@@ -32,3 +32,7 @@ The file asset `6609b245-86ed-4315-8ce0-73f2a8555bf3` and profile `7984c39c-7396
 ## Current authority
 
 `releaseApplied=false`, `acceptanceGranted=false`, `publisherTrustAccepted=false`. Verified build signatures establish byte provenance, not installation-specific release or provider startup authority. No target lifecycle, route, database, firewall, systemd or semantic publication mutation accompanied this preparation.
+
+## Coordinated boot command proof
+
+Gateway source `df103735c1fe75a31e6d4c752360e9368e6aa52d` adds a root-private, isolated Python command that verifies both owner source closure and the original sealed empty-only guard/configuration. Run 37680983756/job 112996642701 passed 31 unit and 5 real isolated native tests, zero skips. Active membership is revoked before original empty restoration. Missing tables suspend lease authority durably; empty tables can be reconstructed without replaying TTL, adopting handles or enabling a provider restart. Unrelated rules and the original transition journal are unchanged. Tampering is rejected before mutation. The original target package at p0mxeups is unchanged. The new command is not installed and no real VPS reboot has been performed. Installation needs an explicit new unit/custody receipt and corresponding bounded native readback: the original helper must not mistake changed unit commands for its old accepted cohort. Preserve historical receipts. Evidence: `evidence/discovery-coordinated-boot-preparation-20261007.json`.
