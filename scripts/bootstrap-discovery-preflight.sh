@@ -58,3 +58,4 @@ publish(policy,rule,0o440)
 print("OUF_DISCOVERY_READ_ONLY_HELPER=INSTALLED GENERAL_SUDO_GRANTED=false")
 OUF_INSTALL
 sudo -n /usr/local/sbin/ouf-discovery-preflight
+"$oufGh" workflow run privileged-discovery-preflight.yml --repo GioNob/ouf-deploy --ref main
