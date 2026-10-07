@@ -142,20 +142,28 @@ def transaction(entries, reload_units, verify_new, verify_old, journal):
     journal('INSTALLING')
     try:
         for entry in entries:
-            replace(entry['path'], entry['old'], entry['new'], entry.get('mode', 0o600))
+            # Record the attempt before rename: fsync can fail AFTER publication.
             changed.append(entry)
+            replace(entry['path'], entry['old'], entry['new'], entry.get('mode', 0o600))
         reload_units()
         verify_new()
         journal('INSTALLED')
     except Exception:
         journal('ROLLBACK_REQUIRED')
-        try:
-            for entry in reversed(changed):
-                replace(entry['path'], entry['new'], entry['old'], entry.get('mode', 0o600))
-            reload_units(); verify_old(); journal('ROLLED_BACK')
-        except Exception:
+        blocked = False
+        for entry in reversed(changed):
+            try:
+                mode = entry.get('mode', 0o600)
+                current = read(entry['path'], mode)
+                if current == entry['new']: replace(entry['path'], entry['new'], entry['old'], mode)
+                elif current != entry['old']: blocked = True
+            except Exception: blocked = True
+        try: reload_units(); verify_old()
+        except Exception: blocked = True
+        if blocked:
             journal('ROLLBACK_BLOCKED')
             raise RuntimeError('partial transition retained; no replay') from None
+        journal('ROLLED_BACK')
         raise RuntimeError('transition rolled back; no replay') from None
 
 
