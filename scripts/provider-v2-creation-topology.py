@@ -67,6 +67,11 @@ def main():
         before=[role(name) for name in ('ouf-semantic-provider','ouf-semantic-southbound')]
         ids=sorted({net['NetworkID'] for item in before for net in item['networks']})
         topology=[network(nid) for nid in ids]
+        runtimes=json.loads(docker('info','--format','{{json .Runtimes}}'))
+        require(isinstance(runtimes,dict) and len(runtimes)<=16, 'RUNTIME_CATALOGUE_UNBOUNDED')
+        runtime_catalogue={name:{'path':item.get('path'),'runtimeType':item.get('runtimeType'),
+            'runtimeArgumentsPresent':bool(item.get('runtimeArgs'))} for name,item in runtimes.items()}
+        require(all(NAME.fullmatch(name) for name in runtime_catalogue), 'RUNTIME_NAME_INVALID')
         names=('ouf-semantic-provider-v2','ouf-semantic-southbound-v2')
         available={name:not docker('ps','-aq','--filter','name=^/'+name+'$').strip() for name in names}
         require(all(available.values()), 'NEW_ROLE_NAME_ALREADY_OCCUPIED')
@@ -74,7 +79,7 @@ def main():
         require(before == after and topology == [network(nid) for nid in ids], 'TOPOLOGY_CHANGED_DURING_READ')
         print('OUF_PROVIDER_V2_CREATION_TOPOLOGY='+json.dumps(dict(
             schema='ouf.semantic-provider-v2-creation-topology.v1',status='READ_ONLY_TOPOLOGY_OBSERVED',
-            legacyRoles=before,networks=topology,newRoleNamesAvailable=available,
+            legacyRoles=before,networks=topology,newRoleNamesAvailable=available,runtimeCatalogue=runtime_catalogue,
             containerLifecycleOperations=0,networkWrites=0,secretValuesPrinted=False,
             privateFilesRead=False,runtimeRegistrationPerformed=False,startAuthorized=False,
             globallyAtomicSnapshotProven=False,notReleaseAcceptance=True),sort_keys=True))
