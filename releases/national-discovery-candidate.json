@@ -9,7 +9,7 @@
   "sourcePins": {
     "semantic": {
       "repository": "GioNob/ouf-semantic-registry",
-      "commit": "ae30d658d9e8c8b935c12121aa816b9d7cfd59aa",
+      "commit": "67cb426995d7b0723e34bfe54e52ea89ae02b81d",
       "pullRequest": 32
     },
     "gateway": {
@@ -19,7 +19,7 @@
     },
     "mcp": {
       "repository": "GioNob/ouf-mcp-server",
-      "commit": "9c6e76b115f723b28de5da2f51622518cc3e37a9",
+      "commit": "3d51524eeddb539d6f78961447e64d9d640141c4",
       "pullRequest": 49
     }
   },
@@ -69,8 +69,8 @@
   "previousRejectedSourcePins": {
     "semantic": {
       "repository": "GioNob/ouf-semantic-registry",
-      "commit": "ae30d658d9e8c8b935c12121aa816b9d7cfd59aa",
-      "pullRequest": 32
+      "commit": "3422a058bbfc45096f14ac7ea3243054ed437652",
+      "pullRequest": 31
     },
     "gateway": {
       "repository": "GioNob/ouf-api-gateway",
@@ -79,12 +79,12 @@
     },
     "mcp": {
       "repository": "GioNob/ouf-mcp-server",
-      "commit": "9c6e76b115f723b28de5da2f51622518cc3e37a9",
+      "commit": "9e8f1fd2dc17ef8836833e40d8963d73512b2191",
       "pullRequest": 49
     }
   },
   "runtimeSelection": "OPERATOR_SELECTED_SUPPORTED_OSS",
-  "candidateStatus": "DEPENDENCY_REMEDIATION_IN_PROGRESS",
+  "candidateStatus": "PATCHED_IMAGES_SCAN_THRESHOLD_MET_SIGNED_PROVENANCE_PENDING",
   "rejectedPackages": [
     {
       "runId": 37659421180,
@@ -94,5 +94,10 @@
       "runId": 37662913414,
       "reason": "OSS_SEMANTIC_RESIDUAL_CRITICAL_HIGH"
     }
-  ]
+  ],
+  "qualificationEvidence": "evidence/discovery-runtime-qualification-20261007.json",
+  "signedProducerCommits": {
+    "semantic": "91381f96be0a3fbd75dcdc44c22aeb90c9f12b8a",
+    "mcp": "32bc369b0ab98629db82620c4ae14525ae412650"
+  }
 }
