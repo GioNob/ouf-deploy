@@ -26,6 +26,8 @@ jobs:
           ref: 84e91e199892bfda1d116a49f53a9990f61724c7
           path: verification-source
           persist-credentials: false
+      - name: Verify archive boundary regression tests
+        run: python3 -m unittest discover -s tests -p test_discovery_archive.py -v
       - uses: actions/download-artifact@v4
         with:
           github-token: ${{ github.token }}
