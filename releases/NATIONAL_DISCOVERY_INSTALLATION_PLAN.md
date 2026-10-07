@@ -19,7 +19,7 @@ IAM's existing in-container bootstrap binding successfully refreshed its admin s
 
 ## Concrete remaining work
 
-1. Connect the ChatGPT OUF app routing context. Its permissions-read call currently fails before contacting the service: missing non-empty `link_id`. No authenticated HUMAN identity/policy read was obtained from that call. Do not fabricate an identifier or user grant.
+1. ChatGPT OUF routing is now verified: explicit plugin selection supplied the account reference. A read-only `ouf.system.status` call on `giovanni-chatgpt` returned MCP HEALTHY, actionRequired=false, partial=false on 2026-10-07 around 20:50 Europe/Rome. The earlier missing-link call was not proof of server disconnection. Current HUMAN discovery identity/policy grants still need their own authorized read; system health alone does not prove them.
 2. Establish an explicitly authorized privileged deployment path. The runner's `sudo -n true` fails. The existing provider kernel guard, source custody, trust and credential copy are root protected. Docker access is not permission to bypass those host controls.
 3. Reconcile the installed provider's completed empty-only guard/cohort and its actual trust/admission/lease gates. Existing pure source contracts and old stopped containers are not start acceptance. Preserve original and failed journals; never replay old apply or silently replace their seals.
 4. Prepare the coordinated applicator using accepted exact role artifacts, two Semantic read-only mounts, existing MCP mounts, provider credential/trust bindings, separate discovery receipt key, actual upstream addresses, and unchanged existing routes. No arbitrary endpoint or published default identity is permitted.
