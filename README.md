@@ -13,7 +13,8 @@ Questo repository privato gestisce l'installazione sul VPS di test. Il percorso 
 - Suite Semantic e controllo PR MCP passati; il controllo separato di latenza MCP è passato al secondo tentativo sullo stesso sorgente, dopo il primo fallimento p95=100.7 ms contro 25 ms. [37664542956](https://github.com/GioNob/ouf-mcp-server/actions/runs/37664542956). Si tratta di CI, non di una misura del VPS.
 - Compatibilità V10 e ripristino del backup provati su PostgreSQL 17 isolato: [37668331670](https://github.com/GioNob/ouf-deploy/actions/runs/37668331670). Dati storici, vecchie scritture e funzioni job preservati. Nessun backup o migrazione del database reale ancora eseguito.
 - Accesso IAM esistente ripristinato senza cambiare client, scope o grant: `ouf-semantic` ha già `gateway.southbound.invoke` DEFAULT. [37667120379](https://github.com/GioNob/ouf-deploy/actions/runs/37667120379).
-- Blocchi operativi: il runner non dispone di `sudo` non interattivo per guard/trust/configurazioni provider protette da root; la chiamata al tool OUF della chat fallisce prima del servizio per riferimento di connessione `link_id` mancante.
+- Connessione OUF della chat verificata con l'account `giovanni-chatgpt`, 7 ottobre circa 20:50 Europe/Rome: MCP `HEALTHY`, `actionRequired=false`, `partial=false`. La selezione esplicita del plugin rende disponibile il riferimento dell'account; il precedente errore era nella chiamata senza tale riferimento, non una prova di disconnessione del server.
+- Blocco infrastrutturale: il runner non dispone di `sudo` non interattivo per guard/trust/configurazioni provider protette da root. La salute MCP non prova l'installazione della discovery o i suoi grant.
 - Provider nazionale ancora disabilitato, origine Gateway e autenticazione provider non configurate esplicitamente.
 - Semantic mantiene entrambi i mount esistenti: autenticazione e chiave del proprietario della consultazione.
 - Nessun rilascio di discovery effettuato. I tool discovery del candidato MCP restano INACTIVE.
@@ -24,7 +25,7 @@ Questo repository privato gestisce l'installazione sul VPS di test. Il percorso 
 |---|---|---|
 | Collegamento operativo | ChatGPT avvia un job che accede al VPS tramite runner | Docker disponibile; accesso privilegiato provider mancante |
 | Pacchetto discovery | Immagini Semantic/MCP e sorgenti Gateway da revisioni fisse | Firmato, trasferito e verificato sul target; non applicato |
-| Installazione discovery | V10, provider nazionale autenticato, tre rotte, policy e tool attivi | Bloccata: canale privilegiato provider e connessione OUF chat |
+| Installazione discovery | V10, provider nazionale autenticato, tre rotte, policy e tool attivi | Bloccata: canale privilegiato provider e collegamenti/policy di installazione |
 | Discovery Teatri | Richiesta reale `CLASS / teatro / it,en`, stato e candidati letti in chat | Non eseguita |
 | Semantica e Onboarding | Mapping, decisioni umane e approvazioni tramite tool governati | Operazioni mancanti da completare |
 | Ingestion e UDP | Run reale, controlli duplicati/merge, materializzazione e lettura in chat | Da eseguire sul nuovo percorso |
