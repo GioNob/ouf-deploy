@@ -4,6 +4,7 @@ import sys
 sys.dont_write_bytecode = True
 import hashlib
 import importlib.util
+from importlib.machinery import SourceFileLoader
 import json
 import os
 from pathlib import Path
@@ -44,7 +45,8 @@ def unique(pairs):
 def load(path, expected, executable=False):
     raw = protected(path, executable)
     if hashlib.sha256(raw).hexdigest() != expected: raise ValueError('source drift')
-    spec = importlib.util.spec_from_file_location('sealed_'+path.stem, path)
+    name = 'sealed_'+path.stem
+    spec = importlib.util.spec_from_loader(name, SourceFileLoader(name, str(path)))
     module = importlib.util.module_from_spec(spec)
     exec(compile(raw, str(path), 'exec'), module.__dict__)
     return module

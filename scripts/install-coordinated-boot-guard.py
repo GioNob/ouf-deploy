@@ -7,6 +7,7 @@ Only the two known systemd commands and the bounded read-only helper change.
 import argparse
 import hashlib
 import importlib.util
+from importlib.machinery import SourceFileLoader
 import json
 import os
 from pathlib import Path
@@ -27,7 +28,7 @@ HELPER = Path('/usr/local/sbin/ouf-discovery-preflight')
 BACKUP = Path('/usr/local/sbin/ouf-discovery-preflight-v2')
 POINTER = Path('/etc/ouf/coordinated-boot-installation.json')
 HELPER_V2_HASH = 'a46d0900ca20ed13115572c9ab9b436105c820e81f066d6e67c2a5333292e893'
-HELPER_V3_HASH = '49c0038410ea7d52e31127cafce914fc7d4fe54d698a0da806ed77d8c511b752'
+HELPER_V3_HASH = '65c8caa661005a7bf4bfe7eb1c5f45932a32c3e024095db861882f6c52998618'
 EXPECTED = {'configurationHash': '24968cf990a32b87f3169b9226fe63d224c93a403540afec197011fbd670b0bb',
             'journalHash': '4ccb05b0a28b6e7e823de3d9af81f29255d60b38271d0a74a00f64e2e5828a74',
             'leaseStructureHash': '26f6f80af9d1e4898c1a6fe6dc8721cd6f67f1ceed05c7eea35e3b9f4a040e54'}
@@ -46,6 +47,8 @@ OWNER_HASHES = {
     'tools/semantic_provider_lease_owner.py': '92736eebeccf344e565186bce94d29c65ffe1d50638d57eae81486e7b26e884d'}
 BOOT_HASHES = {'scripts/run_semantic_coordinated_boot_guard.py': 'ff8d1e483496f9201f9663f58cc3f942c4b6c2ef9041743d52419050fe8134c6',
                'tools/semantic_provider_boot_coordination.py': '518ad91e209d379bc06ce7e209052230d327ce2fa86014d214f32a62b2985431'}
+INSTALL_STAGE = 'INPUT_VALIDATION'
+INSTALL_SNAPSHOT = None
 
 
 def encoded(value): return json.dumps(value, sort_keys=True, separators=(',', ':')).encode()
@@ -93,7 +96,8 @@ def sealed(path, expected, mode=0o600, protected=True):
 
 
 def module(path, raw):
-    spec = importlib.util.spec_from_file_location('sealed_'+path.stem, path)
+    name = 'sealed_'+path.stem
+    spec = importlib.util.spec_from_loader(name, SourceFileLoader(name, str(path)))
     value = importlib.util.module_from_spec(spec)
     exec(compile(raw, str(path), 'exec'), value.__dict__)
     return value
@@ -257,15 +261,20 @@ def observe(receipt, legacy):
 
 
 def install(source_directory, installer_raw):
+    global INSTALL_STAGE, INSTALL_SNAPSHOT
+    INSTALL_STAGE = 'INPUT_VALIDATION'; INSTALL_SNAPSHOT = None
     if os.geteuid() != 0: raise ValueError('root required')
     os.umask(0o077)
     if os.path.lexists(POINTER): raise ValueError('existing installation; no replay')
     helper_old = sealed(HELPER, HELPER_V2_HASH, 0o755)
+    INSTALL_STAGE = 'LEGACY_READER_LOAD'
     legacy = module(HELPER, helper_old)
+    INSTALL_STAGE = 'ORIGINAL_NATIVE_READBACK'
     readiness = legacy.selected_runtime_readiness()
     if any(readiness.get(k) != v for k, v in EXPECTED.items()) \
             or readiness.get('runtimeCustodyVerified') is not True:
         raise ValueError('original native cohort changed')
+    INSTALL_STAGE = 'OWNER_PACKAGE_VALIDATION'
     old_config = parsed(sealed(PACKAGE/'coordinated-configuration.json', PACKAGE_CONFIG_HASH))
     old_journal = parsed(sealed(PACKAGE/'coordination-journal.json', PACKAGE_JOURNAL_HASH))
     if old_journal['state'] != 'QUIESCED' or old_journal['leaseAuthorized'] is not False \
@@ -275,6 +284,7 @@ def install(source_directory, installer_raw):
     sources.update({name: sealed(source_directory/name, expected, protected=False) for name, expected in BOOT_HASHES.items()})
     helper_new = sealed(source_directory/'privileged-discovery-preflight-v3.py', HELPER_V3_HASH, protected=False)
     if not isinstance(installer_raw, bytes) or not installer_raw: raise ValueError('verified execution bytes required')
+    INSTALL_STAGE = 'ORIGINAL_UNIT_BINDING'
     args, installer, cohort = original(legacy)
     g, r, a, c, intent, roots, old_install, gu, unit, drop, _ = cohort
     if {'guard.service': unit, 'docker-drop-in.conf': drop} != UNIT_PATHS: raise ValueError('unit binding drift')
@@ -283,7 +293,9 @@ def install(source_directory, installer_raw):
     parents(POINTER); parents(SNAPSHOTS/'unused')
     if os.path.lexists(BACKUP): sealed(BACKUP, HELPER_V2_HASH, 0o755)
     else: write_new(BACKUP, helper_old, 0o755)
+    INSTALL_STAGE = 'PRIVATE_PACKAGE_PREPARATION'
     root = Path(tempfile.mkdtemp(prefix='semantic-coordinated-boot-install-', dir=SNAPSHOTS)); root.chmod(0o700)
+    INSTALL_SNAPSHOT = root
     for directory in ('source', 'source/scripts', 'source/tools', 'prepared', 'previous'):
         (root/directory).mkdir(mode=0o700)
     for name, raw in sources.items(): write_new(root/'source'/name, raw)
@@ -311,6 +323,7 @@ def install(source_directory, installer_raw):
         write_new(root/'previous'/name, a[name]); write_new(root/'prepared'/name, new[name])
     # Check the owner through the actual isolated read-only CLI before publishing
     # units. The boot command itself revokes; it is not run during installation.
+    INSTALL_STAGE = 'PRIVATE_OWNER_GUARD'
     checked = subprocess.run(['/usr/bin/python3', '-I', '-B', str(root/'source/scripts/run_semantic_coordinated_lease_owner.py'),
         '--mode', 'guard', '--configuration', str(root/'coordinated-configuration.json'), '--configuration-sha256', owner_hash],
         capture_output=True, timeout=30)
@@ -331,6 +344,7 @@ def install(source_directory, installer_raw):
     def journal(state):
         before = read(journal_path)
         replace(journal_path, before, encoded({'state': state, 'startAuthorized': False}))
+    INSTALL_STAGE = 'UNIT_TRANSITION'
     fd = g.lock(Path(c['lockFile']))
     try:
         installer.independent(g, r, intent, roots, old_install, c)
@@ -346,6 +360,7 @@ def install(source_directory, installer_raw):
         transaction(entries, reload_units, verify_new, verify_old, journal)
         # Publish the active receipt only once, after the complete readback.
         # Do not expose a partially written pointer to concurrent readers.
+        INSTALL_STAGE = 'ACTIVE_POINTER_PUBLICATION'
         pointer_temp = root/'active-pointer.json'; write_new(pointer_temp, pointer)
         linked = False
         try:
@@ -366,6 +381,7 @@ def install(source_directory, installer_raw):
             if pointer_temp.exists(): pointer_temp.unlink()
             synced_directory(root)
     finally: os.close(fd)
+    INSTALL_STAGE = 'INSTALLED_BOUNDED_READBACK'
     actual = module(HELPER, sealed(HELPER, HELPER_V3_HASH, 0o755)).collect()
     if actual['runtimeReadiness'].get('runtimeCustodyVerified') is not True:
         raise ValueError('bounded installed readback denied; no replay')
@@ -381,8 +397,18 @@ def main(argv=None):
         result = install(args.source_directory, globals().get('__ouf_verified_source__'))
         print('OUF_COORDINATED_BOOT_INSTALLATION='+json.dumps(result, sort_keys=True))
         return 0
-    except Exception:
-        print('OUF_COORDINATED_BOOT_INSTALLATION=BLOCKED PARTIAL_EVIDENCE_RETAINED=true DO_NOT_RERUN_APPLY=true NO_RAW_OUTPUT=true')
+    except Exception as error:
+        phase = 'NOT_CREATED'
+        if INSTALL_SNAPSHOT is not None:
+            try:
+                value = parsed(read(INSTALL_SNAPSHOT/'installation-journal.json')).get('state')
+                phase = value if value in {'PREPARED', 'INSTALLING', 'INSTALLED', 'ROLLBACK_REQUIRED', 'ROLLED_BACK', 'ROLLBACK_BLOCKED'} else 'UNAVAILABLE'
+            except Exception: phase = 'UNAVAILABLE'
+        print('OUF_COORDINATED_BOOT_INSTALLATION='+json.dumps({
+            'status': 'BLOCKED', 'stage': INSTALL_STAGE, 'installationPhase': phase,
+            'snapshotDirectory': str(INSTALL_SNAPSHOT) if INSTALL_SNAPSHOT is not None else None,
+            'exceptionType': type(error).__name__ if type(error).__name__ in {'ValueError', 'AttributeError', 'RuntimeError', 'OSError', 'PermissionError', 'FileNotFoundError', 'TimeoutExpired'} else 'UNKNOWN',
+            'doNotRerunApply': True, 'noRawOutput': True}, sort_keys=True))
         return 1
 
 

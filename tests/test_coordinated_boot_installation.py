@@ -1,5 +1,7 @@
 import importlib.util
 import json
+import io
+from contextlib import redirect_stdout
 import os
 from pathlib import Path
 import tempfile
@@ -106,6 +108,16 @@ class PublicationTest(unittest.TestCase):
         path.chmod(0o600)
         with self.assertRaises(ValueError): v3.load(path, '0'*64)
 
+    def test_real_extensionless_v2_helper_is_loaded_by_both_readers(self):
+        raw = (ROOT/'privileged-discovery-preflight-v2.py').read_bytes()
+        path = self.root/'ouf-discovery-preflight-v2'
+        install.write_new(path, raw, 0o755)
+        self.assertEqual(install.digest(raw), install.HELPER_V2_HASH)
+        for loaded in (install.module(path, raw), v3.load(path, install.HELPER_V2_HASH, True)):
+            self.assertEqual(loaded.__file__, str(path))
+            self.assertTrue(callable(loaded.selected_runtime_readiness))
+            self.assertTrue(callable(loaded.runtime_installer))
+
     def test_existing_pointer_refuses_replay_before_helper_access(self):
         pointer = self.root/'active.json'; install.write_new(pointer, b'{}')
         with patch.object(install, 'POINTER', pointer), patch.object(install, 'sealed') as read:
@@ -134,6 +146,17 @@ class PublicationTest(unittest.TestCase):
             with self.assertRaises(ValueError): v3.collect()
             pointer['receiptHash'] = install.digest(raw); pointer['observerFile'] = '/tmp/untrusted.py'
             with self.assertRaises(ValueError): v3.collect()
+
+    def test_blocked_output_identifies_stage_without_raw_error_message(self):
+        output = io.StringIO()
+        with patch.object(install, 'install', side_effect=ValueError('secret must not appear')), \
+             patch.object(install, 'INSTALL_STAGE', 'LEGACY_READER_LOAD'), patch.object(install, 'INSTALL_SNAPSHOT', None), \
+             redirect_stdout(output):
+            self.assertEqual(install.main(['--source-directory', str(self.root)]), 1)
+        data = json.loads(output.getvalue().split('OUF_COORDINATED_BOOT_INSTALLATION=')[1])
+        self.assertEqual(data['stage'], 'LEGACY_READER_LOAD')
+        self.assertEqual(data['installationPhase'], 'NOT_CREATED')
+        self.assertNotIn('secret', output.getvalue())
 
 
 if __name__ == '__main__': unittest.main()
