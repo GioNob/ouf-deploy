@@ -161,15 +161,23 @@
     "jobId": 112973222429,
     "nativeProof": true,
     "installed": false,
-    "evidence": "evidence/discovery-provider-coordination-preparation-20261007.json"
+    "evidence": "evidence/discovery-provider-coordination-preparation-20261007.json",
+    "packagePreparation": {
+      "bootstrapCommit": "634a34e594a2158d0976e17539cb6876bafc77e0",
+      "ciRunId": 37677924958,
+      "stagedOnTarget": false,
+      "leaseAuthorized": false,
+      "startAuthorized": false
+    }
   },
   "privilegedReadPath": {
-    "installedVersion": 1,
-    "runId": 37671471821,
-    "upgradeVersion": 2,
+    "installedVersion": 2,
+    "runId": 37675793488,
+    "jobId": 112978836384,
     "upgradeTestRunId": 37674663012,
-    "upgradeInstalled": false,
-    "generalSudoGranted": false
+    "upgradeInstalled": true,
+    "generalSudoGranted": false,
+    "runtimeCustodyVerified": true
   },
   "targetSemanticBackup": {
     "runId": 37672523223,
