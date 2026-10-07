@@ -1,0 +1,20 @@
+name: OUF privileged preflight boundary CI
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [.github/workflows/privileged-preflight-ci.yml, scripts/privileged-discovery-preflight.py, scripts/bootstrap-discovery-preflight.sh, tests/test_privileged_preflight.py]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check installer syntax
+        run: bash -n scripts/bootstrap-discovery-preflight.sh
+      - name: Prove private-file and no-argument boundaries on CI host only
+        run: sudo /usr/bin/python3 -B -m unittest discover -s tests -p test_privileged_preflight.py -v
