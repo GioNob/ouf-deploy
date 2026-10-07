@@ -50,7 +50,10 @@ jobs:
           from pathlib import Path
           sys.path.insert(0, str(Path("verification-source").resolve()))
           from tools import verify_semantic_image_archive as archive
-          from tests.test_discovery_archive import verify
+          node = next(n for n in ast.parse(Path("scripts/scan-discovery-candidate.py").read_text()).body if isinstance(n, ast.FunctionDef) and n.name == "verify_general_image")
+          scope = dict(archive=archive, gzip=gzip, hashlib=hashlib, tarfile=tarfile)
+          exec(compile(ast.Module(body=[node], type_ignores=[]), "archive-verifier", "exec"), scope)
+          verify = scope["verify_general_image"]
           root = Path("/root/ouf-static-mcp")
           root.mkdir(mode=0o700)
           output = Path("package").resolve()
