@@ -1,4 +1,4 @@
-import importlib.util, json, os, shutil, subprocess, tempfile, unittest
+import ast, importlib.util, json, os, shutil, stat, subprocess, tempfile, unittest
 from pathlib import Path
 MODULE=Path(__file__).resolve().parents[1]/"scripts/privileged-discovery-preflight.py"
 spec=importlib.util.spec_from_file_location("preflight",MODULE)
@@ -34,4 +34,23 @@ class CustodyTests(unittest.TestCase):
         p.write_text('oufadmin ALL=(root) NOPASSWD: /usr/local/sbin/ouf-discovery-preflight ""\n');p.chmod(0o440)
         result=subprocess.run(["/usr/sbin/visudo","--check","--file",str(p)],capture_output=True)
         self.assertEqual(result.returncode,0,result.stderr.decode())
+    def publisher(self):
+        text=(MODULE.parent/"bootstrap-discovery-preflight.sh").read_text()
+        body=text.split("<<'OUF_INSTALL'\n",1)[1].split("\nOUF_INSTALL",1)[0]
+        nodes=[n for n in ast.parse(body).body if isinstance(n,ast.FunctionDef) and n.name in ("ancestors","publish")]
+        env=dict(os=os,stat=stat,Path=Path,tempfile=tempfile)
+        exec(compile(ast.Module(body=nodes,type_ignores=[]),"bounded-installer","exec"),env)
+        return env["publish"]
+    def test_installer_publishes_complete_private_policy(self):
+        path=self.root/"policy"
+        raw=b"complete-policy-fixture"
+        self.publisher()(path,raw,0o440)
+        self.assertEqual(path.read_bytes(),raw)
+        self.assertEqual(path.stat().st_mode & 0o777,0o440)
+        self.assertEqual(path.stat().st_nlink,1)
+        self.assertEqual(sorted(p.name for p in self.root.iterdir()),["policy"])
+    def test_installer_preserves_existing_foreign_policy(self):
+        path=self.root/"policy";path.write_bytes(b"existing-policy");path.chmod(0o440)
+        with self.assertRaises(SystemExit):self.publisher()(path,b"changed-policy",0o440)
+        self.assertEqual(path.read_bytes(),b"existing-policy")
 if __name__=="__main__":unittest.main()
