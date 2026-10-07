@@ -14,11 +14,11 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: GioNob/ouf-api-gateway
-          ref: a10df126d229dfefd9e0a4d716a07f1f535b6cd6
+          ref: 0993f45015e7faab3662496c65d88f893371c2ad
           persist-credentials: false
       - name: Install isolated native test dependencies
         run: sudo apt-get update && sudo apt-get install -y nftables iproute2
       - name: Existing authority, startup revocation, shutdown and pre-start regressions
-        run: sudo env OUF_SHARED_COORDINATION_TEST_PARENT=/root python3 -B -m unittest tests.test_semantic_shared_coordination tests.test_semantic_preexec
+        run: sudo env OUF_SHARED_COORDINATION_TEST_PARENT=/root python3 -B -m unittest tests.test_semantic_shared_coordination tests.test_semantic_preexec tests.test_semantic_boot_coordination
       - name: Real DNS, nft, packets and common lock in isolated network namespace
-        run: sudo unshare --net --fork env OUF_SHARED_COORDINATION_NATIVE_TEST=1 python3 -B -m unittest tests.test_semantic_shared_coordination_native
+        run: sudo unshare --net --fork env OUF_SHARED_COORDINATION_NATIVE_TEST=1 python3 -B -m unittest tests.test_semantic_shared_coordination_native tests.test_semantic_boot_coordination_native
