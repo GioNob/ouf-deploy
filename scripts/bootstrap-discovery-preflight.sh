@@ -30,12 +30,15 @@ def publish(path,raw,mode):
         s=path.lstat()
         if not stat.S_ISREG(s.st_mode) or s.st_uid!=0 or s.st_gid!=0 or stat.S_IMODE(s.st_mode)!=mode or path.read_bytes()!=raw:raise SystemExit("EXISTING_HELPER_OR_RULE_DIFFERS")
         return
-    fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,mode)
+    fd,temporary=tempfile.mkstemp(prefix=".ouf-discovery-publish-",dir=path.parent)
     try:
         os.fchmod(fd,mode)
         with os.fdopen(os.dup(fd),"wb") as f:f.write(raw);f.flush()
         os.fsync(fd)
-    finally:os.close(fd)
+        os.link(temporary,path,follow_symlinks=False)
+    finally:
+        os.close(fd)
+        Path(temporary).unlink(missing_ok=True)
     d=os.open(path.parent,os.O_RDONLY|os.O_DIRECTORY)
     try:os.fsync(d)
     finally:os.close(d)
