@@ -7,8 +7,8 @@ test -x "$oufGh"
 oufDownload="$(mktemp -d)"
 oufSnapshot=''
 trap 'if test -n "$oufSnapshot"; then printf "OUF_PROVIDER_V2_TRUST_SNAPSHOT=%s\n" "$oufSnapshot"; fi' EXIT
-oufRevision=4645afc0a8f3b98f06a6bb02b0b94876d700ae92
-oufTrustHash=cc068fd31923027f24c60c6efb1b89300aa5d6e5809dcb7060cb95951661b420
+oufRevision=8474237d4b2ef7eefbb2ba9a0a0b524dcdbd241f
+oufTrustHash=a724becfa3dbcb60052b9cb38a5479372747adb32bc54a7f6cb7b2eb4c3b1226
 oufAccountHash=d3fe5e78d84e021c4a9afdade8ad01add681e1037d26238eb972e03fb9c472fb
 "$oufGh" api "repos/GioNob/ouf-deploy/contents/scripts/prepare-provider-v2-trust.py?ref=$oufRevision" --jq '.content' | base64 -d > "$oufDownload/prepare-provider-v2-trust.py"
 "$oufGh" api "repos/GioNob/ouf-deploy/contents/scripts/provider-role-accounts.py?ref=$oufRevision" --jq '.content' | base64 -d > "$oufDownload/provider-role-accounts.py"
