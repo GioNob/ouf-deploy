@@ -71,3 +71,12 @@ The operator supplied the actual authority bindings for installation `ouf-lab-ne
 ## Issuer source installation on the VPS completed
 
 The operator completed the bounded installation at `/etc/ouf/deploy-snapshots/semantic-creation-issuer-install-USjonf22`, authority profile SHA256 `7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18`. All 19 source hashes and existing authority/public-key references were verified. No private key was read, signature issued, rule changed or container lifecycle action performed. This is `SOURCE_INSTALLED_EXISTING_AUTHORITY_BOUND`; transactionConfigured, policyConsumerLinked, roleSigningAuthorized and startAuthorized remain false. Do not rerun the source installation bootstrap. Evidence: `evidence/discovery-creation-issuer-target-installation-20261007.json`. The next work is a new role-specific candidate transaction using the remediated adapter/southbound artifacts, preserving the old candidates and the live Gateway. The old Gateway-bound candidate stager cannot be reused for the new southbound image.
+
+
+## Nuove immagini provider: prossimo intervento concreto
+
+Letture indipendenti sul VPS completate: [configurazioni di avvio e archivi 37690207099](https://github.com/GioNob/ouf-deploy/actions/runs/37690207099), [layer e account 37691307786](https://github.com/GioNob/ouf-deploy/actions/runs/37691307786). Adapter 10006:10006, southbound 636:636, entrambe le immagini esattamente quelle del pacchetto corretto. Nessuna importazione o esecuzione.
+
+Il nuovo blocco [PROVIDER_V2_PRIVATE_TRUST.md](releases/PROVIDER_V2_PRIVATE_TRUST.md) prepara soltanto certificati e chiave di ricevuta privati per i due nomi nuovi, in uno snapshot separato. [CI 37691852247](https://github.com/GioNob/ouf-deploy/actions/runs/37691852247), job 113033729445, ha passato 7 prove con OpenSSL reale e file root privati, senza skip, più la validazione Bash. Non è ancora applicato sul VPS. Le chiavi dell’autorità di installazione, i container e i servizi esistenti non cambiano. Il runner ha sudo limitato alla lettura; questo passaggio di scrittura protetta richiede l’operatore.
+
+Il risultato prodotto resta da completare: provider nazionale funzionante e discovery MCP, adozione/revisione/approvazione umana, ingestion e riscontro UDP in chat. Nessun job Teatri nazionale è stato eseguito e nessuna accettazione/start è implicata dalle nuove prove.
