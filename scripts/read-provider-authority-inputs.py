@@ -49,7 +49,8 @@ def read(path):
 def project(value):
     result = {k: value[k] for k in FIELDS if type(value.get(k)) in (str, int, bool)}
     # Explicit identity names only; never copy arbitrary configuration or keys.
-    names = ('installationRef', 'entityRef', 'installerIssuerRef', 'attestorIssuerRef', 'installerKeyRef', 'attestorKeyRef')
+    names = ('installationRef', 'entityRef', 'installerIssuerRef', 'attestorIssuerRef', 'installerKeyRef', 'attestorKeyRef',
+             'installation_ref', 'entity_ref', 'installer_issuer_ref', 'attestor_issuer_ref', 'installer_key_ref', 'attestor_key_ref')
     bindings = value.get('bindings', {})
     if type(bindings) is dict:
         result['bindings'] = {k: bindings[k] for k in names if type(bindings.get(k)) is str and re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}', bindings[k])}
