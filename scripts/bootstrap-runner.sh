@@ -17,7 +17,7 @@ if test ! -x ./config.sh; then
 fi
 if test ! -f .runner; then
   test -n "${OUF_RUNNER_REGISTRATION_TOKEN:-}" || { echo "TOKEN_REGISTRAZIONE_MANCANTE"; exit 1; }
-  ./config.sh --unattended --url https://github.com/GioNob/ouf-deploy --token "$OUF_RUNNER_REGISTRATION_TOKEN" --name ouf-vps-test --labels ouf-vps-test --work _work --disableupdate
+  ./config.sh --unattended --url https://github.com/GioNob/ouf-deploy --token "$OUF_RUNNER_REGISTRATION_TOKEN" --name ouf-vps-test --labels ouf-vps-test --work _work
 fi
 unset OUF_RUNNER_REGISTRATION_TOKEN
 python3 - <<'OUF_CHECK_BINDING'
