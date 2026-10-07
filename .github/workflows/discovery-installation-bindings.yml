@@ -1,0 +1,21 @@
+name: OUF discovery installation bindings
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [.github/workflows/discovery-installation-bindings.yml, scripts/read-discovery-installation-bindings.py]
+permissions:
+  contents: read
+concurrency:
+  group: ouf-discovery-release
+  cancel-in-progress: false
+jobs:
+  inspect:
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Inspect existing bindings and mount metadata only
+        run: python3 scripts/read-discovery-installation-bindings.py
