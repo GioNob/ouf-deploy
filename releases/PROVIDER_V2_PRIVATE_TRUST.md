@@ -1,5 +1,8 @@
 # Remediated provider private TLS inputs
 
+> **Target attempt blocked, 7 October 23:49 Europe/Rome.** Snapshot `/etc/ouf/deploy-snapshots/semantic-provider-v2-trust-dlz2t6B6` is retained. Source hashes passed; the installer reported BLOCKED with partial evidence and no raw details. The failing phase and generated file inventory are not yet known. Do not rerun apply or delete/adopt its files. The previous bootstrap is withdrawn pending fixed read-only diagnosis in `scripts/diagnose-provider-v2-trust.py` at revision `5f16b4e79f3dd8d1c7cd71b52ec66636ba51f9d0`. This diagnosis never invokes preparation, opens no private keys and performs no runtime or configuration writes.
+
+
 The issuer source is installed at `/etc/ouf/deploy-snapshots/semantic-creation-issuer-install-USjonf22`. It is not a configured or accepted deployment transaction.
 
 Target run [37690207099](https://github.com/GioNob/ouf-deploy/actions/runs/37690207099) verified the two exact remediated archive/config identities and startup. Target run [37691307786](https://github.com/GioNob/ouf-deploy/actions/runs/37691307786), job 113031925326, independently verified every ordered layer and resolved numeric runtime identities: adapter 10006:10006; southbound 636:636. Eight overlay/refusal tests passed. No image was imported or executed.

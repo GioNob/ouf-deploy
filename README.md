@@ -1,5 +1,8 @@
 # OUF: file → semantica → Onboarding → ingestion → UDP
 
+> **Target attempt blocked, 7 October 23:49 Europe/Rome.** Snapshot `/etc/ouf/deploy-snapshots/semantic-provider-v2-trust-dlz2t6B6` is retained. Source hashes passed; the installer reported BLOCKED with partial evidence and no raw details. The failing phase and generated file inventory are not yet known. Do not rerun apply or delete/adopt its files. The previous bootstrap is withdrawn pending fixed read-only diagnosis in `scripts/diagnose-provider-v2-trust.py` at revision `5f16b4e79f3dd8d1c7cd71b52ec66636ba51f9d0`. This diagnosis never invokes preparation, opens no private keys and performs no runtime or configuration writes.
+
+
 Questo repository privato gestisce l'installazione sul VPS di test. Il percorso prodotto deve essere eseguito dal chatbot tramite MCP: nessun accesso al server per caricare o elaborare un file.
 
 ## Stato provato, 7 ottobre 2026
