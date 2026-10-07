@@ -1,0 +1,34 @@
+# National discovery installation: exact current preparation
+
+## Available and verified
+
+Signed archives are retained privately at `/home/oufadmin/ouf-discovery-signed-stage-pn8_x4vj`. Target run 37667405182 independently verified five signatures per role and each archive's actual image/config/layer binding. Nothing was imported or started.
+
+| Role | Built source | Signed producer | Image |
+| --- | --- | --- | --- |
+| Semantic | 67cb426995d7b0723e34bfe54e52ea89ae02b81d | 91381f96be0a3fbd75dcdc44c22aeb90c9f12b8a | sha256:e9730d879f171530d56843670d7d5139dd7ef2f4ee59c812a1361224392a73b3 |
+| MCP | 3d51524eeddb539d6f78961447e64d9d640141c4 | 32bc369b0ab98629db82620c4ae14525ae412650 | sha256:a0bfc5a3c4eb8710d64b7621224a373d3cfe6db03bc79fc6adbf071c3a220e47 |
+
+Gateway discovery source remains 1d75e404b5a84f361ed2160c611f91aaa68d3fd8. Provider adapter/southbound are separate roles: the old stopped candidates must not be started. Replacing their bytes requires their existing custody/admission/lease integration.
+
+Scans: Semantic 0 Critical/High/Unknown, 177 Medium/9 Low; MCP 0 Critical/High/Unknown/Medium, 1 Low. These are the selected signed builds. The exact database pin expires 2026-10-09T06:31:48Z; later application needs fresh applicable evidence, not an old PASS copied forward.
+
+Migration comparison proved installed V1–V9 unchanged. Hosted run 37668331670 actually applied V1–V9, inserted historical data, dumped/restored the fixture, applied V10, checked unchanged historical content, legacy writes/claim/completion, and per-actor idempotency. This is not a backup of the VPS.
+
+IAM's existing in-container bootstrap binding successfully refreshed its admin session. `ouf-semantic` already has `gateway.southbound.invoke` as DEFAULT. Both provider/discovery scope definitions exist. No IAM client, scope assignment, mapper or application grant changed. Preserve the previously prepared, unmounted Semantic credential copy; do not rotate or recreate it.
+
+## Concrete remaining work
+
+1. Connect the ChatGPT OUF app routing context. Its permissions-read call currently fails before contacting the service: missing non-empty `link_id`. No authenticated HUMAN identity/policy read was obtained from that call. Do not fabricate an identifier or user grant.
+2. Establish an explicitly authorized privileged deployment path. The runner's `sudo -n true` fails. The existing provider kernel guard, source custody, trust and credential copy are root protected. Docker access is not permission to bypass those host controls.
+3. Reconcile the installed provider's completed empty-only guard/cohort and its actual trust/admission/lease gates. Existing pure source contracts and old stopped containers are not start acceptance. Preserve original and failed journals; never replay old apply or silently replace their seals.
+4. Prepare the coordinated applicator using accepted exact role artifacts, two Semantic read-only mounts, existing MCP mounts, provider credential/trust bindings, separate discovery receipt key, actual upstream addresses, and unchanged existing routes. No arbitrary endpoint or published default identity is permitted.
+5. Before Semantic cutover, take and verify a private target database backup. Retain the old container. Recovery must restore the prior container when compatible; a database restore requires explicit reconciliation because it could erase subsequent writes.
+6. Install owner descriptors/current application policy and actual HUMAN scope/grants through their governed boundary; then activate MCP discovery descriptors after installed provider/route readiness.
+7. In chat, request CLASS/teatro/it,en with stable idempotency key, read the actual job and candidates. Do not replace failed provider discovery with empty/local success.
+
+The file asset `6609b245-86ed-4315-8ce0-73f2a8555bf3` and profile `7984c39c-7396-4248-ab0a-f2efc390b49c` remain unchanged. Candidate adoption, semantic review/publication, complete Onboarding mapping/approval, ingestion duplicate/merge controls and UDP readback still require their governed product operations. This plan does not claim that those lifecycle tools already exist.
+
+## Current authority
+
+`releaseApplied=false`, `acceptanceGranted=false`, `publisherTrustAccepted=false`. Verified build signatures establish byte provenance, not installation-specific release or provider startup authority. No target lifecycle, route, database, firewall, systemd or semantic publication mutation accompanied this preparation.
