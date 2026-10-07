@@ -184,7 +184,7 @@
       "unitTests": 31,
       "nativeTests": 5,
       "skips": 0,
-      "installed": false,
+      "installed": true,
       "realRebootProven": false,
       "evidence": "evidence/discovery-coordinated-boot-preparation-20261007.json"
     },
@@ -212,12 +212,19 @@
       },
       "target": {
         "unitBindingsOperatorConfirmed": true,
-        "installationPerformed": false,
-        "readerVersionInstalled": 2,
+        "installationPerformed": true,
+        "readerVersionInstalled": 3,
         "leaseAuthorized": false,
         "startAuthorized": false,
         "daemonStarted": false,
-        "releaseApplied": false
+        "releaseApplied": false,
+        "snapshotDirectory": "/etc/ouf/deploy-snapshots/semantic-coordinated-boot-install-yt5p6huw",
+        "configurationHash": "be76f56598ef3d7e91e773351b6a04f8a4595c4fb6ef1d70986d47ddb350ad04",
+        "journalHash": "45b56a945ad101d9d44c242d0a1fed1e4425d26d9f4674c11d497b22af5ec1c1",
+        "independentPreflightRunId": 37685657539,
+        "independentPreflightJobId": 113012677806,
+        "runtimeCustodyVerified": true,
+        "evidence": "evidence/discovery-coordinated-boot-target-installation-20261007.json"
       },
       "procedure": "releases/COORDINATED_BOOT_INSTALLATION.md",
       "notReleaseAcceptance": true,
@@ -232,13 +239,14 @@
     }
   },
   "privilegedReadPath": {
-    "installedVersion": 2,
-    "runId": 37675793488,
-    "jobId": 112978836384,
+    "installedVersion": 3,
+    "runId": 37685657539,
+    "jobId": 113012677806,
     "upgradeTestRunId": 37674663012,
     "upgradeInstalled": true,
     "generalSudoGranted": false,
-    "runtimeCustodyVerified": true
+    "runtimeCustodyVerified": true,
+    "helperSha256": "65c8caa661005a7bf4bfe7eb1c5f45932a32c3e024095db861882f6c52998618"
   },
   "targetSemanticBackup": {
     "runId": 37672523223,
