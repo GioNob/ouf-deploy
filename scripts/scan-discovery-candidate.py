@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Hosted CI only: verify exact candidate archives and scan offline; no deployment authority."""
-import gzip, hashlib, json, os, subprocess, sys, tarfile
+import base64, gzip, hashlib, json, os, subprocess, sys, tarfile
 from pathlib import Path
 sys.path.insert(0, str(Path("verification-source").resolve()))
 from tools import verify_semantic_image_archive as archive
@@ -42,7 +42,7 @@ def verify_general_image(path, expected_id):
                 row["json"] = archive.json_bytes(b"".join(chunks))
             else:
                 stream = bundle.extractfile(entry)
-                if prefix.startswith(b"\\x1f\\x8b"):
+                if prefix.startswith(bytes.fromhex("1f8b")):
                     stream = gzip.GzipFile(fileobj=stream)
                 diff = hashlib.sha256()
                 size = 0
@@ -89,7 +89,9 @@ for role in ("semantic", "mcp"):
                    env=env, check=True, timeout=180)
     document = json.loads(syft.read_bytes())
     assert document["descriptor"]["version"] == "1.54.0"
-    assert document["source"]["metadata"]["imageID"] == lock["images"][role]["imageId"]
+    assert document["source"]["type"] == "image"
+    assert document["source"]["metadata"]["imageID"] == "sha256:" + verified["configByteSha256"]
+    assert hashlib.sha256(base64.b64decode(document["source"]["metadata"]["config"], validate=True)).hexdigest() == verified["configByteSha256"]
     scanned = subprocess.run(["/usr/bin/python3", "-B", "verification-source/tests/scan_semantic_extended_inventory.py",
                               "--sbom", str(syft)], check=True, capture_output=True, timeout=400)
     report = json.loads(scanned.stdout)
