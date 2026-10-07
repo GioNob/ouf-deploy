@@ -6,13 +6,13 @@ test "$(id -un)" = oufadmin
 oufGh=/home/oufadmin/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh
 oufTmp="$(mktemp -d)"
 trap 'rm -rf -- "$oufTmp"' EXIT
-"$oufGh" api "repos/GioNob/ouf-deploy/contents/scripts/install-coordinated-boot-guard.py?ref=98b697bee70a7f17f11dad687cdd871e01a67171" --jq .content | base64 --decode > "$oufTmp/installer.py"
-printf '%s\n' '89d9af19c6c737eb16cc938becfc6392425045fb480867d1c653c5d83a7f63b1  '"$oufTmp/installer.py" | sha256sum --check --status
+"$oufGh" api "repos/GioNob/ouf-deploy/contents/scripts/install-coordinated-boot-guard.py?ref=8eb860a3ad08e4e196a36ee9f403333d5cd21fe9" --jq .content | base64 --decode > "$oufTmp/installer.py"
+printf '%s\n' 'fe3fc84603c883c87fb5c6ef059e78a686df5ad525b59741b5b9a3856acfab7d  '"$oufTmp/installer.py" | sha256sum --check --status
 mkdir -p "$oufTmp/source/scripts" "$oufTmp/source/tools"
 for oufRelative in scripts/run_semantic_coordinated_boot_guard.py tools/semantic_provider_boot_coordination.py; do
   "$oufGh" api "repos/GioNob/ouf-api-gateway/contents/$oufRelative?ref=df103735c1fe75a31e6d4c752360e9368e6aa52d" --jq .content | base64 --decode > "$oufTmp/source/$oufRelative"
 done
-"$oufGh" api "repos/GioNob/ouf-deploy/contents/scripts/privileged-discovery-preflight-v3.py?ref=98b697bee70a7f17f11dad687cdd871e01a67171" --jq .content | base64 --decode > "$oufTmp/source/privileged-discovery-preflight-v3.py"
+"$oufGh" api "repos/GioNob/ouf-deploy/contents/scripts/privileged-discovery-preflight-v3.py?ref=8eb860a3ad08e4e196a36ee9f403333d5cd21fe9" --jq .content | base64 --decode > "$oufTmp/source/privileged-discovery-preflight-v3.py"
 sudo /usr/bin/python3 -I -B - "$oufTmp/installer.py" "$oufTmp/source" <<'OUF_INSTALL'
 import hashlib,os,stat,sys
 fd=os.open(sys.argv[1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
@@ -22,7 +22,7 @@ try:
         raise SystemExit("INSTALLER_INPUT_INVALID")
     raw=os.read(fd,131073)
 finally:os.close(fd)
-if len(raw)!=info.st_size or hashlib.sha256(raw).hexdigest()!="89d9af19c6c737eb16cc938becfc6392425045fb480867d1c653c5d83a7f63b1":
+if len(raw)!=info.st_size or hashlib.sha256(raw).hexdigest()!="fe3fc84603c883c87fb5c6ef059e78a686df5ad525b59741b5b9a3856acfab7d":
     raise SystemExit("INSTALLER_HASH_MISMATCH")
 source_directory=sys.argv[2]
 sys.argv=[sys.argv[1],"--source-directory",source_directory]
