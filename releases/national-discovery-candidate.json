@@ -236,6 +236,57 @@
         "evidence": "evidence/discovery-coordinated-boot-installation-failure-20261007.json"
       },
       "loaderCorrectionEvidence": "evidence/discovery-coordinated-boot-installation-loader-fix-20261007.json"
+    },
+    "creationIntentPreparation": {
+      "schema": "ouf.discovery.creation-intent-preparation.v1",
+      "gatewaySource": "ace683b1019f79adaace86796b67e463b93ec12e",
+      "creationIntentCI": {
+        "runId": 37688373813,
+        "jobId": 113021951881,
+        "conclusion": "success",
+        "tests": 66,
+        "skips": 0,
+        "realOpenSSL": true,
+        "sourceSealedIsolatedCLI": true,
+        "productionBrokerAuthorizeCreateTest": true,
+        "applicationRuntimeInvoked": false
+      },
+      "initialSourceCI": {
+        "source": "9a5a80c903d2c0577656cb7e23c00cb80a676dff",
+        "runId": 37687879432,
+        "jobId": 113020275503,
+        "tests": 65,
+        "conclusion": "success"
+      },
+      "sourceInstallation": {
+        "sourceCommit": "29b51e5d7a2c187dc1d8e088eb13e0b4e3404e61",
+        "installerSha256": "37a14176355aa7282678dbabbb10ac7c0d51c9c72dc175ac6ba3cfc9ee3e2c92",
+        "manifestSha256": "2ad844d3426f8abe2bb59e8b020ff08bdac1d05de181da552a871bffd7f9cc69",
+        "sourceCount": 19,
+        "bootstrapCommit": "942acda2ca5d0638714c2958ffe6dfdff427340c",
+        "bootstrapSha256": "95f8a7911fa49422c32b75ef68a18ef8bf005d4e49078c33f3be010b6251fad7",
+        "ci": {
+          "runId": 37689237859,
+          "jobId": 113024862381,
+          "tests": 7,
+          "skips": 0,
+          "conclusion": "success",
+          "realPrivateFilePublication": true,
+          "sourceBodiesExecuted": 0,
+          "bootstrapSyntaxChecked": true
+        },
+        "performedOnTarget": false
+      },
+      "existingAuthorityBindingEvidence": "evidence/discovery-provider-authority-bindings-20261007.json",
+      "targetState": {
+        "roleSigningAuthorized": false,
+        "policyConsumerLinked": false,
+        "startAuthorized": false,
+        "providerActivated": false,
+        "releaseApplied": false
+      },
+      "remaining": "Transaction-specific image/constraint acceptance, immutable fresh mandates and issuer/broker/adapter provisioning; target guard/admission/lease/reboot proof; Semantic/MCP rollout and governed product operations.",
+      "notReleaseAcceptance": true
     }
   },
   "privilegedReadPath": {
