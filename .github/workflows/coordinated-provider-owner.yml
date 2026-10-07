@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: GioNob/ouf-api-gateway
-          ref: 0993f45015e7faab3662496c65d88f893371c2ad
+          ref: df103735c1fe75a31e6d4c752360e9368e6aa52d
           persist-credentials: false
       - name: Install isolated native test dependencies
         run: sudo apt-get update && sudo apt-get install -y nftables iproute2
