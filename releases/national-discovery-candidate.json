@@ -45,7 +45,8 @@
     "installation provider OAuth credentials, TLS and Gateway origin binding",
     "distinct discovery receipt key bound consistently to Gateway and Semantic",
     "capability descriptors and explicit HUMAN grants installed by owner",
-    "activate MCP descriptors only after installed provider and route readiness"
+    "activate MCP descriptors only after installed provider and route readiness",
+    "privileged operational path for existing root-owned provider guard, trust and deployment custody"
   ],
   "acceptance": {
     "request": {
@@ -84,7 +85,7 @@
     }
   },
   "runtimeSelection": "OPERATOR_SELECTED_SUPPORTED_OSS",
-  "candidateStatus": "PATCHED_IMAGES_SCAN_THRESHOLD_MET_SIGNED_PROVENANCE_PENDING",
+  "candidateStatus": "SIGNED_IMAGES_STAGED_INSTALLATION_BINDINGS_PENDING",
   "rejectedPackages": [
     {
       "runId": 37659421180,
@@ -99,5 +100,47 @@
   "signedProducerCommits": {
     "semantic": "91381f96be0a3fbd75dcdc44c22aeb90c9f12b8a",
     "mcp": "32bc369b0ab98629db82620c4ae14525ae412650"
+  },
+  "signedTargetStage": {
+    "directory": "/home/oufadmin/ouf-discovery-signed-stage-pn8_x4vj",
+    "runId": 37667405182,
+    "roles": [
+      {
+        "archiveSha256": "a6a9bfbaffa0396b30016a47ce948ed1c03b46b74d99b0a77299b2695ebfc107",
+        "imageId": "sha256:e9730d879f171530d56843670d7d5139dd7ef2f4ee59c812a1361224392a73b3",
+        "producerCommit": "91381f96be0a3fbd75dcdc44c22aeb90c9f12b8a",
+        "producerRun": 37665730385,
+        "role": "semantic",
+        "severityCounts": {
+          "Critical": 0,
+          "High": 0,
+          "Low": 9,
+          "Medium": 177,
+          "Negligible": 0,
+          "Unknown": 0
+        },
+        "sourceCommit": "67cb426995d7b0723e34bfe54e52ea89ae02b81d",
+        "targetArchiveBytesVerified": true,
+        "targetCryptoVerified": true
+      },
+      {
+        "archiveSha256": "8043f74313823c0f1cf387e0802e75692930f4b83f7782c6dbad2e008cb3d2af",
+        "imageId": "sha256:a0bfc5a3c4eb8710d64b7621224a373d3cfe6db03bc79fc6adbf071c3a220e47",
+        "producerCommit": "32bc369b0ab98629db82620c4ae14525ae412650",
+        "producerRun": 37665728762,
+        "role": "mcp",
+        "severityCounts": {
+          "Critical": 0,
+          "High": 0,
+          "Low": 1,
+          "Medium": 0,
+          "Negligible": 0,
+          "Unknown": 0
+        },
+        "sourceCommit": "3d51524eeddb539d6f78961447e64d9d640141c4",
+        "targetArchiveBytesVerified": true,
+        "targetCryptoVerified": true
+      }
+    ]
   }
 }
