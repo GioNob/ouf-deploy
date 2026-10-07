@@ -13,6 +13,12 @@ base=["docker","exec","-i","ouf-keycloak","/opt/keycloak/bin/kcadm.sh","get"]
 try:
     c=call(base+["clients","-r","ouf","--fields","id,clientId"])
     if c.returncode:
+        session=call(["docker","exec","ouf-keycloak","sh","-c",
+            'test -n "$KC_BOOTSTRAP_ADMIN_USERNAME" && test -n "$KC_BOOTSTRAP_ADMIN_PASSWORD" && exec /opt/keycloak/bin/kcadm.sh config credentials --server http://127.0.0.1:8080 --realm master --user "$KC_BOOTSTRAP_ADMIN_USERNAME" --password "$KC_BOOTSTRAP_ADMIN_PASSWORD"'])
+        r["existingBootstrapSessionRefreshSucceeded"]=session.returncode==0
+        if session.returncode==0:
+            c=call(base+["clients","-r","ouf","--fields","id,clientId"])
+    if c.returncode:
         r["iamReadStatus"]="EXISTING_SESSION_UNAVAILABLE"
     else:
         clients=json.loads(c.stdout)
