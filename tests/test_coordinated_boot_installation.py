@@ -56,6 +56,19 @@ class PublicationTest(unittest.TestCase):
             install.transaction(self.entries, lambda: None, denied, lambda: None, self.events.append)
         self.assertTrue(all(e['path'].read_bytes() == e['old'] for e in self.entries))
 
+    def test_failure_after_rename_is_also_recovered(self):
+        original = install.synced_directory
+        calls = []
+        def fail_after_rename(path):
+            calls.append(path)
+            if len(calls) == 2: raise OSError('fixture post-rename fsync failure')
+            return original(path)
+        with patch.object(install, 'synced_directory', side_effect=fail_after_rename):
+            with self.assertRaisesRegex(RuntimeError, 'rolled back'):
+                install.transaction(self.entries, lambda: None, lambda: None, lambda: None, self.events.append)
+        self.assertTrue(all(e['path'].read_bytes() == e['old'] for e in self.entries))
+        self.assertEqual(self.events[-1], 'ROLLED_BACK')
+
     def test_foreign_file_before_publication_is_never_overwritten(self):
         e = self.entries[1]; e['path'].write_bytes(b'foreign')
         with self.assertRaises(RuntimeError):
