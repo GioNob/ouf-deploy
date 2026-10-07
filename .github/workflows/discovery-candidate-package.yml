@@ -1,0 +1,80 @@
+name: OUF discovery candidate package
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/discovery-candidate-package.yml
+permissions:
+  contents: read
+concurrency:
+  group: ouf-discovery-candidate-package
+  cancel-in-progress: false
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-semantic-registry
+          ref: 3422a058bbfc45096f14ac7ea3243054ed437652
+          path: semantic-source
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-mcp-server
+          ref: 9e8f1fd2dc17ef8836833e40d8963d73512b2191
+          path: mcp-source
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: 1d75e404b5a84f361ed2160c611f91aaa68d3fd8
+          path: gateway-source
+          persist-credentials: false
+      - name: Build exact candidate images away from the VPS
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C semantic-source rev-parse HEAD)" = 3422a058bbfc45096f14ac7ea3243054ed437652
+          test "$(git -C mcp-source rev-parse HEAD)" = 9e8f1fd2dc17ef8836833e40d8963d73512b2191
+          test "$(git -C gateway-source rev-parse HEAD)" = 1d75e404b5a84f361ed2160c611f91aaa68d3fd8
+          docker build --label org.opencontainers.image.revision=3422a058bbfc45096f14ac7ea3243054ed437652 -t ouf-semantic:discovery-3422a058bbfc semantic-source
+          docker build --label org.opencontainers.image.revision=9e8f1fd2dc17ef8836833e40d8963d73512b2191 -t ouf-mcp:discovery-9e8f1fd2dc17 mcp-source
+          test "$(docker image inspect ouf-semantic:discovery-3422a058bbfc --format '{{.Config.User}}')" = 10001:10001
+          test "$(docker image inspect ouf-mcp:discovery-9e8f1fd2dc17 --format '{{.Config.User}}')" = 10005:10005
+      - name: Package images and exact Gateway source with byte inventory
+        shell: bash
+        env:
+          OUF_PACKAGE_RUN_ID: ${{ github.run_id }}
+          OUF_PACKAGE_SOURCE: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -m 700 package
+          docker save ouf-semantic:discovery-3422a058bbfc | gzip -n > package/semantic.image.tar.gz
+          docker save ouf-mcp:discovery-9e8f1fd2dc17 | gzip -n > package/mcp.image.tar.gz
+          git -C gateway-source archive --format=tar 1d75e404b5a84f361ed2160c611f91aaa68d3fd8 | gzip -n > package/gateway.source.tar.gz
+          cp releases/national-discovery-candidate.json package/release-candidate.json
+          python3 - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          root = Path("package")
+          files = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in root.iterdir() if p.is_file()}
+          images = {}
+          for role, tag in (("semantic", "ouf-semantic:discovery-3422a058bbfc"), ("mcp", "ouf-mcp:discovery-9e8f1fd2dc17")):
+              image = json.loads(subprocess.check_output(["docker", "image", "inspect", tag]))[0]
+              images[role] = {"imageId": image["Id"], "revision": image["Config"]["Labels"]["org.opencontainers.image.revision"], "user": image["Config"]["User"], "platform": image["Os"] + "/" + image["Architecture"]}
+          report = {"schema":"ouf.discovery.candidate-package.v1", "runId":os.environ["OUF_PACKAGE_RUN_ID"], "producerCommit":os.environ["OUF_PACKAGE_SOURCE"], "archiveDigests":files, "images":images, "releaseApplied":False, "acceptanceGranted":False, "attestationCryptoVerified":False, "vulnerabilityCoverageAccepted":False}
+          (root / "inventory.json").write_text(json.dumps(report, indent=2) + "\n")
+          print("OUF_CANDIDATE_PACKAGE=" + json.dumps(report, sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: national-discovery-candidate-${{ github.run_id }}
+          path: package/
+          if-no-files-found: error
+          retention-days: 7
