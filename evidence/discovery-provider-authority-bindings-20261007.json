@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.discovery.provider-authority-binding-evidence.v1",
+  "source": "OPERATOR_SUPPLIED_READ_ONLY_OUTPUT",
+  "receiptPath": "/etc/ouf/deploy-snapshots/semantic-authority-provisioning-20261004-164654/key-custody-receipt.json",
+  "receiptSha256": "a134c4c8e8487860e6a8ed3a672520935a5de753d02507c4005a0475570b2d49",
+  "bindings": {
+    "attestor_issuer_ref": "ouf-lab-node-attestor",
+    "attestor_key_ref": "ouf-lab-attestor-ed25519-1",
+    "entity_ref": "ouf-lab",
+    "installation_ref": "ouf-lab-netcup-01",
+    "installer_issuer_ref": "ouf-lab-infrastructure-installer",
+    "installer_key_ref": "ouf-lab-installer-ed25519-1"
+  },
+  "privateKeysRead": 0,
+  "configurationWrites": 0,
+  "startAuthorized": false,
+  "notReleaseAcceptance": true
+}
