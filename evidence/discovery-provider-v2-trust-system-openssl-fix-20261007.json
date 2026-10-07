@@ -1,0 +1,28 @@
+{
+  "schema": "ouf.discovery.provider-v2-trust-openssl-fix.v1",
+  "sourceRevision": "8474237d4b2ef7eefbb2ba9a0a0b524dcdbd241f",
+  "sourceSha256": "a724becfa3dbcb60052b9cb38a5479372747adb32bc54a7f6cb7b2eb4c3b1226",
+  "bootstrapRevision": "b5b4f4494665854cf43f75c9aeece09afcab3552",
+  "bootstrapSha256": "bc7d81971fdb542f6b03e8559e68eb9f5b780ae849fd3bfdc28bc87bbd841a22",
+  "systemOpenSslBinding": {
+    "path": "/usr/bin/openssl",
+    "sha256": "acc10176d038aeb7b2a77d9ec972ac2985857a7191f7aecb7c54ef0e2c7e9549",
+    "evidenceSource": "OPERATOR_ROOT_READ_ONLY_DIAGNOSIS"
+  },
+  "failedSnapshotPreserved": "/etc/ouf/deploy-snapshots/semantic-provider-v2-trust-dlz2t6B6",
+  "failedAttemptHadNoClaimOrGeneratedTrustFiles": true,
+  "ci": {
+    "runId": 37692870614,
+    "jobId": 113037145459,
+    "testsPassed": 9,
+    "testsSkipped": 0,
+    "realOpenSsl": true,
+    "realRootPrivateFiles": true,
+    "bashSyntaxValidated": true
+  },
+  "correctedPreparationApplied": false,
+  "installationAuthorityReceiptsModified": false,
+  "installationAuthorityKeyRotation": false,
+  "acceptanceGranted": false,
+  "startAuthorized": false
+}
