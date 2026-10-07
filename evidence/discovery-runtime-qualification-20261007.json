@@ -61,15 +61,23 @@
       "p95Ms": 100.736731,
       "targetMs": 25,
       "retryRequested": true,
-      "resolved": false
+      "resolved": true,
+      "retry": {
+        "runId": 37664542956,
+        "attempt": 2,
+        "jobId": 112943894350,
+        "conclusion": "success",
+        "sameSourceCommit": "3d51524eeddb539d6f78961447e64d9d640141c4"
+      }
     }
   },
   "publicSignedProducers": {
     "semantic": "91381f96be0a3fbd75dcdc44c22aeb90c9f12b8a",
     "mcp": "32bc369b0ab98629db82620c4ae14525ae412650",
-    "result": "NOT_YET_VERIFIED"
+    "result": "VERIFIED_ON_HOSTED_PRODUCERS_AND_TARGET"
   },
   "targetLifecycleOperations": 0,
   "releaseApplied": false,
-  "acceptanceGranted": false
+  "acceptanceGranted": false,
+  "selectedSignedTargetEvidence": "evidence/discovery-signed-target-stage-20261007.json"
 }
