@@ -36,6 +36,12 @@ jobs:
         run: sudo /usr/bin/python3 -B verification-source/tests/prepare_native_vulnerability_scanners.py --database-pin verification-source/docs/handoffs/receipts/SEMANTIC_IMAGE_VULNERABILITY_DATABASE_PIN_2026-10-07.json
       - name: Verify archive bytes and scan offline
         run: sudo /usr/bin/python3 -B scripts/scan-discovery-candidate.py
+      - name: Make public image evidence readable by the artifact uploader
+        if: always()
+        run: |
+          if test -d scan-evidence; then
+            sudo chown -R "$(id -u):$(id -g)" scan-evidence
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
