@@ -12,11 +12,11 @@ The installer independently revalidates them and the original complete sealed co
 
 ## Concrete action
 
-The reviewed bootstrap is scripts/bootstrap-coordinated-boot-installation.sh at 4e9dafd319de5b1466ee11285c0a950426b0af63.
-Bootstrap SHA256: 50a56cf49e35d928b7a732ef8422344d1b25fded090896416a0841736d45a5fe.
-It downloads installer/reader bytes from private revision 8eb860a3ad08e4e196a36ee9f403333d5cd21fe9.
-Installer SHA256: fe3fc84603c883c87fb5c6ef059e78a686df5ad525b59741b5b9a3856acfab7d.
-Reader v3 SHA256: 49c0038410ea7d52e31127cafce914fc7d4fe54d698a0da806ed77d8c511b752.
+The reviewed bootstrap is scripts/bootstrap-coordinated-boot-installation.sh at a6ecdc25982d3b70d18d944961614b7977110c95.
+Bootstrap SHA256: c6ad494f488920edcf06c74fee278f4ce20568eb39dc7016986e7c80f96d2c59.
+It downloads installer/reader bytes from private revision 9db4d34100d4728f7cb8c19dcb11f5aae2d8c269.
+Installer SHA256: 4b6a7aacd6683332a303fbfef82ddc9b3eb3bcd25c9baf808efce321271fb46e.
+Reader v3 SHA256: 65c8caa661005a7bf4bfe7eb1c5f45932a32c3e024095db861882f6c52998618.
 
 The operator runs it as oufadmin, enters sudo password locally, and supplies the resulting redacted receipt. No general sudo rule is added. The bootstrap then dispatches the existing privileged-discovery-preflight.yml for independent runner readback through the same no-argument sudo capability.
 
@@ -41,3 +41,7 @@ The installed command coordinates revocation with the original sealed empty-only
 Hosted tests use real root-private file publication, the actual isolated owner CLI and nft in a separate namespace. Systemd/custody adapters in the installation fixture are simulated. Prior boot-command tests execute actual isolated root CLI revocation and missing-table restoration. Neither is a real VPS reboot. Target loaded-unit readback and a controlled real reboot remain separate evidence.
 
 The action is not release acceptance. Infrastructure authority, shared-face/live-namespace/spoof/IPv6 enforcement, purpose/TLS/OIDC/revocation admission, active lease lifecycle and real reboot remain open. Old provider/southbound images must not be started. Signed remediated role artifacts, local admission and chatbot grants/tools still need their own acceptance before CLASS/teatro/it,en and the subsequent Teatri-to-UDP flow.
+
+## First target attempt and loader correction
+
+The original bootstrap at 4e9dafd319de5b1466ee11285c0a950426b0af63 failed at the initial extensionless legacy-reader import, before installer target writes. The simulated module adapter masked that error in prior CI. Read-only target run 37684853514/job 113009920494 independently confirms original v2 helper, unchanged loaded commands, active Docker and all three original runtime hashes. That bootstrap is withdrawn. Both loaders now use explicit SourceFileLoader and still compile only hash-verified in-memory bytes; a regression loads the actual extensionless v2 helper through both implementations. Failure output includes controlled stage, phase and snapshot metadata without raw error messages. Corrected bootstrap a6ecdc25982d3b70d18d944961614b7977110c95/source 9db4d34100d4728f7cb8c19dcb11f5aae2d8c269 passed run 37685283731/job 113011401986: 13 unit and 2 isolated native tests, zero skips. Services in installation fixtures remain simulated; actual target loaded-unit observation is still required. The correction is a new attempt after independently confirmed unchanged state, not a replay of a partially applied transaction. Installation remains pending. Evidence: `evidence/discovery-coordinated-boot-installation-loader-fix-20261007.json`.

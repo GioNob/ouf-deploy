@@ -191,22 +191,24 @@
     "bootInstallationPreparation": {
       "schema": "ouf.discovery.coordinated-boot-installation-preparation.v1",
       "gatewaySource": "df103735c1fe75a31e6d4c752360e9368e6aa52d",
-      "installerSourceCommit": "8eb860a3ad08e4e196a36ee9f403333d5cd21fe9",
-      "installerSha256": "fe3fc84603c883c87fb5c6ef059e78a686df5ad525b59741b5b9a3856acfab7d",
-      "readerV3Sha256": "49c0038410ea7d52e31127cafce914fc7d4fe54d698a0da806ed77d8c511b752",
-      "bootstrapCommit": "4e9dafd319de5b1466ee11285c0a950426b0af63",
-      "bootstrapSha256": "50a56cf49e35d928b7a732ef8422344d1b25fded090896416a0841736d45a5fe",
+      "installerSourceCommit": "9db4d34100d4728f7cb8c19dcb11f5aae2d8c269",
+      "installerSha256": "4b6a7aacd6683332a303fbfef82ddc9b3eb3bcd25c9baf808efce321271fb46e",
+      "readerV3Sha256": "65c8caa661005a7bf4bfe7eb1c5f45932a32c3e024095db861882f6c52998618",
+      "bootstrapCommit": "a6ecdc25982d3b70d18d944961614b7977110c95",
+      "bootstrapSha256": "c6ad494f488920edcf06c74fee278f4ce20568eb39dc7016986e7c80f96d2c59",
       "ci": {
-        "runId": 37684101009,
-        "jobId": 113007342085,
+        "runId": 37685283731,
+        "jobId": 113011401986,
         "conclusion": "success",
-        "unitTests": 11,
+        "unitTests": 13,
         "nativeTests": 2,
         "skips": 0,
         "actualRootFiles": true,
         "actualNftAndIsolatedReadOnlyCli": true,
         "systemdAndCustodyAdaptersSimulated": true,
-        "realTargetReboot": false
+        "realTargetReboot": false,
+        "includesActualExtensionlessV2ReaderLoading": true,
+        "installationServiceAdaptersSimulated": true
       },
       "target": {
         "unitBindingsOperatorConfirmed": true,
@@ -218,7 +220,15 @@
         "releaseApplied": false
       },
       "procedure": "releases/COORDINATED_BOOT_INSTALLATION.md",
-      "notReleaseAcceptance": true
+      "notReleaseAcceptance": true,
+      "supersededBootstrap": "4e9dafd319de5b1466ee11285c0a950426b0af63",
+      "failedTargetAttempt": {
+        "failedBeforeTargetWrites": true,
+        "diagnosisRunId": 37684853514,
+        "oldRuntimeConfirmed": true,
+        "evidence": "evidence/discovery-coordinated-boot-installation-failure-20261007.json"
+      },
+      "loaderCorrectionEvidence": "evidence/discovery-coordinated-boot-installation-loader-fix-20261007.json"
     }
   },
   "privilegedReadPath": {
