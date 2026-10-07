@@ -15,6 +15,10 @@ if test ! -x ./config.sh; then
   printf '%s\n' "70920811a4f8ad4328818682bca5c6469c1c942fab52448868071d0063816613  $oufArchive" | sha256sum -c -
   tar -xzf "$oufArchive"
 fi
+if ! ./bin/Runner.Listener --version >/dev/null 2>&1; then
+  sudo ./bin/installdependencies.sh
+  ./bin/Runner.Listener --version >/dev/null
+fi
 if test ! -f .runner; then
   test -n "${OUF_RUNNER_REGISTRATION_TOKEN:-}" || { echo "TOKEN_REGISTRAZIONE_MANCANTE"; exit 1; }
   ./config.sh --unattended --url https://github.com/GioNob/ouf-deploy --token "$OUF_RUNNER_REGISTRATION_TOKEN" --name ouf-vps-test --labels ouf-vps-test --work _work
