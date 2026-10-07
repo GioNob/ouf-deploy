@@ -275,7 +275,29 @@
           "sourceBodiesExecuted": 0,
           "bootstrapSyntaxChecked": true
         },
-        "performedOnTarget": false
+        "performedOnTarget": true,
+        "target": {
+          "schema": "ouf.semantic-creation-issuer-source-installation.v1",
+          "status": "SOURCE_INSTALLED_EXISTING_AUTHORITY_BOUND",
+          "directory": "/etc/ouf/deploy-snapshots/semantic-creation-issuer-install-USjonf22",
+          "authorityProfileHash": "7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18",
+          "installerSourceHash": "37a14176355aa7282678dbabbb10ac7c0d51c9c72dc175ac6ba3cfc9ee3e2c92",
+          "manifestHash": "2ad844d3426f8abe2bb59e8b020ff08bdac1d05de181da552a871bffd7f9cc69",
+          "sourceCommit": "ace683b1019f79adaace86796b67e463b93ec12e",
+          "sourceCount": 19,
+          "containerLifecycleOperations": 0,
+          "generalSudoGranted": false,
+          "keysGenerated": 0,
+          "notReleaseAcceptance": true,
+          "policyConsumerLinked": false,
+          "privateKeysRead": 0,
+          "roleSigningAuthorized": false,
+          "rulesChanged": false,
+          "signaturesIssued": 0,
+          "startAuthorized": false,
+          "transactionConfigured": false
+        },
+        "evidence": "evidence/discovery-creation-issuer-target-installation-20261007.json"
       },
       "existingAuthorityBindingEvidence": "evidence/discovery-provider-authority-bindings-20261007.json",
       "targetState": {
