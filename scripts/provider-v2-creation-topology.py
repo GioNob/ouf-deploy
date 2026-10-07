@@ -37,10 +37,14 @@ def role(name):
     require(isinstance(networks,dict) and 1 <= len(networks) <= 8, 'LEGACY_TOPOLOGY_UNBOUNDED')
     result = []
     for netname, record in sorted(networks.items()):
-        require(NAME.fullmatch(netname) and CID.fullmatch(record['NetworkID']), 'EXACT_NETWORK_BINDING_REQUIRED')
+        require(NAME.fullmatch(netname), 'EXACT_NETWORK_NAME_REQUIRED')
+        resolved = docker('network','inspect','--format','{{.Id}}',netname).strip()
+        require(CID.fullmatch(resolved) and record['NetworkID'] in ('',None,resolved), 'EXACT_NETWORK_BINDING_REQUIRED')
         result.append({key:record.get(key) for key in ('NetworkID','EndpointID','IPAddress','IPPrefixLen',
             'GlobalIPv6Address','GlobalIPv6PrefixLen','IPAMConfig','Aliases')})
         result[-1]['name'] = netname
+        result[-1]['NetworkID'] = resolved
+        result[-1]['liveEndpointProven'] = False
     return dict(name=name,containerId=cid,imageId=image,runtimeUser=user,neverStarted=True,
         restartPolicy=restart['Name'],networkMode=mode,networks=result)
 
