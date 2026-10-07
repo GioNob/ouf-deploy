@@ -1,0 +1,21 @@
+name: OUF discovery operational access
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [.github/workflows/discovery-operational-access.yml, scripts/read-discovery-operational-access.py]
+permissions:
+  contents: read
+concurrency:
+  group: ouf-discovery-release
+  cancel-in-progress: false
+jobs:
+  inspect:
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Read current privilege and IAM bindings
+        run: python3 scripts/read-discovery-operational-access.py
