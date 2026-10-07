@@ -14,7 +14,7 @@
     },
     "gateway": {
       "repository": "GioNob/ouf-api-gateway",
-      "commit": "1d75e404b5a84f361ed2160c611f91aaa68d3fd8",
+      "commit": "a10df126d229dfefd9e0a4d716a07f1f535b6cd6",
       "pullRequest": 57
     },
     "mcp": {
@@ -46,7 +46,8 @@
     "distinct discovery receipt key bound consistently to Gateway and Semantic",
     "capability descriptors and explicit HUMAN grants installed by owner",
     "activate MCP descriptors only after installed provider and route readiness",
-    "privileged operational path for existing root-owned provider guard, trust and deployment custody"
+    "privileged operational path for existing root-owned provider guard, trust and deployment custody",
+    "controlled EMPTY_ONLY guard transition with coordinated owner package and target authority/admission acceptance"
   ],
   "acceptance": {
     "request": {
@@ -152,5 +153,30 @@
     "partial": false,
     "readOnly": true,
     "discoveryAcceptanceProven": false
+  },
+  "previousGatewaySourcePin": "1d75e404b5a84f361ed2160c611f91aaa68d3fd8",
+  "providerCoordinationPreparation": {
+    "sourceCommit": "a10df126d229dfefd9e0a4d716a07f1f535b6cd6",
+    "runId": 37674161315,
+    "jobId": 112973222429,
+    "nativeProof": true,
+    "installed": false,
+    "evidence": "evidence/discovery-provider-coordination-preparation-20261007.json"
+  },
+  "privilegedReadPath": {
+    "installedVersion": 1,
+    "runId": 37671471821,
+    "upgradeVersion": 2,
+    "upgradeTestRunId": 37674663012,
+    "upgradeInstalled": false,
+    "generalSudoGranted": false
+  },
+  "targetSemanticBackup": {
+    "runId": 37672523223,
+    "directory": "/home/oufadmin/ouf-semantic-backup-yiagzm7f",
+    "scope": "ouf_sem",
+    "payloadParsed": true,
+    "liveRestorePerformed": false,
+    "refreshRequiredBeforeLaterCutover": true
   }
 }
