@@ -1,0 +1,43 @@
+{
+  "schema": "ouf.discovery.target-backup-evidence.v1",
+  "sourceCommit": "5b296135e83636d3e74ff2d004f6a8582b711e39",
+  "runId": 37672523223,
+  "validationJobId": 112967625337,
+  "targetJobId": 112967787186,
+  "observedAt": "2026-10-07T19:11:25Z",
+  "observation": {
+    "archiveBytes": 101436,
+    "archiveMode": "0o600",
+    "archivePayloadParsed": true,
+    "archiveSha256": "d00b96bbb665b0d12484ce02e0eb811c3b368b6a0eaf995b4635f4c09316d77e",
+    "backupDirectory": "/home/oufadmin/ouf-semantic-backup-yiagzm7f",
+    "containerLifecycleOperations": 0,
+    "databaseWrites": 0,
+    "dumpUploaded": false,
+    "liveRestorePerformed": false,
+    "migrationsVerified": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "postgresImage": "sha256:894f570c0cf0664ed5576a8fd5d5bfb8fb1b19d592885b686c3a88c8bd90c41f",
+    "releaseApplied": false,
+    "schema": "ouf.discovery.semantic-target-backup.v1",
+    "schemaOnly": "ouf_sem",
+    "secretValuesPrinted": false,
+    "semanticImage": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+    "status": "PRIVATE_BACKUP_VALIDATED",
+    "targetRestoreProven": false
+  },
+  "limitations": [
+    "The archived Semantic schema was parsed fully but not restored on the live server.",
+    "This is a point-in-time schema backup; new writes require a fresh backup before later cutover.",
+    "Backup includes ouf_sem only, not all installation databases or object storage."
+  ]
+}
