@@ -7,6 +7,9 @@ r = importlib.util.module_from_spec(s)
 s.loader.exec_module(r)
 
 class ProjectionTests(unittest.TestCase):
+    def test_actual_custody_schema_preserves_snake_case_bindings(self):
+        bindings = {'installation_ref': 'ouf-test', 'entity_ref': 'entity-test', 'installer_issuer_ref': 'installer-test', 'attestor_issuer_ref': 'attestor-test', 'installer_key_ref': 'installer-key', 'attestor_key_ref': 'attestor-key'}
+        self.assertEqual(r.project({'bindings': bindings})['bindings'], bindings)
     def test_no_key_or_arbitrary_configuration_is_exported(self):
         value = {'schema': 'receipt', 'privateKey': 'secret', 'keys': [{'publicKey': 'also omitted'}], 'bindings': {'installationRef': 'ouf-test', 'clientSecret': 'secret'}, 'inventoryHashes': {'private.pem': 'a' * 64, 'dossier.json': 'b' * 64}}
         self.assertEqual(r.project(value), {'schema': 'receipt', 'bindings': {'installationRef': 'ouf-test'}, 'inventoryHashes': {'dossier.json': 'b' * 64}})
