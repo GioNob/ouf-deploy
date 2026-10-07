@@ -1,0 +1,36 @@
+{
+  "schema": "ouf.discovery.coordinated-owner-package-preparation.v1",
+  "sourceCommit": "a10df126d229dfefd9e0a4d716a07f1f535b6cd6",
+  "stagerCommit": "29e5256f30587fc15cb21688ceb80c46ed4e1a72",
+  "stagerSha256": "fc0a01b7672e794740a81fa0bc6bf3610a81026127ca0574b62553bd29b44d1d",
+  "bootstrapCommit": "634a34e594a2158d0976e17539cb6876bafc77e0",
+  "bootstrapPath": "scripts/bootstrap-coordinated-owner-package.sh",
+  "ci": {
+    "runId": 37677924958,
+    "jobId": 112986099402,
+    "tests": 5,
+    "skips": 0,
+    "status": "PASS",
+    "proofs": [
+      "eight source files match exact reviewed Gateway commit",
+      "source-specific UDP/TCP DNS bindings preserved",
+      "foreign bytes and native drift denied",
+      "actual root-private staged CLI guard accepted native nft",
+      "original rules, journal and common lock unchanged"
+    ]
+  },
+  "targetNativePreflight": {
+    "runId": 37675793488,
+    "jobId": 112978836384,
+    "configurationHash": "24968cf990a32b87f3169b9226fe63d224c93a403540afec197011fbd670b0bb",
+    "journalHash": "4ccb05b0a28b6e7e823de3d9af81f29255d60b38271d0a74a00f64e2e5828a74",
+    "leaseStructureHash": "26f6f80af9d1e4898c1a6fe6dc8721cd6f67f1ceed05c7eea35e3b9f4a040e54",
+    "runtimeState": "RUNTIME_EMPTY",
+    "runtimeCustodyVerified": true
+  },
+  "packageStagedOnTarget": false,
+  "guardInstalled": false,
+  "leaseAuthorized": false,
+  "startAuthorized": false,
+  "releaseApplied": false
+}
