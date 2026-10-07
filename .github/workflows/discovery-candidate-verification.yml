@@ -1,0 +1,45 @@
+name: OUF discovery candidate verification
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/discovery-candidate-verification.yml
+      - scripts/scan-discovery-candidate.py
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: ouf-discovery-candidate-verification
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-semantic-registry
+          ref: 84e91e199892bfda1d116a49f53a9990f61724c7
+          path: verification-source
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 37658048241
+          name: national-discovery-candidate-37658048241
+          path: package
+      - name: Prepare hash-pinned scanners and the same fresh database
+        run: sudo /usr/bin/python3 -B verification-source/tests/prepare_native_vulnerability_scanners.py --database-pin verification-source/docs/handoffs/receipts/SEMANTIC_IMAGE_VULNERABILITY_DATABASE_PIN_2026-10-07.json
+      - name: Verify archive bytes and scan offline
+        run: sudo /usr/bin/python3 -B scripts/scan-discovery-candidate.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: discovery-candidate-scan-${{ github.run_id }}
+          path: scan-evidence/
+          if-no-files-found: warn
+          retention-days: 7
