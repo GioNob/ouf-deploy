@@ -14,9 +14,10 @@ ACCOUNT_SOURCE_HASH = 'd3fe5e78d84e021c4a9afdade8ad01add681e1037d26238eb972e03fb
 AUTHORITY = Path('/etc/ouf/deploy-snapshots/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json')
 AUTHORITY_HASH = '7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18'
 OPENSSL = Path('/usr/bin/openssl')
-OPENSSL_HASH = 'f4aa15f2822f670af7b5c1043d7aa6ebbbc64229fd2fae382edfc6a4524749c1'
+OPENSSL_HASH = 'acc10176d038aeb7b2a77d9ec972ac2985857a7191f7aecb7c54ef0e2c7e9549'
 HOSTS = {'adapter': 'ouf-semantic-provider-v2', 'southbound': 'ouf-semantic-southbound-v2'}
 IDS = {'adapter': (10006, 10006), 'southbound': (636, 636)}
+STAGE = 'ARGUMENT_VALIDATION'
 
 def require(ok):
     if not ok:
@@ -64,6 +65,11 @@ def command(executable, *args, expected_success=True):
     r = subprocess.run([str(executable), *map(str, args)], capture_output=True, timeout=30)
     require((r.returncode == 0) is expected_success)
 
+def verified_executable(filename, expected_hash):
+    actual = digest(read(filename, private=False, limit=16777216))
+    require(actual == expected_hash and os.access(filename, os.X_OK))
+    return {'path': str(filename), 'sha256': actual}
+
 def make_trust(root, roles, public_ca, executable):
     require(set(HOSTS) == {r['role'] for r in roles} and len(roles) == 2)
     for row in roles:
@@ -103,26 +109,37 @@ def make_trust(root, roles, public_ca, executable):
     return hashes
 
 def prepare(root):
+    global STAGE
+    STAGE = 'ROOT_AND_SOURCE_BINDING'
     require(os.geteuid() == os.getegid() == 0)
     require(root.parent == Path('/etc/ouf/deploy-snapshots') and re.fullmatch(r'semantic-provider-v2-trust-[A-Za-z0-9]+', root.name))
     ancestors(root); require(stat.S_IMODE(root.lstat().st_mode) == 0o700)
     source = read(root/'prepare-provider-v2-trust.py')
     account_raw = read(root/'provider-role-accounts.py'); require(digest(account_raw) == ACCOUNT_SOURCE_HASH)
+    STAGE = 'AUTHORITY_PROFILE_BINDING'
     authority_raw = read(AUTHORITY); require(digest(authority_raw) == AUTHORITY_HASH)
     authority = json.loads(authority_raw)
     require(authority['schema'] == 'ouf.semantic-existing-installation-authority-bindings.v1' and authority['authorities']['installationRef'] == 'ouf-lab-netcup-01' and authority['authorities']['entityRef'] == 'ouf-lab')
-    require(digest(read(OPENSSL, private=False, limit=16777216)) == OPENSSL_HASH and os.access(OPENSSL, os.X_OK))
+    STAGE = 'OPENSSL_EXECUTABLE_BINDING'
+    openssl_binding = verified_executable(OPENSSL, OPENSSL_HASH)
+    STAGE = 'SYSTEM_PUBLIC_CA_BINDING'
     ca_path = Path('/etc/ssl/certs/ca-certificates.crt')
     public_ca = read(ca_path, private=False)
+    STAGE = 'IMAGE_ROLE_LAYER_BINDING'
     namespace = {'__name__': 'ouf_provider_role_accounts', '__file__': str(root/'provider-role-accounts.py')}
     exec(compile(account_raw, str(root/'provider-role-accounts.py'), 'exec'), namespace)
     roles = [namespace['inspect'](role) for role in HOSTS]
     require(all((row['uid'], row['gid']) == IDS[row['role']] for row in roles))
     claim = {'schema': 'ouf.semantic-provider-v2-trust-claim.v1', 'state': 'PREPARING_PRIVATE_TRUST', 'sourceHash': digest(source), 'accountSourceHash': digest(account_raw), 'authorityProfileHash': AUTHORITY_HASH, 'roles': roles, 'startAuthorized': False}
+    STAGE = 'CLAIM_PUBLICATION'
     write(root/'preparation-claim.json', encoded(claim))
+    STAGE = 'PRIVATE_TLS_PREPARATION'
     hashes = make_trust(root, roles, public_ca, OPENSSL)
-    require(read(AUTHORITY) == authority_raw and read(root/'prepare-provider-v2-trust.py') == source and read(root/'provider-role-accounts.py') == account_raw and read(ca_path, private=False) == public_ca and digest(read(OPENSSL, private=False, limit=16777216)) == OPENSSL_HASH)
+    STAGE = 'INPUT_STABILITY_READBACK'
+    require(read(AUTHORITY) == authority_raw and read(root/'prepare-provider-v2-trust.py') == source and read(root/'provider-role-accounts.py') == account_raw and read(ca_path, private=False) == public_ca and verified_executable(OPENSSL, OPENSSL_HASH) == openssl_binding)
     report = {'schema': 'ouf.semantic-provider-v2-private-trust.v1', 'status': 'PRIVATE_TRUST_PREPARED', 'directory': str(root), 'sourceHash': digest(source), 'accountSourceHash': digest(account_raw), 'authorityProfileHash': AUTHORITY_HASH, 'roles': [{**r, 'hostname': HOSTS[r['role']]} for r in roles], 'artifactHashes': hashes, 'publicCaHash': digest(public_ca), 'tlsCertificatesIssued': 3, 'tlsKeysGenerated': 3, 'providerReceiptKeyGenerated': True, 'installationAuthorityKeysRead': 0, 'deploymentSignaturesIssued': 0, 'containerLifecycleOperations': 0, 'imageImportPerformed': False, 'mountsInstalled': False, 'rulesChanged': False, 'serviceChanges': 0, 'providerCalls': 0, 'publisherTrustAccepted': False, 'acceptanceGranted': False, 'startAuthorized': False, 'notReleaseAcceptance': True, 'generalSudoGranted': False}
+    report['opensslBinding'] = openssl_binding
+    STAGE = 'RECEIPT_PUBLICATION'
     write(root/'trust-receipt.json', encoded(report))
     require(read(root/'trust-receipt.json') == encoded(report))
     return report
@@ -134,8 +151,10 @@ def main():
     try:
         require(args.prepare_private_trust_only); report = prepare(args.package_root)
         print('OUF_PROVIDER_V2_TRUST='+json.dumps(report, sort_keys=True)); return 0
-    except Exception:
-        print('OUF_PROVIDER_V2_TRUST=BLOCKED PARTIAL_EVIDENCE_RETAINED=true DO_NOT_RERUN_APPLY=true NO_RAW_OUTPUT=true'); return 1
+    except Exception as error:
+        kind = type(error).__name__
+        allowed = {'ValueError', 'OSError', 'PermissionError', 'FileNotFoundError', 'SSLError', 'KeyError', 'TypeError', 'TimeoutExpired'}
+        print('OUF_PROVIDER_V2_TRUST=BLOCKED STAGE='+STAGE+' ERROR_CLASS='+(kind if kind in allowed else 'OTHER')+' PARTIAL_EVIDENCE_RETAINED=true DO_NOT_RERUN_APPLY=true NO_RAW_OUTPUT=true'); return 1
 
 if __name__ == '__main__':
     raise SystemExit(main())

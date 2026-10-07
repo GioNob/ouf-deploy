@@ -64,6 +64,14 @@ class Tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             trust.make_trust(self.root, self.roles, self.public, self.openssl)
         self.assertEqual(hashlib.sha256((self.root/'ca.key').read_bytes()).hexdigest(), first['ca.key'])
+    def test_correct_system_binary_binding_retains_actual_fingerprint(self):
+        sha = hashlib.sha256(self.openssl.read_bytes()).hexdigest()
+        self.assertEqual(trust.verified_executable(self.openssl, sha), {'path': str(self.openssl), 'sha256': sha})
+        self.assertEqual(list(self.root.iterdir()), [])
+    def test_wrong_executable_hash_refused_without_fixture_writes(self):
+        with self.assertRaises(ValueError):
+            trust.verified_executable(self.openssl, '0'*64)
+        self.assertEqual(list(self.root.iterdir()), [])
 
 if __name__ == '__main__':
     unittest.main()
