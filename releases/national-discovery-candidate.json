@@ -176,6 +176,17 @@
       "daemonStarted": false,
       "independentPreflightRunId": 37678450910,
       "evidence": "evidence/discovery-coordinated-owner-target-stage-20261007.json"
+    },
+    "bootPreparation": {
+      "sourceCommit": "df103735c1fe75a31e6d4c752360e9368e6aa52d",
+      "runId": 37680983756,
+      "jobId": 112996642701,
+      "unitTests": 31,
+      "nativeTests": 5,
+      "skips": 0,
+      "installed": false,
+      "realRebootProven": false,
+      "evidence": "evidence/discovery-coordinated-boot-preparation-20261007.json"
     }
   },
   "privilegedReadPath": {
