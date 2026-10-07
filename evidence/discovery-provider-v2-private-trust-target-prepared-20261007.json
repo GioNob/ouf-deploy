@@ -1,0 +1,77 @@
+{
+  "evidenceSource": "OPERATOR_SUPPLIED_TARGET_REPORT",
+  "independentRunnerReadbackPerformed": false,
+  "report": {
+    "acceptanceGranted": false,
+    "accountSourceHash": "d3fe5e78d84e021c4a9afdade8ad01add681e1037d26238eb972e03fb9c472fb",
+    "artifactHashes": {
+      "adapter/provider-receipt.key": "24397ea4eedc8eba041161899ec5ab3e995a7cd6f11dfc2d3ac08df735bcec4c",
+      "adapter/server.crt": "25da14612c9f99c865d81627dc11de764f57cdd08db7105c0250a523dd9bfbdf",
+      "adapter/server.key": "a662a1d7ab1f5bce88ada2f777c8f577966cbc331bf117610cf34de38c103c4d",
+      "ca.crt": "b1bda8d7dffb8d074e9eabeae7faa7d44bb7fe27375dae78859fcce1697d087b",
+      "ca.key": "ad7788271aeb584c3ed495f4d5530ab0e099c60b76226644e0df06582b06ac55",
+      "southbound/provider-receipt.key": "24397ea4eedc8eba041161899ec5ab3e995a7cd6f11dfc2d3ac08df735bcec4c",
+      "southbound/server.crt": "7c8af56e93f6a06ee8cb7de480c797c1008d43ea7b3ae4536f5b1f42e892b9ce",
+      "southbound/server.key": "7ca5531bf7a9db8dad86cf168334c6d72a89c27dfa14070d1b1bd49db9e793f1",
+      "trust-bundle.pem": "2e3f4bd8bdcefa651718233d2e7e0fb80cadecf69a3ad9deed00e55e85bf8401"
+    },
+    "authorityProfileHash": "7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18",
+    "containerLifecycleOperations": 0,
+    "deploymentSignaturesIssued": 0,
+    "directory": "/etc/ouf/deploy-snapshots/semantic-provider-v2-trust-vf7B4SM5",
+    "generalSudoGranted": false,
+    "imageImportPerformed": false,
+    "installationAuthorityKeysRead": 0,
+    "mountsInstalled": false,
+    "notReleaseAcceptance": true,
+    "opensslBinding": {
+      "path": "/usr/bin/openssl",
+      "sha256": "acc10176d038aeb7b2a77d9ec972ac2985857a7191f7aecb7c54ef0e2c7e9549"
+    },
+    "providerCalls": 0,
+    "providerReceiptKeyGenerated": true,
+    "publicCaHash": "84f5af5dfad2b5f47039a35a560e2ddf5a7fa713ac35bc0d6b45dd008cd46d51",
+    "publisherTrustAccepted": false,
+    "roles": [
+      {
+        "accountFilesHash": {
+          "etc/group": "6fb6ab5a5526e6f4896b70c7e3c350fd475158a1f0d7b5fc0f3f9bd57f1c3be8",
+          "etc/passwd": "31a94f06f17bc3b9085fccab1d0fa6ee9e79c4a1e4d91f617fa5de95863be015"
+        },
+        "gid": 10006,
+        "hostname": "ouf-semantic-provider-v2",
+        "imageId": "sha256:62e066bd021f386291f5de21ce0e1f9e67904a74b4146326070c7784493ad320",
+        "layerBytesVerified": true,
+        "layerCount": 10,
+        "packagedUser": "10006:10006",
+        "role": "adapter",
+        "runtimeUser": "10006:10006",
+        "uid": 10006
+      },
+      {
+        "accountFilesHash": {
+          "etc/group": "7b49b5b81b968f4c213f622e1630153ccb60617d389d39cdd9cedfaa3c825a70",
+          "etc/passwd": "9ce55bf8fdb9da8e77b1f8f8c3eac461d8540fdd50374cc79a93c9b98790c548"
+        },
+        "gid": 636,
+        "hostname": "ouf-semantic-southbound-v2",
+        "imageId": "sha256:d4c47bbeca75d94e2231e17ca14552885b7b339a5f33dbace411e275c79ded04",
+        "layerBytesVerified": true,
+        "layerCount": 21,
+        "packagedUser": "apisix",
+        "role": "southbound",
+        "runtimeUser": "636:636",
+        "uid": 636
+      }
+    ],
+    "rulesChanged": false,
+    "schema": "ouf.semantic-provider-v2-private-trust.v1",
+    "serviceChanges": 0,
+    "sourceHash": "a724becfa3dbcb60052b9cb38a5479372747adb32bc54a7f6cb7b2eb4c3b1226",
+    "startAuthorized": false,
+    "status": "PRIVATE_TRUST_PREPARED",
+    "tlsCertificatesIssued": 3,
+    "tlsKeysGenerated": 3
+  },
+  "failedSnapshotPreserved": "/etc/ouf/deploy-snapshots/semantic-provider-v2-trust-dlz2t6B6"
+}
