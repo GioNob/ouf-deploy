@@ -165,9 +165,17 @@
     "packagePreparation": {
       "bootstrapCommit": "634a34e594a2158d0976e17539cb6876bafc77e0",
       "ciRunId": 37677924958,
-      "stagedOnTarget": false,
+      "stagedOnTarget": true,
       "leaseAuthorized": false,
-      "startAuthorized": false
+      "startAuthorized": false,
+      "directory": "/etc/ouf/deploy-snapshots/semantic-coordinated-owner-package-p0mxeups",
+      "configurationHash": "994e8b58222f5ddfdb33edb376b7da1f6349153228c55c26b9329fda78fd2a35",
+      "journalHash": "520a58e1292404da4b403e6b01399ad542d3b93fbd49545365a1612be9eec342",
+      "readOnlyGuardVerified": true,
+      "guardInstalled": false,
+      "daemonStarted": false,
+      "independentPreflightRunId": 37678450910,
+      "evidence": "evidence/discovery-coordinated-owner-target-stage-20261007.json"
     }
   },
   "privilegedReadPath": {
