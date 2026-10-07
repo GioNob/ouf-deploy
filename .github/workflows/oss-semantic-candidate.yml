@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [.github/workflows/static-mcp-candidate.yml]
+    paths: [.github/workflows/oss-semantic-candidate.yml]
 permissions:
   contents: read
 concurrency:
