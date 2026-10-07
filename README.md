@@ -14,7 +14,7 @@ Questo repository privato gestisce l'installazione sul VPS di test. Il percorso 
 - Compatibilità V10 e ripristino del backup provati su PostgreSQL 17 isolato: [37668331670](https://github.com/GioNob/ouf-deploy/actions/runs/37668331670). Dati storici, vecchie scritture e funzioni job preservati. Nessun backup o migrazione del database reale ancora eseguito.
 - Accesso IAM esistente ripristinato senza cambiare client, scope o grant: `ouf-semantic` ha già `gateway.southbound.invoke` DEFAULT. [37667120379](https://github.com/GioNob/ouf-deploy/actions/runs/37667120379).
 - Connessione OUF della chat verificata con l'account `giovanni-chatgpt`, 7 ottobre circa 20:50 Europe/Rome: MCP `HEALTHY`, `actionRequired=false`, `partial=false`. La selezione esplicita del plugin rende disponibile il riferimento dell'account; il precedente errore era nella chiamata senza tale riferimento, non una prova di disconnessione del server.
-- Blocco infrastrutturale: il runner non dispone di `sudo` non interattivo per guard/trust/configurazioni provider protette da root. Preparato un helper senza argomenti, esclusivamente di lettura, con bootstrap a hash fisso e regola sudo limitata al solo helper. Gli otto controlli CI finali sono passati; installazione sul VPS ancora da eseguire con la password sudo dell'operatore. Questo abilita l'osservazione privilegiata, non l'applicazione del rilascio.
+- Helper privilegiato di sola lettura installato sul VPS e utilizzabile dal runner senza password: [37671471821](https://github.com/GioNob/ouf-deploy/actions/runs/37671471821), job 112964021220 riuscito. Regola sudo limitata al comando senza argomenti; nessun sudo generale. Mount attesi presenti, nessuna scrittura o operazione sui container. Le ricevute storiche conservano i flag di trust/avvio non accettati. Gli elenchi nft vuoti dipendono da un filtro sui nomi e non provano assenza delle tabelle. Evidenza in `evidence/discovery-privileged-target-preflight-20261007.json`.
 - Lettura reale del catalogo ruoli tramite account amministratore: assegnazione nominale admin presente, tre permessi discovery assenti dal ruolo. Nessuna modifica di grant o IAM. Evidenza in `evidence/discovery-authorization-role-read-20261007.json`.
 - Provider nazionale ancora disabilitato, origine Gateway e autenticazione provider non configurate esplicitamente.
 - Semantic mantiene entrambi i mount esistenti: autenticazione e chiave del proprietario della consultazione.
@@ -24,9 +24,9 @@ Questo repository privato gestisce l'installazione sul VPS di test. Il percorso 
 
 | Passo | Risultato verificabile | Stato |
 |---|---|---|
-| Collegamento operativo | ChatGPT avvia un job che accede al VPS tramite runner | Docker disponibile; accesso privilegiato provider mancante |
+| Collegamento operativo | ChatGPT avvia un job che accede al VPS tramite runner | Docker e lettura privilegiata limitata disponibili; applicazione provider da completare |
 | Pacchetto discovery | Immagini Semantic/MCP e sorgenti Gateway da revisioni fisse | Firmato, trasferito e verificato sul target; non applicato |
-| Installazione discovery | V10, provider nazionale autenticato, tre rotte, policy e tool attivi | Bloccata: canale privilegiato provider e collegamenti/policy di installazione |
+| Installazione discovery | V10, provider nazionale autenticato, tre rotte, policy e tool attivi | Da completare: applicatore privilegiato, collegamenti e policy di installazione |
 | Discovery Teatri | Richiesta reale `CLASS / teatro / it,en`, stato e candidati letti in chat | Non eseguita |
 | Semantica e Onboarding | Mapping, decisioni umane e approvazioni tramite tool governati | Operazioni mancanti da completare |
 | Ingestion e UDP | Run reale, controlli duplicati/merge, materializzazione e lettura in chat | Da eseguire sul nuovo percorso |
