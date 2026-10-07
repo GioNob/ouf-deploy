@@ -25,12 +25,15 @@ report = {
     "components": [],
 }
 if prefix is not None:
-    listed = run(prefix + ["ps", "-a", "--format", "{{.Names}}"])
+    listed = run(prefix + ["ps", "-a", "--format", "{{.State}}\t{{.Names}}"])
     if listed is None or listed.returncode:
         report["status"] = "CONTAINER_LIST_UNAVAILABLE"
     else:
-        names = sorted(name for name in listed.stdout.splitlines() if name.startswith("ouf-") and len(name) <= 128)
-        for name in names[:40]:
+        records = [line.split("\t", 1) for line in listed.stdout.splitlines()]
+        names = [name for state, name in sorted((r for r in records if len(r) == 2 and r[1].startswith("ouf-") and len(r[1]) <= 128), key=lambda r: (r[0] != "running", r[1]))]
+        report["componentCount"] = len(names)
+        report["inventoryTruncated"] = len(names) > 128
+        for name in names[:128]:
             inspected = run(prefix + ["inspect", name])
             if inspected is None or inspected.returncode:
                 report["components"].append({"name": name, "inspectAvailable": False})
