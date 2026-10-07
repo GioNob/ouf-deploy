@@ -1,0 +1,36 @@
+name: Provider v2 private startup input tests
+on:
+  push:
+    paths:
+      - 'scripts/prepare-provider-v2-inputs.py'
+      - 'scripts/test-provider-v2-inputs.py'
+      - 'scripts/bootstrap-provider-v2-inputs.sh'
+      - 'releases/provider-v2-runtime-sources.json'
+      - '.github/workflows/provider-v2-inputs.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: ace683b1019f79adaace86796b67e463b93ec12e
+          path: gateway-fixture
+          persist-credentials: false
+      - name: Compile exact scripts and prepare actual root-private compiler fixtures
+        run: |
+          python3 -m py_compile scripts/prepare-provider-v2-inputs.py scripts/test-provider-v2-inputs.py
+          sudo install -d -m 700 /root/ouf-provider-v2-input-fixture/source/tools/lua
+          sudo install -m 600 scripts/prepare-provider-v2-inputs.py scripts/test-provider-v2-inputs.py scripts/prepare-provider-v2-trust.py /root/ouf-provider-v2-input-fixture/
+          sudo install -m 600 gateway-fixture/tools/southbound_security.py gateway-fixture/tools/semantic_provider_boundary.py gateway-fixture/tools/semantic_provider_admission.py gateway-fixture/tools/semantic_provider_relay.py gateway-fixture/tools/semantic_provider_adapter.py gateway-fixture/tools/materialize_semantic_provider.py gateway-fixture/tools/materialize_semantic_provider_runtime.py gateway-fixture/tools/materialize_semantic_provider_tls.py /root/ouf-provider-v2-input-fixture/source/tools/
+          sudo install -m 600 gateway-fixture/tools/lua/admit_semantic_provider.lua /root/ouf-provider-v2-input-fixture/source/tools/lua/
+      - name: Test actual sealed compilers, private TLS and role-owned publication
+        run: sudo /usr/bin/python3 -I -B /root/ouf-provider-v2-input-fixture/test-provider-v2-inputs.py
+      - run: bash -n scripts/bootstrap-provider-v2-inputs.sh
