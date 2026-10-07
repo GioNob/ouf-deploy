@@ -1,0 +1,69 @@
+{
+  "schema": "ouf.discovery.release-candidate.v1",
+  "purpose": "National discovery of teatro through authenticated chatbot MCP",
+  "targetContainers": [
+    "ouf-semantic",
+    "ouf-apisix",
+    "ouf-mcp"
+  ],
+  "sourcePins": {
+    "semantic": {
+      "repository": "GioNob/ouf-semantic-registry",
+      "commit": "3422a058bbfc45096f14ac7ea3243054ed437652",
+      "pullRequest": 31
+    },
+    "gateway": {
+      "repository": "GioNob/ouf-api-gateway",
+      "commit": "1d75e404b5a84f361ed2160c611f91aaa68d3fd8",
+      "pullRequest": 57
+    },
+    "mcp": {
+      "repository": "GioNob/ouf-mcp-server",
+      "commit": "9e8f1fd2dc17ef8836833e40d8963d73512b2191",
+      "pullRequest": 49
+    }
+  },
+  "migration": {
+    "expectedAddition": "V10__discovery_request_idempotency.sql",
+    "existingMigrationBytesMustMatch": true,
+    "backupRequiredBeforeApply": true,
+    "databaseRollbackAutomatic": false
+  },
+  "preserve": [
+    "existing authenticated routes including repaired UDP search upstream",
+    "Semantic consultation owner key mount",
+    "existing MCP client and fingerprint key mounts",
+    "current databases, source assets and ingestion history"
+  ],
+  "provider": "schema-gov-national",
+  "localFallbackAllowed": false,
+  "releaseApplied": false,
+  "acceptanceGranted": false,
+  "blockingReleaseRequirements": [
+    "migration-aware applicator and tested recovery with database snapshot",
+    "exact built artifact provenance and applicable image acceptance",
+    "installation provider OAuth credentials, TLS and Gateway origin binding",
+    "distinct discovery receipt key bound consistently to Gateway and Semantic",
+    "capability descriptors and explicit HUMAN grants installed by owner",
+    "activate MCP descriptors only after installed provider and route readiness"
+  ],
+  "acceptance": {
+    "request": {
+      "requestedArtifactType": "CLASS",
+      "intent": "teatro",
+      "preferredLanguages": [
+        "it",
+        "en"
+      ]
+    },
+    "requireRealProviderCall": true,
+    "requireOwnedJobStatusAndCandidates": true,
+    "publicationAuthorized": false
+  },
+  "fullFileToUdpStillRequired": [
+    "governed candidate adoption and semantic approval through chatbot tools",
+    "Onboarding complete semantic mapping and approval",
+    "ingestion execution and duplicate/merge handling",
+    "UDP materialization and readback in chatbot"
+  ]
+}
