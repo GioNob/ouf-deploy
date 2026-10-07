@@ -8,8 +8,12 @@ Questo repository privato gestisce l'installazione sul VPS di test. Il percorso 
 - Docker accessibile direttamente dal runner: job 112916316548, run [37657523800](https://github.com/GioNob/ouf-deploy/actions/runs/37657523800).
 - Inventario completo: 96 container, 13 in esecuzione; zero scritture di configurazione e zero operazioni sul ciclo di vita.
 - Confronto Semantic installato/candidato: V1–V9 identiche nei byte; unica aggiunta V10 per l'idempotenza discovery. Run [37657736363](https://github.com/GioNob/ouf-deploy/actions/runs/37657736363).
-- Immagini Semantic/MCP aggiornate e verificate: [Semantic 37664690994](https://github.com/GioNob/ouf-deploy/actions/runs/37664690994), [MCP 37664694124](https://github.com/GioNob/ouf-deploy/actions/runs/37664694124). Zero Critical/High/Unknown con database del 7 ottobre. Non sono installate.
-- Suite Semantic e controllo PR MCP passati; un controllo separato di latenza MCP è in ripetizione dopo p95=100.7 ms contro 25 ms. Non attribuire questo risultato al VPS.
+- Pacchetti Semantic/MCP firmati: [Semantic 37665730385](https://github.com/GioNob/ouf-semantic-registry/actions/runs/37665730385), [MCP 37665728762](https://github.com/GioNob/ouf-mcp-server/actions/runs/37665728762). Zero Critical/High/Unknown con database del 7 ottobre. Le immagini precedenti non sono quelle selezionate per il rilascio.
+- Pacchetti trasferiti sul VPS e firme/byte verificati indipendentemente: [37667405182](https://github.com/GioNob/ouf-deploy/actions/runs/37667405182). Nessuna importazione o partenza; evidenza in `evidence/discovery-signed-target-stage-20261007.json`.
+- Suite Semantic e controllo PR MCP passati; il controllo separato di latenza MCP è passato al secondo tentativo sullo stesso sorgente, dopo il primo fallimento p95=100.7 ms contro 25 ms. [37664542956](https://github.com/GioNob/ouf-mcp-server/actions/runs/37664542956). Si tratta di CI, non di una misura del VPS.
+- Compatibilità V10 e ripristino del backup provati su PostgreSQL 17 isolato: [37668331670](https://github.com/GioNob/ouf-deploy/actions/runs/37668331670). Dati storici, vecchie scritture e funzioni job preservati. Nessun backup o migrazione del database reale ancora eseguito.
+- Accesso IAM esistente ripristinato senza cambiare client, scope o grant: `ouf-semantic` ha già `gateway.southbound.invoke` DEFAULT. [37667120379](https://github.com/GioNob/ouf-deploy/actions/runs/37667120379).
+- Blocchi operativi: il runner non dispone di `sudo` non interattivo per guard/trust/configurazioni provider protette da root; la chiamata al tool OUF della chat fallisce prima del servizio per riferimento di connessione `link_id` mancante.
 - Provider nazionale ancora disabilitato, origine Gateway e autenticazione provider non configurate esplicitamente.
 - Semantic mantiene entrambi i mount esistenti: autenticazione e chiave del proprietario della consultazione.
 - Nessun rilascio di discovery effettuato. I tool discovery del candidato MCP restano INACTIVE.
@@ -18,9 +22,9 @@ Questo repository privato gestisce l'installazione sul VPS di test. Il percorso 
 
 | Passo | Risultato verificabile | Stato |
 |---|---|---|
-| Collegamento operativo | ChatGPT avvia un job che accede al VPS tramite runner | Completato |
-| Pacchetto discovery | Immagini Semantic/MCP e sorgenti Gateway da revisioni fisse | Immagini aggiornate: zero Critical/High/Unknown; firma in corso |
-| Installazione discovery | V10, provider nazionale autenticato, tre rotte, policy e tool attivi | Da completare |
+| Collegamento operativo | ChatGPT avvia un job che accede al VPS tramite runner | Docker disponibile; accesso privilegiato provider mancante |
+| Pacchetto discovery | Immagini Semantic/MCP e sorgenti Gateway da revisioni fisse | Firmato, trasferito e verificato sul target; non applicato |
+| Installazione discovery | V10, provider nazionale autenticato, tre rotte, policy e tool attivi | Bloccata: canale privilegiato provider e connessione OUF chat |
 | Discovery Teatri | Richiesta reale `CLASS / teatro / it,en`, stato e candidati letti in chat | Non eseguita |
 | Semantica e Onboarding | Mapping, decisioni umane e approvazioni tramite tool governati | Operazioni mancanti da completare |
 | Ingestion e UDP | Run reale, controlli duplicati/merge, materializzazione e lettura in chat | Da eseguire sul nuovo percorso |
@@ -32,11 +36,16 @@ Il CSV Teatri è già caricato e profilato: asset `6609b245-86ed-4315-8ce0-73f2a
 - `channel-check.yml`: connessione del runner.
 - `release-readiness.yml`: inventario Docker filtrato, senza valori segreti.
 - `discovery-release-plan.yml`: confronto delle migrazioni nel JAR realmente installato con la revisione candidata.
-- `discovery-candidate-package.yml`: build su runner GitHub ospitato, archivi immagine e sorgenti Gateway con digest. Non usa il VPS e non distribuisce il pacchetto.
+- `discovery-candidate-package.yml`: pacchetto iniziale rifiutato dalle scansioni, conservato come evidenza; non usarlo per il rilascio.
+- `oss-semantic-candidate.yml` / `static-mcp-candidate.yml`: qualificazione delle dipendenze aggiornate su CI ospitata.
+- Workflow firmati nei repository Semantic/MCP: pacchetti selezionati con provenienza e scansioni.
+- `signed-discovery-target-stage.yml`: trasferimento e verifica crittografica dei pacchetti sul VPS, senza importazione/start.
+- `discovery-operational-access.yml`: stato effettivo IAM e privilegi del runner.
+- `discovery-migration-recovery.yml`: V10 e dump/ripristino del database di prova, senza toccare il VPS.
 
 Una build riuscita e un digest non costituiscono accettazione del rilascio. Provenienza verificata, copertura vulnerabilità, collegamenti di installazione, policy e recupero della migrazione devono essere completati prima dell'applicazione.
 
-Il candidato coordinato è in `releases/national-discovery-candidate.json`; le evidenze effettive sono in `evidence/`. Gli script non emettono segreti. Non registrare nuovamente il runner, non ripetere l'installazione e non ricominciare i test manuali già conclusi.
+Il [piano di installazione corrente](releases/NATIONAL_DISCOVERY_INSTALLATION_PLAN.md) descrive pacchetti pronti, blocchi e operazioni mancanti. Il candidato coordinato è in `releases/national-discovery-candidate.json`; le evidenze effettive sono in `evidence/`. Gli script non emettono segreti. Non registrare nuovamente il runner, non ripetere l'installazione e non ricominciare i test manuali già conclusi.
 
 ## Regole del rilascio
 
