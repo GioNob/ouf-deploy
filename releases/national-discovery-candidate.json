@@ -142,5 +142,15 @@
         "targetCryptoVerified": true
       }
     ]
+  },
+  "chatConnection": {
+    "account": "giovanni-chatgpt",
+    "verified": true,
+    "module": "MCP",
+    "status": "HEALTHY",
+    "actionRequired": false,
+    "partial": false,
+    "readOnly": true,
+    "discoveryAcceptanceProven": false
   }
 }
