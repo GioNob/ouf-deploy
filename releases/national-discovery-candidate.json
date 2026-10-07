@@ -9,8 +9,8 @@
   "sourcePins": {
     "semantic": {
       "repository": "GioNob/ouf-semantic-registry",
-      "commit": "3422a058bbfc45096f14ac7ea3243054ed437652",
-      "pullRequest": 31
+      "commit": "ae30d658d9e8c8b935c12121aa816b9d7cfd59aa",
+      "pullRequest": 32
     },
     "gateway": {
       "repository": "GioNob/ouf-api-gateway",
@@ -19,7 +19,7 @@
     },
     "mcp": {
       "repository": "GioNob/ouf-mcp-server",
-      "commit": "9e8f1fd2dc17ef8836833e40d8963d73512b2191",
+      "commit": "9c6e76b115f723b28de5da2f51622518cc3e37a9",
       "pullRequest": 49
     }
   },
@@ -65,5 +65,34 @@
     "Onboarding complete semantic mapping and approval",
     "ingestion execution and duplicate/merge handling",
     "UDP materialization and readback in chatbot"
+  ],
+  "previousRejectedSourcePins": {
+    "semantic": {
+      "repository": "GioNob/ouf-semantic-registry",
+      "commit": "ae30d658d9e8c8b935c12121aa816b9d7cfd59aa",
+      "pullRequest": 32
+    },
+    "gateway": {
+      "repository": "GioNob/ouf-api-gateway",
+      "commit": "1d75e404b5a84f361ed2160c611f91aaa68d3fd8",
+      "pullRequest": 57
+    },
+    "mcp": {
+      "repository": "GioNob/ouf-mcp-server",
+      "commit": "9c6e76b115f723b28de5da2f51622518cc3e37a9",
+      "pullRequest": 49
+    }
+  },
+  "runtimeSelection": "OPERATOR_SELECTED_SUPPORTED_OSS",
+  "candidateStatus": "DEPENDENCY_REMEDIATION_IN_PROGRESS",
+  "rejectedPackages": [
+    {
+      "runId": 37659421180,
+      "reason": "INITIAL_SEMANTIC_AND_MCP_CRITICAL_HIGH"
+    },
+    {
+      "runId": 37662913414,
+      "reason": "OSS_SEMANTIC_RESIDUAL_CRITICAL_HIGH"
+    }
   ]
 }
