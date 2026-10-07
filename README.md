@@ -8,6 +8,8 @@ Questo repository privato gestisce l'installazione sul VPS di test. Il percorso 
 - Docker accessibile direttamente dal runner: job 112916316548, run [37657523800](https://github.com/GioNob/ouf-deploy/actions/runs/37657523800).
 - Inventario completo: 96 container, 13 in esecuzione; zero scritture di configurazione e zero operazioni sul ciclo di vita.
 - Confronto Semantic installato/candidato: V1–V9 identiche nei byte; unica aggiunta V10 per l'idempotenza discovery. Run [37657736363](https://github.com/GioNob/ouf-deploy/actions/runs/37657736363).
+- Immagini Semantic/MCP aggiornate e verificate: [Semantic 37664690994](https://github.com/GioNob/ouf-deploy/actions/runs/37664690994), [MCP 37664694124](https://github.com/GioNob/ouf-deploy/actions/runs/37664694124). Zero Critical/High/Unknown con database del 7 ottobre. Non sono installate.
+- Suite Semantic e controllo PR MCP passati; un controllo separato di latenza MCP è in ripetizione dopo p95=100.7 ms contro 25 ms. Non attribuire questo risultato al VPS.
 - Provider nazionale ancora disabilitato, origine Gateway e autenticazione provider non configurate esplicitamente.
 - Semantic mantiene entrambi i mount esistenti: autenticazione e chiave del proprietario della consultazione.
 - Nessun rilascio di discovery effettuato. I tool discovery del candidato MCP restano INACTIVE.
@@ -17,7 +19,7 @@ Questo repository privato gestisce l'installazione sul VPS di test. Il percorso 
 | Passo | Risultato verificabile | Stato |
 |---|---|---|
 | Collegamento operativo | ChatGPT avvia un job che accede al VPS tramite runner | Completato |
-| Pacchetto discovery | Immagini Semantic/MCP e sorgenti Gateway da revisioni fisse | Produzione CI avviata |
+| Pacchetto discovery | Immagini Semantic/MCP e sorgenti Gateway da revisioni fisse | Immagini aggiornate: zero Critical/High/Unknown; firma in corso |
 | Installazione discovery | V10, provider nazionale autenticato, tre rotte, policy e tool attivi | Da completare |
 | Discovery Teatri | Richiesta reale `CLASS / teatro / it,en`, stato e candidati letti in chat | Non eseguita |
 | Semantica e Onboarding | Mapping, decisioni umane e approvazioni tramite tool governati | Operazioni mancanti da completare |
@@ -40,4 +42,4 @@ Il candidato coordinato è in `releases/national-discovery-candidate.json`; le e
 
 Preservare dati, volumi, servizi esistenti e rotta di ricerca UDP già riparata. Il vecchio helper Semantic richiede migrazioni identiche e un solo mount: non è applicabile a questo candidato. Preparare un applicatore consapevole di V10 e dei due mount attuali, con backup e recupero esplicito. Nessun ripristino automatico del database che possa cancellare dati scritti dopo il rilascio.
 
-Le PR Semantic #31, Gateway #57 e MCP #49 restano bozze; non sono merge o rilascio autorizzato automaticamente. Le decisioni umane di adozione/pubblicazione semantica non possono essere sostituite dal chatbot.
+Le PR Semantic #31/#32, Gateway #57 e MCP #49 restano bozze; non sono merge o rilascio autorizzato automaticamente. Le decisioni umane di adozione/pubblicazione semantica non possono essere sostituite dal chatbot.
