@@ -94,3 +94,8 @@ Restano input OCI/context/launch e chiusura dei profili completa, accettazione
 specifica image/rootfs per entrambi i CID, mandati delle autorità separate,
 prova completa della coppia Docker, configurazione target e confezionamento
 della transazione concreta. Nessun nuovo comando target di avvio è pronto.
+
+
+## Explicit human lab image acceptance, 8 October 23:38:09 Europe/Rome
+
+The user answered "accetto" to the concrete image review proposal. Receipt: evidence/provider-v2-lab-image-human-acceptance-20261008.json, approvalRef OUF_PROVIDER_V2_LAB_IMAGE_REVIEW_20261008_233809. It accepts the two exact v2 images for OUF-LAB, custom-component maintenance by OUF/GioNob, omitted WASM and documented provenance/advisory-coverage limits, with current 5/142 Medium counts. Do not ask this same acceptance again. This is the human message record, not a cryptographic issuer signature or target authorization token. It does not grant complete OCI/rootfs acceptance, role signing, runtime publication, leases, startup or release acceptance. Database freshness remains mandatory. Proceed autonomously with complete target input/profile closure and actual Docker cohort integration; no target start command is ready.

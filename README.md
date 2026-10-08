@@ -108,3 +108,8 @@ Provider v2 approved-transaction integration now connects guarded switching and 
 
 
 Recovered existing signed dependency evidence for both v2 configs from Semantic PR #26, including already-completed operator fresh verification. Current DB validity ends 9 October 2026 08:31:48 Europe/Rome; avoid repeating completed scans/verifications. The transaction now checks freshness across all signed authority windows. See releases/PROVIDER_V2_IMAGE_REVIEW_DRAFT_20261008.md for actual custom/publisher decisions and remaining authority work. No target start command is issued.
+
+
+## Explicit human lab image acceptance, 8 October 23:38:09 Europe/Rome
+
+The user answered "accetto" to the concrete image review proposal. Receipt: evidence/provider-v2-lab-image-human-acceptance-20261008.json, approvalRef OUF_PROVIDER_V2_LAB_IMAGE_REVIEW_20261008_233809. It accepts the two exact v2 images for OUF-LAB, custom-component maintenance by OUF/GioNob, omitted WASM and documented provenance/advisory-coverage limits, with current 5/142 Medium counts. Do not ask this same acceptance again. This is the human message record, not a cryptographic issuer signature or target authorization token. It does not grant complete OCI/rootfs acceptance, role signing, runtime publication, leases, startup or release acceptance. Database freshness remains mandatory. Proceed autonomously with complete target input/profile closure and actual Docker cohort integration; no target start command is ready.
