@@ -87,20 +87,26 @@ def activate(root,records,authority,sources,observer_raw,python_binding,crypto,e
         fmt='{"id":{{json .Id}},"image":{{json .Image}},"runtime":{{json .HostConfig.Runtime}},"state":{{json .State}}}'
         admitted={}
         for role,target in TARGETS.items():
-            cid=target['containerId'];code,raw=command(['inspect','--type','container','--format',fmt,cid],10)
-            require(code==0,stage,'COHORT_NATIVE_STATE_READBACK_FAILED',role)
-            value=decode(raw,16384);state=value['state'];journal_path=root/'registry'/cid/'adapter.json'
-            journal_raw=custody(journal_path,0o600)[0];journal=decode(journal_raw,131072)
-            expected_journal=decode(plan['files'][str(journal_path)],131072)
-            error=state.get('Error','');safe=re.search(r'SEMANTIC_DOCKER_RUNTIME_BLOCKED_([A-Z0-9_]{1,80})',error)
-            facts[cid]={'stateHash':digest(encoded(value)),'adapterJournalHash':digest(journal_raw),
-                'adapterState':journal.get('state') if journal.get('state') in ('STAGED','CREATING','CREATED','PREPARING','STARTING','STARTED','DELETING','DELETED') else 'UNPROVEN',
-                'nativeDenialReason':safe.group(1) if safe else None}
-            admitted[role]=(codes[cid]['exactCidAcknowledged'] and value['id']==cid
-                    and value['image']==target['imageManifestDigest'] and value['runtime']=='ouf-semantic-admitted-v2'
-                    and state['Running'] is True and state['Status']=='running' and type(state['Pid']) is int and state['Pid']>0
-                    and not state['StartedAt'].startswith('0001-') and journal['state']=='STARTED'
-                    and journal['containerId']==cid and journal['configurationHash']==expected_journal['configurationHash'])
+            cid=target['containerId']
+            try:
+                code,raw=command(['inspect','--type','container','--format',fmt,cid],10)
+                require(code==0,stage,'COHORT_NATIVE_STATE_READBACK_FAILED',role)
+                value=decode(raw,16384);state=value['state'];journal_path=root/'registry'/cid/'adapter.json'
+                journal_raw=custody(journal_path,0o600)[0];journal=decode(journal_raw,131072)
+                expected_journal=decode(plan['files'][str(journal_path)],131072)
+                error=state.get('Error','');safe=re.search(r'SEMANTIC_DOCKER_RUNTIME_BLOCKED_([A-Z0-9_]{1,80})',error)
+                facts[cid]={'stateHash':digest(encoded(value)),'adapterJournalHash':digest(journal_raw),
+                    'adapterState':journal.get('state') if journal.get('state') in ('STAGED','CREATING','CREATED','PREPARING','STARTING','STARTED','DELETING','DELETED') else 'UNPROVEN',
+                    'nativeDenialReason':safe.group(1) if safe else None}
+                admitted[role]=(codes[cid]['exactCidAcknowledged'] and value['id']==cid
+                        and value['image']==target['imageManifestDigest'] and value['runtime']=='ouf-semantic-admitted-v2'
+                        and state['Running'] is True and state['Status']=='running' and type(state['Pid']) is int and state['Pid']>0
+                        and not state['StartedAt'].startswith('0001-') and journal['state']=='STARTED'
+                        and journal['containerId']==cid and journal['configurationHash']==expected_journal['configurationHash'])
+            except Exception as error:
+                admitted[role]=False
+                facts[cid]={"readbackStatus":"UNPROVEN","errorType":type(error).__name__,
+                    "reason":error.diagnosis["reason"] if isinstance(error,TransactionDenied) else "COHORT_STATE_READBACK_UNPROVEN"}
         for role,accepted in admitted.items():
             require(accepted,stage,'COHORT_ADMITTED_RUNNING_STATE_UNPROVEN',role)
         require(custody(wrapper_path,0o755)[0]==proposed and executable_binding(docker)==binary,

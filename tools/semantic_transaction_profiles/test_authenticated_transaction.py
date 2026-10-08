@@ -249,7 +249,7 @@ class AuthenticatedTransactionTest(unittest.TestCase):
         self.assertTrue(raised.exception.diagnosis['doNotRerunApply'])
         self.assertEqual(raised.exception.diagnosis['dockerStartRequests'],0)
 
-    def test_cohort_partial_command_failure_retains_uncertain_claim_without_retry(self):
+    def exercise_partial_cohort(self, unreadable=False):
         # Real signatures, files and child processes; guard/Docker behavior are
         # synthetic here. This is orchestration fault proof, NOT native admission.
         from guarded_runtime_switch import wrapper_bytes
@@ -266,6 +266,7 @@ class AuthenticatedTransactionTest(unittest.TestCase):
         script=root/'docker-fixture'
         script.write_text('#!'+self.python['path']+'\nimport sys,json\nfrom pathlib import Path\ncid=sys.argv[-1]\n'
             'if "start" in sys.argv:\n print(cid);sys.exit(1 if cid=='+repr(failed)+' else 0)\n'
+            +('if cid=='+repr(failed)+': print("not-json");sys.exit(0)\n' if unreadable else '')+
             'print(json.dumps({"id":cid,"image":"fixture","runtime":"ci-only","state":{"Status":"created","Running":False,"Pid":0,"StartedAt":"0001-","Error":"private secret must not appear"}}))\n')
         script.chmod(0o755)
         commands={'docker':self.bind(script)}
@@ -278,7 +279,16 @@ class AuthenticatedTransactionTest(unittest.TestCase):
         self.assertFalse((root/'cohort-activation-receipt.json').exists())
         denial=(root/'cohort-activation-denial.json').read_text()
         self.assertNotIn('private secret',denial)
-        self.assertEqual(__import__('json').loads(denial)['cohortOutcome'],'UNPROVEN')
+        report=__import__('json').loads(denial)
+        self.assertEqual(report['cohortOutcome'],'UNPROVEN')
+        self.assertEqual(set(report['candidateObservations']),{v['containerId'] for v in TARGETS.values()})
+        if unreadable:self.assertEqual(report['candidateObservations'][failed]['readbackStatus'],'UNPROVEN')
+
+    def test_cohort_partial_command_failure_retains_uncertain_claim_without_retry(self):
+        self.exercise_partial_cohort()
+
+    def test_cohort_unreadable_first_state_still_preserves_second_observation(self):
+        self.exercise_partial_cohort(unreadable=True)
 
     def test_switch_custody_rejects_published_source_drift(self):
         from guarded_runtime_switch import verify_installed_plan
