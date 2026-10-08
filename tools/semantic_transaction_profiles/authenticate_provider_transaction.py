@@ -64,6 +64,50 @@ def signed(verifier, raw, signature_role, issuer, ctx, name, role, stage):
     require(result is True, stage, 'TARGET_RECORD_SIGNATURE_REQUIRED', role, [name])
 
 
+def validate_preparer_template(value, role):
+    """Check the sealed broker/preparer outer contract before any issuance.
+
+    Structural closure only: native kernel/coordination custody and actual
+    command bytes still require the locked runtime verifier and production CLIs.
+    """
+    stage = 'VERIFY_COMPLETE_PREPARER_CONTRACT'
+    fields = {'schema','pythonPath','pythonHash','commands','commandHashes','candidate','kernel','dns',
+              'coordinationBinding','coordinationJournal','lockFile','budgetSeconds','hostNetworkNamespace'}
+    require(type(value) is dict and set(value) == fields
+            and value['schema'] == 'ouf.semantic-admission-preparer-template.v1',
+            stage, 'EXACT_COMPLETE_BROKER_PREPARER_TEMPLATE_REQUIRED', role,
+            sorted(fields.symmetric_difference(value)) if type(value) is dict else ())
+    candidate = value['candidate']
+    require(type(candidate) is dict and set(candidate) == {
+        'containerId','transactionId','networkBindings','transport','tableName','runtimeBinding'},
+        stage, 'EXACT_BROKER_CANDIDATE_TEMPLATE_REQUIRED', role)
+    commands = {'nft','ip','nsenter','unshare','mount','umount'}
+    require(type(value['commands']) is dict and type(value['commandHashes']) is dict
+            and set(value['commands']) == set(value['commandHashes']) == commands,
+            stage, 'COMPLETE_PREPARER_NATIVE_COMMANDS_REQUIRED', role)
+    bindings = [('python', value['pythonPath'], value['pythonHash'])]
+    runtime = candidate['runtimeBinding']
+    require(type(runtime) is dict and set(runtime) == {'path','sha256'},
+            stage, 'EXACT_PREPARER_RUNTIME_BINDING_REQUIRED', role)
+    bindings.append(('runtime',runtime['path'],runtime['sha256']))
+    bindings.extend((name,value['commands'][name],value['commandHashes'][name]) for name in commands)
+    for name, path, sha in bindings:
+        require(type(path) is str and PurePosixPath(path).is_absolute() and '..' not in PurePosixPath(path).parts
+                and type(sha) is str and re.fullmatch('[0-9a-f]{64}',sha),
+                stage, 'EXACT_PREPARER_COMMAND_BINDING_REQUIRED', role, [name])
+    for name in ('coordinationJournal','lockFile'):
+        path = value[name]
+        require(type(path) is str and PurePosixPath(path).is_absolute() and '..' not in PurePosixPath(path).parts,
+                stage, 'ABSOLUTE_PREPARER_CUSTODY_PATH_REQUIRED', role, [name])
+    require(type(value['budgetSeconds']) is int and 1 <= value['budgetSeconds'] <= 5
+            and type(value['hostNetworkNamespace']) is int and value['hostNetworkNamespace'] > 0,
+            stage, 'BOUNDED_PREPARER_AND_HOST_NAMESPACE_REQUIRED', role)
+    require(all(type(value[name]) is dict for name in ('kernel','dns','coordinationBinding')),
+            stage, 'PREPARER_KERNEL_DNS_COORDINATION_DOCUMENTS_REQUIRED', role)
+    require(type(candidate['networkBindings']) is list and type(candidate['transport']) is list,
+            stage, 'PREPARER_NETWORK_TRANSPORT_DOCUMENTS_REQUIRED', role)
+
+
 def validate_dependency_evidence(value, role, now, authority_expires):
     """Bound signed review metadata, not a scanner/provenance verifier.
 
@@ -133,6 +177,7 @@ def _authenticate_role(role, records, authority, sources, observer_raw, verifier
     same(review, expected, stage, 'TARGET_REVIEW_SCOPE_DRIFT', role)
     window(review, clock())
     signed(verifier, records['review'], 'FINAL_DEPLOYMENT_APPROVAL', ctx['approvalIssuerRef'], ctx, 'review', role, stage)
+    validate_preparer_template(values['preparerTemplate'], role)
     # Signed hashes attest the complete input set. Compile independently of any
     # candidate observation and compare the entire resulting policy, not a view.
     stage = 'COMPILE_AUTHENTICATED_FRAME'

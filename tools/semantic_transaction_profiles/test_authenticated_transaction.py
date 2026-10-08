@@ -106,8 +106,12 @@ class AuthenticatedTransactionTest(unittest.TestCase):
                                    'destination':'46.38.225.230','protocol':'udp','port':53,'peerIngress':{'kind':'HOST'}}],
                      'tableName':'fixture','runtimeBinding':self.runtime}
         preparer = {'schema':'ouf.semantic-admission-preparer-template.v1', 'candidate':candidate,
-            'commands':{'ip':'/usr/bin/ip','nsenter':'/usr/bin/nsenter'},
-            'commandHashes':{'ip':'1'*64,'nsenter':'2'*64},'pythonPath':self.python['path'],'pythonHash':self.python['sha256']}
+            'commands':{name:'/usr/bin/'+name for name in ('nft','ip','nsenter','unshare','mount','umount')},
+            'commandHashes':{name:'1'*64 for name in ('nft','ip','nsenter','unshare','mount','umount')},
+            'pythonPath':self.python['path'],'pythonHash':self.python['sha256'],
+            'kernel':{'fixtureOnly':True},'dns':{'fixtureOnly':True},
+            'coordinationBinding':{'fixtureOnly':True},'coordinationJournal':'/ci-only/coordination.json',
+            'lockFile':'/ci-only/guard.lock','budgetSeconds':5,'hostNetworkNamespace':1}
         values = {'template':template,'launch':launch,'context':context,'framePolicy':policy,'preparerTemplate':preparer,
             'deploymentConstraints':{'fixtureOnly':True},'provenanceEvidence':{'fixturePublisher':'disposable'},
             'dependencyEvidence':self.dependency_evidence(role)}
@@ -389,6 +393,20 @@ class AuthenticatedTransactionTest(unittest.TestCase):
     def test_expired_database_denied_even_with_matching_root_mandate(self):
         self.assertEqual(self.denied_dependency_before_signing(-48*3600),
                          'DATABASE_FRESHNESS_DOES_NOT_COVER_AUTHORITY_WINDOW')
+
+    def test_incomplete_preparer_denied_before_keys_with_matching_root_mandate(self):
+        import json
+        issue,inputs,mandate,binding,output=self.issue_inputs()
+        value=json.loads(inputs['preparerTemplate']);del value['coordinationJournal']
+        inputs['preparerTemplate']=encoded(value)
+        mandate['inputHashes']['preparerTemplate']=digest(inputs['preparerTemplate'])
+        path=Path(binding['path']);self.private(path,encoded(mandate));binding=self.bind(path)
+        with patch('issue_provider_transaction_authority.ExistingEd25519Signer',side_effect=AssertionError('KEY_READ')):
+            with self.assertRaisesRegex(TransactionDenied,'EXACT_COMPLETE_BROKER_PREPARER_TEMPLATE_REQUIRED'):
+                issue('adapter',binding,binding['sha256'],inputs,self.authority,self.sources,
+                      self.observer,self.verifier,output,self.clock)
+        self.assertEqual(list(output.iterdir()),[])
+        self.assertEqual(list(self.signatures.iterdir()),[])
 
     def test_future_database_denied_before_signing(self):
         self.assertEqual(self.denied_dependency_before_signing(1),

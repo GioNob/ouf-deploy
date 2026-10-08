@@ -14,7 +14,7 @@ import stat
 import sys
 import types
 
-MANIFEST_SHA256 = '9389a3ec3f2edbcb28f380be27cfc7531669d88ddc703582e9367a0b527c654c'
+MANIFEST_SHA256 = '91de01c2b75995c757b9cbb2d958194565f7a62aa27d19bb314bf827daf99552'
 AUTHORITY = {'path':'/etc/ouf/deploy-snapshots/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json',
              'sha256':'7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18'}
 POLICY = {'path':'/etc/ouf/deploy-snapshots/semantic-trust-policy-preparation-20261004-172336/trust-policy.json',
