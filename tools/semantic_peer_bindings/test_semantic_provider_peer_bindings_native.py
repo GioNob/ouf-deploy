@@ -92,7 +92,7 @@ def main():
             for index in range(2):
                 flow = {'purpose': 'GATEWAY_ADAPTER', 'authorityRef': 'ci-infrastructure', 'source': bindings[index]['ipv4'],
                     'destination': '198.19.' + str(250 + index) + '.3', 'protocol': 'tcp', 'port': 9443,
-                    'peerIngress': {'kind': 'CREATED_CANDIDATE', 'containerId': cid, 'bindingRef': bindings[index]['bindingRef']}}
+                    'peerIngress': {'kind': 'CREATED_CANDIDATE', 'declaration': expected, 'bindingRef': bindings[index]['bindingRef']}}
                 sealed = p.digest([flow]); actual = p.resolve([flow], [expected], {cid: snapshot}, 'f' * 64)
                 p.require(actual[0]['peerIngress']['ifindex'] == snapshot['bindings'][index]['hostIfindex'] and p.digest([flow]) == sealed, 'CI_PEER_RESOLUTION_FAILED')
             for mutate in ('mac', 'applicationHash'):

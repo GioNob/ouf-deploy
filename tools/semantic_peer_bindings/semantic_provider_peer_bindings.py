@@ -67,6 +67,20 @@ def collect(expected, runtime_root, runtime_binding, commands, run, read_bundle,
     require(first == second and state() == before and generation(before['pid']) == gen and read_bundle(before['bundle'] + '/config.json') == raw, 'PEER_OBSERVATION_CHANGED')
     budget.check()
     return {'containerId': cid, 'applicationHash': expected['applicationHash'], 'generation': gen, 'bindings': first}
+def declarations(flows, current_cid):
+    """Full peer expectations are inside the transport signed by the issuer."""
+    require(type(flows) is list and 1 <= len(flows) <= 128, 'BOUNDED_TRANSPORT_REQUIRED')
+    found = {}
+    for flow in flows:
+        peer = flow.get('peerIngress') if type(flow) is dict else None
+        require(type(peer) is dict, 'PEER_INGRESS_INVALID')
+        if peer.get('kind') != 'CREATED_CANDIDATE': continue
+        require(set(peer) == {'kind', 'declaration', 'bindingRef'}, 'EXACT_SYMBOLIC_PEER_REQUIRED')
+        expected = declaration(peer['declaration']); cid = expected['containerId']
+        require(cid != current_cid, 'PEER_COHORT_INVALID')
+        require(cid not in found or found[cid] == expected, 'INCONSISTENT_PEER_DECLARATION')
+        found[cid] = expected
+    return [found[cid] for cid in sorted(found)]
 def resolve(flows, declarations, snapshots, current_cid):
     """Keep declaration hashes separate from materialized kernel indices.
 
@@ -82,8 +96,9 @@ def resolve(flows, declarations, snapshots, current_cid):
         peer = flow['peerIngress']; require(type(peer) is dict, 'PEER_INGRESS_INVALID')
         value = copy.deepcopy(flow)
         if peer.get('kind') == 'CREATED_CANDIDATE':
-            require(set(peer) == {'kind', 'containerId', 'bindingRef'}, 'EXACT_SYMBOLIC_PEER_REQUIRED')
-            cid = peer['containerId']; require(cid in expected and cid in snapshots and cid != current_cid, 'PEER_COHORT_MISSING')
+            require(set(peer) == {'kind', 'declaration', 'bindingRef'}, 'EXACT_SYMBOLIC_PEER_REQUIRED')
+            embedded = declaration(peer['declaration']); cid = embedded['containerId']; require(cid in expected and cid in snapshots and cid != current_cid, 'PEER_COHORT_MISSING')
+            require(expected[cid] == embedded, 'PEER_DECLARATION_SCOPE_DRIFT')
             snap = snapshots[cid]; require(set(snap) == {'containerId', 'applicationHash', 'generation', 'bindings'} and snap['containerId'] == cid and snap['applicationHash'] == expected[cid]['applicationHash'], 'PEER_SNAPSHOT_SCOPE_DRIFT')
             approved = [b for b in expected[cid]['networkBindings'] if b['bindingRef'] == peer['bindingRef']]
             actual = [b for b in snap['bindings'] if b['bindingRef'] == peer['bindingRef']]

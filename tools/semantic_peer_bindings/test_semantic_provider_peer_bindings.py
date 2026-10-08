@@ -8,7 +8,7 @@ NIC = {'interface': 'oufint0', 'bridge': 'oufsp-int', 'mac': '02:42:ac:15:00:02'
 OCI = {'root': {'path': '/root/fixture/rootfs'}, 'process': {'args': ['sleep', '60'], 'env': ['CI_ONLY_SECRET']}}
 DECL = {'containerId': 'a' * 64, 'applicationHash': p.digest(OCI), 'networkBindings': [NIC]}
 FLOW = {'purpose': 'GATEWAY_ADAPTER', 'authorityRef': 'ci-infrastructure', 'source': '172.21.0.2', 'destination': '172.21.0.3', 'protocol': 'tcp', 'port': 9443,
-    'peerIngress': {'kind': 'CREATED_CANDIDATE', 'containerId': 'a' * 64, 'bindingRef': 'southbound-internal'}}
+    'peerIngress': {'kind': 'CREATED_CANDIDATE', 'declaration': DECL, 'bindingRef': 'southbound-internal'}}
 class Budget:
     def check(self): pass
 class Fixture:
@@ -44,7 +44,9 @@ class Tests(unittest.TestCase):
     def test_foreign_cid_or_binding_is_not_adopted(self):
         snapshot = Fixture().collect()
         for key, value in [('containerId', 'c' * 64), ('bindingRef', 'foreign')]:
-            bad = copy.deepcopy(FLOW); bad['peerIngress'][key] = value
+            bad = copy.deepcopy(FLOW)
+            if key == 'containerId': bad['peerIngress']['declaration']['containerId'] = value
+            else: bad['peerIngress'][key] = value
             with self.subTest(field=key), self.assertRaises(ValueError): p.resolve([bad], [DECL], {'a' * 64: snapshot}, 'b' * 64)
     def test_generation_changed_is_rejected(self):
         f = Fixture(); count = 0
