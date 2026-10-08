@@ -57,6 +57,20 @@ jobs:
         run: sudo /usr/bin/python3 -B ../deploy/tools/semantic_transaction_profiles/test_assembled_frame_profiles_native.py
       - name: Observe real empty nft guard under the already held flock
         run: sudo /usr/bin/unshare --net --fork /usr/bin/python3 -B deploy/tools/semantic_transaction_profiles/test_transaction_guard_observation_native.py
+
+  native-docker-creation-window:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Preserve installed Docker and its bundled runc
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq busybox-static
+          docker version
+          runc --version
       - name: Observe both real Docker creation windows before application release
-        run: sudo /usr/bin/python3 -B deploy/tools/semantic_transaction_profiles/test_docker_creation_window_native.py
+        run: sudo /usr/bin/python3 -B tools/semantic_transaction_profiles/test_docker_creation_window_native.py
 
