@@ -1,5 +1,15 @@
 # Provider v2 admission: next target step — 8 October 2026
 
+## Current next action
+
+Offline reconstruction is complete; do not repeat it. The next operator-only step is the full stopped-candidate comparison using `releases/provider-v2-stopped-rootfs-comparison.sh`. It reuses `semantic-provider-v2-offline-rootfs-s3BU0nDX`; it does not create/start a candidate, modify runtime configuration/firewall, sign, or call a provider. It creates a new evidence/source snapshot and temporarily mounts expected overlay views and exports the two stopped rootfs snapshots. Privileged filesystem access is unavailable to the runner, so this specific execution still needs the operator.
+
+Hosted CI [37773347766](https://github.com/GioNob/ouf-deploy/actions/runs/37773347766), source `396e1bbfedb897403f442cf44fac3b72dff3cd6b`, proves direct complete filesystem observation while Engine 29.8.1 holds an export mount, unchanged never-started state, no read of bind contents, mount release, and rejection of changed content. The exact comparison helper and full entrypoint validation/reporting flow are exercised with one CI-owned candidate and CI-only constant substitutions. The production entrypoint is fixed to two exact target CIDs and accepts no arguments. Evidence: `evidence/provider-v2-stopped-rootfs-ci-20261008.json`.
+
+Docker export's tar cannot substitute for direct observation because it omits metadata used by the strict v1 seal. An initial CI mismatch was the OverlayFS merged root directory's link count. The comparator retains the original offline seal and derives the complete expected seal through a separate actual OverlayFS view of the independently reconstructed tree, including root mode, ownership and every xattr. It does not omit any seal field or copy metadata from the observed candidate. Any target mismatch remains blocked.
+
+Expected target result: `OUF_PROVIDER_V2_ROOTFS_COMPARISON` with `INDEPENDENT_ROOTFS_COMPARISON_PASS`, two exact role seals and no startup authorization. Afterwards, complete the target-specific transaction/OCI/context/signature/namespace/guard/lease admission; then activate Semantic/MCP discovery and prove the Teatri product path via chatbot. A rootfs comparison alone does not finish that product path.
+
 ## Target state
 
 The operator completed stopped creation in `/etc/ouf/deploy-snapshots/semantic-provider-v2-stopped-resume-k5mmsudx`, source SHA256 `2a9fc3d2861faa2e15370c70979b171cb63b2e09a2dfef1e2895ca27fa663861`. The full receipt is `evidence/discovery-provider-v2-stopped-creation-target-20261008.json`.
