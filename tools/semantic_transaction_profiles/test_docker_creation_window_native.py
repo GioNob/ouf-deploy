@@ -23,6 +23,9 @@ def run(*args, payload=None, check=True, timeout=30):
     result = subprocess.run(args, input=payload, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE, timeout=timeout)
     if check and result.returncode:
+        # This fixture owns every argument and contains no credentials/secrets.
+        print(json.dumps({'fixtureCommand': str(args[0]), 'exitCode': result.returncode,
+                          'fixtureError': result.stderr.decode(errors='replace')[-2048:]}), flush=True)
         raise RuntimeError('COMMAND_FAILED:' + str(args[0]) + ':' + str(result.returncode))
     return result
 
@@ -93,6 +96,9 @@ def exercise():
                 entry = tarfile.TarInfo('bin/busybox'); entry.mode = 0o755; entry.size = len(data)
                 tar.addfile(entry, io.BytesIO(data))
             image = dock('image', 'import', '-', payload=archive.getvalue()).stdout.decode().strip()
+            # Docker probes the named runtime before creating daemon metadata.
+            (root / 'settings.json').write_text(json.dumps({
+                'cids': cids, 'python': python, 'script': script, 'runc': runc}))
             for index in range(2):
                 proof = root / ('proof-' + str(index)); proof.mkdir()
                 cid = dock('create', '--runtime', name, '--network', 'none', '--cap-drop', 'ALL',
