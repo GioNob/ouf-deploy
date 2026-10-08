@@ -27,6 +27,8 @@ class NativeCompilerTests(unittest.TestCase):
     def test_real_engine_generated_paths_and_no_runc_or_application_execution(self):
         self.assertEqual(os.geteuid(), 0)
         backend = os.environ.get('OUF_FRAME_COMPILER_BACKEND', 'classic-vfs')
+        network_mode = os.environ.get('OUF_FRAME_COMPILER_NETWORK', 'none')
+        self.assertIn(network_mode, ('none', 'bridge'))
         self.assertIn(backend, ('classic-vfs', 'containerd-overlayfs'))
         root = Path(tempfile.mkdtemp(prefix='ouf-frame-compiler-', dir='/root'))
         root.chmod(0o700); self.addCleanup(shutil.rmtree, root)
@@ -37,7 +39,28 @@ class NativeCompilerTests(unittest.TestCase):
             'if "create" in args:\n' +
             '    i=args.index("--bundle") if "--bundle" in args else args.index("-b")\n' +
             '    bundle=pathlib.Path(args[i+1]).resolve()\n' +
-            '    value={"cid":args[-1],"bundle":str(bundle),"oci":json.loads((bundle/"config.json").read_bytes())}\n' +
+            '    context_read={}\n' +
+            '    if ' + repr(network_mode) + '=="bridge":\n' +
+            '        try:\n' +
+            '            result=subprocess.run([' + repr(shutil.which('docker')) + ',"-H",' + repr('unix://' + str(root / 'docker.sock')) + ',"inspect","--format","{{json .NetworkSettings.SandboxKey}}",args[-1]],capture_output=True,timeout=5)\n' +
+            '            context_read={"querySucceeded":result.returncode==0,"sandboxKey":json.loads(result.stdout) if result.returncode==0 else None}\n' +
+            '        except subprocess.TimeoutExpired:context_read={"querySucceeded":False,"failure":"INSPECT_TIMEOUT"}\n' +
+            '        planfile=pathlib.Path(' + repr(str(root / 'compiler-plan.json')) + ')\n' +
+            '        if planfile.exists():\n' +
+            '            plan=json.loads(planfile.read_bytes())\n' +
+            '            if plan["context"]["containerId"]==args[-1]:\n' +
+            '                if not context_read.get("querySucceeded") or not context_read.get("sandboxKey"):sys.exit(79)\n' +
+            '                import sys\n' +
+            '                sys.path.insert(0,' + repr(str(Path(__file__).resolve().parent)) + ')\n' +
+            '                from compile_creation_frame_policy import compile_policy,canonical\n' +
+            '                netpath=pathlib.Path(context_read["sandboxKey"]).resolve()\n' +
+            '                if str(netpath.parent)!=plan["context"]["networkNamespaceParent"]:sys.exit(80)\n' +
+            '                plan["context"]["networkNamespaceName"]=netpath.name\n' +
+            '                policy=canonical(compile_policy(plan["template"],plan["launch"],plan["context"]))\n' +
+            '                fd=os.open(' + repr(str(root / 'precreate-policy.json')) + ',os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)\n' +
+            '                with os.fdopen(fd,"wb") as stream:stream.write(policy);stream.flush();os.fsync(stream.fileno())\n' +
+            '                context_read["policySealedBeforeOciRead"]=True\n' +
+            '    value={"cid":args[-1],"bundle":str(bundle),"contextRead":context_read,"oci":json.loads((bundle/"config.json").read_bytes())}\n' +
             '    fd=os.open(' + repr(str(root / 'capture-')) + '+args[-1]+".json",os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)\n' +
             '    with os.fdopen(fd,"wb") as stream:stream.write(json.dumps(value).encode());stream.flush();os.fsync(stream.fileno())\n' +
             '    sys.exit(77)\n' +
@@ -70,11 +93,16 @@ class NativeCompilerTests(unittest.TestCase):
                 time.sleep(.25)
             info = json.loads(docker('info', '--format', '{{json .}}').stdout)
             self.assertEqual(docker('pull', 'busybox:1.37.0', timeout=120).returncode, 0)
+            candidate_network = 'none'
+            if network_mode == 'bridge':
+                net = docker('network', 'create', '--subnet', '198.19.250.0/24', 'ouf-ci-frame-bridge')
+                self.assertEqual(net.returncode, 0)
+                candidate_network = 'ouf-ci-frame-bridge'
             self.assertEqual(docker('run', '-d', '--network', 'none', '--name', 'existing',
                                     'busybox:1.37.0', 'sleep', '600').returncode, 0)
             self.addCleanup(lambda: docker('rm', '-f', 'candidate', 'candidate2', 'existing'))
             source = root / 'source'; source.write_bytes(b'CI_PRIVATE_SOURCE'); source.chmod(0o600); os.chown(source, 10006, 10006)
-            create = docker('create', '--name', 'candidate', '--runtime', 'ouf-ci-capture', '--network', 'none',
+            create = docker('create', '--name', 'candidate', '--runtime', 'ouf-ci-capture', '--network', candidate_network,
                             '--user', '10006:10006', '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
                             '--memory', '256m', '--memory-swap', '256m', '--pids-limit', '128', '--no-healthcheck',
                             '--mount', 'type=bind,source=' + str(source) + ',target=/approved-source,readonly',
@@ -156,8 +184,15 @@ class NativeCompilerTests(unittest.TestCase):
             # Baseline fixture only: the template from candidate one is now
             # fixed. Compile candidate two before Docker generates its OCI.
             # No field from candidate two's captured OCI may alter that policy.
-            self.assertIsNone(context['networkNamespaceName'], 'fixture requires a fresh private namespace')
-            create2 = docker('create', '--name', 'candidate2', '--runtime', 'ouf-ci-capture', '--network', 'none',
+            if network_mode == 'none':
+                self.assertIsNone(context['networkNamespaceName'], 'fixture requires a fresh private namespace')
+            else:
+                print('CI_BRIDGE_METADATA_QUERY=' + json.dumps({
+                    'succeeded': captured['contextRead'].get('querySucceeded', False),
+                    'failure': captured['contextRead'].get('failure'),
+                    'sandboxKeyPresent': bool(captured['contextRead'].get('sandboxKey'))}))
+                self.assertTrue(captured['contextRead'].get('querySucceeded'), 'IN_CREATE_DOCKER_CONTEXT_QUERY_FAILED')
+            create2 = docker('create', '--name', 'candidate2', '--runtime', 'ouf-ci-capture', '--network', candidate_network,
                             '--user', '10006:10006', '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
                             '--memory', '256m', '--memory-swap', '256m', '--pids-limit', '128', '--no-healthcheck',
                             '--mount', 'type=bind,source=' + str(source) + ',target=/approved-source,readonly',
@@ -179,17 +214,32 @@ class NativeCompilerTests(unittest.TestCase):
                         'rootfsPath': independent_rootfs2}
             template = {'schema': 'ouf.semantic-creation-frame-template.v1', 'expectedOci': template_oci,
                         'approvedHooks': copy.deepcopy(actual.get('hooks') or {})}
-            policy2 = compile_policy(template, launch, context2)
-            sealed2 = canonical(policy2); policy_path2 = root / 'precreate-policy.json'
-            fd = os.open(policy_path2, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            with os.fdopen(fd, 'wb') as stream:
-                stream.write(sealed2); stream.flush(); os.fsync(stream.fileno())
+            policy_path2 = root / 'precreate-policy.json'
+            if network_mode == 'none':
+                policy2 = compile_policy(template, launch, context2)
+                sealed2 = canonical(policy2)
+                fd = os.open(policy_path2, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                with os.fdopen(fd, 'wb') as stream:
+                    stream.write(sealed2); stream.flush(); os.fsync(stream.fileno())
+            else:
+                # Fixed template/launch/CID/storage context before OCI2 exists.
+                # The refusing runtime reads the independently owned daemon's
+                # sandbox mapping and seals policy before opening config.json.
+                (root / 'compiler-plan.json').write_bytes(canonical({'template': template,
+                    'launch': launch, 'context': context2}))
+                self.assertFalse(policy_path2.exists())
             capture2 = root / ('capture-' + cid2 + '.json'); self.assertFalse(capture2.exists())
             self.assertNotEqual(docker('start', cid2).returncode, 0)
             captured2 = json.loads(capture2.read_bytes()); self.assertEqual(captured2['cid'], cid2)
+            if network_mode == 'bridge':
+                self.assertTrue(captured2['contextRead'].get('policySealedBeforeOciRead'))
+                sealed2 = policy_path2.read_bytes(); policy2 = json.loads(sealed2)
             actual2 = captured2['oci']; rootfs2 = Path(actual2['root']['path'])
             if not rootfs2.is_absolute(): rootfs2 = Path(captured2['bundle']) / rootfs2
             actual2['root']['path'] = str(rootfs2)
+            if network_mode == 'bridge':
+                namespace2 = next(v for v in actual2['linux']['namespaces'] if v['type'] == 'network')
+                namespace2['path'] = str(Path(namespace2['path']).resolve())
             self.assertEqual(policy_path2.read_bytes(), sealed2)
             self.assertTrue(policy2['expectedOci'] == actual2, 'SECOND_CANDIDATE_PRECREATE_POLICY_DRIFT')
             self.assertTrue(configured_profile(actual2, policy2['expectedOci'], policy2['manifest'], policy2['startup'],
@@ -200,8 +250,10 @@ class NativeCompilerTests(unittest.TestCase):
             self.assertEqual(docker('inspect', '--format', '{{.State.Running}}', 'existing').stdout.strip(), b'true')
             print('FRAME_COMPILER_NATIVE=PASS REAL_DOCKER_SHAPE=true RUNC_CREATE_REFUSED=true APPLICATION_NOT_STARTED=true '
                   'SYNTHETIC_TEMPLATE_ONLY=true INDEPENDENT_TEMPLATE_APPROVAL=false CONTEXT_AUTHENTICATED=false '
-                  'SECOND_POLICY_SEALED_BEFORE_OCI_GENERATION=true SECOND_EXACT_COMPARISON=true '
-                  'PRODUCTION_PRECREATE_BINDING_PROVEN=false TARGET_START_AUTHORIZED=false BACKEND=' + backend)
+                  'SECOND_POLICY_SEALED_BEFORE_OCI_GENERATION=' + str(network_mode == 'none').lower() +
+                  ' SECOND_POLICY_SEALED_BEFORE_OCI_READ=true SECOND_EXACT_COMPARISON=true '
+                  'PRODUCTION_PRECREATE_BINDING_PROVEN=false TARGET_START_AUTHORIZED=false BACKEND=' + backend +
+                  ' NETWORK=' + network_mode)
 
 
 if __name__ == '__main__': unittest.main()
