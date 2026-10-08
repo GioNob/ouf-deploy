@@ -122,10 +122,14 @@ def exercise():
                     for cid in cids:
                         metadata = json.loads((root / (cid + '.runtime.json')).read_text())
                         native = json.loads(run(runc, '--root', metadata['runtimeRoot'], 'list', '--format', 'json').stdout)
-                        row = next(value for value in native if value['id'] == cid)
+                        # runc can return JSON null before publishing any state.
+                        assert native is None or type(native) is list
+                        matching = [value for value in (native or []) if value['id'] == cid]
+                        assert len(matching) <= 1
+                        row = matching[0] if matching else {'status': 'absent', 'pid': 0}
                         rows.append({'id': cid, 'status': row['status'], 'pid': row['pid']})
                         # A hook blocks before create finishes. No live state is accepted here.
-                        assert row['status'] in ('stopped', 'creating', 'created')
+                        assert row['status'] in ('absent', 'stopped', 'creating', 'created')
                     (root / 'release').touch()
                     for cid, future in zip(cids, futures):
                         result = future.result()
