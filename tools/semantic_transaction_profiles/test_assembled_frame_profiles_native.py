@@ -140,8 +140,11 @@ def main():
             created.append(cids[1]);run(*invoke('create',cids[1],'--bundle',str(inputs/cids[1])))
             require(digest(json.loads((registry/cids[1]/'bundle/config.json').read_bytes()))==digest(specs[1]),'CI_FULL_OCI_CHANGED')
             second=start(cids[1])
+            outcomes=[]
             for process,out,err in processes:
-                status=process.wait(timeout=60);err.seek(0)
+                status=process.wait(timeout=30);err.seek(0)
+                outcomes.append((status,err.read(1200).decode()))
+            for status,message in outcomes:
                 if status:
                     for index,cid in enumerate(cids):
                         for filename in ('ci-broker-denial.json','ci-node-denial.json'):
@@ -152,7 +155,13 @@ def main():
                             path=registry/cid/filename
                             if path.exists():phases[filename]=json.loads(path.read_bytes()).get('state')
                         print('CONTROLLED_COHORT_PHASES='+json.dumps({'candidateIndex':index,'states':phases}))
-                require(status==0,'CI_COHORT_ADMISSION_FAILED:'+err.read(1200).decode())
+                        state_result=run(commands['runc'],'--root',str(runtime),'state',cid,check=False)
+                        if state_result.returncode==0:
+                            state=json.loads(state_result.stdout)
+                            print('FRAME_PROFILE_RUNTIME_STATE='+json.dumps({'candidateIndex':index,
+                                'status':state.get('status'),'pid':state.get('pid')}))
+                    print('FRAME_PROFILE_PROCESS_RESULTS='+json.dumps(outcomes))
+                require(status==0,'CI_COHORT_ADMISSION_FAILED:'+message)
             require(all(application_proof(cid)=='APP' for cid in cids),'CI_COHORT_APP_PROOF_MISSING')
             for i,cid in enumerate(cids):
                 grant=json.loads((registry/cid/'driver.json').read_bytes())
