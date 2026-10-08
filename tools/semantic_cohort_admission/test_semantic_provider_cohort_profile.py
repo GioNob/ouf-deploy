@@ -17,6 +17,7 @@ sys.modules['tools'] = package
 from tools.semantic_provider_deployment_admission import live_profile, application_hash, transport_hash
 from tools.semantic_provider_preexec import PreexecDenied
 from tools.semantic_provider_peer_bindings import digest
+from tools.semantic_provider_peer_bindings import await_peers,PeerNotReady
 import tools.semantic_provider_node_observation as node
 
 spec=importlib.util.spec_from_file_location('cohort_driver',ROOT/'scripts'/'semantic_provider_preexec_hook.py')
@@ -188,5 +189,28 @@ class Tests(unittest.TestCase):
     def test_final_driver_rejects_resolved_kernel_policy_drift(self):
         fixture,value=self.driver_fixture();value['profile']['policy']['flows'][0]['peerIngress']['ifindex']=99
         with self.assertRaisesRegex(RuntimeError,'PEER_KERNEL_PROFILE_DRIFT'):self.driver_check(fixture,value)
+    def test_cohort_barrier_waits_only_for_explicit_not_ready(self):
+        class Budget:
+            def check(self):pass
+            def remaining(self,maximum):return maximum
+        calls=[];pauses=[]
+        def probe(peer):
+            calls.append(peer['containerId'])
+            if len(calls)==1:raise PeerNotReady()
+            return SNAPSHOT
+        observed=await_peers([PEER],probe,Budget(),pause=pauses.append)
+        self.assertEqual(observed,{PEER['containerId']:SNAPSHOT});self.assertEqual(pauses,[0.1])
+    def test_cohort_barrier_does_not_retry_identity_drift(self):
+        class Budget:
+            def check(self):pass
+        def probe(_):raise ValueError('PEER_COMPLETE_OCI_DRIFT')
+        with self.assertRaisesRegex(ValueError,'PEER_COMPLETE_OCI_DRIFT'):
+            await_peers([PEER],probe,Budget(),pause=lambda _:self.fail('identity drift was retried'))
+    def test_cohort_barrier_does_not_return_ready_when_deadline_expires(self):
+        class Budget:
+            def check(self):pass
+            def remaining(self,_):raise RuntimeError('DEADLINE_EXPIRED')
+        def probe(_):raise PeerNotReady()
+        with self.assertRaisesRegex(RuntimeError,'DEADLINE_EXPIRED'):await_peers([PEER],probe,Budget(),pause=lambda _:None)
 
 if __name__=='__main__':unittest.main()

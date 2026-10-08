@@ -17,7 +17,7 @@ import types
 MODULES = ('materialize_southbound_kernel', 'materialize_southbound_lease_refresh',
     'semantic_provider_dns', 'semantic_provider_lease_nft', 'semantic_provider_lease_owner',
     'materialize_semantic_shared_faces', 'semantic_provider_lease_coordination',
-    'semantic_provider_preexec', 'semantic_provider_preexec_native')
+    'semantic_provider_preexec', 'semantic_provider_preexec_native', 'semantic_provider_peer_bindings')
 SELF = 'scripts/semantic_provider_preexec_hook.py'
 
 
@@ -62,7 +62,7 @@ def load(path):
         raise RuntimeError('EXACT_DRIVER_CONFIGURATION_REQUIRED')
     root = Path(value['sourceRoot'])
     if root.lstat().st_mode & 0o077 or not root.is_dir(): raise RuntimeError('PRIVATE_SOURCE_ROOT_REQUIRED')
-    modules = (*MODULES, 'semantic_provider_peer_bindings','semantic_provider_deployment_admission') if value['schema'] in ('ouf.semantic-preexec-driver.v3','ouf.semantic-preexec-driver.v4','ouf.semantic-preexec-driver.v5','ouf.semantic-preexec-driver.v6') else MODULES
+    modules = (*MODULES, 'semantic_provider_deployment_admission') if value['schema'] in ('ouf.semantic-preexec-driver.v3','ouf.semantic-preexec-driver.v4','ouf.semantic-preexec-driver.v5','ouf.semantic-preexec-driver.v6') else MODULES
     if value['schema'] in ('ouf.semantic-preexec-driver.v4','ouf.semantic-preexec-driver.v5','ouf.semantic-preexec-driver.v6'):
         modules = (*modules, 'semantic_provider_deployment_protocol', 'semantic_provider_deployment_consumption')
     if value['schema'] in ('ouf.semantic-preexec-driver.v5','ouf.semantic-preexec-driver.v6'):

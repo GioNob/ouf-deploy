@@ -10,6 +10,21 @@ import ipaddress
 import json
 import re
 import socket
+import time
+
+class PeerNotReady(Exception):
+    """Read-only creation barrier may wait; this never grants admission."""
+
+def await_peers(expected,probe,budget,pause=time.sleep):
+    require(type(expected) is list and 1 <= len(expected) <= 8,'BOUNDED_PEER_COHORT_REQUIRED')
+    while True:
+        budget.check()
+        try:
+            observations={peer['containerId']:probe(peer) for peer in expected}
+        except PeerNotReady:
+            pause(budget.remaining(0.1))
+            continue
+        budget.check();return observations
 
 def require(ok, code):
     if not ok: raise ValueError(code)
@@ -49,12 +64,16 @@ def collect(expected, runtime_root, runtime_binding, commands, run, read_bundle,
         budget.check()
         children = json.loads(run(commands['nsenter'], ['--net=' + namespace, commands['ip']['path'], '-j', 'addr', 'show'], 131072))
         require(type(children) is list, 'PEER_LINK_RECORD_INVALID'); children = [x for x in children if x.get('ifname') != 'lo']
-        require(len(children) == len(expected['networkBindings']), 'UNAPPROVED_PEER_INTERFACE')
+        require(len(children) <= len(expected['networkBindings']), 'UNAPPROVED_PEER_INTERFACE')
+        require(len(children) == len(expected['networkBindings']), 'PEER_INTERFACES_NOT_READY')
         result = []
         for approved in expected['networkBindings']:
             matches = [x for x in children if x.get('ifname') == approved['interface']]
             require(len(matches) == 1, 'PEER_INTERFACE_MISSING'); child = matches[0]
-            require(child.get('address') == approved['mac'] and [a['local'] for a in child.get('addr_info', []) if a['family'] == 'inet'] == [approved['ipv4']], 'PEER_MAC_IP_DRIFT')
+            addresses=[a['local'] for a in child.get('addr_info', []) if a['family'] == 'inet']
+            require(child.get('address') == approved['mac'],'PEER_MAC_IP_DRIFT')
+            require(bool(addresses),'PEER_ADDRESSES_NOT_READY')
+            require(addresses == [approved['ipv4']], 'PEER_MAC_IP_DRIFT')
             require(not any(a['family'] == 'inet6' for a in child.get('addr_info', [])), 'PEER_IPV6_UNAPPROVED')
             index = child.get('link_index'); require(type(index) is int and index > 1 and type(child.get('ifindex')) is int, 'PEER_HOST_INDEX_INVALID')
             name = socket.if_indextoname(index)

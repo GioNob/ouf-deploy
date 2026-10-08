@@ -43,3 +43,29 @@ jobs:
           sudo install -m 600 tools/semantic_cohort_admission/cohort-draft/tools/*.py /root/ouf-cohort-fixture/cohort-draft/tools/
           sudo install -m 600 tools/semantic_cohort_admission/cohort-draft/scripts/*.py /root/ouf-cohort-fixture/cohort-draft/scripts/
           sudo /usr/bin/python3 -I -B /root/ouf-cohort-fixture/test_semantic_provider_cohort_native.py
+  authenticated-runtime-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          path: deploy
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: ace683b1019f79adaace86796b67e463b93ec12e
+          persist-credentials: false
+          path: gateway
+      - name: Overlay draft sources on frozen Gateway test fixture
+        run: |
+          cp deploy/tools/semantic_cohort_admission/cohort-draft/tools/*.py gateway/tools/
+          cp deploy/tools/semantic_cohort_admission/cohort-draft/scripts/*.py gateway/scripts/
+      - name: Install disposable hosted-native dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq busybox-static iproute2 nftables runc
+      - name: Real authenticated broker admission and rejection regression
+        working-directory: gateway
+        run: |
+          sudo env OUF_DOCKER_ADAPTER_NATIVE_TEST=1 /usr/bin/python3 -B -m unittest -v tests.test_semantic_preexec_docker_adapter.DockerAdapterTest.test_authenticated_adapter_v4_live_mandate_v3_with_immutable_precreate_bindings

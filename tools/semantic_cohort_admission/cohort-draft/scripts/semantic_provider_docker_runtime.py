@@ -212,8 +212,14 @@ def operate(config_path, argv):
                 require(grant['schema'] == 'ouf.semantic-preexec-driver.v3'
                         and grant['authorityBinding']['sha256'] == entry['approvalRef'], 'SCOPED_V3_AUTHORITY_REQUIRED')
             if two_phase:
-                expected_driver = 'ouf.semantic-preexec-driver.v5' if config['schema'] == 'ouf.semantic-docker-runtime-adapter.v4' else 'ouf.semantic-preexec-driver.v4'
-                require(grant['schema'] == expected_driver, 'EXACT_DURABLE_DRIVER_VERSION_REQUIRED')
+                expected_drivers = ('ouf.semantic-preexec-driver.v5','ouf.semantic-preexec-driver.v6') if config['schema'] == 'ouf.semantic-docker-runtime-adapter.v4' else ('ouf.semantic-preexec-driver.v4',)
+                require(grant['schema'] in expected_drivers, 'EXACT_DURABLE_DRIVER_VERSION_REQUIRED')
+                if grant['schema'] == 'ouf.semantic-preexec-driver.v6':
+                    peer_binding=grant.get('peerBinding',{})
+                    require(set(peer_binding)=={'declaredPolicy','observations','commandBindings'}
+                        and bool(peer_binding['observations'])
+                        and digest(peer_binding['declaredPolicy'])==grant['authorityScope']['transportHash'],
+                        'SEALED_COHORT_DRIVER_REQUIRED')
                 sealed = grant['consumptionBinding']; receipt = parse(read(Path(sealed['journalPath'])))
                 require(sealed['binding']['intentHash'] == entry['intentRef']
                         and receipt['configurationHash'] == sealed['binding']['configurationHash']
@@ -291,6 +297,8 @@ def operate(config_path, argv):
             # (runc create) and before Task.Start. Admission must inspect that
             # final live network here, before releasing runc's exec FIFO.
             state = parse(capture([config['runtimePath'], '--root', str(root), 'state', cid]))
+            if config['schema']=='ouf.semantic-docker-runtime-adapter.v4':
+                broker_phase('cohort-ready',state)
             publish('PREPARING'); admit(state)
             publish('STARTING'); driver_call('start'); publish('STARTED'); return 0
         require(read(config_path) == original, 'ADAPTER_CONFIGURATION_DRIFT')

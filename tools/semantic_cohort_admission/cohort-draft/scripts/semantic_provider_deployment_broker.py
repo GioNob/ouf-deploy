@@ -211,6 +211,44 @@ class Broker:
         oci=parse(private(Path(self.args.bundle)/'config.json'))
         return application_hash(oci),NativeBackend.generation(None,actual['pid'])
 
+    def cohort_ready(self,state):
+        from tools.semantic_provider_peer_bindings import declarations,collect,await_peers,PeerNotReady
+        from tools.semantic_provider_deployment_protocol import validate_intent
+        from tools.semantic_provider_deployment_producer import program
+        from tools.semantic_provider_preexec_native import NativeBackend
+        candidate=self.template['candidate']
+        validate_intent(self.intent_raw,self.ctx,self.verifier,self.clock)
+        app,generation=self.runtime(state);record=self.record()
+        require(record['state']=='CREATED' and record['bundleHash']==app,'BROKER_COHORT_CREATED_STATE_REQUIRED')
+        peers=declarations(candidate['transport'],self.cid)
+        if not peers:return
+        commands={k:{'path':self.template['commands'][k],'sha256':self.template['commandHashes'][k]} for k in ('ip','nsenter')}
+        def run(binding,argv,limit):
+            path=program(binding,self.budget)
+            with tempfile.TemporaryFile() as out:
+                result=subprocess.run([path,*argv],stdin=subprocess.DEVNULL,stdout=out,stderr=subprocess.DEVNULL,
+                    timeout=self.budget.remaining(2),env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'})
+                out.seek(0);raw=out.read(limit+1)
+            require(result.returncode==0 and len(raw)<=limit,'COHORT_OBSERVATION_UNPROVEN')
+            program(binding,self.budget);return raw
+        def probe(peer):
+            rows=parse(run(candidate['runtimeBinding'],['--root',self.args.runtime_root,'list','--format','json'],131072))
+            require(type(rows) is list and len(rows)<=1024,'BOUNDED_COHORT_RUNTIME_INVENTORY_REQUIRED')
+            matches=[row for row in rows if row.get('id')==peer['containerId']]
+            require(len(matches)<=1,'COHORT_RUNTIME_IDENTITY_AMBIGUOUS')
+            if not matches or matches[0].get('status')=='creating':raise PeerNotReady()
+            require(matches[0].get('status') in ('created','running'),'COHORT_PEER_STATE_DENIED')
+            try:
+                return collect(peer,self.args.runtime_root,candidate['runtimeBinding'],commands,run,
+                    lambda path:private(Path(path)),lambda pid:NativeBackend.generation(None,pid),self.budget)
+            except ValueError as error:
+                if str(error) in ('PEER_INTERFACES_NOT_READY','PEER_ADDRESSES_NOT_READY','PEER_INTERFACE_MISSING'):
+                    raise PeerNotReady() from None
+                raise
+        await_peers(peers,probe,self.budget)
+        require(self.runtime(state)==(app,generation) and self.record()==record,'BROKER_COHORT_CHANGED_DURING_WAIT')
+        validate_intent(self.intent_raw,self.ctx,self.verifier,self.clock);self.stable()
+
     def emit(self, name, role, facts):
         from tools.semantic_provider_deployment_producer import LocalEvidenceProducer, ProducerEmission, encoded
         from tools.semantic_provider_lease_coordination import PrivateJournal
@@ -340,6 +378,7 @@ class Broker:
                 old=self.record();require(old['state']=='CREATING' and old['bundleHash']==app,'BROKER_CREATION_BINDING_DRIFT')
             self.gate.created(app,generation)
             with self.lock():self.publish(old,state='CREATED')
+        elif self.args.mode=='cohort-ready':self.cohort_ready(state)
         elif self.args.mode=='prepare':self.prepare(state)
         elif self.args.mode=='cleanup':
             with self.lock():
