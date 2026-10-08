@@ -37,7 +37,7 @@ def main():
             '--pidfile', str(root/'pid'), '-H', socket, '--bridge', 'none',
             '--iptables=false', '--ip6tables=false', '--storage-driver', 'overlayfs'],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        export = None
+        export = None; expected_view = None
         try:
             def docker(*args):
                 return subprocess.run([shutil.which('docker'), '-H', socket, *map(str,args)],
@@ -78,7 +78,17 @@ def main():
             for name in ('.dockerenv','etc/resolv.conf','etc/hosts','etc/hostname','dev/console'):
                 (expected/name).write_bytes(b''); (expected/name).chmod(0o755)
             (expected/'etc/mtab').symlink_to('/proc/mounts')
-            expected_seal=sealer(expected,limits,Budget())
+            offline_seal=sealer(expected,limits,Budget())
+            # OverlayFS synthesizes the merged root's directory link count.
+            # Derive an independently mounted expected view; retain every
+            # metadata field and the original offline seal, without masking
+            # the observed container's differences or copying its metadata.
+            expected_view=root/'expected-overlay'; expected_view.mkdir(mode=0o700)
+            (root/'expected-upper').mkdir(mode=0o700)
+            (root/'expected-work').mkdir(mode=0o700)
+            options='lowerdir='+str(expected)+',upperdir='+str(root/'expected-upper')+',workdir='+str(root/'expected-work')
+            subprocess.run(['mount','-t','overlay','overlay','-o',options,str(expected_view)],check=True)
+            expected_seal=sealer(expected_view,limits,Budget())
             mounted=root/'data/rootfs/overlayfs'/cid
             export=subprocess.Popen([shutil.which('docker'),'-H',socket,'export',cid],
                 stdout=subprocess.PIPE,stderr=subprocess.DEVNULL)
@@ -91,8 +101,8 @@ def main():
             assert not (mounted/'private-bind').exists(), 'BIND_SOURCE_EXPOSED'
             # Retain bounded CI-only metadata differences instead of normalizing.
             differences=[]
-            for path in [expected,*sorted(expected.rglob('*'))]:
-                relative=path.relative_to(expected)
+            for path in [expected_view,*sorted(expected_view.rglob('*'))]:
+                relative=path.relative_to(expected_view)
                 actual=mounted/relative; left=path.lstat(); right=actual.lstat()
                 for field in ('st_mode','st_uid','st_gid','st_nlink','st_size'):
                     if field=='st_size' and path.is_dir(): continue
@@ -121,6 +131,7 @@ def main():
             result={'schema':'ouf.stopped-export-mount-ci.v1','engineVersion':info['ServerVersion'],
                 'directMountedRootfsObserved':True,'neverStarted':True,'privateBindContentRead':False,
                 'mountReleased':True,'strictSealMatches':actual_seal==expected_seal,
+                'originalOfflineSeal':offline_seal,'independentExpectedOverlayView':True,
                 'expectedSeal':expected_seal,'actualSeal':actual_seal,'metadataDifferences':differences,
                 'targetOperations':0,'targetAcceptance':False}
             print('OUF_STOPPED_EXPORT_MOUNT_CI='+json.dumps(result,sort_keys=True))
@@ -128,6 +139,8 @@ def main():
         finally:
             if export is not None and export.poll() is None:
                 export.kill(); export.wait(timeout=10)
+            if expected_view is not None and os.path.ismount(expected_view):
+                subprocess.run(['umount',str(expected_view)],check=True,timeout=10)
             daemon.terminate()
             try:daemon.wait(timeout=20)
             except subprocess.TimeoutExpired:daemon.kill();daemon.wait(timeout=5)
