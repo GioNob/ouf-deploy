@@ -58,7 +58,8 @@ def main():
         for cid,expected in candidates.items():doc(root/(cid+'.json'),{'id':cid,'image':expected['imageManifestDigest'],
             'runtime':'ci-only','state':{'Status':'created','Running':False,'Pid':0,'StartedAt':'0001-01-01T00:00:00Z'}})
         guard_command='ci-not-target-boot-command'
-        docker_raw=('#!/usr/bin/python3\nimport sys\nfrom pathlib import Path\nprint((Path('+repr(str(root))+')/(sys.argv[-1]+".json")).read_text())\n').encode()
+        runtime_info={'ouf-semantic-admitted-v2':{'path':'/usr/local/sbin/ouf-semantic-admitted-v2'}}
+        docker_raw=('#!/usr/bin/python3\nimport sys,json\nfrom pathlib import Path\nif "info" in sys.argv: print('+repr(json.dumps(runtime_info))+')\nelse: print((Path('+repr(str(root))+')/(sys.argv[-1]+".json")).read_text())\n').encode()
         system_raw=('#!/usr/bin/python3\nprint('+repr(guard_command)+')\n').encode()
         for name,raw in [('docker',docker_raw),('systemctl',system_raw)]:
             path=root/name;commands[name]={'path':str(path),'sha256':write(path,raw,0o755)}

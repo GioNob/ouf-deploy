@@ -1,6 +1,7 @@
 """Root-private, source-sealed authenticated transaction intake/publication.
 
-No signing or live configuration switch. Existing target policy/authority only.
+Default mode does not sign or change live configuration. Explicit approved
+execution uses existing target policy/authority only.
 Every uncertain attempt keeps its claim and safe stage-specific diagnosis.
 """
 import argparse
@@ -13,7 +14,7 @@ import stat
 import sys
 import types
 
-MANIFEST_SHA256 = '7ebec16cb0206998bc570735dd8d12092e19aa53488dedd539e0b5b1cdf3cc39'
+MANIFEST_SHA256 = '1b46bb420670e9f1c9d238b3e6031186c0fdecaef3249001723bfe00ffc0937e'
 AUTHORITY = {'path':'/etc/ouf/deploy-snapshots/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json',
              'sha256':'7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18'}
 POLICY = {'path':'/etc/ouf/deploy-snapshots/semantic-trust-policy-preparation-20261004-172336/trust-policy.json',
@@ -170,6 +171,8 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--configuration',type=Path,required=True)
     parser.add_argument('--configuration-sha256',required=True)
+    parser.add_argument('--execute-approved-transaction',action='store_true',
+                        help='Consume explicit two-role root mandates, publish, switch and request controlled cohort admission')
     args=parser.parse_args();package=Path(__file__).absolute().parent
     try:
         require(os.geteuid()==0 and sys.flags.isolated and sys.dont_write_bytecode,'ISOLATED_ROOT_INTAKE_REQUIRED')
@@ -177,20 +180,127 @@ def main():
                 and re.fullmatch('semantic-provider-v2-transaction-source-[A-Za-z0-9_-]+',package.name),'EXACT_TRANSACTION_SOURCE_SNAPSHOT_REQUIRED')
         info=package.lstat();require(stat.S_IMODE(info.st_mode)==0o700 and info.st_uid==info.st_gid==0,'PRIVATE_INTAKE_PACKAGE_REQUIRED')
         sources,observer=load(package)
-        report=operate(package,args.configuration,args.configuration_sha256,sources,observer)
+        operation=execute_transaction if args.execute_approved_transaction else operate
+        report=operation(package,args.configuration,args.configuration_sha256,sources,observer)
         print('OUF_PROVIDER_TRANSACTION_INTAKE='+encoded(report).decode());return 0
     except Exception as error:
         if type(getattr(error,'diagnosis',None)) is dict:diagnosis=error.diagnosis.copy()
         else:
             reason=str(error) if isinstance(error,IntakeDenied) and re.fullmatch('[A-Z][A-Z0-9_]{0,95}',str(error)) else 'PRIVATE_TARGET_INTAKE_UNPROVEN'
             diagnosis={'status':'BLOCKED','stage':STAGE,'reason':reason,'secretValuesPrinted':False,'startAuthorized':False}
-        diagnosis.update(evidenceDirectory=str(package),doNotRerunApply=os.path.lexists(package/'intake-claim.json'),
-                         containerLifecycleOperations=0,privateKeysRead=0,targetRuntimeChanged=False)
+        # Execution may have signed/published/switched or requested lifecycle.
+        # Unknown counters are never rewritten to zero by the outer intake.
+        attempted=os.path.lexists(package/'execution-claim.json')
+        diagnosis.update(evidenceDirectory=str(package),doNotRerunApply=attempted or os.path.lexists(package/'intake-claim.json'))
+        if args.execute_approved_transaction and attempted:
+            diagnosis.update(containerLifecycleOperations=None,privateKeysRead=None,targetRuntimeChanged=None)
+        else:diagnosis.update(containerLifecycleOperations=0,privateKeysRead=0,targetRuntimeChanged=False)
         try:
             from publish_provider_transaction import publish_once
             publish_once(package/'intake-denial.json',encoded(diagnosis))
         except Exception:diagnosis['diagnosisSaved']=False
         print('OUF_PROVIDER_TRANSACTION_INTAKE='+encoded(diagnosis).decode());return 1
+
+
+def execute_transaction(package,configuration,expected_configuration_hash,sources,observer):
+    """Explicit operator transaction; never manufacture missing target mandates.
+
+    There is no target configuration/bootstrap supplied by this code. Complete
+    independent records and already-approved root mandates must exist first.
+    Policy/keys/Python/OpenSSL/Docker/guard/wrapper are fixed to this installation.
+    """
+    global STAGE
+    from authenticate_provider_transaction import TARGETS,AUTHORITIES,build_install_plan
+    from issue_provider_transaction_authority import issue_role_authority,INPUTS
+    from publish_provider_transaction import publish_plan,publish_once
+    from guarded_runtime_switch import custody,wrapper_bytes,switch_existing_wrapper
+    from authenticated_runtime_switch import make_locked_switch_verifier
+    from docker_cohort_activation import activate
+    from tools.semantic_provider_deployment_authentication import DetachedAuthenticator,VerificationBudget
+    STAGE='VERIFY_EXPLICIT_EXECUTION_CONFIGURATION'
+    raw=bound({'path':str(configuration),'sha256':expected_configuration_hash});cfg=parse(raw)
+    fields={'schema','authorityProfileBinding','runtimeAdapterBinding','pythonBinding','opensslBinding',
+        'recordsByRole','mandatesByRole','outputRoot','guardPointerBinding','commandBindings'}
+    require(set(cfg)==fields and cfg['schema']=='ouf.semantic-provider-approved-transaction.v1',
+            'EXACT_APPROVED_TARGET_TRANSACTION_REQUIRED')
+    require(cfg['authorityProfileBinding']==AUTHORITY and cfg['runtimeAdapterBinding']==EMPTY_ADAPTER
+        and cfg['pythonBinding']==PYTHON and {k:cfg['opensslBinding'][k] for k in ('path','sha256')}==OPENSSL,
+        'EXISTING_TARGET_EXECUTION_BINDINGS_REQUIRED')
+    require(Path(sys.executable).absolute()==Path(PYTHON['path']),'TARGET_EXECUTION_INTERPRETER_DRIFT')
+    bound(PYTHON,True);bound(OPENSSL,True)
+    profile=parse(bound(AUTHORITY));bound(POLICY);adapter=parse(bound(EMPTY_ADAPTER))
+    require(profile['schema']=='ouf.semantic-existing-installation-authority-bindings.v1'
+        and profile['authorities']==AUTHORITIES and profile['policyBinding']==POLICY,'TARGET_EXECUTION_AUTHORITY_DRIFT')
+    authority={k:profile[k] for k in ('authorities','keyBindings','keyRefs')}
+    output=Path(cfg['outputRoot'])
+    require(output.parent==Path('/etc/ouf/deploy-snapshots') and re.fullmatch('semantic-provider-v2-transaction-[A-Za-z0-9_-]+',output.name)
+        and not os.path.lexists(output),'NEW_APPROVED_TRANSACTION_ROOT_REQUIRED')
+    require(set(cfg['recordsByRole'])==set(cfg['mandatesByRole'])==set(TARGETS),'EXACT_TWO_APPROVED_ROOT_ROLES_REQUIRED')
+    key_paths={value['path'] for value in authority['keyBindings'].values()};records={}
+    for role,bindings in cfg['recordsByRole'].items():
+        require(set(bindings)==INPUTS,'EIGHT_COMPLETE_APPROVED_ROLE_INPUTS_REQUIRED')
+        for value in [*bindings.values(),cfg['mandatesByRole'][role]]:
+            require(value['path'] not in key_paths and Path(value['path']).suffix=='.json'
+                and Path(value['path']).is_relative_to('/etc/ouf/deploy-snapshots'),'APPROVED_PRIVATE_ROLE_INPUT_PATH_REQUIRED')
+        records[role]={name:bound(value) for name,value in bindings.items()}
+        bound(cfg['mandatesByRole'][role])
+    require(cfg['guardPointerBinding']['path']=='/etc/ouf/coordinated-boot-installation.json','EXISTING_GUARD_POINTER_REQUIRED')
+    pointer=parse(bound(cfg['guardPointerBinding']))
+    guard_root=Path('/etc/ouf/deploy-snapshots/semantic-coordinated-boot-install-v2-e4repg0a')
+    require(set(pointer)=={'schema','receiptFile','receiptHash','observerFile','observerHash'}
+        and pointer['schema']=='ouf.semantic-coordinated-boot-pointer.v1'
+        and pointer['receiptFile']==str(guard_root/'installation-receipt.json')
+        and pointer['observerFile']==str(guard_root/'transition-source.py'),'MIGRATED_GUARD_POINTER_SCOPE_DRIFT')
+    receipt_binding={'path':pointer['receiptFile'],'sha256':pointer['receiptHash']}
+    receipt=parse(bound(receipt_binding));bound({'path':pointer['observerFile'],'sha256':pointer['observerHash']})
+    owner_hash='656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8'
+    require(receipt['configurationHash']==owner_hash,'MIGRATED_TARGET_OWNER_SCOPE_DRIFT')
+    owner=parse(bound({'path':str(guard_root/'coordinated-configuration.json'),'sha256':owner_hash}))
+    require(set(cfg['commandBindings'])=={'nft','docker','systemctl'}
+        and cfg['commandBindings']['docker']=={'path':'/usr/bin/docker','sha256':'7f5b38163f9c5367f4b42d905c0505877eafa4c20abe49430c85a770aefacf40'}
+        and cfg['commandBindings']['nft']=={'path':owner['nftPath'],'sha256':owner['nftSha256']}
+        and cfg['commandBindings']['systemctl']['path']=='/usr/bin/systemctl','EXISTING_TARGET_NATIVE_COMMAND_SCOPE_REQUIRED')
+    for value in cfg['commandBindings'].values():bound(value,True)
+    wrapper=Path('/usr/local/sbin/ouf-semantic-admitted-v2')
+    require(digest(custody(wrapper,0o755)[0])=='4956b05ec41fd54a27c00f2b6606d17be97dd84b3c09cff8b252d0fc886331bd',
+            'ORIGINAL_EMPTY_TARGET_WRAPPER_REQUIRED')
+    require(not os.path.lexists(package/'execution-claim.json'),'DO_NOT_REPLAY_APPROVED_TRANSACTION')
+    STAGE='PREFLIGHT_BOTH_EXPLICIT_ROOT_MANDATES'
+    signatures=package/'issued-signatures'
+    crypto={'policyBinding':POLICY,'signatureDirectory':str(signatures),'opensslBinding':cfg['opensslBinding']}
+    # No directory/claim/key mutation until both root approvals pass independently.
+    for role in TARGETS:
+        verifier=DetachedAuthenticator(POLICY,signatures,cfg['opensslBinding'],budget=VerificationBudget(18))
+        mandate=cfg['mandatesByRole'][role]
+        issue_role_authority(role,mandate,mandate['sha256'],records[role],authority,sources,observer,
+                             verifier,package/'role-authority'/role,validate_only=True)
+    for (path,executable),prior in SAVED.items():require(read(path,executable)==prior,'APPROVED_TRANSACTION_INPUT_CHANGED')
+    publish_once(package/'execution-claim.json',encoded({'schema':'ouf.semantic-provider-execution-claim.v1',
+        'configurationHash':digest(raw),'state':'ISSUING_APPROVED_ROLE_RECORDS','outputRoot':str(output),
+        'mandateHashes':{role:value['sha256'] for role,value in cfg['mandatesByRole'].items()},'notReleaseAcceptance':True}))
+    signatures.mkdir(mode=0o700);(package/'role-authority').mkdir(mode=0o700)
+    STAGE='ISSUE_EXPLICIT_TARGET_ROLE_RECORDS'
+    for role in TARGETS:
+        directory=package/'role-authority'/role;directory.mkdir(mode=0o700)
+        verifier=DetachedAuthenticator(POLICY,signatures,cfg['opensslBinding'],budget=VerificationBudget(18))
+        mandate=cfg['mandatesByRole'][role]
+        issued=issue_role_authority(role,mandate,mandate['sha256'],records[role],authority,sources,observer,verifier,directory)
+        records[role].update({name:bound(value) for name,value in issued['records'].items()})
+    for (path,executable),prior in SAVED.items():require(read(path,executable)==prior,'ISSUED_TRANSACTION_INPUT_CHANGED')
+    STAGE='PUBLISH_AUTHENTICATED_TARGET_PROFILES'
+    verifier=DetachedAuthenticator(POLICY,signatures,cfg['opensslBinding'],budget=VerificationBudget(18))
+    plan=build_install_plan(str(output),str(output/'source'),records,authority,sources,observer,PYTHON,crypto,verifier,adapter)
+    publish_plan(output,plan,sources,observer)
+    STAGE='SWITCH_AUTHENTICATED_TARGET_RUNTIME'
+    proposed=wrapper_bytes(PYTHON['path'],output/'source',output/'runtime-configuration-proposal.json')
+    locked=make_locked_switch_verifier(output,records,authority,sources,observer,PYTHON,crypto,adapter,
+        receipt_binding,owner_hash,cfg['commandBindings'])
+    switch_existing_wrapper(wrapper,'4956b05ec41fd54a27c00f2b6606d17be97dd84b3c09cff8b252d0fc886331bd',proposed,
+        output,owner['commonLockFile'],custody(owner['commonLockFile'],0o600)[1],locked)
+    STAGE='CONTROLLED_TARGET_DOCKER_COHORT'
+    report=activate(output,records,authority,sources,observer,PYTHON,crypto,adapter,
+                    receipt_binding,owner_hash,cfg['commandBindings'])
+    publish_once(package/'execution-receipt.json',encoded(report));return report
 
 
 if __name__=='__main__':raise SystemExit(main())

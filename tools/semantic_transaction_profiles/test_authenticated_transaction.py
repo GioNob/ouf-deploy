@@ -207,6 +207,63 @@ class AuthenticatedTransactionTest(unittest.TestCase):
         self.private(path,b'{}')
         with self.assertRaisesRegex(TransactionDenied,'INSTALLED_PROFILE_OR_JOURNAL_DRIFT'):verify_installed_plan(plan)
 
+    def activation(self,root,commands=None,wrapper=None):
+        from docker_cohort_activation import activate
+        return activate(root,self.records,self.authority,self.sources,self.observer,self.python,self.crypto,
+            self.adapter,self.activation_receipt if hasattr(self,'activation_receipt') else {},
+            getattr(self,'activation_owner_hash','0'*64),commands or {},wrapper or str(self.root/'wrapper'))
+
+    def test_cohort_missing_signature_never_requests_docker(self):
+        root,plan,publish=self.installation();publish(root,plan,self.sources,self.observer)
+        (self.signatures/(digest(self.records['adapter']['review'])+'.FINAL_DEPLOYMENT_APPROVAL.json')).unlink()
+        with self.assertRaisesRegex(TransactionDenied,'SIGNED_TARGET_RECORD_MISSING') as raised:self.activation(root)
+        self.assertEqual(raised.exception.diagnosis['dockerStartRequests'],0)
+        self.assertFalse((root/'cohort-activation-claim.json').exists())
+
+    def test_cohort_uninstalled_wrapper_never_requests_docker(self):
+        root,plan,publish=self.installation();publish(root,plan,self.sources,self.observer)
+        wrapper=self.root/'wrapper';wrapper.write_bytes(b'#!/bin/sh\nexit 99\n');wrapper.chmod(0o755)
+        with self.assertRaisesRegex(TransactionDenied,'AUTHENTICATED_RUNTIME_WRAPPER_NOT_INSTALLED') as raised:self.activation(root)
+        self.assertEqual(raised.exception.diagnosis['dockerStartRequests'],0)
+
+    def test_cohort_claim_cannot_be_replayed(self):
+        root,plan,publish=self.installation();publish(root,plan,self.sources,self.observer)
+        self.private(root/'cohort-activation-claim.json',b'{"state":"ACTIVATING"}')
+        with self.assertRaisesRegex(TransactionDenied,'DO_NOT_REPLAY_DOCKER_COHORT') as raised:self.activation(root)
+        self.assertTrue(raised.exception.diagnosis['doNotRerunApply'])
+        self.assertEqual(raised.exception.diagnosis['dockerStartRequests'],0)
+
+    def test_cohort_partial_command_failure_retains_uncertain_claim_without_retry(self):
+        # Real signatures, files and child processes; guard/Docker behavior are
+        # synthetic here. This is orchestration fault proof, NOT native admission.
+        from guarded_runtime_switch import wrapper_bytes
+        root,plan,publish=self.installation();publish(root,plan,self.sources,self.observer)
+        wrapper=self.root/'wrapper';raw=wrapper_bytes(self.python['path'],root/'source',root/'runtime-configuration-proposal.json')
+        wrapper.write_bytes(raw);wrapper.chmod(0o755)
+        self.private(root/'runtime-switch-receipt.json',encoded({'status':'WRAPPER_SWITCHED','installedWrapperHash':digest(raw)}))
+        lock=root/'guard.lock';self.private(lock,b'')
+        owner=root/'owner.json';self.private(owner,encoded({'commonLockFile':str(lock)}));self.activation_owner_hash=digest(owner.read_bytes())
+        # activate resolves this exact filename under the receipt directory.
+        configured=root/'coordinated-configuration.json';self.private(configured,owner.read_bytes())
+        receipt=root/'guard-receipt.json';self.private(receipt,encoded({'directory':str(root)}));self.activation_receipt=self.bind(receipt)
+        failed=TARGETS['adapter']['containerId']
+        script=root/'docker-fixture'
+        script.write_text('#!'+self.python['path']+'\nimport sys,json\nfrom pathlib import Path\ncid=sys.argv[-1]\n'
+            'if "start" in sys.argv:\n print(cid);sys.exit(1 if cid=='+repr(failed)+' else 0)\n'
+            'print(json.dumps({"id":cid,"image":"fixture","runtime":"ci-only","state":{"Status":"created","Running":False,"Pid":0,"StartedAt":"0001-","Error":"private secret must not appear"}}))\n')
+        script.chmod(0o755)
+        commands={'docker':self.bind(script)}
+        with patch('docker_cohort_activation.make_locked_switch_verifier',return_value=lambda fd,phase:None):
+            with self.assertRaisesRegex(TransactionDenied,'COHORT_ADMITTED_RUNNING_STATE_UNPROVEN') as raised:
+                self.activation(root,commands)
+        self.assertEqual(raised.exception.diagnosis['dockerStartRequests'],2)
+        self.assertFalse(raised.exception.diagnosis['automaticRetryPerformed'])
+        self.assertTrue(raised.exception.diagnosis['doNotRerunApply'])
+        self.assertFalse((root/'cohort-activation-receipt.json').exists())
+        denial=(root/'cohort-activation-denial.json').read_text()
+        self.assertNotIn('private secret',denial)
+        self.assertEqual(__import__('json').loads(denial)['cohortOutcome'],'UNPROVEN')
+
     def test_switch_custody_rejects_published_source_drift(self):
         from guarded_runtime_switch import verify_installed_plan
         root,plan,publish=self.installation();publish(root,plan,self.sources,self.observer)
@@ -286,6 +343,17 @@ class AuthenticatedTransactionTest(unittest.TestCase):
         with self.assertRaisesRegex(TransactionDenied,'EXPLICIT_APPROVED_ROOT_MANDATE_HASH_REQUIRED'):
             issue('adapter',binding,None,inputs,self.authority,self.sources,self.observer,self.verifier,output,self.clock)
         self.assertEqual(list(output.iterdir()),[])
+
+    def test_root_mandate_preflight_never_reads_keys_or_publishes(self):
+        from unittest.mock import patch
+        issue,inputs,mandate,binding,output=self.issue_inputs()
+        with patch('issue_provider_transaction_authority.ExistingEd25519Signer',side_effect=AssertionError('KEY_READ')):
+            result=issue('adapter',binding,binding['sha256'],inputs,self.authority,self.sources,
+                         self.observer,self.verifier,output,self.clock,validate_only=True)
+        self.assertEqual(result['privateKeysRead'],0)
+        self.assertEqual(result['signaturesIssued'],0)
+        self.assertEqual(list(output.iterdir()),[])
+        self.assertEqual(list(self.signatures.iterdir()),[])
 
     def test_root_review_input_drift_rejected_before_key_read(self):
         issue,inputs,mandate,binding,output=self.issue_inputs()

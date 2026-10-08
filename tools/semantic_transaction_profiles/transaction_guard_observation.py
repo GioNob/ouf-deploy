@@ -137,6 +137,9 @@ def observe_locked(fd,receipt_binding,expected_owner_hash,candidates,command_bin
     for unit,prop in [('ouf-semantic-boot-guard.service','ExecStart'),('docker.service','ExecStartPre')]:
         require(receipt['guardCommand'].encode() in command('systemctl',['show',unit,'--property='+prop,'--value']),
                 stage,'LOADED_GUARD_COMMAND_DRIFT')
+    runtimes=decode(command('docker',['info','--format','{{json .Runtimes}}']),16384)
+    require(runtimes.get('ouf-semantic-admitted-v2',{}).get('path')=='/usr/local/sbin/ouf-semantic-admitted-v2',
+            stage,'NAMED_DOCKER_RUNTIME_BINDING_DRIFT')
     backend=ReadOnlyDeadlineBackend([owner['nftPath']],owner['kernel'],owner['expectedStructureHash'],
                        owner['readBudgetSeconds'],deadline=deadline)
     backend.verify_ownership(owner['kernel'])
@@ -169,5 +172,6 @@ def observe_locked(fd,receipt_binding,expected_owner_hash,candidates,command_bin
         require(executable_binding(binding)==binaries[name],stage,'NATIVE_COMMAND_CUSTODY_CHANGED')
     require(time.monotonic()<deadline,stage,'GUARD_OBSERVATION_BUDGET_EXCEEDED')
     return {'configurationHash':expected_owner_hash,'kernelConfigurationHash':digest(encoded(owner['kernel'])),
+            'kernelTableName':owner['kernel']['tableName'],
             'candidateStateHashes':facts,'providerSetsEmpty':True,
             'lockInodePreserved':True,'containerLifecycleOperations':0,'notReleaseAcceptance':True}

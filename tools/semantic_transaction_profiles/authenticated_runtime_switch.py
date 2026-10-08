@@ -41,6 +41,7 @@ def make_locked_switch_verifier(root, records, authority, sources, observer_raw,
             value=decode(records[role]['preparerTemplate'],131072)
             guards=[binding['leaseGuard'] for binding in value['candidate']['networkBindings'] if 'leaseGuard' in binding]
             require(len(guards)==2 and all(guard['configurationHash']==observation['kernelConfigurationHash']
+                    and guard['tableName']==observation['kernelTableName']
                     for guard in guards),stage,'SIGNED_NIC_AND_INSTALLED_GUARD_SCOPE_DRIFT',role)
         state={'installedConfigurationHash':installed['configurationHash'],**observation}
         if baseline[0] is None:

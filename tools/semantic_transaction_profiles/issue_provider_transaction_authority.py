@@ -25,7 +25,7 @@ SCOPES = {'installer':['TARGET_REVIEW','DEPLOYMENT_INTENT','FINAL_DEPLOYMENT_APP
 
 
 def issue_role_authority(role, mandate_binding, explicitly_approved_hash, records, authority,
-                         sources, observer_raw, verifier, output_directory, clock=time.time):
+                         sources, observer_raw, verifier, output_directory, clock=time.time, *, validate_only=False):
     """The approved hash is explicit root invocation, NOT a CI/acceptance flag.
 
     Read the root-private operator mandate; its exact scope must match all
@@ -93,6 +93,13 @@ def issue_role_authority(role, mandate_binding, explicitly_approved_hash, record
         'approvalRef':mandate['approvalRef'],'state':'ACTIVE','issuanceAuthorized':True,
         'applicationStartAuthorized':True,'issuedAt':now,'expiresAt':expires}
     payloads={'review':encoded(review),'intent':raw_intent,'liveAuthorization':encoded(live),'finalMandate':encoded(final)}
+    if validate_only:
+        # Pair-wide preflight can validate both independent root mandates before
+        # either key is read. This mode publishes/signs nothing and confers no
+        # authority. Actual issuance still repeats custody/window checks.
+        return {'role':role,'mandateHash':explicitly_approved_hash,
+                'recordHashes':{name:digest(raw) for name,raw in payloads.items()},
+                'signaturesIssued':0,'privateKeysRead':0,'notReleaseAcceptance':True}
     filenames={'review':'review.json','intent':'intent.json','liveAuthorization':'live-authorization.json','finalMandate':'final-mandate.json'}
     directory=Path(output_directory)
     require(all(not os.path.lexists(directory/name) for name in filenames.values()),
