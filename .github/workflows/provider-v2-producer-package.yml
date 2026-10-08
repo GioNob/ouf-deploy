@@ -31,7 +31,7 @@ jobs:
         run: |
           (cd gateway && sha256sum -c ../releases/provider-v2-producer-sources.sha256)
           printf '%s  %s\n' d15d290e903e16f64b9d153658453f2b857c5241eb30ded961fd981a3ba436e4 semantic/tools/semantic_creation_frame_observer.py | sha256sum -c -
-          sudo install -d -m 700 /root/ouf-v2-producer-fixture/source/scripts /root/ouf-v2-producer-fixture/source/tools
+          sudo install -d -m 700 /root/ouf-v2-producer-fixture /root/ouf-v2-producer-fixture/source /root/ouf-v2-producer-fixture/source/scripts /root/ouf-v2-producer-fixture/source/tools
           sudo install -m 600 releases/provider-v2-producer-sources.sha256 /root/ouf-v2-producer-fixture/sources.sha256
           python3 - <<'PY'
           from pathlib import Path
