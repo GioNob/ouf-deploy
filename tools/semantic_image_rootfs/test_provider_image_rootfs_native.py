@@ -46,7 +46,8 @@ def main():
         output=root/'output';output.mkdir(mode=0o700)
         result=prepare(archive,hashlib.sha256(archive.read_bytes()).hexdigest(),digest(manifest),digest(config),umoci,umoci_hash,source,source_hash,output)
         expected=root/'expected';expected.mkdir(mode=0o755);expected.chmod(0o755)
-        for name in ('bin','obsolete'):(expected/name).mkdir(mode=0o755)
+        for name in ('bin','obsolete'):
+            (expected/name).mkdir(mode=0o755);(expected/name).chmod(0o755)
         (expected/'bin/data').write_bytes(b'good');(expected/'bin/data').chmod(0o640);os.chown(expected/'bin/data',10006,10006)
         os.setxattr(expected/'bin/data','user.ouf',b'approved');os.link(expected/'bin/data',expected/'bin/twin')
         (expected/'bin/current').symlink_to('data')
