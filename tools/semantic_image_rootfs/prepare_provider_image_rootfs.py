@@ -22,6 +22,9 @@ import types
 OCI_MANIFEST = 'application/vnd.oci.image.manifest.v1+json'
 OCI_CONFIG = 'application/vnd.oci.image.config.v1+json'
 LAYER_TYPES = {'application/vnd.oci.image.layer.v1.tar', 'application/vnd.oci.image.layer.v1.tar+gzip'}
+DOCKER_MANIFEST = 'application/vnd.docker.distribution.manifest.v2+json'
+DOCKER_CONFIG = 'application/vnd.docker.container.image.v1+json'
+DOCKER_LAYER = 'application/vnd.docker.image.rootfs.diff.tar.gzip'
 
 class Denied(ValueError): pass
 def require(value, reason):
@@ -115,9 +118,9 @@ def blob_json(layout,digest,blobs):
     require(len(raw)==blobs[digest] and 'sha256:'+sha(raw)==digest,'OCI_DOCUMENT_DRIFT');return decode(raw)
 def verify_layout(layout,manifest_digest,config_digest,blobs,budget):
     manifest=blob_json(layout,manifest_digest,blobs)
-    require(manifest.get('schemaVersion')==2 and manifest.get('mediaType')==OCI_MANIFEST,'OCI_MANIFEST_REQUIRED')
+    require(manifest.get('schemaVersion')==2 and manifest.get('mediaType') in (OCI_MANIFEST,DOCKER_MANIFEST),'OCI_MANIFEST_REQUIRED')
     cfg=manifest.get('config',{})
-    require(cfg.get('digest')==config_digest and cfg.get('mediaType')==OCI_CONFIG
+    require(cfg.get('digest')==config_digest and cfg.get('mediaType') in (OCI_CONFIG,DOCKER_CONFIG)
             and cfg.get('size')==blobs.get(config_digest),'OCI_CONFIG_BINDING_DRIFT')
     config=blob_json(layout,config_digest,blobs)
     require(config.get('os')=='linux' and config.get('architecture')=='amd64','EXACT_IMAGE_PLATFORM_REQUIRED')
@@ -126,16 +129,25 @@ def verify_layout(layout,manifest_digest,config_digest,blobs,budget):
             and 1<=len(layers)<=256 and len(layers)==len(diffs),'ORDERED_IMAGE_LAYERS_REQUIRED')
     for descriptor,expected in zip(layers,diffs):
         digest=descriptor.get('digest');path=blob_path(layout,digest)
-        require(descriptor.get('mediaType') in LAYER_TYPES and descriptor.get('size')==blobs.get(digest),'OCI_LAYER_BINDING_DRIFT')
+        require(digest in blobs and descriptor.get('mediaType') in LAYER_TYPES|{DOCKER_LAYER}
+                and descriptor.get('size')==blobs.get(digest),'OCI_LAYER_BINDING_DRIFT')
         blob_path(layout,expected);compressed=hashlib.sha256();plain_hash=hashlib.sha256()
         with path.open('rb') as source:
             while raw:=source.read(65536):budget.check(len(raw));compressed.update(raw)
             require('sha256:'+compressed.hexdigest()==digest,'OCI_LAYER_CHANGED');source.seek(0)
-            plain=gzip.GzipFile(fileobj=source) if descriptor['mediaType'].endswith('+gzip') else source
+            plain=gzip.GzipFile(fileobj=source) if descriptor['mediaType'].endswith('+gzip') or descriptor['mediaType']==DOCKER_LAYER else source
             while raw:=plain.read(65536):budget.check(len(raw));plain_hash.update(raw)
             if plain is not source:plain.close()
         require('sha256:'+plain_hash.hexdigest()==expected,'OCI_LAYER_DIFF_ID_DRIFT')
-    index={'schemaVersion':2,'manifests':[{'mediaType':OCI_MANIFEST,'digest':manifest_digest,'size':blobs[manifest_digest],
+    # Umoci consumes OCI descriptor media types. Preserve every original byte
+    # and digest; derive a separate descriptor-only OCI view for schema2 Docker.
+    view={**manifest,'mediaType':OCI_MANIFEST,'config':{**cfg,'mediaType':OCI_CONFIG},
+        'layers':[{**d,'mediaType':'application/vnd.oci.image.layer.v1.tar+gzip' if d['mediaType']==DOCKER_LAYER else d['mediaType']} for d in layers]}
+    if view!=manifest:
+        view_raw=canonical(view);view_digest='sha256:'+sha(view_raw)
+        write_once(blob_path(layout,view_digest),view_raw);view_size=len(view_raw)
+    else:view_digest=manifest_digest;view_size=blobs[manifest_digest]
+    index={'schemaVersion':2,'manifests':[{'mediaType':OCI_MANIFEST,'digest':view_digest,'size':view_size,
         'annotations':{'org.opencontainers.image.ref.name':'ouf-offline-expected'}}]}
     write_once(layout/'index.json',canonical(index));return diffs
 def program(path,expected):
