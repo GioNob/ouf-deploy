@@ -42,7 +42,7 @@ def main():
   kernel={'tableName':'ouf_sem_provider','guardedInterfaces':['oufsp-int','oufsp-egress'],
    'existingInterfaces':['br-113b5f0a3c53','docker0'],
    'staticFlows':[{'purpose':'GATEWAY_ADAPTER','source':'172.21.0.2','destination':'172.21.0.3','protocol':'tcp','port':9443}]+dns_flows(dns,['172.22.0.2','172.22.0.3']),
-   'providerFlows':[{'endpointRef':'schema-gov','endpoint':'https://schema.gov.it/sparql','source':'172.22.0.3','addresses':[],
+   'providerFlows':[{'endpointRef':'schema-gov','endpoint':'https://schema.gov.it:443/sparql','source':'172.22.0.3','addresses':[],
     'leaseSeconds':30,'resolutionEvidenceRef':'fresh-lease-owner','allowedPrivateAddresses':[]}]}
   real_command(['/usr/sbin/nft','-f','-'],kernel_compiler.materialize(kernel,empty_provider_sets=True)['nftRules'])
   try:

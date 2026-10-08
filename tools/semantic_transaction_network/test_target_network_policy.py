@@ -31,6 +31,21 @@ class PolicyTest(unittest.TestCase):
    for nic in role:
     if 'leaseGuard' in nic:self.assertEqual(nic['leaseGuard']['configurationHash'],digest(result['kernel']))
   self.assertNotEqual(result['originalKernelHash'],digest(self.inputs()[0]['kernel']))
+ def test_explicit_default_https_port_preserves_original_authorized_url(self):
+  n,k,p=self.inputs();k['providerFlows'][0]['endpoint']='https://schema.gov.it:443/sparql'
+  result=assemble(n,k,p)
+  self.assertEqual(result['kernel']['providerFlows'][0]['endpoint'],k['providerFlows'][0]['endpoint'])
+ def test_real_endpoint_drift_reports_exact_public_fields(self):
+  n,k,p=self.inputs();k['providerFlows'][0]['endpoint']='https://schema.gov.it:444/different'
+  with self.assertRaises(NetworkDenied) as error:assemble(n,k,p)
+  self.assertEqual(error.exception.diagnosis['differentFields'],['path','port'])
+  self.assertEqual(error.exception.diagnosis['actualEndpoint'],{'hostname':'schema.gov.it','path':'/different','port':444})
+ def test_credentials_and_query_are_rejected_without_printing_values(self):
+  for raw in ('https://secret@schema.gov.it/sparql','https://schema.gov.it/sparql?secret=value'):
+   n,k,p=self.inputs();k['providerFlows'][0]['endpoint']=raw
+   with self.assertRaises(NetworkDenied) as error:assemble(n,k,p)
+   self.assertEqual(error.exception.diagnosis['reason'],'PROVIDER_ENDPOINT_INVALID')
+   self.assertFalse(error.exception.diagnosis['endpointValuePrinted'])
  def test_installation_dns_parameters_allow_private_resolvers_and_reject_stale_firewall(self):
   n,k,p=self.inputs();result=assemble(n,k,p)
   self.assertEqual(result['dnsProfile']['resolvers'],['10.8.0.53'])

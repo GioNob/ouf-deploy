@@ -2,10 +2,11 @@
 import copy
 import hashlib
 import json
+from urllib.parse import urlsplit
 
 class NetworkDenied(ValueError):
- def __init__(self,reason):
-  self.diagnosis={'status':'BLOCKED','stage':'BUILD_TARGET_NETWORK_POLICY','reason':reason,'secretValuesPrinted':False}
+ def __init__(self,reason,**details):
+  self.diagnosis={'status':'BLOCKED','stage':'BUILD_TARGET_NETWORK_POLICY','reason':reason,**details,'secretValuesPrinted':False}
   super().__init__(reason)
 def require(value,reason):
  if not value:raise NetworkDenied(reason)
@@ -14,6 +15,14 @@ def endpoint(value):
  require(set(value)=={'hostname','path','port'} and value['port']==443,'EXACT_HTTPS_ENDPOINT_REQUIRED')
  require(value['hostname'] in ('schema.gov.it','auth.ouf-lab.it'),'TARGET_ENDPOINT_DRIFT')
  return 'https://'+value['hostname']+value['path']
+def endpoint_scope(raw):
+ try:
+  value=urlsplit(raw)
+  if value.scheme!='https' or not value.hostname or value.username is not None or value.password is not None or value.query or value.fragment:
+   raise ValueError()
+  return {'hostname':value.hostname,'path':value.path,'port':value.port if value.port is not None else 443}
+ except (ValueError,TypeError,AttributeError):
+  raise NetworkDenied('PROVIDER_ENDPOINT_INVALID',endpointValuePrinted=False) from None
 def dns_flows(profile,sources):
  import ipaddress
  require(set(profile)=={'resolvers','resolverPort','timeoutSeconds','maxLeaseSeconds','applyBudgetSeconds'},'EXACT_INSTALLATION_DNS_PROFILE_REQUIRED')
@@ -46,8 +55,12 @@ def assemble(network_inputs,original_kernel,gateway_peer):
  previous=original_kernel['providerFlows'][0]
  require({k:previous[k] for k in ('endpointRef','source','leaseSeconds','resolutionEvidenceRef','allowedPrivateAddresses')}
   =={k:projection['providerFlows'][0][k] for k in ('endpointRef','source','leaseSeconds','resolutionEvidenceRef','allowedPrivateAddresses')},'ORIGINAL_PROVIDER_SCOPE_DRIFT')
- require(previous['endpoint']==endpoint(network_inputs['providerEndpoint']) and previous['source']=='172.22.0.3'
-  and previous['allowedPrivateAddresses']==[] and 1<=previous['leaseSeconds']<=30,'PROVIDER_DESTINATION_SCOPE_DRIFT')
+ expected=network_inputs['providerEndpoint'];endpoint(expected)
+ actual=endpoint_scope(previous['endpoint'])
+ if actual!=expected:
+  raise NetworkDenied('PROVIDER_DESTINATION_SCOPE_DRIFT',expectedEndpoint=expected,actualEndpoint=actual,
+   differentFields=[key for key in ('hostname','path','port') if actual[key]!=expected[key]])
+ require(previous['source']=='172.22.0.3' and previous['allowedPrivateAddresses']==[] and 1<=previous['leaseSeconds']<=30,'PROVIDER_SOURCE_OR_LEASE_SCOPE_DRIFT')
  require(network_inputs['oidcIssuerEndpoint']=={'hostname':'auth.ouf-lab.it','path':'/realms/ouf','port':443},'OIDC_ISSUER_SCOPE_DRIFT')
  dns_profile=copy.deepcopy(network_inputs['dns'])
  expected_dns=dns_flows(dns_profile,['172.22.0.2','172.22.0.3'])
