@@ -20,6 +20,8 @@ HASHES = {
         'template': '0ef8aa503bfb6a5c789000cd73de6e987d1a55688894475e555f4d566581ad05',
         'context': 'e515366dbe8412bf261711ea98bcaac3e6d9e9d8bc3f77109829613ec166f4eb',
         'policy': 'f49155fa412bb76d529713cb4ac2c253105884e9e72f7d2d74dfc5ccf9c5c822'}}
+PHASE = 'READ_EXISTING_FROZEN_FRAME_INPUTS'
+ROLE = None
 
 def hashed(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
@@ -42,18 +44,24 @@ def read(path, expected):
         os.close(fd)
 
 def main():
+    global PHASE, ROLE
     if os.geteuid() != 0:
         raise ValueError('OPERATOR_ROOT_READ_REQUIRED')
     roles = {}
     for role, hashes in HASHES.items():
+        ROLE = role
+        PHASE = 'READ_EXISTING_FROZEN_FRAME_INPUTS'
         documents = {name: read((LAUNCH if name == 'launch' else FRAME) / (role + '.' + name + '.json'), sha)
                      for name, sha in hashes.items()}
+        PHASE = 'SUMMARIZE_HASH_VERIFIED_PRIVATE_FRAME'
         oci = documents['policy']['expectedOci']
         process = oci['process']
         roles[role] = {'inputHashes': hashes, 'containerId': documents['context']['containerId'],
-            'user': process['user'], 'readOnlyRoot': oci['root']['readonly'],
+            'user': process['user'], 'readOnlyRoot': oci['root'].get('readonly', False),
+            'readOnlyRootFieldPresent': 'readonly' in oci['root'],
             'processHash': hashed(process), 'environmentCount': len(process['env']),
-            'argumentCount': len(process['args']), 'noNewPrivileges': process['noNewPrivileges'],
+            'argumentCount': len(process['args']), 'noNewPrivileges': process.get('noNewPrivileges', False),
+            'noNewPrivilegesFieldPresent': 'noNewPrivileges' in process,
             'resources': oci['linux'].get('resources'),
             'mountCount': len(oci['mounts']), 'mountsHash': hashed(oci['mounts']),
             'namespacesHash': hashed(oci['linux']['namespaces']),
@@ -72,8 +80,12 @@ if __name__ == '__main__':
         main()
     except Exception as error:
         reason = str(error) if type(error) is ValueError and str(error).isupper() else type(error).__name__
+        permitted = {'expectedOci', 'process', 'user', 'root', 'readonly', 'env', 'args',
+                     'noNewPrivileges', 'linux', 'mounts', 'namespaces', 'networkNamespaceName',
+                     'sources', 'containerId'}
+        missing = error.args[0] if type(error) is KeyError and error.args and error.args[0] in permitted else None
         print('OUF_PRIVATE_FRAME_REVIEW=' + json.dumps({'status': 'BLOCKED',
-            'phase': 'READ_EXISTING_FROZEN_FRAME_INPUTS', 'reason': reason,
+            'phase': PHASE, 'role': ROLE, 'reason': reason, 'missingField': missing,
             'privateValuesPrinted': False, 'privateKeysRead': 0,
             'configurationWrites': 0, 'containerLifecycleOperations': 0, 'startAuthorized': False}))
         raise SystemExit(1)
