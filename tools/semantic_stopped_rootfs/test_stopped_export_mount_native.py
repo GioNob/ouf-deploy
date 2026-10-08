@@ -68,7 +68,7 @@ def main():
                 archive.add(expected,arcname='.',recursive=True,filter=xattr_header)
             image=docker('import',image_tar).decode().strip()
             secret=root/'private-bind'; secret.write_bytes(b'NOT-IMAGE-CONTENT')
-            cid=docker('create','--network','none','--mount',
+            cid=docker('create','--name','ouf-ci-stopped-candidate','--network','none','--mount',
                 'type=bind,source='+str(secret)+',target=/private-bind,readonly',
                 image,'/not-executed').decode().strip()
             before=json.loads(docker('inspect',cid))[0]
@@ -83,6 +83,35 @@ def main():
             def binding(name):
                 path=Path(shutil.which(name)).resolve()
                 return (path,hashlib.sha256(path.read_bytes()).hexdigest())
+            # Execute the fixed entrypoint's entire validation/reporting flow
+            # against CI-owned locations; its shipped target constants remain
+            # fixed and no runtime arguments can override them.
+            import compare_provider_v2_stopped_rootfs as entry
+            offline=root/'offline'; offline.mkdir(mode=0o700)
+            shutil.copytree(source,offline/'source')
+            role_dir=offline/'adapter'; role_dir.mkdir(mode=0o700)
+            (role_dir/'bundle').mkdir(mode=0o700)
+            shutil.copytree(expected,role_dir/'bundle/rootfs',copy_function=shutil.copy2,symlinks=True)
+            # copytree does not preserve hardlinks; reconstruct the independent
+            # fixture alias explicitly rather than changing expected metadata.
+            (role_dir/'bundle/rootfs/data/twin').unlink()
+            os.link(role_dir/'bundle/rootfs/data/value',role_dir/'bundle/rootfs/data/twin')
+            for name in ('data/value','data/twin'):
+                os.chown(role_dir/'bundle/rootfs'/name,10006,10006)
+            from prepare_provider_image_rootfs import canonical,write_once
+            spec={'cid':cid,'name':'ouf-ci-stopped-candidate','archive':'a'*64,
+                'manifest':image,'config':'sha256:'+'b'*64,'seal':offline_seal['sha256']}
+            receipt={'schema':'ouf.semantic-offline-docker-rootfs.v1',
+                'sourceManifestSha256':entry.SOURCE_MANIFEST,
+                'engineCommit':'464cd50c3d9e92877d56940ea160de6fca7bea23',
+                'archiveSha256':spec['archive'],'manifestDigest':spec['manifest'],
+                'configDigest':spec['config'],'rootfsSeal':offline_seal,'rootfsLimits':limits,
+                'offlineDockerInitLayerApplied':True,'targetRootfsCompared':False}
+            write_once(role_dir/'expected-docker-rootfs.json',canonical(receipt))
+            entry.OFFLINE=offline;entry.DATA_ROOT=root/'data';entry.SNAPSHOT_PARENT=root
+            entry.SOCKET=socket;entry.DOCKER=binding('docker');entry.MOUNT=binding('mount');entry.UMOUNT=binding('umount')
+            entry.ROLES={'adapter':spec}
+            entry.main()
             config=root/'docker-config'; config.mkdir(mode=0o700)
             overlay_dir=root/'expected-overlay'; overlay_dir.mkdir(mode=0o700)
             mounted=root/'data/rootfs/overlayfs'/cid
@@ -108,7 +137,7 @@ def main():
                 time.sleep(.05)
             result={'schema':'ouf.stopped-export-mount-ci.v1','engineVersion':info['ServerVersion'],
                 'directMountedRootfsObserved':True,'neverStarted':True,'privateBindContentRead':False,
-                'mountReleased':True,'strictSealMatches':actual_seal==expected_seal,'unapprovedContentDetected':True,'productionComparisonFunctionsUsed':True,
+                'mountReleased':True,'strictSealMatches':actual_seal==expected_seal,'unapprovedContentDetected':True,'productionComparisonFunctionsUsed':True,'fixedEntrypointExercised':True,
                 'originalOfflineSeal':offline_seal,'independentExpectedOverlayView':True,
                 'expectedSeal':expected_seal,'actualSeal':actual_seal,'metadataDifferences':differences,
                 'targetOperations':0,'targetAcceptance':False}
