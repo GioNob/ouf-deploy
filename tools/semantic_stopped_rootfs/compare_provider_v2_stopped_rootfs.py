@@ -64,7 +64,11 @@ def main():
         raw=docker('inspect','--format','{{.Id}} {{json .State}}',*ids,bound=1048576)
         result={}
         for line in raw.splitlines():
-            cid,body=line.split(b' ',1);result[cid.decode()]=decode(body)
+            cid,body=line.split(b' ',1);state=decode(body)
+            # Health-probe timestamps can advance without a lifecycle change.
+            # Observe the complete lifecycle fields, not unrelated probe ticks.
+            result[cid.decode()]={key:state[key] for key in ('Status','Running','Paused','Restarting',
+                'OOMKilled','Dead','Pid','ExitCode','Error','StartedAt','FinishedAt')}
         require(set(result)==set(ids),'STATE_INVENTORY_UNPROVEN');return result
     info=decode(docker('info','--format','{{json .}}'))
     version=decode(docker('version','--format','{{json .Server}}'))
@@ -100,7 +104,7 @@ def main():
     load_sealer(source,SOURCE_MANIFEST)
     result={'schema':'ouf.semantic-provider-v2-stopped-rootfs-comparison.v1','roles':results,
         'strictSealsMatch':True,'existingContainerStatesUnchanged':True,'containerLifecycleOperations':0,
-        'temporaryExpectedOverlayMounts':2,'stoppedContainerExports':2,'privateKeysRead':0,'providerCalls':0,
+        'temporaryExpectedOverlayMounts':len(results),'stoppedContainerExports':len(results),'privateKeysRead':0,'providerCalls':0,
         'signaturesIssued':0,'runtimeConfigurationWrites':0,'firewallWrites':0,'secretValuesPrinted':False,
         'acceptanceGranted':False,'startAuthorized':False,'status':'INDEPENDENT_ROOTFS_COMPARISON_PASS'}
     write_once(output/'comparison.json',canonical(result))
