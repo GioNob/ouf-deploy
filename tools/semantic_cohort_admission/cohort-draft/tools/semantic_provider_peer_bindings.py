@@ -58,7 +58,15 @@ def declaration(value):
     bindings = value['networkBindings']; require(type(bindings) is list and 1 <= len(bindings) <= 8, 'BOUNDED_PEER_NICS_REQUIRED')
     names = set(); refs = set(); ips = set()
     for item in bindings:
-        require(type(item) is dict and set(item) == {'interface', 'bridge', 'mac', 'ipv4', 'workloadRef', 'bindingRef'}, 'EXACT_PEER_NIC_REQUIRED')
+        keys = {'interface', 'bridge', 'mac', 'ipv4', 'workloadRef', 'bindingRef'}
+        require(type(item) is dict and set(item) in (keys, keys | {'leaseGuard'}), 'EXACT_PEER_NIC_REQUIRED')
+        if 'leaseGuard' in item:
+            guard = item['leaseGuard']
+            require(type(guard) is dict and set(guard)=={'configurationHash','tableName'}
+                and type(guard['configurationHash']) is str and re.fullmatch('[0-9a-f]{64}',guard['configurationHash'])
+                and type(guard['tableName']) is str and re.fullmatch('[A-Za-z][A-Za-z0-9_-]{0,31}',guard['tableName']),
+                'EXACT_PEER_LEASE_GUARD_BINDING_REQUIRED')
+
         require(all(type(item[k]) is str and re.fullmatch('[A-Za-z][A-Za-z0-9_-]{0,14}', item[k]) for k in ('interface', 'bridge')), 'PEER_LINK_NAME_INVALID')
         require(all(type(item[k]) is str and re.fullmatch('[A-Za-z][A-Za-z0-9_-]{0,127}', item[k]) for k in ('workloadRef', 'bindingRef')), 'PEER_REFERENCE_INVALID')
         require(type(item['mac']) is str and re.fullmatch('[0-9a-f]{2}(:[0-9a-f]{2}){5}', item['mac']) and not int(item['mac'][:2], 16) & 1 and item['mac'] != '00:00:00:00:00:00', 'PEER_MAC_INVALID')

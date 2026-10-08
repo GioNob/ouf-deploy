@@ -6,18 +6,22 @@ This initial backend is static IPv4 only: IPv6/VLAN/other data frames are denied
 on selected ports, rather than being silently treated as governed traffic.
 """
 import re
+import hashlib
+import json
 
 from tools.materialize_southbound_kernel import fields, ip, name, port
 
 
 def materialize(policy):
-    fields(policy, ('schema', 'tableName', 'attachments', 'flows'))
-    if policy['schema'] != 'ouf.semantic-shared-faces.v1':
+    composed = policy.get('schema') == 'ouf.semantic-shared-faces.v2'
+    fields(policy, ('schema', 'tableName', 'attachments', 'flows', 'globalLeaseGuard') if composed
+           else ('schema', 'tableName', 'attachments', 'flows'))
+    if policy['schema'] not in ('ouf.semantic-shared-faces.v1', 'ouf.semantic-shared-faces.v2'):
         raise ValueError('explicit shared face schema required')
     table = name(policy['tableName'], 32)
     attachments, flows = policy['attachments'], policy['flows']
     if not isinstance(attachments, list) or not 1 <= len(attachments) <= 32 \
-            or not isinstance(flows, list) or not 1 <= len(flows) <= 128:
+            or not isinstance(flows, list) or not (0 if composed else 1) <= len(flows) <= 128:
         raise ValueError('bounded attachments and approved flows required')
     interfaces, indexes, bindings = set(), set(), set()
     normalized = []
@@ -36,6 +40,20 @@ def materialize(policy):
             raise ValueError('unique explicit unicast IPv4 port binding required')
         interfaces.add(interface); indexes.add(attachment['ifindex']); bindings.add((bridge, str(address)))
         normalized.append((attachment['ifindex'], bridge, str(address), mac))
+    delegated = set()
+    if composed:
+        guard = policy['globalLeaseGuard']
+        fields(guard, ('configurationHash', 'tableName', 'bridges'))
+        name(guard['tableName'], 32)
+        if guard['tableName'] == table or not isinstance(guard['configurationHash'], str) \
+                or not re.fullmatch('[0-9a-f]{64}', guard['configurationHash']) \
+                or not isinstance(guard['bridges'], list) or not guard['bridges'] \
+                or guard['bridges'] != sorted(set(guard['bridges'])):
+            raise ValueError('exact distinct global lease guard required')
+        for bridge in guard['bridges']: name(bridge, 15)
+        delegated = set(guard['bridges'])
+        if not delegated.issubset({v[1] for v in normalized}):
+            raise ValueError('delegated bridge has no approved attachment')
     protected = {v[2] for v in normalized}
     checked = []
     seen = set()
@@ -64,6 +82,14 @@ def materialize(policy):
         seen.add(key); checked.append((*key, peer))
     def transport(address, outgoing, bridge, layer):
         lines = ['  ct state invalid counter drop']
+        if bridge in delegated:
+            # This layer authenticates the port/MAC/IP and denies non-IPv4.
+            # The independently custody-verified global base chains veto all
+            # traffic outside their exact static flows and expiring DNS sets.
+            # nft accept here does not bypass a later base-chain drop.
+            field = 'saddr' if outgoing else 'daddr'
+            return [*lines, f'  ip {field} {address} counter accept']
+
         for source, destination, proto, p, peer in checked:
             incoming = ''
             if not outgoing:
@@ -113,7 +139,23 @@ def materialize(policy):
         'nftRules': '\n'.join(inet_lines+bridge_lines)+'\n', 'tableName': table,
         'tableFamilies': ['inet', 'bridge'], 'installed': False, 'startAuthorized': False,
         'authorityProven': False, 'liveBindingProven': False, 'notReleaseAcceptance': True,
-        'attachmentCount': len(normalized), 'flowCount': len(checked),
+        'attachmentCount': len(normalized), 'flowCount': len(checked), **({'delegatedBridgeCount':len(delegated)} if composed else {}),
         'requirements': ['SEALED_AUTHORITY_REFS', 'LIVE_PORT_IFINDEX_MAC_IP_BINDING',
             'PORT_RECREATION_FAIL_CLOSED_LIFECYCLE', 'SHARED_PEER_AND_ROUTED_PACKET_NEGATIVES',
             'IPV6_DENIAL_PROOF', 'OTHER_TOPOLOGY_BACKEND_ACCEPTANCE']}
+
+
+def validate_global_guard(policy, kernel):
+    """Mandatory under source-bound Coordinator custody, never infer authority."""
+    if policy.get('schema') == 'ouf.semantic-shared-faces.v1': return
+    materialize(policy)
+    guard = policy['globalLeaseGuard']
+    expected = hashlib.sha256(json.dumps(kernel,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+    if guard['configurationHash'] != expected or guard['tableName'] != kernel['tableName'] \
+            or not set(guard['bridges']).issubset(set(kernel['guardedInterfaces'])) \
+            or set(guard['bridges']) & set(kernel['existingInterfaces']):
+        raise ValueError('GLOBAL_LEASE_GUARD_SCOPE_DRIFT')
+    governed = {f['source'] for f in kernel['providerFlows']}
+    governed.update(f[k] for f in kernel['staticFlows'] for k in ('source','destination'))
+    if any(a['bridge'] in guard['bridges'] and a['ipv4'] not in governed for a in policy['attachments']):
+        raise ValueError('GLOBAL_LEASE_GUARD_SOURCE_UNBOUND')

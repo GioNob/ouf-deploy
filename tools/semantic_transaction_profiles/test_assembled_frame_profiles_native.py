@@ -93,7 +93,13 @@ def main():
                 spec,frame_policy=frame(root,rootfs,cid,i,namespace)
                 policies.append(frame_policy)
                 private(input_bundle/'config.json',spec);specs.append(spec)
-            # Both OCI documents and complete sibling identities predate create.
+            kernels=[]
+            for i in range(2):
+                kernel=NativeTest.kernel(None);kernel['tableName']='ccl_'+suffix+str(i)
+                kernel['guardedInterfaces']=[bridge];kernel['providerFlows'][0]['source']=networks[i][0]['ipv4']
+                kernels.append(kernel)
+                networks[i][0]['leaseGuard']={'configurationHash':digest(kernel),'tableName':kernel['tableName']}
+            # Both OCI documents, guard scopes and sibling identities predate create.
             declarations=[{'containerId':cids[i],'applicationHash':digest(specs[i]),'networkBindings':networks[i]} for i in range(2)]
             now=int(time.time())
             for i,cid in enumerate(cids):
@@ -118,7 +124,7 @@ def main():
                 policy=directory/'trust.json';private(policy,{'schema':'ouf.semantic-deployment-trust-policy.v1','installationRef':'ci-installation','entityRef':'ci-entity','keys':grants})
                 crypto={'policyBinding':{'path':str(policy),'sha256':sha(policy)},'signatureDirectory':str(signatures),
                     'opensslBinding':{'path':commands['openssl'],'sha256':sha(commands['openssl']),'version':run(commands['openssl'],'version').stdout.decode().split()[1]},'privateKeys':keys}
-                kernel=NativeTest.kernel(None);kernel['tableName']=lease;kernel['guardedInterfaces']=[bridge];kernel['providerFlows'][0]['source']=datum['ipv4']
+                kernel=kernels[i]
                 datum_cfg={'approved':{cid:datum},'intent':intent,'crypto':crypto,'kernel':kernel,'commands':{k:commands[k] for k in ('nft','ip','nsenter','unshare')},
                     'mountCommands':{k:commands[k] for k in ('mount','umount')},'runc':commands['runc'],'runcHash':sha(commands['runc']),
                     'lock':str(lock),'networkBindings':networks[i],'transport':[flow],'busyboxHash':sha(shutil.which('busybox'))}
@@ -177,7 +183,7 @@ def main():
                 grant=json.loads((registry/cid/'driver.json').read_bytes())
                 require(grant['schema']=='ouf.semantic-preexec-driver.v6' and set(grant['peerBinding']['observations'])=={cids[1-i]},'CI_V6_PEER_GRANT_MISSING')
                 require(grant['profile']['bundleHash']==digest(specs[i]),'CI_SIGNED_FULL_OCI_DRIFT')
-            print('ASSEMBLED_FRAME_PROFILES_NATIVE=PASS NODE_V4=true EFFECTIVE_READONLY_SOURCE_OBSERVED=true PROFILES_GENERATED_BY_ASSEMBLER=true TWO_REAL_CREATED_CANDIDATES=true EXPECTED_COMPLETE_OCI_BEFORE_CREATE=true ABSENT_PEER_PREVENTED_EARLY_RELEASE=true PARTIAL_CREATION_WAIT_PROVEN=true TWO_AUTHENTICATED_V6_STARTS=true REAL_ED25519_NODE_INSTALLER=true CI_ACCEPTANCE_AUTHORITY_ONLY=true TARGET_START_AUTHORIZED=false')
+            print('ASSEMBLED_FRAME_PROFILES_NATIVE=PASS NODE_V4=true EFFECTIVE_READONLY_SOURCE_OBSERVED=true PROFILES_GENERATED_BY_ASSEMBLER=true TWO_REAL_CREATED_CANDIDATES=true EXPECTED_COMPLETE_OCI_BEFORE_CREATE=true ABSENT_PEER_PREVENTED_EARLY_RELEASE=true PARTIAL_CREATION_WAIT_PROVEN=true COMPOSED_GUARD_SCOPE_BOUND=true TWO_AUTHENTICATED_V6_STARTS=true REAL_ED25519_NODE_INSTALLER=true CI_ACCEPTANCE_AUTHORITY_ONLY=true TARGET_START_AUTHORIZED=false')
         finally:
             for process,out,err in processes:
                 if process.poll() is None:process.kill();process.wait(timeout=5)

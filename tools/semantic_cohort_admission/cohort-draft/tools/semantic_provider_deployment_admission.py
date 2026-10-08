@@ -33,8 +33,19 @@ def live_profile(candidate, bundle, namespace, inode, children, hosts, peer_snap
     check(isinstance(approved,list) and 1 <= len(approved) <= 32, 'BOUNDED_NETWORK_APPROVAL_REQUIRED')
     check(len(children) == len(approved), 'UNAPPROVED_NAMESPACE_INTERFACE')
     attachments, links = [], []
+    guards = {}; delegated = set()
     for binding in approved:
-        check(set(binding) == {'interface','bridge','mac','ipv4','workloadRef','bindingRef'}, 'EXACT_NETWORK_APPROVAL_REQUIRED')
+        keys = {'interface','bridge','mac','ipv4','workloadRef','bindingRef'}
+        check(set(binding) in (keys, keys | {'leaseGuard'}), 'EXACT_NETWORK_APPROVAL_REQUIRED')
+        if 'leaseGuard' in binding:
+            guard = binding['leaseGuard']
+            check(type(guard) is dict and set(guard)=={'configurationHash','tableName'}
+                and type(guard['configurationHash']) is str and re.fullmatch('[0-9a-f]{64}',guard['configurationHash'])
+                and type(guard['tableName']) is str and re.fullmatch('[A-Za-z][A-Za-z0-9_-]{0,31}',guard['tableName']),
+                'EXACT_LEASE_GUARD_BINDING_REQUIRED')
+            check(not guards or guards == guard, 'INCONSISTENT_LEASE_GUARD_BINDING')
+            guards = guard.copy(); delegated.add(binding['bridge'])
+
         matches = [v for v in children if v['ifname'] == binding['interface']]
         check(len(matches) == 1, 'LIVE_CHILD_INTERFACE_REQUIRED'); child = matches[0]
         check(child['address'] == binding['mac'] and
@@ -52,6 +63,8 @@ def live_profile(candidate, bundle, namespace, inode, children, hosts, peer_snap
     flows = resolve(candidate['transport'], peers, peer_snapshots or {}, candidate['containerId'])
     policy = {'schema':'ouf.semantic-shared-faces.v1','tableName':candidate['tableName'],
               'attachments':attachments,'flows':flows}
+    if guards:
+        policy.update(schema='ouf.semantic-shared-faces.v2',globalLeaseGuard={**guards,'bridges':sorted(delegated)})
     materialize(policy)
     return {'schema':'ouf.semantic-preexec-profile.v2','namespaceOrigin':'PREPARED' if networks[0].get('path') else 'OCI_CREATED',
             'transactionId':candidate['transactionId'],'containerId':candidate['containerId'],

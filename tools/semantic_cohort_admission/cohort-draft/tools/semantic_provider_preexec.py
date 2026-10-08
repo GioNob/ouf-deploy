@@ -9,7 +9,7 @@ import hashlib
 import json
 import re
 
-from tools.materialize_semantic_shared_faces import materialize
+from tools.materialize_semantic_shared_faces import materialize, validate_global_guard
 
 
 class PreexecDenied(RuntimeError):
@@ -49,6 +49,7 @@ class Preexec:
             if not isinstance(profile[k], str) or not re.fullmatch('/[A-Za-z0-9_./-]+', profile[k]) \
                     or '..' in profile[k].split('/'):
                 raise ValueError('explicit safe runtime path required')
+        validate_global_guard(profile['policy'], coordinator.owner.configuration)
         self.rules = rules(profile)
         if profile['policy']['tableName'] == coordinator.owner.configuration['tableName']:
             raise ValueError('distinct shared and lease tables required')
@@ -101,6 +102,7 @@ class Preexec:
     def quiesced(self):
         # Called while already holding Coordinator's common lock: no recursive
         # flock acquisition and no automatic quiesce/refresh/authority changes.
+        validate_global_guard(self.profile['policy'], self.coord.owner.configuration)
         value = self.coord.journal()
         if value['state'] != 'QUIESCED' or value['leaseAuthorized'] or any(self.coord.sets()):
             raise PreexecDenied('LEASE_QUIESCENCE_REQUIRED')
