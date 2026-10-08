@@ -129,7 +129,19 @@ def main():
    require(probe(0,'198.19.60.11')=='DENY' and probe(1,'198.19.60.10')=='DENY','CI_CROSS_PURPOSE_LEASE_BYPASS')
    require(probe(0,'198.19.60.12')=='DENY' and probe(0,'198.19.60.10',8443)=='DENY','CI_UNREGISTERED_DESTINATION_OR_PORT_BYPASS')
    deadline=time.monotonic()+6
-   while any(backend.read_sets(kernel).values()):
+   def positive_lease_elements():
+    # nft may retain an already expired element until its GC interval. The
+    # production reader rejects expires=0; do not weaken that fail-closed rule.
+    # This fixture observes the kernel expiration boundary directly instead.
+    values=[]
+    for table in backend.tables().values():
+     for row in table['nftables']:
+      for entry in row.get('set',{}).get('elem',[]):
+       ttl=entry['elem']['expires']
+       require(type(ttl) is int and ttl>=0,'CI_MALFORMED_LEASE_EXPIRY')
+       values.append(ttl>0)
+    return any(values)
+   while positive_lease_elements():
     require(time.monotonic()<deadline,'CI_LEASE_EXPIRATION_NOT_OBSERVED');time.sleep(.1)
    expired.touch();out,err=client.communicate(timeout=3)
    require(client.returncode==0 and 'ESTABLISHED_EXPIRED_DENIED' in out,'CI_ESTABLISHED_EXPIRY_BYPASS:'+err[:400])
