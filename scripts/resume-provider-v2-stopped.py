@@ -143,7 +143,14 @@ def archive_identity(path,config_digest):
     require(config_digest in docs,'VERIFIED_CONFIG_NOT_FOUND');cfg=docs[config_digest]
     manifests=[digest for digest,doc in docs.items() if isinstance(doc,dict) and isinstance(doc.get('config'),dict) and doc['config'].get('digest')==config_digest]
     require(len(manifests)==1,'ONE_BOUND_OCI_MANIFEST_REQUIRED')
-    return {'manifestDigest':manifests[0],'configDigest':config_digest,'configuration':cfg}
+    manifest=manifests[0]
+    indexes=[]
+    for digest,doc in docs.items():
+        if isinstance(doc,dict) and isinstance(doc.get('manifests'),list):
+            candidates=[x for x in doc['manifests'] if (x.get('platform') or {}).get('os')=='linux' and (x.get('platform') or {}).get('architecture')=='amd64']
+            if not candidates and len(doc['manifests'])==1:candidates=doc['manifests']
+            if len(candidates)==1 and candidates[0].get('digest')==manifest:indexes.append(digest)
+    return {'manifestDigest':manifest,'indexDigests':sorted(indexes),'configDigest':config_digest,'configuration':cfg}
 
 def verify_retained(accounts):
     claim=private(RETAINED/'creation-claim.json');require(json.loads(claim)['stage']=='BEFORE_IMAGE_IMPORT','RETAINED_CLAIM_REQUIRED')
@@ -164,12 +171,18 @@ def verify_retained(accounts):
 
 def resolved_image(ns,spec,proof):
     available=set(ns.docker('image','ls','-aq','--no-trunc').decode().splitlines())
-    candidates=[ref for ref in (proof['manifestDigest'],proof['configDigest']) if ref in available]
+    candidates=[ref for ref in (*proof['indexDigests'],proof['manifestDigest'],proof['configDigest']) if ref in available]
     require(bool(candidates),'BOUND_IMAGE_NOT_PRESENT')
     ref=candidates[0];img=image(ns,ref);cfg=proof['configuration']
     require(img['RootFS']['Layers']==cfg['rootfs']['diff_ids'] and img['Os']==cfg['os']=='linux' and img['Architecture']==cfg['architecture']=='amd64','IMPORTED_ROOTFS_OR_PLATFORM_DRIFT')
     keys=('Entrypoint','Cmd','Env','WorkingDir','User','Volumes','ExposedPorts','Labels','Healthcheck','StopSignal','Shell')
-    require(all(img['Config'].get(k)==cfg['config'].get(k) for k in keys),'IMPORTED_CONFIG_DRIFT')
+    def canonical(value,key):
+        if key in ('User','WorkingDir','StopSignal') and value is None:return ''
+        if key in ('Volumes','ExposedPorts','Labels') and value is None:return {}
+        if key in ('Entrypoint','Cmd','Env','Shell') and value is None:return []
+        return value
+    mismatches=[k for k in keys if canonical(img['Config'].get(k),k)!=canonical(cfg['config'].get(k),k)]
+    require(not mismatches,'IMPORTED_CONFIG_DRIFT_'+('_'.join(mismatches).upper()))
     return {**spec,'imageId':ref,'configDigest':proof['configDigest'],'manifestDigest':proof['manifestDigest']}
 
 def load_archive(ns,path,root,role):
@@ -268,7 +281,7 @@ def operate(root):
         for spec in specs:
             STAGE='IMAGE_IMPORT_'+spec['role'].upper();proof=proofs[spec['role']]
             available=set(ns.docker('image','ls','-aq','--no-trunc').decode().splitlines())
-            if not available.intersection((proof['manifestDigest'],proof['configDigest'])):
+            if not available.intersection((*proof['indexDigests'],proof['manifestDigest'],proof['configDigest'])):
                 load_archive(ns,Path(proof['archivePath']),root,spec['role']);imports+=1
             resolved.append(resolved_image(ns,spec,proof))
         ns.publish(root/'image-identity-bindings.json',encoded([{k:r[k] for k in ('role','imageId','configDigest','manifestDigest','archiveHash')} for r in resolved]))
