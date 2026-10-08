@@ -4,7 +4,19 @@
 
 Seguire [OUF_WORKING_RULES.md](OUF_WORKING_RULES.md): diagnosi degli errori inclusa in ogni procedura, nessuna verifica ridondante e nessuna ripetizione di passi completati.
 
-## Current next action
+## Prossimo passo operativo — protezioni di rete
+
+Eseguire una sola volta `releases/provider-v2-network-guard-migration.sh`. Il bootstrap usa il pacchetto fissato al commit `77aa9038ed12ba2fd0fce13f5b7246de1b296a66`; SHA256 del bootstrap `afd38956428fa12d08308c2b9e49413e0c06a7837955b38c530ec294a354c5d5`.
+
+CI [37825293313](https://github.com/GioNob/ouf-deploy/actions/runs/37825293313) PASS: installatore completo con nft reale e file privati, recupero dopo pulizia del report temporaneo, DNS privato di installazione preservato, ripetizione limitata alla lettura dello stato già installato. Docker e systemd nella prova completa sono simulati; non è una prova di applicazione sul VPS.
+
+Il comando aggiunge solo l'ambito OIDC con destinazioni inizialmente vuote, mantiene le regole preesistenti e pubblica insieme le configurazioni coerenti di boot/coordinamento. Aggiorna due unit file e il puntatore di installazione, poi esegue solo systemd daemon-reload. Non riavvia Docker, non avvia container, non legge chiavi di autorità, non firma autorizzazioni. I resolver derivano dal profilo di questa installazione: nessun default pubblico universale.
+
+La procedura conserva snapshot e diagnosi con fase, motivo, rollback e hash attesi/effettivi dove disponibili. Dopo un risultato parziale non rilanciare l'applicazione: usare la diagnosi conservata. Il runner non ha sudo generale; l'esecuzione privilegiata richiede l'operatore.
+
+Stato: **comando pronto, applicazione sul VPS non ancora eseguita**. Dopo il risultato positivo resta da completare la transazione firmata e l'avvio controllato del provider; poi discovery nazionale e il percorso Teatri tramite MCP. Nessun passo già completato su immagini, rootfs o preparazione privata va ripetuto.
+
+## Previous completed target steps
 
 **Target image equivalence completed successfully on 2026-10-08. Do not rerun the comparison.** Operator snapshot: `/etc/ouf/deploy-snapshots/semantic-provider-v2-rootfs-compare-ox08k7hb`; source: `/etc/ouf/deploy-snapshots/semantic-v2-image-equivalence-source-GH4jyznf`. Both roles report zero image differences, `imageEquivalent:true` and `IMAGE_EQUIVALENCE_PASS`. Selected operator-reported facts are retained in `evidence/provider-v2-image-equivalence-target-20261008.json`.
 
@@ -106,6 +118,6 @@ The additional read-only peer job [37817578661](https://github.com/GioNob/ouf-de
 
 ### Remaining concrete implementation
 
-The target transaction-specific provisioner/orchestrator is still incomplete. It must atomically migrate the owned global guard and matching boot/coordination bindings under the common lock, install the reviewed source/profile closure, authenticate the complete target frame and actual rootfs seals, issue the short-lived role-scoped mandates and configure the runtime allowlist, then perform controlled admission/start with retained stage-specific diagnosis. None of that target operation was performed by these CI or read jobs. Do not issue a direct Docker start, broad sudo grant or another preparation-only operator command.
+The target transaction-specific provisioner/orchestrator is still incomplete. The reviewed guard migration is now implemented and its operator command is ready, with target execution pending. The remaining orchestrator must install the reviewed source/profile closure, authenticate the complete target frame and actual rootfs seals, issue the short-lived role-scoped mandates and configure the runtime allowlist, then perform controlled admission/start with retained stage-specific diagnosis. None of that target operation was performed by these CI or read jobs. Do not issue a direct Docker start, broad sudo grant or another preparation-only operator command.
 
 The following product phase remains the original goal: existing Teatri asset -> national discovery -> chatbot semantic review -> human approval -> onboarding -> ingestion/duplicate checks -> UDP readback. Product operations remain MCP-only. No product write, national discovery or ingestion execution has occurred in this network integration work.
