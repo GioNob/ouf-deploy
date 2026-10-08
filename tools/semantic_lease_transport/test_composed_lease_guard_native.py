@@ -114,7 +114,7 @@ def main():
    require(probe(0,'198.19.60.10',source='198.19.60.9')=='DENY','CI_SOURCE_SPOOF_BYPASS')
    run(ip,'-n',names[0],'addr','del','198.19.60.9/24','dev','eth0')
    transaction='\n'.join('add element '+family+' '+kernel['tableName']+' provider_'+str(i)+' { 198.19.60.'+str(10+i)+' timeout 4s }' for family in ('inet','bridge') for i in range(2))+'\n'
-   run(nft,'-f','-',raw=transaction);backend.verify_ownership(kernel)
+   run(nft,'-f','-',raw=transaction);lease_applied_at=time.monotonic();backend.verify_ownership(kernel)
    require(probe(0,'198.19.60.10')=='ALLOW','CI_PROVIDER_VALID_LEASE_DENIED')
    require(probe(1,'198.19.60.11')=='ALLOW','CI_IDENTITY_VALID_LEASE_DENIED')
    # A valid global lease cannot excuse a forged child MAC at the port layer.
@@ -141,10 +141,10 @@ def main():
        require(type(ttl) is int and ttl>=0,'CI_MALFORMED_LEASE_EXPIRY')
        values.append(ttl>0)
     return any(values)
-   while positive_lease_elements():
+   while time.monotonic()<lease_applied_at+4.1 or positive_lease_elements():
     require(time.monotonic()<deadline,'CI_LEASE_EXPIRATION_NOT_OBSERVED');time.sleep(.1)
    expired.touch();out,err=client.communicate(timeout=3)
-   require(client.returncode==0 and 'ESTABLISHED_EXPIRED_DENIED' in out,'CI_ESTABLISHED_EXPIRY_BYPASS:'+err[:400])
+   require(client.returncode==0 and 'ESTABLISHED_EXPIRED_DENIED' in out,'CI_ESTABLISHED_EXPIRY_BYPASS:'+json.dumps({'secondsSinceApply':round(time.monotonic()-lease_applied_at,3),'clientError':err[:400],'tables':backend.tables()},sort_keys=True))
    require(probe(0,'198.19.60.10')=='DENY' and probe(1,'198.19.60.11')=='DENY','CI_EXPIRED_NEW_CONNECTION_BYPASS')
    print('COMPOSED_LEASE_PACKETS=PASS TWO_REAL_NAMESPACES=true PROVIDER_AND_IDENTITY_SCOPES=true EMPTY_AND_EXPIRED_LEASES_DENY=true ESTABLISHED_EXPIRY_DENIES=true CROSS_PURPOSE_SOURCE_MAC_AND_PORT_DENY=true TARGET_RUNTIME_OPERATIONS=0 TARGET_START_AUTHORIZED=false TLS_AUTHENTICATION_NOT_CLAIMED=true')
   finally:
