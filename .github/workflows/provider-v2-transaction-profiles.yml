@@ -17,3 +17,30 @@ jobs:
           persist-credentials: false
       - name: Profile scope and seal substitution rejection
         run: python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_assemble_provider_profiles.py
+
+  native-frame-profiles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          path: deploy
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: ace683b1019f79adaace86796b67e463b93ec12e
+          persist-credentials: false
+          path: gateway
+      - name: Prepare reviewed sources and CI-only fixture
+        run: |
+          cp deploy/tools/semantic_cohort_admission/cohort-draft/tools/*.py gateway/tools/
+          cp deploy/tools/semantic_cohort_admission/cohort-draft/scripts/*.py gateway/scripts/
+          cp deploy/tools/semantic_frame_compiler/containerd-overlayfs-adapter.json deploy/tools/semantic_frame_compiler/frame-observer.py deploy/tools/semantic_transaction_profiles/
+      - name: Install disposable native dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq busybox-static iproute2 nftables runc
+      - name: Assemble and consume actual node v4 and broker profiles
+        working-directory: gateway
+        run: sudo /usr/bin/python3 -B ../deploy/tools/semantic_transaction_profiles/test_assembled_frame_profiles_native.py
