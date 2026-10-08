@@ -30,6 +30,7 @@ jobs:
           cp owner-fixture/tools/review_semantic_oci_policy.py tools/semantic_frame_compiler/
           cp owner-fixture/tools/semantic_oci_shape_schema.json tools/semantic_frame_compiler/
           python3 -B -m unittest discover -v -s tools/semantic_frame_compiler -p test_compile_creation_frame_policy.py
+          python3 -B -m unittest discover -v -s tools/semantic_frame_compiler -p test_prepare_provider_v2_launch_inputs.py
       - name: Real isolated Docker frame shape and refusing capture runtime
         run: |
           sudo install -d -m 700 /root/ouf-frame-compiler-fixture
