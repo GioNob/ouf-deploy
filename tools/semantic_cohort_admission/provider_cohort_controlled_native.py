@@ -50,39 +50,7 @@ def main():
             destination=source/name;destination.mkdir(mode=0o700)
             for path in (repository/name).glob('*.py'):
                 shutil.copyfile(path,destination/path.name);(destination/path.name).chmod(0o600)
-        # Error-only CI instrumentation emits class/code/function names, never
-        # application inputs or keys. Source hashes seal this diagnostic copy.
-        node_source=source/'scripts/semantic_provider_node_attestor.py'
-        text=node_source.read_text()
-        text=text.replace('    except Exception:\n', '''    except Exception as error:
-        import re,traceback
-        reason=str(error)
-        if not re.fullmatch('[A-Z_]{1,80}',reason):reason='BOUNDED_FAILURE'
-        diagnostic={'component':'NODE','errorClass':type(error).__name__,'reason':reason,
-            'callChain':[{'function':frame.name,'line':frame.lineno} for frame in traceback.extract_tb(error.__traceback__)]}
-        diagnostic_path=Path(args.configuration).parent/'ci-node-denial.json'
-        diagnostic_path.write_text(json.dumps(diagnostic));diagnostic_path.chmod(0o600)
-''')
-        node_source.write_text(text);node_source.chmod(0o600)
         wrapper=root/'admission.py';shutil.copyfile(repository/'tests/fixtures/semantic_operational_broker_fixture.py',wrapper);wrapper.chmod(0o600)
-        text=wrapper.read_text();begin=text.index('result=subprocess.run(');end=text.index("if mode=='prepare':",begin)
-        text=text[:begin]+'''import runpy,argparse,re,traceback
-module=runpy.run_path(str(Path(cfg['sourceRoot'])/'scripts/semantic_provider_deployment_broker.py'))
-parser=argparse.ArgumentParser()
-for key in ('configuration','container-id','bundle','runtime-root','mode'):parser.add_argument('--'+key,required=True)
-args=parser.parse_args(sys.argv[1:])
-try:
-    configuration_value,configuration_raw=module['load'](args.configuration)
-    module['Broker'](configuration_value,configuration_raw,args.configuration,args).operate(json.loads(request_raw))
-except Exception as error:
-    reason=str(error)
-    if not re.fullmatch('[A-Z_]{1,80}',reason):reason='BOUNDED_FAILURE'
-    diagnostic={'component':'BROKER','errorClass':type(error).__name__,'reason':reason,
-        'callChain':[{'function':frame.name,'line':frame.lineno} for frame in traceback.extract_tb(error.__traceback__)]}
-    diagnostic_path=root/'ci-broker-denial.json';diagnostic_path.write_text(json.dumps(diagnostic));diagnostic_path.chmod(0o600)
-    raise SystemExit(1)
-'''+text[end:]
-        wrapper.write_text(text);wrapper.chmod(0o600)
         lock=root/'guard.lock';lock.touch(mode=0o600)
         config_path=root/'adapter.json';cfg={'schema':'ouf.semantic-docker-runtime-adapter.v4',
             'sourceHash':sha(source/'scripts/semantic_provider_docker_runtime.py'),
