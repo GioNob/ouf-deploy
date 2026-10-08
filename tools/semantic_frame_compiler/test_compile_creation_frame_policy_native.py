@@ -41,10 +41,19 @@ class NativeCompilerTests(unittest.TestCase):
             '    bundle=pathlib.Path(args[i+1]).resolve()\n' +
             '    context_read={}\n' +
             '    if ' + repr(network_mode) + '=="bridge":\n' +
-            '        try:\n' +
-            '            result=subprocess.run([' + repr(shutil.which('docker')) + ',"-H",' + repr('unix://' + str(root / 'docker.sock')) + ',"inspect","--format","{{json .NetworkSettings.SandboxKey}}",args[-1]],capture_output=True,timeout=5)\n' +
-            '            context_read={"querySucceeded":result.returncode==0,"sandboxKey":json.loads(result.stdout) if result.returncode==0 else None}\n' +
-            '        except subprocess.TimeoutExpired:context_read={"querySucceeded":False,"failure":"INSPECT_TIMEOUT"}\n' +
+            '        meta_path=pathlib.Path(' + repr(str(root / 'data' / 'containers')) + ')/args[-1]/"config.v2.json"\n' +
+            '        metadata_raw=meta_path.read_bytes()\n' +
+            '        if len(metadata_raw)>1048576:sys.exit(81)\n' +
+            '        metadata=json.loads(metadata_raw)\n' +
+            '        stored_key=(metadata.get("NetworkSettings") or {}).get("SandboxKey")\n' +
+            '        context_read={"metadataIdMatches":metadata.get("ID")==args[-1],"metadataStable":meta_path.read_bytes()==metadata_raw,"metadataSandboxKeyPresent":bool(stored_key)}\n' +
+            '        if context_read["metadataIdMatches"] and context_read["metadataStable"] and stored_key:\n' +
+            '            context_read.update(querySucceeded=True,sandboxKey=stored_key,source="OWNED_DAEMON_STORED_METADATA")\n' +
+            '        else:\n' +
+            '            try:\n' +
+            '                result=subprocess.run([' + repr(shutil.which('docker')) + ',"-H",' + repr('unix://' + str(root / 'docker.sock')) + ',"inspect","--format","{{json .NetworkSettings.SandboxKey}}",args[-1]],capture_output=True,timeout=5)\n' +
+            '                context_read.update(querySucceeded=result.returncode==0,sandboxKey=json.loads(result.stdout) if result.returncode==0 else None)\n' +
+            '            except subprocess.TimeoutExpired:context_read.update(querySucceeded=False,failure="INSPECT_TIMEOUT")\n' +
             '        planfile=pathlib.Path(' + repr(str(root / 'compiler-plan.json')) + ')\n' +
             '        if planfile.exists():\n' +
             '            plan=json.loads(planfile.read_bytes())\n' +
@@ -190,7 +199,11 @@ class NativeCompilerTests(unittest.TestCase):
                 print('CI_BRIDGE_METADATA_QUERY=' + json.dumps({
                     'succeeded': captured['contextRead'].get('querySucceeded', False),
                     'failure': captured['contextRead'].get('failure'),
-                    'sandboxKeyPresent': bool(captured['contextRead'].get('sandboxKey'))}))
+                    'sandboxKeyPresent': bool(captured['contextRead'].get('sandboxKey')),
+                    'storedMetadataIdMatches': captured['contextRead'].get('metadataIdMatches'),
+                    'storedMetadataStable': captured['contextRead'].get('metadataStable'),
+                    'storedMetadataSandboxKeyPresent': captured['contextRead'].get('metadataSandboxKeyPresent'),
+                    'source': captured['contextRead'].get('source')}))
                 self.assertTrue(captured['contextRead'].get('querySucceeded'), 'IN_CREATE_DOCKER_CONTEXT_QUERY_FAILED')
             create2 = docker('create', '--name', 'candidate2', '--runtime', 'ouf-ci-capture', '--network', candidate_network,
                             '--user', '10006:10006', '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
