@@ -219,3 +219,8 @@ The execution mode is implementation under validation, not a ready target comman
 
 
 Hosted CI [37844327673](https://github.com/GioNob/ouf-deploy/actions/runs/37844327673), source `34dfb2a358d0995834c55f23d4f22ffdf0699cb9`, passed both jobs. Evidence: `evidence/provider-v2-orchestration-ci-20261008.json`. All 25 authenticated, 8 switch and 3 descriptor tests pass; real nft and existing two-peer runc/frame regression passed. Guard Docker/systemd and partial activation responses remain fixtures. No real Docker cohort or target observation is claimed. Operator input custody/independent target acceptance are still required before preparing a concrete target transaction; preserve full private records on VPS and provide only safe metadata/evidence for review in cloud.
+
+
+## Existing target image evidence located by operator
+
+Operator located five provenance/SBOM reports under semantic-image-remediation-20261006-v2/evidence/attestations. Bytes/hash facts are preserved in evidence/provider-v2-existing-image-evidence-inventory-20261008.json; reports were not acquired independently. An exact JSON string comparison found none of the four current manifest/config digests and no selected Boolean approval keys. This does not establish mismatch or rejection: bundle manifest/composed references/report schemas must be resolved. Do not repeat scanning or infer acceptance from directory name. UDP human-review files and old v1 image reports are unrelated to the current two-CID role mandates. Next required operator read is bounded structural metadata plus digest references of existing reports and bundle metadata, never keys/raw private documents. No lifecycle/signing operation was performed.
