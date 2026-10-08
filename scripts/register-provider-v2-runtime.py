@@ -95,7 +95,7 @@ def identity(pid):
     return {'pid':pid,'birth':birth,'path':str(target),'sha256':sha(raw)}
 
 def inventory():
-    ids=docker('ps','-aq').decode().splitlines();require(len(ids)<=256 and all(re.fullmatch('[0-9a-f]{64}',v) for v in ids),'CONTAINER_INVENTORY_UNBOUNDED')
+    ids=docker('ps','-aq','--no-trunc').decode().splitlines();require(len(ids)<=256 and all(re.fullmatch('[0-9a-f]{64}',v) for v in ids),'CONTAINER_INVENTORY_UNBOUNDED')
     if not ids:return []
     fmt='{{json .Id}} {{json .State.Pid}} {{json .State.StartedAt}} {{json .State.Status}} {{json .State.Running}}'
     return sorted(docker('inspect','--type','container','--format',fmt,*ids).decode().splitlines())
