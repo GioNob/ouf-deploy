@@ -10,6 +10,16 @@ import prepare_provider_v2_launch_inputs as p
 
 
 class LaunchTests(unittest.TestCase):
+    def test_updated_observer_bytes_must_match_and_private_errors_are_redacted(self):
+        from unittest.mock import patch
+        ns = types.SimpleNamespace(read=Mock(return_value=b'wrong source'))
+        with self.assertRaisesRegex(p.Denied, 'UPDATED_OBSERVER_SOURCE_REQUIRED'):
+            p.observer_binding(ns)
+        self.assertEqual(p.public_failure(KeyError('private value')), 'REDACTED_ERROR')
+        self.assertEqual(p.public_failure(p.Denied('PRIVATE_VALUE')), 'REDACTED_ERROR')
+        p.add_public_reasons(b"require(False,'SOURCE_DRIFT')")
+        self.assertEqual(p.public_failure(p.Denied('SOURCE_DRIFT')), 'SOURCE_DRIFT')
+
     def setUp(self):
         self.spec = {'role': 'adapter', 'uid': 10006, 'gid': 10006, 'user': '10006:10006',
                      'command': ['--configuration', '/run/adapter.json'], 'readOnlyRoot': True,
@@ -90,6 +100,21 @@ class LaunchTests(unittest.TestCase):
         reader.private.side_effect = drift
         with self.assertRaisesRegex(p.Denied, 'MOUNT_SOURCE_CHANGED'):
             p.collect(reader, ns)
+
+    def test_collect_accepts_sealed_large_source_but_rejects_over_one_mib(self):
+        for size in (262144, 1048577):
+            reader, ns = self.fixture()
+            original = reader.private.side_effect
+            source = b'C' * size
+            for spec in reader.prepare.return_value[0]:
+                spec['mounts'][0]['sha256'] = p.digest(source)
+            reader.private.side_effect = lambda path, *args: source if str(path) == '/sealed/config.json' else original(path, *args)
+            if size == 262144:
+                result = p.collect(reader, ns)
+                self.assertEqual(result['adapter']['sources'][0]['maxBytes'], 1048576)
+            else:
+                with self.assertRaisesRegex(p.Denied, 'OBSERVER_SOURCE_BOUND_EXCEEDED'):
+                    p.collect(reader, ns)
 
 
 if __name__ == '__main__':

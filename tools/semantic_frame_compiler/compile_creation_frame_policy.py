@@ -160,7 +160,7 @@ def compile_policy(template, launch, context):
         require(source['readOnly'] is True and type(source['uid']) is int and source['uid'] >= 0
                 and type(source['gid']) is int and source['gid'] >= 0
                 and type(source['mode']) is int and 0 <= source['mode'] <= 0o777
-                and type(source['maxBytes']) is int and 1 <= source['maxBytes'] <= 131072
+                and type(source['maxBytes']) is int and 1 <= source['maxBytes'] <= 1048576
                 and type(source['sha256']) is str and re.fullmatch('[0-9a-f]{64}', source['sha256']), 'SOURCE_BINDING_REQUIRED')
         found = [v for v in mounts if v.get('destination') == source['target']]
         require(len(found) == 1 and found[0].get('type') == 'bind'

@@ -4,6 +4,7 @@ Reuse only the hash-bound existing stopped-creation reader. Read frozen image
 configuration, sealed startup inputs and the two exact stopped candidates.
 No lifecycle command, signing command or authority-key file is accessed.
 """
+import ast
 import hashlib
 import json
 import os
@@ -21,6 +22,11 @@ TARGETS = {
                 'sha256:277dcefd4744c244f4f6f23f8969f3d0acd64369e2ff1bd67594955c4ca7fbbc'),
     'southbound': ('1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916',
                    'sha256:c15541037a08276e36715a3c3798c2d07fe6faabf5547d3885a66cd10575e366')}
+MAX_SOURCE_BYTES = 1048576
+OBSERVER_HASH = '122a1a44705892ba577d2e83467f39870627ffc16685f886757828611063b3fc'
+OBSERVER_COMMIT = '72310a0f4b0d649854d3abc010509d6724617e4e'
+STAGE = 'INITIAL_READ'
+SAFE_REASONS = {'ROOT_REQUIRED'}
 
 
 class Denied(RuntimeError):
@@ -38,6 +44,23 @@ def encoded(value):
 
 def digest(raw):
     return hashlib.sha256(raw).hexdigest()
+
+
+def add_public_reasons(raw):
+    SAFE_REASONS.update(v.value for v in ast.walk(ast.parse(raw)) if isinstance(v, ast.Constant)
+                        and type(v.value) is str and re.fullmatch('[A-Z_]{1,96}', v.value))
+
+
+def public_failure(error):
+    reason = error.args[0] if type(error).__name__ == 'Denied' and len(error.args) == 1 else None
+    return reason if type(reason) is str and reason in SAFE_REASONS else 'REDACTED_ERROR'
+
+
+def observer_binding(ns):
+    path = Path(__file__).resolve().with_name('frame-observer.py')
+    require(digest(ns.read(path)) == OBSERVER_HASH, 'UPDATED_OBSERVER_SOURCE_REQUIRED')
+    return {'path': str(path), 'sha256': OBSERVER_HASH, 'sourceCommit': OBSERVER_COMMIT,
+            'installedInRuntime': False}
 
 
 def load_reader():
@@ -87,7 +110,7 @@ def launch_from_spec(spec, image_config, independent_environment):
         require(m['mode'] in (0o600, 0o644) and re.fullmatch('[0-9a-f]{64}', m['sha256']),
                 'SEALED_MOUNT_REQUIRED')
         sources.append({**{k: m[k] for k in ('source', 'target', 'uid', 'gid', 'mode', 'sha256')},
-                        'readOnly': True, 'maxBytes': 131072})
+                        'readOnly': True, 'maxBytes': MAX_SOURCE_BYTES})
     result = {'schema': 'ouf.semantic-creation-frame-launch.v1',
               'manifest': {'user': spec['user'], 'readOnlyRoot': spec['readOnlyRoot'],
                            'memoryBytes': spec['memoryBytes'], 'pidsLimit': spec['pidsLimit'],
@@ -121,7 +144,7 @@ def collect(reader, ns):
         # prepare() already rehashes these private TLS/MAC/config files; report
         # those reads explicitly. Never claim that no private material is read.
         for source in resolved['mounts']:
-            require(len(reader.private(source['source'], source['uid'], source['gid'], source['mode'])) <= 131072,
+            require(len(reader.private(source['source'], source['uid'], source['gid'], source['mode'])) <= MAX_SOURCE_BYTES,
                     'OBSERVER_SOURCE_BOUND_EXCEEDED')
         output[role] = launch_from_spec(resolved, proofs[role]['configuration']['config'],
                                        reader.environment(resolved, image))
@@ -140,15 +163,26 @@ def collect(reader, ns):
 
 
 def main():
+    global STAGE
     require(os.geteuid() == 0, 'ROOT_REQUIRED')
     os.umask(0o077)
+    STAGE = 'LOAD_EXISTING_READER'
     reader = load_reader()
+    add_public_reasons(reader.private(READER))
+    STAGE = 'LOAD_RUNTIME_READER'
     ns = reader.namespace(reader.REG / 'register-provider-v2-runtime.py', reader.REG_SOURCE_HASH)
+    add_public_reasons(reader.private(reader.REG / 'register-provider-v2-runtime.py'))
     own = ns.read(Path(__file__).resolve())
+    add_public_reasons(own)
+    STAGE = 'VERIFY_UPDATED_OBSERVER'
+    observer = observer_binding(ns)
+    STAGE = 'VERIFY_COMMAND_BINDINGS'
     for path, expected in ns.BINDS.values():
         require(digest(ns.read(Path(path), True)) == expected, 'COMMAND_BINDING_DRIFT')
+    STAGE = 'COLLECT_PRIVATE_INPUTS'
     output = collect(reader, ns)
     require(ns.read(Path(__file__).resolve()) == own, 'PREPARER_SOURCE_CHANGED')
+    STAGE = 'PUBLISH_PRIVATE_INPUTS'
     root = Path(tempfile.mkdtemp(prefix='semantic-provider-v2-launch-inputs-', dir='/etc/ouf/deploy-snapshots'))
     hashes = {}
     for role, launch in output.items():
@@ -158,6 +192,8 @@ def main():
                'status': 'PRIVATE_LAUNCH_INPUTS_PREPARED', 'directory': str(root), 'launchHashes': hashes,
                'readerSourceHash': READER_HASH, 'candidateCount': 2, 'candidatesNeverStarted': True,
                'preparerSourceHash': digest(own),
+               'maxSourceBytes': MAX_SOURCE_BYTES,
+               'frameObserverBinding': observer,
                'privateTlsAndReceiptFilesRead': True, 'privateEnvironmentRead': True,
                'installationAuthorityKeysRead': 0, 'secretValuesPrinted': False,
                'containerLifecycleOperations': 0, 'providerCalls': 0, 'rulesChanged': False,
@@ -170,6 +206,7 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except Exception:
-        print('OUF_PROVIDER_V2_LAUNCH_INPUTS=BLOCKED NO_RAW_OUTPUT=true')
+    except Exception as error:
+        print('OUF_PROVIDER_V2_LAUNCH_INPUTS=' + json.dumps({'status': 'BLOCKED', 'stage': STAGE,
+              'reason': public_failure(error), 'secretValuesPrinted': False, 'startAuthorized': False}))
         raise SystemExit(1)

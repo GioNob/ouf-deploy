@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: GioNob/ouf-semantic-registry
-          ref: 3505a2f6bfde9c3905b76a5e670ebc30b40d3d6d
+          ref: 72310a0f4b0d649854d3abc010509d6724617e4e
           path: owner-fixture
           persist-credentials: false
       - name: Load exact owner reviewer into isolated compiler fixture
@@ -32,6 +32,9 @@ jobs:
           python3 -B -m unittest discover -v -s tools/semantic_frame_compiler -p test_compile_creation_frame_policy.py
           python3 -B -m unittest discover -v -s tools/semantic_frame_compiler -p test_prepare_provider_v2_launch_inputs.py
           python3 -B -m unittest discover -v -s tools/semantic_frame_compiler -p test_diagnose_provider_v2_launch_inputs.py
+          python3 -B -m unittest discover -v -s owner-fixture/tests -p test_semantic_creation_frame.py
+          python3 -B -m unittest discover -v -s owner-fixture/tests -p test_semantic_creation_frame_observer.py
+          cmp owner-fixture/tools/semantic_creation_frame_observer.py tools/semantic_frame_compiler/frame-observer.py
       - name: Real isolated Docker frame shape and refusing capture runtime
         run: |
           sudo install -d -m 700 /root/ouf-frame-compiler-fixture

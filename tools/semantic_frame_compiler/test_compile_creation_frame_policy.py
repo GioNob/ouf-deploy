@@ -8,6 +8,12 @@ from review_semantic_oci_policy import configured_profile, schema_from_source_cl
 
 
 class CompilerTests(unittest.TestCase):
+    def test_one_mib_source_limit_is_bound_and_larger_values_rejected(self):
+        self.launch['sources'][0]['maxBytes'] = 1048576
+        self.assertEqual(self.compile()['sources'][0]['maxBytes'], 1048576)
+        self.launch['sources'][0]['maxBytes'] = 1048577
+        with self.assertRaises(Denied): self.compile()
+
     def setUp(self):
         self.context = {'schema': 'ouf.semantic-docker-frame-context.v1', 'containerId': 'a' * 64,
                         'bundleParent': '/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby',
