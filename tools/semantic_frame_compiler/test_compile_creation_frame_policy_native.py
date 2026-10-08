@@ -47,7 +47,7 @@ class NativeCompilerTests(unittest.TestCase):
             '        checkpoint=dbpath.read_bytes()\n' +
             '        committed=committed_sandbox(checkpoint,args[-1])\n' +
             '        if dbpath.read_bytes()!=checkpoint:sys.exit(82)\n' +
-            '        stored_key="/run/docker/netns/"+committed["namespaceName"]\n' +
+            '        stored_key=' + repr(str(root / 'exec' / 'netns') + '/') + '+committed["namespaceName"]\n' +
             '        context_read={"querySucceeded":True,"sandboxKey":stored_key,"source":"OWNED_COMMITTED_SANDBOX_CHECKPOINT"}\n' +
             '        planfile=pathlib.Path(' + repr(str(root / 'compiler-plan.json')) + ')\n' +
             '        if planfile.exists():\n' +
@@ -58,9 +58,12 @@ class NativeCompilerTests(unittest.TestCase):
             '                sys.path.insert(0,' + repr(str(Path(__file__).resolve().parent)) + ')\n' +
             '                from compile_creation_frame_policy import compile_policy,canonical\n' +
             '                netpath=pathlib.Path(context_read["sandboxKey"]).resolve()\n' +
-            '                if str(netpath.parent)!=plan["context"]["networkNamespaceParent"]:sys.exit(80)\n' +
+            '                if str(netpath.parent)!=plan["context"]["networkNamespaceParent"]:\n' +
+            '                    pathlib.Path(' + repr(str(root / 'runtime-diagnosis.json')) + ').write_text(json.dumps({"stage":"NAMESPACE_PARENT","ciExpectedParent":plan["context"]["networkNamespaceParent"],"ciDerivedParent":str(netpath.parent)}));sys.exit(80)\n' +
             '                plan["context"]["networkNamespaceName"]=netpath.name\n' +
-            '                policy=canonical(compile_policy(plan["template"],plan["launch"],plan["context"]))\n' +
+            '                try:policy=canonical(compile_policy(plan["template"],plan["launch"],plan["context"]))\n' +
+            '                except Exception as error:\n' +
+            '                    pathlib.Path(' + repr(str(root / 'runtime-diagnosis.json')) + ').write_text(json.dumps({"stage":"COMPILE_POLICY","publicErrorType":type(error).__name__}));sys.exit(83)\n' +
             '                fd=os.open(' + repr(str(root / 'precreate-policy.json')) + ',os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)\n' +
             '                with os.fdopen(fd,"wb") as stream:stream.write(policy);stream.flush();os.fsync(stream.fileno())\n' +
             '                context_read["policySealedBeforeOciRead"]=True\n' +
@@ -238,6 +241,8 @@ class NativeCompilerTests(unittest.TestCase):
                 self.assertFalse(policy_path2.exists())
             capture2 = root / ('capture-' + cid2 + '.json'); self.assertFalse(capture2.exists())
             self.assertNotEqual(docker('start', cid2).returncode, 0)
+            if not capture2.exists() and (root / 'runtime-diagnosis.json').exists():
+                print('CI_BRIDGE_PRECREATE_DIAGNOSIS=' + (root / 'runtime-diagnosis.json').read_text())
             captured2 = json.loads(capture2.read_bytes()); self.assertEqual(captured2['cid'], cid2)
             if network_mode == 'bridge':
                 self.assertTrue(captured2['contextRead'].get('policySealedBeforeOciRead'))
