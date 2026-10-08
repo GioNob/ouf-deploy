@@ -58,11 +58,27 @@ def collect(config):
     info = query('info', '--format', '{"serverVersion":{{json .ServerVersion}},"cgroupDriver":{{json .CgroupDriver}},"dataRoot":{{json .DockerRootDir}},"storageDriver":{{json .Driver}},"driverStatus":{{json .DriverStatus}}}')
     require(type(info['dataRoot']) is str and info['dataRoot'].startswith('/')
             and '..' not in info['dataRoot'].split('/'), 'DOCKER_DATA_ROOT_UNPROVEN')
-    rows = []
+    rows = []; network_declarations = []
     for role, (cid, image) in CANDIDATES.items():
         value = query('inspect', '--type', 'container', '--format',
                       '{"id":{{json .Id}},"image":{{json .Image}},"state":{{json .State}},"graph":{{json (index . "GraphDriver")}},"snapshotter":{{json (index . "Snapshotter")}},"storage":{{json (index . "Storage")}},"runtime":{{json .HostConfig.Runtime}}}', cid)
         require(value['id'] == cid and value['image'] == image and value['runtime'] == 'ouf-semantic-admitted-v2', 'EXACT_CANDIDATE_BINDING_DRIFT')
+        endpoints = query('inspect', '--type', 'container', '--format', '{{json .NetworkSettings.Networks}}', cid)
+        require(type(endpoints) is dict and len(endpoints) == (2 if role == 'adapter' else 3), 'NETWORK_COUNT_DRIFT')
+        for name, endpoint in sorted(endpoints.items()):
+            require(type(name) is str and re.fullmatch('[a-zA-Z0-9_.-]{1,80}', name), 'NETWORK_NAME_UNPROVEN')
+            network = query('network', 'inspect', '--format',
+                '{"id":{{json .Id}},"driver":{{json .Driver}},"internal":{{json .Internal}},"ipv6":{{json .EnableIPv6}},"options":{{json .Options}},"ipam":{{json .IPAM.Config}},"containers":{{json .Containers}}}', endpoint['NetworkID'])
+            require(network['driver'] == 'bridge' and network['ipv6'] is False, 'NETWORK_TYPE_DRIFT')
+            # Only public endpoint coordinates. Never print application configuration or environment.
+            network_declarations.append({'role': role, 'networkName': name, 'networkId': network['id'],
+                'internal': network['internal'], 'bridge': (network['options'] or {}).get('com.docker.network.bridge.name', 'br-' + network['id'][:12]),
+                'ipam': network['ipam'], 'endpointIpam': endpoint['IPAMConfig'],
+                'macAddress': endpoint['MacAddress'], 'aliases': endpoint['Aliases'],
+                'driverOptions': endpoint.get('DriverOpts'), 'gatewayPriority': endpoint.get('GwPriority', 0),
+                'allocatedIpv4': endpoint['IPAddress'], 'endpointIdPresent': bool(endpoint['EndpointID']),
+                'otherEndpoints': [{'containerId': other_id, 'ipv4': other.get('IPv4Address'), 'mac': other.get('MacAddress')}
+                    for other_id, other in sorted((network['containers'] or {}).items()) if other_id not in {v[0] for v in CANDIDATES.values()}]})
         state = value['state']
         require(state['Status'] == 'created' and state['Running'] is False and state['Restarting'] is False
                 and state['Pid'] == 0 and state['StartedAt'].startswith('0001-01-01T'), 'CANDIDATE_NOT_NEVER_STARTED')
@@ -86,7 +102,7 @@ def collect(config):
                      'storageRecordHash': hashlib.sha256(encoded(value['storage'])).hexdigest(),
                      'unknownStorageFieldCount': len(set(data) - set(recognized)),
                      'independentRootfsBindingProven': False})
-    return {'serverVersion': info['serverVersion'], 'cgroupDriver': info['cgroupDriver'], 'dockerDataRoot': info['dataRoot'], 'storageDriver': info['storageDriver'],
+    return {'serverVersion': info['serverVersion'], 'cgroupDriver': info['cgroupDriver'], 'dockerDataRoot': info['dataRoot'], 'storageDriver': info['storageDriver'], 'networkDeclarations': network_declarations,
             'driverStatusHash': hashlib.sha256(encoded(info['driverStatus'])).hexdigest(), 'candidates': rows}
 
 
