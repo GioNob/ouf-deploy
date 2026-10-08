@@ -68,8 +68,9 @@ def collect(config):
         for name, endpoint in sorted(endpoints.items()):
             require(type(name) is str and re.fullmatch('[a-zA-Z0-9_.-]{1,80}', name), 'NETWORK_NAME_UNPROVEN')
             network = query('network', 'inspect', '--format',
-                '{"id":{{json .Id}},"driver":{{json .Driver}},"internal":{{json .Internal}},"ipv6":{{json .EnableIPv6}},"options":{{json .Options}},"ipam":{{json .IPAM.Config}},"containers":{{json .Containers}}}', endpoint['NetworkID'])
+                '{"id":{{json .Id}},"driver":{{json .Driver}},"internal":{{json .Internal}},"ipv6":{{json .EnableIPv6}},"options":{{json .Options}},"ipam":{{json .IPAM.Config}},"containers":{{json .Containers}}}', name)
             require(network['driver'] == 'bridge' and network['ipv6'] is False, 'NETWORK_TYPE_DRIFT')
+            require(endpoint['NetworkID'] in ('', network['id']), 'NETWORK_ID_DRIFT')
             # Only public endpoint coordinates. Never print application configuration or environment.
             network_declarations.append({'role': role, 'networkName': name, 'networkId': network['id'],
                 'internal': network['internal'], 'bridge': (network['options'] or {}).get('com.docker.network.bridge.name', 'br-' + network['id'][:12]),
