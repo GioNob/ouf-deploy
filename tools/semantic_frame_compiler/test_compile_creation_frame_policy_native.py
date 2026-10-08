@@ -79,6 +79,8 @@ class NativeCompilerTests(unittest.TestCase):
             storage_data = inspected['GraphDriver']['Data']
             self.assertEqual(len(storage_data), 1, 'owned vfs fixture must expose one independently read storage root')
             independent_rootfs = str(Path(next(iter(storage_data.values()))).resolve())
+            self.assertTrue(Path(independent_rootfs).is_relative_to(root / 'data'),
+                            'CI_STORAGE_METADATA_SHAPE=' + json.dumps(storage_data))
             self.assertNotEqual(docker('start', cid).returncode, 0)
             self.assertTrue(capture.is_file(), 'create did not reach refusing capture runtime')
             captured = json.loads(capture.read_bytes()); self.assertEqual(captured['cid'], cid)
