@@ -116,3 +116,6 @@ The user answered "accetto" to the concrete image review proposal. Receipt: evid
 
 
 Hosted CI 37849612355 now also passes a real concurrent two-Docker creation-window fixture (runner Docker 28.0.4, not target 29.8.1). Full production admitted-runtime Docker cohort remains unproved. Next required operator input: read the existing fixed private frames with tools/semantic_target_review/read_private_frame_summary.py; no preparation or signing. Lab image acceptance already recorded. See releases/PROVIDER_V2_ADMISSION_NEXT.md.
+
+
+9 October: fixed private frame summary received successfully; do not repeat. Pinned isolated Docker29.8.1/overlayfs window CI and all31 authenticated/preparer preflight tests pass. Next required operator action is the new unsigned document closure helper tools/semantic_target_review/prepare_private_transaction_draft.py; it reuses completed snapshots, prepares only new private review inputs and issues no authority/start. See releases/PROVIDER_V2_ADMISSION_NEXT.md for exact hash, limits and pending full admitted-runtime Docker integration/role acceptance.
