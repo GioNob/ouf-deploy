@@ -31,7 +31,13 @@ def main():
     suffix = uuid.uuid4().hex[:7]; namespace = 'pnc_' + suffix; cid = hashlib.sha256(namespace.encode()).hexdigest()
     commands = {k: str(Path(shutil.which(k)).resolve()) for k in ('ip', 'nsenter', 'runc', 'sysctl')}
     def cmd(*args, check=True):
-        result = subprocess.run(args, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=15)
+        # The created init retains stdio until FIFO release; pipes would wait
+        # for EOF even when the runc create command has already exited.
+        with tempfile.TemporaryFile() as out, tempfile.TemporaryFile() as err:
+            value = subprocess.run(args, stdin=subprocess.DEVNULL, stdout=out, stderr=err, timeout=15)
+            out.seek(0); err.seek(0)
+            result = subprocess.CompletedProcess(args, value.returncode, out.read(1048577), err.read(1048577))
+        p.require(len(result.stdout) <= 1048576 and len(result.stderr) <= 1048576, 'CI_COMMAND_OUTPUT_UNBOUNDED')
         if check and result.returncode: raise RuntimeError('CI_COMMAND_FAILED:' + str(args[:2]) + ':' + result.stderr.decode()[:1200])
         return result
     bridges = []; hosts = []; runtime_created = False
@@ -72,7 +78,8 @@ def main():
             path.write_bytes(p.encoded(oci)); path.chmod(0o600)
             expected = {'containerId': cid, 'applicationHash': p.digest(oci), 'networkBindings': bindings}
             # Expected OCI and NIC declarations exist before runc create.
-            cmd(commands['runc'], '--root', str(runtime), 'create', '--bundle', str(bundle), cid); runtime_created = True
+            runtime_created = True
+            cmd(commands['runc'], '--root', str(runtime), 'create', '--bundle', str(bundle), cid)
             runtime_binding = {'path': commands['runc'], 'sha256': hashlib.sha256(Path(commands['runc']).read_bytes()).hexdigest()}
             io = {k: {'path': commands[k], 'sha256': hashlib.sha256(Path(commands[k]).read_bytes()).hexdigest()} for k in ('ip', 'nsenter')}
             def run(binding, args, limit):
