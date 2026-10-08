@@ -15,6 +15,7 @@ import tempfile
 import time
 import unittest
 import sys
+import re
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -77,10 +78,11 @@ class NativeCompilerTests(unittest.TestCase):
             self.assertEqual(create.returncode, 0); cid = create.stdout.decode().strip()
             inspected = json.loads(docker('inspect', '--format', '{{json .}}', cid).stdout)
             storage_data = inspected['GraphDriver']['Data']
-            self.assertEqual(len(storage_data), 1, 'owned vfs fixture must expose one independently read storage root')
-            independent_rootfs = str(Path(next(iter(storage_data.values()))).resolve())
-            self.assertTrue(Path(independent_rootfs).is_relative_to(root / 'data'),
-                            'CI_STORAGE_METADATA_SHAPE=' + json.dumps(storage_data))
+            self.assertEqual(inspected['GraphDriver']['Name'], 'vfs')
+            self.assertEqual(set(storage_data), {'ID'}, 'owned Engine fixture storage schema drift')
+            self.assertTrue(re.fullmatch('[0-9a-f]{64}', storage_data['ID']))
+            independent_rootfs = str(root / 'data' / 'vfs' / 'dir' / storage_data['ID'])
+            self.assertTrue(Path(independent_rootfs).is_dir())
             self.assertNotEqual(docker('start', cid).returncode, 0)
             self.assertTrue(capture.is_file(), 'create did not reach refusing capture runtime')
             captured = json.loads(capture.read_bytes()); self.assertEqual(captured['cid'], cid)
