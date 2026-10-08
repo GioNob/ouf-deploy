@@ -57,4 +57,6 @@ jobs:
         run: sudo /usr/bin/python3 -B ../deploy/tools/semantic_transaction_profiles/test_assembled_frame_profiles_native.py
       - name: Observe real empty nft guard under the already held flock
         run: sudo /usr/bin/unshare --net --fork /usr/bin/python3 -B deploy/tools/semantic_transaction_profiles/test_transaction_guard_observation_native.py
+      - name: Observe both real Docker creation windows before application release
+        run: sudo /usr/bin/python3 -B deploy/tools/semantic_transaction_profiles/test_docker_creation_window_native.py
 
