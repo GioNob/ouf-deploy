@@ -6,15 +6,15 @@ Seguire [OUF_WORKING_RULES.md](OUF_WORKING_RULES.md): diagnosi degli errori incl
 
 ## Prossimo passo operativo — protezioni di rete
 
-Eseguire una sola volta `releases/provider-v2-network-guard-migration.sh`. Il bootstrap usa il pacchetto fissato al commit `77aa9038ed12ba2fd0fce13f5b7246de1b296a66`; SHA256 del bootstrap `afd38956428fa12d08308c2b9e49413e0c06a7837955b38c530ec294a354c5d5`.
+Eseguire una sola volta `releases/provider-v2-network-guard-migration.sh`. Il bootstrap usa il pacchetto fissato al commit `f7740ce1cbe03c16f5069398985c8795ef1f68b9`; SHA256 del bootstrap `0c3aa73309fbdb851e63a597caf40aa46c2be42d3c3aa384d9d8304e58e1bcd4`.
 
-CI [37825293313](https://github.com/GioNob/ouf-deploy/actions/runs/37825293313) PASS: installatore completo con nft reale e file privati, recupero dopo pulizia del report temporaneo, DNS privato di installazione preservato, ripetizione limitata alla lettura dello stato già installato. Docker e systemd nella prova completa sono simulati; non è una prova di applicazione sul VPS.
+CI [37826181070](https://github.com/GioNob/ouf-deploy/actions/runs/37826181070) PASS: installatore completo con nft reale e file privati, recupero dopo pulizia del report temporaneo, DNS privato di installazione preservato, ripetizione limitata alla lettura dello stato già installato. Docker e systemd nella prova completa sono simulati; non è una prova di applicazione sul VPS.
 
 Il comando aggiunge solo l'ambito OIDC con destinazioni inizialmente vuote, mantiene le regole preesistenti e pubblica insieme le configurazioni coerenti di boot/coordinamento. Aggiorna due unit file e il puntatore di installazione, poi esegue solo systemd daemon-reload. Non riavvia Docker, non avvia container, non legge chiavi di autorità, non firma autorizzazioni. I resolver derivano dal profilo di questa installazione: nessun default pubblico universale.
 
 La procedura conserva snapshot e diagnosi con fase, motivo, rollback e hash attesi/effettivi dove disponibili. Dopo un risultato parziale non rilanciare l'applicazione: usare la diagnosi conservata. Il runner non ha sudo generale; l'esecuzione privilegiata richiede l'operatore.
 
-Stato: **comando pronto, applicazione sul VPS non ancora eseguita**. Dopo il risultato positivo resta da completare la transazione firmata e l'avvio controllato del provider; poi discovery nazionale e il percorso Teatri tramite MCP. Nessun passo già completato su immagini, rootfs o preparazione privata va ripetuto.
+Stato: **primo tentativo sul VPS bloccato prima delle modifiche di rete; comando corretto pronto, da eseguire**. Il risultato del primo tentativo è `PROVIDER_DESTINATION_SCOPE_DRIFT`, fase `BUILD_TARGET_NETWORK_POLICY`, snapshotDirectory:null, doNotRerunApply:false. Fonte installata: `/etc/ouf/deploy-snapshots/semantic-network-guard-source-vt5hc3cq`. Il vecchio confronto letterale non distingueva differenze reali dalla porta HTTPS 443 esplicita. Il nuovo confronto accetta solo la stessa identica destinazione host/percorso/porta, conserva l'URL originale ed espone expectedEndpoint/actualEndpoint/differentFields in caso di divergenza reale. L'URL effettivo del primo errore non è stato stampato: la causa concreta sul VPS resta da confermare. La CI completa include ora un URL con :443. Nessuna ripetizione dell'applicazione precedente: questa correzione è una nuova versione e il tentativo precedente si è fermato prima di claim/snapshot/modifiche. Dopo il risultato positivo resta da completare la transazione firmata e l'avvio controllato del provider; poi discovery nazionale e il percorso Teatri tramite MCP. Nessun passo già completato su immagini, rootfs o preparazione privata va ripetuto.
 
 ## Previous completed target steps
 

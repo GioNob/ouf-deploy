@@ -7,12 +7,12 @@ test "$(id -un)" = oufadmin
 oufGh=/home/oufadmin/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh
 oufPackage="$(mktemp -d "$HOME/ouf-network-guard-source.XXXXXXXX")"
 printf "OUF_NETWORK_GUARD_DOWNLOAD=%s\n" "$oufPackage"
-"$oufGh" api "repos/GioNob/ouf-deploy/contents/tools/semantic_guard_extension/extend_empty_lease_guard.py?ref=77aa9038ed12ba2fd0fce13f5b7246de1b296a66" --jq .content | base64 -d > "$oufPackage/extend_empty_lease_guard.py"
-"$oufGh" api "repos/GioNob/ouf-deploy/contents/tools/semantic_guard_extension/build_guard_profiles.py?ref=77aa9038ed12ba2fd0fce13f5b7246de1b296a66" --jq .content | base64 -d > "$oufPackage/build_guard_profiles.py"
-"$oufGh" api "repos/GioNob/ouf-deploy/contents/tools/semantic_guard_extension/publish_guard_files.py?ref=77aa9038ed12ba2fd0fce13f5b7246de1b296a66" --jq .content | base64 -d > "$oufPackage/publish_guard_files.py"
-"$oufGh" api "repos/GioNob/ouf-deploy/contents/tools/semantic_guard_extension/install_provider_network_guard.py?ref=77aa9038ed12ba2fd0fce13f5b7246de1b296a66" --jq .content | base64 -d > "$oufPackage/install_provider_network_guard.py"
-"$oufGh" api "repos/GioNob/ouf-deploy/contents/tools/semantic_transaction_network/build_target_network_policy.py?ref=77aa9038ed12ba2fd0fce13f5b7246de1b296a66" --jq .content | base64 -d > "$oufPackage/build_target_network_policy.py"
-"$oufGh" api "repos/GioNob/ouf-deploy/contents/tools/semantic_transaction_network/read_gateway_peer_port.py?ref=77aa9038ed12ba2fd0fce13f5b7246de1b296a66" --jq .content | base64 -d > "$oufPackage/read_gateway_peer_port.py"
+"$oufGh" api "repos/GioNob/ouf-deploy/contents/tools/semantic_guard_extension/extend_empty_lease_guard.py?ref=f7740ce1cbe03c16f5069398985c8795ef1f68b9" --jq .content | base64 -d > "$oufPackage/extend_empty_lease_guard.py"
+"$oufGh" api "repos/GioNob/ouf-deploy/contents/tools/semantic_guard_extension/build_guard_profiles.py?ref=f7740ce1cbe03c16f5069398985c8795ef1f68b9" --jq .content | base64 -d > "$oufPackage/build_guard_profiles.py"
+"$oufGh" api "repos/GioNob/ouf-deploy/contents/tools/semantic_guard_extension/publish_guard_files.py?ref=f7740ce1cbe03c16f5069398985c8795ef1f68b9" --jq .content | base64 -d > "$oufPackage/publish_guard_files.py"
+"$oufGh" api "repos/GioNob/ouf-deploy/contents/tools/semantic_guard_extension/install_provider_network_guard.py?ref=f7740ce1cbe03c16f5069398985c8795ef1f68b9" --jq .content | base64 -d > "$oufPackage/install_provider_network_guard.py"
+"$oufGh" api "repos/GioNob/ouf-deploy/contents/tools/semantic_transaction_network/build_target_network_policy.py?ref=f7740ce1cbe03c16f5069398985c8795ef1f68b9" --jq .content | base64 -d > "$oufPackage/build_target_network_policy.py"
+"$oufGh" api "repos/GioNob/ouf-deploy/contents/tools/semantic_transaction_network/read_gateway_peer_port.py?ref=f7740ce1cbe03c16f5069398985c8795ef1f68b9" --jq .content | base64 -d > "$oufPackage/read_gateway_peer_port.py"
 cat > "$oufPackage/captured-network-inputs.json" <<'OUF_CAPTURED'
 {
   "schema": "ouf.semantic-provider-transaction-network-inputs.v1",
@@ -149,9 +149,9 @@ cat > "$oufPackage/captured-network-inputs.json" <<'OUF_CAPTURED'
   "acceptanceGranted": false
 }
 OUF_CAPTURED
-printf '%s' '{"hashes":{"build_guard_profiles.py":"ace451e693102b1fe7e50dc954c71c6c93672ad06670f0ba20fd0ebd600f0774","build_target_network_policy.py":"5a04b30e4917396f4d886a04b3a9c1bb57576bb95c42363670306527d8019305","captured-network-inputs.json":"f9d2f800f1632c30d0f6502bf598431e4d55dc4ff651e2256afd1aed9e2fc756","extend_empty_lease_guard.py":"a2da96318982f48d7230c958841c83994bcfca172aeb8612343a3df57049855d","install_provider_network_guard.py":"9649f309249297d023338593c98e42f74b6aa33d88ebeb88b150308433518ab8","publish_guard_files.py":"3336bc05a9f2ae950af083fb350a693c558ebe48f804a606d56add1187ef402e","read_gateway_peer_port.py":"dd7aa7e671076e8bf2384660dc76d73568c435cb0f69049104929b2292e00a36"},"schema":"ouf.provider-network-guard-source.v1","sourceRef":"77aa9038ed12ba2fd0fce13f5b7246de1b296a66"}' > "$oufPackage/sources.json"
-oufStage=ROOT_SOURCE_PROMOTION
-sudo /usr/bin/python3 -I -B - "$oufPackage" bbd43cf25e58e58c62998632b1ab81b8d11f2e104742e747b57aa05392122512 <<'OUF_ROOT'
+printf '%s' '{"hashes":{"build_guard_profiles.py":"ace451e693102b1fe7e50dc954c71c6c93672ad06670f0ba20fd0ebd600f0774","build_target_network_policy.py":"4a284d7762b07b7ba0ec81f2b3d97d8364cbd750203062453ca2e71782bbe488","captured-network-inputs.json":"f9d2f800f1632c30d0f6502bf598431e4d55dc4ff651e2256afd1aed9e2fc756","extend_empty_lease_guard.py":"a2da96318982f48d7230c958841c83994bcfca172aeb8612343a3df57049855d","install_provider_network_guard.py":"9649f309249297d023338593c98e42f74b6aa33d88ebeb88b150308433518ab8","publish_guard_files.py":"3336bc05a9f2ae950af083fb350a693c558ebe48f804a606d56add1187ef402e","read_gateway_peer_port.py":"dd7aa7e671076e8bf2384660dc76d73568c435cb0f69049104929b2292e00a36"},"schema":"ouf.provider-network-guard-source.v1","sourceRef":"f7740ce1cbe03c16f5069398985c8795ef1f68b9"}' > "$oufPackage/sources.json"
+oufStage=ROOT_INSTALLER_EXECUTION
+sudo /usr/bin/python3 -I -B - "$oufPackage" cf219fd5b9c6d883a49ab690f3d59ecc9db7d9806fdc4c46ba0af19a6ba7dfca <<'OUF_ROOT'
 import hashlib,json,os,pathlib,stat,sys,tempfile
 stage='SOURCE_PROMOTION';destination=None
 try:
