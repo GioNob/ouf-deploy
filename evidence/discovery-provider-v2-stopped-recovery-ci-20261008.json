@@ -1,0 +1,19 @@
+{
+  "schema": "ouf.semantic-provider-v2-stopped-recovery-ci.v1",
+  "sourceCommit": "900c2e0607e67788be44ed2d99af415838128387",
+  "runId": 37729973288,
+  "jobs": [
+    {
+      "id": 113156640942,
+      "name": "validate (containerd)",
+      "conclusion": "success"
+    },
+    {
+      "id": 113156641245,
+      "name": "validate (classic)",
+      "conclusion": "success"
+    }
+  ],
+  "nativeImageImportTested": true,
+  "targetReleaseAcceptance": false
+}
