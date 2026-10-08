@@ -12,7 +12,7 @@ resources, hooks and all remaining fields stay exactly as reviewed. The output
 uses the existing observer policy v1; compilation grants no authority.
 
 The owner reviewer and runtime-shape schema used in CI are pinned to Semantic
-Registry commit `3505a2f6bfde9c3905b76a5e670ebc30b40d3d6d`. Unit tests exercise
+Registry commit `72310a0f4b0d649854d3abc010509d6724617e4e`. Unit tests exercise
 cross-container, namespace, source, command, privilege, seccomp and resource
 drift. The native test uses an isolated dockerd and a capture runtime that
 refuses create before runc execution. Its template is synthetic and built from
@@ -43,3 +43,10 @@ exact never-started candidates. It only writes new root-private launch files.
 Its receipt explicitly reports private TLS/MAC and environment reads; it grants
 no authority. Unit tests cover startup/environment/identity and source/state
 drift. The operator-only step is documented in the release handoff.
+
+After target diagnosis reported OBSERVER_SOURCE_BOUND_EXCEEDED, the mounted
+source-file bound was aligned at one MiB in the compiler, preparer and owner
+observer. Policy/OCI JSON stays bounded at 128 KiB. Streamed hashes, custody,
+stable double reads and the observer deadline remain enforced. The preparer
+requires the matching new observer source beside it and records its binding;
+the retained installed observer and runtime configuration are not replaced.
