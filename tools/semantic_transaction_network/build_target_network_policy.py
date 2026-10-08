@@ -14,6 +14,20 @@ def endpoint(value):
  require(set(value)=={'hostname','path','port'} and value['port']==443,'EXACT_HTTPS_ENDPOINT_REQUIRED')
  require(value['hostname'] in ('schema.gov.it','auth.ouf-lab.it'),'TARGET_ENDPOINT_DRIFT')
  return 'https://'+value['hostname']+value['path']
+def dns_flows(profile,sources):
+ import ipaddress
+ require(set(profile)=={'resolvers','resolverPort','timeoutSeconds','maxLeaseSeconds','applyBudgetSeconds'},'EXACT_INSTALLATION_DNS_PROFILE_REQUIRED')
+ resolvers=profile['resolvers']
+ require(isinstance(resolvers,list) and 1<=len(resolvers)<=8 and len(set(resolvers))==len(resolvers)
+  and profile['resolverPort']==53,'EXPLICIT_INSTALLATION_RESOLVERS_REQUIRED')
+ for raw in resolvers:
+  address=ipaddress.ip_address(raw)
+  require(address.version==4 and str(address)==raw and not(address.is_loopback or address.is_link_local or address.is_multicast or address.is_unspecified),'ROUTABLE_IPV4_RESOLVER_REQUIRED')
+ # Private enterprise resolvers are accepted explicitly; no public-IP constant
+ # is supplied by the code or silently inherited from the build runner.
+ return [{'purpose':'DNS','source':source,'destination':resolver,'protocol':protocol,'port':53}
+  for source in sources for resolver in resolvers for protocol in ('udp','tcp')]
+
 def assemble(network_inputs,original_kernel,gateway_peer):
  """The caller must authenticate the actual original kernel, not the projection.
 
@@ -35,6 +49,10 @@ def assemble(network_inputs,original_kernel,gateway_peer):
  require(previous['endpoint']==endpoint(network_inputs['providerEndpoint']) and previous['source']=='172.22.0.3'
   and previous['allowedPrivateAddresses']==[] and 1<=previous['leaseSeconds']<=30,'PROVIDER_DESTINATION_SCOPE_DRIFT')
  require(network_inputs['oidcIssuerEndpoint']=={'hostname':'auth.ouf-lab.it','path':'/realms/ouf','port':443},'OIDC_ISSUER_SCOPE_DRIFT')
+ dns_profile=copy.deepcopy(network_inputs['dns'])
+ expected_dns=dns_flows(dns_profile,['172.22.0.2','172.22.0.3'])
+ require(sorted((v['source'],v['destination'],v['protocol'],v['port']) for v in original_kernel['staticFlows'] if v['purpose']=='DNS')
+  ==sorted((v['source'],v['destination'],v['protocol'],v['port']) for v in expected_dns),'DNS_PROFILE_AND_NETWORK_FLOW_DRIFT')
  kernel=copy.deepcopy(original_kernel)
  kernel['providerFlows'][0]['addresses']=[]
  kernel['providerFlows'].append({'endpointRef':'ouf-oidc','endpoint':endpoint(network_inputs['oidcIssuerEndpoint']),
@@ -56,7 +74,7 @@ def assemble(network_inputs,original_kernel,gateway_peer):
   'source':'172.18.0.6','destination':'172.18.0.14','protocol':'tcp','port':10443,
   'peerIngress':{'kind':'BRIDGE_PORT','ifindex':gateway_peer['hostIfindex']}}
  return {'schema':'ouf.semantic-target-network-policy-draft.v1','status':'TARGET_NETWORK_POLICY_ASSEMBLED',
-  'originalKernelHash':digest(original_kernel),'kernel':kernel,'networkBindings':networks,
+  'originalKernelHash':digest(original_kernel),'kernel':kernel,'dnsProfile':dns_profile,'networkBindings':networks,
   'semanticIngress':flow,'commonLockFile':network_inputs['commonLockFile'],
   'configurationWrites':0,'firewallWrites':0,'containerLifecycleOperations':0,'providerCalls':0,
   'startAuthorized':False,'acceptanceGranted':False,'bootMigrationImplemented':False}

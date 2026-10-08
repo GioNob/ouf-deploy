@@ -1,14 +1,16 @@
 import copy
 import unittest
-from build_target_network_policy import assemble, NetworkDenied, digest
+from build_target_network_policy import assemble, NetworkDenied, digest, dns_flows
 
 class PolicyTest(unittest.TestCase):
  def inputs(self):
   kernel={'tableName':'ouf_sem_provider','guardedInterfaces':['oufsp-int','oufsp-egress'],
    'existingInterfaces':['br-113b5f0a3c53','docker0'],'staticFlows':[{'purpose':'GATEWAY_ADAPTER','source':'172.21.0.2','destination':'172.21.0.3','protocol':'tcp','port':9443}],
    'providerFlows':[{'endpointRef':'schema-gov','endpoint':'https://schema.gov.it/sparql','source':'172.22.0.3','addresses':['1.2.3.4'],'leaseSeconds':30,'resolutionEvidenceRef':'fresh-lease-owner','allowedPrivateAddresses':[]}]}
+  dns={'resolvers':['10.8.0.53'],'resolverPort':53,'timeoutSeconds':2,'maxLeaseSeconds':30,'applyBudgetSeconds':1}
+  kernel['staticFlows']+=dns_flows(dns,['172.22.0.2','172.22.0.3'])
   projection=copy.deepcopy(kernel);projection['providerFlows'][0].pop('addresses')
-  network={'status':'NETWORK_INPUTS_CAPTURED','kernel':projection,
+  network={'status':'NETWORK_INPUTS_CAPTURED','kernel':projection,'dns':dns,
    'providerEndpoint':{'hostname':'schema.gov.it','path':'/sparql','port':443},
    'oidcIssuerEndpoint':{'hostname':'auth.ouf-lab.it','path':'/realms/ouf','port':443},'commonLockFile':'/run/ouf-semantic-boot-guard/guard.lock'}
   peer={'status':'EXISTING_PEER_PORT_CAPTURED','container':'ouf-semantic','address':'172.18.0.6',
@@ -29,6 +31,11 @@ class PolicyTest(unittest.TestCase):
    for nic in role:
     if 'leaseGuard' in nic:self.assertEqual(nic['leaseGuard']['configurationHash'],digest(result['kernel']))
   self.assertNotEqual(result['originalKernelHash'],digest(self.inputs()[0]['kernel']))
+ def test_installation_dns_parameters_allow_private_resolvers_and_reject_stale_firewall(self):
+  n,k,p=self.inputs();result=assemble(n,k,p)
+  self.assertEqual(result['dnsProfile']['resolvers'],['10.8.0.53'])
+  n['dns']['resolvers']=['10.9.0.53']
+  with self.assertRaisesRegex(NetworkDenied,'DNS_PROFILE_AND_NETWORK_FLOW_DRIFT'):assemble(n,k,p)
  def test_issuer_or_shared_peer_drift_has_specific_diagnosis(self):
   for change in ('issuer','peer'):
    n,k,p=self.inputs()

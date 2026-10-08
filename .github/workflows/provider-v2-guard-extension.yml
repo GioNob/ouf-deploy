@@ -1,0 +1,27 @@
+name: Provider guard extension
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/semantic_guard_extension/**'
+      - 'tools/semantic_transaction_network/build_target_network_policy.py'
+      - 'tools/semantic_transaction_network/test_target_network_policy.py'
+      - '.github/workflows/provider-v2-guard-extension.yml'
+permissions:
+  contents: read
+jobs:
+  extension:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Installation DNS and exact target network scopes
+        run: python3 -B -m unittest discover -s tools/semantic_transaction_network -p test_target_network_policy.py -v
+      - name: Install native nft dependency
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq nftables
+      - name: Atomic guard extension and publication failure recovery
+        run: sudo unshare --net /usr/bin/python3 -B tools/semantic_guard_extension/test_guard_transition_native.py
