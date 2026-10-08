@@ -92,6 +92,7 @@ def mount(source,target,uid,gid,expected,mode=0o600):
 
 def prepare(ns):
     regraw=private(REG/'registration-receipt.json');require(sha(regraw)==REG_REPORT_HASH,'REGISTRATION_RECEIPT_DRIFT');reg=ns.parse(regraw)
+    require(all(sha(private(REG/'source'/name))==value for name,value in reg['sourceHashes'].items()),'REGISTERED_SOURCE_CLOSURE_DRIFT')
     require(reg['status']=='EMPTY_RUNTIME_REGISTERED' and reg['candidateCount']==0 and reg['startAuthorized'] is False,'EMPTY_REGISTRATION_REQUIRED')
     cfgraw=private(REG/'adapter-configuration.json');cfg=ns.parse(cfgraw)
     require(sha(cfgraw)==reg['adapterConfigurationHash'] and cfg['candidates']=={} and cfg['registryRoot']==str(REG/'registry'),'EMPTY_ADAPTER_CONFIGURATION_REQUIRED')
@@ -99,6 +100,7 @@ def prepare(ns):
     catalogue=ns.runtimes();require(catalogue['default']=='runc' and catalogue['runtimes'][reg['runtimeName']]['path']==str(ns.WRAPPER),'REGISTERED_RUNTIME_REQUIRED')
     raw=private(INPUT/'runtime-input-receipt.json');require(sha(raw)==INPUT_REPORT_HASH,'STARTUP_RECEIPT_DRIFT');receipt=ns.parse(raw)
     require(receipt['status']=='PRIVATE_STARTUP_INPUTS_PREPARED' and receipt['startAuthorized'] is False and receipt['directory']==str(INPUT),'PREPARED_INPUTS_REQUIRED')
+    require(receipt['roleImages']=={k:v['imageId'] for k,v in ROLES.items()} and receipt['runtimeUsers']=={k:f"{v['uid']}:{v['gid']}" for k,v in ROLES.items()},'PREPARED_ROLE_BINDING_DRIFT')
     traw=private(TRUST/'trust-receipt.json');require(sha(traw)==receipt['trustReceiptHash'],'TRUST_RECEIPT_DRIFT');trust=ns.parse(traw)
     files={n:private(INPUT/n,*((10006,10006) if n=='adapter.json' else (636,636) if n in ('config.yaml','apisix.yaml') else (0,0))) for n in receipt['outputHashes']}
     require(all(sha(b)==receipt['outputHashes'][n] for n,b in files.items()),'STARTUP_OUTPUT_DRIFT')
@@ -205,6 +207,7 @@ def operate(root):
     ns=namespace(REG/'register-provider-v2-runtime.py',REG_SOURCE_HASH)
     accounts=namespace(TRUST/'provider-role-accounts.py',ACCOUNT_HASH)
     for path,expected in ns.BINDS.values():require(sha(ns.read(Path(path),True))==expected,'HOST_EXECUTABLE_DRIFT')
+    own=private(Path(__file__).resolve())
     specs,preserved=prepare(ns);before=snapshot(ns);pid=ns.daemon_pid();identity=ns.identity(pid);guard=ns.preflight()
     networks={k:network(ns,k) for k in NETWORKS}
     names=ns.docker('ps','-a','--format','{{.Names}}').decode().splitlines()
@@ -221,6 +224,8 @@ def operate(root):
         st=os.fstat(fd);require(stat.S_ISREG(st.st_mode) and st.st_uid==0 and stat.S_IMODE(st.st_mode)==0o600,'GUARD_LOCK_CUSTODY_REQUIRED')
         fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
         require(snapshot(ns)==before and ns.identity(ns.daemon_pid())==identity,'TARGET_CHANGED_BEFORE_CREATE')
+        require(sha(ns.read(ns.GUARD))==ns.GUARD_HASH,'GUARD_CONFIGURATION_DRIFT')
+        require(prepare(ns)==(specs,preserved) and all(network(ns,k)==v for k,v in networks.items()),'PREPARED_INPUTS_DRIFT')
         imports=0
         for spec in specs:
             STAGE='IMAGE_IMPORT_'+spec['role'].upper()
@@ -240,8 +245,9 @@ def operate(root):
         for k,old in networks.items():require(network(ns,k)==old,'LIVE_NETWORK_CHANGED')
     finally:os.close(fd)
     STAGE='GUARD_READBACK';require(ns.preflight()==guard,'GUARD_CUSTODY_CHANGED');prepare(ns)
+    require(private(Path(__file__).resolve())==own,'CREATION_SOURCE_DRIFT')
     report={'schema':'ouf.semantic-provider-v2-stopped-creation.v1','status':'CREATED_STOPPED_AND_READBACK_VERIFIED',
-        'directory':str(root),'candidates':rows,'containerLifecycleOperations':2,'networkAttachmentOperations':3,
+        'directory':str(root),'sourceHash':sha(own),'candidates':rows,'containerLifecycleOperations':2,'networkAttachmentOperations':3,
         'imagesImported':imports,'existingContainerCount':len(before),'existingContainerStatesUnchanged':True,
         'daemonRestarted':False,'firewallWrites':0,'privateAuthorityKeysRead':0,'providerCalls':0,
         'runtimeAllowlistChanged':False,'liveAddressAllocationProven':False,'startAuthorized':False,'acceptanceGranted':False,'notReleaseAcceptance':True}
@@ -255,8 +261,9 @@ def main():
         import tempfile
         root=Path(tempfile.mkdtemp(prefix='semantic-provider-v2-stopped-create-',dir='/etc/ouf/deploy-snapshots'));root.chmod(0o700)
         result=operate(root);print('OUF_PROVIDER_V2_STOPPED_CREATION='+encoded(result).decode().strip())
-    except Exception:
-        print('OUF_PROVIDER_V2_STOPPED_CREATION=BLOCKED STAGE='+STAGE+' PARTIAL_EVIDENCE_RETAINED=true DO_NOT_RERUN_APPLY=true NO_RAW_OUTPUT=true')
+    except Exception as exc:
+        reason=str(exc) if type(exc).__name__=='Denied' and re.fullmatch('[A-Z_]+',str(exc)) else 'BOUNDED_OPERATION_FAILED'
+        print('OUF_PROVIDER_V2_STOPPED_CREATION=BLOCKED STAGE='+STAGE+' REASON='+reason+' PARTIAL_EVIDENCE_RETAINED=true DO_NOT_RERUN_APPLY=true NO_RAW_OUTPUT=true')
         if root:print('OUF_STOPPED_CREATION_SNAPSHOT='+str(root))
         return 1
     return 0
