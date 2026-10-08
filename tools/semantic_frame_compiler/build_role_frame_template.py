@@ -9,7 +9,8 @@ import copy
 from compile_creation_frame_policy import canonical, compile_policy, path, require
 
 
-def build_role_template(template, baseline_launch, launch, approved_user):
+def build_role_template(template, baseline_launch, launch, approved_user, *, mount_ordering):
+    require(mount_ordering in ('depth-path', 'depth-stable-user-first'), 'EXPLICIT_ENGINE_MOUNT_ORDER_REQUIRED')
     # Validation context only; its output is discarded. No target paths needed.
     context = {'schema': 'ouf.semantic-docker-frame-context.v1',
                'containerId': 'a' * 64, 'bundleParent': '/run/approved/bundles',
@@ -67,11 +68,11 @@ def build_role_template(template, baseline_launch, launch, approved_user):
         role_mounts.append({'destination': target, 'type': 'bind', 'source': source,
                             'options': copy.deepcopy(options)})
         reserved.add(target)
-    # This bounded constructor models the depth-only ordering exercised by the
-    # CI Engine: user mounts precede its fixed network mounts at equal depth.
-    # It is not an approved contract for an arbitrary target Engine/version.
+    # Ordering is an explicit independently reviewed Engine contract, not
+    # inferred from the OCI being checked. Exact comparison remains mandatory.
     binds = role_mounts + engine_mounts
-    binds.sort(key=lambda m: m['destination'].count('/'))
+    binds.sort(key=lambda m: (m['destination'].count('/'), m['destination'])
+               if mount_ordering == 'depth-path' else (m['destination'].count('/'),))
     oci['mounts'] = default_mounts + binds
     compile_policy(result, launch, context)
     return result

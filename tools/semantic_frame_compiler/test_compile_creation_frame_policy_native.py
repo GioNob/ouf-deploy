@@ -212,7 +212,9 @@ class NativeCompilerTests(unittest.TestCase):
             launch2['manifest']['mounts'] = [{**mount, 'target': '/run/role.json'}, mount2]
             launch2['sources'] = [{**launch['sources'][0], 'target': '/run/role.json'},
                 {**launch['sources'][0], **mount2, 'sha256': hashlib.sha256(source2.read_bytes()).hexdigest()}]
-            template2 = build_role_template(template, launch, launch2, copy.deepcopy(actual['process']['user']))
+            mount_ordering = os.environ.get('OUF_FRAME_COMPILER_MOUNT_ORDER', 'depth-stable-user-first')
+            template2 = build_role_template(template, launch, launch2, copy.deepcopy(actual['process']['user']),
+                                            mount_ordering=mount_ordering)
             policy_path2 = root / 'precreate-policy.json'
             # Both bridge backends in this fixture use a fresh runc-private
             # namespace (no path), so policy2 does not need the sandbox mapping.
@@ -264,7 +266,7 @@ class NativeCompilerTests(unittest.TestCase):
                             'approvedUser': copy.deepcopy(actual['process']['user']),
                             'engine': {'serverVersion': info['ServerVersion'], 'storageDriver': info['Driver'],
                                        'cgroupDriver': info['CgroupDriver'], 'backend': backend},
-                            'role': role, 'syntheticFixture': True, 'targetTemplateApproved': False,
+                            'role': role, 'mountOrdering': mount_ordering, 'syntheticFixture': True, 'targetTemplateApproved': False,
                             'acceptanceGranted': False, 'startAuthorized': False}
                 raw = canonical(baseline)
                 destination = export / (backend + '-' + role + '.json')
