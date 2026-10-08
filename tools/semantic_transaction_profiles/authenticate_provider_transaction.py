@@ -5,6 +5,7 @@ The installer review and both role mandates must already be externally issued.
 The known target bindings below are evidence selections, never authority grants.
 """
 import copy
+from datetime import datetime, timezone
 from pathlib import PurePosixPath
 import re
 import time
@@ -61,6 +62,47 @@ def signed(verifier, raw, signature_role, issuer, ctx, name, role, stage):
     except FileNotFoundError:
         raise TransactionDenied(stage, 'SIGNED_TARGET_RECORD_MISSING', role, [name]) from None
     require(result is True, stage, 'TARGET_RECORD_SIGNATURE_REQUIRED', role, [name])
+
+
+def validate_dependency_evidence(value, role, now, authority_expires):
+    """Bound signed review metadata, not a scanner/provenance verifier.
+
+    Issuer independently verifies the reports before approving their hashes.
+    Neither this document nor its counters can grant authority. Enforce the
+    existing 48-hour DB policy again at every authenticated checkpoint.
+    """
+    stage='VERIFY_REVIEWED_DEPENDENCY_FRESHNESS'
+    fields={'schema','role','imageConfigDigest','databasePin','reportSha256','inventorySha256',
+            'sourceArtifactSha256','scanDatabaseBuilt','scanDatabaseSchemaVersion','severityCounts',
+            'packageAlertCount','ignoredMatchCount'}
+    require(type(value) is dict and set(value)==fields,stage,'EXACT_REVIEWED_DEPENDENCY_EVIDENCE_REQUIRED',role)
+    same(value,{'schema':'ouf.semantic-provider-dependency-evidence.v1','role':role,
+               'imageConfigDigest':TARGETS[role]['imageConfigDigest']},stage,'DEPENDENCY_IMAGE_SCOPE_DRIFT',role)
+    for key in ('reportSha256','inventorySha256','sourceArtifactSha256'):
+        require(type(value[key]) is str and re.fullmatch('[0-9a-f]{64}',value[key]),stage,'DEPENDENCY_EVIDENCE_HASH_REQUIRED',role,[key])
+    pin=value['databasePin']
+    require(type(pin) is dict and set(pin)=={'status','schemaVersion','built','path','checksum'}
+            and pin['status']=='active' and type(pin['schemaVersion']) is str
+            and re.fullmatch(r'v6\.[0-9]+\.[0-9]+',pin['schemaVersion'])
+            and type(pin['checksum']) is str and re.fullmatch('sha256:[0-9a-f]{64}',pin['checksum'])
+            and type(pin['path']) is str and re.fullmatch('[A-Za-z0-9_.:-]{1,160}',pin['path']),
+            stage,'EXACT_REVIEWED_DATABASE_PIN_REQUIRED',role)
+    require(type(pin['built']) is str and re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z',pin['built']),
+            stage,'DATABASE_BUILD_TIMESTAMP_REQUIRED',role)
+    try:built=datetime.strptime(pin['built'],'%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc).timestamp()
+    except ValueError:raise TransactionDenied(stage,'DATABASE_BUILD_TIMESTAMP_REQUIRED',role) from None
+    require(built<=now<built+48*3600 and now<authority_expires<=built+48*3600,
+            stage,'DATABASE_FRESHNESS_DOES_NOT_COVER_AUTHORITY_WINDOW',role,['databasePin.built'])
+    same(value,{'scanDatabaseBuilt':pin['built'],'scanDatabaseSchemaVersion':pin['schemaVersion']},
+         stage,'REVIEWED_SCAN_DATABASE_DRIFT',role)
+    counts=value['severityCounts']
+    require(type(counts) is dict and set(counts)=={'Critical','High','Medium','Low','Negligible','Unknown'}
+            and all(type(count) is int and 0<=count<=1000000 for count in counts.values()),
+            stage,'EXACT_REVIEWED_SEVERITY_COUNTS_REQUIRED',role)
+    require(all(counts[key]==0 for key in ('Critical','High','Unknown'))
+            and type(value['packageAlertCount']) is int and value['packageAlertCount']==0
+            and type(value['ignoredMatchCount']) is int and value['ignoredMatchCount']==0,
+            stage,'REVIEWED_DEPENDENCY_THRESHOLD_NOT_MET',role)
 
 
 def _authenticate_role(role, records, authority, sources, observer_raw, verifier, clock=time.time):
@@ -136,6 +178,8 @@ def _authenticate_role(role, records, authority, sources, observer_raw, verifier
         signed(verifier, records[name], signature_role, issuer, ctx, name, role, stage)
     for name in ('review', 'intent', 'liveAuthorization', 'finalMandate'):
         window(values[name], clock())
+    validate_dependency_evidence(values['dependencyEvidence'],role,clock(),
+                                 max(values[name]['expiresAt'] for name in ('review','intent','liveAuthorization','finalMandate')))
     return {'intent': intent, 'policy': policy, 'template': template,
             'inputHashes': {name: digest(raw) for name, raw in records.items()},
             'sourceHashes': source_hashes}

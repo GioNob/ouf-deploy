@@ -105,3 +105,6 @@ La preparazione dei sei input v2 è completata sul VPS in `semantic-provider-v2-
 
 
 Provider v2 approved-transaction integration now connects guarded switching and concurrent admitted-runtime Docker requests. The 39-file source closure and 25 local authenticated tests are development validation only. Complete target acceptance/role mandates and real Docker cohort verification remain required; no target command or VPS operation is issued. See releases/PROVIDER_V2_ADMISSION_NEXT.md.
+
+
+Recovered existing signed dependency evidence for both v2 configs from Semantic PR #26, including already-completed operator fresh verification. Current DB validity ends 9 October 2026 08:31:48 Europe/Rome; avoid repeating completed scans/verifications. The transaction now checks freshness across all signed authority windows. See releases/PROVIDER_V2_IMAGE_REVIEW_DRAFT_20261008.md for actual custom/publisher decisions and remaining authority work. No target start command is issued.

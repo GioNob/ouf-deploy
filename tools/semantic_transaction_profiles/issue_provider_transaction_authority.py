@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 import time
 
-from authenticate_provider_transaction import AUTHORITIES, TARGETS, TransactionDenied, require, same
+from authenticate_provider_transaction import AUTHORITIES, TARGETS, TransactionDenied, require, same, validate_dependency_evidence
 from assemble_provider_profiles import digest, encoded
 from compile_creation_frame_policy import compile_policy
 from tools.semantic_provider_deployment_authentication import DetachedAuthenticator, decode, private_bytes
@@ -60,6 +60,7 @@ def issue_role_authority(role, mandate_binding, explicitly_approved_hash, record
             and identity(mandate['approvalRef']),stage,'EXPLICIT_TRANSACTION_AND_APPROVAL_REFS_REQUIRED',role)
     window(mandate,clock())
     values={name:decode(raw,131072) for name,raw in records.items()}
+    validate_dependency_evidence(values['dependencyEvidence'],role,clock(),mandate['expiresAt'])
     policy=compile_policy(values['template'],values['launch'],values['context'])
     require(encoded(policy)==records['framePolicy'] and values['context']['containerId']==target['containerId'],
             stage,'INDEPENDENT_COMPLETE_FRAME_REQUIRED',role)

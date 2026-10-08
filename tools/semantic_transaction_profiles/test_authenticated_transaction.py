@@ -110,7 +110,7 @@ class AuthenticatedTransactionTest(unittest.TestCase):
             'commandHashes':{'ip':'1'*64,'nsenter':'2'*64},'pythonPath':self.python['path'],'pythonHash':self.python['sha256']}
         values = {'template':template,'launch':launch,'context':context,'framePolicy':policy,'preparerTemplate':preparer,
             'deploymentConstraints':{'fixtureOnly':True},'provenanceEvidence':{'fixturePublisher':'disposable'},
-            'dependencyEvidence':{'fixtureScan':'disposable'}}
+            'dependencyEvidence':self.dependency_evidence(role)}
         records = {k:encoded(v) for k,v in values.items()}
         review = {'schema':'ouf.semantic-provider-target-review.v1','issuerRef':AUTHORITIES['approvalIssuerRef'],
             'installationRef':AUTHORITIES['installationRef'],'entityRef':AUTHORITIES['entityRef'],'role':role,**target,
@@ -143,6 +143,18 @@ class AuthenticatedTransactionTest(unittest.TestCase):
             ('finalMandate','FINAL_DEPLOYMENT_APPROVAL',AUTHORITIES['approvalIssuerRef'])]:
             self.sign(records[name],signature_role,issuer)
         return records
+
+    def dependency_evidence(self,role):
+        from datetime import datetime,timezone
+        built=datetime.fromtimestamp(self.now-60,timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+        return {'schema':'ouf.semantic-provider-dependency-evidence.v1','role':role,
+            'imageConfigDigest':TARGETS[role]['imageConfigDigest'],
+            'databasePin':{'status':'active','schemaVersion':'v6.1.10','built':built,
+                           'path':'disposable-ci-db.tar.zst','checksum':'sha256:'+'a'*64},
+            'reportSha256':'b'*64,'inventorySha256':'c'*64,'sourceArtifactSha256':'d'*64,
+            'scanDatabaseBuilt':built,'scanDatabaseSchemaVersion':'v6.1.10',
+            'severityCounts':{key:0 for key in ('Critical','High','Medium','Low','Negligible','Unknown')},
+            'packageAlertCount':0,'ignoredMatchCount':0}
 
     def validate(self,role='adapter'):
         return authenticate_role(role,self.records[role],self.authority,self.sources,self.observer,self.verifier,self.clock)
@@ -354,6 +366,52 @@ class AuthenticatedTransactionTest(unittest.TestCase):
         self.assertEqual(result['signaturesIssued'],0)
         self.assertEqual(list(output.iterdir()),[])
         self.assertEqual(list(self.signatures.iterdir()),[])
+
+    def denied_dependency_before_signing(self,offset,critical=0):
+        from datetime import datetime,timezone
+        import json
+        issue,inputs,mandate,binding,output=self.issue_inputs()
+        value=json.loads(inputs['dependencyEvidence'])
+        built=datetime.fromtimestamp(self.now+offset,timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+        value['databasePin']['built']=value['scanDatabaseBuilt']=built
+        value['severityCounts']['Critical']=critical
+        inputs['dependencyEvidence']=encoded(value)
+        mandate['inputHashes']['dependencyEvidence']=digest(inputs['dependencyEvidence'])
+        path=Path(binding['path']);self.private(path,encoded(mandate));binding=self.bind(path)
+        with patch('issue_provider_transaction_authority.ExistingEd25519Signer',side_effect=AssertionError('KEY_READ')):
+            with self.assertRaises(TransactionDenied) as raised:
+                issue('adapter',binding,binding['sha256'],inputs,self.authority,self.sources,
+                      self.observer,self.verifier,output,self.clock)
+        self.assertEqual(list(output.iterdir()),[])
+        self.assertEqual(raised.exception.diagnosis['stage'],'VERIFY_REVIEWED_DEPENDENCY_FRESHNESS')
+        return raised.exception.diagnosis['reason']
+
+    def test_expired_database_denied_even_with_matching_root_mandate(self):
+        self.assertEqual(self.denied_dependency_before_signing(-48*3600),
+                         'DATABASE_FRESHNESS_DOES_NOT_COVER_AUTHORITY_WINDOW')
+
+    def test_future_database_denied_before_signing(self):
+        self.assertEqual(self.denied_dependency_before_signing(1),
+                         'DATABASE_FRESHNESS_DOES_NOT_COVER_AUTHORITY_WINDOW')
+
+    def test_database_must_cover_entire_approved_window(self):
+        self.assertEqual(self.denied_dependency_before_signing(-48*3600+120),
+                         'DATABASE_FRESHNESS_DOES_NOT_COVER_AUTHORITY_WINDOW')
+
+    def test_critical_dependency_cannot_be_overridden_by_root_mandate(self):
+        self.assertEqual(self.denied_dependency_before_signing(-60,1),
+                         'REVIEWED_DEPENDENCY_THRESHOLD_NOT_MET')
+
+    def test_valid_review_signature_cannot_extend_expired_database(self):
+        import json
+        from datetime import datetime,timezone
+        value=json.loads(self.records['adapter']['dependencyEvidence'])
+        built=datetime.fromtimestamp(self.now-48*3600,timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+        value['databasePin']['built']=value['scanDatabaseBuilt']=built
+        self.records['adapter']['dependencyEvidence']=encoded(value)
+        self.alter('review','dependencyEvidenceHash',digest(encoded(value)),resign=True)
+        with self.assertRaisesRegex(TransactionDenied,'DATABASE_FRESHNESS_DOES_NOT_COVER_AUTHORITY_WINDOW'):
+            self.validate()
 
     def test_root_review_input_drift_rejected_before_key_read(self):
         issue,inputs,mandate,binding,output=self.issue_inputs()
