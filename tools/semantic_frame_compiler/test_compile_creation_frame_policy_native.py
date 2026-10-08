@@ -81,7 +81,12 @@ class NativeCompilerTests(unittest.TestCase):
             self.assertEqual(inspected['GraphDriver']['Name'], 'vfs')
             self.assertEqual(set(storage_data), {'ID'}, 'owned Engine fixture storage schema drift')
             self.assertTrue(re.fullmatch('[0-9a-f]{64}', storage_data['ID']))
-            independent_rootfs = str(root / 'data' / 'vfs' / 'dir' / storage_data['ID'])
+            # API ID is not the writable layer's mount ID. Read the owned
+            # daemon's independent CID-to-mount-ID metadata before task create.
+            mount_record = root / 'data' / 'image' / 'vfs' / 'layerdb' / 'mounts' / cid / 'mount-id'
+            mount_id = mount_record.read_text().strip()
+            self.assertTrue(re.fullmatch('[0-9a-f]{64}', mount_id))
+            independent_rootfs = str(root / 'data' / 'vfs' / 'dir' / mount_id)
             self.assertTrue(Path(independent_rootfs).is_dir())
             self.assertNotEqual(docker('start', cid).returncode, 0)
             capture = root / ('capture-' + cid + '.json')
@@ -139,9 +144,11 @@ class NativeCompilerTests(unittest.TestCase):
             metadata2 = json.loads(docker('inspect', '--format', '{{json .}}', cid2).stdout)
             self.assertEqual(metadata2['GraphDriver']['Name'], 'vfs')
             self.assertEqual(set(metadata2['GraphDriver']['Data']), {'ID'})
-            storage_id2 = metadata2['GraphDriver']['Data']['ID']; self.assertTrue(re.fullmatch('[0-9a-f]{64}', storage_id2))
+            self.assertTrue(re.fullmatch('[0-9a-f]{64}', metadata2['GraphDriver']['Data']['ID']))
+            mount_id2 = (root / 'data' / 'image' / 'vfs' / 'layerdb' / 'mounts' / cid2 / 'mount-id').read_text().strip()
+            self.assertTrue(re.fullmatch('[0-9a-f]{64}', mount_id2))
             context2 = {**context, 'containerId': cid2,
-                        'rootfsPath': str(root / 'data' / 'vfs' / 'dir' / storage_id2)}
+                        'rootfsPath': str(root / 'data' / 'vfs' / 'dir' / mount_id2)}
             template = {'schema': 'ouf.semantic-creation-frame-template.v1', 'expectedOci': template_oci,
                         'approvedHooks': copy.deepcopy(actual.get('hooks') or {})}
             policy2 = compile_policy(template, launch, context2)
