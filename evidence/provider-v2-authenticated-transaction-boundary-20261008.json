@@ -50,5 +50,14 @@
     "canonicalRuntimeHashesVerified": 29,
     "productionCheckUnchanged": true,
     "localTestsPassed": 18
+  },
+  "hostedVerification": {
+    "sourceCommit": "ee95fba9aa664c2b6e3909d7cc74c2fe81739087",
+    "runId": 37832278081,
+    "url": "https://github.com/GioNob/ouf-deploy/actions/runs/37832278081",
+    "profiles": "success",
+    "nativeFrameProfiles": "success",
+    "targetObservation": false,
+    "targetAcceptance": false
   }
 }

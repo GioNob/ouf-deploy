@@ -185,3 +185,10 @@ migration, candidates, inputs and product asset must not be repeated.
 
 
 Hosted run 37831986938: 17/18 authentication tests passed; sealed-loader acceptance correctly denied PRIVATE_INTAKE_HASH_DRIFT. Local materialization had appended one trailing newline to 32 pre-existing repository files. Restored exact repository bytes and canonical closure hashes; all 29 runtime hashes agree with cohort-draft/sources.json. Production hash checks unchanged. Eighteen local tests pass after correction. This is CI/source diagnosis, not target observation.
+
+
+## Verified cloud checkpoint and target authority dependency
+
+Hosted CI [37832278081](https://github.com/GioNob/ouf-deploy/actions/runs/37832278081), source `ee95fba9aa664c2b6e3909d7cc74c2fe81739087`, passed both profiles and native-frame-profiles jobs. This verifies the sealed intake/explicit role-issuance boundary and existing real native regression; it does not inspect or authorize the VPS. The target orchestrator remains incomplete: live guarded wrapper/allowlist switch, complete operator invocation integration and Docker cohort lifecycle are still required. No target command is ready.
+
+Actual complete target input records and independent publisher/dependency acceptance remain unavailable in cloud. Operator intervention is required to supply authorized full-record custody and explicit per-role root mandates bound to the actual two CIDs and reviewed bytes; hash-only receipts and general permission to modify GitHub cannot replace them. Do not transmit private signing keys or secrets to cloud, manufacture acceptance or rerun completed target preparations. Preserve private documents on the VPS. The next integration must consume them there under a complete reviewed operator transaction, not a preparation-only command.
