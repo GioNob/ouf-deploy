@@ -20,6 +20,7 @@ import re
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from compile_creation_frame_policy import canonical, compile_policy
+from build_role_frame_template import build_role_template
 from review_semantic_oci_policy import configured_profile, schema_from_source_closure
 
 
@@ -28,6 +29,11 @@ class NativeCompilerTests(unittest.TestCase):
         self.assertEqual(os.geteuid(), 0)
         backend = os.environ.get('OUF_FRAME_COMPILER_BACKEND', 'classic-vfs')
         network_mode = os.environ.get('OUF_FRAME_COMPILER_NETWORK', 'none')
+        role = os.environ.get('OUF_FRAME_COMPILER_ROLE', 'adapter')
+        self.assertIn(role, ('adapter', 'southbound'))
+        role_uid = 10006 if role == 'adapter' else 636
+        root_readonly = role == 'adapter'
+        readonly_flags = ['--read-only'] if root_readonly else []
         self.assertIn(network_mode, ('none', 'bridge'))
         self.assertIn(backend, ('classic-vfs', 'containerd-overlayfs'))
         root = Path(tempfile.mkdtemp(prefix='ouf-frame-compiler-', dir='/root'))
@@ -81,9 +87,9 @@ class NativeCompilerTests(unittest.TestCase):
             self.assertEqual(docker('run', '-d', '--network', 'none', '--name', 'existing',
                                     'busybox:1.37.0', 'sleep', '600').returncode, 0)
             self.addCleanup(lambda: docker('rm', '-f', 'candidate', 'candidate2', 'existing'))
-            source = root / 'source'; source.write_bytes(b'CI_PRIVATE_SOURCE'); source.chmod(0o600); os.chown(source, 10006, 10006)
+            source = root / 'source'; source.write_bytes(b'CI_PRIVATE_SOURCE'); source.chmod(0o600); os.chown(source, role_uid, role_uid)
             create = docker('create', '--name', 'candidate', '--runtime', 'ouf-ci-capture', '--network', candidate_network,
-                            '--user', '10006:10006', '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
+                            '--user', str(role_uid) + ':' + str(role_uid), *readonly_flags, '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
                             '--memory', '256m', '--memory-swap', '256m', '--pids-limit', '128', '--no-healthcheck',
                             '--mount', 'type=bind,source=' + str(source) + ',target=/approved-source,readonly',
                             'busybox:1.37.0', 'sleep', '600')
@@ -132,9 +138,9 @@ class NativeCompilerTests(unittest.TestCase):
             import hashlib
             mount = {'source': str(source), 'target': '/approved-source', 'readOnly': True}
             launch = {'schema': 'ouf.semantic-creation-frame-launch.v1',
-                'manifest': {'user': '10006:10006', 'readOnlyRoot': True, 'memoryBytes': 268435456, 'pidsLimit': 128, 'mounts': [mount]},
-                'startup': {'uid': 10006, 'gid': 10006, 'umask': None, 'cwd': '/', 'args': ['sleep', '600'], 'env': list(env)},
-                'sources': [{**mount, 'uid': 10006, 'gid': 10006, 'mode': 0o600, 'maxBytes': 131072,
+                'manifest': {'user': str(role_uid) + ':' + str(role_uid), 'readOnlyRoot': root_readonly, 'memoryBytes': 268435456, 'pidsLimit': 128, 'mounts': [mount]},
+                'startup': {'uid': role_uid, 'gid': role_uid, 'umask': None, 'cwd': '/', 'args': ['sleep', '600'], 'env': list(env)},
+                'sources': [{**mount, 'uid': role_uid, 'gid': role_uid, 'mode': 0o600, 'maxBytes': 131072,
                             'sha256': hashlib.sha256(source.read_bytes()).hexdigest()}]}
             context = {'schema': 'ouf.semantic-docker-frame-context.v1', 'containerId': cid,
                        'bundleParent': str(bundle.parent), 'metadataParent': str(root / 'data' / 'containers'),
@@ -167,11 +173,16 @@ class NativeCompilerTests(unittest.TestCase):
             # fixed. Compile candidate two before Docker generates its OCI.
             # No field from candidate two's captured OCI may alter that policy.
             self.assertIsNone(context['networkNamespaceName'], 'fixture requires a fresh private namespace')
+            source2 = root / 'source2'; source2.write_bytes(b'CI_SECOND_SEALED_SOURCE')
+            source2.chmod(0o600); os.chown(source2, role_uid, role_uid)
             create2 = docker('create', '--name', 'candidate2', '--runtime', 'ouf-ci-capture', '--network', candidate_network,
-                            '--user', '10006:10006', '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
-                            '--memory', '256m', '--memory-swap', '256m', '--pids-limit', '128', '--no-healthcheck',
-                            '--mount', 'type=bind,source=' + str(source) + ',target=/approved-source,readonly',
-                            'busybox:1.37.0', 'sleep', '600')
+                            '--user', str(role_uid) + ':' + str(role_uid), *readonly_flags,
+                            '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
+                            '--memory', '512m', '--memory-swap', '512m', '--pids-limit', '64', '--no-healthcheck',
+                            '--workdir', '/tmp', '--env', 'CI_ROLE=second',
+                            '--mount', 'type=bind,source=' + str(source) + ',target=/run/role.json,readonly',
+                            '--mount', 'type=bind,source=' + str(source2) + ',target=/run/deep/trust.pem,readonly',
+                            'busybox:1.37.0', 'sh', '-c', 'sleep 601')
             self.assertEqual(create2.returncode, 0); cid2 = create2.stdout.decode().strip()
             metadata2 = json.loads(docker('inspect', '--format', '{{json .}}', cid2).stdout)
             if backend == 'classic-vfs':
@@ -189,11 +200,20 @@ class NativeCompilerTests(unittest.TestCase):
                         'rootfsPath': independent_rootfs2}
             template = {'schema': 'ouf.semantic-creation-frame-template.v1', 'expectedOci': template_oci,
                         'approvedHooks': copy.deepcopy(actual.get('hooks') or {})}
+            launch2 = copy.deepcopy(launch)
+            launch2['startup'].update(args=['sh', '-c', 'sleep 601'], cwd='/tmp')
+            launch2['startup']['env'].append('CI_ROLE=second')
+            launch2['manifest'].update(memoryBytes=536870912, pidsLimit=64)
+            mount2 = {'source': str(source2), 'target': '/run/deep/trust.pem', 'readOnly': True}
+            launch2['manifest']['mounts'] = [{**mount, 'target': '/run/role.json'}, mount2]
+            launch2['sources'] = [{**launch['sources'][0], 'target': '/run/role.json'},
+                {**launch['sources'][0], **mount2, 'sha256': hashlib.sha256(source2.read_bytes()).hexdigest()}]
+            template2 = build_role_template(template, launch, launch2, copy.deepcopy(actual['process']['user']))
             policy_path2 = root / 'precreate-policy.json'
             # Both bridge backends in this fixture use a fresh runc-private
             # namespace (no path), so policy2 does not need the sandbox mapping.
             # Fix the complete policy before Docker generates candidate2 OCI.
-            policy2 = compile_policy(template, launch, context2)
+            policy2 = compile_policy(template2, launch2, context2)
             sealed2 = canonical(policy2)
             fd = os.open(policy_path2, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
             with os.fdopen(fd, 'wb') as stream:
@@ -222,7 +242,7 @@ class NativeCompilerTests(unittest.TestCase):
                   'SECOND_POLICY_SEALED_BEFORE_OCI_GENERATION=true' +
                   ' SECOND_POLICY_SEALED_BEFORE_OCI_READ=true SECOND_EXACT_COMPARISON=true '
                   'PRODUCTION_PRECREATE_BINDING_PROVEN=false TARGET_START_AUTHORIZED=false BACKEND=' + backend +
-                  ' NETWORK=' + network_mode)
+                  ' NETWORK=' + network_mode + ' ROLE=' + role + ' ROLE_STARTUP_RESOURCES_MULTI_MOUNT=true')
 
 
 if __name__ == '__main__': unittest.main()

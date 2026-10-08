@@ -15,6 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         backend: [classic-vfs, containerd-overlayfs]
+        role: [adapter, southbound]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,6 +31,7 @@ jobs:
           cp owner-fixture/tools/review_semantic_oci_policy.py tools/semantic_frame_compiler/
           cp owner-fixture/tools/semantic_oci_shape_schema.json tools/semantic_frame_compiler/
           python3 -B -m unittest discover -v -s tools/semantic_frame_compiler -p test_compile_creation_frame_policy.py
+          python3 -B -m unittest discover -v -s tools/semantic_frame_compiler -p test_build_role_frame_template.py
           python3 -B -m unittest discover -v -s tools/semantic_frame_compiler -p test_prepare_provider_v2_launch_inputs.py
           python3 -B -m unittest discover -v -s tools/semantic_frame_compiler -p test_diagnose_provider_v2_launch_inputs.py
           python3 -B -m unittest discover -v -s owner-fixture/tests -p test_semantic_creation_frame.py
@@ -39,4 +41,4 @@ jobs:
         run: |
           sudo install -d -m 700 /root/ouf-frame-compiler-fixture
           sudo install -m 600 tools/semantic_frame_compiler/*.py tools/semantic_frame_compiler/semantic_oci_shape_schema.json /root/ouf-frame-compiler-fixture/
-          sudo env OUF_FRAME_COMPILER_NETWORK=bridge OUF_FRAME_COMPILER_BACKEND=${{ matrix.backend }} /usr/bin/python3 -I -B /root/ouf-frame-compiler-fixture/test_compile_creation_frame_policy_native.py
+          sudo env OUF_FRAME_COMPILER_ROLE=${{ matrix.role }} OUF_FRAME_COMPILER_NETWORK=bridge OUF_FRAME_COMPILER_BACKEND=${{ matrix.backend }} /usr/bin/python3 -I -B /root/ouf-frame-compiler-fixture/test_compile_creation_frame_policy_native.py
