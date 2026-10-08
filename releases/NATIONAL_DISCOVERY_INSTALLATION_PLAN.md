@@ -1,5 +1,10 @@
 # National discovery installation: exact current preparation
 
+## Stato corrente — 8 ottobre 2026
+
+TLS e sei file di avvio v2 sono preparati sul VPS; i candidati precedenti restano mai avviati. Lettura root completata: configurazione daemon assente, guard originale e tool effettivi identificati. Il prossimo intervento concreto è [registrare il runtime OUF con lista di candidati vuota](PROVIDER_V2_RUNTIME_REGISTRATION.md). Bootstrap fisso `9668abd6abec533ba3d45af92e673ae797d6330a`; [CI finale 37724467103](https://github.com/GioNob/ouf-deploy/actions/runs/37724467103) passata: otto test di pubblicazione/rifiuto e una prova Docker isolata reale, senza skip. Nessuna registrazione o creazione v2 ancora applicata al target. Il runner non ha il privilegio di scrittura richiesto: l'operatore deve eseguire il bootstrap bounded con sudo. Questo aggiunge soltanto il runtime nominato e usa SIGHUP, mantenendo default/PID del daemon/stati dei container e verificando il guard nativo; allowlist vuota, nessuna autorità di avvio. Dopo la ricevuta target: nuovo manifesto/candidati fermi, transazione di ammissione e avvio, rollout Semantic/MCP e percorso nazionale Teatri → approvazione → ingestion → UDP. Nessun job nazionale Teatri ancora eseguito. Le sezioni cronologiche seguenti conservano le evidenze precedenti; questo paragrafo identifica il prossimo passo attuale.
+
+
 ## Available and verified
 
 Signed archives are retained privately at `/home/oufadmin/ouf-discovery-signed-stage-pn8_x4vj`. Target run 37667405182 independently verified five signatures per role and each archive's actual image/config/layer binding. Nothing was imported or started.
