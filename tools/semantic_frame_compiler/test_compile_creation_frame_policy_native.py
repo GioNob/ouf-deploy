@@ -19,7 +19,7 @@ import re
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from compile_creation_frame_policy import compile_policy
+from compile_creation_frame_policy import canonical, compile_policy
 from review_semantic_oci_policy import configured_profile, schema_from_source_closure
 
 
@@ -28,7 +28,7 @@ class NativeCompilerTests(unittest.TestCase):
         self.assertEqual(os.geteuid(), 0)
         root = Path(tempfile.mkdtemp(prefix='ouf-frame-compiler-', dir='/root'))
         root.chmod(0o700); self.addCleanup(shutil.rmtree, root)
-        capture = root / 'capture.json'; runtime = root / 'capture-runtime'
+        runtime = root / 'capture-runtime'
         runtime.write_text('#!/usr/bin/python3\n' +
             'import json,os,pathlib,subprocess,sys\n' +
             'args=sys.argv[1:]\n' +
@@ -36,7 +36,7 @@ class NativeCompilerTests(unittest.TestCase):
             '    i=args.index("--bundle") if "--bundle" in args else args.index("-b")\n' +
             '    bundle=pathlib.Path(args[i+1]).resolve()\n' +
             '    value={"cid":args[-1],"bundle":str(bundle),"oci":json.loads((bundle/"config.json").read_bytes())}\n' +
-            '    fd=os.open(' + repr(str(capture)) + ',os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)\n' +
+            '    fd=os.open(' + repr(str(root / 'capture-')) + '+args[-1]+".json",os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)\n' +
             '    with os.fdopen(fd,"wb") as stream:stream.write(json.dumps(value).encode());stream.flush();os.fsync(stream.fileno())\n' +
             '    sys.exit(77)\n' +
             'if "start" in args:sys.exit(78)\n' +
@@ -68,7 +68,7 @@ class NativeCompilerTests(unittest.TestCase):
             self.assertEqual(docker('pull', 'busybox:1.37.0', timeout=120).returncode, 0)
             self.assertEqual(docker('run', '-d', '--network', 'none', '--name', 'existing',
                                     'busybox:1.37.0', 'sleep', '600').returncode, 0)
-            self.addCleanup(lambda: docker('rm', '-f', 'candidate', 'existing'))
+            self.addCleanup(lambda: docker('rm', '-f', 'candidate', 'candidate2', 'existing'))
             source = root / 'source'; source.write_bytes(b'CI_PRIVATE_SOURCE'); source.chmod(0o600); os.chown(source, 10006, 10006)
             create = docker('create', '--name', 'candidate', '--runtime', 'ouf-ci-capture', '--network', 'none',
                             '--user', '10006:10006', '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
@@ -84,6 +84,7 @@ class NativeCompilerTests(unittest.TestCase):
             independent_rootfs = str(root / 'data' / 'vfs' / 'dir' / storage_data['ID'])
             self.assertTrue(Path(independent_rootfs).is_dir())
             self.assertNotEqual(docker('start', cid).returncode, 0)
+            capture = root / ('capture-' + cid + '.json')
             self.assertTrue(capture.is_file(), 'create did not reach refusing capture runtime')
             captured = json.loads(capture.read_bytes()); self.assertEqual(captured['cid'], cid)
             actual = captured['oci']; bundle = Path(captured['bundle'])
@@ -125,9 +126,46 @@ class NativeCompilerTests(unittest.TestCase):
             state = json.loads(docker('inspect', '--format', '{{json .State}}', cid).stdout)
             self.assertFalse(state['Running']); self.assertEqual(state['Pid'], 0)
             self.assertTrue(state['StartedAt'].startswith('0001-01-01'))
+            # Baseline fixture only: the template from candidate one is now
+            # fixed. Compile candidate two before Docker generates its OCI.
+            # No field from candidate two's captured OCI may alter that policy.
+            self.assertIsNone(context['networkNamespaceName'], 'fixture requires a fresh private namespace')
+            create2 = docker('create', '--name', 'candidate2', '--runtime', 'ouf-ci-capture', '--network', 'none',
+                            '--user', '10006:10006', '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
+                            '--memory', '256m', '--memory-swap', '256m', '--pids-limit', '128', '--no-healthcheck',
+                            '--mount', 'type=bind,source=' + str(source) + ',target=/approved-source,readonly',
+                            'busybox:1.37.0', 'sleep', '600')
+            self.assertEqual(create2.returncode, 0); cid2 = create2.stdout.decode().strip()
+            metadata2 = json.loads(docker('inspect', '--format', '{{json .}}', cid2).stdout)
+            self.assertEqual(metadata2['GraphDriver']['Name'], 'vfs')
+            self.assertEqual(set(metadata2['GraphDriver']['Data']), {'ID'})
+            storage_id2 = metadata2['GraphDriver']['Data']['ID']; self.assertTrue(re.fullmatch('[0-9a-f]{64}', storage_id2))
+            context2 = {**context, 'containerId': cid2,
+                        'rootfsPath': str(root / 'data' / 'vfs' / 'dir' / storage_id2)}
+            template = {'schema': 'ouf.semantic-creation-frame-template.v1', 'expectedOci': template_oci,
+                        'approvedHooks': copy.deepcopy(actual.get('hooks') or {})}
+            policy2 = compile_policy(template, launch, context2)
+            sealed2 = canonical(policy2); policy_path2 = root / 'precreate-policy.json'
+            fd = os.open(policy_path2, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            with os.fdopen(fd, 'wb') as stream:
+                stream.write(sealed2); stream.flush(); os.fsync(stream.fileno())
+            capture2 = root / ('capture-' + cid2 + '.json'); self.assertFalse(capture2.exists())
+            self.assertNotEqual(docker('start', cid2).returncode, 0)
+            captured2 = json.loads(capture2.read_bytes()); self.assertEqual(captured2['cid'], cid2)
+            actual2 = captured2['oci']; rootfs2 = Path(actual2['root']['path'])
+            if not rootfs2.is_absolute(): rootfs2 = Path(captured2['bundle']) / rootfs2
+            actual2['root']['path'] = str(rootfs2)
+            self.assertEqual(policy_path2.read_bytes(), sealed2)
+            self.assertTrue(policy2['expectedOci'] == actual2, 'SECOND_CANDIDATE_PRECREATE_POLICY_DRIFT')
+            self.assertTrue(configured_profile(actual2, policy2['expectedOci'], policy2['manifest'], policy2['startup'],
+                                              policy2['approvedHooks'], schema)['configuredPolicyConforms'])
+            state2 = json.loads(docker('inspect', '--format', '{{json .State}}', cid2).stdout)
+            self.assertFalse(state2['Running']); self.assertEqual(state2['Pid'], 0)
+            self.assertTrue(state2['StartedAt'].startswith('0001-01-01'))
             self.assertEqual(docker('inspect', '--format', '{{.State.Running}}', 'existing').stdout.strip(), b'true')
             print('FRAME_COMPILER_NATIVE=PASS REAL_DOCKER_SHAPE=true RUNC_CREATE_REFUSED=true APPLICATION_NOT_STARTED=true '
                   'SYNTHETIC_TEMPLATE_ONLY=true INDEPENDENT_TEMPLATE_APPROVAL=false CONTEXT_AUTHENTICATED=false '
+                  'SECOND_POLICY_SEALED_BEFORE_OCI_GENERATION=true SECOND_EXACT_COMPARISON=true '
                   'PRODUCTION_PRECREATE_BINDING_PROVEN=false TARGET_START_AUTHORIZED=false')
 
 
