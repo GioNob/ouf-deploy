@@ -61,12 +61,15 @@ def collect(config):
     rows = []
     for role, (cid, image) in CANDIDATES.items():
         value = query('inspect', '--type', 'container', '--format',
-                      '{"id":{{json .Id}},"image":{{json .Image}},"state":{{json .State}},"graph":{{json .GraphDriver}},"runtime":{{json .HostConfig.Runtime}}}', cid)
+                      '{"id":{{json .Id}},"image":{{json .Image}},"state":{{json .State}},"graph":{{json (index . "GraphDriver")}},"snapshotter":{{json (index . "Snapshotter")}},"storage":{{json (index . "Storage")}},"runtime":{{json .HostConfig.Runtime}}}', cid)
         require(value['id'] == cid and value['image'] == image and value['runtime'] == 'ouf-semantic-admitted-v2', 'EXACT_CANDIDATE_BINDING_DRIFT')
         state = value['state']
         require(state['Status'] == 'created' and state['Running'] is False and state['Restarting'] is False
                 and state['Pid'] == 0 and state['StartedAt'].startswith('0001-01-01T'), 'CANDIDATE_NOT_NEVER_STARTED')
-        graph = value['graph']; require(type(graph) is dict and set(graph) == {'Name', 'Data'}, 'STORAGE_SCHEMA_UNPROVEN')
+        graph = value['graph']
+        if graph is None:
+            graph = {'Name': None, 'Data': {}}
+        require(type(graph) is dict and set(graph) == {'Name', 'Data'}, 'STORAGE_SCHEMA_UNPROVEN')
         data = graph['Data'] or {}; require(type(data) is dict and len(data) <= 16, 'STORAGE_SCHEMA_UNPROVEN')
         # Finite recognized names only; unknown keys/values stay in memory.
         recognized = ('ID', 'Snapshotter', 'MergedDir', 'UpperDir', 'LowerDir', 'WorkDir', 'dir')
@@ -76,6 +79,11 @@ def collect(config):
                    for name in recognized if name in data}
         rows.append({'role': role, 'containerId': cid, 'imageId': image, 'neverStarted': True,
                      'runtime': value['runtime'], 'graphDriver': graph['Name'], 'storageMetadata': summary,
+                     'graphDriverRecordPresent': value['graph'] is not None,
+                     'snapshotterRecordPresent': value['snapshotter'] is not None,
+                     'snapshotterRecordHash': hashlib.sha256(encoded(value['snapshotter'])).hexdigest(),
+                     'storageRecordPresent': value['storage'] is not None,
+                     'storageRecordHash': hashlib.sha256(encoded(value['storage'])).hexdigest(),
                      'unknownStorageFieldCount': len(set(data) - set(recognized)),
                      'independentRootfsBindingProven': False})
     return {'dockerDataRoot': info['dataRoot'], 'storageDriver': info['storageDriver'],
