@@ -26,6 +26,8 @@ from review_semantic_oci_policy import configured_profile, schema_from_source_cl
 class NativeCompilerTests(unittest.TestCase):
     def test_real_engine_generated_paths_and_no_runc_or_application_execution(self):
         self.assertEqual(os.geteuid(), 0)
+        backend = os.environ.get('OUF_FRAME_COMPILER_BACKEND', 'classic-vfs')
+        self.assertIn(backend, ('classic-vfs', 'containerd-overlayfs'))
         root = Path(tempfile.mkdtemp(prefix='ouf-frame-compiler-', dir='/root'))
         root.chmod(0o700); self.addCleanup(shutil.rmtree, root)
         runtime = root / 'capture-runtime'
@@ -43,12 +45,14 @@ class NativeCompilerTests(unittest.TestCase):
             'sys.exit(subprocess.call([' + repr(shutil.which('runc')) + ']+args))\n')
         runtime.chmod(0o700)
         daemon_cfg = root / 'daemon.json'
-        daemon_cfg.write_text(json.dumps({'runtimes': {'ouf-ci-capture': {'path': str(runtime)}}}))
+        daemon_cfg.write_text(json.dumps({'runtimes': {'ouf-ci-capture': {'path': str(runtime)}},
+            'features': {'containerd-snapshotter': backend == 'containerd-overlayfs'}}))
         socket = 'unix://' + str(root / 'docker.sock')
         with (root / 'daemon.log').open('wb') as log:
             daemon = subprocess.Popen([shutil.which('dockerd'), '--config-file', str(daemon_cfg),
                 '--data-root', str(root / 'data'), '--exec-root', str(root / 'exec'), '--pidfile', str(root / 'pid'),
-                '-H', socket, '--bridge', 'none', '--iptables=false', '--ip6tables=false', '--storage-driver', 'vfs'],
+                '-H', socket, '--bridge', 'none', '--iptables=false', '--ip6tables=false', '--storage-driver',
+                'vfs' if backend == 'classic-vfs' else 'overlayfs'],
                 stdout=log, stderr=log)
             def stop():
                 if daemon.poll() is None:
@@ -77,22 +81,26 @@ class NativeCompilerTests(unittest.TestCase):
                             'busybox:1.37.0', 'sleep', '600')
             self.assertEqual(create.returncode, 0); cid = create.stdout.decode().strip()
             inspected = json.loads(docker('inspect', '--format', '{{json .}}', cid).stdout)
-            storage_data = inspected['GraphDriver']['Data']
-            self.assertEqual(inspected['GraphDriver']['Name'], 'vfs')
-            self.assertEqual(set(storage_data), {'ID'}, 'owned Engine fixture storage schema drift')
-            self.assertTrue(re.fullmatch('[0-9a-f]{64}', storage_data['ID']))
-            # API ID is not the writable layer's mount ID. Read the owned
-            # daemon's independent CID-to-mount-ID metadata before task create.
-            mount_record = root / 'data' / 'image' / 'vfs' / 'layerdb' / 'mounts' / cid / 'mount-id'
-            mount_id = mount_record.read_text().strip()
-            self.assertTrue(re.fullmatch('[0-9a-f]{64}', mount_id))
-            independent_rootfs = str(root / 'data' / 'vfs' / 'dir' / mount_id)
-            self.assertTrue(Path(independent_rootfs).is_dir())
+            if backend == 'classic-vfs':
+                storage_data = inspected['GraphDriver']['Data']
+                self.assertEqual(inspected['GraphDriver']['Name'], 'vfs')
+                self.assertEqual(set(storage_data), {'ID'}, 'owned Engine fixture storage schema drift')
+                self.assertTrue(re.fullmatch('[0-9a-f]{64}', storage_data['ID']))
+                # API ID is not the writable layer's mount ID. Read the owned
+                # daemon's CID-to-mount-ID metadata before task create.
+                mount_record = root / 'data' / 'image' / 'vfs' / 'layerdb' / 'mounts' / cid / 'mount-id'
+                mount_id = mount_record.read_text().strip()
+                self.assertTrue(re.fullmatch('[0-9a-f]{64}', mount_id))
+                independent_rootfs = str(root / 'data' / 'vfs' / 'dir' / mount_id)
+                self.assertTrue(Path(independent_rootfs).is_dir())
             self.assertNotEqual(docker('start', cid).returncode, 0)
             capture = root / ('capture-' + cid + '.json')
             self.assertTrue(capture.is_file(), 'create did not reach refusing capture runtime')
             captured = json.loads(capture.read_bytes()); self.assertEqual(captured['cid'], cid)
             actual = captured['oci']; bundle = Path(captured['bundle'])
+            if backend == 'containerd-overlayfs':
+                self.assertEqual(info['Driver'], 'overlayfs')
+                independent_rootfs = str(bundle / 'rootfs')
             rootfs = Path(actual['root']['path'])
             if not rootfs.is_absolute(): rootfs = bundle / rootfs
             actual['root']['path'] = str(rootfs)
@@ -142,13 +150,19 @@ class NativeCompilerTests(unittest.TestCase):
                             'busybox:1.37.0', 'sleep', '600')
             self.assertEqual(create2.returncode, 0); cid2 = create2.stdout.decode().strip()
             metadata2 = json.loads(docker('inspect', '--format', '{{json .}}', cid2).stdout)
-            self.assertEqual(metadata2['GraphDriver']['Name'], 'vfs')
-            self.assertEqual(set(metadata2['GraphDriver']['Data']), {'ID'})
-            self.assertTrue(re.fullmatch('[0-9a-f]{64}', metadata2['GraphDriver']['Data']['ID']))
-            mount_id2 = (root / 'data' / 'image' / 'vfs' / 'layerdb' / 'mounts' / cid2 / 'mount-id').read_text().strip()
-            self.assertTrue(re.fullmatch('[0-9a-f]{64}', mount_id2))
+            if backend == 'classic-vfs':
+                self.assertEqual(metadata2['GraphDriver']['Name'], 'vfs')
+                self.assertEqual(set(metadata2['GraphDriver']['Data']), {'ID'})
+                self.assertTrue(re.fullmatch('[0-9a-f]{64}', metadata2['GraphDriver']['Data']['ID']))
+                mount_id2 = (root / 'data' / 'image' / 'vfs' / 'layerdb' / 'mounts' / cid2 / 'mount-id').read_text().strip()
+                self.assertTrue(re.fullmatch('[0-9a-f]{64}', mount_id2))
+                independent_rootfs2 = str(root / 'data' / 'vfs' / 'dir' / mount_id2)
+            else:
+                # The owned baseline fixes the task parent. CID2 and this path
+                # are known before its task/OCI exists; OCI2 is not consulted.
+                independent_rootfs2 = context['bundleParent'] + '/' + cid2 + '/rootfs'
             context2 = {**context, 'containerId': cid2,
-                        'rootfsPath': str(root / 'data' / 'vfs' / 'dir' / mount_id2)}
+                        'rootfsPath': independent_rootfs2}
             template = {'schema': 'ouf.semantic-creation-frame-template.v1', 'expectedOci': template_oci,
                         'approvedHooks': copy.deepcopy(actual.get('hooks') or {})}
             policy2 = compile_policy(template, launch, context2)
@@ -173,7 +187,7 @@ class NativeCompilerTests(unittest.TestCase):
             print('FRAME_COMPILER_NATIVE=PASS REAL_DOCKER_SHAPE=true RUNC_CREATE_REFUSED=true APPLICATION_NOT_STARTED=true '
                   'SYNTHETIC_TEMPLATE_ONLY=true INDEPENDENT_TEMPLATE_APPROVAL=false CONTEXT_AUTHENTICATED=false '
                   'SECOND_POLICY_SEALED_BEFORE_OCI_GENERATION=true SECOND_EXACT_COMPARISON=true '
-                  'PRODUCTION_PRECREATE_BINDING_PROVEN=false TARGET_START_AUTHORIZED=false')
+                  'PRODUCTION_PRECREATE_BINDING_PROVEN=false TARGET_START_AUTHORIZED=false BACKEND=' + backend)
 
 
 if __name__ == '__main__': unittest.main()
