@@ -1,0 +1,28 @@
+{
+  "schema": "ouf.semantic-provider-v2-launch-inputs-operator-block.v1",
+  "observedAt": "2026-10-08T09:26:03+02:00",
+  "sourceCommit": "d92712c3a164b04c8bbc2521573bb951c78a666f",
+  "sourceSha256": "6485246f0fdcd94e849982b1e082ac987f666cf1ddecf6c58ed8a4a38410c46d",
+  "operatorOutput": "OUF_PROVIDER_V2_LAUNCH_INPUTS=BLOCKED NO_RAW_OUTPUT=true",
+  "stageKnown": false,
+  "targetOutputCompletenessKnown": false,
+  "doNotRerunApply": true,
+  "nextAction": "READ_ONLY_INPUT_COLLECTION_DIAGNOSIS",
+  "acceptanceGranted": false,
+  "startAuthorized": false,
+  "diagnosisSourceCommit": "423cfc2011c864bf98f2bf35bf7dc26e92c9b699",
+  "diagnosisSourceSha256": "7454056d5f5ba3377c8168280ce20529e8290008aeb78d794a8008b720b3a8d3",
+  "diagnosisCiRun": 37743830989,
+  "diagnosisCiJobs": [
+    {
+      "id": 113200520664,
+      "name": "verify (containerd-overlayfs)",
+      "conclusion": "success"
+    },
+    {
+      "id": 113200520856,
+      "name": "verify (classic-vfs)",
+      "conclusion": "success"
+    }
+  ]
+}
