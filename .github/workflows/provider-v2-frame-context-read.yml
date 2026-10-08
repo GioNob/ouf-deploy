@@ -1,0 +1,19 @@
+name: Provider v2 frame context read
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/read_provider_v2_frame_context.py'
+      - '.github/workflows/provider-v2-frame-context-read.yml'
+permissions:
+  contents: read
+jobs:
+  read:
+    runs-on: [self-hosted, ouf-vps-test]
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Read exact stopped candidates and Docker storage metadata
+        run: /usr/bin/python3 -I -B scripts/read_provider_v2_frame_context.py
