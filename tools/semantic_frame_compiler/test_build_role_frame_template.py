@@ -28,7 +28,7 @@ class RoleTemplateTests(unittest.TestCase):
         self.assertEqual(result['expectedOci']['linux']['seccomp'], self.template['expectedOci']['linux']['seccomp'])
         self.assertEqual(result['expectedOci']['process']['capabilities'], self.template['expectedOci']['process']['capabilities'])
         self.assertEqual([m['destination'] for m in result['expectedOci']['mounts']],
-                         ['/etc/hostname', '/etc/hosts', '/etc/resolv.conf', '/run/provider.json', '/run/deep/trust.pem'])
+                         ['/run/provider.json', '/etc/hosts', '/etc/hostname', '/etc/resolv.conf', '/run/deep/trust.pem'])
 
     def test_distinct_root_mode_requires_separate_reviewed_baseline(self):
         launch = copy.deepcopy(self.launch); launch['manifest']['readOnlyRoot'] = False

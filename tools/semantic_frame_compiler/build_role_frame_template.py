@@ -54,6 +54,7 @@ def build_role_template(template, baseline_launch, launch, approved_user):
     engine_mounts = [m for m in retained if m['type'] == 'bind']
     require({m['destination'] for m in engine_mounts} == {'/etc/hosts', '/etc/hostname', '/etc/resolv.conf'},
             'UNKNOWN_BASELINE_BIND_MOUNT')
+    role_mounts = []
     declared = manifest.get('mounts')
     require(type(declared) is list and 1 <= len(declared) <= 32, 'EXACT_SOURCE_SET_REQUIRED')
     reserved = {m['destination'] for m in retained}
@@ -63,11 +64,14 @@ def build_role_template(template, baseline_launch, launch, approved_user):
         source, target = path(m['source']), path(m['target'])
         require(target not in reserved and not any(target.startswith(v + '/') or v.startswith(target + '/')
                     for v in reserved), 'SOURCE_MOUNT_SHADOWING_DENIED')
-        engine_mounts.append({'destination': target, 'type': 'bind', 'source': source,
-                              'options': copy.deepcopy(options)})
+        role_mounts.append({'destination': target, 'type': 'bind', 'source': source,
+                            'options': copy.deepcopy(options)})
         reserved.add(target)
-    # Moby orders user/Engine mounts after defaults by depth, then path.
-    engine_mounts.sort(key=lambda m: (m['destination'].count('/'), m['destination']))
-    oci['mounts'] = default_mounts + engine_mounts
+    # This bounded constructor models the depth-only ordering exercised by the
+    # CI Engine: user mounts precede its fixed network mounts at equal depth.
+    # It is not an approved contract for an arbitrary target Engine/version.
+    binds = role_mounts + engine_mounts
+    binds.sort(key=lambda m: m['destination'].count('/'))
+    oci['mounts'] = default_mounts + binds
     compile_policy(result, launch, context)
     return result
