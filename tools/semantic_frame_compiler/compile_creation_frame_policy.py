@@ -59,11 +59,11 @@ def docker_context(value):
                ('bundleParent', 'metadataParent', 'networkNamespaceParent')}
     require(len(set(parents.values())) == 3, 'CONTEXT_PARENTS_DISTINCT_REQUIRED')
     name = value['networkNamespaceName']
-    require(type(name) is str and re.fullmatch('[0-9a-f]{12,64}', name), 'NETWORK_CONTEXT_REQUIRED')
+    require(name is None or type(name) is str and re.fullmatch('[0-9a-f]{12,64}', name), 'NETWORK_CONTEXT_REQUIRED')
     require(value['cgroupDriver'] in ('systemd', 'cgroupfs'), 'CGROUP_DRIVER_REQUIRED')
     cgroup = 'system.slice:docker:' + cid if value['cgroupDriver'] == 'systemd' else '/docker/' + cid
     return {'rootfs': parents['bundleParent'] + '/' + cid + '/rootfs',
-            'network': parents['networkNamespaceParent'] + '/' + name,
+            'network': None if name is None else parents['networkNamespaceParent'] + '/' + name,
             'cgroup': cgroup, 'hostname': cid[:12],
             **{k: parents['metadataParent'] + '/' + cid + '/' + filename for k, filename in
                (('hosts', 'hosts'), ('hostnameFile', 'hostname'), ('resolv', 'resolv.conf'))}}
@@ -98,7 +98,12 @@ def compile_policy(template, launch, context):
     require(type(namespaces) is list and all(type(v) is dict for v in namespaces), 'NETWORK_TEMPLATE_REQUIRED')
     networks = [v for v in namespaces if v.get('type') == 'network']
     require(len(networks) == 1 and networks[0].get('path') == '$OUF_NETWORK_NAMESPACE', 'NETWORK_TEMPLATE_REQUIRED')
-    networks[0]['path'] = bound['network']
+    if bound['network'] is None:
+        # Docker can request a fresh private namespace which runc creates.
+        # Its identity is observed later; this grants no namespace acceptance.
+        del networks[0]['path']
+    else:
+        networks[0]['path'] = bound['network']
     mounts = oci.get('mounts')
     require(type(mounts) is list and all(type(v) is dict for v in mounts), 'MOUNT_TEMPLATE_REQUIRED')
     slots = {'/etc/hosts': ('$OUF_HOSTS', 'hosts'),

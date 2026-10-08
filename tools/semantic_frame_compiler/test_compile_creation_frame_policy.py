@@ -125,6 +125,16 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual(policy['expectedOci']['linux']['cgroupsPath'], '/docker/' + 'a' * 64)
         self.assertTrue(self.review(policy['expectedOci'], policy)['configuredPolicyConforms'])
 
+    def test_fresh_private_network_namespace_remains_unaccepted_and_has_no_join_path(self):
+        context = copy.deepcopy(self.context); context['networkNamespaceName'] = None
+        policy = compile_policy(self.template, self.launch, context)
+        network = next(v for v in policy['expectedOci']['linux']['namespaces'] if v['type'] == 'network')
+        self.assertEqual(network, {'type': 'network'})
+        self.assertTrue(self.review(policy['expectedOci'], policy)['configuredPolicyConforms'])
+        self.assertFalse(compilation_receipt(self.template, self.launch, context, policy)['kernelEnforcementObserved'])
+        joined = copy.deepcopy(policy['expectedOci']); joined['linux']['namespaces'][-1]['path'] = '/foreign/netns'
+        with self.assertRaises(ValueError): self.review(joined, policy)
+
 
 if __name__ == '__main__':
     unittest.main()

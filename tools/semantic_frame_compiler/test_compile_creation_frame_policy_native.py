@@ -84,8 +84,12 @@ class NativeCompilerTests(unittest.TestCase):
             actual['root']['path'] = str(rootfs)
             network = next(v for v in actual['linux']['namespaces'] if v['type'] == 'network')
             # Mirror the reviewed runtime's /var/run -> /run normalization.
-            network['path'] = str(Path(network['path']).resolve())
-            netpath = Path(network['path'])
+            if network.get('path'):
+                network['path'] = str(Path(network['path']).resolve())
+                netpath = Path(network['path'])
+                netparent, netname = str(netpath.parent), netpath.name
+            else:
+                netparent, netname = str(root / 'exec' / 'netns'), None
             template_oci = copy.deepcopy(actual)
             template_oci['root']['path'] = '$OUF_ROOTFS'; template_oci['hostname'] = '$OUF_HOSTNAME'
             template_oci['linux']['cgroupsPath'] = '$OUF_CGROUPS'
@@ -102,7 +106,7 @@ class NativeCompilerTests(unittest.TestCase):
                             'sha256': hashlib.sha256(source.read_bytes()).hexdigest()}]}
             context = {'schema': 'ouf.semantic-docker-frame-context.v1', 'containerId': cid,
                        'bundleParent': str(bundle.parent), 'metadataParent': str(root / 'data' / 'containers'),
-                       'networkNamespaceParent': str(netpath.parent), 'networkNamespaceName': netpath.name,
+                       'networkNamespaceParent': netparent, 'networkNamespaceName': netname,
                        'cgroupDriver': info['CgroupDriver']}
             policy = compile_policy({'schema': 'ouf.semantic-creation-frame-template.v1', 'expectedOci': template_oci,
                                      'approvedHooks': copy.deepcopy(actual.get('hooks') or {})}, launch, context)
