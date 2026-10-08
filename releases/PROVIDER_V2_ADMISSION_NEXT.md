@@ -182,3 +182,6 @@ from the hash-only operator receipt or CI assertions. The target invocation wiri
 guarded live runtime publication and Docker cohort lifecycle remain incomplete.
 No operator bootstrap or target start command is ready. The existing network
 migration, candidates, inputs and product asset must not be repeated.
+
+
+Hosted run 37831986938: 17/18 authentication tests passed; sealed-loader acceptance correctly denied PRIVATE_INTAKE_HASH_DRIFT. Local materialization had appended one trailing newline to 32 pre-existing repository files. Restored exact repository bytes and canonical closure hashes; all 29 runtime hashes agree with cohort-draft/sources.json. Production hash checks unchanged. Eighteen local tests pass after correction. This is CI/source diagnosis, not target observation.

@@ -124,3 +124,6 @@ node/broker producers at admission. No key is generated, target runtime changed,
 lease granted or application started. The helper is not yet wired to an operator
 bootstrap or tested on the private target inputs. Its real signing/consumer test
 uses disposable CI keys and confers no target authority.
+
+
+Hosted run 37831986938: 17/18 authentication tests passed; sealed-loader acceptance correctly denied PRIVATE_INTAKE_HASH_DRIFT. Local materialization had appended one trailing newline to 32 pre-existing repository files. Restored exact repository bytes and canonical closure hashes; all 29 runtime hashes agree with cohort-draft/sources.json. Production hash checks unchanged. Eighteen local tests pass after correction. This is CI/source diagnosis, not target observation.

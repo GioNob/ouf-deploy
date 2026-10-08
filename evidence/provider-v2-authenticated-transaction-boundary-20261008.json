@@ -42,5 +42,13 @@
     "reason": "CI_PRIVATE_FILES_UNDER_RUNNER_OWNED_ANCESTORS",
     "fix": "ROOT_OWNED_CI_FIXTURE_DIRECTORY",
     "productionCustodyUnchanged": true
+  },
+  "sourceClosureCorrection": {
+    "runId": 37831986938,
+    "reason": "PRIVATE_INTAKE_HASH_DRIFT",
+    "difference": "one appended local trailing newline in 32 existing files",
+    "canonicalRuntimeHashesVerified": 29,
+    "productionCheckUnchanged": true,
+    "localTestsPassed": 18
   }
 }
