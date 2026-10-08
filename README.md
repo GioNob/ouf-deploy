@@ -119,3 +119,6 @@ Hosted CI 37849612355 now also passes a real concurrent two-Docker creation-wind
 
 
 9 October: fixed private frame summary received successfully; do not repeat. Pinned isolated Docker29.8.1/overlayfs window CI and all31 authenticated/preparer preflight tests pass. Next required operator action is the new unsigned document closure helper tools/semantic_target_review/prepare_private_transaction_draft.py; it reuses completed snapshots, prepares only new private review inputs and issues no authority/start. See releases/PROVIDER_V2_ADMISSION_NEXT.md for exact hash, limits and pending full admitted-runtime Docker integration/role acceptance.
+
+
+9 October00:45: target unsigned sixteen-document preparation completed in semantic-provider-v2-transaction-draft-g1yrsazc; do not rerun. Actual receipt is registered. Pair preflight before keys and all32 authenticated tests pass in CI37855993564. Next independent human decision is the concrete full-frame/rootfs input review in releases/PROVIDER_V2_COMPLETE_INPUT_REVIEW_20261009.md. Previous lab-image acceptance stands. Role/key/runtime/start/lease authorization remains absent; no target execution command is ready.
