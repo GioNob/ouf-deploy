@@ -21,6 +21,8 @@ jobs:
           printf '%s\n' 'd8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70  engine.tgz' | sha256sum -c -
           mkdir engine-bin
           tar -xzf engine.tgz --strip-components=1 -C engine-bin
+      - name: Image metadata equivalence and root header tests
+        run: python3 -m unittest discover -v -s tools/semantic_stopped_rootfs -p test_rootfs_image_equivalence.py
       - name: Compare complete metadata while stopped export holds mount
         run: |
           sudo install -d -m 700 /root/ouf-stopped-rootfs /root/ouf-stopped-rootfs/cohort-draft /root/ouf-stopped-rootfs/cohort-draft/tools /root/ouf-stopped-rootfs/cohort-draft/scripts /root/ouf-stopped-rootfs/engine

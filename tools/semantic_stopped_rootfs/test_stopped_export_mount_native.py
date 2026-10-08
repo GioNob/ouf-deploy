@@ -112,6 +112,19 @@ def main():
             entry.SOCKET=socket;entry.DOCKER=binding('docker');entry.MOUNT=binding('mount');entry.UMOUNT=binding('umount')
             entry.ROLES={'adapter':spec}
             entry.main()
+            # Reproduce the real defect: private unpack under umask 077 gives
+            # root mode 0700 when no later correction exists. Runtime expected
+            # mode comes from the independent image header, never target stat.
+            copied=role_dir/'bundle/rootfs';copied.chmod(0o700)
+            new_offline=sealer(copied,limits,Budget());spec['seal']=new_offline['sha256']
+            receipt['rootfsSeal']=new_offline
+            (role_dir/'expected-docker-rootfs.json').write_bytes(canonical(receipt))
+            from rootfs_image_equivalence import layer_root_mode
+            entry.expected_root_mode=lambda layout,manifest:layer_root_mode([image_tar])
+            entry.main(image_equivalence=True)
+            proof_reports=sorted(root.glob('semantic-provider-v2-rootfs-compare-*/comparison.json'),key=lambda p:p.stat().st_mtime_ns)
+            image_proof=json.loads(proof_reports[-1].read_bytes())
+            assert image_proof['imageEquivalent'] is True and image_proof['strictSealsMatch'] is False
             config=root/'docker-config'; config.mkdir(mode=0o700)
             overlay_dir=root/'expected-overlay'; overlay_dir.mkdir(mode=0o700)
             mounted=root/'data/rootfs/overlayfs'/cid
@@ -135,6 +148,10 @@ def main():
                 assert diagnostic['strictSealsMatch'] is False
                 diff=diagnostic['roles'][0]['differences']
                 assert diff['fieldCounts']['sha256']>=1 and diff['fileContentsPrinted'] is False
+                try:entry.main(image_equivalence=True)
+                except ValueError as error:
+                    assert str(error)=='TARGET_ROOTFS_DIFFERS_FROM_INDEPENDENT_EXPECTATION'
+                else:raise AssertionError('IMAGE_EQUIVALENCE_ACCEPTED_CHANGED_CONTENT')
             differences=[]
             after=json.loads(docker('inspect',cid))[0]
             assert before['State']==after['State'], 'STOPPED_CANDIDATE_STATE_CHANGED'
@@ -147,7 +164,8 @@ def main():
                 'mountReleased':True,'strictSealMatches':actual_seal==expected_seal,'unapprovedContentDetected':True,'productionComparisonFunctionsUsed':True,'fixedEntrypointExercised':True,
                 'originalOfflineSeal':offline_seal,'independentExpectedOverlayView':True,
                 'expectedSeal':expected_seal,'actualSeal':actual_seal,'metadataDifferences':differences,
-                'targetOperations':0,'targetAcceptance':False}
+                'targetOperations':0,'targetAcceptance':False,'imageEquivalenceWithIndependentRootModeProven':True,
+                'imageEquivalenceRejectsChangedContent':True}
             print('OUF_STOPPED_EXPORT_MOUNT_CI='+json.dumps(result,sort_keys=True))
             assert actual_seal==expected_seal, 'STRICT_SEAL_BACKEND_COMPATIBILITY_UNPROVEN'
         finally:
