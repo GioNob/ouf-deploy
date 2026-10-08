@@ -1,0 +1,33 @@
+name: Provider v2 frame compiler tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/semantic_frame_compiler/**'
+      - '.github/workflows/provider-v2-frame-compiler.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-semantic-registry
+          ref: 3505a2f6bfde9c3905b76a5e670ebc30b40d3d6d
+          path: owner-fixture
+          persist-credentials: false
+      - name: Load exact owner reviewer into isolated compiler fixture
+        run: |
+          cp owner-fixture/tools/review_semantic_oci_policy.py tools/semantic_frame_compiler/
+          cp owner-fixture/tools/semantic_oci_shape_schema.json tools/semantic_frame_compiler/
+          python3 -B -m unittest discover -v -s tools/semantic_frame_compiler -p test_compile_creation_frame_policy.py
+      - name: Real isolated Docker frame shape and refusing capture runtime
+        run: |
+          sudo install -d -m 700 /root/ouf-frame-compiler-fixture
+          sudo install -m 600 tools/semantic_frame_compiler/*.py tools/semantic_frame_compiler/semantic_oci_shape_schema.json /root/ouf-frame-compiler-fixture/
+          sudo /usr/bin/python3 -I -B /root/ouf-frame-compiler-fixture/test_compile_creation_frame_policy_native.py
