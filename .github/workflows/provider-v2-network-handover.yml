@@ -1,0 +1,31 @@
+name: Provider v2 stopped network handover
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/handover_provider_v2_networks.py'
+      - 'tests/test_handover_provider_v2_networks.py'
+      - '.github/workflows/provider-v2-network-handover.yml'
+permissions:
+  contents: read
+concurrency:
+  group: ouf-provider-v2-network-declarations
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: PYTHONPATH=scripts:tests python3 -B -m unittest discover -v -s tests -p 'test_*provider_v2_networks.py'
+  handover:
+    needs: verify
+    runs-on: [self-hosted, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: /usr/bin/python3 -B scripts/handover_provider_v2_networks.py
