@@ -3,13 +3,13 @@ set -euo pipefail
 umask 077
 test "$(id -un)" = oufadmin
 oufGh=/home/oufadmin/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh
-oufRef=1b6d8c73561f4670817384e613ee4432f471fc15
+oufRef=6b74365821a668479eac10c2364b29d5cbab5eff
 oufWork="$(mktemp -d)"
 oufSnapshot=''
 trap 'if test -n "$oufSnapshot"; then printf "OUF_RUNTIME_REGISTRATION_SNAPSHOT=%s\n" "$oufSnapshot"; fi' EXIT
 "$oufGh" api "repos/GioNob/ouf-deploy/contents/scripts/register-provider-v2-runtime.py?ref=$oufRef" --jq '.content' | base64 -d > "$oufWork/register-provider-v2-runtime.py"
 "$oufGh" api "repos/GioNob/ouf-deploy/contents/releases/provider-v2-runtime-registration-sources.json?ref=$oufRef" --jq '.content' | base64 -d > "$oufWork/sources.json"
-printf '%s  %s\n' '0fc0e51953a7e23626d0d2dfba98b443cff8a41e4dfe679f6701f7cc0a6ee146' "$oufWork/register-provider-v2-runtime.py" '6e0894c95eafcc1b50d2dc15e38918a3912297a063f6800f2da3dd6c69ffa8da' "$oufWork/sources.json" | sha256sum -c -
+printf '%s  %s\n' '2ee5d624ec653e9cdaf1f1d4c4774735e5d151e0f5a3e41587d766d0be998924' "$oufWork/register-provider-v2-runtime.py" '6e0894c95eafcc1b50d2dc15e38918a3912297a063f6800f2da3dd6c69ffa8da' "$oufWork/sources.json" | sha256sum -c -
 python3 - "$oufWork/sources.json" > "$oufWork/paths" <<'PY'
 import json,re,sys
 m=json.load(open(sys.argv[1]))
@@ -31,5 +31,5 @@ sudo install -m 600 "$oufWork/sources.json" "$oufSnapshot/sources.json"
 while read -r oufSha oufPath; do
     sudo install -m 600 "$oufWork/source/$oufPath" "$oufSnapshot/source/$oufPath"
 done < "$oufWork/paths"
-printf '%s  %s\n' '0fc0e51953a7e23626d0d2dfba98b443cff8a41e4dfe679f6701f7cc0a6ee146' "$oufSnapshot/register-provider-v2-runtime.py" '6e0894c95eafcc1b50d2dc15e38918a3912297a063f6800f2da3dd6c69ffa8da' "$oufSnapshot/sources.json" | sudo sha256sum -c -
+printf '%s  %s\n' '2ee5d624ec653e9cdaf1f1d4c4774735e5d151e0f5a3e41587d766d0be998924' "$oufSnapshot/register-provider-v2-runtime.py" '6e0894c95eafcc1b50d2dc15e38918a3912297a063f6800f2da3dd6c69ffa8da' "$oufSnapshot/sources.json" | sudo sha256sum -c -
 sudo /usr/bin/python3.13 -I -B "$oufSnapshot/register-provider-v2-runtime.py" --package-root "$oufSnapshot" --manifest-sha256 6e0894c95eafcc1b50d2dc15e38918a3912297a063f6800f2da3dd6c69ffa8da
