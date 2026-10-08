@@ -89,7 +89,8 @@ def transition(old,new,backend,expected_footprint,publish,restore_publication,re
   raw=patch(old,new,before);record({'state':'APPLYING','oldStructureHash':backend.expected})
   stage='NATIVE_EXTENSION';native_attempted=True;backend.run(['-f','-'],raw);mutated=True
   stage='NATIVE_READBACK';after=backend.tables();require_empty(after)
-  require(digest(stable(after))==expected_footprint,stage,'NEW_COMPILER_FOOTPRINT_DIFFERS')
+  if digest(stable(after))!=expected_footprint:
+   raise TransitionDenied(stage,'NEW_COMPILER_FOOTPRINT_DIFFERS',expectedFootprint=expected_footprint,actualFootprint=digest(stable(after)))
   # Validate the exact removable delta before publishing any active pointer.
   rollback(old,new,before,after)
   stage='PROFILE_PUBLICATION';publication_attempted=True;publish(after)
