@@ -44,9 +44,16 @@ def collect(config):
     def query(*args):
         binary()
         result = subprocess.run([str(DOCKER), '--config', config, '--host', 'unix:///var/run/docker.sock', *args],
-            stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=15,
+            stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=15,
             env={'PATH': '/usr/bin:/bin', 'LC_ALL': 'C'})
-        require(result.returncode == 0 and 0 < len(result.stdout) <= 131072, 'DOCKER_METADATA_READ_FAILED')
+        if result.returncode != 0:
+            error = result.stderr.lower()
+            reason = ('DOCKER_SOCKET_ACCESS_DENIED' if b'permission denied' in error else
+                      'DOCKER_METADATA_FORMAT_UNSUPPORTED' if b"can't evaluate field" in error or b'template parsing error' in error else
+                      'EXACT_CANDIDATE_MISSING' if b'no such object' in error else
+                      'DOCKER_UNAVAILABLE' if b'cannot connect' in error else 'DOCKER_METADATA_READ_FAILED')
+            raise ValueError(reason + '_AT_' + args[0].upper())
+        require(0 < len(result.stdout) <= 131072, 'DOCKER_METADATA_READ_FAILED')
         binary(); return json.loads(result.stdout)
     info = query('info', '--format', '{"dataRoot":{{json .DockerRootDir}},"storageDriver":{{json .Driver}},"driverStatus":{{json .DriverStatus}}}')
     require(type(info['dataRoot']) is str and info['dataRoot'].startswith('/')
