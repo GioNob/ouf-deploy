@@ -41,4 +41,11 @@ jobs:
         run: |
           sudo install -d -m 700 /root/ouf-frame-compiler-fixture
           sudo install -m 600 tools/semantic_frame_compiler/*.py tools/semantic_frame_compiler/semantic_oci_shape_schema.json /root/ouf-frame-compiler-fixture/
-          sudo env OUF_FRAME_COMPILER_ROLE=${{ matrix.role }} OUF_FRAME_COMPILER_NETWORK=bridge OUF_FRAME_COMPILER_BACKEND=${{ matrix.backend }} /usr/bin/python3 -I -B /root/ouf-frame-compiler-fixture/test_compile_creation_frame_policy_native.py
+          sudo env OUF_FRAME_COMPILER_EXPORT_DIRECTORY="${{ github.workspace }}/frame-baselines" OUF_FRAME_COMPILER_ROLE=${{ matrix.role }} OUF_FRAME_COMPILER_NETWORK=bridge OUF_FRAME_COMPILER_BACKEND=${{ matrix.backend }} /usr/bin/python3 -I -B /root/ouf-frame-compiler-fixture/test_compile_creation_frame_policy_native.py
+      - name: Retain synthetic Engine baseline for independent role template review
+        uses: actions/upload-artifact@v4
+        with:
+          name: frame-baseline-${{ matrix.backend }}-${{ matrix.role }}
+          path: frame-baselines/*.json
+          if-no-files-found: error
+          retention-days: 7

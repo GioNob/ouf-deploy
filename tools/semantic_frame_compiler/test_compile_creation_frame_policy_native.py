@@ -251,6 +251,22 @@ class NativeCompilerTests(unittest.TestCase):
             self.assertFalse(state2['Running']); self.assertEqual(state2['Pid'], 0)
             self.assertTrue(state2['StartedAt'].startswith('0001-01-01'))
             self.assertEqual(docker('inspect', '--format', '{{.State.Running}}', 'existing').stdout.strip(), b'true')
+            export_parent = os.environ.get('OUF_FRAME_COMPILER_EXPORT_DIRECTORY')
+            if export_parent:
+                export = Path(export_parent)
+                self.assertTrue(export.is_absolute()); export.mkdir(parents=True, exist_ok=True)
+                baseline = {'schema': 'ouf.semantic-ci-engine-frame-baseline.v1',
+                            'template': template, 'launch': launch,
+                            'approvedUser': copy.deepcopy(actual['process']['user']),
+                            'engine': {'serverVersion': info['ServerVersion'], 'storageDriver': info['Driver'],
+                                       'cgroupDriver': info['CgroupDriver'], 'backend': backend},
+                            'role': role, 'syntheticFixture': True, 'targetTemplateApproved': False,
+                            'acceptanceGranted': False, 'startAuthorized': False}
+                raw = canonical(baseline)
+                destination = export / (backend + '-' + role + '.json')
+                destination.write_bytes(raw); destination.chmod(0o644)
+                print('CI_FRAME_BASELINE_EXPORT=' + json.dumps({'file': destination.name,
+                      'sha256': hashlib.sha256(raw).hexdigest(), 'targetTemplateApproved': False}))
             print('FRAME_COMPILER_NATIVE=PASS REAL_DOCKER_SHAPE=true RUNC_CREATE_REFUSED=true APPLICATION_NOT_STARTED=true '
                   'SYNTHETIC_TEMPLATE_ONLY=true INDEPENDENT_TEMPLATE_APPROVAL=false CONTEXT_AUTHENTICATED=false '
                   'SECOND_POLICY_SEALED_BEFORE_OCI_GENERATION=true' +
