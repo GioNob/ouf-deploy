@@ -13,6 +13,7 @@ import sys
 import tempfile
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parent))
+sys.path.insert(0,str(Path(__file__).resolve().parent.parent/'semantic_transaction_network'))
 import install_provider_network_guard as installer
 import publish_guard_files as files
 from extend_empty_lease_guard import digest,stable
