@@ -20,7 +20,11 @@ The transaction-specific provisioner is not complete. It must bind exact expecte
 
 The fixed reader scripts/read_provider_v2_admission_manifest.py reads only the six hash-bound private policy/context/template files and the existing hash-bound installation authority profile. It emits expected application hashes, public identity/resource facts and authority/key bindings. It reads private application policy bytes but prints no environment, argument or source-file content. It never reads private key files, signs, writes configuration or invokes Docker. It does not grant approval.
 
-The self-hosted runner has no general sudo and cannot read these root-private files. The preparation workflow publishes a source-hash checked, read-only operator command at /home/oufadmin/ouf-v2-admission-manifest-read.sh. Executing that fixed command supplies the private-input manifest needed for the remaining transaction implementation. No start command is ready.
+The self-hosted runner has no general sudo and cannot read these root-private files. The preparation workflow publishes a source-hash checked, read-only operator command at /home/oufadmin/ouf-v2-admission-manifest-read-v2.sh. Executing that fixed command supplies the private-input manifest needed for the remaining transaction implementation. No start command is ready.
 
 ## Remaining product work
 After actual provider admission, activate reviewed Semantic/MCP images and configuration with migration-aware rollback and necessary discovery grants. Discovery MCP bindings, human semantic review/adoption, final onboarding approval and ingestion execution still require deployment/verification. Existing Teatri asset: 6609b245-86ed-4315-8ce0-73f2a8555bf3. Continue through ingestion and UDP readback via chatbot; infrastructure preparation is not the acceptance result.
+
+## Reader correction
+
+The operator's first private read returned a generic blocked error. The reader's direct readonly lookup reproduces a KeyError on the frozen writable-root southbound baseline, which omits that optional field. The v2 reader handles the omitted field as false without modifying or normalizing the original OCI document. Four tests include both frozen role baselines and preservation of original application hashes. Stage and exception class are now reported without raw errors or secret values. Target success remains pending operator execution of the new v2 read command. Do not rerun the original reader or network handover.

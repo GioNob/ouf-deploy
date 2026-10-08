@@ -33,11 +33,11 @@ jobs:
           import os
           from pathlib import Path
           os.umask(0o077)
-          for src, name, mode in [('scripts/read_provider_v2_admission_manifest.py','ouf-v2-admission-manifest-read.py',0o600),('releases/READ_PROVIDER_V2_ADMISSION_MANIFEST.sh','ouf-v2-admission-manifest-read.sh',0o700)]:
+          for src, name, mode in [('scripts/read_provider_v2_admission_manifest.py','ouf-v2-admission-manifest-read-v2.py',0o600),('releases/READ_PROVIDER_V2_ADMISSION_MANIFEST.sh','ouf-v2-admission-manifest-read-v2.sh',0o700)]:
               raw=Path(src).read_bytes(); target=Path('/home/oufadmin')/name
               fd=os.open(target,os.O_CREAT|os.O_EXCL|os.O_WRONLY|os.O_NOFOLLOW,mode)
               with os.fdopen(fd,'wb') as stream:
                   stream.write(raw); stream.flush(); os.fsync(stream.fileno())
-          print('OUF_ADMISSION_MANIFEST_READ_COMMAND=bash /home/oufadmin/ouf-v2-admission-manifest-read.sh')
+          print('OUF_ADMISSION_MANIFEST_READ_COMMAND=bash /home/oufadmin/ouf-v2-admission-manifest-read-v2.sh')
           print('GENERAL_SUDO_GRANTED=false ROOT_COMMANDS_EXECUTED=0')
           PY_PREPARE

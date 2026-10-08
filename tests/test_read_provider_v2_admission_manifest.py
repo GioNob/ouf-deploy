@@ -2,10 +2,24 @@ import contextlib
 import io
 import json
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 import read_provider_v2_admission_manifest as m
 
 class Tests(unittest.TestCase):
+    def test_real_frozen_role_baselines_allow_omitted_writable_root_field(self):
+        for role, expected in [('adapter', True), ('southbound', False)]:
+            local = Path(__file__).parent / ('containerd-overlayfs-' + role + '.json')
+            repo = Path(__file__).parent.parent / 'tools' / 'semantic_frame_compiler' / local.name
+            baseline = json.loads((local if local.is_file() else repo).read_text())
+            policy = {'schema': 'ouf.semantic-configured-creation-frame-policy.v1',
+                'expectedOci': baseline['template']['expectedOci'], 'manifest': baseline['launch']['manifest'],
+                'startup': baseline['launch']['startup'], 'approvedHooks': baseline['template']['approvedHooks'],
+                'sources': baseline['launch']['sources']}
+            original = m.encoded(policy)
+            self.assertEqual(m.summary(policy)['readOnlyRoot'], expected)
+            self.assertEqual(m.encoded(policy), original)
+            self.assertEqual(m.summary(policy)['expectedApplicationHash'], m.digest(m.encoded(policy['expectedOci'])))
     def test_report_never_emits_environment_arguments_or_mount_file_contents(self):
         secret = 'PRIVATE_OIDC_SENTINEL_DO_NOT_PRINT'
         policy = {'schema': 'ouf.semantic-configured-creation-frame-policy.v1',
