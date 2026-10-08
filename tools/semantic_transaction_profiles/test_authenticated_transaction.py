@@ -199,6 +199,20 @@ class AuthenticatedTransactionTest(unittest.TestCase):
         self.assertTrue(raised.exception.diagnosis['doNotRerunApply'])
         self.assertNotIn('private data',(root/'installation-denial.json').read_text())
 
+    def test_switch_custody_rechecks_authenticated_published_profiles(self):
+        from guarded_runtime_switch import verify_installed_plan
+        root,plan,publish=self.installation();publish(root,plan,self.sources,self.observer)
+        self.assertEqual(verify_installed_plan(plan)['configurationHash'],digest(encoded(plan['adapterConfiguration'])))
+        path=next(Path(p) for p in plan['files'] if p.endswith('/broker.json'))
+        self.private(path,b'{}')
+        with self.assertRaisesRegex(TransactionDenied,'INSTALLED_PROFILE_OR_JOURNAL_DRIFT'):verify_installed_plan(plan)
+
+    def test_switch_custody_rejects_published_source_drift(self):
+        from guarded_runtime_switch import verify_installed_plan
+        root,plan,publish=self.installation();publish(root,plan,self.sources,self.observer)
+        self.private(root/'source'/'frame-observer.py',b'changed')
+        with self.assertRaisesRegex(TransactionDenied,'INSTALLED_SOURCE_CLOSURE_DRIFT'):verify_installed_plan(plan)
+
     def test_publication_path_escape_refused_before_writes(self):
         root,plan,publish=self.installation()
         plan['files'][str(root/'..'/'outside.json')]=b'{}'

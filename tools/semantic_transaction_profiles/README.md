@@ -66,7 +66,7 @@ the existing Teatri asset via MCP, national discovery, semantic review and human
 approval, onboarding, ingestion/duplicate checks and UDP readback.
 
 `test_authenticated_transaction.py` uses disposable keys and synthetic complete
-documents. Eighteen tests exercise real OpenSSL signatures, missing/tampered/expired
+documents. Twenty tests exercise real OpenSSL signatures, missing/tampered/expired
 authority, context and source drift, publisher-evidence drift, independent config
 digest, seal substitution and all-or-nothing two-role assembly. It proves this
 boundary only; it does not issue target acceptance, inspect the VPS or prove the
@@ -74,7 +74,7 @@ full Docker activation transaction.
 
 ## Source-sealed private intake and publication
 
-`provider_transaction_intake.py` pins 35 source files through
+`provider_transaction_intake.py` pins 36 source files through
 `intake-source-closure.json` before any module execution. It fixes the existing
 v1 target authority profile, trust policy, empty adapter configuration and actual
 Python/OpenSSL byte bindings; callers cannot select a disposable CI policy.
@@ -127,3 +127,12 @@ uses disposable CI keys and confers no target authority.
 
 
 Hosted run 37831986938: 17/18 authentication tests passed; sealed-loader acceptance correctly denied PRIVATE_INTAKE_HASH_DRIFT. Local materialization had appended one trailing newline to 32 pre-existing repository files. Restored exact repository bytes and canonical closure hashes; all 29 runtime hashes agree with cohort-draft/sources.json. Production hash checks unchanged. Eighteen local tests pass after correction. This is CI/source diagnosis, not target observation.
+
+
+## Guarded runtime switch primitive and GitHub authority audit
+
+`guarded_runtime_switch.py` adds the atomic existing-wrapper compare-and-swap primitive. It preserves prior bytes, requires the same existing root-private guard-lock inode under an exclusive lock, rechecks the caller-provided verifier at three checkpoints, publishes/fsyncs a durable claim before mutation and retains failure diagnosis without automatic rollback or replay. False verifier results cannot be silently accepted. `verify_installed_plan` rechecks all published profile/journal/configuration and source bytes against a freshly authenticated in-process plan. There is no target CLI or default verifier; serialized plans and synthetic callbacks confer no authority.
+
+Eight real private-file/lock tests and two authenticated-publication custody tests pass locally. They do not observe target candidates, activate Docker, authenticate publisher/dependency acceptance or prove an integrated live switch. The locked target verifier and complete operator invocation/Docker cohort transaction remain to implement. The existing privileged helper reacquires its own guard lock and cannot simply be invoked within this primitive; a genuine locked observation integration is required.
+
+The GitHub audit is retained in `evidence/provider-v2-authority-github-audit-20261008.json`. Actual historical user authorizations exist in Semantic branch `codex/semantic-frame-source-bound` at `72310a0f4b0d649854d3abc010509d6724617e4e`: key custody, private policy preparation and scoped verification reads. They explicitly exclude role/deployment signing and start. Older verification receipts concern previous images and keep acceptance false. Reuse those completed permissions/preparations; do not ask again for them or reinterpret them as v2 mandates. No signed two-CID v2 acceptance was found in inspected GitHub sources. This does not prove absence of additional private VPS files.
