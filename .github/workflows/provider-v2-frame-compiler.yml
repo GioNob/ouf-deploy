@@ -33,6 +33,7 @@ jobs:
           python3 -B -m unittest discover -v -s tools/semantic_frame_compiler -p test_compile_creation_frame_policy.py
           python3 -B -m unittest discover -v -s tools/semantic_frame_compiler -p test_build_role_frame_template.py
           python3 -B -m unittest discover -v -s tools/semantic_frame_compiler -p test_prepare_provider_v2_launch_inputs.py
+          python3 -B -m unittest discover -v -s tools/semantic_frame_compiler -p test_prepare_provider_v2_frame_policies.py
           python3 -B -m unittest discover -v -s tools/semantic_frame_compiler -p test_diagnose_provider_v2_launch_inputs.py
           python3 -B -m unittest discover -v -s owner-fixture/tests -p test_semantic_creation_frame.py
           python3 -B -m unittest discover -v -s owner-fixture/tests -p test_semantic_creation_frame_observer.py
