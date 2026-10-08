@@ -60,7 +60,7 @@ class NativeCompilerTests(unittest.TestCase):
             '                netpath=pathlib.Path(context_read["sandboxKey"]).resolve()\n' +
             '                if str(netpath.parent)!=plan["context"]["networkNamespaceParent"]:\n' +
             '                    pathlib.Path(' + repr(str(root / 'runtime-diagnosis.json')) + ').write_text(json.dumps({"stage":"NAMESPACE_PARENT","ciExpectedParent":plan["context"]["networkNamespaceParent"],"ciDerivedParent":str(netpath.parent)}));sys.exit(80)\n' +
-            '                plan["context"]["networkNamespaceName"]=netpath.name\n' +
+            '                if plan["context"]["networkNamespaceName"] is not None:plan["context"]["networkNamespaceName"]=netpath.name\n' +
             '                try:policy=canonical(compile_policy(plan["template"],plan["launch"],plan["context"]))\n' +
             '                except Exception as error:\n' +
             '                    pathlib.Path(' + repr(str(root / 'runtime-diagnosis.json')) + ').write_text(json.dumps({"stage":"COMPILE_POLICY","publicErrorType":type(error).__name__}));sys.exit(83)\n' +
@@ -146,6 +146,8 @@ class NativeCompilerTests(unittest.TestCase):
                 netpath = Path(network['path'])
                 netparent, netname = str(netpath.parent), netpath.name
             else:
+                print('CI_ENGINE_NETWORK_SHAPE=' + json.dumps({'hasNamespacePath': bool(network.get('path')),
+                      'ciHooks': actual.get('hooks') or {}}))
                 netparent, netname = str(root / 'exec' / 'netns'), None
             template_oci = copy.deepcopy(actual)
             template_oci['root']['path'] = '$OUF_ROOTFS'; template_oci['hostname'] = '$OUF_HOSTNAME'
@@ -252,7 +254,8 @@ class NativeCompilerTests(unittest.TestCase):
             actual2['root']['path'] = str(rootfs2)
             if network_mode == 'bridge':
                 namespace2 = next(v for v in actual2['linux']['namespaces'] if v['type'] == 'network')
-                namespace2['path'] = str(Path(namespace2['path']).resolve())
+                if namespace2.get('path'):
+                    namespace2['path'] = str(Path(namespace2['path']).resolve())
             self.assertEqual(policy_path2.read_bytes(), sealed2)
             self.assertTrue(policy2['expectedOci'] == actual2, 'SECOND_CANDIDATE_PRECREATE_POLICY_DRIFT')
             self.assertTrue(configured_profile(actual2, policy2['expectedOci'], policy2['manifest'], policy2['startup'],
