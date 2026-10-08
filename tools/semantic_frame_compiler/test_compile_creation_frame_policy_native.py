@@ -100,7 +100,7 @@ class NativeCompilerTests(unittest.TestCase):
             actual = captured['oci']; bundle = Path(captured['bundle'])
             if backend == 'containerd-overlayfs':
                 self.assertEqual(info['Driver'], 'overlayfs')
-                independent_rootfs = str(bundle / 'rootfs')
+                independent_rootfs = str(root / 'data' / 'rootfs' / 'overlayfs' / cid)
             rootfs = Path(actual['root']['path'])
             if not rootfs.is_absolute(): rootfs = bundle / rootfs
             actual['root']['path'] = str(rootfs)
@@ -174,7 +174,7 @@ class NativeCompilerTests(unittest.TestCase):
             else:
                 # The owned baseline fixes the task parent. CID2 and this path
                 # are known before its task/OCI exists; OCI2 is not consulted.
-                independent_rootfs2 = context['bundleParent'] + '/' + cid2 + '/rootfs'
+                independent_rootfs2 = str(root / 'data' / 'rootfs' / 'overlayfs' / cid2)
             context2 = {**context, 'containerId': cid2,
                         'rootfsPath': independent_rootfs2}
             template = {'schema': 'ouf.semantic-creation-frame-template.v1', 'expectedOci': template_oci,
