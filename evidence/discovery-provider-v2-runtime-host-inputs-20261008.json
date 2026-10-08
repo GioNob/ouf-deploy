@@ -1,0 +1,48 @@
+{
+  "evidenceSource": "Selected fields of operator-supplied root read; not independent runner root observation",
+  "observedAt": "2026-10-08T05:35:14+02:00",
+  "daemon": {
+    "path": "/etc/docker/daemon.json",
+    "present": false,
+    "runtimeNames": []
+  },
+  "commands": {
+    "python": {
+      "path": "/usr/bin/python3.13",
+      "sha256": "889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9"
+    },
+    "runc": {
+      "path": "/usr/bin/runc",
+      "sha256": "3c2ed035be881749630c18eb693dc373a518e938924c1b4c345db72d36a6a256"
+    },
+    "docker": {
+      "path": "/usr/bin/docker",
+      "sha256": "7f5b38163f9c5367f4b42d905c0505877eafa4c20abe49430c85a770aefacf40"
+    }
+  },
+  "guardConfigurationHash": "24968cf990a32b87f3169b9226fe63d224c93a403540afec197011fbd670b0bb",
+  "commonLockFile": "/run/ouf-semantic-boot-guard/guard.lock",
+  "guardTable": "ouf_sem_provider",
+  "guardedInterfaces": [
+    "oufsp-int",
+    "oufsp-egress"
+  ],
+  "excludedSharedInterfaces": [
+    "br-113b5f0a3c53",
+    "br-1209d6794475",
+    "br-d60139f6aee7",
+    "docker0"
+  ],
+  "staticPurposes": [
+    "GATEWAY_ADAPTER",
+    "DNS"
+  ],
+  "providerSource": "172.22.0.3",
+  "leaseSeconds": 30,
+  "configurationWrites": 0,
+  "containerLifecycleOperations": 0,
+  "privateKeysRead": 0,
+  "environmentFilesRead": 0,
+  "providerCalls": 0,
+  "startAuthorized": false
+}
