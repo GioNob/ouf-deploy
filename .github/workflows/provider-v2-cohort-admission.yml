@@ -1,0 +1,45 @@
+name: Provider cohort admission draft tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/semantic_cohort_admission/**'
+      - '.github/workflows/provider-v2-cohort-admission.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify draft source manifest
+        run: |
+          python3 -B - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path('tools/semantic_cohort_admission/cohort-draft')
+          manifest=json.loads((root/'sources.json').read_text())
+          assert manifest['startAuthorized'] is False
+          assert set(manifest['sourceHashes']) == {str(p.relative_to(root)) for p in root.rglob('*.py')}
+          for path,expected in manifest['sourceHashes'].items():
+              assert hashlib.sha256((root/path).read_bytes()).hexdigest() == expected,path
+          print('COHORT_DRAFT_SOURCE_HASHES=PASS TARGET_START_AUTHORIZED=false')
+          PY
+      - name: Integration unit tests
+        run: python3 -B -m unittest discover -v -s tools/semantic_cohort_admission -p test_semantic_provider_cohort_profile.py
+      - name: Resolver unit tests
+        run: python3 -B -m unittest discover -v -s tools/semantic_cohort_admission -p test_semantic_provider_peer_bindings.py
+      - name: Install hosted-only fixture dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq busybox-static iproute2 runc
+      - name: Native draft driver peer recheck; no FIFO release
+        run: |
+          sudo install -d -m 700 /root/ouf-cohort-fixture /root/ouf-cohort-fixture/cohort-draft/tools /root/ouf-cohort-fixture/cohort-draft/scripts
+          sudo install -m 600 tools/semantic_cohort_admission/*.py /root/ouf-cohort-fixture/
+          sudo install -m 600 tools/semantic_cohort_admission/cohort-draft/tools/*.py /root/ouf-cohort-fixture/cohort-draft/tools/
+          sudo install -m 600 tools/semantic_cohort_admission/cohort-draft/scripts/*.py /root/ouf-cohort-fixture/cohort-draft/scripts/
+          sudo /usr/bin/python3 -I -B /root/ouf-cohort-fixture/test_semantic_provider_cohort_native.py
