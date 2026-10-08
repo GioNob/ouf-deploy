@@ -242,6 +242,41 @@ def authenticate_role(role, records, authority, sources, observer_raw, verifier,
         raise TransactionDenied('AUTHENTICATE_TARGET_TRANSACTION', reason, role) from None
 
 
+def validate_pair_closure(checked):
+    """One reciprocal-declaration contract at preflight and signed publication."""
+    stage='VERIFY_TWO_CANDIDATE_INPUT_CLOSURE'
+    require(set(checked)==set(TARGETS),stage,'EXACT_TWO_TARGET_ROLES_REQUIRED')
+    from tools.semantic_provider_peer_bindings import declarations
+    for role,value in checked.items():
+        for peer in declarations(value['template']['candidate']['transport'],TARGETS[role]['containerId']):
+            other=[v for r,v in checked.items() if r!=role and TARGETS[r]['containerId']==peer['containerId']]
+            require(len(other)==1,stage,'EXACT_COHORT_SIBLING_REQUIRED',role)
+            same(peer,{'applicationHash':digest(encoded(other[0]['policy']['expectedOci'])),
+                       'networkBindings':other[0]['template']['candidate']['networkBindings']},
+                 stage,'COMPLETE_SIBLING_DECLARATION_DRIFT',role)
+
+
+def preflight_input_pair(records_by_role):
+    """Pure unsigned check before claims/keys; this grants no role authority.
+
+    Recompile complete expected policies from independently prepared inputs.
+    Actual root mandates and later signatures remain separately mandatory.
+    """
+    stage='PREFLIGHT_TWO_CANDIDATE_INPUTS'
+    require(set(records_by_role)==set(TARGETS),stage,'EXACT_TWO_TARGET_ROLES_REQUIRED')
+    checked={}
+    for role,records in records_by_role.items():
+        values={name:decode(raw,131072) for name,raw in records.items()}
+        policy=compile_policy(values['template'],values['launch'],values['context'])
+        require(encoded(policy)==records['framePolicy'],stage,'COMPLETE_COMPILED_POLICY_DRIFT',role)
+        validate_preparer_template(values['preparerTemplate'],role)
+        same(values['context'],{'containerId':TARGETS[role]['containerId']},stage,'CONTEXT_CANDIDATE_DRIFT',role)
+        same(values['preparerTemplate']['candidate'],{'containerId':TARGETS[role]['containerId']},
+             stage,'PREPARER_CANDIDATE_SCOPE_DRIFT',role)
+        checked[role]={'policy':policy,'template':values['preparerTemplate']}
+    validate_pair_closure(checked)
+
+
 def build_install_plan(root, source_root, records_by_role, authority, sources,
                        observer_raw, python, crypto, verifier, runtime_adapter, clock=time.time):
     """Compile both candidate profiles and exact adapter configuration in memory.
@@ -271,15 +306,7 @@ def build_install_plan(root, source_root, records_by_role, authority, sources,
                for role, records in records_by_role.items()}
     require(len({v['intent']['transactionId'] for v in checked.values()}) == 2,
             stage, 'DISTINCT_ROLE_TRANSACTIONS_REQUIRED')
-    from tools.semantic_provider_peer_bindings import declarations
-    for role, value in checked.items():
-        cid = TARGETS[role]['containerId']
-        for peer in declarations(value['template']['candidate']['transport'], cid):
-            other = [v for r, v in checked.items() if r != role and TARGETS[r]['containerId'] == peer['containerId']]
-            require(len(other) == 1, stage, 'EXACT_COHORT_SIBLING_REQUIRED', role)
-            same(peer, {'applicationHash': digest(encoded(other[0]['policy']['expectedOci'])),
-                        'networkBindings': other[0]['template']['candidate']['networkBindings']},
-                 stage, 'COMPLETE_SIBLING_DECLARATION_DRIFT', role)
+    validate_pair_closure(checked)
     registry = root + '/registry'
     adapter = copy.deepcopy(runtime_adapter)
     for field, relative in (('sourceHash', 'scripts/semantic_provider_docker_runtime.py'),

@@ -14,7 +14,7 @@ import stat
 import sys
 import types
 
-MANIFEST_SHA256 = '91de01c2b75995c757b9cbb2d958194565f7a62aa27d19bb314bf827daf99552'
+MANIFEST_SHA256 = '86fb90d3f224e3753e2117bc799c81a53391ce0d8209c29384e4dbaf9f172d2e'
 AUTHORITY = {'path':'/etc/ouf/deploy-snapshots/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json',
              'sha256':'7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18'}
 POLICY = {'path':'/etc/ouf/deploy-snapshots/semantic-trust-policy-preparation-20261004-172336/trust-policy.json',
@@ -266,6 +266,8 @@ def execute_transaction(package,configuration,expected_configuration_hash,source
             'ORIGINAL_EMPTY_TARGET_WRAPPER_REQUIRED')
     require(not os.path.lexists(package/'execution-claim.json'),'DO_NOT_REPLAY_APPROVED_TRANSACTION')
     STAGE='PREFLIGHT_BOTH_EXPLICIT_ROOT_MANDATES'
+    from authenticate_provider_transaction import preflight_input_pair
+    preflight_input_pair(records)
     signatures=package/'issued-signatures'
     crypto={'policyBinding':POLICY,'signatureDirectory':str(signatures),'opensslBinding':cfg['opensslBinding']}
     # No directory/claim/key mutation until both root approvals pass independently.

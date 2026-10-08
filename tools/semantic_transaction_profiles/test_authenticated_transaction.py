@@ -408,6 +408,33 @@ class AuthenticatedTransactionTest(unittest.TestCase):
         self.assertEqual(list(output.iterdir()),[])
         self.assertEqual(list(self.signatures.iterdir()),[])
 
+    def test_unsigned_pair_preflight_rejects_wrong_complete_sibling_hash(self):
+        import json
+        from authenticate_provider_transaction import preflight_input_pair
+        from issue_provider_transaction_authority import INPUTS
+        records={role:{name:raw for name,raw in values.items() if name in INPUTS}
+                 for role,values in self.records.items()}
+        templates={role:json.loads(values['preparerTemplate']) for role,values in records.items()}
+        for index,(role,template) in enumerate(templates.items()):
+            template['candidate']['networkBindings']=[{'interface':'eth0','bridge':'ci_bridge',
+                'mac':'02:00:00:00:00:0'+str(index+2),'ipv4':'198.19.123.'+str(index+2),
+                'workloadRef':'ci-workload','bindingRef':'ci-binding'}]
+        for role,template in templates.items():
+            peer='southbound' if role=='adapter' else 'adapter'
+            declaration={'containerId':TARGETS[peer]['containerId'],
+                'applicationHash':digest(encoded(json.loads(records[peer]['framePolicy'])['expectedOci'])),
+                'networkBindings':templates[peer]['candidate']['networkBindings']}
+            template['candidate']['transport']=[{'purpose':'GATEWAY_ADAPTER',
+                'authorityRef':'ci-only','source':'198.19.123.2','destination':'198.19.123.3',
+                'protocol':'tcp','port':9443,'peerIngress':{'kind':'CREATED_CANDIDATE',
+                'declaration':declaration,'bindingRef':'ci-binding'}}]
+            records[role]['preparerTemplate']=encoded(template)
+        preflight_input_pair(records)
+        templates['adapter']['candidate']['transport'][0]['peerIngress']['declaration']['applicationHash']='f'*64
+        records['adapter']['preparerTemplate']=encoded(templates['adapter'])
+        with self.assertRaisesRegex(TransactionDenied,'COMPLETE_SIBLING_DECLARATION_DRIFT'):
+            preflight_input_pair(records)
+
     def test_future_database_denied_before_signing(self):
         self.assertEqual(self.denied_dependency_before_signing(1),
                          'DATABASE_FRESHNESS_DOES_NOT_COVER_AUTHORITY_WINDOW')
