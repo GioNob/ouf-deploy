@@ -13,6 +13,8 @@ import stat
 import subprocess
 import sys
 import tempfile
+import time
+from contextlib import contextmanager, nullcontext
 from datetime import datetime, timezone
 
 
@@ -135,6 +137,34 @@ def capture(argv, timeout=20):
 
 def binding(config, cid):
     return digest({**{k: v for k, v in config.items() if k != 'candidates'}, 'candidate': config['candidates'][cid]})
+
+
+@contextmanager
+def admission_schedule(registry, timeout=20):
+    """Serialize admission/start on the existing sealed registry directory.
+
+    This is a separate scheduling inode, not the guard/lease lock borrowed by
+    child processes. Create and peer readiness remain concurrent. No inode is
+    created or replaced and no common-lock failure is ignored.
+    """
+    ancestors(registry/'adapter-schedule'); fd = os.open(registry, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        before = os.fstat(fd)
+        require(stat.S_ISDIR(before.st_mode) and before.st_uid == before.st_gid == 0
+                and stat.S_IMODE(before.st_mode) == 0o700, 'PRIVATE_REGISTRY_REQUIRED')
+        deadline = time.monotonic()+timeout
+        while True:
+            try:
+                fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB); break
+            except BlockingIOError:
+                require(time.monotonic() < deadline, 'ADMISSION_SCHEDULE_TIMEOUT')
+                time.sleep(min(0.05, max(0, deadline-time.monotonic())))
+        current = registry.lstat()
+        require((current.st_dev,current.st_ino,current.st_mode,current.st_uid,current.st_gid)
+                == (before.st_dev,before.st_ino,before.st_mode,before.st_uid,before.st_gid),
+                'ADMISSION_REGISTRY_DRIFT')
+        yield
+    finally: os.close(fd)
 
 
 def operate(config_path, argv):
@@ -299,8 +329,12 @@ def operate(config_path, argv):
             state = parse(capture([config['runtimePath'], '--root', str(root), 'state', cid]))
             if config['schema']=='ouf.semantic-docker-runtime-adapter.v4':
                 broker_phase('cohort-ready',state)
-            publish('PREPARING'); admit(state)
-            publish('STARTING'); driver_call('start'); publish('STARTED'); return 0
+            scheduler = admission_schedule(Path(config['registryRoot'])) if config['schema']=='ouf.semantic-docker-runtime-adapter.v4' else nullcontext()
+            with scheduler:
+                require(read(config_path) == original, 'ADAPTER_CONFIGURATION_DRIFT')
+                state = parse(capture([config['runtimePath'], '--root', str(root), 'state', cid]))
+                publish('PREPARING'); admit(state)
+                publish('STARTING'); driver_call('start'); publish('STARTED'); return 0
         require(read(config_path) == original, 'ADAPTER_CONFIGURATION_DRIFT')
         if operation == 'delete':
             require(record['state'] != 'DELETED', 'DO_NOT_REPLAY_RUNTIME_DELETE'); publish('DELETING')
