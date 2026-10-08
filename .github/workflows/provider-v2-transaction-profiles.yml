@@ -16,7 +16,9 @@ jobs:
         with:
           persist-credentials: false
       - name: Profile scope and seal substitution rejection
-        run: python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_assemble_provider_profiles.py
+        run: python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p 'test_*profiles.py'
+      - name: Partial creation never grants admission
+        run: python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_peer_creation_window.py
 
   native-frame-profiles:
     runs-on: ubuntu-latest

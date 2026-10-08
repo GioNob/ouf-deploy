@@ -212,7 +212,7 @@ class Broker:
         return application_hash(oci),NativeBackend.generation(None,actual['pid'])
 
     def cohort_ready(self,state):
-        from tools.semantic_provider_peer_bindings import declarations,collect,await_peers,PeerNotReady
+        from tools.semantic_provider_peer_bindings import declarations,collect,await_peers,PeerNotReady,creation_pending
         from tools.semantic_provider_deployment_protocol import validate_intent
         from tools.semantic_provider_deployment_producer import program
         from tools.semantic_provider_preexec_native import NativeBackend
@@ -237,6 +237,14 @@ class Broker:
             matches=[row for row in rows if row.get('id')==peer['containerId']]
             require(len(matches)<=1,'COHORT_RUNTIME_IDENTITY_AMBIGUOUS')
             if not matches or matches[0].get('status')=='creating':raise PeerNotReady()
+            if matches[0].get('status')=='stopped' and matches[0].get('pid')==0:
+                # This fixed sibling path belongs to the source-owned cohort
+                # registry. Waiting here grants nothing: collect below must
+                # subsequently prove a real created/running PID and exact OCI.
+                require(self.root.name==self.cid,'EXPLICIT_COHORT_REGISTRY_LAYOUT_REQUIRED')
+                path=self.root.parent/peer['containerId']/'adapter.json'
+                journal=parse(private(path))
+                if creation_pending(matches[0],journal,peer,self.args.runtime_root):raise PeerNotReady()
             require(matches[0].get('status') in ('created','running'),'COHORT_PEER_STATE_DENIED')
             try:
                 return collect(peer,self.args.runtime_root,candidate['runtimeBinding'],commands,run,

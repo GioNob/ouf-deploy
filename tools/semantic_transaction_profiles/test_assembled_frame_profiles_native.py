@@ -53,6 +53,15 @@ def main():
             for path in (repository/name).glob('*.py'):
                 shutil.copyfile(path,destination/path.name);(destination/path.name).chmod(0o600)
         wrapper=root/'admission.py';shutil.copyfile(Path(__file__).with_name('ci_frame_profile_broker.py'),wrapper);wrapper.chmod(0o600)
+        # Reproduce runc's partial list view deterministically. This source-bound
+        # CI facade changes only list visibility while real create is finishing.
+        partial=root/'partial-runtime.py'
+        partial.write_text('#!'+python+'\n'+Path(__file__).with_name('ci_partial_creation_runtime.py').read_text())
+        partial.chmod(0o700)
+        private(partial.with_suffix('.json'), {'realRuntime':commands['runc'],
+            'candidate':cids[1], 'marker':str(root/'partial-active'),
+            'seen':str(root/'partial-seen')})
+        commands['runc']=str(partial)
         lock=root/'guard.lock';lock.touch(mode=0o600)
         config_path=root/'adapter.json';cfg={'schema':'ouf.semantic-docker-runtime-adapter.v4',
             'sourceHash':sha(source/'scripts/semantic_provider_docker_runtime.py'),
@@ -162,12 +171,13 @@ def main():
                                 'status':state.get('status'),'pid':state.get('pid')}))
                     print('FRAME_PROFILE_PROCESS_RESULTS='+json.dumps(outcomes))
                 require(status==0,'CI_COHORT_ADMISSION_FAILED:'+message)
+            require((root/'partial-seen').exists(),'CI_PARTIAL_CREATION_NOT_EXERCISED')
             require(all(application_proof(cid)=='APP' for cid in cids),'CI_COHORT_APP_PROOF_MISSING')
             for i,cid in enumerate(cids):
                 grant=json.loads((registry/cid/'driver.json').read_bytes())
                 require(grant['schema']=='ouf.semantic-preexec-driver.v6' and set(grant['peerBinding']['observations'])=={cids[1-i]},'CI_V6_PEER_GRANT_MISSING')
                 require(grant['profile']['bundleHash']==digest(specs[i]),'CI_SIGNED_FULL_OCI_DRIFT')
-            print('ASSEMBLED_FRAME_PROFILES_NATIVE=PASS NODE_V4=true EFFECTIVE_READONLY_SOURCE_OBSERVED=true PROFILES_GENERATED_BY_ASSEMBLER=true TWO_REAL_CREATED_CANDIDATES=true EXPECTED_COMPLETE_OCI_BEFORE_CREATE=true ABSENT_PEER_PREVENTED_EARLY_RELEASE=true TWO_AUTHENTICATED_V6_STARTS=true REAL_ED25519_NODE_INSTALLER=true CI_ACCEPTANCE_AUTHORITY_ONLY=true TARGET_START_AUTHORIZED=false')
+            print('ASSEMBLED_FRAME_PROFILES_NATIVE=PASS NODE_V4=true EFFECTIVE_READONLY_SOURCE_OBSERVED=true PROFILES_GENERATED_BY_ASSEMBLER=true TWO_REAL_CREATED_CANDIDATES=true EXPECTED_COMPLETE_OCI_BEFORE_CREATE=true ABSENT_PEER_PREVENTED_EARLY_RELEASE=true PARTIAL_CREATION_WAIT_PROVEN=true TWO_AUTHENTICATED_V6_STARTS=true REAL_ED25519_NODE_INSTALLER=true CI_ACCEPTANCE_AUTHORITY_ONLY=true TARGET_START_AUTHORIZED=false')
         finally:
             for process,out,err in processes:
                 if process.poll() is None:process.kill();process.wait(timeout=5)

@@ -28,6 +28,28 @@ def await_peers(expected,probe,budget,pause=time.sleep):
 
 def require(ok, code):
     if not ok: raise ValueError(code)
+
+def creation_pending(row, journal, expected, runtime_root):
+    """Classify only a source-owned CREATING window; this is never admission.
+
+    runc list can show stopped/pid=0 before create has finished publishing its
+    init process. The caller must custody-read the sibling adapter journal.
+    Completed, failed or unrelated records cannot relax the stopped-state check.
+    Even a stale CREATING record can only consume the existing bounded wait;
+    actual created/running state, full OCI and all live NICs remain mandatory.
+    """
+    fields = {'schema', 'containerId', 'configurationHash', 'state',
+              'runtimeRoot', 'bundleHash', 'driverHash'}
+    return (type(row) is dict and row.get('id') == expected['containerId']
+            and row.get('status') == 'stopped' and type(row.get('pid')) is int and row['pid'] == 0
+            and type(journal) is dict and set(journal) == fields
+            and journal['schema'] == 'ouf.semantic-docker-runtime-journal.v1'
+            and journal['containerId'] == expected['containerId'] and journal['state'] == 'CREATING'
+            and type(journal['configurationHash']) is str
+            and re.fullmatch('[0-9a-f]{64}', journal['configurationHash']) is not None
+            and journal['runtimeRoot'] == runtime_root and journal['bundleHash'] == expected['applicationHash']
+            and journal['driverHash'] is None)
+
 def encoded(value): return json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
 def digest(value): return hashlib.sha256(encoded(value)).hexdigest()
 def declaration(value):
