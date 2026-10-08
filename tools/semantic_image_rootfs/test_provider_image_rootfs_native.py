@@ -8,6 +8,7 @@ import shutil
 import sys
 import tarfile
 import tempfile
+sys.path.insert(0,str(Path(__file__).parent))
 from prepare_provider_image_rootfs import prepare,canonical,load_sealer,Budget,OCI_MANIFEST,OCI_CONFIG
 
 def digest(raw):return 'sha256:'+hashlib.sha256(raw).hexdigest()

@@ -9,6 +9,15 @@ on:
 permissions:
   contents: read
 jobs:
+  target-engine-source:
+    runs-on: [self-hosted, linux, x64, ouf-vps-test]
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Read engine public build identity; no container operations
+        run: /usr/bin/python3.13 -I -B tools/semantic_image_rootfs/read_provider_engine_source.py
   offline-rootfs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
