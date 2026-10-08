@@ -219,10 +219,23 @@ class NativeCompilerTests(unittest.TestCase):
                 self.assertEqual(declared_endpoint['MacAddress'], endpoint['MacAddress'])
                 self.assertEqual(declared_endpoint['IPAMConfig']['IPv4Address'], '198.19.250.21')
                 self.assertEqual(declared_endpoint['DriverOpts'], endpoint['DriverOpts'])
+                for index in range(1, 2 if role == 'adapter' else 3):
+                    extra_name = 'ouf-ci-frame-extra-' + str(index)
+                    extra_network = docker('network', 'create', '--subnet', '198.19.' + str(250 + index) + '.0/24', extra_name)
+                    self.assertEqual(extra_network.returncode, 0)
+                    extra_endpoint = {'IPAMConfig': {'IPv4Address': '198.19.' + str(250 + index) + '.21'},
+                                      'Aliases': ['ci-frame-role'], 'MacAddress': '02:42:c6:13:' + format(250 + index, '02x') + ':15',
+                                      'DriverOpts': {'com.docker.network.endpoint.ifname': 'oufnet' + str(index)}}
+                    api_post('/networks/' + extra_name + '/connect', {'Container': cid2, 'EndpointConfig': extra_endpoint})
+                    current = json.loads(docker('inspect', '--format', '{{json .NetworkSettings.Networks}}', cid2).stdout)[extra_name]
+                    self.assertEqual(current['MacAddress'], extra_endpoint['MacAddress'])
+                    self.assertEqual(current['IPAMConfig'], extra_endpoint['IPAMConfig'])
+                    self.assertEqual(current['DriverOpts'], extra_endpoint['DriverOpts'])
                 untouched = json.loads(docker('inspect', '--format', '{{json .State}}', cid2).stdout)
                 self.assertEqual(untouched['Status'], 'created'); self.assertEqual(untouched['Pid'], 0)
                 self.assertTrue(untouched['StartedAt'].startswith('0001-01-01'))
-                print('CI_STOPPED_NETWORK_REBIND=PASS SAME_CID=true MAC_IP_INTERFACE_DECLARED=true APPLICATION_NOT_STARTED=true')
+                print('CI_STOPPED_NETWORK_REBIND=PASS SAME_CID=true MAC_IP_INTERFACE_DECLARED=true APPLICATION_NOT_STARTED=true NETWORK_COUNT=' +
+                      str(2 if role == 'adapter' else 3))
             metadata2 = json.loads(docker('inspect', '--format', '{{json .}}', cid2).stdout)
             if backend == 'classic-vfs':
                 self.assertEqual(metadata2['GraphDriver']['Name'], 'vfs')
