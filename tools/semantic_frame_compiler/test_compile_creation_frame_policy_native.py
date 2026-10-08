@@ -78,6 +78,10 @@ class NativeCompilerTests(unittest.TestCase):
                 self.assertLess(time.monotonic(), deadline, 'owned daemon readiness timed out')
                 time.sleep(.25)
             info = json.loads(docker('info', '--format', '{{json .}}').stdout)
+            expected_version = os.environ.get('OUF_FRAME_COMPILER_ENGINE_VERSION')
+            if expected_version:
+                self.assertEqual(info['ServerVersion'], expected_version, 'CI_ENGINE_VERSION_DRIFT')
+            print('CI_ENGINE_VERSION=' + info['ServerVersion'])
             self.assertEqual(docker('pull', 'busybox:1.37.0', timeout=120).returncode, 0)
             candidate_network = 'none'
             if network_mode == 'bridge':

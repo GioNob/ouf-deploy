@@ -55,7 +55,7 @@ def collect(config):
             raise ValueError(reason + '_AT_' + args[0].upper())
         require(0 < len(result.stdout) <= 131072, 'DOCKER_METADATA_READ_FAILED')
         binary(); return json.loads(result.stdout)
-    info = query('info', '--format', '{"dataRoot":{{json .DockerRootDir}},"storageDriver":{{json .Driver}},"driverStatus":{{json .DriverStatus}}}')
+    info = query('info', '--format', '{"serverVersion":{{json .ServerVersion}},"cgroupDriver":{{json .CgroupDriver}},"dataRoot":{{json .DockerRootDir}},"storageDriver":{{json .Driver}},"driverStatus":{{json .DriverStatus}}}')
     require(type(info['dataRoot']) is str and info['dataRoot'].startswith('/')
             and '..' not in info['dataRoot'].split('/'), 'DOCKER_DATA_ROOT_UNPROVEN')
     rows = []
@@ -86,7 +86,7 @@ def collect(config):
                      'storageRecordHash': hashlib.sha256(encoded(value['storage'])).hexdigest(),
                      'unknownStorageFieldCount': len(set(data) - set(recognized)),
                      'independentRootfsBindingProven': False})
-    return {'dockerDataRoot': info['dataRoot'], 'storageDriver': info['storageDriver'],
+    return {'serverVersion': info['serverVersion'], 'cgroupDriver': info['cgroupDriver'], 'dockerDataRoot': info['dataRoot'], 'storageDriver': info['storageDriver'],
             'driverStatusHash': hashlib.sha256(encoded(info['driverStatus'])).hexdigest(), 'candidates': rows}
 
 

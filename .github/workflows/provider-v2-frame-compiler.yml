@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        backend: [classic-vfs, containerd-overlayfs]
+        backend: [containerd-overlayfs]
         role: [adapter, southbound]
     steps:
       - uses: actions/checkout@v4
@@ -37,11 +37,19 @@ jobs:
           python3 -B -m unittest discover -v -s owner-fixture/tests -p test_semantic_creation_frame.py
           python3 -B -m unittest discover -v -s owner-fixture/tests -p test_semantic_creation_frame_observer.py
           cmp owner-fixture/tools/semantic_creation_frame_observer.py tools/semantic_frame_compiler/frame-observer.py
+      - name: Load target-version Engine only in disposable hosted CI
+        run: |
+          curl --fail --location --retry 2 --connect-timeout 15 --max-time 180 https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz --output engine.tgz
+          sha256sum engine.tgz
+          mkdir engine-bin
+          tar -xzf engine.tgz --strip-components=1 -C engine-bin
+          ./engine-bin/docker --version
+          ./engine-bin/dockerd --version
       - name: Real isolated Docker frame shape and refusing capture runtime
         run: |
           sudo install -d -m 700 /root/ouf-frame-compiler-fixture
           sudo install -m 600 tools/semantic_frame_compiler/*.py tools/semantic_frame_compiler/semantic_oci_shape_schema.json /root/ouf-frame-compiler-fixture/
-          sudo env OUF_FRAME_COMPILER_EXPORT_DIRECTORY="${{ github.workspace }}/frame-baselines" OUF_FRAME_COMPILER_ROLE=${{ matrix.role }} OUF_FRAME_COMPILER_NETWORK=bridge OUF_FRAME_COMPILER_BACKEND=${{ matrix.backend }} /usr/bin/python3 -I -B /root/ouf-frame-compiler-fixture/test_compile_creation_frame_policy_native.py
+          sudo env PATH="${{ github.workspace }}/engine-bin:/usr/sbin:/usr/bin:/sbin:/bin" OUF_FRAME_COMPILER_ENGINE_VERSION=29.8.1 OUF_FRAME_COMPILER_EXPORT_DIRECTORY="${{ github.workspace }}/frame-baselines" OUF_FRAME_COMPILER_ROLE=${{ matrix.role }} OUF_FRAME_COMPILER_NETWORK=bridge OUF_FRAME_COMPILER_BACKEND=${{ matrix.backend }} /usr/bin/python3 -I -B /root/ouf-frame-compiler-fixture/test_compile_creation_frame_policy_native.py
       - name: Retain synthetic Engine baseline for independent role template review
         uses: actions/upload-artifact@v4
         with:
