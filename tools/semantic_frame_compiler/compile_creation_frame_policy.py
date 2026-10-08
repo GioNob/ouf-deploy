@@ -49,7 +49,7 @@ def environment(rows):
 def docker_context(value):
     """Derive only bounded Docker paths from independently authenticated inputs."""
     fields = {'schema', 'containerId', 'bundleParent', 'metadataParent',
-              'networkNamespaceParent', 'networkNamespaceName', 'cgroupDriver'}
+              'networkNamespaceParent', 'networkNamespaceName', 'cgroupDriver', 'rootfsPath', 'storageParent'}
     require(type(value) is dict and set(value) == fields
             and value['schema'] == 'ouf.semantic-docker-frame-context.v1', 'EXACT_CONTEXT_REQUIRED')
     cid = value['containerId']
@@ -58,11 +58,16 @@ def docker_context(value):
     parents = {k: path(value[k]) for k in
                ('bundleParent', 'metadataParent', 'networkNamespaceParent')}
     require(len(set(parents.values())) == 3, 'CONTEXT_PARENTS_DISTINCT_REQUIRED')
+    storage, rootfs = path(value['storageParent']), path(value['rootfsPath'])
+    require(parents['metadataParent'] == storage + '/containers', 'DOCKER_METADATA_PARENT_REQUIRED')
+    require(rootfs == parents['bundleParent'] + '/' + cid + '/rootfs'
+            or PurePosixPath(rootfs).is_relative_to(storage) and rootfs != storage,
+            'ROOTFS_CONTEXT_OUTSIDE_APPROVED_STORAGE')
     name = value['networkNamespaceName']
     require(name is None or type(name) is str and re.fullmatch('[0-9a-f]{12,64}', name), 'NETWORK_CONTEXT_REQUIRED')
     require(value['cgroupDriver'] in ('systemd', 'cgroupfs'), 'CGROUP_DRIVER_REQUIRED')
     cgroup = 'system.slice:docker:' + cid if value['cgroupDriver'] == 'systemd' else '/docker/' + cid
-    return {'rootfs': parents['bundleParent'] + '/' + cid + '/rootfs',
+    return {'rootfs': rootfs,
             'network': None if name is None else parents['networkNamespaceParent'] + '/' + name,
             'cgroup': cgroup, 'hostname': cid[:12],
             **{k: parents['metadataParent'] + '/' + cid + '/' + filename for k, filename in

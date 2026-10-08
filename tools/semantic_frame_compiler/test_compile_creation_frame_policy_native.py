@@ -75,6 +75,10 @@ class NativeCompilerTests(unittest.TestCase):
                             '--mount', 'type=bind,source=' + str(source) + ',target=/approved-source,readonly',
                             'busybox:1.37.0', 'sleep', '600')
             self.assertEqual(create.returncode, 0); cid = create.stdout.decode().strip()
+            inspected = json.loads(docker('inspect', '--format', '{{json .}}', cid).stdout)
+            storage_data = inspected['GraphDriver']['Data']
+            self.assertEqual(len(storage_data), 1, 'owned vfs fixture must expose one independently read storage root')
+            independent_rootfs = next(iter(storage_data.values()))
             self.assertNotEqual(docker('start', cid).returncode, 0)
             self.assertTrue(capture.is_file(), 'create did not reach refusing capture runtime')
             captured = json.loads(capture.read_bytes()); self.assertEqual(captured['cid'], cid)
@@ -107,10 +111,10 @@ class NativeCompilerTests(unittest.TestCase):
             context = {'schema': 'ouf.semantic-docker-frame-context.v1', 'containerId': cid,
                        'bundleParent': str(bundle.parent), 'metadataParent': str(root / 'data' / 'containers'),
                        'networkNamespaceParent': netparent, 'networkNamespaceName': netname,
-                       'cgroupDriver': info['CgroupDriver']}
+                       'cgroupDriver': info['CgroupDriver'], 'rootfsPath': independent_rootfs, 'storageParent': str(root / 'data')}
             policy = compile_policy({'schema': 'ouf.semantic-creation-frame-template.v1', 'expectedOci': template_oci,
                                      'approvedHooks': copy.deepcopy(actual.get('hooks') or {})}, launch, context)
-            self.assertEqual(policy['expectedOci'], actual)
+            self.assertTrue(policy['expectedOci'] == actual, 'CI_COMPILED_POLICY_DRIFT')
             schema = schema_from_source_closure(Path(__file__).with_name('semantic_oci_shape_schema.json').read_bytes())
             result = configured_profile(actual, policy['expectedOci'], policy['manifest'], policy['startup'], policy['approvedHooks'], schema)
             self.assertTrue(result['configuredPolicyConforms']); self.assertFalse(result['acceptanceGranted'])

@@ -12,7 +12,8 @@ class CompilerTests(unittest.TestCase):
         self.context = {'schema': 'ouf.semantic-docker-frame-context.v1', 'containerId': 'a' * 64,
                         'bundleParent': '/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby',
                         'metadataParent': '/var/lib/docker/containers', 'networkNamespaceParent': '/run/docker/netns',
-                        'networkNamespaceName': 'b' * 12, 'cgroupDriver': 'systemd'}
+                        'networkNamespaceName': 'b' * 12, 'cgroupDriver': 'systemd', 'storageParent': '/var/lib/docker',
+                        'rootfsPath': '/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby/' + 'a' * 64 + '/rootfs'}
         mount = {'source': '/approved/adapter.json', 'target': '/run/provider.json', 'readOnly': True}
         self.launch = {'schema': 'ouf.semantic-creation-frame-launch.v1',
                        'manifest': {'user': '10006:10006', 'readOnlyRoot': True, 'memoryBytes': 268435456,
@@ -97,6 +98,7 @@ class CompilerTests(unittest.TestCase):
     def test_different_container_and_namespace_produce_different_exact_policy(self):
         first = self.compile()
         context = copy.deepcopy(self.context); context.update(containerId='d' * 64, networkNamespaceName='e' * 12)
+        context['rootfsPath'] = context['bundleParent'] + '/' + 'd' * 64 + '/rootfs'
         second = compile_policy(self.template, self.launch, context)
         with self.assertRaises(ValueError): self.review(first['expectedOci'], second)
 
@@ -134,6 +136,13 @@ class CompilerTests(unittest.TestCase):
         self.assertFalse(compilation_receipt(self.template, self.launch, context, policy)['kernelEnforcementObserved'])
         joined = copy.deepcopy(policy['expectedOci']); joined['linux']['namespaces'][-1]['path'] = '/foreign/netns'
         with self.assertRaises(ValueError): self.review(joined, policy)
+
+    def test_independent_storage_rootfs_binding_supported_but_foreign_storage_denied(self):
+        context = copy.deepcopy(self.context); context['rootfsPath'] = '/var/lib/docker/vfs/dir/approved-layer'
+        policy = compile_policy(self.template, self.launch, context)
+        self.assertEqual(policy['expectedOci']['root']['path'], context['rootfsPath'])
+        context['rootfsPath'] = '/foreign/storage/rootfs'
+        with self.assertRaises(Denied): compile_policy(self.template, self.launch, context)
 
 
 if __name__ == '__main__':
