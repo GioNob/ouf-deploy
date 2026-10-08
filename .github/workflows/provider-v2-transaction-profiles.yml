@@ -65,12 +65,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Preserve installed Docker and its bundled runc
+      - name: Load exact reviewed Engine into disposable CI only
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq busybox-static
-          docker version
-          runc --version
+          curl --fail --location --retry 2 --connect-timeout 15 --max-time 180 https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz --output engine.tgz
+          printf '%s\n' 'd8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70  engine.tgz' | sha256sum -c -
+          mkdir engine-bin
+          tar -xzf engine.tgz --strip-components=1 -C engine-bin
       - name: Observe both real Docker creation windows before application release
-        run: sudo /usr/bin/python3 -B tools/semantic_transaction_profiles/test_docker_creation_window_native.py
+        run: sudo env OUF_DOCKER_WINDOW_ENGINE_DIRECTORY="${{ github.workspace }}/engine-bin" /usr/bin/python3 -B tools/semantic_transaction_profiles/test_docker_creation_window_native.py
 

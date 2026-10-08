@@ -64,9 +64,9 @@ def fixture(root, args):
 def exercise():
     if os.geteuid() != 0:
         raise RuntimeError('DISPOSABLE_ROOT_CI_REQUIRED')
-    daemon_path = Path('/etc/docker/daemon.json')
-    previous = daemon_path.read_bytes() if daemon_path.exists() else None
-    modified = False
+    engine = os.environ.get('OUF_DOCKER_WINDOW_ENGINE_DIRECTORY')
+    if not engine or not Path(engine).is_absolute():
+        raise RuntimeError('EXPLICIT_DISPOSABLE_ENGINE_DIRECTORY_REQUIRED')
     cids = []
     image = None
     suffix = uuid.uuid4().hex[:12]
@@ -75,19 +75,33 @@ def exercise():
         root = Path(temporary)
         python = str(Path(sys.executable).resolve())
         script = str(Path(__file__).resolve())
-        runc = str(Path(shutil.which('runc')).resolve())
+        runc = str(Path(engine) / 'runc')
+        socket = 'unix://' + str(root / 'docker.sock')
+        daemon = None
+        log = (root / 'daemon.log').open('wb')
         def dock(*args, **kw):
-            return run('docker', *args, **kw)
-        default = dock('info', '--format', '{{.DefaultRuntime}}').stdout
+            return run(str(Path(engine) / 'docker'), '-H', socket, *args, **kw)
         try:
-            config = json.loads(previous) if previous else {}
-            config.setdefault('runtimes', {})[name] = {'path': python,
-                'runtimeArgs': ['-I', '-B', script, '--fixture', str(root)]}
-            daemon_path.parent.mkdir(exist_ok=True)
+            daemon_path = root / 'daemon.json'
+            config = {'features': {'containerd-snapshotter': True},
+                'runtimes': {name: {'path': python,
+                    'runtimeArgs': ['-I', '-B', script, '--fixture', str(root)]}}}
+            (root / 'settings.json').write_text(json.dumps({
+                'cids': cids, 'python': python, 'script': script, 'runc': runc}))
             daemon_path.write_text(json.dumps(config))
-            modified = True
-            run('systemctl', 'reload', 'docker')
-            assert dock('info', '--format', '{{.DefaultRuntime}}').stdout == default
+            daemon = subprocess.Popen([str(Path(engine) / 'dockerd'), '--config-file', str(daemon_path),
+                '--data-root', str(root / 'data'), '--exec-root', str(root / 'exec'),
+                '--pidfile', str(root / 'pid'), '-H', socket, '--bridge', 'none',
+                '--iptables=false', '--ip6tables=false', '--storage-driver', 'overlayfs'],
+                stdout=log, stderr=log,
+                env={**os.environ, 'PATH': engine + ':/usr/sbin:/usr/bin:/sbin:/bin'})
+            deadline = time.monotonic() + 50
+            while dock('info', check=False).returncode:
+                if daemon.poll() is not None or time.monotonic() > deadline:
+                    raise RuntimeError('OWNED_ENGINE_READINESS_UNPROVEN')
+                time.sleep(0.1)
+            info = json.loads(dock('info', '--format', '{{json .}}').stdout)
+            assert info['ServerVersion'] == '29.8.1' and info['Driver'] == 'overlayfs'
             archive = io.BytesIO()
             with tarfile.open(fileobj=archive, mode='w') as tar:
                 entry = tarfile.TarInfo('bin'); entry.type = tarfile.DIRTYPE; entry.mode = 0o755
@@ -141,6 +155,7 @@ def exercise():
                         time.sleep(0.02)
                     print(json.dumps({'status': 'TWO_REAL_DOCKER_CREATION_WINDOWS_PASS',
                         'dockerVersion': dock('version', '--format', '{{.Server.Version}}').stdout.decode().strip(),
+                        'storageDriver': info['Driver'], 'isolatedDaemon': True,
                         'transitionalStates': rows, 'bothApplicationsBlockedBeforeRelease': True,
                         'fullFrameAdmissionProven': False, 'targetAuthority': False,
                         'notReleaseAcceptance': True}, sort_keys=True))
@@ -151,12 +166,13 @@ def exercise():
                 dock('rm', '-f', cid, check=False)
             if image:
                 dock('image', 'rm', image, check=False)
-            if modified:
-                if previous is None:
-                    daemon_path.unlink()
-                else:
-                    daemon_path.write_bytes(previous)
-                run('systemctl', 'reload', 'docker')
+            if daemon is not None and daemon.poll() is None:
+                daemon.terminate()
+                try:
+                    daemon.wait(timeout=20)
+                except subprocess.TimeoutExpired:
+                    daemon.kill(); daemon.wait(timeout=5)
+            log.close()
 
 
 if __name__ == '__main__':
