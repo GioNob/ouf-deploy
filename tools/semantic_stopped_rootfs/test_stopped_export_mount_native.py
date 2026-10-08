@@ -19,6 +19,7 @@ import time
 
 sys.path.insert(0, str(Path(__file__).parent))
 from prepare_provider_image_rootfs import load_sealer, Budget
+from stopped_rootfs_comparison import expected_overlay, stopped_export_view
 
 
 def main():
@@ -79,51 +80,26 @@ def main():
                 (expected/name).write_bytes(b''); (expected/name).chmod(0o755)
             (expected/'etc/mtab').symlink_to('/proc/mounts')
             offline_seal=sealer(expected,limits,Budget())
-            # OverlayFS synthesizes the merged root's directory link count.
-            # Derive an independently mounted expected view; retain every
-            # metadata field and the original offline seal, without masking
-            # the observed container's differences or copying its metadata.
-            expected_view=root/'expected-overlay'; expected_view.mkdir(mode=0o700)
-            (root/'expected-upper').mkdir(mode=0o700)
-            (root/'expected-upper').chmod(expected.stat().st_mode & 0o7777)
-            os.chown(root/'expected-upper',expected.stat().st_uid,expected.stat().st_gid)
-            (root/'expected-work').mkdir(mode=0o700)
-            options='lowerdir='+str(expected)+',upperdir='+str(root/'expected-upper')+',workdir='+str(root/'expected-work')
-            subprocess.run(['mount','-t','overlay','overlay','-o',options,str(expected_view)],check=True)
-            expected_seal=sealer(expected_view,limits,Budget())
+            def binding(name):
+                path=Path(shutil.which(name)).resolve()
+                return (path,hashlib.sha256(path.read_bytes()).hexdigest())
+            config=root/'docker-config'; config.mkdir(mode=0o700)
+            overlay_dir=root/'expected-overlay'; overlay_dir.mkdir(mode=0o700)
             mounted=root/'data/rootfs/overlayfs'/cid
-            export=subprocess.Popen([shutil.which('docker'),'-H',socket,'export',cid],
-                stdout=subprocess.PIPE,stderr=subprocess.DEVNULL)
-            deadline=time.monotonic()+20
-            while not os.path.ismount(mounted):
-                assert export.poll() is None and time.monotonic()<deadline, 'EXPORT_MOUNT_NOT_OBSERVABLE'
-                time.sleep(.05)
-            actual_seal=sealer(mounted,limits,Budget())
-            assert export.poll() is None, 'EXPORT_NOT_HELD_DURING_SEAL'
-            assert not (mounted/'private-bind').exists(), 'BIND_SOURCE_EXPOSED'
-            # Retain bounded CI-only metadata differences instead of normalizing.
+            with expected_overlay(expected,overlay_dir,binding('mount'),binding('umount')) as expected_view:
+                expected_seal=sealer(expected_view,limits,Budget())
+                with stopped_export_view(binding('docker'),socket,config,cid,mounted,67108864) as actual:
+                    actual_seal=sealer(actual,limits,Budget())
+                    assert not (actual/'private-bind').exists(), 'BIND_SOURCE_EXPOSED'
+                    assert actual_seal==expected_seal, 'STRICT_SEAL_BACKEND_COMPATIBILITY_UNPROVEN'
+                # A second observation must reject bytes that diverge from
+                # the same independent expectation; never adopt target bytes.
+                changed=root/'changed'; changed.write_bytes(b'UNAPPROVED')
+                docker('cp',changed,cid+':/data/value')
+                with stopped_export_view(binding('docker'),socket,config,cid,mounted,67108864) as actual:
+                    changed_seal=sealer(actual,limits,Budget())
+                    assert changed_seal!=expected_seal, 'UNAPPROVED_CONTENT_NOT_DETECTED'
             differences=[]
-            for path in [expected_view,*sorted(expected_view.rglob('*'))]:
-                relative=path.relative_to(expected_view)
-                actual=mounted/relative; left=path.lstat(); right=actual.lstat()
-                for field in ('st_mode','st_uid','st_gid','st_nlink','st_size'):
-                    if field=='st_size' and path.is_dir(): continue
-                    if getattr(left,field)!=getattr(right,field):
-                        differences.append({'path':str(relative),'field':field,'expected':getattr(left,field),'actual':getattr(right,field)})
-                if not path.is_symlink():
-                    l={n:os.getxattr(path,n).hex() for n in os.listxattr(path)}
-                    r={n:os.getxattr(actual,n).hex() for n in os.listxattr(actual)}
-                    if l!=r: differences.append({'path':str(relative),'field':'xattrs','expected':l,'actual':r})
-            selector=selectors.DefaultSelector(); selector.register(export.stdout,selectors.EVENT_READ)
-            drained=0; deadline=time.monotonic()+30
-            while True:
-                assert time.monotonic()<deadline, 'EXPORT_DRAIN_TIMEOUT'
-                events=selector.select(.2)
-                if not events: continue
-                chunk=os.read(export.stdout.fileno(),65536)
-                if not chunk: break
-                drained+=len(chunk); assert drained<=67108864
-            selector.close(); assert export.wait(timeout=10)==0
             after=json.loads(docker('inspect',cid))[0]
             assert before['State']==after['State'], 'STOPPED_CANDIDATE_STATE_CHANGED'
             deadline=time.monotonic()+10
@@ -132,7 +108,7 @@ def main():
                 time.sleep(.05)
             result={'schema':'ouf.stopped-export-mount-ci.v1','engineVersion':info['ServerVersion'],
                 'directMountedRootfsObserved':True,'neverStarted':True,'privateBindContentRead':False,
-                'mountReleased':True,'strictSealMatches':actual_seal==expected_seal,
+                'mountReleased':True,'strictSealMatches':actual_seal==expected_seal,'unapprovedContentDetected':True,'productionComparisonFunctionsUsed':True,
                 'originalOfflineSeal':offline_seal,'independentExpectedOverlayView':True,
                 'expectedSeal':expected_seal,'actualSeal':actual_seal,'metadataDifferences':differences,
                 'targetOperations':0,'targetAcceptance':False}
