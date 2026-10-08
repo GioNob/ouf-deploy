@@ -122,3 +122,8 @@ Hosted CI 37849612355 now also passes a real concurrent two-Docker creation-wind
 
 
 9 October00:45: target unsigned sixteen-document preparation completed in semantic-provider-v2-transaction-draft-g1yrsazc; do not rerun. Actual receipt is registered. Pair preflight before keys and all32 authenticated tests pass in CI37855993564. Next independent human decision is the concrete full-frame/rootfs input review in releases/PROVIDER_V2_COMPLETE_INPUT_REVIEW_20261009.md. Previous lab-image acceptance stands. Role/key/runtime/start/lease authorization remains absent; no target execution command is ready.
+
+
+## Human full-input/rootfs acceptance, 9 October00:57:51 Europe/Rome
+
+The user answered "Accetto" to the concrete sixteen-document/full-frame/reported-v1-rootfs proposal at6a4635380443ec15e56993ce8aaecc3b27a0c10e. Receipt: evidence/provider-v2-full-input-human-acceptance-20261009.json; approvalRef OUF_PROVIDER_V2_FULL_INPUT_REVIEW_20261009_005751. Acceptance binds both exact CIDs, eight input hashes per role, source closure and reported v1 seals as inputs of the signed transaction. Do not request this same acceptance again. It is a human witness record, not an authority signature; role signing, ACTIVE mandates, runtime publication, Docker start and leases remain unauthorised. Continue independent complete production-Docker cohort integration/source packaging validation before requesting any concrete separate role/execution scope. Reuse completed draft g1yrsazc; no preparation/read/reconstruction repeat. No target command is ready or target operation performed.
