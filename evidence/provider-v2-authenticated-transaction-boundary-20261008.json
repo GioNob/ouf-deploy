@@ -1,0 +1,32 @@
+{
+  "schema": "ouf.provider-v2-authenticated-transaction-boundary-development.v1",
+  "observedAtDate": "2026-10-08",
+  "evidenceSource": "cloud_local_tests",
+  "baseline": {
+    "package": "OUF_Reality_Baseline_Package_v1_7.zip",
+    "manifestEntriesVerified": 321,
+    "checksumRowsVerified": 323,
+    "mismatches": 0,
+    "consulted": [
+      "Matrix v1.7 sections 1/4/6/7",
+      "Gateway v1.5 T16/T17 GW-A13/A15",
+      "Authorization v1.5 AUTH-06/07/09/12"
+    ]
+  },
+  "validation": {
+    "authenticatedTransactionTests": 10,
+    "existingProfileTests": 4,
+    "actualOpenSSLVerification": true,
+    "fixtureAuthoritiesOnly": true
+  },
+  "boundaryImplemented": true,
+  "targetOrchestratorComplete": false,
+  "targetWrites": 0,
+  "privateKeysReadOnTarget": 0,
+  "targetSignaturesIssued": 0,
+  "containerLifecycleOperationsOnTarget": 0,
+  "providerCalls": 0,
+  "startAuthorized": false,
+  "leaseAuthorized": false,
+  "releaseAccepted": false
+}
