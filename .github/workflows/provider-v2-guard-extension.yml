@@ -27,3 +27,23 @@ jobs:
         run: sudo /usr/bin/python3 -B -m unittest discover -s tools/semantic_guard_extension -p test_installer_diagnosis.py -v
       - name: Atomic guard extension and publication failure recovery
         run: sudo unshare --net /usr/bin/python3 -B tools/semantic_guard_extension/test_guard_transition_native.py
+  installer-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: deploy
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: df103735c1fe75a31e6d4c752360e9368e6aa52d
+          path: gateway
+          persist-credentials: false
+      - name: Install native nft dependency
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq nftables
+      - name: Full private installer, actual nft and report cleanup recovery
+        run: sudo unshare --net /usr/bin/python3 -I -B deploy/tools/semantic_guard_extension/test_installer_native.py gateway

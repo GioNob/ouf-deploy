@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Operator-only migration of the owned empty provider/OIDC guard and boot state.
 
-No image/rootfs preparation, application start, key read, signed admission,
+No image/rootfs preparation, application start, authority-key file read, signed admission,
 Docker daemon restart or general privilege grant is performed.
 """
 import argparse
@@ -21,10 +21,13 @@ POINTER=Path('/etc/ouf/coordinated-boot-installation.json')
 OLD_OWNER_HASH='be76f56598ef3d7e91e773351b6a04f8a4595c4fb6ef1d70986d47ddb350ad04'
 NETWORK_REPORT=Path('/tmp/ouf-transaction-network-979dcbgd/report.json')
 CLAIM=Path('/etc/ouf/provider-v2-network-guard-migration.claim')
+SNAPSHOT_PARENT=Path('/etc/ouf/deploy-snapshots')
+NETWORK_BOUND_FILES={'binding':Path('/etc/ouf/deploy-snapshots/semantic-provider-v2-inputs-XE7IwlGm/binding.json'),
+ 'plan':Path('/etc/ouf/deploy-snapshots/semantic-provider-v2-inputs-XE7IwlGm/runtime-plan.json')}
 UNIT_PATHS={'guard.service':Path('/etc/systemd/system/ouf-semantic-boot-guard.service'),
  'docker-drop-in.conf':Path('/etc/systemd/system/docker.service.d/90-ouf-semantic-boot-guard.conf')}
 PACKAGE_NAMES={'extend_empty_lease_guard.py','build_guard_profiles.py','publish_guard_files.py',
- 'build_target_network_policy.py','read_gateway_peer_port.py','install_provider_network_guard.py'}
+ 'build_target_network_policy.py','read_gateway_peer_port.py','install_provider_network_guard.py','captured-network-inputs.json'}
 STAGE='ROOT_ACCESS';SNAPSHOT=None
 
 class MigrationDenied(ValueError):
@@ -103,7 +106,7 @@ def inspect_candidates():
  return facts
 
 def observe(receipt,legacy=None):
- root=Path(receipt['directory']);require(root.parent==Path('/etc/ouf/deploy-snapshots') and root.name.startswith('semantic-coordinated-boot-install-'),'SELECTED_INSTALLATION_REQUIRED')
+ root=Path(receipt['directory']);require(root.parent==SNAPSHOT_PARENT and root.name.startswith('semantic-coordinated-boot-install-'),'SELECTED_INSTALLATION_REQUIRED')
  core,profiles,files,network=selected(root/'migration',receipt['transitionSourceHashes'])
  require(private(root/'transition-source.py',receipt['observerHash'])==private(root/'migration/install_provider_network_guard.py',receipt['observerHash']),'OBSERVER_SOURCE_CHANGED')
  for name,expected in receipt['sourceHashes'].items():private(root/'source'/name,expected)
@@ -111,6 +114,11 @@ def observe(receipt,legacy=None):
  boot=parsed(private(root/'boot-configuration.json',receipt['bootConfigurationHash']))
  profile=parsed(private(root/'boot-profile.json',receipt['bootProfileHash']))
  require(owner['kernel']==boot['kernel'] and owner['commonLockFile']==boot['lockFile'] and profile['coordinatedConfigurationHash']==receipt['configurationHash'] and profile['bootConfigurationHash']==receipt['bootConfigurationHash'],'INSTALLED_COHORT_DRIFT')
+ private(Path(boot['compilerFile']),boot['compilerHash']);private(Path(profile['bootGuardFile']),profile['bootGuardHash'])
+ executable(Path(owner['nftPath']),owner['nftSha256'])
+ boot_journal=parsed(private(Path(boot['journalFile'])))
+ require(boot_journal=={'schema':'ouf.semantic-runtime-transition.v1','state':'RUNTIME_EMPTY','transactionId':boot['transactionId'],
+  'configurationHash':receipt['bootConfigurationHash'],'leaseStructureHash':owner['expectedStructureHash'],'startAuthorized':False},'EMPTY_BOOT_JOURNAL_DRIFT')
  for name,path in UNIT_PATHS.items():private(path,receipt['artifactHashes'][name])
  loaded(receipt['guardCommand'])
  # Source closures were sealed before introducing their namespace packages.
@@ -143,7 +151,7 @@ def install(package,expected_manifest):
  pointer_raw=private(POINTER);pointer=parsed(pointer_raw)
  require(set(pointer)=={'schema','receiptFile','receiptHash','observerFile','observerHash'} and pointer['schema']=='ouf.semantic-coordinated-boot-pointer.v1','OLD_BOOT_POINTER_REQUIRED')
  oldroot=Path(pointer['receiptFile']).parent
- require(oldroot.parent==Path('/etc/ouf/deploy-snapshots') and oldroot.name.startswith('semantic-coordinated-boot-install-') and Path(pointer['observerFile'])==oldroot/'transition-source.py','OLD_INSTALLED_COHORT_REQUIRED')
+ require(oldroot.parent==SNAPSHOT_PARENT and oldroot.name.startswith('semantic-coordinated-boot-install-') and Path(pointer['observerFile'])==oldroot/'transition-source.py','OLD_INSTALLED_COHORT_REQUIRED')
  receipt=parsed(private(Path(pointer['receiptFile']),pointer['receiptHash']))
  if receipt.get('schema')=='ouf.semantic-provider-network-guard-installation.v1':
   observed=module(Path(pointer['observerFile']),pointer['observerHash'],'installed_network_observer').observe(receipt)
@@ -151,7 +159,7 @@ def install(package,expected_manifest):
  private(Path(pointer['observerFile']),pointer['observerHash'])
  if CLAIM.exists():
   previous=parsed(private(CLAIM));location=Path(previous['snapshotDirectory'])
-  require(location.parent==Path('/etc/ouf/deploy-snapshots') and location.name.startswith('semantic-coordinated-boot-install-v2-'),'MIGRATION_CLAIM_INVALID')
+  require(location.parent==SNAPSHOT_PARENT and location.name.startswith('semantic-coordinated-boot-install-v2-'),'MIGRATION_CLAIM_INVALID')
   SNAPSHOT=location;raise ValueError('APPLY_ALREADY_CLAIMED_READ_RETAINED_DIAGNOSIS')
  require(receipt['configurationHash']==OLD_OWNER_HASH,'ORIGINAL_COORDINATION_CHANGED')
  STAGE='ORIGINAL_BOOT_COHORT'
@@ -169,7 +177,12 @@ def install(package,expected_manifest):
  oldcmd=next(x.split('=',1)[1].strip() for x in oldunit['guard.service'].decode().splitlines() if x.startswith('ExecStart='))
  loaded(oldcmd);inspect_candidates()
  STAGE='INSTALLATION_NETWORK_SCOPE'
- report=parsed(private(NETWORK_REPORT))
+ try:report=parsed(private(NETWORK_REPORT));input_origin='ROOT_READER_REPORT'
+ except FileNotFoundError:
+  # The completed operator read must not be repeated just because /tmp was
+  # cleaned. This sealed metadata copy is bound again to the actual root files.
+  report=parsed(private(package/'captured-network-inputs.json',manifest['hashes']['captured-network-inputs.json']));input_origin='SEALED_CAPTURED_METADATA'
+ for name,path in NETWORK_BOUND_FILES.items():private(path,report['inputHashes'][name])
  require(report['inputHashes']['coordination']==OLD_OWNER_HASH and report['dns']==owner['dns'] and report['commonLockFile']==owner['commonLockFile'],'CAPTURED_NETWORK_PROFILE_DRIFT')
  peer_script=package/'read_gateway_peer_port.py'
  peer_output=command(['/usr/bin/python3','-I','-B',str(peer_script)],limit=16384)
@@ -179,7 +192,7 @@ def install(package,expected_manifest):
  template={**boot,'kernel':plan['kernel'],'parentNetworkNamespace':os.stat('/proc/self/ns/net').st_ino}
  native=parsed(command(['/usr/bin/unshare','--net','/usr/bin/python3','-I','-B',oldprofile['bootGuardFile'],'--native-template'],encoded(template).decode()))
  footprint=core.digest(core.stable(native))
- SNAPSHOT=Path(tempfile.mkdtemp(prefix='semantic-coordinated-boot-install-v2-',dir='/etc/ouf/deploy-snapshots'));SNAPSHOT.chmod(0o700)
+ SNAPSHOT=Path(tempfile.mkdtemp(prefix='semantic-coordinated-boot-install-v2-',dir=SNAPSHOT_PARENT));SNAPSHOT.chmod(0o700)
  files.create(CLAIM,encoded({'snapshotDirectory':str(SNAPSHOT),'sourceRef':manifest['sourceRef'],'applyClaimed':True,'startAuthorized':False}))
  for name in ('migration','source','source/scripts','source/tools','previous'):(SNAPSHOT/name).mkdir(mode=0o700)
  for name,raw in sources.items():files.create(SNAPSHOT/'source'/name,raw)
@@ -207,7 +220,7 @@ def install(package,expected_manifest):
    sourceRef=manifest['sourceRef'],sourceHashes={k:sha(v) for k,v in sources.items()},transitionSourceHashes=manifest['hashes'],observerHash=sha(self_raw),
    artifactHashes={k:sha(v) for k,v in newunits.items()},configurationHash=sha(encoded(compiled['coordinated-configuration.json'])),
    bootConfigurationHash=sha(encoded(compiled['boot-configuration.json'])),bootProfileHash=sha(encoded(compiled['boot-profile.json'])),
-   guardCommand=cmd,oldDirectory=str(oldroot),startAuthorized=False,leaseAuthorized=False,daemonRestarted=False,containerLifecycleOperations=0,
+   guardCommand=cmd,oldDirectory=str(oldroot),networkInputOrigin=input_origin,startAuthorized=False,leaseAuthorized=False,daemonRestarted=False,containerLifecycleOperations=0,
    privateKeysRead=0,providerCalls=0,realRebootProven=False,notReleaseAcceptance=True)
   files.create(SNAPSHOT/'installation-receipt.json',encoded(new_receipt))
   newpointer=encoded({'schema':pointer['schema'],'receiptFile':str(SNAPSHOT/'installation-receipt.json'),'receiptHash':sha(encoded(new_receipt)),
