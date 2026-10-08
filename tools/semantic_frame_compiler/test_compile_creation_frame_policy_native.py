@@ -132,6 +132,20 @@ class NativeCompilerTests(unittest.TestCase):
                        'cgroupDriver': info['CgroupDriver'], 'rootfsPath': independent_rootfs, 'storageParent': str(root / 'data')}
             policy = compile_policy({'schema': 'ouf.semantic-creation-frame-template.v1', 'expectedOci': template_oci,
                                      'approvedHooks': copy.deepcopy(actual.get('hooks') or {})}, launch, context)
+            if policy['expectedOci'] != actual:
+                expected = policy['expectedOci']
+                print('CI_DYNAMIC_SLOT_DIAGNOSIS=' + json.dumps({
+                    'rootMatches': expected['root'] == actual['root'],
+                    'cgroupMatches': expected['linux']['cgroupsPath'] == actual['linux']['cgroupsPath'],
+                    'mountsMatch': expected['mounts'] == actual['mounts'],
+                    'networkMatches': expected['linux']['namespaces'] == actual['linux']['namespaces'],
+                    'hostnameMatches': expected['hostname'] == actual['hostname'],
+                    'environmentMatches': expected['process']['env'] == actual['process']['env'],
+                    # Only generated CI paths; no policy/env/source bytes.
+                    'ciActualRootPath': actual['root']['path'],
+                    'ciExpectedRootPath': expected['root']['path'],
+                    'ciActualCgroupPath': actual['linux']['cgroupsPath'],
+                    'ciExpectedCgroupPath': expected['linux']['cgroupsPath']}))
             self.assertTrue(policy['expectedOci'] == actual, 'CI_COMPILED_POLICY_DRIFT')
             schema = schema_from_source_closure(Path(__file__).with_name('semantic_oci_shape_schema.json').read_bytes())
             result = configured_profile(actual, policy['expectedOci'], policy['manifest'], policy['startup'], policy['approvedHooks'], schema)
