@@ -230,6 +230,18 @@ class NativeCompilerTests(unittest.TestCase):
                 if namespace2.get('path'):
                     namespace2['path'] = str(Path(namespace2['path']).resolve())
             self.assertEqual(policy_path2.read_bytes(), sealed2)
+            if policy2['expectedOci'] != actual2:
+                def differences(left, right, prefix=''):
+                    if type(left) is not type(right): return [prefix]
+                    if isinstance(left, dict):
+                        return [prefix + '/' + k for k in left.keys() ^ right.keys()] + [
+                            p for k in left.keys() & right.keys() for p in differences(left[k], right[k], prefix + '/' + k)]
+                    if isinstance(left, list):
+                        if len(left) != len(right): return [prefix + '/length']
+                        return [p for i, (a, b) in enumerate(zip(left, right))
+                                for p in differences(a, b, prefix + '/' + str(i))]
+                    return [] if left == right else [prefix]
+                print('CI_ROLE_TEMPLATE_DRIFT_FIELDS=' + json.dumps(sorted(differences(policy2['expectedOci'], actual2))))
             self.assertTrue(policy2['expectedOci'] == actual2, 'SECOND_CANDIDATE_PRECREATE_POLICY_DRIFT')
             self.assertTrue(configured_profile(actual2, policy2['expectedOci'], policy2['manifest'], policy2['startup'],
                                               policy2['approvedHooks'], schema)['configuredPolicyConforms'])
