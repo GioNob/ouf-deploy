@@ -27,6 +27,9 @@ class NativeRegistrationTest(unittest.TestCase):
         bindings={name:(str(Path(shutil.which(tool)).resolve()),m.sha(Path(shutil.which(tool)).resolve().read_bytes()))
             for name,tool in {'python':'python3','docker':'docker','runc':'runc'}.items()}
         daemon_path=shutil.which('dockerd');self.assertTrue(daemon_path)
+        # A non-default explicit config path must exist at daemon startup.
+        # Remove only this isolated fixture file after readiness to model the target's absent default config.
+        daemon_file.write_bytes(b'{}\n');daemon_file.chmod(0o600)
         log=(root/'daemon.log').open('wb');self.addCleanup(log.close)
         daemon=subprocess.Popen([daemon_path,'--config-file',str(daemon_file),'--data-root',str(root/'data'),
             '--exec-root',str(root/'exec'),'--pidfile',str(root/'pid'),'-H',socket,'--bridge','none',
@@ -41,8 +44,10 @@ class NativeRegistrationTest(unittest.TestCase):
             return subprocess.run([bindings['docker'][0],'-H',socket,*argv],capture_output=True,timeout=timeout)
         deadline=time.monotonic()+60
         while docker('info').returncode:
-            self.assertIsNone(daemon.poll(),'isolated dockerd stopped before fixture')
+            if daemon.poll() is not None:
+                self.fail('isolated dockerd startup: '+(root/'daemon.log').read_text()[-8000:])
             self.assertLess(time.monotonic(),deadline,'isolated dockerd readiness timeout');time.sleep(.25)
+        daemon_file.unlink()
         p=docker('pull','busybox:1.37.0',timeout=120);self.assertEqual(p.returncode,0,'fixture image unavailable')
         p=docker('run','-d','--network','none','--name','existing-fixture','busybox:1.37.0','sleep','600')
         self.assertEqual(p.returncode,0,'running isolated fixture unavailable')
