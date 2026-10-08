@@ -66,8 +66,61 @@ the existing Teatri asset via MCP, national discovery, semantic review and human
 approval, onboarding, ingestion/duplicate checks and UDP readback.
 
 `test_authenticated_transaction.py` uses disposable keys and synthetic complete
-documents. Ten tests exercise real OpenSSL signatures, missing/tampered/expired
+documents. Eighteen tests exercise real OpenSSL signatures, missing/tampered/expired
 authority, context and source drift, publisher-evidence drift, independent config
 digest, seal substitution and all-or-nothing two-role assembly. It proves this
 boundary only; it does not issue target acceptance, inspect the VPS or prove the
 full Docker activation transaction.
+
+## Source-sealed private intake and publication
+
+`provider_transaction_intake.py` pins 35 source files through
+`intake-source-closure.json` before any module execution. It fixes the existing
+v1 target authority profile, trust policy, empty adapter configuration and actual
+Python/OpenSSL byte bindings; callers cannot select a disposable CI policy.
+Its configuration names all complete private JSON input bindings for both roles.
+The installed authority-key paths are metadata only and are explicitly excluded
+from the input reader. The loader verifies signatures, rechecks input/source
+custody under the bounded operation and invokes `publish_provider_transaction.py`
+only after complete authentication.
+
+Publication uses O_EXCL, mode 0600, root-owned 0700 directories and file/directory
+fsyncs in one new snapshot. Original signed payloads and input hashes are retained;
+uncertain attempts retain installation claims and sanitized stage diagnosis.
+Replaying into an existing snapshot is denied. The runtime configuration remains
+an inert proposal: the installed wrapper, live allowlist, guard, services and
+containers are untouched. The target CLI has not been exercised against the
+private VPS documents. The isolated loader acceptance/modified-source rejection
+and durable publication success/failure/replay/path-escape tests passed locally.
+
+The first hosted run 37830139331 passed its native two-candidate job but failed
+private-input tests because their files were beneath the runner-owned checkout.
+The fixture now uses a separate `/root/ouf-transaction-ci` directory on hosted CI;
+the production ancestor check is unchanged. This does not grant the VPS runner
+any additional sudo or filesystem access.
+
+No operator bootstrap is issued for these components until actual complete target
+acceptance/mandate inputs and the remaining live switch/activation transaction are
+ready. Do not install this as another preparation-only step.
+
+## Explicit role authority issuance
+
+`issue_provider_transaction_authority.py` now emits target review, creation-only
+intent, live node acceptance authorization and final-approval mandate from one
+root-private, operator-authored per-role issuance mandate. The mandate binds all
+eight complete input hashes, the reviewed source closure, separate manifest/config
+digests, original full v1 runtime seal, explicit transaction/approval references
+and exact installer/attestor signing scopes. Root must explicitly pass the exact
+approved mandate hash. An input mismatch or omitted approval hash is rejected
+before a signing key is read. No mandate is manufactured by this helper; its
+author must independently accept publisher/dependency evidence and the complete
+frame. A successful image-equivalence report alone is insufficient.
+
+The helper uses only the installed keys through ExistingEd25519Signer. It preserves
+a durable ISSUING claim before signing, publishes signatures before records,
+verifies issued signatures and denies replay. Four bounded records are emitted;
+actual live-generation attestation and final approval still belong to the existing
+node/broker producers at admission. No key is generated, target runtime changed,
+lease granted or application started. The helper is not yet wired to an operator
+bootstrap or tested on the private target inputs. Its real signing/consumer test
+uses disposable CI keys and confers no target authority.

@@ -21,7 +21,9 @@ jobs:
       - name: Partial creation never grants admission
         run: python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_peer_creation_window.py
       - name: Authenticate complete input set with real Ed25519 signatures
-        run: sudo /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_authenticated_transaction.py
+        run: |
+          sudo install -d -m 0700 /root/ouf-transaction-ci
+          sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-transaction-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_authenticated_transaction.py
 
   native-frame-profiles:
     runs-on: ubuntu-latest

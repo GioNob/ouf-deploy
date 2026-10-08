@@ -10,6 +10,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 
 HERE = Path(__file__).resolve().parent
 DRAFT = HERE.parent / 'semantic_cohort_admission/cohort-draft'
@@ -25,7 +26,7 @@ class AuthenticatedTransactionTest(unittest.TestCase):
     def setUp(self):
         # The production verifier requires root-owned ancestors, as target does.
         self.assertEqual(os.geteuid(), 0, 'run these native-custody tests as root')
-        self.temp = tempfile.TemporaryDirectory(dir=Path.cwd(), prefix='transaction-test-')
+        self.temp = tempfile.TemporaryDirectory(dir=os.environ.get('OUF_TRANSACTION_TEST_ROOT',Path.cwd()), prefix='transaction-test-')
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name); self.root.chmod(0o700)
         self.signatures = self.root/'signatures'; self.signatures.mkdir(mode=0o700)
@@ -166,6 +167,118 @@ class AuthenticatedTransactionTest(unittest.TestCase):
             journal=json.loads(plan['files']['/private/transaction/registry/'+cid+'/adapter.json'])
             self.assertEqual(journal['configurationHash'],adapter_module.binding(plan['adapterConfiguration'],cid))
             self.assertEqual(journal['state'],'STAGED')
+
+    def installation(self):
+        from publish_provider_transaction import publish_plan
+        root=self.root/'installed'
+        plan=build_install_plan(str(root),str(root/'source'),self.records,self.authority,self.sources,
+            self.observer,self.python,self.crypto,self.verifier,self.adapter,self.clock)
+        return root,plan,publish_plan
+
+    def test_durable_publication_and_replay_denial(self):
+        root,plan,publish=self.installation()
+        report=publish(root,plan,self.sources,self.observer)
+        self.assertFalse(report['runtimeConfigurationChanged'])
+        self.assertTrue((root/'installation-receipt.json').is_file())
+        for name,sha in report['fileHashes'].items():
+            self.assertEqual(digest(Path(name).read_bytes()),sha)
+            self.assertEqual(Path(name).stat().st_mode & 0o777,0o600)
+        with self.assertRaisesRegex(TransactionDenied,'EXISTING_TRANSACTION_EVIDENCE_PRESERVED'):
+            publish(root,plan,self.sources,self.observer)
+
+    def test_failed_publication_preserves_claim_and_diagnosis(self):
+        root,plan,publish=self.installation()
+        import publish_provider_transaction as module
+        actual=module.publish_once
+        def fail(path,raw):
+            if path.name=='broker.json':raise OSError('private data must never appear in the diagnosis')
+            return actual(path,raw)
+        with patch.object(module,'publish_once',side_effect=fail):
+            with self.assertRaises(TransactionDenied) as raised:publish(root,plan,self.sources,self.observer)
+        self.assertTrue((root/'installation-claim.json').is_file())
+        self.assertTrue(raised.exception.diagnosis['doNotRerunApply'])
+        self.assertNotIn('private data',(root/'installation-denial.json').read_text())
+
+    def test_publication_path_escape_refused_before_writes(self):
+        root,plan,publish=self.installation()
+        plan['files'][str(root/'..'/'outside.json')]=b'{}'
+        with self.assertRaisesRegex(TransactionDenied,'PRIVATE_PUBLICATION_PATH_OR_SIZE_DENIED'):
+            publish(root,plan,self.sources,self.observer)
+        self.assertFalse(root.exists())
+
+    def source_package(self):
+        import json
+        package=self.root/'package';package.mkdir(mode=0o700)
+        manifest_path=HERE/'intake-source-closure.json'
+        manifest=json.loads(manifest_path.read_bytes())
+        self.private(package/'intake-source-closure.json',manifest_path.read_bytes())
+        for name in manifest['sourceHashes']:
+            if name.startswith('source/'):origin=DRAFT/name.removeprefix('source/')
+            elif name.startswith('utility/'):
+                module=Path(name).name
+                origin=(HERE.parent/'semantic_frame_compiler' if module=='compile_creation_frame_policy.py' else HERE)/module
+            else:origin=HERE.parent/'semantic_frame_compiler/frame-observer.py'
+            destination=package/name;destination.parent.mkdir(parents=True,exist_ok=True,mode=0o700)
+            self.private(destination,origin.read_bytes())
+        return package
+
+    def load_subprocess(self,package):
+        script=HERE/'provider_transaction_intake.py'
+        code="import runpy;from pathlib import Path;module=runpy.run_path("+repr(str(script))+" );module['load'](Path("+repr(str(package))+"))"
+        return subprocess.run([sys.executable,'-I','-B','-c',code],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+
+    def test_isolated_source_loader_accepts_closed_bytes(self):
+        package=self.source_package();result=self.load_subprocess(package)
+        self.assertEqual(result.returncode,0,result.stderr.decode())
+
+    def test_isolated_source_loader_refuses_modified_code_before_execution(self):
+        package=self.source_package()
+        self.private(package/'utility/assemble_provider_profiles.py',b"raise RuntimeError('UNREVIEWED_EXECUTION')")
+        result=self.load_subprocess(package)
+        self.assertNotEqual(result.returncode,0)
+        self.assertIn(b'PRIVATE_INTAKE_HASH_DRIFT',result.stderr)
+        self.assertNotIn(b'UNREVIEWED_EXECUTION',result.stderr)
+
+    def issue_inputs(self):
+        from issue_provider_transaction_authority import INPUTS,SCOPES,issue_role_authority
+        role='adapter';inputs={name:raw for name,raw in self.records[role].items() if name in INPUTS}
+        import json
+        intent=json.loads(self.records[role]['intent'])
+        mandate={'schema':'ouf.semantic-provider-transaction-role-mandate.v1','role':role,
+            'installationRef':AUTHORITIES['installationRef'],'entityRef':AUTHORITIES['entityRef'],**TARGETS[role],
+            'inputHashes':{name:digest(raw) for name,raw in inputs.items()},
+            'sourceClosureHash':digest(encoded({**{name:digest(raw) for name,raw in self.sources.items()},'frame-observer.py':digest(self.observer)})),
+            'roleSigningScopes':SCOPES,'state':'ACTIVE','decision':'ACCEPT_PROVIDER_IMAGE_AND_COMPLETE_FRAME_AND_CONTROLLED_ADMISSION',
+            'transactionId':intent['transactionId'],'approvalRef':'explicit-ci-root-approval','issuedAt':self.now,'expiresAt':self.now+240}
+        path=self.root/'root-role-mandate.json';self.private(path,encoded(mandate))
+        output=self.root/'authority-output';output.mkdir(mode=0o700)
+        # Remove the preceding fixture signatures so this tests the actual
+        # production signing primitive and its exact issuance/custody path.
+        for path in self.signatures.iterdir():path.unlink()
+        return issue_role_authority,inputs,mandate,self.bind(self.root/'root-role-mandate.json'),output
+
+    def test_existing_keys_issue_only_explicit_root_scopes(self):
+        issue,inputs,mandate,binding,output=self.issue_inputs()
+        result=issue('adapter',binding,binding['sha256'],inputs,self.authority,self.sources,self.observer,self.verifier,output,self.clock)
+        self.assertEqual(result['signaturesIssued'],4)
+        self.assertFalse(result['startPerformed'])
+        records={**inputs,**{name:Path(item['path']).read_bytes() for name,item in result['records'].items()}}
+        authenticate_role('adapter',records,self.authority,self.sources,self.observer,self.verifier,self.clock)
+        with self.assertRaisesRegex(Exception,'EXISTING_ROLE_AUTHORITY_EVIDENCE_PRESERVED'):
+            issue('adapter',binding,binding['sha256'],inputs,self.authority,self.sources,self.observer,self.verifier,output,self.clock)
+
+    def test_no_implicit_root_signing_without_explicit_approved_hash(self):
+        issue,inputs,mandate,binding,output=self.issue_inputs()
+        with self.assertRaisesRegex(TransactionDenied,'EXPLICIT_APPROVED_ROOT_MANDATE_HASH_REQUIRED'):
+            issue('adapter',binding,None,inputs,self.authority,self.sources,self.observer,self.verifier,output,self.clock)
+        self.assertEqual(list(output.iterdir()),[])
+
+    def test_root_review_input_drift_rejected_before_key_read(self):
+        issue,inputs,mandate,binding,output=self.issue_inputs()
+        inputs['dependencyEvidence']=b'{"changed":true}'
+        with self.assertRaisesRegex(TransactionDenied,'ROOT_ROLE_REVIEW_SCOPE_DRIFT'):
+            issue('adapter',binding,binding['sha256'],inputs,self.authority,self.sources,self.observer,self.verifier,output,self.clock)
+        self.assertEqual(list(output.iterdir()),[])
 
     def test_unsigned_ci_booleans_cannot_authorize(self):
         path=self.signatures/(digest(self.records['adapter']['liveAuthorization'])+'.CREATION_ATTESTATION.json');path.unlink()

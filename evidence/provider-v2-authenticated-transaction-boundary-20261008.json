@@ -14,10 +14,13 @@
     ]
   },
   "validation": {
-    "authenticatedTransactionTests": 10,
+    "authenticatedTransactionTests": 18,
     "existingProfileTests": 4,
     "actualOpenSSLVerification": true,
-    "fixtureAuthoritiesOnly": true
+    "fixtureAuthoritiesOnly": true,
+    "isolatedSourceLoader": true,
+    "durablePublicationFailureAndReplay": true,
+    "explicitRootScopeSigningWithDisposableKeys": true
   },
   "boundaryImplemented": true,
   "targetOrchestratorComplete": false,
@@ -28,5 +31,16 @@
   "providerCalls": 0,
   "startAuthorized": false,
   "leaseAuthorized": false,
-  "releaseAccepted": false
+  "releaseAccepted": false,
+  "privateIntakeAndPublicationImplemented": true,
+  "sourceClosureFiles": 35,
+  "roleAuthorityIssuanceHelperImplemented": true,
+  "hostedInitialRun": {
+    "id": 37830139331,
+    "nativeTwoCandidateJob": "PASS",
+    "profilesJob": "FAIL",
+    "reason": "CI_PRIVATE_FILES_UNDER_RUNNER_OWNED_ANCESTORS",
+    "fix": "ROOT_OWNED_CI_FIXTURE_DIRECTORY",
+    "productionCustodyUnchanged": true
+  }
 }

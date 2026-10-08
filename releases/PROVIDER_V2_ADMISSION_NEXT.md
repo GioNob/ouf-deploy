@@ -131,3 +131,54 @@ The attached OUF_Reality_Baseline_Package_v1_7.zip was read in this cloud sessio
 
 This is the authenticated compilation boundary, not the finished target orchestrator. Root-private intake/source-sealed loader, durable publication, existing wrapper/allowlist compare-and-swap, fresh guard custody and Docker cohort activation remain to implement. Full private target input documents and actual authorized image/provenance/dependency acceptance plus role-specific mandates are still required. Target policy custody must be pinned to the existing policy binding; synthetic keys with the same identity strings cannot replace it. No target write, source installation, signing, allowlist update, lifecycle operation or Teatri job occurred. No new operator command is ready; do not run another preparation-only bootstrap or direct Docker start.
 
+
+
+### Private intake/publication implementation in the cloud continuation
+
+`provider_transaction_intake.py` now source-seals its loader through 34 fixed
+hashes and fixes the existing target authority profile, policy, original empty
+runtime configuration and actual Python/OpenSSL bindings. It reads complete
+explicit private JSON inputs, excludes the authority-key paths, verifies the role
+signatures and rechecks source/input custody. `publish_provider_transaction.py`
+installs the authenticated proposal into one NEW private snapshot with durable
+O_EXCL publication, retained originals/claims and sanitized failure diagnosis.
+Neither component switches the live wrapper/allowlist, signs or starts anything.
+Fifteen local tests now pass, including isolated loader and durable failure paths.
+
+Initial CI 37830139331: native two-candidate job PASS; profiles job FAIL in fixture
+custody because its private records were placed under runner-owned ancestors.
+The fixture was corrected to use a root-owned CI directory without weakening any
+production custody requirement. Final hosted status must be recorded separately.
+
+Remaining concrete implementation: producer for the newly defined target-review
+record and authentic image/provenance/dependency approval; transaction-specific
+intent/live/final issuance under explicit existing role mandates; full target
+intake integration; guarded live wrapper/allowlist publication; actual Docker
+cohort activation with fresh namespace/guard/lease custody. These remain open,
+not automatically supplied by the new compiler or its CI. No new operator command
+is ready. The existing target network guard and all completed preparations remain
+untouched; do not repeat them. Any request for operator involvement must be for
+actual target authority/private input access or the complete controlled operation,
+not another repeated preparation step.
+
+
+### Explicit role authority issuer added
+
+The helper `issue_provider_transaction_authority.py` now consumes a separately
+operator-authored root-private per-role mandate and its explicitly approved hash.
+It binds eight complete documents, image manifest/config separately, original v1
+seal, source closure, transaction/approval refs and separate installer/attestor
+scopes. It publishes a durable claim before ExistingEd25519Signer reads the
+existing key and emits the review, creation-only intent, live node authorization
+and final mandate. Actual admission attestation/approval remains with the existing
+live producers. The helper does not manufacture root acceptance or change/start
+the target. Eighteen local tests pass, including real existing-key signing and
+consumer verification, rejection without explicit approved hash and refusal of
+input drift before key read. The intake closure now contains 35 files.
+
+The issuer helper still needs the complete target documents and an actual root
+acceptance mandate; neither was acquired in the cloud. They cannot be created
+from the hash-only operator receipt or CI assertions. The target invocation wiring,
+guarded live runtime publication and Docker cohort lifecycle remain incomplete.
+No operator bootstrap or target start command is ready. The existing network
+migration, candidates, inputs and product asset must not be repeated.
