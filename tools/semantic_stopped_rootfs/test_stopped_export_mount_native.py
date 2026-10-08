@@ -85,6 +85,8 @@ def main():
             # the observed container's differences or copying its metadata.
             expected_view=root/'expected-overlay'; expected_view.mkdir(mode=0o700)
             (root/'expected-upper').mkdir(mode=0o700)
+            (root/'expected-upper').chmod(expected.stat().st_mode & 0o7777)
+            os.chown(root/'expected-upper',expected.stat().st_uid,expected.stat().st_gid)
             (root/'expected-work').mkdir(mode=0o700)
             options='lowerdir='+str(expected)+',upperdir='+str(root/'expected-upper')+',workdir='+str(root/'expected-work')
             subprocess.run(['mount','-t','overlay','overlay','-o',options,str(expected_view)],check=True)
