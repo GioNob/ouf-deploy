@@ -9,7 +9,7 @@ import sys
 import tarfile
 import tempfile
 sys.path.insert(0,str(Path(__file__).parent))
-from prepare_provider_image_rootfs import prepare,canonical,load_sealer,Budget,OCI_MANIFEST,OCI_CONFIG
+from prepare_provider_image_rootfs import prepare,apply_docker_init,canonical,load_sealer,Budget,OCI_MANIFEST,OCI_CONFIG
 
 def digest(raw):return 'sha256:'+hashlib.sha256(raw).hexdigest()
 def layer(rows):
@@ -57,5 +57,15 @@ def main():
         assert not (output/'bundle/rootfs/bin/deleted').exists() and not (output/'bundle/rootfs/obsolete/old').exists()
         assert os.stat(output/'bundle/rootfs/bin/data').st_nlink==2
         assert result['containerLifecycleOperations']==0 and result['startAuthorized'] is False
+        init_tool=here/'docker-initlayer';init_hash=hashlib.sha256(init_tool.read_bytes()).hexdigest()
+        docker=apply_docker_init(output,init_tool,init_hash,'464cd50c3d9e92877d56940ea160de6fca7bea23',source,source_hash)
+        for name in ('dev','dev/pts','dev/shm','proc','sys','etc'):
+            (expected/name).mkdir(mode=0o755);(expected/name).chmod(0o755)
+        for name in ('.dockerenv','etc/resolv.conf','etc/hosts','etc/hostname','dev/console'):
+            (expected/name).write_bytes(b'');(expected/name).chmod(0o755)
+        (expected/'etc/mtab').symlink_to('/proc/mounts')
+        assert docker['rootfsSeal']==sealer(expected,docker['rootfsLimits'],Budget())
+        assert docker['imageRootfsSeal']==result['rootfsSeal'] and docker['targetRootfsCompared'] is False
         print('OFFLINE_IMAGE_ROOTFS_NATIVE=PASS REAL_UMOCI=true INDEPENDENT_EXPECTED_FILESYSTEM=true WHITEOUT_OPAQUE_HARDLINK_SYMLINK_UID_MODE_XATTR=true CONTAINER_OPERATIONS=0 TARGET_ACCEPTANCE=false')
+        print('OFFLINE_DOCKER_ROOTFS_NATIVE=PASS OBSERVED_ENGINE_INITLAYER_SOURCE=true INDEPENDENT_EXPECTED_ENGINE_ADDITIONS=true ORIGINAL_IMAGE_SEAL_RETAINED=true CONTAINER_OPERATIONS=0 TARGET_ACCEPTANCE=false')
 if __name__=='__main__':main()

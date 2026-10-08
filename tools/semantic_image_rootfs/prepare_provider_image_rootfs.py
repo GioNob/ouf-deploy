@@ -193,13 +193,40 @@ def prepare(archive,archive_hash,manifest_digest,config_digest,umoci,umoci_hash,
         'dockerInitLayerAccepted':False,'privateKeysRead':0,'signaturesIssued':0,'containerLifecycleOperations':0,
         'imageImportPerformed':False,'providerCalls':0,'acceptanceGranted':False,'startAuthorized':False}
     write_once(output/'expected-rootfs.json',canonical(receipt));return receipt
+def apply_docker_init(output,init_tool,init_hash,engine_commit,source,source_hash):
+    """Apply the observed engine's own init-layer code to the offline copy only."""
+    require(os.geteuid()==0 and sys.flags.isolated and sys.dont_write_bytecode,'ISOLATED_ROOT_REQUIRED')
+    require(engine_commit=='464cd50c3d9e92877d56940ea160de6fca7bea23','EXACT_OBSERVED_ENGINE_SOURCE_REQUIRED')
+    raw=private(output/'expected-rootfs.json');base=decode(raw)
+    require(base['schema']=='ouf.semantic-offline-image-rootfs.v1' and base['offlineImageRootfsReconstructed'] is True
+        and base['startAuthorized'] is False and base['sourceManifestSha256']==source_hash,'EXACT_OFFLINE_IMAGE_PROVENANCE_REQUIRED')
+    sealer=load_sealer(source,source_hash);budget=Budget();root=output/'bundle/rootfs'
+    require(sealer(root,base['rootfsLimits'],budget)==base['rootfsSeal'],'OFFLINE_IMAGE_ROOTFS_CHANGED')
+    program(init_tool,init_hash)
+    claim={'schema':'ouf.semantic-offline-docker-init-claim.v1','imageReceiptSha256':sha(raw),'engineCommit':engine_commit,
+        'initToolSha256':init_hash,'startAuthorized':False}
+    write_once(output/'docker-init-claim.json',canonical(claim))
+    with tempfile.TemporaryFile() as logs:
+        result=subprocess.run([str(init_tool),str(root)],stdin=subprocess.DEVNULL,stdout=logs,stderr=logs,
+            timeout=budget.remaining(),env={'PATH':'/usr/bin:/bin','LC_ALL':'C'})
+        require(result.returncode==0,'OFFLINE_DOCKER_INIT_FAILED')
+    program(init_tool,init_hash);require(private(output/'expected-rootfs.json')==raw,'OFFLINE_IMAGE_PROVENANCE_DRIFT')
+    receipt={**base,'schema':'ouf.semantic-offline-docker-rootfs.v1','imageRootfsSeal':base['rootfsSeal'],
+        'rootfsSeal':sealer(root,base['rootfsLimits'],budget),'imageReceiptSha256':sha(raw),'engineCommit':engine_commit,
+        'initToolSha256':init_hash,'offlineDockerInitLayerApplied':True,'targetRootfsCompared':False,
+        'dockerInitLayerAccepted':False,'acceptanceGranted':False,'startAuthorized':False}
+    write_once(output/'expected-docker-rootfs.json',canonical(receipt));return receipt
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for name in ('archive','umoci','source','output'):parser.add_argument('--'+name,required=True,type=Path)
     for name in ('archive-sha256','manifest-digest','config-digest','umoci-sha256','source-manifest-sha256'):parser.add_argument('--'+name,required=True)
+    parser.add_argument('--docker-init-tool',required=True,type=Path)
+    parser.add_argument('--docker-init-sha256',required=True)
+    parser.add_argument('--engine-commit',required=True)
     args=parser.parse_args()
     try:
         result=prepare(args.archive,args.archive_sha256,args.manifest_digest,args.config_digest,args.umoci,args.umoci_sha256,args.source,args.source_manifest_sha256,args.output)
+        result=apply_docker_init(args.output,args.docker_init_tool,args.docker_init_sha256,args.engine_commit,args.source,args.source_manifest_sha256)
         print('OUF_OFFLINE_IMAGE_ROOTFS='+json.dumps(result,sort_keys=True));return 0
     except Exception as error:
         reason=str(error) if isinstance(error,Denied) and re.fullmatch('[A-Z0-9_]{1,80}',str(error)) else 'OFFLINE_IMAGE_ROOTFS_UNPROVEN'
