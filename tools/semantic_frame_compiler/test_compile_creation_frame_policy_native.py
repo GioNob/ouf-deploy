@@ -16,6 +16,8 @@ import time
 import unittest
 import sys
 import re
+import http.client
+import socket as socket_module
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -188,6 +190,39 @@ class NativeCompilerTests(unittest.TestCase):
                             '--mount', 'type=bind,source=' + str(source2) + ',target=/run/deep/trust.pem,readonly',
                             'busybox:1.37.0', 'sh', '-c', 'sleep 601')
             self.assertEqual(create2.returncode, 0); cid2 = create2.stdout.decode().strip()
+            if network_mode == 'bridge':
+                class OwnedDockerConnection(http.client.HTTPConnection):
+                    def connect(self):
+                        self.sock = socket_module.socket(socket_module.AF_UNIX, socket_module.SOCK_STREAM)
+                        self.sock.settimeout(15); self.sock.connect(str(root / 'docker.sock'))
+                api_version = docker('version', '--format', '{{.Server.APIVersion}}').stdout.decode().strip()
+                self.assertRegex(api_version, r'^1\.[0-9]{2}$')
+                def api_post(route, value):
+                    connection = OwnedDockerConnection('localhost', timeout=15)
+                    try:
+                        connection.request('POST', '/v' + api_version + route, canonical(value),
+                                           {'Content-Type': 'application/json'})
+                        reply = connection.getresponse(); body = reply.read(131073)
+                        self.assertLessEqual(len(body), 131072)
+                        self.assertIn(reply.status, (200, 201, 204), 'CI_ONLY_NETWORK_METADATA_WRITE_FAILED')
+                    finally:
+                        connection.close()
+                # Update only this never-started fixture's metadata, keeping CID,
+                # startup, sources and complete pre-create frame template fixed.
+                api_post('/networks/' + candidate_network + '/disconnect', {'Container': cid2, 'Force': False})
+                endpoint = {'IPAMConfig': {'IPv4Address': '198.19.250.21'}, 'Aliases': ['ci-frame-role'],
+                            'MacAddress': '02:42:c6:13:fa:15',
+                            'DriverOpts': {'com.docker.network.endpoint.ifname': 'oufint0'}}
+                api_post('/networks/' + candidate_network + '/connect', {'Container': cid2, 'EndpointConfig': endpoint})
+                settings = json.loads(docker('inspect', '--format', '{{json .NetworkSettings.Networks}}', cid2).stdout)
+                declared_endpoint = settings[candidate_network]
+                self.assertEqual(declared_endpoint['MacAddress'], endpoint['MacAddress'])
+                self.assertEqual(declared_endpoint['IPAMConfig']['IPv4Address'], '198.19.250.21')
+                self.assertEqual(declared_endpoint['DriverOpts'], endpoint['DriverOpts'])
+                untouched = json.loads(docker('inspect', '--format', '{{json .State}}', cid2).stdout)
+                self.assertEqual(untouched['Status'], 'created'); self.assertEqual(untouched['Pid'], 0)
+                self.assertTrue(untouched['StartedAt'].startswith('0001-01-01'))
+                print('CI_STOPPED_NETWORK_REBIND=PASS SAME_CID=true MAC_IP_INTERFACE_DECLARED=true APPLICATION_NOT_STARTED=true')
             metadata2 = json.loads(docker('inspect', '--format', '{{json .}}', cid2).stdout)
             if backend == 'classic-vfs':
                 self.assertEqual(metadata2['GraphDriver']['Name'], 'vfs')
