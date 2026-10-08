@@ -242,6 +242,8 @@ class NativeCompilerTests(unittest.TestCase):
                                 for p in differences(a, b, prefix + '/' + str(i))]
                     return [] if left == right else [prefix]
                 print('CI_ROLE_TEMPLATE_DRIFT_FIELDS=' + json.dumps(sorted(differences(policy2['expectedOci'], actual2))))
+                print('CI_ROLE_MOUNT_ORDER=' + json.dumps({'expected': [m['destination'] for m in policy2['expectedOci']['mounts']],
+                    'actual': [m['destination'] for m in actual2['mounts']]}))
             self.assertTrue(policy2['expectedOci'] == actual2, 'SECOND_CANDIDATE_PRECREATE_POLICY_DRIFT')
             self.assertTrue(configured_profile(actual2, policy2['expectedOci'], policy2['manifest'], policy2['startup'],
                                               policy2['approvedHooks'], schema)['configuredPolicyConforms'])
