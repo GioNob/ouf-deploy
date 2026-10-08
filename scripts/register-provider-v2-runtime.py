@@ -46,10 +46,10 @@ def parents(p):
     for parent in (p.parent,*p.parent.parents):
         s=parent.lstat();require(stat.S_ISDIR(s.st_mode) and s.st_uid==0 and not s.st_mode&0o022,'ROOT_ANCESTOR_REQUIRED')
 
-def read(p,executable=False):
+def read(p,executable=False,limit=None):
     p=Path(p);parents(p);fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
     try:
-        a=os.fstat(fd);limit=64000000 if executable else 262144
+        a=os.fstat(fd);limit=limit or (64000000 if executable else 262144)
         require(stat.S_ISREG(a.st_mode) and a.st_uid==0 and a.st_nlink==1 and a.st_size<=limit
             and (bool(a.st_mode&0o111) and not a.st_mode&0o022 if executable else stat.S_IMODE(a.st_mode)==0o600),'ROOT_FILE_REQUIRED')
         raw=os.read(fd,limit+1);b=os.fstat(fd)
@@ -82,7 +82,7 @@ def daemon_pid():
 
 def identity(pid):
     exe=Path('/proc')/str(pid)/'exe';target=exe.resolve(strict=True)
-    require(target.name=='dockerd','DOCKER_PROCESS_REQUIRED');raw=read(target,True)
+    require(target.name=='dockerd','DOCKER_PROCESS_REQUIRED');raw=read(target,True,256000000)
     proc=Path('/proc')/str(pid)
     st=(proc/'stat').read_text();birth=st.split(') ',1)[1].split()[19]
     args=(proc/'cmdline').read_bytes();require(len(args)<16384,'DAEMON_ARGUMENTS_UNBOUNDED')
