@@ -80,3 +80,7 @@ jobs:
         working-directory: gateway
         run: |
           sudo env OUF_DOCKER_ADAPTER_NATIVE_TEST=1 /usr/bin/python3 -B -m unittest -v tests.test_semantic_preexec_docker_adapter.DockerAdapterTest.test_authenticated_adapter_v4_live_mandate_v3_with_immutable_precreate_bindings
+      - name: Two controlled runc candidates with signed sibling bindings
+        working-directory: gateway
+        run: |
+          sudo /usr/bin/python3 -B ../deploy/tools/semantic_cohort_admission/provider_cohort_controlled_native.py

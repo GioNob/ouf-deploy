@@ -234,7 +234,7 @@ def operate(config_path, argv):
                         and all(receipt[k] == sealed['binding'][k] == grant['authorityScope'][k]
                             for k in ('installationRef','entityRef','containerId','transactionId')),
                         'DURABLE_ADMISSION_CUSTODY_DRIFT')
-            require(grant['schema'] in ('ouf.semantic-preexec-driver.v2','ouf.semantic-preexec-driver.v3','ouf.semantic-preexec-driver.v4','ouf.semantic-preexec-driver.v5') and grant['profile']['containerId'] == cid
+            require(grant['schema'] in ('ouf.semantic-preexec-driver.v2','ouf.semantic-preexec-driver.v3','ouf.semantic-preexec-driver.v4','ouf.semantic-preexec-driver.v5','ouf.semantic-preexec-driver.v6') and grant['profile']['containerId'] == cid
                     and grant['profile']['bundlePath'] == str(shadow) and grant['profile']['bundleHash'] == digest(oci)
                     and grant['profile']['applicationStartAuthorized'] is True
                     and grant['profile']['infrastructureAuthorityComplete'] is True
