@@ -17,7 +17,17 @@ Creation-only intent issuance and the runtime broker already exist in reviewed G
 
 The target transaction-specific provisioner/orchestrator is not yet implemented. It must assemble per-CID creation mandate, verified frame policy, node-attestor v4 observer binding, final-approval producer, broker/preparer profiles and durable journals, then complete reviewed actual-OCI and namespace/guard/lease admission. It must preserve independent image/config digest bindings and existing source/authority custody. CI or locally generated booleans cannot replace signed complete authorization.
 
-Before writing a target provisioner, locate the already staged observer and source manifests in the exact existing package `/etc/ouf/deploy-snapshots/semantic-admission-package-20261004-055825`. Prior preflight reported source-package receipt SHA256 `080c9f710024e392a84a8f5104f8c6edf56b90eaf3e2488a924e084a2f2c65c0`, but did not expose package file routing. The current root action needed is only a bounded filename listing of that package, no private-key/config-value read or mutation. Do not download, install or fabricate a different observer without checking the existing one.
+The operator has now installed and verified the source package at `/etc/ouf/deploy-snapshots/semantic-provider-v2-producers-Vj1CmjRH`. Apply and verify both returned PASS. This package contains the 26 reviewed Gateway sources and the reviewed frame observer. The raw operator output is retained at `evidence/discovery-provider-v2-producers-target-20261008.txt`; it is operator evidence, not an independently fetched target receipt. Some printed source hashes have missing characters, so do not reconstruct an authoritative root receipt from that pasted output. Use the sealed package manifest for canonical source hashes.
+
+The source-only receipt explicitly leaves broker, preparer, node attestor, installer approval, runtime adapter, trust-policy consumption and startup authorization uninstalled/unconfigured. The previously registered runtime remains separate and has an empty candidate allowlist. No further filename listing or repeated source installation is required.
+
+### Concrete integration defect
+
+Gateway runtime v4 normalizes Docker's generated OCI rootfs and network namespace paths, hashes that document, and sends only the hash to broker `authorize-create` before creating the runc process. Node attestor v4 later requires the observer policy hash to equal the creation intent's artifact hash. The owner OCI reviewer requires byte-canonical equality between the entire actual OCI document and `expectedOci` in that immutable policy. No transaction-specific compiler for that independently prepared, complete target OCI policy is present in the reviewed source closure. The native test fixture supplies its OCI document directly and is not a target Docker policy compiler.
+
+Consequently the remaining work is code integration, not another operator diagnostic. The implementation must resolve the binding of runtime-generated paths and exact OCI acceptance without copying observed values into an authority claim, weakening the complete-policy check, granting default-runtime starts, or treating source custody/CI success as deployment acceptance. It also needs the signed live-acceptance authorization and final-approval issuance paths, not just configuration JSON.
+
+A valid completion proof must exercise the actual Docker/containerd create/start path against the controlled runtime, prove that application code stays blocked until admission, reject mismatched policy/rootfs/namespace facts, and leave existing containers untouched. No target start command is ready.
 
 ## Completion goal
 
