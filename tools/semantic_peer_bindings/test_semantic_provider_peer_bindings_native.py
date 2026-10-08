@@ -13,6 +13,8 @@ import subprocess
 import tempfile
 import time
 import uuid
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import semantic_provider_peer_bindings as p
 
 class Budget:
