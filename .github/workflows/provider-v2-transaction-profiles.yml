@@ -26,6 +26,8 @@ jobs:
           sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-transaction-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_authenticated_transaction.py
       - name: Atomic runtime switch filesystem and guard lock failure handling
         run: sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-transaction-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_guarded_runtime_switch.py
+      - name: Borrowed native guard descriptor custody
+        run: sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-transaction-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_transaction_guard_observation.py
 
   native-frame-profiles:
     runs-on: ubuntu-latest
@@ -53,4 +55,6 @@ jobs:
       - name: Assemble and consume actual node v4 and broker profiles
         working-directory: gateway
         run: sudo /usr/bin/python3 -B ../deploy/tools/semantic_transaction_profiles/test_assembled_frame_profiles_native.py
+      - name: Observe real empty nft guard under the already held flock
+        run: sudo /usr/bin/unshare --net --fork /usr/bin/python3 -B deploy/tools/semantic_transaction_profiles/test_transaction_guard_observation_native.py
 

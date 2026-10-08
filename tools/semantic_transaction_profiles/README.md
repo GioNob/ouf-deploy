@@ -74,7 +74,7 @@ full Docker activation transaction.
 
 ## Source-sealed private intake and publication
 
-`provider_transaction_intake.py` pins 36 source files through
+`provider_transaction_intake.py` pins 38 source files through
 `intake-source-closure.json` before any module execution. It fixes the existing
 v1 target authority profile, trust policy, empty adapter configuration and actual
 Python/OpenSSL byte bindings; callers cannot select a disposable CI policy.
@@ -136,3 +136,10 @@ Hosted run 37831986938: 17/18 authentication tests passed; sealed-loader accepta
 Eight real private-file/lock tests and two authenticated-publication custody tests pass locally. They do not observe target candidates, activate Docker, authenticate publisher/dependency acceptance or prove an integrated live switch. The locked target verifier and complete operator invocation/Docker cohort transaction remain to implement. The existing privileged helper reacquires its own guard lock and cannot simply be invoked within this primitive; a genuine locked observation integration is required.
 
 The GitHub audit is retained in `evidence/provider-v2-authority-github-audit-20261008.json`. Actual historical user authorizations exist in Semantic branch `codex/semantic-frame-source-bound` at `72310a0f4b0d649854d3abc010509d6724617e4e`: key custody, private policy preparation and scoped verification reads. They explicitly exclude role/deployment signing and start. Older verification receipts concern previous images and keep acceptance false. Reuse those completed permissions/preparations; do not ask again for them or reinterpret them as v2 mandates. No signed two-CID v2 acceptance was found in inspected GitHub sources. This does not prove absence of additional private VPS files.
+
+
+## Borrowed-lock native guard integration
+
+`transaction_guard_observation.py` verifies the pinned installed guard receipt, source/file hashes, both empty journals, loaded systemd command, command bytes and exact stopped two-CID Docker metadata. Native nft structure and empty provider memberships are read directly under the existing descriptor; the reader never calls the installed helper or imports installed code. The native backend permits list-table reads only and shares a total 12-second deadline. Docker uses an empty private CLI configuration so registry credentials are not read. Three descriptor custody tests pass locally; actual nft integration is delegated to the isolated hosted fixture (Docker/systemd outputs in that fixture are synthetic).
+
+`authenticated_runtime_switch.py` provides the switch checkpoint verifier: fresh production signature verification and installation-plan reconstruction at each checkpoint, full published-byte custody, native guard/candidate observation, immutable signed NIC references to the actual kernel configuration and unchanged stopped-state hashes. Actual target receipt/authority/command pins and complete records remain required from the sealed root caller. Neither file is a target CLI or a signing/activation authorization. Docker cohort activation and the complete operator transaction entry point remain to integrate.
