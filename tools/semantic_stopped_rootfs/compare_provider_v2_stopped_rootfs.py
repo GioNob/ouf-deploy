@@ -10,6 +10,7 @@ import tempfile
 sys.path.insert(0,str(Path(__file__).parent))
 from prepare_provider_image_rootfs import Budget,canonical,decode,load_sealer,private,program,require,sha,write_once
 from stopped_rootfs_comparison import expected_overlay,stopped_export_view,validated
+from rootfs_difference_report import entries,classify
 
 OFFLINE=Path('/etc/ouf/deploy-snapshots/semantic-provider-v2-offline-rootfs-s3BU0nDX')
 DATA_ROOT=Path('/var/lib/docker')
@@ -32,7 +33,7 @@ ROLES={
   'seal':'ec013e0317560153aece8e08a393442c95aaa13f64e3df274c61987953e546d8'}}
 
 
-def main():
+def main(diagnose=False):
     require(os.geteuid()==0 and len(sys.argv)==1,'FIXED_ROOT_ENTRYPOINT_REQUIRED')
     os.umask(0o077)
     output=Path(tempfile.mkdtemp(prefix='semantic-provider-v2-rootfs-compare-',dir=SNAPSHOT_PARENT))
@@ -89,24 +90,31 @@ def main():
         directory=output/role;directory.mkdir(mode=0o700)
         target=DATA_ROOT/'rootfs/overlayfs'/spec['cid']
         with expected_overlay(lower,directory,MOUNT,UMOUNT) as view:
-            expected=sealer(view,limits,Budget())
+            expected,left=entries(sealer,view,limits)
             with stopped_export_view(DOCKER,socket,config,spec['cid'],target) as mounted:
-                actual=sealer(mounted,limits,Budget())
-                require(actual==expected,'TARGET_ROOTFS_DIFFERS_FROM_INDEPENDENT_EXPECTATION')
+                actual,right=entries(sealer,mounted,limits)
+                differences=None
+                if diagnose or actual!=expected:
+                    differences=classify(left,right)
+                del left,right
         require(sealer(lower,limits,Budget())==receipt['rootfsSeal'],'OFFLINE_EXPECTATION_CHANGED')
         require(sha(canonical(selected(role)))==sha(canonical(before[role])),'STOPPED_CANDIDATE_CONFIGURATION_CHANGED')
         result={'role':role,'containerId':spec['cid'],'offlineReceiptSha256':sha(raw),
             'originalOfflineSeal':receipt['rootfsSeal'],'expectedOverlaySeal':expected,'actualSeal':actual,
-            'strictSealsMatch':True,'targetRootfsCompared':True,'neverStarted':True,'exportMountReleased':True,
+            'strictSealsMatch':actual==expected,'targetRootfsCompared':True,'neverStarted':True,'exportMountReleased':True,
             'privateMountContentsRead':False,'dockerInitLayerAccepted':False,'acceptanceGranted':False,'startAuthorized':False}
+        if differences is not None:result['differences']=differences
         write_once(output/(role+'-comparison.json'),canonical(result));results.append(result)
+        if not diagnose and actual!=expected:
+            print('OUF_ROOTFS_ERROR_ANALYSIS='+canonical(result).decode(),flush=True)
+            require(False,'TARGET_ROOTFS_DIFFERS_FROM_INDEPENDENT_EXPECTATION')
     require(states()==original_states,'EXISTING_CONTAINER_STATES_CHANGED')
     load_sealer(source,SOURCE_MANIFEST)
     result={'schema':'ouf.semantic-provider-v2-stopped-rootfs-comparison.v1','roles':results,
-        'strictSealsMatch':True,'existingContainerStatesUnchanged':True,'containerLifecycleOperations':0,
+        'strictSealsMatch':all(r['strictSealsMatch'] for r in results),'existingContainerStatesUnchanged':True,'containerLifecycleOperations':0,
         'temporaryExpectedOverlayMounts':len(results),'stoppedContainerExports':len(results),'privateKeysRead':0,'providerCalls':0,
         'signaturesIssued':0,'runtimeConfigurationWrites':0,'firewallWrites':0,'secretValuesPrinted':False,
-        'acceptanceGranted':False,'startAuthorized':False,'status':'INDEPENDENT_ROOTFS_COMPARISON_PASS'}
+        'acceptanceGranted':False,'startAuthorized':False,'status':'READ_ONLY_DIFFERENCE_DIAGNOSIS' if diagnose else 'INDEPENDENT_ROOTFS_COMPARISON_PASS'}
     write_once(output/'comparison.json',canonical(result))
     print('OUF_PROVIDER_V2_ROOTFS_COMPARISON='+canonical(result).decode(),flush=True)
 

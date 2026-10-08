@@ -1,6 +1,13 @@
 # Provider v2 admission: next target step — 8 October 2026
 
+## Regole operative
+
+Seguire [OUF_WORKING_RULES.md](OUF_WORKING_RULES.md): diagnosi degli errori inclusa in ogni procedura, nessuna verifica ridondante e nessuna ripetizione di passi completati.
+
 ## Current next action
+
+**Target comparison failed on 2026-10-08.** Operator output reports `TARGET_ROOTFS_DIFFERS_FROM_INDEPENDENT_EXPECTATION`. Retained comparison snapshot: `/etc/ouf/deploy-snapshots/semantic-provider-v2-rootfs-compare-efz3k9xw`; source: `/etc/ouf/deploy-snapshots/semantic-v2-rootfs-comparison-source-FGtPizDO`. The old script did not retain entry-level differences on mismatch; that is a diagnostic defect. Do not repeat its bootstrap or offline reconstruction. Prepare a read-only difference diagnosis using existing inputs, retaining counts and bounded path/field samples without content values. No target cause is proven yet.
+
 
 Offline reconstruction is complete; do not repeat it. The next operator-only step is the full stopped-candidate comparison using `releases/provider-v2-stopped-rootfs-comparison.sh`. It reuses `semantic-provider-v2-offline-rootfs-s3BU0nDX`; it does not create/start a candidate, modify runtime configuration/firewall, sign, or call a provider. It creates a new evidence/source snapshot and temporarily mounts expected overlay views and exports the two stopped rootfs snapshots. Privileged filesystem access is unavailable to the runner, so this specific execution still needs the operator.
 

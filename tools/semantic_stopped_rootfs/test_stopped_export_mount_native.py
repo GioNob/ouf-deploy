@@ -128,6 +128,13 @@ def main():
                 with stopped_export_view(binding('docker'),socket,config,cid,mounted,67108864) as actual:
                     changed_seal=sealer(actual,limits,Budget())
                     assert changed_seal!=expected_seal, 'UNAPPROVED_CONTENT_NOT_DETECTED'
+                entry.main(diagnose=True)
+                reports=sorted(root.glob('semantic-provider-v2-rootfs-compare-*/comparison.json'),key=lambda p:p.stat().st_mtime_ns)
+                diagnostic=json.loads(reports[-1].read_bytes())
+                assert diagnostic['status']=='READ_ONLY_DIFFERENCE_DIAGNOSIS'
+                assert diagnostic['strictSealsMatch'] is False
+                diff=diagnostic['roles'][0]['differences']
+                assert diff['fieldCounts']['sha256']>=1 and diff['fileContentsPrinted'] is False
             differences=[]
             after=json.loads(docker('inspect',cid))[0]
             assert before['State']==after['State'], 'STOPPED_CANDIDATE_STATE_CHANGED'
