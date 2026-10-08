@@ -26,12 +26,20 @@ not independent target-template approval or deployment acceptance.
 2. Bind context to the exact owned Docker transaction independently of the
    OCI being checked. In particular, authenticate the network namespace name
    and installer-selected bundle/metadata parents; syntax is not custody proof.
-3. Add a source-bound pre-create compilation/intent-issuance phase to the
-   runtime adapter. The current immutable intentRef exists before Docker
-   generates the paths, so the compiler alone cannot resolve that ordering.
+3. Bind source-bound pre-create compilation and intent issuance to the existing
+   transaction. Native CI now demonstrates a second policy can be fixed before
+   its OCI is generated on classic vfs and containerd overlayfs. That fixture
+   proof does not approve the target template/context or require a new runtime.
 4. Connect the existing node observer, signed live acceptance and installer
    approval to that transaction, then test the full actual create/start path
    and rejection cases before changing the target allowlist.
 
 No target command, signing, container start or runtime change is provided here.
 The two target candidates remain stopped and their existing allowlist empty.
+
+The companion private launch-input preparer reuses the sealed stopped-creation
+reader and checks frozen image configuration, private source seals and the two
+exact never-started candidates. It only writes new root-private launch files.
+Its receipt explicitly reports private TLS/MAC and environment reads; it grants
+no authority. Unit tests cover startup/environment/identity and source/state
+drift. The operator-only step is documented in the release handoff.
