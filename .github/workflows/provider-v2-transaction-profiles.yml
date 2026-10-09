@@ -76,3 +76,32 @@ jobs:
       - name: Observe both real Docker creation windows before application release
         run: sudo env OUF_DOCKER_WINDOW_ENGINE_DIRECTORY="${{ github.workspace }}/engine-bin" /usr/bin/python3 -B tools/semantic_transaction_profiles/test_docker_creation_window_native.py
 
+
+  native-authenticated-docker-cohort:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          path: deploy
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: ace683b1019f79adaace86796b67e463b93ec12e
+          persist-credentials: false
+          path: gateway
+      - name: Load reviewed production runtime and explicit CI Engine
+        run: |
+          cp deploy/tools/semantic_cohort_admission/cohort-draft/tools/*.py gateway/tools/
+          cp deploy/tools/semantic_cohort_admission/cohort-draft/scripts/*.py gateway/scripts/
+          cp deploy/tools/semantic_frame_compiler/containerd-overlayfs-adapter.json deploy/tools/semantic_frame_compiler/frame-observer.py deploy/tools/semantic_transaction_profiles/
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq busybox-static iproute2 nftables
+          curl --fail --location --retry 2 --connect-timeout 15 --max-time 180 https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz --output engine.tgz
+          printf '%s\n' 'd8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70  engine.tgz' | sha256sum -c -
+          mkdir engine-bin
+          tar -xzf engine.tgz --strip-components=1 -C engine-bin
+      - name: Admit two full-frame peers through actual concurrent Docker requests
+        working-directory: gateway
+        run: sudo env OUF_DOCKER_WINDOW_ENGINE_DIRECTORY="${{ github.workspace }}/engine-bin" /usr/bin/python3 -B ../deploy/tools/semantic_transaction_profiles/test_authenticated_docker_cohort_native.py

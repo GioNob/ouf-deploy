@@ -59,10 +59,11 @@ def frame(root, rootfs, cid, index, namespace):
     return spec, policy
 
 
-def assemble(directory, source, python, crypto, intent, policies, policy, node, registry):
+def assemble(directory, source, python, crypto, intent, policies, policy, node, registry, *, independently_expected_rootfs=None):
     policy_path = directory / 'frame-policy.json'; private(policy_path, policy)
     limits = {'maxEntries': 10000, 'maxBytes': 268435456, 'maxDepth': 32}
-    seal = rootfs_seal(Path(policy['expectedOci']['root']['path']), limits, VerificationBudget(12))
+    seal = (rootfs_seal(Path(policy['expectedOci']['root']['path']), limits, VerificationBudget(12))
+            if independently_expected_rootfs is None else independently_expected_rootfs)
     # Signing input below is CI-only explicit acceptance. It uses the prepared
     # complete frame/hash, never copies a field from the candidate's observed OCI.
     private(directory / 'ci-preapproved-frame.json', {'policyHash': digest(encoded(policy)),
@@ -86,3 +87,4 @@ def assemble(directory, source, python, crypto, intent, policies, policy, node, 
         ['/run'], [str(registry)], limits)
     for name, value in files.items(): private(directory / name, value)
     return files['broker.json'], producer
+
