@@ -10,6 +10,8 @@ on:
       - 'tools/semantic_target_review/execute_bundle_context_recovery.py'
       - 'tools/semantic_target_review/test_bundle_context_recovery.py'
       - 'tools/semantic_target_review/test_r3_launch_fail_closed.py'
+      - 'tools/semantic_target_review/test_r4_launch_fail_closed.py'
+      - 'releases/provider-v2-bundle-context-recovery-20261009.sh'
       - 'releases/provider-v2-post-signature-recovery-20261009.sh'
       - '.github/workflows/provider-v2-locked-switch-regression.yml'
 permissions:
@@ -33,3 +35,6 @@ jobs:
           sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-locked-switch-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_bundle_context_recovery.py
       - name: Failed transfer or digest never reaches sudo
         run: /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_r3_launch_fail_closed.py
+
+      - name: R4 failed transfer or digest never reaches sudo
+        run: /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_r4_launch_fail_closed.py

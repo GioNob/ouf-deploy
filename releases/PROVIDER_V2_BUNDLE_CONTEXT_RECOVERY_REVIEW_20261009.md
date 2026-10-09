@@ -1,3 +1,11 @@
+# R4 approved — one pinned operator execution pending
+
+Human approval received on 9 October 2026 at 10:22:23 Europe/Rome (epoch 1791534143), ref `OUF_PROVIDER_V2_BUNDLE_CONTEXT_RECOVERY_HUMAN_APPROVAL_20261009_102223`. Witness and the helper's only two authorization edits are recorded in commit `796e23f6e3f6e4c8c6ac64bace2230e9bfbf7abe`, `evidence/provider-v2-bundle-context-recovery-human-approval-20261009.json`. The five recovery tests pass with that exact approval. Prior review/CI remain the reviewed implementation; do not request the same acceptance again.
+
+Execute only `releases/provider-v2-bundle-context-recovery-20261009.sh` pinned by commit and SHA256 `ea1ab4e7970ffd61e85b0ec6429a16a3526a4698fa7d8ec66ddc9b073868ecc2`. It verifies and reuses the existing R2 and R3 downloads, downloads only approved R4 helper from 796e23f6… (SHA256 `262f03825cc8beb4c8823c5882d9549d4220a8ffeb90e4601d8fc5671e610fce`), verifies bytes again as root and invokes the exact approved reference. Failures before root emit the launch phase; transaction failures preserve native evidence/claims and never automatically retry. Local fault injection proves failed downloads/digests never reach sudo. No R4 target execution has been observed yet. Await operator output, not another approval. Never repeat R3, image/SBOM/guard preparation or the completed context review.
+
+Earlier checkpoint text below is historical and superseded by this approved execution checkpoint.
+
 # Provider v2: recupero dei due contesti bundle — R4, 9 ottobre 2026
 
 Stato: proposta concreta, non autorità. Nessun comando target da eseguire prima dell'accettazione umana di questo R4.
