@@ -1,0 +1,47 @@
+{
+  "acquisition": "OPERATOR_REPORTED_NOT_INDEPENDENTLY_ACQUIRED",
+  "exitCode": 0,
+  "diagnosis": {
+    "schema": "ouf.semantic-live-docker-shim-bundle-read-only.v1",
+    "approvedBundleParents": {
+      "adapter": "/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby",
+      "southbound": "/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby"
+    },
+    "approvedParentCanonicalPaths": {
+      "adapter": "/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby",
+      "southbound": "/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby"
+    },
+    "containerLifecycleOperations": 0,
+    "defaultsInferred": false,
+    "dockerDaemons": [
+      {
+        "containerdSocket": "/run/containerd/containerd.sock",
+        "namespaceArgument": null,
+        "pid": 1740
+      }
+    ],
+    "existingConfigurationWrites": 0,
+    "historicalTargetRuntimeArgvCaptured": false,
+    "matchesApprovedCanonicalParent": {
+      "adapter": false,
+      "southbound": false
+    },
+    "matchesApprovedLiteralParent": {
+      "adapter": false,
+      "southbound": false
+    },
+    "notReleaseAcceptance": true,
+    "observedBundleParents": {
+      "/run/containerd/io.containerd.runtime.v2.task/moby": {
+        "kernelShimCwdSamples": 13,
+        "requestedCidMatches": []
+      }
+    },
+    "phase": "READ_KERNEL_CWD_OF_EXISTING_SHIMS",
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "signaturesIssued": 0,
+    "startAuthorized": false,
+    "status": "LIVE_SHIM_METADATA_CAPTURED"
+  }
+}
