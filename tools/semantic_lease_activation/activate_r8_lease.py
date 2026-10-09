@@ -166,6 +166,28 @@ def runtime(reader, core, cfg, owner, capsule):
     return coordinator, modules['semantic_provider_coordinated_supervisor'].supervise, check
 
 
+def wait_for_second_cycle(reader, root, timeout=90):
+    # O_EXCL makes a receipt name visible before its contents are durable.
+    # Wait through only known publication states; custody failures stay fatal.
+    deadline = time.monotonic() + timeout
+    last_publication_error = None
+    while time.monotonic() < deadline:
+        if (root/'worker-denial.json').exists():
+            raise ValueError('LEASE_WORKER_FAILED_READ_RETAINED_CAUSE')
+        try:
+            if (root/'cycle-2.json').exists():
+                raw = reader.private(root/'cycle-2.json')
+                return raw, reader.parse(raw)
+        except (json.JSONDecodeError, FileNotFoundError) as error:
+            last_publication_error = error
+        except reader.ReadDenied as error:
+            if str(error) != 'FILE_CHANGED_DURING_READ':
+                raise
+            last_publication_error = error
+        time.sleep(.05)
+    raise ValueError('SECOND_FRESH_LEASE_CYCLE_NOT_OBSERVED') from last_publication_error
+
+
 def compare(cycle, unit, root):
     pid = unit.get('MainPID', '')
     checks = {
@@ -303,16 +325,7 @@ def apply(reference):
         launched = True  # Unknown result is still a potentially submitted start.
         command(argv)
         PHASE = 'VERIFY_TWO_FRESH_DNS_CYCLES_AND_CURRENT_NATIVE_MEMBERSHIP'
-        deadline = time.monotonic() + 90
-        while time.monotonic() < deadline:
-            if (ROOT/'worker-denial.json').exists():
-                raise ValueError('LEASE_WORKER_FAILED_READ_RETAINED_CAUSE')
-            if (ROOT/'cycle-2.json').exists():
-                break
-            time.sleep(.25)
-        require((ROOT/'cycle-2.json').exists(), 'SECOND_FRESH_LEASE_CYCLE_NOT_OBSERVED')
-        cycle_raw = reader.private(ROOT/'cycle-2.json')
-        current = reader.parse(cycle_raw)
+        cycle_raw, current = wait_for_second_cycle(reader, ROOT)
         unit = properties()
         readback = {'cycleReceiptSha256': sha(cycle_raw),
                     'cycleReceipt': {k: current[k] for k in ('status', 'refreshCount', 'workerPid', 'flowAddressCounts')},

@@ -79,6 +79,19 @@ from pathlib import Path
 root=Path(__file__).resolve().parent
 sys.path.insert(0,str(root))
 import activation_core as core
+original_create=core.create
+def delayed_create(path,value):
+ if Path(path).name=='cycle-2.json':
+  fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+  try:
+   time.sleep(1) # Real partial-publication window, test-only.
+   raw=value if isinstance(value,bytes) else core.encoded(value)
+   with os.fdopen(os.dup(fd),'wb') as stream:
+    stream.write(raw);stream.flush();os.fsync(stream.fileno())
+  finally:os.close(fd)
+  core.sync_parent(path)
+ else:original_create(path,value)
+core.create=delayed_create
 original_status=core.status
 def delayed_status(root,value):
  if value.get('status')=='LEASE_ACTIVE' and value.get('refreshCount')==2:
@@ -173,7 +186,14 @@ def main():
                     raise RuntimeError((root/'worker-denial.json').read_text())
                 assert time.monotonic() < deadline, 'CI_TWO_CYCLES_TIMEOUT'
                 time.sleep(.2)
-            cycle = json.loads((root/'cycle-2.json').read_bytes())
+            import importlib.util
+            reader_path = HERE.parents[0]/'semantic_target_review/read_r8_post_start.py'
+            spec = importlib.util.spec_from_file_location('actual_target_receipt_reader', reader_path)
+            receipt_reader = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(receipt_reader)
+            assert (root/'cycle-2.json').read_bytes() == b'', 'PARTIAL_PUBLICATION_NOT_EXERCISED'
+            cycle_raw, cycle = target.wait_for_second_cycle(receipt_reader, root)
+            print('R8_RECEIPT_PUBLICATION=PARTIAL_FILE_WAITED ACTUAL_ROOT_PRIVATE_READER=true', flush=True)
             lagging = json.loads((root/'worker-status.json').read_bytes())
             assert cycle['refreshCount'] == 2 and lagging['refreshCount'] == 1
             target.UNIT = unit
