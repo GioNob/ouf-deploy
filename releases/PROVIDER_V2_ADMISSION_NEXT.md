@@ -1,3 +1,11 @@
+# Current checkpoint — terminal two-task maintenance approved; operator execution pending
+
+Human response `Approvo` at 2026-10-09 14:04:46 Europe/Rome authorizes exactly the reviewed terminal maintenance, with no start. Approval witness/executor commit `1bd1baca89c7e77947180ea5e531713e0afcd5d3`, approvalRef `OUF_TERMINAL_TASK_CLEANUP_HUMAN_APPROVAL_20261009_140446`, epoch1791547486. Only executor approvalRef/time changed from reviewed implementation; three executor tests pass after binding. Executor SHA256 `f94b61f48e85a0bbc669b4cf40b0f2e2cde0e0bca3a4e41ca3620ee510c53830`. Actual code rejects execution after 15:04:46 Europe/Rome (one-hour approved maintenance bound), separately from its 120-second delete-only window.
+
+Pinned launcher `releases/provider-terminal-task-cleanup-20261009.sh`, SHA256 `067550e870562c5609d2f03c3a17ccdcea292d7d89afb112a5d4487c30ad87d2`, reuses existing `/home/oufadmin/ouf-terminal-review.aA1bun9h/read.py` and transfers only the approved new executor plus fixed delete-only gate. Launcher shell syntax and three pre-sudo failure scenarios pass with approved hashes. Native CI 37927151726 SUCCESS remains implementation evidence, not target acceptance. No cleanup or start has yet been observed on the VPS. Execute once, retain complete operator result, do not auto-retry. On success continue with fresh admission context and actual provider orchestration; maintenance itself does not authorize start or release. Previous input/image/rootfs acceptances stay intact. Do not ask for this same maintenance approval again.
+
+Earlier checkpoints below are historical and superseded.
+
 # Current checkpoint — terminal maintenance is concrete and CI-validated, awaiting scoped human approval
 
 Operator review at 13:45:19 Europe/Rome proves two STOPPED containerd v2.3.5 tasks, both historical task PIDs absent, exact owned shim generations and native empty guard. Receipt `evidence/provider-v2-r5-terminal-cleanup-review-target-20261009.json` is operator-reported/not independently acquired. Current wrapper remains R5 `4bd86d0c27039a238ac4894cf0c151745c92814c94af7b5a2f2ed173b70d685a`; no target cleanup or start has run.
