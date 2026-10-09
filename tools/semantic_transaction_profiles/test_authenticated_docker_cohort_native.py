@@ -69,7 +69,7 @@ def main():
         # Temporary source-bound CI diagnosis; never target source/authority.
         node_cli=source/'scripts/semantic_provider_node_attestor.py'
         node_raw=node_cli.read_text()
-        node_raw=node_raw.replace('    except Exception:\n        print('SEMANTIC_NODE_ATTESTOR',
+        node_raw=node_raw.replace("    except Exception:\n        print('SEMANTIC_NODE_ATTESTOR",
             "    except Exception as error:\n        import re\n        reason=str(error)\n        if not re.fullmatch('[A-Z0-9_]{1,96}',reason):reason='CI_NODE_OPERATION_UNPROVEN'\n        diagnosis=Path(args.configuration).parent/'ci-node-denial.json'\n        diagnosis.write_text(json.dumps({'reason':reason,'errorClass':type(error).__name__,'secretValuesPrinted':False}));diagnosis.chmod(0o600)\n        print('SEMANTIC_NODE_ATTESTOR")
         node_cli.write_text(node_raw);node_cli.chmod(0o600)
         wrapper=root/'admission.py';shutil.copyfile(Path(__file__).with_name('ci_frame_profile_broker.py'),wrapper);wrapper.chmod(0o600)
