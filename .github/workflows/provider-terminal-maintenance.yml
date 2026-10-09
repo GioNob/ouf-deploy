@@ -6,6 +6,9 @@ on:
       - 'tools/semantic_target_review/terminal_task_delete_gate.py'
       - 'tools/semantic_target_review/test_terminal_task_delete*.py'
       - 'tools/semantic_target_review/execute_terminal_task_cleanup.py'
+      - 'tools/semantic_target_review/terminal_task_delete_alias_gate.py'
+      - 'tools/semantic_target_review/execute_terminal_alias_recovery.py'
+      - 'tools/semantic_target_review/test_terminal_alias_recovery_executor.py'
       - '.github/workflows/provider-terminal-maintenance.yml'
 permissions:
   contents: read
@@ -21,6 +24,10 @@ jobs:
         run: python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_terminal_task_delete_gate.py
       - name: Inert approval and filesystem wrapper restoration
         run: python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_terminal_task_cleanup_executor.py
+      - name: Exact observed alias and consumed claim preservation
+        run: |
+          python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_terminal_task_delete_alias_gate.py
+          python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_terminal_alias_recovery_executor.py
       - name: Reviewed disposable Engine and static offline rootfs
         run: |
           curl --fail --location --retry 2 --connect-timeout 15 --max-time 120 https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz --output engine.tgz
@@ -31,3 +38,5 @@ jobs:
           sudo apt-get install -y -qq busybox-static
       - name: Actual stopped task deletion with container metadata preserved
         run: sudo env OUF_PLUGIN_ENGINE_DIRECTORY="${{ github.workspace }}/engine-bin" /usr/bin/python3 -B tools/semantic_target_review/test_terminal_task_delete_native.py
+      - name: Reproduce lexical alias denial and recover only stopped tasks
+        run: sudo env OUF_PLUGIN_ENGINE_DIRECTORY="${{ github.workspace }}/engine-bin" /usr/bin/python3 -B tools/semantic_target_review/test_terminal_task_delete_alias_native.py

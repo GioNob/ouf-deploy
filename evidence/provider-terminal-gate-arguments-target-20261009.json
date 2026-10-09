@@ -1,0 +1,74 @@
+{
+  "source": "User-pasted target read-only receipt; no target execution from this chat runtime",
+  "receipt": {
+    "argumentSource": "RETAINED_OPTIONS_AND_CONTAINERD_V2_3_5_NEW_RUNC_SOURCE",
+    "cleanupAuthorized": false,
+    "containerLifecycleOperations": 0,
+    "doNotRerunApply": true,
+    "existingConfigurationWrites": 0,
+    "gateAcknowledgementInvoked": false,
+    "historicalArgvCaptured": false,
+    "notReleaseAcceptance": true,
+    "phase": "READ_RUNC_LIST_AND_PURE_ABSENCE_PREDICATE",
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "providerCalls": 0,
+    "pureAbsenceGate": {
+      "status": "PASS"
+    },
+    "retainedWindow": {
+      "clockChanged": false,
+      "durationSeconds": 120,
+      "expirationNotAttributedToOriginalAttempt": true,
+      "expiredNow": true,
+      "expiresAt": 1791552381,
+      "issuedAt": 1791552261
+    },
+    "roles": {
+      "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": {
+        "argvHash": "d836bbf185ed378d6a0d207449ff1a73186baaf9e0f90222ff215b03daead72d",
+        "argvPrinted": false,
+        "optionsHash": "4828c44fcee22d0b148da07572dbca39c22af51b148ba03bea0321ab1f042abb",
+        "pureArgvGate": {
+          "reason": "EXACT_RETAINED_RUNTIME_ROOT_REQUIRED",
+          "status": "BLOCKED"
+        },
+        "rootArgumentHash": "9f595173b01440cef244647bd9f19079b830bc582d119db5212b6e53544e49a2",
+        "rootComparison": {
+          "canonicalSuppliedRootHash": "c64c266a92b2d9ff052a8f2b817ee730406b2ddde47d550a52effb822b181342",
+          "canonicallyEqual": true,
+          "lexicallyEqual": false,
+          "retainedRootHash": "c64c266a92b2d9ff052a8f2b817ee730406b2ddde47d550a52effb822b181342",
+          "suppliedRootHash": "9f595173b01440cef244647bd9f19079b830bc582d119db5212b6e53544e49a2"
+        },
+        "runtimeBinaryHash": "d407dffaafcf9574cdb6e8092d6e07fa6501f05c4e49b5baa2dfd10d6da11c3b",
+        "runtimeBinaryIsReviewedWrapper": true,
+        "shimGenerationMatches": true
+      },
+      "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": {
+        "argvHash": "65377413956520c01761bdbc2a22be57a238c6e33b250245a068513c60794d7b",
+        "argvPrinted": false,
+        "optionsHash": "4828c44fcee22d0b148da07572dbca39c22af51b148ba03bea0321ab1f042abb",
+        "pureArgvGate": {
+          "reason": "EXACT_RETAINED_RUNTIME_ROOT_REQUIRED",
+          "status": "BLOCKED"
+        },
+        "rootArgumentHash": "9f595173b01440cef244647bd9f19079b830bc582d119db5212b6e53544e49a2",
+        "rootComparison": {
+          "canonicalSuppliedRootHash": "c64c266a92b2d9ff052a8f2b817ee730406b2ddde47d550a52effb822b181342",
+          "canonicallyEqual": true,
+          "lexicallyEqual": false,
+          "retainedRootHash": "c64c266a92b2d9ff052a8f2b817ee730406b2ddde47d550a52effb822b181342",
+          "suppliedRootHash": "9f595173b01440cef244647bd9f19079b830bc582d119db5212b6e53544e49a2"
+        },
+        "runtimeBinaryHash": "d407dffaafcf9574cdb6e8092d6e07fa6501f05c4e49b5baa2dfd10d6da11c3b",
+        "runtimeBinaryIsReviewedWrapper": true,
+        "shimGenerationMatches": true
+      }
+    },
+    "schema": "ouf.semantic-terminal-gate-arguments-read-only.v1",
+    "signaturesIssued": 0,
+    "startAuthorized": false,
+    "status": "TERMINAL_GATE_ARGUMENTS_CAPTURED"
+  }
+}
