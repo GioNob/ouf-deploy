@@ -1,0 +1,50 @@
+{
+  "schema": "ouf.semantic-live-shim-reader-ci.v1",
+  "readerCommit": "d4679f15990b98426cf99faad2c824b384cc7525",
+  "readerSha256": "a30419e239776a8af4ce089359f7b2746fde183ca7bfc9073e86e5b3c5ca3547",
+  "run": 37902096734,
+  "jobs": [
+    {
+      "id": 113726796879,
+      "name": "profiles",
+      "conclusion": "success"
+    },
+    {
+      "id": 113726797018,
+      "name": "native-frame-profiles",
+      "conclusion": "success"
+    },
+    {
+      "id": 113726797044,
+      "name": "native-authenticated-docker-cohort",
+      "conclusion": "success"
+    },
+    {
+      "id": 113726797186,
+      "name": "native-docker-creation-window",
+      "conclusion": "success"
+    }
+  ],
+  "actualNativeProofLog": [
+    "2026-10-09T07:58:53.3978394Z LIVE_DOCKER_SHIM_BUNDLE_READER=PASS TWO_ACTUAL_CI_TASKS=true NO_EXTRA_START=true TARGET_AUTHORITY=false",
+    "2026-10-09T07:58:53.3980023Z AUTHENTICATED_DOCKER_COHORT=PASS ENGINE_29_8_1=true FULL_OCI_FIXED_BEFORE_CREATE=true INDEPENDENT_OFFLINE_ROOTFS=true NODE_V4=true PEER_BOUND_V6=true TWO_APPLICATION_MARKERS=true CI_KEYS_ONLY=true TARGET_AUTHORITY=false"
+  ],
+  "actualCiTasks": 2,
+  "extraContainerStartForDiagnosis": 0,
+  "exploratoryCiFailures": [
+    {
+      "run": 37901405698,
+      "job": 113724582059,
+      "reason": "CTR_PLUGINS_INFO_UNSUPPORTED"
+    },
+    {
+      "run": 37901600823,
+      "job": 113725205843,
+      "reason": "TASK_PLUGIN_STATE_ROOT_EXPORTS_ABSENT"
+    }
+  ],
+  "unsupportedIntrospectionWithdrawn": true,
+  "cloudTargetOperations": 0,
+  "targetAuthorityGranted": false,
+  "notReleaseAcceptance": true
+}
