@@ -1,0 +1,37 @@
+{
+  "schema": "ouf.semantic-r8-prepared-recovery-delivery-validation.v1",
+  "status": "REVIEW_AND_INERT_DELIVERY_VERIFIED",
+  "sourceCommit": "c653dddb477f758bd89dba7886dc42657aa3ff39",
+  "observedAt": "2026-10-09T18:35:49Z",
+  "workflowRun": 37974331313,
+  "job": 113968647731,
+  "conclusion": "success",
+  "testCount": 9,
+  "nativeValidationEvidence": "evidence/provider-r8-prepared-rootfs-native-validation-20261009.json",
+  "remoteFiles": {
+    "tools/semantic_target_review/execute_prepared_mountpoint_recovery.py": {
+      "sha256": "7a4d68895c33c01562298948cfdb2c65c18c1b3525eeb34e8bc36891a998ba3e",
+      "remoteBytesMatchedLocal": true
+    },
+    "tools/semantic_transaction_profiles/prepare_mountpoint_acceptance.py": {
+      "sha256": "143112ab4051ca166f6d7609c107787f2be3ce35ce7946002dfec755ff1fdd98",
+      "remoteBytesMatchedLocal": true
+    },
+    "evidence/provider-r8-mountpoint-recovery-scope-20261009.json": {
+      "sha256": "24f6c5a25893e1757bb903b74b90155e39d19864d377ed3a31a94e80bfce1a86",
+      "remoteBytesMatchedLocal": true
+    },
+    "releases/provider-prepared-mountpoint-recovery-20261009.sh": {
+      "sha256": "b1b9e7b381e6fef9d9bb967996dc817a64ab252a5c21826c199184ad5b36be0d",
+      "remoteBytesMatchedLocal": true
+    }
+  },
+  "approvalPending": true,
+  "targetExecutionPerformed": false,
+  "targetStartupProven": false,
+  "targetRootfsObservationSource": "OPERATOR_REPORTED_RECEIPT",
+  "privateKeysRead": 0,
+  "targetContainerLifecycleOperations": 0,
+  "notReleaseAcceptance": true,
+  "scopeChangedByThisValidation": false
+}
