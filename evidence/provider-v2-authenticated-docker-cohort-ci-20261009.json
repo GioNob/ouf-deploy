@@ -1,0 +1,54 @@
+{
+  "schema": "ouf.semantic-provider-authenticated-docker-cohort-ci.v1",
+  "sourceCommit": "53ee1edb7703cc42026e267ac08dc1bb40cc186c",
+  "workflowRun": 37886341835,
+  "jobs": [
+    {
+      "id": 113677084694,
+      "name": "native-frame-profiles",
+      "conclusion": "success"
+    },
+    {
+      "id": 113677084900,
+      "name": "profiles",
+      "conclusion": "success"
+    },
+    {
+      "id": 113677084923,
+      "name": "native-authenticated-docker-cohort",
+      "conclusion": "success"
+    },
+    {
+      "id": 113677084926,
+      "name": "native-docker-creation-window",
+      "conclusion": "success"
+    }
+  ],
+  "engineVersion": "29.8.1",
+  "staticEngineArchiveSha256": "d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70",
+  "ownDockerAndContainerd": true,
+  "original29SourceHashesVerified": true,
+  "diagnosticInstrumentationPresent": false,
+  "expectedCompleteOciBeforeTaskCreate": true,
+  "independentOfflineImageAndInitlayer": true,
+  "fullV1SealComparedWithoutExclusions": true,
+  "realNodeV4InstallerBrokerAndPeerV6": true,
+  "twoApplicationsStartedInDisposableCi": true,
+  "sourceIntakeLoaderVerifiedFiles": 39,
+  "sourcePreparationPromotedFiles": 41,
+  "sourcePreparationTamperDeniedBeforePublication": true,
+  "retainedFailureRuns": [
+    37885627682,
+    37885736497,
+    37885860729,
+    37885996811,
+    37886125720
+  ],
+  "diagnosticPositiveRun": 37886220154,
+  "diagnosis": "Initial fixture mixed early request failure with premature application release; pinned executables moved into root custody. Explicit owned containerd fixed bundle-parent mismatch. Independent flattened filesystem disagreed only on dev/etc directory link counters; two lower layers model image/initlayer separately and match all entries. A temporary diagnostic shim quoting error was corrected. Final original-source run succeeds.",
+  "ciAuthorityOnly": true,
+  "targetObservedHere": false,
+  "targetOperationsPerformed": 0,
+  "startAuthorized": false,
+  "notReleaseAcceptance": true
+}
