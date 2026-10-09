@@ -10,6 +10,15 @@
     "isTargetObservation": false,
     "runId": 37970394461
   },
+  "finalDeliveryCommit": "e25dd2ddb4a9ebfe545d29e4af2de8e4e144147d",
+  "finalReaderAndDeliveryCI": {
+    "conclusion": "success",
+    "isTargetObservation": false,
+    "jobId": 113956636635,
+    "logsRead": true,
+    "runId": 37970809537,
+    "tests": 12
+  },
   "localHistoricalDeliveryTests": 8,
   "localReaderAndDeliveryTests": 12,
   "newStartCommandPrepared": false,
