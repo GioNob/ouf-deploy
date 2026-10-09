@@ -42,7 +42,33 @@
     "cause": "repository manifest retained previous utility hashes",
     "repairedRepositoryManifest": "84e4237808a92a8e116e140bb828167257236eaade3bcfe76efdee4d9912be7a",
     "localAfterFixTests": 33,
-    "hostedAfterFix": "PENDING"
+    "hostedAfterFix": {
+      "run": 37899168794,
+      "head": "672fbf8cf62b1a395c200279ed1a28a20dcf7957",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 113717436954,
+          "name": "profiles",
+          "conclusion": "success"
+        },
+        {
+          "id": 113717437138,
+          "name": "native-frame-profiles",
+          "conclusion": "success"
+        },
+        {
+          "id": 113717437221,
+          "name": "native-authenticated-docker-cohort",
+          "conclusion": "success"
+        },
+        {
+          "id": 113717437368,
+          "name": "native-docker-creation-window",
+          "conclusion": "success"
+        }
+      ]
+    }
   },
   "earlierSameFailure": {
     "run": 37897270056,
@@ -52,5 +78,11 @@
   "targetRuntimeObserverClosureUnchanged": true,
   "targetOperations": 0,
   "targetAuthorityGranted": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "recoveryHelper": {
+    "reviewHead": "6046de51f3e683434dfb13a38ce8220c694feba3",
+    "sha256": "750422fa9ccf1ae5a12ad48d6c525eacfb1a37c72d51552a90a4d8a2b7ec5c20",
+    "humanApproval": "PENDING",
+    "targetCommandReady": false
+  }
 }
