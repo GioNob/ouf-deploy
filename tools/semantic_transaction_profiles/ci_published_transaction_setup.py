@@ -13,12 +13,13 @@ import time
 from unittest.mock import patch
 
 import authenticate_provider_transaction as authentication
+import issue_provider_transaction_authority as issuance
 from assemble_provider_profiles import digest, encoded
 from guarded_runtime_switch import verify_installed_plan
 from publish_provider_transaction import publish_plan, producer_result_directories
 from tools.materialize_southbound_kernel import materialize
 from tools.semantic_provider_lease_nft import structure_hash
-from tools.semantic_provider_deployment_authentication import DetachedAuthenticator, signing_bytes
+from tools.semantic_provider_deployment_authentication import DetachedAuthenticator, VerificationBudget
 
 
 def prepare(root, source, python, commands, lock, inputs, networks, kernels,
@@ -64,16 +65,7 @@ def prepare(root, source, python, commands, lock, inputs, networks, kernels,
     declarations = [{'containerId':cids[i], 'applicationHash':digest(encoded(inputs[i]['framePolicy']['expectedOci'])),
                      'networkBindings':networks[i]} for i in range(2)]
 
-    def sign(raw, role, issuer):
-        key_role = 'attestor' if role == 'CREATION_ATTESTATION' else 'installer'
-        header = {'schema':'ouf.semantic-deployment-detached-signature.v1', 'algorithm':'Ed25519',
-            'keyRef':key_role+'-ci-key', 'role':role, 'issuerRef':issuer,
-            'installationRef':authorities['installationRef'], 'entityRef':authorities['entityRef'], 'payloadHash':digest(raw)}
-        frame = authority_root/'signing-frame'; frame.write_bytes(signing_bytes(raw,header)); frame.chmod(0o600)
-        signature = run(commands['openssl'],'pkeyutl','-sign','-rawin','-inkey',str(keys[key_role]),'-in',str(frame)).stdout
-        private(signatures/(digest(raw)+'.'+role+'.json'), {**header,'signature':signature.hex()})
-
-    records = {}
+    records = {}; mandates = {}
     for i,role in enumerate(('adapter','southbound')):
         cid = cids[i]; tx = digest(('ci-'+cid).encode()); shared = 'ccs_'+suffix+str(i)
         kernel = kernels[i]; tables.extend([shared,kernel['tableName']])
@@ -106,35 +98,26 @@ def prepare(root, source, python, commands, lock, inputs, networks, kernels,
                 'severityCounts':{k:0 for k in ('Critical','High','Medium','Low','Negligible','Unknown')},
                 'packageAlertCount':0,'ignoredMatchCount':0}}
         raw = {name:encoded(value) for name,value in values.items()}
-        intent = {'schema':'ouf.semantic-deployment-intent.v1', 'issuerRef':authorities['intentIssuerRef'],
-            'installationRef':authorities['installationRef'], 'entityRef':authorities['entityRef'],
-            'containerId':cid, 'transactionId':tx, 'artifactHash':digest(raw['framePolicy']),
-            'deploymentConstraintsHash':digest(raw['deploymentConstraints']),
-            'transportHash':digest(encoded({k:candidate[k] for k in ('networkBindings','transport','tableName')})),
-            'runtimeExecutableHash':runtime['sha256'], 'issuedAt':now, 'expiresAt':now+240,
-            'infrastructureAuthorized':True, 'creationAuthorized':True, 'applicationStartAuthorized':False}
-        review = {'schema':'ouf.semantic-provider-target-review.v1', 'issuerRef':authorities['approvalIssuerRef'],
-            'installationRef':authorities['installationRef'], 'entityRef':authorities['entityRef'], 'role':role, **targets[role],
-            **{k+'Hash':digest(v) for k,v in raw.items()}, 'sourceClosureHash':source_hash,
-            'decision':'ACCEPT_PROVIDER_IMAGE_AND_COMPLETE_FRAME','state':'ACTIVE','issuedAt':now,'expiresAt':now+240}
-        raw.update(intent=encoded(intent),review=encoded(review))
-        scope = {k:intent[k] for k in ('installationRef','entityRef','containerId','transactionId','artifactHash',
-                                    'deploymentConstraintsHash','transportHash','runtimeExecutableHash')}
-        scope.update(intentHash=digest(raw['intent']))
-        raw['liveAuthorization'] = encoded({'schema':'ouf.semantic-node-live-acceptance-authorization.v1',
-            'issuerRef':authorities['attestorRef'], **scope, 'applicationHash':declarations[i]['applicationHash'], 'rootfsSeal':seal,
-            'generationBinding':'OBSERVED_CREATED','state':'ACTIVE','mandateIssuanceAuthorized':True,
-            'attestationAuthorized':True,'completeCreationAccepted':True,'issuedAt':now,'expiresAt':now+240})
-        raw['finalMandate'] = encoded({'schema':'ouf.semantic-final-approval-mandate.v1', 'issuerRef':authorities['approvalIssuerRef'],
-            **scope,'approvalRef':'ci-final-'+cid,'state':'ACTIVE','issuanceAuthorized':True,
-            'applicationStartAuthorized':True,'issuedAt':now,'expiresAt':now+240})
-        for name,signing_role,issuer in (
-            ('intent','DEPLOYMENT_INTENT',authorities['intentIssuerRef']),
-            ('review','FINAL_DEPLOYMENT_APPROVAL',authorities['approvalIssuerRef']),
-            ('liveAuthorization','CREATION_ATTESTATION',authorities['attestorRef']),
-            ('finalMandate','FINAL_DEPLOYMENT_APPROVAL',authorities['approvalIssuerRef'])):
-            sign(raw[name],signing_role,issuer)
-        records[role] = raw
+        mandate = {'schema':'ouf.semantic-provider-transaction-role-mandate.v1', 'role':role,
+            'installationRef':authorities['installationRef'], 'entityRef':authorities['entityRef'], **targets[role],
+            'inputHashes':{k:digest(v) for k,v in raw.items()}, 'sourceClosureHash':source_hash,
+            'roleSigningScopes':issuance.SCOPES, 'state':'ACTIVE',
+            'decision':'ACCEPT_PROVIDER_IMAGE_AND_COMPLETE_FRAME_AND_CONTROLLED_ADMISSION',
+            'transactionId':tx, 'approvalRef':'ci-mandate-'+cid, 'issuedAt':now, 'expiresAt':now+240}
+        mandate_path = authority_root/(role+'-root-mandate.json'); private(mandate_path,mandate)
+        mandates[role] = bind(mandate_path); records[role] = raw
+    with patch.object(authentication,'TARGETS',targets), patch.object(authentication,'AUTHORITIES',authorities), \
+         patch.object(issuance,'TARGETS',targets), patch.object(issuance,'AUTHORITIES',authorities):
+        for validate_only in (True,False):
+            for role in records:
+                directory = authority_root/role
+                if not validate_only: directory.mkdir(mode=0o700)
+                verifier = DetachedAuthenticator(crypto['policyBinding'],crypto['signatureDirectory'],
+                    crypto['opensslBinding'],budget=VerificationBudget(18))
+                issued = issuance.issue_role_authority(role,mandates[role],mandates[role]['sha256'],
+                    records[role],authority,sources,observer,verifier,directory,validate_only=validate_only)
+                if not validate_only:
+                    records[role].update({name:Path(binding['path']).read_bytes() for name,binding in issued['records'].items()})
     destination = root/'published'
     verifier = DetachedAuthenticator(crypto['policyBinding'],crypto['signatureDirectory'],crypto['opensslBinding'])
     # Constant selection is patched only in this CI process. Authenticator,
