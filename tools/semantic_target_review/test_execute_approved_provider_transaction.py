@@ -10,6 +10,24 @@ from unittest.mock import patch
 import execute_approved_provider_transaction as bridge
 
 class ApprovedBridgeTests(unittest.TestCase):
+    def test_recovery_rejects_partial_execution_and_foreign_context(self):
+        denial={'stage':'PREFLIGHT_BOTH_EXPLICIT_ROOT_MANDATES','reason':'PRIVATE_TARGET_INTAKE_UNPROVEN',
+            'privateKeysRead':0,'containerLifecycleOperations':0,'targetRuntimeChanged':False}
+        claim={'schema':'ouf.semantic-provider-operator-context-claim.v1','state':'CONTEXT_RESERVED',
+            'contextDirectory':str(bridge.FAILED_CONTEXT),'approvalRef':bridge.APPROVAL_REF}
+        outer={**denial,'phase':'INVOKE_EXISTING_SEALED_APPROVED_TRANSACTION',
+            'contextDirectory':str(bridge.FAILED_CONTEXT)}
+        present={n:False for n in ('execution-claim.json','issued-signatures','role-authority','intake-claim.json','execution-receipt.json')}
+        bridge.validate_pre_key_failure(denial,claim,outer,present)
+        for changed in ({**denial,'privateKeysRead':None},{**denial,'privateKeysRead':True},
+                        {**denial,'containerLifecycleOperations':1},{**denial,'targetRuntimeChanged':True}):
+            with self.assertRaisesRegex(ValueError,'NO_KEY_OR_LIFECYCLE_ATTEMPT_REQUIRED'):
+                bridge.validate_pre_key_failure(changed,claim,outer,present)
+        with self.assertRaisesRegex(ValueError,'PRE_KEY_RECOVERY_STATE_REQUIRED'):
+            bridge.validate_pre_key_failure(denial,claim,outer,{**present,'execution-claim.json':True})
+        with self.assertRaisesRegex(ValueError,'EXACT_ORIGINAL_CONTEXT_RESERVATION_REQUIRED'):
+            bridge.validate_pre_key_failure(denial,{**claim,'contextDirectory':'/other'},outer,present)
+
     def hashes(self):
         return {role:copy.deepcopy(p['inputHashes']) for role,p in bridge.SCOPE['roleProposals'].items()}
 
