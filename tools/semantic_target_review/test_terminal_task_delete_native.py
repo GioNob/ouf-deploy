@@ -75,9 +75,14 @@ os.execv(RUNC,[RUNC,*args])
             rows=ctr('tasks','list').stdout.decode().splitlines()[1:]
             require(not any(row.split()[0] in cids for row in rows),'CI_TWO_TASKS_REMOVED')
             require(all(ctr('containers','info',cid).stdout==before[cid] for cid in cids),'CI_CONTAINER_METADATA_PRESERVED')
-            require(not any(v.get('id') in cids for v in json.loads(run(str(engine/'runc'),'--root',runtime_root,'list','--format','json').stdout)),'CI_NO_RUNTIME_ENTRY_CREATED')
+            require(not any(v.get('id') in cids for v in (json.loads(run(str(engine/'runc'),'--root',runtime_root,'list','--format','json').stdout) or [])),'CI_NO_RUNTIME_ENTRY_CREATED')
             print('TERMINAL_TASK_CLEANUP_NATIVE=PASS TWO_STOPPED_TASKS_REMOVED=true CONTAINER_METADATA_PRESERVED=true ORIGINAL_DELETE_DENIAL_REPRODUCED=true NO_FORCE_OR_KILL_BY_GATE=true TARGET_AUTHORITY=false')
         finally:
+            # CI-only disposal must also release a failed test's shim mounts.
+            wrapper.write_text('#!/bin/sh\nexec '+str(engine/'runc')+' \"$@\"\n');wrapper.chmod(0o755)
+            for cid in cids:
+                ctr('tasks','kill','--signal','SIGKILL',cid,check=False)
+                ctr('tasks','delete',cid,check=False)
             daemon.terminate()
             try:daemon.wait(timeout=10)
             except subprocess.TimeoutExpired:daemon.kill();daemon.wait()

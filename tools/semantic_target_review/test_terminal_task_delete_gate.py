@@ -16,6 +16,7 @@ class Tests(unittest.TestCase):
     def test_native_entry_or_live_pid_or_state_directory_denies(self):
         cfg={'tasks':{A:{'pid':101},B:{'pid':102}},'runtimeRoot':ROOT}
         gate.absent(cfg,[],lambda _:False)
+        gate.absent(cfg,None,lambda _:False)
         for rows,predicate in (([{'id':A,'status':'stopped'}],lambda _:False),([],lambda p:p=='/proc/102'),([],lambda p:p==ROOT+'/'+A)):
             with self.assertRaises(gate.Denied):gate.absent(cfg,rows,predicate)
 if __name__=='__main__':unittest.main()

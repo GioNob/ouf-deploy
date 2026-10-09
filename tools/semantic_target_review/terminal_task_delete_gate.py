@@ -58,6 +58,8 @@ def parse_delete(argv,cids,runtime_root):
 
 def absent(config,list_rows,pid_present=os.path.lexists):
     cids=config['tasks']
+    # runc serializes a genuinely empty inventory as JSON null.
+    if list_rows is None:list_rows=[]
     require(type(list_rows) is list and len(list_rows)<=1024,'BOUNDED_RUNC_INVENTORY_REQUIRED')
     require(not any(row.get('id') in cids for row in list_rows),'TERMINAL_RUNC_ABSENCE_REQUIRED')
     for cid,record in cids.items():
