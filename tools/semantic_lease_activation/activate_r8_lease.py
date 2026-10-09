@@ -12,15 +12,19 @@ import tempfile
 import threading
 import time
 
-APPROVAL_REF = 'OUF_R8_TWO_FLOW_LEASE_APPROVED_20261009T222121_CEST'
-ISSUED_AT = 1791577281
-EXECUTION_EXPIRES_AT = 1791584481
+APPROVAL_REF = 'PENDING_EXPLICIT_R8_LEASE_READBACK_RECOVERY'
+ISSUED_AT = 0
+EXECUTION_EXPIRES_AT = 0
 READER_HASH = 'ab61835ef55396ddacf4513acc0f21adbaab1b50ac32ad2fdc4c80a23d1835c8'
 CORE_HASH = '51259c988eae4b506f2696ad3f5bf6e954eca9c4396cb36da75e0845ff49e50b'
 COMPILER_HASH = 'c3160940cf79678cb8e44c036cb0d947016f885ab09acfe6cce571833db5b079'
 OLD_COMPILER_HASH = '1c0d7f1243752fe216ef62eefbc2e3253b8f2503b518fafe11277e4d7721a084'
 EXISTING_READER = Path('/home/oufadmin/ouf-r8-post-read.Tl08rnjI/read.py')
-CLAIM = Path('/etc/ouf/provider-r8-network-lease.claim')
+CLAIM = Path('/etc/ouf/provider-r8-network-lease-readback-recovery.claim')
+PRIOR_CLAIM = Path('/etc/ouf/provider-r8-network-lease.claim')
+PRIOR_ROOT = Path('/etc/ouf/deploy-snapshots/semantic-r8-lease-ao5xt5og')
+PRIOR_AUTH_HASH = 'cb264e411c2e52accb65f756a8c71a7986564df081d5fc3818b8f89fc0c2426a'
+PRIOR_CYCLE_TWO_HASH = '8cbef68f14c156b1ef078601a440c0735c8a97ccbef1b299372897c167e287e3'
 UNIT = 'ouf-semantic-provider-lease-r8.service'
 JOURNAL_HASH = 'a58f0cb6e011879fc22723356d19926adf8945c38dcdbf2d21ab3fa34dd6f7f1'
 EXPECTED = {
@@ -162,6 +166,23 @@ def runtime(reader, core, cfg, owner, capsule):
     return coordinator, modules['semantic_provider_coordinated_supervisor'].supervise, check
 
 
+def compare(cycle, unit, root):
+    pid = unit.get('MainPID', '')
+    checks = {
+        'secondCycleActive': cycle.get('status') == 'LEASE_ACTIVE',
+        'secondCycleCount': type(cycle.get('refreshCount')) is int and cycle['refreshCount'] >= 2,
+        'serviceActive': unit.get('ActiveState') == 'active',
+        'serviceRunning': unit.get('SubState') == 'running',
+        'automaticRestartDisabled': unit.get('Restart') == 'no',
+        'sameWorkerPid': isinstance(pid, str) and pid.isdecimal() and int(pid) == cycle.get('workerPid'),
+        'exactWorkerProgram': str(root / 'activate.py') in unit.get('ExecStart', '')}
+    if not all(checks.values()):
+        error = ValueError('EXACT_ACTIVE_LEASE_WORKER_UNPROVEN')
+        error.readback_checks = checks
+        raise error
+    return checks
+
+
 def properties():
     raw = command(['/usr/bin/systemctl', 'show', UNIT, '--property=LoadState,ActiveState,SubState,MainPID,Restart,ExecStart'])
     return dict(line.split('=', 1) for line in raw.decode().splitlines() if '=' in line)
@@ -211,6 +232,26 @@ def apply(reference):
     PHASE = 'RECHECK_REVIEWED_RUNNING_COHORT_AND_QUIESCENT_TWO_FLOW_OWNER'
     report = reader.collect()
     validate_report(report)
+    # Consume a new decision; preserve the preceding claim and every receipt.
+    prior_claim_raw = reader.private(PRIOR_CLAIM)
+    prior_claim = reader.parse(prior_claim_raw)
+    require(prior_claim == {'schema': 'ouf.provider-r8-lease-activation-claim.v1',
+            'approvalRef': 'OUF_R8_TWO_FLOW_LEASE_APPROVED_20261009T222121_CEST',
+            'directory': str(PRIOR_ROOT), 'startAuthorized': False}, 'EXACT_CONSUMED_PRIOR_CLAIM_REQUIRED')
+    prior_auth_raw = reader.private(PRIOR_ROOT/'authorization.json', PRIOR_AUTH_HASH)
+    prior_auth = reader.parse(prior_auth_raw)
+    for name, expected in prior_auth['programHashes'].items():
+        reader.private(PRIOR_ROOT/name, expected)
+    prior_cycle_raw = reader.private(PRIOR_ROOT/'cycle-2.json', PRIOR_CYCLE_TWO_HASH)
+    prior_cycle = reader.parse(prior_cycle_raw)
+    require(prior_cycle['status'] == 'LEASE_ACTIVE' and prior_cycle['refreshCount'] == 2
+            and prior_cycle['workerPid'] == 1847190 and prior_cycle['flowAddressCounts'] == [1, 1],
+            'RETAINED_SUCCESSFUL_SECOND_CYCLE_REQUIRED')
+    prior_denial = reader.parse(reader.private(PRIOR_ROOT/'operator-denial.json',
+        'acb17332b5c5980f24db26e6053491e0c30dffe4cee96a379ca14d56982a6366'))
+    require(prior_denial['cleanup'] == 'EXACT_WORKER_STOPPED_AND_LEASES_REVOKED'
+            and prior_denial['reason'] == 'EXACT_ACTIVE_LEASE_WORKER_UNPROVEN',
+            'RETAINED_CLEANUP_AND_FINAL_DENIAL_REQUIRED')
     cfg, owner = configuration(reader)
     require(owner['dns'] == {'resolvers': ['46.38.225.230', '46.38.252.230'], 'resolverPort': 53,
             'timeoutSeconds': 2, 'maxLeaseSeconds': 30, 'applyBudgetSeconds': 1}, 'EXISTING_BOUNDED_DNS_PROFILE_REQUIRED')
@@ -249,6 +290,9 @@ def apply(reference):
         'providerRequestIssuedByWorker': False, 'notReleaseAcceptance': True}
     CORE.create(ROOT/'authorization.json', capsule)
     CORE.create(ROOT/'before.json', report)
+    CORE.create(ROOT/'prior-consumed-lease-evidence.json', {'directory': str(PRIOR_ROOT),
+        'authorizationHash': PRIOR_AUTH_HASH, 'secondCycleHash': PRIOR_CYCLE_TWO_HASH,
+        'claimHash': sha(prior_claim_raw), 'oldClaimPreserved': True})
     launched = False
     try:
         PHASE = 'START_EXACT_TRANSIENT_LEASE_WORKER_WITHOUT_DOCKER_LIFECYCLE'
@@ -267,12 +311,21 @@ def apply(reference):
                 break
             time.sleep(.25)
         require((ROOT/'cycle-2.json').exists(), 'SECOND_FRESH_LEASE_CYCLE_NOT_OBSERVED')
-        current = reader.parse(reader.private(ROOT/'worker-status.json'))
+        cycle_raw = reader.private(ROOT/'cycle-2.json')
+        current = reader.parse(cycle_raw)
         unit = properties()
-        require(current['status'] == 'LEASE_ACTIVE' and current['refreshCount'] >= 2
-                and unit['ActiveState'] == 'active' and unit['SubState'] == 'running'
-                and unit['Restart'] == 'no' and int(unit['MainPID']) == current['workerPid']
-                and str(ROOT/'activate.py') in unit['ExecStart'], 'EXACT_ACTIVE_LEASE_WORKER_UNPROVEN')
+        readback = {'cycleReceiptSha256': sha(cycle_raw),
+                    'cycleReceipt': {k: current[k] for k in ('status', 'refreshCount', 'workerPid', 'flowAddressCounts')},
+                    'service': {k: unit.get(k) for k in ('LoadState', 'ActiveState', 'SubState', 'MainPID', 'Restart')},
+                    'execStartMatchesSnapshot': str(ROOT/'activate.py') in unit.get('ExecStart', '')}
+        try:
+            readback['checks'] = compare(current, unit, ROOT)
+        except Exception as error:
+            readback['checks'] = getattr(error, 'readback_checks', {})
+            CORE.create(ROOT/'final-worker-readback.json', readback)
+            error.native_diagnosis = {'finalWorkerReadback': readback}
+            raise
+        CORE.create(ROOT/'final-worker-readback.json', readback)
         check()
         with coord.hold_lock():
             value = coord.journal()

@@ -86,6 +86,23 @@ class TargetBoundaries(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'NATIVE_SERVICE_COMMAND_FAILED'):
                 target.require_unit_absent(target.UNIT)
 
+    def test_immutable_second_cycle_and_each_live_worker_predicate(self):
+        root = Path('/etc/ouf/deploy-snapshots/semantic-r8-lease-review')
+        cycle = {'status': 'LEASE_ACTIVE', 'refreshCount': 2, 'workerPid': 1847190}
+        unit = {'ActiveState': 'active', 'SubState': 'running', 'MainPID': '1847190',
+                'Restart': 'no', 'ExecStart': str(root/'activate.py')}
+        self.assertTrue(all(target.compare(cycle, unit, root).values()))
+        for field, value in (('ActiveState', 'inactive'), ('SubState', 'dead'),
+                             ('MainPID', '0'), ('Restart', 'always'), ('ExecStart', 'foreign')):
+            changed = {**unit, field: value}
+            with self.assertRaises(ValueError) as denied:
+                target.compare(cycle, changed, root)
+            self.assertIn(False, denied.exception.readback_checks.values())
+        with self.assertRaises(ValueError):
+            target.compare({**cycle, 'refreshCount': 1}, unit, root)
+        self.assertNotEqual(target.CLAIM, target.PRIOR_CLAIM)
+        self.assertTrue(target.APPROVAL_REF.startswith('PENDING'))
+
     def test_service_does_not_rearm_or_enable(self):
         args = core.service_command(Path('/etc/ouf/deploy-snapshots/reviewed'), 'a' * 64,
                                     unit=target.UNIT)
