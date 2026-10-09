@@ -1,0 +1,47 @@
+{
+  "schema": "ouf.provider-r8-final-lease-denial-target.v1",
+  "source": "OPERATOR_REPORTED",
+  "reportedAt": "2026-10-09T22:35:19+02:00",
+  "receipt": {
+    "cleanup": "EXACT_WORKER_STOPPED_AND_LEASES_REVOKED",
+    "containerLifecycleOperations": 0,
+    "doNotRerunApply": true,
+    "errorType": "ValueError",
+    "evidenceDirectory": "/etc/ouf/deploy-snapshots/semantic-r8-lease-ao5xt5og",
+    "exceptionChain": [
+      {
+        "errorType": "ValueError",
+        "exceptionPoints": [
+          {
+            "file": "activate_r8_lease_systemctl.py",
+            "function": "main",
+            "line": 317
+          },
+          {
+            "file": "activate_r8_lease_systemctl.py",
+            "function": "apply",
+            "line": 272
+          },
+          {
+            "file": "activate_r8_lease_systemctl.py",
+            "function": "require",
+            "line": 45
+          }
+        ],
+        "reason": "EXACT_ACTIVE_LEASE_WORKER_UNPROVEN"
+      }
+    ],
+    "notReleaseAcceptance": true,
+    "phase": "VERIFY_TWO_FRESH_DNS_CYCLES_AND_CURRENT_NATIVE_MEMBERSHIP",
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "reason": "EXACT_ACTIVE_LEASE_WORKER_UNPROVEN",
+    "schema": "ouf.provider-r8-lease-activation.v1",
+    "signaturesIssued": 0,
+    "status": "LEASE_ACTIVATION_DENIED"
+  },
+  "bootstrapExit": 1,
+  "claimConsumed": true,
+  "historicalComparisonValuesNotRetained": true,
+  "raceConfirmedOnTarget": false
+}

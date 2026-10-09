@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.provider-r8-final-readback-race-validation.v1",
+  "sourceCommit": "0449c198a4c5141f2615203a4f5a42b86d49e24f",
+  "runId": 37988200628,
+  "jobId": 114015389705,
+  "conclusion": "success",
+  "markers": [
+    "2026-10-09T20:37:31.7545240Z R8_UNIT_INVENTORY=ABSENCE_AND_EXISTING_SERVICE_VERIFIED REAL_SYSTEMCTL=true",
+    "2026-10-09T20:37:46.9767767Z R8_WORKER_READBACK=OLD_FALSE_DENIAL_REPRODUCED IMMUTABLE_CYCLE_WITH_LIVE_SYSTEMD_PASS=true",
+    "2026-10-09T20:37:49.0434577Z R8_LEASE_NATIVE=ACTIVE_AND_RENEWED REAL_SYSTEMD=true REAL_DNS=true REAL_NFT=true",
+    "2026-10-09T20:38:05.4667238Z R8_LEASE_NATIVE=DNS_FAILURE_REVOKED ORIGINAL_CAUSE_RETAINED=true REPLAY_DENIED=true TARGET_ACTIONS=0"
+  ],
+  "deterministicCiOnlyStatusDelaySeconds": 2,
+  "originalAlgorithmActuallyExecuted": true,
+  "proposedImmutableCycleReadbackComparedAgainstActualSystemd": true,
+  "notYetIntegratedIntoTargetActivation": true,
+  "authorityGranted": false,
+  "targetActions": 0,
+  "targetCauseNotYetConfirmed": true,
+  "notReleaseAcceptance": true,
+  "readerFixturePassed": true
+}
