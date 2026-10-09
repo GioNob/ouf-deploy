@@ -5,6 +5,8 @@ on:
     paths:
       - 'tools/semantic_transaction_profiles/**'
       - 'tools/semantic_frame_compiler/compile_creation_frame_policy.py'
+      - 'tools/semantic_target_review/execute_post_terminal_admission_recovery.py'
+      - 'tools/semantic_target_review/test_post_terminal_admission_recovery.py'
       - '.github/workflows/provider-v2-transaction-profiles.yml'
 permissions:
   contents: read
@@ -26,6 +28,8 @@ jobs:
           sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-transaction-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_authenticated_transaction.py
       - name: Broker lock contention, bounded wait and private denial evidence
         run: sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-transaction-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_broker_source_repair.py
+      - name: Fresh post-terminal admission scope and real signatures
+        run: sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-transaction-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_post_terminal_admission_recovery.py
       - name: Atomic runtime switch filesystem and guard lock failure handling
         run: sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-transaction-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_guarded_runtime_switch.py
       - name: Borrowed native guard descriptor custody
