@@ -1,0 +1,25 @@
+{
+  "schema": "ouf.semantic-provider-r5-source-recovery-ci.v1",
+  "sourceCommit": "600415529f5761f4c8c9bcf9c9396e39f0ae7896",
+  "runId": 37920751753,
+  "jobs": [
+    {
+      "id": 113787810922,
+      "name": "connected-locked-switch",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "proof": [
+    "2026-10-09T10:57:25.6913936Z test_exact_partial_denial_required (test_broker_source_recovery.BrokerRecoveryTests.test_exact_partial_denial_required) ... ok",
+    "2026-10-09T10:57:25.6943568Z test_only_three_observed_advanced_journals_override_original_hashes (test_broker_source_recovery.BrokerRecoveryTests.test_only_three_observed_advanced_journals_override_original_hashes) ... ok",
+    "2026-10-09T10:57:25.6963618Z test_pending_approval_denies_before_any_file_access (test_broker_source_recovery.BrokerRecoveryTests.test_pending_approval_denies_before_any_file_access) ... ok",
+    "2026-10-09T10:57:26.2878844Z test_revised_closure_fresh_eight_signatures_and_publication (test_broker_source_recovery.BrokerRecoveryTests.test_revised_closure_fresh_eight_signatures_and_publication) ... ok",
+    "2026-10-09T10:57:26.2880923Z Ran 4 tests in 0.598s"
+  ],
+  "localRecoveryTestsPassed": 4,
+  "sourceRepairNativeProofRunId": 37907402224,
+  "newSourceClosureHash": "702403e9cd99ddc4ddeed7166f3f408c55657fc690e475e0b35bb5d2c2242bb3",
+  "targetExecutionPerformed": false,
+  "targetAuthority": false
+}
