@@ -1,4 +1,4 @@
-> Current checkpoint: exact runtime alias compatibility defect confirmed by the target's retained options and pure gate predicates. Separate alias recovery is inert pending scoped approval and native CI; old consumed claim/evidence are preserved. Human deadline remains 2026-10-09 17:20:18 Europe/Rome. No provider start or release acceptance. See [recovery review](releases/PROVIDER_TERMINAL_ALIAS_RECOVERY_REVIEW_20261009.md).
+> Current checkpoint: exact runtime alias compatibility defect confirmed by the target's retained options and pure gate predicates. Separate alias recovery is inert pending scoped approval; native CI 37940907012 and ten local tests passed; old consumed claim/evidence are preserved. Human deadline remains 2026-10-09 17:20:18 Europe/Rome. No provider start or release acceptance. See [recovery review](releases/PROVIDER_TERMINAL_ALIAS_RECOVERY_REVIEW_20261009.md).
 
 # Current checkpoint — old runtime error masks terminal gate stderr; read shim argument roots next
 
