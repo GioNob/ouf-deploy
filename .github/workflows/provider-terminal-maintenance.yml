@@ -9,6 +9,8 @@ on:
       - 'tools/semantic_target_review/terminal_task_delete_alias_gate.py'
       - 'tools/semantic_target_review/execute_terminal_alias_recovery.py'
       - 'tools/semantic_target_review/test_terminal_alias_recovery_executor.py'
+      - 'tools/semantic_target_review/read_post_terminal_admission_preflight.py'
+      - 'tools/semantic_target_review/test_post_terminal_admission_preflight.py'
       - '.github/workflows/provider-terminal-maintenance.yml'
 permissions:
   contents: read
@@ -28,6 +30,8 @@ jobs:
         run: |
           python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_terminal_task_delete_alias_gate.py
           python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_terminal_alias_recovery_executor.py
+      - name: Read-only post-terminal admission prerequisites
+        run: python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_post_terminal_admission_preflight.py
       - name: Reviewed disposable Engine and static offline rootfs
         run: |
           curl --fail --location --retry 2 --connect-timeout 15 --max-time 120 https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz --output engine.tgz
