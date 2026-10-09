@@ -1,0 +1,26 @@
+name: Provider locked switch regression
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/semantic_transaction_profiles/authenticated_runtime_switch.py'
+      - 'tools/semantic_target_review/test_execute_approved_provider_transaction.py'
+      - 'tools/semantic_target_review/execute_post_signature_recovery.py'
+      - 'tools/semantic_target_review/test_post_signature_recovery.py'
+      - '.github/workflows/provider-v2-locked-switch-regression.yml'
+permissions:
+  contents: read
+jobs:
+  connected-locked-switch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Actual signature publication and five locked checkpoints
+        run: |
+          sudo install -d -m 0700 /root/ouf-locked-switch-ci
+          sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-locked-switch-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_execute_approved_provider_transaction.py
+      - name: Explicit recovery gates and imported sealed consumer wiring
+        run: /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_post_signature_recovery.py

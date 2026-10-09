@@ -23,6 +23,13 @@ class ApprovedBridgeTests(unittest.TestCase):
         fixture=AuthenticatedTransactionTest();fixture.setUp()
         try:
             records={r:{n:b for n,b in v.items() if n in INPUTS} for r,v in fixture.records.items()}
+            # Synthetic NIC scope only; the real native observer has separate
+            # tests. Keep actual signatures, budget, publication and CAS here.
+            for values in records.values():
+                template=json.loads(values['preparerTemplate'])
+                template['candidate']['networkBindings']=[{'leaseGuard':{
+                    'configurationHash':'a'*64,'tableName':'fixture'}} for _ in range(2)]
+                values['preparerTemplate']=encoded(template)
             scope=copy.deepcopy(bridge.SCOPE)
             for role,value in scope['roleProposals'].items():
                 value.update(TARGETS[role]);value['roleSigningScopes']=SCOPES
@@ -55,6 +62,37 @@ class ApprovedBridgeTests(unittest.TestCase):
             result=publish_plan(output,plan,fixture.sources,fixture.observer)
             self.assertFalse(result['runtimeConfigurationChanged'])
             self.assertTrue((output/'installation-receipt.json').is_file())
+            from authenticated_runtime_switch import make_locked_switch_verifier
+            from guarded_runtime_switch import custody,switch_existing_wrapper
+            wrapper=fixture.root/'wrapper';wrapper.write_bytes(b'old wrapper');wrapper.chmod(0o755)
+            lock=fixture.root/'guard.lock';fixture.private(lock,b'')
+            locked=make_locked_switch_verifier(output,records,fixture.authority,fixture.sources,
+                fixture.observer,fixture.python,crypto,fixture.adapter,{},'a'*64,{})
+            with patch('authenticated_runtime_switch.observe_locked',return_value={
+                'kernelConfigurationHash':'a'*64,'kernelTableName':'fixture'}) as native:
+                result=switch_existing_wrapper(wrapper,digest(b'old wrapper'),b'new wrapper',output,
+                    lock,custody(lock,0o600)[1],locked)
+                self.assertEqual(result['status'],'WRAPPER_SWITCHED')
+                self.assertEqual(native.call_count,3)
+                self.assertEqual(wrapper.read_bytes(),b'new wrapper')
+                import os,fcntl
+                fd=os.open(lock,os.O_RDWR)
+                try:
+                    fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+                    locked(fd,'BEFORE_COHORT_CLAIM')
+                    locked(fd,'BEFORE_COHORT_START')
+                    from tools.semantic_provider_preexec import PreexecDenied
+                    with patch('time.time',return_value=fixture.now+241):
+                        with self.assertRaisesRegex(PreexecDenied,'PROTOCOL_AUTHORITY_EXPIRED_OR_NOT_YET_VALID'):
+                            locked(fd,'BEFORE_COHORT_START')
+                finally:os.close(fd)
+                self.assertEqual(native.call_count,6)
+                profile=Path(next(iter(plan['files'])))
+                profile.write_bytes(b'tampered private profile');profile.chmod(0o600)
+                from authenticate_provider_transaction import TransactionDenied
+                with self.assertRaisesRegex(TransactionDenied,'INSTALLED_PROFILE_OR_JOURNAL_DRIFT'):
+                    locked(-1,'BEFORE_COHORT_START')
+                self.assertEqual(native.call_count,6)
         finally:fixture.doCleanups()
 
     def test_recovery_rejects_partial_execution_and_foreign_context(self):

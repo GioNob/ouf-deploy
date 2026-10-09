@@ -30,7 +30,9 @@ def make_locked_switch_verifier(root, records, authority, sources, observer_raw,
         stage='AUTHENTICATE_LOCKED_RUNTIME_SWITCH'
         require(phase in ('BEFORE_CLAIM','BEFORE_RENAME','AFTER_RENAME','BEFORE_COHORT_CLAIM','BEFORE_COHORT_START'),
                 stage,'EXACT_SWITCH_CHECKPOINT_REQUIRED')
-        budget=VerificationBudget(40)
+        # The sealed authentication backend accepts at most 18 seconds.
+        # Keep its bound; enlarging the caller cannot extend signed authority.
+        budget=VerificationBudget(18)
         verifier=DetachedAuthenticator(crypto['policyBinding'],crypto['signatureDirectory'],
                                         crypto['opensslBinding'],budget=budget)
         plan=build_install_plan(str(root),str(root/'source'),records,authority,sources,

@@ -1,5 +1,13 @@
 # OUF: file → semantica → Onboarding → ingestion → UDP
 
+## Current continuation — 2026-10-09: native readback passes; budget defect reproduced and repaired
+
+Operator-reported READ_ONLY_CHECKS_PASS: eight issued signatures, 81 published file hashes matched, no runtime-switch claim/receipt/denial, native current empty guard passes and candidate state hashes retained. Zero key reads/configuration writes/lifecycle applies to this diagnosis only. The prior signed attempt counters remain unknown. Receipt: evidence/provider-v2-switch-readback-budget-diagnosis-20261009.json.
+
+Deterministic defect in sealed caller: VerificationBudget(40) violates the sealed authentication maximum18 and fails BEFORE_CLAIM, masked by old GUARDED_RUNTIME_SWITCH_UNPROVEN. Connected regression fails with the old caller and passes with18. No historical private stack is claimed acquired. Repository fix does not change installed target utilities. Local9 connected bridge tests +6 recovery gates +10 CAS tests pass; hosted CI pending.
+
+Prepared exact R3 recovery: releases/PROVIDER_V2_POST_SIGNATURE_RECOVERY_REVIEW_20261009.md and tools/semantic_target_review/execute_post_signature_recovery.py. This preserves all original claims/eight signatures/81 files, reuses sixteen accepted bindings and unchanged runtime/observer closure, observes native guard/candidate generation before keys, claims recovery once, creates new context/two240s root mandates/eight signatures/STAGED snapshot and invokes existing controlled two-CID admission. Only two pinned orchestration repairs run in memory; the cohort's imported factory is explicitly rebound. Helper blocks before file access on PENDING_HUMAN_POST_SIGNATURE_RECOVERY_APPROVAL. PartialFailurePolicy requires specific human post-signature recovery approval; no automatic retry. No target command is ready until its real witness/ref/time is bound. Old approvals of images/inputs remain valid; old240s signatures cannot be replayed. No VPS operation performed in cloud. Earlier launch-ready/read-only-next-action paragraphs below are historical and superseded.
+
 ## Latest target result — 2026-10-09 09:00:12 Rome: BLOCKED at runtime switch
 
 The operator ran the accepted recovery launch: six signatures verified, sourceff13uh3n reached VERIFY_RUNTIME_SWITCH, returned GUARDED_RUNTIME_SWITCH_UNPROVEN. Reported renameAttempted=false/wrapperReplaced=false/switchOutcome=UNCHANGED; key/lifecycle counts UNKNOWN (null), not zero. Context /etc/ouf/deploy-snapshots/semantic-provider-v2-approved-context-kanx36_x and claims remain. Do not repeat any launch/signing/switch. See evidence/provider-v2-runtime-switch-target-denial-20261009.json and releases/PROVIDER_V2_RUNTIME_SWITCH_DIAGNOSIS_20261009.md.
