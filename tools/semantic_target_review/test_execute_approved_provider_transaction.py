@@ -10,11 +10,58 @@ from unittest.mock import patch
 import execute_approved_provider_transaction as bridge
 
 class ApprovedBridgeTests(unittest.TestCase):
+    def test_cold_pair_preflight_then_eight_real_signatures_and_publication(self):
+        # One connected cold chain with disposable CI keys; no target/Docker.
+        profiles=Path(__file__).resolve().parent.parent/'semantic_transaction_profiles'
+        sys.path.insert(0,str(profiles))
+        from test_authenticated_transaction import AuthenticatedTransactionTest
+        from issue_provider_transaction_authority import issue_role_authority,INPUTS,SCOPES
+        from authenticate_provider_transaction import TARGETS,encoded,digest,build_install_plan
+        from tools.semantic_provider_deployment_authentication import DetachedAuthenticator
+        from publish_provider_transaction import publish_plan
+        import provider_transaction_intake as intake
+        fixture=AuthenticatedTransactionTest();fixture.setUp()
+        try:
+            records={r:{n:b for n,b in v.items() if n in INPUTS} for r,v in fixture.records.items()}
+            scope=copy.deepcopy(bridge.SCOPE)
+            for role,value in scope['roleProposals'].items():
+                value.update(TARGETS[role]);value['roleSigningScopes']=SCOPES
+                value['inputHashes']={n:digest(b) for n,b in records[role].items()}
+                value['transactionId']=json.loads(records[role]['preparerTemplate'])['candidate']['transactionId']
+                value['sourceClosureHash']=digest(encoded({**{n:digest(b) for n,b in fixture.sources.items()},'frame-observer.py':digest(fixture.observer)}))
+            with patch.object(bridge,'SCOPE',scope),patch.object(bridge,'APPROVED_AT',fixture.now-1),patch.object(bridge,'FRESH_UNTIL',fixture.now+300):
+                mandates=bridge.build_mandates(scope,{r:v['inputHashes'] for r,v in scope['roleProposals'].items()},fixture.now,bridge.APPROVAL_REF)
+            bindings={}
+            for role,value in mandates.items():
+                path=fixture.root/(role+'-cold-mandate.json');fixture.private(path,encoded(value));bindings[role]=fixture.bind(path)
+            signatures=fixture.root/'issued-signatures'
+            cfg={'opensslBinding':fixture.crypto['opensslBinding'],'mandatesByRole':bindings}
+            with patch.object(intake,'POLICY',fixture.crypto['policyBinding']):
+                intake.preflight_root_mandates(fixture.root,cfg,records,fixture.authority,fixture.sources,fixture.observer,fixture.clock)
+            self.assertFalse(signatures.exists())
+            signatures.mkdir(mode=0o700)
+            verifier=DetachedAuthenticator(fixture.crypto['policyBinding'],signatures,fixture.crypto['opensslBinding'],clock=fixture.clock)
+            for role in records:
+                directory=fixture.root/('issued-'+role);directory.mkdir(mode=0o700)
+                result=issue_role_authority(role,bindings[role],bindings[role]['sha256'],records[role],fixture.authority,
+                    fixture.sources,fixture.observer,verifier,directory,fixture.clock)
+                records[role].update({n:Path(v['path']).read_bytes() for n,v in result['records'].items()})
+                self.assertEqual(result['signaturesIssued'],4)
+            self.assertEqual(len(list(signatures.iterdir())),8)
+            crypto={**fixture.crypto,'signatureDirectory':str(signatures)}
+            output=fixture.root/'cold-published'
+            plan=build_install_plan(str(output),str(output/'source'),records,fixture.authority,fixture.sources,
+                fixture.observer,fixture.python,crypto,verifier,fixture.adapter,fixture.clock)
+            result=publish_plan(output,plan,fixture.sources,fixture.observer)
+            self.assertFalse(result['runtimeConfigurationChanged'])
+            self.assertTrue((output/'installation-receipt.json').is_file())
+        finally:fixture.doCleanups()
+
     def test_recovery_rejects_partial_execution_and_foreign_context(self):
         denial={'stage':'PREFLIGHT_BOTH_EXPLICIT_ROOT_MANDATES','reason':'PRIVATE_TARGET_INTAKE_UNPROVEN',
             'privateKeysRead':0,'containerLifecycleOperations':0,'targetRuntimeChanged':False}
         claim={'schema':'ouf.semantic-provider-operator-context-claim.v1','state':'CONTEXT_RESERVED',
-            'contextDirectory':str(bridge.FAILED_CONTEXT),'approvalRef':bridge.APPROVAL_REF}
+            'contextDirectory':str(bridge.FAILED_CONTEXT),'approvalRef':bridge.FAILED_APPROVAL_REF}
         outer={**denial,'phase':'INVOKE_EXISTING_SEALED_APPROVED_TRANSACTION',
             'contextDirectory':str(bridge.FAILED_CONTEXT)}
         present={n:False for n in ('execution-claim.json','issued-signatures','role-authority','intake-claim.json','execution-receipt.json')}
