@@ -1,0 +1,24 @@
+{
+  "schema": "ouf.provider-r8-approved-readback-recovery-delivery-validation.v1",
+  "sourceCommit": "e65f4a1ee6cdb4f15e0180211f8874781562f117",
+  "deliveryCommit": "30e6a944d00fb0aa3aeab368c5853d32b8f7b19e",
+  "launcherSha256": "09dc885154c60d258c2994b1663b5154cdd39f2e3f0ff7a012ba7a2d711dfde0",
+  "entrypointSha256": "58ec8285357ba8fdceb35dbe1af92138a1aff3f91b742c1ae3f425c073e56528",
+  "runId": 37990644938,
+  "jobId": 114023623453,
+  "conclusion": "success",
+  "nativeMarkers": [
+    "2026-10-09T20:59:52.4358027Z R8_UNIT_INVENTORY=ABSENCE_AND_EXISTING_SERVICE_VERIFIED REAL_SYSTEMCTL=true",
+    "2026-10-09T21:00:08.7651633Z R8_RECEIPT_PUBLICATION=PARTIAL_FILE_WAITED ACTUAL_ROOT_PRIVATE_READER=true",
+    "2026-10-09T21:00:08.7720812Z R8_WORKER_READBACK=OLD_FALSE_DENIAL_REPRODUCED IMMUTABLE_CYCLE_WITH_LIVE_SYSTEMD_PASS=true",
+    "2026-10-09T21:00:10.7869470Z R8_LEASE_NATIVE=ACTIVE_AND_RENEWED REAL_SYSTEMD=true REAL_DNS=true REAL_NFT=true",
+    "2026-10-09T21:00:27.4658063Z R8_LEASE_NATIVE=DNS_FAILURE_REVOKED ORIGINAL_CAUSE_RETAINED=true REPLAY_DENIED=true TARGET_ACTIONS=0"
+  ],
+  "remoteBytesMatched": true,
+  "authorityOnlyThreeConstantsChanged": true,
+  "coreAndCompilerUnchanged": true,
+  "scope": "CI_AND_DELIVERY_NOT_VPS_OBSERVATION",
+  "targetActions": 0,
+  "firstInvocationDeadline": "2026-10-10T00:58:47+02:00",
+  "notReleaseAcceptance": true
+}
