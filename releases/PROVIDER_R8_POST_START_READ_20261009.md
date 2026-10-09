@@ -19,6 +19,8 @@ Verifica locale: cinque casi sull'intero collector e sui confini nativi, con JSO
 
 SHA256 lettore: `ab61835ef55396ddacf4513acc0f21adbaab1b50ac32ad2fdc4c80a23d1835c8`.
 
-Il comando di consegna viene pubblicato dopo il commit immutabile del lettore. Usa il gh già presente fuori dal PATH, controlla SHA256 prima del sudo e ricontrolla gli stessi byte in memoria sotto Python isolato. Nessuna nuova approvazione è richiesta per questa lettura già autorizzata; è necessaria soltanto l'esecuzione operatore a causa dei permessi effettivi.
+Comando pronto: [provider-r8-post-start-read-20261009.sh](provider-r8-post-start-read-20261009.sh), SHA256 `ba1394dc23b46ccf70d4fcd3b9da1aa61de3110ac604e81b5c69c5bf15cee215`. Pinna il lettore al commit `a5d849de41c11d1218df393d8c8685f1f63e236d`, già riletto da GitHub con corrispondenza dei byte. Usa il gh già presente fuori dal PATH, controlla SHA256 prima del sudo e ricontrolla gli stessi byte in memoria sotto Python isolato. Nessuna nuova approvazione è richiesta per questa lettura già autorizzata; è necessaria soltanto l'esecuzione operatore a causa dei permessi effettivi.
 
 Dopo il risultato: definire l'attivazione concreta della lease con owner esistente e ambito corrente, poi rollout Semantic/MCP e grant discovery. Non ricaricare Teatri, ripetere R8 o ricreare artefatti firmati già conservati. L'evidenza dipendenze Semantic/MCP va aggiornata prima del cutover perché quella precedente è scaduta.
+
+Consegna verificata anche con gh assente dal PATH: il percorso documentato viene riutilizzato. Download fallito o SHA errato non raggiungono sudo; il codice di errore della lettura root resta visibile attraverso tee. Tre test di consegna (quattro scenari), oltre ai cinque del collector. Non è una nuova prova del VPS.
