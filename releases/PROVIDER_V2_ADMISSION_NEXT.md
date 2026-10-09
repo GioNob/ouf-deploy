@@ -1,3 +1,13 @@
+# Current checkpoint — terminal maintenance window expired; target result unknown
+
+The approved one-hour window ended **9 October 2026 at 15:04:46 Europe/Rome (13:04:46Z)**. The current executor rejects at and after that instant with `LIVE_HUMAN_MAINTENANCE_APPROVAL_REQUIRED`, before loading target helpers or reserving a claim. Six local executor/gate tests and explicit time-boundary/current-time denial checks passed during context reconstruction. Post-approval native CI [37927796726](https://github.com/GioNob/ouf-deploy/actions/runs/37927796726) is SUCCESS; CI is not target acceptance.
+
+No target maintenance receipt exists in the examined repository state; this session has not independently read or changed the VPS. Do not infer that an operator has not run it elsewhere. **Do not run the expired launcher, extend the deadline silently, reset claims, replay R5 or start the provider.** Preserve the recorded approval and all image/input/rootfs acceptances. If already executed, retain and review the complete operator result. Otherwise renew only the temporal window for the same exact two-task, delete-only maintenance; bind a real new human message/timestamp, pin/hash the launcher, then execute once via the existing operator route with all fresh target checks.
+
+See [the concrete continuation review](PROVIDER_TERMINAL_MAINTENANCE_CONTINUATION_20261009.md) for exact CIDs, preservation/restoration requirements, access limits and the Teatri/Semantic/MCP roadmap. No executor, launcher, authority binding or target configuration was changed by this documentation update.
+
+Earlier checkpoints below are historical and superseded.
+
 # Current checkpoint — terminal two-task maintenance approved; operator execution pending
 
 Human response `Approvo` at 2026-10-09 14:04:46 Europe/Rome authorizes exactly the reviewed terminal maintenance, with no start. Approval witness/executor commit `1bd1baca89c7e77947180ea5e531713e0afcd5d3`, approvalRef `OUF_TERMINAL_TASK_CLEANUP_HUMAN_APPROVAL_20261009_140446`, epoch1791547486. Only executor approvalRef/time changed from reviewed implementation; three executor tests pass after binding. Executor SHA256 `f94b61f48e85a0bbc669b4cf40b0f2e2cde0e0bca3a4e41ca3620ee510c53830`. Actual code rejects execution after 15:04:46 Europe/Rome (one-hour approved maintenance bound), separately from its 120-second delete-only window.
