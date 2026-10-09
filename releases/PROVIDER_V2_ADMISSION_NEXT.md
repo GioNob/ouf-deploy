@@ -1,3 +1,15 @@
+# Current checkpoint — terminal maintenance consumed and blocked; read-only diagnosis next
+
+Operator output reported **9 October 2026 at 15:24:48 Europe/Rome** is preserved in [the complete denial receipt](../evidence/provider-terminal-maintenance-target-denial-20261009.json). Evidence is user-pasted/operator-reported, not independently acquired. The one request issued was southbound `ctr tasks delete`, which returned nonzero and produced `TERMINAL_TASK_DELETE_UNPROVEN`. Adapter deletion was not reached. **Task absence/removal and the underlying error are not proven.** Historical lifecycle count remains null.
+
+The receipt reports `wrapperRestored:true` and post-maintenance native `providerSetsEmpty:true`, zero Docker start requests/provider calls/private-key reads/signatures. `priorJournalsPreserved:false` means the final preservation check was not reached, not proof of deletion or corruption. Claim consumed, `doNotRerunApply:true`: **do not rerun the maintenance launcher, reset its claim, infer success, or start the provider.** The renewed two-hour window does not authorize replay of a consumed operation.
+
+Next is fixed read-only `tools/semantic_target_review/read_terminal_maintenance_denial.py`, SHA256 `ec6b6dc59e28214af60524c9b6d9769465690a1b2f508f45fe966f881bfd1608`. It validates the exact retained result/claim/window, compares restored wrapper and frozen source/journal hashes, reads the two current containerd tasks and metadata plus runc list, checks the gate's custody requirements without invoking its delete acknowledgement, reads bounded redacted daemon/bundle error evidence, and observes the native guard under its existing lock. It prints no raw logs/private paths/key material, makes no protected writes and invokes no lifecycle operation. Five local tests pass for consumed-claim preservation, unknown counters, partial task absence, safe log redaction, exact gate-reason boundaries and static command/file mutation audit. No replay/recovery change is proposed before this diagnosis.
+
+The executor retained only stderr/stdout fingerprints from ctr; these alone cannot identify the cause. Daemon/bundle logs may be unavailable and that is not evidence of no error. Native CI success remains distinct from this target denial. L0 Matrix v1.7 and PET Authorization AUTH-05/06/07/08/09/12 were consulted; prior input/image/rootfs acceptances and product roadmap remain preserved.
+
+Earlier checkpoints below are historical and superseded.
+
 # Current checkpoint — two-hour terminal maintenance renewal approved; operator result pending
 
 Human message `Autorizzo, ma fai due ore conoscendo come lavori`, received **9 October 2026 at 15:20:18 Europe/Rome**, explicitly renews the same exact two-task maintenance for **7200 seconds, until 17:20:18 Europe/Rome (15:20:18Z)**. New approvalRef `OUF_TERMINAL_TASK_CLEANUP_HUMAN_APPROVAL_20261009_152018`; witness [evidence/provider-terminal-maintenance-human-renewal-20261009.json](../evidence/provider-terminal-maintenance-human-renewal-20261009.json). The old approval and all prior input/image/rootfs acceptances remain preserved.
