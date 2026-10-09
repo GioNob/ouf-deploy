@@ -1,3 +1,15 @@
+# Current checkpoint — R8 preserved; fresh application scans blocked; remediation in CI
+
+The independent VPS read [37995216597](https://github.com/GioNob/ouf-deploy/actions/runs/37995216597) confirms unchanged R8 PIDs, zero restarts and the retained Semantic bridge peer/ifindex1377. [Receipt](evidence/discovery-rollout-topology-after-r8-20261009.json). The already recorded operator lease activation remains consumed. No apply/start/cleanup/lease replay is permitted.
+
+Fresh scans of the unchanged signed Semantic/MCP SBOMs completed against the9October DB and each report13Unknown Go standard-library advisories, with0Critical/High. The producer signed15subjects but failed its bundle-copy step on root-owned public output. Six actual signatures were subsequently verified and recovered in readback37995713266 without rescanning. [Evidence](evidence/discovery-fresh-dependency-block-and-remediation-20261009.json). The old scan PASS cannot authorize application rollout now.
+
+Concrete remediation is isolated in [Semantic34](https://github.com/GioNob/ouf-semantic-registry/pull/34), removing unused inherited Pebble from the Java image, and [MCP50](https://github.com/GioNob/ouf-mcp-server/pull/50), rebuilding with security-patchedGo1.26.9. New signed-build runs37995955667/37995954188 are in progress, not acceptance. [Current continuation](releases/DISCOVERY_APPLICATION_CONTINUATION_AFTER_R8_20261009.md) records source/artifact custody, migration/peer-binding requirements and the retained Teatri/Cinema product goal. The attached roadmap was read; the full PET package is not available in this conversation, so no new full PET review is claimed.
+
+No VPS lifecycle, provider request, grant or publication occurred. After actual qualification, stage only new signed application archives separately; then complete migration-aware rollout and exact governed Semantic peer binding, preserve existing routes/mounts, and install owner discovery grants. No asset reload, local fallback or national Teatri job.
+
+Earlier checkpoints below are historical and superseded.
+
 # Current checkpoint — R8 two-flow lease active and renewed
 
 The operator reports TWO_FLOW_LEASE_ACTIVE_AND_RENEWED, exit0 for action and bootstrap, at snapshot /etc/ouf/deploy-snapshots/semantic-r8-lease-8wfsv1aa. [Exact receipt](evidence/provider-r8-active-renewed-lease-target-20261009.json). Two fresh DNS/native membership cycles passed; address counts[1,1], refreshCount2, exact transient service ouf-semantic-provider-lease-r8.service. Approved finite flows now permit external traffic. This is operator-reported protected VPS evidence, not independently acquired here.

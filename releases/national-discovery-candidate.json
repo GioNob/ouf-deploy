@@ -40,14 +40,14 @@
   "releaseApplied": false,
   "acceptanceGranted": false,
   "blockingReleaseRequirements": [
-    "migration-aware applicator and tested recovery with database snapshot",
-    "exact built artifact provenance and applicable image acceptance",
-    "installation provider OAuth credentials, TLS and Gateway origin binding",
-    "distinct discovery receipt key bound consistently to Gateway and Semantic",
-    "capability descriptors and explicit HUMAN grants installed by owner",
-    "activate MCP descriptors only after installed provider and route readiness",
-    "privileged operational path for existing root-owned provider guard, trust and deployment custody",
-    "controlled EMPTY_ONLY guard transition with coordinated owner package and target authority/admission acceptance"
+    "qualify and stage new signed Semantic/MCP candidates after fresh scans blocked both retained application archives on Go advisories",
+    "migration-aware Semantic/MCP applicator with current private backup and explicit recovery",
+    "governed replacement or preservation of the exact Semantic host peer binding; no ordinary recreate under retained ifindex1377",
+    "existing private provider credential and separate discovery owner receipt key bound consistently to Semantic/Gateway",
+    "additive discovery routes preserving current Cinema search upstream and authenticated routes",
+    "owner descriptors/current application policy and explicit HUMAN discovery grants",
+    "MCP discovery descriptor activation after actual provider/route readiness",
+    "real CLASS/teatro/it,en request with caller-owned job status and candidates"
   ],
   "acceptance": {
     "request": {
@@ -86,7 +86,7 @@
     }
   },
   "runtimeSelection": "OPERATOR_SELECTED_SUPPORTED_OSS",
-  "candidateStatus": "SIGNED_IMAGES_STAGED_INSTALLATION_BINDINGS_PENDING",
+  "candidateStatus": "APPLICATION_IMAGES_BLOCKED_FRESH_GO_ADVISORIES_REMEDIATION_IN_CI",
   "rejectedPackages": [
     {
       "runId": 37659421180,
@@ -328,5 +328,60 @@
     "payloadParsed": true,
     "liveRestorePerformed": false,
     "refreshRequiredBeforeLaterCutover": true
+  },
+  "historicalBlockingReleaseRequirements": [
+    "migration-aware applicator and tested recovery with database snapshot",
+    "exact built artifact provenance and applicable image acceptance",
+    "installation provider OAuth credentials, TLS and Gateway origin binding",
+    "distinct discovery receipt key bound consistently to Gateway and Semantic",
+    "capability descriptors and explicit HUMAN grants installed by owner",
+    "activate MCP descriptors only after installed provider and route readiness",
+    "privileged operational path for existing root-owned provider guard, trust and deployment custody",
+    "controlled EMPTY_ONLY guard transition with coordinated owner package and target authority/admission acceptance"
+  ],
+  "currentProviderR8": {
+    "startConsumed": true,
+    "leaseActivationConsumed": true,
+    "operatorLeaseReceipt": "evidence/provider-r8-active-renewed-lease-target-20261009.json",
+    "independentRuntimeAndIngressEvidence": "evidence/discovery-rollout-topology-after-r8-20261009.json",
+    "containerIds": {
+      "adapter": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+      "southbound": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916"
+    },
+    "pids": {
+      "adapter": 1826443,
+      "southbound": 1826422
+    },
+    "applicationHealthProven": false,
+    "doNotRerunApply": true,
+    "automaticRestart": false,
+    "bootEnablement": false,
+    "leaseMembershipIndependentlyReadHere": false
+  },
+  "currentApplicationPreparation": {
+    "freshScanRepository": "GioNob/ouf-semantic-registry",
+    "freshScanCommit": "38d19c527fbec82849d6a3cf2628173411f5e2d8",
+    "freshScanRunId": 37995215112,
+    "freshScanStatus": "COMPLETED_THRESHOLD_BLOCKED_13_UNKNOWN_PER_ROLE",
+    "draftPullRequest": 33,
+    "review": "releases/DISCOVERY_APPLICATION_CONTINUATION_AFTER_R8_20261009.md",
+    "rolloutApplied": false,
+    "discoveryJobCreated": false,
+    "freshEvidence": "evidence/discovery-fresh-dependency-block-and-remediation-20261009.json",
+    "remediation": {
+      "semantic": {
+        "pullRequest": 34,
+        "sourceCommit": "403531a9df1cbc877078f8126fd1fc4ff18acea9",
+        "producerCommit": "47d70fac4d69f23a24c552cd5cac4ebaf797c529",
+        "runId": 37995955667
+      },
+      "mcp": {
+        "pullRequest": 50,
+        "sourceCommit": "3ba1d4abcf62af1572997a217a333fa8d231c29f",
+        "producerCommit": "db45385648c7956e045d2d8f0b3f8e3f24270dac",
+        "runId": 37995954188
+      },
+      "targetStagePerformed": false
+    }
   }
 }

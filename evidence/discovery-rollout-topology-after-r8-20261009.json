@@ -1,0 +1,271 @@
+{
+  "schema": "ouf.independent-target-readback.v1",
+  "repository": "GioNob/ouf-deploy",
+  "commit": "5e52fa7678228d6128f1f29631934b8bff730cf7",
+  "runId": 37995216597,
+  "jobId": 114039400538,
+  "observedAt": "2026-10-09T21:44:17.1221841Z",
+  "observationSource": "SELF_HOSTED_VPS_RUNNER_DOCKER_AND_SYSFS_READ",
+  "independentlyAcquiredHere": true,
+  "receipt": {
+    "acceptanceGranted": false,
+    "configurationWrites": 0,
+    "containerLifecycleOperations": 0,
+    "dockerExecCalls": 0,
+    "existingSignedSemanticIngress": {
+      "actualBridge": "br-113b5f0a3c53",
+      "actualHostIfindex": 1377,
+      "changedPeerPortRequiresNewGovernedBinding": true,
+      "exactPortIndexMatches": true,
+      "expectedBridgeMatches": true,
+      "expectedHostIfindex": 1377,
+      "expectedNetworkAddressMatches": true
+    },
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "providerCalls": 0,
+    "roles": {
+      "adapter": {
+        "applicationHealthProven": false,
+        "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+        "health": null,
+        "imageId": "sha256:277dcefd4744c244f4f6f23f8969f3d0acd64369e2ff1bd67594955c4ca7fbbc",
+        "mountBindings": [
+          {
+            "destination": "/run/ouf-semantic-provider/adapter.json",
+            "readOnly": true,
+            "sourcePathSha256": "616aaa8e077b55a12a2589120a44cfc64f8e6cef33c1f6f5035fdaa7bf41fac6",
+            "type": "bind"
+          },
+          {
+            "destination": "/run/ouf-semantic-provider/provider-receipt.key",
+            "readOnly": true,
+            "sourcePathSha256": "cba1b9d9492636df80e4e641ff76645a483d1457c94fe3d3e3b677c776a92bf4",
+            "type": "bind"
+          },
+          {
+            "destination": "/run/ouf-semantic-provider/server.crt",
+            "readOnly": true,
+            "sourcePathSha256": "34303a4094e575192910f46be0fda12442a6296fc897dd3a548c6ae37244c58a",
+            "type": "bind"
+          },
+          {
+            "destination": "/run/ouf-semantic-provider/server.key",
+            "readOnly": true,
+            "sourcePathSha256": "14f831bcbc4883219fe1cb3e4c035aa19f6de034fa896c0d1e9e49b4fc1c7d8b",
+            "type": "bind"
+          },
+          {
+            "destination": "/run/ouf-semantic-provider/trust-bundle.pem",
+            "readOnly": true,
+            "sourcePathSha256": "62fa8d835fc6f75a5f2742b56945d4b6aa859a98e659d1f063fcfa894946fb81",
+            "type": "bind"
+          }
+        ],
+        "networks": {
+          "ouf-semantic-provider-egress": {
+            "ipAddress": "172.22.0.3",
+            "macAddress": "02:42:ac:16:00:03",
+            "networkId": "db8bc9f8feccc3c14f2818a5c843f5c08e5eb2e192530858d88a70ce1cc0a86d"
+          },
+          "ouf-semantic-provider-internal": {
+            "ipAddress": "172.21.0.3",
+            "macAddress": "02:42:ac:15:00:03",
+            "networkId": "2a6652422b45db6f359d94d779ab8625b1ad99b1750bb54582b4b8c4e8aa9307"
+          }
+        },
+        "pid": 1826443,
+        "portBindings": {},
+        "readOnlyRoot": true,
+        "restartCount": 0,
+        "restartPolicy": {
+          "MaximumRetryCount": 0,
+          "Name": "no"
+        },
+        "running": true,
+        "runtime": "ouf-semantic-admitted-v2",
+        "startedAt": "2026-10-09T19:10:21.87693854Z",
+        "status": "running",
+        "user": "10006:10006"
+      },
+      "gateway": {
+        "applicationHealthProven": false,
+        "containerId": "dcbe26bed97dd5c7ac8a131ec2badf77b0291c2ef32907be639bfa09c36596d9",
+        "health": null,
+        "imageId": "sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d",
+        "mountBindings": [
+          {
+            "destination": "/usr/local/apisix/conf/config.yaml",
+            "readOnly": true,
+            "sourcePathSha256": "4db83626f8bdfdab7089b2473d05608e18a1f0ec55462d0eef5fa6fe085e781d",
+            "type": "bind"
+          }
+        ],
+        "networks": {
+          "ouf-backend": {
+            "ipAddress": "172.18.0.10",
+            "macAddress": "66:cb:dc:10:3e:81",
+            "networkId": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3"
+          },
+          "ouf-gateway-control": {
+            "ipAddress": "172.20.0.3",
+            "macAddress": "76:a4:10:f6:eb:a0",
+            "networkId": "1209d67944755d95601b96719c0a5b1860ac2a6f137c10077da7b4e9967637aa"
+          }
+        },
+        "pid": 3759363,
+        "portBindings": {},
+        "readOnlyRoot": false,
+        "restartCount": 0,
+        "restartPolicy": {
+          "MaximumRetryCount": 0,
+          "Name": "unless-stopped"
+        },
+        "running": true,
+        "runtime": "runc",
+        "startedAt": "2026-10-02T10:01:40.539748629Z",
+        "status": "running",
+        "user": "apisix"
+      },
+      "mcp": {
+        "applicationHealthProven": false,
+        "containerId": "ddbfc944d2b7f431cb0189ced278c049b3360a077e9c4b75fa36c58a3a0f127a",
+        "health": null,
+        "imageId": "sha256:99a158f780243b3fa05199bed9db01197be8ae60ae1e75ad5432964509422872",
+        "mountBindings": [
+          {
+            "destination": "/run/secrets/mcp-client-secret",
+            "readOnly": true,
+            "sourcePathSha256": "aedee459fe6808a90fd6c295538cf8180101fdb34f29d0851db3ec4c6418bef5",
+            "type": "bind"
+          },
+          {
+            "destination": "/run/secrets/mcp-fingerprint-key",
+            "readOnly": true,
+            "sourcePathSha256": "cad16f5572fe702e0ce9dd1357e1b5e27c6864a75698dba4378d0c7af4e824ad",
+            "type": "bind"
+          }
+        ],
+        "networks": {
+          "ouf-backend": {
+            "ipAddress": "172.18.0.11",
+            "macAddress": "e2:1d:ec:df:62:d4",
+            "networkId": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3"
+          }
+        },
+        "pid": 3776618,
+        "portBindings": {},
+        "readOnlyRoot": false,
+        "restartCount": 0,
+        "restartPolicy": {
+          "MaximumRetryCount": 0,
+          "Name": "unless-stopped"
+        },
+        "running": true,
+        "runtime": "runc",
+        "startedAt": "2026-10-02T11:03:59.721933008Z",
+        "status": "running",
+        "user": "10005:10005"
+      },
+      "semantic": {
+        "applicationHealthProven": false,
+        "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+        "health": null,
+        "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+        "mountBindings": [
+          {
+            "destination": "/run/ouf-semantic-auth",
+            "readOnly": true,
+            "sourcePathSha256": "79bd55821b907a73b682ce06f261af4e9ffe3a428856074ea86bea66543f6949",
+            "type": "bind"
+          },
+          {
+            "destination": "/run/secrets/semantic-read-owner.key",
+            "readOnly": true,
+            "sourcePathSha256": "a113462727164a339bc8ee745cf2e01fcdcf2cff7d3ecb487ad509ecb893a01d",
+            "type": "bind"
+          }
+        ],
+        "networks": {
+          "ouf-backend": {
+            "ipAddress": "172.18.0.6",
+            "macAddress": "b2:96:a1:e2:c1:8d",
+            "networkId": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3"
+          }
+        },
+        "pid": 3789123,
+        "portBindings": {},
+        "readOnlyRoot": false,
+        "restartCount": 0,
+        "restartPolicy": {
+          "MaximumRetryCount": 0,
+          "Name": "unless-stopped"
+        },
+        "running": true,
+        "runtime": "runc",
+        "startedAt": "2026-10-02T11:45:44.132808507Z",
+        "status": "running",
+        "user": "10001:10001"
+      },
+      "southbound": {
+        "applicationHealthProven": false,
+        "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+        "health": null,
+        "imageId": "sha256:c15541037a08276e36715a3c3798c2d07fe6faabf5547d3885a66cd10575e366",
+        "mountBindings": [
+          {
+            "destination": "/run/ouf-semantic-provider/trust-bundle.pem",
+            "readOnly": true,
+            "sourcePathSha256": "62fa8d835fc6f75a5f2742b56945d4b6aa859a98e659d1f063fcfa894946fb81",
+            "type": "bind"
+          },
+          {
+            "destination": "/usr/local/apisix/conf/apisix.yaml",
+            "readOnly": true,
+            "sourcePathSha256": "1dc70810ecc1d5a01c466d7bf24821c1cceac83d37323657743da4046d5a0b92",
+            "type": "bind"
+          },
+          {
+            "destination": "/usr/local/apisix/conf/config.yaml",
+            "readOnly": true,
+            "sourcePathSha256": "906ed4f90c8409355c63ec91dd49c51e7a397b03d239d7ade1d17655f62e1c6a",
+            "type": "bind"
+          }
+        ],
+        "networks": {
+          "ouf-backend": {
+            "ipAddress": "172.18.0.14",
+            "macAddress": "02:42:ac:12:00:0e",
+            "networkId": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3"
+          },
+          "ouf-semantic-provider-egress": {
+            "ipAddress": "172.22.0.2",
+            "macAddress": "02:42:ac:16:00:02",
+            "networkId": "db8bc9f8feccc3c14f2818a5c843f5c08e5eb2e192530858d88a70ce1cc0a86d"
+          },
+          "ouf-semantic-provider-internal": {
+            "ipAddress": "172.21.0.2",
+            "macAddress": "02:42:ac:15:00:02",
+            "networkId": "2a6652422b45db6f359d94d779ab8625b1ad99b1750bb54582b4b8c4e8aa9307"
+          }
+        },
+        "pid": 1826422,
+        "portBindings": {},
+        "readOnlyRoot": false,
+        "restartCount": 0,
+        "restartPolicy": {
+          "MaximumRetryCount": 0,
+          "Name": "no"
+        },
+        "running": true,
+        "runtime": "ouf-semantic-admitted-v2",
+        "startedAt": "2026-10-09T19:10:21.846292298Z",
+        "status": "running",
+        "user": "636:636"
+      }
+    },
+    "rolloutAuthorized": false,
+    "schema": "ouf.discovery.rollout-topology-read-only.v1",
+    "status": "EXISTING_ROLLOUT_TOPOLOGY_CAPTURED"
+  }
+}
