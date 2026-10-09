@@ -1,6 +1,12 @@
 # Ripresa della manutenzione terminale dopo la scadenza del 9 ottobre 2026
 
-## Stato ricostruito
+## Stato corrente — 16:07:45 Europe/Rome
+
+Le sezioni successive sono il checkpoint storico precedente al rinnovo. Il tentativo approvato alle 15:20:18 ha consumato la propria claim ed è BLOCKED: entrambi i task restano STOPPED, wrapper R5 ripristinato, guardia vuota e tutti gli 83 file verificati conservati. Non rieseguire quel launcher. La diagnosi ha confermato il difetto del confronto lessicale del runtime root; la correzione ammette soltanto l’alias osservato e mantiene il controllo del root canonico.
+
+Il recupero separato è stato esplicitamente autorizzato con “Autorizzo” alle 16:07:45, con scadenza invariata 17:20:18 del 9 ottobre 2026 Europe/Rome. Seguire [revisione, approvazione, CI e launcher correnti](PROVIDER_TERMINAL_ALIAS_RECOVERY_REVIEW_20261009.md). Usa la nuova claim monouso senza alterare quella fallita. Esecuzione operatore ancora da acquisire; nessun avvio provider autorizzato. Conservare le accettazioni precedenti. Il prossimo passo è il nuovo launcher fissato, una sola volta, poi lettura della ricevuta completa.
+
+## Stato ricostruito storico
 
 Ricostruzione dal commit `2e4aac731c6439e0b3399695a69756ea85ef9db6` di ouf-deploy, dal launcher, dall'esecutore e dalle ricevute conservate. I sei repository applicativi sono stati consultati tramite README, revisioni recenti e PR aperte; main non rappresenta automaticamente le revisioni installate.
 
