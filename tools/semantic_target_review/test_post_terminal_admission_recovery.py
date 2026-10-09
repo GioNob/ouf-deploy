@@ -5,8 +5,11 @@ from unittest.mock import patch
 spec=importlib.util.spec_from_file_location('recovery',Path(__file__).with_name('execute_post_terminal_admission_recovery.py'))
 recovery=importlib.util.module_from_spec(spec);spec.loader.exec_module(recovery)
 class RecoveryTests(unittest.TestCase):
+    def test_retained_context_and_output_bind_exact_r5_generation(self):
+        self.assertEqual(recovery.OLD_CONTEXT,Path('/etc/ouf/deploy-snapshots/semantic-provider-v2-approved-context-155oj3tc'))
+        self.assertEqual(recovery.OLD_OUTPUT,Path('/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-155oj3tc'))
     def test_pending_approval_denies_before_any_read(self):
-        with patch.object(recovery,'load_definitions') as loader,patch('os.open',side_effect=AssertionError('unapproved read')):
+        with patch.object(recovery,'APPROVAL_REF','PENDING_HUMAN_POST_TERMINAL_ADMISSION_APPROVAL'),patch.object(recovery,'APPROVED_AT',None),patch.object(recovery,'load_definitions') as loader,patch('os.open',side_effect=AssertionError('unapproved read')):
             with self.assertRaisesRegex(ValueError,'EXPLICIT_POST_TERMINAL_ADMISSION_APPROVAL_REQUIRED'):
                 recovery.main('unapproved','/base','/r3','/repair','/reader')
         loader.assert_not_called()
