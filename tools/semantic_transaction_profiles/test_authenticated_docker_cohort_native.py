@@ -122,12 +122,15 @@ def main():
             with tarfile.open(fileobj=archive,mode='w') as tar:
                 for path in sorted(offline.rglob('*')):tar.add(path,arcname=str(path.relative_to(offline)),recursive=False)
             image=run(str(engine/'docker'),'-H',socket,'image','import','-',payload=archive.getvalue()).stdout.decode().strip()
-            # Exact pinned Moby initlayer semantics: files are unlinked/recreated 0755.
+            # Keep Engine initlayer separate: overlay copy-up merges dev/etc.
+            # Flattening those layers changes directory link counters in the full seal.
+            initlayer=root/'independent-initlayer';initlayer.mkdir(mode=0o755);initlayer.chmod(0o755)
+            for name in ('dev','etc'):(initlayer/name).mkdir(mode=0o755)
             for name in ('.dockerenv','etc/resolv.conf','etc/hosts','etc/hostname','dev/console'):
-                (offline/name).touch(mode=0o755);(offline/name).chmod(0o755)
-            (offline/'etc/mtab').symlink_to('/proc/mounts')
+                (initlayer/name).touch(mode=0o755);(initlayer/name).chmod(0o755)
+            (initlayer/'etc/mtab').symlink_to('/proc/mounts')
             upper=root/'expected-upper';work=root/'expected-work';upper.mkdir();work.mkdir()
-            run(commands['mount'],'-t','overlay','overlay','-o','lowerdir='+str(offline)+',upperdir='+str(upper)+',workdir='+str(work),str(expected_mount));mounted=True
+            run(commands['mount'],'-t','overlay','overlay','-o','lowerdir='+str(initlayer)+':'+str(offline)+',upperdir='+str(upper)+',workdir='+str(work),str(expected_mount));mounted=True
             def expected_trace():
                 import stat
                 def entry(path):
