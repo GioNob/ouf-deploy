@@ -13,13 +13,17 @@ main() {
     echo 'OUF_AUDITED_RECOVERY_LAUNCH=NOT_AUTHORIZED REASON=HUMAN_APPROVAL_PENDING'
     return 79
   fi
-  command -v gh >/dev/null 2>&1 || { echo 'OUF_AUDITED_RECOVERY_LAUNCH=BLOCKED REASON=GH_REQUIRED'; return 1; }
+  OUF_AUDIT_GH="$(command -v gh || true)"
+  if [[ -z "$OUF_AUDIT_GH" ]]; then
+    OUF_AUDIT_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+  fi
+  [[ -x "$OUF_AUDIT_GH" ]] || { echo 'OUF_AUDITED_RECOVERY_LAUNCH=BLOCKED REASON=EXISTING_GH_NOT_EXECUTABLE'; return 1; }
   OUF_AUDIT_DOWNLOAD=$(mktemp -d "$OUF_AUDIT_WORK_ROOT/ouf-audited-recovery.XXXXXXXX") || return 1
   echo "OUF_AUDITED_RECOVERY_DOWNLOAD=$OUF_AUDIT_DOWNLOAD"
   OUF_AUDIT_PHASE=VERIFY_PINNED_DELIVERY_BEFORE_SUDO
   download() {
     local remote_path="$1" filename="$2" expected="$3"
-    gh api "repos/GioNob/ouf-deploy/contents/$remote_path?ref=$OUF_AUDIT_COMMIT" --jq .content > "$OUF_AUDIT_DOWNLOAD/$filename.base64" || return 1
+    "$OUF_AUDIT_GH" api "repos/GioNob/ouf-deploy/contents/$remote_path?ref=$OUF_AUDIT_COMMIT" --jq .content > "$OUF_AUDIT_DOWNLOAD/$filename.base64" || return 1
     base64 --decode "$OUF_AUDIT_DOWNLOAD/$filename.base64" > "$OUF_AUDIT_DOWNLOAD/$filename" || return 1
     printf '%s  %s\n' "$expected" "$OUF_AUDIT_DOWNLOAD/$filename" | sha256sum -c - || return 1
   }
