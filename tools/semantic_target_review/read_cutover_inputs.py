@@ -4,7 +4,6 @@ The old guard observer requires never-started candidates. This reader does not
 invoke it, a boot restorer, broker, supervisor, signer or DNS/provider request.
 Native nft structure normalization matches semantic_provider_lease_nft.py.
 """
-import fcntl
 import hashlib
 import ipaddress
 import json
@@ -288,11 +287,10 @@ def collect():
         require(receipt['guardCommand'].encode() in loaded, 'LOADED_BOOT_COMMAND_DRIFT')
     require(cfg['commandBindings']['nft'] == {'path': owner['nftPath'], 'sha256': owner['nftSha256']},
             'NFT_EXECUTABLE_BINDING_DRIFT')
-    PHASE = 'READ_CURRENT_LEASE_JOURNAL_AND_NATIVE_SETS_UNDER_EXISTING_LOCK'
+    PHASE = 'READ_CURRENT_LEASE_JOURNAL_AND_NATIVE_SETS_OPTIMISTICALLY'
     private(owner['commonLockFile'])
     fd = os.open(owner['commonLockFile'], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
     try:
-        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         lock_id = identity(os.fstat(fd))
         require(lock_id == identity(Path(owner['commonLockFile']).lstat()), 'LOCK_IDENTITY_DRIFT')
         journal_raw = private(owner['journalFile'])
@@ -460,7 +458,6 @@ def collect_cutover():
     private(owner['commonLockFile'])
     fd = os.open(owner['commonLockFile'], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
     try:
-        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         lock_id = identity(os.fstat(fd))
         lease_raw = private(owner['journalFile'])
         for role, (cid, _) in TARGETS.items():
@@ -543,6 +540,8 @@ def cutover_main():
             'providerCalls': 0, 'dnsQueries': 0, 'signaturesIssued': 0,
             'privateValuesPrinted': False, 'applyAuthorized': False, 'notReleaseAcceptance': True}
     base['readOnlyRetrySafe'] = True
+    base['commonLockAcquired'] = False
+    base['readConsistencyMode'] = 'STABLE_REREADS_NOT_ATOMIC_TRANSITION_AUTHORITY'
     try:
         require(os.geteuid() == 0 and sys.flags.isolated and sys.dont_write_bytecode and len(sys.argv) == 1,
                 'ISOLATED_ROOT_READ_ONLY_REQUIRED')

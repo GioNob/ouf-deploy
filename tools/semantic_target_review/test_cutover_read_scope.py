@@ -35,6 +35,11 @@ class ReadScopeTest(unittest.TestCase):
             with self.subTest(args=args), self.assertRaises(self.scope['ReadDenied']):
                 self.scope['native_read']({'path': '/not/read', 'sha256': '0' * 64}, args, [args])
 
+    def test_reader_cannot_contend_with_nonblocking_lease_worker(self):
+        self.assertNotIn('flock(', self.code)
+        self.assertNotIn('import fcntl', self.code)
+        self.assertIn("base['commonLockAcquired'] = False", self.code)
+
     def test_peer_plan_and_reader_never_call_operational_guard(self):
         forbidden = ('systemd-run', 'attestation verify', 'nft flush', 'docker stop', 'docker start')
         self.assertTrue(all(value not in self.code for value in forbidden))
