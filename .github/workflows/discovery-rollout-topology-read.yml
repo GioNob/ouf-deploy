@@ -1,4 +1,4 @@
-name: Read existing discovery rollout topology
+name: Read current discovery rollout topology after R8
 on:
   push:
     branches: [main]
