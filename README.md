@@ -1,3 +1,13 @@
+# Current checkpoint — R5 internal timeout captured; southbound Docker error remains unclassified
+
+Operator readback PASS at 13:21:40 Europe/Rome, 9 October 2026. Receipt in `evidence/provider-v2-r5-broker-phase-readback-target-20261009.json` is operator-reported, not independently acquired. Both exact Docker CIDs are created/stopped, PID zero, never started. Current installed wrapper SHA256 `4bd86d0c27039a238ac4894cf0c151745c92814c94af7b5a2f2ed173b70d685a`. Adapter is DELETING; its broker/deployment are CREATED; bundle retained; no attestation, approval or admission issuance files. Retained `broker-denial-cohort-ready.json` proves `PreexecDenied: AUTHENTICATION_DEADLINE_MISSED`, with producer.program line36 → authentication.check229 → remaining225 → require29. Southbound adapter/broker/deployment remain STAGED, no bundle or broker denial. Read-only counters zero do not change unknown historical R5 key/lifecycle counts.
+
+Code audit confirms cohort_ready awaits a genuinely created/running peer under the existing 18-second authentication deadline. Timeout is proven, but why southbound failed before its broker remains unknown; do not claim lock contention or Docker serialization proven, increase deadlines, replay R5 or clean journals. Native CI success does not answer this target failure.
+
+Next narrow read: `tools/semantic_target_review/read_r5_docker_error.py`, SHA256 `1f849f54d43507151ed094c232aa295dbc9e11d784257cf7b915aaa0f3b61e0a`, verifies R5 approval/context and installed switch receipt then inspects the two exact Docker IDs. Outputs only Error fingerprint/length, fixed public phrase matches and runtime symbolic reasons; never prints raw error, paths or arbitrary tokens. Local valid/empty/symbolic error and secret/path exclusion checks pass. No repeated phase-journal scan, keys, writes, signatures, runtime operations or daemon changes. PET Authorization AUTH-05/06/07/08/09/12 and L0 matrix consulted. Provider admission and product follow-up remain pending.
+
+Earlier checkpoints below are historical and superseded.
+
 # Current checkpoint — R5 consumed; retained COHORT_READY denial must be read
 
 Operator reported R5 BLOCKED at 13:17:44 Europe/Rome on 9 October 2026. Evidence `evidence/provider-v2-r5-target-denial-20261009.json` preserves the full receipt, including unknown lifecycle/key counters (null). Both controlled Docker requests returned exit 1, neither acknowledged the exact CID. Adapter is DELETING with `BROKER_PHASE_COHORT_READY_DENIED`; southbound is STAGED with no parsed native denial. No admitted running state is proven. Do not rerun R5, reset journals, infer zero operations, or attribute the failure to the lock without the retained internal exception.
