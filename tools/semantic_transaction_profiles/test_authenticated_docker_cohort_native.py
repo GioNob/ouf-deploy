@@ -205,6 +205,34 @@ def main():
                 if pid<=0:return None
                 path=Path('/proc')/str(pid)/'root/dev/shm/started'
                 return path.read_text().strip() if path.exists() else None
+            # Reproduce the target's pre-create parent refusal with real Docker.
+            # Disposable CI publication only; keep the denial before correcting.
+            wrong=json.loads(json.dumps(cfg))
+            for cid in cids:
+                wrong['candidates'][cid]['bundleParents']=['/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby']
+            private(config_path,wrong)
+            for cid in cids:private(registry/cid/'adapter.json',{'schema':'ouf.semantic-docker-runtime-journal.v1','containerId':cid,
+                'configurationHash':adapter.binding(wrong,cid),'state':'STAGED','runtimeRoot':None,'bundleHash':None,'driverHash':None})
+            for cid in cids:start(cid)
+            denied={}
+            for cid,(process,out,err) in zip(cids,processes):
+                status=process.wait(timeout=15)
+                state=json.loads(dock('inspect','--format','{{json .State}}',cid).stdout)
+                journal=json.loads((registry/cid/'adapter.json').read_bytes())
+                require(status==1 and 'ADAPTER_BINDING_UNPROVEN_L283' in state.get('Error',''),
+                    'CI_EXACT_BUNDLE_PARENT_REFUSAL_UNPROVEN')
+                require(journal['state']=='STAGED' and journal['runtimeRoot'] is None
+                    and state['Running'] is False and state['Status']=='created'
+                    and state['StartedAt'].startswith('0001-') and application_proof(cid) is None,
+                    'CI_WRONG_BUNDLE_PARENT_RELEASED_APPLICATION')
+                denied[cid]={'stateHash':digest(state),'journalHash':digest(journal),'startExit':status}
+                out.close();err.close()
+            private(root/'ci-precreate-bundle-denial-evidence.json',denied)
+            processes.clear()
+            private(config_path,cfg)
+            for cid in cids:private(registry/cid/'adapter.json',{'schema':'ouf.semantic-docker-runtime-journal.v1','containerId':cid,
+                'configurationHash':adapter.binding(cfg,cid),'state':'STAGED','runtimeRoot':None,'bundleHash':None,'driverHash':None})
+            print('DOCKER_BUNDLE_PARENT_REFUSAL=PASS TWO_REAL_DOCKER_DENIALS_L283=true BOTH_CREATED_STAGED=true NO_APPLICATION_RELEASE=true CI_ONLY=true TARGET_AUTHORITY=false')
             first=start(cids[0])
             time.sleep(.3)
             if first.poll() is not None:
