@@ -1,0 +1,29 @@
+name: OUF remediated discovery migration plan
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/remediated-discovery-release-plan.yml
+      - scripts/plan-remediated-discovery-release.py
+permissions:
+  contents: read
+concurrency:
+  group: ouf-discovery-release
+  cancel-in-progress: false
+jobs:
+  plan:
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-semantic-registry
+          ref: 403531a9df1cbc877078f8126fd1fc4ff18acea9
+          path: semantic-source
+          persist-credentials: false
+      - name: Compare migration bytes without changing the installation
+        run: python3 scripts/plan-remediated-discovery-release.py
