@@ -4,6 +4,25 @@ Il messaggio umano «Approvo» del **9 ottobre 2026 alle 19:19:42 Europe/Rome** 
 
 Executor approvato al commit `f869679b7bf81d930a925508e0fee48eab25612d`, SHA256 `6ce5addae1df8a418bc3dfead347c5d6acbd51d5607c436260aadef741cbcfc0`. Rispetto al codice revisionato cambiano soltanto riferimento e due timestamp. Launcher approvato SHA256 `3bdf5318b8d83e2e52f4cd57b8e8429b75d75fa346285b6ab645dec318387d81`; commit sorgenti/esecutore e tutti i digest sono espliciti. Quattordici prove mirate superate; dopo i pin finali sono ripassate le cinque prove di consegna. Nessuna operazione VPS effettuata dalla sessione.
 
+Verifica della consegna finale: commit launcher `9b68070ae40a8fcc3752837b8d91be64ab38ebde`, [CI 37965938237](https://github.com/GioNob/ouf-deploy/actions/runs/37965938237), quattro job SUCCESS. Verificati nei log i due marker applicativi e le 14 prove, incluse le scadenze esatte dell’approvazione. [Ricevuta finale](../evidence/provider-r7-approved-delivery-validation-20261009.json).
+
+Eseguire sul VPS una sola volta entro le 21:19:42 del 9 ottobre 2026 Europe/Rome, poi conservare e riportare tutto l’output:
+
+```bash
+(
+  set -u
+  set -o pipefail
+  umask 077
+  OUF_R7_LAUNCH="$(mktemp -d "$HOME/ouf-r7-launch.XXXXXXXX")" || exit 1
+  gh api 'repos/GioNob/ouf-deploy/contents/releases/provider-audited-recovery-20261009.sh?ref=9b68070ae40a8fcc3752837b8d91be64ab38ebde' --jq '.content' > "$OUF_R7_LAUNCH/run.b64" || exit 1
+  base64 --decode "$OUF_R7_LAUNCH/run.b64" > "$OUF_R7_LAUNCH/run.sh" || exit 1
+  printf '%s  %s\n' '3bdf5318b8d83e2e52f4cd57b8e8429b75d75fa346285b6ab645dec318387d81' "$OUF_R7_LAUNCH/run.sh" | sha256sum -c - || exit 1
+  bash "$OUF_R7_LAUNCH/run.sh"
+)
+OUF_R7_BOOTSTRAP_EXIT=$?
+printf 'OUF_R7_BOOTSTRAP_EXIT=%s\n' "$OUF_R7_BOOTSTRAP_EXIT"
+```
+
 Le indicazioni PENDING e i vecchi hash sotto descrivono la revisione prima dell'approvazione e sono conservati come storico. La chiusura runtime approvata e tutti gli input restano identici. La scadenza delle dipendenze resta 10 ottobre alle 06:33:47Z. Eseguire una sola volta e conservare l'intero risultato; niente replay di cleanup o transazioni consumate.
 
 ---
