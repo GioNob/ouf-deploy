@@ -198,7 +198,7 @@ if __name__=='__main__':
         attempted=os.path.lexists(PACKAGE/'execution-claim.json')
         report={'status':'BLOCKED','phase':PHASE,'reason':reason,'errorType':type(error).__name__,
             'contextDirectory':str(CONTEXT) if CONTEXT else None,'sourcePackage':str(PACKAGE),
-            'doNotRerunApply':CONTEXT is not None or attempted,'privateValuesPrinted':False,
+            'doNotRerunApply':CONTEXT is not None or attempted or os.path.lexists(PACKAGE/'pre-key-recovery-claim.json') or os.path.lexists(PACKAGE/'operator-context-claim.json'),'privateValuesPrinted':False,
             'privateKeysRead':None if attempted else 0,'containerLifecycleOperations':None if attempted else 0,
             'targetRuntimeChanged':None if attempted else False,'notReleaseAcceptance':True}
         if isinstance(error,OSError):report['errno']=error.errno
