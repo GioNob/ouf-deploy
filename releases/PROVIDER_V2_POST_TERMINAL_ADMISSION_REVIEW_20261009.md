@@ -1,3 +1,7 @@
+# R6 target outcome — consumed and blocked, 2026-10-09 16:59:33 Europe/Rome
+
+[Operator receipt](../evidence/provider-post-terminal-admission-r6-target-denial-20261009.json): two failed start requests; both journals DELETING and ADMISSION_PREPARATION_FAILED. Context/output aj1j95xl. Exact broker cause unproven pending read-only diagnostic. Do not rerun the approved launcher or repurpose its approval for another attempt. Unknown lifecycle/key counts stay null. Historical review below records pre-invocation scope; statements of target execution pending there are superseded by this receipt. No release acceptance.
+
 # R6 — fresh admission after successful terminal maintenance, 2026-10-09
 
 Status: approved for one scoped R6 admission by the human message “Autorizzo” at 2026-10-09 16:51:18 Europe/Rome (14:51:18 UTC, epoch 1791557478). Nine local tests and four pre-sudo launcher failure scenarios pass. The approval is specific to this reviewed R6 operation, distinct from consumed R5 and maintenance authority. No R6 target execution has occurred. This is not release acceptance.

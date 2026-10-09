@@ -1,3 +1,15 @@
+# Current checkpoint — R6 consumed; both candidates denied in admission preparation
+
+Operator receipt at **2026-10-09 16:59:33 Europe/Rome** reports [R6 BLOCKED](evidence/provider-post-terminal-admission-r6-target-denial-20261009.json), COHORT_ADMITTED_RUNNING_STATE_UNPROVEN. Two Docker start requests, both exit 1/no exact CID acknowledgment; no automatic retry. Both adapter journals now DELETING and both Docker errors identify ADMISSION_PREPARATION_FAILED. Context semantic-provider-v2-approved-context-aj1j95xl and output semantic-provider-v2-transaction-aj1j95xl are consumed and retained. The original R5 output 155oj3tc remains separate. Revised source closure remains 702403e9cd99ddc4ddeed7166f3f408c55657fc690e475e0b35bb5d2c2242bb3. These are operator-pasted observations; unknown key/lifecycle counts remain null.
+
+Do not replay R6, R5 or terminal maintenance launchers; no cleanup or new start is authorized by this result. Preserve all journals, claims, containers and sources. Root R6 passed far enough to attempt the controlled cohort; the runtime's prepare subprocess returned nonzero. The exact underlying cause is unproven until retained broker-denial-prepare.json is read for each candidate. Do not infer that the previous authentication timeout is the current cause. No admitted-running result or release acceptance.
+
+Next operator intervention: pinned read_r6_broker_denial.py, SHA256 bcb0d2f12863fec7c310c138f92f560fe55c862e060f2154be1b976bbd29e010. Reader checks exact R6 approval/configuration/output and installed wrapper, reads Docker inspect and bounded retained phase journals/diagnostic files, projects only redacted symbolic reasons and exception locations. No broker operation, key read, signature, write, start/delete or retry. Three local regression/privacy checks PASS. Return its complete structured output; then diagnose the exact broker failure before proposing any concrete repair. Native CI was implementation evidence, not target acceptance.
+
+All broader OUF roadmap/PET constraints and draft PRs remain as recorded below.
+
+Earlier checkpoints below are historical and superseded.
+
 # Current checkpoint — R6 approved; fixed one-use operator invocation pending
 
 Human message “Autorizzo” at **2026-10-09 16:51:18 Europe/Rome**, epoch 1791557478, approves the [concrete R6 admission](releases/PROVIDER_V2_POST_TERMINAL_ADMISSION_REVIEW_20261009.md). [Approval binding](evidence/provider-post-terminal-admission-r6-human-approval-20261009.json) is separate from consumed R5 and terminal maintenance authority. APPROVAL_REF=OUF_PROVIDER_V2_POST_TERMINAL_ADMISSION_APPROVED_20261009T165118_CEST_R6. No R6 VPS execution/result has been observed yet.
