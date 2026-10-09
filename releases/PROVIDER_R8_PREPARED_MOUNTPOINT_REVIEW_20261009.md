@@ -1,3 +1,5 @@
+> **CONSUMATO — AVVIO RIUSCITO RIPORTATO IL 9 OTTOBRE ALLE 21:11:30. Non eseguire di nuovo alcun comando R8.** [Ricevuta](../evidence/provider-r8-target-started-20261009.json): entrambi STARTED, exit0; contesto mf9x0eqd, pacchetto prepared-9jhyd181. La revisione e i riferimenti sotto sono storici. Stato corrente e lavoro successivo nel [handoff](PROVIDER_V2_ADMISSION_NEXT.md).
+
 # R8 — proposta concreta di accettazione del rootfs preparato e recupero
 
 **Stato: approvato dall’utente con “Approvo” alle 20:38:04 Europe/Rome del 9 ottobre 2026. Il primo passaggio R8 è stato respinto nel controllo preliminare, prima di claim, firme e operazioni runtime. Correzione del riconoscimento `rro` preparata sotto la medesima approvazione; R7 resta consumato.**
@@ -67,29 +69,9 @@ Executor corretto: commit `54fbdf91ec61759704a47712cef5627d0127e842`, SHA256 `b8
 
 [Verifica della correzione](../evidence/provider-r8-rro-correction-validation-20261009.json): [CI 37976891760](https://github.com/GioNob/ouf-deploy/actions/runs/37976891760), quattro job riusciti. Il job nativo `113977345885` ha prodotto `R8_COMPILED_RRO_HELPER=PASS` per adapter e southbound prima della pubblicazione e dei due marker applicativi. [CI consegna 37976891826](https://github.com/GioNob/ouf-deploy/actions/runs/37976891826) riuscita; dieci prove di recupero/consegna e sei prove helper, compreso il compilatore fissato. Byte remoti verificati. Nessun risultato dell’esecuzione corretta sul VPS ancora ricevuto.
 
-## Singolo comando operatore approvato
+## Comando operatore consumato
 
-Eseguire una volta come `oufadmin`, entro le 22:38:04 Europe/Rome del 9 ottobre. La richiesta sudo avverrà dopo la verifica dei download. Conservare l’output completo; nessuna ripetizione automatica. Gli eventuali `exit` sono confinati nel subshell, senza chiudere la sessione SSH. [Blocco identico in file](provider-r8-approved-operator-command-20261009.sh).
-
-```bash
-if (
-  set -u
-  set -o pipefail
-  umask 077
-  OUF_R8_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
-  [[ -x "$OUF_R8_GH" ]] || { echo 'OUF_R8_BOOTSTRAP=EXISTING_GH_NOT_EXECUTABLE'; exit 1; }
-  OUF_R8_LAUNCH="$(mktemp -d "$HOME/ouf-r8-launch.XXXXXXXX")" || exit 1
-  "$OUF_R8_GH" api 'repos/GioNob/ouf-deploy/contents/releases/provider-prepared-mountpoint-recovery-20261009.sh?ref=82216a569763e1c604c88b892c635bc0cf6a0850' --jq .content > "$OUF_R8_LAUNCH/run.base64" || exit 1
-  base64 --decode "$OUF_R8_LAUNCH/run.base64" > "$OUF_R8_LAUNCH/run.sh" || exit 1
-  printf '%s  %s\n' 'cadf60374c540e0195a1fedabff7f3b3648c28b181ff2e6ae28fef07158123b4' "$OUF_R8_LAUNCH/run.sh" | sha256sum -c - || exit 1
-  bash "$OUF_R8_LAUNCH/run.sh"
-); then
-  OUF_R8_BOOTSTRAP_EXIT=0
-else
-  OUF_R8_BOOTSTRAP_EXIT=$?
-fi
-echo "OUF_R8_BOOTSTRAP_EXIT=$OUF_R8_BOOTSTRAP_EXIT"
-```
+Il comando è stato eseguito con successo e non va ripetuto. La versione consegnata resta nella cronologia Git del commit `ef7e9c7389c908b2d985b552b05cc245a8c010b5`; il file corrente segnala la consumazione. L’approvazione R8 non permette ulteriori avvii o manutenzioni, anche prima della vecchia scadenza oraria.
 
 Gli helper locali R6 e R7 già eseguiti vengono riutilizzati per hash; si trasferiscono soltanto i due file cambiati: executor e verificatore. Lo scope già scaricato in `/home/oufadmin/ouf-r8-recovery.0ABMEId2/scope.json` viene riutilizzato e verificato per hash; non viene riscaricato. La dependency evidence corrente scade il **10 ottobre 2026 alle 06:33:47Z (08:33:47 Europe/Rome)**; la manutenzione e la nuova finestra dei mandati devono rientrare nella validità, senza estensioni implicite. Qualsiasi nuova incertezza conserva il claim e impedisce il replay.
 

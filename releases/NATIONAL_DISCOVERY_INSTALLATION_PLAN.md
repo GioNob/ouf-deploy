@@ -1,9 +1,10 @@
 # National discovery installation: exact current preparation
 
-## Stato corrente — 8 ottobre 2026
+## Stato corrente — 9 ottobre 2026, dopo l’avvio R8
 
-TLS e sei file di avvio v2 sono preparati sul VPS; i candidati precedenti restano mai avviati. Lettura root completata: configurazione daemon assente, guard originale e tool effettivi identificati. Il prossimo intervento concreto è [registrare il runtime OUF con lista di candidati vuota](PROVIDER_V2_RUNTIME_REGISTRATION.md). Bootstrap fisso `9668abd6abec533ba3d45af92e673ae797d6330a`; [CI finale 37724467103](https://github.com/GioNob/ouf-deploy/actions/runs/37724467103) passata: otto test di pubblicazione/rifiuto e una prova Docker isolata reale, senza skip. Nessuna registrazione o creazione v2 ancora applicata al target. Il runner non ha il privilegio di scrittura richiesto: l'operatore deve eseguire il bootstrap bounded con sudo. Questo aggiunge soltanto il runtime nominato e usa SIGHUP, mantenendo default/PID del daemon/stati dei container e verificando il guard nativo; allowlist vuota, nessuna autorità di avvio. Dopo la ricevuta target: nuovo manifesto/candidati fermi, transazione di ammissione e avvio, rollout Semantic/MCP e percorso nazionale Teatri → approvazione → ingestion → UDP. Nessun job nazionale Teatri ancora eseguito. Le sezioni cronologiche seguenti conservano le evidenze precedenti; questo paragrafo identifica il prossimo passo attuale.
+L’operatore ha riportato l’avvio riuscito dei due candidati v2 alle 21:11:30 Europe/Rome, [ricevuta](../evidence/provider-r8-target-started-20261009.json). Runtime registrato, input/TLS preparati e transazione R8 sono completati e non vanno ripetuti. R8 è consumato; contesto mf9x0eqd, pacchetto prepared-9jhyd181. Entrambi STARTED nella ricevuta, nessun diniego, exit0. Non implica salute applicativa, lease provider, reboot o accettazione di release. Il [handoff corrente](PROVIDER_V2_ADMISSION_NEXT.md) governa i prossimi passi e prevale sulle sezioni storiche sotto.
 
+Proseguire con lettura dello stato tramite runner esistente, requisiti lease/provider, rollout degli artefatti Semantic/MCP già preparati con evidenza di dipendenze aggiornata e grant discovery. Il MCP owner risponde HEALTHY via connettore; il vecchio database di scansione Semantic/MCP è scaduto. Nessun job nazionale Teatri ancora eseguito, nessun ricaricamento asset o fallback locale. Gli archivi firmati, la credenziale Semantic e il backup esistenti elencati sotto sono da riutilizzare quando applicabile, non da ricreare per default.
 
 ## Available and verified
 

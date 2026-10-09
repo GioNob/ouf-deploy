@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Read bounded deployment readiness; never emit inspect/env payloads or credentials."""
 import json
+import re
 import subprocess
 
 def run(command):
@@ -42,6 +43,15 @@ if prefix is not None:
                 data = json.loads(inspected.stdout)[0]
                 report["components"].append({
                     "name": name,
+                    "containerId": data.get("Id"),
+                    "state": data.get("State", {}).get("Status") if data.get("State", {}).get("Status") in ("created", "running", "paused", "restarting", "removing", "exited", "dead") else "UNPROVEN",
+                    "pid": data.get("State", {}).get("Pid"),
+                    "exitCode": data.get("State", {}).get("ExitCode"),
+                    "oomKilled": data.get("State", {}).get("OOMKilled"),
+                    "restartCount": data.get("RestartCount"),
+                    "healthStatus": data.get("State", {}).get("Health", {}).get("Status") if data.get("State", {}).get("Health", {}).get("Status") in ("healthy", "unhealthy", "starting") else None,
+                    "dockerStateErrorPresent": bool(data.get("State", {}).get("Error")),
+                    "startedAt": data.get("State", {}).get("StartedAt") if re.fullmatch(r"[0-9TZ:.+-]{10,40}", data.get("State", {}).get("StartedAt", "")) else None,
                     "running": bool(data.get("State", {}).get("Running")),
                     "imageId": data.get("Image"),
                     "configuredImage": data.get("Config", {}).get("Image"),
