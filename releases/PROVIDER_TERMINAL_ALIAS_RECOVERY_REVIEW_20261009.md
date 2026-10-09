@@ -1,6 +1,6 @@
 # Exact runtime alias maintenance recovery — 2026-10-09
 
-Status: implementation, ten local tests and native CI passed. Target recovery approval pending. Provider start remains unauthorized. This is not release acceptance.
+Status: implementation, ten local tests and native CI passed. Scoped target recovery approved at 16:07:45 Europe/Rome; operator execution pending. Provider start remains unauthorized. This is not release acceptance.
 
 The retained options of both exact owning shims produce the same --root argument. Its SHA256 is 9f595173b01440cef244647bd9f19079b830bc582d119db5212b6e53544e49a2. It resolves to the retained canonical root, SHA256 c64c266a92b2d9ff052a8f2b817ee730406b2ddde47d550a52effb822b181342, but differs lexically. The old gate's pure argument predicate rejects it; the pure absence predicate passes. This reproduces a compatibility defect, without claiming historical argv was captured or attributing the original failure to later expiration. Old bundle error timestamps are historical; containerd runtimeError can prefer the last JSON error over current stderr.
 
@@ -33,3 +33,13 @@ Consult AUTH-05/06/07/08/09/12: distinct human/agent/service authority, explicit
 Official source references:
 - https://github.com/containerd/containerd/blob/v2.3.5/cmd/ctr/commands/commands_unix.go (runc-root -> options.Root)
 - https://github.com/containerd/containerd/blob/v2.3.5/cmd/containerd-shim-runc-v2/process/init.go (NewRunc root/namespace and runtimeError)
+
+## Scoped human acknowledgment recorded — 16:07:45 Europe/Rome
+
+The user answered exactly “Autorizzo” to the concrete separate one-use recovery described above at 2026-10-09T16:07:45+02:00 (1791554865). Approval reference: OUF_TERMINAL_ALIAS_RECOVERY_HUMAN_APPROVAL_20261009_160745. This is operational operator authorization for this reviewed terminal maintenance, not a domain HUMAN_USER token, signature, provider-start authority or release acceptance. The unchanged absolute deadline is 2026-10-09T17:20:18+02:00 (1791559218).
+
+Only APPROVAL_REF and APPROVED_AT changed in the reviewed executor. Approved executor commit f2219975695cc695c4798e3044756f08219a3b36; SHA256 454ba9195caa1e9ea8732ca4cd2f302bdcea5126e42d3951f642e2c184382118. Ten local tests passed after enabling. Exact approved-reference boundary checks deny before the timestamp, at the deadline and after it without loading a helper or reading the target. Native CI [37942041378](https://github.com/GioNob/ouf-deploy/actions/runs/37942041378) succeeded for this approved executor commit.
+
+New operator launcher: releases/provider-terminal-alias-recovery-20261009.sh at commit 57b9c50d8dc8df5babae3f6c4bdbe61fa9e5ae0c, SHA256 8e42a54fc0f4939fd11ecf688a4e2686eb1d7d4f00f3c095aa77576edcaf9630. It pins the approved executor, the already reviewed corrected gate and the retained argument reader independently. The existing terminal review helper is verified by its exact SHA256. No old launcher or executor may be replayed.
+
+Target recovery remains unexecuted by this agent; await the operator's complete OUF_TERMINAL_ALIAS_RECOVERY result. Do not run twice, reset claims, extend clocks, start the provider or infer target acceptance from CI. If the result is blocked, acquire read-only diagnostics from the new evidence directory. After success, verify both tasks absent, container metadata retained, wrapperRestored=true, priorJournalsPreserved=true and empty postMaintenanceEmptyGuard before preparing any subsequent separate admission.
