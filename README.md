@@ -10,6 +10,8 @@ The [concrete R7 review](releases/PROVIDER_AUDITED_RECOVERY_REVIEW_20261009.md) 
 
 Teatri asset `6609b245-86ed-4315-8ce0-73f2a8555bf3` and profile `7984c39c-7396-4248-ab0a-f2efc390b49c` remain loaded. No national job, reload, local fallback or PR merge. Provider must precede Semantic/MCP rollout and discovery grant, then governed semantic approval, onboarding, ingestion/duplicate-merge and UDP/MCP.
 
+Verifica finale del commit `91f866a2`: [run 37960736584](https://github.com/GioNob/ouf-deploy/actions/runs/37960736584), quattro job SUCCESS; marker di due processi Docker e 13 prove del recupero/consegna verificati nei log. [Ricevuta](evidence/provider-r7-delivery-validation-20261009.json). Executor, otto delta e launcher confrontati con i byte remoti. Approvals remain PENDING; no target action.
+
 Earlier checkpoints below are historical and superseded.
 
 # Current checkpoint — exact R6 terminal-task cleanup approved; operator execution pending

@@ -53,3 +53,7 @@ Il successo CI autorizza una valutazione del codice, non il server. Questa sessi
 ## Consegna dopo approvazione
 
 Registrare il messaggio umano e la sua data effettiva, sostituire soltanto riferimento e timestamp dell'approvazione nell'executor; aggiornare i corrispondenti pin del launcher e ripetere le prove mirate di binding/consegna. La chiusura sorgenti runtime proposta resta identica. Pubblicare il commit esatto e fornire un solo comando operatore verificato. Non consegnare il launcher PENDING come comando eseguibile e non chiedere di ripetere il cleanup concluso.
+
+## Verifica finale della consegna
+
+Commit `91f866a2a2a79740a1729d5f4feeb3a8ba5f593d`, [run 37960736584](https://github.com/GioNob/ouf-deploy/actions/runs/37960736584): tutti e quattro i job SUCCESS. Verificati nei log i due marker di pubblicazione/avvio e le 13 prove del recupero/consegna. Riletti dal commit GitHub e confrontati byte per byte executor, otto delta e launcher. [Ricevuta della verifica](../evidence/provider-r7-delivery-validation-20261009.json) con hash dei log. Nessuna modifica di autorità o operazione VPS; approvazione sempre PENDING.
