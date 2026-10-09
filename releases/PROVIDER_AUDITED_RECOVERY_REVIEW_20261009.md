@@ -1,3 +1,13 @@
+# Approvazione R7 registrata — esecuzione operatore pendente
+
+Il messaggio umano «Approvo» del **9 ottobre 2026 alle 19:19:42 Europe/Rome** autorizza esattamente questa revisione, una sola transazione nuova. Finestra per iniziare: fino alle **21:19:42 Europe/Rome**, massimo 7200 secondi. [Ricevuta di approvazione](../evidence/provider-r7-human-approval-20261009.json). Non è necessaria un'altra conferma.
+
+Executor approvato al commit `f869679b7bf81d930a925508e0fee48eab25612d`, SHA256 `6ce5addae1df8a418bc3dfead347c5d6acbd51d5607c436260aadef741cbcfc0`. Rispetto al codice revisionato cambiano soltanto riferimento e due timestamp. Launcher approvato SHA256 `3bdf5318b8d83e2e52f4cd57b8e8429b75d75fa346285b6ab645dec318387d81`; commit sorgenti/esecutore e tutti i digest sono espliciti. Quattordici prove mirate superate; dopo i pin finali sono ripassate le cinque prove di consegna. Nessuna operazione VPS effettuata dalla sessione.
+
+Le indicazioni PENDING e i vecchi hash sotto descrivono la revisione prima dell'approvazione e sono conservati come storico. La chiusura runtime approvata e tutti gli input restano identici. La scadenza delle dipendenze resta 10 ottobre alle 06:33:47Z. Eseguire una sola volta e conservare l'intero risultato; niente replay di cleanup o transazioni consumate.
+
+---
+
 # Revisione concreta R7 — ammissione provider dopo audit
 
 **Stato: PREPARATO, NON AUTORIZZATO.** ReviewRef `OUF_PROVIDER_AUDITED_RECOVERY_REVIEW_20261009_R7`. Executor e launcher contengono ancora `PENDING_AUDITED_PROVIDER_RECOVERY_APPROVAL`; nessun comando target va eseguito in questo stato. [Audit delle cause](PROVIDER_EXPERIMENT_AUDIT_20261009.md), [scope esatto](../evidence/provider-audited-recovery-scope-20261009.json).
