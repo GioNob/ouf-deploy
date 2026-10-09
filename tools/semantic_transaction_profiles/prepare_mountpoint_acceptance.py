@@ -67,8 +67,19 @@ def expanded_image(expected,oci,files):
     result=copy.deepcopy(expected);added=[]
     mounts={m['destination'].lstrip('/'):m for m in oci['mounts']}
     for path in files:
-        require(path not in result and path in mounts and mounts[path]['type']=='bind'
-            and 'ro' in mounts[path]['options'],'EXACT_READ_ONLY_BIND_DESTINATION_REQUIRED')
+        options=set(mounts.get(path,{}).get('options') or [])
+        checks={'absentFromImage':path not in result,'declaredMount':path in mounts,
+            'bindType':mounts.get(path,{}).get('type')=='bind',
+            'readOnlyOption':bool({'ro','rro'} & options),
+            'noWritableOption':not bool({'rw','rrw'} & options)}
+        if not all(checks.values()):
+            error=ValueError('EXACT_READ_ONLY_BIND_DESTINATION_REQUIRED')
+            # Only fixed reviewed image paths and booleans, never host sources
+            # or arbitrary mount option values, enter the public diagnosis.
+            error.diagnosis={'mountpointReview':{'imagePath':path,'checks':checks,
+                'roPresent':'ro' in options,'rroPresent':'rro' in options},
+                'differentFields':[name for name,ok in checks.items() if not ok]}
+            raise error
         parent=path.rpartition('/')[0]
         if parent not in result:
             require(parent=='run/ouf-semantic-provider' and result.get('run',{}).get('kind')=='directory',

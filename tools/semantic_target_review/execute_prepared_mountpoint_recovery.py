@@ -35,7 +35,7 @@ OWNER='656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8'
 ORIGINAL_ENTRY='edc3c97d54a9d241c93ea9791f4dffce9984565763c2236ad1644e8b90c4c4b5'
 R7_ENTRY='a4e9c02915cc32ab839456de57f88e57d42aa607922ba6db8a320fd27bfdc240'
 READER_HASH='f496b2f20e1ac88c694ad16c0a3a3e529463297d8b10b565013903d6df3c55e4'
-DELTA={'prepare_mountpoint_acceptance.py':'143112ab4051ca166f6d7609c107787f2be3ce35ce7946002dfec755ff1fdd98',
+DELTA={'prepare_mountpoint_acceptance.py':'f5dc77021e843fc0440e74792b8eace6dd1756180e69c1726f0898438d37d9b5',
        'scope.json':'24f6c5a25893e1757bb903b74b90155e39d19864d377ed3a31a94e80bfce1a86'}
 HELPERS={
  'r7':('/home/oufadmin/ouf-audited-recovery.mM44KYJx/execute.py','6ce5addae1df8a418bc3dfead347c5d6acbd51d5607c436260aadef741cbcfc0'),

@@ -148,7 +148,14 @@ def main():
             (initlayer/'etc/mtab').symlink_to('/proc/mounts')
             upper=root/'expected-upper';work=root/'expected-work';upper.mkdir();work.mkdir()
             run(commands['mount'],'-t','overlay','overlay','-o','lowerdir='+str(initlayer)+':'+str(offline)+',upperdir='+str(upper)+',workdir='+str(work),str(expected_mount));mounted=True
-            seal=rootfs_seal(expected_mount,{'maxEntries':10000,'maxBytes':268435456,'maxDepth':32},VerificationBudget(12))
+            limits={'maxEntries':10000,'maxBytes':268435456,'maxDepth':32}
+            if mount_preparation:
+                sys.path.insert(0,str(Path(__file__).resolve().parent.parent/'semantic_target_review'))
+                from read_r7_rootfs_differences import entries
+                from prepare_mountpoint_acceptance import expanded_image,image_entries,BIND_FILES
+                seal,unprepared_entries=entries(rootfs_seal,expected_mount,limits)
+                prepared_entries={}
+            else:seal=rootfs_seal(expected_mount,limits,VerificationBudget(12))
             seals_by_role=None
             if mount_preparation:
                 from prepare_mountpoint_acceptance import BIND_FILES
@@ -161,7 +168,7 @@ def main():
                         # Independent expansion before any target create/runtime call.
                         (view/'run/ouf-semantic-provider').mkdir(mode=0o755)
                         for path in files:(view/path).touch(mode=0o644)
-                        seals_by_role[role]=rootfs_seal(view,{'maxEntries':10000,'maxBytes':268435456,'maxDepth':32},VerificationBudget(12))
+                        seals_by_role[role],prepared_entries[role]=entries(rootfs_seal,view,limits)
                         require(seals_by_role[role]['entries']==seal['entries']+len(files)+1
                             and seals_by_role[role]['bytes']==seal['bytes'] and seals_by_role[role]!=seal,
                             'CI_EXACT_PREPARED_ROOTFS_DELTA_REQUIRED')
@@ -199,6 +206,17 @@ def main():
                     'metadataParent':str(root/'data/containers'),'networkNamespaceParent':str(runtime/'netns'),
                     'networkNamespaceName':None,'cgroupDriver':'systemd','rootfsPath':str(root/'data/rootfs/overlayfs'/cid),'storageParent':str(root/'data')}
                 policy=compile_policy(template,launch,context);policies.append(policy);specs.append(policy['expectedOci'])
+                if mount_preparation:
+                    # Exercise the actual R8 helper with unmodified compiled
+                    # Engine rro options, not a handcrafted ro-only fixture.
+                    declared=[m for m in policy['expectedOci']['mounts'] if m['destination'].lstrip('/') in destinations]
+                    require(len(declared)==len(destinations) and all(m['options']==['rbind','rro','rprivate'] for m in declared),
+                        'CI_FROZEN_ENGINE_RRO_OPTIONS_REQUIRED')
+                    before=digest(policy)
+                    expanded,added=expanded_image(image_entries(unprepared_entries,True),policy['expectedOci'],BIND_FILES[role])
+                    require(expanded==image_entries(prepared_entries[role]) and len(added)==len(destinations)+1
+                        and digest(policy)==before,'CI_R8_HELPER_COMPILED_RRO_PREPARED_ROOTFS_DRIFT')
+                    print('R8_COMPILED_RRO_HELPER=PASS ROLE='+role+' OCI_UNCHANGED=true CI_ONLY=true TARGET_AUTHORITY=false',flush=True)
                 inputs.append({'template':template,'launch':launch,'context':context,'framePolicy':policy})
                 networks.append([{'interface':'eth0','bridge':bridge,'mac':mac,'ipv4':address,'workloadRef':'ci-role-'+str(i),'bindingRef':'ci-binding-'+str(i)}])
             kernels=[]
