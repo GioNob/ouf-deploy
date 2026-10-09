@@ -1,3 +1,9 @@
+# R7 eseguito e consumato — ripetizione vietata
+
+La ricevuta del 9 ottobre alle 19:43:00 riporta il fallimento dei due avvii in attestazione live. [Ricevuta integrale](../evidence/provider-r7-target-denial-20261009.json). Il contesto cbuyoyo2 e il claim sono consumati; la scadenza temporale residua non autorizza replay. Nessun nuovo avvio o cleanup autorizzato.
+
+Le sezioni seguenti sono lo storico della revisione e approvazione, superato da questo esito.
+
 # Approvazione R7 registrata — esecuzione operatore pendente
 
 Il messaggio umano «Approvo» del **9 ottobre 2026 alle 19:19:42 Europe/Rome** autorizza esattamente questa revisione, una sola transazione nuova. Finestra per iniziare: fino alle **21:19:42 Europe/Rome**, massimo 7200 secondi. [Ricevuta di approvazione](../evidence/provider-r7-human-approval-20261009.json). Non è necessaria un'altra conferma.
@@ -10,22 +16,7 @@ Verifica precedente alla correzione gh: commit launcher `9b68070ae40a8fcc3752837
 
 Eseguire sul VPS una sola volta entro le 21:19:42 del 9 ottobre 2026 Europe/Rome, poi conservare e riportare tutto l’output:
 
-```bash
-(
-  set -u
-  set -o pipefail
-  umask 077
-  OUF_R7_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
-  [[ -x "$OUF_R7_GH" ]] || { echo "OUF_R7_DELIVERY=EXISTING_GH_NOT_EXECUTABLE"; exit 1; }
-  OUF_R7_LAUNCH="$(mktemp -d "$HOME/ouf-r7-launch.XXXXXXXX")" || exit 1
-  "$OUF_R7_GH" api 'repos/GioNob/ouf-deploy/contents/releases/provider-audited-recovery-20261009.sh?ref=697ddbd170a6eac7576b77bc598d726815f06d14' --jq '.content' > "$OUF_R7_LAUNCH/run.b64" || exit 1
-  base64 --decode "$OUF_R7_LAUNCH/run.b64" > "$OUF_R7_LAUNCH/run.sh" || exit 1
-  printf '%s  %s\n' '05add65060d4684f0143030b8a800e40dafd9851a4d350eda5e99b25369ac952' "$OUF_R7_LAUNCH/run.sh" | sha256sum -c - || exit 1
-  bash "$OUF_R7_LAUNCH/run.sh"
-)
-OUF_R7_BOOTSTRAP_EXIT=$?
-printf 'OUF_R7_BOOTSTRAP_EXIT=%s\n' "$OUF_R7_BOOTSTRAP_EXIT"
-```
+**COMANDO CONSUMATO: non rieseguire. Il comando storico resta nel commit a2656efb.**
 
 Le indicazioni PENDING e i vecchi hash sotto descrivono la revisione prima dell'approvazione e sono conservati come storico. La chiusura runtime approvata e tutti gli input restano identici. La scadenza delle dipendenze resta 10 ottobre alle 06:33:47Z. Eseguire una sola volta e conservare l'intero risultato; niente replay di cleanup o transazioni consumate.
 

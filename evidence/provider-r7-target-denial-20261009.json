@@ -1,0 +1,182 @@
+{
+  "canonicalOperatorDenialSha256": "636659ed76cbef4f45ad9838dff9cf1706b4f53ee07b9aafc159e2cfa3a056e2",
+  "executorCommit": "f869679b7bf81d930a925508e0fee48eab25612d",
+  "exitCodes": {
+    "OUF_AUDITED_RECOVERY_EXIT": 1,
+    "OUF_R7_BOOTSTRAP_EXIT": 1
+  },
+  "launcherCommit": "697ddbd170a6eac7576b77bc598d726815f06d14",
+  "origin": "USER_PASTED_NOT_INDEPENDENTLY_ACQUIRED",
+  "receipt": {
+    "automaticRetryPerformed": false,
+    "candidateObservations": {
+      "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": {
+        "adapterJournalHash": "aa981f3b0ff315fdd0e5093b08196c9e3ad4467991326830a523cc10aa0bec06",
+        "adapterState": "DELETING",
+        "nativeDenialReason": "ADMISSION_PREPARATION_FAILED",
+        "stateHash": "c24e76441100b442d6d0e0ea4f35f99ad5f240ff23803d73e7c9a951a7eed206"
+      },
+      "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": {
+        "adapterJournalHash": "ff9cee4603a1dc133159b6945ae9c3e3ae1015b68f07f97d0f7a55cb8149d94d",
+        "adapterState": "DELETING",
+        "nativeDenialReason": "ADMISSION_PREPARATION_FAILED",
+        "stateHash": "0e9ecdbe10c3d67251032bb315c1b5ce8e1f1ae7ee1aa64f8d0efae30839a795"
+      }
+    },
+    "cohortOutcome": "UNPROVEN",
+    "containerLifecycleOperations": null,
+    "contextDirectory": "/etc/ouf/deploy-snapshots/semantic-provider-v2-approved-context-cbuyoyo2",
+    "differentFields": [],
+    "doNotRerunApply": true,
+    "dockerResults": {
+      "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": {
+        "errorType": null,
+        "exactCidAcknowledged": false,
+        "exitCode": 1
+      },
+      "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": {
+        "errorType": null,
+        "exactCidAcknowledged": false,
+        "exitCode": 1
+      }
+    },
+    "dockerStartRequests": 2,
+    "errorType": "TransactionDenied",
+    "evidenceDirectory": "/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-cbuyoyo2",
+    "exceptionPoints": [
+      {
+        "file": "execute.py",
+        "function": "<module>",
+        "line": 353
+      },
+      {
+        "file": "execute.py",
+        "function": "main",
+        "line": 339
+      },
+      {
+        "file": "provider_transaction_intake.py",
+        "function": "execute_transaction",
+        "line": 321
+      },
+      {
+        "file": "docker_cohort_activation.py",
+        "function": "activate",
+        "line": 129
+      }
+    ],
+    "notReleaseAcceptance": true,
+    "phase": "INVOKE_COHERENT_SIGNED_PUBLICATION_AND_CONTROLLED_COHORT_ONCE",
+    "privateKeysRead": null,
+    "privateValuesPrinted": false,
+    "reason": "COHORT_ADMITTED_RUNNING_STATE_UNPROVEN",
+    "retainedPhaseDiagnostics": {
+      "adapter/attestation-producer-denial-attestation.json": {
+        "exceptionPoints": [
+          {
+            "file": "semantic_provider_peer_bindings.py",
+            "function": "collect",
+            "line": 90
+          },
+          {
+            "file": "semantic_provider_peer_bindings.py",
+            "function": "state",
+            "line": 86
+          },
+          {
+            "file": "semantic_provider_node_observation.py",
+            "function": "run",
+            "line": 106
+          },
+          {
+            "file": "semantic_provider_node_observation.py",
+            "function": "require",
+            "line": 22
+          }
+        ],
+        "reason": "NODE_OBSERVATION_UNPROVEN",
+        "sha256": "a5368b47d42eb3c0f29f378f177ba69eb58945b0a26dadc7141c9dfdbf8836b2"
+      },
+      "adapter/broker-denial-prepare.json": {
+        "exceptionPoints": [
+          {
+            "file": "semantic_provider_deployment_producer.py",
+            "function": "emit_locked",
+            "line": 225
+          },
+          {
+            "file": "semantic_provider_deployment_producer.py",
+            "function": "emit",
+            "line": 134
+          },
+          {
+            "file": "semantic_provider_deployment_producer.py",
+            "function": "invoke",
+            "line": 110
+          },
+          {
+            "file": "semantic_provider_deployment_producer.py",
+            "function": "require",
+            "line": 28
+          }
+        ],
+        "reason": "LOCAL_PRODUCER_DENIED",
+        "sha256": "0f63372b085454d92452f2ed52b05e3655dbfd32b22f0570c146cd18e55ad12a"
+      },
+      "southbound/attestation-producer-denial-attestation.json": {
+        "exceptionPoints": [
+          {
+            "file": "semantic_provider_node_attestor.py",
+            "function": "main",
+            "line": 155
+          },
+          {
+            "file": "semantic_provider_node_attestor.py",
+            "function": "emit",
+            "line": 156
+          },
+          {
+            "file": "semantic_provider_installer_approval.py",
+            "function": "require",
+            "line": 18
+          }
+        ],
+        "reason": "NODE_APPROVED_ROOTFS_DRIFT",
+        "sha256": "62b761c313c3846861962972d08760054de2c9b076de40102fea6cca9985accc"
+      },
+      "southbound/broker-denial-prepare.json": {
+        "exceptionPoints": [
+          {
+            "file": "semantic_provider_deployment_producer.py",
+            "function": "emit_locked",
+            "line": 225
+          },
+          {
+            "file": "semantic_provider_deployment_producer.py",
+            "function": "emit",
+            "line": 134
+          },
+          {
+            "file": "semantic_provider_deployment_producer.py",
+            "function": "invoke",
+            "line": 110
+          },
+          {
+            "file": "semantic_provider_deployment_producer.py",
+            "function": "require",
+            "line": 28
+          }
+        ],
+        "reason": "LOCAL_PRODUCER_DENIED",
+        "sha256": "0f63372b085454d92452f2ed52b05e3655dbfd32b22f0570c146cd18e55ad12a"
+      }
+    },
+    "role": "adapter",
+    "secretValuesPrinted": false,
+    "stage": "VERIFY_CONTROLLED_DOCKER_COHORT_READBACK",
+    "startAuthorized": false,
+    "status": "BLOCKED"
+  },
+  "reportedAt": "2026-10-09T19:43:00+02:00",
+  "schema": "ouf.semantic-r7-operator-denial.v1"
+}

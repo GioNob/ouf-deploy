@@ -1,3 +1,15 @@
+# Current checkpoint — R7 consumed and denied in live node attestation
+
+Operator output at **2026-10-09 19:43:00 Europe/Rome** reports [R7 denial](evidence/provider-r7-target-denial-20261009.json), output `semantic-provider-v2-transaction-cbuyoyo2`, context `semantic-provider-v2-approved-context-cbuyoyo2`. Both Docker requests exited 1, both adapter journals DELETING. No admitted-running result. Historical key/lifecycle counts remain null; doNotRerunApply true. **R7 approval is consumed regardless of the remaining time window. Do not rerun any R7 launcher, reset claims, clean up tasks or start Docker directly.**
+
+The new phase diagnostics identify southbound `NODE_APPROVED_ROOTFS_DRIFT` at node attestor emit line156. Adapter failed while reading the peer's runc state, `NODE_OBSERVATION_UNPROVEN`, at node observation run line106 (nonzero command result or oversized output). Both broker errors `LOCAL_PRODUCER_DENIED` are downstream summaries. The R6 missing-directory failure is past; the actual producer ran. An adapter error caused by southbound's subsequent teardown is plausible but not yet historically proven. No raw observed rootfs seal or entry differences were retained by this exception; do not invent them.
+
+The accepted v1 seal was observed during stopped Docker export, while the new comparison happens after runc create prepares the OCI runtime. Existing CI used an already-present bind destination and did not prove equivalence between these two phases for this target. Missing mount destinations/cwd or OverlayFS metadata changes are hypotheses to distinguish with exact current image-entry and retained evidence comparison. Do not weaken seal checking or turn observed values into authority. Latest source closure `4b9fbd3149b417a2a696302784aa54d0569b5e87ddc66ac439c153c9ab16bc02`.
+
+Next work is read-only diagnosis of the retained R7 records and actual rootfs differences, with no lifecycle, keys, signatures, cleanup or repeat of completed preparation. Preserve every old context and acceptance; any later recovery is separate. Teatri/Semantic/MCP roadmap remains open as recorded. GitHub CLI is outside PATH on this VPS; use the existing explicit path documented in OUF_WORKING_RULES.
+
+Earlier checkpoints below are historical and superseded.
+
 # Current checkpoint — R7 delivery corrected to reuse the documented gh executable
 
 Operator report at 2026-10-09 19:33:14 Europe/Rome: `gh: command not found`, `OUF_R7_BOOTSTRAP_EXIT=1`. The displayed outer command failed before downloading/invoking R7 or reaching sudo; this attempt did not consume its recovery claim. [Failure evidence](evidence/provider-r7-gh-path-delivery-failure-20261009.json). The prior instructions incorrectly assumed gh in PATH despite the recorded installation at `$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh`.
