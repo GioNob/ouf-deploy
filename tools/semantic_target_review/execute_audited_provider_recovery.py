@@ -19,9 +19,9 @@ import time
 import traceback
 import types
 
-APPROVAL_REF = 'PENDING_AUDITED_PROVIDER_RECOVERY_APPROVAL'
-APPROVED_AT = None
-APPROVAL_EXPIRES_AT = None
+APPROVAL_REF = 'OUF_PROVIDER_AUDITED_RECOVERY_APPROVED_20261009T191942_CEST_R7'
+APPROVED_AT = 1791566382
+APPROVAL_EXPIRES_AT = 1791573582
 REVIEW_REF = 'OUF_PROVIDER_AUDITED_RECOVERY_REVIEW_20261009_R7'
 DELTA_FILES = {'provider_transaction_intake.py': 'f81d8ec23d551acb2419aaefa0c2a4531de4de6219758e263496c228cfa4570d', 'publish_provider_transaction.py': '7777f33432bbfadd56f89fd2ed0122ce1c14e41d797498d94fa7bdb3324d0080', 'guarded_runtime_switch.py': '1492237e1c1ce85da5c9220ea3f6f024b24dc4d217ff5bf6e5b43c14fff225bd', 'authenticated_runtime_switch.py': 'ce5625aa645b3da470e84b8544adfa82d5bca8665bb88d8e2d49fd3701548d83', 'repair_broker_sources.py': 'c1479f6cb24bb376b83a6d61f61a80760dc7cf3ae9bc8c5ae9a7e7af6e5b3c8f', 'repair_admission_transport.py': 'a5bece68adb2f710fd082d25fad3b09cadd202d31e8bbd2c13f19b5f19d187f5', 'build_audited_source_package.py': '785ca8e275e0590b6e63aef904cee65c62e74c72cdf17a128abdaad144880ba7', 'scope.json': 'deb00aad4fd5070f72d45c4b6650444c08baf9054357b3a9eb98b7e2cbb205af'}
 BASE = Path('/etc/ouf/deploy-snapshots')

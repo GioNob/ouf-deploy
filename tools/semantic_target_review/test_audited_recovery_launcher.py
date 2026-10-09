@@ -2,6 +2,7 @@
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
@@ -33,8 +34,9 @@ raise SystemExit(int(os.environ.get('CI_SUDO_EXIT','0')))
 
     def launch(self,approve=False,**env):
         text=(ROOT/'releases/provider-audited-recovery-20261009.sh').read_text()
-        if approve:text=text.replace('OUF_AUDIT_APPROVAL=PENDING_AUDITED_PROVIDER_RECOVERY_APPROVAL',
-                                     'OUF_AUDIT_APPROVAL=DISPOSABLE_DELIVERY_TEST_ONLY')
+        selected='DISPOSABLE_DELIVERY_TEST_ONLY' if approve else 'PENDING_AUDITED_PROVIDER_RECOVERY_APPROVAL'
+        text,count=re.subn(r'^OUF_AUDIT_APPROVAL=.*$', 'OUF_AUDIT_APPROVAL='+selected,text,flags=re.MULTILINE)
+        self.assertEqual(count,1)
         return subprocess.run(['bash','-c',text],env={**self.env,**env},stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=15)
 
     def test_pending_approval_never_downloads_or_reaches_sudo(self):

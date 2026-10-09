@@ -5,7 +5,7 @@ set -o pipefail
 umask 077
 OUF_AUDIT_COMMIT=4c1b74c96d54e02f2d18f1248c0e1ea7a02ed46b
 OUF_AUDIT_APPROVAL=PENDING_AUDITED_PROVIDER_RECOVERY_APPROVAL
-OUF_AUDIT_EXECUTOR_SHA=d8701f210d46cc882a785d05ab4959f23d62f857338804cda1b2bdeff78d443f
+OUF_AUDIT_EXECUTOR_SHA=6ce5addae1df8a418bc3dfead347c5d6acbd51d5607c436260aadef741cbcfc0
 OUF_AUDIT_PHASE=REQUIRE_RECORDED_APPROVAL
 OUF_AUDIT_WORK_ROOT=${OUF_AUDIT_WORK_ROOT:-"$HOME"}
 main() {
@@ -23,7 +23,7 @@ main() {
     base64 --decode "$OUF_AUDIT_DOWNLOAD/$filename.base64" > "$OUF_AUDIT_DOWNLOAD/$filename" || return 1
     printf '%s  %s\n' "$expected" "$OUF_AUDIT_DOWNLOAD/$filename" | sha256sum -c - || return 1
   }
-  download tools/semantic_target_review/execute_audited_provider_recovery.py execute.py d8701f210d46cc882a785d05ab4959f23d62f857338804cda1b2bdeff78d443f || return 1
+  download tools/semantic_target_review/execute_audited_provider_recovery.py execute.py 6ce5addae1df8a418bc3dfead347c5d6acbd51d5607c436260aadef741cbcfc0 || return 1
   download tools/semantic_transaction_profiles/provider_transaction_intake.py provider_transaction_intake.py f81d8ec23d551acb2419aaefa0c2a4531de4de6219758e263496c228cfa4570d || return 1
   download tools/semantic_transaction_profiles/publish_provider_transaction.py publish_provider_transaction.py 7777f33432bbfadd56f89fd2ed0122ce1c14e41d797498d94fa7bdb3324d0080 || return 1
   download tools/semantic_transaction_profiles/guarded_runtime_switch.py guarded_runtime_switch.py 1492237e1c1ce85da5c9220ea3f6f024b24dc4d217ff5bf6e5b43c14fff225bd || return 1

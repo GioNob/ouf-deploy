@@ -99,6 +99,27 @@ print(json.dumps({'sourceCount':len(sources),'observerHash':entry['digest'](obse
         with self.assertRaisesRegex(recovery.Denied,'EXPLICIT_AUDITED_RECOVERY_APPROVAL_REQUIRED'):
             recovery.build_mandates(self.scope,{},1791562000,claim['approvalRef'])
 
+    def test_recorded_human_approval_and_exact_time_boundaries(self):
+        record=json.loads((PROFILES.parents[1]/'evidence/provider-r7-human-approval-20261009.json').read_text())
+        self.assertEqual(recovery.APPROVAL_REF,record['approvalRef'])
+        self.assertEqual(recovery.APPROVED_AT,record['approvedAt'])
+        self.assertEqual(recovery.APPROVAL_EXPIRES_AT,record['expiresAt'])
+        self.assertEqual(record['expiresAt']-record['approvedAt'],7200)
+        self.assertEqual(record['reviewRef'],recovery.REVIEW_REF)
+        self.assertEqual(record['sourceClosureHash'],self.scope['package']['sourceClosureHash'])
+        self.assertEqual(record['containerIds'],{'adapter':recovery.A,'southbound':recovery.S})
+        scope=copy.deepcopy(self.scope)
+        records={role:{name:('CI_ONLY_'+name).encode() for name in values['inputHashes']}
+                 for role,values in scope['roles'].items()}
+        for role,values in records.items():scope['roles'][role]['inputHashes']={name:sha(raw) for name,raw in values.items()}
+        for now in (record['approvedAt'],record['expiresAt']-1):
+            result=recovery.build_mandates(scope,records,now,record['approvalRef'])
+            self.assertEqual(set(result),{'adapter','southbound'})
+            self.assertTrue(all(v['issuedAt']==now and v['expiresAt']==now+240 for v in result.values()))
+        for now in (record['approvedAt']-1,record['expiresAt'],record['expiresAt']+1):
+            with self.assertRaisesRegex(recovery.Denied,'LIVE_AUDITED_RECOVERY_APPROVAL_REQUIRED'):
+                recovery.build_mandates(scope,records,now,record['approvalRef'])
+
     def test_current_task_presence_and_malformed_inventory_are_refused(self):
         recovery.absent_tasks(b'TASK PID STATUS\n')
         recovery.absent_tasks(b'TASK PID STATUS\nother 99 RUNNING\n')
