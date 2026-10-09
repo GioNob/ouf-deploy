@@ -19,6 +19,8 @@ jobs:
           persist-credentials: false
       - name: Closed terminal gate boundaries
         run: python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_terminal_task_delete_gate.py
+      - name: Inert approval and filesystem wrapper restoration
+        run: python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_terminal_task_cleanup_executor.py
       - name: Reviewed disposable Engine and static offline rootfs
         run: |
           curl --fail --location --retry 2 --connect-timeout 15 --max-time 120 https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz --output engine.tgz
