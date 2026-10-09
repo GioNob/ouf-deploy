@@ -1,3 +1,13 @@
+# Current checkpoint — R5 consumed; retained COHORT_READY denial must be read
+
+Operator reported R5 BLOCKED at 13:17:44 Europe/Rome on 9 October 2026. Evidence `evidence/provider-v2-r5-target-denial-20261009.json` preserves the full receipt, including unknown lifecycle/key counters (null). Both controlled Docker requests returned exit 1, neither acknowledged the exact CID. Adapter is DELETING with `BROKER_PHASE_COHORT_READY_DENIED`; southbound is STAGED with no parsed native denial. No admitted running state is proven. Do not rerun R5, reset journals, infer zero operations, or attribute the failure to the lock without the retained internal exception.
+
+New context `/etc/ouf/deploy-snapshots/semantic-provider-v2-approved-context-155oj3tc`; transaction `/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-155oj3tc`; revised source closure `702403e9cd99ddc4ddeed7166f3f408c55657fc690e475e0b35bb5d2c2242bb3`. R4 evidence remains preserved at `semantic-provider-v2-transaction-kaa8rbxd`. Current wrapper hash requires readback; do not reuse the pre-R5 wrapper hash as current.
+
+Next authorized action is read-only `tools/semantic_target_review/read_r5_broker_denial.py` (SHA256 `f54c280a180f2c1218fad0cde5ecba79dce1fcc987f6dd8d7dc1f33d4433086f`): verifies original entry hash and R5 approval/context, installed wrapper against switch receipt, current exact Docker identities, phase journal hashes and retained `broker-denial-*` records. It never invokes broker operate/constructors, lifecycle actions, keys, writes or signatures. Output selects only symbolic reasons and basename exception points; local redaction checks pass for valid records, dropping extra fields and rejecting raw reasons/paths. L0 Matrix v1.7 and PET Authorization v1.5 AUTH-05/06/07/08/09/12 consulted. No new recovery is proposed until diagnosis is known. Teatri/discovery/Semantic/MCP pending unchanged.
+
+Earlier sections below are historical and superseded.
+
 # Current checkpoint — R5 source-bound recovery awaiting exact human acceptance
 
 ## R5 approvato — 9 ottobre 2026, 13:02:46 Europe/Rome
