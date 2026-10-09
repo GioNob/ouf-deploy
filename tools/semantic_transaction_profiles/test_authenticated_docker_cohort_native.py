@@ -38,6 +38,7 @@ def private(path,value):
 def main():
     require(os.geteuid()==0,'CI_ROOT_REQUIRED')
     repository=Path.cwd();suffix=uuid.uuid4().hex[:7];bridge='ccb'+suffix
+    published = os.environ.get('OUF_CI_AUTHENTICATED_PUBLICATION') == '1'
     python=str(Path('/usr/bin/python3').resolve())
     commands={k:str(Path(shutil.which(k)).resolve()) for k in ('ip','nft','nsenter','mount','umount','unshare','runc','openssl','sysctl')}
     def run(*argv,payload=None,check=True,cwd=None):
@@ -83,7 +84,7 @@ def main():
             'pythonPath':python,'pythonSha256':sha(python),
             'driverPath':str(source/'scripts/semantic_provider_preexec_hook.py'),'driverSha256':sha(source/'scripts/semantic_provider_preexec_hook.py'),
             'admissionPath':str(wrapper),'admissionSha256':sha(wrapper),'registryRoot':str(registry),'runtimeStateRoot':'/run','candidates':{}}
-        specs=[];policies=[];networks=[];processes=[]
+        specs=[];policies=[];networks=[];processes=[];inputs=[]
         socket='unix://'+str(root/'docker.sock');daemon=None;containerd=None;network=None;image=None
         bundle_parent=runtime/'containerd-state/io.containerd.runtime.v2.task/moby'
         expected_mount=root/'expected-overlay';expected_mount.mkdir(mode=0o700);mounted=False
@@ -117,6 +118,13 @@ def main():
                 (offline/name).mkdir(parents=True,exist_ok=True);(offline/name).chmod(0o755)
             shutil.copyfile(shutil.which('busybox'),offline/'bin/busybox');(offline/'bin/busybox').chmod(0o755)
             (offline/'approved-source').touch(mode=0o644)
+            if published:
+                # Representative file/byte count; image identity remains CI-only.
+                payload=offline/'payload';payload.mkdir(mode=0o755)
+                for index in range(7500):
+                    path=payload/str(index);path.write_bytes(b'ci-file\n');path.chmod(0o644)
+                with (payload/'bulk').open('wb') as stream:stream.truncate(250*1024*1024)
+                (payload/'bulk').chmod(0o644)
             archive=io.BytesIO()
             with tarfile.open(fileobj=archive,mode='w') as tar:
                 for path in sorted(offline.rglob('*')):tar.add(path,arcname=str(path.relative_to(offline)),recursive=False)
@@ -152,6 +160,7 @@ def main():
                     'metadataParent':str(root/'data/containers'),'networkNamespaceParent':str(runtime/'netns'),
                     'networkNamespaceName':None,'cgroupDriver':'systemd','rootfsPath':str(root/'data/rootfs/overlayfs'/cid),'storageParent':str(root/'data')}
                 policy=compile_policy(template,launch,context);policies.append(policy);specs.append(policy['expectedOci'])
+                inputs.append({'template':template,'launch':launch,'context':context,'framePolicy':policy})
                 networks.append([{'interface':'eth0','bridge':bridge,'mac':mac,'ipv4':address,'workloadRef':'ci-role-'+str(i),'bindingRef':'ci-binding-'+str(i)}])
             kernels=[]
             for i in range(2):
@@ -159,43 +168,51 @@ def main():
                 kernel['guardedInterfaces']=[bridge];kernel['providerFlows'][0]['source']=networks[i][0]['ipv4']
                 kernels.append(kernel)
                 networks[i][0]['leaseGuard']={'configurationHash':digest(kernel),'tableName':kernel['tableName']}
-            # Both OCI documents, guard scopes and sibling identities predate create.
-            declarations=[{'containerId':cids[i],'applicationHash':digest(specs[i]),'networkBindings':networks[i]} for i in range(2)]
-            now=int(time.time())
-            for i,cid in enumerate(cids):
-                directory=registry/cid;directory.mkdir(mode=0o700);(directory/'operation.lock').touch(mode=0o600)
-                shared='ccs_'+suffix+str(i);lease='ccl_'+suffix+str(i);tables.extend([shared,lease])
-                peer=1-i;flow={'purpose':'GATEWAY_ADAPTER','authorityRef':'ci-infrastructure',
-                    'source':networks[0][0]['ipv4'],'destination':networks[1][0]['ipv4'],'protocol':'tcp','port':9443,
-                    'peerIngress':{'kind':'CREATED_CANDIDATE','declaration':declarations[peer],'bindingRef':networks[peer][0]['bindingRef']}}
-                datum={'authority':True,'startAuthorized':True,'leaseDrift':False,'signatureDrift':False,'rootfsDrift':False,
-                    'command':specs[i]['process']['args'],'proof':str(root/'unused-proof'),'ipv4':networks[i][0]['ipv4'],'bridge':bridge,'sharedTable':shared,'leaseTable':lease}
-                intent={'schema':'ouf.semantic-deployment-intent.v1','issuerRef':'ci-installer','installationRef':'ci-installation','entityRef':'ci-entity',
-                    'containerId':cid,'transactionId':hashlib.sha256(cid.encode()).hexdigest(),'artifactHash':digest(policies[i]),
-                    'deploymentConstraintsHash':digest(datum),'transportHash':transport_hash({'networkBindings':networks[i],'transport':[flow],'tableName':shared}),
-                    'runtimeExecutableHash':sha(commands['runc']),'issuedAt':now,'expiresAt':now+240,
-                    'infrastructureAuthorized':True,'creationAuthorized':True,'applicationStartAuthorized':False}
-                signatures=directory/'signatures';signatures.mkdir(mode=0o700);keys={};grants=[]
-                for ref,issuer,roles in [('installer-key','ci-installer',['DEPLOYMENT_INTENT','FINAL_DEPLOYMENT_APPROVAL']),('verifier-key','ci-node-verifier',['CREATION_ATTESTATION'])]:
-                    key=directory/(ref+'.pem');run(commands['openssl'],'genpkey','-algorithm','ED25519','-out',str(key));key.chmod(0o600)
-                    public=run(commands['openssl'],'pkey','-in',str(key),'-pubout','-outform','DER').stdout
-                    require(public[:12]==bytes.fromhex('302a300506032b6570032100'),'CI_PUBLIC_KEY_FORMAT')
-                    keys[ref]=str(key);grants.append({'keyRef':ref,'issuerRef':issuer,'roles':roles,'publicKey':public[12:].hex(),'notBefore':now-30,'expiresAt':now+300,'state':'ACTIVE'})
-                policy=directory/'trust.json';private(policy,{'schema':'ouf.semantic-deployment-trust-policy.v1','installationRef':'ci-installation','entityRef':'ci-entity','keys':grants})
-                crypto={'policyBinding':{'path':str(policy),'sha256':sha(policy)},'signatureDirectory':str(signatures),
-                    'opensslBinding':{'path':commands['openssl'],'sha256':sha(commands['openssl']),'version':run(commands['openssl'],'version').stdout.decode().split()[1]},'privateKeys':keys}
-                kernel=kernels[i]
-                datum_cfg={'approved':{cid:datum},'intent':intent,'crypto':crypto,'kernel':kernel,'commands':{k:commands[k] for k in ('nft','ip','nsenter','unshare')},
-                    'mountCommands':{k:commands[k] for k in ('mount','umount')},'runc':commands['runc'],'runcHash':sha(commands['runc']),
-                    'lock':str(lock),'networkBindings':networks[i],'transport':[flow],'busyboxHash':sha(shutil.which('busybox'))}
-                broker=configure(directory,datum_cfg,repository,source,python,run,live_authority=True)
-                original_node=json.loads((directory/'attestation-producer.json').read_bytes())
-                broker,unused=assemble(directory,source,python,crypto,intent,broker,policies[i],original_node,registry,independently_expected_rootfs=seal)
-                entry_config=directory/'broker.json'
-                cfg['candidates'][cid]={'intentRef':digest(intent),'bundleParents':[str(bundle_parent)],'admissionConfiguration':str(entry_config),'admissionConfigurationHash':sha(entry_config)}
-            private(config_path,cfg)
-            for cid in cids:private(registry/cid/'adapter.json',{'schema':'ouf.semantic-docker-runtime-journal.v1','containerId':cid,
-                'configurationHash':adapter.binding(cfg,cid),'state':'STAGED','runtimeRoot':None,'bundleHash':None,'driverHash':None})
+            if published:
+                from ci_published_transaction_setup import prepare
+                cfg=prepare(root,source,python,commands,lock,inputs,networks,kernels,cids,
+                            seal,image,cfg,run,suffix,tables)
+                registry=Path(cfg['registryRoot'])
+                private(config_path,cfg)
+                print('PRODUCTION_PUBLICATION=PASS SIGNED_INPUTS=true EMPTY_RESULT_DIRECTORIES=true DIRECT_PRODUCTION_BROKER=true CI_ONLY=true TARGET_AUTHORITY=false',flush=True)
+            else:
+                # Both OCI documents, guard scopes and sibling identities predate create.
+                declarations=[{'containerId':cids[i],'applicationHash':digest(specs[i]),'networkBindings':networks[i]} for i in range(2)]
+                now=int(time.time())
+                for i,cid in enumerate(cids):
+                    directory=registry/cid;directory.mkdir(mode=0o700);(directory/'operation.lock').touch(mode=0o600)
+                    shared='ccs_'+suffix+str(i);lease='ccl_'+suffix+str(i);tables.extend([shared,lease])
+                    peer=1-i;flow={'purpose':'GATEWAY_ADAPTER','authorityRef':'ci-infrastructure',
+                        'source':networks[0][0]['ipv4'],'destination':networks[1][0]['ipv4'],'protocol':'tcp','port':9443,
+                        'peerIngress':{'kind':'CREATED_CANDIDATE','declaration':declarations[peer],'bindingRef':networks[peer][0]['bindingRef']}}
+                    datum={'authority':True,'startAuthorized':True,'leaseDrift':False,'signatureDrift':False,'rootfsDrift':False,
+                        'command':specs[i]['process']['args'],'proof':str(root/'unused-proof'),'ipv4':networks[i][0]['ipv4'],'bridge':bridge,'sharedTable':shared,'leaseTable':lease}
+                    intent={'schema':'ouf.semantic-deployment-intent.v1','issuerRef':'ci-installer','installationRef':'ci-installation','entityRef':'ci-entity',
+                        'containerId':cid,'transactionId':hashlib.sha256(cid.encode()).hexdigest(),'artifactHash':digest(policies[i]),
+                        'deploymentConstraintsHash':digest(datum),'transportHash':transport_hash({'networkBindings':networks[i],'transport':[flow],'tableName':shared}),
+                        'runtimeExecutableHash':sha(commands['runc']),'issuedAt':now,'expiresAt':now+240,
+                        'infrastructureAuthorized':True,'creationAuthorized':True,'applicationStartAuthorized':False}
+                    signatures=directory/'signatures';signatures.mkdir(mode=0o700);keys={};grants=[]
+                    for ref,issuer,roles in [('installer-key','ci-installer',['DEPLOYMENT_INTENT','FINAL_DEPLOYMENT_APPROVAL']),('verifier-key','ci-node-verifier',['CREATION_ATTESTATION'])]:
+                        key=directory/(ref+'.pem');run(commands['openssl'],'genpkey','-algorithm','ED25519','-out',str(key));key.chmod(0o600)
+                        public=run(commands['openssl'],'pkey','-in',str(key),'-pubout','-outform','DER').stdout
+                        require(public[:12]==bytes.fromhex('302a300506032b6570032100'),'CI_PUBLIC_KEY_FORMAT')
+                        keys[ref]=str(key);grants.append({'keyRef':ref,'issuerRef':issuer,'roles':roles,'publicKey':public[12:].hex(),'notBefore':now-30,'expiresAt':now+300,'state':'ACTIVE'})
+                    policy=directory/'trust.json';private(policy,{'schema':'ouf.semantic-deployment-trust-policy.v1','installationRef':'ci-installation','entityRef':'ci-entity','keys':grants})
+                    crypto={'policyBinding':{'path':str(policy),'sha256':sha(policy)},'signatureDirectory':str(signatures),
+                        'opensslBinding':{'path':commands['openssl'],'sha256':sha(commands['openssl']),'version':run(commands['openssl'],'version').stdout.decode().split()[1]},'privateKeys':keys}
+                    kernel=kernels[i]
+                    datum_cfg={'approved':{cid:datum},'intent':intent,'crypto':crypto,'kernel':kernel,'commands':{k:commands[k] for k in ('nft','ip','nsenter','unshare')},
+                        'mountCommands':{k:commands[k] for k in ('mount','umount')},'runc':commands['runc'],'runcHash':sha(commands['runc']),
+                        'lock':str(lock),'networkBindings':networks[i],'transport':[flow],'busyboxHash':sha(shutil.which('busybox'))}
+                    broker=configure(directory,datum_cfg,repository,source,python,run,live_authority=True)
+                    original_node=json.loads((directory/'attestation-producer.json').read_bytes())
+                    broker,unused=assemble(directory,source,python,crypto,intent,broker,policies[i],original_node,registry,independently_expected_rootfs=seal)
+                    entry_config=directory/'broker.json'
+                    cfg['candidates'][cid]={'intentRef':digest(intent),'bundleParents':[str(bundle_parent)],'admissionConfiguration':str(entry_config),'admissionConfigurationHash':sha(entry_config)}
+                private(config_path,cfg)
+                for cid in cids:private(registry/cid/'adapter.json',{'schema':'ouf.semantic-docker-runtime-journal.v1','containerId':cid,
+                    'configurationHash':adapter.binding(cfg,cid),'state':'STAGED','runtimeRoot':None,'bundleHash':None,'driverHash':None})
             def start(cid):
                 out=tempfile.TemporaryFile();err=tempfile.TemporaryFile()
                 process=subprocess.Popen([str(engine/'docker'),'-H',socket,'start',cid],stdin=subprocess.DEVNULL,stdout=out,stderr=err)
@@ -209,34 +226,35 @@ def main():
                 if pid<=0:return None
                 path=Path('/proc')/str(pid)/'root/dev/shm/started'
                 return path.read_text().strip() if path.exists() else None
-            # Reproduce the target's pre-create parent refusal with real Docker.
-            # Disposable CI publication only; keep the denial before correcting.
-            wrong=json.loads(json.dumps(cfg))
-            for cid in cids:
-                wrong['candidates'][cid]['bundleParents']=['/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby']
-            private(config_path,wrong)
-            for cid in cids:private(registry/cid/'adapter.json',{'schema':'ouf.semantic-docker-runtime-journal.v1','containerId':cid,
-                'configurationHash':adapter.binding(wrong,cid),'state':'STAGED','runtimeRoot':None,'bundleHash':None,'driverHash':None})
-            for cid in cids:start(cid)
-            denied={}
-            for cid,(process,out,err) in zip(cids,processes):
-                status=process.wait(timeout=15)
-                state=json.loads(dock('inspect','--format','{{json .State}}',cid).stdout)
-                journal=json.loads((registry/cid/'adapter.json').read_bytes())
-                require(status==1 and 'ADAPTER_BINDING_UNPROVEN_L283' in state.get('Error',''),
-                    'CI_EXACT_BUNDLE_PARENT_REFUSAL_UNPROVEN')
-                require(journal['state']=='STAGED' and journal['runtimeRoot'] is None
-                    and state['Running'] is False and state['Status']=='created'
-                    and state['StartedAt'].startswith('0001-') and application_proof(cid) is None,
-                    'CI_WRONG_BUNDLE_PARENT_RELEASED_APPLICATION')
-                denied[cid]={'stateHash':digest(state),'journalHash':digest(journal),'startExit':status}
-                out.close();err.close()
-            private(root/'ci-precreate-bundle-denial-evidence.json',denied)
-            processes.clear()
-            private(config_path,cfg)
-            for cid in cids:private(registry/cid/'adapter.json',{'schema':'ouf.semantic-docker-runtime-journal.v1','containerId':cid,
-                'configurationHash':adapter.binding(cfg,cid),'state':'STAGED','runtimeRoot':None,'bundleHash':None,'driverHash':None})
-            print('DOCKER_BUNDLE_PARENT_REFUSAL=PASS TWO_REAL_DOCKER_DENIALS_L283=true BOTH_CREATED_STAGED=true NO_APPLICATION_RELEASE=true CI_ONLY=true TARGET_AUTHORITY=false')
+            if not published:
+                # Reproduce the target's pre-create parent refusal with real Docker.
+                # Disposable CI publication only; keep the denial before correcting.
+                wrong=json.loads(json.dumps(cfg))
+                for cid in cids:
+                    wrong['candidates'][cid]['bundleParents']=['/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby']
+                private(config_path,wrong)
+                for cid in cids:private(registry/cid/'adapter.json',{'schema':'ouf.semantic-docker-runtime-journal.v1','containerId':cid,
+                    'configurationHash':adapter.binding(wrong,cid),'state':'STAGED','runtimeRoot':None,'bundleHash':None,'driverHash':None})
+                for cid in cids:start(cid)
+                denied={}
+                for cid,(process,out,err) in zip(cids,processes):
+                    status=process.wait(timeout=15)
+                    state=json.loads(dock('inspect','--format','{{json .State}}',cid).stdout)
+                    journal=json.loads((registry/cid/'adapter.json').read_bytes())
+                    require(status==1 and 'ADAPTER_BINDING_UNPROVEN_L283' in state.get('Error',''),
+                        'CI_EXACT_BUNDLE_PARENT_REFUSAL_UNPROVEN')
+                    require(journal['state']=='STAGED' and journal['runtimeRoot'] is None
+                        and state['Running'] is False and state['Status']=='created'
+                        and state['StartedAt'].startswith('0001-') and application_proof(cid) is None,
+                        'CI_WRONG_BUNDLE_PARENT_RELEASED_APPLICATION')
+                    denied[cid]={'stateHash':digest(state),'journalHash':digest(journal),'startExit':status}
+                    out.close();err.close()
+                private(root/'ci-precreate-bundle-denial-evidence.json',denied)
+                processes.clear()
+                private(config_path,cfg)
+                for cid in cids:private(registry/cid/'adapter.json',{'schema':'ouf.semantic-docker-runtime-journal.v1','containerId':cid,
+                    'configurationHash':adapter.binding(cfg,cid),'state':'STAGED','runtimeRoot':None,'bundleHash':None,'driverHash':None})
+                print('DOCKER_BUNDLE_PARENT_REFUSAL=PASS TWO_REAL_DOCKER_DENIALS_L283=true BOTH_CREATED_STAGED=true NO_APPLICATION_RELEASE=true CI_ONLY=true TARGET_AUTHORITY=false')
             import fcntl
             lockfd=os.open(lock,os.O_RDWR|os.O_NOFOLLOW)
             try:
@@ -259,7 +277,7 @@ def main():
             for status,message in outcomes:
                 if status:
                     for index,cid in enumerate(cids):
-                        for filename in ('ci-broker-denial.json','ci-node-denial.json'):
+                        for filename in ('ci-broker-denial.json','ci-node-denial.json',*('broker-denial-'+phase+'.json' for phase in ('authorize-create','record-created','cohort-ready','prepare','cleanup'))):
                             path=registry/cid/filename
                             if path.exists():print('CONTROLLED_COHORT_DIAG='+json.dumps({'candidateIndex':index,**json.loads(path.read_bytes())}))
                         phases={}
@@ -285,6 +303,8 @@ def main():
                 grant=json.loads((registry/cid/'driver.json').read_bytes())
                 require(grant['schema']=='ouf.semantic-preexec-driver.v6' and set(grant['peerBinding']['observations'])=={cids[1-i]},'CI_V6_PEER_GRANT_MISSING')
                 require(grant['profile']['bundleHash']==digest(specs[i]),'CI_SIGNED_FULL_OCI_DRIFT')
+            if published:
+                print('PUBLISHED_DOCKER_COHORT=PASS TWO_APPLICATION_MARKERS=true PRODUCTION_NODE_APPROVAL_PREPARER_DRIVER=true ROOTFS_ENTRIES='+str(seal['entries'])+' ROOTFS_BYTES='+str(seal['bytes'])+' CI_ONLY=true TARGET_AUTHORITY=false')
             print('AUTHENTICATED_DOCKER_COHORT=PASS ENGINE_29_8_1=true FULL_OCI_FIXED_BEFORE_CREATE=true INDEPENDENT_OFFLINE_ROOTFS=true NODE_V4=true PEER_BOUND_V6=true TWO_APPLICATION_MARKERS=true CI_KEYS_ONLY=true TARGET_AUTHORITY=false')
             print('BROKER_BOUNDED_COMMON_LOCK=PASS FORCED_NATIVE_CONTENTION=true TWO_APPLICATION_MARKERS=true NO_OPERATION_RETRY=true TARGET_AUTHORITY=false')
         finally:

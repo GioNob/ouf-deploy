@@ -111,3 +111,6 @@ jobs:
       - name: Admit two full-frame peers through actual concurrent Docker requests
         working-directory: gateway
         run: sudo env OUF_DOCKER_WINDOW_ENGINE_DIRECTORY="${{ github.workspace }}/engine-bin" /usr/bin/python3 -B ../deploy/tools/semantic_transaction_profiles/test_authenticated_docker_cohort_native.py
+      - name: Publish signed records and admit peers through direct production broker
+        working-directory: gateway
+        run: sudo env OUF_CI_AUTHENTICATED_PUBLICATION=1 OUF_DOCKER_WINDOW_ENGINE_DIRECTORY="${{ github.workspace }}/engine-bin" /usr/bin/python3 -B ../deploy/tools/semantic_transaction_profiles/test_authenticated_docker_cohort_native.py

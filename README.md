@@ -1,3 +1,15 @@
+# Current checkpoint — R6 cleanup succeeded; complete-path audit in progress
+
+The operator-reported [cleanup receipt](evidence/provider-r6-terminal-cleanup-target-success-20261009.json) reports both exact terminal tasks removed, containers and prior journals preserved, wrapper restored, provider sets empty and exit 0. Retained directory: `/etc/ouf/deploy-snapshots/semantic-r6-terminal-cleanup-f87o7724`. Two delete requests; lifecycle count remains null. Zero start requests, keys, signatures or provider calls; no daemon restart. This is user-pasted evidence, not an independent VPS observation. Do not repeat cleanup or any consumed admission.
+
+The human now requests an exhaustive failure audit before another target intervention. The audit acquired 432 source/evidence/release/workflow files at c82c992279ce6e04ed6da0840ec3d6610946ca6d and verified every Git blob. Known R6 cause: the publisher omitted four empty producer-result directories; repository fix 3aff8e0578db999a6fd946c699c3fd318e8e34df has not run on this target. No fresh provider executor is ready or authorized.
+
+A coverage gap was found: prior native Docker CI used fixture provisioning and a CI broker, bypassing production publication. New CI exercises signed records through the actual publisher, direct production broker, node/approval/preparer/driver and real Docker, with a larger independent synthetic filesystem. Its outcome is pending; neither this fixture nor CI keys authorize the VPS. Audit also covers later phases and deadline/diagnostic contracts before proposing a fresh transaction. Existing accepted image/frame/rootfs inputs remain preserved; validity must be checked at execution.
+
+Teatri asset/profile, national discovery, Semantic/MCP rollout and governed onboarding/ingestion/UDP remain pending. No asset reload, local fallback, release acceptance or PR merge.
+
+Earlier checkpoints below are historical and superseded.
+
 # Current checkpoint — exact R6 terminal-task cleanup approved; operator execution pending
 
 Human “Approvo” at 2026-10-09 17:43:56 Europe/Rome authorizes only the two STOPPED R6 residual tasks reviewed in [scope](releases/PROVIDER_R6_TERMINAL_CLEANUP_REVIEW_20261009.md); [approval record](evidence/provider-r6-terminal-cleanup-human-approval-20261009.json). ApprovalRef OUF_R6_TERMINAL_CLEANUP_APPROVED_20261009T174356_CEST, epoch 1791560636, expiry 1791561836 (18:03:56 Europe/Rome), maximum maintenance window 120 seconds. Executor 7876ecba663ca25a5d7f8322413cd89950fee04a, SHA256 1904926c751851b599e7eab33063d7b9a94d34388b363d4853c831c8834cddaa: only approval reference/timestamps differ from prepared 832ce7595f6d8470f37c5348116490f10589f88c4e924b50450ee1300b6eaaad. Four scoped executor tests still pass. Pending VPS execution, no success inferred.
