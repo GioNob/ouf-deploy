@@ -1,6 +1,6 @@
 # R6 — fresh admission after successful terminal maintenance, 2026-10-09
 
-Status: concrete proposed one-use recovery; eight local tests passed. Executor pending scoped human approval; no R6 target signing/switch/start performed. CI pending. This is not release acceptance.
+Status: concrete proposed one-use recovery; eight local tests passed. Executor pending scoped human approval; no R6 target signing/switch/start performed. Native CI succeeded (all four jobs); launcher failure checks passed. This is not release acceptance.
 
 ## Retained target prerequisites
 
@@ -37,3 +37,9 @@ The residual-task cleanup removes the observed obstruction to southbound creatio
 AUTH-05/06/07/08/09/12: distinct human/agent/service authority, explicit scope, immutable old decisions/evidence, new auditable version, and fail closed before keys on missing evidence. Operational acknowledgment is not a domain HUMAN_USER token or release acceptance. Existing image and sixteen-input acceptances remain valid; only this new concrete one-use admission requires acknowledgment because R5 and maintenance are consumed.
 
 Keep Teatri asset 6609b245-86ed-4315-8ce0-73f2a8555bf3 and profile 7984c39c-7396-4248-ab0a-f2efc390b49c. National semantic discovery without local fallback, governed human adoption/publication, owner/Gateway mediation, Onboarding/Ingestion/UDP follow-up and draft Semantic #31/#32, Gateway #57, MCP #49 remain pending. No reload or merge is implied.
+
+## Final validation and operator launcher
+
+Executor code commit c57db7df9d37c85c5df7caf00819dbacc30ab9b8; exact remote/local bytes match. Native CI [37946292104](https://github.com/GioNob/ouf-deploy/actions/runs/37946292104) SUCCESS: profiles/job113873282322 includes the eight R6 tests and real role signatures; native-frame-profiles/job113873281740, native-docker-creation-window/job113873282223 and native-authenticated-docker-cohort/job113873282349 all succeed. These are disposable implementation proofs; no root R6 target execution or target acceptance is claimed.
+
+Inert operator launcher [provider-v2-post-terminal-admission-20261009.sh](provider-v2-post-terminal-admission-20261009.sh), SHA256 725d911609bcf278735e1e3aa596c03e18bc99308886b83225df8eb5ab7ca09b, pins the pending R6 executor, existing accepted R5 pure source transformation and corrected preflight. It reuses /home/oufadmin/ouf-reviewed-recovery.qGpE9is0/execute.py and /home/oufadmin/ouf-r3-recovery.3ssUuaKX/execute.py by exact hashes. Bash syntax and download failure, wrong digest, source-transform download failure and preflight download failure all PASS without reaching sudo. Before any operator use, record the real scoped human message/time, bind only executor approval fields and update its launcher hash/ref and approval argument. Do not use maintenance authorization as this acknowledgment.
