@@ -69,6 +69,23 @@ class TargetBoundaries(unittest.TestCase):
             with self.assertRaises(ValueError):
                 target.validate_report(changed)
 
+    def test_unit_absence_uses_full_inventory_and_keeps_real_errors_fatal(self):
+        import subprocess
+        def native(args, **kwargs):
+            if args[-1] == target.UNIT:
+                return subprocess.CompletedProcess(args, 1, b'', b'')
+            return subprocess.CompletedProcess(args, 0, b'other.service enabled enabled\n', b'')
+        with patch.object(target.subprocess, 'run', side_effect=native):
+            with self.assertRaisesRegex(ValueError, 'NATIVE_SERVICE_COMMAND_FAILED'):
+                target.command(['/usr/bin/systemctl', 'list-unit-files', target.UNIT])
+            target.require_unit_absent(target.UNIT)
+        with patch.object(target, 'command', return_value=b'other.service enabled\n' + target.UNIT.encode() + b' static\n'):
+            with self.assertRaisesRegex(ValueError, 'LEASE_UNIT_NAME_ALREADY_OWNED'):
+                target.require_unit_absent(target.UNIT)
+        with patch.object(target.subprocess, 'run', return_value=subprocess.CompletedProcess([], 1, b'', b'bus unavailable')):
+            with self.assertRaisesRegex(ValueError, 'NATIVE_SERVICE_COMMAND_FAILED'):
+                target.require_unit_absent(target.UNIT)
+
     def test_service_does_not_rearm_or_enable(self):
         args = core.service_command(Path('/etc/ouf/deploy-snapshots/reviewed'), 'a' * 64,
                                     unit=target.UNIT)

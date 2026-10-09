@@ -20,6 +20,7 @@ import uuid
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import activation_core as core
+import activate_r8_lease as target
 
 
 def run(argv, raw=None, check=True):
@@ -137,6 +138,7 @@ def main():
         root = Path(temporary)
         root.chmod(0o700)
         unit = 'ouf-ci-r8-lease-' + uuid.uuid4().hex[:8] + '.service'
+        target.require_unit_absent(unit)
         owner, old_hash = fixture(root, source, nft)
         core.create(root/'activation_core.py', (HERE/'activation_core.py').read_bytes())
         core.create(root/'activate.py', CHILD.encode())
@@ -152,6 +154,13 @@ def main():
         args.insert(1, '--property=NetworkNamespacePath=/proc/' + str(os.getpid()) + '/ns/net')
         try:
             run(args)
+            try:
+                target.require_unit_absent(unit)
+            except ValueError as error:
+                assert str(error) == 'LEASE_UNIT_NAME_ALREADY_OWNED'
+            else:
+                raise AssertionError('REAL_LOADED_SERVICE_NOT_DETECTED')
+            print('R8_UNIT_INVENTORY=ABSENCE_AND_EXISTING_SERVICE_VERIFIED REAL_SYSTEMCTL=true', flush=True)
             deadline = time.monotonic() + 55
             while not (root/'cycle-2.json').exists():
                 if (root/'worker-denial.json').exists():

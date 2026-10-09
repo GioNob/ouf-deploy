@@ -98,10 +98,22 @@ def command(argv, timeout=20):
     require(len(result.stdout) <= 131072 and len(result.stderr) <= 131072, 'NATIVE_OUTPUT_UNBOUNDED')
     if result.returncode:
         error = ValueError('NATIVE_SERVICE_COMMAND_FAILED')
-        error.native_diagnosis = {'commandName': Path(argv[0]).name, 'exitCode': result.returncode,
+        error.native_diagnosis = {'commandName': Path(argv[0]).name, 'subcommand': argv[1] if len(argv) > 1 else None,
+                                  'exitCode': result.returncode, 'stdoutSha256': sha(result.stdout), 'stdoutBytes': len(result.stdout),
                                   'stderrSha256': sha(result.stderr), 'stderrBytes': len(result.stderr)}
         raise error
     return result.stdout
+
+
+def require_unit_absent(unit):
+    # With an exact nonmatching pattern, list-unit-files may return exit 1
+    # with no stderr. Enumerate both inventories without a name pattern and
+    # check exact membership ourselves; genuine command errors remain fatal.
+    for subcommand in ('list-units', 'list-unit-files'):
+        names = command(['/usr/bin/systemctl', subcommand, '--type=service',
+                         '--all', '--no-legend', '--no-pager'])
+        require(not any(unit.encode() in line.split() for line in names.splitlines()),
+                'LEASE_UNIT_NAME_ALREADY_OWNED')
 
 
 def native_program(reader, path):
@@ -206,10 +218,7 @@ def apply(reference):
         reader.private(cfg['commandBindings'][name]['path'], cfg['commandBindings'][name]['sha256'], executable=True)
     native = {name: native_program(reader, path) for name, path in (
         ('systemd-run', Path('/usr/bin/systemd-run')), ('python', Path('/usr/bin/python3.13')))}
-    for subcommand in ('list-units', 'list-unit-files'):
-        names = command(['/usr/bin/systemctl', subcommand, '--all', '--no-legend', '--no-pager', UNIT])
-        require(not any(line.split() and line.split()[0].decode() == UNIT for line in names.splitlines()),
-                'LEASE_UNIT_NAME_ALREADY_OWNED')
+    require_unit_absent(UNIT)
     # Compatibility is queried before any grant; no package installation.
     version = command(['/usr/bin/systemd-run', '--version'])
     require(re.search(rb'^systemd [0-9]+', version), 'SYSTEMD_RUN_VERSION_UNPROVEN')
