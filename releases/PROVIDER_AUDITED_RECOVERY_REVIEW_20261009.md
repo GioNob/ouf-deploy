@@ -2,9 +2,11 @@
 
 Il messaggio umano «Approvo» del **9 ottobre 2026 alle 19:19:42 Europe/Rome** autorizza esattamente questa revisione, una sola transazione nuova. Finestra per iniziare: fino alle **21:19:42 Europe/Rome**, massimo 7200 secondi. [Ricevuta di approvazione](../evidence/provider-r7-human-approval-20261009.json). Non è necessaria un'altra conferma.
 
-Executor approvato al commit `f869679b7bf81d930a925508e0fee48eab25612d`, SHA256 `6ce5addae1df8a418bc3dfead347c5d6acbd51d5607c436260aadef741cbcfc0`. Rispetto al codice revisionato cambiano soltanto riferimento e due timestamp. Launcher approvato SHA256 `3bdf5318b8d83e2e52f4cd57b8e8429b75d75fa346285b6ab645dec318387d81`; commit sorgenti/esecutore e tutti i digest sono espliciti. Quattordici prove mirate superate; dopo i pin finali sono ripassate le cinque prove di consegna. Nessuna operazione VPS effettuata dalla sessione.
+Executor approvato al commit `f869679b7bf81d930a925508e0fee48eab25612d`, SHA256 `6ce5addae1df8a418bc3dfead347c5d6acbd51d5607c436260aadef741cbcfc0`. Rispetto al codice revisionato cambiano soltanto riferimento e due timestamp. Launcher corretto per riusare gh fuori dal PATH, SHA256 `05add65060d4684f0143030b8a800e40dafd9851a4d350eda5e99b25369ac952`; commit sorgenti/esecutore e tutti i digest sono espliciti. Quattordici prove mirate superate; dopo i pin finali sono ripassate le cinque prove di consegna. Nessuna operazione VPS effettuata dalla sessione.
 
-Verifica della consegna finale: commit launcher `9b68070ae40a8fcc3752837b8d91be64ab38ebde`, [CI 37965938237](https://github.com/GioNob/ouf-deploy/actions/runs/37965938237), quattro job SUCCESS. Verificati nei log i due marker applicativi e le 14 prove, incluse le scadenze esatte dell’approvazione. [Ricevuta finale](../evidence/provider-r7-approved-delivery-validation-20261009.json).
+Verifica precedente alla correzione gh: commit launcher `9b68070ae40a8fcc3752837b8d91be64ab38ebde`, [CI 37965938237](https://github.com/GioNob/ouf-deploy/actions/runs/37965938237), quattro job SUCCESS. Verificati nei log i due marker applicativi e le 14 prove, incluse le scadenze esatte dell’approvazione. [Ricevuta finale](../evidence/provider-r7-approved-delivery-validation-20261009.json).
+
+**Correzione consegna delle 19:33:14:** il tentativo esterno si è fermato su `gh: command not found`, prima di scaricare/eseguire R7. Il percorso gh già registrato era stato omesso dal comando e dal launcher interno. [Ricevuta](../evidence/provider-r7-gh-path-delivery-failure-20261009.json). Nuovo launcher `697ddbd170a6eac7576b77bc598d726815f06d14`; il comando sotto usa direttamente l’installazione esistente e anche il launcher interno la risolve. Executor, sorgenti runtime, approvazione e scadenza restano identici. Il fallimento di questo download non ha consumato il claim R7. Nessuna reinstallazione o nuova approvazione richiesta.
 
 Eseguire sul VPS una sola volta entro le 21:19:42 del 9 ottobre 2026 Europe/Rome, poi conservare e riportare tutto l’output:
 
@@ -13,10 +15,12 @@ Eseguire sul VPS una sola volta entro le 21:19:42 del 9 ottobre 2026 Europe/Rome
   set -u
   set -o pipefail
   umask 077
+  OUF_R7_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+  [[ -x "$OUF_R7_GH" ]] || { echo "OUF_R7_DELIVERY=EXISTING_GH_NOT_EXECUTABLE"; exit 1; }
   OUF_R7_LAUNCH="$(mktemp -d "$HOME/ouf-r7-launch.XXXXXXXX")" || exit 1
-  gh api 'repos/GioNob/ouf-deploy/contents/releases/provider-audited-recovery-20261009.sh?ref=9b68070ae40a8fcc3752837b8d91be64ab38ebde' --jq '.content' > "$OUF_R7_LAUNCH/run.b64" || exit 1
+  "$OUF_R7_GH" api 'repos/GioNob/ouf-deploy/contents/releases/provider-audited-recovery-20261009.sh?ref=697ddbd170a6eac7576b77bc598d726815f06d14' --jq '.content' > "$OUF_R7_LAUNCH/run.b64" || exit 1
   base64 --decode "$OUF_R7_LAUNCH/run.b64" > "$OUF_R7_LAUNCH/run.sh" || exit 1
-  printf '%s  %s\n' '3bdf5318b8d83e2e52f4cd57b8e8429b75d75fa346285b6ab645dec318387d81' "$OUF_R7_LAUNCH/run.sh" | sha256sum -c - || exit 1
+  printf '%s  %s\n' '05add65060d4684f0143030b8a800e40dafd9851a4d350eda5e99b25369ac952' "$OUF_R7_LAUNCH/run.sh" | sha256sum -c - || exit 1
   bash "$OUF_R7_LAUNCH/run.sh"
 )
 OUF_R7_BOOTSTRAP_EXIT=$?

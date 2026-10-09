@@ -73,6 +73,24 @@ raise SystemExit(int(os.environ.get('CI_SUDO_EXIT','0')))
         self.assertFalse((self.root/'sudo-marker').exists())
         self.assertEqual(list(self.root.glob('ouf-audited-recovery.*')),[])
 
+    def test_documented_outer_command_uses_retained_cli_outside_path(self):
+        (self.bin/'gh').rename(self.root/'retained-gh')
+        for name in ('mktemp','base64','sha256sum'):
+            (self.bin/name).symlink_to('/usr/bin/'+name)
+        marker=self.root/'outer-executed-launcher'
+        recorder=self.bin/'bash'
+        recorder.write_text('#!'+sys.executable+'\nimport pathlib,sys\npathlib.Path('+repr(str(marker))+').write_text(sys.argv[1])\n')
+        recorder.chmod(0o755)
+        document=(ROOT/'releases/PROVIDER_AUDITED_RECOVERY_REVIEW_20261009.md').read_text()
+        command=document.split('```bash\n',1)[1].split('```',1)[0]
+        command=command.replace('$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh',str(self.root/'retained-gh'))
+        command=command.replace('$HOME/ouf-r7-launch.',str(self.root/'ouf-r7-launch.'))
+        result=subprocess.run(['/bin/bash','-c',command],env={**self.env,'PATH':str(self.bin)},
+            stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=10)
+        self.assertIn(b'OUF_R7_BOOTSTRAP_EXIT=0',result.stdout,result.stdout.decode()+result.stderr.decode())
+        self.assertEqual(Path(marker.read_text()).read_bytes(),(ROOT/'releases/provider-audited-recovery-20261009.sh').read_bytes())
+        self.assertFalse((self.root/'sudo-marker').exists())
+
     def test_first_and_last_download_failures_never_reach_sudo(self):
         for remote in ('tools/semantic_target_review/execute_audited_provider_recovery.py',
                        'evidence/provider-audited-recovery-scope-20261009.json'):

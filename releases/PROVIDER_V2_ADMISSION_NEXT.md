@@ -1,3 +1,11 @@
+# Current checkpoint — R7 delivery corrected to reuse the documented gh executable
+
+Operator report at 2026-10-09 19:33:14 Europe/Rome: `gh: command not found`, `OUF_R7_BOOTSTRAP_EXIT=1`. The displayed outer command failed before downloading/invoking R7 or reaching sudo; this attempt did not consume its recovery claim. [Failure evidence](../evidence/provider-r7-gh-path-delivery-failure-20261009.json). The prior instructions incorrectly assumed gh in PATH despite the recorded installation at `$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh`.
+
+Corrected launcher commit `697ddbd170a6eac7576b77bc598d726815f06d14`, SHA256 `05add65060d4684f0143030b8a800e40dafd9851a4d350eda5e99b25369ac952`. The [current operator command](PROVIDER_AUDITED_RECOVERY_REVIEW_20261009.md) uses that existing executable explicitly; the inner launcher also falls back to it. Both layers are tested with gh absent from PATH. Executor commit `f869679b7bf81d930a925508e0fee48eab25612d`, SHA256 `6ce5addae1df8a418bc3dfead347c5d6acbd51d5607c436260aadef741cbcfc0`, runtime closure, all accepted inputs and R7 human approval remain unchanged. The existing approval expires at **21:19:42 Europe/Rome on 9 October**. No new approval, installation, maintenance or claim reset. Target transaction remains pending; provide the corrected single operator block, preserve its full output and do not automatically retry after execution.
+
+Earlier checkpoints below are historical and superseded.
+
 # Current checkpoint — R7 approved and pinned; operator execution pending
 
 Human message “Approvo” at **2026-10-09 19:19:42 Europe/Rome** approves the exact [R7 review](PROVIDER_AUDITED_RECOVERY_REVIEW_20261009.md), one fresh guarded transaction for the two existing CIDs, unchanged accepted inputs and source closure `4b9fbd3149b417a2a696302784aa54d0569b5e87ddc66ac439c153c9ab16bc02`. [Approval witness](../evidence/provider-r7-human-approval-20261009.json). ApprovalRef `OUF_PROVIDER_AUDITED_RECOVERY_APPROVED_20261009T191942_CEST_R7`; start window ends **21:19:42 Europe/Rome (19:19:42Z)**, epochs 1791566382–1791573582. Runtime mandates remain limited to 240 seconds and must fit the actual dependency validity.

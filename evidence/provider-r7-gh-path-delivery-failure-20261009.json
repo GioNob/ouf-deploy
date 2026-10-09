@@ -1,11 +1,12 @@
 {
   "approvalExpiresAtUnchanged": 1791573582,
   "approvalRefUnchanged": "OUF_PROVIDER_AUDITED_RECOVERY_APPROVED_20261009T191942_CEST_R7",
+  "correctedLauncherCommit": "697ddbd170a6eac7576b77bc598d726815f06d14",
   "correctedLauncherSha256": "05add65060d4684f0143030b8a800e40dafd9851a4d350eda5e99b25369ac952",
   "correctionScope": "CLI_RESOLUTION_AND_EXPLICIT_INVOCATION_ONLY",
   "executorCommitUnchanged": "f869679b7bf81d930a925508e0fee48eab25612d",
   "executorSha256Unchanged": "6ce5addae1df8a418bc3dfead347c5d6acbd51d5607c436260aadef741cbcfc0",
-  "focusedDeliveryTests": 7,
+  "focusedDeliveryTests": 8,
   "independentTargetObservation": false,
   "inferenceFromDisplayedCommandAndError": {
     "containerLifecycleOperations": 0,
@@ -24,5 +25,6 @@
   "reportedAt": "2026-10-09T19:33:14+02:00",
   "runtimeClosureUnchanged": "4b9fbd3149b417a2a696302784aa54d0569b5e87ddc66ac439c153c9ab16bc02",
   "schema": "ouf.provider-r7-delivery-gh-path-failure.v1",
+  "testsIncludeDocumentedOuterCommandWithoutGhInPath": true,
   "testsIncludeRetainedCliOutsidePath": true
 }
