@@ -5,8 +5,8 @@ container/image/snapshot deletion, journal reset or automatic retry.
 """
 import contextlib,fcntl,hashlib,io,json,os,re,stat,subprocess,sys,tempfile,time,traceback
 from pathlib import Path
-APPROVAL_REF='PENDING_TERMINAL_ALIAS_RECOVERY_APPROVAL'
-APPROVED_AT=None
+APPROVAL_REF='OUF_TERMINAL_ALIAS_RECOVERY_HUMAN_APPROVAL_20261009_160745'
+APPROVED_AT=1791554865
 APPROVAL_EXPIRES_AT=1791559218
 REVIEW_SHA='4269551bed61bb437697cc6d38fb4f782264ba1dfb2bb6109347676fe2f95e27'
 GATE_SHA='a23f71e7fbe29fc3df4f138f41d35b4b5a3c63f14f1f15bc1c9e3d62644c9cfe'
