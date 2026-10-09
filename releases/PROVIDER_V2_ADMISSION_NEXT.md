@@ -1,3 +1,15 @@
+# Current checkpoint — two lease cycles proven; new readback recovery prepared, approval pending
+
+Operator read22:42:50 confirms two LEASE_ACTIVE receipts, fresh DNS and addresses[1,1], workerPID1847190, no worker denial, all prior program hashes matched. Cleanup left QUIESCED, original empty journal/sets, service not-found and both original R8 PIDs running without restarts. [Target readback projection](../evidence/provider-r8-final-lease-readback-target-20261009.json). The exact historical final failing predicate remains unknown because the old verifier did not save its values. Preserve this limit.
+
+The integrated verifier now reads the immutable second-cycle receipt, checks actual systemd status/PID/Restart/ExecStart, saves every comparison, and then rechecks current process generations and native membership. Real native CI37989505450/job114019767899 passed even with the deliberately delayed summary; it executes actual target compare/properties functions. Original core/compiler unchanged. [Recovery review](PROVIDER_R8_LEASE_READBACK_RECOVERY_REVIEW_20261009.md) is concrete but PENDING with zero times. Source1d77ecf777aad58bbb7a7f7bff3fd31b9bf5c32f, entrypoint97b41378fc8bf7339e09968871371107ced63842dea226af874c819d546d92f2.
+
+Existing lease claim remains consumed and untouched. One newly approved action would verify all retained prior bindings and create only `/etc/ouf/provider-r8-network-lease-readback-recovery.claim`, with the same endpoints, current process generations and finite lease scope. Old launchers must not be replayed. Prepared new delivery reuses existing reader/core/compiler/gh and preserves old outputs. No new target action, claim reset or approval has occurred. Ask only for the genuine new one-use activation decision after completing delivery validation; do not ask for another root diagnosis or repeat preparations.
+
+Semantic/MCP fresh evidence, rollout and discovery grants remain next. Teatri asset/profile remain loaded; no national job, reload or local fallback.
+
+Earlier checkpoints below are historical and superseded.
+
 # Current checkpoint — lease attempt consumed; final-readback denial under investigation
 
 Operator result22:35:19 Europe/Rome: EXACT_ACTIVE_LEASE_WORKER_UNPROVEN at final comparison line272, snapshot `/etc/ouf/deploy-snapshots/semantic-r8-lease-ao5xt5og`. Cleanup reports exact worker stopped and leases revoked; lifecycle0, keys0, signatures0, doNotRerunApply=true. [Receipt](../evidence/provider-r8-final-lease-denial-target-20261009.json). The parent passed the cycle-2 file-existence check; its contents and the historical comparison values were not acquired. Do not claim target cause confirmed. **Lease approval is consumed. Do not run either lease launcher, reset claims, start the service or repeat R8.**
