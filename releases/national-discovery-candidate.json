@@ -9,8 +9,8 @@
   "sourcePins": {
     "semantic": {
       "repository": "GioNob/ouf-semantic-registry",
-      "commit": "67cb426995d7b0723e34bfe54e52ea89ae02b81d",
-      "pullRequest": 32
+      "commit": "403531a9df1cbc877078f8126fd1fc4ff18acea9",
+      "pullRequest": 34
     },
     "gateway": {
       "repository": "GioNob/ouf-api-gateway",
@@ -19,8 +19,8 @@
     },
     "mcp": {
       "repository": "GioNob/ouf-mcp-server",
-      "commit": "3d51524eeddb539d6f78961447e64d9d640141c4",
-      "pullRequest": 49
+      "commit": "3ba1d4abcf62af1572997a217a333fa8d231c29f",
+      "pullRequest": 50
     }
   },
   "migration": {
@@ -40,7 +40,6 @@
   "releaseApplied": false,
   "acceptanceGranted": false,
   "blockingReleaseRequirements": [
-    "qualify and stage new signed Semantic/MCP candidates after fresh scans blocked both retained application archives on Go advisories",
     "migration-aware Semantic/MCP applicator with current private backup and explicit recovery",
     "governed replacement or preservation of the exact Semantic host peer binding; no ordinary recreate under retained ifindex1377",
     "existing private provider credential and separate discovery owner receipt key bound consistently to Semantic/Gateway",
@@ -86,7 +85,7 @@
     }
   },
   "runtimeSelection": "OPERATOR_SELECTED_SUPPORTED_OSS",
-  "candidateStatus": "APPLICATION_IMAGES_BLOCKED_FRESH_GO_ADVISORIES_REMEDIATION_IN_CI",
+  "candidateStatus": "SIGNED_FRESH_REMEDIATION_STAGED_CUTOVER_GUARD_REQUIRED",
   "rejectedPackages": [
     {
       "runId": 37659421180,
@@ -97,38 +96,38 @@
       "reason": "OSS_SEMANTIC_RESIDUAL_CRITICAL_HIGH"
     }
   ],
-  "qualificationEvidence": "evidence/discovery-runtime-qualification-20261007.json",
+  "qualificationEvidence": "evidence/discovery-remediated-application-qualification-20261009.json",
   "signedProducerCommits": {
-    "semantic": "91381f96be0a3fbd75dcdc44c22aeb90c9f12b8a",
-    "mcp": "32bc369b0ab98629db82620c4ae14525ae412650"
+    "semantic": "47d70fac4d69f23a24c552cd5cac4ebaf797c529",
+    "mcp": "db45385648c7956e045d2d8f0b3f8e3f24270dac"
   },
   "signedTargetStage": {
-    "directory": "/home/oufadmin/ouf-discovery-signed-stage-pn8_x4vj",
-    "runId": 37667405182,
+    "directory": "/home/oufadmin/ouf-discovery-remediation-stage-6j7rh3xz",
+    "runId": 37996500108,
     "roles": [
       {
-        "archiveSha256": "a6a9bfbaffa0396b30016a47ce948ed1c03b46b74d99b0a77299b2695ebfc107",
-        "imageId": "sha256:e9730d879f171530d56843670d7d5139dd7ef2f4ee59c812a1361224392a73b3",
-        "producerCommit": "91381f96be0a3fbd75dcdc44c22aeb90c9f12b8a",
-        "producerRun": 37665730385,
+        "archiveSha256": "e1a62b7f53497ed471e6539d90ab02efbb4ee68c9f90f3904bcce42618ceaff6",
+        "imageId": "sha256:b1a7956a673f88b5ee65d174c2eda7b9e448153e101348c06fdd53c0640e700b",
+        "producerCommit": "47d70fac4d69f23a24c552cd5cac4ebaf797c529",
+        "producerRun": 37995955667,
         "role": "semantic",
         "severityCounts": {
           "Critical": 0,
           "High": 0,
-          "Low": 9,
-          "Medium": 177,
+          "Low": 17,
+          "Medium": 169,
           "Negligible": 0,
           "Unknown": 0
         },
-        "sourceCommit": "67cb426995d7b0723e34bfe54e52ea89ae02b81d",
+        "sourceCommit": "403531a9df1cbc877078f8126fd1fc4ff18acea9",
         "targetArchiveBytesVerified": true,
         "targetCryptoVerified": true
       },
       {
-        "archiveSha256": "8043f74313823c0f1cf387e0802e75692930f4b83f7782c6dbad2e008cb3d2af",
-        "imageId": "sha256:a0bfc5a3c4eb8710d64b7621224a373d3cfe6db03bc79fc6adbf071c3a220e47",
-        "producerCommit": "32bc369b0ab98629db82620c4ae14525ae412650",
-        "producerRun": 37665728762,
+        "archiveSha256": "be646ac6499f9cb6c781b899f6a7dbdb6057fde4b6a2b71407229a5a6e8cc853",
+        "imageId": "sha256:33eb5195d926bbc15397a82ccd2b1a6c0ae0461f3ff86dd1bb7bbcc7fbc8e7c7",
+        "producerCommit": "db45385648c7956e045d2d8f0b3f8e3f24270dac",
+        "producerRun": 37995954188,
         "role": "mcp",
         "severityCounts": {
           "Critical": 0,
@@ -138,11 +137,15 @@
           "Negligible": 0,
           "Unknown": 0
         },
-        "sourceCommit": "3d51524eeddb539d6f78961447e64d9d640141c4",
+        "sourceCommit": "3ba1d4abcf62af1572997a217a333fa8d231c29f",
         "targetArchiveBytesVerified": true,
         "targetCryptoVerified": true
       }
-    ]
+    ],
+    "thresholdMet": true,
+    "imageImportPerformed": false,
+    "releaseApplied": false,
+    "actualSubjectsVerified": 10
   },
   "chatConnection": {
     "account": "giovanni-chatgpt",
@@ -381,7 +384,78 @@
         "producerCommit": "db45385648c7956e045d2d8f0b3f8e3f24270dac",
         "runId": 37995954188
       },
-      "targetStagePerformed": false
-    }
+      "targetStagePerformed": true,
+      "targetStageEvidence": "evidence/discovery-remediated-application-qualification-20261009.json",
+      "moduleCiStatus": "PASS"
+    },
+    "migrationCompatibility": "EXISTING_BYTES_IDENTICAL_V10_ADDITIVE"
+  },
+  "previousApplicationPreparation": {
+    "sourcePins": {
+      "semantic": {
+        "repository": "GioNob/ouf-semantic-registry",
+        "commit": "403531a9df1cbc877078f8126fd1fc4ff18acea9",
+        "pullRequest": 34
+      },
+      "gateway": {
+        "repository": "GioNob/ouf-api-gateway",
+        "commit": "a10df126d229dfefd9e0a4d716a07f1f535b6cd6",
+        "pullRequest": 57
+      },
+      "mcp": {
+        "repository": "GioNob/ouf-mcp-server",
+        "commit": "3ba1d4abcf62af1572997a217a333fa8d231c29f",
+        "pullRequest": 50
+      }
+    },
+    "signedProducerCommits": {
+      "semantic": "91381f96be0a3fbd75dcdc44c22aeb90c9f12b8a",
+      "mcp": "32bc369b0ab98629db82620c4ae14525ae412650"
+    },
+    "signedTargetStage": {
+      "directory": "/home/oufadmin/ouf-discovery-signed-stage-pn8_x4vj",
+      "runId": 37667405182,
+      "roles": [
+        {
+          "archiveSha256": "a6a9bfbaffa0396b30016a47ce948ed1c03b46b74d99b0a77299b2695ebfc107",
+          "imageId": "sha256:e9730d879f171530d56843670d7d5139dd7ef2f4ee59c812a1361224392a73b3",
+          "producerCommit": "91381f96be0a3fbd75dcdc44c22aeb90c9f12b8a",
+          "producerRun": 37665730385,
+          "role": "semantic",
+          "severityCounts": {
+            "Critical": 0,
+            "High": 0,
+            "Low": 9,
+            "Medium": 177,
+            "Negligible": 0,
+            "Unknown": 0
+          },
+          "sourceCommit": "67cb426995d7b0723e34bfe54e52ea89ae02b81d",
+          "targetArchiveBytesVerified": true,
+          "targetCryptoVerified": true
+        },
+        {
+          "archiveSha256": "8043f74313823c0f1cf387e0802e75692930f4b83f7782c6dbad2e008cb3d2af",
+          "imageId": "sha256:a0bfc5a3c4eb8710d64b7621224a373d3cfe6db03bc79fc6adbf071c3a220e47",
+          "producerCommit": "32bc369b0ab98629db82620c4ae14525ae412650",
+          "producerRun": 37665728762,
+          "role": "mcp",
+          "severityCounts": {
+            "Critical": 0,
+            "High": 0,
+            "Low": 1,
+            "Medium": 0,
+            "Negligible": 0,
+            "Unknown": 0
+          },
+          "sourceCommit": "3d51524eeddb539d6f78961447e64d9d640141c4",
+          "targetArchiveBytesVerified": true,
+          "targetCryptoVerified": true
+        }
+      ]
+    },
+    "qualificationEvidence": "evidence/discovery-runtime-qualification-20261007.json",
+    "status": "RETAINED_ARCHIVES_BLOCKED_BY_FRESH_13_UNKNOWN_GO_ADVISORIES_PER_ROLE",
+    "freshEvidence": "evidence/discovery-fresh-dependency-block-and-remediation-20261009.json"
   }
 }

@@ -24,7 +24,7 @@ Run [37995215112](https://github.com/GioNob/ouf-semantic-registry/actions/runs/3
 
 ## Passaggio applicativo da completare
 
-1. Acquisire l'esito reale e le firme della nuova scansione. Se la soglia fallisce, correggere le dipendenze coinvolte con un nuovo candidato nominato; mantenere le immagini correnti e tutta l'evidenza storica.
+1. COMPLETATO: nuove immagini corrette, scansioni firmate con soglia PASS e verifica di dieci soggetti sul target. Gli archivi precedenti sono conservati come evidenza storica e restano bloccati dalla scansione fresca.
 2. Comporre un applicatore specifico e migration-aware. Il vecchio launcher MCP usa wget dentro l'immagine; il candidato statico non lo include. Il vecchio Semantic launcher è vincolato a migrazioni byte-identiche; qui è previsto V10 additivo. Nessuno dei due è applicabile senza correzione.
 3. Risolvere concretamente il peer Semantic prima del cutover. La porta host1377 è parte del binding osservato. Una ricreazione ordinaria può cambiarla anche mantenendo IP/MAC: serve un raccordo governato alla nuova generazione e alla configurazione/source closure del guard, preservando la lease corrente e i suoi limiti. Non aggiornare soltanto un booleano né disabilitare regole.
 4. Riutilizzare credenziale e trust preparati; collegare chiave discovery distinta e mount necessari. Aggiornare backup privato al cutover; conservare il container precedente e gestire esplicitamente compatibilità V10/recovery. Nessun restore automatico che cancelli scritture successive.
@@ -43,6 +43,25 @@ Il DBv6.1.10 costruito2026-10-09T06:32:32Z, checksum10771a4ded5ec61df357f3bdc3d9
 
 Gli Unknown sono advisory GovulnDB della stdlib Go: Semanticgo1.26.7 nel binario ereditato /usr/bin/pebble; MCPgo1.25.13 nel binario applicativo. La fonte ufficiale [Go1.26.9](https://go.dev/doc/devel/release#go1.26.9) conferma fix di sicurezza dell'8ottobre; il report [GO-2026-6617](https://pkg.go.dev/vuln/GO-2026-6617) indica la versione corretta1.26.9. Non viene inferita la raggiungibilità di tutti i finding; la soglia non viene abbassata o reinterpretata.
 
-[Semantic34](https://github.com/GioNob/ouf-semantic-registry/pull/34) elimina il solo service manager ereditato dal filesystem finale Java; Java21, JAR e migrazioni restano nella stessa linea di sorgenti. La CI verifica assenza di Pebble ed esecuzione Java reale. [MCP50](https://github.com/GioNob/ouf-mcp-server/pull/50) pinnaGo1.26.9 per build/modulo/verify/CI, mantenendo versioni delle dipendenze e comportamento dei tool. Nessun cambiamento al VPS. Le nuove build firmate sono37995955667(Semantic) e37995954188(MCP), ancora in verifica al presente checkpoint.
+[Semantic34](https://github.com/GioNob/ouf-semantic-registry/pull/34) elimina il solo service manager ereditato dal filesystem finale Java; Java21, JAR e migrazioni restano nella stessa linea di sorgenti. La CI verifica assenza di Pebble ed esecuzione Java reale. [MCP50](https://github.com/GioNob/ouf-mcp-server/pull/50) pinnaGo1.26.9 per build/modulo/verify/CI, mantenendo versioni delle dipendenze e comportamento dei tool. Nessun cambiamento al VPS. Le nuove build firmate [37995955667](https://github.com/GioNob/ouf-semantic-registry/actions/runs/37995955667) (Semantic) e [37995954188](https://github.com/GioNob/ouf-mcp-server/actions/runs/37995954188) (MCP) hanno conclusione SUCCESS. Il dettaglio finale è riportato nel checkpoint seguente.
 
 La scansione modifica il prossimo passo: gli archivi precedenti restano conservati ma non sono oggi applicabili alla release sotto la soglia corrente. Se le nuove build passano, conservare/verificare i nuovi archivi firmati in una nuova directory e aggiornare i soli binding del candidato; non sostituire silenziosamente vecchi digest/source pin. Il cutover/peer binding/migrazione/grant e il risultato Teatri rimangono da completare.
+
+## Checkpoint verificato: nuove immagini conservate sul target
+
+[Evidenza finale](../evidence/discovery-remediated-application-qualification-20261009.json). Soglia invariata: zero Critical, High e Unknown, nessuna deroga. Semantic conserva 169 Medium e 17 Low; MCP conserva 1 Low. Questo PASS non significa assenza di ogni vulnerabilità.
+
+| Ruolo | Sorgente firmato | Produttore | Immagine | Archivio SHA256 |
+| --- | --- | --- | --- | --- |
+| Semantic | 403531a9df1cbc877078f8126fd1fc4ff18acea9 | 47d70fac4d69f23a24c552cd5cac4ebaf797c529 | sha256:b1a7956a673f88b5ee65d174c2eda7b9e448153e101348c06fdd53c0640e700b | e1a62b7f53497ed471e6539d90ab02efbb4ee68c9f90f3904bcce42618ceaff6 |
+| MCP | 3ba1d4abcf62af1572997a217a333fa8d231c29f | db45385648c7956e045d2d8f0b3f8e3f24270dac | sha256:33eb5195d926bbc15397a82ccd2b1a6c0ae0461f3ff86dd1bb7bbcc7fbc8e7c7 | be646ac6499f9cb6c781b899f6a7dbdb6057fde4b6a2b71407229a5a6e8cc853 |
+
+La [CI Semantic 37996454179](https://github.com/GioNob/ouf-semantic-registry/actions/runs/37996454179) ha superato tutti e tre i job: Java21/PostgreSQL17, recovery e build container non-root. Il primo tentativo si era fermato sul checksum Dockerfile non aggiornato alla rimozione dichiarata di Pebble; è stato corretto il solo record Dockerfile in evidence/source-checksums.txt. Il sorgente firmato resta 403531a9; i successivi cambi sono il workflow produttore e il record checksum, senza nuovi input di produzione. Non è stata ripetuta la scansione.
+
+La [CI MCP 37995954220](https://github.com/GioNob/ouf-mcp-server/actions/runs/37995954220) è PASS: test con race detector, pairwise, build, migrate, maintenance-worker, staticcheck e govulncheck. Il successivo ripristino del bit eseguibile di scripts/verify.sh conserva il contenuto e non modifica il binario firmato.
+
+Il [run target 37996500108](https://github.com/GioNob/ouf-deploy/actions/runs/37996500108) ha verificato dieci firme reali, cinque per ruolo, con workflow/commit/ref esatti e byte dell'archivio/config/layer/SBOM. Nuova directory privata: /home/oufadmin/ouf-discovery-remediation-stage-6j7rh3xz. Nessuna importazione Docker, configurazione applicativa o operazione lifecycle; la vecchia directory resta conservata.
+
+Il [piano migrazioni sul VPS 37996574805](https://github.com/GioNob/ouf-deploy/actions/runs/37996574805) confronta il JAR corrente con il nuovo sorgente esatto. V1–V9 sono identiche; unica aggiunta V10__discovery_request_idempotency.sql, SHA256 85708e1d37184177471f225806ca21c4088915f766197020f8fefe109407e911. Provider/workload-auth/gateway discovery non risultano abilitati nel Semantic corrente.
+
+Il prossimo lavoro è l'applicatore con migrazione e recovery, coordinato al nuovo binding ingress Semantic. Occorre preservare la lease R8 finché il passaggio completo è concretamente pronto; qualunque modifica al suo profilo sealed richiede una nuova transizione con autorità distinta, senza riciclare l'approvazione consumata. L'estensore esistente è limitato ad append di un flusso in stato QUIESCED e non implementa un cambio del peer: non va riutilizzato come generico patcher. Restano da implementare e verificare raccordo del guard, credenziali/mount discovery, route additive, policy/grant/descriptor e prova owner reale.
