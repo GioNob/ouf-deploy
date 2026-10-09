@@ -111,7 +111,10 @@ def compile_replacement(policy, tables, expected_structure, expected_footprint, 
     require(new_line == old_line.replace('meta iif ' + str(before['hostIfindex']) + ' ',
                                          'meta iif ' + str(after['hostIfindex']) + ' ', 1), 'COMPILER_WIDENED_FLOW')
     actual = copy.deepcopy(tables)
-    selector = {'match': {'op': '==', 'left': {'meta': {'key': 'iif'}}, 'right': before['hostIfindex']}}
+    # nft JSON may render the very same meta-iif index as its current link name.
+    # Both forms must come from the authenticated reciprocal-link observation.
+    selectors = [{'match': {'op': '==', 'left': {'meta': {'key': 'iif'}}, 'right': value}}
+                 for value in (before['hostIfindex'], before['hostInterface'])]
     changed = []
     for family, pair in actual.items():
         require(type(pair) is dict and set(pair) == {'nftables'} and type(pair['nftables']) is list,
@@ -124,10 +127,14 @@ def compile_replacement(policy, tables, expected_structure, expected_footprint, 
                     require(obj['family'] == family and (obj['name'] if kind == 'table' else obj['table']) == table,
                             'FOREIGN_NATIVE_OBJECT_DENIED')
             rule = entry.get('rule')
-            if rule is not None and selector in rule['expr']:
+            matches = [v for v in selectors if rule is not None and v in rule['expr']]
+            if matches:
+                require(len(matches) == 1, 'AMBIGUOUS_NATIVE_PEER_SELECTOR')
+                selector = matches[0]
                 require(family == 'bridge' and rule['chain'] == chain and type(rule['handle']) is int
                         and rule['handle'] > 0 and rule['expr'].count(selector) == 1, 'PEER_RULE_SCOPE_DRIFT')
-                rule['expr'][rule['expr'].index(selector)]['match']['right'] = after['hostIfindex']
+                numeric = type(selector['match']['right']) is int
+                rule['expr'][rule['expr'].index(selector)]['match']['right'] = after['hostIfindex'] if numeric else after['hostInterface']
                 changed.append(rule)
     require(len(changed) == 1, 'EXACT_NATIVE_PEER_RULE_REQUIRED')
     rule = changed[0]
