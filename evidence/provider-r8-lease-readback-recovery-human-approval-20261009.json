@@ -1,0 +1,25 @@
+{
+  "schema": "ouf.provider-r8-lease-readback-recovery-human-approval.v1",
+  "humanMessage": "Approvo",
+  "humanMessageTime": "2026-10-09T22:58:47+02:00",
+  "approvalRef": "OUF_R8_LEASE_READBACK_RECOVERY_APPROVED_20261009T225847_CEST",
+  "issuedAt": 1791579527,
+  "executionExpiresAt": 1791586727,
+  "firstInvocationDeadline": "2026-10-10T00:58:47+02:00",
+  "reviewCommit": "5ad76be3a46f34b68af77a9328e5179d987177fe",
+  "scope": "ONE_NEW_LEASE_ACTIVATION_SAME_TWO_R8_PROCESSES_AND_EXISTING_TWO_HTTPS_FLOWS",
+  "priorClaimResetAuthorized": false,
+  "priorEvidencePreserved": true,
+  "newExclusiveClaim": "/etc/ouf/provider-r8-network-lease-readback-recovery.claim",
+  "containerLifecycleAuthorized": false,
+  "preparedEntrypointSha256": "97b41378fc8bf7339e09968871371107ced63842dea226af874c819d546d92f2",
+  "approvedEntrypointSha256": "58ec8285357ba8fdceb35dbe1af92138a1aff3f91b742c1ae3f425c073e56528",
+  "onlyChangedAuthorityFields": [
+    "APPROVAL_REF",
+    "ISSUED_AT",
+    "EXECUTION_EXPIRES_AT"
+  ],
+  "coreAndCompilerUnchanged": true,
+  "targetActionPerformedHere": false,
+  "notReleaseAcceptance": true
+}

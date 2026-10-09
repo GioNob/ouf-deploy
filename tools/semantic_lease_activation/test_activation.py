@@ -101,7 +101,13 @@ class TargetBoundaries(unittest.TestCase):
         with self.assertRaises(ValueError):
             target.compare({**cycle, 'refreshCount': 1}, unit, root)
         self.assertNotEqual(target.CLAIM, target.PRIOR_CLAIM)
-        self.assertTrue(target.APPROVAL_REF.startswith('PENDING'))
+        approval = json.loads((HERE.parents[1]/'evidence/provider-r8-lease-readback-recovery-human-approval-20261009.json').read_bytes())
+        self.assertEqual(target.APPROVAL_REF, approval['approvalRef'])
+        self.assertEqual(target.ISSUED_AT, approval['issuedAt'])
+        self.assertEqual(target.EXECUTION_EXPIRES_AT, approval['executionExpiresAt'])
+        target.approval_live(target.APPROVAL_REF, clock=lambda: target.ISSUED_AT)
+        with self.assertRaises(ValueError):
+            target.approval_live(target.APPROVAL_REF, clock=lambda: target.EXECUTION_EXPIRES_AT)
 
     def test_service_does_not_rearm_or_enable(self):
         args = core.service_command(Path('/etc/ouf/deploy-snapshots/reviewed'), 'a' * 64,
