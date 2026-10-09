@@ -8,6 +8,8 @@ on:
       - 'tools/semantic_target_review/execute_post_signature_recovery.py'
       - 'tools/semantic_target_review/test_post_signature_recovery.py'
       - 'tools/semantic_target_review/execute_bundle_context_recovery.py'
+      - 'tools/semantic_target_review/execute_broker_source_recovery.py'
+      - 'tools/semantic_target_review/test_broker_source_recovery.py'
       - 'tools/semantic_target_review/test_bundle_context_recovery.py'
       - 'tools/semantic_target_review/test_r3_launch_fail_closed.py'
       - 'tools/semantic_target_review/test_r4_launch_fail_closed.py'
@@ -38,3 +40,6 @@ jobs:
 
       - name: R4 failed transfer or digest never reaches sudo
         run: /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_r4_launch_fail_closed.py
+
+      - name: Revised source closure, eight fresh signatures and isolated publication
+        run: sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-locked-switch-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_broker_source_recovery.py
