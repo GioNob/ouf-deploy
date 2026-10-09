@@ -75,18 +75,26 @@ def main():
             'driverPath':str(source/'scripts/semantic_provider_preexec_hook.py'),'driverSha256':sha(source/'scripts/semantic_provider_preexec_hook.py'),
             'admissionPath':str(wrapper),'admissionSha256':sha(wrapper),'registryRoot':str(registry),'runtimeStateRoot':'/run','candidates':{}}
         specs=[];policies=[];networks=[];processes=[]
-        socket='unix://'+str(root/'docker.sock');daemon=None;network=None;image=None
+        socket='unix://'+str(root/'docker.sock');daemon=None;containerd=None;network=None;image=None
+        bundle_parent=runtime/'containerd-state/io.containerd.runtime.v2.task/moby'
         expected_mount=root/'expected-overlay';expected_mount.mkdir(mode=0o700);mounted=False
         def dock(*args,check=True):return run(str(engine/'docker'),'-H',socket,*args,check=check)
         log=(root/'daemon.log').open('wb')
         try:
+            containerd_config=root/'containerd.toml';containerd_config.write_text('version = 2\n')
+            containerd=subprocess.Popen([str(engine/'containerd'),'--config',str(containerd_config),
+                '--address',str(root/'containerd.sock'),'--root',str(root/'containerd-root'),'--state',str(runtime/'containerd-state')],
+                stdout=log,stderr=log,env={**os.environ,'PATH':str(engine)+':/usr/sbin:/usr/bin:/sbin:/bin'})
+            deadline=time.monotonic()+15
+            while not (root/'containerd.sock').exists():
+                require(containerd.poll() is None and time.monotonic()<deadline,'CI_OWNED_CONTAINERD_READINESS_UNPROVEN');time.sleep(.1)
             daemon_path=root/'daemon.json'
             private(daemon_path,{'features':{'containerd-snapshotter':True},'runtimes':{
                 'ouf-ci-cohort':{'path':python,'runtimeArgs':['-I','-B',str(source/'scripts/semantic_provider_docker_runtime.py'),'--configuration',str(config_path)]}}})
             private(config_path,cfg)
             daemon=subprocess.Popen([str(engine/'dockerd'),'--config-file',str(daemon_path),
                 '--data-root',str(root/'data'),'--exec-root',str(runtime),'--pidfile',str(root/'daemon.pid'),
-                '-H',socket,'--bridge','none','--iptables=false','--ip6tables=false','--storage-driver','overlayfs'],
+                '-H',socket,'--containerd',str(root/'containerd.sock'),'--bridge','none','--iptables=false','--ip6tables=false','--storage-driver','overlayfs'],
                 stdout=log,stderr=log,env={**os.environ,'PATH':str(engine)+':/usr/sbin:/usr/bin:/sbin:/bin'})
             deadline=time.monotonic()+50
             while dock('info',check=False).returncode:
@@ -128,7 +136,7 @@ def main():
                     'sources':[{**mount,'uid':10006,'gid':10006,'mode':0o600,'maxBytes':131072,'sha256':sha(approved_source)}]}
                 template=build_role_template(baseline['template'],baseline['launch'],launch,baseline['approvedUser'],mount_ordering=baseline['mountOrdering'])
                 context={'schema':'ouf.semantic-docker-frame-context.v1','containerId':cid,
-                    'bundleParent':str(runtime/'containerd/daemon/io.containerd.runtime.v2.task/moby'),
+                    'bundleParent':str(bundle_parent),
                     'metadataParent':str(root/'data/containers'),'networkNamespaceParent':str(runtime/'netns'),
                     'networkNamespaceName':None,'cgroupDriver':'systemd','rootfsPath':str(root/'data/rootfs/overlayfs'/cid),'storageParent':str(root/'data')}
                 policy=compile_policy(template,launch,context);policies.append(policy);specs.append(policy['expectedOci'])
@@ -172,7 +180,7 @@ def main():
                 original_node=json.loads((directory/'attestation-producer.json').read_bytes())
                 broker,unused=assemble(directory,source,python,crypto,intent,broker,policies[i],original_node,registry,independently_expected_rootfs=seal)
                 entry_config=directory/'broker.json'
-                cfg['candidates'][cid]={'intentRef':digest(intent),'bundleParents':[str(runtime/'containerd/daemon/io.containerd.runtime.v2.task/moby')],'admissionConfiguration':str(entry_config),'admissionConfigurationHash':sha(entry_config)}
+                cfg['candidates'][cid]={'intentRef':digest(intent),'bundleParents':[str(bundle_parent)],'admissionConfiguration':str(entry_config),'admissionConfigurationHash':sha(entry_config)}
             private(config_path,cfg)
             for cid in cids:private(registry/cid/'adapter.json',{'schema':'ouf.semantic-docker-runtime-journal.v1','containerId':cid,
                 'configurationHash':adapter.binding(cfg,cid),'state':'STAGED','runtimeRoot':None,'bundleHash':None,'driverHash':None})
@@ -238,6 +246,10 @@ def main():
                 daemon.terminate()
                 try:daemon.wait(timeout=20)
                 except subprocess.TimeoutExpired:daemon.kill();daemon.wait(timeout=5)
+            if containerd is not None and containerd.poll() is None:
+                containerd.terminate()
+                try:containerd.wait(timeout=15)
+                except subprocess.TimeoutExpired:containerd.kill();containerd.wait(timeout=5)
             log.close()
             if mounted:run(commands['umount'],str(expected_mount),check=False)
             shutil.rmtree(runtime,ignore_errors=True)
