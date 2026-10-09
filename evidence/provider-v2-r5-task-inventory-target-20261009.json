@@ -1,0 +1,57 @@
+{
+  "schema": "ouf.semantic-r5-task-inventory-target-evidence.v1",
+  "acquisition": "OPERATOR_REPORTED_NOT_INDEPENDENTLY_ACQUIRED",
+  "reportedAt": "2026-10-09T13:38:52+02:00",
+  "readExit": 0,
+  "operatorHelper": "/home/oufadmin/ouf-r5-task-read.SxuaHSiM/read.py",
+  "receipt": {
+    "containerLifecycleOperations": 0,
+    "containerdEndpointSource": "LIVE_DOCKER_EXPLICIT_ARGV",
+    "containerdRequestedTasks": {
+      "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": {
+        "containerMetadataHash": "6a39de17aa02d0358dcac7b931645ac84004bbec013443eec29447c6d772f767",
+        "containerMetadataReadExit": 0,
+        "pid": 1687816,
+        "runtimeKind": "io.containerd.runc.v2",
+        "status": "STOPPED",
+        "taskPresent": true
+      },
+      "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": {
+        "containerMetadataHash": "45b95bc5610c03f5db63d48c52070c5d1302d8bde6a5f22c1ef978bb6bcf2868",
+        "containerMetadataReadExit": 0,
+        "pid": 1722506,
+        "runtimeKind": "io.containerd.runc.v2",
+        "status": "STOPPED",
+        "taskPresent": true
+      }
+    },
+    "ctrExecutableHash": "8bb9bc5014e0f7623603d6a0dc1f7fedfe5b5a9ea5e265cc00dfbbae23ee984e",
+    "defaultsInferred": false,
+    "existingConfigurationWrites": 0,
+    "namespaceSource": "ACCEPTED_CONTEXT_AND_OBSERVED_SHIM_PARENT",
+    "notReleaseAcceptance": true,
+    "note": "Runc inventory is scoped to retained R5 adapter root; task metadata is read separately. No kill/delete/retry.",
+    "phase": "READ_EXPLICIT_DOCKER_CONTAINERD_TASK_METADATA",
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "requestedEntriesAtRetainedRoot": {
+      "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": {
+        "entryPresent": false,
+        "pid": null,
+        "status": null
+      },
+      "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": {
+        "entryPresent": false,
+        "pid": null,
+        "status": null
+      }
+    },
+    "runcListExitCode": 0,
+    "runtimeRootHash": "c64c266a92b2d9ff052a8f2b817ee730406b2ddde47d550a52effb822b181342",
+    "runtimeRootSource": "RETAINED_ADAPTERBOUND_PHASE_JOURNAL",
+    "schema": "ouf.semantic-r5-containerd-runc-inventory-read-only.v1",
+    "signaturesIssued": 0,
+    "startAuthorized": false,
+    "status": "R5_TASK_INVENTORIES_CAPTURED"
+  }
+}
