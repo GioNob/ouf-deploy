@@ -139,11 +139,14 @@ def switch_existing_wrapper(wrapper, expected_wrapper_hash, proposed_bytes, clai
     except Exception as error:
         diagnosis = error.diagnosis.copy() if isinstance(error,TransactionDenied) else {
             'status':'BLOCKED','stage':stage,'reason':'GUARDED_RUNTIME_SWITCH_UNPROVEN','secretValuesPrinted':False}
+        if not isinstance(error,TransactionDenied) and isinstance(error,(ValueError,RuntimeError)) and re.fullmatch('[A-Z][A-Z0-9_]{0,95}',str(error)):
+            diagnosis['reason']=str(error)
+        diagnosis['errorType']=type(error).__name__
         diagnosis.update(evidenceDirectory=str(root),doNotRerunApply=claimed or os.path.lexists(root/'runtime-switch-claim.json'),
                          wrapperReplaced=replaced,renameAttempted=rename_attempted,
                          switchOutcome='REPLACED' if replaced else 'UNPROVEN' if rename_attempted else 'UNCHANGED',
                          containerLifecycleOperations=0,notReleaseAcceptance=True)
-        if isinstance(error,OSError):diagnosis.update(errorType=type(error).__name__,errno=error.errno)
+        if isinstance(error,OSError):diagnosis['errno']=error.errno
         if claimed:
             try:publish_once(root/'runtime-switch-denial.json',encoded(diagnosis))
             except Exception:diagnosis['diagnosisSaved']=False

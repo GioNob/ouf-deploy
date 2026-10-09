@@ -208,7 +208,7 @@ def main():
             # Protocol/authentication denials also carry public symbolic reasons.
             reason=str(error) if isinstance(error,(ValueError,RuntimeError)) and re.fullmatch('[A-Z][A-Z0-9_]{0,95}',str(error)) else 'PRIVATE_TARGET_INTAKE_UNPROVEN'
             diagnosis={'status':'BLOCKED','stage':STAGE,'reason':reason,'secretValuesPrinted':False,'startAuthorized':False}
-        diagnosis['errorType']=type(error).__name__
+        diagnosis.setdefault('errorType',type(error).__name__)
         if isinstance(error,OSError):diagnosis['errno']=error.errno
         # Execution may have signed/published/switched or requested lifecycle.
         # Unknown counters are never rewritten to zero by the outer intake.
@@ -292,7 +292,7 @@ def execute_transaction(package,configuration,expected_configuration_hash,source
     preflight_input_pair(records)
     signatures=package/'issued-signatures'
     crypto={'policyBinding':POLICY,'signatureDirectory':str(signatures),'opensslBinding':cfg['opensslBinding']}
-    # No signature directory/execution claim/key mutation until both root approvals pass.
+    # No directory/claim/key mutation until both root approvals pass independently.
     preflight_root_mandates(package,cfg,records,authority,sources,observer)
     for (path,executable),prior in SAVED.items():require(read(path,executable)==prior,'APPROVED_TRANSACTION_INPUT_CHANGED')
     publish_once(package/'execution-claim.json',encoded({'schema':'ouf.semantic-provider-execution-claim.v1',

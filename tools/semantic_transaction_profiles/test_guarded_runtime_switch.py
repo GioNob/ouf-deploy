@@ -47,6 +47,22 @@ class GuardedSwitchTest(unittest.TestCase):
         with self.assertRaisesRegex(TransactionDenied,'INSTALLED_WRAPPER_HASH_DRIFT'):self.switch(expected='0'*64)
         self.assertEqual(self.wrapper.read_bytes(),self.old);self.assertEqual(list(self.evidence.iterdir()),[])
 
+    def test_native_symbolic_error_is_preserved_before_claim(self):
+        from tools.semantic_provider_preexec import PreexecDenied
+        def verify(fd,phase):raise PreexecDenied('NFT_OPERATION_UNPROVEN')
+        with self.assertRaises(TransactionDenied) as raised:self.switch(verify)
+        self.assertEqual(raised.exception.diagnosis['reason'],'NFT_OPERATION_UNPROVEN')
+        self.assertEqual(raised.exception.diagnosis['errorType'],'PreexecDenied')
+        self.assertFalse(raised.exception.diagnosis['renameAttempted'])
+        self.assertEqual(self.wrapper.read_bytes(),self.old)
+
+    def test_unknown_exception_preserves_type_without_private_error_text(self):
+        def verify(fd,phase):raise KeyError('PRIVATE_VALUE_SENTINEL')
+        with self.assertRaises(TransactionDenied) as raised:self.switch(verify)
+        self.assertEqual(raised.exception.diagnosis['errorType'],'KeyError')
+        self.assertNotIn('PRIVATE_VALUE_SENTINEL',json.dumps(raised.exception.diagnosis))
+        self.assertFalse(raised.exception.diagnosis['wrapperReplaced'])
+
     def test_native_guard_lock_conflict_denies_before_claim(self):
         fd=os.open(self.lock,os.O_RDWR)
         try:
