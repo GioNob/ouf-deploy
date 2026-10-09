@@ -1,6 +1,6 @@
 # Recupero specifico del tentativo kanx36_x — R3
 
-Stato: proposta concreta, non autorizzazione. Il nuovo helper rifiuta l'esecuzione prima di qualsiasi accesso ai file finché manca il riferimento all'approvazione umana registrata.
+Stato: approvato dall'utente il 9 ottobre 2026 alle 09:30:08 Europe/Rome. Witness evidence/provider-v2-post-signature-recovery-human-approval-20261009.json, riferimento OUF_PROVIDER_V2_POST_SIGNATURE_RECOVERY_HUMAN_APPROVAL_20261009_093008. Non chiedere nuovamente conferma per questo ambito. L'approvazione non è osservazione del VPS: esecuzione R3 ancora da effettuare dall'operatore.
 
 ## Problema e correzione
 
@@ -42,3 +42,7 @@ Run `37898950078`, job `113716742413`: 9 test bridge + 6 recupero, PASS. Run `37
 Dopo la correzione, run `37899168794` sul commit `672fbf8cf62b1a395c200279ed1a28a20dcf7957`: tutti e quattro i job PASS — profiles `113717436954` (inclusi i 33 test autenticazione), native-frame `113717437138`, native-authenticated-docker-cohort `113717437221`, native-docker-creation-window `113717437368`. Le prove native usano Docker/namespace/chiavi CI, non i CID o le autorità del VPS.
 
 Helper R3 proposto al commit `6046de51f3e683434dfb13a38ce8220c694feba3`, SHA256 `750422fa9ccf1ae5a12ad48d6c525eacfb1a37c72d51552a90a4d8a2b7ec5c20`. Ancora bloccato in attesa del witness umano reale. Non eseguire vecchi comandi. La clausola già approvata è: “Retain claims, wrapper state and both available candidate observations. No automatic recovery; explicit scoped human recovery is required.”
+
+## Approvazione R3 registrata e helper vincolato
+
+L'utente ha approvato il recupero alle 09:30:08 Europe/Rome; l'atto è nel commit `14a0da47544e4f56313e25b521c27b3ea7481b60`. Helper approvato SHA256 `5ff0a5ac9de85132371026584124f26ad57301601d16882c06974a9c21356328`, limite inferiore orologio `1791531008`. Run GitHub `37899570061` PASS dopo il binding reale: 9 test collegati e 7 test recupero. I paragrafi precedenti su witness mancante/PENDING descrivono lo stato prima del consenso e sono superati da questo atto. L'immagine e i sedici input non sono stati modificati né riapprovati. Il launcher nuovo verifica prima del root il bridge esistente e il solo helper nuovo; riutilizza la verifica dei sei soggetti già riportata PASS sul VPS. Nessuna esecuzione R3 target è ancora stata riportata.

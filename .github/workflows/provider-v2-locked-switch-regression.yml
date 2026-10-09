@@ -7,6 +7,8 @@ on:
       - 'tools/semantic_target_review/test_execute_approved_provider_transaction.py'
       - 'tools/semantic_target_review/execute_post_signature_recovery.py'
       - 'tools/semantic_target_review/test_post_signature_recovery.py'
+      - 'tools/semantic_target_review/test_r3_launch_fail_closed.py'
+      - 'releases/provider-v2-post-signature-recovery-20261009.sh'
       - '.github/workflows/provider-v2-locked-switch-regression.yml'
 permissions:
   contents: read
@@ -24,3 +26,5 @@ jobs:
           sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-locked-switch-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_execute_approved_provider_transaction.py
       - name: Explicit recovery gates and imported sealed consumer wiring
         run: /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_post_signature_recovery.py
+      - name: Failed transfer or digest never reaches sudo
+        run: /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_r3_launch_fail_closed.py
