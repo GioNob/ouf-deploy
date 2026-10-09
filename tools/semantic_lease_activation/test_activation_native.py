@@ -21,6 +21,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import activation_core as core
 import activate_r8_lease as target
+import worker_readback
 
 
 def run(argv, raw=None, check=True):
@@ -74,11 +75,17 @@ def load_compiler(path):
     return module
 
 
-CHILD = r'''import hashlib,json,os,sys,threading
+CHILD = r'''import hashlib,json,os,sys,threading,time
 from pathlib import Path
 root=Path(__file__).resolve().parent
 sys.path.insert(0,str(root))
 import activation_core as core
+original_status=core.status
+def delayed_status(root,value):
+ if value.get('status')=='LEASE_ACTIVE' and value.get('refreshCount')==2:
+  time.sleep(2) # Deterministic CI-only interleaving, never deployed to target.
+ return original_status(root,value)
+core.status=delayed_status
 capsule=Path(sys.argv[2]).read_bytes()
 assert hashlib.sha256(capsule).hexdigest()==sys.argv[3]
 value=json.loads(capsule);owner=value['owner']
@@ -167,6 +174,18 @@ def main():
                     raise RuntimeError((root/'worker-denial.json').read_text())
                 assert time.monotonic() < deadline, 'CI_TWO_CYCLES_TIMEOUT'
                 time.sleep(.2)
+            cycle = json.loads((root/'cycle-2.json').read_bytes())
+            lagging = json.loads((root/'worker-status.json').read_bytes())
+            assert cycle['refreshCount'] == 2 and lagging['refreshCount'] == 1
+            raw_properties = run(['/usr/bin/systemctl', 'show', unit,
+                '--property=ActiveState,SubState,MainPID,Restart,ExecStart']).stdout
+            unit_properties = dict(line.split('=',1) for line in raw_properties.splitlines() if '=' in line)
+            assert all(worker_readback.compare(cycle, unit_properties, root).values())
+            print('R8_WORKER_READBACK=OLD_FALSE_DENIAL_REPRODUCED IMMUTABLE_CYCLE_WITH_LIVE_SYSTEMD_PASS=true', flush=True)
+            deadline = time.monotonic() + 5
+            while json.loads((root/'worker-status.json').read_bytes())['refreshCount'] < 2:
+                assert time.monotonic() < deadline
+                time.sleep(.05)
             status = json.loads((root/'worker-status.json').read_bytes())
             assert status['refreshCount'] >= 2 and status['flowAddressCounts'] == [1, 1] and counts['queries'] >= 8
             for family in ('inet', 'bridge'):
