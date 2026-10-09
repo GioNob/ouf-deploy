@@ -68,6 +68,28 @@ class ApprovedBridgeTests(unittest.TestCase):
                     fixture.sources,fixture.observer,fixture.verifier,fixture.root/'unused-output',fixture.clock,validate_only=True)
                 self.assertEqual(report['privateKeysRead'],0);self.assertEqual(report['signaturesIssued'],0)
             self.assertFalse((fixture.root/'unused-output').exists())
+            # Reproduce the target cold path: future signature directory absent.
+            import provider_transaction_intake as intake
+            from tools.semantic_provider_deployment_authentication import DetachedAuthenticator
+            pending=fixture.root/'issued-signatures'
+            with self.assertRaises(FileNotFoundError):
+                DetachedAuthenticator(fixture.crypto['policyBinding'],pending,fixture.crypto['opensslBinding'])
+            cfg={'opensslBinding':fixture.crypto['opensslBinding'],
+                 'mandatesByRole':{r:fixture.bind(fixture.root/(r+'-bridge-mandate.json')) for r in mandates}}
+            with patch.object(intake,'POLICY',fixture.crypto['policyBinding']):
+                intake.preflight_root_mandates(fixture.root,cfg,records,fixture.authority,
+                    fixture.sources,fixture.observer,fixture.clock)
+                # A denial of the second role also leaves no staging/claim/signature output.
+                bad=copy.deepcopy(mandates['southbound']);bad['containerId']='0'*64
+                fixture.private(fixture.root/'southbound-bridge-mandate.json',encoded(bad))
+                cfg['mandatesByRole']['southbound']=fixture.bind(fixture.root/'southbound-bridge-mandate.json')
+                with self.assertRaisesRegex(ValueError,'ROOT_ROLE_REVIEW_SCOPE_DRIFT'):
+                    intake.preflight_root_mandates(fixture.root,cfg,records,fixture.authority,
+                        fixture.sources,fixture.observer,fixture.clock)
+            self.assertFalse(pending.exists())
+            self.assertFalse((fixture.root/'role-authority').exists())
+            self.assertFalse((fixture.root/'execution-claim.json').exists())
+            self.assertEqual(list(fixture.root.glob('mandate-preflight-*')),[])
         finally:fixture.doCleanups()
 
 if __name__=='__main__':unittest.main()

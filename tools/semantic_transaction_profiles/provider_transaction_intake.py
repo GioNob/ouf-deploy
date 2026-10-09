@@ -13,6 +13,7 @@ import re
 import stat
 import sys
 import types
+import tempfile
 
 MANIFEST_SHA256 = '2699c82124b6bfcbd61991f09a96ebb5c6a2d336aaf3384dcae9288101b29de4'
 AUTHORITY = {'path':'/etc/ouf/deploy-snapshots/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json',
@@ -102,6 +103,24 @@ def load(package):
     return {name.removeprefix('source/'):raw for name,raw in verified.items() if name.startswith('source/')},verified['frame-observer.py']
 
 
+def preflight_root_mandates(package, cfg, records, authority, sources, observer, clock=None):
+    """Use a separate empty verifier directory; issued-signatures stays absent.
+
+    The real verifier validates root custody even in validate_only mode. No
+    signatures, private keys or execution claims are created by this preflight.
+    """
+    from authenticate_provider_transaction import TARGETS
+    from issue_provider_transaction_authority import issue_role_authority
+    from tools.semantic_provider_deployment_authentication import DetachedAuthenticator, VerificationBudget
+    with tempfile.TemporaryDirectory(prefix='mandate-preflight-',dir=package) as directory:
+        for role in TARGETS:
+            verifier=DetachedAuthenticator(POLICY,directory,cfg['opensslBinding'],budget=VerificationBudget(18))
+            mandate=cfg['mandatesByRole'][role]
+            kwargs={} if clock is None else {'clock':clock}
+            issue_role_authority(role,mandate,mandate['sha256'],records[role],authority,sources,observer,
+                                 verifier,package/'role-authority'/role,validate_only=True,**kwargs)
+
+
 def operate(package, configuration, expected_configuration_hash, sources, observer):
     global STAGE
     from authenticate_provider_transaction import DOCUMENTS, TARGETS, AUTHORITIES, build_install_plan
@@ -186,8 +205,11 @@ def main():
     except Exception as error:
         if type(getattr(error,'diagnosis',None)) is dict:diagnosis=error.diagnosis.copy()
         else:
-            reason=str(error) if isinstance(error,IntakeDenied) and re.fullmatch('[A-Z][A-Z0-9_]{0,95}',str(error)) else 'PRIVATE_TARGET_INTAKE_UNPROVEN'
+            # Protocol/authentication denials also carry public symbolic reasons.
+            reason=str(error) if isinstance(error,(ValueError,RuntimeError)) and re.fullmatch('[A-Z][A-Z0-9_]{0,95}',str(error)) else 'PRIVATE_TARGET_INTAKE_UNPROVEN'
             diagnosis={'status':'BLOCKED','stage':STAGE,'reason':reason,'secretValuesPrinted':False,'startAuthorized':False}
+        diagnosis['errorType']=type(error).__name__
+        if isinstance(error,OSError):diagnosis['errno']=error.errno
         # Execution may have signed/published/switched or requested lifecycle.
         # Unknown counters are never rewritten to zero by the outer intake.
         attempted=os.path.lexists(package/'execution-claim.json')
@@ -270,12 +292,8 @@ def execute_transaction(package,configuration,expected_configuration_hash,source
     preflight_input_pair(records)
     signatures=package/'issued-signatures'
     crypto={'policyBinding':POLICY,'signatureDirectory':str(signatures),'opensslBinding':cfg['opensslBinding']}
-    # No directory/claim/key mutation until both root approvals pass independently.
-    for role in TARGETS:
-        verifier=DetachedAuthenticator(POLICY,signatures,cfg['opensslBinding'],budget=VerificationBudget(18))
-        mandate=cfg['mandatesByRole'][role]
-        issue_role_authority(role,mandate,mandate['sha256'],records[role],authority,sources,observer,
-                             verifier,package/'role-authority'/role,validate_only=True)
+    # No signature directory/execution claim/key mutation until both root approvals pass.
+    preflight_root_mandates(package,cfg,records,authority,sources,observer)
     for (path,executable),prior in SAVED.items():require(read(path,executable)==prior,'APPROVED_TRANSACTION_INPUT_CHANGED')
     publish_once(package/'execution-claim.json',encoded({'schema':'ouf.semantic-provider-execution-claim.v1',
         'configurationHash':digest(raw),'state':'ISSUING_APPROVED_ROLE_RECORDS','outputRoot':str(output),

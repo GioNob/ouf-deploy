@@ -318,3 +318,14 @@ Concrete next human review: releases/PROVIDER_V2_SIGN_START_REVIEW_20261009.md, 
 ## Human signing/start scope approved9Oct07:56:24 Europe/Rome
 
 User answered Approvo to review OUF_PROVIDER_V2_SIGN_START_REVIEW_20261009_R1 at5dceb35b75a456ea219f3f2349e68fee9114747c. Witness receipt evidence/provider-v2-sign-start-human-approval-20261009.json; approvalRef OUF_PROVIDER_V2_SIGN_START_HUMAN_APPROVAL_20261009_075624. Explicit scope is existing local keys/two reviewed mandates/authenticated profiles+two-CID allowlist/guarded wrapper CAS/exactly two concurrent starts through the named runtime.240s windows must fit DB validity9Oct08:31:48 Europe/Rome. No repeated approval or completed preparation. This is a human decision witness, not signed target authority or evidence of execution. Existing source ff13uh3n and16 input files are reused. Complete operator-only mandate/config materialization and sealed-entry invocation, preserve failures and no automatic retry/recovery; operator command still being prepared. No target operation has been performed by cloud.
+
+
+## 2026-10-09 08:19 Europe/Rome — operator attempt blocked before keys
+
+Operator-reported attempt at ff13uh3n failed in PREFLIGHT_BOTH_EXPLICIT_ROOT_MANDATES, PRIVATE_TARGET_INTAKE_UNPROVEN. Context xatlxkf6 is preserved. Both reports say zero private-key reads, zero lifecycle operations, targetRuntimeChanged=false. The outer operator doNotRerunApply=true remains binding; do not repeat the old command.
+
+Code diagnosis: DetachedAuthenticator requires its signature directory to exist, but execute_transaction used future issued-signatures before creating it. The actual production constructor reproduces FileNotFoundError with an absent directory in the regression test. Existing fixture had precreated signatures and masked the integration defect. Target directory absence must still be checked by a read-only operator observation; cloud has not independently acquired target state.
+
+Fix: both root mandates now use a separate root-private empty temporary verifier directory, removed on success/denial; future issued-signatures, role-authority, execution-claim and keys remain untouched until both mandates pass. Regression exercises actual constructor, actual issuer, both roles and rejected second role without output/claims/signatures. Seven tests pass locally. Safe diagnoses now preserve errorType/errno and symbolic protocol reasons without raw errors/private values.
+
+The fixed entry is not installed on target. No recovery/start command is ready yet: retain prior entry, claims, denial and context; verify pre-key state before a bounded recovery. Do not overwrite/remove the attempt or repeat 16-input/source promotion. Human sign/start approval remains recorded; it does not extend dependency validity beyond 2026-10-09T06:31:48Z. Runtime39-file closure/manifest and accepted16inputs remain unchanged by this code fix.

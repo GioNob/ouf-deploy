@@ -133,3 +133,14 @@ Provider-v2 update9Oct: full original-source authenticated Docker29.8.1 two-peer
 
 
 Provider-v2 operator intake preparation completed9Oct07:19:55: sourceff13uh3n,41 verified files, accepted16-input pair preflightPASS, no keys/signatures/runtime/start operation. Do not repeat. Next specific human decision is releases/PROVIDER_V2_SIGN_START_REVIEW_20261009.md (two-CID bounded signing/runtime/start proposal); approval remains pending and no target start command is ready.
+
+
+## 2026-10-09 08:19 Europe/Rome — operator attempt blocked before keys
+
+Operator-reported attempt at ff13uh3n failed in PREFLIGHT_BOTH_EXPLICIT_ROOT_MANDATES, PRIVATE_TARGET_INTAKE_UNPROVEN. Context xatlxkf6 is preserved. Both reports say zero private-key reads, zero lifecycle operations, targetRuntimeChanged=false. The outer operator doNotRerunApply=true remains binding; do not repeat the old command.
+
+Code diagnosis: DetachedAuthenticator requires its signature directory to exist, but execute_transaction used future issued-signatures before creating it. The actual production constructor reproduces FileNotFoundError with an absent directory in the regression test. Existing fixture had precreated signatures and masked the integration defect. Target directory absence must still be checked by a read-only operator observation; cloud has not independently acquired target state.
+
+Fix: both root mandates now use a separate root-private empty temporary verifier directory, removed on success/denial; future issued-signatures, role-authority, execution-claim and keys remain untouched until both mandates pass. Regression exercises actual constructor, actual issuer, both roles and rejected second role without output/claims/signatures. Seven tests pass locally. Safe diagnoses now preserve errorType/errno and symbolic protocol reasons without raw errors/private values.
+
+The fixed entry is not installed on target. No recovery/start command is ready yet: retain prior entry, claims, denial and context; verify pre-key state before a bounded recovery. Do not overwrite/remove the attempt or repeat 16-input/source promotion. Human sign/start approval remains recorded; it does not extend dependency validity beyond 2026-10-09T06:31:48Z. Runtime39-file closure/manifest and accepted16inputs remain unchanged by this code fix.
