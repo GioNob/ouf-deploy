@@ -229,12 +229,21 @@ def build_mandates(scope,records,now,approval_ref):
 
 
 def install_package(path,files):
+    info=path.lstat()
+    require(stat.S_ISDIR(info.st_mode) and info.st_uid==info.st_gid==0 and stat.S_IMODE(info.st_mode)==0o700,
+            'PRIVATE_NEW_SOURCE_PACKAGE_REQUIRED')
     for name,raw in files.items():
         relative=Path(name)
-        require(not relative.is_absolute() and '..' not in relative.parts and relative.as_posix()==name,
+        require(relative.parts and not relative.is_absolute() and '..' not in relative.parts and relative.as_posix()==name,
                 'REVIEWED_PACKAGE_PATH_ESCAPE')
         destination=path/relative
-        destination.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
+        parent=path
+        for part in relative.parts[:-1]:
+            parent=parent/part
+            if not os.path.lexists(parent):parent.mkdir(mode=0o700);parent.chmod(0o700)
+            info=parent.lstat()
+            require(stat.S_ISDIR(info.st_mode) and info.st_uid==info.st_gid==0 and stat.S_IMODE(info.st_mode)==0o700,
+                    'PRIVATE_SOURCE_PACKAGE_DIRECTORY_DRIFT')
         publish(destination,raw)
 
 

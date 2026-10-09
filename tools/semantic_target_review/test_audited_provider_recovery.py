@@ -49,6 +49,7 @@ class AuditedRecoveryTest(unittest.TestCase):
         self.assertEqual(values,before)
         package=self.root/'source-package';package.mkdir(mode=0o700)
         recovery.install_package(package,built['files'])
+        self.assertTrue(all(p.stat().st_mode & 0o777 == 0o700 for p in package.rglob('*') if p.is_dir()))
         code="""import json,sys,pathlib
 p=pathlib.Path(sys.argv[1]);entry={'__name__':'sealed_test','__file__':str(p/'provider_transaction_intake.py')}
 exec(compile((p/'provider_transaction_intake.py').read_bytes(),entry['__file__'],'exec'),entry)
