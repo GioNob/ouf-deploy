@@ -36,7 +36,7 @@ The reviewed bridge consumes only that exact failure. It checks root custody, ex
 
 Preflight uses a separate root-private empty verifier directory that is removed on success/denial. Actual signature directory, execution claim and private-key reads remain after both role mandates pass. Safe denial retains errorType/errno and public symbolic reasons without raw private data.
 
-Nine local checks pass, including one connected cold sequence: absent future signature directory → both real issuer preflights → eight actual disposable CI signatures → actual authenticated profile publication. These CI keys/fixtures confer no target authority. Target signing, guard switch and controlled cohort admission have not been performed.
+Nine checks pass locally and in targeted CI run 37895505225/job 113705831877 at bc012af69ea47188b5739eb0c53e204c80366730, including one connected cold sequence: absent future signature directory → both real issuer preflights → eight actual disposable CI signatures → actual authenticated profile publication. These CI keys/fixtures confer no target authority. Target signing, guard switch and controlled cohort admission have not been performed.
 
 After human acceptance is recorded, the existing local authority keys issue two bounded role mandates and the previously approved guarded two-CID transaction may proceed. Mandatory live OCI/rootfs/NIC/peer/generation/guard checks, no automatic retry/rollback, no provider lease grant, no general sudo, no daemon restart, no Teatri job and no release acceptance remain unchanged. Approval cannot suppress a failed target check.
 

@@ -1,5 +1,23 @@
 # OUF: file → semantica → Onboarding → ingestion → UDP
 
+## Current continuation — 2026-10-09 fresh dependency review R2
+
+NEXT HUMAN ACTION: accept or reject the concrete two-document addendum in releases/PROVIDER_V2_FRESH_DEPENDENCY_REVIEW_20261009.md. Original image/frame and sign/start approvals remain recorded; this addendum is required because accepted dependency hashes were bound to a DB that expired at 08:31:48 Europe/Rome. Do not repeat old source/input preparation or the old execution command.
+
+Current proposed hashes: adapter dependencyEvidence e5b31a2117b2f5abfb5e305b62a04d8861341501c626ab1cd50459e2b07b248d; southbound 17ae54703ac8b29c4d554b9832f2a2f9d6d0067d421ee8cffc8ed89e96da8168. Fourteen existing bindings, exact two CIDs/images/v1 seals/full OCI/network/39-file runtime closure retained. Only two newly accepted dependency files will be written to a new root-private operator context; no originals overwritten or recopied.
+
+Fresh DB built 2026-10-08T06:33:47Z, v6.1.10, archive SHA256 3b5bd894077ef069b123399de782d5df1e513c1917255a14f2d086226350d5f4; valid until 2026-10-10T06:33:47Z (10 October 08:33:47 Rome), full 240-second window must fit. Zero Critical/High/Unknown for both roles. Adapter 5 Medium/0 Low; Southbound 141 Medium/19 Low/4 Negligible (one former Medium now Low). No ignored matches/package alerts.
+
+Six actual subjects and shared real Sigstore bundle cryptographically verified in readback run 37894929681/job113704024082, actual downloaded files and bundle hashes checked here. Verified artifact11599489979 SHA256 acd592af6d96bcb716ca2f49573fd91d33114b96579b9d2f9ae33ad8af605c72. Actual subject producer ab1667d08f80737d63a9be2715036d505cb702c6 in public Semantic repository. Producer scan+sign succeeded but job failed in bundle copying; recovered without repeating scans. Earlier private-repository attestation error and public directory ownership error are preserved in review diagnosis. The public workflow ownership fix is12e3a132105f56c988962660984888eda1160605 and did not trigger another fresh scan. CI is not target authority.
+
+Prepared bridge at bc012af69ea47188b5739eb0c53e204c80366730 rejects PENDING_HUMAN_FRESH_DEPENDENCY_ACCEPTANCE before target mutation. Nine actual targeted tests passed both locally and hosted run37895505225/job113705831877, including connected cold pair preflight→eight disposable signatures→actual authenticated publication. No VPS recovery, signatures or start have been performed in this turn. Last target report remains pre-key BLOCKED at xatlxkf6 with zero keys/lifecycle and unchanged runtime.
+
+After human acceptance: record its exact witness/time and pin the additive reviewed scope/approval ref in the bridge (including clock lower bound). Keep FAILED_APPROVAL_REF equal to original OUF_PROVIDER_V2_SIGN_START_HUMAN_APPROVAL_20261009_075624 to verify retained failure; new authorization ref must not impersonate the old claim. Obtain a pinned operator-only launch command that rechecks actual six signed artifact subjects with existing authenticated gh, then uses the reviewed root bridge. Its bounded recovery preserves old context/denial, claims once, executes the hash-pinned fixed entry in memory with original installed entry retained, creates only two fresh dependency inputs, and invokes existing approved signed/guarded two-CID admission. No direct Docker shortcut, no CI fixture authority, no lease/API grant, no daemon restart, no general sudo, no automatic retry/rollback, no national Teatri job, no release acceptance. Continue product roadmap only after actual provider target readbacks and required Semantic/MCP/discovery grants.
+
+Approval question is for changed dependency hashes and exact pre-key recovery, not another image rebuild or repetition of previously approved operating scope.
+
+
+
 ## Stato corrente — 8 ottobre 2026
 
 La migrazione delle protezioni di rete provider/OIDC è completata sul VPS: l'operatore ha riportato `EMPTY_GUARD_EXTENDED`, runtime `RUNTIME_PROVIDER_OIDC_EMPTY`, due candidati mai avviati, destinazioni provider vuote e handle originali preservati. Zero operazioni sul ciclo di vita, nessun riavvio del daemon, nessuna chiamata al provider e nessuna lettura di chiavi private. [Ricevuta target dell'operatore](evidence/provider-v2-network-guard-target-20261008.json): fonte `semantic-network-guard-source-ib5rco84`, snapshot `semantic-coordinated-boot-install-v2-e4repg0a`. Non ripetere la migrazione né le preparazioni di runtime, creazione fermata, immagini/rootfs, TLS, input o reti già completate. La ricevuta non concede avvio, lease o accettazione del rilascio; riavvio reale e stabilità tra letture non sono provati.

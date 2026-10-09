@@ -1,3 +1,7 @@
+# SUPERSEDED — do not run the original command
+
+Current continuation: [fresh dependency review R2](PROVIDER_V2_FRESH_DEPENDENCY_REVIEW_20261009.md). Retain the original procedure below as history; the original attempt failed before keys and is preserved. Fresh two-input human acceptance is pending.
+
 # Approved provider execution — 2026-10-09
 
 Human approval: OUF_PROVIDER_V2_SIGN_START_HUMAN_APPROVAL_20261009_075624, recorded in a355a4f738ed1d5a713b911f33f7f63a4952aa6a. Scope: releases/PROVIDER_V2_SIGN_START_REVIEW_20261009.md at 5dceb35b75a456ea219f3f2349e68fee9114747c.
