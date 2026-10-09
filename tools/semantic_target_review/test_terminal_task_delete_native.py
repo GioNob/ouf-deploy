@@ -52,7 +52,7 @@ os.execv(RUNC,[RUNC,*args])
         try:
             deadline=time.monotonic()+15
             while not socket.exists():require(daemon.poll() is None and time.monotonic()<deadline,'CI_CONTAINERD_READINESS');time.sleep(.1)
-            ctr('images','import','--snapshotter','native',str(archive))
+            ctr('images','import','--local','--platform','linux/amd64','--snapshotter','native',str(archive))
             pids={};roots=set()
             for cid in cids:
                 ctr('run','--detach','--snapshotter','native','--runc-binary',str(wrapper),image,cid)
