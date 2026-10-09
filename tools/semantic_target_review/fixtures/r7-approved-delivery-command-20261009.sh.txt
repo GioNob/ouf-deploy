@@ -1,0 +1,15 @@
+# Historical consumed R7 command, retained only for the delivery regression test.
+(
+  set -u
+  set -o pipefail
+  umask 077
+  OUF_R7_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+  [[ -x "$OUF_R7_GH" ]] || { echo "OUF_R7_DELIVERY=EXISTING_GH_NOT_EXECUTABLE"; exit 1; }
+  OUF_R7_LAUNCH="$(mktemp -d "$HOME/ouf-r7-launch.XXXXXXXX")" || exit 1
+  "$OUF_R7_GH" api 'repos/GioNob/ouf-deploy/contents/releases/provider-audited-recovery-20261009.sh?ref=697ddbd170a6eac7576b77bc598d726815f06d14' --jq '.content' > "$OUF_R7_LAUNCH/run.b64" || exit 1
+  base64 --decode "$OUF_R7_LAUNCH/run.b64" > "$OUF_R7_LAUNCH/run.sh" || exit 1
+  printf '%s  %s\n' '05add65060d4684f0143030b8a800e40dafd9851a4d350eda5e99b25369ac952' "$OUF_R7_LAUNCH/run.sh" | sha256sum -c - || exit 1
+  bash "$OUF_R7_LAUNCH/run.sh"
+)
+OUF_R7_BOOTSTRAP_EXIT=$?
+printf 'OUF_R7_BOOTSTRAP_EXIT=%s\n' "$OUF_R7_BOOTSTRAP_EXIT"

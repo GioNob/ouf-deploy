@@ -73,7 +73,7 @@ raise SystemExit(int(os.environ.get('CI_SUDO_EXIT','0')))
         self.assertFalse((self.root/'sudo-marker').exists())
         self.assertEqual(list(self.root.glob('ouf-audited-recovery.*')),[])
 
-    def test_documented_outer_command_uses_retained_cli_outside_path(self):
+    def test_historical_outer_command_uses_retained_cli_outside_path(self):
         (self.bin/'gh').rename(self.root/'retained-gh')
         for name in ('mktemp','base64','sha256sum'):
             (self.bin/name).symlink_to('/usr/bin/'+name)
@@ -81,8 +81,7 @@ raise SystemExit(int(os.environ.get('CI_SUDO_EXIT','0')))
         recorder=self.bin/'bash'
         recorder.write_text('#!'+sys.executable+'\nimport pathlib,sys\npathlib.Path('+repr(str(marker))+').write_text(sys.argv[1])\n')
         recorder.chmod(0o755)
-        document=(ROOT/'releases/PROVIDER_AUDITED_RECOVERY_REVIEW_20261009.md').read_text()
-        command=document.split('```bash\n',1)[1].split('```',1)[0]
+        command=(ROOT/'tools/semantic_target_review/fixtures/r7-approved-delivery-command-20261009.sh.txt').read_text()
         command=command.replace('$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh',str(self.root/'retained-gh'))
         command=command.replace('$HOME/ouf-r7-launch.',str(self.root/'ouf-r7-launch.'))
         result=subprocess.run(['/bin/bash','-c',command],env={**self.env,'PATH':str(self.bin)},
