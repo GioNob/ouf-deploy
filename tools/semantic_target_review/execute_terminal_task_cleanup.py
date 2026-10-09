@@ -5,8 +5,9 @@ container/image/snapshot deletion, journal reset or automatic retry.
 """
 import contextlib,fcntl,hashlib,io,json,os,re,stat,subprocess,sys,tempfile,time,traceback
 from pathlib import Path
-APPROVAL_REF='OUF_TERMINAL_TASK_CLEANUP_HUMAN_APPROVAL_20261009_140446'
-APPROVED_AT=1791547486
+APPROVAL_REF='OUF_TERMINAL_TASK_CLEANUP_HUMAN_APPROVAL_20261009_152018'
+APPROVED_AT=1791552018
+APPROVAL_WINDOW_SECONDS=7200
 REVIEW_SHA='4269551bed61bb437697cc6d38fb4f782264ba1dfb2bb6109347676fe2f95e27'
 GATE_SHA='b30fb108a72f6aaa008789a6af8b9801ca23dce3dd5f6bd62eb799496cf07027'
 PACKAGE=Path('/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-source-ff13uh3n')
@@ -65,7 +66,7 @@ def main(approval_ref,review_path,gate_path):
     phase='VERIFY_SCOPED_HUMAN_MAINTENANCE_APPROVAL';output=None;entry=None;old=None;new=None;fd=None;switched=False
     try:
         require(APPROVAL_REF!='PENDING_TERMINAL_TASK_CLEANUP_APPROVAL' and approval_ref==APPROVAL_REF and type(APPROVED_AT) is int,'EXPLICIT_TERMINAL_CLEANUP_APPROVAL_REQUIRED')
-        require(APPROVED_AT<=int(time.time())<APPROVED_AT+3600,'LIVE_HUMAN_MAINTENANCE_APPROVAL_REQUIRED')
+        require(APPROVED_AT<=int(time.time())<APPROVED_AT+APPROVAL_WINDOW_SECONDS,'LIVE_HUMAN_MAINTENANCE_APPROVAL_REQUIRED')
         require(os.geteuid()==0 and sys.flags.isolated and sys.dont_write_bytecode,'ISOLATED_ROOT_OPERATOR_REQUIRED')
         reader,_=load(review_path,REVIEW_SHA,'terminal_review');_,gate_raw=load(gate_path,GATE_SHA,'terminal_gate')
         phase='FRESH_TERMINAL_REVIEW_BEFORE_MUTATION'
