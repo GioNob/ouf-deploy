@@ -3,9 +3,9 @@
 set -u
 set -o pipefail
 umask 077
-OUF_R8_COMMIT=378c882379502f5b9809e0f24f6a3a64cdacef56
+OUF_R8_COMMIT=54fbdf91ec61759704a47712cef5627d0127e842
 OUF_R8_APPROVAL=OUF_PROVIDER_PREPARED_MOUNTPOINT_APPROVED_20261009T203804_CEST_R8
-OUF_R8_EXECUTOR_SHA=89cba73a29f3e4def5af40f991720766b51a379c6a441c502d2240f4d17f9214
+OUF_R8_EXECUTOR_SHA=b8ca937be96cb92bd98519b837cc6c661ef22977be0a6668b7209b06b3a2caf9
 OUF_R8_PHASE=REQUIRE_RECORDED_APPROVAL
 OUF_R8_WORK_ROOT=${OUF_R8_WORK_ROOT:-"$HOME"}
 main() {
@@ -25,8 +25,9 @@ main() {
     printf '%s  %s\n' "$expected" "$OUF_R8_DOWNLOAD/$filename" | sha256sum -c - || return 1
   }
   download tools/semantic_target_review/execute_prepared_mountpoint_recovery.py execute.py "$OUF_R8_EXECUTOR_SHA" || return 1
-  download tools/semantic_transaction_profiles/prepare_mountpoint_acceptance.py prepare_mountpoint_acceptance.py 143112ab4051ca166f6d7609c107787f2be3ce35ce7946002dfec755ff1fdd98 || return 1
-  download evidence/provider-r8-mountpoint-recovery-scope-20261009.json scope.json 24f6c5a25893e1757bb903b74b90155e39d19864d377ed3a31a94e80bfce1a86 || return 1
+  download tools/semantic_transaction_profiles/prepare_mountpoint_acceptance.py prepare_mountpoint_acceptance.py f5dc77021e843fc0440e74792b8eace6dd1756180e69c1726f0898438d37d9b5 || return 1
+  cp -- "$HOME/ouf-r8-recovery.0ABMEId2/scope.json" "$OUF_R8_DOWNLOAD/scope.json" || return 1
+  printf '%s  %s\n' '24f6c5a25893e1757bb903b74b90155e39d19864d377ed3a31a94e80bfce1a86' "$OUF_R8_DOWNLOAD/scope.json" | sha256sum -c - || return 1
   OUF_R8_PHASE=EXECUTE_EXPLICITLY_APPROVED_R8_ONCE
   sudo /usr/bin/python3.13 -I -B -c '
 import hashlib,os,stat,sys
