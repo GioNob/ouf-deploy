@@ -53,7 +53,14 @@ def main():
     cids=[];tables=[];processes=[]
     runtime=Path('/run/ouf-docker-cohort-'+suffix);runtime.mkdir(mode=0o700)
     with tempfile.TemporaryDirectory(prefix='ouf-controlled-cohort-',dir='/root') as temporary:
-        root=Path(temporary);source=root/'source';source.mkdir(mode=0o700)
+        root=Path(temporary)
+        downloaded_engine=engine;engine=root/'engine';engine.mkdir(mode=0o700)
+        for binary in downloaded_engine.iterdir():
+            if binary.is_file():
+                target=engine/binary.name;shutil.copyfile(binary,target);target.chmod(0o755)
+                require(sha(target)==sha(binary),'CI_PINNED_ENGINE_COPY_DRIFT')
+        commands['runc']=str(engine/'runc')
+        source=root/'source';source.mkdir(mode=0o700)
         registry=root/'registry';registry.mkdir(mode=0o700)
         for name in ('scripts','tools'):
             destination=source/name;destination.mkdir(mode=0o700)
@@ -184,7 +191,11 @@ def main():
                 return path.read_text().strip() if path.exists() else None
             first=start(cids[0])
             time.sleep(.3)
-            require(first.poll() is None and application_proof(cids[0]) is None,'CI_PREMATURE_COHORT_RELEASE')
+            if first.poll() is not None:
+                processes[0][2].seek(0)
+                print('CI_FIRST_REQUEST_FAILED='+json.dumps({'exitCode':first.returncode,'stderr':processes[0][2].read(1600).decode()}))
+                require(False,'CI_START_REQUEST_TERMINATED_BEFORE_PEER')
+            require(application_proof(cids[0]) is None,'CI_PREMATURE_COHORT_RELEASE')
             second=start(cids[1])
             outcomes=[]
             for process,out,err in processes:
