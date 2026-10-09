@@ -74,3 +74,12 @@ Teatri resta già caricato: asset `6609b245-86ed-4315-8ce0-73f2a8555bf3`, profil
 ## Verifica finale della consegna
 
 Commit `91f866a2a2a79740a1729d5f4feeb3a8ba5f593d`, [run 37960736584](https://github.com/GioNob/ouf-deploy/actions/runs/37960736584): tutti e quattro i job SUCCESS. Verificati nei log i due marker di pubblicazione/avvio e le 13 prove del recupero/consegna. Riletti dal commit GitHub e confrontati byte per byte executor, otto delta e launcher. [Ricevuta della verifica](../evidence/provider-r7-delivery-validation-20261009.json) con hash dei log. Nessuna modifica di autorità o operazione VPS; approvazione sempre PENDING.
+
+
+## R7 actual target result and remaining evidence gap
+
+Operator-reported R7 cbuyoyo2 was denied; approval is consumed. The preserved receipt is evidence/provider-r7-target-denial-20261009.json. Southbound passed live observation then failed its exact accepted v1 rootfs comparison (NODE_APPROVED_ROOTFS_DRIFT). Adapter failed the peer runc-state command (NODE_OBSERVATION_UNPROVEN, nonzero result or over-limit output); historical return code/stderr were discarded. An error after peer teardown is plausible, not proven. Both LOCAL_PRODUCER_DENIED summaries are consequences. Missing R6 producer-result directories no longer explain the live failure.
+
+The successful synthetic native fixture precreated /approved-source and used cwd /. It did not prove phase equality for all target OCI mount destinations/cwd. The accepted target v1 seal came from stopped export, whereas live observation follows runtime preparation. New mount/cwd entries, OverlayFS metadata and content drift are distinct hypotheses; none is licensed as the cause without target differences. The historical observed seal was not saved, so a fresh stopped observation must not be called a reconstruction of that value.
+
+The bounded reader and delivery in PROVIDER_R7_ROOTFS_DIAGNOSIS_20261009.md compare current entries with the retained image, preserve full private maps, print bounded nonsecret differences, and capture current task/shim/native state. No acceptance adjustment, retry, cleanup, role issuance or target operation was performed in this cloud investigation. The old executable R7 operator block has been removed from the review and retained only as a nonexecutable test fixture.
