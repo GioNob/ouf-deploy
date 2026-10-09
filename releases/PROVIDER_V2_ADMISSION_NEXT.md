@@ -1,5 +1,14 @@
 # Provider v2 admission: next target step — 8 October 2026
 
+## Accepted recovery — 2026-10-09 08:53:03 Europe/Rome
+
+User accepted R2 two-dependency input hashes and exact pre-key recovery. Witness evidence/provider-v2-fresh-dependency-human-acceptance-20261009.json at 8cadc271c4d7a6b4942723b7cd8345caeb19b3d9. No further confirmation required. Existing image/frame/sign-start scope retained. Updated helper0a01d31d7bfa892e598df1e4c5e6a8185508b11f has nine passing CI checks run37896156439; SHA256e3253513c4220a0a506c117e0a535145d14f76fcba3f58fe292ee894c46bfcd4. Root clock must be at/after08:53:03 before recovery mutation, full240 seconds within DB validity ending10October08:33:47 Rome. FAILED_APPROVAL_REF still verifies original failure; new refOUF_PROVIDER_V2_FRESH_DEPENDENCY_ACCEPTANCE_20261009_085303 signs reviewed fresh inputs.
+
+NEXT OPERATOR ACTION: run pinned releases/provider-v2-reviewed-recovery-20261009.sh (SHA256 f0b86fb0bc6140da2d56711f3f7234f80c27133ef2916cfbc1963b632dde4786). It checks downloaded verified artifact11599489979 SHA256acd592af6d96bcb716ca2f49573fd91d33114b96579b9d2f9ae33ad8af605c72 and re-verifies six real public producer signatures/bundle before sudo. The script runs fail-fast in its own shell, outside a conditional group; failed downloads/hash/crypto cannot reach privileged execution. Existing authenticated gh and portablefallback reused. No source/input promotion is repeated; fourteen old bindings retained, two newly accepted dependency files created. Old context/claims/denial preserved, exclusive recovery claimed; exact original empty wrapper and no key/lifecycle attempt required. Corrected intake runs SHA256-pinned in memory; original installed entry and runtime39-file closure retained.
+
+No VPS recovery/signing/start has been executed from cloud or reported by user yet. Return OUF_RECOVERY_SIX_SIGNATURES, OUF_PROVIDER_TRANSACTION_INTAKE, OUF_APPROVED_PROVIDER_TRANSACTION and REVIEWED_RECOVERY_EXIT; do not rerun on denial. Mandatory native OCI/rootfs/NIC/peer/generation/guard checks remain. No direct Docker shortcut, automatic retry/rollback, provider lease/API grant, daemon restart, general sudo, Teatri job or release acceptance. Continue original product roadmap only after actual target admission/readbacks. Older pending-review notes below are history; accepted witness governs this addendum.
+
+
 ## Current continuation — 2026-10-09 fresh dependency review R2
 
 NEXT HUMAN ACTION: accept or reject the concrete two-document addendum in releases/PROVIDER_V2_FRESH_DEPENDENCY_REVIEW_20261009.md. Original image/frame and sign/start approvals remain recorded; this addendum is required because accepted dependency hashes were bound to a DB that expired at 08:31:48 Europe/Rome. Do not repeat old source/input preparation or the old execution command.

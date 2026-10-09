@@ -41,3 +41,6 @@ Nine checks pass locally and in targeted CI run 37895505225/job 113705831877 at 
 After human acceptance is recorded, the existing local authority keys issue two bounded role mandates and the previously approved guarded two-CID transaction may proceed. Mandatory live OCI/rootfs/NIC/peer/generation/guard checks, no automatic retry/rollback, no provider lease grant, no general sudo, no daemon restart, no Teatri job and no release acceptance remain unchanged. Approval cannot suppress a failed target check.
 
 No target command is issued while this review is pending. The prepared bridge explicitly rejects pending human dependency acceptance before recovery mutation.
+
+
+Acceptance recorded2026-10-09T08:53:03+02:00 at8cadc271c4d7a6b4942723b7cd8345caeb19b3d9; see evidence/provider-v2-fresh-dependency-human-acceptance-20261009.json. Original proposal retained as reviewed snapshot. Current action: accepted operator launch releases/provider-v2-reviewed-recovery-20261009.sh.
