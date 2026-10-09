@@ -24,6 +24,8 @@ jobs:
         run: |
           sudo install -d -m 0700 /root/ouf-transaction-ci
           sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-transaction-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_authenticated_transaction.py
+      - name: Broker lock contention, bounded wait and private denial evidence
+        run: sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-transaction-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_broker_source_repair.py
       - name: Atomic runtime switch filesystem and guard lock failure handling
         run: sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-transaction-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_guarded_runtime_switch.py
       - name: Borrowed native guard descriptor custody

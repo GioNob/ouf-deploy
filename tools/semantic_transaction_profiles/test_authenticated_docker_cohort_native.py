@@ -71,6 +71,10 @@ def main():
             if relative.startswith('source/'):
                 require(sha(source/relative.removeprefix('source/'))==expected,'CI_ORIGINAL_PRODUCTION_SOURCE_DRIFT')
         require(sha(Path(__file__).with_name('frame-observer.py'))==closure['sourceHashes']['frame-observer.py'],'CI_FRAME_OBSERVER_SOURCE_DRIFT')
+        from repair_broker_sources import repair, BROKER, RUNTIME
+        revised=repair({n:(source/n).read_bytes() for n in (BROKER,RUNTIME)})
+        for name,raw in revised.items():
+            (source/name).write_bytes(raw);(source/name).chmod(0o600)
         wrapper=root/'admission.py';shutil.copyfile(Path(__file__).with_name('ci_frame_profile_broker.py'),wrapper);wrapper.chmod(0o600)
         lock=root/'guard.lock';lock.touch(mode=0o600)
         config_path=root/'adapter.json';cfg={'schema':'ouf.semantic-docker-runtime-adapter.v4',
@@ -233,7 +237,14 @@ def main():
             for cid in cids:private(registry/cid/'adapter.json',{'schema':'ouf.semantic-docker-runtime-journal.v1','containerId':cid,
                 'configurationHash':adapter.binding(cfg,cid),'state':'STAGED','runtimeRoot':None,'bundleHash':None,'driverHash':None})
             print('DOCKER_BUNDLE_PARENT_REFUSAL=PASS TWO_REAL_DOCKER_DENIALS_L283=true BOTH_CREATED_STAGED=true NO_APPLICATION_RELEASE=true CI_ONLY=true TARGET_AUTHORITY=false')
-            first=start(cids[0])
+            import fcntl
+            lockfd=os.open(lock,os.O_RDWR|os.O_NOFOLLOW)
+            try:
+                fcntl.flock(lockfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+                first=start(cids[0]);time.sleep(1)
+                require(first.poll() is None,'CI_COMMON_LOCK_CONTENTION_ABORTED_CREATION')
+                require(application_proof(cids[0]) is None,'CI_LOCK_CONTENTION_RELEASED_APPLICATION')
+            finally:os.close(lockfd)
             time.sleep(.3)
             if first.poll() is not None:
                 processes[0][2].seek(0)
@@ -275,6 +286,7 @@ def main():
                 require(grant['schema']=='ouf.semantic-preexec-driver.v6' and set(grant['peerBinding']['observations'])=={cids[1-i]},'CI_V6_PEER_GRANT_MISSING')
                 require(grant['profile']['bundleHash']==digest(specs[i]),'CI_SIGNED_FULL_OCI_DRIFT')
             print('AUTHENTICATED_DOCKER_COHORT=PASS ENGINE_29_8_1=true FULL_OCI_FIXED_BEFORE_CREATE=true INDEPENDENT_OFFLINE_ROOTFS=true NODE_V4=true PEER_BOUND_V6=true TWO_APPLICATION_MARKERS=true CI_KEYS_ONLY=true TARGET_AUTHORITY=false')
+            print('BROKER_BOUNDED_COMMON_LOCK=PASS FORCED_NATIVE_CONTENTION=true TWO_APPLICATION_MARKERS=true NO_OPERATION_RETRY=true TARGET_AUTHORITY=false')
         finally:
             for process,out,err in processes:
                 if process.poll() is None:process.kill();process.wait(timeout=5)
