@@ -23,7 +23,7 @@ from tools.semantic_provider_deployment_authentication import DetachedAuthentica
 
 
 def prepare(root, source, python, commands, lock, inputs, networks, kernels,
-            cids, seal, image, empty_adapter, run, suffix, tables):
+            cids, seal, image, empty_adapter, run, suffix, tables,*,seals_by_role=None):
     def private(path, value):
         path.write_bytes(encoded(value)); path.chmod(0o600)
 
@@ -61,7 +61,7 @@ def prepare(root, source, python, commands, lock, inputs, networks, kernels,
     source_hash = digest(encoded({**{p:digest(raw) for p,raw in sources.items()}, 'frame-observer.py':digest(observer)}))
     runtime = bind(commands['runc']); python_binding = bind(python)
     targets = {role:{'containerId':cids[i], 'imageManifestDigest':image, 'imageConfigDigest':image,
-                     'runtimeSeal':copy.deepcopy(seal)} for i,role in enumerate(('adapter','southbound'))}
+                     'runtimeSeal':copy.deepcopy(seals_by_role[role] if seals_by_role else seal)} for i,role in enumerate(('adapter','southbound'))}
     declarations = [{'containerId':cids[i], 'applicationHash':digest(encoded(inputs[i]['framePolicy']['expectedOci'])),
                      'networkBindings':networks[i]} for i in range(2)]
 

@@ -39,6 +39,8 @@ def main():
     require(os.geteuid()==0,'CI_ROOT_REQUIRED')
     repository=Path.cwd();suffix=uuid.uuid4().hex[:7];bridge='ccb'+suffix
     published = os.environ.get('OUF_CI_AUTHENTICATED_PUBLICATION') == '1'
+    mount_preparation = os.environ.get('OUF_CI_MOUNTPOINT_PREPARATION') == '1'
+    require(not mount_preparation or published,'CI_MOUNTPOINT_TEST_REQUIRES_PRODUCTION_PUBLICATION')
     python=str(Path('/usr/bin/python3').resolve())
     commands={k:str(Path(shutil.which(k)).resolve()) for k in ('ip','nft','nsenter','mount','umount','unshare','runc','openssl','sysctl')}
     def run(*argv,payload=None,check=True,cwd=None):
@@ -122,7 +124,10 @@ def main():
             for name in ('bin','dev','dev/pts','dev/shm','dev/mqueue','proc','sys','sys/fs','sys/fs/cgroup','etc'):
                 (offline/name).mkdir(parents=True,exist_ok=True);(offline/name).chmod(0o755)
             shutil.copyfile(shutil.which('busybox'),offline/'bin/busybox');(offline/'bin/busybox').chmod(0o755)
-            (offline/'approved-source').touch(mode=0o644)
+            if mount_preparation:
+                for name in ('run','usr','usr/local','usr/local/apisix','usr/local/apisix/conf'):
+                    (offline/name).mkdir(mode=0o755,exist_ok=True);(offline/name).chmod(0o755)
+            else:(offline/'approved-source').touch(mode=0o644)
             if published:
                 # Representative file/byte count; image identity remains CI-only.
                 payload=offline/'payload';payload.mkdir(mode=0o755)
@@ -144,6 +149,23 @@ def main():
             upper=root/'expected-upper';work=root/'expected-work';upper.mkdir();work.mkdir()
             run(commands['mount'],'-t','overlay','overlay','-o','lowerdir='+str(initlayer)+':'+str(offline)+',upperdir='+str(upper)+',workdir='+str(work),str(expected_mount));mounted=True
             seal=rootfs_seal(expected_mount,{'maxEntries':10000,'maxBytes':268435456,'maxDepth':32},VerificationBudget(12))
+            seals_by_role=None
+            if mount_preparation:
+                from prepare_mountpoint_acceptance import BIND_FILES
+                seals_by_role={}
+                for role,files in BIND_FILES.items():
+                    view=root/('expected-'+role);view.mkdir()
+                    up=root/('upper-'+role);up.mkdir();workdir=root/('work-'+role);workdir.mkdir()
+                    run(commands['mount'],'-t','overlay','overlay','-o','lowerdir='+str(initlayer)+':'+str(offline)+',upperdir='+str(up)+',workdir='+str(workdir),str(view))
+                    try:
+                        # Independent expansion before any target create/runtime call.
+                        (view/'run/ouf-semantic-provider').mkdir(mode=0o755)
+                        for path in files:(view/path).touch(mode=0o644)
+                        seals_by_role[role]=rootfs_seal(view,{'maxEntries':10000,'maxBytes':268435456,'maxDepth':32},VerificationBudget(12))
+                        require(seals_by_role[role]['entries']==seal['entries']+len(files)+1
+                            and seals_by_role[role]['bytes']==seal['bytes'] and seals_by_role[role]!=seal,
+                            'CI_EXACT_PREPARED_ROOTFS_DELTA_REQUIRED')
+                    finally:run(commands['umount'],str(view))
             network=dock('network','create','--internal','--subnet','198.19.123.0/24','--opt','com.docker.network.bridge.name='+bridge,'ouf-ci-'+suffix).stdout.decode().strip()
             baseline=json.loads(Path(__file__).with_name('containerd-overlayfs-adapter.json').read_bytes())
             for i in range(2):
@@ -152,18 +174,25 @@ def main():
                 uid=baseline['approvedUser']['uid'];gid=baseline['approvedUser']['gid']
                 readonly=baseline['launch']['manifest']['readOnlyRoot']
                 memory=536870912 if published and i==1 else 268435456
-                approved_source=root/('approved-source-'+str(i));approved_source.write_bytes(b'CI_APPROVED_READ_ONLY_SOURCE');approved_source.chmod(0o600);os.chown(approved_source,uid,gid)
+                role=('adapter','southbound')[i]
+                destinations=BIND_FILES[role] if mount_preparation else ['approved-source']
+                mounts=[];source_records=[];mount_args=[]
+                for j,destination in enumerate(destinations):
+                    approved_source=root/('approved-source-'+str(i)+'-'+str(j));approved_source.write_bytes(b'CI_APPROVED_READ_ONLY_SOURCE');approved_source.chmod(0o600);os.chown(approved_source,uid,gid)
+                    mount={'source':str(approved_source),'target':'/'+destination,'readOnly':True}
+                    mounts.append(mount)
+                    source_records.append({**mount,'uid':uid,'gid':gid,'mode':0o600,'maxBytes':131072,'sha256':sha(approved_source)})
+                    mount_args.extend(['--mount','type=bind,source='+str(approved_source)+',target=/'+destination+',readonly'])
                 mac='02:42:c6:1b:00:'+format(i+2,'02x');address='198.19.123.'+str(i+2)
                 argv=['/bin/busybox','sh','-c','echo APP > /dev/shm/started; /bin/busybox sleep 60']
                 cid=dock('create','--runtime','ouf-ci-cohort','--network',network,'--ip',address,'--mac-address',mac,
                     '--user',str(uid)+':'+str(gid),*(['--read-only'] if readonly else []),'--cap-drop','ALL','--security-opt','no-new-privileges',
                     '--memory',str(memory),'--memory-swap',str(memory),'--pids-limit','128','--no-healthcheck','--env','PATH=/bin',
-                    '--mount','type=bind,source='+str(approved_source)+',target=/approved-source,readonly',image,*argv).stdout.decode().strip();cids.append(cid)
-                mount={'source':str(approved_source),'target':'/approved-source','readOnly':True}
+                    *mount_args,image,*argv).stdout.decode().strip();cids.append(cid)
                 launch={'schema':'ouf.semantic-creation-frame-launch.v1',
-                    'manifest':{'user':str(uid)+':'+str(gid),'readOnlyRoot':readonly,'memoryBytes':memory,'pidsLimit':128,'mounts':[mount]},
+                    'manifest':{'user':str(uid)+':'+str(gid),'readOnlyRoot':readonly,'memoryBytes':memory,'pidsLimit':128,'mounts':mounts},
                     'startup':{'uid':uid,'gid':gid,'umask':None,'cwd':'/','args':argv,'env':['PATH=/bin','HOSTNAME=$OUF_HOSTNAME']},
-                    'sources':[{**mount,'uid':uid,'gid':gid,'mode':0o600,'maxBytes':131072,'sha256':sha(approved_source)}]}
+                    'sources':source_records}
                 template=build_role_template(baseline['template'],baseline['launch'],launch,baseline['approvedUser'],mount_ordering=baseline['mountOrdering'])
                 context={'schema':'ouf.semantic-docker-frame-context.v1','containerId':cid,
                     'bundleParent':str(bundle_parent),
@@ -181,7 +210,7 @@ def main():
             if published:
                 from ci_published_transaction_setup import prepare
                 cfg=prepare(root,source,python,commands,lock,inputs,networks,kernels,cids,
-                            seal,image,cfg,run,suffix,tables)
+                            seal,image,cfg,run,suffix,tables,seals_by_role=seals_by_role)
                 registry=Path(cfg['registryRoot'])
                 private(config_path,cfg)
                 print('PRODUCTION_PUBLICATION=PASS SIGNED_INPUTS=true EMPTY_RESULT_DIRECTORIES=true DIRECT_PRODUCTION_BROKER=true CI_ONLY=true TARGET_AUTHORITY=false',flush=True)
@@ -315,6 +344,13 @@ def main():
                 require(grant['profile']['bundleHash']==digest(specs[i]),'CI_SIGNED_FULL_OCI_DRIFT')
             if published:
                 print('PUBLISHED_DOCKER_COHORT=PASS TWO_APPLICATION_MARKERS=true PRODUCTION_NODE_APPROVAL_PREPARER_DRIVER=true ROOTFS_ENTRIES='+str(seal['entries'])+' ROOTFS_BYTES='+str(seal['bytes'])+' CI_ONLY=true TARGET_AUTHORITY=false')
+            if mount_preparation:
+                for i,role in enumerate(('adapter','southbound')):
+                    node=json.loads((registry/cids[i]/'attestation-producer.json').read_bytes())
+                    mandate=json.loads(Path(node['acceptanceMandatePath']).read_bytes())
+                    require(mandate['rootfsSeal']==seals_by_role[role] and mandate['rootfsSeal']!=seal,
+                        'CI_ACTUAL_NODE_PREPARED_ROOTFS_ACCEPTANCE_REQUIRED')
+                print('MISSING_BIND_DESTINATIONS=PASS ADAPTER_ADDED=6 SOUTHBOUND_ADDED=3 OLD_STOPPED_SEAL_DIFFERS=true EXACT_V1_NODE_COMPARISON=true TWO_APPLICATION_MARKERS=true CI_ONLY=true TARGET_AUTHORITY=false')
             print('AUTHENTICATED_DOCKER_COHORT=PASS ENGINE_29_8_1=true FULL_OCI_FIXED_BEFORE_CREATE=true INDEPENDENT_OFFLINE_ROOTFS=true NODE_V4=true PEER_BOUND_V6=true TWO_APPLICATION_MARKERS=true CI_KEYS_ONLY=true TARGET_AUTHORITY=false')
             print('BROKER_BOUNDED_COMMON_LOCK=PASS FORCED_NATIVE_CONTENTION=true TWO_APPLICATION_MARKERS=true NO_OPERATION_RETRY=true TARGET_AUTHORITY=false')
         finally:

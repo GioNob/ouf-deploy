@@ -25,6 +25,8 @@ jobs:
         run: python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p 'test_*profiles.py'
       - name: Partial creation never grants admission
         run: python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_peer_creation_window.py
+      - name: Exact prepared mountpoint acceptance and unchanged v1 runtime check
+        run: python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_mountpoint_acceptance.py
       - name: Authenticate complete input set with real Ed25519 signatures
         run: |
           sudo install -d -m 0700 /root/ouf-transaction-ci
@@ -121,3 +123,6 @@ jobs:
       - name: Publish signed records and admit peers through direct production broker
         working-directory: gateway
         run: sudo env OUF_CI_AUTHENTICATED_PUBLICATION=1 OUF_DOCKER_WINDOW_ENGINE_DIRECTORY="${{ github.workspace }}/engine-bin" /usr/bin/python3 -B ../deploy/tools/semantic_transaction_profiles/test_authenticated_docker_cohort_native.py
+      - name: Admit exact missing mount destinations with independent prepared-rootfs seals
+        working-directory: gateway
+        run: sudo env OUF_CI_AUTHENTICATED_PUBLICATION=1 OUF_CI_MOUNTPOINT_PREPARATION=1 OUF_DOCKER_WINDOW_ENGINE_DIRECTORY="${{ github.workspace }}/engine-bin" /usr/bin/python3 -B ../deploy/tools/semantic_transaction_profiles/test_authenticated_docker_cohort_native.py
