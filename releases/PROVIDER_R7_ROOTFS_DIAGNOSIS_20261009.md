@@ -1,3 +1,5 @@
+> Lettura già eseguita con successo: snapshot cxgamg_7, ricevuta provider-r7-rootfs-target-20261009.json. Non ripeterla come preparazione separata. Stato corrente: [proposta R8](PROVIDER_R8_PREPARED_MOUNTPOINT_REVIEW_20261009.md). Il comando sottostante è storico.
+
 # R7 — lettura delle differenze reali prima di qualsiasi recupero
 
 R7 è consumato. La ricevuta riportata dall'operatore è conservata in `evidence/provider-r7-target-denial-20261009.json`; non è un'acquisizione indipendente dal VPS. Nessun esito di avvio riuscito è provato. I contatori storici sconosciuti di chiavi/lifecycle restano `null`.
