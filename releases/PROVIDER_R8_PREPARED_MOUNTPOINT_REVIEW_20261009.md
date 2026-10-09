@@ -1,6 +1,8 @@
 # R8 — proposta concreta di accettazione del rootfs preparato e recupero
 
-**Stato: proposta, approvazione umana ancora assente. Executor e launcher sono inerti. Nessun nuovo avvio o cleanup eseguito sul VPS. R7 è consumato.**
+**Stato: approvato dall’utente con “Approvo” alle 20:38:04 Europe/Rome del 9 ottobre 2026. Esecuzione R8 sul VPS ancora in attesa dell’operatore; R7 resta consumato.**
+
+[Approvazione registrata](../evidence/provider-r8-human-approval-20261009.json): `OUF_PROVIDER_PREPARED_MOUNTPOINT_APPROVED_20261009T203804_CEST_R8`, finestra fino alle **22:38:04 Europe/Rome**. Lo scope pubblicato a `b599df24ef3ef820688d6ff4278be4d0453541aa` è invariato. La nuova autorizzazione è già concessa: non richiederla ancora.
 
 ## Evidenza e causa
 
@@ -49,9 +51,33 @@ Wrapper R7 `050cb98116da36efd315d93f4e95471dfe0543c8447fd135b7b1261c7bf587e2`; o
 
 [CI recupero e consegna 37974331313](https://github.com/GioNob/ouf-deploy/actions/runs/37974331313), commit `c653dddb477f758bd89dba7886dc42657aa3ff39`: le nove prove mirate sono passate; log letto e byte dei quattro file remoti confrontati con quelli verificati. [Ricevuta della verifica di consegna](../evidence/provider-r8-prepared-recovery-delivery-validation-20261009.json). Le prove mirate coprono rifiuto di dati/permessi/link/xattr diversi, integrità del pacchetto, approvazioni vecchie/scadute, cambiamento PID/sigillo/wrapper, rimozione dei soli due task, ripristino del wrapper anche al fallimento della seconda rimozione e consegna con gh fuori dal PATH. Nessun comando mutatore è stato eseguito sul VPS durante questa preparazione.
 
-Executor e scope: commit `7d377692e8714f439cea819b6d1aabf0dad0db7b`; executor SHA256 `7a4d68895c33c01562298948cfdb2c65c18c1b3525eeb34e8bc36891a998ba3e`. Launcher `releases/provider-prepared-mountpoint-recovery-20261009.sh`, ancora `PENDING_PREPARED_MOUNTPOINT_RECOVERY_APPROVAL`. Non viene fornito un comando di esecuzione finché questa proposta non è approvata.
+Executor approvato: commit `378c882379502f5b9809e0f24f6a3a64cdacef56`, SHA256 `89cba73a29f3e4def5af40f991720766b51a379c6a441c502d2240f4d17f9214`; cambiano soltanto riferimento e due timestamp dell’approvazione. Launcher commit `5a7249c1b65e209e468de3baa10e73800f69d53e`, SHA256 `1d5a745cbfc17e8e8877d2184a001a3d107df2cb3604a4589105250712c17c74`, vincolato all’executor approvato. Mandati operativi di 240 secondi; scope e runtime invariati.
 
-Alla ricezione dell'approvazione umana registrare riferimento e orario reali, impostare soltanto le tre costanti di approvazione e aggiornare i pin di consegna, verificare i byte remoti e il percorso del launcher, quindi consegnare il singolo blocco operatore con gh esplicito: `$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh`. Non chiedere nuovamente l'approvazione già appena concessa. Non cambiare scope, accettazioni o codice a sua insaputa.
+[Verifica della consegna approvata](../evidence/provider-r8-approved-delivery-validation-20261009.json): [CI 37974841444](https://github.com/GioNob/ouf-deploy/actions/runs/37974841444) riuscita, log verificato; byte remoti di executor, verificatore, scope e launcher identici a quelli verificati. Nessun esito VPS ancora ricevuto.
+
+## Singolo comando operatore approvato
+
+Eseguire una volta come `oufadmin`, entro le 22:38:04 Europe/Rome del 9 ottobre. La richiesta sudo avverrà dopo la verifica dei download. Conservare l’output completo; nessuna ripetizione automatica. Gli eventuali `exit` sono confinati nel subshell, senza chiudere la sessione SSH. [Blocco identico in file](provider-r8-approved-operator-command-20261009.sh).
+
+```bash
+if (
+  set -u
+  set -o pipefail
+  umask 077
+  OUF_R8_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+  [[ -x "$OUF_R8_GH" ]] || { echo 'OUF_R8_BOOTSTRAP=EXISTING_GH_NOT_EXECUTABLE'; exit 1; }
+  OUF_R8_LAUNCH="$(mktemp -d "$HOME/ouf-r8-launch.XXXXXXXX")" || exit 1
+  "$OUF_R8_GH" api 'repos/GioNob/ouf-deploy/contents/releases/provider-prepared-mountpoint-recovery-20261009.sh?ref=5a7249c1b65e209e468de3baa10e73800f69d53e' --jq .content > "$OUF_R8_LAUNCH/run.base64" || exit 1
+  base64 --decode "$OUF_R8_LAUNCH/run.base64" > "$OUF_R8_LAUNCH/run.sh" || exit 1
+  printf '%s  %s\n' '1d5a745cbfc17e8e8877d2184a001a3d107df2cb3604a4589105250712c17c74' "$OUF_R8_LAUNCH/run.sh" | sha256sum -c - || exit 1
+  bash "$OUF_R8_LAUNCH/run.sh"
+); then
+  OUF_R8_BOOTSTRAP_EXIT=0
+else
+  OUF_R8_BOOTSTRAP_EXIT=$?
+fi
+echo "OUF_R8_BOOTSTRAP_EXIT=$OUF_R8_BOOTSTRAP_EXIT"
+```
 
 Gli helper locali R6 e R7 già eseguiti vengono riutilizzati per hash; si trasferiscono soltanto il nuovo executor, il verificatore della proposta e lo scope. La dependency evidence corrente scade il **10 ottobre 2026 alle 06:33:47Z (08:33:47 Europe/Rome)**; la manutenzione e la nuova finestra dei mandati devono rientrare nella validità, senza estensioni implicite. Qualsiasi nuova incertezza conserva il claim e impedisce il replay.
 
