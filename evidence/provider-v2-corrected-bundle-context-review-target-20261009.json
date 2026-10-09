@@ -1,0 +1,67 @@
+{
+  "acquisition": "OPERATOR_REPORTED_NOT_INDEPENDENTLY_ACQUIRED",
+  "operatorReportedAt": "2026-10-09T10:09:16+02:00",
+  "scriptCommit": "95fcec2b39bb510dbadd84ab729db279bc40b4fc",
+  "scriptSha256": "0162e862b5047c6b5682f9ac9ef05a20b55bfc52dba2662e85ec0f4cf96ea7a6",
+  "exitCode": 0,
+  "review": {
+    "acceptanceGranted": false,
+    "containerLifecycleOperations": 0,
+    "existingConfigurationWrites": 0,
+    "newPrivateInputFiles": 0,
+    "notReleaseAcceptance": true,
+    "phase": "COMPILE_EXACT_TWO_PROPOSED_CONTEXTS",
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "roles": {
+      "adapter": {
+        "applicationHash": "816cdcc143d99047151c337eefefe3df29d5ea8a999d50597f1d0b899cd295f4",
+        "completeCompiledPolicyUnchanged": true,
+        "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+        "differentFields": [
+          "bundleParent"
+        ],
+        "framePolicyHash": "e8047e92e8b3938abe67dc8e57f385fced9de1218db348b4723eb3c6d34867fd",
+        "previousBundleParent": "/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby",
+        "previousContextHash": "ede2f4ee4de3b869d11e125cad094cbc5bad900bdb365a10d5d365d3104853ca",
+        "proposedBundleParent": "/run/containerd/io.containerd.runtime.v2.task/moby",
+        "proposedContextHash": "cfc1bfc12855dc49bfe0bf3eef22d0b2fb1f376d017a5cf68a4e77822dc9dfc6",
+        "unchangedInputHashes": {
+          "dependencyEvidence": "e5b31a2117b2f5abfb5e305b62a04d8861341501c626ab1cd50459e2b07b248d",
+          "deploymentConstraints": "2ea27b1d19bf4bd151b3f9199a651a5f693aced13ad9b02490485452aec82ef7",
+          "framePolicy": "e8047e92e8b3938abe67dc8e57f385fced9de1218db348b4723eb3c6d34867fd",
+          "launch": "061e2bd245d45d7e435ff86e07a6897413ae6c164d2d2c9ade2d455d80846943",
+          "preparerTemplate": "0a9a12a36b9f28eca2edcb3a2ad2c3d741559abb5d3699029bcc105c287dab53",
+          "provenanceEvidence": "0e5de8878e68d8fe555024cd5c0b911361c713e6547f93ebebd243ca34791f9f",
+          "template": "bf536f60c1d511f4cdbeb8546e84f46d426f693019938a0a9b4dbf76b3308e01"
+        }
+      },
+      "southbound": {
+        "applicationHash": "fc99be8319b210322292a6f468121de97f764800f5e4fb9717e9ac85a9293322",
+        "completeCompiledPolicyUnchanged": true,
+        "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+        "differentFields": [
+          "bundleParent"
+        ],
+        "framePolicyHash": "f49155fa412bb76d529713cb4ac2c253105884e9e72f7d2d74dfc5ccf9c5c822",
+        "previousBundleParent": "/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby",
+        "previousContextHash": "e515366dbe8412bf261711ea98bcaac3e6d9e9d8bc3f77109829613ec166f4eb",
+        "proposedBundleParent": "/run/containerd/io.containerd.runtime.v2.task/moby",
+        "proposedContextHash": "ce46668d3652eeb1fbf45ebba78c6fdc15aefa9af62801b536b616635a0f4246",
+        "unchangedInputHashes": {
+          "dependencyEvidence": "17ae54703ac8b29c4d554b9832f2a2f9d6d0067d421ee8cffc8ed89e96da8168",
+          "deploymentConstraints": "e349f6f9c059fa11415b6255a115d4d00972468e892624376b45d43365e718c2",
+          "framePolicy": "f49155fa412bb76d529713cb4ac2c253105884e9e72f7d2d74dfc5ccf9c5c822",
+          "launch": "cbc1f30c200a6a27e92b8055aa5542df30f7d124d08004d6f3bfe7dfb9ed2a39",
+          "preparerTemplate": "7ac15676ff00e38e1ac5bf5bd2356e42c34dbe9b485a5ba38d562380dcb1a894",
+          "provenanceEvidence": "75fc6a4022bbec82cad2e77e1d48fae3b3af77218edb1f8bade4d46c867dfa8b",
+          "template": "0ef8aa503bfb6a5c789000cd73de6e987d1a55688894475e555f4d566581ad05"
+        }
+      }
+    },
+    "schema": "ouf.semantic-corrected-bundle-context-review.v1",
+    "signaturesIssued": 0,
+    "startAuthorized": false,
+    "status": "EXACT_CONTEXT_CHANGE_REVIEW_PASS"
+  }
+}

@@ -1,3 +1,13 @@
+# Current actionable checkpoint — R4 bundle context recovery awaiting human acceptance
+
+Operator read-only review PASS, exit 0: exactly two proposed context hashes, adapter `cfc1bfc12855dc49bfe0bf3eef22d0b2fb1f376d017a5cf68a4e77822dc9dfc6`, southbound `ce46668d3652eeb1fbf45ebba78c6fdc15aefa9af62801b536b616635a0f4246`. Only bundleParent changes to `/run/containerd/io.containerd.runtime.v2.task/moby`; full compiled OCI policies/application hashes and fourteen other inputs remain unchanged. Receipt: `evidence/provider-v2-corrected-bundle-context-review-target-20261009.json`. This is operator-reported evidence; no acceptance, signatures, keys, writes or starts were performed by that review. Do not repeat it.
+
+Concrete R4 helper and five recovery tests are committed at `56f2b541370258b498cb52c8ad92635af54b39a3`. [Exact recovery review](PROVIDER_V2_BUNDLE_CONTEXT_RECOVERY_REVIEW_20261009.md) in releases describes both CIDs, hashes, preserved R3 evidence, current-wrapper CAS, fresh native guard before keys, two new contexts, two mandates/eight signatures and one controlled cohort. Helper remains inert with PENDING approval and APPROVED_AT None. User must accept the exact two changed context hashes and this single scoped post-R3 recovery; prior R3 approval is consumed. Do not rerun R3, reuse its expired signatures for execution, restore the empty wrapper automatically or widen the allowlist. Retain all historical unknown counters as unknown. After explicit acceptance, record the actual human response and modify only helper approvalRef/time, then supply one pinned root execution reusing both previously downloaded bridges. No new SBOM transfer/rescan, image prep, guard bootstrap or general sudo.
+
+Both actual CI runs are green: locked switch/recovery `37903901943` and all four native/profile jobs `37903901869`. Real Docker reproduces two L283 parent denials with created/STAGED CI candidates and no application release, then full native two-container admission on the corrected path. `evidence/provider-v2-bundle-context-recovery-ci-20261009.json` retains actual job IDs/proof. These are disposable CI workloads/keys; R4 has not run on VPS and target admission/start/release acceptance is not proven. Teatri remains uploaded and no national discovery job was run; Semantic/MCP rollout and discovery grants remain downstream.
+
+Historical checkpoints below are retained for evidence; their earlier next-action instructions are superseded by this checkpoint.
+
 
 ## Current checkpoint — live Docker bundle mismatch, 9 October 2026
 
