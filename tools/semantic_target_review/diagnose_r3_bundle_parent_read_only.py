@@ -70,9 +70,10 @@ try:
             state=option(args,'--state');config=option(args,'--config') or option(args,'-c')
             value={'pid':int(item.name),'executable':str(executable),'stateSource':None,'statePath':None}
             if state:value.update(stateSource='EXPLICIT_PROCESS_ARGUMENT',statePath=state)
-            elif config:
-                p=Path(config).resolve(strict=True)
+            else:
+                p=Path(config or '/etc/containerd/config.toml').resolve(strict=True)
                 value['configurationPath']=str(p)
+                value['processConfigurationPathExplicit']=config is not None
                 if str(p) in allowed_configs:
                     info=p.lstat();assert stat.S_ISREG(info.st_mode) and info.st_uid==0 and not info.st_mode&0o022
                     fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW)
@@ -80,7 +81,8 @@ try:
                     finally:os.close(fd)
                     assert len(raw)<=131072
                     state=tomllib.loads(raw.decode('utf-8')).get('state')
-                    if state:value.update(stateSource='EXPLICIT_CONTAINERD_CONFIGURATION',statePath=state)
+                    if state:value.update(stateSource='EXPLICIT_CONTAINERD_CONFIGURATION' if config else
+                        'EXISTING_STANDARD_CONFIG_PROCESS_ASSOCIATION_UNPROVEN',statePath=state)
             if value['statePath']:
                 p=Path(value['statePath']);assert p.is_absolute() and '..' not in p.parts
                 parent=p/'io.containerd.runtime.v2.task/moby'
