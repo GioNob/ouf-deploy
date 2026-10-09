@@ -1,6 +1,6 @@
 # Exact runtime alias maintenance recovery — 2026-10-09
 
-Status: implementation, ten local tests and native CI passed. Scoped target recovery approved at 16:07:45 Europe/Rome; operator execution pending. Provider start remains unauthorized. This is not release acceptance.
+Status: implementation, ten local tests and native CI passed. Scoped target recovery approved at 16:07:45 Europe/Rome; operator success reported at 16:12:27 Europe/Rome. Provider start remains unauthorized. This is not release acceptance.
 
 The retained options of both exact owning shims produce the same --root argument. Its SHA256 is 9f595173b01440cef244647bd9f19079b830bc582d119db5212b6e53544e49a2. It resolves to the retained canonical root, SHA256 c64c266a92b2d9ff052a8f2b817ee730406b2ddde47d550a52effb822b181342, but differs lexically. The old gate's pure argument predicate rejects it; the pure absence predicate passes. This reproduces a compatibility defect, without claiming historical argv was captured or attributing the original failure to later expiration. Old bundle error timestamps are historical; containerd runtimeError can prefer the last JSON error over current stderr.
 
@@ -24,7 +24,7 @@ A disposable native containerd/runc fixture uses the reviewed Docker 29.8.1 stat
 
 Native CI [37940907012](https://github.com/GioNob/ouf-deploy/actions/runs/37940907012), job 113854740720, succeeded for code commit ccdbe282927a771b6547b3ecc3ec70d602358252. Logs explicitly report EXACT_ALIAS_DENIAL_REPRODUCED=true and EXACT_ALIAS_RECOVERY=true. Image listing and snapshot metadata assertions also passed. Executor SHA256 f07e2b7efeca863f05e11c8e1c53d56d660aa2cc413a724df483c0753f815af9; corrected gate SHA256 a23f71e7fbe29fc3df4f138f41d35b4b5a3c63f14f1f15bc1c9e3d62644c9cfe.
 
-No target recovery has been executed. Before enabling the reviewed recovery, obtain a scoped acknowledgment for this separate one-use operation; the original operation already consumed its claim and explicitly records doNotRerunApply. Keep the existing 17:20:18 deadline unless the human explicitly changes it. Enabling requires only recording that acknowledgment and pinning the already reviewed files in the operator launcher.
+Historical pre-approval checkpoint: no target recovery had been executed. Before enabling the reviewed recovery, obtain a scoped acknowledgment for this separate one-use operation; the original operation already consumed its claim and explicitly records doNotRerunApply. Keep the existing 17:20:18 deadline unless the human explicitly changes it. Enabling requires only recording that acknowledgment and pinning the already reviewed files in the operator launcher.
 
 ## PET alignment
 
@@ -42,4 +42,10 @@ Only APPROVAL_REF and APPROVED_AT changed in the reviewed executor. Approved exe
 
 New operator launcher: releases/provider-terminal-alias-recovery-20261009.sh at commit 57b9c50d8dc8df5babae3f6c4bdbe61fa9e5ae0c, SHA256 8e42a54fc0f4939fd11ecf688a4e2686eb1d7d4f00f3c095aa77576edcaf9630. It pins the approved executor, the already reviewed corrected gate and the retained argument reader independently. The existing terminal review helper is verified by its exact SHA256. No old launcher or executor may be replayed.
 
-Target recovery remains unexecuted by this agent; await the operator's complete OUF_TERMINAL_ALIAS_RECOVERY result. Do not run twice, reset claims, extend clocks, start the provider or infer target acceptance from CI. If the result is blocked, acquire read-only diagnostics from the new evidence directory. After success, verify both tasks absent, container metadata retained, wrapperRestored=true, priorJournalsPreserved=true and empty postMaintenanceEmptyGuard before preparing any subsequent separate admission.
+Historical pre-execution checkpoint: recovery was not executed by the agent; the operator's complete result is now recorded below. Do not run twice, reset claims, extend clocks, start the provider or infer target acceptance from CI. If the result is blocked, acquire read-only diagnostics from the new evidence directory. After success, verify both tasks absent, container metadata retained, wrapperRestored=true, priorJournalsPreserved=true and empty postMaintenanceEmptyGuard before preparing any subsequent separate admission.
+
+## Operator success reported — 16:12:27 Europe/Rome
+
+[Complete target receipt](../evidence/provider-terminal-alias-recovery-target-success-20261009.json), user-pasted/operator-reported and not independently acquired: exit 0, TWO_TERMINAL_TASKS_REMOVED_ALIAS_RECOVERY_CONTAINERS_PRESERVED, two delete requests, wrapperRestored=true, priorJournalsPreserved=true, providerSetsEmpty=true and lockInodePreserved=true. Both candidate state hashes and configuration/kernel hashes equal prior readbacks. New evidence directory /etc/ouf/deploy-snapshots/semantic-terminal-alias-recovery-3d6pbi16. No Docker start requests/provider calls/private-key reads/signatures/daemon restarts. Historical containerLifecycleOperations remains null because terminal teardown occurred; guard observation's zero is scoped to that observation.
+
+Both maintenance claims are consumed and retained: never rerun either launcher. The restored R5 wrapper is still tied to its consumed context. Next prepare a distinct source-bound admission review/context, preserving all accepted sixteen inputs, image/rootfs/dependency evidence, runtime source closure, old signatures/claims/journals and current empty guard. The maintenance approval does not authorize provider start or release acceptance.
