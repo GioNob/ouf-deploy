@@ -5,9 +5,9 @@ container/image/snapshot deletion, journal reset or automatic retry.
 """
 import contextlib,fcntl,hashlib,io,json,os,re,stat,subprocess,sys,tempfile,time,traceback
 from pathlib import Path
-APPROVAL_REF='PENDING_R6_TERMINAL_CLEANUP_APPROVAL'
-APPROVED_AT=None
-APPROVAL_EXPIRES_AT=None
+APPROVAL_REF='OUF_R6_TERMINAL_CLEANUP_APPROVED_20261009T174356_CEST'
+APPROVED_AT=1791560636
+APPROVAL_EXPIRES_AT=1791561836
 REVIEW_SHA='21c10d32b9acbc80a044a14e87501d060bd273e3aa87b32ce9337b8ef1da66cb'
 GATE_SHA='a23f71e7fbe29fc3df4f138f41d35b4b5a3c63f14f1f15bc1c9e3d62644c9cfe'
 ARGUMENT_READER_SHA='d81fe4518b452c130b1c8c0fef14ffff6cc7a09ab3c92e29d28441786e52b5c7'
