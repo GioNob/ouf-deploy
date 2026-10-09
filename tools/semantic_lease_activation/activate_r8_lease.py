@@ -16,7 +16,9 @@ APPROVAL_REF = 'PENDING_EXPLICIT_R8_TWO_FLOW_LEASE_APPROVAL'
 ISSUED_AT = 0
 EXECUTION_EXPIRES_AT = 0
 READER_HASH = 'ab61835ef55396ddacf4513acc0f21adbaab1b50ac32ad2fdc4c80a23d1835c8'
-CORE_HASH = '62eb52a7ed0833b9d1fa418851ca1c4a027bf17a9032e97bb083ff13c00e9854'
+CORE_HASH = '51259c988eae4b506f2696ad3f5bf6e954eca9c4396cb36da75e0845ff49e50b'
+COMPILER_HASH = 'c3160940cf79678cb8e44c036cb0d947016f885ab09acfe6cce571833db5b079'
+OLD_COMPILER_HASH = '1c0d7f1243752fe216ef62eefbc2e3253b8f2503b518fafe11277e4d7721a084'
 EXISTING_READER = Path('/home/oufadmin/ouf-r8-post-read.Tl08rnjI/read.py')
 CLAIM = Path('/etc/ouf/provider-r8-network-lease.claim')
 UNIT = 'ouf-semantic-provider-lease-r8.service'
@@ -47,10 +49,15 @@ def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
-def load_component(name, path, expected):
+def component_bytes(path, expected):
     with Path(path).open('rb') as stream:
         raw = stream.read(131073)
     require(len(raw) <= 131072 and sha(raw) == expected, 'EXACT_DELIVERY_COMPONENT_HASH_REQUIRED')
+    return raw
+
+
+def load_component(name, path, expected):
+    raw = component_bytes(path, expected)
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
     exec(compile(raw, str(path), 'exec'), module.__dict__)
@@ -110,7 +117,8 @@ def configuration(reader):
 
 
 def runtime(reader, core, cfg, owner, capsule):
-    modules, source_bytes = core.load_installed(owner, reader.GUARD/'source', reader.private)
+    override = capsule['leaseCompilerBinding'] if capsule else None
+    modules, source_bytes = core.load_installed(owner, reader.GUARD/'source', reader.private, override)
     nft = modules['semantic_provider_lease_nft']
     coordination = modules['semantic_provider_lease_coordination']
     backend = nft.NftBackend([owner['nftPath']], owner['kernel'], owner['expectedStructureHash'], owner['readBudgetSeconds'])
@@ -161,7 +169,10 @@ def worker(capsule_path, expected_hash):
             and capsule['expectedJournalHash'] == JOURNAL_HASH and capsule['serviceUnit'] == UNIT,
             'EXACT_APPROVED_LEASE_CAPSULE_REQUIRED')
     approval_live(capsule['approvalRef'])
-    require(set(capsule['programHashes']) == {'activate.py', 'activation_core.py', 'reader.py'}, 'EXACT_PROGRAM_CLOSURE_REQUIRED')
+    require(capsule['leaseCompilerBinding'] == {'path': str(ROOT/'materialize_southbound_lease_refresh.py'),
+            'sha256': COMPILER_HASH, 'originalSha256': OLD_COMPILER_HASH}, 'EXACT_REVIEWED_COMPILER_DELTA_REQUIRED')
+    require(set(capsule['programHashes']) == {'activate.py', 'activation_core.py', 'reader.py',
+            'materialize_southbound_lease_refresh.py'}, 'EXACT_PROGRAM_CLOSURE_REQUIRED')
     for name, expected in capsule['programHashes'].items():
         reader.private(ROOT/name, expected)
     cfg, owner = configuration(reader)
@@ -177,7 +188,13 @@ def apply(reference):
     approval_live(reference)
     require(not os.path.lexists(CLAIM), 'LEASE_ACTIVATION_ALREADY_CLAIMED_DO_NOT_REPLAY')
     source = Path(__file__).absolute()
+    # The root bootstrap executes hash-verified memory bytes. Never reread and
+    # promote a user-writable downloaded file after that verification.
+    self_raw = globals().get('__verified_source_bytes__')
+    require(isinstance(self_raw, bytes) and len(self_raw) <= 131072,
+            'VERIFIED_IN_MEMORY_ENTRYPOINT_REQUIRED')
     CORE, core_raw = load_component('r8_lease_core', source.parent/'activation_core.py', CORE_HASH)
+    compiler_raw = component_bytes(source.parent/'materialize_southbound_lease_refresh.py', COMPILER_HASH)
     reader, reader_raw = load_component('r8_post_reader', EXISTING_READER, READER_HASH)
     PHASE = 'RECHECK_REVIEWED_RUNNING_COHORT_AND_QUIESCENT_TWO_FLOW_OWNER'
     report = reader.collect()
@@ -207,12 +224,16 @@ def apply(reference):
     ROOT.chmod(0o700)
     CORE.create(CLAIM, {'schema': 'ouf.provider-r8-lease-activation-claim.v1', 'approvalRef': reference,
                        'directory': str(ROOT), 'startAuthorized': False})
-    for name, raw in (('activate.py', source.read_bytes()), ('activation_core.py', core_raw), ('reader.py', reader_raw)):
+    for name, raw in (('activate.py', self_raw), ('activation_core.py', core_raw), ('reader.py', reader_raw),
+                      ('materialize_southbound_lease_refresh.py', compiler_raw)):
         CORE.create(ROOT/name, raw)
     capsule = {'schema': 'ouf.provider-r8-lease-authorization.v1', 'approvalRef': reference,
         'ownerConfigurationHash': reader.OWNER_HASH, 'expectedProcessGenerations': EXPECTED,
         'flowHashes': FLOW_HASHES, 'expectedJournalHash': JOURNAL_HASH, 'serviceUnit': UNIT,
-        'programHashes': {name: sha(reader.private(ROOT/name)) for name in ('activate.py', 'activation_core.py', 'reader.py')},
+        'programHashes': {name: sha(reader.private(ROOT/name)) for name in ('activate.py', 'activation_core.py', 'reader.py',
+                         'materialize_southbound_lease_refresh.py')},
+        'leaseCompilerBinding': {'path': str(ROOT/'materialize_southbound_lease_refresh.py'),
+                                'sha256': COMPILER_HASH, 'originalSha256': OLD_COMPILER_HASH},
         'issuedAt': ISSUED_AT, 'executionExpiresAt': EXECUTION_EXPIRES_AT,
         'authorityLifetime': 'CURRENT_R8_PROCESS_GENERATIONS_UNTIL_STOP_FAILURE_OR_REBOOT',
         'automaticRestart': False, 'enableAtBoot': False, 'containerLifecycleAuthorized': False,

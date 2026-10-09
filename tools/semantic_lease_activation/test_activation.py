@@ -16,6 +16,34 @@ import activation_core as core
 
 
 class TargetBoundaries(unittest.TestCase):
+    def test_declared_compiler_delta_reproduces_old_pair_failure_and_keeps_fail_closed(self):
+        source = HERE.parents[0]/'semantic_cohort_admission/cohort-draft'
+        sys.path.insert(0, str(source))
+        from tools.materialize_southbound_lease_refresh import compile_refresh as old
+        spec = importlib.util.spec_from_file_location('reviewed_lease_compiler', HERE/'materialize_southbound_lease_refresh.py')
+        fixed = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(fixed)
+        cfg = {'tableName': 'pair', 'guardedInterfaces': ['pairbr'], 'existingInterfaces': [], 'staticFlows': [],
+               'providerFlows': [{'endpointRef': 'p' + str(i), 'endpoint': 'https://provider.example/' + str(i),
+                 'source': '10.77.0.' + str(i + 2), 'addresses': [], 'leaseSeconds': 30,
+                 'resolutionEvidenceRef': 'ci', 'allowedPrivateAddresses': []} for i in range(2)]}
+        values = [{**{k: f[k] for k in ('endpointRef', 'endpoint', 'resolutionEvidenceRef')},
+                   'addresses': ['1.1.1.1' if i == 0 else '8.8.8.8'], 'observedMonotonic': 10,
+                   'expiresMonotonic': 39, 'historicalEvidenceOnly': False}
+                  for i, f in enumerate(cfg['providerFlows'])]
+        self.assertTrue(old(cfg, values, 11, apply_budget_seconds=1)['denyOnly'])
+        result = fixed.compile_refresh(cfg, values, 11, apply_budget_seconds=1)
+        self.assertFalse(result['denyOnly'])
+        self.assertEqual(result['nftTransaction'].count('add element'), 4)
+        self.assertEqual(result['nftTransaction'].count('timeout 27s'), 4)
+        values[1]['addresses'] = ['127.0.0.1']
+        result = fixed.compile_refresh(cfg, values, 11, apply_budget_seconds=1)
+        self.assertTrue(result['denyOnly'])
+        self.assertNotIn('add element', result['nftTransaction'])
+        self.assertEqual(result['nftTransaction'].count('flush set'), 4)
+        self.assertEqual(core.digest((source/'tools/materialize_southbound_lease_refresh.py').read_bytes()), target.OLD_COMPILER_HASH)
+        self.assertEqual(core.digest((HERE/'materialize_southbound_lease_refresh.py').read_bytes()), target.COMPILER_HASH)
+
     def test_pending_review_cannot_apply_and_window_is_bounded(self):
         with self.assertRaisesRegex(ValueError, 'EXPLICIT_NEW_LEASE_APPROVAL_REQUIRED'):
             target.approval_live(target.APPROVAL_REF, clock=lambda: 100)

@@ -78,7 +78,7 @@ def diagnosis(error):
     return {'exceptionChain': chain, 'privateValuesPrinted': False}
 
 
-def load_installed(owner, source_root, read):
+def load_installed(owner, source_root, read, compiler_override=None):
     """Execute only memory bytes sealed by the fixed owner configuration hash."""
     saved = {name: read(source_root/name, expected) for name, expected in owner['sourceHashes'].items()}
     order = ('materialize_southbound_kernel', 'semantic_provider_dns', 'materialize_southbound_lease_refresh',
@@ -86,6 +86,13 @@ def load_installed(owner, source_root, read):
              'semantic_provider_lease_coordination', 'semantic_provider_coordinated_supervisor')
     require(set(saved) == {'scripts/run_semantic_coordinated_lease_owner.py',
                            *('tools/' + n + '.py' for n in order)}, 'EXACT_INSTALLED_OWNER_CLOSURE_REQUIRED')
+    execution = dict(saved)
+    if compiler_override is not None:
+        key = 'tools/materialize_southbound_lease_refresh.py'
+        require(set(compiler_override) == {'path', 'sha256', 'originalSha256'}
+                and compiler_override['originalSha256'] == digest(saved[key]),
+                'EXPLICIT_REVIEWED_COMPILER_DELTA_REQUIRED')
+        execution[key] = read(Path(compiler_override['path']), compiler_override['sha256'])
     package = types.ModuleType('tools')
     package.__path__ = []
     sys.modules['tools'] = package
@@ -97,7 +104,7 @@ def load_installed(owner, source_root, read):
         module.__package__ = 'tools'
         sys.modules[module.__name__] = module
         setattr(package, name, module)
-        exec(compile(saved[key], module.__file__, 'exec'), module.__dict__)
+        exec(compile(execution[key], module.__file__, 'exec'), module.__dict__)
         modules[name] = module
     return modules, saved
 

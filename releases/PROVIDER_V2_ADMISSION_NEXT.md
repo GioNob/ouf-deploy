@@ -6,6 +6,8 @@ Current owner is QUIESCED, leaseAuthorized=false, provider sets empty and native
 
 Do not repeat R8, cleanup, network migration, input preparation or manual post-start read. After validated review, bind only the actual approval reference/timestamps and deliver the pinned operator action. Semantic/MCP rollout, fresh dependency evidence and discovery grants remain open. Asset/profile and product roadmap below are unchanged.
 
+Native pre-target validation found the original two-empty-flow compiler rejects the first fresh resolution because it validates the still-empty sibling. A focused regression reproduces the original denial and confirms the separately reviewed compiler delta validates each flow before the same all-or-nothing batch. Existing installed source is not overwritten; the new capsule explicitly binds old/new compiler hashes. Corrected native validation is pending; no target lease has been granted.
+
 Earlier checkpoints below are historical and superseded.
 
 # Current checkpoint — R8 target start succeeded; recovery approval consumed

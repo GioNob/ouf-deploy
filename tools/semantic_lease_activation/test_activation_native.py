@@ -83,7 +83,7 @@ assert hashlib.sha256(capsule).hexdigest()==sys.argv[3]
 value=json.loads(capsule);owner=value['owner']
 def read(path,expected):
  raw=Path(path).read_bytes();assert hashlib.sha256(raw).hexdigest()==expected;return raw
-modules,saved=core.load_installed(owner,root/'source',read)
+modules,saved=core.load_installed(owner,root/'source',read,value['compilerOverride'])
 c=modules['semantic_provider_lease_coordination']
 backend=modules['semantic_provider_lease_nft'].NftBackend([owner['nftPath']],owner['kernel'],owner['expectedStructureHash'],5)
 worker=modules['semantic_provider_lease_owner'].LeaseOwner(owner['kernel'],owner['dns'],backend)
@@ -140,7 +140,11 @@ def main():
         owner, old_hash = fixture(root, source, nft)
         core.create(root/'activation_core.py', (HERE/'activation_core.py').read_bytes())
         core.create(root/'activate.py', CHILD.encode())
-        capsule = {'owner': owner, 'journalHash': old_hash, 'approval': {'scope': 'CI_NETNS_ONLY_NOT_TARGET_AUTHORITY'}}
+        compiler = root/'materialize_southbound_lease_refresh.py'
+        core.create(compiler, (HERE/compiler.name).read_bytes())
+        capsule = {'owner': owner, 'journalHash': old_hash, 'approval': {'scope': 'CI_NETNS_ONLY_NOT_TARGET_AUTHORITY'},
+                   'compilerOverride': {'path': str(compiler), 'sha256': core.digest(compiler.read_bytes()),
+                                        'originalSha256': owner['sourceHashes']['tools/' + compiler.name]}}
         core.create(root/'authorization.json', capsule)
         args = core.service_command(root, core.digest(core.encoded(capsule)), unit=unit,
                                      python=str(Path(sys.executable).resolve()))
