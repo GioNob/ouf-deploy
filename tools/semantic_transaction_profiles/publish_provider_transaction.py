@@ -6,6 +6,7 @@ Partial installation is retained with a diagnosis and is never replayed in place
 """
 import hashlib
 import os
+import re
 from pathlib import Path
 import stat
 
@@ -34,6 +35,16 @@ def publish_once(path, raw):
             stream.write(raw); stream.flush(); os.fsync(fd)
     finally: os.close(fd)
     sync(path.parent)
+
+
+def producer_result_directories(configuration):
+    root = Path(configuration['registryRoot'])
+    result = []
+    for cid in configuration['candidates']:
+        require(re.fullmatch('[0-9a-f]{64}', cid) is not None,
+                'PUBLISH_PRIVATE_TRANSACTION', 'EXACT_PRODUCER_CANDIDATE_PATH_REQUIRED')
+        result.extend(root/cid/(name+'-results') for name in ('attestation','approval'))
+    return tuple(result)
 
 
 def publish_plan(root, plan, sources, observer_raw):
@@ -91,6 +102,13 @@ def publish_plan(root, plan, sources, observer_raw):
                 require(stat.S_ISDIR(info.st_mode) and info.st_uid == info.st_gid == 0
                         and stat.S_IMODE(info.st_mode) == 0o700, stage, 'PRIVATE_PUBLICATION_DIRECTORY_DRIFT')
             publish_once(path, raw)
+        # ProducerEmission validates its empty private result directory before
+        # reserving the first-use emission claim. Provision it during install,
+        # never lazily inside a consumed broker operation.
+        for path in producer_result_directories(plan['adapterConfiguration']):
+            require(path.parent.is_relative_to(root) and str(path.parent/'broker.json') in files,
+                    stage, 'AUTHENTICATED_PRODUCER_DIRECTORY_REQUIRED')
+            path.mkdir(mode=0o700); path.chmod(0o700); sync(path.parent); sync(path)
         report = {'schema':'ouf.semantic-provider-transaction-installation.v1',
             'status':'PRIVATE_TRANSACTION_INSTALLED_RUNTIME_UNCHANGED', 'directory':str(root),
             'fileHashes':hashes, 'runtimeConfigurationProposalHash':digest(proposal),

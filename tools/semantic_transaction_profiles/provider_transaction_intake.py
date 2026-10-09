@@ -15,7 +15,7 @@ import sys
 import types
 import tempfile
 
-MANIFEST_SHA256 = '84e4237808a92a8e116e140bb828167257236eaade3bcfe76efdee4d9912be7a'
+MANIFEST_SHA256 = '9ecd16cd04d86c68947b127e845cde7f5fc4170eaf02a9043989f3bf4409bf67'
 AUTHORITY = {'path':'/etc/ouf/deploy-snapshots/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json',
              'sha256':'7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18'}
 POLICY = {'path':'/etc/ouf/deploy-snapshots/semantic-trust-policy-preparation-20261004-172336/trust-policy.json',

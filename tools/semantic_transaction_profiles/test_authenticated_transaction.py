@@ -202,6 +202,32 @@ class AuthenticatedTransactionTest(unittest.TestCase):
         with self.assertRaisesRegex(TransactionDenied,'EXISTING_TRANSACTION_EVIDENCE_PRESERVED'):
             publish(root,plan,self.sources,self.observer)
 
+    def test_publication_satisfies_real_producer_result_directory_custody(self):
+        from types import SimpleNamespace
+        from tools.semantic_provider_deployment_producer import ProducerEmission
+        from publish_provider_transaction import producer_result_directories
+        root,plan,publish=self.installation();publish(root,plan,self.sources,self.observer)
+        request={key:'fixture' for key in ('role','installationRef','entityRef','issuerRef','containerId','transactionId')}
+        producer=SimpleNamespace(request=lambda role,facts:(request,encoded(request)),configured={})
+        for path in producer_result_directories(plan['adapterConfiguration']):
+            self.assertEqual(path.stat().st_mode & 0o777,0o700)
+            self.assertEqual(list(path.iterdir()),[])
+            ProducerEmission(producer,'CREATION_ATTESTATION',{},object(),path,lambda:None)
+        self.assertFalse(any(root.rglob('*-emission.json')))
+
+    def test_switch_rejects_missing_nonprivate_or_used_result_directory(self):
+        from publish_provider_transaction import producer_result_directories
+        from guarded_runtime_switch import verify_installed_plan
+        root,plan,publish=self.installation();publish(root,plan,self.sources,self.observer)
+        path=producer_result_directories(plan['adapterConfiguration'])[0]
+        path.rmdir()
+        with self.assertRaisesRegex(TransactionDenied,'PRODUCER_RESULT_DIRECTORY_MISSING'):verify_installed_plan(plan)
+        path.mkdir(mode=0o755);path.chmod(0o755)
+        with self.assertRaisesRegex(TransactionDenied,'EMPTY_PRIVATE_PRODUCER_RESULT_DIRECTORY_REQUIRED'):verify_installed_plan(plan)
+        path.chmod(0o700);(path/'foreign-result').write_bytes(b'preserve')
+        with self.assertRaisesRegex(TransactionDenied,'EMPTY_PRIVATE_PRODUCER_RESULT_DIRECTORY_REQUIRED'):verify_installed_plan(plan)
+        self.assertEqual((path/'foreign-result').read_bytes(),b'preserve')
+
     def test_failed_publication_preserves_claim_and_diagnosis(self):
         root,plan,publish=self.installation()
         import publish_provider_transaction as module

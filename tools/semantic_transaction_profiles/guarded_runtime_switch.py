@@ -12,7 +12,7 @@ import stat
 
 from authenticate_provider_transaction import TransactionDenied, require
 from assemble_provider_profiles import digest, encoded
-from publish_provider_transaction import directory, publish_once, sync
+from publish_provider_transaction import directory, publish_once, sync, producer_result_directories
 
 
 def custody(path, mode):
@@ -70,6 +70,12 @@ def verify_installed_plan(plan):
         require(not Path(name).is_absolute() and '..' not in Path(name).parts
                 and digest(custody(source/name,0o600)[0])==expected_hash,
                 stage,'INSTALLED_SOURCE_CLOSURE_DRIFT')
+    for path in producer_result_directories(configuration):
+        require(os.path.lexists(path),stage,'PRODUCER_RESULT_DIRECTORY_MISSING')
+        info=path.lstat()
+        require(stat.S_ISDIR(info.st_mode) and info.st_uid == info.st_gid == 0
+                and stat.S_IMODE(info.st_mode) == 0o700 and not any(path.iterdir()),
+                stage,'EMPTY_PRIVATE_PRODUCER_RESULT_DIRECTORY_REQUIRED')
     return {'configurationHash':digest(encoded(configuration)),'root':str(root)}
 
 
