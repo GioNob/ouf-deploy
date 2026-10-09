@@ -1,5 +1,12 @@
 # Provider v2 admission: next target step — 8 October 2026
 
+## Latest target result — 2026-10-09 09:00:12 Rome: BLOCKED at runtime switch
+
+The operator ran the accepted recovery launch: six signatures verified, sourceff13uh3n reached VERIFY_RUNTIME_SWITCH, returned GUARDED_RUNTIME_SWITCH_UNPROVEN. Reported renameAttempted=false/wrapperReplaced=false/switchOutcome=UNCHANGED; key/lifecycle counts UNKNOWN (null), not zero. Context /etc/ouf/deploy-snapshots/semantic-provider-v2-approved-context-kanx36_x and claims remain. Do not repeat any launch/signing/switch. See evidence/provider-v2-runtime-switch-target-denial-20261009.json and releases/PROVIDER_V2_RUNTIME_SWITCH_DIAGNOSIS_20261009.md.
+
+NEXT OPERATOR ACTION: read-only diagnosis script tools/semantic_target_review/diagnose_guard_switch_read_only.py at822bd515d61db9badd991f30f41d445c7566d20c SHA256a4591c2f9472d833ff233a2663eeeaf826c34c7cc74bb9503e1fec23ee7ab473. It consumes retained issuance/publication receipts and calls the existing native empty-guard reader under its lock; no private authority key read, signing, kernel/runtime configuration change or lifecycle operation. Return OUF_SWITCH_READ_ONLY_DIAGNOSIS; source39-file closure is not changed by diagnosis. Underlying exception remains unknown until target output. Improved nested errorType/symbolic-reason preservation has ten local tests passing but is not installed in sealed target utilities. Fresh input/image and original scope approvals remain recorded; no automatic post-signature recovery is authorized by this failure receipt. Prior launch-ready/pending paragraphs below are history, superseded by this result.
+
+
 ## Accepted recovery — 2026-10-09 08:53:03 Europe/Rome
 
 User accepted R2 two-dependency input hashes and exact pre-key recovery. Witness evidence/provider-v2-fresh-dependency-human-acceptance-20261009.json at 8cadc271c4d7a6b4942723b7cd8345caeb19b3d9. No further confirmation required. Existing image/frame/sign-start scope retained. Updated helper0a01d31d7bfa892e598df1e4c5e6a8185508b11f has nine passing CI checks run37896156439; SHA256e3253513c4220a0a506c117e0a535145d14f76fcba3f58fe292ee894c46bfcd4. Root clock must be at/after08:53:03 before recovery mutation, full240 seconds within DB validity ending10October08:33:47 Rome. FAILED_APPROVAL_REF still verifies original failure; new refOUF_PROVIDER_V2_FRESH_DEPENDENCY_ACCEPTANCE_20261009_085303 signs reviewed fresh inputs.
