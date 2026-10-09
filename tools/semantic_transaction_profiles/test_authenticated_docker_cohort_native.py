@@ -236,6 +236,12 @@ def main():
                     print('FRAME_PROFILE_PROCESS_RESULTS='+json.dumps(outcomes))
                 require(status==0,'CI_COHORT_ADMISSION_FAILED:'+message)
             require(all(application_proof(cid)=='APP' for cid in cids),'CI_COHORT_APP_PROOF_MISSING')
+            import runpy
+            reader=runpy.run_path(str(Path(__file__).resolve().parents[1]/'semantic_target_review/read_live_docker_bundle_paths.py'))
+            groups=reader['shim_bundles'](str(root/'containerd.sock'),'moby',cids)
+            require(str(bundle_parent) in groups and set(groups[str(bundle_parent)]['requestedCidMatches'])==set(cids),
+                'CI_KERNEL_SHIM_BUNDLE_OBSERVATION_UNPROVEN')
+            print('LIVE_DOCKER_SHIM_BUNDLE_READER=PASS TWO_ACTUAL_CI_TASKS=true NO_EXTRA_START=true TARGET_AUTHORITY=false')
             for i,cid in enumerate(cids):
                 grant=json.loads((registry/cid/'driver.json').read_bytes())
                 require(grant['schema']=='ouf.semantic-preexec-driver.v6' and set(grant['peerBinding']['observations'])=={cids[1-i]},'CI_V6_PEER_GRANT_MISSING')
