@@ -1,3 +1,11 @@
+# Approvazione ricevuta — consegna operatore in attesa
+
+Messaggio umano “Approvo” del9 ottobre2026 alle22:58:47 Europe/Rome. Nuova singola azione approvata; prima invocazione entro **10 ottobre00:58:47 Europe/Rome**. [Ricevuta](../evidence/provider-r8-lease-readback-recovery-human-approval-20261009.json). Vecchia claim e prove preservate; nessun replay/reset. Non chiedere di nuovo questa approvazione.
+
+Entrypoint approvato commite65f4a1ee6cdb4f15e0180211f8874781562f117, SHA25658ec8285357ba8fdceb35dbe1af92138a1aff3f91b742c1ae3f425c073e56528; solo tre costanti di autorità cambiano. Launcher `provider-r8-lease-readback-recovery-20261009.sh`, SHA25609dc885154c60d258c2994b1663b5154cdd39f2e3f0ff7a012ba7a2d711dfde0. Consegna verificata con percorso gh esatto, hash, bootstrap in memoria e vecchi output preservati. Nessuna operazione target eseguita qui.
+
+La proposta sottostante è la revisione storica approvata; PENDING descrive il suo stato precedente.
+
 # Proposta concreta — recupero della verifica finale della lease R8
 
 Stato: **PENDING**, nessuna autorità target. [Lettura operatore22:42:50](../evidence/provider-r8-final-lease-readback-target-20261009.json): cycle-1 e cycle-2 riportano LEASE_ACTIVE, freshDnsObserved=true, indirizzi[1,1], stesso workerPID1847190. Nessun worker-denial. Il worker-status finale è QUIESCED/count2/setsRevoked=true. Entrambi i container restano running sugli stessi PID, senza riavvii. Servizio corrente not-found/inactive, owner QUIESCED, set vuoti, journal hash originale. Tutti i programmi dello snapshot precedente corrispondono alla capsula autorizzata. Sono evidenze riportate dall’operatore, non acquisite indipendentemente da root.

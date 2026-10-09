@@ -1,3 +1,15 @@
+# Current checkpoint — readback recovery approved; operator execution pending
+
+Human “Approvo” at **2026-10-09 22:58:47 Europe/Rome** approves the recovery review from5ad76be3a46f34b68af77a9328e5179d987177fe. [Approval witness](evidence/provider-r8-lease-readback-recovery-human-approval-20261009.json). ApprovalRef `OUF_R8_LEASE_READBACK_RECOVERY_APPROVED_20261009T225847_CEST`; first invocation expires **10 October00:58:47 Europe/Rome**, epochs1791579527–1791586727. One new lease action for the same two current R8 process generations and existing endpoints; prior claim/evidence preserved. New exclusive claim `/etc/ouf/provider-r8-network-lease-readback-recovery.claim`; never reset or replay either claim.
+
+Approved source `e65f4a1ee6cdb4f15e0180211f8874781562f117`, entrypoint SHA25658ec8285357ba8fdceb35dbe1af92138a1aff3f91b742c1ae3f425c073e56528. Only reference and two times differ from the reviewed entrypoint; core/compiler and recovery logic unchanged. Approved-source native CI is completing. Local authority-window and delivery checks pass: exact existing gh, one entrypoint download, three hashes, verified-memory execution, wrong reference rejected and both old outputs preserved. No target action performed here. Approval is already granted: do not ask again.
+
+Deliver only `releases/provider-r8-lease-readback-recovery-20261009.sh`, SHA25609dc885154c60d258c2994b1663b5154cdd39f2e3f0ff7a012ba7a2d711dfde0, once through the operator. It reuses reader/core/compiler under existing directories. Never use old lease/start/recovery launchers. Success requires complete immutable cycle-2, live systemd matching workerPID/ExecStart and current exact process/network membership. Every final comparison is retained; error cleanup preserves original structures and finite TTLs. Not application health or release acceptance. Preserve the output; no automatic retry.
+
+Semantic/MCP fresh applicable dependency evidence, rollout and discovery grants remain next. Teatri asset/profile unchanged, no national job or local fallback.
+
+Earlier checkpoints below are historical and superseded.
+
 # Current checkpoint — two lease cycles proven; new readback recovery prepared, approval pending
 
 Operator read22:42:50 confirms two LEASE_ACTIVE receipts, fresh DNS and addresses[1,1], workerPID1847190, no worker denial, all prior program hashes matched. Cleanup left QUIESCED, original empty journal/sets, service not-found and both original R8 PIDs running without restarts. [Target readback projection](evidence/provider-r8-final-lease-readback-target-20261009.json). The exact historical final failing predicate remains unknown because the old verifier did not save its values. Preserve this limit.
