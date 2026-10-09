@@ -1,3 +1,13 @@
+# Current checkpoint — lease denied before claim; corrected approved delivery ready
+
+Operator result at22:27:35 Europe/Rome: NATIVE_SERVICE_COMMAND_FAILED, systemctl exit1, stderr empty, at exact-name-filtered inventory line210. No claim/snapshot/service start reached; lifecycle0, doNotRerunApply=false. [Receipt](evidence/provider-r8-lease-preclaim-denial-20261009.json). The retained diagnostic did not name the subcommand; do not invent which of the two inventories failed. The correction enumerates both service inventories without a name pattern and checks exact membership. Genuine inventory failures remain fatal; diagnosis now includes subcommand and stdout/stderr hashes/counts.
+
+Existing human approval22:21:21 remains valid and unconsumed; first invocation deadline10Oct00:21:21 Europe/Rome unchanged. No new approval or scope extension. Core/compiler and runtime bindings unchanged. Corrected source `c662f886ec01785b98d3a79ee09df622ec183da7`, entrypoint SHA2567d12b9809a7db6d9b0963ef89957c7d224b5f59b733662f4878a89dd6208565a. Native CI37987266796/job114012260043 SUCCESS: actual systemctl absence and loaded-service detection, then actual lease opening, renewal, DNS-error revocation and replay denial. [Validation](evidence/provider-r8-lease-systemctl-correction-validation-20261009.json).
+
+Use only corrected launcher `releases/provider-r8-network-lease-systemctl-fix-20261009.sh`, SHA256a7b79d292184ec7403f15c5d977fe962aaaf45b3e118cc8a21b9728b7eecdead. Reuses `/home/oufadmin/ouf-r8-lease.8XKYoqHc/activation_core.py` and compiler, downloads only the corrected entrypoint under a new name, preserves old result.txt and writes result-systemctl-fix.txt. Explicit gh path and existing reader remain unchanged. Never use the old launcher again. No target mutation performed here; verify claim absence again inside the corrected action, execute once, then preserve output. The lease action still checks exact current R8 process generations and the original QUIESCED owner. Teatri/Semantic/MCP roadmap remains open.
+
+Earlier checkpoints below are historical and superseded.
+
 # Current checkpoint — R8 two-flow lease approved; operator execution pending
 
 Human message “Approvo” at **2026-10-09 22:21:21 Europe/Rome** approves the exact two-flow lease review from39130dd288ccbaba4a507d0b6a5703d7576d6694, including the separately bound compiler correction. ApprovalRef `OUF_R8_TWO_FLOW_LEASE_APPROVED_20261009T222121_CEST`; first invocation expires **10 October 00:21:21 Europe/Rome**, epochs1791577281–1791584481. [Approval witness](evidence/provider-r8-lease-human-approval-20261009.json). Existing R8 container generations only, DNS leases maximum30s/renewal15s, one-use transient Restart=no unit, no boot enablement, Docker lifecycle or discovery grant.
