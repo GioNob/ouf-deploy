@@ -5,8 +5,8 @@ container/image/snapshot deletion, journal reset or automatic retry.
 """
 import contextlib,fcntl,hashlib,io,json,os,re,stat,subprocess,sys,tempfile,time,traceback
 from pathlib import Path
-APPROVAL_REF='PENDING_TERMINAL_TASK_CLEANUP_APPROVAL'
-APPROVED_AT=None
+APPROVAL_REF='OUF_TERMINAL_TASK_CLEANUP_HUMAN_APPROVAL_20261009_140446'
+APPROVED_AT=1791547486
 REVIEW_SHA='4269551bed61bb437697cc6d38fb4f782264ba1dfb2bb6109347676fe2f95e27'
 GATE_SHA='b30fb108a72f6aaa008789a6af8b9801ca23dce3dd5f6bd62eb799496cf07027'
 PACKAGE=Path('/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-source-ff13uh3n')
