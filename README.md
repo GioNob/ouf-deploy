@@ -1,4 +1,14 @@
-# Current checkpoint — fresh application remediation qualified and staged; cutover guard required
+# Current checkpoint — PET v1.7 available; native peer plan PASS; private cutover read prepared
+
+The complete attached OUF Reality Baseline Package v1.7 is now available: all 323 SHA256SUMS entries PASS; L0 Matrix v1.7 and applicable PET constraints reviewed. This supersedes the earlier roadmap-only limitation. [Baseline and exact read-only operator command](evidence/discovery-cutover-input-read-preparation-20261010.json).
+
+The pure Semantic ingress planner passes [native CI37998070148](https://github.com/GioNob/ouf-deploy/actions/runs/37998070148): eight actual TCP probes, six negative cases, one bridge ingress predicate changed, lease and unrelated table preserved, conditional recovery proven in a fixture. It does not install or authorize a target transition. [Qualification](evidence/semantic-peer-replacement-native-qualification-20261010.json).
+
+The commit/hash-pinned private binding reader and launcher pass [CI37998809709](https://github.com/GioNob/ouf-deploy/actions/runs/37998809709), four scope and four delivery tests. The reader never acquires the live worker's nonblocking common lock; stable rereads produce observational facts and cannot authorize apply. Target output is pending. No production lifecycle/firewall/configuration changes, keys, signing, DNS/provider requests or R8 replay. [Continuation](releases/DISCOVERY_APPLICATION_CONTINUATION_AFTER_R8_20261009.md).
+
+R8 remains consumed. The remediated signed archives and V10 compatibility qualification below remain the current application inputs; deployment/owner grants/Teatri acceptance are still pending.
+
+# Previous checkpoint — fresh application remediation qualified and staged; cutover guard required
 
 R8 lease activation remains consumed; no apply/start/cleanup/lease replay. [Retained operator receipt](evidence/provider-r8-active-renewed-lease-target-20261009.json).
 

@@ -12,7 +12,21 @@ Semantic corrente conserva CID7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89d
 
 Sono stati esaminati gli alberi correnti dei sette repository OUF e i documenti/codice pertinenti al passaggio corrente. Snapshot main: Onboarding21de5f21e903e6e99f4ef4d6617a446d60a54792; Ingestiona8ba969a5a0e20e9c53977d2875094ce82802f9d; UDP6285b733c49b89cb6d3382abe8dc469f8a0e8b1b; Gatewaydbdc24b5481dc9473b21b360ab1142c9aef0194b; MCP5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042; Semanticd188e5e727eca7a22f414f43f164f85c31411bcf; Deployeb7f9234b45287a50da3888b26ee5bf06707686a prima della nuova lettura.
 
-L'allegato corrente è la roadmap del16 settembre, non il pacchetto integrale dei sette PET. Letti la roadmap allegata, gli aggiornamenti nei repository, le regole operative OUF, il piano nazionale e i manifest/riferimenti normativi esistenti. Non viene dichiarata una nuova lettura integrale dei PET assenti né una verifica riga per riga. L0/Matrixv1.7 e le versioni PET restano quelle della roadmap.
+Il successivo allegato è il pacchetto completo OUF Reality Baseline Package v1.7, generato il16 settembre2026 e dichiarato CURRENT_NORMATIVE_BASELINE dal manifest. SHA256 dell'archivio: e63df67e8817eec38a9d4b3eb736b020f693b932f3360dc02f4555330f2201ce. Tutte le323 voci SHA256SUMS sono PASS. Questo sostituisce la precedente limitazione della conversazione alla sola roadmap.
+
+Letti manifest/README, Matrix L0v1.7 e le prescrizioni pertinenti al passaggio; estratto il testo dei sette PET per la consultazione. Non si dichiara un collaudo completo del sistema o una verifica riga per riga di tutti i PET. Precedenza: Matrixv1.7, PET applicabile, Terminology Noticev1.1 e Blueprintv0.3 per i requisiti non superati.
+
+| Modulo | PET corrente |
+| --- | --- |
+| MCP | v1.4 |
+| Gateway | v1.5 |
+| Ingestion | v1.3 |
+| Source Onboarding | v1.6 |
+| Authorization | v1.5 |
+| UDP | v1.3 |
+| Semantic | v1.3 |
+
+Vincoli applicati: capability umane indipendenti dal canale e mediate dal Gateway; owner API private MCP senza ricorsione Gateway-/mcp; nessun HEALTHY ricavato da fatti parziali; proposte discovery separate da approvazione/pubblicazione umana. Semantic§§159–160 richiede migrazione/recovery compatibile e riferimenti agli snapshot pubblicati; Gateway§§T11/T33 conserva default-deny e binding upstream indipendenti. La baseline normativa non è stata modificata.
 
 ## Scansione degli stessi artefatti
 
@@ -65,3 +79,35 @@ Il [run target 37996500108](https://github.com/GioNob/ouf-deploy/actions/runs/37
 Il [piano migrazioni sul VPS 37996574805](https://github.com/GioNob/ouf-deploy/actions/runs/37996574805) confronta il JAR corrente con il nuovo sorgente esatto. V1–V9 sono identiche; unica aggiunta V10__discovery_request_idempotency.sql, SHA256 85708e1d37184177471f225806ca21c4088915f766197020f8fefe109407e911. Provider/workload-auth/gateway discovery non risultano abilitati nel Semantic corrente.
 
 Il prossimo lavoro è l'applicatore con migrazione e recovery, coordinato al nuovo binding ingress Semantic. Occorre preservare la lease R8 finché il passaggio completo è concretamente pronto; qualunque modifica al suo profilo sealed richiede una nuova transizione con autorità distinta, senza riciclare l'approvazione consumata. L'estensore esistente è limitato ad append di un flusso in stato QUIESCED e non implementa un cambio del peer: non va riutilizzato come generico patcher. Restano da implementare e verificare raccordo del guard, credenziali/mount discovery, route additive, policy/grant/descriptor e prova owner reale.
+
+
+## Checkpoint 10 ottobre Europe/Rome: peer planner verificato, lettura privata pronta
+
+L'ingresso Semantic non è una modifica alla tabella DNS/lease ouf_sem_provider: è un predicato peer BRIDGE_PORT del profilo shared-face southbound, attualmente ifindex1377. Anche quel profilo è vincolato a driver, journal e autorità sealed. Cambiarlo senza una nuova chiusura autenticata romperebbe le verifiche di avvio; nessun hash/booleano verrà aggiornato da solo.
+
+Il compilatore puro tools/semantic_peer_replacement/peer_rebind.py prepara soltanto una replace rule e la sua inversa, dopo verifica di struttura/footprint e due peer completi con OCI e generazione autenticate dal futuro chiamante. Non esegue né autorizza il cambio. [CI37998070148/job114049073781](https://github.com/GioNob/ouf-deploy/actions/runs/37998070148): PASS con nft e namespace Linux reali, otto prove TCP, sei casi negativi, una sola regola ingress cambiata, lease e tabella estranea invariate, recovery condizionale verificata. I CID/hash/generazioni della prova sono fixture, non attestazioni del VPS. [Evidenza](../evidence/semantic-peer-replacement-native-qualification-20261010.json).
+
+Il lettore tools/semantic_target_review/read_cutover_inputs.py è fissato al commit 550c5e733fdafe33ac6b5f0117231d53c603b510, SHA256 b9ea8aa1a8cf31d28dfa1df0960dcf6930880d11244fe1f84e710bfe0b9ec4cf. Verifica in memoria driver, profili, journal, source closure, hash OCI completi dei due container R8 e native shared-face table pair; osserva generazione/NIC/peer reciproco del Semantic corrente e la lease. Non importa codice operativo installato, non legge ENV/chiavi, non esegue richieste DNS/provider, non modifica firewall/configurazioni o lifecycle.
+
+Importante per questo worker specifico: il lettore non acquisisce il common lock. Il worker usa flock non bloccante e la contesa potrebbe far fallire il rinnovo. Si verificano invece riletture stabili, hash e inode; cambiamenti durante la lettura producono READ_BLOCKED. La proiezione è osservativa e non costituisce uno snapshot atomico autorizzante. Il precedente lettore post-start che trattiene il lock non è il comando proposto per questa continuazione.
+
+[CI37998809709/job114051546329](https://github.com/GioNob/ouf-deploy/actions/runs/37998809709) PASS: quattro test di perimetro, quattro di consegna e bash -n. Download a commit esatto; hash verificato prima di sudo e nuovamente sui byte catturati in memoria prima di compile/exec Python -I -B. Alterazioni bloccate prima dell'esecuzione; exit del reader preservato attraverso tee.
+
+[Preparazione e comando esatto](../evidence/discovery-cutover-input-read-preparation-20261010.json). Nessun output di questa lettura dal VPS è ancora disponibile. Il prossimo comando operatore è soltanto questo:
+
+```bash
+(
+  set -euo pipefail
+  umask 077
+  OUF_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+  [ -x "$OUF_GH" ] || OUF_GH="$(command -v gh)"
+  OUF_READ_BOOT="$(mktemp -d "$HOME/ouf-discovery-read-launch.XXXXXXXX")"
+  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' \
+    'repos/GioNob/ouf-deploy/contents/releases/discovery-cutover-input-read-20261010.sh?ref=6df2a6846aa96094a35b0f705e683bc9e1c9ef7b' \
+    > "$OUF_READ_BOOT/run.sh"
+  printf '%s  %s\n' '565251c27c28314d8bf6247921c44dec4407a91194f723b4281cc3fce534ed0e' "$OUF_READ_BOOT/run.sh" | sha256sum -c -
+  bash "$OUF_READ_BOOT/run.sh"
+)
+```
+
+Attesi OUF_DISCOVERY_CUTOVER_INPUT_READ e OUF_DISCOVERY_CUTOVER_READ_EXIT, con result.txt nella directory temporanea dell'utente. sudo serve a leggere i binding root-private; nessun nuovo mandato viene firmato/consumato. READ_BLOCKED non autorizza apply/recovery. Non ripetere apply/start/cleanup/lease R8. Prima di applicare restano necessari nuovo peer OCI completo e reciproco, autorità distinta/closure signed, applicatore migration-aware/readiness, route/policy/grant/descriptor e prova owner reale.

@@ -388,7 +388,23 @@
       "targetStageEvidence": "evidence/discovery-remediated-application-qualification-20261009.json",
       "moduleCiStatus": "PASS"
     },
-    "migrationCompatibility": "EXISTING_BYTES_IDENTICAL_V10_ADDITIVE"
+    "migrationCompatibility": "EXISTING_BYTES_IDENTICAL_V10_ADDITIVE",
+    "peerPlanQualification": {
+      "status": "PASS_ISOLATED_NATIVE_FIXTURE_NOT_TARGET_AUTHORITY",
+      "evidence": "evidence/semantic-peer-replacement-native-qualification-20261010.json",
+      "sourceCommit": "d0e5de432467fa84b8556571e68739412b5f4ff1",
+      "runId": 37998070148,
+      "targetInstalled": false
+    },
+    "cutoverInputRead": {
+      "status": "PREPARED_CI_PASS_TARGET_OUTPUT_PENDING",
+      "evidence": "evidence/discovery-cutover-input-read-preparation-20261010.json",
+      "readerCommit": "550c5e733fdafe33ac6b5f0117231d53c603b510",
+      "deliveryCommit": "6df2a6846aa96094a35b0f705e683bc9e1c9ef7b",
+      "runId": 37998809709,
+      "commonLockAcquired": false,
+      "applyAuthorized": false
+    }
   },
   "previousApplicationPreparation": {
     "sourcePins": {
@@ -457,5 +473,34 @@
     "qualificationEvidence": "evidence/discovery-runtime-qualification-20261007.json",
     "status": "RETAINED_ARCHIVES_BLOCKED_BY_FRESH_13_UNKNOWN_GO_ADVISORIES_PER_ROLE",
     "freshEvidence": "evidence/discovery-fresh-dependency-block-and-remediation-20261009.json"
+  },
+  "normativeBaseline": {
+    "package": "OUF Reality Baseline Package v1.7",
+    "archiveSha256": "e63df67e8817eec38a9d4b3eb736b020f693b932f3360dc02f4555330f2201ce",
+    "packageGeneratedAt": "2026-09-16T12:08:25.585562+00:00",
+    "manifestStatus": "CURRENT_NORMATIVE_BASELINE",
+    "fileChecksumsVerified": 323,
+    "integrityStatus": "PASS_ALL_PACKAGE_SHA256SUMS",
+    "matrixVersion": "1.7",
+    "blueprintVersion": "0.3",
+    "terminologyVersion": "1.1",
+    "petVersions": {
+      "mcp": "1.4",
+      "gateway": "1.5",
+      "ingestion": "1.3",
+      "onboarding": "1.6",
+      "authorization": "1.5",
+      "udp": "1.3",
+      "semantic": "1.3"
+    },
+    "reviewScope": "Manifest/README, L0 Matrix and normative precedence; extracted text from all seven PETs; applicable Semantic, Gateway, authorization and ownership requirements reviewed. No claim of line-by-line full system acceptance.",
+    "applicableConstraints": [
+      "Channel-neutral human capabilities mediated by Gateway; MCP private owner APIs cannot recursively route /mcp",
+      "Only human governed approval/publication; discovery candidates do not imply approved mappings",
+      "Explicit unknown/partial operational facts; no health claim from incomplete input",
+      "Semantic migration-aware recovery; preserve published snapshots/reference closure",
+      "Independent default-deny route/egress and source-bound peer generation"
+    ],
+    "baselineModified": false
   }
 }
