@@ -9,6 +9,7 @@ on:
       - 'tools/semantic_target_review/test_post_terminal_admission_recovery.py'
       - 'tools/semantic_target_review/*audited*'
       - 'evidence/provider-audited-*'
+      - 'releases/provider-audited-recovery-20261009.sh'
       - '.github/workflows/provider-v2-transaction-profiles.yml'
 permissions:
   contents: read
@@ -35,7 +36,7 @@ jobs:
       - name: Fresh post-terminal admission scope and real signatures
         run: sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-transaction-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_post_terminal_admission_recovery.py
       - name: Coherent source package and fresh audited recovery boundaries
-        run: sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-transaction-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_target_review -p test_audited_provider_recovery.py
+        run: sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-transaction-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_target_review -p 'test_audited*.py'
       - name: Atomic runtime switch filesystem and guard lock failure handling
         run: sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-transaction-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_transaction_profiles -p test_guarded_runtime_switch.py
       - name: Borrowed native guard descriptor custody
