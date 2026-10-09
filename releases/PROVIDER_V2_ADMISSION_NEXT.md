@@ -1,3 +1,13 @@
+# Current checkpoint — R8 stable; two-flow network lease prepared, approval pending
+
+Operator readback at 2026-10-09 21:37:45 Europe/Rome [confirms](../evidence/provider-r8-post-start-target-20261009.json) the same two running R8 processes, zero restarts, unchanged STARTED journals and four historical role-record signatures per role. This protected-state receipt is operator-reported. Earlier independent VPS Docker read remains separately recorded.
+
+Current owner is QUIESCED, leaseAuthorized=false, provider sets empty and native structure verified; no matching lease/coordinated unit was reported. The [concrete lease proposal](../releases/PROVIDER_R8_NETWORK_LEASE_REVIEW_20261009.md) is prepared and inert pending specific human approval. It reuses the installed owner and existing read.py, opens only the two preconfigured HTTPS flow scopes with finite DNS leases, monitors the current process generations, and uses a one-use transient Restart=no service with no boot enablement. No Docker lifecycle, key read, role signing, new endpoint or discovery job. Validation of the real DNS/nft/systemd path in an isolated CI namespace is underway; no VPS mutation or lease activation has been performed.
+
+Do not repeat R8, cleanup, network migration, input preparation or manual post-start read. After validated review, bind only the actual approval reference/timestamps and deliver the pinned operator action. Semantic/MCP rollout, fresh dependency evidence and discovery grants remain open. Asset/profile and product roadmap below are unchanged.
+
+Earlier checkpoints below are historical and superseded.
+
 # Current checkpoint — R8 target start succeeded; recovery approval consumed
 
 At **2026-10-09 21:11:30 Europe/Rome** the operator reports [R8 success](../evidence/provider-r8-target-started-20261009.json), `TWO_CANDIDATE_RUNTIME_STARTED`, recovery/bootstrap exit 0. Both exact candidates have adapter state STARTED and no native denial: adapter `f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67`, southbound `1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916`. The existing activation code verifies exact Docker acknowledgments, running/PID>0 and STARTED journals before this success result. This receipt is operator-reported, not independently fetched from VPS.

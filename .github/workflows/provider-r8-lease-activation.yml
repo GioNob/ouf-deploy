@@ -1,0 +1,41 @@
+name: R8 reviewed lease activation
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/semantic_lease_activation/**'
+      - '.github/workflows/provider-r8-lease-activation.yml'
+permissions:
+  contents: read
+jobs:
+  lease-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: a10df126d229dfefd9e0a4d716a07f1f535b6cd6
+          path: lease-owner-source
+          persist-credentials: false
+      - name: Verify exact installed owner source bytes
+        run: |
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          binding=json.loads(Path('tools/semantic_lease_activation/installed-owner-source-bindings.json').read_bytes())
+          for name,expected in binding['sourceHashes'].items():
+              assert hashlib.sha256((Path('lease-owner-source')/name).read_bytes()).hexdigest()==expected, name
+          print('INSTALLED_OWNER_SOURCE_BYTES=8_MATCHED')
+          PY
+      - name: Explicit approval, process generation and non-replay boundaries
+        run: python3 -B -m unittest discover -v -s tools/semantic_lease_activation -p test_activation.py
+      - name: Install disposable native test dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq nftables iproute2
+      - name: Actual transient service, fresh DNS, atomic nft renewal and safe failure
+        run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_activation/test_activation_native.py lease-owner-source

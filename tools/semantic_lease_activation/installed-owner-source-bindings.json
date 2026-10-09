@@ -1,0 +1,13 @@
+{
+  "sourceCommit": "a10df126d229dfefd9e0a4d716a07f1f535b6cd6",
+  "sourceHashes": {
+    "scripts/run_semantic_coordinated_lease_owner.py": "c2937a39578311018d47c0d414e6687278ce8b6b103de62c422cfe7b760b6889",
+    "tools/materialize_southbound_kernel.py": "98e3004300226fecd509a46c009585df14021927f20d4e5c82d8ff7a8a8180de",
+    "tools/materialize_southbound_lease_refresh.py": "1c0d7f1243752fe216ef62eefbc2e3253b8f2503b518fafe11277e4d7721a084",
+    "tools/semantic_provider_coordinated_supervisor.py": "25a952c9f6d1385ce7759ef61666d25c7ec24a5735d3d0d27c36ade8e1614dad",
+    "tools/semantic_provider_dns.py": "c466172113d1ffe850bf2c69762113b55fbc65d9091c96dca98a74548fddf930",
+    "tools/semantic_provider_lease_coordination.py": "e267e0f86637191b9830895930daa35afc10fec733b6957f427ab8a0ccddf587",
+    "tools/semantic_provider_lease_nft.py": "7a5f2b21c096228a3e4d298674e380f667c3004dd6d8ec19934a2302844c0f93",
+    "tools/semantic_provider_lease_owner.py": "92736eebeccf344e565186bce94d29c65ffe1d50638d57eae81486e7b26e884d"
+  }
+}
