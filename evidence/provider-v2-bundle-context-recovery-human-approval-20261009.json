@@ -1,0 +1,26 @@
+{
+  "schema": "ouf.semantic-provider-bundle-context-recovery-human-approval.v1",
+  "approvalRef": "OUF_PROVIDER_V2_BUNDLE_CONTEXT_RECOVERY_HUMAN_APPROVAL_20261009_102223",
+  "humanResponse": "approvo",
+  "approvedAt": "2026-10-09T10:22:23+02:00",
+  "approvedAtEpoch": 1791534143,
+  "reviewCommit": "609ec0c650411fa8b68e44e44fb8e6d8f9b4a267",
+  "reviewRef": "OUF_PROVIDER_V2_BUNDLE_CONTEXT_RECOVERY_REVIEW_20261009_R4",
+  "reviewPath": "releases/PROVIDER_V2_BUNDLE_CONTEXT_RECOVERY_REVIEW_20261009.md",
+  "scope": "Exact two context hash changes and one explicitly scoped post-R3 recovery as reviewed",
+  "proposedContextHashes": {
+    "adapter": "cfc1bfc12855dc49bfe0bf3eef22d0b2fb1f376d017a5cf68a4e77822dc9dfc6",
+    "southbound": "ce46668d3652eeb1fbf45ebba78c6fdc15aefa9af62801b536b616635a0f4246"
+  },
+  "expectedPriorWrapperHash": "3234529d94e84c70ed66f6e54a2d86f156e875fc73c9f8e15844b61edbb8ae20",
+  "unchangedInputCount": 14,
+  "signaturesPermitted": 8,
+  "controlledDockerStartRequestsPermitted": 2,
+  "automaticRetryPermitted": false,
+  "automaticRollbackPermitted": false,
+  "providerLeaseAuthorized": false,
+  "teatriDiscoveryAuthorized": false,
+  "notReleaseAcceptance": true,
+  "targetExecutionObserved": false,
+  "approvedHelperSha256": "262f03825cc8beb4c8823c5882d9549d4220a8ffeb90e4601d8fc5671e610fce"
+}
