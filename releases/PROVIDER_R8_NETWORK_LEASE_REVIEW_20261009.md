@@ -1,3 +1,11 @@
+# Approvazione ricevuta — esecuzione operatore in attesa
+
+Messaggio umano “Approvo” del 9 ottobre 2026 alle22:21:21 Europe/Rome. La prima invocazione è autorizzata fino al **10 ottobre00:21:21 Europe/Rome**; la lease resta poi vincolata alla vita degli attuali due processi. [Ricevuta](../evidence/provider-r8-lease-human-approval-20261009.json). L’approvazione include la copia corretta del compilatore e il perimetro sottostante. Non chiederla nuovamente.
+
+Entrypoint approvato commit `6aa13656205f5dc3f355954874d3324c354ed1da`, SHA256 `6038e18a83a085eaab48ce10f94214ff6f8bf15a649e4af85e4640aae9ff0557`; soltanto riferimento e due tempi cambiano dalla versione sottoposta a revisione. Launcher `provider-r8-network-lease-20261009.sh` SHA256 `a304dae0cfd02b15e28c610d2fb48b9757e53a682a4e54a03b44b24b3c2ef386`. Consegna verificata con il percorso esplicito gh, tre hash e bootstrap in memoria; un riferimento errato viene rifiutato prima delle operazioni target. Nessuna azione VPS eseguita qui. Eseguire una volta e conservare output; nessun replay.
+
+La proposta sottostante è la revisione storica approvata; i riferimenti PENDING descrivono il suo stato prima della decisione.
+
 # Proposta concreta: attivare la lease dei due flussi R8 già previsti
 
 Stato: **preparata, non approvata, non eseguibile sul target**. Il codice mantiene APPROVAL_REF PENDING e tempi zero. La ricevuta operatore delle 21:37:45 Europe/Rome del 9 ottobre, [registrata integralmente](../evidence/provider-r8-post-start-target-20261009.json), conferma entrambi i processi R8 ancora running, stessi PID, zero riavvii e journal STARTED invariati. Stato rete: QUIESCED, autorizzazione lease false, quattro set inet/bridge vuoti, struttura verificata. Nessuna unità lease/coordinated rilevata. L'avvio R8 è concluso e non viene ripetuto.

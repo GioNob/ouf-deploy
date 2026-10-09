@@ -1,3 +1,13 @@
+# Current checkpoint — R8 two-flow lease approved; operator execution pending
+
+Human message “Approvo” at **2026-10-09 22:21:21 Europe/Rome** approves the exact two-flow lease review from39130dd288ccbaba4a507d0b6a5703d7576d6694, including the separately bound compiler correction. ApprovalRef `OUF_R8_TWO_FLOW_LEASE_APPROVED_20261009T222121_CEST`; first invocation expires **10 October 00:21:21 Europe/Rome**, epochs1791577281–1791584481. [Approval witness](../evidence/provider-r8-lease-human-approval-20261009.json). Existing R8 container generations only, DNS leases maximum30s/renewal15s, one-use transient Restart=no unit, no boot enablement, Docker lifecycle or discovery grant.
+
+Approved source commit `6aa13656205f5dc3f355954874d3324c354ed1da`; entrypoint SHA256 `6038e18a83a085eaab48ce10f94214ff6f8bf15a649e4af85e4640aae9ff0557`. Only the approval reference and two timestamps changed from the reviewed entrypoint; core and compiler bytes remain unchanged. The launcher uses the known existing gh executable and existing post-start reader, verifies three new delivery files and executes the verified entrypoint bytes in memory. Approval is already granted: do not request it again. Native proof on908b69e5 is recorded separately; approved-source CI is completing. No target lease action has been performed here.
+
+Deliver `releases/provider-r8-network-lease-20261009.sh` once via the operator, preserve its output and never replay after its claim. Do not rerun R8, cleanup, bootstrap, restore wrappers or start Docker directly. Success must report TWO_FLOW_LEASE_ACTIVE_AND_RENEWED after two fresh cycles; this is network lease readiness, not application health or release acceptance. Semantic/MCP fresh dependency evidence, rollout and discovery grants remain next, followed by the existing Teatri roadmap.
+
+Earlier checkpoints below are historical and superseded.
+
 # Current checkpoint — R8 stable; two-flow network lease prepared, approval pending
 
 Operator readback at 2026-10-09 21:37:45 Europe/Rome [confirms](../evidence/provider-r8-post-start-target-20261009.json) the same two running R8 processes, zero restarts, unchanged STARTED journals and four historical role-record signatures per role. This protected-state receipt is operator-reported. Earlier independent VPS Docker read remains separately recorded.
