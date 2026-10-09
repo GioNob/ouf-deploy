@@ -16,9 +16,16 @@ class PostSignatureRecoveryTests(unittest.TestCase):
         return denial,{n:False for n in recovery.CLAIMS},roles,81
 
     def test_pending_human_scope_blocks_before_file_access(self):
-        with patch('os.open',side_effect=AssertionError('file access before approval')):
+        with patch.object(recovery,'APPROVAL_REF','PENDING_HUMAN_POST_SIGNATURE_RECOVERY_APPROVAL'),\
+             patch('os.open',side_effect=AssertionError('file access before approval')):
             with self.assertRaisesRegex(ValueError,'EXPLICIT_POST_SIGNATURE_RECOVERY_APPROVAL_REQUIRED'):
                 recovery.main('anything','/nonexistent')
+
+    def test_clock_before_recorded_approval_blocks_before_file_access(self):
+        with patch('time.time',return_value=recovery.APPROVED_AT-1),\
+             patch('os.open',side_effect=AssertionError('file access before valid clock')):
+            with self.assertRaisesRegex(ValueError,'ROOT_CLOCK_BEFORE_HUMAN_APPROVAL'):
+                recovery.main(recovery.APPROVAL_REF,'/nonexistent')
 
     def test_exact_retained_eight_signature_failure_accepted_for_review(self):
         recovery.validate_retained_failure(*self.facts())

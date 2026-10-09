@@ -1,4 +1,4 @@
-"""One reviewed recovery into new evidence; pending human approval blocks use.
+"""One explicitly approved recovery into new evidence; other refs are denied.
 
 Original package, failed context, signatures and published files are preserved.
 Runtime/observer sources remain sealed. Two orchestration utilities run pinned
@@ -16,8 +16,8 @@ import tempfile
 import time
 import traceback
 
-APPROVAL_REF='PENDING_HUMAN_POST_SIGNATURE_RECOVERY_APPROVAL'
-APPROVED_AT=None
+APPROVAL_REF='OUF_PROVIDER_V2_POST_SIGNATURE_RECOVERY_HUMAN_APPROVAL_20261009_093008'
+APPROVED_AT=1791531008  # 2026-10-09T09:30:08+02:00, actual human approval.
 REVIEW_REF='OUF_PROVIDER_V2_POST_SIGNATURE_RECOVERY_REVIEW_20261009_R3'
 BASE_SHA='e3253513c4220a0a506c117e0a535145d14f76fcba3f58fe292ee894c46bfcd4'
 OLD_CONTEXT=Path('/etc/ouf/deploy-snapshots/semantic-provider-v2-approved-context-kanx36_x')
@@ -63,6 +63,7 @@ def main(approval_ref,base_path):
     require(APPROVAL_REF!='PENDING_HUMAN_POST_SIGNATURE_RECOVERY_APPROVAL'
         and approval_ref==APPROVAL_REF and type(APPROVED_AT) is int,
         'EXPLICIT_POST_SIGNATURE_RECOVERY_APPROVAL_REQUIRED')
+    require(int(time.time())>=APPROVED_AT,'ROOT_CLOCK_BEFORE_HUMAN_APPROVAL')
     require(os.geteuid()==0 and sys.flags.isolated and sys.dont_write_bytecode,'ISOLATED_ROOT_OPERATOR_REQUIRED')
     require(Path(base_path).is_absolute(),'PINNED_PRIOR_BRIDGE_PATH_REQUIRED')
     fd=os.open(base_path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
