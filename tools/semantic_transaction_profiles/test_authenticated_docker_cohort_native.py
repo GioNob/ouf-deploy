@@ -76,6 +76,11 @@ def main():
         revised=repair({n:(source/n).read_bytes() for n in (BROKER,RUNTIME)})
         for name,raw in revised.items():
             (source/name).write_bytes(raw);(source/name).chmod(0o600)
+        if published:
+            from repair_admission_transport import repair as repair_transport, ORIGINAL as transport_original
+            repaired_transport=repair_transport({n:(source/n).read_bytes() for n in transport_original})
+            for name,raw in repaired_transport.items():
+                (source/name).write_bytes(raw);(source/name).chmod(0o600)
         wrapper=root/'admission.py';shutil.copyfile(Path(__file__).with_name('ci_frame_profile_broker.py'),wrapper);wrapper.chmod(0o600)
         lock=root/'guard.lock';lock.touch(mode=0o600)
         config_path=root/'adapter.json';cfg={'schema':'ouf.semantic-docker-runtime-adapter.v4',
@@ -142,18 +147,23 @@ def main():
             network=dock('network','create','--internal','--subnet','198.19.123.0/24','--opt','com.docker.network.bridge.name='+bridge,'ouf-ci-'+suffix).stdout.decode().strip()
             baseline=json.loads(Path(__file__).with_name('containerd-overlayfs-adapter.json').read_bytes())
             for i in range(2):
-                approved_source=root/('approved-source-'+str(i));approved_source.write_bytes(b'CI_APPROVED_READ_ONLY_SOURCE');approved_source.chmod(0o600);os.chown(approved_source,10006,10006)
+                baseline_name='containerd-overlayfs-southbound.json' if published and i==1 else 'containerd-overlayfs-adapter.json'
+                baseline=json.loads((Path(__file__).resolve().parent.parent/'semantic_frame_compiler'/baseline_name).read_bytes())
+                uid=baseline['approvedUser']['uid'];gid=baseline['approvedUser']['gid']
+                readonly=baseline['launch']['manifest']['readOnlyRoot']
+                memory=536870912 if published and i==1 else 268435456
+                approved_source=root/('approved-source-'+str(i));approved_source.write_bytes(b'CI_APPROVED_READ_ONLY_SOURCE');approved_source.chmod(0o600);os.chown(approved_source,uid,gid)
                 mac='02:42:c6:1b:00:'+format(i+2,'02x');address='198.19.123.'+str(i+2)
                 argv=['/bin/busybox','sh','-c','echo APP > /dev/shm/started; /bin/busybox sleep 60']
                 cid=dock('create','--runtime','ouf-ci-cohort','--network',network,'--ip',address,'--mac-address',mac,
-                    '--user','10006:10006','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges',
-                    '--memory','256m','--memory-swap','256m','--pids-limit','128','--no-healthcheck','--env','PATH=/bin',
+                    '--user',str(uid)+':'+str(gid),*(['--read-only'] if readonly else []),'--cap-drop','ALL','--security-opt','no-new-privileges',
+                    '--memory',str(memory),'--memory-swap',str(memory),'--pids-limit','128','--no-healthcheck','--env','PATH=/bin',
                     '--mount','type=bind,source='+str(approved_source)+',target=/approved-source,readonly',image,*argv).stdout.decode().strip();cids.append(cid)
                 mount={'source':str(approved_source),'target':'/approved-source','readOnly':True}
                 launch={'schema':'ouf.semantic-creation-frame-launch.v1',
-                    'manifest':{'user':'10006:10006','readOnlyRoot':True,'memoryBytes':268435456,'pidsLimit':128,'mounts':[mount]},
-                    'startup':{'uid':10006,'gid':10006,'umask':None,'cwd':'/','args':argv,'env':['PATH=/bin','HOSTNAME=$OUF_HOSTNAME']},
-                    'sources':[{**mount,'uid':10006,'gid':10006,'mode':0o600,'maxBytes':131072,'sha256':sha(approved_source)}]}
+                    'manifest':{'user':str(uid)+':'+str(gid),'readOnlyRoot':readonly,'memoryBytes':memory,'pidsLimit':128,'mounts':[mount]},
+                    'startup':{'uid':uid,'gid':gid,'umask':None,'cwd':'/','args':argv,'env':['PATH=/bin','HOSTNAME=$OUF_HOSTNAME']},
+                    'sources':[{**mount,'uid':uid,'gid':gid,'mode':0o600,'maxBytes':131072,'sha256':sha(approved_source)}]}
                 template=build_role_template(baseline['template'],baseline['launch'],launch,baseline['approvedUser'],mount_ordering=baseline['mountOrdering'])
                 context={'schema':'ouf.semantic-docker-frame-context.v1','containerId':cid,
                     'bundleParent':str(bundle_parent),
@@ -277,7 +287,7 @@ def main():
             for status,message in outcomes:
                 if status:
                     for index,cid in enumerate(cids):
-                        for filename in ('ci-broker-denial.json','ci-node-denial.json',*('broker-denial-'+phase+'.json' for phase in ('authorize-create','record-created','cohort-ready','prepare','cleanup'))):
+                        for filename in ('ci-broker-denial.json','ci-node-denial.json','attestation-producer-denial-attestation.json','approval-producer-denial-approval.json','preparer-denial-prepare.json',*('driver-denial-'+phase+'.json' for phase in ('plan','apply','verify','start')),*('broker-denial-'+phase+'.json' for phase in ('authorize-create','record-created','cohort-ready','prepare','cleanup'))):
                             path=registry/cid/filename
                             if path.exists():print('CONTROLLED_COHORT_DIAG='+json.dumps({'candidateIndex':index,**json.loads(path.read_bytes())}))
                         phases={}
@@ -289,7 +299,7 @@ def main():
                         if state_result.returncode==0:
                             state=json.loads(state_result.stdout)
                             print('FRAME_PROFILE_RUNTIME_STATE='+json.dumps({'candidateIndex':index,
-                                'status':state.get('status'),'pid':state.get('pid')}))
+                                'status':state.get('Status'),'pid':state.get('Pid')}))
                     print('FRAME_PROFILE_PROCESS_RESULTS='+json.dumps(outcomes))
                 require(status==0,'CI_COHORT_ADMISSION_FAILED:'+message)
             require(all(application_proof(cid)=='APP' for cid in cids),'CI_COHORT_APP_PROOF_MISSING')
