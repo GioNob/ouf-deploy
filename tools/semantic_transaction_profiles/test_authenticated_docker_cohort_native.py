@@ -72,6 +72,10 @@ def main():
         node_raw=node_raw.replace("    except Exception:\n        print('SEMANTIC_NODE_ATTESTOR",
             "    except Exception as error:\n        import re\n        reason=str(error)\n        if not re.fullmatch('[A-Z0-9_]{1,96}',reason):reason='CI_NODE_OPERATION_UNPROVEN'\n        diagnosis=Path(args.configuration).parent/'ci-node-denial.json'\n        diagnosis.write_text(json.dumps({'reason':reason,'errorClass':type(error).__name__,'secretValuesPrinted':False}));diagnosis.chmod(0o600)\n        print('SEMANTIC_NODE_ATTESTOR")
         node_cli.write_text(node_raw);node_cli.chmod(0o600)
+        observation=source/'tools/semantic_provider_node_observation.py'
+        observation_raw=observation.read_text().replace('    def add(item):\n        raw=encoded(item)', '    trace=[]\n    def add(item):\n        trace.append(item)\n        raw=encoded(item)')
+        observation_raw=observation_raw.replace("    budget.check();return {'schema':'ouf.semantic-rootfs-seal.v1'", "    trace_path=Path(__file__).parent/('ci-rootfs-trace-'+str(os.getpid())+'.json')\n    trace_path.write_bytes(encoded(trace));trace_path.chmod(0o600)\n    budget.check();return {'schema':'ouf.semantic-rootfs-seal.v1'")
+        observation.write_text(observation_raw);observation.chmod(0o600)
         wrapper=root/'admission.py';shutil.copyfile(Path(__file__).with_name('ci_frame_profile_broker.py'),wrapper);wrapper.chmod(0o600)
         lock=root/'guard.lock';lock.touch(mode=0o600)
         config_path=root/'adapter.json';cfg={'schema':'ouf.semantic-docker-runtime-adapter.v4',
@@ -124,6 +128,19 @@ def main():
             (offline/'etc/mtab').symlink_to('/proc/mounts')
             upper=root/'expected-upper';work=root/'expected-work';upper.mkdir();work.mkdir()
             run(commands['mount'],'-t','overlay','overlay','-o','lowerdir='+str(offline)+',upperdir='+str(upper)+',workdir='+str(work),str(expected_mount));mounted=True
+            def expected_trace():
+                import stat
+                def entry(path):
+                    st=path.lstat();item={'path':str(path.relative_to(expected_mount)) if path!=expected_mount else '',
+                        'mode':stat.S_IMODE(st.st_mode),'uid':st.st_uid,'gid':st.st_gid,'links':st.st_nlink}
+                    if path.is_symlink():item.update(kind='symlink',target=os.readlink(path))
+                    else:
+                        item['xattrs']={name:os.getxattr(path,name).hex() for name in os.listxattr(path)}
+                        if path.is_dir():item['kind']='directory'
+                        else:item.update(kind='file',size=st.st_size,sha256=sha(path))
+                    return item
+                return {value['path']:value for value in [entry(expected_mount),*(entry(path) for path in expected_mount.rglob('*'))]}
+            approved_trace=expected_trace()
             seal=rootfs_seal(expected_mount,{'maxEntries':10000,'maxBytes':268435456,'maxDepth':32},VerificationBudget(12))
             network=dock('network','create','--internal','--subnet','198.19.123.0/24','--opt','com.docker.network.bridge.name='+bridge,'ouf-ci-'+suffix).stdout.decode().strip()
             baseline=json.loads(Path(__file__).with_name('containerd-overlayfs-adapter.json').read_bytes())
@@ -215,6 +232,10 @@ def main():
             for process,out,err in processes:
                 status=process.wait(timeout=30);err.seek(0)
                 outcomes.append((status,err.read(1200).decode()))
+            for trace_file in (source/'tools').glob('ci-rootfs-trace-*.json'):
+                actual_trace={item['path']:item for item in json.loads(trace_file.read_bytes())}
+                diffs=[{'path':path,'expected':approved_trace.get(path),'actual':actual_trace.get(path)} for path in sorted(set(approved_trace)|set(actual_trace)) if approved_trace.get(path)!=actual_trace.get(path)]
+                print('CI_OFFLINE_ROOTFS_DIFFERENCES='+json.dumps(diffs[:30]))
             for status,message in outcomes:
                 if status:
                     for index,cid in enumerate(cids):
