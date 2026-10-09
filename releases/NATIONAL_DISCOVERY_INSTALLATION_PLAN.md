@@ -1,10 +1,10 @@
 # National discovery installation: exact current preparation
 
-## Stato corrente — 9 ottobre 2026, dopo l’avvio R8
+## Stato corrente — 9 ottobre 2026, lease R8 attiva e rinnovata
 
-L’operatore ha riportato l’avvio riuscito dei due candidati v2 alle 21:11:30 Europe/Rome, [ricevuta](../evidence/provider-r8-target-started-20261009.json). Runtime registrato, input/TLS preparati e transazione R8 sono completati e non vanno ripetuti. R8 è consumato; contesto mf9x0eqd, pacchetto prepared-9jhyd181. Entrambi STARTED nella ricevuta, nessun diniego, exit0. Non implica salute applicativa, lease provider, reboot o accettazione di release. Il [handoff corrente](PROVIDER_V2_ADMISSION_NEXT.md) governa i prossimi passi e prevale sulle sezioni storiche sotto.
+L'operatore ha riportato TWO_FLOW_LEASE_ACTIVE_AND_RENEWED, exit0, due cicli e indirizzi[1,1], nella [ricevuta conservata](../evidence/provider-r8-active-renewed-lease-target-20261009.json). Snapshot semantic-r8-lease-8wfsv1aa, servizio transient ouf-semantic-provider-lease-r8.service, nessun riavvio o lifecycle dei container. La ricezione è riportata dall'operatore, non acquisita indipendentemente. Autorizzazione consumata; non ripetere launcher, preparazioni o avvio R8. Non prova salute applicativa, reboot o accettazione di release.
 
-La lettura indipendente del runner 37979230240/job113985199756 conferma entrambi i CID running e zero riavvii alle 19:17Z. Proseguire con stato protetto e requisiti lease/provider, rollout degli artefatti Semantic/MCP già preparati con evidenza di dipendenze aggiornata e grant discovery. Il MCP owner risponde HEALTHY via connettore; il vecchio database di scansione Semantic/MCP è scaduto. Nessun job nazionale Teatri ancora eseguito, nessun ricaricamento asset o fallback locale. Gli archivi firmati, la credenziale Semantic e il backup esistenti elencati sotto sono da riutilizzare quando applicabile, non da ricreare per default.
+Prossimo lavoro: scansioni aggiornate sugli SBOM firmati degli stessi archivi Semantic/MCP già conservati, rollout governato e grant discovery. Il database di scansione precedente è scaduto: non copiare il vecchio PASS. MCP owner HEALTHY è un'osservazione distinta dalla readiness discovery. Nessun job nazionale Teatri, ricaricamento asset o fallback locale. Le sezioni storiche sotto non sono istruzioni di replay; il handoff corrente prevale.
 
 ## Available and verified
 

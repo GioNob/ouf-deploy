@@ -1,3 +1,13 @@
+# Current checkpoint — R8 two-flow lease active and renewed
+
+The operator reports TWO_FLOW_LEASE_ACTIVE_AND_RENEWED, exit0 for action and bootstrap, at snapshot /etc/ouf/deploy-snapshots/semantic-r8-lease-8wfsv1aa. [Exact receipt](evidence/provider-r8-active-renewed-lease-target-20261009.json). Two fresh DNS/native membership cycles passed; address counts[1,1], refreshCount2, exact transient service ouf-semantic-provider-lease-r8.service. Approved finite flows now permit external traffic. This is operator-reported protected VPS evidence, not independently acquired here.
+
+The readback-recovery authorization is consumed. Do not replay any lease, start, cleanup or recovery launcher, reset either claim, or re-run completed preparation. No container lifecycle or daemon restart accompanied this lease action; no automatic restart or boot enablement. applicationHealthProven=false and notReleaseAcceptance=true remain explicit. Historical QUIESCED receipts below do not describe the current active lease.
+
+Continue with fresh applicable dependency scans of the unchanged signed Semantic/MCP artifacts already staged, then governed rollout and discovery grants. Retain current provider processes and owner scope. No national Teatri job, asset reload or local fallback. Existing archive custody, credential and backup remain available; the old scan database expired and cannot authorize current application.
+
+Earlier checkpoints below are historical and superseded.
+
 # Current checkpoint — readback recovery approved; operator execution pending
 
 Human “Approvo” at **2026-10-09 22:58:47 Europe/Rome** approves the recovery review from5ad76be3a46f34b68af77a9328e5179d987177fe. [Approval witness](evidence/provider-r8-lease-readback-recovery-human-approval-20261009.json). ApprovalRef `OUF_R8_LEASE_READBACK_RECOVERY_APPROVED_20261009T225847_CEST`; first invocation expires **10 October00:58:47 Europe/Rome**, epochs1791579527–1791586727. One new lease action for the same two current R8 process generations and existing endpoints; prior claim/evidence preserved. New exclusive claim `/etc/ouf/provider-r8-network-lease-readback-recovery.claim`; never reset or replay either claim.
