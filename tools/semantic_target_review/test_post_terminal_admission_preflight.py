@@ -40,6 +40,38 @@ class Tests(unittest.TestCase):
         m.absent_tasks(b'TASK PID STATUS\nunrelated 1 RUNNING\n')
         for raw in (b'',b'wrong header\n',f'TASK PID STATUS\n{m.S} 5 STOPPED\n'.encode(),b'TASK PID STATUS\nunrelated invalid STOPPED\n'):
             with self.assertRaises(m.Denied):m.absent_tasks(raw)
+    def publication_fixture(self):
+        manifest=json.loads((Path(__file__).resolve().parent.parent/'semantic_transaction_profiles/intake-source-closure.json').read_text())
+        expected={p.removeprefix('source/'):h for p,h in manifest['sourceHashes'].items() if p.startswith('source/') or p=='frame-observer.py'}
+        expected['scripts/semantic_provider_deployment_broker.py']='3069c3dbbb959d8e8d423f5fc0c22db65aa4a50e2ba1874ad26ccd3a928af0cf'
+        expected['scripts/semantic_provider_docker_runtime.py']='7894d0e942642d1daa5ae2e29c85cd7f0584b7cd285c539cab3ae624bab0bba9'
+        files={str(m.ROOT/'source'/name):h for name,h in expected.items()}
+        files.update({str(m.ROOT/'fixture-records'/str(i)):'0'*64 for i in range(81-len(files))})
+        encode=lambda v:json.dumps(v,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
+        return {'fileHashes':files},dict(files),set(expected),encode,manifest
+    def test_actual_sealed_manifest_30_published_sources_not_39_intake_files(self):
+        receipt,frozen,names,encode,manifest=self.publication_fixture()
+        self.assertEqual(len(manifest['sourceHashes']),39);self.assertEqual(len(names),30)
+        observed=m.published_closure(receipt,frozen,names,encode)
+        self.assertEqual(observed['sourceClosureHash'],m.CLOSURE_SHA)
+        self.assertEqual(observed['publishedSourceCount'],30)
+    def test_source_hash_or_name_drift_denied(self):
+        receipt,frozen,names,encode,_=self.publication_fixture()
+        for change in ('hash','missing','extra'):
+            changed=copy.deepcopy(receipt)
+            path=str(m.ROOT/'source/frame-observer.py')
+            if change=='hash':changed['fileHashes'][path]='0'*64
+            if change=='missing':changed['fileHashes'].pop(path)
+            if change=='extra':changed['fileHashes'][str(m.ROOT/'source/utility/unreviewed.py')]='0'*64
+            with self.assertRaises(m.Denied):m.published_closure(changed,frozen,names,encode)
+    def test_source_frozen_digest_mismatch_denied(self):
+        receipt,frozen,names,encode,_=self.publication_fixture()
+        frozen[str(m.ROOT/'source/frame-observer.py')]='0'*64
+        with self.assertRaisesRegex(m.Denied,'PUBLISHED_SOURCE_NOT_FROZEN'):m.published_closure(receipt,frozen,names,encode)
+    def test_publication_escape_denied(self):
+        receipt,frozen,names,encode,_=self.publication_fixture()
+        receipt['fileHashes']['/etc/ouf/keys/private.pem']='0'*64
+        with self.assertRaisesRegex(m.Denied,'PUBLICATION_PATH_OR_HASH_DRIFT'):m.published_closure(receipt,frozen,names,encode)
     def test_native_reader_checks_custody_and_never_delegates_stderr(self):
         binding={'path':'/pinned/ctr','sha256':'a'*64};args=['--address','/run/containerd/containerd.sock','--namespace','moby','tasks','list']
         with patch.object(m.subprocess,'run',return_value=subprocess.CompletedProcess([],0,b'TASK PID STATUS\n',b'private')) as run:

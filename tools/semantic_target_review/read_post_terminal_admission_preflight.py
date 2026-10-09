@@ -19,7 +19,9 @@ A='f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67'
 S='1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916'
 STATES={S:'02d11a458636fedb4377f8a191e696589b1d0b92e0c272b471f0b03f2f8d92ad',A:'daa3f41b98479f443d597bbebb28154a16db0192751feec466db843755be35b1'}
 METADATA={S:'6a39de17aa02d0358dcac7b931645ac84004bbec013443eec29447c6d772f767',A:'45b95bc5610c03f5db63d48c52070c5d1302d8bde6a5f22c1ef978bb6bcf2868'}
-class Denied(ValueError):pass
+class Denied(ValueError):
+    def __init__(self,reason,observation=None):
+        super().__init__(reason);self.observation=observation
 def require(ok,reason):
     if not ok:raise Denied(reason)
 def digest(raw):return hashlib.sha256(raw).hexdigest()
@@ -50,6 +52,21 @@ def absent_tasks(raw):
     for line in lines[1:]:
         fields=line.split();require(len(fields)==3 and fields[1].isdigit(),'TASK_LIST_FORMAT_UNPROVEN')
         require(fields[0] not in STATES,'TERMINAL_TASK_REAPPEARED')
+def published_closure(installation,frozen,expected_names,encoded):
+    files=installation['fileHashes'];require(type(files) is dict,'PUBLICATION_FILE_MAP_REQUIRED')
+    for name,h in files.items():
+        p=Path(name)
+        require(p.is_relative_to(ROOT) and '..' not in p.parts and str(p)==name
+            and type(h) is str and re.fullmatch('[0-9a-f]{64}',h),'PUBLICATION_PATH_OR_HASH_DRIFT')
+    hashes={str(Path(p).relative_to(ROOT/'source')):h for p,h in files.items() if Path(p).is_relative_to(ROOT/'source')}
+    observation={'publicationFileCount':len(files),'expectedSourceCount':len(expected_names),
+        'publishedSourceCount':len(hashes),'exactSourceNames':set(hashes)==set(expected_names),
+        'sourceClosureHash':digest(encoded(hashes))}
+    if not (len(files)==81 and observation['exactSourceNames']
+            and observation['sourceClosureHash']==CLOSURE_SHA):
+        raise Denied('EXACT_RETAINED_R5_SOURCE_CLOSURE_REQUIRED',observation)
+    require(all(frozen.get(str(ROOT/'source'/name))==h for name,h in hashes.items()),'PUBLISHED_SOURCE_NOT_FROZEN')
+    return observation
 def run_read(binding,args,executable_binding):
     identity=executable_binding(binding)
     result=subprocess.run([binding['path'],*args],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,
@@ -70,7 +87,9 @@ def main():
         finally:os.close(handle)
         require(digest(raw)=='edc3c97d54a9d241c93ea9791f4dffce9984565763c2236ad1644e8b90c4c4b5','SEALED_ENTRY_HASH_DRIFT')
         entry={'__name__':'post_terminal_reader','__file__':str(path)}
-        exec(compile(raw,str(path),'exec'),entry);entry['read'](path);entry['load'](PACKAGE)
+        exec(compile(raw,str(path),'exec'),entry)
+        require(entry['read'](path)==raw,'SEALED_ENTRY_CUSTODY_CHANGED')
+        sealed_sources,sealed_observer=entry['load'](PACKAGE)
         success_raw=entry['read'](MAINTENANCE/'maintenance-result.json')
         claim_raw=entry['read'](CONTEXT/'terminal-task-alias-recovery-claim.json')
         success=entry['parse'](success_raw);claim=entry['parse'](claim_raw);validate_success(success,claim)
@@ -98,10 +117,8 @@ def main():
             validate_dependency_evidence(entry['parse'](values['dependencyEvidence']),role,now,now+240)
         report['reviewedDependencyMetadataCovers240Seconds']=True
         installation=entry['parse'](entry['read'](ROOT/'installation-receipt.json'))
-        source_hashes={str(Path(p).relative_to(ROOT/'source')):h for p,h in installation['fileHashes'].items() if Path(p).is_relative_to(ROOT/'source')}
-        require(len(installation['fileHashes'])==81 and len(source_hashes)==39
-            and digest(entry['encoded'](source_hashes))==CLOSURE_SHA,'EXACT_RETAINED_R5_SOURCE_CLOSURE_REQUIRED')
-        require(all(frozen.get(str(ROOT/'source'/name))==h for name,h in source_hashes.items()),'PUBLISHED_SOURCE_NOT_FROZEN')
+        report['sourceClosureObservation']=published_closure(installation,frozen,
+            {*sealed_sources,'frame-observer.py'},entry['encoded'])
         report.update(acceptedInputCount=sum(len(v) for v in records.values()),sourceClosureHash=CLOSURE_SHA,
             retainedFilesVerified=len(frozen),successfulMaintenanceResultHash=digest(success_raw),consumedAliasClaimHash=digest(claim_raw))
         phase='READ_CURRENT_TASK_ABSENCE_AND_METADATA_UNDER_COMMON_LOCK'
@@ -141,6 +158,8 @@ def main():
         report.update(status='POST_TERMINAL_ADMISSION_PREREQUISITES_CAPTURED',phase=phase,
             freshAdmissionApprovalRequired=True,oldContextsPreserved=True)
     except Exception as error:
+        if isinstance(error,Denied) and error.observation is not None:
+            report['sourceClosureObservation']=error.observation
         reason=str(error) if re.fullmatch('[A-Z][A-Z0-9_]{0,95}',str(error)) else 'POST_TERMINAL_PREFLIGHT_UNPROVEN'
         report.update(status='BLOCKED',phase=phase,errorType=type(error).__name__,reason=reason,
             exceptionPoints=[{'file':Path(t.filename).name,'function':t.name,'line':t.lineno} for t in traceback.extract_tb(error.__traceback__)[-4:]])
