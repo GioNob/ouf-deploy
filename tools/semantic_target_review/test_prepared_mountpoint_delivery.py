@@ -17,7 +17,7 @@ class PreparedDeliveryTest(unittest.TestCase):
         self.gh=self.root/'retained-gh'
         self.gh.write_text('#!'+sys.executable+'''\nimport base64,os,pathlib,sys
 route=next(x for x in sys.argv if x.startswith('repos/'))
-assert route.endswith('?ref=7d377692e8714f439cea819b6d1aabf0dad0db7b')
+assert route.endswith('?ref=378c882379502f5b9809e0f24f6a3a64cdacef56')
 relative=route.split('/contents/',1)[1].split('?ref=',1)[0]
 if os.environ.get('CI_FAIL')==relative:raise SystemExit(22)
 raw=(pathlib.Path(os.environ['CI_ROOT'])/relative).read_bytes()
@@ -33,7 +33,8 @@ raise SystemExit(int(os.environ.get('CI_EXIT','0')))
 
     def run_launcher(self,approved=False,**overrides):
         script=(ROOT/'releases/provider-prepared-mountpoint-recovery-20261009.sh').read_text()
-        if approved:script=re.sub(r'^OUF_R8_APPROVAL=.*$','OUF_R8_APPROVAL=DISPOSABLE_CI_ONLY',script,flags=re.MULTILINE)
+        approval='DISPOSABLE_CI_ONLY' if approved else 'PENDING_PREPARED_MOUNTPOINT_RECOVERY_APPROVAL'
+        script=re.sub(r'^OUF_R8_APPROVAL=.*$','OUF_R8_APPROVAL='+approval,script,flags=re.MULTILINE)
         script=script.replace('$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh',str(self.gh))
         return subprocess.run(['/bin/bash','-c',script],env={**self.env,**overrides},stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=10)
 
