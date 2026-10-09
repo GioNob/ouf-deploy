@@ -45,8 +45,9 @@ class TargetBoundaries(unittest.TestCase):
         self.assertEqual(core.digest((HERE/'materialize_southbound_lease_refresh.py').read_bytes()), target.COMPILER_HASH)
 
     def test_pending_review_cannot_apply_and_window_is_bounded(self):
-        with self.assertRaisesRegex(ValueError, 'EXPLICIT_NEW_LEASE_APPROVAL_REQUIRED'):
-            target.approval_live(target.APPROVAL_REF, clock=lambda: 100)
+        with patch.multiple(target, APPROVAL_REF='PENDING_EXPLICIT_R8_TWO_FLOW_LEASE_APPROVAL', ISSUED_AT=0, EXECUTION_EXPIRES_AT=0):
+            with self.assertRaisesRegex(ValueError, 'EXPLICIT_NEW_LEASE_APPROVAL_REQUIRED'):
+                target.approval_live(target.APPROVAL_REF, clock=lambda: 100)
         with patch.multiple(target, APPROVAL_REF='EXPLICIT_HUMAN_REVIEW', ISSUED_AT=100, EXECUTION_EXPIRES_AT=200):
             for now in (99, 200):
                 with self.assertRaises(ValueError):
