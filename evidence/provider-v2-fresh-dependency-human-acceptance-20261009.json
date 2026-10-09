@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.semantic-provider-fresh-dependency-human-acceptance.v1",
+  "approvalRef": "OUF_PROVIDER_V2_FRESH_DEPENDENCY_ACCEPTANCE_20261009_085303",
+  "decisionAt": "2026-10-09T08:53:03+02:00",
+  "humanResponse": "accetto",
+  "acceptedReviewCommit": "3d710540cb36e7e96b52dd9025d4f20dc3aa8935",
+  "acceptedReviewPath": "releases/PROVIDER_V2_FRESH_DEPENDENCY_REVIEW_20261009.md",
+  "parentSignStartApprovalRef": "OUF_PROVIDER_V2_SIGN_START_HUMAN_APPROVAL_20261009_075624",
+  "acceptedDependencyHashes": {
+    "adapter": "e5b31a2117b2f5abfb5e305b62a04d8861341501c626ab1cd50459e2b07b248d",
+    "southbound": "17ae54703ac8b29c4d554b9832f2a2f9d6d0067d421ee8cffc8ed89e96da8168"
+  },
+  "preKeyRecoveryAccepted": true,
+  "operatingScope": "Previously approved bounded signed guarded two-CID transaction; retained pre-key failure only",
+  "isHumanWitnessNotDetachedSignature": true,
+  "targetExecutedHere": false,
+  "notReleaseAcceptance": true
+}
