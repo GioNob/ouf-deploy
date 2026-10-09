@@ -18,7 +18,10 @@ def main():
     assert os.stat('/proc/self/ns/net').st_ino != os.stat('/proc/1/ns/net').st_ino
     nft, ip = shutil.which('nft'), shutil.which('ip')
     def run(args, raw=None):
-        return subprocess.run(args, input=raw, capture_output=True, text=True, check=True, timeout=15).stdout
+        result = subprocess.run(args, input=raw, capture_output=True, text=True, timeout=15)
+        if result.returncode:
+            raise AssertionError('ISOLATED_NATIVE_COMMAND_FAILED: ' + result.stderr[:2000])
+        return result.stdout
     bridge = 'br-113b5f0a3c53'
     roles = ['old', 'new', 'rogue', 'back']
     spaces = {r: 'oufp-' + str(os.getpid()) + '-' + r for r in roles}
@@ -48,7 +51,14 @@ def main():
                        'source': '172.18.0.6', 'destination': '172.18.0.14', 'protocol': 'tcp', 'port': 10443,
                        'peerIngress': {'kind': 'BRIDGE_PORT', 'ifindex': indexes['old']}}]}
         run([nft, '-f', '-'], materialize(policy)['nftRules'])
-        run([nft, '-f', '-'], 'table inet ouf_sem_provider { set provider_0 { type ipv4_addr; flags timeout; elements = { 1.1.1.1 timeout 30s }; } set provider_1 { type ipv4_addr; flags timeout; elements = { 8.8.8.8 timeout 30s }; } }\ntable inet unrelated_ci { chain input { type filter hook input priority 0; policy accept; } }\n')
+        run([nft, '-f', '-'], '''table inet ouf_sem_provider {
+ set provider_0 { type ipv4_addr; flags timeout; elements = { 1.1.1.1 timeout 30s }; }
+ set provider_1 { type ipv4_addr; flags timeout; elements = { 8.8.8.8 timeout 30s }; }
+}
+table inet unrelated_ci {
+ chain input { type filter hook input priority 0; policy accept; }
+}
+''')
         def tables():
             return {f: json.loads(run([nft, '-j', '-n', 'list', 'table', f, policy['tableName']])) for f in ('inet', 'bridge')}
         def protected():
