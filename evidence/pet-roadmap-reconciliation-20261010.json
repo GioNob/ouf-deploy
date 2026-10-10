@@ -746,9 +746,17 @@
     "candidateMcp": "3ba1d4abcf62af1572997a217a333fa8d231c29f",
     "gatewayProductionPin": "a10df126d229dfefd9e0a4d716a07f1f535b6cd6",
     "dnsRecoveryDraftGatewayPin": "be789d76f0c75c6c109cef3c2419d990930c63f2",
-    "nextAuthorizedPreparation": "Full Spring startup on isolated migrated/restored fixture, preserving fail-closed authorization and signed image identity",
+    "nextAuthorizedPreparation": "Compose migration-aware target applicator with fresh private backup, writer fencing/custody and authenticated peer/profile/transport closure coordinating the consumed R9 lease worker",
     "productionApplyReady": false,
-    "R9ReplayAllowed": false
+    "R9ReplayAllowed": false,
+    "fullSpringStartupFollowup": {
+      "observedAt": "2026-10-10T06:49:52Z",
+      "status": "FULL_CANDIDATE_AND_INSTALLED_SPRING_STARTUP_PASS_ISOLATED_DATABASES",
+      "evidence": "evidence/discovery-full-spring-startup-qualification-20261010.json",
+      "runId": 38032196847,
+      "providerAndWorkerDisabled": true,
+      "targetApplyPerformed": false
+    }
   },
   "fullPetConformanceClaim": false,
   "releaseAcceptance": false

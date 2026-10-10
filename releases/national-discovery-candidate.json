@@ -495,7 +495,18 @@
       "runId": 38030919846,
       "targetApplied": false
     },
-    "applicationCutoverPreparation": "releases/discovery-application-cutover-preparation-20261010.json"
+    "applicationCutoverPreparation": "releases/discovery-application-cutover-preparation-20261010.json",
+    "fullSpringStartupQualification": {
+      "status": "FULL_CANDIDATE_AND_INSTALLED_SPRING_STARTUP_PASS_ISOLATED_DATABASES",
+      "evidence": "evidence/discovery-full-spring-startup-qualification-20261010.json",
+      "runId": 38032196847,
+      "candidateAndInstalledFullStartupQualified": true,
+      "iamEnabled": true,
+      "providerEnabled": false,
+      "discoveryWorkerEnabled": false,
+      "targetDatabaseTouched": false,
+      "productionApplicatorPrepared": false
+    }
   },
   "previousApplicationPreparation": {
     "sourcePins": {

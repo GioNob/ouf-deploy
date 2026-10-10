@@ -28,7 +28,17 @@
     "currentSnapshotRestoreTestIsNotTargetRestoreAuthority": true,
     "packagedFlywayQualificationEvidence": "evidence/discovery-packaged-flyway-recovery-qualification-20261010.json",
     "installedFlywayValidationOnV10": "VALIDATED_WITH_CURRENT_SCHEMA",
-    "fullOldAndNewApplicationStartupNotYetQualified": true
+    "fullOldAndNewApplicationStartupNotYetQualified": false,
+    "fullSpringStartupQualificationEvidence": "evidence/discovery-full-spring-startup-qualification-20261010.json",
+    "applicationRuntimeQualification": {
+      "status": "FULL_STARTUP_PASS_ISOLATED_IAM_ENABLED_PROVIDER_WORKER_DISABLED",
+      "candidateJarSha256": "4f856b0b656e36fa0ba45e8dca7d3b5f6180765eed0d54a1ba6586f1e81d809c",
+      "installedJarSha256": "32df2976c0c240d093b4769e296a7411f02548e14ed17b542b6db00a78901bc2",
+      "oldStartsOnV1V9AndRestoredV10": true,
+      "newAppliesV10AndStartsOnCurrentRestore": true,
+      "productionProviderHealthProven": false,
+      "targetRestoreAuthorized": false
+    }
   },
   "peer": {
     "currentTargetEvidence": "evidence/discovery-cutover-input-target-20261010.json",
