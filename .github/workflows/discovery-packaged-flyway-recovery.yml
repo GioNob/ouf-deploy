@@ -1,0 +1,43 @@
+name: OUF packaged Semantic Flyway recovery CI
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/discovery-packaged-flyway-recovery.yml
+      - tests/fixtures/FlywayFixture.java
+      - tests/test_discovery_migration_recovery.py
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-semantic-registry
+          ref: 403531a9df1cbc877078f8126fd1fc4ff18acea9
+          path: semantic-source
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Build exact candidate Java package for isolated library qualification
+        run: |
+          set -euo pipefail
+          test "$(git -C semantic-source rev-parse HEAD)" = 403531a9df1cbc877078f8126fd1fc4ff18acea9
+          docker build --target build -t ouf-flyway-fixture-build semantic-source
+          docker create --name ouf-flyway-package ouf-flyway-fixture-build
+          mkdir package
+          docker cp ouf-flyway-package:/build/target/semantic-registry-1.0.0-SNAPSHOT.jar package/application.jar
+          docker rm ouf-flyway-package
+      - name: Exercise packaged Flyway migrations, post-write restore and checksum denial
+        run: python3 tests/test_discovery_migration_recovery.py --packaged-flyway
+      - name: Remove disposable hosted fixtures
+        if: always()
+        run: docker rm -f ouf-flyway-package ouf-discovery-migration-ci 2>/dev/null || true

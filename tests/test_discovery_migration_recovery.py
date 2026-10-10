@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 """Exercise additive V10 and backup restoration on isolated hosted PostgreSQL, never on OUF databases."""
-import hashlib, json, subprocess, tempfile, time
+import hashlib, json, subprocess, tempfile, time, shutil, zipfile
+import sys
 from pathlib import Path
 DB="ouf-discovery-migration-ci"
+FLYWAY="--packaged-flyway" in sys.argv
+JAR=Path("package/application.jar")
+JAVA_ROOT=Path("package/flyway-fixture")
+def flyway(mode, database, location):
+    return cmd(["java","-cp",str(JAVA_ROOT)+":"+str(JAVA_ROOT/"lib/*"),"FlywayFixture",mode,database,str(location)])
 def cmd(argv, data=None, ok=True):
     p=subprocess.run(argv,input=data,capture_output=True,timeout=60)
     if ok and p.returncode:raise RuntimeError("CI_FIXTURE_COMMAND_FAILED exit="+str(p.returncode)+" stderr="+p.stderr.decode(errors="replace")[:2000])
@@ -11,7 +17,7 @@ def sql(text,database="semantic",ok=True):
     return cmd(["docker","exec","-i",DB,"psql","-X","-U","postgres","-d",database,"-v","ON_ERROR_STOP=1","-A","-t"],text.encode(),ok)
 source=Path("semantic-source/src/main/resources/db/migration")
 try:
-    cmd(["docker","run","-d","--name",DB,"-e","POSTGRES_PASSWORD=ci-fixture-only","-e","POSTGRES_DB=semantic","postgres:17"])
+    cmd(["docker","run","-d","--name",DB,*(["-p","127.0.0.1:55439:5432"] if FLYWAY else []),"-e","POSTGRES_PASSWORD=ci-fixture-only","-e","POSTGRES_DB=semantic","postgres:17"])
     for _ in range(30):
         if cmd(["docker","exec",DB,"pg_isready","--host=127.0.0.1","-U","postgres","-d","semantic"],ok=False).returncode==0:break
         time.sleep(1)
@@ -24,7 +30,22 @@ try:
     files=sorted(source.glob("*.sql"),key=lambda p:int(p.name.split("__")[0][1:]))
     before=[p for p in files if p.name!="V10__discovery_request_idempotency.sql"]
     if len(before)!=9:raise RuntimeError("BASELINE_MIGRATION_SET_CHANGED")
-    for f in before:sql(f.read_text())
+    if FLYWAY:
+        JAVA_ROOT.mkdir(parents=True,exist_ok=True)
+        (JAVA_ROOT/"lib").mkdir(exist_ok=True)
+        with zipfile.ZipFile(JAR) as jar:
+            for name, digest in actual.items():
+                data=jar.read("BOOT-INF/classes/db/migration/"+name)
+                if hashlib.sha256(data).hexdigest()!=digest:raise RuntimeError("PACKAGED_MIGRATION_BYTES_CHANGED")
+            for name in jar.namelist():
+                if name.startswith("BOOT-INF/lib/") and name.endswith(".jar"):
+                    (JAVA_ROOT/"lib"/Path(name).name).write_bytes(jar.read(name))
+        cmd(["javac","-cp",str(JAVA_ROOT/"lib/*"),"-d",str(JAVA_ROOT),"tests/fixtures/FlywayFixture.java"])
+        baseline=JAVA_ROOT/"baseline";baseline.mkdir()
+        for f in before:shutil.copyfile(f,baseline/f.name)
+        flyway("migrate","semantic",baseline)
+    else:
+        for f in before:sql(f.read_text())
     legacy="00000000-0000-4000-8000-000000000001"
     sql("INSERT INTO ouf_sem.discovery_request(request_id,requested_artifact_type,intent,preferred_languages,state,created_by_subject) VALUES ('"+legacy+"','CLASS','retained historical theatre intent',ARRAY['it','en'],'PENDING','historical-subject');")
     query="SELECT to_jsonb(t)::text FROM (SELECT request_id,requested_artifact_type,intent,preferred_languages,provider_policy,state,attempt_count,lease_until,last_error_code,created_by_subject,created_at,completed_at FROM ouf_sem.discovery_request WHERE request_id='"+legacy+"') t;"
@@ -33,7 +54,8 @@ try:
     sql("CREATE DATABASE restored;")
     cmd(["docker","exec","-i",DB,"pg_restore","-U","postgres","-d","restored","--exit-on-error"],dump)
     if sql(query,"restored").stdout.strip()!=legacy_before:raise RuntimeError("CI_BACKUP_RESTORE_CONTENT_DRIFT")
-    sql((source/"V10__discovery_request_idempotency.sql").read_text())
+    if FLYWAY:flyway("migrate","semantic",source)
+    else:sql((source/"V10__discovery_request_idempotency.sql").read_text())
     if sql(query).stdout.strip()!=legacy_before:raise RuntimeError("V10_CHANGED_HISTORICAL_REQUEST")
     key="a"*64;fingerprint="b"*64
     def insert(i,actor,key_hash=None,fp=None):
@@ -59,6 +81,15 @@ try:
     migrated_dump=cmd(["docker","exec",DB,"pg_dump","-U","postgres","-d","semantic","-Fc"]).stdout
     sql("CREATE DATABASE restored_v10;")
     cmd(["docker","exec","-i",DB,"pg_restore","-U","postgres","-d","restored_v10","--exit-on-error"],migrated_dump)
+    if FLYWAY:
+        flyway("validate","restored_v10",source)
+        history="SELECT version,checksum,success FROM ouf_sem.flyway_schema_history ORDER BY installed_rank;"
+        if sql(history).stdout!=sql(history,"restored_v10").stdout:raise RuntimeError("FLYWAY_HISTORY_CHANGED_ON_RESTORE")
+        tampered=JAVA_ROOT/"tampered";shutil.copytree(source,tampered)
+        changed=next(tampered.glob("V9__*.sql"))
+        changed.write_text(changed.read_text()+"\nSELECT 1;\n")
+        flyway("reject","restored_v10",tampered)
+        flyway("validate","restored_v10",source)
     if sql(all_requests,"restored_v10").stdout.strip()!=current_requests:raise RuntimeError("POST_MIGRATION_WRITES_LOST_ON_CURRENT_RESTORE")
     if sql("SELECT state FROM ouf_sem.discovery_request WHERE request_id='"+legacy+"';","restored_v10").stdout.strip()!=b"SUCCEEDED":
         raise RuntimeError("LEGACY_JOB_STATE_LOST_ON_CURRENT_RESTORE")
@@ -67,6 +98,6 @@ try:
     sql(insert(8,"legacy-write-after-current-restore"),"restored_v10")
     sql("SELECT * FROM ouf_sem.claim_discovery_job('legacy-worker-after-current-restore',30);","restored_v10")
     if sql(all_requests).stdout.strip()!=current_requests:raise RuntimeError("RESTORE_CHANGED_LIVE_FIXTURE")
-    print("OUF_DISCOVERY_MIGRATION_RECOVERY_CI="+json.dumps({"status":"PASS","postgresVersion":"17","baselineMigrations":9,"additiveMigration":"V10__discovery_request_idempotency.sql","historicalContentPreserved":True,"legacyWritesAfterMigration":True,"legacyClaimCompleteFunctions":True,"perActorIdempotencyEnforced":True,"baselineBackupRestoredAndCompared":True,"exactRemediatedMigrationBytesVerified":True,"currentV10SnapshotRestoredWithPostMigrationWrites":True,"baselineSnapshotDiffersAfterWrites":True,"restoredV10IdempotencyConstraintRetained":True,"legacyWritesAndClaimAfterCurrentRestore":True,"liveFixtureUnchangedByCurrentRestore":True,"targetDatabaseTouched":False,"targetBackupPerformed":False}))
+    print("OUF_DISCOVERY_MIGRATION_RECOVERY_CI="+json.dumps({"status":"PASS","postgresVersion":"17","baselineMigrations":9,"additiveMigration":"V10__discovery_request_idempotency.sql","historicalContentPreserved":True,"legacyWritesAfterMigration":True,"legacyClaimCompleteFunctions":True,"perActorIdempotencyEnforced":True,"baselineBackupRestoredAndCompared":True,"exactRemediatedMigrationBytesVerified":True,"currentV10SnapshotRestoredWithPostMigrationWrites":True,"baselineSnapshotDiffersAfterWrites":True,"restoredV10IdempotencyConstraintRetained":True,"legacyWritesAndClaimAfterCurrentRestore":True,"liveFixtureUnchangedByCurrentRestore":True,"packagedCandidateFlywayExercised":FLYWAY,"packagedMigrationBytesVerified":FLYWAY,"restoredFlywayHistoryValidated":FLYWAY,"checksumDriftRejectedWithoutRepair":FLYWAY,"oldApplicationRuntimeQualified":False,"fullSpringStartupQualified":False,"targetDatabaseTouched":False,"targetBackupPerformed":False}))
 finally:
     cmd(["docker","rm","-f",DB],ok=False)
