@@ -183,6 +183,17 @@ def r10_state(reader, commands):
             'serviceUnit': UNIT, 'automaticRestart': False, 'continuousLivenessProven': False}
 
 
+def create_secret_projection(custody, root, credential):
+    secret = Path(root) / 'database-secret'
+    secret.mkdir(mode=0o700)
+    custody.create(secret / 'OUF_SEM_DB_PASSWORD', credential, 10001, 10001, 0o400)
+    os.chown(secret, 10001, 10001)
+    secret.chmod(0o500)
+    require(custody.file_bytes(secret / 'OUF_SEM_DB_PASSWORD', 10001, {0o400},
+                              expected=hashlib.sha256(credential).hexdigest()) == credential,
+            'NEW_DATABASE_SECRET_BYTE_CUSTODY_UNPROVEN')
+
+
 def main():
     os.umask(0o077)
     report = dict(schema='ouf.discovery.current-cutover-input-preparation.v1', containerLifecycleOperations=0,
@@ -249,13 +260,7 @@ def main():
         root = Path(tempfile.mkdtemp(prefix='semantic-current-cutover-inputs-', dir=BASE))
         root.chmod(0o700)
         private, public, credential = compile_file_secret(declaration, current, root)
-        secret = root / 'database-secret'
-        secret.mkdir(mode=0o700)
-        custody.create(secret / 'OUF_SEM_DB_PASSWORD', credential, 10001, 10001, 0o400)
-        os.chown(secret, 10001, 10001)
-        secret.chmod(0o500)
-        require(custody.file_bytes(secret / 'OUF_SEM_DB_PASSWORD', 10001, {0o400}, expected=hashlib.sha256(credential).hexdigest()) == credential,
-                'NEW_DATABASE_SECRET_BYTE_CUSTODY_UNPROVEN')
+        create_secret_projection(custody, root, credential)
         private['currentNativeObservation'] = observations
         private['r10Observation'] = r10_after
         private['observedAtUnixSeconds'] = int(time.time())

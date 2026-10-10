@@ -2,7 +2,10 @@ import copy
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
+import stat
+import tempfile
 import types
 import unittest
 
@@ -81,5 +84,27 @@ class CurrentInputTests(unittest.TestCase):
                             (False,['stop',m.UNIT]),(False,['restart',m.UNIT])]:
             with self.assertRaisesRegex(ValueError,'EXACT_READ_ONLY_NATIVE_SCOPE_REQUIRED'):
                 m.native(reader,{},args,docker)
+
+    @unittest.skipUnless(os.geteuid()==0 and os.environ.get('OUF_POSIX_FIXTURE_ROOT'),
+                         'Native UID10001 custody runs on isolated hosted root fixture')
+    def test_actual_posix_projection_and_wrong_mode_owner_link_denials(self):
+        s=importlib.util.spec_from_file_location('custody',Path(__file__).resolve().parents[1]/'tools/semantic_target_review/prepare_application_runtime_inputs.py')
+        c=importlib.util.module_from_spec(s);s.loader.exec_module(c)
+        with tempfile.TemporaryDirectory(dir=os.environ.get('OUF_POSIX_FIXTURE_ROOT',str(Path.cwd()))) as directory:
+            root=Path(directory);root.chmod(0o700)
+            credential=b'nonproduction-custody-fixture'
+            m.create_secret_projection(c,root,credential)
+            secret=root/'database-secret';file=secret/'OUF_SEM_DB_PASSWORD'
+            self.assertEqual((secret.stat().st_uid,secret.stat().st_gid,stat.S_IMODE(secret.stat().st_mode)),(10001,10001,0o500))
+            self.assertEqual((file.stat().st_uid,file.stat().st_gid,stat.S_IMODE(file.stat().st_mode)),(10001,10001,0o400))
+            file.chmod(0o600)
+            with self.assertRaises(ValueError):c.file_bytes(file,10001,{0o400})
+            file.chmod(0o400);os.chown(file,0,0)
+            with self.assertRaises(ValueError):c.file_bytes(file,10001,{0o400})
+            os.chown(file,10001,10001)
+            link=secret/'alias';os.link(file,link)
+            with self.assertRaises(ValueError):c.file_bytes(file,10001,{0o400})
+            link.unlink();link.symlink_to(file)
+            with self.assertRaises(OSError):c.file_bytes(link,10001,{0o400})
 
 if __name__=='__main__':unittest.main()
