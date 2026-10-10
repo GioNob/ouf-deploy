@@ -135,7 +135,7 @@ def main():
                 assert time.monotonic() < deadline, 'SECOND_CYCLE_TIMEOUT'
                 time.sleep(.2)
             from importlib.util import spec_from_file_location, module_from_spec
-            spec = spec_from_file_location('receipt_reader', HERE.parent/'semantic_target_review/read_cutover_inputs.py')
+            spec = spec_from_file_location('receipt_reader', HERE/'reader.py')
             reader = module_from_spec(spec)
             spec.loader.exec_module(reader)
             _, cycle = target.wait_for_second_cycle(reader, root, timeout=5)
