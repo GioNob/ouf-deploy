@@ -7,11 +7,28 @@ on:
       - .github/workflows/discovery-packaged-flyway-recovery.yml
       - tests/fixtures/FlywayFixture.java
       - tests/test_discovery_migration_recovery.py
+      - scripts/capture-installed-flyway.py
 permissions:
   contents: read
   actions: read
 jobs:
+  capture-installed:
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Read exact installed Java package without DB access or lifecycle
+        run: python3 scripts/capture-installed-flyway.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installed-flyway-${{ github.run_id }}
+          path: old-flyway-package/
+          if-no-files-found: error
+          retention-days: 7
   verify:
+    needs: capture-installed
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -24,6 +41,10 @@ jobs:
           ref: 403531a9df1cbc877078f8126fd1fc4ff18acea9
           path: semantic-source
           persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: installed-flyway-${{ github.run_id }}
+          path: old-flyway-package
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -57,7 +78,7 @@ jobs:
           docker cp ouf-flyway-package:/app/application.jar package/application.jar
           docker rm ouf-flyway-package
       - name: Exercise packaged Flyway migrations, post-write restore and checksum denial
-        run: python3 tests/test_discovery_migration_recovery.py --packaged-flyway
+        run: python3 tests/test_discovery_migration_recovery.py --packaged-flyway --installed-flyway
       - name: Remove disposable hosted fixtures
         if: always()
         run: docker rm -f ouf-flyway-package ouf-discovery-migration-ci 2>/dev/null || true

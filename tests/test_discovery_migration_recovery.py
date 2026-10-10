@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 DB="ouf-discovery-migration-ci"
 FLYWAY="--packaged-flyway" in sys.argv
+OLD_FLYWAY="--installed-flyway" in sys.argv
 JAR=Path("package/application.jar")
 JAVA_ROOT=Path("package/flyway-fixture")
 def flyway(mode, database, location):
@@ -74,6 +75,20 @@ try:
     # Restore a current migrated snapshot into a fresh database, never overwrite
     # the live fixture with the old backup. Target recovery still needs custody,
     # writer fencing and a separately authorized applicator.
+    old_flyway_validation=None
+    if OLD_FLYWAY:
+        old=Path("old-flyway-package")
+        receipt=json.loads((old/"capture-receipt.json").read_bytes())
+        if receipt["imageId"]!="sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6":raise RuntimeError("OLD_LIBRARY_IMAGE_DRIFT")
+        for folder,field in (("lib","libraries"),("migrations","migrations")):
+            digests={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (old/folder).iterdir()}
+            if digests!=receipt[field]:raise RuntimeError("OLD_PACKAGE_TRANSFER_DRIFT")
+        cmd(["javac","-cp",str(old/"lib/*"),"-d",str(old),"tests/fixtures/FlywayFixture.java"])
+        observed=cmd(["java","-cp",str(old)+":"+str(old/"lib/*"),"FlywayFixture","validate","semantic",str(old/"migrations")],ok=False)
+        old_flyway_validation="VALIDATED_WITH_CURRENT_SCHEMA" if observed.returncode==0 else "VALIDATION_DENIED"
+        if observed.returncode==0 and b"OUF_FLYWAY_FIXTURE=VALIDATED" not in observed.stdout:raise RuntimeError("OLD_VALIDATION_RESULT_UNPROVEN")
+        # This is the actual installed library set, but not full Spring startup.
+        # A denied legacy validator must block old-image rollback; no repair.
     all_requests="SELECT COALESCE(jsonb_agg(to_jsonb(t) ORDER BY request_id),'[]'::jsonb)::text FROM ouf_sem.discovery_request t;"
     current_requests=sql(all_requests).stdout.strip()
     historical_requests=sql(all_requests,"restored").stdout.strip()
@@ -98,6 +113,6 @@ try:
     sql(insert(8,"legacy-write-after-current-restore"),"restored_v10")
     sql("SELECT * FROM ouf_sem.claim_discovery_job('legacy-worker-after-current-restore',30);","restored_v10")
     if sql(all_requests).stdout.strip()!=current_requests:raise RuntimeError("RESTORE_CHANGED_LIVE_FIXTURE")
-    print("OUF_DISCOVERY_MIGRATION_RECOVERY_CI="+json.dumps({"status":"PASS","postgresVersion":"17","baselineMigrations":9,"additiveMigration":"V10__discovery_request_idempotency.sql","historicalContentPreserved":True,"legacyWritesAfterMigration":True,"legacyClaimCompleteFunctions":True,"perActorIdempotencyEnforced":True,"baselineBackupRestoredAndCompared":True,"exactRemediatedMigrationBytesVerified":True,"currentV10SnapshotRestoredWithPostMigrationWrites":True,"baselineSnapshotDiffersAfterWrites":True,"restoredV10IdempotencyConstraintRetained":True,"legacyWritesAndClaimAfterCurrentRestore":True,"liveFixtureUnchangedByCurrentRestore":True,"packagedCandidateFlywayExercised":FLYWAY,"packagedMigrationBytesVerified":FLYWAY,"restoredFlywayHistoryValidated":FLYWAY,"checksumDriftRejectedWithoutRepair":FLYWAY,"oldApplicationRuntimeQualified":False,"fullSpringStartupQualified":False,"targetDatabaseTouched":False,"targetBackupPerformed":False}))
+    print("OUF_DISCOVERY_MIGRATION_RECOVERY_CI="+json.dumps({"status":"PASS","postgresVersion":"17","baselineMigrations":9,"additiveMigration":"V10__discovery_request_idempotency.sql","historicalContentPreserved":True,"legacyWritesAfterMigration":True,"legacyClaimCompleteFunctions":True,"perActorIdempotencyEnforced":True,"baselineBackupRestoredAndCompared":True,"exactRemediatedMigrationBytesVerified":True,"currentV10SnapshotRestoredWithPostMigrationWrites":True,"baselineSnapshotDiffersAfterWrites":True,"restoredV10IdempotencyConstraintRetained":True,"legacyWritesAndClaimAfterCurrentRestore":True,"liveFixtureUnchangedByCurrentRestore":True,"packagedCandidateFlywayExercised":FLYWAY,"packagedMigrationBytesVerified":FLYWAY,"restoredFlywayHistoryValidated":FLYWAY,"checksumDriftRejectedWithoutRepair":FLYWAY,"installedFlywayValidationOnV10":old_flyway_validation,"installedApplicationLibraryBytesExercised":OLD_FLYWAY,"oldApplicationRuntimeQualified":False,"fullSpringStartupQualified":False,"targetDatabaseTouched":False,"targetBackupPerformed":False}))
 finally:
     cmd(["docker","rm","-f",DB],ok=False)
