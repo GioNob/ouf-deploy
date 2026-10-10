@@ -1,0 +1,35 @@
+{
+  "schema": "ouf.qualified-file-loop-cohort.v1",
+  "status": "UNSIGNED_PACKAGE_BUILD_REQUESTED",
+  "notReleaseAcceptance": true,
+  "targetApplyAuthorized": false,
+  "modules": [
+    {
+      "module": "semantic",
+      "repository": "GioNob/ouf-semantic-registry",
+      "source": "622614b0040cf11be2f6c7e3568733a488ca4ca8",
+      "qualifiedModuleRun": 38065957754
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "source": "8b908554314617298242eb2ae8312f734f55e817",
+      "qualifiedModuleRun": 38069049969
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "source": "bc336208ce41876f2854c3a4d8623fb6698bdcdd",
+      "qualifiedModuleRun": 38068463646
+    }
+  ],
+  "deploymentPrerequisites": [
+    "SIGNED_ARTIFACT_AND_EXTENDED_HOST_OCI_INVENTORY",
+    "FRESH_TARGET_PEER_AND_TRANSPORT_CLOSURE",
+    "NEW_IMAGE_PUBLIC_JAVA_TRUST",
+    "MIGRATION_AWARE_RECOVERY_AND_HOST_READINESS",
+    "HUMAN_TRANSITION_AUTHORITY"
+  ],
+  "previousRuntimeDeclarationIsHistorical": true,
+  "previousClaimsMustNotReplay": true
+}
