@@ -71,6 +71,12 @@ def main():
             peers.extend({'containerId':cid,'clientAddressHash':sha(n['IPAddress'])} for n in raw.values() if n.get('IPAddress'))
         for group in second['sessionGroups']:
             group['matchingContainerIds']=sorted(set(p['containerId'] for p in peers if p['clientAddressHash']==group['clientAddressHash']))
+            group['matchingContainers']=[]
+            for cid in group['matchingContainerIds']:
+                value=json.loads(backup.call(['docker','inspect','--type','container',cid]))[0]
+                group['matchingContainers'].append({'containerId':cid,'name':value['Name'],'imageId':value['Image'],
+                    'restartPolicy':value['HostConfig']['RestartPolicy'],'running':value['State']['Running'],
+                    'startedAt':value['State']['StartedAt'],'configurationHash':sha({k:value[k] for k in ('Config','HostConfig','Mounts','NetworkSettings')})})
         if first['catalogHash']!=second['catalogHash']:raise RuntimeError('CATALOG_CHANGED_DURING_READ')
         if stable_binding(semantic)!=stable_binding(backup.inspect('ouf-semantic')) or stable_binding(postgres)!=stable_binding(backup.inspect('ouf-postgres')):
             raise RuntimeError('LIVE_BINDING_CHANGED_DURING_READ')
