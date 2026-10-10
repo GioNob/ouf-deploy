@@ -1,0 +1,280 @@
+{
+  "OUF_FILE_LOOP_TARGET_PUBLISHER_VERIFICATION": {
+    "applicationConfigurationWrites": 0,
+    "applicationCutoverAuthorized": false,
+    "capsuleDirectory": "/home/oufadmin/ouf-file-loop-provenance-read.2bXiyaeB",
+    "containerLifecycleOperations": 0,
+    "deploymentSignaturesIssued": 0,
+    "imageImports": 0,
+    "installationAuthorityAccepted": false,
+    "notReleaseAcceptance": true,
+    "packages": [
+      {
+        "imageId": "sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85",
+        "migrationCount": 10,
+        "module": "semantic",
+        "originalZipSha256": "a0c30bbb7d44d3e6405bae28ad80b6c5dcfc28ed2f078d387cf4e26d179e28c3",
+        "publisherCryptoVerified": true,
+        "sourceCommit": "622614b0040cf11be2f6c7e3568733a488ca4ca8"
+      },
+      {
+        "imageId": "sha256:98af9d774e446ce621128a52bfa1f9faaa096052cdc185f17dc81f1ea76e9a05",
+        "migrationCount": 14,
+        "module": "ingestion",
+        "originalZipSha256": "29a981ddfaed56265ed1061bdf9a59088e87cd0cac46d5844a7fe9255a7d9c32",
+        "publisherCryptoVerified": true,
+        "sourceCommit": "8b908554314617298242eb2ae8312f734f55e817"
+      },
+      {
+        "imageId": "sha256:7a97979286113c4e3ef6bae87e1bf2d54d2f7195d447ce43b9329f3b90899d28",
+        "migrationCount": 34,
+        "module": "udp",
+        "originalZipSha256": "36de53a045bbe94c3cdda80cf6599adfd014c595da1720c817f2aeb586ef14cd",
+        "publisherCryptoVerified": true,
+        "sourceCommit": "bc336208ce41876f2854c3a4d8623fb6698bdcdd"
+      }
+    ],
+    "privateKeysRead": 0,
+    "publicRootBytesMatchHistoricalBaseline": true,
+    "publicRootStoreHash": "98d34a90fca2688ef5674862d2a484e09e5ca25d2f07c5d654aa28f1581f3419",
+    "publicRootsMergedOrMounted": false,
+    "r9Touched": false,
+    "schema": "ouf.file-loop.target-publisher-byte-verification.v1",
+    "status": "PUBLISHER_CRYPTO_AND_NEW_PUBLIC_ROOT_BYTES_VERIFIED_NOT_APPLY_READY"
+  },
+  "OUF_CANDIDATE_TRUST_BYTE_COMPARISON": {
+    "applyAuthorized": false,
+    "baselineCertificateCount": 118,
+    "baselineHash": "98d34a90fca2688ef5674862d2a484e09e5ca25d2f07c5d654aa28f1581f3419",
+    "candidateImageId": "sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85",
+    "candidateSourceCommit": "622614b0040cf11be2f6c7e3568733a488ca4ca8",
+    "commonLockAcquired": false,
+    "containerLifecycleOperations": 0,
+    "credentialFilesOpened": 0,
+    "deploymentSignaturesIssued": 0,
+    "dnsQueries": 0,
+    "existingConfigurationWrites": 0,
+    "imageImports": 0,
+    "mergedCertificateCount": 119,
+    "mountsInstalled": false,
+    "newDecisionIssued": false,
+    "notReleaseAcceptance": true,
+    "priorInstallationAuthorityReused": false,
+    "privateKeyFilesOpened": 0,
+    "privateValuesPrinted": false,
+    "providerCaHash": "b1bda8d7dffb8d074e9eabeae7faa7d44bb7fe27375dae78859fcce1697d087b",
+    "providerCalls": 0,
+    "publicRootsPreservationProof": "EXACT_BYTES_OF_PREVIOUSLY_VERIFIED_PUBLIC_ONLY_STORE",
+    "r9Touched": false,
+    "readConsistencyMode": "STABLE_REREADS_NOT_TRANSITION_AUTHORITY",
+    "readOnlyRetrySafe": true,
+    "schema": "ouf.file-loop.candidate-trust-byte-comparison.v1",
+    "snapshotFilesRead": 6,
+    "status": "EXISTING_PUBLIC_TRUST_BYTES_MATCH_NEW_CANDIDATE_BASELINE",
+    "storeType": "PKCS12",
+    "truststoreHash": "dcfb221cf3382ab02b752bce3274f64a63c0d822227a5359d1329dee38008079",
+    "truststoreRegenerated": false
+  },
+  "OUF_CURRENT_R9_TRANSITION_READ": {
+    "activationReceiptHash": "12473d3e30ee6f143bd742abf10359682ac3eeb563587dff55ade920de9f3d23",
+    "applyAuthorized": false,
+    "authorizationHash": "400d4e2bd7c0e638960eb144dad69a3ab4a35f6e1c6d39e114033a371c30d3a9",
+    "claimHash": "a251c0d9b17636267dbf7d966d4717df4c168b2884c30bcfc80afd2471595b6d",
+    "commonLockAcquired": false,
+    "completeCutoverBindingsProven": true,
+    "containerLifecycleOperations": 0,
+    "cutover": {
+      "currentSemanticPeer": {
+        "binding": {
+          "bridge": "br-113b5f0a3c53",
+          "childIfindex": 2,
+          "hostIfindex": 1377,
+          "hostInterface": "vethca2111d",
+          "interface": "eth0",
+          "ipv4": "172.18.0.6",
+          "mac": "b2:96:a1:e2:c1:8d"
+        },
+        "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+        "generation": {
+          "namespaceInode": 4026532695,
+          "pid": 3789123,
+          "startTicks": 128311383
+        },
+        "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+        "metadataCommandBindings": {
+          "ip": {
+            "path": "/usr/bin/ip",
+            "sha256": "024784c6d16b183dc7c97d93a943a9270976f167f95f771e14d72442dc657f0c"
+          },
+          "nsenter": {
+            "path": "/usr/bin/nsenter",
+            "sha256": "09ea3a612a16b59c04aa55d894a1e868deaddb8a6a9927c4f1993827a3554de1"
+          }
+        }
+      },
+      "lease": {
+        "configurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+        "flowCount": 2,
+        "flows": [
+          {
+            "approvedAddressCount": 0,
+            "bridgeAddressCount": 0,
+            "endpointHash": "7eb565c4d0399ecb90a080007a8a9dc4bf21eaf0c6a09ffa9bf12b00bd60d5fc",
+            "endpointRefHash": "5569bba62cf88f212353d19b2dfc6a2628febcc414258bdd1e081771f1ce04ff",
+            "index": 0,
+            "inetAddressCount": 0,
+            "leaseSeconds": 30,
+            "minRemainingTtlSeconds": null,
+            "sourceHash": "baab4746ca334ea17bc7c52ab0cb00c2f8c1f6195d25ff7fa96c733d9a45fab3"
+          },
+          {
+            "approvedAddressCount": 0,
+            "bridgeAddressCount": 0,
+            "endpointHash": "4859b6573326119ae26658c8fefeb8cfc05841601a68a37e32ad863c06d2cbed",
+            "endpointRefHash": "bb46dea65bf5662fda3e1b2339065e3ef2bfe67d67ee64dd076dc26e916fdcae",
+            "index": 1,
+            "inetAddressCount": 0,
+            "leaseSeconds": 30,
+            "minRemainingTtlSeconds": null,
+            "sourceHash": "c41d7c528e74fcd055b095d7166eaf67738ffe9e8701376e30315a269f097445"
+          }
+        ],
+        "journalAndMembershipConsistent": true,
+        "journalFileHash": "a58f0cb6e011879fc22723356d19926adf8945c38dcdbf2d21ab3fa34dd6f7f1",
+        "journalHash": "a58f0cb6e011879fc22723356d19926adf8945c38dcdbf2d21ab3fa34dd6f7f1",
+        "journalState": "QUIESCED",
+        "kernelConfigurationHash": "0a646e6109d2dc32aabdbbe26436784de8a83bdeb023a36c5b2712315666f5b5",
+        "leaseAuthorized": false,
+        "nativeStructureVerified": true,
+        "pollSeconds": 15,
+        "providerSetsEmpty": true,
+        "sourceMatchesByRole": {
+          "adapter": [
+            0
+          ],
+          "southbound": [
+            1
+          ]
+        },
+        "startAuthorized": false
+      },
+      "leaseIngressSeparated": true,
+      "missingBeforeApply": [
+        "REPLACEMENT_COMPLETE_OCI_AND_RECIPROCAL_PEER",
+        "NEW_HUMAN_TRANSITION_AUTHORITY_AND_SIGNED_TRANSPORT_CLOSURE",
+        "MIGRATION_AWARE_APPLICATION_RECOVERY_AND_HOST_READINESS"
+      ],
+      "ownerConfigurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+      "roles": {
+        "adapter": {
+          "attachmentCount": 2,
+          "consumptionBindingHash": "421c797b72a2c2fbd7112e51b8cad48d012a363352cec5cb198fed115174426e",
+          "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+          "driverBinding": {
+            "path": "/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-mf9x0eqd/registry/f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67/driver.json",
+            "sha256": "c9870dbabb7590e5d788c882cb860d01cb23216f20054bcaa49d08d6f2d2a651"
+          },
+          "expectedFootprint": "1017ea58d60cc7afc76402f54e62c6333f71568d71d6eee8dcc46ed87ab0be06",
+          "flowCount": 1,
+          "fullOciHash": "816cdcc143d99047151c337eefefe3df29d5ea8a999d50597f1d0b899cd295f4",
+          "journalHash": "e32923e9d662e18b002cae8de716c381646fdb8965cbff19b9da04b835bae591",
+          "nativeStructureVerified": true,
+          "policyHash": "98e89e35c8afe187fd72fc1b4e1c27d955be7930ad9691ee23eda50435e7fa6b",
+          "profileHash": "54a32031b3fb81e86f8e00fb44cb7043b840cf48949bf2890b2012e4961b4b8d",
+          "semanticIngress": [],
+          "sharedStructureHash": "ee2dec447b8d2f5da277ddc10ac4f0f266669b0cb8daa6d3bac3054aa2af0fd1",
+          "sharedTableName": "ouf_v2_adapter",
+          "sourceClosureHash": "d30490055d8a1139753bb3ddc660885ccb6f035e9b46d30573fdb6dfd99c14be",
+          "transportAuthorityHash": "cbeb012f8de2cf0a8339ea950149e6f4d6b8db4e001b6edf3b7fc9a210f709af"
+        },
+        "southbound": {
+          "attachmentCount": 3,
+          "consumptionBindingHash": "32a09eaec7297592a64542ca8fa93fc0a752b5d5a90a8edf5aed18ef8d6df91a",
+          "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+          "driverBinding": {
+            "path": "/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-mf9x0eqd/registry/1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916/driver.json",
+            "sha256": "66ff61a2a5f5a40279b615c7962796ebde6b0432dae167443a4ae4a3db8a5836"
+          },
+          "expectedFootprint": "de2a57a6f12d891af7a4131fe2bb04f61c239b9693503619d9d7a2d3eddff2ed",
+          "flowCount": 2,
+          "fullOciHash": "fc99be8319b210322292a6f468121de97f764800f5e4fb9717e9ac85a9293322",
+          "journalHash": "9e5a173c060d620a6830a6d32ebdaee58abdd78c91b753ce5a5b6298c32549bb",
+          "nativeStructureVerified": true,
+          "policyHash": "b64d3930e490e1831ca0b5cdb59b2aed870f6e0a414ced16c532d46ec5cd32d7",
+          "profileHash": "dadb08b067e1a14dfdfe3fc8360f5544dc30885148a0d5c730913eb7c3d7073f",
+          "semanticIngress": [
+            {
+              "authorityRef": "ouf-lab-infrastructure-installer",
+              "destination": "172.18.0.14",
+              "peerIngress": {
+                "ifindex": 1377,
+                "kind": "BRIDGE_PORT"
+              },
+              "port": 10443,
+              "protocol": "tcp",
+              "purpose": "WORKLOAD_GATEWAY",
+              "source": "172.18.0.6"
+            }
+          ],
+          "sharedStructureHash": "c147c650ec68320ee4f63e3307cce389b7876c270bfcb336c363788f81e864cb",
+          "sharedTableName": "ouf_v2_southbound",
+          "sourceClosureHash": "d30490055d8a1139753bb3ddc660885ccb6f035e9b46d30573fdb6dfd99c14be",
+          "transportAuthorityHash": "ab5ec4d20e29a049aa810a104341fb21f7192b7b854646902a1e13ea4827133c"
+        }
+      }
+    },
+    "databaseWrites": 0,
+    "dnsQueries": 0,
+    "existingConfigurationWrites": 0,
+    "firewallWrites": 0,
+    "leaseElementDiagnostics": null,
+    "notReleaseAcceptance": true,
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "programClosureVerified": true,
+    "providerCalls": 0,
+    "r9": {
+      "applicationHealthProven": false,
+      "consumedR9ReplayAllowed": false,
+      "exceptionChain": [
+        {
+          "errorType": "RuntimeError",
+          "reason": "NFT_SET_TTL_UNPROVEN"
+        }
+      ],
+      "execStartMatchesR9Snapshot": true,
+      "executionWindowIsStartupGate": true,
+      "notContinuousLivenessProof": true,
+      "r9WorkerAndLeaseActiveAtStableObservation": false,
+      "sameLiveWorkerPid": false,
+      "service": {
+        "ActiveState": "failed",
+        "ExecMainCode": "1",
+        "ExecMainExitTimestamp": "Sat 2026-10-10 11:30:02 CEST",
+        "ExecMainStartTimestamp": "Sat 2026-10-10 08:02:24 CEST",
+        "ExecMainStatus": "1",
+        "InvocationID": "ba95ba7239664789ac68430107ac6dc8",
+        "LoadState": "loaded",
+        "MainPID": "0",
+        "NRestarts": "0",
+        "Restart": "no",
+        "Result": "exit-code",
+        "SubState": "failed",
+        "Transient": "yes"
+      },
+      "worker": {
+        "doNotRerunApply": true,
+        "phase": "SUPERVISE_EXISTING_OWNER_FRESH_DNS_AND_FINITE_LEASES",
+        "refreshCount": 795,
+        "schema": "ouf.provider-lease-worker-status.v1",
+        "status": "LEASE_WORKER_FAILED"
+      }
+    },
+    "readConsistencyMode": "STABLE_REREADS_NOT_ATOMIC_TRANSITION_AUTHORITY",
+    "readOnlyRetrySafe": true,
+    "schema": "ouf.discovery.current-r9-transition-read.v1",
+    "signaturesIssued": 0,
+    "status": "CURRENT_R9_TRANSITION_BINDINGS_CAPTURED",
+    "workerStatusHash": "d3613b21946b8181a9abbe6fe7d89214669e658bba0e66b9bc53d8d9346d631f"
+  }
+}
