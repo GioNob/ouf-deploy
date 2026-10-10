@@ -1,0 +1,20 @@
+name: OUF native Semantic database cutover gates
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - tools/semantic_database_cutover/**
+      - .github/workflows/semantic-database-cutover-gates.yml
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Actual PostgreSQL17 database gate and partial interruption semantics
+        run: python3 tools/semantic_database_cutover/test_database_gate_native.py
