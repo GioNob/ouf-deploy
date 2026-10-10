@@ -1,0 +1,53 @@
+name: Current Semantic package configtree startup and recovery
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/semantic-qualified-configtree.yml
+      - tests/qualified_semantic_configtree_fixture.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  qualify-current-package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Download exact retained qualified Semantic ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api repos/GioNob/ouf-deploy/actions/artifacts/11676412613/zip > semantic.zip
+      - name: Verify package and extract exact JAR without importing image
+        run: |
+          python3 - <<'PY'
+          import importlib.util,pathlib,zipfile,shutil
+          s=importlib.util.spec_from_file_location('rebase','scripts/rebase-semantic-package-declaration.py')
+          m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
+          m.package_config('semantic.zip')
+          pathlib.Path('package').mkdir()
+          with zipfile.ZipFile('semantic.zip') as z:
+              jars=[v for v in z.infolist() if pathlib.Path(v.filename).name=='application.jar']
+              m.require(len(jars)==1 and 0<jars[0].file_size<=536870912,'ONE_BOUNDED_QUALIFIED_JAR_REQUIRED')
+              with z.open(jars[0]) as source,open('package/application.jar','xb') as target:
+                  shutil.copyfileobj(source,target,1048576)
+          print('OUF_CURRENT_PACKAGE_BYTES_VERIFIED=PASS')
+          PY
+      - name: Exact application startup with file secret, IAM enforcement, V10 and current restore
+        run: python3 tests/qualified_semantic_configtree_fixture.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: qualified-semantic-configtree-${{ github.run_id }}
+          path: qualified-spring-configtree-receipt.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Remove disposable PostgreSQL fixture
+        if: always()
+        run: docker rm -f ouf-discovery-spring-ci 2>/dev/null || true
