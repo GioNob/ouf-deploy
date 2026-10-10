@@ -95,10 +95,13 @@
     "R9ReplayOrClaimResetAllowed": false
   },
   "nextRead": {
-    "status": "COMPOSE_CANDIDATE_CONFIGURATION_AND_JAVA_TRUST",
-    "productionTransitionReady": false,
-    "existingInputClaimConsumed": true,
-    "scope": "Reuse prepared role-owned files, preserve candidate default public trust, resolve exact MCP workload and provider paths"
+    "status": "ONE_USE_PUBLIC_JAVA_TRUST_PREPARATION_REQUIRES_OPERATOR_SUDO",
+    "sourceCommit": "f25e205b5fe812780cd421a9a742e592268d32b9",
+    "launcher": "releases/application-java-trust-preparation-20261010.sh",
+    "existingRuntimeInputClaimConsumed": true,
+    "doNotRerunRuntimeInputApply": true,
+    "scope": "Merge candidate public roots with protected provider CA using one isolated existing Java21 tool container, no application mounts or cutover",
+    "productionTransitionReady": false
   },
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
