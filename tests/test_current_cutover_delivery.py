@@ -11,8 +11,8 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 LAUNCHER = ROOT/'releases/semantic-current-cutover-inputs-20261010.sh'
 TEXT = LAUNCHER.read_text()
-ROWS = [('scripts/prepare-current-semantic-cutover-inputs.py','read.py','49d47881e3d40277cfa2c57b7bb5d894aed9a971a2a6a77fb75880e2ff494d9d'),('tools/semantic_target_review/prepare_application_runtime_inputs.py','custody.py','cb9ff64684243d563da79d327eb7d7e325dbea6a3922c91a0b7791a3ceec9baf')]
-PIN = '5a9ab106966a8ecc3a2c61012266d1fd9045cd4d'
+ROWS = [('scripts/prepare-current-semantic-cutover-inputs.py','read.py','9aca6a4cc2429e5ca4f8f84dc4e7ca98f8e1d4030e8669399b83d86333a683e6'),('tools/semantic_target_review/prepare_application_runtime_inputs.py','custody.py','cb9ff64684243d563da79d327eb7d7e325dbea6a3922c91a0b7791a3ceec9baf')]
+PIN = '7584cbdc369cdc7f4cf042e36e05914de5192e54'
 
 
 class Delivery(unittest.TestCase):

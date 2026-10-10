@@ -19,6 +19,6 @@ jobs:
         with:
           persist-credentials: false
       - name: Verify live-frame, credential, mount, authority and native-command denial boundaries
-        run: python3 -m unittest discover -s tests -p test_current_cutover_inputs.py -v
+        run: python3 -m unittest discover -s tests -p 'test_current_cutover_*.py' -v
       - name: Verify actual private POSIX custody and wrong owner mode link denials on disposable fixture
         run: sudo env OUF_POSIX_FIXTURE_ROOT=/root /usr/bin/python3 -I -B -m unittest discover -s tests -p test_current_cutover_inputs.py -v
