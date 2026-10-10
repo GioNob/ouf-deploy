@@ -16,8 +16,21 @@ Il supervisore storico usa il poll configurato (15 secondi) rispetto al ceiling 
 
 Il nuovo supervisore candidato in tools/semantic_lease_recovery/adaptive_supervisor.py calcola un limite conservativo dalle durate dei due set dopo ownership/membership/journal, sottrae tutta la finestra di lettura e attende al massimo metà del tempo residuo e il poll configurato. Ogni ciclo richiede nuove risposte DNS attraverso il coordinatore esistente. TTL zero, negativo, non numerico, infinito, bool e maggiore del ceiling restano rifiutati. Se il risveglio arriva oltre il limite, revoca invece di tentare un rinnovo tardivo. Arresto ed errori sigillano QUIESCED; non crea consenso o nuova autorità.
 
-Sette test deterministici PASS localmente; la prova native CI è pendente al commit iniziale di questo report: DNS TTL8 contro poll15, sei cicli, nft inet/bridge reali, flock/journal protetti, revoca e divieto di riarmo. L'aggiornamento è soltanto sorgente candidato: non modifica il VPS, non sostituisce la chiusura hash dell'owner installato e non riattiva R9. Un futuro owner deve essere installato con nuova chiusura e transizione governata.
+La qualifica 587455fee0342d8aa603aa587b916fae4f27517a, run38073961963, passa 15 test deterministici e la prova native: DNS TTL8 contro poll15, sei cicli, nft inet/bridge reali, flock/journal protetti, revoca e divieto di riarmo. L'aggiornamento è soltanto sorgente candidato: non modifica il VPS, non sostituisce la chiusura hash dell'owner installato e non riattiva R9. Un futuro owner deve essere installato con nuova chiusura e transizione governata.
 
 ## Gate applicativi ancora aperti
 
 Complete replacement OCI e peer reciproco, nuova transizione HUMAN/transport firmato, readiness e recovery migration-aware restano richiesti dal read corrente. Le firme publisher e il trust non sono una nuova autorità. Cinema già riuscito e Search8/8 sono preservati; Teatri non va riacquisito. Il giro file precede pull API v2.3. F1/F10/F11 restano non accettati; nessuno dei gap PET cambia stato per questo solo incremento.
+
+
+## Difetto di unità riprodotto e consegna operatore
+
+Le prime run38073622638 e38073690078 rifiutano la finestra di scheduling. Il campione native mostra expires4 trattato dal backend storico come0,004 secondi; non si amplia il gate per far passare il test. La nuova variante nft_seconds_backend.py usa interi JSON in secondi, bounded dal ceiling, mantenendo il rifiuto di zero/duplicati/tipo errato. Non inferisce l'unità dalla grandezza. La run38073791056 passa sei cicli con questa correzione; le successive38073929734 e38073961963 qualificano anche un probe separato: timeout30, expires29→28 dopo1,2 secondi, in entrambi i family.
+
+Questa è prova del difetto nel sorgente e nell'ambiente CI. La risposta R9 attuale non conserva il valore rifiutato; la conferma sull'eseguibile nft del VPS è pendente. Il launcher releases/nft-json-units-isolated-probe-20261010.sh fissato a ae8e53d445bb117bf4e422f95af8847457386db9, SHA256 00dbc0374921b2572567f83d565ac5389ae8a8f6ddcd18a29a9101ab5232a8e0, usa soltanto l'eseguibile hash-bound del vecchio owner in un nuovo namespace. Sono due batch nft isolati (creazione e cleanup), zero tabelle/regole host, nessun hook, traffico, DNS, provider, riavvio, chiave o lease grant. Richiede sudo per unshare e leggere il binding root; dura pochi secondi e scarica solo il piccolo sorgente.
+
+La run38074016804 fallisce il solo controllo checksum di consegna per una terminazione newline letterale nella workflow; ae8e53d445bb117bf4e422f95af8847457386db9 corregge la riga CI, senza modificare launcher/source o la qualifica native già riuscita. Non promuovere una run fallita a PASS.
+
+Il codice corretto è candidato e non installato. Nessuna autorità R9 è riutilizzata; il ripristino richiederà nuova chiusura source e transizione esplicita, coordinata con i gate del cutover. Non richiedere ripetizione di trust/firme/staging/Cinema.
+
+Consegna corretta qualificata: [run38074084847](https://github.com/GioNob/ouf-deploy/actions/runs/38074084847), commit ae8e53d445bb117bf4e422f95af8847457386db9, PASS inclusi checksum/sintassi, 15 test, sei cicli native e probe JSON isolato. L'esecuzione target resta pendente.
