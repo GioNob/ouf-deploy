@@ -86,14 +86,15 @@
   },
   "nextRead": {
     "program": "tools/semantic_target_review/read_current_r9_transition.py",
-    "scope": "Root-private R9 status and existing signed shared ingress, read only; no locks/DNS/keys/replay",
+    "scope": "Worker/service custody plus separate redacted rejected-lease-element diagnostics; original predicate remains unchanged",
     "productionTransitionReady": false,
-    "status": "OPERATOR_SUDO_REQUIRED",
+    "status": "ROOT_OBSERVATION_BLOCKED_LEASE_ADDRESS_OR_TTL_UNPROVEN",
     "accessEvidence": "evidence/current-r9-transition-read-access-20261010.json",
-    "launcher": "releases/current-r9-transition-read-20261010.sh",
-    "readSourceCommit": "f44dae25b77d7e7ff1df59550cc5d3e5fd37d8fe",
-    "launcherSourceCommit": "a6b51d99b308dd9c45493782685df052c507efe6",
-    "rootPrivateReadExecuted": false,
-    "currentR9LivenessProven": false
+    "launcher": "releases/current-r9-lease-diagnostics-20261010.sh",
+    "readSourceCommit": "b70b1638e1e50776ad68d95198c95adcee75a5ed",
+    "rootPrivateReadExecuted": true,
+    "currentR9LivenessProven": false,
+    "targetEvidence": "evidence/current-r9-transition-read-blocked-target-20261010.json",
+    "launcherSha256": "b9ba902a8679ff1991d501cd5d9caa474c071f40933453a5aa4064c2cb241827"
   }
 }

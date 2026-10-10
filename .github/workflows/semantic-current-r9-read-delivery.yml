@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
     paths:
-      - releases/current-r9-transition-read-20261010.sh
+      - releases/current-r9-lease-diagnostics-20261010.sh
       - tools/semantic_target_review/test_current_r9_delivery.py
       - .github/workflows/semantic-current-r9-read-delivery.yml
 permissions:

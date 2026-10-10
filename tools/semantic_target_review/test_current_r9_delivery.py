@@ -17,10 +17,10 @@ class Delivery(unittest.TestCase):
             result=subprocess.run([sys.executable,'-I','-B','-c',delivery.BOOTSTRAP,str(p),str(r)],capture_output=True)
             self.assertNotEqual(result.returncode,0);self.assertIn(b'OUF_R9_READ_DELIVERY_HASH_MISMATCH',result.stderr);self.assertNotIn(b'OUF_CURRENT_R9_TRANSITION_READ=',result.stdout)
     def test_launcher_binds_commit_both_hashes_and_verified_memory(self):
-        path=HERE.parents[1]/'releases/current-r9-transition-read-20261010.sh'
-        if not path.exists():path=Path('current-r9-transition-read-20261010.sh')
+        path=HERE.parents[1]/'releases/current-r9-lease-diagnostics-20261010.sh'
+        if not path.exists():path=Path('current-r9-lease-diagnostics-20261010.sh')
         text=path.read_text();subprocess.run(['bash','-n',str(path)],check=True)
-        self.assertIn('ref=f44dae25b77d7e7ff1df59550cc5d3e5fd37d8fe',text)
+        self.assertIn('ref=b70b1638e1e50776ad68d95198c95adcee75a5ed',text)
         self.assertIn(delivery.READ_HASH,text);self.assertIn(delivery.READER_HASH,text);self.assertIn(delivery.BOOTSTRAP,text)
         self.assertIn('sudo /usr/bin/python3 -I -B -c',text);self.assertNotIn('--apply',text);self.assertNotIn('systemctl restart',text)
 if __name__=='__main__':unittest.main()
