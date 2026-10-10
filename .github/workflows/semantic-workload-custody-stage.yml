@@ -1,0 +1,31 @@
+name: OUF existing Semantic workload credential private stage
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/stage-semantic-workload-credential.py
+      - tests/test_semantic_workload_custody.py
+      - .github/workflows/semantic-workload-custody-stage.yml
+permissions:
+  contents: read
+concurrency:
+  group: ouf-semantic-workload-custody
+  cancel-in-progress: false
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 tests/test_semantic_workload_custody.py
+  stage:
+    needs: qualification
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Privately copy the unchanged exact existing client secret
+        run: python3 scripts/stage-semantic-workload-credential.py
