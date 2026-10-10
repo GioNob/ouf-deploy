@@ -5,6 +5,7 @@ on:
     paths:
       - 'tools/semantic_lease_recovery/**'
       - '.github/workflows/adaptive-finite-lease.yml'
+      - 'releases/nft-json-units-isolated-probe-20261010.sh'
 permissions:
   contents: read
 jobs:
@@ -36,6 +37,10 @@ jobs:
           python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_adaptive_supervisor.py
           python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_nft_seconds_backend.py
           python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_probe_units.py
+      - name: Pinned operator launcher syntax and source hash
+        run: |
+          bash -n releases/nft-json-units-isolated-probe-20261010.sh
+          printf '%s  %s\\n' '818254e83191eecb232ecc9eaf22e3290e2675627780511d2294401aaa040bf5' tools/semantic_lease_recovery/probe_installed_nft_units.py | sha256sum -c -
       - name: Install isolated native fixture dependencies
         run: sudo apt-get update -qq && sudo apt-get install -y -qq nftables iproute2
       - name: Six real short-TTL DNS and nft cycles, revoke and deny rearm
