@@ -1,0 +1,79 @@
+name: Retained file-loop package publisher provenance
+on:
+  push:
+    branches: [codex/file-loop-package-provenance-20261010]
+    paths:
+      - .github/workflows/file-loop-package-provenance.yml
+      - scripts/verify-retained-file-loop-package.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+  attestations: write
+  id-token: write
+jobs:
+  attest-retained-bytes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: semantic
+            artifact: 11676412613
+          - module: ingestion
+            artifact: 11676720102
+          - module: udp
+            artifact: 11676625220
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Download original producer ZIP without rebuilding or repacking
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir retained
+          gh api 'repos/GioNob/ouf-deploy/actions/artifacts/${{ matrix.artifact }}/zip' > retained/${{ matrix.module }}.zip
+      - name: Verify producer digest, member hashes, exact source image and scan
+        run: |
+          python3 scripts/verify-retained-file-loop-package.py --module '${{ matrix.module }}' \
+            --zip retained/${{ matrix.module }}.zip --output retained/continuity.json
+          python3 - <<'PY'
+          import hashlib,pathlib
+          root=pathlib.Path('retained')
+          files=sorted(root.glob('*'))
+          with (root/'subjects.sha256').open('w') as output:
+              for path in files:
+                  with path.open('rb') as source: value=hashlib.file_digest(source,'sha256').hexdigest()
+                  output.write(value+'  '+str(path)+'\n')
+          PY
+      - name: Attest retained ZIP and continuity receipt, not a new image build
+        id: provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        with:
+          subject-checksums: retained/subjects.sha256
+          create-storage-record: false
+      - name: Verify exact hosted producer identity and prepare small target bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROVENANCE_BUNDLE: ${{ steps.provenance.outputs.bundle-path }}
+        run: |
+          set -euo pipefail
+          mkdir evidence
+          cp "$PROVENANCE_BUNDLE" evidence/provenance.json
+          cp retained/continuity.json retained/subjects.sha256 evidence/
+          for file in retained/${{ matrix.module }}.zip retained/continuity.json; do
+            gh attestation verify "$file" --repo GioNob/ouf-deploy \
+              --signer-workflow GioNob/ouf-deploy/.github/workflows/file-loop-package-provenance.yml \
+              --source-digest "$GITHUB_SHA" --source-ref "$GITHUB_REF" --deny-self-hosted-runners \
+              --bundle "$PROVENANCE_BUNDLE" --format json > "evidence/$(basename "$file").verification.json"
+          done
+          echo OUF_RETAINED_PACKAGE_PUBLISHER_CRYPTO=PASS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: file-loop-publisher-provenance-${{ matrix.module }}-${{ github.run_id }}
+          path: evidence/
+          retention-days: 30
+          if-no-files-found: error
