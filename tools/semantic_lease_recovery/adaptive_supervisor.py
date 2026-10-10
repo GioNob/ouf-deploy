@@ -73,6 +73,7 @@ def supervise(coordinator, check_configuration, poll_seconds, stop, *, log=print
                     break
                 require(clock() < next_window['deadlineMonotonic'], 'LEASE_SCHEDULER_WAKE_DEADLINE_MISSED')
                 check_configuration()
+                require(clock() < next_window['deadlineMonotonic'], 'LEASE_CONFIGURATION_CHECK_DEADLINE_MISSED')
                 coordinator.refresh()
                 log('SEMANTIC_COORDINATED_CYCLE=PASS FRESH_DNS=true COMMON_LOCK=true ADAPTIVE_TTL_WAKE=true', flush=True)
     finally:

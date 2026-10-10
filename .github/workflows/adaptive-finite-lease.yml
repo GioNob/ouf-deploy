@@ -32,8 +32,13 @@ jobs:
           print('INSTALLED_SOURCE_CLOSURE_BYTES=PASS')
           PY
       - name: Short actual TTL, read latency, delayed wake, authority and failure boundaries
-        run: python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p 'test_*.py'
+        run: |
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_adaptive_supervisor.py
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_nft_seconds_backend.py
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_probe_units.py
       - name: Install isolated native fixture dependencies
         run: sudo apt-get update -qq && sudo apt-get install -y -qq nftables iproute2
       - name: Six real short-TTL DNS and nft cycles, revoke and deny rearm
         run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_recovery/test_adaptive_native.py lease-owner-source
+      - name: Actual seconds unit probe in a new disposable namespace
+        run: sudo /usr/bin/python3 -B tools/semantic_lease_recovery/probe_native_fixture.py
