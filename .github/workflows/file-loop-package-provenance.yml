@@ -80,7 +80,7 @@ jobs:
               'signer':'COSIGN_3_1_3_KEYLESS_FULCIO_REKOR',
               'githubAttestationApiUsed':False,
               'installationAuthorityAccepted':False,
-              'targetApplyAuthorized':False,'notReleaseAcceptance':True},indent=2)+'\\n')
+              'targetApplyAuthorized':False,'notReleaseAcceptance':True},indent=2)+chr(10))
           PY
           echo OUF_RETAINED_PACKAGE_PUBLISHER_CRYPTO=PASS
       - uses: actions/upload-artifact@v4
