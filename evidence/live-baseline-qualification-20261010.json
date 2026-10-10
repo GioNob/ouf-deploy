@@ -1,0 +1,42 @@
+{
+  "schema": "ouf.file-loop.live-baseline-qualification.v1",
+  "date": "2026-10-10",
+  "notReleaseAcceptance": true,
+  "vpsWrites": 0,
+  "r9Touched": false,
+  "udp": {
+    "source": "bc336208ce41876f2854c3a4d8623fb6698bdcdd",
+    "baseline": "83249a897eb4add4289b5181b3299f48ea4c0f99",
+    "migrationCount": 34,
+    "tests": 208,
+    "failures": 0,
+    "errors": 0,
+    "preexistingSkipped": 2,
+    "newTestsExecuted": 16,
+    "workflowRuns": [
+      38068463646,
+      38068463744,
+      38068463572,
+      38068463688,
+      38068463612
+    ],
+    "imageId": "sha256:32fa42e3f906b8c8092a94e6a0a77fc5c5100e8f29583027478146ed5f97cfd3",
+    "freshHighCriticalFindings": 0,
+    "deploymentAuthorized": false
+  },
+  "ingestion": {
+    "source": "8b908554314617298242eb2ae8312f734f55e817",
+    "baseline": "163c167d09b8371ff7a62ce7068e9d485b6969b7",
+    "migrationCount": 14,
+    "status": "QUALIFICATION_PENDING_NATIVE_IMAGE_PROBE",
+    "failedImageScanRetained": true
+  },
+  "currentChannelRead": {
+    "mcpStatus": "HEALTHY_PUBLIC_OPERATIONAL_ONLY",
+    "cinemaSearchItems": 0,
+    "searchAcceptance": false,
+    "semanticSearchItems": 0,
+    "ingestionStatus": "AUTHORIZATION_DENIED"
+  },
+  "historicalCinemaMaterialization": "8_OF_8_PASS_DO_NOT_REPLAY"
+}
