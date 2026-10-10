@@ -1,0 +1,38 @@
+name: Semantic qualified package declaration
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/rebase-semantic-package-declaration.py
+      - tests/test_semantic_package_declaration.py
+      - .github/workflows/semantic-qualified-package-declaration.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify preservation and denial boundaries
+        run: python3 -m unittest discover -s tests -p test_semantic_package_declaration.py -v
+      - name: Download exact retained producer ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api repos/GioNob/ouf-deploy/actions/artifacts/11676412613/zip > semantic.zip
+      - name: Read cryptographically bound image defaults without Docker or import
+        run: |
+          python3 - <<'PY'
+          import importlib.util,json
+          s=importlib.util.spec_from_file_location('rebase','scripts/rebase-semantic-package-declaration.py')
+          m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
+          c=m.package_config('semantic.zip')
+          m.require(c.get('User')=='10001:10001','EXACT_NON_ROOT_IMAGE_USER_REQUIRED')
+          m.require(c.get('Labels',{}).get('org.opencontainers.image.revision')==m.SOURCE,'EXACT_SOURCE_LABEL_REQUIRED')
+          m.environment(c['Env'])
+          print('OUF_QUALIFIED_PACKAGE_CONFIG='+json.dumps({'imageId':m.IMAGE,'source':m.SOURCE,'configHash':m.digest(c),'user':c['User'],'entrypoint':c.get('Entrypoint'),'workingDir':c.get('WorkingDir'),'imageImports':0,'notReleaseAcceptance':True},sort_keys=True))
+          PY
