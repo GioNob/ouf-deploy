@@ -102,6 +102,11 @@ def compile_file_secret(declaration, current, directory):
     binding = source + ':' + target + ':ro'
     result['proposedHostConfig']['Binds'].append(binding)
     result['hostDelta']['appendedReadOnlyBinds'].append(binding)
+    result['hostDelta']['restartPolicyDelta'] = {
+        'previous': copy.deepcopy(result['proposedHostConfig']['RestartPolicy']),
+        'following': {'Name': 'no', 'MaximumRetryCount': 0}}
+    result['hostDelta']['field'] = 'BindsAndRestartPolicy'
+    result['proposedHostConfig']['RestartPolicy'] = {'Name': 'no', 'MaximumRetryCount': 0}
     result['schema'] = 'ouf.discovery.private-file-secret-runtime-declaration.v1'
     result['inputBindings']['qualifiedPackageDeclarationHash'] = DECLARATION_HASH
     result['databaseSecretProjection'] = {
@@ -119,6 +124,7 @@ def compile_file_secret(declaration, current, directory):
               'retainedLiveFrameHash': digest(frame(current)), 'databasePasswordInCandidateEnv': False,
               'databaseCredentialRotated': False, 'databaseSecretProjectionReadOnly': True,
               'databaseSecretDirectoryMode': '0500', 'databaseSecretFileMode': '0400',
+              'candidateAutomaticRestartDisabled': True,
               'additionalReadOnlyBindCount': 1, 'retainedRoleInputCount': len(declaration['roleOwnedReadOnlyMounts']),
               'platformSecretManagerIntegrationProven': False,
               'productionApplyReady': False, 'completeReplacementOciProven': False,
@@ -217,6 +223,7 @@ def main():
         require(observations['currentSemanticPeer']['generation']['pid'] == current['State']['Pid'],
                 'LIVE_RECIPROCAL_PEER_GENERATION_DRIFT')
         phase = 'REVERIFY_THREE_EXISTING_ROLE_INPUT_BYTES_AND_METADATA'
+        require(len(declaration['roleOwnedReadOnlyMounts']) == 3, 'EXACT_THREE_RETAINED_ROLE_INPUTS_REQUIRED')
         verified = []
         for mount in declaration['roleOwnedReadOnlyMounts']:
             require(mount['uid'] == mount['gid'] == 10001 and mount['mode'] == 0o400 and mount['readOnly'] is True,

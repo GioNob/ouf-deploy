@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - scripts/read-current-semantic-cutover-host.py
+      - scripts/read-semantic-database-admin-scope.py
       - tests/test_current_cutover_host.py
       - .github/workflows/semantic-current-cutover-host.yml
   workflow_dispatch:
@@ -32,3 +33,5 @@ jobs:
         run: python3 scripts/read-current-semantic-cutover-host.py
       - name: Read PostgreSQL catalog and writer-session aggregates without rows or writes
         run: python3 scripts/read-semantic-database-cutover-metadata.py
+      - name: Read existing administrator visibility outside the application database
+        run: python3 scripts/read-semantic-database-admin-scope.py

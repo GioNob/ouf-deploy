@@ -24,7 +24,7 @@ class CurrentInputTests(unittest.TestCase):
             'hostDelta':{'appendedReadOnlyBinds':[]},'inputBindings':{},'requiredBeforeMutation':[],
             'productionApplyReady':False,'applicationCutoverAuthorized':False,'completeReplacementOciProven':False}
         return declaration,current
-    def test_only_password_env_configtree_and_new_readonly_bind_change(self):
+    def test_password_file_bind_and_explicit_restart_policy_are_only_changes(self):
         d,c=self.fixture();before=copy.deepcopy(d)
         private,public,credential=m.compile_file_secret(d,c,'/etc/ouf/deploy-snapshots/fixture')
         self.assertEqual(d,before)
@@ -34,7 +34,9 @@ class CurrentInputTests(unittest.TestCase):
         self.assertEqual(env['SPRING_CONFIG_IMPORT'],'configtree:/run/ouf-semantic-db/')
         self.assertEqual(env['OUF_SEM_DB_USER'],'fixture')
         for k,v in d['proposedHostConfig'].items():
-            if k!='Binds':self.assertEqual(private['proposedHostConfig'][k],v)
+            if k not in ('Binds','RestartPolicy'):self.assertEqual(private['proposedHostConfig'][k],v)
+        self.assertEqual(private['proposedHostConfig']['RestartPolicy'],{'Name':'no','MaximumRetryCount':0})
+        self.assertTrue(public['candidateAutomaticRestartDisabled'])
         self.assertEqual(private['proposedHostConfig']['Binds'][:-1],d['proposedHostConfig']['Binds'])
         self.assertTrue(private['proposedHostConfig']['Binds'][-1].endswith(':/run/ouf-semantic-db:ro'))
         self.assertEqual(private['databaseSecretProjection']['file']['sha256'],hashlib.sha256(credential).hexdigest())
