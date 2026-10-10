@@ -45,3 +45,9 @@ Una risposta vuota autorizzata non dimostra assenza degli otto oggetti storicame
 6. Secondo file sovrapposto e relazioni pendenti/inverse governate; poi R-INSTALL ripetibile su host pulito. Solo dopo consolidamento file, verticali API PULL v2.3.
 
 Questo documento non concede autorità di cutover, non prova salute applicativa continua e non è release acceptance.
+
+## Chiusura della qualifica e riconciliazione
+
+Ingestion 8b908554314617298242eb2ae8312f734f55e817: tutti gli otto workflow PASS; 118 test senza failure/error/skip; SQLite nativo e round-trip XLSX PASS nel container reale. Scansione fresca artefatto 11676426820: zero HIGH/CRITICAL, incluse vulnerabilità senza fix; image ID CI sha256:d6fd13e5d375d823dc6e54065bfd7688765b9c69049ea16ee0acb558abf27d1a. Il blocco temporaneo riportato sopra è chiuso da questa evidenza.
+
+I main ora riconciliano entrambe le linee Git tramite commit a due genitori, preservano i documenti/evidenze storici e includono il gate di continuità automatico: UDP 48a86459fdeed38403838c5a2076b40cb082fe58; Ingestion 6d6777e20e0368c830d1e01de0494d9fa0197dbf. Nessuna migrazione SQL storica è cambiata. Nessun deploy o nuova ingestion è stato eseguito. Le qualifiche descritte sono ai commit candidati immutabili; i check automatici sui commit di riconciliazione devono essere letti separatamente.
