@@ -1,6 +1,6 @@
 {
   "schema": "ouf.discovery.application-cutover-preparation.v1",
-  "status": "QUALIFIED_PACKAGE_DECLARED_ON_TARGET_CUTOVER_COMPOSITION_PENDING",
+  "status": "CURRENT_PACKAGE_AND_INDEPENDENT_TARGET_METADATA_QUALIFIED_PROTECTED_PREPARATION_PENDING",
   "applyAuthorized": false,
   "newTargetAuthorityIssued": false,
   "networkLease": {
@@ -86,7 +86,7 @@
     "existingR10SealedProgramMustRemainUnchanged": true,
     "R10ReplayOrClaimResetAllowed": false
   },
-  "nextRead": "COMPOSE_COORDINATED_R10_PRESERVING_CUTOVER_FRESH_NATIVE_CUSTODY_AND_DATABASE_CLOSURE",
+  "nextRead": "EXECUTE_ONE_QUALIFIED_PROTECTED_INPUT_PREPARATION_WITH_OPERATOR_SUDO",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
@@ -207,5 +207,41 @@
     "historical": true,
     "completeReplacementOciProven": false,
     "candidateImageId": "sha256:b1a7956a673f88b5ee65d174c2eda7b9e448153e101348c06fdd53c0640e700b"
+  },
+  "currentAutonomousProgressEvidence": "evidence/semantic-autonomous-cutover-progress-20261010.json",
+  "currentPackageSpringConfigtreeQualification": {
+    "runId": 38085528129,
+    "evidence": "evidence/semantic-autonomous-cutover-progress-20261010.json",
+    "fullSpringStartupQualifiedOnFixture": true,
+    "iamEnabledInFixture": true,
+    "currentSnapshotRestorePreservesWrites": true,
+    "targetProviderHealthProven": false
+  },
+  "currentIndependentTargetMetadata": {
+    "runId": 38085676564,
+    "adminScopeRunId": 38086062418,
+    "evidence": "evidence/semantic-autonomous-cutover-progress-20261010.json",
+    "semanticGenerationUnchangedAtObservation": true,
+    "R10ServiceActiveAtObservation": true,
+    "nativeLeaseMembershipProven": false,
+    "databaseOid": 21558,
+    "currentMigration": "V9",
+    "writersObserved": 10,
+    "completeAdminVisibility": true,
+    "preparedTransactions": 0,
+    "fenceInstalled": false,
+    "backupPerformed": false
+  },
+  "currentProtectedInputPreparation": {
+    "status": "SUDO_PASSWORD_REQUIRED_OPERATOR_EXECUTION_PENDING",
+    "compilerCommit": "7584cbdc369cdc7f4cf042e36e05914de5192e54",
+    "deliveryCommit": "527710b438fc777428cb9f5e5a6b98c62852231e",
+    "qualificationRun": 38086191419,
+    "targetAttemptRun": 38086291549,
+    "performed": false,
+    "proposedDatabasePasswordInEnv": false,
+    "proposedAdditionalReadOnlyBindCount": 1,
+    "proposedAutomaticRestart": false,
+    "proposedPlatformSecretManagerIntegrationProven": false
   }
 }
