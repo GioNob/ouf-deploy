@@ -9,7 +9,6 @@ on:
 permissions:
   contents: read
   actions: read
-  attestations: write
   id-token: write
 jobs:
   attest-retained-bytes:
@@ -49,27 +48,40 @@ jobs:
                   with path.open('rb') as source: value=hashlib.file_digest(source,'sha256').hexdigest()
                   output.write(value+'  '+str(path)+'\n')
           PY
-      - name: Attest retained ZIP and continuity receipt, not a new image build
-        id: provenance
-        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+      - name: Install checksum-verified keyless publisher signer
+        uses: sigstore/cosign-installer@af595e623eec1ede52d6322f53b635d5def0a95a
         with:
-          subject-checksums: retained/subjects.sha256
-          create-storage-record: false
-      - name: Verify exact hosted producer identity and prepare small target bundle
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PROVENANCE_BUNDLE: ${{ steps.provenance.outputs.bundle-path }}
+          cosign-release: v3.1.3
+      - name: Sign retained bytes with hosted OIDC and verify exact identity
+        shell: bash
         run: |
           set -euo pipefail
           mkdir evidence
-          cp "$PROVENANCE_BUNDLE" evidence/provenance.json
           cp retained/continuity.json retained/subjects.sha256 evidence/
+          IDENTITY="https://github.com/GioNob/ouf-deploy/.github/workflows/file-loop-package-provenance.yml@$GITHUB_REF"
           for file in retained/${{ matrix.module }}.zip retained/continuity.json; do
-            gh attestation verify "$file" --repo GioNob/ouf-deploy \
-              --signer-workflow GioNob/ouf-deploy/.github/workflows/file-loop-package-provenance.yml \
-              --source-digest "$GITHUB_SHA" --source-ref "$GITHUB_REF" --deny-self-hosted-runners \
-              --bundle "$PROVENANCE_BUNDLE" --format json > "evidence/$(basename "$file").verification.json"
+            BUNDLE="evidence/$(basename "$file").sigstore.json"
+            cosign sign-blob --yes --bundle "$BUNDLE" "$file"
+            cosign verify-blob "$file" --bundle "$BUNDLE" \
+              --certificate-identity "$IDENTITY" \
+              --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+              --certificate-github-workflow-repository GioNob/ouf-deploy \
+              --certificate-github-workflow-sha "$GITHUB_SHA" \
+              > "evidence/$(basename "$file").verification.txt" 2>&1
           done
+          python3 - <<'PY'
+          import json,os,pathlib
+          pathlib.Path('evidence/publisher.json').write_text(json.dumps({
+              'schema':'ouf.retained-package-keyless-publisher.v1',
+              'publisherWorkflow':'GioNob/ouf-deploy/.github/workflows/file-loop-package-provenance.yml',
+              'publisherSourceCommit':os.environ['GITHUB_SHA'],
+              'publisherSourceRef':os.environ['GITHUB_REF'],
+              'issuer':'https://token.actions.githubusercontent.com',
+              'signer':'COSIGN_3_1_3_KEYLESS_FULCIO_REKOR',
+              'githubAttestationApiUsed':False,
+              'installationAuthorityAccepted':False,
+              'targetApplyAuthorized':False,'notReleaseAcceptance':True},indent=2)+'\\n')
+          PY
           echo OUF_RETAINED_PACKAGE_PUBLISHER_CRYPTO=PASS
       - uses: actions/upload-artifact@v4
         with:
