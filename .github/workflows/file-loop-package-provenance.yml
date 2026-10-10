@@ -56,22 +56,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir evidence
-          cp retained/continuity.json retained/subjects.sha256 evidence/
+          mkdir publisher-evidence
+          cp retained/continuity.json retained/subjects.sha256 publisher-evidence/
           IDENTITY="https://github.com/GioNob/ouf-deploy/.github/workflows/file-loop-package-provenance.yml@$GITHUB_REF"
           for file in retained/${{ matrix.module }}.zip retained/continuity.json; do
-            BUNDLE="evidence/$(basename "$file").sigstore.json"
+            BUNDLE="publisher-evidence/$(basename "$file").sigstore.json"
             cosign sign-blob --yes --bundle "$BUNDLE" "$file"
             cosign verify-blob "$file" --bundle "$BUNDLE" \
               --certificate-identity "$IDENTITY" \
               --certificate-oidc-issuer https://token.actions.githubusercontent.com \
               --certificate-github-workflow-repository GioNob/ouf-deploy \
               --certificate-github-workflow-sha "$GITHUB_SHA" \
-              > "evidence/$(basename "$file").verification.txt" 2>&1
+              > "publisher-evidence/$(basename "$file").verification.txt" 2>&1
           done
           python3 - <<'PY'
           import json,os,pathlib
-          pathlib.Path('evidence/publisher.json').write_text(json.dumps({
+          pathlib.Path('publisher-evidence/publisher.json').write_text(json.dumps({
               'schema':'ouf.retained-package-keyless-publisher.v1',
               'publisherWorkflow':'GioNob/ouf-deploy/.github/workflows/file-loop-package-provenance.yml',
               'publisherSourceCommit':os.environ['GITHUB_SHA'],
@@ -86,6 +86,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: file-loop-publisher-provenance-${{ matrix.module }}-${{ github.run_id }}
-          path: evidence/
+          path: publisher-evidence/
           retention-days: 30
           if-no-files-found: error
