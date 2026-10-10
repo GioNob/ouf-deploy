@@ -30,5 +30,14 @@
   "roleUidAndNoOverwriteQualified": true,
   "targetJavaTrustPrepared": false,
   "applicationCutoverPerformed": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "immutableDelivery": {
+    "commit": "6b6d3dfa34dd2a2347ab2de879ab5c41fbbd0eeb",
+    "runId": 38051509369,
+    "status": "SUCCESS",
+    "sourceHash": "d8510d570ea9fdda73af5a53e2cb9d42f2a9af58de7d9533c4fdb143ce794d4f",
+    "launcherSha256": "e54fd0031945871c33abfad5cb068617e26683dadfc11104131a99474bd851e3",
+    "deliveryTestMethods": 2,
+    "tamperedDependenciesTested": 4
+  }
 }

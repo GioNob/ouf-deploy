@@ -344,3 +344,10 @@ The runner cannot read the private current R9 snapshot without operator sudo: [a
 ### 10 October follow-up: current read completed; private runtime custody next
 
 R9 was observed active at refresh643; existing cutover input bindings are captured. Configuration delta and unchanged existing Semantic workload credential custody are captured without application/lease cutover. See [the updated PET reconciliation](releases/PET_ROADMAP_RECONCILIATION_20261010.md) and [target custody evidence](evidence/semantic-workload-custody-stage-target-20261010.json). The next [one-use root preparation](releases/application-runtime-input-preparation-20261010.sh) requires the operator's sudo password to create new protected role-owned inputs; it installs no mounts and changes no services, database, firewall, grants or consumed R9 state. Full production applicator and acceptance remain open.
+
+
+### 10 October, 14:03 CEST: protected runtime inputs completed; Java trust next
+
+The operator completed [root runtime input custody](evidence/application-runtime-inputs-prepared-target-20261010.json). Its claim is consumed: do not rerun the runtime-input preparation. Existing credential unchanged, distinct discovery MAC copied for Semantic10001/Gateway636 and public provider CA verified; no application mounts, restart, import, database/firewall/grant or R9 change.
+
+The candidate's exact public Java roots have been captured from its byte-bound signed archive. [Real Java/Docker qualification](evidence/application-java-trust-preparation-qualification-20261010.json) verifies public-root preservation, unknown CA denial, offline tool isolation/cleanup, UID10001 and no overwrite. The next [immutable public Java trust preparation](releases/application-java-trust-preparation-20261010.sh) requires operator sudo. It creates/removes one isolated keytool container from the existing Java21 image, imports no image and mounts nothing into an application. Target truststore preparation and full governed application cutover remain pending; full PET acceptance is not claimed.
