@@ -153,6 +153,12 @@ def main():
             assert unit.encode() in inventory
             print('FINITE_LEASE_R10_SERVICE_PROBES=PASS REAL_SYSTEMCTL=true ROOT_EXECUTABLE_HASH_VERIFIED=true', flush=True)
             assert cycle['refreshCount'] == 2 and cycle['flowAddressCounts'] == [1, 1]
+            tables = {family:json.loads(run([nft,'-j','list','table',family,owner['kernel']['tableName']]).stdout)
+                      for family in ('inet','bridge')}
+            projection = reader.lease_projection(owner, reader.parse(reader.private(root/'journal.json')), tables)
+            assert projection['journalAndMembershipConsistent'] is True
+            assert all(1 <= flow['minRemainingTtlSeconds'] <= 30 for flow in projection['flows'])
+            print('FINITE_LEASE_R10_READER_SECONDS=PASS BOTH_FAMILIES=true STRICT_CEILING=true',flush=True)
             assert counts['zeroTtl'] == 2 and counts['queries'] >= 10
             for family in ('inet', 'bridge'):
                 data = json.loads(run([nft, '-j', 'list', 'table', family, owner['kernel']['tableName']]).stdout)
