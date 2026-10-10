@@ -38,3 +38,8 @@ La priorità è completare l'applicatore della combinazione candidata, insieme a
 Restano applicabili Matrix1.7, Blueprint0.3 e i sette PET indicati nella [riconciliazione](PET_ROADMAP_RECONCILIATION_20261010.md). Authorization valuta; owner applicano; Gateway media; MCP proietta capability; THS conserva le decisioni HUMAN. L'automazione dell'installazione non concede adozione/pubblicazione semantica o grant applicativi per effetto della delega tecnica in chat.
 
 Supply chain, custodia, network default deny, audit, migration/recovery e readiness entrano nei gate dell'installer. R5 resta parziale e R6 aperto; i gap di dominio/OA/HA/load/DR e i blocchi Ingestion/storage non sono risolti da questa decisione. I23 gap originali conservano il proprio stato. Cinema e asset/profilo Teatri sono preservati.
+
+
+## Verticale file → semantica → ingestion → UDP → search, 10 ottobre15:42
+
+La [roadmap dettagliata F0–F11](https://github.com/GioNob/ouf-semantic-registry/blob/a315de5b33a6d9074a04bcbbbca224efd0c4c135/docs/FILE_TO_SEARCH_ROADMAP_20261010.md) esplicita owner, dipendenze e gate del giro richiesto dall'owner. L'identità richiede natura semantica compatibile e evidenze sufficienti; relazioni tra nature diverse, target tardivi e navigazione inversa sono gestiti separatamente. La prima prova file-to-search e la prova multi-fonte precedono l'accettazione su host pulito, mentre il disegno dell'installer procede insieme all'applicatore. I claim consumati, i23 gap PET e Cinema/Teatri sono preservati. La presenza di filtri/riconciliazione nel codice non è accettazione del target; CI Ingestion/UDP rosse e cutover incompleto restano gate espliciti.
