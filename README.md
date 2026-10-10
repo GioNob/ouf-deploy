@@ -1,5 +1,7 @@
 # Current checkpoint — 49-renewal DNS failure confirmed; bounded fresh resample and source-delta core qualified
 
+Latest checkpoint (2026-10-10 07:47 CEST readback): the DNS recovery preflight was denied by the network-only metadata reader before any claim/service start. Scoped systemctl probes are now corrected and qualified in CI (15 tests and real native service probes); corrected read-only VPS preflight is next. See [denial evidence](evidence/provider-dns-recovery-preflight-denial-target-20261010.json) and [recovery proposal](releases/provider-dns-window-recovery-proposal-20261010.json).
+
 Latest checkpoint (2026-10-10): distinct DNS recovery entrypoint and native worker qualification are prepared; fresh read-only VPS preflight is next. New approval is pending, and consumed R8 authority is preserved. See [recovery proposal](releases/provider-dns-window-recovery-proposal-20261010.json) and [continuation record](releases/DISCOVERY_APPLICATION_CONTINUATION_AFTER_R8_20261009.md).
 
 The operator's [retained worker diagnosis](evidence/provider-r8-dns-window-failure-target-20261010.json) confirms failure at9 October23:28:50 Europe/Rome after49 renewals: DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE caused set revocation and supervisor stop. Worker failed/exit1, no automatic restart; Docker remains active. R8 remains QUIESCED with empty sets. The exact zero-TTL versus elapsed-expiry subcase was not recorded.

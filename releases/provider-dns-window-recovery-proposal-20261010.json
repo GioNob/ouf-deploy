@@ -1,6 +1,6 @@
 {
   "schema": "ouf.provider-dns-recovery-proposal.v1",
-  "status": "PREFLIGHT_SERVICE_PROBE_FIXED_REQUALIFICATION_AND_TARGET_READ_PENDING",
+  "status": "CORRECTED_SERVICE_PREFLIGHT_AND_NATIVE_WORKER_QUALIFIED_TARGET_REREAD_PENDING",
   "triggerEvidence": "evidence/provider-r8-dns-window-failure-target-20261010.json",
   "authorityIssued": false,
   "applyAuthorized": false,
@@ -98,8 +98,8 @@
     "denialEvidence": "evidence/provider-dns-recovery-preflight-denial-target-20261010.json"
   },
   "qualification": {
-    "runId": 38028159013,
-    "jobId": 114143327552,
+    "runId": 38028838789,
+    "jobId": 114145328604,
     "status": "PASS",
     "actualUnchangedWorkerFunction": true,
     "realDnsNftTransientSystemd": true,
@@ -107,9 +107,10 @@
     "fixtureMetadataAndAuthority": true,
     "fullProductionApplyNotExecuted": true,
     "targetActions": 0,
-    "originalR8RegressionRun": 38028158989,
-    "finalCombinedRunId": 38028310118,
+    "originalR8RegressionRun": 38028838831,
+    "finalCombinedRunId": 38028838789,
     "finalCombinedStatus": "PASS",
-    "finalTestsPassed": 13
+    "finalTestsPassed": 15,
+    "realScopedSystemctlProbesVerified": true
   }
 }
