@@ -471,6 +471,15 @@
       "refreshCount": 2,
       "doNotRerunApply": true,
       "applicationHealthProven": false
+    },
+    "migrationRecoveryQualification": {
+      "status": "EXACT_REMEDIATED_V10_CURRENT_SNAPSHOT_RESTORE_PASS_ISOLATED_POSTGRES",
+      "evidence": "evidence/discovery-remediated-migration-current-recovery-qualification-20261010.json",
+      "runId": 38029969298,
+      "semanticSourceCommit": "403531a9df1cbc877078f8126fd1fc4ff18acea9",
+      "targetDatabaseTouched": false,
+      "targetBackupPerformed": false,
+      "productionApplicatorPrepared": false
     }
   },
   "previousApplicationPreparation": {

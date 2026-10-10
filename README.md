@@ -2,11 +2,8 @@
 
 Latest checkpoint (2026-10-10 08:04 CEST readback): R9 DNS recovery activated on the VPS, exit0, two renewals, flow counts[1,1]. Claim consumed: do not rerun apply. No application health or release acceptance is asserted. Application migration/recovery and governed Semantic peer cutover remain next. See [target activation evidence](evidence/provider-dns-recovery-active-renewed-target-20261010.json).
 
-Latest checkpoint (2026-10-10 07:56:11 CEST human decision): one R9 DNS recovery activation explicitly authorized. Approved delivery qualified: 20 tests and real isolated systemctl/DNS/nft/transient-worker checks PASS. Startup gate expires 09:56:11 CEST; actual VPS activation/readback is pending. See [human decision](evidence/provider-dns-recovery-human-approval-20261010.json), [qualified delivery](evidence/provider-dns-recovery-approved-delivery-qualification-20261010.json), and [apply launcher](releases/provider-dns-recovery-approved-20261010.sh).
 
-Latest checkpoint (2026-10-10 07:53 CEST readback): corrected DNS recovery target preflight PASS, all five program hashes verified, zero grant/claim/service start. Fifteen tests and real native systemctl/DNS/nft checks passed. Preparation is complete; the distinct recovery activation awaits a new human privileged decision. See [successful target preflight](evidence/provider-dns-recovery-preflight-success-target-20261010.json) and [reviewable recovery proposal](releases/provider-dns-window-recovery-proposal-20261010.json).
 
-Latest checkpoint (2026-10-10): distinct DNS recovery entrypoint and native worker qualification are prepared; fresh read-only VPS preflight is next. New approval is pending, and consumed R8 authority is preserved. See [recovery proposal](releases/provider-dns-window-recovery-proposal-20261010.json) and [continuation record](releases/DISCOVERY_APPLICATION_CONTINUATION_AFTER_R8_20261009.md).
 
 The operator's [retained worker diagnosis](evidence/provider-r8-dns-window-failure-target-20261010.json) confirms failure at9 October23:28:50 Europe/Rome after49 renewals: DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE caused set revocation and supervisor stop. Worker failed/exit1, no automatic restart; Docker remains active. R8 remains QUIESCED with empty sets. The exact zero-TTL versus elapsed-expiry subcase was not recorded.
 

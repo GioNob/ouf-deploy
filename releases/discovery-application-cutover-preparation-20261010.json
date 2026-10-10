@@ -1,0 +1,58 @@
+{
+  "schema": "ouf.discovery.application-cutover-preparation.v1",
+  "status": "BOUND_EVIDENCE_FOR_APPLICATOR_COMPOSITION_NOT_APPLY_READY",
+  "applyAuthorized": false,
+  "newTargetAuthorityIssued": false,
+  "networkLease": {
+    "activationEvidence": "evidence/provider-dns-recovery-active-renewed-target-20261010.json",
+    "claimConsumed": true,
+    "serviceUnit": "ouf-semantic-provider-lease-dns-r9.service",
+    "snapshot": "/etc/ouf/deploy-snapshots/semantic-dns-recovery-r9-hkv5exgo",
+    "ownerConfigurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+    "doNotRerunApply": true,
+    "commonLockMustNotBeAcquiredByObservers": true,
+    "sharedPeerRebindIsSeparateFromDnsLease": true
+  },
+  "signedApplicationEvidence": "evidence/discovery-remediated-application-qualification-20261009.json",
+  "candidateSourcePins": {
+    "semantic": "403531a9df1cbc877078f8126fd1fc4ff18acea9",
+    "mcp": "3ba1d4abcf62af1572997a217a333fa8d231c29f"
+  },
+  "migration": {
+    "unchangedBaseline": "V1_V9_BYTES_IDENTICAL_TO_TARGET_JAR",
+    "onlyAddition": "V10__discovery_request_idempotency.sql",
+    "sha256": "85708e1d37184177471f225806ca21c4088915f766197020f8fefe109407e911",
+    "recoveryQualificationEvidence": "evidence/discovery-remediated-migration-current-recovery-qualification-20261010.json",
+    "freshPrivateTargetBackupRequiredAtCutover": true,
+    "preMigrationBackupMustNotOverwriteLaterWrites": true,
+    "currentSnapshotRestoreTestIsNotTargetRestoreAuthority": true,
+    "oldApplicationFlywayCompatibilityNotYetQualified": true
+  },
+  "peer": {
+    "currentTargetEvidence": "evidence/discovery-cutover-input-target-20261010.json",
+    "semanticContainerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+    "hostInterface": "vethca2111d",
+    "hostIfindex": 1377,
+    "bridge": "br-113b5f0a3c53",
+    "ipv4": "172.18.0.6",
+    "mac": "b2:96:a1:e2:c1:8d",
+    "sharedFaceRole": "southbound",
+    "sharedTable": "ouf_v2_southbound",
+    "purePlanner": "tools/semantic_peer_replacement/peer_rebind.py",
+    "nativePlannerEvidence": "evidence/semantic-peer-replacement-native-qualification-20261010.json",
+    "replacementCompleteOciAndReciprocalPeerRequired": true,
+    "sourceBoundSignedTransportClosureRequired": true,
+    "ordinaryContainerRecreateNotPrepared": true
+  },
+  "requiredComposedClosures": [
+    "Exact complete OCI and generation/reciprocal-peer binding for replacement Semantic",
+    "Reviewed migration-aware applicator with backup custody and fenced-writer recovery semantics",
+    "Authenticated new transport/driver/profile closure and distinct human transition decision",
+    "Private provider credential, workload trust and distinct discovery key/mount custody",
+    "Additive Gateway routes preserving Cinema upstream and authenticated routes",
+    "Explicit HUMAN owner policy/grants and readiness before MCP descriptor activation",
+    "Real CLASS/teatro/it,en caller-owned discovery request/status/candidates"
+  ],
+  "applicationHealthProven": false,
+  "releaseAcceptance": false
+}

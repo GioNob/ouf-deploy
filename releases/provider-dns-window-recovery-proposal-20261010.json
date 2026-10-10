@@ -72,7 +72,7 @@
     "Actual application routes/grants/descriptors/readiness and owner discovery request remain unproven"
   ],
   "semanticPeerCutoverAndApplicationReleaseNotAuthorizedByThisProposal": true,
-  "productionWrites": 0,
+  "productionWrites": null,
   "productionLeaseReactivations": 1,
   "entrypoint": {
     "path": "tools/semantic_lease_activation/activate_dns_recovery.py",
@@ -148,5 +148,11 @@
     "qualificationEvidence": "evidence/provider-dns-recovery-approved-delivery-qualification-20261010.json"
   },
   "activationEvidence": "evidence/provider-dns-recovery-active-renewed-target-20261010.json",
-  "currentAuthorityState": "CONSUMED_CURRENT_WORKER_ONLY_NO_REPLAY"
+  "currentAuthorityState": "CONSUMED_CURRENT_WORKER_ONLY_NO_REPLAY",
+  "productionWriteCountNotRecorded": true,
+  "productionWriteScope": [
+    "New root claim and private worker evidence capsule",
+    "Owned lease journal and finite native provider-set renewals"
+  ],
+  "applicationContinuationPreparation": "releases/discovery-application-cutover-preparation-20261010.json"
 }
