@@ -3,6 +3,7 @@ import hashlib
 import json
 from pathlib import Path
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import activate_dns_recovery as target
@@ -57,6 +58,45 @@ class RecoveryBoundary(unittest.TestCase):
         plan = next(n for n in source.body if isinstance(n, ast.FunctionDef) and n.name == 'plan')
         calls = {ast.unparse(n.func) for n in ast.walk(plan) if isinstance(n, ast.Call)}
         self.assertFalse(calls & {'runtime', 'apply', 'CORE.create', 'core.load_installed', 'coord.hold_lock'})
+
+    def test_actual_prior_validation_uses_scoped_service_probe(self):
+        claim = {'schema': 'ouf.provider-r8-lease-activation-claim.v1', 'approvalRef': target.OLD_APPROVAL,
+                 'directory': str(target.PRIOR_ROOT), 'startAuthorized': False}
+        authorization = {'approvalRef': target.OLD_APPROVAL, 'serviceUnit': target.OLD_UNIT,
+                         'programHashes': {'activate.py': 'a'*64}}
+        cycle = {'status': 'LEASE_ACTIVE', 'refreshCount': 2, 'workerPid': 1856196, 'flowAddressCounts': [1, 1]}
+        denial = {'status': 'LEASE_WORKER_FAILED', 'refreshCount': 49, 'exceptionChain': [
+            {'reason': r} for r in ('REFRESH_FAILED_GATE_BLOCKED', 'REFRESH_FAILED_SETS_REVOKED',
+                                  'DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE')]}
+        data = {str(target.PRIOR_CLAIM): json.dumps(claim).encode(),
+                str(target.PRIOR_ROOT/'authorization.json'): json.dumps(authorization).encode(),
+                str(target.PRIOR_ROOT/'cycle-2.json'): json.dumps(cycle).encode(),
+                str(target.PRIOR_ROOT/'worker-denial.json'): json.dumps(denial).encode(),
+                str(target.PRIOR_ROOT/'activate.py'): b'fixture'}
+        custody = []
+        def private(path, expected=None, executable=False):
+            custody.append((str(path), expected, executable))
+            return b'native executable fixture' if executable else data[str(path)]
+        reader = SimpleNamespace(private=private, parse=json.loads,
+            native_read=lambda *a: self.fail('network-only reader called for systemctl'))
+        cfg = {'commandBindings': {'systemctl': {'path': '/usr/bin/systemctl', 'sha256': 'b'*64}}}
+        props = {'LoadState': 'loaded', 'ActiveState': 'failed', 'SubState': 'failed', 'MainPID': '0',
+                 'Restart': 'no', 'NRestarts': '0', 'InvocationID': 'df9a930eafbb4b56abc662319ba9888e',
+                 'ExecStart': str(target.PRIOR_ROOT/'activate.py')}
+        raw = ('\n'.join(k+'='+v for k, v in props.items())+'\n').encode()
+        with patch.object(target, 'configuration', return_value=(cfg, {})), \
+             patch.object(target, 'command', side_effect=[raw, (target.OLD_UNIT+' loaded failed failed\n').encode()]) as commands:
+            self.assertEqual(target.validate_prior(reader), data[str(target.PRIOR_CLAIM)])
+        self.assertEqual(commands.call_count, 2)
+        self.assertEqual(sum(row == ('/usr/bin/systemctl', 'b'*64, True) for row in custody), 4)
+
+    def test_service_probe_cannot_mutate_or_query_other_units(self):
+        reader = SimpleNamespace(private=lambda *a, **k: self.fail('custody should not be reached'))
+        binding = {'path': '/usr/bin/systemctl', 'sha256': 'b'*64}
+        for args in (['restart', target.OLD_UNIT], ['reset-failed', target.OLD_UNIT],
+                     ['show', target.UNIT], ['list-units']):
+            with self.assertRaisesRegex(ValueError, 'EXACT_READ_ONLY_SERVICE_PROBE_REQUIRED'):
+                target.service_read(reader, binding, args)
 
 
 if __name__ == '__main__':

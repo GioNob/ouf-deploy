@@ -139,6 +139,20 @@ def configuration(reader):
     return cfg, owner
 
 
+def service_read(reader, binding, args):
+    # The cutover reader's native_read accepts only network metadata and has
+    # its own cutover deadline. Keep service probes in a separate exact scope.
+    allowed = [
+        ['show', OLD_UNIT, '--property=LoadState,ActiveState,SubState,MainPID,Restart,NRestarts,InvocationID,ExecStart'],
+        ['list-units', '--type=service', '--all', '--no-legend', '--no-pager']]
+    require(args in allowed and binding['path'] == '/usr/bin/systemctl',
+            'EXACT_READ_ONLY_SERVICE_PROBE_REQUIRED')
+    reader.private(binding['path'], binding['sha256'], executable=True)
+    raw = command([binding['path'], *args])
+    reader.private(binding['path'], binding['sha256'], executable=True)
+    return raw
+
+
 def validate_prior(reader):
     """Read preserved authority and failure; never stop or reset the old unit."""
     claim_raw = reader.private(PRIOR_CLAIM, PRIOR_CLAIM_HASH)
@@ -167,14 +181,14 @@ def validate_prior(reader):
     require(cfg['commandBindings']['systemctl']['path'] == '/usr/bin/systemctl', 'SYSTEMCTL_PATH_DRIFT')
     args = ['show', OLD_UNIT,
             '--property=LoadState,ActiveState,SubState,MainPID,Restart,NRestarts,InvocationID,ExecStart']
-    raw = reader.native_read(cfg['commandBindings']['systemctl'], args, [args])
+    raw = service_read(reader, cfg['commandBindings']['systemctl'], args)
     old = dict(line.split('=', 1) for line in raw.decode().splitlines() if '=' in line)
     require(all(old.get(k) == v for k, v in {
         'LoadState': 'loaded', 'ActiveState': 'failed', 'SubState': 'failed', 'MainPID': '0',
         'Restart': 'no', 'NRestarts': '0', 'InvocationID': 'df9a930eafbb4b56abc662319ba9888e'}.items())
         and str(PRIOR_ROOT/'activate.py') in old.get('ExecStart', ''), 'CONSUMED_WORKER_QUIESCENCE_DRIFT')
     args = ['list-units', '--type=service', '--all', '--no-legend', '--no-pager']
-    units = reader.native_read(cfg['commandBindings']['systemctl'], args, [args])
+    units = service_read(reader, cfg['commandBindings']['systemctl'], args)
     names = {line.split()[0] for line in units.decode().splitlines() if line.split()}
     require({n for n in names if n.startswith('ouf') and 'lease' in n} <= {OLD_UNIT},
             'OTHER_LOADED_LEASE_WORKER_REQUIRES_RECONCILIATION')
