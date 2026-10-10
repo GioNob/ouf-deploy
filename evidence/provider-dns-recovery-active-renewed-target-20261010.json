@@ -1,0 +1,45 @@
+{
+  "schema": "ouf.provider-dns-recovery-target-activation-evidence.v1",
+  "reportedAt": "2026-10-10T08:04:27+02:00",
+  "executionTimestampNotPresentInOutput": true,
+  "approvalRef": "OUF_DNS_WINDOW_RECOVERY_R9_APPROVED_20261010T075611_CEST",
+  "deliveryCommit": "5c7a718bee7eaef17bc0d8fde4eb44eafcf8f34e",
+  "downloadDirectory": "/home/oufadmin/ouf-dns-recovery-apply.AK7Tz8N3",
+  "outputFile": "/home/oufadmin/ouf-dns-recovery-apply.AK7Tz8N3/result.txt",
+  "deliveryHashesVerified": true,
+  "receipt": {
+    "applicationHealthProven": false,
+    "automaticRestart": false,
+    "bootEnablement": false,
+    "containerLifecycleOperations": 0,
+    "daemonRestarted": false,
+    "doNotRerunApply": true,
+    "evidenceDirectory": "/etc/ouf/deploy-snapshots/semantic-dns-recovery-r9-hkv5exgo",
+    "externalTrafficNowPermittedForApprovedFlows": true,
+    "flowAddressCounts": [
+      1,
+      1
+    ],
+    "notReleaseAcceptance": true,
+    "ownerConfigurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+    "privateKeysRead": 0,
+    "providerCallsIssuedByWorker": 0,
+    "refreshCount": 2,
+    "schema": "ouf.provider-dns-recovery-activation.v1",
+    "serviceUnit": "ouf-semantic-provider-lease-dns-r9.service",
+    "signaturesIssued": 0,
+    "status": "TWO_FLOW_LEASE_ACTIVE_AND_RENEWED"
+  },
+  "exitCode": 0,
+  "launcherPhase": "APPLY_NEW_EXPLICIT_R9_DECISION_ONCE",
+  "interpretation": {
+    "twoFreshCyclesAndNativeMembershipVerifiedByEntrypoint": true,
+    "newClaimConsumed": true,
+    "doNotRerunApply": true,
+    "oldR8ClaimsPreserved": true,
+    "applicationHealthProven": false,
+    "releaseAcceptance": false,
+    "observationIsNotContinuingLivenessProof": true,
+    "scopeEndsOnStopFailureRebootOrGenerationDrift": true
+  }
+}

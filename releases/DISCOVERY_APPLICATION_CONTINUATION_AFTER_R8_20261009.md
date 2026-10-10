@@ -1,6 +1,6 @@
 # Continuazione Semantic/MCP dopo R8 — 9 ottobre 2026
 
-Stato aggiornato10 ottobre: lettura privata riuscita; lease QUIESCED, autorizzazione revocata e set vuoti. L'attivazione/rinnovo del9 ottobre resta evidenza storica. Causa DNS documentata dopo49 rinnovi; applicazioni discovery non aggiornate. Questa continuazione riprende il lavoro già autorizzato e non apre un nuovo sprint né modifica la baseline normativa.
+Stato aggiornato10 ottobre08:04 CEST: recupero DNS R9 attivato con exit0, due rinnovi e conteggi[1,1]; claim consumata, nessun replay. La precedente lease R8 QUIESCED e il failure dopo49 rinnovi restano evidenza storica. Applicazioni discovery non aggiornate e salute/accettazione del rilascio non provate. Questa continuazione riprende il lavoro già autorizzato e non apre un nuovo sprint né modifica la baseline normativa.
 
 ## Evidenze e contesto ricostruito
 
@@ -199,3 +199,12 @@ Approved entrypoint commit `fafb67e8e02d78c01a7f5aa961118aa9f6b093d4`, SHA-256 `
 The separate apply launcher `releases/provider-dns-recovery-approved-20261010.sh` pins this approved source commit and all five component hashes, rechecks entrypoint bytes in root memory, and exposes only the exact new `--apply` reference. No source or bootstrap executes before integrity checks. The read-only preflight launcher remains separate and unchanged. New boundary tests cover startup-window endpoints, consumed R9 claim refusal, apply delivery corruption and exact hash/reference binding. No target activation or new lease grant has occurred yet; final delivery qualification is pending.
 
 Final approved delivery qualification [38029340418](https://github.com/GioNob/ouf-deploy/actions/runs/38029340418), job 114146800527, PASS: 10 entrypoint/authority tests, 4 source/diagnostic tests, 3 read-only delivery tests, 3 approved apply delivery tests; real isolated systemctl probes, transient-zero-TTL resampling/two fresh cycles, persistent-TTL revocation and replay refusal. Concurrent [R8 regression 38029340468](https://github.com/GioNob/ouf-deploy/actions/runs/38029340468) PASS. Apply launcher delivery commit `5c7a718bee7eaef17bc0d8fde4eb44eafcf8f34e`, SHA-256 `817d165a73973b2bd3bb9d4c3dca2ffb93405a9ab531696614617896b8d7e35b`, byte-identical on GitHub. Ready for the authorized single operator invocation before 09:56:11 CEST; no actual VPS activation or new lease grant is yet asserted.
+
+
+## 2026-10-10 08:04 CEST — R9 attivato e rinnovato sul VPS
+
+L'operatore ha fornito il readback completo `TWO_FLOW_LEASE_ACTIVE_AND_RENEWED`, exit0: `evidence/provider-dns-recovery-active-renewed-target-20261010.json`. Snapshot `/etc/ouf/deploy-snapshots/semantic-dns-recovery-r9-hkv5exgo`, unit `ouf-semantic-provider-lease-dns-r9.service`, refreshCount2, flowAddressCounts[1,1], owner hash invariato656c23f…. Il timestamp di esecuzione non compare nell'output;08:04:27 CEST è il momento di ricezione, non un tempo inventato di avvio. Il codice verificato ha confrontato ricevuta immutabile del secondo ciclo, processo systemd e membership native correnti.
+
+La nuova claim è consumata: doNotRerunApply=true. Non ripetere apply/start/reset; il worker corrente rinnova lease finite secondo la decisione approvata, e termina/revoca su failure, stop, reboot o drift di generazione. Nessun container lifecycle, daemon restart, restart automatico, boot enablement, chiave letta, firma o chiamata provider. Il traffico esterno dei soli due flussi approvati è permesso al momento del readback; questa ricevuta non garantisce liveness futura. applicationHealthProven=false e notReleaseAcceptance=true.
+
+Il blocco di recupero DNS è chiuso. Si riprende la preparazione applicativa già autorizzata: migrazione V10 e recovery che preservi scritture successive, nuova chiusura governata del peer ingress Semantic (separata dalla tabella DNS), credenziali/mount e route additive, policy/grant/descriptor e prova reale CLASS/teatro/it,en. R9 non autorizza questi cambiamenti sul target. I vecchi piani/launcher restano non applicabili senza le chiusure e il nuovo applicatore concreto.

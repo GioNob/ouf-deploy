@@ -40,7 +40,6 @@
   "releaseApplied": false,
   "acceptanceGranted": false,
   "blockingReleaseRequirements": [
-    "execute explicitly authorized one-use R9 DNS recovery within 09:56:11 CEST startup gate, recheck current state and obtain target two-cycle/native/service receipt; preserve consumed R8 claim",
     "migration-aware Semantic/MCP applicator with current private backup and explicit recovery",
     "governed replacement or preservation of the exact Semantic host peer binding; no ordinary recreate under retained ifindex1377",
     "existing private provider credential and separate discovery owner receipt key bound consistently to Semantic/Gateway",
@@ -362,20 +361,19 @@
     "bootEnablement": false,
     "leaseMembershipIndependentlyReadHere": true,
     "currentLeaseObservation": {
-      "evidence": "evidence/discovery-cutover-input-target-20261010.json",
-      "receivedAt": "2026-10-10T06:54:27+02:00",
-      "state": "QUIESCED",
-      "leaseAuthorized": false,
-      "providerSetsEmpty": true,
-      "journalAndMembershipConsistent": true,
-      "nativeStructureVerified": true,
-      "journalHash": "a58f0cb6e011879fc22723356d19926adf8945c38dcdbf2d21ab3fa34dd6f7f1",
-      "approvedProviderTrafficPermittedByLease": false,
-      "stopCause": "DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE_AFTER_49_RENEWALS",
-      "automaticReactivationAuthorized": false,
-      "diagnosticEvidence": "evidence/provider-r8-dns-window-failure-target-20261010.json",
-      "workerFailureAt": "2026-10-09T23:28:50+02:00",
-      "dnsSubcase": "NOT_RECORDED_ZERO_TTL_VS_ELAPSED_EXPIRY_UNPROVEN"
+      "status": "R9_TWO_FLOW_LEASE_ACTIVE_AND_RENEWED_AT_ACTIVATION_READBACK",
+      "reportedAt": "2026-10-10T08:04:27+02:00",
+      "ownerConfigurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+      "flowAddressCounts": [
+        1,
+        1
+      ],
+      "refreshCount": 2,
+      "serviceUnit": "ouf-semantic-provider-lease-dns-r9.service",
+      "evidenceDirectory": "/etc/ouf/deploy-snapshots/semantic-dns-recovery-r9-hkv5exgo",
+      "evidence": "evidence/provider-dns-recovery-active-renewed-target-20261010.json",
+      "doNotRerunApply": true,
+      "notContinuousLivenessProof": true
     }
   },
   "currentApplicationPreparation": {
@@ -436,15 +434,15 @@
       "targetExit": 0
     },
     "dnsRecoveryPreparation": {
-      "status": "NEW_HUMAN_DECISION_AND_APPROVED_DELIVERY_QUALIFIED_TARGET_ACTIVATION_PENDING",
+      "status": "ONE_USE_R9_TARGET_ACTIVE_AND_RENEWED_CLAIM_CONSUMED",
       "sourceCommit": "be789d76f0c75c6c109cef3c2419d990930c63f2",
       "pullRequest": 58,
       "evidence": "evidence/provider-dns-window-remediation-qualification-20261010.json",
       "proposal": "releases/provider-dns-window-recovery-proposal-20261010.json",
       "coreCommit": "906253fa005b82e13dbc49cdea79b9a15e70a354",
-      "applyReady": true,
+      "applyReady": false,
       "authorityIssued": true,
-      "targetInstalled": false,
+      "targetInstalled": true,
       "entrypointCommit": "fafb67e8e02d78c01a7f5aa961118aa9f6b093d4",
       "entrypointSha256": "6183733f02d3a5e633deac8c07924276df8b6a5cbaa57494be289808c3aaf244",
       "entrypointQualificationEvidence": "evidence/provider-dns-recovery-entry-qualification-20261010.json",
@@ -457,13 +455,22 @@
       "preflightDenialEvidence": "evidence/provider-dns-recovery-preflight-denial-target-20261010.json",
       "preflightSuccessEvidence": "evidence/provider-dns-recovery-preflight-success-target-20261010.json",
       "preflightReportedAt": "2026-10-10T07:53:38+02:00",
-      "applyAuthorized": true,
+      "applyAuthorized": false,
       "humanApprovalEvidence": "evidence/provider-dns-recovery-human-approval-20261010.json",
       "approvedDeliveryCommit": "5c7a718bee7eaef17bc0d8fde4eb44eafcf8f34e",
       "approvedDeliveryQualificationEvidence": "evidence/provider-dns-recovery-approved-delivery-qualification-20261010.json",
       "approvedNativeRunId": 38029340418,
-      "targetActivationExecuted": false,
-      "executionExpiresAt": "2026-10-10T09:56:11+02:00"
+      "targetActivationExecuted": true,
+      "executionExpiresAt": "2026-10-10T09:56:11+02:00",
+      "targetEvidence": "evidence/provider-dns-recovery-active-renewed-target-20261010.json",
+      "evidenceDirectory": "/etc/ouf/deploy-snapshots/semantic-dns-recovery-r9-hkv5exgo",
+      "flowAddressCounts": [
+        1,
+        1
+      ],
+      "refreshCount": 2,
+      "doNotRerunApply": true,
+      "applicationHealthProven": false
     }
   },
   "previousApplicationPreparation": {
