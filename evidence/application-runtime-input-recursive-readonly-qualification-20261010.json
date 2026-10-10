@@ -11,5 +11,12 @@
   "networkPolicyIsNotCreationFrame": true,
   "targetRootPreparationExecuted": false,
   "claimConsumed": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "correctedDelivery": {
+    "commit": "4b937ba22ecb49bbfcb8006f596f09aefaaa3ef3",
+    "runId": 38048370938,
+    "status": "SUCCESS",
+    "launcherSha256": "608e59e611d9cd6930a4a6dc498a94c0ddf4ddb70e0f6d4471ed0a9058c1ddd9",
+    "entrySha256": "cb9ff64684243d563da79d327eb7d7e325dbea6a3922c91a0b7791a3ceec9baf"
+  }
 }
