@@ -164,15 +164,17 @@ def validate_prior(reader):
                 'REFRESH_FAILED_GATE_BLOCKED', 'REFRESH_FAILED_SETS_REVOKED',
                 'DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE'], 'EXACT_RETAINED_DNS_FAILURE_REQUIRED')
     cfg, owner = configuration(reader)
-    raw = reader.run(cfg['commandBindings'], 'systemctl', ['show', OLD_UNIT,
-        '--property=LoadState,ActiveState,SubState,MainPID,Restart,NRestarts,InvocationID,ExecStart'])
+    require(cfg['commandBindings']['systemctl']['path'] == '/usr/bin/systemctl', 'SYSTEMCTL_PATH_DRIFT')
+    args = ['show', OLD_UNIT,
+            '--property=LoadState,ActiveState,SubState,MainPID,Restart,NRestarts,InvocationID,ExecStart']
+    raw = reader.native_read(cfg['commandBindings']['systemctl'], args, [args])
     old = dict(line.split('=', 1) for line in raw.decode().splitlines() if '=' in line)
     require(all(old.get(k) == v for k, v in {
         'LoadState': 'loaded', 'ActiveState': 'failed', 'SubState': 'failed', 'MainPID': '0',
         'Restart': 'no', 'NRestarts': '0', 'InvocationID': 'df9a930eafbb4b56abc662319ba9888e'}.items())
         and str(PRIOR_ROOT/'activate.py') in old.get('ExecStart', ''), 'CONSUMED_WORKER_QUIESCENCE_DRIFT')
-    units = reader.run(cfg['commandBindings'], 'systemctl',
-        ['list-units', '--type=service', '--all', '--no-legend', '--no-pager'])
+    args = ['list-units', '--type=service', '--all', '--no-legend', '--no-pager']
+    units = reader.native_read(cfg['commandBindings']['systemctl'], args, [args])
     names = {line.split()[0] for line in units.decode().splitlines() if line.split()}
     require({n for n in names if n.startswith('ouf') and 'lease' in n} <= {OLD_UNIT},
             'OTHER_LOADED_LEASE_WORKER_REQUIRES_RECONCILIATION')
