@@ -1,6 +1,6 @@
 {
   "schema": "ouf.provider-dns-recovery-proposal.v1",
-  "status": "CORRECTED_SERVICE_PREFLIGHT_AND_NATIVE_WORKER_QUALIFIED_TARGET_REREAD_PENDING",
+  "status": "PREPARATION_AND_TARGET_PREFLIGHT_COMPLETE_NEW_HUMAN_DECISION_PENDING",
   "triggerEvidence": "evidence/provider-r8-dns-window-failure-target-20261010.json",
   "authorityIssued": false,
   "applyAuthorized": false,
@@ -68,8 +68,8 @@
     "reuseConsumedAuthority": false
   },
   "stillRequired": [
-    "Fresh target read-only preflight receipt",
-    "Explicit new human privileged decision and source-bound startup window before service launch"
+    "Explicit new human privileged decision binding the reviewed recovery source, distinct claim and finite startup window",
+    "Activation-time recheck of current process/source/owner/journal/unit state before exclusive claim and service launch"
   ],
   "semanticPeerCutoverAndApplicationReleaseNotAuthorizedByThisProposal": true,
   "productionWrites": 0,
@@ -93,9 +93,12 @@
     "dnsQueries": 0,
     "installedOperationalCodeExecuted": false,
     "deliveryCommit": "fcba567744ec4fc5e18fbc0d0b01d19e6ed5d819",
-    "targetPassed": false,
-    "correctedTargetExecuted": false,
-    "denialEvidence": "evidence/provider-dns-recovery-preflight-denial-target-20261010.json"
+    "targetPassed": true,
+    "correctedTargetExecuted": true,
+    "denialEvidence": "evidence/provider-dns-recovery-preflight-denial-target-20261010.json",
+    "successEvidence": "evidence/provider-dns-recovery-preflight-success-target-20261010.json",
+    "reportedAt": "2026-10-10T07:53:38+02:00",
+    "outputFile": "/home/oufadmin/ouf-dns-recovery-plan.VoJHs8W1/result.txt"
   },
   "qualification": {
     "runId": 38028838789,
@@ -112,5 +115,26 @@
     "finalCombinedStatus": "PASS",
     "finalTestsPassed": 15,
     "realScopedSystemctlProbesVerified": true
+  },
+  "requestedDecisionScope": {
+    "oneActivationOnly": true,
+    "serviceUnit": "ouf-semantic-provider-lease-dns-r9.service",
+    "claimPath": "/etc/ouf/provider-dns-window-recovery-r9.claim",
+    "existingApprovedFlows": 2,
+    "ownerConfigurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+    "workerAuthorityLifetime": "CURRENT_R8_PROCESS_GENERATIONS_UNTIL_STOP_FAILURE_OR_REBOOT",
+    "flowLeaseSecondsMaximum": 30,
+    "renewalPollSeconds": 15,
+    "dnsObservationSecondsMaximum": 2,
+    "dnsFreshAttemptsMaximum": 3,
+    "automaticRestart": false,
+    "enableAtBoot": false,
+    "containerLifecycle": false,
+    "semanticPeerCutover": false,
+    "applicationReleaseAcceptance": false,
+    "existingR8ClaimsPreserved": true,
+    "privateKeysRead": 0,
+    "signaturesIssued": 0,
+    "providerCallsIssuedByWorker": 0
   }
 }

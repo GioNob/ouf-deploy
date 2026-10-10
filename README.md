@@ -1,6 +1,6 @@
 # Current checkpoint — 49-renewal DNS failure confirmed; bounded fresh resample and source-delta core qualified
 
-Latest checkpoint (2026-10-10 07:47 CEST readback): the DNS recovery preflight was denied by the network-only metadata reader before any claim/service start. Scoped systemctl probes are now corrected and qualified in CI (15 tests and real native service probes); corrected read-only VPS preflight is next. See [denial evidence](evidence/provider-dns-recovery-preflight-denial-target-20261010.json) and [recovery proposal](releases/provider-dns-window-recovery-proposal-20261010.json).
+Latest checkpoint (2026-10-10 07:53 CEST readback): corrected DNS recovery target preflight PASS, all five program hashes verified, zero grant/claim/service start. Fifteen tests and real native systemctl/DNS/nft checks passed. Preparation is complete; the distinct recovery activation awaits a new human privileged decision. See [successful target preflight](evidence/provider-dns-recovery-preflight-success-target-20261010.json) and [reviewable recovery proposal](releases/provider-dns-window-recovery-proposal-20261010.json).
 
 Latest checkpoint (2026-10-10): distinct DNS recovery entrypoint and native worker qualification are prepared; fresh read-only VPS preflight is next. New approval is pending, and consumed R8 authority is preserved. See [recovery proposal](releases/provider-dns-window-recovery-proposal-20261010.json) and [continuation record](releases/DISCOVERY_APPLICATION_CONTINUATION_AFTER_R8_20261009.md).
 
