@@ -137,6 +137,17 @@ def main():
             _, cycle = target.wait_for_second_cycle(reader, root, timeout=5)
             target.UNIT = unit
             assert all(target.compare(cycle, target.properties(), root).values())
+            target.OLD_UNIT = unit  # Disposable service replaces only CI metadata.
+            binding = {'path': '/usr/bin/systemctl',
+                       'sha256': core.digest(Path('/usr/bin/systemctl').read_bytes())}
+            args = ['show', unit,
+                    '--property=LoadState,ActiveState,SubState,MainPID,Restart,NRestarts,InvocationID,ExecStart']
+            props = target.service_read(reader, binding, args)
+            assert b'ActiveState=active' in props and b'Restart=no' in props
+            inventory = target.service_read(reader, binding,
+                ['list-units', '--type=service', '--all', '--no-legend', '--no-pager'])
+            assert unit.encode() in inventory
+            print('DNS_RECOVERY_SERVICE_PROBES=PASS REAL_SYSTEMCTL=true ROOT_EXECUTABLE_HASH_VERIFIED=true', flush=True)
             assert cycle['refreshCount'] == 2 and cycle['flowAddressCounts'] == [1, 1]
             assert counts['zeroTtl'] == 2 and counts['queries'] >= 10
             for family in ('inet', 'bridge'):
