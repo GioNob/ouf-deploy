@@ -17,3 +17,9 @@ I digest dell'archivio attestano i byte consegnati da Actions, non una firma del
 Prima di apply: custodia e firma d'installazione; nuovi trust pubblici legati all'immagine; inventario OCI host completo e peer reciproco correnti; readiness/backup/restore/fence di migrazione; transizione HUMAN nella superficie diretta. Nessun reset/replay di claim R9 o del run Cinema. L'archivio Docker non è la dichiarazione OCI completa del container host.
 
 La ricerca corrente degli otto Cinema è verificata nella natura pubblicata cinema#Cinema su tre pagine (3/3/2); [ricevuta limitata](../evidence/current-canonical-search-read-20261010.json). I controlli negativi/audit/multi-file e R-INSTALL restano aperti.
+
+## Passaggio operatore necessario
+
+Launcher releases/file-loop-offline-stage-and-host-read-20261010.sh: scarica circa 571 MB di ZIP, richiede almeno 4 GiB liberi per archivi più estrazione, verifica i digest ZIP e SHA256SUMS interni, conserva i tre pacchetti unsigned nella home. Non esegue docker load/import/run né firma. La sola fase sudo legge metadati dei tre container esistenti, generation PID/namespace, stato systemd R9 e permessi delle directory snapshot già note. Non apre file privati degli snapshot, credenziali o chiavi, non acquisisce lock e non modifica servizi.
+
+Serve l'operatore perché questa sessione non dispone di accesso amministrativo al VPS e la lettura dei metadati nativi /proc e delle directory protette richiede sudo. Non è la ripetizione di un vecchio apply o del giro Cinema. La ricevuta non prova lease, salute applicativa né OCI host completo. Nuova custodia/trust e transizione restano separate.
