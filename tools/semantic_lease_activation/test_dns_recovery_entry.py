@@ -11,9 +11,27 @@ import activate_dns_recovery as target
 
 class RecoveryBoundary(unittest.TestCase):
     def test_pending_decision_cannot_apply_or_touch_claim(self):
-        with patch.object(target.os.path, 'lexists', side_effect=AssertionError('claim accessed')):
+        with patch.object(target, 'APPROVAL_REF', 'PENDING_NEW_DECISION'), \
+             patch.object(target.os.path, 'lexists', side_effect=AssertionError('claim accessed')):
             with self.assertRaisesRegex(ValueError, 'EXPLICIT_NEW_LEASE_APPROVAL_REQUIRED'):
                 target.apply(target.APPROVAL_REF)
+
+    def test_new_decision_is_only_valid_inside_exact_startup_window(self):
+        with patch.object(target, 'APPROVAL_REF', 'EXACT_NEW_DECISION'), \
+             patch.object(target, 'ISSUED_AT', 100), \
+             patch.object(target, 'EXECUTION_EXPIRES_AT', 7300):
+            for now in (100, 7299):
+                target.approval_live('EXACT_NEW_DECISION', clock=lambda: now)
+            for now in (99, 7300):
+                with self.assertRaisesRegex(ValueError, 'EXPLICIT_NEW_LEASE_APPROVAL_REQUIRED'):
+                    target.approval_live('EXACT_NEW_DECISION', clock=lambda: now)
+            with self.assertRaisesRegex(ValueError, 'EXPLICIT_NEW_LEASE_APPROVAL_REQUIRED'):
+                target.approval_live(target.OLD_APPROVAL, clock=lambda: 101)
+
+    def test_consumed_new_claim_is_never_replayed(self):
+        with patch.object(target, 'approval_live'), patch.object(target.os.path, 'lexists', return_value=True):
+            with self.assertRaisesRegex(ValueError, 'LEASE_ACTIVATION_ALREADY_CLAIMED_DO_NOT_REPLAY'):
+                target.apply('EXACT_NEW_DECISION')
 
     def test_r8_decision_cannot_authorize_new_recovery(self):
         with self.assertRaisesRegex(ValueError, 'EXPLICIT_NEW_LEASE_APPROVAL_REQUIRED'):
