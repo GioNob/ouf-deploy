@@ -20,7 +20,7 @@ public final class FlywayFixture {
       case "reject":
         ValidateResult result = flyway.validateWithResult();
         if (result.validationSuccessful) throw new IllegalStateException("CHECKSUM_DRIFT_ACCEPTED");
-        if (!"CHECKSUM_MISMATCH".equals(result.invalidMigrations.get(0).errorDetails.errorCode.name()))
+        if (!"CHECKSUM_MISMATCH".equals(result.invalidMigrations.get(0).errorDetails.errorCode.toString()))
           throw new IllegalStateException("UNEXPECTED_VALIDATION_DENIAL");
         System.out.println("OUF_FLYWAY_FIXTURE=CHECKSUM_DRIFT_REJECTED");
         break;
