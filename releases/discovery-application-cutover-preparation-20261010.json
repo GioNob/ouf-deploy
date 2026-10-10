@@ -127,5 +127,13 @@
   "applicationInputContractTargetEvidence": "evidence/application-input-contract-prepared-target-20261010.json",
   "industrializationGoal": "Single qualified install/upgrade/recovery entry point; no routine manual VPS edits; initial bootstrap and PET-protected human decisions remain explicit",
   "industrializationPlan": "releases/INSTALLATION_INDUSTRIALIZATION_PLAN.md",
-  "reusableInstallerDelivered": false
+  "reusableInstallerDelivered": false,
+  "runtimeDeclarationPreparedOnTarget": true,
+  "runtimeDeclarationTargetEvidence": "evidence/replacement-runtime-declaration-target-20261010.json",
+  "runtimeDeclaration": {
+    "status": "REPLACEMENT_RUNTIME_DECLARED_NOT_REALIZED",
+    "privateDeclarationHash": "b9ee536c6cb4fefa4e6357716599cfdb34a38b7e11789013cf69096e5932709c",
+    "historical": true,
+    "completeReplacementOciProven": false
+  }
 }

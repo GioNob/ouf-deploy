@@ -1,3 +1,9 @@
+# Checkpoint — continuità VPS riconciliata; dichiarazione runtime preparata
+
+Il giro Cinema sul VPS aveva già completato delivery/materializzazione 8/8: non va ripetuto. Teatri upload/profile MCP già acquisiti. [Ricognizione e sequenza corretta](releases/FILE_LOOP_VPS_CONTINUITY_20261010.md): prove storiche, residui Search e differenze fra main e codice installato. Il nuovo controllo rileva le migrazioni e componenti assenti in main prima di comporre un candidato; non autorizza il deploy.
+
+La [dichiarazione runtime riportata dall'operatore](evidence/replacement-runtime-declaration-target-20261010.json) è preparata correttamente, senza lifecycle o attività R9. È intento storico, non OCI realizzato o cutover. Non ripetere le preparazioni consumate. File prima di API verticali PULL.
+
 # Current checkpoint — application input contract verified; reusable installation is the delivery goal
 
 10 October 2026, 15:29 CEST: the operator prepared the protected application input contract. [Target receipt](evidence/application-input-contract-prepared-target-20261010.json): provider routes/IAM/workload agree with the frozen binding, three role-owned read-only source files have verified metadata, no mount or application lifecycle/change performed. Secret bytes are not freshly verified; replacement complete OCI, signed reciprocal peer/transport closure and coordinated applicator remain unproven.
