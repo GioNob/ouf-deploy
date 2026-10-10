@@ -1,5 +1,8 @@
 import copy
+import ast
+import hashlib
 import importlib.util
+import re
 import unittest
 from pathlib import Path
 
@@ -118,6 +121,18 @@ class RuntimeDeclaration(unittest.TestCase):
         contract['candidateConfig']['User'] = '0'
         with self.assertRaises(ValueError):
             m.compile_declaration(intake, contract)
+
+    def test_operator_delivery_checks_the_exact_bytes_before_root_execution(self):
+        root = Path(__file__).parent.parent
+        launcher = (root / 'releases/replacement-runtime-declaration-20261010.sh').read_text()
+        expected = ast.literal_eval(re.search(r'expected=(\([^\n]+\))', launcher).group(1))
+        paths = ['scripts/compile-replacement-runtime-declaration.py',
+                 'tools/semantic_target_review/prepare_application_runtime_inputs.py']
+        self.assertEqual(expected, tuple(hashlib.sha256((root / p).read_bytes()).hexdigest() for p in paths))
+        self.assertEqual(launcher.count('?ref=c80b7584a1b7f403c3ecf113c2c4debad1de405e'), 2)
+        self.assertIn('sudo /usr/bin/python3 -I -B -c', launcher)
+        self.assertIn('compile(sources[0]', launcher)
+        self.assertNotIn('exec(compile(pathlib', launcher)
 
 
 if __name__ == '__main__':

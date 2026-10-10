@@ -128,3 +128,12 @@ Private replacement configuration composition now derives existing IAM issuer/au
 ## Verticale file → semantica → ingestion → UDP → search, 10 ottobre15:42
 
 La [roadmap dettagliata F0–F11](https://github.com/GioNob/ouf-semantic-registry/blob/a315de5b33a6d9074a04bcbbbca224efd0c4c135/docs/FILE_TO_SEARCH_ROADMAP_20261010.md) esplicita owner, dipendenze e gate del giro richiesto dall'owner. L'identità richiede natura semantica compatibile e evidenze sufficienti; relazioni tra nature diverse, target tardivi e navigazione inversa sono gestiti separatamente. La prima prova file-to-search e la prova multi-fonte precedono l'accettazione su host pulito, mentre il disegno dell'installer procede insieme all'applicatore. I claim consumati, i23 gap PET e Cinema/Teatri sono preservati. La presenza di filtri/riconciliazione nel codice non è accettazione del target; CI Ingestion/UDP rosse e cutover incompleto restano gate espliciti.
+
+
+## Seguito 10 ottobre — consolidamento file e dichiarazione runtime
+
+L'owner conferma che i verticali API verranno affrontati dopo il completamento e consolidamento del giro dei file. [Checkpoint operativo e decisione tecnologica](FILE_FIRST_EXECUTION_CHECKPOINT_20261010.md). Le cause dei blocchi worker/MinIO sono state corrette e le nuove immagini passano le prove funzionali e di recupero; il gate di sicurezza corrente ha richiesto una linea Spring supportata OSS e patch Jackson/Tomcat. Le prove di revisione vengono registrate separatamente, senza usare quelle storiche come accettazione corrente o del target.
+
+Il compilatore della dichiarazione runtime supera sette prove di preservazione/denial nella CI [38064998496](https://github.com/GioNob/ouf-deploy/actions/runs/38064998496) su c80b7584… e una prova di consegna locale con hash esatti. Conserva tutti i campi host originali e le osservazioni di rete; dichiara soltanto i tre bind read-only già contrattualizzati. Non realizza OCI, peer o autorità. Il launcher fissato richiede sudo per leggere i due snapshot root privati e creare una nuova evidenza privata. Non legge i file dei segreti, non invoca Docker, non prende il lock lease e non ripete alcun claim/apply R9.
+
+La ricevuta target rimane APPLICATION_INPUT_CONTRACT_PREPARED_NOT_APPLY_READY fino a nuova esecuzione dell'operatore. Le osservazioni conservate non provano lo stato corrente; nuova closure nativa/firmata, fencing/backup fresco e applicatore coordinato restano gate necessari prima di qualunque cutover. Nessuno dei 23 gap PET viene chiuso automaticamente.
