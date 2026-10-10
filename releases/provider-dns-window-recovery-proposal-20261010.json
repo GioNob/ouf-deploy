@@ -1,6 +1,6 @@
 {
   "schema": "ouf.provider-dns-recovery-proposal.v1",
-  "status": "NEW_HUMAN_DECISION_AUTHORIZED_DELIVERY_QUALIFICATION_PENDING",
+  "status": "NEW_HUMAN_DECISION_AND_APPROVED_DELIVERY_QUALIFIED_READY_FOR_ONE_TARGET_ACTIVATION",
   "triggerEvidence": "evidence/provider-r8-dns-window-failure-target-20261010.json",
   "authorityIssued": true,
   "applyAuthorized": true,
@@ -68,8 +68,7 @@
     "reuseConsumedAuthority": false
   },
   "stillRequired": [
-    "Final approved delivery qualification",
-    "Execute one-use approved activation inside startup window after current-state recheck",
+    "Execute the authorized one-use activation before 2026-10-10T09:56:11+02:00 after current-state recheck",
     "Read target immutable two-cycle/service/native membership receipt; no release acceptance inferred"
   ],
   "semanticPeerCutoverAndApplicationReleaseNotAuthorizedByThisProposal": true,
@@ -143,7 +142,9 @@
     "launcher": "releases/provider-dns-recovery-approved-20261010.sh",
     "sha256": "817d165a73973b2bd3bb9d4c3dca2ffb93405a9ab531696614617896b8d7e35b",
     "sourceCommit": "fafb67e8e02d78c01a7f5aa961118aa9f6b093d4",
-    "qualified": false,
-    "targetExecuted": false
+    "qualified": true,
+    "targetExecuted": false,
+    "deliveryCommit": "5c7a718bee7eaef17bc0d8fde4eb44eafcf8f34e",
+    "qualificationEvidence": "evidence/provider-dns-recovery-approved-delivery-qualification-20261010.json"
   }
 }

@@ -1,6 +1,6 @@
 {
   "schema": "ouf.provider-dns-recovery-human-approval.v1",
-  "status": "AUTHORIZED_DELIVERY_QUALIFICATION_PENDING",
+  "status": "AUTHORIZED_APPROVED_DELIVERY_QUALIFIED_TARGET_ACTIVATION_PENDING",
   "approvalRef": "OUF_DNS_WINDOW_RECOVERY_R9_APPROVED_20261010T075611_CEST",
   "humanResponse": "Autorizzo",
   "approvedAt": "2026-10-10T07:56:11+02:00",
@@ -41,5 +41,8 @@
   "signaturesIssued": 0,
   "targetActivationExecuted": false,
   "leaseGrantedOnTarget": false,
-  "doNotReplayConsumedClaim": true
+  "doNotReplayConsumedClaim": true,
+  "deliveryCommit": "5c7a718bee7eaef17bc0d8fde4eb44eafcf8f34e",
+  "deliverySha256": "817d165a73973b2bd3bb9d4c3dca2ffb93405a9ab531696614617896b8d7e35b",
+  "qualificationEvidence": "evidence/provider-dns-recovery-approved-delivery-qualification-20261010.json"
 }
