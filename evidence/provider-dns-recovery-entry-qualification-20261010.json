@@ -18,5 +18,18 @@
   "productionWrites": 0,
   "authorityIssued": false,
   "notReleaseAcceptance": true,
-  "fixtureScope": "Real worker function/DNS/nft/systemd; CI metadata and authority substituted in isolated netns"
+  "fixtureScope": "Real worker function/DNS/nft/systemd; CI metadata and authority substituted in isolated netns",
+  "deliveryCommit": "8c080c5188c8f7d98fafdaeebfd9a25239a34af8",
+  "finalCombinedRunId": 38028310118,
+  "finalCombinedJobId": 114143762713,
+  "finalCombinedStatus": "PASS",
+  "finalCombinedMarkers": [
+    "2026-10-10T05:40:41.3214733Z Ran 6 tests in 0.007s",
+    "2026-10-10T05:40:41.4345306Z Ran 4 tests in 0.018s",
+    "2026-10-10T05:40:41.5569476Z Ran 3 tests in 0.036s",
+    "2026-10-10T05:41:03.3575137Z DNS_RECOVERY_NATIVE=TRANSIENT_ZERO_TTL_RESAMPLED TWO_CYCLES=true OLD_ADDRESSES_DISCARDED=true",
+    "2026-10-10T05:41:19.7633964Z DNS_RECOVERY_NATIVE=PERSISTENT_ZERO_TTL_REVOKED THREE_ATTEMPTS=true REPLAY_DENIED=true ORIGINAL_SOURCES_PRESERVED=true REAL_SYSTEMD_DNS_NFT=true TARGET_ACTIONS=0"
+  ],
+  "finalR8RegressionRunId": 38028310133,
+  "finalR8RegressionStatus": "PASS"
 }

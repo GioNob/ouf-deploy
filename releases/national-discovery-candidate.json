@@ -40,7 +40,7 @@
   "releaseApplied": false,
   "acceptanceGranted": false,
   "blockingReleaseRequirements": [
-    "compose and natively qualify a distinct source-bound DNS recovery entrypoint/capsule; obtain new privileged decision without replay/reset of R8",
+    "fresh read-only DNS recovery target preflight and new privileged decision bound to the qualified distinct entrypoint; preserve consumed R8 claim",
     "migration-aware Semantic/MCP applicator with current private backup and explicit recovery",
     "governed replacement or preservation of the exact Semantic host peer binding; no ordinary recreate under retained ifindex1377",
     "existing private provider credential and separate discovery owner receipt key bound consistently to Semantic/Gateway",
@@ -436,7 +436,7 @@
       "targetExit": 0
     },
     "dnsRecoveryPreparation": {
-      "status": "CANDIDATE_AND_SOURCE_DELTA_CORE_CI_PASS_TARGET_NOT_APPLIED",
+      "status": "DISTINCT_ENTRYPOINT_NATIVE_WORKER_AND_DELIVERY_CI_PASS_TARGET_PREFLIGHT_PENDING",
       "sourceCommit": "be789d76f0c75c6c109cef3c2419d990930c63f2",
       "pullRequest": 58,
       "evidence": "evidence/provider-dns-window-remediation-qualification-20261010.json",
@@ -444,7 +444,14 @@
       "coreCommit": "906253fa005b82e13dbc49cdea79b9a15e70a354",
       "applyReady": false,
       "authorityIssued": false,
-      "targetInstalled": false
+      "targetInstalled": false,
+      "entrypointCommit": "3982b3b8d5c1dc53cc22af740e4319e281013da4",
+      "entrypointSha256": "9fd3e53283e8ceea4aecc67a46483fd2dcbdea08ef9270891d639cbafdd1d379",
+      "entrypointQualificationEvidence": "evidence/provider-dns-recovery-entry-qualification-20261010.json",
+      "nativeRunId": 38028310118,
+      "preflightLauncher": "releases/provider-dns-recovery-preflight-20261010.sh",
+      "preflightDeliveryCommit": "8c080c5188c8f7d98fafdaeebfd9a25239a34af8",
+      "preflightTargetExecuted": false
     }
   },
   "previousApplicationPreparation": {

@@ -91,7 +91,8 @@
     "readOnly": true,
     "commonLockAcquired": false,
     "dnsQueries": 0,
-    "installedOperationalCodeExecuted": false
+    "installedOperationalCodeExecuted": false,
+    "deliveryCommit": "8c080c5188c8f7d98fafdaeebfd9a25239a34af8"
   },
   "qualification": {
     "runId": 38028159013,
@@ -103,6 +104,9 @@
     "fixtureMetadataAndAuthority": true,
     "fullProductionApplyNotExecuted": true,
     "targetActions": 0,
-    "originalR8RegressionRun": 38028158989
+    "originalR8RegressionRun": 38028158989,
+    "finalCombinedRunId": 38028310118,
+    "finalCombinedStatus": "PASS",
+    "finalTestsPassed": 13
   }
 }
