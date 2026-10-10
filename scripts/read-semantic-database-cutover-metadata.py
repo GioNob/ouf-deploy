@@ -21,8 +21,10 @@ SELECT json_build_object(
  'migrations', (SELECT json_agg(version ORDER BY installed_rank) FROM ouf_sem.flyway_schema_history WHERE success),
  'relations', (SELECT json_agg(json_build_object('oid',c.oid,'kind',c.relkind,'owner',pg_get_userbyid(c.relowner)) ORDER BY c.oid) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='ouf_sem' AND c.relkind IN ('r','p','f','m','S')),
  'effectiveWriterRoles', (SELECT json_agg(json_build_object('role',r.rolname,'login',r.rolcanlogin,'superuser',r.rolsuper) ORDER BY r.rolname) FROM pg_roles r WHERE r.rolsuper OR (has_schema_privilege(r.oid,'ouf_sem','USAGE') AND EXISTS(SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='ouf_sem' AND c.relkind IN ('r','p','f') AND has_table_privilege(r.oid,c.oid,'INSERT,UPDATE,DELETE,TRUNCATE')))),
- 'sessions', (SELECT json_agg(json_build_object('sameRole',usename=current_user,'state',state,'semanticPeer',client_addr=inet '172.18.0.6','sameDatabase',datname=current_database()) ORDER BY pid) FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid()),
+ 'sessions', (SELECT json_agg(json_build_object('sameRole',usename=current_user,'state',state,'semanticPeer',client_addr=inet '172.18.0.6','sameDatabase',datname=current_database(),'clientAddress',client_addr::text,'applicationName',application_name) ORDER BY pid) FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid()),
  'otherDatabaseSessionsUsingSameRole', (SELECT count(*) FROM pg_stat_activity WHERE usename=current_user AND datname IS DISTINCT FROM current_database()),
+ 'largeObjectCount', (SELECT count(*) FROM pg_largeobject_metadata),
+ 'relationsOutsideSemanticSchema', (SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname NOT IN ('ouf_sem','pg_catalog','information_schema') AND n.nspname NOT LIKE 'pg_toast%' AND n.nspname NOT LIKE 'pg_temp%' AND c.relkind IN ('r','p','f','m','S')),
  'replicationSubscriptions', (SELECT count(*) FROM pg_subscription WHERE subdbid=(SELECT oid FROM pg_database WHERE datname=current_database()))
 );
 COMMIT;
@@ -43,7 +45,8 @@ def project(raw):
             'successfulMigrations':raw['migrations'], 'relationCount':len(raw['relations'] or []),
             'effectiveWriterRoles':[{'roleHash':sha(r['role']), 'login':r['login'], 'superuser':r['superuser'], 'sameAsCurrentRole':r['role']==raw['user']} for r in writers],
             'sessionCount':len(raw['sessions'] or []), 'semanticPeerSessionCount':sum(1 for s in raw['sessions'] or [] if s['semanticPeer'] is True),
-            'otherDatabaseSessionsUsingSameRole':raw['otherDatabaseSessionsUsingSameRole'], 'replicationSubscriptionCount':raw['replicationSubscriptions'],
+            'otherDatabaseSessionsUsingSameRole':raw['otherDatabaseSessionsUsingSameRole'], 'replicationSubscriptionCount':raw['replicationSubscriptions'], 'largeObjectCount':raw['largeObjectCount'], 'relationsOutsideSemanticSchema':raw['relationsOutsideSemanticSchema'],
+            'sessionGroups': [{'clientAddressHash':sha(address), 'applicationNameHash':sha(app), 'sameRole':same_role, 'count':sum(1 for s in raw['sessions'] or [] if (s['clientAddress'],s['applicationName'],s['sameRole'])==(address,app,same_role))} for address,app,same_role in sorted(set((s['clientAddress'] or '',s['applicationName'],s['sameRole']) for s in raw['sessions'] or []))],
             'catalogHash':sha(static), 'catalogReadVisibilityComplete':role['rolsuper'], 'globalRoleLoginFenceRejected':role['rolsuper'] or raw['otherDatabaseSessionsUsingSameRole']>0, 'dedicatedRoleCustodyProven':False,
             'sessionsAreObservationalNotFenceAuthority':True}
 
@@ -60,6 +63,14 @@ def main():
             if len(raw)>131072:raise RuntimeError('CATALOG_READ_UNBOUNDED')
             return project(json.loads(raw))
         first,second=read(),read()
+        ids=backup.call(['docker','ps','--no-trunc','--format','{{.ID}}']).decode().split()
+        if len(ids)>64:raise RuntimeError('CONTAINER_INVENTORY_UNBOUNDED')
+        peers=[]
+        for cid in ids:
+            raw=json.loads(backup.call(['docker','inspect','--type','container','--format','{{json .NetworkSettings.Networks}}',cid]))
+            peers.extend({'containerId':cid,'clientAddressHash':sha(n['IPAddress'])} for n in raw.values() if n.get('IPAddress'))
+        for group in second['sessionGroups']:
+            group['matchingContainerIds']=sorted(set(p['containerId'] for p in peers if p['clientAddressHash']==group['clientAddressHash']))
         if first['catalogHash']!=second['catalogHash']:raise RuntimeError('CATALOG_CHANGED_DURING_READ')
         if stable_binding(semantic)!=stable_binding(backup.inspect('ouf-semantic')) or stable_binding(postgres)!=stable_binding(backup.inspect('ouf-postgres')):
             raise RuntimeError('LIVE_BINDING_CHANGED_DURING_READ')
