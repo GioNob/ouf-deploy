@@ -5,7 +5,7 @@ from pathlib import Path
 DB="ouf-discovery-migration-ci"
 def cmd(argv, data=None, ok=True):
     p=subprocess.run(argv,input=data,capture_output=True,timeout=60)
-    if ok and p.returncode:raise RuntimeError("CI_COMMAND_FAILED")
+    if ok and p.returncode:raise RuntimeError("CI_FIXTURE_COMMAND_FAILED exit="+str(p.returncode)+" stderr="+p.stderr.decode(errors="replace")[:2000])
     return p
 def sql(text,database="semantic",ok=True):
     return cmd(["docker","exec","-i",DB,"psql","-X","-U","postgres","-d",database,"-v","ON_ERROR_STOP=1","-A","-t"],text.encode(),ok)
@@ -13,7 +13,7 @@ source=Path("semantic-source/src/main/resources/db/migration")
 try:
     cmd(["docker","run","-d","--name",DB,"-e","POSTGRES_PASSWORD=ci-fixture-only","-e","POSTGRES_DB=semantic","postgres:17"])
     for _ in range(30):
-        if cmd(["docker","exec",DB,"pg_isready","-U","postgres","-d","semantic"],ok=False).returncode==0:break
+        if cmd(["docker","exec",DB,"pg_isready","--host=127.0.0.1","-U","postgres","-d","semantic"],ok=False).returncode==0:break
         time.sleep(1)
     else:raise RuntimeError("POSTGRES_NOT_READY")
     qualification=json.loads(Path("evidence/discovery-remediated-application-qualification-20261009.json").read_bytes())
