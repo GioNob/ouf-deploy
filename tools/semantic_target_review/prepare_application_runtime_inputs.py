@@ -75,7 +75,7 @@ def public_trust_source(bundle,policy,live,startup):
     source=str(BASE/'semantic-provider-v2-inputs-XE7IwlGm/config.yaml')
     config_hash='77342a509b0b0e9498728fa366f50ce031c19d78a636d4225de5e95e1ba97140'
     mounts=[m for m in bundle['mounts'] if m.get('destination')==target]
-    require(len(mounts)==1 and mounts[0].get('type')=='bind' and mounts[0].get('source')==source and 'ro' in mounts[0].get('options',[]) and 'rw' not in mounts[0]['options'],'EXACT_READ_ONLY_SOUTHBOUND_CONFIGURATION_REQUIRED')
+    require(len(mounts)==1 and mounts[0].get('type')=='bind' and mounts[0].get('source')==source and bool({'ro','rro'} & set(mounts[0].get('options') or [])) and 'rw' not in mounts[0]['options'],'EXACT_READ_ONLY_SOUTHBOUND_CONFIGURATION_REQUIRED')
     sources=[v for v in policy['sources'] if v.get('target')==target]
     require(len(sources)==1 and sources[0].get('source')==source and sources[0].get('readOnly') is True and sources[0].get('sha256')==config_hash and (sources[0].get('uid'),sources[0].get('gid'),sources[0].get('mode'))==(636,636,0o600),'SEALED_SOUTHBOUND_CONFIGURATION_SOURCE_REQUIRED')
     current=[m for m in live['Mounts'] if m.get('Destination')==target]

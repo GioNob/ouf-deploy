@@ -47,6 +47,11 @@ class PublicTrustBinding(unittest.TestCase):
     def test_configuration_mount_binds_public_trust_without_certificate_mount(self):
         with patch.object(prepare,'file_bytes',side_effect=AssertionError('No file read in metadata binding')):
             self.assertEqual(prepare.public_trust_source(self.bundle,self.policy,self.live,self.startup),prepare.BASE/'semantic-provider-v2-trust-vf7B4SM5')
+    def test_recursive_read_only_oci_is_accepted_but_rw_conflict_is_denied(self):
+        self.bundle['mounts'][0]['options']=['rbind','rro']
+        self.assertEqual(prepare.public_trust_source(self.bundle,self.policy,self.live,self.startup),prepare.BASE/'semantic-provider-v2-trust-vf7B4SM5')
+        self.bundle['mounts'][0]['options'].append('rw')
+        with self.assertRaises(ValueError):prepare.public_trust_source(self.bundle,self.policy,self.live,self.startup)
     def test_writable_oci_or_live_mount_rejected(self):
         for field in ('oci','live'):
             bundle=copy.deepcopy(self.bundle);live=copy.deepcopy(self.live)
