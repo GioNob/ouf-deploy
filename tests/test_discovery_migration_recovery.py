@@ -84,9 +84,11 @@ try:
             digests={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (old/folder).iterdir()}
             if digests!=receipt[field]:raise RuntimeError("OLD_PACKAGE_TRANSFER_DRIFT")
         cmd(["javac","-cp",str(old/"lib/*"),"-d",str(old),"tests/fixtures/FlywayFixture.java"])
-        observed=cmd(["java","-cp",str(old)+":"+str(old/"lib/*"),"FlywayFixture","validate","semantic",str(old/"migrations")],ok=False)
-        old_flyway_validation="VALIDATED_WITH_CURRENT_SCHEMA" if observed.returncode==0 else "VALIDATION_DENIED"
-        if observed.returncode==0 and b"OUF_FLYWAY_FIXTURE=VALIDATED" not in observed.stdout:raise RuntimeError("OLD_VALIDATION_RESULT_UNPROVEN")
+        cmd(["java","-cp",str(old)+":"+str(old/"lib/*"),"FlywayFixture","validate","restored",str(old/"migrations")])
+        observed=cmd(["java","-cp",str(old)+":"+str(old/"lib/*"),"FlywayFixture","observe","semantic",str(old/"migrations")])
+        statuses=[line.split(b"=",1)[1].decode() for line in observed.stdout.splitlines() if line.startswith(b"OUF_FLYWAY_VALIDATION=")]
+        if len(statuses)!=1 or statuses[0] not in ("VALIDATED_WITH_CURRENT_SCHEMA","VALIDATION_DENIED"):raise RuntimeError("OLD_VALIDATION_RESULT_UNPROVEN")
+        old_flyway_validation=statuses[0]
         # This is the actual installed library set, but not full Spring startup.
         # A denied legacy validator must block old-image rollback; no repair.
     all_requests="SELECT COALESCE(jsonb_agg(to_jsonb(t) ORDER BY request_id),'[]'::jsonb)::text FROM ouf_sem.discovery_request t;"

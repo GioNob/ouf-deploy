@@ -17,6 +17,10 @@ public final class FlywayFixture {
         flyway.validate();
         System.out.println("OUF_FLYWAY_FIXTURE=VALIDATED");
         break;
+      case "observe":
+        ValidateResult observation = flyway.validateWithResult();
+        System.out.println("OUF_FLYWAY_VALIDATION="+(observation.validationSuccessful ? "VALIDATED_WITH_CURRENT_SCHEMA" : "VALIDATION_DENIED"));
+        break;
       case "reject":
         ValidateResult result = flyway.validateWithResult();
         if (result.validationSuccessful) throw new IllegalStateException("CHECKSUM_DRIFT_ACCEPTED");
