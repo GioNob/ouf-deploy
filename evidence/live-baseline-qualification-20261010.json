@@ -51,9 +51,16 @@
   },
   "currentChannelRead": {
     "mcpStatus": "HEALTHY_PUBLIC_OPERATIONAL_ONLY",
-    "cinemaSearchItems": 0,
-    "searchAcceptance": false,
-    "semanticSearchItems": 0,
+    "canonicalSearchItems": 8,
+    "pages": [
+      3,
+      3,
+      2
+    ],
+    "terminalCursorNull": true,
+    "searchAcceptance": "BOUNDED_POSITIVE_READ_PASS_FULL_SMOKE_OPEN",
+    "wrongExternalTypeSearchItems": 0,
+    "exactSemanticGet": "ACTIVE_17_ASSERTED_RDF_STATEMENTS",
     "ingestionStatus": "AUTHORIZATION_DENIED"
   },
   "historicalCinemaMaterialization": "8_OF_8_PASS_DO_NOT_REPLAY",
@@ -61,5 +68,63 @@
     "udp": "48a86459fdeed38403838c5a2076b40cb082fe58",
     "ingestion": "6d6777e20e0368c830d1e01de0494d9fa0197dbf",
     "deploymentTriggered": false
+  },
+  "reconciledMainChecks": {
+    "udp": [
+      {
+        "id": 38069214476,
+        "conclusion": "success"
+      },
+      {
+        "id": 38069214501,
+        "conclusion": "success"
+      },
+      {
+        "id": 38069214486,
+        "conclusion": "success"
+      },
+      {
+        "id": 38069214481,
+        "conclusion": "success"
+      },
+      {
+        "id": 38069214557,
+        "conclusion": "success"
+      }
+    ],
+    "ingestion": [
+      {
+        "id": 38069320313,
+        "conclusion": "success"
+      },
+      {
+        "id": 38069320276,
+        "conclusion": "success"
+      },
+      {
+        "id": 38069320290,
+        "conclusion": "success"
+      },
+      {
+        "id": 38069320308,
+        "conclusion": "success"
+      },
+      {
+        "id": 38069320261,
+        "conclusion": "success"
+      },
+      {
+        "id": 38069320291,
+        "conclusion": "success"
+      },
+      {
+        "id": 38069320279,
+        "conclusion": "success"
+      },
+      {
+        "id": 38069320289,
+        "conclusion": "success"
+      }
+    ]
   }
 }

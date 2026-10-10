@@ -1,0 +1,69 @@
+{
+  "schema": "ouf.file-loop.current-canonical-search-read.v1",
+  "date": "2026-10-10",
+  "readOnly": true,
+  "vpsConfigurationWrites": 0,
+  "reingestionIssued": false,
+  "tenantFromConfiguredGrant": "ouf-lab",
+  "canonicalType": "https://api.ouf-lab.it/semantic/cinema#Cinema",
+  "alignedExternalClass": "https://schema.org/MovieTheater",
+  "alignmentMeansAutomaticTypeEquivalence": false,
+  "configuredPolicyRef": "ouf-lab-authorization:38",
+  "configuredGrantsDoNotProveEffectivePermissions": true,
+  "pageSize": 3,
+  "pageCounts": [
+    3,
+    3,
+    2
+  ],
+  "distinctActiveObjectCount": 8,
+  "allActive": true,
+  "terminalCursorNull": true,
+  "partialFlags": [
+    false,
+    false,
+    false
+  ],
+  "returnedPropertyRefs": [
+    "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+    "https://api.ouf-lab.it/semantic/cinema#nome"
+  ],
+  "objectIds": [
+    "0418930b-0929-47fb-bab9-a1bc5d6d3fdb",
+    "070a6a44-a934-4f82-aec9-5723762fa908",
+    "44d19ec1-0b63-49c9-a758-da4b37e90f84",
+    "4594e467-cc1d-45f9-be3b-93ad3cc19d20",
+    "4613bce3-29c3-48f9-b2e7-882d7c9c4449",
+    "659eaa85-7f0b-49e2-bade-42728ebfb12d",
+    "65e7da72-6ff5-4b37-b9cb-54fc89a10a33",
+    "feb48d73-0195-4ddf-84b2-abdfb75cbc36"
+  ],
+  "sourceLineageReattested": false,
+  "semanticGet": {
+    "semanticId": "https://api.ouf-lab.it/semantic/cinema",
+    "revisionId": "51706bed-81e4-4306-aca1-70119821727d",
+    "publicationSetId": "f92a2e17-30c9-456f-bb12-63afa84f41e6",
+    "publicationChecksum": "a711d0428f1cbe24c73cbf0fa5cabfcb52f85df774e7238d884e7f83f41b84e9",
+    "rdfContentHash": "4340986102db6e47345dd8157734d9db83b928edd94485f1b9a5b9e81c497a2e",
+    "statementCount": 17,
+    "partial": false,
+    "status": "ACTIVE",
+    "interpretation": "ASSERTED_RDF_NO_INFERENCE"
+  },
+  "invalidCursorProbe": {
+    "result": "ORCHESTRATION_BUDGET_EXHAUSTED",
+    "retryable": false,
+    "ownerRejectionProven": false
+  },
+  "remainingAcceptance": [
+    "INVALID_CURSOR_OWNER_GATE",
+    "PARTIAL_AND_BUDGET_BEHAVIOR",
+    "NEGATIVE_PROPERTY_LABEL_MINIMIZATION",
+    "OWNER_AUDIT_CORRELATION",
+    "INDEPENDENT_STORAGE_BYTES_AND_HASH",
+    "SECOND_OVERLAPPING_FILE",
+    "CLEAN_HOST_INSTALLATION"
+  ],
+  "status": "EIGHT_CANONICAL_OBJECTS_VISIBLE_THREE_PAGES_NOT_FULL_RELEASE_ACCEPTANCE",
+  "notReleaseAcceptance": true
+}
