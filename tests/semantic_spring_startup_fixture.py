@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Boot the exact signed candidate on disposable databases, with real JWT verification."""
-import base64, hashlib, json, os, shutil, subprocess, tempfile, threading, time, urllib.error, urllib.request, zipfile
+import base64, hashlib, json, os, subprocess, tempfile, threading, time, urllib.error, urllib.request, zipfile
 from datetime import datetime, timezone, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -73,7 +73,7 @@ def main():
             policy_hash = hashlib.sha256(policy.read_bytes()).hexdigest()
             command(["docker", "run", "-d", "--name", DB, "-p", "127.0.0.1:55439:5432", "-e", "POSTGRES_PASSWORD=ci-fixture-only", "-e", "POSTGRES_DB=semantic", "postgres:17"])
             for _ in range(30):
-                if command(["docker", "exec", DB, "pg_isready", "-U", "postgres"], check=False).returncode == 0: break
+                if command(["docker", "exec", DB, "pg_isready", "--host=127.0.0.1", "-U", "postgres", "-d", "semantic"], check=False).returncode == 0: break
                 time.sleep(1)
             else: raise RuntimeError("POSTGRES_NOT_READY")
             receipt = json.loads(Path("evidence/discovery-remediated-application-qualification-20261009.json").read_bytes())["migrationPlan"]["receipt"]
