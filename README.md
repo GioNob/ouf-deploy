@@ -1,3 +1,11 @@
+# Current checkpoint — R10 lease activated and renewed on target
+
+Operator output received **10 October 2026 22:35:54 Europe/Rome** reports TWO_FLOW_LEASE_ACTIVE_AND_RENEWED and launcher exit0: refreshCount2, flowAddressCounts[1,1], exact unit `ouf-semantic-provider-lease-finite-r10.service`, snapshot `/etc/ouf/deploy-snapshots/semantic-finite-lease-recovery-r10-nw9ue4d5`. [Complete structured receipt](evidence/finite-r10-active-renewed-target-20261010.json). Evidence is user-pasted/operator-reported, not independently acquired from the VPS in this session.
+
+**R10 activation is consumed: do not rerun its launcher or reset either R10 or R9 claims.** The two finite approved flows were permitted at the observed successful activation. This receipt does not prove continuous liveness, application health or release acceptance. No container lifecycle, daemon restart, automatic restart, boot enablement, private-key read, signature or provider call by the worker was reported.
+
+Continue with the governed application cutover and readiness, preserving the exact R10 source/cohort/network authority, previously verified packages/trust/inputs and historical data. [Delivery and updated continuation](releases/FINITE_R10_DELIVERY_AND_CONTINUATION_20261010.md). Cinema8/8 delivery/materialization/current Search and Teatri upload/profile remain acquired; F10/F11 and clean-host installer acceptance are still open. Files before vertical API PULLv2.3. Historical checkpoints below are scoped records and do not supersede this R10 activation receipt.
+
 # Current checkpoint — R10 delivery qualified; operator activation pending
 
 R10's sixteen source tests and actual systemd/DNS/nft qualification pass at cd8f43d38a302af318d35890b7c83cd96fe14607. The immutable seven-component launcher is now delivered at bedfb47128bcf8356edc25744ffe3b0ea372739c. [Delivery CI38084153556](https://github.com/GioNob/ouf-deploy/actions/runs/38084153556) PASS: four tests cover all seven download/hash failure positions, isolated bootstrap and entrypoint tamper denial. [Exact operator command and scope](releases/FINITE_R10_DELIVERY_AND_CONTINUATION_20261010.md); [qualification receipt](evidence/finite-r10-delivery-qualified-20261010.json).

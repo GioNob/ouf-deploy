@@ -1,3 +1,13 @@
+# Current target checkpoint — R10 activation received
+
+The operator returned `TWO_FLOW_LEASE_ACTIVE_AND_RENEWED`, refreshCount2, flowAddressCounts[1,1], launcher exit0, at the message timestamp **10 October 2026 22:35:54 Europe/Rome**. The exact service is `ouf-semantic-provider-lease-finite-r10.service`, protected evidence directory `/etc/ouf/deploy-snapshots/semantic-finite-lease-recovery-r10-nw9ue4d5`. [Preserved receipt](../evidence/finite-r10-active-renewed-target-20261010.json). This is operator-reported evidence; no independent live read was performed here.
+
+**The command below is historical delivery documentation and MUST NOT be executed again.** R10's claim is consumed. The registered startup deadline is no longer a pending operator task and never permits replay. Preserve both R9 and R10 claims and all prior evidence.
+
+The two approved finite flow sets were active after two renewals at the recorded activation. Continuous worker liveness is not inferred. The output explicitly leaves applicationHealthProven=false and notReleaseAcceptance=true, with no container lifecycle, daemon restart or provider calls by the worker. The next product scope is governed application cutover/readiness while preserving this admitted process cohort and lease boundary, then complete file-loop acceptance and clean-host installation. Do not repeat Cinema8/8, Teatri upload/profile or consumed package/trust preparations.
+
+---
+
 # R10 recovery delivery and continuation — 10 October 2026
 
 ## Current result
@@ -18,7 +28,7 @@ The new transient unit is `ouf-semantic-provider-lease-finite-r10.service`; the 
 
 The registered window gates initial application and worker startup; it is not a two-hour maximum duration of a successfully admitted supervisor. The claimed worker remains bound to the admitted process generations and stops on failure/stop/reboot. Do not interpret successful activation as permanent liveness.
 
-## One operator command
+## Historical operator command — consumed, do not rerun
 
 Execute once on the VPS using the already authenticated GitHub CLI. This command verifies the launcher before running Bash; the launcher downloads and verifies all seven source components before invoking one isolated sudo Python bootstrap. Root revalidates the entrypoint and executes the verified in-memory bytes. No downloaded bytes are evaluated by a shell pipeline.
 
