@@ -339,3 +339,8 @@ Upstream containerd v2.1.4 source audit: `cmd/ctr/commands/tasks/delete.go` with
 PET/roadmap status remains scoped in [the reconciliation](releases/PET_ROADMAP_RECONCILIATION_20261010.md). Native database fencing/backup passed 6+4 PostgreSQL 17 tests; the stale Semantic smoke was stopped and retained with the primary generation unchanged. No production database gate, backup, migration or restore ran. [Evidence](evidence/discovery-database-fence-backup-qualification-20261010.json).
 
 The runner cannot read the private current R9 snapshot without operator sudo: [access evidence](evidence/current-r9-transition-read-access-20261010.json). Run the immutable [read-only launcher](releases/current-r9-transition-read-20261010.sh) locally on the VPS and return its result. It does not replay R9 or acquire the lease lock. Production applicator and acceptance remain unproven.
+
+
+### 10 October follow-up: current read completed; private runtime custody next
+
+R9 was observed active at refresh643; existing cutover input bindings are captured. Configuration delta and unchanged existing Semantic workload credential custody are captured without application/lease cutover. See [the updated PET reconciliation](releases/PET_ROADMAP_RECONCILIATION_20261010.md) and [target custody evidence](evidence/semantic-workload-custody-stage-target-20261010.json). The next [one-use root preparation](releases/application-runtime-input-preparation-20261010.sh) requires the operator's sudo password to create new protected role-owned inputs; it installs no mounts and changes no services, database, firewall, grants or consumed R9 state. Full production applicator and acceptance remain open.

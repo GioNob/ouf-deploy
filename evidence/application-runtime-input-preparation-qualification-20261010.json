@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.discovery.runtime-input-preparation-qualification.v1",
+  "sourceCommit": "ecb2b92ba89feddb7fc970b70098cad525e13ebc",
+  "runId": 38042159965,
+  "jobId": 114184390737,
+  "status": "FOUR_NATIVE_ROOT_FILESYSTEM_TESTS_PASS",
+  "roleUidGidCopies": [
+    10001,
+    636
+  ],
+  "exclusiveClaimAndFailureReplayDenied": true,
+  "privateInputHashModeSymlinkDenied": true,
+  "localNegativeChecks": 3,
+  "localActualRoleChownUnavailable": "User namespace rejects foreign UID/GID chown with EINVAL; full native ownership qualification ran on disposable hosted ubuntu root",
+  "productionInputPreparationExecuted": false,
+  "applicationCutoverAuthorized": false,
+  "releaseAcceptance": false
+}

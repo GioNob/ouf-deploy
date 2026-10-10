@@ -95,9 +95,14 @@
     "R9ReplayOrClaimResetAllowed": false
   },
   "nextRead": {
-    "program": "scripts/plan-semantic-replacement-configuration.py",
-    "scope": "Configuration delta: signed candidate image defaults, explicit application env overrides and retained mounts; no key/secret-file read, lifecycle or provider calls",
-    "status": "QUALIFY_THEN_AUTOMATIC_SELF_HOSTED_READ",
+    "status": "ONE_USE_ROOT_INPUT_PREPARATION_REQUIRES_OPERATOR_SUDO",
+    "program": "tools/semantic_target_review/prepare_application_runtime_inputs.py",
+    "sourceCommit": "ecb2b92ba89feddb7fc970b70098cad525e13ebc",
+    "launcher": "releases/application-runtime-input-preparation-20261010.sh",
+    "scope": "New root-owned runtime custody only; no mounts, services or cutover",
     "productionTransitionReady": false
-  }
+  },
+  "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
+  "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
+  "runtimeInputsPreparedOnTarget": false
 }

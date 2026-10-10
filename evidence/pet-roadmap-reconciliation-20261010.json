@@ -756,6 +756,24 @@
       "runId": 38032196847,
       "providerAndWorkerDisabled": true,
       "targetApplyPerformed": false
+    },
+    "currentR9Observation": {
+      "status": "LEASE_ACTIVE_AT_STABLE_OBSERVATION",
+      "operatorLocalTime": "2026-10-10T10:50:56+02:00",
+      "refreshCount": 643,
+      "minRemainingTtlSeconds": 0.015,
+      "continuousLivenessProven": false,
+      "evidence": "evidence/current-r9-transition-active-target-20261010.json"
+    },
+    "runtimeCustodyPreparation": {
+      "configurationDeltaCaptured": true,
+      "existingClientAndScopeConfirmed": true,
+      "existingSecretStagedPrivately": true,
+      "clientSecretRotated": false,
+      "gatewayUid": 636,
+      "rootRuntimeInputsPreparedOnTarget": false,
+      "next": "Operator sudo for one-use new runtime input custody, no service or lease cutover",
+      "evidence": "evidence/semantic-workload-custody-stage-target-20261010.json"
     }
   },
   "fullPetConformanceClaim": false,
