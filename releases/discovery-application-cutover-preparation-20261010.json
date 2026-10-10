@@ -95,27 +95,31 @@
     "R9ReplayOrClaimResetAllowed": false
   },
   "nextRead": {
-    "status": "ONE_USE_ROOT_INPUT_PREPARATION_REQUIRES_OPERATOR_SUDO",
-    "program": "tools/semantic_target_review/prepare_application_runtime_inputs.py",
-    "sourceCommit": "b71638367b3cb2b48ce3e65933078b51feb2f85c",
-    "launcher": "releases/application-runtime-input-preparation-20261010.sh",
-    "scope": "New root-owned runtime custody only; no mounts, services or cutover",
-    "productionTransitionReady": false
+    "status": "COMPOSE_CANDIDATE_CONFIGURATION_AND_JAVA_TRUST",
+    "productionTransitionReady": false,
+    "existingInputClaimConsumed": true,
+    "scope": "Reuse prepared role-owned files, preserve candidate default public trust, resolve exact MCP workload and provider paths"
   },
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
-  "runtimeInputsPreparedOnTarget": false,
+  "runtimeInputsPreparedOnTarget": true,
   "runtimeInputPreparationLastAttempt": {
-    "status": "INPUT_PREPARATION_BLOCKED_BEFORE_CLAIM",
-    "reason": "EXACT_READ_ONLY_SOUTHBOUND_CONFIGURATION_REQUIRED",
-    "evidence": "evidence/application-runtime-input-preparation-oci-blocked-target-20261010.json",
-    "retryPermittedAfterCorrectedImmutableDelivery": true
+    "status": "ROOT_RUNTIME_INPUTS_PREPARED_NOT_MOUNTED",
+    "evidence": "evidence/application-runtime-inputs-prepared-target-20261010.json",
+    "doNotRerunApply": true,
+    "privateManifestHash": "732a633e46cb06bb720352aa6a90946281ba6489e94aa35dc04820eae56b4a70"
   },
   "runtimeInputPreparationPriorAttempts": [
     {
       "status": "INPUT_PREPARATION_BLOCKED_BEFORE_CLAIM",
       "evidence": "evidence/application-runtime-input-preparation-blocked-target-20261010.json",
       "reason": "EXACT_READ_ONLY_SOUTHBOUND_CERTIFICATE_REQUIRED",
+      "retryPermittedAfterCorrectedImmutableDelivery": true
+    },
+    {
+      "status": "INPUT_PREPARATION_BLOCKED_BEFORE_CLAIM",
+      "reason": "EXACT_READ_ONLY_SOUTHBOUND_CONFIGURATION_REQUIRED",
+      "evidence": "evidence/application-runtime-input-preparation-oci-blocked-target-20261010.json",
       "retryPermittedAfterCorrectedImmutableDelivery": true
     }
   ]
