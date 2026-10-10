@@ -84,6 +84,15 @@ def diagnosis(error):
                 and window['ttlNoncacheable'] == (window['minimumObservedTtlSeconds'] == 0)
                 and type(attempts) is int and 1 <= attempts <= 3):
             row['dnsObservationWindow'] = {**window, 'freshObservationAttempts': attempts}
+        nft = getattr(error, 'nft_readback', None)
+        if (type(nft) is dict and set(nft) == {'family','flowIndex','expiresType','expiresValue',
+                'duplicateAddress','configuredLeaseSeconds'} and nft['family'] in ('inet','bridge')
+                and type(nft['flowIndex']) is int and 0 <= nft['flowIndex'] <= 31
+                and type(nft['expiresType']) is str and re.fullmatch('[A-Za-z_]{1,32}',nft['expiresType'])
+                and (nft['expiresValue'] is None or type(nft['expiresValue']) is int and 0 <= nft['expiresValue'] < 2**31)
+                and type(nft['duplicateAddress']) is bool and type(nft['configuredLeaseSeconds']) is int
+                and 1 <= nft['configuredLeaseSeconds'] <= 3600):
+            row['nftReadback'] = nft
         chain.append(row)
         error = error.__cause__ or error.__context__
     return {'exceptionChain': chain, 'privateValuesPrinted': False}

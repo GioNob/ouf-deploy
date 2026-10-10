@@ -40,6 +40,15 @@ class Tests(unittest.TestCase):
         self.owner['sourceHashes'].pop('tools/semantic_provider_lease_nft.py')
         with self.assertRaisesRegex(ValueError,'EXACT_INSTALLED_OWNER_CLOSURE_REQUIRED'):
             core.load_installed(self.owner,Path('/fixture/source'),self.read,nft_override=self.delta)
+    def test_future_rejected_ttl_value_is_retained_without_address_or_secrets(self):
+        error=RuntimeError('NFT_SET_TTL_UNPROVEN')
+        error.nft_readback={'family':'inet','flowIndex':0,'expiresType':'int','expiresValue':0,
+                           'duplicateAddress':False,'configuredLeaseSeconds':30}
+        self.assertEqual(core.diagnosis(error)['exceptionChain'][0]['nftReadback']['expiresValue'],0)
+        error.nft_readback['address']='private-secret-value'
+        result=core.diagnosis(error)
+        self.assertNotIn('nftReadback',result['exceptionChain'][0])
+        self.assertNotIn('private-secret-value',str(result))
 
 
 if __name__=='__main__':unittest.main()

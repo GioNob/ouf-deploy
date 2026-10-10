@@ -74,7 +74,13 @@ class NftBackend:
                     element = entry['elem']; address = str(ipaddress.ip_address(element['val']))
                     ttl = element['expires']
                     if type(ttl) is not int or not 0 < ttl <= configuration['providerFlows'][index]['leaseSeconds'] or address in elements:
-                        raise RuntimeError('NFT_SET_TTL_UNPROVEN')
+                        error = RuntimeError('NFT_SET_TTL_UNPROVEN')
+                        error.nft_readback = {'family':family,'flowIndex':index,
+                            'expiresType':type(ttl).__name__,
+                            'expiresValue':ttl if type(ttl) is int and 0 <= ttl < 2**31 else None,
+                            'duplicateAddress':address in elements,
+                            'configuredLeaseSeconds':configuration['providerFlows'][index]['leaseSeconds']}
+                        raise error
                     # libnftables JSON expires is integer seconds, unlike the
                     # underlying netlink millisecond attribute. Do not infer
                     # units from magnitude, accept strings or extend zero TTL.
