@@ -1,4 +1,10 @@
-# Current checkpoint — qualified Semantic package declaration pending on target
+# Current checkpoint — qualified Semantic package declared on target
+
+Operator output received **10 October 2026 22:47:55 Europe/Rome** reports `QUALIFIED_PACKAGE_DECLARED_NOT_APPLY_READY`, exit0. [Complete receipt](evidence/semantic-qualified-package-declaration-target-20261010.json). New private snapshot: `/etc/ouf/deploy-snapshots/semantic-qualified-package-declaration-v7nhhm3o`; declaration SHA256 `78dc04694daf0dd8685b74eedddd64365c600c2303ac3fbaa47313bdb85b5d59`. The declaration selects exact Semantic image `sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85`, source `622614b0040cf11be2f6c7e3568733a488ca4ca8`, and preserves the historical host configuration/creation frame. Evidence is operator-reported, not independently acquired from the VPS.
+
+The package declaration step is complete. The historical command below need not be rerun. The compiler reports no container lifecycle, image import, database/firewall write, credential/private-key-file read or lease-lock acquisition; R10 was not touched. This is **not application cutover or readiness**: live generation/complete OCI/peer, coordinated transport transition, fresh private custody, writer fence/backup/recovery and IAM/provider health remain open. [Updated continuation](releases/SEMANTIC_QUALIFIED_PACKAGE_DECLARATION_20261010.md). Preserve consumed R10 and acquired Cinema/Teatri results.
+
+# Historical checkpoint — qualified Semantic package declaration was pending on target
 
 R10 is consumed and was reported active/renewed on target. The previous private runtime declaration still binds Semantic image `b1a795…`; the retained publisher-verified package binds `e826bd…`. The exact-package compiler and its immutable delivery now pass [CI38084905986](https://github.com/GioNob/ouf-deploy/actions/runs/38084905986):13 tests and cryptographic reading of the real producer ZIP, without image import. [Operator command and remaining cutover scope](releases/SEMANTIC_QUALIFIED_PACKAGE_DECLARATION_20261010.md). Target compilation is pending; application cutover and health are unproven. Historical declarations/startup evidence do not automatically apply to the new image.
 

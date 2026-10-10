@@ -2,7 +2,15 @@
 
 La receipt R10 ricevuta alle 22:35:54 CEST dichiara due flussi attivi e due rinnovi. [Receipt integrale](../evidence/finite-r10-active-renewed-target-20261010.json). R10 è consumata: non ripetere attivazione, reset claim o riavvio del worker. Questa osservazione non dimostra liveness continua o salute applicativa.
 
-## Disallineamento trovato
+## Target receipt — compilation completed
+
+Output received **10 October 2026 22:47:55 CEST** reports `QUALIFIED_PACKAGE_DECLARED_NOT_APPLY_READY`, exit0. [Complete operator-reported receipt](../evidence/semantic-qualified-package-declaration-target-20261010.json). Snapshot `/etc/ouf/deploy-snapshots/semantic-qualified-package-declaration-v7nhhm3o`, private declaration hash `78dc04694daf0dd8685b74eedddd64365c600c2303ac3fbaa47313bdb85b5d59`, candidate config hash `31d2dbbd8a286ac4123148f293e5732fc18f28aeccc28eef3ea061aca5d37193`.
+
+The new declaration now binds Semantic e826bd… with exact qualified source/ZIP. HostConfig hash aee587… and original creation-frame hash ff9159… match the previous protected declaration. Application settings are retained and runtime defaults come from the new image. No R10 touch, lease lock, container lifecycle, image import, database/firewall mutation or key-file access was reported.
+
+**Compilation is complete; the command in the historical delivery section below need not be rerun.** Production apply readiness, fresh runtime custody, complete realized OCI and application cutover remain unproven. Continue with coordinated R10-preserving cutover composition and the closures listed below. The reported timestamp is message receipt time, not independently verified execution time.
+
+## Disallineamento trovato (risolto dalla compilazione target)
 
 La [dichiarazione runtime protetta precedente](../evidence/replacement-runtime-declaration-target-20261010.json) riguarda l'immagine Semantic `sha256:b1a7956a673f88b5ee65d174c2eda7b9e448153e101348c06fdd53c0640e700b`. Il [pacchetto con publisher verificato sul target](../evidence/file-loop-provenance-trust-r9-target-20261010.json) riguarda invece `sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85`, sorgente `622614b0040cf11be2f6c7e3568733a488ca4ca8`. Il nome storico della receipt include R9: le sue prove su publisher e trust restano distinte dalla vecchia osservazione R9 fallita.
 

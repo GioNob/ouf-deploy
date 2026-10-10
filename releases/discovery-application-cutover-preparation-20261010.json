@@ -1,6 +1,6 @@
 {
   "schema": "ouf.discovery.application-cutover-preparation.v1",
-  "status": "BOUND_EVIDENCE_FOR_APPLICATOR_COMPOSITION_NOT_APPLY_READY",
+  "status": "QUALIFIED_PACKAGE_DECLARED_ON_TARGET_CUTOVER_COMPOSITION_PENDING",
   "applyAuthorized": false,
   "newTargetAuthorityIssued": false,
   "networkLease": {
@@ -86,7 +86,7 @@
     "existingR10SealedProgramMustRemainUnchanged": true,
     "R10ReplayOrClaimResetAllowed": false
   },
-  "nextRead": "COMPILE_EXACT_QUALIFIED_SEMANTIC_PACKAGE_DECLARATION_WITHOUT_APPLY",
+  "nextRead": "COMPOSE_COORDINATED_R10_PRESERVING_CUTOVER_FRESH_NATIVE_CUSTODY_AND_DATABASE_CLOSURE",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
@@ -120,14 +120,19 @@
   "industrializationGoal": "Single qualified install/upgrade/recovery entry point; no routine manual VPS edits; initial bootstrap and PET-protected human decisions remain explicit",
   "industrializationPlan": "releases/INSTALLATION_INDUSTRIALIZATION_PLAN.md",
   "reusableInstallerDelivered": false,
-  "runtimeDeclarationPreparedOnTarget": false,
-  "runtimeDeclarationTargetEvidence": "evidence/replacement-runtime-declaration-target-20261010.json",
+  "runtimeDeclarationPreparedOnTarget": true,
+  "runtimeDeclarationTargetEvidence": "evidence/semantic-qualified-package-declaration-target-20261010.json",
   "runtimeDeclaration": {
-    "status": "REPLACEMENT_RUNTIME_DECLARED_NOT_REALIZED",
-    "privateDeclarationHash": "b9ee536c6cb4fefa4e6357716599cfdb34a38b7e11789013cf69096e5932709c",
-    "historical": true,
+    "status": "QUALIFIED_PACKAGE_DECLARED_NOT_APPLY_READY",
+    "privateDeclarationHash": "78dc04694daf0dd8685b74eedddd64365c600c2303ac3fbaa47313bdb85b5d59",
+    "evidenceDirectory": "/etc/ouf/deploy-snapshots/semantic-qualified-package-declaration-v7nhhm3o",
+    "candidateImageId": "sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85",
+    "candidateConfigHash": "31d2dbbd8a286ac4123148f293e5732fc18f28aeccc28eef3ea061aca5d37193",
+    "sourceCommit": "622614b0040cf11be2f6c7e3568733a488ca4ca8",
+    "historicalObservationsRetained": true,
     "completeReplacementOciProven": false,
-    "candidateImageId": "sha256:b1a7956a673f88b5ee65d174c2eda7b9e448153e101348c06fdd53c0640e700b"
+    "freshRuntimeCustodyProven": false,
+    "productionApplyReady": false
   },
   "historicalNetworkLease": {
     "activationEvidence": "evidence/provider-dns-recovery-active-renewed-target-20261010.json",
@@ -184,14 +189,23 @@
   "historicalRuntimeDeclarationPreparedOnTarget": true,
   "applicationInputContractRequiresCurrentPackageBinding": true,
   "qualifiedPackageDeclarationPreparation": {
-    "status": "COMPILER_QUALIFIED_TARGET_COMPILATION_PENDING",
+    "status": "QUALIFIED_PACKAGE_DECLARED_ON_TARGET_NOT_APPLY_READY",
     "candidateImageId": "sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85",
     "compilerCommit": "eee3a3c240df53c30fd25fdb8c77f469c3f63fd7",
     "deliveryCommit": "50c638d62fb4bf86faf9400172acb3a6f165dbb8",
     "qualificationRun": 38084825457,
-    "targetCompilationPerformed": false,
+    "targetCompilationPerformed": true,
     "completeReplacementOciProven": false,
     "productionApplyReady": false,
-    "deliveryQualificationRun": 38084905986
+    "deliveryQualificationRun": 38084905986,
+    "targetEvidence": "evidence/semantic-qualified-package-declaration-target-20261010.json"
+  },
+  "historicalRuntimeDeclarationTargetEvidence": "evidence/replacement-runtime-declaration-target-20261010.json",
+  "historicalRuntimeDeclaration": {
+    "status": "REPLACEMENT_RUNTIME_DECLARED_NOT_REALIZED",
+    "privateDeclarationHash": "b9ee536c6cb4fefa4e6357716599cfdb34a38b7e11789013cf69096e5932709c",
+    "historical": true,
+    "completeReplacementOciProven": false,
+    "candidateImageId": "sha256:b1a7956a673f88b5ee65d174c2eda7b9e448153e101348c06fdd53c0640e700b"
   }
 }
