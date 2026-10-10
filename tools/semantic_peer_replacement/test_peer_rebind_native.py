@@ -10,7 +10,7 @@ import sys
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / 'semantic_cohort_admission/cohort-draft'))
 from tools.materialize_semantic_shared_faces import materialize
-from peer_rebind import compile_replacement, digest, footprint, structure
+from peer_rebind import compile_replacement, compile_conditional_recovery, digest, footprint, structure
 
 
 def main():
@@ -106,12 +106,39 @@ table inet unrelated_ci {
         assert not probe('old') and probe('new') and not probe('rogue')
         # Reverse only after exact new native readback; this is isolated test recovery.
         assert digest(footprint(tables())) == plan['followingFootprintHash']
-        run([nft, '-f', '-'], plan['recoveryTransaction'])
+        recovery_negative = 0
+        for which in ('old', 'new'):
+            old_observation, new_observation = observation('old'), observation('new')
+            changed = old_observation if which == 'old' else new_observation
+            changed['generation']['startTicks'] += 1
+            try: compile_conditional_recovery(plan, digest(plan), tables(), old_observation, new_observation)
+            except ValueError: recovery_negative += 1
+            else: raise AssertionError('changed generation accepted for inverse')
+        try: compile_conditional_recovery(plan, digest(plan), original, observation('old'), observation('new'))
+        except ValueError: recovery_negative += 1
+        else: raise AssertionError('foreign native state accepted for inverse')
+        reverse = compile_conditional_recovery(plan, digest(plan), tables(), observation('old'), observation('new'))
+        run([nft, '-f', '-'], reverse)
         assert digest(footprint(tables())) == digest(footprint(original))
         assert probe('old') and not probe('new')
         assert digest(structure(protected())) == digest(structure(other))
+        # Simulate lifecycle loss of the old reciprocal link. The retained
+        # generation must not authorize an inverse after this actual deletion.
+        run([nft, '-f', '-'], plan['nativeTransaction'])
+        run([ip, 'link', 'del', 'h-old'])
+        gone = subprocess.run([ip, '-j', 'link', 'show', 'dev', 'h-old'],capture_output=True)
+        assert gone.returncode != 0
+        try: compile_conditional_recovery(plan, digest(plan), tables(), None, observation('new'))
+        except ValueError as error:
+            assert str(error) == 'OLD_PEER_GENERATION_CHANGED_REAUTHORIZE'
+            recovery_negative += 1
+        else: raise AssertionError('absent old reciprocal link accepted for inverse')
+        # Do not call probe: it toggles the deleted old link. Inspect new link
+        # and unchanged native ownership instead; prior probes covered traffic.
+        assert digest(footprint(tables())) == plan['followingFootprintHash']
+        assert digest(structure(protected())) == digest(structure(other))
         print('SEMANTIC_PEER_PLAN_NATIVE=' + json.dumps({'status': 'PASS', 'actualNft': True,
-            'actualPacketProbes': 8, 'negativeScopeCases': negative, 'oneIngressRuleChanged': True,
+            'actualPacketProbes': 8, 'negativeScopeCases': negative, 'negativeRecoveryCases': recovery_negative, 'deletedOldPeerInverseDenied': True, 'oneIngressRuleChanged': True,
             'leaseAndUnrelatedTablesUnchanged': True, 'conditionalRecoveryProvenInFixture': True,
             'peerIdentityInputs': 'CI_FIXTURE_NOT_TARGET_ATTESTATIONS', 'targetAcceptance': False}))
     finally:

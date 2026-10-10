@@ -152,3 +152,26 @@ def compile_replacement(policy, tables, expected_structure, expected_footprint, 
                              'NEW_SEPARATE_HUMAN_TRANSITION_AUTHORITY',
                              'NEW_DRIVER_TRANSPORT_CONSUMPTION_BINDINGS_WITHOUT_R8_REPLAY',
                              'LOCKED_NATIVE_COMPARE_APPLY_READBACK_AND_CONDITIONAL_RECOVERY']}
+
+def compile_conditional_recovery(plan, expected_plan_hash, current_tables, observed_old_peer, observed_new_peer):
+    """Return the inverse only while both exact authenticated generations exist.
+
+    expected_plan_hash must come from the source-bound transition closure.
+    Observations must be freshly authenticated reciprocal-link observations,
+    never retained records. This function grants no authority and runs no command.
+    Restarting the old image creates a new generation and requires new attestation
+    and transport/profile authority; preserving IP/MAC is insufficient.
+    """
+    require(type(expected_plan_hash) is str and re.fullmatch('[0-9a-f]{64}', expected_plan_hash)
+            and digest(plan) == expected_plan_hash, 'SEALED_REPLACEMENT_PLAN_DRIFT')
+    require(plan['schema'] == 'ouf.semantic-peer-replacement-plan.v1'
+            and plan['status'] == 'PLAN_ONLY' and plan['installed'] is False
+            and plan['authorityProven'] is False and plan['leaseTableTouched'] is False,
+            'PURE_SOURCE_BOUND_PLAN_REQUIRED')
+    require(observed_old_peer == plan['oldPeer'], 'OLD_PEER_GENERATION_CHANGED_REAUTHORIZE')
+    require(observed_new_peer == plan['newPeer'], 'NEW_PEER_GENERATION_CHANGED_REAUTHORIZE')
+    peer(observed_old_peer); peer(observed_new_peer)
+    require(type(current_tables) is dict and set(current_tables) == {'inet', 'bridge'}
+            and digest(footprint(current_tables)) == plan['followingFootprintHash'],
+            'RECOVERY_NATIVE_FOOTPRINT_DRIFT')
+    return plan['recoveryTransaction']
