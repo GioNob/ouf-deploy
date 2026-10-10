@@ -4,7 +4,8 @@ on:
     branches: [main]
     paths:
       - scripts/rebase-semantic-package-declaration.py
-      - tests/test_semantic_package_declaration.py
+      - tests/test_semantic_package_*.py
+      - releases/semantic-qualified-package-declaration-20261010.sh
       - .github/workflows/semantic-qualified-package-declaration.yml
   workflow_dispatch:
 permissions:
@@ -19,7 +20,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Verify preservation and denial boundaries
-        run: python3 -m unittest discover -s tests -p test_semantic_package_declaration.py -v
+        run: python3 -m unittest discover -s tests -p 'test_semantic_package_*.py' -v
       - name: Download exact retained producer ZIP
         env:
           GH_TOKEN: ${{ github.token }}
