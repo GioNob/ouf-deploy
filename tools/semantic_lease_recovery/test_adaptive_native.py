@@ -67,6 +67,7 @@ def main():
         def log(message, **kw):
             if message.startswith(('SEMANTIC_COORDINATED_START=', 'SEMANTIC_COORDINATED_CYCLE=')):
                 sets = backend.read_sets(owner['kernel'])
+                print('CI_ONLY_TTL_SAMPLE='+json.dumps({'cycle':len(cycles),'reportedSeconds':[[*members.values()] for members in sets.values()]}),flush=True)
                 assert len(sets) == 4 and all(sets.values())
                 assert all(0 < ttl < 8 for members in sets.values() for ttl in members.values())
                 cycles.append(counts['queries'])
