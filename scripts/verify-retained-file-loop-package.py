@@ -53,7 +53,7 @@ def verify(path,module):
                 if item.name in expected:
                     require(item.isfile() and item.size<=2*1024*1024 and item.name not in migrations,"BOUNDED_UNIQUE_SQL_SOURCE_REQUIRED")
                     raw=tree.extractfile(item).read(2*1024*1024+1)
-                    blob=hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\\0"+raw).hexdigest()
+                    blob=hashlib.sha1(b"blob "+str(len(raw)).encode()+bytes([0])+raw).hexdigest()
                     require(blob==expected[item.name],"SOURCE_SQL_BLOB_MISMATCH")
                     migrations[item.name]=raw
         require(set(migrations)==set(expected),"COMPLETE_SOURCE_SQL_REQUIRED")
