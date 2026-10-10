@@ -94,7 +94,7 @@
     "mutatingTransitionMustExplicitlyCoordinateLeaseWorker": true,
     "R9ReplayOrClaimResetAllowed": false
   },
-  "nextRead": "PREPARE_FROZEN_APPLICATION_INPUT_CONTRACT_FROM_PROTECTED_INTAKE",
+  "nextRead": "COMPOSE_COORDINATED_APPLICATOR_AND_REUSABLE_INSTALLATION_STATE_MACHINE",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
@@ -122,5 +122,10 @@
   "javaTrustTargetEvidence": "evidence/application-java-trust-prepared-target-20261010.json",
   "configurationCompositionEvidence": "evidence/replacement-configuration-composed-target-20261010.json",
   "protectedBindingsCapturedOnTarget": true,
-  "protectedBindingsTargetEvidence": "evidence/replacement-protected-bindings-captured-target-20261010.json"
+  "protectedBindingsTargetEvidence": "evidence/replacement-protected-bindings-captured-target-20261010.json",
+  "applicationInputContractPreparedOnTarget": true,
+  "applicationInputContractTargetEvidence": "evidence/application-input-contract-prepared-target-20261010.json",
+  "industrializationGoal": "Single qualified install/upgrade/recovery entry point; no routine manual VPS edits; initial bootstrap and PET-protected human decisions remain explicit",
+  "industrializationPlan": "releases/INSTALLATION_INDUSTRIALIZATION_PLAN.md",
+  "reusableInstallerDelivered": false
 }

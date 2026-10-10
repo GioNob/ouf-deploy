@@ -1,3 +1,9 @@
+## Aggiornamento 10 ottobre 2026, 15:29 CEST
+
+Il risultato richiesto dall'owner è un percorso installazione/upgrade/recupero ripetibile senza interventi manuali ordinari nel VPS: [piano di industrializzazione e criteri di accettazione](INSTALLATION_INDUSTRIALIZATION_PLAN.md). I launcher puntuali di preparazione non sono l'installer finale. Le sezioni sotto sono storiche, non istruzioni di replay.
+
+Sul target sono ora preparati input runtime, truststore Java e contratto applicativo verificato contro il binding provider originale. [Ultima evidenza](../evidence/application-input-contract-prepared-target-20261010.json). Nessun cutover applicativo effettuato; complete OCI, nuova closure peer/transport firmata, applicatore coordinato e readiness restano aperti. R9 è immutato; l'ultima osservazione corrente qualificata del worker rimane quella delle10:50, non una prova di liveness adesso. Si prosegue con l'applicatore e la macchina di stato riusabile, preservando Cinema e Teatri.
+
 # National discovery installation: exact current preparation
 
 ## Stato corrente — 9 ottobre 2026, lease R8 attiva e rinnovata

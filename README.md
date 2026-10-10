@@ -1,3 +1,11 @@
+# Current checkpoint — application input contract verified; reusable installation is the delivery goal
+
+10 October 2026, 15:29 CEST: the operator prepared the protected application input contract. [Target receipt](evidence/application-input-contract-prepared-target-20261010.json): provider routes/IAM/workload agree with the frozen binding, three role-owned read-only source files have verified metadata, no mount or application lifecycle/change performed. Secret bytes are not freshly verified; replacement complete OCI, signed reciprocal peer/transport closure and coordinated applicator remain unproven.
+
+The owner explicitly requires easy repeatable installation without routine VPS edits. [Industrialization plan and acceptance criteria](releases/INSTALLATION_INDUSTRIALIZATION_PLAN.md): versioned signed package, separate installation profile, one restricted privileged entry point, stateful resume without consumed-claim replay, qualified upgrade/recovery and independent clean-host proof. The present sequence of manual launchers is preparation, not the final installer. Initial bootstrap/secrets and PET-protected HUMAN decisions remain explicit.
+
+R9 has not been changed or replayed. Application health and release acceptance remain unproven. [Current preparation](releases/discovery-application-cutover-preparation-20261010.json), [PET reconciliation](releases/PET_ROADMAP_RECONCILIATION_20261010.md). Historical checkpoints follow.
+
 # Current checkpoint — PET roadmap reconciled; both Semantic applications boot on isolated migration/restore
 
 10 October 2026, 08:50 CEST: [seven-PET/roadmap reconciliation](releases/PET_ROADMAP_RECONCILIATION_20261010.md) recorded; R0/R1a retained in their original scope, representative platform acceptance remains open. Latest Ingestion worker and MinIO fixture CI failures are explicit release blockers.
