@@ -94,12 +94,7 @@
     "mutatingTransitionMustExplicitlyCoordinateLeaseWorker": true,
     "R9ReplayOrClaimResetAllowed": false
   },
-  "nextRead": {
-    "status": "COMPOSE_PRIVATE_REPLACEMENT_CONFIGURATION_AND_PUBLIC_RUNTIME_BINDINGS",
-    "doNotRerunRuntimeInputApply": true,
-    "doNotRerunJavaTrustApply": true,
-    "productionTransitionReady": false
-  },
+  "nextRead": "READ_PROTECTED_MANIFEST_AND_FROZEN_PROVIDER_BINDING_WITHOUT_KEYS_OR_APPLY",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
@@ -124,5 +119,6 @@
     }
   ],
   "javaTrustPreparedOnTarget": true,
-  "javaTrustTargetEvidence": "evidence/application-java-trust-prepared-target-20261010.json"
+  "javaTrustTargetEvidence": "evidence/application-java-trust-prepared-target-20261010.json",
+  "configurationCompositionEvidence": "evidence/replacement-configuration-composed-target-20261010.json"
 }
