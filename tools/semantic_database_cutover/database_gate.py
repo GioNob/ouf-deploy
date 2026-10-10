@@ -97,7 +97,7 @@ def install_gate(admin,database,expected_oid,retained_sessions,evidence_director
     claim=root/'gate-claim.json'
     require(not os.path.lexists(claim),'DO_NOT_REPLAY_GATE_CLAIM')
     def database_state():
-        return admin.query("SELECT json_build_object('oid',oid,'allowConnections',datallowconn,'preparedTransactions',(SELECT count(*) FROM pg_prepared_xacts WHERE database="+literal(database)+")) FROM pg_database WHERE datname="+literal(database))
+        return admin.query("SELECT json_build_object('oid',oid::bigint,'allowConnections',datallowconn,'preparedTransactions',(SELECT count(*) FROM pg_prepared_xacts WHERE database="+literal(database)+")) FROM pg_database WHERE datname="+literal(database))
     def sessions():
         return admin.query("SELECT COALESCE(json_agg(json_build_object('pid',pid,'backendStart',backend_start::text,'applicationName',application_name,'user',usename) ORDER BY pid),'[]'::json) FROM pg_stat_activity WHERE datname="+literal(database),"SELECT pg_stat_clear_snapshot();")
     # pg_stat_clear_snapshot returns an empty scalar line, compatible with quiet psql.

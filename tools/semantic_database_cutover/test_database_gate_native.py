@@ -25,7 +25,7 @@ class NativeGate(unittest.TestCase):
         self.channels=[]
         self.admin=self.channel('postgres','admin')
         self.admin.query('true','CREATE DATABASE '+self.db+'; CREATE DATABASE '+self.foreign+';')
-        self.oid=self.admin.query("SELECT oid FROM pg_database WHERE datname='"+self.db+"'")
+        self.oid=self.admin.query("SELECT oid::bigint FROM pg_database WHERE datname='"+self.db+"'")
         self.writer=self.channel(self.db,'writer')
         self.other=self.channel(self.foreign,'foreign')
         self.writer.query('true','CREATE TABLE fixture(id int); INSERT INTO fixture VALUES(1);')
