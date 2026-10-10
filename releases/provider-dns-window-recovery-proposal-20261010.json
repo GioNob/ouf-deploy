@@ -1,0 +1,78 @@
+{
+  "schema": "ouf.provider-dns-recovery-proposal.v1",
+  "status": "SOURCE_PAYLOAD_AND_CORE_PREPARED_NOT_APPLY_READY",
+  "triggerEvidence": "evidence/provider-r8-dns-window-failure-target-20261010.json",
+  "authorityIssued": false,
+  "applyAuthorized": false,
+  "newHumanDecisionRequired": true,
+  "consumedR8ClaimsPreserved": true,
+  "proposedServiceUnit": "ouf-semantic-provider-lease-dns-r9.service",
+  "proposedClaimPath": "/etc/ouf/provider-dns-window-recovery-r9.claim",
+  "proposedNewSnapshotPrefix": "semantic-dns-recovery-r9-",
+  "workerAutomaticRestart": false,
+  "enableAtBoot": false,
+  "containerLifecycleAuthorized": false,
+  "ownerConfigurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+  "requiredPreconditions": {
+    "journalState": "QUIESCED",
+    "journalSha256": "a58f0cb6e011879fc22723356d19926adf8945c38dcdbf2d21ab3fa34dd6f7f1",
+    "bothFlowSetsEmpty": true,
+    "oldWorkerState": "failed",
+    "oldWorkerMainPID": 0,
+    "oldWorkerInvocationID": "df9a930eafbb4b56abc662319ba9888e",
+    "oldSnapshot": "/etc/ouf/deploy-snapshots/semantic-r8-lease-8wfsv1aa",
+    "oldAuthorizationSha256": "087adc9fe21e445e5175bcef6789d8678f4a10dfc97ba94344b9a6c5be08bd07",
+    "oldFailureRecordSha256": "5a41c81f7717665fac86cc3647f2154317727407fbef9fc62d4173c717e854c3",
+    "sameApprovedRunningContainerGenerations": {
+      "adapter": {
+        "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+        "pid": 1826443
+      },
+      "southbound": {
+        "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+        "pid": 1826422
+      }
+    }
+  },
+  "boundedObservationPolicy": {
+    "attemptsMaximum": 3,
+    "totalOriginalDeadlineSeconds": 2,
+    "allSelectedResolversAndAAndAAAARequeriedEachAttempt": true,
+    "oldAddressesDiscardedEachAttempt": true,
+    "negativeTtlMinimumPreserved": true,
+    "maximumFlowLeaseSeconds": 30,
+    "policyAndTransportFailuresNotRetried": true,
+    "persistentFailureRevokesAndStops": true,
+    "workerExitNeverRearmsClaim": true
+  },
+  "sourceDelta": {
+    "repository": "GioNob/ouf-api-gateway",
+    "commit": "be789d76f0c75c6c109cef3c2419d990930c63f2",
+    "pullRequest": 58,
+    "path": "tools/semantic_provider_dns.py",
+    "originalSha256": "c466172113d1ffe850bf2c69762113b55fbc65d9091c96dca98a74548fddf930",
+    "sha256": "f1491cca148c488bbee8089dabcada0361781962d7b2858ad2fc4549cea3696f",
+    "deployCopy": "tools/semantic_lease_activation/dns_recovery_dns.py",
+    "existingInstalledSourceFilesRemainByteIdentical": true
+  },
+  "core": {
+    "path": "tools/semantic_lease_activation/dns_recovery_core.py",
+    "sha256": "3ea3c575da5a61b153294a10abf810811d846f04b64bd12d9a2b8dd5380879aa",
+    "originalCoreUnmodified": true,
+    "explicitOriginalAndReplacementHashRequired": true,
+    "numericOnlyWindowDiagnosticProjection": true
+  },
+  "existingReviewedLeaseCompiler": {
+    "sha256": "c3160940cf79678cb8e44c036cb0d947016f885ab09acfe6cce571833db5b079",
+    "originalSha256": "1c0d7f1243752fe216ef62eefbc2e3253b8f2503b518fafe11277e4d7721a084",
+    "reuseConsumedAuthority": false
+  },
+  "stillRequired": [
+    "Exact entrypoint/capsule and distinct claim binding the full new program closure",
+    "Fresh target preflight and isolated native qualification of the composed entrypoint",
+    "Explicit new human privileged decision before any authorization or service launch"
+  ],
+  "semanticPeerCutoverAndApplicationReleaseNotAuthorizedByThisProposal": true,
+  "productionWrites": 0,
+  "productionLeaseReactivations": 0
+}
