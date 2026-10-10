@@ -67,3 +67,14 @@ Gli errori Ingestion/storage sono registrati nella roadmap di rilascio e vanno r
 ## Seguito 10 ottobre, 08:50 CEST
 
 Il gate isolato di avvio completo ora è PASS: [CI38032196847](https://github.com/GioNob/ouf-deploy/actions/runs/38032196847), [evidenza](../evidence/discovery-full-spring-startup-qualification-20261010.json). Quattro avvii dei JAR effettivi precedente/candidato su baseline V1–V9 e V10 corrente ripristinato; IAM/JWT/policy attivi, quattro ricerche consentite e24 rifiuti verificati. Storico e scritture successive preservati. Provider/worker disabilitati nella fixture: nessuna nuova accettazione di provider, target o intero PET. Il prossimo lavoro è applicatore con backup fresco/custodia/fencing e closure autenticata del peer, coordinato al worker R9. Gli altri gap e i blocchi Ingestion/storage rimangono aperti.
+
+
+## Seguito 10 ottobre, 09:55 CEST — database e accesso R9
+
+La verifica dei writer ha individuato dieci connessioni del vecchio `ouf-semantic-r4a-smoke` oltre alle dieci del Semantic principale. Lo smoke è stato fermato e conservato, senza rimozione o riavvio e senza modificare Semantic principale o R9. La rilettura indipendente conta ora dieci connessioni, tutte del principale. Non riavviare lo smoke prima della revisione della compatibilità dello schema.
+
+Sono PASS sei prove native di fencing e quattro di backup su PostgreSQL 17 isolato, con vero dump e restore su database nuovo: [run38035267718](https://github.com/GioNob/ouf-deploy/actions/runs/38035267718), [evidenza](../evidence/discovery-database-fence-backup-qualification-20261010.json). La chiusura delle nuove connessioni precede il fencing completo e non basta da sola; un backup non viene accettato durante il solo stato parziale. Le prove comprendono guasti/SIGKILL, transazioni preparate, archivio corrotto, preservazione di righe e sequenza e divieto di sovrascrivere scritture successive. Nessun fencing, backup nuovo, migrazione o restore è stato eseguito sul database target.
+
+La lettura fresca di R9 è pronta e supera quattro prove di scope. Il tentativo sul runner [38035986086](https://github.com/GioNob/ouf-deploy/actions/runs/38035986086) restituisce `OPERATOR_SUDO_REQUIRED`: non è una prova di worker corrente attivo. Serve solo l'esecuzione locale del launcher [current-r9-transition-read-20261010.sh](current-r9-transition-read-20261010.sh) con password sudo dell'operatore; nessuna nuova autorizzazione di apply viene richiesta. Il programma legge stato e custodia di R9 e ingress condiviso senza lock, DNS, chiavi, firme, restart o replay.
+
+Coerenza PET confermata nel perimetro di preparazione: owner/auth e approvazione HUMAN restano separati dalla delega operativa; custodia, provenance e fail-closed conservati; Cinema e asset/profilo Teatri preservati. Nessun gap PET viene chiuso da questi test e l'applicatore di produzione completo resta da comporre dopo la lettura target.
