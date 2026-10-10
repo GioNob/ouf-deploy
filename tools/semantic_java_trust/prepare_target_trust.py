@@ -25,7 +25,7 @@ def isolated_merge(native,merge,root,image,report):
         if not re.fullmatch('[a-f0-9]{64}',candidate):raise ValueError('EXACT_NEW_JAVA_TOOL_CONTAINER_REQUIRED')
         tool=candidate
         facts=json.loads(native(['inspect','--type','container',tool]))[0];host=facts['HostConfig']
-        if not (facts['Image']==image and facts['Name']=='/'+name and host['NetworkMode']=='none' and host['ReadOnlyRootfs'] is True and host['Privileged'] is False and host['CapDrop']==['ALL'] and 'no-new-privileges:true' in host['SecurityOpt'] and facts['Config']['User']=='0:0'):raise ValueError('JAVA_TOOL_ISOLATION_UNPROVEN')
+        if not (facts['Image']==image and facts['Name']=='/'+name and host['NetworkMode']=='none' and host['ReadonlyRootfs'] is True and host['Privileged'] is False and host['CapDrop']==['ALL'] and 'no-new-privileges:true' in host['SecurityOpt'] and facts['Config']['User']=='0:0'):raise ValueError('JAVA_TOOL_ISOLATION_UNPROVEN')
         original=merge.run
         try:
             merge.run=lambda keytool,args:native(['exec',tool,str(keytool),'-J-Duser.language=en','-J-Duser.country=US',*args],include_stderr=True)
