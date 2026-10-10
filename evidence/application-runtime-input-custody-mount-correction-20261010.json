@@ -20,5 +20,13 @@
   "productionInputPreparationExecuted": false,
   "claimConsumed": false,
   "APISIXPrivateConfigurationOpened": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "correctedDelivery": {
+    "commit": "3bec64387a0e2d5d21e39b370e9bed9ddb0dff1d",
+    "runId": 38048060049,
+    "status": "SUCCESS",
+    "launcherSha256": "712624c7eccafbb66506a7d7cea500f6269b6da65d35f36c1d634a40a17a7834",
+    "entrySha256": "106b55746b26b2c3f2151bfc41f6496165f239f7d3735b8050b3fe3040da7fcc",
+    "readerSha256": "b9ea8aa1a8cf31d28dfa1df0960dcf6930880d11244fe1f84e710bfe0b9ec4cf"
+  }
 }
