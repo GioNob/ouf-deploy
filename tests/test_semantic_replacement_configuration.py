@@ -28,4 +28,10 @@ class Configuration(unittest.TestCase):
     def test_writable_owner_key_mount_denied(self):
         self.container['Mounts'][1]['RW']=True
         with self.assertRaisesRegex(ValueError,'EXACT_RETAINED_READ_ONLY_AUTH_MOUNTS_REQUIRED'):plan.configuration_delta(self.container,self.old,self.new)
+    def test_old_java_version_label_does_not_override_candidate(self):
+        self.container['Config']['Env'].append('JAVA_VERSION=old-release')
+        self.new['Config']['Env'].append('JAVA_VERSION=new-release')
+        result=plan.configuration_delta(self.container,self.old,self.new)
+        self.assertEqual(plan.environment(result['candidateConfig']['Env'])['JAVA_VERSION'],'new-release')
+        self.assertEqual(result['public']['ignoredLegacyRuntimeMetadataOverrideNames'],['JAVA_VERSION'])
 if __name__=='__main__':unittest.main()

@@ -30,6 +30,10 @@ def configuration_delta(container,installed_image,candidate_image):
     require(container['Id']==CID and container['Image']==installed_image['Id']==OLD_IMAGE and candidate_image['Id']==NEW_IMAGE,'EXACT_IMAGE_AND_CONTAINER_REQUIRED')
     current,base,new=(environment(v['Config'].get('Env',[])) for v in (container,installed_image,candidate_image))
     overrides={k:v for k,v in current.items() if k not in base or base[k]!=v}
+    # JAVA_VERSION labels the image build; it is not a supported application
+    # setting. Keep the signed candidate's value, not old deployment metadata.
+    legacy_runtime=sorted(set(overrides)&{'JAVA_VERSION'})
+    for key in legacy_runtime:overrides.pop(key)
     inherited=sorted(k for k,v in current.items() if k in base and base[k]==v)
     removed=sorted(set(base)-set(current))
     unknown=sorted(k for k in overrides if not k.startswith(('OUF_','SPRING_','MANAGEMENT_')) and k not in ('PORT','JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS'))
@@ -47,6 +51,7 @@ def configuration_delta(container,installed_image,candidate_image):
     return {'candidateConfig':cfg,'retainedContainer':container,'installedImage':installed_image,'candidateImage':candidate_image,
         'public':{'containerId':CID,'installedImageId':OLD_IMAGE,'candidateImageId':NEW_IMAGE,
           'explicitEnvironmentOverrideNames':sorted(overrides),'inheritedImageEnvironmentNames':inherited,
+          'ignoredLegacyRuntimeMetadataOverrideNames':legacy_runtime,
           'removedInstalledImageEnvironmentNames':removed,'unreviewedEnvironmentOverrideNames':unknown,'explicitCommandOrUserOverrideNames':argv_overrides,
           'runtimeDefaultsTakenFromSignedCandidate':True,'candidateConfigHash':digest(cfg),
           'candidateConfigUser':cfg.get('User'),'retainedAuthMounts':[{'destination':m['Destination'],'readOnly':True} for m in mounted],
