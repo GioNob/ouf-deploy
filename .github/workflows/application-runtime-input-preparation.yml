@@ -27,3 +27,13 @@ jobs:
           if [ -f tools/semantic_target_review/test_application_runtime_input_delivery.py ]; then
             python3 tools/semantic_target_review/test_application_runtime_input_delivery.py
           fi
+  target-mount-metadata:
+    needs: qualification
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Exact existing APISIX configuration mount metadata only
+        run: python3 tools/semantic_target_review/read_southbound_configuration_mount.py

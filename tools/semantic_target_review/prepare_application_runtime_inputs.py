@@ -67,6 +67,23 @@ def prepare_files(root,claim,credential,ca,bindings):
     manifest={'schema':'ouf.discovery.private-runtime-input-manifest.v1','inputBindings':bindings,'existingWorkloadCredentialHash':sha(credential.encode()),'discoveryMacKeyHash':sha(key),'publicCaHash':sha(ca),'consumerIdentities':{'semantic':{'uid':10001,'gid':10001},'gateway':{'uid':636,'gid':636}},'mountsInstalled':False,'applicationCutoverAuthorized':False,'leaseAuthorityGranted':False}
     create(root/'private-input-manifest.json',encoded(manifest));return sha(encoded(manifest))
 
+def public_trust_source(bundle,policy,live,startup):
+    """Bind public TLS custody through the admitted read-only APISIX config.
+    That config contains a private key: validate its sealed metadata, never open it.
+    """
+    target='/usr/local/apisix/conf/config.yaml'
+    source=str(BASE/'semantic-provider-v2-inputs-XE7IwlGm/config.yaml')
+    config_hash='77342a509b0b0e9498728fa366f50ce031c19d78a636d4225de5e95e1ba97140'
+    mounts=[m for m in bundle['mounts'] if m.get('destination')==target]
+    require(len(mounts)==1 and mounts[0].get('type')=='bind' and mounts[0].get('source')==source and 'ro' in mounts[0].get('options',[]) and 'rw' not in mounts[0]['options'],'EXACT_READ_ONLY_SOUTHBOUND_CONFIGURATION_REQUIRED')
+    sources=[v for v in policy['sources'] if v.get('target')==target]
+    require(len(sources)==1 and sources[0].get('source')==source and sources[0].get('readOnly') is True and sources[0].get('sha256')==config_hash and (sources[0].get('uid'),sources[0].get('gid'),sources[0].get('mode'))==(636,636,0o600),'SEALED_SOUTHBOUND_CONFIGURATION_SOURCE_REQUIRED')
+    current=[m for m in live['Mounts'] if m.get('Destination')==target]
+    require(live['Id']==SOUTHBOUND and live['Image']=='sha256:c15541037a08276e36715a3c3798c2d07fe6faabf5547d3885a66cd10575e366' and live['State']['Running'] is True and len(current)==1 and current[0].get('Type')=='bind' and current[0].get('Source')==source and current[0].get('RW') is False,'CURRENT_READ_ONLY_SOUTHBOUND_CONFIGURATION_REQUIRED')
+    trust=BASE/'semantic-provider-v2-trust-vf7B4SM5'
+    require(startup.get('schema')=='ouf.semantic-provider-v2-startup-inputs.v1' and startup.get('status')=='PRIVATE_STARTUP_INPUTS_PREPARED' and startup.get('directory')==str(Path(source).parent) and startup.get('sourceHash')=='de06ef9b78cc0c33d7fe0efbedd9019edcac5ad2b680695adf4d2dc224e491b1' and startup.get('trustDirectory')==str(trust) and startup.get('trustReceiptHash')=='bb158aa0eda6c767f6bdf6f4ac6e0f8eefd93cfe6f0ee48196d0f9bf7f521458' and startup.get('outputHashes',{}).get('config.yaml')==config_hash,'EXACT_STARTUP_PUBLIC_TRUST_BINDING_REQUIRED')
+    return trust
+
 def collect(reader,report):
     require(not os.path.lexists(CLAIM),'INPUT_PREPARATION_ALREADY_CLAIMED_DO_NOT_REPLAY')
     user=pwd.getpwnam('oufadmin').pw_uid
@@ -112,11 +129,12 @@ def collect(reader,report):
     require(sha(encoded(driver['profile']))==SOUTHBOUND_PROFILE,'EXACT_CURRENT_SOUTHBOUND_PROFILE_REQUIRED')
     bundle_raw=reader.private(Path(driver['profile']['bundlePath'])/'config.json');bundle=reader.parse(bundle_raw)
     require(sha(encoded(bundle))==driver['profile']['bundleHash'],'EXACT_CURRENT_SOUTHBOUND_OCI_REQUIRED')
-    mounts=[m for m in bundle['mounts'] if m['destination']=='/run/ouf-semantic-provider/server.crt']
-    require(len(mounts)==1 and 'ro' in mounts[0]['options'],'EXACT_READ_ONLY_SOUTHBOUND_CERTIFICATE_REQUIRED')
-    leaf=Path(mounts[0]['source']);trust=leaf.parent.parent
-    require(leaf.parent.name=='southbound' and leaf.name=='server.crt' and trust.parent==BASE and re.fullmatch('semantic-provider-v2-trust-[A-Za-z0-9_]+',trust.name),'EXACT_CONSUMED_PUBLIC_TRUST_SOURCE_REQUIRED')
-    trust_raw=reader.private(trust/'trust-receipt.json');receipt=reader.parse(trust_raw)
+    southbound=native(['inspect','--type','container',SOUTHBOUND])[0]
+    startup_path=BASE/'semantic-provider-v2-inputs-XE7IwlGm/runtime-input-receipt.json'
+    startup_raw=reader.private(startup_path);startup=reader.parse(startup_raw)
+    trust=public_trust_source(bundle,driver['profile']['policy'],southbound,startup)
+    leaf=trust/'southbound/server.crt'
+    trust_raw=reader.private(trust/'trust-receipt.json','bb158aa0eda6c767f6bdf6f4ac6e0f8eefd93cfe6f0ee48196d0f9bf7f521458');receipt=reader.parse(trust_raw)
     require(receipt.get('schema')=='ouf.semantic-provider-v2-private-trust.v1' and receipt.get('status')=='PRIVATE_TRUST_PREPARED' and receipt.get('authorityProfileHash')=='7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18','CONSUMED_PUBLIC_TRUST_RECEIPT_REQUIRED')
     ca=file_bytes(trust/'ca.crt',0,{0o600},65536,receipt['artifactHashes']['ca.crt'])
     cert=file_bytes(leaf,636,{0o600},65536,receipt['artifactHashes']['southbound/server.crt'])
@@ -127,11 +145,12 @@ def collect(reader,report):
         p=subprocess.run([openssl,*args],stdin=subprocess.DEVNULL,capture_output=True,timeout=5);require(p.returncode==0,'EXISTING_PUBLIC_TLS_CHAIN_OR_WINDOW_UNPROVEN')
     reader.private(openssl,openssl_hash,executable=True)
     require(file_bytes(trust/'ca.crt',0,{0o600},65536,receipt['artifactHashes']['ca.crt'])==ca and file_bytes(leaf,636,{0o600},65536,receipt['artifactHashes']['southbound/server.crt'])==cert,'PUBLIC_CERTIFICATE_CHANGED_DURING_VERIFY')
+    require(identity(native(['inspect','--type','container',SOUTHBOUND])[0])==identity(southbound) and reader.private(startup_path)==startup_raw,'SOUTHBOUND_SOURCE_CHANGED_DURING_READ')
     gateway_worker()
     for name in current:require(identity(native(['inspect','--type','container',v[name]['containerId']])[0])==v[name],'SOURCE_CUSTODY_CHANGED_DURING_READ')
     require(identity(native(['inspect','--type','container',SEMANTIC])[0])==identity(semantic),'PRIMARY_CHANGED_DURING_READ')
     require(file_bytes(ENVELOPE,user,{0o600},expected=ENVELOPE_HASH)==raw and reader.private(trust/'trust-receipt.json')==trust_raw and reader.private(reader.OUTPUT/'registry'/SOUTHBOUND/'driver.json',DRIVER_HASH)==driver_raw and reader.private(Path(driver['profile']['bundlePath'])/'config.json')==bundle_raw and reader.private(reader.CONTEXT/'human-approval-binding.json')==human_raw and reader.private(reader.CONTEXT/'execution-configuration.json',human['configurationHash'])==cfg_raw,'INPUT_CUSTODY_CHANGED_DURING_READ')
-    bindings={'privateEnvelopeHash':ENVELOPE_HASH,'workloadProfileHash':PROFILE_HASH,'semantic':identity(semantic),'gateway':v['gateway'],'iam':v['iam'],'southboundDriverHash':DRIVER_HASH,'southboundProfileHash':SOUTHBOUND_PROFILE,'publicTrustReceiptHash':sha(trust_raw),'publicCaHash':sha(ca),'southboundCertificateHash':sha(cert),'sourceContextHash':sha(cfg_raw)}
+    bindings={'privateEnvelopeHash':ENVELOPE_HASH,'workloadProfileHash':PROFILE_HASH,'semantic':identity(semantic),'gateway':v['gateway'],'iam':v['iam'],'southboundDriverHash':DRIVER_HASH,'southboundProfileHash':SOUTHBOUND_PROFILE,'southbound':identity(southbound),'startupReceiptHash':sha(startup_raw),'southboundConfigurationHash':'77342a509b0b0e9498728fa366f50ce031c19d78a636d4225de5e95e1ba97140','publicTrustReceiptHash':sha(trust_raw),'publicCaHash':sha(ca),'southboundCertificateHash':sha(cert),'sourceContextHash':sha(cfg_raw)}
     return v,ca,bindings
 
 def main():
