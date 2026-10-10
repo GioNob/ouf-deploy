@@ -23,7 +23,7 @@ def worker_identity(raw):
     for line in lines[1:]:
         parts=line.split()
         require(len(parts)==4,'EXACT_GATEWAY_PROCESS_METADATA_REQUIRED')
-        if parts[3]=='nginx':
+        if parts[3] in ('nginx','openresty'):
             require(all(x.isdecimal() for x in parts[:3]),'NUMERIC_GATEWAY_PROCESS_IDENTITY_REQUIRED')
             uid,gid=map(int,parts[1:3]);uids.add(uid);gids.add(gid)
     candidates=uids-{0};groups=gids-{0}
@@ -31,13 +31,17 @@ def worker_identity(raw):
     return {'uid':next(iter(candidates)) if candidates else 0,'gid':next(iter(groups)) if groups else 0,'observedNginxUids':sorted(uids),'observedNginxGids':sorted(gids),'hostUserNamespaceTranslationRequired':False}
 def main():
     os.umask(0o077)
-    report={'schema':'ouf.discovery.semantic-workload-credential-stage.v1','secretRotated':False,'iamConfigurationWrites':0,'workloadTokenGrantRequests':0,'externalProviderCalls':0,'existingConfigurationWrites':0,'containerLifecycleOperations':0,'privateKeyFilesOpened':0,'privateValuesPrinted':False,'roleOwnedRuntimeCredentialInstalled':False,'notReleaseAcceptance':True}
+    report={'schema':'ouf.discovery.semantic-workload-credential-stage.v1','secretRotated':False,'iamConfigurationWrites':0,'workloadTokenGrantRequests':0,'externalProviderCalls':0,'existingConfigurationWrites':0,'containerLifecycleOperations':0,'privateKeyFilesOpened':0,'privateValuesPrinted':False,'roleOwnedRuntimeCredentialInstalled':False,'administrativeLoginAttemptsIssued':0,'iamReadRequests':0,'workloadClientSecretRetrieved':False,'notReleaseAcceptance':True}
     try:
         root=Path(tempfile.mkdtemp(prefix='ouf-semantic-workload-custody-',dir=Path.home()));root.chmod(0o700)
+        report['evidenceDirectory']=str(root)
         cli=root/'empty-docker-cli';cli.mkdir(mode=0o700)
         def native(args,stdin=None,parsed=True):
+            if '--no-config' in args:
+                report['administrativeLoginAttemptsIssued']+=1;report['iamReadRequests']+=1
             p=subprocess.run(['/usr/bin/docker','--config',str(cli),*args],input=stdin,capture_output=True,timeout=20,env={'PATH':'/usr/bin:/bin','DOCKER_HOST':'unix:///var/run/docker.sock'})
             require(p.returncode==0 and len(p.stdout)<=2000000 and len(p.stderr)<=131072,'EXACT_EXISTING_CUSTODY_READ_DENIED')
+            if any(type(v) is str and v.endswith('/client-secret') for v in args):report['workloadClientSecretRetrieved']=True
             return json.loads(p.stdout) if parsed else p.stdout
         iam=native(['inspect','--type','container',IAM_ID])[0]
         require(iam['Name']=='/ouf-keycloak' and iam['Image']==reader.IAM_IMAGE and iam['State']['Running'] is True,'EXACT_IAM_GENERATION_REQUIRED')
@@ -53,11 +57,12 @@ def main():
         gateway=native(['inspect','--type','container','ouf-apisix'])[0]
         require(gateway['Name']=='/ouf-apisix' and gateway['Image']==GATEWAY_IMAGE and gateway['State']['Running'] is True and gateway['HostConfig'].get('UsernsMode','') in ('','host'),'EXACT_MAIN_GATEWAY_GENERATION_REQUIRED')
         raw=native(['top',gateway['Id'],'-eo','pid,uid,gid,comm'],parsed=False)
+        report['observedGatewayProcessNames']=sorted({line.split()[-1] for line in raw.decode().splitlines()[1:] if re.fullmatch('[A-Za-z0-9_.+-]{1,32}',line.split()[-1])})
         worker=worker_identity(raw)
         require(stable(iam)==stable(native(['inspect','--type','container',IAM_ID])[0]) and stable(gateway)==stable(native(['inspect','--type','container',gateway['Id']])[0]),'CUSTODY_GENERATIONS_CHANGED_DURING_READ')
         envelope={'schema':'ouf.discovery.private-semantic-workload-custody.v1','clientId':'ouf-semantic','credential':first['value'],'profileHash':PROFILE_HASH,'profile':profile,'iam':identity(iam),'gateway':identity(gateway),'gatewayWorkerIdentity':worker}
         data=encoded(envelope);create(root/'private-workload-custody.json',data)
-        report.update(status='EXISTING_WORKLOAD_CREDENTIAL_STAGED_PRIVATELY_NOT_INSTALLED',evidenceDirectory=str(root),privateEnvelopeSha256=hashlib.sha256(data).hexdigest(),clientId='ouf-semantic',profileHash=PROFILE_HASH,administrativeLoginAttemptsIssued=4,iamReadRequests=4,workloadClientSecretRetrieved=True,gatewayContainerId=gateway['Id'],gatewayImageId=GATEWAY_IMAGE,gatewayWorkerIdentity=worker,sourceGenerationsUnchanged=True)
+        report.update(status='EXISTING_WORKLOAD_CREDENTIAL_STAGED_PRIVATELY_NOT_INSTALLED',evidenceDirectory=str(root),privateEnvelopeSha256=hashlib.sha256(data).hexdigest(),clientId='ouf-semantic',profileHash=PROFILE_HASH,gatewayContainerId=gateway['Id'],gatewayImageId=GATEWAY_IMAGE,gatewayWorkerIdentity=worker,sourceGenerationsUnchanged=True)
         create(root/'receipt.json',encoded(report))
     except Exception as error:
         reason=str(error);report.update(status='WORKLOAD_CUSTODY_STAGE_BLOCKED',reason=reason if re.fullmatch('[A-Z][A-Z0-9_]{0,120}',reason) else 'WORKLOAD_CUSTODY_UNPROVEN',errorType=type(error).__name__)
