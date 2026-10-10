@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: GioNob/ouf-semantic-registry
-          ref: 67cb426995d7b0723e34bfe54e52ea89ae02b81d
+          ref: 403531a9df1cbc877078f8126fd1fc4ff18acea9
           path: semantic-source
           persist-credentials: false
       - name: Exercise historical data, V10, legacy jobs and actual fixture restore

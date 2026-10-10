@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Exercise additive V10 and backup restoration on isolated hosted PostgreSQL, never on OUF databases."""
-import json, subprocess, tempfile, time
+import hashlib, json, subprocess, tempfile, time
 from pathlib import Path
 DB="ouf-discovery-migration-ci"
 def cmd(argv, data=None, ok=True):
@@ -16,6 +16,11 @@ try:
         if cmd(["docker","exec",DB,"pg_isready","-U","postgres","-d","semantic"],ok=False).returncode==0:break
         time.sleep(1)
     else:raise RuntimeError("POSTGRES_NOT_READY")
+    qualification=json.loads(Path("evidence/discovery-remediated-application-qualification-20261009.json").read_bytes())
+    frozen=qualification["migrationPlan"]["receipt"]
+    actual={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in source.glob("*.sql")}
+    if actual!=frozen["candidateMigrationDigests"]:raise RuntimeError("SIGNED_CANDIDATE_MIGRATION_BYTES_CHANGED")
+    if frozen["candidateRevision"]!="403531a9df1cbc877078f8126fd1fc4ff18acea9":raise RuntimeError("SIGNED_CANDIDATE_REVISION_DRIFT")
     files=sorted(source.glob("*.sql"),key=lambda p:int(p.name.split("__")[0][1:]))
     before=[p for p in files if p.name!="V10__discovery_request_idempotency.sql"]
     if len(before)!=9:raise RuntimeError("BASELINE_MIGRATION_SET_CHANGED")
@@ -43,6 +48,25 @@ try:
     sql("SELECT * FROM ouf_sem.claim_discovery_job('legacy-worker',30);")
     sql("SELECT ouf_sem.complete_discovery_job('"+legacy+"',true,NULL);")
     if sql("SELECT state FROM ouf_sem.discovery_request WHERE request_id='"+legacy+"';").stdout.strip()!=b"SUCCEEDED":raise RuntimeError("LEGACY_JOB_FUNCTION_BROKEN_AFTER_V10")
-    print("OUF_DISCOVERY_MIGRATION_RECOVERY_CI="+json.dumps({"status":"PASS","postgresVersion":"17","baselineMigrations":9,"additiveMigration":"V10__discovery_request_idempotency.sql","historicalContentPreserved":True,"legacyWritesAfterMigration":True,"legacyClaimCompleteFunctions":True,"perActorIdempotencyEnforced":True,"baselineBackupRestoredAndCompared":True,"targetDatabaseTouched":False,"targetBackupPerformed":False}))
+    # A pre-V10 snapshot is historical once any writes complete after migration.
+    # Restore a current migrated snapshot into a fresh database, never overwrite
+    # the live fixture with the old backup. Target recovery still needs custody,
+    # writer fencing and a separately authorized applicator.
+    all_requests="SELECT COALESCE(jsonb_agg(to_jsonb(t) ORDER BY request_id),'[]'::jsonb)::text FROM ouf_sem.discovery_request t;"
+    current_requests=sql(all_requests).stdout.strip()
+    historical_requests=sql(all_requests,"restored").stdout.strip()
+    if current_requests==historical_requests:raise RuntimeError("POST_MIGRATION_WRITES_NOT_EXERCISED")
+    migrated_dump=cmd(["docker","exec",DB,"pg_dump","-U","postgres","-d","semantic","-Fc"]).stdout
+    sql("CREATE DATABASE restored_v10;")
+    cmd(["docker","exec","-i",DB,"pg_restore","-U","postgres","-d","restored_v10","--exit-on-error"],migrated_dump)
+    if sql(all_requests,"restored_v10").stdout.strip()!=current_requests:raise RuntimeError("POST_MIGRATION_WRITES_LOST_ON_CURRENT_RESTORE")
+    if sql("SELECT state FROM ouf_sem.discovery_request WHERE request_id='"+legacy+"';","restored_v10").stdout.strip()!=b"SUCCEEDED":
+        raise RuntimeError("LEGACY_JOB_STATE_LOST_ON_CURRENT_RESTORE")
+    if sql(insert(7,"actor-a",key,fingerprint),"restored_v10",ok=False).returncode==0:
+        raise RuntimeError("V10_IDEMPOTENCY_CONSTRAINT_LOST_ON_RESTORE")
+    sql(insert(8,"legacy-write-after-current-restore"),"restored_v10")
+    sql("SELECT * FROM ouf_sem.claim_discovery_job('legacy-worker-after-current-restore',30);","restored_v10")
+    if sql(all_requests).stdout.strip()!=current_requests:raise RuntimeError("RESTORE_CHANGED_LIVE_FIXTURE")
+    print("OUF_DISCOVERY_MIGRATION_RECOVERY_CI="+json.dumps({"status":"PASS","postgresVersion":"17","baselineMigrations":9,"additiveMigration":"V10__discovery_request_idempotency.sql","historicalContentPreserved":True,"legacyWritesAfterMigration":True,"legacyClaimCompleteFunctions":True,"perActorIdempotencyEnforced":True,"baselineBackupRestoredAndCompared":True,"exactRemediatedMigrationBytesVerified":True,"currentV10SnapshotRestoredWithPostMigrationWrites":True,"baselineSnapshotDiffersAfterWrites":True,"restoredV10IdempotencyConstraintRetained":True,"legacyWritesAndClaimAfterCurrentRestore":True,"liveFixtureUnchangedByCurrentRestore":True,"targetDatabaseTouched":False,"targetBackupPerformed":False}))
 finally:
     cmd(["docker","rm","-f",DB],ok=False)
