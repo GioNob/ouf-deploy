@@ -1,0 +1,34 @@
+name: Current Semantic cutover host and database metadata
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/read-current-semantic-cutover-host.py
+      - tests/test_current_cutover_host.py
+      - .github/workflows/semantic-current-cutover-host.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ouf-semantic-db-cutover-metadata
+  cancel-in-progress: false
+jobs:
+  test-public-projection:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -s tests -p test_current_cutover_host.py -v
+  read-target:
+    needs: test-public-projection
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Read engine service and resource metadata without protected snapshots
+        run: python3 scripts/read-current-semantic-cutover-host.py
+      - name: Read PostgreSQL catalog and writer-session aggregates without rows or writes
+        run: python3 scripts/read-semantic-database-cutover-metadata.py
