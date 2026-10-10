@@ -11,7 +11,17 @@
     "ownerConfigurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
     "doNotRerunApply": true,
     "commonLockMustNotBeAcquiredByObservers": true,
-    "sharedPeerRebindIsSeparateFromDnsLease": true
+    "sharedPeerRebindIsSeparateFromDnsLease": true,
+    "currentObservationEvidence": "evidence/current-r9-transition-active-target-20261010.json",
+    "currentObservation": {
+      "operatorLocalTime": "2026-10-10T10:50:56+02:00",
+      "status": "LEASE_ACTIVE",
+      "refreshCount": 643,
+      "workerPid": 1970321,
+      "leaseAndWorkerActiveAtStableObservation": true,
+      "minRemainingTtlSeconds": 0.015,
+      "continuousLivenessProven": false
+    }
   },
   "signedApplicationEvidence": "evidence/discovery-remediated-application-qualification-20261009.json",
   "candidateSourcePins": {
@@ -46,7 +56,7 @@
     "staleSmokeRetainedStopped": true
   },
   "peer": {
-    "currentTargetEvidence": "evidence/discovery-cutover-input-target-20261010.json",
+    "currentTargetEvidence": "evidence/current-r9-transition-active-target-20261010.json",
     "semanticContainerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
     "hostInterface": "vethca2111d",
     "hostIfindex": 1377,
@@ -85,16 +95,9 @@
     "R9ReplayOrClaimResetAllowed": false
   },
   "nextRead": {
-    "program": "tools/semantic_target_review/read_current_r9_transition.py",
-    "scope": "Worker/service custody plus separate redacted rejected-lease-element diagnostics; original predicate remains unchanged",
-    "productionTransitionReady": false,
-    "status": "ROOT_OBSERVATION_BLOCKED_LEASE_ADDRESS_OR_TTL_UNPROVEN",
-    "accessEvidence": "evidence/current-r9-transition-read-access-20261010.json",
-    "launcher": "releases/current-r9-lease-diagnostics-20261010.sh",
-    "readSourceCommit": "b70b1638e1e50776ad68d95198c95adcee75a5ed",
-    "rootPrivateReadExecuted": true,
-    "currentR9LivenessProven": false,
-    "targetEvidence": "evidence/current-r9-transition-read-blocked-target-20261010.json",
-    "launcherSha256": "b9ba902a8679ff1991d501cd5d9caa474c071f40933453a5aa4064c2cb241827"
+    "program": "scripts/plan-semantic-replacement-configuration.py",
+    "scope": "Configuration delta: signed candidate image defaults, explicit application env overrides and retained mounts; no key/secret-file read, lifecycle or provider calls",
+    "status": "QUALIFY_THEN_AUTOMATIC_SELF_HOSTED_READ",
+    "productionTransitionReady": false
   }
 }
