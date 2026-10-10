@@ -94,7 +94,7 @@
     "mutatingTransitionMustExplicitlyCoordinateLeaseWorker": true,
     "R9ReplayOrClaimResetAllowed": false
   },
-  "nextRead": "READ_PROTECTED_MANIFEST_AND_FROZEN_PROVIDER_BINDING_WITHOUT_KEYS_OR_APPLY",
+  "nextRead": "COMPOSE_FROZEN_APPLICATION_MOUNT_AND_PROVIDER_CONTRACT_CLOSURE",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
@@ -120,5 +120,7 @@
   ],
   "javaTrustPreparedOnTarget": true,
   "javaTrustTargetEvidence": "evidence/application-java-trust-prepared-target-20261010.json",
-  "configurationCompositionEvidence": "evidence/replacement-configuration-composed-target-20261010.json"
+  "configurationCompositionEvidence": "evidence/replacement-configuration-composed-target-20261010.json",
+  "protectedBindingsCapturedOnTarget": true,
+  "protectedBindingsTargetEvidence": "evidence/replacement-protected-bindings-captured-target-20261010.json"
 }
