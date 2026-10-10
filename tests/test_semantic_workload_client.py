@@ -11,4 +11,12 @@ class Workload(unittest.TestCase):
         self.assertEqual(read.project([])['status'],'SELECTED_WORKLOAD_CLIENT_ABSENT')
         with self.assertRaises(ValueError):read.project([{},{}])
         with self.assertRaises(ValueError):read.project([{'id':'abcd','clientId':'other-workload'}])
+    def test_memory_login_keeps_password_out_of_command_and_creates_no_config(self):
+        args,stdin=read.memory_only_query('a'*64,['KC_BOOTSTRAP_ADMIN_USERNAME=admin','KC_BOOTSTRAP_ADMIN_PASSWORD=DO_NOT_EXPORT'])
+        self.assertNotIn('DO_NOT_EXPORT',json.dumps(args));self.assertEqual(stdin,b'DO_NOT_EXPORT\n')
+        self.assertIn('--no-config',args);self.assertIn('http://127.0.0.1:8080',args);self.assertNotIn('--password',args)
+        self.assertEqual(args[args.index('get')+1],'clients')
+    def test_ambiguous_or_multiline_existing_password_denied(self):
+        for env in ([],['KEYCLOAK_ADMIN=admin','KEYCLOAK_ADMIN_PASSWORD=bad\nline'],['KEYCLOAK_ADMIN=a','KEYCLOAK_ADMIN_PASSWORD=a','KC_BOOTSTRAP_ADMIN_USERNAME=b','KC_BOOTSTRAP_ADMIN_PASSWORD=b']):
+            with self.assertRaises(ValueError):read.memory_only_query('a'*64,env)
 if __name__=='__main__':unittest.main()
