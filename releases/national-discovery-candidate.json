@@ -40,7 +40,7 @@
   "releaseApplied": false,
   "acceptanceGranted": false,
   "blockingReleaseRequirements": [
-    "establish current QUIESCED worker stop cause; prepare any distinct lease transition without replay/reset of consumed R8 claims",
+    "compose and natively qualify a distinct source-bound DNS recovery entrypoint/capsule; obtain new privileged decision without replay/reset of R8",
     "migration-aware Semantic/MCP applicator with current private backup and explicit recovery",
     "governed replacement or preservation of the exact Semantic host peer binding; no ordinary recreate under retained ifindex1377",
     "existing private provider credential and separate discovery owner receipt key bound consistently to Semantic/Gateway",
@@ -371,8 +371,11 @@
       "nativeStructureVerified": true,
       "journalHash": "a58f0cb6e011879fc22723356d19926adf8945c38dcdbf2d21ab3fa34dd6f7f1",
       "approvedProviderTrafficPermittedByLease": false,
-      "stopCause": "UNPROVEN_DIAGNOSTIC_READ_REQUIRED",
-      "automaticReactivationAuthorized": false
+      "stopCause": "DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE_AFTER_49_RENEWALS",
+      "automaticReactivationAuthorized": false,
+      "diagnosticEvidence": "evidence/provider-r8-dns-window-failure-target-20261010.json",
+      "workerFailureAt": "2026-10-09T23:28:50+02:00",
+      "dnsSubcase": "NOT_RECORDED_ZERO_TTL_VS_ELAPSED_EXPIRY_UNPROVEN"
     }
   },
   "currentApplicationPreparation": {
@@ -422,13 +425,26 @@
       "targetExit": 0
     },
     "workerDiagnosticRead": {
-      "status": "PREPARED_CI_PASS_TARGET_OUTPUT_PENDING",
+      "status": "COMPLETED_DNS_WINDOW_FAILURE_AFTER_49_RENEWALS",
       "evidence": "evidence/provider-r8-worker-quiescence-read-preparation-20261010.json",
       "readerCommit": "a13d50881e0eeab5fc66e9432b43fa4658e046b8",
       "deliveryCommit": "174c8d02c0199a5eb3e87e23ffbfe44a4a44d4c4",
       "runId": 38026120077,
       "applyAuthorized": false,
-      "targetOutputReceived": false
+      "targetOutputReceived": true,
+      "targetEvidence": "evidence/provider-r8-dns-window-failure-target-20261010.json",
+      "targetExit": 0
+    },
+    "dnsRecoveryPreparation": {
+      "status": "CANDIDATE_AND_SOURCE_DELTA_CORE_CI_PASS_TARGET_NOT_APPLIED",
+      "sourceCommit": "be789d76f0c75c6c109cef3c2419d990930c63f2",
+      "pullRequest": 58,
+      "evidence": "evidence/provider-dns-window-remediation-qualification-20261010.json",
+      "proposal": "releases/provider-dns-window-recovery-proposal-20261010.json",
+      "coreCommit": "906253fa005b82e13dbc49cdea79b9a15e70a354",
+      "applyReady": false,
+      "authorityIssued": false,
+      "targetInstalled": false
     }
   },
   "previousApplicationPreparation": {

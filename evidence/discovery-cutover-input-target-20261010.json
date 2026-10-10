@@ -172,10 +172,11 @@
     "leaseAuthorized": false,
     "providerSetsEmpty": true,
     "approvedProviderTrafficPermittedByLease": false,
-    "stopCause": "NOT_PROVEN_BY_THIS_OUTPUT",
+    "stopCause": "DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE_CONFIRMED_BY_LATER_RETAINED_WORKER_DIAGNOSTIC",
     "oldActiveRenewedReceipt": "HISTORICAL_SUCCESS_NOT_CURRENT_LEASE_STATE",
     "doNotRerunApply": true,
     "cutoverAuthorized": false,
-    "containerLifecycleOperations": 0
+    "containerLifecycleOperations": 0,
+    "laterDiagnosticEvidence": "evidence/provider-r8-dns-window-failure-target-20261010.json"
   }
 }

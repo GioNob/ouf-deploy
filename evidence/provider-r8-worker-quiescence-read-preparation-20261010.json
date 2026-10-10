@@ -1,6 +1,6 @@
 {
   "schema": "ouf.provider-r8-worker-quiescence-read-preparation.v1",
-  "status": "PREPARED_CI_PASS_TARGET_OUTPUT_PENDING",
+  "status": "COMPLETED_TARGET_DNS_WINDOW_FAILURE_DIAGNOSED",
   "triggerEvidence": "evidence/discovery-cutover-input-target-20261010.json",
   "reason": "Observed QUIESCED lease does not establish worker stop cause",
   "reader": {
@@ -49,5 +49,7 @@
   "applyAuthorized": false,
   "doNotRerunApply": true,
   "executionWindowIsNotProofOfStopCause": true,
-  "targetOutputReceived": false
+  "targetOutputReceived": true,
+  "targetEvidence": "evidence/provider-r8-dns-window-failure-target-20261010.json",
+  "nextPreparation": "releases/provider-dns-window-recovery-proposal-20261010.json"
 }

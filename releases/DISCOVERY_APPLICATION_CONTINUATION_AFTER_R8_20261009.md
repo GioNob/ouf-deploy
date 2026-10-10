@@ -1,6 +1,6 @@
 # Continuazione Semantic/MCP dopo R8 — 9 ottobre 2026
 
-Stato aggiornato10 ottobre: lettura privata riuscita; lease QUIESCED, autorizzazione revocata e set vuoti. L'attivazione/rinnovo del9 ottobre resta evidenza storica. Causa dell'arresto non ancora provata; applicazioni discovery non aggiornate. Questa continuazione riprende il lavoro già autorizzato e non apre un nuovo sprint né modifica la baseline normativa.
+Stato aggiornato10 ottobre: lettura privata riuscita; lease QUIESCED, autorizzazione revocata e set vuoti. L'attivazione/rinnovo del9 ottobre resta evidenza storica. Causa DNS documentata dopo49 rinnovi; applicazioni discovery non aggiornate. Questa continuazione riprende il lavoro già autorizzato e non apre un nuovo sprint né modifica la baseline normativa.
 
 ## Evidenze e contesto ricostruito
 
@@ -126,7 +126,7 @@ La prossima lettura diagnostica serve a distinguere failure registrata, stop e s
 
 ## Comando successivo: sola diagnosi del worker consumato
 
-[Preparazione verificata](../evidence/provider-r8-worker-quiescence-read-preparation-20261010.json): lettore a13d50881e0eeab5fc66e9432b43fa4658e046b8, SHA256 b7197def3b3f3bf1d108428f61ccc5652dbb916c22f22caf8a5414e761507e3f; launcher 174c8d02c0199a5eb3e87e23ffbfe44a4a44d4c4, SHA256 40862a23cca3fb0b2da255edef464cdf8ebfe8a1272cae536677732c25cad128. [CI38026120077/job114137210582](https://github.com/GioNob/ouf-deploy/actions/runs/38026120077) PASS: quattro test di perimetro/diagnostica oscurata, quattro di consegna, bash -n. Nessuna esecuzione VPS di questo comando è ancora avvenuta.
+[Preparazione verificata](../evidence/provider-r8-worker-quiescence-read-preparation-20261010.json): lettore a13d50881e0eeab5fc66e9432b43fa4658e046b8, SHA256 b7197def3b3f3bf1d108428f61ccc5652dbb916c22f22caf8a5414e761507e3f; launcher 174c8d02c0199a5eb3e87e23ffbfe44a4a44d4c4, SHA256 40862a23cca3fb0b2da255edef464cdf8ebfe8a1272cae536677732c25cad128. [CI38026120077/job114137210582](https://github.com/GioNob/ouf-deploy/actions/runs/38026120077) PASS: quattro test di perimetro/diagnostica oscurata, quattro di consegna, bash -n. L'operatore ha ora completato questo comando con exit0: [ricevuta diagnostica](../evidence/provider-r8-dns-window-failure-target-20261010.json), ricevuta10 ottobre07:08:33 Europe/Rome.
 
 ```bash
 (
@@ -144,3 +144,18 @@ La prossima lettura diagnostica serve a distinguere failure registrata, stop e s
 ```
 
 Incollare OUF_R8_WORKER_QUIESCENCE_READ e OUF_R8_WORKER_QUIESCENCE_READ_EXIT. Il comando legge i record conservati e i soli metadati systemd specificati; non riattiva la lease, non legge log generali/ENV/chiavi, non acquisisce il lock e non avvia/ferma/resetta alcun servizio. L'esito READ_BLOCKED resta un arresto della sola lettura, senza cleanup/apply automatico.
+
+
+## Causa documentata e correzione DNS candidata verificata
+
+La [diagnosi root-private](../evidence/provider-r8-dns-window-failure-target-20261010.json) conferma49 rinnovi prima dell'arresto del9 ottobre23:28:50 Europe/Rome. Catena: DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE → REFRESH_FAILED_SETS_REVOKED → REFRESH_FAILED_GATE_BLOCKED. Il worker è failed/exit-code1, MainPID0, Restart=no, NRestarts0; Docker è active/running, PID1740 e NRestarts0. Source/program closure è verificata; claim e authorization sono conservate. Il journal QUIESCED/a58f0c… coincide con la lettura precedente. Nessuna operator-denial o cleanup-denial nuova è presente.
+
+La finestra di ammissione non è la causa: il worker è terminato23:28:50, prima dell'executionExpiresAt del10 ottobre00:58:47; il codice applica quel gate solo all'ammissione. Il record storico non contiene TTL/tempo trascorso: non è provato se la singola osservazione avesse TTL zero oppure tempo residuo esaurito. Nessuna raggiungibilità provider o salute applicativa viene inferita.
+
+La [PR Gateway58](https://github.com/GioNob/ouf-api-gateway/pull/58), draft, sorgente be789d76f0c75c6c109cef3c2419d990930c63f2, corregge la gestione di finestre DNS inutilizzabili: massimo tre osservazioni complete nuove nello stesso budget assoluto originale di due secondi. Ogni tentativo ripete tutti i resolver selezionati e A/AAAA, senza mescolare indirizzi precedenti. Un'attesa limitata permette a una cache quasi scaduta di esaurirsi. Non si alzano TTL o minimi, non si elimina il TTL negativo dell'altra famiglia, non si resettano timeout e non si introduce fallback. Errori di policy/formato/trasporto restano immediati; fallimento persistente o budget esaurito conserva revoca e arresto, senza restart/rearm.
+
+[Qualificazione](../evidence/provider-dns-window-remediation-qualification-20261010.json): sei regressioni nuove PASS, sei test DNS originali con UDP/TCP reali locali PASS e sei lease-owner PASS. Tre test di inventory root sono saltati nel solo job dedicato; non vengono contati come PASS lì. CI PR control-plane [38026829073](https://github.com/GioNob/ouf-api-gateway/actions/runs/38026829073): cinque job PASS. CI boundary [38026829118](https://github.com/GioNob/ouf-api-gateway/actions/runs/38026829118): quattordici job PASS, incluse prove native nft/DNS/flock/systemd e revoca/arresto. Il primo push control-plane38026801592 era fallito per risoluzione del parent POM Spring Boot nel build UDP; il tentativo ripetuto è PASS, senza cambiare dipendenze. Nessuna scansione applicativa è stata ripetuta per questa modifica al helper Python.
+
+Il nuovo supporto dns_recovery_core.py richiede hash originale e hash del DNS sostitutivo espliciti, conservando i byte degli otto sorgenti owner installati. Copia del DNS candidato byte-identica al Gateway commit in dns_recovery_dns.py; SHA256 f1491cca148c488bbee8089dabcada0361781962d7b2858ad2fc4549cea3696f. Il core proietta solo TTL minimo, elapsed e numero tentativi, evitando messaggi/raw endpoint/resolver o valori privati; [CI38027397908](https://github.com/GioNob/ouf-deploy/actions/runs/38027397908) quattro test PASS. La regressione R8 [38027397907](https://github.com/GioNob/ouf-deploy/actions/runs/38027397907) passa otto test e le prove native di failure/revoca/replay negato, TARGET_ACTIONS=0.
+
+[Proposta source-bound distinta](provider-dns-window-recovery-proposal-20261010.json): nuovo worker/unit/claim, stesso owner656c23…/due flussi/container generazioni, source override DNS esplicito e compiler c316… già verificato. È una proposta senza autorità emessa e non è ancora apply-ready. Restano da comporre entrypoint/capsule completi, preflight e collaudo nativo dell'entrypoint, poi una decisione umana privilegiata distinta. Nessun file/core/driver guard installato, claim R8 o servizio VPS è stato modificato. Il cutover Semantic/MCP, route/grant/descriptor e il risultato Teatri restano separati e pendenti.

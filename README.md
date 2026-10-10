@@ -1,4 +1,12 @@
-# Current checkpoint — private cutover read PASS; lease QUIESCED; worker stop cause pending
+# Current checkpoint — 49-renewal DNS failure confirmed; bounded fresh resample and source-delta core qualified
+
+The operator's [retained worker diagnosis](evidence/provider-r8-dns-window-failure-target-20261010.json) confirms failure at9 October23:28:50 Europe/Rome after49 renewals: DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE caused set revocation and supervisor stop. Worker failed/exit1, no automatic restart; Docker remains active. R8 remains QUIESCED with empty sets. The exact zero-TTL versus elapsed-expiry subcase was not recorded.
+
+[Gateway draft PR58](https://github.com/GioNob/ouf-api-gateway/pull/58) permits at most three entirely fresh observations within the original two-second budget. Resolver/address policy, negative TTL minima, finite expiry and persistent-failure revocation remain intact. Dedicated protocol and owner tests, five Gateway PR jobs and fourteen provider-boundary PR jobs PASS, including native DNS/nft/flock/systemd.
+
+Separate source-delta/diagnostic support is qualified in [deploy CI38027397908](https://github.com/GioNob/ouf-deploy/actions/runs/38027397908); installed R8 source/core/claims are preserved. [Qualification](evidence/provider-dns-window-remediation-qualification-20261010.json) and [distinct recovery proposal](releases/provider-dns-window-recovery-proposal-20261010.json). No target activation or new authority issued. Entry-point/capsule composition and native preflight precede a distinct human privileged decision. [Current continuation](releases/DISCOVERY_APPLICATION_CONTINUATION_AFTER_R8_20261009.md).
+
+# Previous checkpoint — private cutover read PASS; lease QUIESCED; worker stop cause pending
 
 The operator returned CUTOVER_INPUT_BINDINGS_CAPTURED and exit0 on10 October06:54 Europe/Rome. Exact current Semantic reciprocal peer1377 and both R8 shared driver/profile/journal/complete OCI/source bindings were verified. [Complete target receipt](evidence/discovery-cutover-input-target-20261010.json).
 
