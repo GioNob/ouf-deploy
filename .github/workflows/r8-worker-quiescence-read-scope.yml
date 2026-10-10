@@ -1,0 +1,23 @@
+name: R8 worker quiescence reader scope
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/semantic_target_review/read_r8_worker_quiescence.py'
+      - 'tools/semantic_target_review/test_r8_worker_quiescence.py'
+      - '.github/workflows/r8-worker-quiescence-read-scope.yml'
+  pull_request:
+    paths:
+      - 'tools/semantic_target_review/read_r8_worker_quiescence.py'
+      - 'tools/semantic_target_review/test_r8_worker_quiescence.py'
+      - '.github/workflows/r8-worker-quiescence-read-scope.yml'
+permissions:
+  contents: read
+jobs:
+  scope:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify diagnostic privacy, bounded reads and rejection of lifecycle commands
+        run: python3 -B tools/semantic_target_review/test_r8_worker_quiescence.py

@@ -1,4 +1,12 @@
-# Current checkpoint — PET v1.7 available; native peer plan PASS; private cutover read prepared
+# Current checkpoint — private cutover read PASS; lease QUIESCED; worker stop cause pending
+
+The operator returned CUTOVER_INPUT_BINDINGS_CAPTURED and exit0 on10 October06:54 Europe/Rome. Exact current Semantic reciprocal peer1377 and both R8 shared driver/profile/journal/complete OCI/source bindings were verified. [Complete target receipt](evidence/discovery-cutover-input-target-20261010.json).
+
+Current lease: QUIESCED, leaseAuthorized=false, both approved/native flow sets empty, native structure/journal consistent. The9 October ACTIVE_AND_RENEWED receipt remains historical; the approved provider flows are currently denied by the lease. This is not an application health claim or release acceptance.
+
+Next: read only the consumed worker's retained status/denial and exact systemd properties to establish the stop cause. No replay, restart, claim reset, signing or provider request. The worker admission window is not itself proof of stop cause. [Continuation](releases/DISCOVERY_APPLICATION_CONTINUATION_AFTER_R8_20261009.md).
+
+# Previous checkpoint — PET v1.7 available; native peer plan PASS; private cutover read prepared
 
 The complete attached OUF Reality Baseline Package v1.7 is now available: all 323 SHA256SUMS entries PASS; L0 Matrix v1.7 and applicable PET constraints reviewed. This supersedes the earlier roadmap-only limitation. [Baseline and exact read-only operator command](evidence/discovery-cutover-input-read-preparation-20261010.json).
 

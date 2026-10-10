@@ -40,6 +40,7 @@
   "releaseApplied": false,
   "acceptanceGranted": false,
   "blockingReleaseRequirements": [
+    "establish current QUIESCED worker stop cause; prepare any distinct lease transition without replay/reset of consumed R8 claims",
     "migration-aware Semantic/MCP applicator with current private backup and explicit recovery",
     "governed replacement or preservation of the exact Semantic host peer binding; no ordinary recreate under retained ifindex1377",
     "existing private provider credential and separate discovery owner receipt key bound consistently to Semantic/Gateway",
@@ -359,7 +360,20 @@
     "doNotRerunApply": true,
     "automaticRestart": false,
     "bootEnablement": false,
-    "leaseMembershipIndependentlyReadHere": false
+    "leaseMembershipIndependentlyReadHere": true,
+    "currentLeaseObservation": {
+      "evidence": "evidence/discovery-cutover-input-target-20261010.json",
+      "receivedAt": "2026-10-10T06:54:27+02:00",
+      "state": "QUIESCED",
+      "leaseAuthorized": false,
+      "providerSetsEmpty": true,
+      "journalAndMembershipConsistent": true,
+      "nativeStructureVerified": true,
+      "journalHash": "a58f0cb6e011879fc22723356d19926adf8945c38dcdbf2d21ab3fa34dd6f7f1",
+      "approvedProviderTrafficPermittedByLease": false,
+      "stopCause": "UNPROVEN_DIAGNOSTIC_READ_REQUIRED",
+      "automaticReactivationAuthorized": false
+    }
   },
   "currentApplicationPreparation": {
     "freshScanRepository": "GioNob/ouf-semantic-registry",
@@ -397,13 +411,15 @@
       "targetInstalled": false
     },
     "cutoverInputRead": {
-      "status": "PREPARED_CI_PASS_TARGET_OUTPUT_PENDING",
+      "status": "COMPLETED_TARGET_BINDINGS_VERIFIED_LEASE_QUIESCED",
       "evidence": "evidence/discovery-cutover-input-read-preparation-20261010.json",
       "readerCommit": "550c5e733fdafe33ac6b5f0117231d53c603b510",
       "deliveryCommit": "6df2a6846aa96094a35b0f705e683bc9e1c9ef7b",
       "runId": 37998809709,
       "commonLockAcquired": false,
-      "applyAuthorized": false
+      "applyAuthorized": false,
+      "targetEvidence": "evidence/discovery-cutover-input-target-20261010.json",
+      "targetExit": 0
     }
   },
   "previousApplicationPreparation": {

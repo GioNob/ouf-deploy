@@ -1,6 +1,6 @@
 # Continuazione Semantic/MCP dopo R8 — 9 ottobre 2026
 
-Stato: provider avviato, lease attivata e rinnovata secondo la ricevuta operatore; applicazioni discovery non ancora aggiornate. Questa continuazione riprende il lavoro già autorizzato e non apre un nuovo sprint né modifica la baseline normativa.
+Stato aggiornato10 ottobre: lettura privata riuscita; lease QUIESCED, autorizzazione revocata e set vuoti. L'attivazione/rinnovo del9 ottobre resta evidenza storica. Causa dell'arresto non ancora provata; applicazioni discovery non aggiornate. Questa continuazione riprende il lavoro già autorizzato e non apre un nuovo sprint né modifica la baseline normativa.
 
 ## Evidenze e contesto ricostruito
 
@@ -93,7 +93,7 @@ Importante per questo worker specifico: il lettore non acquisisce il common lock
 
 [CI37998809709/job114051546329](https://github.com/GioNob/ouf-deploy/actions/runs/37998809709) PASS: quattro test di perimetro, quattro di consegna e bash -n. Download a commit esatto; hash verificato prima di sudo e nuovamente sui byte catturati in memoria prima di compile/exec Python -I -B. Alterazioni bloccate prima dell'esecuzione; exit del reader preservato attraverso tee.
 
-[Preparazione e comando esatto](../evidence/discovery-cutover-input-read-preparation-20261010.json). Nessun output di questa lettura dal VPS è ancora disponibile. Il prossimo comando operatore è soltanto questo:
+[Preparazione e comando esatto](../evidence/discovery-cutover-input-read-preparation-20261010.json). La lettura è ora completata: output operatore ricevuto10 ottobre06:54:27 Europe/Rome, exit0, result.txt in /home/oufadmin/ouf-discovery-cutover-read.swMLhjl8. [Ricevuta completa](../evidence/discovery-cutover-input-target-20261010.json). Il timestamp di esecuzione non compare nell'output e non viene inventato. Il comando seguente è storico, già eseguito:
 
 ```bash
 (
@@ -111,3 +111,14 @@ Importante per questo worker specifico: il lettore non acquisisce il common lock
 ```
 
 Attesi OUF_DISCOVERY_CUTOVER_INPUT_READ e OUF_DISCOVERY_CUTOVER_READ_EXIT, con result.txt nella directory temporanea dell'utente. sudo serve a leggere i binding root-private; nessun nuovo mandato viene firmato/consumato. READ_BLOCKED non autorizza apply/recovery. Non ripetere apply/start/cleanup/lease R8. Prima di applicare restano necessari nuovo peer OCI completo e reciproco, autorità distinta/closure signed, applicatore migration-aware/readiness, route/policy/grant/descriptor e prova owner reale.
+
+
+## Osservazione corrente: revoca della lease, causa da leggere
+
+La ricevuta CUTOVER_INPUT_BINDINGS_CAPTURED conferma il Semantic corrente CID7ae83be8…/PID3789123, namespaceInode4026532695, startTicks128311383 e peer reciproco1377 su br-113b5f0a3c53, IP172.18.0.6/MACb2:96:a1:e2:c1:8d. I due driver shared-face, journal, OCI completi e source closure R8 risultano verificati. Il CID R8 adapter/southbound e le tabelle ingress sono gli stessi; questo non è un cutover o una prova di salute applicativa.
+
+La lease attuale è QUIESCED, leaseAuthorized=false, startAuthorized=false, providerSetsEmpty=true. Tutti i conteggi approvati/inet/bridge dei due flussi sono zero. Il journal è coerente e ha hash a58f0cb6e011879fc22723356d19926adf8945c38dcdbf2d21ab3fa34dd6f7f1; struttura verificata, owner hash invariato656c23f…. Il traffico esterno dei due flussi non è ora permesso dalla lease. Il successo iniziale TWO_FLOW_LEASE_ACTIVE_AND_RENEWED non viene riscritto, ma non descrive più lo stato corrente.
+
+Questo output non prova il motivo della revoca o lo stato attuale del servizio systemd. Il sorgente del worker verifica la finestra executionExpiresAt all'ammissione; la sua authorityLifetime è CURRENT_R8_PROCESS_GENERATIONS_UNTIL_STOP_FAILURE_OR_REBOOT. Non attribuire l'arresto alla semplice scadenza della finestra senza evidenza. Il nuovo lettore preparato tools/semantic_target_review/read_r8_worker_quiescence.py legge soltanto claim/authorization/program hashes/record diagnostici del preciso snapshot semantic-r8-lease-8wfsv1aa e proprietà delle due unit lease/Docker; nessun codice operativo installato viene importato/eseguito, nessun lock, start/stop/reset o journal generale.
+
+La prossima lettura diagnostica serve a distinguere failure registrata, stop e stato della dipendenza Docker. Una nuova attivazione resta da comporre e autorizzare distintamente soltanto dopo causa e recovery concrete; nessuna claim viene resettata o riutilizzata. Le correzioni applicative firmate e il planner peer isolato restano validi come preparazione, non autorizzano ancora il target.
