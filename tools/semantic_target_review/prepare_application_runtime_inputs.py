@@ -76,6 +76,7 @@ def public_trust_source(bundle,policy,live,startup):
     config_hash='77342a509b0b0e9498728fa366f50ce031c19d78a636d4225de5e95e1ba97140'
     mounts=[m for m in bundle['mounts'] if m.get('destination')==target]
     require(len(mounts)==1 and mounts[0].get('type')=='bind' and mounts[0].get('source')==source and bool({'ro','rro'} & set(mounts[0].get('options') or [])) and 'rw' not in mounts[0]['options'],'EXACT_READ_ONLY_SOUTHBOUND_CONFIGURATION_REQUIRED')
+    require(policy.get('schema')=='ouf.semantic-configured-creation-frame-policy.v1' and sha(encoded(policy['expectedOci']))==sha(encoded(bundle)),'EXACT_ADMITTED_CREATION_FRAME_REQUIRED')
     sources=[v for v in policy['sources'] if v.get('target')==target]
     require(len(sources)==1 and sources[0].get('source')==source and sources[0].get('readOnly') is True and sources[0].get('sha256')==config_hash and (sources[0].get('uid'),sources[0].get('gid'),sources[0].get('mode'))==(636,636,0o600),'SEALED_SOUTHBOUND_CONFIGURATION_SOURCE_REQUIRED')
     current=[m for m in live['Mounts'] if m.get('Destination')==target]
@@ -132,7 +133,9 @@ def collect(reader,report):
     southbound=native(['inspect','--type','container',SOUTHBOUND])[0]
     startup_path=BASE/'semantic-provider-v2-inputs-XE7IwlGm/runtime-input-receipt.json'
     startup_raw=reader.private(startup_path);startup=reader.parse(startup_raw)
-    trust=public_trust_source(bundle,driver['profile']['policy'],southbound,startup)
+    frame_path=BASE/'semantic-provider-v2-transaction-draft-g1yrsazc/southbound/framePolicy.json'
+    frame_raw=reader.private(frame_path,'f49155fa412bb76d529713cb4ac2c253105884e9e72f7d2d74dfc5ccf9c5c822')
+    trust=public_trust_source(bundle,reader.parse(frame_raw),southbound,startup)
     leaf=trust/'southbound/server.crt'
     trust_raw=reader.private(trust/'trust-receipt.json','bb158aa0eda6c767f6bdf6f4ac6e0f8eefd93cfe6f0ee48196d0f9bf7f521458');receipt=reader.parse(trust_raw)
     require(receipt.get('schema')=='ouf.semantic-provider-v2-private-trust.v1' and receipt.get('status')=='PRIVATE_TRUST_PREPARED' and receipt.get('authorityProfileHash')=='7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18','CONSUMED_PUBLIC_TRUST_RECEIPT_REQUIRED')
@@ -145,12 +148,12 @@ def collect(reader,report):
         p=subprocess.run([openssl,*args],stdin=subprocess.DEVNULL,capture_output=True,timeout=5);require(p.returncode==0,'EXISTING_PUBLIC_TLS_CHAIN_OR_WINDOW_UNPROVEN')
     reader.private(openssl,openssl_hash,executable=True)
     require(file_bytes(trust/'ca.crt',0,{0o600},65536,receipt['artifactHashes']['ca.crt'])==ca and file_bytes(leaf,636,{0o600},65536,receipt['artifactHashes']['southbound/server.crt'])==cert,'PUBLIC_CERTIFICATE_CHANGED_DURING_VERIFY')
-    require(identity(native(['inspect','--type','container',SOUTHBOUND])[0])==identity(southbound) and reader.private(startup_path)==startup_raw,'SOUTHBOUND_SOURCE_CHANGED_DURING_READ')
+    require(identity(native(['inspect','--type','container',SOUTHBOUND])[0])==identity(southbound) and reader.private(startup_path)==startup_raw and reader.private(frame_path)==frame_raw,'SOUTHBOUND_SOURCE_CHANGED_DURING_READ')
     gateway_worker()
     for name in current:require(identity(native(['inspect','--type','container',v[name]['containerId']])[0])==v[name],'SOURCE_CUSTODY_CHANGED_DURING_READ')
     require(identity(native(['inspect','--type','container',SEMANTIC])[0])==identity(semantic),'PRIMARY_CHANGED_DURING_READ')
     require(file_bytes(ENVELOPE,user,{0o600},expected=ENVELOPE_HASH)==raw and reader.private(trust/'trust-receipt.json')==trust_raw and reader.private(reader.OUTPUT/'registry'/SOUTHBOUND/'driver.json',DRIVER_HASH)==driver_raw and reader.private(Path(driver['profile']['bundlePath'])/'config.json')==bundle_raw and reader.private(reader.CONTEXT/'human-approval-binding.json')==human_raw and reader.private(reader.CONTEXT/'execution-configuration.json',human['configurationHash'])==cfg_raw,'INPUT_CUSTODY_CHANGED_DURING_READ')
-    bindings={'privateEnvelopeHash':ENVELOPE_HASH,'workloadProfileHash':PROFILE_HASH,'semantic':identity(semantic),'gateway':v['gateway'],'iam':v['iam'],'southboundDriverHash':DRIVER_HASH,'southboundProfileHash':SOUTHBOUND_PROFILE,'southbound':identity(southbound),'startupReceiptHash':sha(startup_raw),'southboundConfigurationHash':'77342a509b0b0e9498728fa366f50ce031c19d78a636d4225de5e95e1ba97140','publicTrustReceiptHash':sha(trust_raw),'publicCaHash':sha(ca),'southboundCertificateHash':sha(cert),'sourceContextHash':sha(cfg_raw)}
+    bindings={'privateEnvelopeHash':ENVELOPE_HASH,'workloadProfileHash':PROFILE_HASH,'semantic':identity(semantic),'gateway':v['gateway'],'iam':v['iam'],'southboundDriverHash':DRIVER_HASH,'southboundProfileHash':SOUTHBOUND_PROFILE,'southbound':identity(southbound),'creationFramePolicyHash':sha(frame_raw),'startupReceiptHash':sha(startup_raw),'southboundConfigurationHash':'77342a509b0b0e9498728fa366f50ce031c19d78a636d4225de5e95e1ba97140','publicTrustReceiptHash':sha(trust_raw),'publicCaHash':sha(ca),'southboundCertificateHash':sha(cert),'sourceContextHash':sha(cfg_raw)}
     return v,ca,bindings
 
 def main():

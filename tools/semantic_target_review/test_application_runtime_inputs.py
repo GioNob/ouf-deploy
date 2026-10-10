@@ -41,7 +41,7 @@ class PublicTrustBinding(unittest.TestCase):
         source=str(prepare.BASE/'semantic-provider-v2-inputs-XE7IwlGm/config.yaml');target='/usr/local/apisix/conf/config.yaml'
         digest='77342a509b0b0e9498728fa366f50ce031c19d78a636d4225de5e95e1ba97140'
         self.bundle={'mounts':[{'destination':target,'source':source,'type':'bind','options':['rbind','ro']}]}
-        self.policy={'sources':[{'source':source,'target':target,'readOnly':True,'sha256':digest,'uid':636,'gid':636,'mode':0o600}]}
+        self.policy={'schema':'ouf.semantic-configured-creation-frame-policy.v1','expectedOci':self.bundle,'sources':[{'source':source,'target':target,'readOnly':True,'sha256':digest,'uid':636,'gid':636,'mode':0o600}]}
         self.live={'Id':prepare.SOUTHBOUND,'Image':'sha256:c15541037a08276e36715a3c3798c2d07fe6faabf5547d3885a66cd10575e366','State':{'Running':True},'Mounts':[{'Destination':target,'Type':'bind','Source':source,'RW':False}]}
         self.startup={'schema':'ouf.semantic-provider-v2-startup-inputs.v1','status':'PRIVATE_STARTUP_INPUTS_PREPARED','directory':str(Path(source).parent),'sourceHash':'de06ef9b78cc0c33d7fe0efbedd9019edcac5ad2b680695adf4d2dc224e491b1','trustDirectory':str(prepare.BASE/'semantic-provider-v2-trust-vf7B4SM5'),'trustReceiptHash':'bb158aa0eda6c767f6bdf6f4ac6e0f8eefd93cfe6f0ee48196d0f9bf7f521458','outputHashes':{'config.yaml':digest}}
     def test_configuration_mount_binds_public_trust_without_certificate_mount(self):
