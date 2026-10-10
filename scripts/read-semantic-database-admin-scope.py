@@ -32,9 +32,8 @@ def main():
         for row in postgres['Config']['Env']:
             k,v=row.split('=',1);require(k not in values,'UNIQUE_DATABASE_ENV_REQUIRED');values[k]=v
         user,password=values.get('POSTGRES_USER','postgres'),values.get('POSTGRES_PASSWORD')
-        require(re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,62}',user) is not None and
-                type(password) is str and 0<len(password)<=4096 and not any(c in password for c in '\n\r\x00'),
-                'EXISTING_ADMIN_CREDENTIAL_BINDING_UNPROVEN')
+        require(re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,62}',user) is not None,
+                'EXISTING_ADMIN_USER_BINDING_UNPROVEN')
         require(database!='postgres','OUTSIDE_APPLICATION_DATABASE_CHANNEL_REQUIRED')
         # database was already validated as a bounded identifier by backup.binding.
         literal="'"+database+"'"
@@ -48,8 +47,19 @@ SELECT json_build_object('adminSuperuser',(SELECT rolsuper FROM pg_roles WHERE r
  'sessions',(SELECT COALESCE(json_agg(json_build_object('pid',pid,'backendStart',(backend_start AT TIME ZONE 'UTC')::text,
                        'user',usename,'applicationName',application_name,'clientAddress',host(client_addr),'state',state) ORDER BY pid),'[]'::json)
              FROM pg_stat_activity WHERE datname="""+literal+""")); COMMIT;"""
-        raw=backup.pg(postgres['Id'],'psql',['--host=127.0.0.1','--port=5432','--username='+user,'--dbname=postgres',
-                      '-X','-q','-A','-t','--set=ON_ERROR_STOP=1','-c',query],password.encode()+b'\n')
+        base=['--username='+user,'--dbname=postgres','-X','-q','-A','-t','--set=ON_ERROR_STOP=1','-c',query]
+        if password is not None:
+            require(type(password) is str and 0<len(password)<=4096 and not any(c in password for c in '\n\r\x00'),
+                    'EXISTING_ADMIN_CREDENTIAL_BINDING_UNPROVEN')
+            raw=backup.pg(postgres['Id'],'psql',['--host=127.0.0.1','--port=5432',*base],password.encode()+b'\n')
+            transport='EXISTING_BOUND_ADMIN_CREDENTIAL_STDIN'
+        else:
+            # Reuse the database service's existing local OS/socket authentication.
+            # Do not open its secret files, change pg_hba, guess roles or issue grants.
+            raw=backup.call(['docker','exec','--user','postgres',postgres['Id'],'env',
+                             'PGOPTIONS=-c default_transaction_read_only=on','psql',
+                             '--host=/var/run/postgresql',*base])
+            transport='EXISTING_POSTGRES_OS_IDENTITY_AND_LOCAL_SOCKET'
         require(len(raw)<=131072,'BOUNDED_ADMIN_CATALOG_REQUIRED')
         value=json.loads(raw)
         require(value['adminDatabase']=='postgres' and value['database']['name']==database and
@@ -65,6 +75,7 @@ SELECT json_build_object('adminSuperuser',(SELECT rolsuper FROM pg_roles WHERE r
                       preparedTransactionCount=value['preparedTransactions'],sessionCount=len(value['sessions']),
                       sessionGenerationHashes=[digest(v) for v in value['sessions']],
                       sessionsAreObservationsNotTerminationAuthority=True,
+                      authenticationTransport=transport,
                       readConsistencyMode='CURRENT_METADATA_NOT_FENCE_OR_BACKUP_AUTHORITY')
         code=0
     except Exception as error:
