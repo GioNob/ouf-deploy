@@ -122,3 +122,25 @@ La lease attuale è QUIESCED, leaseAuthorized=false, startAuthorized=false, prov
 Questo output non prova il motivo della revoca o lo stato attuale del servizio systemd. Il sorgente del worker verifica la finestra executionExpiresAt all'ammissione; la sua authorityLifetime è CURRENT_R8_PROCESS_GENERATIONS_UNTIL_STOP_FAILURE_OR_REBOOT. Non attribuire l'arresto alla semplice scadenza della finestra senza evidenza. Il nuovo lettore preparato tools/semantic_target_review/read_r8_worker_quiescence.py legge soltanto claim/authorization/program hashes/record diagnostici del preciso snapshot semantic-r8-lease-8wfsv1aa e proprietà delle due unit lease/Docker; nessun codice operativo installato viene importato/eseguito, nessun lock, start/stop/reset o journal generale.
 
 La prossima lettura diagnostica serve a distinguere failure registrata, stop e stato della dipendenza Docker. Una nuova attivazione resta da comporre e autorizzare distintamente soltanto dopo causa e recovery concrete; nessuna claim viene resettata o riutilizzata. Le correzioni applicative firmate e il planner peer isolato restano validi come preparazione, non autorizzano ancora il target.
+
+
+## Comando successivo: sola diagnosi del worker consumato
+
+[Preparazione verificata](../evidence/provider-r8-worker-quiescence-read-preparation-20261010.json): lettore a13d50881e0eeab5fc66e9432b43fa4658e046b8, SHA256 b7197def3b3f3bf1d108428f61ccc5652dbb916c22f22caf8a5414e761507e3f; launcher 174c8d02c0199a5eb3e87e23ffbfe44a4a44d4c4, SHA256 40862a23cca3fb0b2da255edef464cdf8ebfe8a1272cae536677732c25cad128. [CI38026120077/job114137210582](https://github.com/GioNob/ouf-deploy/actions/runs/38026120077) PASS: quattro test di perimetro/diagnostica oscurata, quattro di consegna, bash -n. Nessuna esecuzione VPS di questo comando è ancora avvenuta.
+
+```bash
+(
+  set -euo pipefail
+  umask 077
+  OUF_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+  [ -x "$OUF_GH" ] || OUF_GH="$(command -v gh)"
+  OUF_WORKER_BOOT="$(mktemp -d "$HOME/ouf-r8-worker-read-launch.XXXXXXXX")"
+  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' \
+    'repos/GioNob/ouf-deploy/contents/releases/provider-r8-worker-read-20261010.sh?ref=174c8d02c0199a5eb3e87e23ffbfe44a4a44d4c4' \
+    > "$OUF_WORKER_BOOT/run.sh"
+  printf '%s  %s\n' '40862a23cca3fb0b2da255edef464cdf8ebfe8a1272cae536677732c25cad128' "$OUF_WORKER_BOOT/run.sh" | sha256sum -c -
+  bash "$OUF_WORKER_BOOT/run.sh"
+)
+```
+
+Incollare OUF_R8_WORKER_QUIESCENCE_READ e OUF_R8_WORKER_QUIESCENCE_READ_EXIT. Il comando legge i record conservati e i soli metadati systemd specificati; non riattiva la lease, non legge log generali/ENV/chiavi, non acquisisce il lock e non avvia/ferma/resetta alcun servizio. L'esito READ_BLOCKED resta un arresto della sola lettura, senza cleanup/apply automatico.

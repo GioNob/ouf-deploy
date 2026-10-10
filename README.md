@@ -4,7 +4,7 @@ The operator returned CUTOVER_INPUT_BINDINGS_CAPTURED and exit0 on10 October06:5
 
 Current lease: QUIESCED, leaseAuthorized=false, both approved/native flow sets empty, native structure/journal consistent. The9 October ACTIVE_AND_RENEWED receipt remains historical; the approved provider flows are currently denied by the lease. This is not an application health claim or release acceptance.
 
-Next: read only the consumed worker's retained status/denial and exact systemd properties to establish the stop cause. No replay, restart, claim reset, signing or provider request. The worker admission window is not itself proof of stop cause. [Continuation](releases/DISCOVERY_APPLICATION_CONTINUATION_AFTER_R8_20261009.md).
+Next: the pinned worker diagnostic reader is ready and passes [CI38026120077](https://github.com/GioNob/ouf-deploy/actions/runs/38026120077), four scope and four delivery tests. [Exact next read-only command](evidence/provider-r8-worker-quiescence-read-preparation-20261010.json) reads the consumed worker's retained status/denial and exact systemd properties to establish the stop cause. No replay, restart, claim reset, signing or provider request. The worker admission window is not itself proof of stop cause. [Continuation](releases/DISCOVERY_APPLICATION_CONTINUATION_AFTER_R8_20261009.md).
 
 # Previous checkpoint — PET v1.7 available; native peer plan PASS; private cutover read prepared
 

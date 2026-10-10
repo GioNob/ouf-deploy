@@ -420,6 +420,15 @@
       "applyAuthorized": false,
       "targetEvidence": "evidence/discovery-cutover-input-target-20261010.json",
       "targetExit": 0
+    },
+    "workerDiagnosticRead": {
+      "status": "PREPARED_CI_PASS_TARGET_OUTPUT_PENDING",
+      "evidence": "evidence/provider-r8-worker-quiescence-read-preparation-20261010.json",
+      "readerCommit": "a13d50881e0eeab5fc66e9432b43fa4658e046b8",
+      "deliveryCommit": "174c8d02c0199a5eb3e87e23ffbfe44a4a44d4c4",
+      "runId": 38026120077,
+      "applyAuthorized": false,
+      "targetOutputReceived": false
     }
   },
   "previousApplicationPreparation": {
