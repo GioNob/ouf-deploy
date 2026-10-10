@@ -41,5 +41,35 @@ class Review(unittest.TestCase):
             review.service(reader,binding)
         self.assertEqual(run.call_args.args[0],['/usr/bin/systemctl','show',review.UNIT,'--no-pager','--property='+','.join(review.PROPERTIES)])
         self.assertEqual(len(reader.calls),2)
+    def test_rejected_lease_keeps_worker_diagnostics_without_claiming_liveness(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        context=Path('/sealed/context');owner='a'*64
+        human={'approvalRef':'SOURCE_APPROVED','configurationHash':'b'*64}
+        cfg={'commandBindings':{'systemctl':{'path':'/usr/bin/systemctl','sha256':'c'*64}}}
+        records={str(context/'human-approval-binding.json'):human,str(context/'execution-configuration.json'):cfg,
+            str(review.CLAIM):{'schema':'ouf.provider-dns-recovery-activation-claim.v1','approvalRef':review.APPROVAL,'directory':str(review.ROOT),'startAuthorized':False},
+            str(review.ROOT/'authorization.json'):{'schema':'ouf.provider-dns-recovery-authorization.v1','approvalRef':review.APPROVAL,'ownerConfigurationHash':owner,'serviceUnit':review.UNIT,'programHashes':review.PROGRAMS,'automaticRestart':False,'enableAtBoot':False,'containerLifecycleAuthorized':False},
+            str(review.ROOT/'activation-receipt.json'):{'status':'TWO_FLOW_LEASE_ACTIVE_AND_RENEWED','serviceUnit':review.UNIT,'doNotRerunApply':True},str(review.ROOT/'worker-status.json'):self.status}
+        def private(path,*args,**kwargs):return json.dumps(records[str(path)]).encode() if str(path) in records else b'sealed-program'
+        def blocked():raise ValueError('LEASE_ADDRESS_OR_TTL_UNPROVEN')
+        reader=SimpleNamespace(CONTEXT=context,APPROVAL='SOURCE_APPROVED',OWNER_HASH=owner,private=private,parse=json.loads,collect_cutover=blocked,ReadDenied=ValueError)
+        with patch.object(review,'service',return_value=self.unit),patch.object(review,'lease_diagnostics',return_value={'observationalOnly':True}):
+            result=review.collect(reader)
+        self.assertFalse(result['completeCutoverBindingsProven']);self.assertEqual(result['cutover']['reason'],'LEASE_ADDRESS_OR_TTL_UNPROVEN')
+        self.assertEqual(result['r9']['worker']['refreshCount'],4);self.assertFalse(result['r9']['r9WorkerAndLeaseActiveAtStableObservation'])
+    def test_ttl_diagnostics_preserve_rejection_and_hide_address(self):
+        from types import SimpleNamespace
+        flow={'source':'172.18.0.1','allowedPrivateAddresses':[],'leaseSeconds':30}
+        owner={'kernel':{'tableName':'ouf_test','providerFlows':[flow]},'expectedStructureHash':'0'*64}
+        tables={family:{'nftables':[{'set':{'family':family,'table':'ouf_test','name':'provider_0','elem':[{'elem':{'val':'8.8.8.8','expires':ttl}}]}}]} for family,ttl in [('inet',31000),('bridge','29s')]}
+        def run(bindings,name,args,**kwargs):
+            self.assertEqual(name,'nft');self.assertEqual(args[:4],['-j','list','table',args[3]])
+            return json.dumps(tables[args[3]]).encode()
+        reader=SimpleNamespace(GUARD=Path('/sealed/guard'),OWNER_HASH='a'*64,private=lambda *a:json.dumps(owner).encode(),parse=json.loads,run=run,encoded=lambda v:json.dumps(v).encode(),structure=lambda v:v)
+        result=review.lease_diagnostics(reader,{'commandBindings':{}})
+        self.assertTrue(result['grantsNoLeaseAuthority']);self.assertNotIn('8.8.8.8',json.dumps(result))
+        self.assertTrue(all(not r['expiresAcceptedByOriginalPredicate'] for r in result['elements']))
+        self.assertEqual([r['expiresType'] for r in result['elements']],['int','str'])
 
 if __name__=='__main__':unittest.main()

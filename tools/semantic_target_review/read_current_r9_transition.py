@@ -1,7 +1,7 @@
 """Fresh root-private R9/peer read only; no keys, locks, DNS, grants or replay.
 The sealed original cutover reader is executed only from verified memory bytes.
 """
-import hashlib, json, math, os, re, subprocess, sys, types
+import hashlib, ipaddress, json, math, os, re, subprocess, sys, types
 from pathlib import Path
 
 READER_HASH='b9ea8aa1a8cf31d28dfa1df0960dcf6930880d11244fe1f84e710bfe0b9ec4cf'
@@ -60,9 +60,45 @@ def service(reader,binding):
     require(set(values)<=set(PROPERTIES) and values.get('LoadState') in ('loaded','not-found'),'EXACT_SYSTEMD_UNIT_METADATA_REQUIRED')
     return values
 
+def lease_diagnostics(reader,cfg):
+    """Inspect rejected elements without accepting them or disclosing addresses."""
+    owner_raw=reader.private(reader.GUARD/'coordinated-configuration.json',reader.OWNER_HASH)
+    owner=reader.parse(owner_raw);table=owner['kernel']['tableName']
+    require(type(table) is str and re.fullmatch('[A-Za-z][A-Za-z0-9_-]{0,31}',table),'EXACT_LEASE_TABLE_REQUIRED')
+    tables={family:reader.parse(reader.run(cfg['commandBindings'],'nft',['-j','list','table',family,table],table=table)) for family in ('inet','bridge')}
+    rows=[]
+    for family,data in tables.items():
+        for row in data['nftables']:
+            value=row.get('set')
+            if value is None:continue
+            require(value.get('family')==family and value.get('table')==table and re.fullmatch('provider_[0-9]+',value.get('name','')),'EXACT_LEASE_SET_REQUIRED')
+            index=int(value['name'].split('_')[1]);require(index<len(owner['kernel']['providerFlows']),'EXACT_LEASE_FLOW_REQUIRED')
+            flow=owner['kernel']['providerFlows'][index];elements=value.get('elem',[])
+            require(type(elements) is list and len(elements)<=32,'LEASE_DIAGNOSTIC_ELEMENT_BOUND_REQUIRED')
+            for entry in elements:
+                element=entry.get('elem',{});address=element.get('val');ttl=element.get('expires')
+                address_ok=False
+                try:
+                    parsed=ipaddress.ip_address(address)
+                    address_ok=(str(parsed)==address and parsed.version==ipaddress.ip_address(flow['source']).version
+                        and not(parsed.is_loopback or parsed.is_link_local or parsed.is_multicast or parsed.is_unspecified or parsed.is_reserved)
+                        and (parsed.is_global or address in flow['allowedPrivateAddresses']))
+                except (ValueError,TypeError):pass
+                ttl_display=ttl if type(ttl) is int or (type(ttl) is str and re.fullmatch('[0-9.smhd ]{1,48}',ttl)) else None
+                rows.append({'family':family,'flowIndex':index,'addressHash':sha(str(address).encode()),'addressAcceptedByOriginalPredicate':address_ok,
+                    'expiresType':type(ttl).__name__,'expiresValue':ttl_display,'expiresPresent':'expires' in element,
+                    'expiresAcceptedByOriginalPredicate':type(ttl) is int and 0<ttl<=flow['leaseSeconds']*1000,
+                    'configuredLeaseSeconds':flow['leaseSeconds']})
+    require(reader.private(reader.GUARD/'coordinated-configuration.json',reader.OWNER_HASH)==owner_raw,'OWNER_CUSTODY_CHANGED')
+    return {'schema':'ouf.provider-lease-rejected-element-diagnostics.v1','observationalOnly':True,'grantsNoLeaseAuthority':True,
+        'nativeStructureMatchesSealedOwner':sha(reader.encoded(reader.structure(tables)))==owner['expectedStructureHash'],'elements':rows}
+
 def collect(reader):
-    cutover=reader.collect_cutover()
-    cfg=reader.parse(reader.SAVED[str(reader.CONTEXT/'execution-configuration.json')])
+    # Retain service/worker diagnostics even when the original strict lease
+    # projection refuses membership. Never replace or relax that projection.
+    human_raw=reader.private(reader.CONTEXT/'human-approval-binding.json');human=reader.parse(human_raw)
+    require(human.get('approvalRef')==reader.APPROVAL,'EXACT_CONSUMED_SOURCE_CONTEXT_REQUIRED')
+    cfg_raw=reader.private(reader.CONTEXT/'execution-configuration.json',human['configurationHash']);cfg=reader.parse(cfg_raw)
     claim_raw=reader.private(CLAIM);claim=reader.parse(claim_raw)
     require(claim.get('schema')=='ouf.provider-dns-recovery-activation-claim.v1' and claim.get('approvalRef')==APPROVAL and claim.get('directory')==str(ROOT) and claim.get('startAuthorized') is False,'EXACT_CONSUMED_R9_CLAIM_REQUIRED')
     authorization_raw=reader.private(ROOT/'authorization.json');authorization=reader.parse(authorization_raw)
@@ -75,12 +111,20 @@ def collect(reader):
     require(receipt.get('status')=='TWO_FLOW_LEASE_ACTIVE_AND_RENEWED' and receipt.get('serviceUnit')==UNIT and receipt.get('doNotRerunApply') is True,'RETAINED_ACTIVATION_RECEIPT_REQUIRED')
     status_raw=reader.private(ROOT/'worker-status.json');status=reader.parse(status_raw)
     before=service(reader,cfg['commandBindings']['systemctl'])
+    cutover_error=None
+    try:cutover=reader.collect_cutover()
+    except reader.ReadDenied as error:
+        reason=str(error)
+        cutover_error=reason if re.fullmatch('[A-Z][A-Z0-9_]{0,120}',reason) else 'CUTOVER_INPUT_UNPROVEN'
+        cutover={'status':'READ_BLOCKED','reason':cutover_error,'lease':{},'completeCutoverBindingsProven':False}
+    diagnostic=lease_diagnostics(reader,cfg) if cutover_error=='LEASE_ADDRESS_OR_TTL_UNPROVEN' else None
     result=project_worker(status,before,cutover['lease'])
     after=service(reader,cfg['commandBindings']['systemctl'])
     require(before==after and reader.private(ROOT/'worker-status.json')==status_raw,'WORKER_OR_SERVICE_CHANGED_DURING_READ_RETRY_SAFE')
     require(reader.private(CLAIM)==claim_raw and reader.private(ROOT/'authorization.json')==authorization_raw and reader.private(ROOT/'activation-receipt.json')==receipt_raw,'R9_IMMUTABLE_CUSTODY_CHANGED')
     for name,expected in PROGRAMS.items():require(reader.private(ROOT/name,expected)==programs[name],'R9_PROGRAM_BYTES_CHANGED')
-    return {'cutover':cutover,'r9':result,'authorizationHash':sha(authorization_raw),'claimHash':sha(claim_raw),'activationReceiptHash':sha(receipt_raw),'workerStatusHash':sha(status_raw),'programClosureVerified':True}
+    require(reader.private(reader.CONTEXT/'human-approval-binding.json')==human_raw and reader.private(reader.CONTEXT/'execution-configuration.json',human['configurationHash'])==cfg_raw,'SOURCE_COMMAND_CUSTODY_CHANGED')
+    return {'cutover':cutover,'r9':result,'leaseElementDiagnostics':diagnostic,'authorizationHash':sha(authorization_raw),'claimHash':sha(claim_raw),'activationReceiptHash':sha(receipt_raw),'workerStatusHash':sha(status_raw),'programClosureVerified':True,'completeCutoverBindingsProven':cutover_error is None}
 
 def main():
     base={'schema':'ouf.discovery.current-r9-transition-read.v1','applyAuthorized':False,'existingConfigurationWrites':0,'firewallWrites':0,'databaseWrites':0,'containerLifecycleOperations':0,
@@ -88,7 +132,8 @@ def main():
           'readConsistencyMode':'STABLE_REREADS_NOT_ATOMIC_TRANSITION_AUTHORITY'}
     try:
         require(os.geteuid()==0 and sys.flags.isolated and sys.dont_write_bytecode and len(sys.argv)==1,'ISOLATED_ROOT_READ_ONLY_REQUIRED')
-        result={**base,**collect(load_reader(globals().get('__reader_source_bytes__'))),'status':'CURRENT_R9_TRANSITION_BINDINGS_CAPTURED'}
+        collected=collect(load_reader(globals().get('__reader_source_bytes__')))
+        result={**base,**collected,'status':'CURRENT_R9_TRANSITION_BINDINGS_CAPTURED' if collected['completeCutoverBindingsProven'] else 'CURRENT_R9_DIAGNOSTICS_CAPTURED_CUTOVER_UNPROVEN'}
         code=0
     except Exception as error:
         result={**base,'status':'READ_BLOCKED','errorType':type(error).__name__,'reason':str(error) if re.fullmatch('[A-Z][A-Z0-9_]{0,120}',str(error)) else 'CURRENT_TRANSITION_INPUT_UNPROVEN'};code=1
