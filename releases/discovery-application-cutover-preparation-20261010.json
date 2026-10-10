@@ -97,7 +97,7 @@
   "nextRead": {
     "status": "ONE_USE_ROOT_INPUT_PREPARATION_REQUIRES_OPERATOR_SUDO",
     "program": "tools/semantic_target_review/prepare_application_runtime_inputs.py",
-    "sourceCommit": "f75a0a101bf675b1e009e7a6eef0f961575ff851",
+    "sourceCommit": "b71638367b3cb2b48ce3e65933078b51feb2f85c",
     "launcher": "releases/application-runtime-input-preparation-20261010.sh",
     "scope": "New root-owned runtime custody only; no mounts, services or cutover",
     "productionTransitionReady": false
@@ -107,8 +107,16 @@
   "runtimeInputsPreparedOnTarget": false,
   "runtimeInputPreparationLastAttempt": {
     "status": "INPUT_PREPARATION_BLOCKED_BEFORE_CLAIM",
-    "evidence": "evidence/application-runtime-input-preparation-blocked-target-20261010.json",
-    "reason": "EXACT_READ_ONLY_SOUTHBOUND_CERTIFICATE_REQUIRED",
+    "reason": "EXACT_READ_ONLY_SOUTHBOUND_CONFIGURATION_REQUIRED",
+    "evidence": "evidence/application-runtime-input-preparation-oci-blocked-target-20261010.json",
     "retryPermittedAfterCorrectedImmutableDelivery": true
-  }
+  },
+  "runtimeInputPreparationPriorAttempts": [
+    {
+      "status": "INPUT_PREPARATION_BLOCKED_BEFORE_CLAIM",
+      "evidence": "evidence/application-runtime-input-preparation-blocked-target-20261010.json",
+      "reason": "EXACT_READ_ONLY_SOUTHBOUND_CERTIFICATE_REQUIRED",
+      "retryPermittedAfterCorrectedImmutableDelivery": true
+    }
+  ]
 }

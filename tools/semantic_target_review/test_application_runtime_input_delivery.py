@@ -20,8 +20,8 @@ class Delivery(unittest.TestCase):
             self.assertNotEqual(result.returncode,0);self.assertIn(b'OUF_APPLICATION_INPUT_DELIVERY_HASH_MISMATCH',result.stderr);self.assertNotIn(b'OUF_APPLICATION_RUNTIME_INPUTS=',result.stdout)
     def test_launcher_is_pinned_and_not_a_cutover(self):
         subprocess.run(['bash','-n',str(LAUNCH)],check=True)
-        self.assertIn('ref=f75a0a101bf675b1e009e7a6eef0f961575ff851',TEXT)
-        self.assertIn('106b55746b26b2c3f2151bfc41f6496165f239f7d3735b8050b3fe3040da7fcc',TEXT)
+        self.assertIn('ref=b71638367b3cb2b48ce3e65933078b51feb2f85c',TEXT)
+        self.assertIn('cb9ff64684243d563da79d327eb7d7e325dbea6a3922c91a0b7791a3ceec9baf',TEXT)
         self.assertIn('b9ea8aa1a8cf31d28dfa1df0960dcf6930880d11244fe1f84e710bfe0b9ec4cf',TEXT)
         self.assertNotIn('systemctl',TEXT);self.assertNotIn('docker run',TEXT);self.assertNotIn('--apply',TEXT)
 if __name__=='__main__':unittest.main()
