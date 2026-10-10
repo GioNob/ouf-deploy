@@ -38,7 +38,12 @@
       "newAppliesV10AndStartsOnCurrentRestore": true,
       "productionProviderHealthProven": false,
       "targetRestoreAuthorized": false
-    }
+    },
+    "databaseWriterFenceAndBackupEvidence": "evidence/discovery-database-fence-backup-qualification-20261010.json",
+    "fencedBackupQualifiedOnDisposablePostgresql": true,
+    "productionDatabaseFenced": false,
+    "productionBackupTaken": false,
+    "staleSmokeRetainedStopped": true
   },
   "peer": {
     "currentTargetEvidence": "evidence/discovery-cutover-input-target-20261010.json",
@@ -78,5 +83,10 @@
     "commonLockContentionCanTerminateExistingRefresh": true,
     "mutatingTransitionMustExplicitlyCoordinateLeaseWorker": true,
     "R9ReplayOrClaimResetAllowed": false
+  },
+  "nextRead": {
+    "program": "tools/semantic_target_review/read_current_r9_transition.py",
+    "scope": "Root-private R9 status and existing signed shared ingress, read only; no locks/DNS/keys/replay",
+    "productionTransitionReady": false
   }
 }

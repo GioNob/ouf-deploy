@@ -1,0 +1,33 @@
+name: OUF current R9 transition read only
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - tools/semantic_target_review/read_current_r9_transition.py
+      - tools/semantic_target_review/test_current_r9_transition.py
+      - tools/semantic_target_review/try_current_r9_transition.py
+      - .github/workflows/semantic-current-r9-transition-read.yml
+permissions:
+  contents: read
+concurrency:
+  group: ouf-current-r9-transition-read
+  cancel-in-progress: false
+jobs:
+  scope:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 tools/semantic_target_review/test_current_r9_transition.py
+  read:
+    needs: scope
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Exact hash verified read only; report if operator sudo is required
+        run: python3 tools/semantic_target_review/try_current_r9_transition.py
