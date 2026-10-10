@@ -2,7 +2,7 @@ import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.output.ValidateResult;
 public final class FlywayFixture {
   public static void main(String[] args) {
-    if (args.length != 3 || !args[1].matches("[a-z_]+")) throw new IllegalArgumentException("FIXTURE_ARGUMENTS");
+    if (args.length != 3 || !java.util.Set.of("semantic", "restored", "restored_v10").contains(args[1])) throw new IllegalArgumentException("FIXTURE_ARGUMENTS");
     Flyway flyway = Flyway.configure()
       .dataSource("jdbc:postgresql://127.0.0.1:55439/"+args[1], "postgres", "ci-fixture-only")
       .schemas("ouf_sem").defaultSchema("ouf_sem")
