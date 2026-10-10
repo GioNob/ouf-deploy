@@ -137,3 +137,10 @@ L'owner conferma che i verticali API verranno affrontati dopo il completamento e
 Il compilatore della dichiarazione runtime supera sette prove di preservazione/denial nella CI [38064998496](https://github.com/GioNob/ouf-deploy/actions/runs/38064998496) su c80b7584… e una prova di consegna locale con hash esatti. Conserva tutti i campi host originali e le osservazioni di rete; dichiara soltanto i tre bind read-only già contrattualizzati. Non realizza OCI, peer o autorità. Il launcher fissato richiede sudo per leggere i due snapshot root privati e creare una nuova evidenza privata. Non legge i file dei segreti, non invoca Docker, non prende il lock lease e non ripete alcun claim/apply R9.
 
 La ricevuta target rimane APPLICATION_INPUT_CONTRACT_PREPARED_NOT_APPLY_READY fino a nuova esecuzione dell'operatore. Le osservazioni conservate non provano lo stato corrente; nuova closure nativa/firmata, fencing/backup fresco e applicatore coordinato restano gate necessari prima di qualunque cutover. Nessuno dei 23 gap PET viene chiuso automaticamente.
+
+
+## Aggiornamento corrente: R10 attivata e dichiarazione pacchetto in riallineamento
+
+La [receipt operatore](../evidence/finite-r10-active-renewed-target-20261010.json) dichiara R10 TWO_FLOW_LEASE_ACTIVE_AND_RENEWED, refreshCount2, exit0. R10 è consumata e non va ripetuta. Liveness continua e salute applicativa non sono dimostrate.
+
+Il pacchetto Semantic publisher-verificato usa e826bd…; la dichiarazione privata precedente usa b1a795…. [Compilatore,13 test, ZIP reale e comando protetto](SEMANTIC_QUALIFIED_PACKAGE_DECLARATION_20261010.md) sono qualificati. La compilazione sul VPS resta da eseguire; il cutover deve ancora chiudere OCI/peer/trasporto, coordinamento R10, backup/fence/recovery, custody e readiness. Il nuovo pacchetto non eredita le attestazioni applicative del vecchio candidato. Le preparazioni strutturate ora distinguono queste versioni e le osservazioni R9/R10. Cinema8/8 e Teatri restano acquisiti; accettazioni F10/F11 ancora aperte.

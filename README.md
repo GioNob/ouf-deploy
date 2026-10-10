@@ -1,3 +1,9 @@
+# Current checkpoint — qualified Semantic package declaration pending on target
+
+R10 is consumed and was reported active/renewed on target. The previous private runtime declaration still binds Semantic image `b1a795…`; the retained publisher-verified package binds `e826bd…`. The exact-package compiler and its immutable delivery now pass [CI38084905986](https://github.com/GioNob/ouf-deploy/actions/runs/38084905986):13 tests and cryptographic reading of the real producer ZIP, without image import. [Operator command and remaining cutover scope](releases/SEMANTIC_QUALIFIED_PACKAGE_DECLARATION_20261010.md). Target compilation is pending; application cutover and health are unproven. Historical declarations/startup evidence do not automatically apply to the new image.
+
+[Updated structured preparation](releases/discovery-application-cutover-preparation-20261010.json) records R10 separately from the historical failed R9 lease, current source pins and the declaration mismatch. Preserve R10/Cinema/Teatri; no activation replay. Checkpoints below retain their original historical scope.
+
 # Current checkpoint — R10 lease activated and renewed on target
 
 Operator output received **10 October 2026 22:35:54 Europe/Rome** reports TWO_FLOW_LEASE_ACTIVE_AND_RENEWED and launcher exit0: refreshCount2, flowAddressCounts[1,1], exact unit `ouf-semantic-provider-lease-finite-r10.service`, snapshot `/etc/ouf/deploy-snapshots/semantic-finite-lease-recovery-r10-nw9ue4d5`. [Complete structured receipt](evidence/finite-r10-active-renewed-target-20261010.json). Evidence is user-pasted/operator-reported, not independently acquired from the VPS in this session.
@@ -6,7 +12,7 @@ Operator output received **10 October 2026 22:35:54 Europe/Rome** reports TWO_FL
 
 Continue with the governed application cutover and readiness, preserving the exact R10 source/cohort/network authority, previously verified packages/trust/inputs and historical data. [Delivery and updated continuation](releases/FINITE_R10_DELIVERY_AND_CONTINUATION_20261010.md). Cinema8/8 delivery/materialization/current Search and Teatri upload/profile remain acquired; F10/F11 and clean-host installer acceptance are still open. Files before vertical API PULLv2.3. Historical checkpoints below are scoped records and do not supersede this R10 activation receipt.
 
-# Current checkpoint — R10 delivery qualified; operator activation pending
+# Historical checkpoint — R10 delivery qualified; operator activation was pending
 
 R10's sixteen source tests and actual systemd/DNS/nft qualification pass at cd8f43d38a302af318d35890b7c83cd96fe14607. The immutable seven-component launcher is now delivered at bedfb47128bcf8356edc25744ffe3b0ea372739c. [Delivery CI38084153556](https://github.com/GioNob/ouf-deploy/actions/runs/38084153556) PASS: four tests cover all seven download/hash failure positions, isolated bootstrap and entrypoint tamper denial. [Exact operator command and scope](releases/FINITE_R10_DELIVERY_AND_CONTINUATION_20261010.md); [qualification receipt](evidence/finite-r10-delivery-qualified-20261010.json).
 

@@ -4,56 +4,44 @@
   "applyAuthorized": false,
   "newTargetAuthorityIssued": false,
   "networkLease": {
-    "activationEvidence": "evidence/provider-dns-recovery-active-renewed-target-20261010.json",
+    "activationEvidence": "evidence/finite-r10-active-renewed-target-20261010.json",
     "claimConsumed": true,
-    "serviceUnit": "ouf-semantic-provider-lease-dns-r9.service",
-    "snapshot": "/etc/ouf/deploy-snapshots/semantic-dns-recovery-r9-hkv5exgo",
+    "serviceUnit": "ouf-semantic-provider-lease-finite-r10.service",
+    "snapshot": "/etc/ouf/deploy-snapshots/semantic-finite-lease-recovery-r10-nw9ue4d5",
     "ownerConfigurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
     "doNotRerunApply": true,
     "commonLockMustNotBeAcquiredByObservers": true,
     "sharedPeerRebindIsSeparateFromDnsLease": true,
-    "currentObservationEvidence": "evidence/current-r9-transition-active-target-20261010.json",
-    "currentObservation": {
-      "operatorLocalTime": "2026-10-10T10:50:56+02:00",
-      "status": "LEASE_ACTIVE",
-      "refreshCount": 643,
-      "workerPid": 1970321,
-      "leaseAndWorkerActiveAtStableObservation": true,
-      "minRemainingTtlSeconds": 0.015,
+    "lastOperatorReportedObservation": {
+      "status": "TWO_FLOW_LEASE_ACTIVE_AND_RENEWED",
+      "refreshCount": 2,
+      "flowAddressCounts": [
+        1,
+        1
+      ],
+      "independentlyReadOnTarget": false,
       "continuousLivenessProven": false
     }
   },
-  "signedApplicationEvidence": "evidence/discovery-remediated-application-qualification-20261009.json",
+  "signedApplicationEvidence": "evidence/file-loop-provenance-trust-r9-target-20261010.json",
   "candidateSourcePins": {
-    "semantic": "403531a9df1cbc877078f8126fd1fc4ff18acea9",
-    "mcp": "3ba1d4abcf62af1572997a217a333fa8d231c29f"
+    "semantic": "622614b0040cf11be2f6c7e3568733a488ca4ca8",
+    "ingestion": "8b908554314617298242eb2ae8312f734f55e817",
+    "udp": "bc336208ce41876f2854c3a4d8623fb6698bdcdd"
   },
   "migration": {
-    "unchangedBaseline": "V1_V9_BYTES_IDENTICAL_TO_TARGET_JAR",
+    "unchangedBaseline": "V1_V9_TARGET_COMPARISON_REQUIRED_FOR_EXACT_CURRENT_PACKAGE",
     "onlyAddition": "V10__discovery_request_idempotency.sql",
-    "sha256": "85708e1d37184177471f225806ca21c4088915f766197020f8fefe109407e911",
-    "recoveryQualificationEvidence": "evidence/discovery-remediated-migration-current-recovery-qualification-20261010.json",
+    "publisherVerifiedPackageMigrationCount": 10,
+    "packageEvidence": "evidence/file-loop-provenance-trust-r9-target-20261010.json",
+    "historicalRecoveryQualificationNotPromotedToNewImage": true,
     "freshPrivateTargetBackupRequiredAtCutover": true,
     "preMigrationBackupMustNotOverwriteLaterWrites": true,
-    "currentSnapshotRestoreTestIsNotTargetRestoreAuthority": true,
-    "packagedFlywayQualificationEvidence": "evidence/discovery-packaged-flyway-recovery-qualification-20261010.json",
-    "installedFlywayValidationOnV10": "VALIDATED_WITH_CURRENT_SCHEMA",
-    "fullOldAndNewApplicationStartupNotYetQualified": false,
-    "fullSpringStartupQualificationEvidence": "evidence/discovery-full-spring-startup-qualification-20261010.json",
-    "applicationRuntimeQualification": {
-      "status": "FULL_STARTUP_PASS_ISOLATED_IAM_ENABLED_PROVIDER_WORKER_DISABLED",
-      "candidateJarSha256": "4f856b0b656e36fa0ba45e8dca7d3b5f6180765eed0d54a1ba6586f1e81d809c",
-      "installedJarSha256": "32df2976c0c240d093b4769e296a7411f02548e14ed17b542b6db00a78901bc2",
-      "oldStartsOnV1V9AndRestoredV10": true,
-      "newAppliesV10AndStartsOnCurrentRestore": true,
-      "productionProviderHealthProven": false,
-      "targetRestoreAuthorized": false
-    },
-    "databaseWriterFenceAndBackupEvidence": "evidence/discovery-database-fence-backup-qualification-20261010.json",
-    "fencedBackupQualifiedOnDisposablePostgresql": true,
     "productionDatabaseFenced": false,
     "productionBackupTaken": false,
-    "staleSmokeRetainedStopped": true
+    "staleSmokeRetainedStopped": true,
+    "exactNewImageFullApplicationHealthProven": false,
+    "historicalV1V9ComparisonRetained": true
   },
   "peer": {
     "currentTargetEvidence": "evidence/current-r9-transition-active-target-20261010.json",
@@ -73,7 +61,9 @@
     "conditionalRecoveryCompiler": "tools/semantic_peer_replacement/peer_rebind.py:compile_conditional_recovery",
     "conditionalRecoveryEvidence": "evidence/semantic-peer-conditional-recovery-qualification-20261010.json",
     "inverseRequiresOriginalOldPeerGenerationStillLive": true,
-    "recreatedOldImageRequiresNewGovernedPeerBinding": true
+    "recreatedOldImageRequiresNewGovernedPeerBinding": true,
+    "observationsAreHistorical": true,
+    "currentTargetEvidenceIsHistorical": true
   },
   "requiredComposedClosures": [
     "Exact complete OCI and generation/reciprocal-peer binding for replacement Semantic",
@@ -92,9 +82,11 @@
     "observerLockAcquisitionForbidden": true,
     "commonLockContentionCanTerminateExistingRefresh": true,
     "mutatingTransitionMustExplicitlyCoordinateLeaseWorker": true,
-    "R9ReplayOrClaimResetAllowed": false
+    "R9ReplayOrClaimResetAllowed": false,
+    "existingR10SealedProgramMustRemainUnchanged": true,
+    "R10ReplayOrClaimResetAllowed": false
   },
-  "nextRead": "COMPOSE_COORDINATED_APPLICATOR_AND_REUSABLE_INSTALLATION_STATE_MACHINE",
+  "nextRead": "COMPILE_EXACT_QUALIFIED_SEMANTIC_PACKAGE_DECLARATION_WITHOUT_APPLY",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
@@ -128,12 +120,78 @@
   "industrializationGoal": "Single qualified install/upgrade/recovery entry point; no routine manual VPS edits; initial bootstrap and PET-protected human decisions remain explicit",
   "industrializationPlan": "releases/INSTALLATION_INDUSTRIALIZATION_PLAN.md",
   "reusableInstallerDelivered": false,
-  "runtimeDeclarationPreparedOnTarget": true,
+  "runtimeDeclarationPreparedOnTarget": false,
   "runtimeDeclarationTargetEvidence": "evidence/replacement-runtime-declaration-target-20261010.json",
   "runtimeDeclaration": {
     "status": "REPLACEMENT_RUNTIME_DECLARED_NOT_REALIZED",
     "privateDeclarationHash": "b9ee536c6cb4fefa4e6357716599cfdb34a38b7e11789013cf69096e5932709c",
     "historical": true,
-    "completeReplacementOciProven": false
+    "completeReplacementOciProven": false,
+    "candidateImageId": "sha256:b1a7956a673f88b5ee65d174c2eda7b9e448153e101348c06fdd53c0640e700b"
+  },
+  "historicalNetworkLease": {
+    "activationEvidence": "evidence/provider-dns-recovery-active-renewed-target-20261010.json",
+    "claimConsumed": true,
+    "serviceUnit": "ouf-semantic-provider-lease-dns-r9.service",
+    "snapshot": "/etc/ouf/deploy-snapshots/semantic-dns-recovery-r9-hkv5exgo",
+    "ownerConfigurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+    "doNotRerunApply": true,
+    "commonLockMustNotBeAcquiredByObservers": true,
+    "sharedPeerRebindIsSeparateFromDnsLease": true,
+    "currentObservationEvidence": "evidence/current-r9-transition-active-target-20261010.json",
+    "currentObservation": {
+      "operatorLocalTime": "2026-10-10T10:50:56+02:00",
+      "status": "LEASE_ACTIVE",
+      "refreshCount": 643,
+      "workerPid": 1970321,
+      "leaseAndWorkerActiveAtStableObservation": true,
+      "minRemainingTtlSeconds": 0.015,
+      "continuousLivenessProven": false
+    }
+  },
+  "historicalCandidateSourcePins": {
+    "semantic": "403531a9df1cbc877078f8126fd1fc4ff18acea9",
+    "mcp": "3ba1d4abcf62af1572997a217a333fa8d231c29f"
+  },
+  "historicalSignedApplicationEvidence": "evidence/discovery-remediated-application-qualification-20261009.json",
+  "historicalMigrationQualification": {
+    "unchangedBaseline": "V1_V9_BYTES_IDENTICAL_TO_TARGET_JAR",
+    "onlyAddition": "V10__discovery_request_idempotency.sql",
+    "sha256": "85708e1d37184177471f225806ca21c4088915f766197020f8fefe109407e911",
+    "recoveryQualificationEvidence": "evidence/discovery-remediated-migration-current-recovery-qualification-20261010.json",
+    "freshPrivateTargetBackupRequiredAtCutover": true,
+    "preMigrationBackupMustNotOverwriteLaterWrites": true,
+    "currentSnapshotRestoreTestIsNotTargetRestoreAuthority": true,
+    "packagedFlywayQualificationEvidence": "evidence/discovery-packaged-flyway-recovery-qualification-20261010.json",
+    "installedFlywayValidationOnV10": "VALIDATED_WITH_CURRENT_SCHEMA",
+    "fullOldAndNewApplicationStartupNotYetQualified": false,
+    "fullSpringStartupQualificationEvidence": "evidence/discovery-full-spring-startup-qualification-20261010.json",
+    "applicationRuntimeQualification": {
+      "status": "FULL_STARTUP_PASS_ISOLATED_IAM_ENABLED_PROVIDER_WORKER_DISABLED",
+      "candidateJarSha256": "4f856b0b656e36fa0ba45e8dca7d3b5f6180765eed0d54a1ba6586f1e81d809c",
+      "installedJarSha256": "32df2976c0c240d093b4769e296a7411f02548e14ed17b542b6db00a78901bc2",
+      "oldStartsOnV1V9AndRestoredV10": true,
+      "newAppliesV10AndStartsOnCurrentRestore": true,
+      "productionProviderHealthProven": false,
+      "targetRestoreAuthorized": false
+    },
+    "databaseWriterFenceAndBackupEvidence": "evidence/discovery-database-fence-backup-qualification-20261010.json",
+    "fencedBackupQualifiedOnDisposablePostgresql": true,
+    "productionDatabaseFenced": false,
+    "productionBackupTaken": false,
+    "staleSmokeRetainedStopped": true
+  },
+  "historicalRuntimeDeclarationPreparedOnTarget": true,
+  "applicationInputContractRequiresCurrentPackageBinding": true,
+  "qualifiedPackageDeclarationPreparation": {
+    "status": "COMPILER_QUALIFIED_TARGET_COMPILATION_PENDING",
+    "candidateImageId": "sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85",
+    "compilerCommit": "eee3a3c240df53c30fd25fdb8c77f469c3f63fd7",
+    "deliveryCommit": "50c638d62fb4bf86faf9400172acb3a6f165dbb8",
+    "qualificationRun": 38084825457,
+    "targetCompilationPerformed": false,
+    "completeReplacementOciProven": false,
+    "productionApplyReady": false,
+    "deliveryQualificationRun": 38084905986
   }
 }
