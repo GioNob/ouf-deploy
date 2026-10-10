@@ -37,7 +37,10 @@ def private(path, digest=None, *, executable=False):
                 and (bool(info.st_mode & 0o111) if executable else stat.S_IMODE(info.st_mode) == 0o600),
                 'EXACT_ROOT_OWNED_SOURCE_REQUIRED')
         raw = os.read(fd, 8388609)
-        require(info == os.fstat(fd) == path.lstat() and len(raw) == info.st_size,
+        def stable(value):
+            return tuple(getattr(value, key) for key in ('st_dev','st_ino','st_mode','st_uid','st_gid',
+                         'st_nlink','st_size','st_mtime_ns','st_ctime_ns'))
+        require(stable(info) == stable(os.fstat(fd)) == stable(path.lstat()) and len(raw) == info.st_size,
                 'SOURCE_CHANGED_DURING_READ')
     finally: os.close(fd)
     require(digest is None or hashlib.sha256(raw).hexdigest() == digest, 'BOUND_SOURCE_HASH_MISMATCH')
