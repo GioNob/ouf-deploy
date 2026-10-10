@@ -1,0 +1,29 @@
+{
+  "schema": "ouf.semantic-peer-conditional-recovery-qualification.v1",
+  "sourceCommit": "cc6913ea577d91c685569b6d740d37c7a0be57d6",
+  "runId": 38030919846,
+  "jobId": 114151501130,
+  "conclusion": "success",
+  "receipt": {
+    "status": "PASS",
+    "actualNft": true,
+    "actualPacketProbes": 8,
+    "negativeScopeCases": 6,
+    "negativeRecoveryCases": 4,
+    "deletedOldPeerInverseDenied": true,
+    "oneIngressRuleChanged": true,
+    "leaseAndUnrelatedTablesUnchanged": true,
+    "conditionalRecoveryProvenInFixture": true,
+    "peerIdentityInputs": "CI_FIXTURE_NOT_TARGET_ATTESTATIONS",
+    "targetAcceptance": false
+  },
+  "requirements": [
+    "Plan digest must come from authenticated transition closure",
+    "Fresh authenticated reciprocal-link and complete generation observations for both peers",
+    "Exact current native footprint before inverse",
+    "Recreated old image needs newly authenticated generation and new transport/profile authority"
+  ],
+  "targetApplied": false,
+  "authorityIssued": false,
+  "releaseAcceptance": false
+}

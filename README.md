@@ -1,11 +1,11 @@
-# Current checkpoint — 49-renewal DNS failure confirmed; bounded fresh resample and source-delta core qualified
+# Current checkpoint — packaged Flyway recovery and conditional peer inverse qualified
 
-Latest checkpoint (2026-10-10 08:04 CEST readback): R9 DNS recovery activated on the VPS, exit0, two renewals, flow counts[1,1]. Claim consumed: do not rerun apply. No application health or release acceptance is asserted. Application migration/recovery and governed Semantic peer cutover remain next. See [target activation evidence](evidence/provider-dns-recovery-active-renewed-target-20261010.json).
-
-
+Latest checkpoint (2026-10-10 08:25 CEST): exact signed candidate Flyway migration/current-snapshot recovery PASS; actual installed Flyway11.7.2 validates V10 in the isolated fixture. Native peer recovery now rejects changed generations and a deleted old link. See [Flyway evidence](evidence/discovery-packaged-flyway-recovery-qualification-20261010.json), [peer recovery evidence](evidence/semantic-peer-conditional-recovery-qualification-20261010.json), and [cutover preparation](releases/discovery-application-cutover-preparation-20261010.json). Full application startup and composed production applicator remain unqualified. R9 last target activation readback remains exit0/two renewals/[1,1], claim consumed; no replay or continuous-liveness assertion.
 
 
-The operator's [retained worker diagnosis](evidence/provider-r8-dns-window-failure-target-20261010.json) confirms failure at9 October23:28:50 Europe/Rome after49 renewals: DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE caused set revocation and supervisor stop. Worker failed/exit1, no automatic restart; Docker remains active. R8 remains QUIESCED with empty sets. The exact zero-TTL versus elapsed-expiry subcase was not recorded.
+
+
+The operator's [retained worker diagnosis](evidence/provider-r8-dns-window-failure-target-20261010.json) confirms failure at9 October23:28:50 Europe/Rome after49 renewals: DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE caused set revocation and supervisor stop. Worker failed/exit1, no automatic restart; Docker remains active. The historical failed R8 readback showed QUIESCED with empty sets; the later R9 activation supersedes that lease-state observation. The exact zero-TTL versus elapsed-expiry subcase was not recorded.
 
 [Gateway draft PR58](https://github.com/GioNob/ouf-api-gateway/pull/58) permits at most three entirely fresh observations within the original two-second budget. Resolver/address policy, negative TTL minima, finite expiry and persistent-failure revocation remain intact. Dedicated protocol and owner tests, five Gateway PR jobs and fourteen provider-boundary PR jobs PASS, including native DNS/nft/flock/systemd.
 

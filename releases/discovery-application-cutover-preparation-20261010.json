@@ -26,7 +26,9 @@
     "freshPrivateTargetBackupRequiredAtCutover": true,
     "preMigrationBackupMustNotOverwriteLaterWrites": true,
     "currentSnapshotRestoreTestIsNotTargetRestoreAuthority": true,
-    "oldApplicationFlywayCompatibilityNotYetQualified": true
+    "packagedFlywayQualificationEvidence": "evidence/discovery-packaged-flyway-recovery-qualification-20261010.json",
+    "installedFlywayValidationOnV10": "VALIDATED_WITH_CURRENT_SCHEMA",
+    "fullOldAndNewApplicationStartupNotYetQualified": true
   },
   "peer": {
     "currentTargetEvidence": "evidence/discovery-cutover-input-target-20261010.json",
@@ -42,7 +44,11 @@
     "nativePlannerEvidence": "evidence/semantic-peer-replacement-native-qualification-20261010.json",
     "replacementCompleteOciAndReciprocalPeerRequired": true,
     "sourceBoundSignedTransportClosureRequired": true,
-    "ordinaryContainerRecreateNotPrepared": true
+    "ordinaryContainerRecreateNotPrepared": true,
+    "conditionalRecoveryCompiler": "tools/semantic_peer_replacement/peer_rebind.py:compile_conditional_recovery",
+    "conditionalRecoveryEvidence": "evidence/semantic-peer-conditional-recovery-qualification-20261010.json",
+    "inverseRequiresOriginalOldPeerGenerationStillLive": true,
+    "recreatedOldImageRequiresNewGovernedPeerBinding": true
   },
   "requiredComposedClosures": [
     "Exact complete OCI and generation/reciprocal-peer binding for replacement Semantic",
@@ -54,5 +60,13 @@
     "Real CLASS/teatro/it,en caller-owned discovery request/status/candidates"
   ],
   "applicationHealthProven": false,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "productionApplicatorPrepared": false,
+  "workerCoordination": {
+    "existingR9SealedProgramMustRemainUnchanged": true,
+    "observerLockAcquisitionForbidden": true,
+    "commonLockContentionCanTerminateExistingRefresh": true,
+    "mutatingTransitionMustExplicitlyCoordinateLeaseWorker": true,
+    "R9ReplayOrClaimResetAllowed": false
+  }
 }

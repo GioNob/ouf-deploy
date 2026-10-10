@@ -480,7 +480,22 @@
       "targetDatabaseTouched": false,
       "targetBackupPerformed": false,
       "productionApplicatorPrepared": false
-    }
+    },
+    "packagedFlywayQualification": {
+      "status": "EXACT_SIGNED_CANDIDATE_AND_INSTALLED_LIBRARY_VALIDATION_PASS",
+      "evidence": "evidence/discovery-packaged-flyway-recovery-qualification-20261010.json",
+      "runId": 38030801975,
+      "installedFlywayValidationOnV10": "VALIDATED_WITH_CURRENT_SCHEMA",
+      "fullApplicationStartupQualified": false,
+      "targetDatabaseTouched": false
+    },
+    "peerConditionalRecoveryQualification": {
+      "status": "PASS_NATIVE_GENERATION_AND_DELETED_LINK_DENIAL",
+      "evidence": "evidence/semantic-peer-conditional-recovery-qualification-20261010.json",
+      "runId": 38030919846,
+      "targetApplied": false
+    },
+    "applicationCutoverPreparation": "releases/discovery-application-cutover-preparation-20261010.json"
   },
   "previousApplicationPreparation": {
     "sourcePins": {
