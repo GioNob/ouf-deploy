@@ -11,16 +11,16 @@
   if [ -z "$OUF_GH" ] || [ ! -x "$OUF_GH" ]; then printf 'OUF_APPLICATION_INPUTS_DELIVERY=EXISTING_GH_NOT_FOUND\n'; exit 1; fi
   OUF_INPUT_DIR="$(mktemp -d "$HOME/ouf-application-inputs.XXXXXXXX")"
   for OUF_NAME in prepare_application_runtime_inputs.py read_cutover_inputs.py; do
-    "$OUF_GH" api -H 'Accept: application/vnd.github.raw' "repos/GioNob/ouf-deploy/contents/tools/semantic_target_review/$OUF_NAME?ref=ecb2b92ba89feddb7fc970b70098cad525e13ebc" > "$OUF_INPUT_DIR/$OUF_NAME"
+    "$OUF_GH" api -H 'Accept: application/vnd.github.raw' "repos/GioNob/ouf-deploy/contents/tools/semantic_target_review/$OUF_NAME?ref=f75a0a101bf675b1e009e7a6eef0f961575ff851" > "$OUF_INPUT_DIR/$OUF_NAME"
   done
-  printf '%s  %s\n' 'be52da36860fb28dc1d6cb25df7b8400bfbba544c5f3bb523423db1134367f93' "$OUF_INPUT_DIR/prepare_application_runtime_inputs.py" 'b9ea8aa1a8cf31d28dfa1df0960dcf6930880d11244fe1f84e710bfe0b9ec4cf' "$OUF_INPUT_DIR/read_cutover_inputs.py" | sha256sum -c -
+  printf '%s  %s\n' '106b55746b26b2c3f2151bfc41f6496165f239f7d3735b8050b3fe3040da7fcc' "$OUF_INPUT_DIR/prepare_application_runtime_inputs.py" 'b9ea8aa1a8cf31d28dfa1df0960dcf6930880d11244fe1f84e710bfe0b9ec4cf' "$OUF_INPUT_DIR/read_cutover_inputs.py" | sha256sum -c -
   OUF_PHASE=PREPARE_ROLE_OWNED_INPUTS_ONCE_NO_MOUNTS_NO_SERVICES
   sudo /usr/bin/python3 -I -B -c '
 
 import hashlib,pathlib,sys
 if len(sys.argv)!=3:raise SystemExit("OUF_APPLICATION_INPUT_DELIVERY_EXACT_PAIR_REQUIRED")
 sources=[]
-for path,expected in zip(sys.argv[1:],("be52da36860fb28dc1d6cb25df7b8400bfbba544c5f3bb523423db1134367f93","b9ea8aa1a8cf31d28dfa1df0960dcf6930880d11244fe1f84e710bfe0b9ec4cf")):
+for path,expected in zip(sys.argv[1:],("106b55746b26b2c3f2151bfc41f6496165f239f7d3735b8050b3fe3040da7fcc","b9ea8aa1a8cf31d28dfa1df0960dcf6930880d11244fe1f84e710bfe0b9ec4cf")):
     with pathlib.Path(path).open("rb") as stream:raw=stream.read(131073)
     if len(raw)>131072 or hashlib.sha256(raw).hexdigest()!=expected:raise SystemExit("OUF_APPLICATION_INPUT_DELIVERY_HASH_MISMATCH")
     sources.append(raw)
