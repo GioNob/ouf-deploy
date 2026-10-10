@@ -1,0 +1,110 @@
+name: Unsigned file-loop candidate packages
+on:
+  push:
+    branches: [codex/file-loop-cohort-package-20261010]
+    paths:
+      - .github/workflows/file-loop-candidate-package.yml
+      - scripts/package-file-loop-candidate.py
+      - releases/file-loop-qualified-cohort-20261010.json
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: semantic
+            repository: ouf-semantic-registry
+            commit: 622614b0040cf11be2f6c7e3568733a488ca4ca8
+          - module: ingestion
+            repository: ouf-ingestion-runtime
+            commit: 8b908554314617298242eb2ae8312f734f55e817
+          - module: udp
+            repository: ouf-udp-object-resolution
+            commit: bc336208ce41876f2854c3a4d8623fb6698bdcdd
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: deploy
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/${{ matrix.repository }}
+          ref: ${{ matrix.commit }}
+          path: source
+          persist-credentials: false
+      - name: Freeze source and external Docker bases, build non-root candidate
+        run: |
+          python3 deploy/scripts/package-file-loop-candidate.py build \
+            --source source --commit '${{ matrix.commit }}' --module '${{ matrix.module }}' --output package
+      - name: Check native SQLite and XLSX against this newly built image
+        if: matrix.module == 'ingestion'
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --target build -f package/Dockerfile.resolved -t ouf-cohort-native-probe source
+          PROBE_CONTAINER="$(docker create ouf-cohort-native-probe)"
+          trap 'docker rm -f "$PROBE_CONTAINER" >/dev/null 2>&1 || true' EXIT
+          mkdir -p probe/classes probe/dependencies
+          docker cp "$PROBE_CONTAINER:/build/target/test-classes/." probe/classes/
+          docker cp "$PROBE_CONTAINER:/build/target/ingestion-runtime-1.0.0-SNAPSHOT.jar" probe/application.jar
+          python3 - <<'PY'
+          import zipfile,pathlib
+          with zipfile.ZipFile('probe/application.jar') as z:
+              for n in z.namelist():
+                  if n.startswith('BOOT-INF/lib/') and n.endswith('.jar'):
+                      pathlib.Path('probe/dependencies',pathlib.Path(n).name).write_bytes(z.read(n))
+          PY
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges \
+            --tmpfs /tmp:rw,exec,nosuid,nodev,size=64m \
+            -v "$PWD/probe/classes:/probe:ro" -v "$PWD/probe/dependencies:/dependencies:ro" \
+            --entrypoint java 'ouf-cohort-ingestion:${{ matrix.commit }}' \
+            -Djava.awt.headless=true -cp '/probe:/dependencies/*' \
+            it.comune.trieste.ouf.ingestion.RuntimeImageFormatProbe | tee package/native-probe.txt
+      - name: Scan exact candidate, reject HIGH CRITICAL UNKNOWN including unfixed
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ouf-cohort-${{ matrix.module }}:${{ matrix.commit }}
+          format: json
+          output: package/trivy-image.json
+          severity: HIGH,CRITICAL,UNKNOWN
+          ignore-unfixed: false
+          exit-code: 1
+      - name: Export hashed unsigned archive only after image-bound scan
+        run: |
+          python3 deploy/scripts/package-file-loop-candidate.py export \
+            --source source --commit '${{ matrix.commit }}' --module '${{ matrix.module }}' --output package
+      - name: Verify retained SQL and feature source continuity
+        if: matrix.module != 'semantic'
+        run: |
+          python3 deploy/scripts/check-source-continuity.py \
+            --baseline deploy/releases/file-loop-retained-source-baseline-20261010.json \
+            --repository '${{ matrix.repository }}' --candidate-tree package/source-inventory.json \
+            > package-continuity.json
+      - name: Verify offline package checksums
+        run: cd package && sha256sum -c SHA256SUMS
+      - name: Upload candidate and provenance, no signatures and no deployment
+        uses: actions/upload-artifact@v4
+        with:
+          name: file-loop-unsigned-${{ matrix.module }}-${{ github.run_id }}
+          path: |
+            package/
+            package-continuity.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Retain bounded failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: file-loop-package-denial-${{ matrix.module }}-${{ github.run_id }}
+          path: |
+            package/package-record.json
+            package/Dockerfile.resolved
+            package/trivy-image.json
+            package/native-probe.txt
+            package-continuity.json
+          retention-days: 30
