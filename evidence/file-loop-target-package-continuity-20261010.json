@@ -158,7 +158,34 @@
     "method": "COSIGN_3_1_3_KEYLESS_FULCIO_REKOR",
     "githubAttestationApiUnsupportedFailureRun": 38070844195,
     "targetCryptoVerificationCompleted": false,
-    "installationAuthorityAccepted": false
+    "installationAuthorityAccepted": false,
+    "artifacts": [
+      {
+        "id": 11676991790,
+        "name": "file-loop-publisher-provenance-ingestion-38071155443",
+        "zipDigest": "sha256:4b1fbb503887d84c70d8d3d0f43af8966de5b06ddf86e9fe0128de67d680bd81"
+      },
+      {
+        "id": 11676389122,
+        "name": "file-loop-publisher-provenance-udp-38071155443",
+        "zipDigest": "sha256:3cf01450fdcf0cc9e387872a44139e403f7b04b9d632fddddf10e659a098e047"
+      },
+      {
+        "id": 11676214297,
+        "name": "file-loop-publisher-provenance-semantic-38071155443",
+        "zipDigest": "sha256:28794642891694e7ac513dc4ccebcc51d681ad28d13a1784d3309f10d398047f"
+      }
+    ]
   },
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "publicRoots": {
+    "workflowRun": 38071443267,
+    "producerCommit": "1cb25d6ad95e58d0405d01ea4a245ca85704ad11",
+    "artifactId": 11677280041,
+    "artifactZipDigest": "sha256:f77eae7c8a9d042431635008e3da683be15488011380507a64819a0d6ba837f6",
+    "publicStoreHash": "98d34a90fca2688ef5674862d2a484e09e5ca25d2f07c5d654aa28f1581f3419",
+    "baselineMatchesPreviouslyUsed": true,
+    "targetComparisonPending": true,
+    "noPreviousAuthorityInherited": true
+  }
 }
