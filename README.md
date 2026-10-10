@@ -1,3 +1,11 @@
+# Current checkpoint — R10 delivery qualified; operator activation pending
+
+R10's sixteen source tests and actual systemd/DNS/nft qualification pass at cd8f43d38a302af318d35890b7c83cd96fe14607. The immutable seven-component launcher is now delivered at bedfb47128bcf8356edc25744ffe3b0ea372739c. [Delivery CI38084153556](https://github.com/GioNob/ouf-deploy/actions/runs/38084153556) PASS: four tests cover all seven download/hash failure positions, isolated bootstrap and entrypoint tamper denial. [Exact operator command and scope](releases/FINITE_R10_DELIVERY_AND_CONTINUATION_20261010.md); [qualification receipt](evidence/finite-r10-delivery-qualified-20261010.json).
+
+The executor preserves the existing bound R10 decision and startup window: strictly before **10 October 2026 22:47 Europe/Rome**. No renewal, R9 replay, claim reset, image import or application cutover. R10 target execution and current lease activation remain unproven until the complete operator output is received. Successful native CI is not target acceptance. Keep the output through OUF_FINITE_R10_APPLY_EXIT; no automatic retry of a potentially consumed claim.
+
+Cinema delivery/materialization/search 8/8 and Teatri upload/profile remain acquired. File-loop acceptance, coordinated application cutover and reusable clean-host installation are still open; file consolidation precedes native vertical API PULL v2.3. Historical checkpoints below are scoped records, not the current lease observation.
+
 # Checkpoint — continuità VPS riconciliata; dichiarazione runtime preparata
 
 Il giro Cinema sul VPS aveva già completato delivery/materializzazione 8/8: non va ripetuto. Teatri upload/profile MCP già acquisiti. [Ricognizione e sequenza corretta](releases/FILE_LOOP_VPS_CONTINUITY_20261010.md): prove storiche, residui Search e differenze fra main e codice installato. Il nuovo controllo rileva le migrazioni e componenti assenti in main prima di comporre un candidato; non autorizza il deploy.
