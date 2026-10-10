@@ -65,13 +65,13 @@ class NativeGate(unittest.TestCase):
     def test_wrong_database_oid_and_reused_session_generation_rejected_before_mutation(self):
         with self.assertRaisesRegex(GateDenied,'SCOPE_OR_INITIAL_STATE'):self.install(oid=self.oid+1)
         self.assertTrue(self.admin.query("SELECT datallowconn FROM pg_database WHERE datname='"+self.db+"'"))
-        session=self.writer.query("SELECT json_build_object('pid',pg_backend_pid(),'backendStart',backend_start::text,'applicationName',application_name,'user',usename) FROM pg_stat_activity WHERE pid=pg_backend_pid()")
+        session=self.writer.query("SELECT json_build_object('pid',pg_backend_pid(),'backendStart',(backend_start AT TIME ZONE 'UTC')::text,'applicationName',application_name,'user',usename) FROM pg_stat_activity WHERE pid=pg_backend_pid()")
         session['applicationName']='ouf-cutover-hold-'+uuid.uuid4().hex[:16]
         with self.assertRaisesRegex(GateDenied,'SESSION_GENERATION_CHANGED'):self.install([session])
         self.assertFalse((Path(self.directory.name)/'gate-claim.json').exists())
     def test_exact_retained_session_is_kept_but_not_a_backup_or_migration_authority(self):
         hold=self.channel(self.db,'hold')
-        session=hold.query("SELECT json_build_object('pid',pg_backend_pid(),'backendStart',backend_start::text,'applicationName',application_name,'user',usename) FROM pg_stat_activity WHERE pid=pg_backend_pid()")
+        session=hold.query("SELECT json_build_object('pid',pg_backend_pid(),'backendStart',(backend_start AT TIME ZONE 'UTC')::text,'applicationName',application_name,'user',usename) FROM pg_stat_activity WHERE pid=pg_backend_pid()")
         report=self.install([session]);self.assertEqual(len(report['retainedSessionHashes']),1)
         self.assertTrue(hold.query('true'))
         self.assertFalse(report['migrationPerformed']);self.assertFalse(report['restorePerformed'])

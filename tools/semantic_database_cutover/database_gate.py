@@ -99,7 +99,7 @@ def install_gate(admin,database,expected_oid,retained_sessions,evidence_director
     def database_state():
         return admin.query("SELECT json_build_object('oid',oid::bigint,'allowConnections',datallowconn,'preparedTransactions',(SELECT count(*) FROM pg_prepared_xacts WHERE database="+literal(database)+")) FROM pg_database WHERE datname="+literal(database))
     def sessions():
-        return admin.query("SELECT COALESCE(json_agg(json_build_object('pid',pid,'backendStart',backend_start::text,'applicationName',application_name,'user',usename) ORDER BY pid),'[]'::json) FROM pg_stat_activity WHERE datname="+literal(database),"SELECT pg_stat_clear_snapshot();")
+        return admin.query("SELECT COALESCE(json_agg(json_build_object('pid',pid,'backendStart',(backend_start AT TIME ZONE 'UTC')::text,'applicationName',application_name,'user',usename) ORDER BY pid),'[]'::json) FROM pg_stat_activity WHERE datname="+literal(database),"SELECT pg_stat_clear_snapshot();")
     # pg_stat_clear_snapshot returns an empty scalar line, compatible with quiet psql.
     state=database_state()
     require(state and state['oid']==expected_oid and state['allowConnections'] and state['preparedTransactions']==0,'DATABASE_SCOPE_OR_INITIAL_STATE_CHANGED')

@@ -18,3 +18,5 @@ jobs:
           persist-credentials: false
       - name: Actual PostgreSQL17 database gate and partial interruption semantics
         run: python3 tools/semantic_database_cutover/test_database_gate_native.py
+      - name: Actual locked snapshot, gated dump and current-write recovery boundaries
+        run: python3 tools/semantic_database_cutover/test_fenced_backup_native.py
