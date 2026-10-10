@@ -1,0 +1,26 @@
+name: OUF complete replacement runtime declaration
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/compile-replacement-runtime-declaration.py
+      - tests/test_replacement_runtime_declaration.py
+      - releases/replacement-runtime-declaration-20261010.sh
+      - .github/workflows/replacement-runtime-declaration.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Preserve full host intent and reject scope, mount and authority drift
+        run: python3 -m unittest discover -s tests -p 'test_replacement_runtime_declaration.py' -v
+      - name: Check immutable operator delivery when present
+        run: |
+          if test -f releases/replacement-runtime-declaration-20261010.sh; then
+            bash -n releases/replacement-runtime-declaration-20261010.sh
+          fi
