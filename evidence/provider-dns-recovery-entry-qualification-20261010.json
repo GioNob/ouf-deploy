@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.provider-dns-recovery-entry-qualification.v1",
+  "sourceCommit": "3982b3b8d5c1dc53cc22af740e4319e281013da4",
+  "entrypointSha256": "9fd3e53283e8ceea4aecc67a46483fd2dcbdea08ef9270891d639cbafdd1d379",
+  "runId": 38028159013,
+  "jobId": 114143327552,
+  "status": "PASS",
+  "markers": [
+    "2026-10-10T05:38:29.6959750Z DNS_RECOVERY_NATIVE=TRANSIENT_ZERO_TTL_RESAMPLED TWO_CYCLES=true OLD_ADDRESSES_DISCARDED=true",
+    "2026-10-10T05:38:46.2162607Z DNS_RECOVERY_NATIVE=PERSISTENT_ZERO_TTL_REVOKED THREE_ATTEMPTS=true REPLAY_DENIED=true ORIGINAL_SOURCES_PRESERVED=true REAL_SYSTEMD_DNS_NFT=true TARGET_ACTIONS=0"
+  ],
+  "originalRegressionRunId": 38028158989,
+  "originalRegressionJobId": 114143327530,
+  "localEntryAndCoreTestsPassed": 10,
+  "localDeliveryTestsPassed": 3,
+  "fullProductionApplyExecuted": false,
+  "targetPreflightExecuted": false,
+  "productionWrites": 0,
+  "authorityIssued": false,
+  "notReleaseAcceptance": true,
+  "fixtureScope": "Real worker function/DNS/nft/systemd; CI metadata and authority substituted in isolated netns"
+}

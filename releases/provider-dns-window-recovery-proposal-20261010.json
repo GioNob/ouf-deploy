@@ -1,6 +1,6 @@
 {
   "schema": "ouf.provider-dns-recovery-proposal.v1",
-  "status": "SOURCE_PAYLOAD_AND_CORE_PREPARED_NOT_APPLY_READY",
+  "status": "ENTRYPOINT_AND_NATIVE_WORKER_QUALIFIED_TARGET_PREFLIGHT_PENDING",
   "triggerEvidence": "evidence/provider-r8-dns-window-failure-target-20261010.json",
   "authorityIssued": false,
   "applyAuthorized": false,
@@ -68,11 +68,41 @@
     "reuseConsumedAuthority": false
   },
   "stillRequired": [
-    "Exact entrypoint/capsule and distinct claim binding the full new program closure",
-    "Fresh target preflight and isolated native qualification of the composed entrypoint",
-    "Explicit new human privileged decision before any authorization or service launch"
+    "Fresh target read-only preflight receipt",
+    "Explicit new human privileged decision and source-bound startup window before service launch"
   ],
   "semanticPeerCutoverAndApplicationReleaseNotAuthorizedByThisProposal": true,
   "productionWrites": 0,
-  "productionLeaseReactivations": 0
+  "productionLeaseReactivations": 0,
+  "entrypoint": {
+    "path": "tools/semantic_lease_activation/activate_dns_recovery.py",
+    "commit": "3982b3b8d5c1dc53cc22af740e4319e281013da4",
+    "sha256": "9fd3e53283e8ceea4aecc67a46483fd2dcbdea08ef9270891d639cbafdd1d379",
+    "approvalRef": "PENDING_NEW_DNS_WINDOW_RECOVERY_R9_DECISION",
+    "issuedAt": 0,
+    "executionExpiresAt": 0,
+    "programCount": 5
+  },
+  "preflight": {
+    "launcher": "releases/provider-dns-recovery-preflight-20261010.sh",
+    "sourceCommit": "3982b3b8d5c1dc53cc22af740e4319e281013da4",
+    "sha256": "f29658005fae43d7ba409e79f6bd204f904ca94869022143a7d390b1c924361b",
+    "targetExecuted": false,
+    "readOnly": true,
+    "commonLockAcquired": false,
+    "dnsQueries": 0,
+    "installedOperationalCodeExecuted": false
+  },
+  "qualification": {
+    "runId": 38028159013,
+    "jobId": 114143327552,
+    "status": "PASS",
+    "actualUnchangedWorkerFunction": true,
+    "realDnsNftTransientSystemd": true,
+    "isolatedNetns": true,
+    "fixtureMetadataAndAuthority": true,
+    "fullProductionApplyNotExecuted": true,
+    "targetActions": 0,
+    "originalR8RegressionRun": 38028158989
+  }
 }
