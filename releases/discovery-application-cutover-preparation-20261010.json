@@ -95,12 +95,9 @@
     "R9ReplayOrClaimResetAllowed": false
   },
   "nextRead": {
-    "status": "ONE_USE_PUBLIC_JAVA_TRUST_PREPARATION_REQUIRES_OPERATOR_SUDO",
-    "sourceCommit": "f25e205b5fe812780cd421a9a742e592268d32b9",
-    "launcher": "releases/application-java-trust-preparation-20261010.sh",
-    "existingRuntimeInputClaimConsumed": true,
+    "status": "COMPOSE_PRIVATE_REPLACEMENT_CONFIGURATION_AND_PUBLIC_RUNTIME_BINDINGS",
     "doNotRerunRuntimeInputApply": true,
-    "scope": "Merge candidate public roots with protected provider CA using one isolated existing Java21 tool container, no application mounts or cutover",
+    "doNotRerunJavaTrustApply": true,
     "productionTransitionReady": false
   },
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
@@ -125,5 +122,7 @@
       "evidence": "evidence/application-runtime-input-preparation-oci-blocked-target-20261010.json",
       "retryPermittedAfterCorrectedImmutableDelivery": true
     }
-  ]
+  ],
+  "javaTrustPreparedOnTarget": true,
+  "javaTrustTargetEvidence": "evidence/application-java-trust-prepared-target-20261010.json"
 }
