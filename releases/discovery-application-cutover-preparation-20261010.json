@@ -94,7 +94,7 @@
     "mutatingTransitionMustExplicitlyCoordinateLeaseWorker": true,
     "R9ReplayOrClaimResetAllowed": false
   },
-  "nextRead": "COMPOSE_FROZEN_APPLICATION_MOUNT_AND_PROVIDER_CONTRACT_CLOSURE",
+  "nextRead": "PREPARE_FROZEN_APPLICATION_INPUT_CONTRACT_FROM_PROTECTED_INTAKE",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
