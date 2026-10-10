@@ -1,0 +1,755 @@
+{
+  "schema": "ouf.pet-roadmap-reconciliation.v1",
+  "observedAt": "2026-10-10T06:34:28Z",
+  "authority": {
+    "baseline": "OUF Reality Baseline Package v1.7",
+    "blueprint": "0.3",
+    "alignmentMatrix": "1.7",
+    "terminologyNotice": "1.1",
+    "pets": {
+      "onboardingThs": "1.6",
+      "authorization": "1.5",
+      "gateway": "1.5",
+      "ingestion": "1.3",
+      "udpLake": "1.3",
+      "semantic": "1.3",
+      "mcp": "1.4"
+    }
+  },
+  "scope": "Seven PETs cross-module ownership/startup/security/recovery/acceptance requirements compared with current main inventories, existing gap register and current signed deployment candidate; not line-by-line execution of every PET acceptance test",
+  "sources": [
+    "upload/OUF_Roadmap_PET_v1_7_2026-09-16.md",
+    "GioNob/ouf-semantic-registry/docs/OUF_ROADMAP_PET_1_7.md",
+    "GioNob/ouf-semantic-registry/evidence/ouf-pet-gap-register-v1.7.json"
+  ],
+  "mainSnapshots": {
+    "ouf-semantic-registry": {
+      "head": "d188e5e727eca7a22f414f43f164f85c31411bcf",
+      "runs": [
+        {
+          "id": 36130598394,
+          "name": "Semantic Registry module CI",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head": "d188e5e727eca7a22f414f43f164f85c31411bcf"
+        },
+        {
+          "id": 36130598203,
+          "name": "Authorization Semantic pairwise",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "d188e5e727eca7a22f414f43f164f85c31411bcf"
+        },
+        {
+          "id": 36130598116,
+          "name": "Shared Authorization SDK pairwise",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "d188e5e727eca7a22f414f43f164f85c31411bcf"
+        },
+        {
+          "id": 35994907615,
+          "name": "Shared Authorization SDK pairwise",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "d188e5e727eca7a22f414f43f164f85c31411bcf"
+        },
+        {
+          "id": 35994907449,
+          "name": "Authorization Semantic pairwise",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "d188e5e727eca7a22f414f43f164f85c31411bcf"
+        },
+        {
+          "id": 35994907431,
+          "name": "Semantic Registry module CI",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "d188e5e727eca7a22f414f43f164f85c31411bcf"
+        },
+        {
+          "id": 35534800030,
+          "name": "Authorization Semantic pairwise",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "d188e5e727eca7a22f414f43f164f85c31411bcf"
+        },
+        {
+          "id": 35534800009,
+          "name": "Semantic Registry module CI",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "head": "d188e5e727eca7a22f414f43f164f85c31411bcf"
+        },
+        {
+          "id": 35534800057,
+          "name": "Shared Authorization SDK pairwise",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "d188e5e727eca7a22f414f43f164f85c31411bcf"
+        },
+        {
+          "id": 35360471368,
+          "name": "Semantic Registry module CI",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "d188e5e727eca7a22f414f43f164f85c31411bcf"
+        },
+        {
+          "id": 35360471406,
+          "name": "Authorization Semantic pairwise",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "d188e5e727eca7a22f414f43f164f85c31411bcf"
+        },
+        {
+          "id": 35360471372,
+          "name": "Shared Authorization SDK pairwise",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "d188e5e727eca7a22f414f43f164f85c31411bcf"
+        }
+      ]
+    },
+    "ouf-source-onboarding": {
+      "head": "21de5f21e903e6e99f4ef4d6617a446d60a54792",
+      "runs": [
+        {
+          "id": 36388267535,
+          "name": "R2f trusted review browser",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "21de5f21e903e6e99f4ef4d6617a446d60a54792"
+        },
+        {
+          "id": 36388267487,
+          "name": "Source Onboarding module CI",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "21de5f21e903e6e99f4ef4d6617a446d60a54792"
+        },
+        {
+          "id": 35965159994,
+          "name": "R2f trusted review browser",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "21de5f21e903e6e99f4ef4d6617a446d60a54792"
+        },
+        {
+          "id": 35965159908,
+          "name": "Source Onboarding module CI",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "21de5f21e903e6e99f4ef4d6617a446d60a54792"
+        },
+        {
+          "id": 35571861979,
+          "name": "R2f trusted review browser",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "21de5f21e903e6e99f4ef4d6617a446d60a54792"
+        },
+        {
+          "id": 35571862078,
+          "name": "Source Onboarding module CI",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "21de5f21e903e6e99f4ef4d6617a446d60a54792"
+        }
+      ]
+    },
+    "ouf-ingestion-runtime": {
+      "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d",
+      "runs": [
+        {
+          "id": 36423996093,
+          "name": "R2a Onboarding automatic activation",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 36423996284,
+          "name": "Ingestion Runtime module CI",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 36423996231,
+          "name": "R2e GeoPackage features and governed camera-cabinet relations",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 36423996047,
+          "name": "R2b source to authorized serving",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 36423996128,
+          "name": "Shared Authorization SDK pairwise",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 36423996317,
+          "name": "R2c governed publication to historical serving",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 35610529418,
+          "name": "R2b source to authorized serving",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 35610529873,
+          "name": "R2c governed publication to historical serving",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 35610528826,
+          "name": "R2e GeoPackage features and governed camera-cabinet relations",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 35610529074,
+          "name": "Ingestion Runtime module CI",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 35610529265,
+          "name": "Shared Authorization SDK pairwise",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 35610528832,
+          "name": "R2a Onboarding automatic activation",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 35208457094,
+          "name": "R2a Onboarding automatic activation",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 35208457172,
+          "name": "R2c governed publication to historical serving",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 35208457100,
+          "name": "Shared Authorization SDK pairwise",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 35208457041,
+          "name": "R2b source to authorized serving",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 35208457079,
+          "name": "Ingestion Runtime module CI",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        },
+        {
+          "id": 35208457060,
+          "name": "R2e GeoPackage features and governed camera-cabinet relations",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "a8ba969a5a0e20e9c53977d2875094ce82802f9d"
+        }
+      ]
+    },
+    "ouf-udp-object-resolution": {
+      "head": "6285b733c49b89cb6d3382abe8dc469f8a0e8b1b",
+      "runs": [
+        {
+          "id": 36334165364,
+          "name": "R2d governed CRS and grid execution",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "6285b733c49b89cb6d3382abe8dc469f8a0e8b1b"
+        },
+        {
+          "id": 36334165308,
+          "name": "Shared Authorization SDK pairwise",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "6285b733c49b89cb6d3382abe8dc469f8a0e8b1b"
+        },
+        {
+          "id": 36334165297,
+          "name": "UDP Object Resolution module CI",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure",
+          "head": "6285b733c49b89cb6d3382abe8dc469f8a0e8b1b"
+        },
+        {
+          "id": 36333064005,
+          "name": "Shared Authorization SDK pairwise",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "6285b733c49b89cb6d3382abe8dc469f8a0e8b1b"
+        },
+        {
+          "id": 36333064064,
+          "name": "R2d governed CRS and grid execution",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "6285b733c49b89cb6d3382abe8dc469f8a0e8b1b"
+        },
+        {
+          "id": 36333064019,
+          "name": "UDP Object Resolution module CI",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure",
+          "head": "6285b733c49b89cb6d3382abe8dc469f8a0e8b1b"
+        },
+        {
+          "id": 35866578687,
+          "name": "Shared Authorization SDK pairwise",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "6285b733c49b89cb6d3382abe8dc469f8a0e8b1b"
+        },
+        {
+          "id": 35866578751,
+          "name": "R2d governed CRS and grid execution",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "6285b733c49b89cb6d3382abe8dc469f8a0e8b1b"
+        },
+        {
+          "id": 35866578705,
+          "name": "UDP Object Resolution module CI",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "6285b733c49b89cb6d3382abe8dc469f8a0e8b1b"
+        },
+        {
+          "id": 35208290651,
+          "name": "Shared Authorization SDK pairwise",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "6285b733c49b89cb6d3382abe8dc469f8a0e8b1b"
+        },
+        {
+          "id": 35208290744,
+          "name": "R2d governed CRS and grid execution",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "6285b733c49b89cb6d3382abe8dc469f8a0e8b1b"
+        },
+        {
+          "id": 35208290698,
+          "name": "UDP Object Resolution module CI",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "6285b733c49b89cb6d3382abe8dc469f8a0e8b1b"
+        }
+      ]
+    },
+    "ouf-api-gateway": {
+      "head": "dbdc24b5481dc9473b21b360ab1142c9aef0194b",
+      "runs": [
+        {
+          "id": 36410484953,
+          "name": "Gateway control-plane and MCP mediation",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "dbdc24b5481dc9473b21b360ab1142c9aef0194b"
+        },
+        {
+          "id": 35610523494,
+          "name": "Gateway control-plane and MCP mediation",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "dbdc24b5481dc9473b21b360ab1142c9aef0194b"
+        },
+        {
+          "id": 35502083408,
+          "name": "Gateway control-plane and MCP mediation",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "dbdc24b5481dc9473b21b360ab1142c9aef0194b"
+        }
+      ]
+    },
+    "ouf-mcp-server": {
+      "head": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042",
+      "runs": [
+        {
+          "id": 36410481075,
+          "name": "Authorization Java Go conformance",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042"
+        },
+        {
+          "id": 36410481211,
+          "name": "MCP evidence and late recovery",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042"
+        },
+        {
+          "id": 36398663493,
+          "name": "Authorization Java Go conformance",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042"
+        },
+        {
+          "id": 36398663758,
+          "name": "MCP evidence and late recovery",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042"
+        },
+        {
+          "id": 36194885410,
+          "name": "MCP evidence and late recovery",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042"
+        },
+        {
+          "id": 36194885339,
+          "name": "Authorization Java Go conformance",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042"
+        },
+        {
+          "id": 35904630955,
+          "name": "MCP evidence and late recovery",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042"
+        },
+        {
+          "id": 35904630908,
+          "name": "Authorization Java Go conformance",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042"
+        },
+        {
+          "id": 35610520909,
+          "name": "MCP evidence and late recovery",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042"
+        },
+        {
+          "id": 35610521175,
+          "name": "Authorization Java Go conformance",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042"
+        },
+        {
+          "id": 35534819902,
+          "name": "Authorization Java Go conformance",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042"
+        },
+        {
+          "id": 35534819907,
+          "name": "MCP evidence and late recovery",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042"
+        },
+        {
+          "id": 35498535663,
+          "name": "Authorization Java Go conformance",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042"
+        },
+        {
+          "id": 35498535689,
+          "name": "MCP evidence and late recovery",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "head": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042"
+        }
+      ]
+    }
+  },
+  "existingGapStates": [
+    {
+      "id": "AUT-01",
+      "status": "CLOSED"
+    },
+    {
+      "id": "AUT-02",
+      "status": "CLOSED"
+    },
+    {
+      "id": "AUT-03",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "AUT-04",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "ONB-01",
+      "status": "OPEN"
+    },
+    {
+      "id": "ONB-02",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "THS-01",
+      "status": "OPEN"
+    },
+    {
+      "id": "ONB-03",
+      "status": "OPEN"
+    },
+    {
+      "id": "ING-01",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "ING-02",
+      "status": "OPEN"
+    },
+    {
+      "id": "ING-03",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "UDP-01",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "UDP-02",
+      "status": "OPEN"
+    },
+    {
+      "id": "UDP-03",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "SEM-01",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "SEM-02",
+      "status": "OPEN"
+    },
+    {
+      "id": "SEM-03",
+      "status": "OPEN"
+    },
+    {
+      "id": "GW-01",
+      "status": "OPEN"
+    },
+    {
+      "id": "GW-02",
+      "status": "OPEN"
+    },
+    {
+      "id": "GW-03",
+      "status": "OPEN"
+    },
+    {
+      "id": "MCP-01",
+      "status": "OPEN"
+    },
+    {
+      "id": "MCP-02",
+      "status": "OPEN"
+    },
+    {
+      "id": "MCP-03",
+      "status": "OPEN"
+    }
+  ],
+  "udpDeclaredStates": {
+    "VERIFIED": 48,
+    "PARTIAL": 16,
+    "VERIFIED-LAB": 3,
+    "EXTERNAL-OPEN": 2,
+    "independentlyRecertifiedHere": false
+  },
+  "findings": [
+    {
+      "id": "PET-C01",
+      "status": "ALIGNED_CURRENT_SLICE",
+      "requirement": "Matrix §1/§7; Semantic §160.6–7; MCP §122",
+      "finding": "Owner/Gateway mediation, exact references, human approval separation and no provider bypass preserved in current preparation"
+    },
+    {
+      "id": "PET-C02",
+      "status": "PARTIAL",
+      "requirement": "Semantic §160.2/5/12/15; Gateway T33.4",
+      "finding": "V10 is additive and exact libraries/restore qualified; full application startup and representative recovery remain missing"
+    },
+    {
+      "id": "PET-C03",
+      "status": "PARTIAL",
+      "requirement": "MCP §33; Ingestion §46; Matrix §6",
+      "finding": "Operational APIs exist; all-producer catch-up, 30-day incident retention, misfire/dedup/recovery and full all-module status remain open"
+    },
+    {
+      "id": "PET-C04",
+      "status": "DOCUMENTATION_DRIFT",
+      "finding": "Initial roadmap absence of THS browser and seven-tool catalogue superseded: main now contains trusted-review/permission browser assets and ten eligible MCP descriptors; candidate adds guarded inactive discovery descriptors"
+    },
+    {
+      "id": "PET-C05",
+      "status": "DOCUMENTATION_DRIFT",
+      "finding": "Some module traceability headers cite superseded PET/Matrix revisions. Applicable versions remain baseline1.7; historical evidence not relabelled as fresh acceptance"
+    },
+    {
+      "id": "PET-C06",
+      "status": "RELEASE_EVIDENCE_BLOCKED",
+      "repository": "ouf-ingestion-runtime",
+      "runId": 36423996284,
+      "jobId": 108933344141,
+      "finding": "92 tests: 3 failures, 1 error in RunExecutionWorkerRuntimeTest. Cause not established here; earlier PASS does not override latest failure"
+    },
+    {
+      "id": "PET-C07",
+      "status": "REPRODUCIBILITY_BLOCKED",
+      "runs": [
+        36423996047,
+        36423996317,
+        36423996231,
+        36334165297
+      ],
+      "finding": "Object-storage fixture startup/DR cannot pull quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z (unauthorized). No waiver or substituted storage accepted"
+    },
+    {
+      "id": "PET-C08",
+      "status": "NOT_RELEASE_ACCEPTED",
+      "finding": "Current R9 lease receipt proves activation renewals only; not application health, provider discovery, HUMAN publication, full Teatri serving or platform DoD"
+    }
+  ],
+  "roadmapMapping": {
+    "R0": "CLOSED_SCOPED",
+    "R1a": "CLOSED_SCOPED",
+    "R1b": "IMPLEMENTED_WITH_OWNER_AND_ENVIRONMENT_GAPS",
+    "R2aR2f": "IMPLEMENTED_SCOPED_PROCESS_OR_DEPLOYED_SLICES_WITH_ACCEPTANCE_GAPS",
+    "R3": "OPEN_WITH_PARTIAL_OPERATIONAL_BASELINE",
+    "R4a": "PARTIAL_USER_SURFACES_AND_CURRENT_DISCOVERY_CATALOGUE_WORK",
+    "R4b": "OPEN_DOMAIN_AND_GIS_RESIDUALS",
+    "R5": "PARTIAL_SUPPLY_CHAIN_NATIVE_GATES_AND_APPLICATION_CUTOVER_PREPARATION",
+    "R6": "OPEN_REPRESENTATIVE_CROSS_MODULE_ACCEPTANCE"
+  },
+  "currentActivity": {
+    "scope": "National Semantic discovery via Gateway and MCP, preserving Cinema/managed Teatri assets",
+    "candidateSemantic": "403531a9df1cbc877078f8126fd1fc4ff18acea9",
+    "candidateMcp": "3ba1d4abcf62af1572997a217a333fa8d231c29f",
+    "gatewayProductionPin": "a10df126d229dfefd9e0a4d716a07f1f535b6cd6",
+    "dnsRecoveryDraftGatewayPin": "be789d76f0c75c6c109cef3c2419d990930c63f2",
+    "nextAuthorizedPreparation": "Full Spring startup on isolated migrated/restored fixture, preserving fail-closed authorization and signed image identity",
+    "productionApplyReady": false,
+    "R9ReplayAllowed": false
+  },
+  "fullPetConformanceClaim": false,
+  "releaseAcceptance": false
+}

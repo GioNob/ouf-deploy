@@ -1,0 +1,64 @@
+# Punto PET e roadmap — 10 ottobre 2026, 08:34 CEST
+
+Il percorso corrente è coerente con l'ownership e i confini della baseline v1.7, nel perimetro verificato. **La conformità completa dei sette PET e l'accettazione della piattaforma non sono ancora dimostrate.** Il residuo comprende codice, integrazione, superfici umane e prove operative: non è soltanto configurazione IAM.
+
+Fonte normativa: Blueprint L0 v0.3, Matrix v1.7 e Supersession Notice v1.1, quindi PET Onboarding/THS1.6, Authorization1.5, Gateway1.5, Ingestion1.3, UDP/Lake1.3, Semantic1.3, MCP1.4. Sono stati consultati tutti i sette PET per ownership, sicurezza, activation/startup, recovery e acceptance, confrontati con gli alberi main, roadmap, registri e CI nominati. Questa riconciliazione non è una riesecuzione di ogni acceptance test. I323 checksum della baseline erano già verificati; quella decisione non viene riaperta.
+
+[Snapshot di commit, CI, stati e rilievi](../evidence/pet-roadmap-reconciliation-20261010.json). La roadmap del16 settembre è uno snapshot storico: le sezioni successive del registro centrale e le prove nominate la superano nel rispettivo perimetro.
+
+## Stato per PET
+
+| PET | Risultato disponibile | Residuo che impedisce la chiusura |
+|---|---|---|
+| Authorization1.5 | R1a/SDK e AUT-01/02 chiusi nel registro; amministrazione governata, valutazione locale e enforcement owner; IAM reale provato sul gate Onboarding nominato | AUT-03/04 parziali: tutti i domini/canali, rotazione/revoca, assurance e accettazione IAM completa |
+| Onboarding/THS1.6 | ACTIVE/versioni, review umana, managed formats, browser review e permessi; R2f ha una prova di deployment circoscritta | Discovery sorgenti, superfici cross-module/protected operations/log store, gate di scala/restore e tutti i formati nel downstream |
+| Ingestion1.3 | Admission automatica R2a; CSV/REST R2b, pubblicazione/replay R2c e GIS R2d/e tra owner reali con fixture dichiarate | ING-01/02/03 parziali/aperti; raw replay completo, OA persistente/catch-up, profili GIS; latest module CI presenta errori reali del test worker |
+| UDP/Lake1.3 | Identity/resolution, serving e lineage autorizzati, riferimenti storici e fondazioni CRS/GeoPackage | 69 righe dichiarate:48 VERIFIED,16 PARTIAL,3 VERIFIED-LAB,2 EXTERNAL-OPEN; capacity, concurrency, cold history, traversal/budget e scenari completi restano da chiudere; alcune prove MinIO/DR non riproducibili |
+| Semantic1.3 | Discovery/adoption/publication governate e R2c; candidato firmato remediato; V1–V9 identiche e V10 additiva; Flyway effettivamente installato e candidato, backup/restore corrente di fixture PASS | Startup applicativo completo, closure del nuovo peer, backup fresco e recupero governato target, provider reale, job/limits/upstream lifecycle e capacity/DR completi |
+| Gateway1.5 | Mediation/control plane, route IAM/MCP e confini north/south; native packet/DNS/lease tests; due flussi R9 attivati sul VPS | APISIX/etcd HA/LKG/quorum/restore/carico rappresentativi; route discovery additive e nuova autorità transport/profile; nessuna accettazione ricavabile dalla sola lease |
+| MCP1.4 | SDK/authorization/owner API channel-neutral e OA; permessi/proposte; candidato con search/file/Semantic e tre descriptor discovery INACTIVE | Catalogo completo dietro owner/Gateway/grant/readiness; OA di tutti i moduli e client disconnected catch-up; interoperabilità/HA/DR e percorso umano finale |
+
+Gli stati UDP sono classificazioni del repository, non69 recertificazioni di questo controllo. Il registro centrale conserva AUT-01/02 CLOSED; AUT-03/04 e i gruppi cross-module sono PARTIAL/OPEN. Le parti già consegnate non vengono riaperte in assenza di nuova evidenza.
+
+## Roadmap riconciliata
+
+| Tranche | Stato corretto oggi | Criterio ancora necessario |
+|---|---|---|
+| R0 | CHIUSO nel perimetro originario | Conservare il pairwise autenticato e le prove pinned; il vecchio403 non è il blocco corrente |
+| R1a | CHIUSO nel perimetro SDK/adapter/conformance | Conservare default deny e backend deny |
+| R1b | Implementato con gap owner/ambiente | Tutti i domini/canali, IAM lifecycle e acceptance completi |
+| R2a–R2f | Verticali implementate e verificate nel perimetro dichiarato; R2f include deployment Onboarding | Non estendere prove CSV/REST/GIS a ogni formato, tutte le superfici o intera produzione; riportare rosse latest CI |
+| R3 | Aperto, baseline operativa parziale | Fault offline → incidente persistente → retry/dedup/recovery → catch-up autorizzato; retention/misfire/tutti i producer |
+| R4a | Parziale; browser review/permessi e tranche catalogo esistono | Discovery nazionale usabile e percorso proposta→decisione THS→owner; map UI e protected operations cross-module |
+| R4b | Aperto sui residui di dominio/GIS | Profili/formati, job/limits, cold/history/capacity e criteri puntuali |
+| R5 | Parziale; supply chain e guard/native gates avanzati | Applicatore N/N+1, recupero, conformance e package operativo per combinazione candidata |
+| R6 | Aperto |25 E2E canonici, OA/OA-CN, suite locali PET, ambiente/HA/fault/load/restore/RPO/RTO e verifica umana nominata |
+
+L'attività attuale è una verticale R2c/R4a sostenuta dai gate R5 e dall'ambiente R3a. Non è uno sprint che sostituisce la roadmap generale. Cinema e l'asset Teatri già acquisito rimangono la base da conservare; nessun reupload o nuovo mapping implicito.
+
+## Verifica di coerenza
+
+1. **Ownership preservata:** Semantic possiede semantica/pubblicazioni; Onboarding possiede mapping e bundle; Ingestion acquisisce con riferimenti pinned; UDP risolve/materializza; Authorization valuta e gli owner applicano il controllo fine; Gateway media; MCP proietta capability. Nessun servizio Authorization sincrono, incident hub o Agent interno è stato introdotto.
+2. **Human authority preservata:** MCP può proporre e restituire riferimenti opachi; approve/activate/publish e protected log operations restano THS→Gateway→owner (MCP§122, Onboarding§109.8, Matrix§1/7). Il consenso operativo R9 in chat non sostituisce una decisione di pubblicazione semantica o un grant applicativo.
+3. **Rete fail-closed:** Semantic§160.6 e GatewayT11/T33 richiedono Gateway southbound e allowlist. R9 ha aperto soltanto i due flussi approvati con lease finita, niente lifecycle o boot enablement. La ricevuta non dimostra connettività/provider health continuativi. Claim consumate: nessun replay.
+4. **Compatibilità e storico:** V10 è expand-compatible; library-level Flyway e current-snapshot restore PASS soddisfano una parte di Semantic§160.2/5/12. Non certificano full Spring startup, snapshot/reference reconciliation, WAL/PITR/RPO/RTO o target restore. Dopo nuove scritture il backup pre-V10 non può essere ripristinato ciecamente.
+5. **Peer e recovery:** un vecchio ifindex non è un'autorità permanente. Il compilatore dell'inversa verifica digest, footprint e generazioni; il vecchio veth assente o ricreato richiede nuova closure. È un'applicazione dei binding e del default deny, non una nuova prescrizione arbitraria dei PET.
+6. **Capability/readiness:** i descriptor discovery del candidato rimangono INACTIVE fino a route, identità/grant owner e readiness; nessun fallback locale per rendere la demo verde. Vale Semantic§160.15, UDP§109.7 e Onboarding§109.17.
+7. **OA ancora incompleta:** lo status PUBLIC_OPERATIONAL corrente di MCP descrive MCP; non basta a certificare lo snapshot di tutti i moduli richiesto da MCP§33/Matrix§6. Ingestion§46 richiede stesso incidentId nella recovery, misfire distinguibile e retention almeno30 giorni: i documenti attuali lasciano queste prove aperte.
+
+## Rilievi nuovi e tracciabilità
+
+- Ingestion main a8ba969…: [run36423996284](https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/36423996284), job108933344141,92 test con3 failure e1 error in RunExecutionWorkerRuntimeTest. Il log mostra attese PAUSED/SUCCEEDED e mismatch ingestionRunId. La causa non è ancora determinata; non la classifico come semplice flakiness. Le precedenti prove verdi restano storiche.
+- R2b/c/e Ingestion e module/DR UDP: pull di quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z fallisce unauthorized. Latest esiti non riproducibili: [Ingestion R2b](https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/36423996047), [UDP](https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/36334165297). Va ripristinata una fixture storage governata, con pin/provenance; nessuna sostituzione permissiva o waiver.
+- Semantic main d188e5… ha una latest module run cancelled, con precedenti success sullo stesso SHA e pairwise success. Il candidato firmato403531… resta distinto da main e ha proprie evidenze: non si confondono le combinazioni.
+- Alcune intestazioni di tracciabilità citano versioni PET precedenti: Onboarding1.5, Ingestion1.2, Gateway1.3 e Matrix1.6 in note storiche. Questa riconciliazione fissa le versioni applicabili; non rinomina l'evidenza storica.
+- La vecchia assenza totale di browser THS è superata dai file ths/r2f e ths/permissions e dalla loro CI. L'intera THS comune resta aperta.
+- Main MCP oggi dichiara dieci descriptor tool/proposal eligible, non i sette del primo audit. Il candidato3ba1d4… ne dichiara21 totali:17 eligible ACTIVE,3 eligible INACTIVE discovery e1 TRUSTED_HUMAN_ONLY non eligible. Il manifest dichiarato non è una prova di pubblicazione sul VPS.
+
+## Sequenza confermata per l'attività corrente
+
+Prossimo incremento autorizzato: avvio **completo Spring** del Semantic candidato sull'ambiente isolato con V1–V9, upgrade V10 e database corrente ripristinato, senza disabilitare IAM o trasformare un provider mancante in salute inventata. Poi: compatibilità dell'applicazione precedente sullo schema aggiornato, custodia/fencing/backup fresco, closure firmata del peer e coordinazione lease, applicatore concreto e revisionabile.
+
+Prima del cutover target restano necessari readiness, nuove autorità operative nel perimetro concreto, credenziali private e binding reali. Dopo il cutover: nuova policy/grant HUMAN ove richiesto, route additive che preservano Cinema, attivazione dei descriptor e prova reale CLASS/teatro/it,en → stato/candidati → adozione/pubblicazione governata → mapping ACTIVE → ingestione/serving. La lease R9 non viene riapplicata.
+
+Gli errori Ingestion/storage sono registrati nella roadmap di rilascio e vanno risolti prima di dichiarare il percorso completo accettato; non impediscono la preparazione isolata del cutover Semantic/MCP già autorizzata.
