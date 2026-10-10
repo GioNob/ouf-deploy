@@ -6,17 +6,38 @@ on:
     paths:
       - .github/workflows/discovery-spring-startup-recovery.yml
       - tests/semantic_spring_startup_fixture.py
+      - scripts/capture-installed-semantic-application.py
 permissions:
   contents: read
   actions: read
 jobs:
+  capture-installed:
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Read exact installed JAR without DB, keys, lifecycle or common lock
+        run: python3 scripts/capture-installed-semantic-application.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installed-application-${{ github.run_id }}
+          path: old-application-package/
+          if-no-files-found: error
+          retention-days: 7
   verify:
+    needs: capture-installed
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: installed-application-${{ github.run_id }}
+          path: old-application-package
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -50,7 +71,7 @@ jobs:
           docker cp ouf-flyway-package:/app/application.jar package/application.jar
           docker rm ouf-flyway-package
       - name: Boot exact signed application, migrate and restore with IAM enabled
-        run: python3 tests/semantic_spring_startup_fixture.py
+        run: python3 tests/semantic_spring_startup_fixture.py --installed-application
       - uses: actions/upload-artifact@v4
         with:
           name: spring-startup-receipt-${{ github.run_id }}

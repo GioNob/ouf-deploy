@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Boot the exact signed candidate on disposable databases, with real JWT verification."""
-import base64, hashlib, json, os, subprocess, tempfile, threading, time, urllib.error, urllib.request, zipfile
+import base64, hashlib, json, os, subprocess, tempfile, threading, time, sys, urllib.error, urllib.request, zipfile
 from datetime import datetime, timezone, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -92,14 +92,22 @@ def main():
             sql("INSERT INTO ouf_sem.discovery_request(request_id,requested_artifact_type,intent,preferred_languages,state,created_by_subject) VALUES ('00000000-0000-4000-8000-000000000001','CLASS','historical theatre fixture',ARRAY['it','en'],'PENDING','fixture-history');")
             rows = "SELECT jsonb_agg(to_jsonb(t) ORDER BY request_id)::text FROM ouf_sem.discovery_request t;"
             historical = sql(rows)
-            def boot(database):
+            old_jar = None
+            if "--installed-application" in sys.argv:
+                old_jar = Path("old-application-package/application.jar")
+                installed = json.loads(Path("old-application-package/capture-receipt.json").read_bytes())
+                if installed["imageId"] != "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6" or installed["applicationJarSha256"] != "32df2976c0c240d093b4769e296a7411f02548e14ed17b542b6db00a78901bc2":
+                    raise RuntimeError("OLD_APPLICATION_BINDING_CHANGED")
+                if hashlib.sha256(old_jar.read_bytes()).hexdigest() != installed["applicationJarSha256"]: raise RuntimeError("OLD_APPLICATION_TRANSFER_DRIFT")
+            def boot(database, jar=Path("package/application.jar"), kind="candidate"):
+
                 nonlocal process
                 env = os.environ.copy()
                 env.update({"OUF_SEM_DB_URL": "jdbc:postgresql://127.0.0.1:55439/" + database, "OUF_SEM_DB_USER": "postgres", "OUF_SEM_DB_PASSWORD": "ci-fixture-only",
                             "PORT": "55441", "OUF_SCHEMA_GOV_ENABLED": "false", "OUF_DISCOVERY_WORKER_ENABLED": "false"})
-                log = root / (database + ".log")
+                log = root / (kind + "-" + database + ".log")
                 with log.open("wb") as output:
-                    process = subprocess.Popen(["java", "-jar", "package/application.jar", "--ouf.iam.enabled=true", "--ouf.iam.issuer=" + ISSUER, "--ouf.iam.audience=fixture-semantic",
+                    process = subprocess.Popen(["java", "-jar", str(jar), "--ouf.iam.enabled=true", "--ouf.iam.issuer=" + ISSUER, "--ouf.iam.audience=fixture-semantic",
                                                 "--ouf.authorization.bundle-file=" + str(policy), "--ouf.authorization.bundle-id=startup-fixture", "--ouf.authorization.bundle-version=1",
                                                 "--ouf.authorization.bundle-sha256=" + policy_hash], env=env, stdout=output, stderr=subprocess.STDOUT)
                 deadline = time.monotonic() + 60
@@ -120,11 +128,15 @@ def main():
                           ("invalid_signature", http(path, token() + "invalid"), 401),
                           ("missing_discovery_receipt", http("/api/internal/v1/semantic/discovery/request", data=b"{}"), 403),
                           ("forged_discovery_receipt", http("/api/internal/v1/semantic/discovery/request", data=b"{}", receipt="forged.receipt"), 403)]
+                if kind == "installed": checks = [item for item in checks if "discovery_receipt" not in item[0]]
                 for label, (status, body), expected in checks:
                     if status != expected: raise RuntimeError("HTTP_AUTH_BOUNDARY_FAILED " + label + " actual=" + str(status) + " expected=" + str(expected))
                     if label == "granted" and not isinstance(json.loads(body), list): raise RuntimeError("SEARCH_RESPONSE_INVALID")
                 process.terminate(); process.wait(timeout=20); process = None
-                results.append({"database": database, "readiness": "UP", "iamEnabled": True, "positiveSearch": True, "denialChecks": [label for label, _, _ in checks if label != "granted"]})
+                results.append({"application": kind, "database": database, "readiness": "UP", "iamEnabled": True, "positiveSearch": True, "denialChecks": [label for label, _, _ in checks if label != "granted"]})
+            if old_jar:
+                boot("semantic", old_jar, "installed")
+                if sql(rows) != historical: raise RuntimeError("OLD_BASELINE_START_CHANGED_HISTORY")
             boot("semantic")
             if sql("SELECT string_agg(version,',' ORDER BY installed_rank) FROM ouf_sem.flyway_schema_history WHERE success;") != b"1,2,3,4,5,6,7,8,9,10": raise RuntimeError("FULL_SPRING_MIGRATION_HISTORY_UNPROVEN")
             # V10 introduces new nullable columns; compare historical projections.
@@ -136,12 +148,13 @@ def main():
             sql("CREATE DATABASE restored_v10;")
             command(["docker", "exec", "-i", DB, "pg_restore", "-U", "postgres", "-d", "restored_v10", "--exit-on-error"], dump)
             boot("restored_v10")
+            if old_jar: boot("restored_v10", old_jar, "installed")
             if sql(rows, "restored_v10") != current or sql(rows) != current: raise RuntimeError("SPRING_RESTORE_CONTENT_DRIFT")
             receipt = {"schema": "ouf.discovery.spring-startup-fixture.v1", "status": "PASS", "candidateRevision": "403531a9df1cbc877078f8126fd1fc4ff18acea9",
                        "candidateImage": "sha256:b1a7956a673f88b5ee65d174c2eda7b9e448153e101348c06fdd53c0640e700b", "applicationJarSha256": hashlib.sha256(Path("package/application.jar").read_bytes()).hexdigest(),
                        "fullSpringStartupQualified": True, "springAppliedV10": True, "historicalRowsPreserved": True, "currentSnapshotRestoredAfterWrites": True,
                        "liveFixtureUnchangedByRestore": True, "starts": results, "providerEnabled": False, "discoveryWorkerEnabled": False, "realProviderHealthProven": False,
-                       "oldApplicationRuntimeQualified": False, "targetDatabaseTouched": False, "targetBackupPerformed": False, "notReleaseAcceptance": True}
+                       "oldApplicationRuntimeQualified": old_jar is not None, "installedApplicationJarSha256": installed["applicationJarSha256"] if old_jar else None, "targetDatabaseTouched": False, "targetBackupPerformed": False, "notReleaseAcceptance": True}
             Path("spring-startup-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
             print("OUF_DISCOVERY_SPRING_STARTUP_CI=" + json.dumps(receipt))
         finally:
