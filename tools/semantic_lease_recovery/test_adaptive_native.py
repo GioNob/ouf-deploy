@@ -54,7 +54,10 @@ def main():
             {'path': str(compiler), 'sha256': core.digest(compiler.read_bytes()),
              'originalSha256': owner['sourceHashes']['tools/materialize_southbound_lease_refresh.py']})
         c = modules['semantic_provider_lease_coordination']
-        backend = modules['semantic_provider_lease_nft'].NftBackend([nft], owner['kernel'], owner['expectedStructureHash'], 5)
+        # Candidate source is not substituted into the sealed historical owner.
+        # This disposable NEW fixture closure explicitly selects the new backend.
+        from nft_seconds_backend import NftBackend
+        backend = NftBackend([nft], owner['kernel'], owner['expectedStructureHash'], 5)
         worker = modules['semantic_provider_lease_owner'].LeaseOwner(owner['kernel'], owner['dns'], backend)
         journal = c.PrivateJournal(root/'journal.json')
         coordinator = c.Coordinator(worker, owner['binding'], lambda: c.hold_common_lock(root/'common.lock'), journal.read, journal.write)
