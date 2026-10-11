@@ -134,7 +134,29 @@ class Tests(unittest.TestCase):
         recovery.step(); clock.wall -= 1
         self.assertEqual(recovery.step()['state'], 'BLOCKED')
         clock, adapter, journal, recovery = self.fixture(); recovery.policy = Policy(max_attempts=10)
-        with self.assertRaisesRegex(ValueError, 'RECOVERY_CONTEXT_OR_POLICY_DRIFT'): recovery.step()
+        with self.assertRaisesRegex(RuntimeError, 'RECOVERY_JOURNAL_OR_STATE_UNPROVEN'): recovery.step()
+        self.assertEqual(adapter.calls, 0); self.assertEqual(adapter.pauses, 1)
+
+    def test_storage_failure_before_attempt_or_after_publication_revokes_without_replay(self):
+        for fail_at, expected_calls in ((1, 0), (3, 1)):
+            clock, adapter, journal, recovery = self.fixture()
+            original = journal.compare_and_save; writes = []
+            def save(previous, value):
+                writes.append(value['state'])
+                if len(writes) >= fail_at: raise OSError('fixture-private-storage')
+                original(previous, value)
+            journal.compare_and_save = save
+            with self.assertRaisesRegex(RuntimeError, '^RECOVERY_JOURNAL_OR_STATE_UNPROVEN$'):
+                recovery.step()
+            self.assertEqual(adapter.calls, expected_calls)
+            self.assertGreaterEqual(adapter.pauses, 1)
+            self.assertLessEqual(len(adapter.publications), 1)
+
+    def test_forward_wall_adjustment_never_causes_busy_wait_or_early_probe(self):
+        clock, adapter, journal, recovery = self.fixture(); adapter.until = 10**9
+        row = recovery.step(); clock.wall += 10
+        self.assertEqual(recovery.wait_seconds(row), 5)
+        self.assertEqual(recovery.step()['state'], 'RETRY_WAIT'); self.assertEqual(adapter.calls, 1)
 
     def test_actual_posix_journal_persists_and_no_journal_lock_covers_callbacks(self):
         with tempfile.TemporaryDirectory() as root:

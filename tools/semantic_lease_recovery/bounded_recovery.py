@@ -116,6 +116,19 @@ class Recovery:
         return self.save(row, 'RETRY_WAIT', error.code, nextWall=wall + delay, nextMonotonic=mono + delay)
 
     def step(self, *, cancelled=False):
+        try:
+            return self._step(cancelled=cancelled)
+        except Exception:
+            # A failed durable transition must never leave publication live.
+            # Without a trustworthy journal no new attempt/budget is possible;
+            # the entrypoint retains liveness and raises a deduplicated issue.
+            try:
+                self.adapter.pause()
+            except Exception:
+                raise RuntimeError('SAFE_PAUSE_AND_RECOVERY_STATE_UNPROVEN') from None
+            raise RuntimeError('RECOVERY_JOURNAL_OR_STATE_UNPROVEN') from None
+
+    def _step(self, *, cancelled=False):
         row = self.journal.read()
         require(type(row) is dict and row.get('schema') == 'ouf.bounded-recovery.v1', 'RECOVERY_JOURNAL_REQUIRED')
         require(row.get('contextRef') == self.context and row.get('policyHash') == fingerprint(asdict(self.policy)),
@@ -175,7 +188,7 @@ class Recovery:
         require(type(heartbeat) is int and 1 <= heartbeat <= 30, 'BOUNDED_LOCAL_HEARTBEAT_REQUIRED')
         if row['state'] != 'RETRY_WAIT': return heartbeat
         wall, mono = self.now()
-        return max(0, min(heartbeat, row['nextWall'] - wall, row['nextMonotonic'] - mono))
+        return max(0, min(heartbeat, max(row['nextWall'] - wall, row['nextMonotonic'] - mono)))
 
     def serve(self, stop, observe):
         """Keep paused process alive; return success to its normal owner loop."""
