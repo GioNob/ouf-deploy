@@ -24,7 +24,7 @@ def call(*args, data=None):
 def store(root, phase, creation_hash='b'*64):
     root.mkdir(mode=0o700)
     journal = j.Journal(str(root))
-    initial = m.Transition.initial(H, creation_hash, 'c'*64, 'd'*64)
+    initial = m.Transition.initial(m.digest({'fixtureScope':root.name}), creation_hash, 'c'*64, 'd'*64)
     journal.initialize(initial)
     t = m.Transition(journal, initial['contextHash'])
     with t.invocation():
@@ -56,6 +56,7 @@ def die_after_effect(t, phase, effect, managed=False):
 def main():
     suffix = uuid.uuid4().hex[:12]
     app, db = 'ouf-cutover-create-'+suffix, 'ouf-cutover-pg-'+suffix
+    partial_app = None
     with tempfile.TemporaryDirectory(prefix='ouf-cutover-crash-') as directory:
         root = Path(directory)
         try:
@@ -103,6 +104,33 @@ def main():
             assert row['nextPhase'] == m.PHASES.index('ATTEST_NEW_OCI_PEER')
             assert row['applicationWritesMayHaveOccurred'] and not row['preMigrationRestoreAllowed']
 
+            # A crash after start, before pause, is a partial effect: neither
+            # restarting nor calling pause automatically is authorized.
+            partial = store(root/'partial-pause-journal','CREATE_REPLACEMENT',engine.digest(request))
+            partial_app = engine.Engine.name(partial)
+            die_after_effect(partial,'CREATE_REPLACEMENT',
+                lambda: adapter.create_once(partial,request,H,checkpoint),managed=True)
+            with partial.invocation(): adapter.reconcile(partial,request,checkpoint)
+            created = adapter.inspect(partial)
+            partial_intent = {'containerId':created['Id'],'creationRequestHash':engine.digest(request),
+                              'createdEvidenceHash':partial.read()['effects'][-1]['nativeEvidenceHash']}
+            def interrupted_pause():
+                original = adapter.request
+                def interrupted(method,path,body=None):
+                    if path.endswith('/pause'): os._exit(91)
+                    return original(method,path,body)
+                adapter.request = interrupted
+                adapter.stage_paused_once(partial,request,H,checkpoint)
+            die_after_effect(partial,'STAGE_PAUSED_REPLACEMENT',interrupted_pause,managed=True)
+            running = adapter.inspect(partial)
+            assert running['State']['Running'] and not running['State']['Paused']
+            with partial.invocation():
+                try: adapter.reconcile_paused(partial,request,partial_intent,checkpoint)
+                except engine.CreationDenied: pass
+                else: raise AssertionError('PARTIAL_STAGE_ACCEPTED')
+            assert partial.read()['state'] == 'IN_FLIGHT'
+            assert adapter.inspect(partial)['State']['Pid'] == running['State']['Pid']
+
             # Crash BEFORE the command does not make its consumed intent retryable.
             before = store(root/'before-journal', 'CREATE_REPLACEMENT')
             die_after_effect(before, 'CREATE_REPLACEMENT', lambda: None)
@@ -141,10 +169,12 @@ def main():
                 'preMigrationRestoreAllowed':False,'predecessorIncidentAndHistoryPreserved':True,
                 'actualSealedEngineCreationAdapterExercised':True,'foreignImageAndStartedGenerationDenied':True,
                 'realPausedNamespaceCrashReconciledWithoutRestart':True,
+                'partialStartBeforePauseBlocksReplayAndAcceptance':True,
                 'precedingPhaseAuthority':'SYNTHETIC_FIXTURE_ONLY','productionInstallerQualified':False,
                 'targetActions':0,'notReleaseAcceptance':True}))
         finally:
-            for name in (app, db): subprocess.run(['docker','rm','-f',name],capture_output=True,timeout=30)
+            for name in (app, db, partial_app):
+                if name: subprocess.run(['docker','rm','-f',name],capture_output=True,timeout=30)
 
 
 if __name__ == '__main__': main()
