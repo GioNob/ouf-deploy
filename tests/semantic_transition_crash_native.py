@@ -1,0 +1,119 @@
+"""Real effects + abrupt process death; isolated fixture, never target authority.
+
+Preceding phase receipts in this focused fixture are synthetic. We qualify only
+the named Docker-create/PG-migration crash boundaries, not a complete installer.
+"""
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import tempfile
+import time
+import uuid
+from test_semantic_transition_journal import m, j, H
+
+
+def call(*args, data=None):
+    p = subprocess.run(args, input=data, capture_output=True, timeout=60)
+    if p.returncode: raise RuntimeError('ISOLATED_NATIVE_COMMAND_FAILED')
+    return p.stdout
+
+
+def store(root, phase):
+    root.mkdir(mode=0o700)
+    journal = j.Journal(str(root))
+    initial = m.Transition.initial(H, 'b'*64, 'c'*64, 'd'*64)
+    journal.initialize(initial)
+    t = m.Transition(journal, initial['contextHash'])
+    with t.invocation():
+        for previous in m.PHASES[:m.PHASES.index(phase)]:
+            row = t.begin(previous, H, H, t.read()['version'])
+            t.reconcile(previous, H, 'APPLIED', m.digest({'syntheticPrecedingPhase': previous}), row['version'])
+    return t
+
+
+def die_after_effect(t, phase, effect):
+    pid = os.fork()
+    if pid == 0:
+        try:
+            with t.invocation():
+                t.begin(phase, H, H, t.read()['version'])
+                effect()
+                os._exit(91)  # No finally or successful journal receipt.
+        except BaseException:
+            os._exit(92)
+    _, status = os.waitpid(pid, 0)
+    assert os.WIFEXITED(status) and os.WEXITSTATUS(status) == 91
+    assert t.read()['state'] == 'IN_FLIGHT'
+    with t.invocation():
+        try: t.begin(phase, H, 'e'*64, t.read()['version'])
+        except ValueError as error: assert 'RECONCILIATION' in str(error)
+        else: raise AssertionError('CRASH_REPLAY_ALLOWED')
+
+
+def main():
+    suffix = uuid.uuid4().hex[:12]
+    app, db = 'ouf-cutover-create-'+suffix, 'ouf-cutover-pg-'+suffix
+    with tempfile.TemporaryDirectory(prefix='ouf-cutover-crash-') as directory:
+        root = Path(directory)
+        try:
+            call('docker', 'pull', 'alpine:3.22')
+            image = json.loads(call('docker', 'image', 'inspect', 'alpine:3.22'))[0]['Id']
+            t = store(root/'docker-journal', 'CREATE_REPLACEMENT')
+            die_after_effect(t, 'CREATE_REPLACEMENT', lambda: call('docker', 'create', '--name', app,
+                '--network', 'none', '--user', '10001:10001', '--read-only', '--cap-drop', 'ALL',
+                '--security-opt', 'no-new-privileges', image, 'sleep', '300'))
+            actual = json.loads(call('docker', 'inspect', app))[0]
+            assert actual['Image'] == image and actual['State']['Status'] == 'created'
+            assert actual['Config']['User'] == '10001:10001' and actual['Config']['Cmd'] == ['sleep', '300']
+            assert actual['HostConfig']['NetworkMode'] == 'none' and actual['HostConfig']['ReadonlyRootfs']
+            assert actual['Mounts'] == [] and actual['HostConfig']['CapDrop'] == ['ALL']
+            ids = call('docker', 'ps', '-a', '--filter', 'name=^/'+app+'$', '--format', '{{.ID}}').splitlines()
+            assert len(ids) == 1
+            with t.invocation():
+                row = t.reconcile('CREATE_REPLACEMENT', H, 'APPLIED', m.digest(actual), t.read()['version'])
+            assert row['nextPhase'] == m.PHASES.index('ATTEST_NEW_OCI_PEER')
+            assert row['predecessorIncidentRef'] == 'd'*64 and row['predecessorHistoryHash'] == 'c'*64
+
+            # Crash BEFORE the command does not make its consumed intent retryable.
+            before = store(root/'before-journal', 'CREATE_REPLACEMENT')
+            die_after_effect(before, 'CREATE_REPLACEMENT', lambda: None)
+            with before.invocation():
+                row = before.reconcile('CREATE_REPLACEMENT', H, 'NO_EFFECT',
+                    m.digest({'fixtureEffectNotCalled': True}), before.read()['version'])
+                assert row['state'] == 'NO_EFFECT_REQUIRES_NEW_DECISION'
+
+            call('docker', 'run', '-d', '--name', db, '--network', 'none', '-e',
+                 'POSTGRES_PASSWORD=isolated-fixture-only', 'postgres:17')
+            for _ in range(40):
+                p = subprocess.run(['docker','exec',db,'pg_isready','-U','postgres'],capture_output=True,timeout=5)
+                if p.returncode == 0: break
+                time.sleep(.25)
+            else: raise RuntimeError('FIXTURE_POSTGRES_NOT_READY')
+            def sql(text):
+                return call('docker','exec','-i',db,'psql','-X','-A','-t','-q','-U','postgres',
+                            '-v','ON_ERROR_STOP=1',data=text.encode())
+            sql('CREATE SCHEMA ouf_sem; CREATE TABLE ouf_sem.fixture(id int PRIMARY KEY); INSERT INTO ouf_sem.fixture VALUES(1),(2);')
+            baseline = call('docker','exec',db,'pg_dump','-U','postgres','-Fc')
+            pg = store(root/'migration-journal', 'ADMIT_MIGRATION')
+            die_after_effect(pg, 'ADMIT_MIGRATION', lambda: sql('BEGIN; ALTER TABLE ouf_sem.fixture ADD COLUMN current_value text; INSERT INTO ouf_sem.fixture VALUES(3,\'post-migration\'); COMMIT;'))
+            assert pg.read()['databaseMayHaveChanged'] and not pg.read()['preMigrationRestoreAllowed']
+            current = sql('SELECT json_agg(t ORDER BY id) FROM ouf_sem.fixture t;').strip()
+            rows = json.loads(current); assert [x['id'] for x in rows] == [1,2,3]
+            assert rows[2]['current_value'] == 'post-migration'
+            with pg.invocation():
+                pg.reconcile('ADMIT_MIGRATION', H, 'APPLIED', hashlib.sha256(current).hexdigest(), pg.read()['version'])
+                # Merely holding an older valid dump cannot authorize restore.
+                assert baseline.startswith(b'PGDMP') and not pg.read()['preMigrationRestoreAllowed']
+            assert sql('SELECT json_agg(t ORDER BY id) FROM ouf_sem.fixture t;').strip() == current
+            print('OUF_CUTOVER_CRASH_NATIVE='+json.dumps({'status':'PASS','realDockerCreateCrashReconciledWithoutDuplicate':True,
+                'crashBeforeEffectDoesNotReplayConsumedIntent':True,'realPostgresqlCommitCrashPreservesMigrationAndLateWrites':True,
+                'preMigrationRestoreAllowed':False,'predecessorIncidentAndHistoryPreserved':True,
+                'precedingPhaseAuthority':'SYNTHETIC_FIXTURE_ONLY','productionInstallerQualified':False,
+                'targetActions':0,'notReleaseAcceptance':True}))
+        finally:
+            for name in (app, db): subprocess.run(['docker','rm','-f',name],capture_output=True,timeout=30)
+
+
+if __name__ == '__main__': main()

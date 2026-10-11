@@ -1,0 +1,24 @@
+name: Semantic cutover persistent crash reconciliation
+on:
+  push:
+    branches: [main]
+    paths:
+      - tools/semantic_application_cutover/transition_journal.py
+      - tests/test_semantic_transition_journal.py
+      - tests/semantic_transition_crash_native.py
+      - .github/workflows/semantic-transition-crash.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-crash:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Persistent history, ambiguity and migration boundary tests
+        run: python3 -m unittest discover -s tests -p test_semantic_transition_journal.py -v
+      - name: Actual abrupt death after Docker create and PostgreSQL commit
+        run: python3 tests/semantic_transition_crash_native.py
