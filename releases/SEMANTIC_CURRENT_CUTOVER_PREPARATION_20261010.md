@@ -84,3 +84,34 @@ La diagnosi operatore ricevuta alle03:08:55 CEST prova il rifiuto preciso: inet/
 Decisione PET: mantenere default-deny e allowlist indipendente dalle route (Gateway1.5 T11.3, GW-NET-01/02/04); mai accettare/arrotondare/estendere TTLzero, mai aggiungere endpoint o risoluzioni storiche. Il candidato modifica solo l'ammissione del piano, non modifica fonti R10 installate, claim, configurazione owner, profilo DNS o grant. Non è una correzione completa della disponibilità: lease molto brevi vengono ora rifiutati prima dell'installazione, e preemption/readback lento può ancora esaurire una lease valida. Servono una qualificazione completa della nuova chiusura worker, politiche versionate dei budget/retry e prove di cache DNS decrescente, risposte persistentemente inutilizzabili, controllo configurazione lento e scadenza durante le letture. Solo dopo si prepara una nuova attivazione finita, con nuovo claim/unità e decisione propria; R10 resta consumato.
 
 Preparazione secret-file e cutover applicativo sospesi. Nessun comando di applicazione/riattivazione viene proposto con la sola prova del compiler candidato. Non ripetere i launcher R9/R10 o il precedente launcher di preparazione.
+
+## 11 ottobre 2026 — worker candidato qualificato in fixture e prossimo intake protetto
+
+[CI38101472898](https://github.com/GioNob/ouf-deploy/actions/runs/38101472898), sorgente113dcfeedb2a885ac0ef82814ebbdcb9b0ba4d00, job114358105225 SUCCESS. Quattro test del compiler e tre scenari nativi: riproduzione timeout1s→expires0/rifiuto candidato; worker reale con nuovo hash compiler, DNS/systemd/nft, due cicli freschi, TTLzero persistente, revoca e replay negato; altro worker isolato con DNS TTL4 positivo ma margine insufficiente, rifiuto prima dell'ammissione kernel e revoca/replay negato. Entrambe le chiusure fixture preservano fonti storiche e vecchio claim sintetico. [Evidence](../evidence/finite-lease-readback-margin-worker-qualified-20261011.json). Metadata Docker e decisione sono sintetiche CI: non prova nuova chiusura target, disponibilità prolungata, salute applicativa o acceptance. La prima prova worker38101274234 fallì per prefisso snapshot errato nella fixture; il vincolo del worker è rimasto invariato e la fixture corretta è stata rieseguita con successo.
+
+Per costruire il prossimo recupero servono gli hash privati esatti di claim/autorizzazione/receipt R10 e una verifica attuale di chiusure driver/OCI/peer. Non si ricavano dalla sola receipt pubblica. `scripts/read-new-finite-recovery-preflight.py`, sorgente immutabilee3008220b671f7bd81ce18a079202f29e7b03a34, SHA25612359da3c9e5d65c2800b1a9290434a8a27d4e805a6cfc0fe07554600a278984: quattro test locali su consumo, assenza di autorità start/restart/boot/lifecycle, binding owner/service/programs e rifiuto claim straniero. Fonte read-only già usata per la custodia R10; reader installato eseguito in memoria solo dopo verifica di tutti i sette hash. Rilegge artifact stabili e current collect_cutover, richiede quiescenza con journala58f0cb6… e R10 failed/MainPID0/Restartno/NRestarts0. Nessun lock, firma, DNS/provider call, scrittura root, nuovo claim, servizio o traffico concesso. Bootstrap isolato verifica hash prima e dopo sudo.
+
+Lettura root non eseguita automaticamente: l'account runner richiede password sudo, già provato senza alterare permessi. Output atteso `OUF_NEW_RECOVERY_PREFLIGHT`, stato `NEW_RECOVERY_INPUT_BINDINGS_CAPTURED_NOT_APPLY_AUTHORITY`; può negare per drift e resta sempre productionApplyReadyfalse/newStartAuthorizedfalse. Questo comando raccoglie solo i vincoli per preparare un recupero distinto; non è un apply o un ApprovalDecision semantico.
+
+```bash
+(
+  set -euo pipefail
+  umask 077
+  OUF_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+  if [ ! -x "$OUF_GH" ]; then OUF_GH="$(command -v gh)"; fi
+  OUF_READ="$(mktemp "$HOME/ouf-new-recovery-preflight.XXXXXXXX")"
+  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' \
+    'repos/GioNob/ouf-deploy/contents/scripts/read-new-finite-recovery-preflight.py?ref=e3008220b671f7bd81ce18a079202f29e7b03a34' > "$OUF_READ"
+  printf '%s  %s\n' \
+    '12359da3c9e5d65c2800b1a9290434a8a27d4e805a6cfc0fe07554600a278984' \
+    "$OUF_READ" | sha256sum -c -
+  sudo /usr/bin/python3 -I -B -c '
+import hashlib, sys
+with open(sys.argv[1], "rb") as f:
+    source = f.read(65537)
+if hashlib.sha256(source).hexdigest() != "12359da3c9e5d65c2800b1a9290434a8a27d4e805a6cfc0fe07554600a278984":
+    raise SystemExit("PREFLIGHT_SOURCE_HASH_MISMATCH")
+exec(compile(source, "<qualified-recovery-preflight>", "exec"), {"__name__": "__main__"})
+' "$OUF_READ"
+)
+```

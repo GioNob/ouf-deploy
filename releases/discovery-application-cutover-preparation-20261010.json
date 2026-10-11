@@ -1,6 +1,6 @@
 {
   "schema": "ouf.discovery.application-cutover-preparation.v1",
-  "status": "CURRENT_CUTOVER_BLOCKED_R10_QUIESCED_NEW_WORKER_QUALIFICATION_REQUIRED",
+  "status": "CURRENT_CUTOVER_BLOCKED_R10_QUIESCED_NEW_RECOVERY_PRIVATE_BINDINGS_REQUIRED",
   "applyAuthorized": false,
   "newTargetAuthorityIssued": false,
   "networkLease": {
@@ -86,7 +86,7 @@
     "existingR10SealedProgramMustRemainUnchanged": true,
     "R10ReplayOrClaimResetAllowed": false
   },
-  "nextRead": "QUALIFY_COMPLETE_NEW_SOURCE_BOUND_WORKER_AND_BUDGETED_DNS_RECOVERY_BEFORE_NEW_AUTHORITY",
+  "nextRead": "ONE_ROOT_READ_ONLY_NEW_RECOVERY_PREFLIGHT_NO_R10_REPLAY",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
@@ -278,11 +278,19 @@
     "continuousLivenessProven": false
   },
   "candidateReadbackMargin": {
-    "sourceCommit": "4c044ec2b22e328da690b6951d4e910e79426aba",
-    "runId": 38101012511,
-    "jobId": 114356768291,
-    "qualification": "ADMISSION_ONLY_NOT_FULL_WORKER",
+    "sourceCommit": "113dcfeedb2a885ac0ef82814ebbdcb9b0ba4d00",
+    "runId": 38101472898,
+    "jobId": 114358105225,
+    "qualification": "ADMISSION_AND_REAL_WORKER_IN_SYNTHETIC_METADATA_CI_CLOSURE",
+    "fullTargetWorkerClosureQualified": false,
     "productionApplyReady": false,
     "targetApplied": false
+  },
+  "newRecoveryReadOnlyPreflight": {
+    "sourceCommit": "e3008220b671f7bd81ce18a079202f29e7b03a34",
+    "sha256": "12359da3c9e5d65c2800b1a9290434a8a27d4e805a6cfc0fe07554600a278984",
+    "operatorRequiredBecause": "SUDO_PASSWORD_REQUIRED_FOR_ROOT_PRIVATE_ARTIFACTS",
+    "performed": false,
+    "newStartAuthorized": false
   }
 }

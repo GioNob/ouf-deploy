@@ -1,3 +1,7 @@
+# Current checkpoint — R10 quiescent; candidate native worker proof passed; protected recovery bindings pending
+
+R10 revocation proven, claim consumed. [CI38101472898](https://github.com/GioNob/ouf-deploy/actions/runs/38101472898) passes four compiler tests and three native scenarios, including full worker positive cycles, unusable DNS revocation and replay denial. Synthetic CI metadata/authority; target recovery and application cutover not applied. One root read-only intake is required to bind the retained R10 artifacts and current OCI/peer closure before preparing a distinct recovery. [Current PET decisions, evidence and immutable read-only operator command](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md).
+
 # Current checkpoint — R10 revoked; native TTL edge reproduced; new worker qualification required
 
 Operator native read confirms QUIESCED and empty inet/bridge sets for both flows. R10 failure is integer expires0 after250 renewals. [Native CI38101012511](https://github.com/GioNob/ouf-deploy/actions/runs/38101012511) reproduces one-second plan→zero readback; candidate compiler denies this plan without extending TTL. Admission qualification only: full new worker/DNS/latency closure remains required before a new one-use activation. No R10 restart/replay, no cutover or file-secret preparation completed. [Current evidence and PET decisions](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md).
