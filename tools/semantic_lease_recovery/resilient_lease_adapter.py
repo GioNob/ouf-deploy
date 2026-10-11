@@ -76,8 +76,7 @@ class LeaseAdapter:
 
     def publish(self, evidence, deadline):
         self.guard()
-        plan, values = evidence['plan'], evidence['values']
-        deadline = min(deadline, plan['mustApplyByMonotonic'])
+        values = evidence['values']
         if self.clock() >= deadline: raise Temporary('DNS_WINDOW_TOO_SHORT', no_effect=True)
         try:
             with self.c.hold_lock():
@@ -85,6 +84,12 @@ class LeaseAdapter:
                 previous = self.c.journal()
                 if previous['state'] != 'QUIESCED' or previous['leaseAuthorized'] is not False or any(self.c.sets()):
                     raise Permanent('INTEGRITY_UNPROVEN')
+                # Recompute from the SAME absolute DNS expiries after custody
+                # checks. Never restart a relative TTL or reuse cached DNS.
+                plan = self.compiler.compile_refresh(self.c.configuration, values, self.clock(),
+                    apply_budget_seconds=self.c.owner.profile['applyBudgetSeconds'])
+                if plan['denyOnly']: raise Temporary('DNS_WINDOW_TOO_SHORT')
+                deadline = min(deadline, plan['mustApplyByMonotonic'])
                 pending = {**previous, 'state': 'LEASE_UPDATING', 'leaseAuthorized': False}
                 self.c.publish(previous, pending)
                 backend = self.c.owner.backend; cfg = self.c.configuration
