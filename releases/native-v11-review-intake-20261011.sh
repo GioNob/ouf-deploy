@@ -10,8 +10,8 @@
   if [ ! -x "$OUF_GH" ]; then OUF_GH="$(command -v gh || true)"; fi
   if [ -z "$OUF_GH" ] || [ ! -x "$OUF_GH" ]; then echo OUF_EXISTING_GITHUB_CLIENT_REQUIRED >&2; exit 1; fi
   OUF_DIR="$(mktemp -d "$HOME/ouf-native-v11-review-intake.XXXXXXXX")"
-  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/scripts/publish-native-v11-review-intake.py?ref=bdcf4594d152ea12d6b9b39b51e0d2533d83b7ef' > "$OUF_DIR/program.py"
-  printf '%s  %s\n' '469de574b7c8cfa4ba2c33a51fb747efe3b8b31fbc1366a70573dcb06da2ca06' "$OUF_DIR/program.py" | sha256sum -c -
+  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/scripts/publish-native-v11-review-intake.py?ref=d4edb3286a13a6f1c0bd1fc04848a284f8fae933' > "$OUF_DIR/program.py"
+  printf '%s  %s\n' '6ec32cdd81af7fd8e70b4dc2f876ecfabfd2772c1cd6fba70b8e9e4bafe9f666' "$OUF_DIR/program.py" | sha256sum -c -
   "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/tools/semantic_application_cutover/atomic_review_intake.py?ref=bdcf4594d152ea12d6b9b39b51e0d2533d83b7ef' > "$OUF_DIR/atomic.py"
   printf '%s  %s\n' 'c113f578b027c39573b4562cd3ac324abb8108a393b82dde19f8eb53d98e0ea6' "$OUF_DIR/atomic.py" | sha256sum -c -
   "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/tools/semantic_target_review/prepare_application_runtime_inputs.py?ref=9fdf4bed6ded1a01640bcaed2ffadb58204e42d5' > "$OUF_DIR/custody.py"
@@ -19,7 +19,7 @@
   OUF_PHASE=PUBLISH_COMPLETE_PRIVATE_REVIEW_ATOMICALLY_NO_APPLICATION_APPLY
   sudo /usr/bin/python3 -I -B -c '
 import hashlib,os,stat,sys
-expected=["469de574b7c8cfa4ba2c33a51fb747efe3b8b31fbc1366a70573dcb06da2ca06", "c113f578b027c39573b4562cd3ac324abb8108a393b82dde19f8eb53d98e0ea6", "cb9ff64684243d563da79d327eb7d7e325dbea6a3922c91a0b7791a3ceec9baf"]
+expected=["6ec32cdd81af7fd8e70b4dc2f876ecfabfd2772c1cd6fba70b8e9e4bafe9f666", "c113f578b027c39573b4562cd3ac324abb8108a393b82dde19f8eb53d98e0ea6", "cb9ff64684243d563da79d327eb7d7e325dbea6a3922c91a0b7791a3ceec9baf"]
 if len(sys.argv)!=4:raise SystemExit("OUF_NATIVE_REVIEW_INTAKE_EXACT_SOURCE_SET_REQUIRED")
 sources=[]
 for path,digest in zip(sys.argv[1:],expected):
