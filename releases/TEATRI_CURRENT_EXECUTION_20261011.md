@@ -164,3 +164,10 @@ The source-bound artifacts to consume are now concrete, but the qualified Engine
 | CSV proof | Cinema8 ACTIVE served; Teatri13×20 profile | Bounded authorized lineage join for Cinema; published Teatro terms, approved mapping/bundle, run/ACK/lineage/search and13-row accounting |
 
 Engine creation, pause and unpause helpers explicitly leave authority and full OCI/peer/transport checks to the caller; hash receipts alone supply none. No placeholder/no-op checkpoint may be installed on the target. Preserve post-migration writes and reconcile ambiguous effects rather than replaying or restoring an old snapshot. No target apply command is ready from this receipt.
+
+
+## Exact image custody/import primitive qualified; target image-only action ready
+
+[New implementation, scope and operator command](V11_OFFLINE_IMAGE_CUSTODY_20261011.md), [qualification](../evidence/v11-offline-image-import-qualified-20261011.json): run38168097869/job114554772062 SUCCESS,28 tests. Original publisher/ZIP and actual10 rootfs layer bytes are verified. A tagless envelope preserves the exact config/layers/image ID; actual Docker import followed by process death leaves IN_FLIGHT and a reopened journal reconciles without reimport. Six-source delivery, all8 publisher-verification failure positions and current root private-plan bindings are qualified separately. Root entry tests/authentication callbacks are fixtures; actual target execution remains pending.
+
+Next required operator action is the image-only launcher, not a repeated plan/custody read and not an application cutover. It may import one exact untagged image and writes a distinct private import journal; no container, database, R12/firewall/provider/signature effects or application transition claim. The existing runner cannot execute the required root path. New OCI/peer/transport and migration-aware composed application installation remain open. No runtime domain grant is inferred from a hash, root image-only invocation or hosted proof.
