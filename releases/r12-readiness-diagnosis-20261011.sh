@@ -10,8 +10,8 @@
   if [ ! -x "$OUF_GH" ]; then OUF_GH="$(command -v gh || true)"; fi
   if [ -z "$OUF_GH" ] || [ ! -x "$OUF_GH" ]; then echo OUF_EXISTING_GITHUB_CLIENT_REQUIRED >&2; exit 1; fi
   OUF_DIR="$(mktemp -d "$HOME/ouf-r12-readiness-diagnosis.XXXXXXXX")"
-  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/scripts/read-r12-readiness-diagnosis.py?ref=de3ca98607a933a1dc68b6a9b3be09978c88f21c' > "$OUF_DIR/program.py"
-  printf '%s  %s\n' 'a9d8bfcf5b3d5592835fb6cff89ecaeb06d87c11990cb7cb3b38321208225556' "$OUF_DIR/program.py" | sha256sum -c -
+  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/scripts/read-r12-readiness-diagnosis.py?ref=57296c0eb1a8cb5c8bfc371a1bf201a39763f94a' > "$OUF_DIR/program.py"
+  printf '%s  %s\n' 'd52fa8752dd9d37c3d950c9781ec00be1f9d8a173325049ce7eb43ceff1a607e' "$OUF_DIR/program.py" | sha256sum -c -
   "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/scripts/prepare-semantic-inputs-after-r12.py?ref=9fdf4bed6ded1a01640bcaed2ffadb58204e42d5' > "$OUF_DIR/prepare.py"
   printf '%s  %s\n' '693ec0196a60d3a9f6adee96571947306df4a0cffb449905c3dcf8c09a34da1b' "$OUF_DIR/prepare.py" | sha256sum -c -
   "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/tools/semantic_target_review/prepare_application_runtime_inputs.py?ref=9fdf4bed6ded1a01640bcaed2ffadb58204e42d5' > "$OUF_DIR/custody.py"
@@ -19,7 +19,7 @@
   OUF_PHASE=READ_PROTECTED_R12_READINESS_REASON_AND_BUDGET_NO_RECOVERY
   sudo /usr/bin/python3 -I -B -c '
 import hashlib,os,stat,sys
-expected=["a9d8bfcf5b3d5592835fb6cff89ecaeb06d87c11990cb7cb3b38321208225556", "693ec0196a60d3a9f6adee96571947306df4a0cffb449905c3dcf8c09a34da1b", "cb9ff64684243d563da79d327eb7d7e325dbea6a3922c91a0b7791a3ceec9baf"]
+expected=["d52fa8752dd9d37c3d950c9781ec00be1f9d8a173325049ce7eb43ceff1a607e", "693ec0196a60d3a9f6adee96571947306df4a0cffb449905c3dcf8c09a34da1b", "cb9ff64684243d563da79d327eb7d7e325dbea6a3922c91a0b7791a3ceec9baf"]
 if len(sys.argv)!=4:raise SystemExit("OUF_R12_DIAGNOSIS_EXACT_SOURCE_SET_REQUIRED")
 sources=[]
 for path,digest in zip(sys.argv[1:],expected):
