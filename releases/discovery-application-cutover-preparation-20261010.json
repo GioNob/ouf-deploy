@@ -1,6 +1,6 @@
 {
   "schema": "ouf.discovery.application-cutover-preparation.v1",
-  "status": "R12_ACTIVE_CURRENT_CREATION_PLAN_COMPILED_APPLICATION_CLOSURE_PENDING",
+  "status": "R12_ACTIVE_CREATION_PLAN_COMPILED_CURRENT_PACKAGE_SECURITY_AND_RESOURCE_STARTUP_QUALIFIED_TRANSITION_PENDING",
   "applyAuthorized": false,
   "newTargetAuthorityIssued": false,
   "networkLease": {
@@ -83,7 +83,7 @@
     "existingR10SealedProgramMustRemainUnchanged": true,
     "R10ReplayOrClaimResetAllowed": false
   },
-  "nextRead": "QUALIFY_EXACT_PACKAGE_RESOURCE_BOUND_STARTUP_AND_COMPOSE_MIGRATION_AWARE_TRANSITION",
+  "nextRead": "COMPOSE_AUTHENTICATED_MIGRATION_AWARE_APPLICATION_TRANSITION_RETAINING_R12_HISTORY",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
@@ -376,5 +376,22 @@
     "evidenceDirectory": "/etc/ouf/deploy-snapshots/semantic-current-creation-plan-ik1it73_",
     "creationPlanHash": "69cdcb80391b0796af6a4fac4ee845fff65b2322465b20fbfff897c5d64e1a73",
     "creationRequestHash": "339c8949bfd8b23700778225847ef43da2ee943621d6de0ad1b0cc627659b74d"
+  },
+  "currentPackageSecurityQualification": {
+    "run": 38150242010,
+    "evidence": "evidence/file-loop-current-security-qualified-20261011.json",
+    "publisherCryptoFreshlyVerified": true,
+    "allThreeThresholdsMet": true,
+    "targetApplyAuthorized": false
+  },
+  "currentPackageResourceRecoveryQualification": {
+    "run": 38150242024,
+    "job": 114502007935,
+    "evidence": "evidence/semantic-current-resource-recovery-qualified-20261011.json",
+    "exactCandidateImageStartup": true,
+    "installedJarOnCurrentMigratedSnapshot": true,
+    "productionLoadSloQualified": false,
+    "productionProviderHealthProven": false,
+    "completeTargetOciQualified": false
   }
 }

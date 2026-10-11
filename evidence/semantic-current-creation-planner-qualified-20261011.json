@@ -71,5 +71,6 @@
     "csvEndToEndProven": false,
     "releaseAcceptance": false
   },
-  "targetEvidence": "evidence/semantic-current-creation-plan-target-20261011.json"
+  "targetEvidence": "evidence/semantic-current-creation-plan-target-20261011.json",
+  "exactCandidateResourceBoundStartupEvidence": "evidence/semantic-current-resource-recovery-qualified-20261011.json"
 }

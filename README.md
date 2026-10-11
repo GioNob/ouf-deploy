@@ -1,4 +1,4 @@
-> **CSV Teatri — stato corrente:** piano privato di creazione compilato sul VPS, exit0; R12 a302 rinnovi con lo stesso processo. [Prove e prossimi passi](releases/TEATRI_CURRENT_EXECUTION_20261011.md). Profilo13righe/20colonne; qualifica del JAR entro i limiti di risorse in corso. Cambio applicativo e CSV end-to-end ancora da completare.
+> **CSV Teatri — stato corrente:** piano privato di creazione compilato sul VPS, exit0; R12 a302 rinnovi con lo stesso processo. [Prove e prossimi passi](releases/TEATRI_CURRENT_EXECUTION_20261011.md). Profilo13righe/20colonne; avvio dell’immagine esatta entro i limiti, compatibilità del JAR installato con V10 e verifiche correnti di firme/scansioni qualificati in CI. Cambio applicativo e CSV end-to-end ancora da completare.
 
 > **R10 — recupero operativo confermato tramite R12 sul VPS:** ricevuta operatore `ACTIVE / RENEWED`, due rinnovi, un indirizzo autorizzato per ciascuno dei due flussi, exit 0. [Stato e limiti](docs/R10_CONTINUOUS_RECOVERY.md), [ricevuta target](evidence/resilient-r12-active-target-20261011.json). **Non rieseguire gli apply R10/R11/R12.** Salute applicativa e CSV end-to-end restano da provare.
 
