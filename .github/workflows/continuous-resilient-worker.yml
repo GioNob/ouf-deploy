@@ -9,6 +9,7 @@ on:
       - 'tests/test_resilient_intake_delivery.py'
       - 'releases/resilient-worker-current-intake-20261011.sh'
       - '.github/workflows/continuous-resilient-worker.yml'
+      - '.github/workflows/resilient-worker-target-intake.yml'
   pull_request:
     paths:
       - 'tools/semantic_lease_recovery/**'
@@ -17,6 +18,7 @@ on:
       - 'tests/test_resilient_intake_delivery.py'
       - 'releases/resilient-worker-current-intake-20261011.sh'
       - '.github/workflows/continuous-resilient-worker.yml'
+      - '.github/workflows/resilient-worker-target-intake.yml'
 permissions:
   contents: read
 jobs:
