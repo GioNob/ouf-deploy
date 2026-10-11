@@ -69,8 +69,11 @@ def verify_r11(reader, cfg, *, initial):
     for name, digest in auth['programHashes'].items(): reader.private(R11_ROOT/name, digest)
     require(reader.parse(reader.private(R11_CLAIM)) == auth['activationClaim'], 'EXACT_CONSUMED_R11_CLAIM_REQUIRED')
     props = properties(reader, cfg['commandBindings']['systemctl'], R11_UNIT)
-    require(props.get('Restart') == 'no' and props.get('NRestarts') == '0'
-            and str(R11_ROOT/'activate.py') in props.get('ExecStart', ''), 'EXACT_CONSUMED_R11_SERVICE_REQUIRED')
+    require(props.get('Restart') == 'no' and props.get('NRestarts') == '0', 'EXACT_CONSUMED_R11_SERVICE_REQUIRED')
+    if initial or props.get('LoadState') == 'loaded':
+        require(str(R11_ROOT/'activate.py') in props.get('ExecStart', ''), 'EXACT_CONSUMED_R11_SERVICE_REQUIRED')
+    else:
+        require(props.get('LoadState') == 'not-found', 'CONSUMED_R11_UNIT_STATE_UNPROVEN')
     if initial:
         row = reader.parse(reader.private(R11_ROOT/'retry/recovery.json'))
         status = reader.parse(reader.private(R11_ROOT/'worker-status.json'))

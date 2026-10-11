@@ -34,6 +34,11 @@ def configure(m, meta, values):
     m.EXECUTION_EXPIRES_AT=values['expiresAt']
     m.EXPECTED_PROCESSES={}
     m.MODULE_HASHES=values['hashes']
+    m.R11_ROOT=meta/'old-r11'
+    m.R11_CLAIM=meta/'old-r11.claim'
+    m.R11_UNIT=values['r11Unit']
+    m.R11_ENTRY_HASH=values['r11EntryHash']
+    m.R11_INCIDENT=values['r11Incident']
     original_readers=m.readers
     def readers(directory):
         reader,c=original_readers(directory)
@@ -65,11 +70,10 @@ def configure(m, meta, values):
                 raise loaded['bounded_recovery'].Permanent('GENERATION_CHANGED')
             if claimed:m.require(reader.parse(reader.private(m.CLAIM))==capsule['activationClaim'],'CI_CLAIM_DRIFT')
             else:m.require(not os.path.lexists(m.CLAIM),'CI_PRECLAIM_NOT_EMPTY')
+            m.verify_r11(reader,cfg,initial=not claimed)
         recovery.adapter.scope_guard=fixture_guard
         return coordinator,loaded,recovery
     m.runtime=runtime
-    m.verify_r11=lambda reader,cfg,initial: {'startedWall':values['issuedAt']-17, 'startedMonotonic':values['startedMonotonic'], 'attempts':0, 'healthyWallSeconds':0, 'healthyMonotonicSeconds':0}
-    m.stop_r11=lambda reader,cfg: None
 '''
 
 
@@ -124,6 +128,38 @@ def main(source):
                   'startedMonotonic': time.monotonic()-18, 'issuedAt': int(time.time())-1, 'expiresAt': int(time.time())+180,
                   'hashes': {name: core.digest(raw) for name, raw in programs.items()},
                   'ownerHash': scope['ownerConfigurationHash'], 'netnsPid': os.getpid()}
+        # Actual production verify_r11/stop_r11 against a real parked transient
+        # predecessor. Its identity/authority are synthetic CI bindings only.
+        old = meta/'old-r11'; old.mkdir(mode=0o700); (old/'retry').mkdir(mode=0o700)
+        stub = b'''import json,os,signal,threading\nfrom pathlib import Path
+root=Path(__file__).parent
+stop=threading.Event()
+signal.signal(signal.SIGTERM,lambda *a:stop.set())
+status={'state':'BLOCKED','attempts':0,'refreshCount':0,'setsRevoked':True,'workerPid':os.getpid()}
+(root/'worker-status.json').write_text(json.dumps(status));(root/'worker-status.json').chmod(0o600)
+stop.wait()
+row=json.loads((root/'retry/recovery.json').read_text());row['state']='CANCELLED'
+(root/'retry/recovery.json').write_text(json.dumps(row))
+'''
+        old_unit='ouf-ci-r11-predecessor-'+uuid.uuid4().hex[:8]+'.service'
+        old_claim={'schema':'CI_ONLY_CONSUMED_R11_CLAIM','directory':str(old)}
+        old_auth={'schema':'ouf.provider-resilient-r11-authorization.v1','serviceUnit':old_unit,
+                  'ownerConfigurationHash':values['ownerHash'],'activationClaim':old_claim,
+                  'programHashes':{'activate.py':core.digest(stub)}}
+        old_auth['contextRef']=core.digest(core.encoded(old_auth))
+        old_row={'state':'BLOCKED','reason':'GENERATION_CHANGED','attempts':0,'publicationCount':0,
+                 'contextRef':old_auth['contextRef'],'startedWall':values['issuedAt']-17,
+                 'startedMonotonic':values['startedMonotonic'],'healthyWallSeconds':0,'healthyMonotonicSeconds':0}
+        core.create(old/'activate.py',stub);core.create(old/'authorization.json',old_auth)
+        core.create(meta/'old-r11.claim',old_claim);core.create(old/'retry/recovery.json',old_row)
+        old_claim_raw=(meta/'old-r11.claim').read_bytes()
+        values.update(r11Unit=old_unit,r11EntryHash=core.digest(stub),r11Incident=old_auth['contextRef'])
+        argv=core.service_command(old,core.digest(core.encoded(old_auth)),unit=old_unit,python=str(Path(sys.executable).resolve()))
+        run(argv)
+        wait_until=time.monotonic()+10
+        while not (old/'worker-status.json').exists():
+            if time.monotonic()>wait_until:raise RuntimeError('CI_PREDECESSOR_START_FAILED')
+            time.sleep(.1)
         child = (
             'import importlib.util,json,sys\nfrom pathlib import Path\n'
             'root=Path(__file__).resolve().parent\n'
@@ -164,6 +200,10 @@ def main(source):
             root = Path(result['evidenceDirectory'])
             assert result['status'] == 'TWO_FLOW_RESILIENT_LEASE_ACTIVE_AND_RENEWED'
             assert result['incidentRef']==target.R11_INCIDENT
+            assert (meta/'old-r11.claim').read_bytes()==old_claim_raw
+            retained_row=json.loads((root/'retry/recovery.json').read_bytes())
+            assert retained_row['startedWall']==old_row['startedWall'] and retained_row['startedMonotonic']==old_row['startedMonotonic']
+            assert json.loads((old/'retry/recovery.json').read_bytes())['state']=='CANCELLED'
             assert result['refreshCount'] >= 2 and result['flowAddressCounts'] == [1, 1]
             first = json.loads((root/'worker-status.json').read_bytes())
             claim_before = (meta/'new-r12.claim').read_bytes()
@@ -202,6 +242,8 @@ def main(source):
             assert all((meta/'source'/name).read_bytes() == raw for name, raw in retained.items())
             print('CI_R12_GENERATION=BLOCKED_ALIVE_NO_QUERY STOP_REVOKED=true OLD_R10_PRESERVED=true TARGET_ACTIONS=0', flush=True)
         finally:
+            run(['/usr/bin/systemctl','stop',old_unit],check=False)
+            run(['/usr/bin/systemctl','reset-failed',old_unit],check=False)
             run(['/usr/bin/systemctl', 'stop', unit], check=False)
             run(['/usr/bin/systemctl', 'reset-failed', unit], check=False)
             for family in ('inet', 'bridge'):
