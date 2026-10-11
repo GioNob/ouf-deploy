@@ -103,5 +103,39 @@ class Tests(unittest.TestCase):
             reader.CALL_DEADLINE = 10
             with self.assertRaises(reader.ReadDenied): reader.transport_timeout(15)
 
+    def peer_reader(self):
+        peer = self.scope()['currentSemanticPeer']
+        data = {'id': peer['containerId'], 'image': peer['imageId'],
+                'state': {'Pid': peer['generation']['pid'], 'Running': True, 'Status': 'running'},
+                'networks': {'network': {'IPAddress': peer['binding']['ipv4'],
+                                         'MacAddress': peer['binding']['mac']}}}
+        host = [{'ifindex': peer['binding']['hostIfindex'], 'link_index': peer['binding']['childIfindex'],
+                 'master': peer['binding']['bridge'], 'flags': ['UP']}]
+        reader = types.SimpleNamespace(CALL_DEADLINE=100, SEMANTIC_FORMAT='format',
+            SEMANTIC_ID=peer['containerId'], parse=json.loads,
+            generation=lambda pid: peer['generation'])
+        calls = []
+        def read(binding, args, allowed):
+            calls.append(args)
+            return json.dumps(data if args[0]=='inspect' else host)
+        reader.native_read = read
+        return peer, reader, data, host, calls
+
+    def test_runtime_peer_uses_no_namespace_entry_or_broad_capability(self):
+        peer, reader, data, host, calls = self.peer_reader()
+        m.verify_live_peer(reader, {'commandBindings': {'docker': {}}}, peer)
+        self.assertEqual(len(calls), 2)
+        self.assertFalse(any('nsenter' in str(row) or '--net=' in str(row) for row in calls))
+
+    def test_runtime_peer_attachment_or_reciprocal_link_drift_denied(self):
+        for change in ('mac', 'link', 'bridge', 'generation'):
+            peer, reader, data, host, calls = self.peer_reader()
+            if change == 'mac': data['networks']['network']['MacAddress'] = 'foreign'
+            elif change == 'link': host[0]['link_index'] += 1
+            elif change == 'bridge': host[0]['master'] = 'foreign'
+            else: reader.generation = lambda pid: {'pid': 1}
+            with self.assertRaises(ValueError):
+                m.verify_live_peer(reader, {'commandBindings': {'docker': {}}}, peer)
+
 
 if __name__ == '__main__': unittest.main()

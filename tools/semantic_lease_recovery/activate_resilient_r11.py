@@ -28,7 +28,7 @@ EXPECTED_PROCESSES = {
                 'adapterJournalHash': 'd13db4342dc696f0b4c3fce72763de30ca993aa90eaacf38eb5501b392e2b4a7'},
     'southbound': {'pid': 1826422, 'startedAt': '2026-10-09T19:10:21.846292298Z',
                    'adapterJournalHash': '73b1a6e1acaa3f86e1f3e9ccab28455786c41245419d584a5f81961c20ddf772'}}
-MODULE_HASHES = {'activation_core.py': '06d14a340db6d35a795115fd921f901e1cd0de74c06174562107270b08fc7c2a', 'reader.py': 'e4bbbe56e6eb9d890d1d1bc7559e7816f485922d6a058fc6daafd948b8622243', 'bounded_recovery.py': 'ed126f33b17581ae784c82ce3f0ec8b16c266d5ad78481a1890385736bd61dfd', 'recovery_journal.py': '43a293ab9b4075401cfc139a6531f30fdae7277cbe096f10c0d460cd26ed291d', 'lease_recovery_budget.py': 'c4a70c54823934e8d0ede9a5dff52ec93e896826b36445f21048c9519e2aeedf', 'resilient_lease_adapter.py': 'beb09ee948ac2f5a39777b7a10339d6085bae09a90d94e8d95ec3ef940ac1683', 'adaptive_supervisor.py': '08a354cfbea6a31ed1ea21dd80ddab0d0f983e3a0143a6f656124cf843d5635c', 'nft_seconds_backend.py': 'fe55a8e5a3f58ef7f0600e7d652a501864420d3c81fa92b1c28744ac3e60faf0', 'deadline_backend.py': '9918af051a94e1a345a1cb6b73069444e73fdec0918b5494f79b52f8bb2537a2', 'continuous_supervisor.py': '8084748c0ffb5e009e8e59c4c5ecaaf08451fb2cc35540135e2db9a55d12ae0e', 'dns.py': 'f1491cca148c488bbee8089dabcada0361781962d7b2858ad2fc4549cea3696f', 'readback_margin_compiler.py': '814b5321a5fe5772562f50aa17c34c99c2be741b6e2a9d26110a6b8991bdbf1d', 'target_bindings_r11.json': 'b99440a310d23ede9125936f51a3f8fb75ffcffb9dd2d37390c0b7e28c93e7b4'}
+MODULE_HASHES = {'activation_core.py': '06d14a340db6d35a795115fd921f901e1cd0de74c06174562107270b08fc7c2a', 'reader.py': 'e4bbbe56e6eb9d890d1d1bc7559e7816f485922d6a058fc6daafd948b8622243', 'bounded_recovery.py': 'ed126f33b17581ae784c82ce3f0ec8b16c266d5ad78481a1890385736bd61dfd', 'recovery_journal.py': '43a293ab9b4075401cfc139a6531f30fdae7277cbe096f10c0d460cd26ed291d', 'lease_recovery_budget.py': 'c4a70c54823934e8d0ede9a5dff52ec93e896826b36445f21048c9519e2aeedf', 'resilient_lease_adapter.py': 'beb09ee948ac2f5a39777b7a10339d6085bae09a90d94e8d95ec3ef940ac1683', 'adaptive_supervisor.py': '08a354cfbea6a31ed1ea21dd80ddab0d0f983e3a0143a6f656124cf843d5635c', 'nft_seconds_backend.py': '04cd115c756158ce2c04f32608380d7a40f4577d85785dfe46571825876545c1', 'deadline_backend.py': '9918af051a94e1a345a1cb6b73069444e73fdec0918b5494f79b52f8bb2537a2', 'continuous_supervisor.py': '8084748c0ffb5e009e8e59c4c5ecaaf08451fb2cc35540135e2db9a55d12ae0e', 'dns.py': 'f1491cca148c488bbee8089dabcada0361781962d7b2858ad2fc4549cea3696f', 'readback_margin_compiler.py': '814b5321a5fe5772562f50aa17c34c99c2be741b6e2a9d26110a6b8991bdbf1d', 'target_bindings_r11.json': 'b99440a310d23ede9125936f51a3f8fb75ffcffb9dd2d37390c0b7e28c93e7b4'}
 LOAD_ORDER = ('bounded_recovery', 'recovery_journal', 'lease_recovery_budget',
               'resilient_lease_adapter', 'adaptive_supervisor', 'nft_seconds_backend',
               'deadline_backend', 'continuous_supervisor', 'dns', 'readback_margin_compiler')
@@ -193,6 +193,32 @@ def load_worker_modules(reader, core, owner, directory, programs):
     return modules, loaded, retained
 
 
+def verify_live_peer(reader, cfg, peer):
+    # The root intake proved both ends. During supervision, preserve exact
+    # process/netns generation, Docker attachment and reciprocal host veth.
+    # No nsenter or CAP_SYS_ADMIN is required in the NET_ADMIN-only worker.
+    reader.READ_DEADLINE = reader.CALL_DEADLINE
+    args = ['inspect', '--type', 'container', '--format', reader.SEMANTIC_FORMAT, reader.SEMANTIC_ID]
+    data = reader.parse(reader.native_read(cfg['commandBindings']['docker'], args, [args]))
+    state = data['state']
+    require(data['id'] == peer['containerId'] and data['image'] == peer['imageId']
+            and state['Running'] is True and state['Status'] == 'running'
+            and reader.generation(state['Pid']) == peer['generation'],
+            'CURRENT_SEMANTIC_PROCESS_GENERATION_CHANGED')
+    attachments = [row for row in data['networks'].values() if row.get('IPAddress')]
+    require(len(attachments) == 1 and attachments[0]['IPAddress'] == peer['binding']['ipv4']
+            and attachments[0]['MacAddress'] == peer['binding']['mac'],
+            'CURRENT_SEMANTIC_NETWORK_ATTACHMENT_CHANGED')
+    binding = peer['binding']
+    args = ['-j', 'link', 'show', 'dev', binding['hostInterface']]
+    host = reader.parse(reader.native_read(peer['metadataCommandBindings']['ip'], args, [args]))
+    require(len(host) == 1 and host[0]['ifindex'] == binding['hostIfindex']
+            and host[0]['link_index'] == binding['childIfindex'] and host[0]['master'] == binding['bridge']
+            and 'UP' in host[0]['flags']
+            and reader.generation(state['Pid']) == peer['generation'],
+            'CURRENT_RECIPROCAL_HOST_PEER_CHANGED')
+
+
 def runtime(reader, core, owner, cfg, scope, capsule):
     modules, loaded, retained = load_worker_modules(reader, core, owner, ROOT, capsule['programHashes'])
     cls = loaded['deadline_backend'].DeadlineNftBackend
@@ -259,11 +285,7 @@ def runtime(reader, core, owner, cfg, scope, capsule):
                         and sha(encoded(reader.guard_footprint(tables))) == expected_role['expectedFootprint'],
                         'CURRENT_SHARED_NATIVE_GUARD_CHANGED')
             peer = scope['currentSemanticPeer']
-            reader.READ_DEADLINE = reader.CALL_DEADLINE
-            args = ['inspect', '--type', 'container', '--format', reader.SEMANTIC_FORMAT, reader.SEMANTIC_ID]
-            raw = reader.parse(reader.native_read(cfg['commandBindings']['docker'], args, [args]))
-            projected = reader.peer_projection(raw, {k: v['path'] for k, v in peer['metadataCommandBindings'].items()})
-            require(projected == peer, 'CURRENT_RECIPROCAL_SEMANTIC_PEER_CHANGED')
+            verify_live_peer(reader, cfg, peer)
             prior = properties(reader, cfg['commandBindings']['systemctl'], PRIOR_UNIT)
             require(prior.get('MainPID') == '0' and prior.get('NRestarts') == '0',
                     'CONSUMED_R10_WORKER_RESTARTED')
