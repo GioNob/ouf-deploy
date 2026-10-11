@@ -1,5 +1,9 @@
 > **R10 — priorità corrente:** [supervisore continuo qualificato e recupero target da completare](docs/R10_CONTINUOUS_RECOVERY.md).62 test e systemd/DNS/nft reali PASS; il tentativo di lettura protetta sul VPS non è eseguito per permesso root non interattivo non provato. [Evidenza](evidence/continuous-resilient-worker-qualified-20261011.json). Nessun recupero target o CSV end-to-end dichiarato.
 
+## 11 October, 15:38 CEST: R11 target BLOCKED; lease recovery unresolved
+
+The operator executed R11 once. The result is BLOCKED before the first attempt, zero renewals and no approved provider traffic. Both R10 and R11 claims are consumed: **do not rerun either apply**. Exit 0 reports a parked worker receipt; it does not indicate successful recovery. [Target observation](evidence/resilient-r11-blocked-target-20261011.json), [current recovery diagnosis](docs/R10_CONTINUOUS_RECOVERY.md). A real Linux distinct-UID regression confirms that NET_ADMIN-only /proc namespace inspection can be denied; the exact target failure requires the protected read-only guard comparison. No target recovery is claimed.
+
 ## 11 October: R11 qualified; existing two-flow target recovery pending
 
 The operator's protected intake succeeded: R10 remains failed after 250 refreshes, QUIESCED with empty provider sets. [New sealed R11 recovery](docs/R10_CONTINUOUS_RECOVERY.md) is qualified with actual apply, systemd, DNS and nft in isolated CI. [Qualification evidence](evidence/resilient-r11-entry-qualified-20261011.json). Its [immutable delivery](releases/provider-resilient-r11-approved-20261011.sh) uses the retained portable GitHub client and requires operator sudo once. Do not replay R10 or R11. No target recovery or application acceptance is yet claimed.

@@ -63,6 +63,8 @@
     "launcherSha256": "6f7805604df5c9e317d3c6fb6c0b1c820d40dc8c91aacad6420669e5a9ac81f0",
     "mergedPr": "https://github.com/GioNob/ouf-deploy/pull/2",
     "mergeCommit": "c9eb806ae4949db6eff0c4cdf4113c0e41b59918",
-    "targetApply": "PENDING_OPERATOR_SUDO"
-  }
+    "targetApply": "EXECUTED_BLOCKED_ZERO_ATTEMPTS"
+  },
+  "targetObservation": "evidence/resilient-r11-blocked-target-20261011.json",
+  "qualificationGap": "Native activation used a synthetic scope guard; actual restricted-capability process metadata access was not covered."
 }
