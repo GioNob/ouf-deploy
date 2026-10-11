@@ -53,3 +53,10 @@ Destinatari reali, canali, finestre/manutenzione e soglie devono essere configur
 ## Stato e limiti
 
 Questo documento è un piano verificabile, non evidence runtime. La prima tranche corregge la priorità/selezione in MCP/Ingestion e nel reference adapter Gateway e il catch-up dei recuperi supportato dalle proiezioni esistenti. Non prova incident dedup condiviso, transizioni complete, cursor, checkpoint operatore, detector sistemico, consegna email o copertura dei sette moduli sul target. R9/R10 restano consumati; nessun preflight/apply sospeso viene riattivato.
+
+
+## Fondazione di lettura e progettazione cursor — 11 October 2026
+
+[Decisione tecnica cursor/consultazione](OUF_OPERATIONAL_CURSOR_DESIGN.md): revisione di pubblicazione commit-ordered, snapshot immutabili, autorizzazione fresca, limiti di scansione/sessione e ricevute CAS. Un normale sequence o wall-clock non prova il catch-up completo; lock counter dopo row lock può introdurre deadlock. Stato DESIGN/OPEN, senza nuovo deployable centrale.
+
+Sono in qualifica [MCP PR52](https://github.com/GioNob/ouf-mcp-server/pull/52) per autorizzazione owner/proiezione/coverage/budget e [Ingestion PR36](https://github.com/GioNob/ouf-ingestion-runtime/pull/36) per osservazione persistente di tutte le modifiche e distinzione first-seen/nuova osservazione. Le qualifiche preliminari passate non certificano il candidato finale: verificare il ledger di adozione prima di considerarle integrate.

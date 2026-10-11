@@ -69,3 +69,12 @@ Il primo gate completo MCP38105699846 rilevò10 vulnerabilità raggiungibili pre
 Questa tranche rende coerenti i candidati restituiti; non prova la priorità globale di tutti gli incidenti dopo paginazione/redazione. Serve completare cursor/coverage, last-transition ledger (Ingestion oggi created/resolved), checkpoint accesso/consultazione, urgenze OPEN oltre la finestra, dedup di dipendenza tra job e conteggi impatto, detector sistemico/quote/capacità, outbox email/escalation e monitoring esterno. Summary legacy di finestra non è prova della salute corrente. Gateway SQLite è un reference adapter, non prova dell'hosting/datastore/tenant runtime di produzione.
 
 Nessun deploy/migrazione/restart sul VPS, traffico/provider call o email effettuati. R9/R10 consumati, preflight root sospeso e gap target/PET restano. Nuovi default/policy non generano grant HUMAN di dominio.
+
+
+## Seconda tranche Operational Awareness — QUALIFICA IN CORSO
+
+- [MCP PR52](https://github.com/GioNob/ouf-mcp-server/pull/52): ogni aggregate richiede rivalutazione owner principal/capability/tenant/scope/detail prima I/O; query tipizzata anche nei canali non MCP; self-state con allowlist fissa; producer incompleto/unknown esplicito; budget byte. Candidato finale 0f8006711895cfb82166e8a3e22fb7c3bf29a00c, gate nativi da completare.
+- [Ingestion PR36](https://github.com/GioNob/ouf-ingestion-runtime/pull/36): V16 additiva last_updated_at, metadata/reopening/rollback e nuovo incidente con first-seen storico. Candidato finale 50595a5b63c5236c9802964a69f934189a4b42cf, gate nativi da completare. La prova preliminare38117719754 ha27 test PASS sul candidato precedente, non sostituisce la qualifica finale del caso first-seen/nuova osservazione.
+- [Design cursor/consultazione](OUF_OPERATIONAL_CURSOR_DESIGN.md) pubblicato; implementazione OPEN. Timestamp persistente non equivale a revisioni commit-ordered o checkpoint dell'operatore.
+
+Nessuna prova target/deploy/migrazione VPS o concessione runtime; R9/R10 restano consumati e il preflight root sospeso. Le due PR non sono ancora dichiarate integrate.
