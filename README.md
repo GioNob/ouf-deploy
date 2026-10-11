@@ -1,4 +1,8 @@
-# Current checkpoint — project resilience default; bounded recovery qualified; target integration pending
+# Current checkpoint — platform resilience v2; HUMAN recovery budgets merged and qualified
+
+[Policy v2](docs/OUF_RESILIENCE_POLICY.md) and AGENTS instructions apply throughout OUF: persistent quarantine, new finite HUMAN budgets after exhaustion, atomic recovery sessions, fencing and gradual capacity-governed recovery. [Ingestion PR34](https://github.com/GioNob/ouf-ingestion-runtime/pull/34) is merged:35 focused/134 full-module tests PASS and candidate owner/supply-chain/DR gates green. [Adoption ledger and remaining scope](docs/OUF_RESILIENCE_ADOPTION.md). The bounded lease protocol remains isolated-CI qualified; full resilient target worker closure is pending. No VPS migration/apply/restart/cutover; R9/R10 consumed and the prior root preflight suspended. [Current continuation](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md).
+
+# Historical checkpoint — project resilience default; bounded recovery qualified; target integration pending
 
 [Resilience policy](docs/OUF_RESILIENCE_POLICY.md) now applies by default across all seven OUF repositories. [CI38102725541](https://github.com/GioNob/ouf-deploy/actions/runs/38102725541) passes16 tests and real DNS/nft recovery after four virtual outage hours, with finite persistent budgets, empty sets during pause and fresh positive-TTL recovery. [Implementation and remaining closure](docs/OUF_RESILIENCE_IMPLEMENTATION.md). R10 remains consumed and quiescent according to the latest operator observation; no VPS apply/restart/cutover. **Previous root preflight command suspended.** [Current continuation](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md).
 
