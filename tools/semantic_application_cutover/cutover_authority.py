@@ -7,7 +7,7 @@ intake/source/request/history bindings and installed authority context.
 """
 import hashlib,time
 from pathlib import Path
-from tools.semantic_provider_deployment_authentication import DetachedAuthenticator,decode,private_bytes
+from tools.semantic_provider_deployment_authentication import DetachedAuthenticator,decode,private_bytes,policy
 from tools.semantic_provider_deployment_protocol import identity,hashed
 
 class AuthorityDenied(RuntimeError):pass
@@ -32,6 +32,10 @@ class CutoverAuthority:
   require(type(approval['issuedAt']) is int and type(approval['expiresAt']) is int and approval['issuedAt']<=now<approval['expiresAt'] and 0<approval['expiresAt']-approval['issuedAt']<=3600,'FINITE_CURRENT_HUMAN_CUTOVER_DECISION_REQUIRED')
   require(authority.get('schema')=='ouf.semantic-cutover-execution-authority.v1' and all(authority.get(k)==v for k,v in self.expected.items() if k!='intakeHash'),'SIGNED_AUTHORITY_REVIEW_SCOPE_DRIFT')
   require(type(authority.get('issuedAt')) is int and type(authority.get('expiresAt')) is int and approval['issuedAt']<=authority['issuedAt']<=now<authority['expiresAt']<=approval['expiresAt'],'SIGNED_AUTHORITY_WITHIN_HUMAN_WINDOW_REQUIRED')
+  ctx=self.context;configured=policy(self.verifier.read_policy(),ctx['installationRef'],ctx['entityRef'],now)
+  for role,issuer in (('DEPLOYMENT_INTENT',ctx['intentIssuerRef']),('FINAL_DEPLOYMENT_APPROVAL',ctx['approvalIssuerRef']),('CREATION_ATTESTATION',ctx['attestorRef'])):
+   keys=[k for k in configured['keys'] if k['issuerRef']==issuer and role in k['roles'] and k['state']=='ACTIVE' and k['notBefore']<=now<k['expiresAt']]
+   require(len(keys)==1 and authority['expiresAt']<=keys[0]['expiresAt'],'CUTOVER_WINDOW_EXCEEDS_SCOPED_KEY_AUTHORITY')
   return approval_raw
  def __call__(self,raw):
   require(type(raw) is bytes and 0<len(raw)<=131072,'BOUNDED_CUTOVER_AUTHORITY_BYTES_REQUIRED')

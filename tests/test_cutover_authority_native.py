@@ -35,7 +35,8 @@ class SignedCutover(unittest.TestCase):
   self.context={'installationRef':'synthetic-fixture-installation','entityRef':'synthetic-fixture-entity','intentIssuerRef':'synthetic-fixture-installer','approvalIssuerRef':'synthetic-fixture-installer','attestorRef':'synthetic-fixture-attestor'}
   self.key=self.root/'disposable.pem';self.native('genpkey','-algorithm','ED25519','-out',str(self.key));self.key.chmod(0o600)
   self.grant={'keyRef':'synthetic-fixture-only-key','issuerRef':self.context['intentIssuerRef'],'roles':['DEPLOYMENT_INTENT','FINAL_DEPLOYMENT_APPROVAL'],'publicKey':self.native('pkey','-in',str(self.key),'-pubout','-outform','DER')[12:].hex(),'notBefore':self.now-30,'expiresAt':self.now+600,'state':'ACTIVE'}
-  self.policy=self.root/'policy.json';self.write(self.policy,encoded({'schema':'ouf.semantic-deployment-trust-policy.v1','installationRef':self.context['installationRef'],'entityRef':self.context['entityRef'],'keys':[self.grant]}))
+  attestor={'keyRef':'synthetic-fixture-attestor-key','issuerRef':self.context['attestorRef'],'roles':['CREATION_ATTESTATION'],'publicKey':'f'*64,'notBefore':self.now-30,'expiresAt':self.now+600,'state':'ACTIVE'}
+  self.policy=self.root/'policy.json';self.write(self.policy,encoded({'schema':'ouf.semantic-deployment-trust-policy.v1','installationRef':self.context['installationRef'],'entityRef':self.context['entityRef'],'keys':[self.grant,attestor]}))
   self.signatures=self.root/'signatures';self.signatures.mkdir(mode=0o700)
   self.verifier=DetachedAuthenticator(self.binding(self.policy),str(self.signatures),{**self.binding(self.openssl),'version':self.native('version').decode().split()[1]},clock=self.clock)
   self.expected={k:c*64 for k,c in zip(('intakeHash','sourceClosureHash','creationRequestHash','predecessorHistoryHash','predecessorIncidentRef'),'abcde')}
@@ -51,6 +52,12 @@ class SignedCutover(unittest.TestCase):
   frame=self.root/'frame';self.write(frame,signing_bytes(self.authority,header));sig=self.native('pkeyutl','-sign','-rawin','-inkey',str(self.key),'-in',str(frame));self.write(self.signatures/(sha(self.authority)+'.'+role+'.json'),encoded({**header,'signature':sig.hex()}))
  def gate(self):return CutoverAuthority(self.verifier,self.binding(self.mandate),self.approved,self.context,self.expected,self.clock)
  def test_actual_two_scoped_signatures_and_explicit_review_hash_pass(self):self.assertTrue(self.gate()(self.authority))
+ def test_whole_execution_window_must_fit_current_role_policy_before_effects(self):
+  p=json.loads(self.policy.read_bytes());p['keys'][0]['expiresAt']=self.now+80;self.write(self.policy,encoded(p));self.verifier.policy_binding=self.binding(self.policy)
+  with self.assertRaisesRegex(AuthorityDenied,'WINDOW_EXCEEDS_SCOPED_KEY_AUTHORITY'):self.gate()(self.authority)
+ def test_later_attestor_window_also_must_fit_before_stopping_old_runtime(self):
+  p=json.loads(self.policy.read_bytes());p['keys'][1]['expiresAt']=self.now+80;self.write(self.policy,encoded(p));self.verifier.policy_binding=self.binding(self.policy)
+  with self.assertRaisesRegex(AuthorityDenied,'WINDOW_EXCEEDS_SCOPED_KEY_AUTHORITY'):self.gate()(self.authority)
  def test_missing_final_signature_or_wrong_entity_denies(self):
   path=self.signatures/(sha(self.authority)+'.FINAL_DEPLOYMENT_APPROVAL.json');saved=path.read_bytes();path.unlink()
   with self.assertRaises((PreexecDenied,OSError)):self.gate()(self.authority)
