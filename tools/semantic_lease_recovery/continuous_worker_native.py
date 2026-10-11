@@ -11,6 +11,7 @@ import sys
 import tempfile
 import threading
 import time
+import traceback
 import uuid
 
 HERE = Path(__file__).resolve().parent
@@ -62,6 +63,17 @@ def child(root):
             raise Permanent('AUTHORITY_EXPIRED')
     adapter = RenewingLeaseAdapter(coordinator, dns, compiler, guard,
         lambda: backend.verify_ownership(owner['kernel']), clock.mono)
+    # Diagnostic only in this synthetic CI fixture, never in the target worker.
+    for method in ('prepare', 'publish', 'prepare_renewal', 'publish_renewal'):
+        original = getattr(adapter, method)
+        def debug(*args, _original=original, **kw):
+            try: return _original(*args, **kw)
+            except (Permanent,):
+                raise
+            except Exception:
+                traceback.print_exc()
+                raise
+        setattr(adapter, method, debug)
     retry = Journal(root / 'retry')
     recovery = Recovery(retry, adapter, Policy(), 'a'*64, 'b'*64, clock, lambda: .5)
     supervisor = Supervisor(recovery, coordinator, 1)
