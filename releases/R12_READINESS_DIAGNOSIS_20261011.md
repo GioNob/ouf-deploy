@@ -1,5 +1,7 @@
 # R12 readiness and retained budget diagnosis — 11 October 2026
 
+> **Superseded delivery:** the operator proved all9 worker readiness predicates passed, then this initial diagnostic stopped at EXACT_READ_ONLY_NATIVE_SCOPE_REQUIRED because it requested three properties outside the retained exact command scope. That diagnostic defect is fixed; use the [qualified resume operation](RESUME_NATIVE_V11_PLAN_20261011.md), which completes the corrected diagnostic and only then attempts fresh private-plan preparation. Old pinned commands below are retained historical evidence.
+
 The operator's native V11 preparation stopped at CURRENT_R12_PRIVATE_WORKER_UNPROVEN in CURRENT_R12_APPLICATION_AND_INPUT_CUSTODY. No private plan was published and all protected writes, image imports and application effects were zero. [Blocked receipt](../evidence/native-v11-plan-worker-blocked-target-20261011.json).
 
 A direct, unprivileged read from the VPS runner at20:48:08 UTC confirms the original R12 service is active/running, MainPID2446150, Restart=no and NRestarts=0. [Native service receipt](../evidence/r12-public-service-current-20261011.json), [runner execution](https://github.com/GioNob/ouf-deploy/actions/runs/38173718656). This does not establish readiness, valid leases, or the protected reason. The existing nine-predicate readiness check remains unchanged; paused workers are never promoted to ready.

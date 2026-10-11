@@ -1,6 +1,6 @@
 # R10: recupero continuo, qualificazione e applicazione target
 
-> **Stato corrente, 11 ottobre 2026:** il piano nativo V11 è bloccato da `CURRENT_R12_PRIVATE_WORKER_UNPROVEN`, prima di ogni scrittura protetta. La lettura diretta del runner alle 20:48 UTC conferma R12 attivo, PID2446150, zero riavvii; non dimostra readiness o lease valide. La prossima operazione è la [diagnosi root di sola lettura](../releases/R12_READINESS_DIAGNOSIS_20261011.md), senza apply, restart o reset del budget. CSV Teatri end-to-end resta aperto.
+> **Stato corrente, 11 ottobre 2026, 23:10 CEST:** la diagnosi protetta osserva R12 `LEASE_ACTIVE / ACTIVE / RENEWED`, tutti9 i controlli del worker superati,12 tentativi consumati e78133,94s di budget residuo. La diagnosi si arresta poi per un errore di scope del proprio comando systemctl; nessun effetto target. Il difetto è corretto e qualificato con28 test. [Prosecuzione concreta](../releases/RESUME_NATIVE_V11_PLAN_20261011.md): diagnosi completa e, solo con readiness fresca, preparazione dei4 documenti del piano nativo V11. Nessun cutover applicativo; CSV end-to-end ancora aperto.
 
 
 Il vecchio R10 rimane consumato. Il suo fallimento dopo 250 rinnovi è storico;

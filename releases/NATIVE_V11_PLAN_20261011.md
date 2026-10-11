@@ -1,6 +1,6 @@
 # Native V11 private creation plan — 11 October 2026
 
-> **Stato corrente, 11 ottobre 2026:** il piano nativo V11 è bloccato da `CURRENT_R12_PRIVATE_WORKER_UNPROVEN`, prima di ogni scrittura protetta. La lettura diretta del runner alle 20:48 UTC conferma R12 attivo, PID2446150, zero riavvii; non dimostra readiness o lease valide. La prossima operazione è la [diagnosi root di sola lettura](R12_READINESS_DIAGNOSIS_20261011.md), senza apply, restart o reset del budget. CSV Teatri end-to-end resta aperto.
+> **Stato corrente, 11 ottobre 2026, 23:10 CEST:** la diagnosi protetta osserva R12 `LEASE_ACTIVE / ACTIVE / RENEWED`, tutti9 i controlli del worker superati,12 tentativi consumati e78133,94s di budget residuo. La diagnosi si arresta poi per un errore di scope del proprio comando systemctl; nessun effetto target. Il difetto è corretto e qualificato con28 test. [Prosecuzione concreta](RESUME_NATIVE_V11_PLAN_20261011.md): diagnosi completa e, solo con readiness fresca, preparazione dei4 documenti del piano nativo V11. Nessun cutover applicativo; CSV end-to-end ancora aperto.
 
 
 The operator confirmed [EXACT_V11_NATIVE_MANIFEST_IMAGE_CUSTODY_RECONCILED_NO_APPLY](../evidence/v11-manifest-reconciliation-target-20261011.json) at22:04 Europe/Rome: journal VERIFIED/version2, cumulative attempt1, zero new imports, one journal CAS, preserved context, exact config/rootfs and ten layers. No application/DB/provider/lease/firewall effect or domain transition grant occurred. Do not repeat the old import or R12 apply.

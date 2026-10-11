@@ -1,11 +1,11 @@
-> **Stato corrente, 11 ottobre 2026:** il piano nativo V11 è bloccato da `CURRENT_R12_PRIVATE_WORKER_UNPROVEN`, prima di ogni scrittura protetta. La lettura diretta del runner alle 20:48 UTC conferma R12 attivo, PID2446150, zero riavvii; non dimostra readiness o lease valide. La prossima operazione è la [diagnosi root di sola lettura](releases/R12_READINESS_DIAGNOSIS_20261011.md), senza apply, restart o reset del budget. CSV Teatri end-to-end resta aperto.
+> **Stato corrente, 11 ottobre 2026, 23:10 CEST:** la diagnosi protetta osserva R12 `LEASE_ACTIVE / ACTIVE / RENEWED`, tutti9 i controlli del worker superati,12 tentativi consumati e78133,94s di budget residuo. La diagnosi si arresta poi per un errore di scope del proprio comando systemctl; nessun effetto target. Il difetto è corretto e qualificato con28 test. [Prosecuzione concreta](releases/RESUME_NATIVE_V11_PLAN_20261011.md): diagnosi completa e, solo con readiness fresca, preparazione dei4 documenti del piano nativo V11. Nessun cutover applicativo; CSV end-to-end ancora aperto.
 
 
 > **R10 — recupero operativo confermato tramite R12 sul VPS:** ricevuta operatore `ACTIVE / RENEWED`, due rinnovi, un indirizzo autorizzato per ciascuno dei due flussi, exit 0. [Stato e limiti](docs/R10_CONTINUOUS_RECOVERY.md), [ricevuta target](evidence/resilient-r12-active-target-20261011.json). **Non rieseguire gli apply R10/R11/R12.** Salute applicativa e CSV end-to-end restano da provare.
 
 ## 11 October: R12 active on target; earlier pending states superseded
 
-The operator-reported activation confirms two-flow lease recovery at that observation. The original incident and consumed R10/R11 claims are retained, with one recovery attempt and two renewals reported. No application/container cutover, automatic restart or boot enablement is claimed. The following dated checkpoints are historical. The latest native-plan observation is blocked on worker readiness; the service-only read proves the original process is running, not current lease readiness.
+The operator-reported activation confirms two-flow lease recovery at that observation. The original incident and consumed R10/R11 claims are retained, with one recovery attempt and two renewals reported. No application/container cutover, automatic restart or boot enablement is claimed. The following dated checkpoints are historical. The latest protected diagnostic observed all nine worker readiness predicates passing, then stopped at its own overly broad systemctl command. The corrected diagnostic must complete freshly before any new native private-plan preparation.
 
 ## 11 October: confirmed R11 permission defect; sealed R12 recovery qualified
 
