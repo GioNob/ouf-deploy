@@ -69,8 +69,25 @@ class Journal:
     def initialize(self, record):
         # Partial initialization never becomes permission to auto reinitialize.
         self.create(self.lock, b'')
+        self.create(self.root / 'invocation.lock', b'')
         self.create(self.record, encoded(record))
         self.sync()
+
+    @contextmanager
+    def invocation(self):
+        """Exclusive process fencing; separate from short journal/lease locks."""
+        self.check_directory()
+        path = self.root / 'invocation.lock'
+        fd = os.open(path, os.O_RDWR | os.O_NOFOLLOW | os.O_NONBLOCK)
+        try:
+            info = os.fstat(fd)
+            self.check_file(info)
+            require((info.st_dev, info.st_ino) == (path.lstat().st_dev, path.lstat().st_ino),
+                    'WORKER_LOCK_IDENTITY_DRIFT')
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            yield
+        finally:
+            os.close(fd)
 
     @contextmanager
     def transaction(self):

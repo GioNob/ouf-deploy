@@ -1,0 +1,55 @@
+name: Current resilient worker protected intake
+on:
+  push:
+    branches: [main, codex/r10-continuous-recovery-20261011]
+    paths:
+      - '.github/workflows/resilient-worker-target-intake.yml'
+permissions:
+  contents: read
+concurrency:
+  group: ouf-resilient-worker-read-only-intake
+  cancel-in-progress: false
+jobs:
+  qualify-reader:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - run: python3 -B -m unittest discover -v -s tests -p 'test_resilient*py'
+  read-or-report-access:
+    needs: qualify-reader
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Exact read-only source under existing noninteractive sudo permission
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          OUF_INTAKE_SOURCE="$GITHUB_WORKSPACE/scripts/read-resilient-worker-current-intake.py"
+          printf '%s  %s\n' '431124adb0f7c05638decae1a6fdadf5fce69f830d4f218d7ac1eb66b996f52f' "$OUF_INTAKE_SOURCE" | sha256sum -c -
+          if sudo -n /usr/bin/python3 -I -B -c '
+          import hashlib,pathlib,sys
+          path=sys.argv[1];raw=pathlib.Path(path).read_bytes()
+          if len(raw)>65536 or hashlib.sha256(raw).hexdigest()!="431124adb0f7c05638decae1a6fdadf5fce69f830d4f218d7ac1eb66b996f52f":
+              raise SystemExit("CURRENT_INTAKE_SOURCE_HASH_MISMATCH")
+          sys.argv=[path]
+          exec(compile(raw,path,"exec"),{"__name__":"__main__","__file__":path})
+          ' "$OUF_INTAKE_SOURCE" > "$RUNNER_TEMP/resilient-intake-result.txt" 2> "$RUNNER_TEMP/resilient-intake-error.txt"; then
+            cat "$RUNNER_TEMP/resilient-intake-result.txt"
+            echo OUF_RESILIENT_WORKER_INTAKE_EXIT=0
+          else
+            OUF_INTAKE_EXIT=$?
+            if rg -q '^OUF_RESILIENT_WORKER_INTAKE=' "$RUNNER_TEMP/resilient-intake-result.txt"; then
+              cat "$RUNNER_TEMP/resilient-intake-result.txt"
+              echo "OUF_RESILIENT_WORKER_INTAKE_EXIT=$OUF_INTAKE_EXIT"
+              exit "$OUF_INTAKE_EXIT"
+            fi
+            echo OUF_RESILIENT_WORKER_INTAKE=NOT_EXECUTED_ROOT_PERMISSION_UNPROVEN_OPERATOR_REQUIRED
+            echo "OUF_ROOT_ATTEMPT_EXIT=$OUF_INTAKE_EXIT"
+            sha256sum "$RUNNER_TEMP/resilient-intake-error.txt"
+          fi
