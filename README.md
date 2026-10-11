@@ -1,3 +1,5 @@
+> **R10 — priorità corrente:** [supervisore continuo qualificato e recupero target da completare](docs/R10_CONTINUOUS_RECOVERY.md).62 test e systemd/DNS/nft reali PASS; il tentativo di lettura protetta sul VPS non è eseguito per permesso root non interattivo non provato. [Evidenza](evidence/continuous-resilient-worker-qualified-20261011.json). Nessun recupero target o CSV end-to-end dichiarato.
+
 > **Policy di piattaforma vigente:** [Resilienza, quarantena, incidenti e alert — v3](docs/OUF_RESILIENCE_POLICY.md). Obbligatoria per sviluppo e revisione; [adozione e prove](docs/OUF_RESILIENCE_ADOPTION.md).
 
 # Current checkpoint — owner incident pages qualified; autonomous resilience work continues

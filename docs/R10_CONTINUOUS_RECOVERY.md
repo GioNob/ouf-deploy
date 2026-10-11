@@ -60,3 +60,12 @@ chiudono. CSV end-to-end resta successivo, come richiesto dall'owner.
 
 Riferimenti: policy di piattaforma v3; Gateway1.5 T11/T11.3; Matrix1.7;
 OUF_RESILIENCE_IMPLEMENTATION.md. Cinema e Teatri restano preservati.
+
+
+## Qualificazione e blocco di accesso — 11 ottobre 2026
+
+Candidato da92a02e8fc246dbf77ac0584321039d13d2436a, [PR1](https://github.com/GioNob/ouf-deploy/pull/1) integrata. Push38141352405 e PR38141355412 PASS:62 test unit/regression e due percorsi nativi. [Evidenza](../evidence/continuous-resilient-worker-qualified-20261011.json). Il primo candidato aveva un errore di scheduling del primo ACTIVE, corretto e coperto da una prova del serve loop.
+
+Il [tentativo tramite runner38141352468](https://github.com/GioNob/ouf-deploy/actions/runs/38141352468) riporta NOT_EXECUTED_ROOT_PERMISSION_UNPROVEN_OPERATOR_REQUIRED, exit1: la lettura root non è stata eseguita. La conclusione SUCCESS qualifica la segnalazione del blocco, non i vincoli protetti. Serve l'esecuzione operatore della [consegna immutabile di sola lettura](../releases/resilient-worker-current-intake-20261011.sh), SHA2566a853ef53dce2457c66a6f8ff43c4f5e7b77b1599308ecff26f625ab0a69c7cf, disponibile al pin da92a02e8fc246dbf77ac0584321039d13d2436a. Il sorgente interno è letto dal pin00a65cb9758c8f8cac40b1be51f0d5cfb58f3f64 e verificato prima e dopo sudo. Output fino a OUF_RESILIENT_WORKER_INTAKE_EXIT; non include password o segreti. Questo è un nuovo intake, non il preflight storico sospeso e non un apply.
+
+R10 sul target resta non recuperato fino all'applicazione e ricevuta del nuovo servizio completo. La lettura corrente abilita la preparazione dei binding; non autorizza il servizio da sola.

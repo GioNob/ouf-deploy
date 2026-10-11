@@ -60,3 +60,10 @@ Adozione completa ancora aperta: retry automatici del worker, budget iniziali/so
 Integrate MCP PR51, Ingestion PR35 e Gateway PR59: priorità prima dei limiti, recuperi vecchi visibili nel catch-up supportato, conteggi Gateway dell'intera finestra e troncamento esplicito. Prove: MCP full38105960598/race38105960600 e gate sicurezza con0 vulnerabilità raggiungibili dopo aggiornamento Go/dipendenze; Ingestion native21/module137 test; Gateway229 test + APISIX reale. [Evidenza](https://github.com/GioNob/ouf-deploy/blob/main/evidence/operational-priority-qualified-20261011.json).
 
 Restano OPEN cursor/checkpoint operatore, grouping multirun per dipendenza/contatori impatto, detector/quote/capacità, outbox alert e integrazione target multi-owner/autorizzazioni. Reference/fixture e summary di finestra non provano conformità globale o salute corrente. Nessun deploy VPS o email; R9/R10 consumati e precedente preflight sospeso. Le accettazioni precedenti restano preservate.
+
+
+## Supervisione continua qualificata — recupero target ancora aperto
+
+[PR1](https://github.com/GioNob/ouf-deploy/pull/1), candidato da92a02e8fc246dbf77ac0584321039d13d2436a:62 test e collaudo continuo systemd/DNS/nft PASS. Recupero iniziale e rinnovi collegati, budget di recupero cumulativo persistente che non conteggia intervalli sani, esclusione dei worker concorrenti, deadline di trasporto e stati parcheggiati osservabili. [Implementazione, prove e intake operatore](R10_CONTINUOUS_RECOVERY.md), [evidenza](../evidence/continuous-resilient-worker-qualified-20261011.json).
+
+Non è ancora l'entrypoint target source-bound. Il tentativo read-only tramite runner riporta NOT_EXECUTED_ROOT_PERMISSION_UNPROVEN_OPERATOR_REQUIRED; servono i binding protetti correnti prima della chiusura del nuovo entrypoint e della sua applicazione. R10 precedente consumato/QUIESCED resta storico; nessun riavvio o apply. CSV successivo alla risoluzione operativa, come richiesto dall'owner.
