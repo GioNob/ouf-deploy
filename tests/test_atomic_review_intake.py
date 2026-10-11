@@ -1,8 +1,26 @@
-import importlib.util,os,tempfile,unittest
+import importlib.util,os,tempfile,unittest,multiprocessing
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 s=importlib.util.spec_from_file_location('intake',ROOT/'tools/semantic_application_cutover/atomic_review_intake.py');m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
 class AtomicReview(unittest.TestCase):
+ def test_two_publishers_race_without_replacement_or_partial_visibility(self):
+  with tempfile.TemporaryDirectory() as folder:
+   files,manifest=self.inputs();ctx=multiprocessing.get_context('fork');barrier=ctx.Barrier(2);queue=ctx.Queue()
+   def worker():
+    def checkpoint(point):
+     if point=='BEFORE_ATOMIC_PUBLICATION':barrier.wait(timeout=5)
+    queue.put(m.publish(folder,files,manifest,os.geteuid(),checkpoint))
+   children=[ctx.Process(target=worker) for _ in range(2)]
+   for child in children:child.start()
+   results=[queue.get(timeout=10) for _ in children]
+   for child in children:child.join(timeout=10);self.assertEqual(child.exitcode,0)
+   self.assertEqual(sorted(r['newPublication'] for r in results),[False,True]);self.assertEqual(len({r['intakeHash'] for r in results}),1)
+   self.assertEqual(len(list(Path(folder).glob('semantic-native-v11-intake-*'))),1)
+ def test_empty_foreign_destination_cannot_be_replaced(self):
+  with tempfile.TemporaryDirectory() as folder:
+   files,manifest=self.inputs();destination=Path(folder)/('semantic-native-v11-intake-'+m.sha(m.encoded(manifest)));destination.mkdir(mode=0o700)
+   with self.assertRaisesRegex(ValueError,'COMPLETE_REVIEW_FILE_SET'):m.publish(folder,files,manifest,os.geteuid())
+   self.assertEqual(list(destination.iterdir()),[])
  def inputs(self):
   files={name:b'private-fixture-bytes' for name in ('declaration.json','request.json','observation.json','receipt.json')}
   manifest={'schema':'ouf.native-v11-atomic-review-intake.v1','fileHashes':{n:m.sha(v) for n,v in files.items()},'applicationCutoverAuthorized':False,'productionApplyReady':False,'runtimeAuthorityIssued':False,'observationsAreHistorical':True}
