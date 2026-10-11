@@ -44,7 +44,7 @@ with tempfile.TemporaryDirectory() as folder:
     assert audit["repositoryTags"]==[] and audit["layers"]==original_audit["layers"]
     # Exactly one fixture import after original-byte/signature/layer checks.
     # No running container, database, provider or target operation.
-    socket=pathlib.Path("/var/run/docker.sock");s=socket.stat()
+    socket=pathlib.Path(os.environ.get("OUF_CUSTODY_SOCKET","/var/run/docker.sock"));s=socket.stat()
     engine=engine_module.Engine(str(socket),(s.st_dev,s.st_ino,s.st_uid,s.st_gid,stat.S_IMODE(s.st_mode)))
     def inspect(image):
         status,value=engine.request("GET","/v1.44/images/"+image+"/json")
@@ -65,7 +65,7 @@ with tempfile.TemporaryDirectory() as folder:
                 with tempfile.TemporaryDirectory(dir=directory,prefix='empty-docker-cli-') as empty:
                     p=subprocess.run(['docker','--config',empty,'image','load'],stdin=output,
                       stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=120,
-                      env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C','DOCKER_HOST':'unix:///var/run/docker.sock'})
+                      env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C','DOCKER_HOST':'unix://'+str(socket)})
                     assert p.returncode==0 and len(p.stdout)<=2097152
                     print('OUF_HOSTED_EXACT_STDIN_LOAD='+json.dumps({'exit':p.returncode,'stdoutHash':hashlib.sha256(p.stdout).hexdigest(),
                         'expectedImageInOutput':spec['image'].encode() in p.stdout,'fdOffsetAfterLoad':os.lseek(output.fileno(),0,os.SEEK_CUR)}),flush=True)
@@ -75,12 +75,19 @@ with tempfile.TemporaryDirectory() as folder:
     _,status=os.waitpid(pid,0);assert os.waitstatus_to_exitcode(status)==71
     assert journal.read()["state"]=="IN_FLIGHT"
     restarted=Import(journal_module.Journal(directory),initial["contextHash"])
-    with restarted.invocation():receipt=restarted.reconcile(audit,inspect,checkpoint)
+    with restarted.invocation():
+        if os.environ.get('OUF_CUSTODY_MANIFEST_STORE')=='true':
+            def inspect_manifest(image):
+                status,value=engine.request('GET','/v1.48/images/'+image+'/json?manifests=true')
+                assert status in (200,404)
+                return value if status==200 else None
+            receipt=image_manifest_identity.reconcile_existing(restarted,audit,expected_descriptor,inspect_manifest,checkpoint)
+        else:receipt=restarted.reconcile(audit,inspect,checkpoint)
     assert journal.read()["state"]=="VERIFIED" and journal.read()["effectAttemptCount"]==1
     receipt.update(originalArchiveSha256=expected,derivedArchiveSha256=envelope["derivedArchiveSha256"],
                    imageRebuilt=False,newSignatureIssued=False,actualProcessDeathAfterImport=True,durableJournalReopened=True,
                    importEffectAttemptCount=1,reconciliationWithoutSecondImport=True,
-                   runtimeAuthorityFixtureOnly=True)
+                   runtimeAuthorityFixtureOnly=True,actualContainerdStore=os.environ.get('OUF_CUSTODY_MANIFEST_STORE')=='true')
     receipt.update(status="ORIGINAL_SIGNED_V11_LAYERS_TAGLESS_ENVELOPE_AND_HOSTED_ENGINE_MATCH",
        originalZipSha256=spec["zipSha256"],signedSubjectsVerified=8,
        hostedImageImports=1,targetImageImports=0,targetEffects=False,
