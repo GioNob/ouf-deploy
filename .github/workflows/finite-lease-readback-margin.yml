@@ -6,6 +6,7 @@ on:
       - tools/semantic_lease_recovery/readback_margin_compiler.py
       - tools/semantic_lease_recovery/test_readback_margin_compiler.py
       - tools/semantic_lease_recovery/readback_margin_native.py
+      - tools/semantic_lease_recovery/readback_margin_worker_native.py
       - .github/workflows/finite-lease-readback-margin.yml
 permissions:
   contents: read
@@ -29,3 +30,5 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y -qq nftables iproute2
       - name: Native zero reproduction strict backend and candidate admission margin
         run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_recovery/readback_margin_native.py lease-owner-source
+      - name: Prospective compiler closure through actual worker DNS systemd revocation and replay denial
+        run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_recovery/readback_margin_worker_native.py lease-owner-source
