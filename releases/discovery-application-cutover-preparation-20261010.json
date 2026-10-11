@@ -1,6 +1,6 @@
 {
   "schema": "ouf.discovery.application-cutover-preparation.v1",
-  "status": "CURRENT_CUTOVER_BLOCKED_R10_WORKER_FAILED_AFTER_250_REFRESHES",
+  "status": "CURRENT_CUTOVER_BLOCKED_R10_QUIESCED_NEW_WORKER_QUALIFICATION_REQUIRED",
   "applyAuthorized": false,
   "newTargetAuthorityIssued": false,
   "networkLease": {
@@ -86,7 +86,7 @@
     "existingR10SealedProgramMustRemainUnchanged": true,
     "R10ReplayOrClaimResetAllowed": false
   },
-  "nextRead": "BOUNDED_NFT_READBACK_DIAGNOSIS_AND_NATIVE_QUIESCENCE_PROJECTION_NO_REPLAY",
+  "nextRead": "QUALIFY_COMPLETE_NEW_SOURCE_BOUND_WORKER_AND_BUDGETED_DNS_RECOVERY_BEFORE_NEW_AUTHORITY",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
@@ -261,12 +261,28 @@
     "status": "CURRENT_CUTOVER_INPUT_PREPARATION_BLOCKED"
   },
   "r10CurrentObservation": {
-    "receivedAt": "2026-10-11T03:06:18+02:00",
+    "receivedAt": "2026-10-11T03:08:55+02:00",
     "serviceState": "failed",
     "refreshCount": 250,
     "reason": "NFT_SET_TTL_UNPROVEN",
+    "nativeExpiresType": "int",
+    "nativeExpiresValue": 0,
+    "flowIndex": 1,
+    "family": "inet",
     "doNotRerunApply": true,
-    "setsRevokedProven": false,
-    "receipt": "evidence/finite-r10-worker-failed-target-20261011.json"
+    "setsRevokedProven": true,
+    "journalState": "QUIESCED",
+    "leaseAuthorized": false,
+    "journalHash": "a58f0cb6e011879fc22723356d19926adf8945c38dcdbf2d21ab3fa34dd6f7f1",
+    "receipt": "evidence/finite-r10-native-quiescence-target-20261011.json",
+    "continuousLivenessProven": false
+  },
+  "candidateReadbackMargin": {
+    "sourceCommit": "4c044ec2b22e328da690b6951d4e910e79426aba",
+    "runId": 38101012511,
+    "jobId": 114356768291,
+    "qualification": "ADMISSION_ONLY_NOT_FULL_WORKER",
+    "productionApplyReady": false,
+    "targetApplied": false
   }
 }

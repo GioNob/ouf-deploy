@@ -1,3 +1,7 @@
+# Current checkpoint — R10 revoked; native TTL edge reproduced; new worker qualification required
+
+Operator native read confirms QUIESCED and empty inet/bridge sets for both flows. R10 failure is integer expires0 after250 renewals. [Native CI38101012511](https://github.com/GioNob/ouf-deploy/actions/runs/38101012511) reproduces one-second plan→zero readback; candidate compiler denies this plan without extending TTL. Admission qualification only: full new worker/DNS/latency closure remains required before a new one-use activation. No R10 restart/replay, no cutover or file-secret preparation completed. [Current evidence and PET decisions](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md).
+
 # Current checkpoint — R10 worker failed after 250 renewals
 
 Operator diagnosis 2026-10-11 03:06 CEST: R10 failed with NFT_SET_TTL_UNPROVEN, MainPID0, no restart; claim consumed, do not rerun. Native revocation/set emptiness and precise TTL failure remain to be observed. Protected preparation and cutover suspended. [Diagnosis and evidence](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md).

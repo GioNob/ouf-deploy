@@ -1,0 +1,30 @@
+{
+  "schema": "ouf.provider-finite-lease-readback-margin-qualification.v1",
+  "sourceCommit": "4c044ec2b22e328da690b6951d4e910e79426aba",
+  "runId": 38101012511,
+  "jobId": 114356768291,
+  "conclusion": "success",
+  "unitTestsPassed": 4,
+  "nativeReproduction": {
+    "originalPlanTimeoutSeconds": 1,
+    "readback": {
+      "family": "inet",
+      "flowIndex": 0,
+      "expiresType": "int",
+      "expiresValue": 0,
+      "duplicateAddress": false,
+      "configuredLeaseSeconds": 30
+    },
+    "strictBackendReason": "NFT_SET_TTL_UNPROVEN",
+    "candidateOneSecondPlanDenied": true,
+    "candidateTwoSecondPlanPositiveInBothFamilies": true,
+    "revocationProven": true
+  },
+  "scope": "DISPOSABLE_CI_NETNS_SYNTHETIC_OBSERVATIONS_NOT_VPS_TIMING_PROOF",
+  "r10SourcesChanged": false,
+  "r10ClaimReplayed": false,
+  "targetApplied": false,
+  "fullWorkerAvailabilityProven": false,
+  "productionApplyReady": false,
+  "notReleaseAcceptance": true
+}
