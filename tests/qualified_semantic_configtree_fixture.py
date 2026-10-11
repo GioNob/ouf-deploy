@@ -84,8 +84,9 @@ def main():
                 policy.chmod(0o444)
                 secret_dir.chmod(0o500)
                 command(["sudo", "chown", "10001:10001", str(secret_dir), str(secret_dir / "OUF_SEM_DB_PASSWORD")])
-                command(["docker", "pull", "eclipse-temurin:21-jre"])
-                java_image = json.loads(command(["docker", "image", "inspect", "eclipse-temurin:21-jre"]).stdout)[0]["Id"]
+                java_image = "sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85"
+                if json.loads(command(["docker", "image", "inspect", java_image]).stdout)[0]["Id"] != java_image:
+                    raise RuntimeError("EXACT_CANDIDATE_RUNTIME_IMAGE_REQUIRED")
             command(["docker", "run", "-d", "--name", DB, "-p", "127.0.0.1:55439:5432", "-e", "POSTGRES_PASSWORD=ci-fixture-only", "-e", "POSTGRES_DB=semantic", "postgres:17"])
             for _ in range(30):
                 if command(["docker", "exec", DB, "pg_isready", "--host=127.0.0.1", "-U", "postgres", "-d", "semantic"], check=False).returncode == 0: break
@@ -132,12 +133,12 @@ def main():
                     launch[2] = "/fixture/application.jar"
                     prefix = ["docker", "run", "--name", APP, "--network", "host", "--user", "10001:10001",
                               "--memory", "2147483648", "--memory-swap", "2147483648", "--cpus", "2", "--pids-limit", "512",
-                              "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--read-only", "--tmpfs", "/tmp:rw,nosuid,nodev,size=268435456",
+                              "--entrypoint", "java", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--read-only", "--tmpfs", "/tmp:rw,nosuid,nodev,size=268435456",
                               "--mount", "type=bind,src=" + str(root) + ",dst=" + str(root) + ",readonly",
                               "--mount", "type=bind,src=" + str(jar.resolve()) + ",dst=/fixture/application.jar,readonly"]
                     for key in ("OUF_SEM_DB_URL", "OUF_SEM_DB_USER", "PORT", "OUF_SCHEMA_GOV_ENABLED", "OUF_DISCOVERY_WORKER_ENABLED", "SPRING_CONFIG_IMPORT"):
                         prefix += ["--env", key + "=" + env[key]]
-                    launch = prefix + [java_image] + launch
+                    launch = prefix + [java_image] + launch[1:]
                 with log.open("wb") as output:
                     process = subprocess.Popen(launch, env=env, stdout=output, stderr=subprocess.STDOUT)
                 deadline = time.monotonic() + 60

@@ -40,6 +40,18 @@ jobs:
                   shutil.copyfileobj(source,target,1048576)
           print('OUF_CURRENT_PACKAGE_BYTES_VERIFIED=PASS')
           PY
+      - name: Import exact verified runtime image into disposable hosted engine only
+        run: |
+          python3 - <<'PY'
+          import pathlib,shutil,zipfile
+          with zipfile.ZipFile('semantic.zip') as z:
+              members=[i for i in z.infolist() if pathlib.Path(i.filename).name=='image.docker.tar']
+              assert len(members)==1 and 0<members[0].file_size<=2147483648
+              with z.open(members[0]) as src,open('candidate.docker.tar','xb') as dst:
+                  shutil.copyfileobj(src,dst,1048576)
+          PY
+          docker load --input candidate.docker.tar
+          test "$(docker image inspect --format '{{.Id}}' sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85)" = 'sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85'
       - name: Exact application startup with file secret, IAM enforcement, V10 and current restore
         run: python3 tests/qualified_semantic_configtree_fixture.py --bounded-container
       - uses: actions/upload-artifact@v4
