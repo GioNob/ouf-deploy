@@ -82,8 +82,8 @@ def main():
                 # Disposable fixture inputs only. The target credential is never read.
                 root.chmod(0o755)
                 policy.chmod(0o444)
-                command(["sudo", "chown", "10001:10001", str(secret_dir), str(secret_dir / "OUF_SEM_DB_PASSWORD")])
                 secret_dir.chmod(0o500)
+                command(["sudo", "chown", "10001:10001", str(secret_dir), str(secret_dir / "OUF_SEM_DB_PASSWORD")])
                 command(["docker", "pull", "eclipse-temurin:21-jre"])
                 java_image = json.loads(command(["docker", "image", "inspect", "eclipse-temurin:21-jre"]).stdout)[0]["Id"]
             command(["docker", "run", "-d", "--name", DB, "-p", "127.0.0.1:55439:5432", "-e", "POSTGRES_PASSWORD=ci-fixture-only", "-e", "POSTGRES_DB=semantic", "postgres:17"])
