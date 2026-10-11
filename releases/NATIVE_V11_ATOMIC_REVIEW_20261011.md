@@ -10,17 +10,17 @@ The operator completed the corrected R12 diagnostic and native V11 private-plan 
 
 ## Concrete next protected operation
 
-The four draft files currently have sequential publication. The next operation copies their exact bytes into one complete immutable private review directory, alongside an intake.json manifest of file hashes and sealed source hashes. Linux renameat2(RENAME_NOREPLACE) publishes the whole directory atomically without replacing an existing path. Before rename, partial files remain in private staging only. Interrupted staging is retained. If the same complete intake already exists, its exact files/modes/ownership are verified and durability synchronized, with no content rewrite. A race verifies the winning complete intake; an empty/foreign/tampered destination is never replaced.
+The four draft files currently have sequential publication. The next operation copies their exact bytes into one complete immutable private review directory, alongside an intake.json manifest of file hashes and sealed source hashes. Linux renameat2(RENAME_NOREPLACE) publishes the whole directory atomically without replacing an existing path. Before rename, partial files remain in private staging only. Interrupted staging is retained. If a private write is interrupted before durable confirmation, the helper reports an unproven write count and explicit reconciliation requirement, never zero-effect certainty. If the same complete intake already exists, its exact files/modes/ownership are verified and durability synchronized, with no content rewrite. A race verifies the winning complete intake; an empty/foreign/tampered destination is never replaced.
 
 The root helper authenticates exact declaration/request/public-plan hashes, original publisher/config binding, native-image proof and VERIFIED version2 import history recorded by the prepared plan. It reads all source files again before and after publication. Inputs remain unchanged; no package import, worker action, database/network/provider call, claim/signature/key read or budget reset occurs. Five new protected files are written on first publication. Resulting observations remain explicitly historical. Atomic content publication is not atomic runtime transition authority; all live runtime gates still need current owner proof.
 
 | Sealed artifact | Commit | SHA256 |
 |---|---|---|
-| Root publisher | bdcf4594d152ea12d6b9b39b51e0d2533d83b7ef | 469de574b7c8cfa4ba2c33a51fb747efe3b8b31fbc1366a70573dcb06da2ca06 |
+| Root publisher | d4edb3286a13a6f1c0bd1fc04848a284f8fae933 | 6ec32cdd81af7fd8e70b4dc2f876ecfabfd2772c1cd6fba70b8e9e4bafe9f666 |
 | Atomic publisher library | bdcf4594d152ea12d6b9b39b51e0d2533d83b7ef | c113f578b027c39573b4562cd3ac324abb8108a393b82dde19f8eb53d98e0ea6 |
-| Launcher | 65a075f50849b3e7111739f7d331097467631d92 | c2a8760542e7a571ecf9bc2fb6f83e4598fb5f42ab60d8161d17228b9cd8f03c |
+| Launcher | d1f539ddc51b65d0b1bed543f4c1b1ed62cef5bd | b022826608582a0a7b7f745fbc60c68bd4eb748d9e680782536bff0fcd45808a |
 
-[CI38177286427](https://github.com/GioNob/ouf-deploy/actions/runs/38177286427), job114582239229 SUCCESS:7 filesystem tests and10 source/entry/delivery tests. Coverage includes complete publication/repeat, all before-publication fault points, crash after rename, two actual concurrent publishers, no replacement of an empty foreign path, missing/tampered/symlink/permissive files, preserved original package/import bindings, authority/budget-promotion denial, and every source download/hash failure before sudo/root execution. All three immutable downloaded source files and the launcher have been independently hash-verified from GitHub. [Qualification](../evidence/native-v11-atomic-review-qualified-20261011.json).
+[CI38177677934](https://github.com/GioNob/ouf-deploy/actions/runs/38177677934), job114583406130 SUCCESS:7 filesystem tests and11 source/entry/delivery tests. Coverage includes complete publication/repeat, all before-publication fault points, crash after rename, two actual concurrent publishers, no replacement of an empty foreign path, missing/tampered/symlink/permissive files, preserved original package/import bindings, authority/budget-promotion denial, and every source download/hash failure before sudo/root execution. All three immutable downloaded source files and the launcher have been independently hash-verified from GitHub. [Qualification](../evidence/native-v11-atomic-review-qualified-20261011.json).
 
 Root access is unavailable to the runner. Execute this exact operation as oufadmin:
 
@@ -31,8 +31,8 @@ Root access is unavailable to the runner. Execute this exact operation as oufadm
   OUF_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
   if [ ! -x "$OUF_GH" ]; then OUF_GH="$(command -v gh)"; fi
   OUF_LAUNCH="$(mktemp "$HOME/ouf-native-v11-intake-launch.XXXXXXXX")"
-  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/releases/native-v11-review-intake-20261011.sh?ref=65a075f50849b3e7111739f7d331097467631d92' > "$OUF_LAUNCH"
-  printf '%s  %s\n' 'c2a8760542e7a571ecf9bc2fb6f83e4598fb5f42ab60d8161d17228b9cd8f03c' "$OUF_LAUNCH" | sha256sum -c -
+  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/releases/native-v11-review-intake-20261011.sh?ref=d1f539ddc51b65d0b1bed543f4c1b1ed62cef5bd' > "$OUF_LAUNCH"
+  printf '%s  %s\n' 'b022826608582a0a7b7f745fbc60c68bd4eb748d9e680782536bff0fcd45808a' "$OUF_LAUNCH" | sha256sum -c -
   bash "$OUF_LAUNCH"
 )
 ```

@@ -1,17 +1,19 @@
 {
   "schema": "ouf.native-v11-atomic-review-qualification.v1",
-  "sourceCommit": "bdcf4594d152ea12d6b9b39b51e0d2533d83b7ef",
-  "launcherCommit": "65a075f50849b3e7111739f7d331097467631d92",
-  "launcherSha256": "c2a8760542e7a571ecf9bc2fb6f83e4598fb5f42ab60d8161d17228b9cd8f03c",
-  "workflowRunId": 38177286427,
-  "jobId": 114582239229,
+  "sourceCommit": "d4edb3286a13a6f1c0bd1fc04848a284f8fae933",
+  "launcherCommit": "d1f539ddc51b65d0b1bed543f4c1b1ed62cef5bd",
+  "launcherSha256": "b022826608582a0a7b7f745fbc60c68bd4eb748d9e680782536bff0fcd45808a",
+  "workflowRunId": 38177677934,
+  "jobId": 114583406130,
   "conclusion": "success",
   "atomicFilesystemTests": 7,
-  "sourceCustodyAndDeliveryTests": 10,
+  "sourceCustodyAndDeliveryTests": 11,
   "targetAtomicIntakePublished": false,
   "sourcePrivatePlanPrepared": true,
   "applicationCutoverAuthorized": false,
   "productionApplyReady": false,
   "runtimeAuthorityIssued": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "atomicLibraryCommit": "bdcf4594d152ea12d6b9b39b51e0d2533d83b7ef",
+  "partialPrivateWriteNeverClaimedAsZero": true
 }
