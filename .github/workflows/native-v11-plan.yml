@@ -8,6 +8,10 @@ on:
       - tools/semantic_application_cutover/rebase_native_manifest.py
       - tests/test_native_v11*.py
       - tests/native_v11_plan_native.py
+      - tests/native_v11_cutover_executor.py
+      - tests/test_cutover_executor.py
+      - tools/semantic_application_cutover/cutover_executor.py
+      - tools/semantic_application_cutover/creation_adapter.py
       - releases/native-v11-plan-20261011.sh
   workflow_dispatch:
 permissions:
@@ -28,6 +32,7 @@ jobs:
           persist-credentials: false
       - name: Byte custody, bounded parsing and native projection denials
         run: python3 -m unittest discover -s tests -p 'test_native_v11*.py' -v
+      - run: python3 -m unittest discover -s tests -p test_cutover_executor.py -v
       - run: python3 -m unittest discover -s tests -p test_semantic_creation_plan.py -v
       - run: python3 -m unittest discover -s tests -p test_current_r12_custody_read.py -v
       - name: Verify original publisher and every layer; compare actual hosted Engine

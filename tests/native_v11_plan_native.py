@@ -151,6 +151,8 @@ with tempfile.TemporaryDirectory() as folder:
         if observed is not None:engine.request('DELETE','/v1.44/containers/'+observed['Id'])
     receipt.update(nativePlanCompiledUsingActualEngineProof=True,onlyCreationImageIdentityChanged=True,
                    privateRootPlanIsFixture=True,targetPrivatePlanPrepared=False)
+    from native_v11_cutover_executor import qualify
+    qualify(engine,journal_module,root,expected_descriptor['digest'],receipt)
     assert journal.read()["state"]=="VERIFIED" and journal.read()["effectAttemptCount"]==1
     receipt.update(originalArchiveSha256=expected,derivedArchiveSha256=envelope["derivedArchiveSha256"],
                    imageRebuilt=False,newSignatureIssued=False,actualProcessDeathAfterImport=True,durableJournalReopened=True,
