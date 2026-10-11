@@ -1,0 +1,30 @@
+name: Semantic creation intent and native engine fixture
+on:
+  push:
+    branches: [main]
+    paths:
+      - tools/semantic_application_cutover/creation_plan.py
+      - tests/test_semantic_creation_plan.py
+      - tests/semantic_creation_native.py
+      - .github/workflows/semantic-creation-plan.yml
+  pull_request:
+    paths:
+      - tools/semantic_application_cutover/creation_plan.py
+      - tests/test_semantic_creation_plan.py
+      - tests/semantic_creation_native.py
+      - .github/workflows/semantic-creation-plan.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Preserve host intent, deny drift and require finite resources
+        run: python3 -m unittest discover -s tests -p test_semantic_creation_plan.py -v
+      - name: Actual Engine create/start with UID10001 and readonly fake inputs on disposable internal bridge
+        run: sudo /usr/bin/python3 -I -B tests/semantic_creation_native.py
