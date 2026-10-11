@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.provider-resilient-r11-target-observation.v1",
+  "operatorReported": true,
+  "receivedAt": "2026-10-11T15:38:32+02:00",
+  "status": "RESILIENT_WORKER_PARKED_REQUIRES_ATTENTION",
+  "workerState": "BLOCKED",
+  "recoveryAttempts": 0,
+  "refreshCount": 0,
+  "flowAddressCounts": [
+    0,
+    0
+  ],
+  "externalTrafficNowPermittedForApprovedFlows": false,
+  "evidenceDirectory": "/etc/ouf/deploy-snapshots/semantic-resilient-lease-recovery-r11-1gpckuir",
+  "incidentRef": "34b9533ea3d8931bb9971ef7fa3b2ad9f423d5504350faa63421869f79817a73",
+  "doNotRerunApply": true,
+  "r10ConsumedClaimPreserved": true,
+  "rootCause": "UNPROVEN_REQUIRE_EXACT_GUARD_DIAGNOSIS",
+  "qualificationGap": "Native R11 fixture replaced production scope guard; did not exercise actual /proc namespace access with NET_ADMIN-only capabilities.",
+  "applicationHealthProven": false,
+  "notReleaseAcceptance": true
+}

@@ -86,3 +86,18 @@ Il client GitHub portatile già presente viene scelto anche se gh manca da PATH.
 Non vengono richiesti token, né scaricati file privati con curl anonimo.
 28 posizioni di guasto download/alterazione e propagazione dell'exit tramite
 tee sono verificate. Ricevuta target ancora necessaria: un merge non chiude R10.
+
+## Osservazione target 15:38 CEST: recupero non riuscito
+
+L'operatore ha applicato R11 una sola volta. Il worker è BLOCKED con zero tentativi,
+zero rinnovi e set vuoti; claim R11 consumato, non rieseguire la consegna. Exit 0
+indica soltanto che l'attivazione ha restituito la ricevuta del servizio parcheggiato,
+non che il recupero sia riuscito. [Ricevuta riportata dall'operatore](../evidence/resilient-r11-blocked-target-20261011.json).
+
+La prova native precedente sostituiva il controllo di scope di produzione con una
+fixture: non copriva l'accesso /proc alle namespace di processi con UID diverso sotto
+CAP_NET_ADMIN. Questa è una lacuna di qualificazione. La causa target resta da provare.
+La nuova diagnosi read-only esegue il medesimo guard sigillato con root completo e,
+in un processo figlio, con il solo NET_ADMIN e NoNewPrivileges; registra check/operazione,
+classe e errno senza valori privati. Non chiama apply, crea claim, inizializza budget,
+riavvia servizi o modifica lease/configurazioni. Nessun recupero target dichiarato.
