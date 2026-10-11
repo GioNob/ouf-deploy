@@ -95,7 +95,7 @@ def main(source):
     threading.Thread(target=dns, daemon=True).start()
     with tempfile.TemporaryDirectory(prefix='ouf-r11-entry-ci-', dir='/etc') as tmp:
         meta = Path(tmp); meta.chmod(0o700)
-        owner, _ = fixture(meta, source, nft)
+        owner, quiescent_hash = fixture(meta, source, nft)
         owner['dns']['resolverPort'] = port
         owner['nftSha256'] = core.digest(Path(nft).read_bytes())
         core.create(meta/'coordinated-configuration.json', owner)
@@ -112,6 +112,7 @@ def main(source):
             path = HERE/('resilient_reader.py' if name == 'reader.py' else name)
             programs[name] = path.read_bytes()
         scope = {'schema': 'CI_ONLY_R11_METADATA',
+                 'quiescentJournalHash': quiescent_hash,
                  'ownerConfigurationHash': core.digest(core.encoded(owner)),
                  'currentSemanticPeer': {'generation': {'pid': os.getpid(), 'startTicks': 1, 'namespaceInode': 1}}}
         programs['target_bindings_r11.json'] = core.encoded(scope)
