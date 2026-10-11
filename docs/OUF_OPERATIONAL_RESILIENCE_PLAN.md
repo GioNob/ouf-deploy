@@ -50,7 +50,19 @@ Presa in carico HUMAN assegna owner/responsabile e tempo di verifica; non chiude
 
 Destinatari reali, canali, finestre/manutenzione e soglie devono essere configurati e qualificati prima dell'attivazione. Lo sviluppo non invia messaggi di prova a persone senza istruzione esplicita. Il monitoring esterno del piano di controllo deve essere individuato nella configurazione operativa esistente; una piattaforma spenta non può basarsi soltanto sul proprio dispatcher.
 
-## Stato e limiti
+## Stato corrente dei gate — 11 ottobre 2026
+
+| Componente | Stato verificato nel repository | Limite aperto |
+|---|---|---|
+| Priorità e proiezioni owner/MCP | Integrate e qualificate | Copertura dei sette moduli sul target |
+| Pagine stabili e composizione MCP | HTTP/tool qualificati, budget control persistente | Hosting/SDK/network/HA target |
+| Bookmark persistenti owner | Ingestion PR38–39; Gateway PR66–68 qualificati, incluso HTTP | Vettore globale MCP e compactor di storia |
+| Memoria di consultazione | Contratto separato definito | Prova client, capability COMMAND, CAS |
+| Pressione e alert | Reference Gateway con budget/capacità finiti | Sampler/dispatcher/trasporto e configurazione reali |
+
+Le sezioni seguenti conservano lo storico delle prime tranche; non rappresentano lo stato più recente dei gate. [Adozione e prove correnti](OUF_RESILIENCE_ADOPTION.md).
+
+## Stato e limiti delle prime tranche
 
 Questo documento è un piano verificabile, non evidence runtime. La prima tranche corregge la priorità/selezione in MCP/Ingestion e nel reference adapter Gateway e il catch-up dei recuperi supportato dalle proiezioni esistenti. Non prova incident dedup condiviso, transizioni complete, cursor, checkpoint operatore, detector sistemico, consegna email o copertura dei sette moduli sul target. R9/R10 restano consumati; nessun preflight/apply sospeso viene riattivato.
 

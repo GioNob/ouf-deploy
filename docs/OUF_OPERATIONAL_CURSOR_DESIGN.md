@@ -1,6 +1,6 @@
 # Stable incident cursors and operator consultation — implementation decision
 
-Status: owner publication/paging, MCP metadata/composition, delegated mediation and persistent control admission IMPLEMENTED AND CI QUALIFIED (Ingestion PR37; Gateway PR60/64/65; MCP PR53–58). Public HTTP/tool adapter PR58 is IMPLEMENTED AND CI QUALIFIED; Gateway private publication bookmark reference PR66 is qualified. Persistent publication bookmarks, consultation confirmation and target qualification remain OPEN. This design follows [resilience policy v3](OUF_RESILIENCE_POLICY.md), [rollout plan](OUF_OPERATIONAL_RESILIENCE_PLAN.md), MCP PET1.4 §§33–34 and Ingestion PET1.3 Operational Awareness. Existing owners retain authority; no new central incident service or broker is introduced.
+Status: owner publication/paging, MCP metadata/composition, delegated mediation and persistent control admission IMPLEMENTED AND CI QUALIFIED (Ingestion PR37; Gateway PR60/64/65; MCP PR53–58). Public HTTP/tool adapter PR58 is IMPLEMENTED AND CI QUALIFIED; Owner persistent publication bookmarks and hidden HTTP transport are IMPLEMENTED AND CI QUALIFIED (Ingestion PR38–39; Gateway PR66–68). Persistent global MCP vector, consultation confirmation and target qualification remain OPEN. This design follows [resilience policy v3](OUF_RESILIENCE_POLICY.md), [rollout plan](OUF_OPERATIONAL_RESILIENCE_PLAN.md), MCP PET1.4 §§33–34 and Ingestion PET1.3 Operational Awareness. Existing owners retain authority; no new central incident service or broker is introduced.
 
 ## Why observation time is insufficient
 
@@ -79,3 +79,8 @@ Required next tests: old-time late publication after a prior bookmark, restart/l
 ### Owner implementation qualification update — 2026-10-11
 
 Ingestion PR38 is merged after18 native gates,47 focused PostgreSQL tests and163 full-module tests. Gateway PR67 is merged after330 Python passes/2 skips plus Authorization pairwise and real APISIX/OIDC. Both owners protect captured frame metadata and reuse an equivalent live bookmark when publication has not progressed; random UUID ordering is never a progress test. Ingestion uses committed tenant publication order, including an earlier private sequence committed late. These are private primitives, without HTTP bookmark opt-in or a global checkpoint. See [qualification evidence](../evidence/operational-publication-bookmarks-qualified-20261011.json).
+
+
+### Governed owner transport qualified — 2026-10-11
+
+Gateway PR68 qualifies342 Python tests/2 skips plus real APISIX/OIDC and Authorization pairwise. Ingestion PR39 qualifies18 gates,50 focused PostgreSQL and166 module tests. Owner-only closed coverage modes use explicit snapshot+coverage, cursor+coverage or resumeFrom+optional limit; all saved filters are inherited on resume, no timestamp/revision authority is introduced. Global MCP rejects these raw owner positions pending its own opaque-vector contract. Every read still requires current owner SDK decisions; request views do not share mutable authorization.
