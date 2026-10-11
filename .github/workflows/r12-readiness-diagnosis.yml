@@ -1,0 +1,22 @@
+name: R12 protected readiness diagnostic qualification
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/r12-readiness-diagnosis.yml
+      - scripts/read-r12-readiness-diagnosis.py
+      - tests/test_r12_readiness*.py
+      - releases/r12-readiness-diagnosis-20261011.sh
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -s tests -p 'test_r12_readiness*.py' -v
+      - run: python3 -m unittest discover -s tests -p test_current_r12_custody_read.py -v
