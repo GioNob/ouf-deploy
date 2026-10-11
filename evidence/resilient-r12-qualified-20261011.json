@@ -61,5 +61,20 @@
     "applicationHealthProven": false,
     "releaseAcceptance": false,
     "targetRecovered": false
+  },
+  "finalDeliveryQualification": {
+    "commit": "f83db8d5c38e00c7f0cae22d3808659f652b3c57",
+    "runs": [
+      38145705747,
+      38145703048,
+      38145705715,
+      38145705714
+    ],
+    "job": 114488476346,
+    "conclusion": "success",
+    "targetedTests": 25,
+    "mergeCommit": "92d8d9f0cd834541df66f74d58a43a93c1fc8455",
+    "pr": "https://github.com/GioNob/ouf-deploy/pull/3",
+    "targetApply": "PENDING_OPERATOR_SUDO"
   }
 }
