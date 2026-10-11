@@ -24,6 +24,13 @@ class ProjectionTests(unittest.TestCase):
         result = m.project({'refreshCount': True, 'workerPid': -1, 'errno': 'private',
                             'setsRevoked': 'true', 'exceptionChain': [{'reason': 'FAILED'}] * 10})
         self.assertEqual(result, {'exceptionChain': [{'reason': 'FAILED'}] * 6})
+    def test_native_ttl_zero_is_diagnostic_only_and_private_extensions_are_rejected(self):
+        nft = {'family': 'inet', 'flowIndex': 0, 'expiresType': 'int', 'expiresValue': 0,
+               'duplicateAddress': False, 'configuredLeaseSeconds': 30}
+        self.assertEqual(m.project({'nftReadback': nft}), {'nftReadback': nft})
+        for key, value in [('private', 'fixture-secret'), ('expiresValue', True), ('expiresType', 'fixture-secret')]:
+            changed = dict(nft); changed[key] = value
+            self.assertEqual(m.project({'nftReadback': changed}), {})
 
 if __name__ == '__main__':
     unittest.main()

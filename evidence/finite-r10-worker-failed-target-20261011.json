@@ -1,0 +1,49 @@
+{
+  "reportedBy": "operator",
+  "receivedAt": "2026-10-11T03:06:18+02:00",
+  "executionTimeIndependentlyProven": false,
+  "receipt": {
+    "commonLockAcquired": false,
+    "notReleaseAcceptance": true,
+    "privateValuesPrinted": false,
+    "r10Touched": false,
+    "schema": "ouf.provider-r10-read-only-diagnosis.v1",
+    "service": {
+      "ActiveState": "failed",
+      "ExecMainCode": "1",
+      "ExecMainStatus": "1",
+      "LoadState": "loaded",
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Restart": "no",
+      "Result": "exit-code",
+      "SubState": "failed"
+    },
+    "worker-denial.json": {
+      "doNotRerunApply": true,
+      "exceptionChain": [
+        {
+          "reason": "NFT_SET_TTL_UNPROVEN"
+        }
+      ],
+      "phase": "SUPERVISE_EXISTING_OWNER_FRESH_DNS_AND_FINITE_LEASES",
+      "present": true,
+      "refreshCount": 250,
+      "sha256": "96f10ca10c9f9409bb6fff310cc58886b58421b9bd2292ddaf3142fb61a9b05a",
+      "status": "LEASE_WORKER_FAILED"
+    },
+    "worker-status.json": {
+      "doNotRerunApply": true,
+      "exceptionChain": [
+        {
+          "reason": "NFT_SET_TTL_UNPROVEN"
+        }
+      ],
+      "phase": "SUPERVISE_EXISTING_OWNER_FRESH_DNS_AND_FINITE_LEASES",
+      "present": true,
+      "refreshCount": 250,
+      "sha256": "96f10ca10c9f9409bb6fff310cc58886b58421b9bd2292ddaf3142fb61a9b05a",
+      "status": "LEASE_WORKER_FAILED"
+    }
+  }
+}

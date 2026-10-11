@@ -1,6 +1,6 @@
 {
   "schema": "ouf.discovery.application-cutover-preparation.v1",
-  "status": "CURRENT_PROTECTED_INPUT_PREPARATION_BLOCKED_PENDING_R10_DIAGNOSIS",
+  "status": "CURRENT_CUTOVER_BLOCKED_R10_WORKER_FAILED_AFTER_250_REFRESHES",
   "applyAuthorized": false,
   "newTargetAuthorityIssued": false,
   "networkLease": {
@@ -86,7 +86,7 @@
     "existingR10SealedProgramMustRemainUnchanged": true,
     "R10ReplayOrClaimResetAllowed": false
   },
-  "nextRead": "BOUNDED_READ_ONLY_R10_PRIVATE_STATUS_AND_SYSTEMD_DIAGNOSIS_NO_REPLAY",
+  "nextRead": "BOUNDED_NFT_READBACK_DIAGNOSIS_AND_NATIVE_QUIESCENCE_PROJECTION_NO_REPLAY",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
@@ -259,5 +259,14 @@
     "reason": "CURRENT_R10_PRIVATE_WORKER_UNPROVEN",
     "signaturesIssued": 0,
     "status": "CURRENT_CUTOVER_INPUT_PREPARATION_BLOCKED"
+  },
+  "r10CurrentObservation": {
+    "receivedAt": "2026-10-11T03:06:18+02:00",
+    "serviceState": "failed",
+    "refreshCount": 250,
+    "reason": "NFT_SET_TTL_UNPROVEN",
+    "doNotRerunApply": true,
+    "setsRevokedProven": false,
+    "receipt": "evidence/finite-r10-worker-failed-target-20261011.json"
   }
 }

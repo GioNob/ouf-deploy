@@ -1,3 +1,7 @@
+# Current checkpoint — R10 worker failed after 250 renewals
+
+Operator diagnosis 2026-10-11 03:06 CEST: R10 failed with NFT_SET_TTL_UNPROVEN, MainPID0, no restart; claim consumed, do not rerun. Native revocation/set emptiness and precise TTL failure remain to be observed. Protected preparation and cutover suspended. [Diagnosis and evidence](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md).
+
 # Current checkpoint — protected preparation blocked pending R10 diagnosis
 
 Operator receipt received 2026-10-11 02:59 CEST: CURRENT_R10_PRIVATE_WORKER_UNPROVEN, exit1, no existing configuration/database/firewall/container changes. File-secret declaration not prepared. Previous preparation command suspended pending bounded read-only diagnosis; consumed R10 must not be rerun. [Current evidence and diagnostic scope](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md#esito-operatore-ricevuto-l11-ottobre-2026-0259-cest).
