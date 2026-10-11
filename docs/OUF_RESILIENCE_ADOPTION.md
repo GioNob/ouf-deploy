@@ -4,6 +4,7 @@
 
 | Tranche | Concrete boundary | Status |
 |---|---|---|
+| Public publication resume | MCP PR61: HTTP/tool globale qualificati,20 gate PASS; coverage GATEWAY/INGESTION | MERGED; client receipt, altre storie owner e target OPEN |
 | Project rule | Policy v3 and AGENTS instructions in all seven OUF repos | RECORDED |
 | Finite lease recovery protocol | Bounded pause/retry, durable journal, fresh DNS, finite TTL and revocation | QUALIFIED in isolated synthetic-authority CI38102725541;16 tests plus native DNS/nft and four virtual outage hours |
 | HUMAN original-run recovery | New budget after exhaustion, preserved history, atomic grants, worker/session fencing, scheduler exclusion and ACK-gated issue resolution | MERGED PR34; PostgreSQL38104209271:35 tests; module38104209251:134 tests; all named candidate checks SUCCESS |
@@ -188,3 +189,10 @@ Il core è ancora privato: composizione/public HTTP/tool del vettore, storia eve
 [Gateway PR69](https://github.com/GioNob/ouf-api-gateway/pull/69) integrata (`fc8fdcfbfe9f758241aac3219ce9adecb688d40d`):342 test/2 skip, Authorization pairwise e APISIX/OIDC PASS. La rotta fissa MCP incidents media coverage snapshot/page/resume e conserva la delega verificata soltanto verso l'aggregate; token owner non diventano autorità globale. Il backend MCP deve qualificare separatamente lookup/vettore e HTTP/tool; fino a quel gate il suo rifiuto esplicito resta corretto.
 
 [Contratto composizione](https://github.com/GioNob/ouf-mcp-server/blob/main/docs/OPERATIONAL_PUBLICATION_COMPOSITION.md):limite2,5 secondi e massimo3 letture owner per pagina, persistenti budget control, nessun payload/grant salvato e nessun nuovo ciclo retry. L'output distingue publicationModules GATEWAY/INGESTION, mcpSelfHistoryCovered=false e lettura corrente degli OPEN urgenti necessaria. Queste primitive non sono un report completo della storia dei sette moduli né una ricevuta operatore. HTTP/tool pubblico publication in sviluppo; client receipt/COMMAND/CAS, compactor/capacità e host/SDK/HA target restano OPEN. Nessuna migrazione/deploy/VPS/email/R9/R10.
+
+
+### Accesso pubblico publication e budget end-to-end qualificati
+
+[MCP PR61](https://github.com/GioNob/ouf-mcp-server/pull/61) integrata (`d300d3154f63014cc4462e503590d03f79287e87`), candidato `ee4691cfb0a68ae9da9eb4fc29bcc5a61a4dc727`:tutti20 gate push/PR PASS, incluse suite completa/race, vet, staticcheck, govulncheck senza vulnerabilità, PostgreSQL, migrazione/manutenzione CI e pairwise con Gateway PR69/Ingestion PR39.3 nuovi gruppi HTTP qualificano catene complete, handler ricreato, nuovo login/pagine scadute, revoca/principal, history gap/outage e input chiusi; il client MCP ufficiale verifica forwarding tipizzato e rifiuto prima dell'admission. La nuova prova PostgreSQL attraversa l'orchestrazione e il root HTTP:primo accesso e2 resume idle dopo riapertura/login consumano9 chiamate nello stesso window persistente, senza reservation pendenti e con un solo bookmark conservato.
+
+[Contratto pubblico](https://github.com/GioNob/ouf-mcp-server/blob/main/docs/OPERATIONAL_PUBLICATION_HTTP.md), [evidence](../evidence/operational-publication-http-qualified-20261011.json). Modalità chiuse:snapshot+coverage con filtri tipizzati, cursor+coverage, resumeFrom+limit opzionale e filtri salvati ereditati. SDK source/collection/row corrente e delega restano obbligatori; indisponibilità, invalidazione, capacità e storia scaduta sono esplicite. Coverage storica GATEWAY/INGESTION; `mcpSelfHistoryCovered=false`, lettura corrente degli OPEN urgenti separata. Nessuna ricevuta client, consultazione/checkpoint/CAS, nuova autorità di recovery o copertura dei sette moduli. Compactor/hosting/SDK/HA target e alert reali restano OPEN. Nessuna migrazione/deploy/VPS/email/R9/R10.

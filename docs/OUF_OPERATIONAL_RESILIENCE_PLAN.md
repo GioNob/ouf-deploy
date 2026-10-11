@@ -56,7 +56,7 @@ Destinatari reali, canali, finestre/manutenzione e soglie devono essere configur
 |---|---|---|
 | Priorità e proiezioni owner/MCP | Integrate e qualificate | Copertura dei sette moduli sul target |
 | Pagine stabili e composizione MCP | HTTP/tool qualificati, budget control persistente | Hosting/SDK/network/HA target |
-| Bookmark persistenti owner | Ingestion PR38–39; Gateway PR66–68 qualificati, incluso HTTP | Vettore globale MCP e compactor di storia |
+| Bookmark e vettore persistenti | Ingestion PR38–39; Gateway PR66–69; MCP PR59–60 qualificati; HTTP/tool globale PR61 qualificati | Storia degli altri owner, compactor e hosting target |
 | Memoria di consultazione | Contratto separato definito | Prova client, capability COMMAND, CAS |
 | Pressione e alert | Reference Gateway con budget/capacità finiti | Sampler/dispatcher/trasporto e configurazione reali |
 
@@ -72,3 +72,25 @@ Questo documento è un piano verificabile, non evidence runtime. La prima tranch
 [Decisione tecnica cursor/consultazione](OUF_OPERATIONAL_CURSOR_DESIGN.md): revisione di pubblicazione commit-ordered, snapshot immutabili, autorizzazione fresca, limiti di scansione/sessione e ricevute CAS. Un normale sequence o wall-clock non prova il catch-up completo; lock counter dopo row lock può introdurre deadlock. Stato DESIGN/OPEN, senza nuovo deployable centrale.
 
 Integrate e qualificate [MCP PR52](https://github.com/GioNob/ouf-mcp-server/pull/52) per autorizzazione owner/proiezione/coverage/budget e [Ingestion PR36](https://github.com/GioNob/ouf-ingestion-runtime/pull/36) per osservazione persistente di tutte le modifiche e distinzione first-seen/nuova osservazione. [Evidenza finale](../evidence/operational-read-catchup-qualified-20261011.json):20 race operational MCP,28 focused/144 full Ingestion,6/18 gate candidato SUCCESS. Timestamp-only catch-up e summary di finestra non certificano completezza globale o salute corrente; cursor e checkpoint restano OPEN.
+
+
+## Gate successivo: storia degli incidenti propri MCP
+
+La lettura attuale `SystemStatus` proietta tentativi UNKNOWN/UNRESOLVED, debito attivo, backlog di evidence e un massimo di20 security incident recenti. Questa fotografia non certifica una storia completa: il vettore publication GATEWAY/INGESTION deve continuare a dichiarare `mcpSelfHistoryCovered=false`.
+
+Prima di estendere la coverage, inventariare tutte le transizioni owner di admission, UNKNOWN/UNRESOLVED, riconciliazione/late recovery e security incident. Qualificare una proiezione immutabile persistita insieme alla transizione e un ordine di pubblicazione dei soli commit; non costruire un checkpoint da timestamp o dal massimo sequence privato. Preservare l'ordine lock normativo del PET MCP (claim/admission → window → guard → attempt/reservation/debt/evidence) senza aggiungere lock tenant globali davanti all'admission né mantenere transazioni durante I/O. La soluzione di pubblicazione va qualificata separatamente prima di dichiararne la coverage.
+
+Prove richieste: commit tardivo con identificatore precedente, crash/restart e recupero della proiezione, transizioni auto-risolte durante disconnessione, autorizzazione owner e isolamento tenant, retention/gap/quote, concurrency e assenza di reset dei budget. L'estensione non conferisce autorità di chiudere security incident, cancellare debito, rinnovare quarantene o trasformare una lettura in una ricevuta umana. Le altre storie owner e il contratto client rimangono gate distinti.
+
+
+Inventario iniziale owner MCP verificato nel codice corrente (proiezione storica ancora OPEN):
+
+| Sorgente | Mutazione da coprire | Vincolo da conservare |
+|---|---|---|
+| `Store.Reconcile`, `Maintain`, `MarkStaleAndClaim` | Outcome persistenti, RUNNING → UNKNOWN, leases scadute e debito | Admission/claim/guard/window e fencing persistenti; distinguere anche il percorso legacy senza admission context |
+| `Store.ApplyOwnerEvidence` | Recupero owner provato di UNKNOWN e riconciliazione di reservation/claim | Evidence dell'owner corrente; nessun perdono locale del debito |
+| `ExpireUnknown` | UNKNOWN → UNRESOLVED per max hold | Incidente e blocker restano aperti; la scadenza non è una soluzione |
+| `LateCompensate`, `quarantineEvidence`, funzioni SQL di compensazione | Recupero tardivo, mismatch di scope/integrità e security incident deduplicato | CAS, evidence consumata una volta, append-only/audit e isolamento tenant |
+| `ReconcileDebtCaches` | Riparazione cache distinta dalla risoluzione del debito | Somma autoritativa del ledger; nessuna nuova autorità di recovery |
+
+Prima dell'implementazione includere anche le mutazioni nelle funzioni SQL e qualificare rollback/trigger/ruoli di migrazione: l'inventario dei soli metodi Go non prova copertura completa. Nessuna nuova storia è dichiarata disponibile da questa revisione.
