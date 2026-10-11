@@ -9,6 +9,7 @@ verify=module("package_bytes","scripts/verify-durable-v11-package.py")
 spec=verify.SPECS["semantic"]
 sys.path.insert(0,str(ROOT/"tools/semantic_application_cutover"))
 from image_import import Import
+import image_manifest_identity
 journal_module=module("image_import_journal","tools/semantic_lease_recovery/recovery_journal.py")
 engine_module=module("image_import_engine","tools/semantic_application_cutover/engine_creation.py")
 def command(args,timeout=120):
@@ -36,6 +37,10 @@ with tempfile.TemporaryDirectory() as folder:
     with (root/"image.docker.tar").open("rb") as source:
         envelope=custody.tagless_archive(source,output,original_audit)
         audit=custody.archive(output,envelope["derivedArchiveSha256"],spec["image"],spec["source"])
+    expected_descriptor=image_manifest_identity.descriptor(output,audit)
+    print('OUF_V11_AUTHENTICATED_MANIFEST='+json.dumps(expected_descriptor,sort_keys=True),flush=True)
+    assert expected_descriptor=={'mediaType':'application/vnd.docker.distribution.manifest.v2+json',
+        'digest':'sha256:bd48ab35db0441b1f4f48422e7190adaff176a61cddde5f981d93e496ad4b24a','size':1845}
     assert audit["repositoryTags"]==[] and audit["layers"]==original_audit["layers"]
     # Exactly one fixture import after original-byte/signature/layer checks.
     # No running container, database, provider or target operation.
