@@ -49,5 +49,20 @@
     "applicationHealthProven": false,
     "releaseAcceptance": false,
     "targetRecovered": false
+  },
+  "finalDeliveryQualification": {
+    "commit": "06f79a105d18e442145077e1a7ddc848bfdbedd0",
+    "runs": [
+      38143603054,
+      38143600263,
+      38143603030
+    ],
+    "job": 114482279562,
+    "conclusion": "success",
+    "targetedUnitTests": 44,
+    "launcherSha256": "6f7805604df5c9e317d3c6fb6c0b1c820d40dc8c91aacad6420669e5a9ac81f0",
+    "mergedPr": "https://github.com/GioNob/ouf-deploy/pull/2",
+    "mergeCommit": "c9eb806ae4949db6eff0c4cdf4113c0e41b59918",
+    "targetApply": "PENDING_OPERATOR_SUDO"
   }
 }
