@@ -4,12 +4,12 @@
 
 | Tranche | Concrete boundary | Status |
 |---|---|---|
-| Project rule | Policy v2 and AGENTS instructions in all seven OUF repos | RECORDED |
+| Project rule | Policy v3 and AGENTS instructions in all seven OUF repos | RECORDED |
 | Finite lease recovery protocol | Bounded pause/retry, durable journal, fresh DNS, finite TTL and revocation | QUALIFIED in isolated synthetic-authority CI38102725541;16 tests plus native DNS/nft and four virtual outage hours |
 | HUMAN original-run recovery | New budget after exhaustion, preserved history, atomic grants, worker/session fencing, scheduler exclusion and ACK-gated issue resolution | MERGED PR34; PostgreSQL38104209271:35 tests; module38104209251:134 tests; all named candidate checks SUCCESS |
 | Initial runs and publication/scheduler activation | Finite incident budget, job slots/checkpoint preservation, no automatic budget renewal | OPEN; scheduler exclusion of exhausted HUMAN run incidents is implemented, but source-health rolling circuit counters are not recovery grants |
 | Dependency and downstream scope | Circuit isolation, retries at one owner level, downstream ambiguous-effect reconciliation and finite dispatcher/historical replay budgets | OPEN |
-| Quarantine capacity and operator flow | Capacity/retention/backpressure, owner/age/severity, governed actions and safe MCP/THS projection | PARTIAL existing PET mechanisms; complete policy-v2 integration/tests OPEN |
+| Quarantine capacity and operator flow | Capacity/retention/backpressure, owner/age/severity, governed actions and safe MCP/THS projection | PARTIAL existing PET mechanisms; complete policy-v3 integration/tests OPEN |
 | Gradual recovery across sources/tenants | Protected control capacity, per-dependency/tenant quotas and monitored ramp-up | OPEN; first HUMAN profile serializes batches within one recovered run |
 | Target application/lease service | Current private source/command/OCI/peer closure, new finite authority and full resilient owner supervision | OPEN; no VPS apply, old root preflight suspended, R9/R10 consumed |
 
@@ -43,7 +43,7 @@ Policy integrata approvata dall'owner: distinzione incidenti/eventi/lavori/notif
 | Tranche v3 | Stato iniziale verificato |
 |---|---|
 | Capability summary/incidents/explain | Presenti nel manifest MCP; aggregazione Ingestion/Gateway/self; deploy/grant EVIDENCE PENDING |
-| Priorità incidenti | Ordinamento aggregato alfabetico identificato; correzione e qualifica in corso, selezione producer da verificare |
+| Priorità incidenti | Prima tranche di priorità owner/aggregata e catch-up qualificata per i perimetri sotto; cursor, impatto e selezione completa OPEN |
 | Dedup dipendenza e5.000 lavori | Contratto PET presente; chiusura multirun/multi-owner OPEN |
 | Checkpoint operatore/cursor | Query since bounded presente; checkpoint durevole accesso/consultazione e cursor completi OPEN |
 | Crisi/capacità/isteresi | Circuiti legacy parziali; integrazione policy v3 e prove OPEN |
@@ -51,3 +51,21 @@ Policy integrata approvata dall'owner: distinzione incidenti/eventi/lavori/notif
 | Piano di controllo non disponibile | Monitor indipendente/configurazione operativa da qualificare; OPEN |
 
 La policy non dichiara implementate le righe OPEN, non risolve R10 e non autorizza implicitamente replay, deploy o decisioni HUMAN di dominio.
+
+## Prima tranche Operational Awareness integrata e qualificata
+
+- [MCP PR51](https://github.com/GioNob/ouf-mcp-server/pull/51), merge71631d920cc8991d8786c21e4b4826e28a3cada0; candidato9c458fb3662147a39d642631f15e93be4ef80bb0. Priorità unresolved/severity/action/time prima del limite, tie deterministici, troncamento locale/producer e selectionScope esplicito. [Full38105960598](https://github.com/GioNob/ouf-mcp-server/actions/runs/38105960598), job114371431690 SUCCESS; [race38105960600](https://github.com/GioNob/ouf-mcp-server/actions/runs/38105960600),14 test operational top-level,5 nuovi. Tutti i sei gate candidato push/PR SUCCESS, inclusi PostgreSQL/migrazioni, pairwise, conformance, staticcheck e govulncheck.
+- [Ingestion PR35](https://github.com/GioNob/ouf-ingestion-runtime/pull/35), mergeddc6104c97a1d8817e61173862b71a01e405c5ae; candidato7883c73a8f69da7fb28276d05e33bfa1b061abc7. Priorità SQL prima del LIMIT e since sulla proiezione last-seen, includendo risoluzioni di issue vecchie. [Native38105677637](https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/38105677637),21 test inclusi3 nuovi/2 authorization/16 HUMAN. [Module38105677584](https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/38105677584),137 test PASS, container/supply-chain/DR SUCCESS; candidate push owner/SDK/R2a/R2b/R2c/GIS/frozen/continuity SUCCESS.
+- [Gateway PR59](https://github.com/GioNob/ouf-api-gateway/pull/59), merge92987cf7089e95b1c1c79ad76bcd9bf56c0b1d1b; candidato8429e7af376fa0f7c5ea923617dfe75288c79168. Reference adapter SQLite: priorità owner, conteggi dell'intera finestra, troncamento, since timezone-aware e recuperi vecchi nel catch-up. [38105584454](https://github.com/GioNob/ouf-api-gateway/actions/runs/38105584454) e38105586013 SUCCESS:229 test/2 skipped,1 APISIX reale e1 Authorization pairwise;6 nuovi casi di regressione.
+
+### Sicurezza emersa durante la qualifica
+
+Il primo gate completo MCP38105699846 rilevò10 vulnerabilità raggiungibili preesistenti nel Go1.25.13 e x/text0.39.0. Aggiornati compiler/verifica/CI a Go1.26.9, x/text0.41.0 e x/sync0.22.0 selezionato da tidy; Staticcheck2026.1. Input/checksum generati e verificati in38105883793/job114371210960. Gate finale:0 vulnerabilità raggiungibili;1 finding in modulo richiesto fuori dal codice chiamato, non una certificazione di assenza assoluta di vulnerabilità. Nessuna suppression o disabilitazione di gate. I precedenti fallimenti gofmt sono conservati nella storia; formattazione corretta e suite ripetute.
+
+[Evidenza strutturata](../evidence/operational-priority-qualified-20261011.json) · [Piano organico di allineamento](OUF_OPERATIONAL_RESILIENCE_PLAN.md)
+
+### Limiti che restano aperti
+
+Questa tranche rende coerenti i candidati restituiti; non prova la priorità globale di tutti gli incidenti dopo paginazione/redazione. Serve completare cursor/coverage, last-transition ledger (Ingestion oggi created/resolved), checkpoint accesso/consultazione, urgenze OPEN oltre la finestra, dedup di dipendenza tra job e conteggi impatto, detector sistemico/quote/capacità, outbox email/escalation e monitoring esterno. Summary legacy di finestra non è prova della salute corrente. Gateway SQLite è un reference adapter, non prova dell'hosting/datastore/tenant runtime di produzione.
+
+Nessun deploy/migrazione/restart sul VPS, traffico/provider call o email effettuati. R9/R10 consumati, preflight root sospeso e gap target/PET restano. Nuovi default/policy non generano grant HUMAN di dominio.

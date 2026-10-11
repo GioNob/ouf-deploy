@@ -1,6 +1,10 @@
 > **Policy di piattaforma vigente:** [Resilienza, quarantena, incidenti e alert — v3](https://github.com/GioNob/ouf-deploy/blob/main/docs/OUF_RESILIENCE_POLICY.md). Obbligatoria per sviluppo e revisione; [adozione e prove](https://github.com/GioNob/ouf-deploy/blob/main/docs/OUF_RESILIENCE_ADOPTION.md).
 
-# Current checkpoint — platform resilience v2; HUMAN recovery budgets merged and qualified
+# Current checkpoint — resilience policy v3; operational priority integrated
+
+[Policy organica](docs/OUF_RESILIENCE_POLICY.md) e [piano di allineamento](docs/OUF_OPERATIONAL_RESILIENCE_PLAN.md) in evidenza nei sette repository. MCP PR51, Ingestion PR35 e Gateway PR59 integrate: priorità incidenti prima dei limiti e catch-up dei recuperi supportati; suite owner complete PASS e toolchain MCP aggiornato senza sopprimere i gate di sicurezza. [Registro di adozione e limiti](docs/OUF_RESILIENCE_ADOPTION.md) · [Evidenza](evidence/operational-priority-qualified-20261011.json). Cursor/checkpoint operatore, correlazione dipendenze, detector/capacità e alert restano OPEN; nessun deploy VPS o email. R9/R10 consumati, root preflight sospeso.
+
+# Historical checkpoint — platform resilience v2; HUMAN recovery budgets merged and qualified
 
 [Policy v2](docs/OUF_RESILIENCE_POLICY.md) and AGENTS instructions apply throughout OUF: persistent quarantine, new finite HUMAN budgets after exhaustion, atomic recovery sessions, fencing and gradual capacity-governed recovery. [Ingestion PR34](https://github.com/GioNob/ouf-ingestion-runtime/pull/34) is merged:35 focused/134 full-module tests PASS and candidate owner/supply-chain/DR gates green. [Adoption ledger and remaining scope](docs/OUF_RESILIENCE_ADOPTION.md). The bounded lease protocol remains isolated-CI qualified; full resilient target worker closure is pending. No VPS migration/apply/restart/cutover; R9/R10 consumed and the prior root preflight suspended. [Current continuation](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md).
 

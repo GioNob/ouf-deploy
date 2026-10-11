@@ -93,7 +93,7 @@ MCP PET1.4 §33: capability normative, incidentId/dedupKey, catch-up persistente
 
 ## Applicazione e stato reale
 
-Questa politica è obbligatoria per sviluppo/revisione. Non dichiara che tutti i runtime esistenti siano già conformi. Il primo intervento riguarda il provider lease worker; R10 resta fallito/QUIESCED/consumato, set vuoti all'ultima lettura. Sono sospesi i precedenti launcher di recupero/preflight: prima va completata e qualificata la chiusura resiliente. Nessun deploy/restart o nuovo grant è effettuato dalla pubblicazione di questo documento.
+Questa politica è obbligatoria per sviluppo/revisione. Non dichiara che tutti i runtime esistenti siano già conformi. Sono qualificati il protocollo lease isolato e la prima tranche di budget HUMAN; l'adozione multi-modulo resta nel registro; R10 resta fallito/QUIESCED/consumato, set vuoti all'ultima lettura. Sono sospesi i precedenti launcher di recupero/preflight: prima va completata e qualificata la chiusura resiliente. Nessun deploy/restart o nuovo grant è effettuato dalla pubblicazione di questo documento.
 
 Per gli altri moduli la conformità runtime va verificata contro i rispettivi PET e meccanismi di retry/checkpoint già esistenti, conservando owner, contratti, idempotenza e storage. Nessun framework/broker nuovo è introdotto per imporre questa politica.
 
