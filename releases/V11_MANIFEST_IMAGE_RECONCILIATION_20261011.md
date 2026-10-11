@@ -1,5 +1,7 @@
 # V11 image import: exact native manifest reconciliation — 11 October 2026
 
+> **Target step completed:** the operator confirmed VERIFIED/version2 at22:04 Europe/Rome, cumulative import attempt1 and zero new imports. [Target receipt](../evidence/v11-manifest-reconciliation-target-20261011.json). No repeat of this operation is needed. Continue with [new native V11 private plan](NATIVE_V11_PLAN_20261011.md).
+
 The operator attempted the tagless import once and received IMPORT_ABSENCE_DOES_NOT_PROVE_NO_EFFECT. Preserve that consumed journal; do not rerun the old import launcher, reset/remove the journal or repeat Docker load. [Operator receipt](../evidence/v11-image-import-target-ambiguous-20261011.json).
 
 ## Cause and target evidence
@@ -28,26 +30,9 @@ The entry contains no image-load callback, journal initialization, application/c
 
 Native [qualification38169559656](https://github.com/GioNob/ouf-deploy/actions/runs/38169559656) passed for the classic store and a separate actual containerd snapshotter daemon on hosted runners. Each fixture verifies eight publisher subjects and all original byte hashes, performs one tagless import, actually exits the child after the effect, reopens the fsynced journal and reconciles without another import. The containerd case reproduces the config-ID absence and exact manifest identity. Fixture authority checkpoints are synthetic; target root journal/entry acceptance is pending the operator receipt. No target root execution is implied by these hosted tests.
 
-## Necessary operator operation
+## Operator operation completed
 
-Existing runner sudo is denied; no privilege or Docker host-mount bypass is used. This command reconciles the existing imported image and existing consumed journal. It does not invoke the import operation again.
-
-```bash
-(
-  set -euo pipefail
-  umask 077
-  OUF_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
-  if [ ! -x "$OUF_GH" ]; then OUF_GH="$(command -v gh)"; fi
-  OUF_LAUNCH="$(mktemp "$HOME/ouf-v11-manifest-reconcile-launch.XXXXXXXX")"
-  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/releases/reconcile-v11-manifest-image-20261011.sh?ref=213fc71cb5d6f94feacf67c03540611b1a454b23' > "$OUF_LAUNCH"
-  printf '%s  %s\n' '47ee7478dff556ff39515cd7b5e7dabb6b2aa6a2a67e95daedd1aa2e9d22db91' "$OUF_LAUNCH" | sha256sum -c -
-  bash "$OUF_LAUNCH"
-)
-```
-
-Return only OUF_V11_MANIFEST_IMAGE_RECONCILIATION= and the launcher exit/phase/output. Preserve private inputs and signature logs. Final target success must show cumulativeImportEffectAttemptCount1, imageImports0, originalContextPreservedtrue and journalStateVERIFIED. Root journal reconciliation is not release acceptance.
-
-After target custody is accepted, the creation declaration/request needs an explicit native-identity rebase: Image=config digest836… remains unusable on this manifest store. Preserve that old prepared plan and original source provenance. Application fencing, actual container OCI/transport/peer closure, migration admission/release and Teatri13-row CSV→ACK→search remain OPEN. The historical Cinema8-object run must not be replayed.
+The exact existing-import reconciliation was executed successfully. Its immutable launcher remains retained in GitHub; the active operator command is now [native V11 private plan preparation](NATIVE_V11_PLAN_20261011.md). Image custody is established; application/transport/full OCI/CSV acceptance remain OPEN.
 
 ## Final delivery qualification
 
