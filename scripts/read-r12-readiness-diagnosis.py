@@ -37,6 +37,11 @@ def worker_checks(worker,incident):
   'applyReplayDisabled':worker.get('doNotRerunApply') is True,'startNotAuthorized':worker.get('startAuthorized') is False,
   'twoRenewalsObserved':type(worker.get('refreshCount')) is int and worker['refreshCount']>=2,
   'workerPidPresent':type(worker.get('workerPid')) is int and worker['workerPid']>0}
+def service_read(prepare,reader,binding):
+ # Exact retained command scope; additional properties are intentionally absent.
+ props=['LoadState','ActiveState','SubState','MainPID','Restart','NRestarts','ExecStart']
+ raw=prepare.native(reader,binding,['show',prepare.UNIT,'--no-pager','--property='+','.join(props)])
+ return dict(line.split('=',1) for line in raw.decode().splitlines() if '=' in line)
 def modules(sources):
  require(type(sources) is dict and set(sources)==set(HASHES),'EXACT_R12_DIAGNOSIS_SOURCE_SET_REQUIRED')
  for name,h in HASHES.items():require(type(sources[name]) is bytes and len(sources[name])<=131072 and hashlib.sha256(sources[name]).hexdigest()==h,'R12_DIAGNOSIS_SOURCE_HASH_MISMATCH')
@@ -89,10 +94,8 @@ def main():
   human=retained.parse(retained.private(retained.CONTEXT/'human-approval-binding.json'))
   cfg=retained.parse(retained.private(retained.CONTEXT/'execution-configuration.json',human['configurationHash']))
   phase='READ_CURRENT_NATIVE_SERVICE_AND_LEASE_NO_MUTATION'
-  props=['LoadState','ActiveState','SubState','MainPID','Restart','NRestarts','Result','ExecMainCode','ExecMainStatus','ExecStart']
-  raw=prepare.native(retained,cfg['commandBindings']['systemctl'],['show',prepare.UNIT,'--no-pager','--property='+','.join(props)])
-  service=dict(line.split('=',1) for line in raw.decode().splitlines() if '=' in line)
-  report['service']={k:service[k] for k in props if k!='ExecStart' and k in service and re.fullmatch('[A-Za-z0-9_-]{0,64}',service[k])}
+  service=service_read(prepare,retained,cfg['commandBindings']['systemctl'])
+  report['service']={k:service[k] for k in ('LoadState','ActiveState','SubState','MainPID','Restart','NRestarts') if k in service and re.fullmatch('[A-Za-z0-9_-]{0,64}',service[k])}
   report['serviceInvocationBindingsMatch']=service.get('MainPID')==str(invocation.get('pid')) and str(prepare.R12/'activate.py') in service.get('ExecStart','') and AUTH_HASH in service.get('ExecStart','')
   try:
    scope=retained.collect_cutover();lease=scope['lease']
