@@ -175,3 +175,52 @@ class Engine:
         require(actual == self.inspect(transition), 'PAUSED_STAGE_CHANGED_DURING_RECONCILIATION')
         checkpoint('AFTER_PAUSED_STAGE_RECONCILIATION')
         return transition.reconcile('STAGE_PAUSED_REPLACEMENT',digest(intent),'APPLIED',digest(actual),row['version'])
+
+    @staticmethod
+    def runtime_binding(actual):
+        return {'containerId':actual['Id'],'imageId':actual['Image'],
+                'pid':actual['State']['Pid'],'startedAt':actual['State']['StartedAt'],
+                'configHash':digest(actual['Config']),'hostConfigHash':digest(actual['HostConfig']),
+                'mountsHash':digest(actual['Mounts']),'networkSettingsHash':digest(actual['NetworkSettings'])}
+
+    def unpause_once(self, transition, request, authority_evidence_hash, checkpoint):
+        """Release the exact attested paused generation; never start a new one.
+
+        Authenticated checkpoints own full OCI/transport/current lease and scoped
+        database admission. A claim/hash or this helper alone supplies none.
+        Runtime application health is verified separately after release.
+        """
+        row = transition.read()
+        require(row['creationRequestHash'] == digest(request) and row['state'] == 'READY'
+                and row['effects'][-1]['phase'] == 'ADMIT_MIGRATION', 'SCOPED_ADMISSION_BEFORE_UNPAUSE_REQUIRED')
+        actual = self.matching_configuration(transition,request,self.inspect(transition))
+        require(actual['State']['Running'] and actual['State']['Paused'] and actual['State']['Pid'] > 1,
+                'ATTESTED_PAUSED_GENERATION_REQUIRED')
+        intent = self.runtime_binding(actual)
+        checkpoint('BEFORE_UNPAUSE_CLAIM')
+        transition.begin('START_REPLACEMENT',digest(intent),authority_evidence_hash,row['version'])
+        checkpoint('BEFORE_UNPAUSE_EFFECT')
+        require(self.runtime_binding(self.inspect(transition)) == intent, 'PAUSED_GENERATION_DRIFT_BEFORE_RELEASE')
+        status,_ = self.request('POST','/v1.44/containers/'+intent['containerId']+'/unpause')
+        require(status == 204, 'UNPAUSE_OUTCOME_REQUIRES_RECONCILIATION')
+        actual = self.matching_released(transition,request,intent,self.inspect(transition))
+        checkpoint('AFTER_UNPAUSE_EFFECT')
+        return intent, actual
+
+    def matching_released(self, transition, request, intent, actual):
+        actual = self.matching_configuration(transition,request,actual)
+        require(self.runtime_binding(actual) == intent and actual['State']['Running'] is True
+                and actual['State']['Paused'] is False and actual['State']['Status'] == 'running',
+                'EXACT_RELEASED_GENERATION_UNPROVEN')
+        return actual
+
+    def reconcile_released(self, transition, request, intent, checkpoint):
+        row = transition.read()
+        require(row['state'] == 'IN_FLIGHT' and row['effects'][-1]['phase'] == 'START_REPLACEMENT'
+                and row['effects'][-1]['intentHash'] == digest(intent), 'EXACT_IN_FLIGHT_RELEASE_REQUIRED')
+        checkpoint('BEFORE_UNPAUSE_RECONCILIATION')
+        actual = self.matching_released(transition,request,intent,self.inspect(transition))
+        following = self.matching_released(transition,request,intent,self.inspect(transition))
+        require(self.runtime_binding(following) == self.runtime_binding(actual), 'RELEASED_GENERATION_DRIFT')
+        checkpoint('AFTER_UNPAUSE_RECONCILIATION')
+        return transition.reconcile('START_REPLACEMENT',digest(intent),'APPLIED',digest(self.runtime_binding(actual)),row['version'])

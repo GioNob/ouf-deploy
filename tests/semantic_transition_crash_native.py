@@ -103,6 +103,17 @@ def main():
                 row = adapter.reconcile_paused(t,request,stage_intent,checkpoint)
             assert row['nextPhase'] == m.PHASES.index('ATTEST_NEW_OCI_PEER')
             assert row['applicationWritesMayHaveOccurred'] and not row['preMigrationRestoreAllowed']
+            # Intervening attestation/transport/lease/admission receipts remain
+            # synthetic here; the release adapter qualifies only its exact PID.
+            with t.invocation():
+                for phase in m.PHASES[m.PHASES.index('ATTEST_NEW_OCI_PEER'):m.PHASES.index('START_REPLACEMENT')]:
+                    current = t.begin(phase,H,H,t.read()['version'])
+                    t.reconcile(phase,H,'APPLIED',m.digest({'syntheticPrecedingPhase':phase}),current['version'])
+            release_intent = adapter.runtime_binding(paused)
+            die_after_effect(t,'START_REPLACEMENT',lambda: adapter.unpause_once(t,request,H,checkpoint),managed=True)
+            with t.invocation(): adapter.reconcile_released(t,request,release_intent,checkpoint)
+            assert adapter.inspect(t)['State']['Pid'] == paused['State']['Pid']
+            assert not adapter.inspect(t)['State']['Paused']
 
             # A crash after start, before pause, is a partial effect: neither
             # restarting nor calling pause automatically is authorized.
@@ -169,6 +180,7 @@ def main():
                 'preMigrationRestoreAllowed':False,'predecessorIncidentAndHistoryPreserved':True,
                 'actualSealedEngineCreationAdapterExercised':True,'foreignImageAndStartedGenerationDenied':True,
                 'realPausedNamespaceCrashReconciledWithoutRestart':True,
+                'realUnpauseCrashReconciledWithSameProcessGeneration':True,
                 'partialStartBeforePauseBlocksReplayAndAcceptance':True,
                 'precedingPhaseAuthority':'SYNTHETIC_FIXTURE_ONLY','productionInstallerQualified':False,
                 'targetActions':0,'notReleaseAcceptance':True}))
