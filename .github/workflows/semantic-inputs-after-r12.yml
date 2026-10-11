@@ -4,12 +4,14 @@ on:
     branches: [main]
     paths:
       - scripts/prepare-semantic-inputs-after-r12.py
-      - tests/test_semantic_inputs_after_r12.py
+      - tests/test_semantic_inputs_after_r12*.py
+      - releases/semantic-r12-cutover-inputs-20261011.sh
       - .github/workflows/semantic-inputs-after-r12.yml
   pull_request:
     paths:
       - scripts/prepare-semantic-inputs-after-r12.py
-      - tests/test_semantic_inputs_after_r12.py
+      - tests/test_semantic_inputs_after_r12*.py
+      - releases/semantic-r12-cutover-inputs-20261011.sh
       - .github/workflows/semantic-inputs-after-r12.yml
   workflow_dispatch:
 permissions:
@@ -23,6 +25,6 @@ jobs:
         with:
           persist-credentials: false
       - name: Verify active R12 custody and file-secret preparation boundaries
-        run: python3 -m unittest discover -s tests -p test_semantic_inputs_after_r12.py -v
+        run: python3 -m unittest discover -s tests -p 'test_semantic_inputs_after_r12*.py' -v
       - name: Verify actual UID10001 private POSIX projection on disposable hosted fixture
         run: sudo env OUF_POSIX_FIXTURE_ROOT=/root /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_inputs_after_r12.py -v
