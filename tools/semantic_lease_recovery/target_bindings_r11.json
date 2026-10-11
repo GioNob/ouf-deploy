@@ -1,0 +1,99 @@
+{
+  "schema": "ouf.provider-resilient-r11-target-binding.v1",
+  "operatorReported": true,
+  "operatorReceiptReceivedAt": "2026-10-11T15:07:05+02:00",
+  "operatorReceiptStatus": "RESILIENT_WORKER_INPUT_BINDINGS_CAPTURED_NOT_APPLY_AUTHORITY",
+  "ownerConfigurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+  "quiescentJournalHash": "a58f0cb6e011879fc22723356d19926adf8945c38dcdbf2d21ab3fa34dd6f7f1",
+  "retainedArtifactHashes": {
+    "/etc/ouf/provider-finite-lease-recovery-r10.claim": "1ef1ff69ef4407cadfdc1cd07124d4043c3a77f6e8c1230a91d5463c6b61934a",
+    "activation-receipt.json": "2d4a0d2e868a4cdc003c8ffa9cfa168f5b1d6a67c4d7ff633125c194dd6b3bc3",
+    "authorization.json": "caf1d75343b00bf44c4ef30a1c4c097a1b58adeb4b0fb0c0cdd35fa6fb196314",
+    "worker-denial.json": "96f10ca10c9f9409bb6fff310cc58886b58421b9bd2292ddaf3142fb61a9b05a"
+  },
+  "roles": {
+    "adapter": {
+      "attachmentCount": 2,
+      "consumptionBindingHash": "421c797b72a2c2fbd7112e51b8cad48d012a363352cec5cb198fed115174426e",
+      "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+      "driverBinding": {
+        "path": "/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-mf9x0eqd/registry/f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67/driver.json",
+        "sha256": "c9870dbabb7590e5d788c882cb860d01cb23216f20054bcaa49d08d6f2d2a651"
+      },
+      "expectedFootprint": "1017ea58d60cc7afc76402f54e62c6333f71568d71d6eee8dcc46ed87ab0be06",
+      "flowCount": 1,
+      "fullOciHash": "816cdcc143d99047151c337eefefe3df29d5ea8a999d50597f1d0b899cd295f4",
+      "journalHash": "e32923e9d662e18b002cae8de716c381646fdb8965cbff19b9da04b835bae591",
+      "nativeStructureVerified": true,
+      "policyHash": "98e89e35c8afe187fd72fc1b4e1c27d955be7930ad9691ee23eda50435e7fa6b",
+      "profileHash": "54a32031b3fb81e86f8e00fb44cb7043b840cf48949bf2890b2012e4961b4b8d",
+      "semanticIngress": [],
+      "sharedStructureHash": "ee2dec447b8d2f5da277ddc10ac4f0f266669b0cb8daa6d3bac3054aa2af0fd1",
+      "sharedTableName": "ouf_v2_adapter",
+      "sourceClosureHash": "d30490055d8a1139753bb3ddc660885ccb6f035e9b46d30573fdb6dfd99c14be",
+      "transportAuthorityHash": "cbeb012f8de2cf0a8339ea950149e6f4d6b8db4e001b6edf3b7fc9a210f709af"
+    },
+    "southbound": {
+      "attachmentCount": 3,
+      "consumptionBindingHash": "32a09eaec7297592a64542ca8fa93fc0a752b5d5a90a8edf5aed18ef8d6df91a",
+      "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+      "driverBinding": {
+        "path": "/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-mf9x0eqd/registry/1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916/driver.json",
+        "sha256": "66ff61a2a5f5a40279b615c7962796ebde6b0432dae167443a4ae4a3db8a5836"
+      },
+      "expectedFootprint": "de2a57a6f12d891af7a4131fe2bb04f61c239b9693503619d9d7a2d3eddff2ed",
+      "flowCount": 2,
+      "fullOciHash": "fc99be8319b210322292a6f468121de97f764800f5e4fb9717e9ac85a9293322",
+      "journalHash": "9e5a173c060d620a6830a6d32ebdaee58abdd78c91b753ce5a5b6298c32549bb",
+      "nativeStructureVerified": true,
+      "policyHash": "b64d3930e490e1831ca0b5cdb59b2aed870f6e0a414ced16c532d46ec5cd32d7",
+      "profileHash": "dadb08b067e1a14dfdfe3fc8360f5544dc30885148a0d5c730913eb7c3d7073f",
+      "semanticIngress": [
+        {
+          "authorityRef": "ouf-lab-infrastructure-installer",
+          "destination": "172.18.0.14",
+          "peerIngress": {
+            "ifindex": 1377,
+            "kind": "BRIDGE_PORT"
+          },
+          "port": 10443,
+          "protocol": "tcp",
+          "purpose": "WORKLOAD_GATEWAY",
+          "source": "172.18.0.6"
+        }
+      ],
+      "sharedStructureHash": "c147c650ec68320ee4f63e3307cce389b7876c270bfcb336c363788f81e864cb",
+      "sharedTableName": "ouf_v2_southbound",
+      "sourceClosureHash": "d30490055d8a1139753bb3ddc660885ccb6f035e9b46d30573fdb6dfd99c14be",
+      "transportAuthorityHash": "ab5ec4d20e29a049aa810a104341fb21f7192b7b854646902a1e13ea4827133c"
+    }
+  },
+  "currentSemanticPeer": {
+    "binding": {
+      "bridge": "br-113b5f0a3c53",
+      "childIfindex": 2,
+      "hostIfindex": 1377,
+      "hostInterface": "vethca2111d",
+      "interface": "eth0",
+      "ipv4": "172.18.0.6",
+      "mac": "b2:96:a1:e2:c1:8d"
+    },
+    "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+    "generation": {
+      "namespaceInode": 4026532695,
+      "pid": 3789123,
+      "startTicks": 128311383
+    },
+    "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+    "metadataCommandBindings": {
+      "ip": {
+        "path": "/usr/bin/ip",
+        "sha256": "024784c6d16b183dc7c97d93a943a9270976f167f95f771e14d72442dc657f0c"
+      },
+      "nsenter": {
+        "path": "/usr/bin/nsenter",
+        "sha256": "09ea3a612a16b59c04aa55d894a1e868deaddb8a6a9927c4f1993827a3554de1"
+      }
+    }
+  }
+}

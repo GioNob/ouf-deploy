@@ -65,8 +65,7 @@ class RenewingLeaseAdapter(LeaseAdapter):
 
     def _publish_renewal(self, evidence, deadline):
         self.guard()
-        plan, values = evidence['plan'], evidence['values']
-        deadline = min(deadline, plan['mustApplyByMonotonic'])
+        values = evidence['values']
         if self.clock() >= deadline:
             raise Temporary('DNS_WINDOW_TOO_SHORT', no_effect=True)
         try:
@@ -80,6 +79,10 @@ class RenewingLeaseAdapter(LeaseAdapter):
                 if any(not set(row).issubset(set(approved))
                        for row, approved in zip(actual, previous['leaseAddresses'])):
                     raise Permanent('INTEGRITY_UNPROVEN')
+                plan = self.compiler.compile_refresh(cfg, values, self.clock(),
+                    apply_budget_seconds=self.c.owner.profile['applyBudgetSeconds'])
+                if plan['denyOnly']: raise Temporary('DNS_WINDOW_TOO_SHORT')
+                deadline = min(deadline, plan['mustApplyByMonotonic'])
                 pending = {**previous, 'state': 'LEASE_UPDATING', 'leaseAuthorized': False}
                 self.c.publish(previous, pending)
                 backend.verify_ownership(cfg)
@@ -211,10 +214,22 @@ class Supervisor:
                 row = self.tick()
                 # Owner projection contains only safe codes and counts, not
                 # source addresses, exception strings or proof/credential bytes.
-                observe({'state': row['state'], 'reason': row['reason'],
-                         'attempts': row['attempts'], 'renewals': self.renewals,
-                         'incidentRef': self.r.context, 'ready': row['state'] == 'ACTIVE',
-                         'live': True})
+                def projection(value):
+                    return {'state': value['state'], 'reason': value['reason'],
+                            'attempts': value['attempts'], 'renewals': self.renewals,
+                            'incidentRef': self.r.context, 'ready': value['state'] == 'ACTIVE',
+                            'live': True}
+                try:
+                    observe(projection(row))
+                except (RuntimeError, Temporary) as error:
+                    transient_read = (isinstance(error, Temporary)
+                                      and error.code == 'DNS_WINDOW_TOO_SHORT' and error.no_effect)
+                    if row['state'] != 'ACTIVE' or not (ttl_zero(error) or transient_read):
+                        raise
+                    self.active_here = False
+                    row = self.r.retry(self.r.journal.read(),
+                                       Temporary('DNS_WINDOW_TOO_SHORT', no_effect=True))
+                    observe(projection(row))
                 if stop.wait(row.get('waitSeconds', self.r.wait_seconds(row, self.heartbeat))):
                     break
                 if row['state'] == 'ACTIVE': self.renew(row)

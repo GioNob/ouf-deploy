@@ -197,5 +197,26 @@ class Tests(unittest.TestCase):
         self.assertEqual(adapter.renewal_calls, 2)
         self.assertEqual(journal.read()['state'], 'CANCELLED')
 
+    def test_zero_ttl_during_status_readback_pauses_without_process_failure(self):
+        clock, adapter, journal, recovery, supervisor = self.fixture()
+        observations = []
+        class Stop:
+            ticks = 0
+            def is_set(self): return self.ticks >= 3
+            def wait(self, seconds):
+                self.ticks += 1
+                clock.advance(seconds)
+                return self.is_set()
+        def observe(row):
+            observations.append(row['state'])
+            if len(observations) == 1:
+                error = RuntimeError('NFT_SET_TTL_UNPROVEN')
+                error.nft_readback = {'expiresType': 'int', 'expiresValue': 0, 'duplicateAddress': False}
+                raise error
+        supervisor.serve(Stop(), observe)
+        self.assertEqual(observations[:2], ['ACTIVE', 'RETRY_WAIT'])
+        self.assertIn('ACTIVE', observations[2:])
+        self.assertEqual(journal.read()['state'], 'CANCELLED')
+
 
 if __name__ == '__main__': unittest.main()

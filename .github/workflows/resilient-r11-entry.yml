@@ -1,0 +1,54 @@
+name: Source-bound resilient R11 entrypoint
+on:
+  push:
+    branches: [main, 'codex/r11-*']
+    paths:
+      - 'tools/semantic_lease_recovery/**'
+      - '.github/workflows/resilient-r11-entry.yml'
+      - 'releases/provider-resilient-r11-*.sh'
+      - 'tests/test_r11_delivery.py'
+  pull_request:
+    paths:
+      - 'tools/semantic_lease_recovery/**'
+      - '.github/workflows/resilient-r11-entry.yml'
+      - 'releases/provider-resilient-r11-*.sh'
+      - 'tests/test_r11_delivery.py'
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: a10df126d229dfefd9e0a4d716a07f1f535b6cd6
+          path: lease-owner-source
+          persist-credentials: false
+      - name: Fixed source closure and scoped entrypoint contracts
+        run: |
+          python3 - <<'PY'
+          import hashlib,sys
+          from pathlib import Path
+          root=Path('tools/semantic_lease_recovery');sys.path.insert(0,str(root))
+          import activate_resilient_r11 as m
+          assert len(m.MODULE_HASHES)==13
+          for name,digest in m.MODULE_HASHES.items():
+              path=root/('resilient_reader.py' if name=='reader.py' else name)
+              assert hashlib.sha256(path.read_bytes()).hexdigest()==digest,name
+          PY
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_r11_entry.py
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_continuous_supervisor.py
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_bounded_recovery.py
+      - name: Install disposable namespace dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq nftables iproute2
+      - name: Actual apply and sealed worker in systemd with native DNS and nft
+        run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_recovery/r11_entry_native.py lease-owner-source
+      - name: Continuous outage recovery exhaustion and revocation regression
+        run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_recovery/continuous_worker_native.py lease-owner-source
+      - name: Independent bounded recovery regression
+        run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_recovery/resilient_lease_native.py lease-owner-source

@@ -7,7 +7,7 @@ class LeaseRecovery(Recovery):
 
     def initial(self):
         return {**super().initial(), 'timeAccountingProfile': self.PROFILE,
-                'healthyWallSeconds': 0, 'healthyMonotonicSeconds': 0}
+                'healthyWallSeconds': 0, 'healthyMonotonicSeconds': 0, 'publicationCount': 0}
 
     def validate_time_accounting(self, row):
         require(row.get('timeAccountingProfile') == self.PROFILE
@@ -44,4 +44,7 @@ class LeaseRecovery(Recovery):
             healthy_wall += max(0, wall - previous['lastWall'])
             healthy_mono += max(0, mono - previous['lastMonotonic'])
         values.update(healthyWallSeconds=healthy_wall, healthyMonotonicSeconds=healthy_mono)
+        count = previous.get('publicationCount', 0)
+        require(type(count) is int and count >= 0, 'LEASE_PUBLICATION_COUNT_UNPROVEN')
+        values['publicationCount'] = count + (1 if state == 'ACTIVE' and reason in {'RECOVERED', 'RENEWED'} else 0)
         return super().save(previous, state, reason, **values)
