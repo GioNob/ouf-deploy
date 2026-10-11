@@ -32,7 +32,8 @@ with tempfile.TemporaryDirectory() as folder:
     expected=verified["memberSha256"]["image.docker.tar"]
     with (root/"image.docker.tar").open("rb") as stream:audit=custody.archive(stream,expected,spec["image"],spec["source"])
     original_audit=audit
-    with (root/"image.docker.tar").open("rb") as source,(root/"tagless.docker.tar").open("w+b") as output:
+    output=tempfile.TemporaryFile()
+    with (root/"image.docker.tar").open("rb") as source:
         envelope=custody.tagless_archive(source,output,original_audit)
         audit=custody.archive(output,envelope["derivedArchiveSha256"],spec["image"],spec["source"])
     assert audit["repositoryTags"]==[] and audit["layers"]==original_audit["layers"]
@@ -55,7 +56,14 @@ with tempfile.TemporaryDirectory() as folder:
     if pid==0:
         with session.invocation():
             def load_then_crash():
-                command(["docker","image","load","--input",str(root/"tagless.docker.tar")])
+                output.seek(0)
+                with tempfile.TemporaryDirectory(dir=directory,prefix='empty-docker-cli-') as empty:
+                    p=subprocess.run(['docker','--config',empty,'image','load'],stdin=output,
+                      stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=120,
+                      env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C','DOCKER_HOST':'unix:///var/run/docker.sock'})
+                    assert p.returncode==0 and len(p.stdout)<=2097152
+                    print('OUF_HOSTED_EXACT_STDIN_LOAD='+json.dumps({'exit':p.returncode,'stdoutHash':hashlib.sha256(p.stdout).hexdigest(),
+                        'expectedImageInOutput':spec['image'].encode() in p.stdout,'fdOffsetAfterLoad':os.lseek(output.fileno(),0,os.SEEK_CUR)}),flush=True)
                 os._exit(71)
             session.import_once(audit,load_then_crash,inspect,checkpoint)
         os._exit(72)
