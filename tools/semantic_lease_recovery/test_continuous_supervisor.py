@@ -5,7 +5,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from bounded_recovery import Policy, Recovery, Temporary, Permanent
+from bounded_recovery import Policy, Temporary, Permanent
+from lease_recovery_budget import LeaseRecovery as Recovery
 from recovery_journal import Journal
 from continuous_supervisor import Supervisor
 from test_bounded_recovery import Clock, Memory, Adapter
@@ -129,12 +130,34 @@ class Tests(unittest.TestCase):
         self.assertEqual(supervisor.tick()['state'], 'BLOCKED')
         self.assertGreater(adapter.pauses, 0)
 
-    def test_scope_deadline_while_healthy_never_extends_lease(self):
+    def test_healthy_time_is_not_an_outage_but_real_authority_expiry_blocks(self):
         clock, adapter, journal, recovery, supervisor = self.fixture()
         supervisor.tick()
         clock.advance(86400)
-        self.assertEqual(supervisor.tick()['state'], 'PAUSED_EXHAUSTED')
+        self.assertEqual(supervisor.tick()['state'], 'ACTIVE')
+        adapter.guard_error = Permanent('AUTHORITY_EXPIRED')
+        self.assertEqual(supervisor.tick()['state'], 'BLOCKED')
         self.assertEqual(adapter.renewal_calls, 0)
+
+    def test_cumulative_recovery_time_survives_healthy_interval_without_reset(self):
+        clock, adapter, journal, recovery, supervisor = self.fixture(
+            Policy(max_elapsed=100, attempt_timeout=30))
+        supervisor.tick()
+        clock.advance(86400)
+        adapter.renewal_error = Temporary('DNS_UNAVAILABLE')
+        row = supervisor.renew({'leaseDeadlineMonotonic': clock.mono + 30})
+        self.assertEqual(row['state'], 'RETRY_WAIT')
+        self.assertEqual(recovery.remaining(row), 100)
+        clock.advance(5)
+        self.assertEqual(supervisor.tick()['state'], 'ACTIVE')
+        self.assertEqual(recovery.remaining(journal.read()), 95)
+        clock.advance(86400)
+        row = supervisor.renew({'leaseDeadlineMonotonic': clock.mono + 30})
+        self.assertEqual(row['state'], 'RETRY_WAIT')
+        self.assertEqual(recovery.remaining(row), 95)
+        clock.advance(96)
+        self.assertEqual(supervisor.tick()['state'], 'PAUSED_EXHAUSTED')
+        self.assertEqual(journal.read()['attempts'], 2)
 
     def test_actual_invocation_fencing_is_separate_from_journal_transactions(self):
         with tempfile.TemporaryDirectory() as root:

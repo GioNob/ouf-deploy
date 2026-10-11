@@ -19,7 +19,8 @@ sys.path.insert(0, str(HERE.parent / 'semantic_lease_activation'))
 from test_activation_native import fixture, run, load_compiler
 sys.path.insert(0, str(HERE))
 import activation_core as core
-from bounded_recovery import Policy, Recovery, Permanent
+from bounded_recovery import Policy, Permanent
+from lease_recovery_budget import LeaseRecovery as Recovery
 from recovery_journal import Journal
 from continuous_supervisor import RenewingLeaseAdapter, Supervisor
 import dns

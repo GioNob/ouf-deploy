@@ -14,12 +14,17 @@ DNS e pause sono fuori dai lock del journal e della lease. Solo la pubblicazione
 ACL/readback usa il lock comune. TTL zero non viene accettato o esteso.
 
 Il budget di recupero è unico per questa nuova sessione di servizio: 128 tentativi,
-24 ore dal suo inizio, non rinnovabile dal worker. I rinnovi sani non consumano
+24 ore cumulative di recupero, non rinnovabile dal worker. I rinnovi sani non consumano
 tentativi di recupero e non azzerano tentativi, deadline, contesto o incidente.
-La scadenza della sessione mantiene il processo vivo e i flussi revocati.
+lease_recovery_budget.py conserva separatamente gli intervalli sani verificati:
+non scambia un giorno di servizio sano per esaurimento del budget di un guasto.
+Gli orari iniziali e i tentativi restano immutati; pause e tentativi di recupero
+si sommano anche se intervallati da periodi sani. La vera scadenza dell'autorità
+rimane indipendente e prevale sempre. L'esaurimento mantiene il processo vivo e
+i flussi revocati.
 Un eventuale nuovo budget richiede una nuova sessione governata, non un reset.
-Questo profilo finito è deliberato: il componente non concede servizio perpetuo
-o riavvio automatico. L'autorità reale può imporre limiti ancora più brevi.
+Il componente non concede nuova autorità o riavvio automatico.
+L'autorità reale può imporre limiti ancora più brevi.
 
 deadline_backend.py lega tutti i comandi nft di un tentativo alla stessa deadline.
 Le query DNS sono limitate dalla deadline del tentativo e dal profilo DNS.
