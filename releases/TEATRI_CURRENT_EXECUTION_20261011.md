@@ -1,6 +1,6 @@
 # CSV Teatri: current profile and application continuation — 11 October 2026
 
-> **Stato corrente, 11 ottobre 2026, 23:10 CEST:** la diagnosi protetta osserva R12 `LEASE_ACTIVE / ACTIVE / RENEWED`, tutti9 i controlli del worker superati,12 tentativi consumati e78133,94s di budget residuo. La diagnosi si arresta poi per un errore di scope del proprio comando systemctl; nessun effetto target. Il difetto è corretto e qualificato con28 test. [Prosecuzione concreta](RESUME_NATIVE_V11_PLAN_20261011.md): diagnosi completa e, solo con readiness fresca, preparazione dei4 documenti del piano nativo V11. Nessun cutover applicativo; CSV end-to-end ancora aperto.
+> **Stato corrente, 11 ottobre 2026, 23:22 CEST:** diagnosi protetta R12 completata, entrambi i flussi `LEASE_READY` e worker1943 rinnovi totali osservati. Piano nativo V11 preparato nel VPS con dichiarazionefc94b491…, richiesta59181588… e4 documenti privati; nessun reimport/cutover. Qualificata in containerd la creazione dell'immagine originale e la riconciliazione dopo crash anche attraverso il controller composto. [Prossima operazione root](NATIVE_V11_ATOMIC_REVIEW_20261011.md): pubblicazione atomica dei documenti di revisione, senza autorità runtime. CSV end-to-end rimane aperto.
 
 
 [Platform resilience policy v3](../docs/OUF_RESILIENCE_POLICY.md), Reality Baseline v1.7 and [file-first acceptance](FILE_FIRST_EXECUTION_CHECKPOINT_20261010.md) apply. The owner explicitly authorized the existing Teatri asset on 11 October at 16:29 Europe/Rome. No upload/profile replay is needed.

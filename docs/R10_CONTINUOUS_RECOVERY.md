@@ -1,6 +1,6 @@
 # R10: recupero continuo, qualificazione e applicazione target
 
-> **Stato corrente, 11 ottobre 2026, 23:10 CEST:** la diagnosi protetta osserva R12 `LEASE_ACTIVE / ACTIVE / RENEWED`, tutti9 i controlli del worker superati,12 tentativi consumati e78133,94s di budget residuo. La diagnosi si arresta poi per un errore di scope del proprio comando systemctl; nessun effetto target. Il difetto è corretto e qualificato con28 test. [Prosecuzione concreta](../releases/RESUME_NATIVE_V11_PLAN_20261011.md): diagnosi completa e, solo con readiness fresca, preparazione dei4 documenti del piano nativo V11. Nessun cutover applicativo; CSV end-to-end ancora aperto.
+> **Stato corrente, 11 ottobre 2026, 23:22 CEST:** diagnosi protetta R12 completata, entrambi i flussi `LEASE_READY` e worker1943 rinnovi totali osservati. Piano nativo V11 preparato nel VPS con dichiarazionefc94b491…, richiesta59181588… e4 documenti privati; nessun reimport/cutover. Qualificata in containerd la creazione dell'immagine originale e la riconciliazione dopo crash anche attraverso il controller composto. [Prossima operazione root](../releases/NATIVE_V11_ATOMIC_REVIEW_20261011.md): pubblicazione atomica dei documenti di revisione, senza autorità runtime. CSV end-to-end rimane aperto.
 
 
 Il vecchio R10 rimane consumato. Il suo fallimento dopo 250 rinnovi è storico;
