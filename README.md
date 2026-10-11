@@ -1,12 +1,12 @@
-> **Policy di piattaforma vigente:** [Resilienza, quarantena, incidenti e alert — v3](https://github.com/GioNob/ouf-deploy/blob/main/docs/OUF_RESILIENCE_POLICY.md). Obbligatoria per sviluppo e revisione; [adozione e prove](https://github.com/GioNob/ouf-deploy/blob/main/docs/OUF_RESILIENCE_ADOPTION.md).
+> **Policy di piattaforma vigente:** [Resilienza, quarantena, incidenti e alert — v3](docs/OUF_RESILIENCE_POLICY.md). Obbligatoria per sviluppo e revisione; [adozione e prove](docs/OUF_RESILIENCE_ADOPTION.md).
 
-# Current checkpoint — resilience policy v3; operational reads and observations qualified
+# Current checkpoint — owner incident pages qualified; autonomous resilience work continues
 
-[Policy organica](docs/OUF_RESILIENCE_POLICY.md) obbligatoria nei sette repository; [registro di adozione e limiti](docs/OUF_RESILIENCE_ADOPTION.md), [piano di allineamento](docs/OUF_OPERATIONAL_RESILIENCE_PLAN.md) e [design cursor/consultazione — OPEN](docs/OUF_OPERATIONAL_CURSOR_DESIGN.md).
+[Policy organica](docs/OUF_RESILIENCE_POLICY.md), [adozione e limiti](docs/OUF_RESILIENCE_ADOPTION.md), [piano](docs/OUF_OPERATIONAL_RESILIENCE_PLAN.md) e [cursor/consultazione](docs/OUF_OPERATIONAL_CURSOR_DESIGN.md).
 
-MCP PR52 e Ingestion PR36 integrate: autorizzazione owner prima della lettura aggregata, proiezioni safe/partial, filtri e budget byte, observation time persistente delle modifiche con first-seen separato. Qualifica finale:20 operational race MCP,28 focused/144 full Ingestion, tutti6/18 gate candidato SUCCESS. [Evidenza aggiornata](evidence/operational-read-catchup-qualified-20261011.json).
+Qualificate Ingestion PR37 (ledger commit-ordered e pagine owner,37 focused/18 gate), Gateway PR60 (dedup concorrente, snapshot e autorizzazione locale fail-closed,243 test/2 skip/APISIX), PR61 (host pairwise corrente) e PR62 (pressione persistente/isteresi/ripresa graduale,13 nuovi gruppi). MCP PR53 aggiorna resource scope/chiavi nested e qualifica i producer correnti. [Evidenza aggiornata](evidence/operational-owner-pages-qualified-20261011.json).
 
-Preservata la prima tranche MCP PR51, Ingestion PR35 e Gateway PR59: priorità prima dei limiti/catch-up dei recuperi e toolchain MCP aggiornato senza soppressioni di sicurezza. [Evidenza precedente](evidence/operational-priority-qualified-20261011.json). Cursor/checkpoint operatore, coverage globale, salute corrente vs finestra, correlazione dipendenze, detector/capacità/retention, retry owner completi e alert restano OPEN. Prove repository/fixture non certificano target/release acceptance; nessun deploy VPS o email. R9/R10 consumati, root preflight sospeso.
+Il lavoro autonomo continua: outbox alert, cursor globale/bookmark/ricevute, grouping/impatti, retention e integrazione runtime restano OPEN. Reference e CI non provano scheduler/SDK/HA o deployment target. Nessuna email, deploy/migrazione/restart VPS o replay R9/R10; preflight sospeso. Conservate tutte le accettazioni precedenti.
 
 # Historical checkpoint — platform resilience v2; HUMAN recovery budgets merged and qualified
 
