@@ -1,0 +1,47 @@
+name: Resilient R12 namespace identity and sealed activation
+on:
+  push:
+    branches: [main, 'codex/r12-*']
+    paths: ['tools/semantic_lease_recovery/*r12*', 'tools/semantic_lease_recovery/*namespace*', '.github/workflows/resilient-r12-entry.yml', 'releases/provider-resilient-r12-*', 'tests/test_r12_delivery.py']
+  pull_request:
+    paths: ['tools/semantic_lease_recovery/*r12*', 'tools/semantic_lease_recovery/*namespace*', '.github/workflows/resilient-r12-entry.yml', 'releases/provider-resilient-r12-*', 'tests/test_r12_delivery.py']
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: a10df126d229dfefd9e0a4d716a07f1f535b6cd6
+          path: lease-owner-source
+          persist-credentials: false
+      - name: Exact R12 closure and generation contracts
+        run: |
+          python3 - <<'PY'
+          import hashlib,sys
+          from pathlib import Path
+          root=Path('tools/semantic_lease_recovery');sys.path.insert(0,str(root))
+          import activate_resilient_r12 as m
+          assert len(m.MODULE_HASHES)==14
+          for name,digest in m.MODULE_HASHES.items():
+              path=root/('r12_reader.py' if name=='reader.py' else name)
+              assert hashlib.sha256(path.read_bytes()).hexdigest()==digest,name
+          PY
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_namespace_generation.py
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_r12_entry.py
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_continuous_supervisor.py
+          python3 -B -m unittest discover -v -s tests -p test_r12_delivery.py
+      - name: Actual Docker distinct UID and restricted capability namespace regression
+        run: sudo /usr/bin/python3 -I -B tools/semantic_lease_recovery/namespace_generation_native.py
+      - name: Install isolated namespace dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq nftables iproute2
+      - name: R12 apply preclaim rejection sealed service and recovery
+        run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_recovery/r12_entry_native.py lease-owner-source
+      - name: Continuous outage exhaustion and cancellation regression
+        run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_recovery/continuous_worker_native.py lease-owner-source

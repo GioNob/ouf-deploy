@@ -1,0 +1,65 @@
+{
+  "schema": "ouf.provider-resilient-r12-qualification.v1",
+  "sourceCommit": "0149cc164ed57d76abb88e7346fe9e7648363e29",
+  "status": "QUALIFIED_ISOLATED_TARGET_PRECLAIM_AND_APPLY_PENDING",
+  "targetDiagnosis": {
+    "operatorReported": true,
+    "receivedAt": "2026-10-11T15:47:08+02:00",
+    "r11WorkerState": "BLOCKED",
+    "recoveryAttempts": 0,
+    "rootGuard": "GUARD_PASS",
+    "netAdminOnlyGuard": "GUARD_DENIED",
+    "failingOperation": "generation",
+    "errno": 13,
+    "source": "scripts/read-r11-guard-diagnosis.py",
+    "claimConsumed": true,
+    "rootCauseProven": "PROC_NAMESPACE_PERMISSION_DENIED_FALSE_GENERATION_CHANGED"
+  },
+  "qualification": {
+    "runs": [
+      38145498601,
+      38145496021
+    ],
+    "job": 114487836222,
+    "tests": {
+      "namespaceIdentity": 4,
+      "entryExitAndAuthority": 3,
+      "continuousSupervisor": 14
+    },
+    "realDockerUid": 10001,
+    "nativeNamespace": "OLD_PROC_DENIED_NEW_ROOT_BOUND_NSFS_PASS_UNDER_NET_ADMIN_ONLY",
+    "changedHandleRejected": true,
+    "preclaimDenialLeavesClaimAbsent": true,
+    "realSystemdPredecessorStopAndR12Worker": true,
+    "cumulativeBudgetTimestampsPreserved": true,
+    "incidentPreserved": true,
+    "pauseFreshRecoverySameProcess": true,
+    "generationBlockAlive": true,
+    "stopRevokes": true,
+    "fourVirtualHourOutageAndExhaustion": true,
+    "signedTargetMetadata": "SYNTHETIC_CI_FIXTURE",
+    "targetActions": 0
+  },
+  "delivery": {
+    "sourceCommit": "0149cc164ed57d76abb88e7346fe9e7648363e29",
+    "path": "releases/provider-resilient-r12-approved-20261011.sh",
+    "sha256": "a1a5d353dffdb38c3749bd979f504eb17040f1fa1e973e667e7d629daecefa21",
+    "components": 15,
+    "failureAndTamperPositions": 30,
+    "existingPortableGh": true,
+    "executionExpiresAt": "2026-10-11T16:43:18+02:00"
+  },
+  "limits": {
+    "capabilities": [
+      "CAP_NET_ADMIN"
+    ],
+    "ptraceOrNamespaceEntry": false,
+    "newClaimCreatedBeforeActualRestrictedProductionGuard": false,
+    "r10AndR11ConsumedClaimsPreserved": true,
+    "automaticRestart": false,
+    "bootEnablement": false,
+    "applicationHealthProven": false,
+    "releaseAcceptance": false,
+    "targetRecovered": false
+  }
+}

@@ -101,3 +101,41 @@ La nuova diagnosi read-only esegue il medesimo guard sigillato con root completo
 in un processo figlio, con il solo NET_ADMIN e NoNewPrivileges; registra check/operazione,
 classe e errno senza valori privati. Non chiama apply, crea claim, inizializza budget,
 riavvia servizi o modifica lease/configurazioni. Nessun recupero target dichiarato.
+
+## R12: causa provata e correzione senza aumento dei privilegi
+
+La diagnosi target operatore del 11 ottobre, 15:47 CEST prova che il guard R11 passa
+con root completo e viene negato sotto NET_ADMIN nella funzione generation, su
+/proc/PID/ns/net (PermissionError errno 13). Non è un cambio reale di generazione.
+
+R12 acquisisce tramite Docker il SandboxKey delle namespace dei due ruoli e del
+Semantic esistente. In intake root verifica che il handle sia nsfs e corrisponda
+alla stessa namespace /proc e generazione del PID, quindi sigilla path canonico,
+device/inode e SandboxKey nel capsule. Il worker controlla quei valori, gli
+antenati root protetti, PID/start ticks e metadati Docker correnti. Non aggiunge
+SYS_PTRACE/SYS_ADMIN, non entra in namespace e mantiene NET_ADMIN soltanto.
+
+Prima di creare il claim R12 esegue l'intero guard di produzione in un processo
+figlio con gli stessi capability bounds e NoNewPrivileges del worker. Un errore
+ferma l'apply senza claim e senza stop del predecessore; conserva una diagnosi
+con il check specifico. Solo dopo il gate positivo ferma l'esatto R11 bloccato a
+zero tentativi, conserva le sue fonti/claim e avvia la nuova unità sigillata.
+IncidentRef, inizi del budget cumulativo e tentativi sono conservati dal journal
+R11; i budget non ripartono da zero. Il vecchio journal resta nel suo snapshot.
+Nessun cambio di container applicativo o decisione semantica THS.
+
+[PR3](https://github.com/GioNob/ouf-deploy/pull/3),
+[evidenza](../evidence/resilient-r12-qualified-20261011.json),
+[consegna immutabile](../releases/provider-resilient-r12-approved-20261011.sh).
+Qualificazione source 0149cc164ed57d76abb88e7346fe9e7648363e29: container Docker reale UID10001, vecchio
+accesso negato e nuovo handle verificato con NET_ADMIN soltanto; inode/SandboxKey
+drift negati. Pipeline reale systemd/DNS/nft: rifiuto preclaim senza consumo,
+stop di predecessore transiente reale, due rinnovi, pausa/ripresa stesso PID,
+budget conservato, blocco vivo e revoca. La metadata signed target della fixture
+resta sintetica: il guard completo reale del VPS è verificato dal gate preclaim,
+non dichiarato provato dalla fixture. Regressione outage virtuale quattro ore ed
+esaurimento PASS. Consegna con 15 checksum e 30 posizioni download/alterazione.
+
+La finestra iniziale resta 16:43:18 CEST; nessuna proroga automatica. Exit 0 richiede
+due cicli attivi e lease native provate; una ricevuta parcheggiata usa exit 2 e
+workerReason. Applicazione/preclaim target e ricevuta di recupero restano OPEN.

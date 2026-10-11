@@ -1,5 +1,9 @@
 > **R10 — priorità corrente:** [supervisore continuo qualificato e recupero target da completare](docs/R10_CONTINUOUS_RECOVERY.md).62 test e systemd/DNS/nft reali PASS; il tentativo di lettura protetta sul VPS non è eseguito per permesso root non interattivo non provato. [Evidenza](evidence/continuous-resilient-worker-qualified-20261011.json). Nessun recupero target o CSV end-to-end dichiarato.
 
+## 11 October: confirmed R11 permission defect; sealed R12 recovery qualified
+
+The operator proved that R11's full-root guard passes while NET_ADMIN-only /proc namespace inspection fails with errno13. R12 verifies root-bound Docker nsfs handles under the same minimal capabilities and runs the actual production guard in a restricted child before consuming its new claim. [Recovery procedure](docs/R10_CONTINUOUS_RECOVERY.md), [qualification](evidence/resilient-r12-qualified-20261011.json), [immutable delivery](releases/provider-resilient-r12-approved-20261011.sh). Existing incident, cumulative budget and consumed R10/R11 claims are preserved. Target preclaim/apply and recovery receipt remain pending; no application acceptance claimed.
+
 ## 11 October, 15:38 CEST: R11 target BLOCKED; lease recovery unresolved
 
 The operator executed R11 once. The result is BLOCKED before the first attempt, zero renewals and no approved provider traffic. Both R10 and R11 claims are consumed: **do not rerun either apply**. Exit 0 reports a parked worker receipt; it does not indicate successful recovery. [Target observation](evidence/resilient-r11-blocked-target-20261011.json), [current recovery diagnosis](docs/R10_CONTINUOUS_RECOVERY.md). A real Linux distinct-UID regression confirms that NET_ADMIN-only /proc namespace inspection can be denied; the exact target failure requires the protected read-only guard comparison. No target recovery is claimed.
