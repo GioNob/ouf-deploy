@@ -1,26 +1,30 @@
-# Current checkpoint — R10 quiescent; candidate native worker proof passed; protected recovery bindings pending
+# Current checkpoint — project resilience default; bounded recovery qualified; target integration pending
+
+[Resilience policy](docs/OUF_RESILIENCE_POLICY.md) now applies by default across all seven OUF repositories. [CI38102725541](https://github.com/GioNob/ouf-deploy/actions/runs/38102725541) passes16 tests and real DNS/nft recovery after four virtual outage hours, with finite persistent budgets, empty sets during pause and fresh positive-TTL recovery. [Implementation and remaining closure](docs/OUF_RESILIENCE_IMPLEMENTATION.md). R10 remains consumed and quiescent according to the latest operator observation; no VPS apply/restart/cutover. **Previous root preflight command suspended.** [Current continuation](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md).
+
+# Historical checkpoint — R10 quiescent; candidate native worker proof passed; protected recovery bindings pending
 
 R10 revocation proven, claim consumed. [CI38101472898](https://github.com/GioNob/ouf-deploy/actions/runs/38101472898) passes four compiler tests and three native scenarios, including full worker positive cycles, unusable DNS revocation and replay denial. Synthetic CI metadata/authority; target recovery and application cutover not applied. One root read-only intake is required to bind the retained R10 artifacts and current OCI/peer closure before preparing a distinct recovery. [Current PET decisions, evidence and immutable read-only operator command](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md).
 
-# Current checkpoint — R10 revoked; native TTL edge reproduced; new worker qualification required
+# Historical checkpoint — R10 revoked; native TTL edge reproduced; new worker qualification required
 
 Operator native read confirms QUIESCED and empty inet/bridge sets for both flows. R10 failure is integer expires0 after250 renewals. [Native CI38101012511](https://github.com/GioNob/ouf-deploy/actions/runs/38101012511) reproduces one-second plan→zero readback; candidate compiler denies this plan without extending TTL. Admission qualification only: full new worker/DNS/latency closure remains required before a new one-use activation. No R10 restart/replay, no cutover or file-secret preparation completed. [Current evidence and PET decisions](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md).
 
-# Current checkpoint — R10 worker failed after 250 renewals
+# Historical checkpoint — R10 worker failed after 250 renewals
 
 Operator diagnosis 2026-10-11 03:06 CEST: R10 failed with NFT_SET_TTL_UNPROVEN, MainPID0, no restart; claim consumed, do not rerun. Native revocation/set emptiness and precise TTL failure remain to be observed. Protected preparation and cutover suspended. [Diagnosis and evidence](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md).
 
-# Current checkpoint — protected preparation blocked pending R10 diagnosis
+# Historical checkpoint — protected preparation blocked pending R10 diagnosis
 
 Operator receipt received 2026-10-11 02:59 CEST: CURRENT_R10_PRIVATE_WORKER_UNPROVEN, exit1, no existing configuration/database/firewall/container changes. File-secret declaration not prepared. Previous preparation command suspended pending bounded read-only diagnosis; consumed R10 must not be rerun. [Current evidence and diagnostic scope](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md#esito-operatore-ricevuto-l11-ottobre-2026-0259-cest).
 
-# Current checkpoint — autonomous current-package and target qualification
+# Historical checkpoint — autonomous current-package and target qualification
 
 [Progress, PET decisions and one required protected operator command](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md). Exact Semantic e826bd… now passes full Spring/configtree startup, fixture IAM positive/negative enforcement, V10 and current-snapshot recovery at [CI38085528129](https://github.com/GioNob/ouf-deploy/actions/runs/38085528129). Independent target runner reads confirm R10 service active, original Semantic generation, V9 and10 sessions; an existing administrator outside the application database supplies full metadata visibility without grants or database writes. [Structured evidence](evidence/semantic-autonomous-cutover-progress-20261010.json).
 
 The next immutable preparation rechecks native lease/peer/source closure and three role inputs, projects the existing DB password into a readonly file and declares restartno for the replacement. [CI38086191419](https://github.com/GioNob/ouf-deploy/actions/runs/38086191419) qualifies17 distinct tests including actual UID10001/0500/0400 POSIX custody. **Target protected preparation is pending:** the [unattended attempt](https://github.com/GioNob/ouf-deploy/actions/runs/38086291549) stopped at sudo password required before the program ran. Its success conclusion records that operator access is necessary, not preparation success. No application cutover, target fence/backup/image import or provider health proof. Preserve consumed R10 and Cinema/Teatri.
 
-# Current checkpoint — qualified Semantic package declared on target
+# Historical checkpoint — qualified Semantic package declared on target
 
 Operator output received **10 October 2026 22:47:55 Europe/Rome** reports `QUALIFIED_PACKAGE_DECLARED_NOT_APPLY_READY`, exit0. [Complete receipt](evidence/semantic-qualified-package-declaration-target-20261010.json). New private snapshot: `/etc/ouf/deploy-snapshots/semantic-qualified-package-declaration-v7nhhm3o`; declaration SHA256 `78dc04694daf0dd8685b74eedddd64365c600c2303ac3fbaa47313bdb85b5d59`. The declaration selects exact Semantic image `sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85`, source `622614b0040cf11be2f6c7e3568733a488ca4ca8`, and preserves the historical host configuration/creation frame. Evidence is operator-reported, not independently acquired from the VPS.
 
@@ -32,7 +36,7 @@ R10 is consumed and was reported active/renewed on target. The previous private 
 
 [Updated structured preparation](releases/discovery-application-cutover-preparation-20261010.json) records R10 separately from the historical failed R9 lease, current source pins and the declaration mismatch. Preserve R10/Cinema/Teatri; no activation replay. Checkpoints below retain their original historical scope.
 
-# Current checkpoint — R10 lease activated and renewed on target
+# Historical checkpoint — R10 lease activated and renewed on target
 
 Operator output received **10 October 2026 22:35:54 Europe/Rome** reports TWO_FLOW_LEASE_ACTIVE_AND_RENEWED and launcher exit0: refreshCount2, flowAddressCounts[1,1], exact unit `ouf-semantic-provider-lease-finite-r10.service`, snapshot `/etc/ouf/deploy-snapshots/semantic-finite-lease-recovery-r10-nw9ue4d5`. [Complete structured receipt](evidence/finite-r10-active-renewed-target-20261010.json). Evidence is user-pasted/operator-reported, not independently acquired from the VPS in this session.
 
@@ -54,7 +58,7 @@ Il giro Cinema sul VPS aveva già completato delivery/materializzazione 8/8: non
 
 La [dichiarazione runtime riportata dall'operatore](evidence/replacement-runtime-declaration-target-20261010.json) è preparata correttamente, senza lifecycle o attività R9. È intento storico, non OCI realizzato o cutover. Non ripetere le preparazioni consumate. File prima di API verticali PULL.
 
-# Current checkpoint — application input contract verified; reusable installation is the delivery goal
+# Historical checkpoint — application input contract verified; reusable installation is the delivery goal
 
 10 October 2026, 15:29 CEST: the operator prepared the protected application input contract. [Target receipt](evidence/application-input-contract-prepared-target-20261010.json): provider routes/IAM/workload agree with the frozen binding, three role-owned read-only source files have verified metadata, no mount or application lifecycle/change performed. Secret bytes are not freshly verified; replacement complete OCI, signed reciprocal peer/transport closure and coordinated applicator remain unproven.
 
@@ -62,7 +66,7 @@ The owner explicitly requires easy repeatable installation without routine VPS e
 
 R9 has not been changed or replayed. Application health and release acceptance remain unproven. [Current preparation](releases/discovery-application-cutover-preparation-20261010.json), [PET reconciliation](releases/PET_ROADMAP_RECONCILIATION_20261010.md). Historical checkpoints follow.
 
-# Current checkpoint — PET roadmap reconciled; both Semantic applications boot on isolated migration/restore
+# Historical checkpoint — PET roadmap reconciled; both Semantic applications boot on isolated migration/restore
 
 10 October 2026, 08:50 CEST: [seven-PET/roadmap reconciliation](releases/PET_ROADMAP_RECONCILIATION_20261010.md) recorded; R0/R1a retained in their original scope, representative platform acceptance remains open. Latest Ingestion worker and MinIO fixture CI failures are explicit release blockers.
 
@@ -110,7 +114,7 @@ The attached roadmap and relevant repository context were read. The full PET pac
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — R8 two-flow lease active and renewed
+# Historical checkpoint — R8 two-flow lease active and renewed
 
 The operator reports TWO_FLOW_LEASE_ACTIVE_AND_RENEWED, exit0 for action and bootstrap, at snapshot /etc/ouf/deploy-snapshots/semantic-r8-lease-8wfsv1aa. [Exact receipt](evidence/provider-r8-active-renewed-lease-target-20261009.json). Two fresh DNS/native membership cycles passed; address counts[1,1], refreshCount2, exact transient service ouf-semantic-provider-lease-r8.service. Approved finite flows now permit external traffic. This is operator-reported protected VPS evidence, not independently acquired here.
 
@@ -120,7 +124,7 @@ Continue with fresh applicable dependency scans of the unchanged signed Semantic
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — readback recovery approved; operator execution pending
+# Historical checkpoint — readback recovery approved; operator execution pending
 
 Human “Approvo” at **2026-10-09 22:58:47 Europe/Rome** approves the recovery review from5ad76be3a46f34b68af77a9328e5179d987177fe. [Approval witness](evidence/provider-r8-lease-readback-recovery-human-approval-20261009.json). ApprovalRef `OUF_R8_LEASE_READBACK_RECOVERY_APPROVED_20261009T225847_CEST`; first invocation expires **10 October00:58:47 Europe/Rome**, epochs1791579527–1791586727. One new lease action for the same two current R8 process generations and existing endpoints; prior claim/evidence preserved. New exclusive claim `/etc/ouf/provider-r8-network-lease-readback-recovery.claim`; never reset or replay either claim.
 
@@ -132,7 +136,7 @@ Semantic/MCP fresh applicable dependency evidence, rollout and discovery grants 
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — two lease cycles proven; new readback recovery prepared, approval pending
+# Historical checkpoint — two lease cycles proven; new readback recovery prepared, approval pending
 
 Operator read22:42:50 confirms two LEASE_ACTIVE receipts, fresh DNS and addresses[1,1], workerPID1847190, no worker denial, all prior program hashes matched. Cleanup left QUIESCED, original empty journal/sets, service not-found and both original R8 PIDs running without restarts. [Target readback projection](evidence/provider-r8-final-lease-readback-target-20261009.json). The exact historical final failing predicate remains unknown because the old verifier did not save its values. Preserve this limit.
 
@@ -144,7 +148,7 @@ Semantic/MCP fresh evidence, rollout and discovery grants remain next. Teatri as
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — lease attempt consumed; final-readback denial under investigation
+# Historical checkpoint — lease attempt consumed; final-readback denial under investigation
 
 Operator result22:35:19 Europe/Rome: EXACT_ACTIVE_LEASE_WORKER_UNPROVEN at final comparison line272, snapshot `/etc/ouf/deploy-snapshots/semantic-r8-lease-ao5xt5og`. Cleanup reports exact worker stopped and leases revoked; lifecycle0, keys0, signatures0, doNotRerunApply=true. [Receipt](evidence/provider-r8-final-lease-denial-target-20261009.json). The parent passed the cycle-2 file-existence check; its contents and the historical comparison values were not acquired. Do not claim target cause confirmed. **Lease approval is consumed. Do not run either lease launcher, reset claims, start the service or repeat R8.**
 
@@ -156,7 +160,7 @@ Semantic/MCP rollout and fresh dependency evidence/discovery grants remain pendi
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — lease denied before claim; corrected approved delivery ready
+# Historical checkpoint — lease denied before claim; corrected approved delivery ready
 
 Operator result at22:27:35 Europe/Rome: NATIVE_SERVICE_COMMAND_FAILED, systemctl exit1, stderr empty, at exact-name-filtered inventory line210. No claim/snapshot/service start reached; lifecycle0, doNotRerunApply=false. [Receipt](evidence/provider-r8-lease-preclaim-denial-20261009.json). The retained diagnostic did not name the subcommand; do not invent which of the two inventories failed. The correction enumerates both service inventories without a name pattern and checks exact membership. Genuine inventory failures remain fatal; diagnosis now includes subcommand and stdout/stderr hashes/counts.
 
@@ -166,7 +170,7 @@ Use only corrected launcher `releases/provider-r8-network-lease-systemctl-fix-20
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — R8 two-flow lease approved; operator execution pending
+# Historical checkpoint — R8 two-flow lease approved; operator execution pending
 
 Human message “Approvo” at **2026-10-09 22:21:21 Europe/Rome** approves the exact two-flow lease review from39130dd288ccbaba4a507d0b6a5703d7576d6694, including the separately bound compiler correction. ApprovalRef `OUF_R8_TWO_FLOW_LEASE_APPROVED_20261009T222121_CEST`; first invocation expires **10 October 00:21:21 Europe/Rome**, epochs1791577281–1791584481. [Approval witness](evidence/provider-r8-lease-human-approval-20261009.json). Existing R8 container generations only, DNS leases maximum30s/renewal15s, one-use transient Restart=no unit, no boot enablement, Docker lifecycle or discovery grant.
 
@@ -176,7 +180,7 @@ Deliver `releases/provider-r8-network-lease-20261009.sh` once via the operator, 
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — R8 stable; two-flow network lease prepared, approval pending
+# Historical checkpoint — R8 stable; two-flow network lease prepared, approval pending
 
 Operator readback at 2026-10-09 21:37:45 Europe/Rome [confirms](evidence/provider-r8-post-start-target-20261009.json) the same two running R8 processes, zero restarts, unchanged STARTED journals and four historical role-record signatures per role. This protected-state receipt is operator-reported. Earlier independent VPS Docker read remains separately recorded.
 
@@ -188,7 +192,7 @@ Native pre-target validation found the original two-empty-flow compiler rejects 
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — R8 target start succeeded; recovery approval consumed
+# Historical checkpoint — R8 target start succeeded; recovery approval consumed
 
 At **2026-10-09 21:11:30 Europe/Rome** the operator reports [R8 success](evidence/provider-r8-target-started-20261009.json), `TWO_CANDIDATE_RUNTIME_STARTED`, recovery/bootstrap exit 0. Both exact candidates have adapter state STARTED and no native denial: adapter `f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67`, southbound `1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916`. The existing activation code verifies exact Docker acknowledgments, running/PID>0 and STARTED journals before this success result. This receipt is operator-reported, not independently fetched from VPS.
 
@@ -206,7 +210,7 @@ Product: Teatri asset `6609b245-86ed-4315-8ce0-73f2a8555bf3`, profile `7984c39c-
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — R7 consumed and denied in live node attestation
+# Historical checkpoint — R7 consumed and denied in live node attestation
 
 Operator output at **2026-10-09 19:43:00 Europe/Rome** reports [R7 denial](evidence/provider-r7-target-denial-20261009.json), output `semantic-provider-v2-transaction-cbuyoyo2`, context `semantic-provider-v2-approved-context-cbuyoyo2`. Both Docker requests exited 1, both adapter journals DELETING. No admitted-running result. Historical key/lifecycle counts remain null; doNotRerunApply true. **R7 approval is consumed regardless of the remaining time window. Do not rerun any R7 launcher, reset claims, clean up tasks or start Docker directly.**
 
@@ -218,7 +222,7 @@ The [single pinned read-only operator command](releases/PROVIDER_R7_ROOTFS_DIAGN
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — R7 delivery corrected to reuse the documented gh executable
+# Historical checkpoint — R7 delivery corrected to reuse the documented gh executable
 
 Operator report at 2026-10-09 19:33:14 Europe/Rome: `gh: command not found`, `OUF_R7_BOOTSTRAP_EXIT=1`. The displayed outer command failed before downloading/invoking R7 or reaching sudo; this attempt did not consume its recovery claim. [Failure evidence](evidence/provider-r7-gh-path-delivery-failure-20261009.json). The prior instructions incorrectly assumed gh in PATH despite the recorded installation at `$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh`.
 
@@ -226,7 +230,7 @@ Corrected launcher commit `697ddbd170a6eac7576b77bc598d726815f06d14`, SHA256 `05
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — R7 approved and pinned; operator execution pending
+# Historical checkpoint — R7 approved and pinned; operator execution pending
 
 Human message “Approvo” at **2026-10-09 19:19:42 Europe/Rome** approves the exact [R7 review](releases/PROVIDER_AUDITED_RECOVERY_REVIEW_20261009.md), one fresh guarded transaction for the two existing CIDs, unchanged accepted inputs and source closure `4b9fbd3149b417a2a696302784aa54d0569b5e87ddc66ac439c153c9ab16bc02`. [Approval witness](evidence/provider-r7-human-approval-20261009.json). ApprovalRef `OUF_PROVIDER_AUDITED_RECOVERY_APPROVED_20261009T191942_CEST_R7`; start window ends **21:19:42 Europe/Rome (19:19:42Z)**, epochs 1791566382–1791573582. Runtime mandates remain limited to 240 seconds and must fit the actual dependency validity.
 
@@ -236,7 +240,7 @@ No VPS operation has been performed here. Latest operator result remains success
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — failure audit completed; fresh R7 recovery prepared and inert
+# Historical checkpoint — failure audit completed; fresh R7 recovery prepared and inert
 
 The [complete experiment audit](releases/PROVIDER_EXPERIMENT_AUDIT_20261009.md) reconciles all 162 evidence files in the acquired baseline with source and workflow contracts. Confirmed R6 defect: four missing producer-result directories. A later five-second producer timeout was reproduced before any new target attempt and repaired without extending the existing total deadline. The previous native fixture bypassed production publication; new coverage runs actual role issuance, authenticated publication, direct production broker and node/approval/preparer/driver through two real Docker application markers. CI remains isolated implementation evidence, not VPS acceptance.
 
@@ -252,7 +256,7 @@ Verifica finale del commit `91f866a2`: [run 37960736584](https://github.com/GioN
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — exact R6 terminal-task cleanup approved; operator execution pending
+# Historical checkpoint — exact R6 terminal-task cleanup approved; operator execution pending
 
 Human “Approvo” at 2026-10-09 17:43:56 Europe/Rome authorizes only the two STOPPED R6 residual tasks reviewed in [scope](releases/PROVIDER_R6_TERMINAL_CLEANUP_REVIEW_20261009.md); [approval record](evidence/provider-r6-terminal-cleanup-human-approval-20261009.json). ApprovalRef OUF_R6_TERMINAL_CLEANUP_APPROVED_20261009T174356_CEST, epoch 1791560636, expiry 1791561836 (18:03:56 Europe/Rome), maximum maintenance window 120 seconds. Executor 7876ecba663ca25a5d7f8322413cd89950fee04a, SHA256 1904926c751851b599e7eab33063d7b9a94d34388b363d4853c831c8834cddaa: only approval reference/timestamps differ from prepared 832ce7595f6d8470f37c5348116490f10589f88c4e924b50450ee1300b6eaaad. Four scoped executor tests still pass. Pending VPS execution, no success inferred.
 
@@ -262,7 +266,7 @@ Next requires operator receipt from this cleanup. Then prepare fresh repaired pr
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — R6 consumed; both candidates denied in admission preparation
+# Historical checkpoint — R6 consumed; both candidates denied in admission preparation
 
 Operator receipt at **2026-10-09 16:59:33 Europe/Rome** reports [R6 BLOCKED](evidence/provider-post-terminal-admission-r6-target-denial-20261009.json), COHORT_ADMITTED_RUNNING_STATE_UNPROVEN. Two Docker start requests, both exit 1/no exact CID acknowledgment; no automatic retry. Both adapter journals now DELETING and both Docker errors identify ADMISSION_PREPARATION_FAILED. Context semantic-provider-v2-approved-context-aj1j95xl and output semantic-provider-v2-transaction-aj1j95xl are consumed and retained. The original R5 output 155oj3tc remains separate. Revised source closure remains 702403e9cd99ddc4ddeed7166f3f408c55657fc690e475e0b35bb5d2c2242bb3. These are operator-pasted observations; unknown key/lifecycle counts remain null.
 
@@ -274,7 +278,7 @@ All broader OUF roadmap/PET constraints and draft PRs remain as recorded below.
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — R6 approved; fixed one-use operator invocation pending
+# Historical checkpoint — R6 approved; fixed one-use operator invocation pending
 
 Human message “Autorizzo” at **2026-10-09 16:51:18 Europe/Rome**, epoch 1791557478, approves the [concrete R6 admission](releases/PROVIDER_V2_POST_TERMINAL_ADMISSION_REVIEW_20261009.md). [Approval binding](evidence/provider-post-terminal-admission-r6-human-approval-20261009.json) is separate from consumed R5 and terminal maintenance authority. APPROVAL_REF=OUF_PROVIDER_V2_POST_TERMINAL_ADMISSION_APPROVED_20261009T165118_CEST_R6. No R6 VPS execution/result has been observed yet.
 
@@ -286,7 +290,7 @@ Next: operator executes the fixed R6 launcher once as oufadmin and returns compl
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — read-only preflight count defect corrected; target readback pending
+# Historical checkpoint — read-only preflight count defect corrected; target readback pending
 
 Operator read at **9 October 2026 16:23:48 Europe/Rome** returned EXACT_RETAINED_R5_SOURCE_CLOSURE_REQUIRED in REVIEW_ACCEPTED_INPUTS_AND_PUBLISHED_SOURCE_CLOSURE, with zero claims, key reads, signatures, lifecycle and configuration writes. [Complete receipt](evidence/provider-post-terminal-admission-read-denial-20261009.json). This did not revoke the successful terminal recovery or prove target source drift.
 
@@ -298,7 +302,7 @@ The earlier read already passed successful maintenance custody, frozen-file and 
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — terminal alias recovery succeeded; read-only admission preparation next
+# Historical checkpoint — terminal alias recovery succeeded; read-only admission preparation next
 
 Operator output reported **9 October 2026 at 16:12:27 Europe/Rome**, [complete receipt](evidence/provider-terminal-alias-recovery-target-success-20261009.json), is user-pasted/operator-reported, not independently acquired. Exit 0; TWO_TERMINAL_TASKS_REMOVED_ALIAS_RECOVERY_CONTAINERS_PRESERVED. Both exact tasks absent; container metadata preserved; wrapperRestored=true, priorJournalsPreserved=true, empty postMaintenanceEmptyGuard and preserved lock inode. Candidate/configuration/kernel hashes equal prior readbacks. Two delete requests; containerLifecycleOperations remains null, not zero. Docker start requests, provider calls, private-key reads, signatures and daemon restarts are zero/false. Evidence: /etc/ouf/deploy-snapshots/semantic-terminal-alias-recovery-3d6pbi16.
 
@@ -312,7 +316,7 @@ Earlier checkpoints below are historical and superseded.
 
 > Current checkpoint: exact runtime alias compatibility defect confirmed by the target's retained options and pure gate predicates. Separate alias recovery is inert pending scoped approval; native CI 37940907012 and ten local tests passed; old consumed claim/evidence are preserved. Human deadline remains 2026-10-09 17:20:18 Europe/Rome. No provider start or release acceptance. See [recovery review](releases/PROVIDER_TERMINAL_ALIAS_RECOVERY_REVIEW_20261009.md).
 
-# Current checkpoint — old runtime error masks terminal gate stderr; read shim argument roots next
+# Historical checkpoint — old runtime error masks terminal gate stderr; read shim argument roots next
 
 Operator error-detail readback at **9 October 2026 15:39:51 Europe/Rome** is preserved in [the complete receipt and local hash recognition](evidence/provider-terminal-maintenance-error-detail-target-20261009.json), operator-reported/not independently acquired. Both bundle log.json files are root-readable mode0644 and contain only errors dated before the terminal-maintenance attempt. The southbound last error at 11:17:10Z (13:17:10 Europe/Rome) is exactly `SEMANTIC_DOCKER_RUNTIME_BLOCKED_ADAPTER_BINDING_UNPROVEN_L323`: locally computed SHA256 matches `7b2b022bf089eaedd96e7836648e847f7fd435918936fdb277a19e6f7d67a950`. The exact 117-byte daemon error `rpc error: code = Unknown desc = failed to delete task: SEMANTIC_DOCKER_RUNTIME_BLOCKED_ADAPTER_BINDING_UNPROVEN_L323` matches SHA256 `8c0fce1ecfd3a2282149bfc5b5c98c55d67482ef4b8b5ff81d779cdd8d550297`.
 
@@ -328,7 +332,7 @@ Official source references: containerd v2.3.5 [process/init.go](https://github.c
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — both residual tasks still stopped; preservation verified; exact error read next
+# Historical checkpoint — both residual tasks still stopped; preservation verified; exact error read next
 
 Operator readback at **9 October 2026 15:32:49 Europe/Rome** is retained in [the complete readback receipt](evidence/provider-terminal-maintenance-denial-readback-target-20261009.json), operator-reported/not independently acquired. Both exact tasks remain present and STOPPED with historical PIDs 1687816/1722506 absent. Neither CID exists in the retained runc root. Both container metadata hashes match; all **83 retained files** are unchanged and readable. Current wrapper is the exact restored R5 hash and native guard is empty. This verifies preservation that the failed executor did not reach; it does not change historical lifecycle count null or undo the consumed maintenance claim.
 
@@ -340,7 +344,7 @@ The new reader avoids repeating the completed task/metadata/83-file/guard invent
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — terminal maintenance consumed and blocked; read-only diagnosis next
+# Historical checkpoint — terminal maintenance consumed and blocked; read-only diagnosis next
 
 Operator output reported **9 October 2026 at 15:24:48 Europe/Rome** is preserved in [the complete denial receipt](evidence/provider-terminal-maintenance-target-denial-20261009.json). Evidence is user-pasted/operator-reported, not independently acquired. The one request issued was southbound `ctr tasks delete`, which returned nonzero and produced `TERMINAL_TASK_DELETE_UNPROVEN`. Adapter deletion was not reached. **Task absence/removal and the underlying error are not proven.** Historical lifecycle count remains null.
 
@@ -352,7 +356,7 @@ The executor retained only stderr/stdout fingerprints from ctr; these alone cann
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — two-hour terminal maintenance renewal approved; operator result pending
+# Historical checkpoint — two-hour terminal maintenance renewal approved; operator result pending
 
 Human message `Autorizzo, ma fai due ore conoscendo come lavori`, received **9 October 2026 at 15:20:18 Europe/Rome**, explicitly renews the same exact two-task maintenance for **7200 seconds, until 17:20:18 Europe/Rome (15:20:18Z)**. New approvalRef `OUF_TERMINAL_TASK_CLEANUP_HUMAN_APPROVAL_20261009_152018`; witness [evidence/provider-terminal-maintenance-human-renewal-20261009.json](evidence/provider-terminal-maintenance-human-renewal-20261009.json). The old approval and all prior input/image/rootfs acceptances remain preserved.
 
@@ -364,7 +368,7 @@ No live VPS read, cleanup, wrapper switch or provider start was performed by thi
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — terminal maintenance window expired; target result unknown
+# Historical checkpoint — terminal maintenance window expired; target result unknown
 
 The approved one-hour window ended **9 October 2026 at 15:04:46 Europe/Rome (13:04:46Z)**. The current executor rejects at and after that instant with `LIVE_HUMAN_MAINTENANCE_APPROVAL_REQUIRED`, before loading target helpers or reserving a claim. Six local executor/gate tests and explicit time-boundary/current-time denial checks passed during context reconstruction. Post-approval native CI [37927796726](https://github.com/GioNob/ouf-deploy/actions/runs/37927796726) is SUCCESS; CI is not target acceptance.
 
@@ -374,7 +378,7 @@ See [the concrete continuation review](releases/PROVIDER_TERMINAL_MAINTENANCE_CO
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — terminal two-task maintenance approved; operator execution pending
+# Historical checkpoint — terminal two-task maintenance approved; operator execution pending
 
 Human response `Approvo` at 2026-10-09 14:04:46 Europe/Rome authorizes exactly the reviewed terminal maintenance, with no start. Approval witness/executor commit `1bd1baca89c7e77947180ea5e531713e0afcd5d3`, approvalRef `OUF_TERMINAL_TASK_CLEANUP_HUMAN_APPROVAL_20261009_140446`, epoch1791547486. Only executor approvalRef/time changed from reviewed implementation; three executor tests pass after binding. Executor SHA256 `f94b61f48e85a0bbc669b4cf40b0f2e2cde0e0bca3a4e41ca3620ee510c53830`. Actual code rejects execution after 15:04:46 Europe/Rome (one-hour approved maintenance bound), separately from its 120-second delete-only window.
 
@@ -382,7 +386,7 @@ Pinned launcher `releases/provider-terminal-task-cleanup-20261009.sh`, SHA256 `0
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — terminal maintenance is concrete and CI-validated, awaiting scoped human approval
+# Historical checkpoint — terminal maintenance is concrete and CI-validated, awaiting scoped human approval
 
 Operator review at 13:45:19 Europe/Rome proves two STOPPED containerd v2.3.5 tasks, both historical task PIDs absent, exact owned shim generations and native empty guard. Receipt `evidence/provider-v2-r5-terminal-cleanup-review-target-20261009.json` is operator-reported/not independently acquired. Current wrapper remains R5 `4bd86d0c27039a238ac4894cf0c151745c92814c94af7b5a2f2ed173b70d685a`; no target cleanup or start has run.
 
@@ -392,7 +396,7 @@ Full CI 37927151726/job113808729422 SUCCESS proves six tests and actual two-task
 
 Earlier checkpoints below are historical and superseded.
 
-# Current checkpoint — both stopped containerd tasks remain; runc entries absent
+# Historical checkpoint — both stopped containerd tasks remain; runc entries absent
 
 Operator inventory PASS at 13:38:52 Europe/Rome, 9 October 2026, preserved in `evidence/provider-v2-r5-task-inventory-target-20261009.json` (operator-reported/not independently acquired). Namespace moby at Docker's explicit `/run/containerd/containerd.sock`: southbound STOPPED task PID metadata 1687816, metadata SHA256 `6a39de17aa02d0358dcac7b931645ac84004bbec013443eec29447c6d772f767`; adapter STOPPED PID metadata 1722506, metadata SHA256 `45b95bc5610c03f5db63d48c52070c5d1302d8bde6a5f22c1ef978bb6bcf2868`. Neither CID exists in runc inventory at retained R5 adapter root hash `c64c266a92b2d9ff052a8f2b817ee730406b2ddde47d550a52effb822b181342`. ctr `/usr/bin/ctr` SHA256 `8bb9bc5014e0f7623603d6a0dc1f7fedfe5b5a9ea5e265cc00dfbbae23ee984e`. Task presence now proven; PID metadata does not prove a current live process or an absent process.
 

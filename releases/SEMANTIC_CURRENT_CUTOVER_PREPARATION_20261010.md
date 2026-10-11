@@ -93,6 +93,8 @@ Per costruire il prossimo recupero servono gli hash privati esatti di claim/auto
 
 Lettura root non eseguita automaticamente: l'account runner richiede password sudo, già provato senza alterare permessi. Output atteso `OUF_NEW_RECOVERY_PREFLIGHT`, stato `NEW_RECOVERY_INPUT_BINDINGS_CAPTURED_NOT_APPLY_AUTHORITY`; può negare per drift e resta sempre productionApplyReadyfalse/newStartAuthorizedfalse. Questo comando raccoglie solo i vincoli per preparare un recupero distinto; non è un apply o un ApprovalDecision semantico.
 
+**STORICO — COMANDO SOSPESO DAL11 OTTOBRE2026: non eseguire. La nuova chiusura resiliente richiede preparazione e qualificazione proprie.**
+
 ```bash
 (
   set -euo pipefail
@@ -115,3 +117,14 @@ exec(compile(source, "<qualified-recovery-preflight>", "exec"), {"__name__": "__
 ' "$OUF_READ"
 )
 ```
+
+
+## 11 ottobre 2026 — resilienza predefinita e recupero limitato qualificato
+
+Decisione dell'owner: pausa e retry incrementali finiti sono il default di tutto OUF, anche quando una dipendenza resta indisponibile per ore. [Politica v1](../docs/OUF_RESILIENCE_POLICY.md), registrata anche negli AGENTS.md dei sette repository: 5/15/60/300/900 secondi, jitter fino al20%, massimo128 tentativi e24ore per operazione/incidente; prevale il primo limite. Profili specifici versionati, Retry-After rispettato, checkpoint/budget persistenti, nessun reset al riavvio. Revoca, integrità, generazioni/configurazioni mutate ed esiti ambigui non diventano retry permissivi.
+
+[CI38102725541](https://github.com/GioNob/ouf-deploy/actions/runs/38102725541), commit587d436b972def56911c01d80d3bb1e0b5611035, job114361821303 SUCCESS:16 test del controller/journal POSIX e prova nativa DNS/nft con quattro ore virtuali di indisponibilità.21 tentativi nel percorso nativo, set sempre vuoti nella pausa, riapertura con nuove risposte DNS e TTL strettamente positivo in inet/bridge; revoca durante la pausa impedisce ulteriori query. Lock lease assente durante DNS e attese; journal riaperto senza reset; vecchio claim/fonti preservati. CI adattiva sullo stesso commit38102725565 SUCCESS. [Evidenza e limiti](../evidence/bounded-resilient-lease-qualified-20261011.json), [integrazione richiesta](../docs/OUF_RESILIENCE_IMPLEMENTATION.md).
+
+Qualificazione di recupero isolato con scope/metadata sintetici, non quattro ore reali di uptime né worker target completo. Il nuovo controller restituisce il controllo al normale owner dopo il recupero: il supervisore di rinnovo, la nuova autorità live e la chiusura source/command/OCI/peer target devono ancora essere collegati e qualificati. Gli errori di custodia/journal impediscono nuovi tentativi e richiedono gestione osservabile dall'entrypoint, senza auto-ripristino del budget. Nessun apply, restart, enablement, lifecycle applicativo o modifica VPS.
+
+**Il comando root preflight precedente è sospeso e non va eseguito ora.** Rimane storico; non è un'autorizzazione di recupero. R10 resta consumato, failed/QUIESCED secondo l'ultima osservazione operatore; non riavviare/ripetere R9/R10. Preparazione secret-file e cutover restano sospesi. Il seguito prepara una nuova chiusura resiliente distinta, preservando Cinema/Teatri, default deny e authority HUMAN/THS dei PET.

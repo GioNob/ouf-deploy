@@ -1,6 +1,6 @@
 {
   "schema": "ouf.discovery.application-cutover-preparation.v1",
-  "status": "CURRENT_CUTOVER_BLOCKED_R10_QUIESCED_NEW_RECOVERY_PRIVATE_BINDINGS_REQUIRED",
+  "status": "RESILIENT_RECOVERY_PROTOCOL_QUALIFIED_TARGET_CLOSURE_PENDING",
   "applyAuthorized": false,
   "newTargetAuthorityIssued": false,
   "networkLease": {
@@ -291,6 +291,23 @@
     "sha256": "12359da3c9e5d65c2800b1a9290434a8a27d4e805a6cfc0fe07554600a278984",
     "operatorRequiredBecause": "SUDO_PASSWORD_REQUIRED_FOR_ROOT_PRIVATE_ARTIFACTS",
     "performed": false,
-    "newStartAuthorized": false
+    "newStartAuthorized": false,
+    "status": "SUSPENDED_PENDING_RESILIENT_WORKER_CLOSURE",
+    "operatorCommandSuspended": true
+  },
+  "resilience": {
+    "policy": "docs/OUF_RESILIENCE_POLICY.md",
+    "defaultAcrossProject": true,
+    "recordedInSevenRepositoryAgents": true,
+    "evidence": "evidence/bounded-resilient-lease-qualified-20261011.json",
+    "runId": 38102725541,
+    "sourceCommit": "587d436b972def56911c01d80d3bb1e0b5611035",
+    "unitTests": 16,
+    "nativeDnsNftQualified": true,
+    "outageHoursVirtual": 4,
+    "targetWorkerIntegrated": false,
+    "targetApplied": false,
+    "previousPreflightSuspended": true,
+    "allExistingRuntimesConform": false
   }
 }
