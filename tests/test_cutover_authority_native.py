@@ -7,10 +7,27 @@ sys.path.insert(0,str(ROOT/'tools/semantic_application_cutover'))
 from cutover_authority import CutoverAuthority,AuthorityDenied
 from tools.semantic_provider_deployment_authentication import DetachedAuthenticator,signing_bytes
 from tools.semantic_provider_preexec import PreexecDenied
+from cutover_executor import Executor
+from transition_journal import Transition,PHASES
 
 def encoded(v):return json.dumps(v,sort_keys=True,separators=(',',':')).encode()
 def sha(b):return hashlib.sha256(b).hexdigest()
 class SignedCutover(unittest.TestCase):
+ def test_actual_dual_signature_gate_composes_with_all_ordered_fixture_phases(self):
+  import types
+  path=ROOT/'tools/semantic_lease_recovery/recovery_journal.py'
+  if not path.exists():path=ROOT/'tests/fixtures/recovery_journal.py'
+  spec=importlib.util.spec_from_file_location('signed_fixture_journal',path);j=importlib.util.module_from_spec(spec);spec.loader.exec_module(j)
+  intents={p:{'syntheticFixturePhase':p} for p in PHASES}
+  self.authority=encoded({'schema':'ouf.semantic-cutover-execution-authority.v1',**{k:v for k,v in self.expected.items() if k!='intakeHash'},'issuedAt':self.now,'expiresAt':self.now+120,'phaseIntentHashes':{p:sha(encoded(i)) for p,i in intents.items()},'automaticReplayAllowed':False,'databaseRestoreAuthorized':False,'r12ReplayAuthorized':False,'newDistinctLeaseWorkerRequired':True})
+  self.approval['executionAuthorityHash']=sha(self.authority);self.write(self.mandate,encoded(self.approval));self.approved=sha(self.mandate.read_bytes())
+  for role in self.grant['roles']:self.sign(role)
+  root=self.root/'journal';root.mkdir(mode=0o700);store=j.Journal(root);initial=Transition.initial(sha(self.authority),self.expected['creationRequestHash'],self.expected['predecessorHistoryHash'],self.expected['predecessorIncidentRef']);store.initialize(initial);t=Transition(store,initial['contextHash']);calls=[]
+  def checkpoint(phase,point,row):return {'schema':'ouf.semantic-cutover-native-checkpoint.v1','phase':phase,'point':point,'journalVersion':row['version'],'intentHash':sha(encoded(intents[phase])),'authorityHash':sha(self.authority),'sourceClosureHash':self.expected['sourceClosureHash'],'nativeEvidenceHash':'f'*64}
+  adapters={p:types.SimpleNamespace(apply=lambda i,p=p:calls.append(p),observe=lambda i:('APPLIED',{'syntheticNativeFixture':True})) for p in PHASES}
+  executor=Executor(t,self.authority,self.gate(),checkpoint,adapters,intents,self.clock)
+  result=executor.run();self.assertEqual(calls,list(PHASES));self.assertFalse(result['releaseAcceptance'])
+  executor.run();self.assertEqual(calls,list(PHASES))
  def setUp(self):
   self.assertEqual(os.geteuid(),0)
   self.temp=tempfile.TemporaryDirectory(dir=ROOT,prefix='cutover-authority-fixture-');self.addCleanup(self.temp.cleanup);self.root=Path(self.temp.name);self.root.chmod(0o700)

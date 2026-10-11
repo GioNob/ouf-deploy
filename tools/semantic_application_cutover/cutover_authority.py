@@ -35,10 +35,11 @@ class CutoverAuthority:
   return approval_raw
  def __call__(self,raw):
   require(type(raw) is bytes and 0<len(raw)<=131072,'BOUNDED_CUTOVER_AUTHORITY_BYTES_REQUIRED')
-  before=self.mandate(raw);ctx=self.context
+  started=self.clock();before=self.mandate(raw);ctx=self.context
   # BOTH separately role-framed signatures are required; a hash, an ordinary
   # provenance signature or a no-op callback cannot grant execution authority.
   for role,issuer in (('DEPLOYMENT_INTENT',ctx['intentIssuerRef']),('FINAL_DEPLOYMENT_APPROVAL',ctx['approvalIssuerRef'])):
    require(self.verifier(raw,role,issuer,ctx['installationRef'],ctx['entityRef']) is True,'CURRENT_SCOPED_CUTOVER_SIGNATURE_REQUIRED')
   require(self.mandate(raw)==before,'HUMAN_DECISION_CHANGED_DURING_VERIFICATION')
+  require(self.clock()>=started,'CUTOVER_AUTHORITY_CLOCK_REGRESSED')
   return True
