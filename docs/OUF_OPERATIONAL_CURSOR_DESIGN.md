@@ -1,6 +1,6 @@
 # Stable incident cursors and operator consultation — implementation decision
 
-Status: owner publication/paging, MCP metadata/composition, delegated mediation and persistent control admission IMPLEMENTED AND CI QUALIFIED (Ingestion PR37; Gateway PR60/64/65; MCP PR53–57). Public HTTP/tool adapter PR58 is in final qualification. Persistent publication bookmarks, consultation confirmation and target qualification remain OPEN. This design follows [resilience policy v3](OUF_RESILIENCE_POLICY.md), [rollout plan](OUF_OPERATIONAL_RESILIENCE_PLAN.md), MCP PET1.4 §§33–34 and Ingestion PET1.3 Operational Awareness. Existing owners retain authority; no new central incident service or broker is introduced.
+Status: owner publication/paging, MCP metadata/composition, delegated mediation and persistent control admission IMPLEMENTED AND CI QUALIFIED (Ingestion PR37; Gateway PR60/64/65; MCP PR53–58). Public HTTP/tool adapter PR58 is IMPLEMENTED AND CI QUALIFIED; Gateway private publication bookmark reference PR66 is qualified. Persistent publication bookmarks, consultation confirmation and target qualification remain OPEN. This design follows [resilience policy v3](OUF_RESILIENCE_POLICY.md), [rollout plan](OUF_OPERATIONAL_RESILIENCE_PLAN.md), MCP PET1.4 §§33–34 and Ingestion PET1.3 Operational Awareness. Existing owners retain authority; no new central incident service or broker is introduced.
 
 ## Why observation time is insufficient
 
