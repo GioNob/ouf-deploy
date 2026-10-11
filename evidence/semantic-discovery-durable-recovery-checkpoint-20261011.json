@@ -1,6 +1,6 @@
 {
   "schema": "ouf.csv-continuation.discovery-durable-checkpoint.v1",
-  "status": "SOURCE_QUALIFIED_PACKAGE_IN_PROGRESS_TARGET_CUTOVER_OPEN",
+  "status": "SOURCE_AND_SIGNED_OFFLINE_PACKAGE_QUALIFIED_CURRENT_PROTECTED_READ_REQUIRES_OPERATOR",
   "sourceRepository": "GioNob/ouf-semantic-registry",
   "qualifiedSource": "8a2e84b32d4ce2bdc3bc529b56afb5663ab133e3",
   "sourceBranch": "codex/discovery-durable-resilience-20261011",
@@ -17,7 +17,16 @@
   "package": {
     "publisherCommit": "3ec99277b8383e496913b9fd3bb05c877825abf5",
     "runId": 38160893223,
-    "status": "IN_PROGRESS_NOT_ACCEPTANCE"
+    "jobId": 114533383998,
+    "status": "SUCCESS_NOT_TARGET_ACCEPTANCE",
+    "artifactId": 11710556577,
+    "artifactSizeBytes": 212264647,
+    "artifactDigest": "sha256:b6ae1051cee4ec9fb1b28f532622ecd39e038ec2e6a384d50565cbf92f2a0def",
+    "imageId": "sha256:83635be46d1fe61dea08597ea4488980b4349e5f6e0ed8bbd3ab6f5e2686370e",
+    "applicationSourceCommit": "8a2e84b32d4ce2bdc3bc529b56afb5663ab133e3",
+    "attestedSubjects": 8,
+    "packagedMigrations": "V1_V11_BYTE_VERIFIED",
+    "targetPublisherTrustAccepted": false
   },
   "targetObservation": {
     "runId": 38147699164,
@@ -282,5 +291,18 @@
     "CURRENT_SIGNED_COHORT_TRANSPORT_TARGET_CUTOVER",
     "PUBLISHED_TEATRO_REFERENCES_AND_REVIEWED_BUNDLE",
     "REAL_INGESTION_RUN_DURABLE_UDP_ACK_LINEAGE_AUTHORIZED_SEARCH_ALL_13_ROWS"
-  ]
+  ],
+  "protectedRead": {
+    "runId": 38161252572,
+    "jobId": 114534478699,
+    "workflowConclusion": "SUCCESS_REPORTING_ACCESS_ONLY",
+    "readerExecuted": false,
+    "rootAttemptExit": 1,
+    "result": "NOT_EXECUTED_EXISTING_ROOT_PERMISSION_UNPROVEN_OPERATOR_REQUIRED",
+    "localReaderTests": 9,
+    "operatorLauncher": "releases/current-r12-custody-read-20261011.sh",
+    "launcherSha256": "ba8e8cab5c2b6e5030c5e3f093fc9945f06efd0bbeed5dcfb88441faa187371e",
+    "localDeliveryTests": 4,
+    "sudoOrRuntimePermissionChanged": false
+  }
 }

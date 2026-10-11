@@ -1,0 +1,18 @@
+name: Current R12 read-only custody delivery qualification
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/current-r12-custody-delivery.yml
+      - releases/current-r12-custody-read-20261011.sh
+      - tests/test_current_r12_custody_delivery.py
+permissions: {contents: read}
+jobs:
+  delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: bash -n releases/current-r12-custody-read-20261011.sh
+      - run: python3 -B -m unittest discover -s tests -p 'test_current_r12_custody*.py' -v
