@@ -1,3 +1,7 @@
+# Current checkpoint — protected preparation blocked pending R10 diagnosis
+
+Operator receipt received 2026-10-11 02:59 CEST: CURRENT_R10_PRIVATE_WORKER_UNPROVEN, exit1, no existing configuration/database/firewall/container changes. File-secret declaration not prepared. Previous preparation command suspended pending bounded read-only diagnosis; consumed R10 must not be rerun. [Current evidence and diagnostic scope](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md#esito-operatore-ricevuto-l11-ottobre-2026-0259-cest).
+
 # Current checkpoint — autonomous current-package and target qualification
 
 [Progress, PET decisions and one required protected operator command](releases/SEMANTIC_CURRENT_CUTOVER_PREPARATION_20261010.md). Exact Semantic e826bd… now passes full Spring/configtree startup, fixture IAM positive/negative enforcement, V10 and current-snapshot recovery at [CI38085528129](https://github.com/GioNob/ouf-deploy/actions/runs/38085528129). Independent target runner reads confirm R10 service active, original Semantic generation, V9 and10 sessions; an existing administrator outside the application database supplies full metadata visibility without grants or database writes. [Structured evidence](evidence/semantic-autonomous-cutover-progress-20261010.json).
