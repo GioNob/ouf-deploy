@@ -58,6 +58,7 @@ def main():
     assert os.geteuid() == 0
     assert Path('/proc/self/ns/net').stat().st_ino != Path('/proc/1/ns/net').stat().st_ino
     source = Path(sys.argv[1]).resolve()
+    short_window = len(sys.argv) == 3 and sys.argv[2] == '--short-window'
     nft = str(Path(shutil.which('nft')).resolve())
     run(['/usr/sbin/ip', 'link', 'set', 'lo', 'up'])
     server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -83,7 +84,7 @@ def main():
             question = query[12:end+4]
             # First complete A+AAAA attempt is noncacheable; then entirely
             # fresh answers use different IPv4 values. No address carry-over.
-            ttl = 0 if persistent.is_set() or counts['queries'] <= 2 else 30
+            ttl = (3 if short_window else 0) if persistent.is_set() else (0 if counts['queries'] <= 2 else 30)
             if ttl == 0:
                 counts['zeroTtl'] += 1
             ipv4 = ('9.9.9.9' if ttl == 0 else '1.1.1.1') if labels[0] == b'provider' else '8.8.8.8'
@@ -175,9 +176,14 @@ def main():
                 assert time.monotonic() < deadline, 'PERSISTENT_TTL_DENIAL_TIMEOUT'
                 time.sleep(.2)
             failure = reader.parse(reader.private(root/'worker-denial.json'))
-            window = next(v['dnsObservationWindow'] for v in failure['exceptionChain'] if 'dnsObservationWindow' in v)
-            assert window['minimumObservedTtlSeconds'] == 0 and window['ttlNoncacheable'] is True
-            assert window['freshObservationAttempts'] == 3 and failure['refreshCount'] == 2
+            if short_window:
+                assert any(v['reason'] == 'FRESH_RESOLUTION_UNUSABLE' for v in failure['exceptionChain'])
+                print('CI_MARGIN_WORKER_SHORT_DNS=USABLE_DNS_BUT_INSUFFICIENT_KERNEL_MARGIN_DENIED', flush=True)
+            else:
+                window = next(v['dnsObservationWindow'] for v in failure['exceptionChain'] if 'dnsObservationWindow' in v)
+                assert window['minimumObservedTtlSeconds'] == 0 and window['ttlNoncacheable'] is True
+                assert window['freshObservationAttempts'] == 3
+            assert failure['refreshCount'] == 2
             journal = reader.parse(reader.private(root/'journal.json'))
             assert journal['state'] == 'QUIESCED' and journal['leaseAuthorized'] is False
             for family in ('inet', 'bridge'):
@@ -189,7 +195,7 @@ def main():
             assert repeated.returncode != 0 and (root/'journal.json').read_bytes() == before
             assert (root/'old-consumed-claim').read_bytes() == b'CI_CONSUMED_CLAIM_PRESERVED'
             assert all((root/'source'/name).read_bytes() == raw for name, raw in original.items())
-            print('CI_MARGIN_WORKER_NATIVE=PERSISTENT_ZERO_TTL_REVOKED THREE_ATTEMPTS=true REPLAY_DENIED=true ORIGINAL_SOURCES_PRESERVED=true REAL_SYSTEMD_DNS_NFT=true TARGET_ACTIONS=0', flush=True)
+            print('CI_MARGIN_WORKER_NATIVE=UNUSABLE_LEASE_REVOKED REPLAY_DENIED=true ORIGINAL_SOURCES_PRESERVED=true REAL_SYSTEMD_DNS_NFT=true TARGET_ACTIONS=0', flush=True)
         finally:
             run(['/usr/bin/systemctl', 'stop', unit], check=False)
             run(['/usr/bin/systemctl', 'reset-failed', unit], check=False)

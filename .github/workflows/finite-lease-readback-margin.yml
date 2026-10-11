@@ -32,3 +32,5 @@ jobs:
         run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_recovery/readback_margin_native.py lease-owner-source
       - name: Prospective compiler closure through actual worker DNS systemd revocation and replay denial
         run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_recovery/readback_margin_worker_native.py lease-owner-source
+      - name: Positive but too short fresh DNS is denied before unsafe kernel admission
+        run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_recovery/readback_margin_worker_native.py lease-owner-source --short-window
