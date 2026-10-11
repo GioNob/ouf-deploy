@@ -75,7 +75,7 @@ def native():
             # Fixture-only lifecycle: one endpoint owns IP/MAC at a time.
             docker('stop','--time','1',old);docker('network','disconnect',network,old)
             connection=UnixConnection('localhost',timeout=30)
-            connection.request('POST','/v1.49/containers/create?name='+new_name,
+            connection.request('POST','/v1.44/containers/create?name='+new_name,
                                body=m.encoded(request),headers={'Content-Type':'application/json'})
             response=connection.getresponse();body=response.read(65536);connection.close()
             assert response.status==201, (response.status,body.decode()[:300])
