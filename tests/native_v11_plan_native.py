@@ -11,6 +11,7 @@ sys.path.insert(0,str(ROOT/"tools/semantic_application_cutover"))
 from image_import import Import
 import image_manifest_identity
 import rebase_native_manifest
+import transition_journal
 import test_semantic_creation_plan as creation_fixture
 journal_module=module("image_import_journal","tools/semantic_lease_recovery/recovery_journal.py")
 engine_module=module("image_import_engine","tools/semantic_application_cutover/engine_creation.py")
@@ -98,6 +99,56 @@ with tempfile.TemporaryDirectory() as folder:
     assert creation_fixture.m.compile_creation(native_plan,rebase_native_manifest.digest(native_plan),fixture_host)[0]==native_request
     assert {k:v for k,v in native_request.items() if k!='Image'}=={k:v for k,v in original_request.items() if k!='Image'}
     assert native_request['Image']==expected_descriptor['digest']
+    # New integration boundary: create the ORIGINAL signed image by its native
+    # manifest ID, die after the effect, reopen and reconcile without create.
+    # The image's JVM is never started. Prior phase receipts are fixture-only.
+    creation_request={'Image':expected_descriptor['digest'],'User':'10001:10001',
+        'HostConfig':{'NetworkMode':'none','ReadonlyRootfs':True,'CapDrop':['ALL'],
+            'SecurityOpt':['no-new-privileges'],'RestartPolicy':{'Name':'no','MaximumRetryCount':0},
+            'Memory':2147483648,'MemorySwap':2147483648,'NanoCpus':2000000000,'PidsLimit':512}}
+    creation_dir=root/'creation-journal';creation_dir.mkdir(mode=0o700)
+    creation_journal=journal_module.Journal(creation_dir)
+    initial_creation=transition_journal.Transition.initial(fixture_authority,engine_module.digest(creation_request),'c'*64,'d'*64)
+    creation_journal.initialize(initial_creation)
+    transition=transition_journal.Transition(creation_journal,initial_creation['contextHash'])
+    with transition.invocation():
+        for phase in transition_journal.PHASES[:4]:
+            row=transition.begin(phase,fixture_authority,fixture_authority,transition.read()['version'])
+            transition.reconcile(phase,fixture_authority,'APPLIED',engine_module.digest({'syntheticFixturePhase':phase}),row['version'])
+    try:
+        pid=os.fork()
+        if pid==0:
+            try:
+                with transition.invocation():
+                    engine.create_once(transition,creation_request,fixture_authority,lambda phase:None)
+                    os._exit(71)
+            except Exception as error:
+                print('OUF_NATIVE_V11_CREATION_DENIED='+json.dumps({'errorType':type(error).__name__,
+                    'reason':str(error) if str(error).isupper() else 'NATIVE_CREATION_UNPROVEN'}),flush=True)
+                os._exit(72)
+        _,status=os.waitpid(pid,0)
+        observed=engine.inspect(transition)
+        print('OUF_NATIVE_V11_CREATED_IDENTITY='+json.dumps({'requestImageId':creation_request['Image'],
+            'observedImageId':observed.get('Image') if observed else None,'childExit':os.waitstatus_to_exitcode(status)}),flush=True)
+        assert os.waitstatus_to_exitcode(status)==71
+        assert creation_journal.read()['state']=='IN_FLIGHT'
+        reopened=transition_journal.Transition(journal_module.Journal(creation_dir),initial_creation['contextHash'])
+        with reopened.invocation():
+            # A new authority hash cannot replay a consumed creation.
+            try:reopened.begin('CREATE_REPLACEMENT',engine_module.digest(creation_request),'e'*64,reopened.read()['version'])
+            except ValueError:pass
+            else:raise AssertionError('NATIVE_MANIFEST_CREATION_REPLAY_ALLOWED')
+            reconciled=engine.reconcile(reopened,creation_request,lambda phase:None)
+        assert reconciled['nextPhase']==5 and reconciled['state']=='READY'
+        assert engine.inspect(reopened)['Id']==observed['Id']
+        assert not observed['State']['Running'] and observed['State']['Pid']==0
+        receipt.update(actualOriginalImageContainerCreatedByManifest=True,
+            actualProcessDeathAfterContainerCreation=True,creationJournalReopened=True,
+            exactStoppedCreationReconciledWithoutDuplicate=True,originalSignedJvmNeverStarted=True,
+            precedingCutoverPhasesSyntheticFixtureOnly=True,targetTransitionAuthorityIssued=False)
+    finally:
+        observed=engine.inspect(transition)
+        if observed is not None:engine.request('DELETE','/v1.44/containers/'+observed['Id'])
     receipt.update(nativePlanCompiledUsingActualEngineProof=True,onlyCreationImageIdentityChanged=True,
                    privateRootPlanIsFixture=True,targetPrivatePlanPrepared=False)
     assert journal.read()["state"]=="VERIFIED" and journal.read()["effectAttemptCount"]==1
