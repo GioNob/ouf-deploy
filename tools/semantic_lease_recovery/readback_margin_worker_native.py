@@ -84,7 +84,9 @@ def main():
             question = query[12:end+4]
             # First complete A+AAAA attempt is noncacheable; then entirely
             # fresh answers use different IPv4 values. No address carry-over.
-            ttl = (3 if short_window else 0) if persistent.is_set() else (0 if counts['queries'] <= 2 else 30)
+            # TTL4 yields remaining3 after DNS quantization, then a one-second
+            # plan after elapsed sibling observation and the existing budget.
+            ttl = (4 if short_window else 0) if persistent.is_set() else (0 if counts['queries'] <= 2 else 30)
             if ttl == 0:
                 counts['zeroTtl'] += 1
             ipv4 = ('9.9.9.9' if ttl == 0 else '1.1.1.1') if labels[0] == b'provider' else '8.8.8.8'
