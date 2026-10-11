@@ -1,3 +1,5 @@
+> **Policy di piattaforma vigente:** [Resilienza, quarantena, incidenti e alert — v3](https://github.com/GioNob/ouf-deploy/blob/main/docs/OUF_RESILIENCE_POLICY.md). Obbligatoria per sviluppo e revisione; [adozione e prove](https://github.com/GioNob/ouf-deploy/blob/main/docs/OUF_RESILIENCE_ADOPTION.md).
+
 # Resilienza OUF: implementazione e chiusure residue
 
 La [politica v1](OUF_RESILIENCE_POLICY.md) è il default di progetto dal11 ottobre2026. Gli AGENTS.md dei sette repository la richiamano; questo registra una regola di lavoro, non certifica ogni runtime esistente.

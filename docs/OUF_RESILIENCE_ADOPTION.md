@@ -1,4 +1,4 @@
-# Platform resilience v2 — adoption ledger (11 October 2026)
+# Platform resilience v3 — adoption ledger (11 October 2026)
 
 [Normative policy](OUF_RESILIENCE_POLICY.md). The owner's decisions authorize implementation choices consistent with the PETs/AWS references; they do not manufacture runtime HUMAN grants or reopen consumed target activation claims.
 
@@ -35,3 +35,19 @@ V15 additiva introduce un ledger di sessioni, non reset del budget storico. La r
 La prima prova38104025072 fallì soltanto per operatore JSON ? nella query di test con JdbcClient; correzione jsonb_exists, senza modificare quel comportamento produttivo, e riesecuzione PASS. La fixture legacy HUMAN_USER è stata allineata a HUMAN+capability del SDK, non rilassata l'autorizzazione.
 
 Adozione completa ancora aperta: retry automatici del worker, budget iniziali/source/publication/dispatcher/replay storico, circuiti/quote multi-run, capacità/retention/backpressure della quarantena e superfici operatore THS/MCP. I rolling counter circuit esistenti non sono nuove concessioni di budget. Nessuna migration/apply sul VPS, cutover, firma o replay R9/R10; precedente root preflight sospeso. Cinema/Teatri e gap PET/F0–F11 preservati. La suite DR prova la fixture nominata, non il recupero dell'intera piattaforma o dei nuovi ledger popolati sul target.
+
+## Policy v3 — incidenti, catch-up e alert (11 October 2026)
+
+Policy integrata approvata dall'owner: distinzione incidenti/eventi/lavori/notifiche, uno outage/una causa invece di5.000 issue equivalenti; priorità prima della limitazione; checkpoint consultazione distinto da login; crisi su segnali temporali e impatto/capacità, non assenza umana; alert attivi deduplicati con consegna durevole e budget finito. README/AGENTS e documenti principali richiamano la fonte canonica.
+
+| Tranche v3 | Stato iniziale verificato |
+|---|---|
+| Capability summary/incidents/explain | Presenti nel manifest MCP; aggregazione Ingestion/Gateway/self; deploy/grant EVIDENCE PENDING |
+| Priorità incidenti | Ordinamento aggregato alfabetico identificato; correzione e qualifica in corso, selezione producer da verificare |
+| Dedup dipendenza e5.000 lavori | Contratto PET presente; chiusura multirun/multi-owner OPEN |
+| Checkpoint operatore/cursor | Query since bounded presente; checkpoint durevole accesso/consultazione e cursor completi OPEN |
+| Crisi/capacità/isteresi | Circuiti legacy parziali; integrazione policy v3 e prove OPEN |
+| Alert email/outbox/escalation | Policy registrata; configurazione trasporto/destinatari e implementazione OPEN; nessuna email inviata |
+| Piano di controllo non disponibile | Monitor indipendente/configurazione operativa da qualificare; OPEN |
+
+La policy non dichiara implementate le righe OPEN, non risolve R10 e non autorizza implicitamente replay, deploy o decisioni HUMAN di dominio.
