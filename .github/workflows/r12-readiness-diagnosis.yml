@@ -7,6 +7,7 @@ on:
       - scripts/read-r12-readiness-diagnosis.py
       - tests/test_r12_readiness*.py
       - releases/r12-readiness-diagnosis-20261011.sh
+      - releases/resume-native-v11-plan-20261011.sh
   workflow_dispatch:
 permissions:
   contents: read
