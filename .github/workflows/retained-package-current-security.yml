@@ -53,7 +53,7 @@ jobs:
           output: fresh-evidence/trivy.json
           severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
           ignore-unfixed: false
-          exit-code: '1'
+          exit-code: '0' # The following image-bound policy step rejects HIGH/CRITICAL/UNKNOWN; retain lower severities.
           cache: false
           timeout: 10m
       - name: Retain image identity, current coverage and denial counts
