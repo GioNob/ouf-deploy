@@ -87,7 +87,9 @@ def main():
             call('docker', 'run', '-d', '--name', db, '--network', 'none', '-e',
                  'POSTGRES_PASSWORD=isolated-fixture-only', 'postgres:17')
             for _ in range(40):
-                p = subprocess.run(['docker','exec',db,'pg_isready','-U','postgres'],capture_output=True,timeout=5)
+                # The image's init server accepts local sockets before it exits;
+                # only the final server accepts this loopback TCP connection.
+                p = subprocess.run(['docker','exec',db,'pg_isready','--host=127.0.0.1','-U','postgres'],capture_output=True,timeout=5)
                 if p.returncode == 0: break
                 time.sleep(.25)
             else: raise RuntimeError('FIXTURE_POSTGRES_NOT_READY')
