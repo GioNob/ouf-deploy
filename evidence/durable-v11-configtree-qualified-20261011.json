@@ -1,0 +1,198 @@
+{
+  "schema": "ouf.durable-v11-configtree-qualification.v1",
+  "sourceCommit": "37ff0eebcc5e100877f357ba791fe662b2deb508",
+  "run": 38162226566,
+  "job": 114537359394,
+  "conclusion": "success",
+  "receipt": {
+    "schema": "ouf.discovery.qualified-package-configtree-startup.v1",
+    "status": "PASS",
+    "candidateRevision": "8a2e84b32d4ce2bdc3bc529b56afb5663ab133e3",
+    "candidateImage": "sha256:83635be46d1fe61dea08597ea4488980b4349e5f6e0ed8bbd3ab6f5e2686370e",
+    "applicationJarSha256": "23986c7d6ccdc3cae21bedbadeb6db60ac56988ea5b3d49c1f76bf13ba756f01",
+    "fullSpringStartupQualified": true,
+    "databasePasswordInApplicationEnv": false,
+    "requiredConfigtreeSecretQualified": true,
+    "springAppliedV10": true,
+    "springAppliedV11": true,
+    "historicalRowsPreserved": true,
+    "currentSnapshotRestoredAfterWrites": true,
+    "liveFixtureUnchangedByRestore": true,
+    "starts": [
+      {
+        "application": "installed",
+        "database": "semantic",
+        "readiness": "UP",
+        "iamEnabled": true,
+        "positiveSearch": true,
+        "denialChecks": [
+          "anonymous",
+          "ungranted_subject",
+          "missing_scope",
+          "wrong_audience",
+          "invalid_signature"
+        ]
+      },
+      {
+        "application": "candidate",
+        "database": "semantic",
+        "readiness": "UP",
+        "iamEnabled": true,
+        "positiveSearch": true,
+        "denialChecks": [
+          "anonymous",
+          "ungranted_subject",
+          "missing_scope",
+          "wrong_audience",
+          "invalid_signature",
+          "missing_discovery_receipt",
+          "forged_discovery_receipt"
+        ]
+      },
+      {
+        "application": "candidate",
+        "database": "semantic",
+        "readiness": "UP",
+        "iamEnabled": true,
+        "positiveSearch": true,
+        "denialChecks": [
+          "anonymous",
+          "ungranted_subject",
+          "missing_scope",
+          "wrong_audience",
+          "invalid_signature",
+          "missing_discovery_receipt",
+          "forged_discovery_receipt"
+        ]
+      },
+      {
+        "application": "candidate",
+        "database": "restored_v11",
+        "readiness": "UP",
+        "iamEnabled": true,
+        "positiveSearch": true,
+        "denialChecks": [
+          "anonymous",
+          "ungranted_subject",
+          "missing_scope",
+          "wrong_audience",
+          "invalid_signature",
+          "missing_discovery_receipt",
+          "forged_discovery_receipt"
+        ]
+      },
+      {
+        "application": "installed",
+        "database": "restored_v11",
+        "readiness": "UP",
+        "iamEnabled": true,
+        "positiveSearch": true,
+        "denialChecks": [
+          "anonymous",
+          "ungranted_subject",
+          "missing_scope",
+          "wrong_audience",
+          "invalid_signature"
+        ]
+      },
+      {
+        "application": "missing_secret",
+        "requiredConfigtreeMissingDenied": true
+      }
+    ],
+    "providerEnabled": false,
+    "discoveryWorkerEnabled": false,
+    "realProviderHealthProven": false,
+    "oldApplicationRuntimeQualified": true,
+    "installedApplicationJarSha256": "32df2976c0c240d093b4769e296a7411f02548e14ed17b542b6db00a78901bc2",
+    "targetDatabaseTouched": false,
+    "targetBackupPerformed": false,
+    "notReleaseAcceptance": true,
+    "durableBudgetAndIncidentHistoryUnchangedAfterRestartAndCurrentRestore": true,
+    "automaticHumanBudgetRenewalQualified": false,
+    "resourceBoundStartupQualified": true,
+    "resourceChecks": [
+      {
+        "database": "semantic",
+        "application": "installed",
+        "limits": {
+          "Memory": 2147483648,
+          "MemorySwap": 2147483648,
+          "NanoCpus": 2000000000,
+          "PidsLimit": 512
+        },
+        "user": "10001:10001",
+        "oomKilled": false,
+        "memoryUsage": "229.8MiB / 2GiB",
+        "pids": "39"
+      },
+      {
+        "database": "semantic",
+        "application": "candidate",
+        "limits": {
+          "Memory": 2147483648,
+          "MemorySwap": 2147483648,
+          "NanoCpus": 2000000000,
+          "PidsLimit": 512
+        },
+        "user": "10001:10001",
+        "oomKilled": false,
+        "memoryUsage": "251.6MiB / 2GiB",
+        "pids": "40"
+      },
+      {
+        "database": "semantic",
+        "application": "candidate",
+        "limits": {
+          "Memory": 2147483648,
+          "MemorySwap": 2147483648,
+          "NanoCpus": 2000000000,
+          "PidsLimit": 512
+        },
+        "user": "10001:10001",
+        "oomKilled": false,
+        "memoryUsage": "240.4MiB / 2GiB",
+        "pids": "40"
+      },
+      {
+        "database": "restored_v11",
+        "application": "candidate",
+        "limits": {
+          "Memory": 2147483648,
+          "MemorySwap": 2147483648,
+          "NanoCpus": 2000000000,
+          "PidsLimit": 512
+        },
+        "user": "10001:10001",
+        "oomKilled": false,
+        "memoryUsage": "235.6MiB / 2GiB",
+        "pids": "40"
+      },
+      {
+        "database": "restored_v11",
+        "application": "installed",
+        "limits": {
+          "Memory": 2147483648,
+          "MemorySwap": 2147483648,
+          "NanoCpus": 2000000000,
+          "PidsLimit": 512
+        },
+        "user": "10001:10001",
+        "oomKilled": false,
+        "memoryUsage": "227.5MiB / 2GiB",
+        "pids": "39"
+      }
+    ],
+    "fixtureJavaImageId": "sha256:83635be46d1fe61dea08597ea4488980b4349e5f6e0ed8bbd3ab6f5e2686370e",
+    "productionLoadSloQualified": false,
+    "completeTargetOciQualified": false
+  },
+  "limits": [
+    "Disposable hosted Docker/PostgreSQL17 and fixture OIDC/policy; no target DB, backup, lifecycle or lease effects.",
+    "Exact installed JAR runs in candidate Java image, not the old target OCI/peer.",
+    "Provider and worker disabled; no actual external discovery, production load, current actor revocation or HUMAN renewal proved.",
+    "Preserves actual stored exhausted history across candidate restart/current-state restore; outage/service/fencing integration remains the separate 13 native recovery tests.",
+    "Positive search proves HTTP authorization/response contract with fixture data, not Cinema or Teatro serving.",
+    "Target declaration rebinding, complete new OCI, signed transport, lease coordination and migration-aware applicator remain open."
+  ]
+}
