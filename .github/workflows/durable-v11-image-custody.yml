@@ -7,6 +7,8 @@ on:
       - tools/semantic_application_cutover/image_custody.py
       - tests/test_image_*.py
       - tools/semantic_application_cutover/image_import.py
+      - scripts/import-verified-v11-image.py
+      - releases/verified-v11-image-import-20261011.sh
       - tests/durable_v11_image_custody_native.py
   workflow_dispatch:
 permissions:
