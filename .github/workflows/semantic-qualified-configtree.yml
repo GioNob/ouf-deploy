@@ -41,7 +41,7 @@ jobs:
           print('OUF_CURRENT_PACKAGE_BYTES_VERIFIED=PASS')
           PY
       - name: Exact application startup with file secret, IAM enforcement, V10 and current restore
-        run: python3 tests/qualified_semantic_configtree_fixture.py
+        run: python3 tests/qualified_semantic_configtree_fixture.py --bounded-container
       - uses: actions/upload-artifact@v4
         with:
           name: qualified-semantic-configtree-${{ github.run_id }}
@@ -50,4 +50,4 @@ jobs:
           retention-days: 30
       - name: Remove disposable PostgreSQL fixture
         if: always()
-        run: docker rm -f ouf-discovery-spring-ci 2>/dev/null || true
+        run: docker rm -f ouf-discovery-spring-ci ouf-semantic-resource-ci 2>/dev/null || true

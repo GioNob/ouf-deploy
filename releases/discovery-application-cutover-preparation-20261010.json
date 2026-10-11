@@ -1,11 +1,11 @@
 {
   "schema": "ouf.discovery.application-cutover-preparation.v1",
-  "status": "R12_ACTIVE_CURRENT_FILE_SECRET_INTENT_PREPARED_APPLICATION_CLOSURE_PENDING",
+  "status": "R12_ACTIVE_CURRENT_CREATION_PLAN_COMPILED_APPLICATION_CLOSURE_PENDING",
   "applyAuthorized": false,
   "newTargetAuthorityIssued": false,
   "networkLease": {
     "activationEvidence": "evidence/resilient-r12-active-target-20261011.json",
-    "currentObservationEvidence": "evidence/semantic-r12-cutover-inputs-target-20261011.json",
+    "currentObservationEvidence": "evidence/semantic-current-creation-plan-target-20261011.json",
     "claimConsumed": true,
     "serviceUnit": "ouf-semantic-provider-lease-resilient-r12.service",
     "snapshot": "/etc/ouf/deploy-snapshots/semantic-resilient-lease-recovery-r12-y048hyms",
@@ -14,19 +14,10 @@
     "commonLockMustNotBeAcquiredByObservers": true,
     "sharedPeerRebindIsSeparateFromDnsLease": true,
     "lastOperatorReportedObservation": {
-      "refreshCount": 120,
-      "journalState": "LEASE_READY",
-      "leaseAuthorized": true,
-      "flowAddressCounts": [
-        1,
-        1
-      ],
-      "minRemainingTtlSeconds": [
-        16,
-        16
-      ],
-      "currentSemanticGenerationUnchanged": true,
-      "continuousLivenessProven": false
+      "refreshCount": 302,
+      "workerPid": 2446150,
+      "continuousLivenessProven": false,
+      "receipt": "evidence/semantic-current-creation-plan-target-20261011.json"
     }
   },
   "signedApplicationEvidence": "evidence/file-loop-provenance-trust-r9-target-20261010.json",
@@ -92,7 +83,7 @@
     "existingR10SealedProgramMustRemainUnchanged": true,
     "R10ReplayOrClaimResetAllowed": false
   },
-  "nextRead": "COMPILE_CURRENT_PRIVATE_CREATION_REQUEST_AND_FRESH_INPUT_RESOURCE_SCOPE_NO_APPLY",
+  "nextRead": "QUALIFY_EXACT_PACKAGE_RESOURCE_BOUND_STARTUP_AND_COMPOSE_MIGRATION_AWARE_TRANSITION",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
@@ -371,14 +362,19 @@
     "signaturesIssued": 0,
     "status": "CURRENT_CUTOVER_INPUT_PREPARATION_BLOCKED"
   },
-  "latestOperatorReceiptEvidence": "evidence/semantic-r12-cutover-inputs-target-20261011.json",
+  "latestOperatorReceiptEvidence": "evidence/semantic-current-creation-plan-target-20261011.json",
   "currentCreationPlanPreparation": {
-    "status": "QUALIFIED_TARGET_PRIVATE_COMPILATION_PENDING_OPERATOR",
+    "status": "CURRENT_CREATION_INTENT_COMPILED_NOT_APPLY_READY",
     "sourceCommit": "9fdf4bed6ded1a01640bcaed2ffadb58204e42d5",
     "deliveryCommit": "574cc921e2ca26361052647cabbd86fc40243f40",
     "evidence": "evidence/semantic-current-creation-planner-qualified-20261011.json",
     "launcher": "releases/semantic-current-creation-plan-20261011.sh",
     "qualifiedRun": 38148764870,
-    "productionApplyReady": false
+    "productionApplyReady": false,
+    "targetCompilationPerformed": true,
+    "targetEvidence": "evidence/semantic-current-creation-plan-target-20261011.json",
+    "evidenceDirectory": "/etc/ouf/deploy-snapshots/semantic-current-creation-plan-ik1it73_",
+    "creationPlanHash": "69cdcb80391b0796af6a4fac4ee845fff65b2322465b20fbfff897c5d64e1a73",
+    "creationRequestHash": "339c8949bfd8b23700778225847ef43da2ee943621d6de0ad1b0cc627659b74d"
   }
 }

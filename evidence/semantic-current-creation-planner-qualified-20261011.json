@@ -1,6 +1,6 @@
 {
   "schema": "ouf.semantic-current-creation-planner-qualification.v1",
-  "status": "QUALIFIED_ISOLATED_CURRENT_PRIVATE_PLAN_PENDING_OPERATOR",
+  "status": "QUALIFIED_ISOLATED_AND_TARGET_PRIVATE_PLAN_COMPILED",
   "compilerCommit": "e0bac04e24b11715b545ea890e0bbc32c6877850",
   "qualifiedSourceCommit": "9fdf4bed6ded1a01640bcaed2ffadb58204e42d5",
   "deliveryCommit": "574cc921e2ca26361052647cabbd86fc40243f40",
@@ -60,7 +60,7 @@
     "sha256": "096a9bb877da54de35d41725064ebb14a0c456c42cf8b83af409bc1f253172d6"
   },
   "limits": {
-    "targetCompiled": false,
+    "targetCompiled": true,
     "targetContainerCreated": false,
     "targetActions": 0,
     "fullTargetGuardQualifiedByThisFixture": false,
@@ -70,5 +70,6 @@
     "applicationHealthProven": false,
     "csvEndToEndProven": false,
     "releaseAcceptance": false
-  }
+  },
+  "targetEvidence": "evidence/semantic-current-creation-plan-target-20261011.json"
 }

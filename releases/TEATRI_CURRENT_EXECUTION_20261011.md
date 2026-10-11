@@ -37,31 +37,15 @@ The [protected planner](../scripts/compile-semantic-creation-plan-after-r12.py) 
 
 [CI38148764870](https://github.com/GioNob/ouf-deploy/actions/runs/38148764870), job114497583833 SUCCESS:18 distinct Python tests, actual hosted-root four-input POSIX custody and credential mismatch denials, eight download/tamper positions, four root-bootstrap tamper positions, retained portable gh and failure propagation. Actual Engine API1.44 creates/starts UID10001 on a disposable internal bridge with readonly fake inputs, enforced resource limits and exclusive IP/MAC transfer. Alpine fixture, synthetic declaration/host scope; no target application, provider, complete OCI or target planner acceptance is inferred. The first native run failed on fixture API1.49 vs runner maximum1.48; fixed to1.44, failed evidence retained. [Qualification and limits](../evidence/semantic-current-creation-planner-qualified-20261011.json).
 
-## Next operator action: compile the actual private plan
+## Target compilation completed
 
-This is necessary because the current creation declaration and credential custody live in root-private snapshots; the existing runner cannot read them with unattended sudo. It produces the concrete private creation request needed to compose the transition. No new general sudo rule or key disclosure is requested.
+The operator completed the protected planner with exit0: [receipt](../evidence/semantic-current-creation-plan-target-20261011.json). R12 reports302 renewals with unchanged workerPID2446150, exceeding R10's failed refreshCount250. This is a bounded observation, not continuous uptime proof. All four retained inputs were reverified. Private creation plan SHA256 `69cdcb80391b0796af6a4fac4ee845fff65b2322465b20fbfff897c5d64e1a73`; private request SHA256 `339c8949bfd8b23700778225847ef43da2ee943621d6de0ad1b0cc627659b74d`, retained in `/etc/ouf/deploy-snapshots/semantic-current-creation-plan-ik1it73_`. No application, database, image, firewall, lease or budget change occurred. The completed planner command is historical and need not be repeated.
 
-Run as oufadmin and return the complete receipt through OUF_CURRENT_CREATION_PLAN_EXIT:
-
-```bash
-(
-  set -euo pipefail
-  umask 077
-  OUF_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
-  if [ ! -x "$OUF_GH" ]; then OUF_GH="$(command -v gh || true)"; fi
-  if [ -z "$OUF_GH" ] || [ ! -x "$OUF_GH" ]; then echo "OUF_EXISTING_GITHUB_CLIENT_REQUIRED" >&2; exit 1; fi
-  OUF_LAUNCH="$(mktemp "$HOME/ouf-current-creation-plan-launch.XXXXXXXX")"
-  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/releases/semantic-current-creation-plan-20261011.sh?ref=574cc921e2ca26361052647cabbd86fc40243f40' > "$OUF_LAUNCH"
-  printf '%s  %s\n' 'cd0b601c07205297ec389f00ce841de582c801d5e5109277723c7423d8336ec7' "$OUF_LAUNCH" | sha256sum -c -
-  /usr/bin/bash "$OUF_LAUNCH"
-)
-```
-
-Expected: CURRENT_CREATION_INTENT_COMPILED_NOT_APPLY_READY, exit0. BLOCKED means no accepted plan. Four source files come from the same immutable source commit and are verified before sudo, then again in memory. Do not repeat the completed input preparation or any R10/R11/R12 activation.
+Autonomous work continues with exact-package startup inside a UID10001 disposable Java21 container enforcing2GiB memory/no additional swap,2CPUs and512PIDs. The fixture tests configtree, IAM denials, V10 and preservation of post-migration writes on current-snapshot restore. This is startup qualification, not production load/SLO or complete target OCI acceptance.
 
 ## Gates still required for the end-to-end
 
-1. Actual private creation-plan receipt; current artifact cryptographic/security verification and resource-bound exact-JAR qualification.
+1. Current artifact cryptographic/security verification and resource-bound exact-JAR qualification; private creation-plan compilation is completed.
 2. Composed migration-aware applicator: intentional lease coordination retaining incident/budget history, quiesced producers/fresh fenced backup, exact new OCI/reciprocal peer and new signed driver/transport closure. No blind pre-migration restore over later writes.
 3. Additive Gateway routes, current IAM/owner readiness and eligible discovery capabilities; preserve existing Cinema routes/data.
 4. Adequate published Teatro class/properties; if missing, authorized provider discovery, adoption/publication through HUMAN/THS. No local fallback or guessed ontology.

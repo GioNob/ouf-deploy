@@ -9,6 +9,8 @@ DB = "ouf-discovery-spring-ci"
 ISSUER = "http://127.0.0.1:55440"
 BASE = "http://127.0.0.1:55441"
 CAP = "ouf.semantic.search"
+APP = "ouf-semantic-resource-ci"
+RESOURCE = {"Memory": 2147483648, "MemorySwap": 2147483648, "NanoCpus": 2000000000, "PidsLimit": 512}
 
 def command(args, data=None, check=True):
     result = subprocess.run(args, input=data, capture_output=True, timeout=60)
@@ -38,6 +40,8 @@ def main():
     results = []
     process = None
     oidc = None
+    bounded = "--bounded-container" in sys.argv
+    resource_checks = []
     with tempfile.TemporaryDirectory(prefix="ouf-spring-fixture-") as directory:
         root = Path(directory)
         secret_dir = root / "database-secret"; secret_dir.mkdir(mode=0o700)
@@ -74,6 +78,14 @@ def main():
                                   "validFrom": (now - timedelta(minutes=1)).isoformat(), "validUntil": (now + timedelta(minutes=10)).isoformat()}]}
             policy = root / "policy.json"; policy.write_text(json.dumps(bundle)); policy.chmod(0o600)
             policy_hash = hashlib.sha256(policy.read_bytes()).hexdigest()
+            if bounded:
+                # Disposable fixture inputs only. The target credential is never read.
+                root.chmod(0o755)
+                policy.chmod(0o444)
+                command(["sudo", "chown", "10001:10001", str(secret_dir), str(secret_dir / "OUF_SEM_DB_PASSWORD")])
+                secret_dir.chmod(0o500)
+                command(["docker", "pull", "eclipse-temurin:21-jre"])
+                java_image = json.loads(command(["docker", "image", "inspect", "eclipse-temurin:21-jre"]).stdout)[0]["Id"]
             command(["docker", "run", "-d", "--name", DB, "-p", "127.0.0.1:55439:5432", "-e", "POSTGRES_PASSWORD=ci-fixture-only", "-e", "POSTGRES_DB=semantic", "postgres:17"])
             for _ in range(30):
                 if command(["docker", "exec", DB, "pg_isready", "--host=127.0.0.1", "-U", "postgres", "-d", "semantic"], check=False).returncode == 0: break
@@ -112,10 +124,22 @@ def main():
                 env.pop("SPRING_DATASOURCE_PASSWORD", None)
                 env["SPRING_CONFIG_IMPORT"] = "configtree:" + str(secret_dir if kind != "missing_secret" else root / "absent-secret") + "/"
                 log = root / (kind + "-" + database + ".log")
+                launch = ["java", "-jar", str(jar), "--ouf.iam.enabled=true", "--ouf.iam.issuer=" + ISSUER, "--ouf.iam.audience=fixture-semantic",
+                          "--ouf.authorization.bundle-file=" + str(policy), "--ouf.authorization.bundle-id=startup-fixture", "--ouf.authorization.bundle-version=1",
+                          "--ouf.authorization.bundle-sha256=" + policy_hash]
+                if bounded:
+                    command(["docker", "rm", "-f", APP], check=False)
+                    launch[2] = "/fixture/application.jar"
+                    prefix = ["docker", "run", "--name", APP, "--network", "host", "--user", "10001:10001",
+                              "--memory", "2147483648", "--memory-swap", "2147483648", "--cpus", "2", "--pids-limit", "512",
+                              "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--read-only", "--tmpfs", "/tmp:rw,nosuid,nodev,size=268435456",
+                              "--mount", "type=bind,src=" + str(root) + ",dst=" + str(root) + ",readonly",
+                              "--mount", "type=bind,src=" + str(jar.resolve()) + ",dst=/fixture/application.jar,readonly"]
+                    for key in ("OUF_SEM_DB_URL", "OUF_SEM_DB_USER", "PORT", "OUF_SCHEMA_GOV_ENABLED", "OUF_DISCOVERY_WORKER_ENABLED", "SPRING_CONFIG_IMPORT"):
+                        prefix += ["--env", key + "=" + env[key]]
+                    launch = prefix + [java_image] + launch
                 with log.open("wb") as output:
-                    process = subprocess.Popen(["java", "-jar", str(jar), "--ouf.iam.enabled=true", "--ouf.iam.issuer=" + ISSUER, "--ouf.iam.audience=fixture-semantic",
-                                                "--ouf.authorization.bundle-file=" + str(policy), "--ouf.authorization.bundle-id=startup-fixture", "--ouf.authorization.bundle-version=1",
-                                                "--ouf.authorization.bundle-sha256=" + policy_hash], env=env, stdout=output, stderr=subprocess.STDOUT)
+                    process = subprocess.Popen(launch, env=env, stdout=output, stderr=subprocess.STDOUT)
                 deadline = time.monotonic() + 60
                 while time.monotonic() < deadline:
                     if process.poll() is not None:
@@ -134,6 +158,15 @@ def main():
                     time.sleep(0.5)
                 else: raise RuntimeError("SPRING_READINESS_TIMEOUT")
                 path = "/api/semantic/v1/search?q=theatre"
+                if bounded:
+                    actual = json.loads(command(["docker", "inspect", APP]).stdout)[0]
+                    if actual["Config"]["User"] != "10001:10001" or any(actual["HostConfig"][key] != value for key, value in RESOURCE.items()):
+                        raise RuntimeError("APPLICATION_RESOURCE_ENFORCEMENT_UNPROVEN")
+                    if not actual["HostConfig"]["ReadonlyRootfs"] or actual["State"].get("OOMKilled"):
+                        raise RuntimeError("APPLICATION_CONTAINER_BOUNDARY_FAILED")
+                    stats = json.loads(command(["docker", "stats", "--no-stream", "--format", "{{json .}}", APP]).stdout)
+                    resource_checks.append({"database": database, "application": kind, "limits": RESOURCE, "user": "10001:10001", "oomKilled": False,
+                                            "memoryUsage": stats["MemUsage"], "pids": stats["PIDs"]})
                 checks = [("anonymous", http(path), 403), ("granted", http(path, token()), 200),
                           ("ungranted_subject", http(path, token(subject="fixture-outsider")), 403),
                           ("missing_scope", http(path, token(scope="unrelated")), 403),
@@ -145,7 +178,9 @@ def main():
                 for label, (status, body), expected in checks:
                     if status != expected: raise RuntimeError("HTTP_AUTH_BOUNDARY_FAILED " + label + " actual=" + str(status) + " expected=" + str(expected))
                     if label == "granted" and not isinstance(json.loads(body), list): raise RuntimeError("SEARCH_RESPONSE_INVALID")
-                process.terminate(); process.wait(timeout=20); process = None
+                if bounded: command(["docker", "stop", "--time", "15", APP])
+                else: process.terminate()
+                process.wait(timeout=20); process = None
                 results.append({"application": kind, "database": database, "readiness": "UP", "iamEnabled": True, "positiveSearch": True, "denialChecks": [label for label, _, _ in checks if label != "granted"]})
             if old_jar:
                 boot("semantic", old_jar, "installed")
@@ -169,14 +204,18 @@ def main():
                        "fullSpringStartupQualified": True, "databasePasswordInApplicationEnv": False, "requiredConfigtreeSecretQualified": True, "springAppliedV10": True, "historicalRowsPreserved": True, "currentSnapshotRestoredAfterWrites": True,
                        "liveFixtureUnchangedByRestore": True, "starts": results, "providerEnabled": False, "discoveryWorkerEnabled": False, "realProviderHealthProven": False,
                        "oldApplicationRuntimeQualified": old_jar is not None, "installedApplicationJarSha256": installed["applicationJarSha256"] if old_jar else None, "targetDatabaseTouched": False, "targetBackupPerformed": False, "notReleaseAcceptance": True}
+            receipt.update({"resourceBoundStartupQualified": bounded, "resourceChecks": resource_checks, "fixtureJavaImageId": java_image if bounded else None,
+                            "productionLoadSloQualified": False, "completeTargetOciQualified": False})
             Path("qualified-spring-configtree-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
             print("OUF_DISCOVERY_SPRING_STARTUP_CI=" + json.dumps(receipt))
         finally:
+            if bounded: command(["docker", "rm", "-f", APP], check=False)
             if process and process.poll() is None:
                 process.terminate()
                 try: process.wait(timeout=10)
                 except subprocess.TimeoutExpired: process.kill(); process.wait(timeout=10)
             if oidc: oidc.shutdown(); oidc.server_close()
             command(["docker", "rm", "-f", DB], check=False)
+            if bounded: command(["sudo", "chown", "-R", str(os.getuid()) + ":" + str(os.getgid()), str(secret_dir)], check=False)
 
 if __name__ == "__main__": main()
