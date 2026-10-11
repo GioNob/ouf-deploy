@@ -94,7 +94,8 @@ def main():
             server.sendto(answer, peer)
 
     threading.Thread(target=serve, daemon=True).start()
-    with tempfile.TemporaryDirectory(prefix='semantic-readback-margin-worker-', dir='/etc') as temporary:
+    # The unchanged R10 worker also enforces this snapshot prefix in CI.
+    with tempfile.TemporaryDirectory(prefix='semantic-finite-lease-recovery-r10-', dir='/etc') as temporary:
         root = Path(temporary)
         root.chmod(0o700)
         unit = 'ouf-ci-dns-recovery-' + uuid.uuid4().hex[:8] + '.service'
