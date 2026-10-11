@@ -1,0 +1,43 @@
+{
+  "schema": "ouf.current-r12-custody-read-delivery-qualified.v1",
+  "status": "DELIVERY_QUALIFIED_OPERATOR_EXECUTION_REQUIRED",
+  "sourceCommit": "7888cafbc5aceb23c6fce2305afb381f4e94d6cc",
+  "launcherPath": "releases/current-r12-custody-read-20261011.sh",
+  "launcherSha256": "ba8e8cab5c2b6e5030c5e3f093fc9945f06efd0bbeed5dcfb88441faa187371e",
+  "readerCommit": "3ed7815b8164ffab212b44318fb8fbd213256fcc",
+  "readerSha256": "4d4da44d8ef27f77e00982d978ad8400eb7a0b79997bd468535fc49654b2ac3f",
+  "qualification": {
+    "runId": 38161519641,
+    "jobId": 114535249877,
+    "status": "SUCCESS",
+    "tests": 13,
+    "readerTests": 9,
+    "deliveryTests": 4,
+    "downloadAndDigestDenialPositions": 10,
+    "rootBootstrapDenialPositions": 5,
+    "shellSyntax": "PASS",
+    "sudoExecutionInDeliveryFixture": "STUB_ONLY_FAILURE_PROPAGATION"
+  },
+  "targetAccess": {
+    "runId": 38161252572,
+    "jobId": 114534478699,
+    "rootAttemptExit": 1,
+    "readerExecuted": false,
+    "sudoPermissionProven": false,
+    "workflowSuccessMeaning": "ACCESS_BOUNDARY_REPORTED_NOT_PROTECTED_READ_SUCCESS"
+  },
+  "preservation": {
+    "r12Touched": false,
+    "claimsReplayed": false,
+    "repeatedPreparation": false,
+    "protectedWrites": 0,
+    "containerLifecycleOperations": 0,
+    "imageImports": 0,
+    "databaseWrites": 0,
+    "firewallWrites": 0,
+    "signaturesIssuedByReader": 0
+  },
+  "sourceAndPackageCheckpoint": "evidence/semantic-discovery-durable-recovery-checkpoint-20261011.json",
+  "productionApplyReady": false,
+  "csvEndToEndAccepted": false
+}
