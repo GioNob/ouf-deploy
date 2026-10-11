@@ -5,6 +5,7 @@ Entrypoint must supply sealed modules, command/ancestor custody and a new live
 recovery scope bound to exact current process generations and finite budgets.
 """
 import ipaddress
+import time
 from bounded_recovery import Permanent, Temporary, fingerprint
 
 class LeaseAdapter:
@@ -39,16 +40,25 @@ class LeaseAdapter:
 
     def prepare(self, deadline):
         self.guard(); self.pause()
+        return self.fresh_evidence(deadline)
+
+    def fresh_evidence(self, deadline):
+        """DNS I/O is bounded by the caller deadline, outside the lease lock."""
         cfg = self.c.configuration; profile = self.c.owner.profile
         values = []
         for flow in cfg['providerFlows']:
             before = self.clock()
             if before >= deadline: raise Temporary('DEPENDENCY_TIMEOUT')
+            def bounded_query(resolver, port, question, qtype, query_deadline):
+                remaining = deadline - self.clock()
+                if remaining <= 0: raise self.dns.DNSDenied('DNS_DEADLINE_EXPIRED')
+                return self.dns.exchange(resolver, port, question, qtype,
+                    min(query_deadline, time.monotonic() + remaining))
             try:
                 data = self.dns.observe(flow['endpoint'], profile['resolvers'], profile['resolverPort'],
                     ipaddress.ip_address(flow['source']).version,
                     [a + '/' + str(ipaddress.ip_address(a).max_prefixlen) for a in flow['allowedPrivateAddresses']],
-                    profile['timeoutSeconds'], profile['maxLeaseSeconds'])
+                    profile['timeoutSeconds'], profile['maxLeaseSeconds'], query=bounded_query)
             except self.dns.DNSDenied as error:
                 if str(error) in {'DNS_RESOLVER_TRANSPORT_FAILED', 'DNS_DEADLINE_EXPIRED'}:
                     raise Temporary('DNS_UNAVAILABLE') from None
