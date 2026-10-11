@@ -44,6 +44,7 @@ jobs:
           python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_r11_entry.py
           python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_continuous_supervisor.py
           python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_bounded_recovery.py
+          python3 -B -m unittest discover -v -s tests -p test_r11_delivery.py
       - name: Install disposable namespace dependencies
         run: sudo apt-get update -qq && sudo apt-get install -y -qq nftables iproute2
       - name: Actual apply and sealed worker in systemd with native DNS and nft

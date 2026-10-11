@@ -1,0 +1,53 @@
+{
+  "schema": "ouf.provider-resilient-r11-entry-qualification.v1",
+  "qualifiedSourceCommit": "d0048f428bbe5bc499c5d5d5e9c3e407b573f835",
+  "status": "QUALIFIED_ISOLATED_TARGET_APPLY_PENDING",
+  "operatorIntake": {
+    "receivedAt": "2026-10-11T15:07:05+02:00",
+    "operatorReported": true,
+    "status": "RESILIENT_WORKER_INPUT_BINDINGS_CAPTURED_NOT_APPLY_AUTHORITY",
+    "r10": "FAILED_AFTER_250_REFRESHES_QUIESCED_PROVIDER_SETS_EMPTY",
+    "bindingFile": "tools/semantic_lease_recovery/target_bindings_r11.json",
+    "newStartAuthorized": false
+  },
+  "qualification": {
+    "runs": [
+      38143419938,
+      38143415885,
+      38143419965
+    ],
+    "r11Job": 114481740075,
+    "entryTests": 10,
+    "continuousTests": 14,
+    "boundedTests": 16,
+    "native": [
+      "R11_ACTUAL_APPLY_TWO_CYCLES",
+      "REPLAY_AND_CONCURRENT_WORKER_DENIED",
+      "DNS_MARGIN_PAUSE_SAME_PROCESS_FRESH_RECOVERY",
+      "GENERATION_DRIFT_BLOCKED_ALIVE",
+      "STOP_REVOKES",
+      "CONTINUOUS_FOUR_VIRTUAL_HOUR_OUTAGE_RECOVERY",
+      "EXHAUSTION_ALIVE_REVOKED_NO_QUERY",
+      "INDEPENDENT_REAL_DNS_NFT_RECOVERY"
+    ],
+    "targetMetadataAndAuthority": "EXPLICIT_SYNTHETIC_CI_FIXTURE",
+    "targetActions": 0
+  },
+  "delivery": {
+    "sourceCommit": "d0048f428bbe5bc499c5d5d5e9c3e407b573f835",
+    "launcher": "releases/provider-resilient-r11-approved-20261011.sh",
+    "portableGhRequired": true,
+    "components": 14,
+    "allDownloadFailureAndTamperPositionsLocallyTested": 28,
+    "operatorSudoRequired": true
+  },
+  "limits": {
+    "oldR10ClaimPreserved": true,
+    "automaticRestart": false,
+    "bootEnablement": false,
+    "containerLifecycleAuthorized": false,
+    "applicationHealthProven": false,
+    "releaseAcceptance": false,
+    "targetRecovered": false
+  }
+}
