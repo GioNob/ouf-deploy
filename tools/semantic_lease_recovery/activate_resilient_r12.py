@@ -565,11 +565,14 @@ def apply(reference):
     capsule['contextRef'] = sha(encoded(capsule))
     CORE.create(ROOT/'authorization.json', capsule)
     CORE.create(ROOT/'before.json', current)
+    retry_root = ROOT/'retry'; retry_root.mkdir(mode=0o700)
+    PHASE = 'VERIFY_ACTUAL_GUARD_NET_ADMIN_ONLY_BEFORE_CLAIM'
     _, _, preflight = runtime(reader, CORE, owner, cfg, scope, capsule, claimed=False)
     preclaim_guard(preflight.adapter)
+    CORE.create(ROOT/'preclaim-guard.json', {'actualProductionGuardPassed': True,
+        'netAdminOnly': True, 'noNewPrivileges': True, 'claimCreatedBeforeProbe': False})
     CORE.create(CLAIM, claim)
     stop_r11(reader, cfg)
-    retry_root = ROOT/'retry'; retry_root.mkdir(mode=0o700)
     coordinator, loaded, recovery = runtime(reader, CORE, owner, cfg, scope, capsule)
     initial = recovery.initial()
     for key in ('startedWall', 'startedMonotonic', 'attempts', 'healthyWallSeconds', 'healthyMonotonicSeconds'):
