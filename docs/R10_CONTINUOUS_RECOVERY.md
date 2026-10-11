@@ -69,3 +69,10 @@ Candidato da92a02e8fc246dbf77ac0584321039d13d2436a, [PR1](https://github.com/Gio
 Il [tentativo tramite runner38141352468](https://github.com/GioNob/ouf-deploy/actions/runs/38141352468) riporta NOT_EXECUTED_ROOT_PERMISSION_UNPROVEN_OPERATOR_REQUIRED, exit1: la lettura root non è stata eseguita. La conclusione SUCCESS qualifica la segnalazione del blocco, non i vincoli protetti. Serve l'esecuzione operatore della [consegna immutabile di sola lettura](../releases/resilient-worker-current-intake-20261011.sh), SHA2566a853ef53dce2457c66a6f8ff43c4f5e7b77b1599308ecff26f625ab0a69c7cf, disponibile al pin da92a02e8fc246dbf77ac0584321039d13d2436a. Il sorgente interno è letto dal pin00a65cb9758c8f8cac40b1be51f0d5cfb58f3f64 e verificato prima e dopo sudo. Output fino a OUF_RESILIENT_WORKER_INTAKE_EXIT; non include password o segreti. Questo è un nuovo intake, non il preflight storico sospeso e non un apply.
 
 R10 sul target resta non recuperato fino all'applicazione e ricevuta del nuovo servizio completo. La lettura corrente abilita la preparazione dei binding; non autorizza il servizio da sola.
+
+
+## Correzione della consegna — client fuori dal PATH
+
+L'esecuzione operatore si è fermata prima del download con gh: command not found; non ha raggiunto sudo o il reader. Il repository è privato: curl anonimo non è una sostituzione valida. La consegna ora cerca prima il client già usato dai launcher riusciti, $HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh, poi command -v gh. Entrambi i livelli di consegna devono usare il client verificato. Nessuna installazione o nuova autenticazione richiesta.
+
+Nuovo SHA256 del launcher:0d0c320377e1d605b144b5e88922610cf0d0a8173c979a735e5aaf83a037f0ee. Il pin da92a… e hash6a853… sopra sono la consegna precedente difettosa per questo host. Il reader interno e hash431124… restano invariati. Sette prove locali PASS, inclusa esecuzione con client portabile e senza gh nel PATH, blocco download/hash prima di sudo e quattro prove dei binding. Nessun recupero target dichiarato.

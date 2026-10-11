@@ -33,3 +33,8 @@ Prioritize unresolved incidents by severity/action/verified impact before bounde
 Detect systemic pressure using current windowed error rates, breadth, duration and capacity/queue age, not historical issue totals or operator absence. Scope circuits/backpressure, protect control capacity and use hysteresis plus gradual recovery.
 
 Alerts are actionable, deduplicated and configuration-governed, with finite durable delivery budgets/outbox and safe payloads. Delivery/acknowledgement/recovery are distinct. Do not introduce a new incident authority or send real alerts merely while developing these capabilities. Qualify storm/catch-up/retention/capacity/concurrency/notification failure and record remaining deployment gaps.
+
+
+## Existing VPS GitHub client
+
+The current oufadmin VPS does not expose gh in PATH. Historical working deliveries use the existing portable executable at $HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh. Target commands must check this executable first, then optionally command -v gh, and fail before sudo or mutations if unavailable. Never assume raw curl can fetch this private repository anonymously. Preserve existing authentication; do not request or print tokens. This is a retained-host delivery binding, not a portable installation default.

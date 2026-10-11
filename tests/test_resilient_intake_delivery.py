@@ -1,4 +1,5 @@
 import os
+import base64
 from pathlib import Path
 import subprocess
 import tempfile
@@ -9,6 +10,25 @@ LAUNCHER = ROOT / 'releases/resilient-worker-current-intake-20261011.sh'
 
 
 class Tests(unittest.TestCase):
+    def test_retained_portable_client_works_without_gh_in_path(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            gh = root / 'ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh'
+            gh.parent.mkdir(parents=True)
+            encoded = base64.b64encode((ROOT / 'scripts/read-resilient-worker-current-intake.py').read_bytes()).decode()
+            gh.write_text('#!/bin/bash\nprintf "%s\\n" "' + encoded + '"\n')
+            gh.chmod(0o700)
+            sudo = root / 'sudo'
+            sudo.write_text('#!/bin/bash\ntouch "$OUF_TEST_MARKER"\nexit 0\n')
+            sudo.chmod(0o700)
+            marker = root / 'sudo-reached'
+            env = {**os.environ, 'HOME': tmp, 'PATH': tmp + ':/usr/bin:/bin',
+                   'OUF_TEST_MARKER': str(marker)}
+            result = subprocess.run(['bash', str(LAUNCHER)], env=env, capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stderr.decode())
+            self.assertTrue(marker.exists())
+            self.assertIn(b'OUF_RESILIENT_WORKER_INTAKE_EXIT=0', result.stdout)
+
     def test_shell_syntax_and_exact_isolated_hash_verification(self):
         subprocess.run(['bash', '-n', str(LAUNCHER)], check=True)
         text = LAUNCHER.read_text()
