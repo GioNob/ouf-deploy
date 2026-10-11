@@ -4,9 +4,9 @@
 
 [Policy organica](docs/OUF_RESILIENCE_POLICY.md), [adozione e limiti](docs/OUF_RESILIENCE_ADOPTION.md), [piano](docs/OUF_OPERATIONAL_RESILIENCE_PLAN.md) e [cursor/consultazione](docs/OUF_OPERATIONAL_CURSOR_DESIGN.md).
 
-Qualificate Ingestion PR37 (ledger commit-ordered e pagine owner,37 focused/18 gate), Gateway PR60 (dedup concorrente, snapshot e autorizzazione locale fail-closed,243 test/2 skip/APISIX), PR61 (host pairwise corrente) e PR62 (pressione persistente/isteresi/ripresa graduale,13 nuovi gruppi). MCP PR53 aggiorna resource scope/chiavi nested e qualifica i producer correnti. [Evidenza aggiornata](evidence/operational-owner-pages-qualified-20261011.json).
+Qualificate Ingestion PR37 (ledger commit-ordered e pagine owner,37 focused/18 gate), Gateway PR60 (dedup concorrente, snapshot e autorizzazione locale fail-closed,243 test/2 skip/APISIX), PR61 (host pairwise corrente) e PR62 (pressione persistente/isteresi/ripresa graduale,13 nuovi gruppi). MCP PR53 integrata con23 operational race/tutti6 gate PASS e producer correnti; Gateway PR63 integra l’outbox reference finita con20 nuovi gruppi/278 test,2 skip espliciti, Authorization e APISIX PASS. [Evidenza aggiornata](evidence/operational-owner-pages-qualified-20261011.json).
 
-Il lavoro autonomo continua: outbox alert, cursor globale/bookmark/ricevute, grouping/impatti, retention e integrazione runtime restano OPEN. Reference e CI non provano scheduler/SDK/HA o deployment target. Nessuna email, deploy/migrazione/restart VPS o replay R9/R10; preflight sospeso. Conservate tutte le accettazioni precedenti.
+Il lavoro autonomo continua: cursor globale/bookmark/ricevute, grouping/impatti, retention e integrazione runtime restano OPEN. Outbox e pressione sono implementazioni reference qualificate; nessun canale email o scheduler di produzione è attivato. Reference e CI non provano scheduler/SDK/HA o deployment target. Nessuna email, deploy/migrazione/restart VPS o replay R9/R10; preflight sospeso. Conservate tutte le accettazioni precedenti.
 
 # Historical checkpoint — platform resilience v2; HUMAN recovery budgets merged and qualified
 

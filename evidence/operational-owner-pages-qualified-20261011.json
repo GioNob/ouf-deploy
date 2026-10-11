@@ -40,12 +40,21 @@
     "focusedGroups": 13,
     "pushRun": 38121552092,
     "prRun": 38121553557,
-    "status": "REFERENCE_QUALIFIED_NOT_SCHEDULER_ACTIVE"
+    "status": "REFERENCE_QUALIFIED_NOT_SCHEDULER_ACTIVE",
+    "referenceTests": 258
   },
   "mcpOwnerScope": {
     "pr": 53,
     "candidate": "ead7568d780ac88fa1f4dfcce78ba407104e2e5d",
-    "status": "NATIVE_QUALIFICATION_IN_PROGRESS"
+    "merge": "7f38f11f39cc5c7526a70fab2b9e50fadeb0ea8c",
+    "status": "QUALIFIED",
+    "raceTopLevelTests": 23,
+    "raceSubtests": 33,
+    "raceJob": 114417339513,
+    "fullRun": 38121619631,
+    "prFullRun": 38121623166,
+    "candidateGates": 6,
+    "reachableVulnerabilities": 0
   },
   "limitations": [
     "No target deployment/SDK host wiring or HA evidence",
@@ -54,5 +63,18 @@
     "No production pressure sampler/quotas active",
     "No alert transport configured or emails sent",
     "R9/R10 consumed; root preflight suspended"
-  ]
+  ],
+  "gatewayAlertOutbox": {
+    "pr": 63,
+    "candidate": "7c739bf2c70b0631179ce2b29708c057af902e7f",
+    "merge": "4c126d59004bf459d1ef57eba7d36b67810a2cc9",
+    "status": "INERT_REFERENCE_QUALIFIED_NOT_CHANNEL_ACTIVE",
+    "referenceTests": 278,
+    "focusedGroups": 20,
+    "explicitSkips": 2,
+    "pushRun": 38122320736,
+    "prRun": 38122322990,
+    "job": 114419424343,
+    "emailsSent": 0
+  }
 }

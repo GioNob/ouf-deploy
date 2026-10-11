@@ -1,6 +1,6 @@
 # Stable incident cursors and operator consultation — implementation decision
 
-Status: DESIGN, implementation and target qualification OPEN. This design follows [resilience policy v3](OUF_RESILIENCE_POLICY.md), [rollout plan](OUF_OPERATIONAL_RESILIENCE_PLAN.md), MCP PET1.4 §§33–34 and Ingestion PET1.3 Operational Awareness. Existing owners retain authority; no new central incident service or broker is introduced.
+Status: owner publication/paging IMPLEMENTED AND CI QUALIFIED (Ingestion PR37, Gateway PR60); global composition, consultation confirmation and target qualification OPEN. This design follows [resilience policy v3](OUF_RESILIENCE_POLICY.md), [rollout plan](OUF_OPERATIONAL_RESILIENCE_PLAN.md), MCP PET1.4 §§33–34 and Ingestion PET1.3 Operational Awareness. Existing owners retain authority; no new central incident service or broker is introduced.
 
 ## Why observation time is insufficient
 
@@ -45,3 +45,10 @@ Do not hide a metadata write inside READ authority. Any client confirmation muta
 Test late commit below an allocated sequence; pending publication after crash/rollback; concurrent publishers and stale fencing; old issue updates during paging; deterministic priority across pages; policy change/tenant replay/token expiry; more candidates than scan capacity; retention gap and publisher outage; concurrent consultation confirmation; canceled/failed delivery; urgent OPEN incidents predating the window. Test native owner PostgreSQL plus real Gateway/MCP contracts, and record deployment/grant limitations.
 
 Until these tests pass, cursor and persistent 'since last consultation' remain OPEN. PR36 and PR52 close narrower timestamp/read-boundary gaps only. No target deploy, grants, notifications or R9/R10 replay is authorized by this design.
+
+
+## Implemented foundations — 2026-10-11
+
+Ingestion V17 qualifies pending publication under late commits, rollback and competing publishers, plus stable materialized owner pages and current resource decisions. Gateway reference qualifies SQLite commit-order history, atomic cause dedup and stable owner pages; its host authorization port defaults fail-closed. Both return opaque current/next tokens, stable snapshotRef, priority/cursor profiles, coverage lag/baseline gap and visible-items digest. These tokens are owner read snapshots, not persistent operator receipts. MCP PR53 carries correct producer resources and canonical query-bound nested keys against the current pairwise baselines.
+
+The next composition stores only bounded owner position/coverage metadata in the existing MCP PostgreSQL store, refetches each owner page before using a saved offset, and invalidates changed visibility/digests. Persist neither producer payloads nor cached grants. Receipt writes require a separate governed capability and client delivery proof; until that proof is wired, the operator checkpoint remains unchanged. The alert reference outbox from Gateway PR63 is separate delivery state, not a consultation acknowledgement or incident authority.
