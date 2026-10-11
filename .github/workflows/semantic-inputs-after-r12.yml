@@ -1,0 +1,28 @@
+name: Semantic inputs after active R12
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/prepare-semantic-inputs-after-r12.py
+      - tests/test_semantic_inputs_after_r12.py
+      - .github/workflows/semantic-inputs-after-r12.yml
+  pull_request:
+    paths:
+      - scripts/prepare-semantic-inputs-after-r12.py
+      - tests/test_semantic_inputs_after_r12.py
+      - .github/workflows/semantic-inputs-after-r12.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify active R12 custody and file-secret preparation boundaries
+        run: python3 -m unittest discover -s tests -p test_semantic_inputs_after_r12.py -v
+      - name: Verify actual UID10001 private POSIX projection on disposable hosted fixture
+        run: sudo env OUF_POSIX_FIXTURE_ROOT=/root /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_inputs_after_r12.py -v
