@@ -12,6 +12,7 @@ class PlanOrchestration(unittest.TestCase):
    def observe(*args):
     n=count("observe")
     if fault=="ttl" and n==2:raise ValueError("CURRENT_FLOW_TTL_TOO_SHORT")
+    if fault=="journal" and n==2:raise ValueError("LEASE_JOURNAL_CHANGED_DURING_READ")
     result=dict(workerGenerationHash="g",authorizationHash="a",currentSemanticFrameHash=r.digest({"Id":"fixture"}),declarationHash=r.digest(d),refreshCount=100+n,workerPid=123,flows=[{"minRemainingTtlSeconds":15}])
     if n==2 and fault in ("workerGenerationHash","authorizationHash","currentSemanticFrameHash","declarationHash"):result[fault]="changed"
     return result
@@ -63,4 +64,11 @@ class PlanOrchestration(unittest.TestCase):
   self.assertEqual(files,["private-runtime-declaration.json"])
   self.assertEqual(receipt["phase"],"NEW_PRIVATE_DRAFT_PUBLICATION_NO_APPLY")
   self.assertFalse(receipt["productionApplyReady"]);self.assertFalse(receipt["newClaimCreated"])
+ def test_target_journal_collision_discards_read_and_never_retries_or_writes(self):
+  code,receipt,files,calls=self.run_plan("journal")
+  self.assertEqual(code,1);self.assertEqual(receipt["protectedFileWrites"],0)
+  self.assertEqual(receipt["reason"],"LEASE_JOURNAL_CHANGED_DURING_READ")
+  self.assertEqual(receipt["phase"],"FINAL_STABLE_RECHECK")
+  self.assertEqual(calls["observe"],2);self.assertNotIn("write",calls);self.assertEqual(files,[])
+  for key in ("productionApplyReady","newClaimCreated","budgetReset","r12Touched"):self.assertFalse(receipt[key])
 if __name__=="__main__":unittest.main()
