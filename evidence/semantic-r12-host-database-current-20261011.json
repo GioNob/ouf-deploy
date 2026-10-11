@@ -1,0 +1,250 @@
+{
+  "schema": "ouf.discovery.r12-current-host-database-observation.v1",
+  "sourceCommit": "7a7c50b2210b5e38f1f3e34b820d94e38ffc6969",
+  "workflowRun": 38147699164,
+  "job": 114494433103,
+  "source": "EXISTING_SELF_HOSTED_VPS_RUNNER",
+  "conclusion": "success",
+  "receipts": [
+    {
+      "name": "OUF_CURRENT_CUTOVER_HOST_METADATA",
+      "receipt": {
+        "applicationCutoverAuthorized": false,
+        "applicationHealthProven": false,
+        "commonLockAcquired": false,
+        "containerLifecycleOperations": 0,
+        "credentialFilesOpened": 0,
+        "databaseWrites": 0,
+        "firewallWrites": 0,
+        "imageImports": 0,
+        "notReleaseAcceptance": true,
+        "observedAtUnixSeconds": 1791729251,
+        "postgres": {
+          "containerId": "50b36d71620ad00fee1bae45aaf0bf652b9171dc09f567fa552798daf12614ea",
+          "generation": {
+            "Pid": 10948,
+            "Running": true,
+            "StartedAt": "2026-09-17T16:38:23.262232373Z"
+          },
+          "imageId": "sha256:894f570c0cf0664ed5576a8fd5d5bfb8fb1b19d592885b686c3a88c8bd90c41f",
+          "stableBindingHash": "20963098b8748d5be1ebcd0db69767358adb958ca0c8d2d1fa621eb9cd9f50aa"
+        },
+        "privateKeyFilesOpened": 0,
+        "privateValuesPrinted": false,
+        "protectedSnapshotFilesOpened": 0,
+        "qualifiedImagesPresentInEngine": {
+          "ingestion": false,
+          "semantic": false,
+          "udp": false
+        },
+        "r12Service": {
+          "ActiveState": "active",
+          "LoadState": "loaded",
+          "MainPID": "2446150",
+          "NRestarts": "0",
+          "Restart": "no",
+          "Result": "success",
+          "SubState": "running",
+          "continuousLivenessProven": false,
+          "execStartMatchesReportedSnapshot": true,
+          "nativeLeaseMembershipProven": false,
+          "serviceActiveAtObservation": true,
+          "workerPrivateStatusRead": false
+        },
+        "readConsistencyMode": "STABLE_REREADS_NOT_ATOMIC_TRANSITION_AUTHORITY",
+        "resources": {
+          "MemAvailableBytes": 11216740352,
+          "MemTotalBytes": 16773283840,
+          "resourceAdmissionProven": false,
+          "rootFilesystemFreeBytes": 466539782144,
+          "runnerFilesystemFreeBytes": 466539782144
+        },
+        "schema": "ouf.discovery.r12-cutover-host-metadata.v1",
+        "semantic": {
+          "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+          "fullRealizedOciProven": false,
+          "generation": {
+            "Pid": 3789123,
+            "Running": true,
+            "StartedAt": "2026-10-02T11:45:44.132808507Z"
+          },
+          "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+          "installedConfigHash": "097ded59f89cd745ffbfbbbe466bdf64c54a788ab911ea41632b97df0cbea084",
+          "installedHostConfigHash": "0f09a1304fc4b3fb8c503afc23d16159c690296c88264f932d1aa411160c310e",
+          "installedMountsHash": "4bf1ed4e0c4a4a2b201369905be4d8919edafffc881518d492c0cb83154b0d89",
+          "installedStableBindingHash": "8fbcca5f089aa3e01d804c5f01bb619dd1fa6fb571644e1c7c1d9aa71e44fd71",
+          "legacyDatabasePasswordEnvironmentPresent": true,
+          "memoryLimitBytes": 0,
+          "mountCount": 2,
+          "networkSettingsHash": "1528caf335bfa9411e15afcdab1388b735ee639e86e4b525c45734eb9bb0d8bc",
+          "networks": [
+            {
+              "ipv4": "172.18.0.6",
+              "mac": "b2:96:a1:e2:c1:8d",
+              "networkId": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3",
+              "networkNameHash": "295d59cf0a3705372a89c4f830b0dee064ae8597efd7d5fee76c718b61de1ca8"
+            }
+          ],
+          "protectedDeclarationCompared": false,
+          "restartPolicy": {
+            "MaximumRetryCount": 0,
+            "Name": "unless-stopped"
+          },
+          "runtime": "runc",
+          "springConfigImportPresent": false
+        },
+        "status": "CURRENT_CUTOVER_HOST_METADATA_CAPTURED"
+      }
+    },
+    {
+      "name": "OUF_SEMANTIC_DATABASE_CUTOVER_METADATA",
+      "receipt": {
+        "applicationRowsRead": 0,
+        "applyAuthorized": false,
+        "backupPerformed": false,
+        "commonLeaseLockAcquired": false,
+        "containerLifecycleOperations": 0,
+        "databaseWrites": 0,
+        "metadata": {
+          "allowConnections": true,
+          "catalogHash": "b74295628789ced9f3e420e66e476f37b318cbf16d70108ab3ce689ce56fbc3c",
+          "catalogReadVisibilityComplete": false,
+          "currentRole": {
+            "rolbypassrls": false,
+            "rolcanlogin": true,
+            "rolcreatedb": false,
+            "rolcreaterole": false,
+            "rolreplication": false,
+            "rolsuper": false
+          },
+          "databaseNameHash": "35d46b54b523873b96cfa7c240fd399ff40d64a02a812259001b5f187a3b6f12",
+          "databaseOwnerMatchesUser": true,
+          "databaseUserHash": "35d46b54b523873b96cfa7c240fd399ff40d64a02a812259001b5f187a3b6f12",
+          "dedicatedRoleCustodyProven": false,
+          "effectiveWriterRoles": [
+            {
+              "login": true,
+              "roleHash": "52a7cfa3011ba79f91eb87e64b24847be4ac61e7e96334f96e1f0305fb2ab1ef",
+              "sameAsCurrentRole": false,
+              "superuser": true
+            },
+            {
+              "login": true,
+              "roleHash": "35d46b54b523873b96cfa7c240fd399ff40d64a02a812259001b5f187a3b6f12",
+              "sameAsCurrentRole": true,
+              "superuser": false
+            },
+            {
+              "login": false,
+              "roleHash": "e63470a9d7463a3907dbc769ce46b4a4b89838b03b10bd0d995bbaf2ec2010d5",
+              "sameAsCurrentRole": false,
+              "superuser": false
+            }
+          ],
+          "globalRoleLoginFenceRejected": false,
+          "largeObjectCount": 0,
+          "otherDatabaseSessionsUsingSameRole": 0,
+          "preparedTransactionCount": 0,
+          "relationCount": 23,
+          "relationsOutsideSemanticSchema": 0,
+          "replicationSubscriptionCount": 0,
+          "semanticPeerSessionCount": 10,
+          "sessionCount": 10,
+          "sessionGroups": [
+            {
+              "applicationNameHash": "2e3474b54420af566879c7c67a80fe231cb52c9c1e4f0990b69a9753017d9481",
+              "clientAddressHash": "a535ed723efcdb45a6c657c5de1665a0b55428195cfbc05f880e6ae3aedb9b1f",
+              "count": 10,
+              "matchingContainerIds": [
+                "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147"
+              ],
+              "matchingContainers": [
+                {
+                  "configurationHash": "15585be7434df637c48af730c60e8d2c53355ebd0847c172dbff2c671aa24e66",
+                  "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+                  "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+                  "name": "/ouf-semantic",
+                  "restartPolicy": {
+                    "MaximumRetryCount": 0,
+                    "Name": "unless-stopped"
+                  },
+                  "running": true,
+                  "startedAt": "2026-10-02T11:45:44.132808507Z"
+                }
+              ],
+              "sameRole": true
+            }
+          ],
+          "sessionsAreObservationalNotFenceAuthority": true,
+          "successfulMigrations": [
+            null,
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9"
+          ]
+        },
+        "notReleaseAcceptance": true,
+        "postgresContainerId": "50b36d71620ad00fee1bae45aaf0bf652b9171dc09f567fa552798daf12614ea",
+        "privateKeysRead": 0,
+        "privateValuesPrinted": false,
+        "readConsistencyMode": "STABLE_CATALOG_REREADS_NOT_ATOMIC_TRANSITION_AUTHORITY",
+        "schema": "ouf.discovery.database-cutover-metadata.v1",
+        "semanticContainerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+        "status": "DATABASE_CUTOVER_METADATA_CAPTURED"
+      }
+    },
+    {
+      "name": "OUF_DATABASE_ADMIN_SCOPE",
+      "receipt": {
+        "adminSuperuser": true,
+        "adminUserHash": "52a7cfa3011ba79f91eb87e64b24847be4ac61e7e96334f96e1f0305fb2ab1ef",
+        "allowConnections": true,
+        "applicationRowsRead": 0,
+        "authenticationTransport": "EXISTING_POSTGRES_OS_IDENTITY_AND_LOCAL_SOCKET",
+        "backupPerformed": false,
+        "commonLeaseLockAcquired": false,
+        "completeSessionVisibility": true,
+        "containerLifecycleOperations": 0,
+        "credentialFilesOpened": 0,
+        "credentialValuesPrinted": false,
+        "databaseFenceInstalled": false,
+        "databaseNameHash": "35d46b54b523873b96cfa7c240fd399ff40d64a02a812259001b5f187a3b6f12",
+        "databaseOid": 21558,
+        "databaseOwnerHash": "35d46b54b523873b96cfa7c240fd399ff40d64a02a812259001b5f187a3b6f12",
+        "databaseWrites": 0,
+        "fsyncOn": true,
+        "grantsIssued": 0,
+        "notReleaseAcceptance": true,
+        "outsideApplicationDatabase": true,
+        "postgresContainerId": "50b36d71620ad00fee1bae45aaf0bf652b9171dc09f567fa552798daf12614ea",
+        "preparedTransactionCount": 0,
+        "readConsistencyMode": "CURRENT_METADATA_NOT_FENCE_OR_BACKUP_AUTHORITY",
+        "schema": "ouf.discovery.database-admin-scope-observation.v1",
+        "serverVersionNum": "170011",
+        "sessionCount": 10,
+        "sessionGenerationHashes": [
+          "e53c018855cb136035a77e2048796ddb17dd2513210c02563c019d63baf4ed54",
+          "9c712ef20c564837fc11ffbac9ddbbd282edea348c2087048b33a9feac7f73bc",
+          "3be2be2a980747bc493e116303a3d77f8b8480fe50e4f2cbe742f99c4c31a5ad",
+          "ac36aab8f30531a2cdf464c2495c9a7b31bc17066466e6e2437c4e5eb56d052b",
+          "85f2677fc723636327e4a5f6b4de22af6d9ee2c682f5df42eed9596123b4b4b4",
+          "fc126b13a1a1d6167c749942a8fbc3f43ddf49b91a24f075d3eaf105199818da",
+          "ca83202b278577a0e92bbab20ac93955244749b197b3c880ce054e8334e83865",
+          "a3a76a16a79ddd253ed2a5ec34c96225b52d9657d62821a16984de430006484f",
+          "562ee9f3459ffd28a1dd2122016e69463fa7980ea4bc2af4df1fec0410acf8c7",
+          "a55493659b1ab3c43bcaa01c1c204d67e88f03738d092a1f9470d1ede73b8cb3"
+        ],
+        "sessionsAreObservationsNotTerminationAuthority": true,
+        "status": "EXISTING_ADMIN_OUTSIDE_DATABASE_SCOPE_OBSERVED",
+        "synchronousCommitOn": true
+      }
+    }
+  ],
+  "notReleaseAcceptance": true
+}

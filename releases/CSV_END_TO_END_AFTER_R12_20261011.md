@@ -1,3 +1,5 @@
+> **Aggiornamento corrente:** preparazione target riuscita (R12 refresh120 e TTL16s); CSV Teatri esplicitamente autorizzato e profilo letto (13 righe/20 colonne). Il comando di input qui sotto è storico e completato. Usare la [continuazione Teatri e nuovo piano privato di creazione](TEATRI_CURRENT_EXECUTION_20261011.md). [Receipt input](../evidence/semantic-r12-cutover-inputs-target-20261011.json). Nessun nuovo apply applicativo o CSV end-to-end dichiarato.
+
 # CSV end-to-end: continuation after active R12 — 11 October 2026
 
 [Platform resilience policy v3](../docs/OUF_RESILIENCE_POLICY.md) and the attached Reality Baseline v1.7 apply. The operator-confirmed [R12 receipt](../evidence/resilient-r12-active-target-20261011.json) establishes existing two-flow lease readiness at activation; application readiness and CSV acceptance remain open.
@@ -17,7 +19,7 @@ Current authenticated OUF reads through the retained giovanni-chatgpt connection
 - Existing canonical Cinema search returns two pages of three ACTIVE objects each. Third page is refused with non-retryable ORCHESTRATION_BUDGET_EXHAUSTED. Pagination is INCOMPLETE; historical eight-object evidence is not reattested by this read. No budget reset, alternative account or automatic retry was used.
 - Automatic approval review rejected the historical Teatri asset preview because the current request does not explicitly identify/authorize that private file. No file bytes/profile were acquired. Request explicit confirmation before using that asset; do not access it through an alternate path.
 
-## One necessary target preparation
+## Historical input-preparation command — completed by operator
 
 The protected files require operator sudo; previous runner evidence showed password-required before execution. No sudo permission expansion or credential collection is proposed. The old R10 preparation command remains suspended. Run the following distinct qualified preparation as oufadmin and return its full receipt through OUF_CURRENT_CUTOVER_INPUTS_EXIT:
 

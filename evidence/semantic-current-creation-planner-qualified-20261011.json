@@ -1,0 +1,74 @@
+{
+  "schema": "ouf.semantic-current-creation-planner-qualification.v1",
+  "status": "QUALIFIED_ISOLATED_CURRENT_PRIVATE_PLAN_PENDING_OPERATOR",
+  "compilerCommit": "e0bac04e24b11715b545ea890e0bbc32c6877850",
+  "qualifiedSourceCommit": "9fdf4bed6ded1a01640bcaed2ffadb58204e42d5",
+  "deliveryCommit": "574cc921e2ca26361052647cabbd86fc40243f40",
+  "qualification": {
+    "run": 38148764870,
+    "job": 114497583833,
+    "conclusion": "success",
+    "creationPlanUnitTests": 8,
+    "plannerAndDeliveryTests": 10,
+    "actualRootPosixCustodyPassed": true,
+    "distinctPythonTests": 18,
+    "downloadAndTamperPositions": 8,
+    "rootModuleTamperPositions": 3,
+    "rootBootstrapTamperPositions": 4,
+    "portableGhWithoutPath": true,
+    "privilegedFailurePropagatedThroughTee": true,
+    "nativeEngineApi": "1.44",
+    "nativeFixture": "ALPINE_DISPOSABLE_INTERNAL_BRIDGE_NO_TARGET_APPLICATION",
+    "nativeMarker": "REAL_ENGINE_API_UID10001_READONLY_INPUT_RESOURCE_LIMITS_IP_MAC_PASS"
+  },
+  "priorFailure": {
+    "sourceCommit": "e0bac04e24b11715b545ea890e0bbc32c6877850",
+    "run": 38148220432,
+    "job": 114495956269,
+    "reason": "NATIVE_FIXTURE_API_1_49_TOO_NEW_FOR_RUNNER_MAX_1_48",
+    "fixedCommit": "53e17840dc856149acf51c8c282ecc6cadb7192a",
+    "productionCompilerChanged": false
+  },
+  "delivery": {
+    "path": "releases/semantic-current-creation-plan-20261011.sh",
+    "sha256": "cd0b601c07205297ec389f00ce841de582c801d5e5109277723c7423d8336ec7",
+    "sourceModules": [
+      {
+        "path": "scripts/compile-semantic-creation-plan-after-r12.py",
+        "filename": "plan.py",
+        "sha256": "38bb934fedfcdd38d11fc29ff4d60e75170854686273b7592edcae92fa0d1d28"
+      },
+      {
+        "path": "scripts/prepare-semantic-inputs-after-r12.py",
+        "filename": "prepare.py",
+        "sha256": "693ec0196a60d3a9f6adee96571947306df4a0cffb449905c3dcf8c09a34da1b"
+      },
+      {
+        "path": "tools/semantic_target_review/prepare_application_runtime_inputs.py",
+        "filename": "custody.py",
+        "sha256": "cb9ff64684243d563da79d327eb7d7e325dbea6a3922c91a0b7791a3ceec9baf"
+      },
+      {
+        "path": "tools/semantic_application_cutover/creation_plan.py",
+        "filename": "creation.py",
+        "sha256": "e018567bbd67504ec00d5cbd830c65adbb2670dd7a627b63b9ae20ffa420d665"
+      }
+    ]
+  },
+  "boundDeclaration": {
+    "path": "/etc/ouf/deploy-snapshots/semantic-r12-cutover-inputs-dxzne_0r/private-runtime-declaration.json",
+    "sha256": "096a9bb877da54de35d41725064ebb14a0c456c42cf8b83af409bc1f253172d6"
+  },
+  "limits": {
+    "targetCompiled": false,
+    "targetContainerCreated": false,
+    "targetActions": 0,
+    "fullTargetGuardQualifiedByThisFixture": false,
+    "completeRealizedOciProven": false,
+    "realSemanticCandidateResourceLoadQualified": false,
+    "applicationCutoverAuthorized": false,
+    "applicationHealthProven": false,
+    "csvEndToEndProven": false,
+    "releaseAcceptance": false
+  }
+}

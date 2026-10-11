@@ -92,7 +92,7 @@
     "existingR10SealedProgramMustRemainUnchanged": true,
     "R10ReplayOrClaimResetAllowed": false
   },
-  "nextRead": "AUTONOMOUS_CURRENT_R12_HOST_DATABASE_METADATA_THEN_COMPOSE_APPLICATION_CLOSURE",
+  "nextRead": "COMPILE_CURRENT_PRIVATE_CREATION_REQUEST_AND_FRESH_INPUT_RESOURCE_SCOPE_NO_APPLY",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
@@ -224,19 +224,24 @@
     "targetProviderHealthProven": false
   },
   "currentIndependentTargetMetadata": {
-    "runId": 38085676564,
-    "adminScopeRunId": 38086062418,
-    "evidence": "evidence/semantic-autonomous-cutover-progress-20261010.json",
+    "runId": 38147699164,
+    "jobId": 114494433103,
+    "evidence": "evidence/semantic-r12-host-database-current-20261011.json",
+    "R12ServiceActiveAtObservation": true,
     "semanticGenerationUnchangedAtObservation": true,
-    "R10ServiceActiveAtObservation": true,
-    "nativeLeaseMembershipProven": false,
+    "nativeLeaseMembershipProvenByRunner": false,
     "databaseOid": 21558,
     "currentMigration": "V9",
     "writersObserved": 10,
     "completeAdminVisibility": true,
     "preparedTransactions": 0,
     "fenceInstalled": false,
-    "backupPerformed": false
+    "backupPerformed": false,
+    "qualifiedImagesPresentInEngine": {
+      "semantic": false,
+      "ingestion": false,
+      "udp": false
+    }
   },
   "currentProtectedInputPreparation": {
     "status": "CURRENT_INPUTS_AND_FILE_SECRET_DECLARED_NOT_APPLY_READY",
@@ -366,5 +371,14 @@
     "signaturesIssued": 0,
     "status": "CURRENT_CUTOVER_INPUT_PREPARATION_BLOCKED"
   },
-  "latestOperatorReceiptEvidence": "evidence/semantic-r12-cutover-inputs-target-20261011.json"
+  "latestOperatorReceiptEvidence": "evidence/semantic-r12-cutover-inputs-target-20261011.json",
+  "currentCreationPlanPreparation": {
+    "status": "QUALIFIED_TARGET_PRIVATE_COMPILATION_PENDING_OPERATOR",
+    "sourceCommit": "9fdf4bed6ded1a01640bcaed2ffadb58204e42d5",
+    "deliveryCommit": "574cc921e2ca26361052647cabbd86fc40243f40",
+    "evidence": "evidence/semantic-current-creation-planner-qualified-20261011.json",
+    "launcher": "releases/semantic-current-creation-plan-20261011.sh",
+    "qualifiedRun": 38148764870,
+    "productionApplyReady": false
+  }
 }

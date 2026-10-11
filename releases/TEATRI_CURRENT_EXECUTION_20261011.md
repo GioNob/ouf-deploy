@@ -1,0 +1,71 @@
+# CSV Teatri: current profile and application continuation — 11 October 2026
+
+[Platform resilience policy v3](../docs/OUF_RESILIENCE_POLICY.md), Reality Baseline v1.7 and [file-first acceptance](FILE_FIRST_EXECUTION_CHECKPOINT_20261010.md) apply. The owner explicitly authorized the existing Teatri asset on 11 October at 16:29 Europe/Rome. No upload/profile replay is needed.
+
+## What is now proved
+
+The operator completed current protected input preparation with exit0: R12 refreshCount120, two approved addresses total, LEASE_READY and native remaining TTL16s in both flows. The new private declaration is bound to SHA256 `096a9bb877da54de35d41725064ebb14a0c456c42cf8b83af409bc1f253172d6`. Database secret projection is readonly UID10001,0500/0400; candidate environment has no DB password; four readonly input additions are declared. [Operator evidence projection](../evidence/semantic-r12-cutover-inputs-target-20261011.json). No application cutover/import/fence/database/firewall/signature or R12 change occurred.
+
+The authenticated [profile observation](../evidence/teatri-authorized-profile-20261011.json) confirms asset6609b245-86ed-4315-8ce0-73f2a8555bf3, profile7984c39c-7396-4248-ab0a-f2efc390b49c, version1: CSV, UTF-8, semicolon, header row1, **13 rows and20 columns**. No raw bytes or redacted samples are published. The prior automatic-review rejection is resolved by the user's exact-file authorization and successful governed preview.
+
+The existing self-hosted runner independently read current host/engine/catalog/admin metadata at [run38147699164](https://github.com/GioNob/ouf-deploy/actions/runs/38147699164), job114494433103 SUCCESS. R12 active/running, same PID2446150, no restarts; original Semantic image f6525f… still runs, DB has V1–V9 and10 sessions. Candidate Semantic/Ingestion/UDP images are NOT imported. About11.2GB memory and466.5GB filesystem are available; these observations are not resource/SLO admission. No application rows, private snapshots, key files or credential files were read by that runner. [Independent observations](../evidence/semantic-r12-host-database-current-20261011.json).
+
+Exact historical Cinema ontology get remains ACTIVE at revision51706bed-81e4-4306-aca1-70119821727d and publicationf92a2e17-30c9-456f-bb12-63afa84f41e6, with17 asserted RDF statements and partial=false. This explains why CLASS-only search can be empty while a class is present inside a containing ONTOLOGY. The broader teatro search also returns empty; no suitable published Teatro reference has been acquired. Do not map Teatri to Cinema merely to bypass that gap.
+
+## Decisions prepared from the profile, not yet approved
+
+| Fields | Treatment to review |
+|---|---|
+| nome_teatro | Required name;13 distinct values support a proposed source key in this file, not lifetime stability or canonical identity. A rename requires governed continuity/reconciliation. |
+| tipologia |9 distinct strings; map to an approved vocabulary or retain raw text until that mapping is approved. |
+| toponimo, nome_indirizzo, civico, cap, citta, provincia | Address components, not universal object identity. CAP is profiled LONG but must be reviewed as a lexical postal code; preserve leading zeros where present in raw input. |
+| latitudine, longitudine, sistema_riferimento, precisione_coordinate | Nullable coordinate pair, explicit declared CRS and accuracy/provenance. Do not fabricate missing coordinates or interpret a partial pair as a valid point. |
+| capienza_posti | Optional capacity; the sample indicates capacity may refer to a room rather than the whole venue. Preserve qualification; do not sum or assign it blindly to the theatre object. |
+| spettacoli_stagione, stagione_riferimento | Optional time-scoped measure and period, not permanent attributes without temporal mapping. |
+| note | Free text may carry qualifications or sensitive content; preserve raw evidence and require an explicit access decision. |
+| fonte_indirizzo, fonte_coordinate, fonte_altri_dati, data_verifica | Field/observation provenance and verification date. Source URLs are evidence, not permission to crawl external sites or authoritative freshness guarantees. |
+
+Every selected field needs a published semantic term, supported transform and owner-approved DataAccessLabel. No OPEN classification is inferred from being in a CSV. The profile's NATIVE_KEY(nome_teatro) is PENDING_HUMAN_REVIEW. Thirteen rows mean13 source observations to account for, not necessarily13 new UrbanObjects: accepted, rejected/quarantined and intentionally excluded records must reconcile to input count; UDP decides MATCH/NEW/REVIEW under the pinned profile. Same address does not merge different theatres or different canonical types.
+
+## Concrete creation-plan implementation
+
+[creation_plan.py](../tools/semantic_application_cutover/creation_plan.py) compiles a PRIVATE Engine creation request from the hash-bound file-secret declaration. It compares the entire retained configuration/mount/network/generation against current native facts, preserves all unrelated host fields, rejects widened privilege/ports/mounts and requires mandatory configtree and exact readonly custody metadata. Proposed explicit profile v1:2GiB memory, equal total memory+swap (no swap allowance),2CPU quota,512 PIDs,2GiB control reserve and10GiB free-disk reserve. These are conservative technical proposals, not measured production SLOs. The exact Semantic candidate still needs resource-bound startup/load qualification.
+
+Endpoint IP/MAC remain explicitly bound; legacy top-level MAC moves to EndpointSettings for modern Engine APIs. Generated aliases containing the retired container ID are not inherited. **The old endpoint must release IP/MAC under a new governed transition before the creation request is used.** No simultaneous same-identity peer is assumed. A stopped/restarted old image has a new process generation and cannot use the original conditional inverse or consumed R12 authority automatically; migration-aware roll-forward/recovery and newly authenticated transport remain required.
+
+The [protected planner](../scripts/compile-semantic-creation-plan-after-r12.py) composes this with the SAME sealed R12 readiness verifier already exercised by the operator. It rechecks native positive leases, full current frame, all four input-file bytes/metadata and existing DB credential binding, then stable-rereads before producing a new private root0700 snapshot. It never signs, imports, creates/starts/stops a container, fences/writes DB, modifies nft or resets budgets. Its receipt is PLAN ONLY, not apply authority or complete OCI.
+
+[CI38148764870](https://github.com/GioNob/ouf-deploy/actions/runs/38148764870), job114497583833 SUCCESS:18 distinct Python tests, actual hosted-root four-input POSIX custody and credential mismatch denials, eight download/tamper positions, four root-bootstrap tamper positions, retained portable gh and failure propagation. Actual Engine API1.44 creates/starts UID10001 on a disposable internal bridge with readonly fake inputs, enforced resource limits and exclusive IP/MAC transfer. Alpine fixture, synthetic declaration/host scope; no target application, provider, complete OCI or target planner acceptance is inferred. The first native run failed on fixture API1.49 vs runner maximum1.48; fixed to1.44, failed evidence retained. [Qualification and limits](../evidence/semantic-current-creation-planner-qualified-20261011.json).
+
+## Next operator action: compile the actual private plan
+
+This is necessary because the current creation declaration and credential custody live in root-private snapshots; the existing runner cannot read them with unattended sudo. It produces the concrete private creation request needed to compose the transition. No new general sudo rule or key disclosure is requested.
+
+Run as oufadmin and return the complete receipt through OUF_CURRENT_CREATION_PLAN_EXIT:
+
+```bash
+(
+  set -euo pipefail
+  umask 077
+  OUF_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+  if [ ! -x "$OUF_GH" ]; then OUF_GH="$(command -v gh || true)"; fi
+  if [ -z "$OUF_GH" ] || [ ! -x "$OUF_GH" ]; then echo "OUF_EXISTING_GITHUB_CLIENT_REQUIRED" >&2; exit 1; fi
+  OUF_LAUNCH="$(mktemp "$HOME/ouf-current-creation-plan-launch.XXXXXXXX")"
+  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/releases/semantic-current-creation-plan-20261011.sh?ref=574cc921e2ca26361052647cabbd86fc40243f40' > "$OUF_LAUNCH"
+  printf '%s  %s\n' 'cd0b601c07205297ec389f00ce841de582c801d5e5109277723c7423d8336ec7' "$OUF_LAUNCH" | sha256sum -c -
+  /usr/bin/bash "$OUF_LAUNCH"
+)
+```
+
+Expected: CURRENT_CREATION_INTENT_COMPILED_NOT_APPLY_READY, exit0. BLOCKED means no accepted plan. Four source files come from the same immutable source commit and are verified before sudo, then again in memory. Do not repeat the completed input preparation or any R10/R11/R12 activation.
+
+## Gates still required for the end-to-end
+
+1. Actual private creation-plan receipt; current artifact cryptographic/security verification and resource-bound exact-JAR qualification.
+2. Composed migration-aware applicator: intentional lease coordination retaining incident/budget history, quiesced producers/fresh fenced backup, exact new OCI/reciprocal peer and new signed driver/transport closure. No blind pre-migration restore over later writes.
+3. Additive Gateway routes, current IAM/owner readiness and eligible discovery capabilities; preserve existing Cinema routes/data.
+4. Adequate published Teatro class/properties; if missing, authorized provider discovery, adoption/publication through HUMAN/THS. No local fallback or guessed ontology.
+5. Owned Onboarding DRAFT from this profile, human-reviewed keys/access/mapping, ACTIVE checksum-pinned bundle.
+6. Real ingestionRunId, durable UDP ACK, lineage, complete bounded search and negative authorization/replay/recovery tests, with all13 rows accounted for.
+
+A technical development delegation is not a HUMAN domain approval/grant. No Onboarding DRAFT, semantic adoption, ingestion run or new Teatro UrbanObject has been created yet. This is genuine source/fixture/target-preparation progress; CSV end-to-end, reusable installer and full platform acceptance remain open.
