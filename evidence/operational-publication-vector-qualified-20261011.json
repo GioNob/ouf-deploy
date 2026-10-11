@@ -1,0 +1,112 @@
+{
+  "schema": "ouf.operational-publication-vector-qualification.v1",
+  "date": "2026-10-11",
+  "pr": 59,
+  "candidate": "26d2bc20d45f760fd801cf7c614409d71d2bf2b6",
+  "merge": "f3246806abeb504fa396793c615e98f227cff5a2",
+  "runs": [
+    {
+      "id": 38130636303,
+      "name": "Authorization Java Go conformance",
+      "conclusion": "success"
+    },
+    {
+      "id": 38130636288,
+      "name": "Incident priority resilience v3",
+      "conclusion": "success"
+    },
+    {
+      "id": 38130636306,
+      "name": "Operational aggregate delegated context qualification",
+      "conclusion": "success"
+    },
+    {
+      "id": 38130636290,
+      "name": "Operational cursor metadata PostgreSQL qualification",
+      "conclusion": "success"
+    },
+    {
+      "id": 38130636308,
+      "name": "Operational incident cursor HTTP qualification",
+      "conclusion": "success"
+    },
+    {
+      "id": 38130636371,
+      "name": "Persistent publication vector PostgreSQL qualification",
+      "conclusion": "success"
+    },
+    {
+      "id": 38130636340,
+      "name": "Operational control budget PostgreSQL qualification",
+      "conclusion": "success"
+    },
+    {
+      "id": 38130636375,
+      "name": "MCP evidence and late recovery",
+      "conclusion": "success"
+    },
+    {
+      "id": 38130633999,
+      "name": "Authorization Java Go conformance",
+      "conclusion": "success"
+    },
+    {
+      "id": 38130633985,
+      "name": "Incident priority resilience v3",
+      "conclusion": "success"
+    },
+    {
+      "id": 38130634015,
+      "name": "Operational control budget PostgreSQL qualification",
+      "conclusion": "success"
+    },
+    {
+      "id": 38130633981,
+      "name": "Persistent publication vector PostgreSQL qualification",
+      "conclusion": "success"
+    },
+    {
+      "id": 38130633972,
+      "name": "Operational cursor metadata PostgreSQL qualification",
+      "conclusion": "success"
+    },
+    {
+      "id": 38130633989,
+      "name": "Operational incident cursor HTTP qualification",
+      "conclusion": "success"
+    },
+    {
+      "id": 38130633990,
+      "name": "Operational aggregate delegated context qualification",
+      "conclusion": "success"
+    },
+    {
+      "id": 38130633988,
+      "name": "MCP evidence and late recovery",
+      "conclusion": "success"
+    }
+  ],
+  "unitRaceGroups": 3,
+  "postgresGroups": 5,
+  "profiles": {
+    "profile": "ouf.operational-publication-vector.v1",
+    "scope": [
+      "GATEWAY",
+      "INGESTION"
+    ],
+    "metadataBytes": 4096,
+    "maximumDays": 90,
+    "principalPositions": 512,
+    "tenantPositions": 4096,
+    "globalPositions": 32768
+  },
+  "limits": {
+    "privateMetadataStore": true,
+    "publicComposition": false,
+    "historicalMcpSelfEvents": false,
+    "clientReceipt": false,
+    "operatorCheckpoint": false,
+    "targetApplied": false,
+    "r10Touched": false
+  }
+}
