@@ -6,12 +6,16 @@ on:
       - 'tools/semantic_lease_recovery/**'
       - 'scripts/read-resilient-worker-current-intake.py'
       - 'tests/test_resilient_worker_intake.py'
+      - 'tests/test_resilient_intake_delivery.py'
+      - 'releases/resilient-worker-current-intake-20261011.sh'
       - '.github/workflows/continuous-resilient-worker.yml'
   pull_request:
     paths:
       - 'tools/semantic_lease_recovery/**'
       - 'scripts/read-resilient-worker-current-intake.py'
       - 'tests/test_resilient_worker_intake.py'
+      - 'tests/test_resilient_intake_delivery.py'
+      - 'releases/resilient-worker-current-intake-20261011.sh'
       - '.github/workflows/continuous-resilient-worker.yml'
 permissions:
   contents: read
@@ -35,7 +39,7 @@ jobs:
           python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_bounded_recovery.py
           python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_adaptive_supervisor.py
           python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p 'test_r10_*.py'
-          python3 -B -m unittest discover -v -s tests -p test_resilient_worker_intake.py
+          python3 -B -m unittest discover -v -s tests -p 'test_resilient*py'
       - name: Install disposable native dependencies
         run: sudo apt-get update -qq && sudo apt-get install -y -qq nftables iproute2
       - name: Continuous systemd lifecycle with native DNS nft and locks

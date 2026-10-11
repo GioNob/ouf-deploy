@@ -135,7 +135,9 @@ class Supervisor:
             except Exception:
                 return self.r.pause(row, 'BLOCKED', 'LOCAL_AUTHORITY_UNPROVEN')
             row = self.r.step()
-            if row['state'] == 'ACTIVE': self.active_here = True
+            if row['state'] == 'ACTIVE':
+                self.active_here = True
+                return self.tick()
             return row
         if not self.active_here:
             # A recovered ACTIVE checkpoint from another invocation is not

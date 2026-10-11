@@ -31,6 +31,10 @@ class Tests(unittest.TestCase):
         recovery = Recovery(journal, adapter, policy or Policy(), 'a'*64, 'b'*64, clock, lambda: .5)
         journal.value = recovery.initial()
         supervisor = Supervisor(recovery, None, 15)
+        schedule_patch = patch('continuous_supervisor.window',
+                               side_effect=lambda *a, **kw: self.schedule(clock))
+        schedule_patch.start()
+        self.addCleanup(schedule_patch.stop)
         return clock, adapter, journal, recovery, supervisor
 
     def schedule(self, clock):
@@ -153,6 +157,22 @@ class Tests(unittest.TestCase):
         with self.assertRaises(OSError): supervisor.serve(Stop(), observe)
         self.assertGreater(adapter.pauses, 0)
         self.assertEqual(journal.read()['attempts'], 1)
+
+    def test_first_active_serve_cycle_has_a_real_schedule_and_renews(self):
+        clock, adapter, journal, recovery, supervisor = self.fixture()
+        observations = []
+        class Stop:
+            ticks = 0
+            def is_set(self): return self.ticks >= 3
+            def wait(self, seconds):
+                self.ticks += 1
+                clock.advance(seconds)
+                return self.is_set()
+        with patch('continuous_supervisor.window', side_effect=lambda *a, **kw: self.schedule(clock)):
+            supervisor.serve(Stop(), observations.append)
+        self.assertTrue(all(row['ready'] for row in observations))
+        self.assertEqual(adapter.renewal_calls, 2)
+        self.assertEqual(journal.read()['state'], 'CANCELLED')
 
 
 if __name__ == '__main__': unittest.main()
