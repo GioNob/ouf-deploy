@@ -53,3 +53,32 @@ A new explicit operator observation may use the SAME pinned launcher and command
 A regression reproduces the exact final-read exception and asserts immediate blocking, no internal retry, no draft publication, no claim or budget effect. Local16 tests pass; the hosted checkpoint for this added case is recorded separately. Program and launcher bytes are unchanged; no new executable trust or private authority is introduced.
 
 Hosted regression [CI38166096436](https://github.com/GioNob/ouf-deploy/actions/runs/38166096436), job114548865204 SUCCESS:16 tests, exact journal-collision refusal and original-package compatibility pass. [Qualification](../evidence/durable-v11-journal-collision-denial-qualified-20261011.json). The exception is injected in orchestration; target renewal causality and plan acceptance remain unproved. Launcher/program hashes are unchanged.
+
+## Target V11 plan prepared — 11 October, 21:01 CEST
+
+The operator completed a fresh execution of the unchanged pinned launcher; all eight source checks passed, exit0. [Safe success receipt](../evidence/durable-v11-current-plan-target-20261011.json). This supersedes the pending/blocked status of plan preparation, while retaining the earlier journal-collision observation. No cause for that earlier collision is inferred.
+
+New private directory: `/etc/ouf/deploy-snapshots/semantic-durable-v11-plan-2yliy8_t`.
+Declaration SHA256: `ffc02da66a08fb1f1b06c143ef0f2aa18d68a6fb7b2bfaa616a812aa37eabe0f`.
+Creation request SHA256: `798de748a4fcc0d8c2b6eb70f3577430d690729a4a03bc00ebbf3adcae765836`.
+Public plan SHA256: `749399d19c1fae5ad02b1c97e3d05ee04b6bdade242d107b6ab7004a5f0cf7cd`.
+The exact source8a2e84b/image83635be4/ZIPb6ae1051 binding is now prepared on the target. Execution defaults, retained host fields and all four existing input files were preserved/reverified.
+
+R12 reports PID2446150 and refreshCount1332; each native flow had one approved address and minimumTTL16seconds at this read. These are stable-reread observations, not continuous liveness or future transition authority. Exactly four new private draft files were written. No image import, container lifecycle, DB read/write, DNS/provider call, firewall change, signature, common lock, new claim or budget reset occurred. The snapshot is not atomic installation authority. All apply/image-custody/transport/full-realized-OCI flags remain false.
+
+**This preparation is completed. Do not repeat this launcher or the previous custody reader.** Preserve all private artifacts; publish only these safe hashes/receipt. The earlier old-candidate creation request and predecessor declaration remain history, not the new executable intent.
+
+## Next composed transition bindings
+
+The source-bound artifacts to consume are now concrete, but the qualified Engine/journal primitives do not form an authenticated target applicator. The next work must compose the following contracts before any runtime effect:
+
+| Required binding | Current evidence | Remaining proof |
+|---|---|---|
+| New package and image | Exact original ZIP, eight publisher subjects, source/JAR/migrations and target private plan | Target Engine image/layer custody, exact source-bound import reconciliation and resource/admission inventory |
+| Existing authority/history | R12/native custody checks; old consumed claims and finite budgets retained | Distinct authenticated transition authority tied to the new declaration/request; no reuse of R12 activation |
+| Old endpoint and DB | Retained host/network frame; candidate/current-JAR V11 compatibility in CI | Quiesced producers, revoked old traffic, fresh fenced backup, migration-aware admission and recovery |
+| New OCI/peer | Creation intent and Engine/journal primitives qualified separately | Realized expanded OCI, reciprocal peer/generation and new signed driver/transport closure |
+| Release | No target release performed | Authenticated checkpoints, exact paused-generation reconciliation, fresh lease/admission, runtime verification |
+| CSV proof | Cinema8 ACTIVE served; Teatri13×20 profile | Bounded authorized lineage join for Cinema; published Teatro terms, approved mapping/bundle, run/ACK/lineage/search and13-row accounting |
+
+Engine creation, pause and unpause helpers explicitly leave authority and full OCI/peer/transport checks to the caller; hash receipts alone supply none. No placeholder/no-op checkpoint may be installed on the target. Preserve post-migration writes and reconcile ambiguous effects rather than replaying or restoring an old snapshot. No target apply command is ready from this receipt.
