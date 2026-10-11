@@ -1,4 +1,4 @@
-import hashlib,importlib.util,json,subprocess,sys,unittest
+import hashlib,importlib.util,json,subprocess,sys,unittest,types,io,contextlib
 from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
@@ -14,6 +14,16 @@ def fixture():
  files=dict(zip(m.NAMES,map(raw,(decl,request,{'creationPlan':plan,'imageProof':proof,'importJournal':journal},receipt))))
  return files,e
 class Entry(unittest.TestCase):
+ def test_partial_private_write_never_reports_zero_effect(self):
+  files,e=fixture();validate=m.validate
+  def interrupted(base,files,manifest,uid,checkpoint):
+   checkpoint('BEFORE_FILE_private-runtime-declaration.json')
+   raise ValueError('PRIVATE_WRITE_OUTCOME_UNPROVEN')
+  modules={'atomic':types.SimpleNamespace(publish=interrupted),'custody':types.SimpleNamespace(file_bytes=lambda path,*a,**k:files[path.name])}
+  output=io.StringIO()
+  with patch.object(m,'modules',return_value=modules),patch.object(m,'validate',side_effect=lambda files:validate(files,e)),patch.object(m,'EXPECTED',e),patch.object(m.os,'geteuid',return_value=0),patch.object(m.sys,'flags',types.SimpleNamespace(isolated=True)),patch.object(m.sys,'dont_write_bytecode',True),patch.object(m.sys,'argv',['sealed-fixture']),patch.dict(m.__dict__,{'__sealed_program_sha__':'a'*64}),contextlib.redirect_stdout(output):
+   self.assertEqual(m.main(),1)
+  value=json.loads(output.getvalue().split('=',1)[1]);self.assertIsNone(value['protectedFileWrites']);self.assertTrue(value['privateWriteOutcomeRequiresReconciliation']);self.assertEqual(value['protectedFileWriteAttempts'],1);self.assertFalse(value['applicationCutoverAuthorized'])
  def test_complete_bound_fixture_is_a_review_not_authority(self):
   files,e=fixture();values=m.validate(files,e);self.assertFalse(values['receipt.json']['applicationCutoverAuthorized'])
  def test_each_missing_or_changed_file_blocks_review(self):

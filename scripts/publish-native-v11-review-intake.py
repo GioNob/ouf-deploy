@@ -47,12 +47,16 @@ def main():
   manifest={'schema':'ouf.native-v11-atomic-review-intake.v1','sourceDirectory':str(SOURCE),'fileHashes':{n:sha(raw) for n,raw in files.items()},'sourceHashes':{'program':source_hash,**HASHES},'preparedBindings':EXPECTED,'applicationCutoverAuthorized':False,'productionApplyReady':False,'runtimeAuthorityIssued':False,'observationsAreHistorical':True,'notReleaseAcceptance':True}
   require(all(custody.file_bytes(SOURCE/n,0,{0o600})==raw for n,raw in files.items()),'SOURCE_REVIEW_CHANGED_BEFORE_PUBLICATION')
   phase='ATOMIC_COMPLETE_REVIEW_PUBLICATION_NO_APPLICATION_APPLY'
+  report['protectedFileWriteAttempts']=0
   def checkpoint(point):
+   if point.startswith('BEFORE_FILE_'):report['protectedFileWriteAttempts']+=1
    if point.startswith('AFTER_FILE_'):report['protectedFileWrites']+=1
   result=atomic.publish(BASE,files,manifest,0,checkpoint);report.update(result)
   require(all(custody.file_bytes(SOURCE/n,0,{0o600})==raw for n,raw in files.items()),'SOURCE_REVIEW_CHANGED_DURING_PUBLICATION')
   report['status']='COMPLETE_NATIVE_V11_REVIEW_INTAKE_PUBLISHED_NOT_RUNTIME_AUTHORITY';code=0
  except Exception as e:
+  if report.get('protectedFileWriteAttempts',0)>report['protectedFileWrites']:
+   report['protectedFileWrites']=None;report['privateWriteOutcomeRequiresReconciliation']=True
   reason=str(e);report.update(status='NATIVE_V11_REVIEW_INTAKE_BLOCKED',phase=phase,reason=reason if re.fullmatch('[A-Z][A-Z0-9_]{0,120}',reason) else 'NATIVE_REVIEW_INTAKE_UNPROVEN');code=1
  print('OUF_NATIVE_V11_REVIEW_INTAKE='+json.dumps(report,sort_keys=True));return code
 if __name__=='__main__':raise SystemExit(main())
