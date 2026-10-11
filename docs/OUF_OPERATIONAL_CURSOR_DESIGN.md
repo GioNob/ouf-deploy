@@ -1,6 +1,6 @@
 # Stable incident cursors and operator consultation — implementation decision
 
-Status: owner publication/paging IMPLEMENTED AND CI QUALIFIED (Ingestion PR37, Gateway PR60); global composition, consultation confirmation and target qualification OPEN. This design follows [resilience policy v3](OUF_RESILIENCE_POLICY.md), [rollout plan](OUF_OPERATIONAL_RESILIENCE_PLAN.md), MCP PET1.4 §§33–34 and Ingestion PET1.3 Operational Awareness. Existing owners retain authority; no new central incident service or broker is introduced.
+Status: owner publication/paging, MCP metadata/composition, delegated mediation and persistent control admission IMPLEMENTED AND CI QUALIFIED (Ingestion PR37; Gateway PR60/64/65; MCP PR53–57). Public HTTP/tool adapter PR58 is in final qualification. Persistent publication bookmarks, consultation confirmation and target qualification remain OPEN. This design follows [resilience policy v3](OUF_RESILIENCE_POLICY.md), [rollout plan](OUF_OPERATIONAL_RESILIENCE_PLAN.md), MCP PET1.4 §§33–34 and Ingestion PET1.3 Operational Awareness. Existing owners retain authority; no new central incident service or broker is introduced.
 
 ## Why observation time is insufficient
 
@@ -57,3 +57,20 @@ The next composition stores only bounded owner position/coverage metadata in the
 ## MCP metadata qualification
 
 PR54 qualifies the principal-bound PostgreSQL owner-vector metadata store, immutable expiry and positions, finite capacities, concurrent append and unchanged replay in eight successful CI gates. It does not record client delivery or consultation. Bounded composition is being qualified in PR55; production Gateway delegated-context transport, public profile and whole-request budget composition remain explicit gates. See [adoption evidence](OUF_RESILIENCE_ADOPTION.md#cursor-mcp-persistenti-qualificati-composizione-in-sviluppo).
+
+
+## Publication bookmarks and explicit consultation: next implementation contract
+
+A thirty-minute page cursor cannot be an operator bookmark for an absence of weeks. Add distinct owner-local opaque publication bookmarks; preserve them independently of temporary captured-page rows. A bookmark is a read coverage position, never evidence of delivery, human acknowledgement, recovery authority or an incident resolution. Login never advances it.
+
+Resume must select incidents changed after the bookmark's committed publication boundary, taking their latest version at the new committed watermark. Do not reuse observation timestamps or pre-commit sequence numbers as the lower boundary. This captures a late publication even when its occurrence time is old. For Ingestion the per-tenant publication clock/pending ledger is authoritative; SQLite commit-order revision is valid only for the current reference Gateway store. Current urgent OPEN state remains an independent read, so a long-standing important incident cannot disappear behind a history filter.
+
+Bind long-lived bookmark metadata to stable owner/principal/tenant/resource scope and reviewed filter/priority semantics, not to login or conversation identifiers. Re-evaluate current collection/row authorization on resume. A new authentication session does not erase coverage, and a bookmark never preserves an old grant. Scope/policy changes need an explicit invalidation/rebase contract that preserves prior evidence and reports gaps; they cannot silently restart the history at now. Do not carry an old timestamp cutoff into revision-based resume and thereby hide late commits.
+
+Each resumed snapshot stores its immutable parent bookmark. Only a complete, non-redacted, bounded coverage chain may produce a successor bookmark for that captured publication boundary. Unknown publication lag or retention coverage remains explicit. Finite metadata/page/row quotas and owner history floor must be versioned and independently qualified; expired/compacted coverage reports a gap instead of an empty successful catch-up. A finalized read position is still not an operator checkpoint.
+
+MCP should persist only an opaque vector of owner parent/successor bookmarks, page digests and coverage lineage. Confirmation uses a separate reviewed COMMAND capability, current authorization, exact delivery/confirmation binding, idempotency and expected checkpoint version. The parent vector must equal the version actually consulted; owner-proven lineage must prevent rewind or skipped positions. A stale concurrent conversation receives a conflict and repeats validation; random UUID order or local wall-clock order is never used to compare progress.
+
+The delivery integration must name a trusted client contract: exact principal/tenant, consultation ID, page/snapshot digest, delivered page chain and expiry, with cancellation/failure/unseen pages excluded. An MCP tool invocation, Gateway HUMAN delegation, generated response, provider receipt or model assertion does not prove the user saw a page. Until a concrete client confirmation path is implemented, keep consultationRecorded=false and the previous checkpoint unchanged. Acknowledging operational consultation never acknowledges/resolves an incident or renews a quarantined job's execution budget.
+
+Required next tests: old-time late publication after a prior bookmark, restart/login after page expiry, scope/tenant/policy replay, owner lag/retention floor, complete versus redacted/failed/missing pages, finite history/metadata capacity and independent incident writes; then exact client receipt, cancellation, stale concurrent confirmation/CAS, idempotent retry and unchanged checkpoint on failure. Host SDK/HA/network and client delivery remain distinct target gates.
