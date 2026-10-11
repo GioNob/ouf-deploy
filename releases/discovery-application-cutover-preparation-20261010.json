@@ -1,6 +1,6 @@
 {
   "schema": "ouf.discovery.application-cutover-preparation.v1",
-  "status": "CURRENT_PACKAGE_AND_INDEPENDENT_TARGET_METADATA_QUALIFIED_PROTECTED_PREPARATION_PENDING",
+  "status": "CURRENT_PROTECTED_INPUT_PREPARATION_BLOCKED_PENDING_R10_DIAGNOSIS",
   "applyAuthorized": false,
   "newTargetAuthorityIssued": false,
   "networkLease": {
@@ -86,7 +86,7 @@
     "existingR10SealedProgramMustRemainUnchanged": true,
     "R10ReplayOrClaimResetAllowed": false
   },
-  "nextRead": "EXECUTE_ONE_QUALIFIED_PROTECTED_INPUT_PREPARATION_WITH_OPERATOR_SUDO",
+  "nextRead": "BOUNDED_READ_ONLY_R10_PRIVATE_STATUS_AND_SYSTEMD_DIAGNOSIS_NO_REPLAY",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
@@ -233,15 +233,31 @@
     "backupPerformed": false
   },
   "currentProtectedInputPreparation": {
-    "status": "SUDO_PASSWORD_REQUIRED_OPERATOR_EXECUTION_PENDING",
-    "compilerCommit": "7584cbdc369cdc7f4cf042e36e05914de5192e54",
-    "deliveryCommit": "527710b438fc777428cb9f5e5a6b98c62852231e",
-    "qualificationRun": 38086191419,
-    "targetAttemptRun": 38086291549,
-    "performed": false,
-    "proposedDatabasePasswordInEnv": false,
-    "proposedAdditionalReadOnlyBindCount": 1,
-    "proposedAutomaticRestart": false,
-    "proposedPlatformSecretManagerIntegrationProven": false
+    "status": "BLOCKED",
+    "receipt": "evidence/semantic-current-cutover-inputs-blocked-target-20261011.json",
+    "reason": "CURRENT_R10_PRIVATE_WORKER_UNPROVEN",
+    "fileSecretProjectionPrepared": false
+  },
+  "latestOperatorReceipt": {
+    "schema": "ouf.discovery.current-cutover-input-preparation.v1",
+    "applicationHealthProven": false,
+    "commonLockAcquired": false,
+    "containerLifecycleOperations": 0,
+    "credentialRotated": false,
+    "databaseQueries": 0,
+    "databaseWrites": 0,
+    "dnsQueries": 0,
+    "errorType": "ValueError",
+    "existingConfigurationWrites": 0,
+    "firewallWrites": 0,
+    "imageImports": 0,
+    "notReleaseAcceptance": true,
+    "phase": "VERIFY_CURRENT_R10_AND_RETAINED_APPLICATION_FRAME",
+    "privateValuesPrinted": false,
+    "providerCalls": 0,
+    "r10Touched": false,
+    "reason": "CURRENT_R10_PRIVATE_WORKER_UNPROVEN",
+    "signaturesIssued": 0,
+    "status": "CURRENT_CUTOVER_INPUT_PREPARATION_BLOCKED"
   }
 }
