@@ -5,7 +5,8 @@ on:
     paths:
       - .github/workflows/durable-v11-image-custody.yml
       - tools/semantic_application_cutover/image_custody.py
-      - tests/test_image_custody.py
+      - tests/test_image_*.py
+      - tools/semantic_application_cutover/image_import.py
       - tests/durable_v11_image_custody_native.py
   workflow_dispatch:
 permissions:
@@ -21,7 +22,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Byte custody, bounded parsing and native projection denials
-        run: python3 -m unittest discover -s tests -p test_image_custody.py -v
+        run: python3 -m unittest discover -s tests -p 'test_image_*.py' -v
       - name: Verify original publisher and every layer; compare actual hosted Engine
         env:
           GH_TOKEN: ${{ github.token }}
