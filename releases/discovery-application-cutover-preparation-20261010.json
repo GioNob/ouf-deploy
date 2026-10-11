@@ -1,42 +1,31 @@
 {
   "schema": "ouf.discovery.application-cutover-preparation.v1",
-  "status": "RESILIENT_RECOVERY_PROTOCOL_QUALIFIED_TARGET_CLOSURE_PENDING",
+  "status": "R12_ACTIVE_CURRENT_FILE_SECRET_INTENT_PREPARED_APPLICATION_CLOSURE_PENDING",
   "applyAuthorized": false,
   "newTargetAuthorityIssued": false,
   "networkLease": {
-    "activationEvidence": "evidence/finite-r10-active-renewed-target-20261010.json",
+    "activationEvidence": "evidence/resilient-r12-active-target-20261011.json",
+    "currentObservationEvidence": "evidence/semantic-r12-cutover-inputs-target-20261011.json",
     "claimConsumed": true,
-    "serviceUnit": "ouf-semantic-provider-lease-finite-r10.service",
-    "snapshot": "/etc/ouf/deploy-snapshots/semantic-finite-lease-recovery-r10-nw9ue4d5",
+    "serviceUnit": "ouf-semantic-provider-lease-resilient-r12.service",
+    "snapshot": "/etc/ouf/deploy-snapshots/semantic-resilient-lease-recovery-r12-y048hyms",
     "ownerConfigurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
     "doNotRerunApply": true,
     "commonLockMustNotBeAcquiredByObservers": true,
     "sharedPeerRebindIsSeparateFromDnsLease": true,
     "lastOperatorReportedObservation": {
-      "receivedAt": "2026-10-11T03:08:55+02:00",
-      "serviceState": "failed",
-      "refreshCount": 250,
-      "reason": "NFT_SET_TTL_UNPROVEN",
-      "nativeExpiresType": "int",
-      "nativeExpiresValue": 0,
-      "flowIndex": 1,
-      "family": "inet",
-      "doNotRerunApply": true,
-      "setsRevokedProven": true,
-      "journalState": "QUIESCED",
-      "leaseAuthorized": false,
-      "journalHash": "a58f0cb6e011879fc22723356d19926adf8945c38dcdbf2d21ab3fa34dd6f7f1",
-      "receipt": "evidence/finite-r10-native-quiescence-target-20261011.json",
-      "continuousLivenessProven": false
-    },
-    "historicalActivationReceiptObservation": {
-      "status": "TWO_FLOW_LEASE_ACTIVE_AND_RENEWED",
-      "refreshCount": 2,
+      "refreshCount": 120,
+      "journalState": "LEASE_READY",
+      "leaseAuthorized": true,
       "flowAddressCounts": [
         1,
         1
       ],
-      "independentlyReadOnTarget": false,
+      "minRemainingTtlSeconds": [
+        16,
+        16
+      ],
+      "currentSemanticGenerationUnchanged": true,
       "continuousLivenessProven": false
     }
   },
@@ -103,7 +92,7 @@
     "existingR10SealedProgramMustRemainUnchanged": true,
     "R10ReplayOrClaimResetAllowed": false
   },
-  "nextRead": "SUSPENDED_PREVIOUS_PREFLIGHT_PREPARE_AND_QUALIFY_DISTINCT_RESILIENT_WORKER_CLOSURE",
+  "nextRead": "AUTONOMOUS_CURRENT_R12_HOST_DATABASE_METADATA_THEN_COMPOSE_APPLICATION_CLOSURE",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
@@ -250,32 +239,15 @@
     "backupPerformed": false
   },
   "currentProtectedInputPreparation": {
-    "status": "BLOCKED",
-    "receipt": "evidence/semantic-current-cutover-inputs-blocked-target-20261011.json",
-    "reason": "CURRENT_R10_PRIVATE_WORKER_UNPROVEN",
-    "fileSecretProjectionPrepared": false
-  },
-  "latestOperatorReceipt": {
-    "schema": "ouf.discovery.current-cutover-input-preparation.v1",
-    "applicationHealthProven": false,
-    "commonLockAcquired": false,
-    "containerLifecycleOperations": 0,
-    "credentialRotated": false,
-    "databaseQueries": 0,
-    "databaseWrites": 0,
-    "dnsQueries": 0,
-    "errorType": "ValueError",
-    "existingConfigurationWrites": 0,
-    "firewallWrites": 0,
-    "imageImports": 0,
-    "notReleaseAcceptance": true,
-    "phase": "VERIFY_CURRENT_R10_AND_RETAINED_APPLICATION_FRAME",
-    "privateValuesPrinted": false,
-    "providerCalls": 0,
-    "r10Touched": false,
-    "reason": "CURRENT_R10_PRIVATE_WORKER_UNPROVEN",
-    "signaturesIssued": 0,
-    "status": "CURRENT_CUTOVER_INPUT_PREPARATION_BLOCKED"
+    "status": "CURRENT_INPUTS_AND_FILE_SECRET_DECLARED_NOT_APPLY_READY",
+    "receipt": "evidence/semantic-r12-cutover-inputs-target-20261011.json",
+    "fileSecretProjectionPrepared": true,
+    "evidenceDirectory": "/etc/ouf/deploy-snapshots/semantic-r12-cutover-inputs-dxzne_0r",
+    "privateDeclarationHash": "096a9bb877da54de35d41725064ebb14a0c456c42cf8b83af409bc1f253172d6",
+    "candidateConfigHash": "8306f4ce6fd9e04fac19b4bee9b188758c0aa2ad5f753dc5ee3d8377ddb30b01",
+    "proposedHostConfigHash": "8962021bb619cfac9dbe80662a560feedc70b71afff718215cf0be26ff46c2e7",
+    "freshRuntimeCustodyProvenAtApply": false,
+    "productionApplyReady": false
   },
   "r10CurrentObservation": {
     "receivedAt": "2026-10-11T03:08:55+02:00",
@@ -322,9 +294,77 @@
     "unitTests": 16,
     "nativeDnsNftQualified": true,
     "outageHoursVirtual": 4,
-    "targetWorkerIntegrated": false,
-    "targetApplied": false,
+    "targetWorkerIntegrated": true,
+    "targetApplied": true,
     "previousPreflightSuspended": true,
-    "allExistingRuntimesConform": false
-  }
+    "allExistingRuntimesConform": false,
+    "targetScope": "R12_EXISTING_TWO_FLOW_LEASES_ONLY",
+    "currentEvidence": "evidence/semantic-r12-cutover-inputs-target-20261011.json"
+  },
+  "historicalFailedR10NetworkLease": {
+    "activationEvidence": "evidence/finite-r10-active-renewed-target-20261010.json",
+    "claimConsumed": true,
+    "serviceUnit": "ouf-semantic-provider-lease-finite-r10.service",
+    "snapshot": "/etc/ouf/deploy-snapshots/semantic-finite-lease-recovery-r10-nw9ue4d5",
+    "ownerConfigurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+    "doNotRerunApply": true,
+    "commonLockMustNotBeAcquiredByObservers": true,
+    "sharedPeerRebindIsSeparateFromDnsLease": true,
+    "lastOperatorReportedObservation": {
+      "receivedAt": "2026-10-11T03:08:55+02:00",
+      "serviceState": "failed",
+      "refreshCount": 250,
+      "reason": "NFT_SET_TTL_UNPROVEN",
+      "nativeExpiresType": "int",
+      "nativeExpiresValue": 0,
+      "flowIndex": 1,
+      "family": "inet",
+      "doNotRerunApply": true,
+      "setsRevokedProven": true,
+      "journalState": "QUIESCED",
+      "leaseAuthorized": false,
+      "journalHash": "a58f0cb6e011879fc22723356d19926adf8945c38dcdbf2d21ab3fa34dd6f7f1",
+      "receipt": "evidence/finite-r10-native-quiescence-target-20261011.json",
+      "continuousLivenessProven": false
+    },
+    "historicalActivationReceiptObservation": {
+      "status": "TWO_FLOW_LEASE_ACTIVE_AND_RENEWED",
+      "refreshCount": 2,
+      "flowAddressCounts": [
+        1,
+        1
+      ],
+      "independentlyReadOnTarget": false,
+      "continuousLivenessProven": false
+    }
+  },
+  "historicalProtectedInputPreparation": {
+    "status": "BLOCKED",
+    "receipt": "evidence/semantic-current-cutover-inputs-blocked-target-20261011.json",
+    "reason": "CURRENT_R10_PRIVATE_WORKER_UNPROVEN",
+    "fileSecretProjectionPrepared": false
+  },
+  "historicalBlockedOperatorReceipt": {
+    "schema": "ouf.discovery.current-cutover-input-preparation.v1",
+    "applicationHealthProven": false,
+    "commonLockAcquired": false,
+    "containerLifecycleOperations": 0,
+    "credentialRotated": false,
+    "databaseQueries": 0,
+    "databaseWrites": 0,
+    "dnsQueries": 0,
+    "errorType": "ValueError",
+    "existingConfigurationWrites": 0,
+    "firewallWrites": 0,
+    "imageImports": 0,
+    "notReleaseAcceptance": true,
+    "phase": "VERIFY_CURRENT_R10_AND_RETAINED_APPLICATION_FRAME",
+    "privateValuesPrinted": false,
+    "providerCalls": 0,
+    "r10Touched": false,
+    "reason": "CURRENT_R10_PRIVATE_WORKER_UNPROVEN",
+    "signaturesIssued": 0,
+    "status": "CURRENT_CUTOVER_INPUT_PREPARATION_BLOCKED"
+  },
+  "latestOperatorReceiptEvidence": "evidence/semantic-r12-cutover-inputs-target-20261011.json"
 }

@@ -17,7 +17,7 @@ spec = importlib.util.spec_from_file_location('backup', Path(__file__).with_name
 backup = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(backup)
 CID = '7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147'
-UNIT = 'ouf-semantic-provider-lease-finite-r10.service'
+UNIT = 'ouf-semantic-provider-lease-resilient-r12.service'
 IMAGES = {
     'semantic': 'sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85',
     'ingestion': 'sha256:98af9d774e446ce621128a52bfa1f9faaa096052cdc185f17dc81f1ea76e9a05',
@@ -75,7 +75,7 @@ def service():
     require(result.returncode == 0 and len(result.stdout) <= 32768, 'BOUNDED_SERVICE_METADATA_REQUIRED')
     parsed = dict(row.split('=', 1) for row in result.stdout.decode().splitlines() if '=' in row)
     require(set(parsed) == set(props), 'COMPLETE_SERVICE_METADATA_REQUIRED')
-    exact = '/etc/ouf/deploy-snapshots/semantic-finite-lease-recovery-r10-nw9ue4d5/activate.py' in parsed['ExecStart']
+    exact = '/etc/ouf/deploy-snapshots/semantic-resilient-lease-recovery-r12-y048hyms/activate.py' in parsed['ExecStart']
     pid = parsed['MainPID']
     running = parsed['ActiveState'] == 'active' and parsed['SubState'] == 'running' and pid.isdecimal() and int(pid) > 1
     return {k: v for k, v in parsed.items() if k != 'ExecStart'} | {
@@ -86,7 +86,7 @@ def service():
 
 
 def main():
-    report = dict(schema='ouf.discovery.current-cutover-host-metadata.v1',
+    report = dict(schema='ouf.discovery.r12-cutover-host-metadata.v1',
                   containerLifecycleOperations=0, imageImports=0, databaseWrites=0,
                   protectedSnapshotFilesOpened=0, credentialFilesOpened=0, privateKeyFilesOpened=0,
                   privateValuesPrinted=False, firewallWrites=0, commonLockAcquired=False,
@@ -99,7 +99,7 @@ def main():
         report['postgres'] = {'containerId': postgres['Id'], 'imageId': postgres['Image'],
                               'stableBindingHash': digest(stable(postgres)),
                               'generation': {k: postgres['State'][k] for k in ('Pid', 'StartedAt', 'Running')}}
-        report['r10Service'] = service()
+        report['r12Service'] = service()
         report['qualifiedImagesPresentInEngine'] = {}
         for name, image in IMAGES.items():
             result = subprocess.run(['docker', 'image', 'inspect', '--format', '{{.Id}}', image],
@@ -117,8 +117,8 @@ def main():
         require(stable(before) == stable(backup.inspect('ouf-semantic')) and
                 stable(postgres) == stable(backup.inspect('ouf-postgres')), 'INSTALLED_GENERATION_OR_CONFIGURATION_CHANGED')
         after = service()
-        require(all(after[k] == report['r10Service'][k] for k in ('MainPID', 'ActiveState', 'SubState', 'Restart', 'execStartMatchesReportedSnapshot')),
-                'R10_SERVICE_GENERATION_CHANGED_DURING_READ')
+        require(all(after[k] == report['r12Service'][k] for k in ('MainPID', 'ActiveState', 'SubState', 'Restart', 'execStartMatchesReportedSnapshot')),
+                'R12_SERVICE_GENERATION_CHANGED_DURING_READ')
         report.update(status='CURRENT_CUTOVER_HOST_METADATA_CAPTURED', observedAtUnixSeconds=int(time.time()),
                       readConsistencyMode='STABLE_REREADS_NOT_ATOMIC_TRANSITION_AUTHORITY')
         code = 0
