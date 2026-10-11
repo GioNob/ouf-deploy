@@ -1,8 +1,12 @@
-> **R10 — priorità corrente:** [supervisore continuo qualificato e recupero target da completare](docs/R10_CONTINUOUS_RECOVERY.md).62 test e systemd/DNS/nft reali PASS; il tentativo di lettura protetta sul VPS non è eseguito per permesso root non interattivo non provato. [Evidenza](evidence/continuous-resilient-worker-qualified-20261011.json). Nessun recupero target o CSV end-to-end dichiarato.
+> **R10 — recupero operativo confermato tramite R12 sul VPS:** ricevuta operatore `ACTIVE / RENEWED`, due rinnovi, un indirizzo autorizzato per ciascuno dei due flussi, exit 0. [Stato e limiti](docs/R10_CONTINUOUS_RECOVERY.md), [ricevuta target](evidence/resilient-r12-active-target-20261011.json). **Non rieseguire gli apply R10/R11/R12.** Salute applicativa e CSV end-to-end restano da provare.
+
+## 11 October: R12 active on target; earlier pending states superseded
+
+The operator-reported activation confirms two-flow lease recovery at that observation. The original incident and consumed R10/R11 claims are retained, with one recovery attempt and two renewals reported. No application/container cutover, automatic restart or boot enablement is claimed. The following dated checkpoints are historical; current target status is the successful R12 receipt linked above.
 
 ## 11 October: confirmed R11 permission defect; sealed R12 recovery qualified
 
-The operator proved that R11's full-root guard passes while NET_ADMIN-only /proc namespace inspection fails with errno13. R12 verifies root-bound Docker nsfs handles under the same minimal capabilities and runs the actual production guard in a restricted child before consuming its new claim. [Recovery procedure](docs/R10_CONTINUOUS_RECOVERY.md), [qualification](evidence/resilient-r12-qualified-20261011.json), [immutable delivery](releases/provider-resilient-r12-approved-20261011.sh). Existing incident, cumulative budget and consumed R10/R11 claims are preserved. Target preclaim/apply and recovery receipt remain pending; no application acceptance claimed.
+The operator proved that R11's full-root guard passes while NET_ADMIN-only /proc namespace inspection fails with errno13. R12 verifies root-bound Docker nsfs handles under the same minimal capabilities and runs the actual production guard in a restricted child before consuming its new claim. [Recovery procedure](docs/R10_CONTINUOUS_RECOVERY.md), [qualification](evidence/resilient-r12-qualified-20261011.json), [immutable delivery](releases/provider-resilient-r12-approved-20261011.sh). Existing incident, cumulative budget and consumed R10/R11 claims are preserved. Target preclaim/apply and active recovery receipt are now confirmed by the operator; see the current target observation above. No application acceptance claimed.
 
 ## 11 October, 15:38 CEST: R11 target BLOCKED; lease recovery unresolved
 

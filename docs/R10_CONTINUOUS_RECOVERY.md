@@ -1,8 +1,17 @@
 # R10: recupero continuo, qualificazione e applicazione target
 
-Il vecchio R10 rimane consumato. Ultima osservazione target: worker failed dopo
-250 rinnovi, NFT_SET_TTL_UNPROVEN con expires intero zero, QUIESCED e set vuoti.
-Questo documento non dichiara recuperato il VPS.
+Il vecchio R10 rimane consumato. Il suo fallimento dopo 250 rinnovi è storico;
+il recupero operativo dei due flussi è confermato dalla ricevuta R12 riportata sotto.
+
+## Current target state — R12 operational recovery confirmed, 11 October 2026
+
+The operator supplied a successful VPS activation receipt: `TWO_FLOW_RESILIENT_LEASE_ACTIVE_AND_RENEWED`, worker `ACTIVE / RENEWED`, two renewals, one approved address per flow and exit 0. [Target receipt](../evidence/resilient-r12-active-target-20261011.json). This supersedes historical pending/failed observations below: the R10 lease incident has recovered through R12 at the activation observation, using the existing two flows and configuration.
+
+The source-bound entrypoint requires the actual NET_ADMIN-only production guard to pass before consuming the R12 claim and verifies native lease readiness before reporting success. The successful receipt is operator-reported evidence of that path, not a direct assistant SSH read. The logical incident remains `34b9533ea3d8931bb9971ef7fa3b2ad9f423d5504350faa63421869f79817a73`; one recovery attempt and two renewals are reported. Consumed R10/R11 claims are preserved; cumulative recovery history is retained by the qualified transition. **Do not rerun R10, R11 or R12 applies.**
+
+Service: `ouf-semantic-provider-lease-resilient-r12.service`. Target evidence: `/etc/ouf/deploy-snapshots/semantic-resilient-lease-recovery-r12-y048hyms`. No container lifecycle operations, private-key reads, signatures or provider calls by the worker are reported. Automatic restart and boot enablement remain disabled.
+
+This observation establishes lease readiness at activation. It does not prove continuing availability, application health, application cutover, a fresh CSV end-to-end, release acceptance or whole-platform industrialization. Outage/pause/recovery, exhaustion and revocation are qualified in isolated CI; they have not been deliberately exercised on this target after activation. Future failures remain subject to the bounded resilience policy, with fresh evidence and authority required for restoration.
 
 ## Collegamento sviluppato
 
@@ -43,7 +52,7 @@ Il tempo è accelerato soltanto con set vuoti verificati. Autorità, metadati di
 generazione e scope sono sintetici; nessuna azione sul VPS è eseguita.
 Gli esiti CI vanno registrati prima di dichiarare qualificato il candidato.
 
-## Chiusura necessaria sul VPS
+## Percorso storico di qualificazione e chiusura sul VPS
 
 1. Completata la lettura protetta operatore del 11 ottobre 15:07 CEST: custodia
    R10/claim/journal, complete OCI, owner e peer/generazioni acquisiti. Non è
@@ -138,4 +147,4 @@ esaurimento PASS. Consegna con 15 checksum e 30 posizioni download/alterazione.
 
 La finestra iniziale resta 16:43:18 CEST; nessuna proroga automatica. Exit 0 richiede
 due cicli attivi e lease native provate; una ricevuta parcheggiata usa exit 2 e
-workerReason. Applicazione/preclaim target e ricevuta di recupero restano OPEN.
+workerReason. Applicazione/preclaim target e ricevuta attiva sono ora confermati dall'operatore; vedere lo stato corrente in apertura.

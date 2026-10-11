@@ -1,7 +1,7 @@
 {
   "schema": "ouf.provider-resilient-r12-qualification.v1",
   "sourceCommit": "0149cc164ed57d76abb88e7346fe9e7648363e29",
-  "status": "QUALIFIED_ISOLATED_TARGET_PRECLAIM_AND_APPLY_PENDING",
+  "status": "QUALIFIED_ISOLATED_AND_OPERATOR_REPORTED_TARGET_ACTIVE",
   "targetDiagnosis": {
     "operatorReported": true,
     "receivedAt": "2026-10-11T15:47:08+02:00",
@@ -60,7 +60,8 @@
     "bootEnablement": false,
     "applicationHealthProven": false,
     "releaseAcceptance": false,
-    "targetRecovered": false
+    "targetRecovered": true,
+    "targetRecoveredScope": "APPROVED_TWO_FLOW_LEASE_READINESS_AT_ACTIVATION_OBSERVATION"
   },
   "finalDeliveryQualification": {
     "commit": "f83db8d5c38e00c7f0cae22d3808659f652b3c57",
@@ -75,6 +76,14 @@
     "targetedTests": 25,
     "mergeCommit": "92d8d9f0cd834541df66f74d58a43a93c1fc8455",
     "pr": "https://github.com/GioNob/ouf-deploy/pull/3",
-    "targetApply": "PENDING_OPERATOR_SUDO"
+    "targetApply": "OPERATOR_CONFIRMED_ACTIVE_EXIT_0_TWO_RENEWALS"
+  },
+  "targetObservation": {
+    "path": "evidence/resilient-r12-active-target-20261011.json",
+    "operatorReported": true,
+    "directAssistantTargetRead": false,
+    "status": "TWO_FLOW_RESILIENT_LEASE_ACTIVE_AND_RENEWED",
+    "applicationHealthProven": false,
+    "ongoingAvailabilityProven": false
   }
 }

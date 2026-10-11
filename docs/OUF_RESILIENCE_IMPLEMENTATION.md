@@ -2,6 +2,17 @@
 
 # Resilienza OUF: implementazione e chiusure residue
 
+## Current target state — R12 operational recovery confirmed, 11 October 2026
+
+The operator supplied a successful VPS activation receipt: `TWO_FLOW_RESILIENT_LEASE_ACTIVE_AND_RENEWED`, worker `ACTIVE / RENEWED`, two renewals, one approved address per flow and exit 0. [Target receipt](../evidence/resilient-r12-active-target-20261011.json). This supersedes historical pending/failed observations below: the R10 lease incident has recovered through R12 at the activation observation, using the existing two flows and configuration.
+
+The source-bound entrypoint requires the actual NET_ADMIN-only production guard to pass before consuming the R12 claim and verifies native lease readiness before reporting success. The successful receipt is operator-reported evidence of that path, not a direct assistant SSH read. The logical incident remains `34b9533ea3d8931bb9971ef7fa3b2ad9f423d5504350faa63421869f79817a73`; one recovery attempt and two renewals are reported. Consumed R10/R11 claims are preserved; cumulative recovery history is retained by the qualified transition. **Do not rerun R10, R11 or R12 applies.**
+
+Service: `ouf-semantic-provider-lease-resilient-r12.service`. Target evidence: `/etc/ouf/deploy-snapshots/semantic-resilient-lease-recovery-r12-y048hyms`. No container lifecycle operations, private-key reads, signatures or provider calls by the worker are reported. Automatic restart and boot enablement remain disabled.
+
+This observation establishes lease readiness at activation. It does not prove continuing availability, application health, application cutover, a fresh CSV end-to-end, release acceptance or whole-platform industrialization. Outage/pause/recovery, exhaustion and revocation are qualified in isolated CI; they have not been deliberately exercised on this target after activation. Future failures remain subject to the bounded resilience policy, with fresh evidence and authority required for restoration.
+
+
 La [politica v1](OUF_RESILIENCE_POLICY.md) è il default di progetto dal11 ottobre2026. Gli AGENTS.md dei sette repository la richiamano; questo registra una regola di lavoro, non certifica ogni runtime esistente.
 
 ## Recupero finito delle lease qualificato
@@ -62,7 +73,7 @@ Integrate MCP PR51, Ingestion PR35 e Gateway PR59: priorità prima dei limiti, r
 Restano OPEN cursor/checkpoint operatore, grouping multirun per dipendenza/contatori impatto, detector/quote/capacità, outbox alert e integrazione target multi-owner/autorizzazioni. Reference/fixture e summary di finestra non provano conformità globale o salute corrente. Nessun deploy VPS o email; R9/R10 consumati e precedente preflight sospeso. Le accettazioni precedenti restano preservate.
 
 
-## Supervisione continua qualificata — recupero target ancora aperto
+## Checkpoint storico: supervisione continua qualificata prima del recupero target
 
 [PR1](https://github.com/GioNob/ouf-deploy/pull/1), candidato da92a02e8fc246dbf77ac0584321039d13d2436a:62 test e collaudo continuo systemd/DNS/nft PASS. Recupero iniziale e rinnovi collegati, budget di recupero cumulativo persistente che non conteggia intervalli sani, esclusione dei worker concorrenti, deadline di trasporto e stati parcheggiati osservabili. [Implementazione, prove e intake operatore](R10_CONTINUOUS_RECOVERY.md), [evidenza](../evidence/continuous-resilient-worker-qualified-20261011.json).
 
@@ -76,4 +87,4 @@ Il recupero usa i due flussi e il Semantic esistenti. Il cambio applicativo Sema
 
 ## Correzione R12 del guard con privilegi minimi
 
-La diagnosi target prova il difetto R11: errno13 nella lettura /proc namespace con NET_ADMIN soltanto, mentre root passa. [R12 e gate preclaim](R10_CONTINUOUS_RECOVERY.md), [qualificazione](../evidence/resilient-r12-qualified-20261011.json), [consegna](../releases/provider-resilient-r12-approved-20261011.sh). Identità tramite nsfs Docker sigillata; nessun privilegio aggiuntivo. Gate di produzione realmente eseguito con capability ristrette prima del claim; arresto soltanto del predecessore bloccato, incident e budget cumulativi conservati. Parcheggio restituisce exit2 e motivo esplicito. Target apply/recovery ancora OPEN; le qualificazioni isolate non chiudono l'incidente o l'accettazione applicativa.
+La diagnosi target prova il difetto R11: errno13 nella lettura /proc namespace con NET_ADMIN soltanto, mentre root passa. [R12 e gate preclaim](R10_CONTINUOUS_RECOVERY.md), [qualificazione](../evidence/resilient-r12-qualified-20261011.json), [consegna](../releases/provider-resilient-r12-approved-20261011.sh). Identità tramite nsfs Docker sigillata; nessun privilegio aggiuntivo. Gate di produzione realmente eseguito con capability ristrette prima del claim; arresto soltanto del predecessore bloccato, incident e budget cumulativi conservati. Parcheggio restituisce exit2 e motivo esplicito. Target apply e recupero operativo sono ora confermati dalla ricevuta R12 dell'operatore, riportata in apertura. Le qualificazioni isolate restano distinte dall'osservazione target e dall'accettazione applicativa.
