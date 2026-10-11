@@ -53,7 +53,7 @@ class TransitionTest(unittest.TestCase):
 
     def test_database_boundary_persists_before_possible_effect(self):
         with self.transition.invocation():
-            for phase in m.PHASES[:8]: self.apply(phase)
+            for phase in m.PHASES[:m.PHASES.index('ADMIT_MIGRATION')]: self.apply(phase)
             row = self.transition.begin('ADMIT_MIGRATION', H, H, self.transition.read()['version'])
             self.assertTrue(row['databaseMayHaveChanged'])
             self.assertFalse(row['preMigrationRestoreAllowed'])
@@ -90,7 +90,7 @@ class TransitionTest(unittest.TestCase):
 
     def test_tampered_migration_boundary_and_replay_flags_are_denied(self):
         with self.transition.invocation():
-            for phase in m.PHASES[:9]: self.apply(phase)
+            for phase in m.PHASES[:m.PHASES.index('ADMIT_MIGRATION')+1]: self.apply(phase)
         previous = self.store.read(); changed = dict(previous); changed['databaseMayHaveChanged'] = False
         self.store.compare_and_save(previous, changed)
         with self.assertRaisesRegex(ValueError, 'MIGRATION_BOUNDARY_LOST'): self.transition.read()

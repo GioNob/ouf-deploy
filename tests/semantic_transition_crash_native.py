@@ -80,7 +80,7 @@ def main():
             assert len(ids) == 1
             with t.invocation():
                 row = adapter.reconcile(t,request,checkpoint)
-            assert row['nextPhase'] == m.PHASES.index('ATTEST_NEW_OCI_PEER')
+            assert row['nextPhase'] == m.PHASES.index('STAGE_PAUSED_REPLACEMENT')
             assert row['predecessorIncidentRef'] == 'd'*64 and row['predecessorHistoryHash'] == 'c'*64
             # Config drift and already-started generations cannot be reconciled
             # as the requested stopped creation, even with the exact same name.
@@ -92,6 +92,16 @@ def main():
             try: adapter.matching_created(t,request,changed)
             except engine.CreationDenied: pass
             else: raise AssertionError('CHANGED_GENERATION_RECONCILED')
+            stage_intent = {'containerId':actual['Id'],'creationRequestHash':engine.digest(request),
+                            'createdEvidenceHash':row['effects'][-1]['nativeEvidenceHash']}
+            die_after_effect(t,'STAGE_PAUSED_REPLACEMENT',
+                lambda: adapter.stage_paused_once(t,request,H,checkpoint),managed=True)
+            paused = json.loads(call('docker','inspect',app))[0]
+            assert paused['State']['Pid'] > 1 and paused['State']['Paused']
+            with t.invocation():
+                row = adapter.reconcile_paused(t,request,stage_intent,checkpoint)
+            assert row['nextPhase'] == m.PHASES.index('ATTEST_NEW_OCI_PEER')
+            assert row['applicationWritesMayHaveOccurred'] and not row['preMigrationRestoreAllowed']
 
             # Crash BEFORE the command does not make its consumed intent retryable.
             before = store(root/'before-journal', 'CREATE_REPLACEMENT')
@@ -130,6 +140,7 @@ def main():
                 'crashBeforeEffectDoesNotReplayConsumedIntent':True,'realPostgresqlCommitCrashPreservesMigrationAndLateWrites':True,
                 'preMigrationRestoreAllowed':False,'predecessorIncidentAndHistoryPreserved':True,
                 'actualSealedEngineCreationAdapterExercised':True,'foreignImageAndStartedGenerationDenied':True,
+                'realPausedNamespaceCrashReconciledWithoutRestart':True,
                 'precedingPhaseAuthority':'SYNTHETIC_FIXTURE_ONLY','productionInstallerQualified':False,
                 'targetActions':0,'notReleaseAcceptance':True}))
         finally:

@@ -11,7 +11,7 @@ import json
 import re
 
 PHASES = ('STOP_REVOKE_OLD_LEASE', 'QUIESCE_PRODUCERS', 'FENCED_BACKUP',
-          'RELEASE_OLD_ENDPOINT', 'CREATE_REPLACEMENT', 'ATTEST_NEW_OCI_PEER',
+          'RELEASE_OLD_ENDPOINT', 'CREATE_REPLACEMENT', 'STAGE_PAUSED_REPLACEMENT', 'ATTEST_NEW_OCI_PEER',
           'INSTALL_AUTHENTICATED_TRANSPORT', 'START_DISTINCT_LEASE_WORKER',
           'ADMIT_MIGRATION', 'START_REPLACEMENT', 'VERIFY_APPLICATION',
           'RELEASE_PRODUCERS')
@@ -115,7 +115,7 @@ class Transition:
                 'CUTOVER_DATABASE_BOUNDARY_INVALID')
         require(not any(e['phase'] == 'ADMIT_MIGRATION' for e in row['effects'])
                 or row['databaseMayHaveChanged'], 'CUTOVER_MIGRATION_BOUNDARY_LOST')
-        require(not any(e['phase'] == 'START_REPLACEMENT' for e in row['effects'])
+        require(not any(e['phase'] in {'STAGE_PAUSED_REPLACEMENT','START_REPLACEMENT'} for e in row['effects'])
                 or row['applicationWritesMayHaveOccurred'], 'CUTOVER_WRITE_BOUNDARY_LOST')
         return row
 
@@ -138,7 +138,8 @@ class Transition:
         following['effects'].append({'phase': phase, 'intentHash': intent_hash,
                                      'authorityEvidenceHash': authority_evidence_hash, 'state': 'IN_FLIGHT'})
         if phase == 'ADMIT_MIGRATION': following['databaseMayHaveChanged'] = True
-        if phase == 'START_REPLACEMENT': following['applicationWritesMayHaveOccurred'] = True
+        if phase in {'STAGE_PAUSED_REPLACEMENT','START_REPLACEMENT'}:
+            following['applicationWritesMayHaveOccurred'] = True
         self.journal.compare_and_save(previous, following)
         return following
 

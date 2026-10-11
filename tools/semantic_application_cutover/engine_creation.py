@@ -68,7 +68,7 @@ class Engine:
         require(status == 200 and type(value) is dict, 'EXACT_CREATION_INSPECTION_REQUIRED')
         return value
 
-    def matching_created(self, transition, request, actual):
+    def matching_configuration(self, transition, request, actual):
         require(type(actual) is dict and all(type(actual.get(k)) is dict
                 for k in ('Config','HostConfig','State')), 'CREATION_NATIVE_SHAPE_UNPROVEN')
         require(type(request) is dict and type(request.get('Image')) is str
@@ -77,8 +77,6 @@ class Engine:
         require(actual['Name'] == '/'+self.name(transition) and actual['Image'] == request['Image']
                 and re.fullmatch('[0-9a-f]{64}',actual['Id']) is not None,
                 'CREATION_NATIVE_IDENTITY_DRIFT')
-        require(actual['State']['Status'] == 'created' and actual['State']['Running'] is False
-                and actual['State']['Pid'] == 0, 'CREATION_ALREADY_STARTED_OR_STATE_UNKNOWN')
         for key, expected in request.items():
             if key in {'HostConfig','NetworkingConfig'}: continue
             require(actual['Config'].get(key) == expected, 'CREATION_CONFIG_DRIFT')
@@ -87,6 +85,12 @@ class Engine:
         # Actual NICs, mount projections, all expanded OCI fields and live peer
         # generation require the NEXT authenticated attestation phase. This
         # creation consistency check never grants start or transport authority.
+        return actual
+
+    def matching_created(self, transition, request, actual):
+        actual = self.matching_configuration(transition,request,actual)
+        require(actual['State']['Status'] == 'created' and actual['State']['Running'] is False
+                and actual['State']['Pid'] == 0, 'CREATION_ALREADY_STARTED_OR_STATE_UNKNOWN')
         return actual
 
     def create_once(self, transition, request, authority_evidence_hash, checkpoint):
@@ -124,3 +128,50 @@ class Engine:
         require(following == actual, 'CREATION_CHANGED_DURING_RECONCILIATION')
         checkpoint('AFTER_CREATION_RECONCILIATION')
         return transition.reconcile('CREATE_REPLACEMENT',intent,'APPLIED',digest(actual),row['version'])
+
+    def stage_paused_once(self, transition, request, authority_evidence_hash, checkpoint):
+        """Create a live namespace behind owner-proven DB and lease fences.
+
+        Checkpoints MUST prove fresh database admission closed, producers stopped,
+        old leases revoked, source/authority and native command custody. A no-op
+        checkpoint is valid only in isolated fixtures. No start after a crash.
+        The early JVM may exit before pause; this blocks instead of reopening DB
+        or retrying start. Native pause is not full OCI/peer attestation.
+        """
+        row = transition.read()
+        require(row['creationRequestHash'] == digest(request) and row['state'] == 'READY'
+                and row['effects'][-1]['phase'] == 'CREATE_REPLACEMENT', 'CREATION_APPLIED_BEFORE_STAGE_REQUIRED')
+        actual = self.matching_created(transition,request,self.inspect(transition))
+        intent = {'containerId':actual['Id'],'creationRequestHash':digest(request),
+                  'createdEvidenceHash':row['effects'][-1]['nativeEvidenceHash']}
+        checkpoint('BEFORE_PAUSED_STAGE_CLAIM')
+        transition.begin('STAGE_PAUSED_REPLACEMENT',digest(intent),authority_evidence_hash,row['version'])
+        checkpoint('BEFORE_PAUSED_STAGE_EFFECT')
+        cid = actual['Id']
+        status,_ = self.request('POST','/v1.44/containers/'+cid+'/start')
+        require(status == 204, 'PAUSED_STAGE_START_OUTCOME_UNPROVEN')
+        status,_ = self.request('POST','/v1.44/containers/'+cid+'/pause')
+        require(status == 204, 'PAUSED_STAGE_PAUSE_OUTCOME_UNPROVEN')
+        actual = self.matching_paused(transition,request,intent,self.inspect(transition))
+        checkpoint('AFTER_PAUSED_STAGE_EFFECT')
+        return intent, actual
+
+    def matching_paused(self, transition, request, intent, actual):
+        require(type(intent) is dict and set(intent) == {'containerId','creationRequestHash','createdEvidenceHash'}
+                and intent['creationRequestHash'] == digest(request), 'EXACT_PAUSED_STAGE_INTENT_REQUIRED')
+        actual = self.matching_configuration(transition,request,actual)
+        require(actual['Id'] == intent['containerId'] and actual['State']['Running'] is True
+                and actual['State']['Paused'] is True and actual['State']['Status'] == 'paused'
+                and type(actual['State']['Pid']) is int and actual['State']['Pid'] > 1,
+                'EXACT_LIVE_PAUSED_GENERATION_REQUIRED')
+        return actual
+
+    def reconcile_paused(self, transition, request, intent, checkpoint):
+        row = transition.read()
+        require(row['state'] == 'IN_FLIGHT' and row['effects'][-1]['phase'] == 'STAGE_PAUSED_REPLACEMENT'
+                and row['effects'][-1]['intentHash'] == digest(intent), 'EXACT_IN_FLIGHT_PAUSED_STAGE_REQUIRED')
+        checkpoint('BEFORE_PAUSED_STAGE_RECONCILIATION')
+        actual = self.matching_paused(transition,request,intent,self.inspect(transition))
+        require(actual == self.inspect(transition), 'PAUSED_STAGE_CHANGED_DURING_RECONCILIATION')
+        checkpoint('AFTER_PAUSED_STAGE_RECONCILIATION')
+        return transition.reconcile('STAGE_PAUSED_REPLACEMENT',digest(intent),'APPLIED',digest(actual),row['version'])
