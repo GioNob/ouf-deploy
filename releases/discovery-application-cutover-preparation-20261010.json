@@ -13,6 +13,23 @@
     "commonLockMustNotBeAcquiredByObservers": true,
     "sharedPeerRebindIsSeparateFromDnsLease": true,
     "lastOperatorReportedObservation": {
+      "receivedAt": "2026-10-11T03:08:55+02:00",
+      "serviceState": "failed",
+      "refreshCount": 250,
+      "reason": "NFT_SET_TTL_UNPROVEN",
+      "nativeExpiresType": "int",
+      "nativeExpiresValue": 0,
+      "flowIndex": 1,
+      "family": "inet",
+      "doNotRerunApply": true,
+      "setsRevokedProven": true,
+      "journalState": "QUIESCED",
+      "leaseAuthorized": false,
+      "journalHash": "a58f0cb6e011879fc22723356d19926adf8945c38dcdbf2d21ab3fa34dd6f7f1",
+      "receipt": "evidence/finite-r10-native-quiescence-target-20261011.json",
+      "continuousLivenessProven": false
+    },
+    "historicalActivationReceiptObservation": {
       "status": "TWO_FLOW_LEASE_ACTIVE_AND_RENEWED",
       "refreshCount": 2,
       "flowAddressCounts": [
@@ -86,7 +103,7 @@
     "existingR10SealedProgramMustRemainUnchanged": true,
     "R10ReplayOrClaimResetAllowed": false
   },
-  "nextRead": "ONE_ROOT_READ_ONLY_NEW_RECOVERY_PREFLIGHT_NO_R10_REPLAY",
+  "nextRead": "SUSPENDED_PREVIOUS_PREFLIGHT_PREPARE_AND_QUALIFY_DISTINCT_RESILIENT_WORKER_CLOSURE",
   "configurationDeltaEvidence": "evidence/semantic-replacement-configuration-target-20261010.json",
   "existingWorkloadCredentialStageEvidence": "evidence/semantic-workload-custody-stage-target-20261010.json",
   "runtimeInputsPreparedOnTarget": true,
