@@ -1,5 +1,8 @@
 # Native V11 private creation plan — 11 October 2026
 
+> **Stato corrente, 11 ottobre 2026:** il piano nativo V11 è bloccato da `CURRENT_R12_PRIVATE_WORKER_UNPROVEN`, prima di ogni scrittura protetta. La lettura diretta del runner alle 20:48 UTC conferma R12 attivo, PID2446150, zero riavvii; non dimostra readiness o lease valide. La prossima operazione è la [diagnosi root di sola lettura](R12_READINESS_DIAGNOSIS_20261011.md), senza apply, restart o reset del budget. CSV Teatri end-to-end resta aperto.
+
+
 The operator confirmed [EXACT_V11_NATIVE_MANIFEST_IMAGE_CUSTODY_RECONCILED_NO_APPLY](../evidence/v11-manifest-reconciliation-target-20261011.json) at22:04 Europe/Rome: journal VERIFIED/version2, cumulative attempt1, zero new imports, one journal CAS, preserved context, exact config/rootfs and ten layers. No application/DB/provider/lease/firewall effect or domain transition grant occurred. Do not repeat the old import or R12 apply.
 
 The prepared V11 declaration/request still names the config digest836… as the Docker image. The VPS manifest store resolves bd48… instead. The next operation publishes a NEW private review plan with only that creation Image identity changed; the original plans, source bytes and package binding remain retained.
