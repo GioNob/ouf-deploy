@@ -37,3 +37,27 @@ def loaded(audit,expected,native):
   'nativeConfigProjectionHash':digest({k:native['Config'].get(k) for k in FIELDS}),
   'nativeRootfsHash':digest(native['RootFS']),'imageByteCustodyProven':True,
   'completeContainerOciProven':False,'transportClosureProven':False,'targetApplyAuthorized':False}
+
+def reconcile_existing(session,audit,expected,inspect,checkpoint):
+ """Close only an existing consumed import; no initialization or load callback.
+
+ Caller authenticates the exact original context and fresh operator execution.
+ Retain original config-based intent/authority/attempt count; record actual
+ native manifest identity explicitly. Existing VERIFIED evidence must match.
+ """
+ import copy
+ row=session.read(audit)
+ require(row['state'] in ('IN_FLIGHT','VERIFIED') and row['effectAttemptCount']==1,
+  'EXISTING_CONSUMED_IMAGE_IMPORT_REQUIRED')
+ session.checkpoint(row,checkpoint,'BEFORE_MANIFEST_IMAGE_RECONCILIATION')
+ actual=inspect(expected['digest'])
+ require(actual is not None,'IMPORT_ABSENCE_DOES_NOT_PROVE_NO_EFFECT')
+ proof=loaded(audit,expected,actual)
+ require(inspect(expected['digest'])==actual,'IMAGE_CHANGED_DURING_RECONCILIATION')
+ session.checkpoint(row,checkpoint,'AFTER_MANIFEST_IMAGE_RECONCILIATION')
+ if row['state']=='VERIFIED':
+  require(row['nativeEvidenceHash']==digest(proof),'VERIFIED_MANIFEST_EVIDENCE_DRIFT')
+ else:
+  following=copy.deepcopy(row);following.update(version=row['version']+1,state='VERIFIED',imageCustodyProven=True,nativeEvidenceHash=digest(proof))
+  session.journal.compare_and_save(row,following)
+ return proof
