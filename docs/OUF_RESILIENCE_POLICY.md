@@ -1,6 +1,6 @@
-# OUF — politica predefinita di resilienza v1
+# OUF — politica della piattaforma di resilienza e quarantena v2
 
-Decisione utente: 11 ottobre 2026, 03:28:33 CEST. Si applica di default a tutti i moduli OUF e a ogni nuovo lavoro nel progetto. È una politica di implementazione e operatività coerente con i PET, non un'estensione di grant o una modifica implicita dei contratti di dominio.
+Decisioni dell'owner: 11 ottobre2026, 03:28–03:56 CEST. La v2 integra quarantena, nuovo budget umano e recupero controllato; sostituisce la v1 per il lavoro futuro. Si applica di default a tutti i moduli OUF e a ogni nuovo lavoro nel progetto. È una politica di implementazione e operatività coerente con i PET, non un'estensione di grant o una modifica implicita dei contratti di dominio.
 
 ## Regole obbligatorie
 
@@ -15,9 +15,31 @@ Decisione utente: 11 ottobre 2026, 03:28:33 CEST. Si applica di default a tutti 
 9. Eventi/issue persistenti e deduplicati espongono codice sicuro, tentativo, prossimo tentativo, budget residuo, correlazione e risoluzione. Niente raw token, credenziali o payload privati. Un retry non crea un incidente distinto per ogni tentativo.
 10. Prove obbligatorie per nuova integrazione: indisponibilità di ore con tempo simulato, ripresa senza duplicazioni, budget/Retry-After/jitter, stop/revoca/cambio generazione durante la pausa, timeout e crash durante una mutazione, persistenza/ripartenza e nessun lock tenuto nelle attese. Per la rete servono anche nft/DNS reali e negazioni native.
 
+## Quarantena, isolamento e nuovi budget
+
+11. Esaurito il budget automatico, il lavoro si ferma con stato persistente e incidente OPEN; il servizio e il lavoro indipendente restano vivi. "Perso" indica una perdita reale, non un job recuperabile. Isolare la più piccola unità dimostrabilmente indipendente (record/job/partizione/sorgente); mai assumere indipendenza tra revisioni dello stesso oggetto o passaggi obbligatori di un bootstrap.
+12. Quarantena solo con input o riferimento durevole, hash/versioni/configurazione, progresso confermato, storia dei tentativi, motivo/effetti noti e responsabilità. Se la persistenza non è disponibile, sospendere l'ammissione delle operazioni che non possono essere conservate; niente successo, ACK o quarantena inventati.
+13. Un checkpoint può superare una quarantena soltanto quando il contratto owner ammette esplicitamente quel risultato terminale e la relativa evidence è durevole (Ingestion §7.3). Altrimenti resta fermo lo scope dipendente; gli altri possono procedere. Pubblicazioni/scritture ambigue, ordering, completezza del bootstrap, migrazioni condivise e controlli di sicurezza richiedono riconciliazione o blocco più ampio.
+14. Un HUMAN autorizzato può concedere un NUOVO budget finito anche dopo esaurimento, con limiti espliciti/default versionati, motivazione, autore, decisionRef e timestamp. Creare una nuova sessione collegata al job e allo stesso incidente; preservare le sessioni precedenti e i contatori cumulativi. Vietato il reset automatico: non vietata la concessione umana esplicita. Questa delega di sviluppo in chat non costituisce una decisione HUMAN di dominio.
+15. Una sola sessione attiva per scope logico. Decisione/creazione e ammissione dei tentativi atomiche con versione attesa e fencing persistente: doppio click, due operatori, worker ritardati e restart non possono creare due recuperi o pubblicare risultati superati. Nuova sessione/budget non cambia l'idempotency key dell'identica operazione. Un intento/configurazione diverso è una rielaborazione distinta e governata; preservare lineage e dedup, inclusa la finestra di retention necessaria per i replay.
+16. Nuovo budget autorizza tentativi entro i propri limiti; non concede grant, non risolve esiti ambigui, non supera revoca/configurazione incompatibile né l'ammissione sotto carico. Nuova autorità live e nuovo percorso monouso quando richiesti; mai replay della claim consumata R9/R10.
+17. Distinguere item problematico da dipendenza indisponibile: quarantena locale per item, circuito/pausa condivisi per dipendenza. Budget di tentativi/tempo per job/sessione, limiti di concorrenza/chiamate per dipendenza e sorgente/tenant, capacità protetta per controllo e diagnosi. Un solo livello owner del retry per operazione; retry dei vari microservizi non si moltiplicano.
+18. Scheduler, nuovi job e riavvii non aggirano il budget di un incidente esaurito. Eventuali probe di salute sono separati dal replay del job, con costo/frequenza/concorrenza limitati da policy versionata, e non azzerano l'incidente o riattivano automaticamente il lavoro in quarantena senza policy o decisione prevista.
+19. Recupero graduale e annullabile: pochi lavori/probe iniziali, aumento misurato se gli esiti restano sani, limiti globali e per dipendenza; nessuna ripartenza simultanea dell'intero arretrato. Risultati già confermati restano confermati durante l'annullamento.
+20. Quarantena gestita con responsabile, priorità, età, impactSummary, issue/incidentId deduplicato, azioni autorizzate di inspect/resume/reconcile/reprocess/cancel/discard. Limiti di capacità/retention versionati, metriche e soglie di allerta, backpressure sull'ammissione prima della saturazione. Scarto/expiry/supersession soltanto se contratto e autorizzazioni lo ammettono, con motivo/audit e senza cancellare evidence soggetta a lineage/legal hold.
+21. Lavori ormai privi di utilità possono scadere o essere sostituiti solo per policy esplicita: non applicare la sostituzione automatica a delta, cancellazioni o sequenze che richiedono completezza. Timeout per tentativo, scadenza utile, budget della sessione e controllo capacità sono limiti distinti.
+22. Prove ulteriori richieste: nuovo budget dopo esaurimento, doppio comando umano concorrente, fenced worker precedente, crash prima/dopo effetti, risposta tardiva, dedup tra sessioni, ordering/completezza, recover sotto pressione e saturazione della quarantena. Documentazione e fixture isolate non equivalgono a conformità runtime o accettazione target.
+
+## Confronto AWS
+
+Questa è una policy OUF coerente con i seguenti principi AWS, non una certificazione AWS. I default numerici sono decisioni OUF, da motivare e misurare per profilo:
+- [REL05-BP03 Control and limit retry calls](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_mitigate_interaction_failure_limit_retries.html): limiti, backoff/jitter e scelta del livello di retry.
+- [REL04-BP04 Make mutating operations idempotent](https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_prevent_interaction_failure_idempotent.html): identità coerente dell'operazione e dedup degli effetti anche tra tentativi.
+- [SQS dead-letter queue redrive](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-dead-letter-queue-redrive.html): recupero autorizzato e velocità limitata, avvio lento e incremento monitorato. Il principio viene adottato senza introdurre SQS/broker: la baseline OUF usa storage/PostgreSQL e capability owner esistenti.
+
 ## Riferimenti PET
 
-Ingestion Runtime1.3 §15: exponential backoff+jitter, idempotenza e nessun avanzamento committed checkpoint; §24: worker persistente, transazioni corte e niente I/O remoto dentro TX DB; operational awareness: incidenti deduplicati e budget finito per categorie retryable. Gateway1.5 T11/T11.3: retry governati, operazioni idempotenti/safe-to-retry, allowlist/default-deny indipendenti dalle route e protezione DNS/redirect. Authorization1.5: default-deny e audit senza segreti. Semantic1.3: owner enforcement, HUMAN-only governance e secretRef.
+Ingestion Runtime1.3 §7.3 (checkpoint/quarantena terminale), §14 (idempotenza/ordering), §141 (quarantena governata) e §46 (incidentId persistente/retention/catch-up); §15: exponential backoff+jitter, idempotenza e nessun avanzamento committed checkpoint; §20.1/§21: worker persistente, transazioni corte e niente I/O remoto dentro TX DB; operational awareness: incidenti deduplicati e budget finito per categorie retryable. Gateway1.5 T11/T11.3: retry governati, operazioni idempotenti/safe-to-retry, allowlist/default-deny indipendenti dalle route e protezione DNS/redirect. Authorization1.5: default-deny e audit senza segreti. Semantic1.3: owner enforcement, HUMAN-only governance e secretRef.
 
 ## Applicazione e stato reale
 
