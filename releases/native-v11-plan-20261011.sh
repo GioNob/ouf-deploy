@@ -5,7 +5,7 @@
   umask 077
   OUF_DIR=not_created
   OUF_PHASE=DOWNLOAD_EXACT_NATIVE_V11_PLAN_CLOSURE
-  trap 'OUF_CODE=$?; printf "OUF_V11_NATIVE_V11_PLAN_LAUNCHER_EXIT=%s PHASE=%s OUTPUT=%s/result.txt\n" "$OUF_CODE" "$OUF_PHASE" "$OUF_DIR"' EXIT
+  trap 'OUF_CODE=$?; printf "OUF_NATIVE_V11_PLAN_LAUNCHER_EXIT=%s PHASE=%s OUTPUT=%s/result.txt\n" "$OUF_CODE" "$OUF_PHASE" "$OUF_DIR"' EXIT
   OUF_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
   if [ ! -x "$OUF_GH" ]; then OUF_GH="$(command -v gh || true)"; fi
   if [ -z "$OUF_GH" ] || [ ! -x "$OUF_GH" ]; then echo OUF_EXISTING_GITHUB_CLIENT_REQUIRED >&2; exit 1; fi
