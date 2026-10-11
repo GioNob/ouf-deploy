@@ -81,7 +81,30 @@ def archive(stream,expected_tar_sha256,expected_image,expected_source):
                 'sourceCommit':expected_source,'archiveSha256':expected_tar_sha256,
                 'configSha256':expected_image[7:],'layers':observations,'platform':'linux/amd64',
                 'repositoryTags':tags or [],'imageConfig':config['config'],
+                'configMember':image['Config'],'layerMembers':layers,
                 'archiveByteCustodyProven':True,'targetApplyAuthorized':False}
+
+def tagless_archive(source,output,audit):
+    """Re-envelope exact authenticated config/layers without repository tags.
+
+    No image rebuild, new config, layer or publisher signature. Caller reaudits
+    returned archive hash/image/source before import; original provenance is
+    retained separately. Exclude unrelated OCI metadata/old tag descriptors.
+    """
+    source.seek(0);require(hashed(source,LIMIT)[0]==audit['archiveSha256'],'AUTHENTICATED_ARCHIVE_BYTES_CHANGED');source.seek(0)
+    output.seek(0);output.truncate()
+    with tarfile.open(fileobj=source,mode='r:') as original,tarfile.open(fileobj=output,mode='w') as target:
+        import io
+        manifest=[{'Config':audit['configMember'],'RepoTags':None,'Layers':audit['layerMembers']}]
+        raw=encoded(manifest);row=tarfile.TarInfo('manifest.json');row.size=len(raw);row.mode=0o600
+        target.addfile(row,io.BytesIO(raw))
+        for name in [audit['configMember'],*audit['layerMembers']]:
+            old=original.getmember(name);require(old.isfile(),'EXACT_IMAGE_MEMBER_REQUIRED')
+            row=tarfile.TarInfo(name);row.size=old.size;row.mode=0o600
+            with original.extractfile(old) as content:target.addfile(row,content)
+    output.flush();output.seek(0);result,size=hashed(output,LIMIT);output.seek(0)
+    return {'originalArchiveSha256':audit['archiveSha256'],'derivedArchiveSha256':result,
+            'archiveBytes':size,'imageRebuilt':False,'newSignatureIssued':False}
 
 def loaded(audit,native):
     require(type(native) is dict and native.get('Id')==audit['imageId']

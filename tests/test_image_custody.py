@@ -21,6 +21,14 @@ def fixture(change=None,compressed=False,extra=None):
 def audit(data):return c.archive(io.BytesIO(data[0]),data[1],data[2],SOURCE)
 def native(a):return {'Id':a['imageId'],'Os':'linux','Architecture':'amd64','Config':copy.deepcopy(a['imageConfig']),'RootFS':{'Type':'layers','Layers':[x['diffId'] for x in a['layers']]}}
 class Custody(unittest.TestCase):
+    def test_tagless_reenvelope_keeps_exact_config_and_layer_bytes(self):
+        d=fixture(lambda conf,manifest:manifest.__setitem__('RepoTags',['unrelated:latest']))
+        original=audit(d);output=io.BytesIO()
+        result=c.tagless_archive(io.BytesIO(d[0]),output,original)
+        derived=c.archive(output,result['derivedArchiveSha256'],d[2],SOURCE)
+        self.assertEqual(derived['repositoryTags'],[])
+        self.assertEqual(derived['imageConfig'],original['imageConfig']);self.assertEqual(derived['layers'],original['layers'])
+        self.assertEqual(result['originalArchiveSha256'],d[1]);self.assertFalse(result['imageRebuilt']);self.assertFalse(result['newSignatureIssued'])
     def test_actual_layer_bytes_and_loaded_projection_for_raw_and_compressed_layers(self):
         for compressed in (False,True):
             with self.subTest(compressed=compressed):

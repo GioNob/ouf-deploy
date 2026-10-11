@@ -31,6 +31,11 @@ with tempfile.TemporaryDirectory() as folder:
           "--deny-self-hosted-runners","--bundle",str(root/"provenance.json"),"--format","json"])
     expected=verified["memberSha256"]["image.docker.tar"]
     with (root/"image.docker.tar").open("rb") as stream:audit=custody.archive(stream,expected,spec["image"],spec["source"])
+    original_audit=audit
+    with (root/"image.docker.tar").open("rb") as source,(root/"tagless.docker.tar").open("w+b") as output:
+        envelope=custody.tagless_archive(source,output,original_audit)
+        audit=custody.archive(output,envelope["derivedArchiveSha256"],spec["image"],spec["source"])
+    assert audit["repositoryTags"]==[] and audit["layers"]==original_audit["layers"]
     # Exactly one fixture import after original-byte/signature/layer checks.
     # No running container, database, provider or target operation.
     socket=pathlib.Path("/var/run/docker.sock");s=socket.stat()
@@ -50,7 +55,7 @@ with tempfile.TemporaryDirectory() as folder:
     if pid==0:
         with session.invocation():
             def load_then_crash():
-                command(["docker","image","load","--input",str(root/"image.docker.tar")])
+                command(["docker","image","load","--input",str(root/"tagless.docker.tar")])
                 os._exit(71)
             session.import_once(audit,load_then_crash,inspect,checkpoint)
         os._exit(72)
@@ -59,10 +64,11 @@ with tempfile.TemporaryDirectory() as folder:
     restarted=Import(journal_module.Journal(directory),initial["contextHash"])
     with restarted.invocation():receipt=restarted.reconcile(audit,inspect,checkpoint)
     assert journal.read()["state"]=="VERIFIED" and journal.read()["effectAttemptCount"]==1
-    receipt.update(actualProcessDeathAfterImport=True,durableJournalReopened=True,
+    receipt.update(originalArchiveSha256=expected,derivedArchiveSha256=envelope["derivedArchiveSha256"],
+                   imageRebuilt=False,newSignatureIssued=False,actualProcessDeathAfterImport=True,durableJournalReopened=True,
                    importEffectAttemptCount=1,reconciliationWithoutSecondImport=True,
                    runtimeAuthorityFixtureOnly=True)
-    receipt.update(status="ORIGINAL_SIGNED_V11_ARCHIVE_LAYERS_AND_HOSTED_ENGINE_MATCH",
+    receipt.update(status="ORIGINAL_SIGNED_V11_LAYERS_TAGLESS_ENVELOPE_AND_HOSTED_ENGINE_MATCH",
        originalZipSha256=spec["zipSha256"],signedSubjectsVerified=8,
        hostedImageImports=1,targetImageImports=0,targetEffects=False,
        archiveLayersActuallyHashed=True,engineActuallyInspected=True,
