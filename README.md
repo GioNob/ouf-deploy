@@ -1,3 +1,5 @@
+> **CSV end-to-end — ripreso dopo R12:** [continuazione e comando protetto corrente](releases/CSV_END_TO_END_AFTER_R12_20261011.md). Nuova preparazione applicativa qualificata contro R12 attivo: 20 test distinti, inclusa custodia POSIX UID10001 reale. Preparazione target, file specifico autorizzato e nuova prova completa restano pendenti; nessun replay R10/R11/R12. [Evidenza](evidence/csv-continuation-after-r12-20261011.json).
+
 > **R10 — recupero operativo confermato tramite R12 sul VPS:** ricevuta operatore `ACTIVE / RENEWED`, due rinnovi, un indirizzo autorizzato per ciascuno dei due flussi, exit 0. [Stato e limiti](docs/R10_CONTINUOUS_RECOVERY.md), [ricevuta target](evidence/resilient-r12-active-target-20261011.json). **Non rieseguire gli apply R10/R11/R12.** Salute applicativa e CSV end-to-end restano da provare.
 
 ## 11 October: R12 active on target; earlier pending states superseded

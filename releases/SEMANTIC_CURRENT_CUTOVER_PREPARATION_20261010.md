@@ -1,3 +1,5 @@
+> **11 ottobre, continuazione dopo R12 attivo:** il vecchio comando R10 riportato qui resta sospeso. Usare soltanto la [nuova preparazione qualificata contro R12](CSV_END_TO_END_AFTER_R12_20261011.md), dopo aver letto il suo perimetro. [Ricevuta R12](../evidence/resilient-r12-active-target-20261011.json). Non riapplicare R10/R11/R12.
+
 > **Policy di piattaforma vigente:** [Resilienza, quarantena, incidenti e alert — v3](https://github.com/GioNob/ouf-deploy/blob/main/docs/OUF_RESILIENCE_POLICY.md). Obbligatoria per sviluppo e revisione; [adozione e prove](https://github.com/GioNob/ouf-deploy/blob/main/docs/OUF_RESILIENCE_ADOPTION.md).
 
 # Cutover Semantic: avanzamento autonomo e prossimo passaggio protetto
