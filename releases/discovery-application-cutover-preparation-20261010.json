@@ -402,6 +402,9 @@
     "sourceCommit": "622614b0040cf11be2f6c7e3568733a488ca4ca8",
     "policyCompliant": false,
     "candidateDeploymentHeld": true,
-    "freshReplacementQualificationRequired": true
+    "freshReplacementQualificationRequired": true,
+    "sourceCorrectionEvidence": "evidence/semantic-discovery-resilience-source-checkpoint-20261011.json",
+    "correctedSourceCommit": "e5aabd9d4495792d244a792e98798b33aef682ba",
+    "boundedPollingAndClassificationQualified": true
   }
 }
