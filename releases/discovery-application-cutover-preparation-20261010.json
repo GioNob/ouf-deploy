@@ -1,6 +1,6 @@
 {
   "schema": "ouf.discovery.application-cutover-preparation.v1",
-  "status": "R12_ACTIVE_CREATION_PLAN_COMPILED_CURRENT_PACKAGE_SECURITY_AND_RESOURCE_STARTUP_QUALIFIED_TRANSITION_PENDING",
+  "status": "R12_RECOVERED_CRASH_RECONCILIATION_QUALIFIED_SEMANTIC_DISCOVERY_RESILIENCE_GAP_OPEN",
   "applyAuthorized": false,
   "newTargetAuthorityIssued": false,
   "networkLease": {
@@ -393,5 +393,15 @@
     "productionLoadSloQualified": false,
     "productionProviderHealthProven": false,
     "completeTargetOciQualified": false
+  },
+  "transitionCrashQualification": {
+    "evidence": "evidence/semantic-transition-crash-qualified-20261011.json",
+    "productionInstallerQualified": false
+  },
+  "semanticDiscoveryResilience": {
+    "sourceCommit": "622614b0040cf11be2f6c7e3568733a488ca4ca8",
+    "policyCompliant": false,
+    "candidateDeploymentHeld": true,
+    "freshReplacementQualificationRequired": true
   }
 }
