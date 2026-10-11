@@ -6,7 +6,7 @@ def module(name,path):
     s=importlib.util.spec_from_file_location(name,ROOT/path);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
 package=module("sealed_package_reader","scripts/rebase-semantic-package-declaration.py")
 rebind=module("v11_rebind","tools/semantic_application_cutover/rebase_verified_package.py")
-assert hashlib.sha256((ROOT/"scripts/rebase-semantic-package-declaration.py").read_bytes()).hexdigest()=="c147db8ce3a9a4facf8c4e7aa1f2e4cb292445f23c8e77e97e820014ee82feb0"
+assert hashlib.sha256((ROOT/"scripts/rebase-semantic-package-declaration.py").read_bytes()).hexdigest()=="134a31a840373938c3e65cb9d80f588fe8006b472dfb9582ff3bb024733842ed"
 old=package.package_config("old-semantic.zip")
 package.SOURCE=rebind.SOURCE
 new=package.package_config("new-semantic.zip",expected_zip=rebind.ZIP_HASH,expected_image=rebind.IMAGE)
