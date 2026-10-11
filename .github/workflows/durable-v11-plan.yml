@@ -6,7 +6,8 @@ on:
       - .github/workflows/durable-v11-plan.yml
       - tools/semantic_application_cutover/rebase_verified_package.py
       - scripts/prepare-current-durable-v11-plan.py
-      - tests/test_durable_v11_rebind.py
+      - tests/test_durable_v11_*.py
+      - releases/current-durable-v11-plan-20261011.sh
       - tests/durable_v11_rebind_native.py
   workflow_dispatch:
 permissions:
@@ -21,7 +22,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Preservation, custody/default drift and all-seven-source closure denials
-        run: python3 -m unittest discover -s tests -p test_durable_v11_rebind.py -v
+        run: python3 -m unittest discover -s tests -p 'test_durable_v11_*.py' -v
       - name: Download both exact original archives; no host image import
         env:
           GH_TOKEN: ${{ github.token }}

@@ -70,12 +70,24 @@ class RebindTests(unittest.TestCase):
             d,c=fixture();c["Env"].append(row)
             with self.assertRaises(ValueError):r.rebind(d,r.digest(d),c)
     def test_complete_source_closure_checked_before_any_module_execution(self):
-        # No source is executed if any one closure member mismatches, even if
-        # another member contains an executable top-level effect.
+        from unittest.mock import patch
+        paths={"reader":"scripts/read-current-r12-cutover-custody.py",
+               "planner":"scripts/compile-semantic-creation-plan-after-r12.py",
+               "prepare":"scripts/prepare-semantic-inputs-after-r12.py",
+               "custody":"tools/semantic_target_review/prepare_application_runtime_inputs.py",
+               "creation":"tools/semantic_application_cutover/creation_plan.py",
+               "package":"scripts/rebase-semantic-package-declaration.py",
+               "rebind":"tools/semantic_application_cutover/rebase_verified_package.py"}
+        valid={}
+        for name,path in paths.items():
+            file=ROOT/path
+            if not file.exists():
+                file=ROOT/"tests/fixtures"/(name+".py") if name!="package" else ROOT/"scripts/retained-package-reader-for-qualification.py"
+            valid[name]=file.read_bytes()
+            self.assertEqual(hashlib.sha256(valid[name]).hexdigest(),entry.SOURCE_HASHES[name])
         for target in entry.SOURCE_HASHES:
-            sources={key:b"raise AssertionError('SOURCE_EXECUTED_BEFORE_COMPLETE_CLOSURE_CHECK')" for key in entry.SOURCE_HASHES}
-            sources[target]=b"changed"
-            with self.subTest(target=target):
+            sources=dict(valid);sources[target]+=b"#tamper"
+            with self.subTest(target=target),patch("builtins.exec",side_effect=AssertionError("EXECUTED_BEFORE_COMPLETE_HASH_CHECK")):
                 with self.assertRaisesRegex(ValueError,"V11_PLAN_SOURCE_HASH_MISMATCH"):entry.modules(sources)
         with self.assertRaisesRegex(ValueError,"EXACT_V11_PLAN_SOURCE_CLOSURE"):entry.modules({})
 
