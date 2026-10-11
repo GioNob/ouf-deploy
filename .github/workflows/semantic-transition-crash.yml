@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - tools/semantic_application_cutover/transition_journal.py
+      - tools/semantic_application_cutover/engine_creation.py
       - tests/test_semantic_transition_journal.py
       - tests/semantic_transition_crash_native.py
       - .github/workflows/semantic-transition-crash.yml

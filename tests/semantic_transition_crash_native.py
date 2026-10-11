@@ -11,7 +11,8 @@ import subprocess
 import tempfile
 import time
 import uuid
-from test_semantic_transition_journal import m, j, H
+from test_semantic_transition_journal import m, j, H, module
+engine = module('engine_creation', 'tools/semantic_application_cutover/engine_creation.py')
 
 
 def call(*args, data=None):
@@ -20,10 +21,10 @@ def call(*args, data=None):
     return p.stdout
 
 
-def store(root, phase):
+def store(root, phase, creation_hash='b'*64):
     root.mkdir(mode=0o700)
     journal = j.Journal(str(root))
-    initial = m.Transition.initial(H, 'b'*64, 'c'*64, 'd'*64)
+    initial = m.Transition.initial(H, creation_hash, 'c'*64, 'd'*64)
     journal.initialize(initial)
     t = m.Transition(journal, initial['contextHash'])
     with t.invocation():
@@ -33,12 +34,12 @@ def store(root, phase):
     return t
 
 
-def die_after_effect(t, phase, effect):
+def die_after_effect(t, phase, effect, managed=False):
     pid = os.fork()
     if pid == 0:
         try:
             with t.invocation():
-                t.begin(phase, H, H, t.read()['version'])
+                if not managed: t.begin(phase, H, H, t.read()['version'])
                 effect()
                 os._exit(91)  # No finally or successful journal receipt.
         except BaseException:
@@ -60,10 +61,16 @@ def main():
         try:
             call('docker', 'pull', 'alpine:3.22')
             image = json.loads(call('docker', 'image', 'inspect', 'alpine:3.22'))[0]['Id']
-            t = store(root/'docker-journal', 'CREATE_REPLACEMENT')
-            die_after_effect(t, 'CREATE_REPLACEMENT', lambda: call('docker', 'create', '--name', app,
-                '--network', 'none', '--user', '10001:10001', '--read-only', '--cap-drop', 'ALL',
-                '--security-opt', 'no-new-privileges', image, 'sleep', '300'))
+            request = {'Image':image,'User':'10001:10001','Cmd':['sleep','300'],
+                       'HostConfig':{'NetworkMode':'none','ReadonlyRootfs':True,
+                                     'CapDrop':['ALL'],'SecurityOpt':['no-new-privileges']}}
+            t = store(root/'docker-journal', 'CREATE_REPLACEMENT', engine.digest(request))
+            app = engine.Engine.name(t)
+            socket_path = '/var/run/docker.sock'; s = os.stat(socket_path,follow_symlinks=False)
+            adapter = engine.Engine(socket_path,(s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode & 0o777))
+            # Only fixture checkpoint, not a target authenticator or grant.
+            checkpoint = lambda phase: None
+            die_after_effect(t, 'CREATE_REPLACEMENT', lambda: adapter.create_once(t,request,H,checkpoint),managed=True)
             actual = json.loads(call('docker', 'inspect', app))[0]
             assert actual['Image'] == image and actual['State']['Status'] == 'created'
             assert actual['Config']['User'] == '10001:10001' and actual['Config']['Cmd'] == ['sleep', '300']
@@ -72,9 +79,19 @@ def main():
             ids = call('docker', 'ps', '-a', '--filter', 'name=^/'+app+'$', '--format', '{{.ID}}').splitlines()
             assert len(ids) == 1
             with t.invocation():
-                row = t.reconcile('CREATE_REPLACEMENT', H, 'APPLIED', m.digest(actual), t.read()['version'])
+                row = adapter.reconcile(t,request,checkpoint)
             assert row['nextPhase'] == m.PHASES.index('ATTEST_NEW_OCI_PEER')
             assert row['predecessorIncidentRef'] == 'd'*64 and row['predecessorHistoryHash'] == 'c'*64
+            # Config drift and already-started generations cannot be reconciled
+            # as the requested stopped creation, even with the exact same name.
+            changed = dict(actual);changed['Image'] = 'sha256:'+'f'*64
+            try: adapter.matching_created(t,request,changed)
+            except engine.CreationDenied: pass
+            else: raise AssertionError('FOREIGN_IMAGE_RECONCILED')
+            changed = dict(actual);changed['State'] = dict(actual['State'],Status='running',Running=True,Pid=123)
+            try: adapter.matching_created(t,request,changed)
+            except engine.CreationDenied: pass
+            else: raise AssertionError('CHANGED_GENERATION_RECONCILED')
 
             # Crash BEFORE the command does not make its consumed intent retryable.
             before = store(root/'before-journal', 'CREATE_REPLACEMENT')
@@ -112,6 +129,7 @@ def main():
             print('OUF_CUTOVER_CRASH_NATIVE='+json.dumps({'status':'PASS','realDockerCreateCrashReconciledWithoutDuplicate':True,
                 'crashBeforeEffectDoesNotReplayConsumedIntent':True,'realPostgresqlCommitCrashPreservesMigrationAndLateWrites':True,
                 'preMigrationRestoreAllowed':False,'predecessorIncidentAndHistoryPreserved':True,
+                'actualSealedEngineCreationAdapterExercised':True,'foreignImageAndStartedGenerationDenied':True,
                 'precedingPhaseAuthority':'SYNTHETIC_FIXTURE_ONLY','productionInstallerQualified':False,
                 'targetActions':0,'notReleaseAcceptance':True}))
         finally:
