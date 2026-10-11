@@ -1,5 +1,7 @@
 # CSV Teatri: current profile and application continuation — 11 October 2026
 
+> **CSV Teatri — stato corrente:** un tentativo di import V11 segnalato ambiguo; letture native sul VPS e derivazione dai byte firmati identificano la stessa immagine tramite manifest `bd48…`, distinto dal config digest `8363…`. Riconciliazione senza reimport qualificata:41 test, Docker classico e vero containerd, crash/restart con un solo tentativo. Rimane necessaria l'esecuzione root sul journal esistente. Piano di creazione da ribasare sull'identità nativa dopo tale ricevuta; cutover e CSV→ACK→search restano aperti. [Operazione concreta](releases/V11_MANIFEST_IMAGE_RECONCILIATION_20261011.md).
+
 [Platform resilience policy v3](../docs/OUF_RESILIENCE_POLICY.md), Reality Baseline v1.7 and [file-first acceptance](FILE_FIRST_EXECUTION_CHECKPOINT_20261010.md) apply. The owner explicitly authorized the existing Teatri asset on 11 October at 16:29 Europe/Rome. No upload/profile replay is needed.
 
 ## What is now proved

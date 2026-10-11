@@ -1,4 +1,6 @@
-# V11 offline image custody and import reconciliation — 11 October 2026
+# V11 offline image custody and import reconciliation — historical qualification
+
+> **Superseded current action:** the target import was attempted once and the classic config-ID assumption failed on the native manifest store. Do not repeat this import operation or reset its journal. [Current exact manifest reconciliation](V11_MANIFEST_IMAGE_RECONCILIATION_20261011.md) supersedes the operator command below; original source and historical qualification evidence remain retained.
 
 The private V11 plan is already prepared. This step addresses exact image byte custody; it does not apply that creation request, migrate data, create/start/stop a container, change R12, install transport, issue signatures or grant application/domain permissions.
 
@@ -15,7 +17,7 @@ The original archive contains one repository tag. [Tagless CI38167487486](https:
 | Original signed ZIP | b6ae1051cee4ec9fb1b28f532622ecd39e038ec2e6a384d50565cbf92f2a0def |
 | Original image archive | e0e51617f847494f3bf8a746277da02761aeb81b37d1483ec26dc8e4e35fbd00 |
 | Qualified derived tagless archive | 52baabdfd39189c598a9ded3aeec08367d20ae2fccbf14330481c98f1ad7783f |
-| Exact image ID | 83635be46d1fe61dea08597ea4488980b4349e5f6e0ed8bbd3ab6f5e2686370e |
+| Original config image digest (classic Engine ID) | 83635be46d1fe61dea08597ea4488980b4349e5f6e0ed8bbd3ab6f5e2686370e |
 | Native execution-config projection | 52d4e0beabafa92afc603a5cd1fc9e226a367b5d0cc139db1fb27bb75880cd6b |
 | Native rootfs projection | 11ef2e90fcd021cdcd0a06bf3ab5b0fb3d645b8f575d71affef3f5fb1960d775 |
 
@@ -34,26 +36,9 @@ This operation may import one exact image and creates a new private import journ
 
 Local28 tests cover archive/config/layer checks, raw/gzip bytes, bounded copies/metadata, tagless transformation, actual local process death and fsynced journal restart, concurrency/ambiguity/revocation paths, all five sealed module hash failures, all12 download/tamper positions, all6 root-bootstrap tamper positions, all8 signature-failure positions, retained portable gh and exact failure propagation. Root plan tests and authentication callbacks are fixtures; the complete target root entry has not yet executed. Hosted final delivery qualification is linked below after completion.
 
-## Exact necessary operator command
+## Historical operator action retired
 
-The existing runner's root path is unavailable, as already proved at run38161252572; no privilege policy or alternate root path is used. Execute this one operation on the VPS as oufadmin only after the final delivery qualification passes:
-
-```bash
-(
-  set -euo pipefail
-  umask 077
-  OUF_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
-  if [ ! -x "$OUF_GH" ]; then OUF_GH="$(command -v gh)"; fi
-  OUF_LAUNCH="$(mktemp "$HOME/ouf-v11-image-import-launch.XXXXXXXX")"
-  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/releases/verified-v11-image-import-20261011.sh?ref=3f1854d903a2542f4f119a9e473371de4eff26c0' > "$OUF_LAUNCH"
-  printf '%s  %s\n' 'cf45c48d768dbad6b7aae00ed6c54b2f63047424bb6a527dda70e4bb3c8c4bc7' "$OUF_LAUNCH" | sha256sum -c -
-  bash "$OUF_LAUNCH"
-)
-```
-
-Return only the safe `OUF_V11_IMAGE_IMPORT=` receipt and launcher exit/phase/output. Do not disclose private declarations, creation requests, configuration, signature log files or credentials. If blocked, preserve the journal/output and return the receipt before another execution; no manual delete/reset or import replay.
-
-Next application work remains composed producer/DB/lease fencing and backup, old endpoint release, actual new OCI/reciprocal peer and authenticated driver/transport closure, migration-aware admission and release. Existing app/JAR migration compatibility and other qualified primitives are retained. Cinema lineage join and Teatri13-row CSV acceptance remain open; no new ingestion run or object is claimed.
+The original import launcher was executed once on the target and reported an ambiguous outcome. Its original immutable source remains retained. Use only the [current existing-import reconciliation](V11_MANIFEST_IMAGE_RECONCILIATION_20261011.md); the old import command has been removed from this active document. This preserves the consumed operation and avoids an incorrect second import.
 
 ## Final qualification completed
 
