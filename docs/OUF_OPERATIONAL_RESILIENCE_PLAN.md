@@ -57,6 +57,7 @@ Destinatari reali, canali, finestre/manutenzione e soglie devono essere configur
 | Priorità e proiezioni owner/MCP | Integrate e qualificate | Copertura dei sette moduli sul target |
 | Pagine stabili e composizione MCP | HTTP/tool qualificati, budget control persistente | Hosting/SDK/network/HA target |
 | Bookmark e vettore persistenti | Ingestion PR38–39; Gateway PR66–69; MCP PR59–60 qualificati; HTTP/tool globale PR61 qualificati | Storia degli altri owner, compactor e hosting target |
+| Transizioni private MCP | PR62 qualificata: incertezza e attenzione sicurezza nel journal PET | Publisher commit-safe, completezza di tutte le transizioni e lettura storica autorizzata |
 | Memoria di consultazione | Contratto separato definito | Prova client, capability COMMAND, CAS |
 | Pressione e alert | Reference Gateway con budget/capacità finiti | Sampler/dispatcher/trasporto e configurazione reali |
 
@@ -90,7 +91,16 @@ Inventario iniziale owner MCP verificato nel codice corrente (proiezione storica
 | `Store.Reconcile`, `Maintain`, `MarkStaleAndClaim` | Outcome persistenti, RUNNING → UNKNOWN, leases scadute e debito | Admission/claim/guard/window e fencing persistenti; distinguere anche il percorso legacy senza admission context |
 | `Store.ApplyOwnerEvidence` | Recupero owner provato di UNKNOWN e riconciliazione di reservation/claim | Evidence dell'owner corrente; nessun perdono locale del debito |
 | `ExpireUnknown` | UNKNOWN → UNRESOLVED per max hold | Incidente e blocker restano aperti; la scadenza non è una soluzione |
-| `LateCompensate`, `quarantineEvidence`, funzioni SQL di compensazione | Recupero tardivo, mismatch di scope/integrità e security incident deduplicato | CAS, evidence consumata una volta, append-only/audit e isolamento tenant |
+| `LateCompensate`, `quarantineEvidence` e SQL eseguito dai metodi owner | Recupero tardivo, mismatch di scope/integrità e security incident deduplicato | CAS, evidence consumata una volta, append-only/audit e isolamento tenant |
 | `ReconcileDebtCaches` | Riparazione cache distinta dalla risoluzione del debito | Somma autoritativa del ledger; nessuna nuova autorità di recovery |
 
 Prima dell'implementazione includere anche le mutazioni nelle funzioni SQL e qualificare rollback/trigger/ruoli di migrazione: l'inventario dei soli metodi Go non prova copertura completa. Nessuna nuova storia è dichiarata disponibile da questa revisione.
+
+
+## Persistenza privata delle transizioni MCP — PR62 qualificata
+
+[MCP PR62](https://github.com/GioNob/ouf-mcp-server/pull/62) integrata (`8756d363061653b200082f53e168d563cf08c621`), candidato `204de2956596d9b5b5409627f124b504f89535c1`:tutti22 gate push/PR PASS.5 nuove prove PostgreSQL/race qualificano transizioni/noise/immutabilità/privacy, rollback e commit tardivo con sequence precedente, security dedup, ACL NOLOGIN senza autorità di mutazione e writer senza INSERT sul journal. Suite completa PostgreSQL e repository/race, retention/evidence/admission, vet, migrazione/manutenzione CI, staticcheck, govulncheck senza vulnerabilità e pairwise PASS.
+
+[Contratto privato](https://github.com/GioNob/ouf-mcp-server/blob/main/docs/OPERATIONAL_AUDIT_CAPTURE.md), [evidence](../evidence/operational-audit-capture-qualified-20261011.json). Migration010 osserva UNKNOWN/UNRESOLVED e riconciliazione terminale nella stessa transazione del dato owner, nel journal PET append-only esistente. Un esito FAILED risolve l'incertezza di esecuzione, non il fallimento del lavoro né un security incident distinto. Lease/metadati a stato invariato non generano nuove osservazioni. Gli incidenti di sicurezza restano protetti:nessuna copia di category/detail/key/hash/evidence/result/correlation/outcome privati. Nessun nuovo lock di pubblicazione dentro admission/recovery; ruolo definer minimale e nessun grant ai writer.
+
+Questa è persistenza privata delle transizioni di incertezza e attenzione di sicurezza, non copertura di tutte le transizioni MCP o publisher completo. Sequence/timestamp audit non sono watermark; storico precedente alla migrazione non certificato. Retention già governata, soglie/capacità/gap e publisher commit-safe da integrare e qualificare separatamente. API/output restano `mcpSelfHistoryCovered=false` e `consultationRecorded=false`. Lettura storica corrente/autorizzata, altre storie owner e client COMMAND/receipt/CAS restano OPEN. Nessuna migrazione/deploy/VPS/email o replay R9/R10.
