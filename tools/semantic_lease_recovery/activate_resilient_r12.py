@@ -574,6 +574,7 @@ def apply(reference):
     preclaim_guard(preflight.adapter)
     CORE.create(ROOT/'preclaim-guard.json', {'actualProductionGuardPassed': True,
         'netAdminOnly': True, 'noNewPrivileges': True, 'claimCreatedBeforeProbe': False})
+    approval_live(reference)
     CORE.create(CLAIM, claim)
     stop_r11(reader, cfg)
     coordinator, loaded, recovery = runtime(reader, CORE, owner, cfg, scope, capsule)
@@ -585,6 +586,7 @@ def apply(reference):
         require(sha(encoded(coordinator.journal())) == scope['quiescentJournalHash']
                 and not any(coordinator.sets()), 'CURRENT_QUIESCENCE_CHANGED_BEFORE_START')
     PHASE = 'SUBMIT_NEW_SCOPED_WORKER_ONCE'
+    approval_live(reference)
     argv = CORE.service_command(ROOT, sha(encoded(capsule)), unit=UNIT, python=native['python']['path'])
     CORE.create(ROOT/'service-command.json', {'argv': argv, 'nativeBindings': native})
     for binding in native.values(): reader.private(binding['path'], binding['sha256'], executable=True)

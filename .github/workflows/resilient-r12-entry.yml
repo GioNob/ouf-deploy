@@ -34,6 +34,7 @@ jobs:
               assert hashlib.sha256(path.read_bytes()).hexdigest()==digest,name
           PY
           python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_namespace_generation.py
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_r12_entry.py
           python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_continuous_supervisor.py
       - name: Actual Docker distinct UID and restricted capability namespace regression
         run: sudo /usr/bin/python3 -I -B tools/semantic_lease_recovery/namespace_generation_native.py
