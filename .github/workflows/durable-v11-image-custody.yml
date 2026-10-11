@@ -1,0 +1,38 @@
+name: Exact signed V11 image archive and Engine byte custody qualification
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/durable-v11-image-custody.yml
+      - tools/semantic_application_cutover/image_custody.py
+      - tests/test_image_custody.py
+      - tests/durable_v11_image_custody_native.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+  attestations: read
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Byte custody, bounded parsing and native projection denials
+        run: python3 -m unittest discover -s tests -p test_image_custody.py -v
+      - name: Verify original publisher and every layer; compare actual hosted Engine
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          gh api repos/GioNob/ouf-semantic-registry/actions/artifacts/11710556577/zip > semantic.zip
+          python3 tests/durable_v11_image_custody_native.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: durable-v11-image-custody-${{ github.run_id }}
+          path: durable-v11-image-custody-receipt.json
+          if-no-files-found: error
+          retention-days: 30
