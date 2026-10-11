@@ -17,6 +17,8 @@ def projection(v):
  if not isinstance(v,dict):return {'shapeProven':False}
  return {'imageId':v.get('Id'),'os':v.get('Os'),'architecture':v.get('Architecture'),
   'rootfsHash':hashed(v.get('RootFS')),'configHash':hashed(v.get('Config')),
+  'configProjectionHash':hashed({k:v.get('Config',{}).get(k) for k in ('User','Entrypoint','Cmd','Env','WorkingDir','Labels','Volumes','ExposedPorts','StopSignal','Healthcheck','Shell')}),
+  'descriptor':v.get('Descriptor'),'manifests':v.get('Manifests'),
   'sourceMatches':v.get('Config',{}).get('Labels',{}).get('org.opencontainers.image.revision')==SOURCE,
   'repoTagCount':len(v.get('RepoTags') or [])}
 def main():
@@ -40,6 +42,13 @@ def main():
    out['imageCount']=len(rows)
    out['sourceMatches']=[{'imageId':r['Id'],'repoTagCount':len(r.get('RepoTags') or []),'size':r.get('Size')} for r in rows
     if (r.get('Labels') or {}).get('org.opencontainers.image.revision')==SOURCE or r['Id']==IMAGE]
+  out['sourceCandidateReads']=[]
+  for candidate in out.get('sourceMatches',[]):
+   identifier=candidate['imageId']
+   if not re.fullmatch(r'sha256:[0-9a-f]{64}',identifier):raise ValueError('EXACT_CANDIDATE_ID_REQUIRED')
+   for version in dict.fromkeys(versions):
+    status,v=request('/v'+version+'/images/'+identifier+'/json'+('?manifests=true' if version!='1.44' else ''))
+    out['sourceCandidateReads'].append({'apiVersion':version,'status':status,'projection':projection(v) if status==200 else None})
   with tempfile.TemporaryDirectory(prefix='ouf-image-read-') as empty:
    p=subprocess.run(['docker','--config',empty,'image','inspect',IMAGE],stdin=subprocess.DEVNULL,
     stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=30,
