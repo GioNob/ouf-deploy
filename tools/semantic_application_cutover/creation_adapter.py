@@ -11,8 +11,9 @@ def require(ok,reason):
  if not ok:raise CreationDenied(reason)
 
 class CreationAdapter:
- def __init__(self,engine,transition,request):
+ def __init__(self,engine,transition,request,evidence_store=None):
   self.engine,self.transition=engine,transition
+  self.evidence_store=evidence_store
   self.request=json.loads(json.dumps(request,allow_nan=False));self.request_hash=digest(self.request)
  def exact(self,intent):
   require(digest(intent)==self.request_hash and self.transition.read()['creationRequestHash']==self.request_hash,'EXACT_EXECUTOR_CREATION_INTENT_REQUIRED')
@@ -27,4 +28,5 @@ class CreationAdapter:
   actual=self.engine.matching_created(self.transition,self.request,actual)
   following=self.engine.inspect(self.transition)
   require(following==actual,'CREATION_CHANGED_DURING_EXECUTOR_RECONCILIATION')
+  if self.evidence_store is not None:self.evidence_store.publish('CREATE_REPLACEMENT',actual)
   return 'APPLIED',actual

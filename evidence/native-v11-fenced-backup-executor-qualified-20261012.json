@@ -1,0 +1,19 @@
+{
+  "schema": "ouf.fenced-backup-executor-qualification.v1",
+  "sourceCommit": "e4a23927f046f4cc590f06d8c9027a266ecb4679",
+  "workflowRunId": 38204561006,
+  "jobId": 114665056164,
+  "conclusion": "success",
+  "compositionTests": 5,
+  "nativePostgresqlTests": 2,
+  "actualControllerProcessDeath": true,
+  "completedArchiveReconciledWithoutReplay": true,
+  "reopenedDatabaseBlocksReconciliation": true,
+  "backupReplay": false,
+  "automaticReopen": false,
+  "precedingPhasesSynthetic": true,
+  "authoritySynthetic": true,
+  "targetApplied": false,
+  "targetInstallerQualified": false,
+  "notReleaseAcceptance": true
+}
