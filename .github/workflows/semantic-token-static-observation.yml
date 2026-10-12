@@ -3,6 +3,8 @@ on:
   push:
     branches: [main]
     paths:
+      - scripts/read-semantic-token-static-facts.py
+      - tests/test_semantic_token_static_facts.py
       - scripts/observe-semantic-token-source.py
       - tests/test_semantic_token_static_observation.py
       - .github/workflows/semantic-token-static-observation.yml
@@ -25,3 +27,5 @@ jobs:
           sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
           sudo chown -R root:root "$OUF_FIXTURE_ROOT"
           sudo env OUF_NATIVE_UIDS=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_semantic_token_static_observation.py -v
+      - name: Public code facts and sealed observer byte identity
+        run: python3 -B -m unittest discover -s tests -p test_semantic_token_static_facts.py -v
