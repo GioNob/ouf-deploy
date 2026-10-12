@@ -8,6 +8,7 @@ an owner phase implementation, not a standalone operator authorization.
 import copy,hashlib,json,math,os,re,subprocess
 from pathlib import Path
 from transition_journal import digest,hash_value,require
+from native_evidence_store import NativeEvidenceStore
 
 PHASE='STOP_REVOKE_OLD_LEASE'
 HISTORY_FIXED=('schema','contextRef','generationRef','policyHash','timeAccountingProfile','startedWall','startedMonotonic')
@@ -164,7 +165,11 @@ class R12RetirementAdapter:
         self.intent=copy.deepcopy(intent);self.intent_hash=digest(intent)
         require(set(intent)=={'scopeHash','stopTimeoutSeconds'} and intent['scopeHash']==channel.scope_hash
                 and type(intent['stopTimeoutSeconds']) is int and 1<=intent['stopTimeoutSeconds']<=55,'EXACT_BOUNDED_RETIREMENT_INTENT_REQUIRED')
-        require(before_store.root!=store.root,'SEPARATE_DURABLE_RETIREMENT_BASELINE_REQUIRED')
+        require(type(before_store) is NativeEvidenceStore and type(store) is NativeEvidenceStore
+                and before_store.root!=store.root,'SEPARATE_DURABLE_RETIREMENT_BASELINE_REQUIRED')
+        if 'r12Root' in channel.scope:
+            old=Path(channel.scope['r12Root'])
+            require(not before_store.root.is_relative_to(old) and not store.root.is_relative_to(old),'RETIREMENT_EVIDENCE_MUST_NOT_REWRITE_OLD_ROOT')
     def exact(self,intent):
         row=self.transition.read()
         require(digest(intent)==self.intent_hash and row['state']=='IN_FLIGHT' and row['nextPhase']==0

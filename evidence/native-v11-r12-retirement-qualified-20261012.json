@@ -1,0 +1,28 @@
+{
+  "schema": "ouf.native-v11-r12-retirement-qualification.v1",
+  "sourceCommit": "d2b37be2cce4577c44341e7436bb1433c717e35e",
+  "workflowRunId": 38214225150,
+  "jobId": 114695073643,
+  "conclusion": "success",
+  "boundaryTests": 6,
+  "nativeIntegrationTests": 3,
+  "actualSystemdStop": true,
+  "actualSigterm": true,
+  "actualInetAndBridgeSets": true,
+  "productionLeaseRecoveryCancellation": true,
+  "actualControllerProcessDeath": true,
+  "noMutationRetransmission": true,
+  "cumulativeAttemptsPreserved": 24,
+  "cumulativePublicationCountPreserved": 4330,
+  "workerEntrypointIsSynthetic": true,
+  "installationAndAuthorityAreSynthetic": true,
+  "targetRetirementExecuted": false,
+  "targetInstallerQualified": false,
+  "runtimeAuthorityIssued": false,
+  "notReleaseAcceptance": true,
+  "regressionRuns": {
+    "producer": 38213914603,
+    "endpoint": 38213914594,
+    "migrationAdmission": 38213914573
+  }
+}

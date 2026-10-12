@@ -47,3 +47,22 @@ def configure_core(engine,transition,request,store,admin,intents,owner_adapters,
                      'ADMIT_MIGRATION':MigrationAdmissionAdapter(admin,engine,transition,admission,store),
                      'START_REPLACEMENT':ReleasePausedAdapter(engine,transition,request,store)})
     return adapters
+
+def configure_owned_core(engine,transition,request,store,admin,intents,remaining_owner_adapters,
+                         backup_checkpoint,retirement_channel,retirement_before_store):
+    """Eight concrete phases; remaining five owner phases must be sealed separately.
+
+    Constructing this mapping performs no phase effect and grants no authority.
+    Missing owner phase or mismatched retained history blocks before any claim.
+    """
+    from r12_retirement_adapter import R12RetirementAdapter,R12RetirementChannel
+    require(type(remaining_owner_adapters) is dict and set(remaining_owner_adapters)==OWNER-{'STOP_REVOKE_OLD_LEASE'},
+            'FIVE_COMPLETE_SOURCE_SEALED_OWNER_PHASES_REQUIRED')
+    require(type(retirement_channel) is R12RetirementChannel,'TYPED_RETAINED_RETIREMENT_CHANNEL_REQUIRED')
+    row=transition.read()
+    require(row.get('predecessorHistoryHash')==retirement_channel.capture_history_hash
+            and row.get('predecessorIncidentRef')==retirement_channel.capture['r12-authorization.json']['incidentRef'],
+            'CORE_RETIREMENT_PREDECESSOR_HISTORY_OR_INCIDENT_DRIFT')
+    retirement=R12RetirementAdapter(retirement_channel,transition,intents['STOP_REVOKE_OLD_LEASE'],retirement_before_store,store)
+    return configure_core(engine,transition,request,store,admin,intents,
+                          {**remaining_owner_adapters,'STOP_REVOKE_OLD_LEASE':retirement},backup_checkpoint)
