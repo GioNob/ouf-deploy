@@ -6,6 +6,8 @@ on:
     paths:
       - scripts/capture-native-v11-coordination-inputs.py
       - tests/test_coordination_input_capture.py
+      - tests/test_core_adapter_factory.py
+      - tools/semantic_application_cutover/core_adapter_factory.py
       - releases/native-v11-coordination-inputs-20261012.sh
       - tests/test_coordination_capture_delivery.py
       - .github/workflows/native-v11-coordination-inputs.yml
@@ -19,6 +21,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - run: python3 -m unittest discover -s tests -p test_core_adapter_factory.py -v
+      - run: python3 -m unittest discover -s tests -p test_coordination_capture_delivery.py -v
       - name: Actual private root-owned capture fixtures
         run: |
           set -euo pipefail
