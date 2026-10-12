@@ -104,6 +104,7 @@ def main():
             envelope.seek(0);audit=custody.archive(envelope,record['derivedArchiveSha256'],spec['image'],spec['source']);descriptor=identity.descriptor(envelope,audit)
             assert descriptor['digest']=='sha256:bd48ab35db0441b1f4f48422e7190adaff176a61cddde5f981d93e496ad4b24a'
             envelope.seek(0);socket=Path(os.environ['OUF_CUSTODY_SOCKET']);s=socket.stat();engine=Engine(str(socket),(s.st_dev,s.st_ino,s.st_uid,s.st_gid,stat.S_IMODE(s.st_mode)))
+            status,version=engine.request('GET','/version');assert status==200 and version['Version']=='29.8.1','EXACT_TARGET_VERSION_FIXTURE_ENGINE_REQUIRED'
             p=subprocess.run(['docker','--host','unix://'+str(socket),'image','load'],stdin=envelope,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=120);assert p.returncode==0
         status,image=engine.request('GET','/v1.48/images/'+descriptor['digest']+'/json?manifests=true');assert status==200
         image_proof=identity.loaded(audit,descriptor,image)
@@ -132,6 +133,7 @@ def main():
             assert file_hash('/proc/'+str(pid)+'/exe')==java_before
             receipt={'schema':'ouf.native-gated-original-v11-execution.v1','status':'ORIGINAL_V11_WAIT_GATE_AND_SAME_PID_JAVA_EXEC_OBSERVED','sourceCommit':spec['source'],'originalZipSha256':spec['zipSha256'],'nativeManifestImageId':descriptor['digest'],'signedSubjectsVerified':8,'layersVerified':len(audit['layers']),'actualApplicationJarMatchesPublishedBytes':True,'actualJavaLauncherUnchanged':True,'javaNotExecutedBeforeRelease':True,'actualSameGenerationJavaExec':True,'capabilitiesEmpty':True,'noNewPrivileges':True,'imageRebuilt':False,'fixtureImageImports':1,'targetImageImports':0,'authorityAndOtherPhasesSynthetic':True,'databaseMigrationTested':False,'completeOciRootfsPeerAcceptanceProven':False,'providerCalls':0,'applicationReadyProven':False,'targetApplied':False,'notReleaseAcceptance':True}
             receipt.update(filesystem)
+            receipt['qualifiedEngineVersion']=version['Version']
             print('OUF_GATED_ORIGINAL_V11='+json.dumps(receipt,sort_keys=True));(ROOT/'native-gated-v11-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
         finally:
             if cid is not None:engine.request('DELETE','/v1.44/containers/'+cid+'?force=true')
