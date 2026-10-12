@@ -1,4 +1,4 @@
-"""Explicit new launch proposal: hold before the immutable image's Java entry.
+"""Explicit new launch proposal: wait before the immutable image's Java entry.
 
 Pure plan, no Engine, source/key read, signature, grant or old plan overwrite.
 Image/rootfs/publication provenance stays independently verified. The new request
@@ -7,9 +7,9 @@ needs fresh private plan/HUMAN/source authority; old intake59… is not reused.
 import copy,re
 from transition_journal import digest,require
 
-GATE='kill -STOP $$; exec "$@"'
+GATE='OUF_APPLICATION_GATE=0; trap "OUF_APPLICATION_GATE=1" USR1; while [ "$OUF_APPLICATION_GATE" = 0 ]; do sleep 1 & wait "$!"; done; exec "$@"'
 ENTRY=['/bin/sh','-c',GATE,'ouf-gated-application']
-PROFILE='ouf.semantic-preapplication-gate.v1'
+PROFILE='ouf.semantic-preapplication-gate.v2'
 
 def compile_gate(parent_request,parent_request_hash,image_configuration):
     require(type(parent_request) is dict and digest(parent_request)==parent_request_hash,'EXACT_PARENT_CREATION_REQUEST_REQUIRED')
@@ -34,12 +34,12 @@ def compile_gate(parent_request,parent_request_hash,image_configuration):
     following['HostConfig']['CapDrop']=['ALL']
     following['HostConfig']['SecurityOpt']=[v for v in options if not v.startswith('no-new-privileges')]+['no-new-privileges:true']
     # Preserve Image/config/source mounts/network/resources; only these explicit
-    # launch/hardening fields differ. No Java executes before fresh SIGCONT.
+    # launch/hardening fields differ. No Java executes before fresh caught SIGUSR1.
     return following,{'schema':'ouf.semantic-preapplication-gate-proposal.v1','profile':PROFILE,
                       'parentCreationRequestHash':parent_request_hash,'creationRequestHash':digest(following),
                       'imageConfigurationHash':digest(image_configuration),'candidateImageId':following['Image'],
                       'launchGateHash':digest({'Entrypoint':ENTRY,'Cmd':entry}),
                       'changedConfigFields':['Entrypoint','Cmd'],'changedHostFields':['CapDrop','SecurityOpt'],
-                      'releaseSignal':'SIGCONT','imageRebuilt':False,'originalPlanOverwritten':False,
+                      'releaseSignal':'SIGUSR1','imageRebuilt':False,'originalPlanOverwritten':False,
                       'sourceInputsAuthenticatedHere':False,'applicationCutoverAuthorized':False,'productionApplyReady':False,
                       'signaturesIssued':0,'completeRealizedOciProven':False,'notReleaseAcceptance':True}

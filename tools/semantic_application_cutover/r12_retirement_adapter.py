@@ -212,7 +212,7 @@ class R12RetirementAdapter:
                  and lease.get('journalAndMembershipConsistent') is True and lease.get('nativeStructureVerified') is True
                  and lease.get('flowCount')==2 and len(lease.get('flows',[]))==2
                  and all(f.get('inetAddressCount')==f.get('bridgeAddressCount')==0 for f in lease['flows']))
-        if not(stopped and revoked):return 'UNKNOWN',{'oldWorkerRetirementUnproven':True,'stopReplayAllowed':False,'budgetReset':False}
+        if not(stopped and revoked):return 'UNKNOWN',{'oldWorkerRetirementUnproven':True,'stopReplayAllowed':False,'budgetReset':False,'oldServiceStopped':service['ActiveState']=='inactive' and service['SubState']=='dead','finalCancellationPresent':history['state']=='CANCELLED' and history['reason']=='CANCELLED_BY_OWNER','finalWorkerObservationPresent':worker.get('live') is False and worker.get('ready') is False and worker.get('setsRevoked') is True,'workerCountersMatchFinalHistory':worker.get('attempts')==history['attempts'] and worker.get('refreshCount')==history['publicationCount'],'nativeLeaseRevoked':revoked}
         require(after==self.channel.current(),'RETIRED_WORKER_CHANGED_DURING_READ')
         evidence={'schema':'ouf.semantic-r12-retirement-evidence.v1','transitionContextHash':self.transition.context,'intentHash':self.intent_hash,
                   'scopeHash':self.channel.scope_hash,'beforeEvidenceHash':digest({'schema':'ouf.semantic-r12-retirement-before.v1','transitionContextHash':self.transition.context,'intentHash':self.intent_hash,'scopeHash':self.channel.scope_hash,'nativeBefore':before}),

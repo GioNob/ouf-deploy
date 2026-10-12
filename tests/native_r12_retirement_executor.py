@@ -82,7 +82,11 @@ class NativeRetirement(unittest.TestCase):
         e,store=compose(self,'STOP_REVOKE_OLD_LEASE',intent,lambda t,s:R12RetirementAdapter(channel,t,intent,before_store,s),predecessor_history=channel.capture_history_hash)
         return e,channel,r12,base
     def test_actual_active_worker_stop_and_both_families_empty_without_replay(self):
-        e,c,r12,base=self.fixture();e.run(1);c.stop=lambda _:self.fail('NATIVE_STOP_REPLAYED');e.run(1)
+        e,c,r12,base=self.fixture()
+        try:e.run(1)
+        except CutoverDenied:
+            native=c.current();print('OUF_FIXTURE_RETIREMENT_PENDING='+json.dumps({'service':native['service'],'worker':{k:native['worker'].get(k) for k in ('state','ready','live','setsRevoked','attempts','refreshCount')},'history':{k:native['history'].get(k) for k in ('state','reason','attempts','publicationCount')},'lease':{k:native['lease'].get(k) for k in ('journalState','leaseAuthorized','providerSetsEmpty')}},sort_keys=True));raise
+        c.stop=lambda _:self.fail('NATIVE_STOP_REPLAYED');e.run(1)
         row=json.loads((r12/'retry/recovery.json').read_bytes());self.assertEqual(row['attempts'],24);self.assertEqual(row['publicationCount'],4330);self.assertEqual(row['state'],'CANCELLED')
         self.assertTrue((r12/'revoked').is_file());self.assertTrue((r12/'worker-invocation-claim.json').is_file())
     def test_controller_death_after_real_stop_reconciles_and_paused_cancellation_works(self):

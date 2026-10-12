@@ -1,4 +1,4 @@
-"""Actual preapplication SIGSTOP/pause/unpause/SIGCONT + controller death.
+"""Actual preapplication SIGSTOP/pause/unpause/SIGUSR1 + controller death.
 Disposable sleep image; original V11 JVM/complete node/authority not qualified.
 """
 import json,os,stat,subprocess,sys,tempfile,time,unittest
@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT/'tests'),str(ROOT/'tools/semantic_application_cutover')]
 from engine_creation import Engine
 from creation_adapter import CreationAdapter
-from runtime_adapters import PausedStageAdapter
+from gated_stage_adapter import GatedStageAdapter
 from gated_creation_plan import ENTRY,PROFILE
 from gated_process_observation import GatedProcessObservation
 from gated_release_adapter import GatedReleaseAdapter
@@ -28,7 +28,7 @@ class NativeGate(unittest.TestCase):
         intent={'creationRequestHash':digest(request),'priorEvidencePhase':'STAGE_PAUSED_REPLACEMENT','preApplicationGateProfile':PROFILE}
         e,store=compose(self,'START_REPLACEMENT',intent,lambda t,s:GatedReleaseAdapter(engine,t,request,s,before,process,lambda point:None),
                         additional={'CREATE_REPLACEMENT':(request,lambda t,s:CreationAdapter(engine,t,request,s)),
-                                    'STAGE_PAUSED_REPLACEMENT':({'creationRequestHash':digest(request),'priorEvidencePhase':'CREATE_REPLACEMENT'},lambda t,s:PausedStageAdapter(engine,t,request,s))},creation_request=request)
+                                    'STAGE_PAUSED_REPLACEMENT':({'creationRequestHash':digest(request),'priorEvidencePhase':'CREATE_REPLACEMENT'},lambda t,s:GatedStageAdapter(engine,t,request,s,process,lambda point:None))},creation_request=request)
         def cleanup():
             actual=engine.inspect(e.t)
             if actual is not None:engine.request('DELETE','/v1.44/containers/'+actual['Id']+'?force=true')
@@ -42,7 +42,7 @@ class NativeGate(unittest.TestCase):
                 time.sleep(.05)
     def test_real_gate_stops_before_application_then_releases_same_hardened_generation(self):
         e,engine,process=self.fixture();e.run(6);actual=engine.inspect(e.t);before=process.observe(actual['State']['Pid'])
-        self.assertEqual(before['processKind'],'GATE_STOPPED');self.assertTrue(before['capabilitiesEmpty']);self.assertTrue(before['noNewPrivileges'])
+        self.assertEqual(before['processKind'],'GATE_WAITING');self.assertTrue(before['capabilitiesEmpty']);self.assertTrue(before['noNewPrivileges'])
         self.reconcile(e,11);after=process.observe(actual['State']['Pid']);self.assertEqual(after['generation'],before['generation']);self.assertEqual(after['processKind'],'APPLICATION_RUNNING')
         engine.request_original=engine.request
         def forbidden(method,path,body=None):
@@ -65,13 +65,13 @@ class NativeGate(unittest.TestCase):
     def test_native_unpause_signal_gap_retains_stopped_gate_and_ambiguity(self):
         e,engine,process=self.fixture();e.run(10);original=engine.request;mutations=[]
         def request(method,path,body=None):
-            if method=='POST' and path.endswith('/kill?signal=SIGCONT'):raise RuntimeError('native-gap')
+            if method=='POST' and path.endswith('/kill?signal=SIGUSR1'):raise RuntimeError('native-gap')
             if method=='POST':mutations.append(path)
             return original(method,path,body)
         engine.request=request
         with self.assertRaises(RuntimeError):e.run(11)
         with self.assertRaises(CutoverDenied):e.run(11)
-        actual=engine.inspect(e.t);self.assertFalse(actual['State']['Paused']);self.assertEqual(process.observe(actual['State']['Pid'])['processKind'],'GATE_STOPPED')
+        actual=engine.inspect(e.t);self.assertFalse(actual['State']['Paused']);self.assertEqual(process.observe(actual['State']['Pid'])['processKind'],'GATE_WAITING')
         self.assertEqual(len(mutations),1);self.assertEqual(e.t.read()['state'],'IN_FLIGHT')
 
 if __name__=='__main__':unittest.main()

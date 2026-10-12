@@ -3,7 +3,7 @@
 No signal, lifecycle effect or acceptance. Parent owns source/custody/complete
 OCI/peer and artifact proof; process arguments and environment are not printed.
 """
-import os
+import os,signal
 from pathlib import Path
 from transition_journal import require
 from gated_creation_plan import ENTRY
@@ -32,5 +32,6 @@ class GatedProcessObservation:
                 and all(int(status.get(k,'-1'),16)==0 for k in ('CapInh','CapPrm','CapEff','CapBnd','CapAmb')),'GATED_PROCESS_NONROOT_CAPABILITY_OR_NNP_DRIFT')
         after,endstate=generation()
         require(before==after and state==endstate and (root/'cmdline').read_bytes()==raw,'GATED_PROCESS_CHANGED_DURING_READ')
-        kind='GATE_STOPPED' if args==self.gate_args and state=='T' else 'APPLICATION_RUNNING' if args==self.application_args and state not in ('T','t','Z','X') else 'UNPROVEN'
+        caught=int(status.get('SigCgt','0'),16)&(1<<(signal.SIGUSR1-1))
+        kind='GATE_WAITING' if args==self.gate_args and caught and state not in ('Z','X') else 'APPLICATION_RUNNING' if args==self.application_args and state not in ('T','t','Z','X') else 'UNPROVEN'
         return {'generation':before,'processKind':kind,'nonRootIdentityVerified':True,'capabilitiesEmpty':True,'noNewPrivileges':True}

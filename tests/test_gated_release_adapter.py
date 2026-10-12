@@ -15,13 +15,13 @@ class Release(unittest.TestCase):
     def fixture(self):
         request={'Image':'sha256:'+'a'*64,'User':'10001:10001','Entrypoint':ENTRY,'Cmd':['fixture-application']}
         state={'Id':'1'*64,'Image':request['Image'],'Config':request,'HostConfig':{'RestartPolicy':{'Name':'no','MaximumRetryCount':0}},'Mounts':[],'NetworkSettings':{},'RestartCount':0,'State':{'Running':True,'Paused':True,'Status':'paused','Pid':1234,'StartedAt':'fixture-only'}}
-        engine=Engine.__new__(Engine);engine.inspect=lambda _:copy.deepcopy(state);calls=[];kind=['GATE_STOPPED']
+        engine=Engine.__new__(Engine);engine.inspect=lambda _:copy.deepcopy(state);calls=[];kind=['GATE_WAITING']
         process=GatedProcessObservation.__new__(GatedProcessObservation)
         process.observe=lambda _: {'generation':{'pid':1234,'startTicks':12,'namespaceInode':13},'processKind':kind[0],'nonRootIdentityVerified':True,'capabilitiesEmpty':True,'noNewPrivileges':True}
         def request_native(method,path,body=None):
             calls.append(path)
             if path.endswith('/unpause'):state['State'].update(Paused=False,Status='running')
-            if path.endswith('/kill?signal=SIGCONT'):kind[0]='APPLICATION_RUNNING'
+            if path.endswith('/kill?signal=SIGUSR1'):kind[0]='APPLICATION_RUNNING'
             return 204,None
         engine.request=request_native
         temp=tempfile.TemporaryDirectory();self.addCleanup(temp.cleanup);root=Path(temp.name);root.chmod(0o700);before=NativeEvidenceStore(root)
@@ -38,17 +38,17 @@ class Release(unittest.TestCase):
     def test_unpause_signal_gap_remains_ambiguous_without_retransmission(self):
         e,engine,state,kind,calls,process=self.fixture();original=engine.request
         def request(method,path,body=None):
-            if path.endswith('/kill?signal=SIGCONT'):raise RuntimeError('fixture-gap')
+            if path.endswith('/kill?signal=SIGUSR1'):raise RuntimeError('fixture-gap')
             return original(method,path,body)
         engine.request=request
         with self.assertRaises(RuntimeError):e.run(11)
         with self.assertRaises(CutoverDenied):e.run(11)
-        self.assertEqual(len(calls),1);self.assertEqual(kind[0],'GATE_STOPPED');self.assertEqual(e.t.read()['state'],'IN_FLIGHT')
+        self.assertEqual(len(calls),1);self.assertEqual(kind[0],'GATE_WAITING');self.assertEqual(e.t.read()['state'],'IN_FLIGHT')
     def test_death_after_signal_reconciles_without_second_signal(self):
         e,engine,state,kind,calls,process=self.fixture();original=engine.request
         def request(method,path,body=None):
             result=original(method,path,body)
-            if path.endswith('/kill?signal=SIGCONT'):raise RuntimeError('fixture-death-after-signal')
+            if path.endswith('/kill?signal=SIGUSR1'):raise RuntimeError('fixture-death-after-signal')
             return result
         engine.request=request
         with self.assertRaises(RuntimeError):e.run(11)
@@ -60,9 +60,9 @@ class Release(unittest.TestCase):
     def test_revocation_after_unpause_denies_signal_and_keeps_gate_stopped(self):
         e,engine,state,kind,calls,process=self.fixture()
         def checkpoint(point):
-            if point=='BEFORE_PREAPPLICATION_SIGCONT':raise ValueError('CURRENT_AUTHORITY_REVOKED')
+            if point=='BEFORE_PREAPPLICATION_SIGUSR1':raise ValueError('CURRENT_AUTHORITY_REVOKED')
         e.adapters['START_REPLACEMENT'].checkpoint=checkpoint
         with self.assertRaises(ValueError):e.run(11)
-        self.assertEqual(len(calls),1);self.assertEqual(kind[0],'GATE_STOPPED')
+        self.assertEqual(len(calls),1);self.assertEqual(kind[0],'GATE_WAITING')
 
 if __name__=='__main__':unittest.main()

@@ -1,7 +1,7 @@
-"""Explicit unpause + SIGCONT of the same attested pre-application generation.
+"""Explicit unpause + SIGUSR1 of the same attested pre-application generation.
 
 No start, new PID, signal retransmission, restore or rollback. A failure between
-unpause and SIGCONT remains IN_FLIGHT. Fresh source-sealed checkpoints own the
+unpause and SIGUSR1 remains IN_FLIGHT. Fresh source-sealed checkpoints own the
 current authority, migration, complete signed OCI/peer and distinct lease.
 """
 import copy
@@ -32,7 +32,7 @@ class GatedReleaseAdapter:
         return row,actual,self.process.observe(expected['pid'])
     def apply(self,intent):
         row,actual,process=self.current(intent)
-        require(actual['State']['Paused'] is True and actual['State']['Status']=='paused' and process['processKind']=='GATE_STOPPED','EXACT_PREAPPLICATION_GATE_STOPPED_BEFORE_RELEASE_REQUIRED')
+        require(actual['State']['Paused'] is True and actual['State']['Status']=='paused' and process['processKind']=='GATE_WAITING','EXACT_PREAPPLICATION_GATE_WAITING_BEFORE_RELEASE_REQUIRED')
         baseline={'schema':'ouf.semantic-gated-release-before.v1','transitionContextHash':self.transition.context,'intentHash':self.intent_hash,
                   'runtimeBinding':self.engine.runtime_binding(actual),'process':process}
         self.before_store.publish(PHASE,baseline)
@@ -40,8 +40,8 @@ class GatedReleaseAdapter:
         status,_=self.engine.request('POST','/v1.44/containers/'+cid+'/unpause');require(status==204,'GATED_UNPAUSE_OUTCOME_REQUIRES_RECONCILIATION')
         _,fresh,current=self.current(intent)
         require(fresh['State']['Paused'] is False and fresh['State']['Status']=='running' and current==process,'PREAPPLICATION_GATE_CHANGED_BEFORE_SIGNAL')
-        self.checkpoint('BEFORE_PREAPPLICATION_SIGCONT')
-        status,_=self.engine.request('POST','/v1.44/containers/'+cid+'/kill?signal=SIGCONT');require(status==204,'GATED_SIGNAL_OUTCOME_REQUIRES_RECONCILIATION')
+        self.checkpoint('BEFORE_PREAPPLICATION_SIGUSR1')
+        status,_=self.engine.request('POST','/v1.44/containers/'+cid+'/kill?signal=SIGUSR1');require(status==204,'GATED_SIGNAL_OUTCOME_REQUIRES_RECONCILIATION')
     def observe(self,intent):
         row,actual,process=self.current(intent)
         try:

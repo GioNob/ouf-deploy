@@ -7,6 +7,7 @@ on:
       - tools/semantic_application_cutover/gated_creation_plan.py
       - tools/semantic_application_cutover/gated_process_observation.py
       - tools/semantic_application_cutover/gated_release_adapter.py
+      - tools/semantic_application_cutover/gated_stage_adapter.py
       - tools/semantic_application_cutover/native_evidence_store.py
       - tests/test_gated_creation_plan.py
       - tests/test_gated_release_adapter.py
