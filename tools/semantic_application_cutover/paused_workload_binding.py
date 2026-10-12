@@ -2,7 +2,7 @@
 
 This observation grants no OCI/rootfs/peer acceptance or signing authority.
 The existing node contract for runc-created processes remains separate: an
-Engine-paused JVM can have runc state running, and must be described honestly.
+Engine-paused JVM has an observed runc state paused, and must be described honestly.
 """
 from engine_creation import Engine
 from transition_journal import digest,require
@@ -38,9 +38,9 @@ class PausedWorkloadBinding:
         fresh=self.observe();require(fresh==observation,'PAUSED_WORKLOAD_OBSERVATION_STALE')
         binding=fresh['runtimeBinding']
         require(type(state) is dict and state.get('id')==binding['containerId']
-                and state.get('status')=='running' and state.get('pid')==binding['pid'],
-                'EXACT_RUNC_RUNNING_ENGINE_PAUSED_IDENTITY_REQUIRED')
-        # Do not rewrite native status to created. Subsequent complete OCI,
+                and state.get('status')=='paused' and state.get('pid')==binding['pid'],
+                'EXACT_RUNC_PAUSED_ENGINE_PAUSED_IDENTITY_REQUIRED')
+        # Require native paused status; never rewrite it to created. Subsequent complete OCI,
         # rootfs, mount/NIC/peer and signed acceptance checks are mandatory.
-        return {'stateContract':'RUNC_RUNNING_ENGINE_PAUSED','containerId':binding['containerId'],
+        return {'stateContract':'RUNC_PAUSED_ENGINE_PAUSED','containerId':binding['containerId'],
                 'pid':binding['pid'],'pausedBindingHash':digest(fresh),'completeCreationAccepted':False}

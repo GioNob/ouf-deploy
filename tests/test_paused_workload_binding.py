@@ -17,9 +17,9 @@ class Binding(unittest.TestCase):
         store=types.SimpleNamespace(read=lambda phase,h:copy.deepcopy(original))
         original=copy.deepcopy(state)
         return PausedWorkloadBinding(engine,t,request,store),state,row
-    def test_native_state_is_kept_running_and_observation_grants_no_acceptance(self):
-        b,state,row=self.fixture();v=b.observe();proof=b.verify_runc_state({'id':'1'*64,'pid':1234,'status':'running'},v)
-        self.assertEqual(proof['stateContract'],'RUNC_RUNNING_ENGINE_PAUSED');self.assertFalse(proof['completeCreationAccepted'])
+    def test_native_state_is_kept_paused_and_observation_grants_no_acceptance(self):
+        b,state,row=self.fixture();v=b.observe();proof=b.verify_runc_state({'id':'1'*64,'pid':1234,'status':'paused'},v)
+        self.assertEqual(proof['stateContract'],'RUNC_PAUSED_ENGINE_PAUSED');self.assertFalse(proof['completeCreationAccepted'])
         self.assertFalse(v['ociAccepted']);self.assertFalse(v['rootfsAccepted']);self.assertFalse(v['peerAccepted'])
     def test_unpause_restart_or_changed_generation_denies_attestation_binding(self):
         for drift in ('unpause','restart','generation','image','policy'):
@@ -33,9 +33,10 @@ class Binding(unittest.TestCase):
     def test_stale_observation_wrong_phase_or_native_created_status_denies(self):
         b,state,row=self.fixture();v=b.observe()
         with self.assertRaises(ValueError):b.verify_runc_state({'id':'1'*64,'pid':1234,'status':'created'},v)
-        with self.assertRaises(ValueError):b.verify_runc_state({'id':'1'*64,'pid':1235,'status':'running'},v)
-        state['State']['Paused']=False
         with self.assertRaises(ValueError):b.verify_runc_state({'id':'1'*64,'pid':1234,'status':'running'},v)
+        with self.assertRaises(ValueError):b.verify_runc_state({'id':'1'*64,'pid':1235,'status':'paused'},v)
+        state['State']['Paused']=False
+        with self.assertRaises(ValueError):b.verify_runc_state({'id':'1'*64,'pid':1234,'status':'paused'},v)
         b,state,row=self.fixture();row['effects'][-1]['phase']='ADMIT_MIGRATION'
         with self.assertRaises(ValueError):b.observe()
 

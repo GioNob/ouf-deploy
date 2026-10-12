@@ -1,4 +1,4 @@
-"""Full read-only node observation for an Engine-paused, runc-running workload.
+"""Full read-only node observation for an Engine-paused, runc-paused workload.
 
 No modification of the existing runc-created node contract. Shares its bounded
 rootfs, peer, generation and configured-frame primitives. Signing/acceptance

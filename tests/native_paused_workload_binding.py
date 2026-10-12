@@ -1,4 +1,4 @@
-"""Real Docker pause + runc running state, with journal-bound prior Stage proof.
+"""Real Docker pause + runc paused state, with journal-bound prior Stage proof.
 No complete OCI/rootfs/peer/attestation proof, Semantic JVM, or target operation.
 """
 import json,shutil,subprocess,sys,unittest
@@ -16,7 +16,7 @@ class NativeBinding(unittest.TestCase):
         row=e.t.read()
         with e.t.invocation():e.t.begin('ATTEST_NEW_OCI_PEER',e.intent_hashes['ATTEST_NEW_OCI_PEER'],e.authority_hash,row['version'])
         return e,engine,store,PausedWorkloadBinding(engine,e.t,e.intents['CREATE_REPLACEMENT'],store)
-    def test_real_runc_status_remains_running_while_engine_is_paused_and_unpause_denies(self):
+    def test_real_runc_status_is_paused_while_engine_is_paused_and_unpause_denies(self):
         e,engine,store,b=self.fixture();observed=b.observe();cid=observed['runtimeBinding']['containerId'];state=None
         binary=str(Path(shutil.which('runc')).resolve())
         # Disposable fixture inventory only, not target runtime path discovery.
@@ -25,7 +25,7 @@ class NativeBinding(unittest.TestCase):
             if p.returncode==0:
                 state=json.loads(p.stdout);break
         self.assertIsNotNone(state,'NATIVE_FIXTURE_RUNC_STATE_UNPROVEN')
-        self.assertEqual(state['status'],'running');proof=b.verify_runc_state(state,observed)
+        self.assertEqual(state['status'],'paused');proof=b.verify_runc_state(state,observed)
         self.assertFalse(proof['completeCreationAccepted']);self.assertEqual(e.t.read()['nextPhase'],6)
         status,_=engine.request('POST','/v1.44/containers/'+cid+'/unpause');self.assertEqual(status,204)
         with self.assertRaises(ValueError):b.observe()
