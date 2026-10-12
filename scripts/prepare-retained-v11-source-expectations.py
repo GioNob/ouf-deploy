@@ -101,6 +101,38 @@ def review_scope(path):
     return result
 
 
+def request_mount_shape(request):
+    """Count both Docker representations without rewriting the sealed request."""
+    host = request.get('HostConfig')
+    require(type(host) is dict, 'EXACT_GATED_HOST_CONFIG_REQUIRED')
+    binds = host.get('Binds')
+    mounts = host.get('Mounts')
+    binds = [] if binds is None else binds
+    mounts = [] if mounts is None else mounts
+    require(type(binds) is list and type(mounts) is list
+            and len(binds) + len(mounts) == 6,
+            'EXACT_SIX_COMBINED_MOUNT_DECLARATIONS_REQUIRED')
+    targets = []
+    for row in binds:
+        require(type(row) is str and len(row) <= 8192,
+                'EXACT_GATED_BIND_DECLARATION_REQUIRED')
+        parts = row.split(':')
+        require(len(parts) == 3 and parts[0] and parts[2] == 'ro',
+                'EXPLICIT_READONLY_GATED_BIND_REQUIRED')
+        targets.append(str(exact_path(parts[1])))
+    for row in mounts:
+        require(type(row) is dict and row.get('Type') in ('bind', 'volume')
+                and type(row.get('Source')) is str and row['Source']
+                and row.get('ReadOnly') is True,
+                'EXPLICIT_READONLY_STRUCTURED_GATED_MOUNT_REQUIRED')
+        targets.append(str(exact_path(row.get('Target'))))
+    require(len(set(targets)) == 6 and not any(
+        a != b and (a.startswith(b + '/') or b.startswith(a + '/'))
+        for a in targets for b in targets), 'GATED_MOUNT_TARGET_SHADOWING_DENIED')
+    return {'bindCount': len(binds), 'structuredMountCount': len(mounts),
+            'totalMountCount': 6, 'sealedRequestRewritten': False}
+
+
 def source_scope(binding, expected, counted=lambda amount: None):
     """FD-relative traversal, exact old metadata, two hashes, no byte spooling."""
     require(type(binding) is dict and binding.get('Type') in ('bind', 'volume')
@@ -200,10 +232,8 @@ def prepare(atomic, report):
             'GATED_PARENT_FILE_HASH_DRIFT')
     atomic.verify(PARENT, files, raw_manifest, 0)
     request = decode(files[NAMES[0]])
-    require(sha(files[NAMES[0]]) == REQUEST_HASH
-            and type(request.get('HostConfig', {}).get('Binds')) is list
-            and len(request['HostConfig']['Binds']) == 6,
-            'EXACT_GATED_SIX_MOUNT_REQUEST_REQUIRED')
+    require(sha(files[NAMES[0]]) == REQUEST_HASH, 'EXACT_GATED_REQUEST_BYTES_REQUIRED')
+    report['requestMountShape'] = request_mount_shape(request)
     old = decode(files[NAMES[2]])
     require(type(old) is list and len(old) == 2
             and tuple(sha(encoded(item['sourceMetadata'])) for item in old) == METADATA_HASHES,

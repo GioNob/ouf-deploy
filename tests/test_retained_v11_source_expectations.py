@@ -108,7 +108,7 @@ class Expectations(unittest.TestCase):
                 planner.source_scope(self.binding(self.file), expected, counted.append)
         self.assertGreater(sum(counted), 0)
 
-    def fixture(self):
+    def fixture(self, mixed=False):
         base = self.root / 'snapshots'
         base.mkdir(mode=0o700)
         parent = base / 'parent'
@@ -116,7 +116,15 @@ class Expectations(unittest.TestCase):
         entries = [{'binding': self.binding(source, '/retained-' + str(index)),
                     'sourceMetadata': self.metadata(source)}
                    for index, source in enumerate((self.directory, self.file))]
-        request = {'HostConfig': {'Binds': ['SYNTHETIC_PRIVATE_BIND_DO_NOT_PRINT'] * 6},
+        binds = [str(self.root / ('SYNTHETIC_PRIVATE_BIND_DO_NOT_PRINT-' + str(i)))
+                 + ':/synthetic-' + str(i) + ':ro' for i in range(6)]
+        host = {'Binds': binds}
+        if mixed:
+            host = {'Binds': binds[2:], 'Mounts': [
+                {'Type': 'bind', 'Source': entry['binding']['Source'],
+                 'Target': entry['binding']['Destination'], 'ReadOnly': True,
+                 'BindOptions': {'Propagation': 'rprivate'}} for entry in entries]}
+        request = {'HostConfig': host,
                    'Env': ['PRIVATE_FIXTURE=DO_NOT_PRINT_ENV']}
         files = dict(zip(planner.NAMES, map(planner.encoded, (request, {}, entries, {}))))
         manifest = {'schema': 'ouf.native-v11-atomic-review-intake.v1',
@@ -169,6 +177,34 @@ class Expectations(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual(again['intakeHash'], report['intakeHash'])
         self.assertEqual(again['protectedFileWrites'], 0)
+
+    def test_four_binds_and_two_retained_structured_mounts_complete_private_preparation(self):
+        bindings, originals = self.fixture(mixed=True)
+        code, report, output = self.run_entry(bindings)
+        self.assertEqual(code, 0)
+        self.assertEqual(report['protectedFileWrites'], 3)
+        self.assertEqual(report['requestMountShape'], {
+            'bindCount': 4, 'structuredMountCount': 2, 'totalMountCount': 6,
+            'sealedRequestRewritten': False})
+        self.assertNotIn('DO_NOT_PRINT', output)
+        for name, raw in originals.items():
+            self.assertEqual((bindings['PARENT'] / name).read_bytes(), raw)
+
+    def test_combined_mount_shape_denies_missing_extra_writable_and_shadowed_declarations(self):
+        bindings, _ = self.fixture(mixed=True)
+        request = json.loads((bindings['PARENT'] / planner.NAMES[0]).read_bytes())
+        import copy
+        variants = []
+        missing = copy.deepcopy(request); missing['HostConfig']['Mounts'].pop(); variants.append(missing)
+        extra = copy.deepcopy(request); extra['HostConfig']['Binds'].append('/x:/extra:ro'); variants.append(extra)
+        writable = copy.deepcopy(request); writable['HostConfig']['Mounts'][0]['ReadOnly'] = False; variants.append(writable)
+        duplicate = copy.deepcopy(request); duplicate['HostConfig']['Mounts'][0]['Target'] = '/synthetic-2'; variants.append(duplicate)
+        shadow = copy.deepcopy(request); shadow['HostConfig']['Mounts'][0]['Target'] = '/synthetic-2/child'; variants.append(shadow)
+        malformed = copy.deepcopy(request); malformed['HostConfig']['Mounts'] = {}; variants.append(malformed)
+        for value in variants:
+            with self.subTest(value=value):
+                with self.assertRaises(planner.Denied):
+                    planner.request_mount_shape(value)
 
     def test_parent_drift_and_unknown_errors_have_no_writes_or_private_error_text(self):
         bindings, _ = self.fixture()
