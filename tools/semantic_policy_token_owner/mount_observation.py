@@ -92,6 +92,9 @@ class RenewableTokenMountObservation:
                 # scope/expiry/revocation for THIS exact token, not protocol shape.
                 require(self.owner.admit(token,self.deadline+e['minimumRemainingSeconds'],
                         e['ownerBindingHash'],self.deadline) is True,'CURRENT_TOKEN_OWNER_ADMISSION_REQUIRED')
+                require(identity(leaf)==identity(os.fstat(filefd))
+                        ==identity(os.stat(e['fileName'],dir_fd=source,follow_symlinks=False)),
+                        'TOKEN_ROTATED_OR_MOUNT_CHANGED_DURING_OBSERVATION')
                 again,end=self.read_token(filefd)
                 require(again==token and identity(end)==identity(leaf)
                         ==identity(os.stat(e['fileName'],dir_fd=source,follow_symlinks=False))
