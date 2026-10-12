@@ -22,6 +22,7 @@ jobs:
           persist-credentials: false
       - run: python3 -m unittest discover -s tests -p test_current_cutover_host.py -v
   read-target:
+    name: Current retained-host read scopes for composed V11 cutover
     needs: test-public-projection
     runs-on: [self-hosted, Linux, X64, ouf-vps-test]
     timeout-minutes: 5

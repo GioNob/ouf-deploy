@@ -20,6 +20,7 @@ CID = '7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147'
 UNIT = 'ouf-semantic-provider-lease-resilient-r12.service'
 IMAGES = {
     'semantic': 'sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85',
+    'semanticDurableV11Native': 'sha256:bd48ab35db0441b1f4f48422e7190adaff176a61cddde5f981d93e496ad4b24a',
     'ingestion': 'sha256:98af9d774e446ce621128a52bfa1f9faaa096052cdc185f17dc81f1ea76e9a05',
     'udp': 'sha256:7a97979286113c4e3ef6bae87e1bf2d54d2f7195d447ce43b9329f3b90899d28'}
 
