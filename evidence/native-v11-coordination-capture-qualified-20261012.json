@@ -1,0 +1,20 @@
+{
+  "schema": "ouf.native-v11-coordination-capture-qualification.v1",
+  "sourceCommit": "e28587cf2a68980337c8f0364aece10416d7a7c1",
+  "programSha256": "8bf34d1dd1239bd62c6fe6c9407820fd742191b2035a7bcfde7f89696f327b40",
+  "launcherCommit": "a5b2b209abee548c0de514adc2cf9dcc80c24ff2",
+  "launcherSha256": "9dcaa61a1d505b1018072b04aaf37b854f040b7edfb514b5e6f3efe82f6dfbf4",
+  "workflowRunId": 38211080512,
+  "jobId": 114685157076,
+  "conclusion": "success",
+  "coreScopeTests": 3,
+  "deliveryTests": 4,
+  "rootPrivateCaptureTests": 4,
+  "selectedPrivateInputFileCount": 10,
+  "atomicManifestFileCount": 1,
+  "privateKeysRead": 0,
+  "targetCaptureExecuted": false,
+  "runtimeAuthorityIssued": false,
+  "targetInstallerQualified": false,
+  "notReleaseAcceptance": true
+}

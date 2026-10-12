@@ -1,0 +1,98 @@
+{
+  "schema": "ouf.current-v11-host-binding-refresh.v1",
+  "workflowRunId": 38210242756,
+  "jobId": 114682593897,
+  "evidenceSource": "EXISTING_QUALIFIED_SELF_HOSTED_READER",
+  "receipt": {
+    "applicationCutoverAuthorized": false,
+    "applicationHealthProven": false,
+    "commonLockAcquired": false,
+    "containerLifecycleOperations": 0,
+    "credentialFilesOpened": 0,
+    "databaseWrites": 0,
+    "firewallWrites": 0,
+    "imageImports": 0,
+    "notReleaseAcceptance": true,
+    "observedAtUnixSeconds": 1791784665,
+    "postgres": {
+      "containerId": "50b36d71620ad00fee1bae45aaf0bf652b9171dc09f567fa552798daf12614ea",
+      "generation": {
+        "Pid": 10948,
+        "Running": true,
+        "StartedAt": "2026-09-17T16:38:23.262232373Z"
+      },
+      "imageId": "sha256:894f570c0cf0664ed5576a8fd5d5bfb8fb1b19d592885b686c3a88c8bd90c41f",
+      "stableBindingHash": "20963098b8748d5be1ebcd0db69767358adb958ca0c8d2d1fa621eb9cd9f50aa"
+    },
+    "privateKeyFilesOpened": 0,
+    "privateValuesPrinted": false,
+    "protectedSnapshotFilesOpened": 0,
+    "qualifiedImagesPresentInEngine": {
+      "ingestion": false,
+      "semantic": false,
+      "semanticDurableV11Native": true,
+      "udp": false
+    },
+    "r12Service": {
+      "ActiveState": "active",
+      "LoadState": "loaded",
+      "MainPID": "2446150",
+      "NRestarts": "0",
+      "Restart": "no",
+      "Result": "success",
+      "SubState": "running",
+      "continuousLivenessProven": false,
+      "execStartMatchesReportedSnapshot": true,
+      "nativeLeaseMembershipProven": false,
+      "serviceActiveAtObservation": true,
+      "workerPrivateStatusRead": false
+    },
+    "readConsistencyMode": "STABLE_REREADS_NOT_ATOMIC_TRANSITION_AUTHORITY",
+    "resources": {
+      "MemAvailableBytes": 11178405888,
+      "MemTotalBytes": 16773283840,
+      "resourceAdmissionProven": false,
+      "rootFilesystemFreeBytes": 465383444480,
+      "runnerFilesystemFreeBytes": 465383444480
+    },
+    "schema": "ouf.discovery.r12-cutover-host-metadata.v1",
+    "semantic": {
+      "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+      "fullRealizedOciProven": false,
+      "generation": {
+        "Pid": 3789123,
+        "Running": true,
+        "StartedAt": "2026-10-02T11:45:44.132808507Z"
+      },
+      "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+      "installedConfigHash": "097ded59f89cd745ffbfbbbe466bdf64c54a788ab911ea41632b97df0cbea084",
+      "installedHostConfigHash": "0f09a1304fc4b3fb8c503afc23d16159c690296c88264f932d1aa411160c310e",
+      "installedMountsHash": "4bf1ed4e0c4a4a2b201369905be4d8919edafffc881518d492c0cb83154b0d89",
+      "installedStableBindingHash": "8fbcca5f089aa3e01d804c5f01bb619dd1fa6fb571644e1c7c1d9aa71e44fd71",
+      "legacyDatabasePasswordEnvironmentPresent": true,
+      "memoryLimitBytes": 0,
+      "mountCount": 2,
+      "networkSettingsHash": "1528caf335bfa9411e15afcdab1388b735ee639e86e4b525c45734eb9bb0d8bc",
+      "networks": [
+        {
+          "configuredIpamIpv4": null,
+          "endpointId": "dca4cd13c3629c393248ee54e691b14a9590121054f811558a930532f6dde9a8",
+          "ipv4": "172.18.0.6",
+          "mac": "b2:96:a1:e2:c1:8d",
+          "networkId": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3",
+          "networkNameHash": "295d59cf0a3705372a89c4f830b0dee064ae8597efd7d5fee76c718b61de1ca8"
+        }
+      ],
+      "protectedDeclarationCompared": false,
+      "restartCount": 0,
+      "restartPolicy": {
+        "MaximumRetryCount": 0,
+        "Name": "unless-stopped"
+      },
+      "runtime": "runc",
+      "springConfigImportPresent": false
+    },
+    "status": "CURRENT_CUTOVER_HOST_METADATA_CAPTURED"
+  },
+  "notReleaseAcceptance": true
+}
