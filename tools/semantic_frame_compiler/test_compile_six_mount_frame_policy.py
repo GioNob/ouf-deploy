@@ -1,5 +1,17 @@
 """Independent declared inputs, never observed OCI or target authority."""
 import copy,unittest
+import ast,hashlib,sys,types
+from pathlib import Path
+if 'review_semantic_oci_policy' not in sys.modules:
+    # Same pinned reviewer used by existing compiler/native fixtures; parse
+    # literal source only, never execute the frame-observer wrapper.
+    tree=ast.parse(Path(__file__).with_name('frame-observer.py').read_text())
+    sources=next(ast.literal_eval(n.value) for n in tree.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='SOURCES' for t in n.targets))
+    source=sources['review_semantic_oci_policy']
+    assert hashlib.sha256(source.encode()).hexdigest()=='d35123954e91fc463a3ad78cedeeb2284c0106c22de48780e1128178c72a4eb6'
+    reviewer=types.ModuleType('review_semantic_oci_policy')
+    exec(compile(source,'<pinned-compiler-fixture-reviewer>','exec'),reviewer.__dict__)
+    sys.modules[reviewer.__name__]=reviewer
 import test_compile_projected_frame_policy as previous
 from compile_six_mount_frame_policy import compile_policy,compilation_receipt,Denied
 
