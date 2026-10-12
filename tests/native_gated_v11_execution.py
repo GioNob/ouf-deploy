@@ -4,6 +4,7 @@ No real DB, provider, transport authority, target or CSV acceptance.
 import hashlib,importlib.util,json,os,shutil,stat,subprocess,sys,tempfile,time,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT/'tests'),str(ROOT/'tools/semantic_application_cutover')]
+sys.path.insert(0,str(ROOT/'tools/semantic_cohort_admission/cohort-draft'))
 from engine_creation import Engine
 from creation_adapter import CreationAdapter
 from gated_stage_adapter import GatedStageAdapter
