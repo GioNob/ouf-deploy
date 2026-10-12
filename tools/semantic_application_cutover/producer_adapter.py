@@ -11,7 +11,7 @@ class ProducerAdapter:
     def __init__(self,engine,transition,intent,store):
         self.engine,self.transition,self.store=engine,transition,store
         self.intent=json.loads(json.dumps(intent,allow_nan=False))
-        require(set(self.intent)=={'producerBindings','stopTimeoutSeconds'},'EXACT_PRODUCER_QUIESCENCE_INTENT_REQUIRED')
+        require(set(self.intent)=={'producerBindings','initialNetworkSettings','stopTimeoutSeconds'},'EXACT_PRODUCER_QUIESCENCE_INTENT_REQUIRED')
         pins=self.intent['producerBindings']
         require(type(pins) is list and 1<=len(pins)<=8 and type(self.intent['stopTimeoutSeconds']) is int
                 and 1<=self.intent['stopTimeoutSeconds']<=10,'FINITE_INVENTORIED_PRODUCERS_REQUIRED')
@@ -23,6 +23,9 @@ class ProducerAdapter:
                     and type(pin['imageId']) is str and re.fullmatch('sha256:[0-9a-f]{64}',pin['imageId']) is not None
                     and all(type(pin[k]) is str and re.fullmatch('[0-9a-f]{64}',pin[k]) is not None for k in fields if k.endswith('Hash')),'EXACT_PRODUCER_CONFIGURATION_HASHES_REQUIRED')
         require(len({p['containerId'] for p in pins})==len(pins),'DUPLICATE_PRODUCER_SCOPE_DENIED')
+        networks=self.intent['initialNetworkSettings']
+        require(type(networks) is dict and set(networks)=={p['containerId'] for p in pins}
+                and all(type(networks[p['containerId']]) is dict and digest(networks[p['containerId']])==p['networkSettingsHash'] for p in pins),'SIGNED_INITIAL_PRODUCER_NETWORK_SETTINGS_REQUIRED')
         self.intent_hash=digest(self.intent)
     def exact(self,intent):
         require(digest(intent)==self.intent_hash,'IMMUTABLE_PRODUCER_INTENT_REQUIRED')
@@ -61,7 +64,8 @@ class ProducerAdapter:
         require(state['Status']=='exited' and state['Paused'] is False and state['Pid']==0
                 and state.get('Error','')=='' and type(state.get('FinishedAt')) is str
                 and state['FinishedAt']!='0001-01-01T00:00:00Z','EXACT_STOPPED_PRODUCER_REQUIRED')
-        return {'containerId':pin['containerId'],'imageId':pin['imageId'],'startedAt':pin['startedAt'],
+        return {'containerId':pin['containerId'],'imageId':pin['imageId'],'startedAt':pin['startedAt'],'initialRuntimeBinding':pin,
+                'initialNetworkSettings':self.intent['initialNetworkSettings'][pin['containerId']],
                 'finishedAt':state['FinishedAt'],'configHash':pin['configHash'],'hostConfigHash':pin['hostConfigHash'],
                 'mountsHash':pin['mountsHash'],'running':False,'pid':0,'restartCount':0}
     def observe(self,intent):

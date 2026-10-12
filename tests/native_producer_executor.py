@@ -12,14 +12,15 @@ from cutover_executor import CutoverDenied
 
 class NativeProducers(NativeRuntime):
     def producers(self,count):
-        _,engine,_=self.fixture();bindings=[]
+        _,engine,_=self.fixture();bindings=[];networks={}
         for _ in range(count):
             request={'Image':self.image,'Cmd':['sleep','600'],'HostConfig':{'NetworkMode':'none','RestartPolicy':{'Name':'no','MaximumRetryCount':0}}}
             status,result=engine.request('POST','/v1.44/containers/create?name=ouf-producer-fixture-'+uuid.uuid4().hex,request);self.assertEqual(status,201);cid=result['Id']
             self.addCleanup(lambda cid=cid:engine.request('DELETE','/v1.44/containers/'+cid+'?force=true'))
             self.assertEqual(engine.request('POST','/v1.44/containers/'+cid+'/start')[0],204)
-            bindings.append(engine.runtime_binding(engine.request('GET','/v1.44/containers/'+cid+'/json')[1]))
-        intent={'producerBindings':bindings,'stopTimeoutSeconds':1}
+            actual=engine.request('GET','/v1.44/containers/'+cid+'/json')[1]
+            bindings.append(engine.runtime_binding(actual));networks[cid]=actual['NetworkSettings']
+        intent={'producerBindings':bindings,'initialNetworkSettings':networks,'stopTimeoutSeconds':1}
         e,store=compose(self,'QUIESCE_PRODUCERS',intent,lambda t,s:ProducerAdapter(engine,t,intent,s))
         return e,engine,bindings
     def test_controller_death_after_real_stop_reconciles_without_another_stop(self):

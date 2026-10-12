@@ -20,7 +20,7 @@ class Producers(unittest.TestCase):
             calls.append(cid);states[cid]['State'].update(Running=False,Status='exited',Pid=0,FinishedAt='2026-10-12T01:00:00Z')
             return 204,None
         engine.request=request
-        intent={'producerBindings':[engine.runtime_binding(s) for s in states.values()],'stopTimeoutSeconds':1}
+        intent={'producerBindings':[engine.runtime_binding(s) for s in states.values()],'initialNetworkSettings':{cid:copy.deepcopy(s['NetworkSettings']) for cid,s in states.items()},'stopTimeoutSeconds':1}
         e,store=compose(self,'QUIESCE_PRODUCERS',intent,lambda t,s:ProducerAdapter(engine,t,intent,s))
         return e,engine,states,calls,intent
     def test_crash_after_stop_reopens_without_retransmission(self):
