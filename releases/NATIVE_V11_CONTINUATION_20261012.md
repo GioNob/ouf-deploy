@@ -89,6 +89,12 @@ The operator reports `PROTECTED_PRODUCER_ANCESTOR_REQUIRED`, exit1, before produ
 
 Next operation is bounded selected-path lstat metadata only, with captured/redacted unit routing and no symlink traversal after a non-directory ancestor. Do not chmod shared directories, relax the reader guard or automatically rerun the failed inspection. Writer/output/issuer proof and six-mount acceptance remain OPEN.
 
+## Producer ancestor cause identified
+
+[Operator path metadata](../evidence/semantic-token-producer-path-metadata-target-20261012.json) identifies /opt/ouf as UID/GID1000 mode0750. /opt is root0755 and the selected deeper directory is root0700, with no symlinks reported. The root-only ancestor guard fails on /opt/ouf ownership. The owner of that parent can change the child directory entry despite its root0700 custody; this establishes missing root-only path custody, not actual tampering. No producer bytes have been read and no writer authority is accepted.
+
+Do not globally chmod/chown /opt/ouf, assume the child protects the entire path, or weaken the authenticated-source reader. Resolve only the selected direct Python source path and final lstat metadata next, then locate its approved repository/install provenance and prepare an isolated correction. Other /opt/ouf jobs and R12 remain untouched. Static observation of untrusted bytes, if later needed, must be separately labelled and cannot establish source authentication or writer authority.
+
 ## Remaining objective
 
 After the target preparation, finish the six-mount policy and independent acceptance, authenticated transport/new consumption bindings, distinct worker with retained cumulative recovery history, application verification and producer release. Complete sealed installer and current finite HUMAN/signature source authority remain open. The changed gate request needs fresh authority; original59… request/9ec… intake cannot approve it.
