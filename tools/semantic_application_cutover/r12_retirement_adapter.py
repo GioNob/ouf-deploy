@@ -5,7 +5,7 @@ shared lock. Root entrypoint must seal this module, custody/projector sources,
 selected intake/scope and current HUMAN/signature/native checkpoints. This is
 an owner phase implementation, not a standalone operator authorization.
 """
-import copy,hashlib,json,math,os,re,subprocess
+import copy,hashlib,json,math,os,re,subprocess,time
 from pathlib import Path
 from transition_journal import digest,hash_value,require
 from native_evidence_store import NativeEvidenceStore
@@ -156,7 +156,17 @@ class R12RetirementChannel:
         self.custody.create(path,raw);require(self.read(path)==raw,'RETIREMENT_MARKER_PUBLICATION_UNPROVEN');return True
     def stop(self,seconds):
         cfg=parse(self.bound(self.scope['executionBinding']))
-        self.command(cfg['commandBindings']['systemctl'],['stop',self.scope['unit']],timeout=seconds)
+        deadline=time.monotonic()+seconds
+        # systemctl stop with KillMode=control-group can SIGTERM the nft child
+        # needed by graceful cancellation. Signal only the bound MainPID once;
+        # Restart=no is already proved. Observe exit, never stop/restart replay.
+        self.command(cfg['commandBindings']['systemctl'],['kill','--kill-whom=main','--signal=SIGTERM',self.scope['unit']],timeout=min(seconds,10))
+        auth=parse(self.bound(self.scope['authorizationBinding']))
+        while True:
+            service=self.service(cfg,auth)
+            if service['ActiveState']=='inactive' and service['SubState']=='dead' and service['MainPID'] in ('0',None):return
+            require(service['MainPID'] in ('0',None,str(self.scope['workerPid'])) and time.monotonic()<deadline,'RETAINED_MAIN_PROCESS_TERMINATION_UNPROVEN')
+            time.sleep(.05)
 
 class R12RetirementAdapter:
     def __init__(self,channel,transition,intent,before_store,store):

@@ -1,0 +1,48 @@
+name: OUF exact original V11 pre-Java gate execution
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - tests/native_gated_v11_execution.py
+      - .github/workflows/native-gated-v11-execution.yml
+permissions:
+  contents: read
+  actions: read
+  attestations: read
+jobs:
+  original-image:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Original signed artifact into disposable trusted fixture
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          gh api repos/GioNob/ouf-semantic-registry/actions/artifacts/11710556577/zip > semantic.zip
+          OUF_FIXTURE_ROOT="/var/lib/ouf-gated-v11-${GITHUB_RUN_ID}"
+          sudo mkdir -m 700 "$OUF_FIXTURE_ROOT"
+          sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
+          sudo chown -R root:root "$OUF_FIXTURE_ROOT"
+          sudo mkdir -m 700 "$OUF_FIXTURE_ROOT/engine"
+          printf '%s\n' '{"features":{"containerd-snapshotter":true}}' > "$RUNNER_TEMP/ouf-gated-v11-daemon-${GITHUB_RUN_ID}.json"
+          sudo install -o root -g root -m 600 "$RUNNER_TEMP/ouf-gated-v11-daemon-${GITHUB_RUN_ID}.json" "$OUF_FIXTURE_ROOT/engine/daemon.json"
+          sudo dockerd --config-file "$OUF_FIXTURE_ROOT/engine/daemon.json" --data-root "$OUF_FIXTURE_ROOT/engine/data" \
+            --exec-root "$OUF_FIXTURE_ROOT/engine/exec" --pidfile "$OUF_FIXTURE_ROOT/engine/docker.pid" \
+            --host "unix://$OUF_FIXTURE_ROOT/engine/docker.sock" --bridge=none --iptables=false --ip6tables=false \
+            --ip-masq=false > "$RUNNER_TEMP/ouf-gated-v11-engine-${GITHUB_RUN_ID}.log" 2>&1 &
+          OUF_DAEMON_PID=$!
+          trap 'sudo kill "$OUF_DAEMON_PID" 2>/dev/null || true' EXIT
+          OUF_READY=false
+          for OUF_PROBE in {1..30}; do
+            if sudo docker --host "unix://$OUF_FIXTURE_ROOT/engine/docker.sock" version --format '{{.Server.Version}}' > /dev/null 2>&1; then OUF_READY=true; break; fi
+            sleep 1
+          done
+          if [ "$OUF_READY" != true ]; then echo OUF_FIXTURE_ENGINE_NOT_READY; exit 1; fi
+          sudo --preserve-env=GH_TOKEN env OUF_CUSTODY_SOCKET="$OUF_FIXTURE_ROOT/engine/docker.sock" \
+            bash -c 'cd "$1/repository"; python3 tests/native_gated_v11_execution.py' _ "$OUF_FIXTURE_ROOT"
