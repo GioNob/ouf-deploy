@@ -107,6 +107,12 @@ A separate [untrusted static observer](SEMANTIC_TOKEN_UNTRUSTED_STATIC_OBSERVATI
 
 The installed code itself shows no durable failure-budget storage; outer timer/service governance remains unverified. Do not infer compliant resilience from timeout/atomic publication alone. Public configuration KEY names, selected literal numeric operational limits and sealed historical member-name equality can next be extracted statically, without printing credential paths/values or reading configuration/credential files. Root custody, runtime authority, baseline and six-mount acceptance remain unchanged.
 
+## Public producer code settings observed — effective configuration pending
+
+[Operator public facts](../evidence/semantic-token-static-public-facts-target-20261012.json) confirm six OUF_POLICY_TOKEN_* environment KEY names, root directory0750/file0440 publication, HTTP timeout10s, bounded read65537bytes/rejection above65536, token max16384characters, secret max4096characters and expiry check below30s when the field is present. These modes match historical mount0 custody; this is compatible code behavior, not effective binding or legitimate writer proof. Missing expires_in remains accepted by the observed source condition, so the code does not independently establish finite token validity. Outer issuer/policy may impose it; that evidence is still absent.
+
+Next selected read is EnvironmentFiles routing metadata plus safe service/timer timing/retry properties. Do not dump Environment/ExecStart, open config/secret files, renew tokens, mutate units, reset budgets or refresh baseline. A timer cadence or systemd rate limit is not a persisted per-incident finite recovery budget. Source custody, configured output/member and issuer/client/audience/scope authority remain open.
+
 ## Remaining objective
 
 After the target preparation, finish the six-mount policy and independent acceptance, authenticated transport/new consumption bindings, distinct worker with retained cumulative recovery history, application verification and producer release. Complete sealed installer and current finite HUMAN/signature source authority remain open. The changed gate request needs fresh authority; original59… request/9ec… intake cannot approve it.
