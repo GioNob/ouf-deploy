@@ -8,12 +8,14 @@ import hashlib, json, os, re, stat
 from pathlib import Path
 from database_gate import Psql, digest, durable, literal, require
 from fenced_backup import fenced_backup
+from database_channel_scope import verify_admin
 
 
 class FencedBackupAdapter:
-    def __init__(self, admin, intent, checkpoint, transition_context_hash):
+    def __init__(self, admin, intent, checkpoint, transition_context_hash, evidence_store=None):
         require(type(admin) is Psql and callable(checkpoint), 'SEALED_BACKUP_CHANNEL_AND_CHECKPOINT_REQUIRED')
         self.admin, self.checkpoint = admin, checkpoint
+        self.evidence_store=evidence_store
         self.intent = json.loads(json.dumps(intent, allow_nan=False))
         require(set(self.intent) == {'containerId','user','database','databaseOid','directory','maxArchiveBytes'}, 'EXACT_BACKUP_INTENT_REQUIRED')
         require(re.fullmatch('[0-9a-f]{64}',self.intent['containerId']) is not None, 'EXACT_DATABASE_CONTAINER_REQUIRED')
@@ -31,12 +33,7 @@ class FencedBackupAdapter:
         require(stat.S_ISDIR(s.st_mode) and s.st_uid == os.geteuid() and stat.S_IMODE(s.st_mode) == 0o700, 'PRIVATE_BACKUP_DIRECTORY_REQUIRED')
         # The sealed checkpoint additionally verifies command binary/socket and
         # ancestor custody. A channel for another container cannot be substituted.
-        args = self.admin.process.args
-        prefix = ['docker','--config',self.admin.temp.name,'exec','-i',self.intent['containerId'],'env']
-        require(type(args) is list and args[:7] == prefix and len(args) == 19
-                and re.fullmatch('PGAPPNAME=ouf-cutover-[a-z0-9-]{1,40}',args[7]) is not None
-                and args[8:] == ['psql','-X','-q','-A','-t','-v','ON_ERROR_STOP=1','-U',self.intent['user'],'-d',self.admin.database], 'EXACT_BACKUP_ADMIN_CHANNEL_REQUIRED')
-        require(self.admin.database != self.intent['database'], 'OUTSIDE_DATABASE_ADMIN_REQUIRED')
+        verify_admin(self.admin,self.intent['containerId'],self.intent['user'],self.intent['database'])
 
     def apply(self, intent):
         self.exact(intent)
@@ -87,7 +84,8 @@ class FencedBackupAdapter:
         database=self.intent['database']; oid=self.intent['databaseOid']
         state=self.admin.query("SELECT json_build_object('oid',oid::bigint,'closed',NOT datallowconn,'prepared',(SELECT count(*) FROM pg_prepared_xacts WHERE database="+literal(database)+"),'sessions',(SELECT count(*) FROM pg_stat_activity WHERE datid="+str(oid)+")) FROM pg_database WHERE datname="+literal(database),"SELECT pg_stat_clear_snapshot();")
         require(state=={'oid':oid,'closed':True,'prepared':0,'sessions':0}, 'CURRENT_DATABASE_FENCE_UNPROVEN')
-        return {'backupPhaseBindingFileHash':ch,'backupReceiptFileHash':bh,'gateReceiptFileHash':gh,'archiveSha256':ah,'archiveBytes':size,'databaseScopeHash':scope,'currentDatabaseState':state}
+        return {'schema':'ouf.semantic-fenced-backup-executor-evidence.v1','transitionContextHash':self.context['transitionContextHash'],'intentHash':self.intent_hash,
+                'databaseContainerId':self.intent['containerId'],'backupPhaseBindingFileHash':ch,'backupReceiptFileHash':bh,'gateReceiptFileHash':gh,'archiveSha256':ah,'archiveBytes':size,'databaseScopeHash':scope,'currentDatabaseState':state}
 
     def observe(self, intent):
         self.exact(intent)
@@ -98,4 +96,5 @@ class FencedBackupAdapter:
             return 'UNKNOWN', {'completeBackupEvidenceAbsent':True,'absenceDoesNotProveNoEffect':True,'automaticReopen':False}
         require(before==after, 'BACKUP_EVIDENCE_CHANGED_DURING_RECONCILIATION')
         self.checkpoint('AFTER_FENCED_BACKUP_RECONCILIATION')
+        if self.evidence_store is not None:self.evidence_store.publish('FENCED_BACKUP',before)
         return 'APPLIED', before

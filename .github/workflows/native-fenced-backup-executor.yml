@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - tools/semantic_application_cutover/fenced_backup_adapter.py
+      - tools/semantic_application_cutover/database_channel_scope.py
       - tests/test_fenced_backup_adapter.py
       - tests/native_fenced_backup_executor.py
       - .github/workflows/native-fenced-backup-executor.yml
