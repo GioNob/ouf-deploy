@@ -57,6 +57,12 @@ The operator's corrected target run confirms four Binds and two structured Mount
 
 The [pinned metadata diagnostic](RETAINED_V11_METADATA_DIAGNOSIS_20261012.md) is a separate read-only operation: verify the exact original private parent/request, observe both source scopes twice using no-follow stat, emit only changed field names and redacted custody/membership summary. No mounted file content read, baseline write, authority, budget reset or runtime operation. Target diagnostic output is pending.
 
+## Diagnosed retained member replacement — consumer contract pending
+
+The operator reported a stable double metadata read: mount0 directory has changed mtime/ctime, its one0440 root-owned member has changed inode/mtime/ctime, and custody/member set are unchanged. Mount1 is unchanged. [Target diagnosis](../evidence/retained-v11-metadata-diagnosed-target-20261012.json). No content comparison or legitimate writer proof exists; do not treat possible rotation as accepted integrity.
+
+Source review finds R12's Coordinator PrivateJournal uses0600 custody and atomic replacement. That does not attribute the observed0440 member to R12. The [sealed source-usage reader](RETAINED_V11_SOURCE_USAGE_20261012.md) reports exact environment variable-name references from the original private request, without mounted source file reads/values/paths or baseline writes. This is consumer-reference evidence only; target output and writer/owner proof remain pending.
+
 ## Remaining objective
 
 After the target preparation, finish the six-mount policy and independent acceptance, authenticated transport/new consumption bindings, distinct worker with retained cumulative recovery history, application verification and producer release. Complete sealed installer and current finite HUMAN/signature source authority remain open. The changed gate request needs fresh authority; original59… request/9ec… intake cannot approve it.
