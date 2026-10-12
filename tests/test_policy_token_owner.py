@@ -140,10 +140,41 @@ class TokenOwner(unittest.TestCase):
    if next_row['state']=='ACTIVE':raise OSError('PRIVATE_STORAGE')
    return original(previous,next_row)
   journal.compare_and_save=save
-  with self.assertRaises(RuntimeError):operation.step()
-  self.assertEqual(Journal(journal.root).read()['state'],'PUBLISHING')
+  self.assertEqual(operation.step()['state'],'RECONCILE_REQUIRED')
+  self.assertEqual(Journal(journal.root).read()['state'],'RECONCILE_REQUIRED')
   self.assertTrue((root/'output'/'token.jwt').exists())
   restarted=Recovery(Journal(journal.root),adapter,Policy(),'a'*64,'b'*64,clock,lambda:.5)
   self.assertEqual(RenewalOperation(restarted).step()['state'],'RECONCILE_REQUIRED');self.assertEqual(opener.calls,1)
+
+ def test_real_process_death_after_publication_reconciles_without_grant_replay(self):
+  root,clock,owner,opener,adapter,journal,operation=self.fixture()
+  grant_log=root/'grant-count'
+  def count_grant():
+   with grant_log.open('ab') as stream:stream.write(b'G');stream.flush();os.fsync(stream.fileno())
+  opener.callback=count_grant;original=journal.compare_and_save
+  def die(previous,next_row):
+   if next_row['state']=='ACTIVE':os._exit(73)
+   return original(previous,next_row)
+  child=os.fork()
+  if child==0:
+   journal.compare_and_save=die
+   try:operation.step()
+   finally:os._exit(74)
+  _,status=os.waitpid(child,0);self.assertEqual(os.waitstatus_to_exitcode(status),73)
+  self.assertEqual(Journal(journal.root).read()['state'],'PUBLISHING')
+  self.assertTrue((root/'output'/'token.jwt').exists())
+  restarted=Recovery(Journal(journal.root),adapter,Policy(),'a'*64,'b'*64,clock,lambda:.5)
+  self.assertEqual(RenewalOperation(restarted).step()['state'],'RECONCILE_REQUIRED')
+  self.assertEqual(grant_log.read_bytes(),b'G');self.assertEqual(opener.calls,0)
+
+ def test_output_drift_blocks_before_any_grant(self):
+  root,clock,owner,opener,adapter,journal,operation=self.fixture()
+  (root/'output'/'unapproved').write_bytes(b'PRIVATE')
+  self.assertEqual(operation.step()['state'],'BLOCKED');self.assertEqual(opener.calls,0)
+
+ def test_preparation_timeout_includes_duration_in_finite_budget(self):
+  root,clock,owner,opener,adapter,journal,operation=self.fixture(Policy(max_elapsed=30))
+  owner.prepare=lambda *args:clock.advance(31)
+  self.assertEqual(operation.step()['state'],'PAUSED_EXHAUSTED');self.assertEqual(opener.calls,0)
 
 if __name__=='__main__':unittest.main()

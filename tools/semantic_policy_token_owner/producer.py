@@ -151,6 +151,15 @@ def token_response(value,binding):
 
 class AtomicTokenFile:
     def __init__(self,binding): self.binding=binding
+    def check_custody(self):
+        b=self.binding
+        with protected_directory(b.output_directory,gid=b.output_gid,mode=0o750) as directory:
+            names=os.listdir(directory); check(names in ([],[b.output_member]))
+            if names:
+                info=os.stat(b.output_member,dir_fd=directory,follow_symlinks=False)
+                check(stat.S_ISREG(info.st_mode) and info.st_uid==0 and info.st_gid==b.output_gid
+                      and stat.S_IMODE(info.st_mode)==0o440 and info.st_nlink==1
+                      and 0<info.st_size<=65536)
     def publish(self,token,guard):
         b=self.binding
         with protected_directory(b.output_directory,gid=b.output_gid,mode=0o750) as directory:
@@ -203,6 +212,7 @@ class TokenRenewalAdapter:
         self.owner.pause()
     def prepare(self,deadline):
         self.guard(); self.owner.prepare(self.binding.digest(),deadline)
+        self.writer.check_custody()
         secret=self.credential.read(); self.guard()
         self.evidence={'deadline':deadline,'secret':secret,'bindingHash':self.binding.digest()}
         return self.evidence
