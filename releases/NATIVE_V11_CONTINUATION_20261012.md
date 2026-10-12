@@ -51,6 +51,12 @@ The next source-bound no-apply preparer is now delivered at commit `3aefb1a0bd88
 
 The operator reported no-effect exit1 from the first retained-source preparer: `EXACT_GATED_SIX_MOUNT_REQUEST_REQUIRED`, zero hashed source bytes and zero private writes. [Target block](../evidence/retained-v11-source-expectations-blocked-target-20261012.json). The source-only Binds count was too restrictive for retained structured Mounts. The [corrected delivery](RETAINED_V11_COMBINED_MOUNTS_CORRECTION_20261012.md) preserves the exact intake/request and counts both representations with readonly/distinct/non-shadowing targets; the regression covers four Binds plus two structured Mounts. Old launcher source3aefb1… is superseded, not automatically rerun. Target request shape has not been independently read back, and source expectations/full six-mount acceptance remain unproduced until corrected target output arrives.
 
+## Retained metadata drift — read-only diagnosis required
+
+The operator's corrected target run confirms four Binds and two structured Mounts, then reports `RETAINED_SOURCE_METADATA_DRIFT` with zero hashed source bytes/private writes. [Target receipt](../evidence/retained-v11-source-metadata-drift-target-20261012.json). This is an explicit integrity/identity/configuration pause; do not automatically retry or refresh metadata. Changed root fields are still unknown, and no source content drift is inferred.
+
+The [pinned metadata diagnostic](RETAINED_V11_METADATA_DIAGNOSIS_20261012.md) is a separate read-only operation: verify the exact original private parent/request, observe both source scopes twice using no-follow stat, emit only changed field names and redacted custody/membership summary. No mounted file content read, baseline write, authority, budget reset or runtime operation. Target diagnostic output is pending.
+
 ## Remaining objective
 
 After the target preparation, finish the six-mount policy and independent acceptance, authenticated transport/new consumption bindings, distinct worker with retained cumulative recovery history, application verification and producer release. Complete sealed installer and current finite HUMAN/signature source authority remain open. The changed gate request needs fresh authority; original59… request/9ec… intake cannot approve it.
