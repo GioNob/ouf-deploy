@@ -87,10 +87,17 @@ class NativeRetirement(unittest.TestCase):
         self.assertTrue((r12/'revoked').is_file());self.assertTrue((r12/'worker-invocation-claim.json').is_file())
     def test_controller_death_after_real_stop_reconciles_and_paused_cancellation_works(self):
         e,c,r12,base=self.fixture('PAUSED_EXHAUSTED');a=e.adapters['STOP_REVOKE_OLD_LEASE'];original=c.stop
-        def crash(seconds):original(seconds);raise RuntimeError('native-controller-gap')
-        c.stop=crash
-        with self.assertRaises(RuntimeError):e.run(1)
-        e.t=Transition(e.t.journal,e.t.context);a.transition=e.t;c.stop=lambda _:self.fail('NATIVE_STOP_REPLAYED');e.run(1)
+        def crash(seconds):original(seconds);os._exit(91)
+        c.stop=crash;controller=os.fork()
+        if controller==0:
+            try:e.run(1)
+            except Exception:os._exit(92)
+            os._exit(93)
+        _,status=os.waitpid(controller,0);self.assertEqual(os.waitstatus_to_exitcode(status),91)
+        self.assertEqual(e.t.read()['state'],'IN_FLIGHT')
+        e.t=Transition(e.t.journal,e.t.context);a.transition=e.t
+        a.channel=R12RetirementChannel(c.scope,custody,reader.lease_projection)
+        a.channel.stop=lambda _:self.fail('NATIVE_STOP_REPLAYED');e.run(1)
         self.assertEqual(e.t.read()['nextPhase'],1)
     def test_foreign_marker_or_consumed_claim_drift_preserves_worker(self):
         for drift in ('marker','claim'):

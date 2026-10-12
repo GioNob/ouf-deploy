@@ -93,11 +93,15 @@ class R12RetirementChannel:
         props={}
         for line in raw.decode().splitlines():
             k,v=line.split('=',1);require(k in names.split(',') and k not in props,'EXACT_RETAINED_SERVICE_METADATA_REQUIRED');props[k]=v
-        require(set(props)==set(names.split(',')) and props['Restart']=='no' and props['NRestarts']=='0','RETAINED_SERVICE_RESTART_OR_CUSTODY_DRIFT')
-        if props['LoadState']=='not-found':
-            require(props['ActiveState']=='inactive' and props['SubState']=='dead' and props['MainPID']=='0' and props['ExecStart']=='','EXACT_RETIRED_TRANSIENT_UNIT_ABSENCE_REQUIRED')
-            props['ExecStartHash']=sha(props.pop('ExecStart').encode());return props
-        require(props['LoadState']=='loaded','RETAINED_SERVICE_LOAD_STATE_DRIFT')
+        if props.get('LoadState')=='not-found':
+            require(props.get('ActiveState')=='inactive' and props.get('SubState')=='dead'
+                    and all(k not in props or props[k]==v for k,v in {'MainPID':'0','Restart':'no','NRestarts':'0','ExecStart':''}.items()),'EXACT_RETIRED_TRANSIENT_UNIT_ABSENCE_REQUIRED')
+            # Missing properties remain unknown; never manufacture Restart=no
+            # or PID0 for an unloaded unit. Private baseline + absent old process
+            # + final history/native lease are required by reconciliation.
+            return {k:props.get(k) for k in names.split(',') if k!='ExecStart'}|{'ExecStartHash':sha(props['ExecStart'].encode()) if 'ExecStart' in props else None}
+        require(set(props)==set(names.split(',')) and props['LoadState']=='loaded'
+                and props['Restart']=='no' and props['NRestarts']=='0','RETAINED_SERVICE_RESTART_OR_CUSTODY_DRIFT')
         python=cfg['pythonBinding'];expected=' '.join([python['path'],'-I','-B',str(self.root/'activate.py'),'--supervise',str(self.root/'authorization.json'),self.scope['authorizationBinding']['sha256']])
         commands=re.findall(r'argv\[\]=(.*?) ;',props['ExecStart'])
         require(commands==[expected] and auth['nativeBindings']['python']==python,'EXACT_RETAINED_SERVICE_EXECUTION_REQUIRED')
@@ -125,7 +129,7 @@ class R12RetirementChannel:
                 and worker.get('startAuthorized') is False,'CURRENT_RETAINED_WORKER_HISTORY_REQUIRED')
         service=self.service(cfg,auth)
         process=self.process(cfg,service)
-        require(service['MainPID'] in ('0',str(s['workerPid'])),'RETAINED_SERVICE_PID_CHANGED')
+        require(service['MainPID'] in ('0',str(s['workerPid'])) or service['MainPID'] is None and service['LoadState']=='not-found','RETAINED_SERVICE_PID_CHANGED')
         lease_raw=self.read(owner['journalFile']);tables={f:parse(self.command(cfg['commandBindings']['nft'],['-j','list','table',f,owner['kernel']['tableName']])) for f in ('inet','bridge')}
         require(cfg['commandBindings']['nft']=={'path':owner['nftPath'],'sha256':owner['nftSha256']},'RETAINED_NFT_COMMAND_DRIFT')
         lease=self.project(owner,parse(lease_raw),tables)
@@ -136,7 +140,7 @@ class R12RetirementChannel:
         return {'authorizationHash':s['authorizationBinding']['sha256'],'history':history,'worker':worker,'service':service,'processGeneration':process,'lease':lease}
     def process(self,cfg,service):
         pid=self.scope['workerPid'];root=Path('/proc')/str(pid)
-        if service['MainPID']=='0':
+        if service['MainPID'] in ('0',None):
             require(not root.exists(),'RETAINED_WORKER_PROCESS_STILL_PRESENT_OR_PID_REUSED');return None
         expected=[cfg['pythonBinding']['path'],'-I','-B',str(self.root/'activate.py'),'--supervise',str(self.root/'authorization.json'),self.scope['authorizationBinding']['sha256']]
         raw=(root/'cmdline').read_bytes()
@@ -193,7 +197,7 @@ class R12RetirementAdapter:
         if not self.channel.marker(self.marker()):return 'UNKNOWN',{'retirementMarkerAbsent':True,'stopReplayAllowed':False}
         after=self.channel.current();history_progress(before['history'],after['history'])
         service,worker,history,lease=(after[k] for k in ('service','worker','history','lease'))
-        stopped=(service['ActiveState']=='inactive' and service['SubState']=='dead' and service['MainPID']=='0'
+        stopped=(service['ActiveState']=='inactive' and service['SubState']=='dead' and (service['MainPID']=='0' or service['MainPID'] is None and service.get('LoadState')=='not-found')
                  and history['state']=='CANCELLED' and history['reason']=='CANCELLED_BY_OWNER'
                  and worker.get('state')=='CANCELLED' and worker.get('ready') is False and worker.get('live') is False
                  and worker.get('setsRevoked') is True and worker.get('attempts')==history['attempts']
