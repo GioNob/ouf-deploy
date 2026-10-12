@@ -5,6 +5,7 @@ on:
     paths:
       - tools/semantic_policy_token_owner/**
       - tests/test_policy_token_owner.py
+      - tests/test_token_source_stage.py
       - tests/test_renewable_token_mount.py
       - tools/semantic_frame_compiler/compile_six_mount_frame_policy.py
       - tools/semantic_frame_compiler/test_compile_six_mount_frame_policy.py
@@ -28,6 +29,7 @@ jobs:
           sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
           sudo chown -R root:root "$OUF_FIXTURE_ROOT"
           sudo env OUF_NATIVE_UIDS=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_owner.py -v
+          sudo python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_token_source_stage.py -v
           sudo env OUF_NATIVE_MOUNTS=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_renewable_token_mount.py -v
           sudo python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tools/semantic_frame_compiler" -p test_compile_six_mount_frame_policy.py -v
 
