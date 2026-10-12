@@ -1,0 +1,27 @@
+name: OUF untrusted semantic token static observation
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/observe-semantic-token-source.py
+      - tests/test_semantic_token_static_observation.py
+      - .github/workflows/semantic-token-static-observation.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  static-observation-fixtures:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Native UID1000 ancestor, no execution, replacement and redaction boundaries
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-token-static-${GITHUB_RUN_ID}"
+          sudo mkdir -m 700 "$OUF_FIXTURE_ROOT"
+          sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
+          sudo chown -R root:root "$OUF_FIXTURE_ROOT"
+          sudo env OUF_NATIVE_UIDS=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_semantic_token_static_observation.py -v

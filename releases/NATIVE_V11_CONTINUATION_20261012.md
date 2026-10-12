@@ -95,6 +95,12 @@ Next operation is bounded selected-path lstat metadata only, with captured/redac
 
 Do not globally chmod/chown /opt/ouf, assume the child protects the entire path, or weaken the authenticated-source reader. Resolve only the selected direct Python source path and final lstat metadata next, then locate its approved repository/install provenance and prepare an isolated correction. Other /opt/ouf jobs and R12 remain untouched. Static observation of untrusted bytes, if later needed, must be separately labelled and cannot establish source authentication or writer authority.
 
+## Installed token source route selected
+
+[Operator routing](../evidence/semantic-token-producer-routing-target-20261012.json) identifies /opt/ouf/ops/refresh-policy-token.py, root:root0755 regular file, one link, no source bytes read. Seven accessible OUF default-branch trees contain no exact producer filename; unindexed searches and historical/embedded installations remain incomplete. Installed source provenance is not inferred.
+
+A separate [untrusted static observer](SEMANTIC_TOKEN_UNTRUSTED_STATIC_OBSERVATION_20261012.md) is prepared to read only this code, using descriptor-relative no-follow snapshots and exact reported custody. It labels the nonroot ancestry explicitly, redacts literals, never executes the producer and cannot authenticate it. The original authenticated reader and runtime acceptance stay blocked. Source observation on the target is pending.
+
 ## Remaining objective
 
 After the target preparation, finish the six-mount policy and independent acceptance, authenticated transport/new consumption bindings, distinct worker with retained cumulative recovery history, application verification and producer release. Complete sealed installer and current finite HUMAN/signature source authority remain open. The changed gate request needs fresh authority; original59… request/9ec… intake cannot approve it.
