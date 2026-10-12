@@ -3,6 +3,8 @@ on:
   push:
     branches: [main]
     paths:
+      - scripts/read-semantic-token-output-binding.py
+      - tests/test_semantic_token_output_binding.py
       - scripts/read-semantic-token-static-facts.py
       - tests/test_semantic_token_static_facts.py
       - scripts/observe-semantic-token-source.py
@@ -29,3 +31,5 @@ jobs:
           sudo env OUF_NATIVE_UIDS=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_semantic_token_static_observation.py -v
       - name: Public code facts and sealed observer byte identity
         run: python3 -B -m unittest discover -s tests -p test_semantic_token_static_facts.py -v
+      - name: Native private config snapshots and boolean-only correspondence
+        run: sudo python3 -I -B -m unittest discover -s "/var/lib/ouf-token-static-${{ github.run_id }}/repository/tests" -p test_semantic_token_output_binding.py -v
