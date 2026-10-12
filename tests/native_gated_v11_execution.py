@@ -34,6 +34,7 @@ import image_manifest_identity as identity
 def load(name,path):
     spec=importlib.util.spec_from_file_location(name,ROOT/path);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 verify=load('gated_v11_package','scripts/verify-durable-v11-package.py')
+private_plan=load('gated_private_plan','scripts/prepare-gated-v11-private-plan.py')
 
 def command(args,timeout=120):
     p=subprocess.run(args,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=timeout)
@@ -187,6 +188,7 @@ class Fixture:
 def main():
     assert os.geteuid()==0
     spec=verify.SPECS['semantic'];verified=verify.verify(ROOT/'semantic.zip','semantic');fixture=Fixture()
+    exact_configuration=private_plan.image_configuration(ROOT/'semantic.zip')
     with tempfile.TemporaryDirectory(dir=ROOT) as directory:
         root=Path(directory);root.chmod(0o700)
         with zipfile.ZipFile(ROOT/'semantic.zip') as archive:
@@ -206,6 +208,7 @@ def main():
             p=subprocess.run(['docker','--host','unix://'+str(socket),'image','load'],stdin=envelope,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=120);assert p.returncode==0
         status,image=engine.request('GET','/v1.48/images/'+descriptor['digest']+'/json?manifests=true');assert status==200
         image_proof=identity.loaded(audit,descriptor,image)
+        assert exact_configuration['config']==audit['imageConfig']
         network_name='ouf-v11-fixture';bridge='ov11cif'
         status,network=engine.request('POST','/v1.48/networks/create',{'Name':network_name,'Driver':'bridge','Internal':True,'EnableIPv6':False,
                             'Options':{'com.docker.network.bridge.name':bridge},'IPAM':{'Driver':'default','Config':[{'Subnet':'172.29.42.0/24'}]}});assert status==201
