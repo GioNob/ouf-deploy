@@ -156,6 +156,11 @@ print(json.dumps({'sourceCount':len(sources),'observerHash':entry['digest'](obse
         # issued records and starts disposable Docker through the production broker.
         from contextlib import ExitStack
         from test_authenticated_transaction import AuthenticatedTransactionTest
+        # Frozen historical scope: use a matching synthetic clock for this
+        # control-flow fixture. Production expiry checks remain unchanged.
+        from datetime import datetime
+        fixture_now=int(datetime.fromisoformat(self.scope['dependencyValidUntil'].replace('Z','+00:00')).timestamp())-600
+        fixture_clock=patch('time.time',return_value=fixture_now);fixture_clock.start();self.addCleanup(fixture_clock.stop)
         fixture=AuthenticatedTransactionTest();fixture.setUp();self.addCleanup(fixture.doCleanups)
         manifest,original,replacements,reviewed_entry=package_inputs()
         retained=self.root/'retained-source';retained.mkdir(mode=0o700)

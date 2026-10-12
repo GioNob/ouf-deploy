@@ -22,6 +22,8 @@ from tools.semantic_provider_preexec_native import NativeBackend
 from tools.semantic_provider_deployment_admission import application_hash
 from configtree_mount_observation import ConfigtreeMountObservation
 from projected_frame_observation import ProjectedFrameObservation
+from paused_node_observation import PausedNodeObservation
+from tools.semantic_provider_deployment_admission import transport_hash
 import image_custody as custody
 import image_manifest_identity as identity
 
@@ -43,7 +45,7 @@ def file_hash(path,limit=536870912):
             h.update(block)
     return h.hexdigest()
 
-def paused_filesystem(e,engine,store,socket,request,configtree,sources,root):
+def paused_filesystem(e,engine,store,socket,request,configtree,sources,root,peer):
     """Native read-only seal; never construct an approval from observed OCI.
 
     No independent target policy is supplied by this fixture. This qualifies
@@ -92,6 +94,28 @@ def paused_filesystem(e,engine,store,socket,request,configtree,sources,root):
     policy_path=projected/'policy.json';policy_path.write_text(json.dumps(policy,sort_keys=True,separators=(',',':')));policy_path.chmod(0o600)
     bindings={'source':{'path':str(owner),'sha256':file_hash(owner)},'configuration':{'path':str(policy_path),'sha256':file_hash(policy_path)},'bundleParents':[str(bundle.parent)]}
     frame_hash,_=ProjectedFrameObservation(bindings,VerificationBudget(18)).observe(generation,config,application_hash(oci),file_hash(policy_path))
+    result=subprocess.run([binary,'--root',str(runtime_root),'state',peer['containerId']],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=5)
+    assert result.returncode==0;peer_state=decode(result.stdout,16384);assert peer_state['status']=='running'
+    peer_oci=decode((Path(peer_state['bundle'])/'config.json').read_bytes(),131072)
+    commands={name:{'path':str(Path(shutil.which(name)).resolve()),'sha256':file_hash(Path(shutil.which(name)).resolve())} for name in ('ip','nsenter')}
+    app_binding={'interface':'eth0','bridge':peer['bridge'],'mac':peer['appMac'],'ipv4':peer['appIp'],'workloadRef':'fixtureSemantic','bindingRef':'fixtureSemanticFace'}
+    peer_binding={'interface':'eth0','bridge':peer['bridge'],'mac':peer['mac'],'ipv4':peer['ip'],'workloadRef':'fixturePeer','bindingRef':'fixturePeerFace'}
+    transport=[{'purpose':'WORKLOAD_GATEWAY','authorityRef':'SYNTHETIC_FIXTURE_ONLY','source':peer['appIp'],'destination':peer['ip'],'protocol':'tcp','port':8443,
+                'peerIngress':{'kind':'CREATED_CANDIDATE','declaration':{'containerId':peer['containerId'],'applicationHash':application_hash(peer_oci),'networkBindings':[peer_binding]},'bindingRef':'fixturePeerFace'}}]
+    cfg={'runtimeBinding':{'path':binary,'sha256':file_hash(binary)},'runtimeRootParents':[str(Path(runtime_root).parent)],'bundleParents':[str(bundle.parent)],'commands':commands,
+         'candidate':{'networkBindings':[app_binding],'transport':transport,'tableName':'fixtureV11'},'rootfsLimits':limits}
+    observed_request={'containerId':cid,'generation':generation,'applicationHash':application_hash(oci),'artifactHash':file_hash(policy_path),'transportHash':transport_hash(cfg['candidate']),'transactionId':e.t.context}
+    context={'schema':'ouf.semantic-paused-node-context.v1',**{k:before[k] for k in ('transitionContextHash','creationRequestHash','stageEvidenceHash')},'runtimeRoot':str(runtime_root),'bundleHash':application_hash(oci)}
+    budget=VerificationBudget(18);observer=PausedNodeObservation(cfg,budget,binding,ProjectedFrameObservation(bindings,budget))
+    complete=observer.observe(observed_request,context,observer.frame.bundle)
+    assert complete['rootfsSeal']==first and len(complete['peerObservations'])==1 and complete['completeCreationAccepted'] is False
+    wrong_cfg=copy.deepcopy(cfg);wrong_cfg['candidate']['transport'][0]['peerIngress']['declaration']['applicationHash']='f'*64
+    wrong_request={**observed_request,'transportHash':transport_hash(wrong_cfg['candidate'])}
+    budget=VerificationBudget(18);wrong=PausedNodeObservation(wrong_cfg,budget,binding,ProjectedFrameObservation(bindings,budget))
+    try:wrong.observe(wrong_request,context,wrong.frame.bundle)
+    except ValueError:pass
+    else:raise AssertionError('RECIPROCAL_PEER_OCI_DRIFT_ACCEPTED')
+    assert binding.observe()==before and e.t.read()['nextPhase']==6
     old=Path(sources[0]['source']).read_bytes();Path(sources[0]['source']).write_bytes(b'changed-source')
     try:
         try:ProjectedFrameObservation(bindings,VerificationBudget(18)).observe(generation,config,application_hash(oci),file_hash(policy_path))
@@ -119,10 +143,11 @@ def paused_filesystem(e,engine,store,socket,request,configtree,sources,root):
     finally:os.chmod(configtree['source'],0o500)
     assert ConfigtreeMountObservation(configtree,VerificationBudget(18)).observe(generation)['sameSourceFileInMountedView']
     result={'rootfsSeal':first,'observedCompleteOciHash':application_hash(oci),'stableDoubleRootfsSeal':True,
-            'actualPausedRuncContract':True,'independentOciPolicyAccepted':False,'reciprocalPeersVerified':False,
+            'actualPausedRuncContract':True,'independentOciPolicyAccepted':False,'reciprocalPeersVerified':True,
             'singletonConfigtreeObservation':directory,'configtreeHashExtraFileAndPermissionDriftRejected':True,
             'actualFourProjectedInputFrameObserved':True,'projectedFrameHash':frame_hash,'projectedFileHashDriftRejected':True,
-            'fixtureExpectedOciDerivedFromObservedOci':True}
+            'fixtureExpectedOciDerivedFromObservedOci':True,'completePausedNodeObservationHash':digest(complete),
+            'reciprocalPeerOciDriftRejected':True,'observationDidNotAdvanceAttestationPhase':True}
     return result
 
 class Fixture:
@@ -153,6 +178,17 @@ def main():
             p=subprocess.run(['docker','--host','unix://'+str(socket),'image','load'],stdin=envelope,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=120);assert p.returncode==0
         status,image=engine.request('GET','/v1.48/images/'+descriptor['digest']+'/json?manifests=true');assert status==200
         image_proof=identity.loaded(audit,descriptor,image)
+        network_name='ouf-v11-fixture';bridge='ov11cif'
+        status,network=engine.request('POST','/v1.48/networks/create',{'Name':network_name,'Driver':'bridge','Internal':True,'EnableIPv6':False,
+                            'Options':{'com.docker.network.bridge.name':bridge},'IPAM':{'Driver':'default','Config':[{'Subnet':'172.29.42.0/24'}]}});assert status==201
+        network_id=network['Id'];peer_ip='172.29.42.2';peer_mac='02:42:ac:1d:2a:02';app_ip='172.29.42.6';app_mac='02:42:ac:1d:2a:06'
+        peer_request={'Image':descriptor['digest'],'User':'10001:10001','Entrypoint':['/bin/sh','-c','exec sleep 600'],
+                      'HostConfig':{'NetworkMode':network_name,'Runtime':'runc','RestartPolicy':{'Name':'no','MaximumRetryCount':0},'CapDrop':['ALL'],'SecurityOpt':['no-new-privileges:true'],'Memory':268435456,'MemorySwap':268435456,'PidsLimit':128},
+                      'NetworkingConfig':{'EndpointsConfig':{network_name:{'NetworkID':network_id,'IPAMConfig':{'IPv4Address':peer_ip},'MacAddress':peer_mac}}}}
+        status,native_peer=engine.request('POST','/v1.48/containers/create',peer_request);assert status==201
+        peer_id=native_peer['Id'];fixture.addCleanup(lambda:engine.request('DELETE','/v1.48/networks/'+network_id));fixture.addCleanup(lambda:engine.request('DELETE','/v1.48/containers/'+peer_id+'?force=true'))
+        status,_=engine.request('POST','/v1.48/containers/'+peer_id+'/start');assert status==204
+        peer={'containerId':peer_id,'ip':peer_ip,'mac':peer_mac,'bridge':bridge,'appIp':app_ip,'appMac':app_mac}
         private_directory=root/'private-configtree';private_directory.mkdir(mode=0o500);os.chown(private_directory,10001,10001)
         secret=private_directory/'OUF_SEM_DB_PASSWORD';secret.write_bytes(b'synthetic-fixture-only');os.chown(secret,10001,10001);secret.chmod(0o400)
         configtree={'source':str(private_directory),'target':'/run/ouf-configtree','readOnly':True,'uid':10001,'gid':10001,
@@ -162,8 +198,9 @@ def main():
             source=root/name;source.write_bytes(b'synthetic-fixture-only');os.chown(source,10001,10001);source.chmod(0o400)
             sources.append({'source':str(source),'target':'/run/ouf-'+name,'readOnly':True,'uid':10001,'gid':10001,'mode':0o400,'maxBytes':4096,'sha256':file_hash(source)})
         parent={'Image':descriptor['digest'],'User':'10001:10001','Env':list(audit['imageConfig'].get('Env') or [])+['OUF_SEM_DB_URL=jdbc:postgresql://127.0.0.1:1/fixture_only','OUF_SEM_DB_USER=fixture','OUF_SEM_DB_PASSWORD=fixture','OUF_DISCOVERY_WORKER_ENABLED=false','OUF_SCHEMA_GOV_ENABLED=false'],
-                'HostConfig':{'Runtime':'runc','Privileged':False,'NetworkMode':'none','RestartPolicy':{'Name':'no','MaximumRetryCount':0},'Memory':2147483648,'MemorySwap':2147483648,'NanoCpus':2000000000,'PidsLimit':512,
-                              'Binds':[s['source']+':'+s['target']+':ro' for s in sources]+[str(private_directory)+':/run/ouf-configtree:ro']}}
+                'HostConfig':{'Runtime':'runc','Privileged':False,'NetworkMode':network_name,'RestartPolicy':{'Name':'no','MaximumRetryCount':0},'Memory':2147483648,'MemorySwap':2147483648,'NanoCpus':2000000000,'PidsLimit':512,
+                              'Binds':[s['source']+':'+s['target']+':ro' for s in sources]+[str(private_directory)+':/run/ouf-configtree:ro']},
+                'NetworkingConfig':{'EndpointsConfig':{network_name:{'NetworkID':network_id,'IPAMConfig':{'IPv4Address':app_ip},'MacAddress':app_mac}}}}
         request,proposal=compile_gate(parent,digest(parent),{'config':audit['imageConfig']});process=GatedProcessObservation(request)
         before=root/'before';before.mkdir(mode=0o700);before_store=NativeEvidenceStore(before)
         intent={'creationRequestHash':digest(request),'priorEvidencePhase':'STAGE_PAUSED_REPLACEMENT','preApplicationGateProfile':PROFILE}
@@ -176,7 +213,7 @@ def main():
             assert gate['processKind']=='GATE_WAITING' and native['Image']==descriptor['digest']
             jar_before=file_hash('/proc/'+str(pid)+'/root/app/application.jar');assert jar_before==verified['memberSha256']['application.jar']
             java_before=file_hash('/proc/'+str(pid)+'/root/opt/java/openjdk/bin/java');assert process.observe(pid)==gate
-            filesystem=paused_filesystem(e,engine,store,socket,request,configtree,sources,root)
+            filesystem=paused_filesystem(e,engine,store,socket,request,configtree,sources,root,peer)
             deadline=time.monotonic()+5
             while True:
                 try:e.run(11);break
