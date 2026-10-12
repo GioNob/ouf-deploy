@@ -81,6 +81,8 @@ Read only those two units' safe properties and redact ExecStart to executable/sc
 
 The configured executable is /usr/bin/python3; its script argument was intentionally not exposed with raw ExecStart arguments. Next read is the selected producer script's root custody and redacted static source, without executing it or reading token/delegation-key/configuration credential files. Producer output→mount0 correspondence, issuer/client scope, installation authority and renewable-source qualification remain unproven. No service start/stop/token grant or baseline refresh is performed by this diagnosis.
 
+The [producer inspection](SEMANTIC_TOKEN_PRODUCER_READ_20261012.md) is now prepared as a separate no-execution reader: resolve only the direct Python source of the selected root oneshot, exclude mounted credential paths, verify root source custody, and return a redacted AST with symbolic token-path labels after stable double reads. It does not run the producer, read token/key/configuration credential files, issue a grant, change the timer or accept source drift. Target source output is pending; renewed-token contract and writer/output/issuer authority remain OPEN.
+
 ## Remaining objective
 
 After the target preparation, finish the six-mount policy and independent acceptance, authenticated transport/new consumption bindings, distinct worker with retained cumulative recovery history, application verification and producer release. Complete sealed installer and current finite HUMAN/signature source authority remain open. The changed gate request needs fresh authority; original59… request/9ec… intake cannot approve it.
