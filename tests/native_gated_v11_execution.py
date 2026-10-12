@@ -45,7 +45,7 @@ def file_hash(path,limit=536870912):
             h.update(block)
     return h.hexdigest()
 
-def paused_filesystem(e,engine,store,socket,request,configtree,sources,root,peer):
+def paused_filesystem(e,engine,store,socket,request,configtree,sources,fixture_root,peer):
     """Native read-only seal; never construct an approval from observed OCI.
 
     No independent target policy is supplied by this fixture. This qualifies
@@ -84,7 +84,7 @@ def paused_filesystem(e,engine,store,socket,request,configtree,sources,root,peer
     directory=ConfigtreeMountObservation(configtree,VerificationBudget(18)).observe(generation)
     # This fixture's expected OCI is synthetic, never target policy approval.
     # The production observer has no observed-OCI-to-policy generation API.
-    projected=root/'projected';projected.mkdir(mode=0o700)
+    projected=fixture_root/'projected';projected.mkdir(mode=0o700)
     owner=projected/'owner.py';owner.write_bytes((ROOT/'tools/semantic_frame_compiler/frame-observer.py').read_bytes());owner.chmod(0o600)
     mounts=[{k:s[k] for k in ('source','target','readOnly')} for s in sources]+[{k:configtree[k] for k in ('source','target','readOnly')}]
     process=oci['process'];policy={'schema':'ouf.semantic-configured-projected-frame-policy.v1','expectedOci':copy.deepcopy(oci),
