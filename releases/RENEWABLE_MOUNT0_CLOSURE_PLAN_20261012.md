@@ -21,3 +21,9 @@ Status: PRIVATE DESIGN/REVIEW ONLY, NOT APPLY READY. No authority, signature, to
 The prepared `scripts/read-semantic-token-secret-reference-metadata.py` embeds the qualified corrected routing helper and checks its digest before using its private config reader. It admits six known assignments, keeps values/paths private, lstats only the configured reference and its ancestors, stops at a symlink/non-directory ancestor, and observes twice. It opens neither the reference nor its target content and does not infer whether material is a password/private key. Read-only source validated locally (syntax, embedded digest, regular-file and symlink metadata handling); no new native CI qualification claimed for this low-impact metadata helper.
 
 Next target output is pending. This plan is not a request to approve an unfinished deployment; all runtime apply/authority remains blocked until concrete implementation and current scoped review are ready.
+
+## Secret-reference custody result
+
+[Operator metadata](../evidence/semantic-token-secret-reference-metadata-target-20261012.json) reports root:root0400, regular, single-link, no symlink, but rootProtectedAncestors=false. Body/content type remains uninspected. Neither code nor credential-reference custody is established through the current ancestry. Whether both share /opt/ouf is still unknown; do not correlate on proximity alone.
+
+The metadata helper v2 records each ancestor depth/UID/GID/mode/type using only standard route CLASS tags (no private paths), stops before traversing a symlink/non-directory and privately compares unsafe ancestor sets of the current direct producer route and reference. It rereads unit/config/metadata; no code or credential content is opened. This identifies minimal relocation scope without global permission changes. Local syntax/digest/regular-leaf/symlink/non-traversal checks passed; no new native CI qualification claimed. V2 target output pending.
