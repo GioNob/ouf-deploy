@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - tests/native_gated_v11_execution.py
+      - tools/semantic_application_cutover/configtree_mount_observation.py
       - .github/workflows/native-gated-v11-execution.yml
 permissions:
   contents: read
