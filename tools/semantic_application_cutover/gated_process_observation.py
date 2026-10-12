@@ -31,7 +31,10 @@ class GatedProcessObservation:
         require(status.get('Uid','').split()==['10001']*4 and status.get('NoNewPrivs')=='1'
                 and all(int(status.get(k,'-1'),16)==0 for k in ('CapInh','CapPrm','CapEff','CapBnd','CapAmb')),'GATED_PROCESS_NONROOT_CAPABILITY_OR_NNP_DRIFT')
         after,endstate=generation()
-        require(before==after and state==endstate and (root/'cmdline').read_bytes()==raw,'GATED_PROCESS_CHANGED_DURING_READ')
+        # R/S/D/I are scheduler states, not identity or readiness changes.
+        # Preserve generation/argv checks and require both observations in the
+        # accepted liveness category; never certify a stopped/zombie Java exec.
+        require(before==after and (root/'cmdline').read_bytes()==raw,'GATED_PROCESS_CHANGED_DURING_READ')
         caught=int(status.get('SigCgt','0'),16)&(1<<(signal.SIGUSR1-1))
-        kind='GATE_WAITING' if args==self.gate_args and caught and state not in ('Z','X') else 'APPLICATION_RUNNING' if args==self.application_args and state not in ('T','t','Z','X') else 'UNPROVEN'
+        kind='GATE_WAITING' if args==self.gate_args and caught and state in ('R','S','D','I','T','t') and endstate in ('R','S','D','I','T','t') else 'APPLICATION_RUNNING' if args==self.application_args and state in ('R','S','D','I') and endstate in ('R','S','D','I') else 'UNPROVEN'
         return {'generation':before,'processKind':kind,'nonRootIdentityVerified':True,'capabilitiesEmpty':True,'noNewPrivileges':True}

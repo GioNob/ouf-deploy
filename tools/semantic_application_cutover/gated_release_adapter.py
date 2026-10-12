@@ -43,7 +43,11 @@ class GatedReleaseAdapter:
         self.checkpoint('BEFORE_PREAPPLICATION_SIGUSR1')
         status,_=self.engine.request('POST','/v1.44/containers/'+cid+'/kill?signal=SIGUSR1');require(status==204,'GATED_SIGNAL_OUTCOME_REQUIRES_RECONCILIATION')
     def observe(self,intent):
-        row,actual,process=self.current(intent)
+        try:row,actual,process=self.current(intent)
+        except ValueError as error:
+            if str(error)!='GATED_PROCESS_CHANGED_DURING_READ':raise
+            return 'UNKNOWN',{'processTransitionChangedDuringRead':True,'readOnlyReconciliationRequired':True,
+                              'unpauseReplayAllowed':False,'signalReplayAllowed':False}
         try:
             # Bound private before payload; do not adopt an arbitrary process
             # which another invocation happened to start under the same name.
@@ -54,7 +58,11 @@ class GatedReleaseAdapter:
                 and previous.get('process',{}).get('generation')==process['generation'],'GATED_RELEASE_BASELINE_OR_PROCESS_GENERATION_DRIFT')
         if actual['State']['Paused'] is not False or actual['State']['Status']!='running' or process['processKind']!='APPLICATION_RUNNING':
             return 'UNKNOWN',{'preapplicationReleaseUnproven':True,'unpauseReplayAllowed':False,'signalReplayAllowed':False}
-        _,after,end=self.current(intent)
+        try:_,after,end=self.current(intent)
+        except ValueError as error:
+            if str(error)!='GATED_PROCESS_CHANGED_DURING_READ':raise
+            return 'UNKNOWN',{'processTransitionChangedDuringRead':True,'readOnlyReconciliationRequired':True,
+                              'unpauseReplayAllowed':False,'signalReplayAllowed':False}
         require(self.engine.runtime_binding(after)==self.engine.runtime_binding(actual) and after['State']['Paused'] is False and end==process,'GATED_RELEASE_PROCESS_CHANGED_DURING_READ')
         evidence={'schema':'ouf.semantic-gated-application-release.v1','transitionContextHash':self.transition.context,'intentHash':self.intent_hash,
                   'runtimeBinding':self.engine.runtime_binding(actual),'generation':process['generation'],'processKind':'APPLICATION_RUNNING',

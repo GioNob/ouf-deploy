@@ -64,5 +64,23 @@ class Release(unittest.TestCase):
         e.adapters['START_REPLACEMENT'].checkpoint=checkpoint
         with self.assertRaises(ValueError):e.run(11)
         self.assertEqual(len(calls),1);self.assertEqual(kind[0],'GATE_WAITING')
+    def test_exec_read_race_reconciles_without_repeating_effects(self):
+        e,engine,state,kind,calls,process=self.fixture();original=process.observe;pending=[True]
+        def observe(pid):
+            if kind[0]=='APPLICATION_RUNNING' and pending[0]:
+                pending[0]=False;raise ValueError('GATED_PROCESS_CHANGED_DURING_READ')
+            return original(pid)
+        process.observe=observe
+        with self.assertRaises(CutoverDenied):e.run(11)
+        self.assertEqual(e.t.read()['state'],'IN_FLIGHT');self.assertEqual(len(calls),2)
+        e.run(11);self.assertEqual(len(calls),2)
+    def test_unknown_process_integrity_error_is_not_classified_as_read_race(self):
+        e,engine,state,kind,calls,process=self.fixture();original=process.observe
+        def observe(pid):
+            if kind[0]=='APPLICATION_RUNNING':raise ValueError('UNCLASSIFIED_PROCESS_INTEGRITY_ERROR')
+            return original(pid)
+        process.observe=observe
+        with self.assertRaisesRegex(ValueError,'UNCLASSIFIED_PROCESS_INTEGRITY_ERROR'):e.run(11)
+        self.assertEqual(len(calls),2);self.assertEqual(e.t.read()['state'],'IN_FLIGHT')
 
 if __name__=='__main__':unittest.main()
