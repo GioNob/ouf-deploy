@@ -1,0 +1,106 @@
+{
+  "schema": "ouf.retained-v11-metadata-diagnostic-target-receipt.v1",
+  "receivedAt": "2026-10-12T14:09:10Z",
+  "provenance": "VPS_OUTPUT_REPORTED_BY_OPERATOR_IN_CHAT",
+  "independentlyReadBackInThisSession": false,
+  "status": "RETAINED_V11_METADATA_DIAGNOSED_NOT_ACCEPTED",
+  "launcherExit": 0,
+  "baselineIntakeHash": "005f6a7afad7d493a52d9b183816fa0346f1bb1a4de5ab4b63c8b0b39f3fb092",
+  "stableDoubleRead": true,
+  "metadataDriftDetected": true,
+  "metadataComparison": [
+    {
+      "mountIndex": 0,
+      "currentDirectoryEntryCount": 1,
+      "entrySetMatchesBaseline": true,
+      "entries": [
+        {
+          "scope": "SOURCE_ROOT",
+          "changedFields": [
+            "mtimeNs",
+            "ctimeNs"
+          ],
+          "exists": true,
+          "expectedCustody": {
+            "uid": 0,
+            "gid": 10001,
+            "mode": 488,
+            "kind": "directory"
+          },
+          "currentCustody": {
+            "uid": 0,
+            "gid": 10001,
+            "mode": 488,
+            "kind": "directory"
+          }
+        },
+        {
+          "scope": "DIRECTORY_MEMBER",
+          "changedFields": [
+            "inode",
+            "mtimeNs",
+            "ctimeNs"
+          ],
+          "exists": true,
+          "expectedCustody": {
+            "uid": 0,
+            "gid": 10001,
+            "mode": 288,
+            "kind": "file"
+          },
+          "currentCustody": {
+            "uid": 0,
+            "gid": 10001,
+            "mode": 288,
+            "kind": "file"
+          }
+        }
+      ]
+    },
+    {
+      "mountIndex": 1,
+      "currentDirectoryEntryCount": 0,
+      "entrySetMatchesBaseline": true,
+      "entries": [
+        {
+          "scope": "SOURCE_ROOT",
+          "changedFields": [],
+          "exists": true,
+          "expectedCustody": {
+            "uid": 10001,
+            "gid": 10001,
+            "mode": 256,
+            "kind": "file"
+          },
+          "currentCustody": {
+            "uid": 10001,
+            "gid": 10001,
+            "mode": 256,
+            "kind": "file"
+          }
+        }
+      ]
+    }
+  ],
+  "sourceContentBytesRead": 0,
+  "sourceContentBytesHashed": 0,
+  "protectedFileWrites": 0,
+  "baselineRefreshed": false,
+  "r12Touched": false,
+  "budgetReset": false,
+  "signaturesIssued": 0,
+  "runtimeAuthorityIssued": false,
+  "notReleaseAcceptance": true,
+  "completeSixMountClosureProven": false,
+  "interpretation": {
+    "directoryModeOctal": "0750",
+    "memberModeOctal": "0440",
+    "standaloneFileModeOctal": "0400",
+    "consistentWithMemberReplacement": true,
+    "writerIdentityProven": false,
+    "legitimateRotationProven": false,
+    "contentDriftProven": false,
+    "r12LeaseJournalModeFromSource": "0600",
+    "cannotAttributeReplacementToR12FromModeOrTimestamp": true
+  }
+}
