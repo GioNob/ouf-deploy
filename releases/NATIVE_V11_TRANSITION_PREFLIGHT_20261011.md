@@ -1,3 +1,9 @@
+# Current target observation — 12 October 2026
+
+The operator supplied a successful preflight at policyObservationAt1791779294. All five intake files were reverified. Both existing installer and attestor entries are ACTIVE with eligible current role windows, expiresAt1798908417 and 7,129,123 seconds remaining at observation. Both private-key metadata checks match; no key bytes were read. No renewal is indicated by this observation. [Target receipt](../evidence/native-v11-transition-preflight-target-20261012.json).
+
+This is historical public-policy and metadata evidence, not signature verification, R12 liveness, an execution mandate, source closure or runtime authority. Every runtime effect remains zero. The target applicator and CSV acceptance remain OPEN; no further policy-read command is required on this evidence alone.
+
 # Native V11 transition policy preflight — 11 October intake
 
 The operator's23:50:49 CEST submission confirms the complete native V11 review intake is published atomically: /etc/ouf/deploy-snapshots/semantic-native-v11-intake-9ec18cf053e5925e42df93b75990343cc1d09696975fc2a224d76b4b28becdae. Five attempted/confirmed private writes, no runtime/key/signature/lease/budget effect. [Receipt](../evidence/native-v11-atomic-review-target-20261011.json). The original draft and VERIFIED import remain retained.

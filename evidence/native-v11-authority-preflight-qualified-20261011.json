@@ -10,8 +10,9 @@
   "realCryptoTests": 10,
   "scopeEntryAndDeliveryTests": 11,
   "targetIntakeHash": "9ec18cf053e5925e42df93b75990343cc1d09696975fc2a224d76b4b28becdae",
-  "targetPolicyReadExecuted": false,
+  "targetPolicyReadExecuted": true,
   "targetCutoverInstallerQualified": false,
   "targetRuntimeAuthorityIssued": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "targetPolicyReceipt": "native-v11-transition-preflight-target-20261012.json"
 }
