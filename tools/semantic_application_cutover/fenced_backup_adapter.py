@@ -6,12 +6,12 @@ receipts remain UNKNOWN even when an archive or closed database is observed.
 """
 import hashlib, json, os, re, stat
 from pathlib import Path
-from database_gate import Psql, digest, literal, require
+from database_gate import Psql, digest, durable, literal, require
 from fenced_backup import fenced_backup
 
 
 class FencedBackupAdapter:
-    def __init__(self, admin, intent, checkpoint):
+    def __init__(self, admin, intent, checkpoint, transition_context_hash):
         require(type(admin) is Psql and callable(checkpoint), 'SEALED_BACKUP_CHANNEL_AND_CHECKPOINT_REQUIRED')
         self.admin, self.checkpoint = admin, checkpoint
         self.intent = json.loads(json.dumps(intent, allow_nan=False))
@@ -22,6 +22,8 @@ class FencedBackupAdapter:
         self.root = Path(self.intent['directory'])
         require(self.root.is_absolute(), 'ABSOLUTE_PRIVATE_BACKUP_DIRECTORY_REQUIRED')
         self.intent_hash = digest(self.intent)
+        require(type(transition_context_hash) is str and re.fullmatch('[0-9a-f]{64}',transition_context_hash) is not None,'EXACT_BACKUP_TRANSITION_CONTEXT_REQUIRED')
+        self.context = {'schema':'ouf.semantic-cutover-backup-context.v1','transitionContextHash':transition_context_hash,'intentHash':self.intent_hash}
 
     def exact(self, intent):
         require(digest(intent) == self.intent_hash, 'IMMUTABLE_BACKUP_INTENT_REQUIRED')
@@ -39,6 +41,10 @@ class FencedBackupAdapter:
     def apply(self, intent):
         self.exact(intent)
         self.checkpoint('BEFORE_FENCED_BACKUP_PRIMITIVE')
+        require(not any(os.path.lexists(self.root/name) for name in ('backup-phase-binding.json','backup-claim.json','gate-claim.json','backup-receipt.json','gate-receipt.json','semantic.dump','semantic.dump.partial','dump.stderr.private','backup-denial.json','gate-denial.json','admission-closed.json')), 'NEW_TRANSITION_REQUIRES_UNUSED_BACKUP_EVIDENCE_DIRECTORY')
+        # Published before the one-use backup primitive. Reconciliation cannot
+        # adopt a receipt from another context or an earlier backup directory.
+        durable(self.root/'backup-phase-binding.json',self.context)
         fenced_backup(self.admin,self.intent['containerId'],self.intent['user'],self.intent['database'],self.intent['databaseOid'],self.root,checkpoint=self.checkpoint)
 
     def private(self, name, limit, parse=False):
@@ -62,6 +68,8 @@ class FencedBackupAdapter:
         finally: os.close(fd)
 
     def snapshot(self):
+        context,ch,_=self.private('backup-phase-binding.json',262144,True)
+        require(context==self.context,'BACKUP_RECEIPT_BELONGS_TO_ANOTHER_TRANSITION')
         backup,bh,_=self.private('backup-receipt.json',262144,True)
         gate,gh,_=self.private('gate-receipt.json',262144,True)
         _,ah,size=self.private('semantic.dump',self.intent['maxArchiveBytes'])
@@ -79,7 +87,7 @@ class FencedBackupAdapter:
         database=self.intent['database']; oid=self.intent['databaseOid']
         state=self.admin.query("SELECT json_build_object('oid',oid::bigint,'closed',NOT datallowconn,'prepared',(SELECT count(*) FROM pg_prepared_xacts WHERE database="+literal(database)+"),'sessions',(SELECT count(*) FROM pg_stat_activity WHERE datid="+str(oid)+")) FROM pg_database WHERE datname="+literal(database),"SELECT pg_stat_clear_snapshot();")
         require(state=={'oid':oid,'closed':True,'prepared':0,'sessions':0}, 'CURRENT_DATABASE_FENCE_UNPROVEN')
-        return {'backupReceiptFileHash':bh,'gateReceiptFileHash':gh,'archiveSha256':ah,'archiveBytes':size,'databaseScopeHash':scope,'currentDatabaseState':state}
+        return {'backupPhaseBindingFileHash':ch,'backupReceiptFileHash':bh,'gateReceiptFileHash':gh,'archiveSha256':ah,'archiveBytes':size,'databaseScopeHash':scope,'currentDatabaseState':state}
 
     def observe(self, intent):
         self.exact(intent)

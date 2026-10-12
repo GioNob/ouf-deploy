@@ -23,11 +23,13 @@ class BackupComposition(unittest.TestCase):
         admin.query=lambda *a:dict(native)
         if native_admin is not None:
             admin=native_admin;intent=native_intent;evidence=Path(intent['directory'])
-        adapter=FencedBackupAdapter(admin,intent,lambda p:None)
         e.intents['FENCED_BACKUP']=intent;e.authority['phaseIntentHashes']={p:digest(i) for p,i in e.intents.items()}
         raw=json.dumps(e.authority,sort_keys=True,separators=(',',':')).encode();sha=hashlib.sha256(raw).hexdigest()
         directory=root/'composed';directory.mkdir(mode=0o700);initial=Transition.initial(sha,'b'*64,'c'*64,'d'*64)
         journal=j.Journal(directory);journal.initialize(initial);transition=Transition(journal,initial['contextHash'])
+        adapter=FencedBackupAdapter(admin,intent,lambda p:None,transition.context)
+        if not hasattr(self,'contexts'):self.contexts={}
+        self.contexts[str(evidence)]=adapter.context
         original=e.checkpoint
         def checkpoint(p,point,row):
             value=original(p,point,row);value['authorityHash']=sha;value['intentHash']=digest(e.intents[p]);return value
@@ -35,6 +37,7 @@ class BackupComposition(unittest.TestCase):
         e=Executor(transition,raw,e.authenticate,checkpoint,e.adapters,e.intents,e.clock)
         return e,calls,adapter,intent,evidence,native
     def complete(self,root,intent):
+        if not (root/'backup-phase-binding.json').exists():durable(root/'backup-phase-binding.json',self.contexts[str(root)])
         raw=b'fixture-archive-only'*30;archive=root/'semantic.dump';archive.write_bytes(raw);archive.chmod(0o600)
         gate={'schema':'ouf.discovery.database-gate.v1','status':'WRITERS_FENCED','databaseScopeHash':digest({'name':intent['database'],'oid':intent['databaseOid']}),'newConnectionsDenied':True,'otherSessionsAbsent':True,'automaticReopen':False,'restorePerformed':False,'migrationPerformed':False}
         durable(root/'gate-receipt.json',gate)
@@ -79,5 +82,17 @@ class BackupComposition(unittest.TestCase):
             counter[0]+=1;return {**n,'closed':counter[0]==1}
         a.admin.query=query
         with self.assertRaises(GateDenied):a.observe(i)
+    def test_foreign_transition_or_unbound_old_backup_cannot_be_adopted(self):
+        for change in ('foreign','absent'):
+            e,calls,a,i,root,n=self.fixture();self.complete(root,i)
+            path=root/'backup-phase-binding.json'
+            if change=='foreign':path.write_text(json.dumps({**a.context,'transitionContextHash':'f'*64}))
+            else:path.unlink()
+            if change=='foreign':
+                with self.assertRaises(GateDenied):a.observe(i)
+            else:self.assertEqual(a.observe(i)[0],'UNKNOWN')
+            with patch('fenced_backup_adapter.fenced_backup') as apply:
+                with self.assertRaises(GateDenied):a.apply(i)
+                apply.assert_not_called()
 
 if __name__=='__main__':unittest.main()

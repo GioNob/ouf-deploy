@@ -26,7 +26,7 @@ class NativeComposition(FencedBackupNative):
             # A separate process/channel owns the effect; never share a parent
             # psql pipe across controller processes.
             admin=Psql(self.cid,'postgres','postgres','ouf-cutover-admin-composed-child')
-            adapter=FencedBackupAdapter(admin,intent,lambda point:None)
+            adapter=FencedBackupAdapter(admin,intent,lambda point:None,executor.t.context)
             adapter.apply_original=adapter.apply
             def crash(value):
                 adapter.apply_original(value);admin.close();os._exit(71)
