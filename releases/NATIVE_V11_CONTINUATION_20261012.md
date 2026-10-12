@@ -75,6 +75,12 @@ Installed token-writer identity and lawful rotation are still unproven. Do not r
 
 Read only those two units' safe properties and redact ExecStart to executable/script PATH only: no argument values, Environment or credential bytes. The candidate's source/installation/configuration must then be authenticated before accepting token replacement under the renewable-source contract. R12 remains operator-reported active/running. Do not start token jobs, stop R12 or replay failed historical R8/R9/R10 units. Baseline and six-mount acceptance remain unchanged.
 
+## Semantic token service/timer metadata confirmed
+
+[Operator-selected unit metadata](../evidence/semantic-policy-token-unit-metadata-target-20261012.json) confirms root `Type=oneshot`, timer/service mutual relationship, and last execution15:15:16–15:15:17 UTC with Result=success/ExecMainStatus=0. ExecMainCode=1 is CLD_EXITED, not exit status1. Inactive/dead is therefore consistent with the completed successful job. The timer remains active/waiting.
+
+The configured executable is /usr/bin/python3; its script argument was intentionally not exposed with raw ExecStart arguments. Next read is the selected producer script's root custody and redacted static source, without executing it or reading token/delegation-key/configuration credential files. Producer output→mount0 correspondence, issuer/client scope, installation authority and renewable-source qualification remain unproven. No service start/stop/token grant or baseline refresh is performed by this diagnosis.
+
 ## Remaining objective
 
 After the target preparation, finish the six-mount policy and independent acceptance, authenticated transport/new consumption bindings, distinct worker with retained cumulative recovery history, application verification and producer release. Complete sealed installer and current finite HUMAN/signature source authority remain open. The changed gate request needs fresh authority; original59… request/9ec… intake cannot approve it.
