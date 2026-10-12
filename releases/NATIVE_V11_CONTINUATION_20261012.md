@@ -28,13 +28,22 @@ The release reader now distinguishes ordinary R/S scheduler changes from process
 
 ## Necessary target preparation before further source closure
 
-The actual private request preserves **two original mounts plus four additions**. The qualified fixture currently covers the four additions. The types/custody of the two retained sources are not exposed by the current runner or the earlier safe contract-shape capture. Do not silently remove them or claim complete six-mount target acceptance. The request can also contain an explicit retained hostname; its exact private launch semantics must be preserved in policy compilation.
+The actual private request preserves **two original mounts plus four additions**. The qualified fixture currently covers the four additions. The earlier runner/contract-shape capture did not expose the types/custody of the two retained sources. The operator has now reported the successful no-apply preparation below. Do not silently remove them or claim complete six-mount target acceptance. The request can also contain an explicit retained hostname; its exact private launch semantics must be preserved in policy compilation.
 
 A finished no-apply preparer reads the selected original9ec… intake, verifies the original package/config bytes, compiles a fresh gated request and captures bounded no-follow metadata for the two retained mount sources. It reads no mounted source-file contents or private keys, invokes no Docker/nft/systemd/SQL/DNS/provider command, and does not touch R12. It atomically publishes four new private files plus manifest, never overwriting an existing plan/intake. Its observations remain historical and it issues no authority. [Program](../scripts/prepare-gated-v11-private-plan.py), [pinned launcher](gated-v11-private-plan-20261012.sh), [qualification](../evidence/gated-v11-private-plan-qualified-20261012.json), [CI38239801029](https://github.com/GioNob/ouf-deploy/actions/runs/38239801029) SUCCESS:5 preparation and4 delivery tests,10 download/digest denial cases and5 root tamper cases. Actual original V11 image configuration is also exercised in the signed-node native job.
 
 Launcher source56813b8044bd24e75d2b402276aa19a2a59192fc, SHA256b7042685859f7dacbb4bb1bedafa0303e727593633b810038a6b5f9bb09c9b54. Program source524f47c1c5a0b0082204302672dd5d53e5bd16b3, SHA256b69384d6756f14a141556b2bd0bf6c3f45a3914252c1cab058eae6b95c18345a. All5 downloaded sources are checked before sudo and again before root execution. The selected existing portable GitHub client is preferred.
 
-The operator must execute this prepared launcher on the VPS because this session has no SSH/root execution surface and the runner cannot read the selected protected files. This is required private preparation, **not an unfinished cutover approval**. No target output has yet been received. Until it arrives, target six-mount source closure and independent target policy preparation are blocked.
+The operator must execute this prepared launcher on the VPS because this session has no SSH/root execution surface and the runner cannot read the selected protected files. This is required private preparation, **not an unfinished cutover approval**. Target output has now been received from the operator; it is recorded as reported evidence, not an independent live readback. Full six-mount source closure and independent target acceptance remain unproven.
+
+
+## Received target preparation — 12 October 2026, 12:14:48 UTC
+
+The operator reported `GATED_V11_REQUEST_AND_RETAINED_METADATA_PREPARED_NOT_APPLY_READY` and launcher exit0. Five protected files (four files plus manifest) were atomically published as the new intake `005f6a7afad7d493a52d9b183816fa0346f1bb1a4de5ab4b63c8b0b39f3fb092`. Creation request `37b517eda22f5997504687222679d458c9478ee66ba5ef2377cf5588ef3f0a9d`; gate proposal `f415257371da8a541f566587f45ac51c8dce26c6b5854b16d4845ba700aede75`.
+
+The two retained read-only sources are a root-owned directory (uid0/gid10001, mode0750, one regular file and no symlinks) and a regular file (uid/gid10001, mode0400). These are bounded historical metadata observations; the directory's member custody and both sources' exact private bindings/byte expectations still need source-bound closure. No explicit hostname was reported.
+
+The receipt reports original package/configuration byte verification, original intake preserved, zero mounted source-content/private-key reads, zero container/database/provider/firewall operations, R12 untouched and no budget reset. This is preparation only: no publisher-crypto acceptance, signature, runtime authority, deployment, readiness or CSV result. The changed request still requires fresh scoped HUMAN authority. [Operator-reported target receipt](../evidence/gated-v11-private-plan-prepared-target-20261012.json).
 
 ## Remaining objective
 
