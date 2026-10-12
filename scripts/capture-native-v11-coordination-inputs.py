@@ -23,6 +23,19 @@ def require(ok,why):
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def encoded(value):return json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
 def boot_id():return Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+def contract_shape(value):
+    """Bounded field/type metadata only; no scalar values or private paths."""
+    left=[512]
+    def walk(item,depth):
+        left[0]-=1
+        if left[0]<0 or depth>6:return {'type':'TRUNCATED'}
+        if type(item) is dict:
+            keys=sorted(item)
+            if len(keys)>64:return {'type':'OBJECT','fieldCount':len(keys),'truncated':True}
+            return {'type':'OBJECT','fields':{k if re.fullmatch('[A-Za-z][A-Za-z0-9_.-]{0,100}',k) else 'opaque-key-'+sha(k.encode()):walk(item[k],depth+1) for k in keys}}
+        if type(item) is list:return {'type':'ARRAY','count':len(item),'sampleShapes':[walk(v,depth+1) for v in item[:4]],'truncated':len(item)>4}
+        return {'type':'NULL' if item is None else 'BOOLEAN' if type(item) is bool else 'INTEGER' if type(item) is int else 'NUMBER' if type(item) is float else 'STRING'}
+    return walk(value,0)
 def parse(raw):
     def unique(pairs):
         value={}
@@ -80,7 +93,8 @@ def collect(prepare,custody):
     return files,{'nativeReviewIntakeHash':NATIVE_INTAKE_HASH,'authorityProfileHash':AUTHORITY_HASH,'coordinatorConfigurationHash':COORDINATOR_HASH,
                   'executionConfigurationHash':configuration_hash,'r12AuthorizationHash':R12_AUTH_HASH,'r12ContextRef':auth['contextRef'],
                   'r12GenerationRef':auth['generationRef'],'r12IncidentRef':prepare.R12_INCIDENT,'retainedProgramCountVerified':len(prepare.R12_PROGRAMS),
-                  'recoveryAttempts':history['attempts'],'leasePublicationCount':history['publicationCount'],'workerPid':worker['workerPid']}
+                  'recoveryAttempts':history['attempts'],'leasePublicationCount':history['publicationCount'],'workerPid':worker['workerPid'],
+                  'contractShapes':{'coordinator':contract_shape(coordinator),'execution':contract_shape(execution),'authority':contract_shape(authority)}}
 
 def main():
     report={'schema':'ouf.native-v11-coordination-inputs-capture.v1','applicationCutoverAuthorized':False,'runtimeAuthorityIssued':False,'productionApplyReady':False,
