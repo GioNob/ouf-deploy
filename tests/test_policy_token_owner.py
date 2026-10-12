@@ -1,4 +1,5 @@
-import copy,fcntl,json,os,ssl,sys,tempfile,unittest
+import copy,fcntl,json,os,ssl,sys,tempfile,unittest,subprocess,threading
+from http.server import HTTPServer,BaseHTTPRequestHandler
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from tools.semantic_policy_token_owner.producer import (
@@ -35,6 +36,41 @@ class Opener:
   return Response(self.value)
 
 class TokenOwner(unittest.TestCase):
+ def test_real_tls_trust_hostname_redirect_and_single_request(self):
+  with tempfile.TemporaryDirectory(dir=ROOT) as d:
+   cert=Path(d)/'cert.pem';key=Path(d)/'key.pem'
+   subprocess.run(['openssl','req','-x509','-newkey','rsa:2048','-nodes','-days','1',
+    '-subj','/CN=localhost','-addext','subjectAltName=DNS:localhost',
+    '-keyout',str(key),'-out',str(cert)],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+   calls=[];reply={'code':200}
+   class Handler(BaseHTTPRequestHandler):
+    def do_POST(self):
+     calls.append(self.path);self.rfile.read(int(self.headers['Content-Length']))
+     self.send_response(reply['code']);self.send_header('Location','/redirected');self.end_headers()
+     if reply['code']==200:self.wfile.write(b'{"access_token":"FIXTURE_TLS","token_type":"Bearer","expires_in":120}')
+    def do_GET(self):calls.append(self.path);self.send_response(500);self.end_headers()
+    def log_message(self,*args):pass
+   server=HTTPServer(('127.0.0.1',0),Handler);server.timeout=.2
+   context=ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER);context.load_cert_chain(cert,key)
+   server.socket=context.wrap_socket(server.socket,server_side=True)
+   thread=threading.Thread(target=server.serve_forever,kwargs={'poll_interval':.05},daemon=True);thread.start()
+   try:
+    clock=Clock();port=server.server_port
+    binding=Binding(f'https://localhost:{port}/token','client','scope','/run/fixture','token',10001)
+    with self.assertRaises(Temporary):HttpsGrant(clock).request(binding,'FIXTURE_SECRET',130)
+    self.assertEqual(calls,[])
+    trusted=ssl.create_default_context(cafile=str(cert));transport=HttpsGrant(clock,context=trusted)
+    wrong=Binding(f'https://127.0.0.1:{port}/token','client','scope','/run/fixture','token',10001)
+    with self.assertRaises(Temporary):transport.request(wrong,'FIXTURE_SECRET',130)
+    self.assertEqual(calls,[])
+    self.assertEqual(transport.request(binding,'FIXTURE_SECRET',130)['expires_in'],120)
+    self.assertEqual(calls,['/token']);reply['code']=302
+    with self.assertRaises(Temporary):transport.request(binding,'FIXTURE_SECRET',130)
+    self.assertEqual(calls,['/token','/token']);reply['code']=401
+    with self.assertRaises(Permanent):transport.request(binding,'FIXTURE_SECRET',130)
+    self.assertEqual(calls,['/token','/token','/token'])
+   finally:server.shutdown();thread.join(2);server.server_close()
+
  def fixture(self,policy=None):
   temp=tempfile.TemporaryDirectory(dir=ROOT);self.addCleanup(temp.cleanup);root=Path(temp.name);root.chmod(0o700)
   credential=root/'credential';credential.write_text('FIXTURE_SECRET');credential.chmod(0o400)
