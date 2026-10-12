@@ -113,6 +113,12 @@ The installed code itself shows no durable failure-budget storage; outer timer/s
 
 Next selected read is EnvironmentFiles routing metadata plus safe service/timer timing/retry properties. Do not dump Environment/ExecStart, open config/secret files, renew tokens, mutate units, reset budgets or refresh baseline. A timer cadence or systemd rate limit is not a persisted per-incident finite recovery budget. Source custody, configured output/member and issuer/client/audience/scope authority remain open.
 
+## Selected config source custody observed
+
+[Operator config routing](../evidence/semantic-token-config-routing-target-20261012.json) reports one mandatory regular root:root0600 single-link EnvironmentFile, root-protected ancestry, stable double metadata read and zero config/credential bytes. Selected service has Restart=no, OnFailure empty, TimeoutStart25s, RuntimeMax infinity, StartLimit5/10s. Timer observation contains OnBoot15s, accuracy1s, jitter0 and Persistent=no. This does not prove periodic renewal or finite persisted failure/incident budgets; 5/10s is not the policy's128attempts/24h episode accounting.
+
+Next operation may read only the selected config assignments, keep values private and compare the code-derived output member/runtime directory/GID to the sealed historical mount0. No referenced secret/token/delegation-key file may be opened. Resolve precedence and mount/root remapping before claiming an effective host binding. Reject unknown syntax/keys/remapping rather than evaluating a shell or executing producer config(). Source custody, writer/issuer authority and six-mount acceptance remain blocked.
+
 ## Remaining objective
 
 After the target preparation, finish the six-mount policy and independent acceptance, authenticated transport/new consumption bindings, distinct worker with retained cumulative recovery history, application verification and producer release. Complete sealed installer and current finite HUMAN/signature source authority remain open. The changed gate request needs fresh authority; original59… request/9ec… intake cannot approve it.
