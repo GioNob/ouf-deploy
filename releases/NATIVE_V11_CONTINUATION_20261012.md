@@ -69,6 +69,12 @@ Source review finds R12's Coordinator PrivateJournal uses0600 custody and atomic
 
 Installed token-writer identity and lawful rotation are still unproven. Do not refresh the historical baseline, weaken checks, issue/grant tokens, stop R12 ad hoc or treat candidate service names as authority. Next evidence is a bounded read-only service/timer name/state inventory, followed by selected-owner source/configuration routing. Renewable-source implementation/qualification and six-mount signed acceptance remain OPEN; no deployment or Teatri run/ACK/search chain exists.
 
+## Semantic token renewal unit candidate — selected metadata pending
+
+[Operator unit inventory](../evidence/semantic-policy-token-unit-inventory-target-20261012.json) reports `ouf-policy-token@semantic.timer` loaded/active/waiting and `ouf-policy-token@semantic.service` loaded/inactive/dead. This identifies a candidate renewal component, not proof of writer identity. Inactive/dead alone is compatible with a completed scheduled oneshot; Type, Result, last execution timestamps and timer/service relationship remain unverified.
+
+Read only those two units' safe properties and redact ExecStart to executable/script PATH only: no argument values, Environment or credential bytes. The candidate's source/installation/configuration must then be authenticated before accepting token replacement under the renewable-source contract. R12 remains operator-reported active/running. Do not start token jobs, stop R12 or replay failed historical R8/R9/R10 units. Baseline and six-mount acceptance remain unchanged.
+
 ## Remaining objective
 
 After the target preparation, finish the six-mount policy and independent acceptance, authenticated transport/new consumption bindings, distinct worker with retained cumulative recovery history, application verification and producer release. Complete sealed installer and current finite HUMAN/signature source authority remain open. The changed gate request needs fresh authority; original59… request/9ec… intake cannot approve it.
