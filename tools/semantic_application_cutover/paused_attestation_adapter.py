@@ -16,7 +16,11 @@ from tools.semantic_provider_deployment_authentication import private_bytes
 PHASE='ATTEST_NEW_OCI_PEER'
 class PausedAttestationAdapter:
     def __init__(self,transition,intent,store,observer,acceptance,request,context,authorization_binding):
-        require(type(observer) is PausedNodeObservation and type(observer.frame) is ProjectedFrameObservation and type(acceptance) is PausedNodeAcceptance
+        allowed=(ProjectedFrameObservation,)
+        if type(observer) is PausedNodeObservation and type(observer.frame) not in allowed:
+            from six_mount_frame_observation import SixMountFrameObservation
+            allowed=allowed+(SixMountFrameObservation,)
+        require(type(observer) is PausedNodeObservation and type(observer.frame) in allowed and type(acceptance) is PausedNodeAcceptance
                 and type(store) is NativeEvidenceStore,'TYPED_PAUSED_NODE_OWNER_PHASE_REQUIRED')
         require(type(authorization_binding) is dict and set(authorization_binding)=={'path','sha256'}
                 and Path(authorization_binding['path']).is_absolute() and hash_value(authorization_binding['sha256']),
