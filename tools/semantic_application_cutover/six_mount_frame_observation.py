@@ -79,7 +79,7 @@ class SixMountFrameObservation:
     def observe(self,generation,bundle_path,application_hash,artifact_hash):
         require(artifact_hash==self.configured['configuration']['sha256'] and hash_value(application_hash),'EXACT_PROJECTED_FRAME_POLICY_AND_APPLICATION_REQUIRED')
         private=self.pinned();policy=decode(private['configuration'],131072)
-        fields={'schema','expectedOci','manifest','startup','approvedHooks','sources','configtree','renewableToken','delegationKeyTarget'}
+        fields={'schema','expectedOci','manifest','startup','approvedHooks','sources','configtree','renewableToken','delegationKeyTarget','delegationKeyMetadataHash'}
         require(set(policy)==fields and policy['schema']=='ouf.semantic-configured-six-mount-frame-policy.v1'
                 and type(policy['sources']) is list and len(policy['sources'])==4,'EXACT_FOUR_FILES_CONFIGTREE_AND_TOKEN_POLICY_REQUIRED')
         bundle_path=Path(bundle_path);raw=self.bundle(bundle_path);bundle=decode(raw,131072)
@@ -91,6 +91,7 @@ class SixMountFrameObservation:
         bindings.append({k:policy['renewableToken'][k] for k in ('source','target')}|{'readOnly':True})
         key=policy['sources'][3]
         require(policy['delegationKeyTarget']==key['target'] and key['uid']==key['gid']==10001 and key['mode']==0o400 and key['readOnly'] is True, 'STATIC_ORIGINAL_DELEGATION_KEY_CUSTODY_REQUIRED')
+        require(hash_value(policy['delegationKeyMetadataHash']) and digest(attributes(Path(key['source']).lstat()))==policy['delegationKeyMetadataHash'], 'ORIGINAL_STATIC_KEY_METADATA_IDENTITY_DRIFT')
         require(len({v['source'] for v in bindings})==6 and not any(a['target'].startswith(b['target']+'/') for a in bindings for b in bindings if a is not b), 'DISTINCT_NONSHADOWING_SIX_MOUNTS_REQUIRED')
         require(bindings==policy['manifest']['mounts'] and len({v['target'] for v in bindings})==6,'EXACT_SIX_PRIVATE_INPUT_BINDINGS_REQUIRED')
         require(digest(policy['expectedOci'])==application_hash,'INDEPENDENT_PROJECTED_FRAME_EXPECTATION_DRIFT')
@@ -101,6 +102,7 @@ class SixMountFrameObservation:
         files=frame.source_mount_frame(generation['pid'],current,bundle,policy['sources'],self.budget)
         directory=configtree.observe(generation)
         token=RenewableTokenMountObservation(policy['renewableToken'],self.token_owner,time.monotonic()+self.budget.remaining(30),pause_binding=self.pause_binding).observe(token_generation(generation['pid'],allow_frozen=True))
+        require(digest(attributes(Path(key['source']).lstat()))==policy['delegationKeyMetadataHash'], 'ORIGINAL_STATIC_KEY_METADATA_IDENTITY_DRIFT')
         require(self.pinned()==private and self.bundle(bundle_path)==raw
                 and mounts.generation(generation['pid'],self.budget)==current,'PROJECTED_FRAME_CHANGED_DURING_OBSERVATION')
         self.budget.check()

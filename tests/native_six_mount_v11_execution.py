@@ -29,7 +29,7 @@ from cutover_executor import CutoverDenied
 from transition_journal import digest
 from paused_workload_binding import PausedWorkloadBinding
 from tools.semantic_provider_node_observation import rootfs_seal
-from tools.semantic_provider_deployment_authentication import VerificationBudget,decode
+from tools.semantic_provider_deployment_authentication import VerificationBudget,decode,attributes
 from tools.semantic_provider_preexec_native import NativeBackend
 from tools.semantic_provider_deployment_admission import application_hash
 from configtree_mount_observation import ConfigtreeMountObservation
@@ -107,9 +107,25 @@ def paused_filesystem(e,engine,store,socket,request,configtree,sources,fixture_r
     process=oci['process'];policy={'schema':'ouf.semantic-configured-six-mount-frame-policy.v1','expectedOci':copy.deepcopy(oci),
             'manifest':{'user':'10001:10001','readOnlyRoot':False,'memoryBytes':2147483648,'pidsLimit':512,'mounts':mounts},
             'startup':{'uid':10001,'gid':10001,'umask':process['user'].get('umask'),'cwd':process['cwd'],'args':process['args'],'env':process['env']},
-            'approvedHooks':oci.get('hooks') or {},'sources':sources,'configtree':configtree,'renewableToken':TOKEN_POLICY,'delegationKeyTarget':sources[3]['target']}
+            'approvedHooks':oci.get('hooks') or {},'sources':sources,'configtree':configtree,'renewableToken':TOKEN_POLICY,'delegationKeyTarget':sources[3]['target'],'delegationKeyMetadataHash':digest(attributes(Path(sources[3]['source']).lstat()))}
     policy_path=projected/'policy.json';policy_path.write_text(json.dumps(policy,sort_keys=True,separators=(',',':')));policy_path.chmod(0o600)
     bindings={'source':{'path':str(owner),'sha256':file_hash(owner)},'configuration':{'path':str(policy_path),'sha256':file_hash(policy_path)},'bundleParents':[str(bundle.parent)]}
+    frame_hash,_=SixMountFrameObservation(bindings,VerificationBudget(18),TOKEN_OWNER,binding).observe(generation,config,application_hash(oci),file_hash(policy_path))
+    # Same bytes, a different historical identity: the static key cannot use
+    # the renewable-token exception. Restore the SAME original inode afterwards.
+    key_path=Path(sources[3]['source']);held_key=key_path.with_name('held-original-key')
+    key_path.rename(held_key);key_path.write_bytes(held_key.read_bytes());os.chown(key_path,10001,10001);key_path.chmod(0o400)
+    try:
+        try:SixMountFrameObservation(bindings,VerificationBudget(18),TOKEN_OWNER,binding).observe(generation,config,application_hash(oci),file_hash(policy_path))
+        except ValueError:pass
+        else:raise AssertionError('STATIC_KEY_SAME_BYTES_NEW_INODE_ACCEPTED')
+    finally:
+        key_path.unlink();held_key.rename(key_path)
+    # Rename necessarily changes ctime: this is a fresh SYNTHETIC fixture policy
+    # approval, never refreshing a production baseline or original target key.
+    policy['delegationKeyMetadataHash']=digest(attributes(key_path.lstat()))
+    policy_path.write_text(json.dumps(policy,sort_keys=True,separators=(',',':')));policy_path.chmod(0o600)
+    bindings['configuration']['sha256']=file_hash(policy_path)
     frame_hash,_=SixMountFrameObservation(bindings,VerificationBudget(18),TOKEN_OWNER,binding).observe(generation,config,application_hash(oci),file_hash(policy_path))
     result=subprocess.run([binary,'--root',str(runtime_root),'state',peer['containerId']],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=5)
     assert result.returncode==0;peer_state=decode(result.stdout,16384);assert peer_state['status']=='running'
@@ -184,7 +200,7 @@ def paused_filesystem(e,engine,store,socket,request,configtree,sources,fixture_r
     result={'rootfsSeal':first,'observedCompleteOciHash':application_hash(oci),'stableDoubleRootfsSeal':True,
             'actualPausedRuncContract':True,'independentOciPolicyAccepted':False,'reciprocalPeersVerified':True,
             'singletonConfigtreeObservation':directory,'configtreeHashExtraFileAndPermissionDriftRejected':True,
-            'actualSixProjectedInputFrameObserved':True,'requestBindCount':4,'requestStructuredMountCount':2,'tokenOwnerAdmissionSynthetic':True,'projectedFrameHash':frame_hash,'projectedFileHashDriftRejected':True,
+            'actualSixProjectedInputFrameObserved':True,'requestBindCount':4,'requestStructuredMountCount':2,'tokenOwnerAdmissionSynthetic':True,'staticKeySameBytesNewInodeDenied':True,'projectedFrameHash':frame_hash,'projectedFileHashDriftRejected':True,
             'fixtureExpectedOciDerivedFromObservedOci':True,'completePausedNodeObservationHash':digest(complete),
             'reciprocalPeerOciDriftRejected':True,'unsignedObservationDidNotAdvanceAttestationPhase':True,
             'actualScopedPausedAcceptanceFixtureVerified':True,'signedAttestationPhaseCompletedOnce':True,
