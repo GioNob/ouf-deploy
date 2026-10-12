@@ -3,6 +3,9 @@ on:
   push:
     branches: [main]
     paths:
+      - tools/semantic_application_cutover/token_owner_custody_plan.py
+      - tests/test_token_owner_custody_plan.py
+      - evidence/semantic-token-shared-custody-ancestor-target-20261012.json
       - scripts/read-semantic-token-output-binding.py
       - tests/test_semantic_token_output_binding.py
       - scripts/read-semantic-token-static-facts.py
@@ -33,3 +36,5 @@ jobs:
         run: python3 -B -m unittest discover -s tests -p test_semantic_token_static_facts.py -v
       - name: Native private config snapshots and boolean-only correspondence
         run: sudo python3 -I -B -m unittest discover -s "/var/lib/ouf-token-static-${{ github.run_id }}/repository/tests" -p test_semantic_token_output_binding.py -v
+      - name: Review-only custody scope and no authority/effect inference
+        run: python3 -B -m unittest discover -s tests -p test_token_owner_custody_plan.py -v

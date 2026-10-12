@@ -139,6 +139,14 @@ The [private closure plan](RENEWABLE_MOUNT0_CLOSURE_PLAN_20261012.md) distinguis
 
 Both producer-source ancestry and credential-reference ancestry are now unproven. Do not infer they share the same failing parent yet, nor infer actual compromise. Next bounded read reports redacted ancestor depth/custody and privately compares failed ancestors with the selected producer path. That identifies a minimal governed relocation scope; no permission repair, credential copy/rotation, service change, baseline refresh or R12 action is performed.
 
+## Shared custody failure scope identified — diagnosis sufficient
+
+[Operator ancestor v2](../evidence/semantic-token-shared-custody-ancestor-target-20261012.json) confirms one shared unsafe ancestor: /opt/ouf UID/GID1000 mode0750. Source inner directory is root0700; credential-reference inner directory is UID/GID1000 mode0700. Both leaves remain root single-link files, source0755 and reference0400, with no symlinks or content reads. The shared-root cause and additional credential directory control are now evidenced; no content compromise is inferred.
+
+No further source/credential-content diagnosis is needed for this custody finding. A [machine-readable remediation plan](semantic-token-owner-custody-remediation-plan-20261012.json) is compiled from corrected reported facts with exact scope/contradiction guards. It proposes separate root-owned code/credential/recovery roots and preserves output binding/static key/R12. It does NOT copy source or credentials, change /opt/ouf, grant authority, initialize zero budgets or assert existing destinations safe. [Compiler](../tools/semantic_application_cutover/token_owner_custody_plan.py) and four tests reject legacy routing, ambiguous or contradictory custody/effects and prevent unknown private fields entering output/digests.
+
+Implementation/owner review is next: independently vetted producer source, credential re-establishment under existing IAM owner, finite fenced recovery with ambiguous-grant reconciliation, and a separate six-mount renewable-token frame/acceptance. The plan remains REVIEW_ONLY_NOT_APPLY_READY; no deployment or new Teatri run/ACK/object exists.
+
 ## Remaining objective
 
 After the target preparation, finish the six-mount policy and independent acceptance, authenticated transport/new consumption bindings, distinct worker with retained cumulative recovery history, application verification and producer release. Complete sealed installer and current finite HUMAN/signature source authority remain open. The changed gate request needs fresh authority; original59… request/9ec… intake cannot approve it.
