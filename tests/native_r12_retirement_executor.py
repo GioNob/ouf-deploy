@@ -56,7 +56,8 @@ class NativeRetirement(unittest.TestCase):
         claim=write(base/'activation.claim',{'startAuthorized':False,'fixtureOnly':True});boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         auth={'schema':'ouf.provider-resilient-r12-authorization.v1','serviceUnit':unit,'hostBootId':boot,'automaticRestart':False,'enableAtBoot':False,'programHashes':programs,'ownerConfigurationHash':owner_binding['sha256'],'activationClaim':json.loads(Path(claim['path']).read_bytes()),'generationRef':'b'*64,'incidentRef':'d'*64,'nativeBindings':{'python':binary(python)},'executionExpiresAt':1}
         auth['contextRef']=digest(auth);auth_binding=write(r12/'authorization.json',auth)
-        h=history(state);h.update(contextRef=auth['contextRef'],policyHash=digest(asdict(Policy())),startedWall=time.time()-200,startedMonotonic=time.monotonic()-200,lastWall=time.time(),lastMonotonic=time.monotonic())
+        h=history(state);wall,mono=time.time(),time.monotonic();elapsed=min(200,mono)
+        h.update(contextRef=auth['contextRef'],policyHash=digest(asdict(Policy())),startedWall=wall-200,startedMonotonic=mono-elapsed,lastWall=wall,lastMonotonic=mono,healthyMonotonicSeconds=elapsed/2)
         retry=r12/'retry';retry.mkdir(mode=0o700)
         from recovery_journal import Journal
         Journal(retry).initialize(h)
