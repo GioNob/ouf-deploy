@@ -12,6 +12,13 @@ if 'review_semantic_oci_policy' not in sys.modules:
     reviewer=types.ModuleType('review_semantic_oci_policy')
     exec(compile(source,'<pinned-compiler-fixture-reviewer>','exec'),reviewer.__dict__)
     sys.modules[reviewer.__name__]=reviewer
+# Existing fixture setUp reads the separately pinned schema next to its module.
+tree=ast.parse(Path(__file__).with_name('frame-observer.py').read_text())
+schema=next(ast.literal_eval(n.value) for n in tree.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='SCHEMA_BYTES' for t in n.targets))
+assert hashlib.sha256(schema).hexdigest()=='d8f2196b2f0e22c448942d46e25a775d4ffc7284b72435e04633ec9cb08b5368'
+schema_path=Path(__file__).with_name('semantic_oci_shape_schema.json')
+if not schema_path.exists():schema_path.write_bytes(schema)
+assert schema_path.read_bytes()==schema
 import test_compile_projected_frame_policy as previous
 from compile_six_mount_frame_policy import compile_policy,compilation_receipt,Denied
 
