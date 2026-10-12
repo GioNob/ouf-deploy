@@ -1,0 +1,9 @@
+# Semantic token property multiplicity correction — 12 October 2026
+
+The legacy static/routing readers used dict(line.partition(...)) and discarded all but the last row of repeated systemctl properties. systemd's src/systemctl/systemctl-show.c prints each EnvironmentFiles/TimersMonotonic/TimersCalendar array entry as a separate property row. Prior one-file/timer summaries are incomplete; no missing recurrence or sole config source is inferred. The producer code fingerprint and booleans for the observed config remain limited observations, not writer authentication.
+
+V2 keeps property lists, requires exactly one mandatory EnvironmentFile and single empty routing/remap/security fields. The embedded static observer requires unique Type/User/ExecStart rows; multiple direct commands are denied. Timer capture uses ordered lists, --all and explicit missing-field disclosure. No private config paths/values are printed, and no Environment/credential files are dumped. Existing scope/custody/digest/no-follow/code AST and stable double config/plan reads remain in force. Timer timestamps are a historical single capture, not stable source authority.
+
+Config comparison emits only booleans and strict cardinality evidence; it reads selected configuration values privately and NEVER opens referenced mounted token/secret/delegation-key files. It does not execute the producer, grant tokens, mutate units, refresh baselines, reset budgets or touch R12. Unit/code/config drift blocks with safe phase metadata and no retry.
+
+Legacy launcher source7d05dfea0d53e0efbd242aac2a1f206c513e282f is superseded. V2 program SHA256: `ee98b8cb8fccc0a259510f4ce3913d1c29500d74c41d379387246368e902cfbf`. Target v2 execution pending. Local8correspondence and3public-facts tests pass;8native observer tests pass with1UID fixture skipped locally. CI pending. New regression fixtures exercise repeated timers, repeated EnvironmentFiles, duplicate RootDirectory and multiple ExecStart rows.

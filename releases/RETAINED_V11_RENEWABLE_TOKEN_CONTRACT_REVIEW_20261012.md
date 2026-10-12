@@ -25,3 +25,9 @@ The static delegation-key source retains its exact approved custody/content bind
 Read only installed service/timer NAME and STATE metadata to locate the existing credential-renewal component. This inventory prints neither ExecStart arguments nor Environment/EnvironmentFile contents and does not read token/key files or invoke service start/stop/restart. Candidate names alone are not writer proof; absence from the name filter is not proof no writer exists. Then inspect only the selected candidate's source-bound owner configuration under protected routing before implementing/admitting the renewable-source contract.
 
 R12's lease journal uses0600/root-private custody in the inspected source; the observed0440 token is not attributed to R12. No ad hoc R12 stop or token rotation is authorized by this review.
+
+## Installed-source evidence reconciliation
+
+The root-controlled selected config/code observation now reports output directory/member/GID matching historical mount0, root0750/0440 publication and client/scope configured. [Receipt](../evidence/semantic-token-private-output-correspondence-target-20261012.json). Source root ancestry through /opt/ouf remains unproven, and HTTPS/client/scope presence is not approved issuer/audience/grant authority.
+
+Legacy systemctl dict parsing discarded repeated properties. [Correction](SEMANTIC_TOKEN_PROPERTY_MULTIPLICITY_CORRECTION_20261012.md) requires explicit sole-file/single-command cardinality and all timer rows before concluding effective configuration/renewal cadence. Missing expiry is still accepted by observed code; durable finite failure budget and actual owner-enforced validity/revocation remain unproven. The renewable contract remains DESIGN ONLY with no relaxation of historical key custody or six-mount acceptance.

@@ -21,7 +21,12 @@ def routing():
         'ouf-policy-token@semantic.service', '--property=ExecStart,Type,User'],
         capture_output=True, timeout=15)
     require(r.returncode == 0 and len(r.stdout) <= 65536)
-    fields = dict(line.partition('=')[::2] for line in r.stdout.decode().splitlines() if '=' in line)
+    fields = {}
+    for line in r.stdout.decode().splitlines():
+        key, separator, value = line.partition('=')
+        if separator:
+            require(key not in fields)
+            fields[key] = value
     require(fields.get('Type') == 'oneshot' and fields.get('User') == 'root')
     text = fields.get('ExecStart', '')
     exe = re.search(r'\bpath=([^ ;}]+)', text)

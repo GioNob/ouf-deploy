@@ -78,6 +78,7 @@ class StaticObservation(unittest.TestCase):
     def test_command_route_rejects_inline_and_wrong_unit_custody(self):
         good = 'Type=oneshot\nUser=root\nExecStart={ path=/usr/bin/python3 ; argv[]=/usr/bin/python3 /opt/ouf/ops/refresh-policy-token.py semantic ; }'
         for wire in (good.replace('User=root', 'User=1000'),
+                     'ExecStart={ path=/bin/sh ; argv[]=/bin/sh unsafe ; }\n'+good,
                      good.replace('/opt/ouf/ops/refresh-policy-token.py', '-c "do_bad_things"')):
             result = type('Result', (), {'returncode': 0, 'stdout': wire.encode()})()
             with patch.object(observer.subprocess, 'run', return_value=result):

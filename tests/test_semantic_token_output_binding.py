@@ -75,10 +75,21 @@ raise RuntimeError("DO_NOT_EXECUTE")
     def test_remapped_or_optional_config_source_denied(self):
         good='EnvironmentFiles=/private/selected.env (ignore_errors=no)\nUnsetEnvironment=\nRootDirectory=\nRootImage=\nBindPaths=\nBindReadOnlyPaths=\nTemporaryFileSystem=\n'
         for bad in (good.replace('ignore_errors=no','ignore_errors=yes'),
+                    good+'EnvironmentFiles=/private/other.env (ignore_errors=no)\n',
+                    'RootDirectory=/other\n'+good,
                     good.replace('RootDirectory=','RootDirectory=/other'),
                     good.replace('UnsetEnvironment=','UnsetEnvironment=OUF_POLICY_TOKEN_RUNTIME_DIR')):
             result=type('Result',(),{'returncode':0,'stdout':bad.encode()})()
             with patch.object(binding.subprocess,'run',return_value=result):
                 with self.assertRaises(ValueError): binding.routing()
+
+    def test_timer_repeated_properties_preserved_in_order(self):
+        raw=b'TimersMonotonic={ OnUnitActiveUSec=5min ; next_elapse=10min }\nTimersMonotonic={ OnBootUSec=15s ; next_elapse=15s }\nActiveState=active\n'
+        result=type('Result',(),{'returncode':0,'stdout':raw})()
+        with patch.object(binding.subprocess,'run',return_value=result):
+            report=binding.timer_metadata()
+        self.assertEqual(len(report['timerPropertiesAllValues']['TimersMonotonic']),2)
+        self.assertIn('OnUnitActiveUSec',report['timerPropertiesAllValues']['TimersMonotonic'][0])
+        self.assertIn('TimersCalendar',report['timerRequestedPropertiesAbsent'])
 
 if __name__=='__main__': unittest.main()

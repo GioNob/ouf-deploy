@@ -119,6 +119,14 @@ Next selected read is EnvironmentFiles routing metadata plus safe service/timer 
 
 Next operation may read only the selected config assignments, keep values private and compare the code-derived output member/runtime directory/GID to the sealed historical mount0. No referenced secret/token/delegation-key file may be opened. Resolve precedence and mount/root remapping before claiming an effective host binding. Reject unknown syntax/keys/remapping rather than evaluating a shell or executing producer config(). Source custody, writer/issuer authority and six-mount acceptance remain blocked.
 
+## Output correspondence observed — property multiplicity correction required
+
+[Operator correspondence](../evidence/semantic-token-private-output-correspondence-target-20261012.json) reports directory/member/GID match to historical mount0, client/scope configured and HTTPS prefix;690config bytes read total, no referenced secrets/token/key files opened, no execution or authority. This establishes correspondence for the configuration read, not authenticated writer/issuer authority.
+
+A reader defect was found: systemctl prints repeated rows for array properties such as EnvironmentFiles and TimersMonotonic, but dict construction discarded earlier rows. Source review of systemd/systemd src/systemctl/systemctl-show.c confirms per-entry output. Consequently earlier one-config-file counts and timer-only-OnBoot summaries may be incomplete; do not infer no recurrence. Earlier configured direct Python command selection could also discard another ExecStart row. Historical positive booleans are preserved as limited observations, not upgraded or erased.
+
+The [corrected v2 diagnostic](SEMANTIC_TOKEN_PROPERTY_MULTIPLICITY_CORRECTION_20261012.md) rejects duplicated command/routing/remap properties, proves exactly one mandatory EnvironmentFile before private read, preserves ALL timer values in ordered arrays and reports absent requested timer fields. It keeps existing config/code/intake no-follow and hash checks, authority=false and no effects. Fresh target v2 output is required; the legacy launcher7d05d… is superseded. No renewal cadence or finite budget conclusion is accepted yet.
+
 ## Remaining objective
 
 After the target preparation, finish the six-mount policy and independent acceptance, authenticated transport/new consumption bindings, distinct worker with retained cumulative recovery history, application verification and producer release. Complete sealed installer and current finite HUMAN/signature source authority remain open. The changed gate request needs fresh authority; original59… request/9ec… intake cannot approve it.
