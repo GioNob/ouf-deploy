@@ -8,7 +8,7 @@ import hashlib,json,os,re,signal,stat,sys,tarfile,types,zipfile
 from pathlib import Path
 HASHES={'atomic':'c113f578b027c39573b4562cd3ac324abb8108a393b82dde19f8eb53d98e0ea6',
         'publisher':'6ec32cdd81af7fd8e70b4dc2f876ecfabfd2772c1cd6fba70b8e9e4bafe9f666',
-        'journal':'bda7f2c0e7689856d0257b9b3a9b2a938b6962dbacbeb10cc1bbf7eaef905155',
+        'journal':'ac21979816e4eb0fadfd4fba6035830a0e16e7a53164de5a831856e11271377a',
         'gate':'a4e13489d52697117246f979c42a2df766d19f67c7a99e0922c3bb4ac6b45c44'}
 BASE=Path('/etc/ouf/deploy-snapshots')
 PARENT_HASH='9ec18cf053e5925e42df93b75990343cc1d09696975fc2a224d76b4b28becdae'
