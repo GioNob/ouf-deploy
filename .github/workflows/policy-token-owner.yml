@@ -1,0 +1,27 @@
+name: OUF policy-token owner component qualification
+on:
+  push:
+    branches: [main]
+    paths:
+      - tools/semantic_policy_token_owner/**
+      - tests/test_policy_token_owner.py
+      - .github/workflows/policy-token-owner.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  protected-root-token-owner:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Native root/group10001 custody, persistent recovery, atomic publication and ambiguity
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-policy-token-owner-${GITHUB_RUN_ID}"
+          sudo mkdir -m 700 "$OUF_FIXTURE_ROOT"
+          sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
+          sudo chown -R root:root "$OUF_FIXTURE_ROOT"
+          sudo env OUF_NATIVE_UIDS=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_owner.py -v
