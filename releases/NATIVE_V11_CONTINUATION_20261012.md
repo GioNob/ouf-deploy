@@ -180,3 +180,10 @@ Still OPEN: real DomainOwner and protected source/credential re-establishment; i
 
 
 The final six-mount path preserves an independently supplied static-key metadata anchor; a same-byte replacement inode is denied. Separate independent-input compiler is implemented and qualified by CI38299013343 (34 total tests, zero skips); actual target inputs/template/owner authority are still unauthenticated/uncompiled. Native source307c7179… and compiler sourcef633440d… are separately recorded. Current Human Ingestion status read was non-retryably denied; no account escalation/retry or grant proposal, no new current-source/CSV success inferred. Root VPS execution surface, sealed installer and real DomainOwner/source/transport/session integration remain absent.
+
+
+## Protected token source staging — latest qualified component
+
+[Source-stage continuation](SEMANTIC_TOKEN_PROTECTED_SOURCE_STAGE_20261012.md), source87cd35823536905f4c286e44f1630fd46468cd70, [CI38302541520](https://github.com/GioNob/ouf-deploy/actions/runs/38302541520) SUCCESS53 tests/zero skips. Existing explicit HUMAN/dual-role verification binds destination identity and exact source closure; root private atomic publication compiles but never executes candidate bodies. One durable fenced intent blocks blind restaging; completed publication gaps reconcile with zero rewriting. No credential copy, unit mutation, journal initialization, provider request or R12 operation. [Qualification](../evidence/semantic-token-protected-source-stage-qualified-20261012.json).
+
+This is source-custody staging, not the full executable/runtime installer. Real installed DomainOwner/credential re-establishment, executable layout/entry/reporter, governed session advancement, actual authenticated target policy/HUMAN/attestor and application/Teatri E2E remain OPEN. No actual target source staging or runtime authority has been submitted.
