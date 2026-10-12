@@ -127,6 +127,12 @@ A reader defect was found: systemctl prints repeated rows for array properties s
 
 The [corrected v2 diagnostic](SEMANTIC_TOKEN_PROPERTY_MULTIPLICITY_CORRECTION_20261012.md) rejects duplicated command/routing/remap properties, proves exactly one mandatory EnvironmentFile before private read, preserves ALL timer values in ordered arrays and reports absent requested timer fields. It keeps existing config/code/intake no-follow and hash checks, authority=false and no effects. Fresh target v2 output is required; the legacy launcher7d05d… is superseded. No renewal cadence or finite budget conclusion is accepted yet.
 
+## Corrected target v2 correspondence and renewal cadence confirmed
+
+[Operator v2](../evidence/semantic-token-private-output-correspondence-v2-target-20261012.json) confirms explicit property multiplicity, one mandatory EnvironmentFile, one direct Python command and matching output directory/member/GID. All timer rows show OnUnitActive1min and OnBoot15s, active/waiting, last trigger17:36:35 UTC; TimersCalendar is explicitly absent. The long NextElapseMonotonic is an absolute monotonic timestamp, not a weeks-long wait. Earlier one-row timer conclusion is superseded. No token/secret/key bytes, grant, mutation, authority or baseline refresh.
+
+The [private closure plan](RENEWABLE_MOUNT0_CLOSURE_PLAN_20261012.md) distinguishes existing app-owned immutable configtree from root-owned renewable token, documents new six-mount policy integration and governed source/finite renewal requirements. Source authentication remains blocked by UID1000 /opt/ouf ancestry; cadence is not persisted failure budget or issuer/client authority. Next prepared metadata-only read observes the configured secret reference custody without opening its content or inferring material type. Actual source/IAM/renewal and six-mount acceptance remain OPEN; no deployment or Teatri result.
+
 ## Remaining objective
 
 After the target preparation, finish the six-mount policy and independent acceptance, authenticated transport/new consumption bindings, distinct worker with retained cumulative recovery history, application verification and producer release. Complete sealed installer and current finite HUMAN/signature source authority remain open. The changed gate request needs fresh authority; original59… request/9ec… intake cannot approve it.
