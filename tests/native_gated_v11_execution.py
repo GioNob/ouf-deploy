@@ -14,6 +14,11 @@ from native_evidence_store import NativeEvidenceStore
 from executor_composition_fixture import compose
 from cutover_executor import CutoverDenied
 from transition_journal import digest
+from paused_workload_binding import PausedWorkloadBinding
+from tools.semantic_provider_node_observation import rootfs_seal
+from tools.semantic_provider_deployment_authentication import VerificationBudget,decode
+from tools.semantic_provider_preexec_native import NativeBackend
+from tools.semantic_provider_deployment_admission import application_hash
 import image_custody as custody
 import image_manifest_identity as identity
 
@@ -34,6 +39,39 @@ def file_hash(path,limit=536870912):
             if size>limit:raise ValueError('GATED_V11_FILE_UNBOUNDED')
             h.update(block)
     return h.hexdigest()
+
+def paused_filesystem(e,engine,store,socket,request):
+    """Native read-only seal; never construct an approval from observed OCI.
+
+    No independent target policy is supplied by this fixture. This qualifies
+    streaming/stability on original image bytes, not owner acceptance.
+    """
+    row=e.t.read()
+    with e.t.invocation():
+        e.t.begin('ATTEST_NEW_OCI_PEER',e.intent_hashes['ATTEST_NEW_OCI_PEER'],e.authority_hash,row['version'])
+    binding=PausedWorkloadBinding(engine,e.t,request,store);before=binding.observe()
+    cid=before['runtimeBinding']['containerId'];pid=before['runtimeBinding']['pid']
+    binary=str(Path(shutil.which('runc')).resolve());state=None
+    roots=(socket.parent/'exec/runtime-runc/moby',Path('/run/docker/runtime-runc/moby'),Path('/run/containerd/runc/moby'))
+    for runtime_root in roots:
+        result=subprocess.run([binary,'--root',str(runtime_root),'state',cid],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=5)
+        if result.returncode==0:
+            state=decode(result.stdout,16384);break
+    if state is None:raise ValueError('ORIGINAL_V11_PAUSED_RUNC_STATE_UNPROVEN')
+    binding.verify_runc_state(state,before)
+    bundle=Path(state['bundle']);assert bundle.is_absolute() and bundle.is_relative_to(socket.parent)
+    config=bundle/'config.json';raw=config.read_bytes();oci=decode(raw,131072)
+    root=Path(oci['root']['path']);root=root if root.is_absolute() else bundle/root
+    assert '..' not in root.parts and root.is_relative_to(socket.parent)
+    generation=NativeBackend.generation(None,pid)
+    limits={'maxEntries':100000,'maxBytes':8589934592,'maxDepth':64}
+    first=rootfs_seal(root,limits,VerificationBudget(18))
+    second=rootfs_seal(root,limits,VerificationBudget(18))
+    assert first==second and first['entries']>100 and first['bytes']>1000000
+    assert config.read_bytes()==raw and NativeBackend.generation(None,pid)==generation
+    assert binding.observe()==before
+    return {'rootfsSeal':first,'observedCompleteOciHash':application_hash(oci),'stableDoubleRootfsSeal':True,
+            'actualPausedRuncContract':True,'independentOciPolicyAccepted':False,'reciprocalPeersVerified':False}
 
 class Fixture:
     def __init__(self):self.cleanups=[]
@@ -76,6 +114,7 @@ def main():
             assert gate['processKind']=='GATE_WAITING' and native['Image']==descriptor['digest']
             jar_before=file_hash('/proc/'+str(pid)+'/root/app/application.jar');assert jar_before==verified['memberSha256']['application.jar']
             java_before=file_hash('/proc/'+str(pid)+'/root/opt/java/openjdk/bin/java');assert process.observe(pid)==gate
+            filesystem=paused_filesystem(e,engine,store,socket,request)
             deadline=time.monotonic()+5
             while True:
                 try:e.run(11);break
@@ -85,6 +124,7 @@ def main():
             java=process.observe(pid);assert java['processKind']=='APPLICATION_RUNNING' and java['generation']==gate['generation']
             assert file_hash('/proc/'+str(pid)+'/exe')==java_before
             receipt={'schema':'ouf.native-gated-original-v11-execution.v1','status':'ORIGINAL_V11_WAIT_GATE_AND_SAME_PID_JAVA_EXEC_OBSERVED','sourceCommit':spec['source'],'originalZipSha256':spec['zipSha256'],'nativeManifestImageId':descriptor['digest'],'signedSubjectsVerified':8,'layersVerified':len(audit['layers']),'actualApplicationJarMatchesPublishedBytes':True,'actualJavaLauncherUnchanged':True,'javaNotExecutedBeforeRelease':True,'actualSameGenerationJavaExec':True,'capabilitiesEmpty':True,'noNewPrivileges':True,'imageRebuilt':False,'fixtureImageImports':1,'targetImageImports':0,'authorityAndOtherPhasesSynthetic':True,'databaseMigrationTested':False,'completeOciRootfsPeerAcceptanceProven':False,'providerCalls':0,'applicationReadyProven':False,'targetApplied':False,'notReleaseAcceptance':True}
+            receipt.update(filesystem)
             print('OUF_GATED_ORIGINAL_V11='+json.dumps(receipt,sort_keys=True));(ROOT/'native-gated-v11-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
         finally:
             if cid is not None:engine.request('DELETE','/v1.44/containers/'+cid+'?force=true')
