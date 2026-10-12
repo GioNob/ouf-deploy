@@ -10,14 +10,14 @@
   if [ ! -x "$OUF_GH" ]; then OUF_GH="$(command -v gh || true)"; fi
   if [ -z "$OUF_GH" ] || [ ! -x "$OUF_GH" ]; then echo OUF_EXISTING_GITHUB_CLIENT_REQUIRED >&2; exit 1; fi
   OUF_DIR="$(mktemp -d "$HOME/ouf-retained-v11-expectations.XXXXXXXX")"
-  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/scripts/prepare-retained-v11-source-expectations.py?ref=3167d10b89daa9f34f32776b25ad8a5edb630751' > "$OUF_DIR/program.py"
-  printf '%s  %s\n' 'd6b3fc0f277d83e5c93b2fc78fe26fa84a8d36e780487b1665ff6dd481939e31' "$OUF_DIR/program.py" | sha256sum -c -
+  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/scripts/prepare-retained-v11-source-expectations.py?ref=58f8235cbecf5b41f538c0df1158d43ff5c2b23f' > "$OUF_DIR/program.py"
+  printf '%s  %s\n' 'c89caa119ef7c4fea07ac6a65dd5d2b173c144cf6a802e646929418acc859d56' "$OUF_DIR/program.py" | sha256sum -c -
   "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/tools/semantic_application_cutover/atomic_review_intake.py?ref=bdcf4594d152ea12d6b9b39b51e0d2533d83b7ef' > "$OUF_DIR/atomic.py"
   printf '%s  %s\n' 'c113f578b027c39573b4562cd3ac324abb8108a393b82dde19f8eb53d98e0ea6' "$OUF_DIR/atomic.py" | sha256sum -c -
   OUF_PHASE=CAPTURE_PRIVATE_RETAINED_SOURCE_EXPECTATIONS_NO_APPLY
   sudo /usr/bin/python3 -I -B -c '
 import hashlib,os,stat,sys
-expected=["d6b3fc0f277d83e5c93b2fc78fe26fa84a8d36e780487b1665ff6dd481939e31","c113f578b027c39573b4562cd3ac324abb8108a393b82dde19f8eb53d98e0ea6"]
+expected=["c89caa119ef7c4fea07ac6a65dd5d2b173c144cf6a802e646929418acc859d56","c113f578b027c39573b4562cd3ac324abb8108a393b82dde19f8eb53d98e0ea6"]
 if len(sys.argv)!=3:raise SystemExit("OUF_RETAINED_EXPECTATIONS_EXACT_SOURCE_SET_REQUIRED")
 identity=lambda s:(s.st_dev,s.st_ino,s.st_mode,s.st_uid,s.st_gid,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)
 sources=[]
