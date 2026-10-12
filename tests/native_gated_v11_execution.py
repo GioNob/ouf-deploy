@@ -60,10 +60,16 @@ def paused_filesystem(e,engine,store,socket,request):
             state=decode(result.stdout,16384);break
     if state is None:raise ValueError('ORIGINAL_V11_PAUSED_RUNC_STATE_UNPROVEN')
     binding.verify_runc_state(state,before)
-    bundle=Path(state['bundle']);assert bundle.is_absolute() and bundle.is_relative_to(socket.parent)
+    bundle=Path(state['bundle'])
+    # The isolated Engine may use the host containerd task parent. Never widen
+    # to /run: only this exact random fixture CID under closed task parents.
+    task_parents=(socket.parent/'exec/docker/containerd/daemon/io.containerd.runtime.v2.task/moby',
+                  Path('/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby'),
+                  Path('/run/containerd/io.containerd.runtime.v2.task/moby'))
+    assert bundle.is_absolute() and bundle.name==cid and (bundle.is_relative_to(socket.parent) or bundle.parent in task_parents), 'EXACT_FIXTURE_CONTAINERD_BUNDLE_PARENT_REQUIRED'
     config=bundle/'config.json';raw=config.read_bytes();oci=decode(raw,131072)
     root=Path(oci['root']['path']);root=root if root.is_absolute() else bundle/root
-    assert '..' not in root.parts and root.is_relative_to(socket.parent)
+    assert '..' not in root.parts and (root==bundle/'rootfs' or root.is_relative_to(socket.parent)), 'EXACT_FIXTURE_ROOTFS_PARENT_REQUIRED'
     generation=NativeBackend.generation(None,pid)
     limits={'maxEntries':100000,'maxBytes':8589934592,'maxDepth':64}
     first=rootfs_seal(root,limits,VerificationBudget(18))
