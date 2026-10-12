@@ -1,0 +1,26 @@
+{
+  "schema": "ouf.current-cinema-semantic-publication-observation.v1",
+  "evidenceSource": "AUTHENTICATED_OUF_MCP_READS",
+  "observedOn": "2026-10-12",
+  "account": "ouf-admin",
+  "queries": {
+    "MovieTheater": 0,
+    "teatro": 0,
+    "cinema": 1
+  },
+  "semanticId": "https://api.ouf-lab.it/semantic/cinema",
+  "artifactId": "5ae731cc-e4c5-43a3-aa5e-a7576adbd3a1",
+  "revisionId": "51706bed-81e4-4306-aca1-70119821727d",
+  "publicationSetId": "f92a2e17-30c9-456f-bb12-63afa84f41e6",
+  "publicationChecksum": "a711d0428f1cbe24c73cbf0fa5cabfcb52f85df774e7238d884e7f83f41b84e9",
+  "status": "ACTIVE",
+  "rdfSnapshotStatementCount": 17,
+  "rdfSnapshotPartial": false,
+  "assertedClass": "https://api.ouf-lab.it/semantic/cinema#Cinema",
+  "assertedSubClassOf": "https://schema.org/MovieTheater",
+  "interpretation": "ASSERTED_RDF_NO_INFERENCE",
+  "publicationProvenPresent": true,
+  "theatreCompatibilityEstablished": false,
+  "sourceMutation": false,
+  "notReleaseAcceptance": true
+}

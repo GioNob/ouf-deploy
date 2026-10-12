@@ -12,6 +12,14 @@ The signed phase intents reference prior phases rather than guessing a future co
 
 ## Fresh backup ownership
 
-The composed backup additionally publishes a one-use backup-phase-binding.json before invoking the qualified primitive. It binds the signed intent to the exact transition context, which includes authority/request/predecessor history. Preexisting backup files prevent apply; foreign/unbound old receipts cannot be adopted during reconciliation. A partial binding remains consumed and fail-closed. Six composition tests cover this ownership boundary, with native PostgreSQL controller-death qualification required for the updated source.
+The composed backup additionally publishes a one-use backup-phase-binding.json before invoking the qualified primitive. It binds the signed intent to the exact transition context, which includes authority/request/predecessor history. Preexisting backup files prevent apply; foreign/unbound old receipts cannot be adopted during reconciliation. A partial binding remains consumed and fail-closed. [CI38205125648](https://github.com/GioNob/ouf-deploy/actions/runs/38205125648), job114666800376 SUCCESS:6 composition tests and2 actual PostgreSQL controller-death tests qualify this updated ownership boundary. [Current backup receipt](../evidence/native-v11-fenced-backup-executor-qualified-20261012.json).
 
 The complete target applicator remains OPEN. Missing pieces include coordinated R12 stop/revoke with cumulative history, inventoried target producers and endpoint release, complete new OCI/peer attestation and authenticated transport/distinct worker, scoped migration admission, current application/CSV acceptance and the sealed root entrypoint. No new root command or runtime approval is requested for an incomplete applicator; existing R12, image-import history, Cinema and Teatri remain retained.
+
+## Original V11 provenance regression
+
+[CI38204944782](https://github.com/GioNob/ouf-deploy/actions/runs/38204944782), job114666249445 SUCCESS also repeats the existing original-byte native manifest qualification after the creation adapter's optional evidence-store change: the original signed publisher package, all layers and stopped native creation/reconciliation remain valid. This regression does not start the Semantic JVM or qualify target runtime phases.
+
+## Current semantic publication check
+
+Authenticated OUF reads on12 October still find the ACTIVE Cinema ontology, artifact5ae731cc-e4c5-43a3-aa5e-a7576adbd3a1, revision51706bed-81e4-4306-aca1-70119821727d, publicationSetf92a2e17-30c9-456f-bb12-63afa84f41e6. Exact semantic.get returns all17 asserted RDF statements, partialfalse: cinema#Cinema is a subclass of https://schema.org/MovieTheater. SearchesMovieTheater andteatro return empty lists while searchcinema resolves this published artifact. Thus publication itself is demonstrably present; this result is compatible with an artifact-metadata/contained-term indexing gap. It does not establish compatibility of Cinema with theatres or prove a compatible theatre ontology is published. No adoption, new onboarding/run, publication or provider-discovery call was made.
