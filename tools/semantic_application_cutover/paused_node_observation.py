@@ -20,8 +20,12 @@ from projected_frame_observation import ProjectedFrameObservation
 
 class PausedNodeObservation(NodeObservation):
     def __init__(self,cfg,budget,paused_binding,frame_observer):
+        allowed=(CreatedFrameObserver,ProjectedFrameObservation)
+        if type(frame_observer) not in allowed:
+            from six_mount_frame_observation import SixMountFrameObservation
+            allowed=allowed+(SixMountFrameObservation,)
         require(os.geteuid()==0 and type(paused_binding) is PausedWorkloadBinding
-                and type(frame_observer) in (CreatedFrameObserver,ProjectedFrameObservation),'TYPED_ROOT_PAUSED_NODE_OBSERVATION_REQUIRED')
+                and type(frame_observer) in allowed,'TYPED_ROOT_PAUSED_NODE_OBSERVATION_REQUIRED')
         require(set(cfg)=={'runtimeBinding','runtimeRootParents','bundleParents','commands','candidate','rootfsLimits'}
                 and set(cfg['commands'])=={'ip','nsenter'} and set(cfg['candidate'])=={'networkBindings','transport','tableName'},'EXACT_PAUSED_NODE_OBSERVATION_CONFIGURATION_REQUIRED')
         for key in ('runtimeRootParents','bundleParents'):
@@ -77,3 +81,4 @@ class PausedNodeObservation(NodeObservation):
                 'peerObservations':peers,'creationFrameHash':frame_hash,'frameInputHashes':{str(p):hashlib.sha256(raw).hexdigest() for p,raw in frame_inputs.items()},
                 'policyAuthenticationProven':False,'imagePublisherProvenanceVerified':False,'completeCreationAccepted':False,
                 'acceptanceGranted':False,'signaturesIssued':0,'startAuthorized':False}
+
