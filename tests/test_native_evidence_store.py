@@ -26,4 +26,14 @@ class Evidence(unittest.TestCase):
         with self.assertRaises(ValueError):s.read('CREATE_REPLACEMENT',digest({'fixture':True}))
         with self.assertRaises(ValueError):s.path('../foreign')
 
+
+class Baseline(unittest.TestCase):
+    fixture=Evidence.fixture
+    def test_scoped_baseline_rejects_foreign_context_and_symlink_before_content_read(self):
+        s=self.fixture();v={'transitionContextHash':'a'*64,'intentHash':'b'*64,'fixturePrivate':True};s.publish('START_REPLACEMENT',v)
+        self.assertEqual(s.read_baseline('START_REPLACEMENT','a'*64,'b'*64),v)
+        with self.assertRaises(ValueError):s.read_baseline('START_REPLACEMENT','c'*64,'b'*64)
+        p=s.path('START_REPLACEMENT');p.unlink();p.symlink_to('/dev/null')
+        with self.assertRaises(OSError):s.read_baseline('START_REPLACEMENT','a'*64,'b'*64)
+
 if __name__=='__main__':unittest.main()

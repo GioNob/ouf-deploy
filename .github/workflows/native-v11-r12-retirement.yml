@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - tools/semantic_application_cutover/native_evidence_store.py
       - tools/semantic_application_cutover/r12_retirement_adapter.py
       - tools/semantic_application_cutover/r12_retirement_scope.py
       - tools/semantic_application_cutover/core_adapter_factory.py

@@ -5,7 +5,7 @@ retained and denied; publication never overwrites them or issues authority.
 """
 import json,os,stat
 from pathlib import Path
-from transition_journal import PHASES,digest,require
+from transition_journal import PHASES,digest,require,hash_value
 
 class NativeEvidenceStore:
     def __init__(self,directory):
@@ -20,7 +20,7 @@ class NativeEvidenceStore:
     def path(self,phase):
         require(phase in PHASES,'EXACT_NATIVE_EVIDENCE_PHASE_REQUIRED');self.check()
         return self.root/(phase+'.json')
-    def read(self,phase,expected_hash):
+    def _read(self,phase):
         path=self.path(phase);fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
         try:
             s=os.fstat(fd)
@@ -35,9 +35,21 @@ class NativeEvidenceStore:
             require(pin(s)==pin(os.fstat(fd))==pin(path.lstat()) and len(raw)==s.st_size,'NATIVE_EVIDENCE_CHANGED_DURING_READ')
             value=json.loads(raw)
             require(raw==json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
-                    and digest(value)==expected_hash,'NATIVE_EVIDENCE_JOURNAL_BINDING_DRIFT')
+                     ,'NATIVE_EVIDENCE_CANONICAL_BYTES_REQUIRED')
             return value
         finally:os.close(fd)
+    def read(self,phase,expected_hash):
+        require(hash_value(expected_hash),'EXACT_NATIVE_EVIDENCE_JOURNAL_HASH_REQUIRED')
+        value=self._read(phase)
+        require(digest(value)==expected_hash,'NATIVE_EVIDENCE_JOURNAL_BINDING_DRIFT');return value
+    def read_baseline(self,phase,context_hash,intent_hash):
+        # Only the sealed owner reads its own private pre-effect snapshot.
+        # Context/intent bind this one-use baseline before any native effect;
+        # a hash alone neither authorizes it nor adopts a foreign snapshot.
+        require(hash_value(context_hash) and hash_value(intent_hash),'EXACT_NATIVE_BASELINE_SCOPE_REQUIRED')
+        value=self._read(phase)
+        require(type(value) is dict and value.get('transitionContextHash')==context_hash
+                and value.get('intentHash')==intent_hash,'NATIVE_BASELINE_CONTEXT_OR_INTENT_DRIFT');return value
     def publish(self,phase,value):
         raw=json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
         require(len(raw)<=2097152,'BOUNDED_NATIVE_EVIDENCE_REQUIRED')
