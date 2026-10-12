@@ -101,6 +101,12 @@ Do not globally chmod/chown /opt/ouf, assume the child protects the entire path,
 
 A separate [untrusted static observer](SEMANTIC_TOKEN_UNTRUSTED_STATIC_OBSERVATION_20261012.md) is prepared to read only this code, using descriptor-relative no-follow snapshots and exact reported custody. It labels the nonroot ancestry explicitly, redacts literals, never executes the producer and cannot authenticate it. The original authenticated reader and runtime acceptance stay blocked. Source observation on the target is pending.
 
+## Installed producer static flow observed, not authenticated
+
+[Operator static source observation](../evidence/semantic-token-untrusted-static-source-target-20261012.json) reports stable double read, code SHA256728b4c44d0e24b3c3bfc31769346c0c05752e870e93c096fac1c2897250e5c79, 8472bytes total (4236bytes per read), no truncation and no execution/provider calls. The redacted source shows environment configuration, secret-file reading, form token request with redirect rejection and bounded response, then temporary file ownership/mode and durable atomic replacement. This is compatible with the historical inode change but does not establish output→mount0 correspondence, issuer/client scope, lawful rotation or writer identity.
+
+The installed code itself shows no durable failure-budget storage; outer timer/service governance remains unverified. Do not infer compliant resilience from timeout/atomic publication alone. Public configuration KEY names, selected literal numeric operational limits and sealed historical member-name equality can next be extracted statically, without printing credential paths/values or reading configuration/credential files. Root custody, runtime authority, baseline and six-mount acceptance remain unchanged.
+
 ## Remaining objective
 
 After the target preparation, finish the six-mount policy and independent acceptance, authenticated transport/new consumption bindings, distinct worker with retained cumulative recovery history, application verification and producer release. Complete sealed installer and current finite HUMAN/signature source authority remain open. The changed gate request needs fresh authority; original59… request/9ec… intake cannot approve it.
