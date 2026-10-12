@@ -4,11 +4,11 @@ Uses pinned existing owner primitives in an isolated module namespace. Policy
 must be prepared/authenticated independently; observed OCI is never a policy
 input. No signature, key, native mutation or approval is issued here.
 """
-import ast,copy,hashlib,json,os,sys,types
+import ast,copy,hashlib,json,os,stat,sys,types
 from pathlib import Path
 from transition_journal import require,digest,hash_value
 from configtree_mount_observation import ConfigtreeMountObservation
-from tools.semantic_provider_deployment_authentication import private_bytes,decode
+from tools.semantic_provider_deployment_authentication import private_bytes,decode,ancestors,attributes
 
 OWNER_HASHES={'review_semantic_oci_policy':'d35123954e91fc463a3ad78cedeeb2284c0106c22de48780e1128178c72a4eb6',
               'observe_semantic_mount_view':'6d2f00ffcf1159bde6a2bbf9744e62f2c6b6760d8af12d8647d911336a059201',
@@ -17,15 +17,34 @@ OWNER_HASHES={'review_semantic_oci_policy':'d35123954e91fc463a3ad78cedeeb2284c01
 
 class ProjectedFrameObservation:
     def __init__(self,configured,budget):
-        require(os.geteuid()==0 and type(configured) is dict and set(configured)=={'source','configuration'},'EXACT_ROOT_PROJECTED_FRAME_BINDINGS_REQUIRED')
-        require(all(type(v) is dict and set(v)=={'path','sha256'} and Path(v['path']).is_absolute() and hash_value(v['sha256']) for v in configured.values()),'EXACT_PINNED_PROJECTED_FRAME_SOURCE_AND_POLICY_REQUIRED')
+        require(os.geteuid()==0 and type(configured) is dict and set(configured)=={'source','configuration','bundleParents'},'EXACT_ROOT_PROJECTED_FRAME_BINDINGS_REQUIRED')
+        require(all(type(configured[k]) is dict and set(configured[k])=={'path','sha256'} and Path(configured[k]['path']).is_absolute() and hash_value(configured[k]['sha256']) for k in ('source','configuration')),'EXACT_PINNED_PROJECTED_FRAME_SOURCE_AND_POLICY_REQUIRED')
+        require(type(configured['bundleParents']) is list and 1<=len(configured['bundleParents'])<=8
+                and all(type(p) is str and Path(p).is_absolute() and '..' not in Path(p).parts and p!='/' for p in configured['bundleParents']),
+                'EXPLICIT_OWNED_PROJECTED_BUNDLE_PARENTS_REQUIRED')
         self.configured=copy.deepcopy(configured);self.configuration_hash=digest(configured);self.budget=budget
     def pinned(self):
         require(digest(self.configured)==self.configuration_hash,'PROJECTED_FRAME_BINDINGS_DRIFT');values={}
-        for name,binding in self.configured.items():
+        for name in ('source','configuration'):
+            binding=self.configured[name]
             self.budget.check();raw=private_bytes(Path(binding['path']),131072)
             require(hashlib.sha256(raw).hexdigest()==binding['sha256'],'PROJECTED_FRAME_SOURCE_OR_POLICY_DRIFT');values[name]=raw
         return values
+    def bundle(self,path):
+        path=Path(path);require(path.name=='config.json' and path.is_absolute()
+                               and any(Path(p) in path.parent.parents for p in self.configured['bundleParents']),
+                               'PROJECTED_RUNTIME_BUNDLE_OUTSIDE_APPROVAL')
+        ancestors(path);self.budget.check();fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+        try:
+            before=os.fstat(fd)
+            require(stat.S_ISREG(before.st_mode) and before.st_uid==before.st_gid==0 and before.st_nlink==1
+                    and stat.S_IMODE(before.st_mode) in (0o600,0o644) and 0<before.st_size<=131072,
+                    'ROOT_OWNED_RUNTIME_BUNDLE_CUSTODY_REQUIRED')
+            raw=os.read(fd,131073)
+            require(len(raw)==before.st_size and attributes(before)==attributes(os.fstat(fd))==attributes(path.lstat()),
+                    'PROJECTED_RUNTIME_BUNDLE_CHANGED')
+            self.budget.check();return raw
+        finally:os.close(fd)
     def owner(self,raw):
         # Parse only literal embedded source/schema assignments; never execute
         # the wrapper or an unpinned import from the current Python namespace.
@@ -55,7 +74,7 @@ class ProjectedFrameObservation:
         fields={'schema','expectedOci','manifest','startup','approvedHooks','sources','configtree'}
         require(set(policy)==fields and policy['schema']=='ouf.semantic-configured-projected-frame-policy.v1'
                 and type(policy['sources']) is list and len(policy['sources'])==3,'EXACT_THREE_FILES_AND_CONFIGTREE_POLICY_REQUIRED')
-        bundle_path=Path(bundle_path);raw=private_bytes(bundle_path,131072);bundle=decode(raw,131072)
+        bundle_path=Path(bundle_path);raw=self.bundle(bundle_path);bundle=decode(raw,131072)
         require(digest(bundle)==application_hash,'PROJECTED_FRAME_OBSERVED_OCI_DRIFT')
         modules,schema=self.owner(private['source']);review=modules['review_semantic_oci_policy'];mounts=modules['observe_semantic_mount_view'];frame=modules['observe_semantic_creation_frame']
         configtree=ConfigtreeMountObservation(policy['configtree'],self.budget)
@@ -69,7 +88,7 @@ class ProjectedFrameObservation:
                 and current['networkNamespaceInode']==generation['namespaceInode'],'PROJECTED_FRAME_PROCESS_GENERATION_DRIFT')
         files=frame.source_mount_frame(generation['pid'],current,bundle,policy['sources'],self.budget)
         directory=configtree.observe(generation)
-        require(self.pinned()==private and private_bytes(bundle_path,131072)==raw
+        require(self.pinned()==private and self.bundle(bundle_path)==raw
                 and mounts.generation(generation['pid'],self.budget)==current,'PROJECTED_FRAME_CHANGED_DURING_OBSERVATION')
         self.budget.check()
         result={'schema':'ouf.semantic-configured-paused-projected-frame.v1','configuredPolicy':approved,

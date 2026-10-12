@@ -90,7 +90,7 @@ def paused_filesystem(e,engine,store,socket,request,configtree,sources,root):
             'startup':{'uid':10001,'gid':10001,'umask':process['user'].get('umask'),'cwd':process['cwd'],'args':process['args'],'env':process['env']},
             'approvedHooks':oci.get('hooks') or {},'sources':sources,'configtree':configtree}
     policy_path=projected/'policy.json';policy_path.write_text(json.dumps(policy,sort_keys=True,separators=(',',':')));policy_path.chmod(0o600)
-    bindings={'source':{'path':str(owner),'sha256':file_hash(owner)},'configuration':{'path':str(policy_path),'sha256':file_hash(policy_path)}}
+    bindings={'source':{'path':str(owner),'sha256':file_hash(owner)},'configuration':{'path':str(policy_path),'sha256':file_hash(policy_path)},'bundleParents':[str(bundle.parent)]}
     frame_hash,_=ProjectedFrameObservation(bindings,VerificationBudget(18)).observe(generation,config,application_hash(oci),file_hash(policy_path))
     old=Path(sources[0]['source']).read_bytes();Path(sources[0]['source']).write_bytes(b'changed-source')
     try:

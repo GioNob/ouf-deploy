@@ -74,7 +74,7 @@ def docker_context(value):
                (('hosts', 'hosts'), ('hostnameFile', 'hostname'), ('resolv', 'resolv.conf'))}}
 
 
-def compile_policy(template, launch, context):
+def compile_policy(template, launch, context, *, configtree=None):
     """Resolve seven closed placeholders; retain every other OCI field exactly.
 
     launch is independently compiled from verified image and launch inputs.
@@ -89,6 +89,17 @@ def compile_policy(template, launch, context):
     require(type(launch) is dict and set(launch) == fields
             and launch['schema'] == 'ouf.semantic-creation-frame-launch.v1', 'EXACT_LAUNCH_REQUIRED')
     bound = docker_context(context)
+    if configtree is not None:
+        fields={'source','target','readOnly','uid','gid','directoryMode','fileName','fileMode','maxBytes','sha256'}
+        require(type(configtree) is dict and set(configtree)==fields,'EXACT_SINGLETON_CONFIGTREE_REQUIRED')
+        path(configtree['source']);path(configtree['target'])
+        require(configtree['source']!='/' and configtree['target']!='/' and configtree['readOnly'] is True
+                and type(configtree['uid']) is int and type(configtree['gid']) is int and configtree['uid']==configtree['gid']==10001
+                and configtree['directoryMode']==0o500 and configtree['fileMode']==0o400
+                and type(configtree['fileName']) is str and re.fullmatch('[A-Z][A-Z0-9_]{0,127}',configtree['fileName'])
+                and type(configtree['maxBytes']) is int and 1<=configtree['maxBytes']<=1048576
+                and type(configtree['sha256']) is str and re.fullmatch('[0-9a-f]{64}',configtree['sha256']),
+                'EXACT_PRIVATE_CONFIGTREE_PROJECTION_REQUIRED')
     oci = copy.deepcopy(template['expectedOci'])
     require(type(oci) is dict and type(oci.get('root')) is dict
             and type(oci.get('linux')) is dict and type(oci.get('process')) is dict,
@@ -148,13 +159,18 @@ def compile_policy(template, launch, context):
             and memory.get('limit') == memory.get('swap') == manifest['memoryBytes']
             and pids.get('limit') == manifest['pidsLimit'], 'RESOURCE_LAUNCH_DRIFT')
     declared = manifest['mounts']
+    directory_count=0 if configtree is None else 1
     require(type(declared) is list and type(sources) is list and 1 <= len(sources) <= 32
-            and len(sources) == len(declared), 'EXACT_SOURCE_SET_REQUIRED')
+            and len(sources)+directory_count == len(declared)
+            and (configtree is None or len(sources)==3), 'EXACT_SOURCE_SET_REQUIRED')
     require(all(type(v) is dict and set(v) == {'source', 'target', 'readOnly'} for v in declared)
             and all(type(v) is dict and set(v) == {'source', 'target', 'readOnly', 'uid', 'gid', 'mode', 'maxBytes', 'sha256'} for v in sources),
             'EXACT_SOURCE_SET_REQUIRED')
+    bindings=[{k:s[k] for k in ('source','target','readOnly')} for s in sources]
+    if configtree is not None:bindings.append({k:configtree[k] for k in ('source','target','readOnly')})
     pairs = {(v['source'], v['target']) for v in declared}
-    require(len(pairs) == len(declared) and pairs == {(v['source'], v['target']) for v in sources}, 'EXACT_SOURCE_SET_REQUIRED')
+    require(len(pairs) == len(declared) and pairs == {(v['source'], v['target']) for v in bindings}
+            and (configtree is None or bindings==declared), 'EXACT_SOURCE_SET_REQUIRED')
     for source in sources:
         path(source['source']); path(source['target'])
         require(source['readOnly'] is True and type(source['uid']) is int and source['uid'] >= 0
@@ -166,9 +182,17 @@ def compile_policy(template, launch, context):
         require(len(found) == 1 and found[0].get('type') == 'bind'
                 and found[0].get('source') == source['source']
                 and bool({'ro', 'rro'} & set(found[0].get('options') or [])), 'SOURCE_MOUNT_DRIFT')
+    if configtree is not None:
+        found=[v for v in mounts if v.get('destination')==configtree['target']]
+        require(len(found)==1 and found[0].get('type')=='bind' and found[0].get('source')==configtree['source']
+                and bool({'ro','rro'} & set(found[0].get('options') or []))
+                and not {'rw','shared','rshared','slave','rslave'} & set(found[0].get('options') or []),
+                'CONFIGTREE_MOUNT_DRIFT')
     require(canonical(oci.get('hooks') or {}) == canonical(template['approvedHooks']), 'HOOK_TEMPLATE_DRIFT')
     result = {'schema': 'ouf.semantic-configured-creation-frame-policy.v1', 'expectedOci': oci,
               'manifest': manifest, 'startup': startup, 'approvedHooks': copy.deepcopy(template['approvedHooks']), 'sources': sources}
+    if configtree is not None:
+        result['schema']='ouf.semantic-configured-projected-frame-policy.v1';result['configtree']=copy.deepcopy(configtree)
     require(b'$OUF_' not in canonical(result), 'UNRESOLVED_TEMPLATE_SLOT')
     require(len(canonical(result)) <= 131072, 'COMPILED_POLICY_UNBOUNDED')
     return result
@@ -182,3 +206,4 @@ def compilation_receipt(template, launch, context, policy):
             'observedOciUsed': False, 'inputsAuthenticated': False, 'templateApproved': False,
             'kernelEnforcementObserved': False, 'signaturesIssued': 0,
             'acceptanceGranted': False, 'startAuthorized': False}
+

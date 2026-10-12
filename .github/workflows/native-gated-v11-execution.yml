@@ -7,6 +7,7 @@ on:
       - tests/native_gated_v11_execution.py
       - tools/semantic_application_cutover/configtree_mount_observation.py
       - tools/semantic_application_cutover/projected_frame_observation.py
+      - tests/test_projected_frame_custody.py
       - .github/workflows/native-gated-v11-execution.yml
 permissions:
   contents: read
@@ -51,4 +52,4 @@ jobs:
           done
           if [ "$OUF_READY" != true ]; then echo OUF_FIXTURE_ENGINE_NOT_READY; exit 1; fi
           sudo --preserve-env=GH_TOKEN env PATH="$OUF_FIXTURE_ROOT/repository/engine-bin:/usr/sbin:/usr/bin:/sbin:/bin" OUF_CUSTODY_SOCKET="$OUF_FIXTURE_ROOT/engine/docker.sock" \
-            bash -c 'cd "$1/repository"; python3 tests/native_gated_v11_execution.py' _ "$OUF_FIXTURE_ROOT"
+            bash -c 'set -euo pipefail; cd "$1/repository"; python3 -m unittest discover -s tests -p test_projected_frame_custody.py -v; python3 tests/native_gated_v11_execution.py' _ "$OUF_FIXTURE_ROOT"
