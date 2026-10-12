@@ -83,6 +83,12 @@ The configured executable is /usr/bin/python3; its script argument was intention
 
 The [producer inspection](SEMANTIC_TOKEN_PRODUCER_READ_20261012.md) is now prepared as a separate no-execution reader: resolve only the direct Python source of the selected root oneshot, exclude mounted credential paths, verify root source custody, and return a redacted AST with symbolic token-path labels after stable double reads. It does not run the producer, read token/key/configuration credential files, issue a grant, change the timer or accept source drift. Target source output is pending; renewed-token contract and writer/output/issuer authority remain OPEN.
 
+## Producer source ancestor guard blocked
+
+The operator reports `PROTECTED_PRODUCER_ANCESTOR_REQUIRED`, exit1, before producer source opening. [Receipt](../evidence/semantic-token-producer-ancestor-block-target-20261012.json). The guard requires each ancestor to be a real root-owned directory without group/world write bits. Which ancestor and predicate failed remain unknown; neither unsafe ownership nor lawful system-directory layout is inferred. No script execution, mounted credential reads, service mutation, grant, baseline refresh or runtime authority occurred.
+
+Next operation is bounded selected-path lstat metadata only, with captured/redacted unit routing and no symlink traversal after a non-directory ancestor. Do not chmod shared directories, relax the reader guard or automatically rerun the failed inspection. Writer/output/issuer proof and six-mount acceptance remain OPEN.
+
 ## Remaining objective
 
 After the target preparation, finish the six-mount policy and independent acceptance, authenticated transport/new consumption bindings, distinct worker with retained cumulative recovery history, application verification and producer release. Complete sealed installer and current finite HUMAN/signature source authority remain open. The changed gate request needs fresh authority; original59… request/9ec… intake cannot approve it.
