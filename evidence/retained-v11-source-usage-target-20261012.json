@@ -1,0 +1,75 @@
+{
+  "schema": "ouf.retained-v11-source-usage-target-receipt.v1",
+  "receivedAt": "2026-10-12T14:23:41Z",
+  "provenance": "VPS_OUTPUT_REPORTED_BY_OPERATOR_IN_CHAT",
+  "independentlyReadBackInThisSession": false,
+  "status": "RETAINED_V11_SOURCE_USAGE_REFERENCES_CAPTURED_NOT_WRITER_PROOF",
+  "launcherExit": 0,
+  "baselineIntakeHash": "005f6a7afad7d493a52d9b183816fa0346f1bb1a4de5ab4b63c8b0b39f3fb092",
+  "requestMountShape": {
+    "bindCount": 4,
+    "structuredMountCount": 2,
+    "totalMountCount": 6,
+    "sealedRequestRewritten": false
+  },
+  "retainedSourceUsage": [
+    {
+      "mountIndex": 0,
+      "mountType": "bind",
+      "sourceKind": "directory",
+      "environmentReferences": [
+        {
+          "environmentKey": "OUF_AUTHORIZATION_REGISTRY_TOKEN_FILE",
+          "matchKind": "RETAINED_MEMBER_REFERENCE"
+        }
+      ],
+      "referenceCount": 1,
+      "writerIdentityProven": false
+    },
+    {
+      "mountIndex": 1,
+      "mountType": "bind",
+      "sourceKind": "file",
+      "environmentReferences": [
+        {
+          "environmentKey": "OUF_SEMANTIC_DELEGATION_KEY_FILE",
+          "matchKind": "MOUNT_TARGET_REFERENCE"
+        }
+      ],
+      "referenceCount": 1,
+      "writerIdentityProven": false
+    }
+  ],
+  "mountedSourceContentBytesRead": 0,
+  "protectedFileWrites": 0,
+  "environmentValuesPrinted": false,
+  "sourcePathsPrinted": false,
+  "memberNamesPrinted": false,
+  "baselineRefreshed": false,
+  "automaticRetry": false,
+  "budgetReset": false,
+  "r12Touched": false,
+  "containerLifecycleOperations": 0,
+  "databaseQueries": 0,
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "dnsQueries": 0,
+  "firewallWrites": 0,
+  "runtimeAuthorityIssued": false,
+  "signaturesIssued": 0,
+  "completeSixMountClosureProven": false,
+  "applicationCutoverAuthorized": false,
+  "productionApplyReady": false,
+  "writerIdentityProven": false,
+  "notReleaseAcceptance": true,
+  "interpretation": {
+    "authorizationRegistryTokenConsumerIdentified": true,
+    "semanticDelegationKeyConsumerIdentified": true,
+    "legitimateTokenRotationProven": false,
+    "originalV11SourceRef": "3ec99277b8383e496913b9fd3bb05c877825abf5",
+    "originalV11ConsumerRereadsTokenEachPolicyRefresh": true,
+    "consumerDoesNotIssueOrWriteToken": true,
+    "staticSnapshotModelInadequateForRenewableCredential": true,
+    "dynamicCredentialContractNotYetApproved": true
+  }
+}
