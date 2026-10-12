@@ -39,8 +39,7 @@ class EndpointAdapter:
         attachment=initial['Networks'].get(self.intent['networkName'])
         require(type(attachment) is dict and attachment.get('NetworkID')==self.intent['networkId']
                 and attachment.get('EndpointID')==self.intent['originalEndpointId']
-                and attachment.get('IPAddress')==self.intent['staticIpv4'] and attachment.get('MacAddress')==self.intent['macAddress']
-                and type(attachment.get('IPAMConfig')) is dict and attachment['IPAMConfig'].get('IPv4Address')==self.intent['staticIpv4'],'SIGNED_INITIAL_ENDPOINT_BINDING_DRIFT')
+                and attachment.get('IPAddress')==self.intent['staticIpv4'] and attachment.get('MacAddress')==self.intent['macAddress'], 'SIGNED_INITIAL_ENDPOINT_BINDING_DRIFT')
         return producer
     def stopped(self,pin):
         status,actual=self.engine.request('GET','/v1.44/containers/'+self.intent['containerId']+'/json')
@@ -69,9 +68,13 @@ class EndpointAdapter:
     def apply(self,intent):
         pin=self.exact(intent);actual=self.stopped(pin);network=self.network()
         attachment=actual['NetworkSettings']['Networks'].get(self.intent['networkName'])
-        require(type(attachment) is dict and attachment.get('NetworkID')==self.intent['networkId']
-                and type(attachment.get('IPAMConfig')) is dict
-                and attachment['IPAMConfig'].get('IPv4Address')==self.intent['staticIpv4'], 'EXACT_RETAINED_STATIC_ATTACHMENT_REQUIRED')
+        original=pin['initialNetworkSettings']['Networks'][self.intent['networkName']]
+        # Legacy dynamically assigned endpoints are authorized by their signed
+        # initial observed IP/MAC, not by inventing an old static IPAM request.
+        # Docker may clear runtime NetworkID after stop; retained name, original
+        # hash, stopped generation and exact unchanged network identity bind it.
+        require(type(attachment) is dict and attachment.get('NetworkID','') in {'',self.intent['networkId']}
+                and attachment.get('IPAMConfig')==original.get('IPAMConfig'), 'EXACT_RETAINED_ATTACHMENT_REQUIRED')
         require(attachment.get('EndpointID','') in {'',self.intent['originalEndpointId']},'RETAINED_ATTACHMENT_ENDPOINT_IDENTITY_DRIFT')
         status,_=self.engine.request('POST','/v1.44/networks/'+self.intent['networkId']+'/disconnect',{'Container':self.intent['containerId'],'Force':False})
         require(status==200,'ENDPOINT_DISCONNECT_OUTCOME_REQUIRES_RECONCILIATION')

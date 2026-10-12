@@ -11,17 +11,18 @@ from producer_adapter import ProducerAdapter
 from executor_composition_fixture import compose
 
 class NativeEndpoint(NativeRuntime):
-    def endpoint(self):
+    def endpoint(self,legacy_dynamic=False):
         _,engine,_=self.fixture();name='ouf-endpoint-fixture-'+uuid.uuid4().hex[:12]
         status,result=engine.request('POST','/v1.44/networks/create',{'Name':name,'Driver':'bridge','Internal':True,'IPAM':{'Config':[{'Subnet':'10.233.0.0/24'}]}})
         self.assertEqual(status,201);nid=result['Id'];self.addCleanup(lambda:engine.request('DELETE','/v1.44/networks/'+nid))
         def create(ip):
-            request={'Image':self.image,'Cmd':['sleep','600'],'HostConfig':{'NetworkMode':name,'RestartPolicy':{'Name':'no','MaximumRetryCount':0}},'NetworkingConfig':{'EndpointsConfig':{name:{'IPAMConfig':{'IPv4Address':ip}}}}}
+            endpoint={} if ip is None else {'IPAMConfig':{'IPv4Address':ip}}
+            request={'Image':self.image,'Cmd':['sleep','600'],'HostConfig':{'NetworkMode':name,'RestartPolicy':{'Name':'no','MaximumRetryCount':0}},'NetworkingConfig':{'EndpointsConfig':{name:endpoint}}}
             status,value=engine.request('POST','/v1.44/containers/create?name=ouf-endpoint-producer-'+uuid.uuid4().hex,request);self.assertEqual(status,201);cid=value['Id']
             self.addCleanup(lambda:engine.request('DELETE','/v1.44/containers/'+cid+'?force=true'))
             self.assertEqual(engine.request('POST','/v1.44/containers/'+cid+'/start')[0],204)
             return engine.request('GET','/v1.44/containers/'+cid+'/json')[1]
-        initial=create('10.233.0.13');pin=engine.runtime_binding(initial);attach=initial['NetworkSettings']['Networks'][name]
+        initial=create(None if legacy_dynamic else '10.233.0.13');pin=engine.runtime_binding(initial);attach=initial['NetworkSettings']['Networks'][name]
         network=engine.request('GET','/v1.44/networks/'+nid)[1]
         quiesce={'producerBindings':[pin],'initialNetworkSettings':{pin['containerId']:initial['NetworkSettings']},'initialHostConfigs':{pin['containerId']:initial['HostConfig']},'quiescentRestartPolicy':{'Name':'no','MaximumRetryCount':0},'stopTimeoutSeconds':1}
         intent={'containerId':pin['containerId'],'networkId':nid,'networkName':name,'networkConfigurationHash':digest({k:network.get(k) for k in NETWORK_FIELDS}),'originalEndpointId':attach['EndpointID'],'staticIpv4':attach['IPAddress'],'macAddress':attach['MacAddress'],'priorEvidencePhase':'QUIESCE_PRODUCERS'}
@@ -44,6 +45,11 @@ class NativeEndpoint(NativeRuntime):
         with self.assertRaises(CreationDenied):e.run(4)
         self.assertEqual(e.t.read()['state'],'IN_FLIGHT')
         self.assertTrue(engine.request('GET','/v1.44/containers/'+foreign['Id']+'/json')[1]['State']['Running'])
+    def test_dynamically_allocated_legacy_endpoint_is_released_by_observed_binding(self):
+        e,engine,intent,create=self.endpoint(legacy_dynamic=True);e.run(3)
+        self.death_after(e,'RELEASE_OLD_ENDPOINT',4);e.run(4);e.run(4)
+        old=engine.request('GET','/v1.44/containers/'+intent['containerId']+'/json')[1]
+        self.assertNotIn(intent['networkName'],old['NetworkSettings']['Networks']);self.assertEqual(old['State']['Status'],'exited')
 
 if __name__=='__main__':
     names=[n for n in NativeEndpoint.__dict__ if n.startswith('test_')]

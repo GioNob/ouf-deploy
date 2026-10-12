@@ -57,10 +57,13 @@ def project(value):
             'installedConfigHash': digest(value['Config']), 'installedHostConfigHash': digest(host),
             'installedMountsHash': digest(value['Mounts']), 'networkSettingsHash': digest(value['NetworkSettings']),
             'generation': {k: value['State'][k] for k in ('Pid', 'StartedAt', 'Running')},
+            'restartCount': value.get('RestartCount'),
             'runtime': host['Runtime'], 'restartPolicy': host['RestartPolicy'],
             'memoryLimitBytes': host['Memory'], 'mountCount': len(value['Mounts']),
             'networks': [{'networkNameHash': digest(name), 'networkId': n['NetworkID'],
                           'ipv4': n['IPAddress'], 'mac': n['MacAddress']}
+                          | {'endpointId': n.get('EndpointID'),
+                             'configuredIpamIpv4': (n.get('IPAMConfig') or {}).get('IPv4Address')}
                          for name, n in value['NetworkSettings']['Networks'].items()],
             'legacyDatabasePasswordEnvironmentPresent': bool(env.get('OUF_SEM_DB_PASSWORD')),
             'springConfigImportPresent': bool(env.get('SPRING_CONFIG_IMPORT')),

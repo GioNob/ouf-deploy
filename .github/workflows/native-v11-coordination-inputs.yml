@@ -1,0 +1,29 @@
+name: OUF private coordination input capture qualification
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/capture-native-v11-coordination-inputs.py
+      - tests/test_coordination_input_capture.py
+      - releases/native-v11-coordination-inputs-20261012.sh
+      - tests/test_coordination_capture_delivery.py
+      - .github/workflows/native-v11-coordination-inputs.yml
+permissions:
+  contents: read
+jobs:
+  root-private-fixtures:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Actual private root-owned capture fixtures
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-coordination-capture-${GITHUB_RUN_ID}"
+          sudo mkdir -m 700 "$OUF_FIXTURE_ROOT"
+          sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
+          sudo chown -R root:root "$OUF_FIXTURE_ROOT"
+          sudo bash -c 'cd "$1/repository"; python3 -m unittest discover -s tests -p test_coordination_input_capture.py -v' _ "$OUF_FIXTURE_ROOT"
