@@ -24,5 +24,13 @@
     "producer": 38213914603,
     "endpoint": 38213914594,
     "migrationAdmission": 38213914573
-  }
+  },
+  "scopeAndFactorySourceCommit": "33bf7d3f37f4edb56d54f69246827aba5307079c",
+  "scopeAndFactoryWorkflowRunId": 38214789357,
+  "scopeAndFactoryJobId": 114696895019,
+  "scopeDerivationRootTests": 3,
+  "ownedCoreFactoryTests": 2,
+  "scopeAndFactoryConclusion": "success",
+  "captureRegressionRunId": 38214789347,
+  "captureRegressionJobId": 114696895082
 }

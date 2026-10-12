@@ -1,0 +1,23 @@
+name: OUF paused workload native state binding
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - tools/semantic_application_cutover/paused_workload_binding.py
+      - tools/semantic_application_cutover/paused_node_observation.py
+      - tests/test_paused_workload_binding.py
+      - tests/native_paused_workload_binding.py
+      - .github/workflows/native-paused-workload-binding.yml
+permissions:
+  contents: read
+jobs:
+  binding:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -s tests -p test_paused_workload_binding.py -v
+      - run: python3 tests/native_paused_workload_binding.py -v
