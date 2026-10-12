@@ -86,4 +86,16 @@ class SourceStage(unittest.TestCase):
             ProtectedTokenSourceStage(m,files,f.gate(),f.authority).stage()
         self.assertEqual(before,sorted(p.name for p in d.iterdir()))
 
+    def test_second_publisher_cannot_enter_the_held_scope_fence(self):
+        f,d,marker,files,m,stage=self.fixture();checked=[]
+        def compete(point):
+            if point=='BEFORE_FILE_producer.py':
+                other=ProtectedTokenSourceStage(m,files,f.gate(),f.authority)
+                with self.assertRaises(BlockingIOError):other.stage()
+                checked.append(True)
+        result=stage.stage(compete)
+        self.assertEqual(checked,[True]);self.assertTrue(result['newPublication'])
+        self.assertEqual(result['protectedFileWrites'],3)
+        self.assertFalse(marker.exists())
+
 if __name__=='__main__':unittest.main()
