@@ -5,6 +5,7 @@ on:
     paths:
       - tools/semantic_policy_token_owner/**
       - tests/test_policy_token_owner.py
+      - tests/test_renewable_token_mount.py
       - .github/workflows/policy-token-owner.yml
   workflow_dispatch:
 permissions:
@@ -25,3 +26,4 @@ jobs:
           sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
           sudo chown -R root:root "$OUF_FIXTURE_ROOT"
           sudo env OUF_NATIVE_UIDS=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_owner.py -v
+          sudo env OUF_NATIVE_MOUNTS=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_renewable_token_mount.py -v
