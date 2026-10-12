@@ -1,0 +1,20 @@
+{
+  "schema": "ouf.native-preapplication-gate-qualification.v1",
+  "profile": "ouf.semantic-preapplication-gate.v2",
+  "releaseSignal": "SIGUSR1",
+  "sourceCommit": "1c11c2c6460729b3fe7289ba466d595d740e3b36",
+  "workflowRunId": 38220520468,
+  "jobId": 114715377361,
+  "conclusion": "success",
+  "pureProposalTests": 3,
+  "releaseBoundaryTests": 4,
+  "privateEvidenceStoreTests": 4,
+  "nativeSleepIntegrationTests": 3,
+  "actualControllerDeath": true,
+  "nonRootEmptyCapabilitiesAndNnpObserved": true,
+  "sourceV1SelfSigstopProposalWithdrawn": true,
+  "imageRebuilt": false,
+  "targetApplied": false,
+  "targetInstallerQualified": false,
+  "notReleaseAcceptance": true
+}

@@ -32,5 +32,18 @@
   "ownedCoreFactoryTests": 2,
   "scopeAndFactoryConclusion": "success",
   "captureRegressionRunId": 38214789347,
-  "captureRegressionJobId": 114696895082
+  "captureRegressionJobId": 114696895082,
+  "currentSourceCommit": "74f5dfdf48545d04b2769f8b4a0ecf9323156f31",
+  "currentWorkflowRunId": 38221917550,
+  "currentJobId": 114719967738,
+  "currentConclusion": "success",
+  "terminationMethod": "ONE_SYSTEMCTL_KILL_MAIN_SIGTERM_THEN_BOUNDED_READ_ONLY_EXIT_OBSERVATION",
+  "systemctlStopOfWholeControlGroupNotUsed": true,
+  "ownedFactoryTests": 3,
+  "retainedWorkerSourceChanged": false,
+  "failedControlGroupRegressionRuns": [
+    38219142059,
+    38220520449,
+    38221042264
+  ]
 }
