@@ -99,7 +99,9 @@ class ProtectedTokenSourceStage:
                 result=publish(self.manifest['destination'],self.files,self.manifest,0,checked)
                 self.guard()
             finally:os.close(fd)
-            return {**result,'status':'PROTECTED_SOURCE_STAGED_NOT_RUNTIME_INSTALLED',
+            return {**result,'protectedFileWrites':result['protectedFileWrites']+int(created),
+                    'durableIntentCreated':created,'automaticRestagingAllowed':False,
+                    'status':'PROTECTED_SOURCE_STAGED_NOT_RUNTIME_INSTALLED',
                     'sourceClosureHash':self.closure,'sourceBodiesExecuted':0,
                     'runtimeRegistered':False,'credentialFilesOpened':0,'privateKeysRead':0,
                     'unitMutations':0,'providerCalls':0,'budgetReset':False,

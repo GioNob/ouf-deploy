@@ -3,9 +3,9 @@ import json,os,sys,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'tests'),str(ROOT/'tools/semantic_application_cutover'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
+from test_cutover_authority_native import SignedCutover,encoded,sha
 import tools
 tools.__path__.append(str(ROOT/'tools'))
-from test_cutover_authority_native import SignedCutover,encoded,sha
 from tools.semantic_policy_token_owner.source_stage import declaration,ProtectedTokenSourceStage
 from tools.semantic_lease_recovery.bounded_recovery import fingerprint
 
