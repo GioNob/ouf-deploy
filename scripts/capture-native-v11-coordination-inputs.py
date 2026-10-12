@@ -91,10 +91,12 @@ def main():
     phase='VERIFY_SELECTED_SEALED_COORDINATION_READER'
     try:
         require(os.geteuid()==0 and sys.flags.isolated and sys.dont_write_bytecode and len(sys.argv)==1,'ISOLATED_ROOT_COORDINATION_CAPTURE_REQUIRED')
+        program_hash=globals().get('__sealed_program_sha__')
+        require(type(program_hash) is str and re.fullmatch('[0-9a-f]{64}',program_hash) is not None,'SEALED_COORDINATION_COLLECTOR_PROVENANCE_REQUIRED')
         m=modules(globals().get('__coordination_sources__'));files,bindings=collect(m['prepare'],m['custody'])
         phase='ATOMIC_PRIVATE_COORDINATION_INPUT_PUBLICATION'
         manifest={'schema':'ouf.native-v11-atomic-review-intake.v1','collectionKind':'EXISTING_COORDINATOR_AND_CUMULATIVE_HISTORY_INPUTS',
-                  'fileHashes':{n:sha(raw) for n,raw in files.items()},'sourceHashes':HASHES,'bindings':bindings,
+                  'fileHashes':{n:sha(raw) for n,raw in files.items()},'sourceHashes':{'program':program_hash,**HASHES},'bindings':bindings,
                   'applicationCutoverAuthorized':False,'productionApplyReady':False,'runtimeAuthorityIssued':False,'observationsAreHistorical':True}
         def checkpoint(point):
             if point.startswith('BEFORE_FILE_'):report['protectedFileWriteAttempts']+=1

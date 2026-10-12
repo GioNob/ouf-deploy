@@ -35,7 +35,7 @@ class Capture(unittest.TestCase):
         return base,prepare,secret
     def execute(self,modules):
         output=io.StringIO()
-        with patch.object(m,'modules',return_value=modules),patch.object(m.sys,'flags',types.SimpleNamespace(isolated=True)),patch.object(m.sys,'dont_write_bytecode',True),patch.object(m.sys,'argv',['fixture.py']),contextlib.redirect_stdout(output):code=m.main()
+        with patch.object(m,'modules',return_value=modules),patch.object(m,'__sealed_program_sha__','a'*64,create=True),patch.object(m.sys,'flags',types.SimpleNamespace(isolated=True)),patch.object(m.sys,'dont_write_bytecode',True),patch.object(m.sys,'argv',['fixture.py']),contextlib.redirect_stdout(output):code=m.main()
         return code,json.loads(output.getvalue().split('=',1)[1]),output.getvalue()
     def test_full_entry_publishes_complete_private_snapshot_without_reading_key_or_printing_values(self):
         base,prepare,secret=self.fixture();opened=[];original=custody.file_bytes
