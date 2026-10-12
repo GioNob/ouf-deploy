@@ -160,6 +160,16 @@ class TokenOwner(unittest.TestCase):
   restarted=RenewalWorker(ScheduledRecovery(Journal(journal.root),adapter,Policy(),'a'*64,'b'*64,clock,lambda:.5))
   self.assertEqual(restarted.tick()['state'],'RECONCILE_REQUIRED');self.assertEqual(opener.calls,1)
 
+ def test_worker_storage_failure_before_tick_guard_denies_without_private_error(self):
+  root,clock,owner,opener,adapter,journal,worker=self.fixture(scheduled=True)
+  worker.tick();original=journal.read
+  def fail():raise OSError('FIXTURE_PRIVATE_STORAGE_ERROR')
+  journal.read=fail
+  with self.assertRaisesRegex(RuntimeError,'^TOKEN_WORKER_STATE_UNPROVEN$'):worker.tick()
+  self.assertGreater(owner.pauses,0);self.assertFalse(worker.active_here)
+  journal.read=original
+  self.assertEqual(worker.tick()['state'],'RECONCILE_REQUIRED');self.assertEqual(opener.calls,1)
+
  def test_finite_expiry_and_boolean_expiry_denied(self):
   binding=Binding('https://fixture.invalid/token','client','scope','/run/fixture','token',10001)
   for seconds in (None,True,0,30,3601):

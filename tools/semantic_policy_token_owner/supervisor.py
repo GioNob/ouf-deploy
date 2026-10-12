@@ -4,7 +4,6 @@ Every grant attempt, including scheduled successes, consumes the SAME finite
 operation budget. This conservative profile does not claim unbounded healthy
 renewal or implement HUMAN budget renewal. Installer supplies current history.
 """
-import math
 from tools.semantic_lease_recovery.bounded_recovery import Recovery,Permanent,require,number
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.semantic_policy_token_owner.producer import TokenRenewalAdapter,protected_directory
@@ -100,7 +99,12 @@ class RenewalWorker:
     def tick(self):
         # Bounded single-step driver for owner-controlled tests/integration.
         with protected_directory(self.r.journal.root),self.r.journal.invocation():
-            return self._advance()
+            try:return self._advance()
+            except Exception:
+                self.active_here=False
+                try:self.r.adapter.pause()
+                except Exception:raise RuntimeError('TOKEN_WORKER_SAFE_PAUSE_UNPROVEN') from None
+                raise RuntimeError('TOKEN_WORKER_STATE_UNPROVEN') from None
     def wait_seconds(self,row):
         if row['state']!='ACTIVE':return self.r.wait_seconds(row,self.heartbeat)
         wall,mono=self.r.now()
