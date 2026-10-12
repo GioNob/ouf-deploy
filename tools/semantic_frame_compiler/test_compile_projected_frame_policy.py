@@ -1,7 +1,7 @@
 """Independent synthetic template compilation; no native/target approval."""
 import copy,unittest
 import test_compile_creation_frame_policy as fixture_module
-from compile_creation_frame_policy import compile_policy,Denied
+from compile_projected_frame_policy import compile_policy,Denied
 
 class ProjectedCompiler(unittest.TestCase):
     def setUp(self):
