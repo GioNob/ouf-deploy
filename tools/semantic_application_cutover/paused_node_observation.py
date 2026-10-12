@@ -16,11 +16,12 @@ from tools.semantic_provider_deployment_admission import application_hash,live_p
 from tools.semantic_provider_deployment_producer import program
 from tools.semantic_provider_preexec_native import NativeBackend
 from tools.semantic_provider_peer_bindings import declarations,collect
+from projected_frame_observation import ProjectedFrameObservation
 
 class PausedNodeObservation(NodeObservation):
     def __init__(self,cfg,budget,paused_binding,frame_observer):
         require(os.geteuid()==0 and type(paused_binding) is PausedWorkloadBinding
-                and type(frame_observer) is CreatedFrameObserver,'TYPED_ROOT_PAUSED_NODE_OBSERVATION_REQUIRED')
+                and type(frame_observer) in (CreatedFrameObserver,ProjectedFrameObservation),'TYPED_ROOT_PAUSED_NODE_OBSERVATION_REQUIRED')
         require(set(cfg)=={'runtimeBinding','runtimeRootParents','bundleParents','commands','candidate','rootfsLimits'}
                 and set(cfg['commands'])=={'ip','nsenter'} and set(cfg['candidate'])=={'networkBindings','transport','tableName'},'EXACT_PAUSED_NODE_OBSERVATION_CONFIGURATION_REQUIRED')
         for key in ('runtimeRootParents','bundleParents'):

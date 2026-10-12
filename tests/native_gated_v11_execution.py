@@ -1,7 +1,7 @@
 """Exact original signed V11 image: pre-Java gate and same-PID Java release.
 No real DB, provider, transport authority, target or CSV acceptance.
 """
-import hashlib,importlib.util,json,os,shutil,stat,subprocess,sys,tempfile,time,zipfile
+import copy,hashlib,importlib.util,json,os,shutil,stat,subprocess,sys,tempfile,time,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT/'tests'),str(ROOT/'tools/semantic_application_cutover')]
 sys.path.insert(0,str(ROOT/'tools/semantic_cohort_admission/cohort-draft'))
@@ -21,6 +21,7 @@ from tools.semantic_provider_deployment_authentication import VerificationBudget
 from tools.semantic_provider_preexec_native import NativeBackend
 from tools.semantic_provider_deployment_admission import application_hash
 from configtree_mount_observation import ConfigtreeMountObservation
+from projected_frame_observation import ProjectedFrameObservation
 import image_custody as custody
 import image_manifest_identity as identity
 
@@ -42,7 +43,7 @@ def file_hash(path,limit=536870912):
             h.update(block)
     return h.hexdigest()
 
-def paused_filesystem(e,engine,store,socket,request,configtree):
+def paused_filesystem(e,engine,store,socket,request,configtree,sources,root):
     """Native read-only seal; never construct an approval from observed OCI.
 
     No independent target policy is supplied by this fixture. This qualifies
@@ -79,6 +80,24 @@ def paused_filesystem(e,engine,store,socket,request,configtree):
     assert config.read_bytes()==raw and NativeBackend.generation(None,pid)==generation
     assert binding.observe()==before
     directory=ConfigtreeMountObservation(configtree,VerificationBudget(18)).observe(generation)
+    # This fixture's expected OCI is synthetic, never target policy approval.
+    # The production observer has no observed-OCI-to-policy generation API.
+    projected=root/'projected';projected.mkdir(mode=0o700)
+    owner=projected/'owner.py';owner.write_bytes((ROOT/'tools/semantic_frame_compiler/frame-observer.py').read_bytes());owner.chmod(0o600)
+    mounts=[{k:s[k] for k in ('source','target','readOnly')} for s in sources]+[{k:configtree[k] for k in ('source','target','readOnly')}]
+    process=oci['process'];policy={'schema':'ouf.semantic-configured-projected-frame-policy.v1','expectedOci':copy.deepcopy(oci),
+            'manifest':{'user':'10001:10001','readOnlyRoot':False,'memoryBytes':2147483648,'pidsLimit':512,'mounts':mounts},
+            'startup':{'uid':10001,'gid':10001,'umask':process['user'].get('umask'),'cwd':process['cwd'],'args':process['args'],'env':process['env']},
+            'approvedHooks':oci.get('hooks') or {},'sources':sources,'configtree':configtree}
+    policy_path=projected/'policy.json';policy_path.write_text(json.dumps(policy,sort_keys=True,separators=(',',':')));policy_path.chmod(0o600)
+    bindings={'source':{'path':str(owner),'sha256':file_hash(owner)},'configuration':{'path':str(policy_path),'sha256':file_hash(policy_path)}}
+    frame_hash,_=ProjectedFrameObservation(bindings,VerificationBudget(18)).observe(generation,config,application_hash(oci),file_hash(policy_path))
+    old=Path(sources[0]['source']).read_bytes();Path(sources[0]['source']).write_bytes(b'changed-source')
+    try:
+        try:ProjectedFrameObservation(bindings,VerificationBudget(18)).observe(generation,config,application_hash(oci),file_hash(policy_path))
+        except ValueError:pass
+        else:raise AssertionError('PROJECTED_FILE_HASH_DRIFT_ACCEPTED')
+    finally:Path(sources[0]['source']).write_bytes(old)
     secret=Path(configtree['source'])/configtree['fileName'];original=secret.read_bytes()
     secret.write_bytes(b'changed-fixture')
     try:
@@ -99,9 +118,12 @@ def paused_filesystem(e,engine,store,socket,request,configtree):
         else:raise AssertionError('CONFIGTREE_PERMISSION_DRIFT_ACCEPTED')
     finally:os.chmod(configtree['source'],0o500)
     assert ConfigtreeMountObservation(configtree,VerificationBudget(18)).observe(generation)['sameSourceFileInMountedView']
-    return {'rootfsSeal':first,'observedCompleteOciHash':application_hash(oci),'stableDoubleRootfsSeal':True,
+    result={'rootfsSeal':first,'observedCompleteOciHash':application_hash(oci),'stableDoubleRootfsSeal':True,
             'actualPausedRuncContract':True,'independentOciPolicyAccepted':False,'reciprocalPeersVerified':False,
-            'singletonConfigtreeObservation':directory,'configtreeHashExtraFileAndPermissionDriftRejected':True}
+            'singletonConfigtreeObservation':directory,'configtreeHashExtraFileAndPermissionDriftRejected':True,
+            'actualFourProjectedInputFrameObserved':True,'projectedFrameHash':frame_hash,'projectedFileHashDriftRejected':True,
+            'fixtureExpectedOciDerivedFromObservedOci':True}
+    return result
 
 class Fixture:
     def __init__(self):self.cleanups=[]
@@ -135,9 +157,13 @@ def main():
         secret=private_directory/'OUF_SEM_DB_PASSWORD';secret.write_bytes(b'synthetic-fixture-only');os.chown(secret,10001,10001);secret.chmod(0o400)
         configtree={'source':str(private_directory),'target':'/run/ouf-configtree','readOnly':True,'uid':10001,'gid':10001,
                     'directoryMode':0o500,'fileName':secret.name,'fileMode':0o400,'maxBytes':4096,'sha256':file_hash(secret)}
+        sources=[]
+        for name in ('tls-certificate','tls-key','mac-policy'):
+            source=root/name;source.write_bytes(b'synthetic-fixture-only');os.chown(source,10001,10001);source.chmod(0o400)
+            sources.append({'source':str(source),'target':'/run/ouf-'+name,'readOnly':True,'uid':10001,'gid':10001,'mode':0o400,'maxBytes':4096,'sha256':file_hash(source)})
         parent={'Image':descriptor['digest'],'User':'10001:10001','Env':list(audit['imageConfig'].get('Env') or [])+['OUF_SEM_DB_URL=jdbc:postgresql://127.0.0.1:1/fixture_only','OUF_SEM_DB_USER=fixture','OUF_SEM_DB_PASSWORD=fixture','OUF_DISCOVERY_WORKER_ENABLED=false','OUF_SCHEMA_GOV_ENABLED=false'],
                 'HostConfig':{'Runtime':'runc','Privileged':False,'NetworkMode':'none','RestartPolicy':{'Name':'no','MaximumRetryCount':0},'Memory':2147483648,'MemorySwap':2147483648,'NanoCpus':2000000000,'PidsLimit':512,
-                              'Binds':[str(private_directory)+':/run/ouf-configtree:ro']}}
+                              'Binds':[s['source']+':'+s['target']+':ro' for s in sources]+[str(private_directory)+':/run/ouf-configtree:ro']}}
         request,proposal=compile_gate(parent,digest(parent),{'config':audit['imageConfig']});process=GatedProcessObservation(request)
         before=root/'before';before.mkdir(mode=0o700);before_store=NativeEvidenceStore(before)
         intent={'creationRequestHash':digest(request),'priorEvidencePhase':'STAGE_PAUSED_REPLACEMENT','preApplicationGateProfile':PROFILE}
@@ -150,7 +176,7 @@ def main():
             assert gate['processKind']=='GATE_WAITING' and native['Image']==descriptor['digest']
             jar_before=file_hash('/proc/'+str(pid)+'/root/app/application.jar');assert jar_before==verified['memberSha256']['application.jar']
             java_before=file_hash('/proc/'+str(pid)+'/root/opt/java/openjdk/bin/java');assert process.observe(pid)==gate
-            filesystem=paused_filesystem(e,engine,store,socket,request,configtree)
+            filesystem=paused_filesystem(e,engine,store,socket,request,configtree,sources,root)
             deadline=time.monotonic()+5
             while True:
                 try:e.run(11);break
