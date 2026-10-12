@@ -13,8 +13,10 @@
   "selectedPrivateInputFileCount": 10,
   "atomicManifestFileCount": 1,
   "privateKeysRead": 0,
-  "targetCaptureExecuted": false,
+  "targetCaptureExecuted": true,
   "runtimeAuthorityIssued": false,
   "targetInstallerQualified": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "targetReceipt": "native-v11-coordination-target-20261012.json",
+  "targetIntakeHash": "395c92d7bcb8dadfa3bb248a3e94b37bd36a396cc07c16ee5d1d57a646e00239"
 }

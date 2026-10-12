@@ -18,7 +18,7 @@ Existing qualified self-hosted readers ran successfully, without protected snaps
 
 The refreshed host projection confirms two important retained-host differences: old Semantic restart policy unless-stopped, and configuredIpamIpv4 null (observed dynamic address172.18.0.6/MACb2:96:a1:e2:c1:8d). The new adapters explicitly handle those facts. [Initial complete target read receipt](../evidence/current-v11-cutover-host-target-20261012.json), [latest host observation](../evidence/current-v11-host-binding-refresh-20261012.json). Generation rereads are observations, not runtime authority.
 
-## Necessary protected coordination input
+## Protected coordination input captured on the target
 
 The runner cannot open the selected root-private coordinator configuration, R12 cumulative retry history or installed authority profile. Their actual field contracts and private path bindings are required to connect the remaining stop/revoke, OCI attestation, authenticated transport/distinct worker and final acceptance owner phases. Public service metadata cannot substitute for those contracts. No unfinished cutover approval is requested.
 
@@ -28,17 +28,14 @@ Copies are atomically published root-private with the existing no-replace primit
 
 [Launcher](native-v11-coordination-inputs-20261012.sh), sourcea5b2b209abee548c0de514adc2cf9dcc80c24ff2, SHA2569dcaa61a1d505b1018072b04aaf37b854f040b7edfb514b5e6f3efe82f6dfbf4: all four downloaded source hashes precede sudo, and root verifies them again before executing any source. The existing portable gh client is preferred. [CI38211080512](https://github.com/GioNob/ouf-deploy/actions/runs/38211080512), job114685157076 SUCCESS:3 core consistency tests,4 delivery tests covering each download/hash failure and root tamper,4 actual private POSIX/root-custody entry tests including key non-read, safe projection, context/history drift and partial-write accounting. [Receipt](../evidence/native-v11-coordination-capture-qualified-20261012.json).
 
-```bash
-(
-  set -euo pipefail
-  umask 077
-  OUF_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
-  if [ ! -x "$OUF_GH" ]; then OUF_GH="$(command -v gh)"; fi
-  OUF_LAUNCH="$(mktemp "$HOME/ouf-v11-coordination-launch.XXXXXXXX")"
-  "$OUF_GH" api -H 'Accept: application/vnd.github.raw' 'repos/GioNob/ouf-deploy/contents/releases/native-v11-coordination-inputs-20261012.sh?ref=a5b2b209abee548c0de514adc2cf9dcc80c24ff2' > "$OUF_LAUNCH"
-  printf '%s  %s\n' '9dcaa61a1d505b1018072b04aaf37b854f040b7edfb514b5e6f3efe82f6dfbf4' "$OUF_LAUNCH" | sha256sum -c -
-  bash "$OUF_LAUNCH"
-)
-```
+The operator supplied a successful target receipt on 12 October: atomic intake395c92d7bcb8dadfa3bb248a3e94b37bd36a396cc07c16ee5d1d57a646e00239,11 attempted/confirmed protected writes, launcher exit0, no runtime effects or key reads. [Target receipt](../evidence/native-v11-coordination-target-20261012.json). Existing execution configurationfd9f… is now bound; retained history reports24 attempts and4,330 publications. These are cumulative historical observations, not a current lease or transition grant. No repeat capture is requested.
 
-Return only OUF_NATIVE_V11_COORDINATION_INPUTS and OUF_NATIVE_V11_COORDINATION_INPUTS_LAUNCHER_EXIT. This is a concrete protected input capture, not runtime approval or apply. CSV→ACK→object search and the complete sealed target installer remain OPEN.
+## R12 retirement integration in progress
+
+R12RetirementChannel binds the selected ten-file capture and current original authorization/claim/invocation,15 installed program hashes, coordinator/source closure, binary hashes, exact systemd argv and current process generation. It uses only bounded native metadata reads and one specific systemctl stop; it never executes retained activation code, restarts a worker or writes retry budgets. An expired startup window does not prohibit independently owned narrowing.
+
+R12RetirementAdapter is the first owner phase. Before effects, it requires an Executor IN_FLIGHT intent bound to the original incident and captured history hash, and persists a separate root-private fresh before snapshot. A context-bound exclusive revoked marker precedes one bounded stop. Marker/stop gaps and missing/partial evidence remain ambiguous, without retransmission. Successful completion requires a stopped process/unit (including transient unit garbage collection), final CANCELLED worker/history, and fresh exact owned QUIESCED lease with both native families empty. Original claims/history/programs stay retained. Accounting checks reject changed policy/start/context/generation, counter regression and reduced cumulative recovery cost.
+
+Six composition boundary tests pass locally; nine Executor and six producer regression tests also pass after the shared fixture gained an explicit predecessor-history binding. Actual systemd/SIGTERM/nft plus production cumulative cancellation qualification is running in hosted disposable CI. Its worker entry, installation and signatures/checkpoints are synthetic; it cannot qualify the deployed R12 worker's entire transport closure. No target retirement or application effect has been submitted.
+
+The five other owner phases, complete sealed installer, current finite HUMAN/signature authority and CSV→ACK→object search remain OPEN. Continue integration using selected395c… private inputs without exporting private scalar values or replaying historical approvals.

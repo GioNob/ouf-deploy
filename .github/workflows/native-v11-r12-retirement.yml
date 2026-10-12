@@ -1,0 +1,31 @@
+name: OUF R12 retirement Executor qualification
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - tools/semantic_application_cutover/r12_retirement_adapter.py
+      - tests/test_r12_retirement_adapter.py
+      - tests/native_r12_retirement_executor.py
+      - tests/fixtures/r12_retirement_worker.py
+      - .github/workflows/native-v11-r12-retirement.yml
+permissions:
+  contents: read
+jobs:
+  native-retirement:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -s tests -p test_r12_retirement_adapter.py -v
+      - run: sudo apt-get update -qq && sudo apt-get install -y nftables
+      - name: Actual owned systemd and nft retirement
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-retirement-${GITHUB_RUN_ID}"
+          sudo mkdir -m 700 "$OUF_FIXTURE_ROOT"
+          sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
+          sudo chown -R root:root "$OUF_FIXTURE_ROOT"
+          sudo bash -c 'cd "$1/repository"; python3 tests/native_r12_retirement_executor.py -v' _ "$OUF_FIXTURE_ROOT"
