@@ -133,6 +133,12 @@ The [corrected v2 diagnostic](SEMANTIC_TOKEN_PROPERTY_MULTIPLICITY_CORRECTION_20
 
 The [private closure plan](RENEWABLE_MOUNT0_CLOSURE_PLAN_20261012.md) distinguishes existing app-owned immutable configtree from root-owned renewable token, documents new six-mount policy integration and governed source/finite renewal requirements. Source authentication remains blocked by UID1000 /opt/ouf ancestry; cadence is not persisted failure budget or issuer/client authority. Next prepared metadata-only read observes the configured secret reference custody without opening its content or inferring material type. Actual source/IAM/renewal and six-mount acceptance remain OPEN; no deployment or Teatri result.
 
+## Credential reference leaf observed — ancestry not protected
+
+[Operator secret-reference metadata](../evidence/semantic-token-secret-reference-metadata-target-20261012.json) reports root:root0400 regular single-link leaf, no symlink, within4096bytes and stable double stat. Its ancestors are NOT all root/non-writable. No credential content or type was inspected, no referenced file opened and no authority granted. Leaf root ownership cannot compensate for a replaceable ancestor.
+
+Both producer-source ancestry and credential-reference ancestry are now unproven. Do not infer they share the same failing parent yet, nor infer actual compromise. Next bounded read reports redacted ancestor depth/custody and privately compares failed ancestors with the selected producer path. That identifies a minimal governed relocation scope; no permission repair, credential copy/rotation, service change, baseline refresh or R12 action is performed.
+
 ## Remaining objective
 
 After the target preparation, finish the six-mount policy and independent acceptance, authenticated transport/new consumption bindings, distinct worker with retained cumulative recovery history, application verification and producer release. Complete sealed installer and current finite HUMAN/signature source authority remain open. The changed gate request needs fresh authority; original59… request/9ec… intake cannot approve it.
