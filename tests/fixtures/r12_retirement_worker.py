@@ -28,7 +28,10 @@ class Adapter:
     def pause(self):
         assert re.fullmatch('[A-Za-z][A-Za-z0-9_]{0,31}',owner['kernel']['tableName'])
         transaction='\n'.join('flush set '+f+' '+owner['kernel']['tableName']+' provider_'+str(i) for f in ('inet','bridge') for i in range(2))+'\n'
-        subprocess.run([owner['nftPath'],'-f','-'],input=transaction.encode(),check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=5)
+        result=subprocess.run([owner['nftPath'],'-f','-'],input=transaction.encode(),stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=5)
+        if result.returncode:
+            write(root/'fixture-revocation-error.json',{'nativeExitCode':result.returncode,'stderrSha256':hashlib.sha256(result.stderr).hexdigest(),'stderrBytes':len(result.stderr),'fixtureStderr':result.stderr.decode('utf-8',errors='replace')[:2048]})
+            raise RuntimeError('FIXTURE_NATIVE_REVOCATION_FAILED')
         lease=read(Path(owner['journalFile']));write(Path(owner['journalFile']),{**lease,'state':'QUIESCED','leaseAuthorized':False,'leaseAddresses':[[],[]]})
 r=LeaseRecovery(Journal(root/'retry'),Adapter(),Policy(),auth['contextRef'],auth['generationRef'],lambda:(time.time(),time.monotonic()),lambda:0.5)
 row=r.journal.read()

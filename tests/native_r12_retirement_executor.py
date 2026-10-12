@@ -85,7 +85,9 @@ class NativeRetirement(unittest.TestCase):
         e,c,r12,base=self.fixture()
         try:e.run(1)
         except CutoverDenied:
-            native=c.current();print('OUF_FIXTURE_RETIREMENT_PENDING='+json.dumps({'service':native['service'],'worker':{k:native['worker'].get(k) for k in ('state','ready','live','setsRevoked','attempts','refreshCount')},'history':{k:native['history'].get(k) for k in ('state','reason','attempts','publicationCount')},'lease':{k:native['lease'].get(k) for k in ('journalState','leaseAuthorized','providerSetsEmpty')}},sort_keys=True));raise
+            native=c.current();error=r12/'fixture-revocation-error.json'
+            if error.exists():print('OUF_FIXTURE_NATIVE_REVOCATION_ERROR='+error.read_text())
+            print('OUF_FIXTURE_RETIREMENT_PENDING='+json.dumps({'service':native['service'],'worker':{k:native['worker'].get(k) for k in ('state','ready','live','setsRevoked','attempts','refreshCount')},'history':{k:native['history'].get(k) for k in ('state','reason','attempts','publicationCount')},'lease':{k:native['lease'].get(k) for k in ('journalState','leaseAuthorized','providerSetsEmpty')}},sort_keys=True));raise
         c.stop=lambda _:self.fail('NATIVE_STOP_REPLAYED');e.run(1)
         row=json.loads((r12/'retry/recovery.json').read_bytes());self.assertEqual(row['attempts'],24);self.assertEqual(row['publicationCount'],4330);self.assertEqual(row['state'],'CANCELLED')
         self.assertTrue((r12/'revoked').is_file());self.assertTrue((r12/'worker-invocation-claim.json').is_file())

@@ -15,7 +15,7 @@ from migration_admission_adapter import MigrationAdmissionAdapter
 CORE={'QUIESCE_PRODUCERS','FENCED_BACKUP','RELEASE_OLD_ENDPOINT','CREATE_REPLACEMENT','STAGE_PAUSED_REPLACEMENT','ADMIT_MIGRATION','START_REPLACEMENT'}
 OWNER=set(PHASES)-CORE
 
-def configure_core(engine,transition,request,store,admin,intents,owner_adapters,backup_checkpoint):
+def configure_core(engine,transition,request,store,admin,intents,owner_adapters,backup_checkpoint,gated_stage=None,gated_release=None):
     require(type(intents) is dict and set(intents)==set(PHASES) and type(owner_adapters) is dict
             and set(owner_adapters)==OWNER,'COMPLETE_SOURCE_SEALED_OWNER_PHASES_REQUIRED')
     require(all(callable(getattr(a,'apply',None)) and callable(getattr(a,'observe',None)) for a in owner_adapters.values())
@@ -23,8 +23,21 @@ def configure_core(engine,transition,request,store,admin,intents,owner_adapters,
     require(intents['CREATE_REPLACEMENT']==request and transition.read()['creationRequestHash']==digest(request),'EXACT_SHARED_CREATION_REQUEST_REQUIRED')
     backup=intents['FENCED_BACKUP'];admission=intents['ADMIT_MIGRATION'];endpoint=intents['RELEASE_OLD_ENDPOINT'];quiesce=intents['QUIESCE_PRODUCERS']
     require(all(backup.get(k)==admission.get(k) for k in ('containerId','database','databaseOid','user')),'BACKUP_AND_MIGRATION_DATABASE_SCOPE_MISMATCH')
+    from gated_creation_plan import ENTRY
+    from gated_stage_adapter import GatedStageAdapter
+    from gated_release_adapter import GatedReleaseAdapter
+    gated=request.get('Entrypoint')==ENTRY
+    if gated:
+        require(type(gated_stage) is GatedStageAdapter and type(gated_release) is GatedReleaseAdapter
+                and gated_stage.transition is transition and gated_release.transition is transition
+                and digest(gated_stage.request)==digest(request) and gated_release.request_hash==digest(request)
+                and gated_stage.store is store and gated_release.store is store,'EXPLICIT_GATED_STAGE_AND_RELEASE_ADAPTERS_REQUIRED')
+        release_reference=gated_release.intent
+    else:
+        require(gated_stage is None and gated_release is None,'GATED_ADAPTER_WITHOUT_EXPLICIT_GATE_REQUEST_DENIED')
+        release_reference={'creationRequestHash':digest(request),'priorEvidencePhase':'STAGE_PAUSED_REPLACEMENT'}
     require(intents['STAGE_PAUSED_REPLACEMENT']=={'creationRequestHash':digest(request),'priorEvidencePhase':'CREATE_REPLACEMENT'}
-            and intents['START_REPLACEMENT']=={'creationRequestHash':digest(request),'priorEvidencePhase':'STAGE_PAUSED_REPLACEMENT'},'CREATION_STAGE_RELEASE_REFERENCES_MISMATCH')
+            and intents['START_REPLACEMENT']==release_reference,'CREATION_STAGE_RELEASE_REFERENCES_MISMATCH')
     pins=[p for p in quiesce['producerBindings'] if p['containerId']==endpoint['containerId']]
     require(len(pins)==1,'ENDPOINT_OWNER_NOT_IN_QUIESCED_PRODUCER_SCOPE')
     original=quiesce['initialNetworkSettings'][endpoint['containerId']]
@@ -43,13 +56,13 @@ def configure_core(engine,transition,request,store,admin,intents,owner_adapters,
                      'FENCED_BACKUP':FencedBackupAdapter(admin,backup,backup_checkpoint,transition.context,store),
                      'RELEASE_OLD_ENDPOINT':EndpointAdapter(engine,transition,endpoint,store),
                      'CREATE_REPLACEMENT':CreationAdapter(engine,transition,request,store),
-                     'STAGE_PAUSED_REPLACEMENT':PausedStageAdapter(engine,transition,request,store),
+                     'STAGE_PAUSED_REPLACEMENT':gated_stage if gated else PausedStageAdapter(engine,transition,request,store),
                      'ADMIT_MIGRATION':MigrationAdmissionAdapter(admin,engine,transition,admission,store),
-                     'START_REPLACEMENT':ReleasePausedAdapter(engine,transition,request,store)})
+                     'START_REPLACEMENT':gated_release if gated else ReleasePausedAdapter(engine,transition,request,store)})
     return adapters
 
 def configure_owned_core(engine,transition,request,store,admin,intents,remaining_owner_adapters,
-                         backup_checkpoint,retirement_channel,retirement_before_store):
+                         backup_checkpoint,retirement_channel,retirement_before_store,gated_stage=None,gated_release=None):
     """Eight concrete phases; remaining five owner phases must be sealed separately.
 
     Constructing this mapping performs no phase effect and grants no authority.
@@ -65,4 +78,4 @@ def configure_owned_core(engine,transition,request,store,admin,intents,remaining
             'CORE_RETIREMENT_PREDECESSOR_HISTORY_OR_INCIDENT_DRIFT')
     retirement=R12RetirementAdapter(retirement_channel,transition,intents['STOP_REVOKE_OLD_LEASE'],retirement_before_store,store)
     return configure_core(engine,transition,request,store,admin,intents,
-                          {**remaining_owner_adapters,'STOP_REVOKE_OLD_LEASE':retirement},backup_checkpoint)
+                          {**remaining_owner_adapters,'STOP_REVOKE_OLD_LEASE':retirement},backup_checkpoint,gated_stage,gated_release)

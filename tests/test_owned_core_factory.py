@@ -29,4 +29,15 @@ class OwnedFactory(unittest.TestCase):
             with self.assertRaises(ValueError):configure_owned_core(None,t,request,store,admin,intents,owners,lambda point:None,c,before)
             self.assertEqual(calls,[])
 
+    def test_gate_request_cannot_use_plain_unpause_factory(self):
+        from gated_creation_plan import ENTRY
+        request,intents,owners,t,admin,calls,c,before,store=self.fixture();request['Entrypoint']=ENTRY
+        # Existing request hashes must be recompiled; a new launch is never an
+        # approval alias for the previous private plan or ordinary release.
+        from transition_journal import digest
+        old_read=t.read;t.read=lambda:{**old_read(),'creationRequestHash':digest(request)}
+        with self.assertRaisesRegex(ValueError,'EXPLICIT_GATED_STAGE_AND_RELEASE'):
+            configure_owned_core(None,t,request,store,admin,intents,owners,lambda point:None,c,before)
+        self.assertEqual(calls,[])
+
 if __name__=='__main__':unittest.main()
