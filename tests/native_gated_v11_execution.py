@@ -22,6 +22,10 @@ from tools.semantic_provider_preexec_native import NativeBackend
 from tools.semantic_provider_deployment_admission import application_hash
 from configtree_mount_observation import ConfigtreeMountObservation
 from projected_frame_observation import ProjectedFrameObservation
+from paused_attestation_adapter import PausedAttestationAdapter
+from paused_node_acceptance import PausedNodeAcceptance
+from tools.semantic_provider_deployment_signing import ExistingEd25519Signer
+import test_cutover_authority_native as signed_fixture
 from paused_node_observation import PausedNodeObservation
 from tools.semantic_provider_deployment_admission import transport_hash
 import image_custody as custody
@@ -45,7 +49,7 @@ def file_hash(path,limit=536870912):
             h.update(block)
     return h.hexdigest()
 
-def paused_filesystem(e,engine,store,socket,request,configtree,sources,fixture_root,peer):
+def paused_filesystem(e,engine,store,socket,request,configtree,sources,fixture_root,peer,attestation_holder):
     """Native read-only seal; never construct an approval from observed OCI.
 
     No independent target policy is supplied by this fixture. This qualifies
@@ -142,12 +146,36 @@ def paused_filesystem(e,engine,store,socket,request,configtree,sources,fixture_r
         else:raise AssertionError('CONFIGTREE_PERMISSION_DRIFT_ACCEPTED')
     finally:os.chmod(configtree['source'],0o500)
     assert ConfigtreeMountObservation(configtree,VerificationBudget(18)).observe(generation)['sameSourceFileInMountedView']
+    # Actual scoped Ed25519 over actual native observation, with a disposable
+    # synthetic owner/authority. Never target approval or target key issuance.
+    signed=signed_fixture.SignedCutover();signed.setUp();attestation_holder['cleanup']=signed.doCleanups
+    trust=json.loads(signed.policy.read_bytes());key=trust['keys'][1];key['publicKey']=signed.grant['publicKey']
+    signed.write(signed.policy,signed_fixture.encoded(trust));signed.verifier.policy_binding=signed.binding(signed.policy)
+    authority_context={k:signed.context[k] for k in ('installationRef','entityRef','attestorRef')}
+    expected={**{k:e.intents['ATTEST_NEW_OCI_PEER'][k] for k in ('creationRequestHash','sourceClosureHash','qualifiedPackageHash','imageConfigurationHash')},
+              'transitionContextHash':e.t.context,'phaseIntentHash':e.intent_hashes['ATTEST_NEW_OCI_PEER'],
+              **{k:observed_request[k] for k in ('artifactHash','applicationHash','transportHash')}}
+    payload={'schema':'ouf.semantic-paused-node-acceptance-authorization.v1','issuerRef':authority_context['attestorRef'],
+             'installationRef':authority_context['installationRef'],'entityRef':authority_context['entityRef'],**expected,
+             'containerId':cid,'generationBinding':'OBSERVED_PAUSED_GATED','rootfsSeal':complete['rootfsSeal'],'issuedAt':signed.now,
+             'expiresAt':signed.now+180,'state':'ACTIVE','attestationAuthorized':True,'completeCreationAccepted':True}
+    authorization=signed_fixture.encoded(payload);signer=ExistingEd25519Signer(signed.binding(signed.key),key['keyRef'],signed.verifier,
+                           {'role':'CREATION_ATTESTATION','issuerRef':authority_context['attestorRef'],'installationRef':authority_context['installationRef'],'entityRef':authority_context['entityRef']})
+    signature=signer.sign(authorization);authorization_path=signed.root/'paused-acceptance.json';signed.write(authorization_path,authorization)
+    signed.write(signed.signatures/(hashlib.sha256(authorization).hexdigest()+'.CREATION_ATTESTATION.json'),signature)
+    budget=VerificationBudget(18);native_observer=PausedNodeObservation(cfg,budget,binding,ProjectedFrameObservation(bindings,budget))
+    acceptance=PausedNodeAcceptance(signed.verifier,authority_context,expected)
+    attestation_holder['adapter']=PausedAttestationAdapter(e.t,e.intents['ATTEST_NEW_OCI_PEER'],store,native_observer,acceptance,observed_request,context,signed.binding(authorization_path))
+    e.run(7);e.run(7)
+    assert e.t.read()['nextPhase']==7 and len([v for v in e.t.read()['effects'] if v['phase']=='ATTEST_NEW_OCI_PEER' and v['state']=='APPLIED'])==1
     result={'rootfsSeal':first,'observedCompleteOciHash':application_hash(oci),'stableDoubleRootfsSeal':True,
             'actualPausedRuncContract':True,'independentOciPolicyAccepted':False,'reciprocalPeersVerified':True,
             'singletonConfigtreeObservation':directory,'configtreeHashExtraFileAndPermissionDriftRejected':True,
             'actualFourProjectedInputFrameObserved':True,'projectedFrameHash':frame_hash,'projectedFileHashDriftRejected':True,
             'fixtureExpectedOciDerivedFromObservedOci':True,'completePausedNodeObservationHash':digest(complete),
-            'reciprocalPeerOciDriftRejected':True,'observationDidNotAdvanceAttestationPhase':True}
+            'reciprocalPeerOciDriftRejected':True,'unsignedObservationDidNotAdvanceAttestationPhase':True,
+            'actualScopedPausedAcceptanceFixtureVerified':True,'signedAttestationPhaseCompletedOnce':True,
+            'fixturePausedAcceptanceSignaturesIssued':1,'targetSignaturesIssued':0}
     return result
 
 class Fixture:
@@ -204,16 +232,19 @@ def main():
         request,proposal=compile_gate(parent,digest(parent),{'config':audit['imageConfig']});process=GatedProcessObservation(request)
         before=root/'before';before.mkdir(mode=0o700);before_store=NativeEvidenceStore(before)
         intent={'creationRequestHash':digest(request),'priorEvidencePhase':'STAGE_PAUSED_REPLACEMENT','preApplicationGateProfile':PROFILE}
+        attestation_holder={};attest_intent={'creationRequestHash':digest(request),'sourceClosureHash':'e'*64,
+                          'qualifiedPackageHash':spec['zipSha256'],'imageConfigurationHash':digest(audit['imageConfig']),'nodeRecipeHash':'f'*64}
         e,store=compose(fixture,'START_REPLACEMENT',intent,lambda t,s:GatedReleaseAdapter(engine,t,request,s,before_store,process,lambda point:None),additional={
             'CREATE_REPLACEMENT':(request,lambda t,s:CreationAdapter(engine,t,request,s)),
-            'STAGE_PAUSED_REPLACEMENT':({'creationRequestHash':digest(request),'priorEvidencePhase':'CREATE_REPLACEMENT'},lambda t,s:GatedStageAdapter(engine,t,request,s,process,lambda point:None))},creation_request=request)
+            'STAGE_PAUSED_REPLACEMENT':({'creationRequestHash':digest(request),'priorEvidencePhase':'CREATE_REPLACEMENT'},lambda t,s:GatedStageAdapter(engine,t,request,s,process,lambda point:None)),
+            'ATTEST_NEW_OCI_PEER':(attest_intent,lambda t,s:type('SyntheticLateOwnerFixture',(),{'apply':lambda self,i:attestation_holder['adapter'].apply(i),'observe':lambda self,i:attestation_holder['adapter'].observe(i)})())},creation_request=request)
         cid=None
         try:
             e.run(6);native=engine.inspect(e.t);cid=native['Id'];pid=native['State']['Pid'];gate=process.observe(pid)
             assert gate['processKind']=='GATE_WAITING' and native['Image']==descriptor['digest']
             jar_before=file_hash('/proc/'+str(pid)+'/root/app/application.jar');assert jar_before==verified['memberSha256']['application.jar']
             java_before=file_hash('/proc/'+str(pid)+'/root/opt/java/openjdk/bin/java');assert process.observe(pid)==gate
-            filesystem=paused_filesystem(e,engine,store,socket,request,configtree,sources,root,peer)
+            filesystem=paused_filesystem(e,engine,store,socket,request,configtree,sources,root,peer,attestation_holder)
             deadline=time.monotonic()+5
             while True:
                 try:e.run(11);break
@@ -227,6 +258,7 @@ def main():
             receipt['qualifiedEngineVersion']=version['Version']
             print('OUF_GATED_ORIGINAL_V11='+json.dumps(receipt,sort_keys=True));(ROOT/'native-gated-v11-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
         finally:
+            if 'cleanup' in attestation_holder:attestation_holder['cleanup']()
             if cid is not None:engine.request('DELETE','/v1.44/containers/'+cid+'?force=true')
             fixture.close()
 

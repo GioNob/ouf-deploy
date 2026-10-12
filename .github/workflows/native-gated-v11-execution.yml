@@ -7,6 +7,7 @@ on:
       - tests/native_gated_v11_execution.py
       - tools/semantic_application_cutover/configtree_mount_observation.py
       - tools/semantic_application_cutover/projected_frame_observation.py
+      - tools/semantic_application_cutover/paused_attestation_adapter.py
       - tests/test_projected_frame_custody.py
       - tools/semantic_application_cutover/gated_process_observation.py
       - tools/semantic_application_cutover/gated_release_adapter.py
