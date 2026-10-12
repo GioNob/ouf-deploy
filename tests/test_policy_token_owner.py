@@ -6,6 +6,7 @@ from tools.semantic_policy_token_owner.producer import (
  Binding,CredentialFile,DomainOwner,HttpsGrant,TokenRenewalAdapter,RenewalOperation,token_response)
 from tools.semantic_lease_recovery.bounded_recovery import Policy,Recovery,Temporary,Permanent
 from tools.semantic_lease_recovery.recovery_journal import Journal
+from tools.semantic_policy_token_owner.supervisor import ScheduledRecovery,RenewalWorker
 
 class Clock:
  def __init__(self):self.wall=100000.;self.mono=100.
@@ -71,7 +72,7 @@ class TokenOwner(unittest.TestCase):
     self.assertEqual(calls,['/token','/token','/token'])
    finally:server.shutdown();thread.join(2);server.server_close()
 
- def fixture(self,policy=None):
+ def fixture(self,policy=None,*,scheduled=False):
   temp=tempfile.TemporaryDirectory(dir=ROOT);self.addCleanup(temp.cleanup);root=Path(temp.name);root.chmod(0o700)
   credential=root/'credential';credential.write_text('FIXTURE_SECRET');credential.chmod(0o400)
   out=root/'output';out.mkdir(mode=0o750);out.chmod(0o750)
@@ -83,9 +84,81 @@ class TokenOwner(unittest.TestCase):
   clock=Clock();owner=Owner(clock);opener=Opener()
   binding=Binding('https://fixture.invalid/token','fixture-client','fixture-scope',str(out),'token.jwt',10001)
   adapter=TokenRenewalAdapter(binding,CredentialFile(credential),owner,HttpsGrant(clock,opener=opener),clock)
-  journal=Journal(state);recovery=Recovery(journal,adapter,policy or Policy(), 'a'*64,'b'*64,clock,lambda:.5)
+  journal=Journal(state);recovery=(ScheduledRecovery if scheduled else Recovery)(journal,adapter,policy or Policy(), 'a'*64,'b'*64,clock,lambda:.5)
   journal.initialize(recovery.initial()) # TEST ONLY; production component has no initialization API.
-  return root,clock,owner,opener,adapter,journal,RenewalOperation(recovery)
+  return root,clock,owner,opener,adapter,journal,(RenewalWorker(recovery) if scheduled else RenewalOperation(recovery))
+
+ def test_scheduled_success_preserves_budget_and_shortens_interval_for_short_expiry(self):
+  root,clock,owner,opener,adapter,journal,worker=self.fixture(scheduled=True)
+  opener.value['expires_in']=100
+  first=worker.tick();self.assertEqual(first['state'],'ACTIVE')
+  self.assertEqual(first['nextRenewalMonotonic']-clock.mono,50)
+  clock.advance(49);worker.tick();self.assertEqual(opener.calls,1)
+  clock.advance(1);second=worker.tick();self.assertEqual(second['state'],'ACTIVE')
+  self.assertEqual((second['attempts'],second['publicationCount']),(2,2))
+  self.assertEqual((first['startedWall'],first['startedMonotonic']),
+                   (second['startedWall'],second['startedMonotonic']))
+  self.assertFalse(worker.status(second)['applicationReady'])
+
+ def test_scheduled_restart_requires_reconciliation_and_no_timer_budget_reset(self):
+  root,clock,owner,opener,adapter,journal,worker=self.fixture(scheduled=True)
+  first=worker.tick();clock.advance(60)
+  restarted=RenewalWorker(ScheduledRecovery(Journal(journal.root),adapter,Policy(),'a'*64,'b'*64,clock,lambda:.5))
+  row=restarted.tick();self.assertEqual(row['state'],'RECONCILE_REQUIRED')
+  self.assertEqual(row['attempts'],first['attempts']);self.assertEqual(opener.calls,1)
+
+ def test_successful_timer_cycles_cannot_bypass_finite_operation_cap(self):
+  root,clock,owner,opener,adapter,journal,worker=self.fixture(Policy(max_attempts=2),scheduled=True)
+  worker.tick();clock.advance(60);second=worker.tick();self.assertEqual(second['attempts'],2)
+  self.assertEqual(worker.tick()['state'],'PAUSED_EXHAUSTED');clock.advance(10000)
+  self.assertEqual(worker.tick()['attempts'],2);self.assertEqual(opener.calls,2)
+
+ def test_scheduled_dependency_outage_keeps_original_history_after_new_worker(self):
+  root,clock,owner,opener,adapter,journal,worker=self.fixture(scheduled=True)
+  original=worker.tick();clock.advance(60);owner.until=clock.mono+14400
+  row=worker.tick();self.assertEqual(row['state'],'RETRY_WAIT');self.assertEqual(opener.calls,1)
+  replacement=RenewalWorker(ScheduledRecovery(Journal(journal.root),adapter,Policy(),'a'*64,'b'*64,clock,lambda:.5))
+  self.assertEqual(replacement.tick()['attempts'],row['attempts'])
+  while True:
+   clock.advance(row['nextMonotonic']-clock.mono);row=replacement.tick()
+   if row['state']=='ACTIVE':break
+   self.assertEqual(row['state'],'RETRY_WAIT');self.assertEqual(opener.calls,1)
+  self.assertEqual(row['publicationCount'],2);self.assertEqual(opener.calls,2)
+  self.assertEqual(row['startedWall'],original['startedWall'])
+
+ def test_scheduled_revocation_and_expired_token_do_not_grant(self):
+  root,clock,owner,opener,adapter,journal,worker=self.fixture(scheduled=True)
+  worker.tick();owner.revoked=True
+  self.assertEqual(worker.tick()['state'],'BLOCKED');self.assertEqual(opener.calls,1)
+  root,clock,owner,opener,adapter,journal,worker=self.fixture(scheduled=True)
+  worker.tick();clock.advance(121)
+  self.assertEqual(worker.tick()['state'],'RECONCILE_REQUIRED');self.assertEqual(opener.calls,1)
+
+ def test_worker_wait_has_no_journal_lock_and_retains_invocation_fence(self):
+  root,clock,owner,opener,adapter,journal,worker=self.fixture(scheduled=True)
+  class Stop:
+   stopped=False
+   def is_set(inner):return inner.stopped
+   def wait(inner,seconds):
+    self.assertLessEqual(seconds,5)
+    fd=os.open(journal.lock,os.O_RDWR)
+    try:fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+    finally:os.close(fd)
+    with self.assertRaises(BlockingIOError):
+     with Journal(journal.root).invocation():pass
+    inner.stopped=True;return True
+  result=worker.serve(Stop(),lambda status:self.assertTrue(status['live']))
+  self.assertEqual(result['state'],'CANCELLED');self.assertEqual(opener.calls,1)
+
+ def test_worker_observer_failure_revokes_and_restart_does_not_replay(self):
+  root,clock,owner,opener,adapter,journal,worker=self.fixture(scheduled=True)
+  class Stop:
+   def is_set(self):return False
+  def fail(status):raise RuntimeError('FIXTURE_PRIVATE_OBSERVER')
+  with self.assertRaises(RuntimeError):worker.serve(Stop(),fail)
+  self.assertGreater(owner.pauses,0)
+  restarted=RenewalWorker(ScheduledRecovery(Journal(journal.root),adapter,Policy(),'a'*64,'b'*64,clock,lambda:.5))
+  self.assertEqual(restarted.tick()['state'],'RECONCILE_REQUIRED');self.assertEqual(opener.calls,1)
 
  def test_finite_expiry_and_boolean_expiry_denied(self):
   binding=Binding('https://fixture.invalid/token','client','scope','/run/fixture','token',10001)

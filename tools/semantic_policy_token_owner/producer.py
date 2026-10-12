@@ -204,13 +204,14 @@ class TokenRenewalAdapter:
         check(type(binding) is Binding and type(credential) is CredentialFile
               and isinstance(owner,DomainOwner) and type(transport) is HttpsGrant)
         self.binding,self.credential,self.owner,self.transport,self.clock=binding,credential,owner,transport,clock
-        self.writer=AtomicTokenFile(binding); self.evidence=None
+        self.writer=AtomicTokenFile(binding); self.evidence=None; self.publication_window=None
     def guard(self):
         self.owner.guard(self.binding.digest())
     def pause(self):
-        self.evidence=None
+        self.evidence=None; self.publication_window=None
         self.owner.pause()
     def prepare(self,deadline):
+        self.publication_window=None
         self.guard(); self.owner.prepare(self.binding.digest(),deadline)
         self.writer.check_custody()
         secret=self.credential.read(); self.guard()
@@ -236,6 +237,10 @@ class TokenRenewalAdapter:
             publication_guard()
             receipt=self.writer.publish(token,publication_guard)
             self.guard()
+            wall,mono=self.clock()
+            check(math.isfinite(wall) and math.isfinite(mono) and mono>=started
+                  and mono<deadline and valid_until-mono>=self.binding.minimum_remaining)
+            self.publication_window=(wall,mono,valid_until)
             return receipt
         except Temporary as error:
             # A no-effect proof for an admission probe/publication does NOT
