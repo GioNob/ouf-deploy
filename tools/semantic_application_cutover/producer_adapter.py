@@ -2,7 +2,8 @@
 
 The caller's sealed checkpoint proves the complete database-writer inventory,
 authority and command custody. This module never discovers/stops other services,
-changes restart policy, restarts a producer, retries a stop or releases the DB.
+restarts a producer, retries an update/stop or releases the DB. The signed intent
+explicitly authorizes disabling only its reviewed legacy restart policy.
 """
 import json,re
 from engine_creation import digest,require
@@ -11,7 +12,7 @@ class ProducerAdapter:
     def __init__(self,engine,transition,intent,store):
         self.engine,self.transition,self.store=engine,transition,store
         self.intent=json.loads(json.dumps(intent,allow_nan=False))
-        require(set(self.intent)=={'producerBindings','initialNetworkSettings','stopTimeoutSeconds'},'EXACT_PRODUCER_QUIESCENCE_INTENT_REQUIRED')
+        require(set(self.intent)=={'producerBindings','initialNetworkSettings','initialHostConfigs','quiescentRestartPolicy','stopTimeoutSeconds'},'EXACT_PRODUCER_QUIESCENCE_INTENT_REQUIRED')
         pins=self.intent['producerBindings']
         require(type(pins) is list and 1<=len(pins)<=8 and type(self.intent['stopTimeoutSeconds']) is int
                 and 1<=self.intent['stopTimeoutSeconds']<=10,'FINITE_INVENTORIED_PRODUCERS_REQUIRED')
@@ -26,7 +27,17 @@ class ProducerAdapter:
         networks=self.intent['initialNetworkSettings']
         require(type(networks) is dict and set(networks)=={p['containerId'] for p in pins}
                 and all(type(networks[p['containerId']]) is dict and digest(networks[p['containerId']])==p['networkSettingsHash'] for p in pins),'SIGNED_INITIAL_PRODUCER_NETWORK_SETTINGS_REQUIRED')
+        hosts=self.intent['initialHostConfigs']
+        require(type(hosts) is dict and set(hosts)=={p['containerId'] for p in pins}
+                and all(type(hosts[p['containerId']]) is dict and digest(hosts[p['containerId']])==p['hostConfigHash'] for p in pins),'SIGNED_INITIAL_PRODUCER_HOST_CONFIGS_REQUIRED')
+        require(self.intent['quiescentRestartPolicy']=={'Name':'no','MaximumRetryCount':0},'EXPLICIT_QUIESCENT_RESTART_POLICY_REQUIRED')
+        for host in hosts.values():
+            require(host.get('RestartPolicy') in ({'Name':'no','MaximumRetryCount':0},{'Name':'unless-stopped','MaximumRetryCount':0}), 'REVIEWED_LEGACY_RESTART_POLICY_REQUIRED')
         self.intent_hash=digest(self.intent)
+    def quiescent_host(self,pin):
+        host=json.loads(json.dumps(self.intent['initialHostConfigs'][pin['containerId']]))
+        host['RestartPolicy']=self.intent['quiescentRestartPolicy']
+        return host
     def exact(self,intent):
         require(digest(intent)==self.intent_hash,'IMMUTABLE_PRODUCER_INTENT_REQUIRED')
         row=self.transition.read()
@@ -37,12 +48,12 @@ class ProducerAdapter:
         if status==404:return None
         require(status==200 and type(value) is dict and value.get('Id')==pin['containerId'],'EXACT_PRODUCER_INSPECTION_REQUIRED')
         return value
-    def running(self,pin):
+    def running(self,pin,policy_disabled=False):
         actual=self.inspect(pin)
-        require(actual is not None and self.engine.runtime_binding(actual)==pin
+        expected={**pin,'hostConfigHash':digest(self.quiescent_host(pin))} if policy_disabled else pin
+        require(actual is not None and self.engine.runtime_binding(actual)==expected
                 and actual['State']['Running'] is True and actual['State']['Paused'] is False
-                and actual['State']['Status']=='running' and actual['RestartCount']==0
-                and actual['HostConfig']['RestartPolicy']=={'Name':'no','MaximumRetryCount':0},'CURRENT_PRODUCER_GENERATION_OR_RESTART_POLICY_UNPROVEN')
+                and actual['State']['Status']=='running' and type(actual['RestartCount']) is int and actual['RestartCount']>=0,'CURRENT_PRODUCER_GENERATION_OR_RESTART_POLICY_UNPROVEN')
         return actual
     def apply(self,intent):
         self.exact(intent)
@@ -51,23 +62,30 @@ class ProducerAdapter:
         for pin in self.intent['producerBindings']:self.running(pin)
         for pin in self.intent['producerBindings']:
             self.running(pin)
+            if self.intent['initialHostConfigs'][pin['containerId']]['RestartPolicy']!=self.intent['quiescentRestartPolicy']:
+                status,_=self.engine.request('POST','/v1.44/containers/'+pin['containerId']+'/update',{'RestartPolicy':self.intent['quiescentRestartPolicy']})
+                require(status==200,'PRODUCER_RESTART_POLICY_OUTCOME_REQUIRES_RECONCILIATION')
+            self.running(pin,policy_disabled=True)
             status,_=self.engine.request('POST','/v1.44/containers/'+pin['containerId']+'/stop?t='+str(self.intent['stopTimeoutSeconds']))
             require(status==204,'PRODUCER_STOP_OUTCOME_REQUIRES_RECONCILIATION')
     def stopped(self,pin):
         actual=self.inspect(pin)
         if actual is None:return None
         require(actual['Image']==pin['imageId'] and actual['State']['StartedAt']==pin['startedAt']
-                and actual['RestartCount']==0 and digest(actual['Config'])==pin['configHash']
-                and digest(actual['HostConfig'])==pin['hostConfigHash'] and digest(actual['Mounts'])==pin['mountsHash'], 'PRODUCER_GENERATION_OR_CONFIGURATION_DRIFT')
+                and type(actual['RestartCount']) is int and actual['RestartCount']>=0 and digest(actual['Config'])==pin['configHash']
+                and digest(actual['HostConfig']) in {pin['hostConfigHash'],digest(self.quiescent_host(pin))}
+                and digest(actual['Mounts'])==pin['mountsHash'], 'PRODUCER_GENERATION_OR_CONFIGURATION_DRIFT')
         state=actual['State']
         if state['Running'] is True:return None
+        require(digest(actual['HostConfig'])==digest(self.quiescent_host(pin)),'QUIESCENT_RESTART_POLICY_NOT_INSTALLED')
         require(state['Status']=='exited' and state['Paused'] is False and state['Pid']==0
                 and state.get('Error','')=='' and type(state.get('FinishedAt')) is str
                 and state['FinishedAt']!='0001-01-01T00:00:00Z','EXACT_STOPPED_PRODUCER_REQUIRED')
         return {'containerId':pin['containerId'],'imageId':pin['imageId'],'startedAt':pin['startedAt'],'initialRuntimeBinding':pin,
                 'initialNetworkSettings':self.intent['initialNetworkSettings'][pin['containerId']],
-                'finishedAt':state['FinishedAt'],'configHash':pin['configHash'],'hostConfigHash':pin['hostConfigHash'],
-                'mountsHash':pin['mountsHash'],'running':False,'pid':0,'restartCount':0}
+                'finishedAt':state['FinishedAt'],'configHash':pin['configHash'],'hostConfigHash':digest(self.quiescent_host(pin)),
+                'mountsHash':pin['mountsHash'],'running':False,'pid':0,'restartCount':actual['RestartCount'],
+                'restartPolicyDisabled':True}
     def observe(self,intent):
         self.exact(intent)
         before=[self.stopped(pin) for pin in self.intent['producerBindings']]

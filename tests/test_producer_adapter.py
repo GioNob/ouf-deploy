@@ -8,19 +8,21 @@ from transition_journal import Transition
 from cutover_executor import CutoverDenied
 
 class Producers(unittest.TestCase):
-    def fixture(self,count=1):
+    def fixture(self,count=1,restart_policy='no'):
         states={};calls=[]
         for i in range(count):
             cid=str(i+1)*64
-            states[cid]={'Id':cid,'Image':'sha256:'+'a'*64,'Config':{'fixture':i},'HostConfig':{'RestartPolicy':{'Name':'no','MaximumRetryCount':0}},'Mounts':[],'NetworkSettings':{},'RestartCount':0,'State':{'Running':True,'Paused':False,'Status':'running','Pid':100+i,'StartedAt':'2026-10-12T00:00:00Z','FinishedAt':'0001-01-01T00:00:00Z','Error':''}}
+            states[cid]={'Id':cid,'Image':'sha256:'+'a'*64,'Config':{'fixture':i},'HostConfig':{'RestartPolicy':{'Name':restart_policy,'MaximumRetryCount':0}},'Mounts':[],'NetworkSettings':{},'RestartCount':0,'State':{'Running':True,'Paused':False,'Status':'running','Pid':100+i,'StartedAt':'2026-10-12T00:00:00Z','FinishedAt':'0001-01-01T00:00:00Z','Error':''}}
         engine=Engine.__new__(Engine)
         def request(method,path,body=None):
             cid=path.split('/')[3]
             if method=='GET':return (200,copy.deepcopy(states[cid])) if cid in states else (404,None)
-            calls.append(cid);states[cid]['State'].update(Running=False,Status='exited',Pid=0,FinishedAt='2026-10-12T01:00:00Z')
+            calls.append(cid)
+            if path.endswith('/update'):states[cid]['HostConfig']['RestartPolicy']=copy.deepcopy(body['RestartPolicy']);return 200,None
+            states[cid]['State'].update(Running=False,Status='exited',Pid=0,FinishedAt='2026-10-12T01:00:00Z')
             return 204,None
         engine.request=request
-        intent={'producerBindings':[engine.runtime_binding(s) for s in states.values()],'initialNetworkSettings':{cid:copy.deepcopy(s['NetworkSettings']) for cid,s in states.items()},'stopTimeoutSeconds':1}
+        intent={'producerBindings':[engine.runtime_binding(s) for s in states.values()],'initialNetworkSettings':{cid:copy.deepcopy(s['NetworkSettings']) for cid,s in states.items()},'initialHostConfigs':{cid:copy.deepcopy(s['HostConfig']) for cid,s in states.items()},'quiescentRestartPolicy':{'Name':'no','MaximumRetryCount':0},'stopTimeoutSeconds':1}
         e,store=compose(self,'QUIESCE_PRODUCERS',intent,lambda t,s:ProducerAdapter(engine,t,intent,s))
         return e,engine,states,calls,intent
     def test_crash_after_stop_reopens_without_retransmission(self):
@@ -57,5 +59,17 @@ class Producers(unittest.TestCase):
             else:states['1'*64]['State']['StartedAt']='2026-10-12T02:00:00Z'
             with self.assertRaises((CutoverDenied,CreationDenied)):e.run(2)
             self.assertEqual(len(calls),1);self.assertEqual(e.t.read()['state'],'IN_FLIGHT')
+    def test_reviewed_legacy_policy_is_disabled_before_stop_without_replay(self):
+        e,engine,states,calls,intent=self.fixture(restart_policy='unless-stopped');e.run(2);e.run(2)
+        self.assertEqual(len(calls),2);self.assertEqual(states['1'*64]['HostConfig']['RestartPolicy']['Name'],'no')
+    def test_policy_update_stop_gap_remains_consumed(self):
+        e,engine,states,calls,intent=self.fixture(restart_policy='unless-stopped');original=engine.request
+        def interrupt(method,path,body=None):
+            if method=='POST' and '/stop?' in path:raise RuntimeError('fixture-death-after-policy-update')
+            return original(method,path,body)
+        engine.request=interrupt
+        with self.assertRaises(RuntimeError):e.run(2)
+        with self.assertRaises(CutoverDenied):e.run(2)
+        self.assertEqual(len(calls),1);self.assertTrue(states['1'*64]['State']['Running']);self.assertEqual(e.t.read()['state'],'IN_FLIGHT')
 
 if __name__=='__main__':unittest.main()

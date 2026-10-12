@@ -47,7 +47,7 @@ class EndpointAdapter:
         require(status==200 and type(actual) is dict and actual['Id']==pin['containerId'] and actual['Image']==pin['imageId']
                 and actual['State']['StartedAt']==pin['startedAt'] and actual['State']['FinishedAt']==pin['finishedAt']
                 and actual['State']['Status']=='exited' and actual['State']['Running'] is False
-                and actual['State']['Paused'] is False and actual['State']['Pid']==0 and actual['RestartCount']==0
+                and actual['State']['Paused'] is False and actual['State']['Pid']==0 and actual['RestartCount']==pin['restartCount']
                 and digest(actual['Config'])==pin['configHash'] and digest(actual['HostConfig'])==pin['hostConfigHash']
                 and digest(actual['Mounts'])==pin['mountsHash'],'EXACT_STOPPED_ENDPOINT_OWNER_GENERATION_REQUIRED')
         return actual

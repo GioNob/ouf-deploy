@@ -23,7 +23,7 @@ class NativeEndpoint(NativeRuntime):
             return engine.request('GET','/v1.44/containers/'+cid+'/json')[1]
         initial=create('10.233.0.13');pin=engine.runtime_binding(initial);attach=initial['NetworkSettings']['Networks'][name]
         network=engine.request('GET','/v1.44/networks/'+nid)[1]
-        quiesce={'producerBindings':[pin],'initialNetworkSettings':{pin['containerId']:initial['NetworkSettings']},'stopTimeoutSeconds':1}
+        quiesce={'producerBindings':[pin],'initialNetworkSettings':{pin['containerId']:initial['NetworkSettings']},'initialHostConfigs':{pin['containerId']:initial['HostConfig']},'quiescentRestartPolicy':{'Name':'no','MaximumRetryCount':0},'stopTimeoutSeconds':1}
         intent={'containerId':pin['containerId'],'networkId':nid,'networkName':name,'networkConfigurationHash':digest({k:network.get(k) for k in NETWORK_FIELDS}),'originalEndpointId':attach['EndpointID'],'staticIpv4':attach['IPAddress'],'macAddress':attach['MacAddress'],'priorEvidencePhase':'QUIESCE_PRODUCERS'}
         e,store=compose(self,'RELEASE_OLD_ENDPOINT',intent,lambda t,s:EndpointAdapter(engine,t,intent,s),{'QUIESCE_PRODUCERS':(quiesce,lambda t,s:ProducerAdapter(engine,t,quiesce,s))})
         return e,engine,intent,create

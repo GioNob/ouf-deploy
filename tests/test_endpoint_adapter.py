@@ -22,7 +22,7 @@ class Endpoints(unittest.TestCase):
                 return 204,None
             actual['NetworkSettings']['Networks'].pop(name);network['Containers'].pop(cid,None);return 200,None
         engine.request=request;pin=engine.runtime_binding(actual)
-        quiesce={'producerBindings':[pin],'initialNetworkSettings':{cid:copy.deepcopy(actual['NetworkSettings'])},'stopTimeoutSeconds':1}
+        quiesce={'producerBindings':[pin],'initialNetworkSettings':{cid:copy.deepcopy(actual['NetworkSettings'])},'initialHostConfigs':{cid:copy.deepcopy(actual['HostConfig'])},'quiescentRestartPolicy':{'Name':'no','MaximumRetryCount':0},'stopTimeoutSeconds':1}
         intent={'containerId':cid,'networkId':nid,'networkName':name,'networkConfigurationHash':digest({k:network.get(k) for k in NETWORK_FIELDS}),'originalEndpointId':eid,'staticIpv4':ip,'macAddress':mac,'priorEvidencePhase':'QUIESCE_PRODUCERS'}
         if override:intent.update(override)
         e,store=compose(self,'RELEASE_OLD_ENDPOINT',intent,lambda t,s:EndpointAdapter(engine,t,intent,s),{'QUIESCE_PRODUCERS':(quiesce,lambda t,s:ProducerAdapter(engine,t,quiesce,s))})
