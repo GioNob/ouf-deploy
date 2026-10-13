@@ -1,5 +1,7 @@
 """Selected administrative GET boundary and private evidence; synthetic IAM metadata."""
 import importlib.util
+import ast
+import base64
 import json
 from pathlib import Path
 import subprocess
@@ -98,5 +100,30 @@ class IamTargetProbeTest(unittest.TestCase):
             if case == 'override': lines[1] = 'Environment=OUF_POLICY_TOKEN_CLIENT_ID=foreign'
             with patch.object(probe.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0, '\n'.join(lines).encode())):
                 with self.assertRaises(probe.ProbeDenied): probe.routing()
+
+    def test_exact_documented_command_downloads_and_executes_only_verified_probe_bytes(self):
+        text = (ROOT / 'releases/POLICY_TOKEN_IAM_TARGET_OBSERVATION_20261013.md').read_text()
+        command = text.split("python3 - <<'PY' | tee ouf-policy-token-iam-observation.json\n", 1)[1].split('\nPY\n', 1)[0]
+        raw = SOURCE.read_bytes(); calls = []
+        with tempfile.TemporaryDirectory(dir=ROOT) as temp:
+            home = Path(temp)
+            gh = home / 'ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh'
+            gh.parent.mkdir(parents=True); gh.write_text('DISPOSABLE_UNEXECUTED_GH'); gh.chmod(0o700)
+            def run(argv, **kwargs):
+                calls.append(argv)
+                if len(calls) == 1:
+                    self.assertEqual(argv[0], str(gh))
+                    self.assertIn('05b9c2c22730ca869a48a554b2930796ad248f91', argv[2])
+                    return subprocess.CompletedProcess(argv, 0, base64.b64encode(raw))
+                self.assertEqual(argv, ['sudo', '/usr/bin/python3', '-I', '-B', '-'])
+                tree = ast.parse(kwargs['input'].decode())
+                self.assertEqual(base64.b64decode(tree.body[1].value.args[0].value), raw)
+                self.assertEqual(kwargs['timeout'], 135)
+                return subprocess.CompletedProcess(argv, 0)
+            with patch('pathlib.Path.home', return_value=home), patch('shutil.which', return_value=None), \
+                 patch('subprocess.run', side_effect=run):
+                with self.assertRaises(SystemExit) as result: exec(compile(command, '<documented-iam-command>', 'exec'), {})
+            self.assertEqual(result.exception.code, 0)
+            self.assertEqual(len(calls), 2)
 
 if __name__ == '__main__': unittest.main()

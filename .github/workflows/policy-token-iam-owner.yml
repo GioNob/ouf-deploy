@@ -32,7 +32,8 @@ jobs:
           set -euo pipefail
           python3 -I -B -m unittest discover -s tests -p test_policy_token_operator_delivery.py -v
           python3 -I -B -m unittest discover -s tests -p test_policy_token_scope_probe.py -v
-          python3 -I -B -m unittest discover -s tests -p test_policy_token_iam_target_probe.py -v
+          OUF_FIXTURE_ROOT="/var/lib/ouf-online-iam-owner-${GITHUB_RUN_ID}"
+          sudo python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_iam_target_probe.py -v
       - name: Full worker and authority closure imported from verified memory
         run: |
           set -euo pipefail

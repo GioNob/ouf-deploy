@@ -1,5 +1,7 @@
 # Policy token: IAM reale, owner e worker — candidato qualificato
 
+Aggiornamento: l'operatore ha eseguito la lettura root e il [receipt](../evidence/policy-token-protected-scope-target-20261013.json) mostra radici assenti e timer legacy attivo. La successiva closure eseguibile completa è qualificata in CI. Prossimo passo concreto e nuovo comando: [osservazione IAM selezionata](POLICY_TOKEN_IAM_TARGET_OBSERVATION_20261013.md). Non ripetere il comando storico riportato sotto.
+
 Il candidato risolve il seam DomainOwner e compone il worker periodico finito usato per il nuovo contratto del token policy-read. Consente di proseguire verso le card Teatri senza approvare implicitamente token, pubblicazione semantica o attivazione della sorgente. Non è ancora un installer qualificato sul VPS.
 
 ## Modifiche e prova
@@ -30,7 +32,7 @@ Occorre prima la sola osservazione root riportata sotto. Successivamente il pacc
 
 Il canale DRAFT → validazione → review rimane nelle PR [Registry35](https://github.com/GioNob/ouf-semantic-registry/pull/35), [Gateway70](https://github.com/GioNob/ouf-api-gateway/pull/70) e [MCP64](https://github.com/GioNob/ouf-mcp-server/pull/64). Dopo il rollout qualificato: creare i21 draft Teatri, ottenere revisioni/hash/card reali, review HUMAN in THS, poi attivazione source/config approvata e ingestione dei13 record con ACK, lineage, dedup/merge e ricerca. Non sono state create card o ingestion di produzione in questa qualificazione.
 
-## Unico comando richiesto ora all'operatore sul VPS
+## Osservazione root già eseguita — comando storico, non ripetere
 
 Eseguire nel terminale VPS già usato come `oufadmin`. Riutilizza il `gh` esistente fuori dal PATH, scarica una sola sorgente privata da un commit fisso e ne verifica SHA256; il processo root esegue gli stessi byte già verificati dalla memoria, senza una copia modificabile tra verifica ed esecuzione. `sudo` può richiedere la normale password sul terminale.
 
