@@ -52,7 +52,10 @@ class MapperAdmin:
         return metadata.enriched(snapshot,core,metadata.complete_mappers(reader,snapshot,core))
 
 def equivalent(actual,desired):
-    return type(actual)is dict and all(actual.get(k)==v for k,v in desired.items())
+    #Keycloak allocates the registration ID; the requested UUID is the durable
+    #logical operation ID, not a claim that its POST preserves an object ID.
+    return (type(actual)is dict and type(actual.get('id'))is str and re.fullmatch('[0-9a-fA-F-]{36}',actual['id'])
+        and all(actual.get(k)==v for k,v in desired.items() if k!='id'))
 
 class AudienceTransaction:
     """Exclusive invocation fence only; no shared service/lease lock or retry wait."""
@@ -88,9 +91,9 @@ class AudienceTransaction:
             'IN_MEMORY_IAM_INTENT_DRIFT')
         binding.require(binding.decode(self.raw).get('policyTokenIamPreparation')==self.scope,'EXPLICIT_SIGNED_IAM_PREPARATION_SCOPE_REQUIRED')
         binding.require(self.authority(self.raw)is True,'CURRENT_HUMAN_AND_DUAL_ROLE_AUTHORITY_REQUIRED')
-    def guard_reconciled_baseline(self):
+    def guard_reconciled_baseline(self,realized_id):
         current=self.admin.baseline(self.snapshot)
-        current['client']['protocolMappers']=[m for m in current['client']['protocolMappers'] if m.get('id')!=self.desired['id']]
+        current['client']['protocolMappers']=[m for m in current['client']['protocolMappers'] if m.get('id')!=realized_id]
         binding.require(current==self.snapshot,'CURRENT_COMPLETE_IAM_BASELINE_DRIFT')
     def run(self):
         self.guard();started=self.clock();name='policy-token-iam-transaction-'+self.operation+'.private.json'
@@ -124,7 +127,9 @@ class AudienceTransaction:
                 matches=[m for m in models if m.get('id')==self.desired['id'] or m.get('name')==self.desired['name']]
                 if matches:
                     binding.require(len(matches)==1 and equivalent(matches[0],self.desired),'MANAGED_MAPPER_CONFLICT_REQUIRES_REVIEW')
-                    self.guard_reconciled_baseline();self.guard()
+                    binding.require(row.get('realizedMapperId',matches[0]['id'])==matches[0]['id'],'REGISTERED_MAPPER_ID_DRIFT')
+                    row['realizedMapperId']=matches[0]['id']
+                    self.guard_reconciled_baseline(matches[0]['id']);self.guard()
                     row.update(state='APPLIED_RECONCILED');save(row);report['state']=row['state'];return report
                 binding.require(row['state']=='PREPARED' and not row['postConsumed'],'CONSUMED_IAM_ATTEMPT_REQUIRES_RECONCILIATION')
                 # A fresh complete metadata/core reconciliation is mandatory in
@@ -142,7 +147,8 @@ class AudienceTransaction:
                     self.guard();models=self.admin.models();self.guard()
                     matches=[m for m in models if m.get('id')==self.desired['id'] or m.get('name')==self.desired['name']]
                     binding.require(len(matches)==1 and equivalent(matches[0],self.desired),'IAM_EFFECT_RECONCILIATION_REQUIRED')
-                    self.guard_reconciled_baseline();self.guard()
+                    row['realizedMapperId']=matches[0]['id']
+                    self.guard_reconciled_baseline(matches[0]['id']);self.guard()
                     binding.require(0<=self.clock()-started<90,'FINITE_IAM_PREPARATION_DEADLINE')
                     row.update(state='APPLIED_RECONCILED');save(row);report['state']=row['state'];return report
                 except Exception:

@@ -32,7 +32,8 @@ class AudienceTransactionTest(unittest.TestCase):
         return signed,operation
     def test_one_actual_signed_scope_effect_and_completed_reconciliation_never_reposts(self):
         signed,op=self.fixture();models=[];calls=[]
-        def create(body):calls.append(body);models.append(copy.deepcopy(body))
+        def create(body):
+            calls.append(body);model=copy.deepcopy(body);model['id']='22222222-2222-2222-2222-222222222222';models.append(model)
         with patch.object(binding,'PARENT',signed.root),patch.object(transaction.MapperAdmin,'models',side_effect=lambda:copy.deepcopy(models)), \
                 patch.object(transaction.MapperAdmin,'baseline',side_effect=lambda s:copy.deepcopy(s)),patch.object(transaction.MapperAdmin,'create',side_effect=create):
             first=op.run();second=op.run()
@@ -40,6 +41,10 @@ class AudienceTransactionTest(unittest.TestCase):
         self.assertFalse(first['runtimeAuthorityIssued']);self.assertFalse(first['budgetReset'])
         row=binding.decode((signed.root/('policy-token-iam-transaction-'+op.operation+'.private.json')).read_bytes())
         self.assertTrue(row['postConsumed']);self.assertEqual(row['state'],'APPLIED_RECONCILED')
+        self.assertEqual(row['realizedMapperId'],'22222222-2222-2222-2222-222222222222')
+        models[0]['id']='33333333-3333-3333-3333-333333333333'
+        with patch.object(binding,'PARENT',signed.root),patch.object(transaction.MapperAdmin,'models',return_value=models):
+            with self.assertRaisesRegex(binding.CandidateDenied,'REGISTERED_MAPPER_ID_DRIFT'):op.run()
     def test_ambiguous_provider_effect_reconciles_and_missing_effect_cannot_repeat(self):
         for applied in (True,False):
             signed,op=self.fixture();models=[];calls=[]
