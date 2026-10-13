@@ -147,7 +147,16 @@ class AudienceTransaction:
                     report['iamMutations']=1;self.admin.create(self.desired)
                     self.guard();models=self.admin.models();self.guard()
                     matches=[m for m in models if m.get('id')==self.desired['id'] or m.get('name')==self.desired['name']]
-                    binding.require(len(matches)==1 and equivalent(matches[0],self.desired),'IAM_EFFECT_RECONCILIATION_REQUIRED')
+                    if not (len(matches)==1 and equivalent(matches[0],self.desired)):
+                        error=binding.CandidateDenied('IAM_EFFECT_RECONCILIATION_REQUIRED')
+                        named=[m for m in models if m.get('name')==self.desired['name']]
+                        error.safe_diagnostics={'matchingManagedNameCount':len(named),'matchingRequestedIdCount':sum(m.get('id')==self.desired['id'] for m in models),
+                            'managedEffectFindings':[{'idUuidShape':type(m.get('id'))is str and bool(re.fullmatch('[0-9a-fA-F-]{36}',m['id'])),
+                                'protocolMatches':m.get('protocol')==self.desired['protocol'],'providerTypeMatches':m.get('protocolMapper')==self.desired['protocolMapper'],
+                                'configurationExact':m.get('config')==self.desired['config'],
+                                'expectedConfigurationFieldsMatch':{k:type(m.get('config'))is dict and m['config'].get(k)==v for k,v in self.desired['config'].items()}}
+                                for m in named[:2]]}
+                        raise error
                     row['realizedMapperId']=matches[0]['id']
                     self.guard_reconciled_baseline(matches[0]['id']);self.guard()
                     binding.require(0<=self.clock()-started<90,'FINITE_IAM_PREPARATION_DEADLINE')

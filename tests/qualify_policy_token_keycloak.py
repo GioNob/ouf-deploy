@@ -323,6 +323,7 @@ def main():
             report.update(imageId=result.stdout.decode().strip(),status='QUALIFIED_DISPOSABLE_KEYCLOAK_PROTOCOL',fixtureAdminAndRegistrationOnly=True,productionIssuerAccepted=False,targetInstallerReady=False)
     except Exception as e:
         code=str(e);report.update(status='QUALIFICATION_FAILED',failurePhase=phase,reason=code if code.isupper() and len(code)<=128 else 'DISPOSABLE_IAM_BOUNDARY_UNPROVEN')
+        if hasattr(e,'safe_diagnostics'):report['iamEffectDiagnostics']=e.safe_diagnostics
     finally:
         if created:subprocess.run(['docker','rm','-f',name],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=30)
     print('OUF_POLICY_TOKEN_REAL_KEYCLOAK='+json.dumps(report,sort_keys=True))
