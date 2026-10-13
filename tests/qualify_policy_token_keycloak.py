@@ -222,7 +222,7 @@ def main():
             signed=SignedCutover();signed.setUp()
             try:
                 phase='ACTUAL_READ_ONLY_GOVERNANCE_INTAKE'
-                import iam_governance_intake as governance_intake
+                import tools.semantic_policy_token_owner.iam_governance_intake as governance_intake
                 native_run=subprocess.run
                 def intake_cli(argv,**kwargs):
                     if argv[:2]==['/usr/bin/docker','exec']:
