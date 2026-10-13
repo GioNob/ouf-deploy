@@ -1,5 +1,7 @@
 # Lacuna di accounting — proposta di contratto owner
 
+**Design approvato dal proprietario alle17:05:55 Europe/Rome.** [Decisione conservata](../evidence/policy-token-accounting-gap-contract-design-approved-20261013.json). L'approvazione riguarda implementazione e qualificazione del contratto, non budget o esecuzione. Non chiedere di approvare nuovamente questo stesso design. Il JSON originale e il suo hash restano immutati come artefatto storico. [Componente qualificato e prossimi dati host](POLICY_TOKEN_APPROVED_GAP_MIGRATION_HOST_REVIEW_20261013.md).
+
 La lettura sul VPS del13ottobre,16:54 Europe/Rome, è riuscita: audit attualmente disabilitato, GET concluso con exit0, nessun campione richiesto, conteggio storico non noto. I tipi di evento configurati non abilitano la registrazione quando eventsEnabled=false. Questo non dimostra che l'audit sia sempre stato spento o che non esistano vecchi eventi: non sono stati interrogati. Anche eventuali vecchi eventi richiederebbero una prova indipendente di completezza per essere accounting storico accettato. [Ricevuta conservata](../evidence/policy-token-owner-accounting-audit-disabled-target-20261013.json).
 
 La modifica IAM precedente resta completata: un solo POST riconciliato e due firme. Non ripeterla. Le osservazioni della lacuna non creano budget, non emettono token e non risolvono lo storico.
