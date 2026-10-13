@@ -1,4 +1,6 @@
-# Prossimo passo: metadati IAM del client policy-read esistente
+# Metadati IAM del client policy-read esistente — lettura completata
+
+Aggiornamento: la lettura IAM è stata completata dall'operatore. Il [receipt](../evidence/policy-token-existing-iam-metadata-target-20261013.json) conferma client/service-account/scope e il file privato conservato. Non ripetere questo comando né il login. Il passo corrente è [compilare il binding dal file già acquisito](POLICY_TOKEN_IAM_BINDING_COMPILATION_20261013.md).
 
 La [lettura operatore](../evidence/policy-token-protected-scope-target-20261013.json) del 13 ottobre alle08:25:47 Europe/Rome mostra le tre radici proposte assenti, il service legacy inattivo/static e il timer attivo/enabled. Questo non equivale a writer fenced: non arrestare/maskare il timer prima della transizione qualificata. Il receipt è operator-reported, non un readback indipendente.
 
@@ -18,7 +20,7 @@ Il risultato completo, senza la configurazione originale o i suoi percorsi crede
 
 Profilo `ouf.policy-token-admin-observation.single-attempt.v1`: deadline totale120secondi e massimo15secondi per GET, nessun retry interno o moltiplicazione tra layer; errore di sessione richiede login interattivo, drift/schema ignoto bloccano, pubblicazione parziale mantiene evidenza/path e richiede riconciliazione. Il profilo diagnostico non crea o sostituisce incidenti/budget runtime.
 
-## Comando completo per il terminale VPS
+## Comando storico già eseguito — non ripetere
 
 ```bash
 set -o pipefail
