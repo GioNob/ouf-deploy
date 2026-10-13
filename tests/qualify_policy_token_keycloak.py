@@ -11,12 +11,16 @@ import time
 import urllib.parse
 import urllib.request
 import uuid
+from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests')]
 from test_iam_token_admission import certificate
 from tools.semantic_policy_token_owner.iam_admission import IamProfile,PinnedIamOpener,OnlineIamAdmission,_Connection,_Deadline
 from tools.semantic_policy_token_owner.producer import Binding,CredentialFile,HttpsGrant
 from tools.semantic_lease_recovery.bounded_recovery import Permanent
 from tools.semantic_policy_token_owner.iam_binding_candidate import compile_binding,encoded,sha
+import tools.semantic_policy_token_owner.iam_binding_candidate as binding_module
+sys.modules['iam_binding_candidate']=binding_module
+import tools.semantic_policy_token_owner.iam_mapper_enrichment as enrichment
 
 IMAGE='quay.io/keycloak/keycloak:26.0.8'
 SECRET='DISPOSABLE_CI_CLIENT_SECRET'
@@ -124,6 +128,26 @@ def main():
             report.update(actualKcadmProjectionCompiled=True,kcadmMapperSchemaFindings=cli_projection['mapperSchemaFindings'],
                 kcadmUninterpretableMapperCount=cli_projection['uninterpretableMapperCount'],
                 kcadmStaticConstraintsComplete=cli_projection['staticMapperConstraintsComplete'])
+            phase='ACTUAL_KCADM_OWNER_MAPPER_ENRICHMENT'
+            retained=root/('policy-token-iam-metadata-'+'a'*32+'.private.json')
+            retained_raw=encoded(cli_snapshot);retained.write_bytes(retained_raw);retained.chmod(0o600)
+            evidence={'privateEvidenceWrites':0};native_run=subprocess.run
+            def configured_cli(argv,**kwargs):
+                # The disposable fixture uses a private explicit CLI cache; all
+                # GET/resource/--fields/no-fields behavior is the real source.
+                if argv[:5]!=['/usr/bin/docker','exec',name,cli,'get']:raise ValueError('FIXTURE_KCADM_COMMAND_SCOPE_DRIFT')
+                return native_run([*argv,'--config',cli_config],**kwargs)
+            with patch.object(binding_module,'PARENT',root),patch.object(enrichment,'CONTAINER',name), \
+                 patch.object(enrichment,'SERVER','http://127.0.0.1:8080'),patch.object(enrichment,'REALM','fixture'), \
+                 patch.object(enrichment.subprocess,'run',side_effect=configured_cli):
+                enrichment.execute(str(retained),sha(retained_raw),
+                    {'issuer':metadata_snapshot['issuerSelection'],'tenant':'fixture-tenant','audience':'fixture-audience','actor':'SERVICE'},evidence)
+            if retained.read_bytes()!=retained_raw or evidence['uninterpretableMapperCount']!=0 or not all(evidence[k] for k in (
+                'tenantStaticMapperMatchesReference','actorStaticMapperMatchesReference','audienceStaticMapperMatchesReference')):
+                raise ValueError('ACTUAL_KCADM_ENRICHMENT_UNPROVEN')
+            report.update(actualKcadmOwnerMapperEnrichmentPassed=True,retainedProjectionPreserved=True,
+                enrichedKcadmUninterpretableMapperCount=evidence['uninterpretableMapperCount'],
+                enrichedKcadmReviewReasons=evidence['reviewReasons'])
             # Expected subject comes from independent authenticated registration,
             # never from decoding/adopting the candidate token being validated.
             issuer='https://iam.fixture.test:18443/realms/fixture'
