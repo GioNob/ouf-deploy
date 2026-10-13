@@ -24,6 +24,8 @@ import tools.semantic_policy_token_owner.iam_binding_candidate as binding_module
 sys.modules['iam_binding_candidate']=binding_module
 import tools.semantic_policy_token_owner.iam_mapper_enrichment as enrichment
 import tools.semantic_policy_token_owner.iam_mapper_semantics_review as mapper_review
+sys.modules['iam_mapper_semantics_review']=mapper_review
+import tools.semantic_policy_token_owner.iam_introspection_audience_plan as caller_plan
 import tools.semantic_policy_token_owner.iam_install_inputs_probe as install_probe
 
 IMAGE='quay.io/keycloak/keycloak:26.7.4'
@@ -264,6 +266,11 @@ def main():
             if artifact_observation['imageId']!=result.stdout.decode().strip() or artifact_observation['targetProviderImplementationProven']:
                 raise ValueError('DISPOSABLE_ARTIFACT_OBSERVATION_UNPROVEN')
             report['actualDockerArtifactMetadataObserved']=True
+            with patch.object(caller_plan,'CONTAINER',name),patch.object(caller_plan,'IMAGE',artifact_observation['imageId']):
+                distribution,distribution_public=caller_plan.image_bindings({})
+            if distribution['id']!=artifact_observation['imageId']:raise ValueError('DISPOSABLE_IMAGE_DISTRIBUTION_UNPROVEN')
+            report.update(actualDockerDistributionMetadataObserved=True,
+                qualifiedImageArchitecture=distribution_public['imageArchitecture'])
             report.update(matchesObservedTargetImage=artifact_observation['imageId']==TARGET_IMAGE_ID,
                 observedTargetImageId=TARGET_IMAGE_ID,
                 reviewedSourceSemanticsProfile=review_public['sourceSemanticsProfile'],

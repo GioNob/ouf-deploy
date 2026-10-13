@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+import subprocess
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'tools/semantic_policy_token_owner'),str(ROOT/'tests')]
@@ -67,11 +68,23 @@ class CallerAudiencePlanTest(unittest.TestCase):
             proposal=parent/('policy-token-install-inputs-'+ph+'.private.json')
             mr,pr=binding.encoded(s),binding.encoded(p)
             for path,raw in ((metadata,mr),(proposal,pr)):path.write_bytes(raw);path.chmod(0o600)
-            with patch.object(binding,'PARENT',parent):
+            with patch.object(binding,'PARENT',parent),patch.object(planner,'image_bindings',return_value=({},{})):
                 first={'privateEvidenceWrites':0};planner.prepare(str(metadata),h,str(proposal),ph,first)
                 second={'privateEvidenceWrites':0};planner.prepare(str(metadata),h,str(proposal),ph,second)
                 self.assertEqual(first['privateEvidenceWrites'],1);self.assertEqual(second['privateEvidenceWrites'],0)
                 self.assertEqual(Path(first['privateEvidencePath']).stat().st_mode&0o777,0o600)
             self.assertEqual(metadata.read_bytes(),mr);self.assertEqual(proposal.read_bytes(),pr)
+
+    def test_selected_image_distribution_drift_and_private_repository_names_are_not_exposed(self):
+        official='quay.io/keycloak/keycloak@sha256:'+'a'*64
+        replies=[{'image':planner.IMAGE,'running':True}, {'id':planner.IMAGE,'architecture':'amd64','os':'linux',
+            'digests':[official,'PRIVATE_REGISTRY/PRIVATE_IMAGE@sha256:'+'b'*64]}]
+        def run(argv,**kwargs):return subprocess.CompletedProcess(argv,0,binding.encoded(replies.pop(0)))
+        report={}
+        with patch.object(planner.subprocess,'run',side_effect=run): image,public=planner.image_bindings(report)
+        self.assertEqual(report['dockerMetadataReads'],2);self.assertEqual(public['recognizedOfficialImageReferences'],[official])
+        self.assertNotIn('PRIVATE_',json.dumps(public));self.assertFalse(public['targetProviderImplementationProven'])
+        with patch.object(planner.subprocess,'run',return_value=subprocess.CompletedProcess([],0,binding.encoded({'image':'sha256:'+'c'*64,'running':True}))):
+            with self.assertRaises(binding.CandidateDenied):planner.image_bindings({})
 
 if __name__=='__main__':unittest.main()

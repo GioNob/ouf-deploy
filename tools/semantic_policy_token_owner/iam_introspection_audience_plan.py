@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import re
 import signal
+import subprocess
 import uuid
 import iam_binding_candidate as binding
 import iam_mapper_semantics_review as semantics
@@ -16,6 +17,30 @@ import iam_mapper_semantics_review as semantics
 VERSION = '26.7.4'
 IMAGE = 'sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c'
 NAME = 'ouf-policy-token-self-introspection-audience'
+CONTAINER = 'ouf-keycloak'
+
+def image_bindings(report):
+    def read(args):
+        report['dockerMetadataReads'] = report.get('dockerMetadataReads', 0) + 1
+        result = subprocess.run(['/usr/bin/docker', *args], stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=10,
+            env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'})
+        binding.require(result.returncode == 0 and 0 < len(result.stdout) <= 65536, 'EXACT_IMAGE_METADATA_UNAVAILABLE')
+        return binding.decode(result.stdout)
+    selected = read(['inspect','--format','{"image":{{json .Image}},"running":{{json .State.Running}}}',CONTAINER])
+    binding.require(selected == {'image':IMAGE,'running':True}, 'CURRENT_SELECTED_IMAGE_DRIFT')
+    image = read(['image','inspect','--format','{"id":{{json .Id}},"architecture":{{json .Architecture}},"os":{{json .Os}},"digests":{{json .RepoDigests}}}',IMAGE])
+    binding.require(type(image) is dict and set(image) == {'id','architecture','os','digests'} and image['id'] == IMAGE
+        and type(image['architecture']) is str and type(image['os']) is str
+        and (image['digests'] is None or (type(image['digests']) is list and len(image['digests']) <= 16
+             and all(type(v) is str and len(v) <= 512 for v in image['digests']))), 'EXACT_DISTRIBUTION_METADATA_UNPROVEN')
+    image['digests'] = sorted(image['digests'] or [])
+    official = [d for d in image['digests'] if re.fullmatch(r'(quay\.io/keycloak/keycloak|docker\.io/keycloak/keycloak|keycloak/keycloak)@sha256:[0-9a-f]{64}', d)]
+    public = {'imageArchitecture':image['architecture'] if image['architecture'] in {'amd64','arm64'} else 'OTHER_OR_UNPROVEN',
+        'imageOs':image['os'] if image['os'] == 'linux' else 'OTHER_OR_UNPROVEN',
+        'imageRepositoryDigestCount':len(image['digests']),'recognizedOfficialImageReferences':official,
+        'targetProviderImplementationProven':False}
+    return image, public
 
 def compile_plan(snapshot, snapshot_hash, proposal, proposal_hash):
     candidate, public = semantics.review(snapshot, snapshot_hash, proposal['bindingCandidate']['reference'])
@@ -76,6 +101,10 @@ def prepare(metadata_path, metadata_hash, proposal_path, proposal_hash, report):
         binding.require(binding.sha(metadata_raw) == metadata_hash and binding.sha(proposal_raw) == proposal_hash, 'RETAINED_INPUT_HASH_MISMATCH')
         report['phase'] = 'CALLER_AUDIENCE_REVIEW_PLAN'
         plan, public = compile_plan(binding.decode(metadata_raw), metadata_hash, binding.decode(proposal_raw), proposal_hash)
+        report['phase'] = 'EXACT_IMAGE_DISTRIBUTION_METADATA'
+        image, image_public = image_bindings(report)
+        plan['imageDistributionMetadata'] = image
+        public.update(image_public)
         binding.require(binding.read_member(directory, metadata.name) == metadata_raw and binding.read_member(directory, proposal.name) == proposal_raw,
                         'RETAINED_INPUT_CHANGED')
         body = binding.encoded(plan); name = 'policy-token-introspection-review-'+binding.sha(body)+'.private.json'
@@ -107,7 +136,7 @@ def main():
         'baselineRefreshed':False,'budgetReset':False,'r12Touched':False,'notReleaseAcceptance':True}
     try:
         def timeout(*_):raise binding.CandidateDenied('PLAN_DEADLINE')
-        signal.signal(signal.SIGALRM,timeout);signal.alarm(30)
+        signal.signal(signal.SIGALRM,timeout);signal.alarm(45)
         prepare(args.metadata,args.metadata_sha256,args.proposal,args.proposal_sha256,report);code=0
     except Exception as error:
         report['reason']=str(error) if type(error)is binding.CandidateDenied else type(error).__name__
