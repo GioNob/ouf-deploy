@@ -1,9 +1,9 @@
 name: OUF policy-token online IAM and installed owner qualification
 on:
   push:
-    paths: [tools/semantic_policy_token_owner/**, tests/test_iam_token_admission.py, tests/test_installed_token_owner.py, tests/test_policy_token_worker_entry.py, tests/test_policy_token_legacy_units.py, tests/qualify_policy_token_keycloak.py, .github/workflows/policy-token-iam-owner.yml]
+    paths: [tools/semantic_policy_token_owner/**, tests/test_iam_token_admission.py, tests/test_installed_token_owner.py, tests/test_policy_token_worker_entry.py, tests/test_policy_token_legacy_units.py, tests/test_policy_token_sealed_runtime.py, tests/qualify_policy_token_keycloak.py, .github/workflows/policy-token-iam-owner.yml]
   pull_request:
-    paths: [tools/semantic_policy_token_owner/**, tests/test_iam_token_admission.py, tests/test_installed_token_owner.py, tests/test_policy_token_worker_entry.py, tests/test_policy_token_legacy_units.py, tests/qualify_policy_token_keycloak.py, .github/workflows/policy-token-iam-owner.yml]
+    paths: [tools/semantic_policy_token_owner/**, tests/test_iam_token_admission.py, tests/test_installed_token_owner.py, tests/test_policy_token_worker_entry.py, tests/test_policy_token_legacy_units.py, tests/test_policy_token_sealed_runtime.py, tests/qualify_policy_token_keycloak.py, .github/workflows/policy-token-iam-owner.yml]
 permissions: {contents: read}
 jobs:
   native-root-owner:
@@ -32,6 +32,11 @@ jobs:
           set -euo pipefail
           python3 -I -B -m unittest discover -s tests -p test_policy_token_operator_delivery.py -v
           python3 -I -B -m unittest discover -s tests -p test_policy_token_scope_probe.py -v
+      - name: Full worker and authority closure imported from verified memory
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-online-iam-owner-${GITHUB_RUN_ID}"
+          sudo env OUF_NATIVE_UIDS=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_sealed_runtime.py -v
       - name: Existing source-stage and finite worker regressions
         run: |
           set -euo pipefail
