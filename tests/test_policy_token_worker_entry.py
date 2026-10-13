@@ -45,6 +45,8 @@ class WorkerEntryTest(unittest.TestCase):
             try:
                 self.assertTrue(seen.wait(5));time.sleep(.1);self.assertTrue(thread.is_alive())
                 self.assertEqual(owner.store.read()['state'],'BLOCKED')
+                status=json.loads((owner.journal.root/'owner-status.json').read_text())
+                self.assertEqual(status['state'],'BLOCKED');self.assertFalse(status['applicationReady'])
                 self.assertEqual(sum(p.endswith('/token') for p,_ in server.calls),1)
             finally:stop.set();thread.join(3)
         self.assertFalse(thread.is_alive());self.assertEqual(errors,[])

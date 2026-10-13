@@ -48,8 +48,16 @@ def serve(worker,stop,reporter):
                     row=worker._advance();reporter.report(worker.status(row));delay=worker.wait_seconds(row)
                 except Exception:
                     worker.active_here=False
-                    try:worker.r.adapter.pause()
-                    except Exception:pass
+                    try:
+                        # A failed log callback after a successful status write
+                        # must not leave a durable ACTIVE observation while the
+                        # owner has parked. Preserve counters, revoke the marker
+                        # and publish BLOCKED when storage remains trustworthy.
+                        row=worker.r.pause(worker.r.journal.read(),'BLOCKED','LOCAL_AUTHORITY_UNPROVEN')
+                        reporter.report(worker.status(row))
+                    except Exception:
+                        try:worker.r.adapter.pause()
+                        except Exception:pass
                     reporter.unavailable();delay=worker.heartbeat
                     # Do not automatically resume an unproven journal/observer
                     # failure in this invocation. Preserve state and liveness.
