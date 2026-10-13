@@ -3,6 +3,7 @@ import copy
 from pathlib import Path
 import sys
 import time
+import tempfile
 import unittest
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
@@ -108,5 +109,20 @@ class OwnerActionTest(unittest.TestCase):
             with self.assertRaisesRegex(binding.CandidateDenied,'ISSUANCE_ALREADY_CONSUMED'):owner.apply(self.manifest,h,decision,self.report())
     def test_late_human_revocation_preserves_consumption(self):self.failed_post('revocation')
     def test_ambiguous_post_preserves_consumption(self):self.failed_post('ambiguous')
+    def test_only_exact_public_python_shared_library_link_is_bound(self):
+        self.patches[-1].stop()
+        real=owner.stdlib_binding
+        with tempfile.TemporaryDirectory(dir=ROOT)as temporary:
+            prefix=Path(temporary);prefix.chmod(0o700);root=prefix/'stdlib';root.mkdir(mode=0o700)
+            version=str(sys.version_info.major)+'.'+str(sys.version_info.minor);arch='synthetic-test-arch'
+            config=root/('config-'+version+'-'+arch);config.mkdir(mode=0o700)
+            public=prefix/'lib';public.mkdir(mode=0o700);target=public/('libpython'+version+'.so.1.0')
+            target.write_bytes(b'SYNTHETIC_SHARED_CODE');target.chmod(0o600)
+            link=config/('libpython'+version+'.so');link.symlink_to(target)
+            with patch.object(owner.sysconfig,'get_path',return_value=str(root)),patch.object(owner.sysconfig,'get_config_var',return_value=arch), \
+                patch.object(owner.sys,'base_prefix',str(prefix)):
+                value=real();self.assertEqual(len(value['fileHashes']),1)
+                link.unlink();unknown=prefix/'PRIVATE-UNRELATED';unknown.write_bytes(b'UNRELATED');unknown.chmod(0o600);link.symlink_to(unknown)
+                with self.assertRaisesRegex(binding.CandidateDenied,'LINK_DESTINATION_UNPROVEN'):real()
 
 if __name__=='__main__':unittest.main()

@@ -37,6 +37,12 @@ def publish(directory,name,raw):
 
 def stdlib_binding():
     root=Path(sysconfig.get_path('stdlib')).resolve(strict=True)
+    version=str(sys.version_info.major)+'.'+str(sys.version_info.minor)
+    multiarch=sysconfig.get_config_var('MULTIARCH')
+    binding.require(type(multiarch)is str and re.fullmatch('[A-Za-z0-9_-]{1,64}',multiarch),'EXACT_PYTHON_MULTIARCH_REQUIRED')
+    shared_member='config-'+version+'-'+multiarch+'/libpython'+version+'.so'
+    shared_targets={Path(sys.base_prefix)/'lib'/('libpython'+version+'.so.1.0'),
+        Path('/usr/lib')/multiarch/('libpython'+version+'.so.1.0')}
     files={};total=0
     for directory,dirs,names in os.walk(root,followlinks=False):
         parent=Path(directory);row=parent.lstat()
@@ -44,9 +50,11 @@ def stdlib_binding():
         dirs[:]=sorted(d for d in dirs if d not in {'site-packages','dist-packages','test','tests','idlelib','tkinter'})
         for d in dirs:binding.require(not (parent/d).is_symlink(),'STDLIB_DIRECTORY_LINK_UNPROVEN')
         for name in sorted(names):
+            # -S excludes these startup hooks; they are not action dependencies.
+            if sys.flags.no_site and name in {'sitecustomize.py','usercustomize.py'}:continue
             if not name.endswith(('.py','.pyc','.so')):continue
             path=parent/name;resolved=path.resolve(strict=True)
-            if not (resolved.is_relative_to(root) or (name=='sitecustomize.py'
+            if not (resolved.is_relative_to(root) or (str(path.relative_to(root))==shared_member and resolved in shared_targets) or (name=='sitecustomize.py'
                 and resolved==Path('/etc/python'+str(sys.version_info.major)+'.'+str(sys.version_info.minor)+'/sitecustomize.py'))):
                 error=binding.CandidateDenied('STDLIB_LINK_DESTINATION_UNPROVEN')
                 error.safe_diagnostics={'standardLibraryRelativeMember':str(path.relative_to(root)),
@@ -72,7 +80,8 @@ def stdlib_binding():
                 files[str(path.relative_to(root))]={'resolvedPath':str(resolved),'sha256':digest.hexdigest()}
             finally:os.close(fd)
     binding.require(files,'STDLIB_SOURCE_BINDINGS_REQUIRED')
-    return {'root':str(root),'fileHashes':files,'noSiteRequired':True}
+    return {'root':str(root),'fileHashes':files,'noSiteRequired':True,
+        'excludedStartupHooks':['sitecustomize.py','usercustomize.py']}
 
 def inputs(directory):
     intake_raw=binding.read_member(directory,INTAKE)
