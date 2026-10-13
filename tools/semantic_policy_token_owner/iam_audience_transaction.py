@@ -123,6 +123,7 @@ class AudienceTransaction:
                     and row.get('reviewPlanHash')==self.plan_hash and row.get('mapperHash')==self.scope['mapperHash']
                     and type(row.get('postConsumed'))is bool,'RETAINED_IAM_INTENT_DRIFT')
                 owned=True
+                binding.require(row['state']!='BLOCKED','BLOCKED_IAM_INTENT_REQUIRES_CURRENT_REVIEW')
                 self.guard();models=self.admin.models();self.guard()
                 matches=[m for m in models if m.get('id')==self.desired['id'] or m.get('name')==self.desired['name']]
                 if matches:
@@ -153,9 +154,10 @@ class AudienceTransaction:
                     row.update(state='APPLIED_RECONCILED');save(row);report['state']=row['state'];return report
                 except Exception:
                     row.update(state='RECONCILE_REQUIRED');save(row);raise
-            except Exception:
-                if owned and row['state'] not in {'APPLIED_RECONCILED','RECONCILE_REQUIRED','BLOCKED'}:
-                    row.update(state='RECONCILE_REQUIRED' if row['postConsumed'] else 'BLOCKED')
+            except Exception as error:
+                if owned and row['state'] not in {'RECONCILE_REQUIRED','BLOCKED'}:
+                    permanent=type(error)is binding.CandidateDenied
+                    row.update(state='BLOCKED' if permanent or not row['postConsumed'] else 'RECONCILE_REQUIRED')
                     try:save(row)
                     except Exception:pass
                 raise

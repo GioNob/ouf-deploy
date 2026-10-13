@@ -45,6 +45,8 @@ class AudienceTransactionTest(unittest.TestCase):
         models[0]['id']='33333333-3333-3333-3333-333333333333'
         with patch.object(binding,'PARENT',signed.root),patch.object(transaction.MapperAdmin,'models',return_value=models):
             with self.assertRaisesRegex(binding.CandidateDenied,'REGISTERED_MAPPER_ID_DRIFT'):op.run()
+            models[0]['id']='22222222-2222-2222-2222-222222222222'
+            with self.assertRaisesRegex(binding.CandidateDenied,'BLOCKED_IAM'):op.run()
     def test_ambiguous_provider_effect_reconciles_and_missing_effect_cannot_repeat(self):
         for applied in (True,False):
             signed,op=self.fixture();models=[];calls=[]
@@ -76,7 +78,7 @@ class AudienceTransactionTest(unittest.TestCase):
             with self.assertRaisesRegex(binding.CandidateDenied,'BASELINE_DRIFT'):op.run()
             self.assertFalse(create.called)
             with patch.object(transaction.MapperAdmin,'baseline',return_value=op.snapshot):
-                with self.assertRaisesRegex(binding.CandidateDenied,'CONSUMED_IAM'):op.run()
+                with self.assertRaisesRegex(binding.CandidateDenied,'BLOCKED_IAM'):op.run()
             self.assertFalse(create.called)
     def test_late_revocation_after_effect_keeps_consumed_marker_and_cannot_restore_approval(self):
         signed,op=self.fixture();models=[]
