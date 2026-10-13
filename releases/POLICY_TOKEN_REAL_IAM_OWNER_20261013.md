@@ -12,7 +12,7 @@ Il candidato risolve il seam DomainOwner e compone il worker periodico finito us
 
 La source-stage v2 include dieci sorgenti reali e il binding dell'owner; la v1 storica mantiene il proprio contratto. Ogni grant, inclusi i rinnovi riusciti, consuma lo stesso budget finito. Nessun journal, marker, scope, sessione o budget viene inizializzato dal worker. Il profilo conservativo non implementa un rinnovo HUMAN del budget né un servizio illimitato.
 
-Qualificazione dell'intera composizione su commit `1ca0ce8b6e0a5dd40750a9d60f199c8f54c3ecf3`: [CI 38353608730](https://github.com/GioNob/ouf-deploy/actions/runs/38353608730), **72 prove, zero esclusioni**, con custodia root/gid10001, firme Ed25519, TLS vero, writer systemd realmente masked sul runner monouso, riavvio ambiguo, cancellazione e log sink guasto. La prova con un container Keycloak reale passa per discovery, grant, introspection, audience errata, token alterato e client disabilitato. Immagine test `quay.io/keycloak/keycloak:26.0.8`, ID `sha256:e447933b6a5015646c24a1b927a40202ce07adbadac839e7a1f99c463d68a224`. Questo è un issuer monouso CI, non l'IAM di produzione.
+Qualificazione finale dell'intera composizione su commit `25e75789e6d9ba95a783d50956b6c5e9031f2d37`: [CI 38354374394](https://github.com/GioNob/ouf-deploy/actions/runs/38354374394), **78 prove, zero esclusioni**, con custodia root/gid10001, firme Ed25519, TLS vero, writer systemd realmente masked sul runner monouso, riavvio ambiguo, cancellazione, log sink guasto e comando operativo. Quando il log fallisce e il journal resta disponibile, anche l'osservazione persistente passa a BLOCKED. La prova con un container Keycloak reale passa per discovery, grant, introspection, audience errata, token alterato e client disabilitato. Immagine test `quay.io/keycloak/keycloak:26.0.8`, ID `sha256:e447933b6a5015646c24a1b927a40202ce07adbadac839e7a1f99c463d68a224`. Questo è un issuer monouso CI, non l'IAM di produzione. Evidenza conservata: [qualification JSON](../evidence/policy-token-real-iam-owner-source-qualification-20261013.json).
 
 ## Dipendenza reale sul VPS
 
@@ -37,6 +37,7 @@ Eseguire nel terminale VPS già usato come `oufadmin`. Riutilizza il `gh` esiste
 Lo script legge solo ownership/mode/identità delle tre radici e gli stati delle due unit già identificate. Non legge token, chiavi, secret, contenuti del journal, environment, argomenti del writer o nomi dei membri delle directory. Non crea cartelle, non cambia permessi, non ferma servizi e non effettua grant.
 
 ```bash
+set -o pipefail
 python3 - <<'PY' | tee ouf-policy-token-protected-scope-observation.json
 import base64,hashlib,pathlib,shutil,subprocess,sys
 preferred=pathlib.Path.home()/'ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh'
@@ -61,6 +62,6 @@ raise SystemExit(result.returncode)
 PY
 ```
 
-Restituire il JSON prodotto. È una richiesta di esecuzione materiale root read-only, non una nuova richiesta di autorizzazione a sviluppare. Un eventuale errore resta distinto per fase DELlVERY/ROOT_METADATA; le osservazioni UNPROVEN conservano ruolo, fase e motivo. L'esito non dà approvazione all'installer o all'IAM.
+Restituire il JSON prodotto. È una richiesta di esecuzione materiale root read-only, non una nuova richiesta di autorizzazione a sviluppare. Un eventuale errore resta distinto per fase DELIVERY/ROOT_METADATA; le osservazioni UNPROVEN conservano ruolo, fase e motivo. L'esito non dà approvazione all'installer o all'IAM.
 
 Regola di authority applicabile: [AGENTS.md](https://github.com/GioNob/ouf-deploy/blob/main/AGENTS.md), «Development delegation is not runtime HUMAN authority». Il collo di bottiglia corrente è l'assenza della superficie root e dei binding protetti reali, non una revoca dell'autorizzazione GitHub data dall'utente.
