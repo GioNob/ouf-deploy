@@ -48,6 +48,7 @@ class MapperAdmin:
                     'EXACT_METADATA_RESOURCE_REQUIRED')
                 return binding.decode(admin.command('get',resource=resource,fields=fields))
         reader=Reader();core=metadata.core(reader,self.client)
+        binding.require(metadata.canonical(core)==metadata.canonical(metadata.anchor(snapshot)), 'CURRENT_CORE_AND_SCOPE_DRIFT')
         return metadata.enriched(snapshot,core,metadata.complete_mappers(reader,snapshot,core))
 
 def equivalent(actual,desired):

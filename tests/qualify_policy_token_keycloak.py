@@ -28,6 +28,9 @@ sys.modules['iam_mapper_semantics_review']=mapper_review
 import tools.semantic_policy_token_owner.iam_introspection_audience_plan as caller_plan
 import tools.semantic_policy_token_owner.iam_install_inputs_probe as install_probe
 sys.path.insert(0,str(ROOT/'tools/semantic_application_cutover'))
+sys.path.insert(0,str(ROOT/'tools/semantic_cohort_admission/cohort-draft'))
+import tools
+tools.__path__.append(str(ROOT/'tools/semantic_cohort_admission/cohort-draft/tools'))
 sys.modules['iam_mapper_enrichment']=enrichment
 import tools.semantic_policy_token_owner.iam_audience_transaction as iam_transaction
 from test_cutover_authority_native import SignedCutover
