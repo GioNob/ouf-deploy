@@ -6,6 +6,7 @@ material never enters a URL, log, receipt or persisted admission projection.
 """
 from dataclasses import dataclass
 import http.client
+import hashlib
 import io
 import ipaddress
 import json
@@ -137,7 +138,11 @@ class PinnedIamOpener:
         check(type(profile) is IamProfile)
         self.profile,self.clock=profile,clock;self.context=context or ssl.create_default_context()
         check(self.context.check_hostname and self.context.verify_mode==ssl.CERT_REQUIRED)
+    def trust_digest(self):
+        check(self.context.check_hostname and self.context.verify_mode==ssl.CERT_REQUIRED)
+        return fingerprint(sorted(hashlib.sha256(raw).hexdigest() for raw in self.context.get_ca_certs(binary_form=True)))
     def open(self,request,timeout):
+        self.trust_digest()
         p=self.profile;url=request.full_url;method=request.get_method()
         discovery=p.issuer+'/.well-known/openid-configuration'
         check((url==discovery and method=='GET' and request.data is None)

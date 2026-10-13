@@ -21,7 +21,7 @@ from tools.semantic_lease_recovery.bounded_recovery import Recovery,Policy,Perma
 from tools.semantic_lease_recovery.recovery_journal import Journal
 
 class InstalledOwnerTest(unittest.TestCase):
-    def fixture(self):
+    def fixture(self,*,scheduled=False):
         f=SignedCutover();f.setUp();self.addCleanup(f.doCleanups)
         server=Fixture(f.root);self.addCleanup(server.close)
         credential=f.root/'credential';credential.write_text('DISPOSABLE_FIXTURE_SECRET');credential.chmod(0o400)
@@ -34,6 +34,9 @@ class InstalledOwnerTest(unittest.TestCase):
         clock=lambda:(time.time(),time.monotonic());policy=Policy();context='1'*64;generation='2'*64
         wall,mono=clock()
         journal.initialize({'schema':'ouf.bounded-recovery.v1','contextRef':context,'generationRef':generation,'policyHash':fingerprint(policy.__dict__),'state':'NEW','attempts':0,'startedWall':wall,'startedMonotonic':mono,'lastWall':wall,'lastMonotonic':mono,'nextWall':None,'nextMonotonic':None,'reason':'NONE'})
+        if scheduled:
+            from tools.semantic_policy_token_owner.supervisor import ScheduledRecovery
+            row=journal.read();journal.compare_and_save(row,{**row,'renewalProfile':ScheduledRecovery.PROFILE,'intervalSeconds':60,'publicationCount':0,'nextRenewalWall':None,'nextRenewalMonotonic':None,'tokenExpiresWall':None,'tokenExpiresMonotonic':None})
         binding=Binding(server.profile.token_endpoint,server.profile.client_id,'authorization.bundle.read',str(output),'token.jwt',10001)
         secret=CredentialFile(credential);transport=PinnedIamOpener(server.profile,clock,server.context());admission=OnlineIamAdmission(server.profile,secret,transport,clock)
         profile=fingerprint(owner_binding(binding,secret,admission,journal,context,generation))
@@ -42,11 +45,8 @@ class InstalledOwnerTest(unittest.TestCase):
         sources={
             'bounded-recovery.py':ROOT/'tools/semantic_lease_recovery/bounded_recovery.py',
             'recovery-journal.py':ROOT/'tools/semantic_lease_recovery/recovery_journal.py',
-            **{name:ROOT/'tools/semantic_policy_token_owner'/name.replace('-','_') for name in ('producer.py','supervisor.py','mount-observation.py','source-stage.py','installed-owner.py','iam-admission.py')}}
+            **{name:ROOT/'tools/semantic_policy_token_owner'/name.replace('-','_') for name in ('producer.py','supervisor.py','mount-observation.py','source-stage.py','installed-owner.py','iam-admission.py','worker-entry.py','reporter.py')}}
         files={name:path.read_bytes() for name,path in sources.items()}
-        # Entry/reporter are unexecuted component fixture slots, not an installable
-        # runtime or production source acceptance. No fixture authority escapes CI.
-        files.update({'worker-entry.py':b'# UNEXECUTED_COMPONENT_FIXTURE\n','reporter.py':b'# UNEXECUTED_COMPONENT_FIXTURE\n'})
         self.assertEqual(set(files),FILES)
         destination=f.root/'source';destination.mkdir(mode=0o700);s=destination.stat()
         manifest=declaration(str(destination),'a'*40,files,directory_identity={'device':s.st_dev,'inode':s.st_ino},owner_binding_hash=profile)

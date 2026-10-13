@@ -106,7 +106,9 @@ def owner_binding(binding,credential,admission,journal,context_ref,generation_re
           and admission.credential.path==credential.path and type(journal) is Journal)
     admission.profile.match(binding)
     return {'schema':'ouf.installed-policy-token-owner-binding.v1','binding':binding.__dict__,
-            'iamProfile':admission.profile.__dict__,'credentialPath':str(credential.path),'journalPath':str(journal.root),
+            'iamProfile':admission.profile.__dict__,'tlsTrustHash':admission.transport.trust_digest(),
+            'journalPolicyHash':journal.read().get('policyHash'),'renewalProfile':journal.read().get('renewalProfile'),
+            'intervalSeconds':journal.read().get('intervalSeconds'),'credentialPath':str(credential.path),'journalPath':str(journal.root),
             'journalDirectoryIdentity':{'device':journal.directory_id[0],'inode':journal.directory_id[1]},
             'contextRef':context_ref,'generationRef':generation_ref,'legacyUnits':list(LegacyWriterFence.UNITS)}
 
