@@ -54,7 +54,7 @@ def core(reader, client_id):
     optional = reader.get(resource + '/optional-client-scopes', 'id,name,protocol')
     for scopes in (default, optional):
         require(type(scopes) is list and len(scopes) <= 64 and all(type(s) is dict
-                and set(s) == {'id', 'name', 'protocol'} for s in scopes), 'CORE_SCOPE_METADATA_UNPROVEN')
+                and {'id', 'name'} <= set(s) <= {'id', 'name', 'protocol'} for s in scopes), 'CORE_SCOPE_METADATA_UNPROVEN')
         for s in scopes: identifier(s['id'])
     return {'client': client, 'serviceAccount': service, 'defaultScopes': default, 'optionalScopes': optional}
 
@@ -69,8 +69,8 @@ def anchor(snapshot):
     for name in ('defaultScopes', 'optionalScopes'):
         source = snapshot.get(name)
         require(type(source) is list and len(source) <= 64 and all(type(s) is dict
-                and all(k in s for k in ('id', 'name', 'protocol')) for s in source), 'RETAINED_SCOPE_BINDING_UNPROVEN')
-        result[name] = [{k: s[k] for k in ('id', 'name', 'protocol')} for s in source]
+                and all(k in s for k in ('id', 'name')) for s in source), 'RETAINED_SCOPE_BINDING_UNPROVEN')
+        result[name] = [{k: s[k] for k in ('id', 'name', 'protocol') if k in s} for s in source]
     return result
 
 def canonical(value):
