@@ -235,6 +235,7 @@ def main():
                     'authorities':signed.context,'policyBinding':policy_binding,
                     'keyRefs':{'installer':signed.grant['keyRef'],'attestor':'synthetic-fixture-attestor-key'},
                     'keyBindings':{r:{'path':str(signed.root/(r+'-NOT-OPENED.pem')),'sha256':'a'*64} for r in ('installer','attestor')}}
+                public_profile['keyBindings']['installer']=signed.binding(signed.key)
                 profile_path=signed.root/'public-profile.json';signed.write(profile_path,encoded(public_profile))
                 review_path=signed.root/'review-plan.json';signed.write(review_path,encoded(plan))
                 snapshot_path=signed.root/'metadata-snapshot.json';signed.write(snapshot_path,enriched_raw)
@@ -251,25 +252,16 @@ def main():
                     raise ValueError('READ_ONLY_GOVERNANCE_INTAKE_SCOPE_UNPROVEN')
                 report.update(actualGovernanceIntakeCompiled=True,actualGovernanceIntakeCurrentBaselineMatched=True,
                     fixtureGovernanceIntakeWrites=1,fixtureGovernancePrivateKeysRead=0)
-                phase='ACTUAL_SCOPED_IAM_MAPPER_TRANSACTION'
-                signed.now=int(time.time())
-                signed.approval.update(issuedAt=signed.now-1,expiresAt=signed.now+180)
-                plan_hash=sha(encoded(plan));desired=plan['changeProposal']['proposedMapper']
-                raw_authority=json.loads(signed.authority)
-                raw_authority.update(issuedAt=signed.now,expiresAt=signed.now+120)
-                raw_authority['policyTokenIamPreparation']={'reviewPlanHash':plan_hash,
-                    'resource':plan['changeProposal']['resource'],'mapperHash':sha(encoded(desired)),
-                    'operation':'ADD_EXACT_CALLER_AUDIENCE_MAPPER','maximumIamMutations':1,
-                    'introspectionCheckMustRemainEnabled':True,'runtimeAuthorityIssued':False}
-                raw_authority['policyTokenIamFreshReconciliation']={'reviewPlanHash':plan_hash,
-                    'observedClientMapperSetHash':sha(encoded(frozen_metadata['client']['protocolMappers'])),
-                    'metadataAndCoreDriftChecked':True,'callerAudienceReconciled':True}
-                signed.authority=encoded(raw_authority)
-                signed.approval['executionAuthorityHash']=sha(signed.authority)
-                signed.write(signed.mandate,encoded(signed.approval));signed.approved=sha(signed.mandate.read_bytes())
-                for role in signed.grant['roles']:signed.sign(role)
-                signed.clock=time.time;signed.verifier.clock=time.time
-                operation=iam_transaction.AudienceTransaction(plan,plan_hash,frozen_metadata,signed.gate(),signed.authority)
+                phase='ACTUAL_EXISTING_OWNER_SIGNED_ACTION'
+                sys.modules['iam_governance_intake']=governance_intake
+                sys.modules['iam_audience_transaction']=iam_transaction
+                import tools.semantic_policy_token_owner.iam_owner_action as owner_action
+                import tools.semantic_policy_token_owner.iam_action_runtime as action_runtime
+                source_paths={p.stem:p for p in (ROOT/'tools/semantic_policy_token_owner').glob('*.py')}
+                source_paths['cutover_authority']=ROOT/'tools/semantic_application_cutover/cutover_authority.py'
+                source_paths.update({'tools.'+p.stem:p for p in (ROOT/'tools/semantic_cohort_admission/cohort-draft/tools').glob('*.py')})
+                action_sources={n:source_paths[n].read_bytes() for n in action_runtime.MODULES}
+                manifest=action_runtime.declaration('c'*40,action_sources,(ROOT/'tools/semantic_policy_token_owner/iam_action_runtime.py').read_bytes())
                 native_run=subprocess.run
                 def configured_mapper_cli(argv,**kwargs):
                     if argv[:2]==['/usr/bin/docker','exec']:
@@ -279,12 +271,35 @@ def main():
                         args=[*args[:2],'-e','KC_OPTS=-Xms16m -Xmx128m',*args[2:],'--config',cli_config]
                         return native_run(args,**kwargs)
                     return native_run(argv,**kwargs)
-                with patch.object(binding_module,'PARENT',signed.root),patch.object(iam_transaction.subprocess,'run',side_effect=configured_mapper_cli):
-                    applied=operation.run();reconciled=operation.run()
-                if applied['iamMutations']!=1 or reconciled['iamMutations']!=0 or applied['runtimeAuthorityIssued']:
-                    raise ValueError('SCOPED_IAM_SINGLE_MUTATION_UNPROVEN')
+                review_report={};action_report={'signaturesIssued':0,'installationKeyAccessAttempted':False}
+                intake_path=Path(intake_report['privateEvidencePath'])
+                with patch.object(binding_module,'PARENT',signed.root),patch.object(owner_action,'INTAKE',intake_path.name), \
+                    patch.object(owner_action,'INTAKE_HASH',intake_report['privateEvidenceHash']), \
+                    patch.object(governance_intake,'PROFILE',signed.binding(profile_path)),patch.object(governance_intake,'POLICY',policy_binding), \
+                    patch.object(governance_intake,'CONTEXT',signed.context),patch.object(governance_intake,'PLAN',review_path.name), \
+                    patch.object(governance_intake,'PLAN_HASH',sha(encoded(plan))),patch.object(governance_intake,'SNAPSHOT',snapshot_path.name), \
+                    patch.object(governance_intake,'SNAPSHOT_HASH',sha(enriched_raw)),patch.object(iam_transaction.subprocess,'run',side_effect=configured_mapper_cli):
+                    reviewed_action=owner_action.prepare(manifest,review_report)
+                    now=int(time.time());decision={'approvalRef':'SYNTHETIC_EXISTING_OWNER_IAM_DECISION',
+                        'approvedReviewHash':review_report['privateEvidenceHash'],'approvedSourceClosureHash':reviewed_action['sourceClosureHash'],
+                        'approvedAt':now,'firstInvocationBefore':now+120,'decision':'APPROVE_ONE_EXACT_IAM_CALLER_AUDIENCE_MAPPER','state':'ACTIVE'}
+                    applied=owner_action.apply(manifest,review_report['privateEvidenceHash'],decision,action_report)
+                    authority_path=Path(action_report['privateEvidencePath'])/'authority.json'
+                    authority_raw=authority_path.read_bytes();human_path=authority_path.parent/'human.json';human=json.loads(human_path.read_bytes())
+                    expected={k:human[k] for k in ('intakeHash','sourceClosureHash','creationRequestHash','predecessorHistoryHash','predecessorIncidentRef')}
+                    from cutover_authority import CutoverAuthority
+                    from tools.semantic_provider_deployment_authentication import DetachedAuthenticator
+                    verifier=DetachedAuthenticator(policy_binding,str(authority_path.parent),prepared['executablesProposedNotAccepted']['openssl'])
+                    gate=CutoverAuthority(verifier,signed.binding(human_path),sha(human_path.read_bytes()),signed.context,expected)
+                    operation=iam_transaction.AudienceTransaction(plan,sha(encoded(plan)),frozen_metadata,gate,authority_raw)
+                    reconciled=operation.run()
+                if applied['iamMutations']!=1 or reconciled['iamMutations']!=0 or applied['runtimeAuthorityIssued'] or action_report['signaturesIssued']!=2:
+                    raise ValueError('SCOPED_EXISTING_OWNER_SINGLE_MUTATION_UNPROVEN')
                 report.update(actualScopedMapperTransactionPassed=True,completedMapperTransactionNotReplayed=True,
-                    fixtureMapperMutations=1,fixtureCurrentHumanAndRealDualRoleCrypto=True)
+                    fixtureMapperMutations=1,fixtureCurrentHumanAndRealDualRoleCrypto=True,
+                    actualExistingOwnerIssuerToIamActionPassed=True,fixtureExistingOwnerSignaturesIssued=2,
+                    fixtureInstallationKeyAccessAttempted=True,fixturePrivateKeyReadCount=None,
+                    actualActionClosureModuleCount=manifest['moduleCount'],actualStdlibByteBoundFileCount=review_report['stdlibFileCount'])
             finally:signed.doCleanups()
             # Expected subject comes from independent authenticated registration,
             # never from decoding/adopting the candidate token being validated.

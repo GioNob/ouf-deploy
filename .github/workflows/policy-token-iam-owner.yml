@@ -1,9 +1,9 @@
 name: OUF policy-token online IAM and installed owner qualification
 on:
   push:
-    paths: [tools/semantic_policy_token_owner/**, tests/test_iam_token_admission.py, tests/test_installed_token_owner.py, tests/test_policy_token_worker_entry.py, tests/test_policy_token_legacy_units.py, tests/test_policy_token_sealed_runtime.py, tests/test_policy_token_iam_target_probe.py, tests/test_policy_token_iam_binding_candidate.py, tests/test_policy_token_iam_mapper_enrichment.py, tests/test_policy_token_mapper_semantics_review.py, tests/test_policy_token_install_inputs_probe.py, tests/test_policy_token_introspection_audience_plan.py, tests/test_policy_token_iam_audience_transaction.py, tests/test_policy_token_governance_intake.py, tests/test_policy_token_governance_delivery.py, scripts/prepare-policy-token-governance-intake.py, tests/qualify_policy_token_keycloak.py, .github/workflows/policy-token-iam-owner.yml]
+    paths: [tools/semantic_policy_token_owner/**, tests/test_iam_token_admission.py, tests/test_installed_token_owner.py, tests/test_policy_token_worker_entry.py, tests/test_policy_token_legacy_units.py, tests/test_policy_token_sealed_runtime.py, tests/test_policy_token_iam_target_probe.py, tests/test_policy_token_iam_binding_candidate.py, tests/test_policy_token_iam_mapper_enrichment.py, tests/test_policy_token_mapper_semantics_review.py, tests/test_policy_token_install_inputs_probe.py, tests/test_policy_token_introspection_audience_plan.py, tests/test_policy_token_iam_audience_transaction.py, tests/test_policy_token_governance_intake.py, tests/test_policy_token_governance_delivery.py, tests/test_policy_token_iam_owner_action.py, tests/test_policy_token_iam_action_runtime.py, scripts/prepare-policy-token-governance-intake.py, tests/qualify_policy_token_keycloak.py, .github/workflows/policy-token-iam-owner.yml]
   pull_request:
-    paths: [tools/semantic_policy_token_owner/**, tests/test_iam_token_admission.py, tests/test_installed_token_owner.py, tests/test_policy_token_worker_entry.py, tests/test_policy_token_legacy_units.py, tests/test_policy_token_sealed_runtime.py, tests/test_policy_token_iam_target_probe.py, tests/test_policy_token_iam_binding_candidate.py, tests/test_policy_token_iam_mapper_enrichment.py, tests/test_policy_token_mapper_semantics_review.py, tests/test_policy_token_install_inputs_probe.py, tests/test_policy_token_introspection_audience_plan.py, tests/test_policy_token_iam_audience_transaction.py, tests/test_policy_token_governance_intake.py, tests/test_policy_token_governance_delivery.py, scripts/prepare-policy-token-governance-intake.py, tests/qualify_policy_token_keycloak.py, .github/workflows/policy-token-iam-owner.yml]
+    paths: [tools/semantic_policy_token_owner/**, tests/test_iam_token_admission.py, tests/test_installed_token_owner.py, tests/test_policy_token_worker_entry.py, tests/test_policy_token_legacy_units.py, tests/test_policy_token_sealed_runtime.py, tests/test_policy_token_iam_target_probe.py, tests/test_policy_token_iam_binding_candidate.py, tests/test_policy_token_iam_mapper_enrichment.py, tests/test_policy_token_mapper_semantics_review.py, tests/test_policy_token_install_inputs_probe.py, tests/test_policy_token_introspection_audience_plan.py, tests/test_policy_token_iam_audience_transaction.py, tests/test_policy_token_governance_intake.py, tests/test_policy_token_governance_delivery.py, tests/test_policy_token_iam_owner_action.py, tests/test_policy_token_iam_action_runtime.py, scripts/prepare-policy-token-governance-intake.py, tests/qualify_policy_token_keycloak.py, .github/workflows/policy-token-iam-owner.yml]
 permissions: {contents: read}
 jobs:
   native-root-owner:
@@ -42,6 +42,8 @@ jobs:
           sudo python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_iam_audience_transaction.py -v
           sudo python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_governance_intake.py -v
           sudo python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_governance_delivery.py -v
+          sudo python3 -I -B -S -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_iam_owner_action.py -v
+          sudo python3 -I -B -S -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_iam_action_runtime.py -v
       - name: Full worker and authority closure imported from verified memory
         run: |
           set -euo pipefail
@@ -58,7 +60,7 @@ jobs:
         run: |
           set -euo pipefail
           OUF_FIXTURE_ROOT="/var/lib/ouf-online-iam-owner-${GITHUB_RUN_ID}"
-          sudo env OUF_DISPOSABLE_KEYCLOAK=1 GITHUB_ACTIONS=true python3 -I -B "$OUF_FIXTURE_ROOT/repository/tests/qualify_policy_token_keycloak.py"
+          sudo env OUF_DISPOSABLE_KEYCLOAK=1 GITHUB_ACTIONS=true python3 -I -B -S "$OUF_FIXTURE_ROOT/repository/tests/qualify_policy_token_keycloak.py"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with: {name: policy-token-real-keycloak-evidence, path: policy-token-real-keycloak-evidence.json, if-no-files-found: warn}
