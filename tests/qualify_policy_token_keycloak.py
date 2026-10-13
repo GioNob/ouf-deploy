@@ -42,6 +42,13 @@ def main():
             client['protocolMappers'] += [{'name':'fixture-'+kind,'protocol':'openid-connect','protocolMapper':kind,
                 'config':{'access.token.claim':'true','introspection.token.claim':'true'}}
                 for kind in ('oidc-acr-mapper','oidc-allowed-origins-mapper','oidc-sub-mapper')]
+            #26.7.4 need not auto-register this mapper on a fresh client with
+            #our explicit scope selection. The retained VPS has this exact
+            #standard client_id effect; register it explicitly in the fixture.
+            client['protocolMappers'].append({'name':'fixture-client-id-note','protocol':'openid-connect',
+                'protocolMapper':'oidc-usersessionmodel-note-mapper','config':{'claim.name':'client_id',
+                    'user.session.note':'client_id','jsonType.label':'String',
+                    'access.token.claim':'true','introspection.token.claim':'true'}})
             realm={'realm':'fixture','enabled':True,'sslRequired':'all','accessTokenLifespan':300,'clientScopes':[{'name':'authorization.bundle.read','protocol':'openid-connect','attributes':{'include.in.token.scope':'true'}}],'clients':[client]}
             config=root/'fixture-realm.json';config.write_text(json.dumps(realm));config.chmod(0o644)
             phase='START_DISPOSABLE_ISSUER'
@@ -179,6 +186,10 @@ def main():
             enriched_raw=Path(evidence['enrichedMetadataPath']).read_bytes()
             reviewed,review_public=mapper_review.review(binding_module.decode(enriched_raw),sha(enriched_raw),
                 {'issuer':metadata_snapshot['issuerSelection'],'tenant':'fixture-tenant','audience':'fixture-audience','actor':'SERVICE'})
+            report.update(reviewedClientIdSessionNote=review_public['serviceAccountClientIdMapperMatchesRegisteredClientSemantics'],
+                reviewedStandardSubject=review_public['standardSubjectMapperMatchesServiceAccountSemantics'],
+                reviewedStaticMapperConstraintsComplete=review_public['staticMapperConstraintsComplete'],
+                reviewedMapperReasons=review_public['reviewReasons'])
             if not all(review_public[k] for k in ('staticMapperConstraintsComplete',
                     'serviceAccountClientIdMapperMatchesRegisteredClientSemantics',
                     'standardSubjectMapperMatchesServiceAccountSemantics')) \
