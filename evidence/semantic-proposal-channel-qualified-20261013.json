@@ -1,0 +1,89 @@
+{
+  "schema": "ouf.semantic-proposal-channel-qualified.v1",
+  "status": "SOURCE_QUALIFIED_NOT_INSTALLED",
+  "sources": {
+    "semantic": "0b0fc53826bd9be566092bcc621854adaba08358",
+    "mcp": "a02b13ecb7cf9b73c070b59f26b60aaed6060944",
+    "gateway": "8cac6c8877b16eed6f93db9eb08985035b510da5"
+  },
+  "prs": {
+    "semantic": 36,
+    "mcp": 65,
+    "gateway": [
+      71,
+      72
+    ]
+  },
+  "qualification": {
+    "semantic": {
+      "runId": 38464780047,
+      "tests": 65,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "newTestMethods": 17,
+      "actualLuaVectors": 4
+    },
+    "gateway": {
+      "targetedRunId": 38465302839,
+      "targetedTests": 65,
+      "generalRunId": 38465303112
+    },
+    "mcp": {
+      "generalRunId": 38464761855,
+      "targetedRunId": 38464761953,
+      "successfulWorkflowKinds": 12,
+      "ordinaryAndRaceTests": true,
+      "staticcheck": true,
+      "govulncheck": true
+    }
+  },
+  "mainVerification": {
+    "mcp": {
+      "generalRunId": 38465619673,
+      "status": "SUCCESS",
+      "successfulWorkflowKinds": 12
+    },
+    "gateway": {
+      "targetedRunId": 38465719561,
+      "generalRunId": 38465719759,
+      "status": "SUCCESS"
+    },
+    "semantic": {
+      "moduleRunId": 38465711427,
+      "status": "IN_PROGRESS",
+      "otherWorkflowKindsSucceeded": 3
+    }
+  },
+  "properties": {
+    "stableCommandKey": true,
+    "commandKeyDoesNotResetEquivalence": true,
+    "currentOwnerPolicyRequired": true,
+    "ownerReceiptPurposeBound": true,
+    "actualLuaToJavaVerified": true,
+    "ownerCommandsAndReceiptsAtomic": true,
+    "currentDraftVersionAndGreenValidationRequired": true,
+    "existingAuthorizationAndThsCompositionRequired": true,
+    "receiptIsHistorical": true,
+    "receiptReadDoesNotClearMcpDebt": true,
+    "approvalAndPublicationToolEligible": false
+  },
+  "target": {
+    "sshRootAccessAvailable": false,
+    "proposalToolsCallableInCurrentOufConnection": false,
+    "sourceArtifactsInstalled": false,
+    "targetOwnerKeyIssued": false,
+    "runtimeAcceptance": false,
+    "teatriDraftsRegistered": false,
+    "humanDecisionIssued": false,
+    "semanticPublished": false,
+    "ingestionRunExecuted": false,
+    "csvEndToEndProven": false,
+    "r12Touched": false,
+    "baselineRefreshed": false,
+    "budgetReset": false,
+    "credentialsRead": false
+  },
+  "next": "Governed new-artifact and owner-key installation with current target bindings; then register exact Teatri proposals, real THS Human publication/configuration approval, run and durable ACK/lineage/search accounting for 13 rows.",
+  "notReleaseAcceptance": true
+}

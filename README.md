@@ -1,3 +1,5 @@
+> **13 ottobre — canale proposte Teatri implementato e qualificato:** Registry PR36, MCP PR65 e Gateway PR71/72 sono integrati. DRAFT, validazione e richiesta di review hanno ricevute persistenti e verifica Gateway/owner; approvazione e pubblicazione restano HUMAN/THS. [Handoff corrente](releases/SEMANTIC_PROPOSAL_CHANNEL_20261013.md). **Non è installato sul VPS; Teatri non è registrato e il CSV end-to-end resta aperto.** I sorgenti nuovi richiedono un nuovo artefatto e autorità correnti; non riusare immagine V11, accettazioni o claim R12.
+
 > **Stato corrente, ricevuta11 ottobre23:50 CEST:** intake privato V11 pubblicato atomicamente sul VPS, hash9ec18cf053e5925e42df93b75990343cc1d09696975fc2a224d76b4b28becdae, cinque scritture confermate e nessun effetto runtime. Collegata al controller la verifica delle due firme Ed25519 e della decisione HUMAN finita;21 test CI passati. [Prossima lettura root](releases/NATIVE_V11_TRANSITION_PREFLIGHT_20261011.md): policy installata corrente e custodia dei metadati, per completare il collegamento degli adapter target. Cutover e CSV end-to-end restano aperti.
 
 
