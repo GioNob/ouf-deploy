@@ -38,10 +38,10 @@ must classify transient failures under the resilience policy before retrying;
 an ambiguous existing directory always requires reconciliation.
 
 Local isolated tests use actual root directories, native signatures and forked
-process crashes. Ten tests cover creation/restart identities, unknown existing
+process crashes. Twelve tests cover creation/restart identities, unknown existing
 directories, missing signed scope/revocation, both crash windows, missing
 checkpointed directories, concurrent fences, symlinks/parent drift and durable
-deadline expiry. Three isolated-memory tests pass with the expanded exact
+deadline expiry, retained attempt exhaustion and creation without service-retirement permission. Three isolated-memory tests pass with the expanded exact
 29-module closure. Hosted qualification is recorded separately after completion.
 
 Remaining integration: bind the resulting private custody receipt into the

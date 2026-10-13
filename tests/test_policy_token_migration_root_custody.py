@@ -108,6 +108,19 @@ class RootCustodyTest(unittest.TestCase):
             with self.assertRaisesRegex(binding.CandidateDenied,'BUDGET_EXPIRED'):self.action().run()
         retained=json.loads((self.f.f.root/action.name).read_bytes())
         self.assertEqual(retained['expiresMonotonic'],row['expiresMonotonic'])
+    def test_root_creation_needs_no_service_retirement_permission(self):
+        self.sign(lambda a:a.pop('policyTokenLegacyRetirement'))
+        with patch.object(roots.legacy,'read_units',side_effect=AssertionError('no service operation')):
+            self.assertEqual(self.action().run()['state'],'ROOTS_CUSTODIED_NOT_RUNTIME_ACCEPTED')
+    def test_exhausted_retained_attempt_count_cannot_reset(self):
+        action=self.action()
+        with patch.object(roots.os,'mkdir',side_effect=OSError('fixture failure before effect')):
+            with self.assertRaises(OSError):action.run()
+        path=self.f.f.root/action.name;row=json.loads(path.read_bytes())
+        row['mkdirAttempts']=action.scope['maximumMkdirAttempts'];self.f.f.write(path,binding.encoded(row))
+        with patch.object(roots.os,'mkdir',side_effect=AssertionError('no renewed budget')):
+            with self.assertRaisesRegex(binding.CandidateDenied,'BUDGET_EXHAUSTED'):self.action().run()
+        self.assertEqual(json.loads(path.read_bytes())['mkdirAttempts'],row['mkdirAttempts'])
     def test_revocation_after_mkdir_leaves_unproven_pending(self):
         action=self.action();mkdir=roots.os.mkdir
         def revoke(*args,**kwargs):

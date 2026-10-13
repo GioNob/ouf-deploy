@@ -63,9 +63,11 @@ class RootCustody:
             'operation':'FIRST_GOVERNED_MIGRATION_ROOT_CREATION'}))
         self.name='policy-token-root-custody-'+self.operation+'.private.json'
     def guard(self):
-        self.retirement.guard()
+        binding.require(binding.sha(binding.encoded(self.retirement.host))==legacy.HOST_HASH,'ROOT_HOST_INPUT_DRIFT')
+        binding.require(legacy.boot_identity()==self.retirement.host['kernelBootId'],'ROOT_CREATION_BOOT_CHANGED')
         binding.require(binding.decode(self.raw).get('policyTokenRootCustody')==self.scope,
             'EXPLICIT_SIGNED_ROOT_CUSTODY_SCOPE_REQUIRED')
+        binding.require(self.authority(self.raw)is True,'CURRENT_ROOT_CUSTODY_AUTHORITY_REQUIRED')
     @contextmanager
     def parent(self,path,created):
         parts=Path(path).parts;fds=[];seals=[]
