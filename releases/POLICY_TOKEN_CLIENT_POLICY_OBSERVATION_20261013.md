@@ -61,3 +61,42 @@ systemctl show \
 Il comando richiede solo metadati: non richiede `Environment`, `ExecStart`, contenuti dei file, token o credenziali; non usa IAM, non richiede login e non muta servizi. Restituire l'output, compresi eventuali errori. `LoadState=not-found` è un esito da conservare; proprietà vuote non provano assenza di consumer. Queste quattro unità sono un insieme noto, non un inventario completo di ogni possibile consumer. I riferimenti correnti servono a selezionare la successiva revisione concreta, evitando letture indiscriminate e parser ipotetici.
 
 Nessuna nuova componente, journal o framework è necessaria per questa lettura. L'accesso diretto al VPS non è disponibile in questa sessione: questo è il solo intervento operatore richiesto ora.
+
+
+## Metadati delle quattro unità ricevuti alle 20:03 CEST
+
+L'operatore riporta quattro unità loaded/inactive con FragmentPath sotto `/etc/systemd/system` e DropInPaths vuoto. La proprietà EnvironmentFiles non compare: non viene convertita in lista vuota o prova di assenza di configurazione. Stato inactive non prova quiescenza, timer disabilitati o esclusività della credenziale. [Ricevuta](../evidence/policy-token-unit-routing-target-20261013.json).
+
+Il comando precedente era insufficiente per individuare i programmi eseguiti. Non occorre ripeterlo. Questa lettura complementare estrae soltanto percorsi candidati degli script nella directory operativa già nota e nomi dei timer; non stampa ExecStart integrale né argomenti, non legge file di configurazione, script, credenziali o bearer. Non esegue servizi né usa IAM. Quattro GET locali, timeout 5 secondi ciascuno, nessun retry automatico; errori per unità conservati senza stderr grezzo. Percorsi non riconosciuti rimangono non provati, senza fallback o esecuzione dei candidati. Il parser non certifica il significato degli argomenti, il comportamento degli script o la completezza dell'insieme dei consumer. Non richiede sudo o download.
+
+```bash
+python3 - <<'PY'
+import json,re,subprocess
+units=("ouf-policy-token@semantic.service","ouf-gateway-policy-token.service",
+       "ouf-ingestion-policy-token.service","ouf-onboarding-identity-token.service")
+for unit in units:
+    report={"unit":unit,"phase":"READ_COMMAND_METADATA","status":"BLOCKED",
+            "serviceMutations":0,"credentialFilesRead":0,"runtimeAuthorityIssued":False}
+    try:
+        result=subprocess.run(["/usr/bin/systemctl","show",unit,"--no-pager",
+            "--property=ExecStart,TriggeredBy"],stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=5)
+        report["exitCode"]=result.returncode
+        if result.returncode: raise RuntimeError("SYSTEMCTL_METADATA_GET_FAILED")
+        if len(result.stdout)>65536: raise RuntimeError("METADATA_SIZE_LIMIT")
+        fields=dict(line.split("=",1) for line in result.stdout.decode().splitlines() if "=" in line)
+        if "ExecStart" not in fields: raise RuntimeError("EXEC_START_METADATA_NOT_RETURNED")
+        paths=sorted(set(re.findall(r"(?<![A-Za-z0-9_/.-])(/opt/ouf/ops/[A-Za-z0-9_.-]+\.py)(?=[\s;]|$)",fields["ExecStart"])))
+        timers=fields.get("TriggeredBy","").split()
+        if not all(re.fullmatch(r"ouf-[A-Za-z0-9_.@-]+\.timer",t) for t in timers):
+            raise RuntimeError("TRIGGER_METADATA_REQUIRES_REVIEW")
+        report.update(status="METADATA_OBSERVED_NOT_ACCEPTED",phase="SCRIPT_ROUTE_CANDIDATES",
+            scriptPathCandidates=paths,triggeredByTimers=timers,
+            scriptExecutionMappingProven=False,credentialConsumerScopeProven=False)
+        if not paths: report["reason"]="NO_RECOGNIZED_SCRIPT_PATH_CANDIDATE"
+    except subprocess.TimeoutExpired: report["reason"]="SYSTEMCTL_METADATA_TIMEOUT"
+    except RuntimeError as error: report["reason"]=str(error)
+    except Exception as error: report["reason"]=type(error).__name__
+    print(json.dumps(report,sort_keys=True))
+PY
+```
