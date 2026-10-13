@@ -83,7 +83,18 @@ def main():
                 'runtimeAuthorityIssued':False,'notReleaseAcceptance':True}
             candidate,projection=compile_binding(metadata_snapshot,sha(encoded(metadata_snapshot)),
                 {'issuer':metadata_snapshot['issuerSelection'],'tenant':'fixture-tenant','audience':'fixture-audience','actor':'SERVICE'})
-            if not projection['staticMapperConstraintsComplete'] or candidate['productionApplyReady'] or candidate['runtimeAuthorityIssued']:
+            report.update(bindingStaticConstraintsComplete=projection['staticMapperConstraintsComplete'],
+                bindingReviewReasons=projection['reviewReasons'],
+                bindingTenantMapperMatched=projection['tenantStaticMapperMatchesReference'],
+                bindingActorMapperMatched=projection['actorStaticMapperMatchesReference'],
+                bindingAudienceMapperMatched=projection['audienceStaticMapperMatchesReference'])
+            # A real issuer can include additional built-in/default mappers.
+            # Unknown metadata must remain a review reason, not be whitelisted
+            # merely to make this fixture appear accepted. Actual bearer checks
+            # below are independent from this conservative metadata proposal.
+            if not all(projection[k] for k in ('tenantStaticMapperMatchesReference',
+                      'actorStaticMapperMatchesReference','audienceStaticMapperMatchesReference')) \
+                    or candidate['productionApplyReady'] or candidate['runtimeAuthorityIssued']:
                 raise ValueError('REGISTERED_CLAIM_COMPILATION_UNPROVEN')
             report['realAdminMetadataBindingCompilationPassed']=True
             # Expected subject comes from independent authenticated registration,

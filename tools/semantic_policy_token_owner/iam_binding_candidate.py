@@ -148,9 +148,13 @@ def compile_binding(snapshot, snapshot_hash, reference):
     facts = {}
     for claim, expected, label in (('tenant_id', reference['tenant'], 'tenant'),
                                   ('ouf_actor_type', reference['actor'], 'actor')):
-        selected = [m for m in mappers if m['config'].get('claim.name') == claim
-                    and m['config'].get('access.token.claim') == 'true']
+        selected = [m for m in mappers if (m['config'].get('claim.name') == claim
+                    or m['config'].get('claim.name', '').startswith(claim + '.'))
+                    and not (m['config'].get('access.token.claim') == 'false'
+                             and m['config'].get('introspection.token.claim') == 'false')]
         match = bool(selected) and all(m['protocolMapper'] == 'oidc-hardcoded-claim-mapper'
+                    and m['config'].get('claim.name') == claim
+                    and m['config'].get('access.token.claim') == 'true'
                     and m['config'].get('jsonType.label') == 'String'
                     and m['config'].get('claim.value') == expected for m in selected)
         facts[label + 'StaticMapperMatchesReference'] = match
@@ -167,9 +171,15 @@ def compile_binding(snapshot, snapshot_hash, reference):
                 m['config'].get('introspection.token.claim') == 'true' for m in audience)
     if not audience: reasons.append('AUDIENCE_MAPPER_NOT_PROVEN')
     if not facts['audienceIntrospectionMappingExplicit']: reasons.append('AUDIENCE_INTROSPECTION_MAPPING_NOT_EXPLICIT')
+    if any(m['config'].get('claim.name') == 'aud' or m['config'].get('claim.name', '').startswith('aud.') for m in mappers):
+        reasons.append('AUDIENCE_CLAIM_OVERRIDE_REQUIRES_REVIEW')
+    reserved = {'iss', 'client_id', 'azp', 'scope', 'exp', 'iat'}
+    reserved_override = any(m['config'].get('claim.name', '').split('.')[0] in reserved for m in mappers)
+    facts['reservedClaimOverrideMapperObserved'] = reserved_override
+    if reserved_override: reasons.append('RESERVED_CLAIM_MAPPER_REQUIRES_REVIEW')
     # Keycloak service account id is only the candidate subject. Any mapper
     # capable of rewriting sub is explicitly unresolved, including pairwise.
-    subject_override = any(m['config'].get('claim.name') == 'sub'
+    subject_override = any(m['config'].get('claim.name', '').split('.')[0] == 'sub'
                            or m['protocolMapper'] == 'oidc-sha256-pairwise-sub-mapper' for m in mappers)
     facts['subjectOverrideMapperObserved'] = subject_override
     if subject_override: reasons.append('SUBJECT_MAPPER_REQUIRES_REVIEW')
