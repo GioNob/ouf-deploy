@@ -103,6 +103,12 @@ class CredentialTransactionTest(unittest.TestCase):
             with self.assertRaises(binding.CandidateDenied)as caught:admin.call('create','/client-secret')
         self.assertEqual(caught.exception.safe_diagnostics['category'],'COMMAND_TIMEOUT')
         self.assertTrue(caught.exception.safe_diagnostics['mutationOutcomeMayBeUnproven'])
+    def test_time_spent_in_authority_or_unit_guards_cannot_exceed_transaction_budget(self):
+        tick=[0.0]
+        def delayed_units():tick[0]=91.0;return self.f.after
+        with patch.object(transaction,'time',types.SimpleNamespace(monotonic=lambda:tick[0])),patch.object(legacy,'read_units',side_effect=delayed_units),patch.object(transaction.SecretAdmin,'call')as call:
+            with self.assertRaisesRegex(binding.CandidateDenied,'GUARD_DEADLINE'):self.make().run()
+            call.assert_not_called()
     def test_process_crash_after_effect_reservation_is_not_a_new_attempt(self):
         child=os.fork()
         if child==0:

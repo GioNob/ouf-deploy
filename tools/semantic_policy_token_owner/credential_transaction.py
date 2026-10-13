@@ -111,6 +111,9 @@ class CredentialTransaction:
             'CREDENTIAL_ADMIN_EXECUTABLE_CHANGED')
         binding.require(binding.sha(binding.encoded(stable_registration(self.registration)))==self.registration_hash,
             'CREDENTIAL_REGISTRATION_INTENT_DRIFT')
+        finished=time.monotonic()
+        binding.require(self.last_time<=finished<self.admin.deadline,'CREDENTIAL_GUARD_DEADLINE_OR_CLOCK_DRIFT')
+        self.last_time=finished
     def run(self):
         self.last_time=time.monotonic();self.admin.deadline=self.last_time+90
         self.guard()
