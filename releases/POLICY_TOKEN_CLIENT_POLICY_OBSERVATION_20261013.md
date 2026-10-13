@@ -36,3 +36,28 @@ Fonti primarie verificate: [ClientPoliciesResource](https://github.com/keycloak/
 ## Qualificazione completata
 
 Il commit `0c028ec51ac7c8f60cd24185ef5ab6b6012a0e1b` ha superato [la CI 38438841539](https://github.com/GioNob/ouf-deploy/actions/runs/38438841539), job `115439820481`: **211 test, zero esclusioni**, oltre alla prova Keycloak reale delle tre GET incluse policy globali. Anche la PR CI `38438848199` è passata. La composizione usa TLS, crittografia e filesystem reali con issuer sintetico e comandi di servizio/IAM simulati; la prova Keycloak verifica separatamente il protocollo reale. [Ricevuta strutturata](../evidence/policy-token-minimal-composition-and-policy-observer-qualified-20261013.json). Il comando VPS è pronto per la sola osservazione; non è un apply.
+
+
+## Osservazione target ricevuta e passo successivo
+
+L'operatore ha restituito la [ricevuta riuscita](../evidence/policy-token-client-policy-observation-target-20261013.json): tre GET concluse, core del client coincidente con quello conservato, collezioni realm/global policy vuote e nessun executor `secret-rotation` nei profili osservati. L'evidenza privata ha SHA256 `3aef37971d405e0a84c60e0e110f7ababdba8e5c62cbda815e44e9ea5077d060`. È una ricevuta riportata dall'operatore, non una rilettura indipendente del VPS. Il precedente fallimento della sessione resta nella storia. Non ripetere observer, preparazione host o apply IAM.
+
+Restano falsi `effectivePolicyApplicabilityProven`, `credentialConsumerScopeProven`, `productionApplyReady` e `runtimeAuthorityIssued`. La lettura non aggiorna l'intera baseline IAM e non autorizza una rigenerazione.
+
+La documentazione storica Semantic (`docs/OUF_ROADMAP_PET_1_7.md`, sezione sul trasporto del token UDP del 1 ottobre) identifica altri tre writer: gateway, ingestion e onboarding identity. Non dimostra che condividano la credenziale selezionata, né che siano oggi configurati nello stesso modo. L'inventario storico legge anche un bearer: non viene riproposto per questa domanda.
+
+Il dato mancante immediato è il collegamento corrente fra unità e file di configurazione. Eseguire una sola lettura:
+
+```bash
+systemctl show \
+  ouf-policy-token@semantic.service \
+  ouf-gateway-policy-token.service \
+  ouf-ingestion-policy-token.service \
+  ouf-onboarding-identity-token.service \
+  --no-pager \
+  --property=Id,LoadState,ActiveState,FragmentPath,DropInPaths,EnvironmentFiles
+```
+
+Il comando richiede solo metadati: non richiede `Environment`, `ExecStart`, contenuti dei file, token o credenziali; non usa IAM, non richiede login e non muta servizi. Restituire l'output, compresi eventuali errori. `LoadState=not-found` è un esito da conservare; proprietà vuote non provano assenza di consumer. Queste quattro unità sono un insieme noto, non un inventario completo di ogni possibile consumer. I riferimenti correnti servono a selezionare la successiva revisione concreta, evitando letture indiscriminate e parser ipotetici.
+
+Nessuna nuova componente, journal o framework è necessaria per questa lettura. L'accesso diretto al VPS non è disponibile in questa sessione: questo è il solo intervento operatore richiesto ora.
