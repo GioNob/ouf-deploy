@@ -1,6 +1,6 @@
 # New credential and first controlled grant — integration state
 
-The target migration host receipt `93fa9bc8fe4d90fe445bb310363f11966f9ed89df74d169ad925cda0a157acc4` remains the retained input. No repeat host-read command is requested. Its three proposed roots are absent and unaccepted. The legacy service was inactive but its timer was active/enabled; neither has been changed by this development.
+The target migration host receipt `93fa9bc8fe4d90fe445bb310363f11966f9ed89df74d169ad925cda0a157acc4` remains the historical input. Its ABSENT directory observation has been superseded by the [successful root-custody receipt](../evidence/policy-token-root-custody-target-20261013.json): three roots are CUSTODIED/0700. Do not repeat root creation or prior host/consumer observations. The latest reported legacy service state was inactive with its timer active/enabled; this development has made no target service change.
 
 ## Implemented path
 
@@ -18,11 +18,11 @@ Local credential guards and transaction tests pass with native signatures, priva
 
 Dedicated endpoint source reviewed: Keycloak26.7.4 `services/src/main/java/org/keycloak/services/resources/admin/ClientResource.java`, `services/src/main/java/org/keycloak/protocol/oidc/OIDCClientSecretConfigWrapper.java`, and `server-spi-private/src/main/java/org/keycloak/models/ClientSecretConstants.java`. Generic client PUT is not selected because its update path also processes unrelated client configuration. Client policies may retain rotated secrets; no target policy is inferred from the default fixture. Changing a client secret is not evidence that all previously issued bearer tokens have been revoked, nor does it reconstruct historical accounting.
 
-## Still required before any target effect
+## Still required before target credential or service effects
 
-The full installer must bind current selected IAM baseline (including the already-applied audience mapper), prove the credential policy/consumer scope and current TLS/generation, create/custody the absent roots under the retained parent identities, integrate the prepared source closure with the existing signer and exact fresh HUMAN execution review, and provide durable phase reconciliation. Directory identities currently required by the components cannot be invented from ABSENT roots. Root creation now has a separately qualified component ([details](POLICY_TOKEN_MIGRATION_ROOT_CUSTODY_20261013.md)); its integration with signing/delivery and installation orchestration remains incomplete; this is not an installable replacement. Do not start the old worker on an empty/zero history journal.
+The full installer must bind current selected IAM baseline (including the already-applied audience mapper), prove the credential policy/consumer scope and current TLS/generation, prepare the separately scoped output, integrate the executing source closure with the existing signer and exact fresh HUMAN execution review, and provide durable phase reconciliation and worker installation. Root creation/signing/delivery is completed. `completed_roots()` now reads the completed ledger and current directory identities without renewing its old creation window; `from_completed_custody()` binds those identities to the existing migration. This still is not an installable replacement. Do not start the old worker on an empty/zero history journal.
 
-The17:05:55 design approval remains recorded and is not requested again. It does not authorize a production credential rotation, service mutation, new budget or grant. No target signing, service change, IAM mutation, credential read, grant, budget reset, R12 replay, runtime acceptance or CSV end-to-end acceptance occurred in this development. The final execution package must be complete and reviewable before asking for its execution approval.
+The17:05:55 design approval remains recorded and is not requested again. It does not authorize a production credential rotation, service mutation, new budget or grant. The later root-only execution produced two signatures and six directory creations under its own consumed HUMAN claim. That authority cannot be reused for migration. The final execution package must be complete and reviewable before asking for its execution approval.
 
 ## Qualified source checkpoint
 
@@ -42,5 +42,8 @@ The caller must still provide the independently reviewed current client policy,
 consumer scope, prepared directories, TLS bindings and execution authority.
 Keycloak 26.7.4 `ClientPoliciesResource` requires the explicit
 `include-global-policies=true` query to include global policies; client metadata
-alone cannot establish that secret-rotation policies are absent. This is a
-remaining target observation, not an extra runtime or permission mechanism.
+alone cannot establish that secret-rotation policies are absent. The retained
+target observation `3aef37971d405e0a84c60e0e110f7ababdba8e5c62cbda815e44e9ea5077d060`
+already includes global policy metadata and reports zero realm/global policies.
+It remains an observation rather than runtime applicability or consumer proof;
+any required current comparison belongs in the complete execution flow.
