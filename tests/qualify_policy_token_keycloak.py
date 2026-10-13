@@ -72,7 +72,7 @@ def main():
                     'access.token.claim':'true','introspection.token.claim':'true'}})
             #The governed fixture transaction adds the caller audience before
             #the positive bearer test, without disabling audience checks.
-            realm={'realm':'fixture','enabled':True,'sslRequired':'all','accessTokenLifespan':300,'clientScopes':[{'name':'authorization.bundle.read','protocol':'openid-connect','attributes':{'include.in.token.scope':'true'}}],'clients':[client]}
+            realm={'realm':'fixture','enabled':True,'eventsEnabled':True,'eventsExpiration':3600,'enabledEventTypes':['CLIENT_LOGIN','CLIENT_LOGIN_ERROR'],'sslRequired':'all','accessTokenLifespan':300,'clientScopes':[{'name':'authorization.bundle.read','protocol':'openid-connect','attributes':{'include.in.token.scope':'true'}}],'clients':[client]}
             config=root/'fixture-realm.json';config.write_text(json.dumps(realm));config.chmod(0o644)
             phase='START_DISPOSABLE_ISSUER'
             cmd=['docker','run','-d','--name',name,'--memory','1g','--memory-swap','1g','--cpus','2','--pids-limit','512','--cap-drop','ALL','--security-opt','no-new-privileges',
@@ -355,6 +355,25 @@ def main():
             try:admission.admit(token[:-8]+'INVALID',time.monotonic()+300,time.monotonic()+10)
             except Permanent:report['tamperedTokenDenied']=True
             else:raise ValueError('TAMPERED_TOKEN_ACCEPTED')
+            phase='ACTUAL_READ_ONLY_ACCOUNTING_SOURCE_AVAILABILITY'
+            import tools.semantic_policy_token_owner.iam_accounting_observation as accounting_observer
+            class FixtureAuditReader:
+                client='fixture-client'
+                def get(self,resource,fields,queries=()):
+                    args=[*cli_prefix,'get',resource,'--config',cli_config,
+                        '--server','http://127.0.0.1:8080','-r','fixture','--fields',fields]
+                    for query in queries:args+=['-q',query]
+                    response=subprocess.run(args,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=30)
+                    if response.returncode or not 0<len(response.stdout)<=262144:raise ValueError('DISPOSABLE_AUDIT_SOURCE_GET_FAILED')
+                    return json.loads(response.stdout)
+            audit_report={};audit_source=accounting_observer.evaluate(FixtureAuditReader(),audit_report)
+            if not audit_report['auditStorageEnabled'] or not audit_report['requiredClientLoginEventTypesEnabled'] or audit_report['eventSampleCounts'].get('CLIENT_LOGIN',0)<1:
+                raise ValueError('DISPOSABLE_CLIENT_LOGIN_AUDIT_SAMPLE_UNPROVEN')
+            if audit_report['historicalAccountingReconciled'] or audit_source['historicalGrantAttemptCount'] is not None:
+                raise ValueError('AUDIT_SAMPLE_FALSE_HISTORICAL_ACCOUNTING')
+            report.update(actualReadOnlyAuditConfigurationAndClientSamplesPassed=True,
+                fixtureClientLoginSampleCounts=audit_report['eventSampleCounts'],fixtureAuditRetentionSeconds=audit_report['auditRetentionSeconds'],
+                targetHistoricalAccountingAccepted=False)
             phase='REAL_CLIENT_REVOCATION_DENIAL'
             # The added native transaction can outlast the initial synthetic
             # master admin bearer. Obtain a fresh fixture-only setup grant
