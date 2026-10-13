@@ -34,6 +34,7 @@ def certificate(root):
 class Fixture:
     def __init__(self,root):
         self.ca,self.key=certificate(root);self.calls=[];self.body_mode=None;self.code=200;self.after=None
+        self.token_issued_at=int(time.time())
         fixture=self
         class Handler(BaseHTTPRequestHandler):
             protocol_version='HTTP/1.1'
@@ -66,7 +67,7 @@ class Fixture:
         self.profile=IamProfile(issuer,issuer+'/protocol/openid-connect/token',issuer+'/protocol/openid-connect/token/introspect','fixture-client','fixture-service-subject','fixture-tenant','fixture-audience',('authorization.bundle.read',),('authorization.bundle.read',),('127.0.0.1',),90,3600)
         self.thread=threading.Thread(target=self.server.serve_forever,daemon=True);self.thread.start()
     def active(self):
-        now=int(time.time())
+        now=self.token_issued_at
         return {'active':True,'iss':self.profile.issuer,'client_id':self.profile.client_id,'sub':self.profile.subject_id,'tenant_id':self.profile.tenant_id,'ouf_actor_type':'SERVICE','aud':self.profile.audience,'scope':'authorization.bundle.read','iat':now,'exp':now+300}
     def close(self):self.server.shutdown();self.thread.join(2);self.server.server_close()
     def context(self):return ssl.create_default_context(cafile=str(self.ca))
