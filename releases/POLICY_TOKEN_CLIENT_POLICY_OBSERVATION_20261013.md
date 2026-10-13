@@ -100,3 +100,14 @@ for unit in units:
     print(json.dumps(report,sort_keys=True))
 PY
 ```
+
+
+## Risultato della lettura complementare e correzione del metodo
+
+Ricevuta operatore delle 20:10 CEST: tre percorsi candidati riconosciuti e quattro associazioni ai timer. Per onboarding il risultato è `NO_RECOGNIZED_SCRIPT_PATH_CANDIDATE`, non assenza del programma. [Evidence conservata](../evidence/policy-token-script-routing-target-20261013.json).
+
+La revisione del sorgente Semantic `b87c8291c791a6ab0f75ece6e595b49330ac3681`, `scripts/r4a_onboarding_token_runtime.py` (SHA256 `7cd1969fa0773da3243c4d6aeac033e81e90788658dbaccba0440bccbb4bbbd7`), mostra che l'installer dichiara `/var/lib/ouf-r4a-identity/r4a_onboarding_token_runtime.py refresh` e il client `ouf-source-onboarding`. Il filtro della lettura complementare riconosceva soltanto `/opt/ouf/ops/`: il layout noto di onboarding era escluso. Questa omissione del filtro era prevedibile dal repository. Non dimostra che il VPS esegua oggi quei byte e non prova ancora la separazione dei consumer.
+
+Le due letture riportate sopra sono già state eseguite: **non ripeterle e non consegnare un altro probe per correggere soltanto il prefisso**. La prossima consegna deve coprire insieme i programmi e i layout di configurazione noti, i riferimenti al client selezionato e lo stato dei timer, con diagnostica incorporata e senza stampare valori privati o avviare producer. Rimangono da delimitare i consumer effettivi e gli eventuali riferimenti dinamici; un'associazione a un timer non dimostra che questo sia attivo.
+
+L'utente ha richiesto esplicitamente comandi completi, non successive integrazioni per omissioni prevedibili: la regola è ora persistita in [OUF_WORKING_RULES](OUF_WORKING_RULES.md). Non aggiungere framework per realizzare questa lettura. Nessuna nuova autorità, modifica IAM, rigenerazione, grant o accettazione runtime è derivata da queste ricevute.
