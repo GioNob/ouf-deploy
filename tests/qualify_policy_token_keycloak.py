@@ -296,7 +296,15 @@ def main():
             except Permanent:report['tamperedTokenDenied']=True
             else:raise ValueError('TAMPERED_TOKEN_ACCEPTED')
             phase='REAL_CLIENT_REVOCATION_DENIAL'
+            # The added native transaction can outlast the initial synthetic
+            # master admin bearer. Obtain a fresh fixture-only setup grant
+            # before the distinct revocation test; never replay a mutation.
+            status,value=call('POST','/realms/master/protocol/openid-connect/token',{'grant_type':'password','client_id':'admin-cli','username':'ci-admin','password':'DISPOSABLE_CI_ADMIN_PASSWORD'})
+            report['fixtureRevocationSetupAdminGrantHttpStatus']=status
+            if status!=200:raise ValueError('DISPOSABLE_REVOCATION_SETUP_AUTH_UNPROVEN')
+            admin=value['access_token']
             status,current=call('GET','/admin/realms/fixture/clients/'+identifier,bearer=admin)
+            report['fixtureRevocationClientReadHttpStatus']=status
             if status!=200:raise ValueError('DISPOSABLE_CLIENT_STATE_UNAVAILABLE')
             current['enabled']=False;status,_=call('PUT','/admin/realms/fixture/clients/'+identifier,current,bearer=admin)
             if status!=204:raise ValueError('DISPOSABLE_CLIENT_DISABLE_UNPROVEN')
