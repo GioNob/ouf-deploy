@@ -1,5 +1,6 @@
 """Actual disposable Keycloak protocol qualification; never an OUF VPS command."""
 import dataclasses
+import base64
 import json
 import os
 import re
@@ -209,7 +210,30 @@ def main():
             binding=Binding(profile.token_endpoint,profile.client_id,'authorization.bundle.read',str(root),'token.jwt',10001)
             phase='REAL_GRANT_AND_INTROSPECTION';admission.prepare(time.monotonic()+10)
             token=HttpsGrant(clock,opener=transport).request(binding,SECRET,time.monotonic()+10)['access_token']
-            if admission.admit(token,time.monotonic()+300,time.monotonic()+10) is not True:raise ValueError('REAL_ISSUER_ADMISSION_FAILED')
+            original_request=admission.request
+            def observed_request(url,deadline,data=None):
+                value=original_request(url,deadline,data)
+                if url==profile.introspection_endpoint:
+                    report['positiveIntrospectionActive']=type(value)is dict and value.get('active')is True
+                    report['introspectionProtectedFieldPresence']={k:type(value)is dict and k in value
+                        for k in ('iss','client_id','sub','aud','scope','iat','exp','tenant_id','ouf_actor_type')}
+                return value
+            try:
+                with patch.object(admission,'request',side_effect=observed_request):
+                    if admission.admit(token,time.monotonic()+300,time.monotonic()+10) is not True:raise ValueError('REAL_ISSUER_ADMISSION_FAILED')
+            except Exception:
+                # Fixture-only JWT inspection diagnoses issuer output; it never
+                # admits/adopts the bearer or changes expected registration.
+                claims=json.loads(base64.urlsafe_b64decode(token.split('.')[1]+'='*(-len(token.split('.')[1])%4)))
+                report['disposableJwtDiagnosticOnlyNoAdmission']={
+                    'issuerMatchesRegistered':claims.get('iss')==profile.issuer,
+                    'subjectMatchesRegistered':claims.get('sub')==profile.subject_id,
+                    'authorizedPartyMatchesRegistered':claims.get('azp')==profile.client_id,
+                    'clientIdMatchesRegistered':claims.get('client_id')==profile.client_id,
+                    'sidPresent':bool(claims.get('sid')),'sessionStatePresent':bool(claims.get('session_state')),
+                    'issuedAtInteger':type(claims.get('iat'))is int,'expiresAtInteger':type(claims.get('exp'))is int,
+                    'expiresAfterCurrentClock':type(claims.get('exp'))is int and claims['exp']>time.time()}
+                raise
             report['positiveRealIssuerAdmission']=True
             phase='WRONG_AUDIENCE_AND_TAMPER_DENIAL'
             wrong=dataclasses.replace(profile,audience='unapproved-audience')
