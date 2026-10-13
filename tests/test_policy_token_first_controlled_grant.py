@@ -76,6 +76,7 @@ class FirstGrantTest(unittest.TestCase):
         self.assertEqual(json.loads((self.root/operation.session.name).read_bytes())['attemptSlotsConsumed'],0)
     def test_composed_retirement_credential_and_grant_once_without_new_journal(self):
         operation=self.make();transaction=operation.transaction;retirement=transaction.retirement
+        self.c.retirement=retirement;self.c.gate=transaction.authority
         (self.root/transaction.name).unlink();(self.c.destination/'client-secret').unlink()
         (self.root/retirement.name).unlink();self.c.calls.clear()
         state=dict(self.c.f.before);commands=[]

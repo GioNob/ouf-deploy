@@ -86,6 +86,18 @@ class FirstControlledGrant:
                         and credential.get('iamMutationAttemptConsumed')is True and credential.get('credentialPublished')is True,
                         'CREDENTIAL_RECONCILIATION_REQUIRED_NO_AUTOMATIC_REPLAY')
             # Check prepared output before retiring an otherwise functioning writer.
+            previous=evidence.PARENT
+            try:
+                evidence.PARENT=self.transaction.path
+                with evidence.protected_parent()as directory:
+                    info=os.fstat(directory)
+                    evidence.require({'device':info.st_dev,'inode':info.st_ino}==self.transaction.directory_identity
+                        and stat.S_IMODE(info.st_mode)==0o700,'MIGRATION_CREDENTIAL_DIRECTORY_CHANGED')
+                    if credential is None:evidence.require(os.listdir(directory)==[],'MIGRATION_CREDENTIAL_DIRECTORY_NOT_EMPTY')
+            finally:evidence.PARENT=previous
+            if credential is not None:
+                evidence.require(evidence.sha(self.credential.read().encode())==credential.get('newSecretHash'),
+                    'REESTABLISHED_CREDENTIAL_CHANGED')
             self.writer.check_custody()
             with protected_directory(self.binding.output_directory,gid=self.binding.output_gid,mode=0o750)as directory:
                 info=os.fstat(directory)

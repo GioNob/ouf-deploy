@@ -404,6 +404,16 @@ def main():
                 args[args.index('-r')+1]='fixture'
                 return native_cli_run(['/usr/bin/docker','exec','-e','KC_OPTS=-Xms16m -Xmx128m',name,cli,
                     *args,'--config',cli_config],**kwargs)
+            phase='CLIENT_AND_GLOBAL_POLICY_METADATA_OBSERVATION'
+            sys.path.insert(0,str(ROOT/'tests'))
+            from test_policy_token_client_policies import load_observer
+            policy_report={'iamMetadataGetAttempts':0}
+            observed_policies=load_observer()({'client':current},policy_report,credential_cli)
+            report.update(fixtureClientGlobalPolicyObservationPassed=True,
+                fixtureClientPolicyMetadataGetAttempts=policy_report['iamMetadataGetAttempts'],
+                fixtureGlobalPolicyMetadataIncluded=policy_report['globalPolicyMetadataIncluded'],
+                targetEffectiveClientPolicyApplicabilityProven=False)
+            phase='DEDICATED_CLIENT_SECRET_REESTABLISHMENT_PROTOCOL'
             with patch.object(credential_transaction,'subprocess',types.SimpleNamespace(run=credential_cli,DEVNULL=subprocess.DEVNULL,TimeoutExpired=subprocess.TimeoutExpired)):
                 issued_secret=credential_admin.call('create','/client-secret')
                 readback_secret=credential_admin.call('get','/client-secret')
