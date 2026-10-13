@@ -27,6 +27,10 @@ import tools.semantic_policy_token_owner.iam_mapper_semantics_review as mapper_r
 sys.modules['iam_mapper_semantics_review']=mapper_review
 import tools.semantic_policy_token_owner.iam_introspection_audience_plan as caller_plan
 import tools.semantic_policy_token_owner.iam_install_inputs_probe as install_probe
+sys.path.insert(0,str(ROOT/'tools/semantic_application_cutover'))
+sys.modules['iam_mapper_enrichment']=enrichment
+import tools.semantic_policy_token_owner.iam_audience_transaction as iam_transaction
+from test_cutover_authority_native import SignedCutover
 
 IMAGE='quay.io/keycloak/keycloak@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c'
 TARGET_IMAGE_ID='sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c'
@@ -52,12 +56,8 @@ def main():
                 'protocolMapper':'oidc-usersessionmodel-note-mapper','config':{'claim.name':'client_id',
                     'user.session.note':'client_id','jsonType.label':'String',
                     'access.token.claim':'true','introspection.token.claim':'true'}})
-            #26.7.4 requires the authenticated introspection client in audience.
-            #Declare that audience; never disable server/per-client checking.
-            client['protocolMappers'].append({'name':'fixture-self-introspection-audience',
-                'protocol':'openid-connect','protocolMapper':'oidc-audience-mapper','config':{
-                    'included.client.audience':'fixture-client','access.token.claim':'true',
-                    'introspection.token.claim':'true','id.token.claim':'false'}})
+            #The governed fixture transaction adds the caller audience before
+            #the positive bearer test, without disabling audience checks.
             realm={'realm':'fixture','enabled':True,'sslRequired':'all','accessTokenLifespan':300,'clientScopes':[{'name':'authorization.bundle.read','protocol':'openid-connect','attributes':{'include.in.token.scope':'true'}}],'clients':[client]}
             config=root/'fixture-realm.json';config.write_text(json.dumps(realm));config.chmod(0o644)
             phase='START_DISPOSABLE_ISSUER'
@@ -209,6 +209,46 @@ def main():
                 reviewedClientIdSessionNote=review_public['serviceAccountClientIdMapperMatchesRegisteredClientSemantics'],
                 reviewedStandardSubject=review_public['standardSubjectMapperMatchesServiceAccountSemantics'],
                 reviewedMapperReasons=review_public['reviewReasons'])
+            phase='ACTUAL_SCOPED_IAM_MAPPER_TRANSACTION'
+            frozen_metadata=binding_module.decode(enriched_raw)
+            input_proposal={'schema':'ouf.policy-token-install-input-proposal.v1','bindingCandidate':reviewed,
+                'bindingCandidateHash':sha(encoded(reviewed)), 'issuerArtifact':{
+                    'declaredVersion':'26.7.4','imageId':TARGET_IMAGE_ID,'codeMountObserved':False},
+                'runtimeAuthorityIssued':False,'productionApplyReady':False,'budgetReset':False}
+            plan,_=caller_plan.compile_plan(frozen_metadata,sha(enriched_raw),input_proposal,sha(encoded(input_proposal)))
+            signed=SignedCutover();signed.setUp()
+            try:
+                plan_hash=sha(encoded(plan));desired=plan['changeProposal']['proposedMapper']
+                raw_authority=json.loads(signed.authority)
+                raw_authority['policyTokenIamPreparation']={'reviewPlanHash':plan_hash,
+                    'resource':plan['changeProposal']['resource'],'mapperHash':sha(encoded(desired)),
+                    'operation':'ADD_EXACT_CALLER_AUDIENCE_MAPPER','maximumIamMutations':1,
+                    'introspectionCheckMustRemainEnabled':True,'runtimeAuthorityIssued':False}
+                raw_authority['policyTokenIamFreshReconciliation']={'reviewPlanHash':plan_hash,
+                    'observedClientMapperSetHash':sha(encoded(frozen_metadata['client']['protocolMappers'])),
+                    'metadataAndCoreDriftChecked':True,'callerAudienceReconciled':True}
+                signed.authority=encoded(raw_authority)
+                signed.approval['executionAuthorityHash']=sha(signed.authority)
+                signed.write(signed.mandate,encoded(signed.approval));signed.approved=sha(signed.mandate.read_bytes())
+                for role in signed.grant['roles']:signed.sign(role)
+                signed.clock=time.time;signed.verifier.clock=time.time
+                operation=iam_transaction.AudienceTransaction(plan,plan_hash,frozen_metadata,signed.gate(),signed.authority)
+                native_run=subprocess.run
+                def configured_mapper_cli(argv,**kwargs):
+                    if argv[:2]==['/usr/bin/docker','exec']:
+                        args=list(argv);args[args.index('ouf-keycloak')]=name
+                        args[args.index('--server')+1]='http://127.0.0.1:8080'
+                        args[args.index('-r')+1]='fixture'
+                        args=[*args[:2],'-e','KC_OPTS=-Xms16m -Xmx128m',*args[2:],'--config',cli_config]
+                        return native_run(args,**kwargs)
+                    return native_run(argv,**kwargs)
+                with patch.object(binding_module,'PARENT',signed.root),patch.object(iam_transaction.subprocess,'run',side_effect=configured_mapper_cli):
+                    applied=operation.run();reconciled=operation.run()
+                if applied['iamMutations']!=1 or reconciled['iamMutations']!=0 or applied['runtimeAuthorityIssued']:
+                    raise ValueError('SCOPED_IAM_SINGLE_MUTATION_UNPROVEN')
+                report.update(actualScopedMapperTransactionPassed=True,completedMapperTransactionNotReplayed=True,
+                    fixtureMapperMutations=1,fixtureCurrentHumanAndRealDualRoleCrypto=True)
+            finally:signed.doCleanups()
             # Expected subject comes from independent authenticated registration,
             # never from decoding/adopting the candidate token being validated.
             issuer='https://iam.fixture.test:18443/realms/fixture'
