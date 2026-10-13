@@ -1,4 +1,6 @@
-# Binding IAM dai metadati già acquisiti — nessun nuovo login o GET
+# Binding IAM dai metadati già acquisiti — acquisizione mapper da completare
+
+Passo corrente: [arricchire i mapper tramite gli endpoint owner e compilare in un solo comando](POLICY_TOKEN_IAM_MAPPER_ENRICHMENT_20261013.md). La CI kcadm ha riprodotto la perdita dei campi nested nel filtro --fields; non ripetere il comando storico sotto per tentare di ottenere un binding completo da metadati parziali.
 
 Il [receipt operatore](../evidence/policy-token-existing-iam-metadata-target-20261013.json) riporta service-account abilitato, scope richiesti assegnati,9default/5optional e un solo file privato di metadati. Non prova token/secret/accounting o autorità runtime. Il file viene riusato esattamente tramite il suo hash: non ripetere login e acquisizione IAM.
 
@@ -10,7 +12,7 @@ I riferimenti da confrontare, già usati nell'ambiente OUF, sono issuer `https:/
 
 La CLI legge solo il file root0600 selezionato, con no-follow/ancestry/hash/identità e schema esatto, massimo512KiB. Non apre configurazioni, client-secret, token, chiavi, journal o altre evidenze. Pubblica esclusivamente un candidato root0600 nel parent evidence esistente. Nome basato sui byte del candidato e O_EXCL: ripetizione identica riconcilia senza riscrivere; file parziale/estraneo blocca, non viene cancellato o sostituito con un nuovo job. Non crea radici runtime, budget o unit. Il profilo diagnostico ha30secondi complessivi, zero richieste esterne e nessun retry interno.
 
-## Comando per il terminale VPS
+## Comando storico di sola compilazione — usare invece il nuovo arricchimento
 
 ```bash
 set -o pipefail

@@ -1,5 +1,7 @@
 """Selected owner mapper GETs, drift denial, old evidence preservation and privacy."""
 import copy
+import ast
+import base64
 import importlib.util
 from pathlib import Path
 import subprocess
@@ -111,5 +113,30 @@ class MapperEnrichmentTest(unittest.TestCase):
             with self.assertRaises(binding.CandidateDenied): enrichment.execute(str(path), binding.sha(raw), fixtures.REF, report)
         self.assertEqual(report['privateEvidenceWrites'], 1)
         self.assertTrue(Path(report['enrichedMetadataPath']).exists()); self.assertEqual(path.read_bytes(), raw)
+
+    def test_exact_documented_two_source_memory_delivery_checks_both_before_sudo(self):
+        text = (ROOT / 'releases/POLICY_TOKEN_IAM_MAPPER_ENRICHMENT_20261013.md').read_text()
+        command = text.split("python3 - <<'PY' | tee ouf-policy-token-iam-mapper-enrichment.json\n", 1)[1].split('\nPY\n', 1)[0]
+        from tempfile import TemporaryDirectory
+        with TemporaryDirectory(dir=ROOT) as temp:
+            home = Path(temp); gh = home / 'ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh'
+            gh.parent.mkdir(parents=True); gh.write_text('UNEXECUTED_FIXTURE_GH'); gh.chmod(0o700)
+            paths = ['iam_binding_candidate.py', 'iam_mapper_enrichment.py']; calls = []
+            def run(argv, **kwargs):
+                calls.append(argv)
+                if len(calls) <= 2:
+                    self.assertEqual(argv[0], str(gh)); self.assertIn('c9246f3b211b008dd919f6b5a4b37c7c996453be', argv[2])
+                    path = ROOT / 'tools/semantic_policy_token_owner' / paths[len(calls) - 1]
+                    return subprocess.CompletedProcess(argv, 0, base64.b64encode(path.read_bytes()))
+                self.assertEqual(argv, ['sudo', '/usr/bin/python3', '-I', '-B', '-'])
+                tree = ast.parse(kwargs['input'].decode()); records = ast.literal_eval(tree.body[1].value)
+                for (_, payload, expected), path in zip(records, paths):
+                    raw = (ROOT / 'tools/semantic_policy_token_owner' / path).read_bytes()
+                    self.assertEqual(base64.b64decode(payload), raw); self.assertEqual(binding.sha(raw), expected)
+                self.assertEqual(kwargs['timeout'], 195)
+                return subprocess.CompletedProcess(argv, 0)
+            with patch('pathlib.Path.home', return_value=home), patch('shutil.which', return_value=None), patch('subprocess.run', side_effect=run):
+                with self.assertRaises(SystemExit) as result: exec(compile(command, '<enrichment-delivery>', 'exec'), {})
+            self.assertEqual(result.exception.code, 0); self.assertEqual(len(calls), 3)
 
 if __name__ == '__main__': unittest.main()
