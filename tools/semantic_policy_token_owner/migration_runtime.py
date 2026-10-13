@@ -20,7 +20,7 @@ MODULES=frozenset({'cutover_authority','iam_audience_transaction','iam_binding_c
         'semantic_provider_lease_coordination','semantic_provider_lease_nft',
         'semantic_provider_peer_bindings','semantic_provider_preexec','semantic_provider_preexec_native'))})
 MODULES=MODULES|frozenset({'accounting_gap_session','legacy_retirement','credential_reestablishment',
-    'credential_transaction','first_controlled_grant',
+    'credential_transaction','first_controlled_grant','migration_root_custody',
     'tools.semantic_policy_token_owner.producer','tools.semantic_policy_token_owner.iam_admission',
     'tools.semantic_lease_recovery.bounded_recovery','tools.semantic_lease_recovery.recovery_journal'})
 PACKAGES=frozenset({'tools','tools.semantic_policy_token_owner','tools.semantic_lease_recovery'})
