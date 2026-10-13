@@ -2,6 +2,7 @@
 import dataclasses
 import json
 import os
+import re
 from pathlib import Path
 import ssl
 import subprocess
@@ -113,8 +114,26 @@ def main():
             cli='/opt/keycloak/bin/kcadm.sh';cli_config='/tmp/disposable-kcadm-observation.json'
             login=subprocess.run(['docker','exec',name,cli,'config','credentials','--config',cli_config,
                 '--server','http://127.0.0.1:8080','--realm','master','--user','ci-admin',
-                '--password','DISPOSABLE_CI_ADMIN_PASSWORD'],stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=30)
-            if login.returncode:raise ValueError('DISPOSABLE_KCADM_LOGIN_FAILED')
+                '--password','DISPOSABLE_CI_ADMIN_PASSWORD'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=30)
+            if login.returncode:
+                # Fixed categories only; neither tokens nor raw auth errors are
+                # published. Unknown failures block, without a retry/fallback.
+                text=(login.stdout+login.stderr)[:16384].decode('utf-8','replace').lower()
+                categories=[]
+                for pattern,label in ((r'https required|ssl required','HTTPS_REQUIRED'),
+                    (r'invalid_grant|invalid user credentials|invalid credentials','AUTHENTICATION_DENIED'),
+                    (r'connection refused|connectexception','CONNECTION_REFUSED'),
+                    (r'timed out|timeout','CONNECTION_TIMEOUT'),
+                    (r'permission denied|accessdeniedexception','CONFIGURATION_WRITE_DENIED'),
+                    (r'failed to create|could not save|unable to save','CONFIGURATION_PUBLICATION_FAILED'),
+                    (r'unknown option|unmatched argument','CLI_ARGUMENT_UNSUPPORTED'),
+                    (r'hostname|certificate|sslhandshake','TLS_PEER_DENIED')):
+                    if re.search(pattern,text):categories.append(label)
+                statuses=sorted(set(re.findall(r'\b(?:http[^\n]{0,48}|status[^\n]{0,24})\b([45][0-9]{2})\b',text)))
+                report.update(kcadmLoginExitCode=login.returncode,
+                    kcadmLoginDiagnosticCategories=categories or ['UNCLASSIFIED_AUTH_FAILURE'],
+                    kcadmLoginHttpStatuses=statuses)
+                raise ValueError('DISPOSABLE_KCADM_LOGIN_FAILED')
             def cli_get(resource,fields,query=None):
                 argv=['docker','exec',name,cli,'get',resource,'--config',cli_config,
                       '--server','http://127.0.0.1:8080','-r','fixture','--fields',fields]
