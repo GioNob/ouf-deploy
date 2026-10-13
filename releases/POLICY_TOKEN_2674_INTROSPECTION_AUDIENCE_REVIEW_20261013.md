@@ -12,13 +12,13 @@ The initial26.7.4 fixture stopped at missing client_id setup; after explicit reg
 
 ## Operator read and review proposal
 
-Pure exact-file compiler: no IAM/DNS/HTTPS call, credential read, grant, service mutation, runtime directory/budget initialization, signing or R12 effect. Single30second root observation, no retries. Read the exact retained metadata and install proposal with qualified root custody guard, reproduce the v3 candidate and compare it with the embedded candidate. Detect a direct caller-audience mapper only in effective scopes with explicit access/introspection flags.
+Exact-file compiler with selected Docker distribution metadata: no IAM/DNS/HTTPS call, credential read, grant, service mutation, runtime directory/budget initialization, signing or R12 effect. Single45second root observation, no retries. Read the exact retained metadata and install proposal with qualified root custody guard, reproduce the v3 candidate and compare it with the embedded candidate. Detect a direct caller-audience mapper only in effective scopes with explicit access/introspection flags.
 
 If a direct caller audience exists, proposed mutations=0. Otherwise create a conditional ONE-mapper IAM-owner proposal: included.client.audience equals the exact registered client, access/introspection=true, id.token=false. Primary application audience, issuer, tenant/actor claims and scope assignments remain unchanged. Deterministic mapper UUID/fixed managed name; retained name/ID collision blocks. Fresh IAM drift/current approved caller-audience reconciliation and the existing IAM owner's approval are prerequisites to any later apply. The planner has no apply operation. It never assumes that role resolution is absent or current tokens fail.
 
 One root0600 private review file at most under the existing evidence parent; original two inputs stay immutable and identical outputs reconcile without rewriting. Public receipt reports bounded booleans/counts/hashes, not client/mapper values or principals. Partial publication stays available for reconciliation. Credential reestablishment, actual current bearer, historical accounting, complete governed installation/current HUMAN+dual role signatures/six mounts and THS/CSV13 remain open.
 
-Five local adversarial/root publication tests pass. Source5ac10c132fc14ccc7798d71128c7848856dbf42c; full current-version CI must be green before delivery; qualification receipt recorded separately.
+Six local adversarial/root publication tests pass. Source286c4aa31fcfdefe15fbb2d195dbc2dc239d2036; full current-version CI must be green before delivery; qualification receipt recorded separately.
 
 ```bash
 set -o pipefail
@@ -27,8 +27,8 @@ import base64,hashlib,pathlib,shutil,subprocess,os
 preferred=pathlib.Path.home()/'ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh'
 gh=str(preferred) if preferred.is_file() and os.access(preferred,os.X_OK) else shutil.which('gh')
 if not gh:raise SystemExit('phase=DELIVERY reason=EXISTING_GH_UNAVAILABLE; no sudo executed')
-ref='5ac10c132fc14ccc7798d71128c7848856dbf42c'
-sources=[('binding','iam_binding_candidate.py','a8cf18ea78b3acc7261838711345a218e678bfaf11e498dcba6859862d6b655d'),('review','iam_mapper_semantics_review.py','6311342ec38a523a0ae5d1614bc89b359799eae508807a26b5c33b35aa6d1888'),('planner','iam_introspection_audience_plan.py','82012f347c054421e970349621e462ee8f204a372b918a567d8da0f33015646c')]
+ref='286c4aa31fcfdefe15fbb2d195dbc2dc239d2036'
+sources=[('binding','iam_binding_candidate.py','a8cf18ea78b3acc7261838711345a218e678bfaf11e498dcba6859862d6b655d'),('review','iam_mapper_semantics_review.py','6311342ec38a523a0ae5d1614bc89b359799eae508807a26b5c33b35aa6d1888'),('planner','iam_introspection_audience_plan.py','ae7e2d81a28a88d4296c88ea6cd074eb96628ac69689fb57abe18d080570e80e')]
 records=[]
 for name,file,expected in sources:
     endpoint='repos/GioNob/ouf-deploy/contents/tools/semantic_policy_token_owner/'+file+'?ref='+ref
@@ -42,10 +42,14 @@ for name,file,expected in sources:
 args=['qualified-introspection-audience-plan','--metadata','/etc/ouf/deploy-snapshots/policy-token-iam-metadata-830709d5bc5348309025c3a82212a62e.private.json','--metadata-sha256','7e0f46ad0f66ee40b2ce0f662fdb70007744f81f933865264fdf279227681927','--proposal','/etc/ouf/deploy-snapshots/policy-token-install-inputs-db882da50e7b1da53ade4b8b1a3bb22421b0b421670c1e9977d804680c3b741a.private.json','--proposal-sha256','db882da50e7b1da53ade4b8b1a3bb22421b0b421670c1e9977d804680c3b741a']
 bootstrap='import base64,hashlib,sys,types\nrecords='+repr(records)+'\nverified={}\nfor name,payload,expected in records:\n raw=base64.b64decode(payload,validate=True)\n if hashlib.sha256(raw).hexdigest()!=expected:raise SystemExit("phase=ROOT_DELIVERY reason=SOURCE_HASH_MISMATCH")\n verified[name]=raw\nfor label,name in [("binding","iam_binding_candidate"),("review","iam_mapper_semantics_review")]:\n module=types.ModuleType(name)\n sys.modules[name]=module\n exec(compile(verified[label],"qualified-"+label,"exec"),module.__dict__)\nsys.argv='+repr(args)+'\nexec(compile(verified["planner"],"qualified-introspection-audience-plan","exec"),{"__name__":"__main__"})\n'
 try:
-    result=subprocess.run(['sudo','/usr/bin/python3','-I','-B','-'],input=bootstrap.encode(),timeout=45)
+    result=subprocess.run(['sudo','/usr/bin/python3','-I','-B','-'],input=bootstrap.encode(),timeout=55)
 except Exception:raise SystemExit('phase=ROOT_EXECUTION reason=ROOT_EXECUTION_UNAVAILABLE')
 raise SystemExit(result.returncode)
 PY
 ```
 
 Return only public JSON. Private mapper proposal stays on the VPS and grants no IAM or runtime authority.
+
+## Image distribution distinction
+
+Official CI26.7.4 image IDb2f3e1b85071d17a1da8d2cbcc54707853d19c74ae027071789ea1bb12b3ec89 differs from observed target82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c. Same declared version does not prove same artifact. The operator command also performs two bounded selected Docker metadata reads: live selected image/running, then exact image architecture/OS/RepoDigests. A changed image blocks. Private registry names stay only in the private plan; public references are restricted to recognized official repositories and sha256 digests. This provides a route to an exact-distribution comparison, not running-bytecode proof. No Docker lifecycle action, image pull on target, IAM call or configuration mutation is performed. Actual Docker template behavior is qualified on a disposable container.
