@@ -74,6 +74,7 @@ def observe(snapshot,report,runner=subprocess.run):
         'runtimeAuthorityIssued':False,'notReleaseAcceptance':True}
 
 report={'schema':'ouf.policy-token-client-policy-observation-receipt.v1','phase':'RETAINED_INPUT_READ','status':'BLOCKED',
+    'observationProfile':'ouf.policy-token-client-policy-observation.single-attempt.v1',
     'iamMetadataGetAttempts':0,'privateEvidenceWrites':0,'iamMutations':0,'serviceMutations':0,'tokenGrantRequests':0,
     'credentialFilesRead':0,'mountedTokenFilesRead':0,'privateKeysRead':0,'runtimeAuthorityIssued':False,
     'productionApplyReady':False,'budgetReset':False,'r12Touched':False,'notReleaseAcceptance':True,
@@ -107,6 +108,7 @@ try:
         finally:guard.PARENT=previous
         value=observe(snapshot,report)
         raw=guard.encoded(value);digest=guard.sha(raw);name='policy-token-client-policies-'+digest+'.private.json'
+        guard.require(len(raw)<=524288,'COMBINED_POLICY_METADATA_UNBOUNDED')
         report['phase']='PRIVATE_POLICY_METADATA_PUBLICATION'
         try:fd=os.open(name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=directory)
         except FileExistsError:guard.require(guard.read_member(directory,name)==raw,'POLICY_EVIDENCE_CONFLICT')
