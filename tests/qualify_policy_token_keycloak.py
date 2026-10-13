@@ -21,6 +21,7 @@ from tools.semantic_policy_token_owner.iam_binding_candidate import compile_bind
 import tools.semantic_policy_token_owner.iam_binding_candidate as binding_module
 sys.modules['iam_binding_candidate']=binding_module
 import tools.semantic_policy_token_owner.iam_mapper_enrichment as enrichment
+import tools.semantic_policy_token_owner.iam_mapper_semantics_review as mapper_review
 
 IMAGE='quay.io/keycloak/keycloak:26.0.8'
 SECRET='DISPOSABLE_CI_CLIENT_SECRET'
@@ -35,6 +36,9 @@ def main():
             claim=lambda field,value:{'name':field,'protocol':'openid-connect','protocolMapper':'oidc-hardcoded-claim-mapper','config':{'claim.name':field,'claim.value':value,'jsonType.label':'String','access.token.claim':'true','introspection.token.claim':'true'}}
             client={'clientId':'fixture-client','enabled':True,'protocol':'openid-connect','publicClient':False,'secret':SECRET,'serviceAccountsEnabled':True,'standardFlowEnabled':False,'directAccessGrantsEnabled':False,'defaultClientScopes':['authorization.bundle.read'],'optionalClientScopes':[],
                     'protocolMappers':[claim('tenant_id','fixture-tenant'),claim('ouf_actor_type','SERVICE'),{'name':'fixture-audience','protocol':'openid-connect','protocolMapper':'oidc-audience-mapper','config':{'included.custom.audience':'fixture-audience','access.token.claim':'true','introspection.token.claim':'true'}}]}
+            client['protocolMappers'] += [{'name':'fixture-'+kind,'protocol':'openid-connect','protocolMapper':kind,
+                'config':{'access.token.claim':'true','introspection.token.claim':'true'}}
+                for kind in ('oidc-acr-mapper','oidc-allowed-origins-mapper','oidc-sub-mapper')]
             realm={'realm':'fixture','enabled':True,'sslRequired':'all','accessTokenLifespan':300,'clientScopes':[{'name':'authorization.bundle.read','protocol':'openid-connect','attributes':{'include.in.token.scope':'true'}}],'clients':[client]}
             config=root/'fixture-realm.json';config.write_text(json.dumps(realm));config.chmod(0o644)
             phase='START_DISPOSABLE_ISSUER'
@@ -148,6 +152,20 @@ def main():
             report.update(actualKcadmOwnerMapperEnrichmentPassed=True,retainedProjectionPreserved=True,
                 enrichedKcadmUninterpretableMapperCount=evidence['uninterpretableMapperCount'],
                 enrichedKcadmReviewReasons=evidence['reviewReasons'])
+            phase='REAL_REGISTERED_MAPPER_EFFECTS_REVIEW'
+            enriched_raw=Path(evidence['enrichedMetadataPath']).read_bytes()
+            reviewed,review_public=mapper_review.review(binding_module.decode(enriched_raw),sha(enriched_raw),
+                {'issuer':metadata_snapshot['issuerSelection'],'tenant':'fixture-tenant','audience':'fixture-audience','actor':'SERVICE'})
+            if not all(review_public[k] for k in ('staticMapperConstraintsComplete',
+                    'serviceAccountClientIdMapperMatchesRegisteredClientSemantics',
+                    'standardSubjectMapperMatchesServiceAccountSemantics')) \
+                    or reviewed['productionApplyReady'] or reviewed['runtimeAuthorityIssued']:
+                raise ValueError('REAL_REGISTERED_MAPPER_EFFECTS_UNPROVEN')
+            report.update(actualRegisteredMapperEffectsReviewed=True,
+                reviewedStaticMapperConstraintsComplete=review_public['staticMapperConstraintsComplete'],
+                reviewedClientIdSessionNote=review_public['serviceAccountClientIdMapperMatchesRegisteredClientSemantics'],
+                reviewedStandardSubject=review_public['standardSubjectMapperMatchesServiceAccountSemantics'],
+                reviewedMapperReasons=review_public['reviewReasons'])
             # Expected subject comes from independent authenticated registration,
             # never from decoding/adopting the candidate token being validated.
             issuer='https://iam.fixture.test:18443/realms/fixture'
