@@ -32,3 +32,7 @@ Il prossimo lavoro è il collegamento di preparazione e consegna governata ai co
 La sequenza già implementata nei componenti è retirement semantic → credenziale → primo grant/introspezione/pubblicazione, con le riserve durevoli esistenti. La creazione delle radici ha un componente separato già qualificato; manca il collegamento completo di questa sequenza alla consegna/signing dell'installer. La storia legacy rimane UNKNOWN/null, il gap OPEN e il primo budget proposto resta uno/300 secondi; nessun rinnovo implicito o replay R12.
 
 Non rieseguire la raccolta consumer: riutilizzare l'evidenza appena acquisita. Gli eventuali controlli correnti necessari a un'azione appartengono al flusso operativo completo, con diagnosi nello stesso comando. Nessun nuovo comando VPS è richiesto dall'assemblaggio di questo capsule.
+
+## Consegna operativa successiva
+
+La creazione governata delle radici è ora collegata al mandato terminale e alle firme esistenti: [comando completo qualificato](POLICY_TOKEN_ROOT_DELIVERY_20261013.md). CI 38456173237: 27 prove riuscite, zero escluse. Attende esecuzione sul VPS; l'installer completo e il percorso Teatri restano aperti. Non ripetere l'osservazione consumer.
