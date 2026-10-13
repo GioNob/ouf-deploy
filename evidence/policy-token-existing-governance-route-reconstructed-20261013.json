@@ -1,0 +1,47 @@
+{
+  "schema": "ouf.policy-token-existing-governance-route-reconstruction.v1",
+  "status": "EXISTING_ROUTE_IDENTIFIED_NOT_CURRENT_EXECUTION_AUTHORITY",
+  "recordedAt": "2026-10-13",
+  "evidenceSources": [
+    "evidence/discovery-creation-issuer-target-installation-20261007.json",
+    "evidence/discovery-provider-authority-bindings-20261007.json",
+    "evidence/native-v11-transition-preflight-target-20261012.json"
+  ],
+  "authorityProfile": {
+    "path": "/etc/ouf/deploy-snapshots/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json",
+    "sha256": "7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18"
+  },
+  "trustPolicy": {
+    "path": "/etc/ouf/deploy-snapshots/semantic-trust-policy-preparation-20261004-172336/trust-policy.json",
+    "sha256": "21122630e52cb63c3744fee89f5c81ed926dad55231190243ca11be6d481bd42"
+  },
+  "context": {
+    "installationRef": "ouf-lab-netcup-01",
+    "entityRef": "ouf-lab",
+    "intentIssuerRef": "ouf-lab-infrastructure-installer",
+    "approvalIssuerRef": "ouf-lab-infrastructure-installer",
+    "attestorRef": "ouf-lab-node-attestor"
+  },
+  "requiredRoleFrames": [
+    "DEPLOYMENT_INTENT",
+    "FINAL_DEPLOYMENT_APPROVAL"
+  ],
+  "lastTargetObservationRef": "native-v11-transition-preflight-target-20261012.json",
+  "lastObservedPolicyWindowsEligible": true,
+  "observationsAreHistorical": true,
+  "currentTargetReverificationRequiredInsideGuardedPreparation": true,
+  "existingPrivateKeyContentsRead": 0,
+  "signaturesIssued": 0,
+  "iamMutations": 0,
+  "runtimeAuthorityIssued": false,
+  "productionApplyReady": false,
+  "budgetReset": false,
+  "r12Touched": false,
+  "notReleaseAcceptance": true,
+  "remainingPreparation": [
+    "Seal IAM transaction source/interpreter and independently bind exact plan/snapshot/current complete reconciliation",
+    "Bind existing profile and policy by retained hashes; no new authority system or key generation",
+    "Use a distinct scoped signature/mandate package; never replay consumed R8-R12 records",
+    "Present concrete one-mutation review before requesting fresh finite HUMAN approval"
+  ]
+}
