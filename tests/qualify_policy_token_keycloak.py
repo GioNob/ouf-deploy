@@ -385,6 +385,34 @@ def main():
             status,current=call('GET','/admin/realms/fixture/clients/'+identifier,bearer=admin)
             report['fixtureRevocationClientReadHttpStatus']=status
             if status!=200:raise ValueError('DISPOSABLE_CLIENT_STATE_UNAVAILABLE')
+            phase='DEDICATED_CLIENT_SECRET_REESTABLISHMENT_PROTOCOL'
+            from tools.semantic_policy_token_owner.credential_reestablishment import verify_reestablishment
+            # Disposable issuer only. No generic PUT for changing credentials,
+            # no production secret and no claim of target custody or authority.
+            before_rotation=current
+            status,issued_secret=call('POST','/admin/realms/fixture/clients/'+identifier+'/client-secret',bearer=admin)
+            report['fixtureSecretRegenerationHttpStatus']=status
+            if status!=200:raise ValueError('DEDICATED_SECRET_REGENERATION_FAILED')
+            status,readback_secret=call('GET','/admin/realms/fixture/clients/'+identifier+'/client-secret',bearer=admin)
+            if status!=200:raise ValueError('NEW_SECRET_OWNER_READBACK_FAILED')
+            status,current=call('GET','/admin/realms/fixture/clients/'+identifier,bearer=admin)
+            if status!=200:raise ValueError('POST_ROTATION_REGISTRATION_UNAVAILABLE')
+            replacement_secret=verify_reestablishment(before_rotation,current,issued_secret,readback_secret,SECRET)
+            status,_=call('GET','/admin/realms/fixture/clients/'+identifier+'/client-secret/rotated',bearer=admin)
+            if status!=404:raise ValueError('PREVIOUS_ROTATED_SECRET_ABSENCE_UNPROVEN')
+            try:HttpsGrant(clock,opener=transport).request(binding,SECRET,time.monotonic()+10)
+            except Permanent:report['fixturePreviousCredentialDenied']=True
+            else:raise ValueError('PREVIOUS_CREDENTIAL_STILL_ACCEPTED')
+            credential.write_text(replacement_secret);credential.chmod(0o400)
+            issued=HttpsGrant(clock,opener=transport).request(binding,replacement_secret,time.monotonic()+10)
+            token=issued['access_token']
+            if admission.admit(token,time.monotonic()+issued['expires_in'],time.monotonic()+10)is not True:
+                raise ValueError('REESTABLISHED_CREDENTIAL_TOKEN_ADMISSION_FAILED')
+            report.update(fixtureDedicatedSecretRegenerations=1,fixtureCredentialOwnerReadbackMatched=True,
+                fixtureRegistrationPreservedAcrossSecretRegeneration=True,fixturePreviousRotatedSecretAbsent=True,
+                fixtureReestablishedCredentialGrantAndIntrospection=True,targetCredentialReestablished=False,
+                fixtureAdditionalServiceGrantAttemptsForCredentialQualification=2)
+            phase='REAL_CLIENT_REVOCATION_DENIAL'
             current['enabled']=False;status,_=call('PUT','/admin/realms/fixture/clients/'+identifier,current,bearer=admin)
             if status!=204:raise ValueError('DISPOSABLE_CLIENT_DISABLE_UNPROVEN')
             try:admission.admit(token,time.monotonic()+300,time.monotonic()+10)
