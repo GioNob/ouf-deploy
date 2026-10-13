@@ -97,6 +97,33 @@ class BindingCandidateTest(unittest.TestCase):
             self.assertFalse(public['staticMapperConstraintsComplete'])
             self.assertTrue(candidate['reviewReasons'])
 
+    def test_opaque_mapper_shapes_are_retained_as_review_findings_without_false_matches(self):
+        cases = [None, {}, {'protocol': 'foreign', 'protocolMapper': 'PRIVATE_MAPPER_TYPE', 'config': {}},
+                 {'protocol': 'openid-connect', 'protocolMapper': 'PRIVATE_MAPPER_TYPE'},
+                 {'protocol': 'openid-connect', 'protocolMapper': 'PRIVATE_MAPPER_TYPE', 'config': None}]
+        for value in (None, False, 123, ['PRIVATE_VALUE'], {'PRIVATE_KEY': 'PRIVATE_VALUE'}):
+            cases.append({'protocol': 'openid-connect', 'protocolMapper': 'PRIVATE_MAPPER_TYPE', 'config': {'PRIVATE_KEY': value}})
+        for mapper in cases:
+            value = snapshot(); value['client']['protocolMappers'].append(mapper)
+            candidate, public = binding.compile_binding(value, 'a' * 64, REF)
+            self.assertEqual(candidate['schema'], 'ouf.policy-token-iam-binding-candidate.v2')
+            self.assertEqual(public['uninterpretableMapperCount'], 1)
+            self.assertTrue(public['mapperSchemaFindings'])
+            self.assertFalse(public['staticMapperConstraintsComplete'])
+            for key in ('tenantStaticMapperMatchesReference', 'actorStaticMapperMatchesReference',
+                        'audienceStaticMapperMatchesReference', 'tenantIntrospectionMappingExplicit'):
+                self.assertFalse(public[key])
+            self.assertFalse(candidate['productionApplyReady'])
+            self.assertFalse(candidate['runtimeAuthorityIssued'])
+            self.assertNotIn('PRIVATE_', json.dumps(public))
+
+    def test_incomplete_unrequested_optional_mapper_does_not_affect_selected_set(self):
+        value = snapshot(); value['optionalScopes'][1]['protocolMappers'] = [{}]
+        candidate, public = binding.compile_binding(value, 'a' * 64, REF)
+        self.assertEqual(public['uninterpretableMapperCount'], 0)
+        self.assertTrue(public['staticMapperConstraintsComplete'])
+        self.assertFalse(candidate['productionApplyReady'])
+
     def test_exact_hash_root_private_publication_and_identical_reconciliation(self):
         parent, path, raw = self.fixture(); before = path.stat(); report = {'privateEvidenceWrites': 0}
         with patch.object(binding, 'PARENT', parent):
@@ -157,7 +184,7 @@ class BindingCandidateTest(unittest.TestCase):
                 calls.append(argv)
                 if len(calls) == 1:
                     self.assertEqual(argv[0], str(gh))
-                    self.assertIn('5a7c35c0b12a87dab2dc86d565b61477a116558c', argv[2])
+                    self.assertIn('bcd20f30085cfdd13276e3af3d1295f7c43eada2', argv[2])
                     return subprocess.CompletedProcess(argv, 0, base64.b64encode(raw))
                 self.assertEqual(argv, ['sudo', '/usr/bin/python3', '-I', '-B', '-'])
                 tree = ast.parse(kwargs['input'].decode())
