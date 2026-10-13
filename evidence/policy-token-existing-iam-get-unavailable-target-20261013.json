@@ -1,0 +1,33 @@
+{
+  "evidenceSource": "operator_reported_not_independent_live_readback",
+  "reportedAt": "2026-10-13T07:30:31Z",
+  "identicalMessagesReceived": 2,
+  "distinctExecutionsNotInferred": true,
+  "receipt": {
+    "budgetReset": false,
+    "credentialFilesRead": 0,
+    "evidencePublicationMayBePartial": false,
+    "iamMutations": 0,
+    "mountedTokenFilesRead": 0,
+    "notReleaseAcceptance": true,
+    "observationProfile": "ouf.policy-token-admin-observation.single-attempt.v1",
+    "phase": "EXISTING_IAM_READ",
+    "privateEvidenceWrites": 0,
+    "r12Touched": false,
+    "reason": "EXISTING_IAM_GET_UNAVAILABLE",
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.policy-token-existing-iam-observation.v1",
+    "serviceMutations": 0,
+    "status": "BLOCKED",
+    "tokenGrantRequests": 0
+  },
+  "diagnosis": "The corrected selector passed configuration routing, root custody and schema; at least one existing administrative kcadm GET failed. This receipt does not distinguish expired/missing session, container/CLI/server availability, or permissions. No credential/private evidence/service/IAM mutation or SERVICE grant is reported.",
+  "nextOperatorAction": "Use the existing interactive administrator login route: sudo docker exec -it ouf-keycloak /opt/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080 --realm master --user oufadmin. Password only on target terminal. Only after successful login, invoke the unchanged qualified selected-IAM reader. Preserve login errors for diagnosis; do not loop or mutate clients/scopes.",
+  "qualifiedReaderSourceCommit": "2ec928aebdec423ce85c1b5bf65c8b25487d7662",
+  "qualifiedReaderSourceSha256": "e0cf80a9df839932c4278605738a226dd11639f7560c686d32e4241621ef2c87",
+  "targetIamAcceptance": false,
+  "productionApplyReady": false,
+  "r12Touched": false,
+  "budgetReset": false,
+  "notReleaseAcceptance": true
+}
