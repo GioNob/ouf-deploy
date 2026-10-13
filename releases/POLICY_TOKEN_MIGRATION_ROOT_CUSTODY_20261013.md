@@ -50,3 +50,11 @@ and qualify the full installer and its signing/delivery path. This component
 does not stop services, rotate credentials, create a grant session, request a
 token, reconcile unknown accounting, start renewal, or confer release acceptance.
 No new VPS mutation was performed while developing or testing this component.
+
+## Hosted qualification
+
+Source commit `08d39cd680c4e89972d09ead3f2831b053a8d44b` passed
+[run 38435509751](https://github.com/GioNob/ouf-deploy/actions/runs/38435509751),
+job `115428311774`: 12 root-custody tests and 8 retirement regression tests, no
+skips. The parallel PR run `38435516170` also passed. Exact hashes and limits
+are recorded in [the qualification receipt](../evidence/policy-token-migration-root-custody-component-qualified-20261013.json).
