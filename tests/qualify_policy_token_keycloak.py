@@ -15,7 +15,6 @@ import urllib.request
 import uuid
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests')]
-from test_iam_token_admission import certificate
 from tools.semantic_policy_token_owner.iam_admission import IamProfile,PinnedIamOpener,OnlineIamAdmission,_Connection,_Deadline
 from tools.semantic_policy_token_owner.producer import Binding,CredentialFile,HttpsGrant
 from tools.semantic_lease_recovery.bounded_recovery import Permanent
@@ -38,6 +37,18 @@ from test_cutover_authority_native import SignedCutover
 IMAGE='quay.io/keycloak/keycloak@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c'
 TARGET_IMAGE_ID='sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c'
 SECRET='DISPOSABLE_CI_CLIENT_SECRET'
+
+def certificate(root):
+    # Fixture-only native setup keeps the governed Python process -S. No
+    # third-party certificate package/site hook enters the action runtime.
+    ca=root/'ca.pem';key=root/'key.pem'
+    result=subprocess.run(['/usr/bin/openssl','req','-x509','-newkey','rsa:2048','-sha256','-nodes',
+        '-keyout',str(key),'-out',str(ca),'-days','1','-subj','/CN=iam.fixture.test',
+        '-addext','subjectAltName=DNS:iam.fixture.test','-addext','basicConstraints=critical,CA:TRUE'],
+        stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=20,
+        env={'PATH':'/usr/bin:/bin','LC_ALL':'C','OPENSSL_CONF':'/dev/null'})
+    if result.returncode!=0:raise ValueError('DISPOSABLE_TLS_CERTIFICATE_SETUP_FAILED')
+    key.chmod(0o600);return ca,key
 
 def main():
     if os.environ.get('OUF_DISPOSABLE_KEYCLOAK')!='1' or os.environ.get('GITHUB_ACTIONS')!='true':raise SystemExit('DISPOSABLE_HOSTED_CI_ONLY')
