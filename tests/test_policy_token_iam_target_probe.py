@@ -69,7 +69,7 @@ class IamTargetProbeTest(unittest.TestCase):
             with self.assertRaises(probe.ProbeDenied): probe.parse_configuration(changed)
     def test_output_contains_safe_summary_and_evidence_location_only(self):
         raw, cfg = self.config(); snapshot = probe.observe
-        with patch.object(probe, 'routing', return_value=(probe.CONFIGURATION, {})), \
+        with patch.object(probe, 'routing', return_value=('/etc/disposable-policy/semantic.conf', {})), \
              patch.object(probe, 'read_configuration', return_value=raw), \
              patch.object(probe, 'iam_get', side_effect=self.metadata() * 2), \
              patch.object(probe, 'save_snapshot', return_value=('/SAFE_PRIVATE_EVIDENCE', 'a' * 64)), \
@@ -90,16 +90,26 @@ class IamTargetProbeTest(unittest.TestCase):
             self.assertNotIn('UNOPENED_SECRET', saved.read_text())
             self.assertIn('PRIVATE_MAPPER_VALUE', saved.read_text())
             self.assertEqual(len(digest), 64)
-    def test_configuration_route_rejects_other_files_and_environment_overrides(self):
+    def test_configuration_route_rejects_out_of_scope_multiple_files_and_environment_overrides(self):
         props = ['EnvironmentFiles', 'Environment', 'UnsetEnvironment', 'RootDirectory', 'RootImage',
                  'BindPaths', 'BindReadOnlyPaths', 'TemporaryFileSystem']
-        for case in ('foreign', 'duplicate', 'override'):
-            lines = [key + '=' + (probe.CONFIGURATION + ' (ignore_errors=no)' if key == 'EnvironmentFiles' else '') for key in props]
+        for case in ('foreign', 'duplicate', 'override', 'multiple', 'noncanonical'):
+            lines = [key + '=' + ('/etc/disposable-policy/semantic.conf (ignore_errors=no)' if key == 'EnvironmentFiles' else '') for key in props]
             if case == 'foreign': lines[0] = 'EnvironmentFiles=/UNOPENED_SECRET (ignore_errors=no)'
             if case == 'duplicate': lines += [lines[0]]
             if case == 'override': lines[1] = 'Environment=OUF_POLICY_TOKEN_CLIENT_ID=foreign'
+            if case == 'multiple': lines[0] += ' /etc/another.conf (ignore_errors=no)'
+            if case == 'noncanonical': lines[0] = 'EnvironmentFiles=/etc/disposable-policy/../another.conf (ignore_errors=no)'
             with patch.object(probe.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0, '\n'.join(lines).encode())):
                 with self.assertRaises(probe.ProbeDenied): probe.routing()
+
+    def test_single_installed_environment_file_is_selected_without_a_guessed_filename(self):
+        props = ['EnvironmentFiles', 'Environment', 'UnsetEnvironment', 'RootDirectory', 'RootImage',
+                 'BindPaths', 'BindReadOnlyPaths', 'TemporaryFileSystem']
+        for path in ('/etc/disposable-policy/semantic.conf', '/etc/another-policy/semantic-reader.env'):
+            lines = [key + '=' + (path + ' (ignore_errors=no)' if key == 'EnvironmentFiles' else '') for key in props]
+            with patch.object(probe.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0, '\n'.join(lines).encode())):
+                self.assertEqual(probe.routing()[0], path)
 
     def test_exact_documented_command_downloads_and_executes_only_verified_probe_bytes(self):
         text = (ROOT / 'releases/POLICY_TOKEN_IAM_TARGET_OBSERVATION_20261013.md').read_text()
@@ -113,7 +123,7 @@ class IamTargetProbeTest(unittest.TestCase):
                 calls.append(argv)
                 if len(calls) == 1:
                     self.assertEqual(argv[0], str(gh))
-                    self.assertIn('05b9c2c22730ca869a48a554b2930796ad248f91', argv[2])
+                    self.assertIn('2ec928aebdec423ce85c1b5bf65c8b25487d7662', argv[2])
                     return subprocess.CompletedProcess(argv, 0, base64.b64encode(raw))
                 self.assertEqual(argv, ['sudo', '/usr/bin/python3', '-I', '-B', '-'])
                 tree = ast.parse(kwargs['input'].decode())

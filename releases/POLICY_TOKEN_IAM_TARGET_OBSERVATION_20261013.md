@@ -10,7 +10,7 @@ La [lettura operatore](../evidence/policy-token-protected-scope-target-20261013.
 
 ## Osservazione IAM selezionata
 
-Il nuovo reader è limitato al contratto di configurazione `/etc/ouf/policy-token/semantic.env`: root0600, ancestor root senza scritture di gruppo/altri, unica EnvironmentFile e nessun override. Un percorso differente produce `SELECTED_CONFIGURATION_PATH_DRIFT` prima di qualsiasi apertura; non cerca varianti o file credenziali. La configurazione è solo il selettore del client esistente: non prova authority, contenuto del secret o validità del bearer.
+Correzione del selettore dopo il [blocco operatore](../evidence/policy-token-iam-probe-path-selection-block-target-20261013.json): il precedente reader imponeva un filename assunto, senza evidenza target. Non era deriva del VPS. Il reader corretto seleziona l'unica EnvironmentFile dichiarata dalla unit, sotto `/etc`, con percorso canonico, root0600, ancestor root senza scritture di gruppo/altri e nessun override. Non cerca varianti o file credenziali; custodia, schema e stabilità del file/unit restano obbligatori. La configurazione è solo il selettore del client esistente: non prova authority, contenuto del secret o validità del bearer.
 
 Usa soltanto `kcadm get` nel container `ouf-keycloak`, server amministrativo locale `http://localhost:8080`, realm `ouf`, e la sessione già presente. Legge il client selezionato, il service-account e le assegnazioni/default/optional con i metadati dei mapper. Nessuna lettura del client-secret endpoint, login automatico, grant del client SERVICE, modifica IAM, journal o unit. Configurazione e metadati vengono riletti per negare drift durante l'osservazione. Non si assume che la lettura amministrativa interna dimostri il binding HTTPS/peer del token runtime.
 
@@ -27,14 +27,14 @@ import base64,hashlib,pathlib,shutil,subprocess,os
 preferred=pathlib.Path.home()/'ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh'
 gh=str(preferred) if preferred.is_file() and os.access(preferred,os.X_OK) else shutil.which('gh')
 if not gh:raise SystemExit('phase=DELIVERY reason=EXISTING_GH_UNAVAILABLE; no sudo executed')
-ref='05b9c2c22730ca869a48a554b2930796ad248f91'
+ref='2ec928aebdec423ce85c1b5bf65c8b25487d7662'
 endpoint='repos/GioNob/ouf-deploy/contents/tools/semantic_policy_token_owner/iam_target_probe.py?ref='+ref
 try:
     reply=subprocess.run([gh,'api',endpoint,'--jq','.content'],check=True,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=30)
     if len(reply.stdout)>65536:raise ValueError()
     raw=base64.b64decode(b''.join(reply.stdout.split()),validate=True)
 except Exception:raise SystemExit('phase=DELIVERY reason=QUALIFIED_SOURCE_UNAVAILABLE; no sudo executed')
-expected='9bde39bbd64747d01c8fa8b89974a0fdb01f4abecf53802416b3de918074f9b1'
+expected='e0cf80a9df839932c4278605738a226dd11639f7560c686d32e4241621ef2c87'
 if hashlib.sha256(raw).hexdigest()!=expected:raise SystemExit('phase=DELIVERY reason=SOURCE_HASH_MISMATCH; no sudo executed')
 payload=base64.b64encode(raw).decode('ascii')
 bootstrap='import base64,hashlib\nraw=base64.b64decode('+repr(payload)+',validate=True)\nif hashlib.sha256(raw).hexdigest()!='+repr(expected)+':raise SystemExit("phase=ROOT_DELIVERY reason=SOURCE_HASH_MISMATCH")\nexec(compile(raw,"qualified-existing-iam-probe","exec"),{"__name__":"__main__"})\n'
