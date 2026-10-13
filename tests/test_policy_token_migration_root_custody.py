@@ -132,4 +132,67 @@ class RootCustodyTest(unittest.TestCase):
         self.assertEqual(row['created'],{});self.assertEqual(row['pending'],action.steps[0])
         self.assertEqual(row['mkdirAttempts'],1)
 
+    def completed(self,row=None):
+        if row is None:row=self.action().run()
+        return roots.completed_roots(self.f.raw,binding.sha(binding.encoded(row)),self.scope['sourceClosureHash'])
+
+    def test_completed_roots_bind_actual_inodes_without_renewing_expired_creation(self):
+        action=self.action();row=action.run();before=(self.f.f.root/action.name).read_bytes()
+        self.f.f.approval['state']='REVOKED'
+        self.f.f.write(self.f.f.mandate,binding.encoded(self.f.f.approval))
+        with patch.object(roots,'time',types.SimpleNamespace(monotonic=lambda:row['expiresMonotonic']+10000)),\
+             patch.object(roots.os,'mkdir',side_effect=AssertionError('no creation replay')):
+            with self.completed(row)as identities:
+                for role,path in self.paths.items():
+                    self.assertEqual(identities[role],{'path':path,'device':Path(path).stat().st_dev,'inode':Path(path).stat().st_ino})
+        self.assertEqual((self.f.f.root/action.name).read_bytes(),before)
+
+    def test_completed_roots_reject_altered_receipt_or_source_hash(self):
+        action=self.action();row=action.run();digest=binding.sha(binding.encoded(row))
+        for altered_hash,source in [('0'*64,action.scope['sourceClosureHash']),(digest,'0'*64)]:
+            with self.assertRaises(binding.CandidateDenied):
+                with roots.completed_roots(self.f.raw,altered_hash,source):self.fail('invalid custody accepted')
+
+    def test_completed_roots_deny_partial_creation_even_with_matching_hash(self):
+        action=self.action();row=action.run();row['state']='CREATING'
+        self.f.f.write(self.f.f.root/action.name,binding.encoded(row))
+        with self.assertRaisesRegex(binding.CandidateDenied,'SUCCESSFUL_ROOT_CREATION'):
+            with self.completed(row):self.fail('partial custody accepted')
+
+    def test_completed_root_permissions_or_inode_change_is_not_adopted(self):
+        row=self.action().run();path=Path(self.paths['ownerCredential'])
+        path.chmod(0o755)
+        with self.assertRaisesRegex(binding.CandidateDenied,'CUSTODY_DRIFT'):
+            with self.completed(row):self.fail('changed permissions accepted')
+        path.chmod(0o700);path.rename(path.with_name('original'));path.mkdir(mode=0o700)
+        with self.assertRaisesRegex(binding.CandidateDenied,'CUSTODY_DRIFT'):
+            with self.completed(row):self.fail('replacement accepted')
+
+    def test_completed_root_replacement_during_use_fails_and_restores_global_parent(self):
+        row=self.action().run();parent=binding.PARENT;path=Path(self.paths['reviewedCode'])
+        with self.assertRaises(binding.CandidateDenied):
+            with self.completed(row):
+                path.rename(path.with_name('original'));path.mkdir(mode=0o700)
+        self.assertEqual(binding.PARENT,parent)
+
+    def test_completed_root_ledger_change_during_use_is_denied(self):
+        action=self.action();row=action.run()
+        with self.assertRaisesRegex(binding.CandidateDenied,'LEDGER_CHANGED'):
+            with self.completed(row):
+                self.f.f.write(self.f.f.root/action.name,binding.encoded({**row,'version':row['version']+1}))
+
+    def test_completed_root_identity_constructs_real_credential_scope_without_effects(self):
+        from credential_transaction import CredentialTransaction
+        action=self.action();row=action.run();retirement=self.f.action()
+        registration={'id':'11111111-1111-1111-1111-111111111111','clientId':'fixture-client',
+            'enabled':True,'serviceAccountsEnabled':True,'publicClient':False,'protocol':'openid-connect',
+            'clientAuthenticatorType':'client-secret','protocolMappers':[],'defaultClientScopes':['fixture-read']}
+        with self.completed(row)as identities:
+            selected=identities['ownerCredential']
+            transaction=CredentialTransaction(retirement,retirement.authority,retirement.raw,registration,
+                selected['path'],{key:selected[key]for key in ('device','inode')})
+            self.assertEqual(transaction.scope['directoryIdentity'],{key:selected[key]for key in ('device','inode')})
+            self.assertFalse((Path(selected['path'])/transaction.MEMBER).exists())
+        self.assertFalse((self.f.f.root/transaction.name).exists())
+
 if __name__=='__main__':unittest.main()

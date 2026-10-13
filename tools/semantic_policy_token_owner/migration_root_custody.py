@@ -5,7 +5,7 @@ checkpoint requires explicit reconciliation: an unknown directory is never
 adopted, removed, chmodded or recreated. Completed checkpoints are only reused
 under the same signed scope and current host/authority. No credential is read.
 """
-from contextlib import contextmanager
+from contextlib import contextmanager, ExitStack
 import fcntl
 import os
 from pathlib import Path
@@ -27,6 +27,77 @@ def metadata(info,depth):
 
 def protected(row):
     return row['directory'] and not row['symlink'] and row['uid']==row['gid']==0 and not int(row['modeOctal'],8)&0o022
+
+@contextmanager
+def completed_roots(host_raw, evidence_hash, source_closure_hash):
+    """Bind completed creation to current inodes; never renew its expired authority.
+
+    The caller independently pins the successful receipt hashes. This read-only
+    binding does not authorize credentials, files, services or runtime use.
+    Keep the context open through preparation/use so path replacement is denied.
+    """
+    binding.require(type(host_raw)is bytes and binding.sha(host_raw)==legacy.HOST_HASH,
+        'EXACT_COMPLETED_ROOT_HOST_REQUIRED')
+    for digest in (evidence_hash,source_closure_hash):
+        binding.require(type(digest)is str and len(digest)==64 and all(c in '0123456789abcdef'for c in digest),
+            'INDEPENDENT_COMPLETED_ROOT_RECEIPT_HASH_REQUIRED')
+    host=binding.decode(host_raw)
+    proposed=host.get('proposedRootsMetadata')
+    binding.require(type(proposed)is dict and set(proposed)==set(ROLES),'EXACT_THREE_COMPLETED_ROOTS_REQUIRED')
+    operation=binding.sha(binding.encoded({'logicalOwnerScopeHash':host['logicalOwnerScopeHash'],
+        'operation':'FIRST_GOVERNED_MIGRATION_ROOT_CREATION'}))
+    name='policy-token-root-custody-'+operation+'.private.json'
+    with binding.protected_parent()as directory:
+        raw=binding.read_member(directory,name)
+        binding.require(binding.sha(raw)==evidence_hash,'COMPLETED_ROOT_LEDGER_HASH_DRIFT')
+        row=binding.decode(raw);scope=row.get('scope',{})
+        binding.require(row.get('schema')=='ouf.policy-token-root-custody.v1' and row.get('operation')==operation
+            and row.get('state')=='ROOTS_CUSTODIED_NOT_RUNTIME_ACCEPTED' and row.get('pending')is None
+            and scope.get('schema')=='ouf.policy-token-root-custody-scope.v1'
+            and scope.get('hostInputsHash')==legacy.HOST_HASH and scope.get('roots')==proposed
+            and scope.get('logicalOwnerScopeHash')==host['logicalOwnerScopeHash']
+            and scope.get('sourceClosureHash')==source_closure_hash
+            and scope.get('createdModeOctal')=='0700','EXACT_SUCCESSFUL_ROOT_CREATION_REQUIRED')
+        expected={};steps=[]
+        for role,path in ROLES.items():
+            observed=proposed[role];parts=Path(path).parts
+            binding.require(observed.get('path')==path and observed.get('state')=='ABSENT'
+                and type(observed.get('firstMissingDepth'))is int
+                and len(observed.get('ancestors',[]))==observed['firstMissingDepth']
+                and 0<observed['firstMissingDepth']<len(parts),'EXACT_RETAINED_ROOT_LAYOUT_REQUIRED')
+            for depth,info in enumerate(observed['ancestors']):
+                member=str(Path(*parts[:depth+1]))
+                binding.require(info.get('depth')==depth and protected(info)
+                    and (member not in expected or expected[member]==info),'RETAINED_ROOT_ANCESTRY_DRIFT')
+                expected[member]=info
+            for depth in range(observed['firstMissingDepth'],len(parts)):
+                member=str(Path(*parts[:depth+1]))
+                if member not in steps:steps.append(member)
+        binding.require(type(row.get('created'))is dict and set(row['created'])==set(steps)
+            and set(scope.get('directories',[]))==set(steps) and 0<len(steps)<=12,'COMPLETE_ROOT_CHECKPOINTS_REQUIRED')
+        for path,info in row['created'].items():
+            binding.require(protected(info) and info.get('modeOctal')=='0700'
+                and info.get('depth')==len(Path(path).parts)-1,'COMPLETED_ROOT_CHECKPOINT_CUSTODY_REQUIRED')
+            expected[path]=info
+        def current():
+            for path,info in expected.items():
+                binding.require(metadata(Path(path).lstat(),info['depth'])==info,'COMPLETED_ROOT_IDENTITY_OR_CUSTODY_DRIFT')
+            binding.require(binding.read_member(directory,name)==raw,'COMPLETED_ROOT_LEDGER_CHANGED')
+        current()
+        with ExitStack()as held:
+            identities={}
+            for role,path in ROLES.items():
+                previous=binding.PARENT
+                try:
+                    binding.PARENT=Path(path)
+                    fd=held.enter_context(binding.protected_parent())
+                finally:binding.PARENT=previous
+                info=os.fstat(fd)
+                binding.require(metadata(info,len(Path(path).parts)-1)==expected[path],
+                    'COMPLETED_ROOT_DESCRIPTOR_DRIFT')
+                identities[role]={'path':path,'device':info.st_dev,'inode':info.st_ino}
+            try:yield identities
+            finally:current()
 
 class RootCustody:
     def __init__(self,retirement,authority,authority_raw):

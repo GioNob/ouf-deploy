@@ -1,4 +1,4 @@
-# Creazione governata delle radici: comando completo qualificato
+# Creazione governata delle radici — eseguita, non ripetere
 
 Il passaggio operativo ora disponibile crea le tre radici già proposte: codice, credenziale e stato persistente. Le identità device/inode realmente ottenute sono conservate nel ledger privato e serviranno ai binding successivi. Non è l'installer completo, non ruota la credenziale e non completa l'end-to-end Teatri.
 
@@ -16,9 +16,9 @@ L'approvazione nel terminale è necessaria per la regola di `AGENTS.md` «Develo
 
 La prenotazione di emissione ha un'identità stabile per l'operazione. Un errore dopo prenotazione o un risultato non ricevuto non autorizzano una seconda emissione: conservare il JSON e le evidenze, riconciliare prima. Un inode presente ma non registrato non viene adottato, cancellato o sostituito. Un errore prima di qualsiasi effetto rimane distinto per fase/motivo. Il comando non cerca una sessione amministrativa IAM, quindi non serve rifare login Keycloak per questa operazione.
 
-## Comando per il VPS
+## Comando storico già eseguito — non ripetere
 
-Eseguire come `oufadmin` nel terminale abituale. Il comando usa il `gh` portatile esistente e verifica i byte prima di `sudo`. La review e l'eventuale conferma sono nello stesso flusso; restituire soltanto il JSON finale, non file privati o chiavi.
+Eseguito dall’operatore alle 21:59 CEST del 13 ottobre 2026; conservato qui soltanto per tracciabilità. Il comando usa il `gh` portatile esistente e verifica i byte prima di `sudo`. La review e l'eventuale conferma sono nello stesso flusso; restituire soltanto il JSON finale, non file privati o chiavi.
 
 ```bash
 set -o pipefail
@@ -46,4 +46,4 @@ Riletture MCP del 13 ottobre 2026, account `ouf-admin`: `ouf.system.status` rest
 
 Restano da chiudere, con prove target: integrazione completa credenziale/token e worker finito; cutover applicativo/six-mount e readiness; registrazione delle 21 proposte semantiche e review/pubblicazione THS; configurazione sorgente approvata; esecuzione ingestion sui 13 record; ACK e lineage UDP, dedup/merge secondo esiti owner; lettura MCP degli oggetti risultanti. Identificativi di revisioni/pubblicazioni/job/oggetti devono provenire dagli owner, non dalle fixture. Nessun replay della precedente Cinema e nessuna equivalenza tra 13 righe e necessariamente 13 nuovi oggetti canonici.
 
-Il prossimo intervento materiale è l'esecuzione di questo comando sul VPS, perché questa sessione non dispone di accesso amministrativo remoto. La ricevuta con le directory realmente create consente di procedere ai binding di migrazione; non dichiarare l'end-to-end dimostrato da questa milestone.
+L’esecuzione è ora conclusa: [ricevuta target](../evidence/policy-token-root-custody-target-20261013.json), sei mkdir, due firme, tre radici CUSTODIED/0700; nessun effetto IAM, servizi o grant. La ricevuta è fornita dall’operatore, non da un readback indipendente. Review `9a08173e2ab592e831002a5e87a408be65ed4cad3ed8a42958312a657ee12b83`, root evidence `8b7698791f95d84454a65eb9e80ad3061e9d4c32d6efc427930859320e1f8b0d`, source closure `9b78689d3bc4144a005abd5ab7cf8365a7c99e67a0057dfc84d2d27447479623`. La claim è consumata: non rieseguire questo comando. I successivi binding devono leggere il ledger completato e controllare le identità correnti; non chiamare nuovamente la creazione o rinnovarne il budget. La finestra scaduta della creazione non autorizza nuovi effetti e non cancella le directory create con successo. La migrazione completa e l’end-to-end restano aperti.
