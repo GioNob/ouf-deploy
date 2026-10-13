@@ -84,6 +84,19 @@ class BindingCandidateTest(unittest.TestCase):
         self.assertIn('TENANT_INTROSPECTION_MAPPING_NOT_EXPLICIT', candidate['reviewReasons'])
         self.assertTrue(candidate['metadataOnlyNoBearerAdmission'])
 
+    def test_missing_flags_nested_claims_and_reserved_claim_overrides_are_not_ignored(self):
+        for case in ('missing', 'nested', 'scope', 'issuer', 'audience'):
+            value = snapshot(); extra = claim('tenant_id', 'foreign')
+            if case == 'missing': del extra['config']['access.token.claim']
+            if case == 'nested': extra['config']['claim.name'] = 'tenant_id.nested'
+            if case == 'scope': extra['config']['claim.name'] = 'scope'
+            if case == 'issuer': extra['config']['claim.name'] = 'iss'
+            if case == 'audience': extra['config']['claim.name'] = 'aud'
+            value['client']['protocolMappers'].append(extra)
+            candidate, public = binding.compile_binding(value, 'a' * 64, REF)
+            self.assertFalse(public['staticMapperConstraintsComplete'])
+            self.assertTrue(candidate['reviewReasons'])
+
     def test_exact_hash_root_private_publication_and_identical_reconciliation(self):
         parent, path, raw = self.fixture(); before = path.stat(); report = {'privateEvidenceWrites': 0}
         with patch.object(binding, 'PARENT', parent):
@@ -144,7 +157,7 @@ class BindingCandidateTest(unittest.TestCase):
                 calls.append(argv)
                 if len(calls) == 1:
                     self.assertEqual(argv[0], str(gh))
-                    self.assertIn('18d65dcbeea0c563e750b61d0f7887d60c5d3c5e', argv[2])
+                    self.assertIn('5a7c35c0b12a87dab2dc86d565b61477a116558c', argv[2])
                     return subprocess.CompletedProcess(argv, 0, base64.b64encode(raw))
                 self.assertEqual(argv, ['sudo', '/usr/bin/python3', '-I', '-B', '-'])
                 tree = ast.parse(kwargs['input'].decode())
