@@ -28,7 +28,7 @@ sys.modules['iam_mapper_semantics_review']=mapper_review
 import tools.semantic_policy_token_owner.iam_introspection_audience_plan as caller_plan
 import tools.semantic_policy_token_owner.iam_install_inputs_probe as install_probe
 
-IMAGE='quay.io/keycloak/keycloak:26.7.4'
+IMAGE='quay.io/keycloak/keycloak@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c'
 TARGET_IMAGE_ID='sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c'
 SECRET='DISPOSABLE_CI_CLIENT_SECRET'
 
@@ -270,7 +270,9 @@ def main():
                 distribution,distribution_public=caller_plan.image_bindings({})
             if distribution['id']!=artifact_observation['imageId']:raise ValueError('DISPOSABLE_IMAGE_DISTRIBUTION_UNPROVEN')
             report.update(actualDockerDistributionMetadataObserved=True,
-                qualifiedImageArchitecture=distribution_public['imageArchitecture'])
+                qualifiedImageArchitecture=distribution_public['imageArchitecture'],
+                observedTargetRepositoryDigestMatched=IMAGE in distribution['digests'])
+            if IMAGE not in distribution['digests']:raise ValueError('EXACT_OBSERVED_REPOSITORY_DIGEST_NOT_MATCHED')
             report.update(matchesObservedTargetImage=artifact_observation['imageId']==TARGET_IMAGE_ID,
                 observedTargetImageId=TARGET_IMAGE_ID,
                 reviewedSourceSemanticsProfile=review_public['sourceSemanticsProfile'],
