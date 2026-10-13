@@ -1,5 +1,7 @@
 # Lettura unica dei consumer noti del policy token
 
+**Già eseguita sul VPS il 13 ottobre alle 20:32 CEST. Non ripetere il comando sottostante.** [Esito, revisione del codice e integrazione successiva](POLICY_TOKEN_MIGRATION_ASSEMBLY_20261013.md).
+
 Il prossimo passo serve a delimitare l'impatto di una futura rigenerazione della credenziale. Le policy IAM sono già state osservate; i servizi e tre percorsi script sono già stati identificati. Non ripetere i precedenti comandi separati. Il quarto layout, previsto dall'installer onboarding sotto `/var/lib/ouf-r4a-identity/`, è incluso qui.
 
 La procedura è una sola osservazione di operator review, non un installer o una nuova componente runtime. Legge i metadati correnti delle quattro unità, i quattro sorgenti noti senza eseguirli, i riferimenti di configurazione nel layout `/etc/ouf/policy-token/*.conf`, l'ambiente dichiarato delle unità e i quattro timer. Raccoglie inoltre gli altri nomi di unità `ouf-*token*.service`: questo selector non certifica un inventario completo di tutti i possibili consumer. Le proprietà correnti sono lette nuovamente per collegarle alla stessa raccolta dei sorgenti; non viene ripetuta l'osservazione IAM.
