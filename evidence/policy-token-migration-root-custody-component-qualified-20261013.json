@@ -37,5 +37,10 @@
   "historicalGrantAttemptCount": null,
   "budgetReset": false,
   "r12Touched": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "ownerRegressionRun": 38435509877,
+  "ownerRegressionJob": 115428311765,
+  "ownerRegressionTestsPassed": 203,
+  "realDisposableKeycloakProtocolPassed": true,
+  "realKeycloakIsNotFullMigrationEndToEnd": true
 }
