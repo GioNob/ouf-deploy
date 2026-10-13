@@ -1,0 +1,107 @@
+"""Actual disposable Keycloak protocol qualification; never an OUF VPS command."""
+import dataclasses
+import json
+import os
+from pathlib import Path
+import ssl
+import subprocess
+import sys
+import tempfile
+import time
+import urllib.parse
+import urllib.request
+import uuid
+ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests')]
+from test_iam_token_admission import certificate
+from tools.semantic_policy_token_owner.iam_admission import IamProfile,PinnedIamOpener,OnlineIamAdmission,_Connection,_Deadline
+from tools.semantic_policy_token_owner.producer import Binding,CredentialFile,HttpsGrant
+from tools.semantic_lease_recovery.bounded_recovery import Permanent
+
+IMAGE='quay.io/keycloak/keycloak:26.0.8'
+SECRET='DISPOSABLE_CI_CLIENT_SECRET'
+
+def main():
+    if os.environ.get('OUF_DISPOSABLE_KEYCLOAK')!='1' or os.environ.get('GITHUB_ACTIONS')!='true':raise SystemExit('DISPOSABLE_HOSTED_CI_ONLY')
+    name='ouf-disposable-iam-'+uuid.uuid4().hex[:12];phase='PREPARE_FIXTURE';created=False
+    report={'schema':'ouf.policy-token-real-keycloak-qualification.v1','productionCalls':0,'targetCredentialReads':0,'r12Touched':False,'notReleaseAcceptance':True,'imageTag':IMAGE}
+    try:
+        with tempfile.TemporaryDirectory(dir=ROOT,prefix='keycloak-iam-fixture-') as temp:
+            root=Path(temp);root.chmod(0o700);ca,key=certificate(root);key.chmod(0o644)
+            claim=lambda field,value:{'name':field,'protocol':'openid-connect','protocolMapper':'oidc-hardcoded-claim-mapper','config':{'claim.name':field,'claim.value':value,'jsonType.label':'String','access.token.claim':'true','introspection.token.claim':'true'}}
+            client={'clientId':'fixture-client','enabled':True,'protocol':'openid-connect','publicClient':False,'secret':SECRET,'serviceAccountsEnabled':True,'standardFlowEnabled':False,'directAccessGrantsEnabled':False,'defaultClientScopes':['authorization.bundle.read'],'optionalClientScopes':[],
+                    'protocolMappers':[claim('tenant_id','fixture-tenant'),claim('ouf_actor_type','SERVICE'),{'name':'fixture-audience','protocol':'openid-connect','protocolMapper':'oidc-audience-mapper','config':{'included.custom.audience':'fixture-audience','access.token.claim':'true','introspection.token.claim':'true'}}]}
+            realm={'realm':'fixture','enabled':True,'sslRequired':'all','accessTokenLifespan':300,'clientScopes':[{'name':'authorization.bundle.read','protocol':'openid-connect','attributes':{'include.in.token.scope':'true'}}],'clients':[client]}
+            config=root/'fixture-realm.json';config.write_text(json.dumps(realm));config.chmod(0o644)
+            phase='START_DISPOSABLE_ISSUER'
+            cmd=['docker','run','-d','--name',name,'--memory','1g','--memory-swap','1g','--cpus','2','--pids-limit','512','--cap-drop','ALL','--security-opt','no-new-privileges',
+                 '-p','127.0.0.1:18443:8443','-v',str(ca)+':/fixture/cert.pem:ro','-v',str(key)+':/fixture/key.pem:ro','-v',str(config)+':/opt/keycloak/data/import/fixture-realm.json:ro',
+                 '-e','KC_BOOTSTRAP_ADMIN_USERNAME=ci-admin','-e','KC_BOOTSTRAP_ADMIN_PASSWORD=DISPOSABLE_CI_ADMIN_PASSWORD',IMAGE,'start','--http-enabled=false','--https-port=8443','--https-certificate-file=/fixture/cert.pem','--https-certificate-key-file=/fixture/key.pem','--hostname=https://iam.fixture.test:18443','--import-realm']
+            result=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=180)
+            if result.returncode:raise ValueError('DISPOSABLE_ISSUER_START_FAILED')
+            created=True;clock=lambda:(time.time(),time.monotonic());context=ssl.create_default_context(cafile=str(ca))
+            def call(method,path,fields=None,bearer=None):
+                connection=_Connection('iam.fixture.test',18443,'127.0.0.1',context,_Deadline(clock,5))
+                headers={'Host':'iam.fixture.test:18443','Accept':'application/json'}
+                if bearer:headers['Authorization']='Bearer '+bearer
+                if fields is not None:
+                    if method=='PUT':body=json.dumps(fields).encode();headers['Content-Type']='application/json'
+                    else:body=urllib.parse.urlencode(fields).encode();headers['Content-Type']='application/x-www-form-urlencoded'
+                else:body=None
+                try:
+                    connection.request(method,path,body,headers);response=connection.getresponse();raw=response.read(1048577)
+                    if len(raw)>1048576:raise ValueError('DISPOSABLE_RESPONSE_BOUND_EXCEEDED')
+                    return response.status,json.loads(raw) if raw else None
+                finally:connection.close()
+            phase='WAIT_ISSUER_READY';deadline=time.monotonic()+150
+            while True:
+                try:
+                    status,metadata=call('GET','/realms/fixture/.well-known/openid-configuration')
+                    if status==200:break
+                except Exception:pass
+                if time.monotonic()>=deadline:raise ValueError('DISPOSABLE_ISSUER_READINESS_EXHAUSTED')
+                time.sleep(1)
+            phase='READ_REGISTERED_SERVICE_ACCOUNT'
+            status,value=call('POST','/realms/master/protocol/openid-connect/token',{'grant_type':'password','client_id':'admin-cli','username':'ci-admin','password':'DISPOSABLE_CI_ADMIN_PASSWORD'})
+            if status!=200:raise ValueError('DISPOSABLE_REGISTRATION_READ_AUTH_UNPROVEN')
+            admin=value['access_token'];status,clients=call('GET','/admin/realms/fixture/clients?clientId=fixture-client',bearer=admin)
+            if status!=200 or len(clients)!=1:raise ValueError('EXACT_DISPOSABLE_CLIENT_REQUIRED')
+            identifier=clients[0]['id'];status,account=call('GET','/admin/realms/fixture/clients/'+identifier+'/service-account-user',bearer=admin)
+            if status!=200:raise ValueError('REGISTERED_SERVICE_SUBJECT_UNPROVEN')
+            # Expected subject comes from independent authenticated registration,
+            # never from decoding/adopting the candidate token being validated.
+            issuer='https://iam.fixture.test:18443/realms/fixture'
+            profile=IamProfile(issuer,issuer+'/protocol/openid-connect/token',issuer+'/protocol/openid-connect/token/introspect','fixture-client',account['id'],'fixture-tenant','fixture-audience',('authorization.bundle.read',),('authorization.bundle.read','openid','profile','email','roles'),('127.0.0.1',))
+            credential=root/'client-credential';credential.write_text(SECRET);credential.chmod(0o400)
+            transport=PinnedIamOpener(profile,clock,context);admission=OnlineIamAdmission(profile,CredentialFile(credential),transport,clock)
+            binding=Binding(profile.token_endpoint,profile.client_id,'authorization.bundle.read',str(root),'token.jwt',10001)
+            phase='REAL_GRANT_AND_INTROSPECTION';admission.prepare(time.monotonic()+10)
+            token=HttpsGrant(clock,opener=transport).request(binding,SECRET,time.monotonic()+10)['access_token']
+            if admission.admit(token,time.monotonic()+300,time.monotonic()+10) is not True:raise ValueError('REAL_ISSUER_ADMISSION_FAILED')
+            report['positiveRealIssuerAdmission']=True
+            phase='WRONG_AUDIENCE_AND_TAMPER_DENIAL'
+            wrong=dataclasses.replace(profile,audience='unapproved-audience')
+            wrong_admission=OnlineIamAdmission(wrong,CredentialFile(credential),PinnedIamOpener(wrong,clock,context),clock)
+            try:wrong_admission.admit(token,time.monotonic()+300,time.monotonic()+10)
+            except Permanent:report['wrongAudienceDenied']=True
+            else:raise ValueError('UNAPPROVED_AUDIENCE_ACCEPTED')
+            try:admission.admit(token[:-8]+'INVALID',time.monotonic()+300,time.monotonic()+10)
+            except Permanent:report['tamperedTokenDenied']=True
+            else:raise ValueError('TAMPERED_TOKEN_ACCEPTED')
+            phase='REAL_CLIENT_REVOCATION_DENIAL'
+            status,current=call('GET','/admin/realms/fixture/clients/'+identifier,bearer=admin)
+            if status!=200:raise ValueError('DISPOSABLE_CLIENT_STATE_UNAVAILABLE')
+            current['enabled']=False;status,_=call('PUT','/admin/realms/fixture/clients/'+identifier,current,bearer=admin)
+            if status!=204:raise ValueError('DISPOSABLE_CLIENT_DISABLE_UNPROVEN')
+            try:admission.admit(token,time.monotonic()+300,time.monotonic()+10)
+            except Permanent:report['currentDisabledClientDenied']=True
+            else:raise ValueError('DISABLED_CLIENT_ACCEPTED')
+            result=subprocess.run(['docker','inspect','--format','{{.Image}}',name],stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=10,check=True)
+            report.update(imageId=result.stdout.decode().strip(),status='QUALIFIED_DISPOSABLE_KEYCLOAK_PROTOCOL',fixtureAdminAndRegistrationOnly=True,productionIssuerAccepted=False,targetInstallerReady=False)
+    except Exception as e:
+        code=str(e);report.update(status='QUALIFICATION_FAILED',failurePhase=phase,reason=code if code.isupper() and len(code)<=128 else 'DISPOSABLE_IAM_BOUNDARY_UNPROVEN')
+    finally:
+        if created:subprocess.run(['docker','rm','-f',name],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=30)
+    print('OUF_POLICY_TOKEN_REAL_KEYCLOAK='+json.dumps(report,sort_keys=True))
+    Path('policy-token-real-keycloak-evidence.json').write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')
+    return 0 if report['status']=='QUALIFIED_DISPOSABLE_KEYCLOAK_PROTOCOL' else 1
+if __name__=='__main__':raise SystemExit(main())

@@ -61,6 +61,8 @@ class AdmissionStore:
             try:
                 s=os.fstat(fd);check(stat.S_ISREG(s.st_mode) and s.st_uid==s.st_gid==0 and stat.S_IMODE(s.st_mode)==0o600 and s.st_nlink==1)
                 fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+                named=os.stat('owner-admission.lock',dir_fd=directory,follow_symlinks=False)
+                check(identity(s)==identity(named))
                 current=self.decode(read_private(directory,'owner-admission.json',4096))
                 if current!=expected:raise Permanent('GENERATION_CHANGED')
                 value={**current,'version':current['version']+1,'state':state,'tokenHash':token_hash,'blockedAttempt':blocked_attempt}
@@ -70,7 +72,7 @@ class AdmissionStore:
                 try:
                     position=0
                     while position<len(raw):position+=os.write(out,raw[position:])
-                    os.fsync(out);check(self.decode(read_private(directory,'owner-admission.json',4096))==expected)
+                    os.fsync(out);check(identity(os.fstat(fd))==identity(os.stat('owner-admission.lock',dir_fd=directory,follow_symlinks=False)));check(self.decode(read_private(directory,'owner-admission.json',4096))==expected)
                     os.replace(name,'owner-admission.json',src_dir_fd=directory,dst_dir_fd=directory);os.fsync(directory)
                     check(identity(os.fstat(out))==identity(os.stat('owner-admission.json',dir_fd=directory,follow_symlinks=False)))
                 finally:
