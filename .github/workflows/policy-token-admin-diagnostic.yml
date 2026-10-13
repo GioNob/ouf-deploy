@@ -1,9 +1,9 @@
 name: OUF policy-token bounded admin GET diagnosis
 on:
   push:
-    paths: [tools/semantic_policy_token_owner/iam_admin_get_diagnostic.py, tests/test_policy_token_admin_get_diagnostic.py, .github/workflows/policy-token-admin-diagnostic.yml]
+    paths: [tools/semantic_policy_token_owner/iam_admin_get_diagnostic.py, tests/test_policy_token_admin_get_diagnostic.py, scripts/observe-policy-token-consumers.py, tests/test_policy_token_consumers.py, .github/workflows/policy-token-admin-diagnostic.yml]
   pull_request:
-    paths: [tools/semantic_policy_token_owner/iam_admin_get_diagnostic.py, tests/test_policy_token_admin_get_diagnostic.py, .github/workflows/policy-token-admin-diagnostic.yml]
+    paths: [tools/semantic_policy_token_owner/iam_admin_get_diagnostic.py, tests/test_policy_token_admin_get_diagnostic.py, scripts/observe-policy-token-consumers.py, tests/test_policy_token_consumers.py, .github/workflows/policy-token-admin-diagnostic.yml]
 permissions: {contents: read}
 jobs:
   native-root-diagnostic:
@@ -20,3 +20,4 @@ jobs:
           sudo cp -R . "$OUF_DIAGNOSTIC_FIXTURE/repository"
           sudo chown -R root:root "$OUF_DIAGNOSTIC_FIXTURE"
           sudo python3 -I -B -m unittest discover -s "$OUF_DIAGNOSTIC_FIXTURE/repository/tests" -p test_policy_token_admin_get_diagnostic.py -v
+          sudo python3 -I -B -S -m unittest discover -s "$OUF_DIAGNOSTIC_FIXTURE/repository/tests" -p test_policy_token_consumers.py -v
