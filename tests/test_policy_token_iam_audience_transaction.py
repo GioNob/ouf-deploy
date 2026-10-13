@@ -33,7 +33,8 @@ class AudienceTransactionTest(unittest.TestCase):
     def test_one_actual_signed_scope_effect_and_completed_reconciliation_never_reposts(self):
         signed,op=self.fixture();models=[];calls=[]
         def create(body):
-            calls.append(body);model=copy.deepcopy(body);model['id']='22222222-2222-2222-2222-222222222222';models.append(model)
+            calls.append(body);model=copy.deepcopy(body);model['id']='22222222-2222-2222-2222-222222222222'
+            model['config']['userinfo.token.claim']='false';models.append(model)
         with patch.object(binding,'PARENT',signed.root),patch.object(transaction.MapperAdmin,'models',side_effect=lambda:copy.deepcopy(models)), \
                 patch.object(transaction.MapperAdmin,'baseline',side_effect=lambda s:copy.deepcopy(s)),patch.object(transaction.MapperAdmin,'create',side_effect=create):
             first=op.run();second=op.run()
@@ -94,5 +95,13 @@ class AudienceTransactionTest(unittest.TestCase):
         with patch.object(transaction.MapperAdmin,'models')as read:
             with self.assertRaisesRegex(binding.CandidateDenied,'IN_MEMORY'):op.run()
         self.assertFalse(read.called)
+    def test_effective_userinfo_false_only_and_no_unknown_or_expanded_channels(self):
+        signed,op=self.fixture();desired=op.desired
+        normalized=copy.deepcopy(desired);normalized['config']['userinfo.token.claim']='false'
+        self.assertTrue(transaction.equivalent(normalized,desired))
+        for key,value in (('userinfo.token.claim','true'),('userinfo.token.claim',False),
+                          ('lightweight.claim','true'),('included.custom.audience','OTHER'),('unknown','false')):
+            changed=copy.deepcopy(normalized);changed['config'][key]=value
+            self.assertFalse(transaction.equivalent(changed,desired))
 
 if __name__=='__main__':unittest.main()

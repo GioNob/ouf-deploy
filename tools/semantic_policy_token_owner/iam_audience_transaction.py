@@ -54,8 +54,14 @@ class MapperAdmin:
 def equivalent(actual,desired):
     #Keycloak allocates the registration ID; the requested UUID is the durable
     #logical operation ID, not a claim that its POST preserves an object ID.
+    # 26.7.4 AbstractOIDCProtocolMapper.getEffectiveModel materializes the
+    # UserInfo fallback from id.token.claim. Accept only this proven false
+    # default; all unknown fields and any expanded channel remain conflicts.
+    config=actual.get('config') if type(actual)is dict else None
+    expected=desired['config']
     return (type(actual)is dict and type(actual.get('id'))is str and re.fullmatch('[0-9a-fA-F-]{36}',actual['id'])
-        and all(actual.get(k)==v for k,v in desired.items() if k!='id'))
+        and all(actual.get(k)==v for k,v in desired.items() if k not in {'id','config'})
+        and type(config)is dict and config in (expected,{**expected,'userinfo.token.claim':'false'}))
 
 class AudienceTransaction:
     """Exclusive invocation fence only; no shared service/lease lock or retry wait."""
@@ -129,7 +135,10 @@ class AudienceTransaction:
                 if matches:
                     binding.require(len(matches)==1 and equivalent(matches[0],self.desired),'MANAGED_MAPPER_CONFLICT_REQUIRES_REVIEW')
                     binding.require(row.get('realizedMapperId',matches[0]['id'])==matches[0]['id'],'REGISTERED_MAPPER_ID_DRIFT')
+                    effect_hash=binding.sha(binding.encoded(matches[0]))
+                    binding.require(row.get('realizedMapperHash',effect_hash)==effect_hash,'REGISTERED_MAPPER_MODEL_DRIFT')
                     row['realizedMapperId']=matches[0]['id']
+                    row['realizedMapperHash']=effect_hash
                     self.guard_reconciled_baseline(matches[0]['id']);self.guard()
                     row.update(state='APPLIED_RECONCILED');save(row);report['state']=row['state'];return report
                 binding.require(row['state']=='PREPARED' and not row['postConsumed'],'CONSUMED_IAM_ATTEMPT_REQUIRES_RECONCILIATION')
@@ -158,6 +167,7 @@ class AudienceTransaction:
                                 for m in named[:2]]}
                         raise error
                     row['realizedMapperId']=matches[0]['id']
+                    row['realizedMapperHash']=binding.sha(binding.encoded(matches[0]))
                     self.guard_reconciled_baseline(matches[0]['id']);self.guard()
                     binding.require(0<=self.clock()-started<90,'FINITE_IAM_PREPARATION_DEADLINE')
                     row.update(state='APPLIED_RECONCILED');save(row);report['state']=row['state'];return report
