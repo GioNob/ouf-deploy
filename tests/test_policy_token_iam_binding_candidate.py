@@ -1,9 +1,12 @@
 """Effective scopes, static claim uncertainty, root evidence and no replay effects."""
 import copy
+import ast
+import base64
 import importlib.util
 import json
 from pathlib import Path
 import tempfile
+import subprocess
 import unittest
 from unittest.mock import patch
 
@@ -129,5 +132,30 @@ class BindingCandidateTest(unittest.TestCase):
             if case == 'duplicate': value['optionalScopes'].append(copy.deepcopy(value['optionalScopes'][0]))
             if case == 'bounds': value['client']['protocolMappers'] *= 65
             with self.assertRaises(binding.CandidateDenied): binding.compile_binding(value, 'a' * 64, REF)
+
+    def test_exact_documented_delivery_binds_retained_snapshot_hash_and_memory_source(self):
+        text = (ROOT / 'releases/POLICY_TOKEN_IAM_BINDING_COMPILATION_20261013.md').read_text()
+        command = text.split("python3 - <<'PY' | tee ouf-policy-token-iam-binding-compilation.json\n", 1)[1].split('\nPY\n', 1)[0]
+        raw = SOURCE.read_bytes(); calls = []
+        with tempfile.TemporaryDirectory(dir=ROOT) as temp:
+            home = Path(temp); gh = home / 'ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh'
+            gh.parent.mkdir(parents=True); gh.write_text('UNEXECUTED_FIXTURE_GH'); gh.chmod(0o700)
+            def run(argv, **kwargs):
+                calls.append(argv)
+                if len(calls) == 1:
+                    self.assertEqual(argv[0], str(gh))
+                    self.assertIn('18d65dcbeea0c563e750b61d0f7887d60c5d3c5e', argv[2])
+                    return subprocess.CompletedProcess(argv, 0, base64.b64encode(raw))
+                self.assertEqual(argv, ['sudo', '/usr/bin/python3', '-I', '-B', '-'])
+                tree = ast.parse(kwargs['input'].decode())
+                self.assertEqual(base64.b64decode(tree.body[1].value.args[0].value), raw)
+                arguments = ast.literal_eval(tree.body[3].value)
+                self.assertEqual(arguments[arguments.index('--snapshot-sha256') + 1], '6e37df961443b0c3f95f097865c53af5f8b3b777e626d59c5faaa44973942227')
+                self.assertTrue(arguments[arguments.index('--snapshot') + 1].endswith('74e3f02522a741b3919dfe3f06a2cccc.private.json'))
+                self.assertEqual(kwargs['timeout'], 45)
+                return subprocess.CompletedProcess(argv, 0)
+            with patch('pathlib.Path.home', return_value=home), patch('shutil.which', return_value=None), patch('subprocess.run', side_effect=run):
+                with self.assertRaises(SystemExit) as result: exec(compile(command, '<documented-binding-command>', 'exec'), {})
+            self.assertEqual(result.exception.code, 0); self.assertEqual(len(calls), 2)
 
 if __name__ == '__main__': unittest.main()
