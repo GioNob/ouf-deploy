@@ -25,7 +25,8 @@ import tools.semantic_policy_token_owner.iam_mapper_enrichment as enrichment
 import tools.semantic_policy_token_owner.iam_mapper_semantics_review as mapper_review
 import tools.semantic_policy_token_owner.iam_install_inputs_probe as install_probe
 
-IMAGE='quay.io/keycloak/keycloak:26.0.8'
+IMAGE='quay.io/keycloak/keycloak:26.7.4'
+TARGET_IMAGE_ID='sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c'
 SECRET='DISPOSABLE_CI_CLIENT_SECRET'
 
 def main():
@@ -46,7 +47,8 @@ def main():
             phase='START_DISPOSABLE_ISSUER'
             cmd=['docker','run','-d','--name',name,'--memory','1g','--memory-swap','1g','--cpus','2','--pids-limit','512','--cap-drop','ALL','--security-opt','no-new-privileges',
                  '-p','127.0.0.1:18443:8443','-v',str(ca)+':/fixture/cert.pem:ro','-v',str(key)+':/fixture/key.pem:ro','-v',str(config)+':/opt/keycloak/data/import/fixture-realm.json:ro',
-                 '-e','KC_BOOTSTRAP_ADMIN_USERNAME=ci-admin','-e','KC_BOOTSTRAP_ADMIN_PASSWORD=DISPOSABLE_CI_ADMIN_PASSWORD',IMAGE,'start','--http-enabled=true','--https-port=8443','--https-certificate-file=/fixture/cert.pem','--https-certificate-key-file=/fixture/key.pem','--hostname=https://iam.fixture.test:18443','--import-realm']
+                 '-e','KC_BOOTSTRAP_ADMIN_USERNAME=ci-admin','-e','KC_BOOTSTRAP_ADMIN_PASSWORD=DISPOSABLE_CI_ADMIN_PASSWORD',
+                 '-e','JAVA_OPTS_KC_HEAP=-Xms128m -Xmx512m',IMAGE,'start','--http-enabled=true','--https-port=8443','--https-certificate-file=/fixture/cert.pem','--https-certificate-key-file=/fixture/key.pem','--hostname=https://iam.fixture.test:18443','--import-realm']
             result=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=180)
             if result.returncode:raise ValueError('DISPOSABLE_ISSUER_START_FAILED')
             created=True;clock=lambda:(time.time(),time.monotonic());context=ssl.create_default_context(cafile=str(ca))
@@ -112,7 +114,8 @@ def main():
             # CLI inside its disposable container, matching the retained route.
             # SERVICE grant/admission below still uses actual verified TLS only.
             cli='/opt/keycloak/bin/kcadm.sh';cli_config='/tmp/disposable-kcadm-observation.json'
-            login=subprocess.run(['docker','exec',name,cli,'config','credentials','--config',cli_config,
+            cli_prefix=['docker','exec','-e','KC_OPTS=-Xms16m -Xmx128m',name,cli]
+            login=subprocess.run([*cli_prefix,'config','credentials','--config',cli_config,
                 '--server','http://127.0.0.1:8080','--realm','master','--user','ci-admin',
                 '--password','DISPOSABLE_CI_ADMIN_PASSWORD'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=30)
             if login.returncode:
@@ -135,7 +138,7 @@ def main():
                     kcadmLoginHttpStatuses=statuses)
                 raise ValueError('DISPOSABLE_KCADM_LOGIN_FAILED')
             def cli_get(resource,fields,query=None):
-                argv=['docker','exec',name,cli,'get',resource,'--config',cli_config,
+                argv=[*cli_prefix,'get',resource,'--config',cli_config,
                       '--server','http://127.0.0.1:8080','-r','fixture','--fields',fields]
                 if query:argv+=['-q',query]
                 response=subprocess.run(argv,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=30)
@@ -160,7 +163,7 @@ def main():
                 # The disposable fixture uses a private explicit CLI cache; all
                 # GET/resource/--fields/no-fields behavior is the real source.
                 if argv[:5]!=['/usr/bin/docker','exec',name,cli,'get']:raise ValueError('FIXTURE_KCADM_COMMAND_SCOPE_DRIFT')
-                return native_run([*argv,'--config',cli_config],**kwargs)
+                return native_run([argv[0],argv[1],'-e','KC_OPTS=-Xms16m -Xmx128m',*argv[2:],'--config',cli_config],**kwargs)
             with patch.object(binding_module,'PARENT',root),patch.object(enrichment,'CONTAINER',name), \
                  patch.object(enrichment,'SERVER','http://127.0.0.1:8080'),patch.object(enrichment,'REALM','fixture'), \
                  patch.object(enrichment.subprocess,'run',side_effect=configured_cli):
@@ -220,6 +223,10 @@ def main():
             if artifact_observation['imageId']!=result.stdout.decode().strip() or artifact_observation['targetProviderImplementationProven']:
                 raise ValueError('DISPOSABLE_ARTIFACT_OBSERVATION_UNPROVEN')
             report['actualDockerArtifactMetadataObserved']=True
+            report.update(matchesObservedTargetImage=artifact_observation['imageId']==TARGET_IMAGE_ID,
+                observedTargetImageId=TARGET_IMAGE_ID,
+                reviewedSourceSemanticsProfile=review_public['sourceSemanticsProfile'],
+                fixtureServerHeapMaxMiB=512,fixtureCliHeapMaxMiB=128)
             report.update(imageId=result.stdout.decode().strip(),status='QUALIFIED_DISPOSABLE_KEYCLOAK_PROTOCOL',fixtureAdminAndRegistrationOnly=True,productionIssuerAccepted=False,targetInstallerReady=False)
     except Exception as e:
         code=str(e);report.update(status='QUALIFICATION_FAILED',failurePhase=phase,reason=code if code.isupper() and len(code)<=128 else 'DISPOSABLE_IAM_BOUNDARY_UNPROVEN')
