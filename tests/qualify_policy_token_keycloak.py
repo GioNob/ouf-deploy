@@ -50,6 +50,12 @@ def main():
                 'protocolMapper':'oidc-usersessionmodel-note-mapper','config':{'claim.name':'client_id',
                     'user.session.note':'client_id','jsonType.label':'String',
                     'access.token.claim':'true','introspection.token.claim':'true'}})
+            #26.7.4 requires the authenticated introspection client in audience.
+            #Declare that audience; never disable server/per-client checking.
+            client['protocolMappers'].append({'name':'fixture-self-introspection-audience',
+                'protocol':'openid-connect','protocolMapper':'oidc-audience-mapper','config':{
+                    'included.client.audience':'fixture-client','access.token.claim':'true',
+                    'introspection.token.claim':'true','id.token.claim':'false'}})
             realm={'realm':'fixture','enabled':True,'sslRequired':'all','accessTokenLifespan':300,'clientScopes':[{'name':'authorization.bundle.read','protocol':'openid-connect','attributes':{'include.in.token.scope':'true'}}],'clients':[client]}
             config=root/'fixture-realm.json';config.write_text(json.dumps(realm));config.chmod(0o644)
             phase='START_DISPOSABLE_ISSUER'
