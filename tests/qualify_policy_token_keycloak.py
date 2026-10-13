@@ -36,7 +36,7 @@ def main():
             phase='START_DISPOSABLE_ISSUER'
             cmd=['docker','run','-d','--name',name,'--memory','1g','--memory-swap','1g','--cpus','2','--pids-limit','512','--cap-drop','ALL','--security-opt','no-new-privileges',
                  '-p','127.0.0.1:18443:8443','-v',str(ca)+':/fixture/cert.pem:ro','-v',str(key)+':/fixture/key.pem:ro','-v',str(config)+':/opt/keycloak/data/import/fixture-realm.json:ro',
-                 '-e','KC_BOOTSTRAP_ADMIN_USERNAME=ci-admin','-e','KC_BOOTSTRAP_ADMIN_PASSWORD=DISPOSABLE_CI_ADMIN_PASSWORD',IMAGE,'start','--http-enabled=false','--https-port=8443','--https-certificate-file=/fixture/cert.pem','--https-certificate-key-file=/fixture/key.pem','--hostname=https://iam.fixture.test:18443','--import-realm']
+                 '-e','KC_BOOTSTRAP_ADMIN_USERNAME=ci-admin','-e','KC_BOOTSTRAP_ADMIN_PASSWORD=DISPOSABLE_CI_ADMIN_PASSWORD',IMAGE,'start','--http-enabled=true','--https-port=8443','--https-certificate-file=/fixture/cert.pem','--https-certificate-key-file=/fixture/key.pem','--hostname=https://iam.fixture.test:18443','--import-realm']
             result=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=180)
             if result.returncode:raise ValueError('DISPOSABLE_ISSUER_START_FAILED')
             created=True;clock=lambda:(time.time(),time.monotonic());context=ssl.create_default_context(cafile=str(ca))
@@ -97,6 +97,33 @@ def main():
                     or candidate['productionApplyReady'] or candidate['runtimeAuthorityIssued']:
                 raise ValueError('REGISTERED_CLAIM_COMPILATION_UNPROVEN')
             report['realAdminMetadataBindingCompilationPassed']=True
+            phase='EXACT_DISPOSABLE_KCADM_METADATA_PROJECTION'
+            # HTTP is not host-published and is used only by the administrative
+            # CLI inside its disposable container, matching the retained route.
+            # SERVICE grant/admission below still uses actual verified TLS only.
+            cli='/opt/keycloak/bin/kcadm.sh';cli_config='/tmp/disposable-kcadm-observation.json'
+            login=subprocess.run(['docker','exec',name,cli,'config','credentials','--config',cli_config,
+                '--server','http://127.0.0.1:8080','--realm','master','--user','ci-admin',
+                '--password','DISPOSABLE_CI_ADMIN_PASSWORD'],stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=30)
+            if login.returncode:raise ValueError('DISPOSABLE_KCADM_LOGIN_FAILED')
+            def cli_get(resource,fields,query=None):
+                argv=['docker','exec',name,cli,'get',resource,'--config',cli_config,
+                      '--server','http://127.0.0.1:8080','-r','fixture','--fields',fields]
+                if query:argv+=['-q',query]
+                response=subprocess.run(argv,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=30)
+                if response.returncode or not 0<len(response.stdout)<=131072:raise ValueError('DISPOSABLE_KCADM_GET_FAILED')
+                return json.loads(response.stdout)
+            cli_clients=cli_get('clients','id,clientId,enabled,serviceAccountsEnabled,publicClient,clientAuthenticatorType,protocol,protocolMappers','clientId=fixture-client')
+            if type(cli_clients) is not list or len(cli_clients)!=1:raise ValueError('DISPOSABLE_KCADM_CLIENT_NOT_UNIQUE')
+            cli_snapshot={**metadata_snapshot,'client':cli_clients[0],
+                'defaultScopes':cli_get('clients/'+identifier+'/default-client-scopes','id,name,protocol,protocolMappers'),
+                'optionalScopes':cli_get('clients/'+identifier+'/optional-client-scopes','id,name,protocol,protocolMappers')}
+            cli_candidate,cli_projection=compile_binding(cli_snapshot,sha(encoded(cli_snapshot)),
+                {'issuer':metadata_snapshot['issuerSelection'],'tenant':'fixture-tenant','audience':'fixture-audience','actor':'SERVICE'})
+            if cli_candidate['productionApplyReady'] or cli_candidate['runtimeAuthorityIssued']:raise ValueError('CLI_METADATA_FALSE_RUNTIME_ACCEPTANCE')
+            report.update(actualKcadmProjectionCompiled=True,kcadmMapperSchemaFindings=cli_projection['mapperSchemaFindings'],
+                kcadmUninterpretableMapperCount=cli_projection['uninterpretableMapperCount'],
+                kcadmStaticConstraintsComplete=cli_projection['staticMapperConstraintsComplete'])
             # Expected subject comes from independent authenticated registration,
             # never from decoding/adopting the candidate token being validated.
             issuer='https://iam.fixture.test:18443/realms/fixture'

@@ -93,6 +93,36 @@ def read_member(directory, name):
         return b''.join(chunks)
     finally: os.close(fd)
 
+def mapper_shape(mapper):
+    """Return fixed public categories only, never mapper names/config keys/values.
+
+    An opaque mapper can rewrite protected claims: retaining it as a review
+    finding does not make the remaining mapper set complete or accepted.
+    """
+    if type(mapper) is not dict: return ['MAPPER_NOT_OBJECT']
+    findings = []
+    if 'protocol' not in mapper: findings.append('MAPPER_PROTOCOL_ABSENT')
+    elif mapper['protocol'] != 'openid-connect': findings.append('MAPPER_PROTOCOL_UNSUPPORTED')
+    if 'protocolMapper' not in mapper: findings.append('MAPPER_TYPE_ABSENT')
+    elif type(mapper['protocolMapper']) is not str: findings.append('MAPPER_TYPE_NOT_STRING')
+    else: require(0 < len(mapper['protocolMapper']) <= 256, 'MAPPER_TYPE_UNBOUNDED')
+    if 'config' not in mapper: findings.append('MAPPER_CONFIGURATION_ABSENT')
+    elif type(mapper['config']) is not dict: findings.append('MAPPER_CONFIGURATION_NOT_OBJECT')
+    else:
+        cfg = mapper['config']; require(len(cfg) <= 64, 'MAPPER_CONFIGURATION_UNBOUNDED')
+        kinds = set()
+        for key, value in cfg.items():
+            require(type(key) is str and len(key) <= 256, 'MAPPER_CONFIGURATION_KEY_UNBOUNDED')
+            if type(value) is str: require(len(value) <= 4096, 'MAPPER_CONFIGURATION_VALUE_UNBOUNDED')
+            elif value is None: kinds.add('NULL')
+            elif type(value) is bool: kinds.add('BOOLEAN')
+            elif type(value) in (int, float): kinds.add('NUMBER')
+            elif type(value) is list: kinds.add('ARRAY')
+            elif type(value) is dict: kinds.add('OBJECT')
+            else: kinds.add('UNSUPPORTED')
+        findings += ['MAPPER_CONFIGURATION_VALUE_' + kind for kind in sorted(kinds)]
+    return findings
+
 def compile_binding(snapshot, snapshot_hash, reference):
     require(type(snapshot_hash) is str and re.fullmatch('[0-9a-f]{64}', snapshot_hash), 'EXACT_SNAPSHOT_HASH_REQUIRED')
     fields = {'schema', 'issuerSelection', 'realm', 'client', 'serviceAccount', 'defaultScopes',
@@ -131,18 +161,20 @@ def compile_binding(snapshot, snapshot_hash, reference):
             and set(requested) <= set(names) and 'authorization.bundle.read' in requested, 'EXACT_ASSIGNED_REQUESTED_SCOPES_REQUIRED')
     selected_optional = [s for s in optional if s['name'] in requested]
     effective = [client] + default + selected_optional
-    mappers = []
+    mappers = []; shape_counts = {}; uninterpretable = 0; total = 0
     for source in effective:
         items = source.get('protocolMappers', [])
         require(type(items) is list and len(items) <= 64, 'BOUNDED_MAPPER_METADATA_REQUIRED')
         for mapper in items:
-            require(type(mapper) is dict and mapper.get('protocol') == 'openid-connect'
-                    and type(mapper.get('protocolMapper')) is str and type(mapper.get('config')) is dict
-                    and len(mapper['config']) <= 64 and all(type(k) is str and type(v) is str
-                    and len(k) <= 256 and len(v) <= 4096 for k, v in mapper['config'].items()), 'MAPPER_SCHEMA_UNPROVEN')
+            total += 1; require(total <= 256, 'EFFECTIVE_MAPPER_SET_UNBOUNDED')
+            findings = mapper_shape(mapper)
+            if findings:
+                uninterpretable += 1
+                for finding in findings: shape_counts[finding] = shape_counts.get(finding, 0) + 1
+                continue
             mappers.append(mapper)
-    require(len(mappers) <= 256, 'EFFECTIVE_MAPPER_SET_UNBOUNDED')
     reasons = []
+    if uninterpretable: reasons.append('EFFECTIVE_MAPPER_SCHEMA_REQUIRES_REVIEW')
     known = all(m['protocolMapper'] in SAFE_MAPPERS for m in mappers)
     if not known: reasons.append('UNSUPPORTED_EFFECTIVE_MAPPER')
     facts = {}
@@ -152,13 +184,13 @@ def compile_binding(snapshot, snapshot_hash, reference):
                     or m['config'].get('claim.name', '').startswith(claim + '.'))
                     and not (m['config'].get('access.token.claim') == 'false'
                              and m['config'].get('introspection.token.claim') == 'false')]
-        match = bool(selected) and all(m['protocolMapper'] == 'oidc-hardcoded-claim-mapper'
+        match = not uninterpretable and bool(selected) and all(m['protocolMapper'] == 'oidc-hardcoded-claim-mapper'
                     and m['config'].get('claim.name') == claim
                     and m['config'].get('access.token.claim') == 'true'
                     and m['config'].get('jsonType.label') == 'String'
                     and m['config'].get('claim.value') == expected for m in selected)
         facts[label + 'StaticMapperMatchesReference'] = match
-        facts[label + 'IntrospectionMappingExplicit'] = bool(selected) and all(
+        facts[label + 'IntrospectionMappingExplicit'] = not uninterpretable and bool(selected) and all(
                     m['config'].get('introspection.token.claim') == 'true' for m in selected)
         if not match: reasons.append(label.upper() + '_MAPPER_NOT_PROVEN')
         if not facts[label + 'IntrospectionMappingExplicit']: reasons.append(label.upper() + '_INTROSPECTION_MAPPING_NOT_EXPLICIT')
@@ -166,8 +198,8 @@ def compile_binding(snapshot, snapshot_hash, reference):
                 and m['config'].get('access.token.claim') == 'true'
                 and reference['audience'] in (m['config'].get('included.client.audience'),
                                              m['config'].get('included.custom.audience'))]
-    facts['audienceStaticMapperMatchesReference'] = bool(audience)
-    facts['audienceIntrospectionMappingExplicit'] = bool(audience) and all(
+    facts['audienceStaticMapperMatchesReference'] = not uninterpretable and bool(audience)
+    facts['audienceIntrospectionMappingExplicit'] = not uninterpretable and bool(audience) and all(
                 m['config'].get('introspection.token.claim') == 'true' for m in audience)
     if not audience: reasons.append('AUDIENCE_MAPPER_NOT_PROVEN')
     if not facts['audienceIntrospectionMappingExplicit']: reasons.append('AUDIENCE_INTROSPECTION_MAPPING_NOT_EXPLICIT')
@@ -183,18 +215,24 @@ def compile_binding(snapshot, snapshot_hash, reference):
                            or m['protocolMapper'] == 'oidc-sha256-pairwise-sub-mapper' for m in mappers)
     facts['subjectOverrideMapperObserved'] = subject_override
     if subject_override: reasons.append('SUBJECT_MAPPER_REQUIRES_REVIEW')
-    candidate = {'schema': 'ouf.policy-token-iam-binding-candidate.v1', 'snapshotHash': snapshot_hash,
+    candidate = {'schema': 'ouf.policy-token-iam-binding-candidate.v2', 'snapshotHash': snapshot_hash,
                  'reference': dict(reference), 'issuer': reference['issuer'], 'clientId': client['clientId'],
                  'candidateSubjectId': service['id'], 'requestedScopes': sorted(requested),
                  'candidateAllowedScopeEnvelope': sorted(set(s['name'] for s in default) | set(requested)),
                  'unrequestedOptionalScopesExcluded': True,
-                 'effectiveMapperCount': len(mappers), 'mapperFacts': facts, 'reviewReasons': sorted(set(reasons)),
+                 'effectiveMapperCount': total, 'interpretableMapperCount': len(mappers),
+                 'uninterpretableMapperCount': uninterpretable, 'mapperSchemaFindings': shape_counts,
+                 'opaqueMapperEffectsRemainUnproven': bool(uninterpretable),
+                 'mapperFacts': facts, 'reviewReasons': sorted(set(reasons)),
                  'scopeEnvelopeIsConservativeNotObservedTokenScope': True,
                  'metadataOnlyNoBearerAdmission': True, 'peerAddressesBound': False,
                  'credentialProvenanceAccepted': False, 'historicalAccountingReconciled': False,
                  'runtimeAuthorityIssued': False, 'productionApplyReady': False,
                  'budgetReset': False, 'notReleaseAcceptance': True}
-    public = {'effectiveMapperCount': len(mappers), 'selectedOptionalScopeCount': len(selected_optional),
+    public = {'effectiveMapperCount': total, 'interpretableMapperCount': len(mappers),
+              'uninterpretableMapperCount': uninterpretable, 'mapperSchemaFindings': shape_counts,
+              'opaqueMapperEffectsRemainUnproven': bool(uninterpretable),
+              'selectedOptionalScopeCount': len(selected_optional),
               'unrequestedOptionalScopesExcluded': True, 'staticMapperConstraintsComplete': not reasons,
               'reviewReasons': candidate['reviewReasons'], **facts}
     return candidate, public
