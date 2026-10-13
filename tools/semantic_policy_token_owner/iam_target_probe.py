@@ -16,7 +16,6 @@ import subprocess
 import uuid
 
 UNIT = 'ouf-policy-token@semantic.service'
-CONFIGURATION = '/etc/ouf/policy-token/semantic.env'
 SERVER = 'http://localhost:8080'
 ISSUER = 'https://auth.ouf-lab.it/realms/ouf'
 REALM = 'ouf'
@@ -122,8 +121,14 @@ def routing():
             'CONFIGURATION_OVERRIDES_UNPROVEN')
     match = re.fullmatch(r'(/[A-Za-z0-9_./@:-]+) \(ignore_errors=no\)', fields['EnvironmentFiles'])
     require(match is not None, 'SOLE_CONFIGURATION_FILE_REQUIRED')
-    require(match[1] == CONFIGURATION, 'SELECTED_CONFIGURATION_PATH_DRIFT')
-    return match[1], fields
+    # The exact single EnvironmentFile is selected by the installed unit, not
+    # by a guessed deployment filename. Custody/content/stable route checks
+    # apply before using any configuration value. No path search or fallback.
+    path = Path(match[1])
+    require(path.is_absolute() and path.is_relative_to('/etc') and path != Path('/etc')
+            and '..' not in path.parts and str(path) == match[1] and len(path.parts) <= 32,
+            'SELECTED_CONFIGURATION_ROUTE_UNPROVEN')
+    return str(path), fields
 
 def iam_get(resource, fields, query=None):
     # Explicit old route and GET only. A missing/expired session requires the
