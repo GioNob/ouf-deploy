@@ -34,8 +34,8 @@ try:
  entry,manifest=m.load_entry('a'*40,sources,loader,p['declarationHash'])
  library=entry.stdlib_binding() if p['alter']=='stdlib' else None
  print(json.dumps({'loaded':True,'modules':manifest['moduleCount'],'stdlibFiles':len(library['fileHashes']) if library else None,'keysRead':0}))
-except m.RuntimeDenied as e:
- print(json.dumps({'denied':str(e)}));raise SystemExit(1)
+except Exception as e:
+ print(json.dumps({'denied':str(e),'safeDiagnostics':getattr(e,'safe_diagnostics',None)}));raise SystemExit(1)
 '''
         payload={'loader':base64.b64encode(loader).decode(),'sources':{n:base64.b64encode(v).decode() for n,v in raw.items()},
             'declarationHash':runtime.digest(decl),'alter':alter}
@@ -52,7 +52,7 @@ except m.RuntimeDenied as e:
         result=self.native('stdlib');root=Path(sysconfig.get_path('stdlib')).resolve().stat()
         if root.st_uid!=0 or root.st_gid!=0 or root.st_mode&0o022:
             self.assertNotEqual(result.returncode,0)
-            self.assertIn('STDLIB_DIRECTORY_CUSTODY_UNPROVEN',result.stderr.decode())
+            self.assertIn('STDLIB_DIRECTORY_CUSTODY_UNPROVEN',result.stdout.decode()+result.stderr.decode())
         else:
             self.assertEqual(result.returncode,0,result.stderr.decode())
             self.assertGreater(json.loads(result.stdout)['stdlibFiles'],100)

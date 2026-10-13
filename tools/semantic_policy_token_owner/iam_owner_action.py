@@ -46,9 +46,13 @@ def stdlib_binding():
         for name in sorted(names):
             if not name.endswith(('.py','.pyc','.so')):continue
             path=parent/name;resolved=path.resolve(strict=True)
-            binding.require(resolved.is_relative_to(root) or (name=='sitecustomize.py'
-                and resolved==Path('/etc/python'+str(sys.version_info.major)+'.'+str(sys.version_info.minor)+'/sitecustomize.py')),
-                'STDLIB_LINK_DESTINATION_UNPROVEN')
+            if not (resolved.is_relative_to(root) or (name=='sitecustomize.py'
+                and resolved==Path('/etc/python'+str(sys.version_info.major)+'.'+str(sys.version_info.minor)+'/sitecustomize.py'))):
+                error=binding.CandidateDenied('STDLIB_LINK_DESTINATION_UNPROVEN')
+                error.safe_diagnostics={'standardLibraryRelativeMember':str(path.relative_to(root)),
+                    'targetCategory':'SYSTEM_APPORT_HOOK' if str(resolved).startswith('/usr/share/apport/') else 'OTHER_OUTSIDE_STDLIB',
+                    'noSiteEnabled':bool(sys.flags.no_site)}
+                raise error
             for ancestor in resolved.parents:
                 info=ancestor.lstat()
                 binding.require(stat.S_ISDIR(info.st_mode) and info.st_uid==info.st_gid==0 and not info.st_mode&0o022,'STDLIB_FILE_ANCESTRY_UNPROVEN')
@@ -243,6 +247,7 @@ def main(manifest,mode='prepare',review_hash=None,decision=None):
         reason=str(error)
         report['reason']=reason if re.fullmatch('[A-Z][A-Z0-9_]{0,127}',reason) else type(error).__name__
         if isinstance(error,OSError):report['errno']=error.errno
+        if hasattr(error,'safe_diagnostics'):report['safeDiagnostics']=error.safe_diagnostics
         if report['installationKeyAccessAttempted']:report['privateKeyReadCount']=None
         if report.get('iamMutationOutcomeUnproven'):report['iamMutations']=None
         report['evidencePublicationMayBePartial']=report['phase'] in {'PRIVATE_FULL_ACTION_REVIEW_PUBLICATION',
