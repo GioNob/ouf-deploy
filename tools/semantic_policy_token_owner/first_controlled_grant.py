@@ -7,6 +7,7 @@ A published token is not runtime/lease/application acceptance.
 """
 import fcntl
 import os
+import re
 import stat
 import time
 import uuid
@@ -44,6 +45,68 @@ class FirstControlledGrant:
             'outputDirectoryIdentity':self.output_identity,'maximumGrantAttempts':1,
             'automaticRenewalAllowed':False,'runtimeAcceptanceGranted':False}
         self.name='policy-token-first-controlled-grant-'+session.operation+'.private.json'
+    def migrate(self):
+        """Compose the existing operations after root/input execution review.
+
+        No new scheduler, journal or automatic retry. Completed credential
+        custody can be reused; an ambiguous rotation or consumed grant cannot.
+        The caller still supplies the independently reviewed target policy,
+        consumer, directory, TLS and native HUMAN execution bindings.
+        """
+        phase='MIGRATION_SCOPE_PREFLIGHT'
+        try:
+            raw=evidence.decode(self.session.raw)
+            for key,scope in (
+                ('policyTokenLegacyRetirement',self.transaction.retirement.scope),
+                ('policyTokenCredentialReestablishment',self.transaction.scope),
+                ('policyTokenAccountingGapMigration',self.session.scope),
+                ('policyTokenFirstControlledGrant',self.scope)):
+                evidence.require(raw.get(key)==scope,'COMPLETE_SIGNED_MIGRATION_SCOPES_REQUIRED')
+            self.session.guard()
+            evidence.require(self.binding.digest()==self.scope['bindingHash']
+                and self.profile.digest()==self.scope['iamProfileHash']
+                and self.transport.trust_digest()==self.scope['tlsTrustHash'],'MIGRATION_CONFIGURATION_OR_TLS_DRIFT')
+            # Reject consumed work or ambiguous predecessor effects before
+            # touching units, IAM or the issuer. Absence does not create a budget.
+            with evidence.protected_parent()as directory:
+                try:session=self.session.validate(evidence.decode(evidence.read_member(directory,self.session.name)))
+                except FileNotFoundError:session=None
+                evidence.require(session is None or session['attemptSlotsConsumed']==0,'FIRST_GRANT_ALREADY_CONSUMED_NO_REPLAY')
+                if session is not None:
+                    wall,mono=self.clock()
+                    evidence.require(session['lastObservedAt']<=wall<session['expiresAt']
+                        and session['lastMonotonic']<=mono<session['expiresMonotonic']
+                        and session['bootId']==sessions.boot_identity(),'MIGRATION_SESSION_EXPIRED_OR_DRIFTED')
+                try:credential=evidence.decode(evidence.read_member(directory,self.transaction.name))
+                except FileNotFoundError:credential=None
+                if credential is not None:
+                    evidence.require(credential.get('schema')=='ouf.policy-token-credential-transaction.v1'
+                        and credential.get('operation')==self.transaction.operation and credential.get('scope')==self.transaction.scope
+                        and credential.get('state')=='NEW_CREDENTIAL_CUSTODIED_NOT_RUNTIME_ACCEPTED'
+                        and credential.get('iamMutationAttemptConsumed')is True and credential.get('credentialPublished')is True,
+                        'CREDENTIAL_RECONCILIATION_REQUIRED_NO_AUTOMATIC_REPLAY')
+            # Check prepared output before retiring an otherwise functioning writer.
+            self.writer.check_custody()
+            with protected_directory(self.binding.output_directory,gid=self.binding.output_gid,mode=0o750)as directory:
+                info=os.fstat(directory)
+                evidence.require({'device':info.st_dev,'inode':info.st_ino}==self.output_identity
+                    and os.listdir(directory)==[],'MIGRATION_OUTPUT_CUSTODY_OR_CONTENT_CHANGED')
+            phase='GOVERNED_LEGACY_RETIREMENT'
+            self.transaction.retirement.run()
+            phase='GOVERNED_CREDENTIAL_REESTABLISHMENT'
+            if credential is None:self.transaction.run()
+            # run() verifies current local credential bytes against the durable
+            # successful transaction. No later IAM GET adopts an ambiguous POST.
+            phase='FIRST_CONTROLLED_GRANT_AND_PUBLICATION'
+            return self.run()
+        except Exception as error:
+            reason=str(error)
+            detail={'phase':phase,'reason':reason if re.fullmatch('[A-Z][A-Z0-9_]{0,127}',reason)else type(error).__name__,
+                'retirementEvidence':self.transaction.retirement.name,'credentialEvidence':self.transaction.name,
+                'sessionEvidence':self.session.name,'automaticRetryPerformed':False,'rawDiagnosticTextPrinted':False}
+            if type(getattr(error,'safe_diagnostics',None))is dict:detail['operationDiagnostic']=error.safe_diagnostics
+            error.safe_diagnostics=detail
+            raise
     def guard(self):
         self.session.guard()
         evidence.require(evidence.decode(self.session.raw).get('policyTokenFirstControlledGrant')==self.scope,

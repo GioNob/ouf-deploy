@@ -27,3 +27,20 @@ The17:05:55 design approval remains recorded and is not requested again. It does
 ## Qualified source checkpoint
 
 Source commit `1775975d9d5577175692a981b1c4dccba6bd5d89` passed hosted run38433049140, job115419906102: **203 tests, zero skipped**, plus the actual disposable Keycloak protocol check. [Structured qualification receipt](../evidence/policy-token-credential-first-grant-components-qualified-20261013.json) pins the four new module hashes and records the actual protocol flags and remaining installer gates. This includes the exact CLI route, safe diagnostics, guard-duration budget enforcement, weaker prior-credential comparison without weakening new-secret validation, first-grant consumption/publication and the28-module memory loader. It does not authorize execution on the VPS.
+
+## Minimal composed execution path
+
+`FirstControlledGrant.migrate()` composes existing retirement, credential and
+first-grant operations, without another journal, retry scheduler or service.
+It checks all four signed scopes, an unconsumed/current retained session and
+prepared empty output before changing units or IAM. A completed credential
+transaction is reused only through the existing custody/hash guards. Ambiguous
+credential outcomes and consumed grants stop before service/IAM/issuer calls.
+Failures retain the existing evidence names and expose a safe phase/reason.
+
+The caller must still provide the independently reviewed current client policy,
+consumer scope, prepared directories, TLS bindings and execution authority.
+Keycloak 26.7.4 `ClientPoliciesResource` requires the explicit
+`include-global-policies=true` query to include global policies; client metadata
+alone cannot establish that secret-rotation policies are absent. This is a
+remaining target observation, not an extra runtime or permission mechanism.
