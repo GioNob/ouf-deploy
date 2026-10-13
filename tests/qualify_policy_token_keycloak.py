@@ -390,11 +390,24 @@ def main():
             # Disposable issuer only. No generic PUT for changing credentials,
             # no production secret and no claim of target custody or authority.
             before_rotation=current
-            status,issued_secret=call('POST','/admin/realms/fixture/clients/'+identifier+'/client-secret',bearer=admin)
-            report['fixtureSecretRegenerationHttpStatus']=status
-            if status!=200:raise ValueError('DEDICATED_SECRET_REGENERATION_FAILED')
-            status,readback_secret=call('GET','/admin/realms/fixture/clients/'+identifier+'/client-secret',bearer=admin)
-            if status!=200:raise ValueError('NEW_SECRET_OWNER_READBACK_FAILED')
+            import types
+            sys.path.insert(0,str(ROOT/'tools/semantic_policy_token_owner'))
+            import tools.semantic_policy_token_owner.credential_transaction as credential_transaction
+            credential_admin=credential_transaction.SecretAdmin(identifier)
+            credential_admin.deadline=time.monotonic()+90
+            native_cli_run=subprocess.run
+            def credential_cli(argv,**kwargs):
+                expected=['/usr/bin/docker','exec','ouf-keycloak',cli]
+                if argv[:4]!=expected:raise ValueError('CREDENTIAL_FIXTURE_CLI_SCOPE_DRIFT')
+                args=list(argv[4:])
+                args[args.index('--server')+1]='http://127.0.0.1:8080'
+                args[args.index('-r')+1]='fixture'
+                return native_cli_run(['/usr/bin/docker','exec','-e','KC_OPTS=-Xms16m -Xmx128m',name,cli,
+                    *args,'--config',cli_config],**kwargs)
+            with patch.object(credential_transaction,'subprocess',types.SimpleNamespace(run=credential_cli,DEVNULL=subprocess.DEVNULL)):
+                issued_secret=credential_admin.call('create','/client-secret')
+                readback_secret=credential_admin.call('get','/client-secret')
+            report['fixtureDedicatedCredentialKcadmCommandPassed']=True
             status,current=call('GET','/admin/realms/fixture/clients/'+identifier,bearer=admin)
             if status!=200:raise ValueError('POST_ROTATION_REGISTRATION_UNAVAILABLE')
             replacement_secret=verify_reestablishment(before_rotation,current,issued_secret,readback_secret,SECRET)
