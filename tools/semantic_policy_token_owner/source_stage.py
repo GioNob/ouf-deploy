@@ -12,11 +12,11 @@ from atomic_review_intake import publish,encoded,read
 from cutover_authority import CutoverAuthority
 
 FILES={'bounded-recovery.py','recovery-journal.py','producer.py','supervisor.py',
-       'mount-observation.py','source-stage.py','installed-owner.py','worker-entry.py','reporter.py'}
+       'mount-observation.py','source-stage.py','installed-owner.py','worker-entry.py','reporter.py','iam-admission.py'}
 FLAGS={'applicationCutoverAuthorized':False,'productionApplyReady':False,
        'runtimeAuthorityIssued':False,'observationsAreHistorical':True}
 
-def declaration(destination,commit,files,*,directory_identity):
+def declaration(destination,commit,files,*,directory_identity,owner_binding_hash=None):
     require(type(destination) is str and Path(destination).is_absolute()
             and str(Path(destination))==destination and destination!='/'
             and '..' not in Path(destination).parts,'EXPLICIT_PROTECTED_STAGE_DESTINATION_REQUIRED')
@@ -29,8 +29,9 @@ def declaration(destination,commit,files,*,directory_identity):
             and type(directory_identity['device']) is int and directory_identity['device']>=0
             and type(directory_identity['inode']) is int and directory_identity['inode']>0,
             'INDEPENDENT_PROTECTED_DESTINATION_IDENTITY_REQUIRED')
-    return {'schema':'ouf.native-v11-atomic-review-intake.v1',
-            'preparationProfile':'ouf.policy-token-protected-source-stage.v1',
+    require(owner_binding_hash is None or (type(owner_binding_hash) is str and re.fullmatch('[0-9a-f]{64}',owner_binding_hash)), 'EXACT_RUNTIME_OWNER_BINDING_HASH_REQUIRED')
+    return {**({} if owner_binding_hash is None else {'ownerBindingHash':owner_binding_hash}), 'schema':'ouf.native-v11-atomic-review-intake.v1',
+            'preparationProfile':'ouf.policy-token-protected-source-stage.v1' if owner_binding_hash is None else 'ouf.policy-token-protected-source-stage.v2',
             'destination':destination,'sourceCommit':commit,
             'directoryIdentity':dict(directory_identity),
             'fileHashes':{name:hashlib.sha256(raw).hexdigest() for name,raw in files.items()},
@@ -42,7 +43,7 @@ class ProtectedTokenSourceStage:
         require(type(authority) is CutoverAuthority and type(authority_raw) is bytes,
                 'EXISTING_FINITE_HUMAN_DUAL_ROLE_AUTHORITY_REQUIRED')
         require(type(manifest) is dict and type(files) is dict
-                and manifest==declaration(manifest.get('destination'),manifest.get('sourceCommit'),files,directory_identity=manifest.get('directoryIdentity')),
+                and manifest==declaration(manifest.get('destination'),manifest.get('sourceCommit'),files,directory_identity=manifest.get('directoryIdentity'),owner_binding_hash=manifest.get('ownerBindingHash')),
                 'EXACT_SOURCE_STAGE_DECLARATION_REQUIRED')
         require(authority.expected['sourceClosureHash']==fingerprint(manifest),
                 'HUMAN_REVIEWED_SOURCE_AND_DESTINATION_CLOSURE_REQUIRED')
@@ -55,7 +56,7 @@ class ProtectedTokenSourceStage:
         now=self.clock()
         require(self.last<=now<self.deadline,'SOURCE_STAGE_CLOCK_OR_DEADLINE_UNPROVEN')
         require(fingerprint(self.manifest)==self.closure
-                and self.manifest==declaration(self.manifest['destination'],self.manifest['sourceCommit'],self.files,directory_identity=self.manifest['directoryIdentity'])
+                and self.manifest==declaration(self.manifest['destination'],self.manifest['sourceCommit'],self.files,directory_identity=self.manifest['directoryIdentity'],owner_binding_hash=self.manifest.get('ownerBindingHash'))
                 and self.authority.expected['sourceClosureHash']==self.closure,
                 'SOURCE_STAGE_BYTES_DESTINATION_OR_SCOPE_DRIFT')
         require(self.authority(self.raw) is True,'CURRENT_SOURCE_STAGE_AUTHORITY_REQUIRED')
@@ -106,3 +107,4 @@ class ProtectedTokenSourceStage:
                     'runtimeRegistered':False,'credentialFilesOpened':0,'privateKeysRead':0,
                     'unitMutations':0,'providerCalls':0,'budgetReset':False,
                     'runtimeAuthorityIssued':False,'productionApplyReady':False,'notReleaseAcceptance':True}
+
