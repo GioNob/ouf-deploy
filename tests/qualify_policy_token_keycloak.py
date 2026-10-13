@@ -221,8 +221,42 @@ def main():
             plan,_=caller_plan.compile_plan(frozen_metadata,sha(enriched_raw),input_proposal,sha(encoded(input_proposal)))
             signed=SignedCutover();signed.setUp()
             try:
+                phase='ACTUAL_READ_ONLY_GOVERNANCE_INTAKE'
+                import iam_governance_intake as governance_intake
+                native_run=subprocess.run
+                def intake_cli(argv,**kwargs):
+                    if argv[:2]==['/usr/bin/docker','exec']:
+                        args=list(argv);args[args.index('ouf-keycloak')]=name
+                        args[args.index('--server')+1]='http://127.0.0.1:8080';args[args.index('-r')+1]='fixture'
+                        return native_run([*args[:2],'-e','KC_OPTS=-Xms16m -Xmx128m',*args[2:],'--config',cli_config],**kwargs)
+                    return native_run(argv,**kwargs)
+                policy_binding=signed.binding(signed.policy)
+                public_profile={'schema':'ouf.semantic-existing-installation-authority-bindings.v1',
+                    'authorities':signed.context,'policyBinding':policy_binding,
+                    'keyRefs':{'installer':signed.grant['keyRef'],'attestor':'synthetic-fixture-attestor-key'},
+                    'keyBindings':{r:{'path':str(signed.root/(r+'-NOT-OPENED.pem')),'sha256':'a'*64} for r in ('installer','attestor')}}
+                profile_path=signed.root/'public-profile.json';signed.write(profile_path,encoded(public_profile))
+                review_path=signed.root/'review-plan.json';signed.write(review_path,encoded(plan))
+                snapshot_path=signed.root/'metadata-snapshot.json';signed.write(snapshot_path,enriched_raw)
+                closure={'sourceCommit':'c'*40,'sourceHashes':{n:sha((ROOT/'tools/semantic_policy_token_owner'/(n+'.py')).read_bytes())
+                    for n in governance_intake.SOURCE_NAMES}}
+                intake_report={'privateEvidenceWrites':0}
+                with patch.object(binding_module,'PARENT',signed.root),patch.object(governance_intake,'PROFILE',signed.binding(profile_path)), \
+                    patch.object(governance_intake,'POLICY',policy_binding),patch.object(governance_intake,'CONTEXT',signed.context), \
+                    patch.object(governance_intake,'PLAN',review_path.name),patch.object(governance_intake,'PLAN_HASH',sha(encoded(plan))), \
+                    patch.object(governance_intake,'SNAPSHOT',snapshot_path.name),patch.object(governance_intake,'SNAPSHOT_HASH',sha(enriched_raw)), \
+                    patch.object(governance_intake.subprocess,'run',side_effect=intake_cli):
+                    prepared=governance_intake.prepare(closure,intake_report)
+                if prepared['runtimeAuthorityIssued'] or prepared['productionApplyReady'] or intake_report['privateEvidenceWrites']!=1:
+                    raise ValueError('READ_ONLY_GOVERNANCE_INTAKE_SCOPE_UNPROVEN')
+                report.update(actualGovernanceIntakeCompiled=True,actualGovernanceIntakeCurrentBaselineMatched=True,
+                    fixtureGovernanceIntakeWrites=1,fixtureGovernancePrivateKeysRead=0)
+                phase='ACTUAL_SCOPED_IAM_MAPPER_TRANSACTION'
+                signed.now=int(time.time())
+                signed.approval.update(issuedAt=signed.now-1,expiresAt=signed.now+180)
                 plan_hash=sha(encoded(plan));desired=plan['changeProposal']['proposedMapper']
                 raw_authority=json.loads(signed.authority)
+                raw_authority.update(issuedAt=signed.now,expiresAt=signed.now+120)
                 raw_authority['policyTokenIamPreparation']={'reviewPlanHash':plan_hash,
                     'resource':plan['changeProposal']['resource'],'mapperHash':sha(encoded(desired)),
                     'operation':'ADD_EXACT_CALLER_AUDIENCE_MAPPER','maximumIamMutations':1,
