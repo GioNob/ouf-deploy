@@ -16,6 +16,7 @@ from test_iam_token_admission import certificate
 from tools.semantic_policy_token_owner.iam_admission import IamProfile,PinnedIamOpener,OnlineIamAdmission,_Connection,_Deadline
 from tools.semantic_policy_token_owner.producer import Binding,CredentialFile,HttpsGrant
 from tools.semantic_lease_recovery.bounded_recovery import Permanent
+from tools.semantic_policy_token_owner.iam_binding_candidate import compile_binding,encoded,sha
 
 IMAGE='quay.io/keycloak/keycloak:26.0.8'
 SECRET='DISPOSABLE_CI_CLIENT_SECRET'
@@ -67,6 +68,24 @@ def main():
             if status!=200 or len(clients)!=1:raise ValueError('EXACT_DISPOSABLE_CLIENT_REQUIRED')
             identifier=clients[0]['id'];status,account=call('GET','/admin/realms/fixture/clients/'+identifier+'/service-account-user',bearer=admin)
             if status!=200:raise ValueError('REGISTERED_SERVICE_SUBJECT_UNPROVEN')
+            phase='COMPILE_REAL_REGISTERED_CLAIM_METADATA'
+            status,default_scopes=call('GET','/admin/realms/fixture/clients/'+identifier+'/default-client-scopes',bearer=admin)
+            if status!=200:raise ValueError('REGISTERED_DEFAULT_SCOPES_UNPROVEN')
+            status,optional_scopes=call('GET','/admin/realms/fixture/clients/'+identifier+'/optional-client-scopes',bearer=admin)
+            if status!=200:raise ValueError('REGISTERED_OPTIONAL_SCOPES_UNPROVEN')
+            metadata_snapshot={'schema':'ouf.policy-token-existing-iam-metadata.v1',
+                'issuerSelection':'https://iam.fixture.test:18443/realms/fixture','realm':'fixture',
+                'client':{k:clients[0][k] for k in ('clientId','enabled','serviceAccountsEnabled','publicClient','protocol','clientAuthenticatorType','protocolMappers')},
+                'serviceAccount':{k:account[k] for k in ('id','enabled')},
+                'defaultScopes':default_scopes,'optionalScopes':optional_scopes,'requestedScopes':['authorization.bundle.read'],
+                'credentialProvenanceAccepted':False,'actualTokenIntrospectionProven':False,
+                'targetHttpsPeerBindingProven':False,'historicalAccountingReconciled':False,
+                'runtimeAuthorityIssued':False,'notReleaseAcceptance':True}
+            candidate,projection=compile_binding(metadata_snapshot,sha(encoded(metadata_snapshot)),
+                {'issuer':metadata_snapshot['issuerSelection'],'tenant':'fixture-tenant','audience':'fixture-audience','actor':'SERVICE'})
+            if not projection['staticMapperConstraintsComplete'] or candidate['productionApplyReady'] or candidate['runtimeAuthorityIssued']:
+                raise ValueError('REGISTERED_CLAIM_COMPILATION_UNPROVEN')
+            report['realAdminMetadataBindingCompilationPassed']=True
             # Expected subject comes from independent authenticated registration,
             # never from decoding/adopting the candidate token being validated.
             issuer='https://iam.fixture.test:18443/realms/fixture'
