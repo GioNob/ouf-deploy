@@ -54,7 +54,7 @@ except Exception as e:
             self.assertNotEqual(result.returncode,0)
             self.assertIn('STDLIB_DIRECTORY_CUSTODY_UNPROVEN',result.stdout.decode()+result.stderr.decode())
         else:
-            self.assertEqual(result.returncode,0,result.stderr.decode())
+            self.assertEqual(result.returncode,0,result.stdout.decode()+result.stderr.decode())
             self.assertGreater(json.loads(result.stdout)['stdlibFiles'],100)
 
 if __name__=='__main__':unittest.main()
