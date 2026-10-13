@@ -1,9 +1,9 @@
 name: Policy-token governed legacy retirement component
 on:
   push:
-    paths: [tools/semantic_policy_token_owner/legacy_retirement.py, tests/test_policy_token_legacy_retirement.py, tools/semantic_policy_token_owner/migration_root_custody.py, tests/test_policy_token_migration_root_custody.py, .github/workflows/policy-token-legacy-retirement.yml]
+    paths: [tools/semantic_policy_token_owner/legacy_retirement.py, tests/test_policy_token_legacy_retirement.py, tools/semantic_policy_token_owner/migration_root_custody.py, tests/test_policy_token_migration_root_custody.py, scripts/establish-policy-token-migration-roots.py, tests/test_policy_token_root_delivery.py, .github/workflows/policy-token-legacy-retirement.yml]
   pull_request:
-    paths: [tools/semantic_policy_token_owner/legacy_retirement.py, tests/test_policy_token_legacy_retirement.py, tools/semantic_policy_token_owner/migration_root_custody.py, tests/test_policy_token_migration_root_custody.py, .github/workflows/policy-token-legacy-retirement.yml]
+    paths: [tools/semantic_policy_token_owner/legacy_retirement.py, tests/test_policy_token_legacy_retirement.py, tools/semantic_policy_token_owner/migration_root_custody.py, tests/test_policy_token_migration_root_custody.py, scripts/establish-policy-token-migration-roots.py, tests/test_policy_token_root_delivery.py, .github/workflows/policy-token-legacy-retirement.yml]
 permissions: {contents: read}
 jobs:
   signed-persistent-component:
@@ -21,3 +21,4 @@ jobs:
           sudo chown -R root:root "$OUF_FIXTURE_ROOT"
           sudo python3 -I -B -S -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_legacy_retirement.py -v
           sudo python3 -I -B -S -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_migration_root_custody.py -v
+          sudo python3 -I -B -S -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_root_delivery.py -v
