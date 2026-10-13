@@ -3,6 +3,9 @@ import json
 import os
 from pathlib import Path
 import sys
+import subprocess
+import time
+import types
 import unittest
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT/'tools/semantic_policy_token_owner'),str(ROOT/'tests')]
@@ -80,6 +83,26 @@ class CredentialTransactionTest(unittest.TestCase):
         with patch.object(legacy,'read_units',return_value=self.f.before),patch.object(transaction.SecretAdmin,'call')as call:
             with self.assertRaisesRegex(binding.CandidateDenied,'QUIESCENCE'):self.make().run()
             call.assert_not_called()
+    def test_cli_failure_diagnostics_redact_secret_text_and_keep_phase_and_exit(self):
+        admin=transaction.SecretAdmin(self.registration['id']);admin.deadline=time.monotonic()+30
+        def failed(argv,**kw):
+            kw['stderr'].write(b'Not logged in PRIVATE_FIXTURE_SECRET_DO_NOT_PRINT')
+            return subprocess.CompletedProcess(argv,1)
+        proxy=types.SimpleNamespace(run=failed,DEVNULL=subprocess.DEVNULL,TimeoutExpired=subprocess.TimeoutExpired)
+        with patch.object(transaction,'subprocess',proxy):
+            with self.assertRaises(binding.CandidateDenied)as caught:admin.call('create','/client-secret')
+        d=caught.exception.safe_diagnostics
+        self.assertEqual(d['phase'],'CREDENTIAL_ADMIN_CREATE');self.assertEqual(d['exitCode'],1)
+        self.assertIn('SESSION_AUTH_FAILURE_TEXT_OBSERVED',d['diagnosticCategories'])
+        self.assertTrue(d['mutationOutcomeMayBeUnproven']);self.assertNotIn('PRIVATE_FIXTURE',json.dumps(d))
+    def test_cli_timeout_preserves_uncertainty_without_response_or_replay(self):
+        admin=transaction.SecretAdmin(self.registration['id']);admin.deadline=time.monotonic()+30
+        def timeout(*a,**kw):raise subprocess.TimeoutExpired('fixture',15)
+        proxy=types.SimpleNamespace(run=timeout,DEVNULL=subprocess.DEVNULL,TimeoutExpired=subprocess.TimeoutExpired)
+        with patch.object(transaction,'subprocess',proxy):
+            with self.assertRaises(binding.CandidateDenied)as caught:admin.call('create','/client-secret')
+        self.assertEqual(caught.exception.safe_diagnostics['category'],'COMMAND_TIMEOUT')
+        self.assertTrue(caught.exception.safe_diagnostics['mutationOutcomeMayBeUnproven'])
     def test_process_crash_after_effect_reservation_is_not_a_new_attempt(self):
         child=os.fork()
         if child==0:

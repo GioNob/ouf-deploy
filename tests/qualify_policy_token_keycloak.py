@@ -404,7 +404,7 @@ def main():
                 args[args.index('-r')+1]='fixture'
                 return native_cli_run(['/usr/bin/docker','exec','-e','KC_OPTS=-Xms16m -Xmx128m',name,cli,
                     *args,'--config',cli_config],**kwargs)
-            with patch.object(credential_transaction,'subprocess',types.SimpleNamespace(run=credential_cli,DEVNULL=subprocess.DEVNULL)):
+            with patch.object(credential_transaction,'subprocess',types.SimpleNamespace(run=credential_cli,DEVNULL=subprocess.DEVNULL,TimeoutExpired=subprocess.TimeoutExpired)):
                 issued_secret=credential_admin.call('create','/client-secret')
                 readback_secret=credential_admin.call('get','/client-secret')
             report['fixtureDedicatedCredentialKcadmCommandPassed']=True

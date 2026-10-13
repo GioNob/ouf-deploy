@@ -36,11 +36,33 @@ class SecretAdmin:
         argv=['/usr/bin/docker','exec','ouf-keycloak','/opt/keycloak/bin/kcadm.sh',operation,self.resource+suffix,
             '--server','http://localhost:8080','-r','ouf']
         if operation=='create':argv+=['-o']
-        with tempfile.TemporaryFile()as out:
-            result=subprocess.run(argv,stdin=subprocess.DEVNULL,stdout=out,stderr=subprocess.DEVNULL,
-                timeout=min(15,remaining),preexec_fn=bounded_output,env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'})
-            out.seek(0);raw=out.read(65537)
-        binding.require(result.returncode==0 and 0<len(raw)<=65536,'CREDENTIAL_ADMIN_RESULT_UNPROVEN')
+        with tempfile.TemporaryFile()as out,tempfile.TemporaryFile()as err:
+            try:
+                result=subprocess.run(argv,stdin=subprocess.DEVNULL,stdout=out,stderr=err,
+                    timeout=min(15,remaining),preexec_fn=bounded_output,
+                    env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'})
+            except subprocess.TimeoutExpired:
+                denied=binding.CandidateDenied('CREDENTIAL_ADMIN_TIMEOUT_OUTCOME_UNPROVEN')
+                denied.safe_diagnostics={'phase':'CREDENTIAL_ADMIN_'+operation.upper(),
+                    'category':'COMMAND_TIMEOUT','mutationOutcomeMayBeUnproven':operation=='create',
+                    'rawDiagnosticTextPrinted':False,'automaticReplayAllowed':False}
+                raise denied from None
+            out.seek(0);raw=out.read(65537);err.seek(0);diagnostic=err.read(16385)
+        if result.returncode!=0 or not 0<len(raw)<=65536:
+            text=diagnostic[:16384].decode('utf-8','replace').lower()
+            categories=[label for pattern,label in (
+                (r'not logged in|session.*expired|token.*expired|invalid_grant|unauthorized','SESSION_AUTH_FAILURE_TEXT_OBSERVED'),
+                (r'forbidden|not authorized|permission denied','PERMISSION_FAILURE_TEXT_OBSERVED'),
+                (r'not found|does not exist','RESOURCE_UNAVAILABLE_TEXT_OBSERVED'),
+                (r'connection refused|connectexception','CONNECTION_FAILURE_TEXT_OBSERVED'))if re.search(pattern,text)]
+            denied=binding.CandidateDenied('CREDENTIAL_ADMIN_COMMAND_OR_RESPONSE_UNPROVEN')
+            denied.safe_diagnostics={'phase':'CREDENTIAL_ADMIN_'+operation.upper(),'exitCode':result.returncode,
+                'responseEmpty':len(raw)==0,'responseBoundExceeded':len(raw)>65536,
+                'diagnosticCategories':categories or ['UNCLASSIFIED_COMMAND_FAILURE'],
+                'diagnosticCategoriesAreNotRootCauseProof':True,'diagnosticTextTruncated':len(diagnostic)>16384,
+                'rawDiagnosticTextPrinted':False,'mutationOutcomeMayBeUnproven':operation=='create',
+                'automaticReplayAllowed':False}
+            raise denied
         return binding.decode(raw)
 
 class CredentialTransaction:
