@@ -1,5 +1,7 @@
 # Policy-token: integrazione minima e lettura delle policy IAM
 
+**Consegna corrente:** [lettura unica dei consumer](POLICY_TOKEN_CONSUMER_REVIEW_20261013.md). Le letture separate riportate sotto sono già state eseguite e rimangono soltanto come storia; non ripeterle.
+
 La migrazione ora compone i componenti esistenti: arresto governato del vecchio writer, credenziale, primo grant con introspezione e pubblicazione protetta. Non introduce journal, servizio o scheduler aggiuntivi. I registri esistenti impediscono replay; credenziali completate e verificate possono essere riusate, esiti ambigui richiedono riconciliazione.
 
 Resta da osservare un dato target necessario prima di proporre la rigenerazione: le policy del client/realm, incluse quelle globali e i profili degli executor. La lettura del client e i mapper già raccolti non contengono questa informazione. Il codice Keycloak 26.7.4 richiede esplicitamente le query include-global-policies e include-global-profiles. La presenza di un executor secret-rotation in un profilo non dimostra da sola che sia attivo/applicabile; il report mantiene questa distinzione. L'esclusività dei consumer della credenziale resta da stabilire separatamente, non viene dedotta dall'assenza di eventi storici.
