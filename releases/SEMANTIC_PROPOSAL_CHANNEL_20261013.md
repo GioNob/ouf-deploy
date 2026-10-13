@@ -10,6 +10,8 @@ The source path needed to register Teatri DRAFTs, validate exact revisions and r
 
 The targeted Gateway gate passes 65 tests, including actual materialized Lua for four operations and three proposal actor types. Four receipts emitted by that Lua in CI38464424182 are committed as synthetic vectors and pass the Java owner verifier. The signed-envelope HTTP test then traverses the production filter, current owner policy, PostgreSQL, validation and challenge creation. This is composed development qualification, not deployed IAM/THS/CSV evidence. Gateway general tests retain any pre-existing explicit environmental skips; do not describe the entire platform as zero-skip from the targeted result.
 
+Post-merge verification also passed: all twelve MCP workflows (including CI38465619673), Gateway targeted/general CI38465719561/38465719759, and all four Registry workflows including Java/PostgreSQL/image CI38465711427. These source checks do not establish installation or runtime acceptance.
+
 ## Exact tool and owner boundary
 
 | Tool | Transport capability | Owner permission | Operation |
