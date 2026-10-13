@@ -161,7 +161,7 @@ class CredentialTransaction:
             binding.require(os.listdir(directory)==[],'NEW_CREDENTIAL_DIRECTORY_MUST_BE_EMPTY')
             current=self.admin.call('get')
             binding.require(stable_registration(current)==stable_registration(self.registration),'CURRENT_CREDENTIAL_REGISTRATION_DRIFT')
-            old=secret_value(self.admin.call('get','/client-secret'))
+            old=secret_value(self.admin.call('get','/client-secret'),new=False)
             self.guard();fence()
             row={'schema':'ouf.policy-token-credential-transaction.v1','operation':self.operation,'scope':self.scope,
                 'state':'ROTATION_RESERVED_OUTCOME_UNPROVEN','version':0,'iamMutationAttemptConsumed':True,

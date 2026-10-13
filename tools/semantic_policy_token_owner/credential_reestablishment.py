@@ -14,13 +14,14 @@ ROTATION_ATTRIBUTES=frozenset({'client.secret.rotation.enabled','client.secret.e
     'client.secret.remaining.expiration.time'})
 CREATED='client.secret.creation.time'
 
-def secret_value(response):
+def secret_value(response,*,new=True):
+    binding.require(type(new)is bool,'EXPLICIT_SECRET_RESPONSE_ROLE_REQUIRED')
     binding.require(type(response)is dict and set(response)<={'type','value','temporary'}
         and response.get('type')=='secret' and response.get('temporary',False)is False,
         'EXACT_CLIENT_SECRET_RESPONSE_REQUIRED')
     secret=response.get('value')
-    binding.require(type(secret)is str and 32<=len(secret)<=4096 and secret.isascii()
-        and not any(c.isspace()or ord(c)<33 or ord(c)>126 for c in secret)
+    binding.require(type(secret)is str and (32 if new else 1)<=len(secret)<=4096 and (secret.isascii()or not new)
+        and not any(c.isspace()or ord(c)<33 or (new and ord(c)>126) for c in secret)
         and '${' not in secret,'DIRECT_BOUNDED_NEW_CLIENT_SECRET_REQUIRED')
     return secret
 

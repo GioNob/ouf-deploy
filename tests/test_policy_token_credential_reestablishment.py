@@ -29,6 +29,10 @@ class CredentialGuardsTest(unittest.TestCase):
         with self.assertRaises(checks.binding.CandidateDenied):checks.verify_reestablishment(self.before,self.after,self.secret,changed,self.old)
         for value in ('${vault.'+'x'*40+'}', 'x'*31,'x'*4097,'x'*40+'\n'):
             with self.assertRaises(checks.binding.CandidateDenied):checks.secret_value({'type':'secret','value':value})
+    def test_old_credential_comparison_does_not_impose_new_credential_strength(self):
+        self.assertEqual(checks.secret_value({'type':'secret','value':'old'},new=False),'old')
+        self.assertEqual(checks.verify_reestablishment(self.before,self.after,self.secret,self.secret,'old'),'X'*48)
+        with self.assertRaises(checks.binding.CandidateDenied):checks.secret_value({'type':'secret','value':'old'})
     def test_unknown_schema_or_inactive_registration_deny(self):
         for value in ({'type':'secret','value':'x'*48,'extra':True},{'type':'password','value':'x'*48}):
             with self.assertRaises(checks.binding.CandidateDenied):checks.secret_value(value)
