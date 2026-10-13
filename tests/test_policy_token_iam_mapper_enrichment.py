@@ -74,6 +74,19 @@ class MapperEnrichmentTest(unittest.TestCase):
             self.assertEqual(report['privateEvidenceWrites'], 0); self.assertEqual(len(list(parent.iterdir())), 1)
             self.assertEqual(path.read_bytes(), raw)
 
+    def test_scope_assignment_without_protocol_is_preserved_without_inventing_it(self):
+        value = full_metadata()
+        for scope in value['defaultScopes'] + value['optionalScopes']: del scope['protocol']
+        with patch(__name__ + '.full_metadata', return_value=value):
+            full, parent, path, raw, replies = self.fixture()
+        report = {'privateEvidenceWrites': 0}
+        with patch.object(binding, 'PARENT', parent), patch.object(enrichment.Reader, 'get', lambda reader, resource, fields=None: copy.deepcopy(replies[resource])):
+            enrichment.execute(str(path), binding.sha(raw), fixtures.REF, report)
+        saved = binding.decode(Path(report['enrichedMetadataPath']).read_bytes())
+        self.assertFalse(any('protocol' in scope for scope in saved['defaultScopes'] + saved['optionalScopes']))
+        self.assertEqual(report['uninterpretableMapperCount'], 0)
+        self.assertEqual(path.read_bytes(), raw)
+
     def test_exact_get_only_cli_does_not_project_mapper_models_or_fetch_credentials(self):
         report = {}; reader = enrichment.Reader(report)
         resource = 'clients/' + full_metadata()['client']['id'] + '/protocol-mappers/models'
@@ -125,7 +138,7 @@ class MapperEnrichmentTest(unittest.TestCase):
             def run(argv, **kwargs):
                 calls.append(argv)
                 if len(calls) <= 2:
-                    self.assertEqual(argv[0], str(gh)); self.assertIn('c9246f3b211b008dd919f6b5a4b37c7c996453be', argv[2])
+                    self.assertEqual(argv[0], str(gh)); self.assertIn('d3b3b06657d756af297078fc9029f77f0524ba18', argv[2])
                     path = ROOT / 'tools/semantic_policy_token_owner' / paths[len(calls) - 1]
                     return subprocess.CompletedProcess(argv, 0, base64.b64encode(path.read_bytes()))
                 self.assertEqual(argv, ['sudo', '/usr/bin/python3', '-I', '-B', '-'])

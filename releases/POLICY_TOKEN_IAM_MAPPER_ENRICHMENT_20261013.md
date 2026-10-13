@@ -2,7 +2,7 @@
 
 Il VPS ha bloccato la compilazione prima di qualunque scrittura con MAPPER_SCHEMA_UNPROVEN; [receipt](../evidence/policy-token-iam-binding-mapper-schema-block-target-20261013.json). La prova esatta kcadm monouso in [CI38370345359](https://github.com/GioNob/ouf-deploy/actions/runs/38370345359) riproduce la proiezione: sei mapper privi di protocol/type/config dopo --fields, mentre le rappresentazioni REST complete sono interpretabili. Questo identifica un difetto dell'acquisizione qualificata; il vecchio receipt generico non dimostra da solo che ogni anomalia target abbia questa causa.
 
-Il comando seguente conserva il file originale e usa i suoi ID selezionati come anchor. Legge core client/service-account/scope flat, rifiuta qualsiasi differenza dagli anchor, poi legge solo i mapper del client, dei default scope e degli optional richiesti attraverso protocol-mappers/models SENZA --fields. Una seconda lettura conferma mapper e core; nessun endpoint client-secret, grant SERVICE, modifica IAM, arresto unit o reset budget. Gli optional non richiesti non sono interrogati. La sessione amministrativa esistente è riusata; il comando non fa login.
+Il comando seguente conserva il file originale e usa i suoi ID selezionati come anchor. Legge core client/service-account/scope flat, rifiuta qualsiasi differenza dagli anchor, poi legge solo i mapper del client, dei default scope e degli optional richiesti attraverso protocol-mappers/models SENZA --fields. Una seconda lettura conferma mapper e core; Il protocol delle assegnazioni scope, talvolta omesso dal server, rimane opzionale e non viene inventato; id/name e ogni campo presente restano confrontati, mentre il protocol dei mapper è verificato dalle rappresentazioni complete. Nessun endpoint client-secret, grant SERVICE, modifica IAM, arresto unit o reset budget. Gli optional non richiesti non sono interrogati. La sessione amministrativa esistente è riusata; il comando non fa login.
 
 Il nuovo file di metadati root0600 e il candidato root0600 sono gli unici output sul VPS. Il precedente file e il suo hash restano immutati. Fonte/parent/hash e fase restano nel receipt anche se la compilazione finale fallisce. Non è un aggiornamento della baseline runtime congelata né un rinnovo dell'autorità.
 
@@ -19,8 +19,8 @@ import base64,hashlib,pathlib,shutil,subprocess,os
 preferred=pathlib.Path.home()/'ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh'
 gh=str(preferred) if preferred.is_file() and os.access(preferred,os.X_OK) else shutil.which('gh')
 if not gh:raise SystemExit('phase=DELIVERY reason=EXISTING_GH_UNAVAILABLE; no sudo executed')
-ref='c9246f3b211b008dd919f6b5a4b37c7c996453be'
-sources=[('binding','iam_binding_candidate.py','a8cf18ea78b3acc7261838711345a218e678bfaf11e498dcba6859862d6b655d'),('enrichment','iam_mapper_enrichment.py','84df7546f67486a8625c4048126da24c0a759da1c5ecb4775f85588a1ee5a234')]
+ref='d3b3b06657d756af297078fc9029f77f0524ba18'
+sources=[('binding','iam_binding_candidate.py','a8cf18ea78b3acc7261838711345a218e678bfaf11e498dcba6859862d6b655d'),('enrichment','iam_mapper_enrichment.py','6b6cbfdfd2a4b628c35d8a7eeb087339e15e0ae49aff8be1f359f74de7e0699e')]
 records=[]
 for name,file,expected in sources:
     endpoint='repos/GioNob/ouf-deploy/contents/tools/semantic_policy_token_owner/'+file+'?ref='+ref
