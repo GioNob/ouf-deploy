@@ -1,9 +1,9 @@
 name: OUF policy-token online IAM and installed owner qualification
 on:
   push:
-    paths: [tools/semantic_policy_token_owner/**, tests/test_iam_token_admission.py, tests/test_installed_token_owner.py, tests/test_policy_token_worker_entry.py, tests/test_policy_token_legacy_units.py, tests/test_policy_token_sealed_runtime.py, tests/test_policy_token_iam_target_probe.py, tests/test_policy_token_iam_binding_candidate.py, tests/test_policy_token_iam_mapper_enrichment.py, tests/test_policy_token_mapper_semantics_review.py, tests/qualify_policy_token_keycloak.py, .github/workflows/policy-token-iam-owner.yml]
+    paths: [tools/semantic_policy_token_owner/**, tests/test_iam_token_admission.py, tests/test_installed_token_owner.py, tests/test_policy_token_worker_entry.py, tests/test_policy_token_legacy_units.py, tests/test_policy_token_sealed_runtime.py, tests/test_policy_token_iam_target_probe.py, tests/test_policy_token_iam_binding_candidate.py, tests/test_policy_token_iam_mapper_enrichment.py, tests/test_policy_token_mapper_semantics_review.py, tests/test_policy_token_install_inputs_probe.py, tests/qualify_policy_token_keycloak.py, .github/workflows/policy-token-iam-owner.yml]
   pull_request:
-    paths: [tools/semantic_policy_token_owner/**, tests/test_iam_token_admission.py, tests/test_installed_token_owner.py, tests/test_policy_token_worker_entry.py, tests/test_policy_token_legacy_units.py, tests/test_policy_token_sealed_runtime.py, tests/test_policy_token_iam_target_probe.py, tests/test_policy_token_iam_binding_candidate.py, tests/test_policy_token_iam_mapper_enrichment.py, tests/test_policy_token_mapper_semantics_review.py, tests/qualify_policy_token_keycloak.py, .github/workflows/policy-token-iam-owner.yml]
+    paths: [tools/semantic_policy_token_owner/**, tests/test_iam_token_admission.py, tests/test_installed_token_owner.py, tests/test_policy_token_worker_entry.py, tests/test_policy_token_legacy_units.py, tests/test_policy_token_sealed_runtime.py, tests/test_policy_token_iam_target_probe.py, tests/test_policy_token_iam_binding_candidate.py, tests/test_policy_token_iam_mapper_enrichment.py, tests/test_policy_token_mapper_semantics_review.py, tests/test_policy_token_install_inputs_probe.py, tests/qualify_policy_token_keycloak.py, .github/workflows/policy-token-iam-owner.yml]
 permissions: {contents: read}
 jobs:
   native-root-owner:
@@ -37,6 +37,7 @@ jobs:
           sudo python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_iam_binding_candidate.py -v
           sudo python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_iam_mapper_enrichment.py -v
           sudo python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_mapper_semantics_review.py -v
+          sudo python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_install_inputs_probe.py -v
       - name: Full worker and authority closure imported from verified memory
         run: |
           set -euo pipefail

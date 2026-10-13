@@ -22,6 +22,7 @@ import tools.semantic_policy_token_owner.iam_binding_candidate as binding_module
 sys.modules['iam_binding_candidate']=binding_module
 import tools.semantic_policy_token_owner.iam_mapper_enrichment as enrichment
 import tools.semantic_policy_token_owner.iam_mapper_semantics_review as mapper_review
+import tools.semantic_policy_token_owner.iam_install_inputs_probe as install_probe
 
 IMAGE='quay.io/keycloak/keycloak:26.0.8'
 SECRET='DISPOSABLE_CI_CLIENT_SECRET'
@@ -195,6 +196,11 @@ def main():
             except Permanent:report['currentDisabledClientDenied']=True
             else:raise ValueError('DISABLED_CLIENT_ACCEPTED')
             result=subprocess.run(['docker','inspect','--format','{{.Image}}',name],stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=10,check=True)
+            with patch.object(install_probe,'CONTAINER',name):
+                artifact_observation=install_probe.artifact()
+            if artifact_observation['imageId']!=result.stdout.decode().strip() or artifact_observation['targetProviderImplementationProven']:
+                raise ValueError('DISPOSABLE_ARTIFACT_OBSERVATION_UNPROVEN')
+            report['actualDockerArtifactMetadataObserved']=True
             report.update(imageId=result.stdout.decode().strip(),status='QUALIFIED_DISPOSABLE_KEYCLOAK_PROTOCOL',fixtureAdminAndRegistrationOnly=True,productionIssuerAccepted=False,targetInstallerReady=False)
     except Exception as e:
         code=str(e);report.update(status='QUALIFICATION_FAILED',failurePhase=phase,reason=code if code.isupper() and len(code)<=128 else 'DISPOSABLE_IAM_BOUNDARY_UNPROVEN')
