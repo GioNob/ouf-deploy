@@ -20,7 +20,8 @@ PROFILE='ouf.chatbot-file-cohort.gateway-runtime.v1'
 STEPS=('disable_restart','stop','rename','create','connect','start','ready','restore_restart')
 
 
-def compile_runtime(old, old_config_binding, new_config_binding, new_key_env, key, key_hash, cohort_id):
+def compile_runtime(old, old_config_binding, new_config_binding, new_key_env, key, key_hash, cohort_id,
+                    admin_key_binding=None):
     pin=runtime_pin(old)
     require(old.get('Name')=='/ouf-apisix' and old['Config'].get('User')=='apisix'
             and set(old['NetworkSettings']['Networks'])=={'ouf-backend','ouf-gateway-control'}
@@ -30,6 +31,11 @@ def compile_runtime(old, old_config_binding, new_config_binding, new_key_env, ke
             and all(c in '0123456789abcdef' for c in key), 'EXACT_PREPARED_PROPOSAL_KEY_REQUIRED')
     import hashlib
     require(hashlib.sha256(key.encode()).hexdigest()==key_hash, 'PROPOSAL_KEY_HASH_MISMATCH')
+    if admin_key_binding is not None:
+        from tools.chatbot_file_cohort.gateway import EXTERNAL_ADMIN_KEY
+        require(admin_key_binding.get('path')==EXTERNAL_ADMIN_KEY,
+                'EXACT_RETAINED_EXTERNAL_ADMIN_KEY_REQUIRED')
+        private_config(EXTERNAL_ADMIN_KEY,admin_key_binding)
     host=creation_host_config(old['HostConfig']);config=copy.deepcopy(old['Config'])
     require(not host.get('Privileged') and not host.get('AutoRemove') and not host.get('Links')
             and not host.get('VolumesFrom') and not host.get('ContainerIDFile')
@@ -73,6 +79,7 @@ def compile_runtime(old, old_config_binding, new_config_binding, new_key_env, ke
     require(len(encoded(request))<=262144,'BOUNDED_APISIX_CREATION_REQUIRED')
     return {'schema':PROFILE,'pythonExecutable':namespace_program(),'oldRuntimeBinding':pin,'oldName':'ouf-apisix',
             'retiredName':'ouf-apisix-before-'+cohort_id,'oldConfigBinding':old_config_binding,
+            'adminKeyBinding':copy.deepcopy(admin_key_binding),
             'newConfigBinding':new_config_binding,'oldHostConfig':copy.deepcopy(old['HostConfig']),
             'oldMounts':copy.deepcopy(old['Mounts']),'expectedMounts':mounts,
             'creationRequest':request,'networks':networks,'secondaryNetwork':secondary,
@@ -94,6 +101,7 @@ def runtime_scope(plan):
 def proposed_transport(plan):
     return {'transport':'JOURNAL_PROVEN_APISIX_REPLACEMENT_NETNS', 'runtimePlanHash':digest(plan),
             'creationRequestHash':digest(plan['creationRequest']), 'configBinding':plan['newConfigBinding'],
+            'adminKeyBinding':plan['adminKeyBinding'],
             'pythonExecutable':plan['pythonExecutable']}
 
 
@@ -108,6 +116,9 @@ class GatewayRuntime:
         self.action.guard('gatewayRuntimeInstallation',self.scope);self.engine.check_socket()
         private_config(self.plan['oldConfigBinding']['path'],self.plan['oldConfigBinding'])
         private_config(self.plan['newConfigBinding']['path'],self.plan['newConfigBinding'])
+        if self.plan['adminKeyBinding'] is not None:
+            from tools.chatbot_file_cohort.gateway import EXTERNAL_ADMIN_KEY
+            private_config(EXTERNAL_ADMIN_KEY,self.plan['adminKeyBinding'])
     def initialize(self):
         self.guard()
         require(runtime_pin(self.inspect(self.plan['oldName']))==self.plan['oldRuntimeBinding'],
@@ -179,7 +190,9 @@ class GatewayRuntime:
     def transport(self):
         self.generation()
         binding=NamespaceAdmin.observe(self.engine,self.plan['newConfigBinding']['path'])
-        require(binding['pythonExecutable']==self.plan['pythonExecutable'],'APPROVED_NAMESPACE_PYTHON_CHANGED')
+        require(binding['pythonExecutable']==self.plan['pythonExecutable']
+                and binding['adminKeyBinding']==self.plan['adminKeyBinding'],
+                'APPROVED_NAMESPACE_ADMIN_CREDENTIAL_CHANGED')
         return NamespaceAdmin(self.engine,binding,self)
     def mutation(self,step):
         self.guard();p=self.plan;old=p['oldRuntimeBinding']['containerId']

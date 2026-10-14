@@ -25,6 +25,9 @@ class SelectedConfigCustody(unittest.TestCase):
             ('/opt/ouf/secrets/onboarding-ths.yaml',
              (('/opt/ouf',1000,1000,0o750),('/opt/ouf/secrets',1000,1000,0o700)),
              (10003,10003,0o400)),
+            ('/opt/ouf/secrets/apisix-admin-key',
+             (('/opt/ouf',1000,1000,0o750),('/opt/ouf/secrets',1000,1000,0o700)),
+             (1000,None,0o600)),
             ('/etc/ouf/deploy-snapshots/consultation-human-read-20261002-1153/prepared/apisix-config.yaml',
              (('/etc/ouf',0,0,0o755),), (636,636,0o400)),
         )
@@ -39,9 +42,12 @@ class SelectedConfigCustody(unittest.TestCase):
                     self.assertFalse(g.selected_directory_custody(metadata(uid,gid,stat.S_IFDIR|mode|0o020),
                                                                    directory,exception))
                 uid,gid,mode=file_owner
-                self.assertTrue(g.selected_file_custody(metadata(uid,gid,stat.S_IFREG|mode),exception))
-                self.assertFalse(g.selected_file_custody(metadata(uid,gid+1,stat.S_IFREG|mode),exception))
-                self.assertFalse(g.selected_file_custody(metadata(uid,gid,stat.S_IFREG|mode|0o020),exception))
+                observed_gid=gid if gid is not None else 1234
+                self.assertTrue(g.selected_file_custody(metadata(uid,observed_gid,stat.S_IFREG|mode),exception))
+                self.assertFalse(g.selected_file_custody(metadata(uid+1,observed_gid,stat.S_IFREG|mode),exception))
+                if gid is not None:
+                    self.assertFalse(g.selected_file_custody(metadata(uid,gid+1,stat.S_IFREG|mode),exception))
+                self.assertFalse(g.selected_file_custody(metadata(uid,observed_gid,stat.S_IFREG|mode|0o020),exception))
 
     def test_no_wildcard_for_other_configurations(self):
         self.assertFalse(g.selected_directory_custody(metadata(1000,1000,stat.S_IFDIR|0o750),
