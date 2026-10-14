@@ -189,4 +189,71 @@ class FirstGrantTest(unittest.TestCase):
         self.assertEqual(receipt['attemptSlotsConsumed'],1)
         self.assertEqual(sum(p.endswith('/token')for p,_ in self.server.calls),1)
 
+class InstallationReviewBoundFirstGrantTest(RootBoundFirstGrantTest):
+    def setUp(self):
+        super().setUp()
+        self.native={'id':'7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147',
+            'image':'sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6',
+            'pid':123,'startedAt':'fixture-generation','running':True,'restartPolicy':{'Name':'unless-stopped'},'mounts':[]}
+        self.real_registry_generation=grant.registry_generation
+        p=patch.object(grant,'registry_generation',side_effect=lambda:dict(self.native));p.start();self.addCleanup(p.stop)
+        with grant.root_custody.completed_roots(self.r.f.raw,self.root_hash,self.root_source)as identities:
+            roots=dict(identities)
+        pins={
+            'semantic':('78954f106ea1248c624bf71596785af0b2980480cd58020eb0accd5d1f2df1c6','bdfe0f75a5fc4790a5c5ff36e201c3d99713ecc0'),
+            'mcp':('6db692b78f1fde7bc3a30a8727afd4f581b2f8574f00c2fc117b71ea59b2aab4','d43f5604976b07c66d58c5180d871c5656c44d4d'),
+            'gateway':('74b4f974adf74401cd592df26ce62dbea9399c8c025b124ee0e11e6d06f9d73a','23b02bd2195d36499b6618750d52dd49d65c9a60')}
+        source={'executables':{'docker':self.r.f.host['executables']['docker']}}
+        self.review={'schema':'ouf.semantic-candidate-installation-input-review.v1',
+            'sourceClosure':source,'sourceClosureHash':binding.sha(binding.encoded(source)),
+            'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'budgetReset':False,'r12Touched':False,'notReleaseAcceptance':True,
+            'retainedHostInputsHash':binding.sha(self.r.f.raw),'completedRootEvidenceHash':self.root_hash,
+            'rootCreationSourceClosureHash':self.root_source,'completedRoots':roots,'currentRegistry':dict(self.native),
+            'packages':{name:{'archiveSha256':digest,'rootCustodyEstablished':False,
+                'manifest':{'schema':'ouf.semantic-proposal-unsigned-candidate.v1','sourceCommit':commit,'module':name,
+                    'signatureIssued':False,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'notReleaseAcceptance':True,
+                    **({'imageId':'sha256:1e2dac4a6619f511056abc91dd153ce7687efc25aec25aa77a6f66c9f2f67cfd'}if name=='semantic'else{})}}
+                for name,(digest,commit)in pins.items()}}
+        self.review_raw=binding.encoded(self.review);self.review_hash=binding.sha(self.review_raw)
+        self.review_path=self.root/('semantic-candidate-installation-input-review-'+self.review_hash+'.private.json')
+        self.f.write(self.review_path,self.review_raw);self.sign_scopes()
+
+    def make(self):
+        if not hasattr(self,'review_raw'):
+            return super().make()
+        return grant.FirstControlledGrant.from_installation_review(self.f.gate(),self.f.authority,self.r.f.raw,
+            self.review_raw,self.review_hash,self.review['sourceClosureHash'],self.registration,self.binding,
+            self.server.profile,self.transport,self.output_identity,self.clock)
+
+    def test_review_binding_cannot_be_removed_before_effects(self):
+        operation=self.make();operation.installation_review=None
+        with self.assertRaisesRegex(binding.CandidateDenied,'INSTALLATION_REVIEW_BINDING_MISSING'):operation.migrate()
+        self.assertEqual(self.commands,[]);self.assertEqual(self.calls,[]);self.assertEqual(self.server.calls,[])
+
+    def test_changed_current_generation_denies_before_retirement_rotation_or_grant(self):
+        operation=self.make();self.native['pid']=124
+        with self.assertRaisesRegex(binding.CandidateDenied,'REGISTRY_GENERATION_CHANGED')as caught:operation.migrate()
+        self.assertEqual(caught.exception.safe_diagnostics['operationDiagnostic']['changedFields'],['pid'])
+        self.assertEqual(self.commands,[]);self.assertEqual(self.calls,[]);self.assertEqual(self.server.calls,[])
+
+    def test_retained_review_file_change_denies_without_source_recollection(self):
+        operation=self.make();self.f.write(self.review_path,b'{}')
+        with self.assertRaisesRegex(binding.CandidateDenied,'RETAINED_INSTALLATION_REVIEW_CHANGED'):operation.migrate()
+        self.assertEqual(self.commands,[]);self.assertEqual(self.calls,[]);self.assertEqual(self.server.calls,[])
+
+    def test_wrong_independent_review_hash_denied_during_construction(self):
+        self.review_hash='0'*64
+        with self.assertRaisesRegex(binding.CandidateDenied,'BYTES_HASH_DRIFT'):self.make()
+        self.assertEqual(self.server.calls,[])
+
+    def test_native_metadata_selector_has_no_environment_or_command(self):
+        def native(argv,**kwargs):
+            self.assertNotIn('.Config',argv[argv.index('--format')+1])
+            kwargs['stdout'].write(binding.encoded(self.native))
+            return subprocess.CompletedProcess(argv,0)
+        # Exercise the production implementation rather than the fixture observer.
+        with patch.object(grant.subprocess,'run',side_effect=native):
+            value=self.real_registry_generation()
+        self.assertEqual(value,self.native)
+
 if __name__=='__main__':unittest.main()
