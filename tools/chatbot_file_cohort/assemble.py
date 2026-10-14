@@ -139,6 +139,18 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
         phase_intents=prepared['registry']['intents'],lineage=lineage,
         input_hashes={'preparedInputs':digest(prepared),'preparationSourceClosure':preparation_source_hash,
                      'cohortManifest':prepared['imagePlan']['cohortManifestHash']})
+    database=prepared.get('databasePlan')
+    if database is not None and database.get('mcpAuditRoleAdministration') is not None:
+        require(digest(database)==prepared['cohortPlan'].get('databasePlanHash'),
+                'REVIEWED_DATABASE_PLAN_HASH_REQUIRED')
+        selected=next(row for row in database['modules'] if row['module']=='mcp')
+        # Include the concrete temporary privileges and identities in the
+        # operator's private review, not just their digest in the closed bundle.
+        review['mcpMigrationReview']={'databasePlanHash':digest(database),
+            'database':selected['database'],'applicationRole':selected['user'],
+            'administration':copy.deepcopy(database['mcpAuditRoleAdministration']),
+            'preflight':copy.deepcopy(database['mcpAuditRolePreflight'])}
+        require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')
     review_binding=stage(staging_directory,'full-action-review.json',encoded(review))
     return {'review':review,'reviewBinding':review_binding,'executionProfile':profile,
             'processPlan':scopes['finiteActionProcess'],'context':context}
