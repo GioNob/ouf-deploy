@@ -158,6 +158,16 @@ def paused_filesystem(e,engine,store,socket,request,configtree,sources,fixture_r
         except Exception:pass
         else:raise AssertionError('same-byte receipt-key inode replacement was accepted')
     finally:receipt_path.unlink();os.rename(held_receipt,receipt_path)
+    # Restoring the original inode changes ctime. Rebind only this disposable
+    # fixture expectation before its later synthetic acceptance; production
+    # observation rejects metadata change without a fresh independent policy.
+    RECEIPT_KEY['metadataHash']=digest(attributes(receipt_path.lstat()))
+    policy['proposalReceiptKey']=copy.deepcopy(RECEIPT_KEY)
+    policy_path.write_text(json.dumps(policy,sort_keys=True,separators=(',',':')));policy_path.chmod(0o600)
+    bindings['configuration']['sha256']=file_hash(policy_path)
+    observed_request['artifactHash']=file_hash(policy_path)
+    budget=VerificationBudget(18);observer=PausedNodeObservation(cfg,budget,binding,SemanticProposalFrameObservation(bindings,budget,TOKEN_OWNER,binding))
+    complete=observer.observe(observed_request,context,observer.frame.bundle)
     old=Path(sources[0]['source']).read_bytes();Path(sources[0]['source']).write_bytes(b'changed-source')
     try:
         try:SemanticProposalFrameObservation(bindings,VerificationBudget(18),TOKEN_OWNER,binding).observe(generation,config,application_hash(oci),file_hash(policy_path))
@@ -209,7 +219,7 @@ def paused_filesystem(e,engine,store,socket,request,configtree,sources,fixture_r
     result={'rootfsSeal':first,'observedCompleteOciHash':application_hash(oci),'stableDoubleRootfsSeal':True,
             'actualPausedRuncContract':True,'independentOciPolicyAccepted':False,'reciprocalPeersVerified':True,
             'singletonConfigtreeObservation':directory,'configtreeHashExtraFileAndPermissionDriftRejected':True,
-            'actualSixProjectedInputFrameObserved':True,'requestBindCount':4,'requestStructuredMountCount':2,'tokenOwnerAdmissionSynthetic':True,'staticKeySameBytesNewInodeDenied':True,'projectedFrameHash':frame_hash,'projectedFileHashDriftRejected':True,
+            'actualSevenProjectedInputFrameObserved':True,'requestBindCount':4,'requestStructuredMountCount':3,'tokenOwnerAdmissionSynthetic':True,'staticKeySameBytesNewInodeDenied':True,'projectedFrameHash':frame_hash,'projectedFileHashDriftRejected':True,
             'fixtureExpectedOciDerivedFromObservedOci':True,'completePausedNodeObservationHash':digest(complete),
             'reciprocalPeerOciDriftRejected':True,'unsignedObservationDidNotAdvanceAttestationPhase':True,
             'actualScopedPausedAcceptanceFixtureVerified':True,'signedAttestationPhaseCompletedOnce':True,
