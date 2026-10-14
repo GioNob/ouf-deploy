@@ -173,6 +173,41 @@ dovrà legare selettore e identità/superuser osservati al piano firmato,
 usando lo stesso amministratore per preflight, bootstrap e cleanup, e
 preservando hash, backup e journal monouso. Conservare il pacchetto scaricato.
 
+### Correzione dopo la diagnosi amministrativa positiva
+
+L'output operatore delle 19:19 CEST del 14 ottobre 2026 dimostra che il ruolo
+`postgres` non esiste, mentre il selettore POSTGRES_USER identifica un ruolo
+esistente e superuser. La query amministrativa selezionata riesce:
+PostgreSQL 170011; schema, audit_event, tool_attempt e sequenza hanno owner
+authority per il workload; audit owner ancora assente. Per security_incident
+la owner authority del workload è false. Non è una query fallita e non dimostra
+di per sé l'assenza del privilegio TRIGGER.
+
+La migrazione 4 già crea security_incident; la 12 richiede TRIGGER per
+agganciare l'osservatore. Il preparatore corretto seleziona POSTGRES_USER,
+prova current_user/superuser e vincola lo stesso amministratore al piano
+privato e a bootstrap/cleanup. Richiede presenza/OID/owner/ACL della tabella
+incidenti, senza imporre che il workload ne sia proprietario.
+Se TRIGGER manca, la revisione completa include una concessione temporanea
+non delegabile, limitata a quella tabella e a quel workload, con revoca prima
+dell'avvio. OID e owner rimangono invariati; ACL normalizzata confrontata con
+la baseline, anche dopo cleanup. Drift di altri privilegi blocca l'azione.
+Controlli sotto lock di tabella in transazioni corte con lock_timeout; nessun
+lock durante retry/wait, replay di mutazioni ambigue o cambio di ownership.
+
+Il pacchetto rimane quello già verificato. La capsula aggiornata SHA256 è
+`cbdd4ff6a369898b63132d29e9d1403e532afd72238acf0d15fdd48718b3ea14`;
+launcher SHA256 `8941bf483781a8813e3bf48b37db192fbec1d04303cd6a9f0c527de9555fe237`.
+Test locali: database 17, preparazione 7, launcher 13 PASS.
+La CI deve qualificare PostgreSQL reale con amministratore non convenzionale,
+security_incident di altro owner, migrazione 12 esatta, drift ACL,
+trigger funzionante dopo cleanup e privilegi originali preservati.
+Non consegnare la nuova azione prima del successo di questa prova.
+
+Nessuna migrazione, grant operativo o rollout target eseguito da questi
+cambiamenti. Ripresa tramite nuovo piano/revisione e riuso esplicito
+dell'archivio già scaricato; storico e journal conservati.
+
 ## Prova che manca per dichiarare il risultato
 
 La combinazione completa deve essere installata tramite un ingresso operativo

@@ -202,7 +202,9 @@ def prepare_cohort(engine, package_directory, manifest, image_import_plan, postg
     database_plan = compile_database_plan(pg,bindings,migrations,current)
     if database_plan['mcpAuditRoleAdministration'] is not None:
         database_plan['mcpAuditRolePreflight'] = mcp_admin_preflight(
-            pgpin['containerId'],bindings['mcp']['database'],bindings['mcp']['user'])
+            pgpin['containerId'],bindings['mcp']['database'],bindings['mcp']['user'],
+            database_plan['mcpAuditRoleAdministration']['admin'])
+        database_plan['mcpAuditRoleAdministration']['temporaryIncidentTrigger'] = not database_plan['mcpAuditRolePreflight']['incidentBinding']['triggerAuthority']
     plan = compile_cohort(manifest,observed,images,packages,environment_deltas,
         gateway_plan_hash,digest(database_plan),authorization_plan_hash,acceptance_plan_hash)
     for replacement in plan['replacements']:

@@ -6,6 +6,7 @@ separate migration role. No automatic database restore or repair is provided.
 """
 import copy
 import hashlib
+import json
 import os
 from pathlib import Path
 import re
@@ -21,7 +22,7 @@ from database_gate import Psql, identifier, literal
 from engine_creation import Engine
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
-from tools.chatbot_file_cohort.plan import MODULES, NO_RESTART, digest, require, sha, runtime_pin
+from tools.chatbot_file_cohort.plan import MODULES, NO_RESTART, digest, require, sha, runtime_pin, environment
 from tools.chatbot_file_cohort.containers import installation_scope
 
 SCHEMAS = {'onboarding':'ouf_onboarding','ingestion':'ouf_ingestion','udp':'ouf_udp','mcp':'ouf_mcp'}
@@ -125,39 +126,82 @@ def compile_database_plan(pg_observation, module_bindings, candidate_migrations,
         require([r['version'] for r in mcp['expectedMigrations'][-3:]] == [10,11,12]
                 and mcp['pendingMigrationCount'] == 3,
                 'EXACT_MCP_AUDIT_ROLE_MIGRATION_REQUIRED')
+        admin = environment(pg_observation['Config'].get('Env') or []).get('POSTGRES_USER','')
+        identifier(admin)
     return {'schema':'ouf.chatbot-cohort-database-plan.v1','postgresRuntimeBinding':pin,
             'modules':rows,'automaticRestoreAllowed':False,'manualSqlMigrationAllowed':False,
             'mcpAuditRoleAdministration':({
-                'role':'ouf_mcp_operational_audit_owner','admin':'postgres',
+                'role':'ouf_mcp_operational_audit_owner','admin':admin,
                 'temporarySetMembership':True,'temporarySchemaCreate':True,
                 'cleanupRequiredBeforeCohortStart':True} if mcp['pendingMigrationCount'] else None),
             'notReleaseAcceptance':True}
 
 
-def mcp_admin_preflight(container_id, database, application_user):
+def incident_metadata(application_user, omit_temporary=False):
+    """Canonical ACL preserves existing privileges and ownership across cleanup.
+
+    A superuser grant is recorded as the table owner's grant. Only the reviewed
+    non-grantable TRIGGER edge to the application role may be excluded.
+    """
+    identifier(application_user)
+    app = '(SELECT oid FROM pg_roles WHERE rolname='+literal(application_user)+')'
+    edge = "a.grantee="+app+" AND a.grantor=c.relowner AND a.privilege_type='TRIGGER' AND NOT a.is_grantable"
+    acl = ("COALESCE((SELECT jsonb_agg(jsonb_build_array(a.grantor,a.grantee,a.privilege_type,a.is_grantable) "
+           "ORDER BY a.grantor,a.grantee,a.privilege_type,a.is_grantable) "
+           "FROM aclexplode(COALESCE(c.relacl,acldefault('r',c.relowner))) a"+
+           (' WHERE NOT ('+edge+')' if omit_temporary else '')+"),'[]'::jsonb)")
+    return ("SELECT json_build_object('oid',c.oid::bigint,'ownerOid',c.relowner::bigint,"
+            "'aclHash',encode(sha256(convert_to(("+acl+")::text,'UTF8')),'hex'),"
+            "'triggerAuthority',has_table_privilege("+app+",c.oid,'TRIGGER'),"
+            "'triggerGrantCount',(SELECT count(*) FROM aclexplode(COALESCE(c.relacl,acldefault('r',c.relowner))) a WHERE "+edge+")) "
+            "FROM pg_class c WHERE c.oid=to_regclass('ouf_mcp.security_incident') AND c.relkind='r'")
+
+
+def validate_incident_binding(value):
+    require(type(value) is dict and set(value)=={'oid','ownerOid','aclHash','triggerAuthority','triggerGrantCount'}
+            and all(type(value[k]) is int and value[k]>0 for k in ('oid','ownerOid'))
+            and sha(value['aclHash']) and type(value['triggerAuthority']) is bool
+            and type(value['triggerGrantCount']) is int and value['triggerGrantCount'] in (0,1),
+            'EXACT_SECURITY_INCIDENT_TABLE_AND_ACL_REQUIRED')
+
+
+def incident_guard(application_user, binding, omit_temporary=False):
+    validate_incident_binding(binding)
+    return ("LOCK TABLE ouf_mcp.security_incident IN SHARE ROW EXCLUSIVE MODE; "
+            "DO $incident$ BEGIN IF ("+incident_metadata(application_user,omit_temporary)+")::jsonb "
+            "IS DISTINCT FROM "+literal(json.dumps(binding,sort_keys=True,separators=(',',':')))+
+            "::jsonb THEN RAISE EXCEPTION 'SECURITY_INCIDENT_BINDING_DRIFT'; END IF; END $incident$; ")
+
+
+def mcp_admin_preflight(container_id, database, application_user, admin_user):
     """Read the selected PostgreSQL administrator and the role's exact absence."""
-    identifier(database);identifier(application_user)
-    channel = Psql(container_id,'postgres',database,'ouf-cutover-cohort-admin-read')
+    identifier(database);identifier(application_user);identifier(admin_user)
+    channel = Psql(container_id,admin_user,database,'ouf-cutover-cohort-admin-read')
     try:
         user = literal(application_user)
         role = literal('ouf_mcp_operational_audit_owner')
         facts = channel.query("SELECT json_build_object("
             "'serverVersion',current_setting('server_version_num')::int,"
             "'adminSuperuser',(SELECT rolsuper FROM pg_roles WHERE rolname=current_user),"
+            "'adminRoleMatched',current_user="+literal(admin_user)+","
             "'applicationRoleExists',EXISTS(SELECT 1 FROM pg_roles WHERE rolname="+user+"),"
             "'auditRoleAbsent',NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname="+role+"),"
             "'applicationSchemaOwnerAuthority',EXISTS(SELECT 1 FROM pg_namespace WHERE nspname='ouf_mcp' AND pg_has_role((SELECT oid FROM pg_roles WHERE rolname="+user+"),nspowner,'USAGE')) ,"
             "'applicationAuditTableOwnerAuthority',EXISTS(SELECT 1 FROM pg_class WHERE oid=to_regclass('ouf_mcp.audit_event') AND pg_has_role((SELECT oid FROM pg_roles WHERE rolname="+user+"),relowner,'USAGE')) ,"
             "'applicationAttemptTableOwnerAuthority',EXISTS(SELECT 1 FROM pg_class WHERE oid=to_regclass('ouf_mcp.tool_attempt') AND pg_has_role((SELECT oid FROM pg_roles WHERE rolname="+user+"),relowner,'USAGE')) ,"
             "'applicationIncidentTableOwnerAuthority',EXISTS(SELECT 1 FROM pg_class WHERE oid=to_regclass('ouf_mcp.security_incident') AND pg_has_role((SELECT oid FROM pg_roles WHERE rolname="+user+"),relowner,'USAGE')) ,"
-            "'applicationAuditSequenceOwnerAuthority',EXISTS(SELECT 1 FROM pg_class WHERE oid=to_regclass('ouf_mcp.audit_event_sequence_id_seq') AND pg_has_role((SELECT oid FROM pg_roles WHERE rolname="+user+"),relowner,'USAGE')))")
+            "'applicationAuditSequenceOwnerAuthority',EXISTS(SELECT 1 FROM pg_class WHERE oid=to_regclass('ouf_mcp.audit_event_sequence_id_seq') AND pg_has_role((SELECT oid FROM pg_roles WHERE rolname="+user+"),relowner,'USAGE')),"
+            "'incidentBinding',("+incident_metadata(application_user)+"))")
         require(type(facts) is dict and facts.get('serverVersion',0) >= 170000
-                and all(facts.get(key) is True for key in facts if key != 'serverVersion')
-                and set(facts) == {'serverVersion','adminSuperuser','applicationRoleExists','auditRoleAbsent',
+                and all(facts.get(key) is True for key in facts if key not in
+                        ('serverVersion','applicationIncidentTableOwnerAuthority','incidentBinding'))
+                and type(facts.get('applicationIncidentTableOwnerAuthority')) is bool
+                and set(facts) == {'serverVersion','adminSuperuser','adminRoleMatched','applicationRoleExists','auditRoleAbsent',
                                    'applicationSchemaOwnerAuthority','applicationAuditTableOwnerAuthority',
                                    'applicationAttemptTableOwnerAuthority','applicationIncidentTableOwnerAuthority',
-                                   'applicationAuditSequenceOwnerAuthority'},
+                                   'applicationAuditSequenceOwnerAuthority','incidentBinding'},
                 'MCP_AUDIT_ROLE_ADMIN_PREFLIGHT_UNPROVEN')
+        validate_incident_binding(facts['incidentBinding'])
         return facts
     finally:
         channel.close()
@@ -337,13 +381,16 @@ class CohortDatabases:
 
     def audit_role_state(self,binding,statement=''):
         """One local administrative channel; no host credential or SQL output."""
-        channel = Psql(self.plan['postgresRuntimeBinding']['containerId'],'postgres',
+        admin = self.plan['mcpAuditRoleAdministration']['admin']; identifier(admin)
+        temporary = self.plan['mcpAuditRoleAdministration']['temporaryIncidentTrigger']
+        channel = Psql(self.plan['postgresRuntimeBinding']['containerId'],admin,
                        binding['database'],'ouf-cutover-cohort-audit-admin')
         try:
             app = literal(binding['user'])
             role = literal('ouf_mcp_operational_audit_owner')
             expression = ("SELECT json_build_object("
                 "'adminSuperuser',(SELECT rolsuper FROM pg_roles WHERE rolname=current_user),"
+                "'adminRoleMatched',current_user="+literal(admin)+","
                 "'roleExists',EXISTS(SELECT 1 FROM pg_roles WHERE rolname="+role+"),"
                 "'noLogin',COALESCE((SELECT NOT rolcanlogin AND NOT rolsuper AND NOT rolcreaterole FROM pg_roles WHERE rolname="+role+"),false),"
                 "'schemaCreate',COALESCE((SELECT has_schema_privilege(oid,'ouf_mcp','CREATE') FROM pg_roles WHERE rolname="+role+"),false),"
@@ -352,35 +399,58 @@ class CohortDatabases:
                 "'functionOwnerCount',(SELECT count(*) FROM pg_proc WHERE oid IN ("
                 "to_regprocedure('ouf_mcp.capture_operational_attempt_audit()'),"
                 "to_regprocedure('ouf_mcp.capture_operational_security_audit()')) "
-                "AND proowner=(SELECT oid FROM pg_roles WHERE rolname="+role+")))")
+                "AND proowner=(SELECT oid FROM pg_roles WHERE rolname="+role+")),"
+                "'incidentBinding',("+incident_metadata(binding['user'],temporary)+"))")
             state = channel.query(expression,statement,timeout=15)
-            require(type(state) is dict and state.get('adminSuperuser') is True,
+            require(type(state) is dict and state.get('adminSuperuser') is True and state.get('adminRoleMatched') is True,
                     'EXACT_MCP_AUDIT_ADMIN_CHANNEL_REQUIRED')
+            self.incident_state(state)
             return state
         finally:
             channel.close()
 
+    def incident_state(self,state,active=None):
+        original = self.plan['mcpAuditRolePreflight']['incidentBinding']
+        actual = state.get('incidentBinding');validate_incident_binding(original);validate_incident_binding(actual)
+        require(all(actual[k]==original[k] for k in ('oid','ownerOid','aclHash')),
+                'SECURITY_INCIDENT_OWNER_OR_PRIVILEGES_DRIFT')
+        temporary = self.plan['mcpAuditRoleAdministration']['temporaryIncidentTrigger']
+        require(type(temporary) is bool and temporary is (not original['triggerAuthority']),
+                'EXACT_REVIEWED_INCIDENT_TRIGGER_DELTA_REQUIRED')
+        if temporary:
+            require(original['triggerGrantCount']==0,'INCIDENT_TRIGGER_BASELINE_CONFLICT')
+            if active is not None:
+                require(actual['triggerAuthority'] is active and actual['triggerGrantCount']==int(active),
+                        'INCIDENT_TRIGGER_BOOTSTRAP_OR_CLEANUP_UNPROVEN')
+        else:
+            require(actual==original,'EXISTING_INCIDENT_PRIVILEGES_CHANGED')
+
     def prepare_mcp_audit_role(self,binding):
         expected = self.plan.get('mcpAuditRolePreflight')
+        admin = self.plan['mcpAuditRoleAdministration'].get('admin');identifier(admin)
+        temporary = not expected['incidentBinding']['triggerAuthority']
         require(self.plan.get('mcpAuditRoleAdministration') == {
-            'role':'ouf_mcp_operational_audit_owner','admin':'postgres',
+            'role':'ouf_mcp_operational_audit_owner','admin':admin,'temporaryIncidentTrigger':temporary,
             'temporarySetMembership':True,'temporarySchemaCreate':True,
             'cleanupRequiredBeforeCohortStart':True}, 'SIGNED_MCP_AUDIT_ROLE_ADMINISTRATION_REQUIRED')
         previous = self.record()
         role = previous.get('mcpAuditRole')
         if role is None:
             require(mcp_admin_preflight(self.plan['postgresRuntimeBinding']['containerId'],
-                                        binding['database'],binding['user']) == expected,
+                                        binding['database'],binding['user'],admin) == expected,
                     'CURRENT_MCP_ADMIN_PREFLIGHT_CHANGED')
             following = copy.deepcopy(previous)
             following['version'] += 1
             following['mcpAuditRole'] = {'state':'BOOTSTRAP_CLAIMED',
                                           'intentHash':digest(self.plan['mcpAuditRoleAdministration'])}
             self.journal.compare_and_save(previous,following)
-            sql = ('BEGIN; CREATE ROLE ouf_mcp_operational_audit_owner NOLOGIN NOSUPERUSER NOCREATEROLE; '
+            sql = ('BEGIN; SET LOCAL lock_timeout=\'5s\'; '+incident_guard(binding['user'],expected['incidentBinding'])+
+                   'CREATE ROLE ouf_mcp_operational_audit_owner NOLOGIN NOSUPERUSER NOCREATEROLE; '
                    'GRANT CREATE ON SCHEMA ouf_mcp TO ouf_mcp_operational_audit_owner; '
                    'GRANT ouf_mcp_operational_audit_owner TO '+identifier(binding['user'])+
-                   ' WITH ADMIN FALSE, INHERIT FALSE, SET TRUE; COMMIT;')
+                   ' WITH ADMIN FALSE, INHERIT FALSE, SET TRUE; '+
+                   ('GRANT TRIGGER ON TABLE ouf_mcp.security_incident TO '+identifier(binding['user'])+'; ' if temporary else '')+
+                   'COMMIT;')
             state = self.audit_role_state(binding,sql)
         else:
             require(role.get('intentHash') == digest(self.plan['mcpAuditRoleAdministration']),
@@ -390,6 +460,7 @@ class CohortDatabases:
                 and state['schemaCreate'] is True and state['membershipCount'] == 1
                 and state['appMembership'] == 1 and state['functionOwnerCount'] in (0,2),
                 'MCP_AUDIT_BOOTSTRAP_REQUIRES_RECONCILIATION')
+        self.incident_state(state,True)
         previous = self.record()
         if previous['mcpAuditRole']['state'] == 'BOOTSTRAP_CLAIMED':
             following = copy.deepcopy(previous)
@@ -407,6 +478,7 @@ class CohortDatabases:
                 'MCP_AUDIT_ROLE_CLEANUP_ORDER_REQUIRED')
         if previous['mcpAuditRole']['state'] == 'BOOTSTRAPPED':
             state = self.audit_role_state(binding)
+            self.incident_state(state,True)
             require(state['roleExists'] is True and state['noLogin'] is True
                     and state['schemaCreate'] is True and state['membershipCount'] == 1
                     and state['appMembership'] == 1 and state['functionOwnerCount'] == 2,
@@ -415,8 +487,12 @@ class CohortDatabases:
             following['version'] += 1
             following['mcpAuditRole']['state'] = 'CLEANUP_CLAIMED'
             self.journal.compare_and_save(previous,following)
-            sql = ('BEGIN; REVOKE ouf_mcp_operational_audit_owner FROM '+identifier(binding['user'])+'; '
-                   'REVOKE CREATE ON SCHEMA ouf_mcp FROM ouf_mcp_operational_audit_owner; COMMIT;')
+            temporary=self.plan['mcpAuditRoleAdministration']['temporaryIncidentTrigger']
+            sql = ('BEGIN; SET LOCAL lock_timeout=\'5s\'; '+incident_guard(binding['user'],state['incidentBinding'],temporary)+
+                   'REVOKE ouf_mcp_operational_audit_owner FROM '+identifier(binding['user'])+'; '
+                   'REVOKE CREATE ON SCHEMA ouf_mcp FROM ouf_mcp_operational_audit_owner; '+
+                   ('REVOKE TRIGGER ON TABLE ouf_mcp.security_incident FROM '+identifier(binding['user'])+'; ' if temporary else '')+
+                   'COMMIT;')
             state = self.audit_role_state(binding,sql)
         else:
             state = self.audit_role_state(binding)
@@ -424,6 +500,7 @@ class CohortDatabases:
                 and state['schemaCreate'] is False and state['membershipCount'] == 0
                 and state['appMembership'] == 0 and state['functionOwnerCount'] == 2,
                 'MCP_AUDIT_ROLE_CLEANUP_REQUIRES_RECONCILIATION')
+        self.incident_state(state,False)
         previous = self.record()
         if previous['mcpAuditRole']['state'] == 'CLEANUP_CLAIMED':
             following = copy.deepcopy(previous)

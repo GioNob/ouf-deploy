@@ -27,6 +27,7 @@ crypto=runtime_fixture.crypto
 def inputs():
     pg,_,_=runtime_fixture.container_fixture('udp')
     pg.update(Id='5'*64,Name='/ouf-postgres')
+    pg['Config']['Env']=['POSTGRES_USER=fixture_admin']
     pg['State'].update(Pid=5555)
     bindings={m:{'database':'fixture_'+m,'user':'postgres'} for m in p.MODULES}
     expected={m:[{'version':'1','script':'V1__base.sql','type':'SQL','checksum':78787420,'success':True},
@@ -124,14 +125,46 @@ class DatabaseCompiler(unittest.TestCase):
             self.assertIn('"'+d.SCHEMAS[module]+'".'+suffix,queries[idx*2+1])
         self.assertFalse(any('public.' in sql for sql in queries))
 
+    def test_pending_migration_uses_observed_admin_without_default_or_role_promotion(self):
+        pg,b,e,o=inputs();e['mcp'].extend({'version':v,'checksum':str(v)*64} for v in (10,11,12))
+        self.assertEqual(d.compile_database_plan(pg,b,e,o)['mcpAuditRoleAdministration']['admin'],'fixture_admin')
+        pg['Config']['Env']=[]
+        with self.assertRaisesRegex(Exception,'IDENTIFIER'):d.compile_database_plan(pg,b,e,o)
+
+    def test_incident_owner_need_not_be_application_when_admin_and_acl_are_proven(self):
+        calls=[]
+        facts={'serverVersion':170011,'adminSuperuser':True,'adminRoleMatched':True,
+               'applicationRoleExists':True,'auditRoleAbsent':True,
+               'applicationSchemaOwnerAuthority':True,'applicationAuditTableOwnerAuthority':True,
+               'applicationAttemptTableOwnerAuthority':True,'applicationIncidentTableOwnerAuthority':False,
+               'applicationAuditSequenceOwnerAuthority':True,'incidentBinding':incident_binding(False)}
+        class Pg:
+            def __init__(self,cid,user,database,name):calls.append(user)
+            def query(self,sql):return copy.deepcopy(facts)
+            def close(self):pass
+        with patch.object(d,'Psql',Pg):
+            self.assertEqual(d.mcp_admin_preflight('5'*64,'fixture_mcp','fixture_app','fixture_admin'),facts)
+            facts['incidentBinding']=None
+            with self.assertRaisesRegex(p.PlanDenied,'INCIDENT_TABLE'):
+                d.mcp_admin_preflight('5'*64,'fixture_mcp','fixture_app','fixture_admin')
+        self.assertEqual(calls,['fixture_admin','fixture_admin'])
+
+
+def incident_binding(trigger=True):
+    return {'oid':100,'ownerOid':101,'aclHash':'c'*64,'triggerAuthority':trigger,
+            'triggerGrantCount':int(trigger)}
+
 class DatabaseRuntime(unittest.TestCase):
-    def fixture(self, mcp_pending=False):
+    def fixture(self, mcp_pending=False, incident_trigger=True):
         fixture=runtime_fixture.CohortRuntime();cohort,native,f,_=fixture.fixture();self.addCleanup(fixture.doCleanups)
         pg,b,e,o=inputs();native.state[pg['Id']]=copy.deepcopy(pg)
         if mcp_pending:e['mcp'].extend({'version':version,'checksum':str(version)*64}
                                        for version in (10,11,12))
         dbplan=d.compile_database_plan(pg,b,e,o)
-        if mcp_pending:dbplan['mcpAuditRolePreflight']={'adminSuperuser':True,'auditRoleAbsent':True}
+        if mcp_pending:
+            dbplan['mcpAuditRolePreflight']={'adminSuperuser':True,'auditRoleAbsent':True,
+                                           'incidentBinding':incident_binding(incident_trigger)}
+            dbplan['mcpAuditRoleAdministration']['temporaryIncidentTrigger']=not incident_trigger
         installation=copy.deepcopy(cohort.plan);installation['databasePlanHash']=p.digest(dbplan)
         migration=next(r for r in installation['replacements'] if r['module']=='mcp')
         migration['creationRequest']['Entrypoint']=['/usr/local/bin/ouf-mcp']
@@ -156,19 +189,50 @@ class DatabaseRuntime(unittest.TestCase):
             preflight.start();self.addCleanup(preflight.stop)
             role={'roleExists':False,'noLogin':False,'schemaCreate':False,
                   'membershipCount':0,'appMembership':0,'functionOwnerCount':0}
+            incident=incident_binding(incident_trigger)
             def audit_state(binding,statement=''):
                 if 'CREATE ROLE' in statement:
                     role.update(roleExists=True,noLogin=True,schemaCreate=True,
                                 membershipCount=1,appMembership=1)
+                    if 'GRANT TRIGGER ON TABLE' in statement:
+                        incident.update(triggerAuthority=True,triggerGrantCount=1)
                 if 'REVOKE' in statement:
                     role.update(schemaCreate=False,membershipCount=0,appMembership=0)
+                    if 'REVOKE TRIGGER ON TABLE' in statement:
+                        incident.update(triggerAuthority=False,triggerGrantCount=0)
                 role['functionOwnerCount']=2 if o['mcp']['migrations']==e['mcp'] else 0
-                return {'adminSuperuser':True,**role}
+                return {'adminSuperuser':True,'adminRoleMatched':True,**role,'incidentBinding':copy.deepcopy(incident)}
             owner.audit_role_state=audit_state
         observation=patch.object(d,'observe_database',side_effect=lambda cid,u,db,m:copy.deepcopy(o[m]))
         observation.start();self.addCleanup(observation.stop)
         owner.initialize()
         return owner,native,f,o,e,log
+
+    def test_temporary_trigger_grant_is_scoped_and_cleanup_preserves_prior_acl(self):
+        owner,_,_,_,_,_=self.fixture(mcp_pending=True,incident_trigger=False)
+        owner.backup_quiesced();binding=owner.plan['modules'][-1]
+        statements=[];channel=owner.audit_role_state
+        def capture(binding,statement=''):
+            if statement:statements.append(statement)
+            return channel(binding,statement)
+        owner.audit_role_state=capture
+        owner.prepare_mcp_audit_role(binding)
+        prior=owner.record();following=copy.deepcopy(prior);following['version']+=1
+        following['mcpMigration']={'state':'COMPLETE'};owner.journal.compare_and_save(prior,following)
+        # The existing runtime fixture reports both packaged function owners
+        # only once its migration history is at the reviewed expected suffix.
+        channel_state=owner.audit_role_state
+        def completed(binding,statement=''):
+            value=channel_state(binding,statement);value['functionOwnerCount']=2;return value
+        owner.audit_role_state=completed
+        owner.clean_mcp_audit_role(binding)
+        self.assertEqual(owner.record()['mcpAuditRole']['state'],'CLEAN')
+        self.assertIn('GRANT TRIGGER ON TABLE ouf_mcp.security_incident TO "postgres";',statements[0])
+        self.assertIn('REVOKE TRIGGER ON TABLE ouf_mcp.security_incident FROM "postgres";',statements[1])
+        self.assertFalse(any('ALTER TABLE' in sql or 'OWNER TO' in sql for sql in statements))
+        state={'incidentBinding':incident_binding(False)};owner.incident_state(state,False)
+        state['incidentBinding']['aclHash']='f'*64
+        with self.assertRaisesRegex(p.PlanDenied,'PRIVILEGES_DRIFT'):owner.incident_state(state,False)
 
     def test_native_private_capture_reconciles_complete_archives_without_replay_or_restore(self):
         owner,native,_,current,expected,log=self.fixture()
