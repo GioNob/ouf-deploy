@@ -52,6 +52,16 @@ def materialize_target(runtime, references):
     approvals = {'trusted-human-onboarding-approvals-get', 'trusted-human-onboarding-approvals-post'}
     result['routes'].extend(r for r in onboarding_human(runtime, oidc)['routes'] if r['id'] in approvals)
     rows = route_map(result['routes'])
+    # Gateway operational status is outside the file cohort. Its retained
+    # routes remain in `previous`; the target has no running control-plane
+    # container, so this cohort must not re-publish those two upstreams.
+    for rid in ('operational-execute-ouf-gateway-operations-summary',
+                'operational-execute-ouf-gateway-operations-incidents'):
+        row=rows.get(rid)
+        require(row is not None and row.get('labels',{}).get('ouf-mediation')=='operational-execute-v1'
+                and row.get('upstream',{}).get('nodes')=={'ouf-gateway-control-plane:8081':1},
+                'EXACT_UNRELATED_GATEWAY_OPERATIONAL_ROUTE_REQUIRED')
+        del rows[rid]
     # Make APISIX schema defaults explicit in the signed request so full GET
     # equality does not mistake server-added default values for foreign drift.
     for row in rows.values():
@@ -250,15 +260,22 @@ def prepare_gateway(package_directory, package_record, engine, projection_bindin
               'ouf-semantic-registry':selected_semantic_container,
               'ouf-gateway-control-plane':selected_control_container}
     services={};projections=runtime['x-ouf-installation'].get('serviceBindings',{})
+    required={peer.rpartition(':')[0] for row in materialize_target(runtime,refs).values()
+              for peer in row.get('upstream',{}).get('nodes',{})}
+    short_names={'ouf-mcp-server':'ouf-mcp','ouf-ingestion-runtime':'ouf-ingestion',
+                 'ouf-semantic-registry':'ouf-semantic'}
     for logical,identity in selected.items():
+        if logical not in required and short_names.get(logical) not in required:continue
         code,container=engine.request('GET','/v1.44/containers/'+identity+'/json')
         require(code==200,'SELECTED_COHORT_UPSTREAM_UNAVAILABLE');pin=runtime_pin(container)
         network_name='ouf-gateway-control' if logical=='ouf-gateway-control-plane' else 'ouf-backend'
         net=container['NetworkSettings']['Networks'].get(network_name)
         require(type(net) is dict and net['NetworkID']==actual['NetworkSettings']['Networks'][network_name]['NetworkID'],
                 'COHORT_UPSTREAM_NETWORK_DRIFT')
-        aliases=set(net.get('Aliases') or [])|{container['Name'].lstrip('/')}
-        alias=projections.get(logical,logical)
+        aliases=set(net.get('Aliases') or [])
+        # An absent binding leaves the observed, network-advertised Docker
+        # name authoritative. An explicit projection remains exact.
+        alias=projections.get(logical,container['Name'].lstrip('/'))
         require(alias in aliases,'PROJECTED_APPLICATION_DNS_ALIAS_UNPROVEN')
         services[logical]={'alias':alias,'port':8081 if logical=='ouf-gateway-control-plane' else 8080,
                            'currentRuntimeBinding':pin,'networkId':net['NetworkID']}
@@ -266,7 +283,7 @@ def prepare_gateway(package_directory, package_record, engine, projection_bindin
     # Some canonical runtime declarations already use these short owner names.
     for logical,short in (('ouf-mcp-server','ouf-mcp'),('ouf-ingestion-runtime','ouf-ingestion'),
                           ('ouf-semantic-registry','ouf-semantic')):
-        services[short]=services[logical]
+        if logical in services:services[short]=services[logical]
     package={k:v for k,v in record.items() if k!='files'}
     plan=compile_gateway_plan(previous,runtime,refs,package,proposed_transport(replacement) if replacement else binding,services)
     identity=proposal_identity(runtime,plan['proposedRoutes'])

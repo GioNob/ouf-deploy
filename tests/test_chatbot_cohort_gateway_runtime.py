@@ -149,7 +149,7 @@ class GatewayRuntime(unittest.TestCase):
         with patch.object(preparation.secrets,'token_hex',side_effect=AssertionError('must not generate')):
             with self.assertRaisesRegex(ValueError,'PARTIAL_OR_CONFLICTING'):preparation.stage_proposal_key(directory)
 
-    def test_complete_collector_uses_current_projection_all_upstreams_and_one_staged_key(self):
+    def test_complete_collector_uses_observed_aliases_and_only_cohort_upstreams(self):
         owner,native,f=self.fixture()
         from tools.compile_config import compile_config
         from tools.apply_installation_projection import apply_projection
@@ -174,12 +174,12 @@ class GatewayRuntime(unittest.TestCase):
         observations={'ouf-apisix':actual}
         selected=[('ouf-udp','ouf-udp-object-resolution'),('ouf-onboarding','ouf-onboarding'),
                   ('ouf-ingestion','ouf-ingestion-runtime'),('ouf-mcp','ouf-mcp-server'),
-                  ('ouf-semantic','ouf-semantic'),('ouf-gateway-control-plane','ouf-gateway-control-plane')]
+                  ('ouf-semantic','ouf-semantic')]
         for number,(name,alias) in enumerate(selected,1):
             row=copy.deepcopy(actual);row['Id']=format(number,'064x');row['Name']='/'+name
             net='ouf-gateway-control' if name=='ouf-gateway-control-plane' else 'ouf-backend'
             row['NetworkSettings']['Networks']={net:copy.deepcopy(actual['NetworkSettings']['Networks'][net])}
-            row['NetworkSettings']['Networks'][net]['Aliases']=[name,alias]
+            row['NetworkSettings']['Networks'][net]['Aliases']=[name]
             observations[name]=row
         native.engine.request=lambda method,path,body=None:(200,copy.deepcopy(observations[path.split('/')[3]]))
         binding={'runtimeBinding':g.Engine.runtime_binding(actual),'configBinding':owner.plan['oldConfigBinding'],
@@ -203,9 +203,19 @@ class GatewayRuntime(unittest.TestCase):
         self.assertEqual(result['gatewayRuntimePlan']['proposalKeyHash'],key_binding['sha256'])
         self.assertEqual(result['runtimeMutations'],0)
         routes=result['gatewayPlan']['proposedRoutes']
-        self.assertEqual(len(routes),44);self.assertEqual(routes['foreign'],previous['foreign'])
-        self.assertIn('ouf-gateway-control-plane:8081',{n for row in routes.values() for n in row.get('upstream',{}).get('nodes',{})})
+        self.assertEqual(len(routes),42);self.assertEqual(routes['foreign'],previous['foreign'])
+        nodes={n for row in routes.values() for n in row.get('upstream',{}).get('nodes',{})}
+        self.assertIn('ouf-udp:8080',nodes)
+        self.assertNotIn('ouf-gateway-control-plane:8081',nodes)
         self.assertEqual(result['gatewayPlan']['transportBinding'],r.proposed_transport(result['gatewayRuntimePlan']))
+        projection.setdefault('services',{}).setdefault('bindings',{})['ouf-udp-object-resolution']='unobserved-alias'
+        projected.write_bytes(g.encoded(projection))
+        _,drift_binding=g.private_config(projected)
+        with patch.object(g.NamespaceAdmin,'observe',return_value=binding), \
+             patch.object(g.NamespaceAdmin,'routes',return_value=previous), \
+             patch.object(preparation,'stage_proposal_key',return_value=(KEY,key_binding,False)):
+            with self.assertRaisesRegex(ValueError,'PROJECTED_APPLICATION_DNS_ALIAS_UNPROVEN'):
+                preparation.prepare_gateway(package,record,native.engine,drift_binding,'ouf-semantic',output,'fixture')
 
     def test_exact_allowlist_delta_and_source_routes_reference_match(self):
         updated=preparation.expose_environment(CONFIG,'PROPOSAL_KEY')
