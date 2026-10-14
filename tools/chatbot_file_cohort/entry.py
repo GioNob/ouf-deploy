@@ -201,7 +201,11 @@ def collect(args):
         transport=OwnerTransport(selected['selection'],str(session.token_path),str(session.token_path),
                                  wait=lambda seconds:preparation_wait(session,stop,seconds),human_session=session)
         report('CURRENT_HUMAN_OWNER_AUTHORIZATION_REVIEW')
-        auth_plan=compile_plan(transport.observe(),primitives,selected['selection'],session_binding=session.binding())
+        # Operational ingestion status is not part of the CSV-to-search flow.
+        # Do not expand the HUMAN role or chatbot OAuth scope for that optional
+        # read when the retained target descriptor cannot be proven.
+        auth_plan=compile_plan(transport.observe(),primitives,selected['selection'],
+                               include_ingestion_status=False,session_binding=session.binding())
         deltas=environment_deltas(engine,selected['selection']['origin'],
             tenant=selected['selection']['tenant'],issuer=selected['selection']['issuer'],
             audience=gateway['proposalIdentity']['audience'])
