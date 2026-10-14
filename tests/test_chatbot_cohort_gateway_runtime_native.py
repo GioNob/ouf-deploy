@@ -122,6 +122,19 @@ int main(void) {
             except r.CohortPaused as paused:
                 self.assertLess(time.time(),deadline)
                 time.sleep(min(5,max(0,paused.next_attempt_at-time.time())))
+            except Exception as error:
+                if str(error)=='APISIX_CANDIDATE_HOST_DRIFT':
+                    # This is the synthetic scratch fixture only. Never emit
+                    # Config/Env or credentials; expose exact HostConfig diff
+                    # so no production guard is relaxed based on a guess.
+                    record=owner.record();step=r.STEPS[record['nextStep']]
+                    observed=owner.inspect(owner.plan['oldName'])
+                    expected=copy.deepcopy(owner.plan['creationRequest']['HostConfig'])
+                    if step=='restore_restart':expected['RestartPolicy']=owner.plan['originalRestartPolicy']
+                    diff={k:{'expected':value,'actual':observed['HostConfig'].get(k)}
+                          for k,value in expected.items() if observed['HostConfig'].get(k)!=value}
+                    print('SYNTHETIC_APISIX_HOST_CONFIG_DIFF '+json.dumps({'step':step,'difference':diff},sort_keys=True)[:16384],flush=True)
+                raise
         first=owner.record();actual=owner.generation()
         self.assertNotEqual(actual['Id'],cid);self.assertEqual(actual['Image'],old['Image'])
         self.assertEqual(set(actual['NetworkSettings']['Networks']),{'ouf-backend','ouf-gateway-control'})
