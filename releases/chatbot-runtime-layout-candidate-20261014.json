@@ -1,0 +1,26 @@
+{
+  "schema": "ouf.chatbot-runtime-layout-candidate.v1",
+  "sourceCommit": "95e4f9fbe770e3520f75e3386cdc38fe01f6c4a2",
+  "capsuleSha256": "931746225f7043a8267073f93436ebb3ef87e05536ad125adaad6c8f92390321",
+  "launcherSha256": "eadb7093d04fcfad9c8f2e1baa95676ea32d76a763604f0267e682ce3ece674e",
+  "observedTarget": {
+    "systemContainerd": true,
+    "stableEngine": true,
+    "stableRunc": true,
+    "pidMatched": true,
+    "idMatched": true,
+    "running": true,
+    "paused": false
+  },
+  "readOnlyNativePreflightBeforeIam": true,
+  "privateNativeContextReviewIncluded": true,
+  "localTests": {
+    "runtimeLayout": 7,
+    "launcher": 13
+  },
+  "nativeQualification": "PENDING",
+  "targetServiceMutations": 0,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false
+}
