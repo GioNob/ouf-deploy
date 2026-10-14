@@ -44,5 +44,34 @@ class DiagnosisRedaction(unittest.TestCase):
         for value in ('x; DROP DATABASE target', 'x"', '', None, '-hremote'):
             with self.assertRaises(ValueError): d.ident(value)
 
+    def test_preconnection_fatal_errors_are_classified_without_exposing_identities(self):
+        cases = ((b'FATAL:  role "private-user" does not exist\n', 'ROLE_NOT_FOUND'),
+                 (b'FATAL:  password authentication failed for user "private-user"\n', 'PASSWORD_AUTHENTICATION_FAILED'),
+                 (b'FATAL:  Peer authentication failed for user "private-user"\n', 'PEER_AUTHENTICATION_FAILED'),
+                 (b'FATAL:  database "private-db" does not exist\n', 'DATABASE_NOT_FOUND'))
+        for raw, expected in cases:
+            result = d.failure(b'psql: connection to server failed: '+raw, 2)
+            self.assertEqual(result['classification'], expected)
+            self.assertIsNone(result['sqlstate'])
+            self.assertFalse(result['automaticRetry'])
+            self.assertNotIn('private', json.dumps(result))
+
+    def test_admin_selector_is_explicit_without_password_reads_or_default_role(self):
+        self.assertEqual(d.bootstrap_admin({'Config':{'Env':['POSTGRES_USER=fixture_admin',
+                         'POSTGRES_PASSWORD=private-secret']}}), 'fixture_admin')
+        for env in ([], ['POSTGRES_USER=']):
+            self.assertIsNone(d.bootstrap_admin({'Config':{'Env':env}}))
+        with self.assertRaisesRegex(ValueError, 'AMBIGUOUS'):
+            d.bootstrap_admin({'Config':{'Env':['POSTGRES_USER=a','POSTGRES_USER=b']}})
+        with self.assertRaises(ValueError):
+            d.bootstrap_admin({'Config':{'Env':['POSTGRES_USER=admin;DROP DATABASE x']}})
+
+    def test_role_catalogue_redacts_private_fields(self):
+        raw = json.dumps({'value':{'postgresRoleExists':False, 'bootstrapRoleSuperuser':True,
+                                   'roleName':'private-user'}}).encode()
+        result = d.safe_reply(0, raw, b'', 'ADMIN_ROLE_METADATA')
+        self.assertEqual(result['facts'], {'postgresRoleExists':False, 'bootstrapRoleSuperuser':True})
+        self.assertNotIn('private', json.dumps(result))
+
 
 if __name__ == '__main__': unittest.main()
