@@ -212,6 +212,33 @@ Nessuna migrazione, grant operativo o rollout target eseguito da questi
 cambiamenti. Ripresa tramite nuovo piano/revisione e riuso esplicito
 dell'archivio già scaricato; storico e journal conservati.
 
+### Consegna corrente qualificata e pronta per l'operatore
+
+Sorgente eseguibile immutabile `dca15f41bab8ddd254febb72f2a6008f94628ea1`.
+[CI nativa 38608036495](https://github.com/GioNob/ouf-deploy/actions/runs/38608036495):
+**176 test in 23 suite, PASS**, incluso il caso PostgreSQL reale con
+amministratore dal nome diverso da postgres e tabella incidenti di altro owner.
+Migrazione audit 12 esatta; grant TRIGGER limitato e revocato; ACL e owner
+iniziali ripristinati, drift di altri privilegi negato, trigger funzionante
+dopo cleanup, membership SET e CREATE temporanei revocati. La review concreta
+dei delta è qualificata; non è un'accettazione sul VPS.
+
+[Archivio 38608036351](https://github.com/GioNob/ouf-deploy/actions/runs/38608036351):
+digest originale, sei pacchetti e tre source archive PASS.
+La [consegna operatore corrente](chatbot-file-cohort-vps-20261014.sh) sostituisce
+la prima consegna f9b42b8. Usa il gh portabile esistente e l'archivio
+già presente nella directory della capsula iniziale 126e49f3830667934bf8f8d7.
+Nessun nuovo download da 1,7 GB, upload Teatri o profilazione.
+Se l'archivio manca o non è quello esatto, arresto prima di sudo/apply;
+nessuna ricerca indiscriminata o sostituzione automatica.
+
+Il comando opera con nuovo preflight e piano, login richiesti e revisione
+completa al terminale. Prima della conferma dell'hash non emette autorità.
+Le approvazioni applicative restano nel THS e la finestra è un'ora.
+Nessuna migrazione o mutazione di servizi target è stata eseguita da questa
+qualificazione. Prossimo passo: operatore esegue la consegna e riporta soltanto
+gli stati redatti. End-to-end reale resta OPEN.
+
 ## Prova che manca per dichiarare il risultato
 
 La combinazione completa deve essere installata tramite un ingresso operativo

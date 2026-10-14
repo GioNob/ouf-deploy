@@ -1,6 +1,6 @@
 {
   "schema": "ouf.chatbot-cohort-admin-candidate.v1",
-  "sourceCommit": "96f627be0d8e75a8f63ef70baad49c6276999a7e",
+  "sourceCommit": "dca15f41bab8ddd254febb72f2a6008f94628ea1",
   "sourceCapsuleSha256": "c83e9022e803d715c02de7f145c80c0e6ff39a7aee7ab4236c19510947bd2eb8",
   "launcherSha256": "058f188fed166b44cff717577658a8c0f1eb7fc6ba44357e6424f7e73a79e43f",
   "operatorObserved": {
@@ -20,10 +20,46 @@
     "preparation": 7,
     "launcher": 13
   },
-  "nativeQualification": "PENDING",
+  "nativeQualification": "PASS",
   "targetApplyAuthorized": false,
   "runtimeAuthorityIssued": false,
   "chatbotEndToEndProven": false,
   "budgetReset": false,
-  "exactPrivateMigrationReviewIncluded": true
+  "exactPrivateMigrationReviewIncluded": true,
+  "nativeTests": {
+    "suites": 23,
+    "tests": 176,
+    "runId": 38608036495,
+    "jobId": 116003868385,
+    "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38608036495"
+  },
+  "originalArchiveQualification": {
+    "runId": 38608036351,
+    "jobId": 116003867697,
+    "status": "PASS",
+    "archiveSha256": "144699ab7756c8312d49783967cfbb64acc02a617015ad89f5adf51e25a10300",
+    "modulePackages": 6,
+    "sourceArchives": [
+      "mcp",
+      "onboarding",
+      "gateway"
+    ]
+  },
+  "nativeDatabaseProof": {
+    "customAdmin": true,
+    "workloadNoCreateRole": true,
+    "incidentOwnedByOtherRole": true,
+    "exactPackagedAuditMigration": true,
+    "ownerPreserved": true,
+    "baselineAclRestored": true,
+    "unrelatedAclDriftDenied": true,
+    "triggerWorksAfterCleanup": true,
+    "temporaryMembershipRevoked": true,
+    "temporarySchemaCreateRevoked": true,
+    "notTargetAcceptance": true
+  },
+  "operatorDelivery": "releases/chatbot-file-cohort-vps-20261014.sh",
+  "existingArchiveReused": true,
+  "automaticRestore": false,
+  "consumedClaimReplay": false
 }
