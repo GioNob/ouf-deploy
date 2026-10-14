@@ -144,6 +144,35 @@ Conservare l'archivio da 1,7 GB già scaricato. Non rilanciare l'installatore
 prima del risultato diagnostico. Un'eventuale consegna corretta riutilizzerà
 i byte verificati, conservando storico, journal e vincoli di resilienza.
 
+### Risultato della diagnosi operatore e controllo amministratore
+
+Output riportato dall'operatore il 14 ottobre 2026 alle 19:14 CEST:
+DATABASE_IDENTITY e MIGRATION_HISTORY PASS per UDP (35), Onboarding (32),
+Ingestion (15) e MCP (9). Solo ADMIN_OWNERSHIP MCP è BLOCKED:
+exitCode=2, sqlstate=null, UNCLASSIFIED_CHANNEL_FAILURE.
+La lettura è completata; non è una prova positiva del preflight amministrativo.
+
+Il codice di installazione e la prima diagnosi usano un nome amministratore
+costante, `postgres`. La presenza e utilizzabilità di quel ruolo sul target
+non è dimostrata. Gli errori di connessione possono precedere l'esecuzione
+dell'impostazione VERBOSITY di psql: SQLSTATE assente non dimostra un
+errore SQL né una mancanza di permesso su una tabella.
+
+La diagnosi aggiornata, commit `286493fc68cf3b29dd8b559ac976495959ab8729`,
+SHA256 `a9cc6d2f7ab4dcb905bc45d1e916d51eb8f571c048127690899799117876eaa8`,
+legge soltanto il selettore POSTGRES_USER del container corrente e confronta
+la sua esistenza/superuser con pg_roles tramite il caller applicativo MCP.
+Prova poi la query amministrativa in READ ONLY con quel selettore esplicito.
+Nessun default implicito, ricerca indiscriminata di superuser o credential file.
+Classifica solo pattern FATAL fissi e redatti; errori sconosciuti restano BLOCKED,
+senza retry automatico. Otto test locali PASS, non prova target.
+Nessuna correzione di grant o installazione è stata eseguita.
+
+Il prossimo passo è questa lettura diagnostica. La correzione del preparatore
+dovrà legare selettore e identità/superuser osservati al piano firmato,
+usando lo stesso amministratore per preflight, bootstrap e cleanup, e
+preservando hash, backup e journal monouso. Conservare il pacchetto scaricato.
+
 ## Prova che manca per dichiarare il risultato
 
 La combinazione completa deve essere installata tramite un ingresso operativo
