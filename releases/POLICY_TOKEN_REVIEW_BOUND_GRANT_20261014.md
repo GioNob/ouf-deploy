@@ -2,7 +2,7 @@
 
 The retained target input review is `92b3276992b3b3ec459e734196671728b8a49a99a02185e2c6f7c1da87ce82a1`; its source closure is `9b1d85c02dd0cf255138156d6334893cd6eeec120864ab80c8efea63e77e1958`. Collection completed and must not be repeated. The receipt grants no runtime authority.
 
-Source commit `c91006573e7bc4c98de4399b5ede9c3b8eaf3658` passed native owner qualification in runs [38513855392](https://github.com/GioNob/ouf-deploy/actions/runs/38513855392) and [38513852228](https://github.com/GioNob/ouf-deploy/actions/runs/38513852228): 221 tests across 29 suites, zero skips. This includes 19 first-grant cases and a disposable real Keycloak protocol probe. Registry/systemd and administrative credential effects remain simulated boundaries in these tests; no VPS execution is implied.
+Source commit `c91006573e7bc4c98de4399b5ede9c3b8eaf3658` passed native owner qualification in final run [38518580922](https://github.com/GioNob/ouf-deploy/actions/runs/38518580922): 222 tests across 30 suites, zero skips. This includes 18 first-grant cases and a disposable real Keycloak protocol probe. Registry/systemd and administrative credential effects remain simulated boundaries in these tests; no VPS execution is implied.
 
 The v3 construction binds independently supplied review bytes/hash/source closure, three archive/source pins, candidate image, completed root identities and selected current Registry generation. It refuses review/generation/root drift before dependent effects. Historical v1/v2 paths remain available; deleting a binding from v3 does not downgrade it. Existing retirement, credential ambiguity and first-slot durable no-replay rules remain required.
 
