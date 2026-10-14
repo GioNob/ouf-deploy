@@ -308,6 +308,35 @@ Nessun riavvio/unpause, nuovo grant target o replay. L'archivio originale
 è conservato e verrà riutilizzato. Il prossimo comando sostituisce la vecchia
 consegna; non richiede una nuova diagnosi per ogni singolo controllo nativo.
 
+### Consegna corrente dopo il collaudo runtime
+
+Sorgente eseguibile congelata `9f76141e4b689fa86b332b5b83cac823a87bf912`.
+[CI nativa 38613582216](https://github.com/GioNob/ouf-deploy/actions/runs/38613582216):
+**185 test in 24 suite PASS**. Inclusi il preflight aggregato con errori
+indipendenti redatti, negazione di layout ignoti/paused/PID drift, review
+concreta del contesto, e la prova runc reale sul servizio disposable:
+parent del bundle esatto, PID/id, custodia namespace/inode processo e doppia
+lettura stabili. La precedente prova PostgreSQL resta inclusa. Non è il VPS.
+
+[Archivio 38613582282](https://github.com/GioNob/ouf-deploy/actions/runs/38613582282):
+digest originale, sei pacchetti e tre sorgenti PASS.
+[Verifier HUMAN 38613582222](https://github.com/GioNob/ouf-deploy/actions/runs/38613582222):
+66 test in 9 suite PASS. Nessun ampliamento di autorità deriva dai read PASS.
+
+La [consegna operatore corrente](chatbot-file-cohort-vps-20261014.sh) usa questo
+commit e launcher SHA256 eadb7093d04fcfad9c8f2e1baa95676ea32d76a763604f0267e682ce3ece674e.
+Riutilizza il pacchetto della capsula iniziale 126e49f3830667934bf8f8d7.
+Il preflight CURRENT_RETAINED_NATIVE_PREFLIGHT_RESULT viene prima dei login IAM;
+se fallisce, failedChecks e facts riportano insieme i vincoli verificabili.
+Non richiede un nuovo comando per ogni singolo check. I read non sono
+un'accettazione OCI/rootfs né autorizzano traffico o lifecycle; i controlli
+completi vengono ripetuti per il piano e l'attestazione del nuovo workload.
+
+Nessuna migrazione, unpause, restart o nuova autorità target emessa da questa
+qualificazione. Prossimo passo: operatore esegue la consegna corrente, completa
+i login solo dopo preflight positivo, legge/approva la revisione esatta al TTY,
+e riporta gli stati redatti. End-to-end e servizio permanente restano OPEN.
+
 ## Prova che manca per dichiarare il risultato
 
 La combinazione completa deve essere installata tramite un ingresso operativo
