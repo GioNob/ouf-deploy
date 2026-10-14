@@ -179,7 +179,7 @@ class GatewayRuntime(unittest.TestCase):
             row=copy.deepcopy(actual);row['Id']=format(number,'064x');row['Name']='/'+name
             net='ouf-gateway-control' if name=='ouf-gateway-control-plane' else 'ouf-backend'
             row['NetworkSettings']['Networks']={net:copy.deepcopy(actual['NetworkSettings']['Networks'][net])}
-            row['NetworkSettings']['Networks'][net]['Aliases']=[name]
+            row['NetworkSettings']['Networks'][net]['Aliases']=(['opaque-semantic-alias'] if name=='ouf-semantic' else [name])
             observations[name]=row
         native.engine.request=lambda method,path,body=None:(200,copy.deepcopy(observations[path.split('/')[3]]))
         binding={'runtimeBinding':g.Engine.runtime_binding(actual),'configBinding':owner.plan['oldConfigBinding'],
