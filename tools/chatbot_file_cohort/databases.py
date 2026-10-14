@@ -104,6 +104,13 @@ def compile_database_plan(pg_observation, module_bindings, candidate_migrations,
         identifier(binding['database'])
         identifier(binding['user'])
         before = current['migrations']
+        # Flyway can record its creation of a previously absent schema at rank
+        # one. It is retained in the signed history and post-install check, but
+        # has no corresponding SQL file in the application JAR.
+        marker = {'version':None,'script':'"'+SCHEMAS[module]+'"','type':'SCHEMA',
+                  'checksum':None,'success':True}
+        if module != 'mcp' and before and before[0] == marker:
+            expected = [marker,*expected]
         require(current['identity']['name'] == binding['database'] and current['identity']['allowConnections'] is True
                 and current['identity']['prepared'] == 0 and type(before) is list
                 and type(expected) is list and 1 <= len(before) <= len(expected) <= 256
