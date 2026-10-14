@@ -13,10 +13,11 @@ sys.path[:0]=[str(ROOT),str(ROOT/'tools/semantic_policy_token_owner')]
 from tools.chatbot_file_cohort.package_custody import extract_cohort,extract_source,new_directory
 from tools.chatbot_file_cohort.plan import require
 
-ARCHIVE='be55c6eda4485a4c90da9872f63e2533abe21c741c4926ecc129626cc01530f9'
-PRODUCER='f31a653ee1da56b29a6171c159f9c601523735b9'
-RUN=38536134146
-SOURCES={'onboarding':'84828f74ac586bae09a78f0fb197b75b1a3d98d1',
+ARCHIVE='144699ab7756c8312d49783967cfbb64acc02a617015ad89f5adf51e25a10300'
+PRODUCER='8bff54a52a0ce15daccaf2aee932004f106dd178'
+RUN=38584614991
+SOURCES={'mcp':'f249b3dcc58c2a96742092d90fa09fd90b705bd0',
+         'onboarding':'84828f74ac586bae09a78f0fb197b75b1a3d98d1',
          'gateway':'bf179e96200deb84942ad32507edef52a4284cd0'}
 TEMPLATES=('ops/policy_token/ouf-policy-token@.service','ops/policy_token/ouf-policy-token@.timer')
 
@@ -50,7 +51,7 @@ def main():
         if module=='gateway':
             for name in TEMPLATES:require((target/name).is_file(),'QUALIFIED_SYSTEMD_TEMPLATE_MISSING')
     print(json.dumps({'schema':'ouf.chatbot-file-original-artifact-extraction-qualification.v1',
-        'status':'ORIGINAL_ARTIFACT_EXTRACTION_QUALIFIED','artifactId':11880585559,
+        'status':'ORIGINAL_ARTIFACT_EXTRACTION_QUALIFIED','artifactId':11907557440,
         'archiveSha256':ARCHIVE,'producerCommit':PRODUCER,'runId':RUN,
         'modulePackageCount':len(records),'sourceArchives':inventories,
         'gatewaySystemdTemplatesVerified':list(TEMPLATES),

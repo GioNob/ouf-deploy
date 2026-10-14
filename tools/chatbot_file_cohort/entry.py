@@ -24,9 +24,9 @@ from tools.chatbot_file_cohort.package_custody import extract_cohort,extract_sou
 from tools.chatbot_file_cohort.plan import digest,encoded,require,environment,runtime_pin
 from tools.semantic_policy_token_owner.producer import protected_directory
 
-PRODUCER='f31a653ee1da56b29a6171c159f9c601523735b9'
-RUN=38536134146
-ARCHIVE='be55c6eda4485a4c90da9872f63e2533abe21c741c4926ecc129626cc01530f9'
+PRODUCER='8bff54a52a0ce15daccaf2aee932004f106dd178'
+RUN=38584614991
+ARCHIVE='144699ab7756c8312d49783967cfbb64acc02a617015ad89f5adf51e25a10300'
 ONBOARDING='84828f74ac586bae09a78f0fb197b75b1a3d98d1'
 BASELINE='releases/chatbot-existing-cinema-baseline-20261014.json'
 BASELINE_HASH='d55ef320243acd4f4f7b932eb57c5771a67ea8bfcbbd7824e25a5995e482acfb'
@@ -148,7 +148,7 @@ def collect(args):
     from tools.chatbot_file_cohort.authorization import OwnerPrimitives,OwnerTransport,compile_plan
     from tools.chatbot_file_cohort.human_session import HumanSession
     from tools.chatbot_file_cohort.acceptance import compile_acceptance_plan,observe_acceptance_input
-    from file_only_preparation import default_selection,retained_inputs,lineage,prepare_file_only_installation
+    from file_only_preparation import default_selection,retained_inputs,lineage,prepare_file_only_installation,preflight_retained_runtime
     paths=json.loads(source_bytes(source/'tools/chatbot_file_cohort/source_paths.json'))
     sources={name:source_bytes(owner_root/path.split(':',1)[1] if path.startswith('ouf-onboarding:') else source/path)
              for name,path in paths.items()}
@@ -162,11 +162,16 @@ def collect(args):
     socket_binding=(socket_info.st_dev,socket_info.st_ino,socket_info.st_uid,socket_info.st_gid,stat.S_IMODE(socket_info.st_mode))
     engine=Engine(socket_path,socket_binding)
     native_environment(engine,closure['executables']['docker'],new_directory(stage,'docker-cli'))
+    retained_selection=default_selection()
+    report('CURRENT_RETAINED_NATIVE_PREFLIGHT')
+    native_preflight=preflight_retained_runtime(engine,retained_selection)
+    report('CURRENT_RETAINED_NATIVE_PREFLIGHT_RESULT',**native_preflight)
+    require(native_preflight['allRequiredChecksPass'],'RETAINED_NATIVE_PREFLIGHT_FAILED')
     report('CURRENT_ADMINISTRATIVE_SESSION')
     ensure_admin_session(engine,closure['executables']['docker'],new_directory(stage,'iam-session'),emit=emit_line)
     cohort_id='chatbot-file-'+str(RUN)
     selected=select_target(engine,closure['executables']['docker'],picker,PICKER_HASH)
-    retained_selection=default_selection();retained,_=retained_inputs(retained_selection)
+    retained,_=retained_inputs(retained_selection)
     history=lineage(retained_selection)
     report('CURRENT_OWNER_IAM_TLS_AND_ROOT_CUSTODY')
     owner_input=prepare_owner(source_commit=args.source_commit,source_closure_hash=digest(closure),cohort_id=cohort_id,

@@ -152,6 +152,32 @@ class CompleteActionAssembly(unittest.TestCase):
         self.assertEqual(len(result['processPlan']['directoryPlan']),19)
         self.assertEqual(json.loads(Path(result['reviewBinding']['path']).read_bytes()),review)
         self.assertEqual(self.assemble()['review'],review)
+
+    def test_operator_review_contains_the_exact_conditional_database_privileges(self):
+        database={'modules':[{'module':'mcp','database':'fixture_mcp','user':'fixture_app'}],
+                  'mcpAuditRoleAdministration':{'admin':'fixture_admin','temporaryIncidentTrigger':True},
+                  'mcpAuditRolePreflight':{'incidentBinding':{'ownerOid':123,'aclHash':'a'*64}}}
+        self.prepared['databasePlan']=database
+        self.prepared['cohortPlan']['databasePlanHash']=digest(database)
+        self.prepared['registry']['cohortPlanHash']=digest(self.prepared['cohortPlan'])
+        review=self.assemble()['review']
+        self.assertEqual(review['mcpMigrationReview']['administration'],database['mcpAuditRoleAdministration'])
+        self.assertEqual(review['mcpMigrationReview']['preflight'],database['mcpAuditRolePreflight'])
+        self.assertEqual(review['mcpMigrationReview']['databasePlanHash'],digest(database))
+        self.assertEqual(review['mcpMigrationReview']['applicationRole'],'fixture_app')
+        self.assert_no_runtime_effects()
+
+    def test_native_layout_is_concrete_and_bound_to_the_private_review(self):
+        recipe=self.prepared['registry']['nodeRecipe']
+        recipe.update(dockerContext={'bundleParent':'/run/containerd/io.containerd.runtime.v2.task/moby',
+            'networkNamespaceParent':'/var/run/docker/netns'},runtimeRoot='/run/docker/runtime-runc/moby',
+            observationConfiguration={'runtimeBinding':{'path':'/usr/bin/runc','sha256':'a'*64}},
+            expectedRootfsSeal='b'*64)
+        review=self.assemble()['review']
+        self.assertEqual(review['registryNativeFrameReview']['dockerContext'],recipe['dockerContext'])
+        self.assertEqual(review['registryNativeFrameReview']['runtimeBinding'],recipe['observationConfiguration']['runtimeBinding'])
+        self.assertEqual(review['privateInputHashes']['preparedInputs'],digest(self.prepared))
+        self.assert_no_runtime_effects()
         self.assert_no_runtime_effects()
 
     def test_foreign_custody_or_owner_binding_denied_before_private_bundle(self):

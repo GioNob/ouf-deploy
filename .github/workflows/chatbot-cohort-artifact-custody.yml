@@ -24,9 +24,9 @@ jobs:
         run: |
           set -euo pipefail
           umask 077
-          gh api repos/GioNob/ouf-deploy/actions/artifacts/11880585559/zip > "$RUNNER_TEMP/original-cohort.zip"
-          printf '%s  %s\n' be55c6eda4485a4c90da9872f63e2533abe21c741c4926ecc129626cc01530f9 "$RUNNER_TEMP/original-cohort.zip" | sha256sum --check
-      - name: Extract all six packages and both source archives actually used by the installer
+          gh api repos/GioNob/ouf-deploy/actions/artifacts/11907557440/zip > "$RUNNER_TEMP/original-cohort.zip"
+          printf '%s  %s\n' 144699ab7756c8312d49783967cfbb64acc02a617015ad89f5adf51e25a10300 "$RUNNER_TEMP/original-cohort.zip" | sha256sum --check
+      - name: Extract all six packages and three source archives actually used by the installer
         run: |
           set -euo pipefail
           OUF_ARTIFACT_ROOT="/var/lib/ouf-original-cohort-${GITHUB_RUN_ID}"

@@ -303,6 +303,8 @@ class Delivery:
             containers.accept_owner_gate('registry',plan['registryModulePackageHash'],digest(registry_evidence))
             backup_evidence = databases.backup_quiesced()
             containers.accept_owner_gate('database',plan['databasePlanHash'],digest(backup_evidence))
+            self.report('MIGRATING_MCP_SCHEMA_WITH_PACKAGED_SEPARATE_ROLE')
+            databases.migrate_mcp()
             for module in ('udp','onboarding'):
                 self.report('REPLACING_COHORT_MODULE',module=module)
                 self.await_container(containers,module); databases.verify_module(module)

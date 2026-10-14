@@ -1,0 +1,215 @@
+{
+  "schema": "ouf.chatbot-file-cohort-resumption-evidence.v1",
+  "observedAt": "2026-10-14T15:45:16.218Z",
+  "package": {
+    "repository": "GioNob/ouf-deploy",
+    "runId": 38584614991,
+    "runAttempt": 2,
+    "producerCommit": "8bff54a52a0ce15daccaf2aee932004f106dd178",
+    "status": "SUCCESS",
+    "jobCount": 8,
+    "artifactId": 11907557440,
+    "archiveBytes": 1708479761,
+    "archiveSha256": "144699ab7756c8312d49783967cfbb64acc02a617015ad89f5adf51e25a10300",
+    "publisherSignatureVerifiedInProducer": true
+  },
+  "delivery": {
+    "commit": "f9b42b8cd4358a908c7a0e88777f9e55b8400258",
+    "launcherSha256": "811b72c739d11f613288f000e00253acb62a04fa3f56a1ce6ca5300f9bbf483b",
+    "sourceCapsuleSha256": "126e49f3830667934bf8f8d7a5b3bb096fd4982fa0ad0014b11b862984155da9",
+    "sourceMembers": 112,
+    "localLauncherTests": 13,
+    "localDatabaseTests": 14,
+    "checks": [
+      {
+        "name": "signed-native-delivery",
+        "jobId": 115947173000,
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38591471506/job/115947173000"
+      },
+      {
+        "name": "original-artifact",
+        "jobId": 115947166072,
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38591469805/job/115947166072"
+      },
+      {
+        "name": "original-artifact",
+        "jobId": 115947145252,
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38591462718/job/115947145252"
+      },
+      {
+        "name": "signed-native-delivery",
+        "jobId": 115947141085,
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38591462703/job/115947141085"
+      }
+    ],
+    "nativeTestExecution": {
+      "runId": 38591462703,
+      "jobId": 115947141085,
+      "suites": 22,
+      "tests": 163,
+      "failures": 0
+    },
+    "actualArchiveExtraction": {
+      "runId": 38591462718,
+      "jobId": 115947145252,
+      "archiveDigestVerified": true,
+      "modulePackages": 6,
+      "sourceArchives": [
+        "mcp",
+        "onboarding",
+        "gateway"
+      ],
+      "sourceExecuted": false,
+      "targetCalls": 0
+    }
+  },
+  "mcp": {
+    "commit": "f249b3dcc58c2a96742092d90fa09fd90b705bd0",
+    "pr": 69,
+    "disposition": "TARGET_SPECIFIC_DO_NOT_MERGE_UNOBSERVED_INSTALLATION_HISTORIES",
+    "historicalVersionsPreserved": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "pendingVersions": [
+      10,
+      11,
+      12
+    ],
+    "nonCreateRoleQualificationRun": 38584106812
+  },
+  "baselinePackage": {
+    "version": "1.7",
+    "hashedFilesVerified": 323,
+    "mismatches": 0
+  },
+  "currentAuthorizedRead": {
+    "mcpStatus": {
+      "status": "HEALTHY",
+      "partial": false,
+      "actionRequired": false
+    },
+    "cinema": {
+      "observedAt": "2026-10-14T15:42:35.810Z",
+      "count": 8,
+      "partial": false,
+      "nextCursor": null,
+      "objects": [
+        {
+          "urbanObjectId": "0418930b-0929-47fb-bab9-a1bc5d6d3fdb",
+          "revision": 1,
+          "status": "ACTIVE",
+          "propertyIris": [
+            "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+            "https://api.ouf-lab.it/semantic/cinema#nome"
+          ]
+        },
+        {
+          "urbanObjectId": "070a6a44-a934-4f82-aec9-5723762fa908",
+          "revision": 1,
+          "status": "ACTIVE",
+          "propertyIris": [
+            "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+            "https://api.ouf-lab.it/semantic/cinema#nome"
+          ]
+        },
+        {
+          "urbanObjectId": "44d19ec1-0b63-49c9-a758-da4b37e90f84",
+          "revision": 1,
+          "status": "ACTIVE",
+          "propertyIris": [
+            "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+            "https://api.ouf-lab.it/semantic/cinema#nome"
+          ]
+        },
+        {
+          "urbanObjectId": "4594e467-cc1d-45f9-be3b-93ad3cc19d20",
+          "revision": 1,
+          "status": "ACTIVE",
+          "propertyIris": [
+            "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+            "https://api.ouf-lab.it/semantic/cinema#nome"
+          ]
+        },
+        {
+          "urbanObjectId": "4613bce3-29c3-48f9-b2e7-882d7c9c4449",
+          "revision": 1,
+          "status": "ACTIVE",
+          "propertyIris": [
+            "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+            "https://api.ouf-lab.it/semantic/cinema#nome"
+          ]
+        },
+        {
+          "urbanObjectId": "659eaa85-7f0b-49e2-bade-42728ebfb12d",
+          "revision": 1,
+          "status": "ACTIVE",
+          "propertyIris": [
+            "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+            "https://api.ouf-lab.it/semantic/cinema#nome"
+          ]
+        },
+        {
+          "urbanObjectId": "65e7da72-6ff5-4b37-b9cb-54fc89a10a33",
+          "revision": 1,
+          "status": "ACTIVE",
+          "propertyIris": [
+            "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+            "https://api.ouf-lab.it/semantic/cinema#nome"
+          ]
+        },
+        {
+          "urbanObjectId": "feb48d73-0195-4ddf-84b2-abdfb75cbc36",
+          "revision": 1,
+          "status": "ACTIVE",
+          "propertyIris": [
+            "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+            "https://api.ouf-lab.it/semantic/cinema#nome"
+          ]
+        }
+      ]
+    },
+    "teatriProfileRevalidated": false
+  },
+  "resilience": {
+    "canonicalPolicy": "docs/OUF_RESILIENCE_POLICY.md",
+    "version": 3,
+    "noConsumedClaimReplay": true,
+    "noAutomaticDatabaseRestore": true,
+    "noBudgetReset": true,
+    "ambiguousMutationRequiresReconciliation": true,
+    "currentAuthorityAndGenerationRequired": true,
+    "temporarySetAndSchemaCreateCleanupRequired": true,
+    "finiteAcceptanceSeconds": 3600,
+    "platformWideRuntimeComplianceClaimed": false
+  },
+  "remaining": [
+    "CURRENT_VPS_POSTGRES_ADMIN_AND_OWNERSHIP_PREFLIGHT",
+    "CURRENT_OWNED_TEATRI_PROFILE_READ",
+    "EXACT_PRIVATE_FULL_ACTION_REVIEW_AT_OPERATOR_TERMINAL",
+    "TARGET_INSTALLATION_WITH_VERIFIED_BACKUPS_AND_CLEANUP",
+    "HUMAN_THS_SEMANTIC_AND_SOURCE_DECISIONS",
+    "DURABLE_ACK_COMMIT_LINEAGE_TWO_SOURCE_REUSE_AND_FRESH_CHATBOT_SEARCH"
+  ],
+  "targetServiceMutations": 0,
+  "targetMigrationExecuted": false,
+  "runtimeAuthorityIssued": false,
+  "chatbotEndToEndProven": false,
+  "permanentRuntimeAcceptance": false,
+  "notReleaseAcceptance": true
+}

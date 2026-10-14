@@ -51,6 +51,13 @@ jobs:
           ref: b49c0d6f50c574c11684361ce4e8040e9cbddee2
           path: .pairwise/udp
           persist-credentials: false
+      - name: Checkout the exact target MCP migration for native privilege qualification
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-mcp-server
+          ref: f249b3dcc58c2a96742092d90fa09fd90b705bd0
+          path: .pairwise/mcp
+          persist-credentials: false
       - name: Prepare native root custody fixture
         run: |
           set -euo pipefail
@@ -62,7 +69,7 @@ jobs:
         run: |
           set -euo pipefail
           OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
-          for suite in test_chatbot_cohort_delivery_launcher.py test_chatbot_cohort_package_custody.py test_chatbot_cohort_iam_session.py test_chatbot_cohort_assemble.py test_chatbot_cohort_entry.py test_file_only_output_custody.py test_file_only_preparation.py test_chatbot_cohort_target_selection.py test_chatbot_cohort_selected_config_custody.py test_chatbot_cohort_plan.py test_chatbot_cohort_preparation.py test_chatbot_cohort_containers.py test_chatbot_cohort_databases.py test_chatbot_cohort_gateway.py test_chatbot_cohort_gateway_runtime.py test_chatbot_cohort_authorization.py test_chatbot_cohort_human_session.py test_chatbot_cohort_closed_runtime.py; do
+          for suite in test_chatbot_cohort_runtime_layout.py test_chatbot_cohort_pg_diagnosis.py test_chatbot_cohort_delivery_launcher.py test_chatbot_cohort_package_custody.py test_chatbot_cohort_iam_session.py test_chatbot_cohort_assemble.py test_chatbot_cohort_entry.py test_file_only_output_custody.py test_file_only_preparation.py test_chatbot_cohort_target_selection.py test_chatbot_cohort_selected_config_custody.py test_chatbot_cohort_plan.py test_chatbot_cohort_preparation.py test_chatbot_cohort_containers.py test_chatbot_cohort_databases.py test_chatbot_cohort_gateway.py test_chatbot_cohort_gateway_runtime.py test_chatbot_cohort_authorization.py test_chatbot_cohort_human_session.py test_chatbot_cohort_closed_runtime.py; do
             sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" "$OUF_FIXTURE_ROOT/repository/.cohort-test-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p "$suite" -v
           done
       - name: Real four-database archives, full payload parsing and retained rows
@@ -72,7 +79,7 @@ jobs:
         run: |
           set -euo pipefail
           OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
-          sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_POSTGRES=1 OUF_POSTGRES_CONTAINER_ID="$OUF_PG_CID" python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_postgres_native.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_POSTGRES=1 OUF_POSTGRES_CONTAINER_ID="$OUF_PG_CID" OUF_CHATBOT_MCP_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/mcp" python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_postgres_native.py -v
           sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_POSTGRES=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_images_native.py -v
           sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_NATIVE_POSTGRES=1 OUF_POSTGRES_CONTAINER_ID="$OUF_PG_CID" OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" "$OUF_FIXTURE_ROOT/repository/.cohort-test-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_gateway_runtime_native.py -v
       - name: Actual PostgreSQL owner joins distinguish ACK, commit and canonical NOOP
@@ -82,3 +89,4 @@ jobs:
           command -v psql
           OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
           sudo env OUF_CHATBOT_ACCEPTANCE_PG_DSN=postgresql://postgres@127.0.0.1:5432/postgres OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" OUF_CHATBOT_INGESTION_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/ingestion" OUF_CHATBOT_UDP_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/udp" python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_acceptance.py -v
+

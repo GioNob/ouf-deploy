@@ -13,7 +13,7 @@ from urllib.parse import urlsplit, unquote, parse_qsl
 
 from engine_creation import Engine
 from tools.chatbot_file_cohort.plan import MODULES, compile_cohort, environment, runtime_pin, digest, require
-from tools.chatbot_file_cohort.databases import observe_database, compile_database_plan, java_migrations, identifier
+from tools.chatbot_file_cohort.databases import observe_database, compile_database_plan, java_migrations, identifier, mcp_admin_preflight
 from tools.chatbot_file_cohort.images import private_open, image_import_scope
 from tools.chatbot_file_cohort.gateway import private_config
 
@@ -200,6 +200,11 @@ def prepare_cohort(engine, package_directory, manifest, image_import_plan, postg
         migrations[module] = packaged_migrations(package_directory,records[module])
         current[module] = observe_database(pgpin['containerId'],bindings[module]['user'],bindings[module]['database'],module)
     database_plan = compile_database_plan(pg,bindings,migrations,current)
+    if database_plan['mcpAuditRoleAdministration'] is not None:
+        database_plan['mcpAuditRolePreflight'] = mcp_admin_preflight(
+            pgpin['containerId'],bindings['mcp']['database'],bindings['mcp']['user'],
+            database_plan['mcpAuditRoleAdministration']['admin'])
+        database_plan['mcpAuditRoleAdministration']['temporaryIncidentTrigger'] = not database_plan['mcpAuditRolePreflight']['incidentBinding']['triggerAuthority']
     plan = compile_cohort(manifest,observed,images,packages,environment_deltas,
         gateway_plan_hash,digest(database_plan),authorization_plan_hash,acceptance_plan_hash)
     for replacement in plan['replacements']:
