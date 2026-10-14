@@ -59,3 +59,5 @@ Restano necessari custodia/trust firmati per la nuova immagine, binding OCI/peer
 Solo dopo installazione e verifica dei grant effettivi si potranno registrare le21 DRAFT, validare e ottenere vere card THS, quindi pubblicare e approvare/attivare il profilo. Il ciclo CSV richiederà ancora run reale, ACK durevoli, lineage e ricerca autorizzata completa delle13 righe. Non ripetere il precedente denial permanente prima di una nuova via deployata e autorizzata.
 
 Nessun apply, migrazione, firma, grant, reset di budget, operazione R12, registrazione Teatri o nuovo risultato CSV è stato eseguito. Le ricevute CI attestano la qualificazione descritta, non l'installazione o la salute applicativa target.
+
+**Prossimo passaggio target, preparato e qualificato:** [raccolta unica degli input d'installazione](SEMANTIC_CANDIDATE_INSTALLATION_REVIEW_20261014.md), PR7, sei test/zero skip. Usa i pacchetti già consegnati e il ledger completato delle radici; pubblica una review privata e non effettua il cutover. È ancora da eseguire sul VPS. Non ripetere staging, creazione delle radici o precedente apply IAM.
