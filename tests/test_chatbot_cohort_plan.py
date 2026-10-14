@@ -42,6 +42,18 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(request['Entrypoint'], image['Config']['Entrypoint'])
         self.assertFalse(row['automaticRollbackAllowed'])
 
+    def test_only_observed_null_oom_default_is_made_explicit_for_each_module(self):
+        for module in p.MODULES:
+            for value in (None,False,True):
+                with self.subTest(module=module,value=value):
+                    old,image,package=fixture(module);old['HostConfig']['OomKillDisable']=value
+                    row=p.compile_replacement(module,old,image,package,'cohort',{})
+                    self.assertIs(row['creationRequest']['HostConfig']['OomKillDisable'],False if value is None else value)
+                    self.assertIs(row['oldHostConfig']['OomKillDisable'],value)
+                    self.assertIs(old['HostConfig']['OomKillDisable'],value)
+        with self.assertRaisesRegex(p.PlanDenied,'BOOLEAN_OR_DEFAULT'):
+            p.creation_host_config({'OomKillDisable':'false'})
+
     def test_package_image_identity_not_tag_is_required(self):
         old, image, package = fixture()
         image['Id'] = 'sha256:'+'1'*64

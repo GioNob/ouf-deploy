@@ -33,7 +33,7 @@ from file_only_frame_inputs import compile_inputs,BASELINE_SHA256,ENGINE as FRAM
 from tools.semantic_target_review import prepare_application_runtime_inputs as custody
 from tools.semantic_provider_deployment_authentication import attributes
 from tools.semantic_lease_recovery.reader import lease_projection
-from tools.chatbot_file_cohort.plan import environment
+from tools.chatbot_file_cohort.plan import environment,creation_host_config
 from tools.chatbot_file_cohort.preparation import packaged_migrations
 from tools.chatbot_file_cohort.images import private_open
 from database_gate import Psql,identifier
@@ -243,7 +243,8 @@ def creation(parent,declaration,actual,audit,tree,token,delegation,proposal,prop
     result=copy.deepcopy(parent);result.update(Image=audit['imageId'],User='10001:10001',Env=[k+'='+v for k,v in sorted(env.items())],
         Entrypoint=java,Cmd=[],Labels=copy.deepcopy(config.get('Labels') or {}),WorkingDir=config.get('WorkingDir') or '/')
     result.pop('Hostname',None);result.pop('Domainname',None)
-    host=result['HostConfig'];host['RestartPolicy']={'Name':'no','MaximumRetryCount':0};host['Mounts']=[]
+    host=creation_host_config(result['HostConfig']);result['HostConfig']=host
+    host['RestartPolicy']={'Name':'no','MaximumRetryCount':0};host['Mounts']=[]
     endpoints=result['NetworkingConfig']['EndpointsConfig'];original=actual['NetworkSettings']['Networks']
     require(set(endpoints)==set(original) and len(endpoints)==1 and all(
         endpoint['NetworkID']==original[name]['NetworkID']

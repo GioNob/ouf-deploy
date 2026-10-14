@@ -12,7 +12,7 @@ from urllib.parse import quote
 from engine_creation import Engine
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
-from tools.chatbot_file_cohort.plan import digest, encoded, environment, runtime_pin, require, sha, NO_RESTART, PlanDenied
+from tools.chatbot_file_cohort.plan import digest, encoded, environment, runtime_pin, require, sha, NO_RESTART, PlanDenied, creation_host_config
 from tools.chatbot_file_cohort.containers import CohortPaused, READINESS_POLICY
 from tools.chatbot_file_cohort.gateway import NamespaceAdmin, private_config, namespace_program
 
@@ -30,7 +30,7 @@ def compile_runtime(old, old_config_binding, new_config_binding, new_key_env, ke
             and all(c in '0123456789abcdef' for c in key), 'EXACT_PREPARED_PROPOSAL_KEY_REQUIRED')
     import hashlib
     require(hashlib.sha256(key.encode()).hexdigest()==key_hash, 'PROPOSAL_KEY_HASH_MISMATCH')
-    host=copy.deepcopy(old['HostConfig']);config=copy.deepcopy(old['Config'])
+    host=creation_host_config(old['HostConfig']);config=copy.deepcopy(old['Config'])
     require(not host.get('Privileged') and not host.get('AutoRemove') and not host.get('Links')
             and not host.get('VolumesFrom') and not host.get('ContainerIDFile')
             and not str(host.get('PidMode','')).startswith('container:')

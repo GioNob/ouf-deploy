@@ -269,7 +269,8 @@ def main():
                 import tools.semantic_policy_token_owner.iam_owner_action as owner_action
                 import tools.semantic_policy_token_owner.iam_action_runtime as action_runtime
                 source_paths={p.stem:p for p in (ROOT/'tools/semantic_policy_token_owner').glob('*.py')}
-                source_paths['cutover_authority']=ROOT/'tools/semantic_application_cutover/cutover_authority.py'
+                source_paths.update({n:ROOT/'tools/semantic_application_cutover'/(n+'.py') for n in
+                    ('cutover_authority','file_only_profile','gated_creation_plan','transition_journal')})
                 source_paths.update({'tools.'+p.stem:p for p in (ROOT/'tools/semantic_cohort_admission/cohort-draft/tools').glob('*.py')})
                 action_sources={n:source_paths[n].read_bytes() for n in action_runtime.MODULES}
                 manifest=action_runtime.declaration('c'*40,action_sources,(ROOT/'tools/semantic_policy_token_owner/iam_action_runtime.py').read_bytes())

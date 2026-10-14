@@ -69,6 +69,22 @@ def runtime_pin(actual):
                 ('mounts','Mounts'), ('networkSettings','NetworkSettings'))}}
 
 
+def creation_host_config(observed):
+    """Spell out Docker's proven null-to-false OOM default before approval.
+
+    Native Engine v1.44 create/inspect qualified the exact representation:
+    OomKillDisable=null becomes false. No observed field is discarded, and
+    readback remains exact. An explicit true is never rewritten to false.
+    """
+    require(type(observed) is dict, 'EXACT_OBSERVED_HOST_CONFIG_REQUIRED')
+    result=deepcopy(observed)
+    if 'OomKillDisable' in result:
+        value=result['OomKillDisable']
+        require(value is None or type(value) is bool, 'BOOLEAN_OR_DEFAULT_OOM_CONTROL_REQUIRED')
+        if value is None:result['OomKillDisable']=False
+    return result
+
+
 def compile_replacement(module, old, image, package, cohort_id, env_changes):
     require(module in MODULES and re.fullmatch(r'[a-z0-9-]{1,60}', cohort_id or '') is not None,
             'EXACT_COHORT_MODULE_AND_ID_REQUIRED')
@@ -80,7 +96,7 @@ def compile_replacement(module, old, image, package, cohort_id, env_changes):
             and IMAGE.fullmatch(image.get('Id', '')) is not None
             and package.get('scanGate') == 'PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED',
             'EXACT_QUALIFIED_IMAGE_PACKAGE_REQUIRED')
-    config, host = deepcopy(old['Config']), deepcopy(old['HostConfig'])
+    config, host = deepcopy(old['Config']), creation_host_config(old['HostConfig'])
     candidate = image['Config']
     require(config.get('User') == candidate.get('User') == USERS[module],
             'MODULE_RUNTIME_USER_DRIFT')

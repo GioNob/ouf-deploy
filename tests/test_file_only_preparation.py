@@ -110,6 +110,7 @@ class Preparation(unittest.TestCase):
 
     def test_creation_binds_new_token_file_without_disabling_iam(self):
         request,tree,key,token,proposal,context=self.inputs();old=self.producer('a')
+        request['HostConfig']['OomKillDisable']=None
         request['Env']+=['OUF_AUTHORIZATION_REGISTRY_TOKEN_FILE='+token['target']+'/old.jwt',
             'OUF_CONSULTATION_KEY='+key['target'],'OUF_IAM_ENABLED=true']
         request['NetworkingConfig']={'EndpointsConfig':{'ouf-backend':{'NetworkID':'9'*64,
@@ -122,6 +123,8 @@ class Preparation(unittest.TestCase):
         self.assertEqual(env['OUF_AUTHORIZATION_REGISTRY_TOKEN_FILE'],token['target']+'/'+token['fileName'])
         self.assertEqual(env['OUF_IAM_ENABLED'],'true')
         self.assertEqual(len(result['HostConfig']['Binds']),4)
+        self.assertIs(result['HostConfig']['OomKillDisable'],False)
+        self.assertIsNone(request['HostConfig']['OomKillDisable'])
         self.assertEqual(result['Cmd'],audit['imageConfig']['Entrypoint'])
         request['Env'][-1]='OUF_IAM_ENABLED=false'
         with self.assertRaisesRegex(ValueError,'IAM_CANNOT_BE_DISABLED'):

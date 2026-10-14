@@ -49,7 +49,7 @@ class GatewayRuntime(unittest.TestCase):
              'State':{'Running':True,'Paused':False,'Status':'running','Pid':99,'StartedAt':'2026-10-14T00:00:00Z'},
              'Config':{'Image':'apisix:retained','User':'apisix','Hostname':'a'*12,'Env':['RETAINED_KEY='+'1'*64],
                        'Entrypoint':['/docker-entrypoint.sh'],'Cmd':['docker-start'],'Labels':{}},
-             'HostConfig':{'NetworkMode':'ouf-backend','RestartPolicy':{'Name':'unless-stopped','MaximumRetryCount':0},
+             'HostConfig':{'OomKillDisable':None,'NetworkMode':'ouf-backend','RestartPolicy':{'Name':'unless-stopped','MaximumRetryCount':0},
                            'Binds':[str(original)+':/usr/local/apisix/conf/config.yaml:ro']},
              'Mounts':[{'Type':'bind','Source':str(original),'Destination':'/usr/local/apisix/conf/config.yaml','RW':False}],
              'NetworkSettings':{'Networks':{n:{'NetworkID':c*64,'Aliases':['ouf-apisix'],'IPAMConfig':None}
@@ -76,6 +76,8 @@ class GatewayRuntime(unittest.TestCase):
         self.assertTrue(result['oldContainerRetained'])
         old=native.find(owner.plan['retiredName']);new=native.find('ouf-apisix')
         self.assertFalse(old['State']['Running']);self.assertEqual(new['Image'],old['Image'])
+        self.assertIsNone(old['HostConfig']['OomKillDisable'])
+        self.assertIs(new['HostConfig']['OomKillDisable'],False)
         self.assertEqual(set(new['NetworkSettings']['Networks']),{'ouf-backend','ouf-gateway-control'})
         self.assertEqual(r.environment(new['Config']['Env'])['PROPOSAL_KEY'],KEY)
         self.assertEqual(new['Mounts'][0]['Source'],owner.plan['newConfigBinding']['path'])
@@ -88,6 +90,12 @@ class GatewayRuntime(unittest.TestCase):
                 with self.assertRaises(Exception):owner.apply()
                 self.assertEqual(owner.record()['effects'][-1]['state'],'CLAIMED')
                 owner.apply();self.assertEqual(len(native.calls),7)
+
+    def test_changed_oom_control_still_fails_exact_host_readback(self):
+        owner,native,_=self.fixture();owner.apply()
+        native.find('ouf-apisix')['HostConfig']['OomKillDisable']=True
+        with self.assertRaisesRegex(ValueError,'CANDIDATE_HOST_DRIFT'):owner.apply()
+        self.assertEqual(len(native.calls),7)
 
     def test_second_generation_same_id_is_never_adopted_on_resume(self):
         owner,native,_=self.fixture();owner.apply()

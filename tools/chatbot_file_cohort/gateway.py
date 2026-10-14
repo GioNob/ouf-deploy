@@ -259,7 +259,7 @@ class NamespaceAdmin:
             try:
                 output,_=child.communicate(request,timeout=15)
             except subprocess.TimeoutExpired:
-                raise ValueError('APISIX_OUTCOME_REQUIRES_RECONCILIATION') from None
+                require(False,'APISIX_OUTCOME_REQUIRES_RECONCILIATION')
             require(child.returncode==0 and 0<len(output)<=MAX_RESPONSE+65536,
                     'APISIX_OUTCOME_REQUIRES_RECONCILIATION')
             self.check()

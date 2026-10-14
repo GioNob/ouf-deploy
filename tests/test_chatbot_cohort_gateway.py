@@ -14,6 +14,7 @@ import tempfile
 import threading
 import time
 import unittest
+from unittest.mock import MagicMock,patch
 
 ROOT=Path(__file__).resolve().parents[1]
 APP=ROOT if (ROOT/'tools/semantic_application_cutover/engine_creation.py').is_file() else ROOT.parent/'file-profile-work'
@@ -135,6 +136,28 @@ class Projection(unittest.TestCase):
         for bad in (raw.replace(b'deployment:',b'other:'),raw.replace(b'"0123456789abcdef0123456789abcdef"',b'${SECRET}'),
                     raw.replace(b'        role: admin',b'        role: admin\n        role: viewer')):
             with self.assertRaises(ValueError):g.selected_admin_key(bad)
+
+
+class ChildTimeoutClassification(unittest.TestCase):
+    def test_read_and_write_timeouts_are_typed_and_never_automatically_replayed(self):
+        from tools.chatbot_file_cohort.plan import PlanDenied
+        program=g.namespace_program()
+        config=b'deployment:\n  admin:\n    admin_key:\n      - name: admin\n        key: 0123456789abcdef0123456789abcdef\n        role: admin\n'
+        for method,path,body in (('GET','/apisix/admin/routes',None),('PUT','/apisix/admin/routes/fixture',{'id':'fixture'})):
+            with self.subTest(method=method):
+                namespace_fd=os.open('/dev/null',os.O_RDONLY);namespace=os.fstat(namespace_fd)
+                transport=g.NamespaceAdmin.__new__(g.NamespaceAdmin)
+                transport.binding={'pythonExecutable':program,'configBinding':{'path':'/synthetic-config'},
+                    'runtimeBinding':{'pid':os.getpid()},'networkNamespace':{'device':namespace.st_dev,'inode':namespace.st_ino}}
+                transport.check=lambda:None
+                child=MagicMock();child.communicate.side_effect=subprocess.TimeoutExpired('synthetic-child',15)
+                child.poll.return_value=None
+                with patch.object(g,'private_config',return_value=(config,{})),patch.object(g,'namespace_program',return_value=program),patch.object(g.os,'open',return_value=namespace_fd),patch.object(g.subprocess,'Popen',return_value=child) as spawn:
+                    with self.assertRaisesRegex(PlanDenied,'APISIX_OUTCOME_REQUIRES_RECONCILIATION'):
+                        transport.request(method,path,body)
+                self.assertEqual(spawn.call_count,1);self.assertEqual(child.communicate.call_count,1)
+                child.kill.assert_called_once();child.wait.assert_called_once_with(timeout=5)
+                with self.assertRaises(OSError):os.fstat(namespace_fd)
 
 
 class NativeNamespaceTransport(unittest.TestCase):
