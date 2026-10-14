@@ -1,0 +1,1832 @@
+{
+  "applicationWrites": 0,
+  "areas": {
+    "activeProjection": {
+      "data": {
+        "credentialValuesPrinted": false,
+        "gatewayIssuerConfigured": true,
+        "mcpWorkloadClientConsistent": true,
+        "metadata": {
+          "bytes": 1732,
+          "gid": 0,
+          "mode": "0o600",
+          "sha256": "675a61a8edc78f25d84d7a497358d48c7775938c1d6579d0140b14c6aada9830",
+          "uid": 0
+        },
+        "publicApiOriginConfigured": true
+      },
+      "status": "OBSERVED"
+    },
+    "config/ouf-apisix": {
+      "data": [
+        {
+          "configurationKeys": [
+            "admin",
+            "admin_key",
+            "admin_listen",
+            "allow_admin",
+            "apisix",
+            "config_provider",
+            "deployment",
+            "dns_resolver",
+            "enable_admin",
+            "envs",
+            "etcd",
+            "host",
+            "ip",
+            "key",
+            "nginx_config",
+            "node_listen",
+            "port",
+            "prefix",
+            "role",
+            "role_traditional",
+            "timeout"
+          ],
+          "keysTruncated": false,
+          "metadata": {
+            "bytes": 717,
+            "gid": 636,
+            "mode": "0o400",
+            "sha256": "0975a34a8c0a86a462ffb20a079a90da6942a9dd5e9ab333d3f1eda7546baef8",
+            "uid": 636
+          },
+          "readOnly": true,
+          "scalarValuesPrinted": false,
+          "target": "/usr/local/apisix/conf/config.yaml"
+        }
+      ],
+      "status": "OBSERVED"
+    },
+    "config/ouf-ingestion": {
+      "data": [
+        {
+          "configurationKeys": [
+            "ouf.authorization.max-staleness-seconds",
+            "ouf.authorization.refresh-seconds",
+            "ouf.authorization.registry-token-file",
+            "ouf.authorization.registry-url",
+            "ouf.ingestion.activation.enabled",
+            "ouf.ingestion.activation.gateway-url",
+            "ouf.ingestion.activation.tenant-id",
+            "ouf.ingestion.activation.token-file",
+            "ouf.ingestion.execution.enabled",
+            "ouf.ingestion.iam.audience",
+            "ouf.ingestion.iam.enabled",
+            "ouf.ingestion.iam.issuer",
+            "ouf.summary.audience",
+            "ouf.summary.issuer",
+            "ouf.summary.receipt-key-file",
+            "ouf.summary.tenant-id",
+            "ouf.summary.workload"
+          ],
+          "keysTruncated": false,
+          "metadata": {
+            "bytes": 874,
+            "gid": 10002,
+            "mode": "0o440",
+            "sha256": "8d0039511f9b8b33999182d4624107d938e8ded29632baf3924ba9c23dec135c",
+            "uid": 0
+          },
+          "readOnly": true,
+          "scalarValuesPrinted": false,
+          "target": "/run/secrets/ingestion-summary.properties"
+        }
+      ],
+      "status": "OBSERVED"
+    },
+    "config/ouf-keycloak": {
+      "data": [],
+      "status": "OBSERVED"
+    },
+    "config/ouf-mcp": {
+      "data": [],
+      "status": "OBSERVED"
+    },
+    "config/ouf-onboarding": {
+      "data": [
+        {
+          "configurationKeys": [
+            "ouf",
+            "ouf.authorization",
+            "ouf.authorization.bootstrap",
+            "ouf.authorization.bootstrap.admin-issuer",
+            "ouf.authorization.bootstrap.admin-tenant",
+            "ouf.authorization.bootstrap.superadmin-role",
+            "ouf.authorization.bootstrap.superadmin-subject",
+            "ouf.authorization.delegation",
+            "ouf.authorization.delegation.key-file",
+            "ouf.authorization.delegation.workload",
+            "ouf.authorization.ths",
+            "ouf.authorization.ths.enabled",
+            "ouf.authorization.ths.public-origin",
+            "ouf.runtime-publications",
+            "ouf.runtime-publications.tenant-id",
+            "server",
+            "server.servlet",
+            "server.servlet.session",
+            "server.servlet.session.cookie",
+            "server.servlet.session.cookie.http-only",
+            "server.servlet.session.cookie.same-site",
+            "server.servlet.session.cookie.secure",
+            "server.servlet.session.timeout",
+            "spring",
+            "spring.security",
+            "spring.security.oauth2",
+            "spring.security.oauth2.client",
+            "spring.security.oauth2.client.provider",
+            "spring.security.oauth2.client.provider.ouf",
+            "spring.security.oauth2.client.provider.ouf.issuer-uri",
+            "spring.security.oauth2.client.registration",
+            "spring.security.oauth2.client.registration.ouf-ths",
+            "spring.security.oauth2.client.registration.ouf-ths.authorization-grant-type",
+            "spring.security.oauth2.client.registration.ouf-ths.client-id",
+            "spring.security.oauth2.client.registration.ouf-ths.client-secret",
+            "spring.security.oauth2.client.registration.ouf-ths.provider",
+            "spring.security.oauth2.client.registration.ouf-ths.redirect-uri",
+            "spring.security.oauth2.client.registration.ouf-ths.scope"
+          ],
+          "keysTruncated": false,
+          "metadata": {
+            "bytes": 1555,
+            "gid": 10003,
+            "mode": "0o400",
+            "sha256": "6d546047448495746d7eaad6d83e7942fa2950f137d4a240a3aef9309f7f39be",
+            "uid": 10003
+          },
+          "readOnly": true,
+          "scalarValuesPrinted": false,
+          "target": "/run/secrets/onboarding-ths.yaml"
+        }
+      ],
+      "status": "OBSERVED"
+    },
+    "config/ouf-postgres": {
+      "data": [],
+      "status": "OBSERVED"
+    },
+    "config/ouf-semantic": {
+      "data": [],
+      "status": "OBSERVED"
+    },
+    "config/ouf-udp": {
+      "data": [],
+      "status": "OBSERVED"
+    },
+    "container/ouf-apisix": {
+      "data": {
+        "binding": {
+          "configHash": "b6c84a4f0da6a6d96a3977e525d50bb4e024223aa968bd2a15161fcd849201d1",
+          "containerId": "dcbe26bed97dd5c7ac8a131ec2badf77b0291c2ef32907be639bfa09c36596d9",
+          "hostConfigHash": "4ae4ad615fd72a83a6ef605440962b698741b477e775f9ffff0c454efeae168e",
+          "imageId": "sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d",
+          "mountsHash": "67343f16b2dcd4e425465e211a51ed65253af85fd773bff19689f42423501c56",
+          "networkSettingsHash": "2e50101cb26b53c2f39f6575f4c20b1a4ad173624d894399869f931ff9e74a04",
+          "pid": 3759363,
+          "startedAt": "2026-10-02T10:01:40.539748629Z"
+        },
+        "environmentCount": 8,
+        "imageRevision": null,
+        "mountCount": 1,
+        "networkCount": 2,
+        "paused": false,
+        "restartPolicy": {
+          "MaximumRetryCount": 0,
+          "Name": "unless-stopped"
+        },
+        "running": true,
+        "springExternalConfigChannels": [],
+        "status": "running",
+        "userConfigured": true
+      },
+      "status": "OBSERVED"
+    },
+    "container/ouf-gateway-control-plane": {
+      "reason": "NATIVE_METADATA_READ_FAILED",
+      "status": "UNAVAILABLE"
+    },
+    "container/ouf-ingestion": {
+      "data": {
+        "binding": {
+          "configHash": "8c0a3d6aee58b7e92fd3e79190e03a6a6dbc5ea42d5b408461b1dd3aa41e4812",
+          "containerId": "1fa5450574e72ef15ebb2c74e0f421f04d24c842975e324ac958f071672fbb7e",
+          "hostConfigHash": "59c3436348b8e55548ae86e9a769a0aabad44fc1f2defe47c2e3f09e03081ffc",
+          "imageId": "sha256:b07a4a786ca48335feae887e18dc7c4c6cdd9bd0a3a255f83d18c7c1616eec48",
+          "mountsHash": "0505e054ff2c332f9308eac9f958c18ddb57210833efa531bddcc904629904a5",
+          "networkSettingsHash": "f10b3e2aa9bbdc0c7660cbb4297cd731b1c4012bef16cc9707335a5f4adb6d16",
+          "pid": 3328741,
+          "startedAt": "2026-10-01T02:55:00.190888171Z"
+        },
+        "environmentCount": 8,
+        "imageRevision": "163c167d09b8371ff7a62ce7068e9d485b6969b7",
+        "mountCount": 3,
+        "networkCount": 1,
+        "paused": false,
+        "restartPolicy": {
+          "MaximumRetryCount": 0,
+          "Name": "unless-stopped"
+        },
+        "running": true,
+        "springExternalConfigChannels": [
+          "SPRING_CONFIG_ADDITIONAL_LOCATION"
+        ],
+        "status": "running",
+        "userConfigured": true
+      },
+      "status": "OBSERVED"
+    },
+    "container/ouf-keycloak": {
+      "data": {
+        "binding": {
+          "configHash": "6c42e578fb3a18cba8c0c02c72fac41f0202d7878f225b188752e6ba2a7cbbf0",
+          "containerId": "5c3967a7a0cf1a054ba1fec702ddc0b97cf96d1e45bd45d45d27b393f6a1f273",
+          "hostConfigHash": "172f9911d995bf8f4e5e5282a82b88f921d41f4320fc04945f25455e77a122f7",
+          "imageId": "sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+          "mountsHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "networkSettingsHash": "cecbfded8d00739119fb4c9b9bd5251c040d950060954e22f9c7edf1b1cf03c1",
+          "pid": 11448,
+          "startedAt": "2026-09-17T16:44:15.133886659Z"
+        },
+        "environmentCount": 9,
+        "imageRevision": "df15afa5a3a8a2b10021f879ffa93b30fb36c73a",
+        "mountCount": 0,
+        "networkCount": 1,
+        "paused": false,
+        "restartPolicy": {
+          "MaximumRetryCount": 0,
+          "Name": "unless-stopped"
+        },
+        "running": true,
+        "springExternalConfigChannels": [],
+        "status": "running",
+        "userConfigured": true
+      },
+      "status": "OBSERVED"
+    },
+    "container/ouf-mcp": {
+      "data": {
+        "binding": {
+          "configHash": "8b8021a2bce84526c056f844d564ca74f6e6438cff23a96bda5126f5c7a4e592",
+          "containerId": "ddbfc944d2b7f431cb0189ced278c049b3360a077e9c4b75fa36c58a3a0f127a",
+          "hostConfigHash": "db26ffed2cf5f1ba8309c9c4f37ee2a0cdbf2155c2ef10c22c69e3a50bd99d7d",
+          "imageId": "sha256:99a158f780243b3fa05199bed9db01197be8ae60ae1e75ad5432964509422872",
+          "mountsHash": "0a94db91b3a8ca96261fa9c41fdc066ce34acad5445853698a669f2011a76592",
+          "networkSettingsHash": "a85d46f9caca13de7c092e47252f8ec4fb8d4b23e22dfd25a90b474f74ac0d8c",
+          "pid": 3776618,
+          "startedAt": "2026-10-02T11:03:59.721933008Z"
+        },
+        "environmentCount": 11,
+        "imageRevision": "394b4b1540b575564f0ba58541df9d7efc59fb87",
+        "mountCount": 2,
+        "networkCount": 1,
+        "paused": false,
+        "restartPolicy": {
+          "MaximumRetryCount": 0,
+          "Name": "unless-stopped"
+        },
+        "running": true,
+        "springExternalConfigChannels": [],
+        "status": "running",
+        "userConfigured": true
+      },
+      "status": "OBSERVED"
+    },
+    "container/ouf-onboarding": {
+      "data": {
+        "binding": {
+          "configHash": "3852c9cb19e477c90151d84c8642d3905eaf2caf7a94bdf4379aebe8bdda9441",
+          "containerId": "9a72c87387ee416670c2ed699f0b555cd7a83adbeda10a4c390db0328e991073",
+          "hostConfigHash": "8ed9299cfe671197aca65cd6c83b3eb645f9b2fe2e478ee79352f13ffb735b67",
+          "imageId": "sha256:ec6f2a962261a8433bfe103347afa2202837fcec90d210d9b5232711b854ee8a",
+          "mountsHash": "831a67eb22989130c63d836388f2509b6d3924dd04f8feef3dfab1b040d54763",
+          "networkSettingsHash": "4c71b54c84024bb03257bd8506417c882721a7cb90fb4427f3cc5f34f57aedee",
+          "pid": 3139923,
+          "startedAt": "2026-09-30T14:42:14.296301773Z"
+        },
+        "environmentCount": 24,
+        "imageRevision": "6340d5bf120e09b47c32177656e2c377a4c03640",
+        "mountCount": 6,
+        "networkCount": 1,
+        "paused": false,
+        "restartPolicy": {
+          "MaximumRetryCount": 0,
+          "Name": "unless-stopped"
+        },
+        "running": true,
+        "springExternalConfigChannels": [
+          "SPRING_CONFIG_ADDITIONAL_LOCATION",
+          "SPRING_APPLICATION_JSON"
+        ],
+        "status": "running",
+        "userConfigured": true
+      },
+      "status": "OBSERVED"
+    },
+    "container/ouf-postgres": {
+      "data": {
+        "binding": {
+          "configHash": "56d97df50b885229256c05f4b8d22b6a6965c9b98b62f44ec97b02f8f837c46b",
+          "containerId": "50b36d71620ad00fee1bae45aaf0bf652b9171dc09f567fa552798daf12614ea",
+          "hostConfigHash": "6eec55990cddb78d8b73aecd0d8f6ccb413ec217d55a3c684e577fb9daa9260d",
+          "imageId": "sha256:894f570c0cf0664ed5576a8fd5d5bfb8fb1b19d592885b686c3a88c8bd90c41f",
+          "mountsHash": "48a6e02cfdcd6c3d73358ccd61a11f0ed46c659c8d0aca5dc3d236d427ccd156",
+          "networkSettingsHash": "836d938a0db748e0ee147e2ebfd988f61b341852d9b6bab111905c2eeca0d793",
+          "pid": 10948,
+          "startedAt": "2026-09-17T16:38:23.262232373Z"
+        },
+        "environmentCount": 13,
+        "imageRevision": null,
+        "mountCount": 2,
+        "networkCount": 1,
+        "paused": false,
+        "restartPolicy": {
+          "MaximumRetryCount": 0,
+          "Name": "unless-stopped"
+        },
+        "running": true,
+        "springExternalConfigChannels": [],
+        "status": "running",
+        "userConfigured": false
+      },
+      "status": "OBSERVED"
+    },
+    "container/ouf-semantic": {
+      "data": {
+        "binding": {
+          "configHash": "097ded59f89cd745ffbfbbbe466bdf64c54a788ab911ea41632b97df0cbea084",
+          "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+          "hostConfigHash": "0f09a1304fc4b3fb8c503afc23d16159c690296c88264f932d1aa411160c310e",
+          "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+          "mountsHash": "4bf1ed4e0c4a4a2b201369905be4d8919edafffc881518d492c0cb83154b0d89",
+          "networkSettingsHash": "1528caf335bfa9411e15afcdab1388b735ee639e86e4b525c45734eb9bb0d8bc",
+          "pid": 3789123,
+          "startedAt": "2026-10-02T11:45:44.132808507Z"
+        },
+        "environmentCount": 19,
+        "imageRevision": "e7bc5190f9e6afbbc4cf3c90d5d4970afbfad14b",
+        "mountCount": 2,
+        "networkCount": 1,
+        "paused": false,
+        "restartPolicy": {
+          "MaximumRetryCount": 0,
+          "Name": "unless-stopped"
+        },
+        "running": true,
+        "springExternalConfigChannels": [],
+        "status": "running",
+        "userConfigured": true
+      },
+      "status": "OBSERVED"
+    },
+    "container/ouf-udp": {
+      "data": {
+        "binding": {
+          "configHash": "4848fd6c2197fdbdc50c468e502f5aa1e09e1c67fde3678515e689b3cf728c57",
+          "containerId": "6552bf974c4d06619e53e056d768ffd32ec47c5e77421aed635ea6ddecf5d240",
+          "hostConfigHash": "4e01bf742319112de0c5b9df1483503898a7a7c514a2488fdb4a16935238488a",
+          "imageId": "sha256:5e048a859716d6674355e72238f03f899abd705a943ceadbdc5c8863d28f4e9f",
+          "mountsHash": "22f9f62595ea405affc9aaa7a2d6c10f3ebb1da1ff47f779f7e20bfe31d194af",
+          "networkSettingsHash": "d1193dc7bc8b08d1e7f4578b49c1ef11124d39f993da5568d6f9acedd49a374d",
+          "pid": 3509231,
+          "startedAt": "2026-10-01T15:36:32.767844165Z"
+        },
+        "environmentCount": 36,
+        "imageRevision": "83249a897eb4add4289b5181b3299f48ea4c0f99",
+        "mountCount": 2,
+        "networkCount": 1,
+        "paused": false,
+        "restartPolicy": {
+          "MaximumRetryCount": 0,
+          "Name": "unless-stopped"
+        },
+        "running": true,
+        "springExternalConfigChannels": [],
+        "status": "running",
+        "userConfigured": true
+      },
+      "status": "OBSERVED"
+    },
+    "containerInventory": {
+      "reason": "CONTAINER_INVENTORY_LIMIT",
+      "status": "UNAVAILABLE"
+    },
+    "coordinationIntake": {
+      "data": {
+        "expectedHashMatched": true,
+        "metadata": {
+          "bytes": 11474,
+          "gid": 0,
+          "mode": "0o600",
+          "sha256": "395c92d7bcb8dadfa3bb248a3e94b37bd36a396cc07c16ee5d1d57a646e00239",
+          "uid": 0
+        }
+      },
+      "status": "OBSERVED"
+    },
+    "currentRuntimeAuthorityLedger": {
+      "reason": "EXACT_CURRENT_LEDGER_SELECTION_REQUIRED",
+      "status": "NOT_COLLECTED"
+    },
+    "database/ingestion": {
+      "reason": "MIGRATION_METADATA_UNSUPPORTED",
+      "status": "UNAVAILABLE"
+    },
+    "database/mcp": {
+      "reason": "DB_PEER_OR_QUERY_REQUIRES_REVIEW",
+      "status": "UNAVAILABLE"
+    },
+    "database/onboarding": {
+      "reason": "MIGRATION_METADATA_UNSUPPORTED",
+      "status": "UNAVAILABLE"
+    },
+    "database/semantic": {
+      "reason": "MIGRATION_METADATA_UNSUPPORTED",
+      "status": "UNAVAILABLE"
+    },
+    "database/udp": {
+      "reason": "MIGRATION_METADATA_UNSUPPORTED",
+      "status": "UNAVAILABLE"
+    },
+    "engine": {
+      "data": {
+        "CgroupDriver": "systemd",
+        "Containers": 98,
+        "ContainersRunning": 14,
+        "DockerRootDir": "/var/lib/docker",
+        "Driver": "overlayfs",
+        "MemTotal": 16773283840,
+        "NCPU": 8,
+        "ServerVersion": "29.8.1"
+      },
+      "status": "OBSERVED"
+    },
+    "exactRetainedRegistryRead": {
+      "data": {
+        "binding": {
+          "configHash": "097ded59f89cd745ffbfbbbe466bdf64c54a788ab911ea41632b97df0cbea084",
+          "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+          "hostConfigHash": "0f09a1304fc4b3fb8c503afc23d16159c690296c88264f932d1aa411160c310e",
+          "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+          "mountsHash": "4bf1ed4e0c4a4a2b201369905be4d8919edafffc881518d492c0cb83154b0d89",
+          "networkSettingsHash": "1528caf335bfa9411e15afcdab1388b735ee639e86e4b525c45734eb9bb0d8bc",
+          "pid": 3789123,
+          "startedAt": "2026-10-02T11:45:44.132808507Z"
+        },
+        "environmentCount": 19,
+        "imageRevision": "e7bc5190f9e6afbbc4cf3c90d5d4970afbfad14b",
+        "mountCount": 2,
+        "networkCount": 1,
+        "paused": false,
+        "restartPolicy": {
+          "MaximumRetryCount": 0,
+          "Name": "unless-stopped"
+        },
+        "running": true,
+        "springExternalConfigChannels": [],
+        "status": "running",
+        "userConfigured": true
+      },
+      "status": "OBSERVED"
+    },
+    "existingTeatriInput": {
+      "data": {
+        "assetFound": true,
+        "columns": 20,
+        "contentHash": "sha256:08b20658b2b4eadf34d25cd93eead2945096b353ae33b797cf3c41df5319c9e9",
+        "ownerMatches": true,
+        "profileVersion": 1,
+        "rows": 13,
+        "sourceAlreadyBound": false
+      },
+      "status": "OBSERVED"
+    },
+    "freshMcpRead": {
+      "reason": "CONVERSATION_CONNECTOR_ROUTING_UNAVAILABLE",
+      "status": "NOT_COLLECTED"
+    },
+    "gatewayLiveRoutes": {
+      "data": {
+        "configHash": "0975a34a8c0a86a462ffb20a079a90da6942a9dd5e9ab333d3f1eda7546baef8",
+        "credentialPrinted": false,
+        "fullRoutesHash": "5d2a2ff79ddb76e7e0140d9f75e9cce73deb1a848179916a8226bcfc6bd2f8c4",
+        "readMethod": "GET_NETNS_LOOPBACK",
+        "routeCount": 64,
+        "routes": [
+          {
+            "id": "authorization-ths-api",
+            "pluginNames": [
+              "client-control",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "0f46450c07db689d83aac37f34e20940246a8c52af873bc4946c675f96e0150a",
+            "selectorFamily": "OTHER",
+            "selectorHash": "69764bbc017026a7748075f6e607772afe20a0647fe7364670181ef2947f6e81",
+            "upstreamHash": "d20420b8a3fcc911f5dde581f3036720be395462f6f2b41ccb69227863857bcb"
+          },
+          {
+            "id": "authorization-ths-login",
+            "pluginNames": [
+              "client-control",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "f18051c4a65bc1fc40ba2fdbd87d7cf41feed44622970faf10b9d63955d14390",
+            "selectorFamily": "OTHER",
+            "selectorHash": "76d8e1810bf504dae16c338341056db7b96d1f85242d758f4857836861848dda",
+            "upstreamHash": "d20420b8a3fcc911f5dde581f3036720be395462f6f2b41ccb69227863857bcb"
+          },
+          {
+            "id": "authorization-ths-page",
+            "pluginNames": [
+              "client-control",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "32fb3ec7cb6dbbfb06816bc66e7ccdb1e4b62920846cbb5be448f898667d7626",
+            "selectorFamily": "OTHER",
+            "selectorHash": "859b791c5a8c1ae3d9607697e58c7be3687960e81e0891d1774e6c1ee89b3be4",
+            "upstreamHash": "d20420b8a3fcc911f5dde581f3036720be395462f6f2b41ccb69227863857bcb"
+          },
+          {
+            "id": "execute-ouf.gateway.operations.summary",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-validation",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "d0420bee15440ee9cd4dfdf2877da9370f7aab8cfc0fcee58b9d04ebff647a42",
+            "selectorFamily": "OTHER",
+            "selectorHash": "95cefd36bb6ff194d7ee200351c6364674a0c8a4cda3c9b414b44cbe6191292c",
+            "upstreamHash": "c287f3ca9778d1ae0986e5dca3b1bf377482a8aad81aa9055e6114b08e4eeb8f"
+          },
+          {
+            "id": "execute-ouf.ingestion.operations.summary",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-validation",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "3bdde738e6c0af9673ce997ce1d5ada92ba74589f2a07dbe9fe461c727d05edd",
+            "selectorFamily": "OTHER",
+            "selectorHash": "9989d1184ea0a3308ccfdb610cbd97f97de1a4941a68cd6da0c6f174a18dc13c",
+            "upstreamHash": "f48e8a2ce979d4ea6930792af9646012df36853115557108462b0f6436c21cd3"
+          },
+          {
+            "id": "execute-ouf.operations.summary",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-validation",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "3def5af0d1c46d9f577cce6b3e2fb9204ef5f2bf4ab02980806296bbc2e56606",
+            "selectorFamily": "OTHER",
+            "selectorHash": "224ff481b1f4ac96ebb2c71fa492bfca13bfa2265ed2a0d1ea6b4bfefe62b6a3",
+            "upstreamHash": "9bed34eb480b3fdcc132377ecdc77efb4b8734dc48383f9e68b018c70eb63841"
+          },
+          {
+            "id": "execute-urban-object-search",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-validation",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "63edb2104c03946ddae07600c9dbbae467219eb858e33177931ae71ab436f62b",
+            "selectorFamily": "OTHER",
+            "selectorHash": "97e5516fee57530fba07dc66695cb3ce5ed4a1e7e41537439fabb714b39849df",
+            "upstreamHash": "06683394de4c07e5640351833475f8111a3ced765c3a0e45082018ec4b625783"
+          },
+          {
+            "id": "mcp-authorization-policy-bundle-read",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "3fcbf9a51ad9a25af25f13408ecc1c9a910b69671bdaa4799eb1a3ee03b056e6",
+            "selectorFamily": "OTHER",
+            "selectorHash": "2b2e0c4fa6674ce24a381bbd3a0d8186bdaf5dfc0cde8129b6081a000af00b81",
+            "upstreamHash": "b53e7696e604a6d1595a85ebbf9296f2a8049eab975060e8af7058ee07fbdb27"
+          },
+          {
+            "id": "mcp-generic-execution",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-validation",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "91f96c38860421e76d5d7d44876e9cf74deea4d3a2088b0bfd1b2c8eabc32b86",
+            "selectorFamily": "OTHER",
+            "selectorHash": "051e6075cebcaa1e37cd37c9fd48bf6705e509ae792ce5e3778340fe62d2ff51",
+            "upstreamHash": "113df6a9a7cdd1a7040c14521fc29f77baea467a29428dd355743f31675a06d9"
+          },
+          {
+            "id": "mcp-managed-file-create",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "request-validation",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "368a6e5f3ee264dea514039a7a1c16d0c9490413dc48f3f9a56c2a36de17a31d",
+            "selectorFamily": "OTHER",
+            "selectorHash": "38f765a6c57344d245b9d12cfcd0e84c3b2d671c6f2eb54ed64430ac706cdda8",
+            "upstreamHash": "7c5361ee69ddf791dc4e72a63cfb3585dcd7fbac78db084f648d29d0bc83837c"
+          },
+          {
+            "id": "mcp-managed-file-handoff",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "request-validation",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "01b2f85e173a9f1278943814c0a19c40cdb5bb49ab7ae87bc26162921bd1aa15",
+            "selectorFamily": "OTHER",
+            "selectorHash": "c09707828362f14ce012bbba9e0ca108e27b4a6bad7c9fc438b7257abcb05a88",
+            "upstreamHash": "7c5361ee69ddf791dc4e72a63cfb3585dcd7fbac78db084f648d29d0bc83837c"
+          },
+          {
+            "id": "mcp-managed-file-preview",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "request-validation",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "a4ead8964b84845db7b58d5912d2855a04c96bfb013c802e306b01b4572f92eb",
+            "selectorFamily": "OTHER",
+            "selectorHash": "79f592ff09102ee14ce0703bfeb4decbb88e9edcb62f13563177dad4b6d71cb9",
+            "upstreamHash": "7c5361ee69ddf791dc4e72a63cfb3585dcd7fbac78db084f648d29d0bc83837c"
+          },
+          {
+            "id": "mcp-managed-file-profile",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "request-validation",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "97cd469e239985ad046a0602381a945a6461180b3007b0d1a12205fbf9bcd8fb",
+            "selectorFamily": "OTHER",
+            "selectorHash": "9a07f8fc9782eddb30b746285143a491a432dc65706c61e7c97d0c3470e7fd9d",
+            "upstreamHash": "7c5361ee69ddf791dc4e72a63cfb3585dcd7fbac78db084f648d29d0bc83837c"
+          },
+          {
+            "id": "mcp-managed-file-upload",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "proxy-control",
+              "proxy-rewrite",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "192f66e825cbdc7674c773afd3cee422b1105fb62fb3bad7ba444abd4c152bbc",
+            "selectorFamily": "OTHER",
+            "selectorHash": "6e269e8cc3466d543b15195bce3b6352fde8969c88310863c957ab73d0ff1ede",
+            "upstreamHash": "14c1ebe80ebe23f40371eb0b05e0deead2b4a398c7d5a7dc86c0d4a57f41c9e6"
+          },
+          {
+            "id": "mcp-permissions-propose",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-validation",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "9b8b2c89afbe34f8e5533e27b52898a7218b457a9d93971c7ce1b8a998cc9121",
+            "selectorFamily": "OTHER",
+            "selectorHash": "0f80ec15e6962b26764e29eb460abba92fd489128cc3d93d1fcfb18c8e12689a",
+            "upstreamHash": "7c5361ee69ddf791dc4e72a63cfb3585dcd7fbac78db084f648d29d0bc83837c"
+          },
+          {
+            "id": "mcp-permissions-read",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-validation",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "485016c5546b4ea3627468956bac877d511fde3fc2048ba5ee775f17afd5325c",
+            "selectorFamily": "OTHER",
+            "selectorHash": "e7acab103201d93532e601bfadd77cccc69f3d9cb09d9754d495977d709f4ad1",
+            "upstreamHash": "7c5361ee69ddf791dc4e72a63cfb3585dcd7fbac78db084f648d29d0bc83837c"
+          },
+          {
+            "id": "mcp-permissions-status",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-validation",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "20e60f6d564893becc07f63fcac2cda153594880ec75c2637f109e0275523a15",
+            "selectorFamily": "OTHER",
+            "selectorHash": "7b9b7d698ee67a49fa9e55d0d587bf204365c59e59491c040a3009bda7ba7856",
+            "upstreamHash": "7c5361ee69ddf791dc4e72a63cfb3585dcd7fbac78db084f648d29d0bc83837c"
+          },
+          {
+            "id": "mcp-semantic-get",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-validation",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "d781288c889ac0de894aff867a2c765f643e529d22a14cb7229bb355754ec72b",
+            "selectorFamily": "OTHER",
+            "selectorHash": "f7521554be60c67b7bd7273f8899c03045cf34c9f5ed68781e389e8055735828",
+            "upstreamHash": "1843e5b89318b3fbc5d3e2c6211bfb57d3a45cc4f6f4757ca20cd74d9680b4c3"
+          },
+          {
+            "id": "mcp-semantic-search",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-validation",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "f6900ebdc468c3316b6d319ef970b6f52329d9141adfc269f57e79580aaa82ee",
+            "selectorFamily": "OTHER",
+            "selectorHash": "e5ea6e100614b5a3e1c67524d00c10dcbd25af79e67cc823c1fc838c30741076",
+            "upstreamHash": "1843e5b89318b3fbc5d3e2c6211bfb57d3a45cc4f6f4757ca20cd74d9680b4c3"
+          },
+          {
+            "id": "onboarding-identity-preflight-read",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "1a8be0dac796294f67b48cbad2bf1083cc987f0728cea14c2682bf206f3139cb",
+            "selectorFamily": "OTHER",
+            "selectorHash": "577d76671b51a52dcb34d9c2418e97810d6dec6cffdc715c85c4187ef5370f49",
+            "upstreamHash": "a6016cc0bfe59f7043f03dd89bf9e8eb72d65d945a49b0a18b2ae6ef57814759"
+          },
+          {
+            "id": "onboarding-managed-file-read",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "4dbf72782a6a60def4c674c6510cd6b0c4a868530b44b20b5217fc3ba0538c4f",
+            "selectorFamily": "OTHER",
+            "selectorHash": "5d5fc7693c814c081fa919dbbf4e0300c20515b02b703239543d61de2a6e88d8",
+            "upstreamHash": "b53e7696e604a6d1595a85ebbf9296f2a8049eab975060e8af7058ee07fbdb27"
+          },
+          {
+            "id": "ouf-5708b3900d0f-001",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "89caccb9f0faf1b64a6b766e3c63a3605b79b50d47fedd6158699c555fc29758",
+            "selectorFamily": "OTHER",
+            "selectorHash": "5bf548e87c9557728f9f370f7b9d6eac554c4130f741c5f2cf3931713874c86f",
+            "upstreamHash": "e9e94419d31d84781f8443d00c0039d9fb9cabdf3b63f36a0421d33e67769955"
+          },
+          {
+            "id": "ouf-6f5155e48422-001",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "d6dd3a79293f6f42d481917d5d578f4d5a37f7724c0f599d542977c5c9f53058",
+            "selectorFamily": "OTHER",
+            "selectorHash": "5bf548e87c9557728f9f370f7b9d6eac554c4130f741c5f2cf3931713874c86f",
+            "upstreamHash": "e9e94419d31d84781f8443d00c0039d9fb9cabdf3b63f36a0421d33e67769955"
+          },
+          {
+            "id": "public-mcp-endpoint",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "request-validation",
+              "response-rewrite",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "11006bf83f5a028e702aba7e79202b8d7fea5ec1b939e8623b52d2ef2d3eefcd",
+            "selectorFamily": "OTHER",
+            "selectorHash": "626ed124c327c732822f0c1b985c4703e0aa0ab3582587b3f30a277038f1cdbb",
+            "upstreamHash": "53f9966df1d161ff3f4c917005341079cdf6f8a28a9ef813364d17fe4563f105"
+          },
+          {
+            "id": "public-mcp-oauth-protected-resource",
+            "pluginNames": [
+              "limit-count",
+              "mocking",
+              "request-id"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "1e4963e10a9e7f9f3992bf18a8fdf48b537af10d97e3681657e459aaea58fc6f",
+            "selectorFamily": "OTHER",
+            "selectorHash": "18dfb447ee82babd5c871dba326306acb3521f57859280527d0f058f98a9e208",
+            "upstreamHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+          },
+          {
+            "id": "r2b-publication-resolution",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "26f3e255a03c3f23e18be1c90a64a2b473beb56118538fbca71d81772b719b8d",
+            "selectorFamily": "OTHER",
+            "selectorHash": "c360da6c210d1d68c1b2e0a3b3af4ffd74a74c09ea4878f2a6cca4fc5fac65a5",
+            "upstreamHash": "b53e7696e604a6d1595a85ebbf9296f2a8049eab975060e8af7058ee07fbdb27"
+          },
+          {
+            "id": "r2b-semantic-reference",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "bb7440cf703766c3348e191afd1a4fed1685bc99f2b76a7a1eb1da5020e9e2a1",
+            "selectorFamily": "OTHER",
+            "selectorHash": "738c76108673b42f66be5a67372e13c69b08e101c993a5d44f2a7ea2633b71a7",
+            "upstreamHash": "1dcbfab824f9d6bfe07fca23873d059bbf817355153c12acfaef61574e987bdd"
+          },
+          {
+            "id": "r4a-ingestion-human-quarantine-read",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "6ec851ec95e01372ac25fecdd89c839547499f6905014f0d97984aefda44c1b9",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "3cfaeffcce93fa14f5de21f7def1922c8cd9b5376fbfe32ed4498e8b7591b4f2",
+            "upstreamHash": "1edc83c8c475fc5ff5217d95c0e12dfe11118ce7fe640359d24941183fae33ab"
+          },
+          {
+            "id": "r4a-ingestion-human-quarantine-retry",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "c681379b950e0c9fe969a9418c9cfd3146dbbd44d179ec858e826a7ec65a6eb5",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "bf720e6b40c23a084600ab5cdffed360984880010135576be11f5564c274fc07",
+            "upstreamHash": "1edc83c8c475fc5ff5217d95c0e12dfe11118ce7fe640359d24941183fae33ab"
+          },
+          {
+            "id": "r4a-ingestion-human-run-read",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "d0fb0b5352f41dfb4ec77b59a305aec38331a2dcfbbc80ebda8fdbcb54b9ba8e",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "dfe516ebf264ab57edb869bd4aaba0806858aa1e7e7391832acd3983aaccc6ac",
+            "upstreamHash": "1edc83c8c475fc5ff5217d95c0e12dfe11118ce7fe640359d24941183fae33ab"
+          },
+          {
+            "id": "r4a-ingestion-human-run-resume",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "a05106e6f4a55526ba66bc564a1d27586aa969366607e2d52af1404481f53384",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "9c4324713c41a2e254739ea6e46c677861369921b4c8256d9c354002862f9e2d",
+            "upstreamHash": "1edc83c8c475fc5ff5217d95c0e12dfe11118ce7fe640359d24941183fae33ab"
+          },
+          {
+            "id": "r4a-onboarding-ingestion-compatibility",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "343c9de901936d932fd0a7b46d38b5e6ae9263c898ceabe8b077f2c89f753b8d",
+            "selectorFamily": "OTHER",
+            "selectorHash": "3a97def26df4aa544793148b35970da92f93f96564eb4c55fa389cfd87d3b762",
+            "upstreamHash": "b53e7696e604a6d1595a85ebbf9296f2a8049eab975060e8af7058ee07fbdb27"
+          },
+          {
+            "id": "r4a-onboarding-runtime-publications-list",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "41c0d278663e8a71dd6789e94285d95a51e25b512fe53a6a2152abc49fe0bfb3",
+            "selectorFamily": "OTHER",
+            "selectorHash": "abc6ef52d08741b4978b88f99b8d8a5e375d8a9077480f9349b2c5ed33949f45",
+            "upstreamHash": "b53e7696e604a6d1595a85ebbf9296f2a8049eab975060e8af7058ee07fbdb27"
+          },
+          {
+            "id": "r4a-udp-human-materialization-retry",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "387271be424eb265b78fb1295eebc74489e40d6d9aadb6976b9290203c657860",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "de3e1e2f953066824901cebe9d128066bb679098a4a0bfc5852212ec9626a59b",
+            "upstreamHash": "e99e3cb7d30e9cdf5129c237f84a5f1352449dcc22a16891ba74f0a68db284eb"
+          },
+          {
+            "id": "r4a-udp-human-materialization-review",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "91187a67767cdf682d2404f9aee4a278a9293352b06d78d31547f20c7f184a07",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "a729d525e9a9dc9899e298fe716d0bdbc9ba033c42cbe765a307c8b13971f819",
+            "upstreamHash": "e99e3cb7d30e9cdf5129c237f84a5f1352449dcc22a16891ba74f0a68db284eb"
+          },
+          {
+            "id": "r4a-udp-runtime-handoff-write",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "3474768ebcc90bb8974bc070280fe778e99f5397b60d0b931095812378189f94",
+            "selectorFamily": "OTHER",
+            "selectorHash": "49dad212372e5606e2f317fe5ebc947735fc698068f2937e20f51af609987f13",
+            "upstreamHash": "a6016cc0bfe59f7043f03dd89bf9e8eb72d65d945a49b0a18b2ae6ef57814759"
+          },
+          {
+            "id": "r4a-udp-runtime-lake-write",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "554282aad6406a1decb50ff841de400e36399f54e17bf80279556da0a254f07a",
+            "selectorFamily": "OTHER",
+            "selectorHash": "f265389cc0810e1f375fb72bd1fb2c3141c24e84a9f6798fe04febc02c33512e",
+            "upstreamHash": "a6016cc0bfe59f7043f03dd89bf9e8eb72d65d945a49b0a18b2ae6ef57814759"
+          },
+          {
+            "id": "semantic-approval-request",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "232b37f7b7df542f64189b9eb6b1a1bea12a334e4a435eaf2956871cfb62208c",
+            "selectorFamily": "OTHER",
+            "selectorHash": "52c1deb48d7398f740d7236764e684f1ab7ee3396bf7db3b2e28e01870bafdb3",
+            "upstreamHash": "47e01992db5cdf7eca06dc5a37b1e233f13e45ba961c465695266b5cee8dfd54"
+          },
+          {
+            "id": "semantic-artifact-propose",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "8595588ee13043ae9ec5a6147789cceb4c66095239cf6b50f246ffba938c7536",
+            "selectorFamily": "OTHER",
+            "selectorHash": "b7e19dbb306708fe5d69042d75a1a362dd3ded6102c87acb5efdd9b333ed3cb8",
+            "upstreamHash": "47e01992db5cdf7eca06dc5a37b1e233f13e45ba961c465695266b5cee8dfd54"
+          },
+          {
+            "id": "semantic-artifact-search",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "f278acdab92330aef1eb90547254110bae84a2ac09b4a52b23ed10cd2d0d6d32",
+            "selectorFamily": "OTHER",
+            "selectorHash": "009c026434f8763fab60310f60463aa74ebb94214b84857fcf81d669dc023fa6",
+            "upstreamHash": "47e01992db5cdf7eca06dc5a37b1e233f13e45ba961c465695266b5cee8dfd54"
+          },
+          {
+            "id": "semantic-human-card",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "c35d0231f4ca9d7933a089b6e703833b403ad7e3e4504cfb76c7a6ef6d74dd7a",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "a61145d8ad726ed70f5db56d63a38ce24e087a14916bd66f1021645cdf2ca2c6",
+            "upstreamHash": "47e01992db5cdf7eca06dc5a37b1e233f13e45ba961c465695266b5cee8dfd54"
+          },
+          {
+            "id": "semantic-human-decision",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "f6e3adf8c250bba60d5fc90e6f20cf9304a89f859c7e21e23fe2ef71dffede09",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "56d9a8bfda1e99c1c1d42b6da992711c5b4ba69f8c4ccb2b10577f46b2b2b8b0",
+            "upstreamHash": "47e01992db5cdf7eca06dc5a37b1e233f13e45ba961c465695266b5cee8dfd54"
+          },
+          {
+            "id": "semantic-human-publish",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "1b0f29c97022df0d4e5923a5f7c4bdbf4dad5387ff01a487a12a62fbc4061dff",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "956194baa351bea197e5909590abb8291360db2628e2a68811c2e77808b2efde",
+            "upstreamHash": "47e01992db5cdf7eca06dc5a37b1e233f13e45ba961c465695266b5cee8dfd54"
+          },
+          {
+            "id": "semantic-rdf-import",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "153c05455ccc6b421e66c098f4cf1def9adbf57d5d83b53d712ff765f4a81c02",
+            "selectorFamily": "OTHER",
+            "selectorHash": "e4dd367d878a305ea84d11e6a93ce2c6ddb9e959be2175389fa93dbc1b7aa91e",
+            "upstreamHash": "47e01992db5cdf7eca06dc5a37b1e233f13e45ba961c465695266b5cee8dfd54"
+          },
+          {
+            "id": "semantic-revision-validate",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "224eda2cefbfb2eaf706cecf1bbbb6c7b19f261dc551090f7fc9793bffc94a91",
+            "selectorFamily": "OTHER",
+            "selectorHash": "92c993126335176c4262b3ed5083d96fc4b1248e9c44276c9c9228239d0d564d",
+            "upstreamHash": "47e01992db5cdf7eca06dc5a37b1e233f13e45ba961c465695266b5cee8dfd54"
+          },
+          {
+            "id": "ths-identity-preflight-create",
+            "pluginNames": [
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "request-validation",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "68d038bdb796ef2f19f208fe07d6919d34256c4a471f7707af2134a27609dba5",
+            "selectorFamily": "OTHER",
+            "selectorHash": "cd3d4df78f5fb269d70f29ffef27fc8d0fb4ba5cd9784e76c362e7ea3ce85fda",
+            "upstreamHash": "619ae7beddefdbae84ce42ecd6f5e0235ab06231b7423807a75f3c7be8587881"
+          },
+          {
+            "id": "ths-identity-preflight-read",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "8bb2cc7129b8f196f0e6b1a773c52f0b65211cea90bebf822805de7708d43efb",
+            "selectorFamily": "OTHER",
+            "selectorHash": "b00d5bac96f4a5df4467e2e5d2b52e8f6ae6fad1ad78e73be979ad94d9d08b73",
+            "upstreamHash": "a6016cc0bfe59f7043f03dd89bf9e8eb72d65d945a49b0a18b2ae6ef57814759"
+          },
+          {
+            "id": "trusted-human-authorization-delete",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "f46256c161507eb884ed3bcac481642dc331caa9541f2f3c012b248d009cc61b",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "a683dfce9f4cceb4251c8a569e53cd0319783d5d68c620775857286fc8b84633",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          },
+          {
+            "id": "trusted-human-authorization-get",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "8a318db088da9494c3ece7356262796ef73d9040d6ed5c04fdc92cb8e5b3644d",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "babcfd8333b6755c5e3c5d0b05966c1f93114e155a15f402ac0645dd12fd15bc",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          },
+          {
+            "id": "trusted-human-authorization-post",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "785d1bc50853a5744072c08820eb66f411f90f14aad84c1624efd5e9d766299a",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "002f2634be997cba077e32a8a22a879691e1b000affc31e56eb149b89b3fa264",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          },
+          {
+            "id": "trusted-human-authorization-put",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "cf0acce1df3795a82498d71e56a79d7504ba5c7cb74e44cbbbb508ac243964ef",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "56691983dd21f774c8a400ca8f097092e8833471455b2821a13f6faa3f39b6cb",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          },
+          {
+            "id": "trusted-human-installation-get",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "087a4d1a2a7afd09cb0c22bdecd423c7c70aeade21b4dfb2030a2768ddb86a33",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "3fe4dea14fefbb570c2bcec11061e53f46b852a0229c40273fddeea543fcb568",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          },
+          {
+            "id": "trusted-human-installation-post",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "02766ce2b47c01904a1ab2c93e1f51c3fe220aa82e233a43945b311a974e7793",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "9a0a9ee9816edd783e9b4ffef2dd82fa67061563084ca2e322c598ac24097cb6",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          },
+          {
+            "id": "trusted-human-managed-file-actions-post",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "efad8b1da4772eb0f87123b6aa20f84cdf6278b2954901b201c494ea00a4205f",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "655b482089df9b734d28ff91da9ca258e5be68e884115bddc9ab41c5e672e899",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          },
+          {
+            "id": "trusted-human-managed-file-picker",
+            "pluginNames": [
+              "client-control",
+              "proxy-control",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "fbc92b232b02c944913d35888d496ae5265b42800e7825c89eab8bea11591d33",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "ef505757b389394d0b9bdfc73b9ad0eb0412adbbbbaebdb037a69b1d455e58b0",
+            "upstreamHash": "14c1ebe80ebe23f40371eb0b05e0deead2b4a398c7d5a7dc86c0d4a57f41c9e6"
+          },
+          {
+            "id": "trusted-human-managed-file-preview-get",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "204b71f4e1e083f0bff63fe6c1917f04f7ee229ae381f2e954ba2e12432c5544",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "61cebff2c4ad12ae605189fb2884837bf752ca6dc897bd998a6fb9a7c5178cb1",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          },
+          {
+            "id": "trusted-human-managed-file-upload",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "proxy-control",
+              "proxy-rewrite",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "b138abaade374987edff42847678e7272fa8d4f143753d10cd869f7bc1986b1a",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "1d7529f0874300e2813a5dc1706cd208693642ed377253f5c83052a977a16e5d",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          },
+          {
+            "id": "trusted-human-onboarding-approvals-get",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "a08501ee34345f5b0ec07af951dd9ed478c5b8a8fb4da55d68981f3c0f7c8d35",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "8746c24c236531f1c704220224f6f5f5d23eb87ebed8173536197270ffe9b6cf",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          },
+          {
+            "id": "trusted-human-onboarding-approvals-post",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "ab9c283b9c4fc08b92aa8237e7845c02dd8fc1a0e816a6d69d0f90fce7077b28",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "e2ab5895d32a858120c12610bcae021811b8f91f4e8c39bd71f240fc4d7f7dc5",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          },
+          {
+            "id": "trusted-human-onboarding-lifecycle-get",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "1cba4a7215c8ae27c58c686a1498a836835599cc2cf96ef66aa2e78068063ca8",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "82e564ebeb8b9a4f5cf060c1c4a99892a095a04fb113da9483eddc76baa673a1",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          },
+          {
+            "id": "trusted-human-onboarding-lifecycle-post",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "4585bf38c921a9dd6871ef1e1e1dd7d2b36d7de90de3dbf851a7a8088805aa47",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "26f8a58fcb045201d11c99e3db2f965f4ce126d86a3531c4295c70a38d20cf8e",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          },
+          {
+            "id": "trusted-human-onboarding-lifecycle-put",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "748b942cd190d0307a431b6c9094ed530376a194434e476e5830c2367c2693a2",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "a9cc870bc4a647984d37f2b71192d939534c2ce3a314e27b4002413bee16db28",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          },
+          {
+            "id": "trusted-human-onboarding-sources-get",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "3a701343281cec93a2ed10a6d5444a53a8c389f3341789adddc1036f1580f7eb",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "7dadbe69bfdb826a39a0a88dc298dec44eaaf5854d853f922efeeda1a437e54f",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          },
+          {
+            "id": "trusted-human-onboarding-sources-post",
+            "pluginNames": [
+              "client-control",
+              "limit-count",
+              "openid-connect",
+              "proxy-rewrite",
+              "request-id",
+              "serverless-post-function",
+              "serverless-pre-function"
+            ],
+            "pluginValuesPrinted": false,
+            "routeHash": "0edb5658a37a63ac6604ebca57c72927c50e47b0a7bbbad23ce81b7ee2b8b501",
+            "selectorFamily": "TRUSTED_HUMAN",
+            "selectorHash": "e74f280fd3cdfb71c8497338733ad612f983a940f0a61468722c82669a42fcf6",
+            "upstreamHash": "d9628371fcd974e62b1c85e94c26fdef2b0091594ffc833a1886799ffe6a1dc3"
+          }
+        ]
+      },
+      "status": "OBSERVED"
+    },
+    "historicalCreationRequest": {
+      "data": {
+        "expectedHashMatched": true,
+        "metadata": {
+          "bytes": 5332,
+          "gid": 0,
+          "mode": "0o600",
+          "sha256": "59181588fd8bbc0836f892789156532ebcc1cce304197560ca1274f05267d552",
+          "uid": 0
+        }
+      },
+      "status": "OBSERVED"
+    },
+    "historicalDeclaration": {
+      "data": {
+        "expectedHashMatched": true,
+        "metadata": {
+          "bytes": 22832,
+          "gid": 0,
+          "mode": "0o600",
+          "sha256": "fc94b491d05e267b49da6e2e2fe50cc7e02e7986783bad7ebf1289b0914a0a68",
+          "uid": 0
+        }
+      },
+      "status": "OBSERVED"
+    },
+    "historicalReview": {
+      "data": {
+        "expectedHashMatched": true,
+        "metadata": {
+          "bytes": 211826,
+          "gid": 0,
+          "mode": "0o600",
+          "sha256": "92b3276992b3b3ec459e734196671728b8a49a99a02185e2c6f7c1da87ce82a1",
+          "uid": 0
+        }
+      },
+      "status": "OBSERVED"
+    },
+    "iamEffectiveCatalogue": {
+      "reason": "NATIVE_METADATA_READ_FAILED",
+      "status": "UNAVAILABLE"
+    },
+    "image/ouf-apisix": {
+      "data": {
+        "created": "2026-08-21T10:43:24.877588993Z",
+        "id": "sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d",
+        "imageConfigHash": "c16053d2a4c8dc90631715ce748f1171d243b5d58bed59cee035d5709b862f6d",
+        "imageMatchesContainer": true,
+        "repoDigestCount": 1,
+        "rootfsLayersHash": "2ae2dcea32f7baf89fc070d9343ce02b073499a4b7fa93e7f8c19c369ca59a38",
+        "size": 606837925
+      },
+      "status": "OBSERVED"
+    },
+    "image/ouf-ingestion": {
+      "data": {
+        "created": "2026-09-30T23:45:39.301929617+02:00",
+        "id": "sha256:b07a4a786ca48335feae887e18dc7c4c6cdd9bd0a3a255f83d18c7c1616eec48",
+        "imageConfigHash": "d86d7c421d8ddb44cd67d397661033a9786df77cc1916ee06835e1285c86d642",
+        "imageMatchesContainer": true,
+        "repoDigestCount": 1,
+        "rootfsLayersHash": "eb08be0c15d3cecdf9d916dfdb61eea295965152a2b886edf5e062668d8b79d9",
+        "size": 389596142
+      },
+      "status": "OBSERVED"
+    },
+    "image/ouf-keycloak": {
+      "data": {
+        "created": "2026-09-16T14:45:16.428171929Z",
+        "id": "sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+        "imageConfigHash": "efea8786b64105ffc3927496b57974fba6b31d4d762106bdc72bd6e2dce824a1",
+        "imageMatchesContainer": true,
+        "repoDigestCount": 1,
+        "rootfsLayersHash": "a1073a8fcd47c164ed36d9592a516a04e48c9c7a0576ef2e5bd7faf1265ce5b7",
+        "size": 756204654
+      },
+      "status": "OBSERVED"
+    },
+    "image/ouf-mcp": {
+      "data": {
+        "created": "2026-10-02T12:47:23.532865411+02:00",
+        "id": "sha256:99a158f780243b3fa05199bed9db01197be8ae60ae1e75ad5432964509422872",
+        "imageConfigHash": "ad5e18435aea0d13d6b8188cad3bf5cd85a6ec70c6614a11eaa21d658a97a135",
+        "imageMatchesContainer": true,
+        "repoDigestCount": 1,
+        "rootfsLayersHash": "f5ff520e2aa4a3eb65f60bcefa4d97537bc078927bba0f128f072b9f6aa3e1d4",
+        "size": 32208492
+      },
+      "status": "OBSERVED"
+    },
+    "image/ouf-onboarding": {
+      "data": {
+        "created": "2026-09-30T11:14:23.893915037+02:00",
+        "id": "sha256:ec6f2a962261a8433bfe103347afa2202837fcec90d210d9b5232711b854ee8a",
+        "imageConfigHash": "4beb58041d019e5b8234136d733dd9e403fe1c1f3c2b6a38e9c704bab7df1dfe",
+        "imageMatchesContainer": true,
+        "repoDigestCount": 1,
+        "rootfsLayersHash": "f799f0441415a1a469b74d5cfec2d265b1bf3870dc04e728ed5ade4f1624aea0",
+        "size": 658003598
+      },
+      "status": "OBSERVED"
+    },
+    "image/ouf-postgres": {
+      "data": {
+        "created": "2026-08-31T11:37:56.645462999Z",
+        "id": "sha256:894f570c0cf0664ed5576a8fd5d5bfb8fb1b19d592885b686c3a88c8bd90c41f",
+        "imageConfigHash": "48b3b07e4bce43a2944c29a64212784966657ca55942ea7ee4a4a57a6b3fb74a",
+        "imageMatchesContainer": true,
+        "repoDigestCount": 1,
+        "rootfsLayersHash": "6f7fcfd8a3d5b27bc153daa7363da833902f842f01f79663bf2de56ba46bba62",
+        "size": 728761081
+      },
+      "status": "OBSERVED"
+    },
+    "image/ouf-semantic": {
+      "data": {
+        "created": "2026-10-02T13:29:26.955047781+02:00",
+        "id": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+        "imageConfigHash": "3c9c6c463f93b721788364094c78eec5e132086bf7adb019986d3006243cf7d9",
+        "imageMatchesContainer": true,
+        "repoDigestCount": 1,
+        "rootfsLayersHash": "20a01d9c26e32221f829661e95977a65fc658697c068fd9b920a45aa5853ff20",
+        "size": 562943180
+      },
+      "status": "OBSERVED"
+    },
+    "image/ouf-udp": {
+      "data": {
+        "created": "2026-10-01T17:36:21.030506707+02:00",
+        "id": "sha256:5e048a859716d6674355e72238f03f899abd705a943ceadbdc5c8863d28f4e9f",
+        "imageConfigHash": "b89fbc075bd2851b1029dfd7ad621f7c735dae3752ccbd9dfc03173373833c8e",
+        "imageMatchesContainer": true,
+        "repoDigestCount": 1,
+        "rootfsLayersHash": "6a36f31a35eb69055800457c02a8f792b3e31583823d4b08797b977093cdef69",
+        "size": 377090466
+      },
+      "status": "OBSERVED"
+    },
+    "networks": {
+      "data": [
+        {
+          "driver": "bridge",
+          "enableIPv6": false,
+          "endpointCount": 12,
+          "id": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3",
+          "internal": true,
+          "ipamHash": "9e2c45a2f378857a97a52059194c6271d4b676f9dfb9409610559c19540fd7f1",
+          "name": "ouf-backend"
+        },
+        {
+          "driver": "bridge",
+          "enableIPv6": false,
+          "endpointCount": 2,
+          "id": "1209d67944755d95601b96719c0a5b1860ac2a6f137c10077da7b4e9967637aa",
+          "internal": true,
+          "ipamHash": "24c2a0f00812ccf7a36863bc4fa648629e95c97223ca7a3a389a2573ec4272c4",
+          "name": "ouf-gateway-control"
+        }
+      ],
+      "status": "OBSERVED"
+    },
+    "ownerActiveGrants": {
+      "data": {
+        "bundleRefHash": "a0ed5740ac6de64d0ab315da84dfee4c",
+        "capabilityCount": 44,
+        "contentHash": "sha256:e3fee1b85a9ef669276a1af8e190729b35bb45aaa27fb685265d12f9ce426cc7",
+        "grantCount": 87,
+        "projectionOnlyNotEffectivePermissionProof": true,
+        "selectedActorGrantCounts": {
+          "ouf.managed-source.file.profile": 2,
+          "ouf.managed-source.file.upload": 2,
+          "ouf.managed-source.onboarding.create": 2,
+          "ouf.onboarding.configuration.write": 2,
+          "ouf.semantic.approve": 2,
+          "ouf.semantic.consultation.read": 1,
+          "ouf.semantic.propose": 2,
+          "ouf.semantic.publish": 2,
+          "ouf.semantic.review": 2,
+          "ouf.semantic.review.prepare": 2,
+          "urban.object.search": 2
+        },
+        "selectedCapabilities": [
+          "urban.object.search",
+          "ouf.onboarding.configuration.write",
+          "ouf.managed-source.file.upload",
+          "ouf.managed-source.file.profile",
+          "ouf.managed-source.onboarding.create",
+          "ouf.semantic.propose",
+          "ouf.semantic.review.prepare",
+          "ouf.semantic.review",
+          "ouf.semantic.approve",
+          "ouf.semantic.publish",
+          "ouf.semantic.consultation.read"
+        ],
+        "transactionReadOnly": true,
+        "version": 38
+      },
+      "status": "OBSERVED"
+    },
+    "registryHistoricalComparison": {
+      "data": {
+        "changedBindingFields": [],
+        "changedConfigKeys": [],
+        "changedEnvironmentNames": [],
+        "changedHostConfigKeys": [],
+        "changedNetworkSettingsKeys": [],
+        "currentBinding": {
+          "configHash": "097ded59f89cd745ffbfbbbe466bdf64c54a788ab911ea41632b97df0cbea084",
+          "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+          "hostConfigHash": "0f09a1304fc4b3fb8c503afc23d16159c690296c88264f932d1aa411160c310e",
+          "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+          "mountsHash": "4bf1ed4e0c4a4a2b201369905be4d8919edafffc881518d492c0cb83154b0d89",
+          "networkSettingsHash": "1528caf335bfa9411e15afcdab1388b735ee639e86e4b525c45734eb9bb0d8bc",
+          "pid": 3789123,
+          "startedAt": "2026-10-02T11:45:44.132808507Z"
+        },
+        "equal": true,
+        "historicalBinding": {
+          "configHash": "097ded59f89cd745ffbfbbbe466bdf64c54a788ab911ea41632b97df0cbea084",
+          "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+          "hostConfigHash": "0f09a1304fc4b3fb8c503afc23d16159c690296c88264f932d1aa411160c310e",
+          "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+          "mountsHash": "4bf1ed4e0c4a4a2b201369905be4d8919edafffc881518d492c0cb83154b0d89",
+          "networkSettingsHash": "1528caf335bfa9411e15afcdab1388b735ee639e86e4b525c45734eb9bb0d8bc",
+          "pid": 3789123,
+          "startedAt": "2026-10-02T11:45:44.132808507Z"
+        },
+        "mountsChanged": false,
+        "valuesDisclosed": false
+      },
+      "status": "OBSERVED"
+    },
+    "registryNativeRunc": {
+      "data": {
+        "bundleProfile": "SYSTEM_CONTAINERD",
+        "idMatched": true,
+        "pidMatched": true,
+        "running": true,
+        "stableDoubleRead": true
+      },
+      "status": "OBSERVED"
+    },
+    "retainedRecoveryHistory": {
+      "data": {
+        "budgetReset": false,
+        "doesNotProveCurrentAuthority": true,
+        "historicalOnly": true,
+        "metadata": {
+          "bytes": 750,
+          "gid": 0,
+          "mode": "0o600",
+          "sha256": "7616cd129224da874e104791d4e5029f120cc0dc2990d7c4b769e84a68b70630",
+          "uid": 0
+        },
+        "schema": "ouf.bounded-recovery.v1"
+      },
+      "status": "OBSERVED"
+    },
+    "stableAllContainers": {
+      "data": {
+        "allStable": true,
+        "changedContainers": []
+      },
+      "status": "OBSERVED"
+    },
+    "stableNativeTool": {
+      "data": {
+        "dockerHash": "7f5b38163f9c5367f4b42d905c0505877eafa4c20abe49430c85a770aefacf40",
+        "unchanged": true
+      },
+      "status": "OBSERVED"
+    }
+  },
+  "automaticRetry": false,
+  "budgetReset": false,
+  "cachedIamGetMayRefreshAdministrativeSession": true,
+  "chatbotEndToEndProven": false,
+  "completeEnvironmentInventory": false,
+  "containerLifecycleOperations": 0,
+  "databaseMutations": 0,
+  "iamResourceMutations": 0,
+  "interactiveAuthenticationAttempted": false,
+  "maximumElapsedSeconds": 240,
+  "maximumNativeCalls": 128,
+  "nativeCalls": 44,
+  "notReleaseAcceptance": true,
+  "registryChangedBindingFields": [],
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.vps-read-only-inventory.v1",
+  "serviceMutations": 0,
+  "status": "NATIVE_INVENTORY_COLLECTED_COVERAGE_GAPS_REMAIN",
+  "unavailableAreas": [
+    "containerInventory",
+    "container/ouf-gateway-control-plane",
+    "database/semantic",
+    "database/onboarding",
+    "database/ingestion",
+    "database/udp",
+    "database/mcp",
+    "iamEffectiveCatalogue",
+    "currentRuntimeAuthorityLedger",
+    "freshMcpRead"
+  ]
+}
