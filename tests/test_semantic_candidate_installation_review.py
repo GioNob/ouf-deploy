@@ -4,6 +4,8 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import types
 import unittest
@@ -78,5 +80,19 @@ class ReviewTests(unittest.TestCase):
              patch.object(delivery.subprocess,'run',side_effect=command):
             with self.assertRaisesRegex(SystemExit,'HASH_MISMATCH'):delivery.main()
         self.assertEqual(len(calls),1);self.assertEqual(calls[0][0],str(preferred))
+
+    def test_actual_root_body_loads_exact_capsule_and_fails_before_private_target_access(self):
+        capsule=Path(__file__).parents[1]/delivery.CAPSULE_PATH
+        raw=capsule.read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),delivery.CAPSULE_SHA)
+        bootstrap='CAPSULE_SHA='+repr(delivery.CAPSULE_SHA)+'\nROOT_BODY_HASH='+repr(hashlib.sha256(delivery.ROOT_BODY.encode()).hexdigest())+'\n'+delivery.ROOT_BODY
+        reply=subprocess.run([sys.executable,'-I','-B','-S','-c',bootstrap],input=raw,
+                             stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=30)
+        self.assertEqual(reply.returncode,1)
+        row=json.loads(reply.stdout)
+        self.assertEqual(row['phase'],'EXACT_DELIVERED_CANDIDATE_READ')
+        self.assertEqual(row['errno'],2)
+        self.assertEqual(row['runtimeOperations'],0)
+        self.assertEqual(row['privateEvidenceWrites'],0)
 
 if __name__=='__main__':unittest.main()
