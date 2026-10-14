@@ -13,6 +13,7 @@ import selectors
 import stat
 import subprocess
 import time
+from urllib.parse import quote
 import zipfile
 import zlib
 
@@ -115,7 +116,6 @@ def compile_database_plan(pg_observation, module_bindings, candidate_migrations,
                 and current['identity']['prepared'] == 0 and type(before) is list
                 and type(expected) is list and 1 <= len(before) <= len(expected) <= 256
                 and before == expected[:len(before)], 'INSTALLED_MIGRATION_PREFIX_MUST_MATCH_PACKAGED_BYTES')
-        require(module != 'mcp' or before == expected, 'MCP_MIGRATION_ROLE_REQUIRED_FOR_SCHEMA_UPGRADE')
         rows.append({'module':module, **binding, 'schema':SCHEMAS[module], 'databaseOid':current['identity']['oid'],
                      'beforeMigrations':copy.deepcopy(before),'expectedMigrations':copy.deepcopy(expected),
                      'pendingMigrationCount':len(expected)-len(before), 'maximumArchiveBytes':1073741824})
@@ -165,7 +165,7 @@ class CohortDatabases:
         self.guard()
         self.journal.initialize({'schema':'ouf.chatbot-cohort-database-journal.v1',
             'planHash':self.plan_hash,'authorityHash':self.action.authority_hash,
-            'version':1,'backups':{},'budgetReset':False,'restorePerformed':False})
+            'version':1,'backups':{},'mcpMigration':None,'budgetReset':False,'restorePerformed':False})
 
     def record(self):
         row = self.journal.read()
@@ -295,6 +295,114 @@ class CohortDatabases:
                                      'archiveBytes':before.st_size,'payloadParsed':True}, 'COHORT_ARCHIVE_CHANGED')
         finally:
             os.close(fd)
+
+    def migrate_mcp(self):
+        """Run the package's separate, finite MCP migration role after backup.
+
+        A claimed create/start is never replayed. On a resumed invocation the
+        retained native container and database history must prove completion.
+        """
+        binding = next(r for r in self.plan['modules'] if r['module'] == 'mcp')
+        row = next(r for r in self.installation_plan['replacements'] if r['module'] == 'mcp')
+        suffix = row['retiredName'].removeprefix('ouf-mcp-before-')
+        require(suffix and re.fullmatch('[a-z0-9-]{1,60}',suffix), 'EXACT_MCP_MIGRATION_COHORT_REQUIRED')
+        name = 'ouf-mcp-migrate-'+suffix
+        values = [v for v in row['creationRequest']['Env'] if v.startswith('MCP_DATABASE_URL=')]
+        require(len(values) == 1 and row['creationRequest']['User'] == '10005:10005'
+                and row['creationRequest']['Entrypoint'] == ['/usr/local/bin/ouf-mcp']
+                and row['creationRequest']['Image'].startswith('sha256:'),
+                'EXACT_PACKAGED_MCP_MIGRATION_ROLE_REQUIRED')
+        endpoint = row['creationRequest']['NetworkingConfig']['EndpointsConfig']['ouf-backend']
+        request = {'Image':row['creationRequest']['Image'],'User':'10005:10005',
+                   'Entrypoint':['/usr/local/bin/ouf-mcp'],'Cmd':['migrate'],
+                   'WorkingDir':'/app','Env':values,
+                   'Labels':{'it.ouf.file-cohort':suffix,'it.ouf.role':'mcp-migration'},
+                   'HostConfig':{'NetworkMode':'ouf-backend','RestartPolicy':{'Name':'no','MaximumRetryCount':0},
+                                 'AutoRemove':False,'ReadonlyRootfs':True},
+                   'NetworkingConfig':{'EndpointsConfig':{'ouf-backend':{'NetworkID':endpoint['NetworkID']}}}}
+        intent = digest(request)
+
+        def current():
+            self.guard(); self.quiescence()
+            state = observe_database(self.plan['postgresRuntimeBinding']['containerId'],
+                                     binding['user'],binding['database'],'mcp')
+            require(state['identity']['oid'] == binding['databaseOid'], 'MCP_DATABASE_IDENTITY_DRIFT')
+            return state['migrations']
+
+        def native():
+            status, actual = self.engine.request('GET','/v1.44/containers/'+quote(name,safe='')+'/json')
+            require(status in (200,404), 'MCP_MIGRATION_CONTAINER_READ_UNAVAILABLE')
+            if status == 404:return None
+            require(actual['Name'] == '/'+name and actual['Image'] == request['Image']
+                    and all(actual['Config'].get(k) == request[k] for k in
+                            ('User','Entrypoint','Cmd','WorkingDir','Env','Labels'))
+                    and actual['HostConfig'].get('NetworkMode') == 'ouf-backend'
+                    and actual['HostConfig'].get('ReadonlyRootfs') is True
+                    and actual['HostConfig'].get('Privileged') is False
+                    and actual['HostConfig'].get('AutoRemove') is False
+                    and actual.get('Mounts') == []
+                    and actual['NetworkSettings']['Networks']['ouf-backend']['NetworkID'] == endpoint['NetworkID'],
+                    'MCP_MIGRATION_ROLE_NATIVE_IDENTITY_DRIFT')
+            return actual
+
+        with self.journal.invocation():
+            self.guard(); self.quiescence()
+            backup = self.record()['backups'].get('mcp')
+            require(backup is not None and backup.get('state') == 'COMPLETE',
+                    'MCP_MIGRATION_REQUIRES_COMPLETE_BACKUP')
+            self.verify_archive(binding,backup)
+            previous = self.record()
+            claim = previous.get('mcpMigration')
+            if binding['pendingMigrationCount'] == 0:
+                require(claim is None and current() == binding['expectedMigrations'],
+                        'MCP_UNEXPECTED_MIGRATION_HISTORY')
+                return {'pendingMigrationCount':0,'historyHash':digest(binding['expectedMigrations'])}
+            if claim is None:
+                require(current() == binding['beforeMigrations'] and native() is None,
+                        'MCP_MIGRATION_PRECONDITION_DRIFT')
+                following = copy.deepcopy(previous)
+                following['version'] += 1
+                following['mcpMigration'] = {'state':'CLAIMED','name':name,'intentHash':intent}
+                self.journal.compare_and_save(previous,following)
+                status, created = self.engine.request('POST','/v1.44/containers/create?name='+quote(name,safe=''),request)
+                require(status == 201 and type(created) is dict and sha(created.get('Id')),
+                        'MCP_MIGRATION_CREATION_REQUIRES_RECONCILIATION')
+                actual = native()
+                require(actual is not None and actual['Id'] == created['Id']
+                        and actual['State']['Status'] == 'created', 'MCP_MIGRATION_CREATION_NOT_PROVEN')
+                status, _ = self.engine.request('POST','/v1.44/containers/'+created['Id']+'/start')
+                require(status == 204, 'MCP_MIGRATION_START_REQUIRES_RECONCILIATION')
+            else:
+                require(claim.get('name') == name and claim.get('intentHash') == intent
+                        and claim.get('state') in ('CLAIMED','COMPLETE'),
+                        'MCP_MIGRATION_RETAINED_INTENT_DRIFT')
+            deadline = time.monotonic()+120
+            while True:
+                actual = native()
+                require(actual is not None, 'MCP_MIGRATION_ABSENT_REQUIRES_HUMAN_RECONCILIATION')
+                state = actual['State']
+                if state['Status'] == 'exited':
+                    require(state['ExitCode'] == 0 and state['Pid'] == 0 and actual['RestartCount'] == 0,
+                            'MCP_MIGRATION_EXIT_REQUIRES_HUMAN_RECONCILIATION')
+                    break
+                require(state['Status'] == 'running' and time.monotonic() < deadline,
+                        'MCP_MIGRATION_INCOMPLETE_REQUIRES_RECONCILIATION')
+                time.sleep(2)
+            require(current() == binding['expectedMigrations'], 'MCP_MIGRATION_HISTORY_NOT_PACKAGED')
+            previous = self.record()
+            if previous['mcpMigration']['state'] == 'CLAIMED':
+                following = copy.deepcopy(previous)
+                following['version'] += 1
+                following['mcpMigration'] = {'state':'COMPLETE','name':name,'intentHash':intent,
+                                             'containerId':actual['Id'],
+                                             'historyHash':digest(binding['expectedMigrations'])}
+                self.journal.compare_and_save(previous,following)
+            else:
+                require(previous['mcpMigration']['containerId'] == actual['Id']
+                        and previous['mcpMigration']['historyHash'] == digest(binding['expectedMigrations']),
+                        'MCP_MIGRATION_RETAINED_PROOF_DRIFT')
+            return {'pendingMigrationCount':binding['pendingMigrationCount'],
+                    'historyHash':digest(binding['expectedMigrations']),'containerId':actual['Id']}
 
     def verify_module(self,module):
         self.guard()
