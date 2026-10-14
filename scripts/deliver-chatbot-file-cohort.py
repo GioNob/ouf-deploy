@@ -166,11 +166,21 @@ for path,body in sorted(files.items()):
             directories[rel]=child
         fd=directories[rel]
     put(fd,pieces[-1],body)
-put(stage_fd,'preparation-manifest.json',manifest_raw)
+# The authenticated source capsule is retained across invocations. Package
+# extraction and review evidence are single-attempt effects and must get an
+# empty private staging directory, including after a blocked preparation.
+attempt_name='attempt-'+os.urandom(12).hex()
+os.mkdir(attempt_name,0o700,dir_fd=stage_fd);os.fsync(stage_fd)
+attempt_fd=os.open(attempt_name,flags,dir_fd=stage_fd);held.append(attempt_fd)
+info=os.fstat(attempt_fd)
+need(info.st_uid==info.st_gid==0 and stat.S_IMODE(info.st_mode)==0o700,
+     'ROOT_PRIVATE_ATTEMPT_REQUIRED')
+put(attempt_fd,'preparation-manifest.json',manifest_raw)
 source=stage/'source';entry=source/'scripts/install-chatbot-file-cohort.py'
+attempt=stage/attempt_name
 for fd in reversed(held):os.close(fd)
 os.execv(sys.executable,[sys.executable,'-I','-B','-S',str(entry),'--source-directory',str(source),
-    '--package-archive',archive,'--staging-directory',str(stage),'--source-commit',commit,
+    '--package-archive',archive,'--staging-directory',str(attempt),'--source-commit',commit,
     '--preparation-source-hash',EXPECTED])
 '''
 
