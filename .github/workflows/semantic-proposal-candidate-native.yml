@@ -40,7 +40,7 @@ jobs:
           printf '%s\n' 'd8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70  engine.tgz' | sha256sum -c -
           mkdir engine-bin
           tar -xzf engine.tgz --strip-components=1 -C engine-bin
-          gh api repos/GioNob/ouf-semantic-registry/actions/artifacts/11868169115/zip > semantic.zip
+          gh api repos/GioNob/ouf-deploy/actions/artifacts/11868169115/zip > semantic.zip
           OUF_FIXTURE_ROOT="/var/lib/ouf-gated-v11-${GITHUB_RUN_ID}"
           sudo mkdir -m 700 "$OUF_FIXTURE_ROOT"
           sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
