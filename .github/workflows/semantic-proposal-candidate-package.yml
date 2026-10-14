@@ -1,0 +1,100 @@
+name: Unsigned semantic proposal candidate artifacts
+on:
+  push:
+    branches: [codex/semantic-proposal-candidate-package-20261014]
+    paths:
+      - scripts/package-semantic-proposal-candidate.py
+      - tests/test_semantic_proposal_candidate_package.py
+      - .github/workflows/semantic-proposal-candidate-package.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  offline-candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: semantic
+            repository: ouf-semantic-registry
+            commit: 0b0fc53826bd9be566092bcc621854adaba08358
+          - module: mcp
+            repository: ouf-mcp-server
+            commit: a02b13ecb7cf9b73c070b59f26b60aaed6060944
+          - module: gateway
+            repository: ouf-api-gateway
+            commit: 8cac6c8877b16eed6f93db9eb08985035b510da5
+    steps:
+      - uses: actions/checkout@v4
+        with: {path: deploy, persist-credentials: false}
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/${{ matrix.repository }}
+          ref: ${{ matrix.commit }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-go@v6
+        if: matrix.module == 'mcp'
+        with: {go-version: '1.26.9', cache-dependency-path: source/go.sum}
+      - name: Test candidate rejection gates
+        run: python3 -m unittest discover -s deploy/tests -p test_semantic_proposal_candidate_package.py -v
+      - name: Build exact new candidate without target installation
+        run: python3 deploy/scripts/package-semantic-proposal-candidate.py build --source source --module '${{ matrix.module }}' --output package
+      - name: Scan exact Registry image
+        if: matrix.module == 'semantic'
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ouf-cohort-semantic:${{ matrix.commit }}
+          format: json
+          output: package/trivy-image.json
+          scanners: vuln
+          severity: HIGH,CRITICAL,UNKNOWN
+          ignore-unfixed: false
+          exit-code: 1
+      - name: Scan exact MCP executable
+        if: matrix.module == 'mcp'
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: package/ouf-mcp
+          format: json
+          output: package/trivy-image.json
+          scanners: vuln
+          severity: HIGH,CRITICAL,UNKNOWN
+          ignore-unfixed: false
+          exit-code: 1
+      - name: Scan pinned Gateway dependencies
+        if: matrix.module == 'gateway'
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: source
+          format: json
+          output: package/trivy-image.json
+          scanners: vuln
+          severity: HIGH,CRITICAL,UNKNOWN
+          ignore-unfixed: false
+          exit-code: 1
+      - name: Export image-bound or source-bound candidate and checksums
+        run: |
+          python3 deploy/scripts/package-semantic-proposal-candidate.py export --source source --module '${{ matrix.module }}' --output package
+          cd package
+          sha256sum -c SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: semantic-proposal-unsigned-${{ matrix.module }}-${{ github.run_id }}
+          path: package/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve scanner and build rejection diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: semantic-proposal-package-denial-${{ matrix.module }}-${{ github.run_id }}
+          path: |
+            package/trivy-image.json
+            package/package-record.json
+            package/Dockerfile.resolved
+            package/diagnostics.json
+          retention-days: 30
