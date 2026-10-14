@@ -113,6 +113,37 @@ profilo Teatri resta da acquisire; non ripetere upload o profilazione.
 Nessuna migrazione, sostituzione di servizi o nuova decisione HUMAN è stata
 eseguita sul VPS da questa ripresa. Il ciclo reale resta OPEN.
 
+## Arresto della preparazione sul VPS e diagnosi corrente
+
+L'operatore ha eseguito la consegna qualificata e riportato l'output il
+14 ottobre 2026 alle 18:27 CEST. Digest dell'archivio e sorgenti verificati;
+estrazione privata avviata; login amministrativo IAM riuscito. Il programma
+ha superato il controllo dell'asset/profilo esistente prima del login HUMAN:
+questo dimostra i metadati richiesti (ownership, 13 righe, 20 colonne, versione
+e hash), non una nuova lettura MCP dell'anteprima né l'ingestion.
+
+Dopo CURRENT_HUMAN_OWNER_AUTHORIZATION_REVIEW la preparazione ha prodotto
+BLOCKED / PG_STATEMENT_DENIED / runtimeAuthorityIssued=false. Il motivo è
+un EOF del canale psql e non identifica da solo permessi, tabella, SQLSTATE
+o guasto di connessione. La causa precisa resta UNKNOWN; nessun retry
+automatico, grant correttivo o nuova migrazione è autorizzato da questa
+diagnosi. Nessuna autorità di rollout è stata emessa da questa invocazione.
+
+Il prossimo passo operatore è solo la diagnosi
+[scripts/diagnose-file-cohort-postgres.py](../scripts/diagnose-file-cohort-postgres.py),
+pubblicata al commit `5aec5cda89bac9a32b8111611288548b31439788`, SHA256
+`c0ee2b57cea5147a19319748b6543e8948a48c51e21236a55144fb2ec14255d2`.
+Controlla i quattro binding correnti, le query identità/storia e il preflight
+amministrativo MCP in transazioni READ ONLY, con timeout; stampa solo controllo,
+modulo, conteggio, fatti ammessi e SQLSTATE classificato. Non esegue
+installer, restart, migrazioni, grant, restore, rinnovi di budget o token.
+Cinque test locali verificano redazione, classi sconosciute e identità;
+non sono prova PostgreSQL target. Nessuna conformità globale è dichiarata.
+
+Conservare l'archivio da 1,7 GB già scaricato. Non rilanciare l'installatore
+prima del risultato diagnostico. Un'eventuale consegna corretta riutilizzerà
+i byte verificati, conservando storico, journal e vincoli di resilienza.
+
 ## Prova che manca per dichiarare il risultato
 
 La combinazione completa deve essere installata tramite un ingresso operativo
