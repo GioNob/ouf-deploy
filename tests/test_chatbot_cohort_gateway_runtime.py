@@ -84,6 +84,21 @@ class GatewayRuntime(unittest.TestCase):
         self.assertEqual(new['Mounts'][0]['Source'],owner.plan['newConfigBinding']['path'])
         self.assertEqual([c[0] for c in native.calls],['update','stop','rename','create','connect','start','update'])
 
+    def test_external_admin_key_pin_survives_gateway_replacement_plan(self):
+        owner,native,_=self.fixture()
+        old=native.find('ouf-apisix')
+        binding={'path':g.EXTERNAL_ADMIN_KEY,'sha256':'a'*64,'metadata':[1,2,1000,1000,0o100600,1,32,3,4]}
+        args=(old,owner.plan['oldConfigBinding'],owner.plan['newConfigBinding'],
+              'PROPOSAL_KEY',KEY,hashlib.sha256(KEY.encode()).hexdigest(),'fixture')
+        with patch.object(r,'private_config',return_value=(b'synthetic',binding)) as read:
+            planned=r.compile_runtime(*args,admin_key_binding=binding)
+        read.assert_called_once_with(g.EXTERNAL_ADMIN_KEY,binding)
+        self.assertEqual(planned['adminKeyBinding'],binding)
+        self.assertEqual(r.proposed_transport(planned)['adminKeyBinding'],binding)
+        with patch.object(r,'private_config',side_effect=ValueError('CREDENTIAL_DRIFT')):
+            with self.assertRaisesRegex(ValueError,'CREDENTIAL_DRIFT'):
+                r.compile_runtime(*args,admin_key_binding=binding)
+
     def test_every_write_ack_loss_reconciles_without_second_effect(self):
         for effect in ('update','stop','rename','create','connect','start'):
             with self.subTest(effect=effect):

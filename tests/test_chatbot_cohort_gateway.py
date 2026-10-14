@@ -137,6 +137,37 @@ class Projection(unittest.TestCase):
                     raw.replace(b'        role: admin',b'        role: admin\n        role: viewer')):
             with self.assertRaises(ValueError):g.selected_admin_key(bad)
 
+    def test_empty_selected_admin_section_accepts_only_bound_external_key(self):
+        key='0123456789abcdef0123456789abcdef'
+        empty=b'deployment:\n  admin:\n    admin_key:\n    admin_listen:\n      ip: 127.0.0.1\n'
+        with self.assertRaisesRegex(ValueError,'ONE_SELECTED_APISIX_ADMIN_CREDENTIAL_REQUIRED'):
+            g.selected_admin_key(empty)
+        self.assertEqual(g.selected_admin_key(empty,key),key)
+        viewer=empty.replace(b'    admin_listen:',b'      - name: read\n        key: 0123456789abcdef0123456789abcdef\n        role: viewer\n    admin_listen:')
+        with self.assertRaisesRegex(ValueError,'ONE_SELECTED_APISIX_ADMIN_CREDENTIAL_REQUIRED'):
+            g.selected_admin_key(viewer,key)
+        with self.assertRaisesRegex(ValueError,'SELECTED_DEPLOYMENT_ADMIN_SECTION_REQUIRED'):
+            g.selected_admin_key(empty.replace(b'deployment:',b'other:'),key)
+
+    def test_external_key_observation_binds_same_live_generation(self):
+        key=b'0123456789abcdef0123456789abcdef'
+        config=b'deployment:\n  admin:\n    admin_key:\n    admin_listen:\n      ip: 127.0.0.1\n'
+        bind={'path':g.EXTERNAL_ADMIN_KEY,'sha256':'a'*64,'metadata':[1,2,1000,1000,0o100600,1,32,3,4]}
+        actual={'Id':'a'*64,'Name':'/ouf-apisix','Image':'sha256:'+'b'*64,
+                'Config':{},'HostConfig':{},'NetworkSettings':{},
+                'Mounts':[{'Destination':'/usr/local/apisix/conf/config.yaml','Type':'bind','RW':False,'Source':'/fixture/config.yaml'}],
+                'State':{'Running':True,'Paused':False,'Status':'running','Pid':os.getpid(),'StartedAt':'fixture-generation'}}
+        engine=Engine.__new__(Engine);engine.request=lambda *args:(200,copy.deepcopy(actual))
+        def observed(path,expected=None):
+            if path==g.EXTERNAL_ADMIN_KEY:return key,bind
+            self.assertEqual(path,'/fixture/config.yaml');return config,{'path':path}
+        with patch.object(g,'private_config',side_effect=observed), \
+             patch.object(g.os,'stat',return_value=MagicMock(st_dev=1,st_ino=2)), \
+             patch.object(g,'namespace_program',return_value={'path':'/usr/bin/python3','sha256':'c'*64}):
+            row=g.NamespaceAdmin.observe(engine,'/fixture/config.yaml')
+        self.assertEqual(row['adminKeyBinding'],bind)
+        self.assertEqual(row['runtimeBinding']['containerId'],actual['Id'])
+
 
 class ChildTimeoutClassification(unittest.TestCase):
     def test_read_and_write_timeouts_are_typed_and_never_automatically_replayed(self):

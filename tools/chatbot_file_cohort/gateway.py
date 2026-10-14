@@ -20,13 +20,14 @@ from engine_creation import Engine
 import iam_governance_intake as governance
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
-from tools.chatbot_file_cohort.plan import digest, encoded, require, sha
+from tools.chatbot_file_cohort.plan import PlanDenied, digest, encoded, require, sha
 from tools.chatbot_file_cohort.containers import installation_scope
 
 PROFILE = 'ouf.chatbot-file-cohort.gateway-publication.v1'
 MAX_RESPONSE = 8388608
 MAX_ROUTES = 256
 ROUTE_ID = re.compile(r'[A-Za-z0-9._-]{1,128}')
+EXTERNAL_ADMIN_KEY = '/opt/ouf/secrets/apisix-admin-key'
 
 MAX_NAMESPACE_INPUT = 655360
 # Literal source is included in the sealed runtime module. No target path or
@@ -104,6 +105,12 @@ _EXISTING_CONFIG_CUSTODY = {
         'parents': {'/opt/ouf': (1000, 1000, 0o750),
                     '/opt/ouf/secrets': (1000, 1000, 0o700)},
         'file': (10003, 10003, 0o400)},
+    EXTERNAL_ADMIN_KEY: {
+        'parents': {'/opt/ouf': (1000, 1000, 0o750),
+                    '/opt/ouf/secrets': (1000, 1000, 0o700)},
+        # 0600 does not grant group access. The observed uid/mode are fixed;
+        # the actual gid is pinned by the returned file metadata.
+        'file': (1000, None, 0o600)},
     '/etc/ouf/deploy-snapshots/consultation-human-read-20261002-1153/prepared/apisix-config.yaml': {
         'parents': {}, 'file': (636, 636, 0o400)},
 }
@@ -119,7 +126,8 @@ def selected_directory_custody(info, path, exception):
 def selected_file_custody(info, exception):
     selected = exception['file'] if exception else None
     if selected is not None:
-        return (info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)) == selected
+        uid,gid,mode=selected
+        return info.st_uid==uid and (gid is None or info.st_gid==gid) and stat.S_IMODE(info.st_mode)==mode
     return info.st_uid == 0 and stat.S_IMODE(info.st_mode) in (0o400,0o440,0o444,0o600,0o640,0o644)
 
 
@@ -167,7 +175,7 @@ def private_config(path, expected=None):
         for fd in reversed(fds): os.close(fd)
 
 
-def selected_admin_key(raw):
+def selected_admin_key(raw, external_key=None):
     # Closed scalar/list subset of the selected APISIX admin_key section only.
     # No YAML dependency, interpolation, aliases, tags or arbitrary configuration
     # execution in the isolated installer. Unsupported syntax requires review.
@@ -211,9 +219,16 @@ def selected_admin_key(raw):
     if row is not None: candidates.append(row)
     require(len(candidates)<=8 and all(set(r)=={'name','key','role'} for r in candidates),
             'CLOSED_ADMIN_CREDENTIAL_RECORD_REQUIRED')
-    candidates=[r for r in candidates if r.get('role') == 'admin']
-    require(len(candidates) == 1, 'ONE_SELECTED_APISIX_ADMIN_CREDENTIAL_REQUIRED')
-    key = candidates[0].get('key')
+    admin=[r for r in candidates if r.get('role') == 'admin']
+    # The selected live config has a literal but empty admin_key section.
+    # Its separate existing admin-key file was observed to authorize a GET.
+    # No fallback is permitted for ambiguous/nonempty credential records.
+    if not candidates and external_key is not None:
+        key=external_key
+    else:
+        require(external_key is None and len(admin)==1,
+                'ONE_SELECTED_APISIX_ADMIN_CREDENTIAL_REQUIRED')
+        key=admin[0].get('key')
     require(type(key) is str and 16 <= len(key) <= 4096 and all(33 <= ord(c) <= 126 for c in key)
             and not key.startswith(('$ENV', '${', '$secret')), 'LITERAL_SELECTED_ADMIN_CREDENTIAL_REQUIRED')
     return key
@@ -251,9 +266,15 @@ class NamespaceAdmin:
         require(len(mounts) == 1 and mounts[0].get('Type') == 'bind' and mounts[0].get('RW') is False
                 and mounts[0].get('Source') == selected_config, 'EXACT_SELECTED_APISIX_CONFIG_BIND_REQUIRED')
         raw, config = private_config(selected_config)
-        selected_admin_key(raw)
+        admin_binding=None
+        try:selected_admin_key(raw)
+        except PlanDenied as error:
+            if str(error)!='ONE_SELECTED_APISIX_ADMIN_CREDENTIAL_REQUIRED':raise
+            admin_raw,admin_binding=private_config(EXTERNAL_ADMIN_KEY)
+            selected_admin_key(raw,admin_raw.decode('ascii').strip())
         s = os.stat('/proc/'+str(actual['State']['Pid'])+'/ns/net')
         return {'runtimeBinding': Engine.runtime_binding(actual), 'configBinding': config,
+                'adminKeyBinding':admin_binding,
                 'networkNamespace': {'device': s.st_dev, 'inode': s.st_ino},
                 'transport': 'EXACT_APISIX_NETNS_LOOPBACK_HTTP', 'port': 9180,
                 'maximumResponseBytes': MAX_RESPONSE, 'timeoutSeconds': 10,
@@ -280,7 +301,12 @@ class NamespaceAdmin:
         program=self.binding['pythonExecutable']
         require(program==namespace_program(),'APPROVED_NAMESPACE_PYTHON_CHANGED')
         config, _ = private_config(self.binding['configBinding']['path'], self.binding['configBinding'])
-        request=encoded({'method':method,'path':path,'body':body,'key':selected_admin_key(config)})
+        admin_binding=self.binding.get('adminKeyBinding')
+        external=None
+        if admin_binding is not None:
+            raw_key,_=private_config(EXTERNAL_ADMIN_KEY,admin_binding)
+            external=raw_key.decode('ascii').strip()
+        request=encoded({'method':method,'path':path,'body':body,'key':selected_admin_key(config,external)})
         require(len(request)<=MAX_NAMESPACE_INPUT,'APISIX_PRIVATE_STDIN_BOUND_EXCEEDED')
         pid = self.binding['runtimeBinding']['pid']
         ns = os.open('/proc/'+str(pid)+'/ns/net', os.O_RDONLY)
