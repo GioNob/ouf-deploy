@@ -15,8 +15,12 @@ from engine_creation import Engine
 from tools.chatbot_file_cohort.plan import MODULES, compile_cohort, environment, runtime_pin, digest, require
 from tools.chatbot_file_cohort.databases import observe_database, compile_database_plan, java_migrations, identifier
 from tools.chatbot_file_cohort.images import private_open, image_import_scope
+from tools.chatbot_file_cohort.gateway import private_config
 
 DB_PREFIX = {'udp':'OUF_UDP','onboarding':'OUF_ONB','ingestion':'OUF_ING'}
+THS_CONFIG_SOURCE = '/opt/ouf/secrets/onboarding-ths.yaml'
+THS_CONFIG_TARGET = '/run/secrets/onboarding-ths.yaml'
+THS_ADDITIONAL_LOCATION = 'file:' + THS_CONFIG_TARGET
 
 
 def validate_json_overlay(raw,prefix):
@@ -49,7 +53,7 @@ def validate_json_overlay(raw,prefix):
             if type(item) is dict:pending.append((full,item,depth+1))
 
 
-def database_binding(module, actual, postgres):
+def database_binding(module, actual, postgres, ths_binding=None):
     values = environment(actual['Config'].get('Env') or [])
     if module == 'mcp':
         raw = values.get('MCP_DATABASE_URL','')
@@ -58,8 +62,24 @@ def database_binding(module, actual, postgres):
         raw = values.get(prefix+'_DB_URL','')
         require(raw.startswith('jdbc:postgresql://'), 'EXPLICIT_CURRENT_JDBC_DATABASE_REQUIRED')
         validate_json_overlay(values.get('SPRING_APPLICATION_JSON'),prefix)
-        require(not any(values.get(k) for k in ('SPRING_CONFIG_LOCATION','SPRING_CONFIG_ADDITIONAL_LOCATION')),
+        require(not values.get('SPRING_CONFIG_LOCATION'),
                 'CUSTOM_DATASOURCE_CONFIGURATION_REQUIRES_REVIEW')
+        additional = values.get('SPRING_CONFIG_ADDITIONAL_LOCATION')
+        if additional:
+            require(module == 'onboarding' and additional == THS_ADDITIONAL_LOCATION
+                    and type(ths_binding) is dict and ths_binding.get('path') == THS_CONFIG_SOURCE,
+                    'UNREVIEWED_ADDITIONAL_CONFIG_LOCATION')
+            mounts = [m for m in actual.get('Mounts',[]) if m.get('Destination') == THS_CONFIG_TARGET]
+            require(len(mounts) == 1 and mounts[0].get('Type') == 'bind'
+                    and mounts[0].get('Source') == THS_CONFIG_SOURCE and mounts[0].get('RW') is False,
+                    'EXACT_READ_ONLY_THS_CONFIG_BIND_REQUIRED')
+            ths_raw,verified = private_config(THS_CONFIG_SOURCE,ths_binding)
+            require(verified == ths_binding and ths_raw.lstrip().startswith(b'{'),
+                    'SELECTED_THS_JSON_CONFIGURATION_REQUIRED')
+            validate_json_overlay(ths_raw.decode('utf-8'),prefix)
+        else:
+            require(ths_binding is None or module == 'onboarding',
+                    'UNREQUESTED_THS_CONFIGURATION_BINDING')
         for key in ('SPRING_DATASOURCE_URL','SPRING_DATASOURCE_USERNAME'):
             corresponding = raw if key.endswith('_URL') else values.get(prefix+'_DB_USER','')
             require(key not in values or values[key] == corresponding, 'CONFLICTING_DATASOURCE_OVERRIDE')
@@ -116,7 +136,8 @@ def packaged_migrations(directory, record):
 
 
 def prepare_cohort(engine, package_directory, manifest, image_import_plan, postgres_observation,
-                   gateway_plan_hash, authorization_plan_hash, environment_deltas, acceptance_plan_hash=None):
+                   gateway_plan_hash, authorization_plan_hash, environment_deltas, acceptance_plan_hash=None,
+                   ths_binding=None):
     require(type(engine) is Engine, 'REAL_CURRENT_DOCKER_ENGINE_REQUIRED')
     image_import_scope(image_import_plan)
     require(image_import_plan['cohortManifestHash'] == digest(manifest), 'ONE_AUTHENTICATED_COHORT_REQUIRED')
@@ -136,7 +157,7 @@ def prepare_cohort(engine, package_directory, manifest, image_import_plan, postg
         audit = audits[module]['audit']
         observed[module] = actual
         images[module] = {'Id':audit['imageId'],'Config':copy.deepcopy(audit['imageConfig'])}
-        bindings[module] = database_binding(module,actual,pg)
+        bindings[module] = database_binding(module,actual,pg,ths_binding if module == 'onboarding' else None)
         migrations[module] = packaged_migrations(package_directory,records[module])
         current[module] = observe_database(pgpin['containerId'],bindings[module]['user'],bindings[module]['database'],module)
     database_plan = compile_database_plan(pg,bindings,migrations,current)
@@ -145,8 +166,9 @@ def prepare_cohort(engine, package_directory, manifest, image_import_plan, postg
     for replacement in plan['replacements']:
         module = replacement['module']
         candidate = {'Config':replacement['creationRequest'],
-                     'NetworkSettings':observed[module]['NetworkSettings']}
-        require(database_binding(module,candidate,pg) == bindings[module],
+                     'NetworkSettings':observed[module]['NetworkSettings'],
+                     'Mounts':observed[module]['Mounts']}
+        require(database_binding(module,candidate,pg,ths_binding if module == 'onboarding' else None) == bindings[module],
                 'REPLACEMENT_MUST_PRESERVE_REVIEWED_DATABASE_BINDING')
     for name, actual in observed.items():
         code, fresh = engine.request('GET','/v1.44/containers/'+actual['Id']+'/json')
