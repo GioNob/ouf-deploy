@@ -109,7 +109,7 @@ class GatewayPublication(unittest.TestCase):
 
 
 class Projection(unittest.TestCase):
-    def test_actual_final_materializers_build_43_target_projected_routes(self):
+    def test_file_cohort_materializers_leave_gateway_operational_routes_retained(self):
         from tools.compile_config import compile_config
         from tools.apply_installation_projection import apply_projection
         runtime=apply_projection(compile_config(GATEWAY/'ouf-config'),
@@ -118,14 +118,16 @@ class Projection(unittest.TestCase):
               'udpKeyEnv':'UKEY','semanticReadKeyEnv':'RKEY','semanticProposalKeyEnv':'PKEY',
               'semanticReadRouteIds':{'search':'semantic-search','get':'semantic-get'}}
         rows=preparation.materialize_target(runtime,refs)
-        self.assertEqual(len(rows),43)
+        self.assertEqual(len(rows),41)
+        self.assertNotIn('operational-execute-ouf-gateway-operations-summary',rows)
+        self.assertNotIn('operational-execute-ouf-gateway-operations-incidents',rows)
         self.assertEqual(rows['trusted-human-onboarding-approvals-post']['upstream']['timeout']['read'],55)
         existing={'foreign':{'id':'foreign','uri':'/foreign','methods':['GET']}}
         package={'module':'gateway','artifactKind':'SOURCE_AND_ROUTE_PACKAGE','sourceCommit':'a'*40,
                  'cohortSourceLockSha256':'b'*64}
         plan=preparation.compile_gateway_plan(existing,runtime,refs,package,{'fixture':True})
         self.assertEqual(plan['proposedRoutes']['foreign'],existing['foreign'])
-        self.assertEqual(len(plan['proposedRoutes']),44)
+        self.assertEqual(len(plan['proposedRoutes']),42)
         existing['foreign']['uri']='/mcp'
         existing['foreign']['methods']=rows['mcp']['methods'] if 'mcp' in rows else next(r['methods'] for r in rows.values() if r.get('uri')=='/mcp')
         with self.assertRaisesRegex(ValueError,'SELECTOR_COLLISION'):preparation.compile_gateway_plan(existing,runtime,refs,package,{'fixture':True})
