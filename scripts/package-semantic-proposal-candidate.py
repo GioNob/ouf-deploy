@@ -10,8 +10,8 @@ import subprocess
 
 SOURCES = {
     'semantic': ('ouf-semantic-registry', 'bdfe0f75a5fc4790a5c5ff36e201c3d99713ecc0'),
-    'mcp': ('ouf-mcp-server', 'a02b13ecb7cf9b73c070b59f26b60aaed6060944'),
-    'gateway': ('ouf-api-gateway', '8cac6c8877b16eed6f93db9eb08985035b510da5'),
+    'mcp': ('ouf-mcp-server', 'd43f5604976b07c66d58c5180d871c5656c44d4d'),
+    'gateway': ('ouf-api-gateway', '23b02bd2195d36499b6618750d52dd49d65c9a60'),
 }
 KINDS = {'semantic': 'DOCKER_SAVE', 'mcp': 'LINUX_AMD64_EXECUTABLE', 'gateway': 'SOURCE_ARCHIVE'}
 

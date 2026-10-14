@@ -21,10 +21,10 @@ jobs:
             commit: bdfe0f75a5fc4790a5c5ff36e201c3d99713ecc0
           - module: mcp
             repository: ouf-mcp-server
-            commit: a02b13ecb7cf9b73c070b59f26b60aaed6060944
+            commit: d43f5604976b07c66d58c5180d871c5656c44d4d
           - module: gateway
             repository: ouf-api-gateway
-            commit: 8cac6c8877b16eed6f93db9eb08985035b510da5
+            commit: 23b02bd2195d36499b6618750d52dd49d65c9a60
     steps:
       - uses: actions/checkout@v4
         with: {path: deploy, persist-credentials: false}
