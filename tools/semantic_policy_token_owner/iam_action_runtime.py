@@ -19,6 +19,8 @@ MODULES=frozenset({'cutover_authority','iam_audience_transaction','iam_binding_c
         'semantic_provider_deployment_protocol','semantic_provider_deployment_signing',
         'semantic_provider_lease_coordination','semantic_provider_lease_nft',
         'semantic_provider_peer_bindings','semantic_provider_preexec','semantic_provider_preexec_native'))})
+MODULES=MODULES|frozenset({'file_only_profile','gated_creation_plan','transition_journal'})
+
 PACKAGES=frozenset({'tools'})
 STDLIB=frozenset({'argparse','ast','base64','contextlib','copy','fcntl','hashlib','importlib','ipaddress','json',
     'math','os','pathlib','re','selectors','signal','socket','stat','subprocess','sys','sysconfig',

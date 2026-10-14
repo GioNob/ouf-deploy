@@ -23,6 +23,8 @@ MODULES=MODULES|frozenset({'accounting_gap_session','legacy_retirement','credent
     'credential_transaction','first_controlled_grant','migration_root_custody',
     'tools.semantic_policy_token_owner.producer','tools.semantic_policy_token_owner.iam_admission',
     'tools.semantic_lease_recovery.bounded_recovery','tools.semantic_lease_recovery.recovery_journal'})
+MODULES=MODULES|frozenset({'file_only_profile','gated_creation_plan','transition_journal'})
+
 PACKAGES=frozenset({'tools','tools.semantic_policy_token_owner','tools.semantic_lease_recovery'})
 STDLIB=frozenset({'argparse','ast','base64','contextlib','copy','fcntl','hashlib','importlib','ipaddress','json',
     'math','os','pathlib','re','selectors','signal','socket','stat','subprocess','sys','sysconfig',

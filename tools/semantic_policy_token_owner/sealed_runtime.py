@@ -32,6 +32,8 @@ MODULES = frozenset({
 })
 # The separate mount observer remains in the existing signed stage. It is not
 # imported by this worker and is not claimed qualified by this runtime closure.
+MODULES=MODULES|frozenset({'file_only_profile','gated_creation_plan','transition_journal'})
+
 PACKAGES = frozenset({'tools', 'tools.semantic_lease_recovery', 'tools.semantic_policy_token_owner'})
 STDLIB = frozenset({
     'abc', 'contextlib', 'copy', 'ctypes', 'dataclasses', 'errno', 'fcntl',

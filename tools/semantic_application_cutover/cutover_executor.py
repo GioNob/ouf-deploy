@@ -2,7 +2,7 @@
 
 No CLI, keys, authority issuance, target defaults, retry, wait, restore or reopen.
 A sealed installer must authenticate every checkpoint and supply native adapters
-for all thirteen phases. Fixture checkpoints are never target authority.
+for every phase in the signed profile. Fixture checkpoints are never target authority.
 """
 import hashlib,json,time
 from transition_journal import PHASES,hash_value
@@ -18,30 +18,40 @@ def digest(value):
 class Executor:
     def __init__(self,transition,authority_raw,authenticate,checkpoint,adapters,intents,clock=time.time):
         require(type(authority_raw) is bytes and len(authority_raw)<=131072,'BOUNDED_EXTERNAL_AUTHORITY_REQUIRED')
+        self.phases=transition.phases
+        self.profile_hash=transition.profile_hash
         self.authority_hash=hashlib.sha256(authority_raw).hexdigest()
         try:self.authority=json.loads(authority_raw)
         except ValueError:raise CutoverDenied('EXTERNAL_AUTHORITY_JSON_REQUIRED') from None
         require(type(self.authority) is dict,'EXTERNAL_AUTHORITY_OBJECT_REQUIRED')
         require(callable(authenticate) and callable(checkpoint),'EXTERNAL_AUTHENTICATION_AND_NATIVE_CHECKPOINTS_REQUIRED')
-        require(type(adapters) is dict and type(intents) is dict and set(adapters)==set(intents)==set(PHASES),'ALL_ORDERED_PHASE_ADAPTERS_AND_INTENTS_REQUIRED')
+        require(type(adapters) is dict and type(intents) is dict and set(adapters)==set(intents)==set(self.phases),'ALL_ORDERED_PHASE_ADAPTERS_AND_INTENTS_REQUIRED')
         require(all(callable(getattr(a,'apply',None)) and callable(getattr(a,'observe',None)) for a in adapters.values()),'NATIVE_APPLY_AND_RECONCILE_ADAPTER_REQUIRED')
         self.t,self.raw,self.authenticate,self.checkpoint,self.adapters,self.clock=transition,authority_raw,authenticate,checkpoint,adapters,clock
         # Bind the exact immutable intent for every phase before any effect.
-        self.intents={phase:json.loads(json.dumps(intents[phase],allow_nan=False)) for phase in PHASES}
-        self.intent_hashes={phase:digest(self.intents[phase]) for phase in PHASES}
+        self.intents={phase:json.loads(json.dumps(intents[phase],allow_nan=False)) for phase in self.phases}
+        self.intent_hashes={phase:digest(self.intents[phase]) for phase in self.phases}
 
     def verify(self,phase,point,row):
-        require(set(self.adapters)==set(self.intents)==set(PHASES) and all(digest(self.intents[p])==self.intent_hashes[p] for p in PHASES),'IMMUTABLE_PHASE_ADAPTER_OR_INTENT_DRIFT')
+        require(set(self.adapters)==set(self.intents)==set(self.phases) and all(digest(self.intents[p])==self.intent_hashes[p] for p in self.phases),'IMMUTABLE_PHASE_ADAPTER_OR_INTENT_DRIFT')
         # The external authenticator must verify the CURRENT signature, policy,
         # revocation and issuer/scope before every native checkpoint/effect.
         require(self.authenticate(self.raw) is True,'CURRENT_EXTERNAL_SIGNATURE_AND_POLICY_REQUIRED')
+        require(self.t.phases==self.phases and self.t.profile_hash==self.profile_hash,'CUTOVER_EXECUTOR_PROFILE_DRIFT')
         authority=self.authority;now=self.clock()
-        require(set(authority)=={'schema','issuedAt','expiresAt','creationRequestHash','predecessorHistoryHash','predecessorIncidentRef','sourceClosureHash','phaseIntentHashes','automaticReplayAllowed','databaseRestoreAuthorized','r12ReplayAuthorized','newDistinctLeaseWorkerRequired'},'EXACT_CUTOVER_AUTHORITY_SCOPE_REQUIRED')
-        require(authority['schema']=='ouf.semantic-cutover-execution-authority.v1','EXACT_CUTOVER_AUTHORITY_SCHEMA_REQUIRED')
+        profile_fields=set()
+        if self.profile_hash is not None:
+            from file_only_profile import PROFILE
+            require(self.t.execution_profile.verify(self.intents['CREATE_REPLACEMENT'])==self.profile_hash
+                    and authority.get('deploymentProfile')==PROFILE and authority.get('executionProfileHash')==self.profile_hash,
+                    'FILE_ONLY_SIGNED_PROFILE_OR_REQUEST_DRIFT')
+            profile_fields={'deploymentProfile','executionProfileHash'}
+        require(set(authority)=={'schema','issuedAt','expiresAt','creationRequestHash','predecessorHistoryHash','predecessorIncidentRef','sourceClosureHash','phaseIntentHashes','automaticReplayAllowed','databaseRestoreAuthorized','r12ReplayAuthorized','newDistinctLeaseWorkerRequired'}|profile_fields,'EXACT_CUTOVER_AUTHORITY_SCOPE_REQUIRED')
+        require(authority['schema']==('ouf.semantic-cutover-execution-authority.v1' if self.profile_hash is None else 'ouf.semantic-cutover-execution-authority.v2'),'EXACT_CUTOVER_AUTHORITY_SCHEMA_REQUIRED')
         require(hash_value(authority['sourceClosureHash']),'SIGNED_SOURCE_CLOSURE_HASH_REQUIRED')
         require(type(authority['issuedAt']) is int and type(authority['expiresAt']) is int and authority['issuedAt']<=now<authority['expiresAt'] and 0<authority['expiresAt']-authority['issuedAt']<=3600,'FINITE_CURRENT_CUTOVER_AUTHORITY_REQUIRED')
         require(authority['phaseIntentHashes']==self.intent_hashes,'SIGNED_PHASE_INTENT_DRIFT')
-        require(authority['automaticReplayAllowed'] is False and authority['databaseRestoreAuthorized'] is False and authority['r12ReplayAuthorized'] is False and authority['newDistinctLeaseWorkerRequired'] is True,'CUTOVER_REPLAY_RESTORE_OR_WORKER_POLICY_DRIFT')
+        require(authority['automaticReplayAllowed'] is False and authority['databaseRestoreAuthorized'] is False and authority['r12ReplayAuthorized'] is False and authority['newDistinctLeaseWorkerRequired'] is (self.profile_hash is None),'CUTOVER_REPLAY_RESTORE_OR_WORKER_POLICY_DRIFT')
         require(self.authority_hash==row['transitionAuthorityEvidenceHash'] and all(authority[k]==row[k] for k in ('creationRequestHash','predecessorHistoryHash','predecessorIncidentRef')),'CUTOVER_AUTHORITY_HISTORY_OR_REQUEST_DRIFT')
         proof=self.checkpoint(phase,point,row)
         # Native custody/command/complete OCI/peer/lease/DB proofs remain owned
@@ -51,27 +61,28 @@ class Executor:
         require(type(proof['nativeEvidenceHash']) is str and len(proof['nativeEvidenceHash'])==64 and all(c in '0123456789abcdef' for c in proof['nativeEvidenceHash']),'NATIVE_CHECKPOINT_EVIDENCE_HASH_REQUIRED')
         return digest(proof)
 
-    def run(self,phase_count=len(PHASES)):
+    def run(self,phase_count=None):
         """Fresh ordered run or native reconciliation; no mutation retransmission.
 
         An ambiguous native observation remains IN_FLIGHT and stops subsequent
         phases. No-effect remains consumed and requires a new technical decision.
         The dedicated invocation lock is unrelated to the shared network lock.
         """
-        require(type(phase_count) is int and 1<=phase_count<=len(PHASES),'FINITE_ORDERED_PHASE_BOUND_REQUIRED')
+        if phase_count is None:phase_count=len(self.phases)
+        require(type(phase_count) is int and 1<=phase_count<=len(self.phases),'FINITE_ORDERED_PHASE_BOUND_REQUIRED')
         with self.t.invocation():
             while True:
                 row=self.t.read()
                 if row['state']=='READY' and row['nextPhase']>=phase_count:
-                    self.verify(PHASES[row['nextPhase']-1],'PARTIAL_CHECKPOINT_READ_ONLY',row)
+                    self.verify(self.phases[row['nextPhase']-1],'PARTIAL_CHECKPOINT_READ_ONLY',row)
                     return self.report(row)
                 if row['state']=='COMPLETED':
                     # A repeated completed invocation still authenticates the
                     # current external authority, but cannot replay any effect.
-                    self.verify(PHASES[-1],'COMPLETED_READ_ONLY',row)
+                    self.verify(self.phases[-1],'COMPLETED_READ_ONLY',row)
                     return self.report(row)
                 require(row['state'] in {'READY','IN_FLIGHT'},'CONSUMED_NO_EFFECT_REQUIRES_NEW_TECHNICAL_DECISION')
-                phase=PHASES[row['nextPhase']];intent_hash=self.intent_hashes[phase]
+                phase=self.phases[row['nextPhase']];intent_hash=self.intent_hashes[phase]
                 if row['state']=='IN_FLIGHT':
                     require(row['effects'][-1]['intentHash']==intent_hash,'IN_FLIGHT_INTENT_DRIFT')
                     self.verify(phase,'BEFORE_NATIVE_RECONCILIATION',row)
@@ -95,4 +106,8 @@ class Executor:
 
     @staticmethod
     def report(row):
-        return {'schema':'ouf.semantic-cutover-executor-receipt.v1','status':'ORDERED_NATIVE_PHASES_COMPLETED_NOT_RELEASE_ACCEPTANCE' if row['state']=='COMPLETED' else 'ORDERED_PARTIAL_CHECKPOINT_NOT_RELEASE_ACCEPTANCE','contextHash':row['contextHash'],'version':row['version'],'completedPhaseCount':row['nextPhase'],'databaseMayHaveChanged':row['databaseMayHaveChanged'],'applicationWritesMayHaveOccurred':row['applicationWritesMayHaveOccurred'],'automaticReplayAllowed':False,'preMigrationRestoreAllowed':False,'releaseAcceptance':False}
+        result={'schema':'ouf.semantic-cutover-executor-receipt.v1','status':'ORDERED_NATIVE_PHASES_COMPLETED_NOT_RELEASE_ACCEPTANCE' if row['state']=='COMPLETED' else 'ORDERED_PARTIAL_CHECKPOINT_NOT_RELEASE_ACCEPTANCE','contextHash':row['contextHash'],'version':row['version'],'completedPhaseCount':row['nextPhase'],'databaseMayHaveChanged':row['databaseMayHaveChanged'],'applicationWritesMayHaveOccurred':row['applicationWritesMayHaveOccurred'],'automaticReplayAllowed':False,'preMigrationRestoreAllowed':False,'releaseAcceptance':False}
+        if row['schema']=='ouf.semantic-cutover-journal.v2':
+            result.update(schema='ouf.semantic-cutover-executor-receipt.v2',deploymentProfile=row['deploymentProfile'],executionProfileHash=row['executionProfileHash'])
+        return result
+
