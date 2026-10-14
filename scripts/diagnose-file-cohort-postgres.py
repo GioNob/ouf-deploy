@@ -40,9 +40,31 @@ def failure(raw, code):
                '28P01':'INVALID_PASSWORD', '57014':'QUERY_CANCELLED',
                '55P03':'LOCK_UNAVAILABLE', '53300':'CONNECTION_CAPACITY',
                '57P03':'DATABASE_NOT_READY'}
-    return {'status':'BLOCKED', 'sqlstate':state,
-            'classification':classes.get(state, 'UNCLASSIFIED_CHANNEL_FAILURE'),
+    classification = classes.get(state, 'UNCLASSIFIED_CHANNEL_FAILURE')
+    # Connection failures occur before psql executes our VERBOSITY setting.
+    # Match only fixed English FATAL patterns; never expose captured identities.
+    if state is None:
+        patterns = (
+            (rb'FATAL:\s+role "[^"\r\n]{1,63}" does not exist(?:\r?\n|$)', 'ROLE_NOT_FOUND'),
+            (rb'FATAL:\s+password authentication failed for user "[^"\r\n]{1,63}"(?:\r?\n|$)', 'PASSWORD_AUTHENTICATION_FAILED'),
+            (rb'FATAL:\s+Peer authentication failed for user "[^"\r\n]{1,63}"(?:\r?\n|$)', 'PEER_AUTHENTICATION_FAILED'),
+            (rb'FATAL:\s+database "[^"\r\n]{1,63}" does not exist(?:\r?\n|$)', 'DATABASE_NOT_FOUND'))
+        for pattern, reason in patterns:
+            if re.search(pattern, raw):
+                classification = reason
+                break
+    return {'status':'BLOCKED', 'sqlstate':state, 'classification':classification,
             'exitCode':code, 'automaticRetry':False}
+
+
+def bootstrap_admin(pg):
+    rows = [v.split('=', 1)[1] for v in pg['Config'].get('Env', [])
+            if v.startswith('POSTGRES_USER=')]
+    need(len(rows) <= 1, 'AMBIGUOUS_POSTGRES_BOOTSTRAP_SELECTOR')
+    if not rows or not rows[0]:
+        return None
+    ident(rows[0])
+    return rows[0]
 
 
 def safe_reply(code, raw, diagnostic, check):
@@ -54,11 +76,13 @@ def safe_reply(code, raw, diagnostic, check):
         if type(value) is list:
             need(len(value) <= 256, 'BOUNDED_MIGRATION_HISTORY_REQUIRED')
             result['migrationCount'] = len(value)
-        elif type(value) is dict and check == 'ADMIN_OWNERSHIP':
+        elif type(value) is dict and check in ('ADMIN_OWNERSHIP', 'ADMIN_ROLE_METADATA'):
             allowed = {'serverVersion', 'adminSuperuser', 'applicationRoleExists', 'auditRoleAbsent',
                        'applicationSchemaOwnerAuthority', 'applicationAuditTableOwnerAuthority',
                        'applicationAttemptTableOwnerAuthority', 'applicationIncidentTableOwnerAuthority',
-                       'applicationAuditSequenceOwnerAuthority'}
+                       'applicationAuditSequenceOwnerAuthority', 'postgresRoleExists',
+                       'bootstrapSelectorConfigured', 'bootstrapRoleExists',
+                       'bootstrapRoleSuperuser', 'selectorDiffersFromPostgres'}
             result['facts'] = {k:v for k,v in value.items() if k in allowed and
                               (type(v) is bool or (k == 'serverVersion' and type(v) is int))}
         return result
@@ -144,6 +168,18 @@ def main():
                 "SELECT COALESCE(json_agg(json_build_object('version',version,'script',script,'type',type,'checksum',checksum,'success',success) ORDER BY installed_rank),'[]'::json) FROM "+schema+'.flyway_schema_history')
             query(module, 'MIGRATION_HISTORY', user, database, history)
             if module == 'mcp':
+                admin = bootstrap_admin(pg)
+                selected = literal(admin) if admin is not None else 'NULL'
+                query(module, 'ADMIN_ROLE_METADATA', user, database,
+                    "SELECT json_build_object('postgresRoleExists',EXISTS(SELECT 1 FROM pg_roles WHERE rolname='postgres'),"
+                    "'bootstrapSelectorConfigured',"+('true' if admin is not None else 'false')+","
+                    "'selectorDiffersFromPostgres',"+('true' if admin is not None and admin != 'postgres' else 'false')+","
+                    "'bootstrapRoleExists',EXISTS(SELECT 1 FROM pg_roles WHERE rolname="+selected+"),"
+                    "'bootstrapRoleSuperuser',COALESCE((SELECT rolsuper FROM pg_roles WHERE rolname="+selected+"),false))")
+                if admin is None:
+                    print(json.dumps({'module':'mcp', 'check':'ADMIN_OWNERSHIP', 'status':'BLOCKED',
+                        'classification':'POSTGRES_ADMIN_SELECTOR_UNAVAILABLE', 'automaticRetry':False}), flush=True)
+                    continue
                 role = literal(user)
                 fields = ["'serverVersion',current_setting('server_version_num')::int",
                           "'adminSuperuser',(SELECT rolsuper FROM pg_roles WHERE rolname=current_user)",
@@ -153,7 +189,7 @@ def main():
                 for key, table in (('AuditTable','audit_event'), ('AttemptTable','tool_attempt'),
                                    ('IncidentTable','security_incident'), ('AuditSequence','audit_event_sequence_id_seq')):
                     fields.append("'application"+key+"OwnerAuthority',EXISTS(SELECT 1 FROM pg_class WHERE oid=to_regclass('ouf_mcp."+table+"') AND pg_has_role((SELECT oid FROM pg_roles WHERE rolname="+role+"),relowner,'USAGE'))")
-                query(module, 'ADMIN_OWNERSHIP', 'postgres', database,
+                query(module, 'ADMIN_OWNERSHIP', admin, database,
                       'SELECT json_build_object('+','.join(fields)+')')
         for previous in pins:
             fresh = inspect(previous['Name'].lstrip('/'))
