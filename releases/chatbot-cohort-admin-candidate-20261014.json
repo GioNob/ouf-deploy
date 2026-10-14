@@ -1,8 +1,8 @@
 {
   "schema": "ouf.chatbot-cohort-admin-candidate.v1",
-  "sourceCommit": "628fddfd0fb6e09a9481f756b4cdcea22eab2c44",
-  "sourceCapsuleSha256": "4c0e9fdfdebc0bd71b457664d142d7f47dfeda5e79fc1d7acece99339900b074",
-  "launcherSha256": "bb18c8d7f25e9971b62b287105a65572b17bff81a91521ff7b7eb79b078bdf17",
+  "sourceCommit": "96f627be0d8e75a8f63ef70baad49c6276999a7e",
+  "sourceCapsuleSha256": "c83e9022e803d715c02de7f145c80c0e6ff39a7aee7ab4236c19510947bd2eb8",
+  "launcherSha256": "058f188fed166b44cff717577658a8c0f1eb7fc6ba44357e6424f7e73a79e43f",
   "operatorObserved": {
     "postgresRoleExists": false,
     "bootstrapRoleExists": true,
@@ -24,5 +24,6 @@
   "targetApplyAuthorized": false,
   "runtimeAuthorityIssued": false,
   "chatbotEndToEndProven": false,
-  "budgetReset": false
+  "budgetReset": false,
+  "exactPrivateMigrationReviewIncluded": true
 }
