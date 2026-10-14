@@ -9,7 +9,7 @@ import re
 import subprocess
 
 SOURCES = {
-    'semantic': ('ouf-semantic-registry', '0b0fc53826bd9be566092bcc621854adaba08358'),
+    'semantic': ('ouf-semantic-registry', '1b77242375518909ec3219ff06022afd1c7a7b2b'),
     'mcp': ('ouf-mcp-server', 'a02b13ecb7cf9b73c070b59f26b60aaed6060944'),
     'gateway': ('ouf-api-gateway', '8cac6c8877b16eed6f93db9eb08985035b510da5'),
 }

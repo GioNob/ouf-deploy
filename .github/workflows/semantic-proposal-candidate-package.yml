@@ -18,7 +18,7 @@ jobs:
         include:
           - module: semantic
             repository: ouf-semantic-registry
-            commit: 0b0fc53826bd9be566092bcc621854adaba08358
+            commit: 1b77242375518909ec3219ff06022afd1c7a7b2b
           - module: mcp
             repository: ouf-mcp-server
             commit: a02b13ecb7cf9b73c070b59f26b60aaed6060944
@@ -48,6 +48,7 @@ jobs:
           image-ref: ouf-cohort-semantic:${{ matrix.commit }}
           format: json
           output: package/trivy-image.json
+          list-all-pkgs: true
           scanners: vuln
           severity: HIGH,CRITICAL,UNKNOWN
           ignore-unfixed: false
@@ -60,6 +61,7 @@ jobs:
           scan-ref: package/ouf-mcp
           format: json
           output: package/trivy-image.json
+          list-all-pkgs: true
           scanners: vuln
           severity: HIGH,CRITICAL,UNKNOWN
           ignore-unfixed: false
@@ -72,6 +74,7 @@ jobs:
           scan-ref: source
           format: json
           output: package/trivy-image.json
+          list-all-pkgs: true
           scanners: vuln
           severity: HIGH,CRITICAL,UNKNOWN
           ignore-unfixed: false
