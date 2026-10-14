@@ -1,0 +1,37 @@
+name: Semantic candidate archive delivery qualification
+on:
+  push:
+    branches: [codex/semantic-proposal-candidate-package-20261014, main]
+    paths:
+      - scripts/verify-semantic-proposal-candidate-archive.py
+      - tests/test_semantic_candidate_archive.py
+      - releases/semantic-candidate-stage-20261014.sh
+      - .github/workflows/semantic-candidate-delivery.yml
+  pull_request:
+    paths:
+      - scripts/verify-semantic-proposal-candidate-archive.py
+      - tests/test_semantic_candidate_archive.py
+      - releases/semantic-candidate-stage-20261014.sh
+      - .github/workflows/semantic-candidate-delivery.yml
+permissions: {contents: read}
+jobs:
+  offline-rejection-boundaries:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - run: python3 -m unittest discover -s tests -p test_semantic_candidate_archive.py -v
+      - run: python3 -m unittest discover -s tests -p test_semantic_proposal_candidate_package.py -v
+      - run: bash -n releases/semantic-candidate-stage-20261014.sh
+      - name: Enforce offline delivery without target operations
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          text=Path('releases/semantic-candidate-stage-20261014.sh').read_text()
+          commands='\n'.join(line for line in text.splitlines() if not line.lstrip().startswith('#'))
+          assert not re.search(r'\b(sudo|docker|systemctl|nft|psql|ssh)\b',commands)
+          assert '506f2f4bf9980cb801908abb5f7fd9f954b9b191' in text
+          assert 'b42b3ad520251e2d2bd179c63915f14bf31a47692588b42e55628f384ef096d7' in text
+          PY
