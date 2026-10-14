@@ -1,4 +1,6 @@
-# Nuovi pacchetti: raccolta unica degli input d'installazione — 14 ottobre2026
+# Nuovi pacchetti: input d'installazione raccolti — 14 ottobre2026
+
+**Eseguito alle06:41 CEST, non ripetere:** [ricevuta operatore](../evidence/semantic-candidate-installation-input-review-target-20261014.json), review privata92b3276992b3b3ec459e734196671728b8a49a99a02185e2c6f7c1da87ce82a1, source closure9b1d85c02dd0cf255138156d6334893cd6eeec120864ab80c8efea63e77e1958. Tre pacchetti verificati, tre radici riutilizzate, generazione Registry attuale osservata e una pubblicazione privata completa. Nessun effetto runtime o replay. La ricevuta è riportata dall'operatore; non è un readback indipendente. Il seguito deve leggere questa review per hash, senza rieseguire il preparatore.
 
 Lo staging è completato in /home/oufadmin/ouf-semantic-candidates-20261014.fADvCV9u, [ricevuta operatore](../evidence/semantic-proposal-candidate-stage-target-20261014.json). Non scaricare nuovamente gli ZIP. Le radici policy-token create il13 ottobre sono custodite e la claim è consumata: [ricevuta e divieto di replay](POLICY_TOKEN_ROOT_DELIVERY_20261013.md). PR5 è integrata e le quattro CI successive al merge134bcc45 passano.
 
@@ -23,7 +25,7 @@ Il filesystem scratch non supporta il chown usato dalle prove native; non si è 
 
 Programma: scripts/prepare-semantic-candidate-installation-review.py, commit7f3e08060836ec963013f418f1b2cd96f8d0420a, SHA25654d9c1fbfd6f678f65f8039a42147381f2bd2723476e57376cd9a3e38b68aaca. Le modifiche successive a documentazione non cambiano questi pin.
 
-## Comando da eseguire una volta sul VPS
+## Comando storico già eseguito — non ripetere
 
 Riusa gh portable; verifica i byte prima di sudo. Restituire solo il JSON finale, senza ledger, credenziali o output dei comandi amministrativi.
 
