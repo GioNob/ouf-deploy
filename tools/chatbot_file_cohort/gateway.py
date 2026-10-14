@@ -93,24 +93,61 @@ def publication_scope(plan):
             'proposedRuntimeHash': plan['proposedRuntimeHash'], 'automaticRollbackAllowed': False}
 
 
+_EXISTING_CONFIG_CUSTODY = {
+    # These are the observed, already-running selections on this host. Do not
+    # change ownership of /opt/ouf or the files mounted into live containers.
+    '/opt/ouf/installation/active-projection.json': {
+        'parents': {'/opt/ouf': (1000, 1000, 0o750),
+                    '/opt/ouf/installation': (0, 0, 0o700)},
+        'file': (0, 0, 0o600)},
+    '/opt/ouf/secrets/onboarding-ths.yaml': {
+        'parents': {'/opt/ouf': (1000, 1000, 0o750),
+                    '/opt/ouf/secrets': (1000, 1000, 0o700)},
+        'file': (10003, 10003, 0o400)},
+    '/etc/ouf/deploy-snapshots/consultation-human-read-20261002-1153/prepared/apisix-config.yaml': {
+        'parents': {}, 'file': (636, 636, 0o400)},
+}
+
+
+def selected_directory_custody(info, path, exception):
+    selected = exception['parents'].get(path) if exception else None
+    if selected is not None:
+        return (info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)) == selected
+    return info.st_uid == 0 and not info.st_mode & 0o022
+
+
+def selected_file_custody(info, exception):
+    selected = exception['file'] if exception else None
+    if selected is not None:
+        return (info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)) == selected
+    return info.st_uid == 0 and stat.S_IMODE(info.st_mode) in (0o400,0o440,0o444,0o600,0o640,0o644)
+
+
 def private_config(path, expected=None):
-    """Read only the explicitly selected APISIX bind, through root-owned ancestry."""
+    """Read an exact selected file with pinned, no-follow path custody.
+
+    The three existing selections above have different named owners. All
+    other paths, including newly staged APISIX config, retain root custody.
+    """
     target = Path(path)
     require(target.is_absolute() and '..' not in target.parts, 'EXACT_APISIX_CONFIG_PATH_REQUIRED')
+    exception = _EXISTING_CONFIG_CUSTODY.get(str(target))
     fds = []; ancestors = []
     try:
         parent = os.open('/', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW); fds.append(parent)
+        current = '/'
         for name in target.parts[1:-1]:
             child = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
             fds.append(child); info = os.fstat(child)
-            require(info.st_uid == 0 and not info.st_mode & 0o022, 'APISIX_CONFIG_ANCESTRY_NOT_CUSTODIED')
+            current = os.path.join(current, name)
+            require(selected_directory_custody(info,current,exception),'APISIX_CONFIG_ANCESTRY_NOT_CUSTODIED')
             ancestors.append((parent,name,child,(info.st_dev,info.st_ino,info.st_uid,info.st_gid,info.st_mode)))
             parent = child
         fd = os.open(target.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent); fds.append(fd)
         s = os.fstat(fd)
         pin = lambda v: (v.st_dev,v.st_ino,v.st_uid,v.st_gid,v.st_mode,v.st_nlink,v.st_size,v.st_mtime_ns,v.st_ctime_ns)
-        require(stat.S_ISREG(s.st_mode) and s.st_uid == 0 and s.st_nlink == 1
-                and stat.S_IMODE(s.st_mode) in (0o400,0o440,0o444,0o600,0o640,0o644) and 0 < s.st_size <= 1048576,
+        require(stat.S_ISREG(s.st_mode) and s.st_nlink == 1 and 0 < s.st_size <= 1048576
+                and selected_file_custody(s,exception),
                 'ROOT_CONTROLLED_SELECTED_APISIX_CONFIG_REQUIRED')
         raw = b''
         while len(raw) <= 1048576:
