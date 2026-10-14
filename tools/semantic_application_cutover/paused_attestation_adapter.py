@@ -23,6 +23,9 @@ class PausedAttestationAdapter:
         if type(observer) is PausedNodeObservation and type(observer.frame) not in allowed:
             from semantic_proposal_frame_observation import SemanticProposalFrameObservation
             allowed=allowed+(SemanticProposalFrameObservation,)
+        if type(observer) is PausedNodeObservation and type(observer.frame) not in allowed:
+            from file_only_frame_observation import FileOnlyFrameObservation
+            allowed=allowed+(FileOnlyFrameObservation,)
         require(type(observer) is PausedNodeObservation and type(observer.frame) in allowed and type(acceptance) is PausedNodeAcceptance
                 and type(store) is NativeEvidenceStore,'TYPED_PAUSED_NODE_OWNER_PHASE_REQUIRED')
         require(type(authorization_binding) is dict and set(authorization_binding)=={'path','sha256'}
@@ -74,3 +77,4 @@ class PausedAttestationAdapter:
                   'publisherCryptoVerifiedHere':False,'supplyChainRequiredBySealedCheckpoint':True,
                   'runtimeAuthorityIssued':False,'signaturesIssued':0,'applicationStartAuthorized':False,'notReleaseAcceptance':True}
         self.store.publish(PHASE,evidence);return 'APPLIED',evidence
+

@@ -23,10 +23,11 @@ def inputs():
     return request,db
 
 class FileOnlyCutover(unittest.TestCase):
-    def fixture(self):
+    def fixture(self,overrides=None):
         f=crypto.SignedCutover();f.setUp();self.addCleanup(f.doCleanups)
         request,db=inputs();profile=FileOnlyProfile(request,db)
         intents={p:{'syntheticFixturePhase':p} for p in PHASES};intents['CREATE_REPLACEMENT']=request
+        if overrides:intents.update(overrides)
         f.expected['creationRequestHash']=digest(request)
         authority={'schema':'ouf.semantic-cutover-execution-authority.v2',
             **{k:v for k,v in f.expected.items() if k!='intakeHash'},'issuedAt':f.now,'expiresAt':f.now+120,
@@ -161,5 +162,24 @@ class FileOnlyCutover(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'EXPLICIT_FILE_ONLY'):configure_core(None,t,request,None,admin,intents,owners,lambda point:None)
         owners['START_DISTINCT_LEASE_WORKER']=owners[PHASES[0]]
         with self.assertRaises(ValueError):configure_core(None,t,request,None,admin,intents,owners,lambda point:None,execution_profile=p)
+
+    def test_native_migration_adapter_uses_signed_file_profile_prerequisites(self):
+        from test_migration_admission_adapter import Admission
+        from migration_admission_adapter import MigrationAdmissionAdapter
+        from native_evidence_store import NativeEvidenceStore
+        fixture=Admission();legacy,state,paused,writes=fixture.fixture();self.addCleanup(fixture.doCleanups)
+        adapter=legacy.adapters['ADMIT_MIGRATION'];intent=adapter.intent
+        f,p,e,calls=self.fixture({'ADMIT_MIGRATION':intent})
+        directory=f.root/'native';directory.mkdir(mode=0o700);store=NativeEvidenceStore(directory)
+        def observe(phase,record):
+            store.publish(phase,record);return 'APPLIED',record
+        backup={'schema':'ouf.semantic-fenced-backup-executor-evidence.v1','transitionContextHash':e.t.context,
+            'databaseContainerId':intent['containerId'],'databaseScopeHash':digest({'name':intent['database'],'oid':intent['databaseOid']}),
+            'currentDatabaseState':{'oid':intent['databaseOid'],'closed':True,'prepared':0,'sessions':0}}
+        e.adapters['FENCED_BACKUP'].observe=lambda i:observe('FENCED_BACKUP',backup)
+        e.adapters['STAGE_PAUSED_REPLACEMENT'].observe=lambda i:observe('STAGE_PAUSED_REPLACEMENT',paused)
+        e.adapters['ADMIT_MIGRATION']=MigrationAdmissionAdapter(adapter.admin,adapter.engine,e.t,intent,store)
+        e.run(8);self.assertEqual(len(writes),1);self.assertTrue(e.t.read()['databaseMayHaveChanged'])
+        e.run(8);self.assertEqual(len(writes),1)
 
 if __name__=='__main__':unittest.main()
