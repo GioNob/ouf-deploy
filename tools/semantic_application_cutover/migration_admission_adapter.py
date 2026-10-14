@@ -24,7 +24,14 @@ class MigrationAdmissionAdapter:
         row=self.transition.read()
         require(row['state']=='IN_FLIGHT' and row['effects'][-1]['phase']=='ADMIT_MIGRATION'
                 and row['effects'][-1]['intentHash']==self.intent_hash and row['databaseMayHaveChanged'] is True,'DURABLE_MIGRATION_BOUNDARY_REQUIRED')
-        for phase in ('FENCED_BACKUP','STAGE_PAUSED_REPLACEMENT','ATTEST_NEW_OCI_PEER','INSTALL_AUTHENTICATED_TRANSPORT','START_DISTINCT_LEASE_WORKER'):
+        prerequisites=('FENCED_BACKUP','STAGE_PAUSED_REPLACEMENT','ATTEST_NEW_OCI_PEER','INSTALL_AUTHENTICATED_TRANSPORT','START_DISTINCT_LEASE_WORKER')
+        if getattr(self.transition,'execution_profile',None) is not None:
+            from transition_journal import Transition
+            from file_only_profile import PHASES
+            require(type(self.transition) is Transition and self.transition.phases==PHASES,
+                    'EXACT_FILE_ONLY_MIGRATION_PROFILE_REQUIRED')
+            prerequisites=('FENCED_BACKUP','STAGE_PAUSED_REPLACEMENT','ATTEST_NEW_OCI_PEER')
+        for phase in prerequisites:
             require(any(e['phase']==phase and e['state']=='APPLIED' for e in row['effects']),'APPLIED_MIGRATION_PREREQUISITE_REQUIRED')
         backup=next(e for e in row['effects'] if e['phase']=='FENCED_BACKUP')
         record=self.store.read('FENCED_BACKUP',backup['nativeEvidenceHash'])
@@ -59,3 +66,4 @@ class MigrationAdmissionAdapter:
                 'automaticReopen':False,'restorePerformed':False,'preMigrationRestoreAllowed':False}
         self.store.publish('ADMIT_MIGRATION',evidence)
         return 'APPLIED',evidence
+

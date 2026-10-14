@@ -24,6 +24,24 @@ def require(ok, reason):
     if not ok: raise CreationDenied(reason)
 
 
+def started_host_config_matches(expected, actual):
+    """Keep the standalone Engine closure; compare only the proven OOM default.
+
+    Neither native dictionaries nor generation hashes are normalized. Explicit
+    true is distinct, and missing keys/nonboolean OOM values are rejected.
+    """
+    if type(expected) is not dict or type(actual) is not dict: return False
+    for key, value in expected.items():
+        if key == 'OomKillDisable':
+            if key not in actual: return False
+            current = actual[key]
+            if (value is None or value is False) and (current is None or current is False): continue
+            if value is True and current is True: continue
+            return False
+        if actual.get(key) != value: return False
+    return True
+
+
 class Engine:
     def __init__(self, socket_path, socket_binding):
         self.path, self.binding = socket_path, socket_binding
@@ -80,8 +98,15 @@ class Engine:
         for key, expected in request.items():
             if key in {'HostConfig','NetworkingConfig'}: continue
             require(actual['Config'].get(key) == expected, 'CREATION_CONFIG_DRIFT')
-        for key, expected in request.get('HostConfig',{}).items():
-            require(actual['HostConfig'].get(key) == expected, 'CREATION_HOST_CONFIG_DRIFT')
+        if actual['State'].get('Running') is True:
+            # Moby may restore the default OomKillDisable=false to null at
+            # start when the kernel lacks that control. Keep native hashes
+            # unchanged; only that documented pair compares equivalently.
+            require(started_host_config_matches(request.get('HostConfig',{}),actual['HostConfig']),
+                    'CREATION_HOST_CONFIG_DRIFT')
+        else:
+            for key, expected in request.get('HostConfig',{}).items():
+                require(actual['HostConfig'].get(key) == expected, 'CREATION_HOST_CONFIG_DRIFT')
         # Actual NICs, mount projections, all expanded OCI fields and live peer
         # generation require the NEXT authenticated attestation phase. This
         # creation consistency check never grants start or transport authority.

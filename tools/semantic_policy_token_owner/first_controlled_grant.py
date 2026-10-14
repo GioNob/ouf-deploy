@@ -96,7 +96,7 @@ class FirstControlledGrant:
 
     @classmethod
     def from_completed_custody(cls,authority,authority_raw,host_raw,root_evidence_hash,root_source_closure_hash,
-                               registration,binding,profile,transport,output_identity,clock=lambda:(time.time(),time.monotonic())):
+                               registration,binding,profile,transport,output_identity,clock=lambda:(time.time(),time.monotonic()),*,output_custody=None):
         """Compose from actual retained root identities, without creating or issuing.
 
         All new effects still require the current four signed migration scopes.
@@ -109,13 +109,17 @@ class FirstControlledGrant:
                 selected['path'],{key:selected[key]for key in ('device','inode')})
             session=sessions.FirstGapSession(authority,authority_raw,retirement.host['logicalOwnerScopeHash'],
                 authority.expected['sourceClosureHash'],lambda:clock()[0],lambda:clock()[1])
-            result=cls(session,transaction,binding,profile,transport,output_identity,clock)
+            result=cls(session,transaction,binding,profile,transport,output_identity,clock,output_custody=output_custody)
             result.root_receipt=(bytes(host_raw),root_evidence_hash,root_source_closure_hash)
             result.scope={**result.scope,'schema':'ouf.policy-token-first-controlled-grant-scope.v2',
                 'completedRootEvidenceHash':root_evidence_hash,'rootCreationSourceClosureHash':root_source_closure_hash}
+            if output_custody is not None:
+                result.scope.pop('outputDirectoryIdentity')
+                result.scope.update(schema='ouf.policy-token-first-controlled-grant-scope.v4',
+                    outputCustodyScopeHash=evidence.sha(evidence.encoded(output_custody.scope)))
             return result
 
-    def __init__(self,session,credential_transaction,binding,profile,transport,output_identity,clock=lambda:(time.time(),time.monotonic())):
+    def __init__(self,session,credential_transaction,binding,profile,transport,output_identity,clock=lambda:(time.time(),time.monotonic()),*,output_custody=None):
         evidence.require(type(session)is sessions.FirstGapSession and type(credential_transaction)is credentials.CredentialTransaction
             and session.authority is credential_transaction.authority and session.raw==credential_transaction.raw,
             'SAME_FIRST_SESSION_AND_CREDENTIAL_AUTHORITY_REQUIRED')
@@ -125,12 +129,16 @@ class FirstControlledGrant:
         evidence.require(profile.client_id==credential_transaction.registration['clientId']
             and session.scope['logicalOwnerScopeHash']==credential_transaction.scope['logicalOwnerScopeHash'],
             'SAME_LOGICAL_CLIENT_AND_OWNER_REQUIRED')
-        evidence.require(type(output_identity)is dict and set(output_identity)=={'device','inode'}
-            and all(type(v)is int and v>=0 for v in output_identity.values())and output_identity['inode']>0,
+        evidence.require((type(output_custody)is root_custody.TokenOutputCustody and output_identity is None
+            and output_custody.authority is session.authority and output_custody.raw==session.raw
+            and str(output_custody.path)==binding.output_directory) or
+            (type(output_identity)is dict and set(output_identity)=={'device','inode'}
+            and all(type(v)is int and v>=0 for v in output_identity.values())and output_identity['inode']>0),
             'APPROVED_OUTPUT_DIRECTORY_IDENTITY_REQUIRED')
         self.session,self.transaction=session,credential_transaction
         self.binding,self.profile,self.transport,self.clock=binding,profile,transport,clock
-        self.output_identity=dict(output_identity)
+        self.output_identity=None if output_identity is None else dict(output_identity)
+        self.output_custody=output_custody
         self.root_receipt=None
         self.installation_review=None
         self.credential=CredentialFile(credential_transaction.path/credential_transaction.MEMBER)
@@ -151,7 +159,7 @@ class FirstControlledGrant:
                 'COMPLETED_ROOT_REVIEW_BINDING_MISSING')
             return
         host_raw,digest,source=self.root_receipt
-        evidence.require(self.scope.get('schema')in {'ouf.policy-token-first-controlled-grant-scope.v2','ouf.policy-token-first-controlled-grant-scope.v3'}
+        evidence.require(self.scope.get('schema')in {'ouf.policy-token-first-controlled-grant-scope.v2','ouf.policy-token-first-controlled-grant-scope.v3','ouf.policy-token-first-controlled-grant-scope.v4'}
             and self.scope.get('completedRootEvidenceHash')==digest
             and self.scope.get('rootCreationSourceClosureHash')==source,'COMPLETED_ROOT_REVIEW_BINDING_DRIFT')
         with root_custody.completed_roots(host_raw,digest,source)as identities:
@@ -159,6 +167,32 @@ class FirstControlledGrant:
             evidence.require(selected['path']==str(self.transaction.path)
                 and {key:selected[key]for key in ('device','inode')}==self.transaction.directory_identity,
                 'MIGRATION_CREDENTIAL_ROOT_BINDING_DRIFT')
+    def prepare_output(self):
+        evidence.require(type(self.output_custody)is root_custody.TokenOutputCustody,
+            'EXPLICIT_GOVERNED_OUTPUT_CUSTODY_REQUIRED')
+        self.session.guard()
+        evidence.require(evidence.decode(self.session.raw).get('policyTokenFirstControlledGrant')==self.scope,
+            'EXPLICIT_SIGNED_FIRST_GRANT_AND_PUBLICATION_REQUIRED')
+        row=self.output_custody.run()
+        self.output_identity=dict(row['outputIdentity'])
+        self.guard_output_custody()
+        return row
+    def guard_output_custody(self):
+        if self.output_custody is None:
+            evidence.require(self.scope.get('schema')!='ouf.policy-token-first-controlled-grant-scope.v4',
+                'SIGNED_OUTPUT_CUSTODY_BINDING_MISSING')
+            return
+        output=self.output_custody
+        evidence.require(type(output)is root_custody.TokenOutputCustody and output.authority is self.session.authority
+            and output.raw==self.session.raw and str(output.path)==self.binding.output_directory
+            and self.scope.get('outputCustodyScopeHash')==evidence.sha(evidence.encoded(output.scope)),
+            'SIGNED_OUTPUT_CUSTODY_BINDING_DRIFT')
+        output.guard()
+        with evidence.protected_parent()as directory:
+            row=output.validate(evidence.decode(evidence.read_member(directory,output.name)))
+        evidence.require(row['state']=='OUTPUT_CUSTODIED_NOT_RUNTIME_ACCEPTED'
+            and row['outputIdentity']==self.output_identity,'EXACT_CREATED_OUTPUT_IDENTITY_REQUIRED')
+
     def guard_installation_review(self):
         if self.installation_review is None:
             evidence.require(self.scope.get('schema')!='ouf.policy-token-first-controlled-grant-scope.v3'
@@ -200,6 +234,7 @@ class FirstControlledGrant:
         phase='MIGRATION_SCOPE_PREFLIGHT'
         try:
             self.guard_installation_review()
+            self.guard_output_custody()
             raw=evidence.decode(self.session.raw)
             for key,scope in (
                 ('policyTokenLegacyRetirement',self.transaction.retirement.scope),
@@ -266,6 +301,7 @@ class FirstControlledGrant:
             error.safe_diagnostics=detail
             raise
     def guard(self):
+        self.guard_output_custody()
         self.session.guard()
         self.guard_installation_review()
         self.guard_completed_roots()

@@ -17,7 +17,7 @@ from test_policy_token_introspection_audience_plan import inputs,planner,fixture
 
 def sources():
     paths={p.stem:p for p in (ROOT/'tools/semantic_policy_token_owner').glob('*.py')}
-    paths['cutover_authority']=ROOT/'tools/semantic_application_cutover/cutover_authority.py'
+    paths.update({p.stem:p for p in (ROOT/'tools/semantic_application_cutover').glob('*.py')})
     paths.update({'tools.'+p.stem:p for p in (ROOT/'tools/semantic_cohort_admission/cohort-draft/tools').glob('*.py')})
     return {n:paths[n].read_bytes() for n in runtime.MODULES}
 
@@ -65,7 +65,7 @@ class OwnerActionTest(unittest.TestCase):
     def test_prepare_closes_all_sources_without_signing_or_iam_reads(self):
         with patch.object(owner.ExistingEd25519Signer,'sign')as sign,patch.object(owner.MapperAdmin,'models')as read:
             review,h,decision=self.review()
-        self.assertFalse(sign.called);self.assertFalse(read.called);self.assertEqual(review['sourceClosure']['declaration']['moduleCount'],19)
+        self.assertFalse(sign.called);self.assertFalse(read.called);self.assertEqual(review['sourceClosure']['declaration']['moduleCount'],22)
         self.assertTrue(review['freshHumanApprovalRequired']);self.assertFalse(review['productionApplyReady'])
     def test_actual_two_role_signatures_current_human_one_effect_and_consumed_issuance(self):
         _,h,decision=self.review();models=copy.deepcopy(self.snapshot['client']['protocolMappers']);calls=[]

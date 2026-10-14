@@ -27,6 +27,9 @@ class PausedNodeObservation(NodeObservation):
         if type(frame_observer) not in allowed:
             from semantic_proposal_frame_observation import SemanticProposalFrameObservation
             allowed=allowed+(SemanticProposalFrameObservation,)
+        if type(frame_observer) not in allowed:
+            from file_only_frame_observation import FileOnlyFrameObservation
+            allowed=allowed+(FileOnlyFrameObservation,)
         require(os.geteuid()==0 and type(paused_binding) is PausedWorkloadBinding
                 and type(frame_observer) in allowed,'TYPED_ROOT_PAUSED_NODE_OBSERVATION_REQUIRED')
         require(set(cfg)=={'runtimeBinding','runtimeRootParents','bundleParents','commands','candidate','rootfsLimits'}
@@ -84,3 +87,4 @@ class PausedNodeObservation(NodeObservation):
                 'peerObservations':peers,'creationFrameHash':frame_hash,'frameInputHashes':{str(p):hashlib.sha256(raw).hexdigest() for p,raw in frame_inputs.items()},
                 'policyAuthenticationProven':False,'imagePublisherProvenanceVerified':False,'completeCreationAccepted':False,
                 'acceptanceGranted':False,'signaturesIssued':0,'startAuthorized':False}
+

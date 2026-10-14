@@ -4,11 +4,28 @@ on:
     branches: [main]
     paths:
       - .github/workflows/native-cutover-authority.yml
-      - tools/semantic_application_cutover/cutover_authority.py
+      - tools/semantic_application_cutover/**
+      - tools/semantic_frame_compiler/compile_file_only_frame_policy.py
+      - tests/test_file_only_*.py
+      - tests/test_file_only_cutover.py
+      - tests/test_cutover_executor.py
+      - tests/test_semantic_transition_journal.py
+      - tests/test_core_adapter_factory.py
       - tests/test_cutover_authority_native.py
       - scripts/read-native-v11-transition-preflight.py
       - releases/native-v11-transition-preflight-20261011.sh
       - tests/test_transition_preflight*.py
+  pull_request:
+    paths:
+      - .github/workflows/native-cutover-authority.yml
+      - tools/semantic_application_cutover/**
+      - tools/semantic_frame_compiler/compile_file_only_frame_policy.py
+      - tests/test_file_only_*.py
+      - tests/test_file_only_cutover.py
+      - tests/test_cutover_authority_native.py
+      - tests/test_cutover_executor.py
+      - tests/test_semantic_transition_journal.py
+      - tests/test_core_adapter_factory.py
   workflow_dispatch:
 permissions:
   contents: read
@@ -28,5 +45,13 @@ jobs:
           sudo cp -a "$GITHUB_WORKSPACE/." "$OUF_AUTH_ROOT/"
           sudo chown -R 0:0 "$OUF_AUTH_ROOT"
           cd "$OUF_AUTH_ROOT"
-          sudo python3 -m unittest discover -s tests -p test_cutover_authority_native.py -v
+          sudo python3 -I -B -m unittest discover -s tests -p test_cutover_authority_native.py -v
+          sudo python3 -I -B -m unittest discover -s tests -p test_file_only_cutover.py -v
+          sudo python3 -I -B -m unittest discover -s tests -p test_file_only_application_owners.py -v
+          sudo python3 -I -B -m unittest discover -s tests -p test_file_only_frame_compiler.py -v
+          sudo python3 -I -B -m unittest discover -s tests -p test_migration_admission_adapter.py -v
+          sudo python3 -I -B -m unittest discover -s tests -p test_cutover_executor.py -v
+          sudo python3 -I -B -m unittest discover -s tests -p test_semantic_transition_journal.py -v
+          sudo python3 -I -B -m unittest discover -s tests -p test_core_adapter_factory.py -v
           sudo python3 -m unittest discover -s tests -p 'test_transition_preflight*.py' -v
+

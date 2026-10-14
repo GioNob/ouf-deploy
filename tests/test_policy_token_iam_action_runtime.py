@@ -13,7 +13,7 @@ from test_policy_token_iam_owner_action import sources
 class IamActionRuntimeTest(unittest.TestCase):
     def test_complete_closure_and_missing_extra_foreign_dependency_denials(self):
         raw=sources();loader=(ROOT/'tools/semantic_policy_token_owner/iam_action_runtime.py').read_bytes()
-        self.assertEqual(runtime.declaration('a'*40,raw,loader)['moduleCount'],19)
+        self.assertEqual(runtime.declaration('a'*40,raw,loader)['moduleCount'],22)
         for case in ('missing','extra','foreign'):
             changed=dict(raw)
             if case=='missing':changed.pop('cutover_authority')
@@ -43,7 +43,7 @@ except Exception as e:
             stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=40)
     def test_actual_isolated_no_site_full_signer_authority_action_import_from_memory(self):
         result=self.native();self.assertEqual(result.returncode,0,result.stderr.decode())
-        value=json.loads(result.stdout);self.assertTrue(value['loaded']);self.assertEqual(value['modules'],19)
+        value=json.loads(result.stdout);self.assertTrue(value['loaded']);self.assertEqual(value['modules'],22)
     def test_actual_hash_drift_and_preloaded_namespace_block_before_entry(self):
         for case in ('hash','preloaded'):
             result=self.native(case);self.assertNotEqual(result.returncode,0,result.stderr.decode())

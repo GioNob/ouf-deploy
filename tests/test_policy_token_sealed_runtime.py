@@ -63,7 +63,7 @@ print(json.dumps({'memoryImportPassed':True,'closureHash':runtime.manifest_hash,
 
     def test_complete_actual_worker_and_authority_dependencies_load_without_path(self):
         directory, manifest, sources, loader = self.fixture()
-        self.assertEqual(len(sources), 21)
+        self.assertEqual(len(sources), 24)
         result = self.child(directory, manifest)
         self.assertEqual(result.returncode, 0, result.stderr.decode())
         self.assertTrue(json.loads(result.stdout)['memoryImportPassed'])

@@ -41,7 +41,8 @@ def serve(worker,stop,reporter):
     # Exclusive invocation fence spans this process lifetime. Journal CAS and
     # status publication remain short; no shared DB/lease lock spans a wait.
     with protected_directory(worker.r.journal.root),worker.r.journal.invocation():
-        worker.active_here=False
+        # A same-invocation installer may hand off a freshly admitted first publication.
+        # Factory/restarts remain False and cannot resume old ACTIVE history.
         try:
             while not stop.is_set():
                 try:

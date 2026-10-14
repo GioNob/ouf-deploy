@@ -19,6 +19,8 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--package-record',required=True);parser.add_argument('--image',required=True);parser.add_argument('--output',required=True)
     args=parser.parse_args();require(os.geteuid()==0 and os.environ.get('GITHUB_ACTIONS')=='true','ROOT_DISPOSABLE_GITHUB_CI_REQUIRED')
+    require(os.environ.get('DOCKER_HOST','') in ('','unix:///var/run/docker.sock')
+        and os.environ.get('DOCKER_CONTEXT','') in ('','default'),'LOCAL_DISPOSABLE_DOCKER_REQUIRED')
     record_raw=pathlib.Path(args.package_record).read_bytes();require(len(record_raw)<=131072,'BOUNDED_PACKAGE_RECORD_REQUIRED');record=json.loads(record_raw)
     image=record.get('imageId');require(type(image) is str and re.fullmatch('sha256:[a-f0-9]{64}',image) and record.get('runtimeUser')=='10001:10001'
         and re.fullmatch('[a-f0-9]{40}',record.get('sourceCommit','')),'EXACT_QUALIFIED_IMAGE_RECORD_REQUIRED')

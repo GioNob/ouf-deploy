@@ -24,6 +24,10 @@ class ScheduledRecovery(Recovery):
                 'nextRenewalWall':None,'nextRenewalMonotonic':None,
                 'tokenExpiresWall':None,'tokenExpiresMonotonic':None}
     def validate(self,row):
+        if 'workerSessionHash' in row:
+            require(row.get('controlledPredecessorGrantAttempts')==1
+                and row.get('controlledCumulativeGrantAttempts')==1+row.get('attempts',-1),
+                'CONTROLLED_SESSION_HISTORY_DRIFT')
         require(row.get('renewalProfile')==self.PROFILE and row.get('intervalSeconds')==self.interval
                 and type(row.get('publicationCount')) is int and row['publicationCount']>=0,
                 'INSTALLED_SCHEDULE_OR_HISTORY_DRIFT')
@@ -51,6 +55,8 @@ class ScheduledRecovery(Recovery):
             values.update(publicationCount=previous['publicationCount']+1,
                 nextRenewalWall=wall+delay,nextRenewalMonotonic=mono+delay,
                 tokenExpiresWall=wall+expires-mono,tokenExpiresMonotonic=expires)
+        if 'workerSessionHash' in previous:
+            values['controlledCumulativeGrantAttempts']=1+values.get('attempts',previous['attempts'])
         return super().save(previous,state,reason,**values)
 
 class RenewalWorker:

@@ -18,7 +18,7 @@ def sources():
 class MigrationRuntimeTest(unittest.TestCase):
     def test_exact_closure_rejects_missing_extra_and_foreign_dependencies(self):
         raw=sources();loader=(ROOT/'tools/semantic_policy_token_owner/migration_runtime.py').read_bytes()
-        self.assertEqual(runtime.declaration('a'*40,raw,loader)['moduleCount'],29)
+        self.assertEqual(runtime.declaration('a'*40,raw,loader)['moduleCount'],32)
         for case in ('missing','extra','foreign'):
             changed=dict(raw)
             if case=='missing':changed.pop('credential_transaction')
@@ -45,7 +45,7 @@ except Exception as e:
         return subprocess.run([sys.executable,'-I','-B','-S','-c',script],input=json.dumps(payload).encode(),stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=10)
     def test_actual_isolated_no_site_all_migration_components_load_from_verified_memory(self):
         result=self.native('none');self.assertEqual(result.returncode,0,result.stdout.decode()+result.stderr.decode())
-        row=json.loads(result.stdout);self.assertEqual(row['entry'],'first_controlled_grant');self.assertEqual(row['modules'],29)
+        row=json.loads(result.stdout);self.assertEqual(row['entry'],'first_controlled_grant');self.assertEqual(row['modules'],32)
         self.assertFalse(row['installerQualified'])
     def test_tampered_and_preloaded_code_cannot_enter(self):
         for case in ('hash','preloaded'):
