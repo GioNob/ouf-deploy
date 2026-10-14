@@ -221,6 +221,80 @@ def main():
         self.assertEqual(len(root_receipts), 1)
         self.assertEqual(root_receipts[0]['arguments']['source_commit'], COMMIT)
 
+    def test_existing_exact_archive_is_reused_with_new_capsule_and_old_partial_stage_untouched(self):
+        home=self.root/'operator-home';home.mkdir(mode=0o700)
+        previous='e'*64
+        previous_output=home/('ouf-chatbot-file-delivery-'+previous[:24])
+        previous_cohort=previous_output/'cohort';previous_cohort.mkdir(mode=0o700,parents=True)
+        existing=previous_cohort/'cohort.zip';existing.write_bytes(self.package.read_bytes())
+        old_stage=self.base/('chatbot-file-intake-'+previous)
+        old_partial=old_stage/'package';old_partial.mkdir(mode=0o700,parents=True)
+        marker=old_partial/'partial-evidence';marker.write_bytes(b'RETAINED-NOT-REPLAYED')
+        original=(existing.stat().st_ino,marker.stat().st_ino,marker.read_bytes())
+        calls=[];receipts=[];archive=self.archive()
+        def transport(argv,**kwargs):
+            calls.append(argv)
+            if argv[0]=='fixture-gh':
+                endpoint=argv[2]
+                if '/contents/'+launcher.CAPSULE_PATH+'?ref='+COMMIT in endpoint:
+                    return subprocess.CompletedProcess(argv,0,stdout=base64.b64encode(self.manifest_raw))
+                self.assertEqual(endpoint,'repos/'+launcher.REPOSITORY+'/tarball/'+COMMIT)
+                kwargs['stdout'].write(archive);return subprocess.CompletedProcess(argv,0)
+            self.assertEqual(argv[:3],['sudo','--','/usr/bin/python3'])
+            self.assertEqual(argv[-1],str(existing))
+            code=argv[7].replace("base=Path('/etc/ouf/deploy-snapshots')",'base=Path('+repr(str(self.base))+')')
+            result=self.real_run([sys.executable,*argv[3:7],code,*argv[8:]],input=kwargs['input'],
+                stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=15)
+            self.assertEqual(result.returncode,0,result.stderr.decode());receipts.append(json.loads(result.stdout))
+            return result
+        with patch.object(launcher.Path,'home',return_value=home), \
+             patch.object(launcher.shutil,'which',return_value='fixture-gh'), \
+             patch.object(launcher,'CAPSULE_SHA256',self.expected), \
+             patch.object(launcher,'PACKAGE_SHA256',sha(self.package.read_bytes())), \
+             patch.object(launcher.sys,'argv',['fixture-launcher','--source-commit',COMMIT,'--package-archive',str(existing)]), \
+             patch.object(launcher.subprocess,'run',side_effect=transport),patch('builtins.print'):
+            self.assertEqual(launcher.main(),0)
+        self.assertEqual(len(calls),3) # manifest, small source TAR, isolated root entry; no package downloader
+        self.assertEqual(len(receipts),1)
+        self.assertEqual(receipts[0]['arguments']['staging_directory'],str(self.base/('chatbot-file-intake-'+self.expected)))
+        self.assertNotEqual(receipts[0]['arguments']['staging_directory'],str(old_stage))
+        self.assertEqual((existing.stat().st_ino,marker.stat().st_ino,marker.read_bytes()),original)
+        self.assertFalse((home/('ouf-chatbot-file-delivery-'+self.expected[:24])/'cohort').exists())
+
+    def test_reused_archive_tamper_link_and_nonregular_file_are_denied(self):
+        with patch.object(launcher,'PACKAGE_SHA256',sha(self.package.read_bytes())):
+            self.assertEqual(launcher.verified_package(self.package),self.package)
+            with self.assertRaisesRegex(ValueError,'EXACT_DELIVERED_ARCHIVE_PATH_REQUIRED'):
+                launcher.verified_package('relative/cohort.zip')
+            link=self.root/'linked.zip';link.symlink_to(self.package)
+            with self.assertRaises(OSError):launcher.verified_package(link)
+            hardlink=self.root/'hardlink.zip';os.link(self.package,hardlink)
+            with self.assertRaisesRegex(ValueError,'REGULAR_PRIVATE_OPERATOR_ARCHIVE_REQUIRED'):
+                launcher.verified_package(hardlink)
+            hardlink.unlink()
+            with self.assertRaisesRegex(ValueError,'REGULAR_PRIVATE_OPERATOR_ARCHIVE_REQUIRED'):
+                launcher.verified_package(self.root)
+            self.package.write_bytes(b'CHANGED')
+            with self.assertRaisesRegex(ValueError,'EXACT_COHORT_ARCHIVE_REQUIRED'):
+                launcher.verified_package(self.package)
+
+    def test_mismatched_explicit_archive_stops_before_source_tar_or_sudo_without_downloading(self):
+        home=self.root/'operator-home';home.mkdir(mode=0o700);calls=[]
+        def transport(argv,**kwargs):
+            calls.append(argv)
+            self.assertEqual(argv[0],'fixture-gh')
+            self.assertIn('/contents/'+launcher.CAPSULE_PATH+'?ref='+COMMIT,argv[2])
+            return subprocess.CompletedProcess(argv,0,stdout=base64.b64encode(self.manifest_raw))
+        with patch.object(launcher.Path,'home',return_value=home), \
+             patch.object(launcher.shutil,'which',return_value='fixture-gh'), \
+             patch.object(launcher,'CAPSULE_SHA256',self.expected), \
+             patch.object(launcher,'PACKAGE_SHA256','0'*64), \
+             patch.object(launcher.sys,'argv',['fixture-launcher','--source-commit',COMMIT,'--package-archive',str(self.package)]), \
+             patch.object(launcher.subprocess,'run',side_effect=transport),patch('builtins.print'):
+            with self.assertRaisesRegex(ValueError,'EXACT_COHORT_ARCHIVE_REQUIRED'):launcher.main()
+        self.assertEqual(len(calls),1)
+        self.assertEqual(list(self.base.iterdir()),[])
+
 
 if __name__ == '__main__':
     unittest.main()

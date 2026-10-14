@@ -1,0 +1,37 @@
+name: Original chatbot cohort artifact extraction
+on:
+  push:
+    paths:
+      - tools/chatbot_file_cohort/package_custody.py
+      - tests/qualify_chatbot_cohort_artifact.py
+      - .github/workflows/chatbot-cohort-artifact-custody.yml
+  pull_request:
+    paths:
+      - tools/chatbot_file_cohort/package_custody.py
+      - tests/qualify_chatbot_cohort_artifact.py
+      - .github/workflows/chatbot-cohort-artifact-custody.yml
+permissions: {contents: read, actions: read}
+jobs:
+  original-artifact:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Download the unchanged retained artifact and verify its exact digest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          gh api repos/GioNob/ouf-deploy/actions/artifacts/11880585559/zip > "$RUNNER_TEMP/original-cohort.zip"
+          printf '%s  %s\n' be55c6eda4485a4c90da9872f63e2533abe21c741c4926ecc129626cc01530f9 "$RUNNER_TEMP/original-cohort.zip" | sha256sum --check
+      - name: Extract all six packages and both source archives actually used by the installer
+        run: |
+          set -euo pipefail
+          OUF_ARTIFACT_ROOT="/var/lib/ouf-original-cohort-${GITHUB_RUN_ID}"
+          sudo install -d -m 700 "$OUF_ARTIFACT_ROOT"
+          sudo cp -a "$GITHUB_WORKSPACE/." "$OUF_ARTIFACT_ROOT/repository"
+          sudo chown -R 0:0 "$OUF_ARTIFACT_ROOT"
+          sudo python3 -I -B -S "$OUF_ARTIFACT_ROOT/repository/tests/qualify_chatbot_cohort_artifact.py" \
+            --archive "$RUNNER_TEMP/original-cohort.zip" --destination "$OUF_ARTIFACT_ROOT/extraction"

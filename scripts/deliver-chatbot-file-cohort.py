@@ -14,13 +14,14 @@ import os
 from pathlib import Path
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tarfile
 
 REPOSITORY='GioNob/ouf-deploy'
 CAPSULE_PATH='releases/chatbot-file-preparation-capsule-20261014.json'
-CAPSULE_SHA256='33da75e97ea2e347a674f517cd0096af1c9499ca4a0ac663ade5f0d5c3887448'
+CAPSULE_SHA256='79b167043d0ed2eb888e8cfe1585447dec48ae8a8f83c5313337278edd45c7e5'
 PACKAGE_COMMIT='f31a653ee1da56b29a6171c159f9c601523735b9'
 PACKAGE_RUN=38536134146
 PACKAGE_SHA256='be55c6eda4485a4c90da9872f63e2533abe21c741c4926ecc129626cc01530f9'
@@ -33,6 +34,24 @@ def require(ok,reason):
 
 
 def encoded(value):return json.dumps(value,sort_keys=True,separators=(',',':')).encode()
+
+
+def verified_package(path):
+    path=Path(path)
+    require(path.is_absolute() and '..' not in path.parts,'EXACT_DELIVERED_ARCHIVE_PATH_REQUIRED')
+    fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+    try:
+        before=os.fstat(fd)
+        require(stat.S_ISREG(before.st_mode) and before.st_nlink==1 and before.st_uid==os.getuid()
+                and not before.st_mode&0o022,'REGULAR_PRIVATE_OPERATOR_ARCHIVE_REQUIRED')
+        with os.fdopen(os.dup(fd),'rb') as archive:
+            require(hashlib.file_digest(archive,'sha256').hexdigest()==PACKAGE_SHA256,
+                    'EXACT_COHORT_ARCHIVE_REQUIRED')
+        fingerprint=lambda value:(value.st_dev,value.st_ino,value.st_size,value.st_mtime_ns,value.st_ctime_ns)
+        require(fingerprint(before)==fingerprint(os.fstat(fd))==fingerprint(path.lstat()),
+                'DELIVERED_ARCHIVE_CHANGED_DURING_VERIFICATION')
+    finally:os.close(fd)
+    return path
 
 
 def selected_sources(archive,manifest):
@@ -96,7 +115,7 @@ need(set(manifest)=={'schema','files'} and manifest['schema']=='ouf.chatbot-file
 files={name:base64.b64decode(body,validate=True) for name,body in payload['files'].items()}
 need(sum(map(len,files.values()))<=8*1024**2,'ROOT_SOURCE_CLOSURE_UNBOUNDED')
 for name,body in files.items():
-    need(re.fullmatch('[A-Za-z0-9_.\-/]+',name) and str(Path(name))==name and not name.startswith('/')
+    need(re.fullmatch(r'[A-Za-z0-9_.\-/]+',name) and str(Path(name))==name and not name.startswith('/')
          and '..' not in Path(name).parts and len(Path(name).parts)<=32 and 0<len(body)<=2*1024**2
          and hashlib.sha256(body).hexdigest()==manifest['files'][name],'ROOT_SOURCE_MEMBER_HASH_MISMATCH')
 need('scripts/install-chatbot-file-cohort.py' in files,'ROOT_ENTRY_MISSING')
@@ -157,7 +176,9 @@ os.execv(sys.executable,[sys.executable,'-I','-B','-S',str(entry),'--source-dire
 
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--source-commit',required=True);args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--source-commit',required=True)
+    parser.add_argument('--package-archive',help='Existing exact qualified ZIP to verify and reuse without downloading it again')
+    args=parser.parse_args()
     require(re.fullmatch('[0-9a-f]{40}',args.source_commit) and re.fullmatch('[0-9a-f]{64}',CAPSULE_SHA256),
             'FROZEN_EXACT_DELIVERY_SOURCE_REQUIRED')
     preferred=Path.home()/'ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh'
@@ -172,13 +193,16 @@ def main():
         return raw
     manifest_raw=content(CAPSULE_PATH,args.source_commit,CAPSULE_SHA256)
     manifest=json.loads(manifest_raw)
-    downloader=content('scripts/download-file-cohort.py',PACKAGE_COMMIT,DOWNLOADER_SHA256)
     output=Path.home()/('ouf-chatbot-file-delivery-'+CAPSULE_SHA256[:24])
     if not output.exists():output.mkdir(mode=0o700)
     require(output.is_dir() and not output.is_symlink() and output.stat().st_uid==os.getuid()
             and output.stat().st_mode&0o777==0o700,'PRIVATE_OPERATOR_DELIVERY_DIRECTORY_REQUIRED')
     cohort=output/'cohort'
-    if not (cohort/'cohort.zip').exists():
+    package_archive=Path(args.package_archive) if args.package_archive else cohort/'cohort.zip'
+    if args.package_archive:
+        print('Verifico e riutilizzo il pacchetto già scaricato; preparo una nuova capsula privata.',flush=True)
+    elif not package_archive.exists():
+        downloader=content('scripts/download-file-cohort.py',PACKAGE_COMMIT,DOWNLOADER_SHA256)
         print('Scarico il pacchetto unico già qualificato (circa 1,7 GB).',flush=True)
         argv=sys.argv
         try:
@@ -187,8 +211,7 @@ def main():
             exec(compile(downloader,'<qualified-cohort-downloader>','exec'),namespace)
             namespace['main']()
         finally:sys.argv=argv
-    with (cohort/'cohort.zip').open('rb') as archive:
-        require(hashlib.file_digest(archive,'sha256').hexdigest()==PACKAGE_SHA256,'EXACT_COHORT_ARCHIVE_REQUIRED')
+    package_archive=verified_package(package_archive)
     source_archive=output/'qualified-source.tar.gz'
     if not source_archive.exists():
         partial=output/'qualified-source.tar.gz.partial'
@@ -205,7 +228,7 @@ def main():
     print('Pacchetto e sorgenti verificati. Avvio preparazione completa e revisione sul VPS.',flush=True)
     root='EXPECTED='+repr(CAPSULE_SHA256)+'\n'+ROOT_BODY
     result=subprocess.run(['sudo','--','/usr/bin/python3','-I','-B','-S','-c',root,
-        args.source_commit,str(cohort/'cohort.zip')],input=payload,check=False)
+        args.source_commit,str(package_archive)],input=payload,check=False)
     return result.returncode
 
 
