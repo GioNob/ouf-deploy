@@ -59,6 +59,10 @@ def fixture():
     for purpose,names in [('chatgpt',CHAT),('ths',BROWSER)]:
         clients[purpose] = {'id':'id-'+purpose,'clientId':selection['clients'][purpose]['clientId'],'requestedScopes':[],
             'default':[{'id':scopes[n]['id'],'name':n} for n in names if n in scopes],'optional':[]}
+    # The caller's optional requests are unknown: the real owner conversion must
+    # be part of the signed delta, while all unrelated bindings remain intact.
+    promoted=next(r for r in clients['chatgpt']['default'] if r['name']=='ouf.semantic.search')
+    clients['chatgpt']['default'].remove(promoted);clients['chatgpt']['optional'].append(promoted)
     obs = {'active':active,'roles':roles,'registrations':{cap['capabilityId']:{'ownerRef':'ingestion','descriptor':cap}},
            'oauth':{'scopes':scopes,'clients':clients}}
     return selection,obs
@@ -116,6 +120,11 @@ class OwnerFixture:
             client = next(c for c in self.current['oauth']['clients'].values() if c['id'] == cid)
             scope = next(s for s in self.current['oauth']['scopes'].values() if s['id'] == sid)
             client['default'].append({'id':sid,'name':scope['name']})
+        elif verb == 'delete':
+            _,cid,kind,sid=path.split('/')
+            assert kind=='optional-client-scopes'
+            client=next(c for c in self.current['oauth']['clients'].values() if c['id']==cid)
+            client['optional']=[r for r in client['optional'] if r['id']!=sid]
         else: raise AssertionError('Unreviewed IAM operation')
 
     def tool(self,name,arguments,key):
@@ -160,11 +169,14 @@ class CompilerTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'REGISTRATION_CONFLICT'):self.compile()
         del self.obs['registrations'][cap];del self.obs['registrations']['ingestion.operations.read']
         with self.assertRaisesRegex(ValueError,'STATUS_DESCRIPTOR_UNPROVEN'):self.compile()
-    def test_existing_optional_scope_is_preserved_and_must_be_requested(self):
+    def test_optional_scope_is_preserved_if_requested_else_explicitly_promoted(self):
         scope=self.obs['oauth']['scopes']['ouf.semantic.read'];client=self.obs['oauth']['clients']['chatgpt']
         row=next(v for v in client['default'] if v['id']==scope['id']);client['default'].remove(row);client['optional'].append(row)
-        with self.assertRaisesRegex(ValueError,'OPTIONAL_SCOPE_NOT_REQUESTED'):self.compile()
-        client['requestedScopes']=['ouf.semantic.read'];self.compile()
+        plan=self.compile()
+        self.assertEqual(next(b for b in plan['scopeBindings'] if b['scopeName']=='ouf.semantic.read'),
+            {'purpose':'chatgpt','clientId':client['id'],'scopeName':'ouf.semantic.read','kind':'default','previousKind':'optional'})
+        client['requestedScopes']=['ouf.semantic.read']
+        self.assertFalse(any(b['scopeName']=='ouf.semantic.read' for b in self.compile()['scopeBindings']))
     def test_memory_loader_factory_checks_source_identity_and_never_uses_files(self):
         modules=[]
         for name,path in [('qualified_owner_authorization_lifecycle','scripts/r4a_authorization_lifecycle.py'),
@@ -240,9 +252,10 @@ class ComposedAuthorizationTest(unittest.TestCase):
         self.owner.human_confirms();receipt=self.delta.apply()
         self.assertEqual(receipt['status'],'OWNER_POLICY_ROLES_SCOPES_RECONCILED')
         self.assertFalse(receipt['freshClientTokenScopesProven']);self.assertFalse(receipt['runtimeAuthorityIssued'])
-        mutations=[c for c in self.owner.calls if c[0] in ('POST','KC:create','KC:update','authorization.permissions.propose')]
+        self.assertEqual(sum(c[0]=='KC:delete' for c in self.owner.calls),1)
+        mutations=[c for c in self.owner.calls if c[0] in ('POST','KC:create','KC:update','KC:delete','authorization.permissions.propose')]
         self.delta.apply()
-        self.assertEqual(mutations,[c for c in self.owner.calls if c[0] in ('POST','KC:create','KC:update','authorization.permissions.propose')])
+        self.assertEqual(mutations,[c for c in self.owner.calls if c[0] in ('POST','KC:create','KC:update','KC:delete','authorization.permissions.propose')])
     def test_lost_registration_response_reconciles_and_does_not_register_twice(self):
         self.owner.lost=('POST',ADMIN+'/capabilities')
         with self.assertRaisesRegex(AuthorizationPaused,'LOST_RESPONSE'):self.delta.apply()
@@ -304,3 +317,20 @@ class ComposedAuthorizationTest(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+class FiniteHumanSessionBinding(unittest.TestCase):
+    def test_session_binding_is_signed_and_cannot_change_principal_or_retry_window(self):
+        selection, observed = fixture()
+        binding={'sessionId':'11111111-1111-4111-8111-111111111111','selectionHash':digest(selection),
+          **{k:selection[k] for k in ('subject','issuer','tenant')},'clientId':'ouf-human-admin',
+          'scopes':['openid','authorization.policy.admin','mcp.connect','authorization.permissions.read',
+                    'authorization.permissions.propose','authorization.proposal.read'],
+          'tokenPath':'/fixture/session/human-access.jwt','sessionDirectory':'/fixture/session',
+          'createdAt':1000,'expiresAt':8200,'retryProfile':{'id':'ouf.chatbot-human-session.finite.v1',
+          'maximumAttempts':128,'maximumElapsedSeconds':7200,'backoffSeconds':[5,15,60,300,900],
+          'maximumJitterPercent':20,'automaticBudgetRenewalAllowed':False}}
+        plan=compile_plan(observed,helpers(),selection,session_binding=binding)
+        self.assertEqual(authorization_scope(plan)['sessionBinding'],binding)
+        for key,value in [('subject','another-human'),('expiresAt',8201),('selectionHash','0'*64),('clientId','service')]:
+            changed=copy.deepcopy(binding);changed[key]=value
+            with self.assertRaises(Exception):compile_plan(observed,helpers(),selection,session_binding=changed)

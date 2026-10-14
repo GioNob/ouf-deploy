@@ -21,6 +21,41 @@ from tools.semantic_lease_recovery.bounded_recovery import Recovery,Policy,Perma
 from tools.semantic_lease_recovery.recovery_journal import Journal
 
 class InstalledOwnerTest(unittest.TestCase):
+    def test_observer_waits_for_known_renewal_and_rechecks_current_authority(self):
+        f,server,owner,recovery,source,out=self.fixture()
+        with patch.object(LegacyWriterFence,'guard',return_value=True):
+            RenewalOperation(recovery).step()
+            reader=InstalledTokenOwner(owner.binding,owner.credential,owner.admission,owner.journal,
+                owner.context,owner.generation,owner.manifest,f.gate(),f.authority,observer=True)
+            active=owner.journal.read()
+            owner.journal.compare_and_save(active,{**active,'state':'RETRY_WAIT','nextMonotonic':time.monotonic()+60})
+            before=len(server.calls)
+            def complete(_):
+                pending=owner.journal.read();owner.journal.compare_and_save(pending,active)
+            with patch('tools.semantic_policy_token_owner.installed_owner.time.sleep',side_effect=complete) as waiting:
+                reader.await_active(owner.binding.digest(),5)
+            self.assertEqual(waiting.call_count,1)
+            self.assertEqual(len(server.calls),before)
+            self.assertEqual(owner.journal.read()['attempts'],1)
+            pending=owner.journal.read();owner.journal.compare_and_save(pending,{**pending,'state':'RETRY_WAIT'})
+            def revoke(_):
+                f.approval['state']='REVOKED';f.write(f.mandate,encoded(f.approval))
+            with patch('tools.semantic_policy_token_owner.installed_owner.time.sleep',side_effect=revoke):
+                with self.assertRaises(Exception):reader.await_active(owner.binding.digest(),5)
+            self.assertEqual(len(server.calls),before)
+
+    def test_rapid_active_publication_race_cannot_bypass_observer_wait_bound(self):
+        f,server,owner,recovery,source,out=self.fixture()
+        with patch.object(LegacyWriterFence,'guard',return_value=True):
+            RenewalOperation(recovery).step()
+            reader=InstalledTokenOwner(owner.binding,owner.credential,owner.admission,owner.journal,
+                owner.context,owner.generation,owner.manifest,f.gate(),f.authority,observer=True)
+            before=len(server.calls)
+            with patch.object(reader,'guard',side_effect=Permanent('AUTHORITY_REVOKED')), \
+                 patch('tools.semantic_policy_token_owner.installed_owner.time.monotonic',side_effect=[100,100,100,101]):
+                with self.assertRaises(Permanent):reader.await_active(owner.binding.digest(),1)
+            self.assertEqual(len(server.calls),before)
+
     def fixture(self,*,scheduled=False):
         f=SignedCutover();f.setUp();self.addCleanup(f.doCleanups)
         server=Fixture(f.root);self.addCleanup(server.close)

@@ -89,6 +89,14 @@ class GatewayRuntime(unittest.TestCase):
                 self.assertEqual(owner.record()['effects'][-1]['state'],'CLAIMED')
                 owner.apply();self.assertEqual(len(native.calls),7)
 
+    def test_second_generation_same_id_is_never_adopted_on_resume(self):
+        owner,native,_=self.fixture();owner.apply()
+        actual=native.find('ouf-apisix')
+        actual['State'].update(Pid=9999,StartedAt='2026-10-14T04:00:00Z')
+        self.assertEqual(actual['RestartCount'],0)
+        with self.assertRaisesRegex(ValueError,'STARTED_GENERATION_CHANGED'):owner.apply()
+        self.assertEqual(len(native.calls),7)
+
     def test_unknown_connect_does_not_retry(self):
         owner,native,_=self.fixture();native.omit_effect='connect'
         with self.assertRaisesRegex(ValueError,'NETWORK_DRIFT'):owner.apply()

@@ -14,7 +14,7 @@ from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.chatbot_file_cohort.plan import digest, encoded, environment, runtime_pin, require, sha, NO_RESTART, PlanDenied
 from tools.chatbot_file_cohort.containers import CohortPaused, READINESS_POLICY
-from tools.chatbot_file_cohort.gateway import NamespaceAdmin, private_config
+from tools.chatbot_file_cohort.gateway import NamespaceAdmin, private_config, namespace_program
 
 PROFILE='ouf.chatbot-file-cohort.gateway-runtime.v1'
 STEPS=('disable_restart','stop','rename','create','connect','start','ready','restore_restart')
@@ -71,7 +71,7 @@ def compile_runtime(old, old_config_binding, new_config_binding, new_key_env, ke
     primary=host['NetworkMode'];secondary=next(n for n in networks if n!=primary)
     request={**config,'HostConfig':host,'NetworkingConfig':{'EndpointsConfig':{primary:networks[primary]}}}
     require(len(encoded(request))<=262144,'BOUNDED_APISIX_CREATION_REQUIRED')
-    return {'schema':PROFILE,'oldRuntimeBinding':pin,'oldName':'ouf-apisix',
+    return {'schema':PROFILE,'pythonExecutable':namespace_program(),'oldRuntimeBinding':pin,'oldName':'ouf-apisix',
             'retiredName':'ouf-apisix-before-'+cohort_id,'oldConfigBinding':old_config_binding,
             'newConfigBinding':new_config_binding,'oldHostConfig':copy.deepcopy(old['HostConfig']),
             'oldMounts':copy.deepcopy(old['Mounts']),'expectedMounts':mounts,
@@ -93,7 +93,8 @@ def runtime_scope(plan):
 
 def proposed_transport(plan):
     return {'transport':'JOURNAL_PROVEN_APISIX_REPLACEMENT_NETNS', 'runtimePlanHash':digest(plan),
-            'creationRequestHash':digest(plan['creationRequest']), 'configBinding':plan['newConfigBinding']}
+            'creationRequestHash':digest(plan['creationRequest']), 'configBinding':plan['newConfigBinding'],
+            'pythonExecutable':plan['pythonExecutable']}
 
 
 class GatewayRuntime:
@@ -169,10 +170,16 @@ class GatewayRuntime:
         actual=self.candidate(True,True,restored)
         require(actual is not None and v['effects'][3]['evidence']['containerId']==actual['Id'],
                 'APISIX_CREATED_ID_NOT_JOURNAL_PROVEN')
+        current=Engine.runtime_binding(actual)
+        started=v['effects'][5]['evidence'].get('runtimeBinding')
+        require(type(started) is dict and set(started)==set(current)
+                and all(current[k]==value for k,value in started.items() if k!='hostConfigHash'),
+                'APISIX_STARTED_GENERATION_CHANGED')
         return actual
     def transport(self):
         self.generation()
         binding=NamespaceAdmin.observe(self.engine,self.plan['newConfigBinding']['path'])
+        require(binding['pythonExecutable']==self.plan['pythonExecutable'],'APPROVED_NAMESPACE_PYTHON_CHANGED')
         return NamespaceAdmin(self.engine,binding,self)
     def mutation(self,step):
         self.guard();p=self.plan;old=p['oldRuntimeBinding']['containerId']
@@ -204,7 +211,8 @@ class GatewayRuntime:
         else:
             self.old(True);v=self.candidate(step!='create',step in ('start','ready','restore_restart'),step=='restore_restart')
             require(v is not None,'APISIX_WRITE_OUTCOME_UNPROVEN_NO_REPLAY')
-        return {'containerId':v['Id'],'imageId':v['Image'],'nativeHash':digest(v)}
+        return {'containerId':v['Id'],'imageId':v['Image'],'nativeHash':digest(v),
+                'runtimeBinding':Engine.runtime_binding(v)}
     def ready(self,record):
         now=self.clock();budget=record['readiness'] or {'startedAt':now,'attempts':0,'nextAttemptAt':now}
         if now<budget['nextAttemptAt']:raise CohortPaused('APISIX_READINESS_WAIT',budget['nextAttemptAt'])

@@ -1,7 +1,7 @@
 """One-use Gateway publication with real signatures and durable private journal.
 
 APISIX route storage below is an explicit disposable fixture, not VPS evidence.
-The namespace test additionally exercises the actual fork/setns/HTTP transport.
+The namespace test additionally exercises the actual isolated subprocess/setns/HTTP transport.
 """
 import copy
 import json
@@ -11,6 +11,7 @@ import subprocess
 import signal
 import sys
 import tempfile
+import threading
 import time
 import unittest
 
@@ -181,10 +182,14 @@ class NativeNamespaceTransport(unittest.TestCase):
                 'State':{'Running':True,'Paused':False,'Pid':pid,'StartedAt':'fixture-generation'}}
         engine=Engine.__new__(Engine);engine.request=lambda *args:(200,copy.deepcopy(actual))
         binding=g.NamespaceAdmin.observe(engine,str(config));transport=g.NamespaceAdmin(engine,binding)
+        stop_thread=threading.Event();worker=threading.Thread(target=stop_thread.wait);worker.start()
+        self.addCleanup(lambda:(stop_thread.set(),worker.join(timeout=5)))
+        self.assertTrue(worker.is_alive())
         before=os.stat('/proc/self/ns/net');rows=transport.routes();self.assertEqual(set(rows),{'existing'})
         route={'id':'created','uri':'/new','methods':['GET']}
         self.assertEqual(transport.request('PUT','/apisix/admin/routes/created',route)[0],200)
         self.assertEqual(transport.routes()['created'],route)
+        self.assertTrue(worker.is_alive())
         after=os.stat('/proc/self/ns/net');self.assertEqual((before.st_dev,before.st_ino),(after.st_dev,after.st_ino))
 
 

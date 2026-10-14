@@ -7,19 +7,17 @@ automatic replay follows an ambiguous HTTP result.
 """
 import copy
 import hashlib
-import http.client
 import json
 import os
 from pathlib import Path
 import re
-import select
-import signal
 import stat
-import threading
+import subprocess
 import time
 from urllib.parse import quote
 
 from engine_creation import Engine
+import iam_governance_intake as governance
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.chatbot_file_cohort.plan import digest, encoded, require, sha
@@ -29,6 +27,42 @@ PROFILE = 'ouf.chatbot-file-cohort.gateway-publication.v1'
 MAX_RESPONSE = 8388608
 MAX_ROUTES = 256
 ROUTE_ID = re.compile(r'[A-Za-z0-9._-]{1,128}')
+
+MAX_NAMESPACE_INPUT = 655360
+# Literal source is included in the sealed runtime module. No target path or
+# downloaded Python module is executed by this child. Only the selected network
+# namespace FD is inherited; the private credential crosses stdin, never argv.
+NAMESPACE_CHILD_SOURCE = r'''import http.client,json,os,re,signal,sys
+signal.alarm(12)
+try:
+    raw=sys.stdin.buffer.read(655361)
+    if not 0<len(raw)<=655360:raise ValueError()
+    v=json.loads(raw)
+    if type(v)is not dict or set(v)!={'method','path','body','key'}:raise ValueError()
+    method,path,body,key=(v[n] for n in ('method','path','body','key'))
+    if method not in ('GET','PUT') or type(path)is not str:raise ValueError()
+    if path!='/apisix/admin/routes' and not re.fullmatch(r'/apisix/admin/routes/[A-Za-z0-9._-]{1,128}',path):raise ValueError()
+    if (method=='GET' and body is not None) or (method=='PUT' and type(body)is not dict):raise ValueError()
+    if type(key)is not str or not 16<=len(key)<=4096 or not all(33<=ord(c)<=126 for c in key):raise ValueError()
+    payload=None if body is None else json.dumps(body,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
+    if payload is not None and len(payload)>262144:raise ValueError()
+    if len(sys.argv)!=2 or not re.fullmatch(r'[0-9]{1,10}',sys.argv[1]):raise ValueError()
+    fd=int(sys.argv[1]);os.setns(fd,0);os.close(fd)
+    client=http.client.HTTPConnection('127.0.0.1',9180,timeout=10)
+    client.request(method,path,body=payload,headers={'X-API-KEY':key,'Content-Type':'application/json','Accept':'application/json','Connection':'close'})
+    response=client.getresponse();payload=response.read(8388609)
+    if len(payload)>8388608:raise ValueError()
+    result=json.dumps({'status':response.status,'body':json.loads(payload) if payload else {}},sort_keys=True,separators=(',',':'),allow_nan=False).encode()
+    if len(result)>8454144:raise ValueError()
+    sys.stdout.buffer.write(result);sys.stdout.buffer.flush();client.close()
+except BaseException:
+    os._exit(1)
+os._exit(0)
+'''
+
+
+def namespace_program():
+    return governance.executable('/usr/bin/python3')
 
 
 def route_value(doc):
@@ -185,7 +219,8 @@ class NamespaceAdmin:
         return {'runtimeBinding': Engine.runtime_binding(actual), 'configBinding': config,
                 'networkNamespace': {'device': s.st_dev, 'inode': s.st_ino},
                 'transport': 'EXACT_APISIX_NETNS_LOOPBACK_HTTP', 'port': 9180,
-                'maximumResponseBytes': MAX_RESPONSE, 'timeoutSeconds': 10}
+                'maximumResponseBytes': MAX_RESPONSE, 'timeoutSeconds': 10,
+                'pythonExecutable': namespace_program()}
 
     def check(self):
         require(digest(self.binding) == self.binding_hash, 'APISIX_TRANSPORT_BINDING_CHANGED')
@@ -200,60 +235,45 @@ class NamespaceAdmin:
     def request(self, method, path, body=None):
         require(method in ('GET','PUT') and (path == '/apisix/admin/routes'
                 or re.fullmatch(r'/apisix/admin/routes/[A-Za-z0-9._-]{1,128}', path))
-                and (method != 'PUT' or type(body) is dict), 'CLOSED_GATEWAY_ADMIN_OPERATION_REQUIRED')
+                and ((method == 'PUT' and type(body) is dict) or (method == 'GET' and body is None)),
+                'CLOSED_GATEWAY_ADMIN_OPERATION_REQUIRED')
         raw = None if body is None else encoded(body)
         require(raw is None or len(raw) <= 262144, 'BOUNDED_GATEWAY_ADMIN_BODY_REQUIRED')
         self.check()
-        require(threading.active_count() == 1, 'SINGLE_THREADED_NAMESPACE_PARENT_REQUIRED')
+        program=self.binding['pythonExecutable']
+        require(program==namespace_program(),'APPROVED_NAMESPACE_PYTHON_CHANGED')
         config, _ = private_config(self.binding['configBinding']['path'], self.binding['configBinding'])
-        key = selected_admin_key(config)
+        request=encoded({'method':method,'path':path,'body':body,'key':selected_admin_key(config)})
+        require(len(request)<=MAX_NAMESPACE_INPUT,'APISIX_PRIVATE_STDIN_BOUND_EXCEEDED')
         pid = self.binding['runtimeBinding']['pid']
         ns = os.open('/proc/'+str(pid)+'/ns/net', os.O_RDONLY)
-        reader, writer = os.pipe()
         child = None
         try:
             s = os.fstat(ns)
             require({'device':s.st_dev,'inode':s.st_ino} == self.binding['networkNamespace'], 'APISIX_NAMESPACE_FD_CHANGED')
-            child = os.fork()
-            if child == 0:
-                os.close(reader)
-                signal.alarm(12)
-                try:
-                    os.setns(ns, 0)
-                    client = http.client.HTTPConnection('127.0.0.1', 9180, timeout=10)
-                    client.request(method, path, body=raw, headers={'X-API-KEY':key,
-                        'Content-Type':'application/json','Accept':'application/json','Connection':'close'})
-                    response = client.getresponse(); payload = response.read(MAX_RESPONSE+1)
-                    require(len(payload) <= MAX_RESPONSE, 'APISIX_RESPONSE_BOUND_EXCEEDED')
-                    result = encoded({'status':response.status,'body':json.loads(payload) if payload else {}})
-                    require(len(result) <= MAX_RESPONSE+65536, 'APISIX_ENVELOPE_BOUND_EXCEEDED')
-                    while result:
-                        result = result[os.write(writer,result):]
-                    os._exit(0)
-                except BaseException:
-                    os._exit(1)
-            os.close(writer); writer = -1
-            output = b''; deadline = time.monotonic()+15
-            while True:
-                remaining = deadline-time.monotonic()
-                require(remaining > 0 and select.select([reader], [], [], remaining)[0],
-                        'APISIX_OUTCOME_REQUIRES_RECONCILIATION')
-                block = os.read(reader,65536)
-                if not block: break
-                output += block
-                require(len(output) <= MAX_RESPONSE+65536, 'APISIX_PIPE_BOUND_EXCEEDED')
-            _, status = os.waitpid(child,0); child = None
-            require(status == 0, 'APISIX_OUTCOME_REQUIRES_RECONCILIATION')
+            # Popen performs only native fork/exec internals (no preexec_fn).
+            # No Python executes in a copy of the multithreaded owner process.
+            child=subprocess.Popen([program['path'],'-I','-B','-S','-c',NAMESPACE_CHILD_SOURCE,str(ns)],
+                stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,
+                pass_fds=(ns,),close_fds=True,cwd='/',env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'})
+            try:
+                output,_=child.communicate(request,timeout=15)
+            except subprocess.TimeoutExpired:
+                raise ValueError('APISIX_OUTCOME_REQUIRES_RECONCILIATION') from None
+            require(child.returncode==0 and 0<len(output)<=MAX_RESPONSE+65536,
+                    'APISIX_OUTCOME_REQUIRES_RECONCILIATION')
             self.check()
-            result = json.loads(output)
-            return result['status'], result['body']
+            result=json.loads(output)
+            require(type(result)is dict and set(result)=={'status','body'} and type(result['status'])is int
+                    and 100<=result['status']<=599,'APISIX_TYPED_RESPONSE_REQUIRED')
+            return result['status'],result['body']
         finally:
-            if child is not None and child > 0:
-                try: os.kill(child,signal.SIGKILL)
-                except ProcessLookupError: pass
-                os.waitpid(child,0)
-            os.close(ns); os.close(reader)
-            if writer >= 0: os.close(writer)
+            if child is not None:
+                if child.poll() is None:child.kill()
+                child.wait(timeout=5)
+                for pipe in (child.stdin,child.stdout):
+                    if pipe is not None:pipe.close()
+            os.close(ns)
 
     def routes(self):
         status, body = self.request('GET','/apisix/admin/routes')

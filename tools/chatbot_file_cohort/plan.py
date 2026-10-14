@@ -154,10 +154,12 @@ def compile_replacement(module, old, image, package, cohort_id, env_changes):
 
 
 def compile_cohort(manifest, observed, images, packages, env_changes, gateway_plan_hash,
-                   database_plan_hash, authorization_plan_hash):
+                   database_plan_hash, authorization_plan_hash, acceptance_plan_hash=None):
     require(manifest.get('schema') == 'ouf.chatbot-file-cohort-package.v1'
             and sha(gateway_plan_hash) and sha(database_plan_hash) and sha(authorization_plan_hash),
             'COMPLETE_COHORT_OWNER_PLANS_REQUIRED')
+    require(acceptance_plan_hash is None or sha(acceptance_plan_hash),
+            'EXACT_ACCEPTANCE_OBSERVATION_PLAN_HASH_REQUIRED')
     require(set(observed) == set(images) == set(env_changes) == set(MODULES)
             and set(packages) == {'semantic','gateway',*MODULES}, 'COMPLETE_SIX_MODULE_COHORT_REQUIRED')
     locks = {p.get('cohortSourceLockSha256') for p in packages.values()}
@@ -181,6 +183,7 @@ def compile_cohort(manifest, observed, images, packages, env_changes, gateway_pl
             'order':['REGISTRY_VERIFY_HOLD','UDP','ONBOARDING','GATEWAY_ROUTES','INGESTION','MCP','RELEASE'],
             'gatewayPlanHash':gateway_plan_hash, 'databasePlanHash':database_plan_hash,
             'authorizationPlanHash':authorization_plan_hash,
+            **({'acceptancePlanHash':acceptance_plan_hash} if acceptance_plan_hash is not None else {}),
             'oldContainersRetained':True, 'automaticRollbackAllowed':False,
             'databaseRestoreAuthorized':False, 'runtimeAuthorityIssued':False,
             'notReleaseAcceptance':True}

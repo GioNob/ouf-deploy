@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import re
 import stat
+import subprocess
 import time
 
 import iam_binding_candidate as evidence
@@ -43,6 +44,20 @@ def digest(value):
 
 def require(ok, reason):
     evidence.require(ok, reason)
+
+
+def command_matches(program):
+    require(type(program) is dict and set(program) in ({'path','sha256'},{'path','sha256','version'}),
+            'EXACT_CURRENT_COMMAND_BINDING_REQUIRED')
+    require(governance.executable(program['path'])=={key:program[key] for key in ('path','sha256')},
+            'APPROVED_NATIVE_PROGRAM_CHANGED')
+    if 'version' in program:
+        reply=subprocess.run([program['path'],'version'],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,timeout=5,env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'})
+        match=re.match(rb'OpenSSL ([0-9]+\.[0-9]+\.[0-9]+[a-z]?)\b',reply.stdout)
+        require(reply.returncode==0 and len(reply.stdout)<=256 and match is not None
+                and match[1].decode()==program['version'],'EXACT_REVIEWED_OPENSSL_VERSION_REQUIRED')
+    return True
 
 
 def compile_review(*, source_closure, execution_profile, scopes, phase_intents,
@@ -195,7 +210,7 @@ def issue(review, decision, execution_profile):
     validate_decision(review, decision, now)
     programs = review['sourceClosure']['executables']
     for program in programs.values():
-        require(governance.executable(program['path']) == program, 'APPROVED_NATIVE_PROGRAM_CHANGED')
+        command_matches(program)
     library = stdlib_binding()
     require(digest(library) == review['sourceClosure']['stdlibHash']
             and len(library['fileHashes']) == review['sourceClosure']['stdlibFileCount'],

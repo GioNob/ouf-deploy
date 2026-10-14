@@ -113,7 +113,7 @@ class OwnerTransport:
     Credential bytes stay in memory. No browser cookies are read or fabricated.
     The server independently verifies both HUMAN credentials and write proof.
     """
-    def __init__(self, selection, admin_token_file, mcp_token_file, *, wait=None):
+    def __init__(self, selection, admin_token_file, mcp_token_file, *, wait=None, human_session=None):
         self.selection = copy.deepcopy(selection)
         require(set(selection) == {'origin','issuer','tenant','subject','docker','keycloakContainer','realm','clients'},
                 'EXACT_AUTHORIZATION_TRANSPORT_SELECTION_REQUIRED')
@@ -129,12 +129,35 @@ class OwnerTransport:
                 and type(c['requestedScopes']) is list for c in selection['clients'].values()),
                 'SELECTED_CHATGPT_AND_THS_CLIENTS_REQUIRED')
         self.tokens = {'admin':Path(admin_token_file), 'mcp':Path(mcp_token_file)}
+        self.human_session = human_session
+        if human_session is not None:
+            from tools.chatbot_file_cohort.human_session import HumanSession
+            require(type(human_session) is HumanSession and human_session.selection == self.selection
+                    and all(path == human_session.token_path for path in self.tokens.values()),
+                    'REAL_SAME_SELECTED_HUMAN_SESSION_REQUIRED')
         self.opener = urllib.request.build_opener(urllib.request.HTTPSHandler(context=ssl.create_default_context()), NoRedirect())
         require(wait is None or callable(wait), 'AUTHORIZATION_WAIT_FUNCTION_REQUIRED')
         self.wait = time.sleep if wait is None else wait
         self._last_mcp_at, self._role_cache = None, None
 
     def token(self, kind):
+        if self.human_session is not None:
+            # Classifies expired/pending refresh before an owner HTTP mutation.
+            # This does not replay a request whose outcome was ambiguous.
+            from tools.chatbot_file_cohort.human_session import HumanSessionPaused
+            while True:
+                try:
+                    binding = self.human_session.current()
+                    break
+                except HumanSessionPaused as error:
+                    if error.retry_at is None:
+                        raise
+                    # Waiting precedes constructing/sending the owner request;
+                    # no mutation is replayed. Session and aggregate guards keep
+                    # the original finite deadline and cancellation responsive.
+                    self.wait(min(5,max(1,error.retry_at-time.time())))
+            require(binding['selectionHash'] == digest(self.selection)
+                    and binding['tokenPath'] == str(self.tokens[kind]), 'HUMAN_SESSION_TRANSPORT_BINDING_DRIFT')
         path = self.tokens[kind]
         require(path.is_absolute() and path.resolve() == path, 'EXACT_PRIVATE_HUMAN_CREDENTIAL_PATH_REQUIRED')
         fd = os.open(path, os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
@@ -226,7 +249,9 @@ class OwnerTransport:
         require(binary.is_absolute() and stat.S_ISREG(info.st_mode) and info.st_uid == 0 and not info.st_mode&0o022
                 and hashlib.sha256(binary.read_bytes()).hexdigest() == self.selection['docker']['sha256'],
                 'AUTHORIZATION_DOCKER_EXECUTABLE_DRIFT')
-        require(verb in ('get','create','update') and re.fullmatch(r'[A-Za-z0-9_./:-]+',path), 'BOUNDED_KCADM_OPERATION_REQUIRED')
+        require((verb in ('get','create','update') or (verb == 'delete' and
+                re.fullmatch(r'clients/[A-Za-z0-9_-]+/optional-client-scopes/[A-Za-z0-9_-]+',path)))
+                and re.fullmatch(r'[A-Za-z0-9_./:-]+',path), 'BOUNDED_KCADM_OPERATION_REQUIRED')
         args = [str(binary),'exec','-i',self.selection['keycloakContainer'],'/opt/keycloak/bin/kcadm.sh',verb,path,
                 '-r',self.selection['realm'],*query]
         if body is not None: args += ['-f','-']
@@ -305,7 +330,7 @@ class OwnerTransport:
         return {'active':active,'roles':roles,'registrations':registrations,'oauth':oauth}
 
 
-def compile_plan(observed, primitives, selection, *, role_id='admin', include_ingestion_status=True, now=None):
+def compile_plan(observed, primitives, selection, *, role_id='admin', include_ingestion_status=True, now=None, session_binding=None):
     require(type(primitives) is OwnerPrimitives, 'QUALIFIED_EXISTING_OWNER_PRIMITIVES_REQUIRED')
     active, roles = observed['active'], observed['roles']
     require(set(roles) == {'issuer','roles','assignments'} and roles['issuer'] == selection['issuer'],
@@ -365,10 +390,11 @@ def compile_plan(observed, primitives, selection, *, role_id='admin', include_in
                 if name in NEW:
                     require(not scope.get('protocolMappers'), 'NEW_AUTHORIZATION_SCOPE_MAPPER_REQUIRES_REVIEW')
             if name in defaults: continue
-            if name in optional:
-                require(name in client['requestedScopes'], 'OPTIONAL_SCOPE_NOT_REQUESTED:'+purpose+':'+name)
+            if name in optional and name in client['requestedScopes']:
                 continue
-            scope_bindings.append({'purpose':purpose,'clientId':client['id'],'scopeName':name,'kind':'default'})
+            binding={'purpose':purpose,'clientId':client['id'],'scopeName':name,'kind':'default'}
+            if name in optional: binding['previousKind']='optional'
+            scope_bindings.append(binding)
     plan = {'schema':'ouf.chatbot-file-authorization-plan.v1','profile':PROFILE,'selection':copy.deepcopy(selection),
             'helperBindings':copy.deepcopy(primitives.bindings),'baseline':copy.deepcopy(observed),
             'registrationAdditions':missing_registration,'candidatePolicy':candidate,'addedDescriptors':missing,
@@ -378,17 +404,46 @@ def compile_plan(observed, primitives, selection, *, role_id='admin', include_in
                             'roleCatalogue':target_roles} if new_permissions else None,
             'preserveExistingGrants':True,'preserveRoleAssignments':True,'revokeSessions':False,
             'issueTokens':False,'runtimeAuthorityIssued':False,'notReleaseAcceptance':True}
+    if session_binding is not None:
+        validate_session_binding(session_binding, selection)
+        plan['sessionBinding'] = copy.deepcopy(session_binding)
     return plan
 
 
+def validate_session_binding(binding, selection):
+    require(type(binding) is dict and set(binding) == {'sessionId','selectionHash','subject','issuer','tenant',
+            'clientId','scopes','tokenPath','sessionDirectory','createdAt','expiresAt','retryProfile'},
+            'EXACT_FINITE_HUMAN_SESSION_BINDING_REQUIRED')
+    try: valid_id = str(uuid.UUID(binding['sessionId'])) == binding['sessionId']
+    except (ValueError,TypeError,AttributeError): valid_id = False
+    require(valid_id and binding['selectionHash'] == digest(selection)
+            and all(binding[k] == selection[k] for k in ('subject','issuer','tenant'))
+            and binding['clientId'] == 'ouf-human-admin'
+            and binding['scopes'] == ['openid','authorization.policy.admin','mcp.connect',
+                'authorization.permissions.read','authorization.permissions.propose','authorization.proposal.read']
+            and type(binding['createdAt']) in (int,float) and type(binding['expiresAt']) is int
+            and 0 < binding['expiresAt']-binding['createdAt'] <= 7200
+            and binding['retryProfile'] == {'id':'ouf.chatbot-human-session.finite.v1','maximumAttempts':128,
+                'maximumElapsedSeconds':7200,'backoffSeconds':[5,15,60,300,900],
+                'maximumJitterPercent':20,'automaticBudgetRenewalAllowed':False},
+            'FINITE_NOMINAL_HUMAN_SESSION_CONTEXT_REQUIRED')
+    directory, token = Path(binding['sessionDirectory']), Path(binding['tokenPath'])
+    require(directory.is_absolute() and '..' not in directory.parts and token.parent == directory
+            and token.name == 'human-access.jwt', 'EXACT_HUMAN_SESSION_PRIVATE_FILE_BINDING_REQUIRED')
+
+
 def authorization_scope(plan):
-    return {'profile':PROFILE,'planHash':digest(plan),'basePolicyRef':plan['baseline']['active']['policyRef'],
+    scope = {'profile':PROFILE,'planHash':digest(plan),'basePolicyRef':plan['baseline']['active']['policyRef'],
             'basePolicyHash':plan['baseline']['active']['contentHash'],
             'descriptorDeltaHash':digest({'registrations':plan['registrationAdditions'],'descriptors':plan['addedDescriptors']}),
             'roleDeltaHash':digest(plan['roleProposal']),
             'oauthDeltaHash':digest({'create':plan['scopeCreations'],'bind':plan['scopeBindings']}),
             'preserveExistingGrants':True,'preserveRoleAssignments':True,'sessionRevocationAuthorized':False,
             'tokenIssuanceAuthorized':False,'roleConfirmationRequiresOwnerHumanSession':True,'retryPolicy':RETRY}
+    if plan.get('sessionBinding') is not None:
+        validate_session_binding(plan['sessionBinding'], plan['selection'])
+        scope['sessionBinding'] = copy.deepcopy(plan['sessionBinding'])
+    return scope
 
 
 class AuthorizationDelta:
@@ -566,6 +621,23 @@ class AuthorizationDelta:
                 self.effect('scope:'+name,lambda d=definition:self.transport.kc('create','client-scopes',body=d),read_scope)
             for binding in self.plan['scopeBindings']:
                 name, purpose = binding['scopeName'],binding['purpose']
+                if binding.get('previousKind') == 'optional':
+                    # Existing owner rollout performs the same exact OPTIONAL to
+                    # DEFAULT conversion. Each effect has its own retained claim.
+                    def read_optional_removed(_prior,binding=binding):
+                        current=self.transport.oauth();client=current['clients'][binding['purpose']]
+                        require(client['id']==binding['clientId'],'OAUTH_CLIENT_REPLACED')
+                        scope_id=current['scopes'][binding['scopeName']]['id']
+                        return {'clientId':client['id'],'scopeId':scope_id,'optionalRemoved':True} if not any(
+                            r['id']==scope_id for r in client['optional']) else None
+                    def remove_optional(binding=binding):
+                        current=self.transport.oauth();client=current['clients'][binding['purpose']]
+                        require(client['id']==binding['clientId'],'OAUTH_CLIENT_REPLACED')
+                        scope_id=current['scopes'][binding['scopeName']]['id']
+                        require(any(r['id']==scope_id for r in client['optional'])
+                                and not any(r['id']==scope_id for r in client['default']),'OAUTH_OPTIONAL_PROMOTION_DRIFT')
+                        return self.transport.kc('delete','clients/'+client['id']+'/optional-client-scopes/'+scope_id)
+                    self.effect('promote-optional:'+purpose+':'+name,remove_optional,read_optional_removed)
                 def read_binding(_prior,binding=binding):
                     current = self.transport.oauth(); client = current['clients'][binding['purpose']]
                     require(client['id'] == binding['clientId'], 'OAUTH_CLIENT_REPLACED')
@@ -619,7 +691,11 @@ class AuthorizationDelta:
                     'REGISTERED_DESCRIPTOR_DRIFT')
         for purpose,names in self.plan['requiredScopes'].items():
             client = current['oauth']['clients'][purpose]; original = baseline['oauth']['clients'][purpose]
-            require(client['id'] == original['id'] and all(x in client[k] for k in ('default','optional') for x in original[k]),
+            promoted={b['scopeName'] for b in self.plan['scopeBindings'] if b['purpose']==purpose and b.get('previousKind')=='optional'}
+            require(client['id'] == original['id'] and all(x in client[k] for k in ('default','optional')
+                    for x in original[k] if not(k=='optional' and x['name'] in promoted))
+                    and all(any(x['name']==n for x in client['default']) and not any(x['name']==n for x in client['optional'])
+                            for n in promoted),
                     'EXISTING_OAUTH_BINDING_CHANGED')
             available = {s['name'] for s in client['default']} | ({s['name'] for s in client['optional']} & set(client['requestedScopes']))
             require(set(names) <= available, 'REQUIRED_OAUTH_SCOPE_BINDING_NOT_RECONCILED')

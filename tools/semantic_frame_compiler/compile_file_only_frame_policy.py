@@ -15,12 +15,18 @@ def compile_policy(template,launch,context,*,execution_profile,renewable_token,d
     require(type(template) is dict and type(launch) is dict and len(canonical(template))<=131072 and len(canonical(launch))<=131072,
             'BOUNDED_INDEPENDENT_FILE_ONLY_FRAME_REQUIRED')
     template,launch=copy.deepcopy(template),copy.deepcopy(launch);original=copy.deepcopy(launch)
-    token_fields={'source','target','fileName','gid','directoryDevice','directoryInode','ownerBindingHash','maxBytes','minimumRemainingSeconds'}
-    require(type(renewable_token) is dict and set(renewable_token)==token_fields,'EXACT_FILE_ONLY_RENEWABLE_TOKEN_REQUIRED')
+    token_fields={'source','target','fileName','gid','ownerBindingHash','maxBytes','minimumRemainingSeconds'}
+    native_fields=token_fields|{'directoryDevice','directoryInode'}
+    deferred_fields=token_fields|{'directoryCustodyScopeHash'}
+    require(type(renewable_token) is dict and set(renewable_token) in (native_fields,deferred_fields),'EXACT_FILE_ONLY_RENEWABLE_TOKEN_REQUIRED')
+    deferred=set(renewable_token)==deferred_fields
+    require((deferred and type(renewable_token['directoryCustodyScopeHash']) is str
+        and re.fullmatch('[a-f0-9]{64}',renewable_token['directoryCustodyScopeHash'])) or
+        (not deferred and type(renewable_token['directoryDevice']) is int and renewable_token['directoryDevice']>=0
+            and type(renewable_token['directoryInode']) is int and renewable_token['directoryInode']>0),
+        'EXACT_COMPLETED_OR_SIGNED_FUTURE_TOKEN_CUSTODY_REQUIRED')
     for k in ('source','target'):path(renewable_token[k]);require(renewable_token[k]!='/','EXACT_TOKEN_DIRECTORY_REQUIRED')
     require(renewable_token['gid']==10001 and type(renewable_token['gid']) is int
-        and type(renewable_token['directoryDevice']) is int and renewable_token['directoryDevice']>=0
-        and type(renewable_token['directoryInode']) is int and renewable_token['directoryInode']>0
         and type(renewable_token['fileName']) is str and re.fullmatch('[A-Za-z0-9_.-]{1,128}',renewable_token['fileName'])
         and renewable_token['fileName'] not in ('.','..') and type(renewable_token['maxBytes']) is int and 1<=renewable_token['maxBytes']<=16384
         and type(renewable_token['minimumRemainingSeconds']) is int and 1<=renewable_token['minimumRemainingSeconds']<=3600
@@ -54,7 +60,8 @@ def compile_policy(template,launch,context,*,execution_profile,renewable_token,d
     result=compile_files(template,launch,context)
     resolved=result['expectedOci']['mounts'];by_target={m['destination']:m for m in resolved}
     result['expectedOci']['mounts']=[copy.deepcopy(m) if m.get('destination') in directory_targets else by_target[m['destination']] for m in full_mounts]
-    result.update(schema='ouf.semantic-configured-file-only-four-mount-frame-policy.v1',executionProfileHash=profile_hash,
+    result.update(schema=('ouf.semantic-configured-file-only-four-mount-frame-policy.v2-proposal' if deferred
+        else 'ouf.semantic-configured-file-only-four-mount-frame-policy.v1'),executionProfileHash=profile_hash,
         manifest=original['manifest'],configtree=copy.deepcopy(tree),renewableToken=copy.deepcopy(renewable_token),
         delegationKeyTarget=key['target'],delegationKeyMetadataHash=delegation_key_metadata_hash,proposalReceiptKey=receipt)
     require(b'$OUF_' not in canonical(result) and len(canonical(result))<=131072,'UNRESOLVED_OR_UNBOUNDED_FILE_ONLY_FRAME')

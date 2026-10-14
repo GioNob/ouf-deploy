@@ -34,13 +34,15 @@ from tools.semantic_policy_token_owner.iam_admission import IamProfile, PinnedIa
 from tools.semantic_policy_token_owner.reporter import OwnerReporter
 from tools.semantic_policy_token_owner.worker_entry import serve
 from tools.chatbot_file_cohort.action_process import private_file
-from tools.chatbot_file_cohort.review import digest, encoded, require, validate_decision
+from tools.chatbot_file_cohort.review import digest, encoded, require, validate_decision, command_matches
 from tools.chatbot_file_cohort.containers import CohortContainers, CohortPaused
 from tools.chatbot_file_cohort.databases import CohortDatabases
 from tools.chatbot_file_cohort.gateway import GatewayRoutes, NamespaceAdmin
 from tools.chatbot_file_cohort.authorization import AuthorizationDelta, AuthorizationPaused, OwnerPrimitives, OwnerTransport
 from tools.chatbot_file_cohort.images import CohortImages
 from tools.chatbot_file_cohort.gateway_runtime import GatewayRuntime, runtime_scope
+from tools.chatbot_file_cohort.human_session import HumanSession, HumanSessionPaused
+from tools.chatbot_file_cohort.acceptance import AcceptanceObserver
 import qualified_owner_authorization_lifecycle
 import qualified_owner_scope_catalogue
 
@@ -126,7 +128,10 @@ class Delivery:
                 'EXACT_HUMAN_REVIEWED_PRIVATE_PREPARED_INPUTS_REQUIRED')
         self.action, self.prepared, self.sources = action, copy.deepcopy(prepared), dict(sources)
         self.review, self.context, self.emit = copy.deepcopy(review), Path(context), emit
+        require(prepared['gatewayPlan']['transportBinding']['pythonExecutable']==review['sourceClosure']['executables']['python'],
+                'GATEWAY_SUBPROCESS_MUST_USE_SAME_REVIEWED_PYTHON')
         self.stop, self.worker_thread, self.worker = threading.Event(), None, None
+        self.human_session, self.human_thread = None, None
         self.engine = Engine(prepared['engine']['socketPath'], tuple(prepared['engine']['socketBinding']))
         self.owner = build_owner(action, prepared, sources)
         for key, scope in self.owner.scopes().items():
@@ -158,6 +163,15 @@ class Delivery:
         require(not self.stop.is_set(), 'FULL_ACTION_CANCELLED')
         require(self.action.authority(self.action.raw) is True, 'CURRENT_FULL_ACTION_AUTHORITY_REQUIRED')
         self.engine.check_socket()
+        if self.human_session is not None:
+            while True:
+                try:
+                    self.human_session.current(); break
+                except HumanSessionPaused as error:
+                    require(error.retry_at is not None,error.reason)
+                    self.report('HUMAN_SESSION_REFRESH_WAIT',nextAttemptAt=error.retry_at)
+                    require(self.action.authority(self.action.raw) is True,'CURRENT_FULL_ACTION_AUTHORITY_REQUIRED')
+                    require(not self.stop.wait(min(5,max(1,error.retry_at-time.time()))),'FULL_ACTION_CANCELLED')
         if require_worker:
             require(self.worker_thread is not None and self.worker_thread.is_alive(), 'FINITE_OWNER_WORKER_NOT_LIVE')
             self.owner.observer.await_active(self.owner.first.binding.digest())
@@ -210,10 +224,16 @@ class Delivery:
             directories = create_directories(self.action)
             native_environment(self.engine,self.review['sourceClosure']['executables']['docker'],directories['dockerCli'])
             authorization = self.prepared['authorization']
+            session = authorization['plan']['sessionBinding']
+            self.human_session = HumanSession(authorization['plan']['selection'],session['sessionDirectory'],
+                session['tokenPath'],session['expiresAt'],action=self.action)
+            self.human_thread = self.human_session.start_refresh(self.stop,self.emit)
+            self.current()
+            require(self.human_session.binding()==session,'EXACT_PREPARED_HUMAN_SESSION_REQUIRED')
             primitives = OwnerPrimitives.from_qualified_modules(qualified_owner_authorization_lifecycle,
                 qualified_owner_scope_catalogue, authorization['catalogue'].encode('utf-8'), authorization['helperBindings'])
             auth_owner = AuthorizationDelta(self.action, authorization['plan'], Journal(directories['authorization']),
-                OwnerTransport(authorization['plan']['selection'], authorization['adminTokenFile'], authorization['mcpTokenFile'],wait=self.wait), primitives)
+                OwnerTransport(authorization['plan']['selection'], authorization['adminTokenFile'], authorization['mcpTokenFile'],wait=self.wait,human_session=self.human_session), primitives)
             auth_owner.initialize()
             auth_evidence = self.await_authorization(auth_owner)
             self.current()
@@ -297,8 +317,21 @@ class Delivery:
                 maximumSessionSeconds=self.review['maximumElapsedSeconds'])
             # Remain live in this same finite systemd invocation for the actual
             # user loop. Successful infrastructure setup is never E2E proof.
+            observer=AcceptanceObserver(databases,containers,self.prepared['acceptancePlan'])
+            last_acceptance=None;next_observation=0
             while not self.stop.wait(5):
                 self.current(True)
+                if time.monotonic()>=next_observation:
+                    next_observation=time.monotonic()+30
+                    try:
+                        acceptance=observer.observe()
+                        if digest(acceptance)!=last_acceptance:
+                            self.report('ACTUAL_CSV_OWNER_ACCEPTANCE_OBSERVED',ownerAcceptance=acceptance)
+                            last_acceptance=digest(acceptance)
+                    except Exception as observation_error:
+                        # Read-only proof collection cannot claim readiness lost
+                        # or stop the already governed healthy acceptance window.
+                        self.report('CSV_ACCEPTANCE_EVIDENCE_UNAVAILABLE',reason=type(observation_error).__name__)
         except Exception as error:
             reason = str(error) if type(error) in (evidence.CandidateDenied, RuntimeError) else type(error).__name__
             if not reason or len(reason)>160 or any(c not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789' for c in reason):
@@ -310,6 +343,9 @@ class Delivery:
             if self.worker_thread is not None:
                 self.worker_thread.join(timeout=30)
                 require(not self.worker_thread.is_alive(),'FINITE_OWNER_STOP_NOT_RECONCILED')
+            if self.human_thread is not None:
+                self.human_thread.join(timeout=45)
+                require(not self.human_thread.is_alive(),'FINITE_HUMAN_SESSION_STOP_NOT_RECONCILED')
             if app is not None:
                 app.close()
             for sig,handler in previous.items():
@@ -330,7 +366,7 @@ def child_main(prepared, sources, manifest, context_path):
             and digest(prepared) == review['privateInputHashes']['preparedInputs'],
             'EXACT_EXECUTED_SOURCES_AND_PREPARED_INPUTS_REQUIRED')
     for value in review['sourceClosure']['executables'].values():
-        require(governance.executable(value['path']) == value, 'EXECUTED_NATIVE_COMMAND_DRIFT')
+        command_matches(value)
     require(digest(stdlib_binding()) == review['sourceClosure']['stdlibHash'], 'EXECUTED_STDLIB_DRIFT')
     execution_profile = FileOnlyProfile(prepared['registry']['creationRequest'],prepared['registry']['configtree'])
     expected = {key:review[key] for key in ('sourceClosureHash','creationRequestHash','predecessorHistoryHash','predecessorIncidentRef')}

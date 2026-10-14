@@ -84,7 +84,7 @@ def packaged_migrations(directory, record):
 
 
 def prepare_cohort(engine, package_directory, manifest, image_import_plan, postgres_observation,
-                   gateway_plan_hash, authorization_plan_hash, environment_deltas):
+                   gateway_plan_hash, authorization_plan_hash, environment_deltas, acceptance_plan_hash=None):
     require(type(engine) is Engine, 'REAL_CURRENT_DOCKER_ENGINE_REQUIRED')
     image_import_scope(image_import_plan)
     require(image_import_plan['cohortManifestHash'] == digest(manifest), 'ONE_AUTHENTICATED_COHORT_REQUIRED')
@@ -109,7 +109,7 @@ def prepare_cohort(engine, package_directory, manifest, image_import_plan, postg
         current[module] = observe_database(pgpin['containerId'],bindings[module]['user'],bindings[module]['database'],module)
     database_plan = compile_database_plan(pg,bindings,migrations,current)
     plan = compile_cohort(manifest,observed,images,packages,environment_deltas,
-        gateway_plan_hash,digest(database_plan),authorization_plan_hash)
+        gateway_plan_hash,digest(database_plan),authorization_plan_hash,acceptance_plan_hash)
     for replacement in plan['replacements']:
         module = replacement['module']
         candidate = {'Config':replacement['creationRequest'],
