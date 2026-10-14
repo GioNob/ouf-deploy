@@ -6,6 +6,7 @@ from pathlib import Path
 import tarfile
 import tempfile
 import unittest
+from unittest.mock import patch
 import zipfile
 
 import test_chatbot_cohort_containers as fixture
@@ -75,6 +76,32 @@ class CohortPreparation(unittest.TestCase):
                 modified['Config']['Env'].append('SPRING_APPLICATION_JSON='+json.dumps(overlay))
                 self.assertEqual(q.database_binding('onboarding',modified,pg),expected)
                 self.assertNotIn('PRIVATE-FIXTURE',str(expected))
+
+    def test_selected_read_only_ths_json_location_cannot_override_database(self):
+        app,pg=self.inputs('onboarding')
+        binding={'path':q.THS_CONFIG_SOURCE,'sha256':'a'*64,'metadata':[1,2,3]}
+        app['Config']['Env'].append('SPRING_CONFIG_ADDITIONAL_LOCATION='+q.THS_ADDITIONAL_LOCATION)
+        app['Mounts']=[{'Type':'bind','Source':q.THS_CONFIG_SOURCE,
+                        'Destination':q.THS_CONFIG_TARGET,'RW':False}]
+        safe=json.dumps({'spring':{'security':{'oauth2':{'client':{'registration':{
+            'ouf-ths':{'client-secret':'PRIVATE-FIXTURE-SECRET'}}}}}}},indent=2).encode()
+        with patch.object(q,'private_config',return_value=(safe,binding)) as selected:
+            self.assertEqual(q.database_binding('onboarding',app,pg,binding),
+                             {'database':'ouf_onboarding','user':'ouf_onboarding'})
+            selected.assert_called_once_with(q.THS_CONFIG_SOURCE,binding)
+        for payload in ({'spring.datasource.url':'jdbc:postgresql://other/other'},
+                        {'spring':{'config':{'import':'file:/unreviewed'}}},
+                        {'OUF_ONB_DB_USER':'another'}):
+            with self.subTest(payload=payload),patch.object(q,'private_config',return_value=(json.dumps(payload).encode(),binding)):
+                with self.assertRaisesRegex(p.PlanDenied,'CUSTOM_DATASOURCE'):
+                    q.database_binding('onboarding',app,pg,binding)
+        changed=copy.deepcopy(app);changed['Mounts'][0]['RW']=True
+        with self.assertRaisesRegex(p.PlanDenied,'EXACT_READ_ONLY_THS'):
+            q.database_binding('onboarding',changed,pg,binding)
+        changed=copy.deepcopy(app)
+        changed['Config']['Env'][-1]='SPRING_CONFIG_ADDITIONAL_LOCATION=file:/unreviewed.yml'
+        with self.assertRaisesRegex(p.PlanDenied,'UNREVIEWED_ADDITIONAL'):
+            q.database_binding('onboarding',changed,pg,binding)
 
     def test_json_flat_nested_relaxed_names_and_loader_overrides_remain_denied(self):
         app,pg=self.inputs('onboarding')

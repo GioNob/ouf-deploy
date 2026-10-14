@@ -178,7 +178,7 @@ def collect(args):
     gateway=prepare_gateway(package,records['gateway'],engine,selected['projectionBinding'],
         retained['installationReview']['currentRegistry']['id'],new_directory(stage,'gateway'),cohort_id)
     postgres=current(engine,'ouf-postgres');onboarding=current(engine,'ouf-onboarding')
-    db=database_binding('onboarding',onboarding,postgres)
+    db=database_binding('onboarding',onboarding,postgres,selected['thsConfigurationBinding'])
     observed=observe_database(postgres['Id'],db['user'],db['database'],'onboarding')
     db['databaseOid']=observed['identity']['oid']
     asset_id='6609b245-86ed-4315-8ce0-73f2a8555bf3';profile_id='7984c39c-7396-4248-ab0a-f2efc390b49c'
@@ -206,7 +206,7 @@ def collect(args):
             tenant=selected['selection']['tenant'],issuer=selected['selection']['issuer'],
             audience=gateway['proposalIdentity']['audience'])
         co=prepare_cohort(engine,package,manifest,image_plan,postgres,digest(gateway['gatewayPlan']),
-                          digest(auth_plan),deltas,digest(acceptance))
+                          digest(auth_plan),deltas,digest(acceptance),selected['thsConfigurationBinding'])
         old_env=environment(retained['creationRequest']['Env'])
         token_target=str(Path(old_env['OUF_AUTHORIZATION_REGISTRY_TOKEN_FILE']).parent)
         mount={'source':owner.first.binding.output_directory,'target':token_target,'fileName':owner.first.binding.output_member,
