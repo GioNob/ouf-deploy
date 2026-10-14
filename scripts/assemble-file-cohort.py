@@ -49,6 +49,12 @@ def assemble(packages, output):
         require(record.get('scanGate') == 'PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED'
                 and record.get('targetApplyAuthorized') is False and record.get('runtimeAuthorityIssued') is False,
                 'SCAN_OR_AUTHORITY_BINDING_INVALID')
+        required = {'source.tar', 'source-inventory.json', 'trivy-image.json', 'candidate-manifest.json'}
+        if row['kind'] == 'DOCKER_SAVE':
+            required |= {'image.docker.tar', 'package-record.json', 'ouf-mcp' if row['module'] == 'mcp' else 'application.jar'}
+        else:
+            required |= {'routes.file-loop.json', 'compiled-route-declarations.json'}
+        require(required <= set(files), 'CONCRETE_MODULE_DELIVERY_MEMBERS_REQUIRED')
         if row['module'] == 'semantic':
             seal = json.loads((directory/'independent-rootfs-seal.json').read_text())
             require(seal.get('imageId') == record['imageId'] and seal.get('sourceCommit') == row['commit']
@@ -71,6 +77,7 @@ def assemble(packages, output):
                     'sourceCommit':os.environ.get('GITHUB_SHA'),'runId':os.environ.get('GITHUB_RUN_ID'),
                     'runAttempt':os.environ.get('GITHUB_RUN_ATTEMPT')},
         'semanticRuntimeProfile':lock['semanticRuntimeProfile'],
+        'composedQualification':lock['composedQualification'],
         'notReleaseAcceptance':True,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,
         'vpsOperations':0,'r12Touched':False,'budgetReset':False,
         'fullChatbotProductionAcceptanceProven':False,

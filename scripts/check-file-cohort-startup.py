@@ -2,7 +2,7 @@
 """Boot exact Registry candidate with four disposable mounts and real PostgreSQL.
 This does not qualify target TLS, token admission, installation custody or frame authority.
 """
-import argparse, hashlib, http.server, json, os, secrets, subprocess, tempfile, threading, time, urllib.request
+import argparse, base64, hashlib, http.server, json, os, secrets, subprocess, tempfile, threading, time, urllib.request
 from pathlib import Path
 
 def run(*args, timeout=30):
@@ -13,10 +13,11 @@ def main():
     record=json.loads((a.package/'package-record.json').read_text())
     tag=record['imageTag'];suffix=secrets.token_hex(6);pg='ouf-pg-'+suffix;app='ouf-sem-'+suffix
     issuer='http://127.0.0.1:19091/issuer'
+    jwk={}
     class Discovery(http.server.BaseHTTPRequestHandler):
         def do_GET(self):
             if self.path.endswith('/jwks'):
-                response={'keys':[]}
+                response={'keys':[jwk]}
             elif '/.well-known/' in self.path:
                 response={'issuer':issuer,'jwks_uri':issuer+'/jwks','authorization_endpoint':issuer+'/authorize',
                           'token_endpoint':issuer+'/token','response_types_supported':['code'],
@@ -29,6 +30,12 @@ def main():
     try:
         with tempfile.TemporaryDirectory(prefix='ouf-file-cohort-') as rootname:
             root=Path(rootname);root.chmod(0o755)
+            issuer_key=root/'issuer-fixture.key'
+            run('openssl','genpkey','-algorithm','RSA','-pkeyopt','rsa_keygen_bits:2048','-out',str(issuer_key))
+            issuer_key.chmod(0o600)
+            modulus=run('openssl','rsa','-in',str(issuer_key),'-noout','-modulus').split('=',1)[1]
+            jwk.update(kty='RSA',kid='disposable-boot-key',use='sig',alg='RS256',e='AQAB',
+                       n=base64.urlsafe_b64encode(bytes.fromhex(modulus)).rstrip(b'=').decode())
             policy=root/'policy';policy.mkdir(mode=0o755);(policy/'token').write_text('DISPOSABLE_NOT_ADMITTED')
             config=root/'database';config.mkdir(mode=0o755);(config/'spring.datasource.password').write_text('disposable-password')
             delegation=root/'delegation';delegation.write_text('a'*64);delegation.chmod(0o444)

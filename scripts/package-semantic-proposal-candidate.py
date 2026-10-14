@@ -128,6 +128,8 @@ def export(source, output, module):
         manifest['transitivePythonRuntimeQualificationProven'] = False
         require((output/'routes.file-loop.json').is_file(), 'MATERIALIZED_ROUTE_PACKAGE_REQUIRED')
         manifest['materializedRoutesSha256'] = digest(output/'routes.file-loop.json')
+        require((output/'compiled-route-declarations.json').is_file(), 'QUALIFIED_ROUTE_DECLARATIONS_REQUIRED')
+        manifest['compiledRouteDeclarationsSha256'] = digest(output/'compiled-route-declarations.json')
         manifest['routePackageTargetBound'] = False
     json_file(output/'candidate-manifest.json', manifest)
     files = sorted(p for p in output.rglob('*') if p.is_file() and p.name != 'SHA256SUMS')
@@ -165,7 +167,7 @@ def main():
             scan_dir = output/'gateway-scan'
             scan_dir.mkdir()
             (scan_dir/'requirements.txt').write_bytes((source/'requirements-dev.txt').read_bytes())
-            run(['python3', str(Path(__file__).with_name('materialize-file-cohort-routes.py')), '--source', str(source), '--output', str(output/'routes.file-loop.json')], timeout=60)
+            run(['python3', str(Path(__file__).with_name('materialize-file-cohort-routes.py')), '--source', str(source), '--output', str(output/'routes.file-loop.json'), '--declarations', str(output/'compiled-route-declarations.json')], timeout=60)
     except Exception as exc:
         # Do not echo command output, private paths or arbitrary exception text.
         code = str(exc) if isinstance(exc, Denied) else ('COMMAND_TIMEOUT' if isinstance(exc, subprocess.TimeoutExpired) else 'BUILD_OR_EXPORT_FAILED')

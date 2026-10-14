@@ -2,24 +2,83 @@
   "schema": "ouf.chatbot-file-cohort-source-lock.v1",
   "cohortId": "chatbot-file-20261014",
   "modules": [
-    {"module":"semantic","repository":"ouf-semantic-registry","commit":"9ef78cc716587876cb2ca15c1a68e24c1b1aa507","qualifiedSource":"406a3f2443f497a771738c9c557e0700872b56eb","qualificationRun":38526215494,"kind":"DOCKER_SAVE"},
-    {"module":"onboarding","repository":"ouf-source-onboarding","commit":"1eaa6981f76d77dc02ae1eb1380590954d450d7a","qualifiedSource":"266db78f1cf315ee8b9e3025239bd8335a43fa3e","qualificationRun":38526608369,"kind":"DOCKER_SAVE"},
-    {"module":"ingestion","repository":"ouf-ingestion-runtime","commit":"56b4ca57ebe6ce6b1b67fbbb248a1ce7faa7d76b","kind":"DOCKER_SAVE"},
-    {"module":"udp","repository":"ouf-udp-object-resolution","commit":"042727587a48692b6d31b3d60d64e48b08024a1d","kind":"DOCKER_SAVE"},
-    {"module":"mcp","repository":"ouf-mcp-server","commit":"c0a36608f2db57fdd9b4532703fcd1506be8f1e0","qualifiedSource":"f5b728166b6e529694e88685a64de6b31a451e2d","kind":"DOCKER_SAVE"},
-    {"module":"gateway","repository":"ouf-api-gateway","commit":"17a5f01a4b12019635553050e6590f3f27446658","kind":"SOURCE_AND_ROUTE_PACKAGE"}
+    {
+      "module": "semantic",
+      "repository": "ouf-semantic-registry",
+      "commit": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+      "qualifiedSource": "039f044f6063bc37b4e04b189b95b0b234ae1de5",
+      "qualificationRun": 38531440033,
+      "kind": "DOCKER_SAVE"
+    },
+    {
+      "module": "onboarding",
+      "repository": "ouf-source-onboarding",
+      "commit": "84828f74ac586bae09a78f0fb197b75b1a3d98d1",
+      "qualifiedSource": "e700ef9e39b7de8396d1d704d4155649812b5643",
+      "qualificationRun": 38531978767,
+      "kind": "DOCKER_SAVE"
+    },
+    {
+      "module": "ingestion",
+      "repository": "ouf-ingestion-runtime",
+      "commit": "c48ee4b1873a474e81c6e1be70d393854021e2c1",
+      "kind": "DOCKER_SAVE",
+      "qualifiedSource": "98e33a16839e9253b37bf74f37e77cc20dc938e7",
+      "qualificationRun": 38534861649
+    },
+    {
+      "module": "udp",
+      "repository": "ouf-udp-object-resolution",
+      "commit": "b49c0d6f50c574c11684361ce4e8040e9cbddee2",
+      "kind": "DOCKER_SAVE",
+      "qualifiedSource": "d683f12d8acd30f13e1dbae0f3f47501b771a8b8"
+    },
+    {
+      "module": "mcp",
+      "repository": "ouf-mcp-server",
+      "commit": "f7ecaeb210d8fcead478b90c62645db13a7d8226",
+      "kind": "DOCKER_SAVE",
+      "qualifiedSource": "1323f9e3fb35d96fd0ac5d1b17bcc3a80268ec64"
+    },
+    {
+      "module": "gateway",
+      "repository": "ouf-api-gateway",
+      "commit": "bf179e96200deb84942ad32507edef52a4284cd0",
+      "kind": "SOURCE_AND_ROUTE_PACKAGE",
+      "qualifiedSource": "6ac7b02507125755521b07504f26ee8f1010e53f"
+    }
   ],
   "semanticRuntimeProfile": {
-    "springProfilesActive":"file-first",
-    "OUF_SCHEMA_GOV_ENABLED":"false",
-    "OUF_DISCOVERY_WORKER_ENABLED":"false",
-    "mountPurposes":["renewable-policy-token-directory","consultation-delegation-key","database-configtree","distinct-proposal-receipt-key"],
-    "providerInputsRequired":false,
-    "targetIamJavaTlsTrustProven":false,
-    "targetFourMountExecutionQualified":false
+    "springProfilesActive": "file-first",
+    "OUF_SCHEMA_GOV_ENABLED": "false",
+    "OUF_DISCOVERY_WORKER_ENABLED": "false",
+    "mountPurposes": [
+      "renewable-policy-token-directory",
+      "consultation-delegation-key",
+      "database-configtree",
+      "distinct-proposal-receipt-key"
+    ],
+    "providerInputsRequired": false,
+    "targetIamJavaTlsTrustProven": false,
+    "targetFourMountExecutionQualified": false
   },
-  "supersedesPackageWorkflowRun":38508140057,
-  "runtimeAuthorityIssued":false,
-  "targetApplyAuthorized":false,
-  "notReleaseAcceptance":true
+  "supersedesPackageWorkflowRun": 38508140057,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "notReleaseAcceptance": true,
+  "composedQualification": {
+    "repository": "GioNob/ouf-ingestion-runtime",
+    "sourceCommit": "98e33a16839e9253b37bf74f37e77cc20dc938e7",
+    "runId": 38534861649,
+    "jobId": 115755167625,
+    "status": "PASS",
+    "environment": "DISPOSABLE_REAL_MODULES_WITH_EXPLICIT_IDENTITY_AND_GATEWAY_FIXTURES",
+    "targetVpsAcceptance": false,
+    "qualifiedOwnerSources": {
+      "semantic": "039f044f6063bc37b4e04b189b95b0b234ae1de5",
+      "onboarding": "e700ef9e39b7de8396d1d704d4155649812b5643",
+      "udp": "d683f12d8acd30f13e1dbae0f3f47501b771a8b8",
+      "mcp": "1323f9e3fb35d96fd0ac5d1b17bcc3a80268ec64"
+    }
+  }
 }

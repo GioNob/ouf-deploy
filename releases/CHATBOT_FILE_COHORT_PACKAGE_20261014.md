@@ -17,3 +17,5 @@ python3 scripts/download-file-cohort.py --run RUN_VERIFICATO --producer-commit S
 ```
 
 Il launcher finale deve sostituire run e commit soltanto dopo il successo di tutti i sei job e dell'assemblaggio. Lo script controlla run, workflow, commit, digest GitHub dell'archivio, tutti i membri e i sei pin; conserva la firma del publisher. Non estrae, esegue, carica immagini né modifica servizi. L'installazione deve legare questi stessi hash alla transazione e alle autorità pertinenti: il vecchio executor Semantic non installa implicitamente gli altri cinque moduli.
+
+La coorte sorgente congelata include il test composto Ingestion `98e33a16839e9253b37bf74f37e77cc20dc938e7`, run `38534861649`, passato con i quattro owner riportati nel lock. La prova usa i moduli reali in ambiente disposable e fixture di identità/Gateway esplicite; non è una prova di installazione o di accettazione sul VPS. Il bundle contiene anche le dichiarazioni JSON Gateway compilate e verificate: il prepare target può materializzare le 43 rotte con la source qualificata usando solo la libreria standard Python.

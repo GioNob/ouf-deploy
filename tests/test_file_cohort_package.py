@@ -17,6 +17,12 @@ class CohortIntegrityTest(unittest.TestCase):
                       'runtimeAuthorityIssued':False,'imageId':'sha256:'+'a'*64}
             (d/'candidate-manifest.json').write_text(json.dumps(manifest))
             (d/'artifact').write_bytes(b'disposable fixture')
+            members={'source.tar','source-inventory.json','trivy-image.json'}
+            if row['kind']=='DOCKER_SAVE':
+                members|={'image.docker.tar','package-record.json','ouf-mcp' if row['module']=='mcp' else 'application.jar'}
+            else:members|={'routes.file-loop.json','compiled-route-declarations.json'}
+            for member in members:(d/member).write_bytes(b'explicit disposable package member fixture')
+
             if row['module']=='semantic':
                 (d/'package-record.pre-export.json').write_text('{}')
                 (d/'independent-rootfs-seal.json').write_text(json.dumps({'imageId':manifest['imageId'],
@@ -31,6 +37,9 @@ class CohortIntegrityTest(unittest.TestCase):
         result=c.assemble(self.parts,self.root/'out')
         self.assertEqual(len(result['modules']),6)
         self.assertFalse(result['runtimeAuthorityIssued'])
+    def test_missing_concrete_image_or_binary_cannot_be_hidden_by_valid_hashes(self):
+        d=self.parts/'mcp';(d/'image.docker.tar').unlink();self.rehash(d)
+        with self.assertRaisesRegex(ValueError,'CONCRETE_MODULE_DELIVERY'):c.assemble(self.parts,self.root/'out')
     def test_staged_old_three_modules_cannot_assemble(self):
         import shutil
         for name in ['ingestion','onboarding','udp']:shutil.rmtree(self.parts/name)
