@@ -6,6 +6,7 @@ deploy. GitHub and sudo transports are never called. No real package acceptance,
 HUMAN approval, installation authority or target mutation is represented here.
 """
 import base64
+import ast
 import copy
 import hashlib
 import importlib.util
@@ -46,6 +47,26 @@ def encoded(value): return json.dumps(value, sort_keys=True, separators=(',', ':
 
 
 class DeliveryLauncherTest(unittest.TestCase):
+    def test_published_capsule_and_package_pins_match_the_actual_delivered_sources(self):
+        raw = (ROOT/launcher.CAPSULE_PATH).read_bytes()
+        self.assertEqual(sha(raw), launcher.CAPSULE_SHA256)
+        manifest = json.loads(raw)
+        selected = json.loads((ROOT/'tools/chatbot_file_cohort/preparation_sources.json').read_bytes())['files']
+        self.assertEqual(set(manifest['files']), set(selected))
+        for name, expected in manifest['files'].items():
+            with self.subTest(member=name):
+                self.assertEqual(sha((ROOT/name).read_bytes()), expected)
+        def constants(path):
+            return {node.targets[0].id:ast.literal_eval(node.value)
+                for node in ast.parse((ROOT/path).read_bytes()).body
+                if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name)
+                and node.targets[0].id in ('RUN', 'PRODUCER', 'ARCHIVE')}
+        expected = {'RUN':launcher.PACKAGE_RUN, 'PRODUCER':launcher.PACKAGE_COMMIT,
+                    'ARCHIVE':launcher.PACKAGE_SHA256}
+        self.assertEqual(constants('tools/chatbot_file_cohort/entry.py'), expected)
+        self.assertEqual(constants('tests/qualify_chatbot_cohort_artifact.py'), expected)
+        self.assertEqual(sha((ROOT/'scripts/download-file-cohort.py').read_bytes()), launcher.DOWNLOADER_SHA256)
+
     def setUp(self):
         self.assertEqual((os.geteuid(), os.getegid()), (0, 0), 'native root-custody fixture required')
         self.tmp = tempfile.TemporaryDirectory(dir=ROOT, prefix='launcher-fixture-')

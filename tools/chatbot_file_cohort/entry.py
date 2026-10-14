@@ -24,9 +24,9 @@ from tools.chatbot_file_cohort.package_custody import extract_cohort,extract_sou
 from tools.chatbot_file_cohort.plan import digest,encoded,require,environment,runtime_pin
 from tools.semantic_policy_token_owner.producer import protected_directory
 
-PRODUCER='f31a653ee1da56b29a6171c159f9c601523735b9'
-RUN=38536134146
-ARCHIVE='be55c6eda4485a4c90da9872f63e2533abe21c741c4926ecc129626cc01530f9'
+PRODUCER='8bff54a52a0ce15daccaf2aee932004f106dd178'
+RUN=38584614991
+ARCHIVE='144699ab7756c8312d49783967cfbb64acc02a617015ad89f5adf51e25a10300'
 ONBOARDING='84828f74ac586bae09a78f0fb197b75b1a3d98d1'
 BASELINE='releases/chatbot-existing-cinema-baseline-20261014.json'
 BASELINE_HASH='d55ef320243acd4f4f7b932eb57c5771a67ea8bfcbbd7824e25a5995e482acfb'
