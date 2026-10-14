@@ -79,9 +79,11 @@ class DatabaseCompiler(unittest.TestCase):
         self.assertEqual([r['pendingMigrationCount'] for r in plan['modules']],[1,1,1,0])
         o['udp']['migrations'][0]['checksum']+=1
         with self.assertRaisesRegex(p.PlanDenied,'MUST_MATCH_PACKAGED'):d.compile_database_plan(pg,b,e,o)
-        pg,b,e,o=inputs();e['mcp'].append({'version':2,'checksum':'b'*64})
+        pg,b,e,o=inputs();e['mcp'].extend({'version':version,'checksum':str(version)*64}
+                                              for version in (10,11,12))
         plan=d.compile_database_plan(pg,b,e,o)
-        self.assertEqual(next(r for r in plan['modules'] if r['module']=='mcp')['pendingMigrationCount'],1)
+        self.assertEqual(next(r for r in plan['modules'] if r['module']=='mcp')['pendingMigrationCount'],3)
+        self.assertTrue(plan['mcpAuditRoleAdministration']['cleanupRequiredBeforeCohortStart'])
         o['mcp']['migrations'][0]['checksum']='f'*64
         with self.assertRaisesRegex(p.PlanDenied,'MUST_MATCH_PACKAGED'):d.compile_database_plan(pg,b,e,o)
         pg,b,e,o=inputs();b['mcp']['database']=b['udp']['database'];o['mcp']['identity']['name']=b['udp']['database']
@@ -126,8 +128,10 @@ class DatabaseRuntime(unittest.TestCase):
     def fixture(self, mcp_pending=False):
         fixture=runtime_fixture.CohortRuntime();cohort,native,f,_=fixture.fixture();self.addCleanup(fixture.doCleanups)
         pg,b,e,o=inputs();native.state[pg['Id']]=copy.deepcopy(pg)
-        if mcp_pending:e['mcp'].append({'version':2,'checksum':'b'*64})
+        if mcp_pending:e['mcp'].extend({'version':version,'checksum':str(version)*64}
+                                       for version in (10,11,12))
         dbplan=d.compile_database_plan(pg,b,e,o)
+        if mcp_pending:dbplan['mcpAuditRolePreflight']={'adminSuperuser':True,'auditRoleAbsent':True}
         installation=copy.deepcopy(cohort.plan);installation['databasePlanHash']=p.digest(dbplan)
         migration=next(r for r in installation['replacements'] if r['module']=='mcp')
         migration['creationRequest']['Entrypoint']=['/usr/local/bin/ouf-mcp']
@@ -147,6 +151,20 @@ class DatabaseRuntime(unittest.TestCase):
         executable.write_text(code);executable.chmod(0o700)
         owner=d.CohortDatabases(action,native.engine,Journal(journal),installation,dbplan,backup,
             {'path':str(executable),'sha256':hashlib.sha256(executable.read_bytes()).hexdigest()})
+        if mcp_pending:
+            preflight=patch.object(d,'mcp_admin_preflight',return_value=dbplan['mcpAuditRolePreflight'])
+            preflight.start();self.addCleanup(preflight.stop)
+            role={'roleExists':False,'noLogin':False,'schemaCreate':False,
+                  'membershipCount':0,'appMembership':0,'functionOwnerCount':0}
+            def audit_state(binding,statement=''):
+                if 'CREATE ROLE' in statement:
+                    role.update(roleExists=True,noLogin=True,schemaCreate=True,
+                                membershipCount=1,appMembership=1)
+                if 'REVOKE' in statement:
+                    role.update(schemaCreate=False,membershipCount=0,appMembership=0)
+                role['functionOwnerCount']=2 if o['mcp']['migrations']==e['mcp'] else 0
+                return {'adminSuperuser':True,**role}
+            owner.audit_role_state=audit_state
         observation=patch.object(d,'observe_database',side_effect=lambda cid,u,db,m:copy.deepcopy(o[m]))
         observation.start();self.addCleanup(observation.stop)
         owner.initialize()
@@ -214,10 +232,11 @@ class DatabaseRuntime(unittest.TestCase):
                 return 204,None
             return original(method,path,body)
         owner.engine.request=transport;self.addCleanup(setattr,owner.engine,'request',original)
-        proof=owner.migrate_mcp();self.assertEqual(proof['pendingMigrationCount'],1)
+        proof=owner.migrate_mcp();self.assertEqual(proof['pendingMigrationCount'],3)
         self.assertEqual(effects,['create','start'])
         owner.migrate_mcp();self.assertEqual(effects,['create','start'])
         self.assertEqual(owner.record()['mcpMigration']['state'],'COMPLETE')
+        self.assertEqual(owner.record()['mcpAuditRole']['state'],'CLEAN')
 
     def test_ambiguous_mcp_creation_does_not_replay_effect(self):
         owner,native,_,_,_,_=self.fixture(mcp_pending=True)
@@ -233,6 +252,22 @@ class DatabaseRuntime(unittest.TestCase):
         self.assertEqual(owner.record()['mcpMigration']['state'],'CLAIMED')
         with self.assertRaisesRegex(p.PlanDenied,'RECONCILIATION'):owner.migrate_mcp()
         self.assertEqual(effects,['create'])
+
+    def test_ambiguous_administrator_bootstrap_never_replays_role_grant(self):
+        owner,native,_,_,_,_=self.fixture(mcp_pending=True)
+        owner.backup_quiesced();statements=[]
+        def lost_ack(binding,statement=''):
+            if statement:
+                statements.append(statement)
+                raise RuntimeError('administrator ACK lost')
+            return {'adminSuperuser':True,'roleExists':False,'noLogin':False,
+                    'schemaCreate':False,'membershipCount':0,'appMembership':0,
+                    'functionOwnerCount':0}
+        owner.audit_role_state=lost_ack
+        with self.assertRaisesRegex(RuntimeError,'ACK lost'):owner.migrate_mcp()
+        self.assertEqual(owner.record()['mcpAuditRole']['state'],'BOOTSTRAP_CLAIMED')
+        with self.assertRaisesRegex(p.PlanDenied,'RECONCILIATION'):owner.migrate_mcp()
+        self.assertEqual(len(statements),1);self.assertEqual(native.calls,[])
 
     def test_capture_size_bound_leaves_consumed_claim_and_private_partial(self):
         owner,native,_,_,_,log=self.fixture()
