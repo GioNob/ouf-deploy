@@ -18,7 +18,7 @@ jobs:
         include:
           - module: semantic
             repository: ouf-semantic-registry
-            commit: 1b77242375518909ec3219ff06022afd1c7a7b2b
+            commit: bdfe0f75a5fc4790a5c5ff36e201c3d99713ecc0
           - module: mcp
             repository: ouf-mcp-server
             commit: a02b13ecb7cf9b73c070b59f26b60aaed6060944
@@ -57,8 +57,8 @@ jobs:
         if: matrix.module == 'mcp'
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          scan-type: fs
-          scan-ref: package/ouf-mcp
+          scan-type: rootfs
+          scan-ref: package
           format: json
           output: package/trivy-image.json
           list-all-pkgs: true
@@ -71,7 +71,7 @@ jobs:
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
-          scan-ref: source
+          scan-ref: package/gateway-scan
           format: json
           output: package/trivy-image.json
           list-all-pkgs: true

@@ -9,7 +9,7 @@ import re
 import subprocess
 
 SOURCES = {
-    'semantic': ('ouf-semantic-registry', '1b77242375518909ec3219ff06022afd1c7a7b2b'),
+    'semantic': ('ouf-semantic-registry', 'bdfe0f75a5fc4790a5c5ff36e201c3d99713ecc0'),
     'mcp': ('ouf-mcp-server', 'a02b13ecb7cf9b73c070b59f26b60aaed6060944'),
     'gateway': ('ouf-api-gateway', '8cac6c8877b16eed6f93db9eb08985035b510da5'),
 }
@@ -108,13 +108,27 @@ def export(source, output, module):
         executable = output/'ouf-mcp'
         build = json.loads((output/'build-record.json').read_text())
         require(build == {'sourceCommit': commit, 'executableSha256': digest(executable)}, 'EXECUTABLE_CHANGED_AFTER_BUILD')
-        require(Path(scan.get('ArtifactName', '')).resolve() == executable, 'SCANNER_EXECUTABLE_TARGET_MISMATCH')
+        require(Path(scan.get('ArtifactName', '')).resolve() == output, 'SCANNER_EXECUTABLE_TARGET_MISMATCH')
+        require(any(r.get('Type') == 'gobinary' and r.get('Target') == 'ouf-mcp'
+                    and bool(r.get('Packages')) for r in scan['Results']), 'SCANNER_EXECUTABLE_PACKAGES_MISSING')
         require(executable.is_file() and not executable.is_symlink(), 'BUILT_EXECUTABLE_REQUIRED')
         info = run(['go', 'version', '-m', str(executable)]).decode()
         require('vcs.revision='+commit in info and 'vcs.modified=false' in info
                 and 'GOOS=linux' in info and 'GOARCH=amd64' in info and 'CGO_ENABLED=0' in info,
                 'EXECUTABLE_BUILD_IDENTITY_UNPROVEN')
         manifest['executableSha256'] = digest(executable)
+    if module == 'gateway':
+        requirements = source/'requirements-dev.txt'
+        staged = output/'gateway-scan'/'requirements.txt'
+        require(staged.is_file() and not staged.is_symlink() and digest(staged) == digest(requirements),
+                'SCANNER_REQUIREMENTS_SOURCE_BINDING_MISMATCH')
+        require(Path(scan.get('ArtifactName', '')).resolve() == staged.parent,
+                'SCANNER_REQUIREMENTS_TARGET_MISMATCH')
+        require(any(r.get('Type') == 'pip' and r.get('Target') == 'requirements.txt'
+                    and bool(r.get('Packages')) for r in scan['Results']), 'SCANNER_REQUIREMENTS_PACKAGES_MISSING')
+        manifest['requirementsSourcePath'] = 'requirements-dev.txt'
+        manifest['requirementsSha256'] = digest(requirements)
+        manifest['transitivePythonRuntimeQualificationProven'] = False
     json_file(output/'candidate-manifest.json', manifest)
     files = sorted(p for p in output.rglob('*') if p.is_file() and p.name != 'SHA256SUMS')
     require(all(not p.is_symlink() for p in files), 'ARTIFACT_SYMLINK_DENIED')
@@ -148,6 +162,11 @@ def main():
             json_file(output/'build-record.json', {'sourceCommit': commit, 'executableSha256': digest(output/'ouf-mcp')})
         else:
             run(['git', 'archive', '--format=tar', '-o', str(output/'source.tar'), commit], cwd=source)
+            # Trivy recognizes requirements.txt. Preserve exact source bytes and
+            # leave the qualified checkout unchanged; bind the alias at export.
+            scan_dir = output/'gateway-scan'
+            scan_dir.mkdir()
+            (scan_dir/'requirements.txt').write_bytes((source/'requirements-dev.txt').read_bytes())
     except Exception as exc:
         # Do not echo command output, private paths or arbitrary exception text.
         code = str(exc) if isinstance(exc, Denied) else ('COMMAND_TIMEOUT' if isinstance(exc, subprocess.TimeoutExpired) else 'BUILD_OR_EXPORT_FAILED')
