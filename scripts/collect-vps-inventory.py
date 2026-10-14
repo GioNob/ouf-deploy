@@ -15,12 +15,13 @@ from pathlib import Path
 import re
 import resource
 import shutil
+import socket
 import stat
 import subprocess
 import sys
 import tempfile
 import time
-from urllib.parse import urlsplit, unquote
+from urllib.parse import urlsplit, unquote, parse_qsl
 
 BASE=Path('/etc/ouf/deploy-snapshots')
 REVIEW='92b3276992b3b3ec459e734196671728b8a49a99a02185e2c6f7c1da87ce82a1'
@@ -32,15 +33,20 @@ EXPECTED=('ouf-semantic','ouf-onboarding','ouf-ingestion','ouf-udp','ouf-mcp','o
 IDENT=re.compile(r'[A-Za-z_][A-Za-z0-9_]{0,62}')
 CODE=re.compile(r'[A-Z][A-Z0-9_]{1,159}')
 MAX_SECONDS=240
+MAX_CALLS=128
+MAX_CONTAINERS=512
+INSPECT_BATCH=16
 CAPABILITIES=('ouf.managed-source.file.upload','ouf.managed-source.file.profile','ouf.managed-source.onboarding.create','ouf.managed-source.onboarding.review.prepare','ouf.managed-source.onboarding.read','ouf.semantic.propose','ouf.semantic.review.prepare','ouf.semantic.proposal.read','ouf.semantic.consultation.read','ouf.semantic.review','ouf.semantic.approve','ouf.semantic.publish','ouf.onboarding.configuration.write','urban.object.search')
 
 def need(ok,code):
     if not ok:raise ValueError(code)
+class NativeReadFailure(ValueError):
+    def __init__(self,reason,facts):super().__init__(reason);self.facts=facts
 def encoded(value):return json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
 def digest(value):return hashlib.sha256(encoded(value)).hexdigest()
 def safe_error(error):
     text=str(error)
-    return text if type(error) is ValueError and CODE.fullmatch(text) else type(error).__name__
+    return text if isinstance(error,ValueError) and CODE.fullmatch(text) else type(error).__name__
 def ident(value):
     need(type(value) is str and IDENT.fullmatch(value),'DATABASE_IDENTIFIER_UNSUPPORTED')
     return '"'+value+'"'
@@ -59,7 +65,26 @@ def binding(row):
         'networkSettingsHash':digest(row['NetworkSettings'])}
 def named_changes(old,new):
     keys=set(old)|set(new)
-    return sorted(k for k in keys if re.fullmatch(r'[A-Za-z0-9_.-]{1,100}',k) and old.get(k)!=new.get(k))
+    return sorted(k for k in keys if re.fullmatch(r'[A-Za-z0-9_.-]{1,100}',k) and (k not in old or k not in new or old[k]!=new[k]))
+def structural_differences(old,new):
+    """Field names/presence/types only; never scalar values or list contents."""
+    result=[]
+    def walk(a,b,path,depth):
+        if a==b:return
+        need(len(result)<512 and depth<=12,'STRUCTURAL_DIFF_LIMIT')
+        if type(a) is dict and type(b) is dict:
+            for key in sorted(set(a)|set(b)):
+                if type(key) is not str or not re.fullmatch('[A-Za-z0-9_.:-]{1,150}',key):
+                    result.append({'path':path+['<REDACTED_KEY>'],'oldPresent':key in a,'newPresent':key in b,'keyNameRedacted':True});continue
+                current=path+[key]
+                if key not in a or key not in b:
+                    result.append({'path':current,'oldPresent':key in a,'newPresent':key in b,
+                        'oldType':type(a[key]).__name__ if key in a else None,'newType':type(b[key]).__name__ if key in b else None})
+                else:walk(a[key],b[key],current,depth+1)
+        else:
+            result.append({'path':path,'oldPresent':True,'newPresent':True,'oldType':type(a).__name__,'newType':type(b).__name__})
+    for key in ('Config','HostConfig','Mounts','NetworkSettings'):walk(old[key],new[key],[key],0)
+    return result
 def compare(old,new):
     a,b=binding(old),binding(new)
     changed=[key for key in a if a[key]!=b[key]]
@@ -131,23 +156,28 @@ print(json.dumps({'status':r.status,'body':json.loads(body)}));c.close()
 """
 
 class Native:
-    def __init__(self,docker,config,seconds=MAX_SECONDS):
+    def __init__(self,docker,config,seconds=MAX_SECONDS,socket_path='/var/run/docker.sock'):
         self.docker=str(docker);self.config=str(config);self.deadline=time.monotonic()+seconds;self.calls=0
         self.binary_hash=hashlib.sha256(Path(docker).read_bytes()).hexdigest()
-        self.socket=Path('/var/run/docker.sock').resolve();s=self.socket.stat()
-        need(stat.S_ISSOCK(s.st_mode) and s.st_uid==0,'ROOT_LOCAL_ENGINE_REQUIRED')
-        self.socket_pin=(s.st_dev,s.st_ino)
+        self.socket=Path(socket_path).resolve();s=self.socket.stat()
+        need(stat.S_ISSOCK(s.st_mode) and s.st_uid==0 and stat.S_IMODE(s.st_mode) in (0o600,0o660),'ROOT_LOCAL_ENGINE_REQUIRED')
+        self.socket_pin=(s.st_dev,s.st_ino,s.st_uid,s.st_gid,stat.S_IMODE(s.st_mode))
+    def check_socket(self):
+        s=self.socket.stat();need((s.st_dev,s.st_ino,s.st_uid,s.st_gid,stat.S_IMODE(s.st_mode))==self.socket_pin,'ENGINE_SOCKET_CHANGED')
+    def count_call(self):
+        self.calls+=1;need(self.calls<=MAX_CALLS,'INVENTORY_CALL_LIMIT_EXHAUSTED')
+        return self.remaining()
     def remaining(self):
         left=self.deadline-time.monotonic();need(left>0,'INVENTORY_BUDGET_EXHAUSTED');return min(12,left)
     def run(self,args,data=None):
         self.remaining()
-        s=self.socket.stat();need((s.st_dev,s.st_ino)==self.socket_pin,'ENGINE_SOCKET_CHANGED')
-        need(args and args[0] in ('inspect','ps','info','exec','network','image'),'NON_READ_DOCKER_OPERATION_DENIED')
+        self.check_socket()
+        need(args and args[0] in ('inspect','ps','info','exec','network','image','version'),'NON_READ_DOCKER_OPERATION_DENIED')
         if args[0]=='network':need(args[1]=='inspect','NON_READ_NETWORK_OPERATION_DENIED')
         if args[0]=='image':need(args[1]=='inspect','NON_READ_IMAGE_OPERATION_DENIED')
         return self.command([self.docker,'--host','unix://'+str(self.socket),'--config',self.config,*args],data)
     def command(self,args,data=None,pass_fds=()):
-        self.calls+=1;need(self.calls<=128,'INVENTORY_CALL_LIMIT_EXHAUSTED')
+        self.count_call()
         with tempfile.TemporaryFile() as out,tempfile.TemporaryFile() as err:
             try:
                 input_args={'stdin':subprocess.DEVNULL} if data is None else {'input':data}
@@ -157,9 +187,42 @@ class Native:
             need(out.tell()<=8388608 and err.tell()<=262144,'NATIVE_READ_OUTPUT_LIMIT')
             out.seek(0);err.seek(0);return result.returncode,out.read(),err.read()
     def json(self,args):
-        code,raw,err=self.run(args);need(code==0,'NATIVE_METADATA_READ_FAILED');return json.loads(raw)
+        code,raw,err=self.run(args)
+        if code:
+            classification='UNCLASSIFIED_COMMAND_FAILURE'
+            if len(args)>4 and args[0]=='exec' and args[2]=='/opt/keycloak/bin/kcadm.sh' and args[3]=='get':
+                lower=err.lower()
+                if any(v in lower for v in (b'invalid_grant',b'session has expired',b'failed to refresh',b'no server specified',b'no configuration found')):classification='IAM_CACHED_SESSION_UNAVAILABLE'
+                elif any(v in lower for v in (b'forbidden',b'access denied',b'403')):classification='IAM_GET_AUTHORIZATION_DENIED'
+                elif any(v in lower for v in (b'connection refused',b'connect timed out',b'connection timed out')):classification='IAM_TRANSPORT_UNAVAILABLE'
+            raise NativeReadFailure('NATIVE_METADATA_READ_FAILED',{'exitCode':code,'classification':classification,'rawDiagnosticPrinted':False})
+        return json.loads(raw)
     def inspect(self,cid):
         rows=self.json(['inspect','--type=container',cid]);need(len(rows)==1,'ONE_CONTAINER_REQUIRED');return rows[0]
+    def inspect_many(self,ids):
+        need(0<len(ids)<=INSPECT_BATCH and all(re.fullmatch('[0-9a-f]{64}',cid) for cid in ids),'BOUNDED_EXACT_CONTAINER_BATCH_REQUIRED')
+        rows=self.json(['inspect','--type=container',*ids])
+        need(type(rows) is list and len(rows)==len(ids) and {r['Id'] for r in rows}==set(ids),'EXACT_CONTAINER_BATCH_REQUIRED')
+        return rows
+    def engine_get(self,path):
+        need(path=='/version' or re.fullmatch(r'/v1\.44/containers/[0-9a-f]{64}/json',path),'NON_SELECTED_ENGINE_GET_DENIED')
+        self.check_socket();timeout=self.count_call();engine_path=str(self.socket)
+        class Local(http.client.HTTPConnection):
+            def connect(self):
+                self.sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+                self.sock.settimeout(self.timeout);self.sock.connect(engine_path)
+        connection=Local('localhost',timeout=timeout)
+        try:
+            connection.request('GET',path,headers={'Accept':'application/json'})
+            response=connection.getresponse();raw=response.read(2097153)
+            need(len(raw)<=2097152,'ENGINE_RESPONSE_UNBOUNDED')
+            if response.status!=200:raise NativeReadFailure('ENGINE_GET_UNAVAILABLE',{'httpStatus':response.status,'responseBodyPrinted':False})
+            result=json.loads(raw);self.check_socket();return result
+        finally:connection.close()
+    def inspect_api(self,cid):
+        need(re.fullmatch('[0-9a-f]{64}',cid),'EXACT_API_CONTAINER_ID_REQUIRED')
+        row=self.engine_get('/v1.44/containers/'+cid+'/json')
+        need(type(row) is dict and row.get('Id')==cid,'EXACT_API_CONTAINER_REPLY_REQUIRED');return row
     def query(self,pg,user,db,expression):
         ident(user);ident(db)
         sql=("\\set VERBOSITY verbose\nBEGIN READ ONLY; SET LOCAL statement_timeout='7s'; SET LOCAL lock_timeout='1s';\n"
@@ -167,7 +230,7 @@ class Native:
         args=['exec','-i',pg,'env','PGAPPNAME=ouf-integration-inventory','PGOPTIONS=-c default_transaction_read_only=on',
               'psql','-X','-w','-q','-A','-t','-v','ON_ERROR_STOP=1','-U',user,'-d',db]
         code,raw,err=self.run(args,sql)
-        if code:raise ValueError('PG_READ_FAILED_'+(failure(code,err)['sqlstate'] or 'UNKNOWN'))
+        if code:raise NativeReadFailure('PG_READ_FAILED_'+(failure(code,err)['sqlstate'] or 'UNKNOWN'),failure(code,err))
         result=json.loads(raw);need(result.get('transactionReadOnly') is True,'READ_ONLY_TRANSACTION_NOT_PROVEN')
         return result['value']
 
@@ -204,13 +267,17 @@ def selected_configs(row):
 def db_selector(module,row,pg):
     env=environment(row);prefix={'semantic':'OUF_SEM','onboarding':'OUF_ONB','ingestion':'OUF_ING','udp':'OUF_UDP'}.get(module)
     raw=env.get('MCP_DATABASE_URL','') if module=='mcp' else env.get(prefix+'_DB_URL','')
-    parsed=urlsplit(raw.removeprefix('jdbc:'));need(parsed.scheme in ('postgres','postgresql'),'DB_SELECTOR_UNAVAILABLE')
+    need(type(raw) is str and 0<len(raw)<=8192,'DB_SELECTOR_UNAVAILABLE')
+    parsed=urlsplit(raw.removeprefix('jdbc:'));need(parsed.scheme in ('postgres','postgresql') and not parsed.fragment,'DB_SELECTOR_UNAVAILABLE')
     user=unquote(parsed.username or '') if module=='mcp' else env.get(prefix+'_DB_USER','')
     db=unquote(parsed.path)[1:];ident(user);ident(db)
     network=pg['NetworkSettings']['Networks']['ouf-backend']
     peers={pg['Name'].lstrip('/'),pg['Config'].get('Hostname'),network.get('IPAddress'),*(network.get('Aliases') or [])}
-    need(parsed.hostname in peers and parsed.port in (None,5432) and not parsed.query,
-         'DB_PEER_OR_QUERY_REQUIRES_REVIEW')
+    need(parsed.hostname in peers,'DB_PEER_NOT_SELECTED')
+    need(parsed.port in (None,5432),'DB_PORT_UNSUPPORTED')
+    parameters=parse_qsl(parsed.query,keep_blank_values=True,strict_parsing=True)
+    need(len(parameters)<=32 and all(re.fullmatch('[A-Za-z_][A-Za-z0-9_.-]{0,99}',k) and len(v)<=2048 for k,v in parameters),'DB_QUERY_UNBOUNDED_OR_UNSUPPORTED')
+    need(not ({key.lower() for key,_ in parameters}&{'user','username','password','host','hostaddr','port','dbname','database','service','servicefile'}),'DB_QUERY_IDENTITY_OVERRIDE_DENIED')
     schema='ouf_sem' if module=='semantic' else 'ouf_'+module
     return user,db,schema
 def db_inventory(native,pg,module,row):
@@ -219,9 +286,15 @@ def db_inventory(native,pg,module,row):
     history=("SELECT COALESCE(json_agg(json_build_object('version',version,'checksum',checksum) ORDER BY version),'[]'::json) FROM "+q+'.schema_migration' if module=='mcp' else "SELECT COALESCE(json_agg(json_build_object('version',version,'script',script,'type',type,'checksum',checksum,'success',success) ORDER BY installed_rank),'[]'::json) FROM "+q+'.flyway_schema_history')
     migrations=native.query(pg['Id'],user,db,history);need(type(migrations) is list and len(migrations)<=256,'MIGRATION_HISTORY_UNBOUNDED')
     for item in migrations:
+        if module!='mcp' and item.get('type')=='SCHEMA':
+            marker={'version':None,'script':'"'+schema+'"','type':'SCHEMA','checksum':None,'success':True}
+            need(item==marker,'EXACT_FLYWAY_SCHEMA_MARKER_REQUIRED');continue
         for key in ('script','type','version'):
             if key in item and item[key] is not None:
-                need(type(item[key]) in (str,int) and re.fullmatch('[A-Za-z0-9_.-]{1,150}',str(item[key])),'MIGRATION_METADATA_UNSUPPORTED')
+                if not (type(item[key]) in (str,int) and re.fullmatch('[A-Za-z0-9_.-]{1,150}',str(item[key]))):
+                    raise NativeReadFailure('MIGRATION_METADATA_UNSUPPORTED',{'rejectedMetadataField':key,'rawValuePrinted':False})
+        need(item.get('checksum') is None or (type(item['checksum']) is int if module!='mcp' else type(item['checksum']) is str and re.fullmatch('[a-f0-9]{64}',item['checksum'])),'MIGRATION_CHECKSUM_METADATA_UNSUPPORTED')
+        if module!='mcp':need(type(item.get('success')) is bool,'MIGRATION_SUCCESS_METADATA_UNSUPPORTED')
     admin=environment(pg).get('POSTGRES_USER');admin_info={'explicitBootstrapConfigured':bool(admin)}
     if admin:
         ident(admin)
@@ -238,13 +311,17 @@ class Inventory:
     def check(self,name,read):
         try:
             self.native.remaining();value=read();self.areas[name]={'status':'OBSERVED','data':value};return value
-        except Exception as error:self.areas[name]={'status':'UNAVAILABLE','reason':safe_error(error)};return None
+        except Exception as error:
+            self.areas[name]={'status':'UNAVAILABLE','reason':safe_error(error)}
+            if isinstance(error,NativeReadFailure):self.areas[name]['facts']=error.facts
+            return None
     def historical(self,key,path,sha):
         raw,meta=file_bytes(path,sha,root_private=True);self.raw[key]=json.loads(raw)
         return {'metadata':meta,'expectedHashMatched':True}
     def collect(self):
         info=self.check('engine',lambda:self.native.json(['info','--format','{{json .}}']))
         if info is not None:self.areas['engine']['data']={k:info.get(k) for k in ('ServerVersion','Driver','CgroupDriver','DockerRootDir','Containers','ContainersRunning','NCPU','MemTotal')}
+        self.check('engineApiVersions',lambda:self.api_versions())
         native_projection=self.check('activeProjection',lambda:self.projection())
         self.check('historicalReview',lambda:self.historical('review',BASE/('semantic-candidate-installation-input-review-'+REVIEW+'.private.json'),REVIEW))
         self.check('historicalDeclaration',lambda:self.historical('declaration',NATIVE/'private-runtime-declaration.json',DECLARATION))
@@ -267,6 +344,7 @@ class Inventory:
                     self.areas['exactRetainedRegistryRead']['data']=container_summary(actual)
                     self.check('registryHistoricalComparison',lambda:compare(old,actual))
                     self.check('registryNativeRunc',lambda:self.runc(actual))
+                    self.check('registryObservationChannels',lambda:self.registry_channels(old))
         pg=self.rows.get('ouf-postgres')
         if pg:
             for module in ('semantic','onboarding','ingestion','udp','mcp'):
@@ -288,7 +366,8 @@ class Inventory:
         return {'schema':'ouf.vps-read-only-inventory.v1','status':'NATIVE_INVENTORY_COLLECTED_COVERAGE_GAPS_REMAIN',
             'completeEnvironmentInventory':False,'areas':self.areas,'unavailableAreas':missing,
             'registryChangedBindingFields':comparison.get('changedBindingFields'),
-            'maximumElapsedSeconds':MAX_SECONDS,'maximumNativeCalls':128,'nativeCalls':self.native.calls,
+            'collectionProfile':'CLI_AND_ENGINE_1_44_V2',
+            'maximumElapsedSeconds':MAX_SECONDS,'maximumNativeCalls':MAX_CALLS,'nativeCalls':self.native.calls,
             'automaticRetry':False,'applicationWrites':0,'databaseMutations':0,'iamResourceMutations':0,
             'serviceMutations':0,'containerLifecycleOperations':0,'interactiveAuthenticationAttempted':False,
             'cachedIamGetMayRefreshAdministrativeSession':True,
@@ -300,14 +379,54 @@ class Inventory:
             'mcpWorkloadClientConsistent':v.get('iam',{}).get('workloadClients',{}).get('mcpServer')==v.get('mcp',{}).get('environment',{}).get('MCP_OIDC_CLIENT_ID'),
             'credentialValuesPrinted':False}
     def container_inventory(self):
-        code,raw,err=self.native.run(['ps','-a','--no-trunc','--format','{{.ID}}']);need(code==0,'CONTAINER_LIST_UNAVAILABLE')
-        ids=raw.decode().splitlines();need(len(ids)<=64 and all(re.fullmatch('[0-9a-f]{64}',cid) for cid in ids),'CONTAINER_INVENTORY_LIMIT')
-        summaries={};ignored=0
-        for cid in ids:
-            row=self.native.inspect(cid);name=row['Name'].lstrip('/')
-            if re.fullmatch(r'ouf-[a-z0-9_-]{1,80}',name):self.rows[name]=row;summaries[name]=container_summary(row)
+        code,raw,err=self.native.run(['ps','-a','--no-trunc','--format','{{.ID}}\t{{.Names}}']);need(code==0,'CONTAINER_LIST_UNAVAILABLE')
+        lines=raw.decode().splitlines();need(len(lines)<=MAX_CONTAINERS,'CONTAINER_INVENTORY_LIMIT')
+        selected=[];ignored=0
+        for line in lines:
+            fields=line.split('\t');need(len(fields)==2 and re.fullmatch('[0-9a-f]{64}',fields[0]),'CONTAINER_LIST_METADATA_UNSUPPORTED')
+            if re.fullmatch(r'ouf-[a-z0-9_-]{1,80}',fields[1]):selected.append(fields[0])
             else:ignored+=1
-        return {'oufContainers':summaries,'otherContainerCount':ignored,'otherNamesDisclosed':False}
+        need(len(selected)==len(set(selected)),'DUPLICATE_CONTAINER_LIST')
+        summaries={}
+        for start in range(0,len(selected),INSPECT_BATCH):
+            rows=self.native.inspect_many(selected[start:start+INSPECT_BATCH])
+            for row in rows:
+                name=row['Name'].lstrip('/');need(re.fullmatch(r'ouf-[a-z0-9_-]{1,80}',name),'OUF_CONTAINER_NAME_CHANGED')
+                need(name not in summaries,'DUPLICATE_CONTAINER_NAME');summaries[name]=container_summary(row)
+                # Deep DB/config/image reads remain limited to selected owners;
+                # historical stopped candidates are inventoried without reading their secrets.
+                if name in EXPECTED:self.rows[name]=row
+        return {'oufContainers':summaries,'oufContainerCount':len(summaries),'totalContainerCount':len(lines),
+                'otherContainerCount':ignored,'otherNamesDisclosed':False,'maximumContainers':MAX_CONTAINERS,
+                'inspectBatchSize':INSPECT_BATCH,'deepInspectionScope':list(EXPECTED)}
+    def api_versions(self):
+        server=self.native.engine_get('/version')
+        client=self.native.json(['version','--format','{{json .Client}}'])
+        def version(value):
+            need(type(value) is str and re.fullmatch('[0-9][A-Za-z0-9_.+-]{0,79}',value),'ENGINE_VERSION_METADATA_UNSUPPORTED');return value
+        return {'serverVersion':version(server['Version']),'serverApiVersion':version(server['ApiVersion']),
+                'minimumApiVersion':version(server['MinAPIVersion']),'cliVersion':version(client['Version']),
+                'cliMaximumApiVersion':version(client['ApiVersion']),'preparerApiVersion':'1.44',
+                'cliApiOverridePresent':False,'responseValuesOtherThanVersionsPrinted':False}
+    def registry_channels(self,old):
+        cid=old['Id'];cli1=self.native.inspect(cid);api1=self.native.inspect_api(cid)
+        api2=self.native.inspect_api(cid);cli2=self.native.inspect(cid)
+        cli_stable=binding(cli1)==binding(cli2);api_stable=binding(api1)==binding(api2)
+        identity_keys=('containerId','imageId','pid','startedAt')
+        generation_equal=all(binding(cli1)[key]==binding(api1)[key] for key in identity_keys)
+        usable=cli_stable and api_stable and generation_equal and cli1['State']['Running'] is True and api1['State']['Running'] is True
+        hc=compare(old,cli1);ha=compare(old,api1);channels=compare(cli1,api1)
+        return {'preparerApiVersion':'1.44','cliReadMethod':'NATIVE_INSPECT_CLEAN_ENVIRONMENT',
+                'cliStableDoubleRead':cli_stable,'apiStableDoubleRead':api_stable,
+                'sameContainerImagePidStartedAt':generation_equal,'stableComparisonUsable':usable,
+                'historicalVsCli':hc,'historicalVsPreparerApi':ha,'cliVsPreparerApi':channels,
+                'cliToApiStructuralDifferences':structural_differences(cli1,api1),
+                'historicalToApiStructuralDifferences':structural_differences(old,api1),
+                'preparationGenerationGateWouldPass':usable and ha['equal'],
+                'stableChannelDifferenceObserved':usable and not channels['equal'],
+                'historicalCliMatchAndPreparerApiMismatchObserved':usable and hc['equal'] and not ha['equal'],
+                'rawInspectionPrinted':False,'historicalBindingModified':False,
+                'bindingNormalizationApplied':False,'runtimeAuthorityIssued':False}
     def image(self,row):
         rows=self.native.json(['image','inspect',row['Image']]);need(len(rows)==1,'ONE_IMAGE_REQUIRED');v=rows[0]
         return {'id':v['Id'],'size':v.get('Size'),'created':v.get('Created'),
@@ -339,7 +458,7 @@ class Inventory:
         for name,row in self.rows.items():
             fresh=self.native.inspect(row['Id'])
             if binding(fresh)!=binding(row):changed.append(name)
-        return {'allStable':not changed,'changedContainers':changed}
+        return {'allStable':not changed,'changedContainers':changed,'scope':'SELECTED_OWNER_CONTAINERS','containerCount':len(self.rows)}
     def tool_stability(self):
         need(hashlib.sha256(Path(self.native.docker).read_bytes()).hexdigest()==self.native.binary_hash,'DOCKER_EXECUTABLE_CHANGED')
         return {'dockerHash':self.native.binary_hash,'unchanged':True}

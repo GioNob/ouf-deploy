@@ -17,9 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
-      - name: Redaction, complete historical comparisons and finite failure aggregation
+      - name: Redaction, CLI/API gate counterexamples, 98-container batching and actual Unix GET
         run: python3 -I -B -m unittest discover -s tests -p test_vps_inventory.py -v
-      - name: Actual Docker and five PostgreSQL history reads preserve rows and roles
+      - name: Actual Docker API 1.44 and five PostgreSQL histories preserve rows and roles
         env:
           OUF_INVENTORY_PG_CID: ${{ job.services.postgres.id }}
         run: sudo env OUF_INVENTORY_PG_CID="$OUF_INVENTORY_PG_CID" python3 -I -B -m unittest discover -s tests -p test_vps_inventory_native.py -v

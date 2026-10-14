@@ -1,4 +1,4 @@
-import copy,importlib.util,json,os
+import copy,importlib.util,json,os,http.server,socketserver,threading,time
 from pathlib import Path
 import tempfile,unittest
 from unittest.mock import patch
@@ -106,6 +106,7 @@ class InventoryTests(unittest.TestCase):
             def inspect(self,name):
                 return copy.deepcopy(rows.get(name) or next(v for v in rows.values() if v['Id']==name))
             def json(self,args):return {'ServerVersion':'29.8.1'}
+            def inspect_api(self,cid):return self.inspect(cid)
         inv=p.Inventory(N())
         def historical(key,*args):
             if key=='declaration':inv.raw[key]={'retainedNativeCreationFrame':old}
@@ -122,6 +123,7 @@ class InventoryTests(unittest.TestCase):
         inv.existing_input=lambda pg:{'rows':13,'columns':20}
         inv.retained_history=lambda:{'historicalOnly':True}
         inv.tool_stability=lambda:{'unchanged':True}
+        inv.api_versions=lambda:{'preparerApiVersion':'1.44'}
         with patch.object(p,'db_inventory',return_value={'transactionReadOnly':True}),patch.object(p,'selected_configs',return_value=[]):
             result=inv.collect()
         self.assertEqual(result['registryChangedBindingFields'],['configHash'])
@@ -129,5 +131,184 @@ class InventoryTests(unittest.TestCase):
         self.assertIn('freshMcpRead',result['unavailableAreas'])
         self.assertNotIn('never-print',json.dumps(result));self.assertNotIn('new-private-value',json.dumps(result))
         self.assertEqual(result['databaseMutations'],0)
+        self.assertTrue(result['areas']['registryObservationChannels']['data']['stableComparisonUsable'])
+        self.assertFalse(result['areas']['registryObservationChannels']['data']['preparationGenerationGateWouldPass'])
+
+    def test_missing_null_is_reported_as_presence_difference(self):
+        self.assertEqual(p.named_changes({}, {'OnBuild':None}), ['OnBuild'])
+        old=row();new=copy.deepcopy(old);new['Config']['OnBuild']=None
+        paths=p.structural_differences(old,new)
+        self.assertEqual(paths,[{'path':['Config','OnBuild'],'oldPresent':False,'newPresent':True,'oldType':None,'newType':'NoneType'}])
+
+    def test_structural_diff_redacts_values_lists_and_untrusted_keys(self):
+        old=row();new=copy.deepcopy(old)
+        new['Config']['Env'][0]='PASSWORD=another-secret'
+        new['Config']['Labels']['a key containing private material']='private-value'
+        text=json.dumps(p.structural_differences(old,new))
+        for value in ('never-print','another-secret','private-value','private material'):self.assertNotIn(value,text)
+        self.assertIn('REDACTED_KEY',text)
+
+    def channel_inventory(self,cli,api):
+        class N:
+            def inspect(self,cid):return copy.deepcopy(cli)
+            def inspect_api(self,cid):return copy.deepcopy(api)
+        return p.Inventory(N())
+
+    def test_same_generation_api_representation_difference_explains_exact_gate(self):
+        cli=row();api=copy.deepcopy(cli)
+        api['Config']['OnBuild']=None
+        api['HostConfig']['KernelMemoryTCP']=0
+        api['NetworkSettings']['Bridge']=''
+        historical=copy.deepcopy(cli)
+        observed=self.channel_inventory(cli,api).registry_channels(historical)
+        self.assertTrue(observed['sameContainerImagePidStartedAt'])
+        self.assertTrue(observed['historicalVsCli']['equal'])
+        self.assertFalse(observed['preparationGenerationGateWouldPass'])
+        self.assertTrue(observed['historicalCliMatchAndPreparerApiMismatchObserved'])
+        self.assertEqual(set(observed['historicalVsPreparerApi']['changedBindingFields']),{'configHash','hostConfigHash','networkSettingsHash'})
+        self.assertEqual(historical,cli)
+        self.assertFalse(observed['bindingNormalizationApplied'])
+        self.assertNotIn('never-print',json.dumps(observed))
+
+    def test_real_configuration_difference_remains_a_difference(self):
+        old=row();current=copy.deepcopy(old);current['Config']['Env'][0]='PASSWORD=new-secret'
+        observed=self.channel_inventory(current,current).registry_channels(old)
+        self.assertFalse(observed['historicalVsCli']['equal'])
+        self.assertFalse(observed['historicalVsPreparerApi']['equal'])
+        self.assertFalse(observed['stableChannelDifferenceObserved'])
+        self.assertFalse(observed['preparationGenerationGateWouldPass'])
+
+    def test_unstable_channel_never_supplies_usable_comparison(self):
+        inv=self.channel_inventory(row(),row());count=0
+        def unstable(cid):
+            nonlocal count
+            count+=1;value=row();value['State']['Pid']=count;return value
+        inv.native.inspect_api=unstable
+        observed=inv.registry_channels(row())
+        self.assertFalse(observed['stableComparisonUsable'])
+        self.assertFalse(observed['preparationGenerationGateWouldPass'])
+        self.assertFalse(observed['historicalCliMatchAndPreparerApiMismatchObserved'])
+
+    def test_api_unavailable_remains_named_gap_without_raw_error(self):
+        class N:
+            def remaining(self):return 5
+        inv=p.Inventory(N())
+        def unavailable():raise p.NativeReadFailure('ENGINE_GET_UNAVAILABLE',{'httpStatus':400,'responseBodyPrinted':False})
+        inv.check('registryObservationChannels',unavailable)
+        self.assertEqual(inv.areas['registryObservationChannels']['facts']['httpStatus'],400)
+        self.assertEqual(inv.areas['registryObservationChannels']['status'],'UNAVAILABLE')
+
+    def test_ninety_eight_containers_use_bounded_batches_without_deep_candidate_reads(self):
+        rows=[]
+        for i in range(98):
+            x=row();x['Id']=format(i+1,'064x');x['Name']='/ouf-retained-'+str(i);rows.append(x)
+        rows[0]['Name']='/ouf-semantic'
+        calls=[]
+        class N:
+            def run(self,args):return 0,('\n'.join(x['Id']+'\t'+x['Name'][1:] for x in rows)).encode(),b''
+            def inspect_many(self,ids):
+                calls.append(ids);return [x for x in rows if x['Id'] in ids]
+        inv=p.Inventory(N());observed=inv.container_inventory()
+        self.assertEqual(observed['totalContainerCount'],98)
+        self.assertEqual(observed['oufContainerCount'],98)
+        self.assertEqual(len(calls),7);self.assertLessEqual(max(map(len,calls)),16)
+        self.assertEqual(set(inv.rows),{'ouf-semantic'})
+        self.assertNotIn('never-print',json.dumps(observed))
+
+    def test_inventory_limit_rejects_before_inspecting_any_container(self):
+        class N:
+            def run(self,args):return 0,('\n'.join(format(i,'064x')+'\touf-fixture-'+str(i) for i in range(513))).encode(),b''
+            def inspect_many(self,ids):raise AssertionError('must not inspect beyond budget')
+        with self.assertRaisesRegex(ValueError,'CONTAINER_INVENTORY_LIMIT'):p.Inventory(N()).container_inventory()
+
+    def test_inspect_batch_rejects_unselected_and_oversized_replies(self):
+        native=p.Native.__new__(p.Native);native.json=lambda args:[row()]
+        self.assertEqual(native.inspect_many(['a'*64]),[row()])
+        for ids in ([],['a'*64]*17,['private-name']):
+            with self.assertRaises(ValueError):native.inspect_many(ids)
+        with self.assertRaisesRegex(ValueError,'EXACT_CONTAINER_BATCH_REQUIRED'):native.inspect_many(['b'*64])
+
+    def selected_db_rows(self,module,query=''):
+        pg=row();pg['Name']='/ouf-postgres';pg['Config']['Env']=[]
+        pg['NetworkSettings']['Networks']['ouf-backend']={'IPAddress':'10.0.0.2','Aliases':['ouf-postgres']}
+        prefix={'semantic':'OUF_SEM','onboarding':'OUF_ONB','ingestion':'OUF_ING','udp':'OUF_UDP'}.get(module)
+        env=['MCP_DATABASE_URL=postgresql://app@ouf-postgres:5432/test'+query] if module=='mcp' else [prefix+'_DB_URL=jdbc:postgresql://ouf-postgres:5432/test',prefix+'_DB_USER=app']
+        return pg,{'Config':{'Env':env}}
+
+    def test_non_identity_query_is_observed_without_connecting_via_dsn(self):
+        pg,x=self.selected_db_rows('mcp','?sslmode=disable&connect_timeout=5')
+        self.assertEqual(p.db_selector('mcp',x,pg),('app','test','ouf_mcp'))
+
+    def test_query_identity_overrides_remain_denied_including_percent_encoding(self):
+        for query in ('?host=other','?user=other','?password=private-value','?%68ost=other','?service=other'):
+            pg,x=self.selected_db_rows('mcp',query)
+            with self.assertRaisesRegex(ValueError,'DB_QUERY_IDENTITY_OVERRIDE_DENIED'):p.db_selector('mcp',x,pg)
+
+    def test_peer_port_and_query_failures_are_distinct(self):
+        pg,x=self.selected_db_rows('mcp');x['Config']['Env'][0]=x['Config']['Env'][0].replace('ouf-postgres','another-host')
+        with self.assertRaisesRegex(ValueError,'DB_PEER_NOT_SELECTED'):p.db_selector('mcp',x,pg)
+        pg,x=self.selected_db_rows('mcp');x['Config']['Env'][0]=x['Config']['Env'][0].replace('5432','5433')
+        with self.assertRaisesRegex(ValueError,'DB_PORT_UNSUPPORTED'):p.db_selector('mcp',x,pg)
+        pg,x=self.selected_db_rows('mcp','?'+('&'.join('x'+str(i)+'=0' for i in range(33))))
+        with self.assertRaisesRegex(ValueError,'DB_QUERY_UNBOUNDED'):p.db_selector('mcp',x,pg)
+
+    def test_exact_quoted_flyway_schema_markers_are_preserved_in_all_four_histories(self):
+        for module,schema in (('semantic','ouf_sem'),('onboarding','ouf_onboarding'),('ingestion','ouf_ingestion'),('udp','ouf_udp')):
+            marker={'version':None,'script':'"'+schema+'"','type':'SCHEMA','checksum':None,'success':True}
+            pg,x=self.selected_db_rows(module)
+            class N:
+                def query(self,cid,user,db,sql):return [marker] if 'flyway_schema_history' in sql else {'oid':1}
+            observed=p.db_inventory(N(),pg,module,x)
+            self.assertEqual(observed['migrations'],[marker]);self.assertTrue(observed['transactionReadOnly'])
+
+    def test_unknown_marker_and_private_metadata_are_not_silently_accepted(self):
+        pg,x=self.selected_db_rows('semantic')
+        history=[{'version':None,'script':'"other_schema"','type':'SCHEMA','checksum':None,'success':True}]
+        class N:
+            def query(self,cid,user,db,sql):return history if 'flyway_schema_history' in sql else {'oid':1}
+        with self.assertRaisesRegex(ValueError,'EXACT_FLYWAY_SCHEMA_MARKER_REQUIRED'):p.db_inventory(N(),pg,'semantic',x)
+        history[:]=[{'version':'1','script':'arbitrary private metadata','type':'SQL','checksum':1,'success':True}]
+        with self.assertRaises(p.NativeReadFailure) as error:p.db_inventory(N(),pg,'semantic',x)
+        self.assertEqual(error.exception.facts,{'rejectedMetadataField':'script','rawValuePrinted':False})
+        self.assertNotIn('arbitrary',str(error.exception))
+
+    def test_iam_failure_classification_never_emits_stderr(self):
+        native=p.Native.__new__(p.Native)
+        for diagnostic,expected in ((b'invalid_grant never-print-secret','IAM_CACHED_SESSION_UNAVAILABLE'),(b'403 forbidden never-print-secret','IAM_GET_AUTHORIZATION_DENIED'),(b'connection refused never-print-secret','IAM_TRANSPORT_UNAVAILABLE'),(b'unknown never-print-secret','UNCLASSIFIED_COMMAND_FAILURE')):
+            native.run=lambda args:(1,b'',diagnostic)
+            with self.assertRaises(p.NativeReadFailure) as error:native.json(['exec','a'*64,'/opt/keycloak/bin/kcadm.sh','get','clients'])
+            self.assertEqual(error.exception.facts['classification'],expected)
+            self.assertNotIn('never-print',json.dumps(error.exception.facts))
+
+    def test_actual_unix_http_get_is_read_only_bounded_and_pins_socket(self):
+        requests=[]
+        class Server(socketserver.UnixStreamServer):pass
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def do_GET(self):
+                requests.append((self.command,self.path))
+                status,body=(200,json.dumps(row()).encode()) if self.path.endswith('/json') else (404,b'never-print-secret')
+                self.send_response(status);self.send_header('Content-Length',str(len(body)));self.end_headers();self.wfile.write(body)
+            def log_message(self,*args):pass
+        with tempfile.TemporaryDirectory() as directory:
+            socket_path=Path(directory)/'engine.sock'
+            try:server=Server(str(socket_path),Handler)
+            except PermissionError:
+                if os.environ.get('GITHUB_ACTIONS')=='true':raise
+                self.skipTest('local sandbox denies Unix sockets; this test is mandatory in GitHub Actions')
+            thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+            native=p.Native.__new__(p.Native);native.socket=socket_path;native.calls=0;native.deadline=time.monotonic()+10
+            s=socket_path.stat();native.socket_pin=(s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode&0o777)
+            try:
+                self.assertEqual(native.inspect_api('a'*64),row())
+                with self.assertRaises(p.NativeReadFailure) as error:native.engine_get('/version')
+                self.assertEqual(error.exception.facts,{'httpStatus':404,'responseBodyPrinted':False})
+                for path in ('/containers/json','/v1.44/containers/a/json','/v1.44/containers/'+('a'*64)+'/start'):
+                    with self.assertRaisesRegex(ValueError,'NON_SELECTED_ENGINE_GET_DENIED'):native.engine_get(path)
+                native.calls=p.MAX_CALLS
+                with self.assertRaisesRegex(ValueError,'CALL_LIMIT'):native.inspect_api('a'*64)
+                native.calls=0;socket_path.chmod(0o600 if (s.st_mode&0o777)!=0o600 else 0o660)
+                with self.assertRaisesRegex(ValueError,'ENGINE_SOCKET_CHANGED'):native.inspect_api('a'*64)
+            finally:server.shutdown();thread.join();server.server_close()
+        self.assertEqual(requests,[('GET','/v1.44/containers/'+('a'*64)+'/json'),('GET','/version')])
 
 if __name__=='__main__':unittest.main()
