@@ -21,6 +21,42 @@ DB_PREFIX = {'udp':'OUF_UDP','onboarding':'OUF_ONB','ingestion':'OUF_ING'}
 THS_CONFIG_SOURCE = '/opt/ouf/secrets/onboarding-ths.yaml'
 THS_CONFIG_TARGET = '/run/secrets/onboarding-ths.yaml'
 THS_ADDITIONAL_LOCATION = 'file:' + THS_CONFIG_TARGET
+INGESTION_CONFIG_TARGET = '/run/secrets/ingestion-summary.properties'
+
+
+def ingestion_properties(actual, expected=None):
+    """Bind the one retained Spring properties source without reading a token."""
+    values = environment(actual['Config'].get('Env') or [])
+    selectors = {name:value for name,value in values.items() if value and
+                 re.sub('[^a-z0-9]','',name.lower()) in
+                 {'springconfiglocation','springconfigadditionallocation','springconfigimport'}}
+    require(len(selectors) == 1 and next(iter(selectors)) in
+            {'SPRING_CONFIG_LOCATION','SPRING_CONFIG_ADDITIONAL_LOCATION'} and
+            next(iter(selectors.values())) in {'file:'+INGESTION_CONFIG_TARGET,
+                                                  'optional:file:'+INGESTION_CONFIG_TARGET},
+            'EXACT_INGESTION_PROPERTIES_SELECTION_REQUIRED')
+    mounts = [m for m in actual.get('Mounts',[]) if m.get('Destination') == INGESTION_CONFIG_TARGET]
+    require(len(mounts) == 1 and mounts[0].get('Type') == 'bind' and
+            mounts[0].get('RW') is False and type(mounts[0].get('Source')) is str,
+            'EXACT_INGESTION_PROPERTIES_MOUNT_REQUIRED')
+    raw,binding = private_config(mounts[0]['Source'],expected)
+    require(b'\\' not in raw and b'${' not in raw and b'\x00' not in raw,
+            'LITERAL_INGESTION_PROPERTIES_REQUIRED')
+    try:lines = raw.decode('utf-8').splitlines()
+    except UnicodeDecodeError:require(False,'LITERAL_INGESTION_PROPERTIES_REQUIRED')
+    parsed = {}
+    for line in lines:
+        if not line.strip() or line.lstrip().startswith(('#','!')):continue
+        match = re.fullmatch(r'[ \t]*([A-Za-z0-9_.-]+)[ \t]*[=:][ \t]*([^\r\n]*)',line)
+        require(match is not None,'LITERAL_INGESTION_PROPERTIES_REQUIRED')
+        key,value=match[1],match[2].strip()
+        canonical=re.sub('[^a-z0-9]','',key.lower())
+        require(canonical not in parsed,'DUPLICATE_INGESTION_PROPERTY_REQUIRED')
+        require(not canonical.startswith(('springconfig','springdatasource','springflyway',
+                                          'springprofiles','springapplicationjson','oufingdb')),
+                'INGESTION_DATASOURCE_OR_IMPORT_REQUIRES_REVIEW')
+        parsed[canonical]=value
+    return parsed,binding
 
 
 def validate_json_overlay(raw,prefix):
@@ -53,7 +89,7 @@ def validate_json_overlay(raw,prefix):
             if type(item) is dict:pending.append((full,item,depth+1))
 
 
-def database_binding(module, actual, postgres, ths_binding=None):
+def database_binding(module, actual, postgres, ths_binding=None, ingestion_binding=None):
     values = environment(actual['Config'].get('Env') or [])
     if module == 'mcp':
         raw = values.get('MCP_DATABASE_URL','')
@@ -62,10 +98,12 @@ def database_binding(module, actual, postgres, ths_binding=None):
         raw = values.get(prefix+'_DB_URL','')
         require(raw.startswith('jdbc:postgresql://'), 'EXPLICIT_CURRENT_JDBC_DATABASE_REQUIRED')
         validate_json_overlay(values.get('SPRING_APPLICATION_JSON'),prefix)
-        require(not values.get('SPRING_CONFIG_LOCATION'),
+        require(module == 'ingestion' or not values.get('SPRING_CONFIG_LOCATION'),
                 'CUSTOM_DATASOURCE_CONFIGURATION_REQUIRES_REVIEW')
         additional = values.get('SPRING_CONFIG_ADDITIONAL_LOCATION')
-        if additional:
+        if module == 'ingestion' and (additional or values.get('SPRING_CONFIG_LOCATION')):
+            ingestion_properties(actual,ingestion_binding)
+        elif additional:
             require(module == 'onboarding' and additional == THS_ADDITIONAL_LOCATION
                     and type(ths_binding) is dict and ths_binding.get('path') == THS_CONFIG_SOURCE,
                     'UNREVIEWED_ADDITIONAL_CONFIG_LOCATION')
@@ -78,7 +116,7 @@ def database_binding(module, actual, postgres, ths_binding=None):
                     'SELECTED_THS_JSON_CONFIGURATION_REQUIRED')
             validate_json_overlay(ths_raw.decode('utf-8'),prefix)
         else:
-            require(ths_binding is None or module == 'onboarding',
+            require((ths_binding is None or module == 'onboarding') and ingestion_binding is None,
                     'UNREQUESTED_THS_CONFIGURATION_BINDING')
         for key in ('SPRING_DATASOURCE_URL','SPRING_DATASOURCE_USERNAME'):
             corresponding = raw if key.endswith('_URL') else values.get(prefix+'_DB_USER','')
@@ -137,7 +175,7 @@ def packaged_migrations(directory, record):
 
 def prepare_cohort(engine, package_directory, manifest, image_import_plan, postgres_observation,
                    gateway_plan_hash, authorization_plan_hash, environment_deltas, acceptance_plan_hash=None,
-                   ths_binding=None):
+                   ths_binding=None, ingestion_binding=None):
     require(type(engine) is Engine, 'REAL_CURRENT_DOCKER_ENGINE_REQUIRED')
     image_import_scope(image_import_plan)
     require(image_import_plan['cohortManifestHash'] == digest(manifest), 'ONE_AUTHENTICATED_COHORT_REQUIRED')
@@ -157,7 +195,8 @@ def prepare_cohort(engine, package_directory, manifest, image_import_plan, postg
         audit = audits[module]['audit']
         observed[module] = actual
         images[module] = {'Id':audit['imageId'],'Config':copy.deepcopy(audit['imageConfig'])}
-        bindings[module] = database_binding(module,actual,pg,ths_binding if module == 'onboarding' else None)
+        bindings[module] = database_binding(module,actual,pg,ths_binding if module == 'onboarding' else None,
+                                            ingestion_binding if module == 'ingestion' else None)
         migrations[module] = packaged_migrations(package_directory,records[module])
         current[module] = observe_database(pgpin['containerId'],bindings[module]['user'],bindings[module]['database'],module)
     database_plan = compile_database_plan(pg,bindings,migrations,current)
@@ -168,7 +207,8 @@ def prepare_cohort(engine, package_directory, manifest, image_import_plan, postg
         candidate = {'Config':replacement['creationRequest'],
                      'NetworkSettings':observed[module]['NetworkSettings'],
                      'Mounts':observed[module]['Mounts']}
-        require(database_binding(module,candidate,pg,ths_binding if module == 'onboarding' else None) == bindings[module],
+        require(database_binding(module,candidate,pg,ths_binding if module == 'onboarding' else None,
+                                 ingestion_binding if module == 'ingestion' else None) == bindings[module],
                 'REPLACEMENT_MUST_PRESERVE_REVIEWED_DATABASE_BINDING')
     for name, actual in observed.items():
         code, fresh = engine.request('GET','/v1.44/containers/'+actual['Id']+'/json')
