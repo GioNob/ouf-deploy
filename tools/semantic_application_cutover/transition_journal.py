@@ -41,10 +41,40 @@ class Transition:
     Journal invocation fencing must surround the whole installer invocation;
     short journal transactions never encompass Docker/DB/provider operations.
     """
-    def __init__(self, journal, context_hash):
+    def __init__(self, journal, context_hash, *, execution_profile=None):
         require(hash_value(context_hash), 'EXACT_TRANSITION_CONTEXT_REQUIRED')
+        if execution_profile is not None:
+            from file_only_profile import FileOnlyProfile
+            require(type(execution_profile) is FileOnlyProfile, 'TYPED_FILE_ONLY_EXECUTION_PROFILE_REQUIRED')
+        self.execution_profile = execution_profile
+        self.profile_hash = None if execution_profile is None else execution_profile.verify(execution_profile.request)
         self.journal, self.context = journal, context_hash
         self._invoked = False
+
+    @property
+    def phases(self):
+        if self.profile_hash is None:
+            require(self.execution_profile is None, 'CUTOVER_PROFILE_CHANGED')
+            return PHASES
+        from file_only_profile import FileOnlyProfile, PHASES as FILE_PHASES
+        require(type(self.execution_profile) is FileOnlyProfile
+                and self.execution_profile.verify(self.execution_profile.request)==self.profile_hash,
+                'CUTOVER_PROFILE_CHANGED')
+        return FILE_PHASES
+
+    @staticmethod
+    def initial_file_only(context_hash, creation_request_hash, predecessor_history_hash,
+                          predecessor_incident_ref, execution_profile):
+        from file_only_profile import FileOnlyProfile, PROFILE
+        require(type(execution_profile) is FileOnlyProfile, 'TYPED_FILE_ONLY_EXECUTION_PROFILE_REQUIRED')
+        profile_hash=execution_profile.verify(execution_profile.request)
+        require(creation_request_hash==execution_profile.compiled['creationRequestHash'],
+                'FILE_ONLY_CREATION_REQUEST_PROFILE_DRIFT')
+        row=Transition.initial(context_hash,creation_request_hash,predecessor_history_hash,predecessor_incident_ref)
+        row.update(schema='ouf.semantic-cutover-journal.v2', deploymentProfile=PROFILE, executionProfileHash=profile_hash)
+        row['contextHash']=digest({k:row[k] for k in ('transitionAuthorityEvidenceHash','creationRequestHash',
+            'predecessorHistoryHash','predecessorIncidentRef','deploymentProfile','executionProfileHash')})
+        return row
 
     @contextmanager
     def invocation(self):
@@ -77,11 +107,23 @@ class Transition:
 
     def read(self):
         row = self.journal.read()
-        require(row.get('schema') == 'ouf.semantic-cutover-journal.v1'
-                and row.get('contextHash') == self.context, 'CUTOVER_CONTEXT_DRIFT')
+        self.phases  # Validate the typed profile before interpreting any row.
+        profile_fields=()
+        if self.profile_hash is None:
+            require(row.get('schema') == 'ouf.semantic-cutover-journal.v1'
+                    and 'executionProfileHash' not in row and 'deploymentProfile' not in row,
+                    'CUTOVER_PROFILE_SCHEMA_DRIFT')
+        else:
+            from file_only_profile import PROFILE
+            require(row.get('schema') == 'ouf.semantic-cutover-journal.v2'
+                    and row.get('executionProfileHash')==self.profile_hash and row.get('deploymentProfile')==PROFILE
+                    and row.get('creationRequestHash')==self.execution_profile.compiled['creationRequestHash'],
+                    'CUTOVER_PROFILE_SCHEMA_DRIFT')
+            profile_fields=('deploymentProfile','executionProfileHash')
+        require(row.get('contextHash') == self.context, 'CUTOVER_CONTEXT_DRIFT')
         require(type(row.get('version')) is int and row['version'] >= 0
-                and type(row.get('nextPhase')) is int and 0 <= row['nextPhase'] <= len(PHASES)
-                and type(row.get('effects')) is list and len(row['effects']) <= len(PHASES),
+                and type(row.get('nextPhase')) is int and 0 <= row['nextPhase'] <= len(self.phases)
+                and type(row.get('effects')) is list and len(row['effects']) <= len(self.phases),
                 'CUTOVER_JOURNAL_SHAPE_INVALID')
         require(row.get('automaticReplayAllowed') is False
                 and row.get('preMigrationRestoreAllowed') is False,
@@ -90,12 +132,12 @@ class Transition:
                 'predecessorHistoryHash', 'predecessorIncidentRef', 'transitionAuthorityEvidenceHash')),
                 'CUTOVER_HISTORY_DRIFT')
         require(digest({k: row[k] for k in ('creationRequestHash', 'predecessorHistoryHash',
-                'predecessorIncidentRef', 'transitionAuthorityEvidenceHash')}) == self.context,
+                'predecessorIncidentRef', 'transitionAuthorityEvidenceHash')+profile_fields}) == self.context,
                 'CUTOVER_SEALED_BINDINGS_DRIFT')
         require(len(row['effects']) == row['nextPhase'] + (1 if row['state'] in
                 {'IN_FLIGHT', 'NO_EFFECT_REQUIRES_NEW_DECISION'} else 0), 'CUTOVER_PHASE_HISTORY_INCONSISTENT')
         for i, effect in enumerate(row['effects']):
-            require(effect['phase'] == PHASES[i] and hash_value(effect['intentHash'])
+            require(effect['phase'] == self.phases[i] and hash_value(effect['intentHash'])
                     and hash_value(effect['authorityEvidenceHash'])
                     and effect['state'] in {'IN_FLIGHT', 'APPLIED', 'NO_EFFECT_REQUIRES_NEW_DECISION'},
                     'CUTOVER_EFFECT_HISTORY_INVALID')
@@ -106,7 +148,7 @@ class Transition:
                 'CUTOVER_STATE_INVALID')
         if row['state'] in {'IN_FLIGHT', 'NO_EFFECT_REQUIRES_NEW_DECISION'}:
             require(row['effects'][-1]['state'] == row['state'], 'CUTOVER_LAST_EFFECT_STATE_DRIFT')
-        require((row['nextPhase'] == len(PHASES)) == (row['state'] == 'COMPLETED'),
+        require((row['nextPhase'] == len(self.phases)) == (row['state'] == 'COMPLETED'),
                 'CUTOVER_COMPLETION_INVALID')
         # These conservative flags become durable before possible migration or
         # app writes, including a crash before a successful acknowledgement.
@@ -131,7 +173,7 @@ class Transition:
         previous = self.read()
         require(previous['version'] == expected_version, 'CUTOVER_EXPECTED_VERSION_CONFLICT')
         require(previous['state'] == 'READY', 'CUTOVER_RECONCILIATION_OR_NEW_DECISION_REQUIRED')
-        require(previous['nextPhase'] < len(PHASES) and phase == PHASES[previous['nextPhase']],
+        require(previous['nextPhase'] < len(self.phases) and phase == self.phases[previous['nextPhase']],
                 'CUTOVER_PHASE_ORDER_DENIED')
         following = copy.deepcopy(previous)
         following['version'] += 1; following['state'] = 'IN_FLIGHT'
@@ -161,8 +203,9 @@ class Transition:
         effect = following['effects'][-1]; effect['nativeEvidenceHash'] = native_evidence_hash
         if outcome == 'APPLIED':
             effect['state'] = 'APPLIED'; following['nextPhase'] += 1
-            following['state'] = 'COMPLETED' if following['nextPhase'] == len(PHASES) else 'READY'
+            following['state'] = 'COMPLETED' if following['nextPhase'] == len(self.phases) else 'READY'
         elif outcome == 'NO_EFFECT':
             effect['state'] = following['state'] = 'NO_EFFECT_REQUIRES_NEW_DECISION'
         self.journal.compare_and_save(previous, following)
         return following
+
