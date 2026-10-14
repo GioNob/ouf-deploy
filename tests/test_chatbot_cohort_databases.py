@@ -84,6 +84,26 @@ class DatabaseCompiler(unittest.TestCase):
         pg,b,e,o=inputs();b['mcp']['database']=b['udp']['database'];o['mcp']['identity']['name']=b['udp']['database']
         with self.assertRaisesRegex(p.PlanDenied,'SHARED_DATABASE'):d.compile_database_plan(pg,b,e,o)
 
+    def test_exact_flyway_schema_creation_marker_is_preserved_without_sql_bypass(self):
+        pg,b,e,o=inputs()
+        for module in ('udp','onboarding','ingestion'):
+            marker={'version':None,'script':'"ouf_'+module+'"','type':'SCHEMA',
+                    'checksum':None,'success':True}
+            o[module]['migrations'].insert(0,marker)
+        plan=d.compile_database_plan(pg,b,e,o)
+        for row in plan['modules']:
+            if row['module']=='mcp':continue
+            self.assertEqual(row['beforeMigrations'][0],o[row['module']]['migrations'][0])
+            self.assertEqual(row['expectedMigrations'][0],o[row['module']]['migrations'][0])
+            self.assertEqual(row['pendingMigrationCount'],1)
+        o['udp']['migrations'][0]['script']='"other_schema"'
+        with self.assertRaisesRegex(p.PlanDenied,'MUST_MATCH_PACKAGED'):
+            d.compile_database_plan(pg,b,e,o)
+        o['udp']['migrations'][0]['script']='"ouf_udp"'
+        o['udp']['migrations'][1]['checksum']+=1
+        with self.assertRaisesRegex(p.PlanDenied,'MUST_MATCH_PACKAGED'):
+            d.compile_database_plan(pg,b,e,o)
+
     def test_database_reads_exact_owner_schema_not_public(self):
         pg,b,e,o=inputs();queries=[]
         class Pg:
