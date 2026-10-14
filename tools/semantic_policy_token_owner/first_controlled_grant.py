@@ -6,9 +6,12 @@ It becomes executable only inside the separately reviewed full source closure.
 A published token is not runtime/lease/application acceptance.
 """
 import fcntl
+import json
 import os
 import re
 import stat
+import subprocess
+import tempfile
 import time
 import uuid
 import accounting_gap_session as sessions
@@ -18,7 +21,79 @@ import iam_binding_candidate as evidence
 from tools.semantic_policy_token_owner.producer import Binding,CredentialFile,HttpsGrant,AtomicTokenFile,token_response,protected_directory
 from tools.semantic_policy_token_owner.iam_admission import IamProfile,PinnedIamOpener,OnlineIamAdmission
 
+def registry_generation():
+    """Exact selected metadata only; do not retrieve Env, command or logs."""
+    cid='7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147'
+    template='{"id":{{json .Id}},"image":{{json .Image}},"pid":{{json .State.Pid}},"startedAt":{{json .State.StartedAt}},"running":{{json .State.Running}},"restartPolicy":{{json .HostConfig.RestartPolicy}},"mounts":{{json .Mounts}}}'
+    with tempfile.TemporaryFile()as stdout:
+        reply=subprocess.run(['/usr/bin/docker','inspect','--type','container','--format',template,cid],
+            stdin=subprocess.DEVNULL,stdout=stdout,stderr=subprocess.DEVNULL,timeout=10,
+            env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'})
+        stdout.seek(0);raw=stdout.read(65537)
+    evidence.require(reply.returncode==0 and 0<len(raw)<=65536,'REVIEW_BOUND_REGISTRY_METADATA_UNAVAILABLE')
+    result=json.loads(raw,object_pairs_hook=evidence.unique)
+    evidence.require(type(result)is dict and set(result)=={'id','image','pid','startedAt','running','restartPolicy','mounts'}
+        and result['id']==cid and result['running']is True and type(result['pid'])is int and result['pid']>0,
+        'REVIEW_BOUND_REGISTRY_METADATA_INVALID')
+    return result
+
 class FirstControlledGrant:
+    @classmethod
+    def from_installation_review(cls,authority,authority_raw,host_raw,review_raw,review_hash,review_source_hash,
+                                 registration,binding,profile,transport,output_identity,clock=lambda:(time.time(),time.monotonic())):
+        """Bind the retained input review without treating it as execution approval.
+
+        The caller still supplies fresh four-scope HUMAN/dual-role authority,
+        actual prepared output custody and independent IAM/TLS bindings.
+        No collection, directory, credential or budget is created here.
+        """
+        for value in (review_hash,review_source_hash):
+            evidence.require(type(value)is str and re.fullmatch('[0-9a-f]{64}',value),
+                'INDEPENDENT_INSTALLATION_REVIEW_HASHES_REQUIRED')
+        evidence.require(type(review_raw)is bytes and 0<len(review_raw)<=524288
+            and evidence.sha(review_raw)==review_hash,'INSTALLATION_REVIEW_BYTES_HASH_DRIFT')
+        review=evidence.decode(review_raw)
+        evidence.require(review.get('schema')=='ouf.semantic-candidate-installation-input-review.v1'
+            and review.get('sourceClosureHash')==review_source_hash
+            and evidence.sha(evidence.encoded(review.get('sourceClosure')))==review_source_hash
+            and review.get('targetApplyAuthorized')is False and review.get('runtimeAuthorityIssued')is False
+            and review.get('budgetReset')is False and review.get('r12Touched')is False
+            and review.get('notReleaseAcceptance')is True and review.get('retainedHostInputsHash')==evidence.sha(host_raw),
+            'EXACT_RETAINED_INSTALLATION_INPUT_REVIEW_REQUIRED')
+        packages=review.get('packages')
+        expected={
+            'semantic':('78954f106ea1248c624bf71596785af0b2980480cd58020eb0accd5d1f2df1c6','bdfe0f75a5fc4790a5c5ff36e201c3d99713ecc0'),
+            'mcp':('6db692b78f1fde7bc3a30a8727afd4f581b2f8574f00c2fc117b71ea59b2aab4','d43f5604976b07c66d58c5180d871c5656c44d4d'),
+            'gateway':('74b4f974adf74401cd592df26ce62dbea9399c8c025b124ee0e11e6d06f9d73a','23b02bd2195d36499b6618750d52dd49d65c9a60')}
+        evidence.require(type(packages)is dict and set(packages)==set(expected),'EXACT_REVIEWED_CANDIDATE_SET_REQUIRED')
+        for name,(digest,commit)in expected.items():
+            record=packages[name];manifest=record.get('manifest',{})
+            evidence.require(record.get('archiveSha256')==digest and record.get('rootCustodyEstablished')is False
+                and manifest.get('sourceCommit')==commit and manifest.get('module')==name
+                and manifest.get('schema')=='ouf.semantic-proposal-unsigned-candidate.v1'
+                and manifest.get('signatureIssued')is False and manifest.get('runtimeAuthorityIssued')is False
+                and manifest.get('targetApplyAuthorized')is False and manifest.get('notReleaseAcceptance')is True,
+                'REVIEWED_CANDIDATE_IDENTITY_OR_AUTHORITY_DRIFT')
+        evidence.require(packages['semantic']['manifest'].get('imageId')==
+            'sha256:1e2dac4a6619f511056abc91dd153ce7687efc25aec25aa77a6f66c9f2f67cfd',
+            'REVIEWED_REGISTRY_CANDIDATE_IMAGE_DRIFT')
+        native=review.get('currentRegistry')
+        evidence.require(type(native)is dict and set(native)=={'id','image','pid','startedAt','running','restartPolicy','mounts'}
+            and native.get('id')=='7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147'
+            and native.get('image')=='sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6'
+            and type(native.get('pid'))is int and native['pid']>0 and native.get('running')is True,
+            'REVIEWED_PREDECESSOR_REGISTRY_REQUIRED')
+        result=cls.from_completed_custody(authority,authority_raw,host_raw,
+            review.get('completedRootEvidenceHash'),review.get('rootCreationSourceClosureHash'),
+            registration,binding,profile,transport,output_identity,clock)
+        result.installation_review=(bytes(review_raw),review_hash,review_source_hash)
+        result.scope={**result.scope,'schema':'ouf.policy-token-first-controlled-grant-scope.v3',
+            'installationInputReviewHash':review_hash,'installationInputReviewSourceClosureHash':review_source_hash,
+            'reviewedCandidateSetHash':evidence.sha(evidence.encoded(packages)),
+            'reviewedPredecessorRegistryGenerationHash':evidence.sha(evidence.encoded(native))}
+        result.guard_installation_review()
+        return result
+
     @classmethod
     def from_completed_custody(cls,authority,authority_raw,host_raw,root_evidence_hash,root_source_closure_hash,
                                registration,binding,profile,transport,output_identity,clock=lambda:(time.time(),time.monotonic())):
@@ -57,6 +132,7 @@ class FirstControlledGrant:
         self.binding,self.profile,self.transport,self.clock=binding,profile,transport,clock
         self.output_identity=dict(output_identity)
         self.root_receipt=None
+        self.installation_review=None
         self.credential=CredentialFile(credential_transaction.path/credential_transaction.MEMBER)
         self.admission=OnlineIamAdmission(profile,self.credential,transport,clock)
         self.writer=AtomicTokenFile(binding)
@@ -75,7 +151,7 @@ class FirstControlledGrant:
                 'COMPLETED_ROOT_REVIEW_BINDING_MISSING')
             return
         host_raw,digest,source=self.root_receipt
-        evidence.require(self.scope.get('schema')=='ouf.policy-token-first-controlled-grant-scope.v2'
+        evidence.require(self.scope.get('schema')in {'ouf.policy-token-first-controlled-grant-scope.v2','ouf.policy-token-first-controlled-grant-scope.v3'}
             and self.scope.get('completedRootEvidenceHash')==digest
             and self.scope.get('rootCreationSourceClosureHash')==source,'COMPLETED_ROOT_REVIEW_BINDING_DRIFT')
         with root_custody.completed_roots(host_raw,digest,source)as identities:
@@ -83,6 +159,36 @@ class FirstControlledGrant:
             evidence.require(selected['path']==str(self.transaction.path)
                 and {key:selected[key]for key in ('device','inode')}==self.transaction.directory_identity,
                 'MIGRATION_CREDENTIAL_ROOT_BINDING_DRIFT')
+    def guard_installation_review(self):
+        if self.installation_review is None:
+            evidence.require(self.scope.get('schema')!='ouf.policy-token-first-controlled-grant-scope.v3'
+                and 'installationInputReviewHash'not in self.scope,'INSTALLATION_REVIEW_BINDING_MISSING')
+            return
+        self.guard_completed_roots()
+        raw,digest,source=self.installation_review
+        evidence.require(evidence.sha(raw)==digest and self.scope.get('schema')=='ouf.policy-token-first-controlled-grant-scope.v3'
+            and self.scope.get('installationInputReviewHash')==digest
+            and self.scope.get('installationInputReviewSourceClosureHash')==source,'INSTALLATION_REVIEW_SCOPE_DRIFT')
+        review=evidence.decode(raw)
+        evidence.require(review['sourceClosureHash']==source and evidence.sha(evidence.encoded(review['sourceClosure']))==source
+            and self.scope['reviewedCandidateSetHash']==evidence.sha(evidence.encoded(review['packages']))
+            and self.scope['reviewedPredecessorRegistryGenerationHash']==evidence.sha(evidence.encoded(review['currentRegistry'])),
+            'INSTALLATION_REVIEW_CONTEXT_DRIFT')
+        with evidence.protected_parent()as directory:
+            evidence.require(evidence.read_member(directory,'semantic-candidate-installation-input-review-'+digest+'.private.json')==raw,
+                'RETAINED_INSTALLATION_REVIEW_CHANGED')
+        with root_custody.completed_roots(*self.root_receipt)as identities:
+            evidence.require(review['completedRoots']==identities,'INSTALLATION_REVIEW_ROOT_IDENTITIES_DRIFT')
+        executable=review['sourceClosure']['executables']['docker']
+        evidence.require(credentials.governance.executable('/usr/bin/docker')==executable,
+            'REVIEW_BOUND_DOCKER_EXECUTABLE_CHANGED')
+        observed=registry_generation()
+        if observed!=review['currentRegistry']:
+            error=evidence.CandidateDenied('REVIEW_BOUND_REGISTRY_GENERATION_CHANGED')
+            error.safe_diagnostics={'changedFields':[k for k in observed if observed[k]!=review['currentRegistry'][k]],
+                'evidenceLocation':'semantic-candidate-installation-input-review-'+digest+'.private.json',
+                'rawMetadataPrinted':False,'automaticReplayAllowed':False}
+            raise error
     def migrate(self):
         """Compose the existing operations after root/input execution review.
 
@@ -93,6 +199,7 @@ class FirstControlledGrant:
         """
         phase='MIGRATION_SCOPE_PREFLIGHT'
         try:
+            self.guard_installation_review()
             raw=evidence.decode(self.session.raw)
             for key,scope in (
                 ('policyTokenLegacyRetirement',self.transaction.retirement.scope),
@@ -160,6 +267,7 @@ class FirstControlledGrant:
             raise
     def guard(self):
         self.session.guard()
+        self.guard_installation_review()
         self.guard_completed_roots()
         evidence.require(evidence.decode(self.session.raw).get('policyTokenFirstControlledGrant')==self.scope,
             'EXPLICIT_SIGNED_FIRST_GRANT_AND_PUBLICATION_REQUIRED')
