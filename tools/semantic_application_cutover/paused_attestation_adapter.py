@@ -20,6 +20,9 @@ class PausedAttestationAdapter:
         if type(observer) is PausedNodeObservation and type(observer.frame) not in allowed:
             from six_mount_frame_observation import SixMountFrameObservation
             allowed=allowed+(SixMountFrameObservation,)
+        if type(observer) is PausedNodeObservation and type(observer.frame) not in allowed:
+            from semantic_proposal_frame_observation import SemanticProposalFrameObservation
+            allowed=allowed+(SemanticProposalFrameObservation,)
         require(type(observer) is PausedNodeObservation and type(observer.frame) in allowed and type(acceptance) is PausedNodeAcceptance
                 and type(store) is NativeEvidenceStore,'TYPED_PAUSED_NODE_OWNER_PHASE_REQUIRED')
         require(type(authorization_binding) is dict and set(authorization_binding)=={'path','sha256'}
