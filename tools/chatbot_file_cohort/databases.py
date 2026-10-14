@@ -146,16 +146,17 @@ def mcp_admin_preflight(container_id, database, application_user):
             "'adminSuperuser',(SELECT rolsuper FROM pg_roles WHERE rolname=current_user),"
             "'applicationRoleExists',EXISTS(SELECT 1 FROM pg_roles WHERE rolname="+user+"),"
             "'auditRoleAbsent',NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname="+role+"),"
-            "'applicationOwnsSchema',EXISTS(SELECT 1 FROM pg_namespace WHERE nspname='ouf_mcp' AND nspowner=(SELECT oid FROM pg_roles WHERE rolname="+user+")),"
-            "'applicationOwnsAuditTable',EXISTS(SELECT 1 FROM pg_class WHERE oid=to_regclass('ouf_mcp.audit_event') AND relowner=(SELECT oid FROM pg_roles WHERE rolname="+user+")),"
-            "'applicationOwnsAttemptTable',EXISTS(SELECT 1 FROM pg_class WHERE oid=to_regclass('ouf_mcp.tool_attempt') AND relowner=(SELECT oid FROM pg_roles WHERE rolname="+user+")),"
-            "'applicationOwnsIncidentTable',EXISTS(SELECT 1 FROM pg_class WHERE oid=to_regclass('ouf_mcp.security_incident') AND relowner=(SELECT oid FROM pg_roles WHERE rolname="+user+")),"
-            "'applicationOwnsAuditSequence',EXISTS(SELECT 1 FROM pg_class WHERE oid=to_regclass('ouf_mcp.audit_event_sequence_id_seq') AND relowner=(SELECT oid FROM pg_roles WHERE rolname="+user+")))")
+            "'applicationSchemaOwnerAuthority',EXISTS(SELECT 1 FROM pg_namespace WHERE nspname='ouf_mcp' AND pg_has_role((SELECT oid FROM pg_roles WHERE rolname="+user+"),nspowner,'USAGE')) ,"
+            "'applicationAuditTableOwnerAuthority',EXISTS(SELECT 1 FROM pg_class WHERE oid=to_regclass('ouf_mcp.audit_event') AND pg_has_role((SELECT oid FROM pg_roles WHERE rolname="+user+"),relowner,'USAGE')) ,"
+            "'applicationAttemptTableOwnerAuthority',EXISTS(SELECT 1 FROM pg_class WHERE oid=to_regclass('ouf_mcp.tool_attempt') AND pg_has_role((SELECT oid FROM pg_roles WHERE rolname="+user+"),relowner,'USAGE')) ,"
+            "'applicationIncidentTableOwnerAuthority',EXISTS(SELECT 1 FROM pg_class WHERE oid=to_regclass('ouf_mcp.security_incident') AND pg_has_role((SELECT oid FROM pg_roles WHERE rolname="+user+"),relowner,'USAGE')) ,"
+            "'applicationAuditSequenceOwnerAuthority',EXISTS(SELECT 1 FROM pg_class WHERE oid=to_regclass('ouf_mcp.audit_event_sequence_id_seq') AND pg_has_role((SELECT oid FROM pg_roles WHERE rolname="+user+"),relowner,'USAGE')))")
         require(type(facts) is dict and facts.get('serverVersion',0) >= 170000
                 and all(facts.get(key) is True for key in facts if key != 'serverVersion')
                 and set(facts) == {'serverVersion','adminSuperuser','applicationRoleExists','auditRoleAbsent',
-                                   'applicationOwnsSchema','applicationOwnsAuditTable','applicationOwnsAttemptTable',
-                                   'applicationOwnsIncidentTable','applicationOwnsAuditSequence'},
+                                   'applicationSchemaOwnerAuthority','applicationAuditTableOwnerAuthority',
+                                   'applicationAttemptTableOwnerAuthority','applicationIncidentTableOwnerAuthority',
+                                   'applicationAuditSequenceOwnerAuthority'},
                 'MCP_AUDIT_ROLE_ADMIN_PREFLIGHT_UNPROVEN')
         return facts
     finally:
