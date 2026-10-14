@@ -1,0 +1,25 @@
+{
+  "schema": "ouf.chatbot-file-cohort-source-lock.v1",
+  "cohortId": "chatbot-file-20261014",
+  "modules": [
+    {"module":"semantic","repository":"ouf-semantic-registry","commit":"9ef78cc716587876cb2ca15c1a68e24c1b1aa507","qualifiedSource":"406a3f2443f497a771738c9c557e0700872b56eb","qualificationRun":38526215494,"kind":"DOCKER_SAVE"},
+    {"module":"onboarding","repository":"ouf-source-onboarding","commit":"1eaa6981f76d77dc02ae1eb1380590954d450d7a","qualifiedSource":"266db78f1cf315ee8b9e3025239bd8335a43fa3e","qualificationRun":38526608369,"kind":"DOCKER_SAVE"},
+    {"module":"ingestion","repository":"ouf-ingestion-runtime","commit":"56b4ca57ebe6ce6b1b67fbbb248a1ce7faa7d76b","kind":"DOCKER_SAVE"},
+    {"module":"udp","repository":"ouf-udp-object-resolution","commit":"042727587a48692b6d31b3d60d64e48b08024a1d","kind":"DOCKER_SAVE"},
+    {"module":"mcp","repository":"ouf-mcp-server","commit":"c0a36608f2db57fdd9b4532703fcd1506be8f1e0","qualifiedSource":"f5b728166b6e529694e88685a64de6b31a451e2d","kind":"DOCKER_SAVE"},
+    {"module":"gateway","repository":"ouf-api-gateway","commit":"17a5f01a4b12019635553050e6590f3f27446658","kind":"SOURCE_AND_ROUTE_PACKAGE"}
+  ],
+  "semanticRuntimeProfile": {
+    "springProfilesActive":"file-first",
+    "OUF_SCHEMA_GOV_ENABLED":"false",
+    "OUF_DISCOVERY_WORKER_ENABLED":"false",
+    "mountPurposes":["renewable-policy-token-directory","consultation-delegation-key","database-configtree","distinct-proposal-receipt-key"],
+    "providerInputsRequired":false,
+    "targetIamJavaTlsTrustProven":false,
+    "targetFourMountExecutionQualified":false
+  },
+  "supersedesPackageWorkflowRun":38508140057,
+  "runtimeAuthorityIssued":false,
+  "targetApplyAuthorized":false,
+  "notReleaseAcceptance":true
+}

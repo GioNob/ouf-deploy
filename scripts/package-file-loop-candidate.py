@@ -13,7 +13,7 @@ def main():
     p.add_argument("phase", choices=["build", "export"])
     p.add_argument("--source", required=True)
     p.add_argument("--commit", required=True)
-    p.add_argument("--module", required=True, choices=["semantic", "ingestion", "udp"])
+    p.add_argument("--module", required=True, choices=["semantic", "onboarding", "ingestion", "udp", "mcp"])
     p.add_argument("--output", required=True)
     a = p.parse_args()
     source = pathlib.Path(a.source).resolve()
@@ -79,8 +79,9 @@ def main():
                         "-o", str(output / "source.tar"), a.commit], check=True)
         cid = run("docker", "create", tag)
         try:
-            jar = "/app/application.jar" if a.module == "semantic" else "/app/app.jar"
-            subprocess.run(["docker", "cp", cid + ":" + jar, str(output / "application.jar")], check=True)
+            jar = "/usr/local/bin/ouf-mcp" if a.module == "mcp" else "/app/application.jar" if a.module in ("semantic", "onboarding") else "/app/app.jar"
+            extracted = "ouf-mcp" if a.module == "mcp" else "application.jar"
+            subprocess.run(["docker", "cp", cid + ":" + jar, str(output / extracted)], check=True)
         finally:
             subprocess.run(["docker", "rm", cid], check=True)
         inventory = []
@@ -107,3 +108,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
