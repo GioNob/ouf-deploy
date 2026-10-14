@@ -16,8 +16,12 @@ LIMIT=6*1024**3
 MODULES={'semantic','onboarding','ingestion','udp','gateway','mcp'}
 
 
-def relative(name):
-    require(type(name) is str and re.fullmatch('[A-Za-z0-9_.\-/]+',name)
+def relative(name,*,source_file=False):
+    # git archive preserves the qualified Gateway's systemd template filenames
+    # (ouf-policy-token@.service/.timer). Only regular source files need '@';
+    # aggregate ZIP/checksum paths and source directories keep their grammar.
+    pattern=r'[A-Za-z0-9_.@\-/]+' if source_file else r'[A-Za-z0-9_.\-/]+'
+    require(type(name) is str and re.fullmatch(pattern,name)
         and not name.startswith('/') and '..' not in Path(name).parts
         and str(Path(name))==name and len(Path(name).parts)<=32,'EXACT_RELATIVE_PACKAGE_MEMBER_REQUIRED')
     return name
@@ -77,7 +81,7 @@ def extract_cohort(archive_path,archive_hash,producer_commit,run_id,destination)
         require(archive.getinfo('COHORT_SHA256SUMS').file_size<=100000,'BOUNDED_COHORT_CHECKSUMS_REQUIRED')
         sums=archive.read('COHORT_SHA256SUMS');declared={}
         for line in sums.decode().splitlines():
-            require(re.fullmatch('[0-9a-f]{64}  [A-Za-z0-9_.\-/]+',line),'EXACT_CHECKSUM_LINE_REQUIRED')
+            require(re.fullmatch(r'[0-9a-f]{64}  [A-Za-z0-9_.\-/]+',line),'EXACT_CHECKSUM_LINE_REQUIRED')
             hashed,name=line.split('  ',1);relative(name)
             require(name not in declared,'DUPLICATE_COHORT_CHECKSUM');declared[name]=hashed
         require(set(names)==set(declared)|{'COHORT_SHA256SUMS','COHORT_SHA256SUMS.sigstore.json'},
@@ -128,7 +132,7 @@ def extract_source(package,record,destination):
         with tarfile.open(fileobj=source,mode='r:') as archive:
             seen=set()
             for member in archive:
-                name=relative(member.name.rstrip('/'))
+                name=relative(member.name.rstrip('/'),source_file=member.isfile())
                 require(name not in seen and len(seen)<20000 and (member.isdir() or member.isfile()),
                         'EXACT_REGULAR_MODULE_SOURCE_MEMBER_REQUIRED');seen.add(name)
                 total+=member.size

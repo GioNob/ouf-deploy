@@ -219,6 +219,30 @@ class PackageCustodyTest(unittest.TestCase):
             c.extract_source(package, record, destination)
         self.assertEqual(list(destination.iterdir()), [])
 
+    def test_exact_gateway_systemd_template_names_are_regular_source_files_only(self):
+        # These two names occur in the immutable packaged Gateway Git tree
+        # bf179e96200deb84942ad32507edef52a4284cd0. Contents are parser fixtures.
+        package, manifest, _ = self.extract()
+        record = next(row for row in manifest['modules'] if row['module'] == 'gateway')
+        names = ['ops/policy_token/ouf-policy-token@.service', 'ops/policy_token/ouf-policy-token@.timer']
+        raw = source_tar([('ops/', b'', tarfile.DIRTYPE), ('ops/policy_token/', b'', tarfile.DIRTYPE)]
+            + [(name, b'SYNTHETIC SOURCE; NEVER INSTALLED\n', tarfile.REGTYPE) for name in names])
+        (package/'gateway/source.tar').write_bytes(raw); record['files']['source.tar'] = sha(raw)
+        destination = self.directory(); c.extract_source(package, record, destination)
+        for name in names:
+            self.assertEqual((destination/name).read_bytes(), b'SYNTHETIC SOURCE; NEVER INSTALLED\n')
+            self.assertEqual(stat.S_IMODE((destination/name).stat().st_mode), 0o600)
+        # The artifact/checksum namespace and directory grammar do not widen.
+        with self.assertRaisesRegex(PlanDenied, 'EXACT_RELATIVE_PACKAGE_MEMBER_REQUIRED'):
+            self.extract(self.archive(extras=[('gateway/extra@.service', b'not a source member')]))
+        for name in ('ops/template@', '../escape@.service', 'ops//extra@.service', '/extra@.service'):
+            with self.subTest(name=name):
+                kind = tarfile.DIRTYPE if name == 'ops/template@' else tarfile.REGTYPE
+                raw = source_tar([(name, b'not extracted', kind)])
+                (package/'gateway/source.tar').write_bytes(raw); record['files']['source.tar'] = sha(raw)
+                with self.assertRaisesRegex(PlanDenied, 'EXACT_RELATIVE_PACKAGE_MEMBER_REQUIRED'):
+                    c.extract_source(package, record, self.directory())
+
     def test_hash_valid_tar_traversal_links_and_duplicate_members_are_denied(self):
         entries = [[('../outside', b'no', tarfile.REGTYPE)], [('/outside', b'no', tarfile.REGTYPE)],
             [('link', b'', tarfile.SYMTYPE)], [('link', b'', tarfile.LNKTYPE)],
