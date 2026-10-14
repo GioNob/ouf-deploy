@@ -1,0 +1,26 @@
+{
+  "schema": "ouf.policy-token-legacy-retirement-component-qualification.v1",
+  "sourceCommit": "ea204f8d00eba1f8e1ba11f608d424d36c4ca52a",
+  "sourceSha256": "b47eb05bf737403577c1be642f97f727b5b25f383bb190f6e39489aa82f4b6be",
+  "testSha256": "48aa767e9cb218d19fb841b25f24ac0699e529b6341b6f311d345410b42ca96c",
+  "runs": [
+    38425838549,
+    38425830022
+  ],
+  "logReviewedJob": 115394876990,
+  "tests": 8,
+  "skipped": 0,
+  "nativeRoleSignatures": true,
+  "nativePersistenceAndProcessCrash": true,
+  "systemctlEffects": "SIMULATED_NOT_TARGET_PROVEN",
+  "targetHostEvidenceHash": "93fa9bc8fe4d90fe445bb310363f11966f9ed89df74d169ad925cda0a157acc4",
+  "targetServiceMutations": 0,
+  "targetTokenGrantRequests": 0,
+  "targetIamMutations": 0,
+  "fullOwnerInstallerQualified": false,
+  "runtimeAuthorityIssued": false,
+  "productionApplyReady": false,
+  "budgetReset": false,
+  "r12Touched": false,
+  "notReleaseAcceptance": true
+}

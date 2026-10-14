@@ -1,0 +1,36 @@
+{
+  "schema": "ouf.policy-token-consumer-review-qualification.v1",
+  "sourceCommit": "c33d39c6922fbcd87a853c8b9f12e6bbb193e22a",
+  "scriptPath": "scripts/observe-policy-token-consumers.py",
+  "scriptSha256": "aae257252f861bddc3d8532939241bd2966970aac45ff6c6d353d8e63486342f",
+  "testFileSha256": "c9f06b425ecb38105f88f5157e0a9ae8ebc94dd05fd3d6e4153fbda2485f2b09",
+  "ci": {
+    "runId": 38446905118,
+    "jobId": 115467555342,
+    "conclusion": "success",
+    "totalTests": 15,
+    "consumerReviewTests": 10,
+    "skippedTests": 0,
+    "parallelPullRequestRunId": 38446909875,
+    "parallelPullRequestJobId": 115467571273,
+    "parallelPullRequestConclusion": "success"
+  },
+  "qualificationScope": {
+    "isolatedRootBodyExercised": true,
+    "nativeProtectedEvidencePublicationExercised": true,
+    "systemctlCommandsSimulated": true,
+    "writerSourcesExecuted": false,
+    "portableGhDeliveryExercised": true,
+    "redactionAndPartialFindingsExercised": true,
+    "sourceSelectedConfigurationExercised": true,
+    "symlinkAndOversizeDenialsExercised": true,
+    "unresolvedDataFlowRemainsUnproven": true
+  },
+  "targetObserved": false,
+  "credentialConsumerScopeProven": false,
+  "allConsumerDiscoveryProven": false,
+  "productionApplyReady": false,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "notReleaseAcceptance": true
+}

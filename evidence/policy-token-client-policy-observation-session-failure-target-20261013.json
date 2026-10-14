@@ -1,0 +1,41 @@
+{
+  "schema": "ouf.operator-reported-target-observation.v1",
+  "reportedAt": "2026-10-13T19:37:20+02:00",
+  "source": "USER_PASTED_VPS_RECEIPT",
+  "independentTargetReadback": false,
+  "qualifiedScriptCommit": "0c028ec51ac7c8f60cd24185ef5ab6b6012a0e1b",
+  "receipt": {
+    "baselineRefreshed": false,
+    "budgetReset": false,
+    "credentialFilesRead": 0,
+    "diagnosticCategories": [
+      "SESSION_AUTH_FAILURE_TEXT_OBSERVED"
+    ],
+    "diagnosticCategoriesAreNotRootCauseProof": true,
+    "diagnosticTextTruncated": false,
+    "evidencePublicationMayBePartial": false,
+    "iamMetadataGetAttempts": 1,
+    "iamMutations": 0,
+    "lastIamGetExitCode": 1,
+    "mountedTokenFilesRead": 0,
+    "notReleaseAcceptance": true,
+    "observationProfile": "ouf.policy-token-client-policy-observation.single-attempt.v1",
+    "phase": "CURRENT_CLIENT_CORE",
+    "privateEvidenceWrites": 0,
+    "privateKeysRead": 0,
+    "productionApplyReady": false,
+    "r12Touched": false,
+    "rawDiagnosticTextPrinted": false,
+    "reason": "CLIENT_POLICY_GET_UNAVAILABLE",
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.policy-token-client-policy-observation-receipt.v1",
+    "serviceMutations": 0,
+    "status": "BLOCKED",
+    "tokenGrantRequests": 0
+  },
+  "nextStep": "Interactive existing admin-session authentication, then one invocation of the retained hash-verified observer; preserve this failed attempt.",
+  "rootCauseProven": false,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "notReleaseAcceptance": true
+}

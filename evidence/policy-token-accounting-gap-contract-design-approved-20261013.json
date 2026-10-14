@@ -1,0 +1,21 @@
+{
+  "actor": "PROJECT_OWNER_IN_CURRENT_CONVERSATION",
+  "approvedProposalHash": "f1200b4de0b33899760b1db1406725b6b7d633451b037ec9dc638754ecbcaa17",
+  "budgetIssued": false,
+  "budgetReset": false,
+  "decision": "APPROVE_ACCOUNTING_GAP_MIGRATION_CONTRACT_DESIGN_ONLY",
+  "decisionAt": "2026-10-13T17:05:55+02:00",
+  "firstControlledSessionMaximumElapsedSeconds": 300,
+  "firstControlledSessionMaximumGrantAttempts": 1,
+  "gapRemainsOpen": true,
+  "legacyCumulativeGrantAttemptCount": null,
+  "notReleaseAcceptance": true,
+  "productionApplyReady": false,
+  "r12Touched": false,
+  "runtimeAuthorityIssued": false,
+  "runtimeExecutionAuthorized": false,
+  "schema": "ouf.policy-token-accounting-gap-contract-design-decision.v1",
+  "state": "DESIGN_APPROVED",
+  "tokenGrantRequests": 0,
+  "witness": "approvo"
+}

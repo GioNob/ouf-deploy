@@ -1,0 +1,24 @@
+name: Policy-token governed legacy retirement component
+on:
+  push:
+    paths: [tools/semantic_policy_token_owner/legacy_retirement.py, tests/test_policy_token_legacy_retirement.py, tools/semantic_policy_token_owner/migration_root_custody.py, tests/test_policy_token_migration_root_custody.py, scripts/establish-policy-token-migration-roots.py, tests/test_policy_token_root_delivery.py, .github/workflows/policy-token-legacy-retirement.yml]
+  pull_request:
+    paths: [tools/semantic_policy_token_owner/legacy_retirement.py, tests/test_policy_token_legacy_retirement.py, tools/semantic_policy_token_owner/migration_root_custody.py, tests/test_policy_token_migration_root_custody.py, scripts/establish-policy-token-migration-roots.py, tests/test_policy_token_root_delivery.py, .github/workflows/policy-token-legacy-retirement.yml]
+permissions: {contents: read}
+jobs:
+  signed-persistent-component:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Isolated root fixture with native signatures and crash persistence
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-retirement-${GITHUB_RUN_ID}"
+          sudo mkdir -m 700 "$OUF_FIXTURE_ROOT"
+          sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
+          sudo chown -R root:root "$OUF_FIXTURE_ROOT"
+          sudo python3 -I -B -S -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_legacy_retirement.py -v
+          sudo python3 -I -B -S -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_migration_root_custody.py -v
+          sudo python3 -I -B -S -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_root_delivery.py -v

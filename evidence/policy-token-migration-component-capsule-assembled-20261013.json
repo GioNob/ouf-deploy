@@ -1,0 +1,272 @@
+{
+  "schema": "ouf.policy-token-migration-component-capsule-assembly.v1",
+  "sourceCommit": "c33d39c6922fbcd87a853c8b9f12e6bbb193e22a",
+  "capsulePath": "releases/policy-token-migration-component-capsule-20261013.json",
+  "capsuleSha256": "6f97e4b49a9d47b5d277b49be7d3037326fcb40045b664c5e4a17af8e31bbac7",
+  "capsuleBytes": 441267,
+  "declarationHash": "aa3021e579308a85fdc7970928b6d79ee1598d9c01059493ec03f864868c5bd5",
+  "declaration": {
+    "schema": "ouf.policy-token-migration-component-source-closure.v1",
+    "sourceCommit": "c33d39c6922fbcd87a853c8b9f12e6bbb193e22a",
+    "entryModule": "first_controlled_grant",
+    "loaderHash": "9cfb0cfacf62375ff411e6dcccb42ef83dadf3e6f039b93367e8191e1c352473",
+    "sourceHashes": {
+      "accounting_gap_session": "e22d2283d7133eb766b9523e72c4753cb2b67e621c207a3f28fdb79e91090451",
+      "credential_reestablishment": "856859b31c1a68464c91820d45c5a9301fdce4644bfa0e87855362bce980ce9d",
+      "credential_transaction": "38b3fa021d2c7cd5798f97cbc9f06211607581a3df7a86268cea1f89a4dad100",
+      "cutover_authority": "bcf184e675632dff87e4273a7337291ce51626df4749085277e97754d2a06689",
+      "first_controlled_grant": "57397baf625277f181def185ff8c314fbc8b44db047d24f10f5781ad4e5d7118",
+      "iam_audience_transaction": "7d0963c71b8bce9b29d1f82ed5b4d3dcfea05af49ecd5910482f9caa4442209a",
+      "iam_binding_candidate": "a8cf18ea78b3acc7261838711345a218e678bfaf11e498dcba6859862d6b655d",
+      "iam_governance_intake": "6dd8efb3f4e1728d429eb88c8dc8654527093756ea352da17e4df2effec90c2b",
+      "iam_mapper_enrichment": "6b6cbfdfd2a4b628c35d8a7eeb087339e15e0ae49aff8be1f359f74de7e0699e",
+      "iam_owner_action": "f0e70c549dd962847387d3f01d836e7648033cfc7598c72053b2f41643c2fe30",
+      "legacy_retirement": "b47eb05bf737403577c1be642f97f727b5b25f383bb190f6e39489aa82f4b6be",
+      "migration_root_custody": "4f8d6ff300361667048921ced9e5ced45d22f2eef503b7759ea647bcca8c1e55",
+      "tools.materialize_semantic_shared_faces": "66986436206e9448e0bad58b651f4802a53e54eb179327c7050d963c22f33b62",
+      "tools.materialize_southbound_kernel": "98e3004300226fecd509a46c009585df14021927f20d4e5c82d8ff7a8a8180de",
+      "tools.semantic_lease_recovery.bounded_recovery": "ed126f33b17581ae784c82ce3f0ec8b16c266d5ad78481a1890385736bd61dfd",
+      "tools.semantic_lease_recovery.recovery_journal": "43a293ab9b4075401cfc139a6531f30fdae7277cbe096f10c0d460cd26ed291d",
+      "tools.semantic_policy_token_owner.iam_admission": "ab4d217405643ad564fc6091a995169f2dd8008f7e51a6d117d127b4b494124e",
+      "tools.semantic_policy_token_owner.producer": "005babec3710780542883179770fcd258269fddb9f4f9076a895450ea2241aa7",
+      "tools.semantic_provider_deployment_admission": "fccde9a325939b400a95dc5e8714755727ed57b476b01c82019a15ffac8f8df4",
+      "tools.semantic_provider_deployment_authentication": "29e1942733abc74e8eb21eb927427c3e6e39806b06492f1dc614bd0805e53013",
+      "tools.semantic_provider_deployment_consumption": "053e2e5031cd51adf957388296a808cd8ba824dbc2ab671143e756312d050aef",
+      "tools.semantic_provider_deployment_producer": "582371358c769f7724fb76bb17fd5e11530a09ab06c19a3a66351fc77d984776",
+      "tools.semantic_provider_deployment_protocol": "53f5629c3a57de622e51a05f9bf86b29f34328bf5756857afa458fb738f24e15",
+      "tools.semantic_provider_deployment_signing": "b079f11f1175afb3bcf3f2e33bfa3d06fe188a38fd8fa53b0e52d1d80cd31cad",
+      "tools.semantic_provider_lease_coordination": "e267e0f86637191b9830895930daa35afc10fec733b6957f427ab8a0ccddf587",
+      "tools.semantic_provider_lease_nft": "7a5f2b21c096228a3e4d298674e380f667c3004dd6d8ec19934a2302844c0f93",
+      "tools.semantic_provider_peer_bindings": "4d99b60459d7122b5126d8424fb6233a9f3de15858219cd9061131b23f45af8b",
+      "tools.semantic_provider_preexec": "53eb9b79efcdca0ffe93bb0c80a582a285caf9126fd97e930fa503b6106eb797",
+      "tools.semantic_provider_preexec_native": "ef0b98c96879933480a26418edc2b971b21a116509ac87cbc39e3b2062e7a528"
+    },
+    "moduleCount": 29,
+    "requiredPythonFlags": [
+      "-I",
+      "-B",
+      "-S"
+    ],
+    "fullOwnerInstallerQualified": false,
+    "runtimeAuthorityIssued": false,
+    "notReleaseAcceptance": true
+  },
+  "sourceBindings": [
+    {
+      "module": "accounting_gap_session",
+      "path": "tools/semantic_policy_token_owner/accounting_gap_session.py",
+      "gitBlob": "072612a4d4ccdfb469f51abf6f040e7e50f2c187",
+      "sha256": "e22d2283d7133eb766b9523e72c4753cb2b67e621c207a3f28fdb79e91090451"
+    },
+    {
+      "module": "credential_reestablishment",
+      "path": "tools/semantic_policy_token_owner/credential_reestablishment.py",
+      "gitBlob": "479255a54cf7a23589879f06dc384693936ab1b5",
+      "sha256": "856859b31c1a68464c91820d45c5a9301fdce4644bfa0e87855362bce980ce9d"
+    },
+    {
+      "module": "credential_transaction",
+      "path": "tools/semantic_policy_token_owner/credential_transaction.py",
+      "gitBlob": "562e24961366b179252140f42ab6bacb48546395",
+      "sha256": "38b3fa021d2c7cd5798f97cbc9f06211607581a3df7a86268cea1f89a4dad100"
+    },
+    {
+      "module": "cutover_authority",
+      "path": "tools/semantic_application_cutover/cutover_authority.py",
+      "gitBlob": "b41f804170845cee4319e04fb4e2285e646a67a9",
+      "sha256": "bcf184e675632dff87e4273a7337291ce51626df4749085277e97754d2a06689"
+    },
+    {
+      "module": "first_controlled_grant",
+      "path": "tools/semantic_policy_token_owner/first_controlled_grant.py",
+      "gitBlob": "7d4fb27fb6b968a08a361dd33a315bb566ea0a70",
+      "sha256": "57397baf625277f181def185ff8c314fbc8b44db047d24f10f5781ad4e5d7118"
+    },
+    {
+      "module": "iam_audience_transaction",
+      "path": "tools/semantic_policy_token_owner/iam_audience_transaction.py",
+      "gitBlob": "987eb52136d6a083f0d852c70f238fd183fc52e7",
+      "sha256": "7d0963c71b8bce9b29d1f82ed5b4d3dcfea05af49ecd5910482f9caa4442209a"
+    },
+    {
+      "module": "iam_binding_candidate",
+      "path": "tools/semantic_policy_token_owner/iam_binding_candidate.py",
+      "gitBlob": "94e92172822bdc12449482e3765cd80e13df83d4",
+      "sha256": "a8cf18ea78b3acc7261838711345a218e678bfaf11e498dcba6859862d6b655d"
+    },
+    {
+      "module": "iam_governance_intake",
+      "path": "tools/semantic_policy_token_owner/iam_governance_intake.py",
+      "gitBlob": "5b1eeaad762ab4b7f5850e0c7c374e9748d180f3",
+      "sha256": "6dd8efb3f4e1728d429eb88c8dc8654527093756ea352da17e4df2effec90c2b"
+    },
+    {
+      "module": "iam_mapper_enrichment",
+      "path": "tools/semantic_policy_token_owner/iam_mapper_enrichment.py",
+      "gitBlob": "f0534769c11d1ffec5c1d9a8a02e556ab9c604e5",
+      "sha256": "6b6cbfdfd2a4b628c35d8a7eeb087339e15e0ae49aff8be1f359f74de7e0699e"
+    },
+    {
+      "module": "iam_owner_action",
+      "path": "tools/semantic_policy_token_owner/iam_owner_action.py",
+      "gitBlob": "26419bd99e6a14d4cc0358b0d1b4bbb8229c7a3e",
+      "sha256": "f0e70c549dd962847387d3f01d836e7648033cfc7598c72053b2f41643c2fe30"
+    },
+    {
+      "module": "legacy_retirement",
+      "path": "tools/semantic_policy_token_owner/legacy_retirement.py",
+      "gitBlob": "ce0bb92b6c3d70ca413d1933857bd0ab8966a345",
+      "sha256": "b47eb05bf737403577c1be642f97f727b5b25f383bb190f6e39489aa82f4b6be"
+    },
+    {
+      "module": "migration_root_custody",
+      "path": "tools/semantic_policy_token_owner/migration_root_custody.py",
+      "gitBlob": "9a5254a89178a09a6fb0b2695846663b4eee00fe",
+      "sha256": "4f8d6ff300361667048921ced9e5ced45d22f2eef503b7759ea647bcca8c1e55"
+    },
+    {
+      "module": "tools.materialize_semantic_shared_faces",
+      "path": "tools/semantic_cohort_admission/cohort-draft/tools/materialize_semantic_shared_faces.py",
+      "gitBlob": "ef30cd4e8e9121a1d2fca41bacbb1bd7c9a4829c",
+      "sha256": "66986436206e9448e0bad58b651f4802a53e54eb179327c7050d963c22f33b62"
+    },
+    {
+      "module": "tools.materialize_southbound_kernel",
+      "path": "tools/semantic_cohort_admission/cohort-draft/tools/materialize_southbound_kernel.py",
+      "gitBlob": "6dc94a57dbce7f722a4e0bceb37294aa9cbe575d",
+      "sha256": "98e3004300226fecd509a46c009585df14021927f20d4e5c82d8ff7a8a8180de"
+    },
+    {
+      "module": "tools.semantic_lease_recovery.bounded_recovery",
+      "path": "tools/semantic_lease_recovery/bounded_recovery.py",
+      "gitBlob": "3ed5598a0313c0a4cc94ae9348e2bcf652c661a0",
+      "sha256": "ed126f33b17581ae784c82ce3f0ec8b16c266d5ad78481a1890385736bd61dfd"
+    },
+    {
+      "module": "tools.semantic_lease_recovery.recovery_journal",
+      "path": "tools/semantic_lease_recovery/recovery_journal.py",
+      "gitBlob": "e37835b3da80ed74e63fdc53b48b39e3cc857270",
+      "sha256": "43a293ab9b4075401cfc139a6531f30fdae7277cbe096f10c0d460cd26ed291d"
+    },
+    {
+      "module": "tools.semantic_policy_token_owner.iam_admission",
+      "path": "tools/semantic_policy_token_owner/iam_admission.py",
+      "gitBlob": "11da7bd73c87657fc9c31b649e0acd88d3ed2f87",
+      "sha256": "ab4d217405643ad564fc6091a995169f2dd8008f7e51a6d117d127b4b494124e"
+    },
+    {
+      "module": "tools.semantic_policy_token_owner.producer",
+      "path": "tools/semantic_policy_token_owner/producer.py",
+      "gitBlob": "b53c4c537c1884cd47129e31bc512be1d2247f14",
+      "sha256": "005babec3710780542883179770fcd258269fddb9f4f9076a895450ea2241aa7"
+    },
+    {
+      "module": "tools.semantic_provider_deployment_admission",
+      "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_admission.py",
+      "gitBlob": "18276a11b8344d7e7e7e54ba1e12d553102ea039",
+      "sha256": "fccde9a325939b400a95dc5e8714755727ed57b476b01c82019a15ffac8f8df4"
+    },
+    {
+      "module": "tools.semantic_provider_deployment_authentication",
+      "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_authentication.py",
+      "gitBlob": "8485493ad8036516023560c4cf5270b106fc911a",
+      "sha256": "29e1942733abc74e8eb21eb927427c3e6e39806b06492f1dc614bd0805e53013"
+    },
+    {
+      "module": "tools.semantic_provider_deployment_consumption",
+      "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_consumption.py",
+      "gitBlob": "b7e8533a31f01f2618f06042ac4ea4fdcf7cdbe2",
+      "sha256": "053e2e5031cd51adf957388296a808cd8ba824dbc2ab671143e756312d050aef"
+    },
+    {
+      "module": "tools.semantic_provider_deployment_producer",
+      "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_producer.py",
+      "gitBlob": "1c150d81c27040c62ca26fdea9773806387b87ec",
+      "sha256": "582371358c769f7724fb76bb17fd5e11530a09ab06c19a3a66351fc77d984776"
+    },
+    {
+      "module": "tools.semantic_provider_deployment_protocol",
+      "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_protocol.py",
+      "gitBlob": "d336f1e2eab6cb52a7b643063d248853e6f47633",
+      "sha256": "53f5629c3a57de622e51a05f9bf86b29f34328bf5756857afa458fb738f24e15"
+    },
+    {
+      "module": "tools.semantic_provider_deployment_signing",
+      "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_signing.py",
+      "gitBlob": "9ce18b4db25bbc74aa8f8686db6f8e80cfab3685",
+      "sha256": "b079f11f1175afb3bcf3f2e33bfa3d06fe188a38fd8fa53b0e52d1d80cd31cad"
+    },
+    {
+      "module": "tools.semantic_provider_lease_coordination",
+      "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_coordination.py",
+      "gitBlob": "6b641e2315b9b64ebed0e1a0af0cd5006fc3b2a3",
+      "sha256": "e267e0f86637191b9830895930daa35afc10fec733b6957f427ab8a0ccddf587"
+    },
+    {
+      "module": "tools.semantic_provider_lease_nft",
+      "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_nft.py",
+      "gitBlob": "676775f09f1be61a3e2883cf0eaeafd71113ca2e",
+      "sha256": "7a5f2b21c096228a3e4d298674e380f667c3004dd6d8ec19934a2302844c0f93"
+    },
+    {
+      "module": "tools.semantic_provider_peer_bindings",
+      "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_peer_bindings.py",
+      "gitBlob": "cd8fa8e7a5f172d504fea77af051eacdf12647c3",
+      "sha256": "4d99b60459d7122b5126d8424fb6233a9f3de15858219cd9061131b23f45af8b"
+    },
+    {
+      "module": "tools.semantic_provider_preexec",
+      "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_preexec.py",
+      "gitBlob": "9a71e13212b14715df4e075a217e0581d98b40b1",
+      "sha256": "53eb9b79efcdca0ffe93bb0c80a582a285caf9126fd97e930fa503b6106eb797"
+    },
+    {
+      "module": "tools.semantic_provider_preexec_native",
+      "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_preexec_native.py",
+      "gitBlob": "36e9e5f9594fc90159f0a46fd1742323ca06ec3a",
+      "sha256": "ef0b98c96879933480a26418edc2b971b21a116509ac87cbc39e3b2062e7a528"
+    },
+    {
+      "module": "migration_runtime",
+      "path": "tools/semantic_policy_token_owner/migration_runtime.py",
+      "gitBlob": "cb5a66166a489bdb1f31884e58a31ff14469c6f0",
+      "sha256": "9cfb0cfacf62375ff411e6dcccb42ef83dadf3e6f039b93367e8191e1c352473"
+    }
+  ],
+  "remoteGitBlobCountVerified": 30,
+  "sourceQualificationRuns": [
+    {
+      "runId": 38446909989,
+      "conclusion": "success"
+    },
+    {
+      "runId": 38446909986,
+      "conclusion": "success"
+    }
+  ],
+  "packageVerification": {
+    "status": "EXACT_PACKAGED_COMPONENT_IMPORT_VERIFIED",
+    "pythonFlags": [
+      "-I",
+      "-B",
+      "-S"
+    ],
+    "moduleCount": 29,
+    "entryModule": "first_controlled_grant",
+    "productionEntryMethodInvoked": false,
+    "location": "LOCAL_ISOLATED_PROCESS"
+  },
+  "componentCapsulePrepared": true,
+  "fullOwnerInstallerQualified": false,
+  "targetInstallReviewPrepared": false,
+  "installationKeyAccessAttempted": false,
+  "signaturesIssued": 0,
+  "iamMutations": 0,
+  "serviceMutations": 0,
+  "tokenGrantRequests": 0,
+  "runtimeAuthorityIssued": false,
+  "productionApplyReady": false,
+  "budgetReset": false,
+  "r12Touched": false,
+  "notReleaseAcceptance": true
+}

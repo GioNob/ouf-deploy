@@ -1,0 +1,23 @@
+{
+  "schema": "ouf.policy-token-root-delivery-qualification.v1",
+  "sourceCommit": "698427d6a26b8714e33611eb7ad225f72100dbc3",
+  "scriptPath": "scripts/establish-policy-token-migration-roots.py",
+  "scriptSha256": "e5ea803a5f2eb2dc297bd70fbc77ff9c5675c92225fc67afdec1b7ff8a6bc51d",
+  "capsuleSha256": "6f97e4b49a9d47b5d277b49be7d3037326fcb40045b664c5e4a17af8e31bbac7",
+  "ciRun": 38456173237,
+  "ciJob": 115499355740,
+  "ciConclusion": "success",
+  "logVerified": true,
+  "tests": {"legacyRetirement": 8, "rootCustody": 12, "delivery": 7, "skipped": 0},
+  "actualCapsuleFunctionsImportedInIsolatedProcess": true,
+  "fixtureNativeSignaturesAndDirectoryWrites": true,
+  "fixtureHumanAndHostInputsSynthetic": true,
+  "targetRootExecutionObserved": false,
+  "fullOwnerInstallerQualified": false,
+  "runtimeAuthorityIssued": false,
+  "productionApplyReady": false,
+  "csvEndToEndProven": false,
+  "budgetReset": false,
+  "r12Touched": false,
+  "notReleaseAcceptance": true
+}
