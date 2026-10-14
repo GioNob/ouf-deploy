@@ -16,7 +16,7 @@ def digest(value):
     return hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
 
 class Executor:
-    def __init__(self,transition,authority_raw,authenticate,checkpoint,adapters,intents,clock=time.time):
+    def __init__(self,transition,authority_raw,authenticate,checkpoint,adapters,intents,clock=time.time,*,aggregate_action=None,aggregate_scope=None):
         require(type(authority_raw) is bytes and len(authority_raw)<=131072,'BOUNDED_EXTERNAL_AUTHORITY_REQUIRED')
         self.phases=transition.phases
         self.profile_hash=transition.profile_hash
@@ -31,6 +31,14 @@ class Executor:
         # Bind the exact immutable intent for every phase before any effect.
         self.intents={phase:json.loads(json.dumps(intents[phase],allow_nan=False)) for phase in self.phases}
         self.intent_hashes={phase:digest(self.intents[phase]) for phase in self.phases}
+        self.aggregate_action,self.aggregate_scope=aggregate_action,aggregate_scope
+        if aggregate_action is not None:
+            from tools.semantic_policy_token_owner.owner_installation import AggregateAction
+            require(type(aggregate_action) is AggregateAction and self.profile_hash is not None
+                    and aggregate_action.raw==authority_raw and aggregate_action.authority is authenticate
+                    and type(aggregate_scope) is dict,'EXACT_SHARED_AGGREGATE_FILE_AUTHORITY_REQUIRED')
+            self.aggregate_scope=json.loads(json.dumps(aggregate_scope,allow_nan=False))
+        else:require(aggregate_scope is None,'AGGREGATE_SCOPE_WITHOUT_TYPED_AUTHORITY_DENIED')
 
     def verify(self,phase,point,row):
         require(set(self.adapters)==set(self.intents)==set(self.phases) and all(digest(self.intents[p])==self.intent_hashes[p] for p in self.phases),'IMMUTABLE_PHASE_ADAPTER_OR_INTENT_DRIFT')
@@ -46,7 +54,20 @@ class Executor:
                     and authority.get('deploymentProfile')==PROFILE and authority.get('executionProfileHash')==self.profile_hash,
                     'FILE_ONLY_SIGNED_PROFILE_OR_REQUEST_DRIFT')
             profile_fields={'deploymentProfile','executionProfileHash'}
-        require(set(authority)=={'schema','issuedAt','expiresAt','creationRequestHash','predecessorHistoryHash','predecessorIncidentRef','sourceClosureHash','phaseIntentHashes','automaticReplayAllowed','databaseRestoreAuthorized','r12ReplayAuthorized','newDistinctLeaseWorkerRequired'}|profile_fields,'EXACT_CUTOVER_AUTHORITY_SCOPE_REQUIRED')
+        aggregate_fields=set()
+        if self.aggregate_action is not None:
+            require(self.aggregate_action.raw==self.raw and self.aggregate_action.authority is self.authenticate
+                    and self.aggregate_scope['creationRequestHash']==authority['creationRequestHash']
+                    and self.aggregate_scope['executionProfileHash']==self.profile_hash
+                    and self.aggregate_scope['sourceClosureHash']==authority['sourceClosureHash']
+                    and self.aggregate_scope['phaseIntentHashes']==self.intent_hashes,
+                    'AGGREGATE_REGISTRY_SCOPE_DRIFT')
+            self.aggregate_action.guard('applicationRegistryCutover',self.aggregate_scope)
+            aggregate_fields={'policyTokenOwnerInstallation','policyTokenOutputCustody','policyTokenLegacyRetirement',
+                'policyTokenCredentialReestablishment','policyTokenAccountingGapMigration','policyTokenFirstControlledGrant',
+                'policyTokenFiniteWorkerSession','tokenOwnerRuntime','applicationCohortInstallation','gatewayRoutePublication',
+                'chatbotFileAuthorization','finiteActionProcess','applicationRegistryCutover'}
+        require(set(authority)=={'schema','issuedAt','expiresAt','creationRequestHash','predecessorHistoryHash','predecessorIncidentRef','sourceClosureHash','phaseIntentHashes','automaticReplayAllowed','databaseRestoreAuthorized','r12ReplayAuthorized','newDistinctLeaseWorkerRequired'}|profile_fields|aggregate_fields,'EXACT_CUTOVER_AUTHORITY_SCOPE_REQUIRED')
         require(authority['schema']==('ouf.semantic-cutover-execution-authority.v1' if self.profile_hash is None else 'ouf.semantic-cutover-execution-authority.v2'),'EXACT_CUTOVER_AUTHORITY_SCHEMA_REQUIRED')
         require(hash_value(authority['sourceClosureHash']),'SIGNED_SOURCE_CLOSURE_HASH_REQUIRED')
         require(type(authority['issuedAt']) is int and type(authority['expiresAt']) is int and authority['issuedAt']<=now<authority['expiresAt'] and 0<authority['expiresAt']-authority['issuedAt']<=3600,'FINITE_CURRENT_CUTOVER_AUTHORITY_REQUIRED')

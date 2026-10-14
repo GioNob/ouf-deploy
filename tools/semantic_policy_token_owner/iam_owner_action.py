@@ -110,7 +110,7 @@ def prepare(manifest,report):
     with binding.protected_parent()as directory:
         intake,plan,snapshot,profile=inputs(directory)
         binding.require(manifest.get('schema')=='ouf.policy-token-iam-action-source-closure.v1'
-            and manifest.get('moduleCount')==19 and manifest.get('requiredPythonFlags')==['-I','-B','-S'],
+            and manifest.get('moduleCount')==22 and manifest.get('requiredPythonFlags')==['-I','-B','-S'],
             'EXACT_FULL_IAM_ACTION_CLOSURE_REQUIRED')
         report['phase']='PYTHON_STDLIB_BYTE_BINDING'
         library=stdlib_binding()
@@ -133,7 +133,7 @@ def prepare(manifest,report):
         wrote=publish(directory,'policy-token-iam-action-review-'+digest+'.private.json',body)
         report.update(status='IAM_ACTION_CLOSURE_PREPARED_REVIEW_ONLY',privateEvidenceWrites=int(wrote),
             privateEvidencePath=str(binding.PARENT/('policy-token-iam-action-review-'+digest+'.private.json')),
-            privateEvidenceHash=digest,sourceClosureHash=review['sourceClosureHash'],applySourceModuleCount=19,
+            privateEvidenceHash=digest,sourceClosureHash=review['sourceClosureHash'],applySourceModuleCount=22,
             stdlibFileCount=len(library['fileHashes']),applySourceClosurePrepared=True,plannedIamMutations=1)
     return review
 

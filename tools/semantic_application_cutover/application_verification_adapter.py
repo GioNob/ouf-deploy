@@ -20,11 +20,12 @@ class ApplicationReadinessChannel:
     No secrets, redirects, proxy environment or arbitrary SQL/URL are accepted.
     """
     def __init__(self,scope):
-        fields={'databaseContainerId','databaseUser','database','databaseOid','flywayHistoryHash','health'}
+        fields={'databaseContainerId','databaseUser','database','databaseOid','flywaySchema','flywayHistoryHash','health'}
         require(type(scope) is dict and set(scope)==fields and hash_value(scope['databaseContainerId'])
                 and type(scope['databaseOid']) is int and scope['databaseOid']>0 and hash_value(scope['flywayHistoryHash']),
                 'EXACT_APPLICATION_READINESS_SCOPE_REQUIRED')
         identifier(scope['databaseUser']);identifier(scope['database'])
+        require(scope['flywaySchema']=='ouf_sem','EXACT_REGISTRY_FLYWAY_SCHEMA_REQUIRED')
         h=scope['health'];require(type(h) is dict and set(h)=={'address','port','path','timeoutSeconds'},'EXACT_APPLICATION_HEALTH_SCOPE_REQUIRED')
         address=ipaddress.ip_address(h['address'])
         require(address.version==4 and address.is_private and not address.is_unspecified and not address.is_multicast
@@ -37,7 +38,7 @@ class ApplicationReadinessChannel:
         channel=Psql(s['databaseContainerId'],s['databaseUser'],s['database'],'ouf-cutover-readiness')
         try:
             value=channel.query("SELECT json_build_object('name',current_database(),'oid',oid::bigint,'allowConnections',datallowconn) FROM pg_database WHERE datname=current_database()",timeout=10)
-            rows=channel.query("SELECT COALESCE(json_agg(json_build_object('installedRank',installed_rank,'version',version,'description',description,'type',type,'script',script,'checksum',checksum,'success',success) ORDER BY installed_rank),'[]'::json) FROM public.flyway_schema_history",timeout=10)
+            rows=channel.query("SELECT COALESCE(json_agg(json_build_object('version',version,'type',type,'script',script,'checksum',checksum,'success',success) ORDER BY installed_rank),'[]'::json) FROM "+identifier(s['flywaySchema'])+".flyway_schema_history",timeout=10)
         finally:channel.close()
         require(value=={'name':s['database'],'oid':s['databaseOid'],'allowConnections':True},'CURRENT_APPLICATION_DATABASE_IDENTITY_DRIFT')
         require(type(rows) is list and 1<=len(rows)<=256 and all(type(r) is dict and r.get('success') is True for r in rows)

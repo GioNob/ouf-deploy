@@ -57,20 +57,25 @@ class FileOnlyNodeOwner:
         self.root=Path(directory);ancestors(self.root/'placeholder');s=self.root.lstat()
         require(self.root.is_absolute() and self.root.is_dir() and s.st_uid==s.st_gid==0 and s.st_mode&0o777==0o700,'PRIVATE_NODE_OWNER_DIRECTORY_REQUIRED')
         self.directory_binding=(s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode);self.adapter=None
-    def current(self,intent):
+    def current(self,intent,retained=False):
         s=self.root.lstat();require((s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode)==self.directory_binding
             and digest(self.recipe)==self.recipe_hash and digest(intent)==digest(self.intent)==self.intent_hash,'FILE_ONLY_NODE_OWNER_SCOPE_DRIFT')
         self.profile.verify(self.request);require(self.authority(self.raw) is True,'CURRENT_FULL_ACTION_NODE_AUTHORITY_REQUIRED')
         row=self.transition.read()
-        require(row['state']=='IN_FLIGHT' and row['effects'][-1]['phase']==PHASE and row['effects'][-1]['intentHash']==self.intent_hash,
-            'DURABLE_SCOPED_NODE_ATTESTATION_REQUIRED')
+        if retained:
+            previous=[e for e in row['effects'] if e['phase']==PHASE and e['state']=='APPLIED' and e['intentHash']==self.intent_hash]
+            require(len(previous)==1,'RETAINED_COMPLETED_NODE_ATTESTATION_REQUIRED')
+            self.store.read(PHASE,previous[0]['nativeEvidenceHash'])
+        else:
+            require(row['state']=='IN_FLIGHT' and row['effects'][-1]['phase']==PHASE and row['effects'][-1]['intentHash']==self.intent_hash,
+                'DURABLE_SCOPED_NODE_ATTESTATION_REQUIRED')
         return row
     def publish(self,path,raw):
         if os.path.lexists(path):require(private_bytes(path)==raw,'FILE_ONLY_NODE_EVIDENCE_DRIFT')
         else:publish_once(path,raw,'FILE_ONLY_NODE_EVIDENCE_RACE')
-    def resolve(self,intent):
-        self.current(intent)
-        if self.adapter is not None:return self.adapter
+    def resolve(self,intent,retained=False):
+        self.current(intent,retained)
+        if self.adapter is not None and not retained:return self.adapter
         recipe=self.recipe;budget=ObservationBudget(recipe['observationSeconds']);paused=PausedWorkloadBinding(self.engine,self.transition,self.request,self.store)
         before=paused.observe();native=self.engine.inspect(self.transition);cid=before['runtimeBinding']['containerId']
         config=copy.deepcopy(recipe['observationConfiguration']);runner=NodeObservation(config,budget)
@@ -115,15 +120,30 @@ class FileOnlyNodeOwner:
                 'nodeRecipeHash':self.recipe_hash}) and os.path.lexists(auth_path) and os.path.lexists(signature_path),'PARTIAL_NODE_ISSUANCE_RECONCILIATION_REQUIRED')
             require(private_bytes(auth_path)==raw,'NODE_ACCEPTANCE_AUTHORIZATION_DRIFT')
         else:
+            require(not retained,'COMPLETED_NODE_ISSUANCE_REQUIRED_NO_RESIGNING')
             self.current(intent)
             publish_once(claim,encoded({'transitionContextHash':self.transition.context,'authorizationHash':hashlib.sha256(raw).hexdigest(),
                 'nodeRecipeHash':self.recipe_hash}),'NODE_ATTESTATION_ISSUANCE_ALREADY_CONSUMED')
             self.current(intent);envelope=self.signer.sign(raw);publish_once(signature_path,envelope,'NODE_ATTESTATION_SIGNATURE_ALREADY_PRESENT')
             publish_once(auth_path,raw,'NODE_ATTESTATION_AUTHORIZATION_ALREADY_PRESENT')
         acceptance=PausedNodeAcceptance(self.verifier,ctx,expected,self.authority.clock);acceptance.verify(raw,observed,cid)
-        self.current(intent)
+        self.current(intent,retained)
         self.adapter=PausedAttestationAdapter(self.transition,self.intent,self.store,observer,acceptance,request,node_context,
             {'path':str(auth_path),'sha256':hashlib.sha256(raw).hexdigest()})
         return self.adapter
     def apply(self,intent):self.resolve(intent).apply(intent)
     def observe(self,intent):return self.resolve(intent).observe(intent)
+    def verify_retained(self):
+        """Fresh native paused proof/current signature before admission/unpause.
+
+        This creates no signature or claim and cannot repair missing issuance.
+        Reconstructing the observer gives each bounded read its own deadline.
+        """
+        adapter=self.resolve(self.intent,retained=True)
+        raw=adapter.authorization()
+        before=adapter.observer.observe(adapter.request,adapter.context,adapter.observer.frame.bundle)
+        proof=adapter.acceptance.verify(raw,before,adapter.request['containerId'])
+        after=adapter.observer.observe(adapter.request,adapter.context,adapter.observer.frame.bundle)
+        require(before==after and adapter.authorization()==raw,'RETAINED_PAUSED_NODE_CHANGED_DURING_READ')
+        self.current(self.intent,retained=True)
+        return {'nativeObservationHash':digest(before),'acceptanceVerificationHash':digest(proof)}

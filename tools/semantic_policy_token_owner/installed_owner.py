@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import stat
 import subprocess
+import time
 import uuid
 from cutover_authority import CutoverAuthority
 from tools.semantic_lease_recovery.bounded_recovery import Permanent,Temporary,fingerprint
@@ -148,7 +149,7 @@ class InstalledTokenOwner(DomainOwner):
                 raw=read_private(directory,name,131072);check(hashlib.sha256(raw).hexdigest()==expected);files[name]=raw
             check(m==declaration(m['destination'],m['sourceCommit'],files,directory_identity=m['directoryIdentity'],owner_binding_hash=self.profile_hash))
         return True
-    def guard(self,binding_hash):
+    def _verified_state(self,binding_hash):
         check(binding_hash==self.binding.digest()
               and self.configuration==owner_binding(self.binding,self.credential,self.admission,self.journal,self.context,self.generation)
               and fingerprint(self.manifest)==self.closure and stage_authority_matches(self.authority,self.raw,self.manifest))
@@ -160,8 +161,37 @@ class InstalledTokenOwner(DomainOwner):
         current=self.store.read()
         if not self.observer and row['state']=='PUBLISHING' and current['state']=='BLOCKED' and current['blockedAttempt']==row['attempts']:
             raise Permanent('AUTHORITY_REVOKED')
+        return row,current
+    def guard(self,binding_hash):
+        row,current=self._verified_state(binding_hash)
         if self.observer:
             if row['state']!='ACTIVE' or current['state']!='ACTIVE':raise Permanent('AUTHORITY_REVOKED')
+    def await_active(self,binding_hash,maximum_wait_seconds=3600):
+        """Wait for this owner's known renewal, granting no observation meanwhile.
+
+        Each pass repeats signatures, source, legacy fence, generation and
+        retained-budget verification. Parked/unknown states never enter a retry
+        loop. The ordinary ACTIVE guard remains the only successful return.
+        """
+        check(self.observer and type(maximum_wait_seconds) is int and 1<=maximum_wait_seconds<=3600)
+        deadline=time.monotonic()+maximum_wait_seconds
+        previous=time.monotonic()
+        while True:
+            row,current=self._verified_state(binding_hash)
+            if row['state']=='ACTIVE' and current['state']=='ACTIVE':
+                try:return self.guard(binding_hash)
+                except Permanent as error:
+                    # A legitimate publication may have started between the
+                    # two guarded reads. Re-enter the complete verified state
+                    # check; actual revocation/parked states fail there.
+                    if error.code!='AUTHORITY_REVOKED':raise
+                    continue
+            check(row['state'] in ('NEW','ATTEMPTING','PUBLISHING','RETRY_WAIT')
+                  and current['state'] in ('ACTIVE','BLOCKED'))
+            now=time.monotonic()
+            check(previous<=now<deadline)
+            previous=now
+            time.sleep(min(1,deadline-now))
     def guard_worker_session(self,row):
         signed=json.loads(self.raw,object_pairs_hook=unique).get('policyTokenFiniteWorkerSession')
         check(type(signed)is dict and fingerprint(signed)==row['workerSessionHash']
