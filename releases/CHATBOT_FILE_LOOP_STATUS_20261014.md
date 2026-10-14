@@ -80,6 +80,39 @@ ha completato build, scansione, export, boot Registry con quattro mount,
 assemblaggio dei sei moduli e firma/verifica del publisher. Nessuna immagine
 è stata applicata al VPS da questo run.
 
+## Ripresa del pacchetto dopo lo sblocco Actions
+
+Il run [38584614991, tentativo 2](https://github.com/GioNob/ouf-deploy/actions/runs/38584614991/attempts/2)
+ha completato source-lock, i sei moduli, scansioni, assemblaggio e firma/verifica
+del publisher. L’archivio completo è l’artefatto `11907557440`, SHA256
+`144699ab7756c8312d49783967cfbb64acc02a617015ad89f5adf51e25a10300`.
+
+Questa variante sostituisce soltanto il pin MCP della tabella storica con
+`f249b3dcc58c2a96742092d90fa09fd90b705bd0` ([MCP PR69](https://github.com/GioNob/ouf-mcp-server/pull/69)):
+conserva gli esatti byte delle migrazioni VPS 1–9 e aggiunge le migrazioni 10–12.
+Non va integrata in main finché le altre cronologie installate non sono osservate.
+Il lock corrente riporta questo overlay; la prova composta precedente rimane
+qualificata per i propri sorgenti, non diventa una nuova prova composta dell’overlay.
+
+[Deploy PR29](https://github.com/GioNob/ouf-deploy/pull/29), sorgente consegna
+`f9b42b8cd4358a908c7a0e88777f9e55b8400258`, lega launcher, ingresso root,
+manifesto dei sorgenti e qualificazione dell’estrattore allo stesso archivio.
+Il controllo del manifesto confronta tutti i sorgenti effettivi e impedisce una
+consegna con hash precedenti alle modifiche. I quattro check push/PR del nuovo
+commit sono SUCCESS: il job nativo esegue 163 test in 22 suite; il job archivio
+scarica e verifica il digest, estrae i sei pacchetti e i tre source archive.
+[Ricevuta](chatbot-file-cohort-resumption-evidence-20261014.json). La migrazione rimane dietro
+preflight amministrativo corrente, quattro backup, quiescenza e revisione
+completa al terminale. Cleanup verificato delle abilitazioni temporanee prima
+dell’avvio; nessun replay mutativo o restore automatico.
+
+La ricerca MCP corrente del 14 ottobre conferma gli otto Cinema ACTIVE,
+revisioni e proprietà della baseline invariati, `partial=false` e nessuna
+pagina ulteriore. Non è una riesecuzione ingestion. La conferma corrente del
+profilo Teatri resta da acquisire; non ripetere upload o profilazione.
+Nessuna migrazione, sostituzione di servizi o nuova decisione HUMAN è stata
+eseguita sul VPS da questa ripresa. Il ciclo reale resta OPEN.
+
 ## Prova che manca per dichiarare il risultato
 
 La combinazione completa deve essere installata tramite un ingresso operativo
