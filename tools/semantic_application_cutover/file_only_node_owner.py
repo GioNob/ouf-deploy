@@ -24,6 +24,10 @@ from tools.semantic_provider_installer_approval import publish_once
 from tools.semantic_provider_node_observation import NodeObservation
 from tools.semantic_provider_preexec_native import NativeBackend
 from tools.semantic_provider_deployment_admission import transport_hash
+from tools.semantic_policy_token_owner.installed_owner import InstalledTokenOwner
+from tools.semantic_policy_token_owner.producer import protected_directory
+import migration_root_custody as output_custody
+import iam_binding_candidate as retained_evidence
 
 PHASE='ATTEST_NEW_OCI_PEER'
 def encoded(value):return json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
@@ -73,6 +77,46 @@ class FileOnlyNodeOwner:
     def publish(self,path,raw):
         if os.path.lexists(path):require(private_bytes(path)==raw,'FILE_ONLY_NODE_EVIDENCE_DRIFT')
         else:publish_once(path,raw,'FILE_ONLY_NODE_EVIDENCE_RACE')
+    def token_binding(self):
+        """Materialize a signed future directory only from its same-action receipt.
+
+        The proposal stays unchanged. Existing inode-bound v1 inputs retain
+        their original semantics; new custody is never adopted from stat alone.
+        """
+        expected=copy.deepcopy(self.recipe['renewableToken'])
+        if 'directoryCustodyScopeHash' not in expected:return expected
+        owner=self.token_owner
+        require(type(owner) is InstalledTokenOwner and owner.observer is True
+            and owner.authority is self.authority and owner.raw==self.raw,
+            'SAME_ACTUAL_INSTALLED_OWNER_FOR_FUTURE_OUTPUT_REQUIRED')
+        owner.await_active(owner.binding.digest())
+        scope=json.loads(self.raw)['policyTokenOutputCustody']
+        require(digest(scope)==expected['directoryCustodyScopeHash']
+            and expected['ownerBindingHash']==owner.binding.digest()
+            and expected['source']==scope['path']==owner.binding.output_directory
+            and expected['fileName']==owner.binding.output_member and expected['gid']==owner.binding.output_gid,
+            'SAME_SIGNED_OUTPUT_SCOPE_AND_OWNER_BINDING_REQUIRED')
+        with retained_evidence.protected_parent() as directory:
+            host=retained_evidence.read_member(directory,'policy-token-migration-host-inputs-'+scope['hostInputsHash']+'.private.json')
+            require(hashlib.sha256(host).hexdigest()==scope['hostInputsHash'],'OUTPUT_HOST_INPUT_RECEIPT_DRIFT')
+            custody=output_custody.TokenOutputCustody(self.authority,self.raw,host,
+                scope['completedRootEvidenceHash'],scope['rootCreationSourceClosureHash'])
+            require(custody.scope==scope,'EXACT_ACTUAL_OUTPUT_CUSTODY_OWNER_REQUIRED');custody.guard()
+            raw=retained_evidence.read_member(directory,custody.name)
+            row=custody.validate(retained_evidence.decode(raw))
+            require(row['state']=='OUTPUT_CUSTODIED_NOT_RUNTIME_ACCEPTED','COMPLETED_OUTPUT_CREATION_RECEIPT_REQUIRED')
+            with protected_directory(custody.parent_identity['path']) as parent:
+                info=os.fstat(parent)
+                require({'device':info.st_dev,'inode':info.st_ino}==
+                    {k:custody.parent_identity[k] for k in ('device','inode')},'OUTPUT_RECEIPT_PARENT_IDENTITY_DRIFT')
+                child=os.open('token-output',os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,dir_fd=parent)
+                try:custody.check_child(parent,child,row)
+                finally:os.close(child)
+            require(retained_evidence.read_member(directory,custody.name)==raw,'OUTPUT_CREATION_RECEIPT_CHANGED')
+            custody.guard();owner.guard(owner.binding.digest())
+        expected.pop('directoryCustodyScopeHash')
+        expected.update(directoryDevice=row['outputIdentity']['device'],directoryInode=row['outputIdentity']['inode'])
+        return expected
     def resolve(self,intent,retained=False):
         self.current(intent,retained)
         if self.adapter is not None and not retained:return self.adapter
@@ -94,8 +138,9 @@ class FileOnlyNodeOwner:
         require(type(merged) is str and Path(merged).is_absolute() and Path(merged).is_relative_to(context['storageParent']),
             'EXACT_NATIVE_IMAGE_MERGED_ROOTFS_REQUIRED')
         context.update(containerId=cid,networkNamespaceName=Path(sandbox).name,rootfsPath=merged)
+        token=self.token_binding()
         policy=compile_policy(recipe['template'],recipe['launch'],context,execution_profile=self.profile,
-            renewable_token=recipe['renewableToken'],delegation_key_metadata_hash=recipe['delegationKeyMetadataHash'],proposal_receipt_key=recipe['proposalReceiptKey'])
+            renewable_token=token,delegation_key_metadata_hash=recipe['delegationKeyMetadataHash'],proposal_receipt_key=recipe['proposalReceiptKey'])
         raw_policy=encoded(policy);policy_path=self.root/'frame-policy.json';self.publish(policy_path,raw_policy)
         configured={'source':recipe['frameSourceBinding'],'configuration':{'path':str(policy_path),'sha256':hashlib.sha256(raw_policy).hexdigest()},
             'bundleParents':config['bundleParents']}

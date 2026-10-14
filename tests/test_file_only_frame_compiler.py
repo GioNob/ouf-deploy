@@ -48,5 +48,13 @@ class FourMountCompiler(unittest.TestCase):
     def test_no_policy_can_be_derived_from_foreign_or_extra_context(self):
         t,l,c,a=self.fixture();c['observedOci']=t['expectedOci']
         with self.assertRaises(ValueError):compile_policy(t,l,c,**a)
+    def test_future_output_is_explicit_proposal_and_cannot_mix_invented_inode(self):
+        t,l,c,a=self.fixture();token=a['renewable_token']
+        token.pop('directoryDevice');token.pop('directoryInode');token['directoryCustodyScopeHash']='7'*64
+        result=compile_policy(t,l,c,**a)
+        self.assertEqual(result['schema'],'ouf.semantic-configured-file-only-four-mount-frame-policy.v2-proposal')
+        self.assertNotIn('directoryInode',result['renewableToken'])
+        token['directoryInode']=1
+        with self.assertRaisesRegex(ValueError,'EXACT_FILE_ONLY_RENEWABLE_TOKEN'):compile_policy(t,l,c,**a)
 
 if __name__=='__main__':unittest.main()
