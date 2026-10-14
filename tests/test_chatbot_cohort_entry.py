@@ -17,6 +17,7 @@ from unittest.mock import patch
 import test_chatbot_cohort_assemble as assembly
 import test_chatbot_cohort_containers as containers
 from tools.chatbot_file_cohort import entry,plan
+from tools.chatbot_file_cohort import preparation
 
 
 class EntryIntegration(unittest.TestCase):
@@ -105,6 +106,49 @@ class EntryIntegration(unittest.TestCase):
             entry.watch_child({'context':str(context),'unit':'explicit-fixture.service'},{'path':'/unused'})
         self.assertEqual([json.loads(row) for row in output.getvalue().splitlines()],[status,accepted])
         alive.assert_called_once();pause.assert_called_once_with(2)
+
+    def test_external_ingestion_properties_are_retained_without_new_environment_override(self):
+        observed={}
+        for index,module in enumerate(plan.MODULES):
+            old,_,_=containers.container_fixture(module)
+            old['Id']=str(index+1)*64
+            observed[module]=old
+        origin='https://gateway.fixture.invalid'
+        selected=observed['ingestion']
+        selected['Config']['Env'] += [
+            'SPRING_CONFIG_ADDITIONAL_LOCATION=optional:file:'+preparation.INGESTION_CONFIG_TARGET]
+        source='/etc/ouf/deploy-snapshots/review/ingestion-summary.properties'
+        selected['Mounts'] += [
+            {'Type':'bind','Source':source,'Destination':preparation.INGESTION_CONFIG_TARGET,'RW':False},
+            {'Type':'bind','Source':'/private/existing-tokens','Destination':'/run/existing-tokens','RW':False}]
+        raw=('ouf.ingestion.iam.enabled=true\n'
+             'ouf.ingestion.iam.issuer=https://issuer.fixture.invalid/realms/fixture\n'
+             'ouf.ingestion.iam.audience=ouf-api-gateway\n'
+             'ouf.ingestion.activation.enabled=true\n'
+             'ouf.ingestion.execution.enabled=true\n'
+             'ouf.ingestion.activation.gateway-url='+origin+'\n'
+             'ouf.ingestion.activation.token-file=/run/existing-tokens/service.jwt\n'
+             'ouf.ingestion.activation.tenant-id=tenant-fixture\n').encode()
+        binding={'path':source,'sha256':hashlib.sha256(raw).hexdigest(),'metadata':[1,2,3]}
+        # The other two applications have already selected their retained
+        # gateway and token channels; only Ingestion is the new external case.
+        for name,fields in (('onboarding',[
+                'OUF_ONBOARDING_UDP_IDENTITY_GATEWAY_URL='+origin,
+                'OUF_ONBOARDING_UDP_IDENTITY_TOKEN_FILE=/run/existing-tokens/service.jwt']),
+                ('udp',['OUF_UDP_EXECUTION_GATEWAY_URL='+origin,
+                'OUF_UDP_EXECUTION_TOKEN_FILE=/run/existing-tokens/service.jwt',
+                'OUF_UDP_TENANT_ID=tenant-fixture'])):
+            observed[name]['Config']['Env'] += fields
+            observed[name]['Mounts'].append({'Type':'bind','Source':'/private/existing-tokens',
+                'Destination':'/run/existing-tokens','RW':False})
+        docker=containers.DockerFixture(self.fixture.f.root,observed,{'replacements':[]})
+        self.addCleanup(docker.close)
+        with patch.object(preparation,'private_config',return_value=(raw,binding)):
+            result=entry.environment_deltas(docker.engine,origin,tenant='tenant-fixture',
+                issuer='https://issuer.fixture.invalid/realms/fixture',audience='ouf-api-gateway',
+                ingestion_binding=binding)
+        self.assertEqual(result['ingestion'],{})
+        self.assertNotIn('SPRING_APPLICATION_JSON',str(selected['Config']['Env']))
 
     def test_actual_preparation_capsule_imports_isolated_and_rejects_source_drift(self):
         stage=self.fixture.stage;source=stage/'source';source.mkdir(mode=0o700)

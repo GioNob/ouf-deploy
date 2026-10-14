@@ -143,7 +143,7 @@ def collect(args):
     from tools.chatbot_file_cohort.target_selection import select_target
     from tools.chatbot_file_cohort.gateway_preparation import prepare_gateway
     from tools.chatbot_file_cohort.images import prepare_imports
-    from tools.chatbot_file_cohort.preparation import prepare_cohort,database_binding
+    from tools.chatbot_file_cohort.preparation import prepare_cohort,database_binding,ingestion_properties
     from tools.chatbot_file_cohort.databases import observe_database
     from tools.chatbot_file_cohort.authorization import OwnerPrimitives,OwnerTransport,compile_plan
     from tools.chatbot_file_cohort.human_session import HumanSession
@@ -206,11 +206,13 @@ def collect(args):
         # read when the retained target descriptor cannot be proven.
         auth_plan=compile_plan(transport.observe(),primitives,selected['selection'],
                                include_ingestion_status=False,session_binding=session.binding())
+        _,ingestion_binding=ingestion_properties(current(engine,'ouf-ingestion'))
         deltas=environment_deltas(engine,selected['selection']['origin'],
             tenant=selected['selection']['tenant'],issuer=selected['selection']['issuer'],
-            audience=gateway['proposalIdentity']['audience'])
+            audience=gateway['proposalIdentity']['audience'],ingestion_binding=ingestion_binding)
         co=prepare_cohort(engine,package,manifest,image_plan,postgres,digest(gateway['gatewayPlan']),
-                          digest(auth_plan),deltas,digest(acceptance),selected['thsConfigurationBinding'])
+                          digest(auth_plan),deltas,digest(acceptance),selected['thsConfigurationBinding'],
+                          ingestion_binding)
         old_env=environment(retained['creationRequest']['Env'])
         token_target=str(Path(old_env['OUF_AUTHORIZATION_REGISTRY_TOKEN_FILE']).parent)
         mount={'source':owner.first.binding.output_directory,'target':token_target,'fileName':owner.first.binding.output_member,
@@ -225,6 +227,7 @@ def collect(args):
             source_directory=source,iam_profile=owner_input['owner']['iamProfile'])
         prepared={'schema':'ouf.chatbot-file-cohort-prepared-inputs.v1',
             'engine':{'socketPath':socket_path,'socketBinding':list(socket_binding)},'owner':owner_input['owner'],
+            'ingestionConfigurationBinding':ingestion_binding,
             'registry':registry,'cohortPlan':co['cohortPlan'],'databasePlan':co['databasePlan'],
             'gatewayPlan':gateway['gatewayPlan'],'gatewayRuntimePlan':gateway['gatewayRuntimePlan'],'imagePlan':image_plan,
             'authorization':{'plan':auth_plan,'catalogue':catalogue.decode(),'helperBindings':OWNER_FILES,
@@ -256,7 +259,7 @@ def preparation_wait(session,stop,seconds):
         stop.wait(min(1,deadline-time.monotonic()))
 
 
-def configuration(actual,prefix):
+def configuration(actual,prefix,ingestion_binding=None):
     """Selected Spring/JVM scalar metadata; never read a bearer or secret file."""
     from tools.chatbot_file_cohort.target_selection import flattened
     from tools.chatbot_file_cohort.preparation import validate_json_overlay
@@ -272,6 +275,10 @@ def configuration(actual,prefix):
         validate_json_overlay(values['SPRING_APPLICATION_JSON'],prefix)
         overlay=json.loads(values['SPRING_APPLICATION_JSON'])
         for key,value in flattened(overlay).items():add('.'.join(key),value)
+    if prefix == 'OUF_ING' and ingestion_binding is not None:
+        from tools.chatbot_file_cohort.preparation import ingestion_properties
+        properties,_=ingestion_properties(actual,ingestion_binding)
+        for key,value in properties.items():add(key,value)
     argv=(actual['Config'].get('Entrypoint') or [])+(actual['Config'].get('Cmd') or [])
     for name in ('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','JAVA_OPTS'):
         if values.get(name):argv+=shlex.split(values[name])
@@ -319,12 +326,15 @@ def updated_overlay(overlay,updates):
     return json.dumps(overlay,sort_keys=True,separators=(',',':'))
 
 
-def environment_deltas(engine,origin,*,tenant=None,issuer=None,audience=None):
+def environment_deltas(engine,origin,*,tenant=None,issuer=None,audience=None,ingestion_binding=None):
     """Preserve existing identity channels and explicitly enable the qualified loops."""
     ingestion=current(engine,'ouf-ingestion');onboarding=current(engine,'ouf-onboarding');udp=current(engine,'ouf-udp')
-    _,ing_json,read=configuration(ingestion,'OUF_ING')
+    _,ing_json,read=configuration(ingestion,'OUF_ING',ingestion_binding)
     require(read('ouf.ingestion.iam.enabled','OUF_ING_IAM_ENABLED')=='true',
             'CURRENT_INGESTION_IAM_ENABLED_REQUIRED')
+    for loop in ('activation','execution'):
+        require(read('ouf.ingestion.'+loop+'.enabled')=='true',
+                'CURRENT_INGESTION_WORKER_LOOP_REQUIRED')
     ing_updates={'ouf.ingestion.iam.enabled':True}
     if issuer is not None:
         actual=read('ouf.ingestion.iam.issuer','OUF_ING_IAM_ISSUER')
@@ -363,7 +373,8 @@ def environment_deltas(engine,origin,*,tenant=None,issuer=None,audience=None):
     return {'udp':{'set':{'SPRING_APPLICATION_JSON':updated_overlay(udp_json,udp_updates)}},
         'onboarding':{'set':{'OUF_WORKFLOW_THS_GATEWAY_BASE_URL':origin,'OUF_RESOLUTION_THS_GATEWAY_BASE_URL':origin,
                             'SPRING_APPLICATION_JSON':updated_overlay(onb_json,onb_updates)}},
-        'ingestion':{'set':{'SPRING_APPLICATION_JSON':updated_overlay(ing_json,ing_updates)}},'mcp':{}}
+        'ingestion':({} if ingestion_binding is not None else
+                     {'set':{'SPRING_APPLICATION_JSON':updated_overlay(ing_json,ing_updates)}}),'mcp':{}}
 
 
 def watch_child(receipt,systemctl):
