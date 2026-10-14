@@ -271,6 +271,43 @@ Conservare pacchetto e capsule precedenti. Non rilanciare la consegna apply
 prima di acquisire questi fatti. La prova CI rimane valida per i propri
 sorgenti; il ciclo reale resta OPEN.
 
+### Correzione layout e preflight aggregato prima dei login
+
+L'output operatore delle 19:58 CEST del 14 ottobre 2026 identifica il divario:
+container, PID, stato running e generazioni Engine/runc sono stabili;
+bundleUsesSystemContainerd=true, bundleExactExpected=false.
+La causa è il solo parent del bundle: /run/containerd/io.containerd.runtime.v2.task/moby.
+Non è un container paused né una nuova generazione da adottare.
+
+La correzione supporta due profili espliciti nel sorgente, Docker-managed e
+system-containerd, selezionando esattamente il parent del container corrente.
+Nessun glob o path arbitrario deriva dall'OCI. Il singolo parent scelto è
+vincolato al recipe e alla revisione, riusato nelle successive osservazioni
+paused, peer e full frame. Runtime root rimane quello già osservato /run/docker.
+Il namespace /var/run/docker/netns è accettato solo come alias del parent
+canonico /run/docker/netns, con custodia del parent e inode coincidente con
+/proc/PID/ns/net. Parent ignoti, drift PID/id e stato paused restano negati.
+
+Un nuovo preflight read-only precede entrambi i login IAM. Raccoglie nello
+stesso report vincoli retained, generazione, baseline Engine (versione/driver/
+cgroup/storage), custodia della chiave di consultazione (solo metadati),
+runtime/layout, namespace, NIC e stabilità. I controlli indipendenti continuano
+dopo un diniego, quelli dipendenti non fanno probe con selettori non verificati.
+Fatti e codici redatti; nessuna autorità o credenziale viene concessa da PASS.
+Il collector completo ripete i controlli e le route IAM prima della review.
+
+La review privata include anche il contesto runtime Registry concreto e
+l'expected rootfs seal indipendente. Capsule 112 sorgenti:
+SHA256 `931746225f7043a8267073f93436ebb3ef87e05536ad125adaad6c8f92390321`.
+Launcher SHA256 `eadb7093d04fcfad9c8f2e1baa95676ea32d76a763604f0267e682ce3ece674e`.
+Localmente runtime layout 7 e launcher 13 test PASS.
+CI completa e prova native runc/bundle/namespace ancora da completare per
+questi sorgenti. Non consegnare questa variante prima del successo.
+
+Nessun riavvio/unpause, nuovo grant target o replay. L'archivio originale
+è conservato e verrà riutilizzato. Il prossimo comando sostituisce la vecchia
+consegna; non richiede una nuova diagnosi per ogni singolo controllo nativo.
+
 ## Prova che manca per dichiarare il risultato
 
 La combinazione completa deve essere installata tramite un ingresso operativo

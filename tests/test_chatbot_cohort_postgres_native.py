@@ -12,6 +12,7 @@ import re
 import shutil
 import stat
 import subprocess
+import sys
 import unittest
 
 import test_chatbot_cohort_containers as fixture
@@ -23,6 +24,32 @@ from engine_creation import Engine
 
 @unittest.skipUnless(os.environ.get('OUF_NATIVE_POSTGRES') == '1', 'explicit disposable Docker/PostgreSQL CI only')
 class NativePostgres(unittest.TestCase):
+    def test_real_containerd_bundle_and_namespace_profile_are_exact(self):
+        """Native path/inode qualification on the existing disposable service."""
+        sys.path.insert(0,str(fixture.ROOT/'tools/semantic_frame_compiler'))
+        import file_only_preparation as prep
+        cid=os.environ['OUF_POSTGRES_CONTAINER_ID']
+        docker=Path(shutil.which('docker')).resolve();runtime=Path(shutil.which('runc')).resolve()
+        def native(argv):
+            return subprocess.run(argv,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,check=True,timeout=10,
+                env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'}).stdout
+        with __import__('tempfile').TemporaryDirectory() as config:
+            def inspect():
+                return json.loads(native([str(docker),'--host','unix:///var/run/docker.sock',
+                    '--config',config,'inspect','--type=container',cid]))[0]
+            current=inspect()
+            state=json.loads(native([str(runtime),'--root',prep.RUNTIME_ROOT,'state',cid]))
+            context=prep.retained_runtime_context(current,state,{'runtimeStateRoot':'/run/docker'})
+            prep.verify_namespace(current,context)
+            self.assertIn(context['bundleParent'],prep.BUNDLE_PARENTS)
+            self.assertEqual(state['bundle'],context['bundleParent']+'/'+cid)
+            info=Path(state['bundle']).stat()
+            self.assertTrue(stat.S_ISDIR(info.st_mode));self.assertEqual(info.st_uid,0)
+            self.assertFalse(info.st_mode&0o022)
+            self.assertEqual(json.loads(native([str(runtime),'--root',prep.RUNTIME_ROOT,'state',cid])),state)
+            self.assertEqual(p.runtime_pin(inspect()),p.runtime_pin(current))
+
     def test_custom_admin_and_nonowned_incident_table_apply_exact_audit_migration(self):
         """Actual PG primitives and pinned migration; not a target rollout."""
         cid=os.environ['OUF_POSTGRES_CONTAINER_ID'];self.assertRegex(cid,r'^[a-f0-9]{64}$')

@@ -140,6 +140,11 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
         input_hashes={'preparedInputs':digest(prepared),'preparationSourceClosure':preparation_source_hash,
                      'cohortManifest':prepared['imagePlan']['cohortManifestHash']})
     database=prepared.get('databasePlan')
+    recipe=prepared['registry']['nodeRecipe']
+    if recipe.get('dockerContext') is not None:
+        review['registryNativeFrameReview']={'dockerContext':copy.deepcopy(recipe['dockerContext']),
+            'runtimeRoot':recipe['runtimeRoot'],'runtimeBinding':copy.deepcopy(recipe['observationConfiguration']['runtimeBinding']),
+            'expectedRootfsSeal':recipe['expectedRootfsSeal']}
     if database is not None and database.get('mcpAuditRoleAdministration') is not None:
         require(digest(database)==prepared['cohortPlan'].get('databasePlanHash'),
                 'REVIEWED_DATABASE_PLAN_HASH_REQUIRED')
