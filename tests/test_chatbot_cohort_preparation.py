@@ -103,6 +103,36 @@ class CohortPreparation(unittest.TestCase):
         with self.assertRaisesRegex(p.PlanDenied,'UNREVIEWED_ADDITIONAL'):
             q.database_binding('onboarding',changed,pg,binding)
 
+    def test_retained_ingestion_properties_keep_database_and_reject_other_config_sources(self):
+        app,pg=self.inputs('ingestion')
+        source='/etc/ouf/deploy-snapshots/review/ingestion-summary.properties'
+        app['Config']['Env'].append('SPRING_CONFIG_ADDITIONAL_LOCATION=optional:file:'+q.INGESTION_CONFIG_TARGET)
+        app['Mounts']=[{'Type':'bind','Source':source,'Destination':q.INGESTION_CONFIG_TARGET,'RW':False}]
+        binding={'path':source,'sha256':'a'*64,'metadata':[1,2,3]}
+        raw=(b'ouf.ingestion.iam.enabled=true\n'
+             b'ouf.ingestion.iam.issuer=https://issuer.fixture.invalid/realms/fixture\n'
+             b'ouf.ingestion.iam.audience=ouf-api-gateway\n'
+             b'ouf.ingestion.activation.enabled=true\n'
+             b'ouf.ingestion.execution.enabled=true\n'
+             b'ouf.ingestion.activation.gateway-url=https://gateway.fixture.invalid\n'
+             b'ouf.ingestion.activation.token-file=/run/existing-tokens/service.jwt\n'
+             b'ouf.ingestion.activation.tenant-id=tenant-fixture\n')
+        with patch.object(q,'private_config',return_value=(raw,binding)) as selected:
+            self.assertEqual(q.database_binding('ingestion',app,pg,ingestion_binding=binding),
+                             {'database':'ouf_ingestion','user':'ouf_ingestion'})
+            selected.assert_called_once_with(source,binding)
+        for altered in (raw+b'OUF_INGESTION_IAM_ENABLED=false\n',
+                        raw+b'spring.config.import=file:/another\n',
+                        raw+b'spring.datasource.url=jdbc:postgresql://another/db\n'):
+            with self.subTest(altered=altered[-50:]),patch.object(q,'private_config',return_value=(altered,binding)):
+                with self.assertRaises(p.PlanDenied):q.database_binding('ingestion',app,pg,ingestion_binding=binding)
+        changed=copy.deepcopy(app);changed['Mounts'][0]['RW']=True
+        with self.assertRaisesRegex(p.PlanDenied,'EXACT_INGESTION_PROPERTIES_MOUNT'):
+            q.database_binding('ingestion',changed,pg,ingestion_binding=binding)
+        changed=copy.deepcopy(app);changed['Config']['Env'].append('SPRING_CONFIG_IMPORT=file:/another')
+        with self.assertRaisesRegex(p.PlanDenied,'EXACT_INGESTION_PROPERTIES_SELECTION'):
+            q.database_binding('ingestion',changed,pg,ingestion_binding=binding)
+
     def test_json_flat_nested_relaxed_names_and_loader_overrides_remain_denied(self):
         app,pg=self.inputs('onboarding')
         overlays=[{'spring.datasource.url':'jdbc:postgresql://other/other'},
