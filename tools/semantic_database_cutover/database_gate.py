@@ -141,3 +141,4 @@ def install_gate(admin,database,expected_oid,retained_sessions,evidence_director
         try:durable(root/'gate-denial.json',diagnosis)
         except OSError:pass
         raise GateDenied('GATE_INSTALLATION_INCOMPLETE:'+phase) from None
+

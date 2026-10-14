@@ -98,3 +98,4 @@ def fenced_backup(admin,container_id,user,database,expected_oid,directory,*,chec
             try:dump.wait(timeout=5)
             except subprocess.TimeoutExpired:dump.terminate();dump.wait(timeout=5)
         hold.close()
+

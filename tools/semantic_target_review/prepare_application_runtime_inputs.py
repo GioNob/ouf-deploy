@@ -172,3 +172,4 @@ def main():
         reason=str(error);report.update(status='INPUT_PREPARATION_BLOCKED',reason=reason if re.fullmatch('[A-Z][A-Z0-9_]{0,120}',reason) else 'RUNTIME_INPUT_PREPARATION_UNPROVEN',errorType=type(error).__name__,evidenceDirectory=str(root) if root else None,doNotRerunApply=os.path.lexists(CLAIM));code=1
     print('OUF_APPLICATION_RUNTIME_INPUTS='+json.dumps(report,sort_keys=True));return code
 if __name__=='__main__':raise SystemExit(main())
+
