@@ -28,11 +28,15 @@ class Owners(unittest.TestCase):
         server=HTTPServer(('127.0.0.1',0),Handler);thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
         self.addCleanup(server.server_close);self.addCleanup(server.shutdown)
         scope={'databaseContainerId':'c'*64,'databaseUser':'postgres','database':'semantic','databaseOid':44,
-            'flywayHistoryHash':digest(state['migrations']),'health':{'address':'127.0.0.1','port':server.server_port,'path':'/actuator/health/readiness','timeoutSeconds':1}}
+            'flywaySchema':'ouf_sem','flywayHistoryHash':digest(state['migrations']),'health':{'address':'127.0.0.1','port':server.server_port,'path':'/actuator/health/readiness','timeoutSeconds':1}}
         channel=ApplicationReadinessChannel(scope)
         class Pg:
             def __init__(self,*args):state['dbConnections']=state.get('dbConnections',0)+1
-            def query(self,expression,**kwargs):return copy.deepcopy(state['migrations'] if 'flyway_schema_history' in expression else state['db'])
+            def query(self,expression,**kwargs):
+                if 'flyway_schema_history' in expression:
+                    if '"ouf_sem".flyway_schema_history' not in expression:raise AssertionError('fixture requires actual Registry schema')
+                    return copy.deepcopy(state['migrations'])
+                return copy.deepcopy(state['db'])
             def close(self):pass
         patch=mock.patch.object(app,'Psql',Pg);patch.start();self.addCleanup(patch.stop)
         request,_=profile_fixture.inputs();request_hash=digest(request)
