@@ -196,8 +196,8 @@ Controlli sotto lock di tabella in transazioni corte con lock_timeout; nessun
 lock durante retry/wait, replay di mutazioni ambigue o cambio di ownership.
 
 Il pacchetto rimane quello già verificato. La capsula aggiornata SHA256 è
-`cbdd4ff6a369898b63132d29e9d1403e532afd72238acf0d15fdd48718b3ea14`;
-launcher SHA256 `8941bf483781a8813e3bf48b37db192fbec1d04303cd6a9f0c527de9555fe237`.
+`4c0e9fdfdebc0bd71b457664d142d7f47dfeda5e79fc1d7acece99339900b074`;
+launcher SHA256 `bb18c8d7f25e9971b62b287105a65572b17bff81a91521ff7b7eb79b078bdf17`.
 Test locali: database 17, preparazione 7, launcher 13 PASS.
 La CI deve qualificare PostgreSQL reale con amministratore non convenzionale,
 security_incident di altro owner, migrazione 12 esatta, drift ACL,
