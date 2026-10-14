@@ -20,7 +20,7 @@ from cutover_executor import CutoverDenied
 class Owners(unittest.TestCase):
     def fixture(self,release=False,retire_all=False):
         state={'http':200,'health':{'status':'UP'},'db':{'name':'semantic','oid':44,'allowConnections':True},
-            'migrations':[{'installedRank':1,'version':'1','description':'fixture','type':'SQL','script':'V1__fixture.sql','checksum':123,'success':True}]}
+            'migrations':[{'version':'1','type':'SQL','script':'V1__fixture.sql','checksum':123,'success':True}]}
         class Handler(BaseHTTPRequestHandler):
             def do_GET(self):
                 self.send_response(state['http']);self.end_headers();self.wfile.write(json.dumps(state['health']).encode())

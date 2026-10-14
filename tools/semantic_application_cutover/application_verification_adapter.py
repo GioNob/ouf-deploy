@@ -38,7 +38,7 @@ class ApplicationReadinessChannel:
         channel=Psql(s['databaseContainerId'],s['databaseUser'],s['database'],'ouf-cutover-readiness')
         try:
             value=channel.query("SELECT json_build_object('name',current_database(),'oid',oid::bigint,'allowConnections',datallowconn) FROM pg_database WHERE datname=current_database()",timeout=10)
-            rows=channel.query("SELECT COALESCE(json_agg(json_build_object('installedRank',installed_rank,'version',version,'description',description,'type',type,'script',script,'checksum',checksum,'success',success) ORDER BY installed_rank),'[]'::json) FROM "+identifier(s['flywaySchema'])+".flyway_schema_history",timeout=10)
+            rows=channel.query("SELECT COALESCE(json_agg(json_build_object('version',version,'type',type,'script',script,'checksum',checksum,'success',success) ORDER BY installed_rank),'[]'::json) FROM "+identifier(s['flywaySchema'])+".flyway_schema_history",timeout=10)
         finally:channel.close()
         require(value=={'name':s['database'],'oid':s['databaseOid'],'allowConnections':True},'CURRENT_APPLICATION_DATABASE_IDENTITY_DRIFT')
         require(type(rows) is list and 1<=len(rows)<=256 and all(type(r) is dict and r.get('success') is True for r in rows)

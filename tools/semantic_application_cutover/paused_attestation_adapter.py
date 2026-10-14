@@ -36,10 +36,13 @@ class PausedAttestationAdapter:
         self.intent_hash=digest(intent);self.request_hash=digest(request);self.context_hash=digest(context)
         expected=acceptance.expected
         self.acceptance_scope_hash=digest({'context':acceptance.context,'expected':expected})
+        recipe_field={}
+        if 'nodeRecipeHash' in intent:
+            require(hash_value(intent['nodeRecipeHash']),'EXACT_FILE_ONLY_NODE_RECIPE_HASH_REQUIRED')
+            recipe_field={'nodeRecipeHash':intent['nodeRecipeHash']}
         require(intent=={'creationRequestHash':expected['creationRequestHash'],'sourceClosureHash':expected['sourceClosureHash'],
-                         'qualifiedPackageHash':expected['qualifiedPackageHash'],'imageConfigurationHash':expected['imageConfigurationHash'],
-                         'nodeRecipeHash':intent.get('nodeRecipeHash')}
-                and hash_value(intent['nodeRecipeHash']) and expected['phaseIntentHash']==self.intent_hash
+                         'qualifiedPackageHash':expected['qualifiedPackageHash'],'imageConfigurationHash':expected['imageConfigurationHash'],**recipe_field}
+                and expected['phaseIntentHash']==self.intent_hash
                 and expected['transitionContextHash']==transition.context
                 and all(request.get(k)==expected[k] for k in ('applicationHash','artifactHash','transportHash'))
                 and context.get('transitionContextHash')==transition.context

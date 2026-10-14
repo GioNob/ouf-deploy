@@ -22,7 +22,7 @@ class FileOnlyApplication:
     def __init__(self,*,engine,transition,request,intents,store,before_store,admin,
                  retirement_channel,retirement_before_store,profile,authority,authority_raw,
                  verifier,attestation_signer,token_owner,node_recipe,node_directory,
-                 readiness_scope,checkpoint,phase_checkpoint,backup_checkpoint):
+                 readiness_scope,checkpoint,phase_checkpoint,backup_checkpoint,aggregate_action=None,aggregate_scope=None):
         require(type(profile) is FileOnlyProfile and transition.execution_profile is profile
             and type(authority) is CutoverAuthority and authority.execution_profile is profile
             and authority.verifier is verifier and request.get('Entrypoint')==ENTRY,
@@ -44,8 +44,10 @@ class FileOnlyApplication:
                 before_store,readiness,native('RELEASE_PRODUCERS'))}
         self.executor=Executor(transition,authority_raw,authority,checkpoint,
             configure_owned_core(engine,transition,request,store,admin,intents,owners,backup_checkpoint,retirement_channel,
-                retirement_before_store,stage,release,execution_profile=profile),intents,authority.clock)
+                retirement_before_store,stage,release,execution_profile=profile),intents,authority.clock,
+            aggregate_action=aggregate_action,aggregate_scope=aggregate_scope)
         self.transition=transition
+        self.node_owner=node
     def verify_registry_and_hold(self):
         """Advance/reconcile through VERIFY_APPLICATION; do not release consumers."""
         return self.executor.run(PHASES.index('VERIFY_APPLICATION')+1)
