@@ -272,9 +272,11 @@ def prepare_gateway(package_directory, package_record, engine, projection_bindin
         net=container['NetworkSettings']['Networks'].get(network_name)
         require(type(net) is dict and net['NetworkID']==actual['NetworkSettings']['Networks'][network_name]['NetworkID'],
                 'COHORT_UPSTREAM_NETWORK_DRIFT')
-        aliases=set(net.get('Aliases') or [])
-        # An absent binding leaves the observed, network-advertised Docker
-        # name authoritative. An explicit projection remains exact.
+        # Docker registers the selected custom container name on a user-defined
+        # network even when inspect omits it from the separate Aliases array.
+        aliases=set(net.get('Aliases') or [])|{container['Name'].lstrip('/')}
+        # An absent binding uses the selected container name. An explicit
+        # projection must match that exact name or an observed network alias.
         alias=projections.get(logical,container['Name'].lstrip('/'))
         require(alias in aliases,'PROJECTED_APPLICATION_DNS_ALIAS_UNPROVEN')
         services[logical]={'alias':alias,'port':8081 if logical=='ouf-gateway-control-plane' else 8080,
