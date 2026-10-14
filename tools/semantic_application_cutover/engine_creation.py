@@ -11,7 +11,6 @@ import os
 import re
 import socket
 import stat
-from tools.chatbot_file_cohort.plan import host_config_matches
 
 
 class CreationDenied(RuntimeError): pass
@@ -23,6 +22,24 @@ def digest(value):
 
 def require(ok, reason):
     if not ok: raise CreationDenied(reason)
+
+
+def started_host_config_matches(expected, actual):
+    """Keep the standalone Engine closure; compare only the proven OOM default.
+
+    Neither native dictionaries nor generation hashes are normalized. Explicit
+    true is distinct, and missing keys/nonboolean OOM values are rejected.
+    """
+    if type(expected) is not dict or type(actual) is not dict: return False
+    for key, value in expected.items():
+        if key == 'OomKillDisable':
+            if key not in actual: return False
+            current = actual[key]
+            if (value is None or value is False) and (current is None or current is False): continue
+            if value is True and current is True: continue
+            return False
+        if actual.get(key) != value: return False
+    return True
 
 
 class Engine:
@@ -85,7 +102,7 @@ class Engine:
             # Moby may restore the default OomKillDisable=false to null at
             # start when the kernel lacks that control. Keep native hashes
             # unchanged; only that documented pair compares equivalently.
-            require(host_config_matches(request.get('HostConfig',{}),actual['HostConfig']),
+            require(started_host_config_matches(request.get('HostConfig',{}),actual['HostConfig']),
                     'CREATION_HOST_CONFIG_DRIFT')
         else:
             for key, expected in request.get('HostConfig',{}).items():
