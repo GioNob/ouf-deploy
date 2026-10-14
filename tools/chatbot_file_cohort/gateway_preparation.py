@@ -244,7 +244,7 @@ def prepare_gateway(package_directory, package_record, engine, projection_bindin
         new_path=str(Path(output_directory)/('apisix-config-'+hashlib.sha256(proposed_raw).hexdigest()+'.yaml'))
         _,new_config=private_config(new_path);writes+=int(created)
         replacement=compile_runtime(actual,binding['configBinding'],new_config,proposal_key_environment,key,key_binding['sha256'],cohort_id,
-                                    admin_key_binding=binding['adminKeyBinding'])
+                                    admin_key_binding=binding.get('adminKeyBinding'))
     selected={'ouf-udp-object-resolution':'ouf-udp','ouf-onboarding':'ouf-onboarding',
               'ouf-ingestion-runtime':'ouf-ingestion','ouf-mcp-server':'ouf-mcp',
               'ouf-semantic-registry':selected_semantic_container,
