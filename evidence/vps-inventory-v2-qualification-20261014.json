@@ -1,0 +1,176 @@
+{
+  "schema": "ouf.vps-inventory-v2-qualification.v1",
+  "date": "2026-10-14",
+  "sourceCommit": "8dd4c06b26c2c3a0e0545e8f733b8d58a20275de",
+  "sourceSha256": "b0e9f78178452873be69b7e8870a185c6966ea1640231ffb7952ed102aaa4058",
+  "pushRunId": 38644073507,
+  "pushJobId": 116126488393,
+  "prRunId": 38644078961,
+  "prJobId": 116126507068,
+  "status": "PASS",
+  "unitTests": 32,
+  "nativeDatabaseAndDockerTests": 1,
+  "skippedTests": 0,
+  "actualUnixSocketTestRan": true,
+  "fixtureRowsAndRoleCountsPreserved": true,
+  "nativeFixture": {
+    "nativeEngineVersions": {
+      "serverVersion": "28.0.4",
+      "serverApiVersion": "1.48",
+      "minimumApiVersion": "1.24",
+      "cliVersion": "28.0.4",
+      "cliMaximumApiVersion": "1.48",
+      "preparerApiVersion": "1.44",
+      "cliApiOverridePresent": false,
+      "responseValuesOtherThanVersionsPrinted": false
+    },
+    "nativeChannelComparison": {
+      "preparerApiVersion": "1.44",
+      "cliReadMethod": "NATIVE_INSPECT_CLEAN_ENVIRONMENT",
+      "cliStableDoubleRead": true,
+      "apiStableDoubleRead": true,
+      "sameContainerImagePidStartedAt": true,
+      "stableComparisonUsable": true,
+      "historicalVsCli": {
+        "equal": true,
+        "changedBindingFields": [],
+        "historicalBinding": {
+          "containerId": "626910aee3359bd1b0a4bbade4c9299fd45cf569436d72a231570fc2b597c9a9",
+          "imageId": "sha256:79bd7c99e923138f136f8009d6bffa66e21e9d4fda5c0c561b00fc9c90cfe537",
+          "pid": 2155,
+          "startedAt": "2026-10-14T21:56:47.402981442Z",
+          "configHash": "98e0a2991c4720803d7ff431ffaea4796fd2b8e26d716508dcf15d14a28b1681",
+          "hostConfigHash": "864d277183fed1dcfbd659d691e546d248a33dee1710bb428d604cbdb29722b5",
+          "mountsHash": "30007637ba794d2a59aa49602e0a147673386c7e61a12099097adb0f76d16432",
+          "networkSettingsHash": "8b6367236dad7c2c1f92d9ac76e5929bdd45e2caf474a3754e358996c4da4f09"
+        },
+        "currentBinding": {
+          "containerId": "626910aee3359bd1b0a4bbade4c9299fd45cf569436d72a231570fc2b597c9a9",
+          "imageId": "sha256:79bd7c99e923138f136f8009d6bffa66e21e9d4fda5c0c561b00fc9c90cfe537",
+          "pid": 2155,
+          "startedAt": "2026-10-14T21:56:47.402981442Z",
+          "configHash": "98e0a2991c4720803d7ff431ffaea4796fd2b8e26d716508dcf15d14a28b1681",
+          "hostConfigHash": "864d277183fed1dcfbd659d691e546d248a33dee1710bb428d604cbdb29722b5",
+          "mountsHash": "30007637ba794d2a59aa49602e0a147673386c7e61a12099097adb0f76d16432",
+          "networkSettingsHash": "8b6367236dad7c2c1f92d9ac76e5929bdd45e2caf474a3754e358996c4da4f09"
+        },
+        "changedConfigKeys": [],
+        "changedHostConfigKeys": [],
+        "changedEnvironmentNames": [],
+        "changedNetworkSettingsKeys": [],
+        "mountsChanged": false,
+        "valuesDisclosed": false
+      },
+      "historicalVsPreparerApi": {
+        "equal": false,
+        "changedBindingFields": [
+          "networkSettingsHash"
+        ],
+        "historicalBinding": {
+          "containerId": "626910aee3359bd1b0a4bbade4c9299fd45cf569436d72a231570fc2b597c9a9",
+          "imageId": "sha256:79bd7c99e923138f136f8009d6bffa66e21e9d4fda5c0c561b00fc9c90cfe537",
+          "pid": 2155,
+          "startedAt": "2026-10-14T21:56:47.402981442Z",
+          "configHash": "98e0a2991c4720803d7ff431ffaea4796fd2b8e26d716508dcf15d14a28b1681",
+          "hostConfigHash": "864d277183fed1dcfbd659d691e546d248a33dee1710bb428d604cbdb29722b5",
+          "mountsHash": "30007637ba794d2a59aa49602e0a147673386c7e61a12099097adb0f76d16432",
+          "networkSettingsHash": "8b6367236dad7c2c1f92d9ac76e5929bdd45e2caf474a3754e358996c4da4f09"
+        },
+        "currentBinding": {
+          "containerId": "626910aee3359bd1b0a4bbade4c9299fd45cf569436d72a231570fc2b597c9a9",
+          "imageId": "sha256:79bd7c99e923138f136f8009d6bffa66e21e9d4fda5c0c561b00fc9c90cfe537",
+          "pid": 2155,
+          "startedAt": "2026-10-14T21:56:47.402981442Z",
+          "configHash": "98e0a2991c4720803d7ff431ffaea4796fd2b8e26d716508dcf15d14a28b1681",
+          "hostConfigHash": "864d277183fed1dcfbd659d691e546d248a33dee1710bb428d604cbdb29722b5",
+          "mountsHash": "30007637ba794d2a59aa49602e0a147673386c7e61a12099097adb0f76d16432",
+          "networkSettingsHash": "12c7e0d07ac08159c61f69c26d20848b8628598e63561003478eb7714603281a"
+        },
+        "changedConfigKeys": [],
+        "changedHostConfigKeys": [],
+        "changedEnvironmentNames": [],
+        "changedNetworkSettingsKeys": [
+          "Networks"
+        ],
+        "mountsChanged": false,
+        "valuesDisclosed": false
+      },
+      "cliVsPreparerApi": {
+        "equal": false,
+        "changedBindingFields": [
+          "networkSettingsHash"
+        ],
+        "historicalBinding": {
+          "containerId": "626910aee3359bd1b0a4bbade4c9299fd45cf569436d72a231570fc2b597c9a9",
+          "imageId": "sha256:79bd7c99e923138f136f8009d6bffa66e21e9d4fda5c0c561b00fc9c90cfe537",
+          "pid": 2155,
+          "startedAt": "2026-10-14T21:56:47.402981442Z",
+          "configHash": "98e0a2991c4720803d7ff431ffaea4796fd2b8e26d716508dcf15d14a28b1681",
+          "hostConfigHash": "864d277183fed1dcfbd659d691e546d248a33dee1710bb428d604cbdb29722b5",
+          "mountsHash": "30007637ba794d2a59aa49602e0a147673386c7e61a12099097adb0f76d16432",
+          "networkSettingsHash": "8b6367236dad7c2c1f92d9ac76e5929bdd45e2caf474a3754e358996c4da4f09"
+        },
+        "currentBinding": {
+          "containerId": "626910aee3359bd1b0a4bbade4c9299fd45cf569436d72a231570fc2b597c9a9",
+          "imageId": "sha256:79bd7c99e923138f136f8009d6bffa66e21e9d4fda5c0c561b00fc9c90cfe537",
+          "pid": 2155,
+          "startedAt": "2026-10-14T21:56:47.402981442Z",
+          "configHash": "98e0a2991c4720803d7ff431ffaea4796fd2b8e26d716508dcf15d14a28b1681",
+          "hostConfigHash": "864d277183fed1dcfbd659d691e546d248a33dee1710bb428d604cbdb29722b5",
+          "mountsHash": "30007637ba794d2a59aa49602e0a147673386c7e61a12099097adb0f76d16432",
+          "networkSettingsHash": "12c7e0d07ac08159c61f69c26d20848b8628598e63561003478eb7714603281a"
+        },
+        "changedConfigKeys": [],
+        "changedHostConfigKeys": [],
+        "changedEnvironmentNames": [],
+        "changedNetworkSettingsKeys": [
+          "Networks"
+        ],
+        "mountsChanged": false,
+        "valuesDisclosed": false
+      },
+      "cliToApiStructuralDifferences": [
+        {
+          "path": [
+            "NetworkSettings",
+            "Networks",
+            "github_network_878e7ed231e94b919044ed233a52723a",
+            "Aliases"
+          ],
+          "oldPresent": true,
+          "newPresent": true,
+          "oldType": "list",
+          "newType": "list"
+        }
+      ],
+      "historicalToApiStructuralDifferences": [
+        {
+          "path": [
+            "NetworkSettings",
+            "Networks",
+            "github_network_878e7ed231e94b919044ed233a52723a",
+            "Aliases"
+          ],
+          "oldPresent": true,
+          "newPresent": true,
+          "oldType": "list",
+          "newType": "list"
+        }
+      ],
+      "preparationGenerationGateWouldPass": false,
+      "stableChannelDifferenceObserved": true,
+      "historicalCliMatchAndPreparerApiMismatchObserved": true,
+      "rawInspectionPrinted": false,
+      "historicalBindingModified": false,
+      "bindingNormalizationApplied": false,
+      "runtimeAuthorityIssued": false
+    }
+  },
+  "targetVpsDiagnosisProven": false,
+  "applicationSourcesModified": false,
+  "targetServiceMutations": 0,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}

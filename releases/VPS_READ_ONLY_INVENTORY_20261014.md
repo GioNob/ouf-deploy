@@ -1,3 +1,12 @@
+# Current operator step
+
+The next read-only action is [inventory v2](VPS_READ_ONLY_INVENTORY_V2_20261014.md),
+qualified at source `8dd4c06b26c2c3a0e0545e8f733b8d58a20275de`.
+The v1 operator report is archived at commit `a3a7c8bfab7711d05a0b668e362e093c559c771b`;
+the assessment is in `VPS_INVENTORY_ASSESSMENT_20261014.md`. Do not rerun the
+cohort delivery until the stable CLI/API comparison and remaining coverage are reconciled.
+The following section records the original v1 collector and its limits.
+
 # VPS inventory: exact qualified operator action, 14 October 2026
 
 This is resource-read-only diagnostic collection, not a rollout.
