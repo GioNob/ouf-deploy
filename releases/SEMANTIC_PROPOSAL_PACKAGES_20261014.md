@@ -20,7 +20,13 @@ Per Lupa,2.8 non è presentato come una correzione upstream provata: le note di 
 
 Gli ZIP scaricati sono verificati contro i digest Actions e tutti i checksum interni. Registry image ID: sha256:1e2dac4a6619f511056abc91dd153ce7687efc25aec25aa77a6f66c9f2f67cfd. Il verificatore non estrae né esegue gli artefatti.
 
-## Consegna sul VPS
+## Consegna sul VPS completata — non ripetere
+
+Ricevuta fornita dall'operatore il14 ottobre2026 alle06:05 CEST: [evidenza target](../evidence/semantic-proposal-candidate-stage-target-20261014.json). I tre ZIP sono conservati in `/home/oufadmin/ouf-semantic-candidates-20261014.fADvCV9u`; digest e manifest coincidono con la qualifica. È un risultato riferito dall'operatore, non una rilettura indipendente. Nessun effetto runtime. Il comando seguente è storico e non va ripetuto.
+
+La continuazione IAM del13 ottobre è ora integrata tramite PR5: [radici già custodite](POLICY_TOKEN_ROOT_DELIVERY_20261013.md), claim consumata; [migrazione e riuso del ledger completato](POLICY_TOKEN_MIGRATION_ASSEMBLY_20261013.md). Queste evidenze non erano in main durante la confezione dei pacchetti; il nuovo staging non le sostituisce e non autorizza la ricreazione delle radici.
+
+## Consegna storica
 
 Serve questo passaggio operatore perché la sessione non dispone di SSH o di una superficie di esecuzione sul VPS. Non serve sudo. Il launcher scarica circa207MB in una nuova directory privata della home e richiede1GiB libero; conserva ricevute, fase e motivo di eventuale blocco. Ogni download ha un timeout, un solo tentativo e nessun retry automatico. Non modifica container, unità, database, chiavi o R12.
 
