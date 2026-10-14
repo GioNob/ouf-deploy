@@ -118,16 +118,29 @@ class Projection(unittest.TestCase):
               'udpKeyEnv':'UKEY','semanticReadKeyEnv':'RKEY','semanticProposalKeyEnv':'PKEY',
               'semanticReadRouteIds':{'search':'semantic-search','get':'semantic-get'}}
         rows=preparation.materialize_target(runtime,refs)
-        self.assertEqual(len(rows),41)
-        self.assertNotIn('operational-execute-ouf-gateway-operations-summary',rows)
-        self.assertNotIn('operational-execute-ouf-gateway-operations-incidents',rows)
+        self.assertEqual(len(rows),37)
+        self.assertFalse(any(name.startswith('operational-execute-') for name in rows))
         self.assertEqual(rows['trusted-human-onboarding-approvals-post']['upstream']['timeout']['read'],55)
-        existing={'foreign':{'id':'foreign','uri':'/foreign','methods':['GET']}}
+        existing={'foreign':{'id':'foreign','uri':'/foreign','methods':['GET']},
+                  'execute-ouf.operations.summary':{'id':'execute-ouf.operations.summary',
+                      'uri':'/internal/capabilities/v1/execute/ouf.operations.summary','methods':['POST']},
+                  'execute-ouf.ingestion.operations.summary':{'id':'execute-ouf.ingestion.operations.summary',
+                      'uri':'/internal/capabilities/v1/execute/ouf.ingestion.operations.summary','methods':['POST']}}
         package={'module':'gateway','artifactKind':'SOURCE_AND_ROUTE_PACKAGE','sourceCommit':'a'*40,
                  'cohortSourceLockSha256':'b'*64}
         plan=preparation.compile_gateway_plan(existing,runtime,refs,package,{'fixture':True})
         self.assertEqual(plan['proposedRoutes']['foreign'],existing['foreign'])
-        self.assertEqual(len(plan['proposedRoutes']),42)
+        self.assertEqual(len(plan['proposedRoutes']),40)
+        self.assertEqual(plan['proposedRoutes']['execute-ouf.operations.summary'],existing['execute-ouf.operations.summary'])
+        self.assertEqual(plan['proposedRoutes']['execute-ouf.ingestion.operations.summary'],existing['execute-ouf.ingestion.operations.summary'])
+        actual_refs=copy.deepcopy(refs)
+        actual_refs['semanticReadRouteIds']={'search':'mcp-semantic-search','get':'mcp-semantic-get'}
+        actual_semantic=preparation.materialize_target(runtime,actual_refs)
+        retained={**existing,'mcp-semantic-search':actual_semantic['mcp-semantic-search'],
+                  'mcp-semantic-get':actual_semantic['mcp-semantic-get']}
+        actual_plan=preparation.compile_gateway_plan(retained,runtime,actual_refs,package,{'fixture':True})
+        self.assertEqual(actual_plan['proposedRoutes']['mcp-semantic-search'],retained['mcp-semantic-search'])
+        self.assertEqual(actual_plan['proposedRoutes']['mcp-semantic-get'],retained['mcp-semantic-get'])
         existing['foreign']['uri']='/mcp'
         existing['foreign']['methods']=rows['mcp']['methods'] if 'mcp' in rows else next(r['methods'] for r in rows.values() if r.get('uri')=='/mcp')
         with self.assertRaisesRegex(ValueError,'SELECTOR_COLLISION'):preparation.compile_gateway_plan(existing,runtime,refs,package,{'fixture':True})

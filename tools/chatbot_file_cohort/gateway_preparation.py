@@ -52,15 +52,22 @@ def materialize_target(runtime, references):
     approvals = {'trusted-human-onboarding-approvals-get', 'trusted-human-onboarding-approvals-post'}
     result['routes'].extend(r for r in onboarding_human(runtime, oidc)['routes'] if r['id'] in approvals)
     rows = route_map(result['routes'])
-    # Gateway operational status is outside the file cohort. Its retained
-    # routes remain in `previous`; the target has no running control-plane
-    # container, so this cohort must not re-publish those two upstreams.
-    for rid in ('operational-execute-ouf-gateway-operations-summary',
-                'operational-execute-ouf-gateway-operations-incidents'):
+    # Operational status/incident mediation is outside this file cohort.
+    # Retained routes keep their existing IDs and owner semantics. In
+    # particular, current summary routes use different reviewed IDs for the
+    # same HTTP selectors, and the Gateway control plane is not running.
+    operational=(('ouf-operations-summary','ouf-mcp-server:8080'),
+                 ('ouf-operations-incidents','ouf-mcp-server:8080'),
+                 ('ouf-ingestion-operations-summary','ouf-ingestion-runtime:8080'),
+                 ('ouf-ingestion-operations-incidents','ouf-ingestion-runtime:8080'),
+                 ('ouf-gateway-operations-summary','ouf-gateway-control-plane:8081'),
+                 ('ouf-gateway-operations-incidents','ouf-gateway-control-plane:8081'))
+    for suffix,upstream in operational:
+        rid='operational-execute-'+suffix
         row=rows.get(rid)
         require(row is not None and row.get('labels',{}).get('ouf-mediation')=='operational-execute-v1'
-                and row.get('upstream',{}).get('nodes')=={'ouf-gateway-control-plane:8081':1},
-                'EXACT_UNRELATED_GATEWAY_OPERATIONAL_ROUTE_REQUIRED')
+                and row.get('upstream',{}).get('nodes')=={upstream:1},
+                'EXACT_UNRELATED_OPERATIONAL_ROUTE_REQUIRED')
         del rows[rid]
     # Make APISIX schema defaults explicit in the signed request so full GET
     # equality does not mistake server-added default values for foreign drift.

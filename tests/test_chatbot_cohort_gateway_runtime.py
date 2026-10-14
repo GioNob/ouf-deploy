@@ -203,7 +203,7 @@ class GatewayRuntime(unittest.TestCase):
         self.assertEqual(result['gatewayRuntimePlan']['proposalKeyHash'],key_binding['sha256'])
         self.assertEqual(result['runtimeMutations'],0)
         routes=result['gatewayPlan']['proposedRoutes']
-        self.assertEqual(len(routes),42);self.assertEqual(routes['foreign'],previous['foreign'])
+        self.assertEqual(len(routes),38);self.assertEqual(routes['foreign'],previous['foreign'])
         nodes={n for row in routes.values() for n in row.get('upstream',{}).get('nodes',{})}
         self.assertIn('ouf-udp:8080',nodes)
         self.assertNotIn('ouf-gateway-control-plane:8081',nodes)
