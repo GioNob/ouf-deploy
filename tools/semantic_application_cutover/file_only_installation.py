@@ -74,16 +74,17 @@ def compile_scope(prepared,source_closure_hash):
         'phaseIntentHashes':{p:digest(intents[p]) for p in PHASES},'directoryPlanHash':digest(paths)}
 
 class RegistryCheckpoints:
-    def __init__(self,prepared,action,engine,transition,store,retirement,token_owner,cohort):
+    def __init__(self,prepared,action,engine,transition,store,before_store,retirement,token_owner,cohort):
         require(type(action) is AggregateAction and type(engine) is Engine and type(transition) is Transition
-                and type(store) is NativeEvidenceStore and type(retirement) is R12RetirementChannel
+                and type(store) is NativeEvidenceStore and type(before_store) is NativeEvidenceStore
+                and before_store.root!=store.root and type(retirement) is R12RetirementChannel
                 and type(token_owner) is InstalledTokenOwner,'REAL_REGISTRY_CHECKPOINT_OWNERS_REQUIRED')
         require(type(cohort) is dict and set(cohort)=={'containers','databases','gateway','authorization'}
                 and type(cohort['containers']) is CohortContainers and type(cohort['databases']) is CohortDatabases
                 and type(cohort['gateway']) is GatewayRoutes and type(cohort['authorization']) is AuthorizationDelta
                 and all(v.action is action for v in cohort.values()),'SAME_AGGREGATE_NATIVE_COHORT_OWNERS_REQUIRED')
         self.prepared=copy.deepcopy(prepared);self.action,self.engine,self.transition,self.store=action,engine,transition,store
-        self.retirement,self.token_owner,self.cohort=retirement,token_owner,cohort
+        self.retirement,self.token_owner,self.cohort,self.before_store=retirement,token_owner,cohort,before_store
         self.scope=compile_scope(prepared,action.closure);self.application=None;self.directory_bindings={}
         require(digest(cohort['containers'].plan)==self.scope['cohortPlanHash'],'SAME_COMPLETE_APPLICATION_COHORT_PLAN_REQUIRED')
         retired={r['oldRuntimeBinding']['containerId'] for r in cohort['containers'].plan['replacements']}
@@ -141,9 +142,7 @@ class RegistryCheckpoints:
                 selected=[p for p in selected if p['containerId'] in retired]
             quiesced=self.application.executor.adapters['QUIESCE_PRODUCERS']
             require(all(quiesced.stopped(pin) is not None for pin in selected),'REGISTRY_DEPENDENT_PRODUCER_FENCE_LOST')
-        # Revalidate the current owner policy before accepting any new phase;
-        # read-only reconciliations cannot substitute an unsigned assertion.
-        proof['authorizationHash']=digest(self.cohort['authorization'].verify())
+        proof['authorizationHash']=digest(self.authorization(phase,point))
         if 'ATTEST_NEW_OCI_PEER' in completed and ((phase=='ADMIT_MIGRATION' and point=='BEFORE_NATIVE_EFFECT')
                 or (phase=='START_REPLACEMENT' and point=='BEFORE_UNPAUSE')):
             proof['pausedNodeHash']=digest(self.application.node_owner.verify_retained())
@@ -159,6 +158,35 @@ class RegistryCheckpoints:
 
     def backup(self,point):
         return self.phase('FENCED_BACKUP',point,self.transition.read())
+
+    def authorization(self,phase,point):
+        """Owner HTTP is deliberately unavailable while Onboarding is quiesced.
+
+        Preserve its actual pre-quiescence proof and immutable effect ledger;
+        validate the current full HUMAN authority locally throughout downtime.
+        Fresh owner verification is mandatory again before any producer release.
+        """
+        owner=self.cohort['authorization'];owner.guard()
+        prior_phase=phase=='STOP_REVOKE_OLD_LEASE' or (phase=='QUIESCE_PRODUCERS'
+            and point in ('BEFORE_DURABLE_INTENT','BEFORE_NATIVE_EFFECT'))
+        if prior_phase:
+            proof=owner.verify()
+            if phase=='QUIESCE_PRODUCERS' and point=='BEFORE_NATIVE_EFFECT':
+                self.before_store.publish('QUIESCE_PRODUCERS',{'schema':'ouf.registry-authorization-before-quiescence.v1',
+                    'transitionContextHash':self.transition.context,'intentHash':self.scope['phaseIntentHashes']['QUIESCE_PRODUCERS'],
+                    'authorityHash':self.action.authority_hash,'authorizationPlanHash':owner.hash,
+                    'authorizationHistoryHash':digest(owner.record()),'ownerEvidence':proof})
+            return {'currentOwnerEvidence':proof,'ownerQuiesced':False}
+        baseline=self.before_store.read_baseline('QUIESCE_PRODUCERS',self.transition.context,
+            self.scope['phaseIntentHashes']['QUIESCE_PRODUCERS'])
+        require(baseline.get('schema')=='ouf.registry-authorization-before-quiescence.v1'
+            and baseline.get('authorityHash')==self.action.authority_hash and baseline.get('authorizationPlanHash')==owner.hash
+            and baseline.get('authorizationHistoryHash')==digest(owner.record()),'PRE_QUIESCENCE_OWNER_PROOF_OR_HISTORY_CHANGED')
+        if phase=='RELEASE_PRODUCERS':
+            current=owner.verify();require(current==baseline['ownerEvidence'],'OWNER_AUTHORIZATION_CHANGED_ACROSS_COHORT_CUTOVER')
+            return {'currentOwnerEvidence':current,'ownerQuiesced':False}
+        return {'retainedPreQuiescenceEvidenceHash':digest(baseline),'ownerQuiesced':True,
+                'currentOwnerHttpProven':False,'currentLocalAuthorityHash':self.action.authority_hash}
 
 def build(prepared,action,token_owner,engine,verifier,attestation_signer,directories,cohort):
     require(type(action) is AggregateAction and type(engine) is Engine and type(token_owner) is InstalledTokenOwner,
@@ -179,7 +207,7 @@ def build(prepared,action,token_owner,engine,verifier,attestation_signer,directo
     store=NativeEvidenceStore(directories['evidence']);before=NativeEvidenceStore(directories['before'])
     retirement_before=NativeEvidenceStore(directories['retirementBefore'])
     retirement=R12RetirementChannel(prepared['retirementScope'],custody,lease_projection)
-    checkpoints=RegistryCheckpoints(prepared,action,engine,transition,store,retirement,token_owner,cohort)
+    checkpoints=RegistryCheckpoints(prepared,action,engine,transition,store,before,retirement,token_owner,cohort)
     backup=prepared['intents']['FENCED_BACKUP']
     admin=Psql(backup['containerId'],backup['user'],prepared['adminDatabase'],'ouf-cutover-registry-admin')
     try:

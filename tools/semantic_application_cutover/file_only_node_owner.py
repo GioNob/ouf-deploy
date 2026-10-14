@@ -82,11 +82,15 @@ class FileOnlyNodeOwner:
         state=decode(runner.run(config['runtimeBinding'],['--root',recipe['runtimeRoot'],'state',cid],16384),16384)
         paused.verify_runc_state(state,before)
         context=copy.deepcopy(recipe['dockerContext'])
-        require(set(context)=={'schema','bundleParent','metadataParent','networkNamespaceParent','cgroupDriver','storageParent'},'EXACT_REVIEWED_DOCKER_CONTEXT_PARENTS_REQUIRED')
+        fields={'schema','bundleParent','metadataParent','networkNamespaceParent','cgroupDriver','storageParent'}
+        require(set(context) in (fields,fields|{'rootfsLayout'}),'EXACT_REVIEWED_DOCKER_CONTEXT_PARENTS_REQUIRED')
         require(state.get('bundle')==context['bundleParent']+'/'+cid,'NODE_BUNDLE_OUTSIDE_REVIEWED_DOCKER_CONTEXT')
         sandbox=native.get('NetworkSettings',{}).get('SandboxKey')
         require(type(sandbox) is str and str(Path(sandbox).parent)==context['networkNamespaceParent'],'NODE_SANDBOX_OUTSIDE_REVIEWED_PARENT')
-        merged=native.get('GraphDriver',{}).get('Data',{}).get('MergedDir')
+        layout=context.pop('rootfsLayout','graphdriver-merged-dir-v1')
+        require(layout in ('graphdriver-merged-dir-v1','docker-containerd-overlayfs-v1'),'REVIEWED_ROOTFS_LAYOUT_REQUIRED')
+        merged=(context['storageParent']+'/rootfs/overlayfs/'+cid if layout=='docker-containerd-overlayfs-v1'
+            else native.get('GraphDriver',{}).get('Data',{}).get('MergedDir'))
         require(type(merged) is str and Path(merged).is_absolute() and Path(merged).is_relative_to(context['storageParent']),
             'EXACT_NATIVE_IMAGE_MERGED_ROOTFS_REQUIRED')
         context.update(containerId=cid,networkNamespaceName=Path(sandbox).name,rootfsPath=merged)

@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import sys
 import unittest
+from types import SimpleNamespace
 ROOT=Path(__file__).resolve().parents[1]
 TOKEN=ROOT if (ROOT/'tools/semantic_policy_token_owner/owner_installation.py').exists() else ROOT.parent/'token-owner-installer-work'
 COHORT=ROOT if (ROOT/'tools/chatbot_file_cohort/authorization.py').exists() else ROOT.parent/'cohort-delivery-work'
@@ -16,7 +17,8 @@ from cutover_executor import Executor,CutoverDenied
 from transition_journal import Transition,digest
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
-from file_only_installation import compile_scope,directory_bindings
+from file_only_installation import compile_scope,directory_bindings,RegistryCheckpoints
+from native_evidence_store import NativeEvidenceStore
 
 SCOPES=('policyTokenOwnerInstallation','policyTokenOutputCustody','policyTokenLegacyRetirement',
     'policyTokenCredentialReestablishment','policyTokenAccountingGapMigration','policyTokenFirstControlledGrant',
@@ -90,5 +92,30 @@ class Aggregate(unittest.TestCase):
         self.assertNotEqual(compile_scope(prepared,'a'*64)['preparedHash'],result['preparedHash'])
         prepared['directoryPlan']['node']='/different/action/node'
         with self.assertRaisesRegex(ValueError,'GROUPED_ROOT'):compile_scope(prepared,'a'*64)
+
+    def test_quiesced_authorization_owner_uses_retained_proof_and_current_local_mandate(self):
+        # Only owner HTTP is simulated. Current HUMAN/dual-role verification,
+        # durable private evidence and changed-history denial remain real.
+        f,p,e,action,scope,calls=self.fixture();history={'version':4};seen=[]
+        receipt={'status':'OWNER_POLICY_ROLES_SCOPES_RECONCILED','fixtureOnly':True}
+        def verify():seen.append('http');return copy.deepcopy(receipt)
+        expected=json.loads(action.raw)['chatbotFileAuthorization']
+        owner=SimpleNamespace(hash='f'*64,guard=lambda:action.guard('chatbotFileAuthorization',expected),
+            verify=verify,record=lambda:copy.deepcopy(history))
+        native=f.root/'authorization-before';native.mkdir(mode=0o700)
+        check=RegistryCheckpoints.__new__(RegistryCheckpoints)
+        check.cohort={'authorization':owner};check.before_store=NativeEvidenceStore(native)
+        check.transition=e.t;check.scope=scope;check.action=action
+        check.authorization('QUIESCE_PRODUCERS','BEFORE_NATIVE_EFFECT');self.assertEqual(seen,['http'])
+        for phase in ('QUIESCE_PRODUCERS','FENCED_BACKUP','ATTEST_NEW_OCI_PEER','VERIFY_APPLICATION'):
+            value=check.authorization(phase,'AFTER_NATIVE_EFFECT')
+            self.assertTrue(value['ownerQuiesced']);self.assertFalse(value['currentOwnerHttpProven'])
+        self.assertEqual(seen,['http'])
+        check.authorization('RELEASE_PRODUCERS','BEFORE_NATIVE_EFFECT');self.assertEqual(seen,['http','http'])
+        history['version']+=1
+        with self.assertRaisesRegex(ValueError,'OWNER_PROOF_OR_HISTORY_CHANGED'):
+            check.authorization('FENCED_BACKUP','BEFORE_NATIVE_EFFECT')
+        history['version']-=1;f.approval['state']='REVOKED';f.write(f.mandate,fixture.crypto.encoded(f.approval))
+        with self.assertRaises(Exception):check.authorization('FENCED_BACKUP','BEFORE_NATIVE_EFFECT')
 
 if __name__=='__main__':unittest.main()
