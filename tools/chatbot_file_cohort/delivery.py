@@ -37,7 +37,7 @@ from tools.chatbot_file_cohort.action_process import private_file
 from tools.chatbot_file_cohort.review import digest, encoded, require, validate_decision, command_matches
 from tools.chatbot_file_cohort.containers import CohortContainers, CohortPaused
 from tools.chatbot_file_cohort.databases import CohortDatabases
-from tools.chatbot_file_cohort.gateway import GatewayRoutes, NamespaceAdmin
+from tools.chatbot_file_cohort.gateway import GatewayRoutes, NamespaceAdmin, private_config
 from tools.chatbot_file_cohort.authorization import AuthorizationDelta, AuthorizationPaused, OwnerPrimitives, OwnerTransport
 from tools.chatbot_file_cohort.images import CohortImages
 from tools.chatbot_file_cohort.gateway_runtime import GatewayRuntime, runtime_scope
@@ -221,6 +221,10 @@ class Delivery:
         app = None
         try:
             self.current()
+            binding=self.prepared['ingestionConfigurationBinding']
+            require(type(binding) is dict and set(binding)=={'path','sha256','metadata'},
+                    'EXACT_REVIEWED_INGESTION_CONFIGURATION_BINDING_REQUIRED')
+            private_config(binding['path'],binding)
             directories = create_directories(self.action)
             native_environment(self.engine,self.review['sourceClosure']['executables']['docker'],directories['dockerCli'])
             authorization = self.prepared['authorization']
@@ -307,6 +311,7 @@ class Delivery:
             gateway.apply(); gateway_evidence = gateway.verify()
             containers.accept_owner_gate('gateway',plan['gatewayPlanHash'],digest(gateway_evidence))
             for module in ('ingestion','mcp'):
+                if module=='ingestion':private_config(binding['path'],binding)
                 self.report('REPLACING_COHORT_MODULE',module=module)
                 self.await_container(containers,module); databases.verify_module(module)
             self.current(True)
