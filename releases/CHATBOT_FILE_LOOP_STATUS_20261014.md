@@ -212,7 +212,7 @@ Nessuna migrazione, grant operativo o rollout target eseguito da questi
 cambiamenti. Ripresa tramite nuovo piano/revisione e riuso esplicito
 dell'archivio già scaricato; storico e journal conservati.
 
-### Consegna corrente qualificata e pronta per l'operatore
+### Consegna qualificata: stato target aggiornato sotto
 
 Sorgente eseguibile immutabile `dca15f41bab8ddd254febb72f2a6008f94628ea1`.
 [CI nativa 38608036495](https://github.com/GioNob/ouf-deploy/actions/runs/38608036495):
@@ -238,6 +238,38 @@ Le approvazioni applicative restano nel THS e la finestra è un'ora.
 Nessuna migrazione o mutazione di servizi target è stata eseguita da questa
 qualificazione. Prossimo passo: operatore esegue la consegna e riporta soltanto
 gli stati redatti. End-to-end reale resta OPEN.
+
+### Stato target corrente: blocco runc prima della revisione
+
+L'operatore ha eseguito la sorgente qualificata dca15f41 usando l'archivio
+esistente e riportato l'output il 14 ottobre 2026 alle 19:49 CEST.
+Preparazione e login IAM riusciti; il precedente preflight DB è stato
+superato. Il collector Registry si è fermato con
+RETAINED_REAL_RUNC_GENERATION_AND_LAYOUT_REQUIRED e
+runtimeAuthorityIssued=false. Non è stata raggiunta la conferma finale.
+Nessuna migrazione, bootstrap audit role o nuova azione lifecycle target
+è stata eseguita da questa invocazione.
+
+La condizione richiede id, PID, status runc=running e un bundle con prefisso
+esatto /run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby.
+Il caller prova Running=true per il Registry precedente, ma non distingue
+Paused. Pausa o layout/alias sono ipotesi da discriminare: nessuna è ancora
+un fatto target. Non relabel, unpause, restart, nuovo grant o ampliamento
+della policy deriva dall'errore; nessun retry automatico di esito sconosciuto.
+
+Il prossimo passo è il solo read
+[scripts/diagnose-file-cohort-runc.py](../scripts/diagnose-file-cohort-runc.py),
+SHA256 `7ebfa2816427073ed8398bf38f864dc3f06911445a739fdba6182a78b7cbf464`.
+Usa le esatte binding retained e i loro hash, legge il container selezionato
+e il comando runc state due volte; stampa soltanto booleane/profili e stati
+redatti. Nessun login IAM, token, config.json OCI, pause/unpause, restart,
+firma, migrazione o tentativo di apply. Cinque test locali qualificano
+separazione running/paused, drift PID/generazione, layout distinti e redazione;
+non sono un'osservazione del VPS.
+
+Conservare pacchetto e capsule precedenti. Non rilanciare la consegna apply
+prima di acquisire questi fatti. La prova CI rimane valida per i propri
+sorgenti; il ciclo reale resta OPEN.
 
 ## Prova che manca per dichiarare il risultato
 
