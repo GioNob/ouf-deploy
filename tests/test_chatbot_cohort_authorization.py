@@ -169,6 +169,18 @@ class CompilerTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'REGISTRATION_CONFLICT'):self.compile()
         del self.obs['registrations'][cap];del self.obs['registrations']['ingestion.operations.read']
         with self.assertRaisesRegex(ValueError,'STATUS_DESCRIPTOR_UNPROVEN'):self.compile()
+    def test_csv_to_search_scope_excludes_unproven_optional_ingestion_status(self):
+        self.obs['registrations'].pop('ingestion.operations.read')
+        self.obs['active']['policy']['capabilities']=[c for c in self.obs['active']['policy']['capabilities']
+            if c['capabilityId']!='ingestion.operations.read']
+        self.obs['active']['contentHash']=digest(self.obs['active']['policy'])
+        plan=compile_plan(self.obs,self.primitives,self.selection,include_ingestion_status=False,
+                          now='2026-10-14T09:00:00Z')
+        self.assertEqual({p['capabilityId'] for p in plan['addedPermissions']},set(NEW))
+        self.assertEqual(set(plan['scopeCreations']),set(NEW))
+        self.assertEqual(set(plan['requiredScopes']['chatgpt']),set(CHAT))
+        self.assertNotIn('ingestion.operations.read',plan['requiredScopes']['chatgpt'])
+        self.assertEqual(plan['candidatePolicy']['grants'],self.obs['active']['policy']['grants'])
     def test_optional_scope_is_preserved_if_requested_else_explicitly_promoted(self):
         scope=self.obs['oauth']['scopes']['ouf.semantic.read'];client=self.obs['oauth']['clients']['chatgpt']
         row=next(v for v in client['default'] if v['id']==scope['id']);client['default'].remove(row);client['optional'].append(row)
