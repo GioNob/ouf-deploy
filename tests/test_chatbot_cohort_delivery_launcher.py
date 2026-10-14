@@ -130,17 +130,23 @@ class DeliveryLauncherTest(unittest.TestCase):
     def test_root_subprocess_executes_exact_entry_with_isolation_private_custody_and_forwarded_bindings(self):
         result = self.run_root(); self.assertEqual(result.returncode, 0, result.stderr.decode())
         receipt = json.loads(result.stdout); stage = self.base/('chatbot-file-intake-'+self.expected)
+        attempt = Path(receipt['arguments']['staging_directory'])
+        self.assertEqual(attempt.parent, stage)
+        self.assertRegex(attempt.name, r'^attempt-[0-9a-f]{24}$')
         self.assertEqual(receipt['status'], 'SYNTHETIC_ENTRY_ONLY')
         self.assertEqual((receipt['isolated'], receipt['noSite'], receipt['noBytecode'], receipt['uid']), (1, 1, True, 0))
         self.assertEqual(receipt['arguments'], {'source_directory':str(stage/'source'),
-            'package_archive':str(self.package), 'staging_directory':str(stage),
+            'package_archive':str(self.package), 'staging_directory':str(attempt),
             'source_commit':COMMIT, 'preparation_source_hash':self.expected})
         self.assertFalse(receipt['targetApplyAuthorized'])
-        self.assertEqual(set(receipt['files']), {'source/'+p for p in self.files}|{'preparation-manifest.json'})
+        self.assertEqual(set(receipt['files']), {'preparation-manifest.json'})
         for name, value in receipt['files'].items():
             self.assertEqual((value['uid'], value['gid'], value['mode']), (0, 0, '0o600'))
-            raw = self.manifest_raw if name == 'preparation-manifest.json' else self.files[name.removeprefix('source/')]
-            self.assertEqual(value['sha256'], sha(raw))
+            self.assertEqual(value['sha256'], sha(self.manifest_raw))
+        for name, raw in self.files.items():
+            source = stage/'source'/name
+            self.assertEqual(sha(source.read_bytes()), sha(raw))
+            self.assertEqual(stat.S_IMODE(source.stat().st_mode), 0o600)
         for path in (stage, *(p for p in stage.rglob('*') if p.is_dir())):
             self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o700)
         self.assertEqual(list(stage.rglob('*.pyc')), [])
@@ -167,7 +173,12 @@ class DeliveryLauncherTest(unittest.TestCase):
         first = self.run_root(); self.assertEqual(first.returncode, 0, first.stderr.decode())
         stage = self.base/('chatbot-file-intake-'+self.expected); entry = stage/'source'/ENTRY
         identity = (entry.stat().st_dev, entry.stat().st_ino)
+        first_attempt=Path(json.loads(first.stdout)['arguments']['staging_directory'])
+        marker=first_attempt/'retained-marker';marker.write_bytes(b'PRIOR_ATTEMPT_UNCHANGED')
         again = self.run_root(); self.assertEqual(again.returncode, 0, again.stderr.decode())
+        second_attempt=Path(json.loads(again.stdout)['arguments']['staging_directory'])
+        self.assertNotEqual(first_attempt,second_attempt)
+        self.assertEqual(marker.read_bytes(),b'PRIOR_ATTEMPT_UNCHANGED')
         self.assertEqual(identity, (entry.stat().st_dev, entry.stat().st_ino))
         entry.write_bytes(ENTRY_BYTES.replace(b'SYNTHETIC_ENTRY_ONLY', b'SYNTHETIC_ENTRY_EVIL'))
         self.assert_denied(self.run_root(), 'ROOT_EXISTING_SOURCE_BYTES_DRIFT')
@@ -256,7 +267,8 @@ def main():
             self.assertEqual(launcher.main(),0)
         self.assertEqual(len(calls),3) # manifest, small source TAR, isolated root entry; no package downloader
         self.assertEqual(len(receipts),1)
-        self.assertEqual(receipts[0]['arguments']['staging_directory'],str(self.base/('chatbot-file-intake-'+self.expected)))
+        self.assertEqual(Path(receipts[0]['arguments']['staging_directory']).parent,
+                         self.base/('chatbot-file-intake-'+self.expected))
         self.assertNotEqual(receipts[0]['arguments']['staging_directory'],str(old_stage))
         self.assertEqual((existing.stat().st_ino,marker.stat().st_ino,marker.read_bytes()),original)
         self.assertFalse((home/('ouf-chatbot-file-delivery-'+self.expected[:24])/'cohort').exists())
