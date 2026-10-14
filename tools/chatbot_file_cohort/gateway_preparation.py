@@ -154,6 +154,18 @@ def lua_constant(route,name):
     return values[0]
 
 
+def proposal_identity(runtime, routes):
+    """The exact owner receipt identity already rendered into all four routes."""
+    installation=runtime['x-ouf-installation']
+    identity={'issuer':installation['issuerUrl'].rstrip('/'),'audience':installation['gatewayAudience'],
+              'workload':installation['mcpServiceIdentity']}
+    for mode in ('create','validate','review','read'):
+        route=routes['semantic-proposal-'+mode]
+        for constant,key in (('ISSUER','issuer'),('AUDIENCE','audience'),('MCP_WORKLOAD','workload')):
+            require(lua_constant(route,constant)==identity[key],'MATERIALIZED_PROPOSAL_IDENTITY_DRIFT')
+    return identity
+
+
 def observe_references(routes, runtime, values, proposal_env):
     def selected(uri):
         rows=[r for r in routes.values() if r.get('uri')==uri]
@@ -256,13 +268,15 @@ def prepare_gateway(package_directory, package_record, engine, projection_bindin
         services[short]=services[logical]
     package={k:v for k,v in record.items() if k!='files'}
     plan=compile_gateway_plan(previous,runtime,refs,package,proposed_transport(replacement) if replacement else binding,services)
+    identity=proposal_identity(runtime,plan['proposedRoutes'])
+    plan['proposalIdentity']=identity
     plan['projectionBinding']=current_projection
     plan['proposalKeyBinding']=key_binding
     plan['gatewayRuntimePlanHash']=digest(replacement) if replacement else None
     require(transport.routes()==previous and NamespaceAdmin.observe(engine,mounts[0]['Source'])==binding,
             'GATEWAY_CHANGED_DURING_COMPLETE_PREPARATION')
     return {'gatewayPlan':plan,'gatewayRuntimePlan':replacement,'proposalKeyBinding':key_binding,
-            'targetReferences':refs,'privateEvidenceWrites':writes,'runtimeMutations':0,
+            'targetReferences':refs,'proposalIdentity':identity,'privateEvidenceWrites':writes,'runtimeMutations':0,
             'runtimeAuthorityIssued':False,'notReleaseAcceptance':True}
 
 

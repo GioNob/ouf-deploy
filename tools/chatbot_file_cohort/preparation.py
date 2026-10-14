@@ -5,6 +5,7 @@ already authenticated the six-module package and copied it to private custody.
 """
 import copy
 import hashlib
+import json
 import re
 import tarfile
 from pathlib import Path
@@ -18,6 +19,36 @@ from tools.chatbot_file_cohort.images import private_open, image_import_scope
 DB_PREFIX = {'udp':'OUF_UDP','onboarding':'OUF_ONB','ingestion':'OUF_ING'}
 
 
+def validate_json_overlay(raw,prefix):
+    """Preserve the existing THS OAuth overlay without accepting a DB override."""
+    if not raw:return
+    require(type(raw) is str and len(raw.encode())<=262144,'BOUNDED_APPLICATION_JSON_REQUIRED')
+    def unique(pairs):
+        value={}
+        for key,item in pairs:
+            require(key not in value,'DUPLICATE_APPLICATION_JSON_PROPERTY')
+            value[key]=item
+        return value
+    try:
+        value=json.loads(raw,object_pairs_hook=unique)
+    except (ValueError,TypeError,RecursionError):
+        require(False,'EXACT_APPLICATION_JSON_OBJECT_REQUIRED')
+    require(type(value) is dict,'EXACT_APPLICATION_JSON_OBJECT_REQUIRED')
+    protected=('springdatasource','springflyway','springconfig','springprofiles',
+               'springapplicationjson',re.sub('[^a-z0-9]','',prefix.lower())+'db')
+    pending=[('',value,0)];seen=0
+    while pending:
+        stem,current,depth=pending.pop()
+        require(depth<=16,'BOUNDED_APPLICATION_JSON_DEPTH_REQUIRED')
+        for name,item in current.items():
+            seen+=1
+            require(seen<=2048 and 0<len(name)<=256,'BOUNDED_APPLICATION_JSON_PROPERTIES_REQUIRED')
+            full=stem+'.'+name if stem else name
+            canonical=re.sub('[^a-z0-9]','',full.lower())
+            require(not canonical.startswith(protected),'CUSTOM_DATASOURCE_CONFIGURATION_REQUIRES_REVIEW')
+            if type(item) is dict:pending.append((full,item,depth+1))
+
+
 def database_binding(module, actual, postgres):
     values = environment(actual['Config'].get('Env') or [])
     if module == 'mcp':
@@ -26,7 +57,8 @@ def database_binding(module, actual, postgres):
         prefix = DB_PREFIX[module]
         raw = values.get(prefix+'_DB_URL','')
         require(raw.startswith('jdbc:postgresql://'), 'EXPLICIT_CURRENT_JDBC_DATABASE_REQUIRED')
-        require(not any(values.get(k) for k in ('SPRING_APPLICATION_JSON','SPRING_CONFIG_LOCATION','SPRING_CONFIG_ADDITIONAL_LOCATION')),
+        validate_json_overlay(values.get('SPRING_APPLICATION_JSON'),prefix)
+        require(not any(values.get(k) for k in ('SPRING_CONFIG_LOCATION','SPRING_CONFIG_ADDITIONAL_LOCATION')),
                 'CUSTOM_DATASOURCE_CONFIGURATION_REQUIRES_REVIEW')
         for key in ('SPRING_DATASOURCE_URL','SPRING_DATASOURCE_USERNAME'):
             corresponding = raw if key.endswith('_URL') else values.get(prefix+'_DB_USER','')

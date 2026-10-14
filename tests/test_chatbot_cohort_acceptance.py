@@ -47,8 +47,9 @@ class PostgreSqlAcceptance(unittest.TestCase):
         cls.dsn=urllib.parse.urlunsplit(url._replace(path='/'+cls.db))
         onb=Path(os.environ['OUF_CHATBOT_ONBOARDING_ROOT'])/'src/main/resources/db/migration'
         ing=Path(os.environ['OUF_CHATBOT_INGESTION_ROOT'])
-        groups=[(onb,[1,5,30,32]),(ing/'ingestion/src/main/resources/db/migration',[1,4]),
-                (ing/'udp/src/main/resources/db/migration',[1,2,3,5,7,17])]
+        udp=Path(os.environ['OUF_CHATBOT_UDP_ROOT'])
+        groups=[(onb,[1,5,30,32]),(ing/'src/main/resources/db/migration',[1,4]),
+                (udp/'src/main/resources/db/migration',[1,2,3,5,7,17])]
         for directory,versions in groups:
             for version in versions:
                 paths=list(directory.glob('V'+str(version)+'__*.sql'))
@@ -187,7 +188,19 @@ class PostgreSqlAcceptance(unittest.TestCase):
             self.assertEqual(report['phase'],'SOURCE_COMMIT_PROVEN' if source_no==1 else 'TWO_SOURCE_COMMIT_AND_REUSE_PROVEN')
             self.assertFalse(report['freshChatbotSearchProven'])
         self.assertEqual(report['canonicalNoOpCount'],13)
+        self.assertEqual(report['committedUrbanObjectIds'],sorted(objects))
+        self.assertEqual(report['distinctUrbanObjectCount'],len(report['committedUrbanObjectIds']))
         self.assertTrue(report['sameCanonicalRecordHashesPreserved'])
+        # A historical bound asset remains the immutable byte/profile baseline;
+        # it does not block deployment or get reassigned to another source.
+        bound_input=self.query(asset_query(plan['assetId'],plan['profileId'],subject))
+        bound_plan=compile_acceptance_plan(asset_id=plan['assetId'],profile_id=plan['profileId'],profile_version=1,
+             tenant=tenant,subject=subject,canonical_type=kind,ontology_semantic_id=ontology,baseline=baseline,
+             asset_observation=bound_input)
+        self.assertFalse(bound_plan['existingAssetReusable'])
+        remaining=self.query(source_query(bound_plan,issued))
+        self.assertEqual([s['sourceId'] for s in remaining],['fixture-source-2'])
+        self.assertEqual(summarize(bound_plan,remaining,[runrows[1]],[udprows[1]],self.query(baseline_query(plan)))['requiredAdditionalUploadCount'],2)
         swapped=copy.deepcopy(udprows)
         swapped[1][0]['urbanObjectId'],swapped[1][1]['urbanObjectId']=swapped[1][1]['urbanObjectId'],swapped[1][0]['urbanObjectId']
         self.assertFalse(summarize(plan,sources,runrows,swapped,self.query(baseline_query(plan)))['secondSourceReusesSameObjectIds'])

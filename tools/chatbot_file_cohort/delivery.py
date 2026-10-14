@@ -331,7 +331,10 @@ class Delivery:
                     except Exception as observation_error:
                         # Read-only proof collection cannot claim readiness lost
                         # or stop the already governed healthy acceptance window.
-                        self.report('CSV_ACCEPTANCE_EVIDENCE_UNAVAILABLE',reason=type(observation_error).__name__)
+                        reason=str(observation_error)
+                        if not reason or len(reason)>160 or any(c not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789' for c in reason):
+                            reason=type(observation_error).__name__
+                        self.report('CSV_ACCEPTANCE_EVIDENCE_UNAVAILABLE',reason=reason)
         except Exception as error:
             reason = str(error) if type(error) in (evidence.CandidateDenied, RuntimeError) else type(error).__name__
             if not reason or len(reason)>160 or any(c not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789' for c in reason):

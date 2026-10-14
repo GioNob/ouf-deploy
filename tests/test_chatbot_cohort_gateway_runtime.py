@@ -171,6 +171,11 @@ class GatewayRuntime(unittest.TestCase):
             result=preparation.prepare_gateway(package,record,native.engine,projected_binding,'ouf-semantic',output,'fixture')
         self.assertIsNotNone(result['gatewayRuntimePlan'])
         self.assertEqual(result['gatewayPlan']['proposalKeyBinding'],result['proposalKeyBinding'])
+        self.assertEqual(result['gatewayPlan']['proposalIdentity'],result['proposalIdentity'])
+        self.assertEqual(result['proposalIdentity'],{
+            'issuer':runtime['x-ouf-installation']['issuerUrl'].rstrip('/'),
+            'audience':runtime['x-ouf-installation']['gatewayAudience'],
+            'workload':runtime['x-ouf-installation']['mcpServiceIdentity']})
         self.assertEqual(result['gatewayRuntimePlan']['proposalKeyHash'],key_binding['sha256'])
         self.assertEqual(result['runtimeMutations'],0)
         routes=result['gatewayPlan']['proposedRoutes']

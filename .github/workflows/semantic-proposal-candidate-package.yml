@@ -1,64 +1,81 @@
-name: Unsigned semantic proposal candidate artifacts
+name: Complete chatbot file cohort packages
 on:
   push:
-    branches: [codex/semantic-proposal-candidate-package-20261014]
+    branches: [codex/complete-file-cohort-package-20261014]
     paths:
       - scripts/package-semantic-proposal-candidate.py
+      - scripts/package-file-loop-candidate.py
+      - scripts/assemble-file-cohort.py
+      - scripts/check-file-cohort-startup.py
+      - scripts/qualify-file-only-rootfs.py
+      - scripts/materialize-file-cohort-routes.py
+      - scripts/download-file-cohort.py
       - tests/test_semantic_proposal_candidate_package.py
+      - tests/test_file_cohort_package.py
+      - releases/chatbot-file-cohort-20261014.json
       - .github/workflows/semantic-proposal-candidate-package.yml
   workflow_dispatch:
 permissions: {contents: read}
 jobs:
-  offline-candidate:
+  source-lock:
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 5
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with: {persist-credentials: false}
+      - name: Test stale-cohort and member-integrity rejection
+        run: |
+          python3 -m unittest discover -s tests -p test_semantic_proposal_candidate_package.py -v
+          python3 -m unittest discover -s tests -p test_file_cohort_package.py -v
+      - id: matrix
+        run: |
+          python3 - <<'PY'
+          import json,os
+          lock=json.load(open('releases/chatbot-file-cohort-20261014.json'))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as output:
+              output.write('matrix='+json.dumps({'include':lock['modules']},separators=(',',':'))+'\n')
+          PY
+  offline-candidate:
+    needs: source-lock
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - module: semantic
-            repository: ouf-semantic-registry
-            commit: bdfe0f75a5fc4790a5c5ff36e201c3d99713ecc0
-          - module: mcp
-            repository: ouf-mcp-server
-            commit: d43f5604976b07c66d58c5180d871c5656c44d4d
-          - module: gateway
-            repository: ouf-api-gateway
-            commit: 23b02bd2195d36499b6618750d52dd49d65c9a60
+      matrix: ${{ fromJSON(needs.source-lock.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with: {path: deploy, persist-credentials: false}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: GioNob/${{ matrix.repository }}
           ref: ${{ matrix.commit }}
           path: source
           persist-credentials: false
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         if: matrix.module == 'mcp'
         with: {go-version: '1.26.9', cache-dependency-path: source/go.sum}
-      - name: Test candidate rejection gates
-        run: python3 -m unittest discover -s deploy/tests -p test_semantic_proposal_candidate_package.py -v
-      - name: Build exact new candidate without target installation
+      - name: Install exact Gateway materializer dependencies
+        if: matrix.module == 'gateway'
+        run: python3 -m pip install -r source/requirements-dev.txt
+      - name: Build source-locked candidate without target installation
         run: python3 deploy/scripts/package-semantic-proposal-candidate.py build --source source --module '${{ matrix.module }}' --output package
-      - name: Scan exact Registry image
+      - name: Derive independent candidate rootfs seal before Java executes
         if: matrix.module == 'semantic'
-        uses: aquasecurity/trivy-action@v0.36.0
+        run: |
+          cp package/package-record.json package/package-record.pre-export.json
+          sudo env GITHUB_ACTIONS=true python3 deploy/scripts/qualify-file-only-rootfs.py \
+            --package-record package/package-record.pre-export.json \
+            --image 'ouf-cohort-semantic:${{ matrix.commit }}' --output package/independent-rootfs-seal.json
+      - name: Boot exact Registry image with four disposable mounts and PostgreSQL
+        if: matrix.module == 'semantic'
+        run: python3 deploy/scripts/check-file-cohort-startup.py --package package
+      - name: Scan each exact Java or MCP image
+        if: matrix.kind == 'DOCKER_SAVE'
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
-          image-ref: ouf-cohort-semantic:${{ matrix.commit }}
-          format: json
-          output: package/trivy-image.json
-          list-all-pkgs: true
-          scanners: vuln
-          severity: HIGH,CRITICAL,UNKNOWN
-          ignore-unfixed: false
-          exit-code: 1
-      - name: Scan exact MCP executable
-        if: matrix.module == 'mcp'
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          scan-type: rootfs
-          scan-ref: package
+          image-ref: ouf-cohort-${{ matrix.module }}:${{ matrix.commit }}
           format: json
           output: package/trivy-image.json
           list-all-pkgs: true
@@ -68,7 +85,7 @@ jobs:
           exit-code: 1
       - name: Scan pinned Gateway dependencies
         if: matrix.module == 'gateway'
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
           scan-type: fs
           scan-ref: package/gateway-scan
@@ -79,25 +96,64 @@ jobs:
           severity: HIGH,CRITICAL,UNKNOWN
           ignore-unfixed: false
           exit-code: 1
-      - name: Export image-bound or source-bound candidate and checksums
+      - name: Export scanned image, executable or routes with source and all hashes
         run: |
           python3 deploy/scripts/package-semantic-proposal-candidate.py export --source source --module '${{ matrix.module }}' --output package
           cd package
           sha256sum -c SHA256SUMS
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: semantic-proposal-unsigned-${{ matrix.module }}-${{ github.run_id }}
+          name: cohort-part-${{ matrix.module }}
           path: package/
           if-no-files-found: error
-          retention-days: 30
-      - name: Preserve scanner and build rejection diagnostics
+          retention-days: 7
+          compression-level: 0
+      - name: Retain bounded rejection diagnostics
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: semantic-proposal-package-denial-${{ matrix.module }}-${{ github.run_id }}
+          name: cohort-denial-${{ matrix.module }}-${{ github.run_id }}
           path: |
             package/trivy-image.json
             package/package-record.json
             package/Dockerfile.resolved
             package/diagnostics.json
+            package/disposable-startup-diagnostics.txt
           retention-days: 30
+  complete-cohort:
+    needs: offline-candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions: {contents: read, actions: read, id-token: write}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with: {persist-credentials: false}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with: {pattern: 'cohort-part-*', path: parts}
+      - name: Verify exact six source pins and every artifact before assembly
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for path in Path('parts').iterdir():
+              path.rename(path.with_name(path.name.removeprefix('cohort-part-')))
+          PY
+          python3 scripts/assemble-file-cohort.py --packages parts --output complete
+          cd complete
+          sha256sum -c COHORT_SHA256SUMS
+      - uses: sigstore/cosign-installer@af595e623eec1ede52d6322f53b635d5def0a95a
+        with: {cosign-release: v3.1.3}
+      - name: Attest exact aggregate hashes with publisher identity, not installation authority
+        run: |
+          set -euo pipefail
+          IDENTITY="https://github.com/GioNob/ouf-deploy/.github/workflows/semantic-proposal-candidate-package.yml@$GITHUB_REF"
+          cosign sign-blob --yes --bundle complete/COHORT_SHA256SUMS.sigstore.json complete/COHORT_SHA256SUMS
+          cosign verify-blob complete/COHORT_SHA256SUMS --bundle complete/COHORT_SHA256SUMS.sigstore.json \
+            --certificate-identity "$IDENTITY" --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --certificate-github-workflow-repository GioNob/ouf-deploy --certificate-github-workflow-sha "$GITHUB_SHA"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: chatbot-file-cohort-${{ github.run_id }}
+          path: complete/
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0

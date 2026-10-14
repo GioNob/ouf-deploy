@@ -5,8 +5,9 @@ import os
 from pathlib import Path
 import sys
 import time
+from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock,patch
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'tests'),str(ROOT/'tools/semantic_application_cutover'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
 from test_cutover_authority_native import SignedCutover,encoded,sha
@@ -32,16 +33,26 @@ class InstalledOwnerTest(unittest.TestCase):
             before=len(server.calls)
             def complete(_):
                 pending=owner.journal.read();owner.journal.compare_and_save(pending,active)
-            with patch('tools.semantic_policy_token_owner.installed_owner.time.sleep',side_effect=complete) as waiting:
-                reader.await_active(owner.binding.digest(),5)
+            # Replacing time.sleep on the shared stdlib module also intercepts
+            # OpenSSL subprocess waits and unrelated fixture threads. Replace
+            # only this observer's clock namespace so the one wait below is
+            # genuinely its renewal wait, not an incidental process poll.
+            waiting=Mock(side_effect=complete)
+            clock=SimpleNamespace(time=time.time,monotonic=time.monotonic,sleep=waiting)
+            with patch('tools.semantic_policy_token_owner.installed_owner.time',clock):
+                self.assertIsNone(reader.await_active(owner.binding.digest(),5))
             self.assertEqual(waiting.call_count,1)
+            self.assertEqual(owner.journal.read()['state'],'ACTIVE')
             self.assertEqual(len(server.calls),before)
             self.assertEqual(owner.journal.read()['attempts'],1)
             pending=owner.journal.read();owner.journal.compare_and_save(pending,{**pending,'state':'RETRY_WAIT'})
             def revoke(_):
                 f.approval['state']='REVOKED';f.write(f.mandate,encoded(f.approval))
-            with patch('tools.semantic_policy_token_owner.installed_owner.time.sleep',side_effect=revoke):
+            revoked_wait=Mock(side_effect=revoke)
+            clock=SimpleNamespace(time=time.time,monotonic=time.monotonic,sleep=revoked_wait)
+            with patch('tools.semantic_policy_token_owner.installed_owner.time',clock):
                 with self.assertRaises(Exception):reader.await_active(owner.binding.digest(),5)
+            self.assertEqual(revoked_wait.call_count,1)
             self.assertEqual(len(server.calls),before)
 
     def test_rapid_active_publication_race_cannot_bypass_observer_wait_bound(self):
@@ -51,8 +62,9 @@ class InstalledOwnerTest(unittest.TestCase):
             reader=InstalledTokenOwner(owner.binding,owner.credential,owner.admission,owner.journal,
                 owner.context,owner.generation,owner.manifest,f.gate(),f.authority,observer=True)
             before=len(server.calls)
+            clock=SimpleNamespace(time=time.time,monotonic=Mock(side_effect=[100,100,100,101]),sleep=time.sleep)
             with patch.object(reader,'guard',side_effect=Permanent('AUTHORITY_REVOKED')), \
-                 patch('tools.semantic_policy_token_owner.installed_owner.time.monotonic',side_effect=[100,100,100,101]):
+                 patch('tools.semantic_policy_token_owner.installed_owner.time',clock):
                 with self.assertRaises(Permanent):reader.await_active(owner.binding.digest(),1)
             self.assertEqual(len(server.calls),before)
 

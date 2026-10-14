@@ -1,6 +1,7 @@
 import copy
 import hashlib
 import io
+import json
 from pathlib import Path
 import tarfile
 import tempfile
@@ -61,6 +62,36 @@ class CohortPreparation(unittest.TestCase):
                 self.assertEqual(q.packaged_migrations(root,record),expected)
                 path.write_bytes(path.read_bytes()+b'drift')
                 with self.assertRaisesRegex(p.PlanDenied,'BYTES_CHANGED'):q.packaged_migrations(root,record)
+
+    def test_existing_ths_oauth_overlay_preserves_the_exact_database_binding(self):
+        app,pg=self.inputs('onboarding')
+        expected=q.database_binding('onboarding',app,pg)
+        for overlay in (
+            {'spring.security.oauth2.client.registration.ouf-ths.scope':['openid','profile','urban.object.search']},
+            {'spring':{'security':{'oauth2':{'client':{'registration':{'ouf-ths':{
+                'scope':['openid','profile'],'client-secret':'PRIVATE-FIXTURE-SECRET'}}}}}}}):
+            with self.subTest(overlay=overlay):
+                modified=copy.deepcopy(app)
+                modified['Config']['Env'].append('SPRING_APPLICATION_JSON='+json.dumps(overlay))
+                self.assertEqual(q.database_binding('onboarding',modified,pg),expected)
+                self.assertNotIn('PRIVATE-FIXTURE',str(expected))
+
+    def test_json_flat_nested_relaxed_names_and_loader_overrides_remain_denied(self):
+        app,pg=self.inputs('onboarding')
+        overlays=[{'spring.datasource.url':'jdbc:postgresql://other/other'},
+            {'spring':{'datasource':{'username':'another'}}},
+            {'SPRING_DATASOURCE_URL':'jdbc:postgresql://other/other'},
+            {'spring.config.import':'file:/unreviewed.properties'},
+            {'spring':{'profiles':{'active':'unreviewed'}}},
+            {'spring.flyway.url':'jdbc:postgresql://other/other'},
+            {'OUF_ONB_DB_URL':'jdbc:postgresql://other/other'}]
+        for overlay in overlays:
+            with self.subTest(overlay=overlay):
+                modified=copy.deepcopy(app);modified['Config']['Env'].append('SPRING_APPLICATION_JSON='+json.dumps(overlay))
+                with self.assertRaisesRegex(p.PlanDenied,'CUSTOM_DATASOURCE'):q.database_binding('onboarding',modified,pg)
+        for raw in ('[]','{"spring":{},"spring":{}}','{bad'):
+            modified=copy.deepcopy(app);modified['Config']['Env'].append('SPRING_APPLICATION_JSON='+raw)
+            with self.assertRaises(p.PlanDenied):q.database_binding('onboarding',modified,pg)
 
 
 if __name__ == '__main__':unittest.main()

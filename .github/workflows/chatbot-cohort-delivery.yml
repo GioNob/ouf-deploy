@@ -1,9 +1,9 @@
 name: Chatbot cohort delivery native owners
 on:
   push:
-    paths: ['tools/chatbot_file_cohort/**', 'tests/test_chatbot_cohort_*.py', '.github/workflows/chatbot-cohort-delivery.yml']
+    paths: ['tools/chatbot_file_cohort/**', 'scripts/install-chatbot-file-cohort.py', 'scripts/deliver-chatbot-file-cohort.py', 'tests/test_chatbot_cohort_*.py', '.github/workflows/chatbot-cohort-delivery.yml']
   pull_request:
-    paths: ['tools/chatbot_file_cohort/**', 'tests/test_chatbot_cohort_*.py', '.github/workflows/chatbot-cohort-delivery.yml']
+    paths: ['tools/chatbot_file_cohort/**', 'scripts/install-chatbot-file-cohort.py', 'scripts/deliver-chatbot-file-cohort.py', 'tests/test_chatbot_cohort_*.py', '.github/workflows/chatbot-cohort-delivery.yml']
 permissions: {contents: read}
 jobs:
   signed-native-delivery:
@@ -44,6 +44,13 @@ jobs:
           ref: c48ee4b1873a474e81c6e1be70d393854021e2c1
           path: .pairwise/ingestion
           persist-credentials: false
+      - name: Checkout the exact UDP owner migrations
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-udp-object-resolution
+          ref: b49c0d6f50c574c11684361ce4e8040e9cbddee2
+          path: .pairwise/udp
+          persist-credentials: false
       - name: Prepare native root custody fixture
         run: |
           set -euo pipefail
@@ -55,7 +62,7 @@ jobs:
         run: |
           set -euo pipefail
           OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
-          for suite in test_chatbot_cohort_package_custody.py test_chatbot_cohort_iam_session.py test_chatbot_cohort_assemble.py test_file_only_output_custody.py test_file_only_preparation.py test_chatbot_cohort_target_selection.py test_chatbot_cohort_plan.py test_chatbot_cohort_preparation.py test_chatbot_cohort_containers.py test_chatbot_cohort_databases.py test_chatbot_cohort_gateway.py test_chatbot_cohort_gateway_runtime.py test_chatbot_cohort_authorization.py test_chatbot_cohort_human_session.py test_chatbot_cohort_closed_runtime.py; do
+          for suite in test_chatbot_cohort_delivery_launcher.py test_chatbot_cohort_package_custody.py test_chatbot_cohort_iam_session.py test_chatbot_cohort_assemble.py test_chatbot_cohort_entry.py test_file_only_output_custody.py test_file_only_preparation.py test_chatbot_cohort_target_selection.py test_chatbot_cohort_plan.py test_chatbot_cohort_preparation.py test_chatbot_cohort_containers.py test_chatbot_cohort_databases.py test_chatbot_cohort_gateway.py test_chatbot_cohort_gateway_runtime.py test_chatbot_cohort_authorization.py test_chatbot_cohort_human_session.py test_chatbot_cohort_closed_runtime.py; do
             sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" "$OUF_FIXTURE_ROOT/repository/.cohort-test-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p "$suite" -v
           done
       - name: Real four-database archives, full payload parsing and retained rows
@@ -74,4 +81,4 @@ jobs:
           set -euo pipefail
           command -v psql
           OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
-          sudo env OUF_CHATBOT_ACCEPTANCE_PG_DSN=postgresql://postgres@127.0.0.1:5432/postgres OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" OUF_CHATBOT_INGESTION_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/ingestion" python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_acceptance.py -v
+          sudo env OUF_CHATBOT_ACCEPTANCE_PG_DSN=postgresql://postgres@127.0.0.1:5432/postgres OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" OUF_CHATBOT_INGESTION_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/ingestion" OUF_CHATBOT_UDP_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/udp" python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_acceptance.py -v

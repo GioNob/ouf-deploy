@@ -1,6 +1,6 @@
 """Real Docker two-network replacement and child netns readback in disposable CI.
 
-The image serves static test admin JSON. This tests native creation/custody and
+The nonroot scratch image serves static test admin JSON from a CI-built ELF. This tests native creation/custody and
 journal reconciliation, not APISIX application semantics or a target acceptance.
 """
 import copy
@@ -27,25 +27,56 @@ class NativeGatewayRuntime(unittest.TestCase):
         f=fixture.crypto.SignedCutover();f.setUp();self.addCleanup(f.doCleanups)
         binary=Path(shutil.which('docker')).resolve()
         def docker(*args):
-            return subprocess.run([str(binary),*args],check=True,stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE,timeout=90).stdout
+            reply=subprocess.run([str(binary),*args],stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE,timeout=90)
+            self.assertEqual(reply.returncode,0,'fixture Docker '+args[0]+' failed: '+reply.stderr[:2048].decode('utf-8','replace'))
+            return reply.stdout
         path='/var/run/docker.sock';info=os.stat(path,follow_symlinks=False)
         engine=Engine(path,(info.st_dev,info.st_ino,info.st_uid,info.st_gid,stat.S_IMODE(info.st_mode)))
-        code,pg=engine.request('GET','/v1.44/containers/'+os.environ['OUF_POSTGRES_CONTAINER_ID']+'/json')
-        self.assertEqual(code,200)
         root=f.root/'native-gateway';root.mkdir(mode=0o700)
         build=root/'build';build.mkdir(mode=0o700)
         (build/'passwd').write_text('apisix:x:10001:10001:fixture:/:/bin/false\n')
-        www=build/'www'/'apisix'/'admin';www.mkdir(parents=True)
         retained={'id':'retained','uri':'/retained','methods':['GET']}
-        (www/'routes').write_text(json.dumps({'total':1,'list':[{'value':retained}]}))
-        base_tag='ouf-native-gateway-base:'+hashlib.sha256(str(root).encode()).hexdigest()[:24]
-        docker('tag',pg['Image'],base_tag)
-        self.addCleanup(lambda:subprocess.run([str(binary),'image','rm',base_tag],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=20))
-        (build/'Dockerfile').write_text('FROM '+base_tag+' AS base\nFROM scratch\n'
-            'COPY --from=base /bin/busybox /bin/busybox\nCOPY --from=base /lib /lib\n'
-            'COPY passwd /etc/passwd\nCOPY www /www\nUSER apisix\n'
-            'ENTRYPOINT ["/bin/busybox","httpd","-f","-p","9180","-h","/www"]\n')
+        body=json.dumps({'total':1,'list':[{'value':retained}]},separators=(',',':'))
+        response='HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\nContent-Length: '+str(len(body.encode()))+'\r\n\r\n'+body
+        # Alpine's base busybox does not guarantee the httpd applet. Compile the
+        # deliberately tiny server fixture so early process exit cannot turn
+        # the subsequent two-network observation into an unrelated failure.
+        server_source=r'''#include <arpa/inet.h>
+#include <errno.h>
+#include <signal.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <unistd.h>
+static const char response[]=RESPONSE;
+int main(void) {
+    signal(SIGPIPE,SIG_IGN);
+    int server=socket(AF_INET,SOCK_STREAM,0);if(server<0)return 2;
+    int one=1;if(setsockopt(server,SOL_SOCKET,SO_REUSEADDR,&one,sizeof(one)))return 3;
+    struct sockaddr_in a={0};a.sin_family=AF_INET;a.sin_addr.s_addr=htonl(INADDR_ANY);a.sin_port=htons(9180);
+    if(bind(server,(struct sockaddr*)&a,sizeof(a))||listen(server,8))return 4;
+    for(;;) {
+        int c=accept(server,0,0);if(c<0){if(errno==EINTR)continue;return 5;}
+        struct timeval timeout={3,0};setsockopt(c,SOL_SOCKET,SO_RCVTIMEO,&timeout,sizeof(timeout));setsockopt(c,SOL_SOCKET,SO_SNDTIMEO,&timeout,sizeof(timeout));
+        char input[4097]={0};size_t used=0;
+        while(used<sizeof(input)-1&&!strstr(input,"\r\n\r\n")) {
+            ssize_t n=read(c,input+used,sizeof(input)-1-used);if(n<=0)break;used+=(size_t)n;
+        }
+        if(strstr(input,"\r\n\r\n")&&strncmp(input,"GET /apisix/admin/routes HTTP/1.",32)==0) {
+            size_t sent=0;while(sent<sizeof(response)-1){ssize_t n=write(c,response+sent,sizeof(response)-1-sent);if(n<=0)break;sent+=(size_t)n;}
+        }
+        close(c);
+    }
+}
+'''.replace('RESPONSE',json.dumps(response))
+        source=build/'server.c';source.write_text(server_source)
+        compiler=shutil.which('cc');self.assertIsNotNone(compiler,'native CI C compiler is required')
+        compiled=subprocess.run([compiler,'-static','-O2','-Wall','-Wextra','-Werror',str(source),'-o',str(build/'server')],stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=30)
+        self.assertEqual(compiled.returncode,0,compiled.stderr[:2048].decode('utf-8','replace'))
+        (build/'server').chmod(0o755)
+        (build/'Dockerfile').write_text('FROM scratch\nCOPY server /server\n'
+            'COPY passwd /etc/passwd\nUSER apisix\nENTRYPOINT ["/server"]\n')
         tag='ouf-native-gateway:'+hashlib.sha256(str(root).encode()).hexdigest()[:24]
         docker('build','--pull=false','-t',tag,str(build))
         image=docker('image','inspect','--format','{{.Id}}',tag).decode().strip()
@@ -61,6 +92,12 @@ class NativeGatewayRuntime(unittest.TestCase):
             '--mount','type=bind,src='+str(original)+',dst=/usr/local/apisix/conf/config.yaml,readonly',
             '--env','RETAINED_KEY='+'1'*64,image).decode().strip()
         self.addCleanup(lambda:subprocess.run([str(binary),'rm','-f',cid],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=20))
+        code,started=engine.request('GET','/v1.44/containers/'+cid+'/json')
+        self.assertEqual(code,200)
+        self.assertTrue(started['State']['Running'] and not started['State']['Restarting']
+                        and started['State']['Pid']>1 and started['RestartCount']==0,
+                        'fixture server did not remain in its first running generation: '+
+                        json.dumps({k:started['State'].get(k) for k in ('Status','Running','Restarting','ExitCode','Error')})[:2048])
         docker('network','connect','--alias','ouf-apisix','ouf-gateway-control',cid)
         code,old=engine.request('GET','/v1.44/containers/'+cid+'/json');self.assertEqual(code,200)
         key,key_binding,_=fixture.preparation.stage_proposal_key(root)

@@ -32,8 +32,8 @@ def compile_acceptance_plan(*, asset_id, profile_id, profile_version, tenant, su
             and asset_observation.get('columns')==20 and asset_observation.get('mediaType')=='text/csv'
             and all(re.fullmatch(r'sha256:[0-9a-f]{64}',str(asset_observation.get(k,''))) for k in ('contentHash','profileContractHash')),
             'CURRENT_OWNED_THIRTEEN_ROW_TWENTY_COLUMN_CSV_REQUIRED')
-    require('boundSourceId' in asset_observation and asset_observation['boundSourceId'] is None,
-            'ORIGINAL_ASSET_ALREADY_BOUND_TO_SOURCE_REQUIRES_EXISTING_SOURCE_SELECTION')
+    require('boundSourceId' in asset_observation and (asset_observation['boundSourceId'] is None
+            or type(asset_observation['boundSourceId']) is str),'ORIGINAL_ASSET_BINDING_METADATA_REQUIRED')
     require(baseline.get('schema') == 'ouf.chatbot-existing-object-baseline.v1'
             and baseline.get('count') == 8 and baseline.get('nextCursor') is None
             and baseline.get('partial') is False and len(baseline['objects']) == 8,
@@ -53,6 +53,8 @@ def compile_acceptance_plan(*, asset_id, profile_id, profile_version, tenant, su
             'ontologySemanticId':ontology_semantic_id,'createdAfter':'SIGNED_ACTION_ISSUED_AT',
             'requiredSourceCount':2,'maximumSourceCount':2,'expectedRowsPerSource':13,
             'originalAssetObservation':copy.deepcopy(asset_observation),
+            'firstSourceInput':'EXISTING_IF_UNASSIGNED_ELSE_IDENTICAL_UPLOAD',
+            'existingAssetReusable':asset_observation['boundSourceId'] is None,
             'secondSourceInput':'NEW_UPLOAD_SAME_BYTES_SAME_OWNER_SAME_PROFILE_AFTER_ACTION',
             'baseline':{'canonicalType':baseline['canonicalType'],'objects':sorted(objects,key=lambda r:r['urbanObjectId'])},
             'baselineEvidenceHash':digest(baseline),'automaticOwnerWritesAllowed':False,
@@ -107,7 +109,8 @@ def source_query(plan, issued_at):
  JOIN ouf_onboarding.managed_file_asset af ON af.asset_id=a.asset_id
  WHERE a.subject_id={s} AND a.created_at>=to_timestamp({issued_at})
    AND af.uploaded_by={s} AND af.content_hash={content} AND af.media_type='text/csv'
-   AND (af.asset_id={a}::uuid OR af.created_at>=to_timestamp({issued_at}))
+   AND ((af.asset_id={a}::uuid AND {'true' if plan['existingAssetReusable'] else 'false'})
+        OR (af.asset_id<>{a}::uuid AND af.created_at>=to_timestamp({issued_at})))
  ORDER BY a.created_at,a.idempotency_key LIMIT 3
 ), observed AS (
  SELECT json_build_object(
@@ -272,24 +275,31 @@ def summarize(plan, sources, runs, committed, baseline):
             objects={r['handoffId']:r['urbanObjectId'] for r in udp}
             bindings.append(sorted((h['contentHash'],objects[h['handoffId']]) for h in run[0]['handoffs']))
         same_records=(bindings[0]==bindings[1] and sources[0]['propertyIris']==sources[1]['propertyIris'])
-    distinct_assets=(len(sources)==2 and sources[0]['assetId']==plan['assetId'] and sources[0]['profileId']==plan['profileId']
+    first_asset_matched=(bool(sources) and ((sources[0]['assetId']==plan['assetId'] and sources[0]['profileId']==plan['profileId'])
+                         if plan['existingAssetReusable'] else sources[0]['assetId']!=plan['assetId']))
+    distinct_assets=(len(sources)==2 and first_asset_matched
                      and sources[1]['assetId']!=sources[0]['assetId'] and sources[1]['profileId']!=sources[0]['profileId'])
     reused=(len(complete)==2 and all(complete) and distinct_assets
             and {r['urbanObjectId'] for r in committed[0]}=={r['urbanObjectId'] for r in committed[1]}
             and same_records
             and all(r['resolution'] in ('MATCH','HUMAN_APPROVE_MATCH') for r in committed[1]))
+    committed_ids=sorted({r['urbanObjectId'] for rows in committed for r in rows
+                          if r['commitMatched'] is True and r['urbanObjectId'] is not None})
     phase=('TWO_SOURCE_COMMIT_AND_REUSE_PROVEN' if reused and preserved else
            'SOURCE_COMMIT_PROVEN' if any(complete) and preserved else 'NOT_PROVEN')
     return {'schema':'ouf.chatbot-file-owner-acceptance-receipt.v1','profile':PROFILE,'phase':phase,
             'status':'OWNER_EVIDENCE_OBSERVED_NOT_CHATBOT_ACCEPTED','planHash':digest(plan),
             'observedSourceCount':len(sources),'committedSourceCount':sum(complete),
             'requiredSourceCount':2,'expectedRowsPerSource':plan['expectedRowsPerSource'],
+            'existingAssetReusable':plan['existingAssetReusable'],
+            'requiredAdditionalUploadCount':1 if plan['existingAssetReusable'] else 2,
             'observedAckCount':sum(sum(h['acked'] is True for h in run[0]['handoffs']) for run in runs if len(run)==1),
             'openResolutionIssueCount':sum(r['openResolutionIssue'] is True for rows in committed for r in rows),
             'canonicalNoOpCount':sum(r['commitMatched'] is True and r['materialChange'] is False for rows in committed for r in rows),
             'eightBaselineObjectsPreserved':preserved,'secondSourceReusesSameObjectIds':reused,
             'sameCanonicalRecordHashesPreserved':same_records,
-            'distinctUrbanObjectCount':len({r['urbanObjectId'] for rows in committed for r in rows if r['commitMatched'] is True}),
+            'distinctUrbanObjectCount':len(committed_ids),
+            'committedUrbanObjectIds':committed_ids if reused and preserved else [],
             'ownerEvidenceHash':digest({'sources':sources,'runs':runs,'udp':committed,'baseline':baseline}),
             'freshChatbotSearchProven':False,'recordValuesReadOrPrinted':False,'ownerWrites':0,
             'runtimeAuthorityIssued':False,'budgetReset':False,'notReleaseAcceptance':True}

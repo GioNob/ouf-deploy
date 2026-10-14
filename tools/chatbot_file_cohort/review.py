@@ -146,7 +146,9 @@ def terminal_decision(review, review_path):
         'Documento privato completo: '+str(review_path)+'\n'
         'SHA256: '+review_hash+'\n'
         'Include sostituzione dei cinque servizi applicativi, route Gateway, autorizzazioni esplicite,\n'
-        'backup e migrazioni previsti, installazione owner e ritiro dei produttori precedenti.\n'
+        'backup e migrazioni previsti, installazione owner e ritiro del servizio/timer policy-token semantic.\n'
+        +('Include sostituzione del container APISIX con la stessa immagine e la configurazione qui revisionata.\n'
+          if 'sameImageId' in review['scopes']['gatewayRuntimeInstallation'] else '')+
         'Un primo grant (massimo 300 secondi), poi una sessione distinta di massimo '
         +str(review['finiteWorkerMaximumAttempts'])+' tentativi e '
         +str(review['finiteWorkerMaximumSeconds'])+' secondi.\n'

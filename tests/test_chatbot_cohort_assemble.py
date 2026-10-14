@@ -5,13 +5,16 @@ fixtures; root receipts and Ed25519 are real. The new output directory remains
 absent, and the preparation authority cannot authorize any operation.
 """
 import copy
+import contextlib
 import dataclasses
 import hashlib
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
 import sys
+import threading
 import unittest
 from unittest.mock import patch
 
@@ -26,6 +29,7 @@ for name in ('qualified_owner_authorization_lifecycle','qualified_owner_scope_ca
         module=importlib.util.module_from_spec(spec);sys.modules[name]=module;spec.loader.exec_module(module)
 
 import test_policy_token_migration_root_custody as custody_fixture
+import test_chatbot_cohort_human_session as human_fixture
 from tools.chatbot_file_cohort import assemble as compiler
 from tools.chatbot_file_cohort import runtime
 from tools.chatbot_file_cohort.review import REQUIRED_SCOPES,digest,encoded
@@ -113,7 +117,7 @@ class CompleteActionAssembly(unittest.TestCase):
         self.prepared={'schema':'ouf.chatbot-file-cohort-prepared-inputs.v1','owner':owner,'registry':registry,
             'cohortPlan':cohort,'gatewayRuntimePlan':None,
             'gatewayPlan':{'previousRuntimeHash':'1'*64,'proposedRuntimeHash':'2'*64,
-                'transportBinding':{'syntheticTargetObservation':True},'proposalKeyBinding':{'sha256':'3'*64}},
+                'transportBinding':{'syntheticTargetObservation':True,'pythonExecutable':program},'proposalKeyBinding':{'sha256':'3'*64}},
             'authorization':{'plan':{'baseline':{'active':{'policyRef':'fixture','contentHash':'4'*64}},
                 'registrationAdditions':[],'addedDescriptors':[],'roleProposal':{},'scopeCreations':[],'scopeBindings':[]}},
             'imagePlan':{'schema':'ouf.chatbot-cohort-image-import-plan.v1','cohortManifestHash':'e'*64,
@@ -170,5 +174,28 @@ class CompleteActionAssembly(unittest.TestCase):
         Path(self.context).mkdir(mode=0o700)
         with self.assertRaisesRegex(Exception,'ALREADY_EXISTS_NO_REPLAY'):self.assemble()
         Path(self.context).rmdir();self.assert_no_runtime_effects()
+
+    def test_approved_decision_survives_refresh_pause_without_new_consent_or_issuance(self):
+        human=human_fixture.HumanSessionTest();human.setUp();self.addCleanup(human.doCleanups)
+        human.login();human.clock.advance(400)
+        decision={'expiresAt':int(human.clock.time()+60)}
+        compiled={'review':{'explicitSyntheticReviewOnly':True},'reviewBinding':{'path':str(self.stage/'review.json')},
+                  'executionProfile':object()}
+        stop=threading.Event();waits=[];issued=[]
+        def wait(seconds):
+            waits.append(seconds);human.clock.advance(seconds);human.session.refresh_if_due();return False
+        class BeforeIssuance(Exception):pass
+        def issue(review,actual_decision,profile):
+            issued.append(actual_decision)
+            self.assertIs(actual_decision,decision)
+            raise BeforeIssuance()
+        with patch.object(compiler,'time',human.clock),patch.object(stop,'wait',side_effect=wait),\
+                patch.object(compiler,'terminal_decision',return_value=decision) as prompt,\
+                patch.object(compiler,'issue',side_effect=issue),contextlib.redirect_stdout(io.StringIO()):
+            with self.assertRaises(BeforeIssuance):compiler.approve_and_start(compiled,human.session,stop)
+        self.assertEqual(prompt.call_count,1);self.assertEqual(len(waits),1)
+        self.assertEqual(len(issued),1);self.assertEqual(human.fixture.refreshes,1)
+        self.assertTrue(stop.is_set());self.assertLess(human.clock.time(),decision['expiresAt'])
+        self.assert_no_runtime_effects()
 
 if __name__=='__main__':unittest.main()
