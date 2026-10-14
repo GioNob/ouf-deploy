@@ -15,7 +15,7 @@ from urllib.parse import quote
 from engine_creation import Engine
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
-from tools.chatbot_file_cohort.plan import PROFILE, MODULES, NO_RESTART, digest, require, sha
+from tools.chatbot_file_cohort.plan import host_config_matches, PROFILE, MODULES, NO_RESTART, digest, require, sha
 
 STAGES = ('rename', 'create', 'start', 'ready', 'restart_policy')
 READINESS_POLICY = {'profile':'ouf.chatbot-cohort-readiness.v1', 'maximumAttempts':128,
@@ -164,7 +164,7 @@ class CohortContainers:
         host = copy.deepcopy(request['HostConfig'])
         if restored_policy:
             host['RestartPolicy'] = row['restoreRestartPolicy']
-        require(all(actual['HostConfig'].get(k) == v for k, v in host.items()),
+        require(host_config_matches(host,actual['HostConfig']),
                 'COHORT_REPLACEMENT_HOST_CONFIG_DRIFT')
         old_mounts = {(m['Type'],m['Source'],m['Destination'],m['RW']) for m in row['oldMounts']}
         new_mounts = {(m['Type'],m['Source'],m['Destination'],m['RW']) for m in actual['Mounts']}

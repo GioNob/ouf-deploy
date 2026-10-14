@@ -24,6 +24,14 @@ class EntryIntegration(unittest.TestCase):
         self.fixture=assembly.CompleteActionAssembly()
         self.fixture.setUp();self.addCleanup(self.fixture.doCleanups)
 
+    def test_login_instruction_reaches_buffered_output_before_waiting_for_human(self):
+        raw=io.BytesIO()
+        output=io.TextIOWrapper(raw,encoding='utf-8',line_buffering=False)
+        self.addCleanup(output.close)
+        with contextlib.redirect_stdout(output):
+            entry.emit_line('OPEN_IN_BROWSER=https://fixture.invalid/device')
+        self.assertEqual(raw.getvalue(),b'OPEN_IN_BROWSER=https://fixture.invalid/device\n')
+
     def test_entry_compilation_owner_is_real_and_has_no_issuance_or_output_effect(self):
         f=self.fixture
         owner=entry.compilation_owner(f.prepared['owner'],f.sources,f.closure,f.stage,f.context,f.lineage)

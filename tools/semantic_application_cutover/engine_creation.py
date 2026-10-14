@@ -11,6 +11,7 @@ import os
 import re
 import socket
 import stat
+from tools.chatbot_file_cohort.plan import host_config_matches
 
 
 class CreationDenied(RuntimeError): pass
@@ -80,8 +81,15 @@ class Engine:
         for key, expected in request.items():
             if key in {'HostConfig','NetworkingConfig'}: continue
             require(actual['Config'].get(key) == expected, 'CREATION_CONFIG_DRIFT')
-        for key, expected in request.get('HostConfig',{}).items():
-            require(actual['HostConfig'].get(key) == expected, 'CREATION_HOST_CONFIG_DRIFT')
+        if actual['State'].get('Running') is True:
+            # Moby may restore the default OomKillDisable=false to null at
+            # start when the kernel lacks that control. Keep native hashes
+            # unchanged; only that documented pair compares equivalently.
+            require(host_config_matches(request.get('HostConfig',{}),actual['HostConfig']),
+                    'CREATION_HOST_CONFIG_DRIFT')
+        else:
+            for key, expected in request.get('HostConfig',{}).items():
+                require(actual['HostConfig'].get(key) == expected, 'CREATION_HOST_CONFIG_DRIFT')
         # Actual NICs, mount projections, all expanded OCI fields and live peer
         # generation require the NEXT authenticated attestation phase. This
         # creation consistency check never grants start or transport authority.

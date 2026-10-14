@@ -13,7 +13,7 @@ def fixture(module='onboarding'):
            'Config':{'Image':'old:tag','User':p.USERS[module], 'Env':['PASSWORD=private-value', 'KEEP=present'],
                      'Entrypoint':['java'], 'Cmd':['old.jar'], 'WorkingDir':'/app', 'Hostname':'a'*12,
                      'Labels':{'existing':'preserved'}},
-           'HostConfig':{'RestartPolicy':{'Name':'unless-stopped','MaximumRetryCount':0},
+           'HostConfig':{'OomKillDisable':None,'RestartPolicy':{'Name':'unless-stopped','MaximumRetryCount':0},
                          'NetworkMode':'ouf-backend', 'Memory':536870912,
                          'Mounts':[{'Type':'bind','Source':'/private/data','Target':'/data','ReadOnly':False}]},
            'Mounts':[{'Type':'bind','Source':'/private/data','Destination':'/data','RW':True}],
@@ -53,6 +53,21 @@ class PlanTests(unittest.TestCase):
                     self.assertIs(old['HostConfig']['OomKillDisable'],value)
         with self.assertRaisesRegex(p.PlanDenied,'BOOLEAN_OR_DEFAULT'):
             p.creation_host_config({'OomKillDisable':'false'})
+
+    def test_default_oom_roundtrip_is_equivalent_without_mutating_native_hashes(self):
+        for expected in (None,False):
+            for actual in (None,False):
+                left={'OomKillDisable':expected,'Memory':123};right={'OomKillDisable':actual,'Memory':123}
+                hashes=(p.digest(left),p.digest(right))
+                self.assertTrue(p.host_config_matches(left,right))
+                self.assertEqual(hashes,(p.digest(left),p.digest(right)))
+            for actual in (True,0,1,'false'):
+                self.assertFalse(p.host_config_matches({'OomKillDisable':expected},{'OomKillDisable':actual}))
+            self.assertFalse(p.host_config_matches({'OomKillDisable':expected},{}))
+        self.assertFalse(p.host_config_matches({'OomKillDisable':True},{'OomKillDisable':None}))
+        self.assertFalse(p.host_config_matches({'OomKillDisable':True},{'OomKillDisable':False}))
+        self.assertTrue(p.host_config_matches({'OomKillDisable':True},{'OomKillDisable':True}))
+        self.assertFalse(p.host_config_matches({'OomKillDisable':False,'Memory':123},{'OomKillDisable':None,'Memory':124}))
 
     def test_package_image_identity_not_tag_is_required(self):
         old, image, package = fixture()

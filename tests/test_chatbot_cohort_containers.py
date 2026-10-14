@@ -105,6 +105,8 @@ class DockerFixture:
             actual['Config']['Hostname']=cid[:12]
             self.state[cid]=actual;status,result=201,{'Id':cid}
         elif stage=='start':
+            if self.find(identity)['HostConfig'].get('OomKillDisable') is False:
+                self.find(identity)['HostConfig']['OomKillDisable']=None
             self.find(identity)['State'].update(Status='running',Running=True,Pid=2000+self.serial,
                 StartedAt='2026-10-14T03:00:%02dZ'%self.serial)
             status,result=204,None

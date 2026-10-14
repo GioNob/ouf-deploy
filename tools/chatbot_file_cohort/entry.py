@@ -43,6 +43,12 @@ def report(phase,**safe):
         'notReleaseAcceptance':True,**safe},sort_keys=True,separators=(',',':')),flush=True)
 
 
+def emit_line(message):
+    # The operator command tees stdout; interactive login instructions must be
+    # visible before the device flow waits for the HUMAN to act.
+    print(message,flush=True)
+
+
 def source_bytes(path,expected=None,maximum=262144):
     path=Path(path)
     with protected_directory(path.parent) as directory:
@@ -157,7 +163,7 @@ def collect(args):
     engine=Engine(socket_path,socket_binding)
     native_environment(engine,closure['executables']['docker'],new_directory(stage,'docker-cli'))
     report('CURRENT_ADMINISTRATIVE_SESSION')
-    ensure_admin_session(engine,closure['executables']['docker'],new_directory(stage,'iam-session'),emit=print)
+    ensure_admin_session(engine,closure['executables']['docker'],new_directory(stage,'iam-session'),emit=emit_line)
     cohort_id='chatbot-file-'+str(RUN)
     selected=select_target(engine,closure['executables']['docker'],picker,PICKER_HASH)
     retained_selection=default_selection();retained,_=retained_inputs(retained_selection)
@@ -187,7 +193,7 @@ def collect(args):
     # collectors have completed before a refresh thread can exist.
     human_dir=new_directory(stage,'human-session')
     session=HumanSession(selected['selection'],human_dir,human_dir/'human-access.jwt',int(time.time())+7200)
-    stop=threading.Event();session.login(emit=print,stop=stop);session.start_refresh(stop,emit=print)
+    stop=threading.Event();session.login(emit=emit_line,stop=stop);session.start_refresh(stop,emit=emit_line)
     try:
         catalogue=source_bytes(owner_root/'catalogue/chatbot-source-review-capabilities.json',
                               OWNER_FILES['catalogue/chatbot-source-review-capabilities.json'])

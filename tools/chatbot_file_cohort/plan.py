@@ -73,8 +73,9 @@ def creation_host_config(observed):
     """Spell out Docker's proven null-to-false OOM default before approval.
 
     Native Engine v1.44 create/inspect qualified the exact representation:
-    OomKillDisable=null becomes false. No observed field is discarded, and
-    readback remains exact. An explicit true is never rewritten to false.
+    OomKillDisable=null becomes false. No observed field is discarded.
+    The documented default roundtrip is compared by host_config_matches;
+    an explicit true is never rewritten to false.
     """
     require(type(observed) is dict, 'EXACT_OBSERVED_HOST_CONFIG_REQUIRED')
     result=deepcopy(observed)
@@ -83,6 +84,26 @@ def creation_host_config(observed):
         require(value is None or type(value) is bool, 'BOOLEAN_OR_DEFAULT_OOM_CONTROL_REQUIRED')
         if value is None:result['OomKillDisable']=False
     return result
+
+
+def host_config_matches(expected, actual):
+    """Compare requested fields; only Docker's default OOM forms are equivalent.
+
+    Moby daemon_unix.go assigns false at create, then may restore nil when the
+    kernel lacks OomKillDisable. Both mean no disable requested. Explicit true,
+    a missing key or another type is never accepted as this default. The native
+    dictionaries and their signed/generation hashes are never rewritten.
+    """
+    if type(expected) is not dict or type(actual) is not dict:return False
+    for key,value in expected.items():
+        if key=='OomKillDisable':
+            if key not in actual:return False
+            current=actual[key]
+            if (value is None or value is False) and (current is None or current is False):continue
+            if value is True and current is True:continue
+            return False
+        if actual.get(key)!=value:return False
+    return True
 
 
 def compile_replacement(module, old, image, package, cohort_id, env_changes):

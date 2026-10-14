@@ -18,6 +18,39 @@ from transition_journal import digest
 from cutover_executor import CutoverDenied
 
 class Owners(unittest.TestCase):
+    def test_started_registry_oom_default_matches_without_rewriting_native_hash(self):
+        engine=Engine.__new__(Engine);transition=types.SimpleNamespace(context='a'*64)
+        request={'Image':'sha256:'+'b'*64,'HostConfig':{'OomKillDisable':False,'Memory':536870912}}
+        actual={'Name':'/'+engine.name(transition),'Id':'c'*64,'Image':request['Image'],
+            'Config':{'Image':request['Image']},'HostConfig':{'OomKillDisable':None,'Memory':536870912},
+            'State':{'Running':True,'Paused':True,'Status':'paused','Pid':123,'StartedAt':'fixture'},
+            'Mounts':[],'NetworkSettings':{}}
+        original=copy.deepcopy(actual);before=Engine.runtime_binding(actual)
+        intent={'containerId':actual['Id'],'creationRequestHash':digest(request),'createdEvidenceHash':'d'*64}
+        self.assertIs(engine.matching_paused(transition,request,intent,actual),actual)
+        self.assertEqual(actual,original);self.assertEqual(Engine.runtime_binding(actual),before)
+        self.assertNotEqual(before['hostConfigHash'],digest(request['HostConfig']))
+        actual['State'].update(Paused=False,Status='running')
+        self.assertIs(engine.matching_released(transition,request,before,actual),actual)
+        self.assertEqual(Engine.runtime_binding(actual),before)
+
+    def test_registry_oom_equivalence_is_only_default_after_start(self):
+        engine=Engine.__new__(Engine);transition=types.SimpleNamespace(context='a'*64)
+        request={'Image':'sha256:'+'b'*64,'HostConfig':{'OomKillDisable':False,'Memory':536870912}}
+        original={'Name':'/'+engine.name(transition),'Id':'c'*64,'Image':request['Image'],
+            'Config':{'Image':request['Image']},'HostConfig':{'OomKillDisable':None,'Memory':536870912},
+            'State':{'Running':True}}
+        for case in ('true','integer_zero','integer_one','string','missing','memory','created'):
+            with self.subTest(case=case):
+                actual=copy.deepcopy(original)
+                if case in ('true','integer_zero','integer_one','string'):
+                    actual['HostConfig']['OomKillDisable']={'true':True,'integer_zero':0,'integer_one':1,'string':'false'}[case]
+                if case=='missing':actual['HostConfig'].pop('OomKillDisable')
+                if case=='memory':actual['HostConfig']['Memory']+=1
+                if case=='created':actual['State']['Running']=False
+                with self.assertRaisesRegex(RuntimeError,'CREATION_HOST_CONFIG_DRIFT'):
+                    engine.matching_configuration(transition,request,actual)
+
     def fixture(self,release=False,retire_all=False):
         state={'http':200,'health':{'status':'UP'},'db':{'name':'semantic','oid':44,'allowConnections':True},
             'migrations':[{'version':'1','type':'SQL','script':'V1__fixture.sql','checksum':123,'success':True}]}

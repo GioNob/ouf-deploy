@@ -12,7 +12,7 @@ from urllib.parse import quote
 from engine_creation import Engine
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
-from tools.chatbot_file_cohort.plan import digest, encoded, environment, runtime_pin, require, sha, NO_RESTART, PlanDenied, creation_host_config
+from tools.chatbot_file_cohort.plan import digest, encoded, environment, runtime_pin, require, sha, NO_RESTART, PlanDenied, creation_host_config, host_config_matches
 from tools.chatbot_file_cohort.containers import CohortPaused, READINESS_POLICY
 from tools.chatbot_file_cohort.gateway import NamespaceAdmin, private_config, namespace_program
 
@@ -151,7 +151,7 @@ class GatewayRuntime:
             require(v['Config'].get(k)==value,'APISIX_CANDIDATE_PROCESS_DRIFT')
         host=copy.deepcopy(r['HostConfig'])
         if restored:host['RestartPolicy']=p['originalRestartPolicy']
-        require(all(v['HostConfig'].get(k)==value for k,value in host.items()),'APISIX_CANDIDATE_HOST_DRIFT')
+        require(host_config_matches(host,v['HostConfig']),'APISIX_CANDIDATE_HOST_DRIFT')
         projection=lambda rows:{(m['Type'],m['Source'],m['Destination'],m['RW']) for m in rows}
         require(projection(v['Mounts'])==projection(p['expectedMounts']),'APISIX_CANDIDATE_MOUNT_DRIFT')
         networks=v['NetworkSettings']['Networks'];expected=p['networks'] if connected else r['NetworkingConfig']['EndpointsConfig']
