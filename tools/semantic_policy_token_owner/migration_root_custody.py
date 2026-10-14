@@ -239,3 +239,139 @@ class RootCustody:
                     row.update(state='ROOTS_CUSTODIED_NOT_RUNTIME_ACCEPTED',version=row['version']+1);save(row)
                 return binding.decode(binding.encoded(row))
             finally:os.close(lock)
+
+class TokenOutputCustody:
+    """Create one group-readable child of completed recovery custody.
+
+    Never widen existing roots. One durable mkdir reservation; a partial or
+    failed attempt is reconciliation-only, including an absent result. No
+    credentials, token, IAM, services or runtime authority are produced.
+    """
+    def __init__(self,authority,authority_raw,host_raw,root_evidence_hash,root_source_hash):
+        binding.require(type(authority)is CutoverAuthority and type(authority_raw)is bytes,
+            'CURRENT_TYPED_OUTPUT_CUSTODY_AUTHORITY_REQUIRED')
+        self.authority,self.raw,self.host_raw=authority,bytes(authority_raw),bytes(host_raw)
+        self.root_evidence_hash,self.root_source_hash=root_evidence_hash,root_source_hash
+        host=binding.decode(host_raw)
+        with completed_roots(host_raw,root_evidence_hash,root_source_hash)as identities:
+            self.parent_identity=dict(identities['durableRecovery'])
+        self.path=Path(self.parent_identity['path'])/'token-output'
+        self.scope={'schema':'ouf.policy-token-output-custody-scope.v1',
+            'operation':'CREATE_ONE_TOKEN_OUTPUT_CHILD',
+            'hostInputsHash':legacy.HOST_HASH,'logicalOwnerScopeHash':host['logicalOwnerScopeHash'],
+            'sourceClosureHash':authority.expected['sourceClosureHash'],
+            'completedRootEvidenceHash':root_evidence_hash,'rootCreationSourceClosureHash':root_source_hash,
+            'parentIdentity':self.parent_identity,'path':str(self.path),'uid':0,'gid':10001,'modeOctal':'0750',
+            'maximumMkdirAttempts':1,'maximumElapsedSeconds':300,
+            'existingDirectoryAdoptionAllowed':False,'existingRootPermissionChangesAllowed':False,
+            'automaticRollbackAllowed':False,'runtimeAcceptanceGranted':False}
+        self.operation=binding.sha(binding.encoded({'logicalOwnerScopeHash':host['logicalOwnerScopeHash'],
+            'operation':'FIRST_GOVERNED_TOKEN_OUTPUT_CHILD','path':str(self.path)}))
+        self.name='policy-token-output-custody-'+self.operation+'.private.json'
+    def guard(self):
+        binding.require(binding.decode(self.raw).get('policyTokenOutputCustody')==self.scope,
+            'EXPLICIT_SIGNED_TOKEN_OUTPUT_SCOPE_REQUIRED')
+        binding.require(self.authority(self.raw)is True,'CURRENT_OUTPUT_CUSTODY_HUMAN_AUTHORITY_REQUIRED')
+        binding.require(legacy.boot_identity()==binding.decode(self.host_raw)['kernelBootId'],
+            'OUTPUT_CUSTODY_BOOT_CHANGED')
+    def validate(self,row):
+        binding.require(type(row)is dict and set(row)=={'schema','operation','scope','state','version',
+            'mkdirAttemptConsumed','outputIdentity','createdMonotonic','expiresMonotonic','bootId'}
+            and row['schema']=='ouf.policy-token-output-custody.v1' and row['operation']==self.operation
+            and row['scope']==self.scope and row['mkdirAttemptConsumed']is True
+            and type(row['version'])is int and row['state']in {'MKDIR_RESERVED_OUTCOME_UNPROVEN','OUTPUT_CUSTODIED_NOT_RUNTIME_ACCEPTED'}
+            and row['version']==(1 if row['state']=='OUTPUT_CUSTODIED_NOT_RUNTIME_ACCEPTED' else 0)
+            and type(row['createdMonotonic'])in (int,float) and 0<=row['createdMonotonic']<float('inf')
+            and type(row['expiresMonotonic'])in (int,float) and row['expiresMonotonic']==row['createdMonotonic']+300
+            and row['bootId']==binding.decode(self.host_raw)['kernelBootId'],'OUTPUT_CUSTODY_LEDGER_DRIFT')
+        info=row['outputIdentity']
+        binding.require((row['state']=='MKDIR_RESERVED_OUTCOME_UNPROVEN' and info is None)
+            or (row['state']=='OUTPUT_CUSTODIED_NOT_RUNTIME_ACCEPTED' and type(info)is dict
+                and set(info)=={'device','inode'} and all(type(v)is int and v>=0 for v in info.values())
+                and info['inode']>0),'OUTPUT_CUSTODY_IDENTITY_DRIFT')
+        return row
+    def run(self):
+        self.guard()
+        with completed_roots(self.host_raw,self.root_evidence_hash,self.root_source_hash)as identities:
+            binding.require(identities['durableRecovery']==self.parent_identity,'OUTPUT_PARENT_IDENTITY_DRIFT')
+            with binding.protected_parent()as directory:
+                lock=os.open(self.name+'.lock',os.O_RDWR|os.O_CREAT|os.O_NOFOLLOW|os.O_NONBLOCK,0o600,dir_fd=directory)
+                try:
+                    info=os.fstat(lock)
+                    binding.require(stat.S_ISREG(info.st_mode) and info.st_uid==info.st_gid==0
+                        and stat.S_IMODE(info.st_mode)==0o600 and info.st_nlink==1,'OUTPUT_FENCE_CUSTODY_REQUIRED')
+                    fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);seal=binding.identity(info)
+                    def fence():
+                        binding.require(seal==binding.identity(os.fstat(lock))
+                            ==binding.identity(os.stat(self.name+'.lock',dir_fd=directory,follow_symlinks=False)),
+                            'OUTPUT_FENCE_CHANGED')
+                    def budget(row):
+                        now=time.monotonic()
+                        binding.require(row['createdMonotonic']<=now<row['expiresMonotonic'],
+                            'OUTPUT_CUSTODY_BUDGET_EXPIRED_OR_CLOCK_DRIFT')
+                    def save(row,first=False):
+                        self.guard();fence();budget(row);raw=binding.encoded(self.validate(row))
+                        name=self.name if first else '.'+self.name+'.'+uuid.uuid4().hex
+                        fd=os.open(name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=directory)
+                        try:
+                            with os.fdopen(os.dup(fd),'wb')as stream:stream.write(raw);stream.flush();os.fsync(stream.fileno())
+                            fence()
+                            if not first:os.replace(name,self.name,src_dir_fd=directory,dst_dir_fd=directory)
+                            os.fsync(directory)
+                            binding.require(binding.read_member(directory,self.name)==raw,'OUTPUT_LEDGER_PUBLICATION_UNPROVEN')
+                        finally:os.close(fd)
+                    # Enter with the explicit parent binding; the protected
+                    # reader captures that path and holds its ancestry FDs.
+                    previous=binding.PARENT
+                    try:
+                        binding.PARENT=Path(self.parent_identity['path'])
+                        parent_context=binding.protected_parent()
+                        parent=parent_context.__enter__()
+                    finally:binding.PARENT=previous
+                    try:
+                        p=os.fstat(parent)
+                        binding.require({'device':p.st_dev,'inode':p.st_ino}==
+                            {k:self.parent_identity[k]for k in ('device','inode')},'OUTPUT_PARENT_DESCRIPTOR_DRIFT')
+                        try:row=self.validate(binding.decode(binding.read_member(directory,self.name)))
+                        except FileNotFoundError:row=None
+                        self.guard();fence()
+                        if row is not None:
+                            budget(row)
+                            binding.require(row['state']=='OUTPUT_CUSTODIED_NOT_RUNTIME_ACCEPTED',
+                                'OUTPUT_RECONCILIATION_REQUIRED_NO_MKDIR_REPLAY')
+                        else:
+                            try:os.stat('token-output',dir_fd=parent,follow_symlinks=False)
+                            except FileNotFoundError:pass
+                            else:binding.require(False,'UNRECORDED_OUTPUT_REQUIRES_RECONCILIATION_NO_ADOPTION')
+                            now=time.monotonic()
+                            row={'schema':'ouf.policy-token-output-custody.v1','operation':self.operation,'scope':self.scope,
+                                'state':'MKDIR_RESERVED_OUTCOME_UNPROVEN','version':0,'mkdirAttemptConsumed':True,
+                                'outputIdentity':None,'createdMonotonic':now,'expiresMonotonic':now+300,
+                                'bootId':binding.decode(self.host_raw)['kernelBootId']}
+                            save(row,first=True);self.guard();fence();budget(row)
+                            os.mkdir('token-output',0o700,dir_fd=parent);os.fsync(parent)
+                            child=os.open('token-output',os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,dir_fd=parent)
+                            try:
+                                s=os.fstat(child)
+                                binding.require(stat.S_ISDIR(s.st_mode) and s.st_uid==s.st_gid==0
+                                    and stat.S_IMODE(s.st_mode)==0o700 and not os.listdir(child),
+                                    'NEW_OUTPUT_CHILD_CUSTODY_UNPROVEN')
+                                self.guard();fence();budget(row)
+                                os.fchown(child,0,10001);os.fchmod(child,0o750);os.fsync(child);os.fsync(parent)
+                                s=os.fstat(child)
+                                row.update(state='OUTPUT_CUSTODIED_NOT_RUNTIME_ACCEPTED',version=1,
+                                    outputIdentity={'device':s.st_dev,'inode':s.st_ino})
+                                self.check_child(parent,child,row);save(row)
+                            finally:os.close(child)
+                        child=os.open('token-output',os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,dir_fd=parent)
+                        try:self.check_child(parent,child,row);self.guard();fence();budget(row)
+                        finally:os.close(child)
+                        return binding.decode(binding.encoded(row))
+                    finally:parent_context.__exit__(None,None,None)
+                finally:os.close(lock)
+    def check_child(self,parent,child,row):
+        s=os.fstat(child);named=os.stat('token-output',dir_fd=parent,follow_symlinks=False)
+        binding.require(stat.S_ISDIR(s.st_mode) and s.st_uid==0 and s.st_gid==10001
+            and stat.S_IMODE(s.st_mode)==0o750 and binding.identity(s)==binding.identity(named)
+            and {'device':s.st_dev,'inode':s.st_ino}==row['outputIdentity'],
+            'COMPLETED_OUTPUT_IDENTITY_OR_CUSTODY_DRIFT_NO_RECREATE')
