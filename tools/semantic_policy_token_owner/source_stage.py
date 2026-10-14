@@ -38,6 +38,17 @@ def declaration(destination,commit,files,*,directory_identity,owner_binding_hash
             **FLAGS,'sourceBodiesExecuted':0,'runtimeRegistered':False,
             'credentialMaterialIncluded':False,'budgetReset':False,'notReleaseAcceptance':True}
 
+def stage_authority_matches(authority, authority_raw, manifest):
+    digest = fingerprint(manifest)
+    if authority.expected['sourceClosureHash'] == digest:
+        return True
+    import json
+    scope = json.loads(authority_raw).get('policyTokenOwnerInstallation')
+    return (type(scope) is dict and scope.get('schema') == 'ouf.policy-token-owner-installation.v1'
+            and scope.get('sourceClosureHash') == authority.expected['sourceClosureHash']
+            and scope.get('stageManifestHash') == digest)
+
+
 class ProtectedTokenSourceStage:
     def __init__(self,manifest,files,authority,authority_raw,*,max_seconds=120,clock=time.monotonic):
         require(type(authority) is CutoverAuthority and type(authority_raw) is bytes,
@@ -45,7 +56,7 @@ class ProtectedTokenSourceStage:
         require(type(manifest) is dict and type(files) is dict
                 and manifest==declaration(manifest.get('destination'),manifest.get('sourceCommit'),files,directory_identity=manifest.get('directoryIdentity'),owner_binding_hash=manifest.get('ownerBindingHash')),
                 'EXACT_SOURCE_STAGE_DECLARATION_REQUIRED')
-        require(authority.expected['sourceClosureHash']==fingerprint(manifest),
+        require(stage_authority_matches(authority, authority_raw, manifest),
                 'HUMAN_REVIEWED_SOURCE_AND_DESTINATION_CLOSURE_REQUIRED')
         require(type(max_seconds) is int and 1<=max_seconds<=120,'FINITE_SOURCE_STAGE_DURATION_REQUIRED')
         self.manifest,self.files=copy.deepcopy(manifest),dict(files)
@@ -57,7 +68,7 @@ class ProtectedTokenSourceStage:
         require(self.last<=now<self.deadline,'SOURCE_STAGE_CLOCK_OR_DEADLINE_UNPROVEN')
         require(fingerprint(self.manifest)==self.closure
                 and self.manifest==declaration(self.manifest['destination'],self.manifest['sourceCommit'],self.files,directory_identity=self.manifest['directoryIdentity'],owner_binding_hash=self.manifest.get('ownerBindingHash'))
-                and self.authority.expected['sourceClosureHash']==self.closure,
+                and stage_authority_matches(self.authority, self.raw, self.manifest),
                 'SOURCE_STAGE_BYTES_DESTINATION_OR_SCOPE_DRIFT')
         require(self.authority(self.raw) is True,'CURRENT_SOURCE_STAGE_AUTHORITY_REQUIRED')
         finished=self.clock();require(now<=finished<self.deadline,'SOURCE_STAGE_CLOCK_OR_DEADLINE_UNPROVEN')

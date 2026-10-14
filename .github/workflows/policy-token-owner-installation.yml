@@ -1,0 +1,28 @@
+name: Complete finite policy-token owner installation
+on:
+  push:
+    paths: ['tools/semantic_policy_token_owner/**', 'tests/test_policy_token_owner_installation.py', 'tests/test_policy_token_installer_runtime.py', '.github/workflows/policy-token-owner-installation.yml']
+  pull_request:
+    paths: ['tools/semantic_policy_token_owner/**', 'tests/test_policy_token_owner_installation.py', 'tests/test_policy_token_installer_runtime.py', '.github/workflows/policy-token-owner-installation.yml']
+permissions: {contents: read}
+jobs:
+  actual-composition:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Prepare native root and group custody fixture
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-complete-owner-${GITHUB_RUN_ID}"
+          sudo mkdir -m 700 "$OUF_FIXTURE_ROOT"
+          sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
+          sudo chown -R root:root "$OUF_FIXTURE_ROOT"
+      - name: Full installation, actual TLS and signatures, preserved history and no replay
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-complete-owner-${GITHUB_RUN_ID}"
+          for suite in test_policy_token_owner_installation.py test_policy_token_first_controlled_grant.py test_policy_token_output_custody.py test_installed_token_owner.py test_policy_token_worker_entry.py test_policy_token_sealed_runtime.py test_policy_token_migration_runtime.py test_policy_token_installer_runtime.py; do
+            sudo env OUF_NATIVE_UIDS=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p "$suite" -v
+          done
