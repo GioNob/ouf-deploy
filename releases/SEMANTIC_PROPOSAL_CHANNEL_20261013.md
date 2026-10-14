@@ -1,5 +1,7 @@
 # Semantic proposal channel implementation and runtime handoff
 
+**Packaging continuation, 14 October:** [qualified new candidates and VPS delivery](SEMANTIC_PROPOSAL_PACKAGES_20261014.md) now pin remediated Registry/MCP and hardened Gateway sources. The tables below retain the original channel implementation checkpoint; use the newer package manifest for candidate byte identity. The channel and Teatri remain uninstalled/unregistered.
+
 The source path needed to register Teatri DRAFTs, validate exact revisions and request real THS review challenges is implemented and merged. It has not been installed on the VPS, and the Teatri proposal remains unregistered. This checkpoint replaces the earlier statement that the missing proposal channel still needs implementation; it does not replace retained runtime evidence or installation gates.
 
 | Module | Exact merged source | Change | Qualification |
