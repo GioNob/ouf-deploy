@@ -80,7 +80,10 @@ class DatabaseCompiler(unittest.TestCase):
         o['udp']['migrations'][0]['checksum']+=1
         with self.assertRaisesRegex(p.PlanDenied,'MUST_MATCH_PACKAGED'):d.compile_database_plan(pg,b,e,o)
         pg,b,e,o=inputs();e['mcp'].append({'version':2,'checksum':'b'*64})
-        with self.assertRaisesRegex(p.PlanDenied,'MCP_MIGRATION_ROLE'):d.compile_database_plan(pg,b,e,o)
+        plan=d.compile_database_plan(pg,b,e,o)
+        self.assertEqual(next(r for r in plan['modules'] if r['module']=='mcp')['pendingMigrationCount'],1)
+        o['mcp']['migrations'][0]['checksum']='f'*64
+        with self.assertRaisesRegex(p.PlanDenied,'MUST_MATCH_PACKAGED'):d.compile_database_plan(pg,b,e,o)
         pg,b,e,o=inputs();b['mcp']['database']=b['udp']['database'];o['mcp']['identity']['name']=b['udp']['database']
         with self.assertRaisesRegex(p.PlanDenied,'SHARED_DATABASE'):d.compile_database_plan(pg,b,e,o)
 
@@ -120,11 +123,15 @@ class DatabaseCompiler(unittest.TestCase):
         self.assertFalse(any('public.' in sql for sql in queries))
 
 class DatabaseRuntime(unittest.TestCase):
-    def fixture(self):
+    def fixture(self, mcp_pending=False):
         fixture=runtime_fixture.CohortRuntime();cohort,native,f,_=fixture.fixture();self.addCleanup(fixture.doCleanups)
         pg,b,e,o=inputs();native.state[pg['Id']]=copy.deepcopy(pg)
+        if mcp_pending:e['mcp'].append({'version':2,'checksum':'b'*64})
         dbplan=d.compile_database_plan(pg,b,e,o)
         installation=copy.deepcopy(cohort.plan);installation['databasePlanHash']=p.digest(dbplan)
+        migration=next(r for r in installation['replacements'] if r['module']=='mcp')
+        migration['creationRequest']['Entrypoint']=['/usr/local/bin/ouf-mcp']
+        migration['creationRequest']['Env'].append('MCP_DATABASE_URL=postgres://fixture@ouf-postgres/fixture_mcp')
         raw=json.loads(f.authority);raw['applicationCohortInstallation']=c.installation_scope(installation)
         f.authority=crypto.encoded(raw);f.approval['executionAuthorityHash']=crypto.sha(f.authority)
         f.write(f.mandate,crypto.encoded(f.approval));f.approved=crypto.sha(f.mandate.read_bytes())
@@ -186,6 +193,46 @@ class DatabaseRuntime(unittest.TestCase):
                 else:native.find('5'*64)['State']['Pid']+=1
                 with self.assertRaises(Exception):owner.backup_quiesced()
                 self.assertEqual(owner.record()['backups'],{});self.assertFalse(log.exists())
+
+    def test_separate_mcp_role_applies_pending_history_once_after_backup(self):
+        owner,native,_,current,expected,_=self.fixture(mcp_pending=True)
+        owner.backup_quiesced(); original=owner.engine.request; migrator={};effects=[]
+        def transport(method,path,body=None):
+            if path.startswith('/v1.44/containers/ouf-mcp-migrate-fixture/json'):
+                return (200,copy.deepcopy(migrator)) if migrator else (404,None)
+            if path.startswith('/v1.44/containers/create?name=ouf-mcp-migrate-fixture'):
+                effects.append('create')
+                migrator.update(Id='e'*64,Name='/ouf-mcp-migrate-fixture',Image=body['Image'],
+                    Config={k:copy.deepcopy(v) for k,v in body.items() if k not in ('HostConfig','NetworkingConfig')},
+                    HostConfig={**copy.deepcopy(body['HostConfig']),'Privileged':False},Mounts=[],RestartCount=0,
+                    NetworkSettings={'Networks':{'ouf-backend':{'NetworkID':body['NetworkingConfig']['EndpointsConfig']['ouf-backend']['NetworkID']}}},
+                    State={'Status':'created','Running':False,'Pid':0})
+                return 201,{'Id':migrator['Id']}
+            if path == '/v1.44/containers/'+'e'*64+'/start':
+                effects.append('start');migrator['State'].update(Status='exited',ExitCode=0)
+                current['mcp']['migrations']=copy.deepcopy(expected['mcp'])
+                return 204,None
+            return original(method,path,body)
+        owner.engine.request=transport;self.addCleanup(setattr,owner.engine,'request',original)
+        proof=owner.migrate_mcp();self.assertEqual(proof['pendingMigrationCount'],1)
+        self.assertEqual(effects,['create','start'])
+        owner.migrate_mcp();self.assertEqual(effects,['create','start'])
+        self.assertEqual(owner.record()['mcpMigration']['state'],'COMPLETE')
+
+    def test_ambiguous_mcp_creation_does_not_replay_effect(self):
+        owner,native,_,_,_,_=self.fixture(mcp_pending=True)
+        owner.backup_quiesced(); original=owner.engine.request;effects=[]
+        def transport(method,path,body=None):
+            if path.startswith('/v1.44/containers/ouf-mcp-migrate-fixture/json'):
+                return 404,None
+            if path.startswith('/v1.44/containers/create?name=ouf-mcp-migrate-fixture'):
+                effects.append('create');return 500,None
+            return original(method,path,body)
+        owner.engine.request=transport;self.addCleanup(setattr,owner.engine,'request',original)
+        with self.assertRaisesRegex(p.PlanDenied,'RECONCILIATION'):owner.migrate_mcp()
+        self.assertEqual(owner.record()['mcpMigration']['state'],'CLAIMED')
+        with self.assertRaisesRegex(p.PlanDenied,'RECONCILIATION'):owner.migrate_mcp()
+        self.assertEqual(effects,['create'])
 
     def test_capture_size_bound_leaves_consumed_claim_and_private_partial(self):
         owner,native,_,_,_,log=self.fixture()
