@@ -100,4 +100,39 @@ class OutputCustodyTest(unittest.TestCase):
         with self.assertRaisesRegex(binding.CandidateDenied,'CUSTODY_DRIFT'):self.make().run()
         self.assertFalse(Path(self.scope['path']).exists())
 
+    def test_revocation_after_group_mode_change_keeps_unproven_reservation(self):
+        action=self.make();chmod=roots.os.fchmod
+        def revoke(*a,**kw):
+            chmod(*a,**kw);self.r.f.f.approval['state']='REVOKED'
+            self.r.f.f.write(self.r.f.f.mandate,binding.encoded(self.r.f.f.approval))
+        with patch.object(roots.os,'fchmod',side_effect=revoke):
+            with self.assertRaises(Exception):action.run()
+        row=json.loads((self.r.f.f.root/action.name).read_bytes())
+        self.assertEqual(row['state'],'MKDIR_RESERVED_OUTCOME_UNPROVEN')
+        self.assertIsNone(row['outputIdentity'])
+
+class OutputToFirstGrantTest(unittest.TestCase):
+    def test_actual_output_identity_composes_into_tls_admitted_first_grant(self):
+        import test_policy_token_first_controlled_grant as first
+        f=first.RootBoundFirstGrantTest();f.setUp();self.addCleanup(f.doCleanups)
+        proposal=roots.TokenOutputCustody(f.f.gate(),f.f.authority,f.r.f.raw,f.root_hash,f.root_source)
+        authority=json.loads(f.f.authority);authority['policyTokenOutputCustody']=proposal.scope
+        f.f.authority=binding.encoded(authority);f.f.approval['executionAuthorityHash']=binding.sha(f.f.authority)
+        f.f.write(f.f.mandate,binding.encoded(f.f.approval));f.f.approved=binding.sha(f.f.mandate.read_bytes())
+        for role in f.f.grant['roles']:f.f.sign(role)
+        action=roots.TokenOutputCustody(f.f.gate(),f.f.authority,f.r.f.raw,f.root_hash,f.root_source)
+        custody=action.run();f.output=action.path;f.output_identity=custody['outputIdentity']
+        f.binding=first.grant.Binding(f.server.profile.token_endpoint,'fixture-client','authorization.bundle.read',
+            str(f.output),'token.jwt',10001)
+        f.sign_scopes()
+        with patch.object(first.legacy,'read_units',side_effect=lambda:dict(f.state)),\
+             patch.object(first.legacy.subprocess,'run',side_effect=f.command),\
+             patch.object(first.fixtures.transaction.SecretAdmin,'call',side_effect=f.admin):
+            result=f.make().migrate()
+        self.assertEqual(result['state'],'TOKEN_PUBLISHED_NOT_RUNTIME_ACCEPTED')
+        self.assertEqual((f.output/'token.jwt').read_text(),'FIXTURE_TOKEN')
+        self.assertEqual((f.output/'token.jwt').stat().st_mode&0o777,0o440)
+        self.assertEqual((f.root_ledger).read_bytes(),f.original_ledger)
+        self.assertEqual(json.loads((f.root/action.name).read_bytes())['outputIdentity'],custody['outputIdentity'])
+
 if __name__=='__main__':unittest.main()
