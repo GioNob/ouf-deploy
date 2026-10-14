@@ -36,9 +36,10 @@
     {
       "module": "mcp",
       "repository": "ouf-mcp-server",
-      "commit": "f7ecaeb210d8fcead478b90c62645db13a7d8226",
+      "commit": "a716de014af5e6071d7028cb84cf6312fa7dc284",
       "kind": "DOCKER_SAVE",
-      "qualifiedSource": "1323f9e3fb35d96fd0ac5d1b17bcc3a80268ec64"
+      "qualifiedSource": "1323f9e3fb35d96fd0ac5d1b17bcc3a80268ec64",
+      "qualificationRun": 38580945995
     },
     {
       "module": "gateway",
