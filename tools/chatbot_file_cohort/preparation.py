@@ -8,7 +8,7 @@ import hashlib
 import re
 import tarfile
 from pathlib import Path
-from urllib.parse import urlsplit, unquote
+from urllib.parse import urlsplit, unquote, parse_qsl
 
 from engine_creation import Engine
 from tools.chatbot_file_cohort.plan import MODULES, compile_cohort, environment, runtime_pin, digest, require
@@ -41,6 +41,10 @@ def database_binding(module, actual, postgres):
             and parsed.port in (None,5432) and not parsed.fragment
             and re.fullmatch('/[A-Za-z_][A-Za-z_0-9]{0,62}',unquote(parsed.path)),
             'BOUNDED_SELECTED_DATABASE_URL_REQUIRED')
+    parameters = parse_qsl(parsed.query,keep_blank_values=True,strict_parsing=True)
+    require(len(parameters) <= 32 and not ({key.lower() for key,_ in parameters}
+            & {'user','username','password','host','hostaddr','port','dbname','database','service','servicefile'}),
+            'DATABASE_URL_IDENTITY_OVERRIDE_REQUIRES_REVIEW')
     peers = {postgres['Name'].lstrip('/'),postgres['Config'].get('Hostname')}
     network = postgres['NetworkSettings'].get('Networks',{}).get('ouf-backend')
     require(type(network) is dict, 'POSTGRES_ON_SELECTED_BACKEND_REQUIRED')
@@ -106,6 +110,12 @@ def prepare_cohort(engine, package_directory, manifest, image_import_plan, postg
     database_plan = compile_database_plan(pg,bindings,migrations,current)
     plan = compile_cohort(manifest,observed,images,packages,environment_deltas,
         gateway_plan_hash,digest(database_plan),authorization_plan_hash)
+    for replacement in plan['replacements']:
+        module = replacement['module']
+        candidate = {'Config':replacement['creationRequest'],
+                     'NetworkSettings':observed[module]['NetworkSettings']}
+        require(database_binding(module,candidate,pg) == bindings[module],
+                'REPLACEMENT_MUST_PRESERVE_REVIEWED_DATABASE_BINDING')
     for name, actual in observed.items():
         code, fresh = engine.request('GET','/v1.44/containers/'+actual['Id']+'/json')
         require(code == 200 and runtime_pin(fresh) == runtime_pin(actual), 'APPLICATION_CHANGED_DURING_PREPARATION')

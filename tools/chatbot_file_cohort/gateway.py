@@ -76,8 +76,8 @@ def private_config(path, expected=None):
         s = os.fstat(fd)
         pin = lambda v: (v.st_dev,v.st_ino,v.st_uid,v.st_gid,v.st_mode,v.st_nlink,v.st_size,v.st_mtime_ns,v.st_ctime_ns)
         require(stat.S_ISREG(s.st_mode) and s.st_uid == 0 and s.st_nlink == 1
-                and stat.S_IMODE(s.st_mode) in (0o400,0o600) and 0 < s.st_size <= 1048576,
-                'PRIVATE_SELECTED_APISIX_CONFIG_REQUIRED')
+                and stat.S_IMODE(s.st_mode) in (0o400,0o440,0o444,0o600,0o640,0o644) and 0 < s.st_size <= 1048576,
+                'ROOT_CONTROLLED_SELECTED_APISIX_CONFIG_REQUIRED')
         raw = b''
         while len(raw) <= 1048576:
             part = os.read(fd,65536)
@@ -155,11 +155,20 @@ class NamespaceAdmin:
     Existing Engine socket custody and the exact APISIX generation are checked
     before and after each request, including namespace inode and selected bind.
     """
-    def __init__(self, engine, binding):
+    def __init__(self, engine, binding, runtime_owner=None):
         require(type(engine) is Engine and os.geteuid() == 0
                 and hasattr(os, 'setns'), 'QUALIFIED_ROOT_NAMESPACE_TRANSPORT_REQUIRED')
         self.engine, self.binding = engine, copy.deepcopy(binding)
         self.binding_hash = digest(binding)
+        self.runtime_owner=runtime_owner
+        self.reviewed_binding=copy.deepcopy(binding)
+        if runtime_owner is not None:
+            from tools.chatbot_file_cohort.gateway_runtime import GatewayRuntime, proposed_transport
+            require(type(runtime_owner) is GatewayRuntime and runtime_owner.engine is engine,
+                    'CONCRETE_SAME_ENGINE_APISIX_RUNTIME_OWNER_REQUIRED')
+            require(Engine.runtime_binding(runtime_owner.generation())==binding['runtimeBinding'],
+                    'NEW_APISIX_GENERATION_NOT_PROVEN_BY_OWNER')
+            self.reviewed_binding=proposed_transport(runtime_owner.plan)
 
     @staticmethod
     def observe(engine, selected_config):
@@ -180,6 +189,11 @@ class NamespaceAdmin:
 
     def check(self):
         require(digest(self.binding) == self.binding_hash, 'APISIX_TRANSPORT_BINDING_CHANGED')
+        if self.runtime_owner is not None:
+            from tools.chatbot_file_cohort.gateway_runtime import proposed_transport
+            require(self.reviewed_binding==proposed_transport(self.runtime_owner.plan)
+                    and Engine.runtime_binding(self.runtime_owner.generation())==self.binding['runtimeBinding'],
+                    'APISIX_RUNTIME_OWNER_OR_REVIEW_CHANGED')
         current = self.observe(self.engine, self.binding['configBinding']['path'])
         require(current == self.binding, 'APISIX_GENERATION_OR_NAMESPACE_CHANGED')
 
@@ -254,7 +268,7 @@ class GatewayRoutes:
                 and type(transport) is NamespaceAdmin, 'CONCRETE_SIGNED_GATEWAY_COMPONENTS_REQUIRED')
         require(plan.get('schema') == PROFILE and cohort_plan['gatewayPlanHash'] == digest(plan)
                 and cohort_plan['gatewayModulePackageHash'] == plan['gatewayModulePackageHash']
-                and transport.binding == plan['transportBinding'], 'GATEWAY_COHORT_PLAN_BINDING_REQUIRED')
+                and transport.reviewed_binding == plan['transportBinding'], 'GATEWAY_COHORT_PLAN_BINDING_REQUIRED')
         before,after = plan['previousRoutes'],plan['proposedRoutes']
         require(type(before) is dict and type(after) is dict and set(before) <= set(after)
                 and route_map(list(before.values())) == before and route_map(list(after.values())) == after

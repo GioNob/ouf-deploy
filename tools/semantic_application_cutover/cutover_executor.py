@@ -66,7 +66,8 @@ class Executor:
             aggregate_fields={'policyTokenOwnerInstallation','policyTokenOutputCustody','policyTokenLegacyRetirement',
                 'policyTokenCredentialReestablishment','policyTokenAccountingGapMigration','policyTokenFirstControlledGrant',
                 'policyTokenFiniteWorkerSession','tokenOwnerRuntime','applicationCohortInstallation','gatewayRoutePublication',
-                'chatbotFileAuthorization','finiteActionProcess','applicationRegistryCutover'}
+                'chatbotFileAuthorization','finiteActionProcess','applicationRegistryCutover','cohortImageImport',
+                'gatewayRuntimeInstallation'}
         require(set(authority)=={'schema','issuedAt','expiresAt','creationRequestHash','predecessorHistoryHash','predecessorIncidentRef','sourceClosureHash','phaseIntentHashes','automaticReplayAllowed','databaseRestoreAuthorized','r12ReplayAuthorized','newDistinctLeaseWorkerRequired'}|profile_fields|aggregate_fields,'EXACT_CUTOVER_AUTHORITY_SCOPE_REQUIRED')
         require(authority['schema']==('ouf.semantic-cutover-execution-authority.v1' if self.profile_hash is None else 'ouf.semantic-cutover-execution-authority.v2'),'EXACT_CUTOVER_AUTHORITY_SCHEMA_REQUIRED')
         require(hash_value(authority['sourceClosureHash']),'SIGNED_SOURCE_CLOSURE_HASH_REQUIRED')

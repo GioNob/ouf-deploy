@@ -41,10 +41,11 @@ jobs:
         run: |
           set -euo pipefail
           OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
-          for suite in test_chatbot_cohort_plan.py test_chatbot_cohort_containers.py test_chatbot_cohort_databases.py test_chatbot_cohort_gateway.py; do
+          for suite in test_chatbot_cohort_plan.py test_chatbot_cohort_preparation.py test_chatbot_cohort_containers.py test_chatbot_cohort_databases.py test_chatbot_cohort_gateway.py test_chatbot_cohort_gateway_runtime.py; do
             sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" "$OUF_FIXTURE_ROOT/repository/.cohort-test-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p "$suite" -v
           done
       - name: Real four-database archives, full payload parsing and retained rows
+        if: ${{ !cancelled() }}
         env:
           OUF_PG_CID: ${{ job.services.postgres.id }}
         run: |

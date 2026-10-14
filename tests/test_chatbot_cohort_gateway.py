@@ -35,10 +35,10 @@ class GatewayPublication(unittest.TestCase):
                 'changed':{'id':'changed','uri':'/review','methods':['POST'],'timeout':10}}
         after=copy.deepcopy(before);after['changed']['timeout']=55
         after['added']={'id':'added','uri':'/readiness','methods':['POST']}
-        changes=[{'id':n,'before':before.get(n),'after':after[n]} for n in ('changed','added')]
+        changes=[{'id':n,'before':before.get(n),'after':after[n]} for n in sorted(('changed','added'))]
         plan={'schema':g.PROFILE,'gatewayModulePackageHash':'e'*64,'previousRoutes':before,'proposedRoutes':after,
               'previousRuntimeHash':g.digest(before),'proposedRuntimeHash':g.digest(after),'changes':changes,
-              'transportBinding':{'fixture':True},'automaticRollbackAllowed':False}
+              'transportBinding':{'fixture':True},'automaticRollbackAllowed':False,'automaticWriteReplayAllowed':False}
         cohort={'gatewayPlanHash':g.digest(plan),'gatewayModulePackageHash':'e'*64,
                 'cohortManifestHash':'c'*64,'replacements':[{'oldRuntimeBinding':{'containerId':'a'*64}}]}
         value=json.loads(f.authority)

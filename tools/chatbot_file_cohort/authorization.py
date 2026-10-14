@@ -41,7 +41,8 @@ CHAT = ['ouf.managed-source.file.upload','ouf.managed-source.file.profile','ouf.
         'ouf.managed-source.onboarding.create','ouf.semantic.propose','ouf.semantic.review.prepare',
         'ouf.semantic.approval.request','ouf.semantic.search','ouf.semantic.read','urban.object.search',*NEW]
 BROWSER = ['ouf.managed-source.file.upload','ouf.onboarding.configuration.write','ouf.semantic.review',
-           'ouf.semantic.approve','ouf.semantic.publish','urban.identity.preflight']
+           'ouf.semantic.approve','ouf.semantic.publish','urban.identity.preflight',
+           'resolution.issue.read','resolution.match.approve']
 
 
 class AuthorizationPaused(RuntimeError):
@@ -112,7 +113,7 @@ class OwnerTransport:
     Credential bytes stay in memory. No browser cookies are read or fabricated.
     The server independently verifies both HUMAN credentials and write proof.
     """
-    def __init__(self, selection, admin_token_file, mcp_token_file):
+    def __init__(self, selection, admin_token_file, mcp_token_file, *, wait=None):
         self.selection = copy.deepcopy(selection)
         require(set(selection) == {'origin','issuer','tenant','subject','docker','keycloakContainer','realm','clients'},
                 'EXACT_AUTHORIZATION_TRANSPORT_SELECTION_REQUIRED')
@@ -129,6 +130,9 @@ class OwnerTransport:
                 'SELECTED_CHATGPT_AND_THS_CLIENTS_REQUIRED')
         self.tokens = {'admin':Path(admin_token_file), 'mcp':Path(mcp_token_file)}
         self.opener = urllib.request.build_opener(urllib.request.HTTPSHandler(context=ssl.create_default_context()), NoRedirect())
+        require(wait is None or callable(wait), 'AUTHORIZATION_WAIT_FUNCTION_REQUIRED')
+        self.wait = time.sleep if wait is None else wait
+        self._last_mcp_at, self._role_cache = None, None
 
     def token(self, kind):
         path = self.tokens[kind]
@@ -194,6 +198,16 @@ class OwnerTransport:
     def tool(self, name, arguments, key):
         require(name in ('authorization.permissions.read','authorization.permissions.propose','authorization.proposal.read'),
                 'EXACT_EXISTING_PERMISSION_TOOL_REQUIRED')
+        # Actual MCP retains read admission claims but does not replay payloads.
+        # A fresh read key does not reset its principal/tenant budget or query guard.
+        if name != 'authorization.permissions.propose':
+            key = key+':'+str(uuid.uuid4())
+        # Existing admission permits three calls/minute, and at most two equivalent
+        # queries. Pace the client; never change server budgets to make delivery pass.
+        if self._last_mcp_at is not None:
+            delay = self._last_mcp_at + 31 - time.monotonic()
+            if delay > 0: self.wait(delay)
+        self._last_mcp_at = time.monotonic()
         status, reply, _ = self.request('/mcp','POST',{'jsonrpc':'2.0','id':key,'method':'tools/call',
             'params':{'name':name,'arguments':arguments,'_meta':{
                 'io.modelcontextprotocol/protocolVersion':'2026-07-28',
@@ -230,7 +244,18 @@ class OwnerTransport:
         return json.loads(result.stdout) if verb == 'get' and result.stdout.strip() else None
 
     def active(self): return self.request(ADMIN+'/policies/active')[1]
-    def roles(self): return self.tool('authorization.permissions.read',{'view':'ROLES'},'cohort:roles:read')
+
+    def roles(self, active=None):
+        # The owner changes its role catalogue only inside the same locked policy
+        # publication transaction (OufRoleCatalogueStore.stage / decide). Validate
+        # that owner policy afresh; cached roles never survive a version/hash change.
+        current = self.active() if active is None else active
+        if self._role_cache is not None and self._role_cache[0] == current:
+            return copy.deepcopy(self._role_cache[1])
+        roles = self.tool('authorization.permissions.read',{'view':'ROLES'},'cohort:roles:read')
+        require(self.active() == current, 'ROLE_POLICY_CHANGED_DURING_READ')
+        self._role_cache = (copy.deepcopy(current),copy.deepcopy(roles))
+        return roles
 
     def registrations(self):
         rows = []
@@ -275,8 +300,8 @@ class OwnerTransport:
 
     def observe(self):
         # Complete preflight before any mutation, including both HUMAN sessions.
-        active = self.active(); roles = self.roles(); registrations = self.registrations(); oauth = self.oauth()
-        require(self.active() == active and self.roles() == roles, 'AUTHORIZATION_BASELINE_CHANGED_DURING_READ')
+        active = self.active(); roles = self.roles(active); registrations = self.registrations(); oauth = self.oauth()
+        require(self.active() == active, 'AUTHORIZATION_BASELINE_CHANGED_DURING_READ')
         return {'active':active,'roles':roles,'registrations':registrations,'oauth':oauth}
 
 

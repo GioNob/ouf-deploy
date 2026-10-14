@@ -40,6 +40,7 @@ from tools.chatbot_file_cohort.databases import CohortDatabases
 from tools.chatbot_file_cohort.gateway import GatewayRoutes, NamespaceAdmin
 from tools.chatbot_file_cohort.authorization import AuthorizationDelta, AuthorizationPaused, OwnerPrimitives, OwnerTransport
 from tools.chatbot_file_cohort.images import CohortImages
+from tools.chatbot_file_cohort.gateway_runtime import GatewayRuntime, runtime_scope
 import qualified_owner_authorization_lifecycle
 import qualified_owner_scope_catalogue
 
@@ -212,7 +213,7 @@ class Delivery:
             primitives = OwnerPrimitives.from_qualified_modules(qualified_owner_authorization_lifecycle,
                 qualified_owner_scope_catalogue, authorization['catalogue'].encode('utf-8'), authorization['helperBindings'])
             auth_owner = AuthorizationDelta(self.action, authorization['plan'], Journal(directories['authorization']),
-                OwnerTransport(authorization['plan']['selection'], authorization['adminTokenFile'], authorization['mcpTokenFile']), primitives)
+                OwnerTransport(authorization['plan']['selection'], authorization['adminTokenFile'], authorization['mcpTokenFile'],wait=self.wait), primitives)
             auth_owner.initialize()
             auth_evidence = self.await_authorization(auth_owner)
             self.current()
@@ -222,6 +223,30 @@ class Delivery:
             images.initialize()
             self.report('IMPORTING_QUALIFIED_IMAGES_BEFORE_FIRST_GRANT')
             images.apply()
+            self.current()
+            gateway_runtime = None
+            runtime_plan = self.prepared['gatewayRuntimePlan']
+            if runtime_plan is not None:
+                gateway_runtime = GatewayRuntime(self.action,self.engine,runtime_plan,Journal(directories['gatewayRuntime']))
+                gateway_runtime.initialize()
+                while True:
+                    self.current()
+                    try:
+                        gateway_runtime.apply(); break
+                    except CohortPaused as error:
+                        require(error.reason in ('APISIX_READINESS_WAIT','APISIX_READINESS_TRANSIENT')
+                                and error.next_attempt_at is not None,error.reason)
+                        self.report('APISIX_READINESS_WAIT',nextAttemptAt=error.next_attempt_at)
+                        self.wait(max(0,error.next_attempt_at-time.time()))
+                transport = gateway_runtime.transport()
+                auth_owner.verify()
+            else:
+                self.action.guard('gatewayRuntimeInstallation',{
+                    'profile':'ouf.chatbot-file-cohort.gateway-runtime.v1','required':False,
+                    'retainedTransportHash':digest(self.prepared['gatewayPlan']['transportBinding']),
+                    'proposalKeyHash':self.prepared['gatewayPlan']['proposalKeyBinding']['sha256'],
+                    'automaticRollbackAllowed':False,'automaticWriteReplayAllowed':False})
+                transport = NamespaceAdmin(self.engine,self.prepared['gatewayPlan']['transportBinding'])
             self.current()
             self.report('INSTALLING_FINITE_TOKEN_OWNER')
             self.worker = self.owner.install()
@@ -235,7 +260,7 @@ class Delivery:
             databases = CohortDatabases(self.action,self.engine,Journal(directories['databases']),plan,
                 self.prepared['databasePlan'],directories['backups'],self.review['sourceClosure']['executables']['docker'])
             gateway = GatewayRoutes(self.action,plan,self.prepared['gatewayPlan'],Journal(directories['gateway']),
-                NamespaceAdmin(self.engine,self.prepared['gatewayPlan']['transportBinding']))
+                transport)
             containers.initialize(); databases.initialize(); gateway.initialize()
             containers.accept_owner_gate('authorization',plan['authorizationPlanHash'],digest(auth_evidence))
             profile = evidence.decode(governance.public_input(governance.PROFILE))

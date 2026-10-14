@@ -181,11 +181,35 @@ class CompilerTest(unittest.TestCase):
         transport=OwnerTransport(self.selection,Path('/unused/admin'),Path('/unused/mcp'))
         reply={'jsonrpc':'2.0','result':{'content':[{'type':'text','text':json.dumps(self.obs['roles'])}]}}
         with patch.object(transport,'request',return_value=(200,reply,{})) as request:
-            self.assertEqual(transport.roles(),self.obs['roles'])
+            self.assertEqual(transport.tool('authorization.permissions.read',{'view':'ROLES'},'read'),self.obs['roles'])
         payload=request.call_args.args[2]
         self.assertEqual(payload['params']['_meta']['io.modelcontextprotocol/protocolVersion'],'2026-07-28')
         self.assertEqual(payload['params']['_meta']['io.modelcontextprotocol/clientCapabilities'],{})
         self.assertEqual(payload['params']['name'],'authorization.permissions.read')
+    def test_actual_mcp_read_keys_are_fresh_and_pacing_does_not_change_command_identity(self):
+        now=[100.0];delays=[]
+        def wait(delay):delays.append(delay);now[0]+=delay
+        transport=OwnerTransport(self.selection,Path('/unused/admin'),Path('/unused/mcp'),wait=wait)
+        reply={'jsonrpc':'2.0','result':{'content':[{'type':'text','text':'{}'}]}}
+        import tools.chatbot_file_cohort.authorization as module
+        with patch.object(module.time,'monotonic',side_effect=lambda:now[0]),patch.object(transport,'request',return_value=(200,reply,{})) as req:
+            for _ in range(2):transport.tool('authorization.permissions.read',{'view':'ROLES'},'same-read')
+            for _ in range(2):transport.tool('authorization.permissions.propose',{'operation':'REPLACE_ROLES'},'same-command')
+        keys=[c.kwargs['key'] for c in req.call_args_list]
+        self.assertNotEqual(keys[0],keys[1]);self.assertEqual(keys[2:],['same-command','same-command'])
+        self.assertEqual(delays,[31,31,31])
+    def test_role_cache_requires_same_fresh_owner_policy_and_invalidates_on_publication(self):
+        transport=OwnerTransport(self.selection,Path('/unused/admin'),Path('/unused/mcp'))
+        active=copy.deepcopy(self.obs['active']);roles=copy.deepcopy(self.obs['roles'])
+        with patch.object(transport,'active',side_effect=lambda:copy.deepcopy(active)),patch.object(transport,'tool',side_effect=lambda *_:copy.deepcopy(roles)) as tool:
+            self.assertEqual(transport.roles(),roles);self.assertEqual(transport.roles(),roles)
+            self.assertEqual(tool.call_count,1)
+            active['contentHash']='different-published-hash';active['policyRef']='fixture-policy:39'
+            roles['roles'][0]['displayName']='Changed by owner'
+            self.assertEqual(transport.roles(),roles);self.assertEqual(tool.call_count,2)
+        with patch.object(transport,'active',side_effect=[active,dict(active,contentHash='drift')]),patch.object(transport,'tool',return_value=roles):
+            transport._role_cache=None
+            with self.assertRaisesRegex(ValueError,'ROLE_POLICY_CHANGED_DURING_READ'):transport.roles()
 
 
 class ComposedAuthorizationTest(unittest.TestCase):

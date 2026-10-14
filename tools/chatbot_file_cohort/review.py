@@ -30,7 +30,7 @@ REQUIRED_SCOPES = frozenset({
     'policyTokenAccountingGapMigration', 'policyTokenFirstControlledGrant',
     'policyTokenFiniteWorkerSession', 'tokenOwnerRuntime',
     'applicationCohortInstallation', 'gatewayRoutePublication',
-    'chatbotFileAuthorization', 'finiteActionProcess', 'applicationRegistryCutover', 'cohortImageImport'})
+    'chatbotFileAuthorization', 'finiteActionProcess', 'applicationRegistryCutover', 'cohortImageImport', 'gatewayRuntimeInstallation'})
 
 
 def encoded(value):

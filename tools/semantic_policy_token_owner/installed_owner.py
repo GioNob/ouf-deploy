@@ -177,6 +177,9 @@ class InstalledTokenOwner(DomainOwner):
         deadline=time.monotonic()+maximum_wait_seconds
         previous=time.monotonic()
         while True:
+            now=time.monotonic()
+            check(previous<=now<deadline)
+            previous=now
             row,current=self._verified_state(binding_hash)
             if row['state']=='ACTIVE' and current['state']=='ACTIVE':
                 try:return self.guard(binding_hash)
