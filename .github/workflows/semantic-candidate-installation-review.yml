@@ -1,0 +1,22 @@
+name: Semantic candidate bounded installation input review
+on:
+  push:
+    branches: [codex/semantic-candidate-installation-review-20261014, main]
+    paths:
+      - scripts/prepare-semantic-candidate-installation-review.py
+      - tests/test_semantic_candidate_installation_review.py
+      - .github/workflows/semantic-candidate-installation-review.yml
+  pull_request:
+    paths:
+      - scripts/prepare-semantic-candidate-installation-review.py
+      - tests/test_semantic_candidate_installation_review.py
+      - .github/workflows/semantic-candidate-installation-review.yml
+permissions: {contents: read}
+jobs:
+  native-custody-and-delivery-boundaries:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - run: sudo /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_candidate_installation_review.py -v
