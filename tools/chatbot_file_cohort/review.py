@@ -147,6 +147,8 @@ def terminal_decision(review, review_path):
         'SHA256: '+review_hash+'\n'
         'Include sostituzione dei cinque servizi applicativi, route Gateway, autorizzazioni esplicite,\n'
         'backup e migrazioni previsti, installazione owner e ritiro del servizio/timer policy-token semantic.\n'
+        'Se MCP ha le tre migrazioni pendenti: creazione del ruolo audit NOLOGIN con amministratore DB,\n'
+        'abilitazioni temporanee SET e CREATE sullo schema, poi revoca verificata prima del riavvio.\n'
         +('Include sostituzione del container APISIX con la stessa immagine e la configurazione qui revisionata.\n'
           if 'sameImageId' in review['scopes']['gatewayRuntimeInstallation'] else '')+
         'Un primo grant (massimo 300 secondi), poi una sessione distinta di massimo '
