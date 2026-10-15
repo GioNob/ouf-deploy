@@ -84,11 +84,20 @@ class _Deadline:
         return self.end-now
 
 class _Raw(io.RawIOBase):
-    def __init__(self,sock,deadline):super().__init__();self.sock,self.deadline=sock,deadline
+    def __init__(self,sock,deadline):
+        super().__init__();self.sock,self.deadline=sock,deadline
+        # HTTPConnection closes its socket as soon as a non-persistent
+        # response's headers arrive. Keep the socket's native file reference
+        # until the response body is consumed, like SSLSocket.makefile does.
+        self.stream=sock.makefile('rb',buffering=0)
     def readable(self):return True
     def readinto(self,buffer):
         self.sock.settimeout(self.deadline.remaining())
-        return self.sock.recv_into(buffer)
+        return self.stream.readinto(buffer)
+    def close(self):
+        if not self.closed:
+            try:self.stream.close()
+            finally:super().close()
 
 class _Socket:
     def __init__(self,sock,deadline):self.sock,self.deadline=sock,deadline

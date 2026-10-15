@@ -190,6 +190,7 @@ class SignedPregrantContinuation(installation_fixture.OwnerInstallationTest):
             pregrant_recovery=self.proof)
 
     def test_completed_output_expired_creation_budget_and_retirement_are_observed_without_replay(self):
+        self.f.server.connection_close=True
         before=len(self.f.commands)
         output=self.continued.output
         # Explicit observation has no mkdir or new creation deadline. The exact
