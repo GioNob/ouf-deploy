@@ -27,15 +27,18 @@ jobs:
           sha256sum /tmp/ouf-docker-29.8.1.tgz
           sudo install -d -m 755 /opt/ouf-docker-29
           sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
+          sudo chown -R root:root /opt/ouf-docker-29
           /opt/ouf-docker-29/dockerd --version
-          sudo systemctl stop docker.service docker.socket containerd.service
+          sudo systemctl stop docker.service docker.socket
+          sudo systemctl start containerd.service
           sudo install -d -m 700 /var/lib/ouf-docker-29
           printf '%s\n' '{"features":{"containerd-snapshotter":true},"exec-opts":["native.cgroupdriver=systemd"]}' > /tmp/ouf-docker-29.json
           sudo systemd-run --unit=ouf-docker-contract-daemon --property=Restart=no \
             --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
             /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json \
             --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 \
-            --exec-root=/run/ouf-docker-29 --pidfile=/run/ouf-docker-29.pid
+            --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid \
+            --containerd=/run/containerd/containerd.sock
           for OUF_DOCKER_POLL in $(seq 1 60); do
             if sudo docker info > /tmp/ouf-docker-29-info.txt 2>/dev/null; then break; fi
             sleep 1
