@@ -2,7 +2,7 @@
   "schema": "ouf.signed-admission-recovery-qualification.v1",
   "date": "2026-10-15",
   "sourceCommit": "e70ca5957772e170bc762dd937e1c46a40051f0a",
-  "status": "IMPLEMENTED_NATIVE_QUALIFICATION_RUNNING",
+  "status": "ALL_SEVEN_EXACT_SOURCE_NATIVE_CHECKS_PASSED",
   "profile": "ouf.chatbot-signed-paused-admission-reprocessing.v1",
   "capsuleSha256": "7f2ade604c8f084451674a0453a0ba3db8f8cda55dcda37c2ed446cb182e1149",
   "capsuleFiles": 118,
@@ -12,45 +12,94 @@
   "checks": [
     {
       "runId": 38808949174,
+      "jobId": 116676974691,
       "name": "Complete finite policy-token owner installation",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success",
+      "sourceCommit": "e70ca5957772e170bc762dd937e1c46a40051f0a",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38808949174",
+      "suites": 8,
+      "tests": 70,
+      "skippedTests": 0,
+      "completeJobLogInspected": true
     },
     {
       "runId": 38808949255,
+      "jobId": 116676975382,
       "name": "OUF policy-token online IAM and installed owner qualification",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success",
+      "sourceCommit": "e70ca5957772e170bc762dd937e1c46a40051f0a",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38808949255",
+      "suites": 33,
+      "tests": 250,
+      "skippedTests": 0,
+      "completeJobLogInspected": true
     },
     {
       "runId": 38808949156,
+      "jobId": 116676975819,
       "name": "Chatbot cohort delivery native owners",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success",
+      "sourceCommit": "e70ca5957772e170bc762dd937e1c46a40051f0a",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38808949156",
+      "suites": 53,
+      "tests": 383,
+      "skippedTests": 0,
+      "completeJobLogInspected": true
     },
     {
       "runId": 38808949152,
+      "jobId": 116676974805,
       "name": "Policy-token governed legacy retirement component",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success",
+      "sourceCommit": "e70ca5957772e170bc762dd937e1c46a40051f0a",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38808949152",
+      "suites": 4,
+      "tests": 44,
+      "skippedTests": 0,
+      "completeJobLogInspected": true
     },
     {
       "runId": 38808949136,
+      "jobId": 116676974339,
       "name": "Remaining Docker lifecycle contracts on 29.8.1",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success",
+      "sourceCommit": "e70ca5957772e170bc762dd937e1c46a40051f0a",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38808949136",
+      "suites": 4,
+      "tests": 25,
+      "skippedTests": 0,
+      "completeJobLogInspected": true
     },
     {
       "runId": 38808949218,
+      "jobId": 116676975541,
       "name": "Native cutover HUMAN scope and existing Ed25519 verifier",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success",
+      "sourceCommit": "e70ca5957772e170bc762dd937e1c46a40051f0a",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38808949218",
+      "suites": 11,
+      "tests": 75,
+      "skippedTests": 0,
+      "completeJobLogInspected": true
     },
     {
       "runId": 38808949177,
+      "jobId": 116676975259,
       "name": "OUF paused workload native state binding",
       "status": "completed",
-      "conclusion": "success"
+      "conclusion": "success",
+      "sourceCommit": "e70ca5957772e170bc762dd937e1c46a40051f0a",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38808949177",
+      "suites": 2,
+      "tests": 9,
+      "skippedTests": 0,
+      "completeJobLogInspected": true
     }
   ],
   "local": {
@@ -60,10 +109,21 @@
     "launcherTests": 14,
     "newWorkerNativeTests": "HOSTED_ONLY_LOCAL_GROUP_CUSTODY_UNAVAILABLE"
   },
-  "allRequiredChecksPassed": false,
+  "allRequiredChecksPassed": true,
   "operatorCommandDelivered": false,
   "newRuntimeAuthorityIssued": false,
   "targetMutationsThisDevelopment": 0,
   "chatbotEndToEndProven": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "wrapperPublished": true,
+  "operatorCommandPrepared": true,
+  "wrapperPath": "scripts/launch-chatbot-signed-recovery-20261015.sh",
+  "wrapperSha256": "0caf75c51e730bbcba3ec6d448dd63299a6c3d742ae5f6beec977a9ec13aced6",
+  "totalTestsAcrossWorkflows": 856,
+  "totalSuitesAcrossWorkflows": 115,
+  "productionLimitations": [
+    "Hosted qualification is not actual VPS acceptance or CSV chatbot end-to-end proof",
+    "New exact HUMAN approval and fresh target native closed-database/backup proof remain required",
+    "Native effects in signed-recovery unit fixtures are explicitly synthetic"
+  ]
 }

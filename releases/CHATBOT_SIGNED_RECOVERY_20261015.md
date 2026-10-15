@@ -15,8 +15,8 @@ The caller/phase bug is fixed and all seven native CI gates passed on source
 No further diagnostic command or replay of the previous operator command.
 
 Current implementation sourcee70ca5957772e170bc762dd937e1c46a40051f0a adds profile
-ouf.chatbot-signed-paused-admission-reprocessing.v1. Qualification is RUNNING;
-this checkpoint is NOT an operational release or target runtime authority.
+ouf.chatbot-signed-paused-admission-reprocessing.v1. All seven required exact-source native workflows PASS.
+This document and wrapper do not issue target runtime authority.
 
 The fixed predecessor reader validates every prior source/review/claim/journal,
 exact latest v19, current stopped executor/cancelled worker/blocked admission,
@@ -63,6 +63,37 @@ Capsule7f2ade604c8f084451674a0453a0ba3db8f8cda55dcda37c2ed446cb182e1149,
 baf0c8c681a2f01439f9fe2e0336f4db1cbf492fc85190775a7c3046a08b2b72.
 Prepared wrapper scripts/launch-chatbot-signed-recovery-20261015.sh,
 SHA0caf75c51e730bbcba3ec6d448dd63299a6c3d742ae5f6beec977a9ec13aced6,
-remains UNPUBLISHED until all current required native CI gates pass. Same already
+is published after all seven current required native CI gates passed. Same already
 downloaded ZIP144699ab must be reused. No merge or target execution authorized
 by this documentation. CSV end-to-end and permanent runtime acceptance unproven.
+
+## Exact-source hosted qualification
+
+| Workflow | Tests | Suites | Result |
+| --- | ---: | ---: | --- |
+| [Complete finite policy-token owner installation](https://github.com/GioNob/ouf-deploy/actions/runs/38808949174) | 70 | 8 | PASS, no skips |
+| [OUF policy-token online IAM and installed owner qualification](https://github.com/GioNob/ouf-deploy/actions/runs/38808949255) | 250 | 33 | PASS, no skips |
+| [Chatbot cohort delivery native owners](https://github.com/GioNob/ouf-deploy/actions/runs/38808949156) | 383 | 53 | PASS, no skips |
+| [Policy-token governed legacy retirement component](https://github.com/GioNob/ouf-deploy/actions/runs/38808949152) | 44 | 4 | PASS, no skips |
+| [Remaining Docker lifecycle contracts on 29.8.1](https://github.com/GioNob/ouf-deploy/actions/runs/38808949136) | 25 | 4 | PASS, no skips |
+| [Native cutover HUMAN scope and existing Ed25519 verifier](https://github.com/GioNob/ouf-deploy/actions/runs/38808949218) | 75 | 11 | PASS, no skips |
+| [OUF paused workload native state binding](https://github.com/GioNob/ouf-deploy/actions/runs/38808949177) | 9 | 2 | PASS, no skips |
+
+All seven completed job logs were inspected. The cohort workflow includes the
+actual fifth TLS grant and v4 complete-review compilation, real PostgreSQL
+archives and migration contracts, masked failed systemd timer, Docker lifecycle,
+Gateway runtime and commit/canonical NOOP predicates. These are disposable
+fixtures; actual target CSV end-to-end remains unproven.
+
+## Operator handoff
+
+Fetch the wrapper at an immutable evidence commit, verify the SHA256 above and
+execute once with terminal input. It reuses the existing qualified ZIP and logs
+to a private `$HOME/ouf-signed-recovery-launch.*/run.log`. The full native paused
+OCI/rootfs and current fenced DB/backup preflight runs before IAM/device/terminal
+approval. Allow up to 180 seconds for the paused native preflight. Administrative
+login is requested only if needed. The current device login and exact terminal
+`APPROVO <new review hash>` are still explicit. A new finite action is separate
+from the stopped predecessor and never extends its authority. The complete
+review explains preserved signed history, one fresh attestation, current closed
+DB admission and cumulative grant accounting. No automatic replay on failure.
