@@ -1,3 +1,24 @@
+# Current finding: published image identity differs under containerd (2026-10-15)
+
+The operator completed pure archive validation: all five retained tagless files exactly match their approved audits. Semantic is still IN_FLIGHT/attempt 1, all other images READY/attempt 0, expected image IDs return 404, no later-stage recovery journals exist. No automatic repeat is permitted.
+
+A disposable two-store CI reproducer on source `7464582615d285999a56518c355ed6cbf5e81f74` downloaded the exact existing semantic artifact 11907831957 from producer run 38584614991, rederived the same 390021120-byte tagless archive (SHA256 `9f1961025f0e55d7a12e7f3f6df5c5fe0980ff4cad730086262bedecdaf6a357`), and ran the existing Import owner and real Docker load stream. Run https://github.com/GioNob/ouf-deploy/actions/runs/38700933784 has one PASS/classic and one expected reproduced failure/containerd:
+
+- Classic overlay2, Docker 28.0.4, job 116308656259: load succeeds as original configuration ID `sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489`; native custody verification passes.
+- Containerd overlayfs, Docker 28.0.4, job 116308655931: load exits 0 with native ID `sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3`. Looking up the original config ID is 404; existing Import.verify raises ValueError `IMPORT_ABSENCE_DOES_NOT_PROVE_NO_EFFECT`. Its journal remains IN_FLIGHT/attempt 1. Rootfs matches. Full raw Config equality is false; selected execution fields have not yet been inspected on target. Do not claim this tested VPS Docker 29.8.1 or that raw native Config equals the archive Config.
+
+This closes the reproduction gap, not the deployment. Earlier image-import tests used tiny fixtures; the exact-image TLS/frame test loaded the original archive. Neither exercised these exact derived bytes with the containerd store. No application code, image, target service or database was changed by the new CI. The new branch is diagnosis only; it must not be used as a deploy source.
+
+The next necessary operator action is read-only `scripts/read-chatbot-native-image-identity-20261015.py`, SHA256 `cc9aa1b3bc2cda61ce476f7de0a7483b53efcd00028c78372b025ef6be3ee075`. It is bound to dd03/authority48c7/sourceb646 and lists images by exact source revision, then compares rootfs and execution fields against the sealed audits. It emits identifiers, approved archive hashes, comparison booleans and mismatching field names/types, never raw config/environment. Ten local tests pass; native HTTP transport is mocked locally. No import, restart, IAM login, authority renewal or DB write. Target proof is pending; preserve old consumed claims and keep the execute wrapper suspended.
+
+The product correction must bind both published config-byte identity and exact native image identity throughout import, plan/creation and realized validation; retain strict config/rootfs checks and the unchanged six-module package pins. Fixing only the failed GET or accepting any source-labelled image is insufficient. Recovery must reconcile the image already loaded under its native ID before any further import; old auth-only predecessor gate deliberately does not cover this image-stage attempt.
+
+See `evidence/chatbot-containerd-image-identity-diagnosis-20261015.json` and the full small CI report `evidence/chatbot-containerd-tagless-ci-report-20261015.json`. CSV/chatbot acceptance remains unproven.
+
+---
+
+## Previous handoff (historical)
+
 # Current target readback: first image attempt unresolved (2026-10-15, 09:33 CEST)
 
 The pinned target readback completed. The dd03 finite process is inactive/MainPID 0. Its authority binding matches. Semantic image journal is IN_FLIGHT/version 1/effectAttemptCount 1; the exact image GET is 404. UDP, onboarding, ingestion and MCP remain READY/version 0/attempt 0 and their images are absent too. No recovery.json exists for containers/databases/gateway/gatewayRuntime. These facts narrow the stop to the first image import; image absence alone does not reconcile its consumed claim. Systemd Result=success is not deployment success.
