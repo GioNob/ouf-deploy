@@ -1,0 +1,100 @@
+{
+  "schema": "ouf.chatbot-private-bridge-oci-expectation-qualification.v1",
+  "date": "2026-10-15",
+  "sourceCommit": "24d36d23e7c7183b7895e1dc823d3c06428412b2",
+  "sourceBranch": "codex/retained-inspection-channel-20261015",
+  "pr": 31,
+  "prDraft": true,
+  "prMerged": false,
+  "status": "COMPONENT_CI_QUALIFIED_TARGET_PROPOSAL_READBACK_REQUIRED_NO_RUNTIME_LAUNCHER",
+  "capsuleSha256": "411a164153c887ade2559c80dff96af169784bc08a9dff7e985125ac9fe1dd6c",
+  "sourceModuleCountChanged": false,
+  "moduleImagePinsChanged": false,
+  "correctedContracts": [
+    "Docker Linux non-TTY PATH/HOSTNAME default slots then signed request environment order",
+    "Fresh private named-bridge OCI namespace path absent; verify current sandbox/kernel namespace inode independently"
+  ],
+  "fullOciComparisonRelaxed": false,
+  "observedOciCopiedIntoExpectedPolicy": false,
+  "qualification": [
+    {
+      "name": "nativeCohort",
+      "runId": 38776032264,
+      "jobId": 116563789181,
+      "status": "PASS",
+      "tests": 324,
+      "suites": 43,
+      "skipped": 0
+    },
+    {
+      "name": "docker29",
+      "runId": 38776031941,
+      "jobId": 116563787611,
+      "status": "PASS",
+      "tests": 25,
+      "suites": 4,
+      "skipped": 0,
+      "exactFullOciMatched": true,
+      "environmentRows": 36,
+      "legacyAllEnvironmentPositionsDiffer": true,
+      "legacyNamespacePathWasWrong": true,
+      "nativeFixtureApplication": "static HTTP ELF substitutes for Spring",
+      "fullNodeAttestationAndTokenAdmissionProven": false
+    },
+    {
+      "name": "onlineIam",
+      "runId": 38776032561,
+      "jobId": 116563791252,
+      "status": "PASS"
+    },
+    {
+      "name": "independentOwnerInstaller",
+      "runId": 38776032180,
+      "status": "PASS"
+    },
+    {
+      "name": "humanAuthority",
+      "runId": 38776031948,
+      "status": "PASS"
+    },
+    {
+      "name": "legacyRetirement",
+      "runId": 38776032879,
+      "status": "PASS"
+    }
+  ],
+  "developmentTrial": {
+    "sourceCommit": "bc3ef2887f0215cf206578474878e70e4cea6859",
+    "dockerRunId": 38775801635,
+    "result": "FAIL",
+    "reason": "Native fixture assertion indexed an omitted false root.readonly key; corrected test uses OCI default false. Expected full policy remains exact."
+  },
+  "readOnlyProposalReader": {
+    "path": "scripts/read-chatbot-bridge-proposal-20261015.py",
+    "sha256": "42b7b07afe4652a4d32bb22452eb92fa8a6ace8d5ab63d490ece02975db7c494",
+    "embeddedCompilerModules": 6,
+    "localNewCases": 5,
+    "supportingPreparationCases": 15,
+    "totalLocalTests": 20,
+    "skipped": 0,
+    "fullReaderControlFlowCase": true,
+    "candidateTestExtraNativeDriftDenied": true,
+    "realFrozenImageSealerCase": true,
+    "privateBindVisibleInImageViewDeniedBeforeScan": true,
+    "serviceMutations": 0,
+    "databaseMutations": 0,
+    "grantRequests": 0,
+    "iamCalls": 0,
+    "credentialOrTokenFilesRead": false,
+    "maximumImageScanSeconds": 180,
+    "maximumWholeReadbackSeconds": 240
+  },
+  "currentTargetCandidatePolicyMatchProven": false,
+  "currentTargetRootfsSealMatchProven": false,
+  "pausedRegistryRecoveryImplemented": false,
+  "controlledCumulativeGrantAttemptsRetained": 2,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}
