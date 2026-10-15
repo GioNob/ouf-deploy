@@ -65,3 +65,5 @@ GitHub runner-owned ancestors correctly failed the sealer's root-owned path
 requirement.36861be7 moves those tests into a root-owned disposable fixture;
 the trust check and original sealer remain unchanged. Both native profiles
 then passed. Preserve this failed experiment as development history.
+
+Reader CI run38782162247/job116584868336 at exact source84271d380d414a2fe211ac78f71c28b06d9e0e11 passed all8 cases, zero skips. The published reader was fetched and compared with the local exact bytes (SHA256dbdcd40d90a2c5294623bc8777c1584d01a8704477e85004a1de362dad25c1bb). No target difference is yet inferred from these tests.

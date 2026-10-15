@@ -94,7 +94,16 @@
     "procfsAvailableInWorkspace": false,
     "privateBindContentsRead": false,
     "maximumScanSeconds": 180,
-    "maximumReadbackSeconds": 240
+    "maximumReadbackSeconds": 240,
+    "ci": {
+      "sourceCommit": "84271d380d414a2fe211ac78f71c28b06d9e0e11",
+      "runId": 38782162247,
+      "jobId": 116584868336,
+      "conclusion": "success",
+      "tests": 8,
+      "skipped": 0
+    },
+    "publishedBytesFetchedAndVerified": true
   },
   "trial": {
     "sourceCommit": "809e95e1acb8b2df1ecfb8c5ce5d8dafcf8e79f9",
@@ -108,4 +117,3 @@
   "chatbotEndToEndProven": false,
   "notReleaseAcceptance": true
 }
-

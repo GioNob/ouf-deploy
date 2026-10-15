@@ -23,3 +23,8 @@ Preserve target six APPLIED effects, paused generation, cumulative2 grants,
 cancelled worker, blocked admission and original/global claims. No old runtime
 relaunch, CREATE/STAGE/SIGUSR1/grant replay, policy overwrite or budget reset.
 Current boundary governed recovery is not implemented or authorized.
+
+Reader exact-source CI38782162247/job116584868336 PASS:8 tests,0 skips.
+Deliver ONLY reader84271d380d414a2fe211ac78f71c28b06d9e0e11, SHA256
+dbdcd40d90a2c5294623bc8777c1584d01a8704477e85004a1de362dad25c1bb.
+Await its complete ROOTFS_ENTRY_DIFFERENCES and END before runtime changes.
