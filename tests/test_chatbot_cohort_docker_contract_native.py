@@ -20,7 +20,7 @@ import time
 import unittest
 
 ROOT=Path(__file__).resolve().parents[1]
-sys.path[:0]=[str(ROOT),str(ROOT/'tools/semantic_application_cutover'),str(ROOT/'tests')]
+sys.path[:0]=[str(ROOT),str(ROOT/'tools/semantic_application_cutover'),str(ROOT/'tools/semantic_frame_compiler'),str(ROOT/'tests')]
 import test_chatbot_cohort_containers as bootstrap
 from engine_creation import Engine
 from transition_journal import Transition,digest
@@ -33,6 +33,9 @@ from gated_process_observation import GatedProcessObservation
 from native_evidence_store import NativeEvidenceStore
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.chatbot_file_cohort.containers import CohortContainers
+from file_only_frame_inputs import compile_inputs,ENGINE as FRAME_ENGINE
+from compile_file_only_frame_policy import compile_policy,private_bridge_namespace_name
+from tools.semantic_provider_deployment_authentication import attributes
 
 JAVA=r'''#include <arpa/inet.h>
 #include <errno.h>
@@ -98,14 +101,20 @@ class NativeDockerContract(unittest.TestCase):
             subnet=ipaddress.ip_network(network['IPAM']['Config'][0]['Subnet']);address=str(subnet.network_address+7)
             targets=['/run/db','/run/token','/run/consult','/run/receipt'];binds=[];expected_mounts=set()
             for i,target in enumerate(targets):
-                source=root/('bind'+str(i));source.mkdir(mode=0o755);os.chown(source,10001,10001)
+                source=root/('bind'+str(i))
+                if i<2:
+                    source.mkdir(mode=0o500 if i==0 else 0o750);os.chown(source,10001 if i==0 else 0,10001)
+                else:
+                    source.write_bytes(b'disposable-native-key-'+str(i).encode());source.chmod(0o400 if i==2 else 0o440)
+                    os.chown(source,10001 if i==2 else 0,10001)
                 binds.append(str(source)+':'+target+':ro');expected_mounts.add(('bind',str(source),target,False))
             tree={'source':str(root/'bind0'),'target':'/run/db','readOnly':True,'uid':10001,'gid':10001,
                 'directoryMode':0o500,'fileName':'OUF_SEM_DB_PASSWORD','fileMode':0o400,'maxBytes':1024,'sha256':'b'*64}
             env=list(image_data['Config']['Env'])+['OUF_SCHEMA_GOV_ENABLED=false','OUF_DISCOVERY_WORKER_ENABLED=false',
-                'SPRING_CONFIG_IMPORT=configtree:/run/db/']
+                'SPRING_CONFIG_IMPORT=configtree:/run/db/']+[('OUF_FIXTURE_%02d=value_%02d'%(i,i))for i in range(31)]
+            values=dict(row.split('=',1)for row in env);env=[k+'='+v for k,v in sorted(values.items())]
             request={'Image':image,'User':'10001:10001','WorkingDir':'/','Env':env,'Entrypoint':ENTRY,'Cmd':command,
-                'HostConfig':{'Mounts':[],'Binds':binds,'NetworkMode':primary,'ReadonlyRootfs':True,
+                'HostConfig':{'Mounts':[],'Binds':binds,'NetworkMode':primary,'ReadonlyRootfs':False,'Memory':134217728,'MemorySwap':134217728,'PidsLimit':128,'NanoCpus':500000000,
                     'RestartPolicy':{'Name':'no','MaximumRetryCount':0},'CapDrop':['ALL'],
                     'SecurityOpt':['no-new-privileges:true'],'OomKillDisable':False},
                 'NetworkingConfig':{'EndpointsConfig':{primary:{'NetworkID':nid,'Aliases':['fixture-registry'],
@@ -168,12 +177,48 @@ class NativeDockerContract(unittest.TestCase):
                 self.assertEqual(state['bundle'],'/run/containerd/io.containerd.runtime.v2.task/moby/'+cid)
                 oci=json.loads((Path(state['bundle'])/'config.json').read_bytes())
                 self.assertEqual(oci['process']['user']['uid'],10001);self.assertEqual(oci['process']['user']['gid'],10001)
-                self.assertTrue(oci['root']['readonly']);self.assertTrue(oci['process']['noNewPrivileges'])
+                self.assertFalse(oci['root']['readonly']);self.assertTrue(oci['process']['noNewPrivileges'])
                 self.assertTrue(all(not values for values in oci['process']['capabilities'].values()))
                 mounted={m['destination']:m for m in oci['mounts']}
                 for _,source,target,_ in expected_mounts:
                     self.assertEqual(mounted[target]['source'],source)
                     self.assertEqual(mounted[target]['options'],['rbind','rro','rprivate'])
+                # Compile the complete expected OCI from the versioned Engine
+                # baseline + signed creation inputs, never from this OCI.
+                key={'source':str(root/'bind2'),'target':'/run/consult','readOnly':True,'uid':10001,'gid':10001,
+                    'mode':0o400,'maxBytes':256,'sha256':hashlib.sha256((root/'bind2').read_bytes()).hexdigest()}
+                receipt={'source':str(root/'bind3'),'target':'/run/receipt','readOnly':True,'uid':0,'gid':10001,
+                    'mode':0o440,'maxBytes':256,'sha256':hashlib.sha256((root/'bind3').read_bytes()).hexdigest(),
+                    'metadataHash':digest(attributes((root/'bind3').stat()))}
+                token_stat=(root/'bind1').stat()
+                token={'source':str(root/'bind1'),'target':'/run/token','fileName':'token','gid':10001,
+                    'directoryDevice':token_stat.st_dev,'directoryInode':token_stat.st_ino,'ownerBindingHash':'a'*64,
+                    'maxBytes':8192,'minimumRemainingSeconds':30}
+                baseline=(ROOT/'tools/semantic_frame_compiler/containerd-overlayfs-southbound.json').read_bytes()
+                template,launch=compile_inputs(baseline,request,tree,token,key,receipt,FRAME_ENGINE)
+                context={'schema':'ouf.semantic-docker-frame-context.v1','containerId':cid,
+                    'bundleParent':'/run/containerd/io.containerd.runtime.v2.task/moby',
+                    'metadataParent':host['DockerRootDir']+'/containers',
+                    'networkNamespaceParent':str(Path(paused['NetworkSettings']['SandboxKey']).parent),
+                    'networkNamespaceName':private_bridge_namespace_name(request),'cgroupDriver':'systemd',
+                    'storageParent':host['DockerRootDir'],'rootfsPath':str(merged)}
+                policy=compile_policy(template,launch,context,execution_profile=profile,renewable_token=token,
+                    delegation_key_metadata_hash=digest(attributes((root/'bind2').stat())),proposal_receipt_key=receipt)
+                self.assertEqual(policy['expectedOci'],oci)
+                expected_network=[n for n in policy['expectedOci']['linux']['namespaces']if n['type']=='network']
+                self.assertEqual(expected_network,[{'type':'network'}])
+                self.assertEqual((Path(paused['NetworkSettings']['SandboxKey']).stat().st_ino),
+                    (Path('/proc')/str(pid)/'ns/net').stat().st_ino)
+                self.assertEqual(len(oci['process']['env']),36)
+                legacy=copy.deepcopy(policy['expectedOci'])
+                legacy['process']['env']=request['Env']+['HOSTNAME='+cid[:12]]
+                [n for n in legacy['linux']['namespaces']if n['type']=='network'][0]['path']=paused['NetworkSettings']['SandboxKey']
+                self.assertNotEqual(legacy,oci)
+                self.assertTrue(all(a!=b for a,b in zip(legacy['process']['env'],oci['process']['env'])))
+                self.assertEqual(dict(row.split('=',1)for row in legacy['process']['env']),dict(row.split('=',1)for row in oci['process']['env']))
+                print('DOCKER_COMPLETE_EXPECTED_OCI='+json.dumps({'exactFullOciMatched':True,'sourceWasIndependentBaseline':True,
+                    'environmentRows':36,'legacyAllEnvironmentPositionsDiffer':True,'legacyNamespacePathWasWrong':True,
+                    'originalMismatchFamiliesReproduced':2,'acceptanceGranted':False}),flush=True)
                 finish('STAGE_PAUSED_REPLACEMENT',stage_intent,paused)
                 for phase in ('ATTEST_NEW_OCI_PEER','ADMIT_MIGRATION'):
                     intent={'syntheticNonDockerBoundary':phase};begin(phase,intent);finish(phase,intent,{'synthetic':phase})

@@ -16,7 +16,7 @@ from paused_node_acceptance import PausedNodeAcceptance
 from paused_attestation_adapter import PausedAttestationAdapter
 from native_evidence_store import NativeEvidenceStore
 from cutover_authority import CutoverAuthority
-from compile_file_only_frame_policy import compile_policy
+from compile_file_only_frame_policy import compile_policy,private_bridge_namespace_name
 from tools.semantic_policy_token_owner.producer import DomainOwner
 from tools.semantic_provider_deployment_authentication import DetachedAuthenticator,private_bytes,decode,ancestors
 from tools.semantic_provider_deployment_signing import ExistingEd25519Signer
@@ -137,7 +137,9 @@ class FileOnlyNodeOwner:
             else native.get('GraphDriver',{}).get('Data',{}).get('MergedDir'))
         require(type(merged) is str and Path(merged).is_absolute() and Path(merged).is_relative_to(context['storageParent']),
             'EXACT_NATIVE_IMAGE_MERGED_ROOTFS_REQUIRED')
-        context.update(containerId=cid,networkNamespaceName=Path(sandbox).name,rootfsPath=merged)
+        require(Path(sandbox).stat().st_ino==(Path('/proc')/str(before['runtimeBinding']['pid'])/'ns/net').stat().st_ino,
+            'PAUSED_DOCKER_SANDBOX_NAMESPACE_IDENTITY_DRIFT')
+        context.update(containerId=cid,networkNamespaceName=private_bridge_namespace_name(self.request),rootfsPath=merged)
         token=self.token_binding()
         policy=compile_policy(recipe['template'],recipe['launch'],context,execution_profile=self.profile,
             renewable_token=token,delegation_key_metadata_hash=recipe['delegationKeyMetadataHash'],proposal_receipt_key=recipe['proposalReceiptKey'])

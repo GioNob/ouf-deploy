@@ -136,6 +136,9 @@ class Preparation(unittest.TestCase):
 
     def test_independent_baseline_compiles_complete_four_mount_policy(self):
         request,tree,key,token,proposal,context=self.inputs()
+        # This Engine-specific compiler requires the audited image PATH; the
+        # generic four-mount fixture deliberately does not carry image inputs.
+        request['Env'].insert(0,'PATH=/usr/bin:/bin')
         raw=(ROOT/'tools/semantic_frame_compiler/containerd-overlayfs-southbound.json').read_bytes()
         template,launch=compile_inputs(raw,request,tree,token,key,proposal,ENGINE)
         result=compile_policy(template,launch,context,execution_profile=FileOnlyProfile(request,tree),

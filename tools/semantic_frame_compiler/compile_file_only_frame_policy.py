@@ -10,6 +10,52 @@ from compile_semantic_proposal_frame_policy import receipt_key
 from file_only_profile import FileOnlyProfile
 from gated_creation_plan import ENTRY
 
+def private_bridge_namespace_name(request):
+    """A signed named-bridge creation asks Docker/runc for a fresh namespace.
+
+    SandboxKey identifies the live namespace after staging; it is not an OCI
+    request to join an existing namespace. Host/shared/container modes are not
+    covered by this profile and cannot silently inherit the fresh expectation.
+    """
+    host=request.get('HostConfig');net=request.get('NetworkingConfig')
+    require(type(host)is dict and type(net)is dict and type(net.get('EndpointsConfig'))is dict
+        and len(net['EndpointsConfig'])==1,'ONE_SIGNED_PRIVATE_BRIDGE_ENDPOINT_REQUIRED')
+    name,endpoint=next(iter(net['EndpointsConfig'].items()));mode=host.get('NetworkMode')
+    require(type(name)is str and type(endpoint)is dict and type(mode)is str
+        and mode in (name,endpoint.get('NetworkID'))and mode not in ('host','none','default','bridge')
+        and not mode.startswith('container:'),'EXPLICIT_SIGNED_PRIVATE_BRIDGE_REQUIRED')
+    return None
+
+def docker_bridge_environment(request):
+    """Derive Docker's Linux non-TTY default/override order from signed input.
+
+    PATH and HOSTNAME are default slots, then configured entries replace those
+    slots or append in request order. No observed OCI/environment is an input.
+    This closed profile already carries its audited image PATH explicitly.
+    """
+    require(type(request.get('HostConfig'))is dict,'EXPLICIT_DOCKER_HOST_CONFIGURATION_REQUIRED')
+    require(request.get('Tty',False)is False and request.get('Hostname')in(None,'')
+        and request.get('Domainname')in(None,'')and not request['HostConfig'].get('Links'),
+        'BOUNDED_NONTTY_UNLINKED_DOCKER_ENVIRONMENT_REQUIRED')
+    values=environment(request.get('Env'))
+    require('PATH'in values and bool(values['PATH'])and 'HOSTNAME'not in values,
+        'EXPLICIT_IMAGE_PATH_AND_DOCKER_HOSTNAME_REQUIRED')
+    return ['PATH='+values['PATH'],'HOSTNAME=$OUF_HOSTNAME']+[row for row in request['Env']if row.split('=',1)[0]!='PATH']
+
+def recompile_bridge_proposal(template,launch,request):
+    """Rebuild only expected environment slots from the unchanged launch intent.
+
+    Useful for a new, explicitly reviewed proposal over retained inputs. This
+    never overwrites their files, transforms observed OCI or grants acceptance.
+    """
+    template,launch=copy.deepcopy(template),copy.deepcopy(launch)
+    wanted={**environment(request['Env']),'HOSTNAME':'$OUF_HOSTNAME'}
+    require(environment(template['expectedOci']['process']['env'])==wanted
+        and environment(launch['startup']['env'])==wanted,'RETAINED_FRAME_ENVIRONMENT_VALUE_DRIFT')
+    ordered=docker_bridge_environment(request)
+    template['expectedOci']['process']['env']=copy.deepcopy(ordered);launch['startup']['env']=copy.deepcopy(ordered)
+    return template,launch
+
 def compile_policy(template,launch,context,*,execution_profile,renewable_token,delegation_key_metadata_hash,proposal_receipt_key):
     require(type(execution_profile) is FileOnlyProfile,'EXACT_TYPED_FILE_ONLY_FRAME_PROFILE_REQUIRED')
     profile_hash=execution_profile.verify(execution_profile.request);tree=execution_profile.configtree
