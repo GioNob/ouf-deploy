@@ -5,24 +5,37 @@ It is ready for current VPS preflight and a new exact HUMAN review. No new
 target command has been executed from this workspace. CSV/chatbot E2E and
 permanent runtime acceptance remain unproven.
 
-Source: `2a122f1144579fe03d57c14e35452a8fbf6e0547` in
+Source: `0525c4186a5613000905ba4dfae6766827ad9f06` in
 `codex/retained-inspection-channel-20261015`, draft/unmerged PR31. The release
 is pinned to that commit; no moving branch is executed.
 
-Capsule115: `4661898e09b12abc5d347220dcdf4749c3d58b61adc54c22958f9be1bca6544f`.
-Delivery launcher: `2ba82089bd3a03e569204e69a3499ae710618081f90e7f7bdd49151c8a43cfdf`.
-Operator wrapper: `7fe82d9c8baf46b6ff70bc31add302d45102bd35ade56400cbb6951aa91eb948`.
+Capsule115: `c228da198b608f6bf8461bf73dfc283c59334aaa80b2f0308be09c010df43fce`.
+Delivery launcher: `788b7381ab642effce7786b0ca5b07a575cc01069df51c7e13c584ddf18fbce3`.
+Operator wrapper: `a0e3653a43c7bf9be1f0ccd886144f5f6036065ada1106cc954ffc2b0505017d`.
+
+## Correction after the earlier qualified candidate
+
+The previous source `2a122f1144579fe03d57c14e35452a8fbf6e0547` stopped on the
+VPS at POSTGRANT_RETAINED_HISTORY_PREFLIGHT, before IAM and runtime authority.
+The complete private bundle exceeded the independent IAM snapshot helper's
+512KiB protocol limit. The retained-history reader now honors its explicit
+8MiB artifact bound, preserving root custody, file mode, no-follow and stable
+read checks. The separate IAM protocol remains unchanged. The actual complete
+compiler bundle reproduces the previous failure and passes with this fix;
+seven additional reader regressions cover bounds, custody, drift and JSON.
+The earlier test set missed that compiler-to-reader boundary. See
+`releases/CHATBOT_POSTGRANT_SNAPSHOT_BOUND_FIX_20261015.md` for the scope.
 
 ## Completed checks on the same source
 
 | Qualification | Result | Run |
 | --- | --- | --- |
-| Complete native cohort, including7 continuation worker/review tests |311tests /41suites /0skip PASS|[38748893930](https://github.com/GioNob/ouf-deploy/actions/runs/38748893930)|
-| Docker29.8.1 /overlayfs /systemd and real PostgreSQL contracts |25tests /4suites /0skip PASS|[38748894334](https://github.com/GioNob/ouf-deploy/actions/runs/38748894334)|
-| Independent owner installer and closed imports |70tests /8suites /0skip PASS|[38748894515](https://github.com/GioNob/ouf-deploy/actions/runs/38748894515)|
-| Online IAM /disposable real Keycloak |237tests /31suites /0skip PASS|[38748894224](https://github.com/GioNob/ouf-deploy/actions/runs/38748894224)|
-| Native HUMAN authority and Ed25519 |PASS|[38748894413](https://github.com/GioNob/ouf-deploy/actions/runs/38748894413)|
-| Governed legacy retirement |PASS|[38748894456](https://github.com/GioNob/ouf-deploy/actions/runs/38748894456)|
+| Complete native cohort, including7 continuation worker/review tests |319tests /42suites /0skip PASS|[38765374763](https://github.com/GioNob/ouf-deploy/actions/runs/38765374763)|
+| Docker29.8.1 /overlayfs /systemd and real PostgreSQL contracts |25tests /4suites /0skip PASS|[38765374706](https://github.com/GioNob/ouf-deploy/actions/runs/38765374706)|
+| Independent owner installer and closed imports |70tests /8suites /0skip PASS|[38765374890](https://github.com/GioNob/ouf-deploy/actions/runs/38765374890)|
+| Online IAM /disposable real Keycloak |237tests /31suites /0skip PASS|[38765374883](https://github.com/GioNob/ouf-deploy/actions/runs/38765374883)|
+| Native HUMAN authority and Ed25519 |PASS|[38765374785](https://github.com/GioNob/ouf-deploy/actions/runs/38765374785)|
+| Governed legacy retirement |PASS|[38765374829](https://github.com/GioNob/ouf-deploy/actions/runs/38765374829)|
 
 The new tests cover a spent first grant and cancelled zero-renewal worker,
 fresh accounted TLS publication before admission, current HUMAN revocation,

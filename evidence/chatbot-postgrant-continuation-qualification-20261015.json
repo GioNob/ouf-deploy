@@ -2,14 +2,14 @@
   "schema": "ouf.chatbot-postgrant-continuation-qualification.v1",
   "date": "2026-10-15",
   "status": "NATIVE_QUALIFIED_TARGET_PREFLIGHT_AND_FRESH_HUMAN_ACTION_REQUIRED",
-  "sourceCommit": "2a122f1144579fe03d57c14e35452a8fbf6e0547",
+  "sourceCommit": "0525c4186a5613000905ba4dfae6766827ad9f06",
   "sourceBranch": "codex/retained-inspection-channel-20261015",
   "pr": 31,
   "prDraft": true,
   "prMerged": false,
-  "capsuleSha256": "4661898e09b12abc5d347220dcdf4749c3d58b61adc54c22958f9be1bca6544f",
+  "capsuleSha256": "c228da198b608f6bf8461bf73dfc283c59334aaa80b2f0308be09c010df43fce",
   "capsuleFiles": 115,
-  "launcherSha256": "2ba82089bd3a03e569204e69a3499ae710618081f90e7f7bdd49151c8a43cfdf",
+  "launcherSha256": "788b7381ab642effce7786b0ca5b07a575cc01069df51c7e13c584ddf18fbce3",
   "targetReaderSha256": "f4e71357305f6827eac16a931b1ea23dbc85e3a5f135af4fc0b42cf09eed600b",
   "predecessorAuthorityHash": "7db9ea82ed6fbbdc88cfdbd8e7315404e6c958e841731d1d12b22482f8fa8f30",
   "predecessorTransitionHash": "bfabae1561e4f906f23afe0c2e71d8f240774a38b9ac8b08c9ed43e4b5e1ecfb",
@@ -27,17 +27,17 @@
   "qualification": [
     {
       "name": "nativeCohort",
-      "runId": 38748893930,
-      "jobId": 116469733441,
-      "tests": 311,
-      "suites": 41,
+      "runId": 38765374763,
+      "jobId": 116527070864,
+      "tests": 319,
+      "suites": 42,
       "status": "PASS",
       "skipped": 0
     },
     {
       "name": "docker29",
-      "runId": 38748894334,
-      "jobId": 116469735618,
+      "runId": 38765374706,
+      "jobId": 116527070593,
       "tests": 25,
       "suites": 4,
       "status": "PASS",
@@ -45,8 +45,8 @@
     },
     {
       "name": "independentOwnerInstaller",
-      "runId": 38748894515,
-      "jobId": 116469735929,
+      "runId": 38765374890,
+      "jobId": 116527071658,
       "tests": 70,
       "suites": 8,
       "status": "PASS",
@@ -54,8 +54,8 @@
     },
     {
       "name": "onlineIam",
-      "runId": 38748894224,
-      "jobId": 116469734837,
+      "runId": 38765374883,
+      "jobId": 116527071544,
       "tests": 237,
       "suites": 31,
       "status": "PASS",
@@ -63,13 +63,21 @@
     },
     {
       "name": "humanAuthority",
-      "runId": 38748894413,
-      "status": "PASS"
+      "runId": 38765374785,
+      "jobId": 116527071087,
+      "tests": 66,
+      "suites": 9,
+      "status": "PASS",
+      "skipped": 0
     },
     {
       "name": "legacyRetirement",
-      "runId": 38748894456,
-      "status": "PASS"
+      "runId": 38765374829,
+      "jobId": 116527071516,
+      "tests": 44,
+      "suites": 4,
+      "status": "PASS",
+      "skipped": 0
     }
   ],
   "dockerServer": "29.8.1",
@@ -86,5 +94,22 @@
   "runtimeAuthorityIssued": false,
   "budgetReset": false,
   "chatbotEndToEndProven": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "operatorWrapperSha256": "a0e3653a43c7bf9be1f0ccd886144f5f6036065ada1106cc954ffc2b0505017d",
+  "previousCandidate": {
+    "sourceCommit": "2a122f1144579fe03d57c14e35452a8fbf6e0547",
+    "targetResult": "PRIVATE_SNAPSHOT_CUSTODY_UNPROVEN",
+    "phase": "POSTGRANT_RETAINED_HISTORY_PREFLIGHT",
+    "runtimeAuthorityIssued": false,
+    "qualificationGap": "The complete compiler bundle was not fed through the retained-history snapshot reader."
+  },
+  "snapshotReaderCorrection": {
+    "callerBoundBytes": 8388608,
+    "independentIamSnapshotBoundBytes": 524288,
+    "completeCompilerBundleRegression": "RED_BEFORE_GREEN_AFTER",
+    "additionalReaderRegressions": 7,
+    "custodyChecksPreserved": true,
+    "safeCodeLocationsOnIntakeFailure": true
+  },
+  "qualificationVerifiedAt": "2026-10-15T16:08:55.928701+00:00"
 }
