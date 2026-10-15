@@ -1,49 +1,57 @@
-# Next chatbot/VPS action — 2026-10-15, mount-owner lifetime incident
+# Next chatbot/VPS action — 2026-10-15, mounted-token recovery
 
-Do NOT rerun the prior paused-recovery launcher. Its fixed incident claim was
-consumed by the action below; no admission or worker is adopted on restart.
+The latest complete target metadata reader PASS is retained in
+ evidence/chatbot-mounted-recovery-target-20261015.json.
+It binds failed sourceb7d24c57/review2380132a/authority8c59697f and context
+/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-d3ef7a038a6b587dde883e802080cb393732be9c4399f98e43a1a3ff6b3b2c2f.
+Unitouf-file-cohort-d3ef7a038a6b587dde883e802080cb39.service is stopped/not-found.
+Transition8cfb3760/v15: six APPLIED, ATTEST IN_FLIGHT, prior failed-intent marker
+intact. Worker978c661b CANCELLED/attempts1/publication1/prior2/cumulative3;
+session2c64588a; admissionc456b40b BLOCKED/v3. Claim e440b996 remains reserved.
+Node contains only frame-policy, no issuance/acceptance. Same paused PID3484588,
+container790c6274/restarts0. Four later journals have zero effects/backups.
+Old authority was not expired at read; its stopped executor/cancelled worker
+and blocked admission are preserved, never revived or extended.
 
-Latest owner output: sourceb7d24c57d6e45e71994ac3f99f56f249d83cde22,
-review2380132af8e47de185894fde156470e162dab784942c8615778e7620e7f8fc60,
-authority8c59697f46b3ce1b54d1cff1acf1f08dde6c4087062d28e379465d9a76ec570a,
-context/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-d3ef7a038a6b587dde883e802080cb393732be9c4399f98e43a1a3ff6b3b2c2f,
-unitouf-file-cohort-d3ef7a038a6b587dde883e802080cb39.service.
-All six retained effects, native full OCI/rootfs and DB fence passed preflight.
-It started a distinct worker and entered private frame observation, then failed
-at OnlineIamAdmission.admit line239 (Permanent/AUTHORITY_EXPIRED). It passed
-issuer identity, audience and scope checks before that lifetime refusal.
-Actual latest worker attempts/cumulative count/journal/claim/node issuance are
-not yet read back. Do not infer them from entering a delivery phase.
+Root cause is proven: the mount observer passed read-deadline(up to30s)+mount
+minimum30s as token expiry, which cannot meet actual owner minimum90s. Core
+lifetime fix c4fdc34f687553f1b02fcb79576a1e6562d395d0 passed six CI gates. It uses
+retained publication expiry on BOTH clocks and unchanged actual online IAM.
+Seven joined native readonly-mount/installed-owner/TLS tests pass; no lowering
+of minimum90s, artificial expiry, publication, renewal or counter reset.
 
-Confirmed source defect: mount observer passed its read deadline(up to30s)+
-signed mount minimum30s as token expiry. That ceiling<60s cannot satisfy owner
-minimum90s. The old suites separately tested real mounts and real owner but
-missed their integration. Core fix source4be0acc81fccb15d66245525de5eba45b5083541 fixes
-this with an explicit fail-closed mounted-token owner witness using the
-existing durable publication expiry on both clocks plus unchanged online IAM.
-Minimum90s stays enforced; no fabricated TTL, lifetime extension, grant, token
-publication, counter reset or source/authority bypass. Seven new actual native
-readonly mount+signed owner+TLS tests pass in the hosted cohort and IAM steps.
-Final source c4fdc34f687553f1b02fcb79576a1e6562d395d0 has identical core/capsule bytes and also preserves the synthetic mount fixture interface; its full six-gate qualification is pending.
-See CHATBOT_MOUNT_OWNER_LIFETIME_FIX_20261015.md and target failure evidence.
+Fixed governed recovery v2 is implemented at source
+e74cfc009fba1c142dc168fa86610358fd268842 on
+codex/retained-inspection-channel-20261015 (draft PR31, no merge).
+It preserves both previous failed intents and all six effects, old journal
+and both old claims, backup/DB fence, exact image and native generation.
+New fixed O_EXCL/inode/flock claim, current complete HUMAN review and a signed
+worker sessionv3 retain prior3; first new TLS grant must become cumulative4.
+No old worker/token adoption; no CREATE/STAGE/SIGUSR1, image import, retirement,
+first grant, credential rotation or backup/fence replay. Full independent OCI/
+rootfs preflight precedes IAM/device/terminal interaction. Existing complete
+frame, token, peer, node-signing and later native application checks stay required.
 
-The next target action is ONLY scripts/read-chatbot-mount-owner-failure-20261015.py
-from qualified reader commit bda269b13935588c92f7803b0a5850b33a05be8d. Reader SHA:
-80d2903fe5093bd0fc41cd0ea3a227d7929da6fd7b68f36c4d91fab26bd644fe.
-It reads the fixed latest review/private bundle, stopped unit, retained worker/
-session/admission, phase journal/old failed intent marker, node issuance boundary,
-later journals and one native Docker GET. It validates exact frozen source pins,
-computes the mismatch from reviewed metadata and reports persisted lifetime
-metadata only. No token/credential file reads, IAM/DB calls, grants, source-body
-execution, journal/claim writes, signatures or runtime changes. Only sudo.
-Its complete fixture plus custody/privacy checks PASS6 native hosted-root tests,
-zero skips: run38793900576/job116625182987, sourcebda269b13935588c92f7803b0a5850b33a05be8d.
-Copyable wrapper: releases/read-chatbot-mount-owner-failure-20261015.sh. Expect END complete true.
+Qualification PENDING at this checkpoint: all six same-source runs must PASS.
+Runs:38796920463 cohort,38796920407 IAM,38796920559 Docker29.8.1,
+38796920447 owner,38796920495 HUMAN/Ed25519,38796920382 legacy retirement.
+Earlier sourcef66e69ca had actual fourth TLS grant/mounted admission PASS but
+failed its complete-review TEST FIXTURE missing old-owner reference; it must
+not be delivered. e74cfc00 fixes that reference and runs the six native v3 cases
+before the long suites, including actual complete review compilation.
+No runtime code/capsule changed by that test-only correction.
 
-After that readback, prepare a new governed continuation from the latest signed
-scope, preserve BOTH historical failed intents and all six applied effects,
-retain all old claims/receipts/DB fence/backups, account the newly observed
-worker attempts cumulatively and use one new explicit finite HUMAN budget.
-The corrected source alone does not authorize such a continuation. Do not reuse
-old global claims, CREATE/STAGE/SIGUSR1, credentials, first grant or old worker.
-Target full frame/token/peer attestation and CSV chatbot E2E remain unproven.
+Exact candidate capsule0188d923fe197a6102097abc8b3af26a94e0175923a23fcca008801acd0b9e3d
+117files/99runtime modules. LauncherSHA
+72323604029b4ede41211a579e138ef6fcda03f8e396d1b67bdf251130118595.
+Pinned operational wrapper is prepared locally as
+scripts/launch-chatbot-mount-recovery-20261015.sh, SHA
+929b278ef98f96c45560409347be586fa1f9ca1dea575c696ca0fca9f3edc751.
+Publish it and the final qualification only after six gates pass; do not give
+a target command while any gate is red/pending. User has no further readback
+to perform now. Existing user downloaded qualified ZIP must be reused.
+
+No new runtime authority issued by this development. E2E still unproven. After
+actual cohort readiness use TEATRI_SEMANTIC_REUSE_REVIEW_20261014.md for actual
+source HUMAN approval, COMMIT rather than ACK, UDP lineage, fresh chatbot search
+and same-content canonical NOOP/reuse; preserve existing Cinema baseline.
