@@ -1,3 +1,15 @@
+# Current stop: image-import reconciliation required (2026-10-15, 09:25 CEST)
+
+The latest VPS attempt accepted the fresh HUMAN decision and reconciled the expired auth-only predecessor successfully. It then reached `IMPORTING_QUALIFIED_IMAGES_BEFORE_FIRST_GRANT` and stopped with `PAUSED_REQUIRES_RECONCILIATION`, reason `ValueError`. Image effects remain unknown. Do not run the previous execute wrapper again: its predecessor gate only covers auth-only history, not this new image-import attempt.
+
+Run only `scripts/read-chatbot-image-import-20261015.py` from the new evidence commit, hash `28597621dcb87444e6248e12266ec0529ba77ce11808d986ce0a2b00c0291fe4`. It is pinned to the exact failed dd03 context, authenticates its authority/bundle/prepared bindings, reads five image journals, and makes at most five image-inspection GET requests. It does not load images, start/restart services, write DBs, refresh IAM sessions, or renew authority. Output includes only journal states, exact comparison booleans and names/types of mismatching image-config fields; no raw configuration/environment.
+
+Nine local tests passed, including a complete synthetic retained-context read that preserves all files. Engine request method is verified with mocks; native Unix sockets were unavailable in the current sandbox (EPERM). Target readback is pending. The exact inner cause is still unknown; CSV chatbot end-to-end remains unproven. See `evidence/chatbot-image-import-paused-20261015.json`.
+
+---
+
+## Previous handoff (historical, execution instructions suspended)
+
 # OUF — ripresa revisionata del ciclo CSV, 15 ottobre 2026
 
 ## Riferimento corrente

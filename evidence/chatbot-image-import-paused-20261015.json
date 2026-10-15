@@ -1,0 +1,51 @@
+{
+  "schema": "ouf.chatbot-image-import-paused-evidence.v1",
+  "observedDate": "2026-10-15",
+  "source": "Operator-pasted VPS output at 09:25 Europe/Rome",
+  "sourceCommit": "b64645982655f58a2907bf1425dd86fd6ab0ed9f",
+  "reviewHash": "a7cc6bd53145dc53a4e62b3d25318aff5df6ce1a1401f51f56ff534e4ab5fb44",
+  "authorityHash": "48c75739575b7d618484ed78184834d2d1961da97fa2870d80d14ce26fe978f4",
+  "context": "/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-dd03d434361deb62e1caeaf7958a71c39c095f065e776312779d59dd6a7f4a77",
+  "unit": "ouf-file-cohort-dd03d434361deb62e1caeaf7958a71c3.service",
+  "authorityExpiresAt": 1792052697,
+  "observedPhases": [
+    "AUTHORIZATION_RECONCILED_BEFORE_FIRST_GRANT",
+    "IMPORTING_QUALIFIED_IMAGES_BEFORE_FIRST_GRANT",
+    "PAUSED_REQUIRES_RECONCILIATION"
+  ],
+  "reason": "ValueError",
+  "exactInnerReasonKnown": false,
+  "previousAuthOnlyReconciliationObserved": true,
+  "newHumanApprovalAccepted": true,
+  "imageEffectsKnown": false,
+  "applicationStagesReachedByCodeOrdering": false,
+  "chatbotEndToEndProven": false,
+  "budgetReset": false,
+  "automaticRetry": false,
+  "readback": {
+    "path": "scripts/read-chatbot-image-import-20261015.py",
+    "sha256": "28597621dcb87444e6248e12266ec0529ba77ce11808d986ce0a2b00c0291fe4",
+    "databaseMutations": 0,
+    "serviceMutations": 0,
+    "imageImportRequests": 0,
+    "engineRequests": "At most five GET /v1.44/images/<approved-sha256>/json",
+    "rawConfigurationPrinted": false,
+    "authorityRenewed": false
+  },
+  "validation": {
+    "localTests": 9,
+    "passed": 9,
+    "skipped": 0,
+    "completeFixtureReadPreservesAllFiles": true,
+    "transportMethodCheckedWithMocks": true,
+    "realUnixSocketTestAvailable": false,
+    "realUnixSocketLimit": "Sandbox socket creation returned EPERM; no native transport qualification claimed.",
+    "targetExecutionObserved": false
+  },
+  "limitations": [
+    "ValueError deliberately redacted; inner image-custody assertion is not in retained public status.",
+    "Image import may have had effects; never rerun the current execute wrapper.",
+    "Later-stage claims are read for corroboration; absence alone is not generic recovery authority.",
+    "No product patch or new runtime authorization issued by this diagnostic."
+  ]
+}
