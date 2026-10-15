@@ -1,5 +1,16 @@
 # CSV/chatbot — current handoff, 2026-10-15
 
+## Current diagnostic update: masked timer retains failed state
+
+Operator readback identifies the strict predicate mismatch: `ouf-policy-token@semantic.timer` is permanently masked, `ActiveState=failed`, `SubState=failed`, `Result=resources`, no Job. The service is masked/inactive/MainPID=0/no Job. The delivery unit is inactive/not-found/MainPID=0 (collected transient unit); its retained `Result=success` is not delivery acceptance. `resources` alone does not establish a RAM/disk problem.
+
+No production predicate change or recovery has been deployed. Preserve timer failure evidence and all owner/output/retirement reservations. Do not issue `reset-failed`, repeat mask/stop, restart delivery, or rerun an execution wrapper.
+
+The next operator action is **one read-only diagnostic**:
+`scripts/read-chatbot-pregrant-retirement-20261015.py`,
+SHA256 **6ce593b40fa6d1959aa34dd2a4827e78e4cdf686da2b45d699219b1e5060e1f9**.
+Run with root read access only; no Keycloak login, device code or HUMAN execution approval. It binds exact 95749a8 source/context/authority and sealed prepared bundle, reads seven exact global ledgers, four owner ledgers, source-stage intent/intake/file hashes without executing source, root/output/credential-directory metadata without opening credential/token members, five image journals/native image GETs, and bounded authorization/APISIX/later-stage metadata. Completed APISIX native generation is compared with the final journal binding via two container GETs. It does not initialize/lock/rewrite journals. Nine local privacy/custody/transport/full-flow/source-hash/native-generation scenarios were checked during development; native VPS execution remains pending. This is diagnostic evidence, not recovery authority.
+
 ## Latest VPS result: retirement reconciliation required
 
 The qualified 95749a8ef316856e16c44c1d7aa3b6791b408993 execution was run and approved. It progressed beyond all five image imports and APISIX runtime preparation, then paused at `INSTALLING_FINITE_TOKEN_OWNER` with `RETIREMENT_QUIESCENCE_UNPROVEN`. See `evidence/chatbot-legacy-retirement-paused-20261015.json` for the exact new context, authority and plan bindings.
