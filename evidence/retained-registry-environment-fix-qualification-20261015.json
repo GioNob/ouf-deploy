@@ -1,0 +1,54 @@
+{
+  "schema": "ouf.retained-registry-environment-fix-qualification.v1",
+  "date": "2026-10-15",
+  "sourceCommit": "912ec9d90015a2742957e49f72bc3a483e759e10",
+  "pr": 31,
+  "status": "CI_QUALIFIED_TARGET_PREPARATION_PENDING",
+  "rootCause": "UNAPPLIED_HISTORICAL_DISCOVERY_JAVA_TOOL_OPTIONS_RETAINED_IN_FILE_ONLY_PROPOSAL",
+  "native": {
+    "runId": 38675974309,
+    "jobId": 116229545255,
+    "conclusion": "success",
+    "tests": 195,
+    "suites": 25,
+    "skips": 0
+  },
+  "realImage": {
+    "runId": 38675969215,
+    "jobId": 116229529470,
+    "conclusion": "success",
+    "artifactId": 11907831957,
+    "producerRunId": 38584614991,
+    "imageId": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489",
+    "historicalEnvironmentNamesCompiled": {
+      "creation": 31,
+      "native": 19
+    },
+    "fixtureValues": "DISPOSABLE_AND_PUBLIC_SOURCE_DERIVED_NOT_TARGET_VALUES",
+    "fourMountProfileCompiled": true,
+    "defaultJavaTlsToPublicKeycloakDiscovery": "PASS",
+    "discoveryIssuer": "https://auth.ouf-lab.it/realms/ouf",
+    "runtimeImageEnvironmentValueHashes": "SEE_PRIOR_EXACT_IMAGE_READ_EVIDENCE",
+    "targetTlsFromActualNetworkNamespaceProven": false
+  },
+  "humanVerifier": {
+    "runId": 38675974374,
+    "conclusion": "success"
+  },
+  "capsuleSha256": "6cdb34162fbdabfb585fdeeb8d7d9d7a7169d956d8ad8d25ed7c50a910738d1f",
+  "launcherSha256": "310da13bbbe583e040237221b4d54ff8c5dafa670541cef3a426a88de3acbebb",
+  "wrapperSha256": "eb83af756739f71d36a856b980a63a7f5c0e05f76e531e849d77c3444b78cb8c",
+  "applicationPinsChanged": false,
+  "packageChanged": false,
+  "historicalInputsMutated": false,
+  "disposableCiContainerOperationsOccurred": true,
+  "targetServiceMutations": 0,
+  "targetDatabaseMutations": 0,
+  "automaticRetry": false,
+  "budgetReset": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "completeTargetPreparationProven": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}
