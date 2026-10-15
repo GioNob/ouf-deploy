@@ -1,0 +1,174 @@
+{
+  "schema": "ouf.chatbot-docker-contract-qualification.v1",
+  "recordedAt": "2026-10-15T12:43:10.817Z",
+  "sourceCommit": "ff3f2ba81baba4eb348c8aa07e834e404c82bbd7",
+  "productionSourceCommit": "2353c511dd422b692510cf31a8652f7e12fdf2be",
+  "productionUnchangedInHeadWorkflowOnlyCommit": true,
+  "capsuleSha256": "f5751921337637d99988d649268a356d8f8b8cfca17b068fbf5e099c7642026f",
+  "capsuleFileCount": 112,
+  "launcherSha256": "49637db86009c1ecb40be20a244f13a09498afb0e309216326762fef94d0ea4d",
+  "qualifications": [
+    {
+      "name": "Docker29 lifecycle and signed owner regressions",
+      "runId": 38736234551,
+      "jobId": 116426121918,
+      "sourceCommit": "ff3f2ba81baba4eb348c8aa07e834e404c82bbd7",
+      "status": "PASS",
+      "tests": 25,
+      "suites": 4,
+      "skips": 0
+    },
+    {
+      "name": "native cohort owners",
+      "runId": 38735728121,
+      "jobId": 116424416178,
+      "sourceCommit": "2353c511dd422b692510cf31a8652f7e12fdf2be",
+      "status": "PASS",
+      "tests": 288,
+      "suites": 37,
+      "skips": 0
+    },
+    {
+      "name": "online IAM and installed owner",
+      "runId": 38735734188,
+      "jobId": 116424434234,
+      "sourceCommit": "2353c511dd422b692510cf31a8652f7e12fdf2be",
+      "status": "PASS",
+      "tests": 237,
+      "suites": 31,
+      "skips": 0
+    },
+    {
+      "name": "complete owner installation",
+      "runId": 38735734096,
+      "status": "PASS"
+    },
+    {
+      "name": "HUMAN Ed25519 verifier",
+      "runId": 38735734025,
+      "status": "PASS"
+    },
+    {
+      "name": "legacy retirement",
+      "runId": 38735734000,
+      "status": "PASS"
+    }
+  ],
+  "headRunsObserved": [
+    {
+      "runId": 38736241658,
+      "name": "Remaining Docker lifecycle contracts on 29.8.1",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "runId": 38736241576,
+      "name": "Complete finite policy-token owner installation",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "runId": 38736241670,
+      "name": "Chatbot cohort delivery native owners",
+      "event": "pull_request",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "runId": 38736241618,
+      "name": "Policy-token governed legacy retirement component",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "runId": 38736241501,
+      "name": "Native cutover HUMAN scope and existing Ed25519 verifier",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "runId": 38736241867,
+      "name": "OUF policy-token online IAM and installed owner qualification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "runId": 38736234551,
+      "name": "Remaining Docker lifecycle contracts on 29.8.1",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "docker": {
+    "serverVersion": "29.8.1",
+    "cliVersion": "29.8.1",
+    "storageDriver": "overlayfs",
+    "cgroupDriver": "systemd",
+    "apiVersion": "1.56",
+    "minimumApiVersion": "1.40",
+    "productionRequestVersion": "1.44",
+    "binaryDownload": "https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz",
+    "observedBinaryArchiveSha256": "d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70",
+    "operations": [
+      "create",
+      "start",
+      "pause",
+      "unpause",
+      "kill(SIGUSR1)",
+      "connect",
+      "disconnect",
+      "update",
+      "stop",
+      "rename"
+    ]
+  },
+  "readiness": {
+    "maximumAttempts": 128,
+    "maximumElapsedSeconds": 3600,
+    "clippedToCurrentAuthority": true,
+    "readOnlyReconciliation": true,
+    "startOrSignalReplayAllowed": false,
+    "respectRetryAfter": true,
+    "bootAndMonotonicClockBound": true,
+    "durableJournal": true
+  },
+  "fixtureLimits": [
+    "Native lifecycle HTTP responder simulates java; no qualified Spring application boot",
+    "Native lifecycle non-Docker attestation/admission boundaries are synthetic",
+    "Nine signed application/producer cases use real signatures/Journal/HTTP and simulated Docker/database state",
+    "Three PostgreSQL cases use actual PostgreSQL, exec, archives, exact MCP migration and native runtime paths"
+  ],
+  "localSignedOwnerTestRun": {
+    "tests": 9,
+    "errors": 4,
+    "failuresIn": "signing/verification before owner assertions, including explicit 5-second OpenSSL signing timeout",
+    "unchangedTestsPassedInCi": true,
+    "securityTimeoutsWeakened": false
+  },
+  "targetBaseline": {
+    "readbackInputSha256": "f4e71357305f6827eac16a931b1ea23dbc85e3a5f135af4fc0b42cf09eed600b",
+    "readbackRecords": 103,
+    "complete": true,
+    "context": "chatbot-file-cohort-signed-b05102a00d9f20ec6a935e1de201d4a9bb800f2aac8876fe79b0ed187e5f9623",
+    "appliedPredecessorPhaseCount": 4,
+    "replacementRegistryState": "CREATED_PID_ZERO",
+    "oldApplicationsStopped": 5,
+    "firstGrantConsumed": true,
+    "finiteWorkerState": "CANCELLED",
+    "targetObservedAgainDuringAudit": false
+  },
+  "targetMutationsDuringAudit": 0,
+  "applicationImagesRebuilt": 0,
+  "newTargetRecoveryLauncherQualified": false,
+  "postGrantQuiescedContinuationImplemented": false,
+  "runtimeAuthorityIssued": false,
+  "chatbotEndToEndProven": false,
+  "permanentRuntimeAcceptance": false,
+  "notReleaseAcceptance": true
+}
