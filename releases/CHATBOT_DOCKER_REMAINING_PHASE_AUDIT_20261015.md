@@ -56,7 +56,7 @@ Capsule: `f5751921337637d99988d649268a356d8f8b8cfca17b068fbf5e099c7642026f` (112
 | HUMAN scope / Ed25519 verifier | 2353c511dd422b692510cf31a8652f7e12fdf2be | [38735734025](https://github.com/GioNob/ouf-deploy/actions/runs/38735734025) | PASS |
 | Governed legacy retirement | 2353c511dd422b692510cf31a8652f7e12fdf2be | [38735734000](https://github.com/GioNob/ouf-deploy/actions/runs/38735734000) | PASS |
 
-At this recording, duplicate complete-cohort and online-IAM PR reruns on the CI-only ff3f2ba head are still running. The table attributes results to the actual tested revisions rather than claiming they have finished.
+At this recording, the duplicate complete-cohort PR rerun on the CI-only ff3f2ba head is still running; its online-IAM, full owner installation, HUMAN, legacy retirement and Docker reruns have passed. The table attributes complete test counts to the actual tested production revision rather than claiming the duplicate cohort rerun has finished.
 
 The native Docker job pins actual server and CLI 29.8.1, overlayfs and cgroup systemd on an isolated disposable daemon using external containerd and /run/docker runtime state. It verifies API1.56/min1.40 while production requests use /v1.44. The official HTTPS binary archive observed SHA256 is `d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70`.
 
