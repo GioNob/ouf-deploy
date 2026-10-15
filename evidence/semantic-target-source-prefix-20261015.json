@@ -1,0 +1,15 @@
+{
+  "schema": "ouf.semantic-target-source-prefix.v1",
+  "date": "2026-10-15",
+  "candidateCommit": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+  "installedCount": 10,
+  "candidateCountIncludingSchemaMarker": 11,
+  "status": "EXACT_SOURCE_PREFIX_MATCH",
+  "pendingScripts": [
+    "V10__proposal_command_receipts.sql"
+  ],
+  "comparisonIncludesAllFlywayColumns": true,
+  "packagedJarIndependentlyRead": false,
+  "databaseMutations": 0,
+  "notReleaseAcceptance": true
+}

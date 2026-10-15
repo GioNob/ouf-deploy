@@ -72,3 +72,28 @@ dei due canali e negare differenze non spiegate. Gestire il marker semantic
 esatto senza alterare la storia conservata. Qualificare queste condizioni insieme
 prima di pubblicare un nuovo launcher di consegna. I pin applicativi e l'archivio
 1,7GB restano invariati. Nessun rollout è autorizzato da questo documento.
+
+## Evidenze indipendenti raccolte dalla chat dopo l'inventario
+
+La disponibilità di routing del connettore OUF per l'account `ouf-admin`,
+corrispondente al proprietario selezionato, ha permesso una ricerca MCP fresca
+del tipo canonico Cinema. Risultato completo:8 oggetti ACTIVE, revisione1,
+stessi ID e property IRI della baseline del14 ottobre, nextCursor null e
+partial false. [Evidenza redatta](../evidence/chatbot-cinema-read-20261015.json).
+La lacuna di accesso MCP della conversazione è quindi superata per questa
+lettura; il campo NOT_COLLECTED nell'output del processo VPS resta immutato.
+Non è reingestion né prova CSV Teatri. La ricerca semantic.search(q=Teatri,
+limit=10) ha restituito una lista vuota nell'ambito autorizzato: non è una
+dimostrazione globale di assenza di ogni artefatto semantic.
+
+Il confronto dei file SQL del commit semantic candidato eccef11a… con tutte
+le colonne Flyway osservate conferma il prefisso completo:10 righe installate
+(incluso SCHEMA),11 attese, sola V10__proposal_command_receipts.sql pendente.
+[Confronto source-prefix](../evidence/semantic-target-source-prefix-20261015.json).
+Il JAR dell'archivio non è stato riletto da questa sessione; il controllo dei byte
+del pacchetto deve restare nel preparatore.
+
+La correzione circoscritta è nella PR31, ramo
+codex/retained-inspection-channel-20261015, distinto dalla baseline PR29.
+Resta una bozza finché le prove native non passano. La qualificazione dei due
+difetti non equivale alla qualificazione dell'intera consegna B03/B04.
