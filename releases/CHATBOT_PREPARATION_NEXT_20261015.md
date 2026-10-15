@@ -21,7 +21,7 @@ Seven joined native readonly-mount/installed-owner/TLS tests pass; no lowering
 of minimum90s, artificial expiry, publication, renewal or counter reset.
 
 Fixed governed recovery v2 is implemented at source
-e74cfc009fba1c142dc168fa86610358fd268842 on
+f2e70ae8ccce848eff3fed3d9b95f535af8b3e18 on
 codex/retained-inspection-channel-20261015 (draft PR31, no merge).
 It preserves both previous failed intents and all six effects, old journal
 and both old claims, backup/DB fence, exact image and native generation.
@@ -32,21 +32,46 @@ first grant, credential rotation or backup/fence replay. Full independent OCI/
 rootfs preflight precedes IAM/device/terminal interaction. Existing complete
 frame, token, peer, node-signing and later native application checks stay required.
 
-Qualification PENDING at this checkpoint: all six same-source runs must PASS.
-Runs:38796920463 cohort,38796920407 IAM,38796920559 Docker29.8.1,
-38796920447 owner,38796920495 HUMAN/Ed25519,38796920382 legacy retirement.
-Earlier sourcef66e69ca had actual fourth TLS grant/mounted admission PASS but
-failed its complete-review TEST FIXTURE missing old-owner reference; it must
-not be delivered. e74cfc00 fixes that reference and runs the six native v3 cases
-before the long suites, including actual complete review compilation.
-No runtime code/capsule changed by that test-only correction.
+Qualification BLOCKED: source f2e70ae8ccce848eff3fed3d9b95f535af8b3e18 has six
+GitHub job failures WITHOUT RUNNER START (runner_id0/empty steps, no logs).
+Cohort run38798031552/job116639479918; check-run has one annotation, but this
+connector cannot read the /check-runs/.../annotations endpoint. Its summary/
+text fields are null. The actual reason is NOT established. Billing/quota is
+possible but must not be asserted without the annotation. No rerun requested,
+no spending/settings/visibility changes and no target runtime command delivered.
+
+Earlier source e74cfc00: actual joined mount/owner/TLS step PASS and all six
+native v3 worker/history/fourth-grant/full-review cases PASS. Five companion
+checks PASS. Whole cohort run38796920463 failed ONE legacy terminal-summary
+fixture using synthetic-postgrant rather than the actual supported profile.
+Source f2e70ae8 changes ONLY that test: uses actual old profile and adds the new
+three-grant summary case; all9 terminal tests PASS locally. All production
+capsule/launcher bytes remain identical to e74cfc00. The complete cohort must
+still finish before runtime delivery; no claim of all-six-gate qualification.
+Earlier f66e69ca failed another test fixture's missing old-owner reference,
+corrected at e74cfc00. Never deliver either failed source as qualified.
+
+Next required user intervention: open the specific GitHub job and report its
+single annotation: https://github.com/GioNob/ouf-deploy/actions/runs/38798031552/job/116639479918.
+No VPS action or new IAM/device/HUMAN approval is requested. After the runner
+block is understood/resolved, qualify the exact f2e70ae8 source; use existing
+rerun-job capability with bounded deliberate requests, not new source changes
+or repeated target attempts to work around unavailable CI.
+
+Local extra validation: complete closed-source imports3 PASS, launcher14 PASS,
+signed two-failure recovery5 PASS, legacy paused recovery9 PASS, postgrant9 PASS,
+terminal9 PASS. Additional selected local suites pass; native systemd journal
+and missing peer-source cases are environment limitations, NOT locally passed:
+process-native(no systemd journal); target-selection(missing pinned picker);
+Gateway/Gateway-runtime(missing peer compiler); authorization(missing peer env).
+Hosted qualification remains necessary for those and actual group custody.
 
 Exact candidate capsule0188d923fe197a6102097abc8b3af26a94e0175923a23fcca008801acd0b9e3d
 117files/99runtime modules. LauncherSHA
 72323604029b4ede41211a579e138ef6fcda03f8e396d1b67bdf251130118595.
 Pinned operational wrapper is prepared locally as
 scripts/launch-chatbot-mount-recovery-20261015.sh, SHA
-929b278ef98f96c45560409347be586fa1f9ca1dea575c696ca0fca9f3edc751.
+c3e0e5975535d8c420d1a68035a85db663b7ad0ec85f4fc9a68d2a3b82761fd1.
 Publish it and the final qualification only after six gates pass; do not give
 a target command while any gate is red/pending. User has no further readback
 to perform now. Existing user downloaded qualified ZIP must be reused.

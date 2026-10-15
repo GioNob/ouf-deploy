@@ -1,0 +1,79 @@
+{
+  "schema": "ouf.chatbot-mounted-recovery-qualification.v1",
+  "date": "2026-10-15",
+  "status": "BLOCKED_CI_RUNNER_NOT_STARTED_ANNOTATION_REQUIRED",
+  "sourceCommit": "f2e70ae8ccce848eff3fed3d9b95f535af8b3e18",
+  "capsuleSha256": "0188d923fe197a6102097abc8b3af26a94e0175923a23fcca008801acd0b9e3d",
+  "capsuleFiles": 117,
+  "runtimeModules": 99,
+  "launcherSha256": "72323604029b4ede41211a579e138ef6fcda03f8e396d1b67bdf251130118595",
+  "checks": [
+    {
+      "runId": 38798031204,
+      "name": "Remaining Docker lifecycle contracts on 29.8.1",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "runId": 38798031552,
+      "name": "Chatbot cohort delivery native owners",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "runId": 38798031501,
+      "name": "Native cutover HUMAN scope and existing Ed25519 verifier",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "runId": 38798031048,
+      "name": "OUF policy-token online IAM and installed owner qualification",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "runId": 38798031198,
+      "name": "Complete finite policy-token owner installation",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "runId": 38798031374,
+      "name": "Policy-token governed legacy retirement component",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "cohortJob": {
+    "runId": 38798031552,
+    "jobId": 116639479918,
+    "runnerId": 0,
+    "steps": [],
+    "logsAvailable": false,
+    "annotationsCount": 1,
+    "annotationContentAvailable": false,
+    "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38798031552/job/116639479918"
+  },
+  "cause": "UNESTABLISHED_NO_BILLING_OR_QUOTA_ASSERTION",
+  "previousSourceEvidence": {
+    "sourceCommit": "e74cfc009fba1c142dc168fa86610358fd268842",
+    "cohortRunId": 38796920463,
+    "cohortJobId": 116635635915,
+    "wholeJobConclusion": "failure",
+    "nativeMountedOwnerIntegrationTests": 7,
+    "nativeV3WorkerAndWholeReviewTests": 6,
+    "criticalNativeStepsConclusion": "success",
+    "failure": "ONE_LEGACY_TERMINAL_TEST_USED_SYNTHETIC_PROFILE",
+    "latestChangeIsTestOnly": true,
+    "latestTerminalTestsLocal": 9
+  },
+  "targetEvidence": "evidence/chatbot-mounted-recovery-target-20261015.json",
+  "productionCapsuleSameAsPriorNativeSteps": true,
+  "allRequiredChecksPassed": false,
+  "runtimeCommandDelivered": false,
+  "newRuntimeAuthorityIssued": false,
+  "targetMutationsThisDevelopment": 0,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}
