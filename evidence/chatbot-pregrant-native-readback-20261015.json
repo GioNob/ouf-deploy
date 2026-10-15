@@ -1,0 +1,498 @@
+{
+  "schema": "ouf.chatbot-pregrant-native-readback-evidence.v1",
+  "date": "2026-10-15",
+  "attachmentSha256": "0cf178570d932246dc8c88c6c32eacc84e154a80e2c10b424b4bd63034f42176",
+  "readerSha256": "6ce593b40fa6d1959aa34dd2a4827e78e4cdf686da2b45d699219b1e5060e1f9",
+  "sourceCommit": "95749a8ef316856e16c44c1d7aa3b6791b408993",
+  "records": [
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "BEGIN",
+      "databaseMutations": 0,
+      "imageImportRequests": 0,
+      "readOnly": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1",
+      "serviceMutations": 0
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "UNIT",
+      "exitCode": 0,
+      "properties": {
+        "ActiveState": "failed",
+        "Id": "ouf-policy-token@semantic.timer",
+        "Job": "",
+        "LoadState": "masked",
+        "Result": "resources",
+        "SubState": "failed",
+        "UnitFileState": "masked"
+      },
+      "readOnly": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "UNIT",
+      "exitCode": 0,
+      "properties": {
+        "ActiveState": "inactive",
+        "Id": "ouf-policy-token@semantic.service",
+        "Job": "",
+        "LoadState": "masked",
+        "MainPID": "0",
+        "Result": "success",
+        "SubState": "dead",
+        "UnitFileState": "masked"
+      },
+      "readOnly": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "UNIT",
+      "exitCode": 0,
+      "properties": {
+        "ActiveState": "inactive",
+        "Id": "ouf-file-cohort-3f1e74ca1de7962018be8e1d6dd023f6.service",
+        "Job": "",
+        "LoadState": "not-found",
+        "MainPID": "0",
+        "Result": "success",
+        "SubState": "dead",
+        "UnitFileState": ""
+      },
+      "readOnly": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "STATUS",
+      "phase": "PAUSED_REQUIRES_RECONCILIATION",
+      "readOnly": true,
+      "reason": "RETIREMENT_QUIESCENCE_UNPROVEN",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticReplayAllowed": false,
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": true,
+      "readOnly": true,
+      "record": "installation",
+      "recordHash": "ff7de4da5b1503e109891b7f00aaf2a7df2709e2aac89e0e6e61a8c4e442fca2",
+      "recordSchema": "ouf.policy-token-owner-installation-intent.v1",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1",
+      "state": "RESERVED_OUTCOME_UNPROVEN"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": false,
+      "readOnly": true,
+      "record": "installationCompleted",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "commandAttemptConsumed": true,
+      "present": true,
+      "readOnly": true,
+      "record": "retirement",
+      "recordHash": "38c670782408fd6843350f549eaeffe1b59adae7b923b907d4ccdad373424b7c",
+      "recordSchema": "ouf.policy-token-legacy-retirement.v1",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1",
+      "state": "COMMAND_RESERVED_OUTCOME_UNPROVEN",
+      "version": 0
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "mkdirAttemptConsumed": true,
+      "present": true,
+      "readOnly": true,
+      "record": "output",
+      "recordHash": "0d176ef0fa749df76cbd636a944e1b420b33201b65741c652c9ad5c376fa01ce",
+      "recordSchema": "ouf.policy-token-output-custody.v1",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1",
+      "state": "OUTPUT_CUSTODIED_NOT_RUNTIME_ACCEPTED",
+      "version": 1
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": false,
+      "readOnly": true,
+      "record": "credentialTransaction",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": false,
+      "readOnly": true,
+      "record": "firstGapSession",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": false,
+      "readOnly": true,
+      "record": "firstGrant",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": true,
+      "readOnly": true,
+      "record": "sourceStageIntent",
+      "recordHash": "47f8ecd2d5cd70564cd9062fe093634f93083691e79a94abcb6697659a4428d7",
+      "recordSchema": "ouf.policy-token-source-stage-intent.v1",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": true,
+      "readOnly": true,
+      "record": "sourceStageIntake",
+      "recordHash": "e6f5140a6c63048b8ccd5f6c5d0b758ced5da9ef6d7c05f16180bf8f309cea94",
+      "recordSchema": "ouf.native-v11-atomic-review-intake.v1",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "allFileHashesMatch": true,
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "SOURCE_STAGE",
+      "fileCount": 10,
+      "manifestMatchesReviewed": true,
+      "readOnly": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1",
+      "sourceExecuted": false
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": false,
+      "readOnly": true,
+      "record": "ownerRecovery",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": false,
+      "readOnly": true,
+      "record": "ownerFirstGrant",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": false,
+      "readOnly": true,
+      "record": "ownerSession",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": false,
+      "readOnly": true,
+      "record": "ownerAdmission",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "DIRECTORY",
+      "device": 65028,
+      "directory": "ownerRecovery",
+      "empty": false,
+      "entryCount": 1,
+      "gid": 0,
+      "inode": 4161615,
+      "modeOctal": "0700",
+      "readOnly": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1",
+      "uid": 0
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "DIRECTORY",
+      "device": 65028,
+      "directory": "tokenOutput",
+      "empty": true,
+      "entryCount": 0,
+      "gid": 10001,
+      "inode": 11185506,
+      "modeOctal": "0750",
+      "readOnly": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1",
+      "uid": 0
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "DIRECTORY",
+      "device": 65028,
+      "directory": "credentialRootMetadataOnly",
+      "empty": true,
+      "entryCount": 0,
+      "gid": 0,
+      "inode": 4161609,
+      "modeOctal": "0700",
+      "readOnly": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1",
+      "uid": 0
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "IMAGE",
+      "executionConfigMismatchFields": [],
+      "executionConfigPass": true,
+      "httpStatus": 200,
+      "identityPass": true,
+      "imagePresent": true,
+      "journal": {
+        "effectAttemptCount": 0,
+        "imageCustodyProven": true,
+        "state": "VERIFIED",
+        "version": 1
+      },
+      "mismatchTypes": {},
+      "module": "semantic",
+      "readOnly": true,
+      "rootfsPass": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "IMAGE",
+      "executionConfigMismatchFields": [],
+      "executionConfigPass": true,
+      "httpStatus": 200,
+      "identityPass": true,
+      "imagePresent": true,
+      "journal": {
+        "effectAttemptCount": 1,
+        "imageCustodyProven": true,
+        "state": "VERIFIED",
+        "version": 2
+      },
+      "mismatchTypes": {},
+      "module": "udp",
+      "readOnly": true,
+      "rootfsPass": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "IMAGE",
+      "executionConfigMismatchFields": [],
+      "executionConfigPass": true,
+      "httpStatus": 200,
+      "identityPass": true,
+      "imagePresent": true,
+      "journal": {
+        "effectAttemptCount": 1,
+        "imageCustodyProven": true,
+        "state": "VERIFIED",
+        "version": 2
+      },
+      "mismatchTypes": {},
+      "module": "onboarding",
+      "readOnly": true,
+      "rootfsPass": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "IMAGE",
+      "executionConfigMismatchFields": [],
+      "executionConfigPass": true,
+      "httpStatus": 200,
+      "identityPass": true,
+      "imagePresent": true,
+      "journal": {
+        "effectAttemptCount": 1,
+        "imageCustodyProven": true,
+        "state": "VERIFIED",
+        "version": 2
+      },
+      "mismatchTypes": {},
+      "module": "ingestion",
+      "readOnly": true,
+      "rootfsPass": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "IMAGE",
+      "executionConfigMismatchFields": [],
+      "executionConfigPass": true,
+      "httpStatus": 200,
+      "identityPass": true,
+      "imagePresent": true,
+      "journal": {
+        "effectAttemptCount": 1,
+        "imageCustodyProven": true,
+        "state": "VERIFIED",
+        "version": 2
+      },
+      "mismatchTypes": {},
+      "module": "mcp",
+      "readOnly": true,
+      "rootfsPass": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": true,
+      "readOnly": true,
+      "record": "authorization",
+      "recordHash": "2732a0859b04157b2c24e56dd4da0b2296e7d2705818939d519d7041fd3fac64",
+      "recordSchema": "ouf.chatbot-file-authorization-journal.v1",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1",
+      "version": 1
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": false,
+      "readOnly": true,
+      "record": "containers",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": false,
+      "readOnly": true,
+      "record": "databases",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": false,
+      "readOnly": true,
+      "record": "gateway",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RECORD",
+      "present": true,
+      "readOnly": true,
+      "record": "gatewayRuntime",
+      "recordHash": "d9a7427d73867801fda31acbba4b1df3d7dafd4e99d35cd1cdbb2b5d7816448a",
+      "recordSchema": "ouf.chatbot-file-cohort.gateway-runtime.v1",
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1",
+      "version": 19
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "GATEWAY_PROGRESS",
+      "effects": [
+        {
+          "state": "APPLIED",
+          "step": "disable_restart"
+        },
+        {
+          "state": "APPLIED",
+          "step": "stop"
+        },
+        {
+          "state": "APPLIED",
+          "step": "rename"
+        },
+        {
+          "state": "APPLIED",
+          "step": "create"
+        },
+        {
+          "state": "APPLIED",
+          "step": "connect"
+        },
+        {
+          "state": "APPLIED",
+          "step": "start"
+        },
+        {
+          "state": "APPLIED",
+          "step": "ready"
+        },
+        {
+          "state": "APPLIED",
+          "step": "restore_restart"
+        }
+      ],
+      "nextStep": 8,
+      "readOnly": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "GATEWAY_GENERATION",
+      "matchesFinalJournal": true,
+      "paused": false,
+      "present": true,
+      "readOnly": true,
+      "running": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1"
+    },
+    {
+      "authorityRenewed": false,
+      "automaticRetry": false,
+      "budgetReset": false,
+      "chatbotEndToEndProven": false,
+      "check": "END",
+      "credentialOrTokenFilesRead": false,
+      "databaseMutations": 0,
+      "imageImportRequests": 0,
+      "rawConfigPrinted": false,
+      "rawEnvironmentPrinted": false,
+      "readOnly": true,
+      "schema": "ouf.chatbot-pregrant-retirement-readback.v1",
+      "serviceMutations": 0
+    }
+  ],
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}
