@@ -1,0 +1,60 @@
+{
+  "schema": "ouf.chatbot-role-owner-roundtrip-diagnosis.v1",
+  "date": "2026-10-15",
+  "sourceCommit": "6959b1dbaeb30ca3a838c7d6243a55e9cfc5118a",
+  "operatorObservedAt": "2026-10-15T08:37:37+02:00",
+  "operatorReportsBrowserConfirmation": true,
+  "targetReadback": {
+    "phase": "HUMAN_OWNER_ROLE_CONFIRMATION_REQUIRED",
+    "proposalId": "adf95413-92b0-460b-a112-2fd80bd208ac",
+    "state": "EXPIRED",
+    "ActiveState": "active",
+    "SubState": "running",
+    "Result": "success",
+    "ExecMainStatus": 0,
+    "statusMtimeNotProvided": true
+  },
+  "authenticatedOwnerRolesRead": {
+    "account": "ouf-admin",
+    "roleCount": 2,
+    "adminContainsThreeNewCapabilities": [
+      "ouf.managed-source.onboarding.review.prepare",
+      "ouf.managed-source.onboarding.read",
+      "ouf.semantic.proposal.read"
+    ],
+    "rawCatalogueArchived": false
+  },
+  "hashReconstruction": {
+    "hashFromOperatorRecoveryScreenshot": "3e7b9cadf1c5ffef3f6c72ef27629f9d080c1c5ca7e7e08b8b5b3d6d0de2ad54",
+    "currentOwnerCatalogueAsProposal": "c0ef096034ce2c31736f081ccb15cf0cfd816f362e7707425a7f6ae05b230930",
+    "currentCatalogueRemovingOnlyDefaultFieldsOnThreeNewPermissions": "3e7b9cadf1c5ffef3f6c72ef27629f9d080c1c5ca7e7e08b8b5b3d6d0de2ad54",
+    "reconstructionMatchesReviewedPayload": true,
+    "removedOwnerAddedDefaults": {
+      "allowedDataLabels": [],
+      "allowedDetailLevels": [],
+      "externalRoleRef": null,
+      "maxAuthenticationAgeSeconds": null,
+      "requiredAcr": null,
+      "requiredAmr": [],
+      "resourceId": null
+    }
+  },
+  "sourceDefect": {
+    "compilePlanBuildsSparseNewPermissionConstraints": true,
+    "ownerSerializesFullGrantConstraintsRecord": true,
+    "applyUsesLiteralRolesEquality": true,
+    "verifyUsesLiteralTargetRolesEquality": true,
+    "expectedFailureIfComparisonReached": "ROLE_BASELINE_DRIFT",
+    "diagnosis": "Owner round-trip comparison defect proven; current live waiting point not yet located."
+  },
+  "limits": {
+    "newProposalIdNotProvided": true,
+    "liveProcessStacksNotRead": true,
+    "sourceOrderDoesNotProveCurrentWaitLocation": true,
+    "noRuntimePatchApplied": true,
+    "rolesNotRewritten": true,
+    "cohortReadyProven": false,
+    "CSVEndToEndProven": false,
+    "authorityRenewed": false
+  }
+}
