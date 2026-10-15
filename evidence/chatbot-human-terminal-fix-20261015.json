@@ -1,0 +1,92 @@
+{
+  "schema": "ouf.chatbot-human-terminal-block-diagnosis.v1",
+  "date": "2026-10-15",
+  "evidenceOrigin": "operator-reported VPS output; source-order analysis; disposable real controlling PTY tests",
+  "sourceCommit": "951f91c8df3d252c720ffa4f0fc787ff90d91b9e",
+  "target": {
+    "preflightAllRequiredChecksPass": true,
+    "completeReviewReady": true,
+    "reviewHash": "5cc4b24c718a2ecc303e0184086c4697745dee83629b5ba7e9a8efe2337bf4e3",
+    "reviewPath": "/etc/ouf/deploy-snapshots/chatbot-file-intake-e2d2ff9ce2dec348754edf977f911aac987a1d22723368571b26586870d50736/attempt-6568fe935b19d4e112cc2ff8/full-action-review.json",
+    "visibleApprovalMatchesPrintedHash": true,
+    "reportedReason": "FULL_ACTION_NOT_APPROVED",
+    "reportedRuntimeAuthorityIssued": null
+  },
+  "limits": {
+    "actualTerminalInputBytesCaptured": false,
+    "phoneSpecificInputCause": "UNKNOWN",
+    "privateReviewDocumentAcquired": false,
+    "chatbotEndToEndProven": false,
+    "releaseAcceptance": false
+  },
+  "sourceOrder": {
+    "denialLocation": "review.terminal_decision, exact-byte comparison",
+    "before": [
+      "review.issue",
+      "existing role signatures",
+      "FiniteActionProcess.start",
+      "first controlled grant",
+      "service/database runtime application"
+    ],
+    "inference": "This specific denial did not issue runtime authority or start target application; the reported null is retained rather than globally reinterpreted."
+  },
+  "legacyRealPTYControls": {
+    "exactASCIIApproval": "PASS",
+    "bracketedPasteAroundExactApproval": "REPRODUCES_FULL_ACTION_NOT_APPROVED",
+    "prequeuedDeviceFlowInput": "REPRODUCES_FULL_ACTION_NOT_APPROVED",
+    "targetAttribution": "These reproduce the failure class; neither proves the actual target input format."
+  },
+  "correction": {
+    "sourceCommit": "6959b1dbaeb30ca3a838c7d6243a55e9cfc5118a",
+    "onlyCapsuleSourceFilesChanged": [
+      "tools/chatbot_file_cohort/review.py",
+      "tools/chatbot_file_cohort/runtime.py"
+    ],
+    "stdlibImportAdded": "termios",
+    "maximumTerminalAttempts": 3,
+    "discardPreReviewQueuedInput": true,
+    "accepted": [
+      "exact ASCII APPROVO plus current full lowercase hash",
+      "one exact bracketed-paste envelope around whole line or current hash suffix"
+    ],
+    "denied": [
+      "different review hash",
+      "Unicode transformations",
+      "whitespace normalization",
+      "arbitrary ANSI stripping",
+      "automatic approval"
+    ],
+    "diagnostics": "classification and byte counts only; no input text or input hashes",
+    "samePromptRetry": true,
+    "archiveAndSixApplicationPinsChanged": false
+  },
+  "qualification": {
+    "runId": 38687882912,
+    "jobId": 116266819989,
+    "tests": 207,
+    "suites": 27,
+    "skipped": 0,
+    "status": "PASS",
+    "humanVerifierRunId": 38687887549,
+    "humanVerifierJobId": 116266834610,
+    "humanVerifierStatus": "PASS",
+    "duplicatePRRunId": 38687887477,
+    "duplicatePRJobId": 116266834441,
+    "duplicatePRConclusion": "success",
+    "unchangedExactImageFrameAndJavaTLS": {
+      "runId": 38684997298,
+      "sourceCommit": "951f91c8df3d252c720ffa4f0fc787ff90d91b9e",
+      "status": "PASS",
+      "rerunForTerminalOnlyChange": false
+    }
+  },
+  "delivery": {
+    "wrapperPath": "releases/chatbot-file-cohort-execute-terminal-vps-20261015.sh",
+    "wrapperSha256": "4164ef0b48b9bd428b5e1b24f95c78c137ecb1f82284f603465d57538c25d343",
+    "capsuleSha256": "f9726cc181ecf6f6e5bc0ab9064e7114a1ec261f0f5284f5e8580996fce47755",
+    "launcherSha256": "2fae09635e3c8ba6770a267dcc512e143ce5cb4f89ca218ce396d64d9e6a1d77",
+    "freshReviewAndManualTerminalApprovalRequired": true,
+    "prepareOnly": false,
+    "maximumActionSeconds": 3600
+  }
+}

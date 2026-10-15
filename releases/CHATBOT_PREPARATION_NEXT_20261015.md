@@ -20,19 +20,27 @@ Una ricerca MCP fresca restituisce gli stessi8 Cinema ACTIVE/revisione1 e gli st
 
 La proposta semantica resta preparata e non registrata: nessun pin pubblicato è inventato, nessun onboarding DRAFT è stato creato. Dopo la disponibilità del cohort, acquisire la review HUMAN e i pin effettivamente pubblicati, poi usare il mapping completo. La seconda sorgente richiede l'input distinto con gli stessi byte previsto dal piano di accettazione.
 
+## Ultima esecuzione: conferma terminale rifiutata
+
+Una seconda preparazione completa è riuscita con review5cc4b24c718a2ecc303e0184086c4697745dee83629b5ba7e9a8efe2337bf4e3. Il testo riportato dall'operatore coincide con la richiesta, ma il lettore esatto di /dev/tty lo ha rifiutato con FULL_ACTION_NOT_APPROVED. I byte effettivamente letti non sono disponibili: non è dimostrato un errore dell'operatore né una specifica causa dello smartphone.
+
+Il confronto avviene prima di firme, emissione dell'autorità e avvio del processo. Il campo runtimeAuthorityIssued riportato è null; l'assenza di emissione per questo specifico errore deriva dall'ordine del sorgente. La preparazione acquisita resta valida come evidenza; B04 non è iniziato.
+
+Il nuovo lettore elimina l'input precedente prima di mostrare la review, accetta un solo involucro standard di incolla attorno al testo esatto o al solo hash, e offre massimo tre tentativi nello stesso prompt con diagnosi di formato senza riportare l'input. Hash diverso, spazi e trasformazioni Unicode restano rifiutati. Non approva né ripete automaticamente l'azione.
+
 ## Consegna per esecuzione
 
-Wrapper: [chatbot-file-cohort-execute-vps-20261015.sh](chatbot-file-cohort-execute-vps-20261015.sh).
-SHA256: **310efbf261d3e767924a6b1cd6a87f22d9bdc7111624c680f88466597bc170f7**.
-Sorgente eseguibile: **951f91c8df3d252c720ffa4f0fc787ff90d91b9e**.
-Launcher SHA256:596bd594af24775ed5b9107199bb781893391c543624728f820bc4395581e084.
-Capsula SHA256:e2d2ff9ce2dec348754edf977f911aac987a1d22723368571b26586870d50736.
+Wrapper: [chatbot-file-cohort-execute-terminal-vps-20261015.sh](chatbot-file-cohort-execute-terminal-vps-20261015.sh).
+SHA256: **4164ef0b48b9bd428b5e1b24f95c78c137ecb1f82284f603465d57538c25d343**.
+Sorgente eseguibile: **6959b1dbaeb30ca3a838c7d6243a55e9cfc5118a**.
+Launcher SHA256:2fae09635e3c8ba6770a267dcc512e143ce5cb4f89ca218ce396d64d9e6a1d77.
+Capsula SHA256:f9726cc181ecf6f6e5bc0ab9064e7114a1ec261f0f5284f5e8580996fce47755.
 
-Il wrapper conserva il launcher qualificato e i pin. Riusa lo ZIP locale già verificato; il client gh portatile esistente viene controllato prima di sudo. Rispetto al wrapper di sola preparazione cambia il commento esplicativo e viene omesso --prepare-only. Non sono modificati i sorgenti eseguibili e non serve una nuova qualificazione del prodotto: CI200 test/26 suite, frame completo con immagine reale e TLS sono gli stessi già acquisiti, più la preparazione completa target ora riuscita. Il wrapper è verificato per sintassi Bash e hash.
+Il wrapper riusa lo ZIP locale già verificato e controlla il client gh portatile prima di sudo. Punta esattamente alla correzione terminale qualificata. Sei sorgenti applicativi, immagini, frame runtime e scope dell'azione restano invariati. L'inclusione esplicita di termios nella closure permette la gestione della coda del terminale; non abilita import arbitrari. La CI del nuovo sorgente38687882912/job116266819989 è PASS:207 test,27 suite,nessuno saltato. Anche la run PR38687887477 e il verificatore HUMAN38687887549 sono PASS. La qualificazione è documentata nell'evidenza terminale; i test della composizione frame con immagine reale e del TLS Java restano quelli del sorgente951f91c, poiché questi percorsi non sono modificati. Il wrapper è verificato per sintassi Bash e hash.
 
 Il programma ricontrolla gli input correnti e produce una NUOVA review. Il ramo prepare-only ha terminato il refresh della sessione HUMAN: il vecchio hash è evidenza della preparazione, non un'autorizzazione riutilizzabile. Usare esclusivamente l'hash mostrato dal nuovo prompt:
 `APPROVO <hash mostrato nel terminale>`.
-Non inserirlo automaticamente, non usare l'hash b53cc4ba... per approvare una review diversa. È un requisito del preparatore in tools/chatbot_file_cohort/review.py, non un nuovo giro di permessi imposto dalla chat.
+Digitare APPROVO seguito da uno spazio e incollare il solo hash corrente è supportato. Non inserire la conferma automaticamente e non riusare gli hash precedenti b53cc4ba... o5cc4b24c... per approvare una review diversa. È un requisito del preparatore in tools/chatbot_file_cohort/review.py, non un nuovo giro di permessi imposto dalla chat.
 
 Prima di questa conferma il programma prepara la review; dopo può installare il cohort finito. L'azione comprende cinque sostituzioni applicative, backup/migrazioni previsti, Gateway e autorizzazioni IAM, owner policy-token e ritiro delle unità legacy. Se il piano lo richiede, sostituisce APISIX con la stessa immagine e la configurazione revisionata. Per MCP: ruolo audit NOLOGIN e privilegi temporanei selezionati, revocati prima dell'avvio. Nessun restore DB, replay delle claim consumate o rinnovo automatico del mandato.
 
@@ -51,3 +59,5 @@ B04 installazione effettiva: non avviata.
 B05 CSV Teatri dal chatbot e B06 seconda sorgente: aperti.
 
 Evidenze: [ricevuta target](../evidence/complete-target-preparation-20261015.json), [letture MCP prima dell'esecuzione](../evidence/chatbot-pre-execution-inputs-20261015.json), [correzione frame qualificata](FILE_ONLY_FRAME_GATE_FIX_20261015.md).
+
+[Evidenza del blocco terminale e qualificazione](../evidence/chatbot-human-terminal-fix-20261015.json).
