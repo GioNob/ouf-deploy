@@ -59,6 +59,12 @@ def main():
     if containerd:audit['nativeIdentity']=native_identity(audit)
     expected=runtime_image_id(audit)
     REPORT['nativeImageId']=expected
+    if SOURCE=='eccef11a97367f20e278db40b9ed6f45dd980c37':
+        audit_file=stage/'native-audit.json';audit_file.write_text(json.dumps(audit))
+        frame=subprocess.run([sys.executable,'-I','-B',str(ROOT/'tests/qualify_retained_registry_environment.py'),
+            str(parent),str(audit_file)],check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=45)
+        emit('EXACT_NATIVE_REGISTRY_FRAME_PASS',nativeImageId=expected,report=frame.stdout.decode().strip())
+        REPORT['exactNativeRegistryFullFramePass']=True
     if containerd and SOURCE=='eccef11a97367f20e278db40b9ed6f45dd980c37':
         assert expected=='sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3','EXACT_RECONCILED_TARGET_MANIFEST_REQUIRED'
     REPORT['archiveSha256']=audit['archiveSha256'];REPORT['archiveBytes']=target.stat().st_size

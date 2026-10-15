@@ -16,9 +16,16 @@ assert len(raw)<=2097152 and 'sha256:'+hashlib.sha256(raw).hexdigest()==record['
 config=json.loads(raw)['config']
 request,old,audit,tree,token,key,proposal=Preparation().retained_candidate(config)
 request['Image']=audit['imageId']=record['imageId']
+if len(sys.argv)==3:
+    from image_custody import runtime_image_id
+    audit=json.loads(Path(sys.argv[2]).read_text())
+    assert audit['imageId']==record['imageId'] and audit['imageConfig']==config
+    expected_native=runtime_image_id(audit)
+else:expected_native=record['imageId']
 result=prep.creation(request,{'retainedNativeCreationFrame':old},old,audit,tree,token,key,proposal,
     {'issuer':'gateway','audience':'semantic','workload':'ouf-semantic'})
 FileOnlyProfile(result,tree)
+assert result['Image']==expected_native
 # Exercise the same composed sequence as prepare_file_only_installation, not
 # only the standalone execution profile. Validation identities are discarded;
 # they do not become runtime observations or signing authority.
@@ -41,7 +48,7 @@ assert 'JAVA_TOOL_OPTIONS' not in env and 'OUF_SEM_DB_PASSWORD' not in env
 assert env['OUF_IAM_ENABLED']=='true' and all(env[k]=='false' for k in prep.FLAGS)
 (package/'compiled-registry-environment.json').write_text(json.dumps(env,sort_keys=True))
 print('OUF_EXACT_IMAGE_RETAINED_ENV_COMPILATION='+json.dumps({'status':'PASS',
-    'imageId':record['imageId'],'historicalCreationNames':31,'historicalNativeNames':19,
+    'imageId':record['imageId'],'nativeImageId':expected_native,'historicalCreationNames':31,'historicalNativeNames':19,
     'values':'DISPOSABLE_AND_PUBLIC_SOURCE_DERIVED_NOT_TARGET_VALUES',
     'fourMountProfileCompiled':True,'fourMountFramePolicyCompiled':True,'exactRuntimeGatePreserved':True,
     'contextIdentities':'VALIDATION_ONLY_DISCARDED_NOT_TARGET_OBSERVATIONS','unreviewedJvmOptionsAccepted':False,
