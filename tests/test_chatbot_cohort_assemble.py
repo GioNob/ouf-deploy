@@ -44,6 +44,14 @@ from tools.semantic_provider_deployment_authentication import DetachedAuthentica
 
 
 class CompleteActionAssembly(unittest.TestCase):
+    def test_complete_bundle_can_be_read_by_the_retained_history_reader(self):
+        from tools.chatbot_file_cohort.action_process import observed_private_json
+        compiled=self.assemble();binding=compiled['processPlan']['bundle'];path=Path(binding['path'])
+        self.assertGreater(path.stat().st_size,524288)
+        value,observed=observed_private_json(path,8388608)
+        self.assertEqual(observed,binding)
+        self.assertEqual(value['prepared'],json.loads(encoded(self.prepared)))
+
     def setUp(self):
         roots=custody_fixture.RootCustodyTest();roots.setUp();self.addCleanup(roots.doCleanups)
         self.roots=roots;self.f=roots.f.f
@@ -119,6 +127,7 @@ class CompleteActionAssembly(unittest.TestCase):
             'gatewayPlan':{'previousRuntimeHash':'1'*64,'proposedRuntimeHash':'2'*64,
                 'transportBinding':{'syntheticTargetObservation':True,'pythonExecutable':program},'proposalKeyBinding':{'sha256':'3'*64}},
             'authorization':{'plan':{'baseline':{'active':{'policyRef':'fixture','contentHash':'4'*64}},
+                'targetRoles':{'issuer':issuer,'roles':[],'assignments':[]},
                 'registrationAdditions':[],'addedDescriptors':[],'roleProposal':{},'scopeCreations':[],'scopeBindings':[]}},
             'imagePlan':{'schema':'ouf.chatbot-cohort-image-import-plan.v1','cohortManifestHash':'e'*64,
                 'images':[{'module':m} for m in ('semantic','udp','onboarding','ingestion','mcp')],

@@ -1,19 +1,23 @@
 name: Chatbot cohort delivery native owners
 on:
   push:
-    paths: ['tools/chatbot_file_cohort/**', 'scripts/install-chatbot-file-cohort.py', 'scripts/deliver-chatbot-file-cohort.py', 'tests/test_chatbot_cohort_*.py', '.github/workflows/chatbot-cohort-delivery.yml']
+    branches: [main]
+    paths: ['tools/semantic_policy_token_owner/**', 'tests/test_policy_token_*.py', 'tools/chatbot_file_cohort/**', 'scripts/install-chatbot-file-cohort.py', 'scripts/deliver-chatbot-file-cohort.py', 'tests/test_chatbot_cohort_*.py', '.github/workflows/chatbot-cohort-delivery.yml']
   pull_request:
-    paths: ['tools/chatbot_file_cohort/**', 'scripts/install-chatbot-file-cohort.py', 'scripts/deliver-chatbot-file-cohort.py', 'tests/test_chatbot_cohort_*.py', '.github/workflows/chatbot-cohort-delivery.yml']
+    paths: ['tools/semantic_policy_token_owner/**', 'tests/test_policy_token_*.py', 'tools/chatbot_file_cohort/**', 'scripts/install-chatbot-file-cohort.py', 'scripts/deliver-chatbot-file-cohort.py', 'tests/test_chatbot_cohort_*.py', '.github/workflows/chatbot-cohort-delivery.yml']
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 permissions: {contents: read}
 jobs:
   signed-native-delivery:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     services:
       postgres:
         image: postgres:17-alpine
         ports: ['5432:5432']
-        env: {POSTGRES_HOST_AUTH_METHOD: trust}
+        env: {POSTGRES_USER: postgres, POSTGRES_HOST_AUTH_METHOD: trust}
         options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 12
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -58,20 +62,62 @@ jobs:
           ref: f249b3dcc58c2a96742092d90fa09fd90b705bd0
           path: .pairwise/mcp
           persist-credentials: false
-      - name: Prepare native root custody fixture
+      - name: Compile the pinned owner GrantConstraints and Jackson round-trip fixture
+        run: |
+          set -euo pipefail
+          mvn -B -q -f tests/fixtures/owner-role-roundtrip/pom.xml org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath -Dmdep.outputFile="$GITHUB_WORKSPACE/.owner-roundtrip.classpath"
+          mkdir .owner-roundtrip-classes
+          javac -cp "$(cat .owner-roundtrip.classpath)" -d .owner-roundtrip-classes \
+            .pairwise/onboarding/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/{AuthorizationPolicy,PrincipalContext,ResourceContext}.java \
+            tests/fixtures/owner-role-roundtrip/OwnerConstraintRoundTrip.java
+      - name: Seal native root custody fixture
         run: |
           set -euo pipefail
           OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
           sudo mkdir -m 700 "$OUF_FIXTURE_ROOT"
           sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
           sudo chown -R root:root "$OUF_FIXTURE_ROOT"
+      - name: Retained attestation checkpoints and protected target readback
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
+          for suite in test_paused_workload_binding.py test_file_only_retained_checkpoint.py test_chatbot_cohort_attestation_checkpoint_readback.py; do
+            sudo python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p "$suite" -v
+          done
+      - name: Actual readonly token mount with installed signed owner and TLS introspection
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
+          sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_MOUNTS=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_mount_owner_integration.py -v
+      - name: Three-grant history, actual fourth TLS grant and complete v3 review compilation
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
+          sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" "$OUF_FIXTURE_ROOT/repository/.cohort-test-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_mounted_reprocessing.py -v
+      - name: Four preserved grants, fifth actual TLS grant and complete v4 review
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
+          sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" "$OUF_FIXTURE_ROOT/repository/.cohort-test-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_signed_reprocessing.py -v
       - name: Signed native journals, effects, revocation and reconciliation
         run: |
           set -euo pipefail
           OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
-          for suite in test_chatbot_cohort_runtime_layout.py test_chatbot_cohort_pg_diagnosis.py test_chatbot_cohort_delivery_launcher.py test_chatbot_cohort_package_custody.py test_chatbot_cohort_iam_session.py test_chatbot_cohort_assemble.py test_chatbot_cohort_entry.py test_file_only_output_custody.py test_file_only_preparation.py test_chatbot_cohort_target_selection.py test_chatbot_cohort_selected_config_custody.py test_chatbot_cohort_plan.py test_chatbot_cohort_preparation.py test_chatbot_cohort_containers.py test_chatbot_cohort_databases.py test_chatbot_cohort_gateway.py test_chatbot_cohort_gateway_runtime.py test_chatbot_cohort_authorization.py test_chatbot_cohort_human_session.py test_chatbot_cohort_closed_runtime.py; do
-            sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" "$OUF_FIXTURE_ROOT/repository/.cohort-test-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p "$suite" -v
+          for suite in test_chatbot_cohort_signed_recovery.py test_policy_token_legacy_retirement.py test_policy_token_owner_installation.py test_chatbot_cohort_pregrant_recovery.py test_chatbot_cohort_post_credential_recovery.py test_policy_token_postgrant_continuation.py test_policy_token_paused_continuation.py test_chatbot_cohort_paused_recovery.py test_chatbot_cohort_mounted_recovery.py test_chatbot_cohort_postgrant_recovery.py test_chatbot_cohort_postgrant_executor.py test_chatbot_cohort_postgrant_preparation.py test_chatbot_cohort_snapshot_reader.py test_chatbot_cohort_docker_contract.py test_chatbot_cohort_registry_readiness.py test_chatbot_cohort_runtime_layout.py test_chatbot_cohort_pg_diagnosis.py test_chatbot_cohort_delivery_launcher.py test_chatbot_cohort_package_custody.py test_chatbot_cohort_iam_session.py test_chatbot_cohort_terminal.py test_chatbot_cohort_predecessor.py test_chatbot_cohort_image_identity.py test_chatbot_cohort_process_native.py test_chatbot_cohort_assemble.py test_chatbot_cohort_entry.py test_file_only_output_custody.py test_file_only_preparation.py test_file_only_bridge_expectation.py test_gated_creation_plan.py test_chatbot_cohort_target_selection.py test_chatbot_cohort_selected_config_custody.py test_chatbot_cohort_plan.py test_chatbot_cohort_preparation.py test_chatbot_cohort_containers.py test_chatbot_cohort_databases.py test_chatbot_cohort_gateway.py test_chatbot_cohort_gateway_runtime.py test_chatbot_cohort_authorization.py test_chatbot_cohort_human_session.py test_chatbot_cohort_closed_runtime.py; do
+            sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" OUF_OWNER_JAVA_CLASSPATH="$OUF_FIXTURE_ROOT/repository/.owner-roundtrip-classes:$(cat .owner-roundtrip.classpath)" "$OUF_FIXTURE_ROOT/repository/.cohort-test-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p "$suite" -v
           done
+      - name: Real masked failed timer and shared legacy writer fence
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
+          sudo env OUF_NATIVE_SYSTEMD=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_pregrant_systemd_native.py -v
+      - name: Real paired CLI API observations and semantic schema marker preserve fixture
+        env:
+          OUF_PG_CID: ${{ job.services.postgres.id }}
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
+          sudo env OUF_NATIVE_SOCKETS=1 OUF_POSTGRES_CONTAINER_ID="$OUF_PG_CID" python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_inspection_native.py -v
       - name: Real four-database archives, full payload parsing and retained rows
         if: ${{ !cancelled() }}
         env:

@@ -90,6 +90,14 @@ class CredentialTransaction:
             'clientUuid':registration['id'],'operation':'FIRST_GOVERNED_CREDENTIAL_REESTABLISHMENT'}))
         self.name='policy-token-credential-transaction-'+self.operation+'.private.json'
         self.admin=SecretAdmin(registration['id'])
+    def receipt_schema(self):
+        if getattr(self,'pregrant_recovery',None) is not None:
+            binding.require(type(self.pregrant_recovery)is legacy.PregrantRecovery
+                and self.pregrant_recovery.post_credential
+                and self.scope.get('schema')=='ouf.policy-token-credential-reconciliation-scope.v1',
+                'TYPED_POST_CREDENTIAL_RECEIPT_REQUIRED')
+            return 'ouf.policy-token-credential-reconciliation-receipt.v1'
+        return 'ouf.policy-token-credential-transaction.v1'
     def guard(self):
         now=time.monotonic()
         binding.require(self.last_time<=now<self.admin.deadline,'CREDENTIAL_TRANSACTION_CLOCK_OR_DEADLINE')
@@ -117,6 +125,10 @@ class CredentialTransaction:
     def run(self):
         self.last_time=time.monotonic();self.admin.deadline=self.last_time+90
         self.guard()
+        if getattr(self,'pregrant_recovery',None) is not None:
+            binding.require(type(self.pregrant_recovery)is legacy.PregrantRecovery
+                and self.pregrant_recovery.post_credential,'TYPED_POST_CREDENTIAL_RECONCILIATION_REQUIRED')
+            return self.pregrant_recovery.credential(self)
         with binding.protected_parent()as evidence:
             retired=binding.decode(binding.read_member(evidence,self.retirement.name))
             binding.require(retired.get('operation')==self.retirement.operation and retired.get('scope')==self.retirement.scope

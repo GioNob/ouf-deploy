@@ -8,6 +8,53 @@ import copy,re
 from compile_creation_frame_policy import compile_policy as compile_files,canonical,path,require,environment
 from compile_semantic_proposal_frame_policy import receipt_key
 from file_only_profile import FileOnlyProfile
+from gated_creation_plan import ENTRY
+
+def private_bridge_namespace_name(request):
+    """A signed named-bridge creation asks Docker/runc for a fresh namespace.
+
+    SandboxKey identifies the live namespace after staging; it is not an OCI
+    request to join an existing namespace. Host/shared/container modes are not
+    covered by this profile and cannot silently inherit the fresh expectation.
+    """
+    host=request.get('HostConfig');net=request.get('NetworkingConfig')
+    require(type(host)is dict and type(net)is dict and type(net.get('EndpointsConfig'))is dict
+        and len(net['EndpointsConfig'])==1,'ONE_SIGNED_PRIVATE_BRIDGE_ENDPOINT_REQUIRED')
+    name,endpoint=next(iter(net['EndpointsConfig'].items()));mode=host.get('NetworkMode')
+    require(type(name)is str and type(endpoint)is dict and type(mode)is str
+        and mode in (name,endpoint.get('NetworkID'))and mode not in ('host','none','default','bridge')
+        and not mode.startswith('container:'),'EXPLICIT_SIGNED_PRIVATE_BRIDGE_REQUIRED')
+    return None
+
+def docker_bridge_environment(request):
+    """Derive Docker's Linux non-TTY default/override order from signed input.
+
+    PATH and HOSTNAME are default slots, then configured entries replace those
+    slots or append in request order. No observed OCI/environment is an input.
+    This closed profile already carries its audited image PATH explicitly.
+    """
+    require(type(request.get('HostConfig'))is dict,'EXPLICIT_DOCKER_HOST_CONFIGURATION_REQUIRED')
+    require(request.get('Tty',False)is False and request.get('Hostname')in(None,'')
+        and request.get('Domainname')in(None,'')and not request['HostConfig'].get('Links'),
+        'BOUNDED_NONTTY_UNLINKED_DOCKER_ENVIRONMENT_REQUIRED')
+    values=environment(request.get('Env'))
+    require('PATH'in values and bool(values['PATH'])and 'HOSTNAME'not in values,
+        'EXPLICIT_IMAGE_PATH_AND_DOCKER_HOSTNAME_REQUIRED')
+    return ['PATH='+values['PATH'],'HOSTNAME=$OUF_HOSTNAME']+[row for row in request['Env']if row.split('=',1)[0]!='PATH']
+
+def recompile_bridge_proposal(template,launch,request):
+    """Rebuild only expected environment slots from the unchanged launch intent.
+
+    Useful for a new, explicitly reviewed proposal over retained inputs. This
+    never overwrites their files, transforms observed OCI or grants acceptance.
+    """
+    template,launch=copy.deepcopy(template),copy.deepcopy(launch)
+    wanted={**environment(request['Env']),'HOSTNAME':'$OUF_HOSTNAME'}
+    require(environment(template['expectedOci']['process']['env'])==wanted
+        and environment(launch['startup']['env'])==wanted,'RETAINED_FRAME_ENVIRONMENT_VALUE_DRIFT')
+    ordered=docker_bridge_environment(request)
+    template['expectedOci']['process']['env']=copy.deepcopy(ordered);launch['startup']['env']=copy.deepcopy(ordered)
+    return template,launch
 
 def compile_policy(template,launch,context,*,execution_profile,renewable_token,delegation_key_metadata_hash,proposal_receipt_key):
     require(type(execution_profile) is FileOnlyProfile,'EXACT_TYPED_FILE_ONLY_FRAME_PROFILE_REQUIRED')
@@ -57,12 +104,35 @@ def compile_policy(template,launch,context,*,execution_profile,renewable_token,d
     full_mounts=copy.deepcopy(mounts);directory_targets={d['target'] for d in dirs}
     template['expectedOci']['mounts']=[m for m in mounts if m.get('destination') not in directory_targets]
     launch['manifest']['mounts']=bindings[:2]
+    # ENTRY is an exact, already validated runtime shell program. Its literal
+    # $OUF_APPLICATION_GATE is not a Docker template slot. Project only the two
+    # authenticated argv fields while the unchanged generic compiler resolves
+    # and rejects template slots everywhere else; never rewrite the shell text.
+    full_args=copy.deepcopy(launch['startup']['args'])
+    gated=execution_profile.request['Entrypoint']==ENTRY
+    if gated:
+        require(template['expectedOci']['process'].get('args')==full_args,
+            'FILE_ONLY_FRAME_AND_SIGNED_LAUNCH_DRIFT')
+        application_args=copy.deepcopy(execution_profile.request['Cmd'])
+        template['expectedOci']['process']['args']=copy.deepcopy(application_args)
+        launch['startup']['args']=copy.deepcopy(application_args)
     result=compile_files(template,launch,context)
+    if gated:
+        result['expectedOci']['process']['args']=copy.deepcopy(full_args)
+        result['startup']['args']=copy.deepcopy(full_args)
     resolved=result['expectedOci']['mounts'];by_target={m['destination']:m for m in resolved}
     result['expectedOci']['mounts']=[copy.deepcopy(m) if m.get('destination') in directory_targets else by_target[m['destination']] for m in full_mounts]
     result.update(schema=('ouf.semantic-configured-file-only-four-mount-frame-policy.v2-proposal' if deferred
         else 'ouf.semantic-configured-file-only-four-mount-frame-policy.v1'),executionProfileHash=profile_hash,
         manifest=original['manifest'],configtree=copy.deepcopy(tree),renewableToken=copy.deepcopy(renewable_token),
         delegationKeyTarget=key['target'],delegationKeyMetadataHash=delegation_key_metadata_hash,proposalReceiptKey=receipt)
-    require(b'$OUF_' not in canonical(result) and len(canonical(result))<=131072,'UNRESOLVED_OR_UNBOUNDED_FILE_ONLY_FRAME')
+    checked=copy.deepcopy(result)
+    if gated:
+        # Only these two complete, exact signed argv lists are excluded from
+        # slot scanning. A matching string in ENV, paths, hooks or metadata is
+        # still rejected, including directory inputs restored after projection.
+        for process in (checked['expectedOci']['process'],checked['startup']):
+            require(process['args']==full_args,'FILE_ONLY_GATE_COMMAND_DRIFT')
+            process['args']=copy.deepcopy(application_args)
+    require(b'$OUF_' not in canonical(checked) and len(canonical(result))<=131072,'UNRESOLVED_OR_UNBOUNDED_FILE_ONLY_FRAME')
     return result

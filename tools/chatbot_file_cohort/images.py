@@ -6,7 +6,7 @@ from pathlib import Path
 import stat
 import subprocess
 
-from image_custody import archive, tagless_archive, loaded
+from image_custody import archive, tagless_archive, loaded, native_identity, runtime_image_id, unbound_audit
 from image_import import Import
 from engine_creation import Engine
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
@@ -33,12 +33,27 @@ def private_open(path, maximum=2147483648):
         raise
 
 
-def prepare_imports(package_directory, manifest, output_directory):
+def engine_image_profile(engine):
+    code,info=engine.request('GET','/v1.44/info')
+    require(code==200 and type(info)is dict,'CURRENT_NATIVE_IMAGE_STORE_REQUIRED')
+    status=info.get('DriverStatus') or []
+    require(type(status)is list and all(type(row)is list and len(row)==2 for row in status),
+            'NATIVE_IMAGE_STORE_PROFILE_REQUIRED')
+    containerd=info.get('Driver')=='overlayfs' and dict(status).get('driver-type')=='io.containerd.snapshotter.v1'
+    classic=info.get('Driver')=='overlay2' and dict(status).get('driver-type')!='io.containerd.snapshotter.v1'
+    require(containerd or classic,'QUALIFIED_NATIVE_IMAGE_STORE_REQUIRED')
+    return {'profile':'CONTAINERD_MANIFEST' if containerd else 'CLASSIC_CONFIG',
+        **{k:info.get(k) for k in ('ServerVersion','Driver','DriverStatus','CgroupDriver')}}
+
+
+def prepare_imports(package_directory, manifest, output_directory, *, engine=None):
     """Private preparation only; no Docker load or daemon mutation."""
     package_directory, output_directory = Path(package_directory), Path(output_directory)
     rows = {r['module']:r for r in manifest['modules']}
     require(set(rows) == {'semantic','gateway',*MODULES}, 'ONE_COMPLETE_PACKAGE_REQUIRED')
     planned = []
+    native_profile=engine_image_profile(engine) if engine is not None else None
+    containerd=native_profile is not None and native_profile['profile']=='CONTAINERD_MANIFEST'
     with protected_directory(output_directory) as output:
         for module in IMAGE_MODULES:
             record = rows[module]
@@ -51,17 +66,20 @@ def prepare_imports(package_directory, manifest, output_directory):
                 original = archive(raw, record['files']['image.docker.tar'], record['imageId'], record['sourceCommit'])
                 fd = os.open(destination.name, os.O_RDWR|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW, 0o600, dir_fd=output)
                 with os.fdopen(fd, 'w+b') as derived:
-                    derivation = tagless_archive(raw, derived, original)
+                    derivation = tagless_archive(raw, derived, original,containerd=containerd)
                     os.fsync(derived.fileno())
                     audit = archive(derived, derivation['derivedArchiveSha256'], record['imageId'], record['sourceCommit'])
             require(not audit['repositoryTags'], 'TAG_MUTATION_NOT_AUTHORIZED')
+            if containerd:audit['nativeIdentity']=native_identity(audit)
             planned.append({'module':module, 'archivePath':str(destination), 'audit':audit,
                 'originalArchiveSha256':original['archiveSha256'],
                 'modulePackageHash':digest({k:v for k,v in record.items() if k != 'files'})})
         os.fsync(output)
-    return {'schema':'ouf.chatbot-cohort-image-import-plan.v1', 'cohortManifestHash':digest(manifest),
+    result={'schema':'ouf.chatbot-cohort-image-import-plan.v1', 'cohortManifestHash':digest(manifest),
         'images':planned, 'maximumImportSecondsPerImage':180, 'maximumImportAttemptsPerImage':1,
         'retagAllowed':False, 'automaticReplayAllowed':False, 'runtimeAuthorityIssued':False}
+    if native_profile is not None:result['nativeEngineProfile']=native_profile
+    return result
 
 
 def image_import_scope(plan):
@@ -89,6 +107,8 @@ class CohortImages:
         require(image_import_scope(self.plan) == self.scope, 'IMAGE_IMPORT_INTENT_DRIFT')
         self.action.guard('cohortImageImport', self.scope)
         self.engine.check_socket()
+        if 'nativeEngineProfile' in self.plan:
+            require(engine_image_profile(self.engine)==self.plan['nativeEngineProfile'],'NATIVE_IMAGE_STORE_CHANGED')
         path = Path(self.docker['path']); info = path.lstat()
         require(path.is_absolute() and stat.S_ISREG(info.st_mode) and info.st_uid == 0
                 and not info.st_mode & 0o022 and hashlib.sha256(path.read_bytes()).hexdigest() == self.docker['sha256'],
@@ -109,7 +129,7 @@ class CohortImages:
     def load(self, row):
         self.guard()
         with private_open(row['archivePath']) as source:
-            require(archive(source,row['audit']['archiveSha256'],row['audit']['imageId'],row['audit']['sourceCommit']) == row['audit'],
+            require(archive(source,row['audit']['archiveSha256'],row['audit']['imageId'],row['audit']['sourceCommit']) == unbound_audit(row['audit']),
                     'CURRENT_IMAGE_ARCHIVE_CUSTODY_DRIFT')
             require(not row['audit']['repositoryTags'], 'TAG_MUTATION_NOT_AUTHORIZED')
             source.seek(0)
@@ -135,7 +155,7 @@ class CohortImages:
                 elif state['state'] == 'IN_FLIGHT':
                     proof = owner.reconcile(row['audit'],self.inspect,self.guard)
                 else:
-                    proof = loaded(row['audit'],self.inspect(row['audit']['imageId']))
+                    proof = loaded(row['audit'],self.inspect(runtime_image_id(row['audit'])))
                     require(digest(proof) == state['nativeEvidenceHash'], 'VERIFIED_IMAGE_EVIDENCE_DRIFT')
                 evidence.append({'module':row['module'],'evidenceHash':digest(proof)})
         return {'schema':'ouf.chatbot-cohort-image-import-receipt.v1','planHash':digest(self.plan),

@@ -330,6 +330,18 @@ class OwnerTransport:
         return {'active':active,'roles':roles,'registrations':registrations,'oauth':oauth}
 
 
+def owner_permission_constraints(resource, attributes, detail_levels=None):
+    """Exact GrantConstraints JSON emitted by the qualified Java owner.
+
+    Complete newly proposed permissions before signing. Historical catalogue
+    entries and strict catalogue equality remain unchanged.
+    """
+    return {'effect':'ALLOW','externalRoleRef':None,'resourceType':resource,'resourceId':None,
+        'resourceAttributes':copy.deepcopy(attributes),'allowedDataLabels':[],
+        'allowedDetailLevels':list(detail_levels or []),'requiredAcr':None,
+        'requiredAmr':[],'maxAuthenticationAgeSeconds':None}
+
+
 def compile_plan(observed, primitives, selection, *, role_id='admin', include_ingestion_status=True, now=None, session_binding=None):
     require(type(primitives) is OwnerPrimitives, 'QUALIFIED_EXISTING_OWNER_PRIMITIVES_REQUIRED')
     active, roles = observed['active'], observed['roles']
@@ -349,15 +361,15 @@ def compile_plan(observed, primitives, selection, *, role_id='admin', include_in
     caps = {c['capabilityId']:c for c in active['policy']['capabilities']}
     additions = []
     for cap, (_, _, resource) in NEW.items():
-        additions.append({'capabilityId':cap,'constraints':{'effect':'ALLOW','resourceType':resource,
-            'resourceAttributes':{'module':'SEMANTIC'} if resource == 'semantic.proposalcommand' else {}}})
+        additions.append({'capabilityId':cap,'constraints':owner_permission_constraints(resource,
+            {'module':'SEMANTIC'} if resource == 'semantic.proposalcommand' else {})})
     if include_ingestion_status:
         cap = 'ingestion.operations.read'; registered = observed['registrations'].get(cap)
         require(registered is not None and registered['descriptor'] == caps.get(cap)
                 and caps[cap]['operation'] == 'READ' and caps[cap]['requiredScope'] == cap
                 and 'HUMAN' in caps[cap]['allowedActors'], 'EXISTING_INGESTION_STATUS_DESCRIPTOR_UNPROVEN')
-        additions.append({'capabilityId':cap,'constraints':{'effect':'ALLOW','resourceType':'operational',
-            'resourceAttributes':{'module':'INGESTION'},'allowedDetailLevels':['TENANT_OPERATIONAL']}})
+        additions.append({'capabilityId':cap,'constraints':owner_permission_constraints('operational',
+            {'module':'INGESTION'},['TENANT_OPERATIONAL'])})
     target_roles = copy.deepcopy(roles)
     target = next(r for r in target_roles['roles'] if r['roleId'] == role_id)
     existing = {p['capabilityId']:p for p in target['permissions']}
@@ -664,6 +676,9 @@ class AuthorizationDelta:
                     return self.transport.tool('authorization.permissions.propose',self.plan['roleProposal'],key)
                 receipt = self.effect('role-proposal',propose_roles,
                                       read_proposal,retry_idempotent=True)
+                if receipt['state'] in ('EXPIRED','REJECTED'):
+                    raise AuthorizationPaused('HUMAN_OWNER_ROLE_PROPOSAL_'+receipt['state'],
+                        proposalId=receipt['proposalId'],expiresAt=receipt['expiresAt'],state=receipt['state'])
                 if receipt['state'] != 'PUBLISHED':
                     raise AuthorizationPaused('HUMAN_OWNER_ROLE_CONFIRMATION_REQUIRED',proposalId=receipt['proposalId'],
                         approvalPath=receipt['approvalPath'],expiresAt=receipt['expiresAt'],state=receipt['state'])

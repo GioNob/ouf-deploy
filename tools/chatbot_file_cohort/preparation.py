@@ -194,7 +194,9 @@ def prepare_cohort(engine, package_directory, manifest, image_import_plan, postg
         require(audits[module]['modulePackageHash'] == digest(packages[module]), 'IMAGE_AUDIT_PACKAGE_DRIFT')
         audit = audits[module]['audit']
         observed[module] = actual
-        images[module] = {'Id':audit['imageId'],'Config':copy.deepcopy(audit['imageConfig'])}
+        from image_custody import runtime_image_id
+        images[module] = {'Id':runtime_image_id(audit),'Config':copy.deepcopy(audit['imageConfig'])}
+        if 'nativeIdentity' in audit:images[module]['archiveAudit']=copy.deepcopy(audit)
         bindings[module] = database_binding(module,actual,pg,ths_binding if module == 'onboarding' else None,
                                             ingestion_binding if module == 'ingestion' else None)
         migrations[module] = packaged_migrations(package_directory,records[module])

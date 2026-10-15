@@ -1,5 +1,4 @@
 {
-  "schema": "ouf.chatbot-file-preparation-source-paths.v1",
   "files": [
     "releases/chatbot-existing-cinema-baseline-20261014.json",
     "scripts/install-chatbot-file-cohort.py",
@@ -9,6 +8,7 @@
     "tools/chatbot_file_cohort/authorization.py",
     "tools/chatbot_file_cohort/child_bootstrap.py",
     "tools/chatbot_file_cohort/containers.py",
+    "tools/chatbot_file_cohort/continued_owner.py",
     "tools/chatbot_file_cohort/databases.py",
     "tools/chatbot_file_cohort/delivery.py",
     "tools/chatbot_file_cohort/entry.py",
@@ -18,12 +18,17 @@
     "tools/chatbot_file_cohort/human_session.py",
     "tools/chatbot_file_cohort/iam_session.py",
     "tools/chatbot_file_cohort/images.py",
+    "tools/chatbot_file_cohort/mounted_recovery.py",
     "tools/chatbot_file_cohort/owner_preparation.py",
     "tools/chatbot_file_cohort/package_custody.py",
+    "tools/chatbot_file_cohort/paused_recovery.py",
     "tools/chatbot_file_cohort/plan.py",
+    "tools/chatbot_file_cohort/postgrant_preparation.py",
+    "tools/chatbot_file_cohort/postgrant_recovery.py",
     "tools/chatbot_file_cohort/preparation.py",
     "tools/chatbot_file_cohort/review.py",
     "tools/chatbot_file_cohort/runtime.py",
+    "tools/chatbot_file_cohort/signed_recovery.py",
     "tools/chatbot_file_cohort/source_paths.json",
     "tools/chatbot_file_cohort/target_selection.py",
     "tools/semantic_application_cutover/application_verification_adapter.py",
@@ -113,5 +118,6 @@
     "tools/semantic_policy_token_owner/supervisor.py",
     "tools/semantic_policy_token_owner/worker_entry.py",
     "tools/semantic_target_review/prepare_application_runtime_inputs.py"
-  ]
+  ],
+  "schema": "ouf.chatbot-file-preparation-source-paths.v1"
 }

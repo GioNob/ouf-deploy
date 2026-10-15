@@ -54,7 +54,8 @@ class AggregateAction:
 
 
 def finite_worker_scope(logical_scope, first_operation, first_scope_hash, policy,
-                        context_ref, generation_ref, interval_seconds):
+                        context_ref, generation_ref, interval_seconds, *, predecessor_attempts=1,
+                        cancelled_worker_hash=None, predecessor_session_hash=None):
     evidence.require(type(policy) is Policy and 1 <= policy.max_attempts <= 128
                      and 1 <= policy.max_elapsed <= 3600 and 1 <= interval_seconds <= 3600,
                      'REVIEWED_FINITE_WORKER_WITHIN_HUMAN_WINDOW_REQUIRED')
@@ -62,7 +63,15 @@ def finite_worker_scope(logical_scope, first_operation, first_scope_hash, policy
         evidence.require(type(value) is str and len(value) == 64
                          and all(c in '0123456789abcdef' for c in value),
                          'EXACT_WORKER_HISTORY_AND_GENERATION_BINDINGS_REQUIRED')
-    return {'schema': 'ouf.policy-token-new-finite-worker-session.v1',
+    evidence.require(predecessor_attempts in (1,2,3,4) and type(predecessor_attempts)is int,'EXACT_CONTROLLED_PREDECESSOR_COUNT_REQUIRED')
+    extra={}
+    if predecessor_attempts in(2,3,4):
+        evidence.require(all(type(v)is str and len(v)==64 and all(c in '0123456789abcdef'for c in v)for v in(cancelled_worker_hash,predecessor_session_hash)),
+            'EXACT_CANCELLED_WORKER_AND_SESSION_HISTORY_REQUIRED')
+        extra={'controlledHistoryProfile':'ouf.policy-token-cancelled-worker-continuation.v1','predecessorCancelledWorkerHash':cancelled_worker_hash,
+            'predecessorWorkerSessionHash':predecessor_session_hash}
+    else:evidence.require(cancelled_worker_hash is None and predecessor_session_hash is None,'LEGACY_SESSION_CANNOT_HIDE_ADDITIONAL_HISTORY')
+    return {'schema': 'ouf.policy-token-new-finite-worker-session.v'+str(predecessor_attempts),**extra,
             'logicalOwnerScopeHash': logical_scope, 'predecessorFirstGrantOperation': first_operation,
             'predecessorFirstGrantScopeHash': first_scope_hash,
             'operation': 'OPEN_NEW_FINITE_WORKER_SESSION_AFTER_RECONCILED_FIRST_GRANT',
@@ -70,7 +79,7 @@ def finite_worker_scope(logical_scope, first_operation, first_scope_hash, policy
             'policy': json.loads(evidence.encoded(dataclasses.asdict(policy))),
             'intervalSeconds': interval_seconds,
             'legacyHistoryDisposition': 'UNKNOWN_RETAINED_NOT_RECONCILED',
-            'predecessorGrantAttempts': 1, 'automaticBudgetRenewalAllowed': False,
+            'predecessorGrantAttempts': predecessor_attempts, 'automaticBudgetRenewalAllowed': False,
             'consumedClaimReplayAllowed': False}
 
 class OwnerInstallation:
@@ -84,7 +93,7 @@ class OwnerInstallation:
     def __init__(self, action, host_raw, root_evidence_hash, root_source_hash,
                  registration, binding, profile, transport, source_commit,
                  stage_files, policy, context_ref, generation_ref, interval_seconds,
-                 clock=lambda: (time.time(), time.monotonic())):
+                 clock=lambda: (time.time(), time.monotonic()), *, pregrant_recovery=None,renewal_actor=None):
         evidence.require(type(action) is AggregateAction and type(binding) is Binding
                          and type(profile) is IamProfile and type(transport) is PinnedIamOpener,
                          'CONCRETE_AGGREGATE_OWNER_COMPONENTS_REQUIRED')
@@ -99,6 +108,12 @@ class OwnerInstallation:
         self.first = first_grant.FirstControlledGrant.from_completed_custody(
             action.authority, action.raw, host_raw, root_evidence_hash, root_source_hash,
             registration, binding, profile, transport, None, clock, output_custody=self.output)
+        self.pregrant_recovery=None
+        if pregrant_recovery is not None:
+            self.pregrant_recovery=roots.legacy.PregrantRecovery(action.authority,action.raw,pregrant_recovery)
+            self.pregrant_recovery.configure(self.output,self.first.transaction.retirement)
+            self.pregrant_recovery.configure_first(self.first,renewal_actor)
+            self.first.scope['outputCustodyScopeHash']=fingerprint(self.output.scope)
         self.policy, self.context, self.generation, self.interval = policy, context_ref, generation_ref, interval_seconds
         self.worker_scope = finite_worker_scope(self.first.session.scope['logicalOwnerScopeHash'],
             self.first.session.operation, fingerprint(self.first.scope), policy,
@@ -130,6 +145,10 @@ class OwnerInstallation:
         self.operation = fingerprint({'logicalOwnerScopeHash': self.worker_scope['logicalOwnerScopeHash'],
                                       'operation': 'FIRST_COMPLETE_TOKEN_OWNER_INSTALLATION'})
         self.intent_name = 'policy-token-owner-installation-'+self.operation+'.private.json'
+        if self.pregrant_recovery is not None:
+            self.scope['pregrantRecovery']=copy.deepcopy(self.pregrant_recovery.proof)
+            self.pregrant_recovery.owner_scope=copy.deepcopy(self.scope)
+            self.intent_name=self.pregrant_recovery.continuation
 
     def scopes(self):
         return {'policyTokenOwnerInstallation': copy.deepcopy(self.scope),
@@ -165,6 +184,8 @@ class OwnerInstallation:
 
     def install(self):
         self.guard()
+        if self.pregrant_recovery is not None:
+            self.pregrant_recovery.admit()
         with evidence.protected_parent() as directory:
             lock=os.open(self.intent_name+'.lock',os.O_RDWR|os.O_CREAT|os.O_NOFOLLOW|os.O_NONBLOCK,0o600,dir_fd=directory)
             try:
@@ -196,6 +217,9 @@ class OwnerInstallation:
                 self.first.prepare_output()
                 guarded()
                 ProtectedTokenSourceStage(self.manifest,self.files,self.action.authority,self.action.raw).stage()
+                guarded()
+                if self.pregrant_recovery is not None:
+                    self.pregrant_recovery.prepare_credential(self.first)
                 guarded()
                 receipt=self.first.migrate()
                 guarded()

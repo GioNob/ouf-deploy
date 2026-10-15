@@ -94,8 +94,11 @@ def host_config_matches(expected, actual):
     a missing key or another type is never accepted as this default. The native
     dictionaries and their signed/generation hashes are never rewritten.
     """
+    # Keep this pure planner independently importable. The owner Engine uses
+    # the same narrowly tested empty-spec and OOM comparisons.
     if type(expected) is not dict or type(actual) is not dict:return False
     for key,value in expected.items():
+        if key=='Mounts' and type(value)is list and not value and actual.get(key)is None:continue
         if key=='OomKillDisable':
             if key not in actual:return False
             current=actual[key]
@@ -111,9 +114,16 @@ def compile_replacement(module, old, image, package, cohort_id, env_changes):
             'EXACT_COHORT_MODULE_AND_ID_REQUIRED')
     require(old.get('Name') == '/ouf-'+module, 'SELECTED_CONTAINER_NAME_DRIFT')
     pin = runtime_pin(old)
+    package_image=image.get('Id')
+    if 'archiveAudit' in image:
+        from image_custody import runtime_image_id
+        audit=image['archiveAudit']
+        require(runtime_image_id(audit)==image.get('Id') and audit['sourceCommit']==package.get('sourceCommit')
+                and audit['imageConfig']==image.get('Config'),'EXACT_PACKAGE_NATIVE_IMAGE_BINDING_REQUIRED')
+        package_image=audit['imageId']
     require(package.get('module') == module and COMMIT.fullmatch(package.get('sourceCommit', ''))
             and package.get('artifactKind') == 'DOCKER_SAVE'
-            and package.get('imageId') == image.get('Id')
+            and package.get('imageId') == package_image
             and IMAGE.fullmatch(image.get('Id', '')) is not None
             and package.get('scanGate') == 'PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED',
             'EXACT_QUALIFIED_IMAGE_PACKAGE_REQUIRED')

@@ -12,13 +12,37 @@ import test_cutover_authority_native as fixtures
 import legacy_retirement as retirement
 binding=retirement.binding
 
+class StandaloneRetirementImport(unittest.TestCase):
+    def test_component_imports_without_repository_package_namespace(self):
+        script="""
+import sys,types
+from pathlib import Path
+root=Path(sys.argv[1])
+sys.path[:0]=[str(root/'tools/semantic_policy_token_owner'),str(root/'tools/semantic_application_cutover'),
+    str(root/'tools/semantic_cohort_admission/cohort-draft')]
+package=types.ModuleType('tools');package.__path__=[str(root/'tools/semantic_cohort_admission/cohort-draft/tools')]
+sys.modules['tools']=package
+class StandaloneBoundary:
+    def find_spec(self,fullname,path=None,target=None):
+        if fullname=='tools.semantic_policy_token_owner' or fullname.startswith('tools.semantic_policy_token_owner.'):
+            raise ModuleNotFoundError('standalone retirement has no worker package')
+sys.meta_path.insert(0,StandaloneBoundary())
+import legacy_retirement
+assert legacy_retirement.PregrantRecovery.__module__=='legacy_retirement'
+"""
+        result=subprocess.run([sys.executable,'-I','-B','-S','-c',script,
+            str(ROOT)],stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,timeout=15)
+        self.assertEqual(result.returncode,0,result.stderr.decode())
+
 class RetirementTest(unittest.TestCase):
     def setUp(self):
         self.f=fixtures.SignedCutover();self.f.setUp();self.addCleanup(self.f.doCleanups)
         p=patch.object(retirement,'subprocess',types.SimpleNamespace(run=subprocess.run,DEVNULL=subprocess.DEVNULL));p.start();self.addCleanup(p.stop)
         self.before={u:{'Id':u,'LoadState':'loaded','ActiveState':'active' if u.endswith('.timer')else 'inactive',
+            'SubState':'waiting' if u.endswith('.timer')else 'dead','Job':'',
             'UnitFileState':'enabled' if u.endswith('.timer')else 'static','MainPID':'0'}for u in retirement.UNITS}
-        self.after={u:{**r,'LoadState':'masked','ActiveState':'inactive','UnitFileState':'masked'}for u,r in self.before.items()}
+        self.after={u:{**r,'LoadState':'masked','ActiveState':'inactive','SubState':'dead','UnitFileState':'masked'}for u,r in self.before.items()}
         self.host={'schema':'ouf.policy-token-migration-host-inputs.v1','logicalOwnerScopeHash':'f'*64,
             'legacyHistory':{'state':'UNKNOWN','cumulativeGrantAttemptCount':None,'reconciled':False,'gapRemainsOpen':True},
             'runtimeAuthorityIssued':False,'legacyUnitsMetadata':list(self.before.values()),'kernelBootId':'fixture-boot',
@@ -97,7 +121,7 @@ class RetirementTest(unittest.TestCase):
     def test_metadata_reader_rejects_duplicate_units(self):
         def command(argv,**kw):
             self.assertEqual(argv[1],'show')
-            row='Id='+retirement.UNITS[0]+'\nLoadState=masked\nActiveState=inactive\nUnitFileState=masked\n'
+            row='Id='+retirement.UNITS[0]+'\nLoadState=masked\nActiveState=inactive\nSubState=dead\nJob=\nUnitFileState=masked\n'
             kw['stdout'].write((row+'\n'+row).encode())
             return subprocess.CompletedProcess(argv,0)
         with patch.object(retirement.subprocess,'run',side_effect=command):
@@ -113,3 +137,4 @@ class RetirementTest(unittest.TestCase):
             with self.assertRaisesRegex(binding.CandidateDenied,'BOOT_CHANGED'):self.action().run()
 
 if __name__=='__main__':unittest.main()
+

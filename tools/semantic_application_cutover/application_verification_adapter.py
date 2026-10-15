@@ -4,13 +4,28 @@ Health is not authorization or CSV acceptance. The reviewed image retains IAM,
 consultation and THS; this phase proves its running generation, exact completed
 Flyway history and bounded readiness response before other producers resume.
 """
-import copy,http.client,ipaddress,json
+import copy,http.client,ipaddress,json,time
+from email.utils import parsedate_to_datetime
 from database_gate import Psql,identifier,GateDenied
 from engine_creation import Engine
 from native_evidence_store import NativeEvidenceStore
 from transition_journal import digest,hash_value,require
 
 PHASE='VERIFY_APPLICATION'
+
+def retry_after_delay(value,now):
+    if value is None:return 0
+    require(type(value)is str and 0<len(value)<=128,'APPLICATION_READINESS_RETRY_AFTER_INVALID')
+    if value.isascii() and value.isdecimal():
+        require(len(value)<=10,'APPLICATION_READINESS_RETRY_AFTER_INVALID')
+        return int(value)
+    try:
+        date=parsedate_to_datetime(value)
+        require(date.tzinfo is not None,'APPLICATION_READINESS_RETRY_AFTER_INVALID')
+        return max(0,date.timestamp()-now)
+    except (ValueError,TypeError,OverflowError):
+        raise ValueError('APPLICATION_READINESS_RETRY_AFTER_INVALID') from None
+
 
 class ApplicationReadinessChannel:
     """Lazy local database channel and direct, bounded container health GET.
@@ -45,12 +60,14 @@ class ApplicationReadinessChannel:
                 and digest(rows)==s['flywayHistoryHash'],'CURRENT_APPLICATION_MIGRATION_HISTORY_UNPROVEN')
         self.exact();return {'databaseScopeHash':digest(value),'flywayHistoryHash':digest(rows),'migrationCount':len(rows)}
     def health(self):
-        self.exact();s=self.scope['health'];client=http.client.HTTPConnection(s['address'],s['port'],timeout=s['timeoutSeconds'])
+        self.exact();self.retry_after_seconds=0;s=self.scope['health'];client=http.client.HTTPConnection(s['address'],s['port'],timeout=s['timeoutSeconds'])
         try:
             client.request('GET',s['path'],headers={'Accept':'application/json','Connection':'close'})
             reply=client.getresponse();raw=reply.read(65537)
             require(len(raw)<=65536,'BOUNDED_APPLICATION_HEALTH_RESPONSE_REQUIRED')
-            if reply.status in (502,503,504):return None
+            if reply.status in (502,503,504):
+                self.retry_after_seconds=retry_after_delay(reply.getheader('Retry-After'),time.time())
+                return None
             require(reply.status==200,'APPLICATION_HEALTH_HTTP_UNPROVEN')
             try:value=json.loads(raw)
             except ValueError:raise ValueError('APPLICATION_HEALTH_JSON_UNPROVEN') from None

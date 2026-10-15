@@ -109,6 +109,11 @@ class DomainOwner(ABC):
     def prepare(self, binding_hash, deadline): pass
     @abstractmethod
     def admit(self, token, valid_until_monotonic, binding_hash, deadline): pass
+    def admit_mounted(self, token, minimum_remaining, binding_hash, deadline):
+        # A mount observer has no grant receipt and cannot invent a token
+        # lifetime from its own I/O deadline. Only a concrete owner with a
+        # current, durable publication window can implement this witness.
+        raise Permanent('INTEGRITY_UNPROVEN')
     @abstractmethod
     def pause(self): pass
 

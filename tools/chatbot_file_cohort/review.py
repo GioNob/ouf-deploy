@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 import stat
 import subprocess
+import termios
 import time
 
 import iam_binding_candidate as evidence
@@ -25,6 +26,8 @@ from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 
 DECISION = 'APPROVE_ONE_FINITE_CHATBOT_FILE_COHORT_ACTION'
 SCHEMA = 'ouf.chatbot-file-cohort-full-action-review.v1'
+TERMINAL_ATTEMPTS = 3
+PASTE_START, PASTE_END = b'\x1b[200~', b'\x1b[201~'
 REQUIRED_SCOPES = frozenset({
     'policyTokenOwnerInstallation', 'policyTokenOutputCustody',
     'policyTokenLegacyRetirement', 'policyTokenCredentialReestablishment',
@@ -92,9 +95,17 @@ def compile_review(*, source_closure, execution_profile, scopes, phase_intents,
     require(type(maximum_seconds) is int and 1 <= maximum_seconds <= 3600,
             'FINITE_HUMAN_ACCEPTANCE_WINDOW_REQUIRED')
     worker = scopes['policyTokenFiniteWorkerSession']
+    recovery=scopes['applicationRegistryCutover'].get('postGrantRecovery')
+    paused=type(recovery)is dict and recovery.get('profile')in('ouf.chatbot-paused-unsigned-attestation-reprocessing.v1','ouf.chatbot-paused-unsigned-attestation-reprocessing.v2','ouf.chatbot-signed-paused-admission-reprocessing.v1')
+    prior=4 if paused and recovery['profile']=='ouf.chatbot-signed-paused-admission-reprocessing.v1'else(3 if paused and recovery['profile'].endswith('.v2')else(2 if paused else 1))
+    if paused:
+        require(worker.get('schema')=='ouf.policy-token-new-finite-worker-session.v'+str(prior)
+            and worker.get('predecessorCancelledWorkerHash')==recovery['cancelledWorkerHash']
+            and worker.get('predecessorWorkerSessionHash')==recovery['workerSessionHash']
+            and worker.get('newBudget')==recovery['newBudget'],'EXACT_PAUSED_CUMULATIVE_WORKER_REVIEW_REQUIRED')
     require(worker['policy']['max_elapsed'] <= maximum_seconds
             and worker['legacyHistoryDisposition'] == 'UNKNOWN_RETAINED_NOT_RECONCILED'
-            and worker['predecessorGrantAttempts'] == 1
+            and worker['predecessorGrantAttempts'] == prior
             and worker['automaticBudgetRenewalAllowed'] is False
             and worker['consumedClaimReplayAllowed'] is False,
             'DISTINCT_FINITE_WORKER_AND_RETAINED_UNKNOWN_HISTORY_REQUIRED')
@@ -136,6 +147,46 @@ def validate_decision(review, decision, now):
         'EXACT_CURRENT_FINITE_HUMAN_DECISION_REQUIRED')
 
 
+def terminal_answer(raw, expected, byte_count=None):
+    """Accept exact text, optionally inside one exact terminal paste envelope.
+
+    Never normalize whitespace, Unicode, hash case or arbitrary ANSI controls.
+    Returned diagnostics contain only classifications and counts, no input text.
+    """
+    count=len(raw) if byte_count is None else byte_count
+    one_envelope=(raw.count(PASTE_START)==raw.count(PASTE_END)==1 and raw.endswith(PASTE_END))
+    wrapped=one_envelope and raw.startswith(PASTE_START)
+    hash_wrapped=one_envelope and raw.startswith(b'APPROVO '+PASTE_START)
+    if wrapped:value=raw[len(PASTE_START):-len(PASTE_END)]
+    elif hash_wrapped:value=b'APPROVO '+raw[len(b'APPROVO ')+len(PASTE_START):-len(PASTE_END)]
+    else:value=raw
+    wrapped=wrapped or hash_wrapped
+    accepted=count<=128 and value==expected
+    if accepted:reason='EXACT_BRACKETED_PASTE' if wrapped else 'EXACT_TEXT'
+    elif count>128:reason='INPUT_TOO_LONG'
+    elif not value:reason='EMPTY_LINE'
+    elif any(c>127 for c in value):reason='NON_ASCII_BYTES'
+    elif any(c<32 or c==127 for c in value):reason='TERMINAL_CONTROL_BYTES'
+    elif value!=value.strip(b' \t'):reason='EDGE_WHITESPACE'
+    elif re.fullmatch(rb'APPROVO [0-9a-f]{64}',value):reason='DIFFERENT_REVIEW_HASH'
+    else:reason='EXACT_APPROVAL_TEXT_REQUIRED'
+    return accepted,{'reason':reason,'receivedBytes':count,'expectedBytes':len(expected),
+        'pasteEnvelopeRecognized':wrapped}
+
+
+def terminal_line(fd):
+    answer=bytearray();count=0
+    while count<4096:
+        part=os.read(fd,1)
+        require(part,'HUMAN_TERMINAL_CLOSED')
+        if part in (b'\n',b'\r'):return bytes(answer),count
+        count+=1
+        if count<=128:answer.extend(part)
+    # Do not leave an unbounded rejected paste queued for the invoking shell.
+    termios.tcflush(fd,termios.TCIFLUSH)
+    return bytes(answer),count
+
+
 def terminal_decision(review, review_path):
     """Only the operator controlling the terminal can answer this fresh review."""
     require(type(review) is dict and review.get('schema') == SCHEMA,
@@ -145,14 +196,66 @@ def terminal_decision(review, review_path):
     summary = ('\nRevisione unica del ciclo CSV/chatbot.\n'
         'Documento privato completo: '+str(review_path)+'\n'
         'SHA256: '+review_hash+'\n'
+        +('Ripresa dopo attestazione firmata e controllo precedente alla migrazione.\n'
+          'Le sette fasi applicate, la firma precedente, i due intenti falliti e il nuovo intento sospeso restano nello storico.\n'
+          'Questa decisione autorizza una nuova attestazione con il codice corretto sullo stesso processo in pausa.\n'
+          'Una sola nuova ammissione DB richiede la verifica owner del database ancora chiuso e del backup conservato.\n'
+          'Il flag prudenziale databaseMayHaveChanged resta true; nessun ripristino DB o reset.\n'
+          'Quattro grant consumati restano conteggiati; il prossimo nuovo grant sara il quinto cumulativo.\n'
+          'Nessun replay CREATE/STAGE/SIGUSR1 o primo grant; nuova finestra finita, vecchie firme e claim intatti.\n'
+          if review.get('postGrantRecoveryReview',{}).get('profile')=='ouf.chatbot-signed-paused-admission-reprocessing.v1'else'')
+        +('Ripresa dopo correzione della validità del token montato, sullo stesso Registry in pausa.\n'
+          'Le sei fasi completate e i due intenti falliti restano conservati con backup e blocco DB.\n'
+          'Tre grant già consumati restano conteggiati; il prossimo nuovo grant sarà il quarto cumulativo.\n'
+          'Il nuovo worker verifica la scadenza pubblicata e IAM corrente; il minimo di 90 secondi resta invariato.\n'
+          'Il precedente esecutore è spento e il worker cancellato; questa decisione non estende la vecchia autorità.\n'
+          'Nessun replay CREATE/STAGE/SIGUSR1, nessun reset o rinnovo automatico.\n'
+          if review.get('postGrantRecoveryReview',{}).get('profile')=='ouf.chatbot-paused-unsigned-attestation-reprocessing.v2'else'')
+        +('Ripresa dell’attestazione non firmata sullo stesso Registry già in pausa.\n'
+          'Le sei fasi completate, il backup e il blocco connessioni DB sono conservati.\n'
+          'Si correggono solo la proposta OCI e la baseline dei punti di mount; nessun replay CREATE/STAGE/SIGUSR1.\n'
+          'Due grant già consumati restano conteggiati; un nuovo worker ha un budget finito distinto.\n'
+          'Il precedente intento fallito resta integralmente nello storico; nessun reset o rinnovo automatico.\n'
+          if review.get('postGrantRecoveryReview',{}).get('profile')=='ouf.chatbot-paused-unsigned-attestation-reprocessing.v1' else (
+          'Ripresa dopo un primo grant già consumato e un worker cancellato senza rinnovi.\n'
+          'Si conserva il container Registry già creato; zero nuovi caricamenti immagini e zero replay CREATE.\n'
+          'Le quattro fasi già applicate, il backup e il blocco nuove connessioni DB restano conservati.\n'
+          'Nessuna nuova rotazione credenziale, nessuna ripetizione del primo grant o del ritiro timer.\n'
+          'Questa decisione autorizza un nuovo worker finito; il totale riparte da un grant già consumato.\n'
+          if review.get('postGrantRecoveryReview',{}).get('profile')=='ouf.chatbot-postgrant-created-continuation.v1' else ''))
+        +('Ripresa con nuova finestra finita: '+str(len(review['previousFiniteActions']))+
+          ' tentativi precedenti scaduti e spenti, storico e claim conservati.\n'
+          'Verificata assenza di migrazioni e primo grant nei tentativi precedenti.\n'
+          if review.get('previousFiniteActions') else '')+
+        ('Il caricamento semantic precedente è riconciliato con manifest, configurazione e filesystem esatti.\n'
+         'L\'immagine già presente viene verificata senza nuovo caricamento; tentativo precedente conservato.\n'
+          if any(p.get('imageImportReadback') for p in review.get('previousFiniteActions',[])) else '')+
+        ('Ripresa prima del primo grant: cinque immagini e generazione APISIX già verificate.\n'
+         'Il precedente mask/stop e la directory token sono riconciliati senza ripeterli.\n'
+         'Il timer mascherato conserva lo stato failed; nessun reset-failed.\n'
+         'La vecchia prenotazione resta intatta; una sola continuazione esplicita, senza replay.\n'
+          if review.get('scopes',{}).get('policyTokenOwnerInstallation',{}).get('pregrantRecovery') is not None else '')+
+        ('La credenziale già pubblicata viene verificata e riutilizzata: zero nuove rotazioni.\n'
+         'La sessione precedente scaduta con zero grant resta intatta.\n'
+         'Questa nuova decisione apre un solo budget distinto: massimo un grant cumulativo e 300 secondi.\n'
+          if (review.get('scopes',{}).get('policyTokenOwnerInstallation',{}).get('pregrantRecovery') or {}).get('priorCredentialMutationAttempts')==1 else '')+
+        ('I ruoli OUF risultano già pubblicati: vengono riletti, senza nuova proposta se invariati.\n'
+          if review.get('authorizationReview',{}).get('requiresNewRoleConfirmation') is False else
+          'Eventuale conferma dei ruoli: apri il link browser esplicito; la proposta dura 15 minuti.\n')+
         'Include sostituzione dei cinque servizi applicativi, route Gateway, autorizzazioni esplicite,\n'
-        'backup e migrazioni previsti, installazione owner e ritiro del servizio/timer policy-token semantic.\n'
+        +('backup e migrazioni ancora previsti e nuovo worker; storico precedente conservato.\n'
+          if review.get('postGrantRecoveryReview')is not None else
+          'backup e migrazioni previsti, installazione owner e ritiro del servizio/timer policy-token semantic.\n')+
+        'L\'attesa Registry riconcilia solo letture: massimo 128 tentativi e 3600 secondi, entro questa finestra;\n'
+        'contatori e scadenze persistenti, nessuna ripetizione di start o SIGUSR1.\n'
         'Se MCP ha le tre migrazioni pendenti: creazione del ruolo audit NOLOGIN con amministratore DB,\n'
         'abilitazioni temporanee SET e CREATE sullo schema; se previsto nel piano, TRIGGER sulla sola security_incident.\n'
         'Revoca verificata prima del riavvio; proprietario e privilegi preesistenti della tabella preservati.\n'
         +('Include sostituzione del container APISIX con la stessa immagine e la configurazione qui revisionata.\n'
-          if 'sameImageId' in review['scopes']['gatewayRuntimeInstallation'] else '')+
-        'Un primo grant (massimo 300 secondi), poi una sessione distinta di massimo '
+          if 'sameImageId' in review['scopes']['gatewayRuntimeInstallation'] else '')
+        +('Nessun nuovo primo grant. Nuova sessione distinta di massimo '
+          if review.get('postGrantRecoveryReview')is not None else
+          'Un primo grant (massimo 300 secondi), poi una sessione distinta di massimo ')
         +str(review['finiteWorkerMaximumAttempts'])+' tentativi e '
         +str(review['finiteWorkerMaximumSeconds'])+' secondi.\n'
         'La storia legacy resta UNKNOWN. Nessun reset, rollback DB o rinnovo automatico del mandato.\n'
@@ -164,15 +267,24 @@ def terminal_decision(review, review_path):
     try:
         info = os.fstat(fd)
         require(stat.S_ISCHR(info.st_mode) and os.isatty(fd), 'CONTROLLING_HUMAN_TERMINAL_REQUIRED')
+        # Input left while the device flow was running is not a decision made
+        # after this current review. Show the prompt only after clearing it.
+        termios.tcflush(fd,termios.TCIFLUSH)
         os.write(fd, summary.encode('utf-8'))
-        answer = bytearray()
-        while len(answer) <= 128:
-            part = os.read(fd, 1)
-            require(part, 'HUMAN_TERMINAL_CLOSED')
-            if part in (b'\n', b'\r'):
-                break
-            answer.extend(part)
-        require(bytes(answer) == ('APPROVO '+review_hash).encode(), 'FULL_ACTION_NOT_APPROVED')
+        expected=('APPROVO '+review_hash).encode('ascii')
+        accepted=False
+        for attempt in range(1,TERMINAL_ATTEMPTS+1):
+            answer,count=terminal_line(fd)
+            accepted,detail=terminal_answer(answer,expected,count)
+            if accepted:break
+            diagnostic={'schema':'ouf.chatbot-human-terminal-input.v1','status':'NOT_ACCEPTED',
+                'attempt':attempt,'maximumAttempts':TERMINAL_ATTEMPTS,
+                'runtimeAuthorityIssued':False,'inputTextPrinted':False,**detail}
+            os.write(fd,b'\n'+encoded(diagnostic)+b'\n')
+            if attempt<TERMINAL_ATTEMPTS:
+                os.write(fd,('Riprova nello stesso prompt; usa solo il testo esatto, senza spazi aggiuntivi.\n'
+                    'APPROVO '+review_hash+'\n> ').encode('ascii'))
+        require(accepted,'FULL_ACTION_NOT_APPROVED')
     finally:
         os.close(fd)
     now = int(time.time())

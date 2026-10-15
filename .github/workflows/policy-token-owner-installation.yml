@@ -1,9 +1,13 @@
 name: Complete finite policy-token owner installation
 on:
   push:
+    branches: [main]
     paths: ['tools/semantic_policy_token_owner/**', 'tests/test_policy_token_owner_installation.py', 'tests/test_policy_token_installer_runtime.py', '.github/workflows/policy-token-owner-installation.yml']
   pull_request:
     paths: ['tools/semantic_policy_token_owner/**', 'tests/test_policy_token_owner_installation.py', 'tests/test_policy_token_installer_runtime.py', '.github/workflows/policy-token-owner-installation.yml']
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 permissions: {contents: read}
 jobs:
   actual-composition:

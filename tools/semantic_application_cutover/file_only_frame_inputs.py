@@ -10,6 +10,7 @@ import json
 
 from transition_journal import require
 from file_only_profile import FileOnlyProfile
+from compile_file_only_frame_policy import docker_bridge_environment
 from compile_creation_frame_policy import compile_policy as compile_baseline
 
 BASELINE_SHA256='ea86df348ace963d41d3a24ab3b9bea693c3b3ba36e181a1aaec5f7e97333b63'
@@ -42,7 +43,7 @@ def compile_inputs(raw,request,tree,token,delegation,proposal,engine_profile):
     bindings=[{k:s[k] for k in ('source','target','readOnly')} for s in files]
     bindings += [{k:tree[k] for k in ('source','target','readOnly')},{k:token[k] for k in ('source','target')}|{'readOnly':True}]
     startup={'uid':10001,'gid':10001,'umask':None,'cwd':request['WorkingDir'],
-        'args':request['Entrypoint']+(request.get('Cmd') or []),'env':request['Env']+['HOSTNAME=$OUF_HOSTNAME']}
+        'args':request['Entrypoint']+(request.get('Cmd') or []),'env':docker_bridge_environment(request)}
     launch={'schema':'ouf.semantic-creation-frame-launch.v1','startup':startup,'sources':files,
         'manifest':{'user':'10001:10001','readOnlyRoot':False,'memoryBytes':host['Memory'],
             'pidsLimit':host['PidsLimit'],'mounts':bindings}}

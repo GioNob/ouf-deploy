@@ -96,7 +96,7 @@ class RenewableTokenMountObservation:
                 self.guard()
                 # Existing owner must prove actual issuer/signature/audience/
                 # scope/expiry/revocation for THIS exact token, not protocol shape.
-                require(self.owner.admit(token,self.deadline+e['minimumRemainingSeconds'],
+                require(self.owner.admit_mounted(token,e['minimumRemainingSeconds'],
                         e['ownerBindingHash'],self.deadline) is True,'CURRENT_TOKEN_OWNER_ADMISSION_REQUIRED')
                 require(identity(leaf)==identity(os.fstat(filefd))
                         ==identity(os.stat(e['fileName'],dir_fd=source,follow_symlinks=False)),

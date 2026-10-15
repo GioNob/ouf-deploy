@@ -6,21 +6,100 @@ Docker effect has a durable, exclusive claim; an interrupted effect is only read
 back. Readiness GETs use persisted finite budgets, without holding the CAS lock.
 """
 import copy
+import hashlib
 import http.client
 import ipaddress
 import json
 import time
+from pathlib import Path
 from urllib.parse import quote
 
 from engine_creation import Engine
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
-from tools.chatbot_file_cohort.plan import host_config_matches, PROFILE, MODULES, NO_RESTART, digest, require, sha
+from tools.chatbot_file_cohort.plan import host_config_matches, PROFILE, MODULES, NO_RESTART, digest, require, sha,PlanDenied
 
 STAGES = ('rename', 'create', 'start', 'ready', 'restart_policy')
 READINESS_POLICY = {'profile':'ouf.chatbot-cohort-readiness.v1', 'maximumAttempts':128,
                     'maximumElapsedSeconds':3600, 'backoffSeconds':[5,15,60,300,900],
                     'maximumJitterPercent':20}
+
+REGISTRY_READINESS_POLICY={**READINESS_POLICY,'profile':'ouf.chatbot-registry-readiness.v1',
+    'readOnlyReconciliationOnly':True,'startOrSignalReplayAllowed':False,'respectRetryAfter':True}
+
+
+class RegistryReadinessBudget:
+    """Durable observation budget only; grants no execution or domain authority.
+
+    The aggregate caller guards current HUMAN/generation before every attempt
+    and wait. Journal transactions never span its Engine/HTTP calls or sleeps.
+    A crash in ATTEMPTING is retained and requires explicit reconciliation.
+    """
+    def __init__(self,journal,scope_hash,authority_hash,expires_at,clock=lambda:(time.time(),time.monotonic()),boot=None):
+        require(type(journal)is Journal and sha(scope_hash) and sha(authority_hash)
+            and type(expires_at)is int,'EXACT_REGISTRY_READINESS_BUDGET_SCOPE_REQUIRED')
+        self.journal,self.clock=journal,clock
+        self.boot=boot or Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        self.expected={'schema':'ouf.registry-readiness-budget.v1','scopeHash':scope_hash,
+            'authorityHash':authority_hash,'policy':copy.deepcopy(REGISTRY_READINESS_POLICY),'bootId':self.boot}
+        self.expires_at=expires_at
+    def initialize(self):
+        if not any((self.journal.root/name).exists() for name in ('recovery.json','recovery.lock','invocation.lock')):
+            wall,mono=self.clock();remaining=min(3600,self.expires_at-wall)
+            require(remaining>0,'CURRENT_REGISTRY_READINESS_AUTHORITY_REQUIRED')
+            self.journal.initialize({**self.expected,'version':0,'state':'IDLE','attempts':0,
+                'createdAt':wall,'expiresAt':wall+remaining,'createdMonotonic':mono,'expiresMonotonic':mono+remaining,
+                'lastWall':wall,'lastMonotonic':mono,'nextAttemptAt':wall,'nextAttemptMonotonic':mono,'phase':None})
+        return self.record()
+    def record(self):
+        row=self.journal.read();wall,mono=self.clock()
+        require(all(row.get(k)==v for k,v in self.expected.items())
+            and type(row.get('attempts'))is int and 0<=row['attempts']<=128
+            and type(row.get('version'))is int and row['version']>=0
+            and row.get('state') in ('IDLE','ATTEMPTING','RETRY_WAIT','COMPLETE','PAUSED_EXHAUSTED')
+            and row['createdAt']<=row['lastWall']<=wall and row['createdMonotonic']<=row['lastMonotonic']<=mono
+            and 0<row['expiresAt']-row['createdAt']<=3600 and row['expiresAt']<=self.expires_at
+            and 0<row['expiresMonotonic']-row['createdMonotonic']<=3600,
+            'REGISTRY_READINESS_HISTORY_OR_CLOCK_DRIFT')
+        return row
+    def save(self,row,**changes):
+        wall,mono=self.clock();following={**row,**changes,'version':row['version']+1,'lastWall':wall,'lastMonotonic':mono}
+        self.journal.compare_and_save(row,following);return following
+    def exhausted(self,row):
+        wall,mono=self.clock()
+        return row['attempts']>=128 or wall>=row['expiresAt'] or mono>=row['expiresMonotonic']
+    def reserve(self):
+        row=self.record()
+        require(row['state']in ('IDLE','RETRY_WAIT'),'REGISTRY_READINESS_IN_FLIGHT_OR_TERMINAL_NO_REPLAY')
+        if self.exhausted(row):
+            self.save(row,state='PAUSED_EXHAUSTED');raise PlanDenied('REGISTRY_READINESS_BUDGET_EXHAUSTED')
+        wall,mono=self.clock()
+        require(wall>=row['nextAttemptAt'] and mono>=row['nextAttemptMonotonic'],'REGISTRY_READINESS_WAIT_NOT_ELAPSED')
+        return self.save(row,state='ATTEMPTING',attempts=row['attempts']+1)
+    def schedule(self,phase,minimum_delay=0):
+        require(type(minimum_delay)in (int,float) and 0<=minimum_delay<float('inf'),
+            'BOUNDED_REGISTRY_RETRY_AFTER_REQUIRED')
+        require(phase in ('START_REPLACEMENT','VERIFY_APPLICATION'),'EXACT_READONLY_REGISTRY_RECONCILIATION_PHASE_REQUIRED')
+        row=self.record();require(row['state']=='ATTEMPTING','REGISTRY_READINESS_ATTEMPT_REQUIRED')
+        if self.exhausted(row):
+            self.save(row,state='PAUSED_EXHAUSTED');raise PlanDenied('REGISTRY_READINESS_BUDGET_EXHAUSTED')
+        wall,mono=self.clock();base=(5,15,60,300,900)[min(row['attempts']-1,4)]
+        seed=hashlib.sha256((row['scopeHash']+str(row['attempts'])).encode()).digest()
+        delay=max(minimum_delay,base*(1+(int.from_bytes(seed[:2],'big')/65535)*.2))
+        if minimum_delay>=min(row['expiresAt']-wall,row['expiresMonotonic']-mono):
+            self.save(row,state='PAUSED_EXHAUSTED');raise PlanDenied('REGISTRY_READINESS_RETRY_AFTER_EXCEEDS_BUDGET')
+        return self.save(row,state='RETRY_WAIT',phase=phase,nextAttemptAt=wall+delay,nextAttemptMonotonic=mono+delay)
+    def wait_seconds(self):
+        row=self.record();wall,mono=self.clock()
+        if row['state']=='RETRY_WAIT' and not self.exhausted(row):
+            return min(max(row['nextAttemptAt']-wall,row['nextAttemptMonotonic']-mono,0),
+                row['expiresAt']-wall,row['expiresMonotonic']-mono)
+        return 0
+    def complete(self):
+        row=self.record();require(row['state']=='ATTEMPTING','REGISTRY_READINESS_ATTEMPT_REQUIRED')
+        wall,mono=self.clock()
+        require(wall<row['expiresAt'] and mono<row['expiresMonotonic'],'REGISTRY_READINESS_DEADLINE_EXCEEDED')
+        return self.save(row,state='COMPLETE')
 
 
 class CohortPaused(RuntimeError):

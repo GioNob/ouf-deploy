@@ -9,6 +9,7 @@ import copy
 import fcntl
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import stat
@@ -86,21 +87,34 @@ class AdmissionStore:
 class LegacyWriterFence:
     """Read only the two previously identified units. Never mask/stop them here."""
     UNITS=('ouf-policy-token@semantic.service','ouf-policy-token@semantic.timer')
-    def guard(self):
-        p=subprocess.run(['/usr/bin/systemctl','show',*self.UNITS,'--no-pager','--property=Id,LoadState,ActiveState,UnitFileState,MainPID'],
-            stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=5,
+    @staticmethod
+    def quiescent(rows,units):
+        # Keep the standalone worker closure independent of installer modules.
+        # Contract tests compare this predicate with the retirement component.
+        return set(rows)==set(units) and all(row.get('LoadState')=='masked'
+            and row.get('UnitFileState')=='masked' and row.get('Job')==''
+            and (row.get('ActiveState'),row.get('SubState')) in (
+                {('inactive','dead'),('failed','failed')} if unit.endswith('.timer') else {('inactive','dead')})
+            and row.get('MainPID','0' if unit.endswith('.timer') else None)=='0'
+            for unit,row in rows.items())
+    def read_units(self):
+        props={'Id','LoadState','ActiveState','SubState','UnitFileState','MainPID','Job'}
+        p=subprocess.run(['/usr/bin/systemctl','show',*self.UNITS,'--no-pager',
+            '--property=Id,LoadState,ActiveState,SubState,UnitFileState,MainPID,Job'],
+            stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=5,
             env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'})
         check(p.returncode==0 and 0<len(p.stdout)<=8192)
         rows={}
         for block in p.stdout.decode('ascii').strip().split('\n\n'):
             value={}
             for line in block.splitlines():
-                k,sep,v=line.partition('=');check(sep and k in ('Id','LoadState','ActiveState','UnitFileState','MainPID') and k not in value);value[k]=v
-            check({'Id','LoadState','ActiveState','UnitFileState'}<=set(value)<= {'Id','LoadState','ActiveState','UnitFileState','MainPID'} and value['Id'] in self.UNITS and value['Id'] not in rows)
-            check(value['LoadState']=='masked' and value['UnitFileState']=='masked'
-                  and value['ActiveState']=='inactive'
-                  and (value.get('MainPID')=='0' if value['Id'].endswith('.service') else value.get('MainPID','0')=='0'));rows[value['Id']]=value
-        check(set(rows)==set(self.UNITS));return True
+                key,sep,item=line.partition('=');check(sep and key in props and key not in value);value[key]=item
+            check(props-{'MainPID'}<=set(value)<=props and value['Id'] in self.UNITS and value['Id'] not in rows)
+            rows[value['Id']]=value
+        check(set(rows)==set(self.UNITS))
+        return rows
+    def guard(self):
+        check(self.quiescent(self.read_units(),self.UNITS));return True
 
 def owner_binding_inputs(binding,credential,admission,journal,context_ref,generation_ref,policy_hash,renewal_profile,interval_seconds,worker_session_hash=None):
     check(type(binding) is Binding and type(credential) is CredentialFile and type(admission) is OnlineIamAdmission
@@ -197,20 +211,39 @@ class InstalledTokenOwner(DomainOwner):
             time.sleep(min(1,deadline-now))
     def guard_worker_session(self,row):
         signed=json.loads(self.raw,object_pairs_hook=unique).get('policyTokenFiniteWorkerSession')
+        prior=signed.get('predecessorGrantAttempts')if type(signed)is dict else None
+        check(type(prior)is int and prior in(1,2,3,4))
         check(type(signed)is dict and fingerprint(signed)==row['workerSessionHash']
             and self.configuration.get('workerSessionHash')==row['workerSessionHash']
-            and signed.get('schema')=='ouf.policy-token-new-finite-worker-session.v1'
+            and signed.get('schema')=='ouf.policy-token-new-finite-worker-session.v'+str(prior)
             and signed.get('contextRef')==self.context and signed.get('generationRef')==self.generation
             and fingerprint(signed.get('policy'))==row['policyHash']
             and signed.get('intervalSeconds')==row['intervalSeconds']
-            and signed.get('predecessorGrantAttempts')==1
+            and signed.get('predecessorGrantAttempts')==prior
             and signed.get('automaticBudgetRenewalAllowed')is False
             and signed.get('consumedClaimReplayAllowed')is False
             and row.get('legacyHistory')=={'state':'UNKNOWN','cumulativeGrantAttemptCount':None,
                 'reconciled':False,'gapRemainsOpen':True}
-            and row.get('controlledPredecessorGrantAttempts')==1
-            and row.get('controlledCumulativeGrantAttempts')==1+row['attempts'])
+            and row.get('controlledPredecessorGrantAttempts')==prior
+            and row.get('controlledCumulativeGrantAttempts')==prior+row['attempts'])
+        if prior==1:check('controlledHistoryProfile'not in signed and 'controlledHistoryProfile'not in row)
         with protected_directory(self.journal.root)as directory:
+            if prior in(2,3,4):
+                check(signed.get('controlledHistoryProfile')==row.get('controlledHistoryProfile')=='ouf.policy-token-cancelled-worker-continuation.v1'
+                    and signed.get('newBudget',{}).get('priorControlledGrantAttempts')==prior)
+                for key in('predecessorCancelledWorkerHash','predecessorWorkerSessionHash'):check(signed.get(key)==row.get(key))
+                worker_raw=read_private(directory,'owner-predecessor-worker.json',32768)
+                session_raw=read_private(directory,'owner-predecessor-session.json',32768)
+                check(hashlib.sha256(worker_raw).hexdigest()==signed['predecessorCancelledWorkerHash']
+                    and hashlib.sha256(session_raw).hexdigest()==signed['predecessorWorkerSessionHash'])
+                previous=json.loads(worker_raw,object_pairs_hook=unique);old_session=json.loads(session_raw,object_pairs_hook=unique)
+                check(previous.get('state')=='CANCELLED'and previous.get('attempts')==1
+                    and previous.get('controlledPredecessorGrantAttempts')==prior-1 and previous.get('controlledCumulativeGrantAttempts')==prior
+                    and previous.get('workerSessionHash')==signed['predecessorWorkerSessionHash']
+                    and previous.get('firstGrantReceiptHash')==row['firstGrantReceiptHash']
+                    and old_session.get('schema')=='ouf.policy-token-new-finite-worker-session.v'+str(prior-1)
+                    and old_session.get('predecessorGrantAttempts')==prior-1
+                    and old_session.get('logicalOwnerScopeHash')==signed['logicalOwnerScopeHash'])
             check(json.loads(read_private(directory,'owner-session.json',16384),object_pairs_hook=unique)==signed)
             raw=read_private(directory,'owner-first-grant.json',16384)
             check(hashlib.sha256(raw).hexdigest()==row['firstGrantReceiptHash'])
@@ -239,6 +272,32 @@ class InstalledTokenOwner(DomainOwner):
         self.admission.admit(token,valid_until_monotonic,deadline);self.guard(binding_hash)
         if self.observer:check(self.store.read()==before)
         else:self.store.save(before,'ACTIVE',token_hash)
+        return True
+    def admit_mounted(self,token,minimum_remaining,binding_hash,deadline):
+        """Authenticate this published token using its retained grant window.
+
+        The mount's finite read deadline is not token expiry. Both durable
+        clocks, the current admission hash and online IAM must agree. Nothing
+        is published, renewed or extended by this observer operation.
+        """
+        check(self.observer and type(minimum_remaining)is int and 1<=minimum_remaining<=3600
+            and type(deadline)in(int,float)and math.isfinite(deadline))
+        self.guard(binding_hash);row,current=self._verified_state(binding_hash)
+        check(row['state']=='ACTIVE'and current['state']=='ACTIVE')
+        wall,mono=self.admission.clock()
+        check(all(type(row.get(k))in(int,float)and math.isfinite(row[k])for k in
+            ('tokenExpiresWall','tokenExpiresMonotonic','lastWall','lastMonotonic'))
+            and row['lastWall']<=wall and row['lastMonotonic']<=mono<deadline
+            and deadline<=mono+30)
+        required=max(minimum_remaining,self.binding.minimum_remaining)
+        valid_until=min(row['tokenExpiresMonotonic'],mono+row['tokenExpiresWall']-wall)
+        if valid_until-mono<required:raise Permanent('AUTHORITY_EXPIRED')
+        self.admit(token,valid_until,binding_hash,deadline)
+        self.guard(binding_hash);end_wall,end_mono=self.admission.clock()
+        check(wall<=end_wall and mono<=end_mono<deadline
+            and self.journal.read()==row and self.store.read()==current)
+        if min(row['tokenExpiresWall']-end_wall,row['tokenExpiresMonotonic']-end_mono)<required:
+            raise Permanent('AUTHORITY_EXPIRED')
         return True
     def pause(self):
         if not self.observer:

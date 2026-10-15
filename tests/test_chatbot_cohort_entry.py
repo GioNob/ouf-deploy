@@ -12,6 +12,7 @@ from pathlib import Path
 import subprocess
 import sys
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import test_chatbot_cohort_assemble as assembly
@@ -25,6 +26,20 @@ class EntryIntegration(unittest.TestCase):
         self.fixture=assembly.CompleteActionAssembly()
         self.fixture.setUp();self.addCleanup(self.fixture.doCleanups)
 
+    def test_prepare_only_returns_review_without_authority_or_runtime_start(self):
+        class NoAuthority:
+            def approve_and_start(self,*args):raise AssertionError('preparation must never request runtime authority')
+        args=SimpleNamespace(prepare_only=True)
+        compiled={'reviewBinding':{'path':'/private/complete-review.json','sha256':'a'*64}}
+        with patch.object(entry,'watch_child',side_effect=AssertionError('preparation must never watch a started unit')),\
+             contextlib.redirect_stdout(io.StringIO()) as output:
+            receipt=entry.finish_review(args,compiled,None,None,NoAuthority(),{})
+        self.assertFalse(args.authority_issued)
+        self.assertEqual(receipt['status'],'COMPLETE_PRIVATE_REVIEW_READY_NOT_STARTED')
+        self.assertFalse(receipt['targetApplyAuthorized']);self.assertFalse(receipt['runtimeAuthorityIssued'])
+        self.assertFalse(receipt['chatbotEndToEndProven'])
+        self.assertEqual(json.loads(output.getvalue().splitlines()[-1]),receipt)
+
     def test_login_instruction_reaches_buffered_output_before_waiting_for_human(self):
         raw=io.BytesIO()
         output=io.TextIOWrapper(raw,encoding='utf-8',line_buffering=False)
@@ -32,6 +47,23 @@ class EntryIntegration(unittest.TestCase):
         with contextlib.redirect_stdout(output):
             entry.emit_line('OPEN_IN_BROWSER=https://fixture.invalid/device')
         self.assertEqual(raw.getvalue(),b'OPEN_IN_BROWSER=https://fixture.invalid/device\n')
+    def test_pending_role_review_has_explicit_browser_link_and_expiry_outside_json(self):
+        value={'phase':'HUMAN_OWNER_ROLE_CONFIRMATION_REQUIRED','state':'PENDING',
+            'proposalId':'11111111-1111-4111-8111-111111111111',
+            'approvalPath':'https://gateway.fixture.invalid/trusted-human/authorization/?proposal=11111111-1111-4111-8111-111111111111',
+            'expiresAt':'2026-10-15T09:15:00Z'}
+        message=entry.human_action_message(value)
+        self.assertIn('AZIONE RICHIESTA',message);self.assertIn(value['approvalPath'],message)
+        self.assertIn(value['expiresAt'],message);self.assertIn('XXXX-YYYY',message)
+        for path in ('http://gateway.fixture.invalid/trusted-human/authorization/?proposal='+value['proposalId'],
+                     'https://gateway.fixture.invalid/other'):
+            with self.assertRaises(ValueError):entry.human_action_message(dict(value,approvalPath=path))
+    def test_expired_review_and_reconciliation_are_explained_without_actionable_old_link(self):
+        message=entry.human_action_message({'phase':'HUMAN_OWNER_ROLE_CONFIRMATION_REQUIRED','state':'EXPIRED',
+            'approvalPath':'https://expired.invalid/'})
+        self.assertIn('non è approvabile',message);self.assertNotIn('https://',message)
+        self.assertIn('ROLE_BASELINE_DRIFT',entry.human_action_message(
+            {'phase':'PAUSED_REQUIRES_RECONCILIATION','reason':'ROLE_BASELINE_DRIFT'}))
 
     def test_entry_compilation_owner_is_real_and_has_no_issuance_or_output_effect(self):
         f=self.fixture

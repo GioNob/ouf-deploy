@@ -19,6 +19,7 @@ import threading
 import time
 from urllib.parse import urlsplit
 
+import iam_binding_candidate as evidence
 from engine_creation import Engine
 from tools.chatbot_file_cohort.package_custody import extract_cohort,extract_source,new_directory
 from tools.chatbot_file_cohort.plan import digest,encoded,require,environment,runtime_pin
@@ -96,7 +97,7 @@ def current(engine,name):
     return row
 
 
-def compilation_owner(owner_inputs,sources,closure,stage,context,lineage):
+def compilation_owner(owner_inputs,sources,closure,stage,context,lineage,pregrant_recovery=None,renewal_actor=None):
     """Real constructor, deliberately absent mandate, no output-directory effect."""
     import iam_governance_intake as governance
     from cutover_authority import CutoverAuthority
@@ -109,7 +110,9 @@ def compilation_owner(owner_inputs,sources,closure,stage,context,lineage):
         absent,governance.CONTEXT,{'sourceClosureHash':digest(closure),'creationRequestHash':absent,
         'intakeHash':digest(owner_inputs),**lineage})
     return build_owner(AggregateAction(gate,encoded({'schema':'ouf.preparation-without-authority.v1'}),digest(closure)),
-                       {'owner':owner_inputs},sources)
+                       {'owner':owner_inputs,**({'ownerPregrantRecovery':pregrant_recovery}
+                           if pregrant_recovery is not None else {}),
+                        **({'ownerRenewalActor':renewal_actor} if renewal_actor is not None else {})},sources)
 
 
 def collect(args):
@@ -121,6 +124,22 @@ def collect(args):
     with protected_directory(source):pass
     with protected_directory(stage):pass
     verify_preparation_capsule(source,stage,args.preparation_source_hash)
+    from tools.chatbot_file_cohort.signed_recovery import CONTEXT as SIGNED_CONTEXT
+    if os.path.lexists(evidence.PARENT/SIGNED_CONTEXT/'review.json'):
+        from tools.chatbot_file_cohort.postgrant_preparation import collect as collect_signed
+        return collect_signed(args,paused=True,mounted=True,signed=True)
+    from tools.chatbot_file_cohort.mounted_recovery import CONTEXT as MOUNTED_CONTEXT
+    if os.path.lexists(evidence.PARENT/MOUNTED_CONTEXT/'review.json'):
+        from tools.chatbot_file_cohort.postgrant_preparation import collect as collect_mounted
+        return collect_mounted(args,paused=True,mounted=True)
+    from tools.chatbot_file_cohort.paused_recovery import CONTEXT as PAUSED_CONTEXT
+    if os.path.lexists(evidence.PARENT/PAUSED_CONTEXT/'review.json'):
+        from tools.chatbot_file_cohort.postgrant_preparation import collect as collect_paused
+        return collect_paused(args,paused=True)
+    from tools.chatbot_file_cohort.postgrant_recovery import CONTEXT as POSTGRANT_CONTEXT
+    if os.path.lexists(evidence.PARENT/POSTGRANT_CONTEXT/'review.json'):
+        from tools.chatbot_file_cohort.postgrant_preparation import collect as collect_postgrant
+        return collect_postgrant(args)
     report('AUTHENTICATED_PACKAGE_PRIVATE_EXTRACTION')
     package,manifest,provenance=extract_cohort(args.package_archive,ARCHIVE,PRODUCER,RUN,new_directory(stage,'package'))
     records={row['module']:row for row in manifest['modules']}
@@ -164,22 +183,34 @@ def collect(args):
     native_environment(engine,closure['executables']['docker'],new_directory(stage,'docker-cli'))
     retained_selection=default_selection()
     report('CURRENT_RETAINED_NATIVE_PREFLIGHT')
-    native_preflight=preflight_retained_runtime(engine,retained_selection)
+    native_preflight=preflight_retained_runtime(engine,retained_selection,command_binding=closure['executables']['docker'])
     report('CURRENT_RETAINED_NATIVE_PREFLIGHT_RESULT',**native_preflight)
     require(native_preflight['allRequiredChecksPass'],'RETAINED_NATIVE_PREFLIGHT_FAILED')
+    from tools.chatbot_file_cohort.action_process import previous_authorization_actions
+    previous=previous_authorization_actions(digest(manifest),closure['executables']['systemctl'])
+    recoveries=[row['ownerPregrantRecovery'] for row in previous if row.get('ownerPregrantRecovery') is not None]
+    require(len(recoveries)<=1,'ONE_PREGRANT_OWNER_CONTINUATION_REQUIRED')
+    recovery=recoveries[0] if recoveries else None
+    if recovery is not None:
+        report('CURRENT_PREGRANT_RECOVERY_PREFLIGHT_PASSED',priorGrantAttempts=0,
+            priorCredentialMutationAttempts=recovery['priorCredentialMutationAttempts'],priorRetirementCommandAttempts=1,
+            existingImagesVerified=5,existingGatewayGenerationVerified=True)
     report('CURRENT_ADMINISTRATIVE_SESSION')
     ensure_admin_session(engine,closure['executables']['docker'],new_directory(stage,'iam-session'),emit=emit_line)
     cohort_id='chatbot-file-'+str(RUN)
     selected=select_target(engine,closure['executables']['docker'],picker,PICKER_HASH)
+    from legacy_retirement import POST_PROFILE
+    renewal_actor=({key:selected['selection'][key] for key in ('issuer','tenant','subject')}
+        if recovery is not None and recovery['schema']==POST_PROFILE else None)
     retained,_=retained_inputs(retained_selection)
     history=lineage(retained_selection)
     report('CURRENT_OWNER_IAM_TLS_AND_ROOT_CUSTODY')
     owner_input=prepare_owner(source_commit=args.source_commit,source_closure_hash=digest(closure),cohort_id=cohort_id,
         docker_binding=closure['executables']['docker'],engine_path=engine.path)
     report('EXACT_IMAGE_AND_GATEWAY_PREPARATION')
-    image_plan=prepare_imports(package,manifest,new_directory(stage,'images'))
+    image_plan=prepare_imports(package,manifest,new_directory(stage,'images'),engine=engine)
     _,context=assemble.authority_directory(cohort_id,digest(closure),digest(manifest))
-    owner=compilation_owner(owner_input['owner'],sources,closure,stage,context,history)
+    owner=compilation_owner(owner_input['owner'],sources,closure,stage,context,history,recovery,renewal_actor)
     gateway=prepare_gateway(package,records['gateway'],engine,selected['projectionBinding'],
         retained['installationReview']['currentRegistry']['id'],new_directory(stage,'gateway'),cohort_id)
     postgres=current(engine,'ouf-postgres');onboarding=current(engine,'ouf-onboarding')
@@ -237,6 +268,8 @@ def collect(args):
             'gatewayPlan':gateway['gatewayPlan'],'gatewayRuntimePlan':gateway['gatewayRuntimePlan'],'imagePlan':image_plan,
             'authorization':{'plan':auth_plan,'catalogue':catalogue.decode(),'helperBindings':OWNER_FILES,
                 'adminTokenFile':str(session.token_path),'mcpTokenFile':str(session.token_path)},'acceptancePlan':acceptance}
+        if recovery is not None:prepared['ownerPregrantRecovery']=recovery
+        if renewal_actor is not None:prepared['ownerRenewalActor']=renewal_actor
         # Keep all preparation evidence private, while the final review binds its
         # exact bytes. No unbounded raw environment or diagnostics reach stdout.
         assemble.stage(stage,'preparation-evidence.json',encoded({'package':provenance,'selection':selected,
@@ -244,16 +277,28 @@ def collect(args):
         compiled=assemble.assemble(prepared=prepared,sources=sources,loader=loader,
             bootstrap=source_bytes(source/'tools/chatbot_file_cohort/child_bootstrap.py'),closure=closure,
             staging_directory=stage,lineage=history,preparation_source_hash=args.preparation_source_hash,cohort_id=cohort_id)
-        report('COMPLETE_REVIEW_READY',reviewPath=compiled['reviewBinding']['path'],reviewHash=compiled['reviewBinding']['sha256'])
-        args.authority_issued=None
-        receipt=assemble.approve_and_start(compiled,session,stop)
-        args.authority_issued=True
-        print(json.dumps(receipt,sort_keys=True,separators=(',',':')),flush=True)
-        watch_child(receipt,closure['executables']['systemctl'])
-        return receipt
+        return finish_review(args,compiled,session,stop,assemble,closure)
     finally:
         stop.set()
         if session.thread is not None:session.thread.join(45)
+
+
+def finish_review(args,compiled,session,stop,assembler,closure):
+    report('COMPLETE_REVIEW_READY',reviewPath=compiled['reviewBinding']['path'],reviewHash=compiled['reviewBinding']['sha256'])
+    if getattr(args,'prepare_only',False):
+        args.authority_issued=False
+        receipt={'schema':'ouf.chatbot-file-preparation-result.v1','status':'COMPLETE_PRIVATE_REVIEW_READY_NOT_STARTED',
+            'reviewPath':compiled['reviewBinding']['path'],'reviewHash':compiled['reviewBinding']['sha256'],
+            'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'serviceMutations':0,
+            'budgetReset':False,'chatbotEndToEndProven':False,'notReleaseAcceptance':True}
+        print(json.dumps(receipt,sort_keys=True,separators=(',',':')),flush=True)
+        return receipt
+    args.authority_issued=None
+    receipt=assembler.approve_and_start(compiled,session,stop)
+    args.authority_issued=True
+    print(json.dumps(receipt,sort_keys=True,separators=(',',':')),flush=True)
+    watch_child(receipt,closure['executables']['systemctl'])
+    return receipt
 
 
 def preparation_wait(session,stop,seconds):
@@ -382,6 +427,26 @@ def environment_deltas(engine,origin,*,tenant=None,issuer=None,audience=None,ing
                      {'set':{'SPRING_APPLICATION_JSON':updated_overlay(ing_json,ing_updates)}}),'mcp':{}}
 
 
+def human_action_message(value):
+    """Explain the required browser decision outside machine JSON."""
+    if value.get('phase')=='PAUSED_REQUIRES_RECONCILIATION':
+        return 'Esecuzione sospesa; serve riconciliazione. Motivo: '+str(value.get('reason','UNKNOWN'))
+    if value.get('phase')!='HUMAN_OWNER_ROLE_CONFIRMATION_REQUIRED':return None
+    if value.get('state')!='PENDING':
+        return 'La proposta dei ruoli non è approvabile: '+str(value.get('state','UNKNOWN'))+'. Non usare il vecchio link.'
+    path=value.get('approvalPath');proposal=value.get('proposalId')
+    require(type(path)is str and type(proposal)is str and re.fullmatch('[0-9a-f-]{36}',proposal),
+            'EXACT_OWNER_ROLE_BROWSER_LINK_REQUIRED')
+    parsed=urlsplit(path)
+    require(parsed.scheme=='https' and parsed.hostname and not parsed.username and not parsed.password
+            and not parsed.fragment and parsed.path=='/trusted-human/authorization/'
+            and parsed.query=='proposal='+proposal,'EXACT_OWNER_ROLE_BROWSER_LINK_REQUIRED')
+    return ('\nAZIONE RICHIESTA: apri questo link nel browser e revisiona i ruoli OUF:\n'+path+
+        '\nConferma solo dopo aver letto la review. Scadenza proposta: '+str(value.get('expiresAt','UNKNOWN'))+
+        '\nNon serve un device code XXXX-YYYY per questa conferma.\n'
+        'Il mandato complessivo non viene esteso da questa attesa.\n')
+
+
 def watch_child(receipt,systemctl):
     import subprocess
     path=Path(receipt['context'])/'delivery-status.json';last=None
@@ -391,6 +456,8 @@ def watch_child(receipt,systemctl):
             raw=source_bytes(path,maximum=8192)
             if raw!=last:
                 value=json.loads(raw);print(json.dumps(value,sort_keys=True,separators=(',',':')),flush=True);last=raw
+                message=human_action_message(value)
+                if message is not None:print(message,flush=True)
                 if (value['phase']=='ACTUAL_CSV_OWNER_ACCEPTANCE_OBSERVED'
                         and value.get('ownerAcceptance',{}).get('phase')=='TWO_SOURCE_COMMIT_AND_REUSE_PROVEN'):
                     return
@@ -402,10 +469,24 @@ def watch_child(receipt,systemctl):
     raise RuntimeError('FINITE_DELIVERY_OBSERVATION_WINDOW_ENDED')
 
 
+def safe_failure_locations(error):
+    """Bounded code locations only; no exception text, paths or local values."""
+    locations=[];tb=error.__traceback__
+    for _ in range(64):
+        if tb is None:break
+        module=tb.tb_frame.f_globals.get('__name__','');function=tb.tb_frame.f_code.co_name
+        if module.startswith('tools.chatbot_file_cohort.') and re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,79}',function):
+            locations.append({'module':module,'function':function,'line':tb.tb_lineno})
+        tb=tb.tb_next
+    return {'schema':'ouf.chatbot-file-preparation-safe-failure-location.v1',
+        'locations':locations[-8:],'messagesPrinted':False,'pathsPrinted':False,'localValuesPrinted':False}
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for key in ('source-directory','package-archive','staging-directory','source-commit','preparation-source-hash'):
         parser.add_argument('--'+key,required=True)
+    parser.add_argument('--prepare-only',action='store_true',help='Retain complete private review and exit before runtime authority or application start')
     args=parser.parse_args()
     try:collect(args)
     except KeyboardInterrupt:
@@ -415,7 +496,8 @@ def main():
         # reason when it is a constant diagnostic code, otherwise the class.
         reason=str(error)
         safe=reason if re.fullmatch('[A-Z][A-Z0-9_]{0,159}',reason) else type(error).__name__
-        report('BLOCKED',reason=safe,runtimeAuthorityIssued=getattr(args,'authority_issued',False));raise SystemExit(1)
+        report('BLOCKED',reason=safe,diagnostic=safe_failure_locations(error),
+            runtimeAuthorityIssued=getattr(args,'authority_issued',False));raise SystemExit(1)
 
 
 if __name__=='__main__':main()
