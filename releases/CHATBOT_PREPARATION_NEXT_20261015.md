@@ -1,6 +1,16 @@
 # CSV/chatbot — current handoff, 2026-10-15
 
-## Current result and next operator action
+## Latest VPS result: retirement reconciliation required
+
+The qualified 95749a8ef316856e16c44c1d7aa3b6791b408993 execution was run and approved. It progressed beyond all five image imports and APISIX runtime preparation, then paused at `INSTALLING_FINITE_TOKEN_OWNER` with `RETIREMENT_QUIESCENCE_UNPROVEN`. See `evidence/chatbot-legacy-retirement-paused-20261015.json` for the exact new context, authority and plan bindings.
+
+The exact source proves `systemctl mask --now` returned zero and the following bounded unit read parsed, but the strict masked/inactive/no-process predicate failed. The differing property is **not yet known**. First grant, application-container replacement and cohort database migrations are later in the code and were not reached in this attempt. APISIX may already have changed; do not classify this attempt as mutation-free.
+
+**Do not rerun any execution wrapper or restart the consumed finite action.** Owner-installation intent and legacy-retirement command reservation have already been written by this path. The old auth-only/image-only predecessor gates are insufficient for this new partial stage. Do not remove/reset any reservation or replay a command. Next action: read-only current unit properties/mask links, then reconcile durable stage evidence before proposing a recovery. Actual CSV/chatbot end-to-end remains unproven.
+
+## Prior qualified launch preparation (historical; no longer the next action)
+
+### Historical qualification and launch instructions
 
 The containerd image-identity defect is corrected and qualified in **GioNob/ouf-deploy commit 95749a8ef316856e16c44c1d7aa3b6791b408993**, draft PR31, branch codex/retained-inspection-channel-20261015. PR31 still targets PR29's branch codex/chatbot-mcp-migration-role-20261014 at fdc990136592f0353c2824f4de632a052910a2a0. Neither PR is merged.
 

@@ -1,0 +1,43 @@
+{
+  "schema": "ouf.chatbot-retirement-paused-evidence.v1",
+  "date": "2026-10-15",
+  "evidenceSource": "Operator-pasted VPS transcript; executing source inspected at exact commit",
+  "sourceCommit": "95749a8ef316856e16c44c1d7aa3b6791b408993",
+  "reviewHash": "6ff5430760e93ab51a26313a18198f094ded12760954fb8a4fcf53db5b3274a0",
+  "context": "/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-3f1e74ca1de7962018be8e1d6dd023f685ea208a70aa5e2e2078f92961d7fd4c",
+  "unit": "ouf-file-cohort-3f1e74ca1de7962018be8e1d6dd023f6.service",
+  "authorityHash": "83d70a33518b7bf7c1ca2904d715623294bb8132d5db1373381ab7ea001f2072",
+  "authorityExpiresAt": 1792056838,
+  "planHash": "c2fad152330f9bfa82615fc910e1a213770736e9d4d0408ed0dfdf61dd8242e8",
+  "phase": "PAUSED_REQUIRES_RECONCILIATION",
+  "reason": "RETIREMENT_QUIESCENCE_UNPROVEN",
+  "observedPhases": [
+    "IMPORTING_QUALIFIED_IMAGES_BEFORE_FIRST_GRANT",
+    "APISIX_READINESS_WAIT",
+    "INSTALLING_FINITE_TOKEN_OWNER"
+  ],
+  "codeOrderConclusions": {
+    "allFiveImageApplyReturned": true,
+    "gatewayRuntimeApplyReturned": true,
+    "legacyMaskAndStopReturnCode": 0,
+    "legacyPostCommandReadParsed": true,
+    "legacyQuiescencePredicate": false,
+    "firstGrantNotReached": true,
+    "cohortDatabaseMigrationsNotReached": true
+  },
+  "unknowns": [
+    "Exact differing systemd property",
+    "Current legacy unit states and mask link targets",
+    "Current delivery unit state",
+    "Durable owner-installation and retirement record readback"
+  ],
+  "legacyUnits": [
+    "ouf-policy-token@semantic.timer",
+    "ouf-policy-token@semantic.service"
+  ],
+  "nextAction": "Read-only systemctl show and exact mask-link readback without sudo. No execution wrapper, mask/stop replay, reset-failed, service restart, grant or authority renewal.",
+  "automaticRetry": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}
