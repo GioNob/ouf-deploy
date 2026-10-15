@@ -15,6 +15,7 @@ from tools.chatbot_file_cohort.images import prepare_imports, CohortImages, imag
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from engine_creation import Engine
+from image_custody import runtime_image_id
 
 
 @unittest.skipUnless(os.environ.get('OUF_NATIVE_POSTGRES') == '1', 'explicit disposable Docker CI only')
@@ -42,14 +43,18 @@ class NativeImages(unittest.TestCase):
             self.addCleanup(lambda image=identity: subprocess.run([str(binary),'image','rm','-f',image],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=20))
             directory = packages/module; directory.mkdir(mode=0o700)
             image = directory/'image.docker.tar'; docker('save','-o',str(image),identity)
-            records.append({'module':module,'artifactKind':'DOCKER_SAVE','imageId':identity,'sourceCommit':commit,
+            with tarfile.open(image) as saved:
+                entry=json.load(saved.extractfile('manifest.json'))[0]
+                config=saved.extractfile(entry['Config']).read()
+            configuration_id='sha256:'+hashlib.sha256(config).hexdigest()
+            records.append({'module':module,'artifactKind':'DOCKER_SAVE','imageId':configuration_id,'sourceCommit':commit,
                 'scanGate':'PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED','files':{'image.docker.tar':hashlib.sha256(image.read_bytes()).hexdigest()}})
             # The fixture label above is test data; no scan/production acceptance is asserted.
             docker('image','rm','-f',identity)
             journal = f.root/('image-journal-'+module); journal.mkdir(mode=0o700); journals[module] = Journal(journal)
         records.append({'module':'gateway','artifactKind':'SOURCE_AND_ROUTE_PACKAGE','files':{}})
         manifest = {'schema':'ouf.chatbot-file-cohort-package.v1','modules':records}
-        plan = prepare_imports(packages,manifest,output)
+        plan = prepare_imports(packages,manifest,output,engine=engine)
         for row in plan['images']:self.assertEqual(row['audit']['repositoryTags'],[])
         raw = json.loads(f.authority); raw['cohortImageImport'] = image_import_scope(plan)
         f.authority = fixture.crypto.encoded(raw); f.approval['executionAuthorityHash'] = fixture.crypto.sha(f.authority)
@@ -64,7 +69,7 @@ class NativeImages(unittest.TestCase):
         self.assertEqual(owner.apply(),first)
         self.assertEqual({k:j.read() for k,j in journals.items()},history)
         for row in plan['images']:
-            actual = owner.inspect(row['audit']['imageId'])
+            actual = owner.inspect(runtime_image_id(row['audit']))
             self.assertEqual(actual.get('RepoTags') or [],[])
         f.approval['state'] = 'REVOKED'; f.write(f.mandate,fixture.crypto.encoded(f.approval))
         with self.assertRaises(Exception):owner.apply()

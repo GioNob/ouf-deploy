@@ -47,6 +47,9 @@ jobs:
           sudo chown -R root:root "$OUF_FIXTURE"
           sudo python3 -I -B "$OUF_FIXTURE/repository/tests/qualify_published_tagless_import.py" \
             "$OUF_FIXTURE/repository/published" "$OUF_FIXTURE/stage" /var/run/docker.sock
+          sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_POSTGRES=1 \
+            python3 -I -B -m unittest discover -s "$OUF_FIXTURE/repository/tests" \
+            -p test_chatbot_cohort_images_native.py -v
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
