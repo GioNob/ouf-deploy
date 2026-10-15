@@ -23,7 +23,16 @@ jobs:
           path: frozen-source
           persist-credentials: false
       - name: Test independent original sealer capture and image-store classification
-        run: python3 -B -m unittest discover -s tests -p test_chatbot_rootfs_baseline.py -v
+        run: |
+          set -euo pipefail
+          sudo install -d -m 700 /var/lib/ouf-rootfs-test/scripts /var/lib/ouf-rootfs-test/tests \
+            /var/lib/ouf-rootfs-test/tools/semantic_cohort_admission/cohort-draft/tools
+          sudo cp scripts/diagnose-chatbot-rootfs-baseline.py /var/lib/ouf-rootfs-test/scripts/
+          sudo cp tests/test_chatbot_rootfs_baseline.py /var/lib/ouf-rootfs-test/tests/
+          sudo cp frozen-source/tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_node_observation.py \
+            /var/lib/ouf-rootfs-test/tools/semantic_cohort_admission/cohort-draft/tools/
+          sudo chown -R root:root /var/lib/ouf-rootfs-test
+          sudo python3 -I -B -m unittest discover -s /var/lib/ouf-rootfs-test/tests -p test_chatbot_rootfs_baseline.py -v
       - name: Download the retained original semantic artifact without rebuilding
         env: {GH_TOKEN: '${{ github.token }}'}
         run: |
