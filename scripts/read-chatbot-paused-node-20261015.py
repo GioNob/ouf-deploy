@@ -22,8 +22,9 @@ def encoded(v):return json.dumps(v,sort_keys=True,separators=(',',':'),allow_nan
 def digest(v):return hashlib.sha256(encoded(v)).hexdigest()
 def identity(s):return tuple(getattr(s,k)for k in ('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns'))
 def emit(check,**v):
-    print(json.dumps(dict(schema='ouf.chatbot-paused-node-readback.v1',check=check,readOnly=True,
-        automaticRetry=False,budgetReset=False,**v),sort_keys=True),flush=True)
+    fixed=dict(schema='ouf.chatbot-paused-node-readback.v1',check=check,readOnly=True,automaticRetry=False,budgetReset=False)
+    require(not set(v)&set(fixed),'RESERVED_DIAGNOSTIC_FIELD')
+    print(json.dumps({**fixed,**v},sort_keys=True),flush=True)
 def unique(rows):
     d={}
     for k,v in rows:require(k not in d,'DUPLICATE_JSON_KEY');d[k]=v
@@ -45,11 +46,20 @@ def read(path,maximum=262144,expected=None):
         require(expected is None or hashlib.sha256(raw).hexdigest()==expected,'READ_HASH_DRIFT')
         return json.loads(raw,object_pairs_hook=unique,parse_constant=lambda _:(_ for _ in ()).throw(ReadDenied('NONFINITE_JSON')))
     finally:os.close(fd)
+def safe_locations(error):
+    frames=[];tb=error.__traceback__
+    for _ in range(64):
+        if tb is None:break
+        code=tb.tb_frame.f_code
+        if (code.co_filename==__file__ or code.co_filename.startswith('<verified-network:'))and re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,79}',code.co_name):
+            frames.append({'function':code.co_name,'line':tb.tb_lineno})
+        tb=tb.tb_next
+    return frames[-12:]
 def attempt(check,fn):
     try:return fn()
     except Exception as e:
         ERRORS.append(check);code=str(e)if type(e)is ReadDenied else type(e).__name__
-        emit(check,status='UNAVAILABLE',reason=code if re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,100}',code)else'UNCLASSIFIED')
+        emit(check,status='UNAVAILABLE',reason=code if re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,100}',code)else'UNCLASSIFIED',locations=safe_locations(e),messagesPrinted=False)
 def command(binding,args):
     path=Path(binding['path']);s=path.stat()
     require(path.is_absolute()and stat.S_ISREG(s.st_mode)and s.st_uid==0 and not s.st_mode&0o022
@@ -154,6 +164,57 @@ def network_probe(prepared,native,oci,bundle,sources):
     require(encoded((candidate,oci,again,again_hosts))==before_inputs and proc_generation(pid)==before,'NETWORK_PROBE_INPUT_OR_GENERATION_DRIFT')
     return result
 
+
+OCI_FIELDS=set('ociVersion process root hostname domainname mounts hooks annotations linux readonly cwd terminal args env user uid gid additionalGids umask noNewPrivileges capabilities bounding effective permitted inheritable ambient rlimits type hard soft destination source options resources devices memory cpu pids limit shares period quota burst realtimeRuntime realtimePeriod cpus mems swap reservation swappiness disableOOMKiller unified namespaces path major minor access allow weight leafWeight blkio throttleReadBpsDevice throttleWriteBpsDevice throttleReadIOPSDevice throttleWriteIOPSDevice cgroupsPath sysctl maskedPaths readonlyPaths seccomp defaultAction defaultErrnoRet architectures flags syscalls names action errnoRet index value valueTwo op class closID intelRdt shmSize hugepageLimits oomScoreAdj personality apparmorProfile selinuxLabel oomKillDisable network classID priorities name containerID hostID size fileMode createRuntime createContainer prestart startContainer poststart poststop timeout onConsole read write blockIO'.split())
+OBSERVER_SOURCE_SHA='50515084020fded5844b6277f7e4e5670bfdb3a30906636fb3ae85deeabda358'
+def oci_difference(expected,actual,maximum=64):
+    """Only static OCI field names, indexes and types; no data/map keys/values."""
+    differences=[];total=0;visited=0
+    def visit(a,b,path):
+        nonlocal total,visited
+        visited+=1;require(visited<=30000 and len(path)<=1024,'BOUNDED_OCI_DIFFERENCE_REQUIRED')
+        if type(a)is not type(b):add(path,'TYPE',type(a).__name__,type(b).__name__);return
+        if type(a)is dict:
+            for index,key in enumerate(sorted(set(a)|set(b))):
+                component=key if key in OCI_FIELDS else '{key#'+str(index)+'}'
+                next_path=path+'/'+component
+                if key not in a:add(next_path,'ONLY_NATIVE','absent',type(b[key]).__name__)
+                elif key not in b:add(next_path,'ONLY_EXPECTED',type(a[key]).__name__,'absent')
+                else:visit(a[key],b[key],next_path)
+        elif type(a)is list:
+            if len(a)!=len(b):add(path+'/length','LENGTH','list','list',expectedLength=len(a),nativeLength=len(b))
+            for i,(x,y)in enumerate(zip(a,b)):visit(x,y,path+'/'+str(i))
+        elif a!=b:
+            public={}
+            for side,value in (('expected',a),('native',b)):
+                if re.fullmatch(r'/mounts/[0-9]+/options/[0-9]+',path)and value in ('ro','rw','rro','rbind','bind','rprivate','private','shared','rshared','slave','rslave','nosuid','nodev','noexec','relatime','strictatime','noatime','tmpcopyup'):
+                    public[side+'PublicMountOption']=value
+                elif path in ('/root/readonly','/process/noNewPrivileges','/process/terminal')and type(value)is bool:
+                    public[side+'PublicBoolean']=value
+            add(path,'VALUE',type(a).__name__,type(b).__name__,**public)
+    def add(path,kind,a,b,**public):
+        nonlocal total
+        total+=1
+        if len(differences)<maximum:differences.append(dict(path=path,kind=kind,expectedType=a,nativeType=b,**public))
+    visit(expected,actual,'')
+    return dict(exactMatch=total==0,differenceCount=total,differences=differences,truncated=total>maximum,
+        privateValuesPrinted=False,valueHashesPrinted=False,dynamicMapKeysPrinted=False,publicMountOptionsAndBooleansAllowed=True)
+def original_oci_gate(oci,policy,sources):
+    raw=base64.b64decode(sources['paused_node_observation'],validate=True)
+    require(hashlib.sha256(raw).hexdigest()==OBSERVER_SOURCE_SHA,'ORIGINAL_OBSERVATION_SOURCE_DRIFT')
+    # This is the same first full-OCI predicate in the fixed source: the
+    # request/context application hash is compiled from policy.expectedOci.
+    matches=digest(oci)==digest(policy['expectedOci'])
+    emit('ORIGINAL_FULL_OCI_GATE',status='PASS'if matches else'DENIED',
+        sourceReason=None if matches else'PAUSED_NODE_FULL_OCI_DRIFT',signatureIssued=False,sourceHashVerified=True)
+    emit('OCI_DIFFERENCE',**oci_difference(policy['expectedOci'],oci))
+    def mount_set(value):
+        mounts=value.get('mounts')
+        return sorted(encoded(x)for x in mounts)if type(mounts)is list else None
+    emit('OCI_ORDER_FACTS',mountsIdenticalIgnoringOrder=mount_set(oci)==mount_set(policy['expectedOci']),
+        ociVersion=oci.get('ociVersion')if oci.get('ociVersion')in('1.0.2','1.1.0','1.2.0','1.2.1','1.3.0')else None,
+        expectedOciVersion=policy['expectedOci'].get('ociVersion')if policy['expectedOci'].get('ociVersion')in('1.0.2','1.1.0','1.2.0','1.2.1','1.3.0')else None)
+
 def mount_projection(native,policy):
     pid=native['State']['Pid'];before=proc_generation(pid);raw=(Path('/proc')/str(pid)/'mountinfo').read_bytes()
     require(len(raw)<=131072,'BOUNDED_MOUNTINFO_REQUIRED');rows=[r.split()for r in raw.decode().splitlines()]
@@ -162,7 +223,7 @@ def mount_projection(native,policy):
         source=Path(b['source']);a=source.lstat();target=b['target'];view=Path('/proc')/str(pid)/'root'/target.lstrip('/')
         matches=[r for r in rows if len(r)>6 and r[4]==target]
         emit('MOUNT_METADATA',slot=slot,sameSourceInode=identity(a)==identity(view.stat()),
-            readOnly=len(matches)==1 and 'ro'in matches[0][5].split(',')and'rw'not in matches[0][5].split(','),
+            mountReadOnly=len(matches)==1 and 'ro'in matches[0][5].split(',')and'rw'not in matches[0][5].split(','),
             subordinateMountAbsent=not any(len(r)>4 and r[4].startswith(target+'/')for r in rows),contentRead=False)
     require(proc_generation(pid)==before and (Path('/proc')/str(pid)/'mountinfo').read_bytes()==raw,'MOUNT_PROJECTION_DRIFT')
 
@@ -186,10 +247,10 @@ def main():
     paths=p['registry']['directoryPlan'];transition=read(Path(paths['transition'])/'recovery.json')
     phase_names={'STOP_REVOKE_OLD_LEASE','QUIESCE_PRODUCERS','FENCED_BACKUP','RELEASE_OLD_ENDPOINT','CREATE_REPLACEMENT','STAGE_PAUSED_REPLACEMENT','ATTEST_NEW_OCI_PEER','ADMIT_MIGRATION','START_REPLACEMENT','VERIFY_APPLICATION','RELEASE_PRODUCERS'}
     require(all(x.get('phase')in phase_names and x.get('state')in('APPLIED','IN_FLIGHT','NO_EFFECT','UNKNOWN')for x in transition['effects']),'SAFE_PHASE_PROJECTION_REQUIRED')
-    emit('REGISTRY_TRANSITION',**projection(transition),phases=[{'phase':x['phase'],'state':x['state']}for x in transition['effects']])
+    emit('REGISTRY_TRANSITION',**projection(transition),recordHash=digest(transition),phases=[{'phase':x['phase'],'state':x['state']}for x in transition['effects']])
     owner=Path(review['scopes']['policyTokenOwnerInstallation']['journalPath'])
     for name in ('recovery.json','owner-session.json','owner-admission.json'):
-        attempt('WORKER_'+name,lambda name=name:emit('WORKER_'+name,**projection(read(owner/name))))
+        attempt('WORKER_'+name,lambda name=name:emit('WORKER_'+name,recordHash=digest(read(owner/name)),**projection(read(owner/name))))
     for name in ('containers','databases','gateway','authorization'):
         attempt('LATER_'+name,lambda name=name:emit('LATER_'+name,**projection(read(Path(process['directoryPlan'][name])/'recovery.json'))))
     native=inspect(p['engine']);state=native['State'];pid=state['Pid']
@@ -203,16 +264,17 @@ def main():
     # Runtime config is root-controlled but Docker may use0644. It contains no credential file bodies.
     raw=runtime_config(cfg_path);oci=json.loads(raw);policy=read(Path(paths['node'])/'frame-policy.json',131072)
     emit('RETAINED_FRAME_POLICY',exactOciMatches=digest(oci)==digest(policy['expectedOci']),signatureClaimPresent=(Path(paths['node'])/'attestation-issuance-claim.json').exists(),privateValuesPrinted=False)
+    attempt('OCI_COMPARISON',lambda:original_oci_gate(oci,policy,bundle['sources']))
     attempt('MOUNTS',lambda:mount_projection(native,policy))
     attempt('NETWORK',lambda:network_probe(p,native,oci,runtime['bundle'],bundle['sources']))
     require(inspect(p['engine'])==native and runtime_config(cfg_path)==raw,'NATIVE_READBACK_DRIFT')
     emit('END',complete=not ERRORS,unavailableChecks=ERRORS,serviceMutations=0,databaseMutations=0,grantRequests=0,
-        credentialOrTokenFilesRead=False,authorityRenewed=False,budgetReset=False,chatbotEndToEndProven=False,
+        credentialOrTokenFilesRead=False,authorityRenewed=False,chatbotEndToEndProven=False,
         rootfsSealCheckPerformed=False,frameByteContentChecksPerformed=False,attestationAccepted=False)
 
 if __name__=='__main__':
     try:main()
     except Exception as e:
         reason=str(e)if type(e)is ReadDenied else type(e).__name__
-        emit('STOP',reason=reason if re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,100}',reason)else'UNCLASSIFIED',exceptionMessagePrinted=False)
+        emit('STOP',reason=reason if re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,100}',reason)else'UNCLASSIFIED',exceptionMessagePrinted=False,locations=safe_locations(e))
         sys.exit(2)

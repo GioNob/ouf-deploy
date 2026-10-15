@@ -18,15 +18,15 @@
     "STAGE_PAUSED_REPLACEMENT completed",
     "ATTEST_NEW_OCI_PEER entered; observation raised"
   ],
-  "currentNativeStateReread": false,
-  "newWorkerGrantCountKnown": false,
+  "currentNativeStateReread": true,
+  "newWorkerGrantCountKnown": true,
   "underlyingFailedConditionKnown": false,
-  "readerSha256": "2898efd826ddd52129855def6885be6b804ddb274fa80dfef9dd73a889f4aa11",
+  "readerSha256": "72993b9f2a8f47274a945d6d9da761cd2a261c97745cceaf61b334e054ca5b7b",
   "readerTests": {
-    "tests": 7,
+    "tests": 11,
     "skipped": 0,
     "result": "PASS",
-    "location": "local isolated Python, disposable fixtures; no target access"
+    "location": "local isolated Python, disposable fixtures; includes two complete reader entrypoint cases"
   },
   "readerOperations": {
     "engineMethod": "GET",
@@ -50,10 +50,15 @@
     "This projects current records and selected native observations, not the complete original exception traceback.",
     "Network compiler functions are the exact verified source bodies; their diagnostic exception class has no authority.",
     "Rootfs seal and private file-content frame checks are not rerun.",
-    "Passing this diagnostic does not prove full attestation, application readiness or CSV end-to-end."
+    "Passing this diagnostic does not prove full attestation, application readiness or CSV end-to-end.",
+    "The first target readback stopped with TypeError: reserved output fields were duplicated. The replacement fixes both collisions and reports redacted OCI differences."
   ],
   "automaticRetry": false,
   "budgetReset": false,
   "chatbotEndToEndProven": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "currentReadbackComplete": false,
+  "controlledCumulativeGrantAttempts": 2,
+  "observedFramePolicyExactOciMatches": false,
+  "originalDiagnosticDefectReproduced": true
 }

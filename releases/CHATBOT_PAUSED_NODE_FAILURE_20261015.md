@@ -51,3 +51,39 @@ privacy, real bounded private-file/symlink/hardlink custody, safe ledger project
 The target reader has not been executed from this workspace. No new runtime
 continuation is supplied until the retained effects and new worker accounting
 have been reconciled without resetting history or replaying consumed operations.
+
+## Operator readback and corrected reader
+
+The first readback (operator output at18:29 Europe/Rome) confirms transition
+v13, nextPhase6: first6 phases APPLIED, ATTEST_NEW_OCI_PEER IN_FLIGHT. The
+new worker is CANCELLED with1 attempt and1 publication; cumulative attempts2.
+Admission is BLOCKEDv3. The Registry is running/paused, PID3484588, restart0.
+The retained expected OCI differs from the current OCI; no issuance claim exists.
+The actual pure native network policy check passes. These are target facts,
+not merely consequences inferred from test execution.
+
+The reader failed twice due to its own output emitter: mount readOnly collided
+with the readOnly protocol flag, then END budgetReset collided with the protocol
+flag. Both TypeErrors are locally reproduced. The mount field is now named
+mountReadOnly; the redundant END field is removed and reserved fields are
+explicitly guarded. Safe code locations accompany unknown reader errors.
+
+The corrected reader adds the source-hash-verified original full-OCI predicate
+and a bounded structural diff. Only static OCI field names, list indexes,
+types and lengths are returned; dynamic map keys and private values/hashes
+are suppressed. Approved public mount-option enums and boolean hardening flags
+may be shown. It does not copy current OCI into expected policy or authorize it.
+Network PASS does not repair the OCI mismatch. No runtime patch is yet proposed.
+
+Eleven local tests now pass, zero skips. Two run the entire main entrypoint
+through END against actual sealed disposable records and source/view inodes,
+with native command/process observations explicitly simulated: both equal and
+unequal OCI cases complete with4 mount metadata rows. The unequal case reports
+PAUSED_NODE_FULL_OCI_DRIFT with redacted locations. This closes the emitter
+coverage gap; it is not a native VPS/Docker acceptance test.
+
+Use the replacement reader at this checkpoint. It needs only sudo and performs
+no grant, IAM/DB or lifecycle operation. The new target output is needed to
+identify the actual differing OCI fields before constructing a recovery plan.
+See evidence/chatbot-paused-node-partial-readback-20261015.json. The cumulative
+2 grant attempts, old journals, claims and paused generation must be retained.

@@ -1,0 +1,85 @@
+{
+  "schema": "ouf.chatbot-paused-node-readback-reconciliation.v1",
+  "date": "2026-10-15",
+  "source": "operator pasted target readback",
+  "readerCommit": "00a72b455a32c187fbe0172f630e3af85e8eb07c",
+  "readerSha256": "2898efd826ddd52129855def6885be6b804ddb274fa80dfef9dd73a889f4aa11",
+  "runtimeSourceCommit": "0525c4186a5613000905ba4dfae6766827ad9f06",
+  "authorityHash": "fa7bdc08f0c0ea048b064774648176cf54ce51279118ce1df0ff296fc8616d3b",
+  "status": "PARTIAL_TARGET_READBACK_WITH_DIAGNOSTIC_DEFECT",
+  "deliveryStopped": true,
+  "continuationReserved": true,
+  "registryTransition": {
+    "state": "IN_FLIGHT",
+    "version": 13,
+    "nextPhase": 6,
+    "appliedPhases": [
+      "STOP_REVOKE_OLD_LEASE",
+      "QUIESCE_PRODUCERS",
+      "FENCED_BACKUP",
+      "RELEASE_OLD_ENDPOINT",
+      "CREATE_REPLACEMENT",
+      "STAGE_PAUSED_REPLACEMENT"
+    ],
+    "inFlightPhase": "ATTEST_NEW_OCI_PEER"
+  },
+  "worker": {
+    "state": "CANCELLED",
+    "attempts": 1,
+    "controlledCumulativeGrantAttempts": 2,
+    "publicationCount": 1
+  },
+  "admission": {
+    "state": "BLOCKED",
+    "version": 3
+  },
+  "laterJournals": {
+    "containers": {
+      "version": 2
+    },
+    "databases": {
+      "version": 1
+    },
+    "gateway": {
+      "version": 1
+    },
+    "authorization": {
+      "version": 1
+    }
+  },
+  "registryNative": {
+    "containerId": "790c62742c92eabc095d4ab22f2070e0c40a41e4a219685a7d8120e4661e4e5d",
+    "running": true,
+    "paused": true,
+    "pid": 3484588,
+    "restartCount": 0,
+    "status": "paused"
+  },
+  "retainedFramePolicy": {
+    "exactOciMatches": false,
+    "signatureClaimPresent": false
+  },
+  "networkCompilerProbe": "PASS",
+  "mountProjection": "UNAVAILABLE_TypeError",
+  "readerStoppedWith": "TypeError",
+  "readerComplete": false,
+  "readerRootCauseReproducedLocally": {
+    "mountProjection": "emit received readOnly both as protocol flag and mount property",
+    "finalEnd": "emit received budgetReset both as protocol flag and payload property"
+  },
+  "nextReaderSha256": "72993b9f2a8f47274a945d6d9da761cd2a261c97745cceaf61b334e054ca5b7b",
+  "nextReaderTests": {
+    "tests": 11,
+    "skipped": 0,
+    "status": "PASS",
+    "completeEntrypointCases": 2
+  },
+  "serviceMutations": 0,
+  "databaseMutations": 0,
+  "grantRequests": 0,
+  "iamCalls": 0,
+  "runtimeAuthorityIssuedByReader": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}
