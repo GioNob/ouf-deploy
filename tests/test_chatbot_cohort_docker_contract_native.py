@@ -177,7 +177,7 @@ class NativeDockerContract(unittest.TestCase):
                 self.assertEqual(state['bundle'],'/run/containerd/io.containerd.runtime.v2.task/moby/'+cid)
                 oci=json.loads((Path(state['bundle'])/'config.json').read_bytes())
                 self.assertEqual(oci['process']['user']['uid'],10001);self.assertEqual(oci['process']['user']['gid'],10001)
-                self.assertFalse(oci['root']['readonly']);self.assertTrue(oci['process']['noNewPrivileges'])
+                self.assertFalse(oci['root'].get('readonly',False));self.assertTrue(oci['process']['noNewPrivileges'])
                 self.assertTrue(all(not values for values in oci['process']['capabilities'].values()))
                 mounted={m['destination']:m for m in oci['mounts']}
                 for _,source,target,_ in expected_mounts:
