@@ -29,6 +29,7 @@ jobs:
           sudo env OUF_NATIVE_UIDS=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_output_custody.py -v
           sudo env OUF_NATIVE_UIDS=1 GITHUB_ACTIONS=true python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_worker_entry.py -v
           sudo env OUF_NATIVE_UIDS=1 GITHUB_ACTIONS=true python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_legacy_units.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_MOUNTS=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_renewable_token_mount.py -v
           sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_MOUNTS=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_mount_owner_integration.py -v
       - name: Exact operator handoff and read-only probe
         run: |
