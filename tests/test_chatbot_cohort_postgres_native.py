@@ -122,6 +122,12 @@ class NativePostgres(unittest.TestCase):
         finally:channel.close()
 
     def test_real_archives_preserve_rows_and_owner_migration_identity(self):
+        self.real_archives()
+
+    def test_restricted_mcp_role_requires_explicit_backup_reader(self):
+        self.real_archives(restricted_mcp=True)
+
+    def real_archives(self, restricted_mcp=False):
         self.assertEqual(os.geteuid(), 0)
         cid = os.environ['OUF_POSTGRES_CONTAINER_ID']
         self.assertRegex(cid, r'^[a-f0-9]{64}$')
@@ -154,8 +160,22 @@ class NativePostgres(unittest.TestCase):
                 expected[module] = [{'version': '1', 'script': 'V1__base.sql', 'type': 'SQL', 'checksum': 78787420, 'success': True}]
                 history = "CREATE TABLE "+schema+".flyway_schema_history(installed_rank int PRIMARY KEY,version text,script text,type text,checksum int,success boolean); INSERT INTO "+schema+".flyway_schema_history VALUES (1,'1','V1__base.sql','SQL',78787420,true);"
             sql(database, 'CREATE SCHEMA '+schema+';'+history+'CREATE TABLE '+schema+".retained_data(id int PRIMARY KEY,value text); INSERT INTO "+schema+".retained_data VALUES (1,'preexisting'),(2,'città');")
-            current[module] = d.observe_database(cid, 'postgres', database, module)
+            if module=='mcp' and restricted_mcp:
+                app=prefix+'app'
+                sql(database,'CREATE ROLE '+d.identifier(app)+' LOGIN NOSUPERUSER NOCREATEROLE; GRANT USAGE ON SCHEMA '+schema+' TO '+d.identifier(app)+'; GRANT SELECT ON '+schema+'.schema_migration TO '+d.identifier(app)+';')
+                bindings[module]['user']=app
+                denied=subprocess.run([str(binary),'exec',cid,'pg_dump','-U',app,'-d',database,
+                    '--format=custom','--no-owner','--no-acl','--lock-wait-timeout=10s'],
+                    stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=30)
+                self.assertNotEqual(denied.returncode,0)
+                self.assertEqual(d.dump_failure_reason(denied.stderr),'COHORT_DATABASE_DUMP_INSUFFICIENT_PRIVILEGE')
+            current[module] = d.observe_database(cid, bindings[module]['user'], database, module)
+        if restricted_mcp:
+            expected['mcp'] += [{'version':v,'checksum':'b'*64}for v in (10,11,12)]
         dbplan = d.compile_database_plan(pg, bindings, expected, current)
+        if restricted_mcp:
+            facts=d.mcp_backup_preflight(cid,bindings['mcp']['database'],'postgres')
+            dbplan=d.compile_mcp_backup_reader(dbplan,facts)
         replacements = []
         for index, module in enumerate(p.MODULES):
             name = prefix+module+'_producer'
@@ -184,13 +204,17 @@ class NativePostgres(unittest.TestCase):
         self.assertEqual(owner.backup_quiesced(), receipt)
         self.assertEqual(owner.record(), first)
         for module in p.MODULES:
-            owner.verify_module(module)
+            if module!='mcp' or not restricted_mcp:owner.verify_module(module)
             schema = d.identifier(d.SCHEMAS[module])
             self.assertEqual(sql(bindings[module]['database'], 'SELECT count(*) FROM '+schema+'.retained_data;').strip(), b'2')
             raw = (backup/(module+'.dump')).read_bytes()
             self.assertTrue(raw.startswith(b'PGDMP'))
             restored = docker('exec', '-i', cid, 'pg_restore', '--file=-', data=raw)
             self.assertIn(b'preexisting', restored); self.assertIn('città'.encode(), restored)
+        if restricted_mcp:
+            self.assertEqual(sql(bindings['mcp']['database'],"SELECT has_table_privilege("+d.literal(app)+",'ouf_mcp.retained_data','SELECT');").strip(),b'f')
+            self.assertIsNone(owner.record()['mcpMigration'])
+            self.assertIsNone(owner.record()['mcpAuditRole'])
         # Changing a real installed owner history fails the signed migration match.
         sql(bindings['udp']['database'], 'UPDATE '+d.identifier(d.SCHEMAS['udp'])+'.flyway_schema_history SET checksum=0;')
         with self.assertRaisesRegex(p.PlanDenied, 'NOT_PACKAGED_VERSION'): owner.verify_module('udp')

@@ -155,7 +155,7 @@ def incident_binding(trigger=True):
             'triggerGrantCount':int(trigger)}
 
 class DatabaseRuntime(unittest.TestCase):
-    def fixture(self, mcp_pending=False, incident_trigger=True):
+    def fixture(self, mcp_pending=False, incident_trigger=True, backup_reader=False):
         fixture=runtime_fixture.CohortRuntime();cohort,native,f,_=fixture.fixture();self.addCleanup(fixture.doCleanups)
         pg,b,e,o=inputs();native.state[pg['Id']]=copy.deepcopy(pg)
         if mcp_pending:e['mcp'].extend({'version':version,'checksum':str(version)*64}
@@ -165,6 +165,12 @@ class DatabaseRuntime(unittest.TestCase):
             dbplan['mcpAuditRolePreflight']={'adminSuperuser':True,'auditRoleAbsent':True,
                                            'incidentBinding':incident_binding(incident_trigger)}
             dbplan['mcpAuditRoleAdministration']['temporaryIncidentTrigger']=not incident_trigger
+        if backup_reader:
+            facts={'databaseOid':o['mcp']['identity']['oid'],'databaseMatched':True,
+                'roleMatched':True,'superuser':True,'readOnly':True}
+            dbplan=d.compile_mcp_backup_reader(dbplan,facts)
+            preflight=patch.object(d,'mcp_backup_preflight',return_value=facts)
+            preflight.start();self.addCleanup(preflight.stop)
         installation=copy.deepcopy(cohort.plan);installation['databasePlanHash']=p.digest(dbplan)
         migration=next(r for r in installation['replacements'] if r['module']=='mcp')
         migration['creationRequest']['Entrypoint']=['/usr/local/bin/ouf-mcp']
@@ -207,6 +213,53 @@ class DatabaseRuntime(unittest.TestCase):
         observation.start();self.addCleanup(observation.stop)
         owner.initialize()
         return owner,native,f,o,e,log
+
+    def test_explicit_mcp_reader_is_signed_and_does_not_change_workload_role(self):
+        owner,_,_,_,_,_=self.fixture(mcp_pending=True,backup_reader=True)
+        binding=owner.plan['modules'][-1]
+        self.assertEqual(binding['user'],'postgres')
+        self.assertEqual(d.selected_backup_user(owner.plan,binding),'fixture_admin')
+        for row in owner.plan['modules'][:-1]:self.assertEqual(d.selected_backup_user(owner.plan,row),row['user'])
+        owner.backup_quiesced()
+        self.assertEqual(owner.record()['backups']['mcp']['state'],'COMPLETE')
+        self.assertIsNone(owner.record()['mcpMigration'])
+
+    def test_changed_admin_preflight_denies_before_archive_creation(self):
+        owner,_,_,_,_,_=self.fixture(mcp_pending=True,backup_reader=True)
+        with patch.object(d,'mcp_backup_preflight',return_value={'superuser':False}):
+            with self.assertRaisesRegex(p.PlanDenied,'CURRENT_MCP_BACKUP_READER_DRIFT'):owner.backup_quiesced()
+        self.assertFalse((owner.root/'mcp.dump').exists())
+        self.assertEqual(owner.record()['backups']['mcp']['state'],'CLAIMED')
+
+    def test_no_implicit_privilege_fallback_and_no_old_claim_replay(self):
+        owner,_,_,_,_,_=self.fixture(mcp_pending=True)
+        binding=owner.plan['modules'][-1]
+        self.assertEqual(d.selected_backup_user(owner.plan,binding),binding['user'])
+        previous=owner.record();following=copy.deepcopy(previous);following['version']+=1
+        following['backups']['mcp']={'state':'CLAIMED','scopeHash':p.digest(binding)}
+        owner.journal.compare_and_save(previous,following)
+        with self.assertRaisesRegex(p.PlanDenied,'NOT_REPLAY'):owner.backup_quiesced()
+
+    def test_reader_field_tampering_and_wrong_preflight_are_denied(self):
+        owner,_,_,_,_,_=self.fixture(mcp_pending=True,backup_reader=True)
+        for key,value in [('user','unreviewed'),('database','other'),('databaseOid',99),
+                          ('sourceDatabasePlanHash','0'*64),('automaticFallbackAllowed',True)]:
+            changed=copy.deepcopy(owner.plan);changed['mcpBackupReader'][key]=value
+            with self.assertRaises(p.PlanDenied):d.selected_backup_user(changed,changed['modules'][-1])
+        prior=copy.deepcopy(owner.plan);prior.pop('mcpBackupReader')
+        facts=copy.deepcopy(owner.plan['mcpBackupReader']['preflight']);facts['superuser']=False
+        with self.assertRaises(p.PlanDenied):d.compile_mcp_backup_reader(prior,facts)
+
+    def test_dump_error_categories_are_closed_and_bounded(self):
+        self.assertEqual(d.dump_failure_reason(b'permission denied for table SECRET'),
+            'COHORT_DATABASE_DUMP_INSUFFICIENT_PRIVILEGE')
+        self.assertEqual(d.dump_failure_reason(b'unknown SECRET'), 'COHORT_DATABASE_DUMP_FAILED')
+        owner,_,_,_,_,log=self.fixture()
+        binary=Path(owner.docker['path'])
+        binary.write_text('#!/usr/bin/python3\nimport sys\nsys.stderr.write("permission denied for table SECRET\\n");sys.exit(1)\n')
+        owner.docker['sha256']=hashlib.sha256(binary.read_bytes()).hexdigest()
+        with self.assertRaisesRegex(p.PlanDenied,'DUMP_INSUFFICIENT_PRIVILEGE')as caught:owner.backup_quiesced()
+        self.assertNotIn('SECRET',str(caught.exception));self.assertEqual(owner.record()['backups']['udp']['state'],'CLAIMED')
 
     def test_temporary_trigger_grant_is_scoped_and_cleanup_preserves_prior_acl(self):
         owner,_,_,_,_,_=self.fixture(mcp_pending=True,incident_trigger=False)

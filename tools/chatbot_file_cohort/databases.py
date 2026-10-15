@@ -137,6 +137,72 @@ def compile_database_plan(pg_observation, module_bindings, candidate_migrations,
             'notReleaseAcceptance':True}
 
 
+def mcp_backup_preflight(container_id, database, admin_user):
+    """Read the exact selected backup principal; no GRANT or owner changes."""
+    identifier(database); identifier(admin_user)
+    channel = Psql(container_id,admin_user,database,'ouf-cutover-backup-reader')
+    try:
+        facts = channel.query("SELECT json_build_object('databaseOid',d.oid::bigint,"
+            "'databaseMatched',current_database()="+literal(database)+","
+            "'roleMatched',current_user="+literal(admin_user)+","
+            "'superuser',r.rolsuper,'readOnly',current_setting('transaction_read_only')='on') "
+            "FROM pg_database d CROSS JOIN pg_roles r WHERE d.datname=current_database() AND r.rolname=current_user",
+            "BEGIN READ ONLY; SET LOCAL statement_timeout='10s';",timeout=15)
+        require(type(facts) is dict and set(facts)=={'databaseOid','databaseMatched','roleMatched','superuser','readOnly'}
+            and type(facts['databaseOid']) is int and facts['databaseOid']>0
+            and all(facts[k] is True for k in ('databaseMatched','roleMatched','superuser','readOnly')),
+            'MCP_BACKUP_ADMINISTRATIVE_READER_UNPROVEN')
+        return facts
+    finally:
+        channel.close()
+
+
+def compile_mcp_backup_reader(plan, facts):
+    """Explicit changed plan for fresh review; never an error-triggered fallback.
+
+    The previous database plan and application credentials remain intact. This
+    opt-in is deliberately restricted to the already reviewed MCP administrator.
+    It does not reconcile an old backup claim or grant runtime authority.
+    """
+    require('mcpBackupReader' not in plan,'BACKUP_READER_ALREADY_COMPILED')
+    mcp = next(row for row in plan['modules'] if row['module']=='mcp')
+    admin = (plan.get('mcpAuditRoleAdministration') or {}).get('admin')
+    identifier(admin)
+    expected = {'databaseOid':mcp['databaseOid'],'databaseMatched':True,
+                'roleMatched':True,'superuser':True,'readOnly':True}
+    require(facts==expected and type(facts.get('databaseOid')) is int,
+            'MCP_BACKUP_READER_PREFLIGHT_DRIFT')
+    following=copy.deepcopy(plan)
+    following['mcpBackupReader']={'profile':'ouf.mcp-explicit-administrative-backup-reader.v1',
+        'sourceDatabasePlanHash':digest(plan),'module':'mcp','user':admin,
+        'database':mcp['database'],'databaseOid':mcp['databaseOid'],
+        'preflight':copy.deepcopy(facts),'applicationPrivilegesChanged':False,
+        'automaticFallbackAllowed':False}
+    return following
+
+
+def selected_backup_user(plan,binding):
+    """Pure signed-plan validation. Runtime also repeats the owner preflight."""
+    if 'mcpBackupReader' not in plan or binding['module']!='mcp':return binding['user']
+    prior=copy.deepcopy(plan);reader=prior.pop('mcpBackupReader')
+    require(compile_mcp_backup_reader(prior,reader.get('preflight'))==plan
+        and binding==next(row for row in plan['modules'] if row['module']=='mcp'),
+        'SIGNED_MCP_BACKUP_READER_DRIFT')
+    return reader['user']
+
+
+def dump_failure_reason(raw):
+    """Only static categories reach delivery status; raw stderr stays private."""
+    for pattern,code in (
+        (rb'permission denied for (?:table|sequence|schema|relation)','INSUFFICIENT_PRIVILEGE'),
+        (rb'query would be affected by row-level security policy','ROW_LEVEL_SECURITY'),
+        (rb'password authentication failed|Peer authentication failed|no pg_hba.conf entry','AUTHENTICATION'),
+        (rb'aborting because of server version mismatch','VERSION_MISMATCH'),
+        (rb'canceling statement due to lock timeout','LOCK_TIMEOUT')):
+        if re.search(pattern,raw):return 'COHORT_DATABASE_DUMP_'+code
+    return 'COHORT_DATABASE_DUMP_FAILED'
+
+
 def incident_metadata(application_user, omit_temporary=False):
     """Canonical ACL preserves existing privileges and ownership across cleanup.
 
@@ -306,33 +372,43 @@ class CohortDatabases:
                     'restorePerformed':False,'notReleaseAcceptance':True}
 
     def capture(self,binding):
+        user=selected_backup_user(self.plan,binding)
+        cid = self.plan['postgresRuntimeBinding']['containerId']
+        if binding['module']=='mcp' and 'mcpBackupReader' in self.plan:
+            self.guard()
+            require(mcp_backup_preflight(cid,binding['database'],user)==self.plan['mcpBackupReader']['preflight'],
+                    'CURRENT_MCP_BACKUP_READER_DRIFT')
+            self.guard()
         path = self.root/(binding['module']+'.dump')
         fd = os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
-        cid = self.plan['postgresRuntimeBinding']['containerId']
-        args = [self.docker['path'],'--host','unix://'+self.engine.path,'--config',str(self.root),'exec',cid,'pg_dump','-U',binding['user'],
+        args = [self.docker['path'],'--host','unix://'+self.engine.path,'--config',str(self.root),'exec',cid,'pg_dump','-U',user,
                 '-d',binding['database'],'--format=custom','--no-owner','--no-acl','--lock-wait-timeout=10s']
         try:
-            proc = subprocess.Popen(args,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL)
+            proc = subprocess.Popen(args,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         except Exception:
             os.close(fd)
             raise
         count,h,deadline = 0,hashlib.sha256(),time.monotonic()+90
         selector = selectors.DefaultSelector()
-        selector.register(proc.stdout,selectors.EVENT_READ)
+        selector.register(proc.stdout,selectors.EVENT_READ,'dump')
+        selector.register(proc.stderr,selectors.EVENT_READ,'diagnostic')
+        diagnostic=bytearray()
         try:
             with os.fdopen(fd,'wb') as output:
-                while True:
+                while selector.get_map():
                     require(time.monotonic() < deadline,'COHORT_BACKUP_TIME_BOUND_EXHAUSTED')
-                    if not selector.select(min(1,max(0,deadline-time.monotonic()))):
-                        continue
-                    raw = os.read(proc.stdout.fileno(),65536)
-                    if not raw:
-                        break
-                    count += len(raw)
-                    require(count <= binding['maximumArchiveBytes'],'COHORT_BACKUP_SIZE_BOUND_EXHAUSTED')
-                    output.write(raw)
-                    h.update(raw)
-                require(proc.wait(timeout=5) == 0 and count > 100,'COHORT_DATABASE_DUMP_FAILED')
+                    for key,_ in selector.select(min(1,max(0,deadline-time.monotonic()))):
+                        raw = os.read(key.fd,65536)
+                        if not raw:
+                            selector.unregister(key.fileobj);continue
+                        if key.data=='diagnostic':
+                            require(len(diagnostic)+len(raw)<=65536,'COHORT_BACKUP_DIAGNOSTIC_BOUND_EXHAUSTED')
+                            diagnostic.extend(raw);continue
+                        count += len(raw)
+                        require(count <= binding['maximumArchiveBytes'],'COHORT_BACKUP_SIZE_BOUND_EXHAUSTED')
+                        output.write(raw)
+                        h.update(raw)
+                require(proc.wait(timeout=5) == 0 and count > 100,dump_failure_reason(diagnostic))
                 output.flush()
                 os.fsync(output.fileno())
         finally:
@@ -345,6 +421,7 @@ class CohortDatabases:
                     proc.kill()
                     proc.wait(timeout=5)
             proc.stdout.close()
+            proc.stderr.close()
         self.guard()
         with path.open('rb') as stream:
             result = subprocess.run([self.docker['path'],'--host','unix://'+self.engine.path,'--config',str(self.root),'exec','-i',cid,
