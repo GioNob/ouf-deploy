@@ -34,3 +34,34 @@ The target remains transitionv13/nextPhase6 with six APPLIED effects and unsigne
 ATTEST IN_FLIGHT, same paused PID3484588, cumulative2 grants and cancelled worker.
 Its old finite authority has expired. No current paused-attestation recovery
 profile is implemented; do not replay any earlier installer or remove claims.
+
+## Native outcome
+
+Run38781095495 at source36861be786b5fcae853b116a35d406bf961705cb
+completed both real image-store jobs successfully. Each ran the four source/
+stream tests and sealed the original image twice. Both EXACT v1 seals match
+the original package:9301 entries,1719645735 bytes,
+510f56436da3e36b700b244e5e2476db9d4984216866e412b0484f951bfdb8a2.
+The store-only explanation is REFUTED for these tested inputs; no normalization
+or seal-policy change is warranted. Target count9302 differs by a net one entry,
+with equal byte total; that does not prove that only one field/entry differs.
+
+The new fixed read-only reader scripts/read-chatbot-rootfs-entry-diff-20261015.py
+embeds the complete independent CI entry manifest. Before comparing it with
+target records, it replays the exact original ordered v1 stream and requires
+equality with the retained reviewed package seal. The unchanged original
+sealer captures target entry records without exclusions. It compares every
+entry/field, reports total counts with at most40 public metadata/path samples,
+and suppresses content, hashes, xattr values and link targets. Host subordinate
+mounts and exposure of private bind inodes are denied before content scan.
+No signing/approval/grant/runtime recovery is attempted. Eight local reader
+cases passed, including the entire main handoff (two I/O boundaries mocked),
+real original sealer/capture and private-view refusal (procfs mocked because
+not present in this workspace), exact full CI manifest replay, drift/privacy,
+baseline tamper and sample truncation. These are not target/E2E acceptance.
+
+Initial native experiment809e95e1 failed at the pre-Docker test fixture because
+GitHub runner-owned ancestors correctly failed the sealer's root-owned path
+requirement.36861be7 moves those tests into a root-owned disposable fixture;
+the trust check and original sealer remain unchanged. Both native profiles
+then passed. Preserve this failed experiment as development history.

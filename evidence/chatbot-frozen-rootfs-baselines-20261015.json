@@ -1,0 +1,111 @@
+{
+  "schema": "ouf.chatbot-frozen-rootfs-native-baselines-evidence.v1",
+  "date": "2026-10-15",
+  "sourceCommit": "36861be786b5fcae853b116a35d406bf961705cb",
+  "runId": 38781095495,
+  "status": "BOTH_PROFILES_REPRODUCE_ORIGINAL_QUALIFIED_SEAL",
+  "jobs": [
+    {
+      "jobId": 116581181116,
+      "profile": "classic",
+      "artifactId": 11996181485,
+      "artifactSha256": "68a683a2366ab6a6e45bb950908744e68d35c307e76d71aa2c124d020416be1c"
+    },
+    {
+      "jobId": 116581181469,
+      "profile": "containerd",
+      "artifactId": 11996141214,
+      "artifactSha256": "a49d4ca7c2c6ddc0ecc2157fc04d6a540580bdb7367c9aef0ebb47a74f944ba1"
+    }
+  ],
+  "summaries": [
+    {
+      "acceptanceGranted": false,
+      "configurationImageId": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489",
+      "dockerVersion": "29.8.1",
+      "driver": "overlay2",
+      "imageArchiveSha256": "a0f1e2252f01a0e4a45c1262f124298000c56d206bdf9953b78bcd6b3ad4017a",
+      "javaStarted": false,
+      "nativeImageId": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489",
+      "notReleaseAcceptance": true,
+      "observedRootfsSeal": {
+        "bytes": 1719645735,
+        "entries": 9301,
+        "schema": "ouf.semantic-rootfs-seal.v1",
+        "sha256": "510f56436da3e36b700b244e5e2476db9d4984216866e412b0484f951bfdb8a2"
+      },
+      "partArtifactSha256": "5d28e55ca5541efadec4b93a6396c8f84d21e6db92766b785b1cd8c3fd10db09",
+      "profile": "classic",
+      "qualifiedRootfsSeal": {
+        "bytes": 1719645735,
+        "entries": 9301,
+        "schema": "ouf.semantic-rootfs-seal.v1",
+        "sha256": "510f56436da3e36b700b244e5e2476db9d4984216866e412b0484f951bfdb8a2"
+      },
+      "qualifiedSealMatches": true,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.chatbot-frozen-rootfs-baseline.v1",
+      "sourceCommit": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+      "stableDoubleSeal": true,
+      "vpsAccesses": 0
+    },
+    {
+      "acceptanceGranted": false,
+      "configurationImageId": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489",
+      "dockerVersion": "29.8.1",
+      "driver": "overlayfs",
+      "imageArchiveSha256": "a0f1e2252f01a0e4a45c1262f124298000c56d206bdf9953b78bcd6b3ad4017a",
+      "javaStarted": false,
+      "nativeImageId": "sha256:ebcb0dc9cef7a53d881a375c5f65f945c8f59e3a45b3bcd2ab65acd33059d597",
+      "notReleaseAcceptance": true,
+      "observedRootfsSeal": {
+        "bytes": 1719645735,
+        "entries": 9301,
+        "schema": "ouf.semantic-rootfs-seal.v1",
+        "sha256": "510f56436da3e36b700b244e5e2476db9d4984216866e412b0484f951bfdb8a2"
+      },
+      "partArtifactSha256": "5d28e55ca5541efadec4b93a6396c8f84d21e6db92766b785b1cd8c3fd10db09",
+      "profile": "containerd",
+      "qualifiedRootfsSeal": {
+        "bytes": 1719645735,
+        "entries": 9301,
+        "schema": "ouf.semantic-rootfs-seal.v1",
+        "sha256": "510f56436da3e36b700b244e5e2476db9d4984216866e412b0484f951bfdb8a2"
+      },
+      "qualifiedSealMatches": true,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.chatbot-frozen-rootfs-baseline.v1",
+      "sourceCommit": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+      "stableDoubleSeal": true,
+      "vpsAccesses": 0
+    }
+  ],
+  "independentEntryManifestSha256": "8a4ade39c1019a056501b22901569bf419d94f4d3aa0fd04ddf8cb400caf149d",
+  "imageStoreOnlyHypothesis": "REFUTED_FOR_TESTED_EXACT_IMAGE",
+  "targetObservedEntries": 9302,
+  "targetObservedBytes": 1719645735,
+  "targetExactEntryDifferenceKnown": false,
+  "newReader": {
+    "path": "scripts/read-chatbot-rootfs-entry-diff-20261015.py",
+    "sha256": "dbdcd40d90a2c5294623bc8777c1584d01a8704477e85004a1de362dad25c1bb",
+    "localTests": 8,
+    "completeMainHandoffTest": true,
+    "originalSealerRealFilesystemTest": true,
+    "procfsAvailableInWorkspace": false,
+    "privateBindContentsRead": false,
+    "maximumScanSeconds": 180,
+    "maximumReadbackSeconds": 240
+  },
+  "trial": {
+    "sourceCommit": "809e95e1acb8b2df1ecfb8c5ce5d8dafcf8e79f9",
+    "runId": 38780945339,
+    "status": "TEST_FIXTURE_FAILED_BEFORE_DOCKER",
+    "reason": "Runner-owned directory rejected by original root ancestry check; corrected root-owned disposable fixture."
+  },
+  "runtimeAuthorityIssued": false,
+  "pausedRegistryRecoveryImplemented": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}
+

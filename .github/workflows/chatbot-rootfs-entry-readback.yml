@@ -1,0 +1,33 @@
+name: Exact rootfs entry readback qualification
+on:
+  push:
+    branches: [codex/vps-read-only-inventory-20261014]
+    paths:
+      - .github/workflows/chatbot-rootfs-entry-readback.yml
+      - scripts/read-chatbot-rootfs-entry-diff-20261015.py
+      - tests/test_chatbot_rootfs_entry_readback.py
+permissions: {contents: read}
+jobs:
+  independent-ci-manifest-and-read-only-main:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 24d36d23e7c7183b7895e1dc823d3c06428412b2
+          path: qualified-source
+          persist-credentials: false
+      - name: Eight fixed reader counterexamples in root-owned isolated fixture
+        run: |
+          set -euo pipefail
+          sudo install -d -m 700 /var/lib/ouf-rootfs-reader-test
+          sudo cp -R qualified-source/. /var/lib/ouf-rootfs-reader-test/
+          sudo cp scripts/read-chatbot-rootfs-entry-diff-20261015.py scripts/read-chatbot-paused-node-20261015.py \
+            /var/lib/ouf-rootfs-reader-test/scripts/
+          sudo cp tests/test_chatbot_rootfs_entry_readback.py tests/test_chatbot_paused_node_readback.py \
+            /var/lib/ouf-rootfs-reader-test/tests/
+          sudo chown -R root:root /var/lib/ouf-rootfs-reader-test
+          sudo python3 -I -B -S -m unittest discover -s /var/lib/ouf-rootfs-reader-test/tests \
+            -p test_chatbot_rootfs_entry_readback.py -v

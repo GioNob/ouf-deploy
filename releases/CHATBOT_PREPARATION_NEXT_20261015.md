@@ -1,18 +1,25 @@
 # Next chatbot/VPS action — 2026-10-15
 
 Latest target evidence: evidence/chatbot-bridge-proposal-target-20261015.json.
-The read-only candidate24d36d23 now matches COMPLETE target OCI, including all
+Candidate24d36d23 independently matches COMPLETE target OCI, including all
 environment values/order and private namespace. The next image rootfs seal
-differs (9302entries,1719645735bytes); no attestation was accepted.
+differs:9302entries,1719645735bytes. No attestation was accepted.
 
-Do not ask the owner to relaunch any runtime command. First inspect the new
-Frozen Registry rootfs across Docker image stores workflow and its two entry
-artifacts. It uses the exact original semantic artifact and unchanged original
-sealer on disposable Docker29.8.1 classic/containerd stores. Read
-releases/CHATBOT_ROOTFS_BASELINE_DIAGNOSIS_20261015.md. The experiment is pending
-at this checkpoint. A store/metadata hypothesis is NOT a proven root cause.
+Native run38781095495/source36861be7 PASS on both exact Docker29.8.1 stores.
+Both original v1 seals EXACTLY reproduce the original package:9301entries,
+1719645735bytes,510f56436da3e36b700b244e5e2476db9d4984216866e412b0484f951bfdb8a2.
+The store-only hypothesis was REFUTED for these inputs. No policy weakening.
+Read evidence/chatbot-frozen-rootfs-baselines-20261015.json and
+releases/CHATBOT_ROOTFS_BASELINE_DIAGNOSIS_20261015.md.
 
-Preserve target six APPLIED effects, current paused generation, cumulative2
-grants, cancelled worker, blocked admission and all original/global claims.
-No CREATE/STAGE/SIGUSR1/grant replay, policy overwrite or budget reset. The
-current boundary's governed recovery is not implemented or authorized.
+Next target action is ONLY scripts/read-chatbot-rootfs-entry-diff-20261015.py.
+Its embedded independent CI records reconstruct the exact retained package
+seal before comparison. It reuses the original unchanged sealer, captures
+every target entry, and reports exact differing fields without exclusions.
+It requires sudo only, no IAM/device/APPROVO. No token/credential content,
+signing, journal/config changes, grants, DB/IAM calls or container operations.
+
+Preserve target six APPLIED effects, paused generation, cumulative2 grants,
+cancelled worker, blocked admission and original/global claims. No old runtime
+relaunch, CREATE/STAGE/SIGUSR1/grant replay, policy overwrite or budget reset.
+Current boundary governed recovery is not implemented or authorized.
