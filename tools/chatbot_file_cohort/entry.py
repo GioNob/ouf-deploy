@@ -96,7 +96,7 @@ def current(engine,name):
     return row
 
 
-def compilation_owner(owner_inputs,sources,closure,stage,context,lineage):
+def compilation_owner(owner_inputs,sources,closure,stage,context,lineage,pregrant_recovery=None):
     """Real constructor, deliberately absent mandate, no output-directory effect."""
     import iam_governance_intake as governance
     from cutover_authority import CutoverAuthority
@@ -109,7 +109,8 @@ def compilation_owner(owner_inputs,sources,closure,stage,context,lineage):
         absent,governance.CONTEXT,{'sourceClosureHash':digest(closure),'creationRequestHash':absent,
         'intakeHash':digest(owner_inputs),**lineage})
     return build_owner(AggregateAction(gate,encoded({'schema':'ouf.preparation-without-authority.v1'}),digest(closure)),
-                       {'owner':owner_inputs},sources)
+                       {'owner':owner_inputs,**({'ownerPregrantRecovery':pregrant_recovery}
+                           if pregrant_recovery is not None else {})},sources)
 
 
 def collect(args):
@@ -167,6 +168,15 @@ def collect(args):
     native_preflight=preflight_retained_runtime(engine,retained_selection,command_binding=closure['executables']['docker'])
     report('CURRENT_RETAINED_NATIVE_PREFLIGHT_RESULT',**native_preflight)
     require(native_preflight['allRequiredChecksPass'],'RETAINED_NATIVE_PREFLIGHT_FAILED')
+    from tools.chatbot_file_cohort.action_process import previous_authorization_actions
+    previous=previous_authorization_actions(digest(manifest),closure['executables']['systemctl'])
+    recoveries=[row['ownerPregrantRecovery'] for row in previous if row.get('ownerPregrantRecovery') is not None]
+    require(len(recoveries)<=1,'ONE_PREGRANT_OWNER_CONTINUATION_REQUIRED')
+    recovery=recoveries[0] if recoveries else None
+    if recovery is not None:
+        report('CURRENT_PREGRANT_RECOVERY_PREFLIGHT_PASSED',priorGrantAttempts=0,
+            priorCredentialMutationAttempts=0,priorRetirementCommandAttempts=1,
+            existingImagesVerified=5,existingGatewayGenerationVerified=True)
     report('CURRENT_ADMINISTRATIVE_SESSION')
     ensure_admin_session(engine,closure['executables']['docker'],new_directory(stage,'iam-session'),emit=emit_line)
     cohort_id='chatbot-file-'+str(RUN)
@@ -179,7 +189,7 @@ def collect(args):
     report('EXACT_IMAGE_AND_GATEWAY_PREPARATION')
     image_plan=prepare_imports(package,manifest,new_directory(stage,'images'),engine=engine)
     _,context=assemble.authority_directory(cohort_id,digest(closure),digest(manifest))
-    owner=compilation_owner(owner_input['owner'],sources,closure,stage,context,history)
+    owner=compilation_owner(owner_input['owner'],sources,closure,stage,context,history,recovery)
     gateway=prepare_gateway(package,records['gateway'],engine,selected['projectionBinding'],
         retained['installationReview']['currentRegistry']['id'],new_directory(stage,'gateway'),cohort_id)
     postgres=current(engine,'ouf-postgres');onboarding=current(engine,'ouf-onboarding')
@@ -237,6 +247,7 @@ def collect(args):
             'gatewayPlan':gateway['gatewayPlan'],'gatewayRuntimePlan':gateway['gatewayRuntimePlan'],'imagePlan':image_plan,
             'authorization':{'plan':auth_plan,'catalogue':catalogue.decode(),'helperBindings':OWNER_FILES,
                 'adminTokenFile':str(session.token_path),'mcpTokenFile':str(session.token_path)},'acceptancePlan':acceptance}
+        if recovery is not None:prepared['ownerPregrantRecovery']=recovery
         # Keep all preparation evidence private, while the final review binds its
         # exact bytes. No unbounded raw environment or diagnostics reach stdout.
         assemble.stage(stage,'preparation-evidence.json',encoded({'package':provenance,'selection':selected,

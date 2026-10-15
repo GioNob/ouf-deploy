@@ -87,20 +87,9 @@ class LegacyWriterFence:
     """Read only the two previously identified units. Never mask/stop them here."""
     UNITS=('ouf-policy-token@semantic.service','ouf-policy-token@semantic.timer')
     def guard(self):
-        p=subprocess.run(['/usr/bin/systemctl','show',*self.UNITS,'--no-pager','--property=Id,LoadState,ActiveState,UnitFileState,MainPID'],
-            stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=5,
-            env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'})
-        check(p.returncode==0 and 0<len(p.stdout)<=8192)
-        rows={}
-        for block in p.stdout.decode('ascii').strip().split('\n\n'):
-            value={}
-            for line in block.splitlines():
-                k,sep,v=line.partition('=');check(sep and k in ('Id','LoadState','ActiveState','UnitFileState','MainPID') and k not in value);value[k]=v
-            check({'Id','LoadState','ActiveState','UnitFileState'}<=set(value)<= {'Id','LoadState','ActiveState','UnitFileState','MainPID'} and value['Id'] in self.UNITS and value['Id'] not in rows)
-            check(value['LoadState']=='masked' and value['UnitFileState']=='masked'
-                  and value['ActiveState']=='inactive'
-                  and (value.get('MainPID')=='0' if value['Id'].endswith('.service') else value.get('MainPID','0')=='0'));rows[value['Id']]=value
-        check(set(rows)==set(self.UNITS));return True
+        import legacy_retirement
+        check(legacy_retirement.quiescent(legacy_retirement.read_units()))
+        return True
 
 def owner_binding_inputs(binding,credential,admission,journal,context_ref,generation_ref,policy_hash,renewal_profile,interval_seconds,worker_session_hash=None):
     check(type(binding) is Binding and type(credential) is CredentialFile and type(admission) is OnlineIamAdmission

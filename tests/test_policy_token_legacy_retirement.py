@@ -17,8 +17,9 @@ class RetirementTest(unittest.TestCase):
         self.f=fixtures.SignedCutover();self.f.setUp();self.addCleanup(self.f.doCleanups)
         p=patch.object(retirement,'subprocess',types.SimpleNamespace(run=subprocess.run,DEVNULL=subprocess.DEVNULL));p.start();self.addCleanup(p.stop)
         self.before={u:{'Id':u,'LoadState':'loaded','ActiveState':'active' if u.endswith('.timer')else 'inactive',
+            'SubState':'waiting' if u.endswith('.timer')else 'dead','Job':'',
             'UnitFileState':'enabled' if u.endswith('.timer')else 'static','MainPID':'0'}for u in retirement.UNITS}
-        self.after={u:{**r,'LoadState':'masked','ActiveState':'inactive','UnitFileState':'masked'}for u,r in self.before.items()}
+        self.after={u:{**r,'LoadState':'masked','ActiveState':'inactive','SubState':'dead','UnitFileState':'masked'}for u,r in self.before.items()}
         self.host={'schema':'ouf.policy-token-migration-host-inputs.v1','logicalOwnerScopeHash':'f'*64,
             'legacyHistory':{'state':'UNKNOWN','cumulativeGrantAttemptCount':None,'reconciled':False,'gapRemainsOpen':True},
             'runtimeAuthorityIssued':False,'legacyUnitsMetadata':list(self.before.values()),'kernelBootId':'fixture-boot',
@@ -97,7 +98,7 @@ class RetirementTest(unittest.TestCase):
     def test_metadata_reader_rejects_duplicate_units(self):
         def command(argv,**kw):
             self.assertEqual(argv[1],'show')
-            row='Id='+retirement.UNITS[0]+'\nLoadState=masked\nActiveState=inactive\nUnitFileState=masked\n'
+            row='Id='+retirement.UNITS[0]+'\nLoadState=masked\nActiveState=inactive\nSubState=dead\nJob=\nUnitFileState=masked\n'
             kw['stdout'].write((row+'\n'+row).encode())
             return subprocess.CompletedProcess(argv,0)
         with patch.object(retirement.subprocess,'run',side_effect=command):
@@ -113,3 +114,4 @@ class RetirementTest(unittest.TestCase):
             with self.assertRaisesRegex(binding.CandidateDenied,'BOOT_CHANGED'):self.action().run()
 
 if __name__=='__main__':unittest.main()
+

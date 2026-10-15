@@ -23,7 +23,7 @@ HOST_HASH='93fa9bc8fe4d90fe445bb310363f11966f9ed89df74d169ad925cda0a157acc4'
 def read_units():
     with tempfile.TemporaryFile() as output:
         result=subprocess.run(['/usr/bin/systemctl','show',*UNITS,'--no-pager',
-            '--property=Id,LoadState,ActiveState,UnitFileState,MainPID'],stdin=subprocess.DEVNULL,
+            '--property=Id,LoadState,ActiveState,SubState,UnitFileState,MainPID,Job'],stdin=subprocess.DEVNULL,
             stdout=output,stderr=subprocess.DEVNULL,timeout=10,
             env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'})
         output.seek(0);raw=output.read(8193)
@@ -33,18 +33,24 @@ def read_units():
         row={}
         for line in block.splitlines():
             key,sep,value=line.partition('=')
-            binding.require(sep and key in {'Id','LoadState','ActiveState','UnitFileState','MainPID'}
+            binding.require(sep and key in {'Id','LoadState','ActiveState','SubState','UnitFileState','MainPID','Job'}
                 and key not in row,'LEGACY_UNIT_SCHEMA_DRIFT')
             row[key]=value
-        binding.require({'Id','LoadState','ActiveState','UnitFileState'}<=set(row)
+        binding.require({'Id','LoadState','ActiveState','SubState','UnitFileState','Job'}<=set(row)
             and row['Id'] in UNITS and row['Id'] not in rows,'EXACT_LEGACY_UNITS_REQUIRED')
         rows[row['Id']]=row
     binding.require(set(rows)==set(UNITS),'EXACT_LEGACY_UNITS_REQUIRED')
     return rows
 
 def quiescent(rows):
+    # A failed timer is a terminal state, not an active schedule. Preserve its
+    # failure evidence; never reset-failed merely to satisfy a status predicate.
+    # Permanent masks, no queued Job and the inactive service/PID fence remain
+    # mandatory. Runtime/temporary masks and failed services are not admitted.
     return set(rows)==set(UNITS) and all(row.get('LoadState')=='masked'
-        and row.get('UnitFileState')=='masked' and row.get('ActiveState')=='inactive'
+        and row.get('UnitFileState')=='masked' and row.get('Job')==''
+        and (row.get('ActiveState'),row.get('SubState')) in (
+            {('inactive','dead'),('failed','failed')} if unit.endswith('.timer') else {('inactive','dead')})
         and row.get('MainPID', '0' if unit.endswith('.timer') else None)=='0'
         for unit,row in rows.items())
 
@@ -83,8 +89,14 @@ class LegacyRetirement:
         binding.require(boot_identity()==self.host['kernelBootId'],'MIGRATION_BOOT_CHANGED')
         binding.require(governance.executable('/usr/bin/systemctl')==self.host['executables']['systemctl'],
             'SYSTEMCTL_EXECUTABLE_CHANGED')
+        if getattr(self,'pregrant_recovery',None) is not None:
+            from tools.semantic_policy_token_owner.pregrant_recovery import PregrantRecovery
+            binding.require(type(self.pregrant_recovery)is PregrantRecovery,'TYPED_PREGRANT_RECOVERY_REQUIRED')
+            self.pregrant_recovery.guard()
     def run(self):
         self.guard()
+        if getattr(self,'pregrant_recovery',None) is not None:
+            return self.pregrant_recovery.retirement(self)
         with binding.protected_parent() as directory:
             binding.require(binding.read_member(directory,'policy-token-migration-host-inputs-'+HOST_HASH+'.private.json')
                 ==self.host_raw,'RETAINED_HOST_INPUT_CHANGED')
@@ -122,7 +134,8 @@ class LegacyRetirement:
                     binding.require(quiescent(observed),'RETIREMENT_RECONCILIATION_REQUIRED_NO_COMMAND_REPLAY')
                 else:
                     baseline={u['Id']:u for u in self.host['legacyUnitsMetadata']}
-                    binding.require(observed==baseline,'LEGACY_UNIT_BASELINE_CHANGED')
+                    binding.require({unit:{key:row[key] for key in baseline[unit]} for unit,row in observed.items()}
+                        ==baseline,'LEGACY_UNIT_BASELINE_CHANGED')
                     self.guard();fence()
                     row={'schema':'ouf.policy-token-legacy-retirement.v1','operation':self.operation,'scope':self.scope,
                         'commandAttemptConsumed':True,'state':'COMMAND_RESERVED_OUTCOME_UNPROVEN','version':0}

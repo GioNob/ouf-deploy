@@ -190,11 +190,16 @@ def terminal_decision(review, review_path):
         'SHA256: '+review_hash+'\n'
         +('Ripresa con nuova finestra finita: '+str(len(review['previousFiniteActions']))+
           ' tentativi precedenti scaduti e spenti, storico e claim conservati.\n'
-          'Verificata assenza di sostituzioni servizi, migrazioni e primo grant nei tentativi precedenti.\n'
+          'Verificata assenza di migrazioni e primo grant nei tentativi precedenti.\n'
           if review.get('previousFiniteActions') else '')+
         ('Il caricamento semantic precedente è riconciliato con manifest, configurazione e filesystem esatti.\n'
          'L\'immagine già presente viene verificata senza nuovo caricamento; tentativo precedente conservato.\n'
           if any(p.get('imageImportReadback') for p in review.get('previousFiniteActions',[])) else '')+
+        ('Ripresa prima del primo grant: cinque immagini e generazione APISIX già verificate.\n'
+         'Il precedente mask/stop e la directory token sono riconciliati senza ripeterli.\n'
+         'Il timer mascherato conserva lo stato failed; nessun reset-failed.\n'
+         'La vecchia prenotazione resta intatta; una sola continuazione esplicita, senza replay.\n'
+          if review.get('scopes',{}).get('policyTokenOwnerInstallation',{}).get('pregrantRecovery') is not None else '')+
         ('I ruoli OUF risultano già pubblicati: vengono riletti, senza nuova proposta se invariati.\n'
           if review.get('authorizationReview',{}).get('requiresNewRoleConfirmation') is False else
           'Eventuale conferma dei ruoli: apri il link browser esplicito; la proposta dura 15 minuti.\n')+

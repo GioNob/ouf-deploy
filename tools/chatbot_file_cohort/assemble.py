@@ -96,6 +96,9 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
     operation,context=authority_directory(cohort_id,closure_hash,prepared['imagePlan']['cohortManifestHash'])
     require(not os.path.lexists(context),'FULL_ACTION_CONTEXT_ALREADY_EXISTS_NO_REPLAY')
     previous=previous_authorization_actions(prepared['imagePlan']['cohortManifestHash'],closure['executables']['systemctl'])
+    recoveries=[row['ownerPregrantRecovery'] for row in previous if row.get('ownerPregrantRecovery') is not None]
+    require(len(recoveries)<=1 and prepared.get('ownerPregrantRecovery')==(recoveries[0] if recoveries else None),
+        'EXACT_PREGRANT_RECOVERY_MUST_PRECEDE_OWNER_COMPILATION')
     if previous:
         prepared=copy.deepcopy(prepared)
         prepared['previousFiniteActions']=previous

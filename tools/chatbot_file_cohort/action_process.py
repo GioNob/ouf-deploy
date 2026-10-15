@@ -168,6 +168,76 @@ def image_predecessor_readback(review,authority_hash):
     return receipts,bindings
 
 
+def pregrant_native_readback(review,authority_hash):
+    """Prove completed five-image/APISIX effects without issuing any command."""
+    from image_custody import loaded,runtime_image_id
+    from image_import import Import
+    from engine_creation import Engine
+    from tools.chatbot_file_cohort.images import image_import_scope
+    from tools.chatbot_file_cohort.gateway_runtime import runtime_scope,STEPS
+    from tools.semantic_policy_token_owner.pregrant_recovery import GATEWAY_RECORD_HASH
+    process=review['scopes']['finiteActionProcess'];binding=process['bundle']
+    bundle=evidence.decode(private_file(binding,8388608));prepared=bundle['prepared'];plan=prepared['imagePlan']
+    require(bundle['declaration']==review['sourceClosure']['declaration']
+        and digest(prepared)==review['privateInputHashes']['preparedInputs']
+        and image_import_scope(plan)==review['scopes']['cohortImageImport']
+        and plan['cohortManifestHash']==review['privateInputHashes']['cohortManifest'],
+        'EXACT_PREGRANT_PREPARED_PLAN_REQUIRED')
+    engine=Engine(prepared['engine']['socketPath'],tuple(prepared['engine']['socketBinding']))
+    receipts=[];bindings=[binding]
+    require([row['module'] for row in plan['images']]==['semantic','udp','onboarding','ingestion','mcp'],
+        'EXACT_PREGRANT_FIVE_IMAGES_REQUIRED')
+    for row in plan['images']:
+        module=row['module'];audit=row['audit']
+        path=Path(process['directoryPlan']['image'+module.capitalize()])/'recovery.json'
+        record,record_binding=observed_private_json(path,65536);bindings.append(record_binding)
+        initial=Import.initial(audit,authority_hash)
+        state=Import.validate_record(audit,record,initial['contextHash'])
+        require(state==record and state['authorityHash']==authority_hash and state['state']=='VERIFIED'
+            and state['effectAttemptCount']==(0 if module=='semantic' else 1),
+            'COMPLETED_PREGRANT_IMAGE_HISTORY_REQUIRED')
+        identity=runtime_image_id(audit);code,native=engine.request('GET','/v1.44/images/'+identity+'/json')
+        require(code==200,'PREGRANT_VERIFIED_IMAGE_MISSING')
+        proof=loaded(audit,native)
+        require(digest(proof)==state['nativeEvidenceHash']
+            and engine.request('GET','/v1.44/images/'+identity+'/json')==(code,native),
+            'PREGRANT_NATIVE_IMAGE_PROOF_DRIFT')
+        receipts.append({'module':module,'effectAttemptCount':state['effectAttemptCount'],
+            'outcome':'VERIFIED_NATIVE_IMAGE_RETAINED','nativeImageId':identity,'nativeCustodyHash':digest(proof)})
+    runtime=prepared['gatewayRuntimePlan'];scope=runtime_scope(runtime)
+    path=Path(process['directoryPlan']['gatewayRuntime'])/'recovery.json'
+    journal,journal_binding=observed_private_json(path,65536);bindings.append(journal_binding)
+    require(journal_binding['sha256']==GATEWAY_RECORD_HASH
+        and scope==review['scopes']['gatewayRuntimeInstallation']
+        and journal.get('schema')==scope['profile'] and journal.get('authorityHash')==authority_hash
+        and journal.get('planHash')==scope['planHash'] and journal.get('budgetReset')is False
+        and journal.get('nextStep')==len(STEPS) and len(journal.get('effects',[]))==len(STEPS)
+        and all(effect.get('step')==step and effect.get('state')=='APPLIED'
+            and effect.get('intentHash')==digest({'planHash':scope['planHash'],'step':step})
+            for effect,step in zip(journal['effects'],STEPS)),
+        'COMPLETED_PREGRANT_APISIX_HISTORY_REQUIRED')
+    expected=journal['effects'][-1]['evidence']['runtimeBinding'];identity=expected['containerId']
+    require(re.fullmatch('[0-9a-f]{64}',identity) is not None,'EXACT_PREGRANT_APISIX_ID_REQUIRED')
+    code,native=engine.request('GET','/v1.44/containers/'+identity+'/json')
+    require(code==200 and Engine.runtime_binding(native)==expected
+        and native['Name']=='/'+runtime['oldName'] and native['State']['Running']is True
+        and native['State']['Paused']is False and native['RestartCount']==0
+        and journal['effects'][3]['evidence']['containerId']==identity
+        and engine.request('GET','/v1.44/containers/'+identity+'/json')==(code,native),
+        'PREGRANT_APISIX_GENERATION_DRIFT')
+    old_id=runtime['oldRuntimeBinding']['containerId']
+    code,old=engine.request('GET','/v1.44/containers/'+old_id+'/json')
+    old_host=copy.deepcopy(runtime['oldHostConfig']);old_host['RestartPolicy']={'Name':'no','MaximumRetryCount':0}
+    require(code==200 and old['Id']==old_id and old['Image']==runtime['oldRuntimeBinding']['imageId']
+        and old['Name']=='/'+runtime['retiredName'] and old['State']['Running']is False
+        and old['State']['Pid']==0 and old['HostConfig']==old_host
+        and digest(old['Config'])==runtime['oldRuntimeBinding']['configHash']
+        and digest(old['Mounts'])==runtime['oldRuntimeBinding']['mountsHash'],
+        'PREGRANT_RETAINED_APISIX_DRIFT')
+    return receipts,{'runtimeBinding':expected,'completedSteps':list(STEPS),
+        'oldContainerRetained':True,'automaticReplayAllowed':False},bindings
+
+
 def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None):
     """Reconcile only the known auth-only predecessor; never resume a start claim.
 
@@ -189,8 +259,10 @@ def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None)
         if review.get('privateInputHashes',{}).get('cohortManifest')!=manifest_hash:continue
         source=review['sourceClosure']['declaration']['sourceCommit']
         image_recovery=source==IMAGE_IDENTITY_PREDECESSOR_SOURCE
+        from tools.semantic_policy_token_owner.pregrant_recovery import SOURCE as PREGRANT_SOURCE,observe as observe_pregrant
+        pregrant_recovery=source==PREGRANT_SOURCE
         require(review.get('schema')=='ouf.chatbot-file-cohort-full-action-review.v1'
-            and source in (AUTHORIZATION_ONLY_PREDECESSOR_SOURCE,IMAGE_IDENTITY_PREDECESSOR_SOURCE),
+            and source in (AUTHORIZATION_ONLY_PREDECESSOR_SOURCE,IMAGE_IDENTITY_PREDECESSOR_SOURCE,PREGRANT_SOURCE),
             'PREVIOUS_ACTION_SOURCE_REQUIRES_OWNER_RECONCILIATION')
         process=review['scopes']['finiteActionProcess'];operation=process['logicalOperationHash']
         require(context.name=='chatbot-file-cohort-signed-'+operation
@@ -212,7 +284,7 @@ def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None)
             and authority.get('sourceClosureHash')==review['sourceClosureHash']
             and authority.get('chatbotFileAuthorization')==review['scopes']['chatbotFileAuthorization'],
             'PREVIOUS_AUTHORITY_SCOPE_DRIFT')
-        if image_recovery:
+        if image_recovery or pregrant_recovery:
             require(authority.get('cohortImageImport')==review['scopes']['cohortImageImport'],
                     'PREVIOUS_IMAGE_AUTHORITY_SCOPE_DRIFT')
         status,status_binding=observed_private_json(context/'delivery-status.json',8192)
@@ -247,7 +319,8 @@ def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None)
                 require(completed['identities'].get(path)=={'device':info.st_dev,'inode':info.st_ino},
                         'PREVIOUS_STAGE_DIRECTORY_IDENTITY_DRIFT')
                 allowed=({'recovery.json','recovery.lock','invocation.lock'} if name=='authorization' or
-                    image_recovery and name in {'imageSemantic','imageUdp','imageOnboarding','imageIngestion','imageMcp'} else
+                    (image_recovery or pregrant_recovery) and name in {'imageSemantic','imageUdp','imageOnboarding','imageIngestion','imageMcp'}
+                    or pregrant_recovery and name=='gatewayRuntime' else
                     {Path(p).name for p in wanted.values() if Path(p).parent==Path(path)})
                 require(set(os.listdir(directory))<=allowed,
                         'PREVIOUS_APPLICATION_OR_TOKEN_STAGE_HISTORY_REQUIRES_OWNER_RECONCILIATION')
@@ -258,21 +331,28 @@ def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None)
             and journal.get('planHash')==review['scopes']['chatbotFileAuthorization']['planHash']
             and journal.get('budgetReset') is False,'PREVIOUS_AUTHORIZATION_HISTORY_DRIFT')
         effects=journal.get('effects',{})
-        require((effects or image_recovery) and all(e.get('state')=='APPLIED' and type(e.get('attempts'))is int
+        require((effects or image_recovery or pregrant_recovery) and all(e.get('state')=='APPLIED' and type(e.get('attempts'))is int
             and 1<=e['attempts']<=128 for e in effects.values()),
             'AMBIGUOUS_PREVIOUS_AUTHORIZATION_EFFECT_REQUIRES_OWNER_RECONCILIATION')
         image_receipts,image_bindings=([],[])
         if image_recovery:
             require(status.get('reason')=='ValueError','EXACT_PREVIOUS_IMAGE_IDENTITY_FAILURE_REQUIRED')
             image_receipts,image_bindings=image_predecessor_readback(review,authority_binding['sha256'])
-        result.append({'schema':'ouf.chatbot-auth-only-predecessor-readback.v1' if not image_recovery else
-                'ouf.chatbot-image-identity-predecessor-readback.v1',
+        recovery_proof=None;gateway_receipt=None
+        if pregrant_recovery:
+            require(status.get('reason')=='RETIREMENT_QUIESCENCE_UNPROVEN','EXACT_PREGRANT_FAILURE_REQUIRED')
+            recovery_proof=observe_pregrant(review,authority_binding['sha256'])
+            image_receipts,gateway_receipt,image_bindings=pregrant_native_readback(review,authority_binding['sha256'])
+        result.append({'schema':'ouf.chatbot-pregrant-predecessor-readback.v1' if pregrant_recovery else
+                'ouf.chatbot-image-identity-predecessor-readback.v1' if image_recovery else
+                'ouf.chatbot-auth-only-predecessor-readback.v1',
             'context':str(context),'unit':process['unit'],'authorityHash':authority_binding['sha256'],
             'sourceCommit':source,'expiredAt':decision['expiresAt'],
             'processStopped':True,'startClaimRetained':True,'budgetReset':False,
             'applicationStageClaimsPresent':False,'firstGrantStageClaimsPresent':False,
             'priorAuthorizationEffectAttempts':{n:e['attempts'] for n,e in sorted(effects.items())},
-            **({'imageImportReadback':image_receipts} if image_recovery else {}),
+            **({'imageImportReadback':image_receipts} if image_recovery or pregrant_recovery else {}),
+            **({'ownerPregrantRecovery':recovery_proof,'gatewayRuntimeReadback':gateway_receipt} if pregrant_recovery else {}),
             'recordBindings':[review_binding,decision_binding,authority_binding,status_binding,
                 claim_binding,completed_binding,journal_binding,*image_bindings]})
     return result

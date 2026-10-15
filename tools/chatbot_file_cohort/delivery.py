@@ -109,7 +109,8 @@ def build_owner(action, prepared, sources):
     files = {name:sources[module] for name,module in STAGE_SOURCE.items()}
     return OwnerInstallation(action, host, value['rootEvidenceHash'], value['rootCreationSourceClosureHash'],
         value['registration'], Binding(**value['binding']), profile, transport, value['sourceCommit'],
-        files, Policy(**policy), value['contextRef'], value['generationRef'], value['intervalSeconds'])
+        files, Policy(**policy), value['contextRef'], value['generationRef'], value['intervalSeconds'],
+        pregrant_recovery=prepared.get('ownerPregrantRecovery'))
 
 
 def native_environment(engine, docker_binding, cli_directory):

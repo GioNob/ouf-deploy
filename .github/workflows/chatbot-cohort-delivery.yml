@@ -1,9 +1,9 @@
 name: Chatbot cohort delivery native owners
 on:
   push:
-    paths: ['tools/chatbot_file_cohort/**', 'scripts/install-chatbot-file-cohort.py', 'scripts/deliver-chatbot-file-cohort.py', 'tests/test_chatbot_cohort_*.py', '.github/workflows/chatbot-cohort-delivery.yml']
+    paths: ['tools/semantic_policy_token_owner/**', 'tests/test_policy_token_*.py', 'tools/chatbot_file_cohort/**', 'scripts/install-chatbot-file-cohort.py', 'scripts/deliver-chatbot-file-cohort.py', 'tests/test_chatbot_cohort_*.py', '.github/workflows/chatbot-cohort-delivery.yml']
   pull_request:
-    paths: ['tools/chatbot_file_cohort/**', 'scripts/install-chatbot-file-cohort.py', 'scripts/deliver-chatbot-file-cohort.py', 'tests/test_chatbot_cohort_*.py', '.github/workflows/chatbot-cohort-delivery.yml']
+    paths: ['tools/semantic_policy_token_owner/**', 'tests/test_policy_token_*.py', 'tools/chatbot_file_cohort/**', 'scripts/install-chatbot-file-cohort.py', 'scripts/deliver-chatbot-file-cohort.py', 'tests/test_chatbot_cohort_*.py', '.github/workflows/chatbot-cohort-delivery.yml']
 permissions: {contents: read}
 jobs:
   signed-native-delivery:
@@ -77,9 +77,14 @@ jobs:
         run: |
           set -euo pipefail
           OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
-          for suite in test_chatbot_cohort_runtime_layout.py test_chatbot_cohort_pg_diagnosis.py test_chatbot_cohort_delivery_launcher.py test_chatbot_cohort_package_custody.py test_chatbot_cohort_iam_session.py test_chatbot_cohort_terminal.py test_chatbot_cohort_predecessor.py test_chatbot_cohort_image_identity.py test_chatbot_cohort_process_native.py test_chatbot_cohort_assemble.py test_chatbot_cohort_entry.py test_file_only_output_custody.py test_file_only_preparation.py test_gated_creation_plan.py test_chatbot_cohort_target_selection.py test_chatbot_cohort_selected_config_custody.py test_chatbot_cohort_plan.py test_chatbot_cohort_preparation.py test_chatbot_cohort_containers.py test_chatbot_cohort_databases.py test_chatbot_cohort_gateway.py test_chatbot_cohort_gateway_runtime.py test_chatbot_cohort_authorization.py test_chatbot_cohort_human_session.py test_chatbot_cohort_closed_runtime.py; do
+          for suite in test_policy_token_legacy_retirement.py test_policy_token_owner_installation.py test_chatbot_cohort_pregrant_recovery.py test_chatbot_cohort_runtime_layout.py test_chatbot_cohort_pg_diagnosis.py test_chatbot_cohort_delivery_launcher.py test_chatbot_cohort_package_custody.py test_chatbot_cohort_iam_session.py test_chatbot_cohort_terminal.py test_chatbot_cohort_predecessor.py test_chatbot_cohort_image_identity.py test_chatbot_cohort_process_native.py test_chatbot_cohort_assemble.py test_chatbot_cohort_entry.py test_file_only_output_custody.py test_file_only_preparation.py test_gated_creation_plan.py test_chatbot_cohort_target_selection.py test_chatbot_cohort_selected_config_custody.py test_chatbot_cohort_plan.py test_chatbot_cohort_preparation.py test_chatbot_cohort_containers.py test_chatbot_cohort_databases.py test_chatbot_cohort_gateway.py test_chatbot_cohort_gateway_runtime.py test_chatbot_cohort_authorization.py test_chatbot_cohort_human_session.py test_chatbot_cohort_closed_runtime.py; do
             sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" OUF_OWNER_JAVA_CLASSPATH="$OUF_FIXTURE_ROOT/repository/.owner-roundtrip-classes:$(cat .owner-roundtrip.classpath)" "$OUF_FIXTURE_ROOT/repository/.cohort-test-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p "$suite" -v
           done
+      - name: Real masked failed timer and shared legacy writer fence
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
+          sudo env OUF_NATIVE_SYSTEMD=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_pregrant_systemd_native.py -v
       - name: Real paired CLI API observations and semantic schema marker preserve fixture
         env:
           OUF_PG_CID: ${{ job.services.postgres.id }}

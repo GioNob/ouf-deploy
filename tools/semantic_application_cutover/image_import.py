@@ -23,9 +23,12 @@ class Import:
                 'intent':target,'authorityHash':authority_hash,'version':0,'state':'READY',
                 'automaticReplayAllowed':False,'effectAttemptCount':0,'imageCustodyProven':False}
     def read(self,audit):
-        row=self.journal.read()
-        require(row.get('schema')=='ouf.image-import-journal.v1' and row.get('contextHash')==self.context
-                and digest({'intent':row['intent'],'authorityHash':row['authorityHash']})==self.context
+        return self.validate_record(audit,self.journal.read(),self.context)
+    @staticmethod
+    def validate_record(audit,row,context):
+        """Same owner validation for bounded stopped-history readback; no lock."""
+        require(row.get('schema')=='ouf.image-import-journal.v1' and row.get('contextHash')==context
+                and digest({'intent':row['intent'],'authorityHash':row['authorityHash']})==context
                 and row['intent']==intent(audit),'IMPORT_CONTEXT_OR_INTENT_DRIFT')
         require(row['automaticReplayAllowed'] is False and type(row['version']) is int and row['version']>=0
                 and row['state'] in ('READY','IN_FLIGHT','VERIFIED') and type(row['effectAttemptCount']) is int

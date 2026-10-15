@@ -84,7 +84,7 @@ class OwnerInstallation:
     def __init__(self, action, host_raw, root_evidence_hash, root_source_hash,
                  registration, binding, profile, transport, source_commit,
                  stage_files, policy, context_ref, generation_ref, interval_seconds,
-                 clock=lambda: (time.time(), time.monotonic())):
+                 clock=lambda: (time.time(), time.monotonic()), *, pregrant_recovery=None):
         evidence.require(type(action) is AggregateAction and type(binding) is Binding
                          and type(profile) is IamProfile and type(transport) is PinnedIamOpener,
                          'CONCRETE_AGGREGATE_OWNER_COMPONENTS_REQUIRED')
@@ -99,6 +99,12 @@ class OwnerInstallation:
         self.first = first_grant.FirstControlledGrant.from_completed_custody(
             action.authority, action.raw, host_raw, root_evidence_hash, root_source_hash,
             registration, binding, profile, transport, None, clock, output_custody=self.output)
+        self.pregrant_recovery=None
+        if pregrant_recovery is not None:
+            from tools.semantic_policy_token_owner.pregrant_recovery import PregrantRecovery
+            self.pregrant_recovery=PregrantRecovery(action,pregrant_recovery)
+            self.pregrant_recovery.configure(self.output,self.first.transaction.retirement)
+            self.first.scope['outputCustodyScopeHash']=fingerprint(self.output.scope)
         self.policy, self.context, self.generation, self.interval = policy, context_ref, generation_ref, interval_seconds
         self.worker_scope = finite_worker_scope(self.first.session.scope['logicalOwnerScopeHash'],
             self.first.session.operation, fingerprint(self.first.scope), policy,
@@ -130,6 +136,10 @@ class OwnerInstallation:
         self.operation = fingerprint({'logicalOwnerScopeHash': self.worker_scope['logicalOwnerScopeHash'],
                                       'operation': 'FIRST_COMPLETE_TOKEN_OWNER_INSTALLATION'})
         self.intent_name = 'policy-token-owner-installation-'+self.operation+'.private.json'
+        if self.pregrant_recovery is not None:
+            self.scope['pregrantRecovery']=copy.deepcopy(self.pregrant_recovery.proof)
+            self.pregrant_recovery.owner_scope=copy.deepcopy(self.scope)
+            self.intent_name=self.pregrant_recovery.continuation
 
     def scopes(self):
         return {'policyTokenOwnerInstallation': copy.deepcopy(self.scope),
@@ -165,6 +175,8 @@ class OwnerInstallation:
 
     def install(self):
         self.guard()
+        if self.pregrant_recovery is not None:
+            self.pregrant_recovery.admit()
         with evidence.protected_parent() as directory:
             lock=os.open(self.intent_name+'.lock',os.O_RDWR|os.O_CREAT|os.O_NOFOLLOW|os.O_NONBLOCK,0o600,dir_fd=directory)
             try:
