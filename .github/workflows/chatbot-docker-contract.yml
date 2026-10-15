@@ -1,9 +1,13 @@
 name: Remaining Docker lifecycle contracts on 29.8.1
 on:
   push:
+    branches: [main]
     paths: ['tools/semantic_application_cutover/engine_creation.py', 'tools/chatbot_file_cohort/*.py', 'tools/semantic_application_cutover/file_only_installation.py', 'tools/semantic_application_cutover/file_only_node_owner.py', 'tools/semantic_application_cutover/file_only_frame_inputs.py', 'tools/semantic_frame_compiler/compile_file_only_frame_policy.py', 'tests/test_chatbot_cohort_registry_readiness.py', 'tests/test_chatbot_cohort_docker_contract*.py', '.github/workflows/chatbot-docker-contract.yml']
   pull_request:
     paths: ['tools/semantic_application_cutover/engine_creation.py', 'tools/chatbot_file_cohort/*.py', 'tools/semantic_application_cutover/file_only_installation.py', 'tools/semantic_application_cutover/file_only_node_owner.py', 'tools/semantic_application_cutover/file_only_frame_inputs.py', 'tools/semantic_frame_compiler/compile_file_only_frame_policy.py', 'tests/test_chatbot_cohort_registry_readiness.py', 'tests/test_chatbot_cohort_docker_contract*.py', '.github/workflows/chatbot-docker-contract.yml']
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 permissions: {contents: read}
 jobs:
   docker-29:

@@ -1,9 +1,13 @@
 name: Chatbot cohort delivery native owners
 on:
   push:
+    branches: [main]
     paths: ['tools/semantic_policy_token_owner/**', 'tests/test_policy_token_*.py', 'tools/chatbot_file_cohort/**', 'scripts/install-chatbot-file-cohort.py', 'scripts/deliver-chatbot-file-cohort.py', 'tests/test_chatbot_cohort_*.py', '.github/workflows/chatbot-cohort-delivery.yml']
   pull_request:
     paths: ['tools/semantic_policy_token_owner/**', 'tests/test_policy_token_*.py', 'tools/chatbot_file_cohort/**', 'scripts/install-chatbot-file-cohort.py', 'scripts/deliver-chatbot-file-cohort.py', 'tests/test_chatbot_cohort_*.py', '.github/workflows/chatbot-cohort-delivery.yml']
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 permissions: {contents: read}
 jobs:
   signed-native-delivery:

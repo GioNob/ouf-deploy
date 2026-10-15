@@ -27,6 +27,9 @@ on:
       - tests/test_semantic_transition_journal.py
       - tests/test_core_adapter_factory.py
   workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
