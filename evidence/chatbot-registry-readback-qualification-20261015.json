@@ -1,0 +1,44 @@
+{
+  "schema": "ouf.registry-creation-readback-qualification.v1",
+  "date": "2026-10-15",
+  "readerCommit": "75cc72d0c90220b8d3f1d8d7f39fa958a88048b3",
+  "readerPath": "scripts/read-chatbot-registry-creation-20261015.py",
+  "readerSha256": "fec439581e4080f517e68edd679bb4fe175515fbcd0d0afb296b79bb61caf8e3",
+  "workflowRun": 38729868880,
+  "workflowJob": 116404707174,
+  "conclusion": "success",
+  "tests": 5,
+  "skips": 0,
+  "localPureTests": 4,
+  "localUnixCapability": "socket creation denied by sandbox; executed successfully in hosted root",
+  "cases": [
+    "actual GET-only Unix HTTP and selector rejection before connection",
+    "complete bound main reads private review/authority/bundle/history and leaves files unchanged",
+    "created container exact comparator reports only names/types of mismatches",
+    "running OOM comparison follows existing production comparator without changing acceptance",
+    "only fixed allowlisted CreationDenied codes printed; private sentinel redacted"
+  ],
+  "limits": {
+    "maximumEngineGets": 52,
+    "maximumSecondsPerGet": 10,
+    "maximumOverallSeconds": 240
+  },
+  "target": {
+    "sourceCommit": "bc2d111200de75b90f8072a83c1739fbfb945313",
+    "reviewHash": "14ab339d3d29d3be9ad027ddad19dbd9ef3cc2b68ff1aece951a528e8c74ec29",
+    "authorityHash": "7db9ea82ed6fbbdc88cfdbd8e7315404e6c958e841731d1d12b22482f8fa8f30",
+    "context": "/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-b05102a00d9f20ec6a935e1de201d4a9bb800f2aac8876fe79b0ed187e5f9623"
+  },
+  "targetReadbackReceived": false,
+  "targetReaderExecutedByAgent": false,
+  "serviceMutations": 0,
+  "databaseMutations": 0,
+  "iamCalls": 0,
+  "grantRequests": 0,
+  "credentialOrTokenFilesRead": false,
+  "retainedSourceBodiesExecuted": false,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}
