@@ -1,0 +1,69 @@
+{
+  "schema": "ouf.signed-admission-recovery-qualification.v1",
+  "date": "2026-10-15",
+  "sourceCommit": "e70ca5957772e170bc762dd937e1c46a40051f0a",
+  "status": "IMPLEMENTED_NATIVE_QUALIFICATION_RUNNING",
+  "profile": "ouf.chatbot-signed-paused-admission-reprocessing.v1",
+  "capsuleSha256": "7f2ade604c8f084451674a0453a0ba3db8f8cda55dcda37c2ed446cb182e1149",
+  "capsuleFiles": 118,
+  "runtimeModules": 100,
+  "launcherSha256": "baf0c8c681a2f01439f9fe2e0336f4db1cbf492fc85190775a7c3046a08b2b72",
+  "targetEvidence": "evidence/chatbot-retained-attestation-target-20261015.json",
+  "checks": [
+    {
+      "runId": 38808949174,
+      "name": "Complete finite policy-token owner installation",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "runId": 38808949255,
+      "name": "OUF policy-token online IAM and installed owner qualification",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "runId": 38808949156,
+      "name": "Chatbot cohort delivery native owners",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "runId": 38808949152,
+      "name": "Policy-token governed legacy retirement component",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "runId": 38808949136,
+      "name": "Remaining Docker lifecycle contracts on 29.8.1",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "runId": 38808949218,
+      "name": "Native cutover HUMAN scope and existing Ed25519 verifier",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "runId": 38808949177,
+      "name": "OUF paused workload native state binding",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "local": {
+    "signedRecoveryTests": 6,
+    "terminalTests": 10,
+    "closedRuntimeTests": 3,
+    "launcherTests": 14,
+    "newWorkerNativeTests": "HOSTED_ONLY_LOCAL_GROUP_CUSTODY_UNAVAILABLE"
+  },
+  "allRequiredChecksPassed": false,
+  "operatorCommandDelivered": false,
+  "newRuntimeAuthorityIssued": false,
+  "targetMutationsThisDevelopment": 0,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}
