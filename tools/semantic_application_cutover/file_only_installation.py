@@ -69,7 +69,8 @@ def compile_scope(prepared,source_closure_hash):
         from tools.chatbot_file_cohort.postgrant_recovery import PROFILE
         from tools.chatbot_file_cohort.paused_recovery import PROFILE as PAUSED_PROFILE
         from tools.chatbot_file_cohort.mounted_recovery import PROFILE as MOUNTED_PROFILE
-        require(recovery.get('profile')in(PROFILE,PAUSED_PROFILE,MOUNTED_PROFILE)and paths['backup']==recovery['retainedBackupDirectory'],
+        from tools.chatbot_file_cohort.signed_recovery import PROFILE as SIGNED_PROFILE
+        require(recovery.get('profile')in(PROFILE,PAUSED_PROFILE,MOUNTED_PROFILE,SIGNED_PROFILE)and paths['backup']==recovery['retainedBackupDirectory'],
             'EXACT_REVIEWED_RETAINED_BACKUP_DIRECTORY_REQUIRED')
     require(intents['FENCED_BACKUP']['directory']==paths['backup'],'REGISTRY_BACKUP_DIRECTORY_SCOPE_DRIFT')
     require(prepared['nodeRecipe']['sourceClosureHash']==source_closure_hash

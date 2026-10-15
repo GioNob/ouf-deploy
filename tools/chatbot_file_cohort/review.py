@@ -96,8 +96,8 @@ def compile_review(*, source_closure, execution_profile, scopes, phase_intents,
             'FINITE_HUMAN_ACCEPTANCE_WINDOW_REQUIRED')
     worker = scopes['policyTokenFiniteWorkerSession']
     recovery=scopes['applicationRegistryCutover'].get('postGrantRecovery')
-    paused=type(recovery)is dict and recovery.get('profile')in('ouf.chatbot-paused-unsigned-attestation-reprocessing.v1','ouf.chatbot-paused-unsigned-attestation-reprocessing.v2')
-    prior=3 if paused and recovery['profile'].endswith('.v2')else(2 if paused else 1)
+    paused=type(recovery)is dict and recovery.get('profile')in('ouf.chatbot-paused-unsigned-attestation-reprocessing.v1','ouf.chatbot-paused-unsigned-attestation-reprocessing.v2','ouf.chatbot-signed-paused-admission-reprocessing.v1')
+    prior=4 if paused and recovery['profile']=='ouf.chatbot-signed-paused-admission-reprocessing.v1'else(3 if paused and recovery['profile'].endswith('.v2')else(2 if paused else 1))
     if paused:
         require(worker.get('schema')=='ouf.policy-token-new-finite-worker-session.v'+str(prior)
             and worker.get('predecessorCancelledWorkerHash')==recovery['cancelledWorkerHash']
@@ -196,6 +196,14 @@ def terminal_decision(review, review_path):
     summary = ('\nRevisione unica del ciclo CSV/chatbot.\n'
         'Documento privato completo: '+str(review_path)+'\n'
         'SHA256: '+review_hash+'\n'
+        +('Ripresa dopo attestazione firmata e controllo precedente alla migrazione.\n'
+          'Le sette fasi applicate, la firma precedente, i due intenti falliti e il nuovo intento sospeso restano nello storico.\n'
+          'Questa decisione autorizza una nuova attestazione con il codice corretto sullo stesso processo in pausa.\n'
+          'Una sola nuova ammissione DB richiede la verifica owner del database ancora chiuso e del backup conservato.\n'
+          'Il flag prudenziale databaseMayHaveChanged resta true; nessun ripristino DB o reset.\n'
+          'Quattro grant consumati restano conteggiati; il prossimo nuovo grant sara il quinto cumulativo.\n'
+          'Nessun replay CREATE/STAGE/SIGUSR1 o primo grant; nuova finestra finita, vecchie firme e claim intatti.\n'
+          if review.get('postGrantRecoveryReview',{}).get('profile')=='ouf.chatbot-signed-paused-admission-reprocessing.v1'else'')
         +('Ripresa dopo correzione della validità del token montato, sullo stesso Registry in pausa.\n'
           'Le sei fasi completate e i due intenti falliti restano conservati con backup e blocco DB.\n'
           'Tre grant già consumati restano conteggiati; il prossimo nuovo grant sarà il quarto cumulativo.\n'

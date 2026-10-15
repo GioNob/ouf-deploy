@@ -28,6 +28,7 @@
     "tools/chatbot_file_cohort/preparation.py",
     "tools/chatbot_file_cohort/review.py",
     "tools/chatbot_file_cohort/runtime.py",
+    "tools/chatbot_file_cohort/signed_recovery.py",
     "tools/chatbot_file_cohort/source_paths.json",
     "tools/chatbot_file_cohort/target_selection.py",
     "tools/semantic_application_cutover/application_verification_adapter.py",

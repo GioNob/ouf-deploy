@@ -147,7 +147,7 @@ def current_paused_native(previous,engine,native):
     from tools.semantic_provider_node_observation import rootfs_seal,NodeObservation
     from tools.semantic_provider_deployment_authentication import attributes,ancestors,decode
     from compile_file_only_frame_policy import compile_policy,private_bridge_namespace_name
-    registry=previous['prepared']['registry'];request=registry['creationRequest'];recipe=proposed_recipe(registry,retained_mount=previous.get('recoveryProfile')=='ouf.chatbot-paused-unsigned-attestation-reprocessing.v2')
+    registry=previous['prepared']['registry'];request=registry['creationRequest'];recipe=proposed_recipe(registry,retained_mount=previous.get('recoveryProfile')in('ouf.chatbot-paused-unsigned-attestation-reprocessing.v2','ouf.chatbot-signed-paused-admission-reprocessing.v1'))
     stage=previous['payloads']['evidence']['STAGE_PAUSED_REPLACEMENT']
     require(native['Id']==original.CREATED_ID and native['RestartCount']==0
         and native['State']['Status']=='paused'and native['State']['Paused']is True and native['State']['Running']is True

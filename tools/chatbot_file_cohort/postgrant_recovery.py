@@ -62,9 +62,10 @@ def validate_cutover_seed(row,intents,authority_hash=None):
 
 
 def recovery_component(profile):
-    from tools.chatbot_file_cohort import paused_recovery,mounted_recovery
-    require(profile in(paused_recovery.PROFILE,mounted_recovery.PROFILE),'EXACT_RECOVERY_PROFILE_REQUIRED')
-    return paused_recovery if profile==paused_recovery.PROFILE else mounted_recovery
+    from tools.chatbot_file_cohort import paused_recovery,mounted_recovery,signed_recovery
+    components={x.PROFILE:x for x in(paused_recovery,mounted_recovery,signed_recovery)}
+    require(profile in components,'EXACT_RECOVERY_PROFILE_REQUIRED')
+    return components[profile]
 
 
 def validate_worker_seed(first,worker,admission,session,completed,profile=None):
@@ -311,7 +312,8 @@ def current_baseline(predecessor,engine):
     require(legacy.quiescent(legacy.read_units()),'POSTGRANT_LEGACY_WRITER_NOT_QUIESCENT')
     return {'createdContainerId':CREATED_ID,'createdRuntimeHash':digest(actual),
         'postgresRuntimeHash':digest(pgpin),'databaseFenceProven':True,'imagesVerified':5,
-        'retainedPrefixPhaseCount':6 if paused else 4,'controlledGrantAttemptsRetained':predecessor['worker']['controlledCumulativeGrantAttempts'] if paused else 1,'serviceMutations':0,'grantRequests':0}
+        'retainedPrefixPhaseCount':6 if paused else 4,
+        **({'historicalAppliedPhaseCount':7,'newSourceRequiresFreshAttestation':True,'conservativeDatabaseFlagRetained':True}if predecessor.get('recoveryProfile')=='ouf.chatbot-signed-paused-admission-reprocessing.v1'else{}),'controlledGrantAttemptsRetained':predecessor['worker']['controlledCumulativeGrantAttempts'] if paused else 1,'serviceMutations':0,'grantRequests':0}
 
 
 def seed_registry(predecessor,directories,action,scope):

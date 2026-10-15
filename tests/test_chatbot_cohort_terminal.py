@@ -122,6 +122,15 @@ class HumanTerminal(unittest.TestCase):
         self.assertNotIn(b'Un primo grant (massimo 300 secondi)',output)
 
 
+    def test_signed_review_explains_four_grants_new_attestation_and_conservative_database_flag(self):
+        value,_=self.fixture();value['postGrantRecoveryReview']={'profile':'ouf.chatbot-signed-paused-admission-reprocessing.v1'}
+        expected=('APPROVO '+review.digest(value)).encode('ascii')
+        with patch.object(self,'fixture',return_value=(value,expected)):
+            output,_,_=self.interact([expected])
+        self.assertIn(b'RESULT_OK=',output);self.assertIn(b'Quattro grant',output);self.assertIn(b'quinto cumulativo',output)
+        self.assertIn(b'databaseMayHaveChanged resta true',output);self.assertIn(b'nuova attestazione',output)
+        self.assertNotIn(b'Tre grant',output);self.assertNotIn(b'Le quattro fasi',output)
+
     def test_mounted_review_explains_three_prior_grants_and_keeps_old_scope_summary_out(self):
         value,_=self.fixture();value['postGrantRecoveryReview']={'profile':'ouf.chatbot-paused-unsigned-attestation-reprocessing.v2'}
         expected=('APPROVO '+review.digest(value)).encode('ascii')
