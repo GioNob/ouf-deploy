@@ -8,7 +8,7 @@ UNIT=re.compile(r'ouf-file-cohort-[0-9a-f]{32}\.service')
 CODE=re.compile(r'[A-Z][A-Z0-9_]{0,159}')
 PROPERTIES=('Id','LoadState','ActiveState','SubState','Result','MainPID',
     'ExecMainCode','ExecMainStatus','ExecMainStartTimestamp','ExecMainExitTimestamp',
-    'ActiveEnterTimestamp','InactiveEnterTimestamp','RuntimeMaxUSec','Restart')
+    'ActiveEnterTimestamp','InactiveEnterTimestamp','RuntimeMaxUSec','Restart','StandardOutput','StandardError')
 
 def emit(check,**value):
     print(json.dumps({'schema':'ouf.chatbot-finite-action-readback.v1','check':check,
@@ -43,8 +43,10 @@ def public_record(message):
             return {k:value[k] for k in keys if k in value} if type(value)is dict else None
         match=re.fullmatch(r'[A-Za-z_][A-Za-z0-9_.]*: ([A-Z][A-Z0-9_]{0,159})',message.strip())
         return {'safeExceptionCode':match.group(1)} if match else None
-    if type(value)is dict and value.get('schema')=='ouf.chatbot-file-cohort-delivery-status.v1':
-        return value
+    if type(value)is dict:
+        if value.get('schema')=='ouf.chatbot-file-cohort-delivery-status.v1':return value
+        if value.get('schema')=='ouf.chatbot-file-cohort-child-exit.v1':
+            return {k:value[k] for k in ('schema','phase','exceptionType','privateDiagnosticPrinted') if k in value}
     return None
 
 def observe(context):
