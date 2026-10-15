@@ -1,30 +1,30 @@
 # Next chatbot/VPS action — 2026-10-15
 
-Latest target evidence: evidence/chatbot-bridge-proposal-target-20261015.json.
-Candidate24d36d23 independently matches COMPLETE target OCI, including all
-environment values/order and private namespace. The next image rootfs seal
-differs:9302entries,1719645735bytes. No attestation was accepted.
+Latest target evidence: evidence/chatbot-rootfs-entry-target-20261015.json.
+The candidate exact OCI passes. Rootfs differences are fully classified:8,
+all mount placeholders/ancestors and one directory link counter. The package
+CI qualifier used different mount TARGETS from the reviewed retained request.
+No shared image content drift is reported; no exclusions are allowed.
 
-Native run38781095495/source36861be7 PASS on both exact Docker29.8.1 stores.
-Both original v1 seals EXACTLY reproduce the original package:9301entries,
-1719645735bytes,510f56436da3e36b700b244e5e2476db9d4984216866e412b0484f951bfdb8a2.
-The store-only hypothesis was REFUTED for these inputs. No policy weakening.
-Read evidence/chatbot-frozen-rootfs-baselines-20261015.json and
-releases/CHATBOT_ROOTFS_BASELINE_DIAGNOSIS_20261015.md.
+Read releases/CHATBOT_RETAINED_MOUNT_ROOTFS_FIX_20261015.md and
+evidence/chatbot-retained-mount-rootfs-qualification-20261015.json.
+Independent native CI38784418792/sourcea535e987 PASS with original image,
+exact retained mount targets, same pre-Java gate and unchanged original sealer.
+Its complete entry differences reproduce all8 target public projections.
+Retained mount seal:9302entries,1719645735bytes,
+a73d7520737345d67030baaa2405478b3784fc84060f6ec6ccc6109f98ac2f11.
+Original package seal510f5643 remains retained, never overwritten.
 
-Next target action is ONLY scripts/read-chatbot-rootfs-entry-diff-20261015.py.
-Its embedded independent CI records reconstruct the exact retained package
-seal before comparison. It reuses the original unchanged sealer, captures
-every target entry, and reports exact differing fields without exclusions.
-It requires sudo only, no IAM/device/APPROVO. No token/credential content,
-signing, journal/config changes, grants, DB/IAM calls or container operations.
+Next target action is ONLY scripts/read-chatbot-retained-rootfs-proposal-20261015.py
+after its fixed-reader CI completes. It binds the reviewed four readonly targets
+and compares full OCI plus every image entry and exact new independent v1 seal.
+It requires sudo only; no IAM/device/APPROVO, no private credential/token content,
+signing, DB call, grant, journal/policy overwrite or runtime operation.
 
-Preserve target six APPLIED effects, paused generation, cumulative2 grants,
-cancelled worker, blocked admission and original/global claims. No old runtime
-relaunch, CREATE/STAGE/SIGUSR1/grant replay, policy overwrite or budget reset.
-Current boundary governed recovery is not implemented or authorized.
-
-Reader exact-source CI38782162247/job116584868336 PASS:8 tests,0 skips.
-Deliver ONLY reader84271d380d414a2fe211ac78f71c28b06d9e0e11, SHA256
-dbdcd40d90a2c5294623bc8777c1584d01a8704477e85004a1de362dad25c1bb.
-Await its complete ROOTFS_ENTRY_DIFFERENCES and END before runtime changes.
+Current target state unchanged: six APPLIED, ATTEST IN_FLIGHT/v13, no signature
+claim, same paused generation, cumulative2 grants/cancelled worker. Old authority
+expired and old global continuation claim reserved. Do not replay old launcher.
+Governed paused-attestation recovery is still NOT implemented: preserve all six
+effects, backups/fence, original history/claims, account new worker after2, bind
+changed recipe under fresh HUMAN finite approval and persistent fencing.
+Actual full private frame/token/peer acceptance and CSV chatbot E2E unproven.
