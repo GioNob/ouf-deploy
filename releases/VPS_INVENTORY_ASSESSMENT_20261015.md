@@ -95,5 +95,8 @@ del pacchetto deve restare nel preparatore.
 
 La correzione circoscritta è nella PR31, ramo
 codex/retained-inspection-channel-20261015, distinto dalla baseline PR29.
-Resta una bozza finché le prove native non passano. La qualificazione dei due
+Le prove native e la modalità prepare-only hanno passato193 test in25 suite al
+sorgente d8f23a433effbcb0ffb3581f658ce80f2963b595. La qualificazione dei due
 difetti non equivale alla qualificazione dell'intera consegna B03/B04.
+Il [prossimo passo](CHATBOT_PREPARATION_NEXT_20261015.md) è ora la preparazione
+completa con uscita obbligatoria a review privata, senza autorità o avvio runtime.
