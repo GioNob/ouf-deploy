@@ -1,0 +1,36 @@
+# Frozen Registry rootfs baseline diagnosis — 2026-10-15
+
+The owner target readback at19:43 CEST completed all checks without mutation.
+Candidate24d36d23 independently derives the exact COMPLETE observed OCI. The36
+environment rows have the same names and values and now the same order; fresh
+network namespace expectation and kernel sandbox binding pass. This fixes the
+previous expected-policy defect on the actual target, without accepting it.
+
+The next independent image seal differs:9302 entries and1719645735 bytes were
+read from the host image view; no credential/token bind content was read. The
+original seal and native journals were retained. This digest alone cannot
+identify whether content, directory topology, mode, ownership, links or xattrs
+differ. No rootfs policy may be weakened or replaced with the target digest.
+
+Code inspection shows the package seal was generated using the CLASSIC Docker
+MergedDir, while target runtime uses containerd overlayfs. Prior project
+diagnostics documented directory link-count differences between filesystems;
+that history is a hypothesis here, not evidence about this image.
+
+The new CI workflow uses the exact retained semantic part artifact11907831957
+from original successful run38584614991, archive digest5d28e55ca5541efadec4b93a6396c8f84d21e6db92766b785b1cd8c3fd10db09.
+It does not rebuild images. Two disposable Docker29.8.1 engines (classic and
+containerd) load these image bytes, create the same four synthetic mount
+targets, start only the nonroot pre-Java shell gate, pause, and compute the
+unchanged original v1 seal twice. Each canonical entry is retained in a CI
+artifact for diagnosis. No JVM release, target operation or acceptance occurs.
+
+Four local tests prove exact sealer stream replay, immutable original code
+verification, file drift detection and artifact hash rejection before output.
+Native CI results must be inspected before interpreting the target difference.
+This is a bounded experiment (15min/job,180s/scan), not a new target launcher.
+
+The target remains transitionv13/nextPhase6 with six APPLIED effects and unsigned
+ATTEST IN_FLIGHT, same paused PID3484588, cumulative2 grants and cancelled worker.
+Its old finite authority has expired. No current paused-attestation recovery
+profile is implemented; do not replay any earlier installer or remove claims.

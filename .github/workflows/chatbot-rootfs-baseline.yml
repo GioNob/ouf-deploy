@@ -1,0 +1,84 @@
+name: Frozen Registry rootfs across Docker image stores
+on:
+  push:
+    branches: [codex/vps-read-only-inventory-20261014]
+    paths:
+      - .github/workflows/chatbot-rootfs-baseline.yml
+      - scripts/diagnose-chatbot-rootfs-baseline.py
+      - tests/test_chatbot_rootfs_baseline.py
+permissions: {contents: read, actions: read}
+jobs:
+  frozen-rootfs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix: {profile: [classic, containerd]}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 8bff54a52a0ce15daccaf2aee932004f106dd178
+          path: frozen-source
+          persist-credentials: false
+      - name: Test independent original sealer capture and image-store classification
+        run: python3 -B -m unittest discover -s tests -p test_chatbot_rootfs_baseline.py -v
+      - name: Download the retained original semantic artifact without rebuilding
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          gh api repos/GioNob/ouf-deploy/actions/artifacts/11907831957/zip > /tmp/ouf-original-semantic.zip
+          echo '5d28e55ca5541efadec4b93a6396c8f84d21e6db92766b785b1cd8c3fd10db09  /tmp/ouf-original-semantic.zip' | sha256sum --check -
+      - name: Prepare exact disposable Docker 29.8.1 image store
+        env: {OUF_CI_PROFILE: '${{ matrix.profile }}'}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          sha256sum /tmp/ouf-docker-29.8.1.tgz
+          sudo install -d -m 755 /opt/ouf-docker-29
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
+          sudo chown -R root:root /opt/ouf-docker-29
+          sudo systemctl stop docker.service docker.socket
+          sudo systemctl start containerd.service
+          python3 - <<'PY'
+          import json,os
+          profile=os.environ['OUF_CI_PROFILE']
+          config={'features':{'containerd-snapshotter':profile=='containerd'},'exec-opts':['native.cgroupdriver=systemd']}
+          if profile=='classic':config['storage-driver']='overlay2'
+          with open('/tmp/ouf-rootfs-daemon.json','w')as stream:json.dump(config,stream)
+          PY
+          sudo systemd-run --unit=ouf-rootfs-ci-daemon --property=Restart=no \
+            --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-rootfs-daemon.json \
+            --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-rootfs-ci \
+            --exec-root=/run/docker --pidfile=/run/ouf-rootfs-ci.pid --containerd=/run/containerd/containerd.sock
+          for OUF_CI_POLL in $(seq 1 60); do
+            if sudo /opt/ouf-docker-29/docker info >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          test "$(sudo /opt/ouf-docker-29/docker version --format '{{.Server.Version}}')" = 29.8.1
+      - name: Seal the same image twice before Java with four synthetic private mounts
+        env: {OUF_CI_PROFILE: '${{ matrix.profile }}'}
+        run: |
+          set -euo pipefail
+          sudo install -d -m 700 /var/lib/ouf-rootfs-program
+          sudo cp scripts/diagnose-chatbot-rootfs-baseline.py /var/lib/ouf-rootfs-program/diagnose.py
+          sudo cp -R frozen-source /var/lib/ouf-rootfs-program/source
+          sudo chown -R root:root /var/lib/ouf-rootfs-program
+          sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            python3 -I -B -S /var/lib/ouf-rootfs-program/diagnose.py \
+            --part /tmp/ouf-original-semantic.zip --source-root /var/lib/ouf-rootfs-program/source \
+            --profile "$OUF_CI_PROFILE" --output /var/lib/ouf-rootfs-result
+          sudo cp -R /var/lib/ouf-rootfs-result result
+          sudo chown -R "$(id -u):$(id -g)" result
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: frozen-rootfs-${{ matrix.profile }}-${{ github.run_id }}
+          path: result/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Bounded disposable daemon diagnostics
+        if: failure()
+        run: sudo journalctl --unit=ouf-rootfs-ci-daemon --no-pager --lines=60
