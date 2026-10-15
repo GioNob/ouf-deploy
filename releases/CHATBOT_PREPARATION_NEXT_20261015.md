@@ -1,10 +1,44 @@
 # CSV/chatbot — handoff corrente, 15 ottobre 2026
 
-## Arresto corrente: continuazione4a65b9 / OSError
+## Readback OSError completato: credenziale pubblicata, grant0
 
-L'operatore ha eseguito il nuovo wrapper qualificato. Il preflight di recupero è PASS: cinque immagini e generazione APISIX esistenti verificati; contatori precedenti credenziale0/grant0/ritiro1. Review **261f9e998acaded184ec9be41a1be1dbd862c4c8b3c57d961cce6820a578b184** approvata e processo finito avviato. Poi INSTALLING_FINITE_TOKEN_OWNER → **PAUSED_REQUIRES_RECONCILIATION / OSError**. Il tipo generico non identifica errno, operazione o effetti. I contatori del preflight non provano l'assenza di effetti durante l'installazione. Nessun nuovo apply è autorizzato da questo checkpoint.
+L'operatore ha fornito l'intero output del reader87f2d8e:54 record, END complete=true, unavailableChecks vuoto. Archiviato integralmente in `evidence/chatbot-pregrant-oserror-readback-20261015.json` (allegato SHA25668ae2671e29b07ae1e2f3e56836e86f63e8bc0f6f88ccfe4297c747392c15557). Il processo4a65b9 è spento/not-found/PID0. Stato PAUSED_REQUIRES_RECONCILIATION/OSError. Nessun errno o traceback è conservato nei10 record systemd.
 
-**Non rilanciare il wrapper4a65b9 né precedenti, non riavviare l'unità consumata, non cancellare ricevute e non fare reset-failed.** Il prossimo passo è esclusivamente il reader `scripts/read-chatbot-pregrant-oserror-20261015.py`, SHA256 **87f2d8e25347ce5f3d6b0be0aef205640cc683d815314ea9ddd70a887f4ae9c9**. Verificato localmente per compilazione, proiezione errno/redazione, prosecuzione dei controlli indipendenti e comandi nativi read-only. Richiede solo sudo; nessun login IAM o browser.
+**Non eseguire wrapper o sorgenti di installazione, compreso07a2c4.** La correzione TLS è qualificata ma la continuazione post-credenziale NON è implementata. Il precedente recupero richiedeva credenziale/sessione assenti e non può essere riutilizzato. La prossima azione è solo il probe pubblico sotto.
+
+Evidenze target nuove:
+- Credenziale: NEW_CREDENTIAL_CUSTODIED_NOT_RUNTIME_ACCEPTED/version1, iamMutationAttemptConsumed=true, credentialPublished=true. Hash record **a9fa6304781bff2c9a795d16520881401a49124db869de87338f8978251436ae**. La directory credenziale contiene1 elemento, il reader non ne ha letto il contenuto.
+- Sessione: NEW_FINITE_SESSION/version0/attemptSlotsConsumed0. Hash **2879325cd95434413f29dc4058d945e16d0bbc71eaf29d44176c705b5ca6ce0c**. Receipt firstGrant assente; output token vuoto; quattro record worker assenti. Il contratto riserva il tentativo prima della POST di grant: questa sessione non è arrivata alla richiesta.
+- Continuazione: intent6bdf577601a0b4275b52c2758e7bb5493024682cdea12f1f46a62e8ee75d6dc7; completed assente. Receipt output c5d6d3bc78d65c18127058b8e236246f5cfde87d93ddc5aac5d7f8f6471880a7; retirement3b054f15c49ff43e9de9a6fb5aa642dad8ad23757130af2a9cdd236cb83538d5, QUIESCENCE_OBSERVED. Record originari95749 intatti.
+- Stage corrente: intent a654074cc01bf4c702041591907614e1ca22a6ee34ff37b6b0e4abadf084dc53, manifest **0ff3cf4f630709a74c089b4aa75359aa27d62176a9c0975d8f9db90a831b99bf**,10file tutti corrispondenti, zero staging parziali.
+- authorization journal80db4295967f18a733adff0c3b5273d1af9af0789bcddbe7b76ac4849907b465/version1; containers/databases/gateway/gatewayRuntime assenti nel nuovo context. APISIX completato resta nel predecessor95749, non è stato reinstallato nel context4a65b9.
+- Spazio corrente:352277303296byte disponibili,32668398inode liberi nel filesystem target; /tmp8369836032byte disponibili. Mount scrivibili. Non c'è evidenza corrente di esaurimento; non attribuire OSError a disco/RAM. Footprint capsule108397015040byte,20intake+4signed. Nessuna pulizia effettuata o autorizzata da questo checkpoint.
+
+## Difetto reale riprodotto e corretto, causa VPS ancora da confermare
+
+Il client `iam_admission._Socket.makefile` avvolgeva direttamente SSLSocket in un RawIOBase senza il riferimento nativo creato da socket.makefile. http.client chiude la connessione dopo gli header di una risposta non persistente; il successivo read del body usava quindi il socket già chiuso. Riprodotto prima della correzione con vero TLS loopback/HTTP1.0: **OSError errno9 EBADF,1 discovery GET,0 grant**. Il punto corrisponde alla fascia osservata: prima sessione aperta, prima consume_attempt_slot. Il VPS non ha conservato l'errno, quindi questa è una causa candidata, non ancora una root cause dimostrata sul target.
+
+Correzione sorgente **07a2c46203ea36b0af141cbe3f32f01475d90158**, tree18747c3e1390b617fd5f129c6420679dd0c6e9ca, PR31 draft/unmerged. Il Raw conserva il file nativo SSLSocket.makefile(rb,buffering=0) e lo rilascia alla chiusura del body. Restano deadline complessiva, massimo body, peer/IP, hostname/CA e redirect vietati. Nessuna modifica ai microservizi applicativi, immagini, ruoli o pacchetto. Capsula696912f1db597573baabd5915132e35d4df4872c2c1fb5ea1e67e216768dd7b8/112file; launcherb7fdc162d2a143569bad7ed15aa98d3ddee3b16bcdb21b17126efe433430448d.
+
+Tutti gli8workflow push/PR PASS. Consegnacoordinata38719053215:263test/34suite/zero skip; online IAM38719053168:236test/31suite/zero skip. Installazione completa38719053131 PASS, incluso flusso reale con Connection:close e nuovo caso di errore discovery che conserva credenziale e sessione0. Localmente10testTLS e3closure completi PASS; nuovi casi HTTP1.0/Connection:close, body frammentati, deadline, socket chiusi. Vedi `evidence/chatbot-iam-http-close-qualification-20261015.json`.
+
+## Passo richiesto all'operatore: solo due GET pubbliche
+
+Reader `scripts/read-chatbot-iam-close-20261015.py`, SHA256 **ecd9849a4fd89657c267d2e1b0af7406c37fe19e84a385ad52bb63cb41f2c148**. Verificato localmente con serverTLS reale: il percorso precedente riproduce EBADF, quello con riferimento nativo passa; esattamente2GETdiscovery, nessun token o valore privato stampato. Il lettore rilegge review/authority/bundle del context eff1... e hash credential/session sopra, conferma processo fermo, stat del solo client-secret (nessuna lettura), scadenza della sessione e assenza del primo grant. Poi confronta due GET allo stesso issuer/IP/TLS trust già revisionati: vecchio comportamento e stream corretto. Massimo10secondi ciascuno, nessuna risoluzione DNS/proxy/redirect, nessuna POST, introspezione, credenziale, grant, scrittura o rinnovo di autorità. Riporta HTTPversion/will-close/errno ed esito identità del body senza stampare body o indirizzi.
+
+La prossima risposta deve essere l'output di questo probe; non un nuovo tentativo di installazione. La chat può consegnarlo in memoria con verifica hash prima di sudo, come il reader precedente. Nessun login Keycloak/device/HUMAN necessario per il probe. CSV end-to-end ancora non dimostrato.
+
+## Recupero post-credenziale da implementare dopo il probe
+
+Serve una nuova review esplicita e un nuovo percorso stretto per la sola storia4a65b9 osservata, dopo finestra precedente scaduta/processo spento. Conservare credenziale già pubblicata, vecchia sessione0/scadenze, intent/receipt, source stage95749 e4a65b9, contatori e claim. Non rifare mask/stop, mkdir, image load, APISIX o rotazione. Il codice attuale NON lo fa e non deve essere lanciato sperando che riprenda.
+
+La sessione di300secondi non può essere estesa o sovrascritta: una nuova decisione HUMAN può aprire un budget distinto per lo stesso logical operation/incident, con predecessore hashato e cumulative grant0→massimo1. Record e lock della prima claim restano stabili; un nuovo job/source ID non concede altri grant. Concorrenza/revoca, credenziale mutata, vecchio counter consumato, nuove history di worker/DB/applicazioni o drift nativo devono negare prima degli effetti. L'adozione del secret può leggerlo solo nell'owner corrente autorizzato, per confrontarlo con il record completato; il probe non lo legge. Prima della nuova review, verificare nativamente immagini/APISIX, entrambe le generazioni di source stage e public discovery corretta.
+
+Attenzione al codice `previous_authorization_actions`: oggi visita95749 e chiama observe_pregrant che richiede credential/session assenti; questo ora fallirebbe anche prima di arrivare al context4a65b9. Occorre una prova post-credenziale completa preliminare, legata alla review4a65b9 che già incorpora il proof95749, per distinguere lo storico originario dalla continuazione successiva. Non aggiungere un generico allow_existing_history.
+
+L'osservabilità va completata nel nuovo recupero: l'eccezione corrente conserva solo il tipo; registrare in modo sicuro fase/errno e posizioni del sorgente verificato, senza messaggi/argomenti o secret. Non ripetere una mutazione solo per ottenere un traceback.
+
+## Binding e storia conservati
 
 Il reader è fissato a:
 - source **4a65b9326c15d9758ecba1793965617a2a92e43e**;
