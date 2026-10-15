@@ -100,8 +100,125 @@ def compile_process_plan(*, logical_operation, source_closure_hash, programs,
         'authorityDirectory':authority_directory, 'unit':unit, 'argv':argv,
         'directoryPlan':copy.deepcopy(directory_plan),
         'maximumElapsedSeconds':maximum_seconds, 'restart':'no', 'enableAtBoot':False,
+        'standardOutput':'journal','standardError':'journal',
         'startsBeforeFirstGrant':True, 'sameInvocationWorkerHandoffRequired':True,
         'automaticReplayAllowed':False, 'permanentRuntimeAcceptance':False}
+
+
+AUTHORIZATION_ONLY_PREDECESSOR_SOURCE='6959b1dbaeb30ca3a838c7d6243a55e9cfc5118a'
+
+
+def observed_private_json(path,maximum):
+    path=Path(path)
+    with protected_directory(path.parent) as directory:
+        raw=evidence.read_member(directory,path.name)
+    require(len(raw)<=maximum,'BOUNDED_PREVIOUS_ACTION_RECORD_REQUIRED')
+    binding={'path':str(path),'sha256':hashlib.sha256(raw).hexdigest()}
+    require(private_file(binding,maximum)==raw,'PREVIOUS_ACTION_READ_DRIFT')
+    return evidence.decode(raw),binding
+
+
+def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None):
+    """Reconcile only the known auth-only predecessor; never resume a start claim.
+
+    An expired, stopped window plus empty unapplied stage journals proves that
+    no first grant or application attempt is being reset. Any later-stage or
+    ambiguous history requires a separate owner reconciliation path.
+    """
+    require(re.fullmatch('[0-9a-f]{64}',str(manifest_hash)),'EXACT_RECOVERY_COHORT_REQUIRED')
+    require(governance.executable(systemctl['path'])==systemctl,'RECOVERY_SYSTEMCTL_BINDING_CHANGED')
+    with evidence.protected_parent():
+        contexts=sorted(evidence.PARENT.glob('chatbot-file-cohort-signed-*'))
+    require(len(contexts)<=16,'BOUNDED_PREVIOUS_COHORT_CONTEXTS_REQUIRED')
+    result=[]
+    for context in contexts:
+        if str(context)==exclude_context:continue
+        require(re.fullmatch('chatbot-file-cohort-signed-[0-9a-f]{64}',context.name),
+                'EXACT_PREVIOUS_ACTION_CONTEXT_REQUIRED')
+        review,review_binding=observed_private_json(context/'review.json',262144)
+        if review.get('privateInputHashes',{}).get('cohortManifest')!=manifest_hash:continue
+        require(review.get('schema')=='ouf.chatbot-file-cohort-full-action-review.v1'
+            and review['sourceClosure']['declaration']['sourceCommit']==AUTHORIZATION_ONLY_PREDECESSOR_SOURCE,
+            'PREVIOUS_ACTION_SOURCE_REQUIRES_OWNER_RECONCILIATION')
+        process=review['scopes']['finiteActionProcess'];operation=process['logicalOperationHash']
+        require(context.name=='chatbot-file-cohort-signed-'+operation
+            and process['authorityDirectory']==str(context)
+            and process['unit']=='ouf-file-cohort-'+operation[:32]+'.service',
+            'PREVIOUS_ACTION_PROCESS_IDENTITY_DRIFT')
+        decision,decision_binding=observed_private_json(context/'decision.json',8192)
+        require(decision.get('approvedReviewHash')==digest(review)
+            and decision.get('approvedSourceClosureHash')==review['sourceClosureHash']
+            and type(decision.get('approvedAt'))is int
+            and decision.get('decision')=='APPROVE_ONE_FINITE_CHATBOT_FILE_COHORT_ACTION'
+            and decision.get('state')=='ACTIVE'
+            and type(decision.get('expiresAt'))is int and 0<decision['expiresAt']-decision['approvedAt']<=3600
+            and type(decision.get('expiresAt'))is int and decision['expiresAt']<=time.time(),
+            'PREVIOUS_FINITE_WINDOW_MUST_BE_EXPIRED')
+        authority,authority_binding=observed_private_json(context/'authority.json',131072)
+        require(authority.get('expiresAt')==decision['expiresAt']
+            and authority.get('finiteActionProcess')==process
+            and authority.get('sourceClosureHash')==review['sourceClosureHash']
+            and authority.get('chatbotFileAuthorization')==review['scopes']['chatbotFileAuthorization'],
+            'PREVIOUS_AUTHORITY_SCOPE_DRIFT')
+        status,status_binding=observed_private_json(context/'delivery-status.json',8192)
+        require(status.get('schema')=='ouf.chatbot-file-cohort-delivery-status.v1'
+            and status.get('phase')=='PAUSED_REQUIRES_RECONCILIATION'
+            and status.get('authorityHash')==authority_binding['sha256']
+            and status.get('budgetReset') is False,'PREVIOUS_ACTION_OUTCOME_REQUIRES_RECONCILIATION')
+        output=subprocess.run([systemctl['path'],'show',process['unit'],
+            '--property=ActiveState,MainPID'],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,timeout=10,check=False)
+        require(output.returncode==0 and len(output.stdout)<=8192,'PREVIOUS_PROCESS_STATE_UNAVAILABLE')
+        rows=dict(line.split('=',1) for line in output.stdout.decode().splitlines() if '=' in line)
+        require(rows.get('ActiveState') in ('inactive','failed') and rows.get('MainPID')=='0',
+                'PREVIOUS_FINITE_PROCESS_MUST_BE_STOPPED')
+        claim,claim_binding=observed_private_json(evidence.PARENT/('chatbot-file-cohort-process-'+operation+'.claim.json'),8192)
+        require(claim.get('authorityHash')==authority_binding['sha256'] and claim.get('planHash')==digest(process)
+            and claim.get('state')=='START_CONSUMED_OUTCOME_UNPROVEN'
+            and claim.get('automaticReplayAllowed') is False
+            and type(claim.get('runtimeMaxSeconds'))is int and 0<claim['runtimeMaxSeconds']<=3600,
+            'PREVIOUS_START_CLAIM_MUST_BE_RETAINED')
+        completed,completed_binding=observed_private_json(context/'directories.completed.json',32768)
+        wanted=process['directoryPlan']
+        require({'authorization','containers','databases','gateway','gatewayRuntime','backups','dockerCli',
+            'imageSemantic','imageUdp','imageOnboarding','imageIngestion','imageMcp'}<=set(wanted)
+            and len(wanted)<=24,'COMPLETE_PREVIOUS_APPLICATION_DIRECTORY_PLAN_REQUIRED')
+        require(completed.get('authorityHash')==authority_binding['sha256']
+            and completed.get('planHash')==digest(wanted),'PREVIOUS_DIRECTORY_PLAN_DRIFT')
+        for name,path in wanted.items():
+            require(Path(path).is_relative_to(context) and Path(path)!=context,'PREVIOUS_STAGE_PATH_DRIFT')
+            with protected_directory(path) as directory:
+                info=os.fstat(directory)
+                require(completed['identities'].get(path)=={'device':info.st_dev,'inode':info.st_ino},
+                        'PREVIOUS_STAGE_DIRECTORY_IDENTITY_DRIFT')
+                allowed=({'recovery.json','recovery.lock','invocation.lock'} if name=='authorization' else
+                    {Path(p).name for p in wanted.values() if Path(p).parent==Path(path)})
+                require(set(os.listdir(directory))<=allowed,
+                        'PREVIOUS_APPLICATION_OR_TOKEN_STAGE_HISTORY_REQUIRES_OWNER_RECONCILIATION')
+        auth_path=Path(wanted['authorization'])/'recovery.json'
+        journal,journal_binding=observed_private_json(auth_path,65536)
+        require(journal.get('schema')=='ouf.chatbot-file-authorization-journal.v1'
+            and journal.get('authorityHash')==authority_binding['sha256']
+            and journal.get('planHash')==review['scopes']['chatbotFileAuthorization']['planHash']
+            and journal.get('budgetReset') is False,'PREVIOUS_AUTHORIZATION_HISTORY_DRIFT')
+        effects=journal.get('effects',{})
+        require(effects and all(e.get('state')=='APPLIED' and type(e.get('attempts'))is int
+            and 1<=e['attempts']<=128 for e in effects.values()),
+            'AMBIGUOUS_PREVIOUS_AUTHORIZATION_EFFECT_REQUIRES_OWNER_RECONCILIATION')
+        result.append({'schema':'ouf.chatbot-auth-only-predecessor-readback.v1',
+            'context':str(context),'unit':process['unit'],'authorityHash':authority_binding['sha256'],
+            'sourceCommit':AUTHORIZATION_ONLY_PREDECESSOR_SOURCE,'expiredAt':decision['expiresAt'],
+            'processStopped':True,'startClaimRetained':True,'budgetReset':False,
+            'applicationStageClaimsPresent':False,'firstGrantStageClaimsPresent':False,
+            'priorAuthorizationEffectAttempts':{n:e['attempts'] for n,e in sorted(effects.items())},
+            'recordBindings':[review_binding,decision_binding,authority_binding,status_binding,
+                claim_binding,completed_binding,journal_binding]})
+    return result
+
+
+def verify_previous_authorization_actions(expected,manifest_hash,systemctl,context):
+    require(previous_authorization_actions(manifest_hash,systemctl,str(context))==expected,
+            'PREVIOUS_ACTION_HISTORY_CHANGED_BEFORE_NEW_EXECUTION')
 
 
 class FiniteActionProcess:
@@ -131,7 +248,7 @@ class FiniteActionProcess:
     def properties(self):
         self.guard()
         result = subprocess.run([self.plan['programs']['systemctl']['path'], 'show', self.plan['unit'],
-            '--property=Id,LoadState,ActiveState,SubState,MainPID,Transient,Restart,RuntimeMaxUSec,DropInPaths,EnvironmentFiles'],
+            '--property=Id,LoadState,ActiveState,SubState,MainPID,Transient,Restart,RuntimeMaxUSec,DropInPaths,EnvironmentFiles,StandardOutput,StandardError'],
             stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=10, check=False,
             env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin', 'LANG':'C', 'LC_ALL':'C'})
         require(result.returncode == 0 and len(result.stdout) <= 8192, 'FINITE_PROCESS_STATE_UNAVAILABLE')
@@ -158,6 +275,7 @@ class FiniteActionProcess:
         require(rows.get('LoadState') == 'loaded' and rows.get('ActiveState') == 'active'
                 and rows.get('SubState') == 'running' and rows.get('Transient') == 'yes'
                 and rows.get('Restart') == 'no' and not rows.get('DropInPaths')
+                and rows.get('StandardOutput')=='journal' and rows.get('StandardError')=='journal'
                 and not rows.get('EnvironmentFiles') and rows.get('MainPID', '').isdigit()
                 and int(rows['MainPID']) > 1, 'EXACT_ACTIVE_FINITE_PROCESS_REQUIRED')
         pid = int(rows['MainPID'])
@@ -201,7 +319,9 @@ class FiniteActionProcess:
             require(publish(directory, self.claim, encoded(claim)), 'FINITE_PROCESS_START_ALREADY_CONSUMED')
         self.guard()
         argv = [self.plan['programs']['systemdRun']['path'], '--quiet', '--collect',
+            '--description=OUF finite reviewed CSV chatbot action',
             '--unit='+self.plan['unit'], '--property=Type=exec', '--property=Restart=no',
+            '--property=StandardOutput=journal', '--property=StandardError=journal',
             '--property=RuntimeMaxSec='+str(remaining), '--property=KillMode=control-group',
             '--property=TimeoutStopSec=30', '--property=UMask=0077', '--property=WorkingDirectory=/',
             '--', *self.plan['argv']]

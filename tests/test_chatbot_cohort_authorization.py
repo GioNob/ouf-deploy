@@ -7,6 +7,7 @@ import copy
 import hashlib
 import json
 import os
+import subprocess
 from pathlib import Path
 import sys
 import types
@@ -66,6 +67,13 @@ def fixture():
     obs = {'active':active,'roles':roles,'registrations':{cap['capabilityId']:{'ownerRef':'ingestion','descriptor':cap}},
            'oauth':{'scopes':scopes,'clients':clients}}
     return selection,obs
+
+
+def owner_constraint_roundtrip(catalogue):
+    cp=os.environ['OUF_OWNER_JAVA_CLASSPATH']
+    result=subprocess.run(['java','-cp',cp,'OwnerConstraintRoundTrip'],input=encoded(catalogue),
+        stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=30,check=True)
+    return json.loads(result.stdout)
 
 
 class OwnerFixture:
@@ -144,7 +152,7 @@ class OwnerFixture:
 
     def human_confirms(self):
         # Explicit fixture HUMAN owner transition; production code has no such adapter.
-        self.current['roles'] = copy.deepcopy(self.plan['targetRoles'])
+        self.current['roles'] = owner_constraint_roundtrip(self.plan['targetRoles'])
         policy = self.current['active']['policy']
         policy['grants'] += list(expected_role_grant_additions(self.plan).values())
         policy['version'] += 1
@@ -164,6 +172,18 @@ class CompilerTest(unittest.TestCase):
         self.assertEqual(set(plan['scopeCreations']),set(NEW)|{'ingestion.operations.read'})
         self.assertEqual({b['purpose'] for b in plan['scopeBindings']},{'chatgpt'})
         self.assertFalse(plan['revokeSessions']);self.assertFalse(plan['issueTokens'])
+    def test_pinned_java_owner_roundtrip_is_exact_and_reproduces_old_sparse_mismatch(self):
+        plan=self.compile();target=plan['targetRoles']
+        self.assertEqual(owner_constraint_roundtrip(target),target)
+        sparse=copy.deepcopy(target)
+        additions={p['capabilityId'] for p in plan['addedPermissions']}
+        for role in sparse['roles']:
+            for permission in role['permissions']:
+                if permission['capabilityId'] in additions:
+                    permission['constraints']={k:v for k,v in permission['constraints'].items()
+                        if k in ('effect','resourceType','resourceAttributes') or v not in (None,[])}
+        self.assertNotEqual(sparse,owner_constraint_roundtrip(sparse))
+        self.assertEqual(owner_constraint_roundtrip(sparse),target)
     def test_conflicting_registration_and_missing_status_contract_fail_before_any_transport(self):
         cap=next(iter(NEW));self.obs['registrations'][cap]={'ownerRef':'wrong','descriptor':{}}
         with self.assertRaisesRegex(ValueError,'REGISTRATION_CONFLICT'):self.compile()
@@ -273,6 +293,25 @@ class ComposedAuthorizationTest(unittest.TestCase):
         with self.assertRaisesRegex(AuthorizationPaused,'LOST_RESPONSE'):self.delta.apply()
         self.prepare()
         self.assertEqual(self.owner.calls.count(('POST',ADMIN+'/capabilities')),3)
+    def test_reprepare_after_real_owner_publication_has_no_second_role_or_iam_delta(self):
+        self.prepare();self.owner.human_confirms();self.delta.apply()
+        plan=compile_plan(self.owner.observe(),self.primitives,self.plan['selection'])
+        self.assertIsNone(plan['roleProposal']);self.assertEqual(plan['targetRoles'],self.owner.roles())
+        self.assertEqual(plan['addedPermissions'],[]);self.assertEqual(plan['addedDescriptors'],[])
+        self.assertEqual(plan['registrationAdditions'],[]);self.assertEqual(plan['scopeCreations'],{})
+        self.assertEqual(plan['scopeBindings'],[])
+        self.assertEqual(plan['baseline']['active']['policy']['grants'],self.owner.active()['policy']['grants'])
+    def test_expired_or_rejected_review_stops_without_another_proposal(self):
+        self.prepare()
+        for state in ('EXPIRED','REJECTED'):
+            next(iter(self.owner.proposals.values()))['state']=state
+            with self.assertRaisesRegex(AuthorizationPaused,'HUMAN_OWNER_ROLE_PROPOSAL_'+state):self.delta.apply()
+        self.assertEqual(len(self.owner.proposals),1)
+        self.assertEqual(sum(c[0]=='authorization.permissions.propose' for c in self.owner.calls),1)
+    def test_exact_catalogue_comparison_still_rejects_unrelated_role_changes(self):
+        self.prepare();self.owner.human_confirms()
+        self.owner.current['roles']['roles'][0]['displayName']='Changed outside the review'
+        with self.assertRaisesRegex(ValueError,'ROLE_BASELINE_DRIFT'):self.delta.apply()
     def test_ambiguous_non_idempotent_draft_is_not_recreated_and_exact_owner_id_can_reconcile(self):
         self.owner.lost=('POST',ADMIN+'/policies')
         with self.assertRaisesRegex(AuthorizationPaused,'LOST_RESPONSE'):self.delta.apply()

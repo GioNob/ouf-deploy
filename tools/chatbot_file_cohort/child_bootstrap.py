@@ -112,4 +112,12 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as error:
+        # The delivery already persists its bounded public reason. Startup
+        # failures must not send arbitrary exception bodies to the journal.
+        print(json.dumps({'schema':'ouf.chatbot-file-cohort-child-exit.v1',
+            'phase':'FINITE_CHILD_FAILED','exceptionType':type(error).__name__,
+            'privateDiagnosticPrinted':False},sort_keys=True),flush=True)
+        raise SystemExit(1)

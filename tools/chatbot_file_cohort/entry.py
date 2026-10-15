@@ -394,6 +394,26 @@ def environment_deltas(engine,origin,*,tenant=None,issuer=None,audience=None,ing
                      {'set':{'SPRING_APPLICATION_JSON':updated_overlay(ing_json,ing_updates)}}),'mcp':{}}
 
 
+def human_action_message(value):
+    """Explain the required browser decision outside machine JSON."""
+    if value.get('phase')=='PAUSED_REQUIRES_RECONCILIATION':
+        return 'Esecuzione sospesa; serve riconciliazione. Motivo: '+str(value.get('reason','UNKNOWN'))
+    if value.get('phase')!='HUMAN_OWNER_ROLE_CONFIRMATION_REQUIRED':return None
+    if value.get('state')!='PENDING':
+        return 'La proposta dei ruoli non è approvabile: '+str(value.get('state','UNKNOWN'))+'. Non usare il vecchio link.'
+    path=value.get('approvalPath');proposal=value.get('proposalId')
+    require(type(path)is str and type(proposal)is str and re.fullmatch('[0-9a-f-]{36}',proposal),
+            'EXACT_OWNER_ROLE_BROWSER_LINK_REQUIRED')
+    parsed=urlsplit(path)
+    require(parsed.scheme=='https' and parsed.hostname and not parsed.username and not parsed.password
+            and not parsed.fragment and parsed.path=='/trusted-human/authorization/'
+            and parsed.query=='proposal='+proposal,'EXACT_OWNER_ROLE_BROWSER_LINK_REQUIRED')
+    return ('\nAZIONE RICHIESTA: apri questo link nel browser e revisiona i ruoli OUF:\n'+path+
+        '\nConferma solo dopo aver letto la review. Scadenza proposta: '+str(value.get('expiresAt','UNKNOWN'))+
+        '\nNon serve un device code XXXX-YYYY per questa conferma.\n'
+        'Il mandato complessivo non viene esteso da questa attesa.\n')
+
+
 def watch_child(receipt,systemctl):
     import subprocess
     path=Path(receipt['context'])/'delivery-status.json';last=None
@@ -403,6 +423,8 @@ def watch_child(receipt,systemctl):
             raw=source_bytes(path,maximum=8192)
             if raw!=last:
                 value=json.loads(raw);print(json.dumps(value,sort_keys=True,separators=(',',':')),flush=True);last=raw
+                message=human_action_message(value)
+                if message is not None:print(message,flush=True)
                 if (value['phase']=='ACTUAL_CSV_OWNER_ACCEPTANCE_OBSERVED'
                         and value.get('ownerAcceptance',{}).get('phase')=='TWO_SOURCE_COMMIT_AND_REUSE_PROVEN'):
                     return

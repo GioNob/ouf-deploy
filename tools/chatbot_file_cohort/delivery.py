@@ -10,6 +10,7 @@ import dataclasses
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import signal
 import shutil
@@ -33,7 +34,7 @@ from tools.semantic_policy_token_owner.producer import Binding, protected_direct
 from tools.semantic_policy_token_owner.iam_admission import IamProfile, PinnedIamOpener
 from tools.semantic_policy_token_owner.reporter import OwnerReporter
 from tools.semantic_policy_token_owner.worker_entry import serve
-from tools.chatbot_file_cohort.action_process import private_file
+from tools.chatbot_file_cohort.action_process import private_file,verify_previous_authorization_actions
 from tools.chatbot_file_cohort.review import digest, encoded, require, validate_decision, command_matches
 from tools.chatbot_file_cohort.containers import CohortContainers, CohortPaused
 from tools.chatbot_file_cohort.databases import CohortDatabases
@@ -43,8 +44,14 @@ from tools.chatbot_file_cohort.images import CohortImages
 from tools.chatbot_file_cohort.gateway_runtime import GatewayRuntime, runtime_scope
 from tools.chatbot_file_cohort.human_session import HumanSession, HumanSessionPaused
 from tools.chatbot_file_cohort.acceptance import AcceptanceObserver
+from tools.chatbot_file_cohort.plan import PlanDenied
 import qualified_owner_authorization_lifecycle
 import qualified_owner_scope_catalogue
+
+def public_failure_reason(error):
+    reason=str(error) if type(error) in (evidence.CandidateDenied,RuntimeError,PlanDenied) else type(error).__name__
+    return reason if re.fullmatch('[A-Z][A-Z0-9_]{0,159}',reason) else type(error).__name__
+
 
 STAGE_SOURCE = {
     'bounded-recovery.py':'tools.semantic_lease_recovery.bounded_recovery',
@@ -343,10 +350,7 @@ class Delivery:
                             reason=type(observation_error).__name__
                         self.report('CSV_ACCEPTANCE_EVIDENCE_UNAVAILABLE',reason=reason)
         except Exception as error:
-            reason = str(error) if type(error) in (evidence.CandidateDenied, RuntimeError) else type(error).__name__
-            if not reason or len(reason)>160 or any(c not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789' for c in reason):
-                reason = type(error).__name__
-            self.report('PAUSED_REQUIRES_RECONCILIATION',reason=reason)
+            self.report('PAUSED_REQUIRES_RECONCILIATION',reason=public_failure_reason(error))
             raise
         finally:
             self.stop.set()
@@ -388,4 +392,6 @@ def child_main(prepared, sources, manifest, context_path):
     action = AggregateAction(gate,authority_raw,review['sourceClosureHash'])
     for key,scope in review['scopes'].items():
         action.guard(key,scope)
+    verify_previous_authorization_actions(prepared.get('previousFiniteActions',[]),
+        prepared['imagePlan']['cohortManifestHash'],review['sourceClosure']['executables']['systemctl'],context)
     Delivery(action,prepared,sources,review,context).run()

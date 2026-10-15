@@ -188,6 +188,13 @@ def terminal_decision(review, review_path):
     summary = ('\nRevisione unica del ciclo CSV/chatbot.\n'
         'Documento privato completo: '+str(review_path)+'\n'
         'SHA256: '+review_hash+'\n'
+        +('Ripresa con nuova finestra finita: '+str(len(review['previousFiniteActions']))+
+          ' tentativo precedente scaduto e spento, storico e claim conservati.\n'
+          'Verificata assenza di claim applicative e del primo grant nei tentativi precedenti.\n'
+          if review.get('previousFiniteActions') else '')+
+        ('I ruoli OUF risultano già pubblicati: vengono riletti, senza nuova proposta se invariati.\n'
+          if review.get('authorizationReview',{}).get('requiresNewRoleConfirmation') is False else
+          'Eventuale conferma dei ruoli: apri il link browser esplicito; la proposta dura 15 minuti.\n')+
         'Include sostituzione dei cinque servizi applicativi, route Gateway, autorizzazioni esplicite,\n'
         'backup e migrazioni previsti, installazione owner e ritiro del servizio/timer policy-token semantic.\n'
         'Se MCP ha le tre migrazioni pendenti: creazione del ruolo audit NOLOGIN con amministratore DB,\n'

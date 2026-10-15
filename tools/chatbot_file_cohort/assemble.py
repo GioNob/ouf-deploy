@@ -22,7 +22,7 @@ from file_only_installation import compile_scope as registry_scope
 from tools.semantic_provider_deployment_authentication import DetachedAuthenticator
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_policy_token_owner.producer import protected_directory
-from tools.chatbot_file_cohort.action_process import compile_process_plan,FiniteActionProcess,private_file
+from tools.chatbot_file_cohort.action_process import compile_process_plan,FiniteActionProcess,private_file,previous_authorization_actions
 from tools.chatbot_file_cohort.containers import installation_scope
 from tools.chatbot_file_cohort.gateway import publication_scope,NamespaceAdmin
 from tools.chatbot_file_cohort.gateway_runtime import runtime_scope
@@ -95,6 +95,10 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
     require(expected_declaration==closure['declaration'],'COMPLETE_EXECUTING_SOURCE_CLOSURE_CHANGED')
     operation,context=authority_directory(cohort_id,closure_hash,prepared['imagePlan']['cohortManifestHash'])
     require(not os.path.lexists(context),'FULL_ACTION_CONTEXT_ALREADY_EXISTS_NO_REPLAY')
+    previous=previous_authorization_actions(prepared['imagePlan']['cohortManifestHash'],closure['executables']['systemctl'])
+    if previous:
+        prepared=copy.deepcopy(prepared)
+        prepared['previousFiniteActions']=previous
     profile=FileOnlyProfile(prepared['registry']['creationRequest'],prepared['registry']['configtree'])
     expected={'sourceClosureHash':closure_hash,'creationRequestHash':digest(profile.request),
               'intakeHash':digest(prepared),**lineage}
@@ -139,6 +143,9 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
         phase_intents=prepared['registry']['intents'],lineage=lineage,
         input_hashes={'preparedInputs':digest(prepared),'preparationSourceClosure':preparation_source_hash,
                      'cohortManifest':prepared['imagePlan']['cohortManifestHash']})
+    review['authorizationReview']={'requiresNewRoleConfirmation':prepared['authorization']['plan']['roleProposal'] is not None,
+        'targetRoleCatalogueHash':digest(prepared['authorization']['plan']['targetRoles'])}
+    if previous:review['previousFiniteActions']=copy.deepcopy(previous)
     database=prepared.get('databasePlan')
     recipe=prepared['registry']['nodeRecipe']
     if recipe.get('dockerContext') is not None:
@@ -156,6 +163,7 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
             'administration':copy.deepcopy(database['mcpAuditRoleAdministration']),
             'preflight':copy.deepcopy(database['mcpAuditRolePreflight'])}
         require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')
+    require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')
     review_binding=stage(staging_directory,'full-action-review.json',encoded(review))
     return {'review':review,'reviewBinding':review_binding,'executionProfile':profile,
             'processPlan':scopes['finiteActionProcess'],'context':context}

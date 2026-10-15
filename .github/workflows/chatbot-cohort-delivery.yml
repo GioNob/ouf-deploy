@@ -58,7 +58,15 @@ jobs:
           ref: f249b3dcc58c2a96742092d90fa09fd90b705bd0
           path: .pairwise/mcp
           persist-credentials: false
-      - name: Prepare native root custody fixture
+      - name: Compile the pinned owner GrantConstraints and Jackson round-trip fixture
+        run: |
+          set -euo pipefail
+          mvn -B -q -f tests/fixtures/owner-role-roundtrip/pom.xml org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath -Dmdep.outputFile="$GITHUB_WORKSPACE/.owner-roundtrip.classpath"
+          mkdir .owner-roundtrip-classes
+          javac -cp "$(cat .owner-roundtrip.classpath)" -d .owner-roundtrip-classes \
+            .pairwise/onboarding/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/{AuthorizationPolicy,PrincipalContext,ResourceContext}.java \
+            tests/fixtures/owner-role-roundtrip/OwnerConstraintRoundTrip.java
+      - name: Seal native root custody fixture
         run: |
           set -euo pipefail
           OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
@@ -69,8 +77,8 @@ jobs:
         run: |
           set -euo pipefail
           OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
-          for suite in test_chatbot_cohort_runtime_layout.py test_chatbot_cohort_pg_diagnosis.py test_chatbot_cohort_delivery_launcher.py test_chatbot_cohort_package_custody.py test_chatbot_cohort_iam_session.py test_chatbot_cohort_terminal.py test_chatbot_cohort_assemble.py test_chatbot_cohort_entry.py test_file_only_output_custody.py test_file_only_preparation.py test_gated_creation_plan.py test_chatbot_cohort_target_selection.py test_chatbot_cohort_selected_config_custody.py test_chatbot_cohort_plan.py test_chatbot_cohort_preparation.py test_chatbot_cohort_containers.py test_chatbot_cohort_databases.py test_chatbot_cohort_gateway.py test_chatbot_cohort_gateway_runtime.py test_chatbot_cohort_authorization.py test_chatbot_cohort_human_session.py test_chatbot_cohort_closed_runtime.py; do
-            sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" "$OUF_FIXTURE_ROOT/repository/.cohort-test-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p "$suite" -v
+          for suite in test_chatbot_cohort_runtime_layout.py test_chatbot_cohort_pg_diagnosis.py test_chatbot_cohort_delivery_launcher.py test_chatbot_cohort_package_custody.py test_chatbot_cohort_iam_session.py test_chatbot_cohort_terminal.py test_chatbot_cohort_predecessor.py test_chatbot_cohort_process_native.py test_chatbot_cohort_assemble.py test_chatbot_cohort_entry.py test_file_only_output_custody.py test_file_only_preparation.py test_gated_creation_plan.py test_chatbot_cohort_target_selection.py test_chatbot_cohort_selected_config_custody.py test_chatbot_cohort_plan.py test_chatbot_cohort_preparation.py test_chatbot_cohort_containers.py test_chatbot_cohort_databases.py test_chatbot_cohort_gateway.py test_chatbot_cohort_gateway_runtime.py test_chatbot_cohort_authorization.py test_chatbot_cohort_human_session.py test_chatbot_cohort_closed_runtime.py; do
+            sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" OUF_OWNER_JAVA_CLASSPATH="$OUF_FIXTURE_ROOT/repository/.owner-roundtrip-classes:$(cat .owner-roundtrip.classpath)" "$OUF_FIXTURE_ROOT/repository/.cohort-test-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p "$suite" -v
           done
       - name: Real paired CLI API observations and semantic schema marker preserve fixture
         env:

@@ -119,6 +119,7 @@ class CompleteActionAssembly(unittest.TestCase):
             'gatewayPlan':{'previousRuntimeHash':'1'*64,'proposedRuntimeHash':'2'*64,
                 'transportBinding':{'syntheticTargetObservation':True,'pythonExecutable':program},'proposalKeyBinding':{'sha256':'3'*64}},
             'authorization':{'plan':{'baseline':{'active':{'policyRef':'fixture','contentHash':'4'*64}},
+                'targetRoles':{'issuer':issuer,'roles':[],'assignments':[]},
                 'registrationAdditions':[],'addedDescriptors':[],'roleProposal':{},'scopeCreations':[],'scopeBindings':[]}},
             'imagePlan':{'schema':'ouf.chatbot-cohort-image-import-plan.v1','cohortManifestHash':'e'*64,
                 'images':[{'module':m} for m in ('semantic','udp','onboarding','ingestion','mcp')],
