@@ -171,8 +171,9 @@ class NativeDockerContract(unittest.TestCase):
                 self.assertTrue(oci['root']['readonly']);self.assertTrue(oci['process']['noNewPrivileges'])
                 self.assertTrue(all(not values for values in oci['process']['capabilities'].values()))
                 mounted={m['destination']:m for m in oci['mounts']}
-                for source,target,readonly in ((s,t,True)for _,s,t,_ in expected_mounts):
-                    self.assertEqual(mounted[target]['source'],source);self.assertIn('ro',mounted[target]['options'])
+                for _,source,target,_ in expected_mounts:
+                    self.assertEqual(mounted[target]['source'],source)
+                    self.assertEqual(mounted[target]['options'],['rbind','rro','rprivate'])
                 finish('STAGE_PAUSED_REPLACEMENT',stage_intent,paused)
                 for phase in ('ATTEST_NEW_OCI_PEER','ADMIT_MIGRATION'):
                     intent={'syntheticNonDockerBoundary':phase};begin(phase,intent);finish(phase,intent,{'synthetic':phase})
