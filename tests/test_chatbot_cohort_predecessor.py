@@ -3,6 +3,11 @@ import copy,hashlib,json,os,shutil,subprocess,tempfile,time,unittest
 from pathlib import Path
 from unittest.mock import patch
 import test_file_only_preparation
+import test_chatbot_cohort_image_identity as image_fixture
+from tools.chatbot_file_cohort.images import prepare_imports,image_import_scope,IMAGE_MODULES
+from image_custody import archive,native_identity,runtime_image_id
+from image_import import Import
+from engine_creation import Engine
 from tools.chatbot_file_cohort import action_process as process
 from tools.semantic_lease_recovery.bounded_recovery import Permanent
 
@@ -87,5 +92,79 @@ class Predecessor(unittest.TestCase):
         self.assertEqual(len(self.observe()),1)
         self.context.chmod(0o755)
         with self.assertRaisesRegex(Permanent,'INTEGRITY_UNPROVEN'):self.observe()
+
+class ImagePredecessor(unittest.TestCase):
+    write=Predecessor.write
+    observe=Predecessor.observe
+    def setUp(self):
+        Predecessor.setUp(self)
+        package=self.root/'package';package.mkdir(mode=0o700);output=self.root/'tagless';output.mkdir(mode=0o700)
+        records=[]
+        for module in IMAGE_MODULES:
+            directory=package/module;directory.mkdir(mode=0o700);path=directory/'image.docker.tar'
+            audit=image_fixture.tiny_archive(path)
+            records.append({'module':module,'sourceCommit':audit['sourceCommit'],'imageId':audit['imageId'],
+                'artifactKind':'DOCKER_SAVE','scanGate':'PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED',
+                'files':{'image.docker.tar':audit['archiveSha256']}})
+        records.append({'module':'gateway'})
+        self.image_plan=prepare_imports(package,{'modules':records},output)
+        self.image_plan['cohortManifestHash']=self.manifest
+        self.engine=Engine.__new__(Engine);self.engine.path='/fixture-socket';self.engine.check_socket=lambda:None
+        self.native=None
+        for row in self.image_plan['images']:
+            audit=row['audit']
+            if row['module']=='semantic':
+                bound=copy.deepcopy(audit);bound['nativeIdentity']=native_identity(audit)
+                self.native={'Id':runtime_image_id(bound),'Os':'linux','Architecture':'amd64',
+                    'RootFS':{'Type':'layers','Layers':[r['diffId'] for r in audit['layers']]},'Config':copy.deepcopy(audit['imageConfig'])}
+            del audit['configBytes'] # Exact b646 predecessor archive-audit schema.
+            initial=Import.initial(audit,'0'*64)
+        self.review['sourceClosure']['declaration']['sourceCommit']=process.IMAGE_IDENTITY_PREDECESSOR_SOURCE
+        scope=image_import_scope(self.image_plan);self.review['scopes']['cohortImageImport']=scope
+        prepared={'imagePlan':self.image_plan,'engine':{'socketPath':'/fixture-socket','socketBinding':[]}}
+        self.review['privateInputHashes']['preparedInputs']=process.digest(prepared)
+        bundle={'declaration':self.review['sourceClosure']['declaration'],'prepared':prepared}
+        path=self.context/'bundle.json';self.write(path,bundle)
+        self.plan['bundle']={'path':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+        self.authority['cohortImageImport']=scope;self.authority_hash=process.digest(self.authority)
+        self.status.update(authorityHash=self.authority_hash,reason='ValueError')
+        self.claim.update(authorityHash=self.authority_hash,planHash=process.digest(self.plan))
+        self.completed['authorityHash']=self.authority_hash
+        self.journal.update(authorityHash=self.authority_hash,effects={})
+        self.decision['approvedReviewHash']=process.digest(self.review)
+        for name,value in [('review.json',self.review),('decision.json',self.decision),('authority.json',self.authority),
+            ('delivery-status.json',self.status),('directories.completed.json',self.completed)]:self.write(self.context/name,value)
+        self.write(self.claim_path,self.claim);self.write(self.journal_path,self.journal)
+        for row in self.image_plan['images']:
+            initial=Import.initial(row['audit'],self.authority_hash)
+            if row['module']=='semantic':initial.update(version=1,state='IN_FLIGHT',effectAttemptCount=1)
+            self.write(Path(self.paths['image'+row['module'].capitalize()])/'recovery.json',initial)
+        self.engine.request=lambda method,path:(200,copy.deepcopy(self.native))
+        patcher=patch('engine_creation.Engine',return_value=self.engine);patcher.start();self.addCleanup(patcher.stop)
+    def test_loaded_manifest_is_reconciled_with_no_old_file_or_journal_changes(self):
+        before={p:p.read_bytes() for p in self.root.rglob('*') if p.is_file()}
+        result=self.observe();image=result[0]['imageImportReadback']
+        self.assertEqual(image[0]['effectAttemptCount'],1);self.assertEqual(image[0]['nativeImageId'],self.native['Id'])
+        self.assertEqual(image[0]['outcome'],'APPLIED_NATIVE_MANIFEST_VERIFIED')
+        self.assertTrue(all(r['effectAttemptCount']==0 for r in image[1:]))
+        process.verify_previous_authorization_actions(result,self.manifest,self.systemctl,self.root/'next')
+        self.assertEqual(before,{p:p.read_bytes() for p in self.root.rglob('*') if p.is_file()})
+    def test_wrong_native_identity_or_execution_config_blocks(self):
+        self.native['Config']['Env']=['INJECTED=1']
+        with self.assertRaisesRegex(ValueError,'EXECUTION_CONFIG_DRIFT'):self.observe()
+        self.native['Config'].pop('Env');self.native['Id']='sha256:'+'0'*64
+        with self.assertRaisesRegex(ValueError,'IDENTITY_DRIFT'):self.observe()
+    def test_later_database_stage_or_second_image_attempt_blocks(self):
+        path=Path(self.paths['databases'])/'recovery.json';self.write(path,{'attempt':1})
+        with self.assertRaisesRegex(process.evidence.CandidateDenied,'STAGE_HISTORY'):self.observe()
+        path.unlink();path=Path(self.paths['imageUdp'])/'recovery.json';value=json.loads(path.read_text())
+        value.update(version=1,state='IN_FLIGHT',effectAttemptCount=1);self.write(path,value)
+        with self.assertRaisesRegex(process.evidence.CandidateDenied,'UNATTEMPTED_PREVIOUS_IMAGE'):self.observe()
+    def test_archive_drift_blocks_reconciliation(self):
+        path=Path(self.image_plan['images'][0]['archivePath']);path.write_bytes(b'changed')
+        with self.assertRaisesRegex(ValueError,'ARCHIVE_BYTES_CHANGED'):self.observe()
+    def test_native_manifest_absence_is_never_permission_to_reimport(self):
+        self.engine.request=lambda *args:(404,None)
+        with self.assertRaisesRegex(process.evidence.CandidateDenied,'NATIVE_MANIFEST_IMAGE_REQUIRED'):self.observe()
 
 if __name__=='__main__':unittest.main()

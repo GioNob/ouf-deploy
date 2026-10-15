@@ -106,6 +106,7 @@ def compile_process_plan(*, logical_operation, source_closure_hash, programs,
 
 
 AUTHORIZATION_ONLY_PREDECESSOR_SOURCE='6959b1dbaeb30ca3a838c7d6243a55e9cfc5118a'
+IMAGE_IDENTITY_PREDECESSOR_SOURCE='b64645982655f58a2907bf1425dd86fd6ab0ed9f'
 
 
 def observed_private_json(path,maximum):
@@ -117,6 +118,54 @@ def observed_private_json(path,maximum):
     require(len(raw)<=maximum,'BOUNDED_PREVIOUS_ACTION_RECORD_REQUIRED')
     binding={'path':str(path),'sha256':hashlib.sha256(raw).hexdigest()}
     return evidence.decode(raw),binding
+
+
+def image_predecessor_readback(review,authority_hash):
+    """Read the single known completed-load/failed-config-ID-check attempt.
+
+    Preserve all old journals. Native manifest, raw config/layer descriptors,
+    current rootfs and execution fields must all match before a successor may
+    recognize that image as already imported. No old authority is exercised.
+    """
+    from image_custody import archive,native_identity,loaded
+    from image_import import Import
+    from engine_creation import Engine
+    from tools.chatbot_file_cohort.images import private_open,image_import_scope
+    process=review['scopes']['finiteActionProcess']
+    binding=process['bundle'];bundle=evidence.decode(private_file(binding,8388608))
+    prepared=bundle['prepared'];plan=prepared['imagePlan']
+    require(bundle['declaration']==review['sourceClosure']['declaration']
+        and digest(prepared)==review['privateInputHashes']['preparedInputs']
+        and image_import_scope(plan)==review['scopes']['cohortImageImport']
+        and plan['cohortManifestHash']==review['privateInputHashes']['cohortManifest'],
+        'EXACT_PREVIOUS_IMAGE_PLAN_REQUIRED')
+    engine=Engine(prepared['engine']['socketPath'],tuple(prepared['engine']['socketBinding']))
+    receipts=[];bindings=[binding]
+    for row in plan['images']:
+        module=row['module'];audit=row['audit']
+        path=Path(process['directoryPlan']['image'+module.capitalize()])/'recovery.json'
+        record,record_binding=observed_private_json(path,65536);bindings.append(record_binding)
+        initial=Import.initial(audit,authority_hash)
+        if module!='semantic':
+            require(record==initial,'UNATTEMPTED_PREVIOUS_IMAGE_HISTORY_REQUIRED')
+            receipts.append({'module':module,'effectAttemptCount':0,'outcome':'UNATTEMPTED'})
+            continue
+        require(record=={**initial,'version':1,'state':'IN_FLIGHT','effectAttemptCount':1},
+                'EXACT_PREVIOUS_SEMANTIC_IMPORT_CLAIM_REQUIRED')
+        with private_open(row['archivePath']) as source:
+            actual=archive(source,audit['archiveSha256'],audit['imageId'],audit['sourceCommit'])
+        require({k:v for k,v in actual.items() if k!='configBytes'}==audit,
+                'PREVIOUS_AUTHENTICATED_ARCHIVE_DRIFT')
+        actual['nativeIdentity']=native_identity(actual);identity=actual['nativeIdentity']['nativeImageId']
+        code,native=engine.request('GET','/v1.44/images/'+identity+'/json')
+        require(code==200,'PREVIOUS_NATIVE_MANIFEST_IMAGE_REQUIRED')
+        proof=loaded(actual,native)
+        require(engine.request('GET','/v1.44/images/'+identity+'/json')==(code,native),
+                'PREVIOUS_IMAGE_CHANGED_DURING_RECONCILIATION')
+        receipts.append({'module':module,'effectAttemptCount':1,'outcome':'APPLIED_NATIVE_MANIFEST_VERIFIED',
+            'configurationImageId':audit['imageId'],'nativeImageId':identity,
+            'archiveSha256':audit['archiveSha256'],'nativeCustodyHash':digest(proof)})
+    return receipts,bindings
 
 
 def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None):
@@ -138,8 +187,10 @@ def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None)
                 'EXACT_PREVIOUS_ACTION_CONTEXT_REQUIRED')
         review,review_binding=observed_private_json(context/'review.json',262144)
         if review.get('privateInputHashes',{}).get('cohortManifest')!=manifest_hash:continue
+        source=review['sourceClosure']['declaration']['sourceCommit']
+        image_recovery=source==IMAGE_IDENTITY_PREDECESSOR_SOURCE
         require(review.get('schema')=='ouf.chatbot-file-cohort-full-action-review.v1'
-            and review['sourceClosure']['declaration']['sourceCommit']==AUTHORIZATION_ONLY_PREDECESSOR_SOURCE,
+            and source in (AUTHORIZATION_ONLY_PREDECESSOR_SOURCE,IMAGE_IDENTITY_PREDECESSOR_SOURCE),
             'PREVIOUS_ACTION_SOURCE_REQUIRES_OWNER_RECONCILIATION')
         process=review['scopes']['finiteActionProcess'];operation=process['logicalOperationHash']
         require(context.name=='chatbot-file-cohort-signed-'+operation
@@ -161,6 +212,9 @@ def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None)
             and authority.get('sourceClosureHash')==review['sourceClosureHash']
             and authority.get('chatbotFileAuthorization')==review['scopes']['chatbotFileAuthorization'],
             'PREVIOUS_AUTHORITY_SCOPE_DRIFT')
+        if image_recovery:
+            require(authority.get('cohortImageImport')==review['scopes']['cohortImageImport'],
+                    'PREVIOUS_IMAGE_AUTHORITY_SCOPE_DRIFT')
         status,status_binding=observed_private_json(context/'delivery-status.json',8192)
         require(status.get('schema')=='ouf.chatbot-file-cohort-delivery-status.v1'
             and status.get('phase')=='PAUSED_REQUIRES_RECONCILIATION'
@@ -192,7 +246,8 @@ def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None)
                 info=os.fstat(directory)
                 require(completed['identities'].get(path)=={'device':info.st_dev,'inode':info.st_ino},
                         'PREVIOUS_STAGE_DIRECTORY_IDENTITY_DRIFT')
-                allowed=({'recovery.json','recovery.lock','invocation.lock'} if name=='authorization' else
+                allowed=({'recovery.json','recovery.lock','invocation.lock'} if name=='authorization' or
+                    image_recovery and name in {'imageSemantic','imageUdp','imageOnboarding','imageIngestion','imageMcp'} else
                     {Path(p).name for p in wanted.values() if Path(p).parent==Path(path)})
                 require(set(os.listdir(directory))<=allowed,
                         'PREVIOUS_APPLICATION_OR_TOKEN_STAGE_HISTORY_REQUIRES_OWNER_RECONCILIATION')
@@ -203,17 +258,23 @@ def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None)
             and journal.get('planHash')==review['scopes']['chatbotFileAuthorization']['planHash']
             and journal.get('budgetReset') is False,'PREVIOUS_AUTHORIZATION_HISTORY_DRIFT')
         effects=journal.get('effects',{})
-        require(effects and all(e.get('state')=='APPLIED' and type(e.get('attempts'))is int
+        require((effects or image_recovery) and all(e.get('state')=='APPLIED' and type(e.get('attempts'))is int
             and 1<=e['attempts']<=128 for e in effects.values()),
             'AMBIGUOUS_PREVIOUS_AUTHORIZATION_EFFECT_REQUIRES_OWNER_RECONCILIATION')
-        result.append({'schema':'ouf.chatbot-auth-only-predecessor-readback.v1',
+        image_receipts,image_bindings=([],[])
+        if image_recovery:
+            require(status.get('reason')=='ValueError','EXACT_PREVIOUS_IMAGE_IDENTITY_FAILURE_REQUIRED')
+            image_receipts,image_bindings=image_predecessor_readback(review,authority_binding['sha256'])
+        result.append({'schema':'ouf.chatbot-auth-only-predecessor-readback.v1' if not image_recovery else
+                'ouf.chatbot-image-identity-predecessor-readback.v1',
             'context':str(context),'unit':process['unit'],'authorityHash':authority_binding['sha256'],
-            'sourceCommit':AUTHORIZATION_ONLY_PREDECESSOR_SOURCE,'expiredAt':decision['expiresAt'],
+            'sourceCommit':source,'expiredAt':decision['expiresAt'],
             'processStopped':True,'startClaimRetained':True,'budgetReset':False,
             'applicationStageClaimsPresent':False,'firstGrantStageClaimsPresent':False,
             'priorAuthorizationEffectAttempts':{n:e['attempts'] for n,e in sorted(effects.items())},
+            **({'imageImportReadback':image_receipts} if image_recovery else {}),
             'recordBindings':[review_binding,decision_binding,authority_binding,status_binding,
-                claim_binding,completed_binding,journal_binding]})
+                claim_binding,completed_binding,journal_binding,*image_bindings]})
     return result
 
 

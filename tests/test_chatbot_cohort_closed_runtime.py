@@ -39,6 +39,7 @@ try:
  assert entry.AggregateAction is sys.modules['tools.semantic_policy_token_owner.owner_installation'].AggregateAction
  assert entry.GatewayRuntime is sys.modules['tools.chatbot_file_cohort.gateway_runtime'].GatewayRuntime
  assert entry.public_failure_reason(entry.PlanDenied('ROLE_BASELINE_DRIFT'))=='ROLE_BASELINE_DRIFT'
+ assert entry.public_failure_reason(entry.ImageCustodyDenied('NATIVE_IMAGE_IDENTITY_DRIFT'))=='NATIVE_IMAGE_IDENTITY_DRIFT'
  assert entry.public_failure_reason(ValueError('DO_NOT_PRINT_PRIVATE_VALUE'))=='ValueError'
  assert entry.public_failure_reason(RuntimeError('private value'))=='RuntimeError'
  print(json.dumps({'entry':entry.__name__,'modules':manifest['moduleCount'],'sameConcreteOwnerTypes':True}))

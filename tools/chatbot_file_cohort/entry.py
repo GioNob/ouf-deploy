@@ -177,7 +177,7 @@ def collect(args):
     owner_input=prepare_owner(source_commit=args.source_commit,source_closure_hash=digest(closure),cohort_id=cohort_id,
         docker_binding=closure['executables']['docker'],engine_path=engine.path)
     report('EXACT_IMAGE_AND_GATEWAY_PREPARATION')
-    image_plan=prepare_imports(package,manifest,new_directory(stage,'images'))
+    image_plan=prepare_imports(package,manifest,new_directory(stage,'images'),engine=engine)
     _,context=assemble.authority_directory(cohort_id,digest(closure),digest(manifest))
     owner=compilation_owner(owner_input['owner'],sources,closure,stage,context,history)
     gateway=prepare_gateway(package,records['gateway'],engine,selected['projectionBinding'],

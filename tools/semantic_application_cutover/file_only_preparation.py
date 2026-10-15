@@ -431,7 +431,8 @@ def creation(parent,declaration,actual,audit,tree,token,delegation,proposal,prop
         OUF_SEMANTIC_PROPOSAL_RECEIPT_ISSUER=proposal_identity['issuer'],
         OUF_SEMANTIC_PROPOSAL_RECEIPT_AUDIENCE=proposal_identity['audience'],
         OUF_SEMANTIC_PROPOSAL_RECEIPT_WORKLOAD=proposal_identity['workload'])
-    result=copy.deepcopy(parent);result.update(Image=audit['imageId'],User='10001:10001',Env=[k+'='+v for k,v in sorted(env.items())],
+    from image_custody import runtime_image_id
+    result=copy.deepcopy(parent);result.update(Image=runtime_image_id(audit),User='10001:10001',Env=[k+'='+v for k,v in sorted(env.items())],
         Entrypoint=java,Cmd=[],Labels=copy.deepcopy(config.get('Labels') or {}),WorkingDir=config.get('WorkingDir') or '/')
     result.pop('Hostname',None);result.pop('Domainname',None)
     host=creation_host_config(result['HostConfig']);result['HostConfig']=host

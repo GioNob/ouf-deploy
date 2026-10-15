@@ -1,0 +1,56 @@
+name: Exact published tagless image import diagnosis
+on:
+  push:
+    branches: [codex/published-tagless-import-20261015, codex/retained-inspection-channel-20261015]
+    paths: [.github/workflows/chatbot-published-tagless-import.yml, tests/qualify_published_tagless_import.py]
+permissions: {contents: read, actions: read}
+jobs:
+  exact-import:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        containerd: [false, true]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Download existing exact six-module cohort without rebuilding
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: '11907557440'
+          run-id: '38584614991'
+          github-token: ${{ github.token }}
+          path: published
+          merge-multiple: true
+      - name: Select the image store on this disposable runner only
+        env:
+          OUF_CONTAINERD: ${{ matrix.containerd }}
+        run: |
+          set -euo pipefail
+          sudo systemctl stop docker.service docker.socket
+          sudo env OUF_CONTAINERD="$OUF_CONTAINERD" python3 - <<'PY'
+          import json,os,pathlib
+          path=pathlib.Path('/etc/docker/daemon.json')
+          value=json.loads(path.read_text()) if path.exists() else {}
+          value.setdefault('features',{})['containerd-snapshotter']=os.environ['OUF_CONTAINERD']=='true'
+          path.write_text(json.dumps(value)+'\n')
+          PY
+          sudo systemctl start docker.service
+          docker info --format 'Version={{.ServerVersion}} Driver={{.Driver}}'
+      - name: Seal disposable files and exercise the exact tagless stream and import journal
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE="/var/lib/ouf-tagless-${GITHUB_RUN_ID}-${{ matrix.containerd }}"
+          sudo mkdir -m 700 "$OUF_FIXTURE"
+          sudo cp -R . "$OUF_FIXTURE/repository"
+          sudo chown -R root:root "$OUF_FIXTURE"
+          sudo python3 -I -B "$OUF_FIXTURE/repository/tests/qualify_published_tagless_import.py" \
+            "$OUF_FIXTURE/repository/published" "$OUF_FIXTURE/stage" /var/run/docker.sock
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: tagless-import-${{ matrix.containerd }}-${{ github.run_id }}
+          path: tagless-import-report.json
+          if-no-files-found: warn
+          retention-days: 30

@@ -189,9 +189,12 @@ def terminal_decision(review, review_path):
         'Documento privato completo: '+str(review_path)+'\n'
         'SHA256: '+review_hash+'\n'
         +('Ripresa con nuova finestra finita: '+str(len(review['previousFiniteActions']))+
-          ' tentativo precedente scaduto e spento, storico e claim conservati.\n'
-          'Verificata assenza di claim applicative e del primo grant nei tentativi precedenti.\n'
+          ' tentativi precedenti scaduti e spenti, storico e claim conservati.\n'
+          'Verificata assenza di sostituzioni servizi, migrazioni e primo grant nei tentativi precedenti.\n'
           if review.get('previousFiniteActions') else '')+
+        ('Il caricamento semantic precedente è riconciliato con manifest, configurazione e filesystem esatti.\n'
+         'L\'immagine già presente viene verificata senza nuovo caricamento; tentativo precedente conservato.\n'
+          if any(p.get('imageImportReadback') for p in review.get('previousFiniteActions',[])) else '')+
         ('I ruoli OUF risultano già pubblicati: vengono riletti, senza nuova proposta se invariati.\n'
           if review.get('authorizationReview',{}).get('requiresNewRoleConfirmation') is False else
           'Eventuale conferma dei ruoli: apri il link browser esplicito; la proposta dura 15 minuti.\n')+

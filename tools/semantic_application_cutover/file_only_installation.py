@@ -20,7 +20,7 @@ from native_evidence_store import NativeEvidenceStore
 from r12_retirement_adapter import R12RetirementChannel
 from application_verification_adapter import ApplicationReadinessChannel
 from database_gate import Psql,literal
-from image_custody import loaded
+from image_custody import loaded,runtime_image_id
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.semantic_lease_recovery.reader import lease_projection
 from tools.semantic_target_review import prepare_application_runtime_inputs as custody
@@ -64,7 +64,7 @@ def compile_scope(prepared,source_closure_hash):
     require(all(paths[n]==str(root/n) for n in DIRECTORIES),'REGISTRY_DIRECTORIES_MUST_STAY_IN_GROUPED_ROOT')
     require(intents['FENCED_BACKUP']['directory']==paths['backup'],'REGISTRY_BACKUP_DIRECTORY_SCOPE_DRIFT')
     require(prepared['nodeRecipe']['sourceClosureHash']==source_closure_hash
-        and prepared['imageAudit']['imageId']==prepared['creationRequest']['Image']
+        and runtime_image_id(prepared['imageAudit'])==prepared['creationRequest']['Image']
         and prepared['readinessScope']['flywaySchema']=='ouf_sem'
         and prepared['readinessScope']['database']!=prepared['adminDatabase'], 'REGISTRY_REVIEWED_IMAGE_SOURCE_OR_DATABASE_DRIFT')
     ApplicationReadinessChannel(prepared['readinessScope'])

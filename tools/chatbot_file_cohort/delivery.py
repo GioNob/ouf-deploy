@@ -45,11 +45,12 @@ from tools.chatbot_file_cohort.gateway_runtime import GatewayRuntime, runtime_sc
 from tools.chatbot_file_cohort.human_session import HumanSession, HumanSessionPaused
 from tools.chatbot_file_cohort.acceptance import AcceptanceObserver
 from tools.chatbot_file_cohort.plan import PlanDenied
+from image_custody import ImageCustodyDenied,runtime_image_id
 import qualified_owner_authorization_lifecycle
 import qualified_owner_scope_catalogue
 
 def public_failure_reason(error):
-    reason=str(error) if type(error) in (evidence.CandidateDenied,RuntimeError,PlanDenied) else type(error).__name__
+    reason=str(error) if type(error) in (evidence.CandidateDenied,RuntimeError,PlanDenied,ImageCustodyDenied) else type(error).__name__
     return reason if re.fullmatch('[A-Z][A-Z0-9_]{0,159}',reason) else type(error).__name__
 
 
@@ -254,6 +255,11 @@ class Delivery:
             images.initialize()
             self.report('IMPORTING_QUALIFIED_IMAGES_BEFORE_FIRST_GRANT')
             images.apply()
+            image_audits={row['module']:row['audit'] for row in self.prepared['imagePlan']['images']}
+            require(self.prepared['registry']['creationRequest']['Image']==runtime_image_id(image_audits['semantic'])
+                and all(row['creationRequest']['Image']==runtime_image_id(image_audits[row['module']])
+                    for row in self.prepared['cohortPlan']['replacements']),
+                'ALL_CREATION_IMAGES_MUST_MATCH_APPROVED_NATIVE_IDENTITIES')
             self.current()
             gateway_runtime = None
             runtime_plan = self.prepared['gatewayRuntimePlan']
