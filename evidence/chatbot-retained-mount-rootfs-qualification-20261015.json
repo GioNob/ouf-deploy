@@ -56,5 +56,23 @@
   "controlledCumulativeGrantAttemptsRetained": 2,
   "runtimeAuthorityIssued": false,
   "chatbotEndToEndProven": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "readOnlyProposalReader": {
+    "path": "scripts/read-chatbot-retained-rootfs-proposal-20261015.py",
+    "sourceCommit": "3b22669289c82e03d57743b48cf8be9e5e73ae9f",
+    "sha256": "40df05f3522f5213a74e83fd2621bba314dea3b5c6a7f530bf2415fff36d8276",
+    "ciRunId": 38785161756,
+    "ciJobId": 116595159120,
+    "conclusion": "success",
+    "tests": 10,
+    "skipped": 0,
+    "publishedBytesFetchedAndVerified": true,
+    "credentialOrTokenFilesRead": false,
+    "serviceMutations": 0,
+    "databaseMutations": 0,
+    "grantRequests": 0,
+    "iamCalls": 0,
+    "maximumReadbackSeconds": 240,
+    "maximumImageScanSeconds": 180
+  }
 }

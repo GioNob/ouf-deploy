@@ -46,3 +46,13 @@ postgrant-created-v1 launcher does not implement this boundary and must not run.
 
 Full private frame byte checks, fresh token admission, peer attestation,
 migrations/start/readiness and actual chatbot CSV end-to-end remain unproven.
+
+Fixed reader source3b22669289c82e03d57743b48cf8be9e5e73ae9f passed all10
+local and CI tests (run38785161756/job116595159120, zero skips). Published
+bytes were fetched and verified:40df05f3522f5213a74e83fd2621bba314dea3b5c6a7f530bf2415fff36d8276.
+The fixed entrypoint test mocks the two proposal/rootfs handoffs; separate
+cases exercise original sealer capture on actual files, private bind refusal,
+independent full CI manifest replay and readonly/mount-profile drift denial.
+Procfs is unavailable locally; a separate parser test supplies mountinfo.
+The new target proposal readback has NOT yet been returned. Deliver only the
+read-only launcher; do not use an old execute/reconcile installer.
