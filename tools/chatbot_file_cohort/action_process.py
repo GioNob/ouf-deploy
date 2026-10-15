@@ -110,11 +110,12 @@ AUTHORIZATION_ONLY_PREDECESSOR_SOURCE='6959b1dbaeb30ca3a838c7d6243a55e9cfc5118a'
 
 def observed_private_json(path,maximum):
     path=Path(path)
-    with protected_directory(path.parent) as directory:
+    guard=evidence.protected_parent() if path.parent==evidence.PARENT else protected_directory(path.parent)
+    with guard as directory:
         raw=evidence.read_member(directory,path.name)
+        require(evidence.read_member(directory,path.name)==raw,'PREVIOUS_ACTION_READ_DRIFT')
     require(len(raw)<=maximum,'BOUNDED_PREVIOUS_ACTION_RECORD_REQUIRED')
     binding={'path':str(path),'sha256':hashlib.sha256(raw).hexdigest()}
-    require(private_file(binding,maximum)==raw,'PREVIOUS_ACTION_READ_DRIFT')
     return evidence.decode(raw),binding
 
 

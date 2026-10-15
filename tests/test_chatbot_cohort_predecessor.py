@@ -4,6 +4,7 @@ from pathlib import Path
 from unittest.mock import patch
 import test_file_only_preparation
 from tools.chatbot_file_cohort import action_process as process
+from tools.semantic_lease_recovery.bounded_recovery import Permanent
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -81,5 +82,10 @@ class Predecessor(unittest.TestCase):
     def test_omitting_predecessor_from_new_review_is_denied(self):
         with self.assertRaisesRegex(process.evidence.CandidateDenied,'HISTORY_CHANGED_BEFORE_NEW_EXECUTION'):
             process.verify_previous_authorization_actions([],self.manifest,self.systemctl,self.root/'new-context')
+    def test_root_owned_public_snapshot_parent_keeps_private_child_custody(self):
+        self.root.chmod(0o755)
+        self.assertEqual(len(self.observe()),1)
+        self.context.chmod(0o755)
+        with self.assertRaisesRegex(Permanent,'INTEGRITY_UNPROVEN'):self.observe()
 
 if __name__=='__main__':unittest.main()
