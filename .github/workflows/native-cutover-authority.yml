@@ -51,6 +51,8 @@ jobs:
           sudo python3 -I -B -m unittest discover -s tests -p test_cutover_authority_native.py -v
           sudo python3 -I -B -m unittest discover -s tests -p test_file_only_cutover.py -v
           sudo python3 -I -B -m unittest discover -s tests -p test_file_only_application_owners.py -v
+          sudo python3 -I -B -m unittest discover -s tests -p test_file_only_retained_checkpoint.py -v
+          sudo python3 -I -B -m unittest discover -s tests -p test_paused_workload_binding.py -v
           sudo python3 -I -B -m unittest discover -s tests -p test_file_only_frame_compiler.py -v
           sudo python3 -I -B -m unittest discover -s tests -p test_migration_admission_adapter.py -v
           sudo python3 -I -B -m unittest discover -s tests -p test_cutover_executor.py -v

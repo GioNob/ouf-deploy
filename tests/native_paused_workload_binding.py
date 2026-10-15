@@ -35,5 +35,33 @@ class NativeBinding(unittest.TestCase):
         with self.assertRaises(ValueError):b.observe()
         actual=engine.inspect(e.t);self.assertEqual(actual['Id'],cid);self.assertTrue(actual['State']['Paused'])
         self.assertEqual(e.t.read()['nextPhase'],6)
+    def test_real_pause_survives_both_retained_checkpoints_synthetic_acceptance_metadata(self):
+        # This component test does NOT issue/verify node acceptance or migrate
+        # a database: only its phase metadata is synthetic, explicitly below.
+        e,engine,store,original=self.fixture();intent=e.intent_hashes['ATTEST_NEW_OCI_PEER']
+        receipt={'schema':'ouf.semantic-owner-signed-paused-node-phase.v1','transitionContextHash':e.t.context,
+            'creationRequestHash':e.t.read()['creationRequestHash'],'intentHash':intent,
+            'completeNativeObservationPerformed':True,'currentScopedAcceptanceSignatureVerified':True}
+        store.publish('ATTEST_NEW_OCI_PEER',receipt)
+        row=e.t.read()
+        with e.t.invocation():e.t.reconcile('ATTEST_NEW_OCI_PEER',intent,'APPLIED',digest(receipt),row['version'])
+        for phase in('ADMIT_MIGRATION','START_REPLACEMENT'):
+            row=e.t.read()
+            with e.t.invocation():e.t.begin(phase,e.intent_hashes[phase],e.authority_hash,row['version'])
+            with self.assertRaises(ValueError):original.observe()
+            retained=PausedWorkloadBinding.retained_at_checkpoint(engine,e.t,e.intents['CREATE_REPLACEMENT'],store,
+                attestation_intent_hash=intent,checkpoint_row=e.t.read())
+            observed=retained.observe();cid=observed['runtimeBinding']['containerId']
+            state=None;binary=str(Path(shutil.which('runc')).resolve())
+            for root in('/run/docker/runtime-runc/moby','/run/containerd/runc/moby'):
+                p=subprocess.run(['sudo',binary,'--root',root,'state',cid],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=10)
+                if p.returncode==0:state=json.loads(p.stdout);break
+            self.assertIsNotNone(state);self.assertFalse(retained.verify_runc_state(state,observed)['completeCreationAccepted'])
+            self.assertTrue(engine.inspect(e.t)['State']['Paused'])
+            if phase=='ADMIT_MIGRATION':
+                row=e.t.read()
+                with e.t.invocation():e.t.reconcile(phase,e.intent_hashes[phase],'APPLIED',digest({'syntheticMigrationMetadata':True}),row['version'])
+        status,_=engine.request('POST','/v1.44/containers/'+cid+'/unpause');self.assertEqual(status,204)
+        with self.assertRaises(ValueError):retained.observe()
 
 if __name__=='__main__':unittest.main()

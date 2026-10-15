@@ -118,9 +118,12 @@ class FileOnlyNodeOwner:
         expected.update(directoryDevice=row['outputIdentity']['device'],directoryInode=row['outputIdentity']['inode'])
         return expected
     def resolve(self,intent,retained=False):
-        self.current(intent,retained)
+        checkpoint_row=self.current(intent,retained)
         if self.adapter is not None and not retained:return self.adapter
-        recipe=self.recipe;budget=ObservationBudget(recipe['observationSeconds']);paused=PausedWorkloadBinding(self.engine,self.transition,self.request,self.store)
+        recipe=self.recipe;budget=ObservationBudget(recipe['observationSeconds'])
+        paused=(PausedWorkloadBinding.retained_at_checkpoint(self.engine,self.transition,self.request,self.store,
+            attestation_intent_hash=self.intent_hash,checkpoint_row=checkpoint_row)if retained else
+            PausedWorkloadBinding(self.engine,self.transition,self.request,self.store))
         before=paused.observe();native=self.engine.inspect(self.transition);cid=before['runtimeBinding']['containerId']
         config=copy.deepcopy(recipe['observationConfiguration']);runner=NodeObservation(config,budget)
         state=decode(runner.run(config['runtimeBinding'],['--root',recipe['runtimeRoot'],'state',cid],16384),16384)
