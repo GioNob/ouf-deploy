@@ -24,6 +24,56 @@ from engine_creation import Engine
 
 @unittest.skipUnless(os.environ.get('OUF_NATIVE_POSTGRES') == '1', 'explicit disposable Docker/PostgreSQL CI only')
 class NativePostgres(unittest.TestCase):
+    def test_exact_standalone_preflight_query_on_mixed_catalogue(self):
+        """Run the delivered reader itself, without replacing SQL or Engine."""
+        import importlib.util,tempfile
+        spec=importlib.util.spec_from_file_location('standalone_reader',
+            fixture.ROOT/'scripts/read-chatbot-mcp-backup-preflight-20261016.py')
+        reader=importlib.util.module_from_spec(spec);spec.loader.exec_module(reader)
+        cid=os.environ['OUF_POSTGRES_CONTAINER_ID'];binary=str(Path(shutil.which('docker')).resolve())
+        def sql(database,statement):
+            return subprocess.run([binary,'exec',cid,'psql','-X','-q','-A','-t','-v','ON_ERROR_STOP=1',
+                '-U','postgres','-d',database,'-c',statement],stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,check=True,timeout=20).stdout
+        suffix=os.urandom(8).hex();database='ouf_reader_'+suffix;app='ouf_reader_app_'+suffix
+        sql('postgres','CREATE ROLE '+app+' LOGIN NOSUPERUSER;')
+        self.addCleanup(lambda:sql('postgres','DROP ROLE '+app+';'))
+        sql('postgres','CREATE DATABASE '+database+';')
+        self.addCleanup(lambda:sql('postgres','DROP DATABASE '+database+' WITH (FORCE);'))
+        sql(database,'CREATE SCHEMA ouf_mcp; CREATE TABLE ouf_mcp.security_incident(id int PRIMARY KEY); '
+            'CREATE TABLE ouf_mcp.allowed(id int); CREATE SEQUENCE ouf_mcp.denied_sequence; '
+            'CREATE SEQUENCE ouf_mcp.allowed_sequence; CREATE VIEW ouf_mcp.visible_view AS SELECT 1; '
+            'GRANT USAGE ON SCHEMA ouf_mcp TO '+app+'; GRANT SELECT ON ouf_mcp.allowed TO '+app+'; '
+            'GRANT SELECT ON SEQUENCE ouf_mcp.allowed_sequence TO '+app+';')
+        oid=int(sql(database,'SELECT oid FROM pg_database WHERE datname=current_database();').strip())
+        binding={'user':app,'database':database,'databaseOid':oid,'maximumArchiveBytes':1048576}
+        sock='/var/run/docker.sock';s=os.stat(sock,follow_symlinks=False)
+        prepared={'engine':{'socketPath':sock,'socketBinding':
+            [s.st_dev,s.st_ino,s.st_uid,s.st_gid,stat.S_IMODE(s.st_mode)]},
+            'databasePlan':{'postgresRuntimeBinding':{'containerId':cid},'mcpAuditRoleAdministration':{'admin':'postgres'}}}
+        # Reproduce the old unsafe WHERE expression on this same real catalogue.
+        query=reader.backup_reader_query('postgres',binding)
+        old=query.replace("CASE WHEN c.relkind IN ('r','p','m') THEN NOT has_table_privilege('"+app+
+            "',c.oid,'SELECT') ELSE false END","NOT has_table_privilege('"+app+"',c.oid,'SELECT')")
+        old=old.replace("CASE WHEN c.relkind='S' THEN NOT has_sequence_privilege('"+app+
+            "',c.oid,'SELECT') ELSE false END","NOT has_sequence_privilege('"+app+"',c.oid,'SELECT')")
+        failed=subprocess.run([binary,'exec',cid,'env','PGOPTIONS=-c default_transaction_read_only=on',
+            'psql','-X','-q','-A','-t','-v','ON_ERROR_STOP=1','-v','VERBOSITY=verbose',
+            '-U','postgres','-d',database,'-c',old],stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=20)
+        self.assertNotEqual(failed.returncode,0)
+        self.assertEqual(reader.sql_failure(failed.stderr,failed.returncode),
+            {'classification':'WRONG_OBJECT_TYPE','sqlState':'42809'})
+        with tempfile.TemporaryDirectory()as config:
+            admin,facts=reader.backup_reader_preflight(binary,prepared,config,binding)
+            self.assertEqual(admin,'postgres')
+            self.assertEqual(facts,{'databaseOid':oid,'databaseMatched':True,'roleMatched':True,
+                'superuser':True,'readOnly':True,'applicationMissingTableSelect':1,
+                'applicationMissingSequenceSelect':1,'applicationIncidentSelect':False})
+            result=reader.dump_probe(binary,prepared['engine'],config,prepared['databasePlan'],{**binding,'user':admin})
+            self.assertEqual(result['classification'],'DUMP_PROBE_SUCCEEDED')
+            self.assertGreater(result['dumpBytes'],100);self.assertFalse(result['backupAccepted'])
+            self.assertEqual(reader.backup_reader_preflight(binary,prepared,config,binding),(admin,facts))
+
     def test_real_containerd_bundle_and_namespace_profile_are_exact(self):
         """Native path/inode qualification on the existing disposable service."""
         sys.path.insert(0,str(fixture.ROOT/'tools/semantic_frame_compiler'))

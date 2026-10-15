@@ -38,6 +38,7 @@ jobs:
           import test_chatbot_cohort_postgres_native as m
           suite=unittest.TestSuite(m.NativePostgres(name) for name in (
               "test_real_archives_preserve_rows_and_owner_migration_identity",
-              "test_restricted_mcp_role_requires_explicit_backup_reader"))
+              "test_restricted_mcp_role_requires_explicit_backup_reader",
+              "test_exact_standalone_preflight_query_on_mixed_catalogue"))
           result=unittest.TextTestRunner(verbosity=2).run(suite)
-          sys.exit(0 if result.wasSuccessful() and not result.skipped and result.testsRun==2 else 1)'
+          sys.exit(0 if result.wasSuccessful() and not result.skipped and result.testsRun==3 else 1)'

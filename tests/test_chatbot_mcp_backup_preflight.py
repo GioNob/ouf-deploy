@@ -31,6 +31,22 @@ class Preflight(unittest.TestCase):
                           ('applicationMissingTableSelect','secret'),('extra','secret')]:
             facts=self.facts();facts[key]=value
             with self.assertRaises(r.ReadDenied):self.invoke_preflight(facts)
+    def test_sql_failure_is_classified_without_exposing_diagnostic(self):
+        p=self.prepared();binding={'user':'fixture_app','database':'fixture_db','databaseOid':42}
+        error=b'ERROR:  42809: private_table_SECRET is not a sequence\nDETAIL: SECRET\n'
+        out=io.StringIO()
+        with patch.object(r,'inspect',return_value={'Id':'a'*64,'Config':{'Env':['POSTGRES_USER=fixture_admin']}}),\
+            patch.object(r,'bounded',return_value=(1,b'',error,0)),contextlib.redirect_stdout(out):
+            with self.assertRaisesRegex(r.ReadDenied,'ADMINISTRATIVE_READ_ONLY_PREFLIGHT_FAILED'):
+                r.backup_reader_preflight('/docker',p,'/private',binding)
+        self.assertNotIn('SECRET',out.getvalue());value=json.loads(out.getvalue())
+        self.assertEqual(value['classification'],'WRONG_OBJECT_TYPE');self.assertEqual(value['sqlState'],'42809')
+        self.assertFalse(value['rawDiagnosticPrinted']);self.assertEqual(value['stderrBytes'],len(error))
+        self.assertEqual(r.sql_failure(b'ERROR: SECRET: private',1),
+            {'classification':'UNCLASSIFIED_SQL_PREFLIGHT_FAILURE','sqlState':None})
+    def test_query_rejects_identifier_injection(self):
+        with self.assertRaises(r.ReadDenied):
+            r.backup_reader_query('admin',{'database':'db','user':"x'; SELECT 'SECRET"})
     def test_metadata_only_emits_allowlisted_values(self):
         with tempfile.TemporaryDirectory(dir=ROOT)as d:
             p=Path(d)/'record';p.write_bytes(r.encoded({'state':'CANCELLED','attempts':1,

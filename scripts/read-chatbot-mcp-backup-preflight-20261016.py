@@ -256,28 +256,52 @@ def recovery_checkpoint(review,prepared):
     emit('REGISTRY_NATIVE',runtimeHash=digest(runtime_pin(actual)),status=state['Status'],
         running=state['Running'],paused=state['Paused'],pid=state['Pid'],restartCount=actual['RestartCount'])
 
-def backup_reader_preflight(binary,prepared,config,binding):
-    plan=prepared['databasePlan'];admin=plan['mcpAuditRoleAdministration']['admin']
-    require(type(admin)is str and re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,62}',admin),'EXACT_EXISTING_ADMIN_SELECTOR_REQUIRED')
-    pg=inspect(prepared['engine'],plan['postgresRuntimeBinding']['containerId'])
-    selectors=[v.split('=',1)[1]for v in pg['Config'].get('Env',[])if v.startswith('POSTGRES_USER=')]
-    require(selectors==[admin],'SELECTED_ADMIN_CONFIG_DRIFT')
+def backup_reader_query(admin,binding):
+    for value in (admin,binding['user'],binding['database']):
+        require(type(value)is str and re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,62}',value),'EXACT_DATABASE_IDENTIFIER_REQUIRED')
     app="'"+binding['user']+"'";database="'"+binding['database']+"'"
-    query=("SELECT json_build_object('databaseOid',d.oid::bigint,"
+    # WHERE conjuncts have no evaluation order. CASE keeps sequence-only
+    # privilege checks away from tables, indexes and other pg_class entries.
+    return ("SELECT json_build_object('databaseOid',d.oid::bigint,"
         "'databaseMatched',current_database()="+database+",'roleMatched',current_user='"+admin+"',"
         "'superuser',r.rolsuper,'readOnly',current_setting('transaction_read_only')='on',"
         "'applicationMissingTableSelect',(SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "
         "WHERE c.relkind IN ('r','p','m') AND n.nspname NOT LIKE 'pg_%' AND n.nspname<>'information_schema' "
-        "AND NOT has_table_privilege("+app+",c.oid,'SELECT')),"
+        "AND CASE WHEN c.relkind IN ('r','p','m') THEN NOT has_table_privilege("+app+",c.oid,'SELECT') ELSE false END),"
         "'applicationMissingSequenceSelect',(SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "
         "WHERE c.relkind='S' AND n.nspname NOT LIKE 'pg_%' AND n.nspname<>'information_schema' "
-        "AND NOT has_sequence_privilege("+app+",c.oid,'SELECT')),"
+        "AND CASE WHEN c.relkind='S' THEN NOT has_sequence_privilege("+app+",c.oid,'SELECT') ELSE false END),"
         "'applicationIncidentSelect',has_table_privilege("+app+",'ouf_mcp.security_incident','SELECT')) "
         "FROM pg_database d CROSS JOIN pg_roles r WHERE d.datname=current_database() AND r.rolname=current_user")
+
+def sql_failure(raw,code):
+    # VERBOSITY=verbose supplies SQLSTATE. Return only a closed vocabulary;
+    # never emit SQL, identifiers, DETAIL, HINT or an arbitrary five-byte token.
+    states={b'42809':'WRONG_OBJECT_TYPE',b'42501':'INSUFFICIENT_PRIVILEGE',
+        b'42P01':'UNDEFINED_TABLE',b'42704':'UNDEFINED_OBJECT',b'42883':'UNDEFINED_FUNCTION',
+        b'42601':'SYNTAX_ERROR',b'25006':'READ_ONLY_TRANSACTION',b'57014':'QUERY_CANCELLED',
+        b'28P01':'PASSWORD_AUTHENTICATION_FAILED',b'28000':'AUTHENTICATION_FAILED',
+        b'3D000':'INVALID_DATABASE',b'53300':'CONNECTION_CAPACITY'}
+    match=re.search(rb'(?:ERROR|FATAL):\s+([A-Z0-9]{5}):',raw)
+    if match and match[1] in states:return {'classification':states[match[1]],'sqlState':match[1].decode()}
+    category=classify(raw,code)
+    return {'classification':'UNCLASSIFIED_SQL_PREFLIGHT_FAILURE'if category=='UNCLASSIFIED_DUMP_FAILURE'else category,
+        'sqlState':None}
+
+def backup_reader_preflight(binary,prepared,config,binding):
+    plan=prepared['databasePlan'];admin=plan['mcpAuditRoleAdministration']['admin']
+    query=backup_reader_query(admin,binding)
+    pg=inspect(prepared['engine'],plan['postgresRuntimeBinding']['containerId'])
+    selectors=[v.split('=',1)[1]for v in pg['Config'].get('Env',[])if v.startswith('POSTGRES_USER=')]
+    require(selectors==[admin],'SELECTED_ADMIN_CONFIG_DRIFT')
     argv=[binary,'--host','unix://'+prepared['engine']['socketPath'],'--config',config,'exec',pg['Id'],
         'env','LC_ALL=C','PGOPTIONS=-c default_transaction_read_only=on -c statement_timeout=10000',
-        'psql','-X','-q','-A','-t','-v','ON_ERROR_STOP=1','-U',admin,'-d',binding['database'],'-c',query]
-    code,raw,_,_=bounded(argv,seconds=20,maximum=8192)
+        'timeout','-s','KILL','15','psql','-X','-q','-A','-t','-v','ON_ERROR_STOP=1',
+        '-v','VERBOSITY=verbose','-U',admin,'-d',binding['database'],'-c',query]
+    code,raw,err,_=bounded(argv,seconds=20,maximum=8192)
+    if code!=0:
+        emit('ADMINISTRATIVE_SQL_FAILURE',exitCode=code,stderrBytes=len(err),rawDiagnosticPrinted=False,
+            **sql_failure(err,code))
     require(code==0,'ADMINISTRATIVE_READ_ONLY_PREFLIGHT_FAILED')
     facts=json.loads(raw,object_pairs_hook=unique)
     flags=('databaseMatched','roleMatched','superuser','readOnly','applicationIncidentSelect')
