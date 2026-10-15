@@ -1,36 +1,48 @@
-# Next chatbot/VPS action — 2026-10-15
+# Next chatbot/VPS action — 2026-10-15, mount-owner lifetime incident
 
-The latest owner target readback is fully green for the independent static
-proposal: exact full OCI, exact retained-mount image rootfs and zero differing
-entries. Reader source3b226692; uploadSHA513cef3ecc37f7e86f455b82b92194b7d5c1762c8b9bab0aa2fc4eb7dd759b57.
-See evidence/chatbot-retained-rootfs-proposal-target-20261015.json.
+Do NOT rerun the prior paused-recovery launcher. Its fixed incident claim was
+consumed by the action below; no admission or worker is adopted on restart.
 
-The fixed governed paused-attestation recovery is now implemented and qualified
-at source b7d24c57d6e45e71994ac3f99f56f249d83cde22. All six same-source CI gates
-PASS. Full cohort run38788441005/job116606422113:337 tests/45 suites/zero skips.
-The four actual native TLS/JWT continuation cases and nine signed journal/fence
-cases pass. See evidence/chatbot-paused-recovery-qualification-20261015.json and
-releases/CHATBOT_PAUSED_RECOVERY_READY_20261015.md. This qualification supersedes
-the PENDING implementation checkpoint on the immutable source commit.
+Latest owner output: sourceb7d24c57d6e45e71994ac3f99f56f249d83cde22,
+review2380132af8e47de185894fde156470e162dab784942c8615778e7620e7f8fc60,
+authority8c59697f46b3ce1b54d1cff1acf1f08dde6c4087062d28e379465d9a76ec570a,
+context/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-d3ef7a038a6b587dde883e802080cb393732be9c4399f98e43a1a3ff6b3b2c2f,
+unitouf-file-cohort-d3ef7a038a6b587dde883e802080cb39.service.
+All six retained effects, native full OCI/rootfs and DB fence passed preflight.
+It started a distinct worker and entered private frame observation, then failed
+at OnlineIamAdmission.admit line239 (Permanent/AUTHORITY_EXPIRED). It passed
+issuer identity, audience and scope checks before that lifetime refusal.
+Actual latest worker attempts/cumulative count/journal/claim/node issuance are
+not yet read back. Do not infer them from entering a delivery phase.
 
-Next target action is scripts/launch-chatbot-paused-recovery-20261015.sh from
-THIS evidence commit, which fetches the pinned operational launcher at b7d24c57.
-The wrapper SHA is a620ff14a03d475610e174a831cfc88f185fce14f0d39ed942d3eb235259f4ee.
-It reuses the already downloaded qualified ZIP. A new exact complete HUMAN
-review/terminal approval is required before a new finite runtime action.
-This is an operational continuation, not another standalone read-only probe.
+Confirmed source defect: mount observer passed its read deadline(up to30s)+
+signed mount minimum30s as token expiry. That ceiling<60s cannot satisfy owner
+minimum90s. The old suites separately tested real mounts and real owner but
+missed their integration. Source4be0acc81fccb15d66245525de5eba45b5083541 fixes
+this with an explicit fail-closed mounted-token owner witness using the
+existing durable publication expiry on both clocks plus unchanged online IAM.
+Minimum90s stays enforced; no fabricated TTL, lifetime extension, grant, token
+publication, counter reset or source/authority bypass. Seven new actual native
+readonly mount+signed owner+TLS tests pass in the hosted cohort and IAM steps.
+Full six-gate regression qualification is still pending at this checkpoint.
+See CHATBOT_MOUNT_OWNER_LIFETIME_FIX_20261015.md and target failure evidence.
 
-Preserve the old paused generation and all six APPLIED effects, old journals,
-claims, fenced backup and DB connection fence. The failed unsigned seventh
-intent remains recorded. No CREATE/STAGE/SIGUSR1 replay, image reimport,
-credential rotation, retirement replay, first-grant replay or counter reset.
-A distinct persistent incident claim fences one invocation. Current native
-static OCI/rootfs preflight precedes IAM/device/terminal interactions.
+The next target action is ONLY scripts/read-chatbot-mount-owner-failure-20261015.py
+from this evidence commit, after its own dedicated CI passes. Reader SHA:
+80d2903fe5093bd0fc41cd0ea3a227d7929da6fd7b68f36c4d91fab26bd644fe.
+It reads the fixed latest review/private bundle, stopped unit, retained worker/
+session/admission, phase journal/old failed intent marker, node issuance boundary,
+later journals and one native Docker GET. It validates exact frozen source pins,
+computes the mismatch from reviewed metadata and reports persisted lifetime
+metadata only. No token/credential file reads, IAM/DB calls, grants, source-body
+execution, journal/claim writes, signatures or runtime changes. Only sudo.
+Its complete fixture plus custody/privacy checks pass6 local tests; hosted
+qualification is required before giving the command. Expect END complete true.
 
-The distinct worker starts at attempts0/prior2/cumulative2, bound to the exact
-cancelled published worker/session. Its first new grant is cumulative3.
-Fresh full frame/token/peer acceptance remains required; only then may the
-remaining normal finite cutover and five-service/database/Gateway work proceed.
-Actual CSV chatbot end-to-end remains unproven. After cohort readiness, use
-TEATRI_SEMANTIC_REUSE_REVIEW_20261014.md for HUMAN source approval, actual commit,
-UDP lineage, fresh chatbot search and same-content canonical reuse checks.
+After that readback, prepare a new governed continuation from the latest signed
+scope, preserve BOTH historical failed intents and all six applied effects,
+retain all old claims/receipts/DB fence/backups, account the newly observed
+worker attempts cumulatively and use one new explicit finite HUMAN budget.
+The corrected source alone does not authorize such a continuation. Do not reuse
+old global claims, CREATE/STAGE/SIGUSR1, credentials, first grant or old worker.
+Target full frame/token/peer attestation and CSV chatbot E2E remain unproven.
