@@ -1,71 +1,40 @@
-# Prossimo passo — preparazione completa senza avvio, 15 ottobre 2026
+# Prossimo passo OUF — preparazione privata, aggiornamento 15 ottobre 2026
 
-## Risultati acquisiti
+## Ultimo stato verificato
 
-L'output VPS del15 ottobre identifica il difetto: Aliases della rete è null nel
-frame storico/CLI e lista nell'API1.44; gli altri campi e la generazione coincidono.
-Le cinque storie DB sono leggibili. La storia semantic coincide col prefisso
-dei sorgenti candidati, marker SCHEMA incluso, con sola migrazione V10 pendente.
-Una ricerca MCP fresca con l'account proprietario restituisce gli stessi8 Cinema
-ACTIVE/revisione1 della baseline. Teatri non è dimostrato end-to-end.
+Il tentativo sul VPS con912ec9d90015a2742957e49f72bc3a483e759e10 ha superato tutti i15 controlli nativi, incluso retainedEnvironment=true. La correzione dell'opzione storica JAVA_TOOL_OPTIONS è dunque confermata sul target. Si è fermato con UNRESOLVED_TEMPLATE_SLOT prima della review completa.
 
-La correzione è nella [PR31](https://github.com/GioNob/ouf-deploy/pull/31), distinta
-dalla baseline PR29. Preserva la comparazione storica CLI completa, i binding API
-completi per gli intenti e il marker semantic nella storia/readiness. Non modifica
-i sei sorgenti applicativi o il pacchetto qualificato.
+La causa è riprodotta localmente: la variabile runtime $OUF_APPLICATION_GATE nel comando di attesa esatto veniva confusa con un segnaposto Docker. I test precedenti non collegavano creation e compilazione completa del frame. La correzione è nel wrapper file-only; il comando di attesa e il compilatore generico sono invariati. La lettura del prefisso semantic e quella del bridge precedono questo punto e risultano superate per deduzione dal percorso del codice, non come nuovo report SQL autonomo.
 
-## Qualificazione esatta
+## Versione da usare
 
-- Sorgente eseguibile: `d8f23a433effbcb0ffb3581f658ce80f2963b595`.
-- [CI](https://github.com/GioNob/ouf-deploy/actions/runs/38667398767),
-  job116202361077: **193 test,25 suite,PASS,nessun test saltato**.
-- Socket/CLI/API reali e storia semantic PostgreSQL reale; righe, storia,
-  conteggio ruoli e ruolo applicativo non-superuser preservati nelle fixture.
-- Test espliciti del flag nel root entry isolato e dell'uscita a review completa
-  senza chiamare approvazione, emissione di autorità o avvio del processo.
-- Verificatore HUMAN: run38667398803,PASS.
-- [Evidenza strutturata](../evidence/retained-inspection-fix-qualification-20261015.json).
-- Capsula: `ba1e4723e8797cb30f1461caf90af6e26eae9f2a617484e076e7a7617d0ca680`.
-- Launcher Python: `52dfb7becbec183392633b581636740d07ecbddf3f1ed2564817efd0d218e207`.
-- [Comando operatore](chatbot-file-cohort-prepare-vps-20261015.sh), SHA256
-  `3167a62da12eb48e439b7e3f899ec6ac71a8745640949e9ca99bb6a8094dd046`.
+Sorgente eseguibile: **951f91c8df3d252c720ffa4f0fc787ff90d91b9e** (PR31).
+Capsula SHA256: e2d2ff9ce2dec348754edf977f911aac987a1d22723368571b26586870d50736.
+Launcher SHA256: 596bd594af24775ed5b9107199bb781893391c543624728f820bc4395581e084.
+Wrapper: [chatbot-file-cohort-prepare-frame-vps-20261015.sh](chatbot-file-cohort-prepare-frame-vps-20261015.sh).
+Wrapper SHA256: d10694b46d642cf11a2804f618b5124e2c4749e4d84f71f5f0274dbdcdf004e2.
 
-La prima prova nativa falliva prima dell'esecuzione perché la fixture importava
-un installer owner non necessario; la fixture è stata corretta e la prova reale
-ha poi passato. Non è un errore scoperto eseguendo il nuovo preparatore sul VPS.
+Eseguire il wrapper che pinna questo sorgente, non il preparatore contenuto nella branch delle evidenze PR30. Le versioni precedenti rimangono come storico, non come istruzioni correnti. Il wrapper usa il client gh portatile esistente e riusa obbligatoriamente lo ZIP già scaricato; non modifica i sei pin applicativi o il pacchetto.
 
-## Operazione richiesta
+- CI nativa [38685001075](https://github.com/GioNob/ouf-deploy/actions/runs/38685001075), job116257719205: **200 test,26 suite,PASS,nessun test saltato**.
+- CI immagine reale [38684997298](https://github.com/GioNob/ouf-deploy/actions/runs/38684997298), job116257708073: PASS della sequenza creation → compile_inputs → compile_policy, con fourMountFramePolicyCompiled=true ed exactRuntimeGatePreserved=true.
+- La stessa immagine conserva PASS della verifica Java HTTPS predefinita sulla discovery pubblica Keycloak; è una prova CI, non della rete del VPS.
+- Verificatore HUMAN38685001079:PASS.
+- Casi negativi: segnaposto in ENV, fonte di directory ripristinata e metadati; comando di attesa alterato; argv OCI diverso dagli argv indipendenti. Tutti respinti.
+- I112 membri della capsula sono verificati per hash: rispetto alla precedente cambia un solo sorgente selezionato, compile_file_only_frame_policy.py.
 
-Il comando usa obbligatoriamente `--prepare-only`. Verifica e riusa l'archivio
-esistente esatto; scarica i sorgenti della nuova capsula, effettua le normali
-autenticazioni e compila tutti gli input privati e la review. Può richiedere sudo,
-password amministrativa Keycloak nel relativo prompt e login browser con device
-code. Le password non vanno inserite in chat e il programma non le registra.
+La nuova prova su immagine reale esegue l'intera concatenazione creation → compile_inputs → compile_policy, incluso il gate e la custodia futura del token. Usa valori di test e contesti di validazione scartati; non è accettazione del VPS.
 
-Si ferma con `COMPLETE_PRIVATE_REVIEW_READY_NOT_STARTED`: riporta reviewPath e
-reviewHash, runtimeAuthorityIssued=false e targetApplyAuthorized=false. Non chiede
-di approvare il runtime e non avvia l'installazione. Sono attesi file privati di
-staging/audit e sessioni di autenticazione; nessuna mutazione di servizio, DB o
-risorsa IAM deriva da questa modalità. Non azzera budget o claim consumati.
+## Operazione e risultato atteso
 
-La nuova capsula mantiene gli stage precedenti. Il percorso ZIP è quello già
-usato nel launcher qualificato precedente; se assente, si ferma prima di sudo.
-Il launcher non riscarica1,7GB quando l'archivio esplicito è presente e valido.
+Il wrapper usa --prepare-only. Possono essere necessarie autenticazioni correnti sudo, amministrativa IAM e browser/device. Non inserire password nella chat. Le sessioni e i device code passati non costituiscono autorità riutilizzabile.
 
-Questo è il tentativo di qualificare la preparazione completa con le vere
-configurazioni del VPS, ancora non dimostrata dalla CI. Non è un rollout né una
-promessa che ogni condizione del target sia già verificata. Un errore deve essere
-riconciliato con l'inventario e con il punto di esecuzione; non ricominciare a
-modificare microservizi senza una causa dimostrata.
+Il risultato atteso è COMPLETE_PRIVATE_REVIEW_READY_NOT_STARTED, con reviewPath/reviewHash, runtimeAuthorityIssued=false e targetApplyAuthorized=false. L'installazione non viene approvata o avviata da questa modalità. Staging privato e sessioni di autenticazione sono previsti; nessun budget viene azzerato.
 
-## Stato dopo questa tranche
+## Accettazione ancora aperta
 
-B02: diagnosi target chiusa. B01: correzione qualificata in CI, ancora da osservare
-nella preparazione completa target. B03: review completa target attesa. B04: reale
-upgrade/IAM/Gateway/THS non applicato. B05/B06: CSV Teatri e seconda sorgente ancora
-da dimostrare. Il riferimento Cinema è fresco e preservato alla lettura del15.
-Catalogo amministrativo IAM e ledger corrente non diventano verificati dal solo
-successo della ricerca MCP; autorità e contabilità valide restano prerequisiti
-della futura applicazione. La review prepare-only è un riferimento privato della
-preparazione, non un'approvazione riutilizzabile oltre scadenze/cambiamenti: una
-futura esecuzione richiederà sessione e verifiche correnti.
+La review completa sul VPS resta da dimostrare: intenti/scope, riletture finali, verifica corrente R12 e assemblaggio della review. Restano poi applicazione governata e ciclo CSV Teatri: HUMAN/THS, ingestion, ACK durevole, commit/lineage UDP, ricerca chatbot fresca e seconda sorgente MATCH/NOOP. Gli8 Cinema devono essere preservati.
+
+Il CSV Teatri esistente resta asset6609b245-86ed-4315-8ce0-73f2a8555bf3/profile7984c39c-7396-4248-ab0a-f2efc390b49c, versione1,13 righe/20 colonne. La correzione di distribuzione non prova l'end-to-end e non implica una stima affidabile della durata residua.
+
+Dettagli: [analisi del blocco e correzione](FILE_ONLY_FRAME_GATE_FIX_20261015.md), [evidenza target](../evidence/chatbot-preparation-frame-block-20261015.json), [qualificazione](../evidence/file-only-frame-gate-fix-qualification-20261015.json).

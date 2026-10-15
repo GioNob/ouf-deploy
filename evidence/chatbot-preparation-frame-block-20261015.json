@@ -1,0 +1,72 @@
+{
+  "schema": "ouf.chatbot-preparation-frame-block-assessment.v1",
+  "date": "2026-10-15",
+  "acquisition": "OPERATOR_PASTED_TARGET_OUTPUT",
+  "preparerCommit": "912ec9d90015a2742957e49f72bc3a483e759e10",
+  "mode": "PREPARE_ONLY",
+  "targetResult": {
+    "phase": "BLOCKED",
+    "reason": "UNRESOLVED_TEMPLATE_SLOT",
+    "runtimeAuthorityIssued": false,
+    "chatbotEndToEndProven": false,
+    "budgetReset": false,
+    "notReleaseAcceptance": true
+  },
+  "preflight": {
+    "allRequiredChecksPass": true,
+    "checks": {
+      "consultationKeyCustody": true,
+      "engineBaseline": true,
+      "historicalGeneration": true,
+      "networkNamespace": true,
+      "networkNic": true,
+      "registryInspection": true,
+      "retainedEnvironment": true,
+      "retainedGeneration": true,
+      "retainedInputs": true,
+      "retainedNativeCommands": true,
+      "runcState": true,
+      "runtimeLayoutAndIdentity": true,
+      "stableEngine": true,
+      "stableRetainedCommands": true,
+      "stableRunc": true
+    },
+    "failedChecks": {},
+    "facts": {
+      "CgroupDriver": "systemd",
+      "Driver": "overlayfs",
+      "ServerVersion": "29.8.1",
+      "bundleProfile": "SYSTEM_CONTAINERD",
+      "historicalDiscoveryJvmTrustOptionRemovedFromProposal": true,
+      "namespaceProfile": "VAR_RUN_ALIAS"
+    }
+  },
+  "adminSession": {
+    "administrativeLoginAttempted": true,
+    "status": "SELECTED_IAM_GET_AVAILABLE",
+    "iamResourceMutations": 0,
+    "serviceMutations": 0,
+    "serviceTokenGrantRequests": 0
+  },
+  "deviceCodeOmitted": true,
+  "completePrivateReviewProduced": false,
+  "localReproduction": {
+    "beforeFix": "UNRESOLVED_TEMPLATE_SLOT",
+    "location": "compile_creation_frame_policy.compile_policy called by compile_file_only_frame_policy.compile_policy",
+    "cause": "Blanket unresolved-slot scan rejects the exact runtime shell variable $OUF_APPLICATION_GATE inside the pre-application gate argv",
+    "targetDataRequired": false
+  },
+  "inferencesFromPinnedSourceOrder": {
+    "explicitlyNotSeparateNativeDiagnostic": true,
+    "semanticMigrationPrefixAndBootstrapSuperuserCheckReachedAndPassed": true,
+    "selectedRegistryBridgeCheckReachedAndPassed": true,
+    "reason": "The reproduced failing final frame policy compilation follows these checks in prepare_file_only_installation; the earlier independent baseline compilation has no gate and passes."
+  },
+  "notProven": [
+    "completeTargetPreparation",
+    "currentR12FinalReadback",
+    "runtimeApplication",
+    "csvTeatriEndToEnd",
+    "secondSourceMatchNoop"
+  ]
+}
