@@ -9,6 +9,7 @@ import copy
 import fcntl
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import stat
@@ -270,6 +271,32 @@ class InstalledTokenOwner(DomainOwner):
         self.admission.admit(token,valid_until_monotonic,deadline);self.guard(binding_hash)
         if self.observer:check(self.store.read()==before)
         else:self.store.save(before,'ACTIVE',token_hash)
+        return True
+    def admit_mounted(self,token,minimum_remaining,binding_hash,deadline):
+        """Authenticate this published token using its retained grant window.
+
+        The mount's finite read deadline is not token expiry. Both durable
+        clocks, the current admission hash and online IAM must agree. Nothing
+        is published, renewed or extended by this observer operation.
+        """
+        check(self.observer and type(minimum_remaining)is int and 1<=minimum_remaining<=3600
+            and type(deadline)in(int,float)and math.isfinite(deadline))
+        self.guard(binding_hash);row,current=self._verified_state(binding_hash)
+        check(row['state']=='ACTIVE'and current['state']=='ACTIVE')
+        wall,mono=self.admission.clock()
+        check(all(type(row.get(k))in(int,float)and math.isfinite(row[k])for k in
+            ('tokenExpiresWall','tokenExpiresMonotonic','lastWall','lastMonotonic'))
+            and row['lastWall']<=wall and row['lastMonotonic']<=mono<deadline
+            and deadline<=mono+30)
+        required=max(minimum_remaining,self.binding.minimum_remaining)
+        valid_until=min(row['tokenExpiresMonotonic'],mono+row['tokenExpiresWall']-wall)
+        if valid_until-mono<required:raise Permanent('AUTHORITY_EXPIRED')
+        self.admit(token,valid_until,binding_hash,deadline)
+        self.guard(binding_hash);end_wall,end_mono=self.admission.clock()
+        check(wall<=end_wall and mono<=end_mono<deadline
+            and self.journal.read()==row and self.store.read()==current)
+        if min(row['tokenExpiresWall']-end_wall,row['tokenExpiresMonotonic']-end_mono)<required:
+            raise Permanent('AUTHORITY_EXPIRED')
         return True
     def pause(self):
         if not self.observer:

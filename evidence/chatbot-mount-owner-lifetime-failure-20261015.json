@@ -1,0 +1,29 @@
+{
+  "appliedPrefixPhaseCount": 6,
+  "authorityHash": "8c59697f46b3ce1b54d1cff1acf1f08dde6c4087062d28e379465d9a76ec570a",
+  "chatbotEndToEndProven": false,
+  "context": "/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-d3ef7a038a6b587dde883e802080cb393732be9c4399f98e43a1a3ff6b3b2c2f",
+  "date": "2026-10-15",
+  "evidenceOrigin": "USER_PASTED_TARGET_OUTPUT",
+  "innermostFailure": {
+    "function": "admit",
+    "line": 239,
+    "module": "tools.semantic_policy_token_owner.iam_admission",
+    "sourceCode": "AUTHORITY_EXPIRED"
+  },
+  "latestTransitionHash": null,
+  "latestWorkerAttempts": null,
+  "latestWorkerCumulativeAttempts": null,
+  "nextAction": "QUALIFY_MOUNT_OWNER_FIX_AND_READ_LATEST_RETAINED_STATE_NO_REPLAY",
+  "nodeAttestationAccepted": false,
+  "notReleaseAcceptance": true,
+  "phase": "PAUSED_REQUIRES_RECONCILIATION",
+  "planHash": "329ba0d330b265c8dc52fc758b713ab1659605c4e263554ed91b2ef4134507ef",
+  "priorControlledGrantAttempts": 2,
+  "reason": "Permanent",
+  "reviewHash": "2380132af8e47de185894fde156470e162dab784942c8615778e7620e7f8fc60",
+  "schema": "ouf.chatbot-mount-owner-lifetime-failure.v1",
+  "sourceCommit": "b7d24c57d6e45e71994ac3f99f56f249d83cde22",
+  "staticPreflightPassed": true,
+  "unit": "ouf-file-cohort-d3ef7a038a6b587dde883e802080cb39.service"
+}

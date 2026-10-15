@@ -10,7 +10,7 @@ class FixtureOwner(DomainOwner):
     def guard(self,binding_hash):pass
     def prepare(self,binding_hash,deadline):pass
     def pause(self):pass
-    def admit(self,token,*args):
+    def admit_mounted(self,token,*args):
         self.calls+=1
         if self.callback:self.callback()
         return self.accept
@@ -89,3 +89,4 @@ class RenewableMount(unittest.TestCase):
         self.assertEqual(owner.calls,0)
 
 if __name__=='__main__':unittest.main()
+

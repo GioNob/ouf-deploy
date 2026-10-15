@@ -73,6 +73,11 @@ jobs:
           sudo mkdir -m 700 "$OUF_FIXTURE_ROOT"
           sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
           sudo chown -R root:root "$OUF_FIXTURE_ROOT"
+      - name: Actual readonly token mount with installed signed owner and TLS introspection
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
+          sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_MOUNTS=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_mount_owner_integration.py -v
       - name: Signed native journals, effects, revocation and reconciliation
         run: |
           set -euo pipefail
