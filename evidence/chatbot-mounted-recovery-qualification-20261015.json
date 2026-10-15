@@ -1,13 +1,13 @@
 {
   "schema": "ouf.chatbot-mounted-recovery-qualification.v1",
   "date": "2026-10-15",
-  "status": "BLOCKED_CI_ACCOUNT_BILLING_OR_SPENDING_LIMIT",
+  "status": "QUALIFICATION_RUNNING_PUBLIC_STANDARD_RUNNERS",
   "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
   "capsuleSha256": "0188d923fe197a6102097abc8b3af26a94e0175923a23fcca008801acd0b9e3d",
   "capsuleFiles": 117,
   "runtimeModules": 99,
   "launcherSha256": "72323604029b4ede41211a579e138ef6fcda03f8e396d1b67bdf251130118595",
-  "cause": "USER_REPORTED_GITHUB_ACCOUNT_BILLING_OR_SPENDING_LIMIT_ANNOTATION",
+  "cause": "PRIOR_ACCOUNT_GATE_CLEARED_AFTER_OWNER_MADE_REPOSITORY_PUBLIC",
   "previousSourceEvidence": {
     "sourceCommit": "e74cfc009fba1c142dc168fa86610358fd268842",
     "cohortRunId": 38796920463,
@@ -137,7 +137,7 @@
     ],
     "rerunsRequestedAfterBillingReport": 0
   },
-  "visibilityLastObserved": "private",
+  "visibilityLastObserved": "public",
   "privacyReview": {
     "trackedFiles": 1550,
     "localReadableFiles": 259,
@@ -146,5 +146,107 @@
     "completePublicDisclosureAudit": false
   },
   "billingSettingsChanged": false,
-  "repositoryVisibilityChangedByAgent": false
+  "repositoryVisibilityChangedByAgent": false,
+  "publicQualification": {
+    "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+    "rerunsPerWorkflow": 1,
+    "checks": [
+      {
+        "runId": 38799875475,
+        "jobs": [
+          {
+            "jobId": 116648805489,
+            "status": "in_progress",
+            "conclusion": null,
+            "current": "Signed native journals, effects, revocation and reconciliation",
+            "passed": [
+              "Set up job",
+              "Initialize containers",
+              "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "Checkout the exact qualified Gateway materializers",
+              "Install pinned materializer dependencies in an isolated test environment",
+              "Checkout the exact owner helper and database migration sources",
+              "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "Checkout the exact UDP owner migrations",
+              "Checkout the exact target MCP migration for native privilege qualification",
+              "Compile the pinned owner GrantConstraints and Jackson round-trip fixture",
+              "Seal native root custody fixture",
+              "Actual readonly token mount with installed signed owner and TLS introspection",
+              "Three-grant history, actual fourth TLS grant and complete v3 review compilation"
+            ],
+            "failed": []
+          }
+        ]
+      },
+      {
+        "runId": 38799875567,
+        "jobs": [
+          {
+            "jobId": 116648945842,
+            "status": "in_progress",
+            "conclusion": null,
+            "current": "Actual disposable Keycloak issuer protocol (no target connection)",
+            "passed": [
+              "Set up job",
+              "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+              "Prepare disposable root fixture",
+              "Actual TLS/peer, root custody, role signatures and persistent admission fencing",
+              "Exact operator handoff and read-only probe",
+              "Full worker and authority closure imported from verified memory",
+              "Existing source-stage and finite worker regressions"
+            ],
+            "failed": []
+          }
+        ]
+      },
+      {
+        "runId": 38799875577,
+        "jobs": [
+          {
+            "jobId": 116648950234,
+            "status": "completed",
+            "conclusion": "success",
+            "failed": []
+          }
+        ]
+      },
+      {
+        "runId": 38799875436,
+        "jobs": [
+          {
+            "jobId": 116648955937,
+            "runnerId": 1000031500,
+            "status": "completed",
+            "conclusion": "success",
+            "failed": []
+          }
+        ]
+      },
+      {
+        "runId": 38799875533,
+        "jobs": [
+          {
+            "jobId": 116648964216,
+            "runnerId": 1000031501,
+            "status": "completed",
+            "conclusion": "success",
+            "failed": []
+          }
+        ]
+      },
+      {
+        "runId": 38799875681,
+        "jobs": [
+          {
+            "jobId": 116648967135,
+            "runnerId": 1000031502,
+            "status": "completed",
+            "conclusion": "success",
+            "failed": []
+          }
+        ]
+      }
+    ],
+    "allRequiredChecksPassed": false
+  }
 }

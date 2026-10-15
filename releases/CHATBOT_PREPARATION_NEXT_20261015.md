@@ -32,7 +32,14 @@ first grant, credential rotation or backup/fence replay. Full independent OCI/
 rootfs preflight precedes IAM/device/terminal interaction. Existing complete
 frame, token, peer, node-signing and later native application checks stay required.
 
-Qualification BLOCKED by a confirmed GitHub account billing/spending-limit gate.
+Qualification RUNNING after owner changed repository visibility to public.
+All six standard-hosted-runner checks have actually started on source43819bc0;
+Docker, native authority, full installation and retirement checks PASS.
+Cohort joined mount/owner/TLS and v3 three-prior/fourth-grant review steps PASS;
+whole cohort and separate disposable Keycloak IAM checks are still running.
+Exactly one rerun per current workflow was requested; no source-triggered rerun.
+
+Previous qualification was blocked by a confirmed account billing/spending gate.
 The user supplied the exact GitHub annotation for source f2e70ae8:
 "The job was not started because recent account payments have failed or your
 spending limit needs to be increased. Please check the 'Billing & plans'
@@ -45,11 +52,12 @@ main-only native-authority trigger stays main-only. All six retain identical
 jobs, test commands, permissions, pull-request paths and push paths. Each now
 cancels superseded runs of the same workflow/PR (or branch). Structural YAML
 and exact job/permissions/path comparisons PASS locally. No required test is
-removed. The PR-triggered six checks failed at dispatch while the repository
-was still private; no manual rerun was requested. Current whole-cohort
+removed. The initial PR-triggered checks failed at dispatch while the repository
+was private. After publication all six received a runner on one deliberate rerun.
+Current whole-cohort
 qualification remains incomplete. Capsule/launcher/production bytes unchanged.
 
-The user chose to make the repository public. Visibility last observed private;
+The user chose to make the repository public. Visibility now verified public;
 the agent has NOT changed visibility, payment details, budgets or spending caps.
 Official GitHub docs state standard hosted runner usage is free for public
 repositories; larger runners remain billed. These six use ubuntu-24.04 standard
@@ -74,12 +82,12 @@ still finish before runtime delivery; no claim of all-six-gate qualification.
 Earlier f66e69ca failed another test fixture's missing old-owner reference,
 corrected at e74cfc00. Never deliver either failed source as qualified.
 
-Next action: read repository visibility after the user's change. If public,
-rerun the current cohort check once to establish runner availability, then
-qualify the remaining required checks on the SAME current source. If dispatch
-still reports the account billing gate, stop reruns and report that exact gate.
-No new source edits solely to cause reruns; no VPS test as a substitute for CI.
-No new IAM/device/HUMAN approval or diagnostic command is requested now.
+Next action: wait for current cohort and separate IAM checks to finish. Read
+all completed native logs, verify counts/no skips and exact source. If all six
+pass, publish wrapper SHA378fc7e4bbac39be2c213e841fda06590b02b91b899d5a34a4a74092dfca8100
+pinned to43819bc0 and the final evidence, then provide one concrete VPS command
+with fresh exact HUMAN review. No VPS diagnostic, new source edit or extra
+rerun is currently requested from the user. CI is not target E2E acceptance.
 
 Local extra validation: complete closed-source imports3 PASS, launcher14 PASS,
 signed two-failure recovery5 PASS, legacy paused recovery9 PASS, postgrant9 PASS,
@@ -94,7 +102,7 @@ Exact candidate capsule0188d923fe197a6102097abc8b3af26a94e0175923a23fcca008801ac
 72323604029b4ede41211a579e138ef6fcda03f8e396d1b67bdf251130118595.
 Pinned operational wrapper is prepared locally as
 scripts/launch-chatbot-mount-recovery-20261015.sh, SHA
-c3e0e5975535d8c420d1a68035a85db663b7ad0ec85f4fc9a68d2a3b82761fd1.
+378fc7e4bbac39be2c213e841fda06590b02b91b899d5a34a4a74092dfca8100.
 Publish it and the final qualification only after six gates pass; do not give
 a target command while any gate is red/pending. User has no further readback
 to perform now. Existing user downloaded qualified ZIP must be reused.
