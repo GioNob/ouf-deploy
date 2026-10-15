@@ -3,7 +3,6 @@ import hashlib,json,os,shutil,stat,subprocess,tempfile,unittest
 from pathlib import Path
 from unittest.mock import patch
 import test_chatbot_cohort_runtime_layout as setup
-from tools.chatbot_file_cohort.delivery import native_environment
 
 p=setup.p
 ROOT=Path(__file__).resolve().parents[1]
@@ -22,7 +21,10 @@ class NativeRetainedInspection(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=ROOT,prefix='inspection-native-') as config,patch.dict(os.environ):
             socket_path=str(Path('/var/run/docker.sock').resolve());s=os.stat(socket_path)
             engine=p.Engine(socket_path,(s.st_dev,s.st_ino,s.st_uid,s.st_gid,stat.S_IMODE(s.st_mode)))
-            native_environment(engine,binding,config)
+            # The paired reader needs a pinned empty CLI configuration, not
+            # the authorization-owner installer imported by delivery.py.
+            os.environ.update(PATH='/usr/sbin:/usr/bin:/sbin:/bin',DOCKER_HOST='unix://'+socket_path,DOCKER_CONFIG=config)
+            for key in ('DOCKER_CONTEXT','DOCKER_TLS_VERIFY','DOCKER_CERT_PATH','DOCKER_API_VERSION'):os.environ.pop(key,None)
             try:
                 command(['network','create',network]);net_created=True
                 command(['network','connect',network,pg_id]);connected=True
