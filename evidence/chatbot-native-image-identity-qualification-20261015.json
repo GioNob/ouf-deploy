@@ -1,0 +1,178 @@
+{
+  "schema": "ouf.native-image-identity-correction-qualification.v1",
+  "date": "2026-10-15",
+  "sourceCommit": "95749a8ef316856e16c44c1d7aa3b6791b408993",
+  "capsuleSha256": "5fb8c5e1ec207594155ac61fbd2b03d821135d28d50c6f00aa7cd86a018f49a5",
+  "launcherSha256": "547790e03093f8c51c3947e09e14d3b9b10b900bbf42363f7fe0047333c12715",
+  "qualifiedChecks": {
+    "nativePr": {
+      "runId": 38704849033,
+      "jobId": 116321606947,
+      "tests": 234,
+      "suites": 30,
+      "skipped": 0,
+      "status": "PASS"
+    },
+    "exactFiveAndSignedOwner": {
+      "runId": 38704843739,
+      "classicJobId": 116321589263,
+      "containerdJobId": 116321589315,
+      "status": "PASS",
+      "serverVersion": "28.0.4",
+      "imagesPerBackend": 5,
+      "applicationImagesStarted": false,
+      "exactSemanticFourMountGatedFrame": "PASS_BOTH_BACKENDS",
+      "existingLegacySemanticVerifiedWithoutReload": true,
+      "signedFiveImageOwner": "PASS_BOTH_BACKENDS",
+      "records": [
+        {
+          "job": 116321589263,
+          "tests": 1,
+          "suites": 1,
+          "skipped": false,
+          "imageCases": [
+            {
+              "check": "NATIVE_IDENTITY_PASS",
+              "configurationImageId": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489",
+              "existingLegacyReconciledWithoutReload": false,
+              "nativeImageId": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489"
+            },
+            {
+              "check": "NATIVE_IDENTITY_PASS",
+              "configurationImageId": "sha256:554a190a8e7ae9ed7f5c206e42e435812277d294670db9a9ecf39022488c679c",
+              "existingLegacyReconciledWithoutReload": false,
+              "nativeImageId": "sha256:554a190a8e7ae9ed7f5c206e42e435812277d294670db9a9ecf39022488c679c"
+            },
+            {
+              "check": "NATIVE_IDENTITY_PASS",
+              "configurationImageId": "sha256:d253a0afe5f8fdaa0056e7ac345cf610b08a569a68a7079515dcc886ea721c8e",
+              "existingLegacyReconciledWithoutReload": false,
+              "nativeImageId": "sha256:d253a0afe5f8fdaa0056e7ac345cf610b08a569a68a7079515dcc886ea721c8e"
+            },
+            {
+              "check": "NATIVE_IDENTITY_PASS",
+              "configurationImageId": "sha256:87f26084dadfafdd7973b6a8d7659a6d2a4d4fe2ce9f3b57a63dc5d5af1690ff",
+              "existingLegacyReconciledWithoutReload": false,
+              "nativeImageId": "sha256:87f26084dadfafdd7973b6a8d7659a6d2a4d4fe2ce9f3b57a63dc5d5af1690ff"
+            },
+            {
+              "check": "NATIVE_IDENTITY_PASS",
+              "configurationImageId": "sha256:e8538c64407757396b13da8e586507900cf126030ce4f25aafd8a5b7de6d60e5",
+              "existingLegacyReconciledWithoutReload": false,
+              "nativeImageId": "sha256:e8538c64407757396b13da8e586507900cf126030ce4f25aafd8a5b7de6d60e5"
+            }
+          ],
+          "framePass": true
+        },
+        {
+          "job": 116321589315,
+          "tests": 1,
+          "suites": 1,
+          "skipped": false,
+          "imageCases": [
+            {
+              "check": "NATIVE_IDENTITY_PASS",
+              "configurationImageId": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489",
+              "existingLegacyReconciledWithoutReload": true,
+              "nativeImageId": "sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3"
+            },
+            {
+              "check": "NATIVE_IDENTITY_PASS",
+              "configurationImageId": "sha256:554a190a8e7ae9ed7f5c206e42e435812277d294670db9a9ecf39022488c679c",
+              "existingLegacyReconciledWithoutReload": false,
+              "nativeImageId": "sha256:09fa007cfefdf97220f9a3d3970b8a07b7db06ffcbdb3352546c5ffb62d4974f"
+            },
+            {
+              "check": "NATIVE_IDENTITY_PASS",
+              "configurationImageId": "sha256:d253a0afe5f8fdaa0056e7ac345cf610b08a569a68a7079515dcc886ea721c8e",
+              "existingLegacyReconciledWithoutReload": false,
+              "nativeImageId": "sha256:e3466ff0dd29f55bee31e1600485d7441980c8a669ea129ba23ccda93c3febcb"
+            },
+            {
+              "check": "NATIVE_IDENTITY_PASS",
+              "configurationImageId": "sha256:87f26084dadfafdd7973b6a8d7659a6d2a4d4fe2ce9f3b57a63dc5d5af1690ff",
+              "existingLegacyReconciledWithoutReload": false,
+              "nativeImageId": "sha256:85529961c932bc013fb4fe85bd542a2248901ed0b5c154c7c276e830179bf78a"
+            },
+            {
+              "check": "NATIVE_IDENTITY_PASS",
+              "configurationImageId": "sha256:e8538c64407757396b13da8e586507900cf126030ce4f25aafd8a5b7de6d60e5",
+              "existingLegacyReconciledWithoutReload": false,
+              "nativeImageId": "sha256:a00779989378d260cc9ed963a79d44e280540ea3dc6b3f2b4c6feb18bac51a73"
+            }
+          ],
+          "framePass": true
+        }
+      ]
+    },
+    "humanVerifier": {
+      "runId": 38704849109,
+      "status": "PASS"
+    },
+    "nativePush": {
+      "runId": 38704843732,
+      "jobId": 116321589250,
+      "status": "PASS",
+      "tests": 234,
+      "suites": 30,
+      "skipped": 0
+    }
+  },
+  "targetObserved": {
+    "reportedLocal": "2026-10-15 09:53 Europe/Rome",
+    "serverVersion": "29.8.1",
+    "context": "/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-dd03d434361deb62e1caeaf7958a71c39c095f065e776312779d59dd6a7f4a77",
+    "authorityHash": "48c75739575b7d618484ed78184834d2d1961da97fa2870d80d14ce26fe978f4",
+    "authorityExpiresAt": 1792052697,
+    "configurationImageId": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489",
+    "nativeImageId": "sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3",
+    "approvedArchiveSha256": "9f1961025f0e55d7a12e7f3f6df5c5fe0980ff4cad730086262bedecdaf6a357",
+    "executionConfigPass": true,
+    "rootfsPass": true,
+    "sourceLabelMatches": true,
+    "repositoryTagCount": 0,
+    "otherFourExpectedSourceCandidates": 0,
+    "correctedExecutionNotYetStarted": true
+  },
+  "frozenPackage": {
+    "producerCommit": "8bff54a52a0ce15daccaf2aee932004f106dd178",
+    "runId": 38584614991,
+    "artifactId": 11907557440,
+    "archiveSha256": "144699ab7756c8312d49783967cfbb64acc02a617015ad89f5adf51e25a10300",
+    "applicationImagesRebuilt": 0
+  },
+  "changes": [
+    "Explicit config digest/native manifest digest binding, stable OCI envelope preserves config/layer bytes and prevents importer cache-dependent descriptor selection.",
+    "Import journal, four application plans and semantic registry factory use exact native identity; raw config/source package identity and strict config/rootfs checks remain bound.",
+    "Read-only recovery recognizes exactly b646 first semantic import with APPLIED native content evidence; other four image journals must be pristine; auth-only6959 predecessor still supported; old claims and journals remain unchanged.",
+    "Unknown sources, active/unexpired predecessor, altered archives, changed native identity/config/rootfs and later DB/service/token-stage journals deny recovery.",
+    "Known ImageCustodyDenied codes are public; arbitrary ValueError bodies remain private."
+  ],
+  "wrapper": {
+    "path": "releases/chatbot-file-cohort-native-identity-execute-vps-20261015.sh",
+    "sha256": "136267249a832148754100de5f741dafd93da5beee231cf160dd6b81a2e0913d",
+    "existingArchiveReused": true,
+    "waitBeforePreparationUntil": 1792052697,
+    "waitTests": {
+      "pastDeadline": "PASS",
+      "finite61SecondAdvance": "PASS",
+      "hostClockMoreThanHourBehind": "DENIED_AS_EXPECTED"
+    },
+    "newFiniteHumanReviewRequired": true
+  },
+  "qualificationFailurePreserved": {
+    "runId": 38704349009,
+    "stage": "Extra tiny synthetic image fixture",
+    "reason": "NATIVE_IMAGE_EXECUTION_CONFIG_DRIFT",
+    "realFiveImagesAndNativeFramePassed": true,
+    "resolution": "Explicit USER, WORKDIR, ENV, ENTRYPOINT, CMD and STOPSIGNAL in the disposable image fixture; strict production comparison unchanged."
+  },
+  "limits": [
+    "CI uses Docker28.0.4 classic and containerd; full new deployment on VPS Docker29.8.1 remains pending.",
+    "Readonly target confirms exact same semantic native manifest ID and execution/rootfs projections; no corrected target runtime action has been executed.",
+    "No target import, service, DB or new runtime authority is performed by this qualification."
+  ],
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}

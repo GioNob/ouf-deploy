@@ -1,118 +1,77 @@
-# Current finding: published image identity differs under containerd (2026-10-15)
+# CSV/chatbot — current handoff, 2026-10-15
 
-The operator completed pure archive validation: all five retained tagless files exactly match their approved audits. Semantic is still IN_FLIGHT/attempt 1, all other images READY/attempt 0, expected image IDs return 404, no later-stage recovery journals exist. No automatic repeat is permitted.
+## Current result and next operator action
 
-A disposable two-store CI reproducer on source `7464582615d285999a56518c355ed6cbf5e81f74` downloaded the exact existing semantic artifact 11907831957 from producer run 38584614991, rederived the same 390021120-byte tagless archive (SHA256 `9f1961025f0e55d7a12e7f3f6df5c5fe0980ff4cad730086262bedecdaf6a357`), and ran the existing Import owner and real Docker load stream. Run https://github.com/GioNob/ouf-deploy/actions/runs/38700933784 has one PASS/classic and one expected reproduced failure/containerd:
+The containerd image-identity defect is corrected and qualified in **GioNob/ouf-deploy commit 95749a8ef316856e16c44c1d7aa3b6791b408993**, draft PR31, branch codex/retained-inspection-channel-20261015. PR31 still targets PR29's branch codex/chatbot-mcp-migration-role-20261014 at fdc990136592f0353c2824f4de632a052910a2a0. Neither PR is merged.
 
-- Classic overlay2, Docker 28.0.4, job 116308656259: load succeeds as original configuration ID `sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489`; native custody verification passes.
-- Containerd overlayfs, Docker 28.0.4, job 116308655931: load exits 0 with native ID `sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3`. Looking up the original config ID is 404; existing Import.verify raises ValueError `IMPORT_ABSENCE_DOES_NOT_PROVE_NO_EFFECT`. Its journal remains IN_FLIGHT/attempt 1. Rootfs matches. Full raw Config equality is false; selected execution fields have not yet been inspected on target. Do not claim this tested VPS Docker 29.8.1 or that raw native Config equals the archive Config.
+**The corrected execution has NOT been run on the VPS. Actual CSV/chatbot end-to-end remains unproven.** The next action is the new wrapper `releases/chatbot-file-cohort-native-identity-execute-vps-20261015.sh`, SHA256 **136267249a832148754100de5f741dafd93da5beee231cf160dd6b81a2e0913d**. Fetch it from the same exact evidence commit as this handoff, verify that hash, then run it. Never execute application/deployment code from this evidence branch: the wrapper fetches the qualified source commit above with launcher SHA256 **547790e03093f8c51c3947e09e14d3b9b10b900bbf42363f7fe0047333c12715** and capsule SHA256 **5fb8c5e1ec207594155ac61fbd2b03d821135d28d50c6f00aa7cd86a018f49a5**.
 
-This closes the reproduction gap, not the deployment. Earlier image-import tests used tiny fixtures; the exact-image TLS/frame test loaded the original archive. Neither exercised these exact derived bytes with the containerd store. No application code, image, target service or database was changed by the new CI. The new branch is diagnosis only; it must not be used as a deploy source.
+The wrapper preserves existing GitHub authentication, reuses the exact existing ZIP, and waits only if needed for old authority expiry **1792052697 / 2026-10-15 10:24:57 Europe/Rome** before preparation. The bounded clock wait performs no privileged work or runtime authority issuance. Preparation may ask for sudo, the existing Keycloak administrative login and a device-code identity login. Fresh full-action approval is required in the controlling VPS terminal: type APPROVO followed by the new hash displayed by that execution. A new finite one-hour window starts after that approval. Never paste an old approval hash or pipe approval automatically. If roles remain as currently published, no new role proposal should be needed; any mandatory role-review URL is now printed explicitly outside JSON.
 
-The next necessary operator action is read-only `scripts/read-chatbot-native-image-identity-20261015.py`, SHA256 `cc9aa1b3bc2cda61ce476f7de0a7483b53efcd00028c78372b025ef6be3ee075`. It is bound to dd03/authority48c7/sourceb646 and lists images by exact source revision, then compares rootfs and execution fields against the sealed audits. It emits identifiers, approved archive hashes, comparison booleans and mismatching field names/types, never raw config/environment. Ten local tests pass; native HTTP transport is mocked locally. No import, restart, IAM login, authority renewal or DB write. Target proof is pending; preserve old consumed claims and keep the execute wrapper suspended.
+Do not rerun the old reconcile-execute wrapper: its gate handles only auth-only predecessors and correctly refuses image-stage history. Do not restart either old unit. After terminal loss or pause, read the newest retained unit/status before further effects. The corrected one-use source cannot automatically replay a consumed later-stage attempt.
 
-The product correction must bind both published config-byte identity and exact native image identity throughout import, plan/creation and realized validation; retain strict config/rootfs checks and the unchanged six-module package pins. Fixing only the failed GET or accepting any source-labelled image is insufficient. Recovery must reconcile the image already loaded under its native ID before any further import; old auth-only predecessor gate deliberately does not cover this image-stage attempt.
+## What the VPS actually proved
 
-See `evidence/chatbot-containerd-image-identity-diagnosis-20261015.json` and the full small CI report `evidence/chatbot-containerd-tagless-ci-report-20261015.json`. CSV/chatbot acceptance remains unproven.
+Old auth-only predecessor:
+- Source 6959b1dbaeb30ca3a838c7d6243a55e9cfc5118a.
+- Context /etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-b96d2afabbd3275beadb0bbb525608278d5f098af1e14de1f5e4333bff9b488d.
+- Unit ouf-file-cohort-b96d2afabbd3275beadb0bbb52560827.service.
+- Authority 80b8f8218991d12d3abff0b4760804d86e247de1f4adc76ab446255fe19ec7f6, expired 08:48:03 CEST. Stopped with PlanDenied after HUMAN role publication. Strict Jackson GrantConstraints DTO round-trip issue was subsequently fixed; exact inner old code was not retained.
+- Owner roles were published through a separate HUMAN recovery proposal. Do not reopen expired proposal adf95413-92b0-460b-a112-2fd80bd208ac or rerun its recovery driver. Its old draft was EXPIRED, not the newer published confirmation.
 
----
+Latest attempted execution:
+- Source **b64645982655f58a2907bf1425dd86fd6ab0ed9f**.
+- Review a7cc6bd53145dc53a4e62b3d25318aff5df6ce1a1401f51f56ff534e4ab5fb44 was explicitly accepted.
+- Context **/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-dd03d434361deb62e1caeaf7958a71c39c095f065e776312779d59dd6a7f4a77**.
+- Unit **ouf-file-cohort-dd03d434361deb62e1caeaf7958a71c3.service**, old PID3229846 gone.
+- Authority **48c75739575b7d618484ed78184834d2d1961da97fa2870d80d14ce26fe978f4**, expiry1792052697. Status PAUSED_REQUIRES_RECONCILIATION / ValueError.
+- AUTHORIZATION_RECONCILED_BEFORE_FIRST_GRANT succeeded, then IMPORTING_QUALIFIED_IMAGES_BEFORE_FIRST_GRANT.
+- Semantic journal IN_FLIGHT/version1/effectAttemptCount1. Other four image journals READY/version0/attempt0. No containers/databases/gateway/gatewayRuntime recovery journals. Process inactive/dead/MainPID0. Systemd Result=success after transient-unit collection does not prove delivery success.
+- Pure readback validated all five archives exactly against their sealed audits. Native identity readback at09:53 CEST confirmed semantic exists as **sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3**, while its published config ID is **sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489**. Source label, every selected execution-config field and RootFS all match; repository tag count0. All other source-revision image candidate lists were empty.
+- Target Docker29.8.1, containerd overlayfs, cgroup systemd, bundle SYSTEM_CONTAINERD, namespace VAR_RUN_ALIAS.
 
-## Previous handoff (historical)
+The original tagless archive SHA256s observed on target were semantic9f1961025f0e55d7a12e7f3f6df5c5fe0980ff4cad730086262bedecdaf6a357, udp06407b66e1750a700457a66b023534f4c34e16e71ff2ef9cdd303b31c3e3881a, onboarding759acf9c4475fe5755af53e4328e89a786f9edc9da0e44c867342694abf2a72d, ingestion9637f803b18f41b38b7dd9ef3fb20dcf75165db1d9bf89e5354bb80b447c9f02, mcp9711dae70d52b66cff781a7af4196be7b8f3c0ae0d8029cafb9391be6882708c. See structured evidence for exact sizes and IDs.
 
-# Current target readback: first image attempt unresolved (2026-10-15, 09:33 CEST)
+## Correction, recovery limits and qualification
 
-The pinned target readback completed. The dd03 finite process is inactive/MainPID 0. Its authority binding matches. Semantic image journal is IN_FLIGHT/version 1/effectAttemptCount 1; the exact image GET is 404. UDP, onboarding, ingestion and MCP remain READY/version 0/attempt 0 and their images are absent too. No recovery.json exists for containers/databases/gateway/gatewayRuntime. These facts narrow the stop to the first image import; image absence alone does not reconcile its consumed claim. Systemd Result=success is not deployment success.
+The published ID hashes raw image configuration. The containerd ID hashes the manifest. Existing code loaded the image successfully, then got404 when looking up the configuration ID and raised IMPORT_ABSENCE_DOES_NOT_PROVE_NO_EFFECT as a plain ValueError. Original reproducer run38700933784 proved classic PASS / containerd same failure with the exact retained semantic artifact; native target readback confirms the same identity split.
 
-**Do not repeat the execute command.** The exact ValueError body was redacted by the running source. The next diagnostic is `scripts/read-chatbot-image-archives-20261015.py`, SHA256 `938b73013d3de2c4ebfeebe5da1b9017fe27d3665933a1776df4d50bbb0ede86`. It preserves the previous readback and additionally executes only the pure archive validator from the retained approved bundle, after checking its exact known source SHA256 `d118924b52618f00871ccd4ae9ade379ccb818ce517e34e31d815fe5abdfdd23`. It opens the five approved archives read-only, verifies bytes/layers/config against their reviewed audits and prints only safe error codes or mismatch field names. It never imports the delivery bootstrap or load callback. Import requests, service changes, database changes and authority renewal remain zero. Some disk reading is expected, with an ARCHIVE_READ_BEGIN progress line before each image.
+The correction derives and binds an exact Docker schema2 manifest from unchanged config/layer bytes, includes an explicit tagless OCI index/manifest, and uses native IDs in import journals, four replacement plans and semantic registry creation/realized validation. It preserves the original configuration identity and publisher package pins. Explicit index descriptors avoid cache-dependent legacy-importer compression choices. App config/layer bytes are not rebuilt or changed; derived archive metadata/hashes change under the reviewed new profile. Config/rootfs comparisons stay exact; there is no acceptance based only on source labels. Known ImageCustodyDenied codes are visible, arbitrary ValueError bodies remain private.
 
-Thirteen local tests pass, including real synthetic compressed archive parsing, serialized audit equality, changed archive denial, pinned source rejection, safe output, and complete context read preserving files. Engine transport uses mocks in local tests; native Docker integration is not claimed for this diagnostic. Target archive verification is pending; no product patch is inferred from unobserved archive results. See `evidence/chatbot-image-journals-readback-20261015.json`.
+The successor readback accepts only the known6959 auth-only context and knownb646 first-semantic-image case, with stopped/expired worker, exact review/decision/authority/start-claim bindings, exact archived bytes, deterministic native manifest and current config/rootfs, pristine remaining image journals, and empty later application/DB/token stages. It preserves all old journals and attempt counts; it does not reuse the old authority or reset claims. Any unknown source, missing image, altered bytes/native identity, extra image attempt or later-stage history denies. The child rechecks the predecessor receipts before effects.
 
----
+At final source95749a8:
+- Push38704843732/job116321589250 and PR38704849033/job116321606947 each **PASS234 tests/30 suites/0skips**. Includes real signatures, closed source imports, privileged PostgreSQL17 roles/triggers and privilege revocation, four DB archives, native processes/namespace/Gateway fixtures, and actual owner joins distinguishing ACK/commit/NOOP.
+- HUMAN verifier38704849109 PASS.
+- Exact retained artifact matrix38704843739: classic job116321589263 and containerd job116321589315 **PASS**. All five original app images; existing legacy semantic reconciliation without reload; fresh explicit-envelope import; native-ID container creation without application start; exact semantic config through full four-mount gated frame; signed five-image owner/store guard on both backends.
+- CI Docker28.0.4; exact full deployment on target Docker29.8.1 remains pending. Target readback proves the same semantic manifest identity/config/rootfs.
+- Earlier extra synthetic fixture failure38704349009 was a strict execution-config mismatch on minimal docker-import images; all five real images passed. Disposable fixture now declares USER/WORKDIR/ENV/ENTRYPOINT/CMD/STOPSIGNAL explicitly. Production comparison was not relaxed.
+- Wrapper Bash syntax and finite clock wait cases passed (already expired,61s simulated wait, clock>1h behind denied). No target mutation/new authority by this work.
 
-## Previous handoff (historical)
+## Frozen six-module package and host delivery
 
-# Current stop: image-import reconciliation required (2026-10-15, 09:25 CEST)
+Producer **8bff54a52a0ce15daccaf2aee932004f106dd178**, run38584614991 attempt2, artifact11907557440, original ZIP SHA256 **144699ab7756c8312d49783967cfbb64acc02a617015ad89f5adf51e25a10300**. Reuse `$HOME/ouf-chatbot-file-delivery-126e49f3830667934bf8f8d7/cohort/cohort.zip`; do not redownload/rebuild to change a deployment helper. Existing gh is `$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh`; check it first, then PATH; preserve auth and never request/print tokens.
 
-The latest VPS attempt accepted the fresh HUMAN decision and reconciled the expired auth-only predecessor successfully. It then reached `IMPORTING_QUALIFIED_IMAGES_BEFORE_FIRST_GRANT` and stopped with `PAUSED_REQUIRES_RECONCILIATION`, reason `ValueError`. Image effects remain unknown. Do not run the previous execute wrapper again: its predecessor gate only covers auth-only history, not this new image-import attempt.
+Pins unchanged:
+- semantic GioNob/ouf-semantic-registry eccef11a97367f20e278db40b9ed6f45dd980c37.
+- onboarding **GioNob/ouf-source-onboarding** 84828f74ac586bae09a78f0fb197b75b1a3d98d1.
+- ingestion c48ee4b1873a474e81c6e1be70d393854021e2c1.
+- udp b49c0d6f50c574c11684361ce4e8040e9cbddee2.
+- mcp f249b3dcc58c2a96742092d90fa09fd90b705bd0; target overlay preserves migrations1–9 and appends10–12; do not merge it globally.
+- gateway bf179e96200deb84942ad32507edef52a4284cd0.
 
-Run only `scripts/read-chatbot-image-import-20261015.py` from the new evidence commit, hash `28597621dcb87444e6248e12266ec0529ba77ce11808d986ce0a2b00c0291fe4`. It is pinned to the exact failed dd03 context, authenticates its authority/bundle/prepared bindings, reads five image journals, and makes at most five image-inspection GET requests. It does not load images, start/restart services, write DBs, refresh IAM sessions, or renew authority. Output includes only journal states, exact comparison booleans and names/types of mismatching image-config fields; no raw configuration/environment.
+Read AGENTS.md and current docs/OUF_RESILIENCE_POLICY.md. Preserve legacy UNKNOWN/R9/R10/R12 history, consumed claims and cumulative attempts. No automatic new budget, DB rollback, authority renewal or shared-service restart. This is finite acceptance, not permanent runtime acceptance. GitHub development work is authorized; a current exact runtime HUMAN decision is still native protocol. User primarily uses a phone, needs concrete copyable commands and meaningful updates within60s; no unsupported “almost done”/ETA promises. No SSH session exists here and no private keys/passwords should be requested in chat. Full98-item VPS inventory remains on VPS at /home/oufadmin/ouf-vps-inventory-v2.sRYFvsMe/inventory-full.json; only selected reports were archived—do not claim the complete file was saved.
 
-Nine local tests passed, including a complete synthetic retained-context read that preserves all files. Engine request method is verified with mocks; native Unix sockets were unavailable in the current sandbox (EPERM). Target readback is pending. The exact inner cause is still unknown; CSV chatbot end-to-end remains unproven. See `evidence/chatbot-image-import-paused-20261015.json`.
+## Continue through actual CSV acceptance after COHORT_READY
 
----
+Delivery order: authorization reconciliation -> exact images -> optional same-image APISIX config replacement -> finite token owner/legacy retirement -> first grant<=300s and distinct worker<=128 attempts/3600s -> registry hold -> quiesced four DB backups/migrations/temp MCP audit-role grants and verified revocation -> other services/routes -> release -> **COHORT_READY_FOR_ACTUAL_CHATBOT_CSV_ACCEPTANCE**. The same finite worker must stay alive. Never relaunch it because SSH was lost. Readback observed before stage claims is not proof later mutations happened.
 
-## Previous handoff (historical, execution instructions suspended)
+At readiness, continue actual application work through the MCP **ouf-admin** account (link_6aafef96b4148191b767e9af7b756a07, owner profile b93d8cf6-cd14-4ee6-91d7-84cd76c4f500), not the other giovanni-chatgpt account. Refresh available tool metadata before claiming new capabilities; old MCP catalog had18 tools until upgrade/scopes/client refresh. Required new tools are onboarding.read, onboarding.review.prepare, semantic.proposal.read. Role publication alone does not prove tool availability.
 
-# OUF — ripresa revisionata del ciclo CSV, 15 ottobre 2026
+Teatri existing asset6609b245-86ed-4315-8ce0-73f2a8555bf3, profile7984c39c-7396-4248-ab0a-f2efc390b49c v1,13 rows/20 columns/UTF8 semicolon/header1. Historical bytes SHA25608b20658b2b4eadf34d25cd93eead2945096b353ae33b797cf3c41df5319c9e9. No raw CSV bytes are available locally; use owner readback and a governed human file upload/picker for a second source.
 
-## Riferimento corrente
+Prepared review files remain releases/TEATRI_SEMANTIC_REUSE_REVIEW_20261014.md, teatri-reuse-semantic-proposal-20261014.json and teatri-reuse-20261014.ttl. Proposal hashbe74308e098aa3a65396f3df739dd8f2837e9f8e27b6e49deb0e49d04506cb1a, RDF SHA2566e4668ea42cf1c75b822e17a8ca9cb71fb2c4d8f500eed628282fa6039a6dbaa. Class https://schema.org/PerformingArtsTheater, ontology semantic ID https://api.ouf-lab.it/semantic/teatri#TeatriOntology. Twenty lexical string mappings preserve input/provenance/CAP zeros; source-native key proposed nome_teatro with normalization://managed-file/native-key-v1. This remains PENDING_HUMAN_REVIEW and RESTRICTED classification needs actual HUMAN decision. No semantic proposal or onboarding draft is proved registered yet; never invent approved/published references.
 
-Usare soltanto il wrapper [chatbot-file-cohort-reconcile-execute-vps-20261015.sh](chatbot-file-cohort-reconcile-execute-vps-20261015.sh) di questa revisione. I precedenti wrapper di esecuzione restano documenti storici e non vanno rilanciati. Il ramo di queste evidenze contiene sorgenti applicativi storici: il wrapper scarica esplicitamente il sorgente qualificato dalla PR31, non esegue il prodotto da questo ramo.
+Acceptance sequence: fresh asset/profile/identity read -> register semantic proposal and HUMAN review/publication -> resolve real pins -> onboarding DRAFT and HUMAN approval -> ingestion ACK **then owner-proven commit** -> UDP lineage and fresh chatbot search -> distinct second governed source with same file bytes demonstrating MATCH/NOOP/reuse. Preserve baseline8 ACTIVE Cinema objects at revision1 and ontology/property IRI sets. Expected13 Teatri objects only if uniqueness/commit is actually verified; do not assert total21 or identical property values prematurely. Application HUMAN reviews stay in their THS; infrastructure approval does not replace them.
 
-- Sorgente eseguibile: **b64645982655f58a2907bf1425dd86fd6ab0ed9f**.
-- Wrapper SHA256:1124633ee2c3d28c5c62eaed6a2b9e8fe9eb4804d57d68c108d019945f2788c6.
-- Launcher SHA256:60ea50d9ba9ccb88befb7f422cae9d7b3ab06add6f27a53bd75c3e3aa4846ae5.
-- Capsula SHA256:ebbccef8be1ed62d8c32a3325dbd83c6396d2dde486a18d2469af6661b1b6b9f.
-- Archivio esistente obbligatorio:`$HOME/ouf-chatbot-file-delivery-126e49f3830667934bf8f8d7/cohort/cohort.zip`.
-- SHA256 archivio:144699ab7756c8312d49783967cfbb64acc02a617015ad89f5adf51e25a10300.
-- Producer 8bff54a52a0ce15daccaf2aee932004f106dd178,run 38584614991,artifact 11907557440. Nessuno dei sei pin applicativi è cambiato.
-
-## Esito acquisito
-
-La preparazione completa precedente è riuscita. La decisione terminale delle07:48:03 CEST è stata accettata; il processo separato systemd è partito. La proposta dei ruoli è poi scaduta senza conferma, con link presentato soltanto nel JSON approvalPath. Il recupero mirato ha creato una nuova proposta con contenuto identico e l'operatore riferisce di averla confermata.
-
-Una lettura OUF autenticata conferma il ruolo admin con le tre nuove capacità e un catalogo corrispondente alla review, salvo i soli campi predefiniti aggiunti dall'owner sui tre permessi nuovi. I ruoli pubblicati restano acquisiti.
-
-Ultimo stato persistito: **PAUSED_REQUIRES_RECONCILIATION**,reason **PlanDenied**,aggiornato2026-10-15T06:37:47.806355Z. Il processo è inactive/dead, nessun thread osservato; la finestra è scaduta alle 08:48:03 CEST. Result=success/ExecMainStatus=0 dell'unità ormai inattiva non costituiscono prova di completamento. Il codice interno preciso del PlanDenied non era registrato. L'installazione e il CSV non sono dimostrati.
-
-## Difetti verificati e correzioni
-
-Il compilatore proponeva constraints parziali; il DTO Java dell'owner li restituisce con tutti i campi vuoti/null. La fixture precedente copiava targetRoles invece di attraversare tale serializzazione. L'hash della review è ricostruibile esattamente togliendo solo quei default dai tre nuovi permessi della risposta reale.
-
-Il nuovo compilatore genera i soli nuovi permessi direttamente nel formato completo del GrantConstraints qualificato. Non normalizza il catalogo storico e mantiene la sua uguaglianza rigorosa. Il nuovo test attraversa il DTO Java e Jackson reali: riproduce il vecchio errore, applica la correzione e dimostra che una ripreparazione dopo pubblicazione non crea un'altra proposta ruoli o delta IAM.
-
-PlanDenied conserva ora il codice pubblico sicuro. Il terminale mostra una richiesta browser esplicita, link e scadenza fuori dal JSON. Proposte EXPIRED/REJECTED richiedono intervento e non rimangono in attesa automatica. Il figlio invia diagnostica pubblica al journal systemd, senza traceback o corpi arbitrari di eccezione. Una vera unità systemd usa il bootstrap reale e verifica la persistenza del fallimento pubblico dopo distacco del terminale.
-
-## Qualificazione
-
-[CI38696421404](https://github.com/GioNob/ouf-deploy/actions/runs/38696421404),job 116293919549: **223 test, 29 suite,PASS,zero skip**. Run PR 38696428010/job 116293939782 PASS. Verificatore HUMAN 38696428157/job 116293940620 PASS.
-
-Il DTO viene compilato dai sorgenti owner 84828f74ac586bae09a78f0fb197b75b1a3d98d1 con BOM Jackson 2.21.7. Sono qualificati anche i controlli di custodia e lineage della ripresa, inclusa la cartella snapshot pubblica root-owned con figli privati.
-
-Composizione frame con immagine pubblicata e TLS Java rimangono qualificati dalla run 38684997298 del sorgente 951f91c; quei percorsi e le immagini non sono modificati. La CI non equivale a prova E2E sul VPS.
-
-## Prima della nuova finestra
-
-Il programma riconcilia soltanto il predecessore noto 6959b1d dello stesso pacchetto. Deve trovare:
-- vecchio mandato scaduto e processo spento;
-- claim di avvio consumata ancora presente, senza replay;
-- tutti gli effetti amministrativi registrati APPLIED, con conteggi conservati;
-- directory delle fasi successive senza registri di import immagini, applicazione, backup/migrazione o primo grant.
-
-Qualsiasi storico successivo/ambiguo blocca questa ripresa. I record sono letti con custodia root e hash, inclusi review, decisione, autorità, ultimo stato, claim, identità directory e journal amministrativo. Entrano nella nuova review e vengono ricontrollati nel figlio prima dell'esecuzione. È una riconciliazione mirata di una finestra fermata nella fase amministrativa, non un meccanismo generale per riavviare qualunque cutover.
-
-La verifica sul target non è ancora eseguita: il nuovo comando la effettua prima dell'approvazione. Il processo precedente resta fermo e i suoi file non vengono modificati.
-
-## Istruzioni operatore
-
-1. Il wrapper verifica e riusa lo ZIP già scaricato e il client gh portatile prima di sudo.
-2. Completare eventuali prompt sudo e amministrazione Keycloak nei terminali previsti; nessuna password va in chat.
-3. Se compare OPEN_IN_BROWSER con codice XXXX-YYYY, aprire il link e usare quel codice per il login della sessione corrente.
-4. Dopo tutte le verifiche viene pubblicata una NUOVA review privata. La sintesi identifica il tentativo precedente e indica se occorre una nuova conferma ruoli. Con i ruoli già pubblicati e invariati non è prevista una nuova proposta ruoli.
-5. Leggere la review e digitare `APPROVO ` seguito dall'intero nuovo hash mostrato. Il lettore ammette massimo tre risposte nello stesso prompt; l'incolla del solo hash è supportato. Non automatizzare l'approvazione o riutilizzare vecchi hash.
-6. La nuova finestra finita, massimo 3600 secondi, inizia dalla nuova decisione. Non deriva dal vecchio mandato. Eventuali conferme browser dei ruoli sono mostrate come AZIONE RICHIESTA con link esplicito e scadenza 15 minuti.
-7. Inviare stati PAUSED/BLOCKED o COHORT_READY_FOR_ACTUAL_CHATBOT_CSV_ACCEPTANCE. Dopo un esito mutativo ambiguo non rilanciare il wrapper.
-
-La review comprende cinque sostituzioni applicative, backup/migrazioni previsti, Gateway/IAM, owner policy-token e ritiro delle unità legacy. Se richiesto dal piano, APISIX viene sostituito con la stessa immagine e la configurazione revisionata. MCP può richiedere il ruolo audit NOLOGIN e privilegi temporanei selezionati, revocati prima dell'avvio. Il primo grant rimane distinto e limitato a 300 secondi; nessun restore DB, replay R12, reset di budget o rinnovo automatico è autorizzato.
-
-## Prova CSV ancora da eseguire
-
-Teatri: asset 6609b245-86ed-4315-8ce0-73f2a8555bf3,profile 7984c39c-7396-4248-ab0a-f2efc390b49c/versione 1,13 righe e 20 colonne alla lettura precedente. I 20 nomi corrispondono al mapping in releases/teatri-reuse-semantic-proposal-20261014.json del sorgente qualificato. Proposta e Turtle sono preparati; non inventare pubblicazioni o pin approvati.
-
-Classe: https://schema.org/PerformingArtsTheater; ontologySemanticId: https://api.ouf-lab.it/semantic/teatri#TeatriOntology. La proposta richiede review/classificazione HUMAN effettiva. Dopo il cohort: proposta/review/pin semantici, onboarding e review della sorgente, ingestion, distinzione ACK/commit, lineage UDP e ricerca chatbot fresca. Poi nuova sorgente governata con gli stessi byte e verifica MATCH/NOOP. Le decisioni applicative rimangono nelle rispettive THS.
-
-La baseline osservata è 8 Cinema ACTIVE/revisione1 con gli stessi IRI di proprietà, non una prova di uguaglianza di tutti i valori. Le capacità aggiornate del client ChatGPT e la ricerca fresca devono ancora essere verificate dopo l'upgrade. Nessuna review infrastrutturale prova il ciclo CSV.
-
-B01/B02/B03: acquisiti sulla precedente preparazione completa. B04: primo processo avviato e fermato nella fase amministrativa, nuova riconciliazione target da osservare. B05/B06: CSV Teatri e seconda sorgente ancora aperti.
-
-Evidenze: [qualificazione e stato del tentativo](../evidence/chatbot-role-roundtrip-reconciliation-qualification-20261015.json), [diagnosi owner](../evidence/chatbot-role-owner-roundtrip-diagnosis-20261015.json), [preparazione target riuscita](../evidence/complete-target-preparation-20261015.json).
+Owner AcceptanceObserver runs every30s within the same worker. ACTUAL_CSV_OWNER_ACCEPTANCE_OBSERVED is not itself success; inspect nested phase. TWO_SOURCE_COMMIT_AND_REUSE_PROVEN is owner proof; fresh chatbot search/read evidence is additionally required. No CSV end-to-end proof currently exists.
