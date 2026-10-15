@@ -25,6 +25,7 @@ from iam_owner_action import publish, stdlib_binding
 from cutover_authority import CutoverAuthority
 from file_only_profile import FileOnlyProfile
 from engine_creation import Engine,CreationDenied
+from cutover_executor import CutoverDenied
 from file_only_installation import build as build_registry
 from tools.semantic_provider_deployment_authentication import DetachedAuthenticator
 from tools.semantic_provider_deployment_signing import ExistingEd25519Signer
@@ -37,7 +38,7 @@ from tools.semantic_policy_token_owner.reporter import OwnerReporter
 from tools.semantic_policy_token_owner.worker_entry import serve
 from tools.chatbot_file_cohort.action_process import private_file,verify_previous_authorization_actions
 from tools.chatbot_file_cohort.review import digest, encoded, require, validate_decision, command_matches
-from tools.chatbot_file_cohort.containers import CohortContainers, CohortPaused
+from tools.chatbot_file_cohort.containers import CohortContainers, CohortPaused, RegistryReadinessBudget,REGISTRY_READINESS_POLICY
 from tools.chatbot_file_cohort.databases import CohortDatabases
 from tools.chatbot_file_cohort.gateway import GatewayRoutes, NamespaceAdmin, private_config
 from tools.chatbot_file_cohort.authorization import AuthorizationDelta, AuthorizationPaused, OwnerPrimitives, OwnerTransport
@@ -85,6 +86,38 @@ def public_failure_diagnostic(error):
         tb=tb.tb_next
     result['locations']=frames[-12:]
     return result
+
+
+def transient_registry_observation(application,error):
+    """Only exact read-only UNKNOWN outcomes after a consumed release/verify.
+
+    Executor observes an IN_FLIGHT phase; it cannot resend its mutation. Fresh
+    native/process checks reject paused/foreign/changed generations and unknown
+    integrity errors before any read-only wait is admitted.
+    """
+    if type(error)is not CutoverDenied or str(error)!='NATIVE_AMBIGUITY_OR_NO_EFFECT_STOPS_CUTOVER':return None
+    executor=application.executor;row=executor.t.read()
+    if row.get('state')!='IN_FLIGHT' or not row.get('effects'):return None
+    effect=row['effects'][-1];phase=effect['phase'];observed=effect.get('nativeEvidenceHash')
+    if phase=='VERIFY_APPLICATION':
+        expected={'applicationReadinessUnproven':True,'readOnlyReconciliationRequired':True,
+            'dependentProducersRemainQuiesced':True}
+        if observed!=digest(expected):return None
+        executor.adapters[phase].current(executor.intents[phase])
+        return phase
+    if phase=='START_REPLACEMENT':
+        permitted=({'processTransitionChangedDuringRead':True,'readOnlyReconciliationRequired':True,
+            'unpauseReplayAllowed':False,'signalReplayAllowed':False},
+            {'preapplicationReleaseUnproven':True,'unpauseReplayAllowed':False,'signalReplayAllowed':False})
+        if observed not in {digest(v) for v in permitted}:return None
+        try:_,native,process=executor.adapters[phase].current(executor.intents[phase])
+        except ValueError as current_error:
+            if str(current_error)=='GATED_PROCESS_CHANGED_DURING_READ':return phase
+            raise
+        if (native['State']['Running']is True and native['State']['Paused']is False
+            and native['State']['Status']=='running' and process['processKind']in ('GATE_WAITING','APPLICATION_RUNNING')):
+            return phase
+    return None
 
 
 STAGE_SOURCE = {
@@ -261,6 +294,32 @@ class Delivery:
                 self.report('COHORT_READINESS_WAIT', module=module, nextAttemptAt=error.next_attempt_at)
                 self.wait(max(0,error.next_attempt_at-time.time()), True)
 
+    def await_registry(self,application,directory):
+        scope=self.review['scopes']['applicationRegistryCutover']
+        require(scope.get('readinessPolicy')==REGISTRY_READINESS_POLICY,'REVIEWED_REGISTRY_READINESS_POLICY_REQUIRED')
+        budget=RegistryReadinessBudget(Journal(directory),digest(scope),self.action.authority_hash,
+            evidence.decode(self.action.raw)['expiresAt'])
+        self.current(True);budget.initialize()
+        with budget.journal.invocation():
+            while True:
+                self.current(True)
+                delay=budget.wait_seconds()
+                if delay>0:
+                    row=budget.record()
+                    self.report('REGISTRY_READINESS_WAIT',registryPhase=row['phase'],attempts=row['attempts'],
+                        nextAttemptAt=row['nextAttemptAt'],maximumAttempts=128)
+                    self.wait(delay,True)
+                    continue
+                budget.reserve()
+                try:result=application.verify_registry_and_hold()
+                except CutoverDenied as error:
+                    self.current(True)
+                    phase=transient_registry_observation(application,error)
+                    if phase is None:raise
+                    budget.schedule(phase)
+                    continue
+                self.current(True);budget.complete();return result
+
     def run(self):
         previous = {}
         for sig in (signal.SIGINT,signal.SIGTERM):
@@ -350,7 +409,7 @@ class Delivery:
             app = build_registry(self.prepared['registry'],self.action,self.owner.observer,self.engine,verifier,signer,
                 registry_directories,{'containers':containers,'databases':databases,'gateway':gateway,'authorization':auth_owner})
             self.report('REGISTRY_REPLACEMENT_AND_VERIFICATION')
-            registry_evidence = app.verify_registry_and_hold()
+            registry_evidence = self.await_registry(app,registry_directories['before'])
             self.current(True)
             containers.accept_owner_gate('registry',plan['registryModulePackageHash'],digest(registry_evidence))
             backup_evidence = databases.backup_quiesced()

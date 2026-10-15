@@ -94,11 +94,19 @@ def host_config_matches(expected, actual):
     a missing key or another type is never accepted as this default. The native
     dictionaries and their signed/generation hashes are never rewritten.
     """
-    # One owner comparator also covers created/started Registry phases. The
-    # only extra equivalence is requested Mounts=[] versus omitempty null/absent;
-    # exact Binds and independently realized mount projections remain required.
-    from engine_creation import started_host_config_matches
-    return started_host_config_matches(expected,actual)
+    # Keep this pure planner independently importable. The owner Engine uses
+    # the same narrowly tested empty-spec and OOM comparisons.
+    if type(expected) is not dict or type(actual) is not dict:return False
+    for key,value in expected.items():
+        if key=='Mounts' and type(value)is list and not value and actual.get(key)is None:continue
+        if key=='OomKillDisable':
+            if key not in actual:return False
+            current=actual[key]
+            if (value is None or value is False) and (current is None or current is False):continue
+            if value is True and current is True:continue
+            return False
+        if actual.get(key)!=value:return False
+    return True
 
 
 def compile_replacement(module, old, image, package, cohort_id, env_changes):

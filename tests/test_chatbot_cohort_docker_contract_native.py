@@ -81,12 +81,13 @@ class NativeDockerContract(unittest.TestCase):
             self.assertEqual(compiled.returncode,0,compiled.stderr[-4000:].decode('utf-8','replace'))
             (build/'java').chmod(0o755)
             command=['java','-XX:MaxRAMPercentage=75','-jar','/app/application.jar']
-            (build/'Dockerfile').write_text('FROM postgres:17-alpine\nCOPY java /usr/local/bin/java\n'
+            (build/'Dockerfile').write_text('FROM alpine:3.21\nCOPY java /usr/local/bin/java\n'
                 'USER 10001:10001\nENTRYPOINT '+json.dumps(ENTRY)+'\nCMD '+json.dumps(command)+'\n')
             tag='ouf-docker-contract:'+hashlib.sha256(str(root).encode()).hexdigest()[:24]
             docker('build','--pull','-t',tag,str(build));image=docker('image','inspect','--format','{{.Id}}',tag)
             self.addCleanup(lambda:subprocess.run([binary,'image','rm','-f',tag],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=20))
             status,image_data=engine.request('GET','/v1.44/images/'+image+'/json');self.assertEqual(status,200)
+            self.assertIn(image_data['Config'].get('Volumes'),(None,{}))
             suffix=hashlib.sha256(str(root).encode()).hexdigest()[:12]
             networks=[]
             for part in ('primary','secondary'):

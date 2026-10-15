@@ -1,9 +1,9 @@
 name: Remaining Docker lifecycle contracts on 29.8.1
 on:
   push:
-    paths: ['tools/semantic_application_cutover/engine_creation.py', 'tools/chatbot_file_cohort/plan.py', 'tests/test_chatbot_cohort_docker_contract*.py', '.github/workflows/chatbot-docker-contract.yml']
+    paths: ['tools/semantic_application_cutover/engine_creation.py', 'tools/chatbot_file_cohort/*.py', 'tools/semantic_application_cutover/file_only_installation.py', 'tests/test_chatbot_cohort_registry_readiness.py', 'tests/test_chatbot_cohort_docker_contract*.py', '.github/workflows/chatbot-docker-contract.yml']
   pull_request:
-    paths: ['tools/semantic_application_cutover/engine_creation.py', 'tools/chatbot_file_cohort/plan.py', 'tests/test_chatbot_cohort_docker_contract*.py', '.github/workflows/chatbot-docker-contract.yml']
+    paths: ['tools/semantic_application_cutover/engine_creation.py', 'tools/chatbot_file_cohort/*.py', 'tools/semantic_application_cutover/file_only_installation.py', 'tests/test_chatbot_cohort_registry_readiness.py', 'tests/test_chatbot_cohort_docker_contract*.py', '.github/workflows/chatbot-docker-contract.yml']
 permissions: {contents: read}
 jobs:
   docker-29:
@@ -53,6 +53,9 @@ jobs:
           sudo env PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
             OUF_NATIVE_DOCKER_CONTRACT=1 OUF_DOCKER_EXPECTED_VERSION=29.8.1 \
             python3 -I -B -m unittest discover -s "$OUF_FIXTURE/repository/tests" -p 'test_chatbot_cohort_docker_contract*.py' -v
+          sudo env PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 \
+            python3 -I -B -m unittest discover -s "$OUF_FIXTURE/repository/tests" -p test_chatbot_cohort_registry_readiness.py -v
           OUF_PG_CID="$(sudo /opt/ouf-docker-29/docker run -d --name ouf-contract-postgres -e POSTGRES_HOST_AUTH_METHOD=trust postgres:17-alpine)"
           for OUF_PG_POLL in $(seq 1 60); do
             if sudo /opt/ouf-docker-29/docker exec "$OUF_PG_CID" pg_isready -U postgres >/dev/null 2>&1; then break; fi

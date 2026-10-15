@@ -209,6 +209,8 @@ def terminal_decision(review, review_path):
           'Eventuale conferma dei ruoli: apri il link browser esplicito; la proposta dura 15 minuti.\n')+
         'Include sostituzione dei cinque servizi applicativi, route Gateway, autorizzazioni esplicite,\n'
         'backup e migrazioni previsti, installazione owner e ritiro del servizio/timer policy-token semantic.\n'
+        'L\'attesa Registry riconcilia solo letture: massimo 128 tentativi e 3600 secondi, entro questa finestra;\n'
+        'contatori e scadenze persistenti, nessuna ripetizione di start o SIGUSR1.\n'
         'Se MCP ha le tre migrazioni pendenti: creazione del ruolo audit NOLOGIN con amministratore DB,\n'
         'abilitazioni temporanee SET e CREATE sullo schema; se previsto nel piano, TRIGGER sulla sola security_incident.\n'
         'Revoca verificata prima del riavvio; proprietario e privilegi preesistenti della tabella preservati.\n'

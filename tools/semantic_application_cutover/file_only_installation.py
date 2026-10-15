@@ -27,6 +27,7 @@ from tools.semantic_target_review import prepare_application_runtime_inputs as c
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_policy_token_owner.installed_owner import InstalledTokenOwner
 from tools.chatbot_file_cohort.containers import CohortContainers
+from tools.chatbot_file_cohort.containers import REGISTRY_READINESS_POLICY
 from tools.chatbot_file_cohort.databases import CohortDatabases
 from tools.chatbot_file_cohort.gateway import GatewayRoutes
 from tools.chatbot_file_cohort.authorization import AuthorizationDelta
@@ -69,6 +70,7 @@ def compile_scope(prepared,source_closure_hash):
         and prepared['readinessScope']['database']!=prepared['adminDatabase'], 'REGISTRY_REVIEWED_IMAGE_SOURCE_OR_DATABASE_DRIFT')
     ApplicationReadinessChannel(prepared['readinessScope'])
     return {'schema':'ouf.semantic-file-only-installation-scope.v1','preparedHash':digest(prepared),
+        'readinessPolicy':copy.deepcopy(REGISTRY_READINESS_POLICY),
         'creationRequestHash':digest(prepared['creationRequest']),'executionProfileHash':profile.sha256,
         'sourceClosureHash':source_closure_hash,'cohortPlanHash':prepared['cohortPlanHash'],
         'phaseIntentHashes':{p:digest(intents[p]) for p in PHASES},'directoryPlanHash':digest(paths)}
