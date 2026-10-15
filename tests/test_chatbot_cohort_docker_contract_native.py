@@ -48,9 +48,11 @@ int main(void) {
  if(bind(fd,(struct sockaddr*)&a,sizeof(a))||listen(fd,8))return 3;
  for(;;){int c=accept(fd,0,0);if(c<0){if(errno==EINTR)continue;return 4;}
  struct timeval t={2,0};setsockopt(c,SOL_SOCKET,SO_RCVTIMEO,&t,sizeof(t));
- char b[4096];(void)read(c,b,sizeof(b));
+ char b[4097]={0};size_t used=0;
+ while(used<sizeof(b)-1&&!strstr(b,"\r\n\r\n")){
+ ssize_t n=read(c,b+used,sizeof(b)-1-used);if(n<=0)break;used+=(size_t)n;}
  const char response[]="HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Type: application/json\r\nContent-Length: 15\r\n\r\n{\"status\":\"UP\"}";
- (void)write(c,response,sizeof(response)-1);close(c);}
+ size_t sent=0;while(sent<sizeof(response)-1){ssize_t n=write(c,response+sent,sizeof(response)-1-sent);if(n<=0)break;sent+=(size_t)n;}close(c);}
 }'''
 
 @unittest.skipUnless(os.environ.get('OUF_NATIVE_DOCKER_CONTRACT')=='1','explicit disposable Docker contract CI only')
@@ -74,8 +76,9 @@ class NativeDockerContract(unittest.TestCase):
             print('DOCKER_CONTRACT_ENGINE='+json.dumps({k:version[k] for k in ('Version','ApiVersion','MinAPIVersion')}
                 |{'driver':host['Driver'],'cgroupDriver':host['CgroupDriver']}),flush=True)
             build=root/'build';build.mkdir(mode=0o700);(build/'java.c').write_text(JAVA)
-            subprocess.run([shutil.which('cc'),'-static','-O2','-Wall','-Wextra','-Werror',str(build/'java.c'),
-                '-o',str(build/'java')],check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=30)
+            compiled=subprocess.run([shutil.which('cc'),'-static','-O2','-Wall','-Wextra','-Werror',str(build/'java.c'),
+                '-o',str(build/'java')],stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=30)
+            self.assertEqual(compiled.returncode,0,compiled.stderr[-4000:].decode('utf-8','replace'))
             (build/'java').chmod(0o755)
             command=['java','-XX:MaxRAMPercentage=75','-jar','/app/application.jar']
             (build/'Dockerfile').write_text('FROM postgres:17-alpine\nCOPY java /usr/local/bin/java\n'
