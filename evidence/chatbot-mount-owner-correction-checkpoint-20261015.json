@@ -1,0 +1,38 @@
+{
+  "schema": "ouf.chatbot-mount-owner-correction-checkpoint.v1",
+  "date": "2026-10-15",
+  "coreFixCommit": "4be0acc81fccb15d66245525de5eba45b5083541",
+  "latestTestAndFixtureCommit": "c4fdc34f687553f1b02fcb79576a1e6562d395d0",
+  "capsuleSha256": "b83176b490de4046faee411a5d12562914d23b6db95cd44eb3c6d65d78b88eda",
+  "coreIntegration": {
+    "runId": 38793238424,
+    "jobId": 116622915047,
+    "tests": 7,
+    "actualReadOnlyMount": true,
+    "actualInstalledSignedOwner": true,
+    "actualTlsIntrospection": true,
+    "skipped": 0,
+    "passed": true,
+    "ownerMinimumSecondsUnchanged": 90,
+    "sourceWasCoreFix": true
+  },
+  "fullFinalSourceRegression": "PENDING",
+  "reader": {
+    "commit": "bda269b13935588c92f7803b0a5850b33a05be8d",
+    "sha256": "80d2903fe5093bd0fc41cd0ea3a227d7929da6fd7b68f36c4d91fab26bd644fe",
+    "runId": 38793900576,
+    "jobId": 116625182987,
+    "tests": 6,
+    "skipped": 0,
+    "conclusion": "success",
+    "credentialOrTokenFilesRead": false,
+    "iamCalls": 0,
+    "databaseCalls": 0,
+    "sourceBodiesExecuted": false
+  },
+  "targetLatestGrantCountKnown": false,
+  "runtimeCommandReady": false,
+  "nextAction": "READ_FIXED_LATEST_STATE_ONLY",
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}

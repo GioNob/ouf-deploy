@@ -18,17 +18,17 @@ not yet read back. Do not infer them from entering a delivery phase.
 Confirmed source defect: mount observer passed its read deadline(up to30s)+
 signed mount minimum30s as token expiry. That ceiling<60s cannot satisfy owner
 minimum90s. The old suites separately tested real mounts and real owner but
-missed their integration. Source4be0acc81fccb15d66245525de5eba45b5083541 fixes
+missed their integration. Core fix source4be0acc81fccb15d66245525de5eba45b5083541 fixes
 this with an explicit fail-closed mounted-token owner witness using the
 existing durable publication expiry on both clocks plus unchanged online IAM.
 Minimum90s stays enforced; no fabricated TTL, lifetime extension, grant, token
 publication, counter reset or source/authority bypass. Seven new actual native
 readonly mount+signed owner+TLS tests pass in the hosted cohort and IAM steps.
-Full six-gate regression qualification is still pending at this checkpoint.
+Final source c4fdc34f687553f1b02fcb79576a1e6562d395d0 has identical core/capsule bytes and also preserves the synthetic mount fixture interface; its full six-gate qualification is pending.
 See CHATBOT_MOUNT_OWNER_LIFETIME_FIX_20261015.md and target failure evidence.
 
 The next target action is ONLY scripts/read-chatbot-mount-owner-failure-20261015.py
-from this evidence commit, after its own dedicated CI passes. Reader SHA:
+from qualified reader commit bda269b13935588c92f7803b0a5850b33a05be8d. Reader SHA:
 80d2903fe5093bd0fc41cd0ea3a227d7929da6fd7b68f36c4d91fab26bd644fe.
 It reads the fixed latest review/private bundle, stopped unit, retained worker/
 session/admission, phase journal/old failed intent marker, node issuance boundary,
@@ -36,8 +36,9 @@ later journals and one native Docker GET. It validates exact frozen source pins,
 computes the mismatch from reviewed metadata and reports persisted lifetime
 metadata only. No token/credential file reads, IAM/DB calls, grants, source-body
 execution, journal/claim writes, signatures or runtime changes. Only sudo.
-Its complete fixture plus custody/privacy checks pass6 local tests; hosted
-qualification is required before giving the command. Expect END complete true.
+Its complete fixture plus custody/privacy checks PASS6 native hosted-root tests,
+zero skips: run38793900576/job116625182987, sourcebda269b13935588c92f7803b0a5850b33a05be8d.
+Copyable wrapper: releases/read-chatbot-mount-owner-failure-20261015.sh. Expect END complete true.
 
 After that readback, prepare a new governed continuation from the latest signed
 scope, preserve BOTH historical failed intents and all six applied effects,
