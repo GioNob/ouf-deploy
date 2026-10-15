@@ -101,8 +101,7 @@ class OwnerInstallation:
             registration, binding, profile, transport, None, clock, output_custody=self.output)
         self.pregrant_recovery=None
         if pregrant_recovery is not None:
-            from tools.semantic_policy_token_owner.pregrant_recovery import PregrantRecovery
-            self.pregrant_recovery=PregrantRecovery(action,pregrant_recovery)
+            self.pregrant_recovery=roots.legacy.PregrantRecovery(action.authority,action.raw,pregrant_recovery)
             self.pregrant_recovery.configure(self.output,self.first.transaction.retirement)
             self.first.scope['outputCustodyScopeHash']=fingerprint(self.output.scope)
         self.policy, self.context, self.generation, self.interval = policy, context_ref, generation_ref, interval_seconds

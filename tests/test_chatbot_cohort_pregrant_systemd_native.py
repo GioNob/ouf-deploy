@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 import subprocess
+import time
 import unittest
 import uuid
 from unittest.mock import patch
@@ -24,15 +25,24 @@ class NativeMaskedTimer(unittest.TestCase):
                 env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'})
         try:
             files[1].write_text('[Service]\nType=oneshot\nExecStart=/usr/bin/true\n')
-            files[0].write_text('[Timer]\nOnActiveSec=1h\nUnit='+units[1]+'\n')
+            files[0].write_text('[Timer]\nOnActiveSec=3s\nAccuracySec=1us\nUnit='+units[1]+'\n')
             for path in files:path.chmod(0o644)
             self.assertEqual(command('daemon-reload').returncode,0)
+            self.assertEqual(command('start',units[0]).returncode,0)
             self.assertEqual(command('mask',units[1]).returncode,0)
-            # A timer whose trigger cannot load fails with resources. This does
-            # not invoke its service or require resource exhaustion on the host.
-            self.assertNotEqual(command('start',units[0]).returncode,0)
+            # Mask the target AFTER starting the timer. Refusing to load a
+            # timer initially is a different state. At expiry its start job is
+            # denied and the timer records resources without host exhaustion.
+            deadline=time.monotonic()+8;state=b''
+            while time.monotonic()<deadline:
+                result=subprocess.run(['/usr/bin/systemctl','show',units[0],'--property=ActiveState','--value'],
+                    stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=5,check=True)
+                state=result.stdout.strip()
+                if state==b'failed':break
+                time.sleep(0.1)
+            self.assertEqual(state,b'failed')
             self.assertEqual(command('mask','--now',*units).returncode,0)
-            with patch.object(legacy,'UNITS',units):
+            with patch.object(legacy,'UNITS',units),patch.object(LegacyWriterFence,'UNITS',units):
                 observed=legacy.read_units()
                 self.assertEqual(observed[units[0]]['ActiveState'],'failed')
                 self.assertEqual(observed[units[0]]['SubState'],'failed')

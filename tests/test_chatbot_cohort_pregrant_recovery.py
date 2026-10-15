@@ -14,7 +14,7 @@ from unittest.mock import patch
 
 import test_file_only_preparation
 import test_policy_token_owner_installation as installation_fixture
-from tools.semantic_policy_token_owner import pregrant_recovery as recovery
+import legacy_retirement as recovery
 from tools.semantic_policy_token_owner.installed_owner import LegacyWriterFence
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction,OwnerInstallation
 from tools.semantic_policy_token_owner.producer import Binding
@@ -67,13 +67,13 @@ class CompletedInfrastructure(unittest.TestCase):
                 'evidence':{'containerId':self.new_gateway['Id'],'runtimeBinding':Engine.runtime_binding(self.new_gateway)}}
                 for step in STEPS]}
         path=Path(self.paths['gatewayRuntime'])/'recovery.json';self.write(path,self.gateway)
-        p=patch.object(recovery,'GATEWAY_RECORD_HASH',recovery.evidence.sha(path.read_bytes()));p.start();self.addCleanup(p.stop)
+        p=patch.object(recovery,'GATEWAY_RECORD_HASH',recovery.binding.sha(path.read_bytes()));p.start();self.addCleanup(p.stop)
         prepared={'imagePlan':self.image_plan,'gatewayRuntimePlan':self.runtime,
             'engine':{'socketPath':'/fixture-socket','socketBinding':[]}}
         self.review['privateInputHashes']['preparedInputs']=process.digest(prepared)
         bundle={'declaration':self.review['sourceClosure']['declaration'],'prepared':prepared}
         path=Path(self.plan['bundle']['path']);self.write(path,bundle)
-        self.plan['bundle']['sha256']=recovery.evidence.sha(path.read_bytes())
+        self.plan['bundle']['sha256']=recovery.binding.sha(path.read_bytes())
         self.by_id['/v1.44/containers/'+self.old_gateway['Id']+'/json']=self.old_gateway
         self.by_id['/v1.44/containers/'+self.new_gateway['Id']+'/json']=self.new_gateway
         def get(method,path):
@@ -114,7 +114,7 @@ class Quiescence(unittest.TestCase):
 
     def test_actual_observed_terminal_failed_timer_is_quiescent_and_worker_uses_same_fence(self):
         rows=self.rows();self.assertTrue(legacy.quiescent(rows))
-        with patch.object(legacy,'read_units',return_value=rows):self.assertTrue(LegacyWriterFence().guard())
+        with patch.object(LegacyWriterFence,'read_units',return_value=rows):self.assertTrue(LegacyWriterFence().guard())
 
     def test_active_pending_runtime_mask_missing_fields_or_service_pid_are_rejected(self):
         timer,service=legacy.UNITS
@@ -123,6 +123,7 @@ class Quiescence(unittest.TestCase):
             (service,'MainPID','123'),(service,'ActiveState','failed'),(service,'Job','9')):
             rows=self.rows();rows[unit][key]=value
             with self.subTest(unit=unit,key=key,value=value):self.assertFalse(legacy.quiescent(rows))
+            self.assertEqual(legacy.quiescent(rows),LegacyWriterFence.quiescent(rows,legacy.UNITS))
         rows=self.rows();rows[timer].pop('Job');self.assertFalse(legacy.quiescent(rows))
         rows=self.rows();rows[service].pop('MainPID');self.assertFalse(legacy.quiescent(rows))
 
@@ -149,13 +150,13 @@ class SignedPregrantContinuation(installation_fixture.OwnerInstallationTest):
         self.old_scopes=self.old.scopes()
         self.old_scopes['finiteActionProcess']={'authorityDirectory':str(context)}
         review={'sourceClosure':{'declaration':{'sourceCommit':recovery.SOURCE}},'scopes':self.old_scopes}
-        self.f.f.write(context/'review.json',recovery.evidence.encoded(review))
+        self.f.f.write(context/'review.json',recovery.binding.encoded(review))
         authority=self.old.action.authority_hash
         code=Path(self.f.r.paths['reviewedCode']);closure=self.old.scope['stageManifestHash']
         paths=recovery.names(self.old_scopes)
-        hashes={key:recovery.evidence.sha(paths[key].read_bytes()) for key in ('installation','retirement','output')}
-        hashes['stageIntent']=recovery.evidence.sha((code/('policy-token-source-stage-'+closure+'.intent')).read_bytes())
-        hashes['stageIntake']=recovery.evidence.sha((code/('semantic-native-v11-intake-'+closure)/'intake.json').read_bytes())
+        hashes={key:recovery.binding.sha(paths[key].read_bytes()) for key in ('installation','retirement','output')}
+        hashes['stageIntent']=recovery.binding.sha((code/('policy-token-source-stage-'+closure+'.intent')).read_bytes())
+        hashes['stageIntake']=recovery.binding.sha((code/('semantic-native-v11-intake-'+closure)/'intake.json').read_bytes())
         roots={'ownerRecovery':(self.f.r.paths['durableRecovery'],0,0o700),
             'credential':(self.f.r.paths['ownerCredential'],0,0o700),
             'output':(str(self.old.output.path),10001,0o750)}
@@ -170,13 +171,13 @@ class SignedPregrantContinuation(installation_fixture.OwnerInstallationTest):
         # never used as a credential or execution authorization.
         self.f.f.expected['sourceClosureHash']='9'*64
         value=json.loads(self.f.f.authority);value['sourceClosureHash']='9'*64
-        self.f.f.authority=recovery.evidence.encoded(value)
+        self.f.f.authority=recovery.binding.encoded(value)
         planned=self.successor()
-        value.update(planned.scopes());self.f.f.authority=recovery.evidence.encoded(value)
+        value.update(planned.scopes());self.f.f.authority=recovery.binding.encoded(value)
         self.f.f.approval['sourceClosureHash']='9'*64
-        self.f.f.approval['executionAuthorityHash']=recovery.evidence.sha(self.f.f.authority)
-        self.f.f.write(self.f.f.mandate,recovery.evidence.encoded(self.f.f.approval))
-        self.f.f.approved=recovery.evidence.sha(self.f.f.mandate.read_bytes())
+        self.f.f.approval['executionAuthorityHash']=recovery.binding.sha(self.f.f.authority)
+        self.f.f.write(self.f.f.mandate,recovery.binding.encoded(self.f.f.approval))
+        self.f.f.approved=recovery.binding.sha(self.f.f.mandate.read_bytes())
         for role in self.f.f.grant['roles']:self.f.f.sign(role)
         self.continued=self.successor()
 
@@ -212,7 +213,7 @@ class SignedPregrantContinuation(installation_fixture.OwnerInstallationTest):
 
     def test_revoked_current_human_denies_before_continuation_or_grant(self):
         self.f.f.approval['state']='REVOKED'
-        self.f.f.write(self.f.f.mandate,recovery.evidence.encoded(self.f.f.approval))
+        self.f.f.write(self.f.f.mandate,recovery.binding.encoded(self.f.f.approval))
         with self.assertRaises(Exception):self.continued.install()
         self.assertEqual(self.grants(),0);self.assertFalse(self.f.calls)
         self.assertFalse((self.f.f.root/self.continued.intent_name).exists())
@@ -252,7 +253,7 @@ class SignedPregrantContinuation(installation_fixture.OwnerInstallationTest):
         def publish(name,row):
             value=original(name,row)
             self.f.f.approval['state']='REVOKED'
-            self.f.f.write(self.f.f.mandate,recovery.evidence.encoded(self.f.f.approval))
+            self.f.f.write(self.f.f.mandate,recovery.binding.encoded(self.f.f.approval))
             return value
         with patch.object(self.continued.pregrant_recovery,'publish',side_effect=publish),self.assertRaises(Exception):
             self.continued.install()

@@ -74,7 +74,6 @@
   "tools.semantic_policy_token_owner.installed_owner": "tools/semantic_policy_token_owner/installed_owner.py",
   "tools.semantic_policy_token_owner.mount_observation": "tools/semantic_policy_token_owner/mount_observation.py",
   "tools.semantic_policy_token_owner.owner_installation": "tools/semantic_policy_token_owner/owner_installation.py",
-  "tools.semantic_policy_token_owner.pregrant_recovery": "tools/semantic_policy_token_owner/pregrant_recovery.py",
   "tools.semantic_policy_token_owner.producer": "tools/semantic_policy_token_owner/producer.py",
   "tools.semantic_policy_token_owner.reporter": "tools/semantic_policy_token_owner/reporter.py",
   "tools.semantic_policy_token_owner.source_stage": "tools/semantic_policy_token_owner/source_stage.py",

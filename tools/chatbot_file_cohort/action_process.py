@@ -175,7 +175,7 @@ def pregrant_native_readback(review,authority_hash):
     from engine_creation import Engine
     from tools.chatbot_file_cohort.images import image_import_scope
     from tools.chatbot_file_cohort.gateway_runtime import runtime_scope,STEPS
-    from tools.semantic_policy_token_owner.pregrant_recovery import GATEWAY_RECORD_HASH
+    from legacy_retirement import GATEWAY_RECORD_HASH
     process=review['scopes']['finiteActionProcess'];binding=process['bundle']
     bundle=evidence.decode(private_file(binding,8388608));prepared=bundle['prepared'];plan=prepared['imagePlan']
     require(bundle['declaration']==review['sourceClosure']['declaration']
@@ -259,7 +259,7 @@ def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None)
         if review.get('privateInputHashes',{}).get('cohortManifest')!=manifest_hash:continue
         source=review['sourceClosure']['declaration']['sourceCommit']
         image_recovery=source==IMAGE_IDENTITY_PREDECESSOR_SOURCE
-        from tools.semantic_policy_token_owner.pregrant_recovery import SOURCE as PREGRANT_SOURCE,observe as observe_pregrant
+        from legacy_retirement import SOURCE as PREGRANT_SOURCE,observe as observe_pregrant
         pregrant_recovery=source==PREGRANT_SOURCE
         require(review.get('schema')=='ouf.chatbot-file-cohort-full-action-review.v1'
             and source in (AUTHORIZATION_ONLY_PREDECESSOR_SOURCE,IMAGE_IDENTITY_PREDECESSOR_SOURCE,PREGRANT_SOURCE),

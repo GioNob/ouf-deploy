@@ -86,10 +86,34 @@ class AdmissionStore:
 class LegacyWriterFence:
     """Read only the two previously identified units. Never mask/stop them here."""
     UNITS=('ouf-policy-token@semantic.service','ouf-policy-token@semantic.timer')
+    @staticmethod
+    def quiescent(rows,units):
+        # Keep the standalone worker closure independent of installer modules.
+        # Contract tests compare this predicate with the retirement component.
+        return set(rows)==set(units) and all(row.get('LoadState')=='masked'
+            and row.get('UnitFileState')=='masked' and row.get('Job')==''
+            and (row.get('ActiveState'),row.get('SubState')) in (
+                {('inactive','dead'),('failed','failed')} if unit.endswith('.timer') else {('inactive','dead')})
+            and row.get('MainPID','0' if unit.endswith('.timer') else None)=='0'
+            for unit,row in rows.items())
+    def read_units(self):
+        props={'Id','LoadState','ActiveState','SubState','UnitFileState','MainPID','Job'}
+        p=subprocess.run(['/usr/bin/systemctl','show',*self.UNITS,'--no-pager',
+            '--property=Id,LoadState,ActiveState,SubState,UnitFileState,MainPID,Job'],
+            stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=5,
+            env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'})
+        check(p.returncode==0 and 0<len(p.stdout)<=8192)
+        rows={}
+        for block in p.stdout.decode('ascii').strip().split('\n\n'):
+            value={}
+            for line in block.splitlines():
+                key,sep,item=line.partition('=');check(sep and key in props and key not in value);value[key]=item
+            check(props-{'MainPID'}<=set(value)<=props and value['Id'] in self.UNITS and value['Id'] not in rows)
+            rows[value['Id']]=value
+        check(set(rows)==set(self.UNITS))
+        return rows
     def guard(self):
-        import legacy_retirement
-        check(legacy_retirement.quiescent(legacy_retirement.read_units()))
-        return True
+        check(self.quiescent(self.read_units(),self.UNITS));return True
 
 def owner_binding_inputs(binding,credential,admission,journal,context_ref,generation_ref,policy_hash,renewal_profile,interval_seconds,worker_session_hash=None):
     check(type(binding) is Binding and type(credential) is CredentialFile and type(admission) is OnlineIamAdmission
