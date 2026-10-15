@@ -15,7 +15,7 @@ from tools.chatbot_file_cohort.images import prepare_imports, CohortImages, imag
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from engine_creation import Engine
-from image_custody import runtime_image_id
+from image_custody import runtime_image_id,FIELDS
 
 
 @unittest.skipUnless(os.environ.get('OUF_NATIVE_POSTGRES') == '1', 'explicit disposable Docker CI only')
@@ -39,7 +39,11 @@ class NativeImages(unittest.TestCase):
                 raw = ('disposable '+module).encode(); member = tarfile.TarInfo('fixture.txt')
                 member.size = len(raw); member.mode = 0o444; archive.addfile(member,io.BytesIO(raw))
             tag = 'ouf-native-fixture:'+commit
-            identity = docker('import','--change','LABEL org.opencontainers.image.revision='+commit,'-',tag,data=stream.getvalue()).decode().strip()
+            identity = docker('import','--change','LABEL org.opencontainers.image.revision='+commit,
+                '--change','USER 65534:65534','--change','WORKDIR /',
+                '--change','ENV PATH=/usr/bin:/bin','--change','ENTRYPOINT ["/fixture-never-run"]',
+                '--change','CMD ["fixture"]','--change','STOPSIGNAL SIGTERM',
+                '-',tag,data=stream.getvalue()).decode().strip()
             self.addCleanup(lambda image=identity: subprocess.run([str(binary),'image','rm','-f',image],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=20))
             directory = packages/module; directory.mkdir(mode=0o700)
             image = directory/'image.docker.tar'; docker('save','-o',str(image),identity)
@@ -62,7 +66,15 @@ class NativeImages(unittest.TestCase):
         for role in f.grant['roles']:f.sign(role)
         action = AggregateAction(f.gate(),f.authority,f.expected['sourceClosureHash'])
         owner = CohortImages(action,engine,plan,journals,{'path':str(binary),'sha256':hashlib.sha256(binary.read_bytes()).hexdigest()})
-        owner.initialize(); first = owner.apply()
+        owner.initialize()
+        try:first = owner.apply()
+        except Exception:
+            for row in plan['images']:
+                current=owner.inspect(runtime_image_id(row['audit']))
+                if current is not None:
+                    different=[key for key in FIELDS if current['Config'].get(key)!=row['audit']['imageConfig'].get(key)]
+                    if different:print('NATIVE_FIXTURE_CONFIG_MISMATCH_FIELDS='+json.dumps({'module':row['module'],'fields':different}),flush=True)
+            raise
         self.assertEqual(len(first['images']),5)
         history = {k:j.read() for k,j in journals.items()}
         self.assertTrue(all(r['effectAttemptCount'] == 1 and r['state'] == 'VERIFIED' for r in history.values()))

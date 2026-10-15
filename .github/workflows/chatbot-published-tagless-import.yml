@@ -2,7 +2,7 @@ name: Exact published tagless image import diagnosis
 on:
   push:
     branches: [codex/published-tagless-import-20261015, codex/retained-inspection-channel-20261015]
-    paths: [.github/workflows/chatbot-published-tagless-import.yml, tests/qualify_published_tagless_import.py]
+    paths: [.github/workflows/chatbot-published-tagless-import.yml, tests/qualify_published_tagless_import.py, tests/test_chatbot_cohort_images_native.py]
 permissions: {contents: read, actions: read}
 jobs:
   exact-import:
