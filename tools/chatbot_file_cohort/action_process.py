@@ -110,12 +110,37 @@ IMAGE_IDENTITY_PREDECESSOR_SOURCE='b64645982655f58a2907bf1425dd86fd6ab0ed9f'
 
 
 def observed_private_json(path,maximum):
+    """Read one sealed snapshot within the caller's explicit artifact bound.
+
+    The IAM snapshot helper has an independent fixed512KiB protocol limit;
+    a complete closed-source bundle has an explicit8MiB limit instead. Do not
+    route that bundle through the smaller protocol or relax its custody rules.
+    """
+    require(type(maximum)is int and 0<maximum<=8388608,'BOUNDED_PREVIOUS_ACTION_RECORD_REQUIRED')
     path=Path(path)
     guard=evidence.protected_parent() if path.parent==evidence.PARENT else protected_directory(path.parent)
     with guard as directory:
-        raw=evidence.read_member(directory,path.name)
-        require(evidence.read_member(directory,path.name)==raw,'PREVIOUS_ACTION_READ_DRIFT')
-    require(len(raw)<=maximum,'BOUNDED_PREVIOUS_ACTION_RECORD_REQUIRED')
+        def snapshot():
+            before=os.stat(path.name,dir_fd=directory,follow_symlinks=False)
+            evidence.require(stat.S_ISREG(before.st_mode) and before.st_uid==before.st_gid==0
+                and stat.S_IMODE(before.st_mode)==0o600 and before.st_nlink==1,
+                'PRIVATE_SNAPSHOT_CUSTODY_UNPROVEN')
+            require(0<before.st_size<=maximum,'BOUNDED_PREVIOUS_ACTION_RECORD_REQUIRED')
+            fd=os.open(path.name,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=directory)
+            try:
+                require(evidence.identity(before)==evidence.identity(os.fstat(fd)),'PREVIOUS_ACTION_READ_DRIFT')
+                value=bytearray()
+                while len(value)<=maximum:
+                    part=os.read(fd,min(65536,maximum+1-len(value)))
+                    if not part:break
+                    value.extend(part)
+                require(len(value)==before.st_size and evidence.identity(before)==evidence.identity(os.fstat(fd))
+                    ==evidence.identity(os.stat(path.name,dir_fd=directory,follow_symlinks=False)),
+                    'PREVIOUS_ACTION_READ_DRIFT')
+                return bytes(value)
+            finally:os.close(fd)
+        raw=snapshot()
+        require(snapshot()==raw,'PREVIOUS_ACTION_READ_DRIFT')
     binding={'path':str(path),'sha256':hashlib.sha256(raw).hexdigest()}
     return evidence.decode(raw),binding
 

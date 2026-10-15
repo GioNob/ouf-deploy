@@ -457,6 +457,19 @@ def watch_child(receipt,systemctl):
     raise RuntimeError('FINITE_DELIVERY_OBSERVATION_WINDOW_ENDED')
 
 
+def safe_failure_locations(error):
+    """Bounded code locations only; no exception text, paths or local values."""
+    locations=[];tb=error.__traceback__
+    for _ in range(64):
+        if tb is None:break
+        module=tb.tb_frame.f_globals.get('__name__','');function=tb.tb_frame.f_code.co_name
+        if module.startswith('tools.chatbot_file_cohort.') and re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,79}',function):
+            locations.append({'module':module,'function':function,'line':tb.tb_lineno})
+        tb=tb.tb_next
+    return {'schema':'ouf.chatbot-file-preparation-safe-failure-location.v1',
+        'locations':locations[-8:],'messagesPrinted':False,'pathsPrinted':False,'localValuesPrinted':False}
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for key in ('source-directory','package-archive','staging-directory','source-commit','preparation-source-hash'):
@@ -471,7 +484,8 @@ def main():
         # reason when it is a constant diagnostic code, otherwise the class.
         reason=str(error)
         safe=reason if re.fullmatch('[A-Z][A-Z0-9_]{0,159}',reason) else type(error).__name__
-        report('BLOCKED',reason=safe,runtimeAuthorityIssued=getattr(args,'authority_issued',False));raise SystemExit(1)
+        report('BLOCKED',reason=safe,diagnostic=safe_failure_locations(error),
+            runtimeAuthorityIssued=getattr(args,'authority_issued',False));raise SystemExit(1)
 
 
 if __name__=='__main__':main()

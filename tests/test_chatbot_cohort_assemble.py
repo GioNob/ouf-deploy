@@ -44,6 +44,14 @@ from tools.semantic_provider_deployment_authentication import DetachedAuthentica
 
 
 class CompleteActionAssembly(unittest.TestCase):
+    def test_complete_bundle_can_be_read_by_the_retained_history_reader(self):
+        from tools.chatbot_file_cohort.action_process import observed_private_json
+        compiled=self.assemble();binding=compiled['processPlan']['bundle'];path=Path(binding['path'])
+        self.assertGreater(path.stat().st_size,524288)
+        value,observed=observed_private_json(path,8388608)
+        self.assertEqual(observed,binding)
+        self.assertEqual(value['prepared'],json.loads(encoded(self.prepared)))
+
     def setUp(self):
         roots=custody_fixture.RootCustodyTest();roots.setUp();self.addCleanup(roots.doCleanups)
         self.roots=roots;self.f=roots.f.f
