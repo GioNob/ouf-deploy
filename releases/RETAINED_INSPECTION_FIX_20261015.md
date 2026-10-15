@@ -26,10 +26,18 @@ Questa tranche cambia solo la preparazione e le relative prove:
 
 Capsula nuova e distinta:
 `releases/chatbot-file-preparation-capsule-20261015.json`, SHA256
-`33d42e9aa04968035201a30a5d7d8a79c45ee4e42ebafabefe32deaa8722ae90`.
+`ba1e4723e8797cb30f1461caf90af6e26eae9f2a617484e076e7a7617d0ca680`.
 La capsula14 e i riferimenti immutabili precedenti restano conservati.
 Il launcher Python seleziona la nuova capsula; nessun nuovo comando target viene
 pubblicato da questo documento prima della qualificazione.
+
+È disponibile `--prepare-only` nel launcher e nell'entry isolato. Dopo la
+compilazione della review completa restituisce
+`COMPLETE_PRIVATE_REVIEW_READY_NOT_STARTED`, senza chiamare approve_and_start,
+emettere autorità o avviare il processo applicativo. La normale semantica di
+approvazione rimane disponibile solo quando questa opzione non è selezionata.
+Il prossimo comando operatore deve usare obbligatoriamente --prepare-only fino
+alla revisione della preparazione completa e della contabilità corrente.
 
 Prove locali: test di formato e di creazione completa della request a quattro
 mount, dinieghi per Config/Host/Mount/IP/MAC/Endpoint/DNS/alias, instabilità dei

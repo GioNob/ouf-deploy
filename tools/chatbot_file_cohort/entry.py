@@ -244,16 +244,28 @@ def collect(args):
         compiled=assemble.assemble(prepared=prepared,sources=sources,loader=loader,
             bootstrap=source_bytes(source/'tools/chatbot_file_cohort/child_bootstrap.py'),closure=closure,
             staging_directory=stage,lineage=history,preparation_source_hash=args.preparation_source_hash,cohort_id=cohort_id)
-        report('COMPLETE_REVIEW_READY',reviewPath=compiled['reviewBinding']['path'],reviewHash=compiled['reviewBinding']['sha256'])
-        args.authority_issued=None
-        receipt=assemble.approve_and_start(compiled,session,stop)
-        args.authority_issued=True
-        print(json.dumps(receipt,sort_keys=True,separators=(',',':')),flush=True)
-        watch_child(receipt,closure['executables']['systemctl'])
-        return receipt
+        return finish_review(args,compiled,session,stop,assemble,closure)
     finally:
         stop.set()
         if session.thread is not None:session.thread.join(45)
+
+
+def finish_review(args,compiled,session,stop,assembler,closure):
+    report('COMPLETE_REVIEW_READY',reviewPath=compiled['reviewBinding']['path'],reviewHash=compiled['reviewBinding']['sha256'])
+    if getattr(args,'prepare_only',False):
+        args.authority_issued=False
+        receipt={'schema':'ouf.chatbot-file-preparation-result.v1','status':'COMPLETE_PRIVATE_REVIEW_READY_NOT_STARTED',
+            'reviewPath':compiled['reviewBinding']['path'],'reviewHash':compiled['reviewBinding']['sha256'],
+            'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'serviceMutations':0,
+            'budgetReset':False,'chatbotEndToEndProven':False,'notReleaseAcceptance':True}
+        print(json.dumps(receipt,sort_keys=True,separators=(',',':')),flush=True)
+        return receipt
+    args.authority_issued=None
+    receipt=assembler.approve_and_start(compiled,session,stop)
+    args.authority_issued=True
+    print(json.dumps(receipt,sort_keys=True,separators=(',',':')),flush=True)
+    watch_child(receipt,closure['executables']['systemctl'])
+    return receipt
 
 
 def preparation_wait(session,stop,seconds):
@@ -406,6 +418,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for key in ('source-directory','package-archive','staging-directory','source-commit','preparation-source-hash'):
         parser.add_argument('--'+key,required=True)
+    parser.add_argument('--prepare-only',action='store_true',help='Retain complete private review and exit before runtime authority or application start')
     args=parser.parse_args()
     try:collect(args)
     except KeyboardInterrupt:

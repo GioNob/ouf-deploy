@@ -32,6 +32,7 @@ from pathlib import Path
 p=argparse.ArgumentParser()
 for name in ("source-directory","package-archive","staging-directory","source-commit","preparation-source-hash"):
     p.add_argument("--"+name,required=True)
+p.add_argument("--prepare-only",action="store_true",default=argparse.SUPPRESS)
 a=p.parse_args();source=Path(a.source_directory);stage=Path(a.staging_directory)
 members={str(v.relative_to(stage)):{"mode":oct(stat.S_IMODE(v.stat().st_mode)),
     "uid":v.stat().st_uid,"gid":v.stat().st_gid,"sha256":hashlib.sha256(v.read_bytes()).hexdigest()}
@@ -107,9 +108,9 @@ class DeliveryLauncherTest(unittest.TestCase):
         self.assertEqual(launcher.ROOT_BODY.count(selected), 1)
         return launcher.ROOT_BODY.replace(selected, 'base=Path('+repr(str(self.base))+')')
 
-    def run_root(self, payload=None, expected=None, flags=('-I', '-B', '-S')):
+    def run_root(self, payload=None, expected=None, flags=('-I', '-B', '-S'),prepare_only=False):
         return self.real_run([sys.executable, *flags, '-c',
-            'EXPECTED='+repr(expected or self.expected)+'\n'+self.root_body(), COMMIT, str(self.package)],
+            'EXPECTED='+repr(expected or self.expected)+'\nPREPARE_ONLY='+repr(prepare_only)+'\n'+self.root_body(), COMMIT, str(self.package)],
             input=self.payload() if payload is None else payload, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE, timeout=15)
 
@@ -171,6 +172,13 @@ class DeliveryLauncherTest(unittest.TestCase):
         for path in (stage, *(p for p in stage.rglob('*') if p.is_dir())):
             self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o700)
         self.assertEqual(list(stage.rglob('*.pyc')), [])
+
+    def test_prepare_only_flag_reaches_isolated_root_entry(self):
+        result=self.run_root(prepare_only=True)
+        self.assertEqual(result.returncode,0,result.stderr.decode())
+        receipt=json.loads(result.stdout)
+        self.assertTrue(receipt['arguments']['prepare_only'])
+        self.assertFalse(receipt['targetApplyAuthorized'])
 
     def test_root_hash_complete_set_and_source_bytes_are_rechecked_before_any_entry(self):
         self.assert_denied(self.run_root(expected='0'*64), 'ROOT_CAPSULE_MANIFEST_HASH_MISMATCH')

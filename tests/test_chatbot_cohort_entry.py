@@ -12,6 +12,7 @@ from pathlib import Path
 import subprocess
 import sys
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import test_chatbot_cohort_assemble as assembly
@@ -24,6 +25,20 @@ class EntryIntegration(unittest.TestCase):
     def setUp(self):
         self.fixture=assembly.CompleteActionAssembly()
         self.fixture.setUp();self.addCleanup(self.fixture.doCleanups)
+
+    def test_prepare_only_returns_review_without_authority_or_runtime_start(self):
+        class NoAuthority:
+            def approve_and_start(self,*args):raise AssertionError('preparation must never request runtime authority')
+        args=SimpleNamespace(prepare_only=True)
+        compiled={'reviewBinding':{'path':'/private/complete-review.json','sha256':'a'*64}}
+        with patch.object(entry,'watch_child',side_effect=AssertionError('preparation must never watch a started unit')),\
+             contextlib.redirect_stdout(io.StringIO()) as output:
+            receipt=entry.finish_review(args,compiled,None,None,NoAuthority(),{})
+        self.assertFalse(args.authority_issued)
+        self.assertEqual(receipt['status'],'COMPLETE_PRIVATE_REVIEW_READY_NOT_STARTED')
+        self.assertFalse(receipt['targetApplyAuthorized']);self.assertFalse(receipt['runtimeAuthorityIssued'])
+        self.assertFalse(receipt['chatbotEndToEndProven'])
+        self.assertEqual(json.loads(output.getvalue().splitlines()[-1]),receipt)
 
     def test_login_instruction_reaches_buffered_output_before_waiting_for_human(self):
         raw=io.BytesIO()
