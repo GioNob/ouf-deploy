@@ -1,0 +1,56 @@
+{
+  "archiveBytes": 390021120,
+  "archiveSha256": "9f1961025f0e55d7a12e7f3f6df5c5fe0980ff4cad730086262bedecdaf6a357",
+  "candidateReadback": [
+    {
+      "configMatches": false,
+      "imageId": "sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3",
+      "rootfsMatches": true,
+      "tags": []
+    }
+  ],
+  "chatbotEndToEndProven": false,
+  "engine": {
+    "Architecture": "x86_64",
+    "CgroupDriver": "systemd",
+    "Driver": "overlayfs",
+    "ServerVersion": "28.0.4"
+  },
+  "exactImageGetStatus": 404,
+  "exceptionType": "ValueError",
+  "expectedImageId": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489",
+  "fixtureOnly": true,
+  "journal": {
+    "authorityHash": "8a7e9e6d189a7fb8a0dd2959ea5ac630997ee52bb461b16b73bb8cbbcc0ec021",
+    "automaticReplayAllowed": false,
+    "contextHash": "611804279c91ef3bae2aee325bffae0c43101436a25635d776ea66e0b11aa854",
+    "effectAttemptCount": 1,
+    "imageCustodyProven": false,
+    "intent": {
+      "archiveSha256": "9f1961025f0e55d7a12e7f3f6df5c5fe0980ff4cad730086262bedecdaf6a357",
+      "imageId": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489",
+      "sourceCommit": "eccef11a97367f20e278db40b9ed6f45dd980c37"
+    },
+    "schema": "ouf.image-import-journal.v1",
+    "state": "IN_FLIGHT",
+    "version": 1
+  },
+  "listedImageIds": [
+    "sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3"
+  ],
+  "load": {
+    "elapsedSeconds": 4.097,
+    "exitCode": 0,
+    "stderr": "",
+    "stdout": "Loaded image ID: sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3\n"
+  },
+  "passed": false,
+  "reason": "IMPORT_ABSENCE_DOES_NOT_PROVE_NO_EFFECT",
+  "schema": "ouf.published-tagless-import-ci.v1",
+  "sourceCommit": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+  "stdinPosition": {
+    "buffered": 0,
+    "descriptor": 0
+  },
+  "targetServiceMutations": 0
+}

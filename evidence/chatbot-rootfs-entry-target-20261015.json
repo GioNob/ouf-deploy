@@ -1,0 +1,721 @@
+{
+  "attachmentSha256": "2b958be8f79ca6ba4c3130e39f40cf080a3c2a54cd3dcc226e53261ac71cfa84",
+  "chatbotEndToEndProven": false,
+  "contentHashDifferencesReported": 0,
+  "date": "2026-10-15",
+  "diagnosis": "QUALIFIED_CI_PLACEHOLDER_MOUNT_TARGETS_DIFFER_FROM_REVIEWED_RETAINED_TARGETS",
+  "notReleaseAcceptance": true,
+  "origin": "USER_ATTACHMENT_NOT_INDEPENDENT_VPS_ACCESS",
+  "readerCommit": "84271d380d414a2fe211ac78f71c28b06d9e0e11",
+  "readerSha256": "dbdcd40d90a2c5294623bc8777c1584d01a8704477e85004a1de362dad25c1bb",
+  "records": [
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "BEGIN",
+      "credentialOrTokenFilesRead": false,
+      "databaseMutations": 0,
+      "grantRequests": 0,
+      "iamCalls": 0,
+      "readOnly": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "serviceMutations": 0
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RETAINED_STATUS",
+      "phase": "PAUSED_REQUIRES_RECONCILIATION",
+      "readOnly": true,
+      "reason": "ValueError",
+      "runtimeAuthorityIssuedByReader": false,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "PROCESS",
+      "readOnly": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "stopped": true
+    },
+    {
+      "authorityMatches": true,
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "CONTINUATION_RESERVATION",
+      "readOnly": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "state": "CONTINUATION_RESERVED_NO_AUTOMATIC_REPLAY"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "REGISTRY_TRANSITION",
+      "nextPhase": 6,
+      "phases": [
+        {
+          "phase": "STOP_REVOKE_OLD_LEASE",
+          "state": "APPLIED"
+        },
+        {
+          "phase": "QUIESCE_PRODUCERS",
+          "state": "APPLIED"
+        },
+        {
+          "phase": "FENCED_BACKUP",
+          "state": "APPLIED"
+        },
+        {
+          "phase": "RELEASE_OLD_ENDPOINT",
+          "state": "APPLIED"
+        },
+        {
+          "phase": "CREATE_REPLACEMENT",
+          "state": "APPLIED"
+        },
+        {
+          "phase": "STAGE_PAUSED_REPLACEMENT",
+          "state": "APPLIED"
+        },
+        {
+          "phase": "ATTEST_NEW_OCI_PEER",
+          "state": "IN_FLIGHT"
+        }
+      ],
+      "readOnly": true,
+      "recordHash": "af9c88a9ca302cc69ec11b2a85035510eb03d7282d7409b46be88aa720ecbb8f",
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "state": "IN_FLIGHT",
+      "version": 13
+    },
+    {
+      "attempts": 1,
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "WORKER_recovery.json",
+      "controlledCumulativeGrantAttempts": 2,
+      "publicationCount": 1,
+      "readOnly": true,
+      "recordHash": "779053bf26eee3faff47217295fd325cf71bffa131c0ed66de0af414079bbc55",
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "state": "CANCELLED"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "WORKER_owner-session.json",
+      "readOnly": true,
+      "recordHash": "17a6c711beae9887d446d521bd765d2fab3cafc3eee6e4ccd4c62c523b8b2785",
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "WORKER_owner-admission.json",
+      "readOnly": true,
+      "recordHash": "14d0c98eabf416c044b68cf6fde4d8068c900fc03f3ca3bc11980aea1fede9e6",
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "state": "BLOCKED",
+      "version": 3
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "LATER_containers",
+      "readOnly": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "version": 2
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "LATER_databases",
+      "readOnly": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "version": 1
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "LATER_gateway",
+      "readOnly": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "version": 1
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "LATER_authorization",
+      "readOnly": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "version": 1
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "REGISTRY_NATIVE",
+      "paused": true,
+      "pid": 3484588,
+      "readOnly": true,
+      "restartCount": 0,
+      "running": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "status": "paused"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "RETAINED_FRAME_POLICY",
+      "exactOciMatches": false,
+      "privateValuesPrinted": false,
+      "readOnly": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "signatureClaimPresent": false
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "ORIGINAL_FULL_OCI_GATE",
+      "readOnly": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "signatureIssued": false,
+      "sourceHashVerified": true,
+      "sourceReason": "PAUSED_NODE_FULL_OCI_DRIFT",
+      "status": "DENIED"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "OCI_DIFFERENCE",
+      "differenceCount": 37,
+      "differences": [
+        {
+          "expectedType": "str",
+          "kind": "ONLY_EXPECTED",
+          "nativeType": "absent",
+          "path": "/linux/namespaces/1/path"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/0"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/1"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/2"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/3"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/4"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/5"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/6"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/7"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/8"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/9"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/10"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/11"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/12"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/13"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/14"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/15"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/16"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/17"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/18"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/19"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/20"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/21"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/22"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/23"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/24"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/25"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/26"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/27"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/28"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/29"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/30"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/31"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/32"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/33"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/34"
+        },
+        {
+          "expectedType": "str",
+          "kind": "VALUE",
+          "nativeType": "str",
+          "path": "/process/env/35"
+        }
+      ],
+      "dynamicMapKeysPrinted": false,
+      "exactMatch": false,
+      "privateValuesPrinted": false,
+      "publicMountOptionsAndBooleansAllowed": true,
+      "readOnly": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "truncated": false,
+      "valueHashesPrinted": false
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "OCI_ORDER_FACTS",
+      "expectedOciVersion": "1.3.0",
+      "mountsIdenticalIgnoringOrder": true,
+      "ociVersion": "1.3.0",
+      "readOnly": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "MOUNT_METADATA",
+      "contentRead": false,
+      "mountReadOnly": true,
+      "readOnly": true,
+      "sameSourceInode": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "slot": 0,
+      "subordinateMountAbsent": true
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "MOUNT_METADATA",
+      "contentRead": false,
+      "mountReadOnly": true,
+      "readOnly": true,
+      "sameSourceInode": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "slot": 1,
+      "subordinateMountAbsent": true
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "MOUNT_METADATA",
+      "contentRead": false,
+      "mountReadOnly": true,
+      "readOnly": true,
+      "sameSourceInode": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "slot": 2,
+      "subordinateMountAbsent": true
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "MOUNT_METADATA",
+      "contentRead": false,
+      "mountReadOnly": true,
+      "readOnly": true,
+      "sameSourceInode": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "slot": 3,
+      "subordinateMountAbsent": true
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "EXACT_NATIVE_NETWORK_POLICY",
+      "nicCount": 1,
+      "readOnly": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "sourceFunctionsUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "applyAuthorized": false,
+      "automaticRetry": false,
+      "budgetReset": false,
+      "candidateExactEnvironmentOrder": true,
+      "candidateExactFullOci": true,
+      "candidatePrivateNetworkNamespacePathAbsent": true,
+      "candidateSourceCommit": "24d36d23e7c7183b7895e1dc823d3c06428412b2",
+      "changedEnvironmentNames": [],
+      "check": "BRIDGE_PROPOSAL_COMPARISON",
+      "environmentValueHashesPrinted": false,
+      "environmentValuesPrinted": false,
+      "expectedOciDerivedFromObservedOci": false,
+      "kernelSandboxNamespaceMatched": true,
+      "missingEnvironmentNames": [],
+      "originalSignedCreationRequestPreserved": true,
+      "privateValuesPrinted": false,
+      "readOnly": true,
+      "sameEnvironmentNames": true,
+      "sameEnvironmentValues": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "signatureIssued": false,
+      "unexpectedEnvironmentNames": []
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "CI_BASELINE_MANIFEST",
+      "entries": 9301,
+      "exactRetainedQualifiedSealReproduced": true,
+      "expectedEntriesDerivedFromTarget": false,
+      "readOnly": true,
+      "runId": 38781095495,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "sourceCommit": "36861be786b5fcae853b116a35d406bf961705cb"
+    },
+    {
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "QUALIFIED_IMAGE_ROOTFS_BEGIN",
+      "credentialOrTokenFilesRead": false,
+      "imageFilesRead": true,
+      "maximumSeconds": 180,
+      "readOnly": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1"
+    },
+    {
+      "acceptanceGranted": false,
+      "automaticRetry": false,
+      "budgetReset": false,
+      "check": "ROOTFS_ENTRY_DIFFERENCES",
+      "contentHashesPrinted": false,
+      "differentEntryCount": 8,
+      "fieldCounts": {
+        "MISSING_ENTRY": 3,
+        "UNEXPECTED_ENTRY": 4,
+        "links": 1
+      },
+      "fileContentsPrinted": false,
+      "readOnly": true,
+      "samples": [
+        {
+          "declaredPrivateMountPathOrAncestor": true,
+          "differentFields": [
+            "links"
+          ],
+          "expected": {
+            "gid": 0,
+            "kind": "directory",
+            "links": 4,
+            "mode": 493,
+            "uid": 0
+          },
+          "imagePath": "run/ouf",
+          "observed": {
+            "gid": 0,
+            "kind": "directory",
+            "links": 2,
+            "mode": 493,
+            "uid": 0
+          }
+        },
+        {
+          "declaredPrivateMountPathOrAncestor": true,
+          "differentFields": [
+            "UNEXPECTED_ENTRY"
+          ],
+          "imagePath": "run/ouf-semantic-auth",
+          "observed": {
+            "gid": 0,
+            "kind": "directory",
+            "links": 2,
+            "mode": 493,
+            "uid": 0
+          }
+        },
+        {
+          "declaredPrivateMountPathOrAncestor": true,
+          "differentFields": [
+            "UNEXPECTED_ENTRY"
+          ],
+          "imagePath": "run/ouf-semantic-db",
+          "observed": {
+            "gid": 0,
+            "kind": "directory",
+            "links": 2,
+            "mode": 493,
+            "uid": 0
+          }
+        },
+        {
+          "declaredPrivateMountPathOrAncestor": false,
+          "differentFields": [
+            "MISSING_ENTRY"
+          ],
+          "expected": {
+            "gid": 0,
+            "kind": "directory",
+            "links": 2,
+            "mode": 493,
+            "uid": 0
+          },
+          "imagePath": "run/ouf/database"
+        },
+        {
+          "declaredPrivateMountPathOrAncestor": false,
+          "differentFields": [
+            "MISSING_ENTRY"
+          ],
+          "expected": {
+            "gid": 0,
+            "kind": "file",
+            "links": 1,
+            "mode": 420,
+            "size": 0,
+            "uid": 0
+          },
+          "imagePath": "run/ouf/delegation.key"
+        },
+        {
+          "declaredPrivateMountPathOrAncestor": false,
+          "differentFields": [
+            "MISSING_ENTRY"
+          ],
+          "expected": {
+            "gid": 0,
+            "kind": "directory",
+            "links": 2,
+            "mode": 493,
+            "uid": 0
+          },
+          "imagePath": "run/ouf/policy"
+        },
+        {
+          "declaredPrivateMountPathOrAncestor": true,
+          "differentFields": [
+            "UNEXPECTED_ENTRY"
+          ],
+          "imagePath": "run/secrets",
+          "observed": {
+            "gid": 0,
+            "kind": "directory",
+            "links": 2,
+            "mode": 493,
+            "uid": 0
+          }
+        },
+        {
+          "declaredPrivateMountPathOrAncestor": true,
+          "differentFields": [
+            "UNEXPECTED_ENTRY"
+          ],
+          "imagePath": "run/secrets/semantic-read-owner.key",
+          "observed": {
+            "gid": 0,
+            "kind": "file",
+            "links": 1,
+            "mode": 420,
+            "size": 0,
+            "uid": 0
+          }
+        }
+      ],
+      "samplesTruncated": false,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "signatureIssued": false,
+      "symlinkTargetsPrinted": false,
+      "xattrValuesPrinted": false
+    },
+    {
+      "acceptanceGranted": false,
+      "automaticRetry": false,
+      "budgetReset": false,
+      "bytes": 1719645735,
+      "check": "QUALIFIED_IMAGE_ROOTFS",
+      "credentialOrTokenFilesRead": false,
+      "entries": 9302,
+      "expectedBytes": 1719645735,
+      "expectedEntries": 9301,
+      "imageFilesRead": true,
+      "readOnly": true,
+      "sameAsQualifiedImageSeal": false,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "signatureIssued": false
+    },
+    {
+      "attestationAccepted": false,
+      "authorityRenewed": false,
+      "automaticRetry": false,
+      "budgetReset": false,
+      "candidateExactFullOci": true,
+      "candidateImageRootfsMatches": false,
+      "chatbotEndToEndProven": false,
+      "check": "END",
+      "complete": true,
+      "credentialOrTokenFilesRead": false,
+      "databaseMutations": 0,
+      "frameByteContentChecksPerformed": false,
+      "grantRequests": 0,
+      "readOnly": true,
+      "rootfsSealCheckPerformed": true,
+      "schema": "ouf.chatbot-rootfs-entry-readback.v1",
+      "serviceMutations": 0,
+      "unavailableChecks": []
+    }
+  ],
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.chatbot-rootfs-entry-target-evidence.v1"
+}

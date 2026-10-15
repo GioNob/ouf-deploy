@@ -1,0 +1,54 @@
+{
+  "schema": "ouf.chatbot-retained-attestation-failure.v1",
+  "date": "2026-10-15",
+  "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+  "reviewHash": "e375f7fe868806206c42a0609d98de65fab96d3b0aafcec375af0004d91d3e25",
+  "authorityHash": "3a2c33eabd19545bf1128f5049a4fa7df79cf76edec450b6c4946144c3943fd8",
+  "authorityExpiresAt": 1792100102,
+  "context": "/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-d8a817cd13770cd5a655b8b955ef8959588959ffb0751dd24ddd1ef28e49fd52",
+  "unit": "ouf-file-cohort-d8a817cd13770cd5a655b8b955ef8959.service",
+  "planHash": "074ba9c08df3c945d63a1acec2a33fb1c62b16a7336be6e52962f1dfaaf05d8e",
+  "reportedPhase": "PAUSED_REQUIRES_RECONCILIATION",
+  "reason": "CURRENT_ATTESTATION_PHASE_AND_CREATION_SCOPE_REQUIRED",
+  "sourceTraceInference": {
+    "checkpointPhase": "ADMIT_MIGRATION",
+    "checkpointPoint": "BEFORE_NATIVE_EFFECT",
+    "attestationAppliedRequiredByCaller": true,
+    "migrationApplyNotEnteredAtReportedFailure": true,
+    "independentJournalReadStillRequired": true,
+    "cumulativeGrantsNotYetObserved": true
+  },
+  "defect": "Fresh retained node re-observation reused a binding accepting only ATTEST_NEW_OCI_PEER IN_FLIGHT",
+  "fixSource": "266a4fe7f200d37014b1683b954ef777cdaae46f",
+  "fixCapsuleSha256": "3247eff86492edf78a0942d92345de9e1443625192cf848833a9edb3692b52fd",
+  "reader": {
+    "path": "scripts/read-chatbot-retained-attestation-20261015.py",
+    "sourceCommit": "266a4fe7f200d37014b1683b954ef777cdaae46f",
+    "sha256": "d9dcd95a73275ddcefb9169fdcdffe4dd5e0d649aa623b69e2e9b43cad186399",
+    "localTests": 6,
+    "hostedReaderStepPassedOnIdenticalBytes": {
+      "runId": 38805033459,
+      "jobId": 116663555366
+    },
+    "maximumEngineGets": 2,
+    "iamCalls": 0,
+    "grantRequests": 0,
+    "databaseCalls": 0,
+    "serviceMutations": 0,
+    "credentialOrTokenFilesRead": false,
+    "sourceBodiesExecuted": false
+  },
+  "coreLocalTests": {
+    "binding": 6,
+    "ownerCallPath": 3,
+    "launcher": 14,
+    "closedRuntime": 3
+  },
+  "qualificationStatus": "RUNNING_NEW_SOURCE_NOT_OPERATIONAL_RECOVERY",
+  "oldRuntimeCommandMustNotBeReplayed": true,
+  "newRuntimeRecoveryPublished": false,
+  "newRuntimeAuthorityIssuedByThisDevelopment": false,
+  "targetOperationsByThisAssistantTurn": 0,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}

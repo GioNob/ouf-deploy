@@ -1,0 +1,45 @@
+{
+  "schema": "ouf.complete-target-preparation-evidence.v1",
+  "date": "2026-10-15",
+  "acquisition": "OPERATOR_PASTED_TARGET_OUTPUT",
+  "preparerCommit": "951f91c8df3d252c720ffa4f0fc787ff90d91b9e",
+  "capsuleSha256": "e2d2ff9ce2dec348754edf977f911aac987a1d22723368571b26586870d50736",
+  "targetPreflight": {
+    "allRequiredChecksPass": true,
+    "failedChecks": {},
+    "checkCount": 15,
+    "retainedEnvironment": true,
+    "historicalGeneration": true,
+    "historicalDiscoveryJvmTrustOptionRemovedFromProposal": true
+  },
+  "administrativeSession": {
+    "administrativeLoginAttempted": false,
+    "status": "SELECTED_IAM_GET_AVAILABLE",
+    "iamResourceMutations": 0,
+    "serviceTokenGrantRequests": 0
+  },
+  "receipt": {
+    "schema": "ouf.chatbot-file-preparation-result.v1",
+    "status": "COMPLETE_PRIVATE_REVIEW_READY_NOT_STARTED",
+    "reviewPath": "/etc/ouf/deploy-snapshots/chatbot-file-intake-e2d2ff9ce2dec348754edf977f911aac987a1d22723368571b26586870d50736/attempt-f101046b9824be1e37f8879d/full-action-review.json",
+    "reviewHash": "b53cc4ba39c8998cdc013098465258f14d927c79b5fbccb645605a76fb214f72",
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "serviceMutations": 0,
+    "budgetReset": false,
+    "chatbotEndToEndProven": false,
+    "notReleaseAcceptance": true
+  },
+  "fullPrivateReviewContentsAcquiredByAgent": false,
+  "reviewDocumentRetainedOnVps": true,
+  "deviceCodeOmitted": true,
+  "milestones": {
+    "B01": "TARGET_PREFLIGHT_PASS",
+    "B02": "HISTORICAL_INSPECTION_DIAGNOSIS_CLOSED",
+    "B03": "COMPLETE_TARGET_PREPARATION_PASS",
+    "B04": "RUNTIME_APPLICATION_NOT_STARTED",
+    "B05": "CSV_TEATRI_END_TO_END_NOT_PROVEN",
+    "B06": "SECOND_SOURCE_REUSE_NOT_PROVEN"
+  },
+  "runtimeAcceptance": false
+}

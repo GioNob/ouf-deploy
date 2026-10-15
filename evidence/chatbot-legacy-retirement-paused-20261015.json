@@ -1,0 +1,84 @@
+{
+  "schema": "ouf.chatbot-retirement-paused-evidence.v1",
+  "date": "2026-10-15",
+  "evidenceSource": "Operator-pasted VPS transcript; executing source inspected at exact commit",
+  "sourceCommit": "95749a8ef316856e16c44c1d7aa3b6791b408993",
+  "reviewHash": "6ff5430760e93ab51a26313a18198f094ded12760954fb8a4fcf53db5b3274a0",
+  "context": "/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-3f1e74ca1de7962018be8e1d6dd023f685ea208a70aa5e2e2078f92961d7fd4c",
+  "unit": "ouf-file-cohort-3f1e74ca1de7962018be8e1d6dd023f6.service",
+  "authorityHash": "83d70a33518b7bf7c1ca2904d715623294bb8132d5db1373381ab7ea001f2072",
+  "authorityExpiresAt": 1792056838,
+  "planHash": "c2fad152330f9bfa82615fc910e1a213770736e9d4d0408ed0dfdf61dd8242e8",
+  "phase": "PAUSED_REQUIRES_RECONCILIATION",
+  "reason": "RETIREMENT_QUIESCENCE_UNPROVEN",
+  "observedPhases": [
+    "IMPORTING_QUALIFIED_IMAGES_BEFORE_FIRST_GRANT",
+    "APISIX_READINESS_WAIT",
+    "INSTALLING_FINITE_TOKEN_OWNER"
+  ],
+  "codeOrderConclusions": {
+    "allFiveImageApplyReturned": true,
+    "gatewayRuntimeApplyReturned": true,
+    "legacyMaskAndStopReturnCode": 0,
+    "legacyPostCommandReadParsed": true,
+    "legacyQuiescencePredicate": false,
+    "firstGrantNotReached": true,
+    "cohortDatabaseMigrationsNotReached": true
+  },
+  "unknowns": [
+    "Exact differing systemd property",
+    "Current legacy unit states and mask link targets",
+    "Current delivery unit state",
+    "Durable owner-installation and retirement record readback"
+  ],
+  "legacyUnits": [
+    "ouf-policy-token@semantic.timer",
+    "ouf-policy-token@semantic.service"
+  ],
+  "nextAction": "Pinned read-only pregrant retirement reader; no reset-failed, mask/stop replay, delivery restart, grant, authority renewal or execution wrapper.",
+  "automaticRetry": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true,
+  "systemdReadback": {
+    "timer": {
+      "Id": "ouf-policy-token@semantic.timer",
+      "Result": "resources",
+      "LoadState": "masked",
+      "ActiveState": "failed",
+      "SubState": "failed",
+      "UnitFileState": "masked",
+      "Job": ""
+    },
+    "service": {
+      "Id": "ouf-policy-token@semantic.service",
+      "MainPID": "0",
+      "Result": "success",
+      "LoadState": "masked",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": "masked",
+      "Job": ""
+    },
+    "delivery": {
+      "Id": "ouf-file-cohort-3f1e74ca1de7962018be8e1d6dd023f6.service",
+      "MainPID": "0",
+      "Result": "success",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": "",
+      "Job": ""
+    }
+  },
+  "immediateCause": "Strict ActiveState=inactive predicate rejects the masked timer's retained failed state.",
+  "resourceFailureCause": "UNKNOWN; Result=resources alone does not prove host memory or disk exhaustion.",
+  "readerQualification": {
+    "sha256": "6ce593b40fa6d1959aa34dd2a4827e78e4cdf686da2b45d699219b1e5060e1f9",
+    "localDevelopmentScenarios": 9,
+    "nativeVpsRun": false,
+    "sourceExecuted": false,
+    "credentialOrTokenFilesRead": false,
+    "notes": "Seven initial privacy/custody/transport/full-flow scenarios plus staged raw source hash and native gateway generation checks; no CI or native VPS execution claimed."
+  }
+}

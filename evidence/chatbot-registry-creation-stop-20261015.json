@@ -1,0 +1,73 @@
+{
+  "schema": "ouf.operator-post-credential-registry-stop.v1",
+  "observedDate": "2026-10-15",
+  "sourceCommit": "bc2d111200de75b90f8072a83c1739fbfb945313",
+  "wrapperEvidenceCommit": "c23bc8084716e7d8403dd317c846a4c37d878b2e",
+  "wrapperHashVerifiedByOperator": true,
+  "launcherHashVerifiedByOperator": true,
+  "reviewHash": "14ab339d3d29d3be9ad027ddad19dbd9ef3cc2b68ff1aece951a528e8c74ec29",
+  "reviewPath": "/etc/ouf/deploy-snapshots/chatbot-file-intake-2461cd9188c1821e571683c3a90e690f058e20e3764155ff0e9e07772a1a65d7/attempt-709ab239240b97f598a0c023/full-action-review.json",
+  "operatorExactApprovalEntered": true,
+  "authorityHash": "7db9ea82ed6fbbdc88cfdbd8e7315404e6c958e841731d1d12b22482f8fa8f30",
+  "context": "/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-b05102a00d9f20ec6a935e1de201d4a9bb800f2aac8876fe79b0ed187e5f9623",
+  "unit": "ouf-file-cohort-b05102a00d9f20ec6a935e1de201d4a9.service",
+  "mainPidAtStart": 3420585,
+  "processPlanHash": "fcb9b4015a23f9acf1822500d783fc20ecffd4be8de1c408bbc76e18997ce0b5",
+  "authorityExpiresAt": 1792067730,
+  "maximumSessionSeconds": 3600,
+  "preflight": {
+    "allRequiredChecksPass": true,
+    "existingGatewayGenerationVerified": true,
+    "existingImagesVerified": 5,
+    "priorCredentialMutationAttempts": 1,
+    "priorGrantAttempts": 0,
+    "priorRetirementCommandAttempts": 1
+  },
+  "administrativePreflight": {
+    "administrativeLoginAttempted": true,
+    "clientSecretRead": false,
+    "iamResourceMutations": 0,
+    "serviceMutations": 0,
+    "serviceTokenGrantRequests": 0,
+    "status": "SELECTED_IAM_GET_AVAILABLE"
+  },
+  "deliveryPhases": [
+    "IMPORTING_QUALIFIED_IMAGES_BEFORE_FIRST_GRANT",
+    "INSTALLING_FINITE_TOKEN_OWNER",
+    "REGISTRY_REPLACEMENT_AND_VERIFICATION",
+    "PAUSED_REQUIRES_RECONCILIATION"
+  ],
+  "failure": {
+    "reason": "CreationDenied",
+    "diagnostic": {
+      "schema": "ouf.chatbot-file-cohort-safe-failure-location.v1",
+      "locations": [
+        {
+          "function": "run",
+          "line": 343,
+          "module": "tools.chatbot_file_cohort.delivery"
+        }
+      ],
+      "messagesPrinted": false
+    }
+  },
+  "intakeTerminalState": {
+    "phase": "BLOCKED",
+    "reason": "FINITE_DELIVERY_PROCESS_STOPPED_INSPECT_RETAINED_STATUS",
+    "runtimeAuthorityIssued": true
+  },
+  "controlFlowInference": {
+    "tokenOwnerInstallReturnedSuccessfully": true,
+    "firstGrantAndWorkerDurableReceiptsNeedReadback": true,
+    "registryNativePhaseUnknown": true,
+    "servicesMayAlreadyBeQuiesced": true,
+    "migrationsNotReachedInObservedFlow": true
+  },
+  "deviceCodeRetained": false,
+  "rawOutputRetained": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true,
+  "automaticRetry": false,
+  "targetMutationsPerformedByAgent": false
+}

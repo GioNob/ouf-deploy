@@ -1,0 +1,215 @@
+{
+  "schema": "ouf.vps-inventory-assessment.v1",
+  "date": "2026-10-14",
+  "provenance": {
+    "origin": "Operator attachment supplied in this conversation; not independently signed VPS telemetry",
+    "attachmentFileName": "Pasted text(20261014-213234).txt",
+    "attachmentSha256": "d385fe29039f043bc826712fcf58241f616fa3308a119f0f94fa86d9562a8cd0",
+    "attachmentBytes": 52156,
+    "archivedInventoryPath": "evidence/vps-inventory-20261014.json",
+    "archivedInventorySha256": "6243fd6afada80a24cb9e511479881681fb8323d2e74bd5786bf8010381017d6",
+    "transformation": "One JSON record extracted and pretty-printed without changing its values; surrounding terminal text excluded",
+    "exactCollectionTimestampAvailable": false,
+    "collectorCommit": "671cbef1f16fec195f8b0095efdf561479a117ed",
+    "collectorSha256": "7e61c2477b82411ba7cc97a4b9f5ee1556ad8453d537c51e8abb3c221fa4ec8a",
+    "publicationCredentialReview": "Metadata-only output reviewed; no raw environment, configuration scalars, APISIX plugin values, bearer or private key present"
+  },
+  "coverage": {
+    "observedAreas": 40,
+    "unavailableOrNotCollectedAreas": [
+      "containerInventory",
+      "container/ouf-gateway-control-plane",
+      "database/semantic",
+      "database/onboarding",
+      "database/ingestion",
+      "database/udp",
+      "database/mcp",
+      "iamEffectiveCatalogue",
+      "currentRuntimeAuthorityLedger",
+      "freshMcpRead"
+    ],
+    "completeEnvironmentInventory": false,
+    "allSelectedEightContainersStableDuringCollection": true,
+    "allNinetyEightContainersInventoried": false
+  },
+  "verifiedFacts": {
+    "historicalRegistryBindingEqualsCurrentCliBinding": true,
+    "registryChangedBindingFields": [],
+    "nativeRunc": {
+      "bundleProfile": "SYSTEM_CONTAINERD",
+      "idMatched": true,
+      "pidMatched": true,
+      "running": true,
+      "stableDoubleRead": true
+    },
+    "existingTeatriInput": {
+      "assetFound": true,
+      "columns": 20,
+      "contentHash": "sha256:08b20658b2b4eadf34d25cd93eead2945096b353ae33b797cf3c41df5319c9e9",
+      "ownerMatches": true,
+      "profileVersion": 1,
+      "rows": 13,
+      "sourceAlreadyBound": false
+    },
+    "activePolicyVersion": 38,
+    "effectiveOwnerPermissionsProven": false,
+    "liveGatewayRouteCount": 64,
+    "candidateModuleSourcePinsModifiedByThisAssessment": false,
+    "runningImageRevisions": {
+      "semantic": "e7bc5190f9e6afbbc4cf3c90d5d4970afbfad14b",
+      "onboarding": "6340d5bf120e09b47c32177656e2c377a4c03640",
+      "ingestion": "163c167d09b8371ff7a62ce7068e9d485b6969b7",
+      "udp": "83249a897eb4add4289b5181b3299f48ea4c0f99",
+      "mcp": "394b4b1540b575564f0ba58541df9d7efc59fb87"
+    },
+    "candidateModulePins": [
+      {
+        "module": "semantic",
+        "repository": "ouf-semantic-registry",
+        "commit": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+        "qualifiedSource": "039f044f6063bc37b4e04b189b95b0b234ae1de5",
+        "qualificationRun": 38531440033,
+        "kind": "DOCKER_SAVE"
+      },
+      {
+        "module": "onboarding",
+        "repository": "ouf-source-onboarding",
+        "commit": "84828f74ac586bae09a78f0fb197b75b1a3d98d1",
+        "qualifiedSource": "e700ef9e39b7de8396d1d704d4155649812b5643",
+        "qualificationRun": 38531978767,
+        "kind": "DOCKER_SAVE"
+      },
+      {
+        "module": "ingestion",
+        "repository": "ouf-ingestion-runtime",
+        "commit": "c48ee4b1873a474e81c6e1be70d393854021e2c1",
+        "kind": "DOCKER_SAVE",
+        "qualifiedSource": "98e33a16839e9253b37bf74f37e77cc20dc938e7",
+        "qualificationRun": 38534861649
+      },
+      {
+        "module": "udp",
+        "repository": "ouf-udp-object-resolution",
+        "commit": "b49c0d6f50c574c11684361ce4e8040e9cbddee2",
+        "kind": "DOCKER_SAVE",
+        "qualifiedSource": "d683f12d8acd30f13e1dbae0f3f47501b771a8b8"
+      },
+      {
+        "module": "mcp",
+        "repository": "ouf-mcp-server",
+        "commit": "f249b3dcc58c2a96742092d90fa09fd90b705bd0",
+        "kind": "DOCKER_SAVE",
+        "qualifiedSource": "1323f9e3fb35d96fd0ac5d1b17bcc3a80268ec64",
+        "qualificationRun": 38584106812
+      },
+      {
+        "module": "gateway",
+        "repository": "ouf-api-gateway",
+        "commit": "bf179e96200deb84942ad32507edef52a4284cd0",
+        "kind": "SOURCE_AND_ROUTE_PACKAGE",
+        "qualifiedSource": "6ac7b02507125755521b07504f26ee8f1010e53f"
+      }
+    ]
+  },
+  "diagnosis": [
+    {
+      "id": "D01",
+      "classification": "OBSERVATION_CHANNEL_MISMATCH_HYPOTHESIS",
+      "verified": "Collector uses native docker inspect with a clean environment; preparer uses Engine API v1.44; both hash full Config/HostConfig/Mounts/NetworkSettings with equivalent canonical JSON",
+      "hypothesis": "Version-dependent response fields can explain the preparation hash mismatch without a runtime change",
+      "targetCauseProven": false,
+      "closeWhen": "Read the exact same container through both channels within a stable observation window; report differing field names and hashes without exposing values; compare against the immutable historical frame",
+      "dockerPrimaryReference": "https://docs.docker.com/reference/api/engine/version-history/"
+    },
+    {
+      "id": "D02",
+      "classification": "VERIFIED_COLLECTOR_CAPACITY_LIMIT",
+      "fact": "Collector rejects more than 64 containers before summarization; Engine reports 98 total, 14 running",
+      "applicationDefectProven": false
+    },
+    {
+      "id": "D03",
+      "classification": "VERIFIED_COLLECTOR_FORMAT_LIMIT_LIVE_FIELD_UNDISCLOSED",
+      "fact": "Collector rejects quoted Flyway SCHEMA script metadata accepted by the release database planner; four Java database areas report MIGRATION_METADATA_UNSUPPORTED",
+      "exactRejectedLiveFieldProven": false,
+      "migrationFailureProven": false
+    },
+    {
+      "id": "D04",
+      "classification": "SELECTOR_FAILURE_AMBIGUOUS",
+      "fact": "MCP selector reports DB_PEER_OR_QUERY_REQUIRES_REVIEW; the collector combines hostname, port and any-query denial; the preparer accepts bounded non-identity query parameters",
+      "exactRejectedLiveSelectorConditionProven": false,
+      "databaseFailureProven": false
+    },
+    {
+      "id": "D05",
+      "classification": "IAM_READ_FAILURE_UNCLASSIFIED",
+      "fact": "NATIVE_METADATA_READ_FAILED does not discriminate cached-session expiry, authorization denial or another command failure",
+      "effectiveScopeAndGrantClosureProven": false
+    }
+  ],
+  "plannedRolloutWorkStillOpen": {
+    "newCapabilitiesAbsentFromSelectedActiveCatalogue": [
+      "ouf.managed-source.onboarding.review.prepare",
+      "ouf.managed-source.onboarding.read",
+      "ouf.semantic.proposal.read"
+    ],
+    "candidateRouteIdsAbsentFromLiveInventory": [
+      "semantic-proposal-create",
+      "semantic-proposal-validate",
+      "semantic-proposal-review",
+      "semantic-proposal-read"
+    ],
+    "absenceMeans": "Existing deployment remains old; planned publication and governance work are not target-qualified yet",
+    "humanApprovalStillRequiredForDomainTransitions": true
+  },
+  "baselineDelta": [
+    {
+      "id": "B01",
+      "status": "OPEN_VERIFIED_PREFLIGHT_DEFECT",
+      "detail": "Early check omits the full historical binding comparison used by creation(); allRequiredChecksPass does not mean complete preparation passes"
+    },
+    {
+      "id": "B02",
+      "status": "PARTIAL_CLI_DRIFT_EXCLUDED_API_CAUSE_OPEN",
+      "detail": "Historical and current full CLI bindings equal; failing API v1.44 binding not captured in this inventory"
+    },
+    {
+      "id": "B03",
+      "status": "OPEN_UNPROVEN_COMPLETE_DELIVERY"
+    },
+    {
+      "id": "B04",
+      "status": "OPEN_UNPROVEN_TARGET_MIGRATION_AND_AUTH"
+    },
+    {
+      "id": "B05",
+      "status": "OPEN_UNPROVEN_ACTUAL_CSV_ACCEPTANCE",
+      "detail": "Existing 13-row asset is observed; ACK, commit, lineage, fresh chatbot search and preservation of eight Cinema are not proven by this inventory"
+    },
+    {
+      "id": "B06",
+      "status": "OPEN_UNPROVEN_SECOND_SOURCE_REUSE"
+    }
+  ],
+  "decision": {
+    "project": "CONTINUE_BOUNDED_ANALYSIS",
+    "targetRollout": "HOLD",
+    "abandonmentJustifiedByThisInventory": false,
+    "shortDistanceToDemoProven": false,
+    "completionWithinOneMonthGuaranteed": false,
+    "nextDiscriminatingEvidence": "Reconcile exact historical/current binding through the preparer API channel, then representative complete preparation before another target rollout",
+    "stopCurrentMethodIf": "Another target run is proposed without reconciling known coverage gaps, or repeated work adds no discriminating evidence",
+    "reassessInvestmentIf": "The mandatory complete CSV path cannot be qualified under the project contracts within a bounded work cycle agreed with the owner"
+  },
+  "applicationWrites": 0,
+  "databaseMutations": 0,
+  "iamResourceMutations": 0,
+  "serviceMutations": 0,
+  "containerLifecycleOperations": 0,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}

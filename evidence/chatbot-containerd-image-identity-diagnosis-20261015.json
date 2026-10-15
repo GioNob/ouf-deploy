@@ -1,0 +1,104 @@
+{
+  "schema": "ouf.containerd-image-identity-diagnosis.v1",
+  "date": "2026-10-15",
+  "targetReadback": {
+    "source": "Operator output 09:38 Europe/Rome",
+    "authorityHash": "48c75739575b7d618484ed78184834d2d1961da97fa2870d80d14ce26fe978f4",
+    "archives": [
+      {
+        "module": "semantic",
+        "archiveBytes": 390021120,
+        "archiveAuditMatches": true,
+        "archiveAuditMismatchFields": [],
+        "tagless": true
+      },
+      {
+        "module": "udp",
+        "archiveBytes": 264632320,
+        "archiveAuditMatches": true,
+        "archiveAuditMismatchFields": [],
+        "tagless": true
+      },
+      {
+        "module": "onboarding",
+        "archiveBytes": 449361920,
+        "archiveAuditMatches": true,
+        "archiveAuditMismatchFields": [],
+        "tagless": true
+      },
+      {
+        "module": "ingestion",
+        "archiveBytes": 284129280,
+        "archiveAuditMatches": true,
+        "archiveAuditMismatchFields": [],
+        "tagless": true
+      },
+      {
+        "module": "mcp",
+        "archiveBytes": 22917120,
+        "archiveAuditMatches": true,
+        "archiveAuditMismatchFields": [],
+        "tagless": true
+      }
+    ],
+    "semanticJournal": "IN_FLIGHT",
+    "otherFourJournals": "READY",
+    "expectedImageGets": "All five HTTP 404",
+    "laterStageRecoveryJournalsPresent": false,
+    "targetCandidateIdentityReadPending": true
+  },
+  "reproduction": {
+    "commit": "7464582615d285999a56518c355ed6cbf5e81f74",
+    "branch": "codex/published-tagless-import-20261015",
+    "runId": 38700933784,
+    "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38700933784",
+    "artifactId": 11907831957,
+    "producerRunId": 38584614991,
+    "sourceCommit": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+    "archiveSha256": "9f1961025f0e55d7a12e7f3f6df5c5fe0980ff4cad730086262bedecdaf6a357",
+    "archiveBytes": 390021120,
+    "classic": {
+      "jobId": 116308656259,
+      "serverVersion": "28.0.4",
+      "driver": "overlay2",
+      "result": "PASS",
+      "loadExitCode": 0,
+      "imageId": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489"
+    },
+    "containerd": {
+      "jobId": 116308655931,
+      "serverVersion": "28.0.4",
+      "driver": "overlayfs",
+      "result": "REPRODUCED_FAILURE",
+      "loadExitCode": 0,
+      "imageId": "sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3",
+      "expectedConfigIdGetStatus": 404,
+      "reason": "IMPORT_ABSENCE_DOES_NOT_PROVE_NO_EFFECT",
+      "journal": "IN_FLIGHT",
+      "effectAttemptCount": 1,
+      "rootfsMatches": true,
+      "fullNativeConfigEqualsArchiveConfig": false,
+      "reportArtifactId": 11956152525
+    },
+    "targetServerVersion": "29.8.1",
+    "exactTargetEngineVersionReproduced": false,
+    "applicationImageStarted": false,
+    "targetMutations": 0
+  },
+  "finding": "Current code treats the published configuration digest as the Engine image identity. The exact tagless archive loads successfully under the containerd store with a different native ID, then its original-ID GET is 404 and Import.verify raises the same plain ValueError class. Target native-ID correspondence still requires readback; no assertion bypass or replay is authorized.",
+  "qualificationGap": "Existing native imports used tiny fixtures; exact published-image test loaded the original archive. Neither qualified this exact derived tagless archive under containerd.",
+  "next": {
+    "script": "scripts/read-chatbot-native-image-identity-20261015.py",
+    "sha256": "cc9aa1b3bc2cda61ce476f7de0a7483b53efcd00028c78372b025ef6be3ee075",
+    "requests": "At most five label-filter image lists and two stable GETs per candidate; 12 candidates maximum.",
+    "localTests": 10,
+    "passed": 10,
+    "nativeTransportLocallyMocked": true,
+    "imageImportRequests": 0,
+    "authorityRenewed": false
+  },
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "productFixImplemented": false,
+  "oldExecuteCommandSuspended": true
+}

@@ -1,0 +1,115 @@
+{
+  "schema": "ouf.chatbot-postgrant-continuation-qualification.v1",
+  "date": "2026-10-15",
+  "status": "NATIVE_QUALIFIED_TARGET_PREFLIGHT_AND_FRESH_HUMAN_ACTION_REQUIRED",
+  "sourceCommit": "0525c4186a5613000905ba4dfae6766827ad9f06",
+  "sourceBranch": "codex/retained-inspection-channel-20261015",
+  "pr": 31,
+  "prDraft": true,
+  "prMerged": false,
+  "capsuleSha256": "c228da198b608f6bf8461bf73dfc283c59334aaa80b2f0308be09c010df43fce",
+  "capsuleFiles": 115,
+  "launcherSha256": "788b7381ab642effce7786b0ca5b07a575cc01069df51c7e13c584ddf18fbce3",
+  "targetReaderSha256": "f4e71357305f6827eac16a931b1ea23dbc85e3a5f135af4fc0b42cf09eed600b",
+  "predecessorAuthorityHash": "7db9ea82ed6fbbdc88cfdbd8e7315404e6c958e841731d1d12b22482f8fa8f30",
+  "predecessorTransitionHash": "bfabae1561e4f906f23afe0c2e71d8f240774a38b9ac8b08c9ed43e4b5e1ecfb",
+  "createdContainerId": "790c62742c92eabc095d4ab22f2070e0c40a41e4a219685a7d8120e4661e4e5d",
+  "controlledGrantAttemptsRetained": 1,
+  "newFirstGrantAttemptsAllowed": 0,
+  "maximumNewWorkerGrantAttempts": 128,
+  "maximumActionSeconds": 3600,
+  "automaticRenewal": false,
+  "oldJournalWritesAllowed": false,
+  "credentialRotationAllowed": false,
+  "containerCreationReplayAllowed": false,
+  "dbBackupReplayAllowed": false,
+  "independentOwnerModuleRestoredGitBlob": "150c4bc41dde51c1b59b948bfba662fb69433da2",
+  "qualification": [
+    {
+      "name": "nativeCohort",
+      "runId": 38765374763,
+      "jobId": 116527070864,
+      "tests": 319,
+      "suites": 42,
+      "status": "PASS",
+      "skipped": 0
+    },
+    {
+      "name": "docker29",
+      "runId": 38765374706,
+      "jobId": 116527070593,
+      "tests": 25,
+      "suites": 4,
+      "status": "PASS",
+      "skipped": 0
+    },
+    {
+      "name": "independentOwnerInstaller",
+      "runId": 38765374890,
+      "jobId": 116527071658,
+      "tests": 70,
+      "suites": 8,
+      "status": "PASS",
+      "skipped": 0
+    },
+    {
+      "name": "onlineIam",
+      "runId": 38765374883,
+      "jobId": 116527071544,
+      "tests": 237,
+      "suites": 31,
+      "status": "PASS",
+      "skipped": 0
+    },
+    {
+      "name": "humanAuthority",
+      "runId": 38765374785,
+      "jobId": 116527071087,
+      "tests": 66,
+      "suites": 9,
+      "status": "PASS",
+      "skipped": 0
+    },
+    {
+      "name": "legacyRetirement",
+      "runId": 38765374829,
+      "jobId": 116527071516,
+      "tests": 44,
+      "suites": 4,
+      "status": "PASS",
+      "skipped": 0
+    }
+  ],
+  "dockerServer": "29.8.1",
+  "driver": "overlayfs",
+  "cgroupDriver": "systemd",
+  "knownLimits": [
+    "Target state has not been reread from this workspace; the launcher must independently prove current retained state before IAM login.",
+    "Native Docker fixture uses a static HTTP application, not the qualified Spring cohort.",
+    "Actual target OCI admission, migrations, application health and CSV acceptance remain unproven.",
+    "A new exact terminal HUMAN decision is necessary; previous approval is not reused.",
+    "This is a finite acceptance window, not permanent runtime acceptance."
+  ],
+  "targetMutationsFromThisWorkspace": 0,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true,
+  "operatorWrapperSha256": "a0e3653a43c7bf9be1f0ccd886144f5f6036065ada1106cc954ffc2b0505017d",
+  "previousCandidate": {
+    "sourceCommit": "2a122f1144579fe03d57c14e35452a8fbf6e0547",
+    "targetResult": "PRIVATE_SNAPSHOT_CUSTODY_UNPROVEN",
+    "phase": "POSTGRANT_RETAINED_HISTORY_PREFLIGHT",
+    "runtimeAuthorityIssued": false,
+    "qualificationGap": "The complete compiler bundle was not fed through the retained-history snapshot reader."
+  },
+  "snapshotReaderCorrection": {
+    "callerBoundBytes": 8388608,
+    "independentIamSnapshotBoundBytes": 524288,
+    "completeCompilerBundleRegression": "RED_BEFORE_GREEN_AFTER",
+    "additionalReaderRegressions": 7,
+    "custodyChecksPreserved": true,
+    "safeCodeLocationsOnIntakeFailure": true
+  },
+  "qualificationVerifiedAt": "2026-10-15T16:08:55.928701+00:00"
+}

@@ -1,0 +1,64 @@
+{
+  "schema": "ouf.chatbot-paused-node-failed-successor-evidence.v1",
+  "date": "2026-10-15",
+  "sourceCommit": "0525c4186a5613000905ba4dfae6766827ad9f06",
+  "reviewHash": "892cc1048a526d0e4705a58ce91a9b5a3f6712796d64fb98b619d8ad397bfc8f",
+  "authorityHash": "fa7bdc08f0c0ea048b064774648176cf54ce51279118ce1df0ff296fc8616d3b",
+  "context": "/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-6876e1b33e42a03b673d68f2acbb1f80dcf0cbb9bc50d8f945099f8535d86ad3",
+  "reportedPhase": "PAUSED_REQUIRES_RECONCILIATION",
+  "reportedReason": "ValueError",
+  "reportedLastFunction": {
+    "module": "file_only_node_owner",
+    "function": "resolve",
+    "line": 154
+  },
+  "reportedRuntimeAuthorityIssued": true,
+  "orderedProgressInferredFromExecutingSource": [
+    "CREATE_REPLACEMENT reconciled",
+    "STAGE_PAUSED_REPLACEMENT completed",
+    "ATTEST_NEW_OCI_PEER entered; observation raised"
+  ],
+  "currentNativeStateReread": true,
+  "newWorkerGrantCountKnown": true,
+  "underlyingFailedConditionKnown": false,
+  "readerSha256": "72993b9f2a8f47274a945d6d9da761cd2a261c97745cceaf61b334e054ca5b7b",
+  "readerTests": {
+    "tests": 11,
+    "skipped": 0,
+    "result": "PASS",
+    "location": "local isolated Python, disposable fixtures; includes two complete reader entrypoint cases"
+  },
+  "readerOperations": {
+    "engineMethod": "GET",
+    "engineContainer": "790c62742c92eabc095d4ab22f2070e0c40a41e4a219685a7d8120e4661e4e5d",
+    "engineGetMaximum": 2,
+    "nativeReads": [
+      "systemctl show fixed unit",
+      "runc state exact container",
+      "nsenter ip -j addr show",
+      "ip -j link show dev observed host veth"
+    ],
+    "pureCompilerFromRetainedSources": true,
+    "credentialOrTokenFilesRead": false,
+    "databaseCalls": 0,
+    "grantRequests": 0,
+    "serviceMutations": 0,
+    "oldJournalWrites": 0,
+    "authorityIssued": false
+  },
+  "readerLimits": [
+    "This projects current records and selected native observations, not the complete original exception traceback.",
+    "Network compiler functions are the exact verified source bodies; their diagnostic exception class has no authority.",
+    "Rootfs seal and private file-content frame checks are not rerun.",
+    "Passing this diagnostic does not prove full attestation, application readiness or CSV end-to-end.",
+    "The first target readback stopped with TypeError: reserved output fields were duplicated. The replacement fixes both collisions and reports redacted OCI differences."
+  ],
+  "automaticRetry": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true,
+  "currentReadbackComplete": false,
+  "controlledCumulativeGrantAttempts": 2,
+  "observedFramePolicyExactOciMatches": false,
+  "originalDiagnosticDefectReproduced": true
+}

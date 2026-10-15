@@ -1,0 +1,72 @@
+{
+  "schema": "ouf.file-only-frame-gate-fix-qualification.v1",
+  "date": "2026-10-15",
+  "sourceCommit": "951f91c8df3d252c720ffa4f0fc787ff90d91b9e",
+  "pr": 31,
+  "status": "CI_QUALIFIED_TARGET_REVIEW_PENDING",
+  "localBeforeFix": {
+    "test": "test_complete_creation_to_frame_preserves_exact_deferred_runtime_gate",
+    "result": "UNRESOLVED_TEMPLATE_SLOT",
+    "privateTargetValuesRequired": false
+  },
+  "native": {
+    "runId": 38685001075,
+    "jobId": 116257719205,
+    "conclusion": "success",
+    "tests": 200,
+    "suites": 26,
+    "skips": 0,
+    "failedSuites": 0
+  },
+  "realImage": {
+    "runId": 38684997298,
+    "jobId": 116257708073,
+    "conclusion": "success",
+    "artifactId": 11907831957,
+    "producerRunId": 38584614991,
+    "imageId": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489",
+    "creationToFramePolicyCompiled": true,
+    "exactRuntimeGatePreserved": true,
+    "expectedHistoricalEnvironmentNameCounts": {
+      "creation": 31,
+      "native": 19
+    },
+    "fixtureValues": "DISPOSABLE_AND_PUBLIC_SOURCE_DERIVED_NOT_TARGET_VALUES",
+    "dockerLayoutProfiles": [
+      "SYSTEM_CONTAINERD",
+      "VAR_RUN_ALIAS"
+    ],
+    "contextIdentities": "VALIDATION_ONLY_DISCARDED_NOT_TARGET_OBSERVATIONS",
+    "defaultJavaTlsToPublicKeycloakDiscovery": "PASS",
+    "targetTlsFromActualNamespaceProven": false
+  },
+  "negativeCases": [
+    "unresolvedEnvironmentValue",
+    "unresolvedRestoredDirectorySource",
+    "runtimeGateVariableInAnnotations",
+    "modifiedLaunchGateCommand",
+    "mismatchedOciGateCommand"
+  ],
+  "humanVerifier": {
+    "runId": 38685001079,
+    "conclusion": "success"
+  },
+  "changedPreparationCapsuleSources": [
+    "tools/semantic_frame_compiler/compile_file_only_frame_policy.py"
+  ],
+  "genericCompilerChanged": false,
+  "runtimeGateCommandChanged": false,
+  "applicationPinsChanged": false,
+  "packageChanged": false,
+  "capsuleSha256": "e2d2ff9ce2dec348754edf977f911aac987a1d22723368571b26586870d50736",
+  "launcherSha256": "596bd594af24775ed5b9107199bb781893391c543624728f820bc4395581e084",
+  "wrapperSha256": "d10694b46d642cf11a2804f618b5124e2c4749e4d84f71f5f0274dbdcdf004e2",
+  "targetServiceMutations": 0,
+  "targetDatabaseMutations": 0,
+  "completeTargetPreparationProven": false,
+  "chatbotEndToEndProven": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "budgetReset": false,
+  "notReleaseAcceptance": true
+}

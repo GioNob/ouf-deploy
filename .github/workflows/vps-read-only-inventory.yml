@@ -1,0 +1,25 @@
+name: VPS read-only inventory qualification
+on:
+  push:
+    paths: ['scripts/collect-vps-inventory.py', 'tests/test_vps_inventory*.py', '.github/workflows/vps-read-only-inventory.yml']
+  pull_request:
+    paths: ['scripts/collect-vps-inventory.py', 'tests/test_vps_inventory*.py', '.github/workflows/vps-read-only-inventory.yml']
+permissions: {contents: read}
+jobs:
+  redaction-and-real-database:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env: {POSTGRES_USER: bootstrap, POSTGRES_DB: inventory_test, POSTGRES_HOST_AUTH_METHOD: trust}
+        options: --health-cmd "pg_isready -U bootstrap -d inventory_test" --health-interval 5s --health-timeout 5s --health-retries 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Redaction, CLI/API gate counterexamples, 98-container batching and actual Unix GET
+        run: python3 -I -B -m unittest discover -s tests -p test_vps_inventory.py -v
+      - name: Actual Docker API 1.44 and five PostgreSQL histories preserve rows and roles
+        env:
+          OUF_INVENTORY_PG_CID: ${{ job.services.postgres.id }}
+        run: sudo env OUF_INVENTORY_PG_CID="$OUF_INVENTORY_PG_CID" python3 -I -B -m unittest discover -s tests -p test_vps_inventory_native.py -v

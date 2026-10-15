@@ -1,0 +1,1517 @@
+{
+  "applicationWrites": 0,
+  "areas": {
+    "container/ouf-gateway-control-plane": {
+      "facts": {
+        "classification": "UNCLASSIFIED_COMMAND_FAILURE",
+        "exitCode": 1,
+        "rawDiagnosticPrinted": false
+      },
+      "reason": "NATIVE_METADATA_READ_FAILED",
+      "status": "UNAVAILABLE"
+    },
+    "containerInventory": {
+      "data": {
+        "deepInspectionScope": [
+          "ouf-semantic",
+          "ouf-onboarding",
+          "ouf-ingestion",
+          "ouf-udp",
+          "ouf-mcp",
+          "ouf-postgres",
+          "ouf-keycloak",
+          "ouf-apisix",
+          "ouf-gateway-control-plane"
+        ],
+        "inspectBatchSize": 16,
+        "maximumContainers": 512,
+        "otherContainerCount": 0,
+        "otherNamesDisclosed": false,
+        "oufContainerCount": 98,
+        "selectedOwnerContainers": {
+          "ouf-apisix": {
+            "binding": {
+              "configHash": "b6c84a4f0da6a6d96a3977e525d50bb4e024223aa968bd2a15161fcd849201d1",
+              "containerId": "dcbe26bed97dd5c7ac8a131ec2badf77b0291c2ef32907be639bfa09c36596d9",
+              "hostConfigHash": "4ae4ad615fd72a83a6ef605440962b698741b477e775f9ffff0c454efeae168e",
+              "imageId": "sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d",
+              "mountsHash": "67343f16b2dcd4e425465e211a51ed65253af85fd773bff19689f42423501c56",
+              "networkSettingsHash": "2e50101cb26b53c2f39f6575f4c20b1a4ad173624d894399869f931ff9e74a04",
+              "pid": 3759363,
+              "startedAt": "2026-10-02T10:01:40.539748629Z"
+            },
+            "environmentCount": 8,
+            "imageRevision": null,
+            "mountCount": 1,
+            "networkCount": 2,
+            "paused": false,
+            "restartPolicy": {
+              "MaximumRetryCount": 0,
+              "Name": "unless-stopped"
+            },
+            "running": true,
+            "springExternalConfigChannels": [],
+            "status": "running",
+            "userConfigured": true
+          },
+          "ouf-ingestion": {
+            "binding": {
+              "configHash": "8c0a3d6aee58b7e92fd3e79190e03a6a6dbc5ea42d5b408461b1dd3aa41e4812",
+              "containerId": "1fa5450574e72ef15ebb2c74e0f421f04d24c842975e324ac958f071672fbb7e",
+              "hostConfigHash": "59c3436348b8e55548ae86e9a769a0aabad44fc1f2defe47c2e3f09e03081ffc",
+              "imageId": "sha256:b07a4a786ca48335feae887e18dc7c4c6cdd9bd0a3a255f83d18c7c1616eec48",
+              "mountsHash": "0505e054ff2c332f9308eac9f958c18ddb57210833efa531bddcc904629904a5",
+              "networkSettingsHash": "f10b3e2aa9bbdc0c7660cbb4297cd731b1c4012bef16cc9707335a5f4adb6d16",
+              "pid": 3328741,
+              "startedAt": "2026-10-01T02:55:00.190888171Z"
+            },
+            "environmentCount": 8,
+            "imageRevision": "163c167d09b8371ff7a62ce7068e9d485b6969b7",
+            "mountCount": 3,
+            "networkCount": 1,
+            "paused": false,
+            "restartPolicy": {
+              "MaximumRetryCount": 0,
+              "Name": "unless-stopped"
+            },
+            "running": true,
+            "springExternalConfigChannels": [
+              "SPRING_CONFIG_ADDITIONAL_LOCATION"
+            ],
+            "status": "running",
+            "userConfigured": true
+          },
+          "ouf-keycloak": {
+            "binding": {
+              "configHash": "6c42e578fb3a18cba8c0c02c72fac41f0202d7878f225b188752e6ba2a7cbbf0",
+              "containerId": "5c3967a7a0cf1a054ba1fec702ddc0b97cf96d1e45bd45d45d27b393f6a1f273",
+              "hostConfigHash": "172f9911d995bf8f4e5e5282a82b88f921d41f4320fc04945f25455e77a122f7",
+              "imageId": "sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+              "mountsHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "networkSettingsHash": "cecbfded8d00739119fb4c9b9bd5251c040d950060954e22f9c7edf1b1cf03c1",
+              "pid": 11448,
+              "startedAt": "2026-09-17T16:44:15.133886659Z"
+            },
+            "environmentCount": 9,
+            "imageRevision": "df15afa5a3a8a2b10021f879ffa93b30fb36c73a",
+            "mountCount": 0,
+            "networkCount": 1,
+            "paused": false,
+            "restartPolicy": {
+              "MaximumRetryCount": 0,
+              "Name": "unless-stopped"
+            },
+            "running": true,
+            "springExternalConfigChannels": [],
+            "status": "running",
+            "userConfigured": true
+          },
+          "ouf-mcp": {
+            "binding": {
+              "configHash": "8b8021a2bce84526c056f844d564ca74f6e6438cff23a96bda5126f5c7a4e592",
+              "containerId": "ddbfc944d2b7f431cb0189ced278c049b3360a077e9c4b75fa36c58a3a0f127a",
+              "hostConfigHash": "db26ffed2cf5f1ba8309c9c4f37ee2a0cdbf2155c2ef10c22c69e3a50bd99d7d",
+              "imageId": "sha256:99a158f780243b3fa05199bed9db01197be8ae60ae1e75ad5432964509422872",
+              "mountsHash": "0a94db91b3a8ca96261fa9c41fdc066ce34acad5445853698a669f2011a76592",
+              "networkSettingsHash": "a85d46f9caca13de7c092e47252f8ec4fb8d4b23e22dfd25a90b474f74ac0d8c",
+              "pid": 3776618,
+              "startedAt": "2026-10-02T11:03:59.721933008Z"
+            },
+            "environmentCount": 11,
+            "imageRevision": "394b4b1540b575564f0ba58541df9d7efc59fb87",
+            "mountCount": 2,
+            "networkCount": 1,
+            "paused": false,
+            "restartPolicy": {
+              "MaximumRetryCount": 0,
+              "Name": "unless-stopped"
+            },
+            "running": true,
+            "springExternalConfigChannels": [],
+            "status": "running",
+            "userConfigured": true
+          },
+          "ouf-onboarding": {
+            "binding": {
+              "configHash": "3852c9cb19e477c90151d84c8642d3905eaf2caf7a94bdf4379aebe8bdda9441",
+              "containerId": "9a72c87387ee416670c2ed699f0b555cd7a83adbeda10a4c390db0328e991073",
+              "hostConfigHash": "8ed9299cfe671197aca65cd6c83b3eb645f9b2fe2e478ee79352f13ffb735b67",
+              "imageId": "sha256:ec6f2a962261a8433bfe103347afa2202837fcec90d210d9b5232711b854ee8a",
+              "mountsHash": "831a67eb22989130c63d836388f2509b6d3924dd04f8feef3dfab1b040d54763",
+              "networkSettingsHash": "4c71b54c84024bb03257bd8506417c882721a7cb90fb4427f3cc5f34f57aedee",
+              "pid": 3139923,
+              "startedAt": "2026-09-30T14:42:14.296301773Z"
+            },
+            "environmentCount": 24,
+            "imageRevision": "6340d5bf120e09b47c32177656e2c377a4c03640",
+            "mountCount": 6,
+            "networkCount": 1,
+            "paused": false,
+            "restartPolicy": {
+              "MaximumRetryCount": 0,
+              "Name": "unless-stopped"
+            },
+            "running": true,
+            "springExternalConfigChannels": [
+              "SPRING_CONFIG_ADDITIONAL_LOCATION",
+              "SPRING_APPLICATION_JSON"
+            ],
+            "status": "running",
+            "userConfigured": true
+          },
+          "ouf-postgres": {
+            "binding": {
+              "configHash": "56d97df50b885229256c05f4b8d22b6a6965c9b98b62f44ec97b02f8f837c46b",
+              "containerId": "50b36d71620ad00fee1bae45aaf0bf652b9171dc09f567fa552798daf12614ea",
+              "hostConfigHash": "6eec55990cddb78d8b73aecd0d8f6ccb413ec217d55a3c684e577fb9daa9260d",
+              "imageId": "sha256:894f570c0cf0664ed5576a8fd5d5bfb8fb1b19d592885b686c3a88c8bd90c41f",
+              "mountsHash": "48a6e02cfdcd6c3d73358ccd61a11f0ed46c659c8d0aca5dc3d236d427ccd156",
+              "networkSettingsHash": "836d938a0db748e0ee147e2ebfd988f61b341852d9b6bab111905c2eeca0d793",
+              "pid": 10948,
+              "startedAt": "2026-09-17T16:38:23.262232373Z"
+            },
+            "environmentCount": 13,
+            "imageRevision": null,
+            "mountCount": 2,
+            "networkCount": 1,
+            "paused": false,
+            "restartPolicy": {
+              "MaximumRetryCount": 0,
+              "Name": "unless-stopped"
+            },
+            "running": true,
+            "springExternalConfigChannels": [],
+            "status": "running",
+            "userConfigured": false
+          },
+          "ouf-semantic": {
+            "binding": {
+              "configHash": "097ded59f89cd745ffbfbbbe466bdf64c54a788ab911ea41632b97df0cbea084",
+              "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+              "hostConfigHash": "0f09a1304fc4b3fb8c503afc23d16159c690296c88264f932d1aa411160c310e",
+              "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+              "mountsHash": "4bf1ed4e0c4a4a2b201369905be4d8919edafffc881518d492c0cb83154b0d89",
+              "networkSettingsHash": "1528caf335bfa9411e15afcdab1388b735ee639e86e4b525c45734eb9bb0d8bc",
+              "pid": 3789123,
+              "startedAt": "2026-10-02T11:45:44.132808507Z"
+            },
+            "environmentCount": 19,
+            "imageRevision": "e7bc5190f9e6afbbc4cf3c90d5d4970afbfad14b",
+            "mountCount": 2,
+            "networkCount": 1,
+            "paused": false,
+            "restartPolicy": {
+              "MaximumRetryCount": 0,
+              "Name": "unless-stopped"
+            },
+            "running": true,
+            "springExternalConfigChannels": [],
+            "status": "running",
+            "userConfigured": true
+          },
+          "ouf-udp": {
+            "binding": {
+              "configHash": "4848fd6c2197fdbdc50c468e502f5aa1e09e1c67fde3678515e689b3cf728c57",
+              "containerId": "6552bf974c4d06619e53e056d768ffd32ec47c5e77421aed635ea6ddecf5d240",
+              "hostConfigHash": "4e01bf742319112de0c5b9df1483503898a7a7c514a2488fdb4a16935238488a",
+              "imageId": "sha256:5e048a859716d6674355e72238f03f899abd705a943ceadbdc5c8863d28f4e9f",
+              "mountsHash": "22f9f62595ea405affc9aaa7a2d6c10f3ebb1da1ff47f779f7e20bfe31d194af",
+              "networkSettingsHash": "d1193dc7bc8b08d1e7f4578b49c1ef11124d39f993da5568d6f9acedd49a374d",
+              "pid": 3509231,
+              "startedAt": "2026-10-01T15:36:32.767844165Z"
+            },
+            "environmentCount": 36,
+            "imageRevision": "83249a897eb4add4289b5181b3299f48ea4c0f99",
+            "mountCount": 2,
+            "networkCount": 1,
+            "paused": false,
+            "restartPolicy": {
+              "MaximumRetryCount": 0,
+              "Name": "unless-stopped"
+            },
+            "running": true,
+            "springExternalConfigChannels": [],
+            "status": "running",
+            "userConfigured": true
+          }
+        },
+        "totalContainerCount": 98
+      },
+      "status": "OBSERVED"
+    },
+    "coordinationIntake": {
+      "data": {
+        "expectedHashMatched": true,
+        "metadata": {
+          "bytes": 11474,
+          "gid": 0,
+          "mode": "0o600",
+          "sha256": "395c92d7bcb8dadfa3bb248a3e94b37bd36a396cc07c16ee5d1d57a646e00239",
+          "uid": 0
+        }
+      },
+      "status": "OBSERVED"
+    },
+    "currentRuntimeAuthorityLedger": {
+      "reason": "EXACT_CURRENT_LEDGER_SELECTION_REQUIRED",
+      "status": "NOT_COLLECTED"
+    },
+    "database/ingestion": {
+      "data": {
+        "administration": {
+          "postgresRoleExists": false,
+          "roleExists": true,
+          "superuser": true
+        },
+        "effectiveExternalOverridesValidated": false,
+        "historyHash": "fd03f7e534a3694906d7721cfa85feadbe603eef918db1919981530aa1ad559c",
+        "identity": {
+          "allowConnections": true,
+          "oid": 21554,
+          "prepared": 0,
+          "serverVersion": 170011
+        },
+        "migrationCount": 15,
+        "migrations": [
+          {
+            "checksum": null,
+            "script": "\"ouf_ingestion\"",
+            "success": true,
+            "type": "SCHEMA",
+            "version": null
+          },
+          {
+            "checksum": 28809713,
+            "script": "V1__ingestion_runtime_core.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "1"
+          },
+          {
+            "checksum": -1190230229,
+            "script": "V2__durable_ack_and_replay.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "2"
+          },
+          {
+            "checksum": 1677862093,
+            "script": "V3__trusted_operations.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "3"
+          },
+          {
+            "checksum": 960152441,
+            "script": "V4__scheduler_and_source_health.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "4"
+          },
+          {
+            "checksum": -2033393121,
+            "script": "V5__replay_execution_lifecycle.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "5"
+          },
+          {
+            "checksum": -2023917644,
+            "script": "V6__protected_operational_log.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "6"
+          },
+          {
+            "checksum": -848911848,
+            "script": "V7__execution_worker_and_snapshot.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "7"
+          },
+          {
+            "checksum": -61585214,
+            "script": "V8__schema_surveillance.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "8"
+          },
+          {
+            "checksum": -1413097987,
+            "script": "V9__runtime_issue_governance.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "9"
+          },
+          {
+            "checksum": 1627974653,
+            "script": "V10__quarantine_lifecycle.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "10"
+          },
+          {
+            "checksum": -1835304128,
+            "script": "V11__classified_source_resilience.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "11"
+          },
+          {
+            "checksum": -1198212964,
+            "script": "V12__governed_lifecycle_and_historical_replay.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "12"
+          },
+          {
+            "checksum": 1850262212,
+            "script": "V13__pressure_admission_retry_budget.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "13"
+          },
+          {
+            "checksum": -1324686996,
+            "script": "V14__published_activation_schedule.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "14"
+          }
+        ],
+        "rowValuesRead": false,
+        "selectorSource": "CONTAINER_ENV_BASELINE",
+        "transactionReadOnly": true
+      },
+      "status": "OBSERVED"
+    },
+    "database/mcp": {
+      "data": {
+        "administration": {
+          "incident": {
+            "aclHash": "bf37ee1ad00599f2c57ed62a4d217294",
+            "exists": true,
+            "oid": 26036,
+            "ownerHash": "839b86ebc250cb5c6f4a2cb39968ea07",
+            "workloadOwnerAuthority": false,
+            "workloadTrigger": false
+          },
+          "postgresRoleExists": false,
+          "roleExists": true,
+          "superuser": true
+        },
+        "effectiveExternalOverridesValidated": false,
+        "historyHash": "12150c8f4735f9bf41d87978a168ae0e8328674adb54b856f7e83bac216f5c14",
+        "identity": {
+          "allowConnections": true,
+          "oid": 21560,
+          "prepared": 0,
+          "serverVersion": 170011
+        },
+        "migrationCount": 9,
+        "migrations": [
+          {
+            "checksum": "a70a2389352f5f8387f96b6051becf97f64f1e922aba9c353545449e0fa0b225",
+            "version": 1
+          },
+          {
+            "checksum": "138614ca67d9365e7525c0d56313ab1514e3ea9f1fe32b5095a3d85e3ecbb74d",
+            "version": 2
+          },
+          {
+            "checksum": "044d5d6fe3fdd5f77179a4f677885aa3ca4f72ca1bc52f6f10c44b57306bfb3e",
+            "version": 3
+          },
+          {
+            "checksum": "9bae68eb83dabf8bd80fcfdf38189c54cced1228b3b22a7128c4c5cda3b7c72c",
+            "version": 4
+          },
+          {
+            "checksum": "3dc65eeee6668444e77e3a08982a71a1412fda53c3e8b90cbddd7d6959e5ad54",
+            "version": 5
+          },
+          {
+            "checksum": "8973286df97ef30dd7281dfaf5bfb251ca078d4a2862de235b6988bc5e5eb375",
+            "version": 6
+          },
+          {
+            "checksum": "ad1e6b93b10ae2b6e407015f4bfb5026f2cd633a8565d30584fddd98e274f174",
+            "version": 7
+          },
+          {
+            "checksum": "2e279669f11a1b4949c93e17522d127003aa7c3f54cd2af0461500676f2bef28",
+            "version": 8
+          },
+          {
+            "checksum": "798ec17290d8952a6824871739d4b352bc3984f4e600fda9c704d6784d704dd2",
+            "version": 9
+          }
+        ],
+        "rowValuesRead": false,
+        "selectorSource": "CONTAINER_ENV_BASELINE",
+        "transactionReadOnly": true
+      },
+      "status": "OBSERVED"
+    },
+    "database/onboarding": {
+      "data": {
+        "administration": {
+          "postgresRoleExists": false,
+          "roleExists": true,
+          "superuser": true
+        },
+        "effectiveExternalOverridesValidated": false,
+        "historyHash": "ee2c157738239731173b82095ce4dd6e7d73733b63981f42f904193572348d2b",
+        "identity": {
+          "allowConnections": true,
+          "oid": 21552,
+          "prepared": 0,
+          "serverVersion": 170011
+        },
+        "migrationCount": 32,
+        "migrations": [
+          {
+            "checksum": null,
+            "script": "\"ouf_onboarding\"",
+            "success": true,
+            "type": "SCHEMA",
+            "version": null
+          },
+          {
+            "checksum": -1741592109,
+            "script": "V1__onboarding_core.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "1"
+          },
+          {
+            "checksum": 996844401,
+            "script": "V2__validation_engine.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "2"
+          },
+          {
+            "checksum": 1600844784,
+            "script": "V3__technical_discovery.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "3"
+          },
+          {
+            "checksum": -627733179,
+            "script": "V4__mapping_workspace.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "4"
+          },
+          {
+            "checksum": 883882247,
+            "script": "V5__managed_file_profiles.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "5"
+          },
+          {
+            "checksum": 1919593374,
+            "script": "V6__initial_ingestion_and_pull_scheduler.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "6"
+          },
+          {
+            "checksum": -863387440,
+            "script": "V7__restore_onboarding_boundary.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "7"
+          },
+          {
+            "checksum": 2130713047,
+            "script": "V8__managed_file_preview.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "8"
+          },
+          {
+            "checksum": 2082508972,
+            "script": "V9__managed_file_contract_hardening.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "9"
+          },
+          {
+            "checksum": 916454338,
+            "script": "V10__runtime_projection_schema_surveillance.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "10"
+          },
+          {
+            "checksum": 1448252072,
+            "script": "V11__trusted_human_protected_operations.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "11"
+          },
+          {
+            "checksum": 1957263982,
+            "script": "V12__semantic_gap_workflow.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "12"
+          },
+          {
+            "checksum": 1803913999,
+            "script": "V13__managed_file_quarantine.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "13"
+          },
+          {
+            "checksum": 1927372170,
+            "script": "V14__schema_mapping_governance.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "14"
+          },
+          {
+            "checksum": -1102892978,
+            "script": "V15__authorization_policy_registry.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "15"
+          },
+          {
+            "checksum": 417342666,
+            "script": "V16__authorization_admin_lifecycle.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "16"
+          },
+          {
+            "checksum": 1006288422,
+            "script": "V17__geopackage_profiles.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "17"
+          },
+          {
+            "checksum": 1911583384,
+            "script": "V18__access_profiles.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "18"
+          },
+          {
+            "checksum": -995714641,
+            "script": "V19__access_semantic_proposals.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "19"
+          },
+          {
+            "checksum": 796262715,
+            "script": "V20__authorization_bootstrap_latch.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "20"
+          },
+          {
+            "checksum": -842052288,
+            "script": "V21__installation_configuration_lifecycle.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "21"
+          },
+          {
+            "checksum": 254732051,
+            "script": "V22__installation_environment_validation.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "22"
+          },
+          {
+            "checksum": 1035570649,
+            "script": "V23__installation_projection_export_audit.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "23"
+          },
+          {
+            "checksum": -1953198277,
+            "script": "V24__installation_environment_validation_correlation.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "24"
+          },
+          {
+            "checksum": -1257671603,
+            "script": "V25__candidate_installation_projection_export.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "25"
+          },
+          {
+            "checksum": -787996211,
+            "script": "V26__protected_superadmin_role.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "26"
+          },
+          {
+            "checksum": 62111128,
+            "script": "V27__authorization_permission_proposals.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "27"
+          },
+          {
+            "checksum": -742084940,
+            "script": "V28__nominal_superadmin.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "28"
+          },
+          {
+            "checksum": -658740420,
+            "script": "V29__ouf_role_catalogue.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "29"
+          },
+          {
+            "checksum": 367514504,
+            "script": "V30__managed_file_onboarding_idempotency.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "30"
+          },
+          {
+            "checksum": -1872920549,
+            "script": "V31__managed_file_upload_idempotency.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "31"
+          }
+        ],
+        "rowValuesRead": false,
+        "selectorSource": "CONTAINER_ENV_BASELINE",
+        "transactionReadOnly": true
+      },
+      "status": "OBSERVED"
+    },
+    "database/semantic": {
+      "data": {
+        "administration": {
+          "postgresRoleExists": false,
+          "roleExists": true,
+          "superuser": true
+        },
+        "effectiveExternalOverridesValidated": false,
+        "historyHash": "ca7c29e71d7eae6b0803ba01b6633697120001e95b3dcee6484cd4aaaa97a176",
+        "identity": {
+          "allowConnections": true,
+          "oid": 21558,
+          "prepared": 0,
+          "serverVersion": 170011
+        },
+        "migrationCount": 10,
+        "migrations": [
+          {
+            "checksum": null,
+            "script": "\"ouf_sem\"",
+            "success": true,
+            "type": "SCHEMA",
+            "version": null
+          },
+          {
+            "checksum": -229176171,
+            "script": "V1__semantic_registry.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "1"
+          },
+          {
+            "checksum": -370046820,
+            "script": "V2__governed_publication.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "2"
+          },
+          {
+            "checksum": 1421470298,
+            "script": "V3__discovery_jobs.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "3"
+          },
+          {
+            "checksum": -1092036175,
+            "script": "V4__candidate_adoption.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "4"
+          },
+          {
+            "checksum": 1905797703,
+            "script": "V5__validation_compatibility.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "5"
+          },
+          {
+            "checksum": 648864672,
+            "script": "V6__interchange_change_governance.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "6"
+          },
+          {
+            "checksum": 1546537302,
+            "script": "V7__trusted_human_governance_audit.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "7"
+          },
+          {
+            "checksum": -319796023,
+            "script": "V8__governed_deprecation_retirement.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "8"
+          },
+          {
+            "checksum": 521654427,
+            "script": "V9__authorization_actor_type_canonicalization.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "9"
+          }
+        ],
+        "rowValuesRead": false,
+        "selectorSource": "CONTAINER_ENV_BASELINE",
+        "transactionReadOnly": true
+      },
+      "status": "OBSERVED"
+    },
+    "database/udp": {
+      "data": {
+        "administration": {
+          "postgresRoleExists": false,
+          "roleExists": true,
+          "superuser": true
+        },
+        "effectiveExternalOverridesValidated": false,
+        "historyHash": "5ab3dc58ab760bd4d8bcba7db96739fc7536e9befdb81fd31fd74d442de51555",
+        "identity": {
+          "allowConnections": true,
+          "oid": 21556,
+          "prepared": 0,
+          "serverVersion": 170011
+        },
+        "migrationCount": 35,
+        "migrations": [
+          {
+            "checksum": null,
+            "script": "\"ouf_udp\"",
+            "success": true,
+            "type": "SCHEMA",
+            "version": null
+          },
+          {
+            "checksum": -52230585,
+            "script": "V1__handoff_and_resolution_core.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "1"
+          },
+          {
+            "checksum": -744760032,
+            "script": "V2__canonical_revision_authority.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "2"
+          },
+          {
+            "checksum": 647181559,
+            "script": "V3__relationship_resolution.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "3"
+          },
+          {
+            "checksum": -1155247595,
+            "script": "V4__spatial_resolution.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "4"
+          },
+          {
+            "checksum": -1800875911,
+            "script": "V5__human_resolution_merge_split.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "5"
+          },
+          {
+            "checksum": 887404116,
+            "script": "V6__merge_repoint_and_contribution_links.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "6"
+          },
+          {
+            "checksum": -1523353946,
+            "script": "V7__governed_serving.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "7"
+          },
+          {
+            "checksum": 518442206,
+            "script": "V8__query_complexity_budget.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "8"
+          },
+          {
+            "checksum": -199210382,
+            "script": "V9__spatial_query_budget.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "9"
+          },
+          {
+            "checksum": 491818960,
+            "script": "V10__lake_object_lifecycle.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "10"
+          },
+          {
+            "checksum": -1824633093,
+            "script": "V11__handoff_raw_lake_reference.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "11"
+          },
+          {
+            "checksum": 908347656,
+            "script": "V12__lake_maintenance_scheduler.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "12"
+          },
+          {
+            "checksum": 739027995,
+            "script": "V13__lake_shadow_rebuild.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "13"
+          },
+          {
+            "checksum": 61207461,
+            "script": "V14__shadow_rebuild_fencing_and_rollback.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "14"
+          },
+          {
+            "checksum": -1718975492,
+            "script": "V15__historical_reproduce.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "15"
+          },
+          {
+            "checksum": -969460423,
+            "script": "V16__materialization_reference_integrity.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "16"
+          },
+          {
+            "checksum": 490009295,
+            "script": "V17__selective_bitemporal_delta_history.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "17"
+          },
+          {
+            "checksum": -1000976960,
+            "script": "V18__capability_retry_guard.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "18"
+          },
+          {
+            "checksum": 169180654,
+            "script": "V19__source_raw_handoff_reference.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "19"
+          },
+          {
+            "checksum": 26228480,
+            "script": "V20__governed_coordinate_transformations.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "20"
+          },
+          {
+            "checksum": 672268981,
+            "script": "V21__pinned_relationship_reconciliation.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "21"
+          },
+          {
+            "checksum": -252379595,
+            "script": "V22__weighted_identity_evidence.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "22"
+          },
+          {
+            "checksum": 561679179,
+            "script": "V23__geometry_authority_conflict.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "23"
+          },
+          {
+            "checksum": -835784960,
+            "script": "V24__human_geometry_decisions.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "24"
+          },
+          {
+            "checksum": -1491487699,
+            "script": "V25__human_property_decisions.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "25"
+          },
+          {
+            "checksum": -369310849,
+            "script": "V26__geometry_roles_and_validity.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "26"
+          },
+          {
+            "checksum": -971238326,
+            "script": "V27__identity_scope_serialization.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "27"
+          },
+          {
+            "checksum": 1298756818,
+            "script": "V28__identity_value_lookup.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "28"
+          },
+          {
+            "checksum": 2068388741,
+            "script": "V29__identity_field_shape_catalog.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "29"
+          },
+          {
+            "checksum": -419854425,
+            "script": "V30__resolution_review_package.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "30"
+          },
+          {
+            "checksum": 80452861,
+            "script": "V31__serialize_identity_coverage_invalidation.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "31"
+          },
+          {
+            "checksum": 909978875,
+            "script": "V32__governed_identity_preactivation_attestation.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "32"
+          },
+          {
+            "checksum": -819055726,
+            "script": "V33__human_new_identity_decision.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "33"
+          },
+          {
+            "checksum": 592479726,
+            "script": "V34__repeat_human_review_after_stale_coverage.sql",
+            "success": true,
+            "type": "SQL",
+            "version": "34"
+          }
+        ],
+        "rowValuesRead": false,
+        "selectorSource": "CONTAINER_ENV_BASELINE",
+        "transactionReadOnly": true
+      },
+      "status": "OBSERVED"
+    },
+    "engine": {
+      "data": {
+        "CgroupDriver": "systemd",
+        "Containers": 98,
+        "ContainersRunning": 14,
+        "DockerRootDir": "/var/lib/docker",
+        "Driver": "overlayfs",
+        "MemTotal": 16773283840,
+        "NCPU": 8,
+        "ServerVersion": "29.8.1"
+      },
+      "status": "OBSERVED"
+    },
+    "engineApiVersions": {
+      "data": {
+        "cliApiOverridePresent": false,
+        "cliMaximumApiVersion": "1.56",
+        "cliVersion": "29.8.1",
+        "minimumApiVersion": "1.40",
+        "preparerApiVersion": "1.44",
+        "responseValuesOtherThanVersionsPrinted": false,
+        "serverApiVersion": "1.56",
+        "serverVersion": "29.8.1"
+      },
+      "status": "OBSERVED"
+    },
+    "existingTeatriInput": {
+      "data": {
+        "assetFound": true,
+        "columns": 20,
+        "contentHash": "sha256:08b20658b2b4eadf34d25cd93eead2945096b353ae33b797cf3c41df5319c9e9",
+        "ownerMatches": true,
+        "profileVersion": 1,
+        "rows": 13,
+        "sourceAlreadyBound": false
+      },
+      "status": "OBSERVED"
+    },
+    "freshMcpRead": {
+      "reason": "CONVERSATION_CONNECTOR_ROUTING_UNAVAILABLE",
+      "status": "NOT_COLLECTED"
+    },
+    "gatewayLiveRoutes": {
+      "data": {
+        "configHash": "0975a34a8c0a86a462ffb20a079a90da6942a9dd5e9ab333d3f1eda7546baef8",
+        "credentialPrinted": false,
+        "fullRoutesHash": "5d2a2ff79ddb76e7e0140d9f75e9cce73deb1a848179916a8226bcfc6bd2f8c4",
+        "readMethod": "GET_NETNS_LOOPBACK",
+        "routeCount": 64,
+        "routeIds": [
+          "authorization-ths-api",
+          "authorization-ths-login",
+          "authorization-ths-page",
+          "execute-ouf.gateway.operations.summary",
+          "execute-ouf.ingestion.operations.summary",
+          "execute-ouf.operations.summary",
+          "execute-urban-object-search",
+          "mcp-authorization-policy-bundle-read",
+          "mcp-generic-execution",
+          "mcp-managed-file-create",
+          "mcp-managed-file-handoff",
+          "mcp-managed-file-preview",
+          "mcp-managed-file-profile",
+          "mcp-managed-file-upload",
+          "mcp-permissions-propose",
+          "mcp-permissions-read",
+          "mcp-permissions-status",
+          "mcp-semantic-get",
+          "mcp-semantic-search",
+          "onboarding-identity-preflight-read",
+          "onboarding-managed-file-read",
+          "ouf-5708b3900d0f-001",
+          "ouf-6f5155e48422-001",
+          "public-mcp-endpoint",
+          "public-mcp-oauth-protected-resource",
+          "r2b-publication-resolution",
+          "r2b-semantic-reference",
+          "r4a-ingestion-human-quarantine-read",
+          "r4a-ingestion-human-quarantine-retry",
+          "r4a-ingestion-human-run-read",
+          "r4a-ingestion-human-run-resume",
+          "r4a-onboarding-ingestion-compatibility",
+          "r4a-onboarding-runtime-publications-list",
+          "r4a-udp-human-materialization-retry",
+          "r4a-udp-human-materialization-review",
+          "r4a-udp-runtime-handoff-write",
+          "r4a-udp-runtime-lake-write",
+          "semantic-approval-request",
+          "semantic-artifact-propose",
+          "semantic-artifact-search",
+          "semantic-human-card",
+          "semantic-human-decision",
+          "semantic-human-publish",
+          "semantic-rdf-import",
+          "semantic-revision-validate",
+          "ths-identity-preflight-create",
+          "ths-identity-preflight-read",
+          "trusted-human-authorization-delete",
+          "trusted-human-authorization-get",
+          "trusted-human-authorization-post",
+          "trusted-human-authorization-put",
+          "trusted-human-installation-get",
+          "trusted-human-installation-post",
+          "trusted-human-managed-file-actions-post",
+          "trusted-human-managed-file-picker",
+          "trusted-human-managed-file-preview-get",
+          "trusted-human-managed-file-upload",
+          "trusted-human-onboarding-approvals-get",
+          "trusted-human-onboarding-approvals-post",
+          "trusted-human-onboarding-lifecycle-get",
+          "trusted-human-onboarding-lifecycle-post",
+          "trusted-human-onboarding-lifecycle-put",
+          "trusted-human-onboarding-sources-get",
+          "trusted-human-onboarding-sources-post"
+        ]
+      },
+      "status": "OBSERVED"
+    },
+    "historicalCreationRequest": {
+      "data": {
+        "expectedHashMatched": true,
+        "metadata": {
+          "bytes": 5332,
+          "gid": 0,
+          "mode": "0o600",
+          "sha256": "59181588fd8bbc0836f892789156532ebcc1cce304197560ca1274f05267d552",
+          "uid": 0
+        }
+      },
+      "status": "OBSERVED"
+    },
+    "historicalDeclaration": {
+      "data": {
+        "expectedHashMatched": true,
+        "metadata": {
+          "bytes": 22832,
+          "gid": 0,
+          "mode": "0o600",
+          "sha256": "fc94b491d05e267b49da6e2e2fe50cc7e02e7986783bad7ebf1289b0914a0a68",
+          "uid": 0
+        }
+      },
+      "status": "OBSERVED"
+    },
+    "historicalReview": {
+      "data": {
+        "expectedHashMatched": true,
+        "metadata": {
+          "bytes": 211826,
+          "gid": 0,
+          "mode": "0o600",
+          "sha256": "92b3276992b3b3ec459e734196671728b8a49a99a02185e2c6f7c1da87ce82a1",
+          "uid": 0
+        }
+      },
+      "status": "OBSERVED"
+    },
+    "iamEffectiveCatalogue": {
+      "facts": {
+        "classification": "IAM_CACHED_SESSION_UNAVAILABLE",
+        "exitCode": 1,
+        "rawDiagnosticPrinted": false
+      },
+      "reason": "NATIVE_METADATA_READ_FAILED",
+      "status": "UNAVAILABLE"
+    },
+    "ownerActiveGrants": {
+      "data": {
+        "bundleRefHash": "a0ed5740ac6de64d0ab315da84dfee4c",
+        "capabilityCount": 44,
+        "contentHash": "sha256:e3fee1b85a9ef669276a1af8e190729b35bb45aaa27fb685265d12f9ce426cc7",
+        "grantCount": 87,
+        "projectionOnlyNotEffectivePermissionProof": true,
+        "selectedActorGrantCounts": {
+          "ouf.managed-source.file.profile": 2,
+          "ouf.managed-source.file.upload": 2,
+          "ouf.managed-source.onboarding.create": 2,
+          "ouf.onboarding.configuration.write": 2,
+          "ouf.semantic.approve": 2,
+          "ouf.semantic.consultation.read": 1,
+          "ouf.semantic.propose": 2,
+          "ouf.semantic.publish": 2,
+          "ouf.semantic.review": 2,
+          "ouf.semantic.review.prepare": 2,
+          "urban.object.search": 2
+        },
+        "selectedCapabilities": [
+          "urban.object.search",
+          "ouf.onboarding.configuration.write",
+          "ouf.managed-source.file.upload",
+          "ouf.managed-source.file.profile",
+          "ouf.managed-source.onboarding.create",
+          "ouf.semantic.propose",
+          "ouf.semantic.review.prepare",
+          "ouf.semantic.review",
+          "ouf.semantic.approve",
+          "ouf.semantic.publish",
+          "ouf.semantic.consultation.read"
+        ],
+        "transactionReadOnly": true,
+        "version": 38
+      },
+      "status": "OBSERVED"
+    },
+    "registryHistoricalComparison": {
+      "data": {
+        "changedBindingFields": [],
+        "changedConfigKeys": [],
+        "changedEnvironmentNames": [],
+        "changedHostConfigKeys": [],
+        "changedNetworkSettingsKeys": [],
+        "currentBinding": {
+          "configHash": "097ded59f89cd745ffbfbbbe466bdf64c54a788ab911ea41632b97df0cbea084",
+          "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+          "hostConfigHash": "0f09a1304fc4b3fb8c503afc23d16159c690296c88264f932d1aa411160c310e",
+          "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+          "mountsHash": "4bf1ed4e0c4a4a2b201369905be4d8919edafffc881518d492c0cb83154b0d89",
+          "networkSettingsHash": "1528caf335bfa9411e15afcdab1388b735ee639e86e4b525c45734eb9bb0d8bc",
+          "pid": 3789123,
+          "startedAt": "2026-10-02T11:45:44.132808507Z"
+        },
+        "equal": true,
+        "historicalBinding": {
+          "configHash": "097ded59f89cd745ffbfbbbe466bdf64c54a788ab911ea41632b97df0cbea084",
+          "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+          "hostConfigHash": "0f09a1304fc4b3fb8c503afc23d16159c690296c88264f932d1aa411160c310e",
+          "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+          "mountsHash": "4bf1ed4e0c4a4a2b201369905be4d8919edafffc881518d492c0cb83154b0d89",
+          "networkSettingsHash": "1528caf335bfa9411e15afcdab1388b735ee639e86e4b525c45734eb9bb0d8bc",
+          "pid": 3789123,
+          "startedAt": "2026-10-02T11:45:44.132808507Z"
+        },
+        "mountsChanged": false,
+        "valuesDisclosed": false
+      },
+      "status": "OBSERVED"
+    },
+    "registryNativeRunc": {
+      "data": {
+        "bundleProfile": "SYSTEM_CONTAINERD",
+        "idMatched": true,
+        "pidMatched": true,
+        "running": true,
+        "stableDoubleRead": true
+      },
+      "status": "OBSERVED"
+    },
+    "registryObservationChannels": {
+      "data": {
+        "apiStableDoubleRead": true,
+        "bindingNormalizationApplied": false,
+        "cliReadMethod": "NATIVE_INSPECT_CLEAN_ENVIRONMENT",
+        "cliStableDoubleRead": true,
+        "cliToApiStructuralDifferences": [
+          {
+            "newPresent": true,
+            "newType": "list",
+            "oldPresent": true,
+            "oldType": "NoneType",
+            "path": [
+              "NetworkSettings",
+              "Networks",
+              "ouf-backend",
+              "Aliases"
+            ]
+          }
+        ],
+        "cliVsPreparerApi": {
+          "changedBindingFields": [
+            "networkSettingsHash"
+          ],
+          "changedConfigKeys": [],
+          "changedEnvironmentNames": [],
+          "changedHostConfigKeys": [],
+          "changedNetworkSettingsKeys": [
+            "Networks"
+          ],
+          "currentBinding": {
+            "configHash": "097ded59f89cd745ffbfbbbe466bdf64c54a788ab911ea41632b97df0cbea084",
+            "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+            "hostConfigHash": "0f09a1304fc4b3fb8c503afc23d16159c690296c88264f932d1aa411160c310e",
+            "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+            "mountsHash": "4bf1ed4e0c4a4a2b201369905be4d8919edafffc881518d492c0cb83154b0d89",
+            "networkSettingsHash": "4a81705a5b0b57216be21d6f1da3c419fd000e53249313f96965b5cd49946ba7",
+            "pid": 3789123,
+            "startedAt": "2026-10-02T11:45:44.132808507Z"
+          },
+          "equal": false,
+          "historicalBinding": {
+            "configHash": "097ded59f89cd745ffbfbbbe466bdf64c54a788ab911ea41632b97df0cbea084",
+            "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+            "hostConfigHash": "0f09a1304fc4b3fb8c503afc23d16159c690296c88264f932d1aa411160c310e",
+            "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+            "mountsHash": "4bf1ed4e0c4a4a2b201369905be4d8919edafffc881518d492c0cb83154b0d89",
+            "networkSettingsHash": "1528caf335bfa9411e15afcdab1388b735ee639e86e4b525c45734eb9bb0d8bc",
+            "pid": 3789123,
+            "startedAt": "2026-10-02T11:45:44.132808507Z"
+          },
+          "mountsChanged": false,
+          "valuesDisclosed": false
+        },
+        "historicalBindingModified": false,
+        "historicalCliMatchAndPreparerApiMismatchObserved": true,
+        "historicalToApiStructuralDifferences": [
+          {
+            "newPresent": true,
+            "newType": "list",
+            "oldPresent": true,
+            "oldType": "NoneType",
+            "path": [
+              "NetworkSettings",
+              "Networks",
+              "ouf-backend",
+              "Aliases"
+            ]
+          }
+        ],
+        "historicalVsCli": {
+          "changedBindingFields": [],
+          "changedConfigKeys": [],
+          "changedEnvironmentNames": [],
+          "changedHostConfigKeys": [],
+          "changedNetworkSettingsKeys": [],
+          "currentBinding": {
+            "configHash": "097ded59f89cd745ffbfbbbe466bdf64c54a788ab911ea41632b97df0cbea084",
+            "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+            "hostConfigHash": "0f09a1304fc4b3fb8c503afc23d16159c690296c88264f932d1aa411160c310e",
+            "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+            "mountsHash": "4bf1ed4e0c4a4a2b201369905be4d8919edafffc881518d492c0cb83154b0d89",
+            "networkSettingsHash": "1528caf335bfa9411e15afcdab1388b735ee639e86e4b525c45734eb9bb0d8bc",
+            "pid": 3789123,
+            "startedAt": "2026-10-02T11:45:44.132808507Z"
+          },
+          "equal": true,
+          "historicalBinding": {
+            "configHash": "097ded59f89cd745ffbfbbbe466bdf64c54a788ab911ea41632b97df0cbea084",
+            "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+            "hostConfigHash": "0f09a1304fc4b3fb8c503afc23d16159c690296c88264f932d1aa411160c310e",
+            "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+            "mountsHash": "4bf1ed4e0c4a4a2b201369905be4d8919edafffc881518d492c0cb83154b0d89",
+            "networkSettingsHash": "1528caf335bfa9411e15afcdab1388b735ee639e86e4b525c45734eb9bb0d8bc",
+            "pid": 3789123,
+            "startedAt": "2026-10-02T11:45:44.132808507Z"
+          },
+          "mountsChanged": false,
+          "valuesDisclosed": false
+        },
+        "historicalVsPreparerApi": {
+          "changedBindingFields": [
+            "networkSettingsHash"
+          ],
+          "changedConfigKeys": [],
+          "changedEnvironmentNames": [],
+          "changedHostConfigKeys": [],
+          "changedNetworkSettingsKeys": [
+            "Networks"
+          ],
+          "currentBinding": {
+            "configHash": "097ded59f89cd745ffbfbbbe466bdf64c54a788ab911ea41632b97df0cbea084",
+            "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+            "hostConfigHash": "0f09a1304fc4b3fb8c503afc23d16159c690296c88264f932d1aa411160c310e",
+            "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+            "mountsHash": "4bf1ed4e0c4a4a2b201369905be4d8919edafffc881518d492c0cb83154b0d89",
+            "networkSettingsHash": "4a81705a5b0b57216be21d6f1da3c419fd000e53249313f96965b5cd49946ba7",
+            "pid": 3789123,
+            "startedAt": "2026-10-02T11:45:44.132808507Z"
+          },
+          "equal": false,
+          "historicalBinding": {
+            "configHash": "097ded59f89cd745ffbfbbbe466bdf64c54a788ab911ea41632b97df0cbea084",
+            "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+            "hostConfigHash": "0f09a1304fc4b3fb8c503afc23d16159c690296c88264f932d1aa411160c310e",
+            "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+            "mountsHash": "4bf1ed4e0c4a4a2b201369905be4d8919edafffc881518d492c0cb83154b0d89",
+            "networkSettingsHash": "1528caf335bfa9411e15afcdab1388b735ee639e86e4b525c45734eb9bb0d8bc",
+            "pid": 3789123,
+            "startedAt": "2026-10-02T11:45:44.132808507Z"
+          },
+          "mountsChanged": false,
+          "valuesDisclosed": false
+        },
+        "preparationGenerationGateWouldPass": false,
+        "preparerApiVersion": "1.44",
+        "rawInspectionPrinted": false,
+        "runtimeAuthorityIssued": false,
+        "sameContainerImagePidStartedAt": true,
+        "stableChannelDifferenceObserved": true,
+        "stableComparisonUsable": true
+      },
+      "status": "OBSERVED"
+    },
+    "retainedRecoveryHistory": {
+      "data": {
+        "budgetReset": false,
+        "doesNotProveCurrentAuthority": true,
+        "historicalOnly": true,
+        "metadata": {
+          "bytes": 750,
+          "gid": 0,
+          "mode": "0o600",
+          "sha256": "7616cd129224da874e104791d4e5029f120cc0dc2990d7c4b769e84a68b70630",
+          "uid": 0
+        },
+        "schema": "ouf.bounded-recovery.v1"
+      },
+      "status": "OBSERVED"
+    },
+    "stableAllContainers": {
+      "data": {
+        "allStable": true,
+        "changedContainers": [],
+        "containerCount": 8,
+        "scope": "SELECTED_OWNER_CONTAINERS"
+      },
+      "status": "OBSERVED"
+    },
+    "stableNativeTool": {
+      "data": {
+        "dockerHash": "7f5b38163f9c5367f4b42d905c0505877eafa4c20abe49430c85a770aefacf40",
+        "unchanged": true
+      },
+      "status": "OBSERVED"
+    }
+  },
+  "automaticRetry": false,
+  "budgetReset": false,
+  "cachedIamGetMayRefreshAdministrativeSession": true,
+  "chatbotEndToEndProven": false,
+  "collectionProfile": "CLI_AND_ENGINE_1_44_V2",
+  "completeEnvironmentInventory": false,
+  "containerLifecycleOperations": 0,
+  "databaseMutations": 0,
+  "displayProfile": "SELECTED_DIAGNOSIS_FULL_REPORT_RETAINED",
+  "iamResourceMutations": 0,
+  "interactiveAuthenticationAttempted": false,
+  "maximumElapsedSeconds": 240,
+  "maximumNativeCalls": 128,
+  "nativeCalls": 57,
+  "notReleaseAcceptance": true,
+  "registryChangedBindingFields": [],
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.vps-read-only-inventory.v1",
+  "serviceMutations": 0,
+  "status": "NATIVE_INVENTORY_COLLECTED_COVERAGE_GAPS_REMAIN",
+  "unavailableAreas": [
+    "container/ouf-gateway-control-plane",
+    "iamEffectiveCatalogue",
+    "currentRuntimeAuthorityLedger",
+    "freshMcpRead"
+  ]
+}

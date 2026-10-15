@@ -1,0 +1,58 @@
+{
+  "schema": "ouf.chatbot-live-finite-action-observation.v1",
+  "observedAt": "2026-10-15T06:19:47.299998+00:00",
+  "operatorReported": true,
+  "sourceCommit": "6959b1dbaeb30ca3a838c7d6243a55e9cfc5118a",
+  "context": "/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-b96d2afabbd3275beadb0bbb525608278d5f098af1e14de1f5e4333bff9b488d",
+  "unit": "ouf-file-cohort-b96d2afabbd3275beadb0bbb52560827.service",
+  "systemd": {
+    "ActiveState": "active",
+    "SubState": "running",
+    "MainPID": 3048709,
+    "Restart": "no",
+    "RuntimeMaxUSec": "59min 59s",
+    "ExecMainStartTimestamp": "2026-10-15T07:48:03+02:00"
+  },
+  "decision": {
+    "approvedAt": 1792043283,
+    "expiresAt": 1792046883,
+    "expiredAtRead": false
+  },
+  "status": {
+    "phase": "HUMAN_OWNER_ROLE_CONFIRMATION_REQUIRED",
+    "proposalId": "adf95413-92b0-460b-a112-2fd80bd208ac",
+    "state": "EXPIRED",
+    "expiresAt": "2026-10-15T06:08:47.890887Z",
+    "authorityHash": "80b8f8218991d12d3abff0b4760804d86e247de1f4adc76ab446255fe19ec7f6"
+  },
+  "ownerReadIndependentlyConfirmsExpired": true,
+  "finalPolicyRef": null,
+  "sourceAnalysis": {
+    "rejectedTerminalAnswersMaximum": 3,
+    "acceptedTerminalAnswerBreaksLoopImmediately": true,
+    "roleReviewIsSeparateBrowserAction": true,
+    "ownerProposalTTLSeconds": 900,
+    "expiredProposalCannotBeConfirmed": true,
+    "liveLoopKeepsReadingSameExpiredReceipt": true,
+    "targetRolesReadbackAllowsExistingLoopToVerifyAndContinue": true,
+    "applicationImportsReplacementsAndDatabaseCutoverFollowAuthorizationCompletion": true,
+    "IAMPreparatoryEffectsMayAlreadyHaveOccurred": true
+  },
+  "outcomes": {
+    "runtimeProcessStarted": true,
+    "fullCohortReadyProven": false,
+    "CSVEndToEndProven": false
+  },
+  "recovery": {
+    "kind": "ONE_NEW_NONBINDING_HUMAN_ROLE_REVIEW_WITH_IDENTICAL_PAYLOAD",
+    "scriptSha256": "6e8e61edf6f95e4dc62a79dd550f67e0947de4d12a107869a628837a36697cc8",
+    "oldProposalUnchanged": true,
+    "rolesPublishedByScript": false,
+    "mandateRenewed": false,
+    "processRestarted": false,
+    "originalClaimsAndHistoryUnchanged": true,
+    "ownerDedupKey": "cohort-role-recovery:adf95413-92b0-460b-a112-2fd80bd208ac",
+    "sourceAndSignaturesCheckedFromExistingSealedContext": true,
+    "checks": "8 disposable proposal recovery cases PASS; no live recovery run yet"
+  }
+}

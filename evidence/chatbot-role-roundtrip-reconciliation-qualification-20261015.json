@@ -1,0 +1,87 @@
+{
+  "schema": "ouf.chatbot-role-roundtrip-reconciliation-qualification.v1",
+  "date": "2026-10-15",
+  "target": {
+    "operatorReported": true,
+    "statusUpdatedAt": "2026-10-15T06:37:47.806355+00:00",
+    "phase": "PAUSED_REQUIRES_RECONCILIATION",
+    "reason": "PlanDenied",
+    "unit": "ouf-file-cohort-b96d2afabbd3275beadb0bbb52560827.service",
+    "ActiveState": "inactive",
+    "SubState": "dead",
+    "processThreadsObserved": 0,
+    "reportedResult": "success",
+    "reportedExecMainStatus": 0,
+    "successInference": "No runtime success inferred from collected/inactive systemd defaults.",
+    "authorityHash": "80b8f8218991d12d3abff0b4760804d86e247de1f4adc76ab446255fe19ec7f6",
+    "authorityExpiredAt": "2026-10-15T06:48:03Z",
+    "preciseInnerPlanDeniedCode": "NOT_RETAINED",
+    "rolesPublished": true,
+    "cohortReadyProven": false,
+    "CSVEndToEndProven": false
+  },
+  "qualification": {
+    "sourceCommit": "b64645982655f58a2907bf1425dd86fd6ab0ed9f",
+    "runId": 38696421404,
+    "jobId": 116293919549,
+    "status": "PASS",
+    "tests": 223,
+    "suites": 29,
+    "skipped": 0,
+    "humanVerifierRunId": 38696428157,
+    "humanVerifierJobId": 116293940620,
+    "humanVerifierStatus": "PASS"
+  },
+  "duplicatePRQualification": {
+    "runId": 38696428010,
+    "jobId": 116293939782,
+    "status": "PASS"
+  },
+  "fixes": {
+    "newPermissionJSON": "Generate all fields from exact qualified GrantConstraints; preserve historical roles and strict catalogue equality.",
+    "ownerJavaSource": "GioNob/ouf-source-onboarding@84828f74ac586bae09a78f0fb197b75b1a3d98d1",
+    "jacksonBOM": "2.21.7",
+    "oldSparseMismatchReproducedWithRealOwnerDTO": true,
+    "reprepareAfterPublicationHasNoNewRoleOrIAMDelta": true,
+    "terminalShowsBrowserLinkAndExpiryOutsideJSON": true,
+    "expiredOrRejectedReviewDoesNotKeepWaiting": true,
+    "planDeniedPublicCodePreserved": true,
+    "systemdPublicJournalNativeTestPass": true,
+    "rawExceptionBodyNotPrinted": true
+  },
+  "reconciliation": {
+    "onlyPredecessorSource": "6959b1dbaeb30ca3a838c7d6243a55e9cfc5118a",
+    "sameFrozenCohortRequired": true,
+    "previousExpiredAndStoppedRequired": true,
+    "previousStartClaimNeverReplayed": true,
+    "previousRecordsBoundAndRecheckedBeforeExecution": true,
+    "priorAuthorizationEffectAttemptsRetained": true,
+    "allPriorAuthorizationEffectsMustBeApplied": true,
+    "applicationAndFirstGrantStageDirectoriesMustHaveNoRecords": true,
+    "unknownLaterStageHistoryBlocks": true,
+    "targetReadbackNotYetRun": true,
+    "newManualTerminalDecisionRequired": true,
+    "automaticAuthorityRenewal": false,
+    "budgetReset": false
+  },
+  "delivery": {
+    "sourceCommit": "b64645982655f58a2907bf1425dd86fd6ab0ed9f",
+    "capsuleSha256": "ebbccef8be1ed62d8c32a3325dbd83c6396d2dde486a18d2469af6661b1b6b9f",
+    "launcherSha256": "60ea50d9ba9ccb88befb7f422cae9d7b3ab06add6f27a53bd75c3e3aa4846ae5",
+    "wrapperPath": "releases/chatbot-file-cohort-reconcile-execute-vps-20261015.sh",
+    "wrapperSha256": "1124633ee2c3d28c5c62eaed6a2b9e8fe9eb4804d57d68c108d019945f2788c6",
+    "readbackReaderSha256": "fb08046feef23eccf8b22959af7e8a3a1092b354737966068a3d82b5e91c117c",
+    "archiveSha256": "144699ab7756c8312d49783967cfbb64acc02a617015ad89f5adf51e25a10300",
+    "sixApplicationPinsChanged": false,
+    "maximumNewSessionSeconds": 3600,
+    "maximumFirstGrantSeconds": 300,
+    "automaticRestart": false
+  },
+  "limits": {
+    "fullPrivateReviewNotAcquiredByAgent": true,
+    "legacyHistoryRemainsUnknown": true,
+    "permanentRuntimeAcceptance": false,
+    "releaseAcceptance": false,
+    "originalDownloadReportedPublisherSignatureLocallyVerified": false
+  }
+}

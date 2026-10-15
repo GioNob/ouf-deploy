@@ -1,0 +1,84 @@
+{
+  "schema": "ouf.chatbot-retained-attestation-target.v1",
+  "date": "2026-10-15",
+  "readerCommit": "266a4fe7f200d37014b1683b954ef777cdaae46f",
+  "readerSha256": "d9dcd95a73275ddcefb9169fdcdffe4dd5e0d649aa623b69e2e9b43cad186399",
+  "complete": true,
+  "retainedRecordsStable": true,
+  "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+  "reviewHash": "e375f7fe868806206c42a0609d98de65fab96d3b0aafcec375af0004d91d3e25",
+  "authorityHash": "3a2c33eabd19545bf1128f5049a4fa7df79cf76edec450b6c4946144c3943fd8",
+  "context": "chatbot-file-cohort-signed-d8a817cd13770cd5a655b8b955ef8959588959ffb0751dd24ddd1ef28e49fd52",
+  "processStopped": true,
+  "authorityExpiredAtRead": false,
+  "transition": {
+    "sha256": "cbc366cc0b376bea82407411bbadf76e584d47455ee22e0274ad45741c89d74f",
+    "version": 19,
+    "state": "IN_FLIGHT",
+    "nextPhase": 7,
+    "appliedCount": 7,
+    "databaseMayHaveChanged": true,
+    "bothOlderFailedIntentsRetained": true,
+    "migrationNativeReceiptPresent": false,
+    "acceptedAttestation": {
+      "intentHash": "2ae87aef92eb50cdeda08e4ca631e0c873f798980208e08d007942a5ed4c6610",
+      "nativeEvidenceHash": "95e301b2174a62adca9f9f57816a1f0064d60df7ca43a913164ae74e23048312"
+    },
+    "pendingMigration": {
+      "intentHash": "c93fd7eb15da2f698aadc3700dd30eab9eab9c453d28b7eee43fd20996e89df1",
+      "state": "IN_FLIGHT"
+    }
+  },
+  "node": {
+    "authorizationSha256": "037bc589146bd94b8495a0d3e1e307fb282c24fa05cd1ff2a9d76e81c7b67e61",
+    "issuanceClaimSha256": "2d326ed2daccaed4c2d447bbdf82585dddbd18f6da69cb5d4ba113afb30f2d07",
+    "unknownMembers": false,
+    "completeNativeObservationRecorded": true,
+    "scopedSignatureVerificationRecorded": true,
+    "signatureReverifiedByReader": false
+  },
+  "claimSha256": "b92a6cff1a688dfedd7c3b67464af99c4767e0a71af1e79d4904016de86e4f30",
+  "worker": {
+    "sha256": "910c34c29816e1879dd057b473cd9175c54582fd40b37e64bceeb88fd03812f1",
+    "state": "CANCELLED",
+    "attempts": 1,
+    "publicationCount": 1,
+    "priorControlledGrantAttempts": 3,
+    "cumulative": 4
+  },
+  "sessionSha256": "2f042183d057cf0fec673cc04fa4e229b39634bee9b0d7780e04fabcc72cfb3a",
+  "admission": {
+    "sha256": "2ceb76a6bb6ecc885e3013bc336959a997f985f8ba7a7c210bef92292bccf4df",
+    "state": "BLOCKED",
+    "version": 3
+  },
+  "later": {
+    "authorization": "cff178639c53b81d9058801e0efb8a0980a28c2a646626da1aafa2fc10714de1",
+    "containers": "85d1fdac77f2466d6f308857f764ea125490ef94e1c70f9e971f3e8cc3036e0d",
+    "databases": "ac3b42f27a14eba3b5762fd0ef3ee2f576aab7087f96d5b98903dd9ca1dc683a",
+    "gateway": "c9f3af5b2790ec42bfef95264836f4fdc1eaabbdc8c4b35e2b40026450679faf",
+    "effectCountEach": 0,
+    "backupCountEach": 0,
+    "mcpAuditRolePresent": false,
+    "mcpMigrationPresent": false
+  },
+  "native": {
+    "containerId": "790c62742c92eabc095d4ab22f2070e0c40a41e4a219685a7d8120e4661e4e5d",
+    "pid": 3484588,
+    "restartCount": 0,
+    "running": true,
+    "paused": true,
+    "status": "paused",
+    "stableAcrossTwoReads": true
+  },
+  "databaseFenceQueried": false,
+  "grantRequests": 0,
+  "iamCalls": 0,
+  "databaseMutations": 0,
+  "serviceMutations": 0,
+  "credentialOrTokenFilesRead": false,
+  "sourceBodiesExecuted": false,
+  "runtimeAuthorityIssued": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}

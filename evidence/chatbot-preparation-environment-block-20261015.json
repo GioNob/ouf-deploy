@@ -1,0 +1,40 @@
+{
+  "schema": "ouf.chatbot-preparation-attempt-assessment.v1",
+  "date": "2026-10-15",
+  "source": "OPERATOR_PASTED_TARGET_OUTPUT",
+  "preparerCommit": "d8f23a433effbcb0ffb3581f658ce80f2963b595",
+  "mode": "PREPARE_ONLY",
+  "result": "BLOCKED",
+  "reason": "REVIEWED_APPLICATION_AND_IMAGE_ENVIRONMENT_REQUIRED",
+  "retainedNativePreflight": {
+    "allRequiredChecksPass": true,
+    "historicalGeneration": true,
+    "serverVersion": "29.8.1",
+    "storageDriver": "overlayfs",
+    "cgroupDriver": "systemd",
+    "bundleProfile": "SYSTEM_CONTAINERD",
+    "namespaceProfile": "VAR_RUN_ALIAS"
+  },
+  "administrativeSession": {
+    "selectedIamGetAvailable": true,
+    "iamResourceMutations": 0,
+    "serviceTokenGrantRequests": 0
+  },
+  "completePrivateReviewProduced": false,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true,
+  "deviceCodeOmitted": true,
+  "verifiedSubsequentDiagnosis": {
+    "exactCandidateImageEnvironmentPredicatePasses": true,
+    "unexpectedImageEnvironmentNames": [],
+    "imageConfigurationReadRun": 38672848037,
+    "conclusion": "The failed conjunction therefore rejects at least one historical creation-request environment name; its name is not present in the shared inventory.",
+    "retainedEnvironmentNamesObserved": false
+  },
+  "productionCodeChanged": false,
+  "applicationPinsChanged": false,
+  "retryPreparationRequested": false,
+  "nextOperation": "READ_ONLY_BYTE_PINNED_HISTORICAL_ENVIRONMENT_NAMES_AND_STATIC_ENVIRONMENT_CHECKS"
+}

@@ -1,0 +1,22 @@
+name: Fixed mount-owner failure metadata reader
+on:
+  push:
+    paths: ['scripts/read-chatbot-mount-owner-failure-20261015.py', 'tests/test_chatbot_mount_owner_readback.py', '.github/workflows/chatbot-mount-owner-readback.yml']
+  pull_request:
+    paths: ['scripts/read-chatbot-mount-owner-failure-20261015.py', 'tests/test_chatbot_mount_owner_readback.py', '.github/workflows/chatbot-mount-owner-readback.yml']
+permissions: {contents: read}
+jobs:
+  root-read-only-fixture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Complete bounded reader, custody drift and closed public projections
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-mount-owner-reader-${GITHUB_RUN_ID}"
+          sudo mkdir -m 700 "$OUF_FIXTURE_ROOT"
+          sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
+          sudo chown -R root:root "$OUF_FIXTURE_ROOT"
+          sudo python3 -I -B -S -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_mount_owner_readback.py -v

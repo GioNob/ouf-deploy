@@ -1,0 +1,48 @@
+{
+  "schema": "ouf.retained-inspection-fix-qualification.v1",
+  "date": "2026-10-15",
+  "executableCommit": "d8f23a433effbcb0ffb3581f658ce80f2963b595",
+  "capsuleSha256": "ba1e4723e8797cb30f1461caf90af6e26eae9f2a617484e076e7a7617d0ca680",
+  "launcherSha256": "52dfb7becbec183392633b581636740d07ecbddf3f1ed2564817efd0d218e207",
+  "operatorScriptSha256": "3167a62da12eb48e439b7e3f899ec6ac71a8745640949e9ca99bb6a8094dd046",
+  "runId": 38667398767,
+  "jobId": 116202361077,
+  "conclusion": "success",
+  "testSuites": 25,
+  "testCount": 193,
+  "skippedTests": 0,
+  "prepareOnlyEntryRootFlagTestPassed": true,
+  "prepareOnlyNoAuthorityOrStartTestPassed": true,
+  "pairedNativeObservation": {
+    "pairedNativeCliBinding": {
+      "containerId": "3beddbb9dda5d10545fb0bdd61b9094911f19c7dc232a0238b161d78ff78086e",
+      "imageId": "sha256:79bd7c99e923138f136f8009d6bffa66e21e9d4fda5c0c561b00fc9c90cfe537",
+      "pid": 18911,
+      "startedAt": "2026-10-15T01:48:33.613104192Z",
+      "configHash": "fc236e2077228b039c9c9fe03b3a35250bb5c829b600dff4fd8870542fa317e9",
+      "hostConfigHash": "4779e7cb2586817fe42795e6266e1a68d27cf20cfe4097adabc778ff22ac8f05",
+      "mountsHash": "88a757566bbe53d79cadca674d262345cd497fac4d40632e41626bbc2cf6bd60",
+      "networkSettingsHash": "d63d565f1d24c1bf13b97809c50c88d58bae5e292e5ff86f82afdcc34e4ac79f"
+    },
+    "pairedNativeApiBinding": {
+      "containerId": "3beddbb9dda5d10545fb0bdd61b9094911f19c7dc232a0238b161d78ff78086e",
+      "imageId": "sha256:79bd7c99e923138f136f8009d6bffa66e21e9d4fda5c0c561b00fc9c90cfe537",
+      "pid": 18911,
+      "startedAt": "2026-10-15T01:48:33.613104192Z",
+      "configHash": "fc236e2077228b039c9c9fe03b3a35250bb5c829b600dff4fd8870542fa317e9",
+      "hostConfigHash": "4779e7cb2586817fe42795e6266e1a68d27cf20cfe4097adabc778ff22ac8f05",
+      "mountsHash": "88a757566bbe53d79cadca674d262345cd497fac4d40632e41626bbc2cf6bd60",
+      "networkSettingsHash": "cc6150a52f2b98af4206a48db7ec238d34add9133bdcf02298b0670ccb5f7b2b"
+    },
+    "fullBindingsRetained": true
+  },
+  "priorFailedFixtureRun": 38666200613,
+  "priorFailure": "Test imported unrelated authorization-owner installer before execution; fixture environment initialization corrected",
+  "applicationSourcesModified": false,
+  "targetExecutionPerformed": false,
+  "completeRepresentativePreparationProven": false,
+  "chatbotEndToEndProven": false,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "notReleaseAcceptance": true
+}

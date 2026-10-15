@@ -1,0 +1,146 @@
+{
+  "schema": "ouf.chatbot-iam-http-close-qualification.v1",
+  "date": "2026-10-15",
+  "sourceCommit": "07a2c46203ea36b0af141cbe3f32f01475d90158",
+  "sourceTree": "18747c3e1390b617fd5f129c6420679dd0c6e9ca",
+  "predecessorSource": "4a65b9326c15d9758ecba1793965617a2a92e43e",
+  "capsuleSha256": "696912f1db597573baabd5915132e35d4df4872c2c1fb5ea1e67e216768dd7b8",
+  "launcherSha256": "b7fdc162d2a143569bad7ed15aa98d3ddee3b16bcdb21b17126efe433430448d",
+  "change": "Hold the native SSLSocket file reference for each deadline-bounded response stream and release it on response close",
+  "localBeforeFix": {
+    "protocol": "HTTP/1.0",
+    "errorClass": "OSError",
+    "errno": 9,
+    "discoveryRequests": 1,
+    "grantRequests": 0
+  },
+  "localAfterFix": {
+    "tlsAdmissionTests": 10,
+    "closedRuntimeTests": 3,
+    "allPass": true,
+    "protocols": [
+      "HTTP/1.0",
+      "HTTP/1.1 Connection: close"
+    ],
+    "fragmentedBodies": true,
+    "wholeRequestDeadline": true,
+    "socketsReleased": true
+  },
+  "nativeDelivery": {
+    "runId": 38719053215,
+    "jobId": 116368784712,
+    "tests": 263,
+    "suites": 34,
+    "skipped": 0,
+    "result": "PASS"
+  },
+  "onlineIam": {
+    "runId": 38719053168,
+    "jobId": 116368784463,
+    "tests": 236,
+    "suites": 31,
+    "skipped": 0,
+    "result": "PASS"
+  },
+  "completeOwner": {
+    "runId": 38719053131,
+    "result": "PASS",
+    "closingResponseSuccessTest": true,
+    "preGrantFailurePreservesPublishedCredentialAndZeroCounter": true
+  },
+  "runs": [
+    {
+      "id": 38719053123,
+      "name": "Native cutover HUMAN scope and existing Ed25519 verifier",
+      "event": "pull_request",
+      "headSha": "07a2c46203ea36b0af141cbe3f32f01475d90158",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38719053123"
+    },
+    {
+      "id": 38719053140,
+      "name": "Policy-token governed legacy retirement component",
+      "event": "pull_request",
+      "headSha": "07a2c46203ea36b0af141cbe3f32f01475d90158",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38719053140"
+    },
+    {
+      "id": 38719053131,
+      "name": "Complete finite policy-token owner installation",
+      "event": "pull_request",
+      "headSha": "07a2c46203ea36b0af141cbe3f32f01475d90158",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38719053131"
+    },
+    {
+      "id": 38719053215,
+      "name": "Chatbot cohort delivery native owners",
+      "event": "pull_request",
+      "headSha": "07a2c46203ea36b0af141cbe3f32f01475d90158",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38719053215"
+    },
+    {
+      "id": 38719053168,
+      "name": "OUF policy-token online IAM and installed owner qualification",
+      "event": "pull_request",
+      "headSha": "07a2c46203ea36b0af141cbe3f32f01475d90158",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38719053168"
+    },
+    {
+      "id": 38719042621,
+      "name": "Complete finite policy-token owner installation",
+      "event": "push",
+      "headSha": "07a2c46203ea36b0af141cbe3f32f01475d90158",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38719042621"
+    },
+    {
+      "id": 38719042540,
+      "name": "OUF policy-token online IAM and installed owner qualification",
+      "event": "push",
+      "headSha": "07a2c46203ea36b0af141cbe3f32f01475d90158",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38719042540"
+    },
+    {
+      "id": 38719042589,
+      "name": "Chatbot cohort delivery native owners",
+      "event": "push",
+      "headSha": "07a2c46203ea36b0af141cbe3f32f01475d90158",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38719042589"
+    }
+  ],
+  "targetEvidence": "evidence/chatbot-pregrant-oserror-readback-20261015.json",
+  "targetErrorErrnoObserved": false,
+  "targetHttpCloseBehaviorObserved": false,
+  "targetRootCauseConfirmed": false,
+  "credentialTransactionCompleted": true,
+  "credentialMutationAttempts": 1,
+  "firstGrantAttempts": 0,
+  "actualCsvEndToEndProven": false,
+  "targetExecutionOfCorrectedSourceObserved": false,
+  "notReleaseAcceptance": true,
+  "postCredentialRecoveryImplemented": false,
+  "doNotRunExistingExecutionWrappers": true,
+  "nextAction": {
+    "path": "scripts/read-chatbot-iam-close-20261015.py",
+    "sha256": "ecd9849a4fd89657c267d2e1b0af7406c37fe19e84a385ad52bb63cb41f2c148",
+    "maximumPublicDiscoveryGets": 2,
+    "maximumSecondsPerGet": 10,
+    "serviceMutations": 0,
+    "iamAdminCalls": 0,
+    "credentialOrTokenFilesRead": false,
+    "grants": 0,
+    "automaticRetry": false,
+    "authorityRenewed": false
+  },
+  "gaps": [
+    "Original delivery retained only the exception class; no errno/trace location was present in its journal",
+    "Current code supports the prior pregrant recovery, not the new completed-credential/unused-session continuation",
+    "Do not reset or overwrite the old session, rotate the credential again or replay any consumed start claim"
+  ]
+}

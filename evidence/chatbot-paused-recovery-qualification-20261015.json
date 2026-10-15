@@ -1,0 +1,105 @@
+{
+  "schema": "ouf.chatbot-paused-recovery-source-qualification.v1",
+  "date": "2026-10-15",
+  "status": "SAME_SOURCE_SIX_GATES_PASS_TARGET_EXECUTION_NOT_STARTED",
+  "sourceCommit": "b7d24c57d6e45e71994ac3f99f56f249d83cde22",
+  "capsuleSha256": "d7f970d08b585000ca92e850e4c2743336a1645a398cf66ab9eb48c5b1b60b8a",
+  "capsuleFiles": 116,
+  "runtimeModules": 98,
+  "launcherSha256": "ccdc95aa88ba2205bd9ac86f1b26654615a544b0ca35e0ab58f38fcd82740c30",
+  "wrapperPath": "scripts/launch-chatbot-paused-recovery-20261015.sh",
+  "wrapperSha256": "a620ff14a03d475610e174a831cfc88f185fce14f0d39ed942d3eb235259f4ee",
+  "checks": [
+    {
+      "runId": 38788441092,
+      "jobId": 116606422489,
+      "name": "Policy-token governed legacy retirement component",
+      "conclusion": "success",
+      "suites": 4,
+      "tests": 44,
+      "skipped": 0,
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38788441092"
+    },
+    {
+      "runId": 38788441315,
+      "jobId": 116606423576,
+      "name": "Native cutover HUMAN scope and existing Ed25519 verifier",
+      "conclusion": "success",
+      "suites": 9,
+      "tests": 66,
+      "skipped": 0,
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38788441315"
+    },
+    {
+      "runId": 38788441083,
+      "jobId": 116606421792,
+      "name": "Remaining Docker lifecycle contracts on 29.8.1",
+      "conclusion": "success",
+      "suites": 4,
+      "tests": 25,
+      "skipped": 0,
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38788441083"
+    },
+    {
+      "runId": 38788441040,
+      "jobId": 116606422277,
+      "name": "Complete finite policy-token owner installation",
+      "conclusion": "success",
+      "suites": 8,
+      "tests": 70,
+      "skipped": 0,
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38788441040"
+    },
+    {
+      "runId": 38788441050,
+      "jobId": 116606422188,
+      "name": "OUF policy-token online IAM and installed owner qualification",
+      "conclusion": "success",
+      "suites": 31,
+      "tests": 237,
+      "skipped": 0,
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38788441050"
+    },
+    {
+      "runId": 38788441005,
+      "jobId": 116606422113,
+      "name": "Chatbot cohort delivery native owners",
+      "conclusion": "success",
+      "suites": 45,
+      "tests": 337,
+      "skipped": 0,
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38788441005"
+    }
+  ],
+  "targetProposalEvidence": "evidence/chatbot-retained-rootfs-proposal-target-20261015.json",
+  "targetProposalUploadSha256": "513cef3ecc37f7e86f455b82b92194b7d5c1762c8b9bab0aa2fc4eb7dd759b57",
+  "targetStatic": {
+    "completeOci": true,
+    "retainedMountImageRootfs": true,
+    "differentEntries": 0,
+    "attestationAccepted": false
+  },
+  "recovery": {
+    "appliedEffectsPreserved": 6,
+    "failedUnsignedEffectRetained": true,
+    "firstActivePhase": "ATTEST_NEW_OCI_PEER",
+    "predecessorGrantAttempts": 2,
+    "workerInitialAttempts": 0,
+    "workerInitialCumulativeAttempts": 2,
+    "firstNewRealTlsGrantCumulativeAttempts": 3,
+    "oldJournalUnchanged": true,
+    "oldClaimUnchanged": true,
+    "noCreateStageSignalReplay": true,
+    "requiresNewExactHumanApproval": true,
+    "persistentExclusiveFence": true
+  },
+  "limitations": [
+    "Executor/CAS tests use synthetic native attestation effects; real TLS/JWT worker tests use independent hosted native fixtures.",
+    "Target static proposal was observed, but private frame/token/peer acceptance and remaining application/migration/readiness phases are unproven.",
+    "CSV chatbot end-to-end remains unproven; CI PostgreSQL acceptance fixtures are not actual target CSV evidence."
+  ],
+  "runtimeAuthorityIssued": false,
+  "serviceMutationsOnTarget": 0,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}

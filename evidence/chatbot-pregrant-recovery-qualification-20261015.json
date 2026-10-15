@@ -1,0 +1,143 @@
+{
+  "schema": "ouf.chatbot-pregrant-recovery-qualification.v1",
+  "date": "2026-10-15",
+  "sourceCommit": "4a65b9326c15d9758ecba1793965617a2a92e43e",
+  "sourceTree": "d0057668db8a9bdaaa7e6db793aac411ee06fd87",
+  "pullRequest": "https://github.com/GioNob/ouf-deploy/pull/31",
+  "draft": true,
+  "merged": false,
+  "capsuleSha256": "f9715d9728e78554305df567415bd949f8c3a89d00010204f6c549a1932a3728",
+  "capsuleFileCount": 112,
+  "launcherSha256": "4b6f30144055af38978f04d6eef16ddab134a890b0dcee460261ec28de5ca3dd",
+  "wrapperPath": "releases/chatbot-file-cohort-pregrant-recovery-execute-vps-20261015.sh",
+  "wrapperSha256": "4e85a8e48f134a8c6d53ecaafd8b25942ff8cad9a38731a4dcd52be12caf6bf9",
+  "wrapperBashSyntaxCheck": "PASS",
+  "originalApplicationArchiveSha256": "144699ab7756c8312d49783967cfbb64acc02a617015ad89f5adf51e25a10300",
+  "applicationPinsChanged": false,
+  "applicationImagesRebuilt": false,
+  "targetExecutionOfCandidateObserved": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true,
+  "targetReadback": "evidence/chatbot-pregrant-native-readback-20261015.json",
+  "tests": {
+    "coordinatedDelivery": {
+      "runId": 38715383127,
+      "jobId": 116356673368,
+      "tests": 262,
+      "suites": 34,
+      "skipped": 0
+    },
+    "onlineIam": {
+      "runId": 38715383165,
+      "jobId": 116356673746,
+      "tests": 234,
+      "suites": 31,
+      "skipped": 0
+    },
+    "recoveryCases": 13,
+    "realSystemdMaskedFailedTimer": "PASS"
+  },
+  "runs": [
+    {
+      "id": 38715383372,
+      "name": "Native cutover HUMAN scope and existing Ed25519 verifier",
+      "event": "pull_request",
+      "headSha": "4a65b9326c15d9758ecba1793965617a2a92e43e",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38715383372"
+    },
+    {
+      "id": 38715383112,
+      "name": "Policy-token governed legacy retirement component",
+      "event": "pull_request",
+      "headSha": "4a65b9326c15d9758ecba1793965617a2a92e43e",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38715383112"
+    },
+    {
+      "id": 38715383033,
+      "name": "Complete finite policy-token owner installation",
+      "event": "pull_request",
+      "headSha": "4a65b9326c15d9758ecba1793965617a2a92e43e",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38715383033"
+    },
+    {
+      "id": 38715383165,
+      "name": "OUF policy-token online IAM and installed owner qualification",
+      "event": "pull_request",
+      "headSha": "4a65b9326c15d9758ecba1793965617a2a92e43e",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38715383165"
+    },
+    {
+      "id": 38715383127,
+      "name": "Chatbot cohort delivery native owners",
+      "event": "pull_request",
+      "headSha": "4a65b9326c15d9758ecba1793965617a2a92e43e",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38715383127"
+    },
+    {
+      "id": 38715377158,
+      "name": "Policy-token governed legacy retirement component",
+      "event": "push",
+      "headSha": "4a65b9326c15d9758ecba1793965617a2a92e43e",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38715377158"
+    },
+    {
+      "id": 38715377030,
+      "name": "Complete finite policy-token owner installation",
+      "event": "push",
+      "headSha": "4a65b9326c15d9758ecba1793965617a2a92e43e",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38715377030"
+    },
+    {
+      "id": 38715377019,
+      "name": "Chatbot cohort delivery native owners",
+      "event": "push",
+      "headSha": "4a65b9326c15d9758ecba1793965617a2a92e43e",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38715377019"
+    },
+    {
+      "id": 38715377065,
+      "name": "OUF policy-token online IAM and installed owner qualification",
+      "event": "push",
+      "headSha": "4a65b9326c15d9758ecba1793965617a2a92e43e",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38715377065"
+    }
+  ],
+  "regressionHistory": [
+    {
+      "source": "71264d8d0b664bd5988a2d2bb7c48b94a45915c7",
+      "recoveryCases": 13,
+      "result": "recovery cases passed; separate standalone worker import and timer setup fixture failures blocked delivery"
+    },
+    {
+      "source": "22e856fe359048a6b24523d8c8ec03dc931bc286",
+      "result": "four workflows failed at the same legacy-to-worker producer import boundary before recovery tests; no target execution"
+    },
+    {
+      "source": "4a65b9326c15d9758ecba1793965617a2a92e43e",
+      "result": "standalone dependency removed with FD-relative protected private reads; explicit isolated component regression; all nine workflows pass"
+    }
+  ],
+  "preservedConstraints": [
+    "fixed predecessor source/review/authority and record hashes",
+    "old reservations and source files unchanged",
+    "existing output inode and original timestamps retained",
+    "zero mkdir and mask/stop attempts in continuation",
+    "fresh exact HUMAN approval and current signatures",
+    "single first grant and finite separate worker",
+    "no automatic retry of ambiguous effects, budget reset or consumed claim replay"
+  ],
+  "limits": [
+    "Target Docker version remains 29.8.1; hosted CI is not proof of identical full VPS environment",
+    "VPS installation/migrations and actual CSV/chatbot acceptance are still pending",
+    "Cause of the historical timer failure is not inferred from resources"
+  ]
+}

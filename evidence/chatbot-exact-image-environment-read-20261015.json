@@ -1,0 +1,41 @@
+{
+  "artifactId": 11907831957,
+  "chatbotEndToEndProven": false,
+  "currentImageEnvironmentPredicatePasses": true,
+  "databaseMutations": 0,
+  "environmentNames": [
+    "JAVA_HOME",
+    "JAVA_VERSION",
+    "LANG",
+    "LANGUAGE",
+    "LC_ALL",
+    "PATH"
+  ],
+  "environmentValueSha256": {
+    "JAVA_HOME": "0c0b3b4ed12beb88fce550746fae9b76b4b1b54ad6f19db498b1df0009af79ef",
+    "JAVA_VERSION": "269c98b9c63e009cae7509c80f87101539a3710622d04d20cd2991f37c3686fc",
+    "LANG": "65ce8c93514741c928d27fcdbe7b0a754dfcaebcb2292111cd60305dc983f51f",
+    "LANGUAGE": "fb4f8ed5e18c083b8f51e7e4fc663e8d1044afa23f1d57018906f3278cc7bb10",
+    "LC_ALL": "65ce8c93514741c928d27fcdbe7b0a754dfcaebcb2292111cd60305dc983f51f",
+    "PATH": "18fd332762afe2dd4ffe7a651ba3f7c1d962cca8be3c35197a139f6b92b96436"
+  },
+  "imageArchiveSha256": "a0f1e2252f01a0e4a45c1262f124298000c56d206bdf9953b78bcd6b3ad4017a",
+  "imageId": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489",
+  "module": "semantic",
+  "notReleaseAcceptance": true,
+  "producerCommit": "8bff54a52a0ce15daccaf2aee932004f106dd178",
+  "retainedApplicationEnvironmentObserved": false,
+  "runId": 38584614991,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.exact-published-image-environment-read.v1",
+  "serviceMutations": 0,
+  "sourceCommit": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+  "unexpectedImageEnvironmentNames": [],
+  "verification": {
+    "runId": 38672848037,
+    "jobId": 116219722868,
+    "conclusion": "success",
+    "readerCommit": "41d1b855c2c8d046995966718c57966e8938e87b",
+    "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38672848037"
+  }
+}
