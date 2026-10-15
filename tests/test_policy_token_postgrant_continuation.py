@@ -123,5 +123,68 @@ class PostGrantOwner(unittest.TestCase):
                     self.directory,self.f.clock,transport=self.f.transport)
         self.assertEqual(self.harness.grants(),1);self.unchanged()
 
+    def test_complete_review_compiles_new_worker_with_retained_output_and_backup_without_effects(self):
+        # Only the selected target observations are synthetic; constructors,
+        # root receipts, output inode, source closure and review are concrete.
+        import test_chatbot_cohort_assemble as assembly
+        import test_file_only_cutover as file_fixture
+        import tools.semantic_policy_token_owner.iam_admission as iam
+        compiler=assembly.compiler;root=self.f.f.root
+        sources={name:((assembly.OWNER/path.split(':',1)[1])if path.startswith('ouf-onboarding:')
+            else assembly.ROOT/path).read_bytes()for name,path in assembly.PATHS.items()}
+        loader=(assembly.ROOT/'tools/chatbot_file_cohort/runtime.py').read_bytes()
+        program=self.f.r.f.host['executables']['systemctl']
+        openssl={**self.f.f.binding(self.f.f.openssl),'version':self.f.f.native('version').decode().split()[1]}
+        closure={'declaration':assembly.runtime.declaration('b'*40,sources,loader,
+            {'ouf-deploy':'b'*40,'ouf-onboarding':'c'*40}),
+            'executables':{**{key:program for key in ('python','docker','systemctl','systemdRun')},'openssl':openssl},
+            'stdlibHash':fingerprint({'syntheticProgramObservationOnly':True}),'stdlibFileCount':1}
+        stage=root/'complete-postgrant-review';stage.mkdir(mode=0o700)
+        backup=root/'preserved-backup';backup.mkdir(mode=0o700)
+        proof=copy.deepcopy(self.proof);proof['retainedBackupDirectory']=str(backup)
+        _,context=compiler.authority_directory('synthetic-postgrant-complete',fingerprint(closure),'e'*64)
+        paths={'root':context+'/registry',**{name:context+'/registry/'+name for name in
+            ('transition','evidence','before','retirementBefore','node')}};paths['backup']=str(backup)
+        request,tree=file_fixture.inputs();identity=Path(self.value['binding']['output_directory']).stat()
+        mounted={'source':self.value['binding']['output_directory'],'target':'/run/ouf/policy','fileName':'token.jwt','gid':10001,
+            'ownerBindingHash':self.old.first.binding.digest(),'directoryDevice':identity.st_dev,'directoryInode':identity.st_ino,
+            'maxBytes':8192,'minimumRemainingSeconds':30}
+        intents={phase:{'syntheticTargetObservation':phase}for phase in file_fixture.PHASES}
+        intents['CREATE_REPLACEMENT']=request;intents['FENCED_BACKUP']={'directory':str(backup)}
+        cohort={'cohortManifestHash':'e'*64,'replacements':[{'module':module,'oldRuntimeBinding':{'containerId':c*64}}
+            for module,c in zip(('udp','onboarding','ingestion','mcp'),'5678')]}
+        registry={'schema':'ouf.semantic-file-only-installation-inputs.v1','creationRequest':request,'configtree':tree,
+            'intents':intents,'retirementScope':{'syntheticTargetObservation':True},'postGrantRecovery':proof,
+            'nodeRecipe':{'sourceClosureHash':fingerprint(closure),'renewableToken':mounted},
+            'readinessScope':{'databaseContainerId':'b'*64,'databaseUser':'postgres','database':'semantic','databaseOid':4,
+                'flywaySchema':'ouf_sem','flywayHistoryHash':'c'*64,
+                'health':{'address':'10.1.0.2','port':8080,'path':'/actuator/health/readiness','timeoutSeconds':5}},
+            'postgresRuntimeBinding':{'syntheticTargetObservation':True},'imageAudit':{'imageId':request['Image']},
+            'commandBindings':{'docker':program},'directoryPlan':paths,'cohortPlanHash':fingerprint(cohort),'adminDatabase':'postgres'}
+        prepared={'schema':'ouf.chatbot-file-cohort-prepared-inputs.v1','owner':self.value,'postGrantRecovery':proof,
+            'postGrantWorkerDirectory':str(self.directory),'registry':registry,'cohortPlan':cohort,'gatewayRuntimePlan':None,
+            'gatewayPlan':{'previousRuntimeHash':'1'*64,'proposedRuntimeHash':'2'*64,
+                'transportBinding':{'syntheticTargetObservation':True,'pythonExecutable':program},'proposalKeyBinding':{'sha256':'3'*64}},
+            'authorization':{'plan':{'baseline':{'active':{'policyRef':'fixture','contentHash':'4'*64}},
+                'targetRoles':{'issuer':self.f.server.profile.issuer,'roles':[],'assignments':[]},
+                'registrationAdditions':[],'addedDescriptors':[],'roleProposal':None,'scopeCreations':[],'scopeBindings':[]}},
+            'imagePlan':{'schema':'ouf.chatbot-cohort-image-import-plan.v1','cohortManifestHash':'e'*64,
+                'images':[{'module':module}for module in ('semantic','udp','onboarding','ingestion','mcp')],
+                'maximumImportSecondsPerImage':180,'maximumImportAttemptsPerImage':1,'retagAllowed':False,'automaticReplayAllowed':False}}
+        with (patch.object(p,'read_predecessor',return_value=self.predecessor),
+            patch.object(p,'proof_scope',return_value=proof),
+            patch.object(compiler.governance,'POLICY',self.f.f.binding(self.f.f.policy)),
+            patch.object(compiler.governance,'CONTEXT',self.f.f.context),
+            patch.object(iam.ssl,'create_default_context',return_value=self.f.transport.context)):
+            compiled=compiler.assemble(prepared=prepared,sources=sources,loader=loader,
+                bootstrap=(assembly.ROOT/'tools/chatbot_file_cohort/child_bootstrap.py').read_bytes(),closure=closure,
+                staging_directory=stage,lineage={'predecessorHistoryHash':'c'*64,'predecessorIncidentRef':'d'*64},
+                preparation_source_hash='f'*64,cohort_id='synthetic-postgrant-complete')
+        review=compiled['review'];self.assertEqual(review['firstControlledGrantMaximumAttempts'],0)
+        self.assertEqual(review['postGrantRecoveryReview'],proof)
+        self.assertNotIn(str(backup),compiled['processPlan']['directoryPlan'].values())
+        self.assertEqual(list(self.directory.iterdir()),[]);self.assertFalse(Path(context).exists())
+        self.assertEqual(self.harness.grants(),1);self.unchanged()
+
 
 if __name__=='__main__':unittest.main()

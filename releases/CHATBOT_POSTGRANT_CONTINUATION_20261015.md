@@ -30,21 +30,27 @@ One persistent global reservation prevents double invocation or automatic
 replay after a crash. Registry admission must recheck the archive and the live
 closed/empty database immediately before its sole admission effect.
 
-## Local evidence and outstanding qualification
+## Local and hosted evidence; outstanding qualification
 
 33 tests passed locally across historical invariants and persistent fencing,
 real dual-role signed successor execution with simulated effects, preparation
 import order and authorization rebind, real terminal approval, sealed source
 imports, and readiness/retry accounting. These are not target execution or CSV
-proofs. Six newly added composed worker tests could not run locally because the
-restricted environment does not support group10001 custody. Hosted root CI
-must execute those tests without skips, using real TLS, signatures and custody.
+proofs. Six composed worker tests could not run locally because the restricted
+environment does not support group10001 custody. They subsequently **passed
+without skips** in hosted root CI run38747278316 at draft3f7b5131d66f57a9c16a360b19baeb483eb20ce1,
+using real TLS, signatures and custody. That full job failed later on an existing
+assembly assertion because a normal-path diagnostic string changed; preserve
+that original diagnostic. A seventh test now adds complete continuation review
+assembly and must also pass hosted CI.
 
 The Docker29 fixture now also checks copied-history GET-only reconciliation,
 actual paused rootfs layout, runc bundle identity and independent OCI restrictions.
-These additions are not qualified until the native Docker job passes. The
-fixture uses a static native HTTP program in place of Spring and explicitly
-simulates non-Docker attestation/admission boundaries.
+These additions **passed** in Docker29.8.1 run38747621663/job116465317223 at
+0a54ec9c7d4cf58c7d6caff85587e9167d1fe7c2 (25tests, no skips). The test uses the
+retained recursive read-only OCI options `rbind,rro,rprivate`. The fixture uses
+a static native HTTP program in place of Spring and explicitly simulates
+non-Docker attestation/admission boundaries.
 
 Outstanding: full native worker and regression jobs; complete continuation
 assembly/review and current target preflight coverage; review of every future

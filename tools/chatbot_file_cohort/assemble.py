@@ -128,7 +128,8 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
     require(mounted['source']==owner.first.binding.output_directory
         and mounted['fileName']==owner.first.binding.output_member and mounted['gid']==owner.first.binding.output_gid
         and mounted['ownerBindingHash']==owner.first.binding.digest(),
-        'SAME_ACTION_OUTPUT_BINDING_AND_NATIVE_OWNER_REQUIRED')
+        'SAME_ACTION_FUTURE_OUTPUT_CUSTODY_AND_NATIVE_OWNER_REQUIRED' if recovery is None
+        else 'SAME_ACTION_OUTPUT_BINDING_AND_NATIVE_OWNER_REQUIRED')
     if recovery is None:
         require(mounted['directoryCustodyScopeHash']==digest(owner.output.scope),
             'SAME_ACTION_FUTURE_OUTPUT_CUSTODY_AND_NATIVE_OWNER_REQUIRED')
