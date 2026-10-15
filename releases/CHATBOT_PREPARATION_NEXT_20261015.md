@@ -1,3 +1,50 @@
+LATEST ACTUAL VPS ATTEMPT — 2026-10-15 22:36 CEST
+
+The previously delivered source43819bc0 wrapper WAS EXECUTED. It passed exact
+six-effect/native preflight, current admin/device and HUMAN reviewe375f7fe,
+then started authority3a2c33ea/contextd8a817cd (expires1792100102). It failed at
+CURRENT_ATTESTATION_PHASE_AND_CREATION_SCOPE_REQUIRED. Source trace proves the
+reported checkpoint is ADMIT_MIGRATION/BEFORE_NATIVE_EFFECT; the caller requires
+ATTEST_NEW_OCI_PEER already APPLIED. Actual current journal, signed node records
+and cumulative grants still need one metadata read. Do not assume count4 or
+invent a zero-DB-effect receipt from the trace. Conservative migration flag may
+already be true because Transition.begin sets it BEFORE possible native effects.
+
+DO NOT REPLAY the previously delivered unsigned recovery command. Its fixed
+claim is now consumed and the boundary is signed, requiring a new governed
+continuation/reprocessing contract after exact readback. Preserve every old
+journal/claim/receipt, the source43819bc0 acceptance and finite budget history.
+
+Current core fix source266a4fe7f200d37014b1683b954ef777cdaae46f, capsule3247eff86492edf78a0942d92345de9e1443625192cf848833a9edb3692b52fd.
+It adds a separate frozen retained checkpoint observation for migration/unpause;
+default new attestation remains IN_FLIGHT-only. Existing signed receipt, full
+prefix/current authority, current paused generation, OCI/rootfs/peer/token/current
+signature checks remain required. No signature reissuance or generic phase bypass.
+Local binding6/owner-wiring3/reader6/launcher14/closure3 tests PASS. Native Docker/
+runc test on final source PASS (cursor/acceptance metadata explicitly synthetic).
+Other hosted qualification is still running. Initial source39f3f519 native
+fixture used a legacy13-phase journal at a file-only11-phase boundary; only its
+fixture was corrected in final266a4fe7, production code unchanged.
+
+ONE TARGET ACTION NOW: reader scripts/read-chatbot-retained-attestation-20261015.py
+at source266a4fe7f200d37014b1683b954ef777cdaae46f, SHA256d9dcd95a73275ddcefb9169fdcdffe4dd5e0d649aa623b69e2e9b43cad186399.
+It reads fixed reviewe375/authority3a2/contextd8a/bound bundle, frozen source hashes,
+claim, Registry journal, node issuance/authorization/accepted receipt hashes,
+worker/session/admission/cumulative attempts and four later owner journals. Two
+native container GETs; pinned stopped-systemd read. No IAM/DB calls or writes,
+no token/credential file reads, no source body execution or signature acceptance.
+Six reader tests PASS locally and in the rooted cohort step38805033459/job116663555366
+on byte-identical source39f3f519. Only sudo is required on target. Read DB fencing
+as UNKNOWN until its actual owner reconfirms it; reader does not query Postgres.
+
+After readback: compile governed continuation from the SIGNED attestation plus
+IN_FLIGHT migration boundary. Keep conservative DB flags and prove native DB/
+migration state rather than dropping an ambiguous intent. Qualify complete real
+retained owner checkpoints before a new runtime command. No new target command
+or runtime authority has been published by this core/reader development.
+
+OLDER QUALIFICATION/HISTORY (superseded as next target action):
+
 # Next chatbot/VPS action — 2026-10-15, mounted-token recovery
 
 The latest complete target metadata reader PASS is retained in
