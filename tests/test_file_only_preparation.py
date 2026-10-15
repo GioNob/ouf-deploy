@@ -81,6 +81,51 @@ class Preparation(unittest.TestCase):
             request,old,*_=self.retained_candidate();request['Env'].append(key+'=true')
             with self.subTest(key=key),self.assertRaises(ValueError):prep.retained_file_environment(request,old)
 
+    def gated_frame(self):
+        request,old,audit,tree,token,key,proposal=self.retained_candidate()
+        result=prep.creation(request,{'retainedNativeCreationFrame':old},old,audit,tree,token,key,proposal,
+            {'issuer':'gateway','audience':'semantic','workload':'ouf-semantic'})
+        token={k:v for k,v in token.items() if k not in ('directoryDevice','directoryInode')}
+        token['directoryCustodyScopeHash']='7'*64
+        raw=(ROOT/'tools/semantic_frame_compiler/containerd-overlayfs-southbound.json').read_bytes()
+        template,launch=compile_inputs(raw,result,tree,token,key,proposal,ENGINE)
+        *_,context=self.inputs()
+        args={'execution_profile':FileOnlyProfile(result,tree),'renewable_token':token,
+            'delegation_key_metadata_hash':'d'*64,'proposal_receipt_key':proposal}
+        return template,launch,context,args,result
+
+    def test_complete_creation_to_frame_preserves_exact_deferred_runtime_gate(self):
+        template,launch,context,args,request=self.gated_frame();before=copy.deepcopy((template,launch,request))
+        result=compile_policy(template,launch,context,**args)
+        expected=request['Entrypoint']+request['Cmd']
+        self.assertEqual(result['startup']['args'],expected)
+        self.assertEqual(result['expectedOci']['process']['args'],expected)
+        self.assertIn('$OUF_APPLICATION_GATE',expected[2])
+        self.assertEqual(result['expectedOci']['hostname'],context['containerId'][:12])
+        self.assertNotIn('$OUF_',result['expectedOci']['root']['path'])
+        self.assertEqual(result['schema'],'ouf.semantic-configured-file-only-four-mount-frame-policy.v2-proposal')
+        self.assertEqual((template,launch,request),before)
+
+    def test_runtime_gate_does_not_exempt_unresolved_fields_or_modified_commands(self):
+        for field in ('env','directory','annotation','args','ociArgs'):
+            template,launch,context,args,request=self.gated_frame()
+            if field=='env':
+                row='OUF_UNUSED=$OUF_UNREVIEWED'
+                request['Env'].append(row);launch['startup']['env'].append(row)
+                template['expectedOci']['process']['env'].append(row)
+                args['execution_profile']=FileOnlyProfile(request,args['execution_profile'].configtree)
+            if field=='directory':
+                token=args['renewable_token'];token['source']='/fixture/$OUF_APPLICATION_GATE'
+                launch['manifest']['mounts'][3]['source']=token['source']
+                for mount in template['expectedOci']['mounts']:
+                    if mount['destination']==token['target']:mount['source']=token['source']
+            if field=='annotation':template['expectedOci']['annotations']={'value':'$OUF_APPLICATION_GATE'}
+            if field=='args':
+                launch['startup']['args'][2]+='; echo $OUF_UNREVIEWED'
+                template['expectedOci']['process']['args']=copy.deepcopy(launch['startup']['args'])
+            if field=='ociArgs':template['expectedOci']['process']['args'][2]+='; echo changed'
+            with self.subTest(field=field),self.assertRaises(ValueError):compile_policy(template,launch,context,**args)
+
     def inputs(self):
         _,launch,context,args=FourMountCompiler().fixture()
         request=copy.deepcopy(args['execution_profile'].request);tree=args['execution_profile'].configtree

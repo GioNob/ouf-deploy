@@ -8,6 +8,7 @@ import copy,re
 from compile_creation_frame_policy import compile_policy as compile_files,canonical,path,require,environment
 from compile_semantic_proposal_frame_policy import receipt_key
 from file_only_profile import FileOnlyProfile
+from gated_creation_plan import ENTRY
 
 def compile_policy(template,launch,context,*,execution_profile,renewable_token,delegation_key_metadata_hash,proposal_receipt_key):
     require(type(execution_profile) is FileOnlyProfile,'EXACT_TYPED_FILE_ONLY_FRAME_PROFILE_REQUIRED')
@@ -57,12 +58,35 @@ def compile_policy(template,launch,context,*,execution_profile,renewable_token,d
     full_mounts=copy.deepcopy(mounts);directory_targets={d['target'] for d in dirs}
     template['expectedOci']['mounts']=[m for m in mounts if m.get('destination') not in directory_targets]
     launch['manifest']['mounts']=bindings[:2]
+    # ENTRY is an exact, already validated runtime shell program. Its literal
+    # $OUF_APPLICATION_GATE is not a Docker template slot. Project only the two
+    # authenticated argv fields while the unchanged generic compiler resolves
+    # and rejects template slots everywhere else; never rewrite the shell text.
+    full_args=copy.deepcopy(launch['startup']['args'])
+    gated=execution_profile.request['Entrypoint']==ENTRY
+    if gated:
+        require(template['expectedOci']['process'].get('args')==full_args,
+            'FILE_ONLY_FRAME_AND_SIGNED_LAUNCH_DRIFT')
+        application_args=copy.deepcopy(execution_profile.request['Cmd'])
+        template['expectedOci']['process']['args']=copy.deepcopy(application_args)
+        launch['startup']['args']=copy.deepcopy(application_args)
     result=compile_files(template,launch,context)
+    if gated:
+        result['expectedOci']['process']['args']=copy.deepcopy(full_args)
+        result['startup']['args']=copy.deepcopy(full_args)
     resolved=result['expectedOci']['mounts'];by_target={m['destination']:m for m in resolved}
     result['expectedOci']['mounts']=[copy.deepcopy(m) if m.get('destination') in directory_targets else by_target[m['destination']] for m in full_mounts]
     result.update(schema=('ouf.semantic-configured-file-only-four-mount-frame-policy.v2-proposal' if deferred
         else 'ouf.semantic-configured-file-only-four-mount-frame-policy.v1'),executionProfileHash=profile_hash,
         manifest=original['manifest'],configtree=copy.deepcopy(tree),renewableToken=copy.deepcopy(renewable_token),
         delegationKeyTarget=key['target'],delegationKeyMetadataHash=delegation_key_metadata_hash,proposalReceiptKey=receipt)
-    require(b'$OUF_' not in canonical(result) and len(canonical(result))<=131072,'UNRESOLVED_OR_UNBOUNDED_FILE_ONLY_FRAME')
+    checked=copy.deepcopy(result)
+    if gated:
+        # Only these two complete, exact signed argv lists are excluded from
+        # slot scanning. A matching string in ENV, paths, hooks or metadata is
+        # still rejected, including directory inputs restored after projection.
+        for process in (checked['expectedOci']['process'],checked['startup']):
+            require(process['args']==full_args,'FILE_ONLY_GATE_COMMAND_DRIFT')
+            process['args']=copy.deepcopy(application_args)
+    require(b'$OUF_' not in canonical(checked) and len(canonical(result))<=131072,'UNRESOLVED_OR_UNBOUNDED_FILE_ONLY_FRAME')
     return result

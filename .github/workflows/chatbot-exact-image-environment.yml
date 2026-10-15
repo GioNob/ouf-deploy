@@ -1,4 +1,4 @@
-name: Exact published chatbot image environment read
+name: Exact published chatbot registry frame and TLS
 on:
   push:
     branches: [codex/retained-inspection-channel-20261015]
@@ -71,7 +71,7 @@ jobs:
           print('OUF_EXACT_IMAGE_ENVIRONMENT='+json.dumps(report,sort_keys=True))
           pathlib.Path('image-environment-read.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
           PY
-      - name: Compile the observed historical ENV shape against the real image configuration
+      - name: Compile creation through full gated frame with the real image configuration
         run: python3 tests/qualify_retained_registry_environment.py published
       - name: Test default Java TLS of this exact image against public Keycloak discovery
         run: |

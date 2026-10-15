@@ -19,6 +19,22 @@ request['Image']=audit['imageId']=record['imageId']
 result=prep.creation(request,{'retainedNativeCreationFrame':old},old,audit,tree,token,key,proposal,
     {'issuer':'gateway','audience':'semantic','workload':'ouf-semantic'})
 FileOnlyProfile(result,tree)
+# Exercise the same composed sequence as prepare_file_only_installation, not
+# only the standalone execution profile. Validation identities are discarded;
+# they do not become runtime observations or signing authority.
+token={k:v for k,v in token.items() if k not in ('directoryDevice','directoryInode')}
+token['directoryCustodyScopeHash']='7'*64
+baseline=(Path(__file__).resolve().parents[1]/
+    'tools/semantic_frame_compiler/containerd-overlayfs-southbound.json').read_bytes()
+template,launch=prep.compile_inputs(baseline,result,tree,token,key,proposal,prep.FRAME_ENGINE)
+context={'schema':'ouf.semantic-docker-frame-context.v1','containerId':'a'*64,
+    'bundleParent':prep.BUNDLE_PARENTS[1],'metadataParent':'/var/lib/docker/containers',
+    'networkNamespaceParent':'/var/run/docker/netns','networkNamespaceName':'b'*12,
+    'cgroupDriver':'systemd','storageParent':'/var/lib/docker','rootfsPath':'/var/lib/docker/validation-only-rootfs'}
+policy=prep.compile_policy(template,launch,context,execution_profile=FileOnlyProfile(result,tree),
+    renewable_token=token,delegation_key_metadata_hash='d'*64,proposal_receipt_key=proposal)
+assert policy['startup']['args']==policy['expectedOci']['process']['args']==result['Entrypoint']+result['Cmd']
+assert policy['schema']=='ouf.semantic-configured-file-only-four-mount-frame-policy.v2-proposal'
 env=prep.environment(result['Env'])
 assert len(request['Env'])==31 and len(old['Config']['Env'])==19
 assert 'JAVA_TOOL_OPTIONS' not in env and 'OUF_SEM_DB_PASSWORD' not in env
@@ -27,5 +43,6 @@ assert env['OUF_IAM_ENABLED']=='true' and all(env[k]=='false' for k in prep.FLAG
 print('OUF_EXACT_IMAGE_RETAINED_ENV_COMPILATION='+json.dumps({'status':'PASS',
     'imageId':record['imageId'],'historicalCreationNames':31,'historicalNativeNames':19,
     'values':'DISPOSABLE_AND_PUBLIC_SOURCE_DERIVED_NOT_TARGET_VALUES',
-    'fourMountProfileCompiled':True,'unreviewedJvmOptionsAccepted':False,
+    'fourMountProfileCompiled':True,'fourMountFramePolicyCompiled':True,'exactRuntimeGatePreserved':True,
+    'contextIdentities':'VALIDATION_ONLY_DISCARDED_NOT_TARGET_OBSERVATIONS','unreviewedJvmOptionsAccepted':False,
     'targetPreparationProven':False,'chatbotEndToEndProven':False,'notReleaseAcceptance':True},sort_keys=True))
