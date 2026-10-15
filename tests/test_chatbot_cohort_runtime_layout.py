@@ -87,7 +87,8 @@ class RuntimeLayout(unittest.TestCase):
         class Reader:
             def __init__(self,*args):pass
             def run(self,*args):return json.dumps(s).encode()
-        inputs={'installationReview':{'currentRegistry':recorded},'declaration':{'retainedNativeCreationFrame':copy.deepcopy(c)}}
+        inputs={'installationReview':{'currentRegistry':recorded},'declaration':{'retainedNativeCreationFrame':copy.deepcopy(c)},
+                'creationRequest':{'Env':['PATH=/bin']}}
         with patch.object(p,'retained_inputs',return_value=(inputs,{})),\
              patch.object(p,'retained_native_bindings',return_value=(a,{'path':'fixture','sha256':'a'*64},{},[])),\
              patch.object(p,'NodeObservation',Reader),\
@@ -103,7 +104,7 @@ class RuntimeLayout(unittest.TestCase):
         for key in ('Config','HostConfig','Mounts'):c[key]=copy.deepcopy(native[key])
         old=copy.deepcopy(c);c['Config']['Env'].append('PRIVATE_INPUT=never-print-this-value')
         values={'installationReview':{'currentRegistry':{'id':c['Id'],'image':c['Image'],'pid':123,'startedAt':'fixture-generation'}},
-                'declaration':{'retainedNativeCreationFrame':old}}
+                'declaration':{'retainedNativeCreationFrame':old},'creationRequest':{'Env':['PATH=/bin']}}
         class Engine:
             def check_socket(self):pass
             def request(self,method,path):return (200,copy.deepcopy(c)) if path.endswith('/json') else (200,{})

@@ -48,6 +48,33 @@ RUNTIME_ROOT='/run/docker/runtime-runc/moby'
 BUNDLE_PARENTS=('/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby',
                 '/run/containerd/io.containerd.runtime.v2.task/moby')
 NAMESPACE_PARENTS=('/run/docker/netns','/var/run/docker/netns')
+# Exact option introduced by compose-semantic-replacement-draft.py for the
+# retired discovery provider. The file-only four-mount profile does not mount
+# that store. Never discard an applied/native or otherwise different JVM option.
+RETIRED_DISCOVERY_JVM_TRUST=(
+    '-Djavax.net.ssl.trustStore=/run/ouf-discovery-trust/java-truststore.p12 '
+    '-Djavax.net.ssl.trustStoreType=PKCS12 -Djavax.net.ssl.trustStorePassword=changeit')
+RUNTIME_ENV={'PATH','JAVA_HOME','JAVA_VERSION','LANG','LANGUAGE','LC_ALL','TZ'}
+
+
+def retained_file_environment(parent,native):
+    prior=environment(parent['Env'])
+    if 'JAVA_TOOL_OPTIONS' in prior:
+        applied=environment(native['Config'].get('Env') or [])
+        require(prior['JAVA_TOOL_OPTIONS']==RETIRED_DISCOVERY_JVM_TRUST
+                and 'JAVA_TOOL_OPTIONS' not in applied,
+                'UNREVIEWED_OR_APPLIED_HISTORICAL_JVM_OPTIONS')
+        prior.pop('JAVA_TOOL_OPTIONS')
+    require(all(k in RUNTIME_ENV or k.startswith(('OUF_','SPRING_','MANAGEMENT_')) or k=='PORT' for k in prior),
+            'REVIEWED_RETAINED_APPLICATION_ENVIRONMENT_REQUIRED')
+    require(not set(prior)&{'JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','_JAVA_OPTIONS'},
+            'FILE_ONLY_JVM_PROPERTY_OVERRIDE_DENIED')
+    require(not any(k.startswith('SPRING_') and k!='SPRING_CONFIG_IMPORT' for k in prior),
+            'FILE_ONLY_SPRING_OVERRIDE_DENIED')
+    require(not any(k.lower().replace('_','') in
+        {'oufsemanticprovidersschemagovenabled','oufsemanticdiscoveryworkerenabled'} for k in prior),
+        'FILE_ONLY_FEATURE_ALIAS_OVERRIDE_DENIED')
+    return prior
 
 
 def retained_runtime_context(current,state,adapter):
@@ -190,6 +217,11 @@ def preflight_retained_runtime(engine,selection,command_binding=None):
             checks[name]=False;return None
     values=check('retainedInputs',lambda:retained_inputs(selection)[0])
     if values is None:return {'allRequiredChecksPass':False,'checks':checks,'failedChecks':failures,'facts':facts}
+    prior=check('retainedEnvironment',lambda:retained_file_environment(
+        values['creationRequest'],values['declaration']['retainedNativeCreationFrame']))
+    if prior is not None:
+        facts['historicalDiscoveryJvmTrustOptionRemovedFromProposal']=(
+            'JAVA_TOOL_OPTIONS' in environment(values['creationRequest']['Env']))
     recorded=values['installationReview']['currentRegistry'];cid=recorded['id']
     def inspect():
         engine.check_socket();code,row=engine.request('GET','/v1.44/containers/'+cid+'/json')
@@ -384,11 +416,9 @@ def creation(parent,declaration,actual,audit,tree,token,delegation,proposal,prop
     config=audit['imageConfig'];java=['java','-XX:MaxRAMPercentage=75','-jar','/app/application.jar']
     require(config.get('User')=='10001:10001' and config.get('Entrypoint')==java and config.get('Cmd') in (None,[])
             and config.get('Volumes') in (None,{}),'EXACT_REVIEWED_REGISTRY_IMAGE_LAUNCH_REQUIRED')
-    prior=environment(parent['Env']);image=environment(config.get('Env') or [])
-    runtime={'PATH','JAVA_HOME','JAVA_VERSION','LANG','LANGUAGE','LC_ALL','TZ'}
-    require(set(image)<=runtime and all(k in runtime or k.startswith(('OUF_','SPRING_','MANAGEMENT_')) or k=='PORT' for k in prior),
-            'REVIEWED_APPLICATION_AND_IMAGE_ENVIRONMENT_REQUIRED')
-    env={**image,**{k:v for k,v in prior.items() if k not in runtime},**FLAGS}
+    prior=retained_file_environment(parent,old);image=environment(config.get('Env') or [])
+    require(set(image)<=RUNTIME_ENV,'REVIEWED_IMAGE_ENVIRONMENT_REQUIRED')
+    env={**image,**{k:v for k,v in prior.items() if k not in RUNTIME_ENV},**FLAGS}
     require(not set(env)&{'OUF_SEM_DB_PASSWORD','SPRING_DATASOURCE_PASSWORD'}
             and env.get('SPRING_CONFIG_IMPORT')=='configtree:'+tree['target']+'/', 'FILE_ONLY_RETAINED_DATABASE_SECRET_REQUIRED')
     require(env.get('OUF_IAM_ENABLED','true')!='false','EXISTING_IAM_CANNOT_BE_DISABLED')

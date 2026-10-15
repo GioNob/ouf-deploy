@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
       - name: Download the existing exact semantic artifact without rebuilding
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
@@ -69,6 +71,37 @@ jobs:
           print('OUF_EXACT_IMAGE_ENVIRONMENT='+json.dumps(report,sort_keys=True))
           pathlib.Path('image-environment-read.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
           PY
+      - name: Compile the observed historical ENV shape against the real image configuration
+        run: python3 tests/qualify_retained_registry_environment.py published
+      - name: Test default Java TLS of this exact image against public Keycloak discovery
+        run: |
+          set -euo pipefail
+          docker load --input published/image.docker.tar
+          mkdir -p tls-probe
+          cat > tls-probe/Verify.java <<'JAVA'
+          import java.net.URI;
+          import javax.net.ssl.HttpsURLConnection;
+          import java.nio.charset.StandardCharsets;
+          public class Verify {
+            public static void main(String[] args) throws Exception {
+              String issuer="https://auth.ouf-lab.it/realms/ouf";
+              HttpsURLConnection c=(HttpsURLConnection)URI.create(issuer+"/.well-known/openid-configuration").toURL().openConnection();
+              c.setConnectTimeout(10000);c.setReadTimeout(15000);c.setInstanceFollowRedirects(false);
+              if(c.getResponseCode()!=200)throw new IllegalStateException("OIDC_DISCOVERY_200_REQUIRED");
+              byte[] bytes=c.getInputStream().readNBytes(131073);
+              if(bytes.length>131072)throw new IllegalStateException("BOUNDED_DISCOVERY_REQUIRED");
+              String body=new String(bytes,StandardCharsets.UTF_8).replaceAll("\\s+","");
+              if(!body.contains("\"issuer\":\""+issuer+"\""))throw new IllegalStateException("EXACT_ISSUER_REQUIRED");
+              System.out.println("OUF_EXACT_IMAGE_DEFAULT_JAVA_TLS=PASS PUBLIC_DISCOVERY_GET_ONLY "+c.getCipherSuite());
+              c.disconnect();
+            }
+          }
+          JAVA
+          javac --release 17 -d tls-probe tls-probe/Verify.java
+          docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
+            --memory 256m --pids-limit 64 --tmpfs /tmp:rw,noexec,nosuid,size=16m \
+            --mount "type=bind,src=$PWD/tls-probe,dst=/probe,readonly" --entrypoint java \
+            sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489 -cp /probe Verify
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: exact-image-environment-read-${{ github.run_id }}

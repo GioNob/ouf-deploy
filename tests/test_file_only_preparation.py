@@ -16,6 +16,71 @@ from file_only_profile import FileOnlyProfile,PHASES
 from transition_journal import digest
 
 class Preparation(unittest.TestCase):
+    def retained_candidate(self,image_config=None):
+        """Target-observed names, source-derived values; no VPS secret values."""
+        request,tree,key,token,proposal,context=self.inputs();old=self.producer('a')
+        env={'JAVA_HOME':'/opt/java/openjdk','JAVA_VERSION':'fixture-old',
+            'LANG':'en_US.UTF-8','LANGUAGE':'en_US:en','LC_ALL':'en_US.UTF-8','PATH':'/usr/bin:/bin',
+            'OUF_AUTHORIZATION_MAX_STALENESS_SECONDS':'120','OUF_AUTHORIZATION_REFRESH_SECONDS':'30',
+            'OUF_AUTHORIZATION_REGISTRY_TOKEN_FILE':token['target']+'/old.jwt',
+            'OUF_AUTHORIZATION_REGISTRY_URL':'https://api.ouf-lab.it/authorization',
+            'OUF_IAM_ACTOR_TYPE_CLAIM':'actor_type','OUF_IAM_AUDIENCE':'ouf-api-gateway',
+            'OUF_IAM_ENABLED':'true','OUF_IAM_ISSUER':'https://auth.ouf-lab.it/realms/ouf',
+            'OUF_SEMANTIC_DELEGATION_KEY_FILE':key['target'],'OUF_SEMANTIC_DELEGATION_WORKLOAD':'ouf-mcp-server',
+            'OUF_SEM_DB_URL':'jdbc:postgresql://ouf-postgres:5432/ouf_semantic','OUF_SEM_DB_USER':'ouf_semantic'}
+        native={**env,'OUF_SEM_DB_PASSWORD':'DISPOSABLE_NOT_A_TARGET_PASSWORD'}
+        old['Config']['Env']=[k+'='+v for k,v in native.items()]
+        # Independent historical literal from compose-semantic-replacement-draft.py.
+        env.update({'JAVA_TOOL_OPTIONS':'-Djavax.net.ssl.trustStore=/run/ouf-discovery-trust/java-truststore.p12 '
+            '-Djavax.net.ssl.trustStoreType=PKCS12 -Djavax.net.ssl.trustStorePassword=changeit',
+            'SPRING_CONFIG_IMPORT':'configtree:'+tree['target']+'/',
+            'OUF_SCHEMA_GOV_ENABLED':'true','OUF_SCHEMA_GOV_GATEWAY_AUTH_ENABLED':'true',
+            'OUF_SCHEMA_GOV_GATEWAY_BASE_URL':'https://ouf-semantic-southbound-v2:10443',
+            'OUF_SCHEMA_GOV_SEARCH_PATH':'/internal/providers/schema-gov/search',
+            'OUF_SCHEMA_GOV_FETCH_PATH':'/internal/providers/schema-gov/fetch',
+            'OUF_SCHEMA_GOV_TOKEN_ENDPOINT':env['OUF_IAM_ISSUER']+'/protocol/openid-connect/token',
+            'OUF_SCHEMA_GOV_CLIENT_ID':'ouf-semantic','OUF_SCHEMA_GOV_CLIENT_SECRET_FILE':'/run/secrets/schema-gov-client-secret',
+            'OUF_SCHEMA_GOV_WORKLOAD_SCOPE':'gateway.southbound.invoke',
+            'OUF_SEMANTIC_DISCOVERY_DELEGATION_KEY_FILE':'/run/secrets/semantic-discovery-owner.key',
+            'OUF_SEMANTIC_DISCOVERY_DELEGATION_WORKLOAD':'ouf-mcp-server'})
+        request['Env']=[k+'='+v for k,v in env.items()]
+        request['NetworkingConfig']={'EndpointsConfig':{'ouf-backend':{'NetworkID':'9'*64,
+            'MacAddress':'02:42:0a:2a:00:02','IPAMConfig':{'IPv4Address':'10.42.0.2'}}}}
+        config=image_config or {'User':'10001:10001','Entrypoint':request['Entrypoint'],
+            'Cmd':[],'Volumes':{},'Env':['PATH=/usr/bin:/bin'],'WorkingDir':'/app'}
+        audit={'imageId':request['Image'],'imageConfig':config}
+        return request,old,audit,tree,token,key,proposal
+
+    def test_observed_historical_environment_converts_only_exact_unapplied_discovery_trust(self):
+        request,old,audit,tree,token,key,proposal=self.retained_candidate()
+        before=copy.deepcopy((request,old,audit));self.assertEqual(len(request['Env']),31)
+        self.assertEqual(len(old['Config']['Env']),19)
+        result=prep.creation(request,{'retainedNativeCreationFrame':old},old,audit,tree,token,key,proposal,
+            {'issuer':'gateway','audience':'semantic','workload':'ouf-semantic'})
+        env=prep.environment(result['Env'])
+        self.assertNotIn('JAVA_TOOL_OPTIONS',env);self.assertNotIn('OUF_SEM_DB_PASSWORD',env)
+        self.assertEqual(env['OUF_SCHEMA_GOV_ENABLED'],'false')
+        self.assertEqual(env['OUF_DISCOVERY_WORKER_ENABLED'],'false')
+        self.assertEqual(env['OUF_IAM_ISSUER'],'https://auth.ouf-lab.it/realms/ouf')
+        self.assertEqual(env['OUF_IAM_ENABLED'],'true');self.assertEqual(len(result['HostConfig']['Binds']),4)
+        self.assertFalse(any('/run/ouf-discovery-trust' in b for b in result['HostConfig']['Binds']))
+        self.assertEqual((request,old,audit),before)
+        FileOnlyProfile(result,tree)
+
+    def test_other_or_applied_jvm_options_are_never_silently_removed(self):
+        for option in ('','-Djavax.net.ssl.trustStore=/another/store',
+            prep.RETIRED_DISCOVERY_JVM_TRUST+' -Douf.semantic.discovery-worker.enabled=true'):
+            request,old,*_=self.retained_candidate();env=prep.environment(request['Env'])
+            env['JAVA_TOOL_OPTIONS']=option;request['Env']=[k+'='+v for k,v in env.items()]
+            with self.subTest(option=option),self.assertRaisesRegex(ValueError,'UNREVIEWED_OR_APPLIED'):
+                prep.retained_file_environment(request,old)
+        request,old,*_=self.retained_candidate()
+        old['Config']['Env'].append('JAVA_TOOL_OPTIONS='+prep.RETIRED_DISCOVERY_JVM_TRUST)
+        with self.assertRaisesRegex(ValueError,'UNREVIEWED_OR_APPLIED'):prep.retained_file_environment(request,old)
+        for key in ('JDK_JAVA_OPTIONS','_JAVA_OPTIONS','SPRING_APPLICATION_JSON','OUF_SEMANTIC_DISCOVERY_WORKER_ENABLED'):
+            request,old,*_=self.retained_candidate();request['Env'].append(key+'=true')
+            with self.subTest(key=key),self.assertRaises(ValueError):prep.retained_file_environment(request,old)
+
     def inputs(self):
         _,launch,context,args=FourMountCompiler().fixture()
         request=copy.deepcopy(args['execution_profile'].request);tree=args['execution_profile'].configtree
