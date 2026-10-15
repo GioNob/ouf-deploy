@@ -1,0 +1,90 @@
+{
+  "schema": "ouf.chatbot-image-journal-observation.v1",
+  "observedDate": "2026-10-15",
+  "reportedAtLocal": "09:33 Europe/Rome",
+  "source": "Operator-pasted output of read-chatbot-image-import-20261015.py",
+  "context": "/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-dd03d434361deb62e1caeaf7958a71c39c095f065e776312779d59dd6a7f4a77",
+  "authorityHash": "48c75739575b7d618484ed78184834d2d1961da97fa2870d80d14ce26fe978f4",
+  "authorityMatches": true,
+  "process": {
+    "ActiveState": "inactive",
+    "SubState": "dead",
+    "MainPID": "0",
+    "Result": "success",
+    "ExecMainStatus": "0"
+  },
+  "processResultDoesNotProveDeliverySuccess": true,
+  "phase": "PAUSED_REQUIRES_RECONCILIATION",
+  "reason": "ValueError",
+  "imageJournals": [
+    {
+      "module": "semantic",
+      "httpStatus": 404,
+      "state": "IN_FLIGHT",
+      "version": 1,
+      "effectAttemptCount": 1,
+      "imageCustodyProven": false
+    },
+    {
+      "module": "udp",
+      "httpStatus": 404,
+      "state": "READY",
+      "version": 0,
+      "effectAttemptCount": 0,
+      "imageCustodyProven": false
+    },
+    {
+      "module": "onboarding",
+      "httpStatus": 404,
+      "state": "READY",
+      "version": 0,
+      "effectAttemptCount": 0,
+      "imageCustodyProven": false
+    },
+    {
+      "module": "ingestion",
+      "httpStatus": 404,
+      "state": "READY",
+      "version": 0,
+      "effectAttemptCount": 0,
+      "imageCustodyProven": false
+    },
+    {
+      "module": "mcp",
+      "httpStatus": 404,
+      "state": "READY",
+      "version": 0,
+      "effectAttemptCount": 0,
+      "imageCustodyProven": false
+    }
+  ],
+  "laterStageRecoveryJournals": {
+    "containers": false,
+    "databases": false,
+    "gateway": false,
+    "gatewayRuntime": false
+  },
+  "exactFailureCauseKnown": false,
+  "absenceDoesNotProveNoImageEffect": true,
+  "automaticReplayAllowed": false,
+  "chatbotEndToEndProven": false,
+  "nextRead": {
+    "script": "scripts/read-chatbot-image-archives-20261015.py",
+    "sha256": "938b73013d3de2c4ebfeebe5da1b9017fe27d3665933a1776df4d50bbb0ede86",
+    "pinnedValidatorSha256": "d118924b52618f00871ccd4ae9ade379ccb818ce517e34e31d815fe5abdfdd23",
+    "mode": "Read-only same approved archive validator, all five retained tagless archives; no import callback or delivery bootstrap executed.",
+    "expectedOutput": "Original safe archive assertion code, or audit equality/mismatching field names. No raw metadata or environment.",
+    "localTests": 13,
+    "passed": 13,
+    "skipped": 0,
+    "testsUseNativeDocker": false,
+    "targetReadPending": true
+  },
+  "changes": {
+    "applicationSources": 0,
+    "imagesRebuilt": 0,
+    "serviceMutations": 0,
+    "databaseMutations": 0,
+    "authorityRenewed": false
+  }
+}

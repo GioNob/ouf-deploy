@@ -1,3 +1,15 @@
+# Current target readback: first image attempt unresolved (2026-10-15, 09:33 CEST)
+
+The pinned target readback completed. The dd03 finite process is inactive/MainPID 0. Its authority binding matches. Semantic image journal is IN_FLIGHT/version 1/effectAttemptCount 1; the exact image GET is 404. UDP, onboarding, ingestion and MCP remain READY/version 0/attempt 0 and their images are absent too. No recovery.json exists for containers/databases/gateway/gatewayRuntime. These facts narrow the stop to the first image import; image absence alone does not reconcile its consumed claim. Systemd Result=success is not deployment success.
+
+**Do not repeat the execute command.** The exact ValueError body was redacted by the running source. The next diagnostic is `scripts/read-chatbot-image-archives-20261015.py`, SHA256 `938b73013d3de2c4ebfeebe5da1b9017fe27d3665933a1776df4d50bbb0ede86`. It preserves the previous readback and additionally executes only the pure archive validator from the retained approved bundle, after checking its exact known source SHA256 `d118924b52618f00871ccd4ae9ade379ccb818ce517e34e31d815fe5abdfdd23`. It opens the five approved archives read-only, verifies bytes/layers/config against their reviewed audits and prints only safe error codes or mismatch field names. It never imports the delivery bootstrap or load callback. Import requests, service changes, database changes and authority renewal remain zero. Some disk reading is expected, with an ARCHIVE_READ_BEGIN progress line before each image.
+
+Thirteen local tests pass, including real synthetic compressed archive parsing, serialized audit equality, changed archive denial, pinned source rejection, safe output, and complete context read preserving files. Engine transport uses mocks in local tests; native Docker integration is not claimed for this diagnostic. Target archive verification is pending; no product patch is inferred from unobserved archive results. See `evidence/chatbot-image-journals-readback-20261015.json`.
+
+---
+
+## Previous handoff (historical)
+
 # Current stop: image-import reconciliation required (2026-10-15, 09:25 CEST)
 
 The latest VPS attempt accepted the fresh HUMAN decision and reconciled the expired auth-only predecessor successfully. It then reached `IMPORTING_QUALIFIED_IMAGES_BEFORE_FIRST_GRANT` and stopped with `PAUSED_REQUIRES_RECONCILIATION`, reason `ValueError`. Image effects remain unknown. Do not run the previous execute wrapper again: its predecessor gate only covers auth-only history, not this new image-import attempt.
