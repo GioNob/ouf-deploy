@@ -4,9 +4,9 @@
 
 L'ultima esecuzione VPS (source **95749a8ef316856e16c44c1d7aa3b6791b408993**) è **ferma prima del primo grant**: `PAUSED_REQUIRES_RECONCILIATION / RETIREMENT_QUIESCENCE_UNPROVEN`. Il reader successivo è terminato con END, senza mutazioni. L'output allegato completo è archiviato in `evidence/chatbot-pregrant-native-readback-20261015.json`.
 
-**Nessun nuovo comando di esecuzione è ancora qualificato. Non rilanciare i wrapper precedenti, non riavviare unità finite consumate, non cancellare prenotazioni e non eseguire reset-failed.** L'agent sta qualificando la correzione candidata **22e856fe359048a6b24523d8c8ec03dc931bc286** (draft PR31, branch `codex/retained-inspection-channel-20261015`). Non è stata eseguita sul VPS. PR31 resta non merged e ha come base il branch PR29 `codex/chatbot-mcp-migration-role-20261014` a fdc990136592f0353c2824f4de632a052910a2a0.
+**Nuovo recupero qualificato in CI. Non rilanciare i wrapper precedenti, non riavviare unità finite consumate, non cancellare prenotazioni e non eseguire reset-failed.** La correzione qualificata è **4a65b9326c15d9758ecba1793965617a2a92e43e** (draft PR31, branch `codex/retained-inspection-channel-20261015`). Non è stata eseguita sul VPS. PR31 resta non merged e ha come base il branch PR29 `codex/chatbot-mcp-migration-role-20261014` a fdc990136592f0353c2824f4de632a052910a2a0.
 
-Il passo successivo dell'agent è verificare tutti i workflow del candidato, risolvere eventuali errori CI, aggiornare questa pagina e pubblicare soltanto allora un wrapper con commit/hash esatti. L'utente non deve intervenire durante queste verifiche.
+Il passo operativo successivo è il wrapper nuovo pubblicato sotto, eseguito dall'operatore sul VPS con una nuova review HUMAN esatta. Riutilizza il pacchetto esistente. Il primo controllo di recupero precede il login IAM e non modifica lo stato osservato. La nuova esecuzione target e l'accettazione CSV restano da verificare.
 
 ## Progresso VPS verificato
 
@@ -38,17 +38,19 @@ gateway runtime d9a7427d73867801fda31acbba4b1df3d7dafd4e99d35cd1cdbb2b5d7816448a
 
 ## Correzione candidata e verifiche
 
-Candidato22e856: stesso contratto di quiescenza nei due percorsi (retirement e worker standalone): entrambi permanentemente masked, nessun Job, servizio inactive/dead/PID0; al timer è consentito inactive/dead oppure failed/failed. Nessun reset-failed. Il worker resta indipendente dai moduli installer.
+Candidato4a65b9: stesso contratto di quiescenza nei due percorsi (retirement e worker standalone): entrambi permanentemente masked, nessun Job, servizio inactive/dead/PID0; al timer è consentito inactive/dead oppure failed/failed. Nessun reset-failed. Il worker resta indipendente dai moduli installer.
 
 Il recupero è integrato nel modulo legacy già presente nei runtime chiusi. Richiede esattamente il predecessore95749a8, review/authority e record sopra, custodia/inode, dieci file precedenti intatti, assenza di rotazione/grant/worker/applicazioni e prova nativa di immagini/APISIX. La nuova revisione include tutto il proof nella scope owner corrente. Output e ritiro vengono osservati con nuove ricevute separate (massimo0 mkdir/mask/stop), conservando contatori/timestamp originali. Una sola prenotazione di continuazione stabile, autorità HUMAN e firme correnti; nessun riuso della start claim. Il nuovo codice owner viene predisposto come generazione distinta, conservando la precedente.
 
-Le verifiche precedenti nel candidato71264d8 hanno passato i13 nuovi casi, inclusi sei con custodia root:10001, vere firme Ed25519 e TLS/grant/pubblicazione, oltre alla regressione owner. Hanno però individuato un'importazione incompatibile nel worker standalone e un errore nella fixture systemd: rifiutare inizialmente un timer con target già masked non produce lo stato failed. Il candidato22e856 corregge la dipendenza senza ampliare i runtime e fa fallire il timer alla scadenza dopo aver mascherato il target. **La nuova revisione deve ripassare la CI; i risultati vecchi non qualificano il candidato.**
+Le verifiche precedenti nel candidato71264d8 hanno passato i13 nuovi casi, inclusi sei con custodia root:10001, vere firme Ed25519 e TLS/grant/pubblicazione, oltre alla regressione owner. Hanno però individuato un'importazione incompatibile nel worker standalone e un errore nella fixture systemd: rifiutare inizialmente un timer con target già masked non produce lo stato failed. Il candidato22e856 ha riorganizzato il recupero senza ampliare i runtime e corretto la fixture del timer; conservava però l'ulteriore import incompatibile individuato e corretto in4a65b9. Questi risultati restano storici: la qualificazione corrente4a65b9 è documentata sotto.
 
-Verifiche locali del codice22e856: 7 casi metadata/immagini/APISIX, legacy8, import runtime completo3, terminale7 e launcher14 passati; i sei casi con group10001 non sono eseguibili nel sandbox locale e restano obbligatori in CI. Le tre closure migration/installer/worker standalone compilano con i32/39/24 moduli previsti, senza nuova dipendenza o allowlist stdlib.
+Il candidato22e856 è stato fermato dalla CI: quattro workflow hanno fallito allo stesso import di producer dal modulo legacy, prima dei test di recupero. Nessuna esecuzione VPS. Il candidato4a65b9 elimina questa dipendenza dalla componente standalone, mantiene la lettura privata con FD/ancestry/no-follow e aggiunge una regressione che vieta il package worker durante l'import isolato.
 
-Capsula candidata: **7c3c31c874bb2db6edc81726b89c584f53007826c8a9af08cd98c169892cd555**, 112 file.
-Launcher candidato: **250bedbed6521e96c78db90cb70ffcd436a70948c33c8cfb25ac417e4999ccbe**.
-Non offrire ancora un comando VPS su questa base.
+Verifiche locali4a65b9: retirement9PASS, import runtime completo3PASS, recupero7PASS e6 skip per group10001 non disponibile nel sandbox. Le tre closure migration/installer/worker standalone compilano con32/39/24 moduli, senza ampliare allowlist o set dei moduli. I sei casi nativi restano obbligatori in CI. CI hosted4a65b9 completata: tutti i9 workflow push/PR PASS. PR consegna38715383127:262 test/34 suite/zero skip, incl13 casi recupero e timer systemd reale. PR online IAM38715383165:234 test/31 suite/zero skip, incluso Keycloak reale disposable. Installazione completa38715383033, retirement38715383112 e HUMAN verifier38715383372 PASS. Push corrispondenti38715377019/38715377065/38715377030/38715377158 PASS. Vedi evidence/chatbot-pregrant-recovery-qualification-20261015.json.
+
+Capsula qualificata: **f9715d9728e78554305df567415bd949f8c3a89d00010204f6c549a1932a3728**,112 file.
+Launcher qualificato: **4b6f30144055af38978f04d6eef16ddab134a890b0dcee460261ec28de5ca3dd**.
+Wrapper qualificato e pubblicato: releases/chatbot-file-cohort-pregrant-recovery-execute-vps-20261015.sh, SHA2564e85a8e48f134a8c6d53ecaafd8b25942ff8cad9a38731a4dcd52be12caf6bf9. Verifica sintassi Bash PASS. Il wrapper è ora consegnabile, fissato al commit4a65b9326c15d9758ecba1793965617a2a92e43e. Il programma mostrerà una NUOVA review: approvare soltanto l'hash corrente, mai6ff o altri precedenti. Include gli effetti applicativi ancora da eseguire: cinque container, backup/migrazioni e primo grant/worker finito. APISIX e immagini completati vengono verificati e riutilizzati. Non rilanciare automaticamente dopo un nuovo PAUSED/BLOCKED: leggere stato e record prima di qualsiasi ulteriore azione. Dopo COHORT_READY_FOR_ACTUAL_CHATBOT_CSV_ACCEPTANCE proseguire subito con la prova MCP nella stessa finestra.
 
 ## Pacchetto applicativo congelato
 
