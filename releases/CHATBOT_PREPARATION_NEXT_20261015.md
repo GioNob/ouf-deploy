@@ -32,44 +32,38 @@ first grant, credential rotation or backup/fence replay. Full independent OCI/
 rootfs preflight precedes IAM/device/terminal interaction. Existing complete
 frame, token, peer, node-signing and later native application checks stay required.
 
-Qualification RUNNING after owner changed repository visibility to public.
-All six standard-hosted-runner checks have actually started on source43819bc0;
-Docker, native authority, full installation and retirement checks PASS.
-Cohort joined mount/owner/TLS and v3 three-prior/fourth-grant review steps PASS;
-whole cohort and separate disposable Keycloak IAM checks are still running.
-Exactly one rerun per current workflow was requested; no source-triggered rerun.
+Qualification COMPLETE on source43819bc04dc40daaf119a2098945405f42d7bc6f.
+All six native GitHub CI gates PASS on attempt2, each deliberately rerun ONCE
+after owner made repository public. Full logs read, zero skips:
+- Cohort38799875475/job116648805489:356tests/48suites.
+- IAM38799875567/job116648945842:250tests/33suites plus actual disposable Keycloak.
+- Installation38799875577/job116648950234:70tests/8suites.
+- Docker29.8.1 38799875436/job116648955937:25tests/4suites.
+- HUMAN authority38799875533/job116648964216:66tests/9suites.
+- Retirement38799875681/job116648967135:44tests/4suites.
+Joined actual readonly mount/signed owner/TLS, third-history/fourth-grant/full
+v3 review, both failed-intent preservation, original native DB migration/dump,
+Gateway replacement and ACK/COMMIT/canonical NOOP fixtures pass.
+These fixture results are NOT actual target private-frame/CSV acceptance.
 
-Previous qualification was blocked by a confirmed account billing/spending gate.
-The user supplied the exact GitHub annotation for source f2e70ae8:
-"The job was not started because recent account payments have failed or your
-spending limit needs to be increased. Please check the 'Billing & plans'
-section in your settings". This does NOT distinguish payment failure from
-quota/budget exhaustion. That candidate's six jobs never started a runner.
+Source43819bc0 changes ONLY six workflows relative to f2e70ae8: five formerly
+unrestricted push triggers now target main only; native authority was already
+main-only. All jobs, commands, permissions and path filters are identical.
+Per-workflow/PR concurrency cancels superseded qualification. Local YAML/job/
+permission/path comparisons PASS. No required check removed. Production
+capsule/launcher bytes unchanged. All117 capsule file hashes checked locally.
 
-Current source43819bc04dc40daaf119a2098945405f42d7bc6f changes ONLY six CI workflows:
-five formerly unrestricted push triggers are restricted to main; the existing
-main-only native-authority trigger stays main-only. All six retain identical
-jobs, test commands, permissions, pull-request paths and push paths. Each now
-cancels superseded runs of the same workflow/PR (or branch). Structural YAML
-and exact job/permissions/path comparisons PASS locally. No required test is
-removed. The initial PR-triggered checks failed at dispatch while the repository
-was private. After publication all six received a runner on one deliberate rerun.
-Current whole-cohort
-qualification remains incomplete. Capsule/launcher/production bytes unchanged.
+Prior f2e70ae8/initial43819bc0 jobs were rejected before runner assignment.
+The user supplied GitHub's account payment/spending-limit annotation, then
+chose public visibility. Public visibility and all six actual runner starts
+were verified. No billing limit/payment/visibility setting was changed by the
+agent. The exact original annotation and failed dispatches remain in evidence.
+No native VPS execution, new grant or authority issued during development.
 
-The user chose to make the repository public. Visibility now verified public;
-the agent has NOT changed visibility, payment details, budgets or spending caps.
-Official GitHub docs state standard hosted runner usage is free for public
-repositories; larger runners remain billed. These six use ubuntu-24.04 standard
-runners. All five pinned peer repositories are already public. A payment lock
-can still require account intervention; do not promise visibility alone fixes it.
-No target runtime command delivered and no new VPS authority/mutations.
-
-Public-disclosure review is LIMITED: tree has1550 tracked blobs;259 locally
-readable tracked files scanned with known private-key/GitHub/AWS token patterns,
-zero matches. Generated disposable local test keys are UNTRACKED. No full
-repository/history/artifact disclosure audit was performed; do not certify the
-repository secret-free or alter its visibility on that basis.
+Public-disclosure review remains LIMITED:1550 tracked blobs;259 local tracked
+files scanned with known key/GitHub/AWS-token patterns, zero matches. Generated
+local disposable test keys are untracked. No complete history/artifact audit;
+do not certify all public history secret-free.
 
 Earlier source e74cfc00: actual joined mount/owner/TLS step PASS and all six
 native v3 worker/history/fourth-grant/full-review cases PASS. Five companion
@@ -82,12 +76,17 @@ still finish before runtime delivery; no claim of all-six-gate qualification.
 Earlier f66e69ca failed another test fixture's missing old-owner reference,
 corrected at e74cfc00. Never deliver either failed source as qualified.
 
-Next action: wait for current cohort and separate IAM checks to finish. Read
-all completed native logs, verify counts/no skips and exact source. If all six
-pass, publish wrapper SHA378fc7e4bbac39be2c213e841fda06590b02b91b899d5a34a4a74092dfca8100
-pinned to43819bc0 and the final evidence, then provide one concrete VPS command
-with fresh exact HUMAN review. No VPS diagnostic, new source edit or extra
-rerun is currently requested from the user. CI is not target E2E acceptance.
+Next action: deliver the published exact wrapper to the user for ONE actual
+VPS invocation. Source43819bc0 is qualified by all six native CI gates. Wrapper
+SHA378fc7e4bbac39be2c213e841fda06590b02b91b899d5a34a4a74092dfca8100
+pins source43819bc0, launcherSHA72323604 and capsuleSHA0188d923; reuses existing
+ZIP144699ab. On VPS it validates exact retained history and full native OCI/
+rootfs BEFORE administrative/device/terminal interactions. Explain four possible
+operator steps (sudo, Keycloak admin if needed, fresh device code, exact APPROVO
+review). Later application-domain HUMAN links are printed explicitly. Preserve
+private run.log and finite detached process evidence if the phone disconnects.
+No new readback, first-grant/replacement replay or automatic rerun is requested.
+At this checkpoint user execution is NOT confirmed; do not assume it occurred.
 
 Local extra validation: complete closed-source imports3 PASS, launcher14 PASS,
 signed two-failure recovery5 PASS, legacy paused recovery9 PASS, postgrant9 PASS,
@@ -103,9 +102,9 @@ Exact candidate capsule0188d923fe197a6102097abc8b3af26a94e0175923a23fcca008801ac
 Pinned operational wrapper is prepared locally as
 scripts/launch-chatbot-mount-recovery-20261015.sh, SHA
 378fc7e4bbac39be2c213e841fda06590b02b91b899d5a34a4a74092dfca8100.
-Publish it and the final qualification only after six gates pass; do not give
-a target command while any gate is red/pending. User has no further readback
-to perform now. Existing user downloaded qualified ZIP must be reused.
+Wrapper and final qualification are now published after all six gates pass.
+The user has no further diagnostic readback to perform now. Existing downloaded
+qualified ZIP must be reused. No target command execution confirmed.
 
 No new runtime authority issued by this development. E2E still unproven. After
 actual cohort readiness use TEATRI_SEMANTIC_REUSE_REVIEW_20261014.md for actual

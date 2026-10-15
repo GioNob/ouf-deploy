@@ -1,7 +1,7 @@
 {
   "schema": "ouf.chatbot-mounted-recovery-qualification.v1",
   "date": "2026-10-15",
-  "status": "QUALIFICATION_RUNNING_PUBLIC_STANDARD_RUNNERS",
+  "status": "SIX_NATIVE_CI_GATES_PASS_TARGET_ACTION_NOT_STARTED",
   "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
   "capsuleSha256": "0188d923fe197a6102097abc8b3af26a94e0175923a23fcca008801acd0b9e3d",
   "capsuleFiles": 117,
@@ -22,8 +22,7 @@
   },
   "targetEvidence": "evidence/chatbot-mounted-recovery-target-20261015.json",
   "productionCapsuleSameAsPriorNativeSteps": true,
-  "allRequiredChecksPassed": false,
-  "runtimeCommandDelivered": false,
+  "allRequiredChecksPassed": true,
   "newRuntimeAuthorityIssued": false,
   "targetMutationsThisDevelopment": 0,
   "chatbotEndToEndProven": false,
@@ -97,7 +96,8 @@
     "jobsAndPermissionsUnchanged": true,
     "cancelSupersededPerWorkflowAndPullRequest": true,
     "localStructuralValidation": "PASS",
-    "runs": [
+    "rerunsRequestedAfterBillingReport": 0,
+    "initialDispatchBeforePublication": [
       {
         "runId": 38799875475,
         "name": "Chatbot cohort delivery native owners",
@@ -134,8 +134,7 @@
         "status": "completed",
         "conclusion": "failure"
       }
-    ],
-    "rerunsRequestedAfterBillingReport": 0
+    ]
   },
   "visibilityLastObserved": "public",
   "privacyReview": {
@@ -150,103 +149,199 @@
   "publicQualification": {
     "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
     "rerunsPerWorkflow": 1,
+    "allRequiredChecksPassed": true,
     "checks": [
       {
         "runId": 38799875475,
-        "jobs": [
-          {
-            "jobId": 116648805489,
-            "status": "in_progress",
-            "conclusion": null,
-            "current": "Signed native journals, effects, revocation and reconciliation",
-            "passed": [
-              "Set up job",
-              "Initialize containers",
-              "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
-              "Checkout the exact qualified Gateway materializers",
-              "Install pinned materializer dependencies in an isolated test environment",
-              "Checkout the exact owner helper and database migration sources",
-              "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
-              "Checkout the exact UDP owner migrations",
-              "Checkout the exact target MCP migration for native privilege qualification",
-              "Compile the pinned owner GrantConstraints and Jackson round-trip fixture",
-              "Seal native root custody fixture",
-              "Actual readonly token mount with installed signed owner and TLS introspection",
-              "Three-grant history, actual fourth TLS grant and complete v3 review compilation"
-            ],
-            "failed": []
-          }
-        ]
+        "name": "Chatbot cohort delivery native owners",
+        "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+        "attempt": 2,
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875475",
+        "jobId": 116648805489,
+        "jobUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875475/job/116648805489",
+        "tests": 356,
+        "suites": 48,
+        "skipped": 0,
+        "logsRead": true
       },
       {
         "runId": 38799875567,
-        "jobs": [
-          {
-            "jobId": 116648945842,
-            "status": "in_progress",
-            "conclusion": null,
-            "current": "Actual disposable Keycloak issuer protocol (no target connection)",
-            "passed": [
-              "Set up job",
-              "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
-              "Prepare disposable root fixture",
-              "Actual TLS/peer, root custody, role signatures and persistent admission fencing",
-              "Exact operator handoff and read-only probe",
-              "Full worker and authority closure imported from verified memory",
-              "Existing source-stage and finite worker regressions"
-            ],
-            "failed": []
-          }
-        ]
+        "name": "OUF policy-token online IAM and installed owner qualification",
+        "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+        "attempt": 2,
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875567",
+        "jobId": 116648945842,
+        "jobUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875567/job/116648945842",
+        "tests": 250,
+        "suites": 33,
+        "skipped": 0,
+        "logsRead": true
       },
       {
         "runId": 38799875577,
-        "jobs": [
-          {
-            "jobId": 116648950234,
-            "status": "completed",
-            "conclusion": "success",
-            "failed": []
-          }
-        ]
+        "name": "Complete finite policy-token owner installation",
+        "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+        "attempt": 2,
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875577",
+        "jobId": 116648950234,
+        "jobUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875577/job/116648950234",
+        "tests": 70,
+        "suites": 8,
+        "skipped": 0,
+        "logsRead": true
       },
       {
         "runId": 38799875436,
-        "jobs": [
-          {
-            "jobId": 116648955937,
-            "runnerId": 1000031500,
-            "status": "completed",
-            "conclusion": "success",
-            "failed": []
-          }
-        ]
+        "name": "Remaining Docker lifecycle contracts on 29.8.1",
+        "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+        "attempt": 2,
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875436",
+        "jobId": 116648955937,
+        "jobUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875436/job/116648955937",
+        "tests": 25,
+        "suites": 4,
+        "skipped": 0,
+        "logsRead": true
       },
       {
         "runId": 38799875533,
-        "jobs": [
-          {
-            "jobId": 116648964216,
-            "runnerId": 1000031501,
-            "status": "completed",
-            "conclusion": "success",
-            "failed": []
-          }
-        ]
+        "name": "Native cutover HUMAN scope and existing Ed25519 verifier",
+        "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+        "attempt": 2,
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875533",
+        "jobId": 116648964216,
+        "jobUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875533/job/116648964216",
+        "tests": 66,
+        "suites": 9,
+        "skipped": 0,
+        "logsRead": true
       },
       {
         "runId": 38799875681,
-        "jobs": [
-          {
-            "jobId": 116648967135,
-            "runnerId": 1000031502,
-            "status": "completed",
-            "conclusion": "success",
-            "failed": []
-          }
-        ]
+        "name": "Policy-token governed legacy retirement component",
+        "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+        "attempt": 2,
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875681",
+        "jobId": 116648967135,
+        "jobUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875681/job/116648967135",
+        "tests": 44,
+        "suites": 4,
+        "skipped": 0,
+        "logsRead": true
       }
-    ],
-    "allRequiredChecksPassed": false
+    ]
+  },
+  "checks": [
+    {
+      "runId": 38799875475,
+      "name": "Chatbot cohort delivery native owners",
+      "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+      "attempt": 2,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875475",
+      "jobId": 116648805489,
+      "jobUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875475/job/116648805489",
+      "tests": 356,
+      "suites": 48,
+      "skipped": 0,
+      "logsRead": true
+    },
+    {
+      "runId": 38799875567,
+      "name": "OUF policy-token online IAM and installed owner qualification",
+      "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+      "attempt": 2,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875567",
+      "jobId": 116648945842,
+      "jobUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875567/job/116648945842",
+      "tests": 250,
+      "suites": 33,
+      "skipped": 0,
+      "logsRead": true
+    },
+    {
+      "runId": 38799875577,
+      "name": "Complete finite policy-token owner installation",
+      "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+      "attempt": 2,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875577",
+      "jobId": 116648950234,
+      "jobUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875577/job/116648950234",
+      "tests": 70,
+      "suites": 8,
+      "skipped": 0,
+      "logsRead": true
+    },
+    {
+      "runId": 38799875436,
+      "name": "Remaining Docker lifecycle contracts on 29.8.1",
+      "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+      "attempt": 2,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875436",
+      "jobId": 116648955937,
+      "jobUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875436/job/116648955937",
+      "tests": 25,
+      "suites": 4,
+      "skipped": 0,
+      "logsRead": true
+    },
+    {
+      "runId": 38799875533,
+      "name": "Native cutover HUMAN scope and existing Ed25519 verifier",
+      "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+      "attempt": 2,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875533",
+      "jobId": 116648964216,
+      "jobUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875533/job/116648964216",
+      "tests": 66,
+      "suites": 9,
+      "skipped": 0,
+      "logsRead": true
+    },
+    {
+      "runId": 38799875681,
+      "name": "Policy-token governed legacy retirement component",
+      "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+      "attempt": 2,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875681",
+      "jobId": 116648967135,
+      "jobUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38799875681/job/116648967135",
+      "tests": 44,
+      "suites": 4,
+      "skipped": 0,
+      "logsRead": true
+    }
+  ],
+  "operatorCommandPublished": true,
+  "operatorExecutionConfirmed": false,
+  "operatorWrapper": {
+    "path": "scripts/launch-chatbot-mount-recovery-20261015.sh",
+    "sha256": "378fc7e4bbac39be2c213e841fda06590b02b91b899d5a34a4a74092dfca8100",
+    "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+    "archiveReused": true,
+    "freshExactHumanReviewRequired": true
   }
 }
