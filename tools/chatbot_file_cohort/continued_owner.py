@@ -41,10 +41,10 @@ class ContinuedOwnerInstallation:
     def __init__(self,action,value,stage_files,proof,predecessor,journal_directory,
                  clock=lambda:(time.time(),time.monotonic()),*,transport=None):
         from tools.chatbot_file_cohort.postgrant_recovery import PROFILE,validate_worker_seed
-        evidence.require(type(action)is AggregateAction and proof.get('profile')==PROFILE,
+        evidence.require(type(action)is AggregateAction and proof.get('profile')in(PROFILE,'ouf.chatbot-paused-unsigned-attestation-reprocessing.v1'),
             'EXACT_POSTGRANT_OWNER_CONTINUATION_REQUIRED')
         validate_worker_seed(predecessor['firstGrant'],predecessor['worker'],predecessor['admission'],
-            predecessor['session'],predecessor['completed'])
+            predecessor['session'],predecessor['completed'],profile=proof['profile'])
         self.action,self.clock,self.proof=action,clock,copy.deepcopy(proof)
         self.predecessor=copy.deepcopy(predecessor)
         private_host=value['hostInputBinding']
@@ -72,7 +72,9 @@ class ContinuedOwnerInstallation:
         self.admission=OnlineIamAdmission(profile,credential,transport,clock)
         receipt=predecessor['firstGrant'];old_session=predecessor['session']
         self.worker_scope=finite_worker_scope(old_session['logicalOwnerScopeHash'],receipt['operation'],receipt['scopeHash'],
-            self.policy,self.context,self.generation,self.interval)
+            self.policy,self.context,self.generation,self.interval,
+            **({'predecessor_attempts':2,'cancelled_worker_hash':proof['cancelledWorkerHash'],
+                'predecessor_session_hash':proof['workerSessionHash']}if proof['newBudget']['priorControlledGrantAttempts']==2 else{}))
         self.worker_scope['newBudget']=copy.deepcopy(proof['newBudget'])
         self.worker_scope['predecessorCancelledWorkerHash']=proof['cancelledWorkerHash']
         from tools.semantic_policy_token_owner.supervisor import ScheduledRecovery
@@ -131,13 +133,20 @@ class ContinuedOwnerInstallation:
             'nextRenewalWall':None,'nextRenewalMonotonic':None,'tokenExpiresWall':None,'tokenExpiresMonotonic':None,
             'workerSessionHash':fingerprint(self.worker_scope),'firstGrantReceiptHash':FIRST_HASH,
             'legacyHistory':copy.deepcopy(self.predecessor['worker']['legacyHistory']),
-            'controlledPredecessorGrantAttempts':1,'controlledCumulativeGrantAttempts':1,'bootId':receipt['bootId']}
+            'controlledPredecessorGrantAttempts':self.proof['newBudget']['priorControlledGrantAttempts'],
+            'controlledCumulativeGrantAttempts':self.proof['newBudget']['priorControlledGrantAttempts'],'bootId':receipt['bootId']}
+        if row['controlledPredecessorGrantAttempts']==2:
+            row.update({k:self.worker_scope[k]for k in('controlledHistoryProfile','predecessorCancelledWorkerHash','predecessorWorkerSessionHash')})
         with protected_directory(self.journal.root)as directory:
             for name,value in (('owner-first-grant.json',receipt),('owner-session.json',self.worker_scope),
                 ('owner-admission.json',{'schema':'ouf.policy-token-owner-admission.v1','ownerProfileHash':self.owner_hash,
                     'contextRef':self.context,'generationRef':self.generation,'version':0,'state':'BLOCKED',
                     'tokenHash':None,'blockedAttempt':None})):
                 OwnerInstallation._write_once(self,directory,name,evidence.encoded(value))
+        if row['controlledPredecessorGrantAttempts']==2:
+            with protected_directory(self.journal.root)as directory:
+                for name,value in(('owner-predecessor-worker.json',self.predecessor['worker']),('owner-predecessor-session.json',self.predecessor['session'])):
+                    OwnerInstallation._write_once(self,directory,name,evidence.encoded(value))
         self.journal.initialize(row);self.guard()
         worker=build_worker(self.first.binding,self.first.credential,self.first.profile,self.first.transport,
             self.journal,self.policy,self.context,self.generation,self.manifest,self.action.authority,self.action.raw,

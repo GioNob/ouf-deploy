@@ -210,20 +210,38 @@ class InstalledTokenOwner(DomainOwner):
             time.sleep(min(1,deadline-now))
     def guard_worker_session(self,row):
         signed=json.loads(self.raw,object_pairs_hook=unique).get('policyTokenFiniteWorkerSession')
+        prior=signed.get('predecessorGrantAttempts')if type(signed)is dict else None
+        check(type(prior)is int and prior in(1,2))
         check(type(signed)is dict and fingerprint(signed)==row['workerSessionHash']
             and self.configuration.get('workerSessionHash')==row['workerSessionHash']
-            and signed.get('schema')=='ouf.policy-token-new-finite-worker-session.v1'
+            and signed.get('schema')==('ouf.policy-token-new-finite-worker-session.v1'if prior==1 else'ouf.policy-token-new-finite-worker-session.v2')
             and signed.get('contextRef')==self.context and signed.get('generationRef')==self.generation
             and fingerprint(signed.get('policy'))==row['policyHash']
             and signed.get('intervalSeconds')==row['intervalSeconds']
-            and signed.get('predecessorGrantAttempts')==1
+            and signed.get('predecessorGrantAttempts')==prior
             and signed.get('automaticBudgetRenewalAllowed')is False
             and signed.get('consumedClaimReplayAllowed')is False
             and row.get('legacyHistory')=={'state':'UNKNOWN','cumulativeGrantAttemptCount':None,
                 'reconciled':False,'gapRemainsOpen':True}
-            and row.get('controlledPredecessorGrantAttempts')==1
-            and row.get('controlledCumulativeGrantAttempts')==1+row['attempts'])
+            and row.get('controlledPredecessorGrantAttempts')==prior
+            and row.get('controlledCumulativeGrantAttempts')==prior+row['attempts'])
+        if prior==1:check('controlledHistoryProfile'not in signed and 'controlledHistoryProfile'not in row)
         with protected_directory(self.journal.root)as directory:
+            if prior==2:
+                check(signed.get('controlledHistoryProfile')==row.get('controlledHistoryProfile')=='ouf.policy-token-cancelled-worker-continuation.v1'
+                    and signed.get('newBudget',{}).get('priorControlledGrantAttempts')==2)
+                for key in('predecessorCancelledWorkerHash','predecessorWorkerSessionHash'):check(signed.get(key)==row.get(key))
+                worker_raw=read_private(directory,'owner-predecessor-worker.json',32768)
+                session_raw=read_private(directory,'owner-predecessor-session.json',32768)
+                check(hashlib.sha256(worker_raw).hexdigest()==signed['predecessorCancelledWorkerHash']
+                    and hashlib.sha256(session_raw).hexdigest()==signed['predecessorWorkerSessionHash'])
+                previous=json.loads(worker_raw,object_pairs_hook=unique);old_session=json.loads(session_raw,object_pairs_hook=unique)
+                check(previous.get('state')=='CANCELLED'and previous.get('attempts')==1
+                    and previous.get('controlledPredecessorGrantAttempts')==1 and previous.get('controlledCumulativeGrantAttempts')==prior
+                    and previous.get('workerSessionHash')==signed['predecessorWorkerSessionHash']
+                    and previous.get('firstGrantReceiptHash')==row['firstGrantReceiptHash']
+                    and old_session.get('schema')=='ouf.policy-token-new-finite-worker-session.v1'
+                    and old_session.get('logicalOwnerScopeHash')==signed['logicalOwnerScopeHash'])
             check(json.loads(read_private(directory,'owner-session.json',16384),object_pairs_hook=unique)==signed)
             raw=read_private(directory,'owner-first-grant.json',16384)
             check(hashlib.sha256(raw).hexdigest()==row['firstGrantReceiptHash'])

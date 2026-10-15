@@ -67,7 +67,8 @@ def compile_scope(prepared,source_closure_hash):
         'REGISTRY_DIRECTORIES_MUST_STAY_IN_GROUPED_ROOT')
     if recovery is not None:
         from tools.chatbot_file_cohort.postgrant_recovery import PROFILE
-        require(recovery.get('profile')==PROFILE and paths['backup']==recovery['retainedBackupDirectory'],
+        from tools.chatbot_file_cohort.paused_recovery import PROFILE as PAUSED_PROFILE
+        require(recovery.get('profile')in(PROFILE,PAUSED_PROFILE)and paths['backup']==recovery['retainedBackupDirectory'],
             'EXACT_REVIEWED_RETAINED_BACKUP_DIRECTORY_REQUIRED')
     require(intents['FENCED_BACKUP']['directory']==paths['backup'],'REGISTRY_BACKUP_DIRECTORY_SCOPE_DRIFT')
     require(prepared['nodeRecipe']['sourceClosureHash']==source_closure_hash

@@ -61,7 +61,11 @@ def validate_cutover_seed(row,intents,authority_hash=None):
     return copy.deepcopy(row)
 
 
-def validate_worker_seed(first,worker,admission,session,completed):
+def validate_worker_seed(first,worker,admission,session,completed,profile=None):
+    if profile is not None and profile!=PROFILE:
+        from tools.chatbot_file_cohort.paused_recovery import PROFILE as PAUSED,validate_worker
+        require(profile==PAUSED,'EXACT_RECOVERY_PROFILE_REQUIRED')
+        return validate_worker(first,worker,admission,session)
     require(first.get('state')=='TOKEN_PUBLISHED_NOT_RUNTIME_ACCEPTED'
         and first.get('attemptSlotsConsumed')==1 and first.get('gapRemainsOpen')is True
         and first.get('historicalAccountingReconciled')is False
@@ -86,6 +90,9 @@ def validate_worker_seed(first,worker,admission,session,completed):
 def verify_successor_transition(row,scope,authority_hash):
     """Historical effects keep their original authority; new effects use current."""
     recovery=scope.get('postGrantRecovery')
+    if type(recovery)is dict and recovery.get('profile')!=PROFILE:
+        from tools.chatbot_file_cohort.paused_recovery import verify_successor_transition as paused_verify
+        return paused_verify(row,scope,authority_hash)
     require(type(recovery)is dict and recovery.get('profile')==PROFILE
         and recovery.get('predecessorAuthorityHash')==AUTHORITY
         and recovery.get('predecessorTransitionHash')==TRANSITION_HASH
@@ -116,7 +123,11 @@ def stopped_process(process,systemctl):
         and rows.get('MainPID')=='0' and rows.get('Job')=='','POSTGRANT_PREDECESSOR_PROCESS_NOT_STOPPED')
 
 
-def read_predecessor():
+def read_predecessor(profile=None):
+    if profile is not None and profile!=PROFILE:
+        from tools.chatbot_file_cohort.paused_recovery import PROFILE as PAUSED,read_predecessor as read_paused
+        require(profile==PAUSED,'EXACT_RECOVERY_PROFILE_REQUIRED')
+        return read_paused()
     """Read fixed approved context and immutable records, never execute its code."""
     root=evidence.PARENT/CONTEXT;bindings=[]
     def read(path,expected=None,maximum=262144):
@@ -220,6 +231,9 @@ PINNED_STAGE_HASHES={
 
 
 def proof_scope(predecessor,actor):
+    if predecessor.get('recoveryProfile') is not None:
+        from tools.chatbot_file_cohort.paused_recovery import proof_scope as paused_proof
+        return paused_proof(predecessor,actor)
     require(type(actor)is dict and set(actor)=={'issuer','tenant','subject'}
         and actor=={k:predecessor['prepared']['authorization']['plan']['selection'][k]for k in actor},
         'POSTGRANT_SAME_HUMAN_ACTOR_REQUIRED')
@@ -242,6 +256,9 @@ def proof_scope(predecessor,actor):
 
 
 def retained_bindings(proof):
+    if proof.get('profile')!=PROFILE:
+        from tools.chatbot_file_cohort.paused_recovery import retained_bindings as paused_bindings
+        return paused_bindings(proof)
     require(proof.get('profile')==PROFILE,'EXACT_POSTGRANT_CONTINUATION_PROFILE_REQUIRED')
     for binding in proof['recordBindings']:
         private_file(binding,8388608 if binding['path'].endswith('child-bundle.json') else 2097152)
@@ -256,7 +273,11 @@ def current_baseline(predecessor,engine):
     pregrant_native_readback(original,legacy.AUTHORITY)
     profile=FileOnlyProfile(prepared['registry']['creationRequest'],prepared['registry']['configtree'])
     transition=Transition.__new__(Transition);transition.context=row['contextHash']
-    actual=engine.matching_created(transition,prepared['registry']['creationRequest'],engine.inspect(transition))
+    paused=predecessor.get('recoveryProfile') is not None
+    actual=engine.matching_configuration(transition,prepared['registry']['creationRequest'],engine.inspect(transition))if paused else engine.matching_created(transition,prepared['registry']['creationRequest'],engine.inspect(transition))
+    if paused:
+        from tools.chatbot_file_cohort.paused_recovery import current_paused_native
+        current_paused_native(predecessor,engine,actual)
     require(actual['Id']==CREATED_ID and actual.get('RestartCount')==0,'POSTGRANT_EXACT_ALREADY_CREATED_CONTAINER_REQUIRED')
     require(engine.inspect(transition)==actual,'POSTGRANT_CREATED_GENERATION_UNSTABLE')
     # Existing owner predicate understands the stopped host policy and detached
@@ -291,11 +312,14 @@ def current_baseline(predecessor,engine):
     require(legacy.quiescent(legacy.read_units()),'POSTGRANT_LEGACY_WRITER_NOT_QUIESCENT')
     return {'createdContainerId':CREATED_ID,'createdRuntimeHash':digest(actual),
         'postgresRuntimeHash':digest(pgpin),'databaseFenceProven':True,'imagesVerified':5,
-        'retainedPrefixPhaseCount':4,'controlledGrantAttemptsRetained':1,'serviceMutations':0,'grantRequests':0}
+        'retainedPrefixPhaseCount':6 if paused else 4,'controlledGrantAttemptsRetained':2 if paused else 1,'serviceMutations':0,'grantRequests':0}
 
 
 def seed_registry(predecessor,directories,action,scope):
     """Copy only immutable evidence; the exact CREATE remains IN_FLIGHT."""
+    if scope.get('postGrantRecovery',{}).get('profile')!=PROFILE:
+        from tools.chatbot_file_cohort.paused_recovery import seed_registry as paused_seed
+        return paused_seed(predecessor,directories,action,scope)
     action.guard('applicationRegistryCutover',scope)
     require(scope.get('postGrantRecovery')is not None,'REVIEWED_REGISTRY_CONTINUATION_REQUIRED')
     retained_bindings(scope['postGrantRecovery'])
@@ -314,27 +338,31 @@ def seed_registry(predecessor,directories,action,scope):
 
 class ContinuationFence:
     """One global reservation for this logical incident, irrespective of source."""
-    def __init__(self,action,proof):self.action,self.proof=action,copy.deepcopy(proof);self.fd=None
+    def __init__(self,action,proof):
+        self.action,self.proof=action,copy.deepcopy(proof);self.fd=None;self.claim=CLAIM
+        if proof.get('profile')!=PROFILE:
+            from tools.chatbot_file_cohort.paused_recovery import PROFILE as PAUSED,CLAIM as PAUSED_CLAIM
+            require(proof.get('profile')==PAUSED,'EXACT_RECOVERY_PROFILE_REQUIRED');self.claim=PAUSED_CLAIM
     def __enter__(self):
         scope=json.loads(self.action.raw)['applicationRegistryCutover']
         require(scope.get('postGrantRecovery')==self.proof,'EXACT_SIGNED_POSTGRANT_RESERVATION_REQUIRED')
         self.action.guard('applicationRegistryCutover',scope)
         retained_bindings(self.proof)
         with evidence.protected_parent()as directory:
-            self.fd=os.open(CLAIM,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=directory)
+            self.fd=os.open(self.claim,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=directory)
             try:
                 fcntl.flock(self.fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
-                raw=encoded({'schema':PROFILE,'authorityHash':self.action.authority_hash,'proofHash':digest(self.proof),
-                    'state':'CONTINUATION_RESERVED_NO_AUTOMATIC_REPLAY','priorControlledGrantAttempts':1})
+                raw=encoded({'schema':self.proof['profile'],'authorityHash':self.action.authority_hash,'proofHash':digest(self.proof),
+                    'state':'CONTINUATION_RESERVED_NO_AUTOMATIC_REPLAY','priorControlledGrantAttempts':self.proof.get('newBudget',{}).get('priorControlledGrantAttempts',1)})
                 with os.fdopen(os.dup(self.fd),'wb')as out:out.write(raw);out.flush();os.fsync(out.fileno())
                 os.fsync(directory)
-                self.binding={'path':str(evidence.PARENT/CLAIM),'sha256':hashlib.sha256(raw).hexdigest()}
+                self.binding={'path':str(evidence.PARENT/self.claim),'sha256':hashlib.sha256(raw).hexdigest()}
                 self.identity=evidence.identity(os.fstat(self.fd))
             except BaseException:os.close(self.fd);self.fd=None;raise
         self.guard();return self
     def guard(self):
         require(self.fd is not None and self.identity==evidence.identity(os.fstat(self.fd))
-            ==evidence.identity((evidence.PARENT/CLAIM).lstat()),'POSTGRANT_GLOBAL_RESERVATION_IDENTITY_DRIFT')
+            ==evidence.identity((evidence.PARENT/self.claim).lstat()),'POSTGRANT_GLOBAL_RESERVATION_IDENTITY_DRIFT')
         private_file(self.binding,4096)
         return True
     def __exit__(self,*_):

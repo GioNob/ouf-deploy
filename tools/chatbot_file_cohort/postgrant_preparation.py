@@ -52,11 +52,15 @@ def validate_authorization_rebind(previous,current):
         and not right.get('scopeBindings'),'POSTGRANT_NEW_AUTHORIZATION_WRITES_DENIED')
 
 
-def collect(args):
+def collect(args,*,paused=False):
     source,stage=Path(args.source_directory),Path(args.staging_directory)
-    require(not os.path.lexists(evidence.PARENT/CLAIM),'POSTGRANT_CONTINUATION_ALREADY_RESERVED_INSPECT_ONLY')
+    profile=None;claim=CLAIM
+    if paused:
+        from tools.chatbot_file_cohort.paused_recovery import PROFILE,CLAIM as PAUSED_CLAIM
+        profile=PROFILE;claim=PAUSED_CLAIM
+    require(not os.path.lexists(evidence.PARENT/claim),'POSTGRANT_CONTINUATION_ALREADY_RESERVED_INSPECT_ONLY')
     report('POSTGRANT_RETAINED_HISTORY_PREFLIGHT')
-    previous=read_predecessor();old=previous['prepared'];bundle=previous['bundle']
+    previous=read_predecessor(profile);old=previous['prepared'];bundle=previous['bundle']
     qualified_helpers(stage,bundle)
     from tools.chatbot_file_cohort import assemble
     from tools.chatbot_file_cohort.delivery import native_environment
@@ -74,6 +78,7 @@ def collect(args):
             'POSTGRANT_NATIVE_EXECUTABLE_CHANGED')
     engine=Engine(old['engine']['socketPath'],tuple(old['engine']['socketBinding']))
     native_environment(engine,closure['executables']['docker'],new_directory(stage,'docker-cli'))
+    if paused:report('PAUSED_COMPLETE_OCI_AND_ROOTFS_PREFLIGHT',maximumSeconds=180)
     native=current_baseline(previous,engine)
     report('POSTGRANT_RETAINED_HISTORY_AND_NATIVE_PREFLIGHT_PASSED',**native)
     report('CURRENT_ADMINISTRATIVE_SESSION')
@@ -104,6 +109,9 @@ def collect(args):
         registry['directoryPlan']={name:str(root if name=='root' else root/name)for name in old['registry']['directoryPlan']}
         registry['directoryPlan']['backup']=proof['retainedBackupDirectory']
         registry['cohortPlanHash']=cohort_hash
+        if paused:
+            from tools.chatbot_file_cohort.paused_recovery import proposed_recipe
+            registry['nodeRecipe']=proposed_recipe(registry)
         recipe=registry['nodeRecipe'];recipe['sourceClosureHash']=digest(closure)
         mounted=recipe['renewableToken'];mounted.pop('directoryCustodyScopeHash',None)
         mounted.update(directoryDevice=previous['output']['outputIdentity']['device'],

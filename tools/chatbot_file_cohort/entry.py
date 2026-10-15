@@ -124,6 +124,10 @@ def collect(args):
     with protected_directory(source):pass
     with protected_directory(stage):pass
     verify_preparation_capsule(source,stage,args.preparation_source_hash)
+    from tools.chatbot_file_cohort.paused_recovery import CONTEXT as PAUSED_CONTEXT
+    if os.path.lexists(evidence.PARENT/PAUSED_CONTEXT/'review.json'):
+        from tools.chatbot_file_cohort.postgrant_preparation import collect as collect_paused
+        return collect_paused(args,paused=True)
     from tools.chatbot_file_cohort.postgrant_recovery import CONTEXT as POSTGRANT_CONTEXT
     if os.path.lexists(evidence.PARENT/POSTGRANT_CONTEXT/'review.json'):
         from tools.chatbot_file_cohort.postgrant_preparation import collect as collect_postgrant

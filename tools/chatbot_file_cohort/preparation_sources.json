@@ -1,5 +1,4 @@
 {
-  "schema": "ouf.chatbot-file-preparation-source-paths.v1",
   "files": [
     "releases/chatbot-existing-cinema-baseline-20261014.json",
     "scripts/install-chatbot-file-cohort.py",
@@ -21,6 +20,7 @@
     "tools/chatbot_file_cohort/images.py",
     "tools/chatbot_file_cohort/owner_preparation.py",
     "tools/chatbot_file_cohort/package_custody.py",
+    "tools/chatbot_file_cohort/paused_recovery.py",
     "tools/chatbot_file_cohort/plan.py",
     "tools/chatbot_file_cohort/postgrant_preparation.py",
     "tools/chatbot_file_cohort/postgrant_recovery.py",
@@ -116,5 +116,6 @@
     "tools/semantic_policy_token_owner/supervisor.py",
     "tools/semantic_policy_token_owner/worker_entry.py",
     "tools/semantic_target_review/prepare_application_runtime_inputs.py"
-  ]
+  ],
+  "schema": "ouf.chatbot-file-preparation-source-paths.v1"
 }

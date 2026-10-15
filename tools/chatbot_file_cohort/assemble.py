@@ -108,7 +108,7 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
         from tools.chatbot_file_cohort.postgrant_recovery import read_predecessor,proof_scope,retained_bindings
         retained_bindings(recovery)
         previous=[]
-        require(proof_scope(read_predecessor(),recovery['newBudget']['actor'])==recovery,
+        require(proof_scope(read_predecessor(recovery['profile']),recovery['newBudget']['actor'])==recovery,
             'EXACT_POSTGRANT_RECOVERY_MUST_PRECEDE_OWNER_COMPILATION')
     if previous:
         prepared=copy.deepcopy(prepared)

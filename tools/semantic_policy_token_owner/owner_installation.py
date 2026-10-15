@@ -54,7 +54,8 @@ class AggregateAction:
 
 
 def finite_worker_scope(logical_scope, first_operation, first_scope_hash, policy,
-                        context_ref, generation_ref, interval_seconds):
+                        context_ref, generation_ref, interval_seconds, *, predecessor_attempts=1,
+                        cancelled_worker_hash=None, predecessor_session_hash=None):
     evidence.require(type(policy) is Policy and 1 <= policy.max_attempts <= 128
                      and 1 <= policy.max_elapsed <= 3600 and 1 <= interval_seconds <= 3600,
                      'REVIEWED_FINITE_WORKER_WITHIN_HUMAN_WINDOW_REQUIRED')
@@ -62,7 +63,15 @@ def finite_worker_scope(logical_scope, first_operation, first_scope_hash, policy
         evidence.require(type(value) is str and len(value) == 64
                          and all(c in '0123456789abcdef' for c in value),
                          'EXACT_WORKER_HISTORY_AND_GENERATION_BINDINGS_REQUIRED')
-    return {'schema': 'ouf.policy-token-new-finite-worker-session.v1',
+    evidence.require(predecessor_attempts in (1,2) and type(predecessor_attempts)is int,'EXACT_CONTROLLED_PREDECESSOR_COUNT_REQUIRED')
+    extra={}
+    if predecessor_attempts==2:
+        evidence.require(all(type(v)is str and len(v)==64 and all(c in '0123456789abcdef'for c in v)for v in(cancelled_worker_hash,predecessor_session_hash)),
+            'EXACT_CANCELLED_WORKER_AND_SESSION_HISTORY_REQUIRED')
+        extra={'controlledHistoryProfile':'ouf.policy-token-cancelled-worker-continuation.v1','predecessorCancelledWorkerHash':cancelled_worker_hash,
+            'predecessorWorkerSessionHash':predecessor_session_hash}
+    else:evidence.require(cancelled_worker_hash is None and predecessor_session_hash is None,'LEGACY_SESSION_CANNOT_HIDE_ADDITIONAL_HISTORY')
+    return {'schema': 'ouf.policy-token-new-finite-worker-session.v1'if predecessor_attempts==1 else'ouf.policy-token-new-finite-worker-session.v2',**extra,
             'logicalOwnerScopeHash': logical_scope, 'predecessorFirstGrantOperation': first_operation,
             'predecessorFirstGrantScopeHash': first_scope_hash,
             'operation': 'OPEN_NEW_FINITE_WORKER_SESSION_AFTER_RECONCILED_FIRST_GRANT',
@@ -70,7 +79,7 @@ def finite_worker_scope(logical_scope, first_operation, first_scope_hash, policy
             'policy': json.loads(evidence.encoded(dataclasses.asdict(policy))),
             'intervalSeconds': interval_seconds,
             'legacyHistoryDisposition': 'UNKNOWN_RETAINED_NOT_RECONCILED',
-            'predecessorGrantAttempts': 1, 'automaticBudgetRenewalAllowed': False,
+            'predecessorGrantAttempts': predecessor_attempts, 'automaticBudgetRenewalAllowed': False,
             'consumedClaimReplayAllowed': False}
 
 class OwnerInstallation:

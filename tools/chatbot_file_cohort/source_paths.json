@@ -64,6 +64,7 @@
   "tools.chatbot_file_cohort.gateway_runtime": "tools/chatbot_file_cohort/gateway_runtime.py",
   "tools.chatbot_file_cohort.human_session": "tools/chatbot_file_cohort/human_session.py",
   "tools.chatbot_file_cohort.images": "tools/chatbot_file_cohort/images.py",
+  "tools.chatbot_file_cohort.paused_recovery": "tools/chatbot_file_cohort/paused_recovery.py",
   "tools.chatbot_file_cohort.plan": "tools/chatbot_file_cohort/plan.py",
   "tools.chatbot_file_cohort.postgrant_recovery": "tools/chatbot_file_cohort/postgrant_recovery.py",
   "tools.chatbot_file_cohort.review": "tools/chatbot_file_cohort/review.py",
