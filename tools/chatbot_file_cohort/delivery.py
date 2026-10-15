@@ -161,7 +161,7 @@ def create_directories(action):
 def build_owner(action, prepared, sources):
     value = prepared['owner']
     if prepared.get('postGrantRecovery')is not None:
-        from tools.semantic_policy_token_owner.owner_installation import ContinuedOwnerInstallation
+        from tools.chatbot_file_cohort.continued_owner import ContinuedOwnerInstallation
         from tools.chatbot_file_cohort.postgrant_recovery import read_predecessor
         files={name:sources[module]for name,module in STAGE_SOURCE.items()}
         return ContinuedOwnerInstallation(action,value,files,prepared['postGrantRecovery'],read_predecessor(),

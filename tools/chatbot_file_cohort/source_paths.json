@@ -57,6 +57,7 @@
   "tools.chatbot_file_cohort.action_process": "tools/chatbot_file_cohort/action_process.py",
   "tools.chatbot_file_cohort.authorization": "tools/chatbot_file_cohort/authorization.py",
   "tools.chatbot_file_cohort.containers": "tools/chatbot_file_cohort/containers.py",
+  "tools.chatbot_file_cohort.continued_owner": "tools/chatbot_file_cohort/continued_owner.py",
   "tools.chatbot_file_cohort.databases": "tools/chatbot_file_cohort/databases.py",
   "tools.chatbot_file_cohort.delivery": "tools/chatbot_file_cohort/delivery.py",
   "tools.chatbot_file_cohort.gateway": "tools/chatbot_file_cohort/gateway.py",

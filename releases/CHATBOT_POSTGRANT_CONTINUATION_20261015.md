@@ -56,3 +56,11 @@ Outstanding: full native worker and regression jobs; complete continuation
 assembly/review and current target preflight coverage; review of every future
 phase's retained authority and database fencing. A pinned VPS launcher is to be
 issued only after the required checks pass. E2E remains unproven.
+
+The broad standalone-owner qualification also caught a closed-import regression:
+placing the continuation in its shared installation module introduced a cohort
+dependency into the independent installer closure. The continuation is now in
+`tools/chatbot_file_cohort/continued_owner.py`. The original shared
+`owner_installation.py` is restored byte-for-byte to its previously qualified
+blob `150c4bc41dde51c1b59b948bfba662fb69433da2`; no expansion of the independent
+installer dependency allowlist is made. The full cohort capsule has115 files.

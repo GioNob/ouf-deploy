@@ -13,7 +13,8 @@ from unittest.mock import patch
 
 import test_policy_token_owner_installation as existing
 from tools.chatbot_file_cohort import postgrant_recovery as p
-from tools.semantic_policy_token_owner.owner_installation import AggregateAction,ContinuedOwnerInstallation
+from tools.semantic_policy_token_owner.owner_installation import AggregateAction
+from tools.chatbot_file_cohort.continued_owner import ContinuedOwnerInstallation
 from tools.semantic_lease_recovery.bounded_recovery import Policy,fingerprint
 from tools.semantic_policy_token_owner.supervisor import RenewalWorker
 
