@@ -69,7 +69,7 @@ class MountedReprocessingOwner(unittest.TestCase):
                 ContinuedOwnerInstallation(self.new.action,self.value,self.h.h.harness.files,self.proof,previous,self.directory,self.f.clock,transport=self.f.transport)
         self.assertEqual(self.h.h.harness.grants(),3);self.unchanged()
     def test_complete_review_compiles_v3_session_with_retained_output_and_no_target_effects(self):
-        self.predecessor=self.previous;self.harness=self.h.h.harness
+        self.predecessor=self.previous;self.harness=self.h.h.harness;self.old=self.h.new
         prior.prior.PostGrantOwner.test_complete_review_compiles_new_worker_with_retained_output_and_backup_without_effects(self)
     def test_initialization_or_relaunch_never_reuses_the_previous_token(self):
         self.new.install()
