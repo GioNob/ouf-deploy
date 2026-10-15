@@ -1,0 +1,87 @@
+{
+  "schema": "ouf.retained-checkpoint-fix-qualification.v1",
+  "sourceCommit": "266a4fe7f200d37014b1683b954ef777cdaae46f",
+  "capsuleSha256": "3247eff86492edf78a0942d92345de9e1443625192cf848833a9edb3692b52fd",
+  "allSevenNativeChecksPass": true,
+  "checks": [
+    {
+      "runId": 38805284690,
+      "jobId": 116664420527,
+      "name": "OUF paused workload native state binding",
+      "sourceCommit": "266a4fe7f200d37014b1683b954ef777cdaae46f",
+      "tests": 9,
+      "suites": 2,
+      "skips": 0,
+      "conclusion": "success",
+      "logsRead": true
+    },
+    {
+      "runId": 38805284500,
+      "jobId": 116664860786,
+      "name": "Chatbot cohort delivery native owners",
+      "sourceCommit": "266a4fe7f200d37014b1683b954ef777cdaae46f",
+      "tests": 371,
+      "suites": 51,
+      "skips": 0,
+      "conclusion": "success",
+      "logsRead": true
+    },
+    {
+      "runId": 38805284550,
+      "jobId": 116664418730,
+      "name": "Remaining Docker lifecycle contracts on 29.8.1",
+      "sourceCommit": "266a4fe7f200d37014b1683b954ef777cdaae46f",
+      "tests": 25,
+      "suites": 4,
+      "skips": 0,
+      "conclusion": "success",
+      "logsRead": true
+    },
+    {
+      "runId": 38805284632,
+      "jobId": 116664842565,
+      "name": "OUF policy-token online IAM and installed owner qualification",
+      "sourceCommit": "266a4fe7f200d37014b1683b954ef777cdaae46f",
+      "tests": 250,
+      "suites": 33,
+      "skips": 0,
+      "conclusion": "success",
+      "logsRead": true
+    },
+    {
+      "runId": 38805284396,
+      "jobId": 116664472770,
+      "name": "Complete finite policy-token owner installation",
+      "sourceCommit": "266a4fe7f200d37014b1683b954ef777cdaae46f",
+      "tests": 70,
+      "suites": 8,
+      "skips": 0,
+      "conclusion": "success",
+      "logsRead": true
+    },
+    {
+      "runId": 38805284118,
+      "jobId": 116664417408,
+      "name": "Native cutover HUMAN scope and existing Ed25519 verifier",
+      "sourceCommit": "266a4fe7f200d37014b1683b954ef777cdaae46f",
+      "tests": 75,
+      "suites": 11,
+      "skips": 0,
+      "conclusion": "success",
+      "logsRead": true
+    },
+    {
+      "runId": 38805284382,
+      "jobId": 116664418759,
+      "name": "Policy-token governed legacy retirement component",
+      "sourceCommit": "266a4fe7f200d37014b1683b954ef777cdaae46f",
+      "tests": 44,
+      "suites": 4,
+      "skips": 0,
+      "conclusion": "success",
+      "logsRead": true
+    }
+  ],
+  "newTargetRecoveryImplemented": false,
+  "chatbotEndToEndProven": false
+}
