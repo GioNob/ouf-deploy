@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 import stat
 import subprocess
+import termios
 import time
 
 import iam_binding_candidate as evidence
@@ -25,6 +26,8 @@ from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 
 DECISION = 'APPROVE_ONE_FINITE_CHATBOT_FILE_COHORT_ACTION'
 SCHEMA = 'ouf.chatbot-file-cohort-full-action-review.v1'
+TERMINAL_ATTEMPTS = 3
+PASTE_START, PASTE_END = b'\x1b[200~', b'\x1b[201~'
 REQUIRED_SCOPES = frozenset({
     'policyTokenOwnerInstallation', 'policyTokenOutputCustody',
     'policyTokenLegacyRetirement', 'policyTokenCredentialReestablishment',
@@ -136,6 +139,46 @@ def validate_decision(review, decision, now):
         'EXACT_CURRENT_FINITE_HUMAN_DECISION_REQUIRED')
 
 
+def terminal_answer(raw, expected, byte_count=None):
+    """Accept exact text, optionally inside one exact terminal paste envelope.
+
+    Never normalize whitespace, Unicode, hash case or arbitrary ANSI controls.
+    Returned diagnostics contain only classifications and counts, no input text.
+    """
+    count=len(raw) if byte_count is None else byte_count
+    one_envelope=(raw.count(PASTE_START)==raw.count(PASTE_END)==1 and raw.endswith(PASTE_END))
+    wrapped=one_envelope and raw.startswith(PASTE_START)
+    hash_wrapped=one_envelope and raw.startswith(b'APPROVO '+PASTE_START)
+    if wrapped:value=raw[len(PASTE_START):-len(PASTE_END)]
+    elif hash_wrapped:value=b'APPROVO '+raw[len(b'APPROVO ')+len(PASTE_START):-len(PASTE_END)]
+    else:value=raw
+    wrapped=wrapped or hash_wrapped
+    accepted=count<=128 and value==expected
+    if accepted:reason='EXACT_BRACKETED_PASTE' if wrapped else 'EXACT_TEXT'
+    elif count>128:reason='INPUT_TOO_LONG'
+    elif not value:reason='EMPTY_LINE'
+    elif any(c>127 for c in value):reason='NON_ASCII_BYTES'
+    elif any(c<32 or c==127 for c in value):reason='TERMINAL_CONTROL_BYTES'
+    elif value!=value.strip(b' \t'):reason='EDGE_WHITESPACE'
+    elif re.fullmatch(rb'APPROVO [0-9a-f]{64}',value):reason='DIFFERENT_REVIEW_HASH'
+    else:reason='EXACT_APPROVAL_TEXT_REQUIRED'
+    return accepted,{'reason':reason,'receivedBytes':count,'expectedBytes':len(expected),
+        'pasteEnvelopeRecognized':wrapped}
+
+
+def terminal_line(fd):
+    answer=bytearray();count=0
+    while count<4096:
+        part=os.read(fd,1)
+        require(part,'HUMAN_TERMINAL_CLOSED')
+        if part in (b'\n',b'\r'):return bytes(answer),count
+        count+=1
+        if count<=128:answer.extend(part)
+    # Do not leave an unbounded rejected paste queued for the invoking shell.
+    termios.tcflush(fd,termios.TCIFLUSH)
+    return bytes(answer),count
+
+
 def terminal_decision(review, review_path):
     """Only the operator controlling the terminal can answer this fresh review."""
     require(type(review) is dict and review.get('schema') == SCHEMA,
@@ -164,15 +207,24 @@ def terminal_decision(review, review_path):
     try:
         info = os.fstat(fd)
         require(stat.S_ISCHR(info.st_mode) and os.isatty(fd), 'CONTROLLING_HUMAN_TERMINAL_REQUIRED')
+        # Input left while the device flow was running is not a decision made
+        # after this current review. Show the prompt only after clearing it.
+        termios.tcflush(fd,termios.TCIFLUSH)
         os.write(fd, summary.encode('utf-8'))
-        answer = bytearray()
-        while len(answer) <= 128:
-            part = os.read(fd, 1)
-            require(part, 'HUMAN_TERMINAL_CLOSED')
-            if part in (b'\n', b'\r'):
-                break
-            answer.extend(part)
-        require(bytes(answer) == ('APPROVO '+review_hash).encode(), 'FULL_ACTION_NOT_APPROVED')
+        expected=('APPROVO '+review_hash).encode('ascii')
+        accepted=False
+        for attempt in range(1,TERMINAL_ATTEMPTS+1):
+            answer,count=terminal_line(fd)
+            accepted,detail=terminal_answer(answer,expected,count)
+            if accepted:break
+            diagnostic={'schema':'ouf.chatbot-human-terminal-input.v1','status':'NOT_ACCEPTED',
+                'attempt':attempt,'maximumAttempts':TERMINAL_ATTEMPTS,
+                'runtimeAuthorityIssued':False,'inputTextPrinted':False,**detail}
+            os.write(fd,b'\n'+encoded(diagnostic)+b'\n')
+            if attempt<TERMINAL_ATTEMPTS:
+                os.write(fd,('Riprova nello stesso prompt; usa solo il testo esatto, senza spazi aggiuntivi.\n'
+                    'APPROVO '+review_hash+'\n> ').encode('ascii'))
+        require(accepted,'FULL_ACTION_NOT_APPROVED')
     finally:
         os.close(fd)
     now = int(time.time())
