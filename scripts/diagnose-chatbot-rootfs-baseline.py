@@ -12,6 +12,8 @@ SOURCE='eccef11a97367f20e278db40b9ed6f45dd980c37'
 IMAGE='sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489'
 LIMITS={'maxEntries':100000,'maxBytes':8589934592,'maxDepth':64}
 TARGETS=['/run/ouf/delegation.key','/run/ouf/proposal.key','/run/ouf/database','/run/ouf/policy']
+MOUNT_PROFILES={'ci-original':TARGETS,'retained-registry-v1':[
+    '/run/secrets/semantic-read-owner.key','/run/ouf/proposal.key','/run/ouf-semantic-db','/run/ouf-semantic-auth']}
 GATE='OUF_APPLICATION_GATE=0; trap "OUF_APPLICATION_GATE=1" USR1; while [ "$OUF_APPLICATION_GATE" = 0 ]; do sleep 1 & wait "$!"; done; exec "$@"'
 ENTRY=['/bin/sh','-c',GATE,'ouf-gated-application']
 JAVA=['java','-XX:MaxRAMPercentage=75','-jar','/app/application.jar']
@@ -75,7 +77,9 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--part',type=Path,required=True);parser.add_argument('--source-root',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True);parser.add_argument('--profile',choices=['classic','containerd'],required=True)
-    args=parser.parse_args();require(os.geteuid()==0 and os.environ.get('GITHUB_ACTIONS')=='true','DISPOSABLE_ROOT_CI_ONLY')
+    parser.add_argument('--mount-profile',choices=tuple(MOUNT_PROFILES),default='ci-original')
+    args=parser.parse_args();targets=MOUNT_PROFILES[args.mount_profile]
+    require(os.geteuid()==0 and os.environ.get('GITHUB_ACTIONS')=='true','DISPOSABLE_ROOT_CI_ONLY')
     require(os.environ.get('DOCKER_HOST','')in('','unix:///var/run/docker.sock')and os.environ.get('DOCKER_CONTEXT','')in('','default'),'LOCAL_DISPOSABLE_DAEMON_ONLY')
     args.output.mkdir(mode=0o755);cid=None;name='ouf-rootfs-diagnosis-'+uuid.uuid4().hex
     def docker(*argv):
@@ -100,7 +104,7 @@ def main():
                 p.mkdir(mode=0o500 if i==2 else 0o750);os.chown(p,10001 if i==2 else 0,10001)
                 f=p/('OUF_SEM_DB_PASSWORD'if i==2 else'token');f.write_bytes(b'CI_SYNTHETIC_NO_AUTHORITY');f.chmod(0o400 if i==2 else 0o440);os.chown(f,10001 if i==2 else 0,10001)
         arguments=['create','--name',name,'--network','none','--restart','no','--user','10001:10001','--cap-drop','ALL','--security-opt','no-new-privileges:true','--entrypoint',ENTRY[0]]
-        for p,target in zip(sources,TARGETS):arguments+=['--mount','type=bind,src='+str(p)+',dst='+target+',readonly']
+        for p,target in zip(sources,targets):arguments+=['--mount','type=bind,src='+str(p)+',dst='+target+',readonly']
         try:
             cid=docker(*arguments,native['Id'],*ENTRY[1:],*JAVA);require(re.fullmatch('[a-f0-9]{64}',cid),'EXACT_CI_CONTAINER_REQUIRED')
             docker('start',cid);docker('pause',cid);before=decode(docker('inspect',cid))[0];pid=before['State']['Pid']
@@ -110,7 +114,7 @@ def main():
             merged=Path(before['GraphDriver']['Data']['MergedDir'])if args.profile=='classic'else Path(info['DockerRootDir'])/'rootfs/overlayfs'/cid
             process_root=Path('/proc',str(pid),'root')
             require((merged.stat().st_dev,merged.stat().st_ino)==(process_root.stat().st_dev,process_root.stat().st_ino),'SAME_CI_ROOTFS_REQUIRED')
-            for p,target in zip(sources,TARGETS):
+            for p,target in zip(sources,targets):
                 view=merged/target.lstrip('/')
                 require(view.exists()and(view.stat().st_dev,view.stat().st_ino)!=(p.stat().st_dev,p.stat().st_ino),'CI_BIND_CONTENT_VIEW_DENIED')
             observe,records=sealer(args.source_root);first=observe(merged,LIMITS,Budget())
@@ -120,7 +124,8 @@ def main():
             require(first==second==replay(records) and records==records_again,'STABLE_CI_ROOTFS_SEAL_REQUIRED')
             after=decode(docker('inspect',cid))[0]
             require(before==after and Path('/proc',str(pid),'cmdline').read_bytes()==cmdline,'CI_GENERATION_CHANGED')
-            result={'schema':'ouf.chatbot-frozen-rootfs-baseline.v1','profile':args.profile,'dockerVersion':info['ServerVersion'],'driver':info['Driver'],
+            result={'schema':'ouf.chatbot-frozen-rootfs-baseline.v1','profile':args.profile,'mountProfile':args.mount_profile,'mountTargets':targets,
+                'dockerVersion':info['ServerVersion'],'driver':info['Driver'],
                 'partArtifactSha256':PART_SHA,'sourceCommit':SOURCE,'configurationImageId':IMAGE,'nativeImageId':native['Id'],
                 'imageArchiveSha256':sha(root/'package/image.docker.tar'),'qualifiedRootfsSeal':qualified['rootfsSeal'],'observedRootfsSeal':first,
                 'qualifiedSealMatches':first==qualified['rootfsSeal'],'stableDoubleSeal':True,'javaStarted':False,

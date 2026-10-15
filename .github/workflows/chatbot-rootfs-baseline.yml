@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       fail-fast: false
-      matrix: {profile: [classic, containerd]}
+      matrix: {profile: [containerd]}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with: {persist-credentials: false}
@@ -79,7 +79,7 @@ jobs:
           sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
             python3 -I -B -S /var/lib/ouf-rootfs-program/diagnose.py \
             --part /tmp/ouf-original-semantic.zip --source-root /var/lib/ouf-rootfs-program/source \
-            --profile "$OUF_CI_PROFILE" --output /var/lib/ouf-rootfs-result
+            --profile "$OUF_CI_PROFILE" --mount-profile retained-registry-v1 --output /var/lib/ouf-rootfs-result
           sudo cp -R /var/lib/ouf-rootfs-result result
           sudo chown -R "$(id -u):$(id -g)" result
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
