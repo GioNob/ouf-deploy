@@ -25,7 +25,7 @@ READINESS_POLICY = {'profile':'ouf.chatbot-cohort-readiness.v1', 'maximumAttempt
                     'maximumJitterPercent':20}
 
 REGISTRY_READINESS_POLICY={**READINESS_POLICY,'profile':'ouf.chatbot-registry-readiness.v1',
-    'readOnlyReconciliationOnly':True,'startOrSignalReplayAllowed':False}
+    'readOnlyReconciliationOnly':True,'startOrSignalReplayAllowed':False,'respectRetryAfter':True}
 
 
 class RegistryReadinessBudget:
@@ -76,14 +76,18 @@ class RegistryReadinessBudget:
         wall,mono=self.clock()
         require(wall>=row['nextAttemptAt'] and mono>=row['nextAttemptMonotonic'],'REGISTRY_READINESS_WAIT_NOT_ELAPSED')
         return self.save(row,state='ATTEMPTING',attempts=row['attempts']+1)
-    def schedule(self,phase):
+    def schedule(self,phase,minimum_delay=0):
+        require(type(minimum_delay)in (int,float) and 0<=minimum_delay<float('inf'),
+            'BOUNDED_REGISTRY_RETRY_AFTER_REQUIRED')
         require(phase in ('START_REPLACEMENT','VERIFY_APPLICATION'),'EXACT_READONLY_REGISTRY_RECONCILIATION_PHASE_REQUIRED')
         row=self.record();require(row['state']=='ATTEMPTING','REGISTRY_READINESS_ATTEMPT_REQUIRED')
         if self.exhausted(row):
             self.save(row,state='PAUSED_EXHAUSTED');raise PlanDenied('REGISTRY_READINESS_BUDGET_EXHAUSTED')
         wall,mono=self.clock();base=(5,15,60,300,900)[min(row['attempts']-1,4)]
         seed=hashlib.sha256((row['scopeHash']+str(row['attempts'])).encode()).digest()
-        delay=base*(1+(int.from_bytes(seed[:2],'big')/65535)*.2)
+        delay=max(minimum_delay,base*(1+(int.from_bytes(seed[:2],'big')/65535)*.2))
+        if minimum_delay>=min(row['expiresAt']-wall,row['expiresMonotonic']-mono):
+            self.save(row,state='PAUSED_EXHAUSTED');raise PlanDenied('REGISTRY_READINESS_RETRY_AFTER_EXCEEDS_BUDGET')
         return self.save(row,state='RETRY_WAIT',phase=phase,nextAttemptAt=wall+delay,nextAttemptMonotonic=mono+delay)
     def wait_seconds(self):
         row=self.record();wall,mono=self.clock()

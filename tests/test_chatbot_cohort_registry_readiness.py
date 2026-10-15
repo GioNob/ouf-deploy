@@ -117,6 +117,33 @@ class RegistryWait(unittest.TestCase):
         restarted=self.budget();restarted.initialize()
         with self.assertRaises(PlanDenied):restarted.reserve()
         self.assertEqual(self.journal.read()['attempts'],attempts)
+    def test_retry_after_is_respected_and_never_shortened_to_fit_authority(self):
+        from application_verification_adapter import ApplicationReadinessChannel,retry_after_delay
+        from unittest.mock import patch
+        delay=retry_after_delay('90',self.now[0]);self.assertEqual(delay,90)
+        b=self.budget();b.initialize();b.reserve();b.schedule('VERIFY_APPLICATION',delay)
+        self.assertEqual(b.wait_seconds(),90)
+        self.advance(90);b.reserve()
+        with self.assertRaisesRegex(PlanDenied,'RETRY_AFTER_EXCEEDS_BUDGET'):b.schedule('VERIFY_APPLICATION',3600)
+        self.assertEqual(self.journal.read()['state'],'PAUSED_EXHAUSTED')
+        self.assertEqual(retry_after_delay('Thu, 01 Jan 1970 00:00:00 GMT',self.now[0]),0)
+        for value in ('invalid','NaN','-1','1'*129):
+            with self.assertRaises(ValueError):retry_after_delay(value,self.now[0])
+        class Reply:
+            status=503
+            def read(self,limit):return b'{}'
+            def getheader(self,name):return '90'
+        class Client:
+            def __init__(self,*args,**kw):self.closed=False
+            def request(self,*args,**kw):pass
+            def getresponse(self):return Reply()
+            def close(self):self.closed=True
+        channel=object.__new__(ApplicationReadinessChannel)
+        channel.scope={'health':{'address':'192.168.1.1','port':8080,'path':'/actuator/health','timeoutSeconds':5}}
+        channel.exact=lambda:None
+        with patch('application_verification_adapter.http.client.HTTPConnection',Client):
+            self.assertIsNone(channel.health());self.assertEqual(channel.retry_after_seconds,90)
+
     def test_cas_conflict_clock_regression_and_expired_success_are_not_repaired(self):
         b=self.budget();b.initialize();before=b.record();b.reserve()
         with self.assertRaises(ValueError):b.save(before,state='RETRY_WAIT')

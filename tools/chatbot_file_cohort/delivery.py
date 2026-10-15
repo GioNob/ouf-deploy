@@ -316,7 +316,9 @@ class Delivery:
                     self.current(True)
                     phase=transient_registry_observation(application,error)
                     if phase is None:raise
-                    budget.schedule(phase)
+                    channel=getattr(application.executor.adapters[phase],'channel',None)
+                    retry_after=getattr(channel,'retry_after_seconds',0) if phase=='VERIFY_APPLICATION' else 0
+                    budget.schedule(phase,retry_after)
                     continue
                 self.current(True);budget.complete();return result
 
