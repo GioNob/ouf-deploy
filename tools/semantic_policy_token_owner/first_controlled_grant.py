@@ -261,7 +261,7 @@ class FirstControlledGrant:
                 try:credential=evidence.decode(evidence.read_member(directory,self.transaction.name))
                 except FileNotFoundError:credential=None
                 if credential is not None:
-                    evidence.require(credential.get('schema')=='ouf.policy-token-credential-transaction.v1'
+                    evidence.require(credential.get('schema')==self.transaction.receipt_schema()
                         and credential.get('operation')==self.transaction.operation and credential.get('scope')==self.transaction.scope
                         and credential.get('state')=='NEW_CREDENTIAL_CUSTODIED_NOT_RUNTIME_ACCEPTED'
                         and credential.get('iamMutationAttemptConsumed')is True and credential.get('credentialPublished')is True,
@@ -312,7 +312,7 @@ class FirstControlledGrant:
         self.transaction.guard()
         with evidence.protected_parent()as directory:
             row=evidence.decode(evidence.read_member(directory,self.transaction.name))
-            evidence.require(row.get('schema')=='ouf.policy-token-credential-transaction.v1'
+            evidence.require(row.get('schema')==self.transaction.receipt_schema()
                 and row.get('operation')==self.transaction.operation and row.get('scope')==self.transaction.scope
                 and row.get('state')=='NEW_CREDENTIAL_CUSTODIED_NOT_RUNTIME_ACCEPTED'
                 and row.get('iamMutationAttemptConsumed')is True and row.get('credentialPublished')is True,

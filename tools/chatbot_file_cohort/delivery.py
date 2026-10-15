@@ -6,6 +6,7 @@ cohort rollout and the user's finite CSV acceptance window. No restart adopts an
 old ACTIVE token, no database rollback or grant budget reset is supplied here.
 """
 import copy
+import errno
 import dataclasses
 import hashlib
 import json
@@ -52,6 +53,28 @@ import qualified_owner_scope_catalogue
 def public_failure_reason(error):
     reason=str(error) if type(error) in (evidence.CandidateDenied,RuntimeError,PlanDenied,ImageCustodyDenied) else type(error).__name__
     return reason if re.fullmatch('[A-Z][A-Z0-9_]{0,159}',reason) else type(error).__name__
+
+
+def public_failure_diagnostic(error):
+    result={'schema':'ouf.chatbot-file-cohort-safe-failure-location.v1','messagesPrinted':False}
+    if isinstance(error,OSError) and type(error.errno)is int and 0<error.errno<4096:
+        result.update(errno=error.errno,errnoName=errno.errorcode.get(error.errno,'UNKNOWN'))
+    phase=getattr(error,'safe_diagnostics',{})
+    if type(phase)is dict and phase.get('phase') in ('MIGRATION_SCOPE_PREFLIGHT','GOVERNED_LEGACY_RETIREMENT',
+            'GOVERNED_CREDENTIAL_REESTABLISHMENT','FIRST_CONTROLLED_GRANT_AND_PUBLICATION'):
+        result['componentPhase']=phase['phase']
+    frames=[];tb=error.__traceback__
+    for _ in range(64):
+        if tb is None:break
+        module=tb.tb_frame.f_globals.get('__name__','')
+        if (module.startswith(('tools.chatbot_file_cohort.','tools.semantic_policy_token_owner.'))
+            or module in ('legacy_retirement','accounting_gap_session','credential_transaction','first_controlled_grant','migration_root_custody')):
+            function=tb.tb_frame.f_code.co_name
+            if re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,79}',function):
+                frames.append({'module':module,'function':function,'line':tb.tb_lineno})
+        tb=tb.tb_next
+    result['locations']=frames[-12:]
+    return result
 
 
 STAGE_SOURCE = {
@@ -107,10 +130,15 @@ def build_owner(action, prepared, sources):
     policy = copy.deepcopy(value['policy'])
     policy['delays'] = tuple(policy['delays'])
     files = {name:sources[module] for name,module in STAGE_SOURCE.items()}
+    actor=prepared.get('ownerRenewalActor')
+    if actor is not None and 'authorization' in prepared:
+        selected=prepared['authorization']['plan']['selection']
+        require(actor=={k:selected[k] for k in ('issuer','tenant','subject')},
+            'OWNER_RENEWAL_ACTOR_MUST_MATCH_CURRENT_HUMAN_SELECTION')
     return OwnerInstallation(action, host, value['rootEvidenceHash'], value['rootCreationSourceClosureHash'],
         value['registration'], Binding(**value['binding']), profile, transport, value['sourceCommit'],
         files, Policy(**policy), value['contextRef'], value['generationRef'], value['intervalSeconds'],
-        pregrant_recovery=prepared.get('ownerPregrantRecovery'))
+        pregrant_recovery=prepared.get('ownerPregrantRecovery'),renewal_actor=actor)
 
 
 def native_environment(engine, docker_binding, cli_directory):
@@ -357,7 +385,8 @@ class Delivery:
                             reason=type(observation_error).__name__
                         self.report('CSV_ACCEPTANCE_EVIDENCE_UNAVAILABLE',reason=reason)
         except Exception as error:
-            self.report('PAUSED_REQUIRES_RECONCILIATION',reason=public_failure_reason(error))
+            self.report('PAUSED_REQUIRES_RECONCILIATION',reason=public_failure_reason(error),
+                diagnostic=public_failure_diagnostic(error))
             raise
         finally:
             self.stop.set()

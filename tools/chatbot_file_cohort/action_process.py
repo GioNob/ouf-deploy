@@ -238,6 +238,70 @@ def pregrant_native_readback(review,authority_hash):
         'oldContainerRetained':True,'automaticReplayAllowed':False},bindings
 
 
+def post_credential_discovery(owner):
+    from tools.semantic_policy_token_owner.iam_admission import IamProfile,PinnedIamOpener,OnlineIamAdmission
+    from tools.semantic_policy_token_owner.producer import CredentialFile
+    value=copy.deepcopy(owner['iamProfile'])
+    for key in ('required_scopes','allowed_scopes','peer_addresses'):value[key]=tuple(value[key])
+    profile=IamProfile(**value);transport=PinnedIamOpener(profile)
+    require(transport.trust_digest()==owner['tlsTrustSetHash'],'POST_CREDENTIAL_IAM_TRUST_DRIFT')
+    credential=CredentialFile(Path(owner['binding']['output_directory']).parent/'unused-no-credential-read')
+    # prepare performs only the public discovery GET; CredentialFile.read is
+    # never called here. No POST, introspection or SERVICE bearer is obtained.
+    admission=OnlineIamAdmission(profile,credential,transport)
+    require(admission.prepare(time.monotonic()+10)is True,'POST_CREDENTIAL_PUBLIC_DISCOVERY_UNPROVEN')
+    return {'discoveryIdentityVerified':True,'tlsTrustSetVerified':True,'grantRequests':0,
+        'credentialFilesRead':False,'maximumSeconds':10}
+
+
+def post_credential_native_readback(review,authority_hash,proof):
+    import legacy_retirement as legacy
+    from image_import import Import
+    from image_custody import loaded,runtime_image_id
+    from engine_creation import Engine
+    from tools.chatbot_file_cohort.images import image_import_scope
+    require(proof.get('schema')==legacy.POST_PROFILE and proof.get('predecessorReviewHash')==digest(review)
+        and proof.get('predecessorAuthorityHash')==authority_hash,'EXACT_POST_CREDENTIAL_NATIVE_PROOF_REQUIRED')
+    original=evidence.decode(legacy.private(evidence.PARENT/legacy.CONTEXT/'review.json',legacy.REVIEW))
+    old_images,gateway,bindings=pregrant_native_readback(original,legacy.AUTHORITY)
+    process=review['scopes']['finiteActionProcess'];bundle_binding=process['bundle']
+    bundle=evidence.decode(private_file(bundle_binding,8388608));prepared=bundle['prepared'];plan=prepared['imagePlan']
+    require(bundle['declaration']==review['sourceClosure']['declaration']
+        and digest(prepared)==review['privateInputHashes']['preparedInputs']
+        and image_import_scope(plan)==review['scopes']['cohortImageImport']
+        and plan['cohortManifestHash']==review['privateInputHashes']['cohortManifest'],
+        'EXACT_POST_CREDENTIAL_PREPARED_PLAN_REQUIRED')
+    engine=Engine(prepared['engine']['socketPath'],tuple(prepared['engine']['socketBinding']))
+    require([row['module'] for row in plan['images']]==[r['module'] for r in old_images]
+        and prepared['gatewayRuntimePlan']is None
+        and prepared['gatewayPlan']['transportBinding']['runtimeBinding']==gateway['runtimeBinding'],
+        'POST_CREDENTIAL_RETAINED_APISIX_BINDING_DRIFT')
+    scope={'profile':'ouf.chatbot-file-cohort.gateway-runtime.v1','required':False,
+        'retainedTransportHash':digest(prepared['gatewayPlan']['transportBinding']),
+        'proposalKeyHash':prepared['gatewayPlan']['proposalKeyBinding']['sha256'],
+        'automaticRollbackAllowed':False,'automaticWriteReplayAllowed':False}
+    require(review['scopes']['gatewayRuntimeInstallation']==scope,'POST_CREDENTIAL_GATEWAY_SCOPE_DRIFT')
+    receipts=[];bindings.append(bundle_binding)
+    for row,previous in zip(plan['images'],old_images):
+        module=row['module'];audit=row['audit'];identity=runtime_image_id(audit)
+        require(identity==previous['nativeImageId'],'POST_CREDENTIAL_IMAGE_NATIVE_ID_DRIFT')
+        path=Path(process['directoryPlan']['image'+module.capitalize()])/'recovery.json'
+        state,bound=observed_private_json(path,65536);bindings.append(bound)
+        initial=Import.initial(audit,authority_hash)
+        require(Import.validate_record(audit,state,initial['contextHash'])==state
+            and state['state']=='VERIFIED' and state['effectAttemptCount']==0
+            and state['authorityHash']==authority_hash,'POST_CREDENTIAL_IMAGE_MUST_BE_VERIFIED_WITHOUT_RELOAD')
+        code,native=engine.request('GET','/v1.44/images/'+identity+'/json')
+        require(code==200,'POST_CREDENTIAL_VERIFIED_IMAGE_MISSING');native_proof=loaded(audit,native)
+        require(digest(native_proof)==state['nativeEvidenceHash']==previous['nativeCustodyHash']
+            and engine.request('GET','/v1.44/images/'+identity+'/json')==(code,native),
+            'POST_CREDENTIAL_NATIVE_IMAGE_DRIFT')
+        receipts.append({'module':module,'effectAttemptCount':0,'outcome':'VERIFIED_NATIVE_IMAGE_RETAINED',
+            'nativeImageId':identity,'nativeCustodyHash':digest(native_proof)})
+    discovery=post_credential_discovery(prepared['owner'])
+    return receipts,gateway,bindings,discovery
+
+
 def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None):
     """Reconcile only the known auth-only predecessor; never resume a start claim.
 
@@ -250,6 +314,13 @@ def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None)
     with evidence.protected_parent():
         contexts=sorted(evidence.PARENT.glob('chatbot-file-cohort-signed-*'))
     require(len(contexts)<=16,'BOUNDED_PREVIOUS_COHORT_CONTEXTS_REQUIRED')
+    from legacy_retirement import POST_SOURCE,POST_CONTEXT,POST_AUTHORITY,observe_post_credential
+    post_proof=None
+    post_path=evidence.PARENT/POST_CONTEXT/'review.json'
+    if os.path.lexists(post_path):
+        post_review,_=observed_private_json(post_path,262144)
+        if post_review.get('privateInputHashes',{}).get('cohortManifest')==manifest_hash:
+            post_proof=observe_post_credential(post_review,POST_AUTHORITY)
     result=[]
     for context in contexts:
         if str(context)==exclude_context:continue
@@ -261,8 +332,9 @@ def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None)
         image_recovery=source==IMAGE_IDENTITY_PREDECESSOR_SOURCE
         from legacy_retirement import SOURCE as PREGRANT_SOURCE,observe as observe_pregrant
         pregrant_recovery=source==PREGRANT_SOURCE
+        post_credential=source==POST_SOURCE
         require(review.get('schema')=='ouf.chatbot-file-cohort-full-action-review.v1'
-            and source in (AUTHORIZATION_ONLY_PREDECESSOR_SOURCE,IMAGE_IDENTITY_PREDECESSOR_SOURCE,PREGRANT_SOURCE),
+            and source in (AUTHORIZATION_ONLY_PREDECESSOR_SOURCE,IMAGE_IDENTITY_PREDECESSOR_SOURCE,PREGRANT_SOURCE,POST_SOURCE),
             'PREVIOUS_ACTION_SOURCE_REQUIRES_OWNER_RECONCILIATION')
         process=review['scopes']['finiteActionProcess'];operation=process['logicalOperationHash']
         require(context.name=='chatbot-file-cohort-signed-'+operation
@@ -284,7 +356,7 @@ def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None)
             and authority.get('sourceClosureHash')==review['sourceClosureHash']
             and authority.get('chatbotFileAuthorization')==review['scopes']['chatbotFileAuthorization'],
             'PREVIOUS_AUTHORITY_SCOPE_DRIFT')
-        if image_recovery or pregrant_recovery:
+        if image_recovery or pregrant_recovery or post_credential:
             require(authority.get('cohortImageImport')==review['scopes']['cohortImageImport'],
                     'PREVIOUS_IMAGE_AUTHORITY_SCOPE_DRIFT')
         status,status_binding=observed_private_json(context/'delivery-status.json',8192)
@@ -319,7 +391,7 @@ def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None)
                 require(completed['identities'].get(path)=={'device':info.st_dev,'inode':info.st_ino},
                         'PREVIOUS_STAGE_DIRECTORY_IDENTITY_DRIFT')
                 allowed=({'recovery.json','recovery.lock','invocation.lock'} if name=='authorization' or
-                    (image_recovery or pregrant_recovery) and name in {'imageSemantic','imageUdp','imageOnboarding','imageIngestion','imageMcp'}
+                    (image_recovery or pregrant_recovery or post_credential) and name in {'imageSemantic','imageUdp','imageOnboarding','imageIngestion','imageMcp'}
                     or pregrant_recovery and name=='gatewayRuntime' else
                     {Path(p).name for p in wanted.values() if Path(p).parent==Path(path)})
                 require(set(os.listdir(directory))<=allowed,
@@ -331,19 +403,31 @@ def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None)
             and journal.get('planHash')==review['scopes']['chatbotFileAuthorization']['planHash']
             and journal.get('budgetReset') is False,'PREVIOUS_AUTHORIZATION_HISTORY_DRIFT')
         effects=journal.get('effects',{})
-        require((effects or image_recovery or pregrant_recovery) and all(e.get('state')=='APPLIED' and type(e.get('attempts'))is int
+        require((effects or image_recovery or pregrant_recovery or post_credential) and all(e.get('state')=='APPLIED' and type(e.get('attempts'))is int
             and 1<=e['attempts']<=128 for e in effects.values()),
             'AMBIGUOUS_PREVIOUS_AUTHORIZATION_EFFECT_REQUIRES_OWNER_RECONCILIATION')
         image_receipts,image_bindings=([],[])
         if image_recovery:
             require(status.get('reason')=='ValueError','EXACT_PREVIOUS_IMAGE_IDENTITY_FAILURE_REQUIRED')
             image_receipts,image_bindings=image_predecessor_readback(review,authority_binding['sha256'])
-        recovery_proof=None;gateway_receipt=None
+        recovery_proof=None;gateway_receipt=None;discovery=None
         if pregrant_recovery:
             require(status.get('reason')=='RETIREMENT_QUIESCENCE_UNPROVEN','EXACT_PREGRANT_FAILURE_REQUIRED')
-            recovery_proof=observe_pregrant(review,authority_binding['sha256'])
+            if post_proof is None:
+                recovery_proof=observe_pregrant(review,authority_binding['sha256'])
+            else:
+                from legacy_retirement import retained_pregrant
+                require(digest(retained_pregrant(review,authority_binding['sha256']))==post_proof['originalPregrantProofHash'],
+                    'POST_CREDENTIAL_ORIGINAL_PREGRANT_HISTORY_DRIFT')
             image_receipts,gateway_receipt,image_bindings=pregrant_native_readback(review,authority_binding['sha256'])
-        result.append({'schema':'ouf.chatbot-pregrant-predecessor-readback.v1' if pregrant_recovery else
+        if post_credential:
+            require(post_proof is not None and status.get('reason')=='OSError',
+                'EXACT_POST_CREDENTIAL_IO_FAILURE_REQUIRED')
+            recovery_proof=post_proof
+            image_receipts,gateway_receipt,image_bindings,discovery=post_credential_native_readback(
+                review,authority_binding['sha256'],post_proof)
+        result.append({'schema':'ouf.chatbot-post-credential-predecessor-readback.v1' if post_credential else
+                'ouf.chatbot-pregrant-predecessor-readback.v1' if pregrant_recovery else
                 'ouf.chatbot-image-identity-predecessor-readback.v1' if image_recovery else
                 'ouf.chatbot-auth-only-predecessor-readback.v1',
             'context':str(context),'unit':process['unit'],'authorityHash':authority_binding['sha256'],
@@ -351,8 +435,11 @@ def previous_authorization_actions(manifest_hash,systemctl,exclude_context=None)
             'processStopped':True,'startClaimRetained':True,'budgetReset':False,
             'applicationStageClaimsPresent':False,'firstGrantStageClaimsPresent':False,
             'priorAuthorizationEffectAttempts':{n:e['attempts'] for n,e in sorted(effects.items())},
-            **({'imageImportReadback':image_receipts} if image_recovery or pregrant_recovery else {}),
-            **({'ownerPregrantRecovery':recovery_proof,'gatewayRuntimeReadback':gateway_receipt} if pregrant_recovery else {}),
+            **({'imageImportReadback':image_receipts} if image_recovery or pregrant_recovery or post_credential else {}),
+            **({'ownerPregrantRecovery':recovery_proof,'gatewayRuntimeReadback':gateway_receipt} if pregrant_recovery or post_credential else {}),
+            **({'postCredentialPublicDiscovery':discovery} if post_credential else {}),
+            **({'historicalOwnerSupersededBy':{'authorityHash':POST_AUTHORITY,'proofHash':digest(post_proof)}}
+                if pregrant_recovery and post_proof is not None else {}),
             'recordBindings':[review_binding,decision_binding,authority_binding,status_binding,
                 claim_binding,completed_binding,journal_binding,*image_bindings]})
     return result

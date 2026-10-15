@@ -96,7 +96,7 @@ def current(engine,name):
     return row
 
 
-def compilation_owner(owner_inputs,sources,closure,stage,context,lineage,pregrant_recovery=None):
+def compilation_owner(owner_inputs,sources,closure,stage,context,lineage,pregrant_recovery=None,renewal_actor=None):
     """Real constructor, deliberately absent mandate, no output-directory effect."""
     import iam_governance_intake as governance
     from cutover_authority import CutoverAuthority
@@ -110,7 +110,8 @@ def compilation_owner(owner_inputs,sources,closure,stage,context,lineage,pregran
         'intakeHash':digest(owner_inputs),**lineage})
     return build_owner(AggregateAction(gate,encoded({'schema':'ouf.preparation-without-authority.v1'}),digest(closure)),
                        {'owner':owner_inputs,**({'ownerPregrantRecovery':pregrant_recovery}
-                           if pregrant_recovery is not None else {})},sources)
+                           if pregrant_recovery is not None else {}),
+                        **({'ownerRenewalActor':renewal_actor} if renewal_actor is not None else {})},sources)
 
 
 def collect(args):
@@ -175,12 +176,15 @@ def collect(args):
     recovery=recoveries[0] if recoveries else None
     if recovery is not None:
         report('CURRENT_PREGRANT_RECOVERY_PREFLIGHT_PASSED',priorGrantAttempts=0,
-            priorCredentialMutationAttempts=0,priorRetirementCommandAttempts=1,
+            priorCredentialMutationAttempts=recovery['priorCredentialMutationAttempts'],priorRetirementCommandAttempts=1,
             existingImagesVerified=5,existingGatewayGenerationVerified=True)
     report('CURRENT_ADMINISTRATIVE_SESSION')
     ensure_admin_session(engine,closure['executables']['docker'],new_directory(stage,'iam-session'),emit=emit_line)
     cohort_id='chatbot-file-'+str(RUN)
     selected=select_target(engine,closure['executables']['docker'],picker,PICKER_HASH)
+    from legacy_retirement import POST_PROFILE
+    renewal_actor=({key:selected['selection'][key] for key in ('issuer','tenant','subject')}
+        if recovery is not None and recovery['schema']==POST_PROFILE else None)
     retained,_=retained_inputs(retained_selection)
     history=lineage(retained_selection)
     report('CURRENT_OWNER_IAM_TLS_AND_ROOT_CUSTODY')
@@ -189,7 +193,7 @@ def collect(args):
     report('EXACT_IMAGE_AND_GATEWAY_PREPARATION')
     image_plan=prepare_imports(package,manifest,new_directory(stage,'images'),engine=engine)
     _,context=assemble.authority_directory(cohort_id,digest(closure),digest(manifest))
-    owner=compilation_owner(owner_input['owner'],sources,closure,stage,context,history,recovery)
+    owner=compilation_owner(owner_input['owner'],sources,closure,stage,context,history,recovery,renewal_actor)
     gateway=prepare_gateway(package,records['gateway'],engine,selected['projectionBinding'],
         retained['installationReview']['currentRegistry']['id'],new_directory(stage,'gateway'),cohort_id)
     postgres=current(engine,'ouf-postgres');onboarding=current(engine,'ouf-onboarding')
@@ -248,6 +252,7 @@ def collect(args):
             'authorization':{'plan':auth_plan,'catalogue':catalogue.decode(),'helperBindings':OWNER_FILES,
                 'adminTokenFile':str(session.token_path),'mcpTokenFile':str(session.token_path)},'acceptancePlan':acceptance}
         if recovery is not None:prepared['ownerPregrantRecovery']=recovery
+        if renewal_actor is not None:prepared['ownerRenewalActor']=renewal_actor
         # Keep all preparation evidence private, while the final review binds its
         # exact bytes. No unbounded raw environment or diagnostics reach stdout.
         assemble.stage(stage,'preparation-evidence.json',encoded({'package':provenance,'selection':selected,

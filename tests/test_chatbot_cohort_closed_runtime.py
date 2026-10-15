@@ -42,6 +42,14 @@ try:
  assert entry.public_failure_reason(entry.ImageCustodyDenied('NATIVE_IMAGE_IDENTITY_DRIFT'))=='NATIVE_IMAGE_IDENTITY_DRIFT'
  assert entry.public_failure_reason(ValueError('DO_NOT_PRINT_PRIVATE_VALUE'))=='ValueError'
  assert entry.public_failure_reason(RuntimeError('private value'))=='RuntimeError'
+ try:
+  raise OSError(9,'PRIVATE_MESSAGE_MUST_NOT_APPEAR','/private/credential')
+ except OSError as error:
+  error.safe_diagnostics={'phase':'FIRST_CONTROLLED_GRANT_AND_PUBLICATION','privateValue':'PRIVATE_MESSAGE_MUST_NOT_APPEAR'}
+  diagnostic=entry.public_failure_diagnostic(error)
+  assert diagnostic['errno']==9 and diagnostic['errnoName']=='EBADF'
+  assert diagnostic['componentPhase']=='FIRST_CONTROLLED_GRANT_AND_PUBLICATION'
+  assert 'PRIVATE_MESSAGE' not in json.dumps(diagnostic) and '/private/credential' not in json.dumps(diagnostic)
  print(json.dumps({'entry':entry.__name__,'modules':manifest['moduleCount'],'sameConcreteOwnerTypes':True}))
 except Exception as e:
  print(json.dumps({'denied':str(e)}));raise SystemExit(1)

@@ -200,6 +200,10 @@ def terminal_decision(review, review_path):
          'Il timer mascherato conserva lo stato failed; nessun reset-failed.\n'
          'La vecchia prenotazione resta intatta; una sola continuazione esplicita, senza replay.\n'
           if review.get('scopes',{}).get('policyTokenOwnerInstallation',{}).get('pregrantRecovery') is not None else '')+
+        ('La credenziale già pubblicata viene verificata e riutilizzata: zero nuove rotazioni.\n'
+         'La sessione precedente scaduta con zero grant resta intatta.\n'
+         'Questa nuova decisione apre un solo budget distinto: massimo un grant cumulativo e 300 secondi.\n'
+          if (review.get('scopes',{}).get('policyTokenOwnerInstallation',{}).get('pregrantRecovery') or {}).get('priorCredentialMutationAttempts')==1 else '')+
         ('I ruoli OUF risultano già pubblicati: vengono riletti, senza nuova proposta se invariati.\n'
           if review.get('authorizationReview',{}).get('requiresNewRoleConfirmation') is False else
           'Eventuale conferma dei ruoli: apri il link browser esplicito; la proposta dura 15 minuti.\n')+

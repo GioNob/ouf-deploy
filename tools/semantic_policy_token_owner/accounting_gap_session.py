@@ -52,12 +52,22 @@ class FirstGapSession:
         binding.require(binding.decode(self.raw).get('policyTokenAccountingGapMigration')==self.scope,
             'EXPLICIT_SIGNED_GAP_MIGRATION_SCOPE_REQUIRED')
         binding.require(self.authority(self.raw)is True,'CURRENT_HUMAN_AND_DUAL_ROLE_AUTHORITY_REQUIRED')
+        if getattr(self,'pregrant_recovery',None) is not None:
+            from legacy_retirement import PregrantRecovery
+            binding.require(type(self.pregrant_recovery)is PregrantRecovery
+                and self.pregrant_recovery.post_credential,'TYPED_POST_CREDENTIAL_SESSION_RECOVERY_REQUIRED')
+            # Check only immutable predecessor facts here. The current session
+            # may be consumed; its unused expired predecessor never changes.
+            self.pregrant_recovery.guard()
     def validate(self,row):
+        renewal=self.scope.get('newBudget')
         required={'schema','operation','scope','version','state','sessionDecisionHash','createdAt','lastObservedAt',
             'expiresAt','createdMonotonic','lastMonotonic','expiresMonotonic','bootId',
             'attemptSlotsConsumed','legacyHistory','historicalCumulativeGrantAttemptCount',
             'runtimeAuthorityIssued','notReleaseAcceptance'}
-        binding.require(type(row)is dict and set(row)==required and row['schema']=='ouf.policy-token-first-gap-session.v1'
+        if renewal is not None:required=required|{'budgetDecision'}
+        schema='ouf.policy-token-first-gap-session.v2' if renewal is not None else 'ouf.policy-token-first-gap-session.v1'
+        binding.require(type(row)is dict and set(row)==required and row['schema']==schema
             and row['operation']==self.operation and row['scope']==self.scope and type(row['version'])is int and row['version']>=0
             and row['state']in STATES and type(row['sessionDecisionHash'])is str and re.fullmatch('[0-9a-f]{64}',row['sessionDecisionHash'])
             and all(type(row[key])is int for key in ('createdAt','lastObservedAt','expiresAt','attemptSlotsConsumed'))
@@ -73,6 +83,16 @@ class FirstGapSession:
                 'reconciled':False,'gapRemainsOpen':True}
             and row['historicalCumulativeGrantAttemptCount']is None
             and row['runtimeAuthorityIssued']is False and row['notReleaseAcceptance']is True,'RETAINED_GAP_SESSION_DRIFT')
+        if renewal is not None:
+            decision=row['budgetDecision']
+            binding.require(type(decision)is dict and set(decision)=={'actor','reason','decisionRef','authorityHash',
+                'predecessorSessionHash','priorGrantAttempts','maximumCumulativeGrantAttempts'}
+                and decision['actor']==renewal['actor'] and decision['reason']==renewal['reason']
+                and type(decision['decisionRef'])is str and re.fullmatch('[A-Za-z0-9_.:-]{1,128}',decision['decisionRef'])
+                and decision['authorityHash']==row['sessionDecisionHash']
+                and decision['predecessorSessionHash']==renewal['predecessorSession']['sha256']
+                and decision['priorGrantAttempts']==0 and decision['maximumCumulativeGrantAttempts']==1,
+                'EXPLICIT_NEW_FIRST_GRANT_BUDGET_DECISION_REQUIRED')
         return row
     def save(self,directory,row,first=False):
         raw=binding.encoded(self.validate(row))
@@ -123,6 +143,14 @@ class FirstGapSession:
                         'attemptSlotsConsumed':0,'legacyHistory':{'gapEvidenceHash':GAP_HASH,'state':'UNKNOWN',
                             'cumulativeGrantAttemptCount':None,'reconciled':False,'gapRemainsOpen':True},
                         'historicalCumulativeGrantAttemptCount':None,'runtimeAuthorityIssued':False,'notReleaseAcceptance':True}
+                    renewal=self.scope.get('newBudget')
+                    if renewal is not None:
+                        mandate=binding.decode(self.authority.mandate(self.raw))
+                        row['schema']='ouf.policy-token-first-gap-session.v2'
+                        row['budgetDecision']={'actor':renewal['actor'],'reason':renewal['reason'],
+                            'decisionRef':mandate['approvalRef'],'authorityHash':binding.sha(self.raw),
+                            'predecessorSessionHash':renewal['predecessorSession']['sha256'],
+                            'priorGrantAttempts':0,'maximumCumulativeGrantAttempts':1}
                     self.guard();self.save(directory,row,first=True);return row
                 binding.require(not consume or row['attemptSlotsConsumed']==0,'CONSUMED_SLOT_REQUIRES_RECONCILIATION_NO_REPLAY')
                 binding.require(row['lastObservedAt']<=now<row['expiresAt'],'SESSION_EXPIRED_OR_CLOCK_REGRESSED_NO_RENEWAL')

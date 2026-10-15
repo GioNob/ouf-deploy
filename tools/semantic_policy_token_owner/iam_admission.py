@@ -126,7 +126,9 @@ class _Response:
         self.status=response.status;self.total=0
     def __enter__(self):return self
     def __exit__(self,*_):self.close()
-    def close(self):self.response.close();self.connection.close()
+    def close(self):
+        try:self.response.close()
+        finally:self.connection.close()
     def read(self,count):
         try:
             self.deadline.remaining();raw=self.response.read(min(count,65537-self.total))
@@ -159,7 +161,11 @@ class PinnedIamOpener:
         mutating=url==p.token_endpoint;parts=urllib.parse.urlsplit(url);deadline=_Deadline(self.clock,timeout)
         # Do not try another peer after failure: the durable owner owns any retry.
         connection=_Connection(parts.hostname,parts.port or 443,p.peer_addresses[0],self.context,deadline)
-        submitted=False
+        submitted=False;response=None
+        def close_failed_response():
+            try:
+                if response is not None:response.close()
+            finally:connection.close()
         try:
             connection.connect();deadline.remaining();submitted=True
             headers={'Host':parts.netloc,'Accept':'application/json','Connection':'close'}
@@ -178,14 +184,14 @@ class PinnedIamOpener:
             check(content=='application/json')
             return _Response(connection,response,deadline,mutating)
         except ssl.SSLError:
-            connection.close();raise Permanent('INTEGRITY_UNPROVEN') from None
+            close_failed_response();raise Permanent('INTEGRITY_UNPROVEN') from None
         except Temporary as e:
-            connection.close();raise Temporary(e.code,retry_after=e.retry_after,no_effect=not mutating or not submitted) from None
-        except Permanent:connection.close();raise
+            close_failed_response();raise Temporary(e.code,retry_after=e.retry_after,no_effect=not mutating or not submitted) from None
+        except Permanent:close_failed_response();raise
         except (socket.timeout,TimeoutError,ConnectionError,OSError,http.client.HTTPException):
-            connection.close();raise Temporary('DEPENDENCY_TIMEOUT',no_effect=not mutating or not submitted) from None
+            close_failed_response();raise Temporary('DEPENDENCY_TIMEOUT',no_effect=not mutating or not submitted) from None
         except Exception:
-            connection.close();raise Permanent('INTEGRITY_UNPROVEN') from None
+            close_failed_response();raise Permanent('INTEGRITY_UNPROVEN') from None
 
 class OnlineIamAdmission:
     """Read-only authenticated discovery/introspection at the EXISTING issuer.

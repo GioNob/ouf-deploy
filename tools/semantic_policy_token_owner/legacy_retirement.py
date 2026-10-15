@@ -15,6 +15,7 @@ import re
 import stat
 import subprocess
 import tempfile
+import time
 import uuid
 import iam_binding_candidate as binding
 import iam_governance_intake as governance
@@ -249,8 +250,8 @@ def names(scopes):
         'session':binding.PARENT/('policy-token-first-gap-session-'+first['sessionOperation']+'.private.json'),
         'grant':binding.PARENT/('policy-token-first-controlled-grant-'+first['sessionOperation']+'.private.json')}
 
-def observe(review,authority_hash):
-    """Read-only preparation, called after stopped/expired process validation."""
+def retained_pregrant(review,authority_hash):
+    """Immutable original pregrant facts; absence is checked by its phase owner."""
     binding.require(digest(review)==REVIEW and authority_hash==AUTHORITY
         and review['sourceClosure']['declaration']['sourceCommit']==SOURCE
         and Path(review['scopes']['finiteActionProcess']['authorityDirectory']).name==CONTEXT,
@@ -305,6 +306,10 @@ def observe(review,authority_hash):
         'priorRetirementCommandAttempts':1,'priorOutputMkdirAttempts':1,
         'priorCredentialMutationAttempts':0,'priorGrantAttempts':0,
         'automaticReplayAllowed':False,'budgetReset':False}
+    return result
+
+def observe(review,authority_hash):
+    result=retained_pregrant(review,authority_hash)
     admission(result)
     binding.require(quiescent(read_units()),'PREGRANT_LEGACY_QUIESCENCE_REQUIRED')
     return result
@@ -322,11 +327,15 @@ class PregrantRecovery:
             'CURRENT_TYPED_PREGRANT_AUTHORITY_REQUIRED')
         self.authority,self.raw=authority,bytes(authority_raw)
         self.proof=copy.deepcopy(proof);self.hash=digest(self.proof);self.owner_scope=None
-        old_review=binding.decode(private(binding.PARENT/CONTEXT/'review.json',REVIEW))
+        self.post_credential=self.proof.get('schema')==POST_PROFILE
+        old_review=binding.decode(private(binding.PARENT/(POST_CONTEXT if self.post_credential else CONTEXT)/'review.json',
+            POST_REVIEW if self.post_credential else REVIEW))
         # Re-observe while still effect-free; arbitrary proof dictionaries cannot
         # replace the fixed original records or absence/identity requirements.
-        binding.require(observe(old_review,AUTHORITY)==self.proof,'EXACT_CURRENT_PREGRANT_PROOF_REQUIRED')
-        self.continuation='policy-token-owner-pregrant-continuation-'+AUTHORITY+'.private.json'
+        observed=observe_post_credential(old_review,POST_AUTHORITY) if self.post_credential else observe(old_review,AUTHORITY)
+        binding.require(observed==self.proof,'EXACT_CURRENT_PREGRANT_PROOF_REQUIRED')
+        self.continuation=('policy-token-owner-post-credential-continuation-'+POST_AUTHORITY if self.post_credential
+            else 'policy-token-owner-pregrant-continuation-'+AUTHORITY)+'.private.json'
 
     def guard(self):
         binding.require(self.owner_scope is not None and digest(self.proof)==self.hash
@@ -339,9 +348,14 @@ class PregrantRecovery:
         for record_ref in self.proof['recordBindings'].values():private(record_ref['path'],record_ref['sha256'])
         binding.require({label:directory_binding(*value) for label,value in ROOTS.items()}
             ==self.proof['rootBindings'],'PREGRANT_ROOT_IDENTITIES_CHANGED')
+        if self.post_credential:
+            binding.require(credential_metadata()==self.proof['credentialMetadata'],
+                'POST_CREDENTIAL_FILE_METADATA_CHANGED')
 
     def admit(self):
-        self.guard();admission(self.proof)
+        self.guard()
+        if self.post_credential:post_credential_admission(self.proof)
+        else:admission(self.proof)
         binding.require(quiescent(read_units()),'PREGRANT_LEGACY_QUIESCENCE_REQUIRED')
 
     def configure(self,output,retirement):
@@ -351,7 +365,31 @@ class PregrantRecovery:
             component.scope={**component.scope,'operation':operation,count_key:0,
                 'pregrantRecoveryHash':self.hash,'predecessorRecord':copy.deepcopy(self.proof['recordBindings'][label])}
             component.name='policy-token-'+label+'-pregrant-reconciliation-'+AUTHORITY+'.private.json'
+            if self.post_credential:
+                component.name='policy-token-'+label+'-post-credential-reconciliation-'+POST_AUTHORITY+'.private.json'
             component.pregrant_recovery=self
+
+    def configure_first(self,first,actor):
+        if not self.post_credential:return
+        binding.require(type(actor)is dict and set(actor)=={'issuer','tenant','subject'}
+            and all(type(v)is str and 1<=len(v)<=256 and not any(c.isspace() for c in v) for v in actor.values()),
+            'CURRENT_SELECTED_HUMAN_BUDGET_ACTOR_REQUIRED')
+        transaction=first.transaction
+        transaction.scope={**transaction.scope,'schema':'ouf.policy-token-credential-reconciliation-scope.v1',
+            'operation':'REUSE_EXACT_COMPLETED_CREDENTIAL',
+            'maximumIamMutations':0,'pregrantRecoveryHash':self.hash,
+            'predecessorRecord':copy.deepcopy(self.proof['recordBindings']['credential'])}
+        transaction.name='policy-token-credential-post-credential-reconciliation-'+POST_AUTHORITY+'.private.json'
+        transaction.pregrant_recovery=self
+        first.scope['credentialScopeHash']=digest(transaction.scope)
+        session=first.session
+        session.scope={**session.scope,'schema':'ouf.policy-token-new-first-grant-budget-scope.v1',
+            'operation':'OPEN_NEW_WINDOW_AFTER_EXPIRED_UNUSED_FIRST_SESSION',
+            'newBudget':{'actor':copy.deepcopy(actor),'reason':'CONFIRMED_HTTP_RESPONSE_LIFETIME_FAILURE_BEFORE_GRANT',
+                'predecessorSession':copy.deepcopy(self.proof['recordBindings']['session']),
+                'priorGrantAttempts':0,'maximumCumulativeGrantAttempts':1,'automaticRenewalAllowed':False}}
+        session.name='policy-token-first-gap-session-post-credential-'+POST_AUTHORITY+'.private.json'
+        session.pregrant_recovery=self
 
     def publish(self,name,row):
         self.guard()
@@ -400,3 +438,145 @@ class PregrantRecovery:
             self.proof['recordBindings']['retirement']['sha256']))
         row.update(scope=copy.deepcopy(component.scope),state='QUIESCENCE_OBSERVED',version=1)
         return self.publish(component.name,row)
+
+    def prepare_credential(self,first):
+        if not self.post_credential:return
+        # Current authority only: observe the consumed retirement, then adopt
+        # the exact successful local credential receipt. No IAM admin call.
+        first.transaction.retirement.run()
+        first.transaction.run()
+
+    def credential(self,component):
+        self.guard()
+        row=binding.decode(private(self.proof['recordBindings']['credential']['path'],
+            self.proof['recordBindings']['credential']['sha256']))
+        previous=binding.PARENT
+        try:
+            binding.PARENT=component.path
+            with binding.protected_parent() as directory:
+                info=os.stat(component.MEMBER,dir_fd=directory,follow_symlinks=False)
+                binding.require(stat.S_ISREG(info.st_mode) and info.st_uid==info.st_gid==0
+                    and stat.S_IMODE(info.st_mode)==0o400 and info.st_nlink==1 and 0<info.st_size<=4096,
+                    'RETAINED_COMPLETED_CREDENTIAL_CUSTODY_REQUIRED')
+                fd=os.open(component.MEMBER,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=directory)
+                try:
+                    raw=os.read(fd,4097)
+                    binding.require(binding.identity(info)==binding.identity(os.fstat(fd))
+                        ==binding.identity(os.stat(component.MEMBER,dir_fd=directory,follow_symlinks=False))
+                        and len(raw)==info.st_size and binding.sha(raw)==row['newSecretHash'],
+                        'RETAINED_COMPLETED_CREDENTIAL_BYTES_CHANGED')
+                finally:os.close(fd)
+        finally:binding.PARENT=previous
+        row['scope']=copy.deepcopy(component.scope)
+        row['schema']=component.receipt_schema()
+        return self.publish(component.name,row)
+
+# Fixed follow-up to the completed credential / unused session readback. No
+# generic adoption of an arbitrary in-flight installation is provided.
+POST_SOURCE='4a65b9326c15d9758ecba1793965617a2a92e43e'
+POST_AUTHORITY='2c35198422227b7db0894ca37ee4d70947ae56fcce813f8d0d1ab9a81c9b5733'
+POST_REVIEW='261f9e998acaded184ec9be41a1be1dbd862c4c8b3c57d961cce6820a578b184'
+POST_CONTEXT='chatbot-file-cohort-signed-eff1b6915816bcfc409b16e1d24b9eb342b1c38e3d6ae80e362ac893c5480d0b'
+POST_PROFILE='ouf.policy-token-post-credential-reconciliation.v1'
+POST_CREDENTIAL_ID=(65028,4161549,86)
+POST_RECORD_HASHES={
+    'postContinuation':'6bdf577601a0b4275b52c2758e7bb5493024682cdea12f1f46a62e8ee75d6dc7',
+    'postOutput':'c5d6d3bc78d65c18127058b8e236246f5cfde87d93ddc5aac5d7f8f6471880a7',
+    'postRetirement':'3b054f15c49ff43e9de9a6fb5aa642dad8ad23757130af2a9cdd236cb83538d5',
+    'credential':'a9fa6304781bff2c9a795d16520881401a49124db869de87338f8978251436ae',
+    'session':'2879325cd95434413f29dc4058d945e16d0bbc71eaf29d44176c705b5ca6ce0c',
+    'postStageIntent':'a654074cc01bf4c702041591907614e1ca22a6ee34ff37b6b0e4abadf084dc53',
+    'postStageIntake':'0ff3cf4f630709a74c089b4aa75359aa27d62176a9c0975d8f9db90a831b99bf'}
+
+def credential_metadata():
+    path=Path(ROOTS['credential'][0])/'client-secret'
+    binding.require(path.resolve()==path,'POST_CREDENTIAL_SYMLINK_DENIED')
+    info=path.lstat()
+    binding.require(stat.S_ISREG(info.st_mode) and info.st_uid==info.st_gid==0
+        and stat.S_IMODE(info.st_mode)==0o400 and info.st_nlink==1
+        and (info.st_dev,info.st_ino,info.st_size)==POST_CREDENTIAL_ID,
+        'EXACT_POST_CREDENTIAL_METADATA_REQUIRED')
+    return {'device':info.st_dev,'inode':info.st_ino,'bytes':info.st_size,
+        'uid':0,'gid':0,'modeOctal':'0400','links':1,
+        'mtimeNs':info.st_mtime_ns,'ctimeNs':info.st_ctime_ns}
+
+def post_credential_admission(proof):
+    for path in proof['absentRecords']:
+        binding.require(not os.path.lexists(path),'POST_CREDENTIAL_LATER_EFFECT_HISTORY_PRESENT')
+    binding.require(set(os.listdir(ROOTS['ownerRecovery'][0]))=={'token-output'}
+        and set(os.listdir(ROOTS['credential'][0]))=={'client-secret'}
+        and not os.listdir(ROOTS['output'][0]),'POST_CREDENTIAL_OWNER_OR_OUTPUT_HISTORY_PRESENT')
+    session=binding.decode(private(proof['recordBindings']['session']['path'],
+        proof['recordBindings']['session']['sha256']))
+    binding.require(session['attemptSlotsConsumed']==0 and session['state']=='NEW_FINITE_SESSION'
+        and session['bootId']==boot_identity() and time.time()>=session['expiresAt']
+        and time.monotonic()>=session['expiresMonotonic'],
+        'POST_CREDENTIAL_UNUSED_SESSION_MUST_BE_EXPIRED_UNCHANGED')
+    binding.require(credential_metadata()==proof['credentialMetadata'],'POST_CREDENTIAL_METADATA_DRIFT')
+
+def observe_post_credential(review,authority_hash):
+    binding.require(digest(review)==POST_REVIEW and authority_hash==POST_AUTHORITY
+        and review['sourceClosure']['declaration']['sourceCommit']==POST_SOURCE
+        and Path(review['scopes']['finiteActionProcess']['authorityDirectory']).name==POST_CONTEXT,
+        'EXACT_POST_CREDENTIAL_PREDECESSOR_REQUIRED')
+    original=binding.decode(private(binding.PARENT/CONTEXT/'review.json',REVIEW))
+    seed=retained_pregrant(original,AUTHORITY)
+    scopes=review['scopes'];owner=scopes['policyTokenOwnerInstallation']
+    binding.require(owner.get('pregrantRecovery')==seed,'POST_CREDENTIAL_ORIGINAL_RECOVERY_PROOF_DRIFT')
+    result=copy.deepcopy(seed);bindings=result['recordBindings'];paths=names(scopes)
+    records={}
+    fixed={
+        'postContinuation':binding.PARENT/('policy-token-owner-pregrant-continuation-'+AUTHORITY+'.private.json'),
+        'postOutput':binding.PARENT/('policy-token-output-pregrant-reconciliation-'+AUTHORITY+'.private.json'),
+        'postRetirement':binding.PARENT/('policy-token-retirement-pregrant-reconciliation-'+AUTHORITY+'.private.json'),
+        'credential':paths['credential'],'session':paths['session']}
+    for label,path in fixed.items():
+        raw=private(path,POST_RECORD_HASHES[label]);records[label]=binding.decode(raw)
+        bindings[label]={'path':str(path),'sha256':binding.sha(raw)}
+    continuation=records['postContinuation']
+    binding.require(continuation.get('scope')==owner and continuation.get('authorityHash')==POST_AUTHORITY
+        and continuation.get('state')=='RESERVED_OUTCOME_UNPROVEN'
+        and continuation.get('automaticReplayAllowed')is False,
+        'EXACT_POST_CREDENTIAL_INSTALLATION_RESERVATION_REQUIRED')
+    for label,key,state in (('postOutput','policyTokenOutputCustody','OUTPUT_CUSTODIED_NOT_RUNTIME_ACCEPTED'),
+                           ('postRetirement','policyTokenLegacyRetirement','QUIESCENCE_OBSERVED'),
+                           ('credential','policyTokenCredentialReestablishment','NEW_CREDENTIAL_CUSTODIED_NOT_RUNTIME_ACCEPTED'),
+                           ('session','policyTokenAccountingGapMigration','NEW_FINITE_SESSION')):
+        binding.require(records[label].get('scope')==scopes[key] and records[label].get('state')==state,
+            'EXACT_POST_CREDENTIAL_COMPLETED_COMPONENT_REQUIRED')
+    credential=records['credential'];session=records['session']
+    binding.require(credential.get('iamMutationAttemptConsumed')is True
+        and credential.get('credentialPublished')is True and credential.get('version')==1
+        and session.get('sessionDecisionHash')==POST_AUTHORITY and session.get('attemptSlotsConsumed')==0
+        and session.get('version')==0,'POST_CREDENTIAL_ZERO_GRANT_COMPLETED_ROTATION_REQUIRED')
+    for label,path,expected in (
+        ('originalReview',binding.PARENT/CONTEXT/'review.json',REVIEW),
+        ('postReview',binding.PARENT/POST_CONTEXT/'review.json',POST_REVIEW),
+        ('postAuthority',binding.PARENT/POST_CONTEXT/'authority.json',POST_AUTHORITY)):
+        raw=private(path,expected);bindings[label]={'path':str(path),'sha256':binding.sha(raw)}
+        if label=='postAuthority':
+            old_authority=binding.decode(raw)
+            binding.require(all(old_authority.get(k)==v for k,v in scopes.items()),'POST_CREDENTIAL_SIGNED_SCOPE_DRIFT')
+    closure=owner['stageManifestHash'];stage=CODE/('semantic-native-v11-intake-'+closure)
+    binding.require(closure==POST_RECORD_HASHES['postStageIntake'],'EXACT_POST_CREDENTIAL_SOURCE_MANIFEST_REQUIRED')
+    for label,path in (('postStageIntent',CODE/('policy-token-source-stage-'+closure+'.intent')),
+                       ('postStageIntake',stage/'intake.json')):
+        raw=private(path,POST_RECORD_HASHES[label]);records[label]=binding.decode(raw)
+        bindings[label]={'path':str(path),'sha256':binding.sha(raw)}
+    manifest=records['postStageIntake'];files=manifest['fileHashes']
+    binding.require(digest(manifest)==closure and manifest['sourceCommit']==POST_SOURCE
+        and set(files)=={key.split(':',1)[1] for key in seed['recordBindings'] if key.startswith('source:')}
+        and records['postStageIntent']=={'schema':'ouf.policy-token-source-stage-intent.v1',
+            'sourceClosureHash':closure,'authorityHash':POST_AUTHORITY},'POST_CREDENTIAL_SOURCE_STAGE_DRIFT')
+    for name,expected in files.items():
+        private(stage/name,expected);bindings['postSource:'+name]={'path':str(stage/name),'sha256':expected}
+    result.update(schema=POST_PROFILE,predecessorSource=POST_SOURCE,predecessorAuthorityHash=POST_AUTHORITY,
+        predecessorReviewHash=POST_REVIEW,originalPregrantProofHash=digest(seed),
+        priorCredentialMutationAttempts=1,priorGrantAttempts=0,
+        credentialMetadata=credential_metadata())
+    result['absentRecords']=[path for path in seed['absentRecords']
+        if path not in (str(paths['credential']),str(paths['session']))]
+    result['absentRecords'].append(str(fixed['postContinuation'])+'.completed')
+    post_credential_admission(result)
+    binding.require(quiescent(read_units()),'POST_CREDENTIAL_LEGACY_QUIESCENCE_REQUIRED')
+    return result

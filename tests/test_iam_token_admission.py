@@ -126,6 +126,19 @@ class IamAdmissionTest(unittest.TestCase):
                     with self.transport.open(request,0.15) as response:response.read(65537)
                 self.assertEqual(raised.exception.no_effect,not mutating)
                 self.assertLess(time.monotonic()-start,1)
+    def test_rejected_closing_response_releases_socket_even_while_exception_is_retained(self):
+        import tools.semantic_policy_token_owner.iam_admission as implementation
+        original=implementation._Connection.connect;sockets=[]
+        def connected(connection):
+            original(connection);sockets.append(connection.sock.sock)
+        self.fixture.connection_close=True
+        with patch.object(implementation._Connection,'connect',connected):
+            for status,expected in ((429,Temporary),(302,Permanent)):
+                self.fixture.code=status
+                with self.subTest(status=status),self.assertRaises(expected) as raised:
+                    self.admission.prepare(time.monotonic()+10)
+                self.assertIsNotNone(raised.exception)
+                self.assertTrue(all(sock.fileno()==-1 for sock in sockets))
     def test_issuer_revocation_expiry_identity_scope_and_audience_are_denied(self):
         bad=[('client_id','other'),('sub','other'),('tenant_id','other'),('ouf_actor_type','HUMAN'),('iss','https://other.invalid'),('aud',['other']),('scope','authorization.bundle.read privileged.write'),('exp',int(time.time())+1),('exp',True),('iat',int(time.time())+30),'inactive']
         for mode in bad:

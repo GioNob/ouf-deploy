@@ -84,7 +84,7 @@ class OwnerInstallation:
     def __init__(self, action, host_raw, root_evidence_hash, root_source_hash,
                  registration, binding, profile, transport, source_commit,
                  stage_files, policy, context_ref, generation_ref, interval_seconds,
-                 clock=lambda: (time.time(), time.monotonic()), *, pregrant_recovery=None):
+                 clock=lambda: (time.time(), time.monotonic()), *, pregrant_recovery=None,renewal_actor=None):
         evidence.require(type(action) is AggregateAction and type(binding) is Binding
                          and type(profile) is IamProfile and type(transport) is PinnedIamOpener,
                          'CONCRETE_AGGREGATE_OWNER_COMPONENTS_REQUIRED')
@@ -103,6 +103,7 @@ class OwnerInstallation:
         if pregrant_recovery is not None:
             self.pregrant_recovery=roots.legacy.PregrantRecovery(action.authority,action.raw,pregrant_recovery)
             self.pregrant_recovery.configure(self.output,self.first.transaction.retirement)
+            self.pregrant_recovery.configure_first(self.first,renewal_actor)
             self.first.scope['outputCustodyScopeHash']=fingerprint(self.output.scope)
         self.policy, self.context, self.generation, self.interval = policy, context_ref, generation_ref, interval_seconds
         self.worker_scope = finite_worker_scope(self.first.session.scope['logicalOwnerScopeHash'],
@@ -207,6 +208,9 @@ class OwnerInstallation:
                 self.first.prepare_output()
                 guarded()
                 ProtectedTokenSourceStage(self.manifest,self.files,self.action.authority,self.action.raw).stage()
+                guarded()
+                if self.pregrant_recovery is not None:
+                    self.pregrant_recovery.prepare_credential(self.first)
                 guarded()
                 receipt=self.first.migrate()
                 guarded()
