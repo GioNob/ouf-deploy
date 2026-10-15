@@ -52,12 +52,15 @@ def validate_authorization_rebind(previous,current):
         and not right.get('scopeBindings'),'POSTGRANT_NEW_AUTHORIZATION_WRITES_DENIED')
 
 
-def collect(args,*,paused=False):
+def collect(args,*,paused=False,mounted=False):
     source,stage=Path(args.source_directory),Path(args.staging_directory)
     profile=None;claim=CLAIM
     if paused:
         from tools.chatbot_file_cohort.paused_recovery import PROFILE,CLAIM as PAUSED_CLAIM
         profile=PROFILE;claim=PAUSED_CLAIM
+        if mounted:
+            from tools.chatbot_file_cohort.mounted_recovery import PROFILE as MOUNTED,CLAIM as MOUNTED_CLAIM
+            profile=MOUNTED;claim=MOUNTED_CLAIM
     require(not os.path.lexists(evidence.PARENT/claim),'POSTGRANT_CONTINUATION_ALREADY_RESERVED_INSPECT_ONLY')
     report('POSTGRANT_RETAINED_HISTORY_PREFLIGHT')
     previous=read_predecessor(profile);old=previous['prepared'];bundle=previous['bundle']
@@ -111,7 +114,7 @@ def collect(args,*,paused=False):
         registry['cohortPlanHash']=cohort_hash
         if paused:
             from tools.chatbot_file_cohort.paused_recovery import proposed_recipe
-            registry['nodeRecipe']=proposed_recipe(registry)
+            registry['nodeRecipe']=proposed_recipe(registry,retained_mount=mounted)
         recipe=registry['nodeRecipe'];recipe['sourceClosureHash']=digest(closure)
         mounted=recipe['renewableToken'];mounted.pop('directoryCustodyScopeHash',None)
         mounted.update(directoryDevice=previous['output']['outputIdentity']['device'],

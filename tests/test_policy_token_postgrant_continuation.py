@@ -125,6 +125,7 @@ class PostGrantOwner(unittest.TestCase):
         self.assertEqual(self.harness.grants(),1);self.unchanged()
 
     def test_complete_review_compiles_new_worker_with_retained_output_and_backup_without_effects(self):
+        baseline_grants=self.harness.grants()
         # Only the selected target observations are synthetic; constructors,
         # root receipts, output inode, source closure and review are concrete.
         import test_chatbot_cohort_assemble as assembly
@@ -185,7 +186,7 @@ class PostGrantOwner(unittest.TestCase):
         self.assertEqual(review['postGrantRecoveryReview'],proof)
         self.assertNotIn(str(backup),compiled['processPlan']['directoryPlan'].values())
         self.assertEqual(list(self.directory.iterdir()),[]);self.assertFalse(Path(context).exists())
-        self.assertEqual(self.harness.grants(),1);self.unchanged()
+        self.assertEqual(self.harness.grants(),baseline_grants);self.unchanged()
 
 
 if __name__=='__main__':unittest.main()

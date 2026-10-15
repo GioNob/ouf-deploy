@@ -96,15 +96,16 @@ def compile_review(*, source_closure, execution_profile, scopes, phase_intents,
             'FINITE_HUMAN_ACCEPTANCE_WINDOW_REQUIRED')
     worker = scopes['policyTokenFiniteWorkerSession']
     recovery=scopes['applicationRegistryCutover'].get('postGrantRecovery')
-    paused=type(recovery)is dict and recovery.get('profile')=='ouf.chatbot-paused-unsigned-attestation-reprocessing.v1'
+    paused=type(recovery)is dict and recovery.get('profile')in('ouf.chatbot-paused-unsigned-attestation-reprocessing.v1','ouf.chatbot-paused-unsigned-attestation-reprocessing.v2')
+    prior=3 if paused and recovery['profile'].endswith('.v2')else(2 if paused else 1)
     if paused:
-        require(worker.get('schema')=='ouf.policy-token-new-finite-worker-session.v2'
+        require(worker.get('schema')=='ouf.policy-token-new-finite-worker-session.v'+str(prior)
             and worker.get('predecessorCancelledWorkerHash')==recovery['cancelledWorkerHash']
             and worker.get('predecessorWorkerSessionHash')==recovery['workerSessionHash']
             and worker.get('newBudget')==recovery['newBudget'],'EXACT_PAUSED_CUMULATIVE_WORKER_REVIEW_REQUIRED')
     require(worker['policy']['max_elapsed'] <= maximum_seconds
             and worker['legacyHistoryDisposition'] == 'UNKNOWN_RETAINED_NOT_RECONCILED'
-            and worker['predecessorGrantAttempts'] == (2 if paused else 1)
+            and worker['predecessorGrantAttempts'] == prior
             and worker['automaticBudgetRenewalAllowed'] is False
             and worker['consumedClaimReplayAllowed'] is False,
             'DISTINCT_FINITE_WORKER_AND_RETAINED_UNKNOWN_HISTORY_REQUIRED')
@@ -195,6 +196,13 @@ def terminal_decision(review, review_path):
     summary = ('\nRevisione unica del ciclo CSV/chatbot.\n'
         'Documento privato completo: '+str(review_path)+'\n'
         'SHA256: '+review_hash+'\n'
+        +('Ripresa dopo correzione della validità del token montato, sullo stesso Registry in pausa.\n'
+          'Le sei fasi completate e i due intenti falliti restano conservati con backup e blocco DB.\n'
+          'Tre grant già consumati restano conteggiati; il prossimo nuovo grant sarà il quarto cumulativo.\n'
+          'Il nuovo worker verifica la scadenza pubblicata e IAM corrente; il minimo di 90 secondi resta invariato.\n'
+          'Il precedente esecutore è spento e il worker cancellato; questa decisione non estende la vecchia autorità.\n'
+          'Nessun replay CREATE/STAGE/SIGUSR1, nessun reset o rinnovo automatico.\n'
+          if review.get('postGrantRecoveryReview',{}).get('profile')=='ouf.chatbot-paused-unsigned-attestation-reprocessing.v2'else'')
         +('Ripresa dell’attestazione non firmata sullo stesso Registry già in pausa.\n'
           'Le sei fasi completate, il backup e il blocco connessioni DB sono conservati.\n'
           'Si correggono solo la proposta OCI e la baseline dei punti di mount; nessun replay CREATE/STAGE/SIGUSR1.\n'
@@ -206,7 +214,7 @@ def terminal_decision(review, review_path):
           'Le quattro fasi già applicate, il backup e il blocco nuove connessioni DB restano conservati.\n'
           'Nessuna nuova rotazione credenziale, nessuna ripetizione del primo grant o del ritiro timer.\n'
           'Questa decisione autorizza un nuovo worker finito; il totale riparte da un grant già consumato.\n'
-          if review.get('postGrantRecoveryReview')is not None else ''))
+          if review.get('postGrantRecoveryReview',{}).get('profile')=='ouf.chatbot-postgrant-created-continuation.v1' else ''))
         +('Ripresa con nuova finestra finita: '+str(len(review['previousFiniteActions']))+
           ' tentativi precedenti scaduti e spenti, storico e claim conservati.\n'
           'Verificata assenza di migrazioni e primo grant nei tentativi precedenti.\n'

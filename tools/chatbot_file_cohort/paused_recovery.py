@@ -124,7 +124,7 @@ def read_predecessor():
             'PAUSED_LATER_APPLICATION_EFFECT_REQUIRES_DIFFERENT_RECOVERY')
     return result
 
-def proposed_recipe(registry):
+def proposed_recipe(registry,*,retained_mount=False):
     from compile_file_only_frame_policy import recompile_bridge_proposal
     request=registry['creationRequest'];recipe=copy.deepcopy(registry['nodeRecipe'])
     targets=[]
@@ -134,7 +134,7 @@ def proposed_recipe(registry):
         and not request['HostConfig'].get('Tmpfs')and not request['HostConfig'].get('VolumesFrom')
         and registry['imageAudit']['configSha256']==IMAGE_CONFIG
         and registry['imageAudit']['sourceCommit']==CI_WITNESS['moduleSource']
-        and recipe['imageConfigurationHash']==IMAGE_CONFIG and recipe['expectedRootfsSeal']==ORIGINAL_SEAL,
+        and recipe['imageConfigurationHash']==IMAGE_CONFIG and recipe['expectedRootfsSeal']==(ROOTFS_SEAL if retained_mount else ORIGINAL_SEAL),
         'EXACT_INDEPENDENT_RETAINED_MOUNT_CI_IMAGE_PROFILE_REQUIRED')
     recipe['template'],recipe['launch']=recompile_bridge_proposal(recipe['template'],recipe['launch'],request)
     recipe['expectedRootfsSeal']=copy.deepcopy(ROOTFS_SEAL)
@@ -147,7 +147,7 @@ def current_paused_native(previous,engine,native):
     from tools.semantic_provider_node_observation import rootfs_seal,NodeObservation
     from tools.semantic_provider_deployment_authentication import attributes,ancestors,decode
     from compile_file_only_frame_policy import compile_policy,private_bridge_namespace_name
-    registry=previous['prepared']['registry'];request=registry['creationRequest'];recipe=proposed_recipe(registry)
+    registry=previous['prepared']['registry'];request=registry['creationRequest'];recipe=proposed_recipe(registry,retained_mount=previous.get('recoveryProfile')=='ouf.chatbot-paused-unsigned-attestation-reprocessing.v2')
     stage=previous['payloads']['evidence']['STAGE_PAUSED_REPLACEMENT']
     require(native['Id']==original.CREATED_ID and native['RestartCount']==0
         and native['State']['Status']=='paused'and native['State']['Paused']is True and native['State']['Running']is True
