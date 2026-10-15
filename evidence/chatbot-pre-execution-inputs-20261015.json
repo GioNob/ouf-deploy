@@ -1,0 +1,254 @@
+{
+  "schema": "ouf.chatbot-pre-execution-input-observation.v1",
+  "date": "2026-10-15",
+  "source": "AUTHENTICATED_CHATBOT_MCP_OWNER_READS",
+  "selectedAccount": "ouf-admin",
+  "subject": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+  "teatri": {
+    "assetId": "6609b245-86ed-4315-8ce0-73f2a8555bf3",
+    "profileId": "7984c39c-7396-4248-ab0a-f2efc390b49c",
+    "profileVersion": 1,
+    "format": "CSV",
+    "metadata": {
+      "rows": 13,
+      "columns": 20,
+      "encoding": "UTF-8",
+      "delimiter": ";",
+      "headerRow": 1
+    },
+    "columns": [
+      {
+        "name": "nome_teatro",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 13
+      },
+      {
+        "name": "tipologia",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 9
+      },
+      {
+        "name": "toponimo",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 4
+      },
+      {
+        "name": "nome_indirizzo",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 13
+      },
+      {
+        "name": "civico",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 12
+      },
+      {
+        "name": "cap",
+        "dataType": "LONG",
+        "nullable": false,
+        "distinctValues": 10
+      },
+      {
+        "name": "citta",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 1
+      },
+      {
+        "name": "provincia",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 1
+      },
+      {
+        "name": "latitudine",
+        "dataType": "DECIMAL",
+        "nullable": true,
+        "distinctValues": 10
+      },
+      {
+        "name": "longitudine",
+        "dataType": "DECIMAL",
+        "nullable": true,
+        "distinctValues": 10
+      },
+      {
+        "name": "sistema_riferimento",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 1
+      },
+      {
+        "name": "precisione_coordinate",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 3
+      },
+      {
+        "name": "capienza_posti",
+        "dataType": "LONG",
+        "nullable": true,
+        "distinctValues": 4
+      },
+      {
+        "name": "spettacoli_stagione",
+        "dataType": "LONG",
+        "nullable": true,
+        "distinctValues": 1
+      },
+      {
+        "name": "stagione_riferimento",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 1
+      },
+      {
+        "name": "note",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 8
+      },
+      {
+        "name": "fonte_indirizzo",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 13
+      },
+      {
+        "name": "fonte_coordinate",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 10
+      },
+      {
+        "name": "fonte_altri_dati",
+        "dataType": "STRING",
+        "nullable": true,
+        "distinctValues": 5
+      },
+      {
+        "name": "data_verifica",
+        "dataType": "DATE",
+        "nullable": false,
+        "distinctValues": 1
+      }
+    ],
+    "identityProposal": {
+      "stabilityLimit": "Identity remains stable while the proposed key remains stable",
+      "sourceFields": [
+        "nome_teatro"
+      ],
+      "strategy": "NATIVE_KEY",
+      "normalizationRuleRef": "normalization://managed-file/native-key-v1"
+    },
+    "proposalStatus": "PENDING_HUMAN_REVIEW",
+    "sampleValuesOmitted": true,
+    "mappingCheck": {
+      "sourceCommit": "951f91c8df3d252c720ffa4f0fc787ff90d91b9e",
+      "proposalPath": "releases/teatri-reuse-semantic-proposal-20261014.json",
+      "proposalHash": "be74308e098aa3a65396f3df739dd8f2837e9f8e27b6e49deb0e49d04506cb1a",
+      "rdfSha256": "6e4668ea42cf1c75b822e17a8ca9cb71fb2c4d8f500eed628282fa6039a6dbaa",
+      "fieldCount": 20,
+      "allCurrentProfileFieldNamesMatch": true,
+      "semanticReferencesResolved": false,
+      "notExecutableOnboardingRequest": true,
+      "requiresOwnerPublicationPins": true
+    },
+    "rawFileBytesRead": false,
+    "redactedProfileSampleReturnedByOwner": true
+  },
+  "cinema": {
+    "canonicalType": "https://api.ouf-lab.it/semantic/cinema#Cinema",
+    "count": 8,
+    "partial": false,
+    "nextCursor": null,
+    "objects": [
+      {
+        "urbanObjectId": "0418930b-0929-47fb-bab9-a1bc5d6d3fdb",
+        "status": "ACTIVE",
+        "revision": 1,
+        "propertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+          "https://api.ouf-lab.it/semantic/cinema#nome"
+        ]
+      },
+      {
+        "urbanObjectId": "070a6a44-a934-4f82-aec9-5723762fa908",
+        "status": "ACTIVE",
+        "revision": 1,
+        "propertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+          "https://api.ouf-lab.it/semantic/cinema#nome"
+        ]
+      },
+      {
+        "urbanObjectId": "44d19ec1-0b63-49c9-a758-da4b37e90f84",
+        "status": "ACTIVE",
+        "revision": 1,
+        "propertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+          "https://api.ouf-lab.it/semantic/cinema#nome"
+        ]
+      },
+      {
+        "urbanObjectId": "4594e467-cc1d-45f9-be3b-93ad3cc19d20",
+        "status": "ACTIVE",
+        "revision": 1,
+        "propertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+          "https://api.ouf-lab.it/semantic/cinema#nome"
+        ]
+      },
+      {
+        "urbanObjectId": "4613bce3-29c3-48f9-b2e7-882d7c9c4449",
+        "status": "ACTIVE",
+        "revision": 1,
+        "propertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+          "https://api.ouf-lab.it/semantic/cinema#nome"
+        ]
+      },
+      {
+        "urbanObjectId": "659eaa85-7f0b-49e2-bade-42728ebfb12d",
+        "status": "ACTIVE",
+        "revision": 1,
+        "propertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+          "https://api.ouf-lab.it/semantic/cinema#nome"
+        ]
+      },
+      {
+        "urbanObjectId": "65e7da72-6ff5-4b37-b9cb-54fc89a10a33",
+        "status": "ACTIVE",
+        "revision": 1,
+        "propertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+          "https://api.ouf-lab.it/semantic/cinema#nome"
+        ]
+      },
+      {
+        "urbanObjectId": "feb48d73-0195-4ddf-84b2-abdfb75cbc36",
+        "status": "ACTIVE",
+        "revision": 1,
+        "propertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo",
+          "https://api.ouf-lab.it/semantic/cinema#nome"
+        ]
+      }
+    ],
+    "metadataMatchesExistingBaseline": true,
+    "propertyValuesUnchangedNotAsserted": true
+  },
+  "semanticProposalCreated": false,
+  "onboardingDraftCreated": false,
+  "targetServiceMutations": 0,
+  "targetDatabaseMutations": 0,
+  "runtimeAuthorityIssued": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}
