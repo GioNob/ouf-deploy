@@ -31,6 +31,17 @@ class PostCredential(initial.SignedPregrantContinuation):
         with patch.object(self.previous.first.admission,'prepare',side_effect=OSError(9,'synthetic closed response')):
             with self.assertRaises(OSError):self.previous.install()
         self.assertEqual(self.grants(),0)
+        # The inherited historical retirement fixture uses "fixture-boot";
+        # the new first session and worker independently use the real kernel
+        # boot. Restrict that historical stub to its original contract while
+        # the real post-session admission compares the actual current boot.
+        real_admission=recovery.post_credential_admission
+        actual_boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        def current_session_admission(proof):
+            with patch.object(recovery,'boot_identity',return_value=actual_boot):
+                return real_admission(proof)
+        p=patch.object(recovery,'post_credential_admission',side_effect=current_session_admission)
+        p.start();self.addCleanup(p.stop)
         self.before_admin=list(self.f.calls);self.before_commands=list(self.f.commands)
         old_scopes=self.previous.scopes()
         old_scopes['finiteActionProcess']={'authorityDirectory':str(context)}
