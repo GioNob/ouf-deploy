@@ -20,8 +20,8 @@ retained publication expiry on BOTH clocks and unchanged actual online IAM.
 Seven joined native readonly-mount/installed-owner/TLS tests pass; no lowering
 of minimum90s, artificial expiry, publication, renewal or counter reset.
 
-Fixed governed recovery v2 is implemented at source
-f2e70ae8ccce848eff3fed3d9b95f535af8b3e18 on
+Fixed governed recovery v2 is implemented at current source
+43819bc04dc40daaf119a2098945405f42d7bc6f on
 codex/retained-inspection-channel-20261015 (draft PR31, no merge).
 It preserves both previous failed intents and all six effects, old journal
 and both old claims, backup/DB fence, exact image and native generation.
@@ -32,13 +32,36 @@ first grant, credential rotation or backup/fence replay. Full independent OCI/
 rootfs preflight precedes IAM/device/terminal interaction. Existing complete
 frame, token, peer, node-signing and later native application checks stay required.
 
-Qualification BLOCKED: source f2e70ae8ccce848eff3fed3d9b95f535af8b3e18 has six
-GitHub job failures WITHOUT RUNNER START (runner_id0/empty steps, no logs).
-Cohort run38798031552/job116639479918; check-run has one annotation, but this
-connector cannot read the /check-runs/.../annotations endpoint. Its summary/
-text fields are null. The actual reason is NOT established. Billing/quota is
-possible but must not be asserted without the annotation. No rerun requested,
-no spending/settings/visibility changes and no target runtime command delivered.
+Qualification BLOCKED by a confirmed GitHub account billing/spending-limit gate.
+The user supplied the exact GitHub annotation for source f2e70ae8:
+"The job was not started because recent account payments have failed or your
+spending limit needs to be increased. Please check the 'Billing & plans'
+section in your settings". This does NOT distinguish payment failure from
+quota/budget exhaustion. That candidate's six jobs never started a runner.
+
+Current source43819bc04dc40daaf119a2098945405f42d7bc6f changes ONLY six CI workflows:
+five formerly unrestricted push triggers are restricted to main; the existing
+main-only native-authority trigger stays main-only. All six retain identical
+jobs, test commands, permissions, pull-request paths and push paths. Each now
+cancels superseded runs of the same workflow/PR (or branch). Structural YAML
+and exact job/permissions/path comparisons PASS locally. No required test is
+removed. The PR-triggered six checks failed at dispatch while the repository
+was still private; no manual rerun was requested. Current whole-cohort
+qualification remains incomplete. Capsule/launcher/production bytes unchanged.
+
+The user chose to make the repository public. Visibility last observed private;
+the agent has NOT changed visibility, payment details, budgets or spending caps.
+Official GitHub docs state standard hosted runner usage is free for public
+repositories; larger runners remain billed. These six use ubuntu-24.04 standard
+runners. All five pinned peer repositories are already public. A payment lock
+can still require account intervention; do not promise visibility alone fixes it.
+No target runtime command delivered and no new VPS authority/mutations.
+
+Public-disclosure review is LIMITED: tree has1550 tracked blobs;259 locally
+readable tracked files scanned with known private-key/GitHub/AWS token patterns,
+zero matches. Generated disposable local test keys are UNTRACKED. No full
+repository/history/artifact disclosure audit was performed; do not certify the
+repository secret-free or alter its visibility on that basis.
 
 Earlier source e74cfc00: actual joined mount/owner/TLS step PASS and all six
 native v3 worker/history/fourth-grant/full-review cases PASS. Five companion
@@ -51,12 +74,12 @@ still finish before runtime delivery; no claim of all-six-gate qualification.
 Earlier f66e69ca failed another test fixture's missing old-owner reference,
 corrected at e74cfc00. Never deliver either failed source as qualified.
 
-Next required user intervention: open the specific GitHub job and report its
-single annotation: https://github.com/GioNob/ouf-deploy/actions/runs/38798031552/job/116639479918.
-No VPS action or new IAM/device/HUMAN approval is requested. After the runner
-block is understood/resolved, qualify the exact f2e70ae8 source; use existing
-rerun-job capability with bounded deliberate requests, not new source changes
-or repeated target attempts to work around unavailable CI.
+Next action: read repository visibility after the user's change. If public,
+rerun the current cohort check once to establish runner availability, then
+qualify the remaining required checks on the SAME current source. If dispatch
+still reports the account billing gate, stop reruns and report that exact gate.
+No new source edits solely to cause reruns; no VPS test as a substitute for CI.
+No new IAM/device/HUMAN approval or diagnostic command is requested now.
 
 Local extra validation: complete closed-source imports3 PASS, launcher14 PASS,
 signed two-failure recovery5 PASS, legacy paused recovery9 PASS, postgrant9 PASS,

@@ -1,61 +1,13 @@
 {
   "schema": "ouf.chatbot-mounted-recovery-qualification.v1",
   "date": "2026-10-15",
-  "status": "BLOCKED_CI_RUNNER_NOT_STARTED_ANNOTATION_REQUIRED",
-  "sourceCommit": "f2e70ae8ccce848eff3fed3d9b95f535af8b3e18",
+  "status": "BLOCKED_CI_ACCOUNT_BILLING_OR_SPENDING_LIMIT",
+  "sourceCommit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
   "capsuleSha256": "0188d923fe197a6102097abc8b3af26a94e0175923a23fcca008801acd0b9e3d",
   "capsuleFiles": 117,
   "runtimeModules": 99,
   "launcherSha256": "72323604029b4ede41211a579e138ef6fcda03f8e396d1b67bdf251130118595",
-  "checks": [
-    {
-      "runId": 38798031204,
-      "name": "Remaining Docker lifecycle contracts on 29.8.1",
-      "status": "completed",
-      "conclusion": "failure"
-    },
-    {
-      "runId": 38798031552,
-      "name": "Chatbot cohort delivery native owners",
-      "status": "completed",
-      "conclusion": "failure"
-    },
-    {
-      "runId": 38798031501,
-      "name": "Native cutover HUMAN scope and existing Ed25519 verifier",
-      "status": "completed",
-      "conclusion": "failure"
-    },
-    {
-      "runId": 38798031048,
-      "name": "OUF policy-token online IAM and installed owner qualification",
-      "status": "completed",
-      "conclusion": "failure"
-    },
-    {
-      "runId": 38798031198,
-      "name": "Complete finite policy-token owner installation",
-      "status": "completed",
-      "conclusion": "failure"
-    },
-    {
-      "runId": 38798031374,
-      "name": "Policy-token governed legacy retirement component",
-      "status": "completed",
-      "conclusion": "failure"
-    }
-  ],
-  "cohortJob": {
-    "runId": 38798031552,
-    "jobId": 116639479918,
-    "runnerId": 0,
-    "steps": [],
-    "logsAvailable": false,
-    "annotationsCount": 1,
-    "annotationContentAvailable": false,
-    "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38798031552/job/116639479918"
-  },
-  "cause": "UNESTABLISHED_NO_BILLING_OR_QUOTA_ASSERTION",
+  "cause": "USER_REPORTED_GITHUB_ACCOUNT_BILLING_OR_SPENDING_LIMIT_ANNOTATION",
   "previousSourceEvidence": {
     "sourceCommit": "e74cfc009fba1c142dc168fa86610358fd268842",
     "cohortRunId": 38796920463,
@@ -75,5 +27,124 @@
   "newRuntimeAuthorityIssued": false,
   "targetMutationsThisDevelopment": 0,
   "chatbotEndToEndProven": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "priorUnstartedCandidate": {
+    "sourceCommit": "f2e70ae8ccce848eff3fed3d9b95f535af8b3e18",
+    "checks": [
+      {
+        "runId": 38798031204,
+        "name": "Remaining Docker lifecycle contracts on 29.8.1",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "runId": 38798031552,
+        "name": "Chatbot cohort delivery native owners",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "runId": 38798031501,
+        "name": "Native cutover HUMAN scope and existing Ed25519 verifier",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "runId": 38798031048,
+        "name": "OUF policy-token online IAM and installed owner qualification",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "runId": 38798031198,
+        "name": "Complete finite policy-token owner installation",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "runId": 38798031374,
+        "name": "Policy-token governed legacy retirement component",
+        "status": "completed",
+        "conclusion": "failure"
+      }
+    ],
+    "cohortJob": {
+      "runId": 38798031552,
+      "jobId": 116639479918,
+      "runnerId": 0,
+      "steps": [],
+      "logsAvailable": false,
+      "annotationsCount": 1,
+      "annotationContentAvailable": false,
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38798031552/job/116639479918"
+    }
+  },
+  "annotation": {
+    "text": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+    "source": "user-provided GitHub job annotation",
+    "runId": 38798031552,
+    "jobId": 116639479918,
+    "distinguishesFailedPaymentFromQuota": false
+  },
+  "ciDuplicateRepair": {
+    "commit": "43819bc04dc40daaf119a2098945405f42d7bc6f",
+    "workflows": 6,
+    "featurePushDuplicateTriggersRemoved": 5,
+    "pushBranches": [
+      "main"
+    ],
+    "pullRequestPathsUnchanged": true,
+    "jobsAndPermissionsUnchanged": true,
+    "cancelSupersededPerWorkflowAndPullRequest": true,
+    "localStructuralValidation": "PASS",
+    "runs": [
+      {
+        "runId": 38799875475,
+        "name": "Chatbot cohort delivery native owners",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "runId": 38799875567,
+        "name": "OUF policy-token online IAM and installed owner qualification",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "runId": 38799875577,
+        "name": "Complete finite policy-token owner installation",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "runId": 38799875436,
+        "name": "Remaining Docker lifecycle contracts on 29.8.1",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "runId": 38799875533,
+        "name": "Native cutover HUMAN scope and existing Ed25519 verifier",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "runId": 38799875681,
+        "name": "Policy-token governed legacy retirement component",
+        "status": "completed",
+        "conclusion": "failure"
+      }
+    ],
+    "rerunsRequestedAfterBillingReport": 0
+  },
+  "visibilityLastObserved": "private",
+  "privacyReview": {
+    "trackedFiles": 1550,
+    "localReadableFiles": 259,
+    "knownKeyTokenPatternFindings": 0,
+    "historyScanned": false,
+    "completePublicDisclosureAudit": false
+  },
+  "billingSettingsChanged": false,
+  "repositoryVisibilityChangedByAgent": false
 }
