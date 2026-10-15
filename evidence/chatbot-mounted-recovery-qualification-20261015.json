@@ -96,7 +96,6 @@
     "jobsAndPermissionsUnchanged": true,
     "cancelSupersededPerWorkflowAndPullRequest": true,
     "localStructuralValidation": "PASS",
-    "rerunsRequestedAfterBillingReport": 0,
     "initialDispatchBeforePublication": [
       {
         "runId": 38799875475,
@@ -134,7 +133,9 @@
         "status": "completed",
         "conclusion": "failure"
       }
-    ]
+    ],
+    "manualRerunsBeforeVisibilityChange": 0,
+    "manualRerunsAfterVisibilityChange": 6
   },
   "visibilityLastObserved": "public",
   "privacyReview": {
