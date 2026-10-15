@@ -58,6 +58,9 @@ def directories(context,registry):
            'imageSemantic','imageUdp','imageOnboarding','imageIngestion','imageMcp')
     result={name:str(Path(context)/name) for name in names}
     for name,path in registry['directoryPlan'].items():
+        if name=='backup' and registry.get('postGrantRecovery')is not None:
+            require(path==registry['postGrantRecovery']['retainedBackupDirectory'],'EXACT_POSTGRANT_RETAINED_BACKUP_REQUIRED')
+            continue
         require(Path(path).is_relative_to(context) and Path(path)!=Path(context),
                 'REGISTRY_PRIVATE_CHILDREN_MUST_USE_GROUPED_CONTEXT')
         result['registry'+name.capitalize()]=path
@@ -95,10 +98,18 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
     require(expected_declaration==closure['declaration'],'COMPLETE_EXECUTING_SOURCE_CLOSURE_CHANGED')
     operation,context=authority_directory(cohort_id,closure_hash,prepared['imagePlan']['cohortManifestHash'])
     require(not os.path.lexists(context),'FULL_ACTION_CONTEXT_ALREADY_EXISTS_NO_REPLAY')
-    previous=previous_authorization_actions(prepared['imagePlan']['cohortManifestHash'],closure['executables']['systemctl'])
-    recoveries=[row['ownerPregrantRecovery'] for row in previous if row.get('ownerPregrantRecovery') is not None]
-    require(len(recoveries)<=1 and prepared.get('ownerPregrantRecovery')==(recoveries[0] if recoveries else None),
-        'EXACT_PREGRANT_RECOVERY_MUST_PRECEDE_OWNER_COMPILATION')
+    recovery=prepared.get('postGrantRecovery')
+    if recovery is None:
+        previous=previous_authorization_actions(prepared['imagePlan']['cohortManifestHash'],closure['executables']['systemctl'])
+        recoveries=[row['ownerPregrantRecovery'] for row in previous if row.get('ownerPregrantRecovery') is not None]
+        require(len(recoveries)<=1 and prepared.get('ownerPregrantRecovery')==(recoveries[0] if recoveries else None),
+            'EXACT_PREGRANT_RECOVERY_MUST_PRECEDE_OWNER_COMPILATION')
+    else:
+        from tools.chatbot_file_cohort.postgrant_recovery import read_predecessor,proof_scope,retained_bindings
+        retained_bindings(recovery)
+        previous=[]
+        require(proof_scope(read_predecessor(),recovery['newBudget']['actor'])==recovery,
+            'EXACT_POSTGRANT_RECOVERY_MUST_PRECEDE_OWNER_COMPILATION')
     if previous:
         prepared=copy.deepcopy(prepared)
         prepared['previousFiniteActions']=previous
@@ -114,12 +125,19 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
     compiler_action=AggregateAction(gate,encoded({'schema':'ouf.preparation-without-authority.v1'}),closure_hash)
     owner=build_owner(compiler_action,prepared,sources)
     mounted=prepared['registry']['nodeRecipe']['renewableToken']
-    require(mounted['directoryCustodyScopeHash']==digest(owner.output.scope)
-        and mounted['source']==owner.first.binding.output_directory
-        and mounted['fileName']==owner.first.binding.output_member
-        and mounted['gid']==owner.first.binding.output_gid
+    require(mounted['source']==owner.first.binding.output_directory
+        and mounted['fileName']==owner.first.binding.output_member and mounted['gid']==owner.first.binding.output_gid
         and mounted['ownerBindingHash']==owner.first.binding.digest(),
-        'SAME_ACTION_FUTURE_OUTPUT_CUSTODY_AND_NATIVE_OWNER_REQUIRED')
+        'SAME_ACTION_OUTPUT_BINDING_AND_NATIVE_OWNER_REQUIRED')
+    if recovery is None:
+        require(mounted['directoryCustodyScopeHash']==digest(owner.output.scope),
+            'SAME_ACTION_FUTURE_OUTPUT_CUSTODY_AND_NATIVE_OWNER_REQUIRED')
+    else:
+        from tools.semantic_policy_token_owner.producer import protected_directory
+        with protected_directory(mounted['source'],gid=mounted['gid'],mode=0o750)as fd:
+            info=os.fstat(fd)
+            require(mounted.get('directoryDevice')==info.st_dev and mounted.get('directoryInode')==info.st_ino
+                and 'directoryCustodyScopeHash'not in mounted,'EXACT_ALREADY_CUSTODIED_OUTPUT_IDENTITY_REQUIRED')
     scopes=owner.scopes()
     scopes.update(applicationCohortInstallation=installation_scope(prepared['cohortPlan']),
         gatewayRoutePublication=publication_scope(prepared['gatewayPlan']),
@@ -166,6 +184,11 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
             'administration':copy.deepcopy(database['mcpAuditRoleAdministration']),
             'preflight':copy.deepcopy(database['mcpAuditRolePreflight'])}
         require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')
+    require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')
+    if recovery is not None:
+        review['postGrantRecoveryReview']=copy.deepcopy(recovery)
+        review['firstControlledGrantMaximumAttempts']=0
+        review['firstControlledGrantMaximumSeconds']=0
     require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')
     review_binding=stage(staging_directory,'full-action-review.json',encoded(review))
     return {'review':review,'reviewBinding':review_binding,'executionProfile':profile,

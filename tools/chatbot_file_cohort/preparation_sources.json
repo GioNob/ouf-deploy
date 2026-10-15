@@ -21,6 +21,8 @@
     "tools/chatbot_file_cohort/owner_preparation.py",
     "tools/chatbot_file_cohort/package_custody.py",
     "tools/chatbot_file_cohort/plan.py",
+    "tools/chatbot_file_cohort/postgrant_preparation.py",
+    "tools/chatbot_file_cohort/postgrant_recovery.py",
     "tools/chatbot_file_cohort/preparation.py",
     "tools/chatbot_file_cohort/review.py",
     "tools/chatbot_file_cohort/runtime.py",

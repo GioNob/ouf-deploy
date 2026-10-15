@@ -19,6 +19,7 @@ import threading
 import time
 from urllib.parse import urlsplit
 
+import iam_binding_candidate as evidence
 from engine_creation import Engine
 from tools.chatbot_file_cohort.package_custody import extract_cohort,extract_source,new_directory
 from tools.chatbot_file_cohort.plan import digest,encoded,require,environment,runtime_pin
@@ -123,6 +124,10 @@ def collect(args):
     with protected_directory(source):pass
     with protected_directory(stage):pass
     verify_preparation_capsule(source,stage,args.preparation_source_hash)
+    from tools.chatbot_file_cohort.postgrant_recovery import CONTEXT as POSTGRANT_CONTEXT
+    if os.path.lexists(evidence.PARENT/POSTGRANT_CONTEXT/'review.json'):
+        from tools.chatbot_file_cohort.postgrant_preparation import collect as collect_postgrant
+        return collect_postgrant(args)
     report('AUTHENTICATED_PACKAGE_PRIVATE_EXTRACTION')
     package,manifest,provenance=extract_cohort(args.package_archive,ARCHIVE,PRODUCER,RUN,new_directory(stage,'package'))
     records={row['module']:row for row in manifest['modules']}

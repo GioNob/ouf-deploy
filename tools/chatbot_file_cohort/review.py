@@ -188,6 +188,12 @@ def terminal_decision(review, review_path):
     summary = ('\nRevisione unica del ciclo CSV/chatbot.\n'
         'Documento privato completo: '+str(review_path)+'\n'
         'SHA256: '+review_hash+'\n'
+        +('Ripresa dopo un primo grant già consumato e un worker cancellato senza rinnovi.\n'
+          'Si conserva il container Registry già creato; zero nuovi caricamenti immagini e zero replay CREATE.\n'
+          'Le quattro fasi già applicate, il backup e il blocco nuove connessioni DB restano conservati.\n'
+          'Nessuna nuova rotazione credenziale, nessuna ripetizione del primo grant o del ritiro timer.\n'
+          'Questa decisione autorizza un nuovo worker finito; il totale riparte da un grant già consumato.\n'
+          if review.get('postGrantRecoveryReview')is not None else '')
         +('Ripresa con nuova finestra finita: '+str(len(review['previousFiniteActions']))+
           ' tentativi precedenti scaduti e spenti, storico e claim conservati.\n'
           'Verificata assenza di migrazioni e primo grant nei tentativi precedenti.\n'
@@ -208,15 +214,19 @@ def terminal_decision(review, review_path):
           if review.get('authorizationReview',{}).get('requiresNewRoleConfirmation') is False else
           'Eventuale conferma dei ruoli: apri il link browser esplicito; la proposta dura 15 minuti.\n')+
         'Include sostituzione dei cinque servizi applicativi, route Gateway, autorizzazioni esplicite,\n'
-        'backup e migrazioni previsti, installazione owner e ritiro del servizio/timer policy-token semantic.\n'
+        +('backup e migrazioni ancora previsti e nuovo worker; storico precedente conservato.\n'
+          if review.get('postGrantRecoveryReview')is not None else
+          'backup e migrazioni previsti, installazione owner e ritiro del servizio/timer policy-token semantic.\n')+
         'L\'attesa Registry riconcilia solo letture: massimo 128 tentativi e 3600 secondi, entro questa finestra;\n'
         'contatori e scadenze persistenti, nessuna ripetizione di start o SIGUSR1.\n'
         'Se MCP ha le tre migrazioni pendenti: creazione del ruolo audit NOLOGIN con amministratore DB,\n'
         'abilitazioni temporanee SET e CREATE sullo schema; se previsto nel piano, TRIGGER sulla sola security_incident.\n'
         'Revoca verificata prima del riavvio; proprietario e privilegi preesistenti della tabella preservati.\n'
         +('Include sostituzione del container APISIX con la stessa immagine e la configurazione qui revisionata.\n'
-          if 'sameImageId' in review['scopes']['gatewayRuntimeInstallation'] else '')+
-        'Un primo grant (massimo 300 secondi), poi una sessione distinta di massimo '
+          if 'sameImageId' in review['scopes']['gatewayRuntimeInstallation'] else '')
+        +('Nessun nuovo primo grant. Nuova sessione distinta di massimo '
+          if review.get('postGrantRecoveryReview')is not None else
+          'Un primo grant (massimo 300 secondi), poi una sessione distinta di massimo ')
         +str(review['finiteWorkerMaximumAttempts'])+' tentativi e '
         +str(review['finiteWorkerMaximumSeconds'])+' secondi.\n'
         'La storia legacy resta UNKNOWN. Nessun reset, rollback DB o rinnovo automatico del mandato.\n'

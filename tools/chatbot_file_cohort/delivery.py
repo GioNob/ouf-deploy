@@ -160,6 +160,12 @@ def create_directories(action):
 
 def build_owner(action, prepared, sources):
     value = prepared['owner']
+    if prepared.get('postGrantRecovery')is not None:
+        from tools.semantic_policy_token_owner.owner_installation import ContinuedOwnerInstallation
+        from tools.chatbot_file_cohort.postgrant_recovery import read_predecessor
+        files={name:sources[module]for name,module in STAGE_SOURCE.items()}
+        return ContinuedOwnerInstallation(action,value,files,prepared['postGrantRecovery'],read_predecessor(),
+            prepared['postGrantWorkerDirectory'])
     require(set(value) == {'hostInputBinding','rootEvidenceHash','rootCreationSourceClosureHash','registration',
         'binding','iamProfile','tlsTrustSetHash','sourceCommit','policy','contextRef','generationRef','intervalSeconds'},
         'EXACT_COMPLETE_OWNER_INSTALLATION_INPUTS_REQUIRED')
@@ -199,7 +205,7 @@ def native_environment(engine, docker_binding, cli_directory):
 
 
 class Delivery:
-    def __init__(self, action, prepared, sources, review, context, emit=print):
+    def __init__(self, action, prepared, sources, review, context, emit=print,*,continuation_fence=None):
         require(type(action) is AggregateAction and type(prepared) is dict and type(sources) is dict,
                 'REAL_COMPLETE_AGGREGATE_DELIVERY_INPUTS_REQUIRED')
         require(prepared.get('schema') == 'ouf.chatbot-file-cohort-prepared-inputs.v1'
@@ -212,6 +218,9 @@ class Delivery:
                 'GATEWAY_SUBPROCESS_MUST_USE_SAME_REVIEWED_PYTHON')
         self.stop, self.worker_thread, self.worker = threading.Event(), None, None
         self.human_session, self.human_thread = None, None
+        self.continuation_fence=continuation_fence
+        require((prepared.get('postGrantRecovery')is None)==(continuation_fence is None),
+            'POSTGRANT_GLOBAL_CONTINUATION_FENCE_REQUIRED')
         self.engine = Engine(prepared['engine']['socketPath'], tuple(prepared['engine']['socketBinding']))
         self.owner = build_owner(action, prepared, sources)
         for key, scope in self.owner.scopes().items():
@@ -242,6 +251,7 @@ class Delivery:
     def current(self, require_worker=False):
         require(not self.stop.is_set(), 'FULL_ACTION_CANCELLED')
         require(self.action.authority(self.action.raw) is True, 'CURRENT_FULL_ACTION_AUTHORITY_REQUIRED')
+        if self.continuation_fence is not None:self.continuation_fence.guard()
         self.engine.check_socket()
         if self.human_session is not None:
             while True:
@@ -347,14 +357,25 @@ class Delivery:
             auth_owner = AuthorizationDelta(self.action, authorization['plan'], Journal(directories['authorization']),
                 OwnerTransport(authorization['plan']['selection'], authorization['adminTokenFile'], authorization['mcpTokenFile'],wait=self.wait,human_session=self.human_session), primitives)
             auth_owner.initialize()
-            auth_evidence = self.await_authorization(auth_owner)
+            recovery=self.prepared.get('postGrantRecovery')
+            if recovery is None:auth_evidence = self.await_authorization(auth_owner)
+            else:
+                from tools.chatbot_file_cohort.postgrant_recovery import read_predecessor,current_baseline
+                previous=read_predecessor();current_baseline(previous,self.engine)
+                auth_evidence=copy.deepcopy(previous['payloads']['before']['QUIESCE_PRODUCERS']['ownerEvidence'])
+                auth_evidence['planHash']=auth_owner.hash
+                require(not auth_owner.record()['effects'],'POSTGRANT_NO_NEW_AUTHORIZATION_MUTATIONS_ALLOWED')
             self.current()
             images = CohortImages(self.action,self.engine,self.prepared['imagePlan'],
                 {name:Journal(directories['image'+name.capitalize()]) for name in ('semantic','udp','onboarding','ingestion','mcp')},
                 self.review['sourceClosure']['executables']['docker'])
-            images.initialize()
-            self.report('IMPORTING_QUALIFIED_IMAGES_BEFORE_FIRST_GRANT')
-            images.apply()
+            if recovery is None:
+                images.initialize()
+                self.report('IMPORTING_QUALIFIED_IMAGES_BEFORE_FIRST_GRANT')
+                images.apply()
+            else:
+                self.action.guard('cohortImageImport',images.scope)
+                self.report('RETAINED_IMAGES_VERIFIED_NO_IMPORT_OR_FIRST_GRANT_REPLAY',imagesVerified=5)
             image_audits={row['module']:row['audit'] for row in self.prepared['imagePlan']['images']}
             require(self.prepared['registry']['creationRequest']['Image']==runtime_image_id(image_audits['semantic'])
                 and all(row['creationRequest']['Image']==runtime_image_id(image_audits[row['module']])
@@ -385,7 +406,7 @@ class Delivery:
                     'automaticRollbackAllowed':False,'automaticWriteReplayAllowed':False})
                 transport = NamespaceAdmin(self.engine,self.prepared['gatewayPlan']['transportBinding'])
             self.current()
-            self.report('INSTALLING_FINITE_TOKEN_OWNER')
+            self.report('INSTALLING_DISTINCT_POSTGRANT_FINITE_WORKER' if recovery is not None else 'INSTALLING_FINITE_TOKEN_OWNER')
             self.worker = self.owner.install()
             reporter = OwnerReporter(self.worker.r.journal, self.emit)
             self.worker_thread = threading.Thread(target=serve, args=(self.worker,self.stop,reporter),
@@ -406,8 +427,13 @@ class Delivery:
                 {'role':'CREATION_ATTESTATION','issuerRef':governance.CONTEXT['attestorRef'],
                     'installationRef':governance.CONTEXT['installationRef'],'entityRef':governance.CONTEXT['entityRef']})
             registry_directories = self.prepared['registry']['directoryPlan']
-            require(all(path in {str(self.context),*directories.values()} for path in registry_directories.values()),
+            allowed_registry_paths={str(self.context),*directories.values()}
+            if recovery is not None:allowed_registry_paths.add(recovery['retainedBackupDirectory'])
+            require(all(path in allowed_registry_paths for path in registry_directories.values()),
                     'REGISTRY_DIRECTORIES_OUTSIDE_WHOLE_ACTION_PLAN')
+            if recovery is not None:
+                from tools.chatbot_file_cohort.postgrant_recovery import seed_registry
+                seed_registry(previous,registry_directories,self.action,self.review['scopes']['applicationRegistryCutover'])
             app = build_registry(self.prepared['registry'],self.action,self.owner.observer,self.engine,verifier,signer,
                 registry_directories,{'containers':containers,'databases':databases,'gateway':gateway,'authorization':auth_owner})
             self.report('REGISTRY_REPLACEMENT_AND_VERIFICATION')
@@ -499,6 +525,12 @@ def child_main(prepared, sources, manifest, context_path):
     action = AggregateAction(gate,authority_raw,review['sourceClosureHash'])
     for key,scope in review['scopes'].items():
         action.guard(key,scope)
-    verify_previous_authorization_actions(prepared.get('previousFiniteActions',[]),
-        prepared['imagePlan']['cohortManifestHash'],review['sourceClosure']['executables']['systemctl'],context)
-    Delivery(action,prepared,sources,review,context).run()
+    recovery=prepared.get('postGrantRecovery')
+    if recovery is None:
+        verify_previous_authorization_actions(prepared.get('previousFiniteActions',[]),
+            prepared['imagePlan']['cohortManifestHash'],review['sourceClosure']['executables']['systemctl'],context)
+        Delivery(action,prepared,sources,review,context).run()
+    else:
+        from tools.chatbot_file_cohort.postgrant_recovery import ContinuationFence
+        with ContinuationFence(action,recovery)as fence:
+            Delivery(action,prepared,sources,review,context,continuation_fence=fence).run()

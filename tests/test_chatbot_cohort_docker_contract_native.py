@@ -136,6 +136,17 @@ class NativeDockerContract(unittest.TestCase):
                 mutations_before=sum(method=='POST' for method,path in calls)
                 self.assertEqual(adapter.observe(request)[0],'APPLIED')
                 self.assertEqual(sum(method=='POST' for method,path in calls),mutations_before)
+                # A successor private journal addresses the exact existing
+                # created container by preserving the original context. Its
+                # reconciliation must issue GETs only, even after a lost ACK.
+                retained=journal.record.read_bytes();seed=transition.read()
+                (root/'successor-journal').mkdir(mode=0o700)
+                successor_journal=Journal(root/'successor-journal');successor_journal.initialize(seed)
+                successor=Transition(successor_journal,transition.context,execution_profile=profile)
+                observed=CreationAdapter(engine,successor,request,store).observe(request)
+                self.assertEqual(observed[0],'APPLIED');self.assertEqual(observed[1]['Id'],cid)
+                self.assertEqual(sum(method=='POST' for method,path in calls),mutations_before)
+                self.assertEqual(journal.record.read_bytes(),retained);self.assertEqual(successor.read(),seed)
                 finish('CREATE_REPLACEMENT',request,created)
                 process=GatedProcessObservation(request);points=[]
                 stage=GatedStageAdapter(engine,transition,request,store,process,points.append)
@@ -143,6 +154,25 @@ class NativeDockerContract(unittest.TestCase):
                 begin('STAGE_PAUSED_REPLACEMENT',stage_intent);stage.apply(stage_intent)
                 outcome,paused=stage.observe(stage_intent);self.assertEqual(outcome,'APPLIED')
                 self.assertEqual(process.observe(paused['State']['Pid'])['processKind'],'GATE_WAITING')
+                # Independently known fixture policy, checked against actual
+                # runc/OCI layout; never compile approval policy from this OCI.
+                pid=paused['State']['Pid'];merged=Path(host['DockerRootDir'])/'rootfs'/'overlayfs'/cid
+                self.assertEqual((merged.stat().st_dev,merged.stat().st_ino),
+                    (Path('/proc/'+str(pid)+'/root').stat().st_dev,Path('/proc/'+str(pid)+'/root').stat().st_ino))
+                runc=str(Path(binary).parent/'runc')
+                state_command=subprocess.run([runc,'--root','/run/docker/runtime-runc/moby','state',cid],
+                    stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=10)
+                self.assertEqual(state_command.returncode,0,state_command.stderr[-1000:].decode('utf-8','replace'))
+                state=json.loads(state_command.stdout)
+                self.assertEqual((state['id'],state['pid'],state['status']),(cid,pid,'paused'))
+                self.assertEqual(state['bundle'],'/run/containerd/io.containerd.runtime.v2.task/moby/'+cid)
+                oci=json.loads((Path(state['bundle'])/'config.json').read_bytes())
+                self.assertEqual(oci['process']['user']['uid'],10001);self.assertEqual(oci['process']['user']['gid'],10001)
+                self.assertTrue(oci['root']['readonly']);self.assertTrue(oci['process']['noNewPrivileges'])
+                self.assertTrue(all(not values for values in oci['process']['capabilities'].values()))
+                mounted={m['destination']:m for m in oci['mounts']}
+                for source,target,readonly in ((s,t,True)for _,s,t,_ in expected_mounts):
+                    self.assertEqual(mounted[target]['source'],source);self.assertIn('ro',mounted[target]['options'])
                 finish('STAGE_PAUSED_REPLACEMENT',stage_intent,paused)
                 for phase in ('ATTEST_NEW_OCI_PEER','ADMIT_MIGRATION'):
                     intent={'syntheticNonDockerBoundary':phase};begin(phase,intent);finish(phase,intent,{'synthetic':phase})

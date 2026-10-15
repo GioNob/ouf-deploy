@@ -111,5 +111,15 @@ class HumanTerminal(unittest.TestCase):
         _,expected=self.fixture();output,_,_=self.interact([expected],prequeued=b'LEFT_FROM_DEVICE_FLOW')
         self.assertIn(b'RESULT_OK=',output);self.assertNotIn(b'NOT_ACCEPTED',output)
 
+    def test_postgrant_review_explains_consumed_grant_and_new_worker_without_new_create(self):
+        value,_=self.fixture();value['postGrantRecoveryReview']={'profile':'synthetic-postgrant'}
+        expected=('APPROVO '+review.digest(value)).encode('ascii')
+        with patch.object(self,'fixture',return_value=(value,expected)):
+            output,_,_=self.interact([expected])
+        self.assertIn(b'RESULT_OK=',output)
+        self.assertIn(b'Nessun nuovo primo grant.',output)
+        self.assertIn(b'zero replay CREATE',output)
+        self.assertNotIn(b'Un primo grant (massimo 300 secondi)',output)
+
 
 if __name__=='__main__':unittest.main()

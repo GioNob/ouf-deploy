@@ -52,7 +52,7 @@ def directory_bindings(paths):
 
 def compile_scope(prepared,source_closure_hash):
     """The complete private collector output, before any effect or signature."""
-    require(type(prepared) is dict and set(prepared)==FIELDS
+    require(type(prepared) is dict and set(prepared)in (FIELDS,FIELDS|{'postGrantRecovery'})
             and prepared['schema']=='ouf.semantic-file-only-installation-inputs.v1'
             and hash_value(source_closure_hash) and hash_value(prepared['cohortPlanHash']),
             'EXACT_COMPLETE_REGISTRY_INSTALLATION_INPUTS_REQUIRED')
@@ -62,14 +62,21 @@ def compile_scope(prepared,source_closure_hash):
         and intents['CREATE_REPLACEMENT']==prepared['creationRequest'],'COMPLETE_REGISTRY_NATIVE_PHASE_INTENTS_REQUIRED')
     paths=prepared['directoryPlan'];require(type(paths) is dict and set(paths)=={'root',*DIRECTORIES},'EXACT_GROUPED_REGISTRY_DIRECTORIES_REQUIRED')
     root=Path(paths['root']);require(root.is_absolute() and '..' not in root.parts and str(root)!='/', 'ABSOLUTE_PRIVATE_REGISTRY_ROOT_REQUIRED')
-    require(all(paths[n]==str(root/n) for n in DIRECTORIES),'REGISTRY_DIRECTORIES_MUST_STAY_IN_GROUPED_ROOT')
+    recovery=prepared.get('postGrantRecovery')
+    require(all(paths[n]==str(root/n) for n in DIRECTORIES if n!='backup' or recovery is None),
+        'REGISTRY_DIRECTORIES_MUST_STAY_IN_GROUPED_ROOT')
+    if recovery is not None:
+        from tools.chatbot_file_cohort.postgrant_recovery import PROFILE
+        require(recovery.get('profile')==PROFILE and paths['backup']==recovery['retainedBackupDirectory'],
+            'EXACT_REVIEWED_RETAINED_BACKUP_DIRECTORY_REQUIRED')
     require(intents['FENCED_BACKUP']['directory']==paths['backup'],'REGISTRY_BACKUP_DIRECTORY_SCOPE_DRIFT')
     require(prepared['nodeRecipe']['sourceClosureHash']==source_closure_hash
         and runtime_image_id(prepared['imageAudit'])==prepared['creationRequest']['Image']
         and prepared['readinessScope']['flywaySchema']=='ouf_sem'
         and prepared['readinessScope']['database']!=prepared['adminDatabase'], 'REGISTRY_REVIEWED_IMAGE_SOURCE_OR_DATABASE_DRIFT')
     ApplicationReadinessChannel(prepared['readinessScope'])
-    return {'schema':'ouf.semantic-file-only-installation-scope.v1','preparedHash':digest(prepared),
+    return {**({'postGrantRecovery':copy.deepcopy(recovery)}if recovery is not None else {}),
+        'schema':'ouf.semantic-file-only-installation-scope.v1','preparedHash':digest(prepared),
         'readinessPolicy':copy.deepcopy(REGISTRY_READINESS_POLICY),
         'creationRequestHash':digest(prepared['creationRequest']),'executionProfileHash':profile.sha256,
         'sourceClosureHash':source_closure_hash,'cohortPlanHash':prepared['cohortPlanHash'],
@@ -148,6 +155,14 @@ class RegistryCheckpoints:
         if 'ATTEST_NEW_OCI_PEER' in completed and ((phase=='ADMIT_MIGRATION' and point=='BEFORE_NATIVE_EFFECT')
                 or (phase=='START_REPLACEMENT' and point=='BEFORE_UNPAUSE')):
             proof['pausedNodeHash']=digest(self.application.node_owner.verify_retained())
+        if phase=='ADMIT_MIGRATION' and point=='BEFORE_NATIVE_EFFECT':
+            # Recheck the retained archive and live closed/empty database from
+            # the admin channel immediately before the sole admission owner.
+            # This does not rerun backup or connect to the fenced target DB.
+            expected=self.store.read('FENCED_BACKUP',completed['FENCED_BACKUP']['nativeEvidenceHash'])
+            current=self.application.executor.adapters['FENCED_BACKUP'].snapshot()
+            require(current==expected,'REGISTRY_RETAINED_BACKUP_OR_DATABASE_FENCE_CHANGED')
+            proof['fencedBackupHash']=digest(current)
         if phase=='RELEASE_PRODUCERS':
             proof['containersHash']=digest(self.cohort['containers'].verify_all())
             proof['databasesHash']=digest([self.cohort['databases'].verify_module(m) for m in ('udp','onboarding','ingestion','mcp')])
@@ -181,11 +196,19 @@ class RegistryCheckpoints:
             return {'currentOwnerEvidence':proof,'ownerQuiesced':False}
         baseline=self.before_store.read_baseline('QUIESCE_PRODUCERS',self.transition.context,
             self.scope['phaseIntentHashes']['QUIESCE_PRODUCERS'])
+        recovery=self.scope.get('postGrantRecovery')
+        expected_authority=self.action.authority_hash if recovery is None else recovery['predecessorAuthorityHash']
+        expected_plan=owner.hash if recovery is None else recovery['originalAuthorizationPlanHash']
+        expected_history=digest(owner.record()) if recovery is None else recovery['originalAuthorizationHistoryHash']
         require(baseline.get('schema')=='ouf.registry-authorization-before-quiescence.v1'
-            and baseline.get('authorityHash')==self.action.authority_hash and baseline.get('authorizationPlanHash')==owner.hash
-            and baseline.get('authorizationHistoryHash')==digest(owner.record()),'PRE_QUIESCENCE_OWNER_PROOF_OR_HISTORY_CHANGED')
+            and baseline.get('authorityHash')==expected_authority and baseline.get('authorizationPlanHash')==expected_plan
+            and baseline.get('authorizationHistoryHash')==expected_history,'PRE_QUIESCENCE_OWNER_PROOF_OR_HISTORY_CHANGED')
+        retained_evidence=copy.deepcopy(baseline['ownerEvidence'])
+        if recovery is not None:
+            require(not owner.record()['effects'],'POSTGRANT_AUTHORIZATION_EFFECT_REPLAY_DENIED')
+            retained_evidence['planHash']=owner.hash
         if phase=='RELEASE_PRODUCERS':
-            current=owner.verify();require(current==baseline['ownerEvidence'],'OWNER_AUTHORIZATION_CHANGED_ACROSS_COHORT_CUTOVER')
+            current=owner.verify();require(current==retained_evidence,'OWNER_AUTHORIZATION_CHANGED_ACROSS_COHORT_CUTOVER')
             return {'currentOwnerEvidence':current,'ownerQuiesced':False}
         return {'retainedPreQuiescenceEvidenceHash':digest(baseline),'ownerQuiesced':True,
                 'currentOwnerHttpProven':False,'currentLocalAuthorityHash':self.action.authority_hash}
@@ -201,9 +224,14 @@ def build(prepared,action,token_owner,engine,verifier,attestation_signer,directo
     require(type(profile) is FileOnlyProfile and profile.verify(prepared['creationRequest'])==scope['executionProfileHash'],
             'ONE_SHARED_FILE_ONLY_AUTHORITY_PROFILE_REQUIRED')
     journal=Journal(directories['transition'])
-    initial=Transition.initial_file_only(action.authority_hash,scope['creationRequestHash'],
+    recovery=prepared.get('postGrantRecovery')
+    prior_authority=action.authority_hash if recovery is None else recovery['predecessorAuthorityHash']
+    initial=Transition.initial_file_only(prior_authority,scope['creationRequestHash'],
         action.authority.expected['predecessorHistoryHash'],action.authority.expected['predecessorIncidentRef'],profile)
-    if not any(os.path.lexists(journal.root/name) for name in ('recovery.lock','invocation.lock','recovery.json')):
+    if recovery is not None:
+        from tools.chatbot_file_cohort.postgrant_recovery import verify_successor_transition
+        verify_successor_transition(journal.read(),scope,action.authority_hash)
+    elif not any(os.path.lexists(journal.root/name) for name in ('recovery.lock','invocation.lock','recovery.json')):
         journal.initialize(initial)
     transition=Transition(journal,initial['contextHash'],execution_profile=profile);transition.read()
     store=NativeEvidenceStore(directories['evidence']);before=NativeEvidenceStore(directories['before'])

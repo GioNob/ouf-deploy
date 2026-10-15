@@ -74,7 +74,13 @@ class Executor:
         require(type(authority['issuedAt']) is int and type(authority['expiresAt']) is int and authority['issuedAt']<=now<authority['expiresAt'] and 0<authority['expiresAt']-authority['issuedAt']<=3600,'FINITE_CURRENT_CUTOVER_AUTHORITY_REQUIRED')
         require(authority['phaseIntentHashes']==self.intent_hashes,'SIGNED_PHASE_INTENT_DRIFT')
         require(authority['automaticReplayAllowed'] is False and authority['databaseRestoreAuthorized'] is False and authority['r12ReplayAuthorized'] is False and authority['newDistinctLeaseWorkerRequired'] is (self.profile_hash is None),'CUTOVER_REPLAY_RESTORE_OR_WORKER_POLICY_DRIFT')
-        require(self.authority_hash==row['transitionAuthorityEvidenceHash'] and all(authority[k]==row[k] for k in ('creationRequestHash','predecessorHistoryHash','predecessorIncidentRef')),'CUTOVER_AUTHORITY_HISTORY_OR_REQUEST_DRIFT')
+        if self.aggregate_scope is not None and self.aggregate_scope.get('postGrantRecovery')is not None:
+            from tools.chatbot_file_cohort.postgrant_recovery import verify_successor_transition
+            verify_successor_transition(row,self.aggregate_scope,self.authority_hash)
+            require(all(authority[k]==row[k] for k in ('creationRequestHash','predecessorHistoryHash','predecessorIncidentRef')),
+                'POSTGRANT_CURRENT_AUTHORITY_HISTORY_OR_REQUEST_DRIFT')
+        else:
+            require(self.authority_hash==row['transitionAuthorityEvidenceHash'] and all(authority[k]==row[k] for k in ('creationRequestHash','predecessorHistoryHash','predecessorIncidentRef')),'CUTOVER_AUTHORITY_HISTORY_OR_REQUEST_DRIFT')
         proof=self.checkpoint(phase,point,row)
         # Native custody/command/complete OCI/peer/lease/DB proofs remain owned
         # by the sealed authenticator/checkpoint, not caller-supplied flags.
