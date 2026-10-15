@@ -87,7 +87,7 @@ class RuntimeLayout(unittest.TestCase):
         class Reader:
             def __init__(self,*args):pass
             def run(self,*args):return json.dumps(s).encode()
-        inputs={'installationReview':{'currentRegistry':recorded}}
+        inputs={'installationReview':{'currentRegistry':recorded},'declaration':{'retainedNativeCreationFrame':copy.deepcopy(c)}}
         with patch.object(p,'retained_inputs',return_value=(inputs,{})),\
              patch.object(p,'retained_native_bindings',return_value=(a,{'path':'fixture','sha256':'a'*64},{},[])),\
              patch.object(p,'NodeObservation',Reader),\
@@ -97,6 +97,22 @@ class RuntimeLayout(unittest.TestCase):
         self.assertEqual(set(result['failedChecks']),{'engineBaseline','consultationKeyCustody','runtimeLayoutAndIdentity'})
         self.assertTrue(result['checks']['stableRunc']);self.assertTrue(result['checks']['stableEngine'])
         self.assertNotIn('secret',json.dumps(result));self.assertNotIn(c['Id'],json.dumps(result))
+
+    def test_preflight_reports_full_historical_drift_before_iam(self):
+        c,s,a=self.inputs();native,_,_=fixture.container_fixture('mcp')
+        for key in ('Config','HostConfig','Mounts'):c[key]=copy.deepcopy(native[key])
+        old=copy.deepcopy(c);c['Config']['Env'].append('PRIVATE_INPUT=never-print-this-value')
+        values={'installationReview':{'currentRegistry':{'id':c['Id'],'image':c['Image'],'pid':123,'startedAt':'fixture-generation'}},
+                'declaration':{'retainedNativeCreationFrame':old}}
+        class Engine:
+            def check_socket(self):pass
+            def request(self,method,path):return (200,copy.deepcopy(c)) if path.endswith('/json') else (200,{})
+        with patch.object(p,'retained_inputs',return_value=(values,{})),patch.object(p,'consultation_metadata',return_value=True),\
+             patch.object(p,'retained_native_bindings',side_effect=ValueError('NATIVE_FIXTURE_UNAVAILABLE')):
+            result=p.preflight_retained_runtime(Engine(),{})
+        self.assertFalse(result['allRequiredChecksPass'])
+        self.assertEqual(result['failedChecks']['historicalGeneration'],'RETAINED_REGISTRY_NATIVE_GENERATION_CHANGED')
+        self.assertNotIn('never-print',json.dumps(result))
 
 
 if __name__=='__main__':unittest.main()

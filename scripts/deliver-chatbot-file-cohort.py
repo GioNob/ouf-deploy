@@ -20,8 +20,8 @@ import sys
 import tarfile
 
 REPOSITORY='GioNob/ouf-deploy'
-CAPSULE_PATH='releases/chatbot-file-preparation-capsule-20261014.json'
-CAPSULE_SHA256='931746225f7043a8267073f93436ebb3ef87e05536ad125adaad6c8f92390321'
+CAPSULE_PATH='releases/chatbot-file-preparation-capsule-20261015.json'
+CAPSULE_SHA256='33d42e9aa04968035201a30a5d7d8a79c45ee4e42ebafabefe32deaa8722ae90'
 PACKAGE_COMMIT='8bff54a52a0ce15daccaf2aee932004f106dd178'
 PACKAGE_RUN=38584614991
 PACKAGE_SHA256='144699ab7756c8312d49783967cfbb64acc02a617015ad89f5adf51e25a10300'

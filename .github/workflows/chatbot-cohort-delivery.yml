@@ -13,7 +13,7 @@ jobs:
       postgres:
         image: postgres:17-alpine
         ports: ['5432:5432']
-        env: {POSTGRES_HOST_AUTH_METHOD: trust}
+        env: {POSTGRES_USER: postgres, POSTGRES_HOST_AUTH_METHOD: trust}
         options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 12
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -72,6 +72,13 @@ jobs:
           for suite in test_chatbot_cohort_runtime_layout.py test_chatbot_cohort_pg_diagnosis.py test_chatbot_cohort_delivery_launcher.py test_chatbot_cohort_package_custody.py test_chatbot_cohort_iam_session.py test_chatbot_cohort_assemble.py test_chatbot_cohort_entry.py test_file_only_output_custody.py test_file_only_preparation.py test_chatbot_cohort_target_selection.py test_chatbot_cohort_selected_config_custody.py test_chatbot_cohort_plan.py test_chatbot_cohort_preparation.py test_chatbot_cohort_containers.py test_chatbot_cohort_databases.py test_chatbot_cohort_gateway.py test_chatbot_cohort_gateway_runtime.py test_chatbot_cohort_authorization.py test_chatbot_cohort_human_session.py test_chatbot_cohort_closed_runtime.py; do
             sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" "$OUF_FIXTURE_ROOT/repository/.cohort-test-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p "$suite" -v
           done
+      - name: Real paired CLI API observations and semantic schema marker preserve fixture
+        env:
+          OUF_PG_CID: ${{ job.services.postgres.id }}
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
+          sudo env OUF_NATIVE_SOCKETS=1 OUF_POSTGRES_CONTAINER_ID="$OUF_PG_CID" python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_inspection_native.py -v
       - name: Real four-database archives, full payload parsing and retained rows
         if: ${{ !cancelled() }}
         env:

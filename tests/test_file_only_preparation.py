@@ -87,8 +87,76 @@ class Preparation(unittest.TestCase):
         with patch.object(prep,'Psql',Channel),self.assertRaisesRegex(ValueError,'SELECTED_POSTGRES'):
             prep.registry_database(pg,request,migrations)
 
+    def test_semantic_schema_marker_is_preserved_in_expected_history(self):
+        marker={'version':None,'type':'SCHEMA','script':'"ouf_sem"','checksum':None,'success':True}
+        sql={'version':'1','type':'SQL','script':'V1__init.sql','checksum':123,'success':True}
+        Channel,calls,pg,request,migrations=self.database(history=[marker,sql])
+        original=copy.deepcopy(migrations)
+        with patch.object(prep,'Psql',Channel):result=prep.registry_database(pg,request,migrations)
+        self.assertEqual(result['before'],[marker,sql]);self.assertEqual(result['expected'],[marker,sql])
+        self.assertEqual(migrations,original)
+        self.assertNotEqual(digest(result['expected']),digest(migrations))
+        for altered in ({**marker,'script':'"wrong_schema"'},{**marker,'success':False},{**sql,'checksum':321}):
+            history=[altered,sql] if altered.get('type')=='SCHEMA' else [marker,altered]
+            Channel,calls,pg,request,migrations=self.database(history=history)
+            with patch.object(prep,'Psql',Channel),self.assertRaisesRegex(ValueError,'MIGRATION_PREFIX'):
+                prep.registry_database(pg,request,migrations)
+
+    def inspection_pair(self):
+        cli=self.producer('a');cli['Name']='/ouf-semantic'
+        cli['NetworkSettings']['Networks']['ouf-backend'].update(Aliases=None,DNSNames=['ouf-semantic','a'*12])
+        api=copy.deepcopy(cli);api['NetworkSettings']['Networks']['ouf-backend']['Aliases']=['a'*12]
+        return cli,api
+
+    def test_exact_target_channel_profile_keeps_both_complete_bindings(self):
+        cli,api=self.inspection_pair();before_cli=copy.deepcopy(cli);before_api=copy.deepcopy(api)
+        prep.verify_retained_inspection(cli,api,cli)
+        self.assertEqual(cli,before_cli);self.assertEqual(api,before_api)
+        self.assertNotEqual(prep.Engine.runtime_binding(cli)['networkSettingsHash'],prep.Engine.runtime_binding(api)['networkSettingsHash'])
+
+    def test_channel_profile_denies_other_network_or_configuration_differences(self):
+        for field in ('config','host','mounts','ipv4','mac','endpoint','dns','aliases','historicalAliases'):
+            cli,api=self.inspection_pair();old=copy.deepcopy(cli)
+            endpoint=api['NetworkSettings']['Networks']['ouf-backend']
+            if field=='config':api['Config']['Env'].append('SECRET=private-value')
+            if field=='host':api['HostConfig']['RestartPolicy']['Name']='always'
+            if field=='mounts':api['Mounts']=[{'Source':'/private/path'}]
+            if field=='ipv4':endpoint['IPAddress']='10.42.0.9'
+            if field=='mac':endpoint['MacAddress']='02:42:0a:2a:00:09'
+            if field=='endpoint':endpoint['EndpointID']='b'*64
+            if field=='dns':endpoint['DNSNames']=['new-name']
+            if field=='aliases':endpoint['Aliases']=['unexplained-alias']
+            if field=='historicalAliases':cli['NetworkSettings']['Networks']['ouf-backend']['Aliases']=['ouf-semantic']
+            with self.subTest(field=field),self.assertRaises(ValueError):prep.verify_retained_inspection(old,api,cli)
+
+    def test_paired_reader_uses_exact_host_and_rejects_either_unstable_channel(self):
+        for unstable in (None,'cli','api'):
+            cli,api=self.inspection_pair();calls=[];api_calls=[]
+            class Engine:
+                path='/var/run/pinned.sock'
+                def check_socket(self):pass
+                def request(self,method,path):
+                    api_calls.append((method,path));value=copy.deepcopy(api)
+                    if unstable=='api' and len(api_calls)==2:value['State']['Pid']=999
+                    return 200,value
+            class Reader:
+                def __init__(self,*args):pass
+                def run(self,command,args,limit):
+                    calls.append((command,args,limit));value=copy.deepcopy(cli)
+                    if unstable=='cli' and len(calls)==2:value['State']['Pid']=999
+                    return json.dumps([value]).encode()
+            with patch.object(prep,'native_commands'),patch.object(prep,'NodeObservation',Reader),\
+                 patch.dict(prep.os.environ,{'DOCKER_CONFIG':'/private/empty-cli-config'}):
+                if unstable:
+                    with self.assertRaisesRegex(ValueError,'CHANNEL_UNSTABLE'):prep.paired_retained_inspection(Engine(),cli,{'path':'/usr/bin/docker','sha256':'d'*64},object())
+                else:
+                    observed,native=prep.paired_retained_inspection(Engine(),cli,{'path':'/usr/bin/docker','sha256':'d'*64},object())
+                    self.assertEqual(observed,api);self.assertEqual(native,cli)
+            self.assertEqual(calls[0][1],['--host','unix:///var/run/pinned.sock','--config','/private/empty-cli-config','inspect','--type=container','a'*64])
+            self.assertTrue(all(method=='GET' for method,path in api_calls))
+
     def producer(self,letter):
-        return {'Id':letter*64,'Image':'sha256:'+'f'*64,'State':{'Pid':12,'StartedAt':'2026-10-14T01:00:00Z'},
+        return {'Id':letter*64,'Image':'sha256:'+'f'*64,'State':{'Pid':12,'StartedAt':'2026-10-14T01:00:00Z','Running':True},
             'Config':{'Env':[]},'HostConfig':{'RestartPolicy':{'Name':'unless-stopped','MaximumRetryCount':0}},'Mounts':[],
             'NetworkSettings':{'Networks':{'ouf-backend':{'NetworkID':'9'*64,'EndpointID':letter*64,
                 'IPAddress':'10.42.0.2','MacAddress':'02:42:0a:2a:00:02'}}}}

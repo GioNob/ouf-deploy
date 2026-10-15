@@ -121,7 +121,60 @@ def consultation_metadata(current):
     return mount,info
 
 
-def preflight_retained_runtime(engine,selection):
+def paired_retained_inspection(engine,old,command,budget):
+    """Keep the complete historical CLI binding and new API binding distinct.
+
+    The authenticated native CLI matches the historical observation channel.
+    API1.44 remains the channel for newly compiled action intents. Neither raw
+    dictionary nor binding is normalized; unexplained channel deltas are denied.
+    """
+    cid=old['Id'];require(re.fullmatch('[0-9a-f]{64}',cid),'EXACT_RETAINED_RUNTIME_ID_REQUIRED')
+    native_commands(command,engine);runner=NodeObservation({},budget)
+    args=['--host','unix://'+engine.path,'--config',os.environ['DOCKER_CONFIG'],
+          'inspect','--type=container',cid]
+    def cli():
+        engine.check_socket();rows=parse(runner.run(command,args,2097152))
+        require(type(rows) is list and len(rows)==1 and rows[0].get('Id')==cid,'EXACT_RETAINED_CLI_INSPECTION_REQUIRED')
+        engine.check_socket();return rows[0]
+    def api():
+        code,row=engine.request('GET','/v1.44/containers/'+cid+'/json')
+        require(code==200 and row.get('Id')==cid,'EXACT_CURRENT_REGISTRY_INSPECTION_REQUIRED');return row
+    native=cli();current=api();api_after=api();native_after=cli()
+    require(Engine.runtime_binding(native)==Engine.runtime_binding(native_after)
+            and Engine.runtime_binding(current)==Engine.runtime_binding(api_after),'RETAINED_INSPECTION_CHANNEL_UNSTABLE')
+    verify_retained_inspection(old,current,native)
+    return current,native
+
+
+def verify_retained_inspection(old,current,native):
+    require(Engine.runtime_binding(old)==Engine.runtime_binding(native),'RETAINED_REGISTRY_NATIVE_GENERATION_CHANGED')
+    cli_binding=Engine.runtime_binding(native);api_binding=Engine.runtime_binding(current)
+    require(all(cli_binding[k]==api_binding[k] for k in cli_binding if k!='networkSettingsHash'),
+            'RETAINED_INSPECTION_CHANNEL_IDENTITY_OR_CONFIGURATION_DRIFT')
+    require(native['State']['Running'] is True and current['State']['Running'] is True,
+            'CURRENT_RETAINED_REGISTRY_REQUIRED')
+    cli_net=native['NetworkSettings'];api_net=current['NetworkSettings']
+    require(set(cli_net)==set(api_net) and all(cli_net[k]==api_net[k] for k in cli_net if k!='Networks')
+            and set(cli_net['Networks'])==set(api_net['Networks']),'RETAINED_INSPECTION_CHANNEL_NETWORK_DRIFT')
+    for name,left in cli_net['Networks'].items():
+        right=api_net['Networks'][name]
+        require(set(left)==set(right) and all(left[k]==right[k] for k in left if k!='Aliases'),
+                'RETAINED_INSPECTION_CHANNEL_ENDPOINT_DRIFT')
+        if left.get('Aliases')!=right.get('Aliases'):
+            # The exact target-observed compatibility shape. DNSNames and every
+            # other endpoint field still compare in full. No general aliases
+            # normalization, list reordering or arbitrary network diff allowed.
+            aliases=right.get('Aliases')
+            dns=left.get('DNSNames') or []
+            require(type(dns) is list and len(dns)<=128 and all(type(v) is str for v in dns),
+                    'RETAINED_INSPECTION_CHANNEL_DNS_NAMES_UNPROVEN')
+            allowed={native['Id'][:12],native.get('Name','').lstrip('/'),*dns}
+            require(left.get('Aliases') is None and type(aliases) is list and len(aliases)<=128
+                    and all(type(v) is str and re.fullmatch('[A-Za-z0-9_.-]{1,253}',v) and v in allowed for v in aliases),
+                    'RETAINED_INSPECTION_CHANNEL_ALIASES_PROFILE_UNPROVEN')
+
+
+def preflight_retained_runtime(engine,selection,command_binding=None):
     """Collect independent native failures before either interactive login.
 
     This is redacted read evidence only. The full collector repeats every
@@ -141,8 +194,12 @@ def preflight_retained_runtime(engine,selection):
     def inspect():
         engine.check_socket();code,row=engine.request('GET','/v1.44/containers/'+cid+'/json')
         require(code==200 and row.get('Id')==cid,'EXACT_CURRENT_REGISTRY_INSPECTION_REQUIRED');return row
-    current=check('registryInspection',inspect)
+    paired=check('historicalGeneration',lambda:paired_retained_inspection(
+        engine,values['declaration']['retainedNativeCreationFrame'],command_binding,budget)) if command_binding is not None else None
+    current=check('registryInspection',lambda:paired[0] if paired is not None else inspect())
     if current is None:return {'allRequiredChecksPass':False,'checks':checks,'failedChecks':failures,'facts':facts}
+    if command_binding is None:
+        check('historicalGeneration',lambda:verify_retained_inspection(values['declaration']['retainedNativeCreationFrame'],current,current))
     def current_generation():
         require(current['Image']==recorded['image'] and current['State']['Pid']==recorded['pid']
                 and current['State']['StartedAt']==recorded['startedAt'],'CURRENT_RETAINED_REGISTRY_REQUIRED')
@@ -318,10 +375,10 @@ def configtree(declaration):
     require(attributes(info)==attributes(path.lstat()),'DATABASE_CONFIGTREE_CHANGED_DURING_READ')
     return result
 
-def creation(parent,declaration,actual,audit,tree,token,delegation,proposal,proposal_identity):
+def creation(parent,declaration,actual,audit,tree,token,delegation,proposal,proposal_identity,retained_native_frame=None):
     """Explicit file-only delta: retain network/resources, remove unused inputs."""
-    old=declaration['retainedNativeCreationFrame'];require(Engine.runtime_binding(old)==Engine.runtime_binding(actual),
-        'RETAINED_REGISTRY_NATIVE_GENERATION_CHANGED')
+    old=declaration['retainedNativeCreationFrame']
+    verify_retained_inspection(old,actual,actual if retained_native_frame is None else retained_native_frame)
     require(type(proposal_identity) is dict and set(proposal_identity)=={'issuer','audience','workload'}
             and all(type(v) is str and 0<len(v)<=2048 for v in proposal_identity.values()), 'EXACT_OWNER_PROPOSAL_IDENTITY_REQUIRED')
     config=audit['imageConfig'];java=['java','-XX:MaxRAMPercentage=75','-jar','/app/application.jar']
@@ -381,6 +438,10 @@ def registry_database(postgres,request,migrations):
         current=channel.query("SELECT json_build_object('name',current_database(),'oid',oid::bigint,'allowConnections',datallowconn,'prepared',(SELECT count(*) FROM pg_prepared_xacts WHERE database=current_database())) FROM pg_database WHERE datname=current_database()",timeout=10)
         before=channel.query("SELECT COALESCE(json_agg(json_build_object('version',version,'type',type,'script',script,'checksum',checksum,'success',success) ORDER BY installed_rank),'[]'::json) FROM ouf_sem.flyway_schema_history",timeout=10)
     finally:channel.close()
+    # Preserve Flyway's exact schema-creation row, as the cohort DB planner does.
+    # It is retained in expected history; no SQL file is invented for this marker.
+    marker={'version':None,'type':'SCHEMA','script':'"ouf_sem"','checksum':None,'success':True}
+    if before and before[0]==marker:migrations=[marker,*migrations]
     require(current.get('name')==database and type(current.get('oid')) is int and current['oid']>0
             and current.get('allowConnections') is True and current.get('prepared')==0 and type(before) is list
             and 1<=len(before)<=len(migrations)<=256 and before==migrations[:len(before)], 'CURRENT_REGISTRY_MIGRATION_PREFIX_REQUIRED')
@@ -435,8 +496,9 @@ def prepare_file_only_installation(*,engine,selection,package_directory,semantic
     require(type(engine) is Engine and hash_value(source_closure_hash),'REAL_REGISTRY_PREPARATION_ENGINE_REQUIRED')
     native_commands(command_binding,engine)
     values,retirement=retained_inputs(selection);declaration=values['declaration'];review=values['installationReview']
-    cid=review['currentRegistry']['id'];code,actual=engine.request('GET','/v1.44/containers/'+cid+'/json')
-    require(code==200 and actual['Id']==cid and actual['Image']==review['currentRegistry']['image']
+    cid=review['currentRegistry']['id']
+    actual,retained_native=paired_retained_inspection(engine,declaration['retainedNativeCreationFrame'],command_binding,ObservationBudget(60))
+    require(actual['Id']==cid and actual['Image']==review['currentRegistry']['image']
             and actual['State']['Pid']==review['currentRegistry']['pid'] and actual['State']['StartedAt']==review['currentRegistry']['startedAt']
             and actual['State']['Running'] is True,'CURRENT_RETAINED_REGISTRY_REQUIRED')
     code,pg=engine.request('GET','/v1.44/containers/'+postgres['Id']+'/json');require(code==200 and Engine.runtime_binding(pg)==Engine.runtime_binding(postgres),'CURRENT_SELECTED_POSTGRES_REQUIRED')
@@ -449,7 +511,7 @@ def prepare_file_only_installation(*,engine,selection,package_directory,semantic
     require(type(frame_inputs) is dict and set(frame_inputs)=={'baselineBinding','delegationKey','dockerContext','runtimeRoot','observationConfiguration','frameSourceBinding'},
             'COMPLETE_INDEPENDENT_NATIVE_FRAME_INPUTS_REQUIRED')
     delegation=frame_inputs['delegationKey'];delegation_metadata=file_source(delegation)
-    request=creation(values['creationRequest'],declaration,actual,image_audit,tree,owner_mount,delegation,proposal,proposal_identity)
+    request=creation(values['creationRequest'],declaration,actual,image_audit,tree,owner_mount,delegation,proposal,proposal_identity,retained_native_frame=retained_native)
     profile=FileOnlyProfile(request,tree)
     require(frame_inputs['baselineBinding']['sha256']==BASELINE_SHA256,'PINNED_INDEPENDENT_ENGINE_BASELINE_REQUIRED')
     baseline=bound(frame_inputs['baselineBinding']);code,info=engine.request('GET','/v1.44/info')
@@ -467,7 +529,7 @@ def prepare_file_only_installation(*,engine,selection,package_directory,semantic
     require(code==200 and network['Name']==name and network['Driver']=='bridge' and network['EnableIPv6'] is False,'CURRENT_EXACT_REGISTRY_BRIDGE_REQUIRED')
     address=endpoints[name]['IPAMConfig']['IPv4Address'];port=int(environment(request['Env']).get('PORT','8080'))
     readiness={'databaseContainerId':pg['Id'],'databaseUser':db['user'],'database':db['database'],'databaseOid':db['databaseOid'],
-        'flywaySchema':'ouf_sem','flywayHistoryHash':digest(migrations),'health':{'address':address,'port':port,'path':'/actuator/health/readiness','timeoutSeconds':5}}
+        'flywaySchema':'ouf_sem','flywayHistoryHash':digest(db['expected']),'health':{'address':address,'port':port,'path':'/actuator/health/readiness','timeoutSeconds':5}}
     recipe={'schema':'ouf.semantic-file-only-node-recipe.v1','sourceClosureHash':source_closure_hash,
         'qualifiedPackageHash':digest(semantic_record),'imageConfigurationHash':image_audit['configSha256'],
         **{k:copy.deepcopy(v) for k,v in frame_inputs.items() if k not in ('baselineBinding','delegationKey')},
@@ -491,6 +553,9 @@ def prepare_file_only_installation(*,engine,selection,package_directory,semantic
     for native in [*producers,pg]:
         code,fresh=engine.request('GET','/v1.44/containers/'+native['Id']+'/json')
         require(code==200 and Engine.runtime_binding(fresh)==Engine.runtime_binding(native),'REGISTRY_PREPARATION_GENERATION_CHANGED')
+    final_api,final_cli=paired_retained_inspection(engine,declaration['retainedNativeCreationFrame'],command_binding,ObservationBudget(60))
+    require(Engine.runtime_binding(final_api)==Engine.runtime_binding(actual)
+            and Engine.runtime_binding(final_cli)==Engine.runtime_binding(retained_native),'REGISTRY_PREPARATION_GENERATION_CHANGED')
     require(registry_database(pg,request,migrations)==db and configtree(declaration)==tree
             and file_source(delegation)==delegation_metadata and file_source(proposal)==proposal['metadataHash'],
             'REGISTRY_PREPARATION_PRIVATE_INPUT_CHANGED')

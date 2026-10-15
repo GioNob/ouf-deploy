@@ -164,7 +164,7 @@ def collect(args):
     native_environment(engine,closure['executables']['docker'],new_directory(stage,'docker-cli'))
     retained_selection=default_selection()
     report('CURRENT_RETAINED_NATIVE_PREFLIGHT')
-    native_preflight=preflight_retained_runtime(engine,retained_selection)
+    native_preflight=preflight_retained_runtime(engine,retained_selection,command_binding=closure['executables']['docker'])
     report('CURRENT_RETAINED_NATIVE_PREFLIGHT_RESULT',**native_preflight)
     require(native_preflight['allRequiredChecksPass'],'RETAINED_NATIVE_PREFLIGHT_FAILED')
     report('CURRENT_ADMINISTRATIVE_SESSION')
