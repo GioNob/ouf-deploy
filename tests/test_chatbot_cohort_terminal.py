@@ -112,13 +112,25 @@ class HumanTerminal(unittest.TestCase):
         self.assertIn(b'RESULT_OK=',output);self.assertNotIn(b'NOT_ACCEPTED',output)
 
     def test_postgrant_review_explains_consumed_grant_and_new_worker_without_new_create(self):
-        value,_=self.fixture();value['postGrantRecoveryReview']={'profile':'synthetic-postgrant'}
+        value,_=self.fixture();value['postGrantRecoveryReview']={'profile':'ouf.chatbot-postgrant-created-continuation.v1'}
         expected=('APPROVO '+review.digest(value)).encode('ascii')
         with patch.object(self,'fixture',return_value=(value,expected)):
             output,_,_=self.interact([expected])
         self.assertIn(b'RESULT_OK=',output)
         self.assertIn(b'Nessun nuovo primo grant.',output)
         self.assertIn(b'zero replay CREATE',output)
+        self.assertNotIn(b'Un primo grant (massimo 300 secondi)',output)
+
+
+    def test_mounted_review_explains_three_prior_grants_and_keeps_old_scope_summary_out(self):
+        value,_=self.fixture();value['postGrantRecoveryReview']={'profile':'ouf.chatbot-paused-unsigned-attestation-reprocessing.v2'}
+        expected=('APPROVO '+review.digest(value)).encode('ascii')
+        with patch.object(self,'fixture',return_value=(value,expected)):
+            output,_,_=self.interact([expected])
+        self.assertIn(b'RESULT_OK=',output)
+        self.assertIn(b'Tre grant',output);self.assertIn(b'quarto cumulativo',output)
+        self.assertIn(b'90 secondi',output);self.assertIn(b'due intenti falliti',output)
+        self.assertNotIn(b'Due grant',output);self.assertNotIn(b'Le quattro fasi',output)
         self.assertNotIn(b'Un primo grant (massimo 300 secondi)',output)
 
 
