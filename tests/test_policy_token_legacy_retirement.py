@@ -12,6 +12,29 @@ import test_cutover_authority_native as fixtures
 import legacy_retirement as retirement
 binding=retirement.binding
 
+class StandaloneRetirementImport(unittest.TestCase):
+    def test_component_imports_without_repository_package_namespace(self):
+        script="""
+import sys,types
+from pathlib import Path
+root=Path(sys.argv[1])
+sys.path[:0]=[str(root/'tools/semantic_policy_token_owner'),str(root/'tools/semantic_application_cutover'),
+    str(root/'tools/semantic_cohort_admission/cohort-draft')]
+package=types.ModuleType('tools');package.__path__=[str(root/'tools/semantic_cohort_admission/cohort-draft/tools')]
+sys.modules['tools']=package
+class StandaloneBoundary:
+    def find_spec(self,fullname,path=None,target=None):
+        if fullname=='tools.semantic_policy_token_owner' or fullname.startswith('tools.semantic_policy_token_owner.'):
+            raise ModuleNotFoundError('standalone retirement has no worker package')
+sys.meta_path.insert(0,StandaloneBoundary())
+import legacy_retirement
+assert legacy_retirement.PregrantRecovery.__module__=='legacy_retirement'
+"""
+        result=subprocess.run([sys.executable,'-I','-B','-S','-c',script,
+            str(ROOT)],stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,timeout=15)
+        self.assertEqual(result.returncode,0,result.stderr.decode())
+
 class RetirementTest(unittest.TestCase):
     def setUp(self):
         self.f=fixtures.SignedCutover();self.f.setUp();self.addCleanup(self.f.doCleanups)

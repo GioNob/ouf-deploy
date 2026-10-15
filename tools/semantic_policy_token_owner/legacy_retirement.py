@@ -6,6 +6,7 @@ One durable command reservation survives crash and reapproval. Subsequent calls
 only reconcile observed unit state; they never replay a consumed command.
 """
 import copy
+from contextlib import contextmanager
 import hashlib
 from pathlib import Path
 import fcntl
@@ -19,7 +20,6 @@ import iam_binding_candidate as binding
 import iam_governance_intake as governance
 from cutover_authority import CutoverAuthority
 from accounting_gap_session import boot_identity
-from tools.semantic_policy_token_owner.producer import protected_directory
 
 UNITS=('ouf-policy-token@semantic.timer','ouf-policy-token@semantic.service')
 HOST_HASH='93fa9bc8fe4d90fe445bb310363f11966f9ed89df74d169ad925cda0a157acc4'
@@ -178,6 +178,36 @@ ROOTS={'ownerRecovery':('/var/lib/ouf/policy-token/semantic',0,0o700),
     'output':('/var/lib/ouf/policy-token/semantic/token-output',10001,0o750)}
 
 def digest(value):return binding.sha(binding.encoded(value))
+
+@contextmanager
+def protected_directory(path):
+    """Hold root-owned private ancestry without importing the worker package."""
+    path=Path(path)
+    binding.require(os.geteuid()==os.getegid()==0 and path.is_absolute()
+        and path!=Path('/') and '..' not in path.parts and len(path.parts)<=32,
+        'PREGRANT_PRIVATE_PARENT_REQUIRED')
+    fds=[];seals=[]
+    try:
+        flags=os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_NONBLOCK
+        parent=os.open('/',flags);fds.append(parent)
+        for part in path.parts[1:]:
+            before=os.stat(part,dir_fd=parent,follow_symlinks=False)
+            binding.require(stat.S_ISDIR(before.st_mode) and before.st_uid==before.st_gid==0
+                and not before.st_mode&0o022,'PREGRANT_PRIVATE_PARENT_CUSTODY_REQUIRED')
+            child=os.open(part,flags,dir_fd=parent);fds.append(child)
+            binding.require(binding.identity(before)==binding.identity(os.fstat(child)),
+                'PREGRANT_PRIVATE_PARENT_CHANGED')
+            seals.append((parent,part,child,(before.st_dev,before.st_ino,before.st_uid,before.st_gid,before.st_mode)))
+            parent=child
+        binding.require(stat.S_IMODE(os.fstat(parent).st_mode)==0o700,
+            'PREGRANT_PRIVATE_PARENT_MODE_REQUIRED')
+        yield parent
+        for parent,part,child,seal in seals:
+            for current in (os.fstat(child),os.stat(part,dir_fd=parent,follow_symlinks=False)):
+                binding.require(seal==(current.st_dev,current.st_ino,current.st_uid,current.st_gid,current.st_mode),
+                    'PREGRANT_PRIVATE_PARENT_CHANGED')
+    finally:
+        for fd in reversed(fds):os.close(fd)
 
 def private(path,expected=None):
     path=Path(path)
