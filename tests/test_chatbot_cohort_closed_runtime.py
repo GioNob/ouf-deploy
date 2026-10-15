@@ -42,6 +42,14 @@ try:
  assert entry.public_failure_reason(entry.ImageCustodyDenied('NATIVE_IMAGE_IDENTITY_DRIFT'))=='NATIVE_IMAGE_IDENTITY_DRIFT'
  assert entry.public_failure_reason(ValueError('DO_NOT_PRINT_PRIVATE_VALUE'))=='ValueError'
  assert entry.public_failure_reason(RuntimeError('private value'))=='RuntimeError'
+ assert entry.public_failure_reason(entry.CreationDenied('CREATION_HOST_CONFIG_DRIFT'))=='CREATION_HOST_CONFIG_DRIFT'
+ assert entry.public_failure_reason(entry.CreationDenied('PRIVATE_SENTINEL'))=='CreationDenied'
+ try:
+  sys.modules['engine_creation'].require(False,'CREATION_HOST_CONFIG_DRIFT')
+ except entry.CreationDenied as error:
+  d=entry.public_failure_diagnostic(error)
+  assert any(x['module']=='engine_creation' and x['function']=='require' for x in d['locations'])
+  assert 'PRIVATE_SENTINEL' not in json.dumps(d)
  try:
   raise OSError(9,'PRIVATE_MESSAGE_MUST_NOT_APPEAR','/private/credential')
  except OSError as error:

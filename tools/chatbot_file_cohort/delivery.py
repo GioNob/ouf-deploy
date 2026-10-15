@@ -24,7 +24,7 @@ import iam_governance_intake as governance
 from iam_owner_action import publish, stdlib_binding
 from cutover_authority import CutoverAuthority
 from file_only_profile import FileOnlyProfile
-from engine_creation import Engine
+from engine_creation import Engine,CreationDenied
 from file_only_installation import build as build_registry
 from tools.semantic_provider_deployment_authentication import DetachedAuthenticator
 from tools.semantic_provider_deployment_signing import ExistingEd25519Signer
@@ -51,6 +51,13 @@ import qualified_owner_authorization_lifecycle
 import qualified_owner_scope_catalogue
 
 def public_failure_reason(error):
+    if type(error)is CreationDenied:
+        return str(error) if str(error) in {'CREATION_CONFIG_DRIFT','CREATION_HOST_CONFIG_DRIFT',
+            'CREATION_NATIVE_IDENTITY_DRIFT','CREATION_ALREADY_STARTED_OR_STATE_UNKNOWN',
+            'ENGINE_OUTCOME_REQUIRES_RECONCILIATION','EXACT_CREATION_INSPECTION_REQUIRED',
+            'CREATION_OUTCOME_REQUIRES_RECONCILIATION','PAUSED_STAGE_START_OUTCOME_UNPROVEN',
+            'PAUSED_STAGE_PAUSE_OUTCOME_UNPROVEN','EXACT_LIVE_PAUSED_GENERATION_REQUIRED',
+            'UNPAUSE_OUTCOME_REQUIRES_RECONCILIATION','RELEASED_GENERATION_DRIFT'} else 'CreationDenied'
     reason=str(error) if type(error) in (evidence.CandidateDenied,RuntimeError,PlanDenied,ImageCustodyDenied) else type(error).__name__
     return reason if re.fullmatch('[A-Z][A-Z0-9_]{0,159}',reason) else type(error).__name__
 
@@ -68,7 +75,10 @@ def public_failure_diagnostic(error):
         if tb is None:break
         module=tb.tb_frame.f_globals.get('__name__','')
         if (module.startswith(('tools.chatbot_file_cohort.','tools.semantic_policy_token_owner.'))
-            or module in ('legacy_retirement','accounting_gap_session','credential_transaction','first_controlled_grant','migration_root_custody')):
+            or module in ('legacy_retirement','accounting_gap_session','credential_transaction','first_controlled_grant','migration_root_custody',
+                'engine_creation','creation_adapter','runtime_adapters','gated_stage_adapter','gated_release_adapter',
+                'gated_process_observation','file_only_application','file_only_installation','cutover_executor',
+                'file_only_node_owner','application_verification_adapter','producer_release_adapter','endpoint_adapter')):
             function=tb.tb_frame.f_code.co_name
             if re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,79}',function):
                 frames.append({'module':module,'function':function,'line':tb.tb_lineno})

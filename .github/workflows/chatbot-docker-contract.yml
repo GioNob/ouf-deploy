@@ -1,0 +1,50 @@
+name: Remaining Docker lifecycle contracts on 29.8.1
+on:
+  push:
+    paths: ['tools/semantic_application_cutover/engine_creation.py', 'tools/chatbot_file_cohort/plan.py', 'tests/test_chatbot_cohort_docker_contract*.py', '.github/workflows/chatbot-docker-contract.yml']
+  pull_request:
+    paths: ['tools/semantic_application_cutover/engine_creation.py', 'tools/chatbot_file_cohort/plan.py', 'tests/test_chatbot_cohort_docker_contract*.py', '.github/workflows/chatbot-docker-contract.yml']
+permissions: {contents: read}
+jobs:
+  docker-29:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Use official Docker 29.8.1 in an isolated disposable data root
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          sha256sum /tmp/ouf-docker-29.8.1.tgz
+          sudo install -d -m 755 /opt/ouf-docker-29
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
+          /opt/ouf-docker-29/dockerd --version
+          sudo systemctl stop docker.service docker.socket containerd.service
+          sudo install -d -m 700 /var/lib/ouf-docker-29
+          printf '%s\n' '{"features":{"containerd-snapshotter":true},"exec-opts":["native.cgroupdriver=systemd"]}' > /tmp/ouf-docker-29.json
+          sudo systemd-run --unit=ouf-docker-contract-daemon --property=Restart=no \
+            --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json \
+            --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 \
+            --exec-root=/run/ouf-docker-29 --pidfile=/run/ouf-docker-29.pid
+          for OUF_DOCKER_POLL in $(seq 1 60); do
+            if sudo docker info > /tmp/ouf-docker-29-info.txt 2>/dev/null; then break; fi
+            sleep 1
+          done
+          test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
+          test "$(sudo docker info --format '{{.Driver}}')" = overlayfs
+          test "$(sudo docker info --format '{{.CgroupDriver}}')" = systemd
+      - name: Real create pause signal readiness mounts networks update and rename
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE="/var/lib/ouf-docker-contract-${GITHUB_RUN_ID}"
+          sudo install -d -m 700 "$OUF_FIXTURE"
+          sudo cp -R . "$OUF_FIXTURE/repository"
+          sudo chown -R root:root "$OUF_FIXTURE"
+          sudo env OUF_NATIVE_DOCKER_CONTRACT=1 OUF_DOCKER_EXPECTED_VERSION=29.8.1 \
+            python3 -I -B -m unittest discover -s "$OUF_FIXTURE/repository/tests" -p 'test_chatbot_cohort_docker_contract*.py' -v
+      - name: Preserve bounded daemon diagnostics on failure
+        if: failure()
+        run: sudo journalctl --unit=ouf-docker-contract-daemon --no-pager --lines=100
