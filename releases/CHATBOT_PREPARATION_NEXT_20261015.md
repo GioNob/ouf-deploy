@@ -1,14 +1,28 @@
 # CSV/chatbot — handoff corrente, 15 ottobre 2026
 
-## Stato operativo e prossima azione
+## Arresto corrente: continuazione4a65b9 / OSError
 
-L'ultima esecuzione VPS (source **95749a8ef316856e16c44c1d7aa3b6791b408993**) è **ferma prima del primo grant**: `PAUSED_REQUIRES_RECONCILIATION / RETIREMENT_QUIESCENCE_UNPROVEN`. Il reader successivo è terminato con END, senza mutazioni. L'output allegato completo è archiviato in `evidence/chatbot-pregrant-native-readback-20261015.json`.
+L'operatore ha eseguito il nuovo wrapper qualificato. Il preflight di recupero è PASS: cinque immagini e generazione APISIX esistenti verificati; contatori precedenti credenziale0/grant0/ritiro1. Review **261f9e998acaded184ec9be41a1be1dbd862c4c8b3c57d961cce6820a578b184** approvata e processo finito avviato. Poi INSTALLING_FINITE_TOKEN_OWNER → **PAUSED_REQUIRES_RECONCILIATION / OSError**. Il tipo generico non identifica errno, operazione o effetti. I contatori del preflight non provano l'assenza di effetti durante l'installazione. Nessun nuovo apply è autorizzato da questo checkpoint.
 
-**Nuovo recupero qualificato in CI. Non rilanciare i wrapper precedenti, non riavviare unità finite consumate, non cancellare prenotazioni e non eseguire reset-failed.** La correzione qualificata è **4a65b9326c15d9758ecba1793965617a2a92e43e** (draft PR31, branch `codex/retained-inspection-channel-20261015`). Non è stata eseguita sul VPS. PR31 resta non merged e ha come base il branch PR29 `codex/chatbot-mcp-migration-role-20261014` a fdc990136592f0353c2824f4de632a052910a2a0.
+**Non rilanciare il wrapper4a65b9 né precedenti, non riavviare l'unità consumata, non cancellare ricevute e non fare reset-failed.** Il prossimo passo è esclusivamente il reader `scripts/read-chatbot-pregrant-oserror-20261015.py`, SHA256 **87f2d8e25347ce5f3d6b0be0aef205640cc683d815314ea9ddd70a887f4ae9c9**. Verificato localmente per compilazione, proiezione errno/redazione, prosecuzione dei controlli indipendenti e comandi nativi read-only. Richiede solo sudo; nessun login IAM o browser.
 
-Il passo operativo successivo è il wrapper nuovo pubblicato sotto, eseguito dall'operatore sul VPS con una nuova review HUMAN esatta. Riutilizza il pacchetto esistente. Il primo controllo di recupero precede il login IAM e non modifica lo stato osservato. La nuova esecuzione target e l'accettazione CSV restano da verificare.
+Il reader è fissato a:
+- source **4a65b9326c15d9758ecba1793965617a2a92e43e**;
+- context `/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-eff1b6915816bcfc409b16e1d24b9eb342b1c38e3d6ae80e362ac893c5480d0b`;
+- unit `ouf-file-cohort-eff1b6915816bcfc409b16e1d24b9eb3.service`;
+- authority **2c35198422227b7db0894ca37ee4d70947ae56fcce813f8d0d1ab9a81c9b5733**;
+- plan **0a74c41f04068e11e6fefbb24430fa14a7fcdeaa0c087c76795039141fc6f5df**;
+- scadenza1792061873.
 
-## Progresso VPS verificato
+Rilegge review/authority/bundle esatti, unità, ricevute originarie e della continuazione, staging corrente ed eventuale parziale, transazione credenziale/sessione/primo grant/worker, metadati delle directory e journal delle fasi successive. Legge il journal di systemd ma stampa solo eventuali errno e posizioni del traceback appartenenti ai sorgenti verificati; non stampa messaggi, codice o argomenti. Rileva spazio/inode/mount e footprint aggregato delle capsule; queste letture correnti non sono da sole prova della causa storica. Non legge file client-secret/token, non esegue sorgenti conservati, non crea lock/journal, non interroga IAM né rinnova autorità. Conserva errori di singoli controlli e prosegue.
+
+Evidenza dell'output operatore: `evidence/chatbot-pregrant-continuation-oserror-20261015.json`. Il nuovo readback non è ancora stato ricevuto. **CSV/chatbot end-to-end resta non dimostrato.** Sorgenti applicativi e pacchetto restano congelati; nessuna modifica target è stata eseguita dall'agent in questa diagnosi.
+
+## Qualificazione e storia precedenti
+
+La revisione4a65b9 aveva superato tutti i9 workflow: consegna262 test/34 suite/zero skip, online IAM234 test/31 suite/zero skip, installazione completa, retirement e HUMAN. Il wrapper resta evidenza della consegna, non un comando da rilanciare dopo il nuovo arresto. PR31 draft/unmerged, source branch `codex/retained-inspection-channel-20261015`, base PR29 `codex/chatbot-mcp-migration-role-20261014` a fdc990136592f0353c2824f4de632a052910a2a0.
+
+## Stato precedente95749 verificato prima della continuazione
 
 - Tutte e cinque le immagini hanno journal VERIFIED e prove native di identità, configurazione e RootFS corrispondenti. Semantic è stato riutilizzato senza load (0 nuovi tentativi); UDP/onboarding/ingestion/MCP hanno ciascuno 1 load consumato.
 - APISIX ha tutti gli otto passaggi APPLIED e versione journal19. La generazione attuale è running, non paused e coincide esattamente con il binding finale del journal. Il container precedente è conservato.
@@ -50,7 +64,7 @@ Verifiche locali4a65b9: retirement9PASS, import runtime completo3PASS, recupero7
 
 Capsula qualificata: **f9715d9728e78554305df567415bd949f8c3a89d00010204f6c549a1932a3728**,112 file.
 Launcher qualificato: **4b6f30144055af38978f04d6eef16ddab134a890b0dcee460261ec28de5ca3dd**.
-Wrapper qualificato e pubblicato: releases/chatbot-file-cohort-pregrant-recovery-execute-vps-20261015.sh, SHA2564e85a8e48f134a8c6d53ecaafd8b25942ff8cad9a38731a4dcd52be12caf6bf9. Verifica sintassi Bash PASS. Il wrapper è ora consegnabile, fissato al commit4a65b9326c15d9758ecba1793965617a2a92e43e. Il programma mostrerà una NUOVA review: approvare soltanto l'hash corrente, mai6ff o altri precedenti. Include gli effetti applicativi ancora da eseguire: cinque container, backup/migrazioni e primo grant/worker finito. APISIX e immagini completati vengono verificati e riutilizzati. Non rilanciare automaticamente dopo un nuovo PAUSED/BLOCKED: leggere stato e record prima di qualsiasi ulteriore azione. Dopo COHORT_READY_FOR_ACTUAL_CHATBOT_CSV_ACCEPTANCE proseguire subito con la prova MCP nella stessa finestra.
+Wrapper qualificato e pubblicato: releases/chatbot-file-cohort-pregrant-recovery-execute-vps-20261015.sh, SHA2564e85a8e48f134a8c6d53ecaafd8b25942ff8cad9a38731a4dcd52be12caf6bf9. Verifica sintassi Bash PASS. Il wrapper è stato consegnato ed eseguito al commit4a65b9326c15d9758ecba1793965617a2a92e43e; dopo l'arresto OSError non va rilanciato. Il programma mostrerà una NUOVA review: approvare soltanto l'hash corrente, mai6ff o altri precedenti. Include gli effetti applicativi ancora da eseguire: cinque container, backup/migrazioni e primo grant/worker finito. APISIX e immagini completati vengono verificati e riutilizzati. Non rilanciare automaticamente dopo un nuovo PAUSED/BLOCKED: leggere stato e record prima di qualsiasi ulteriore azione. Dopo COHORT_READY_FOR_ACTUAL_CHATBOT_CSV_ACCEPTANCE proseguire subito con la prova MCP nella stessa finestra.
 
 ## Pacchetto applicativo congelato
 

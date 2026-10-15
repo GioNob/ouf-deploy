@@ -1,0 +1,61 @@
+{
+  "schema": "ouf.chatbot-pregrant-continuation-operator-result.v1",
+  "date": "2026-10-15",
+  "sourceCommit": "4a65b9326c15d9758ecba1793965617a2a92e43e",
+  "provenance": "Operator pasted complete launch output in this conversation; not independently read back yet",
+  "reviewHash": "261f9e998acaded184ec9be41a1be1dbd862c4c8b3c57d961cce6820a578b184",
+  "reviewPath": "/etc/ouf/deploy-snapshots/chatbot-file-intake-f9715d9728e78554305df567415bd949f8c3a89d00010204f6c549a1932a3728/attempt-90a749ccf940e75ef4202046/full-action-review.json",
+  "authorityHash": "2c35198422227b7db0894ca37ee4d70947ae56fcce813f8d0d1ab9a81c9b5733",
+  "context": "/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-eff1b6915816bcfc409b16e1d24b9eb342b1c38e3d6ae80e362ac893c5480d0b",
+  "unit": "ouf-file-cohort-eff1b6915816bcfc409b16e1d24b9eb3.service",
+  "initialPid": 3347204,
+  "planHash": "0a74c41f04068e11e6fefbb24430fa14a7fcdeaa0c087c76795039141fc6f5df",
+  "authorityExpiresAt": 1792061873,
+  "observedPreflight": {
+    "allRetainedNativeChecksPass": true,
+    "existingGatewayGenerationVerified": true,
+    "existingImagesVerified": 5,
+    "priorCredentialMutationAttempts": 0,
+    "priorGrantAttempts": 0,
+    "priorRetirementCommandAttempts": 1
+  },
+  "observedPhases": [
+    "CURRENT_PREGRANT_RECOVERY_PREFLIGHT_PASSED",
+    "COMPLETE_REVIEW_READY",
+    "IMPORTING_QUALIFIED_IMAGES_BEFORE_FIRST_GRANT",
+    "INSTALLING_FINITE_TOKEN_OWNER",
+    "PAUSED_REQUIRES_RECONCILIATION"
+  ],
+  "reason": "OSError",
+  "errno": null,
+  "failingOperation": null,
+  "currentEffectsReconciled": false,
+  "currentCredentialMutationAttempts": null,
+  "currentGrantAttempts": null,
+  "runtimeAuthorityIssued": true,
+  "automaticRetry": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true,
+  "doNotRerunExecution": true,
+  "nextAction": "Pinned read-only current continuation diagnostic; no service mutations, credential/token file reads, IAM calls or grants",
+  "readerPath": "scripts/read-chatbot-pregrant-oserror-20261015.py",
+  "readerSha256": "87f2d8e25347ce5f3d6b0be0aef205640cc683d815314ea9ddd70a887f4ae9c9",
+  "readerLocalValidation": [
+    "Python compilation",
+    "errno projection and private message redaction",
+    "independent checks continue after one OSError",
+    "subprocess allowlist limited to systemctl show, journalctl and du"
+  ],
+  "limits": [
+    "OSError alone does not identify the operation, errno, outcome or root cause",
+    "Earlier zero credential/grant counts belong to the preflight, not the failure-time readback",
+    "Do not infer disk exhaustion from a generic OSError or historical timer resources result",
+    "CI qualification did not prove success of this target continuation"
+  ],
+  "omitted": [
+    "deviceCode",
+    "login credentials",
+    "approval tokens"
+  ]
+}
