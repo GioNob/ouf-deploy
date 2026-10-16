@@ -1,3 +1,13 @@
+## 2026-10-16 — Actual role preflight and private update candidate preparation
+
+User target log /home/oufadmin/ouf-semantic-mcp-reprocessing-preflight-read.YZ0cQW57/read.log confirms the exact old generation and all 12 source checksums. The application has schema CREATE, migration INSERT, REFERENCES and immutable trigger EXECUTE, but has neither SET nor inherited access to ouf_mcp_retention_owner. The retention role owns the existing function, has NOLOGIN, no superuser and zero memberships. Function definition hash is pinned in evidence/chatbot-semantic-mcp-role-target-20261016.json. These are observations, not authorization to grant membership.
+
+The proposed least-privilege sequence must hold MCP stopped while a single temporary membership permits the native packaged migration 13, then prove the original zero-membership state before application start. No permanent superuser/CREATEROLE/owner change is proposed. The previous claim and all cumulative history remain unchanged.
+
+Private preparation source e055287fbe1842512434f7a3b553f52fc962ceb2 passed CI run 38936636346: 19 reader tests, 5 preparation tests against the actual candidate archive (both tagless archive profiles), and actual native image import on the ephemeral overlay2 runner. This run does not prove native containerd import. The same ref passed a separate native PostgreSQL preflight workflow after making observation reusable without public emission of its private context.
+
+Next user action: the separately pinned launch-chatbot-semantic-mcp-update-review-20261016.sh downloads artifact 12059844351, checks ZIP/source hashes, creates a new root-private candidate, verifies current role/claim/runtime bindings, copies only approved MCP configuration into its private review and derives the tagless archive for the observed Engine store. It performs no image import, lifecycle action, DB write, grant, token call, signature or runtime authority issuance. It stops on changed generation/roles/history. At most 180 seconds, five Engine reads and one read-only SQL session. The root result is not ready for execution: pending executor qualification, current authenticated exact review, fresh owner receipt absence, separate finite reprocessing consent, existing role signatures, final runtime profile/metadata mounts and current authorization/owner policy remain explicit. No approval is requested by the preparer.
+
 # MCP semantic reprocessing: target binding and unsigned package
 
 Status: technical 8/8, functional 0/6. No proposal, semantic approval, release acceptance, runtime permit, migration or cutover is performed by this preparation.

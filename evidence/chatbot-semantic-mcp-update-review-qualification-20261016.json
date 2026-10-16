@@ -1,0 +1,28 @@
+{
+  "acceptanceGranted": false,
+  "actualUnsignedCandidateUsed": true,
+  "archiveReenvelopeProfilesQualified": [
+    "CLASSIC_CONFIG",
+    "CONTAINERD_MANIFEST"
+  ],
+  "boundedReaderTests": 19,
+  "completedTechnicalPhases": 8,
+  "conclusion": "success",
+  "functionalMilestonesProven": 0,
+  "job": 117093682787,
+  "nativeContainerdImageImportProvenInThisRun": false,
+  "nativeRunnerImageImport": {
+    "containerLifecycleOperations": 0,
+    "driver": "overlay2",
+    "imageByteCustodyProven": true
+  },
+  "privatePreparationTests": 5,
+  "readyForExecution": false,
+  "rootTargetPreparationObserved": false,
+  "run": 38936636346,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.chatbot-semantic-mcp-private-update-review-qualification.v1",
+  "signatureIssued": false,
+  "sourceCommit": "e055287fbe1842512434f7a3b553f52fc962ceb2",
+  "targetOperations": 0
+}
