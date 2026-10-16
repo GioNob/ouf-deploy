@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -31,6 +32,10 @@ from tools.chatbot_file_cohort.plan import digest, encoded, require
 
 PROFILE = 'ouf.chatbot-file-authorization.v1'
 RETRY = {'maximumAttempts':128,'maximumElapsedSeconds':86400,'backoffSeconds':[5,15,60,300,900],'maximumJitterPercent':20}
+OBSERVATION_POLICY={'profile':'ouf.authorization-finite-observation.v1','maximumAttempts':128,
+    'maximumElapsedSeconds':3600,'backoffSeconds':[5,15,60,300,900],'maximumJitterPercent':20,
+    'respectRetryAfter':True,'readOnlyOnly':True,'crashRequiresReconciliation':True,
+    'automaticBudgetRenewalAllowed':False,'reason':'WITHIN_ONE_REVIEWED_FINITE_HUMAN_ACTION'}
 ADMIN = '/api/trusted-human/v1/authorization'
 NEW = {
     'ouf.managed-source.onboarding.review.prepare': ('onboarding', 'COMMAND', 'source'),
@@ -214,7 +219,8 @@ class OwnerTransport:
             try:
                 delay = float(retry) if retry.isdigit() else max(0,parsedate_to_datetime(retry).timestamp()-time.time())
             except (ValueError,TypeError,OverflowError): pass
-            raise AuthorizationPaused('AUTHORIZATION_HTTP_'+str(e.code),retryAfterSeconds=delay) from None
+            raise AuthorizationPaused('AUTHORIZATION_HTTP_'+str(e.code),retryAfterSeconds=delay,
+                retryAfterInvalid=bool(retry and delay is None)) from None
         except (urllib.error.URLError, TimeoutError, OSError):
             raise AuthorizationPaused('AUTHORIZATION_TRANSPORT_OUTCOME_UNPROVEN') from None
 
@@ -455,6 +461,9 @@ def authorization_scope(plan):
     if plan.get('sessionBinding') is not None:
         validate_session_binding(plan['sessionBinding'], plan['selection'])
         scope['sessionBinding'] = copy.deepcopy(plan['sessionBinding'])
+    if 'observationPolicy' in plan:
+        require(plan['observationPolicy']==OBSERVATION_POLICY,'EXACT_AUTHORIZATION_OBSERVATION_POLICY_REQUIRED')
+        scope['readObservationPolicy']=copy.deepcopy(OBSERVATION_POLICY)
     return scope
 
 
@@ -492,6 +501,93 @@ class AuthorizationDelta:
         before = self.record(); following = copy.deepcopy(before)
         following['effects'][name] = value; following['version'] += 1
         self.journal.compare_and_save(before,following)
+
+    def verify_resilient(self, stage, *, clock=time.time,monotonic=time.monotonic,boot=None):
+        """Only verify() reads; reserve a durable attempt before each observation.
+
+        This method never invokes apply/effect, refreshes a grant, or replays a
+        mutation. An interrupted in-flight read needs explicit reconciliation.
+        """
+        self.guard()
+        require(self.plan.get('observationPolicy')==OBSERVATION_POLICY
+            and stage in ('AFTER_GATEWAY','FINAL_COHORT'),'SIGNED_AUTHORIZATION_READ_OBSERVATION_REQUIRED')
+        boot=boot or Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        now,mono=clock(),monotonic()
+        with self.journal.invocation():
+            row=self.record();budget=copy.deepcopy(row.get('observations',{}).get(stage))
+            if budget is None:
+                expires=min(now+3600,json.loads(self.action.raw)['expiresAt'])
+                require(expires>now,'AUTHORIZATION_OBSERVATION_AUTHORITY_EXPIRED')
+                budget={'policy':copy.deepcopy(OBSERVATION_POLICY),'planHash':self.hash,'stage':stage,
+                    'bootId':boot,'startedAt':now,'lastObservedAt':now,'lastMonotonic':mono,
+                    'expiresAt':expires,'expiresMonotonic':mono+expires-now,'attempts':0,
+                    'nextAttemptAt':now,'nextAttemptMonotonic':mono,'state':'READY',
+                    'historicalObservationAttempts':None,'incidentState':'OPEN','budgetReset':False}
+            require(budget['policy']==OBSERVATION_POLICY and budget['planHash']==self.hash
+                and budget['stage']==stage and budget['bootId']==boot and budget['budgetReset']is False
+                and type(budget['attempts'])is int and 0<=budget['attempts']<=128
+                and now+2>=budget['lastObservedAt'] and mono>=budget['lastMonotonic'],
+                'AUTHORIZATION_OBSERVATION_HISTORY_OR_CLOCK_DRIFT')
+            def save(state,**updates):
+                self.guard();before=self.record();following=copy.deepcopy(before)
+                require(clock()+2>=budget['lastObservedAt'] and monotonic()>=budget['lastMonotonic'],
+                    'AUTHORIZATION_OBSERVATION_CLOCK_DRIFT')
+                budget.update(updates,state=state,lastObservedAt=clock(),lastMonotonic=monotonic())
+                following.setdefault('observations',{})[stage]=copy.deepcopy(budget)
+                following['version']+=1;self.journal.compare_and_save(before,following)
+            def exhausted():
+                return clock()>=budget['expiresAt'] or monotonic()>=budget['expiresMonotonic']
+            require(budget['state']!='ATTEMPTING','AUTHORIZATION_OBSERVATION_IN_FLIGHT_RECONCILIATION_REQUIRED')
+            require(budget['state'] in ('READY','RETRY_WAIT','COMPLETE'),'AUTHORIZATION_OBSERVATION_TERMINAL_NO_REPLAY')
+            if exhausted() or budget['attempts']>=128:
+                save('PAUSED_EXHAUSTED');raise AuthorizationPaused('AUTHORIZATION_OBSERVATION_BUDGET_EXHAUSTED')
+            if now<budget['nextAttemptAt'] or mono<budget['nextAttemptMonotonic']:
+                raise AuthorizationPaused('AUTHORIZATION_READ_RETRY_NOT_DUE',observation=stage,
+                    nextAttemptAt=budget['nextAttemptAt'])
+            save('ATTEMPTING',attempts=budget['attempts']+1)
+            try:result=self.verify()
+            except AuthorizationPaused as error:
+                self.guard()
+                transient=error.reason in ('AUTHORIZATION_HTTP_408','AUTHORIZATION_HTTP_429',
+                    'AUTHORIZATION_HTTP_502','AUTHORIZATION_HTTP_503','AUTHORIZATION_HTTP_504',
+                    'AUTHORIZATION_TRANSPORT_OUTCOME_UNPROVEN')
+                if not transient:
+                    save('BLOCKED',failureReason=error.reason);raise
+                minimum=error.detail.get('retryAfterSeconds')
+                if minimum is None:minimum=0
+                if error.detail.get('retryAfterInvalid') or type(minimum)not in(int,float) or not math.isfinite(minimum) or minimum<0:
+                    save('BLOCKED',failureReason='INVALID_RETRY_AFTER')
+                    raise AuthorizationPaused('AUTHORIZATION_READ_INVALID_RETRY_AFTER') from None
+                base=OBSERVATION_POLICY['backoffSeconds'][min(budget['attempts']-1,4)]
+                jitter=int(digest({'planHash':self.hash,'stage':stage,'attempt':budget['attempts']})[:8],16)/0xffffffff
+                delay=max(minimum,base*(1+.2*jitter));now,mono=clock(),monotonic()
+                if exhausted() or budget['attempts']>=128 or delay>=min(budget['expiresAt']-now,budget['expiresMonotonic']-mono):
+                    save('PAUSED_EXHAUSTED',failureReason=error.reason)
+                    raise AuthorizationPaused('AUTHORIZATION_OBSERVATION_BUDGET_EXHAUSTED') from None
+                save('RETRY_WAIT',failureReason=error.reason,nextAttemptAt=now+delay,nextAttemptMonotonic=mono+delay)
+                raise AuthorizationPaused(error.reason,observation=stage,nextAttemptAt=budget['nextAttemptAt']) from None
+            except BaseException:
+                # Preserve ATTEMPTING: unknown outcomes never gain automatic retry.
+                raise
+            self.guard()
+            if exhausted():
+                save('PAUSED_EXHAUSTED');raise AuthorizationPaused('AUTHORIZATION_OBSERVATION_BUDGET_EXHAUSTED')
+            save('COMPLETE',evidenceHash=digest(result),incidentState='RESOLVED',
+                nextAttemptAt=clock(),nextAttemptMonotonic=monotonic())
+            return result
+
+    def observation_retry_status(self,error):
+        self.guard()
+        if type(error)is not AuthorizationPaused:return None
+        stage=error.detail.get('observation')
+        if stage not in ('AFTER_GATEWAY','FINAL_COHORT'):return None
+        budget=self.record().get('observations',{}).get(stage)
+        if (type(budget)is not dict or budget.get('state')!='RETRY_WAIT'
+            or budget.get('policy')!=OBSERVATION_POLICY or budget.get('planHash')!=self.hash
+            or error.detail.get('nextAttemptAt')!=budget.get('nextAttemptAt')):return None
+        return {'observation':stage,'failureReason':budget['failureReason'],
+            'nextAttemptAt':budget['nextAttemptAt'],'attempts':budget['attempts'],
+            'remainingAttempts':128-budget['attempts'],'deadline':budget['expiresAt'],'budgetReset':False}
 
     def retry_status(self, error):
         """Read the exact retained retry claim; never grant retry from error text alone."""

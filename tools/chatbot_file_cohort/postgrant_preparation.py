@@ -48,6 +48,10 @@ def validate_authorization_rebind(previous,current):
     """Only the fresh session binding may change before recompiling its hash."""
     left=copy.deepcopy(previous);right=copy.deepcopy(current)
     left.pop('sessionBinding',None);right.pop('sessionBinding',None)
+    if 'observationPolicy' in right:
+        from tools.chatbot_file_cohort.authorization import OBSERVATION_POLICY
+        require(right['observationPolicy']==OBSERVATION_POLICY,'EXACT_AUTHORIZATION_READ_POLICY_REQUIRED')
+        right.pop('observationPolicy');left.pop('observationPolicy',None)
     require(left==right and not right.get('addedDescriptors') and not right.get('roleProposal')
         and not right.get('scopeBindings'),'POSTGRANT_NEW_AUTHORIZATION_WRITES_DENIED')
 
@@ -73,6 +77,8 @@ def collect(args,*,paused=False,mounted=False,signed=False,backup=False,migratio
     if gateway:
         from tools.chatbot_file_cohort.gateway_recovery import PROFILE as GATEWAY,CLAIM as GATEWAY_CLAIM
         profile=GATEWAY;claim=GATEWAY_CLAIM
+        from tools.chatbot_file_cohort import gateway_retained
+        if gateway_retained.available():claim=gateway_retained.CLAIM
     require(not os.path.lexists(evidence.PARENT/claim),'POSTGRANT_CONTINUATION_ALREADY_RESERVED_INSPECT_ONLY')
     report('POSTGRANT_RETAINED_HISTORY_PREFLIGHT')
     previous=read_predecessor(profile);old=previous['prepared'];bundle=previous['bundle']
@@ -115,6 +121,9 @@ def collect(args,*,paused=False,mounted=False,signed=False,backup=False,migratio
         authorization=prepared['authorization']
         authorization['adminTokenFile']=authorization['mcpTokenFile']=str(session.token_path)
         authorization['plan']['sessionBinding']=session.binding()
+        if gateway:
+            from tools.chatbot_file_cohort.authorization import OBSERVATION_POLICY
+            authorization['plan']['observationPolicy']=copy.deepcopy(OBSERVATION_POLICY)
         validate_authorization_rebind(old['authorization']['plan'],authorization['plan'])
         if backup:
             from tools.chatbot_file_cohort.databases import mcp_backup_preflight,compile_mcp_backup_reader

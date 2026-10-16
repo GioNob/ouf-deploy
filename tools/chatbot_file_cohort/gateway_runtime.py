@@ -178,6 +178,11 @@ class GatewayRuntime:
             private_config(EXTERNAL_ADMIN_KEY,self.plan['adminKeyBinding'])
     def initialize(self):
         self.guard()
+        proof=json.loads(self.action.raw).get('applicationRegistryCutover',{}).get('postGrantRecovery',{})
+        if 'retainedNumericGateway' in proof:
+            from tools.chatbot_file_cohort.gateway_retained import adopt_runtime
+            adopt_runtime(self,proof)
+            return
         require(runtime_pin(self.inspect(self.plan['oldName']))==self.plan['oldRuntimeBinding'],
                 'EXACT_CURRENT_APISIX_BEFORE_INSTALL_REQUIRED')
         self.journal.initialize({'schema':PROFILE,'planHash':self.scope['planHash'],

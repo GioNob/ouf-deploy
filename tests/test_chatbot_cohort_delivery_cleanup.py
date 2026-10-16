@@ -8,6 +8,24 @@ import test_chatbot_cohort_assemble as bootstrap
 from tools.chatbot_file_cohort import delivery as d,postgrant_recovery as recovery
 
 class RecoveryCleanup(unittest.TestCase):
+    def test_authorization_read_pause_waits_then_retries_only_observation(self):
+        from tools.chatbot_file_cohort.authorization import OBSERVATION_POLICY,AuthorizationPaused
+        owner=d.Delivery.__new__(d.Delivery)
+        checks=[];waits=[];reports=[]
+        owner.current=lambda *args:checks.append(args)
+        owner.wait=lambda *args:waits.append(args)
+        owner.report=lambda *args,**kwargs:reports.append((args,kwargs))
+        from unittest.mock import MagicMock
+        delta=SimpleNamespace(plan={'observationPolicy':OBSERVATION_POLICY},
+            verify_resilient=MagicMock(side_effect=[AuthorizationPaused('AUTHORIZATION_HTTP_503'),{'readVerified':True}]),
+            observation_retry_status=MagicMock(return_value={'observation':'AFTER_GATEWAY','nextAttemptAt':d.time.time(),
+                'attempts':1,'failureReason':'AUTHORIZATION_HTTP_503'}))
+        self.assertEqual(owner.await_authorization_verification(delta,'AFTER_GATEWAY'),{'readVerified':True})
+        self.assertEqual(delta.verify_resilient.call_count,2);self.assertEqual(len(waits),1)
+        self.assertEqual(reports[0][0],('AUTHORIZATION_READINESS_WAIT',))
+        self.assertEqual(d.public_failure_reason(AuthorizationPaused('AUTHORIZATION_HTTP_503')),'AUTHORIZATION_HTTP_503')
+        self.assertEqual(d.public_failure_reason(AuthorizationPaused('PRIVATE_SENTINEL')),'AuthorizationPaused')
+
     def test_preflight_error_keeps_original_failure_and_restores_signal_handlers(self):
         session={'sessionDirectory':'/synthetic/session','tokenPath':'/synthetic/token','expiresAt':123}
         auth={'plan':{'sessionBinding':session,'selection':{}},'catalogue':'{}','helperBindings':{},

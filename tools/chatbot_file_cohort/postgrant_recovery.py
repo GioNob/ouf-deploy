@@ -363,7 +363,8 @@ class ContinuationFence:
     def __init__(self,action,proof):
         self.action,self.proof=action,copy.deepcopy(proof);self.fd=None;self.claim=CLAIM
         if proof.get('profile')!=PROFILE:
-            self.claim=recovery_component(proof.get('profile')).CLAIM
+            component=recovery_component(proof.get('profile'))
+            self.claim=component.claim_for(proof) if hasattr(component,'claim_for') else component.CLAIM
     def __enter__(self):
         scope=json.loads(self.action.raw)['applicationRegistryCutover']
         require(scope.get('postGrantRecovery')==self.proof,'EXACT_SIGNED_POSTGRANT_RESERVATION_REQUIRED')

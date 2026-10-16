@@ -208,3 +208,35 @@ mirati locali e la CI reader 38861702379 (job 116845217363, PASS). Il nuovo
 launcher di sola lettura è `scripts/launch-chatbot-gateway-authorization-20261016.sh`.
 Attendere il suo readback prima di predisporre una prosecuzione: la nuova
 configurazione APISIX è un effetto già consumato da riconciliare, non da ripetere.
+
+## Readback del 16 ottobre, 08:33 CEST: APISIX completato, autorizzazione MCP 503
+
+Il reader conferma otto passi APISIX APPLIED, journal
+`1505050a950b8a9d9565eff9fb95301d5193baa55ad8fc76dbb3acac3f362b18`,
+container `733c5bdeca250fba778d431e121120e6653296d84c747552d8f95290ad01e8d9`,
+runtime `456f99eb1c0d071d188194ba30c0cb1e73b9665e6a89ac03b21c9e2e3451e354`,
+running, restartCount 0, due asset numerici RO. Le due letture delle 64 route
+esistenti hanno hash `2df6795143d7f8c81aa8f692688a8ba40f1026de1053650dd61fbfe5736e35d8`:
+corrispondono al prefisso conservato, non al piano finale. Restano 28 modifiche
+delle 37 del piano; 64 è l'inventario totale, incluse route estranee preservate.
+
+Autorizzazioni: zero effetti nuovi, journal
+`690865a6eddb01ddca3edf90c7e3502e14d7c74af1b2b214987deddc9c65ea36`;
+nuovo worker non installato. Gli otto grant precedenti restano acquisiti.
+Nei log della nuova generazione compare una chiamata MCP 503 e un GET
+amministrativo 200; il reader non conserva il corpo né dimostra la causa
+interna di quel 503. Non sono stati effettuati nuovi MCP probe, grant o mutazioni.
+Fase 5 ancora sospesa, fasi 1–4 completate, CSV 0/6.
+
+La prosecuzione in preparazione adotta il journal APISIX in un nuovo journal
+firmato e conserva il vecchio claim consumato. Nessun nuovo stop/create/start,
+nessuna ristadiazione di configurazione o asset. La chain resta lo stesso profilo
+Gateway e lo stesso incidente con una ricevuta tipizzata di adozione completata.
+Una prenotazione nuova e distinta richiede un nuovo HUMAN review; non ripete
+nessun effetto precedente. Le letture di autorizzazione prima e dopo il rilascio
+coorte hanno un profilo firmato `ouf.authorization-finite-observation.v1`,
+128 tentativi e 3600 secondi entro la scadenza HUMAN, backoff 5/15/60/300/900,
+jitter massimo 20%, Retry-After, contatori persistenti, nessun rinnovo automatico.
+Crash in ATTEMPTING, drift, revoca, rifiuti permanenti e budget esaurito bloccano.
+Gli esiti ambigui di scrittura restano fuori da questi retry di sola lettura.
+La nuova versione deve superare la qualifica Docker prima del launcher operativo.

@@ -47,6 +47,18 @@ def prepare(source_root,output_directory,image,old_config_binding):
 
 
 def prepare_continuation(previous,engine,source,output_directory,cohort_id):
+    if 'retainedGatewayAttempt' in previous:
+        import copy
+        from tools.chatbot_file_cohort.gateway_retained import current_transport
+        from tools.chatbot_file_cohort.gateway import NamespaceAdmin
+        binding=current_transport(previous,engine)
+        transport=NamespaceAdmin(engine,binding);transport.check()
+        retained=previous['retainedGatewayAttempt']['prepared']
+        plan=retained['gatewayPlan']
+        require(transport.routes()==plan['previousRoutes'] and transport.routes()==plan['previousRoutes'],
+            'RETAINED_NUMERIC_GATEWAY_ROUTE_PREFIX_DRIFT')
+        transport.check()
+        return copy.deepcopy(plan),copy.deepcopy(retained['gatewayRuntimePlan'])
     from tools.chatbot_file_cohort import gateway_recovery as recovery
     from tools.chatbot_file_cohort.gateway import NamespaceAdmin
     from tools.chatbot_file_cohort.gateway_runtime import compile_runtime,proposed_transport

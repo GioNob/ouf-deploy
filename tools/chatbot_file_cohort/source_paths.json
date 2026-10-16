@@ -64,6 +64,7 @@
   "tools.chatbot_file_cohort.gateway": "tools/chatbot_file_cohort/gateway.py",
   "tools.chatbot_file_cohort.gateway_recovery": "tools/chatbot_file_cohort/gateway_recovery.py",
   "tools.chatbot_file_cohort.gateway_recovery_plan": "tools/chatbot_file_cohort/gateway_recovery_plan.py",
+  "tools.chatbot_file_cohort.gateway_retained": "tools/chatbot_file_cohort/gateway_retained.py",
   "tools.chatbot_file_cohort.gateway_runtime": "tools/chatbot_file_cohort/gateway_runtime.py",
   "tools.chatbot_file_cohort.human_session": "tools/chatbot_file_cohort/human_session.py",
   "tools.chatbot_file_cohort.images": "tools/chatbot_file_cohort/images.py",

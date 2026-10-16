@@ -56,6 +56,8 @@ class GatewayWorker(unittest.TestCase):
         self.f=f;self.harness=h.harness;self.value=value;self.proof=proof
         self.predecessor=previous;self.directory=directory;self.old=old;self.unchanged=h.unchanged
         def complete_phase5(prepared):
+            from tools.chatbot_file_cohort.authorization import OBSERVATION_POLICY
+            prepared['authorization']['plan']['observationPolicy']=copy.deepcopy(OBSERVATION_POLICY)
             from tools.chatbot_file_cohort import gateway_runtime as r
             prepared['gatewayRuntimePlan']={'schema':r.PROFILE,'sameExistingImageRequired':True,
                 'automaticRollbackAllowed':False,'automaticWriteReplayAllowed':False,
@@ -69,6 +71,13 @@ class GatewayWorker(unittest.TestCase):
                 'mcpBackupReader':{'syntheticRetainedReader':True}}
             prepared['databasePlan']=database;prepared['cohortPlan']['databasePlanHash']=base.fingerprint(database)
             prepared['registry']['cohortPlanHash']=base.fingerprint(prepared['cohortPlan'])
+        from tools.chatbot_file_cohort import gateway_retained
+        self.proof['retainedNumericGateway']={'profile':gateway_retained.PROFILE,
+            'sourceCommit':gateway_retained.SOURCE,'reviewHash':gateway_retained.REVIEW,
+            'authorityHash':gateway_retained.AUTHORITY,'runtimeJournalHash':gateway_retained.RUNTIME,
+            'runtimeBindingHash':gateway_retained.NATIVE,'runtimePlanHash':'a'*64,'gatewayPlanHash':'b'*64,
+            'historicalEffects':8,'newLifecycleEffectsAllowed':False,'newWorkerPreviouslyInstalled':False,
+            'originalContinuationClaimHash':'c'*64}
         review=base.PostGrantOwner.compile_complete_review(self,complete_phase5)
         self.assertEqual(review['completedTechnicalPhases'],[1,2,3,4]);self.assertEqual(review['currentTechnicalPhase'],5)
         self.assertEqual(review['gatewayContinuationReview']['remainingChanges'],28)
@@ -76,6 +85,10 @@ class GatewayWorker(unittest.TestCase):
         self.assertEqual(review['mcpMigrationReview']['disposition'],'COMPLETE_CLEAN_VERIFY_ONLY_NO_REPLAY')
         self.assertEqual(review['mcpBackupReaderReview']['disposition'],'RETAINED_ARCHIVE_ONLY_ZERO_NEW_DUMPS')
         self.assertFalse(review['chatbotEndToEndProven']);self.assertEqual(h.harness.grants(),8)
+        adopted_review=review
+        self.assertEqual(adopted_review['gatewayContinuationReview']['runtimeDisposition'],'COMPLETED_EIGHT_STEPS_VERIFY_ONLY')
+        self.assertEqual(adopted_review['gatewayContinuationReview']['retainedNumericGateway'],self.proof['retainedNumericGateway'])
+        self.assertEqual(adopted_review['scopes']['policyTokenFiniteWorkerSession']['predecessorGrantAttempts'],8)
         sign(make().scopes(),'EXACT_V8_GATEWAY_FINITE_HUMAN_DECISION')
         owner=make();new=owner.install();initial=owner.journal.read()
         self.assertEqual(initial['controlledCumulativeGrantAttempts'],8);self.assertEqual(initial['attempts'],0)

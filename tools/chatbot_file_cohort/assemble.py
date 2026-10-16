@@ -202,6 +202,9 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
                 'newConfigBinding':copy.deepcopy(runtime['newConfigBinding']),
                 'readinessPolicy':copy.deepcopy(runtime['readinessPolicy']),
                 'replayAllowed':False,'sameImageRequired':True}
+            if 'retainedNumericGateway' in recovery:
+                review['gatewayContinuationReview'].update(runtimeDisposition='COMPLETED_EIGHT_STEPS_VERIFY_ONLY',
+                    retainedNumericGateway=copy.deepcopy(recovery['retainedNumericGateway']))
         review['firstControlledGrantMaximumAttempts']=0
         review['firstControlledGrantMaximumSeconds']=0
     require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')

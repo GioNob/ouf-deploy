@@ -21,6 +21,7 @@
     "tools/chatbot_file_cohort/gateway_preparation.py",
     "tools/chatbot_file_cohort/gateway_recovery.py",
     "tools/chatbot_file_cohort/gateway_recovery_plan.py",
+    "tools/chatbot_file_cohort/gateway_retained.py",
     "tools/chatbot_file_cohort/gateway_runtime.py",
     "tools/chatbot_file_cohort/human_session.py",
     "tools/chatbot_file_cohort/iam_session.py",

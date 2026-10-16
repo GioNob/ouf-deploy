@@ -146,17 +146,19 @@ def read_predecessor():
     database=read(Path(directory['databases'])/'recovery.json',DATABASE_HASH)
     validate_databases(database,prepared['databasePlan']);backup_root=directory['backups']
     for module in ARCHIVES:prior.archive_bytes(backup_root,module)
-    return {**previous,'recoveryProfile':PROFILE,'migrationPredecessor':previous,'review':review,'prepared':prepared,
+    result={**previous,'recoveryProfile':PROFILE,'migrationPredecessor':previous,'review':review,'prepared':prepared,
         'authority':authority,'transition':row,'bundle':bundle,'worker':worker,'session':session,'admission':admission,
         'payloads':payloads,'recordBindings':bindings,'databaseJournal':database,'backupRoot':backup_root,
         'containerJournal':containers,'gatewayJournal':gateway,'gatewayRuntimeJournal':runtime_journal}
+    from tools.chatbot_file_cohort import gateway_retained
+    return gateway_retained.enrich(result) if gateway_retained.available() else result
 
 
 def proof_scope(previous,actor):
     base=copy.deepcopy(previous['prepared']['postGrantRecovery'])
     for key in ('migrationImageAudit','migrationNativeBinding','migrationRuntimeHash'):
         base.pop(key,None)
-    return {**base,'profile':PROFILE,'gatewayPredecessorSource':SOURCE,'gatewayPredecessorAuthorityHash':AUTHORITY,
+    result={**base,'profile':PROFILE,'gatewayPredecessorSource':SOURCE,'gatewayPredecessorAuthorityHash':AUTHORITY,
         'gatewayPredecessorReviewHash':REVIEW,'predecessorTransitionHash':TRANSITION_HASH,
         'appliedPrefixHash':digest(previous['transition']['effects']),'appliedPrefixPhaseCount':10,
         'cancelledWorkerHash':WORKER_HASH,'workerSessionHash':SESSION_HASH,'databaseJournalHash':DATABASE_HASH,
@@ -171,9 +173,24 @@ def proof_scope(previous,actor):
         'completeArchivesRetained':4,'newMcpArchiveMaximumAttempts':0,'migrationCreateAllowed':False,
         'migrationStartMaximumAttempts':0,'auditBootstrapAllowed':False,'completedContainerEffectsRetained':10,
         'completedGatewayEffectsRetained':9,'unresolvedGatewayClaimRetained':True,'oldAuthorityExtended':False}
+    if 'retainedGatewayAttempt' in previous:
+        result['retainedNumericGateway']=copy.deepcopy(previous['retainedGatewayAttempt']['receipt'])
+        result['newBudget']['reason']='READ_ONLY_AUTHORIZATION_RECOVERY_AFTER_COMPLETED_GATEWAY'
+    return result
+
+
+def claim_for(proof=None):
+    from tools.chatbot_file_cohort import gateway_retained
+    if proof is not None and 'retainedNumericGateway' in proof:
+        gateway_retained.validate_proof(proof)
+        return gateway_retained.CLAIM
+    return CLAIM
 
 
 def retained_bindings(proof):
+    if 'retainedNumericGateway' in proof:
+        from tools.chatbot_file_cohort.gateway_retained import validate_proof
+        validate_proof(proof)
     require(proof.get('profile')==PROFILE and proof.get('gatewayPredecessorAuthorityHash')==AUTHORITY
         and proof.get('gatewayPredecessorSource')==SOURCE and proof.get('gatewayPredecessorReviewHash')==REVIEW
         and proof.get('predecessorTransitionHash')==TRANSITION_HASH and proof.get('cancelledWorkerHash')==WORKER_HASH
@@ -362,6 +379,9 @@ def validate_publication(action,plan,transport):
 
 
 def current_gateway_transport(previous,engine):
+    if 'retainedGatewayAttempt' in previous:
+        from tools.chatbot_file_cohort.gateway_retained import current_transport
+        return current_transport(previous,engine)
     from tools.chatbot_file_cohort.gateway import NamespaceAdmin
     from tools.chatbot_file_cohort.gateway_runtime import GatewayRuntime,STEPS
     prepared=previous['prepared'];runtime=prepared.get('gatewayRuntimePlan')

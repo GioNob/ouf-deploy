@@ -197,17 +197,21 @@ def terminal_decision(review, review_path):
     review_hash = digest(review)
     require(Path(review_path).is_absolute(), 'PUBLISHED_PRIVATE_REVIEW_PATH_REQUIRED')
     gateway=review.get('postGrantRecoveryReview',{}).get('profile')=='ouf.chatbot-gateway-schema-continuation.v1'
+    retained_gateway=bool(review.get('postGrantRecoveryReview',{}).get('retainedNumericGateway'))
     summary = ('\nRevisione unica del ciclo CSV/chatbot.\n'
         'Documento privato completo: '+str(review_path)+'\n'
         'SHA256: '+review_hash+'\n'
         +('Fase tecnica 5/8: ripresa Gateway; fasi 1–4 completate e conservate.\n'
           'Quattro backup verificati: zero nuovi dump o restore; migrazioni MCP COMPLETE e privilegi CLEAN.\n'
           'Nessun bootstrap audit, start migrazione, sostituzione UDP/Onboarding o replay Registry.\n'
-          'APISIX viene sostituito con la stessa immagine e due asset verificati montati in sola lettura.\n'
+          +('APISIX già sostituito: otto passi conservati, verifica soltanto; nessun nuovo stop/create/start.\n'
+            'I due asset numerici verificati restano montati in sola lettura.\n' if retained_gateway else
+            'APISIX viene sostituito con la stessa immagine e due asset verificati montati in sola lettura.\n')+
           'Sono conservate nove modifiche Gateway e il decimo claim ambiguo: 28 modifiche restanti,\n'
           'con nuovo intento per lo schema corretto e verifica integrale delle route prima e dopo ogni scrittura.\n'
           'Otto grant restano conteggiati; il prossimo effettivo sarà il nono cumulativo.\n'
           'La nuova finestra ha massimo 128 tentativi e 3600 secondi, senza rinnovo automatico.\n'
+          'Le verifiche di autorizzazione transitorie attendono con budget persistente, jitter e Retry-After.\n'
           if gateway else '')
         +('Fase tecnica 2/8: ripresa dal container MCP già creato e mai avviato.\n'
           'Quattro backup COMPLETE copiati e verificati: zero nuovi dump, zero restore.\n'
@@ -288,7 +292,8 @@ def terminal_decision(review, review_path):
           'abilitazioni temporanee SET e CREATE sullo schema; se previsto nel piano, TRIGGER sulla sola security_incident.\n')+
 
         'Revoca verificata prima del riavvio; proprietario e privilegi preesistenti della tabella preservati.\n'
-        +('Include sostituzione del container APISIX con la stessa immagine e la configurazione qui revisionata.\n'
+        +('APISIX completato viene riconciliato in sola lettura; nessuna nuova sostituzione.\n' if retained_gateway else
+          'Include sostituzione del container APISIX con la stessa immagine e la configurazione qui revisionata.\n'
           if 'sameImageId' in review['scopes']['gatewayRuntimeInstallation'] else '')
         +('Nessun nuovo primo grant. Nuova sessione distinta di massimo '
           if review.get('postGrantRecoveryReview')is not None else

@@ -54,6 +54,11 @@ import qualified_owner_scope_catalogue
 SAFE_NODE_FAILURE_CODES=frozenset(['APPLIED_PAUSED_STAGE_REQUIRED', 'COMPLETED_NODE_ISSUANCE_REQUIRED_NO_RESIGNING', 'COMPLETED_OUTPUT_CREATION_RECEIPT_REQUIRED', 'CONFIGTREE_FILE_UNBOUNDED', 'CONFIGTREE_POLICY_DRIFT', 'CONFIGTREE_PRIVATE_FILE_HASH_OR_METADATA_DRIFT', 'CONFIGTREE_PROCESS_GENERATION_DRIFT', 'CONFIGTREE_PROC_READ_UNBOUNDED', 'CONFIGTREE_SOURCE_OR_MOUNT_CHANGED', 'CURRENT_ATTESTATION_PHASE_AND_CREATION_SCOPE_REQUIRED', 'CURRENT_FULL_ACTION_NODE_AUTHORITY_REQUIRED', 'DISTINCT_NONSHADOWING_FILE_ONLY_MOUNTS_REQUIRED', 'DISTINCT_ROOT_OWNED_PROPOSAL_RECEIPT_KEY_REQUIRED', 'DURABLE_SCOPED_NODE_ATTESTATION_REQUIRED', 'EFFECTIVE_CONFIGTREE_DIRECTORY_IDENTITY_DRIFT', 'EFFECTIVE_CONFIGTREE_FILE_IDENTITY_DRIFT', 'EFFECTIVE_PRIVATE_READONLY_CONFIGTREE_REQUIRED', 'EXACT_ACTUAL_OUTPUT_CUSTODY_OWNER_REQUIRED', 'EXACT_CONFIGTREE_PATH_REQUIRED', 'EXACT_CURRENT_PAUSED_WORKLOAD_GENERATION_REQUIRED', 'EXACT_FILE_ONLY_FOUR_MOUNT_POLICY_REQUIRED', 'EXACT_FILE_ONLY_FRAME_PROFILE_REQUIRED', 'EXACT_FILE_ONLY_FRAME_TRANSITION_PROFILE_REQUIRED', 'EXACT_INDEPENDENT_FILE_ONLY_NODE_RECIPE_REQUIRED', 'EXACT_NATIVE_IMAGE_MERGED_ROOTFS_REQUIRED', 'EXACT_PAUSED_NODE_CONTEXT_AND_GENERATION_REQUIRED', 'EXACT_PAUSED_NODE_OBSERVATION_CONFIGURATION_REQUIRED', 'EXACT_PRIVATE_SINGLETON_CONFIGTREE_REQUIRED', 'EXACT_REVIEWED_DOCKER_CONTEXT_PARENTS_REQUIRED', 'EXACT_ROOT_CONFIGTREE_BINDING_REQUIRED', 'EXACT_RUNC_PAUSED_ENGINE_PAUSED_IDENTITY_REQUIRED', 'EXACT_SINGLETON_CONFIGTREE_DIRECTORY_REQUIRED', 'EXPLICIT_PAUSED_NODE_PATH_PARENTS_REQUIRED', 'FILE_ONLY_FRAME_CHANGED_DURING_OBSERVATION', 'FILE_ONLY_FRAME_PROCESS_GENERATION_DRIFT', 'FILE_ONLY_KEY_METADATA_IDENTITY_DRIFT', 'FILE_ONLY_NODE_EVIDENCE_DRIFT', 'FILE_ONLY_NODE_OWNER_SCOPE_DRIFT', 'FINITE_NATIVE_NODE_OBSERVATION_REQUIRED', 'INDEPENDENT_FILE_ONLY_COMPLETE_OCI_DRIFT', 'INDEPENDENT_IMAGE_ROOTFS_SEAL_MISMATCH', 'NATIVE_NODE_OBSERVATION_DEADLINE', 'NODE_ACCEPTANCE_AUTHORIZATION_DRIFT', 'NODE_BUNDLE_OUTSIDE_REVIEWED_DOCKER_CONTEXT', 'NODE_SANDBOX_OUTSIDE_REVIEWED_PARENT', 'ORIGINAL_STATIC_CONSULTATION_KEY_REQUIRED', 'OUTPUT_CREATION_RECEIPT_CHANGED', 'OUTPUT_HOST_INPUT_RECEIPT_DRIFT', 'OUTPUT_RECEIPT_PARENT_IDENTITY_DRIFT', 'PARTIAL_NODE_ISSUANCE_RECONCILIATION_REQUIRED', 'PAUSED_DOCKER_SANDBOX_NAMESPACE_IDENTITY_DRIFT', 'PAUSED_NODE_BUNDLE_OUTSIDE_APPROVAL', 'PAUSED_NODE_CHANGED_DURING_COMPLETE_OBSERVATION', 'PAUSED_NODE_CONFIGURATION_DRIFT', 'PAUSED_NODE_FULL_OCI_DRIFT', 'PAUSED_NODE_GENERATION_DRIFT', 'PAUSED_NODE_NAMESPACE_INODE_DRIFT', 'PAUSED_NODE_NETWORK_NAMESPACE_REQUIRED', 'PAUSED_NODE_PEER_BUNDLE_OUTSIDE_APPROVAL', 'PAUSED_NODE_ROOTFS_PATH_REQUIRED', 'PAUSED_NODE_RUNTIME_ROOT_OUTSIDE_APPROVAL', 'PAUSED_NODE_TRANSPORT_DRIFT', 'PAUSED_NODE_UNAPPROVED_INTERFACE', 'PAUSED_WORKLOAD_CHANGED_DURING_OBSERVATION', 'PAUSED_WORKLOAD_OBSERVATION_STALE', 'PRIVATE_CONFIGTREE_FILE_CUSTODY_DRIFT', 'PRIVATE_NODE_OWNER_DIRECTORY_REQUIRED', 'RETAINED_COMPLETED_NODE_ATTESTATION_REQUIRED', 'RETAINED_PAUSED_NODE_CHANGED_DURING_READ', 'REVIEWED_ROOTFS_LAYOUT_REQUIRED', 'SAME_ACTUAL_INSTALLED_OWNER_FOR_FUTURE_OUTPUT_REQUIRED', 'SAME_SIGNED_OUTPUT_SCOPE_AND_OWNER_BINDING_REQUIRED', 'SHARED_APPROVED_NODE_SIGNING_CONTEXT_REQUIRED', 'SIGNED_FILE_ONLY_NODE_RECIPE_REQUIRED', 'TYPED_COMPLETE_FILE_ONLY_NODE_OWNER_REQUIRED', 'TYPED_FILE_ONLY_TOKEN_OWNER_AND_PROFILE_REQUIRED', 'TYPED_PAUSED_WORKLOAD_ENGINE_REQUIRED', 'TYPED_ROOT_PAUSED_NODE_OBSERVATION_REQUIRED'])
 
 def public_failure_reason(error):
+    if type(error)is AuthorizationPaused:
+        allowed={'AUTHORIZATION_HTTP_'+str(code)for code in (400,401,403,404,408,409,429,500,502,503,504)}
+        allowed|={'AUTHORIZATION_TRANSPORT_OUTCOME_UNPROVEN','AUTHORIZATION_OBSERVATION_BUDGET_EXHAUSTED',
+            'AUTHORIZATION_READ_INVALID_RETRY_AFTER'}
+        return error.reason if error.reason in allowed else 'AuthorizationPaused'
     if type(error)is Permanent:
         return error.code if error.code in {'AUTHORITY_EXPIRED','AUTHORITY_REVOKED','INTEGRITY_UNPROVEN',
             'GENERATION_CHANGED','PERMANENT_FAILURE','CONFIGURATION_DRIFT'}else'Permanent'
@@ -306,6 +311,17 @@ class Delivery:
                 self.wait((5,15,60)[min(attempt,2)])
                 attempt += 1
 
+    def await_authorization_verification(self,owner,stage,require_worker=False):
+        if 'observationPolicy' not in owner.plan:return owner.verify()
+        while True:
+            self.current(require_worker)
+            try:return owner.verify_resilient(stage)
+            except AuthorizationPaused as error:
+                retry=owner.observation_retry_status(error)
+                if retry is None:raise
+                self.report('AUTHORIZATION_READINESS_WAIT',**retry)
+                self.wait(max(0,retry['nextAttemptAt']-time.time()),require_worker)
+
     def await_container(self, containers, module):
         while True:
             self.current(True)
@@ -400,6 +416,8 @@ class Delivery:
             if runtime_plan is not None:
                 gateway_runtime = GatewayRuntime(self.action,self.engine,runtime_plan,Journal(directories['gatewayRuntime']))
                 gateway_runtime.initialize()
+                if recovery is not None and 'retainedNumericGateway' in recovery:
+                    self.report('COMPLETED_APISIX_ADOPTED_NO_LIFECYCLE_REPLAY',completedSteps=8)
                 while True:
                     self.current()
                     try:
@@ -410,7 +428,7 @@ class Delivery:
                         self.report('APISIX_READINESS_WAIT',nextAttemptAt=error.next_attempt_at)
                         self.wait(max(0,error.next_attempt_at-time.time()))
                 transport = gateway_runtime.transport()
-                auth_owner.verify()
+                self.await_authorization_verification(auth_owner,'AFTER_GATEWAY')
             else:
                 self.action.guard('gatewayRuntimeInstallation',{
                     'profile':'ouf.chatbot-file-cohort.gateway-runtime.v1','required':False,
@@ -488,7 +506,7 @@ class Delivery:
                 self.await_container(containers,module); databases.verify_module(module)
             self.current(True)
             verified = containers.verify_all()
-            gateway.verify(); auth_owner.verify()
+            gateway.verify(); self.await_authorization_verification(auth_owner,'FINAL_COHORT',True)
             app.release_after_cohort_verification()
             self.report('COHORT_READY_FOR_ACTUAL_CHATBOT_CSV_ACCEPTANCE',cohortEvidenceHash=digest(verified),
                 maximumSessionSeconds=self.review['maximumElapsedSeconds'])
