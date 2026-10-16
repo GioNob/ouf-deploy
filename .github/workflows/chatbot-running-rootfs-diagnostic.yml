@@ -1,0 +1,28 @@
+name: Running Registry rootfs diagnostic qualification
+on:
+  push:
+    branches: [fix/cohort-mcp-backup-recovery-20261016]
+    paths: ['scripts/read-chatbot-running-rootfs-diff-20261016.py', 'tests/test_running_rootfs_diagnostic.py', '.github/workflows/chatbot-running-rootfs-diagnostic.yml']
+permissions: {contents: read}
+jobs:
+  read-only-native-sealer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Root-owned fixture with no target access
+        run: |
+          set -euo pipefail
+          sudo mkdir -m 700 /var/lib/ouf-running-rootfs-test
+          sudo cp -R . /var/lib/ouf-running-rootfs-test/repository
+          sudo chown -R root:root /var/lib/ouf-running-rootfs-test
+      - name: Exact frozen sealer, private custody, redaction and native running process
+        run: |
+          set -euo pipefail
+          sudo env OUF_NATIVE_PROCESS=1 python3 -I -B -c '
+          import sys,unittest
+          sys.path.insert(0,"/var/lib/ouf-running-rootfs-test/repository/tests")
+          import test_running_rootfs_diagnostic as m
+          result=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(m.Diagnostic))
+          sys.exit(0 if result.wasSuccessful() and not result.skipped and result.testsRun==14 else 1)'
