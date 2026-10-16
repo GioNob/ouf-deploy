@@ -12,7 +12,7 @@ def sql(text):
  assert p.returncode==0,'SYNTHETIC_SQL_QUALIFICATION_FAILED'
  assert len(p.stdout)<=65536 and len(p.stderr)<=65536
  return p.stdout.decode().strip()
-identity=json.loads(sql("SELECT json_build_object('database',current_database(),'user',current_user,'oid',(SELECT oid FROM pg_database WHERE datname=current_database()),'version',current_setting('server_version_num')::int)"))
+identity=json.loads(sql("SELECT json_build_object('database',current_database(),'user',current_user,'oid',(SELECT oid::bigint FROM pg_database WHERE datname=current_database()),'version',current_setting('server_version_num')::int)"))
 assert identity['database']=='preflight_fixture' and identity['user']=='mcp' and 170000<=identity['version']<180000
 sql("CREATE ROLE fixture_application NOLOGIN NOSUPERUSER NOCREATEROLE; GRANT USAGE,CREATE ON SCHEMA ouf_mcp TO fixture_application; GRANT INSERT ON ouf_mcp.schema_migration TO fixture_application; GRANT REFERENCES ON ouf_mcp.tool_attempt,ouf_mcp.budget_window TO fixture_application")
 def observe():
