@@ -4,6 +4,48 @@ Roadmap confermata dall'utente il 16 ottobre 2026. Numerazione stabile fino alla
 
 ## Stato corrente
 
+**Aggiornamento13:02 Europe/Rome: correzione Registry Gateway COMPLETA sul target;
+fasi tecniche1–8 conservate; CSV0/6.**
+Review continuazione8d9ed8ebebf1937a091d45905a49019eb8c738f341a2522c290bd128a452cff3;
+autorità830b072a37ef4d7689225acd39fd1ca4776f48e9a640f1405bb140ff8082d4da.
+ENDcomplete:14nuove PUT e1modifica precedente adottata senza replay,
+15tentativi cumulativi, zero DB/grant/lifecycle, journal precedenti immutati.
+Mappa finale d4452956e84f19df0bc13b31b379985460a5fc60c9287d616757665229fc8e1b,
+74route totali,15binding Registry corretti e59route estranee preservate.
+Dopo ogni PUT: HTTP200, risposta immediata non uguale al route object richiesto,
+ma GET integrale esattamente uguale alla mappa prevista. La forma della risposta
+immediata non è una prova sostitutiva; la rilettura ha provato ogni effetto.
+
+Verifica diretta MCP account ouf-admin dopo la correzione: semantic.search Teatri
+risponde [] senza503; teatro []. Cinema restituisce l'ontologia ACTIVE con
+artifact5ae731cc-e4c5-43a3-aa5e-a7576adbd3a1,
+revision51706bed-81e4-4306-aca1-70119821727d,
+publicationSet f92a2e17-30c9-456f-bb12-63afa84f41e6. Non prova gli8oggetti UDP
+né alcuna nuova ricerca funzionale sul CSV Teatri.
+Una quarta ricerca nello stesso minuto (PerformingArtsTheater) ha restituito
+orchestration budget exhausted/retryablefalse. Nessun retry di quella chiamata,
+reset o aumento budget. Il codice pinned MCP mantiene budget persistenti a
+finestra per principal/manifest, distinti dal worker infrastrutturale; non
+confondere questo errore con il503 corretto o con la finestra CSV scaduta.
+
+Blocco funzionale corrente: manifest MCP f249b3dcc58c2a96742092d90fa09fd90b705bd0
+pubblica semantic.propose/review.prepare/approval.request/proposal.read ACTIVE e
+toolEligible, ma questi4tool non sono disponibili nel catalogo della connessione
+in questa chat. Nessuna proposta/approval è stata creata. Verificare/aggiornare
+la lista strumenti della connessione e poi proseguire attraverso il percorso
+MCP→Gateway→owner e HUMAN THS; nessun bypass owner/backend diretto.
+La proposta storica teatri-reuse-semantic-proposal-20261014.json resta NON
+registrata/approvata: riuso PerformingArtsTheater,20campi lessicali, CAPtestuale,
+coordinate/capienza qualificate e identità/access label da review HUMAN.
+La finestra CSV originaria è terminata alle12:57:06; il suo output completo
+riporta FINITE_DELIVERY_PROCESS_STOPPED_INSPECT_RETAINED_STATUS, non prova
+indipendente del motivo interno. Nessuna nuova finestra applicativa/worker/grant
+è stata emessa dalla correzione route. Serve riconciliazione dello stato conservato
+prima di una eventuale ripresa governata. Non rilanciare installer/applicatori.
+
+Gli aggiornamenti seguenti conservano la cronologia e non superano questo stato.
+
+
 **Ultimo output VPS: fasi tecniche 1–8 superate nell'esecuzione; tappe CSV 0/6.**
 Runtime d7bbb768970aad1a001ca4d085bcc87c58a29cec, review
 07ee9e8adf0d645018fb70212884f43c22e85cf3c7288bd78dad5bf0d02413bc,
