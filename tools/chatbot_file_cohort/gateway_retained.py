@@ -114,6 +114,28 @@ def validate_proof(proof):
     return receipt
 
 
+def pregrant_successor_readback(original_pin,previous,engine):
+    """Join the original completed effect to its exact governed successor.
+
+    The original candidate is now retained stopped, not expected to be live.
+    Five image proofs and the older retired ancestor remain independently read.
+    """
+    attempt=previous['retainedGatewayAttempt'];plan=attempt['prepared']['gatewayRuntimePlan']
+    receipt=validate_proof({'retainedNumericGateway':attempt['receipt']})
+    validate_runtime(plan,attempt['journal'])
+    require(plan['oldRuntimeBinding']==original_pin
+        and digest(plan)==receipt['runtimePlanHash']
+        and digest(plan['oldHostConfig'])==original_pin['hostConfigHash'],
+        'PREGRANT_APISIX_SUCCESSOR_LINEAGE_DRIFT')
+    code,old=engine.request('GET','/v1.44/containers/'+original_pin['containerId']+'/json')
+    require(code==200 and old['State']['StartedAt']==original_pin['startedAt']
+        and old['State']['Paused']is False and old['RestartCount']==0,
+        'PREGRANT_RETIRED_APISIX_GENERATION_DRIFT')
+    first=current_transport(previous,engine)
+    require(current_transport(previous,engine)==first,'PREGRANT_APISIX_SUCCESSOR_UNSTABLE')
+    return first
+
+
 def current_transport(previous,engine):
     from tools.chatbot_file_cohort.gateway import NamespaceAdmin,apisix_runtime_binding
     from tools.chatbot_file_cohort.gateway_runtime import GatewayRuntime,validate_numeric_assets

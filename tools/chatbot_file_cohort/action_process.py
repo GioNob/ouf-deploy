@@ -193,7 +193,7 @@ def image_predecessor_readback(review,authority_hash):
     return receipts,bindings
 
 
-def pregrant_native_readback(review,authority_hash):
+def pregrant_native_readback(review,authority_hash,*,gateway_successor=None):
     """Prove completed five-image/APISIX effects without issuing any command."""
     from image_custody import loaded,runtime_image_id
     from image_import import Import
@@ -243,13 +243,19 @@ def pregrant_native_readback(review,authority_hash):
         'COMPLETED_PREGRANT_APISIX_HISTORY_REQUIRED')
     expected=journal['effects'][-1]['evidence']['runtimeBinding'];identity=expected['containerId']
     require(re.fullmatch('[0-9a-f]{64}',identity) is not None,'EXACT_PREGRANT_APISIX_ID_REQUIRED')
-    code,native=engine.request('GET','/v1.44/containers/'+identity+'/json')
-    require(code==200 and Engine.runtime_binding(native)==expected
-        and native['Name']=='/'+runtime['oldName'] and native['State']['Running']is True
-        and native['State']['Paused']is False and native['RestartCount']==0
-        and journal['effects'][3]['evidence']['containerId']==identity
-        and engine.request('GET','/v1.44/containers/'+identity+'/json')==(code,native),
-        'PREGRANT_APISIX_GENERATION_DRIFT')
+    if gateway_successor is None:
+        code,native=engine.request('GET','/v1.44/containers/'+identity+'/json')
+        require(code==200 and Engine.runtime_binding(native)==expected
+            and native['Name']=='/'+runtime['oldName'] and native['State']['Running']is True
+            and native['State']['Paused']is False and native['RestartCount']==0
+            and journal['effects'][3]['evidence']['containerId']==identity
+            and engine.request('GET','/v1.44/containers/'+identity+'/json')==(code,native),
+            'PREGRANT_APISIX_GENERATION_DRIFT')
+    else:
+        from tools.chatbot_file_cohort.gateway_retained import pregrant_successor_readback
+        require(journal['effects'][3]['evidence']['containerId']==identity,
+            'PREGRANT_APISIX_CREATED_ID_DRIFT')
+        pregrant_successor_readback(expected,gateway_successor,engine)
     old_id=runtime['oldRuntimeBinding']['containerId']
     code,old=engine.request('GET','/v1.44/containers/'+old_id+'/json')
     old_host=copy.deepcopy(runtime['oldHostConfig']);old_host['RestartPolicy']={'Name':'no','MaximumRetryCount':0}

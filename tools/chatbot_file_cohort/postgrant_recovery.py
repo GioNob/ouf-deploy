@@ -270,7 +270,8 @@ def current_baseline(predecessor,engine):
     prepared=predecessor['prepared'];row=predecessor['transition']
     from tools.chatbot_file_cohort.action_process import pregrant_native_readback
     original=evidence.decode(legacy.private(evidence.PARENT/legacy.CONTEXT/'review.json',legacy.REVIEW))
-    pregrant_native_readback(original,legacy.AUTHORITY)
+    pregrant_native_readback(original,legacy.AUTHORITY,
+        gateway_successor=predecessor if 'retainedGatewayAttempt' in predecessor else None)
     profile=FileOnlyProfile(prepared['registry']['creationRequest'],prepared['registry']['configtree'])
     transition=Transition.__new__(Transition);transition.context=row['contextHash']
     from tools.chatbot_file_cohort.backup_recovery import PROFILE as BACKUP_PROFILE

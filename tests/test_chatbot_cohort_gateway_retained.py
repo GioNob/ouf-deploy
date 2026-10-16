@@ -1,5 +1,6 @@
 """Completed post-Gateway attempt must be frozen before a fresh finite decision."""
 import copy,json,tempfile,unittest
+from types import SimpleNamespace
 from contextlib import ExitStack
 from pathlib import Path
 from unittest.mock import patch
@@ -15,7 +16,11 @@ class RetainedAttempt(unittest.TestCase):
         def write(path,value):
             path.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
             path.write_bytes(encoded(value));path.chmod(0o600);return digest(value)
-        plan={'runtimeBindingProfile':'ouf.apisix-runtime-binding.mount-set.v1'}
+        old_host={'RestartPolicy':{'Name':'unless-stopped','MaximumRetryCount':0}}
+        original_pin={'containerId':'e'*64,'imageId':'sha256:'+'f'*64,'pid':99,'startedAt':'original-start',
+            **{k:'c'*64 for k in ('configHash','mountsHash','networkSettingsHash')},'hostConfigHash':digest(old_host)}
+        plan={'runtimeBindingProfile':'ouf.apisix-runtime-binding.mount-set.v1',
+            'oldRuntimeBinding':original_pin,'oldHostConfig':old_host}
         prepared={'postGrantRecovery':{'profile':base.PROFILE},'gatewayRuntimePlan':plan,'gatewayPlan':{'syntheticRemaining':28},
             'authorization':{'plan':{}},'databasePlan':{'retainedDatabasePlan':True},'cohortPlan':{'replacements':[]},
             'postGrantWorkerDirectory':str(root/'owner')}
@@ -53,6 +58,33 @@ class RetainedAttempt(unittest.TestCase):
         self.root,self.row,self.plan,self.previous=root,row,plan,previous
         self.write=write
         return previous
+    def test_pregrant_joins_original_effect_to_completed_successor_without_writes(self):
+        previous=r.enrich(self.fixture());pin=self.plan['oldRuntimeBinding']
+        old={'State':{'StartedAt':pin['startedAt'],'Paused':False},'RestartCount':0}
+        reads=[]
+        def request(method,path):
+            self.assertEqual(method,'GET');reads.append(path);return 200,copy.deepcopy(old)
+        engine=SimpleNamespace(request=request);transport={'runtimeBinding':self.row['effects'][-1]['evidence']['runtimeBinding']}
+        with patch.object(r,'current_transport',return_value=transport)as observe:
+            self.assertEqual(r.pregrant_successor_readback(pin,previous,engine),transport)
+            self.assertEqual(observe.call_count,2)
+            bad=copy.deepcopy(pin);bad['pid']+=1
+            with self.assertRaisesRegex(Exception,'SUCCESSOR_LINEAGE_DRIFT'):
+                r.pregrant_successor_readback(bad,previous,engine)
+            self.assertEqual(observe.call_count,2)
+        self.assertEqual(reads,['/v1.44/containers/'+pin['containerId']+'/json'])
+    def test_pregrant_successor_instability_or_changed_retired_generation_blocks(self):
+        previous=r.enrich(self.fixture());pin=self.plan['oldRuntimeBinding']
+        old={'State':{'StartedAt':pin['startedAt'],'Paused':False},'RestartCount':0}
+        engine=SimpleNamespace(request=lambda *_:(200,old))
+        with patch.object(r,'current_transport',side_effect=[{'generation':1},{'generation':2}]):
+            with self.assertRaisesRegex(Exception,'SUCCESSOR_UNSTABLE'):
+                r.pregrant_successor_readback(pin,previous,engine)
+        old['RestartCount']=1
+        with patch.object(r,'current_transport')as observe:
+            with self.assertRaisesRegex(Exception,'RETIRED_APISIX_GENERATION_DRIFT'):
+                r.pregrant_successor_readback(pin,previous,engine)
+            observe.assert_not_called()
     def test_current_attempt_augments_original_history_and_uses_distinct_claim(self):
         previous=self.fixture();original=copy.deepcopy(previous);result=r.enrich(previous)
         self.assertEqual(previous,original);self.assertEqual(result['prepared'],original['prepared'])

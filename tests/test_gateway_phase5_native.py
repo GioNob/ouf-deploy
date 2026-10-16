@@ -172,6 +172,11 @@ class NativePhaseFive(unittest.TestCase):
             if method!='GET':native_writes.append((method,path))
             return adoption_request(method,path,*args)
         engine.request=request
+        # Full preparation enters through the older pregrant checkpoint, whose
+        # then-live APISIX is now the stopped predecessor of this replacement.
+        # Exercise that lineage gate before the later runtime adoption gate.
+        retained.pregrant_successor_readback(runtime['oldRuntimeBinding'],previous,engine)
+        self.assertEqual(native_writes,[])
         owner.initialize();owner.apply();owner.apply()
         self.assertEqual(owner.record()['nextStep'],8);self.assertEqual(native_writes,[])
         self.assertEqual(historical_owner.journal.record.read_bytes(),historical_bytes)

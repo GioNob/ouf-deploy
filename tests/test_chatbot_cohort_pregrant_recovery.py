@@ -92,6 +92,19 @@ class CompletedInfrastructure(unittest.TestCase):
         with self.assertRaisesRegex(Exception,'APISIX_GENERATION_DRIFT'):
             process.pregrant_native_readback(self.review,self.authority_hash)
 
+    def test_explicit_successor_keeps_image_and_older_ancestor_custody(self):
+        successor={'retainedGatewayAttempt':{'syntheticExplicitSuccessor':True}}
+        self.new_gateway['State']['Running']=False
+        before={p:p.read_bytes()for p in self.root.rglob('*')if p.is_file()}
+        with patch('tools.chatbot_file_cohort.gateway_retained.pregrant_successor_readback')as verify:
+            images,_,_=process.pregrant_native_readback(self.review,self.authority_hash,gateway_successor=successor)
+            verify.assert_called_once_with(self.gateway['effects'][-1]['evidence']['runtimeBinding'],successor,self.engine)
+            self.assertEqual(len(images),5)
+            self.old_gateway['Config']['Env']=['DRIFT']
+            with self.assertRaisesRegex(Exception,'RETAINED_APISIX_DRIFT'):
+                process.pregrant_native_readback(self.review,self.authority_hash,gateway_successor=successor)
+        self.assertEqual(before,{p:p.read_bytes()for p in self.root.rglob('*')if p.is_file()})
+
     def test_changed_image_execution_config_denies_reuse(self):
         for path,native in self.by_id.items():
             if path.startswith('/v1.44/images/'):
