@@ -101,9 +101,24 @@ class Execution(unittest.TestCase):
             with self.assertRaises(Exception):r.issue_token_action(self.review,self.decision(),self.human)
         self.assertFalse((self.context/'issuance.claim.json').exists())
 
-    def main(self,rejected=False,cancel_after_response=False):
+    def main(self,rejected=False,cancel_after_response=False,resume=False):
         # New directory creation belongs to this dispatcher rather than the component fixture.
-        self.f.journal.rmdir()
+        preparation=None
+        if not resume:self.f.journal.rmdir()
+        else:
+            from tools.chatbot_file_cohort.human_session import CLIENT,SCOPES,PROFILE
+            from tools.semantic_lease_recovery.recovery_journal import Journal
+            human_directory=self.context/'human-session';human_directory.mkdir(mode=0o700)
+            now=int(time.time());self.hb={**self.actor,'sessionId':'retained-synthetic-login',
+                'selectionHash':r.digest(self.actor),'clientId':CLIENT,'scopes':SCOPES,
+                'tokenPath':str(human_directory/'human-access.jwt'),'sessionDirectory':str(human_directory),
+                'createdAt':now-100,'expiresAt':now+3500,'retryProfile':PROFILE}
+            prior_human=HumanSession(self.actor,human_directory,human_directory/'human-access.jwt',self.hb['expiresAt'])
+            Journal(human_directory).initialize({'schema':'ouf.chatbot-human-session.private.v1','binding':self.hb,
+                'bootId':prior_human._boot(),'monotonicDeadline':time.monotonic()+3500,
+                'lastObservedAt':time.time(),'attempts':7,'state':'DEVICE_START','budgetReset':False})
+            info=self.context.stat();preparation={'schema':'ouf.pre-authority-token-preparation-continuation.v1',
+                'contextPath':str(self.context),'directoryIdentity':[info.st_dev,info.st_ino],'targetReadbackHash':'e'*64}
         prepared={'owner':self.f.value,'engine':self.f.engine_binding,
             'authorization':{'plan':{'selection':self.actor}}}
         sources={module:self.f.base.files[name]for name,module in STAGE_SOURCE.items()}
@@ -123,7 +138,7 @@ class Execution(unittest.TestCase):
              patch('tools.semantic_policy_token_owner.worker_entry.serve',side_effect=once):
             token_only_session_main(prepared,sources,self.closure,self.f.review,self.proposal,self.candidate,self.cb,
                 self.f.records,self.f.first,self.context,{'path':str(self.g.root/'synthetic-executor.py'),'sha256':'d'*64},
-                emit=lambda value:None,transport=self.f.installed.first.transport)
+                emit=lambda value:None,transport=self.f.installed.first.transport,interrupted_preparation=preparation)
         return before,rows
 
     def test_dispatcher_signs_installs_and_performs_only_one_accounted_workload_grant(self):
@@ -143,6 +158,23 @@ class Execution(unittest.TestCase):
         self.assertEqual(rows[0]['controlledCumulativeGrantAttempts'],70)
         self.assertEqual(target.read_bytes(),raw)
         self.assertEqual((target.stat().st_ino,target.stat().st_mtime_ns),(previous.st_ino,previous.st_mtime_ns))
+
+    def test_observed_empty_preparation_and_oauth_journal_are_continued_without_reset(self):
+        before,rows=self.main(resume=True)
+        self.assertEqual(rows[0]['controlledCumulativeGrantAttempts'],70)
+        self.assertEqual(self.f.grants(),before+1)
+        proof=json.loads((self.context/'preparation-continuation.json').read_bytes())
+        human=json.loads((self.context/'human-session/recovery.json').read_bytes())
+        self.assertEqual(proof['attemptsBefore'],7);self.assertEqual(human['attempts'],7)
+        self.assertEqual(proof['originalHumanExpiry'],self.hb['expiresAt'])
+        final=json.loads((self.context/'review.json').read_bytes())
+        self.assertEqual(final['preAuthorityContinuation'],proof)
+
+    def test_continuation_refuses_preexisting_authority_artifacts_before_grant(self):
+        self.g.write(self.context/'issuance.claim.json',r.encoded({'prior':True}));before=self.f.grants()
+        with self.assertRaisesRegex(Exception,'UNISSUED_INTERRUPTED_CONTEXT_REQUIRED'):self.main(resume=True)
+        self.assertEqual(self.f.grants(),before)
+        self.assertFalse((self.context/'preparation-continuation.json').exists())
 
     def test_terminal_rejection_has_no_signatures_fence_or_workload_grant(self):
         before=self.f.grants()

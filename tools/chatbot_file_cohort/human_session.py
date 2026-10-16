@@ -125,6 +125,59 @@ class HumanSession:
                 'HUMAN_OAUTH_ENDPOINT_DRIFT')
         return value
 
+    def prepare_interrupted_login(self, emit=print):
+        """Continue the SAME login budget; replace only a proven expired challenge.
+
+        A pending mutating/rotating request is never replayed. No deadline,
+        attempt counter, authenticated identity or throttle state is reset.
+        """
+        require(self.action is None, 'PRE_AUTHORITY_LOGIN_CONTINUATION_ONLY')
+        with self.journal.invocation():
+            row=self._read();self._check(row)
+            state=row.get('state')
+            require(state in {'NEW','DEVICE_START','DEVICE_POLL','REQUESTING','RETRY_WAIT','VERIFYING','READY','BLOCKED'},
+                    'KNOWN_INTERRUPTED_HUMAN_STATE_REQUIRED')
+            if state=='BLOCKED':raise HumanSessionPaused('HUMAN_LOGIN_ALREADY_BLOCKED_RECONCILIATION_REQUIRED')
+            if state=='REQUESTING' and row.get('operation') not in ('DISCOVERY','USERINFO'):
+                self._save(row,state='BLOCKED',reason='HUMAN_OAUTH_INTERRUPTED_OUTCOME_UNPROVEN')
+                raise HumanSessionPaused('HUMAN_OAUTH_INTERRUPTED_OUTCOME_UNPROVEN')
+            effective=row.get('resumeState') if state=='RETRY_WAIT' else state
+            if effective!='DEVICE_POLL':
+                return {'state':state,'attempts':row['attempts'],'expiresAt':self.expires_at,'budgetReset':False}
+            if state=='RETRY_WAIT' and time.time()<row['nextAttemptAt']:
+                raise HumanSessionPaused('HUMAN_OAUTH_TEMPORARILY_UNAVAILABLE',retry_at=row['nextAttemptAt'])
+            deadline=row.get('deviceDeadline')
+            require(type(deadline)in (int,float) and 0<deadline<=self.expires_at,
+                    'RETAINED_DEVICE_CHALLENGE_DEADLINE_REQUIRED')
+            if time.time()<deadline:
+                uri,code=row.get('verificationUri'),row.get('userCode')
+                if uri is None or code is None:
+                    # Old code did not retain display metadata. Do not create
+                    # a second outstanding challenge or bypass its deadline.
+                    raise HumanSessionPaused('HUMAN_DEVICE_PROMPT_NOT_RETAINED_WAIT_EXPIRY',retry_at=deadline)
+                require(type(uri)is str and uri.startswith(self.selection['issuer']+'/')
+                    and not any(c.isspace()for c in uri) and type(code)is str and 1<=len(code)<=64
+                    and all(c.isalnum()or c=='-'for c in code),'EXACT_RETAINED_DEVICE_PROMPT_REQUIRED')
+                emit('OPEN_IN_BROWSER='+uri);emit('ENTER_DEVICE_CODE='+code)
+                return {'state':state,'attempts':row['attempts'],'expiresAt':self.expires_at,'budgetReset':False}
+            require(not any(row.get(k)for k in ('accessToken','refreshToken','publishedAccessToken'))
+                and type(row.get('deviceCode'))is str and row['deviceCode']
+                and row['attempts']<PROFILE['maximumAttempts'], 'EXPIRED_PRE_TOKEN_CHALLENGE_ONLY')
+            history=copy.deepcopy(row.get('expiredDeviceChallengeHistory',[]))
+            require(type(history)is list and len(history)<PROFILE['maximumAttempts'],
+                    'BOUNDED_DEVICE_CHALLENGE_HISTORY_REQUIRED')
+            receipt={'schema':'ouf.human-expired-device-challenge.v1','previousRowHash':digest(row),
+                'attemptsBefore':row['attempts'],'expiredAt':deadline,'continuedAt':time.time(),
+                'reason':'INTERRUPTED_PRE_AUTHORITY_LOGIN_PROMPT_CONTINUATION',
+                'originalSessionExpiry':self.expires_at,'budgetReset':False}
+            history.append(receipt)
+            following=self._save(row,state='DEVICE_START',resumeState='DEVICE_START',
+                expiredDeviceChallengeHistory=history,deviceCode=None,verificationUri=None,userCode=None)
+            require(following['attempts']==row['attempts'] and following['binding']==row['binding']
+                and following['monotonicDeadline']==row['monotonicDeadline'], 'HUMAN_LOGIN_BUDGET_MUST_BE_PRESERVED')
+            return {'state':'DEVICE_START','attempts':row['attempts'],'expiresAt':self.expires_at,
+                'expiredChallengeReceiptHash':digest(receipt),'budgetReset':False}
+
     def _http(self, url, values=None, bearer=None):
         headers = {'Accept':'application/json'}
         raw = None
@@ -321,6 +374,7 @@ class HumanSession:
                                 'BOUNDED_PROVIDER_POLL_INTERVAL_REQUIRED')
                         interval = max(5,supplied_interval)
                         row = self._save(row, state='DEVICE_POLL', deviceCode=result['device_code'],
+                            verificationUri=uri,userCode=code,
                             deviceDeadline=min(self.expires_at,time.time()+min(600,result['expires_in'])),
                             interval=interval, nextPollAt=time.time()+interval)
                         emit('OPEN_IN_BROWSER='+uri); emit('ENTER_DEVICE_CODE='+code)

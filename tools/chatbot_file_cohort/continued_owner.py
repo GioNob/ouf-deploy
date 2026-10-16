@@ -304,7 +304,8 @@ TOKEN_STAGE_SOURCE = {
 
 
 def token_only_session_main(prepared,sources,closure,proposal,proposal_binding,candidate,candidate_binding,
-                            records,first_receipt,context_path,executor_binding,emit=print,*,transport=None):
+                            records,first_receipt,context_path,executor_binding,emit=print,*,transport=None,
+                            interrupted_preparation=None):
     """One sealed foreground invocation; no old delivery/phase executor is called."""
     import signal
     import threading
@@ -312,7 +313,7 @@ def token_only_session_main(prepared,sources,closure,proposal,proposal_binding,c
     from iam_owner_action import publish
     from cutover_authority import CutoverAuthority
     from tools.semantic_provider_deployment_authentication import DetachedAuthenticator
-    from tools.chatbot_file_cohort.human_session import HumanSession
+    from tools.chatbot_file_cohort.human_session import HumanSession,HumanSessionPaused
     from tools.chatbot_file_cohort.review import (compile_token_review,terminal_token_decision,
         issue_token_action,command_matches,digest,encoded,require)
     from tools.semantic_policy_token_owner.installed_owner import compile_governed_session
@@ -345,20 +346,58 @@ def token_only_session_main(prepared,sources,closure,proposal,proposal_binding,c
     require(scope==candidate['compiledSessionScope'],'NATIVE_CANDIDATE_SCOPE_CHANGED')
     fence=Path(scope['fenceBinding']['path']);journal=Path(scope['fenceBinding']['value']['journalPath'])
     require(not os.path.lexists(fence),'TOKEN_LOGICAL_SCOPE_ALREADY_CLAIMED_RECONCILIATION_REQUIRED')
-    with protected_directory(journal.parent)as directory:
-        # New private preparation only; never clear/reuse a prior attempt.
-        os.mkdir(journal.name,0o700,dir_fd=directory);os.fsync(directory)
+    if interrupted_preparation is None:
+        with protected_directory(journal.parent)as directory:
+            os.mkdir(journal.name,0o700,dir_fd=directory);os.fsync(directory)
+    else:
+        require(set(interrupted_preparation)=={'schema','contextPath','directoryIdentity','targetReadbackHash'}
+            and interrupted_preparation['schema']=='ouf.pre-authority-token-preparation-continuation.v1'
+            and interrupted_preparation['contextPath']==str(context)
+            and type(interrupted_preparation['targetReadbackHash'])is str
+            and len(interrupted_preparation['targetReadbackHash'])==64
+            and all(c in '0123456789abcdef'for c in interrupted_preparation['targetReadbackHash']),
+            'EXACT_INTERRUPTED_PREPARATION_BINDING_REQUIRED')
+        with protected_directory(context)as directory:
+            info=os.fstat(directory)
+            require([info.st_dev,info.st_ino]==interrupted_preparation['directoryIdentity']
+                and set(os.listdir(directory))=={'human-session'}, 'UNISSUED_INTERRUPTED_CONTEXT_REQUIRED')
+        with protected_directory(journal)as directory:
+            require(not os.listdir(directory),'INTERRUPTED_NEW_WORKER_MUST_REMAIN_UNINITIALIZED')
     files={name:sources[module]for name,module in TOKEN_STAGE_SOURCE.items()}
     args=(prepared['owner'],files,closure['declaration']['sourceCommit'],proposal,records,first_receipt,
         proposal_binding,prepared['engine'],journal)
     planned=GovernedSemanticOwnerContinuation(unissued,*args,transport=transport)
     # Scope construction above cannot use the absent preparation mandate.
-    with protected_directory(context)as directory:
-        os.mkdir('human-session',0o700,dir_fd=directory);os.fsync(directory)
     human_directory=context/'human-session'
+    if interrupted_preparation is None:
+        with protected_directory(context)as directory:
+            os.mkdir('human-session',0o700,dir_fd=directory);os.fsync(directory)
+        human_expiry=int(time.time())+7200
+    else:
+        previous_human=Journal(human_directory).read()
+        human_expiry=previous_human['binding']['expiresAt']
     human=HumanSession(prepared['authorization']['plan']['selection'],human_directory,
-        human_directory/'human-access.jwt',int(time.time())+7200)
-    emit('OUF_TOKEN_SESSION_PHASE=FRESH_HUMAN_LOGIN technical=8/8 functional=0/6')
+        human_directory/'human-access.jwt',human_expiry)
+    continuation=None
+    if interrupted_preparation is not None:
+        human._check(previous_human)
+        continuation={'schema':'ouf.pre-authority-token-login-continuation-receipt.v1',
+            'binding':copy.deepcopy(interrupted_preparation),'previousHumanRowHash':digest(previous_human),
+            'attemptsBefore':previous_human['attempts'],'originalHumanExpiry':human_expiry,
+            'workerJournalIdentity':list(planned.journal.directory_id),'budgetReset':False}
+        with protected_directory(context)as directory:
+            require(publish(directory,'preparation-continuation.json',encoded(continuation)),
+                    'PRE_AUTHORITY_CONTINUATION_ALREADY_CONSUMED')
+        emit('OUF_TOKEN_SESSION_PHASE=CONTINUE_EXISTING_HUMAN_LOGIN technical=8/8 functional=0/6')
+        while True:
+            try:
+                metadata=human.prepare_interrupted_login(emit=emit)
+                emit('OUF_HUMAN_LOGIN_CONTINUATION='+encoded(metadata).decode());break
+            except HumanSessionPaused as error:
+                if error.retry_at is None:raise
+                emit('OUF_HUMAN_LOGIN_WAIT='+error.reason)
+                threading.Event().wait(min(30,max(0,error.retry_at-time.time())))
+    else:emit('OUF_TOKEN_SESSION_PHASE=FRESH_HUMAN_LOGIN technical=8/8 functional=0/6')
     human_binding=human.login(emit=emit)
     profile=evidence.decode(governance.public_input(governance.PROFILE))
     role_policy=evidence.decode(governance.public_input(governance.POLICY))
@@ -367,6 +406,15 @@ def token_only_session_main(prepared,sources,closure,proposal,proposal_binding,c
         'TOKEN_SESSION_WINDOW_EXCEEDS_EXISTING_ROLE_AUTHORITY')
     final=compile_token_review(closure,planned.scopes(),proposal_binding,candidate_binding,human_binding,context)
     final['executorBinding']=dict(executor_binding)
+    if continuation is not None:
+        final['preAuthorityContinuation']=continuation
+        planned.journal.check_directory()
+        with protected_directory(journal)as directory:
+            require(not os.listdir(directory),'UNINITIALIZED_WORKER_REQUIRED_BEFORE_DECISION')
+        with protected_directory(context)as directory:
+            require([os.fstat(directory).st_dev,os.fstat(directory).st_ino]==interrupted_preparation['directoryIdentity']
+                and set(os.listdir(directory))=={'human-session','preparation-continuation.json'},
+                'INTERRUPTED_CONTEXT_CHANGED_BEFORE_DECISION')
     # Recheck target generation and cancellation after the possibly long login.
     raw=encoded(planned.scopes())
     old_raw=planned.raw;planned.raw=raw
