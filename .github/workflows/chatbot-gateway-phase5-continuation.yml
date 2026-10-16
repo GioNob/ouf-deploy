@@ -2,7 +2,7 @@ name: Gateway and Ingestion governed continuation native
 on:
   push:
     branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths: ['tools/chatbot_file_cohort/**', 'tests/test_gateway_phase5_native.py', 'tests/test_chatbot_cohort_gateway_retained.py', 'tests/test_chatbot_cohort_authorization_observation.py', 'tests/test_policy_token_gateway_recovery.py', 'tests/test_policy_token_postgrant_continuation.py', '.github/workflows/chatbot-gateway-phase5-continuation.yml']
+    paths: ['tools/chatbot_file_cohort/**', 'tests/test_gateway_phase5_native.py', 'tests/test_ingestion_phase6_native.py', 'tests/test_chatbot_cohort_ingestion_recovery.py', 'tests/test_policy_token_ingestion_recovery.py', 'tests/test_chatbot_cohort_gateway_retained.py', 'tests/test_chatbot_cohort_authorization_observation.py', 'tests/test_policy_token_gateway_recovery.py', 'tests/test_policy_token_postgrant_continuation.py', '.github/workflows/chatbot-gateway-phase5-continuation.yml']
 permissions: {contents: read}
 concurrency:
   group: gateway-phase5-${{ github.ref }}
