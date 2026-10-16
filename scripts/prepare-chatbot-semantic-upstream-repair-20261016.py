@@ -601,7 +601,7 @@ def log_metadata(raw):
 DNS_CHILD=r'''import ipaddress,json,os,re,signal,socket,struct,sys
 signal.alarm(25)
 try:
-    data=json.loads(sys.stdin.buffer.read(32769));fd=int(sys.argv[1]);os.setns(fd,0);os.close(fd)
+    stage='INPUT';data=json.loads(sys.stdin.buffer.read(32769));fd=int(sys.argv[1]);stage='NAMESPACE';os.setns(fd,0);os.close(fd)
     queries=data['queries'];allowed=set(data['registryAddresses']);resolver=str(ipaddress.ip_address(data['resolver']))
     if not 0<len(queries)<=4 or not 0<len(allowed)<=4:raise ValueError()
     result=[]
@@ -614,7 +614,7 @@ try:
             pos+=n
         raise ValueError()
     for query in queries:
-        host=query['host'];port=query['port'];addresses=[];rcode=0;dns_unavailable=False
+        stage='QUERY_NAME';host=query['host'];port=query['port'];addresses=[];rcode=0;dns_unavailable=False
         if type(port)is not int or not 1<=port<=65535:raise ValueError()
         try:addresses=[str(ipaddress.ip_address(host))]
         except ValueError:
@@ -623,7 +623,7 @@ try:
             if not all(0<len(v)<=63 for v in labels):raise ValueError()
             token=os.urandom(2);name=b''.join(bytes([len(v)])+v.encode('ascii')for v in labels)+b'\0'
             request=token+struct.pack('!HHHHH',256,1,0,0,0)+name+struct.pack('!HH',1,1)
-            family=socket.AF_INET6 if ':'in resolver else socket.AF_INET
+            stage='DNS_RESPONSE';family=socket.AF_INET6 if ':'in resolver else socket.AF_INET
             try:
                 with socket.socket(family,socket.SOCK_DGRAM)as conn:
                     conn.settimeout(2);conn.connect((resolver,53));conn.send(request);raw=conn.recv(8192)
@@ -637,7 +637,7 @@ try:
                 pos=skip_name(raw,pos);kind,klass,ttl,size=struct.unpack('!HHIH',raw[pos:pos+10]);pos+=10
                 value=raw[pos:pos+size];pos+=size
                 if klass==1 and kind==1 and size==4:addresses.append(socket.inet_ntop(socket.AF_INET,value))
-        addresses=sorted(set(addresses));matches=[v for v in addresses if v in allowed];reachable=False
+        stage='TCP';addresses=sorted(set(addresses));matches=[v for v in addresses if v in allowed];reachable=False
         for value in matches[:4]:
             try:
                 with socket.create_connection((value,port),timeout=2):reachable=True
@@ -651,7 +651,9 @@ try:
             'onlyRegistryAddresses':bool(addresses)and set(addresses)<=allowed,
             'matchedTcpReachable':reachable,'directRegistryTcpReachable':direct})
     sys.stdout.write(json.dumps(result));sys.stdout.flush()
-except BaseException:os._exit(1)
+except BaseException as error:
+    sys.stdout.write(json.dumps({'probeFailure':locals().get('stage','INPUT'),'exceptionClass':type(error).__name__}));sys.stdout.flush()
+    os._exit(1)
 os._exit(0)
 '''
 
@@ -698,8 +700,12 @@ def upstream_metadata(prepared,routes,gateway,registry,transport):
             stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,pass_fds=(fd,),close_fds=True,
             cwd='/',env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'})
         raw,_=child.communicate(encoded({'queries':queries,'registryAddresses':sorted(addresses),'resolver':resolver}),timeout=30)
-        require(child.returncode==0 and 0<len(raw)<=32768,'BOUNDED_NAMESPACE_DNS_READ_UNAVAILABLE')
-        observed=json.loads(raw,object_pairs_hook=unique);require(type(observed)is list and len(observed)==len(queries),
+        require(0<len(raw)<=32768,'BOUNDED_NAMESPACE_DNS_READ_UNAVAILABLE')
+        observed=json.loads(raw,object_pairs_hook=unique)
+        if type(observed)is dict and observed.get('probeFailure')in('INPUT','NAMESPACE','QUERY_NAME','DNS_RESPONSE','TCP'):
+            require(False,'DNS_PROBE_FAILED_AT_'+observed['probeFailure'])
+        require(child.returncode==0,'BOUNDED_NAMESPACE_DNS_READ_UNAVAILABLE')
+        require(type(observed)is list and len(observed)==len(queries),
             'EXACT_DNS_RESULT_COUNT_REQUIRED')
     finally:
         if child is not None:
@@ -715,14 +721,20 @@ def upstream_metadata(prepared,routes,gateway,registry,transport):
         referencesPrinted=False,addressesPrinted=False,configurationModified=False)
 
 
-def compile_binding_repair(plan,registry):
+def compile_binding_repair(plan,registry,request):
     import copy
     binding=plan.get('upstreamBindings',{}).get('ouf-semantic-registry')
     require(type(binding)is dict and type(binding.get('alias'))is str and type(binding.get('port'))is int,
         'RETAINED_REVIEWED_REGISTRY_BINDING_REQUIRED')
-    current=registry['Name'].lstrip('/')
-    require(re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,127}',current)is not None
-        and current!=binding['alias'],'DISTINCT_CURRENT_REGISTRY_NAME_REQUIRED')
+    import ipaddress
+    endpoints=request.get('NetworkingConfig',{}).get('EndpointsConfig',{})
+    require(type(endpoints)is dict and len(endpoints)==1,'ONE_REVIEWED_STATIC_REGISTRY_NETWORK_REQUIRED')
+    name,endpoint=next(iter(endpoints.items()));network=registry['NetworkSettings']['Networks'].get(name)
+    require(type(network)is dict and endpoint.get('NetworkID')==network.get('NetworkID')==binding.get('networkId')
+        and endpoint.get('IPAMConfig',{}).get('IPv4Address')==network.get('IPAddress'),
+        'REVIEWED_STATIC_REGISTRY_ADDRESS_DRIFT')
+    current=str(ipaddress.IPv4Address(network['IPAddress']))
+    require(current!=binding['alias'],'DISTINCT_CURRENT_REGISTRY_ADDRESS_REQUIRED')
     old=binding['alias']+':'+str(binding['port']);new=current+':'+str(binding['port'])
     before=plan['proposedRoutes'];after=copy.deepcopy(before);changes=[]
     for rid,row in sorted(after.items()):
@@ -736,7 +748,9 @@ def compile_binding_repair(plan,registry):
     require({'/internal/capabilities/v1/execute/semantic/search',
         '/internal/capabilities/v1/execute/semantic/get'}<=selected,'SEMANTIC_BINDINGS_NOT_INCLUDED')
     return {'schema':'ouf.chatbot-semantic-upstream-repair-review.v1','oldBinding':binding,
-        'proposedBinding':{'alias':current,'port':binding['port'],'runtimeBinding':runtime_pin(registry)},
+        'proposedBinding':{'host':current,'profile':'ouf.reviewed-retained-static-registry-address.v1',
+            'networkId':binding['networkId'],'creationRequestHash':digest(request),
+            'port':binding['port'],'runtimeBinding':runtime_pin(registry)},
         'beforeMapHash':digest(before),'afterMapHash':digest(after),'changes':changes,
         'proposedRoutes':after,'automaticWriteReplayAllowed':False,'runtimeAuthorityIssued':False,
         'databaseRestoreAuthorized':False,'serviceLifecycleAuthorized':False,'newGrantAuthorized':False,
@@ -814,7 +828,11 @@ def main():
         'DIAGNOSED_REGISTRY_GENERATION_DRIFT')
     require(time.time()<authority['expiresAt'],'EXISTING_FINITE_WINDOW_EXPIRED')
     old_observation=upstream_metadata(p,first,gateway,registry,transport)
-    repair=compile_binding_repair(p['gatewayPlan'],registry)
+    emit('REGISTRY_NAME_DNS_SHAPE',nameLength=len(registry['Name'].lstrip('/')),
+        maximumLabelLength=max(map(len,registry['Name'].lstrip('/').rstrip('.').split('.'))),
+        dnsLabelLengthsValid=all(0<len(v)<=63 for v in registry['Name'].lstrip('/').rstrip('.').split('.')),
+        valuesPrinted=False)
+    repair=compile_binding_repair(p['gatewayPlan'],registry,p['registry']['creationRequest'])
     candidate=upstream_metadata(p,repair['proposedRoutes'],gateway,registry,transport)
     require(all(candidate['configuredAliasesMatchCurrentRegistry'])and all(v['rcode']==0
         and not v['dnsUnavailable']and v['onlyRegistryAddresses']and v['matchedTcpReachable']
@@ -826,7 +844,8 @@ def main():
         unchangedRouteCount=len(first)-len(repair['changes']))
     emit('PROPOSED_BINDING_CHECKED',changedRouteCount=len(repair['changes']),
         unchangedRouteCount=repair['unchangedRouteCount'],candidateDnsAndTcpProven=True,
-        aliasValuesPrinted=False,routeValuesPrinted=False)
+        aliasValuesPrinted=False,routeValuesPrinted=False,
+        proposedBindingProfile='ouf.reviewed-retained-static-registry-address.v1')
     gateway_check(p['engine'],transport);live_process(programs['systemctl'])
     for cid,actual in observations:
         following=engine_get(p['engine'],'containers',cid)
