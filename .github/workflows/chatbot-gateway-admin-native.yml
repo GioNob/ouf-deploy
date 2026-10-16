@@ -16,10 +16,11 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: GioNob/ouf-api-gateway
-          ref: bf179e96200deb84942ad32507edef52a4284cd0
+          ref: f0d11909f8dce34811036800944ed4c6665d1972
           path: .pairwise/gateway
           persist-credentials: false
       - run: |
           python3 -m venv .admin-venv
           .admin-venv/bin/pip install -r .pairwise/gateway/requirements-dev.txt
+          (cd .pairwise/gateway && ../../.admin-venv/bin/python -m pytest -q tests/test_onboarding_review.py tests/test_file_loop_coherence.py)
           .admin-venv/bin/python scripts/diagnose-gateway-route-package-native.py --gateway-source .pairwise/gateway --report gateway-admin-reproduction.json

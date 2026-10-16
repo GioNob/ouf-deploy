@@ -78,6 +78,16 @@ def main():
                     if isinstance(value,dict) and 'value' in value:value=value['value']
                     value={k:v for k,v in value.items() if k not in ('create_time','update_time')}
                     observed['readbackMatches']=code==200 and value==route
+                    if value!=route:
+                        def differences(a,b,path=''):
+                            if type(a)!=type(b):return [{'path':path,'expectedType':type(a).__name__,'observedType':type(b).__name__}]
+                            if isinstance(a,dict):
+                                return [d for k in sorted(set(a)|set(b)) for d in differences(a.get(k),b.get(k),path+'/'+k)]
+                            if isinstance(a,list):
+                                if len(a)!=len(b):return [{'path':path,'expectedLength':len(a),'observedLength':len(b)}]
+                                return [d for i,(x,y) in enumerate(zip(a,b)) for d in differences(x,y,path+'/'+str(i))]
+                            return [] if a==b else [{'path':path,'expected':a,'observed':b}]
+                        observed['syntheticFixtureDifferences']=differences(route,value)[:20]
                 report['routes'].append(observed);print(json.dumps(observed),flush=True)
             report['complete']=True
             a.report.write_text(json.dumps(report,indent=2)+'\n')
