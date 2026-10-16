@@ -2,7 +2,7 @@ name: Gateway phase 5 governed continuation native
 on:
   push:
     branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths: ['tools/chatbot_file_cohort/**', 'tests/test_gateway_phase5_native.py', '.github/workflows/chatbot-gateway-phase5-continuation.yml']
+    paths: ['tools/chatbot_file_cohort/**', 'tests/test_gateway_phase5_native.py', 'tests/test_policy_token_gateway_recovery.py', 'tests/test_policy_token_postgrant_continuation.py', '.github/workflows/chatbot-gateway-phase5-continuation.yml']
 permissions: {contents: read}
 concurrency:
   group: gateway-phase5-${{ github.ref }}
@@ -34,3 +34,32 @@ jobs:
           set -euo pipefail
           OUF_FIXTURE_ROOT="/var/lib/ouf-phase5-${GITHUB_RUN_ID}"
           sudo env OUF_NATIVE_GATEWAY_PHASE5=1 OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" "$OUF_FIXTURE_ROOT/repository/.phase5-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_gateway_phase5_native.py -v
+
+  finite-history:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: d20de6b886bc910cf408685a27eb78c76a910151
+          path: .pairwise/gateway
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: 84828f74ac586bae09a78f0fb197b75b1a3d98d1
+          path: .pairwise/onboarding
+          persist-credentials: false
+      - name: Complete phase-5 review, eight retained grants and ninth TLS grant
+        run: |
+          set -euo pipefail
+          python3 -m venv .phase5-venv
+          .phase5-venv/bin/pip install -r .pairwise/gateway/requirements-dev.txt
+          OUF_FIXTURE_ROOT="/var/lib/ouf-phase5-history-${GITHUB_RUN_ID}"
+          sudo mkdir -m 700 "$OUF_FIXTURE_ROOT"
+          sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
+          sudo chown -R root:root "$OUF_FIXTURE_ROOT"
+          sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" "$OUF_FIXTURE_ROOT/repository/.phase5-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_gateway_recovery.py -v
