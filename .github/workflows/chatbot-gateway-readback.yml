@@ -1,0 +1,32 @@
+name: Gateway phase 5 GET-only readback qualification
+on:
+  push:
+    branches: [fix/cohort-mcp-backup-recovery-20261016]
+    paths:
+      - scripts/read-chatbot-gateway-state-20261016.py
+      - tests/test_gateway_publication_readback.py
+      - .github/workflows/chatbot-gateway-readback.yml
+permissions: {contents: read}
+jobs:
+  bounded-readback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env: {POSTGRES_USER: postgres, POSTGRES_HOST_AUTH_METHOD: trust}
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Root custody, real namespace GET and PostgreSQL SELECT
+        env:
+          OUF_PG_CID: ${{ job.services.postgres.id }}
+        run: |
+          set -euo pipefail
+          sudo install -d -m 700 /var/lib/ouf-gateway-readback
+          sudo cp -R . /var/lib/ouf-gateway-readback/repository
+          sudo chown -R root:root /var/lib/ouf-gateway-readback
+          sudo env OUF_NATIVE_NAMESPACES=1 OUF_NATIVE_POSTGRES=1 OUF_POSTGRES_CONTAINER_ID="$OUF_PG_CID" \
+            /usr/bin/python3 -I -B -m unittest discover \
+            -s /var/lib/ouf-gateway-readback/repository/tests -p test_gateway_publication_readback.py -v

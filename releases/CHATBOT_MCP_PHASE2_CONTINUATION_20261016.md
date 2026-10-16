@@ -1,5 +1,7 @@
 # Phase 2: continue the existing MCP migration container
 
+**Consumed on target:** the approved execution passed MCP migrations/cleanup, UDP and Onboarding in the execution flow, then paused at Gateway publication with `GATEWAY_WRITE_OUTCOME_UNPROVEN_NO_REPLAY`. Do not rerun this launcher. Follow the current [roadmap](../docs/CHATBOT_CSV_ROADMAP.md) and phase-5 readback. The remainder is historical release documentation.
+
 ## Target boundary and roadmap
 
 The 16 October target readback proves technical phase 1 complete. All four

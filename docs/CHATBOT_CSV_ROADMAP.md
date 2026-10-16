@@ -4,19 +4,21 @@ Roadmap confermata dall'utente il 16 ottobre 2026. Numerazione stabile fino alla
 
 ## Stato corrente
 
-**Fase tecnica 2/8 sospesa; dimostrazione funzionale 0/6.**
+**Fase tecnica 5/8 sospesa; dimostrazione funzionale 0/6.**
 
-La lettura VPS del 16 ottobre conferma **tutti e quattro gli archivi COMPLETE** e il container MCP ancora created/mai avviato: la fase 1 è completata e non va ripetuta. Il controllo errato confrontava Env e Labels con la sola richiesta, senza i default dell'immagine. La correzione accetta esclusivamente l'unione esatta di immagine verificata e richiesta originaria, conservando gli altri vincoli di identità.
+L'esecuzione della prosecuzione `70af66b26d9a8dfdd7151c55f44eb5795fcc84a8` è arrivata a `PUBLISHING_REVIEWED_GATEWAY_ROUTES`, poi si è fermata con `GATEWAY_WRITE_OUTCOME_UNPROVEN_NO_REPLAY`. L'ordine del codice impone prima `migrate_mcp()` (con revoca verificata), quindi sostituzione/readiness e `verify_module()` di UDP e Onboarding. Le fasi 2–4 sono quindi superate nel flusso; una nuova rilettura deve confermare checkpoint e stato persistito corrente. Non scambiare il successo del flusso precedente per disponibilità permanente dopo la cancellazione del worker.
 
-La prosecuzione conserva il container esistente, i quattro backup, i dieci effetti Registry e i sei grant consumati. Un nuovo mandato finito governa un solo start, le migrazioni, la revoca verificata dei privilegi temporanei e le fasi successive. Nessun nuovo dump, create MCP di migrazione o bootstrap audit. Stato VPS ancora sospeso; la prova CI non chiude la fase 2. Vedere `releases/CHATBOT_MCP_PHASE2_CONTINUATION_20261016.md` per qualificazione e comando corrente.
+**La fase 1 non è stata ripetuta:** vengono copiati/verificati i quattro archivi già COMPLETE, senza nuovi dump. I messaggi generici del launcher (`REGISTRY_REPLACEMENT_AND_VERIFICATION`, preparazione completa) descrivono passaggi comuni: in questa prosecuzione i dieci effetti Registry restano conservati e non vengono rieseguiti. Le autenticazioni/revisioni rinnovano la sola sessione finita, non la fase backup.
+
+Il Gateway ha un claim di scrittura e una mappa riletta non uguale alla mappa attesa. L'ACK della PUT non è conservato dal codice corrente: dai soli log non si può distinguere mancata applicazione, normalizzazione lato APISIX o altra differenza. **Non rilanciare il delivery né ripetere la PUT.** Prossimo passo: diagnosi GET/SELECT vincolata al contesto, con differenze strutturali redatte e verifica delle fasi già superate.
 
 | # | Fase tecnica | Stato |
 |---|---|---|
 | 1 | Riconciliare il backup interrotto e completare i backup dei quattro database | COMPLETATA: quattro archivi COMPLETE, hash e journal verificati sul VPS; nessun nuovo dump nella ripresa |
-| 2 | Applicare le migrazioni MCP e verificare la revoca dei privilegi temporanei | **Sospesa: MCP_MIGRATION_ROLE_NATIVE_IDENTITY_DRIFT** |
-| 3 | Sostituire UDP e verificarne schema e avvio | Da eseguire |
-| 4 | Sostituire Onboarding e verificarne schema e avvio | Da eseguire |
-| 5 | Pubblicare e verificare le route Gateway | Da eseguire |
+| 2 | Applicare le migrazioni MCP e verificare la revoca dei privilegi temporanei | Completata nel flusso; rilettura checkpoint CLEAN e DB da acquisire |
+| 3 | Sostituire UDP e verificarne schema e avvio | Completata nel flusso; rilettura da acquisire |
+| 4 | Sostituire Onboarding e verificarne schema e avvio | Completata nel flusso; rilettura da acquisire |
+| 5 | Pubblicare e verificare le route Gateway | **Sospesa: GATEWAY_WRITE_OUTCOME_UNPROVEN_NO_REPLAY** |
 | 6 | Sostituire Ingestion e verificarne schema e avvio | Da eseguire |
 | 7 | Sostituire MCP e verificarne schema e avvio | Da eseguire |
 | 8 | Verificare l'insieme e riabilitare i produttori | Da eseguire |
@@ -30,13 +32,21 @@ La prosecuzione conserva il container esistente, i quattro backup, i dieci effet
 | 5 | Importare nuovamente lo stesso CSV e dimostrare il riuso degli oggetti senza duplicazioni | Da dimostrare |
 | 6 | Verificare entrambe le acquisizioni e la conservazione degli otto oggetti Cinema esistenti | Da dimostrare |
 
-## Qualificazione della prosecuzione
+## Ultimo arresto VPS (16 ottobre 2026, output ricevuto alle 04:30 Europe/Rome)
+
+Revisione `bd2cbc1e969bf3eb4c5b1b54240cf1d67d3283685bc1ca563f893d17e3430144`, autorità `0e3a1a76b5528704c3295eff50c92b269a4f69c7d5eeff3304b193e991b54cb8`.
+Contesto `/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-35d5c6c756feb9c4811ac6d24610698a10c82d22b831d2cc85cd5c22c94d40d5`.
+Unità `ouf-file-cohort-35d5c6c756feb9c4811ac6d24610698a.service`, PID iniziale 3622829, piano `b7bd0f0906ab9741b06e91040bd3f402c933b79fbed606cdde003e67d4afd538`, scadenza 1792121285, restart=no.
+Log `/home/oufadmin/ouf-mcp-phase2-continuation-launch.AINt2Om8/run.log`.
+Sei grant precedenti conservati; il nuovo totale va riletto, non dedotto dal solo avvio worker. Nessun reset, restore, nuovo primo grant o accettazione permanente. Fasi 6–8 non raggiunte; CSV 0/6.
+
+## Qualificazione storica della prosecuzione di fase 2
 
 Runtime `70af66b26d9a8dfdd7151c55f44eb5795fcc84a8`: CI completa `38838880289` superata, 435 test/58 suite, zero errori o skip. CI backup `38838880431`: 79 test/7 suite, parzialmente sovrapposti alla completa. CI nativa `38839051380`: binario MCP originale su Docker 29.8.1/PostgreSQL 17, da 9 a 12 migrazioni e revoca verificata dei privilegi temporanei; nessun accesso al VPS. Un ulteriore test locale del percorso produzione conferma completamento/pulizia e riconciliazione senza secondo start (13 test locali della nuova suite).
 
-**Prossimo passo: nuova revisione completa sul VPS** con `scripts/launch-chatbot-mcp-phase2-continuation-20261016.sh`. La nuova sessione conserva sei grant cumulativi; il prossimo è il settimo. La fase 2 resta aperta fino all'evidenza target. Il nuovo launcher non ripete la fase 1.
+**Passo storico, ora consumato: nuova revisione completa sul VPS** con `scripts/launch-chatbot-mcp-phase2-continuation-20261016.sh`. La nuova sessione conserva sei grant cumulativi; il prossimo è il settimo. L'esecuzione successiva ha superato le fasi 2–4 nel flusso ed è sospesa in fase 5. Il launcher consumato non va ripetuto.
 
-## Ultima conferma VPS (16 ottobre 2026, 03:56 Europe/Rome)
+## Precedente conferma VPS (16 ottobre 2026, 03:56 Europe/Rome)
 
 Diagnosi `ouf.chatbot-mcp-migration-readback.v1` conclusa con `complete=true`, zero mutazioni/dump/grant. Fase 1 definitivamente confermata per questo checkpoint: UDP 247357 byte, Onboarding 325831, Ingestion 94318, MCP 250874, tutti COMPLETE e immutati. Il nuovo MCP ha SHA256 `b050f7706b650199a09115e24828858de509179f26896c92072cab6ae9946dc4`.
 
