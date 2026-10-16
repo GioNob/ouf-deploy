@@ -12,7 +12,7 @@ sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_policy_token_
 import test_cutover_authority_native as signed
 from engine_creation import Engine
 import image_custody as custody
-from tools.semantic_mcp_update.owner import SingleMcpUpdate,digest,scope
+from tools.semantic_mcp_update.owner import SingleMcpUpdate,UpdatePaused,digest,scope
 from tools.semantic_mcp_update.native import NativePorts
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
@@ -94,11 +94,18 @@ with tempfile.TemporaryDirectory(dir='/root',prefix='mcp-update-native-fixture-'
    'network':{'name':network,'id':net['NetworkID'],'ip':net['IPAddress'],'mac':net['MacAddress']},'readiness':{'port':8080,'path':'/health/ready'},
    'maximumExecutionSeconds':900,'automaticRollbackAllowed':False,'databaseRestoreAllowed':False,'semanticDispatchAllowed':False}
   plan['logicalUpdateRef']=digest({'oldContainerId':oldid,'databaseOid':data['oid'],'predecessorAttemptId':attempt})
-  c=crypto;c.authority=signed.encoded({'schema':'ouf.semantic-cutover-execution-authority.v1',**{k:v for k,v in c.expected.items()if k!='intakeHash'},'issuedAt':c.now,'expiresAt':c.now+120,'mcpSingleUpdate':scope(plan)})
+  c=crypto;c.now=int(time.time());c.approval['issuedAt']=c.now;c.approval['expiresAt']=c.now+180;c.authority=signed.encoded({'schema':'ouf.semantic-cutover-execution-authority.v1',**{k:v for k,v in c.expected.items()if k!='intakeHash'},'issuedAt':c.now,'expiresAt':c.now+120,'mcpSingleUpdate':scope(plan)})
   c.approval['executionAuthorityHash']=signed.sha(c.authority);c.write(c.mandate,signed.encoded(c.approval));c.approved=signed.sha(c.mandate.read_bytes())
   for role in c.grant['roles']:c.sign(role)
   action=AggregateAction(c.gate(),c.authority,c.expected['sourceClosureHash']);ports=NativePorts(action,engine,plan)
-  update=SingleMcpUpdate(action,journal,plan,ports);update.initialize();result=update.run()
+  update=SingleMcpUpdate(action,journal,plan,ports);update.initialize()
+  end=time.monotonic()+110
+  while True:
+   try:result=update.run();break
+   except UpdatePaused as paused:
+    assert str(paused)=='READINESS_RETRY_WAIT','FIXTURE_EFFECT_REQUIRES_RECONCILIATION'
+    assert time.monotonic()<end,'FIXTURE_FINITE_READINESS_EXHAUSTED'
+    state=journal.read();time.sleep(min(.2,max(0,state['nextReadAt']-time.time())))
   assert result['applicationReady']and not result['acceptanceGranted'];assert inspect(oldid)['State']['Running']is False
   assert len(journal.read()['effects'])==16
   result2=update.run();assert result2['applicationReady']
