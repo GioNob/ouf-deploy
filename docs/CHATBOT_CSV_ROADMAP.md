@@ -23,6 +23,21 @@ conserva anche le 28 modifiche Gateway: zero nuove scritture route. Qualifiche c
 con sorgente runtime a2132d7ee330f9f0ce7d4fc9316dd880acad4f3f.
 Questo rilascio non avanza lo stato target: serve la nuova esecuzione HUMAN
 e la verifica del relativo esito sul VPS.
+### Ultima esecuzione VPS: start Ingestion ambiguo
+
+Runtime f6078a5ac07853b4abc13d310882f5a30086baba: preflight passato,
+review 62c8837120f9079cbf2dd026105ccce7befbbbfbbd09b1c67fc813e6a468f91e
+approvata; autorità b6335ae592c469d253a345c29352a6fe2180e1297a29146b98bf1048016b4fe4.
+APISIX adottato senza replay, nuovo worker finito installato, Gateway verificato
+senza scritture. Arresto COHORT_START_REQUIRES_RECONCILIATION nel POST Docker
+start Ingestion: la risposta non era 204, il corpo non è conservato.
+Lo stato fisico del container dopo la richiesta non è ancora provato.
+Fase 6/8 sospesa, fasi 1–5 conservate, CSV 0/6. Il predecessore conserva nove
+grant; il conteggio del nuovo worker deve essere letto e non va presunto pari a dieci.
+Prossimo passo: diagnosi GET-only fissata all'ultima review/autorità/generazione,
+lettura claim start e State.Error classificato senza testo, verifica delle route.
+Nessun nuovo start, create, dump, restore, grant o replay autorizzato dalla diagnosi.
+
 ### Arresto del launcher di fase 6 nel preflight
 
 Il tentativo con runtime a2132d7ee330f9f0ce7d4fc9316dd880acad4f3f si è fermato
