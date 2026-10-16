@@ -24,7 +24,7 @@ class IngestionContinuation(unittest.TestCase):
         # The enrichment fixture below mocks this historical boundary; this
         # regression must not, because that hid a module/count name collision.
         from tools.chatbot_file_cohort.action_process import observed_private_json
-        with tempfile.TemporaryDirectory() as directory:
+        with tempfile.TemporaryDirectory(prefix='archive-bindings-',dir=fixture.ROOT.parent) as directory:
             root=Path(directory);root.chmod(0o700)
             record=root/'record.json';record.write_text('{}');record.chmod(0o600)
             _,binding=observed_private_json(record,8388608)
