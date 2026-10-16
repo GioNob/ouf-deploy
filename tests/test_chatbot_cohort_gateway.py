@@ -74,11 +74,16 @@ class GatewayPublication(unittest.TestCase):
         self.assertEqual(native.state['retained'],owner.plan['previousRoutes']['retained'])
         self.assertEqual(native.state['changed']['timeout'],55)
         self.restart(owner).apply();self.assertEqual(len(native.calls),2)
+        for effect in owner.record()['effects']:
+            self.assertEqual(effect['writeAcknowledgement']['status'],200)
+            self.assertIs(effect['writeAcknowledgement']['effectAccepted'],False)
+            self.assertNotIn('body',effect['writeAcknowledgement'])
 
     def test_lost_ack_is_get_reconciled_never_replayed(self):
         owner,native,_=self.fixture();native.lose_ack=True
         with self.assertRaises(OSError):owner.apply()
         self.assertEqual(owner.record()['effects'][-1]['state'],'CLAIMED')
+        self.assertNotIn('writeAcknowledgement',owner.record()['effects'][-1])
         self.restart(owner).apply();self.assertEqual(len(native.calls),2)
 
     def test_unknown_absent_effect_never_retry_or_rollback(self):
@@ -86,6 +91,22 @@ class GatewayPublication(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'OUTCOME_UNPROVEN_NO_REPLAY'):owner.apply()
         with self.assertRaisesRegex(ValueError,'OUTCOME_UNPROVEN_NO_REPLAY'):self.restart(owner).apply()
         self.assertEqual(len(native.calls),1);self.assertEqual(native.state,owner.plan['previousRoutes'])
+        self.assertEqual(owner.record()['effects'][0]['writeAcknowledgement']['status'],500)
+
+    def test_private_error_body_is_hashed_and_claim_is_not_replayed(self):
+        owner,native,_=self.fixture();native.omit=True
+        request=native.request
+        secret='synthetic-private-value-must-not-appear'
+        def reject(method,path,body):
+            request(method,path,body)
+            return 400,{'error_msg':secret}
+        native.request=reject
+        with self.assertRaisesRegex(ValueError,'OUTCOME_UNPROVEN_NO_REPLAY'):owner.apply()
+        row=owner.record();self.assertNotIn(secret,json.dumps(row))
+        self.assertEqual(row['effects'][0]['writeAcknowledgement']['bodySha256'],
+                         g.digest({'error_msg':secret}))
+        with self.assertRaisesRegex(ValueError,'OUTCOME_UNPROVEN_NO_REPLAY'):self.restart(owner).apply()
+        self.assertEqual(len(native.calls),1)
 
     def test_current_human_revocation_denies_even_readback_resume(self):
         owner,native,f=self.fixture();native.lose_ack=True

@@ -31,6 +31,7 @@ def main():
     from tools.materialize_onboarding_review import materialize as review
     from tools.materialize_semantic_human_runtime import materialize as semantic_human
     from tools.materialize_trusted_human_onboarding_runtime import materialize as human
+    from tools.prepare_apisix_numeric_runtime import prepare, IMAGE_DIGEST
     import yaml
     rt,existing=retained_installation()
     result=review(add_to_existing(existing,rt,'DELEGATION_KEY','SEMANTIC_PROPOSAL_KEY'),rt,'DELEGATION_KEY','AUTHORIZATION_OWNER_KEY')
@@ -48,26 +49,24 @@ def main():
         with tempfile.TemporaryDirectory()as directory:
             root=Path(directory);root.chmod(0o755)
             cfg={'apisix':{'node_listen':9080},'deployment':{'role':'traditional','role_traditional':{'config_provider':'etcd'},'admin':{'admin_listen':{'ip':'0.0.0.0','port':9180},'allow_admin':['0.0.0.0/0'],'admin_key':[{'name':'admin','key':key,'role':'admin'}]},'etcd':{'host':['http://'+etcd+':2379']}},'nginx_config':{'envs':['OIDC_SECRET','DELEGATION_KEY','AUTHORIZATION_OWNER_KEY','UDP_OWNER_KEY','SEMANTIC_READ_KEY','SEMANTIC_PROPOSAL_KEY']}}
-            hook=root/'ouf_json_precision.lua'
-            hook.write_text("local expected=9007199254740991\nfor _,name in ipairs({'cjson','cjson.safe'}) do\n local json=require(name)\n json.encode_number_precision(16)\n assert(json.decode(json.encode(expected))==expected, 'OUF_JSON_INTEGER_ROUNDTRIP_REQUIRED')\nend\n")
-            hook.chmod(0o644)
-            # Qualify a narrowly scoped upstream compiler fix: Lua's %s rounds
-            # numeric constants while generating the range comparison code.
-            image_ref='apache/apisix@sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d'
+            compatibility=prepare(cfg,IMAGE_DIGEST)
+            cfg=compatibility['config'];mount_args=[]
+            for asset in compatibility['assets']:
+                target=root/asset['name'];target.write_bytes(asset['bytes']);target.chmod(0o644)
+                mount_args+=['-v',str(target)+':'+asset['destination']+':ro']
+            report['compatibilityProfile']=compatibility['profile']
+            report['compatibilityAssets']=[{k:v for k,v in asset.items() if k!='bytes'} for asset in compatibility['assets']]
+            image_ref='apache/apisix@'+IMAGE_DIGEST
             source=docker('run','--rm','--entrypoint','cat',image_ref,'/usr/local/apisix/deps/share/lua/5.1/jsonschema.lua')+'\n'
-            anchor='local function addRangeCheck(ctx, op, reference, msg)\n'
-            assert source.count(anchor)==1, 'RANGE_COMPILER_SOURCE_DRIFT'
-            patched=source.replace(anchor,anchor+"  reference = sformat('%.17g', reference)\n")
-            validator=root/'jsonschema.lua';validator.write_text(patched);validator.chmod(0o644)
             report['rangeCompilerOriginalSha256']=hashlib.sha256(source.encode()).hexdigest()
-            report['rangeCompilerPatchedSha256']=hashlib.sha256(patched.encode()).hexdigest()
+            assert report['rangeCompilerOriginalSha256']=='f96d08b5da233b3f3d89322c2cdcc86a4475aa47304166bdc599f5c65f855609'
+            report['rangeCompilerPatchedSha256']=hashlib.sha256((root/'jsonschema.lua').read_bytes()).hexdigest()
             print(json.dumps({k:v for k,v in report.items() if k.startswith('rangeCompiler')}),flush=True)
-            cfg['apisix'].update(extra_lua_path='/usr/local/apisix/conf/?.lua',lua_module_hook='ouf_json_precision')
             config=root/'config.yaml';config.write_text(yaml.safe_dump(cfg));config.chmod(0o644)
             docker('run','-d','--name',etcd,'--network',net,'quay.io/coreos/etcd:v3.5.17','etcd','--listen-client-urls=http://0.0.0.0:2379','--advertise-client-urls=http://'+etcd+':2379')
             env=['-e','OIDC_SECRET=synthetic-ci-only']
             for i,name in enumerate(cfg['nginx_config']['envs'][1:]):env+=['-e',name+'='+str(i+1)*64]
-            docker('run','-d','--name',apisix,'--network',net,'-p','127.0.0.1::9180','-p','127.0.0.1::9080',*env,'-v',str(config)+':/usr/local/apisix/conf/config.yaml:ro','-v',str(hook)+':/usr/local/apisix/conf/ouf_json_precision.lua:ro','-v',str(validator)+':/usr/local/apisix/deps/share/lua/5.1/jsonschema.lua:ro',image_ref)
+            docker('run','-d','--name',apisix,'--network',net,'-p','127.0.0.1::9180','-p','127.0.0.1::9080',*env,'-v',str(config)+':/usr/local/apisix/conf/config.yaml:ro',*mount_args,image_ref)
             port=int(docker('port',apisix,'9180/tcp').rsplit(':',1)[1])
             def request(method,path,body=None):
                 conn=http.client.HTTPConnection('127.0.0.1',port,timeout=10)
@@ -131,6 +130,34 @@ def main():
                 if expected:assert json.loads(raw)==payload,(value,raw)
             report['numericBoundaryVectors']=len(vectors);report['numericPayloadPreserved']=True
             print(json.dumps({'numericBoundaryVectors':len(vectors),'numericPayloadPreserved':True}),flush=True)
+            from tests.test_onboarding_review import request as review_request
+            from tests.test_semantic_proposals import request as semantic_request
+            contracts=[('mcp-managed-file-review-prepare','expectedVersion',review_request()),
+                       ('semantic-proposal-review','expectedRowVersion',semantic_request('ouf.semantic.approval.request')),
+                       ('semantic-proposal-validate','expectedRowVersion',semantic_request('ouf.semantic.review.prepare'))]
+            checked=0
+            for index,(route_id,field,sample) in enumerate(contracts):
+                isolated=copy.deepcopy(probe);isolated['id']='ci-contract-'+str(index)
+                isolated['uri']='/'+isolated['id']
+                original=next(r for r in rows if r['id']==route_id)
+                isolated['plugins']['request-validation']=copy.deepcopy(original['plugins']['request-validation'])
+                assert request('PUT','/apisix/admin/routes/'+isolated['id'],isolated)[0] in (200,201)
+                for value in vectors:
+                    payload=copy.deepcopy(sample);payload['Arguments'][field]=value
+                    expected=type(value)is int and 0<=value<=9007199254740991
+                    for attempt in range(30):
+                        conn=http.client.HTTPConnection('127.0.0.1',dataport,timeout=5)
+                        try:
+                            conn.request('POST',isolated['uri'],body=json.dumps(payload).encode(),headers={'Content-Type':'application/json'})
+                            resp=conn.getresponse();raw=resp.read(65537);status=resp.status
+                        finally:conn.close()
+                        if status!=404:break
+                        time.sleep(0.2)
+                    assert status==(200 if expected else 400),(route_id,value,status,raw)
+                    if expected:assert json.loads(raw)==payload,(route_id,value,raw)
+                    checked+=1
+            report['actualContractBoundaryVectors']=checked
+            print(json.dumps({'actualContractBoundaryVectors':checked,'allThreeContractPayloadsPreserved':True}),flush=True)
             docker('restart',apisix)
             # Docker may reallocate an ephemeral published host port on restart.
             port=int(docker('port',apisix,'9180/tcp').rsplit(':',1)[1])

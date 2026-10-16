@@ -416,7 +416,20 @@ class GatewayRoutes:
                     record = self.save(record,following)
                     self.guard()
                     # Exactly one PUT. Its acknowledgement alone is never accepted.
-                    self.transport.request('PUT','/apisix/admin/routes/'+quote(change['id'],safe=''),change['after'])
+                    status,body=self.transport.request('PUT','/apisix/admin/routes/'+quote(change['id'],safe=''),change['after'])
+                    # Retain bounded diagnostic evidence before reconciliation.
+                    # Never persist a possibly secret-bearing response body and
+                    # never turn an HTTP acknowledgement into effect acceptance.
+                    require(type(status) is int and 100<=status<=599,
+                            'GATEWAY_WRITE_ACK_STATUS_INVALID')
+                    raw=encoded(body)
+                    require(len(raw)<=MAX_RESPONSE,'GATEWAY_WRITE_ACK_BOUND_EXCEEDED')
+                    following=copy.deepcopy(record)
+                    following['effects'][-1]['writeAcknowledgement']={
+                        'schema':'ouf.gateway-write-acknowledgement.v1',
+                        'status':status,'bodySha256':hashlib.sha256(raw).hexdigest(),
+                        'bodyBytes':len(raw),'effectAccepted':False}
+                    record=self.save(record,following)
                 # Resuming a CLAIMED row performs GET only, even if the row is absent.
                 require(self.transport.routes() == self.expected(n+1), 'GATEWAY_WRITE_OUTCOME_UNPROVEN_NO_REPLAY')
                 self.guard()
