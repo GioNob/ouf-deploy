@@ -34,11 +34,16 @@ def main():
             result=subprocess.run(['docker','exec','-i',pg,'psql','-X','-q','-A','-t','-v','ON_ERROR_STOP=1','-U',user,'-d','postgres'],
                 input=statement.encode(),stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=30)
             q.r.require(result.returncode==0,'CI_SQL_FAILED');return result.stdout.decode().strip()
-        sql("CREATE ROLE fixture_app LOGIN NOSUPERUSER NOCREATEROLE; CREATE ROLE fixture_incident NOLOGIN; CREATE SCHEMA ouf_mcp AUTHORIZATION fixture_app; GRANT CREATE ON DATABASE postgres TO fixture_app;")
+        # Historical migrations 4/6 create distinct NOLOGIN roles. Build only
+        # the disposable pre-existing baseline with a fixture administrator;
+        # revoke these setup attributes before the candidate binary is tested.
+        sql("CREATE ROLE fixture_app LOGIN SUPERUSER; CREATE ROLE fixture_incident NOLOGIN; CREATE SCHEMA ouf_mcp AUTHORIZATION fixture_app; GRANT CREATE ON DATABASE postgres TO fixture_app;")
         sql("CREATE TABLE ouf_mcp.schema_migration(version integer primary key,checksum char(64) not null,applied_at timestamptz not null default transaction_timestamp());",'fixture_app')
         for p,row in zip(files[:9],expected[:9]):
             sql('BEGIN; '+p.read_text()+"\nINSERT INTO ouf_mcp.schema_migration(version,checksum) VALUES ("+str(row['version'])+",'"+row['checksum']+"'); COMMIT;",'fixture_app')
-        sql('ALTER TABLE ouf_mcp.security_incident OWNER TO fixture_incident;')
+        sql('ALTER ROLE fixture_app NOSUPERUSER NOCREATEROLE; ALTER TABLE ouf_mcp.security_incident OWNER TO fixture_incident;')
+        q.r.require(sql("SELECT NOT rolsuper AND NOT rolcreaterole FROM pg_roles WHERE rolname='fixture_app'")=='t',
+            'CANDIDATE_MIGRATION_MUST_USE_NONADMIN_ROLE')
         incident=json.loads(sql(q.r.incident_metadata('fixture_app',False)))
         q.r.require(incident['triggerAuthority'] is False and incident['triggerGrantCount']==0,'NONOWNED_INCIDENT_FIXTURE_REQUIRED')
         sql('CREATE ROLE ouf_mcp_operational_audit_owner NOLOGIN NOSUPERUSER NOCREATEROLE; '
@@ -75,6 +80,7 @@ def main():
         result={'schema':'ouf.mcp-phase2-native-migration-qualification.v1','sourceCommit':source_commit,
             'artifactSha256':q.PART_SHA,'nativeImageId':image['Id'],'beforeMigrationCount':9,'afterMigrationCount':12,
             'createCount':1,'startCount':1,'containerExitCode':0,'immutableConfigurationPreserved':True,
+            'candidateDatabaseUserSuperuser':False,'candidateDatabaseUserCreateRole':False,
             'cleanup':final,'targetAccess':False,'runtimeAuthorityIssued':False,'signedAggregateEndToEnd':False}
         output.joinpath('migration-summary.json').write_text(json.dumps(result,sort_keys=True,indent=2)+'\n');print(json.dumps(result,sort_keys=True))
     finally:
