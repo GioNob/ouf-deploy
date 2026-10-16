@@ -43,6 +43,22 @@ Controllo successivo limitato: alias e DNS dal namespace APISIX, confronto con
 il Registry corrente e apertura TCP senza payload solo verso i suoi indirizzi
 indipendentemente riletti. Nessun valore DNS/IP o segreto pubblicato.
 
+### Upstream target: alias storico non risolto, TCP corrente raggiungibile
+
+Il successivo readback completo rileva una rete comune, un solo nodo, alias
+configurato non corrispondente al Registry corrente e risposta DNS SERVFAIL
+(rcode2), zero indirizzi. La porta del Registry selezionato indipendentemente è
+raggiungibile da APISIX. Nessun healthcheck attivo/passivo configurato.
+Questo supporta una correzione del binding, ancora da preparare, autorizzare e
+applicare; non dimostra readiness HTTP o accettazione semantica. Il preparatore
+Gateway selezionava il nome del Registry precedente prima del cutover: il
+confronto con lo stesso piano non intercettava l'alias storico.
+Nessuna ripetizione fasi1–8, nessun restore o rilancio installazione. Prossimo
+passo: prova DNS/TCP del nome corrente e revisione privata del solo delta nodes
+per tutte le route che usano l'esatto binding Registry storico. Tutte le altre
+proprietà/route, grant e journal precedenti restano immutati. Nessuna scrittura
+Gateway o autorità runtime emessa dal preparatore. Scadenza esistente invariata.
+
 ### Tappa funzionale 1/6: profilo confermato, consultazione semantica 503
 
 Dal chatbot, account ouf-admin: source.file.preview conferma asset

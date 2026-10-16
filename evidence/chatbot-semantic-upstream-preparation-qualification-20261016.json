@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.chatbot-semantic-upstream-preparation-qualification.v1",
+  "sourceCommit": "1ee13740cb666a33a55d9447c6046861b7c3e7b5",
+  "qualificationRunId": 38888139181,
+  "qualificationJobId": 116930820382,
+  "testsPassed": 65,
+  "testsSkipped": 0,
+  "targetExecutionProven": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "privateReviewPreparationOnly": true,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "installationSpecific": true,
+  "multiHostQualification": false,
+  "readerSha256": "de407b1b0c17dcb25c1cefb95209d53a9fefe2a7890b14e893dc6447b8bd564d",
+  "launcherSha256": "26f758fec3305fa6c01fcd625a1de445ba45bb4a1eb1f73e5cc616617d1936ea"
+}
