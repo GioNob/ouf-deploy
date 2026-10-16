@@ -132,6 +132,8 @@ def main():
             report['numericBoundaryVectors']=len(vectors);report['numericPayloadPreserved']=True
             print(json.dumps({'numericBoundaryVectors':len(vectors),'numericPayloadPreserved':True}),flush=True)
             docker('restart',apisix)
+            # Docker may reallocate an ephemeral published host port on restart.
+            port=int(docker('port',apisix,'9180/tcp').rsplit(':',1)[1])
             for attempt in range(45):
                 try:
                     code,doc=request('GET','/apisix/admin/routes')
