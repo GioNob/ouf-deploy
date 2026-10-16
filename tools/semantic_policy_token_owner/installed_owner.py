@@ -23,6 +23,79 @@ from tools.semantic_policy_token_owner.producer import Binding,CredentialFile,Do
 from tools.semantic_policy_token_owner.iam_admission import OnlineIamAdmission,unique
 from tools.semantic_policy_token_owner.source_stage import declaration,FILES,stage_authority_matches
 
+GOVERNED_SESSION='ouf.policy-token-governed-worker-session.v1'
+GOVERNED_HISTORY='ouf.policy-token-governed-worker-continuation.v1'
+
+def compile_governed_session(review,records,first,policy,context,generation,interval):
+    """Pure scope compiler. Its result requires a fresh typed HUMAN authority.
+
+    Counts derive from bound retained records, never from a schema suffix.
+    Legacy, unknown earlier accounting remains explicitly unreconciled.
+    """
+    check(type(review)is dict and review.get('schema')=='ouf.chatbot-semantic-functional-session-review.v1'
+        and review.get('readyForExecution')is False and review.get('runtimeAuthorityIssued')is False
+        and review.get('humanApprovalGranted')is False)
+    required={'recovery.json','owner-session.json','owner-admission.json','owner-status.json'}
+    check(type(records)is dict and set(records)==required
+        and {k:fingerprint(v)for k,v in records.items()}==review.get('predecessorRecordHashes'))
+    old=records['recovery.json'];session=records['owner-session.json'];admission=records['owner-admission.json']
+    prior=old.get('controlledCumulativeGrantAttempts');count=old.get('attempts');base=old.get('controlledPredecessorGrantAttempts')
+    check(type(prior)is int and type(count)is int and type(base)is int and
+        0<=count<=128 and 1<=base<=prior<=1000000 and prior==base+count
+        and old.get('state')=='CANCELLED'and old.get('reason')=='CANCELLED_BY_OWNER'
+        and admission.get('state')=='BLOCKED'and old.get('workerSessionHash')==fingerprint(session)
+        and session.get('predecessorGrantAttempts')==base
+        and session.get('schema') in (GOVERNED_SESSION,'ouf.policy-token-new-finite-worker-session.v'+str(base))
+        and old.get('policyHash')==fingerprint(session.get('policy'))
+        and old.get('contextRef')==session.get('contextRef')and old.get('generationRef')==session.get('generationRef'))
+    legacy={'state':'UNKNOWN','cumulativeGrantAttemptCount':None,'reconciled':False,'gapRemainsOpen':True}
+    check(old.get('legacyHistory')==legacy and fingerprint(first)==old.get('firstGrantReceiptHash')
+        and first.get('state')=='TOKEN_PUBLISHED_NOT_RUNTIME_ACCEPTED'
+        and first.get('attemptSlotsConsumed')==1 and first.get('gapRemainsOpen')is True
+        and first.get('historicalAccountingReconciled')is False
+        and first.get('legacyHistoricalGrantAttempts')is None
+        and first.get('operation')==session.get('predecessorFirstGrantOperation')
+        and first.get('scopeHash')==session.get('predecessorFirstGrantScopeHash')
+        and first.get('bootId')==old.get('bootId'))
+    budget=review.get('proposedFiniteBudget');decision=review.get('requiredOwnerDecision')
+    check(type(budget)is dict and budget.get('priorControlledGrantAttempts')==prior
+        and budget.get('predecessorWorkerAttempts')==count
+        and budget.get('maximumNewTokenGrantAttempts')==128
+        and budget.get('maximumCumulativeGrantAttempts')==prior+128
+        and budget.get('maximumSeconds')==3600 and budget.get('renewalIntervalSeconds')==interval==60
+        and budget.get('automaticRenewalAllowed')is False
+        and decision.get('explicitContinuationAfterOwnerCancellationRequired')is True
+        and decision.get('freshAuthenticatedHumanDecisionRequired')is True)
+    check(type(policy)is dict and set(policy)=={'delays','max_attempts','max_elapsed','attempt_timeout','jitter'}
+        and policy['delays']==[5,15,60,300,900]and type(policy['max_attempts'])is int
+        and 1<=policy['max_attempts']<=128 and type(policy['max_elapsed'])is int
+        and type(policy['attempt_timeout'])is int
+        and 1<=policy['attempt_timeout']<=policy['max_elapsed']<=3600 and policy['jitter']==.2)
+    check(all(type(x)is str and len(x)==64 and all(c in '0123456789abcdef'for c in x)
+        for x in(context,generation,session.get('logicalOwnerScopeHash',''))))
+    predecessor=Path(review.get('predecessorJournalDirectory',''))
+    check(predecessor.is_absolute()and str(predecessor)==review['predecessorJournalDirectory']
+        and '..'not in predecessor.parts and predecessor!=Path('/')
+        and decision.get('newJournalAndPersistentFencingRequired')is True)
+    parent=predecessor.parent;logical=session['logicalOwnerScopeHash'];review_hash=fingerprint(review)
+    journal=str(parent/('semantic-functional-worker-'+review_hash))
+    fence={'path':str(parent/('semantic-functional-session-'+logical+'.fence.json')),
+        'value':{'schema':'ouf.semantic-functional-session-fence.v1','logicalOwnerScopeHash':logical,
+            'reviewHash':review_hash,'journalPath':journal,'predecessorWorkerHash':fingerprint(old),'active':True}}
+    return {'schema':GOVERNED_SESSION,'controlledHistoryProfile':GOVERNED_HISTORY,
+        'operation':'OPEN_NEW_FINITE_WORKER_AFTER_EXPLICIT_CANCELLED_PREDECESSOR_REVIEW',
+        'reviewHash':fingerprint(review),'predecessorRecordHashes':copy.deepcopy(review['predecessorRecordHashes']),
+        'predecessorGrantAttempts':prior,'maximumCumulativeGrantAttempts':prior+policy['max_attempts'],
+        'logicalOwnerScopeHash':session['logicalOwnerScopeHash'],
+        'predecessorFirstGrantOperation':first['operation'],'predecessorFirstGrantScopeHash':first['scopeHash'],
+        'firstGrantReceiptHash':fingerprint(first),'contextRef':context,'generationRef':generation,
+        'policy':copy.deepcopy(policy),'intervalSeconds':interval,
+        'requestedHumanActor':copy.deepcopy(review['requestedHumanActor']),
+        'fenceBinding':fence,
+        'commandKey':review['commandKey'],'proposalHash':review['proposalHash'],
+        'automaticBudgetRenewalAllowed':False,'consumedClaimReplayAllowed':False,
+        'legacyHistoryDisposition':'UNKNOWN_RETAINED_NOT_RECONCILED'}
+
 def read_private(directory,name,limit):
     s=os.stat(name,dir_fd=directory,follow_symlinks=False)
     check(stat.S_ISREG(s.st_mode) and s.st_uid==s.st_gid==0 and stat.S_IMODE(s.st_mode)==0o600
@@ -211,6 +284,9 @@ class InstalledTokenOwner(DomainOwner):
             time.sleep(min(1,deadline-now))
     def guard_worker_session(self,row):
         signed=json.loads(self.raw,object_pairs_hook=unique).get('policyTokenFiniteWorkerSession')
+        if type(signed)is dict and signed.get('schema')==GOVERNED_SESSION:
+            self.guard_governed_worker_session(row,signed)
+            return
         prior=signed.get('predecessorGrantAttempts')if type(signed)is dict else None
         check(type(prior)is int and prior in(1,2,3,4,5,6,8,9,10))
         check(type(signed)is dict and fingerprint(signed)==row['workerSessionHash']
@@ -257,6 +333,37 @@ class InstalledTokenOwner(DomainOwner):
                 and receipt.get('historicalAccountingReconciled')is False
                 and receipt.get('legacyHistoricalGrantAttempts')is None
                 and receipt.get('bootId')==row.get('bootId'))
+        fd=os.open('/proc/sys/kernel/random/boot_id',os.O_RDONLY|os.O_NOFOLLOW)
+        try:
+            info=os.fstat(fd);raw=os.read(fd,65)
+            check(info.st_uid==info.st_gid==0 and not info.st_mode&0o022
+                and raw.decode('ascii').strip()==row['bootId'])
+        finally:os.close(fd)
+
+    def guard_governed_worker_session(self,row,signed):
+        with protected_directory(self.journal.root)as directory:
+            review=json.loads(read_private(directory,'owner-session-review.json',131072),object_pairs_hook=unique)
+            records={name:json.loads(read_private(directory,'predecessor-'+name,131072),object_pairs_hook=unique)
+                for name in ('recovery.json','owner-session.json','owner-admission.json','owner-status.json')}
+            first=json.loads(read_private(directory,'owner-first-grant.json',16384),object_pairs_hook=unique)
+            compiled=compile_governed_session(review,records,first,signed['policy'],self.context,self.generation,signed['intervalSeconds'])
+            check(compiled==signed and json.loads(read_private(directory,'owner-session.json',131072),object_pairs_hook=unique)==signed)
+        prior=signed['predecessorGrantAttempts'];attempts=row.get('attempts')
+        fence=signed['fenceBinding'];path=Path(fence['path'])
+        check(str(self.journal.root)==fence['value']['journalPath'])
+        with protected_directory(path.parent)as directory:
+            check(json.loads(read_private(directory,path.name,16384),object_pairs_hook=unique)==fence['value'])
+        check(fingerprint(signed)==row.get('workerSessionHash')==self.configuration.get('workerSessionHash')
+            and row.get('controlledHistoryProfile')==GOVERNED_HISTORY
+            and row.get('controlledPredecessorGrantAttempts')==prior and type(attempts)is int
+            and 0<=attempts<=signed['policy']['max_attempts']
+            and row.get('controlledCumulativeGrantAttempts')==prior+attempts
+            and row.get('controlledCumulativeGrantAttempts')<=signed['maximumCumulativeGrantAttempts']
+            and row.get('policyHash')==fingerprint(signed['policy'])
+            and row.get('intervalSeconds')==signed['intervalSeconds']
+            and row.get('firstGrantReceiptHash')==signed['firstGrantReceiptHash']
+            and row.get('legacyHistory')==records['recovery.json']['legacyHistory']
+            and row.get('bootId')==first['bootId'])
         fd=os.open('/proc/sys/kernel/random/boot_id',os.O_RDONLY|os.O_NOFOLLOW)
         try:
             info=os.fstat(fd);raw=os.read(fd,65)
