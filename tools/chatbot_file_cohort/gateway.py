@@ -33,7 +33,7 @@ MAX_NAMESPACE_INPUT = 655360
 # Literal source is included in the sealed runtime module. No target path or
 # downloaded Python module is executed by this child. Only the selected network
 # namespace FD is inherited; the private credential crosses stdin, never argv.
-NAMESPACE_CHILD_SOURCE = r'''import http.client,json,os,re,signal,sys
+NAMESPACE_CHILD_SOURCE = r'''import hashlib,http.client,json,os,re,signal,sys
 signal.alarm(12)
 try:
     raw=sys.stdin.buffer.read(655361)
@@ -53,7 +53,13 @@ try:
     client.request(method,path,body=payload,headers={'X-API-KEY':key,'Content-Type':'application/json','Accept':'application/json','Connection':'close'})
     response=client.getresponse();payload=response.read(8388609)
     if len(payload)>8388608:raise ValueError()
-    result=json.dumps({'status':response.status,'body':json.loads(payload) if payload else {}},sort_keys=True,separators=(',',':'),allow_nan=False).encode()
+    retry=response.getheader('Retry-After','')
+    if len(retry)>128 or any(ord(c)<32 or ord(c)>126 for c in retry):raise ValueError()
+    try:parsed=json.loads(payload) if payload else {}
+    except ValueError:
+        if method!='GET' or response.status not in (429,502,503,504):raise
+        parsed={'unparsedBodySha256':hashlib.sha256(payload).hexdigest(),'bodyBytes':len(payload)}
+    result=json.dumps({'status':response.status,'body':parsed,'retryAfter':retry},sort_keys=True,separators=(',',':'),allow_nan=False).encode()
     if len(result)>8454144:raise ValueError()
     sys.stdout.buffer.write(result);sys.stdout.buffer.flush();client.close()
 except BaseException:
@@ -295,6 +301,7 @@ class NamespaceAdmin:
                 or re.fullmatch(r'/apisix/admin/routes/[A-Za-z0-9._-]{1,128}', path))
                 and ((method == 'PUT' and type(body) is dict) or (method == 'GET' and body is None)),
                 'CLOSED_GATEWAY_ADMIN_OPERATION_REQUIRED')
+        self.retry_after=''
         raw = None if body is None else encoded(body)
         require(raw is None or len(raw) <= 262144, 'BOUNDED_GATEWAY_ADMIN_BODY_REQUIRED')
         self.check()
@@ -327,8 +334,11 @@ class NamespaceAdmin:
                     'APISIX_OUTCOME_REQUIRES_RECONCILIATION')
             self.check()
             result=json.loads(output)
-            require(type(result)is dict and set(result)=={'status','body'} and type(result['status'])is int
+            require(type(result)is dict and set(result)=={'status','body','retryAfter'} and type(result['status'])is int
                     and 100<=result['status']<=599,'APISIX_TYPED_RESPONSE_REQUIRED')
+            require(type(result['retryAfter'])is str and len(result['retryAfter'])<=128
+                and all(32<=ord(c)<=126 for c in result['retryAfter']),'APISIX_RETRY_AFTER_HEADER_INVALID')
+            self.retry_after=result['retryAfter']
             return result['status'],result['body']
         finally:
             if child is not None:
@@ -347,8 +357,11 @@ class NamespaceAdmin:
 
 class GatewayRoutes:
     def __init__(self, action, cohort_plan, plan, journal, transport):
-        require('governedReprocessing' not in plan,
+        if 'governedReprocessing' in plan:
+            require(plan['governedReprocessing'].get('executionProfile')=='ouf.chatbot-gateway-schema-continuation.v1',
                 'GATEWAY_REPROCESSING_EXECUTOR_NOT_YET_QUALIFIED')
+            from tools.chatbot_file_cohort.gateway_recovery import validate_publication
+            validate_publication(action,plan,transport)
         require(type(action) is AggregateAction and type(journal) is Journal
                 and type(transport) is NamespaceAdmin, 'CONCRETE_SIGNED_GATEWAY_COMPONENTS_REQUIRED')
         require(plan.get('schema') == PROFILE and cohort_plan['gatewayPlanHash'] == digest(plan)

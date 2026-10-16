@@ -123,3 +123,12 @@ Cinque grant erano consumati prima della nuova sessione; la successiva lettura h
 - Proseguire autonomamente su codice/analisi/CI; fermarsi quando occorre l'intervento dell'utente sul VPS. Tenere l'utente aggiornato durante il lavoro.
 
 Riferimenti: `AGENTS.md`, `docs/OUF_RESILIENCE_POLICY.md`, `releases/CHATBOT_RUNNING_ROOTFS_RECOVERY_20261016.md`.
+
+### Phase-5 continuation candidate (2026-10-16, qualification pending)
+
+The previous full cohort CI run38852300756 completed successfully on549f9e66.
+The new candidate integrates retained phases1–4, numeric compatibility mounts,
+remaining28 Gateway writes and an eight-grant predecessor worker. Its new native
+and signed integration gates are pending. No new target action or launcher is
+accepted; target phase5 and functional0/6 remain unchanged. See
+[continuation design and gates](../releases/CHATBOT_GATEWAY_PHASE5_CONTINUATION_DESIGN_20261016.md).

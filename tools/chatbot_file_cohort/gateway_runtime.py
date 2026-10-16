@@ -17,11 +17,21 @@ from tools.chatbot_file_cohort.containers import CohortPaused, READINESS_POLICY
 from tools.chatbot_file_cohort.gateway import NamespaceAdmin, private_config, namespace_program
 
 PROFILE='ouf.chatbot-file-cohort.gateway-runtime.v1'
+APISIX_READINESS_POLICY={**READINESS_POLICY,'profile':'ouf.apisix-finite-readiness.v2',
+    'respectRetryAfter':True,'readOnlyOnly':True,'crashRequiresReconciliation':True,
+    'finiteProfileReason':'WITHIN_ONE_REVIEWED_3600_SECOND_HUMAN_ACTION'}
+NUMERIC_IMAGE='sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d'
+# Same qualified manifest/config pair: Docker image stores expose either identity.
+NUMERIC_IMAGE_IDS=(NUMERIC_IMAGE,'sha256:b6fd21b8c341f3bf274ddabbad2e3c1bbb6a17566f0e41bf618166e63e4641e4')
+NUMERIC_ASSETS={
+ '/usr/local/apisix/deps/share/lua/5.1/jsonschema.lua':'f8c1fa8f9e8535467d4e8880312d769cdbf5e047d32593ab73d2fefb71e44364',
+ '/usr/local/apisix/conf/ouf_json_precision.lua':'0444d8b4d6cab03ccc4b6cf47364d606b81ec11a843f7ab4714208d79dfb1eaa'}
+NUMERIC_PROFILE='ouf.apisix-numeric-compatibility-mounts.v1'
 STEPS=('disable_restart','stop','rename','create','connect','start','ready','restore_restart')
 
 
 def compile_runtime(old, old_config_binding, new_config_binding, new_key_env, key, key_hash, cohort_id,
-                    admin_key_binding=None):
+                    admin_key_binding=None, numeric_assets=None):
     pin=runtime_pin(old)
     require(old.get('Name')=='/ouf-apisix' and old['Config'].get('User')=='apisix'
             and set(old['NetworkSettings']['Networks'])=={'ouf-backend','ouf-gateway-control'}
@@ -61,6 +71,16 @@ def compile_runtime(old, old_config_binding, new_config_binding, new_key_env, ke
             host['Binds'][i]=new_config_binding['path']+':'+fields[1]+':ro';replaced=True
     require(replaced,'EXPLICIT_APISIX_MOUNT_REQUEST_REQUIRED')
     selected[0]['Source']=new_config_binding['path']
+    if numeric_assets is not None:
+        validate_numeric_assets(old['Image'],numeric_assets)
+        destinations={m['Destination'] for m in mounts}
+        for asset in numeric_assets:
+            destination=asset['destination'];binding=asset['binding']
+            require(destination not in destinations,'NUMERIC_ASSET_MOUNT_ALREADY_PRESENT')
+            require(':' not in binding['path'],'LITERAL_NUMERIC_ASSET_BIND_PATH_REQUIRED')
+            host.setdefault('Binds',[]).append(binding['path']+':'+destination+':ro')
+            mounts.append({'Type':'bind','Source':binding['path'],'Destination':destination,'RW':False})
+            destinations.add(destination)
     values=environment(config.get('Env') or [])
     require(new_key_env not in values or values[new_key_env]==key,'PROPOSAL_ENV_KEY_CONFLICT')
     values[new_key_env]=key
@@ -77,7 +97,7 @@ def compile_runtime(old, old_config_binding, new_config_binding, new_key_env, ke
     primary=host['NetworkMode'];secondary=next(n for n in networks if n!=primary)
     request={**config,'HostConfig':host,'NetworkingConfig':{'EndpointsConfig':{primary:networks[primary]}}}
     require(len(encoded(request))<=262144,'BOUNDED_APISIX_CREATION_REQUIRED')
-    return {'schema':PROFILE,'pythonExecutable':namespace_program(),'oldRuntimeBinding':pin,'oldName':'ouf-apisix',
+    result={'schema':PROFILE,'pythonExecutable':namespace_program(),'oldRuntimeBinding':pin,'oldName':'ouf-apisix',
             'retiredName':'ouf-apisix-before-'+cohort_id,'oldConfigBinding':old_config_binding,
             'adminKeyBinding':copy.deepcopy(admin_key_binding),
             'newConfigBinding':new_config_binding,'oldHostConfig':copy.deepcopy(old['HostConfig']),
@@ -86,13 +106,33 @@ def compile_runtime(old, old_config_binding, new_config_binding, new_key_env, ke
             'proposalKeyEnvironment':new_key_env,'proposalKeyHash':key_hash,
             'originalRestartPolicy':original_policy,'sameExistingImageRequired':True,
             'automaticRollbackAllowed':False,'automaticWriteReplayAllowed':False,
-            'readinessPolicy':copy.deepcopy(READINESS_POLICY),'runtimeAuthorityIssued':False}
+            'readinessPolicy':copy.deepcopy(APISIX_READINESS_POLICY),'runtimeAuthorityIssued':False}
+    if numeric_assets is not None:
+        result['numericCompatibility']={'profile':NUMERIC_PROFILE,'assets':copy.deepcopy(numeric_assets)}
+    return result
+
+
+def validate_numeric_assets(image,assets):
+    require(image in NUMERIC_IMAGE_IDS and type(assets)is list and len(assets)==2
+        and {a.get('destination') for a in assets}==set(NUMERIC_ASSETS),
+        'EXACT_QUALIFIED_NUMERIC_IMAGE_AND_ASSETS_REQUIRED')
+    sources=[]
+    for asset in assets:
+        require(set(asset)=={'destination','binding','readOnly'} and asset['readOnly']is True,
+            'NUMERIC_ASSET_MUST_BE_READ_ONLY')
+        binding=asset['binding'];raw,observed=private_config(binding['path'],binding)
+        require(observed['sha256']==NUMERIC_ASSETS[asset['destination']]
+            and observed['metadata'][2:4]==[0,0] and observed['metadata'][4]&0o777==0o444,
+            'QUALIFIED_ROOT_CUSTODIED_NUMERIC_ASSET_REQUIRED')
+        sources.append(binding['path'])
+    require(len(set(sources))==2,'DISTINCT_NUMERIC_ASSET_FILES_REQUIRED')
 
 
 def runtime_scope(plan):
     require(plan.get('schema')==PROFILE and plan.get('sameExistingImageRequired') is True
             and plan.get('automaticRollbackAllowed') is False and plan.get('automaticWriteReplayAllowed') is False,
             'EXACT_GOVERNED_APISIX_RUNTIME_PLAN_REQUIRED')
+    require(plan.get('readinessPolicy')==APISIX_READINESS_POLICY,'EXACT_APISIX_READINESS_POLICY_REQUIRED')
     return {'profile':PROFILE,'planHash':digest(plan),'oldContainerId':plan['oldRuntimeBinding']['containerId'],
             'sameImageId':plan['oldRuntimeBinding']['imageId'],'proposalKeyHash':plan['proposalKeyHash'],
             'automaticRollbackAllowed':False,'automaticWriteReplayAllowed':False}
@@ -106,16 +146,23 @@ def proposed_transport(plan):
 
 
 class GatewayRuntime:
-    def __init__(self,action,engine,plan,journal,clock=time.time):
+    def __init__(self,action,engine,plan,journal,clock=time.time,monotonic=time.monotonic,boot=None):
         require(type(action) is AggregateAction and type(engine) is Engine and type(journal) is Journal,
                 'CONCRETE_GOVERNED_APISIX_RUNTIME_REQUIRED')
         self.action,self.engine,self.journal,self.clock=action,engine,journal,clock
+        self.monotonic=monotonic
+        from pathlib import Path
+        self.boot=boot or Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         self.plan=copy.deepcopy(plan);self.scope=runtime_scope(plan)
     def guard(self):
         require(runtime_scope(self.plan)==self.scope,'APISIX_RUNTIME_PLAN_DRIFT')
         self.action.guard('gatewayRuntimeInstallation',self.scope);self.engine.check_socket()
         private_config(self.plan['oldConfigBinding']['path'],self.plan['oldConfigBinding'])
         private_config(self.plan['newConfigBinding']['path'],self.plan['newConfigBinding'])
+        numeric=self.plan.get('numericCompatibility')
+        if numeric is not None:
+            require(numeric.get('profile')==NUMERIC_PROFILE,'NUMERIC_COMPATIBILITY_PROFILE_DRIFT')
+            validate_numeric_assets(self.plan['oldRuntimeBinding']['imageId'],numeric['assets'])
         if self.plan['adminKeyBinding'] is not None:
             from tools.chatbot_file_cohort.gateway import EXTERNAL_ADMIN_KEY
             private_config(EXTERNAL_ADMIN_KEY,self.plan['adminKeyBinding'])
@@ -227,23 +274,58 @@ class GatewayRuntime:
         return {'containerId':v['Id'],'imageId':v['Image'],'nativeHash':digest(v),
                 'runtimeBinding':Engine.runtime_binding(v)}
     def ready(self,record):
-        now=self.clock();budget=record['readiness'] or {'startedAt':now,'attempts':0,'nextAttemptAt':now}
-        if now<budget['nextAttemptAt']:raise CohortPaused('APISIX_READINESS_WAIT',budget['nextAttemptAt'])
-        require(budget['attempts']<128 and now-budget['startedAt']<3600,'APISIX_READINESS_BUDGET_EXHAUSTED')
-        following=copy.deepcopy(record);following['readiness']=copy.deepcopy(budget)
-        following['readiness']['attempts']+=1
-        delay=[5,15,60,300,900][min(budget['attempts'],4)]
-        following['readiness']['nextAttemptAt']=now+delay
-        record=self.save(record,following)
+        self.guard();self.generation()
+        now,mono=self.clock(),self.monotonic()
+        expiry=json.loads(self.action.raw)['expiresAt']
+        budget=copy.deepcopy(record['readiness'])
+        if budget is None:
+            remaining=min(3600,expiry-now)
+            require(remaining>0,'APISIX_READINESS_AUTHORITY_EXPIRED')
+            budget={'profile':APISIX_READINESS_POLICY['profile'],'bootId':self.boot,'state':'IDLE',
+                'startedAt':now,'startedMonotonic':mono,'expiresAt':now+remaining,'expiresMonotonic':mono+remaining,
+                'lastWall':now,'lastMonotonic':mono,'attempts':0,'nextAttemptAt':now,'nextAttemptMonotonic':mono}
+        require(budget.get('profile')==APISIX_READINESS_POLICY['profile'] and budget.get('bootId')==self.boot
+            and type(budget.get('attempts'))is int and 0<=budget['attempts']<=128
+            and budget['startedAt']<=budget['lastWall']<=now and budget['startedMonotonic']<=budget['lastMonotonic']<=mono
+            and 0<budget['expiresAt']-budget['startedAt']<=3600 and budget['expiresAt']<=expiry
+            and 0<budget['expiresMonotonic']-budget['startedMonotonic']<=3600,
+            'APISIX_READINESS_HISTORY_OR_CLOCK_DRIFT')
+        def save(state,**changes):
+            nonlocal record,budget
+            budget.update(state=state,lastWall=self.clock(),lastMonotonic=self.monotonic(),**changes)
+            following=copy.deepcopy(record);following['readiness']=copy.deepcopy(budget)
+            record=self.save(record,following)
+        def exhausted():
+            return self.clock()>=budget['expiresAt'] or self.monotonic()>=budget['expiresMonotonic']
+        def pause_exhausted(reason):
+            save('PAUSED_EXHAUSTED');raise PlanDenied(reason)
+        require(budget['state']in ('IDLE','RETRY_WAIT'),'APISIX_READINESS_IN_FLIGHT_OR_TERMINAL_NO_REPLAY')
+        if budget['attempts']>=128 or exhausted():pause_exhausted('APISIX_READINESS_BUDGET_EXHAUSTED')
+        wait=max(budget['nextAttemptAt']-now,budget['nextAttemptMonotonic']-mono,0)
+        if wait:raise CohortPaused('APISIX_READINESS_WAIT',now+min(wait,budget['expiresAt']-now,budget['expiresMonotonic']-mono))
+        save('ATTEMPTING',attempts=budget['attempts']+1)
         transport=self.transport()
         try:
             status,body=transport.request('GET','/apisix/admin/routes')
         except PlanDenied as error:
             if str(error)!='APISIX_OUTCOME_REQUIRES_RECONCILIATION':raise
-            raise CohortPaused('APISIX_READINESS_TRANSIENT',now+delay) from None
-        if status in (502,503,504):raise CohortPaused('APISIX_READINESS_TRANSIENT',now+delay)
-        require(status==200 and type(body.get('list')) is list and body.get('total')==len(body['list']),
-                'APISIX_ADMIN_READINESS_PERMANENT_FAILURE')
+            status,body=503,None
+        self.guard()
+        if exhausted():pause_exhausted('APISIX_READINESS_DEADLINE_EXCEEDED')
+        if status in (429,502,503,504):
+            if budget['attempts']>=128:pause_exhausted('APISIX_READINESS_BUDGET_EXHAUSTED')
+            now,mono=self.clock(),self.monotonic()
+            minimum=retry_after_seconds(getattr(transport,'retry_after',''),now)
+            if minimum>=min(budget['expiresAt']-now,budget['expiresMonotonic']-mono):
+                pause_exhausted('APISIX_READINESS_RETRY_AFTER_EXCEEDS_BUDGET')
+            base=APISIX_READINESS_POLICY['backoffSeconds'][min(budget['attempts']-1,4)]
+            fraction=int(digest({'planHash':self.scope['planHash'],'attempt':budget['attempts']})[:8],16)/0xffffffff
+            delay=max(minimum,base*(1+.2*fraction))
+            save('RETRY_WAIT',nextAttemptAt=now+delay,nextAttemptMonotonic=mono+delay)
+            raise CohortPaused('APISIX_READINESS_TRANSIENT',now+min(delay,budget['expiresAt']-now,budget['expiresMonotonic']-mono))
+        require(status==200 and type(body)is dict and type(body.get('list'))is list
+            and body.get('total')==len(body['list']),'APISIX_ADMIN_READINESS_PERMANENT_FAILURE')
+        save('COMPLETE')
         return record
     def apply(self):
         with self.journal.invocation():
@@ -266,3 +348,20 @@ class GatewayRuntime:
         return {'schema':PROFILE,'planHash':self.scope['planHash'],'runtimeBinding':Engine.runtime_binding(actual),
                 'proposalKeyHash':self.plan['proposalKeyHash'],'oldContainerRetained':True,
                 'automaticRollbackAllowed':False,'runtimeAuthorityIssued':False,'notReleaseAcceptance':True}
+
+
+def retry_after_seconds(value,now):
+    """Only the bounded selected header is exposed; never shorten Retry-After."""
+    import re
+    from email.utils import parsedate_to_datetime
+    require(type(value)is str and len(value)<=128,'APISIX_RETRY_AFTER_HEADER_INVALID')
+    if not value:return 0
+    if re.fullmatch(r'[0-9]{1,12}',value):return int(value)
+    try:
+        parsed=parsedate_to_datetime(value)
+        require(parsed.tzinfo is not None,'APISIX_RETRY_AFTER_HEADER_INVALID')
+        result=max(0,parsed.timestamp()-now)
+    except (ValueError,TypeError,OverflowError):
+        raise PlanDenied('APISIX_RETRY_AFTER_HEADER_INVALID') from None
+    require(result<float('inf'),'APISIX_RETRY_AFTER_HEADER_INVALID')
+    return result

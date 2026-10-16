@@ -99,8 +99,9 @@ def compile_review(*, source_closure, execution_profile, scopes, phase_intents,
     paused=type(recovery)is dict and recovery.get('profile')in('ouf.chatbot-paused-unsigned-attestation-reprocessing.v1','ouf.chatbot-paused-unsigned-attestation-reprocessing.v2','ouf.chatbot-signed-paused-admission-reprocessing.v1')
     backup=type(recovery)is dict and recovery.get('profile')=='ouf.chatbot-verified-registry-mcp-backup-recovery.v1'
     migration=type(recovery)is dict and recovery.get('profile')=='ouf.chatbot-created-mcp-migration-continuation.v1'
-    prior=6 if migration else 5 if backup else 4 if paused and recovery['profile']=='ouf.chatbot-signed-paused-admission-reprocessing.v1'else(3 if paused and recovery['profile'].endswith('.v2')else(2 if paused else 1))
-    if paused or backup or migration:
+    gateway=type(recovery)is dict and recovery.get('profile')=='ouf.chatbot-gateway-schema-continuation.v1'
+    prior=8 if gateway else 6 if migration else 5 if backup else 4 if paused and recovery['profile']=='ouf.chatbot-signed-paused-admission-reprocessing.v1'else(3 if paused and recovery['profile'].endswith('.v2')else(2 if paused else 1))
+    if paused or backup or migration or gateway:
         require(worker.get('schema')=='ouf.policy-token-new-finite-worker-session.v'+str(prior)
             and worker.get('predecessorCancelledWorkerHash')==recovery['cancelledWorkerHash']
             and worker.get('predecessorWorkerSessionHash')==recovery['workerSessionHash']
@@ -119,7 +120,7 @@ def compile_review(*, source_closure, execution_profile, scopes, phase_intents,
         'phaseIntentHashes': {name: digest(intent) for name, intent in phase_intents.items()},
         'privateInputHashes': copy.deepcopy(input_hashes),
         'maximumElapsedSeconds': maximum_seconds, 'freshHumanDecisionRequired': True,
-        'maximumExistingInstallerSignatures': 2, 'additionalNodeAttestationSignatures': 0 if backup or migration else 1,
+        'maximumExistingInstallerSignatures': 2, 'additionalNodeAttestationSignatures': 0 if backup or migration or gateway else 1,
         'firstControlledGrantMaximumAttempts': 1, 'firstControlledGrantMaximumSeconds': 300,
         'finiteWorkerMaximumAttempts': worker['policy']['max_attempts'],
         'finiteWorkerMaximumSeconds': worker['policy']['max_elapsed'],
@@ -195,9 +196,19 @@ def terminal_decision(review, review_path):
             'FULL_ACTION_REVIEW_BEFORE_TERMINAL_PROMPT_REQUIRED')
     review_hash = digest(review)
     require(Path(review_path).is_absolute(), 'PUBLISHED_PRIVATE_REVIEW_PATH_REQUIRED')
+    gateway=review.get('postGrantRecoveryReview',{}).get('profile')=='ouf.chatbot-gateway-schema-continuation.v1'
     summary = ('\nRevisione unica del ciclo CSV/chatbot.\n'
         'Documento privato completo: '+str(review_path)+'\n'
         'SHA256: '+review_hash+'\n'
+        +('Fase tecnica 5/8: ripresa Gateway; fasi 1–4 completate e conservate.\n'
+          'Quattro backup verificati: zero nuovi dump o restore; migrazioni MCP COMPLETE e privilegi CLEAN.\n'
+          'Nessun bootstrap audit, start migrazione, sostituzione UDP/Onboarding o replay Registry.\n'
+          'APISIX viene sostituito con la stessa immagine e due asset verificati montati in sola lettura.\n'
+          'Sono conservate nove modifiche Gateway e il decimo claim ambiguo: 28 modifiche restanti,\n'
+          'con nuovo intento per lo schema corretto e verifica integrale delle route prima e dopo ogni scrittura.\n'
+          'Otto grant restano conteggiati; il prossimo effettivo sarà il nono cumulativo.\n'
+          'La nuova finestra ha massimo 128 tentativi e 3600 secondi, senza rinnovo automatico.\n'
+          if gateway else '')
         +('Fase tecnica 2/8: ripresa dal container MCP già creato e mai avviato.\n'
           'Quattro backup COMPLETE copiati e verificati: zero nuovi dump, zero restore.\n'
           'Nessun nuovo create MCP, bootstrap del ruolo audit o replay delle dieci fasi Registry.\n'
@@ -260,15 +271,18 @@ def terminal_decision(review, review_path):
         ('I ruoli OUF risultano già pubblicati: vengono riletti, senza nuova proposta se invariati.\n'
           if review.get('authorizationReview',{}).get('requiresNewRoleConfirmation') is False else
           'Eventuale conferma dei ruoli: apri il link browser esplicito; la proposta dura 15 minuti.\n')+
-        'Include sostituzione dei cinque servizi applicativi, route Gateway, autorizzazioni esplicite,\n'
-        +('verifica dei quattro backup esistenti, migrazioni e nuovo worker; storico conservato.\n'
+        ('Dopo il Gateway: sostituzione Ingestion e MCP, verifica complessiva e rilascio produttori.\n' if gateway else
+         'Include sostituzione dei cinque servizi applicativi, route Gateway, autorizzazioni esplicite,\n')
+        +('Nuovo worker finito; checkpoint e storico precedente conservati.\n' if gateway else
+          'verifica dei quattro backup esistenti, migrazioni e nuovo worker; storico conservato.\n'
           if review.get('postGrantRecoveryReview',{}).get('profile')=='ouf.chatbot-created-mcp-migration-continuation.v1' else
           'backup e migrazioni ancora previsti e nuovo worker; storico precedente conservato.\n'
           if review.get('postGrantRecoveryReview')is not None else
           'backup e migrazioni previsti, installazione owner e ritiro del servizio/timer policy-token semantic.\n')+
         'L\'attesa Registry riconcilia solo letture: massimo 128 tentativi e 3600 secondi, entro questa finestra;\n'
         'contatori e scadenze persistenti, nessuna ripetizione di start o SIGUSR1.\n'
-        +('Il ruolo audit NOLOGIN e i privilegi temporanei SET/CREATE/TRIGGER sono già presenti: nessun nuovo bootstrap.\n'
+        +('Il ruolo audit NOLOGIN resta presente con SET/CREATE/TRIGGER temporanei revocati.\n' if gateway else
+          'Il ruolo audit NOLOGIN e i privilegi temporanei SET/CREATE/TRIGGER sono già presenti: nessun nuovo bootstrap.\n'
           if review.get('postGrantRecoveryReview',{}).get('profile')=='ouf.chatbot-created-mcp-migration-continuation.v1' else
           'Se MCP ha le tre migrazioni pendenti: creazione del ruolo audit NOLOGIN con amministratore DB,\n'
           'abilitazioni temporanee SET e CREATE sullo schema; se previsto nel piano, TRIGGER sulla sola security_incident.\n')+

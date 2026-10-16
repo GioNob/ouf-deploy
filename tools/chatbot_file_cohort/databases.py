@@ -322,6 +322,10 @@ class CohortDatabases:
                 and row.get('authorityHash') == self.action.authority_hash
                 and row.get('restorePerformed') is False and row.get('budgetReset') is False,
                 'COHORT_DATABASE_JOURNAL_DRIFT')
+        recovery=row.get('governedGatewayRecovery')
+        if recovery is not None:
+            require(recovery.get('state')=='COMPLETE_ARCHIVES_AND_CHECKPOINTS_COPIED',
+                'PARTIAL_GATEWAY_CHECKPOINT_ADOPTION_REQUIRES_RECONCILIATION')
         recovery=row.get('governedBackupRecovery')
         if recovery is not None:
             require(recovery.get('state')=='COMPLETE_ARCHIVES_COPIED_NEW_MCP_ATTEMPT_REQUIRED',

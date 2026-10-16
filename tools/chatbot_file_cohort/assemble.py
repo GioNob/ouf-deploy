@@ -190,6 +190,18 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
     require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')
     if recovery is not None:
         review['postGrantRecoveryReview']=copy.deepcopy(recovery)
+        if recovery['profile']=='ouf.chatbot-gateway-schema-continuation.v1':
+            review['completedTechnicalPhases']=[1,2,3,4]
+            review['currentTechnicalPhase']=5
+            review['mcpMigrationReview']['disposition']='COMPLETE_CLEAN_VERIFY_ONLY_NO_REPLAY'
+            review['mcpBackupReaderReview']['disposition']='RETAINED_ARCHIVE_ONLY_ZERO_NEW_DUMPS'
+            review['gatewayContinuationReview']={'historicalAppliedChanges':9,'historicalClaimRetained':True,
+                'remainingChanges':len(prepared['gatewayPlan']['changes']),
+                'newIntentHash':prepared['gatewayPlan']['governedReprocessing']['newIntentHash'],
+                'numericCompatibility':copy.deepcopy(runtime['numericCompatibility']),
+                'newConfigBinding':copy.deepcopy(runtime['newConfigBinding']),
+                'readinessPolicy':copy.deepcopy(runtime['readinessPolicy']),
+                'replayAllowed':False,'sameImageRequired':True}
         review['firstControlledGrantMaximumAttempts']=0
         review['firstControlledGrantMaximumSeconds']=0
     require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')

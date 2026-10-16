@@ -212,7 +212,7 @@ class InstalledTokenOwner(DomainOwner):
     def guard_worker_session(self,row):
         signed=json.loads(self.raw,object_pairs_hook=unique).get('policyTokenFiniteWorkerSession')
         prior=signed.get('predecessorGrantAttempts')if type(signed)is dict else None
-        check(type(prior)is int and prior in(1,2,3,4,5,6))
+        check(type(prior)is int and prior in(1,2,3,4,5,6,8))
         check(type(signed)is dict and fingerprint(signed)==row['workerSessionHash']
             and self.configuration.get('workerSessionHash')==row['workerSessionHash']
             and signed.get('schema')=='ouf.policy-token-new-finite-worker-session.v'+str(prior)
@@ -228,7 +228,7 @@ class InstalledTokenOwner(DomainOwner):
             and row.get('controlledCumulativeGrantAttempts')==prior+row['attempts'])
         if prior==1:check('controlledHistoryProfile'not in signed and 'controlledHistoryProfile'not in row)
         with protected_directory(self.journal.root)as directory:
-            if prior in(2,3,4,5,6):
+            if prior in(2,3,4,5,6,8):
                 check(signed.get('controlledHistoryProfile')==row.get('controlledHistoryProfile')=='ouf.policy-token-cancelled-worker-continuation.v1'
                     and signed.get('newBudget',{}).get('priorControlledGrantAttempts')==prior)
                 for key in('predecessorCancelledWorkerHash','predecessorWorkerSessionHash'):check(signed.get(key)==row.get(key))
@@ -237,12 +237,14 @@ class InstalledTokenOwner(DomainOwner):
                 check(hashlib.sha256(worker_raw).hexdigest()==signed['predecessorCancelledWorkerHash']
                     and hashlib.sha256(session_raw).hexdigest()==signed['predecessorWorkerSessionHash'])
                 previous=json.loads(worker_raw,object_pairs_hook=unique);old_session=json.loads(session_raw,object_pairs_hook=unique)
-                check(previous.get('state')=='CANCELLED'and previous.get('attempts')==1
-                    and previous.get('controlledPredecessorGrantAttempts')==prior-1 and previous.get('controlledCumulativeGrantAttempts')==prior
+                previous_count=6 if prior==8 else prior-1
+                previous_attempts=2 if prior==8 else 1
+                check(previous.get('state')=='CANCELLED'and previous.get('attempts')==previous_attempts
+                    and previous.get('controlledPredecessorGrantAttempts')==previous_count and previous.get('controlledCumulativeGrantAttempts')==prior
                     and previous.get('workerSessionHash')==signed['predecessorWorkerSessionHash']
                     and previous.get('firstGrantReceiptHash')==row['firstGrantReceiptHash']
-                    and old_session.get('schema')=='ouf.policy-token-new-finite-worker-session.v'+str(prior-1)
-                    and old_session.get('predecessorGrantAttempts')==prior-1
+                    and old_session.get('schema')=='ouf.policy-token-new-finite-worker-session.v'+str(previous_count)
+                    and old_session.get('predecessorGrantAttempts')==previous_count
                     and old_session.get('logicalOwnerScopeHash')==signed['logicalOwnerScopeHash'])
             check(json.loads(read_private(directory,'owner-session.json',16384),object_pairs_hook=unique)==signed)
             raw=read_private(directory,'owner-first-grant.json',16384)

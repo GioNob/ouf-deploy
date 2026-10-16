@@ -105,7 +105,7 @@ def transient_registry_observation(application,error):
     if type(error)is RegistryRecoveryReadinessPending:
         row=application.executor.t.read()
         recovery=(application.executor.aggregate_scope or {}).get('postGrantRecovery') or {}
-        if recovery.get('profile') in (BACKUP_PROFILE,'ouf.chatbot-created-mcp-migration-continuation.v1') and row.get('state')=='READY' and row.get('nextPhase')==10:
+        if recovery.get('profile') in (BACKUP_PROFILE,'ouf.chatbot-created-mcp-migration-continuation.v1','ouf.chatbot-gateway-schema-continuation.v1') and row.get('state')=='READY' and row.get('nextPhase')==10:
             return 'VERIFY_APPLICATION'
         return None
     if type(error)is not CutoverDenied or str(error)!='NATIVE_AMBIGUITY_OR_NO_EFFECT_STOPS_CUTOVER':return None
@@ -439,6 +439,10 @@ class Delivery:
             if recovery is not None and recovery.get('profile')=='ouf.chatbot-created-mcp-migration-continuation.v1':
                 from tools.chatbot_file_cohort.migration_recovery import adopt_backups
                 adopt_backups(databases,previous,recovery)
+            gateway_continuation=recovery is not None and recovery.get('profile')=='ouf.chatbot-gateway-schema-continuation.v1'
+            if gateway_continuation:
+                from tools.chatbot_file_cohort.gateway_recovery import adopt_backups,adopt_containers
+                adopt_backups(databases,previous,recovery);adopt_containers(containers,previous,recovery)
             containers.accept_owner_gate('authorization',plan['authorizationPlanHash'],digest(auth_evidence))
             profile = evidence.decode(governance.public_input(governance.PROFILE))
             verifier = self.action.authority.verifier
@@ -461,11 +465,19 @@ class Delivery:
             containers.accept_owner_gate('registry',plan['registryModulePackageHash'],digest(registry_evidence))
             backup_evidence = databases.backup_quiesced()
             containers.accept_owner_gate('database',plan['databasePlanHash'],digest(backup_evidence))
-            self.report('MIGRATING_MCP_SCHEMA_WITH_PACKAGED_SEPARATE_ROLE')
-            databases.migrate_mcp()
+            if gateway_continuation:
+                from tools.chatbot_file_cohort.gateway_recovery import current_databases,current_completed_containers
+                current_databases(previous);current_completed_containers(previous,self.engine)
+                self.report('PHASES_ONE_TO_FOUR_RETAINED_NO_REPLAY',technicalPhase=5,newDumpAttempts=0,
+                    migrationStartAttempts=0,completedContainerEffectsRetained=10)
+            else:
+                self.report('MIGRATING_MCP_SCHEMA_WITH_PACKAGED_SEPARATE_ROLE')
+                databases.migrate_mcp()
             for module in ('udp','onboarding'):
-                self.report('REPLACING_COHORT_MODULE',module=module)
-                self.await_container(containers,module); databases.verify_module(module)
+                if not gateway_continuation:
+                    self.report('REPLACING_COHORT_MODULE',module=module)
+                    self.await_container(containers,module)
+                databases.verify_module(module)
             self.current(True)
             self.report('PUBLISHING_REVIEWED_GATEWAY_ROUTES')
             gateway.apply(); gateway_evidence = gateway.verify()

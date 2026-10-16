@@ -64,7 +64,7 @@ class GatewayRuntime(unittest.TestCase):
         native=APISIXFixture(f.root,{'old':old},{'replacements':[{'name':'ouf-apisix','oldMounts':plan['expectedMounts']}]})
         self.addCleanup(native.close)
         journal=private/'journal';journal.mkdir(mode=0o700)
-        owner=r.GatewayRuntime(action,native.engine,plan,Journal(journal))
+        owner=r.GatewayRuntime(action,native.engine,plan,Journal(journal),boot='synthetic-boot')
         class Ready:
             def request(self,*args):return 200,{'total':0,'list':[]}
             def routes(self):return {}

@@ -1,8 +1,8 @@
 """Offline phase-5 reprocessing plan; never mutates a retained journal or route.
 
-This compiler is not registered as an executable recovery profile. Runtime
-custody, finite HUMAN authority, worker fencing, completed-owner adoption and
-the new APISIX generation must be integrated and qualified before execution.
+The compiler alone grants no executable scope. The distinct recovery profile
+binds its result to retained history, finite HUMAN authority and a concrete
+numeric-compatible APISIX owner before the publisher can accept it.
 """
 import copy
 

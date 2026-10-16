@@ -124,6 +124,10 @@ def collect(args):
     with protected_directory(source):pass
     with protected_directory(stage):pass
     verify_preparation_capsule(source,stage,args.preparation_source_hash)
+    from tools.chatbot_file_cohort.gateway_recovery import CONTEXT as GATEWAY_CONTEXT
+    if os.path.lexists(evidence.PARENT/GATEWAY_CONTEXT):
+        from tools.chatbot_file_cohort.postgrant_preparation import collect as collect_gateway
+        return collect_gateway(args,gateway=True)
     from tools.chatbot_file_cohort.migration_recovery import CONTEXT as MIGRATION_CONTEXT
     if os.path.lexists(evidence.PARENT/MIGRATION_CONTEXT):
         from tools.chatbot_file_cohort.postgrant_preparation import collect as collect_migration
