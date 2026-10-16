@@ -5,6 +5,8 @@ on:
     paths:
       - scripts/read-chatbot-gateway-state-20261016.py
       - tests/test_gateway_publication_readback.py
+      - scripts/read-chatbot-gateway-schema-20261016.py
+      - tests/test_gateway_schema_readback.py
       - .github/workflows/chatbot-gateway-readback.yml
 permissions: {contents: read}
 jobs:
@@ -29,4 +31,4 @@ jobs:
           sudo chown -R root:root /var/lib/ouf-gateway-readback
           sudo env OUF_NATIVE_NAMESPACES=1 OUF_NATIVE_POSTGRES=1 OUF_POSTGRES_CONTAINER_ID="$OUF_PG_CID" \
             /usr/bin/python3 -I -B -m unittest discover \
-            -s /var/lib/ouf-gateway-readback/repository/tests -p test_gateway_publication_readback.py -v
+            -s /var/lib/ouf-gateway-readback/repository/tests -p "test_gateway*readback.py" -v

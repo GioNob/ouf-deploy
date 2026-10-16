@@ -68,7 +68,9 @@ def main():
                 except (OSError,ValueError,http.client.HTTPException):pass
                 time.sleep(1)
             else:raise RuntimeError('Disposable APISIX not ready: '+docker('logs','--tail','30',apisix))
-            report['image']=json.loads(docker('image','inspect','apache/apisix:3.18.0-debian'))[0]['RepoDigests']
+            image=json.loads(docker('image','inspect','apache/apisix:3.18.0-debian'))[0]
+            report['image']=image['RepoDigests'];report['imageId']=image['Id']
+            print(json.dumps({'image':report['image'],'imageId':report['imageId']}),flush=True)
             for route in rows:
                 status,body=request('PUT','/apisix/admin/routes/'+route['id'],route)
                 observed={'id':route['id'],'status':status,'requestSha256':hashlib.sha256(json.dumps(route,sort_keys=True,separators=(',',':')).encode()).hexdigest()}
@@ -80,7 +82,7 @@ def main():
                     observed['readbackMatches']=code==200 and value==route
                     if value!=route:
                         def differences(a,b,path=''):
-                            if type(a)!=type(b):return [{'path':path,'expectedType':type(a).__name__,'observedType':type(b).__name__}]
+                            if type(a)!=type(b):return [{'path':path,'expectedType':type(a).__name__,'observedType':type(b).__name__,**({'expected':a,'observed':b} if isinstance(a,(int,float)) and isinstance(b,(int,float)) else {})}]
                             if isinstance(a,dict):
                                 return [d for k in sorted(set(a)|set(b)) for d in differences(a.get(k),b.get(k),path+'/'+k)]
                             if isinstance(a,list):
