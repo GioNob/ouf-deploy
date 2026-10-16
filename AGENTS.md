@@ -1,5 +1,9 @@
 # OUF project instructions
 
+## Active CSV/chatbot roadmap
+
+Follow [the stable 8 technical phases and 6 functional milestones](docs/CHATBOT_CSV_ROADMAP.md). Keep its evidence/status current and include the current numbered phase and functional progress in user updates until completion. Internal launcher phases do not replace this roadmap. Distinguish execution-flow evidence, persisted target readback, CI qualification and end-to-end acceptance.
+
 ## Default resilience requirement
 
 The project owner's decision of 2026-10-11 requires bounded resilient pause/resume by default throughout OUF. Follow [OUF resilience policy v3](https://github.com/GioNob/ouf-deploy/blob/main/docs/OUF_RESILIENCE_POLICY.md) and the module PET.
