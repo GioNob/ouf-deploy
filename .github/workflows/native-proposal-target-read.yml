@@ -1,0 +1,24 @@
+name: Native semantic proposal target metadata read
+on:
+  push:
+    branches: [codex/semantic-native-proposal-channel-20261013]
+    paths: [scripts/read-native-proposal-target.py, .github/workflows/native-proposal-target-read.yml]
+permissions: {contents: read}
+concurrency:
+  group: ouf-native-proposal-target-read
+  cancel-in-progress: false
+jobs:
+  read:
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: python3 -B scripts/read-native-proposal-target.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-proposal-target-read-${{ github.run_id }}
+          path: native-proposal-target-read.json
+          if-no-files-found: error
+          retention-days: 30

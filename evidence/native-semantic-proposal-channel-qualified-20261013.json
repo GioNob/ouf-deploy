@@ -1,0 +1,159 @@
+{
+  "schema": "ouf.native-semantic-proposal-channel.qualification.v1",
+  "date": "2026-10-13",
+  "normativeBaseline": {
+    "package": "OUF Reality Baseline v1.7",
+    "verifiedChecksumEntries": 323,
+    "mismatches": 0,
+    "policy": "OUF_RESILIENCE_POLICY v3"
+  },
+  "sources": {
+    "semantic": "b87c8291c791a6ab0f75ece6e595b49330ac3681",
+    "gateway": "5bdb36f3980a5b33fbce0a9bfe2c2cb64393e63a",
+    "mcp": "cd8992925ab803da28eefc7e5283273704b6a16c"
+  },
+  "pullRequests": {
+    "semantic": "https://github.com/GioNob/ouf-semantic-registry/pull/35",
+    "gateway": "https://github.com/GioNob/ouf-api-gateway/pull/70",
+    "mcp": "https://github.com/GioNob/ouf-mcp-server/pull/64"
+  },
+  "qualification": {
+    "ownerChain": {
+      "run": 38347676737,
+      "conclusion": "success",
+      "tests": 19,
+      "skips": 0,
+      "teatriDraftDefinitions": 21,
+      "preservedWarnings": 21,
+      "warningRule": "VAL-008",
+      "gatewayLuaJavaPostgresql": true,
+      "identityPolicyNamespaceOwnership": "synthetic fixtures"
+    },
+    "semanticFull": {
+      "run": 38347676738,
+      "conclusion": "success",
+      "includesContainer": true,
+      "publishedRdfSnapshotPreserved": true
+    },
+    "gatewayFull": {
+      "run": 38346532912,
+      "conclusion": "success",
+      "localPassed": 357,
+      "localSkipped": 4
+    },
+    "mcpFull": {
+      "run": 38347420516,
+      "conclusion": "success",
+      "go": "1.26.9",
+      "vulnerabilityCheck": "No vulnerabilities found",
+      "raceAndPostgresql": true
+    },
+    "mcpGatewaySchema": {
+      "run": 38347420531,
+      "conclusion": "success"
+    }
+  },
+  "target": {
+    "run": 38347019293,
+    "observedAt": 1791866018,
+    "readOnly": true,
+    "service": {
+      "ActiveState": "active",
+      "ExecMainStatus": "0",
+      "LoadState": "loaded",
+      "MainPID": "2446150",
+      "NRestarts": "0",
+      "Result": "success",
+      "SubState": "running"
+    },
+    "runningContainers": [
+      {
+        "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+        "health": null,
+        "imageId": "sha256:c15541037a08276e36715a3c3798c2d07fe6faabf5547d3885a66cd10575e366",
+        "names": [
+          "/ouf-semantic-southbound-v2"
+        ],
+        "restartCount": 0,
+        "running": true,
+        "sourceRevision": null,
+        "status": "running"
+      },
+      {
+        "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+        "health": null,
+        "imageId": "sha256:277dcefd4744c244f4f6f23f8969f3d0acd64369e2ff1bd67594955c4ca7fbbc",
+        "names": [
+          "/ouf-semantic-provider-v2"
+        ],
+        "restartCount": 0,
+        "running": true,
+        "sourceRevision": "c0b1f97bdb1fbcd6a88117dea6520ea9c322f265",
+        "status": "running"
+      },
+      {
+        "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+        "health": null,
+        "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+        "names": [
+          "/ouf-semantic"
+        ],
+        "restartCount": 0,
+        "running": true,
+        "sourceRevision": "e7bc5190f9e6afbbc4cf3c90d5d4970afbfad14b",
+        "status": "running"
+      },
+      {
+        "containerId": "ddbfc944d2b7f431cb0189ced278c049b3360a077e9c4b75fa36c58a3a0f127a",
+        "health": null,
+        "imageId": "sha256:99a158f780243b3fa05199bed9db01197be8ae60ae1e75ad5432964509422872",
+        "names": [
+          "/ouf-mcp"
+        ],
+        "restartCount": 0,
+        "running": true,
+        "sourceRevision": "394b4b1540b575564f0ba58541df9d7efc59fb87",
+        "status": "running"
+      },
+      {
+        "containerId": "dcbe26bed97dd5c7ac8a131ec2badf77b0291c2ef32907be639bfa09c36596d9",
+        "health": null,
+        "imageId": "sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d",
+        "names": [
+          "/ouf-apisix"
+        ],
+        "restartCount": 0,
+        "running": true,
+        "sourceRevision": null,
+        "status": "running"
+      }
+    ],
+    "lifecycleOperations": 0,
+    "protectedFileReads": 0,
+    "credentialReads": 0,
+    "observationLimits": "Public Engine/systemd metadata proves running generations only; no current application, route, policy, custody or lease readiness acceptance."
+  },
+  "effects": {
+    "productionNativeDraftsCreated": 0,
+    "productionChallengesCreated": 0,
+    "humanApprovalIssued": false,
+    "semanticPublished": false,
+    "sourceActivated": false,
+    "ingestionRunIssued": false,
+    "durableAckObserved": false,
+    "csvEndToEndAccepted": false,
+    "r12Changed": false,
+    "budgetReset": false
+  },
+  "deploymentGates": [
+    "Register current capability descriptors/scopes/owner permissions through existing governed configuration; no grant is inferred from development authorization.",
+    "Complete existing real DomainOwner/credential re-establishment and authenticated renewable token source.",
+    "Complete independently bound target six-mount policy, fresh finite HUMAN/attestor authority and sealed V11 installer/entry/reporter.",
+    "Package current qualified sources with publisher/installation closure; historical V11 package cannot silently carry new source.",
+    "Migrate owner V10 and install exact bounded Gateway/MCP routes through the governed target release.",
+    "Use genuine Registry revision/hash-bound THS cards; preserve expired challenges and require explicit governed renewal.",
+    "After approved published semantics and reviewed source configuration, account for all13 observations with owner ACK, lineage and authorized search."
+  ],
+  "resilienceLimits": "Transactional deduplication, rollback, persisted preparation receipts and ambiguity reconciliation qualified; no new timed automatic retry worker, quarantine retention/capacity tuning or full platform resilience compliance is claimed.",
+  "status": "SOURCE_CHAIN_QUALIFIED_TARGET_ROLLOUT_BLOCKED"
+}
