@@ -41,6 +41,32 @@ class RegistryWait(unittest.TestCase):
             'evidence':types.SimpleNamespace(decode=json.loads)}
         exec(compile(ast.Module(body=[transient,wait],type_ignores=[]),'actual-registry-delivery-functions','exec'),ns)
         return ns
+    def test_verified_running_recovery_waits_read_only_with_retry_after(self):
+        from tools.chatbot_file_cohort.backup_recovery import RegistryRecoveryReadinessPending,PROFILE
+        ns=self.functions();owner,app,*rest=self.fixture(phases=())
+        row={'state':'READY','nextPhase':10,'effects':[]}
+        app.executor.t.read=lambda:row
+        app.executor.aggregate_scope={'postGrantRecovery':{'profile':PROFILE}}
+        app.executor.adapters['VERIFY_APPLICATION'].channel=types.SimpleNamespace(retry_after_seconds=0)
+        calls=[]
+        def verify():
+            calls.append(self.now[0])
+            if len(calls)<3:raise RegistryRecoveryReadinessPending(45)
+            return {'freshReadiness':True}
+        app.verify_registry_and_hold=verify
+        result=ns['await_registry'](owner,app,str(self.root))
+        self.assertEqual(result,{'freshReadiness':True})
+        self.assertEqual(len(calls),3)
+        self.assertTrue(all(b-a>=45 for a,b in zip(calls,calls[1:])))
+
+    def test_running_readiness_error_is_not_retryable_at_other_boundaries(self):
+        from tools.chatbot_file_cohort.backup_recovery import RegistryRecoveryReadinessPending,PROFILE
+        ns=self.functions();_,app,*_=self.fixture(phases=())
+        app.executor.aggregate_scope={'postGrantRecovery':{'profile':PROFILE}}
+        for state,cursor in [('IN_FLIGHT',10),('READY',9),('COMPLETED',11)]:
+            app.executor.t.read=lambda:{'state':state,'nextPhase':cursor}
+            self.assertIsNone(ns['transient_registry_observation'](app,RegistryRecoveryReadinessPending(0)))
+
     def fixture(self,phases=('START_REPLACEMENT','VERIFY_APPLICATION')):
         row={'state':'READY','effects':[]};calls=[];side_effects=[];reports=[];revoked=[False]
         native={'State':{'Running':True,'Paused':False,'Status':'running'}}

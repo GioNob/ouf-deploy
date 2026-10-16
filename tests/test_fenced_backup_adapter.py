@@ -82,6 +82,20 @@ class BackupComposition(unittest.TestCase):
             counter[0]+=1;return {**n,'closed':counter[0]==1}
         a.admin.query=query
         with self.assertRaises(GateDenied):a.observe(i)
+    def test_retained_archive_read_does_not_assert_historical_fence_is_current(self):
+        e,calls,a,i,root,n=self.fixture();self.complete(root,i)
+        expected=a.snapshot();expected.pop('currentDatabaseState')
+        n['closed']=False;n['sessions']=3
+        with patch.object(a.admin,'query',side_effect=AssertionError('archive read cannot query SQL')):
+            self.assertEqual(a.retained_snapshot(),expected)
+        with self.assertRaises(GateDenied):a.snapshot()
+    def test_retained_archive_read_still_rejects_corruption_and_foreign_context(self):
+        for change in ('archive','context'):
+            with self.subTest(change=change):
+                e,calls,a,i,root,n=self.fixture();self.complete(root,i)
+                if change=='archive':(root/'semantic.dump').write_bytes(b'corrupt')
+                else:(root/'backup-phase-binding.json').write_text(json.dumps({**a.context,'transitionContextHash':'f'*64}))
+                with self.assertRaises(GateDenied):a.retained_snapshot()
     def test_foreign_transition_or_unbound_old_backup_cannot_be_adopted(self):
         for change in ('foreign','absent'):
             e,calls,a,i,root,n=self.fixture();self.complete(root,i)

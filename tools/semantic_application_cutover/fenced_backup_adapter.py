@@ -64,7 +64,8 @@ class FencedBackupAdapter:
             return (json.loads(b''.join(chunks)) if parse else None), h.hexdigest(), count
         finally: os.close(fd)
 
-    def snapshot(self):
+    def retained_snapshot(self):
+        """Validate the immutable archive without asserting a current DB fence."""
         context,ch,_=self.private('backup-phase-binding.json',262144,True)
         require(context==self.context,'BACKUP_RECEIPT_BELONGS_TO_ANOTHER_TRANSITION')
         backup,bh,_=self.private('backup-receipt.json',262144,True)
@@ -81,11 +82,15 @@ class FencedBackupAdapter:
                 and backup.get('databaseAdmissionRemainsClosed') is True and backup.get('allOtherSessionsAbsentAtGate') is True
                 and backup.get('restorePerformed') is False and backup.get('migrationPerformed') is False
                 and backup.get('targetAuthorityGranted') is False, 'EXACT_COMPLETE_BACKUP_RECEIPT_REQUIRED')
+        return {'schema':'ouf.semantic-fenced-backup-executor-evidence.v1','transitionContextHash':self.context['transitionContextHash'],'intentHash':self.intent_hash,
+                'databaseContainerId':self.intent['containerId'],'backupPhaseBindingFileHash':ch,'backupReceiptFileHash':bh,'gateReceiptFileHash':gh,'archiveSha256':ah,'archiveBytes':size,'databaseScopeHash':scope}
+
+    def snapshot(self):
+        retained=self.retained_snapshot()
         database=self.intent['database']; oid=self.intent['databaseOid']
         state=self.admin.query("SELECT json_build_object('oid',oid::bigint,'closed',NOT datallowconn,'prepared',(SELECT count(*) FROM pg_prepared_xacts WHERE database="+literal(database)+"),'sessions',(SELECT count(*) FROM pg_stat_activity WHERE datid="+str(oid)+")) FROM pg_database WHERE datname="+literal(database),"SELECT pg_stat_clear_snapshot();")
         require(state=={'oid':oid,'closed':True,'prepared':0,'sessions':0}, 'CURRENT_DATABASE_FENCE_UNPROVEN')
-        return {'schema':'ouf.semantic-fenced-backup-executor-evidence.v1','transitionContextHash':self.context['transitionContextHash'],'intentHash':self.intent_hash,
-                'databaseContainerId':self.intent['containerId'],'backupPhaseBindingFileHash':ch,'backupReceiptFileHash':bh,'gateReceiptFileHash':gh,'archiveSha256':ah,'archiveBytes':size,'databaseScopeHash':scope,'currentDatabaseState':state}
+        return {**retained,'currentDatabaseState':state}
 
     def observe(self, intent):
         self.exact(intent)

@@ -303,14 +303,18 @@ def current_baseline(predecessor,engine):
         current_registry(predecessor,engine);current_databases(predecessor)
     from database_gate import Psql
     from fenced_backup_adapter import FencedBackupAdapter
-    if not running:
-        admin=Psql(pgpin['containerId'],prepared['registry']['intents']['FENCED_BACKUP']['user'],
-            prepared['registry']['adminDatabase'],'ouf-cutover-postgrant-read')
-        try:
-            backup=FencedBackupAdapter(admin,prepared['registry']['intents']['FENCED_BACKUP'],lambda _:None,row['contextHash'])
-            require(backup.snapshot()==predecessor['payloads']['evidence']['FENCED_BACKUP'],
-                'POSTGRANT_CURRENT_BACKUP_OR_DATABASE_FENCE_DRIFT')
-        finally:admin.close()
+    admin=Psql(pgpin['containerId'],prepared['registry']['intents']['FENCED_BACKUP']['user'],
+        prepared['registry']['adminDatabase'],'ouf-cutover-postgrant-read')
+    try:
+        backup=FencedBackupAdapter(admin,prepared['registry']['intents']['FENCED_BACKUP'],lambda _:None,row['contextHash'])
+        retained=predecessor['payloads']['evidence']['FENCED_BACKUP']
+        if running:
+            expected={k:v for k,v in retained.items() if k!='currentDatabaseState'}
+            require(backup.retained_snapshot()==expected and backup.retained_snapshot()==expected,
+                'POSTGRANT_RETAINED_REGISTRY_BACKUP_DRIFT')
+        else:
+            require(backup.snapshot()==retained,'POSTGRANT_CURRENT_BACKUP_OR_DATABASE_FENCE_DRIFT')
+    finally:admin.close()
     from image_custody import loaded,runtime_image_id
     for image in prepared['imagePlan']['images']:
         audit=image['audit'];code,native=engine.request('GET','/v1.44/images/'+runtime_image_id(audit)+'/json')

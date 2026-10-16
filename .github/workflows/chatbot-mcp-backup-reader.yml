@@ -24,7 +24,7 @@ jobs:
       - name: Signed owner and fixed preflight unit qualification
         run: |
           set -euo pipefail
-          for suite in test_chatbot_cohort_backup_recovery.py test_chatbot_cohort_databases.py test_chatbot_mcp_backup_preflight.py; do
+          for suite in test_fenced_backup_adapter.py test_chatbot_cohort_registry_readiness.py test_chatbot_cohort_delivery_launcher.py test_chatbot_cohort_backup_recovery.py test_chatbot_cohort_databases.py test_chatbot_mcp_backup_preflight.py; do
             sudo python3 -I -B -m unittest discover -s /var/lib/ouf-mcp-backup-test/repository/tests -p "$suite" -v
           done
       - name: Actual restricted role denial and signed administrative backup
