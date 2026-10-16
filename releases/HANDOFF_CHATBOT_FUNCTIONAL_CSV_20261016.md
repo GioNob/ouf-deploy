@@ -1,3 +1,40 @@
+# Handoff aggiornato — tappa funzionale1/6 sospesa sul403
+
+### Seguito: catalogo disponibile, proposta rifiutata dall'owner
+
+Verifica del16 ottobre dopo l'handoff: tutti e quattro i tool semantici sono ora
+callable nel catalogo di questa chat (24 tool OUF totali). Non è una lettura
+indipendente del remote tools/list né una prova della causa del vecchio catalogo.
+Un solo semantic.propose con ouf-admin e proposta be74308e… restituisce HTTP403
+SEM_CAPABILITY_REQUIRED:ouf.semantic.propose; il wrapper classifica INVALID_ARGUMENT,
+ma il corpo identifica un rifiuto di autorizzazione. Nessun retry automatico,
+nessun artifactId/revisionId/ricevuta o review THS restituito.
+
+La lettura governata Authorization mostra policy ouf-lab-authorization:40,
+hash sha256:d4e2478ce91c0bb2d2d36144dab1305ad137b7ae4c74e218f07e70604ade57bc,
+due grant configurati per ouf.semantic.propose e assegnazione nominale admin.
+Sono CONFIGURED_GRANTS_NOT_EFFECTIVE_PERMISSIONS: non provano il bundle effettivo,
+la freschezza o il contesto di decisione del Registry. Non aggiungere grant per
+ipotesi e non dichiarare già individuata la causa. Chiave durevole del tentativo:
+teatri-semantic-draft-be74308e098aa3a6-20261016; conservarla per riconciliazione,
+non cambiare intento/chiave per aggirare il403.
+
+Fasi tecniche1–8 conservate, funzionali0/6. La tappa1/6 resta sospesa prima della
+creazione provata della DRAFT. Il nuovo reader scripts/read-chatbot-semantic-denial-20261016.py
+legge stato conservato/processo/contatori presenti e un campione classificato dei
+log Registry; ammette processo fermo e authority scaduta, senza riattivare nulla.
+Cinque test locali PASS, inclusi output bound nativo e assenza di segreti nelle
+proiezioni. Esecuzione VPS e causa effettiva del deny ancora non provate.
+Evidenza: evidence/chatbot-semantic-proposal-denied-20261016.json.
+
+
+Procedura: releases/CHATBOT_SEMANTIC_DENIAL_READBACK_20261016.md.
+Richiedere l'output del launcher pinned; non è ancora disponibile la lettura VPS.
+
+---
+
+## Snapshot storico precedente (13:02 Europe/Rome)
+
 # Handoff — Gateway repaired; functional CSV stage1/6
 
 Last verified operator result2026-10-16 13:02 Europe/Rome. Work in Italian.
