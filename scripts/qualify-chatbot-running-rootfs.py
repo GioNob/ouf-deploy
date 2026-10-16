@@ -93,17 +93,18 @@ def main():
                     if v['kind']=='file':
                         raw=(root/k).read_bytes();(a.output/'runtime-file.bin').write_bytes(raw)
                 time.sleep(1)
-            native_mapping=contract.mapped_file;observed_identities=[]
-            def traced_mapping(*args):
-                result=native_mapping(*args);observed_identities.append(result[2]);return result
-            contract.mapped_file=traced_mapping
-            try:proof=contract.observe(root,b.LIMITS,b.Budget(),EXPECTED,pid)
-            except Exception:
-                if len(observed_identities)==2:
-                    fields=['dev','ino','mode','uid','gid','nlink','size','mtime_ns','ctime_ns']
-                    print('CI_RUNTIME_IDENTITY_CHANGED_FIELDS='+json.dumps([k for k,x,y in zip(fields,*observed_identities)if x!=y]),flush=True)
-                raise
+            proof=contract.observe(root,b.LIMITS,b.Budget(),EXPECTED,pid)
+            # Actual inode/mapping stays fixed while this CI-only timestamp advances.
+            native_mapping=contract.mapped_file;timestamp_calls=[]
+            def advancing_timestamp(*args):
+                result=native_mapping(*args);timestamp_calls.append(True)
+                if len(timestamp_calls)==1:
+                    q=root/contract.PERF_PATH;st=q.stat();os.utime(q,ns=(st.st_atime_ns,st.st_mtime_ns+1))
+                return result
+            contract.mapped_file=advancing_timestamp
+            try:contract.observe(root,b.LIMITS,b.Budget(),EXPECTED,pid)
             finally:contract.mapped_file=native_mapping
+            b.require(len(timestamp_calls)==2,'REAL_TIMESTAMP_ADVANCE_TEST_REQUIRED')
             denied=[]
             # Disposable fixtures exercise the actual predicate, never target files.
             for label,relative,operation,undo in [
@@ -125,7 +126,7 @@ def main():
                 'moduleSource':b.SOURCE,'configurationImageId':b.IMAGE,'archiveSha256':b.sha(work/'package/image.docker.tar'),
                 'sameJavaPid':True,'livenessUp':True,'syntheticDatabase':True,'syntheticOidcMetadata':True,'authorizationBundleAbsent':True,
                 'vpsAccesses':0,'runtimeAuthorityIssued':False,'acceptanceGranted':False,'notReleaseAcceptance':True,
-                'runningRootfsProof':proof,'nativeNegativeChecks':denied,'postgresFixtureImage':pgimage['Id'],'dockerVersion':info['ServerVersion']}
+                'runningRootfsProof':proof,'nativeTimestampAdvanceAccepted':True,'nativeNegativeChecks':denied,'postgresFixtureImage':pgimage['Id'],'dockerVersion':info['ServerVersion']}
             (a.output/'summary.json').write_bytes(b.encoded(result)+b'\n');print(b.encoded(result).decode())
         finally:
             if server:server.shutdown();server.server_close()

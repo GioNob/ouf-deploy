@@ -111,7 +111,10 @@ def mapped_file(root,relative,pid,budget):
             raw=os.read(fd,32769);schema,values=perfdata(raw)
             require(identity(before)==identity(os.fstat(fd))==identity(os.stat(Path(relative).name,dir_fd=directory,follow_symlinks=False))
                     and identity(before)==identity((proc/'root'/relative).stat()),'RUNNING_JVM_PERFDATA_IDENTITY_DRIFT')
-            return schema,values,identity(before)
+            # mmap writers may update mtime/ctime between complete scans.
+            # They are not part of the v1 semantic seal or kernel file identity.
+            # They remain checked within this single bounded read above.
+            return schema,values,identity(before)[:7]
         finally:os.close(fd)
     finally:os.close(directory)
 
