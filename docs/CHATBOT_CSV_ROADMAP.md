@@ -23,6 +23,23 @@ conserva anche le 28 modifiche Gateway: zero nuove scritture route. Qualifiche c
 con sorgente runtime a2132d7ee330f9f0ce7d4fc9316dd880acad4f3f.
 Questo rilascio non avanza lo stato target: serve la nuova esecuzione HUMAN
 e la verifica del relativo esito sul VPS.
+### Arresto del launcher di fase 6 nel preflight
+
+Il tentativo con runtime a2132d7ee330f9f0ce7d4fc9316dd880acad4f3f si è fermato
+in gateway_recovery.retained_bindings con AttributeError prima di nuova autorità
+runtime: il nome locale prior (conteggio grant) nascondeva il modulo
+migration_recovery usato per archive_bytes. Nessuna nuova approvazione richiesta,
+nessun avanzamento target; restano nove grant conservati. La qualifica precedente
+non copriva il percorso completo: l'enrichment simulava retained_bindings.
+Correzione runtime f6078a5ac07853b4abc13d310882f5a30086baba: prior_count separato
+dal modulo; nuova regressione attraversa il validatore e il lettore reale di tutti
+quattro i file, rifiuta ogni archivio alterato e il conteggio errato. Nessuna
+modifica a confini di autorità, pin, policy, retry, piani o identità target.
+Il nuovo launcher è scripts/launch-chatbot-ingestion-archive-binding-fix-20261016.sh.
+CI mirata 38879641570 PASS (21 test di storico/ripresa e due nativi), backup
+38879641568 PASS; locale 14 test di consegna PASS. Suite generale aggiuntiva
+38879641541 ancora in corso al rilascio; nessun avanzamento target derivato dai test.
+
 La cronologia seguente resta come evidenza degli arresti precedenti.
 
 ### Cronologia precedente

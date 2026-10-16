@@ -1,5 +1,7 @@
 # Fase 6: Ingestion creato, Gateway completato e nove grant conservati
 
+**Superato dal fix del preflight**: vedere CHATBOT_INGESTION_ARCHIVE_BINDING_FIX_20261016.md. Il runtime qui descritto ha incontrato AttributeError nel primo tentativo target, prima di nuova autorità.
+
 ## Stato VPS confermato
 
 Fasi tecniche 1–5 complete, fase 6 sospesa, 7–8 pendenti, CSV 0/6.
