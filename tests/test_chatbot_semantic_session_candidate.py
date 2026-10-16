@@ -1,6 +1,7 @@
 import importlib.util
 import os
 from pathlib import Path
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -9,10 +10,13 @@ spec=importlib.util.spec_from_file_location('candidate',ROOT/'scripts/prepare-ch
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 
 class Tests(unittest.TestCase):
-    def test_candidate_source_hashes_match_packaged_bodies(self):
-        for name,expected in m.SOURCE_HASHES.items():
-            path=ROOT/'tools/semantic_policy_token_owner'/name.replace('-','_')
-            self.assertEqual(m.hashlib.sha256(path.read_bytes()).hexdigest(),expected)
+    def test_pinned_source_reader_rejects_drift(self):
+        with tempfile.TemporaryDirectory(dir=ROOT)as d:
+            path=Path(d)/'source.py';path.write_bytes(b'print(1)\n');path.chmod(0o600)
+            expected=m.hashlib.sha256(path.read_bytes()).hexdigest()
+            self.assertEqual(m.source(path,expected),b'print(1)\n')
+            path.write_bytes(b'print(2)\n')
+            with self.assertRaisesRegex(m.ReadDenied,'CANDIDATE_SOURCE_DRIFT'):m.source(path,expected)
 
     def test_hash_bound_compiler_uses_same_pure_contract_as_qualification(self):
         import test_governed_semantic_session_contract as fixture

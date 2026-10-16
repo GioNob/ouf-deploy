@@ -50,7 +50,7 @@ class Tests(unittest.TestCase):
         with patch.object(os,'stat',side_effect=lambda *a,**k:wrapped(original_stat(*a,**k))),\
              patch.object(os,'fstat',side_effect=lambda *a,**k:wrapped(original_fstat(*a,**k))),\
              patch.object(os,'chown',side_effect=chown),patch.object(os,'fchown',side_effect=fchown):
-            yield
+            yield owners
 
     def test_drift_unreviewed_origin_mount_and_url_reject_before_credential(self):
         a,p=fixture();u,s=m.selected(a,p)

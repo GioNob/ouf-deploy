@@ -157,3 +157,140 @@ class ContinuedOwnerInstallation:
         return worker
 
 
+class GovernedSemanticOwnerContinuation:
+    """Token-only continuation; construction and scope compilation have no effects.
+
+    Requires a newly signed, finite AggregateAction. A deterministic global
+    fence is consumed before source staging or journal initialization. Partial
+    installation is reconciliation-only; the cancelled predecessor is untouched.
+    """
+    def __init__(self,action,value,stage_files,source_commit,review,records,first_receipt,
+                 review_binding,engine_binding,journal_directory,
+                 clock=lambda:(time.time(),time.monotonic()),*,transport=None):
+        from tools.chatbot_file_cohort.action_process import private_file
+        from tools.semantic_policy_token_owner.installed_owner import compile_governed_session
+        from tools.semantic_policy_token_owner.supervisor import ScheduledRecovery
+        evidence.require(type(action)is AggregateAction,'TYPED_CURRENT_GOVERNED_ACTION_REQUIRED')
+        evidence.require(fingerprint(value)==review['retainedOwnerInputsHash']
+            and evidence.sha(private_file(review_binding,8388608))==fingerprint(review),
+            'EXACT_RETAINED_OWNER_AND_PRIVATE_REVIEW_REQUIRED')
+        self.action,self.value,self.clock=action,copy.deepcopy(value),clock
+        self.raw=action.raw
+        self.review,self.records,self.receipt=copy.deepcopy(review),copy.deepcopy(records),copy.deepcopy(first_receipt)
+        evidence.require(type(records['owner-session.json'].get('policy',{}).get('max_attempts'))is int
+            and 0<=records['recovery.json']['attempts']<=records['owner-session.json']['policy']['max_attempts']<=128,
+            'PREDECESSOR_ATTEMPTS_EXCEED_ITS_REVIEWED_BUDGET')
+        self.review_binding=copy.deepcopy(review_binding)
+        self.host_raw=private_file(value['hostInputBinding'],2097152)
+        self.root_hash,self.root_source=value['rootEvidenceHash'],value['rootCreationSourceClosureHash']
+        with roots.completed_roots(self.host_raw,self.root_hash,self.root_source)as current:self.roots=copy.deepcopy(current)
+        binding=Binding(**value['binding']);profile_value=copy.deepcopy(value['iamProfile'])
+        for key in ('required_scopes','allowed_scopes','peer_addresses'):profile_value[key]=tuple(profile_value[key])
+        profile=IamProfile(**profile_value);profile.match(binding)
+        transport=PinnedIamOpener(profile)if transport is None else transport
+        evidence.require(type(transport)is PinnedIamOpener and transport.profile==profile
+            and transport.trust_digest()==value['tlsTrustSetHash'],'CURRENT_RETAINED_IAM_TRUST_REQUIRED')
+        credential=CredentialFile(Path(self.roots['ownerCredential']['path'])/'client-secret')
+        self.first=RetainedGrantReference(binding,credential,profile,transport)
+        self.policy=Policy(max_attempts=128,max_elapsed=3600,attempt_timeout=30)
+        self.context=fingerprint({'operation':review['logicalOperation'],'reviewHash':fingerprint(review)})
+        self.generation=fingerprint(review['registryGeneration']);self.interval=60
+        self.worker_scope=compile_governed_session(review,records,first_receipt,
+            evidence.decode(evidence.encoded(dataclasses.asdict(self.policy))),self.context,self.generation,self.interval)
+        evidence.require(str(journal_directory)==self.worker_scope['fenceBinding']['value']['journalPath'],
+            'DETERMINISTIC_NEW_SESSION_JOURNAL_REQUIRED')
+        self.journal=Journal(journal_directory)
+        self.admission=OnlineIamAdmission(profile,credential,transport,clock)
+        self.runtime_binding={'schema':'ouf.semantic-functional-runtime-binding.v1',
+            'reviewHash':fingerprint(review),'engine':copy.deepcopy(engine_binding),
+            'registryGeneration':copy.deepcopy(review['registryGeneration'])}
+        self.owner_binding=owner_binding_inputs(binding,credential,self.admission,self.journal,self.context,
+            self.generation,fingerprint(dataclasses.asdict(self.policy)),ScheduledRecovery.PROFILE,
+            self.interval,fingerprint(self.worker_scope))
+        self.owner_hash=fingerprint(self.owner_binding);self.files=dict(stage_files)
+        code=self.roots['reviewedCode']
+        self.manifest=declaration(code['path'],source_commit,self.files,
+            directory_identity={k:code[k]for k in('device','inode')},owner_binding_hash=self.owner_hash)
+        self.scope={'schema':'ouf.policy-token-owner-installation.v1','sourceClosureHash':action.closure,
+            'stageManifestHash':fingerprint(self.manifest),'ownerBindingHash':self.owner_hash,
+            'workerSessionScopeHash':fingerprint(self.worker_scope),
+            'operation':'INSTALL_TOKEN_ONLY_GOVERNED_CONTINUATION_NO_FIRST_GRANT',
+            'journalPath':str(self.journal.root),'contextRef':self.context,'generationRef':self.generation,
+            'privateReviewHash':fingerprint(review),'firstGrantReceiptHash':fingerprint(first_receipt),
+            'journalDirectoryIdentity':list(self.journal.directory_id),
+            'initializeJournalOnlyIfAbsent':True,'automaticReplayAllowed':False,
+            'applicationAcceptanceGranted':False}
+        self.runtime_scope={'ownerBindingHash':self.owner_hash,'operation':'RENEW_EXISTING_POLICY_READ_CREDENTIAL',
+            'legacyWriterMustBeMasked':True,'credentialReestablishmentRequired':True,'automaticBudgetResetAllowed':False}
+
+    def scopes(self):
+        return {'policyTokenOwnerInstallation':copy.deepcopy(self.scope),
+            'policyTokenFiniteWorkerSession':copy.deepcopy(self.worker_scope),
+            'tokenOwnerRuntime':copy.deepcopy(self.runtime_scope),
+            'semanticFunctionalRuntime':copy.deepcopy(self.runtime_binding)}
+
+    def guard(self,*,fence_required):
+        from tools.chatbot_file_cohort.action_process import private_file
+        from tools.semantic_policy_token_owner.installed_owner import read_private
+        for key,scope in self.scopes().items():self.action.guard(key,scope)
+        InstalledTokenOwner.guard_governed_registry(self,self.worker_scope)
+        evidence.require(evidence.sha(private_file(self.review_binding,8388608))==fingerprint(self.review),
+            'GOVERNED_REVIEW_CHANGED')
+        self.journal.check_directory()
+        evidence.require(list(self.journal.directory_id)==self.scope['journalDirectoryIdentity'],
+            'GOVERNED_SESSION_DIRECTORY_DRIFT')
+        with roots.completed_roots(self.host_raw,self.root_hash,self.root_source)as current:
+            evidence.require(current==self.roots,'COMPLETED_ROOT_CUSTODY_DRIFT')
+        evidence.require(roots.legacy.quiescent(roots.legacy.read_units()),'LEGACY_WRITER_FENCE_REQUIRED')
+        prior=Path(self.review['predecessorJournalDirectory'])
+        with protected_directory(prior)as directory:
+            for name,value in self.records.items():
+                evidence.require(evidence.decode(read_private(directory,name,131072))==value,'CANCELLED_PREDECESSOR_CHANGED')
+            evidence.require(evidence.decode(read_private(directory,'owner-first-grant.json',16384))==self.receipt,
+                'FIRST_GRANT_HISTORY_CHANGED')
+        if fence_required:
+            fence=self.worker_scope['fenceBinding'];path=Path(fence['path'])
+            with protected_directory(path.parent)as directory:
+                evidence.require(evidence.decode(read_private(directory,path.name,16384))==fence['value'],
+                    'GOVERNED_GLOBAL_FENCE_CHANGED')
+
+    def install(self):
+        from tools.semantic_policy_token_owner.supervisor import ScheduledRecovery
+        from tools.semantic_policy_token_owner.installed_owner import InstalledTokenOwner
+        self.guard(fence_required=False)
+        evidence.require(not os.listdir(self.journal.root),'NEW_SESSION_JOURNAL_ALREADY_CONSUMED')
+        fence=self.worker_scope['fenceBinding'];path=Path(fence['path'])
+        with protected_directory(path.parent)as directory:
+            # Exclusive stable-scope claim survives failure; never auto replace.
+            OwnerInstallation._write_once(self,directory,path.name,evidence.encoded(fence['value']))
+        self.guard(fence_required=True)
+        ProtectedTokenSourceStage(self.manifest,self.files,self.action.authority,self.action.raw).stage()
+        self.guard(fence_required=True);wall,mono=self.clock()
+        previous=self.records['recovery.json'];prior=self.worker_scope['predecessorGrantAttempts']
+        row={'schema':'ouf.bounded-recovery.v1','contextRef':self.context,'generationRef':self.generation,
+            'policyHash':fingerprint(dataclasses.asdict(self.policy)),'state':'NEW','attempts':0,
+            'startedWall':wall,'startedMonotonic':mono,'lastWall':wall,'lastMonotonic':mono,
+            'nextWall':None,'nextMonotonic':None,'reason':'EXPLICIT_GOVERNED_SEMANTIC_SESSION',
+            'renewalProfile':ScheduledRecovery.PROFILE,'intervalSeconds':self.interval,'publicationCount':0,
+            'nextRenewalWall':None,'nextRenewalMonotonic':None,'tokenExpiresWall':None,'tokenExpiresMonotonic':None,
+            'workerSessionHash':fingerprint(self.worker_scope),'firstGrantReceiptHash':fingerprint(self.receipt),
+            'legacyHistory':copy.deepcopy(previous['legacyHistory']),
+            'controlledHistoryProfile':self.worker_scope['controlledHistoryProfile'],
+            'controlledPredecessorGrantAttempts':prior,'controlledCumulativeGrantAttempts':prior,
+            'bootId':self.receipt['bootId']}
+        with protected_directory(self.journal.root)as directory:
+            values={'owner-session-review.json':self.review,'owner-session.json':self.worker_scope,
+                'owner-first-grant.json':self.receipt,
+                'owner-admission.json':{'schema':'ouf.policy-token-owner-admission.v1',
+                    'ownerProfileHash':self.owner_hash,'contextRef':self.context,'generationRef':self.generation,
+                    'version':0,'state':'BLOCKED','tokenHash':None,'blockedAttempt':None},
+                **{'predecessor-'+name:value for name,value in self.records.items()}}
+            for name,value in values.items():OwnerInstallation._write_once(self,directory,name,evidence.encoded(value))
+        self.journal.initialize(row);self.guard(fence_required=True)
+        worker=build_worker(self.first.binding,self.first.credential,self.first.profile,self.first.transport,
+            self.journal,self.policy,self.context,self.generation,self.manifest,self.action.authority,self.action.raw,
+            interval_seconds=self.interval,clock=self.clock)
+        evidence.require(worker.active_here is False,'EXPIRED_TOKEN_CANNOT_BE_ADOPTED')
+        self.observer=InstalledTokenOwner(self.first.binding,self.first.credential,self.admission,self.journal,
+            self.context,self.generation,self.manifest,self.action.authority,self.action.raw,observer=True)
+        return worker

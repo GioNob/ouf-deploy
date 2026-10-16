@@ -8,14 +8,17 @@ and retained operation/generation are required on every dependent step.
 import copy
 import fcntl
 import hashlib
+import http.client
 import json
 import math
 import os
 from pathlib import Path
 import stat
+import socket
 import subprocess
 import time
 import uuid
+from urllib.parse import quote
 from cutover_authority import CutoverAuthority
 from tools.semantic_lease_recovery.bounded_recovery import Permanent,Temporary,fingerprint
 from tools.semantic_lease_recovery.recovery_journal import Journal
@@ -345,6 +348,9 @@ class InstalledTokenOwner(DomainOwner):
             review=json.loads(read_private(directory,'owner-session-review.json',131072),object_pairs_hook=unique)
             records={name:json.loads(read_private(directory,'predecessor-'+name,131072),object_pairs_hook=unique)
                 for name in ('recovery.json','owner-session.json','owner-admission.json','owner-status.json')}
+            old_policy=records['owner-session.json'].get('policy',{})
+            check(type(old_policy.get('max_attempts'))is int and
+                0<=records['recovery.json']['attempts']<=old_policy['max_attempts']<=128)
             first=json.loads(read_private(directory,'owner-first-grant.json',16384),object_pairs_hook=unique)
             compiled=compile_governed_session(review,records,first,signed['policy'],self.context,self.generation,signed['intervalSeconds'])
             check(compiled==signed and json.loads(read_private(directory,'owner-session.json',131072),object_pairs_hook=unique)==signed)
@@ -370,6 +376,42 @@ class InstalledTokenOwner(DomainOwner):
             check(info.st_uid==info.st_gid==0 and not info.st_mode&0o022
                 and raw.decode('ascii').strip()==row['bootId'])
         finally:os.close(fd)
+        self.guard_governed_registry(signed)
+
+    def guard_governed_registry(self,signed):
+        runtime=json.loads(self.raw,object_pairs_hook=unique).get('semanticFunctionalRuntime')
+        check(type(runtime)is dict and set(runtime)=={'schema','reviewHash','engine','registryGeneration'}
+            and runtime['schema']=='ouf.semantic-functional-runtime-binding.v1'
+            and runtime['reviewHash']==signed['reviewHash'])
+        engine=runtime['engine'];expected=runtime['registryGeneration'];path=engine['socketPath']
+        check(set(engine)=={'socketPath','socketBinding'}and Path(path).is_absolute()
+            and Path(path).resolve()==Path(path))
+        def guard_socket():
+            s=os.stat(path,follow_symlinks=False)
+            check(stat.S_ISSOCK(s.st_mode)and s.st_uid==0 and
+                [s.st_dev,s.st_ino,s.st_uid,s.st_gid,stat.S_IMODE(s.st_mode)]==engine['socketBinding'])
+        guard_socket()
+        class Local(http.client.HTTPConnection):
+            def connect(self):
+                self.sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+                self.sock.settimeout(5);self.sock.connect(path)
+        conn=Local('localhost',timeout=5)
+        try:
+            cid=expected['containerId'];check(type(cid)is str and len(cid)==64 and all(c in '0123456789abcdef'for c in cid))
+            conn.request('GET','/v1.44/containers/'+quote(cid,safe='')+'/json')
+            response=conn.getresponse();raw=response.read(2097153)
+            check(response.status==200 and len(raw)<=2097152);guard_socket()
+            actual=json.loads(raw,object_pairs_hook=unique);mounts=actual['Mounts']
+            check(actual['State'].get('Running')is True and type(mounts)is list and
+                all(type(m)is dict and type(m.get('Destination'))is str for m in mounts)
+                and len({m['Destination']for m in mounts})==len(mounts))
+            observed={'containerId':actual['Id'],'imageId':actual['Image'],'pid':actual['State']['Pid'],
+                'startedAt':actual['State']['StartedAt'],
+                'mountsHash':fingerprint(sorted(mounts,key=lambda m:m['Destination'])),
+                **{name+'Hash':fingerprint(actual[key])for name,key in
+                    (('config','Config'),('hostConfig','HostConfig'),('networkSettings','NetworkSettings'))}}
+            check(observed==expected)
+        finally:conn.close()
 
     def prepare(self,binding_hash,deadline):
         check(not self.observer);self.guard(binding_hash);self.admission.prepare(deadline);self.guard(binding_hash)

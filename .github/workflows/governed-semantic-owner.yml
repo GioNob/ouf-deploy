@@ -1,0 +1,41 @@
+name: Governed semantic token-only continuation
+on:
+  push:
+    branches: [fix/cohort-mcp-backup-recovery-20261016]
+    paths:
+      - tools/chatbot_file_cohort/continued_owner.py
+      - tools/semantic_policy_token_owner/installed_owner.py
+      - tools/semantic_policy_token_owner/supervisor.py
+      - tests/test_governed_owner_composed.py
+      - .github/workflows/governed-semantic-owner.yml
+  pull_request:
+    paths:
+      - tools/chatbot_file_cohort/continued_owner.py
+      - tools/semantic_policy_token_owner/installed_owner.py
+      - tests/test_governed_owner_composed.py
+      - .github/workflows/governed-semantic-owner.yml
+permissions: {contents: read}
+concurrency:
+  group: governed-semantic-owner-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-composition:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Isolated root-owned synthetic fixture
+        run: |
+          set -euo pipefail
+          OUF_QUALIFICATION_ROOT="/var/lib/ouf-governed-session-${GITHUB_RUN_ID}"
+          sudo mkdir -m 700 "$OUF_QUALIFICATION_ROOT"
+          sudo cp -R . "$OUF_QUALIFICATION_ROOT/repository"
+          sudo chown -R root:root "$OUF_QUALIFICATION_ROOT"
+      - name: Actual role signatures, TLS, UID/GID, Unix metadata GET and fencing
+        run: |
+          set -euo pipefail
+          OUF_QUALIFICATION_ROOT="/var/lib/ouf-governed-session-${GITHUB_RUN_ID}"
+          for suite in test_governed_owner_composed.py test_governed_semantic_session_contract.py test_cutover_authority_native.py test_policy_token_owner_installation.py test_installed_token_owner.py; do
+            sudo env OUF_NATIVE_UIDS=1 python3 -I -B -m unittest discover -s "$OUF_QUALIFICATION_ROOT/repository/tests" -p "$suite" -v
+          done
