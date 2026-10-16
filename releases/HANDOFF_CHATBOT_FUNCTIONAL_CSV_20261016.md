@@ -1,5 +1,56 @@
 ## 16 ottobre — candidato target verificato; composizione token-only in qualifica
 
+## 16 ottobre 15:34 — readback pre-autorità acquisito; continuazione senza reset pronta
+
+L'operatore ha un solo terminale sul cellulare. Il readback target ENDcomplete
+ha riportato PRE_AUTHORITY_PREPARATION_ONLY_OBSERVED: processi0, fence assente,
+nuovo journal presente/vuoto, worker non inizializzato, nessun file di review,
+decisione, mandato, autorità, claim di emissione o firma. Predecessori immutati,
+69tentativi controllati. Contesto esatto
+`/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem`, device65028/inode1322063;
+human-session presente con3entry, journal presente, contenuti OAuth non letti dal
+reader. Questo ha lasciato budget e stato OAuth non dimostrati fino alla nuova
+validazione locale nella continuazione; non autorizza un budget nuovo.
+
+Nuovo comando per LO STESSO TERMINALE:
+`scripts/launch-chatbot-semantic-token-continue-20261016.sh`, commit
+`bb98e42254c24983a55a8f64fd9012babfee3c25`, SHA256
+`a08112326cab8e254bfdb195d1a51f9a40860abcbdd219c8689d5068e7023d5f`.
+Sorgente immutabile `e7e0b1c543c278672eb99870d1dab118721649be`.
+
+La continuazione verifica ancora assenza di altri esecutori, contesto/inode,
+predecessori, fence assente e journal vuoto; non cancella o ricrea directory.
+Consuma una distinta claim privata di riconciliazione pre-autorità, conservando
+hash della riga OAuth precedente, tentativi e scadenza originale. Riusa lo stesso
+journal HUMAN, sessionId, massimo128richieste e deadline7200originale: nessun reset.
+Se la richiesta mutante/rotante era rimasta REQUESTING o lo stato era BLOCKED,
+resta bloccata senza replay. Le letture interrotte restano nel profilo esistente.
+Se è scaduta SOLO una challenge DEVICE_POLL, senza credenziali ricevute e senza
+esiti ambigui, conserva hash/storico e prepara una nuova challenge nello stesso
+budget. Rispetta Retry-After e scadenza; non crea due challenge concorrenti.
+Il nuovo codice conserva anche URI/codice da mostrare per evitare un altro
+prompt perso. I bearer/refresh/device_code restano privati; solo link e user_code
+previsti per l'operatore sono visualizzati. -u e flush esplicito rendono immediati
+i messaggi attraverso tee. La continuazione legge il journal OAuth privato per
+validarlo; il precedente reader di sola metadata non lo aveva aperto.
+
+CI GitHub Actions sorgente [38910246917](https://github.com/GioNob/ouf-deploy/actions/runs/38910246917),
+job117003968326:82test PASS, inclusi7casi OAuth di continuazione su vera socket,
+8casi composti con firme/TLS/custodia,5bootstrap e15regressioni OAuth.
+CI consegna [38910546838](https://github.com/GioNob/ouf-deploy/actions/runs/38910546838),
+job117004978656:PASS,2test launcher attivo e9test reader. Il test launcher segue
+ora la consegna attiva a8file; le vecchie versioni/pin restano nei commit storici.
+Capsula sviluppo d86348bd6918d6e39755020928a3124041f8d132e46b78bf29b991aa27a941d9.
+
+Nessuna autorità runtime nuova inferita: dopo login è ancora richiesta
+APPROVO<hash-esatto> della nuova review, con due firme dei ruoli esistenti.
+Finestra workload massima3600secondi,128nuovi tentativi, cumulativo massimo197,
+69controllati precedenti e gap legacy UNKNOWN conservati. Nessun primo grant,
+rotazione, lifecycle, DB, Gateway, modifica grant, MCP o semantic.propose automatico.
+La sessione foreground va lasciata aperta dopo APPROVO; riportare STARTED e primo
+STATUS, oppure STOP completo. Con un solo telefono il login usa il browser dello
+stesso dispositivo; non è richiesto un secondo terminale.8/8tecniche,0/6funzionali.
+
 ## 16 ottobre 15:23 — Ctrl-C osservato; prossimo passo solo readback
 
 L'operatore ha riportato BEGIN seguito da ^C, senza STOP o prompt HUMAN.
