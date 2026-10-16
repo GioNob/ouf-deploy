@@ -15,7 +15,7 @@ SOURCE='d7bbb768970aad1a001ca4d085bcc87c58a29cec'
 UNIT='ouf-file-cohort-16e5f80e40d09772048f1575850b643a.service'
 
 def emit(check,**values):
-    fixed=dict(schema='ouf.chatbot-semantic-policy-refresh-readback.v1',check=check,readOnly=True,
+    fixed=dict(schema='ouf.chatbot-semantic-policy-refresh-readback.v2',check=check,readOnly=True,
         automaticRetry=False,budgetReset=False,acceptanceGranted=False)
     require(not set(values)&set(fixed),'RESERVED_OUTPUT_FIELD')
     print(json.dumps({**fixed,**values},sort_keys=True),flush=True)
@@ -111,9 +111,13 @@ def selected(actual,prepared):
     require(url==setting(reviewed,'REGISTRY_URL') and token==setting(reviewed,'REGISTRY_TOKEN_FILE'),
             'REVIEWED_REFRESH_BINDING_DRIFT')
     u=urlsplit(url);origin=urlsplit(prepared['authorization']['plan']['selection']['origin'])
-    require(u.scheme=='https' and u.hostname and not u.username and not u.password
-        and not u.fragment and not u.query and u.path.startswith('/api/')
-        and (u.scheme,u.hostname,u.port)==(origin.scheme,origin.hostname,origin.port),
+    checks={'https':u.scheme=='https','hostnamePresent':bool(u.hostname),
+        'noEmbeddedCredentials':not u.username and not u.password,
+        'noFragmentOrQuery':not u.fragment and not u.query,
+        'exactPolicyBundleContractPath':u.path=='/internal/capabilities/v1/authorization/policy-bundle/active',
+        'sameApprovedOrigin':(u.scheme,u.hostname,u.port or 443)==(origin.scheme,origin.hostname,origin.port or 443)}
+    emit('ENDPOINT_BINDING_CHECKS',**checks,equalsReviewedRegistryUrl=True,urlValuesPrinted=False)
+    require(all(checks.values()),
         'SELECTED_AUTHORIZATION_HTTPS_ORIGIN_REQUIRED')
     require(token.startswith('/') and str(Path(token))==token and '..'not in Path(token).parts,
             'EXACT_TOKEN_TARGET_REQUIRED')

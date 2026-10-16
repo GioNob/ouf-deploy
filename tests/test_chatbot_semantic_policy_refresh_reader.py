@@ -14,7 +14,7 @@ spec=importlib.util.spec_from_file_location('refresh_reader',ROOT/'scripts/read-
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 
 def fixture():
-    env=['OUF_AUTHORIZATION_REGISTRY_URL=https://policy.invalid/api/active',
+    env=['OUF_AUTHORIZATION_REGISTRY_URL=https://policy.invalid/internal/capabilities/v1/authorization/policy-bundle/active',
          'OUF_AUTHORIZATION_REGISTRY_TOKEN_FILE=/token/current']
     a={'Id':m.REGISTRY,'Image':'sha256:'+'a'*64,'State':{'Running':True,'Pid':123,'StartedAt':'fixed'},
        'Config':{'Env':env,'User':'10001:10001'},'HostConfig':{},'NetworkSettings':{},
@@ -33,6 +33,16 @@ class Tests(unittest.TestCase):
             lambda a,p:a['Mounts'][0].__setitem__('Source','/other'),
             lambda a,p:a['Mounts'][0].__setitem__('RW',True)):
             a,p=fixture();mutate(a,p)
+            with self.assertRaises(m.ReadDenied):m.selected(a,p)
+
+    def test_exact_published_gateway_contract_and_canonical_https_port(self):
+        a,p=fixture()
+        p['authorization']['plan']['selection']['origin']='https://policy.invalid:443'
+        m.selected(a,p)
+        for path in ('/api/active','/internal/capabilities/v1/authorization/policy-bundle/active/','/unrelated'):
+            a,p=fixture()
+            row='OUF_AUTHORIZATION_REGISTRY_URL=https://policy.invalid'+path
+            a['Config']['Env'][0]=p['registry']['creationRequest']['Env'][0]=row
             with self.assertRaises(m.ReadDenied):m.selected(a,p)
 
     def test_real_private_file_expiry_and_symlink_rejection(self):

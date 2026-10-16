@@ -1,3 +1,41 @@
+## 16 ottobre — reader refresh v1 fermato prima di token e rete; correzione v2
+
+Fasi tecniche 8/8 conservate; funzionali 0/6.
+Output operatore: STOP SELECTED_AUTHORIZATION_HTTPS_ORIGIN_REQUIRED.
+Lo stop avviene dopo l'uguaglianza dei riferimenti URL/token con la creationRequest
+e prima di credential() e fetch_policy(): nessun token aperto e nessun GET policy
+eseguito da questo tentativo. Zero nuovi grant, emissioni, reset o mutazioni.
+Il cumulativo69 e la cancellazione del worker precedente sono conservati.
+
+Errore nel reader: richiedeva path.startsWith('/api/'), ma il contratto Gateway
+pubblicato è GET /internal/capabilities/v1/authorization/policy-bundle/active.
+Fonte: ouf-semantic-registry eccef11a97367f20e278db40b9ed6f45dd980c37,
+docs/installation/OUF_INSTALLATION_MANUAL.md, sezioni policy bundle e Gateway.
+Il vincolo /api/ era un'assunzione diagnostica errata, non una regola PET.
+Il marker composto v1 non distingue quale predicato target abbia fallito:
+non dimostra origine diversa né un errore del refresh runtime.
+
+Reader schema v2: percorso contrattuale ESATTO; HTTPS e assenza di credenziali
+nell'URL/query/fragment obbligatori. Conserva origine della selection approvata,
+uguaglianza con URL e token nella review, mount readonly e custodia.
+Normalizza soltanto porta HTTPS implicita/esplicita443.
+Espone separatamente i predicati URL prima dello stop, mai URL/credenziali.
+Nessun fallback diretto all'owner o allargamento host/percorso.
+Il launcher v1 resta storico e non va rieseguito; utilizzare il nuovo launcher v2.
+Gli altri limiti diagnostici della v1 rimangono: un token workload già esistente,
+un GET configurato senza retry, nessuna emissione/installazione policy o rinnovo,
+TLS/hostname verificati, risultato dal VPS non equivalente al trasporto JVM
+o allo snapshot policy in memoria. HUMAN THS resta il gate della tappa1.
+
+Diciassette test locali PASS, inclusa regressione sul percorso Gateway canonico,
+rifiuto dei percorsi /api/ e simili, origine diversa, mount diverso, symlink,
+redazione e bound. bash -n launcher richiesto prima della consegna.
+Prova v2 sul VPS ancora necessaria. Proposta originale non ritentata.
+Reader v2 SHA256: 23515f3ffb879cfd8aeff078865f6898e0088b70751d909367dccc81ff5eebab.
+
+
+---
+
 # Diagnostica finita del percorso di refresh policy
 
 ## 16 ottobre — binding dinamico Authorization osservato sul target
