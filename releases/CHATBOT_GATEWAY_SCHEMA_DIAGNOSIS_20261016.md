@@ -1,5 +1,12 @@
 # Fase 5/8: schema APISIX, causa riprodotta e verifica mirata
 
+> Aggiornamento: la lettura VPS schema/immagine è completa; non ripeterla.
+> La correzione numerica è qualificata in CI `38851740138`: 37 route esatte anche
+> dopo riavvio, 32 vettori payload/limiti. [Evidenza e gate ancora aperti](../evidence/chatbot-gateway-numeric-qualification-20261016.json).
+> Questo documento conserva i passaggi storici. Nessun launcher di ripresa runtime
+> è autorizzato o rilasciato da questa diagnosi.
+
+
 ## Stato target confermato
 
 La diagnosi operatore del 16 ottobre 2026, 05:04 Europe/Rome, è completa:

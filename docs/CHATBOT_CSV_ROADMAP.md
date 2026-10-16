@@ -32,13 +32,37 @@ Il Gateway ha un claim di scrittura e una mappa riletta non uguale alla mappa at
 | 5 | Importare nuovamente lo stesso CSV e dimostrare il riuso degli oggetti senza duplicazioni | Da dimostrare |
 | 6 | Verificare entrambe le acquisizioni e la conservazione degli otto oggetti Cinema esistenti | Da dimostrare |
 
+## Correzione Gateway qualificata in CI, 16 ottobre 2026
+
+La lettura schema VPS completa lega immagine e schema alla riproduzione: fase 5/8,
+nove modifiche applicate, decima assente, otto grant cumulativi, CSV 0/6.
+Fasi 1–4 conservate: nessun nuovo dump, restore, migrazione o sostituzione UDP/Onboarding.
+
+Candidato Gateway `d20de6b886bc910cf408685a27eb78c76a910151`; CI nativa deploy
+`38851740138` (job `116814239144`, sorgente `99dfe5e3d8dd9c4517c8c7910ccfc461475ffdd2`)
+PASS: 37 route accettate/rilette esattamente prima e dopo riavvio, 24 vettori sulle
+tre route interessate e 8 vettori generali JSON/numerici. Schema canonico invariato;
+proiezione del solo `$id` qualificato, precisione cjson a 16 cifre e costanti range
+del compilatore jsonschema a 17 cifre. Il massimo contrattuale resta 9007199254740991.
+
+Il compilatore offline della prosecuzione conserva nove effetti APPLIED e il claim
+storico irrisolto, calcola 28 modifiche residue e una diversa intenzione per la route
+corretta. Non è registrato come profilo eseguibile e non conferisce autorità.
+La pubblicazione futura conserva stato HTTP/hash/lunghezza ACK senza corpo privato;
+GET esatta resta obbligatoria e nessun esito ambiguo autorizza replay.
+
+**Gate ancora aperto:** integrare e qualificare insieme runtime APISIX, adozione dei
+checkpoint delle fasi 1–4, fencing e nuova sessione finita con storia degli otto grant.
+Non usare i launcher precedenti: nessun nuovo comando VPS di ripresa è rilasciato
+con questa qualificazione. La fase 5 target NON è completata. [Prove e limiti](../evidence/chatbot-gateway-numeric-qualification-20261016.json).
+
 ## Collegamento schema/immagine target confermato, 06:26 Europe/Rome
 
 La lettura mirata è completa: image ID corrispondente al manifest APISIX della riproduzione; schema canonico e proiezione metadata coincidono, URN annidato presente e zero riferimenti. Tutti e tre i massimi corrispondono al contratto safe integer. Due GET stabili: nove effetti applicati, decima route assente, journal immutato. Otto grant conservati, zero chiamate DB/letture backup/mutazioni. [Evidenza](../evidence/chatbot-gateway-schema-target-20261016.json). Non serve ripetere questa diagnosi per ricercare la stessa causa: prossimo lavoro è correzione della serializzazione, prova nativa dei limiti e prosecuzione governata. L'ACK storico resta non disponibile.
 
-## Analisi successiva: compatibilità schema APISIX
+## Analisi storica precedente alla correzione numerica
 
-La riproduzione isolata con Admin API APISIX reale restituisce HTTP 400 sulla stessa decima route per un `$id` URN annidato non supportato. La proiezione candidata elimina solo il metadato senza riferimenti, lasciando intatto il contratto canonico. La prova su tutte le 37 route ha inoltre rilevato tre massimi numerici alterati da 9007199254740991 a 9007199254741000.0: **il candidato non è ancora applicabile**, nessuna tolleranza nel confronto né indebolimento dei limiti. Prossimo controllo target: [schema e immagine, solo GET senza DB o archivi](../releases/CHATBOT_GATEWAY_SCHEMA_DIAGNOSIS_20261016.md). CI reader 16 test senza skip; riproduzione candidata 37 accettate, 34 GET esatte, 3 differenze ancora aperte. Fase 5/8, CSV 0/6.
+La riproduzione isolata con Admin API APISIX reale restituisce HTTP 400 sulla stessa decima route per un `$id` URN annidato non supportato. La proiezione candidata elimina solo il metadato senza riferimenti, lasciando intatto il contratto canonico. La prova su tutte le 37 route ha inoltre rilevato tre massimi numerici alterati da 9007199254740991 a 9007199254741000.0: **il candidato non è ancora applicabile**, nessuna tolleranza nel confronto né indebolimento dei limiti. Controllo target successivamente completato: [schema e immagine, solo GET senza DB o archivi](../releases/CHATBOT_GATEWAY_SCHEMA_DIAGNOSIS_20261016.md). CI reader 16 test senza skip; riproduzione candidata 37 accettate, 34 GET esatte, 3 differenze aperte a quel checkpoint, poi risolte in CI come riportato sopra. Fase 5/8, CSV 0/6.
 
 ## Diagnosi completa VPS, 16 ottobre 2026 05:04 Europe/Rome
 
