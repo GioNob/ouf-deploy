@@ -236,6 +236,12 @@ class CohortContainers:
         require(actual['Name'] == '/'+row['name'] and actual['Image'] == request['Image']
                 and sha(actual.get('Id')) and actual['Id'] != row['oldRuntimeBinding']['containerId'],
                 'COHORT_REPLACEMENT_IDENTITY_DRIFT')
+        if row['module']=='ingestion' and hasattr(self,'action'):
+            proof=json.loads(self.action.raw).get('applicationRegistryCutover',{}).get('postGrantRecovery',{})
+            if 'retainedCreatedIngestion' in proof:
+                from tools.chatbot_file_cohort.ingestion_recovery import validate_proof
+                pin=validate_proof(proof)
+                require(actual['Id']==pin['createdContainerId'],'CREATED_INGESTION_SIGNED_ID_DRIFT')
         for key, value in request.items():
             if key in ('HostConfig','NetworkingConfig') or (key == 'Hostname' and not value):
                 continue

@@ -14,6 +14,10 @@ class IngestionWorker(unittest.TestCase):
     def test_nine_preserved_tenth_actual_tls_grant_and_complete_phase6_review(self):
         h=phase5.GatewayWorker();self.addCleanup(h.doCleanups)
         h.test_eight_preserved_ninth_actual_grant_no_reset_or_replay()
+        # The preceding test deliberately corrupts its fixture mandate to prove
+        # denial. Restore only that disposable fixture before a new signed review.
+        h.f.f.write(h.f.f.mandate,base.existing.fixture.binding.encoded(h.f.f.approval))
+        h.f.f.approved=base.existing.fixture.binding.sha(h.f.f.mandate.read_bytes())
         old=h.successor_owner;worker=h.successor_worker
         self.assertEqual(worker.r.step(cancelled=True)['state'],'CANCELLED')
         paths=[old.journal.root/n for n in ('recovery.json','owner-session.json','owner-admission.json')]

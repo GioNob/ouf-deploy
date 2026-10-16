@@ -19,7 +19,7 @@ class NativeIngestion(unittest.TestCase):
         (root/'pause.c').write_text('#include <unistd.h>\nint main(void){for(;;)pause();}\n')
         v=subprocess.run([shutil.which('cc'),'-static','-O2',str(root/'pause.c'),'-o',str(root/'pause')],capture_output=True,timeout=30)
         self.assertEqual(v.returncode,0,v.stderr.decode());(root/'pause').chmod(0o755)
-        prefix='FROM scratch\nCOPY pause /pause\nUSER 10004:10004\nENTRYPOINT ["/pause"]\nENV BASE_A=one BASE_B=two BASE_C=three\n'
+        prefix='FROM scratch\nCOPY pause /pause\nUSER '+p.USERS['ingestion']+'\nENTRYPOINT ["/pause"]\nENV BASE_A=one BASE_B=two BASE_C=three\n'
         images=[]
         for version,suffix in [('old',''),('new','ENV IMAGE_A=four IMAGE_B=five IMAGE_C=six\n')]:
             (root/'Dockerfile').write_text(prefix+suffix)

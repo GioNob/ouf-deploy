@@ -72,6 +72,7 @@ class IngestionContinuation(unittest.TestCase):
         with self.assertRaisesRegex(Exception,'ALREADY_CONSUMED'):r.adopt_containers(self.successor,self.previous,self.proof)
         calls=copy.deepcopy(self.native.calls);self.actual['Id']='f'*64
         with self.assertRaisesRegex(Exception,'EXACT_CREATED'):r.native_readback(self.previous,self.native.engine)
+        with self.assertRaisesRegex(Exception,'SIGNED_ID_DRIFT'):self.successor.candidate(self.row)
         self.actual['Id']=r.CREATED
         bad=copy.deepcopy(self.previous['ingestionAttempt']['containers']);bad['effects'][-1]['intentHash']='0'*64
         with self.assertRaises(Exception):r.validate_containers(self.owner.plan,bad)
