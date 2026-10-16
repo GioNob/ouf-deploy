@@ -5,6 +5,7 @@ on:
     paths:
       - scripts/launch-chatbot-semantic-token-session-20261016.sh
       - scripts/launch-chatbot-semantic-token-continue-20261016.sh
+      - scripts/launch-chatbot-semantic-login-window-20261016.sh
       - tests/test_semantic_token_launcher.py
       - scripts/read-chatbot-semantic-token-interruption-20261016.py
       - scripts/launch-chatbot-semantic-token-interruption-readback-20261016.sh
@@ -14,6 +15,7 @@ on:
     paths:
       - scripts/launch-chatbot-semantic-token-session-20261016.sh
       - scripts/launch-chatbot-semantic-token-continue-20261016.sh
+      - scripts/launch-chatbot-semantic-login-window-20261016.sh
       - tests/test_semantic_token_launcher.py
       - scripts/read-chatbot-semantic-token-interruption-20261016.py
       - scripts/launch-chatbot-semantic-token-interruption-readback-20261016.sh

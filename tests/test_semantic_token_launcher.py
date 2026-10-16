@@ -9,7 +9,7 @@ import tempfile
 import unittest
 
 ROOT=Path(__file__).resolve().parents[1]
-SHELL=ROOT/'scripts/launch-chatbot-semantic-token-continue-20261016.sh'
+SHELL=ROOT/'scripts/launch-chatbot-semantic-login-window-20261016.sh'
 
 class Launcher(unittest.TestCase):
     def parsed(self):
