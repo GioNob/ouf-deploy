@@ -6,6 +6,8 @@ Roadmap confermata dall'utente il 16 ottobre 2026. Numerazione stabile fino alla
 
 **Fase tecnica 2/8 sospesa; dimostrazione funzionale 0/6.**
 
+Analisi successiva: la CI `38837043139`, sorgente `adaa828255be7437a06b405db759c891343cd6a0`, ha riprodotto il difetto con l'immagine MCP originale su Docker 29.8.1/containerd. Differiscono solo `Config.Env` e `Config.Labels`: Docker incorpora i default dell'immagine, il predicato runtime confronta invece la sola richiesta. ID immagine, rete, utente, comando, entrypoint, mount e campi host controllati coincidono. Questo identifica un difetto del predicato, ma non certifica lo stato corrente sul VPS. Il reader di fase 2 è qualificato con 8 test e query SELECT su PostgreSQL 17 reale; prossimo intervento: leggere lo stato target con `scripts/launch-chatbot-mcp-migration-state-20261016.sh`. Non rilanciare il delivery.
+
 | # | Fase tecnica | Stato |
 |---|---|---|
 | 1 | Riconciliare il backup interrotto e completare i backup dei quattro database | Superata nel flusso eseguito; rilettura degli archivi e del journal della nuova sessione da acquisire |

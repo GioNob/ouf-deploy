@@ -104,3 +104,7 @@ for this release.
 Qualification and publication issue no runtime authority and do not establish
 CSV/chatbot end-to-end acceptance. That remains dependent on successful target
 execution and the actual owner-observed CSV interaction.
+# Superseded operational entry point: phase 2 pause
+
+The launcher below was executed and approved on the VPS. Its new delivery stopped at `MCP_MIGRATION_ROLE_NATIVE_IDENTITY_DRIFT` after backup and migration-container creation. **Do not rerun this consumed launcher.** Follow the [stable roadmap](../docs/CHATBOT_CSV_ROADMAP.md) and [phase 2 readback](CHATBOT_MCP_PHASE2_READBACK_20261016.md). The qualified running-rootfs result remains historical evidence; it is not permission to replay the action.
+
