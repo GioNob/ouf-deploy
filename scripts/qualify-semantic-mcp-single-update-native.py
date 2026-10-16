@@ -37,7 +37,7 @@ with tempfile.TemporaryDirectory(dir='/root',prefix='mcp-update-native-fixture-'
  root=Path(rootdir);root.chmod(0o700)
  with patch.object(signed,'ROOT',root):crypto.setUp()
  try:
-  cli('network','create',network)
+  cli('network','create','--subnet','172.29.77.0/24',network)
   pgid=cli('run','-d','--name',pgname,'--network',network,'--network-alias','pg-fixture','-e','POSTGRES_USER=mcp','-e','POSTGRES_PASSWORD=mcp','-e','POSTGRES_DB=mcp_update_fixture','postgres:17').decode();containers.append(pgid)
   for _ in range(100):
    ready=subprocess.run(['docker','exec',pgid,'pg_isready','-h','127.0.0.1','-U','mcp','-d','mcp_update_fixture'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
@@ -57,6 +57,14 @@ with tempfile.TemporaryDirectory(dir='/root',prefix='mcp-update-native-fixture-'
   oldid=cli('run','-d','--name',oldname,'--network',network,'--user','10005:10005','--read-only','--restart','no','--entrypoint','/bin/sh','alpine:3.22','-c','while true; do sleep 1; done').decode();containers.append(oldid)
   old=inspect(oldid);pg=inspect(pgid);net=old['NetworkSettings']['Networks'][network]
   sock=Path('/var/run/docker.sock').resolve();info=sock.lstat();engine=Engine(str(sock),(info.st_dev,info.st_ino,info.st_uid,info.st_gid,stat.S_IMODE(info.st_mode)))
+  native_request=engine.request
+  def fixture_request(method,path,body=None):
+   status,value=native_request(method,path,body)
+   if method!='GET'and not 200<=status<300:
+    print(json.dumps({'syntheticFixtureDockerStatus':status,'operation':path.split('?')[0],
+     'boundedFixtureMessage':str((value or{}).get('message',''))[:1024]}),flush=True)
+   return status,value
+  engine.request=fixture_request
   # Build fixture pins through the same explicitly reviewed Engine API as the
   # production observer; CLI inspect uses a newer API projection.
   old=engine.request('GET','/v1.44/containers/'+oldid+'/json')[1]
