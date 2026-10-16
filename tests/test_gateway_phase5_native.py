@@ -113,6 +113,14 @@ class NativePhaseFive(unittest.TestCase):
         action=g.AggregateAction(f.gate(),f.authority,f.expected['sourceClosureHash'])
         d=private/'runtime';d.mkdir(mode=0o700)
         owner=r.GatewayRuntime(action,engine,runtime,Journal(d));owner.initialize()
+        mount_observations={}
+        native_request=engine.request
+        def track_mounts(*args,**kwargs):
+            code,body=native_request(*args,**kwargs)
+            if code==200 and type(body)is dict and 'Mounts'in body:
+                mount_observations[g.digest(body['Mounts'])]=copy.deepcopy(body['Mounts'])
+            return code,body
+        engine.request=track_mounts
         def remove_created():
             record=owner.record()
             if record['nextStep']>=4:remove('rm','-f',record['effects'][3]['evidence']['containerId'])
@@ -128,7 +136,8 @@ class NativePhaseFive(unittest.TestCase):
                 started=record['effects'][5]['evidence']['runtimeBinding'] if record['nextStep']>=6 else {}
                 print(json.dumps({'check':'SYNTHETIC_NATIVE_GENERATION_DIFF','step':record['nextStep'],
                     'differences':{k:{'started':started.get(k),'current':v}for k,v in current.items()if started.get(k)!=v},
-                    'restartCount':actual['RestartCount'],'state':actual['State']},sort_keys=True),flush=True)
+                    'restartCount':actual['RestartCount'],'state':actual['State'],
+                    'mounts':{h:mount_observations.get(h)for h in (started.get('mountsHash'),current.get('mountsHash'))}},sort_keys=True),flush=True)
                 raise
         self.assertEqual(owner.transport().routes(),preserved_map)
         route_dir=private/'routes';route_dir.mkdir(mode=0o700)
