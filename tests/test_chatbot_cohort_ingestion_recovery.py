@@ -1,5 +1,5 @@
 """Finite phase-6 continuation: immutable CLAIMED create and exact image defaults."""
-import copy,json,unittest
+import copy,hashlib,json,tempfile,unittest
 from contextlib import ExitStack
 from pathlib import Path
 from unittest.mock import patch
@@ -19,6 +19,48 @@ def receipt():
         'retainedAppliedContainerEffects':11,'claimedCreateObservationRequired':True}
 
 class IngestionContinuation(unittest.TestCase):
+    def test_retained_bindings_reads_all_archive_bytes_for_eight_and_nine_grants(self):
+        # Exercise the production binding validator and archive reader together.
+        # The enrichment fixture below mocks this historical boundary; this
+        # regression must not, because that hid a module/count name collision.
+        from tools.chatbot_file_cohort.action_process import observed_private_json
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);root.chmod(0o700)
+            record=root/'record.json';record.write_text('{}');record.chmod(0o600)
+            _,binding=observed_private_json(record,8388608)
+            archives={}
+            for module in base.ARCHIVES:
+                data=b'PGDMP-disposable-binding-fixture-'+module.encode()
+                archive=root/(module+'.dump');archive.write_bytes(data);archive.chmod(0o600)
+                archives[module]=(len(data),hashlib.sha256(data).hexdigest())
+            proof={'profile':base.PROFILE,'gatewayPredecessorAuthorityHash':base.AUTHORITY,
+                'gatewayPredecessorSource':base.SOURCE,'gatewayPredecessorReviewHash':base.REVIEW,
+                'predecessorTransitionHash':base.TRANSITION_HASH,'cancelledWorkerHash':base.WORKER_HASH,
+                'workerSessionHash':base.SESSION_HASH,'databaseJournalHash':base.DATABASE_HASH,
+                'containerJournalHash':base.CONTAINERS_HASH,'gatewayJournalHash':base.GATEWAY_HASH,
+                'newBudget':{'priorControlledGrantAttempts':8},'registryPhaseReplayAllowed':False,
+                'newNodeAttestationAllowed':False,'runningRootfsQualification':base.RUNNING_ROOTFS_QUALIFICATION,
+                'newMcpArchiveMaximumAttempts':0,'migrationStartMaximumAttempts':0,
+                'migrationCreateAllowed':False,'auditBootstrapAllowed':False,'oldAuthorityExtended':False,
+                'recordBindings':[binding],'retainedCohortBackupDirectory':str(root)}
+            before={p.name:p.read_bytes()for p in root.iterdir()}
+            with patch.object(base,'ARCHIVES',archives),patch.object(base.prior,'ARCHIVES',archives):
+                base.retained_bindings(proof)
+                latest=copy.deepcopy(proof);latest.update(retainedCreatedIngestion=receipt(),
+                    cancelledWorkerHash=r.WORKER,workerSessionHash=r.SESSION,
+                    newBudget={'priorControlledGrantAttempts':9})
+                base.retained_bindings(latest)
+                self.assertEqual({p.name:p.read_bytes()for p in root.iterdir()},before)
+                bad=copy.deepcopy(latest);bad['newBudget']['priorControlledGrantAttempts']=8
+                with self.assertRaisesRegex(Exception,'EXACT_GATEWAY_RECOVERY_PROOF_REQUIRED'):
+                    base.retained_bindings(bad)
+                for module in archives:
+                    path=root/(module+'.dump');data=path.read_bytes()
+                    path.write_bytes(b'X'+data[1:])
+                    with self.assertRaisesRegex(Exception,'RETAINED_ARCHIVE_HASH_OR_IDENTITY_DRIFT'):
+                        base.retained_bindings(latest)
+                    path.write_bytes(data)
+
     def fixture(self):
         f=fixture.CohortRuntime();self.addCleanup(f.doCleanups)
         owner,native,crypto,now=f.fixture();owner.run_until('onboarding')

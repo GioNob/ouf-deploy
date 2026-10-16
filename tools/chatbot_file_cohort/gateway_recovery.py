@@ -202,10 +202,10 @@ def claim_for(proof=None):
 
 
 def retained_bindings(proof):
-    worker_hash,session_hash,prior=WORKER_HASH,SESSION_HASH,8
+    worker_hash,session_hash,prior_count=WORKER_HASH,SESSION_HASH,8
     if 'retainedCreatedIngestion' in proof:
         from tools.chatbot_file_cohort import ingestion_recovery as tail
-        tail.validate_proof(proof);worker_hash,session_hash,prior=tail.WORKER,tail.SESSION,9
+        tail.validate_proof(proof);worker_hash,session_hash,prior_count=tail.WORKER,tail.SESSION,9
     if 'retainedNumericGateway' in proof:
         from tools.chatbot_file_cohort.gateway_retained import validate_proof
         validate_proof(proof)
@@ -214,7 +214,7 @@ def retained_bindings(proof):
         and proof.get('predecessorTransitionHash')==TRANSITION_HASH and proof.get('cancelledWorkerHash')==worker_hash
         and proof.get('workerSessionHash')==session_hash and proof.get('databaseJournalHash')==DATABASE_HASH
         and proof.get('containerJournalHash')==CONTAINERS_HASH and proof.get('gatewayJournalHash')==GATEWAY_HASH
-        and proof.get('newBudget',{}).get('priorControlledGrantAttempts')==prior
+        and proof.get('newBudget',{}).get('priorControlledGrantAttempts')==prior_count
         and proof.get('registryPhaseReplayAllowed')is False and proof.get('newNodeAttestationAllowed')is False
         and proof.get('runningRootfsQualification')==RUNNING_ROOTFS_QUALIFICATION
         and proof.get('newMcpArchiveMaximumAttempts')==proof.get('migrationStartMaximumAttempts')==0
