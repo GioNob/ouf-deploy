@@ -71,7 +71,7 @@ def compile_scope(prepared,source_closure_hash):
         from tools.chatbot_file_cohort.mounted_recovery import PROFILE as MOUNTED_PROFILE
         from tools.chatbot_file_cohort.signed_recovery import PROFILE as SIGNED_PROFILE
         from tools.chatbot_file_cohort.backup_recovery import PROFILE as BACKUP_PROFILE
-        require(recovery.get('profile')in(PROFILE,PAUSED_PROFILE,MOUNTED_PROFILE,SIGNED_PROFILE,BACKUP_PROFILE,'ouf.chatbot-created-mcp-migration-continuation.v1')and paths['backup']==recovery['retainedBackupDirectory'],
+        require(recovery.get('profile')in(PROFILE,PAUSED_PROFILE,MOUNTED_PROFILE,SIGNED_PROFILE,BACKUP_PROFILE,'ouf.chatbot-created-mcp-migration-continuation.v1','ouf.chatbot-gateway-schema-continuation.v1')and paths['backup']==recovery['retainedBackupDirectory'],
             'EXACT_REVIEWED_RETAINED_BACKUP_DIRECTORY_REQUIRED')
     require(intents['FENCED_BACKUP']['directory']==paths['backup'],'REGISTRY_BACKUP_DIRECTORY_SCOPE_DRIFT')
     require(prepared['nodeRecipe']['sourceClosureHash']==source_closure_hash
@@ -156,10 +156,12 @@ class RegistryCheckpoints:
             quiesced=self.application.executor.adapters['QUIESCE_PRODUCERS']
             require(all(quiesced.stopped(pin) is not None for pin in selected),'REGISTRY_DEPENDENT_PRODUCER_FENCE_LOST')
         recovery=self.scope.get('postGrantRecovery') or {}
-        if recovery.get('profile') in ('ouf.chatbot-verified-registry-mcp-backup-recovery.v1','ouf.chatbot-created-mcp-migration-continuation.v1'):
+        if recovery.get('profile') in ('ouf.chatbot-verified-registry-mcp-backup-recovery.v1','ouf.chatbot-created-mcp-migration-continuation.v1','ouf.chatbot-gateway-schema-continuation.v1'):
             from tools.chatbot_file_cohort.backup_recovery import current_registry,read_predecessor
             if recovery['profile']=='ouf.chatbot-created-mcp-migration-continuation.v1':
                 from tools.chatbot_file_cohort.migration_recovery import read_predecessor
+            elif recovery['profile']=='ouf.chatbot-gateway-schema-continuation.v1':
+                from tools.chatbot_file_cohort.gateway_recovery import read_predecessor
             proof['currentRegistryHash']=digest(current_registry(read_predecessor(),self.engine,readiness=True))
             from gated_process_observation import RunningWorkloadBinding
             from tools.semantic_policy_token_owner.mount_observation import RenewableTokenMountObservation,generation

@@ -346,9 +346,9 @@ class Delivery:
                 self.current(True);budget.complete();return result
 
     def run(self):
-        previous = {}
+        previous_signal_handlers = {}
         for sig in (signal.SIGINT,signal.SIGTERM):
-            previous[sig] = signal.signal(sig, lambda *_:self.stop.set())
+            previous_signal_handlers[sig] = signal.signal(sig, lambda *_:self.stop.set())
         app = None
         try:
             self.current()
@@ -526,7 +526,7 @@ class Delivery:
                 require(not self.human_thread.is_alive(),'FINITE_HUMAN_SESSION_STOP_NOT_RECONCILED')
             if app is not None:
                 app.close()
-            for sig,handler in previous.items():
+            for sig,handler in previous_signal_handlers.items():
                 signal.signal(sig,handler)
 
 
