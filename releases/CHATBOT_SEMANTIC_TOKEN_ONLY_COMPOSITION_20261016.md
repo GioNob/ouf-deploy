@@ -52,3 +52,33 @@ documentazione. Nessun comando operativo nuovo consegnato da questa qualifica.
 Le approvazioni semantiche rimangono esclusivamente nel THS; riconciliare
 teatri-semantic-draft-be74308e098aa3a6-20261016 prima di riprenderne l'intento.
 
+
+## Qualifica del 16 ottobre — concorrenza e capsula di sviluppo
+
+Commit `fec8ef136de34862d0eedc166d837c8ddd20b957`.
+CI nativa [38899332754](https://github.com/GioNob/ouf-deploy/actions/runs/38899332754),
+job116967401758: PASS,47test (6composti,7contratto,10firme,6installazione,
+18owner). UID/GID, boot e socket Unix reali nel runner, nessun adapter locale.
+Rimane una qualifica con fixture sintetiche, non esecuzione target.
+
+La prima prova concorrente aveva dato FileNotFoundError prima della claim:
+completed_roots cambiava temporaneamente il globale binding.PARENT per
+aprire i tre percorsi. Questo rendeva possibili interferenze tra lettori nello
+stesso processo. protected_parent ora riceve il percorso esplicito facoltativo;
+completed_roots e il secondo accesso di output custody non cambiano più il
+globale. Nuova regressione: un lettore indipendente conserva il parent delle
+evidenze anche durante i controlli delle root. La guardia e la claim O_EXCL
+restano rigorose. Sei prove composte PASS anche localmente con gli adapter
+espliciti già documentati;19regressioni root custody PASS senza quegli adapter.
+
+La capsula di sviluppo riallinea solo gli hash dei cinque sorgenti cambiati e
+il digest nel delivery Python: SHA256capsula
+f233e099efe5516c9cf0636f884cb549727bcdbf2dc6fd3d6cd6cf5bb11792e8.
+CI backup [38899332950](https://github.com/GioNob/ouf-deploy/actions/runs/38899332950)
+PASS. I launcher e riferimenti Git già eseguiti sul VPS restano storici e non
+vanno rilanciati. Il candidato privato target resta valido per le prove che
+ha effettivamente eseguito; non certifica l'intero nuovo esecutore.
+
+Nessun nuovo comando operativo consegnato: confezionamento/entrypoint,
+review sigillata e nuova decisione HUMAN restano necessari. Nessun grant o
+rinnovo eseguito sul VPS da questa qualifica;8/8tecniche,0/6funzionali.
