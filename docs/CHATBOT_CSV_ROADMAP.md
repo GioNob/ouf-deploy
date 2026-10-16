@@ -6,7 +6,9 @@ Roadmap confermata dall'utente il 16 ottobre 2026. Numerazione stabile fino alla
 
 **Fase tecnica 2/8 sospesa; dimostrazione funzionale 0/6.**
 
-Analisi successiva: la CI `38837043139`, sorgente `adaa828255be7437a06b405db759c891343cd6a0`, ha riprodotto il difetto con l'immagine MCP originale su Docker 29.8.1/containerd. Differiscono solo `Config.Env` e `Config.Labels`: Docker incorpora i default dell'immagine, il predicato runtime confronta invece la sola richiesta. ID immagine, rete, utente, comando, entrypoint, mount e campi host controllati coincidono. Questo identifica un difetto del predicato, ma non certifica lo stato corrente sul VPS. Il reader di fase 2 è qualificato con 8 test e query SELECT su PostgreSQL 17 reale; prossimo intervento: leggere lo stato target con `scripts/launch-chatbot-mcp-migration-state-20261016.sh`. Non rilanciare il delivery.
+La lettura VPS del 16 ottobre conferma **tutti e quattro gli archivi COMPLETE** e il container MCP ancora created/mai avviato: la fase 1 è completata e non va ripetuta. Il controllo errato confrontava Env e Labels con la sola richiesta, senza i default dell'immagine. La correzione accetta esclusivamente l'unione esatta di immagine verificata e richiesta originaria, conservando gli altri vincoli di identità.
+
+La prosecuzione conserva il container esistente, i quattro backup, i dieci effetti Registry e i sei grant consumati. Un nuovo mandato finito governa un solo start, le migrazioni, la revoca verificata dei privilegi temporanei e le fasi successive. Nessun nuovo dump, create MCP di migrazione o bootstrap audit. Stato VPS ancora sospeso; la prova CI non chiude la fase 2. Vedere `releases/CHATBOT_MCP_PHASE2_CONTINUATION_20261016.md` per qualificazione e comando corrente.
 
 | # | Fase tecnica | Stato |
 |---|---|---|
@@ -28,6 +30,12 @@ Analisi successiva: la CI `38837043139`, sorgente `adaa828255be7437a06b405db759c
 | 5 | Importare nuovamente lo stesso CSV e dimostrare il riuso degli oggetti senza duplicazioni | Da dimostrare |
 | 6 | Verificare entrambe le acquisizioni e la conservazione degli otto oggetti Cinema esistenti | Da dimostrare |
 
+## Qualificazione della prosecuzione
+
+Runtime `70af66b26d9a8dfdd7151c55f44eb5795fcc84a8`: CI completa `38838880289` superata, 435 test/58 suite, zero errori o skip. CI backup `38838880431`: 79 test/7 suite, parzialmente sovrapposti alla completa. CI nativa `38839051380`: binario MCP originale su Docker 29.8.1/PostgreSQL 17, da 9 a 12 migrazioni e revoca verificata dei privilegi temporanei; nessun accesso al VPS. Un ulteriore test locale del percorso produzione conferma completamento/pulizia e riconciliazione senza secondo start (13 test locali della nuova suite).
+
+**Prossimo passo: nuova revisione completa sul VPS** con `scripts/launch-chatbot-mcp-phase2-continuation-20261016.sh`. La nuova sessione conserva sei grant cumulativi; il prossimo è il settimo. La fase 2 resta aperta fino all'evidenza target. Il nuovo launcher non ripete la fase 1.
+
 ## Ultima conferma VPS (16 ottobre 2026, 03:56 Europe/Rome)
 
 Diagnosi `ouf.chatbot-mcp-migration-readback.v1` conclusa con `complete=true`, zero mutazioni/dump/grant. Fase 1 definitivamente confermata per questo checkpoint: UDP 247357 byte, Onboarding 325831, Ingestion 94318, MCP 250874, tutti COMPLETE e immutati. Il nuovo MCP ha SHA256 `b050f7706b650199a09115e24828858de509179f26896c92072cab6ae9946dc4`.
@@ -47,9 +55,9 @@ Unità: `ouf-file-cohort-f9616bc49b224fa219e6ea4b8c9ff542.service`.
 Piano: `6714bf5f617fb53535d5cb3ee6ebf74abe4af841f83b42346a1c7b9d00ddb1e6`.
 Scadenza dichiarata: `1792118031`; finestra massima 3600 secondi, nessun rinnovo automatico.
 
-Il traceback raggiunge `databases.migrate_mcp`, riga 668, nella verifica native dopo create e prima di start. Il flusso ha già completato `backup_quiesced()` e verificato nuovamente l'archivio MCP prima del punto fallito: questo sostiene il superamento della fase 1. Occorre ancora leggere archivi, journal e stato nativo correnti per confermare gli effetti persistiti. Non dichiarare già applicate le migrazioni o revocati i privilegi: la preparazione del ruolo audit precede il create e può avere lasciato privilegi temporanei.
+Il traceback raggiunge `databases.migrate_mcp`, riga 668, nella verifica native dopo create e prima di start. Il flusso ha già completato `backup_quiesced()` e verificato nuovamente l'archivio MCP prima del punto fallito: questo sostiene il superamento della fase 1. Questa era l'incertezza iniziale, risolta dalla lettura VPS riportata sopra. Non dichiarare già applicate le migrazioni o revocati i privilegi: la preparazione del ruolo audit precede il create e può avere lasciato privilegi temporanei.
 
-Cinque grant erano consumati prima della nuova sessione; il totale successivo è sconosciuto finché non viene riletto. Il messaggio finale è `FINITE_DELIVERY_PROCESS_STOPPED_INSPECT_RETAINED_STATUS`, con autorità emessa. Nessuna prova end-to-end e nessuna accettazione permanente.
+Cinque grant erano consumati prima della nuova sessione; la successiva lettura ha confermato sei grant cumulativi. Il messaggio finale è `FINITE_DELIVERY_PROCESS_STOPPED_INSPECT_RETAINED_STATUS`, con autorità emessa. Nessuna prova end-to-end e nessuna accettazione permanente.
 
 ## Regole di prosecuzione
 

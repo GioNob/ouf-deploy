@@ -1,5 +1,7 @@
 # Fase 2/8: identità del container di migrazione MCP
 
+**Diagnosi VPS completata il 16 ottobre:** quattro backup COMPLETE, container mai avviato, nove migrazioni, ruolo audit BOOTSTRAPPED e sei grant cumulativi. La fase 1 è conclusa. Il testo seguente conserva il piano diagnostico storico; il passo operativo corrente è la [prosecuzione di fase 2](CHATBOT_MCP_PHASE2_CONTINUATION_20261016.md).
+
 Roadmap stabile: [8 fasi tecniche e 6 tappe funzionali](../docs/CHATBOT_CSV_ROADMAP.md). Stato: fase 2 sospesa, CSV 0/6. Questo pacchetto diagnostico non riprende il delivery e non accetta il rilascio.
 
 ## Problema riprodotto

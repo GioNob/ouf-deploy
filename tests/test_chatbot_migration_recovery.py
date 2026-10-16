@@ -102,6 +102,37 @@ class CompleteArchiveAdoption(unittest.TestCase):
         self.f.mandate.write_bytes(b'{}')
         with self.assertRaises(Exception):m.adopt_backups(self.owner,self.previous,self.proof)
         self.assertEqual(list(self.owner.root.iterdir()),[]);self.unchanged()
+    def test_production_migration_path_reuses_claim_then_cleans_without_second_start(self):
+        m.adopt_backups(self.owner,self.previous,self.proof)
+        binding=self.owner.plan['modules'][-1]
+        self.owner.audit_role_state(binding,'CREATE ROLE fixture')
+        name,req=n.request_for(self.owner.installation_plan)
+        _,_,_,actual,_=readback.fixture();actual['Id']=m.MIGRATION_ID
+        from engine_creation import Engine
+        request=self.native.engine.request;starts=[]
+        def effect(method,path,body=None):
+            if method=='GET' and path in ('/v1.44/containers/'+name+'/json','/v1.44/containers/'+m.MIGRATION_ID+'/json'):
+                return 200,actual
+            if method=='POST' and path=='/v1.44/containers/'+m.MIGRATION_ID+'/start':
+                starts.append(path);actual['State'].update(Status='exited',ExitCode=0,Pid=0,StartedAt='2026-10-16T00:00:00Z')
+                self.observed['mcp']['migrations']=copy.deepcopy(self.expected['mcp'])
+                return 204,{}
+            return request(method,path,body)
+        with patch.object(m,'MIGRATION_RUNTIME',digest(Engine.runtime_binding(actual))), \
+             patch.object(m,'native',side_effect=lambda owner,request,name,value:value), \
+             patch.object(self.native.engine,'request',side_effect=effect), \
+             patch.object(self.owner,'prepare_mcp_audit_role',side_effect=AssertionError('bootstrap repeated')), \
+             patch.object(self.owner,'capture',side_effect=AssertionError('dump repeated')):
+            first=self.owner.migrate_mcp();second=self.owner.migrate_mcp()
+        self.assertEqual(first,second);self.assertEqual(len(starts),1)
+        record=self.owner.record()
+        self.assertEqual(record['mcpMigration']['state'],'COMPLETE')
+        self.assertEqual(record['mcpAuditRole']['state'],'CLEAN')
+        self.assertEqual(record['governedMigrationRecovery']['startAttempts'],1)
+        state=self.owner.audit_role_state(binding)
+        self.assertEqual(state['appMembership'],0);self.assertFalse(state['schemaCreate'])
+        self.unchanged()
+
     def test_start_once_and_ambiguous_effect_cannot_be_replayed(self):
         m.adopt_backups(self.owner,self.previous,self.proof)
         _,name,req,a,i=readback.fixture();self.proof.update(originalDatabasePlanHash=self.owner.plan_hash)
