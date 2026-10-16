@@ -1,0 +1,142 @@
+{
+  "schema": "ouf.chatbot-verified-registry-backup-recovery-qualification.v1",
+  "date": "2026-10-16",
+  "sourceCommit": "eab913b879827c029d77fb5702e94b20aef386c7",
+  "predecessorSourceCommit": "e70ca5957772e170bc762dd937e1c46a40051f0a",
+  "profile": "ouf.chatbot-verified-registry-mcp-backup-recovery.v1",
+  "status": "QUALIFIED_FOR_NEW_EXACT_HUMAN_REVIEW",
+  "files": {
+    "scripts/deliver-chatbot-file-cohort.py": "54cc42308fd606bab1ae15410dbb2b1b542b6f7f313071185c164401c7814b23",
+    "scripts/launch-chatbot-backup-recovery-20261016.sh": "81e406fe0242c67b4567b3733a16dc4f51ef96613ad6f2cae85fbf82a556fa61",
+    "releases/chatbot-file-preparation-capsule-20261015.json": "8e6b05b00dc1e0f62dccf9e6b9a4b34a98312b1b69c3a1a623ede0cdb7346b0b",
+    "tools/chatbot_file_cohort/backup_recovery.py": "d09173a0c7a0afe60aa6b04e665e3d35c5d6c35e9783584814499b676804cae4",
+    "tools/semantic_application_cutover/gated_process_observation.py": "6076599fdc0bcd3a507cbf3d514decc224e5fc6932ef7a4e256767d8801ba9c2",
+    "tools/semantic_policy_token_owner/mount_observation.py": "4e1ed5032d33ba6a249f7909cb8cbb8cbe70a8fdef0e4443c05375aeba9ec837",
+    "tests/test_running_registry_mount.py": "db77ee38627c0b9870ab2773de7fa12156f55d369769a15557946024e7d06d9d"
+  },
+  "qualifications": [
+    {
+      "workflowRunId": 38828474230,
+      "workflowJobId": 116741407955,
+      "sourceCommit": "eab913b879827c029d77fb5702e94b20aef386c7",
+      "name": "MCP explicit backup reader qualification",
+      "conclusion": "success",
+      "totalTests": 77,
+      "skipped": 0,
+      "suites": [
+        {
+          "name": "retained and fenced Registry backup",
+          "tests": 8
+        },
+        {
+          "name": "finite Registry readiness and Retry-After",
+          "tests": 9
+        },
+        {
+          "name": "pinned delivery launcher",
+          "tests": 14
+        },
+        {
+          "name": "signed ten-phase successor and backup adoption",
+          "tests": 10
+        },
+        {
+          "name": "signed database owner",
+          "tests": 22
+        },
+        {
+          "name": "exact standalone preflight",
+          "tests": 10
+        },
+        {
+          "name": "actual PostgreSQL archives and restricted role",
+          "tests": 4
+        }
+      ],
+      "workflowUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38828474230",
+      "status": "completed",
+      "failures": 0,
+      "errors": 0,
+      "testSummariesVerifiedInJobLog": true
+    },
+    {
+      "workflowRunId": 38827997111,
+      "workflowJobId": 116739875526,
+      "sourceCommit": "02778bbb40902ce78750269c2359ed63a8c35d2f",
+      "name": "Running Registry token mount qualification",
+      "conclusion": "success",
+      "totalTests": 4,
+      "skipped": 0,
+      "unchangedCodePaths": [
+        "tools/semantic_application_cutover/gated_process_observation.py",
+        "tools/semantic_policy_token_owner/mount_observation.py",
+        "tests/test_running_registry_mount.py"
+      ],
+      "workflowUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38827997111",
+      "status": "completed",
+      "failures": 0,
+      "errors": 0,
+      "testSummariesVerifiedInJobLog": true
+    },
+    {
+      "workflowRunId": 38828474141,
+      "workflowJobId": 116741690523,
+      "sourceCommit": "eab913b879827c029d77fb5702e94b20aef386c7",
+      "name": "Chatbot cohort delivery native owners",
+      "conclusion": "success",
+      "totalTests": 416,
+      "suiteCount": 56,
+      "skipped": 0,
+      "testSummariesVerifiedInJobLog": true,
+      "workflowUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38828474141",
+      "status": "completed",
+      "failures": 0,
+      "errors": 0
+    }
+  ],
+  "retainedTargetBoundary": {
+    "registryState": "READY",
+    "registryVersion": 29,
+    "nextPhase": 10,
+    "completedRegistryEffects": 10,
+    "workerState": "CANCELLED",
+    "controlledCumulativeGrantAttempts": 5,
+    "workerAdmissionState": "BLOCKED",
+    "completedCohortArchives": 3,
+    "failedMcpArchiveBytes": 0,
+    "mcpMigrationStarted": false
+  },
+  "newFiniteSession": {
+    "schema": "ouf.policy-token-new-finite-worker-session.v5",
+    "priorControlledGrantAttempts": 5,
+    "maximumNewWorkerAttempts": 128,
+    "maximumSeconds": 3600,
+    "automaticRenewalAllowed": false,
+    "newMcpArchiveMaximumAttempts": 1,
+    "humanDecision": "NEW_EXACT_FULL_ACTION_REQUIRED"
+  },
+  "preservedInvariants": [
+    "Historical signatures, journals, consumed claims and five prior controlled grants remain unchanged",
+    "Ten Registry effects are copied as evidence; only RELEASE_PRODUCERS may execute under the new action",
+    "No create, stage, unpause, SIGUSR1, database admission or node attestation replay",
+    "Three completed archives are verified and copied with a durable one-use claim; interrupted copies block replay",
+    "The empty failed MCP archive and its CLAIMED record remain unchanged",
+    "The new reviewed backup plan uses the selected existing administrator and does not add application backup privileges",
+    "Current running Registry process generation, complete OCI, independent image rootfs, readiness and actual readonly token mount are checked",
+    "Registry historical archive custody is checked independently of the current database fence; fenced phases still require closed/no-session proof",
+    "Fresh signed authority and the same cumulative incident history bind the new finite worker session"
+  ],
+  "limitations": [
+    "Hosted disposable PostgreSQL and process fixtures do not constitute VPS acceptance",
+    "The running mount fixture uses a real hardened process, mount namespace, read-only mount and TLS owner; Docker receipts are synthetic",
+    "This publication executes no target recovery and issues no target runtime authority",
+    "The actual CSV/chatbot end-to-end result remains unproven"
+  ],
+  "targetMutationCount": 0,
+  "newRuntimeAuthorityIssued": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true,
+  "fullSuiteIncludesActualSixthTlsGrantAndV5ReviewCompilation": true,
+  "deliveryBytesReadBackFromPublishedSourceAndMatched": true
+}

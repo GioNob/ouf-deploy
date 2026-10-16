@@ -92,15 +92,16 @@ zero skips. The native regression reproduces the old expression's SQLSTATE
 probe succeed. This identifies a real defect in the old query; the target's
 suppressed stderr means its exact SQLSTATE remains unknown until readback.
 
-## Why target administrative verification is still necessary
+## Why the target administrative preflight was necessary
 
 The existing signed recovery profile resumes a paused Registry before
 attestation/admission. This attempt instead passed Registry verification and
 completed three later backups. Reusing the previous profile would use the wrong
-checkpoint. Its worker/grant count and Registry's state after cancellation have
-were not collected by the first backup reader; the second readback now supplies
-them as described above. Administrative dump capability remains unproven on
-the target because the SQL preflight stopped first.
+checkpoint. Its worker/grant count and Registry's state after cancellation were
+not collected by the first backup reader; the second readback supplied them.
+At that intermediate checkpoint, administrative dump capability was still
+unproven because the SQL preflight stopped first. The corrected successful
+preflight below closes that diagnostic gap.
 
 The standalone `read-chatbot-mcp-backup-preflight-20261016.py` binds the exact
 failed context, review, authority, source and reported database journal. It reads
@@ -143,6 +144,68 @@ producer release remains a possible future Registry effect after the full
 cohort verifies. A distinct v5 worker session retains five predecessors; its
 first new grant will be the sixth cumulative controlled attempt.
 
-The candidate still requires qualification before any operational launcher is
-released. The previous recovery launcher remains unsuitable and must not run.
+The candidate passed the qualifications recorded below, and a separate pinned
+launcher is now released. The previous recovery launcher remains unsuitable.
 The CSV/chatbot end-to-end acceptance remains unproven.
+
+## Delivery qualification and operational handoff
+
+Runtime source: `eab913b879827c029d77fb5702e94b20aef386c7`.
+The preparation capsule SHA-256 is
+`8e6b05b00dc1e0f62dccf9e6b9a4b34a98312b1b69c3a1a623ede0cdb7346b0b`.
+The launcher uses this exact source, verifies the delivery script's hash and
+reuses the original package archive, whose identity the inner launcher checks.
+It selects the existing portable GitHub client before considering PATH.
+
+The targeted workflow [38828474230](https://github.com/GioNob/ouf-deploy/actions/runs/38828474230)
+passed 77 tests with zero skips on this source. Four tests use actual PostgreSQL:
+the application dump is denied, the explicit administrative backup succeeds,
+the complete payload parses, and the three old archives and failed claim remain
+unchanged during signed successor adoption. The retained Registry archive is
+checked separately from the current database fence; old fenced phases continue
+to reject an open database or extra sessions. No backup privilege is granted
+to the workload.
+
+The running token-mount workflow [38827997111](https://github.com/GioNob/ouf-deploy/actions/runs/38827997111)
+passed four tests on the preceding test-only commit. Its process observer,
+mount observer and test file are byte-identical in the delivery source. The
+fixture uses a real non-root process with empty capabilities and NoNewPrivs,
+a real read-only mount and signed TLS owner. The Docker receipts are synthetic;
+this qualification does not substitute for fresh target observation. Revocation
+and generation drift deny acceptance.
+
+The full delivery workflow [38828474141](https://github.com/GioNob/ouf-deploy/actions/runs/38828474141)
+passed 416 tests across 56 suites with zero failures, errors or skips on the
+exact delivery source. This includes the actual sixth TLS grant, complete v5
+review compilation, revocation and reconciliation, previous session histories,
+real service fencing, four-database archives and native owner acceptance joins.
+The detailed qualification and source hashes are recorded in
+`evidence/chatbot-verified-registry-backup-recovery-qualification-20261016.json`.
+The 77 targeted tests overlap the general suite and are not an additional
+77 distinct cases.
+
+The operational launcher is
+`scripts/launch-chatbot-backup-recovery-20261016.sh`.
+Run it once as `oufadmin` in the interactive VPS terminal. The existing installer
+performs read-only history/native checks before login and prepares the complete
+new review before asking for `APPROVO <review-hash>`. This new HUMAN decision is
+required by `AGENTS.md` and resilience policy v3: the changed backup plan/source
+and finite session cannot inherit the expired authority. All old grant attempts
+and incident history remain retained. The new session is bounded to 128 worker
+attempts and 3600 seconds, with no automatic renewal. Its first successful new
+grant is the sixth cumulative controlled attempt.
+
+The action adopts the three complete cohort backups, permits one new MCP dump,
+and continues the remaining cohort deployment through the existing owners.
+It preserves the exact running Registry and its ten applied effects; only final
+producer release may be a new Registry effect after full cohort verification.
+An interrupted archive copy or ambiguous dump remains blocked for governed
+reconciliation, without repeating the dump or resetting an incident budget.
+The launcher records its log path. On any stop, retain that log and all journals;
+the same consumed recovery must not be launched again.
+
+Successful setup reports `COHORT_READY_FOR_ACTUAL_CHATBOT_CSV_ACCEPTANCE` and
+keeps the finite session alive for the actual CSV interaction. A real owner
+acceptance observation is still required before claiming chatbot end-to-end
+success. The qualification and launcher publication themselves perform no VPS
+mutation and issue no runtime authority.
