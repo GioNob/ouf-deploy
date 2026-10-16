@@ -23,6 +23,22 @@ conserva anche le 28 modifiche Gateway: zero nuove scritture route. Qualifiche c
 con sorgente runtime a2132d7ee330f9f0ce7d4fc9316dd880acad4f3f.
 Questo rilascio non avanza lo stato target: serve la nuova esecuzione HUMAN
 e la verifica del relativo esito sul VPS.
+### Readback VPS: start Ingestion fallito prima del processo
+
+Diagnosi allegata: stesso CID cbf3067d946cf21a8f4abbb03ed47a217f2f39624ed1a5fb23a642325129ee35,
+status created, PID 0, neverStarted=true, ExitCode 127, restartCount 0.
+Docker State.Error presente (224 byte), categorie MISSING_PATH_OR_EXECUTABLE
+ed OCI_RUNTIME_FAILURE. Journal: 12 APPLIED + ingestion.start CLAIMED,
+hash 4781c2c59cdd1075a4c1d5510a5fc91251a7350281a432d9a59dc59cdee7ecf1.
+Worker CANCELLED: 10 grant cumulativi (9+1), admission BLOCKED; il prossimo
+nuovo tentativo sarebbe l'undicesimo. Nessun budget azzerato.
+Gateway 74 route conforme, 28 effetti conservati; backup COMPLETE, MCP
+migrazioni COMPLETE/audit CLEAN; UDP e Onboarding stessa generazione.
+Fase 6/8 sospesa, fasi 1–5 complete, CSV 0/6. Il programma non ha avviato Java.
+L'eventuale conflitto PATH/JAVA_HOME con i default immagine è un'ipotesi:
+prossima diagnosi legge soltanto confronto comando/ambiente e classificazione
+più precisa dell'errore. Nessun nuovo start o modifica alla configurazione.
+
 ### Ultima esecuzione VPS: start Ingestion ambiguo
 
 Runtime f6078a5ac07853b4abc13d310882f5a30086baba: preflight passato,
