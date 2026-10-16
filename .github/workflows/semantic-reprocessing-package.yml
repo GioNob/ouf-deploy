@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: GioNob/ouf-mcp-server
-          ref: 1cbc496e1632ec3b1f2f0d9bf1e1f59a308278ef
+          ref: f00e7e3bfcaee9272b9b6d204a7fa3ea79a563a4
           path: source
           persist-credentials: false
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -45,12 +45,12 @@ jobs:
       - name: Freeze external bases and build one unsigned MCP candidate
         run: >-
           python3 deploy/scripts/package-file-loop-candidate.py build
-          --source source --commit 1cbc496e1632ec3b1f2f0d9bf1e1f59a308278ef
+          --source source --commit f00e7e3bfcaee9272b9b6d204a7fa3ea79a563a4
           --module mcp --output package
       - name: Scan exact candidate including unfixed vulnerabilities
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: ouf-cohort-mcp:1cbc496e1632ec3b1f2f0d9bf1e1f59a308278ef
+          image-ref: ouf-cohort-mcp:f00e7e3bfcaee9272b9b6d204a7fa3ea79a563a4
           format: json
           output: package/trivy-image.json
           severity: HIGH,CRITICAL,UNKNOWN
@@ -58,7 +58,7 @@ jobs:
           exit-code: 1
       - name: Export candidate and independently verify archive checksums
         run: |
-          python3 deploy/scripts/package-file-loop-candidate.py export --source source --commit 1cbc496e1632ec3b1f2f0d9bf1e1f59a308278ef --module mcp --output package
+          python3 deploy/scripts/package-file-loop-candidate.py export --source source --commit f00e7e3bfcaee9272b9b6d204a7fa3ea79a563a4 --module mcp --output package
           cd package
           sha256sum -c SHA256SUMS
       - uses: actions/upload-artifact@v4
