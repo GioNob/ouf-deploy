@@ -125,7 +125,7 @@ class NativePhaseFive(unittest.TestCase):
                 mount_observations[g.digest(body['Mounts'])]=copy.deepcopy(body['Mounts'])
             return code,body
         engine.request=track_mounts
-        def remove_created():
+        def remove_created(owner=owner):
             record=owner.record()
             if record['nextStep']>=4:remove('rm','-f',record['effects'][3]['evidence']['containerId'])
         self.addCleanup(remove_created)
@@ -166,10 +166,10 @@ class NativePhaseFive(unittest.TestCase):
         stack.enter_context(patch.object(recovery,'read_predecessor',return_value=previous))
         adopted=private/'adopted-runtime';adopted.mkdir(mode=0o700)
         historical_owner=owner;owner=r.GatewayRuntime(action,engine,runtime,Journal(adopted))
-        native_writes=[];native_request=engine.request
+        native_writes=[];adoption_request=engine.request
         def request(method,path,*args):
             if method!='GET':native_writes.append((method,path))
-            return native_request(method,path,*args)
+            return adoption_request(method,path,*args)
         engine.request=request
         owner.initialize();owner.apply();owner.apply()
         self.assertEqual(owner.record()['nextStep'],8);self.assertEqual(native_writes,[])
