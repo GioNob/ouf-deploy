@@ -1,0 +1,23 @@
+{
+  "schema": "ouf.chatbot-gateway-readback-qualification.v1",
+  "source": "ebdcf153c450ea5ab55c1783d281f1b963c5c29c",
+  "runId": 38841644559,
+  "jobId": 116782864580,
+  "conclusion": "success",
+  "tests": 12,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "realNamespaceGet": true,
+  "realPostgresSelect": true,
+  "httpServerIsSyntheticFixture": true,
+  "targetAccess": false,
+  "targetReadbackPending": true,
+  "runtimePredicateChanged": false,
+  "gatewayWrites": 0,
+  "runtimeAuthorityIssued": false,
+  "technicalPhase": 5,
+  "functionalMilestonesProven": 0,
+  "readerSha256": "fa88de46ffe5b772b155a71ba0945d068fa16570e8e5768ade496fef1dad20d1",
+  "launcherSha256": "660c4a75612b483b727dd2f6dd5cc54532e902c0ca10b9ba9a9b729d43c1df67"
+}
