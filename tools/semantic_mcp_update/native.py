@@ -196,7 +196,7 @@ class NativePorts:
    policy={'Name':'no','MaximumRetryCount':0}if stage=='DISABLE_OLD_RESTART'else p['replacement']['restoreRestartPolicy']
    status,_=self.request('POST','/v1.44/containers/'+cid+'/update',{'RestartPolicy':policy});require(status==200,'RESTART_POLICY_OUTCOME_UNPROVEN')
   elif stage=='STOP_OLD':
-   status,_=self.request('POST','/v1.44/containers/'+old+'/stop?t=20');require(status==204,'STOP_OUTCOME_UNPROVEN')
+   status,_=self.request('POST','/v1.44/containers/'+old+'/stop?t=10');require(status==204,'STOP_OUTCOME_UNPROVEN')
   elif stage=='BACKUP_DATABASE':
    path=Path(p['database']['backupPath']);fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
    try:
