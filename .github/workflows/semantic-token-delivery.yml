@@ -1,0 +1,29 @@
+name: Sealed semantic token session delivery
+on:
+  push:
+    branches: [fix/cohort-mcp-backup-recovery-20261016]
+    paths:
+      - scripts/launch-chatbot-semantic-token-session-20261016.sh
+      - tests/test_semantic_token_launcher.py
+      - .github/workflows/semantic-token-delivery.yml
+  pull_request:
+    paths:
+      - scripts/launch-chatbot-semantic-token-session-20261016.sh
+      - tests/test_semantic_token_launcher.py
+      - .github/workflows/semantic-token-delivery.yml
+permissions: {contents: read}
+jobs:
+  native-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Root-owned disposable launcher qualification
+        run: |
+          set -euo pipefail
+          OUF_DELIVERY_ROOT="/var/lib/ouf-token-delivery-${GITHUB_RUN_ID}"
+          sudo mkdir -m 700 "$OUF_DELIVERY_ROOT"
+          sudo cp -R . "$OUF_DELIVERY_ROOT/repository"
+          sudo chown -R root:root "$OUF_DELIVERY_ROOT"
+          sudo python3 -I -B -m unittest discover -s "$OUF_DELIVERY_ROOT/repository/tests" -p test_semantic_token_launcher.py -v
