@@ -1,3 +1,8 @@
+> Completed: the operator returned the bounded read-only diagnostic. See
+> [the qualified running-rootfs recovery](CHATBOT_RUNNING_ROOTFS_RECOVERY_20261016.md)
+> for the eight-entry result and new pinned handoff. This document retains the
+> original diagnostic instructions as history.
+
 # Running Registry rootfs mismatch: next action is read-only diagnosis
 
 The VPS run of the backup recovery launcher from

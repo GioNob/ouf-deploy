@@ -1,9 +1,13 @@
 # Running target update — 2026-10-16
 
-The delivered recovery is now blocked on the running Registry rootfs seal before
-new HUMAN review. Do not repeat that launcher. See
-[the read-only diagnostic handoff](CHATBOT_RUNNING_ROOTFS_DIAGNOSIS_20261016.md)
-for the observed failure, test coverage limit and next pinned command.
+The earlier delivery was blocked on the running Registry rootfs seal before
+new HUMAN review. Its failed attempt remains retained; do not repeat that old
+launcher. The diagnostic has now identified the eight additions and an
+independent frozen-image reproduction has qualified the new typed runtime
+predicate. See [the running-rootfs recovery handoff](CHATBOT_RUNNING_ROOTFS_RECOVERY_20261016.md)
+for the new source, qualification, limits and distinct pinned launcher. The
+[original diagnostic handoff](CHATBOT_RUNNING_ROOTFS_DIAGNOSIS_20261016.md)
+remains historical evidence.
 
 # MCP backup role correction and retained recovery boundary
 
