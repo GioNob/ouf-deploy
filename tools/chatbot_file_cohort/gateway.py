@@ -240,6 +240,25 @@ def selected_admin_key(raw, external_key=None):
     return key
 
 
+MOUNT_SET_BINDING='ouf.apisix-runtime-binding.mount-set.v1'
+
+
+def apisix_runtime_binding(actual,profile=None):
+    """Versioned mount ordering only; preserve every native field and cardinality.
+
+    Historical bindings remain byte-for-byte unchanged. Docker's Mounts array
+    order is unstable across inspect calls; only newly reviewed plans opt in.
+    """
+    require(profile in (None,MOUNT_SET_BINDING),'UNKNOWN_APISIX_RUNTIME_BINDING_PROFILE')
+    result=Engine.runtime_binding(actual)
+    if profile is not None:
+        mounts=actual['Mounts']
+        require(type(mounts)is list and all(type(m)is dict and type(m.get('Destination'))is str for m in mounts)
+            and len({m['Destination']for m in mounts})==len(mounts),'APISIX_DUPLICATE_OR_INVALID_MOUNT')
+        result['mountsHash']=digest(sorted(mounts,key=lambda m:m['Destination']))
+    return result
+
+
 class NamespaceAdmin:
     """Bounded loopback HTTP in a child; no image, exec, proxy or redirect.
 
@@ -258,12 +277,13 @@ class NamespaceAdmin:
             from tools.chatbot_file_cohort.gateway_runtime import GatewayRuntime, proposed_transport
             require(type(runtime_owner) is GatewayRuntime and runtime_owner.engine is engine,
                     'CONCRETE_SAME_ENGINE_APISIX_RUNTIME_OWNER_REQUIRED')
-            require(Engine.runtime_binding(runtime_owner.generation())==binding['runtimeBinding'],
+            require(binding.get('runtimeBindingProfile')==runtime_owner.plan.get('runtimeBindingProfile')
+                    and apisix_runtime_binding(runtime_owner.generation(),binding.get('runtimeBindingProfile'))==binding['runtimeBinding'],
                     'NEW_APISIX_GENERATION_NOT_PROVEN_BY_OWNER')
             self.reviewed_binding=proposed_transport(runtime_owner.plan)
 
     @staticmethod
-    def observe(engine, selected_config):
+    def observe(engine, selected_config, binding_profile=None):
         require(type(engine) is Engine, 'CUSTODIED_ENGINE_REQUIRED')
         status, actual = engine.request('GET', '/v1.44/containers/ouf-apisix/json')
         require(status == 200 and actual.get('Name') == '/ouf-apisix'
@@ -279,21 +299,23 @@ class NamespaceAdmin:
             admin_raw,admin_binding=private_config(EXTERNAL_ADMIN_KEY)
             selected_admin_key(raw,admin_raw.decode('ascii').strip())
         s = os.stat('/proc/'+str(actual['State']['Pid'])+'/ns/net')
-        return {'runtimeBinding': Engine.runtime_binding(actual), 'configBinding': config,
+        result={'runtimeBinding': apisix_runtime_binding(actual,binding_profile), 'configBinding': config,
                 'adminKeyBinding':admin_binding,
                 'networkNamespace': {'device': s.st_dev, 'inode': s.st_ino},
                 'transport': 'EXACT_APISIX_NETNS_LOOPBACK_HTTP', 'port': 9180,
                 'maximumResponseBytes': MAX_RESPONSE, 'timeoutSeconds': 10,
                 'pythonExecutable': namespace_program()}
+        if binding_profile is not None:result['runtimeBindingProfile']=binding_profile
+        return result
 
     def check(self):
         require(digest(self.binding) == self.binding_hash, 'APISIX_TRANSPORT_BINDING_CHANGED')
         if self.runtime_owner is not None:
             from tools.chatbot_file_cohort.gateway_runtime import proposed_transport
             require(self.reviewed_binding==proposed_transport(self.runtime_owner.plan)
-                    and Engine.runtime_binding(self.runtime_owner.generation())==self.binding['runtimeBinding'],
+                    and apisix_runtime_binding(self.runtime_owner.generation(),self.binding.get('runtimeBindingProfile'))==self.binding['runtimeBinding'],
                     'APISIX_RUNTIME_OWNER_OR_REVIEW_CHANGED')
-        current = self.observe(self.engine, self.binding['configBinding']['path'])
+        current = self.observe(self.engine, self.binding['configBinding']['path'],self.binding.get('runtimeBindingProfile'))
         require(current == self.binding, 'APISIX_GENERATION_OR_NAMESPACE_CHANGED')
 
     def request(self, method, path, body=None):

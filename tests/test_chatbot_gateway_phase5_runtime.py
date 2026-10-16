@@ -10,6 +10,23 @@ from tools.chatbot_file_cohort.gateway_numeric_preparation import numeric_config
 
 
 class NumericPreparation(unittest.TestCase):
+    def test_mount_binding_ignores_only_order_preserves_fields_and_rejects_duplicates(self):
+        fixture=Fixture();self.addCleanup(fixture.doCleanups)
+        owner,native,_=fixture.fixture()
+        actual=owner.inspect(owner.plan['oldName'])
+        mount=copy.deepcopy(actual['Mounts'][0]);mount['Destination']='/synthetic-extra'
+        actual['Mounts'].append(mount)
+        legacy=g.Engine.runtime_binding(actual)
+        expected=g.apisix_runtime_binding(actual,g.MOUNT_SET_BINDING)
+        changed=copy.deepcopy(actual);changed['Mounts'].reverse()
+        self.assertEqual(g.apisix_runtime_binding(changed,g.MOUNT_SET_BINDING),expected)
+        self.assertNotEqual(g.Engine.runtime_binding(changed),legacy)
+        self.assertEqual(g.apisix_runtime_binding(actual),legacy)
+        for field,value in [('RW',True),('Source','/other'),('Propagation','shared'),('Mode','rw'),('Type','volume')]:
+            changed=copy.deepcopy(actual);changed['Mounts'][0][field]=value
+            with self.subTest(field=field):self.assertNotEqual(g.apisix_runtime_binding(changed,g.MOUNT_SET_BINDING),expected)
+        changed=copy.deepcopy(actual);changed['Mounts'].append(copy.deepcopy(changed['Mounts'][0]))
+        with self.assertRaisesRegex(ValueError,'DUPLICATE'):g.apisix_runtime_binding(changed,g.MOUNT_SET_BINDING)
     def test_two_installations_preserve_every_existing_byte(self):
         import yaml
         for domain,peer,port in [('municipality-a.example','10.8.1.4',9443),('municipality-b.example','172.29.7.2',9180)]:

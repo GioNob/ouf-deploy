@@ -14,7 +14,7 @@ from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.chatbot_file_cohort.plan import digest, encoded, environment, runtime_pin, require, sha, NO_RESTART, PlanDenied, creation_host_config, host_config_matches
 from tools.chatbot_file_cohort.containers import CohortPaused, READINESS_POLICY
-from tools.chatbot_file_cohort.gateway import NamespaceAdmin, private_config, namespace_program
+from tools.chatbot_file_cohort.gateway import NamespaceAdmin, private_config, namespace_program, apisix_runtime_binding, MOUNT_SET_BINDING
 
 PROFILE='ouf.chatbot-file-cohort.gateway-runtime.v1'
 APISIX_READINESS_POLICY={**READINESS_POLICY,'profile':'ouf.apisix-finite-readiness.v2',
@@ -109,6 +109,7 @@ def compile_runtime(old, old_config_binding, new_config_binding, new_key_env, ke
             'readinessPolicy':copy.deepcopy(APISIX_READINESS_POLICY),'runtimeAuthorityIssued':False}
     if numeric_assets is not None:
         result['numericCompatibility']={'profile':NUMERIC_PROFILE,'assets':copy.deepcopy(numeric_assets)}
+        result['runtimeBindingProfile']=MOUNT_SET_BINDING
     return result
 
 
@@ -133,6 +134,8 @@ def runtime_scope(plan):
             and plan.get('automaticRollbackAllowed') is False and plan.get('automaticWriteReplayAllowed') is False,
             'EXACT_GOVERNED_APISIX_RUNTIME_PLAN_REQUIRED')
     require(plan.get('readinessPolicy')==APISIX_READINESS_POLICY,'EXACT_APISIX_READINESS_POLICY_REQUIRED')
+    require(plan.get('runtimeBindingProfile')==(MOUNT_SET_BINDING if plan.get('numericCompatibility')is not None else None),
+        'EXACT_APISIX_RUNTIME_BINDING_PROFILE_REQUIRED')
     return {'profile':PROFILE,'planHash':digest(plan),'oldContainerId':plan['oldRuntimeBinding']['containerId'],
             'sameImageId':plan['oldRuntimeBinding']['imageId'],'proposalKeyHash':plan['proposalKeyHash'],
             'automaticRollbackAllowed':False,'automaticWriteReplayAllowed':False}
@@ -228,7 +231,7 @@ class GatewayRuntime:
         actual=self.candidate(True,True,restored)
         require(actual is not None and v['effects'][3]['evidence']['containerId']==actual['Id'],
                 'APISIX_CREATED_ID_NOT_JOURNAL_PROVEN')
-        current=Engine.runtime_binding(actual)
+        current=apisix_runtime_binding(actual,self.plan.get('runtimeBindingProfile'))
         started=v['effects'][5]['evidence'].get('runtimeBinding')
         require(type(started) is dict and set(started)==set(current)
                 and all(current[k]==value for k,value in started.items() if k!='hostConfigHash'),
@@ -236,7 +239,7 @@ class GatewayRuntime:
         return actual
     def transport(self):
         self.generation()
-        binding=NamespaceAdmin.observe(self.engine,self.plan['newConfigBinding']['path'])
+        binding=NamespaceAdmin.observe(self.engine,self.plan['newConfigBinding']['path'],self.plan.get('runtimeBindingProfile'))
         require(binding['pythonExecutable']==self.plan['pythonExecutable']
                 and binding['adminKeyBinding']==self.plan['adminKeyBinding'],
                 'APPROVED_NAMESPACE_ADMIN_CREDENTIAL_CHANGED')
@@ -272,7 +275,7 @@ class GatewayRuntime:
             self.old(True);v=self.candidate(step!='create',step in ('start','ready','restore_restart'),step=='restore_restart')
             require(v is not None,'APISIX_WRITE_OUTCOME_UNPROVEN_NO_REPLAY')
         return {'containerId':v['Id'],'imageId':v['Image'],'nativeHash':digest(v),
-                'runtimeBinding':Engine.runtime_binding(v)}
+                'runtimeBinding':apisix_runtime_binding(v,self.plan.get('runtimeBindingProfile'))}
     def ready(self,record):
         self.guard();self.generation()
         now,mono=self.clock(),self.monotonic()
@@ -345,7 +348,7 @@ class GatewayRuntime:
     def verify(self):
         require(self.record()['nextStep']==len(STEPS),'APISIX_INSTALLATION_INCOMPLETE')
         actual=self.generation();self.transport().routes()
-        return {'schema':PROFILE,'planHash':self.scope['planHash'],'runtimeBinding':Engine.runtime_binding(actual),
+        return {'schema':PROFILE,'planHash':self.scope['planHash'],'runtimeBinding':apisix_runtime_binding(actual,self.plan.get('runtimeBindingProfile')),
                 'proposalKeyHash':self.plan['proposalKeyHash'],'oldContainerRetained':True,
                 'automaticRollbackAllowed':False,'runtimeAuthorityIssued':False,'notReleaseAcceptance':True}
 
