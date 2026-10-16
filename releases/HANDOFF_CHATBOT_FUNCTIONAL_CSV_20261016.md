@@ -1,3 +1,45 @@
+## 16 ottobre — reader refresh v2 bloccato sulla custodia; v3 allineata al produttore
+
+Fasi tecniche 8/8 conservate; funzionali 0/6.
+L'output operatore v2 supera tutti i predicati URL: uguaglianza review,
+HTTPS/hostname, nessuna credenziale/query/fragment, contratto Gateway esatto,
+stessa origine approvata. Poi STOP PRIVATE_WORKLOAD_TOKEN_REQUIRED.
+L'esecuzione si ferma prima di os.read(token) e di fetch_policy(): zero byte
+token letti e zero GET policy. Il file è aperto per fstat, senza leggere contenuto.
+Il marker composto non prova da solo quale proprietà del file sia diversa.
+
+Il reader richiedeva erroneamente UID==GID e modo0400/0600.
+Il produttore effettivo tools/semantic_policy_token_owner/producer.py,
+AtomicTokenFile.publish/check_custody, pubblica invece UID0/GIDoutput_gid,
+modo0440 in directory UID0/GIDoutput_gid modo0750; owner_installation.py
+vincola output_gid10001. Sono contratti già esistenti, non una nuova eccezione.
+La v3 richiede ESATTAMENTE file(0,10001,0440), directory(0,10001,0750),
+antenati root senza scrittura group/other, file regolare singolo link,
+custodia no-follow e drift; limite file65536 del produttore e token16384.
+Non ammette più i vecchi formati diagnostici UID==GID/0400/0600.
+Prima di leggere il contenuto espone soltanto UID/GID/mode e predicati
+regular/singleLink/sizeBound/tokenBytesRead0. Nessun chmod/chown target.
+
+Diciotto test locali PASS. La prova invoca il VERO AtomicTokenFile.publish
+con open/chmod/write/fsync/rename reali e poi il reader sul file prodotto.
+LIMITAZIONE: chown/fchown del filesystem Work restituiscono EINVAL; soltanto
+ownership e metadati UID/GID sono simulati nell'adapter di test. Non è una prova
+nativa kernel di ownership10001, né accettazione target. Test negativi coprono
+UID/GID/modi errati, directory errata, symlink, path/origine/mount, risposta
+troppo grande e redazione. Il sorgente del produttore è invariato.
+bash -n del launcher viene verificato prima della consegna.
+
+V1 e v2 restano storiche e non vanno rieseguite. Usare il nuovo launcher v3.
+I vincoli v2 su endpoint/review/mount restano; massimo un token già montato e
+un GET HTTPS, senza retry, emissione token, rinnovo worker/sessione, installazione
+policy, grant, modifiche DB/Gateway/servizi o reset. Cumulativo69 conservato.
+La causa runtime del403 e lo snapshot caricato restano non provati.
+DRAFT, riconciliazione ricevuta e HUMAN THS ancora non completati.
+Reader v3 SHA256: f98f493a6bdaad7ed20f17f5e8e251ae73fd10713ab34e865ba74239a66babd5.
+
+
+---
+
 ## 16 ottobre — reader refresh v1 fermato prima di token e rete; correzione v2
 
 Fasi tecniche 8/8 conservate; funzionali 0/6.

@@ -15,7 +15,7 @@ SOURCE='d7bbb768970aad1a001ca4d085bcc87c58a29cec'
 UNIT='ouf-file-cohort-16e5f80e40d09772048f1575850b643a.service'
 
 def emit(check,**values):
-    fixed=dict(schema='ouf.chatbot-semantic-policy-refresh-readback.v2',check=check,readOnly=True,
+    fixed=dict(schema='ouf.chatbot-semantic-policy-refresh-readback.v3',check=check,readOnly=True,
         automaticRetry=False,budgetReset=False,acceptanceGranted=False)
     require(not set(values)&set(fixed),'RESERVED_OUTPUT_FIELD')
     print(json.dumps({**fixed,**values},sort_keys=True),flush=True)
@@ -143,14 +143,20 @@ def credential(path):
         for name in path.parts[1:-1]:
             child=os.open(name,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,dir_fd=parent);fds.append(child)
             st=os.fstat(child)
-            require(st.st_uid in (0,10001) and not st.st_mode&0o022,'TOKEN_ANCESTRY_CUSTODY_REQUIRED')
+            require(st.st_uid==0 and not st.st_mode&0o022,'TOKEN_ANCESTRY_CUSTODY_REQUIRED')
             ancestors.append((parent,name,child,identity(st)));parent=child
+        directory=os.fstat(parent)
+        require((directory.st_uid,directory.st_gid,stat.S_IMODE(directory.st_mode))==(0,10001,0o750),
+                'TOKEN_OUTPUT_DIRECTORY_CUSTODY_REQUIRED')
         fd=os.open(path.name,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=parent);fds.append(fd)
         st=os.fstat(fd)
-        require(stat.S_ISREG(st.st_mode) and st.st_uid==st.st_gid and st.st_uid in (0,10001)
-            and stat.S_IMODE(st.st_mode)in(0o400,0o600)and st.st_nlink==1 and 0<st.st_size<=16384,
+        emit('TOKEN_CUSTODY_METADATA',uid=st.st_uid,gid=st.st_gid,modeOctal=format(stat.S_IMODE(st.st_mode),'04o'),
+            regularFile=stat.S_ISREG(st.st_mode),singleLink=st.st_nlink==1,sizeWithinBound=0<st.st_size<=65536,
+            tokenBytesRead=0,credentialValuesPrinted=False)
+        require(stat.S_ISREG(st.st_mode) and (st.st_uid,st.st_gid,stat.S_IMODE(st.st_mode))==(0,10001,0o440)
+            and st.st_nlink==1 and 0<st.st_size<=65536,
             'PRIVATE_WORKLOAD_TOKEN_REQUIRED')
-        raw=os.read(fd,16385)
+        raw=os.read(fd,65537)
         require(len(raw)==st.st_size and identity(st)==identity(os.fstat(fd))
             ==identity(os.stat(path.name,dir_fd=parent,follow_symlinks=False)),'TOKEN_READ_DRIFT')
         for parent,name,child,seal in ancestors:
@@ -159,7 +165,7 @@ def credential(path):
             require(seal[:6]==pin(os.fstat(child))==pin(os.stat(name,dir_fd=parent,follow_symlinks=False)),
                     'TOKEN_ANCESTRY_DRIFT')
         token=raw.decode('ascii').strip()
-        require(token and not any(c.isspace()for c in token),'WORKLOAD_TOKEN_SHAPE_INVALID')
+        require(token and len(token)<=16384 and not any(c.isspace()for c in token),'WORKLOAD_TOKEN_SHAPE_INVALID')
         parts=token.split('.');require(len(parts)==3,'JWT_WORKLOAD_TOKEN_REQUIRED')
         claims=json.loads(base64.urlsafe_b64decode(parts[1]+'='*(-len(parts[1])%4)),object_pairs_hook=unique)
         exp=claims.get('exp');require(type(exp)is int,'JWT_EXPIRY_REQUIRED')

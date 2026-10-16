@@ -4,12 +4,17 @@ import copy
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
+import sys
 import tempfile
+import types
 import unittest
 from unittest.mock import patch
 
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT))
+from tools.semantic_policy_token_owner.producer import AtomicTokenFile,Binding
 spec=importlib.util.spec_from_file_location('refresh_reader',ROOT/'scripts/read-chatbot-semantic-policy-refresh-20261016.py')
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 
@@ -24,6 +29,29 @@ def fixture():
     return a,p
 
 class Tests(unittest.TestCase):
+    def setUp(self):
+        self.emitter=patch.object(m,'emit');self.emitter.start();self.addCleanup(self.emitter.stop)
+
+    @contextlib.contextmanager
+    def ownership_adapter(self):
+        # The Work filesystem cannot chown. Emulate ownership metadata only;
+        # open/no-follow/chmod/write/fsync/rename and producer code remain real.
+        original_stat,original_fstat=os.stat,os.fstat
+        owners={}
+        def wrapped(s):
+            if (s.st_dev,s.st_ino)not in owners:return s
+            values={name:getattr(s,name)for name in dir(s)if name.startswith('st_')}
+            values['st_uid'],values['st_gid']=owners[(s.st_dev,s.st_ino)]
+            return types.SimpleNamespace(**values)
+        def chown(path,uid,gid):
+            s=original_stat(path);owners[(s.st_dev,s.st_ino)]=(uid,gid)
+        def fchown(fd,uid,gid):
+            s=original_fstat(fd);owners[(s.st_dev,s.st_ino)]=(uid,gid)
+        with patch.object(os,'stat',side_effect=lambda *a,**k:wrapped(original_stat(*a,**k))),\
+             patch.object(os,'fstat',side_effect=lambda *a,**k:wrapped(original_fstat(*a,**k))),\
+             patch.object(os,'chown',side_effect=chown),patch.object(os,'fchown',side_effect=fchown):
+            yield
+
     def test_drift_unreviewed_origin_mount_and_url_reject_before_credential(self):
         a,p=fixture();u,s=m.selected(a,p)
         self.assertEqual(s,'/private/token/current')
@@ -47,8 +75,13 @@ class Tests(unittest.TestCase):
 
     def test_real_private_file_expiry_and_symlink_rejection(self):
         claims=base64.urlsafe_b64encode(b'{"exp":1,"private":"SECRET"}').decode().rstrip('=')
-        with tempfile.TemporaryDirectory(dir=ROOT)as d:
-            p=Path(d)/'token';p.write_text('header.'+claims+'.signature');p.chmod(0o400)
+        with tempfile.TemporaryDirectory(dir=ROOT)as d,self.ownership_adapter():
+            os.chown(d,0,10001);os.chmod(d,0o750)
+            b=Binding('https://issuer.invalid/token','test','scope',d,'token',10001)
+            writer=AtomicTokenFile(b);writer.check_custody()
+            writer.publish('header.'+claims+'.signature',lambda:None)
+            writer.check_custody();p=Path(d)/'token'
+            self.assertEqual((p.stat().st_uid,p.stat().st_gid,p.stat().st_mode&0o777),(0,10001,0o440))
             token,metadata=m.credential(p)
             self.assertTrue(metadata['expiredAtRead']);self.assertFalse(metadata['signatureVerifiedLocally'])
             self.assertNotIn('SECRET',json.dumps(metadata))
@@ -56,6 +89,16 @@ class Tests(unittest.TestCase):
             with self.assertRaises(OSError):m.credential(link)
             p.chmod(0o644)
             with self.assertRaises(m.ReadDenied):m.credential(p)
+
+    def test_custody_contract_rejects_wrong_uid_gid_mode_and_directory(self):
+        with tempfile.TemporaryDirectory(dir=ROOT)as d,self.ownership_adapter():
+            os.chown(d,0,10001);os.chmod(d,0o750)
+            p=Path(d)/'token';p.write_text('not-read')
+            for uid,gid,mode in ((0,0,0o400),(10001,10001,0o400),(0,10001,0o640),(0,10001,0o600)):
+                os.chown(p,uid,gid);os.chmod(p,mode)
+                with self.assertRaisesRegex(m.ReadDenied,'PRIVATE_WORKLOAD_TOKEN_REQUIRED'):m.credential(p)
+            os.chown(p,0,10001);os.chmod(p,0o440);os.chmod(d,0o700)
+            with self.assertRaisesRegex(m.ReadDenied,'TOKEN_OUTPUT_DIRECTORY_CUSTODY_REQUIRED'):m.credential(p)
 
     def response(self,status=401,doc=None):
         class Reply:

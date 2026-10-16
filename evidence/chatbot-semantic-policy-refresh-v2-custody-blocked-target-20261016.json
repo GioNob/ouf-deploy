@@ -1,0 +1,26 @@
+{
+  "schema": "ouf.chatbot-semantic-policy-refresh-v2-custody-blocked-target.v1",
+  "source": "OPERATOR_SUPPLIED_OUTPUT",
+  "readerCommit": "727e210f887f47b0efe22f4a5d457678353c8523",
+  "complete": false,
+  "reason": "PRIVATE_WORKLOAD_TOKEN_REQUIRED",
+  "allEndpointBindingChecksPassed": true,
+  "tokenBytesRead": 0,
+  "policyGets": 0,
+  "exactFailedCustodyPredicateProven": false,
+  "readerCustodyPredicateIncompatibleWithProducer": true,
+  "expectedProducerCustody": {
+    "uid": 0,
+    "gid": 10001,
+    "modeOctal": "0440",
+    "directoryModeOctal": "0750"
+  },
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "readOnly": true,
+  "automaticRetry": false,
+  "budgetReset": false,
+  "acceptanceGranted": false,
+  "runtimeAuthorityIssued": false,
+  "reconciliationPerformed": false
+}
