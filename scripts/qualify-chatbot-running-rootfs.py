@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Start the frozen image in disposable CI; synthetic DB/OIDC, no target access."""
-import argparse,importlib.util,json,os,re,subprocess,tempfile,time,uuid,urllib.request,threading,http.server
+import base64,argparse,importlib.util,json,os,re,subprocess,tempfile,time,uuid,urllib.request,threading,http.server
 from pathlib import Path
 spec=importlib.util.spec_from_file_location('baseline',Path(__file__).with_name('baseline.py'))
 b=importlib.util.module_from_spec(spec);spec.loader.exec_module(b)
@@ -40,12 +40,14 @@ def main():
                 def do_GET(self):
                     body=json.dumps({'issuer':issuer,'authorization_endpoint':issuer+'/unused','jwks_uri':issuer+'/jwks',
                         'response_types_supported':['code'],'subject_types_supported':['public'],'id_token_signing_alg_values_supported':['RS256']}
-                        if self.path.endswith('/.well-known/openid-configuration')else{'keys':[]}).encode()
+                        if self.path.endswith('/.well-known/openid-configuration')else{'keys':[{'kty':'RSA','kid':'CI_PUBLIC_ONLY','use':'sig','alg':'RS256','e':'AQAB',
+                            'n':base64.urlsafe_b64encode(b'\xc5'+b'\x87'*254+b'\x91').decode().rstrip('=')}]}).encode()
                     self.send_response(200);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)));self.end_headers();self.wfile.write(body)
                 def log_message(self,*args):pass
             server=http.server.ThreadingHTTPServer((gateway,0),Metadata);issuer='http://'+gateway+':'+str(server.server_port)
             threading.Thread(target=server.serve_forever,daemon=True).start()
-            docker('pull','postgres:16');pgimage=json.loads(docker('image','inspect','postgres:16'))[0]
+            pgref='postgres@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d'
+            docker('pull',pgref);pgimage=json.loads(docker('image','inspect',pgref))[0]
             pg=docker('create','--network',network,'--network-alias','database','--env','POSTGRES_USER=ci',
                 '--env','POSTGRES_DB=ouf_semantic','--env','POSTGRES_PASSWORD=CI_SYNTHETIC_NO_AUTHORITY',pgimage['Id']);owned.append(pg);docker('start',pg)
             ready=False
