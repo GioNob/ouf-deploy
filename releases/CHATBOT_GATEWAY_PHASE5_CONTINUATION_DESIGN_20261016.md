@@ -1,6 +1,10 @@
 # Phase 5 continuation: integration contract, not an executable release
 
-Status: numeric compatibility qualified; continuation candidate implemented, native qualification OPEN.
+Historical design checkpoint. Qualification subsequently completed on
+`aeeb625ddacc5837e4520788d73a6598aaa5734f`: native run38857329614, complete
+run38857329616 (473 tests/63 suites, no failures/skips), backup run38857329638.
+The released procedure is [here](CHATBOT_GATEWAY_PHASE5_CONTINUATION_20261016.md).
+The original design and gates below remain as history; target phase5 is still open.
 No command in this document grants authority or can resume the target.
 Roadmap: technical 5/8, functional 0/6. Phases 1–4 remain completed.
 

@@ -45,9 +45,11 @@ tre route interessate e 8 vettori generali JSON/numerici. Schema canonico invari
 proiezione del solo `$id` qualificato, precisione cjson a 16 cifre e costanti range
 del compilatore jsonschema a 17 cifre. Il massimo contrattuale resta 9007199254740991.
 
-Il compilatore offline della prosecuzione conserva nove effetti APPLIED e il claim
+Il compilatore della prosecuzione conserva nove effetti APPLIED e il claim
 storico irrisolto, calcola 28 modifiche residue e una diversa intenzione per la route
-corretta. Non è registrato come profilo eseguibile e non conferisce autorità.
+corretta. La successiva integrazione eseguibile richiede il nuovo profilo firmato,
+la revisione HUMAN completa e i controlli concreti del runtime; il piano da solo
+non conferisce autorità.
 La pubblicazione futura conserva stato HTTP/hash/lunghezza ACK senza corpo privato;
 GET esatta resta obbligatoria e nessun esito ambiguo autorizza replay.
 
@@ -124,7 +126,7 @@ Cinque grant erano consumati prima della nuova sessione; la successiva lettura h
 
 Riferimenti: `AGENTS.md`, `docs/OUF_RESILIENCE_POLICY.md`, `releases/CHATBOT_RUNNING_ROOTFS_RECOVERY_20261016.md`.
 
-### Phase-5 continuation candidate (2026-10-16, qualification pending)
+### Historical phase-5 candidate checkpoint (qualification subsequently completed)
 
 The previous full cohort CI run38852300756 completed successfully on549f9e66.
 The new candidate integrates retained phases1–4, numeric compatibility mounts,
@@ -132,3 +134,22 @@ remaining28 Gateway writes and an eight-grant predecessor worker. Its new native
 and signed integration gates are pending. No new target action or launcher is
 accepted; target phase5 and functional0/6 remain unchanged. See
 [continuation design and gates](../releases/CHATBOT_GATEWAY_PHASE5_CONTINUATION_DESIGN_20261016.md).
+
+
+## Prosecuzione fase 5 qualificata, pronta per la revisione sul VPS
+
+Sorgente `aeeb625ddacc5837e4520788d73a6598aaa5734f`. CI `38857329614` PASS:
+APISIX reale sostituito con asset in sola lettura, nove effetti conservati e 28
+scritture residue, mappa finale di 37 route esatta; revisione completa, storia di
+otto grant e nono grant reale TLS. La correzione del confronto mount ordina solo
+i record completi per destinazione univoca, senza scartare campi o alterare i pin
+storici. La policy corrente si applica all'esecuzione nuova, preservando la
+ricostruzione degli scope storici. Il guard Registry include esplicitamente il
+profilo di fase 5 e conserva verifiche correnti di readiness e token montato.
+
+Backup regression `38857329638` PASS. Suite completa `38857329616` PASS:
+473 test in 63 suite, zero errori o skip. Il launcher sorgente/hash-pinned è
+rilasciato: [procedura di fase 5](../releases/CHATBOT_GATEWAY_PHASE5_CONTINUATION_20261016.md).
+Nessuna modifica target da queste prove; fasi 1–4 conservate, fase 5/8 sospesa,
+CSV 0/6. Prossimo passo: nuova revisione privata completa sul VPS e decisione
+HUMAN esatta, poi esecuzione e lettura dell’esito.
