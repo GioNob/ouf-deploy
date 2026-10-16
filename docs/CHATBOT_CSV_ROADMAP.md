@@ -357,3 +357,22 @@ membri `9ca1c537e02de4fb2fa988edd244a46613fa115332d9a16de32db4fd0bd49991`.
 Il precedente launcher vincolato a 495d46 è superato: usare questo rilascio.
 Nessuna nuova esecuzione VPS durante la qualifica: fase 5 ancora sospesa,
 fasi 1–4 conservate, otto grant storici, 28 modifiche residue, CSV 0/6.
+
+
+## Diagnosi del nuovo arresto dopo Gateway
+
+Reader `scripts/read-chatbot-postgateway-container-20261016.py`, sorgente
+`c48305c1f960cb7642589a5b973ac0520193b200`, SHA256
+`3c057b348857d99784af932f11cb86d458bd7c225aef70f180845ced68219405`.
+CI `38874295581`, job `116885500996`, PASS: 26 test, comprese le prove reali
+namespace GET e SELECT PostgreSQL dei lettori di regressione. Il nuovo lettore
+non chiama PostgreSQL: verifica file privati, GET Docker e due GET Gateway.
+Il flusso completo è provato con file privati reali e osservazioni native
+simulate; i helper di trasporto/custodia sono identici al lettore già qualificato.
+Non dichiara esecuzione o riconciliazione sul VPS prima dell'output operatore.
+Legge modulo/passo CLAIMED, configurazione richiesta/immagine/effettiva senza
+valori, worker con contatori reali, journal 28/28 Gateway e mappa finale stabile.
+Zero nuovi dump, backup letti, DB/IAM/MCP/grant o scritture di servizio/Gateway.
+Launcher `scripts/launch-chatbot-postgateway-container-20261016.sh`, SHA256
+`ad9ac7854ca025f0b097a6164d22e3fe3539951f2af7b6001a438d39c4326b24`.
+Il vecchio delivery non va rilanciato: contiene effetti ormai consumati.
