@@ -21,6 +21,8 @@ on:
       - tests/test_gateway_semantic_upstream_readback.py
       - scripts/prepare-chatbot-semantic-upstream-repair-20261016.py
       - tests/test_gateway_semantic_upstream_preparation_readback.py
+      - scripts/apply-chatbot-semantic-upstream-repair-20261016.py
+      - tests/test_gateway_semantic_upstream_application_readback.py
       - .github/workflows/chatbot-gateway-readback.yml
 permissions: {contents: read}
 jobs:
