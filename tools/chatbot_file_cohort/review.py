@@ -97,8 +97,9 @@ def compile_review(*, source_closure, execution_profile, scopes, phase_intents,
     worker = scopes['policyTokenFiniteWorkerSession']
     recovery=scopes['applicationRegistryCutover'].get('postGrantRecovery')
     paused=type(recovery)is dict and recovery.get('profile')in('ouf.chatbot-paused-unsigned-attestation-reprocessing.v1','ouf.chatbot-paused-unsigned-attestation-reprocessing.v2','ouf.chatbot-signed-paused-admission-reprocessing.v1')
-    prior=4 if paused and recovery['profile']=='ouf.chatbot-signed-paused-admission-reprocessing.v1'else(3 if paused and recovery['profile'].endswith('.v2')else(2 if paused else 1))
-    if paused:
+    backup=type(recovery)is dict and recovery.get('profile')=='ouf.chatbot-verified-registry-mcp-backup-recovery.v1'
+    prior=5 if backup else 4 if paused and recovery['profile']=='ouf.chatbot-signed-paused-admission-reprocessing.v1'else(3 if paused and recovery['profile'].endswith('.v2')else(2 if paused else 1))
+    if paused or backup:
         require(worker.get('schema')=='ouf.policy-token-new-finite-worker-session.v'+str(prior)
             and worker.get('predecessorCancelledWorkerHash')==recovery['cancelledWorkerHash']
             and worker.get('predecessorWorkerSessionHash')==recovery['workerSessionHash']
@@ -117,7 +118,7 @@ def compile_review(*, source_closure, execution_profile, scopes, phase_intents,
         'phaseIntentHashes': {name: digest(intent) for name, intent in phase_intents.items()},
         'privateInputHashes': copy.deepcopy(input_hashes),
         'maximumElapsedSeconds': maximum_seconds, 'freshHumanDecisionRequired': True,
-        'maximumExistingInstallerSignatures': 2, 'additionalNodeAttestationSignatures': 1,
+        'maximumExistingInstallerSignatures': 2, 'additionalNodeAttestationSignatures': 0 if backup else 1,
         'firstControlledGrantMaximumAttempts': 1, 'firstControlledGrantMaximumSeconds': 300,
         'finiteWorkerMaximumAttempts': worker['policy']['max_attempts'],
         'finiteWorkerMaximumSeconds': worker['policy']['max_elapsed'],
@@ -196,6 +197,14 @@ def terminal_decision(review, review_path):
     summary = ('\nRevisione unica del ciclo CSV/chatbot.\n'
         'Documento privato completo: '+str(review_path)+'\n'
         'SHA256: '+review_hash+'\n'
+        +('Ripresa dopo backup MCP fallito, con Registry già avviato e verificato.\n'
+          'Dieci fasi Registry completate restano immutate; nessun replay o nuova attestazione.\n'
+          'I tre backup validi sono copiati e verificati; il dump MCP vuoto e il claim fallito restano nello storico.\n'
+          'Un solo nuovo dump MCP usa il ruolo amministrativo indicato nella revisione privata.\n'
+          'Il ruolo applicativo resta invariato; nessun restore o reset del database.\n'
+          'Cinque grant consumati restano conteggiati; il prossimo nuovo grant sarà il sesto cumulativo.\n'
+          'Nuova sessione di massimo 128 tentativi e 3600 secondi, senza rinnovo automatico.\n'
+          if review.get('postGrantRecoveryReview',{}).get('profile')=='ouf.chatbot-verified-registry-mcp-backup-recovery.v1' else '')
         +('Ripresa dopo attestazione firmata e controllo precedente alla migrazione.\n'
           'Le sette fasi applicate, la firma precedente, i due intenti falliti e il nuovo intento sospeso restano nello storico.\n'
           'Questa decisione autorizza una nuova attestazione con il codice corretto sullo stesso processo in pausa.\n'

@@ -24,7 +24,7 @@ jobs:
       - name: Signed owner and fixed preflight unit qualification
         run: |
           set -euo pipefail
-          for suite in test_chatbot_cohort_databases.py test_chatbot_mcp_backup_preflight.py; do
+          for suite in test_chatbot_cohort_backup_recovery.py test_chatbot_cohort_databases.py test_chatbot_mcp_backup_preflight.py; do
             sudo python3 -I -B -m unittest discover -s /var/lib/ouf-mcp-backup-test/repository/tests -p "$suite" -v
           done
       - name: Actual restricted role denial and signed administrative backup
@@ -39,6 +39,7 @@ jobs:
           suite=unittest.TestSuite(m.NativePostgres(name) for name in (
               "test_real_archives_preserve_rows_and_owner_migration_identity",
               "test_restricted_mcp_role_requires_explicit_backup_reader",
-              "test_exact_standalone_preflight_query_on_mixed_catalogue"))
+              "test_exact_standalone_preflight_query_on_mixed_catalogue",
+              "test_native_failed_backup_adoption_preserves_three_archives"))
           result=unittest.TextTestRunner(verbosity=2).run(suite)
-          sys.exit(0 if result.wasSuccessful() and not result.skipped and result.testsRun==3 else 1)'
+          sys.exit(0 if result.wasSuccessful() and not result.skipped and result.testsRun==4 else 1)'

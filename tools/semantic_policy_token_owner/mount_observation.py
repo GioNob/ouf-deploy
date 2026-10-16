@@ -20,7 +20,7 @@ def generation(pid,*,allow_frozen=False):
             'networkNamespace':Path(f'/proc/{pid}/ns/net').stat().st_ino}
 
 class RenewableTokenMountObservation:
-    def __init__(self,expected,owner,deadline,clock=time.monotonic,*,pause_binding=None):
+    def __init__(self,expected,owner,deadline,clock=time.monotonic,*,pause_binding=None,running_binding=None):
         fields={'source','target','fileName','gid','directoryDevice','directoryInode',
                 'ownerBindingHash','maxBytes','minimumRemainingSeconds'}
         require(type(expected) is dict and set(expected)==fields and isinstance(owner,DomainOwner),
@@ -44,7 +44,12 @@ class RenewableTokenMountObservation:
         if pause_binding is not None:
             from paused_workload_binding import PausedWorkloadBinding
             require(type(pause_binding) is PausedWorkloadBinding,'TYPED_ENGINE_PAUSE_BINDING_REQUIRED')
+        require(pause_binding is None or running_binding is None,'ONE_NATIVE_MOUNT_PROCESS_BINDING_REQUIRED')
+        if running_binding is not None:
+            from gated_process_observation import RunningWorkloadBinding
+            require(type(running_binding) is RunningWorkloadBinding,'TYPED_RUNNING_REGISTRY_BINDING_REQUIRED')
         self.pause_binding=pause_binding
+        self.running_binding=running_binding
     def guard(self):
         require(self.clock()<self.deadline and fingerprint(self.expected)==self.policy_hash,
                 'MOUNT_OBSERVATION_DEADLINE_OR_POLICY_DRIFT')
@@ -70,8 +75,10 @@ class RenewableTokenMountObservation:
                 {'pid','startTicks','mountNamespace','networkNamespace'},'EXACT_PAUSED_GENERATION_REQUIRED')
         self.guard();e=self.expected;pid=expected_generation['pid'];fds=[]
         pause_before=None if self.pause_binding is None else self.pause_binding.observe()
+        running_before=None if self.running_binding is None else self.running_binding.observe()
+        if running_before is not None:require(running_before['runtimeBinding']['pid']==pid,'EXACT_RUNNING_REGISTRY_PROCESS_REQUIRED')
         if pause_before is not None:require(pause_before['runtimeBinding']['pid']==pid,'EXACT_PAUSED_ENGINE_PROCESS_REQUIRED')
-        require(generation(pid,allow_frozen=pause_before is not None)==expected_generation,'PAUSED_MOUNT_PROCESS_DRIFT')
+        require(generation(pid,allow_frozen=pause_before is not None or running_before is not None)==expected_generation,'PAUSED_MOUNT_PROCESS_DRIFT')
         try:
             with protected_directory(e['source'],gid=e['gid'],mode=0o750) as source:
                 root=os.fstat(source)
@@ -107,8 +114,9 @@ class RenewableTokenMountObservation:
                         ==identity(os.fstat(mounted)) and identity(os.fstat(source))==identity(root)
                         and os.listdir(source)==[e['fileName']] and self.mountinfo(pid)==raw,
                         'TOKEN_ROTATED_OR_MOUNT_CHANGED_DURING_OBSERVATION')
-                require(generation(pid,allow_frozen=pause_before is not None)==expected_generation
-                        and (pause_before is None or self.pause_binding.observe()==pause_before),
+                require(generation(pid,allow_frozen=pause_before is not None or running_before is not None)==expected_generation
+                        and (pause_before is None or self.pause_binding.observe()==pause_before)
+                        and (running_before is None or self.running_binding.observe()==running_before),
                         'PAUSED_MOUNT_PROCESS_DRIFT');self.guard()
                 return {'schema':'ouf.renewable-token-mount-observation.v1','bindingHash':self.policy_hash,
                         'generationHash':fingerprint(expected_generation),'privateBytesRead':leaf.st_size*2,

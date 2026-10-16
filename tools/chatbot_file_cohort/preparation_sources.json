@@ -6,6 +6,7 @@
     "tools/chatbot_file_cohort/action_process.py",
     "tools/chatbot_file_cohort/assemble.py",
     "tools/chatbot_file_cohort/authorization.py",
+    "tools/chatbot_file_cohort/backup_recovery.py",
     "tools/chatbot_file_cohort/child_bootstrap.py",
     "tools/chatbot_file_cohort/containers.py",
     "tools/chatbot_file_cohort/continued_owner.py",

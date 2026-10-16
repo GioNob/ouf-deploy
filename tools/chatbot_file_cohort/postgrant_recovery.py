@@ -62,8 +62,8 @@ def validate_cutover_seed(row,intents,authority_hash=None):
 
 
 def recovery_component(profile):
-    from tools.chatbot_file_cohort import paused_recovery,mounted_recovery,signed_recovery
-    components={x.PROFILE:x for x in(paused_recovery,mounted_recovery,signed_recovery)}
+    from tools.chatbot_file_cohort import paused_recovery,mounted_recovery,signed_recovery,backup_recovery
+    components={x.PROFILE:x for x in(paused_recovery,mounted_recovery,signed_recovery,backup_recovery)}
     require(profile in components,'EXACT_RECOVERY_PROFILE_REQUIRED')
     return components[profile]
 
@@ -273,11 +273,13 @@ def current_baseline(predecessor,engine):
     pregrant_native_readback(original,legacy.AUTHORITY)
     profile=FileOnlyProfile(prepared['registry']['creationRequest'],prepared['registry']['configtree'])
     transition=Transition.__new__(Transition);transition.context=row['contextHash']
+    from tools.chatbot_file_cohort.backup_recovery import PROFILE as BACKUP_PROFILE
+    running=predecessor.get('recoveryProfile')==BACKUP_PROFILE
     paused=predecessor.get('recoveryProfile') is not None
     actual=engine.matching_configuration(transition,prepared['registry']['creationRequest'],engine.inspect(transition))if paused else engine.matching_created(transition,prepared['registry']['creationRequest'],engine.inspect(transition))
     if paused:
         from tools.chatbot_file_cohort.paused_recovery import current_paused_native
-        current_paused_native(predecessor,engine,actual)
+        current_paused_native(predecessor,engine,actual,running=running)
     require(actual['Id']==CREATED_ID and actual.get('RestartCount')==0,'POSTGRANT_EXACT_ALREADY_CREATED_CONTAINER_REQUIRED')
     require(engine.inspect(transition)==actual,'POSTGRANT_CREATED_GENERATION_UNSTABLE')
     # Existing owner predicate understands the stopped host policy and detached
@@ -296,23 +298,27 @@ def current_baseline(predecessor,engine):
     code,pg=engine.request('GET','/v1.44/containers/'+pgpin['containerId']+'/json')
     require(code==200 and Engine.runtime_binding(pg)==pgpin and pg['State']['Running']is True,
         'POSTGRANT_POSTGRES_GENERATION_DRIFT')
+    if running:
+        from tools.chatbot_file_cohort.backup_recovery import current_registry,current_databases
+        current_registry(predecessor,engine);current_databases(predecessor)
     from database_gate import Psql
     from fenced_backup_adapter import FencedBackupAdapter
-    admin=Psql(pgpin['containerId'],prepared['registry']['intents']['FENCED_BACKUP']['user'],
-        prepared['registry']['adminDatabase'],'ouf-cutover-postgrant-read')
-    try:
-        backup=FencedBackupAdapter(admin,prepared['registry']['intents']['FENCED_BACKUP'],lambda _:None,row['contextHash'])
-        require(backup.snapshot()==predecessor['payloads']['evidence']['FENCED_BACKUP'],
-            'POSTGRANT_CURRENT_BACKUP_OR_DATABASE_FENCE_DRIFT')
-    finally:admin.close()
+    if not running:
+        admin=Psql(pgpin['containerId'],prepared['registry']['intents']['FENCED_BACKUP']['user'],
+            prepared['registry']['adminDatabase'],'ouf-cutover-postgrant-read')
+        try:
+            backup=FencedBackupAdapter(admin,prepared['registry']['intents']['FENCED_BACKUP'],lambda _:None,row['contextHash'])
+            require(backup.snapshot()==predecessor['payloads']['evidence']['FENCED_BACKUP'],
+                'POSTGRANT_CURRENT_BACKUP_OR_DATABASE_FENCE_DRIFT')
+        finally:admin.close()
     from image_custody import loaded,runtime_image_id
     for image in prepared['imagePlan']['images']:
         audit=image['audit'];code,native=engine.request('GET','/v1.44/images/'+runtime_image_id(audit)+'/json')
         require(code==200,'POSTGRANT_LOADED_IMAGE_ABSENT');loaded(audit,native)
     require(legacy.quiescent(legacy.read_units()),'POSTGRANT_LEGACY_WRITER_NOT_QUIESCENT')
     return {'createdContainerId':CREATED_ID,'createdRuntimeHash':digest(actual),
-        'postgresRuntimeHash':digest(pgpin),'databaseFenceProven':True,'imagesVerified':5,
-        'retainedPrefixPhaseCount':6 if paused else 4,
+        'postgresRuntimeHash':digest(pgpin),'databaseFenceProven':not running,'imagesVerified':5,'registryAlreadyRunning':running,
+        'retainedPrefixPhaseCount':10 if running else 6 if paused else 4,
         **({'historicalAppliedPhaseCount':7,'newSourceRequiresFreshAttestation':True,'conservativeDatabaseFlagRetained':True}if predecessor.get('recoveryProfile')=='ouf.chatbot-signed-paused-admission-reprocessing.v1'else{}),'controlledGrantAttemptsRetained':predecessor['worker']['controlledCumulativeGrantAttempts'] if paused else 1,'serviceMutations':0,'grantRequests':0}
 
 

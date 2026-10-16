@@ -124,6 +124,10 @@ def collect(args):
     with protected_directory(source):pass
     with protected_directory(stage):pass
     verify_preparation_capsule(source,stage,args.preparation_source_hash)
+    from tools.chatbot_file_cohort.backup_recovery import CONTEXT as BACKUP_CONTEXT
+    if os.path.lexists(evidence.PARENT/BACKUP_CONTEXT):
+        from tools.chatbot_file_cohort.postgrant_preparation import collect as collect_backup
+        return collect_backup(args,backup=True)
     from tools.chatbot_file_cohort.signed_recovery import CONTEXT as SIGNED_CONTEXT
     if os.path.lexists(evidence.PARENT/SIGNED_CONTEXT/'review.json'):
         from tools.chatbot_file_cohort.postgrant_preparation import collect as collect_signed

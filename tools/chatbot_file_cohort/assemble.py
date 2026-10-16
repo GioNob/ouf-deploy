@@ -185,6 +185,8 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
             'administration':copy.deepcopy(database['mcpAuditRoleAdministration']),
             'preflight':copy.deepcopy(database['mcpAuditRolePreflight'])}
         require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')
+    if database is not None and database.get('mcpBackupReader') is not None:
+        review['mcpBackupReaderReview']=copy.deepcopy(database['mcpBackupReader'])
     require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')
     if recovery is not None:
         review['postGrantRecoveryReview']=copy.deepcopy(recovery)

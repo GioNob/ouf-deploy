@@ -52,7 +52,7 @@ def validate_authorization_rebind(previous,current):
         and not right.get('scopeBindings'),'POSTGRANT_NEW_AUTHORIZATION_WRITES_DENIED')
 
 
-def collect(args,*,paused=False,mounted=False,signed=False):
+def collect(args,*,paused=False,mounted=False,signed=False,backup=False):
     source,stage=Path(args.source_directory),Path(args.staging_directory)
     profile=None;claim=CLAIM
     if paused:
@@ -64,6 +64,9 @@ def collect(args,*,paused=False,mounted=False,signed=False):
         if signed:
             from tools.chatbot_file_cohort.signed_recovery import PROFILE as SIGNED,CLAIM as SIGNED_CLAIM
             profile=SIGNED;claim=SIGNED_CLAIM
+    if backup:
+        from tools.chatbot_file_cohort.backup_recovery import PROFILE as BACKUP,CLAIM as BACKUP_CLAIM
+        profile=BACKUP;claim=BACKUP_CLAIM
     require(not os.path.lexists(evidence.PARENT/claim),'POSTGRANT_CONTINUATION_ALREADY_RESERVED_INSPECT_ONLY')
     report('POSTGRANT_RETAINED_HISTORY_PREFLIGHT')
     previous=read_predecessor(profile);old=previous['prepared'];bundle=previous['bundle']
@@ -107,6 +110,12 @@ def collect(args,*,paused=False,mounted=False,signed=False):
         authorization['adminTokenFile']=authorization['mcpTokenFile']=str(session.token_path)
         authorization['plan']['sessionBinding']=session.binding()
         validate_authorization_rebind(old['authorization']['plan'],authorization['plan'])
+        if backup:
+            from tools.chatbot_file_cohort.databases import mcp_backup_preflight,compile_mcp_backup_reader
+            db=prepared['databasePlan'];mcp=next(r for r in db['modules'] if r['module']=='mcp')
+            facts=mcp_backup_preflight(db['postgresRuntimeBinding']['containerId'],mcp['database'],db['mcpAuditRoleAdministration']['admin'])
+            prepared['databasePlan']=compile_mcp_backup_reader(db,facts)
+            prepared['cohortPlan']['databasePlanHash']=digest(prepared['databasePlan'])
         prepared['cohortPlan']['authorizationPlanHash']=digest(authorization['plan'])
         cohort_hash=digest(prepared['cohortPlan'])
         registry=prepared['registry'];registry['postGrantRecovery']=copy.deepcopy(proof)

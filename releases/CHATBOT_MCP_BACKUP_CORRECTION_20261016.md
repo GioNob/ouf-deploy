@@ -116,3 +116,33 @@ the three complete backups and the empty failed MCP archive/claim. It needs
 fresh native proof and a new explicit HUMAN decision for the changed source and
 backup plan. The preflight does not grant that authority or implement adoption.
 Do not run the previous recovery launcher or remove the old MCP claim/archive.
+
+## Successful target preflight and successor candidate
+
+The corrected reader at `500eab9d6ddad1e02865bb333ef66ce946ad58e0`
+completed on the target. The administrator matches database OID 21560 and
+produced 250874 bytes with exit 0 and no stderr. The application lacks SELECT
+on two tables and no sequences; its privileges were unchanged. The final
+check proves all retained archives and the database journal unchanged. This
+probe was discarded and is not an accepted backup. See the success evidence.
+
+The successor candidate adds an exact verified-Registry recovery profile.
+It preserves all ten Registry effects, the signed/unsigned reprocessing
+history, five controlled grants, the empty MCP archive/claim and three complete
+archives. It copies those three archives into a new private directory under a
+consumed continuation fence, with a durable copy claim and no automatic replay
+after interrupted copying. A changed signed database plan authorizes one new
+MCP dump with the existing administrator. No GRANT is added for backup.
+
+The Registry is checked as the same running process, complete OCI and
+independent rootfs, with fresh readiness and a current owner-admitted token
+observed through its actual read-only mount. No new node attestation, database
+admission, create, stage, unpause or SIGUSR1 is executed. The previous signature
+remains historical evidence and its expiry is not extended. Only the final
+producer release remains a possible future Registry effect after the full
+cohort verifies. A distinct v5 worker session retains five predecessors; its
+first new grant will be the sixth cumulative controlled attempt.
+
+The candidate still requires qualification before any operational launcher is
+released. The previous recovery launcher remains unsuitable and must not run.
+The CSV/chatbot end-to-end acceptance remains unproven.

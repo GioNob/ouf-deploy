@@ -177,7 +177,10 @@ class NativePostgres(unittest.TestCase):
     def test_restricted_mcp_role_requires_explicit_backup_reader(self):
         self.real_archives(restricted_mcp=True)
 
-    def real_archives(self, restricted_mcp=False):
+    def test_native_failed_backup_adoption_preserves_three_archives(self):
+        self.real_archives(restricted_mcp=True,recovery=True)
+
+    def real_archives(self, restricted_mcp=False,recovery=False):
         self.assertEqual(os.geteuid(), 0)
         cid = os.environ['OUF_POSTGRES_CONTAINER_ID']
         self.assertRegex(cid, r'^[a-f0-9]{64}$')
@@ -223,7 +226,7 @@ class NativePostgres(unittest.TestCase):
         if restricted_mcp:
             expected['mcp'] += [{'version':v,'checksum':'b'*64}for v in (10,11,12)]
         dbplan = d.compile_database_plan(pg, bindings, expected, current)
-        if restricted_mcp:
+        if restricted_mcp and not recovery:
             facts=d.mcp_backup_preflight(cid,bindings['mcp']['database'],'postgres')
             dbplan=d.compile_mcp_backup_reader(dbplan,facts)
         replacements = []
@@ -248,6 +251,40 @@ class NativePostgres(unittest.TestCase):
         owner = d.CohortDatabases(action, engine, Journal(journal), installation, dbplan, backup,
             {'path': str(binary), 'sha256': hashlib.sha256(binary.read_bytes()).hexdigest()})
         owner.initialize()
+        if recovery:
+            from unittest.mock import patch
+            from tools.chatbot_file_cohort import backup_recovery as b
+            with self.assertRaisesRegex(p.PlanDenied,'INSUFFICIENT_PRIVILEGE'):
+                owner.backup_quiesced()
+            old=owner.record();old_plan=copy.deepcopy(dbplan);oldroot=backup
+            self.assertEqual(old['backups']['mcp']['state'],'CLAIMED')
+            self.assertEqual((oldroot/'mcp.dump').read_bytes(),b'')
+            preserved={path:path.read_bytes() for path in oldroot.iterdir()}
+            preserved[owner.journal.record]=owner.journal.record.read_bytes()
+            pins={m:(len(preserved[oldroot/(m+'.dump')]),hashlib.sha256(preserved[oldroot/(m+'.dump')]).hexdigest()) for m in p.MODULES}
+            dbplan=d.compile_mcp_backup_reader(old_plan,d.mcp_backup_preflight(cid,bindings['mcp']['database'],'postgres'))
+            installation=copy.deepcopy(installation);installation['databasePlanHash']=p.digest(dbplan)
+            raw=json.loads(f.authority);raw['applicationCohortInstallation']=c.installation_scope(installation)
+            f.authority=fixture.crypto.encoded(raw);f.approval['executionAuthorityHash']=fixture.crypto.sha(f.authority)
+            f.write(f.mandate,fixture.crypto.encoded(f.approval));f.approved=fixture.crypto.sha(f.mandate.read_bytes())
+            for role in f.grant['roles']:f.sign(role)
+            action=AggregateAction(f.gate(),f.authority,f.expected['sourceClosureHash'])
+            backup=f.root/'new-backups';backup.mkdir(mode=0o700)
+            journal=f.root/'new-database-journal';journal.mkdir(mode=0o700)
+            owner=d.CohortDatabases(action,engine,Journal(journal),installation,dbplan,backup,
+                {'path':str(binary),'sha256':hashlib.sha256(binary.read_bytes()).hexdigest()})
+            owner.initialize()
+            proof={'retainedCohortBackupDirectory':str(oldroot)}
+            def retained(proof):
+                for module in p.MODULES:b.archive_bytes(proof['retainedCohortBackupDirectory'],module)
+                self.assertEqual(preserved[next(path for path in preserved if path.name=='recovery.json')],
+                    next(path for path in preserved if path.name=='recovery.json').read_bytes())
+            with patch.object(b,'ARCHIVES',pins),patch.object(b,'DATABASE_HASH',p.digest(old)),patch.object(b,'AUTHORITY',old['authorityHash']),patch.object(b,'retained_bindings',side_effect=retained):
+                b.adopt_backups(owner,{'databaseJournal':old,'prepared':{'databasePlan':old_plan},'backupRoot':str(oldroot)},proof)
+            self.assertEqual(set(owner.record()['backups']),{'udp','onboarding','ingestion'})
+            for module in ('udp','onboarding','ingestion'):
+                self.assertEqual((backup/(module+'.dump')).read_bytes(),preserved[oldroot/(module+'.dump')])
+            for path,data in preserved.items():self.assertEqual(path.read_bytes(),data)
         receipt = owner.backup_quiesced()
         self.assertEqual(receipt['backupCount'], 4); self.assertFalse(receipt['restorePerformed'])
         first = owner.record()

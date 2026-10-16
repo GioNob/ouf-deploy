@@ -101,6 +101,13 @@ def transient_registry_observation(application,error):
     native/process checks reject paused/foreign/changed generations and unknown
     integrity errors before any read-only wait is admitted.
     """
+    from tools.chatbot_file_cohort.backup_recovery import RegistryRecoveryReadinessPending,PROFILE as BACKUP_PROFILE
+    if type(error)is RegistryRecoveryReadinessPending:
+        row=application.executor.t.read()
+        recovery=(application.executor.aggregate_scope or {}).get('postGrantRecovery') or {}
+        if recovery.get('profile')==BACKUP_PROFILE and row.get('state')=='READY' and row.get('nextPhase')==10:
+            return 'VERIFY_APPLICATION'
+        return None
     if type(error)is not CutoverDenied or str(error)!='NATIVE_AMBIGUITY_OR_NO_EFFECT_STOPS_CUTOVER':return None
     executor=application.executor;row=executor.t.read()
     if row.get('state')!='IN_FLIGHT' or not row.get('effects'):return None
@@ -333,7 +340,7 @@ class Delivery:
                     phase=transient_registry_observation(application,error)
                     if phase is None:raise
                     channel=getattr(application.executor.adapters[phase],'channel',None)
-                    retry_after=getattr(channel,'retry_after_seconds',0) if phase=='VERIFY_APPLICATION' else 0
+                    retry_after=getattr(error,'retry_after_seconds',getattr(channel,'retry_after_seconds',0)) if phase=='VERIFY_APPLICATION' else 0
                     budget.schedule(phase,retry_after)
                     continue
                 self.current(True);budget.complete();return result
@@ -426,6 +433,9 @@ class Delivery:
             gateway = GatewayRoutes(self.action,plan,self.prepared['gatewayPlan'],Journal(directories['gateway']),
                 transport)
             containers.initialize(); databases.initialize(); gateway.initialize()
+            if recovery is not None and recovery.get('profile')=='ouf.chatbot-verified-registry-mcp-backup-recovery.v1':
+                from tools.chatbot_file_cohort.backup_recovery import adopt_backups
+                adopt_backups(databases,previous,recovery)
             containers.accept_owner_gate('authorization',plan['authorizationPlanHash'],digest(auth_evidence))
             profile = evidence.decode(governance.public_input(governance.PROFILE))
             verifier = self.action.authority.verifier

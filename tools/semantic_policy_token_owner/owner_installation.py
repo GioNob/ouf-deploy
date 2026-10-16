@@ -63,9 +63,9 @@ def finite_worker_scope(logical_scope, first_operation, first_scope_hash, policy
         evidence.require(type(value) is str and len(value) == 64
                          and all(c in '0123456789abcdef' for c in value),
                          'EXACT_WORKER_HISTORY_AND_GENERATION_BINDINGS_REQUIRED')
-    evidence.require(predecessor_attempts in (1,2,3,4) and type(predecessor_attempts)is int,'EXACT_CONTROLLED_PREDECESSOR_COUNT_REQUIRED')
+    evidence.require(predecessor_attempts in (1,2,3,4,5) and type(predecessor_attempts)is int,'EXACT_CONTROLLED_PREDECESSOR_COUNT_REQUIRED')
     extra={}
-    if predecessor_attempts in(2,3,4):
+    if predecessor_attempts in(2,3,4,5):
         evidence.require(all(type(v)is str and len(v)==64 and all(c in '0123456789abcdef'for c in v)for v in(cancelled_worker_hash,predecessor_session_hash)),
             'EXACT_CANCELLED_WORKER_AND_SESSION_HISTORY_REQUIRED')
         extra={'controlledHistoryProfile':'ouf.policy-token-cancelled-worker-continuation.v1','predecessorCancelledWorkerHash':cancelled_worker_hash,

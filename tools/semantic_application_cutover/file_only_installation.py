@@ -70,7 +70,8 @@ def compile_scope(prepared,source_closure_hash):
         from tools.chatbot_file_cohort.paused_recovery import PROFILE as PAUSED_PROFILE
         from tools.chatbot_file_cohort.mounted_recovery import PROFILE as MOUNTED_PROFILE
         from tools.chatbot_file_cohort.signed_recovery import PROFILE as SIGNED_PROFILE
-        require(recovery.get('profile')in(PROFILE,PAUSED_PROFILE,MOUNTED_PROFILE,SIGNED_PROFILE)and paths['backup']==recovery['retainedBackupDirectory'],
+        from tools.chatbot_file_cohort.backup_recovery import PROFILE as BACKUP_PROFILE
+        require(recovery.get('profile')in(PROFILE,PAUSED_PROFILE,MOUNTED_PROFILE,SIGNED_PROFILE,BACKUP_PROFILE)and paths['backup']==recovery['retainedBackupDirectory'],
             'EXACT_REVIEWED_RETAINED_BACKUP_DIRECTORY_REQUIRED')
     require(intents['FENCED_BACKUP']['directory']==paths['backup'],'REGISTRY_BACKUP_DIRECTORY_SCOPE_DRIFT')
     require(prepared['nodeRecipe']['sourceClosureHash']==source_closure_hash
@@ -154,6 +155,18 @@ class RegistryCheckpoints:
                 selected=[p for p in selected if p['containerId'] in retired]
             quiesced=self.application.executor.adapters['QUIESCE_PRODUCERS']
             require(all(quiesced.stopped(pin) is not None for pin in selected),'REGISTRY_DEPENDENT_PRODUCER_FENCE_LOST')
+        recovery=self.scope.get('postGrantRecovery') or {}
+        if recovery.get('profile')=='ouf.chatbot-verified-registry-mcp-backup-recovery.v1':
+            from tools.chatbot_file_cohort.backup_recovery import current_registry,read_predecessor
+            proof['currentRegistryHash']=digest(current_registry(read_predecessor(),self.engine,readiness=True))
+            from gated_process_observation import RunningWorkloadBinding
+            from tools.semantic_policy_token_owner.mount_observation import RenewableTokenMountObservation,generation
+            import time
+            running=RunningWorkloadBinding(self.engine,self.transition,self.prepared['creationRequest'],self.store)
+            observation=running.observe()
+            mounted=self.prepared['nodeRecipe']['renewableToken']
+            proof['currentTokenMountHash']=digest(RenewableTokenMountObservation(mounted,self.token_owner,
+                time.monotonic()+30,running_binding=running).observe(generation(observation['runtimeBinding']['pid'],allow_frozen=True)))
         proof['authorizationHash']=digest(self.authorization(phase,point))
         if 'ATTEST_NEW_OCI_PEER' in completed and ((phase=='ADMIT_MIGRATION' and point=='BEFORE_NATIVE_EFFECT')
                 or (phase=='START_REPLACEMENT' and point=='BEFORE_UNPAUSE')):

@@ -140,25 +140,31 @@ def proposed_recipe(registry,*,retained_mount=False):
     recipe['expectedRootfsSeal']=copy.deepcopy(ROOTFS_SEAL)
     return recipe
 
-def current_paused_native(previous,engine,native):
+def current_paused_native(previous,engine,native,*,running=False):
     """All static native mismatches fail BEFORE IAM/HUMAN interactive steps."""
     from gated_process_observation import GatedProcessObservation
     from file_only_node_owner import ObservationBudget
     from tools.semantic_provider_node_observation import rootfs_seal,NodeObservation
     from tools.semantic_provider_deployment_authentication import attributes,ancestors,decode
     from compile_file_only_frame_policy import compile_policy,private_bridge_namespace_name
-    registry=previous['prepared']['registry'];request=registry['creationRequest'];recipe=proposed_recipe(registry,retained_mount=previous.get('recoveryProfile')in('ouf.chatbot-paused-unsigned-attestation-reprocessing.v2','ouf.chatbot-signed-paused-admission-reprocessing.v1'))
+    from tools.chatbot_file_cohort.backup_recovery import PROFILE as BACKUP_PROFILE
+    require(not running or previous.get('recoveryProfile')==BACKUP_PROFILE,'EXACT_RUNNING_BACKUP_RECOVERY_REQUIRED')
+    registry=previous['prepared']['registry'];request=registry['creationRequest'];recipe=proposed_recipe(registry,retained_mount=running or previous.get('recoveryProfile')in('ouf.chatbot-paused-unsigned-attestation-reprocessing.v2','ouf.chatbot-signed-paused-admission-reprocessing.v1'))
     stage=previous['payloads']['evidence']['STAGE_PAUSED_REPLACEMENT']
     require(native['Id']==original.CREATED_ID and native['RestartCount']==0
-        and native['State']['Status']=='paused'and native['State']['Paused']is True and native['State']['Running']is True
+        and native['State']['Status']==('running' if running else 'paused') and native['State']['Paused'] is (not running) and native['State']['Running']is True
         and Engine.runtime_binding(native)==Engine.runtime_binding(stage),'EXACT_RETAINED_PAUSED_STAGE_GENERATION_REQUIRED')
     process=GatedProcessObservation(request);before=process.observe(native['State']['Pid'])
-    require(before['processKind']=='GATE_WAITING','PAUSED_PREAPPLICATION_GATE_MUST_STILL_BE_WAITING')
+    require(before['processKind']==('APPLICATION_RUNNING' if running else 'GATE_WAITING'),'EXACT_RETAINED_PROCESS_KIND_REQUIRED')
+    if running:
+        release=previous['payloads']['evidence']['START_REPLACEMENT']
+        require(before['generation']==release['generation'] and Engine.runtime_binding(native)==release['runtimeBinding'],
+            'SAME_PREVIOUSLY_RELEASED_APPLICATION_GENERATION_REQUIRED')
     budget=ObservationBudget(180);config=recipe['observationConfiguration'];runner=NodeObservation(config,budget)
     state=decode(runner.run(config['runtimeBinding'],['--root',recipe['runtimeRoot'],'state',native['Id']],16384),16384)
     context=copy.deepcopy(recipe['dockerContext']);layout=context.pop('rootfsLayout',None)
     require(layout=='docker-containerd-overlayfs-v1'and state.get('id')==native['Id']
-        and state.get('pid')==native['State']['Pid']and state.get('status')=='paused'
+        and state.get('pid')==native['State']['Pid']and state.get('status')==('running' if running else 'paused')
         and state.get('bundle')==context['bundleParent']+'/'+native['Id'],'PAUSED_REVIEWED_RUNC_LAYOUT_REQUIRED')
     path=Path(state['bundle'])/'config.json';ancestors(path);fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
     try:
@@ -190,7 +196,7 @@ def current_paused_native(previous,engine,native):
     require(process.observe(native['State']['Pid'])==before and path.read_bytes()==raw
         and engine.inspect(SimpleNamespace(context=previous['transition']['contextHash']))==native,
         'PAUSED_NATIVE_GENERATION_CHANGED_DURING_PREFLIGHT')
-    return {'completeOci':True,'independentRootfs':True,'samePausedGate':True,'privateBindContentsRead':False}
+    return {'completeOci':True,'independentRootfs':True,'samePausedGate':not running,'sameReleasedApplication':running,'privateBindContentsRead':False}
 
 def proof_scope(previous,actor):
     require(actor=={k:previous['prepared']['authorization']['plan']['selection'][k]for k in ('issuer','tenant','subject')},
