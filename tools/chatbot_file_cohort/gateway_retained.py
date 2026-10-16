@@ -94,6 +94,7 @@ def enrich(previous):
         'receipt':{'profile':PROFILE,'sourceCommit':SOURCE,'reviewHash':REVIEW,'authorityHash':AUTHORITY,
             'runtimeJournalHash':RUNTIME,'runtimeBindingHash':NATIVE,'runtimePlanHash':digest(plan),
             'gatewayPlanHash':digest(prepared['gatewayPlan']),'historicalEffects':8,
+            'authorizationReceiptHash':digest(previous['payloads']['before']['QUIESCE_PRODUCERS']['ownerEvidence']),
             'newLifecycleEffectsAllowed':False,'newWorkerPreviouslyInstalled':False,
             'originalContinuationClaimHash':digest(old_claim)}}
     return {**previous,'recordBindings':bindings,'retainedGatewayAttempt':attempt}
@@ -103,8 +104,8 @@ def validate_proof(proof):
     receipt=proof.get('retainedNumericGateway',{})
     require(type(receipt)is dict and set(receipt)=={'profile','sourceCommit','reviewHash','authorityHash',
         'runtimeJournalHash','runtimeBindingHash','runtimePlanHash','gatewayPlanHash','historicalEffects',
-        'newLifecycleEffectsAllowed','newWorkerPreviouslyInstalled','originalContinuationClaimHash'}
-        and all(sha(receipt.get(k))for k in ('runtimePlanHash','gatewayPlanHash','originalContinuationClaimHash'))
+        'newLifecycleEffectsAllowed','newWorkerPreviouslyInstalled','originalContinuationClaimHash','authorizationReceiptHash'}
+        and all(sha(receipt.get(k))for k in ('runtimePlanHash','gatewayPlanHash','originalContinuationClaimHash','authorizationReceiptHash'))
         and receipt.get('profile')==PROFILE and receipt.get('sourceCommit')==SOURCE
         and receipt.get('reviewHash')==REVIEW and receipt.get('authorityHash')==AUTHORITY
         and receipt.get('runtimeJournalHash')==RUNTIME and receipt.get('runtimeBindingHash')==NATIVE

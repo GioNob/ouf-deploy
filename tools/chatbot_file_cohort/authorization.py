@@ -144,6 +144,7 @@ class OwnerTransport:
         require(wait is None or callable(wait), 'AUTHORIZATION_WAIT_FUNCTION_REQUIRED')
         self.wait = time.sleep if wait is None else wait
         self._last_mcp_at, self._role_cache = None, None
+        self._retained_roles_boundary = False
 
     def token(self, kind):
         if self.human_session is not None:
@@ -283,6 +284,7 @@ class OwnerTransport:
         current = self.active() if active is None else active
         if self._role_cache is not None and self._role_cache[0] == current:
             return copy.deepcopy(self._role_cache[1])
+        require(not self._retained_roles_boundary,'RETAINED_ROLE_POLICY_CHANGED_REQUIRE_RECONCILIATION')
         roles = self.tool('authorization.permissions.read',{'view':'ROLES'},'cohort:roles:read')
         require(self.active() == current, 'ROLE_POLICY_CHANGED_DURING_READ')
         self._role_cache = (copy.deepcopy(current),copy.deepcopy(roles))
@@ -464,6 +466,19 @@ def authorization_scope(plan):
     if 'observationPolicy' in plan:
         require(plan['observationPolicy']==OBSERVATION_POLICY,'EXACT_AUTHORIZATION_OBSERVATION_POLICY_REQUIRED')
         scope['readObservationPolicy']=copy.deepcopy(OBSERVATION_POLICY)
+    if 'retainedRoleObservation' in plan:
+        binding=plan['retainedRoleObservation']
+        require(type(binding)is dict and set(binding)=={'profile','ownerReceiptHash','policyRef','policyHash',
+            'roleCatalogueHash','allowedStage','forceFreshMcpBeforeRelease','ownerPublicationContract'}
+            and binding['profile']=='ouf.authorization-retained-role-observation.v1'
+            and binding['allowedStage']=='AFTER_GATEWAY' and binding['forceFreshMcpBeforeRelease']is True
+            and binding['ownerPublicationContract']=='LOCKED_ATOMIC_ROLE_AND_POLICY_PUBLICATION'
+            and all(type(binding[k])is str and re.fullmatch('[0-9a-f]{64}',binding[k])for k in
+                ('ownerReceiptHash','policyHash','roleCatalogueHash'))
+            and type(binding['policyRef'])is str and 0<len(binding['policyRef'])<=256
+            and binding['roleCatalogueHash']==digest(plan['targetRoles']),
+            'EXACT_RETAINED_OWNER_ROLE_OBSERVATION_REQUIRED')
+        scope['retainedRoleObservation']=copy.deepcopy(binding)
     return scope
 
 
@@ -479,6 +494,34 @@ class AuthorizationDelta:
     def guard(self):
         require(digest(self.plan) == self.hash and authorization_scope(self.plan) == self.scope, 'AUTHORIZATION_PLAN_DRIFT')
         self.action.guard('chatbotFileAuthorization',self.scope)
+        if 'retainedRoleObservation' in self.plan:
+            scope=json.loads(self.action.raw).get('applicationRegistryCutover',{})
+            proof=scope.get('postGrantRecovery',{})
+            require(proof.get('profile')=='ouf.chatbot-gateway-schema-continuation.v1'
+                and proof.get('retainedNumericGateway',{}).get('authorizationReceiptHash')
+                    ==self.plan['retainedRoleObservation']['ownerReceiptHash'],
+                'RETAINED_ROLE_OBSERVATION_REQUIRES_PINNED_RECOVERY_RECEIPT')
+            self.action.guard('applicationRegistryCutover',scope)
+
+    def verify_read_observation(self,stage):
+        """Persisted equivalent of the in-process role cache during quiescence.
+
+        The owner changes roles and ACTIVE policy atomically. The previously
+        observed role hash is reusable only while fresh owner policy identity
+        remains exact. Final release always forces the real MCP read again.
+        """
+        self.guard()
+        binding=self.plan.get('retainedRoleObservation') if stage=='AFTER_GATEWAY' else None
+        if binding is None:
+            if stage=='FINAL_COHORT':self.transport._role_cache=None
+            return self.verify()
+        active=self.transport.active()
+        require(active.get('policyRef')==binding['policyRef'] and active.get('contentHash')==binding['policyHash'],
+            'RETAINED_ROLE_OWNER_POLICY_CHANGED')
+        self.transport._role_cache=(copy.deepcopy(active),copy.deepcopy(self.plan['targetRoles']))
+        self.transport._retained_roles_boundary=True
+        try:return self.verify()
+        finally:self.transport._retained_roles_boundary=False
 
     def initialize(self):
         self.guard()
@@ -513,6 +556,7 @@ class AuthorizationDelta:
             and stage in ('AFTER_GATEWAY','FINAL_COHORT'),'SIGNED_AUTHORIZATION_READ_OBSERVATION_REQUIRED')
         boot=boot or Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         now,mono=clock(),monotonic()
+        mode='RETAINED_ROLES_CURRENT_OWNER_POLICY' if stage=='AFTER_GATEWAY' and 'retainedRoleObservation' in self.plan else 'FRESH_MCP_ROLE_READ'
         with self.journal.invocation():
             row=self.record();budget=copy.deepcopy(row.get('observations',{}).get(stage))
             if budget is None:
@@ -522,9 +566,10 @@ class AuthorizationDelta:
                     'bootId':boot,'startedAt':now,'lastObservedAt':now,'lastMonotonic':mono,
                     'expiresAt':expires,'expiresMonotonic':mono+expires-now,'attempts':0,
                     'nextAttemptAt':now,'nextAttemptMonotonic':mono,'state':'READY',
-                    'historicalObservationAttempts':None,'incidentState':'OPEN','budgetReset':False}
+                    'historicalObservationAttempts':None,'incidentState':'OPEN','budgetReset':False,'roleObservationMode':mode}
             require(budget['policy']==OBSERVATION_POLICY and budget['planHash']==self.hash
                 and budget['stage']==stage and budget['bootId']==boot and budget['budgetReset']is False
+                and budget.get('roleObservationMode')==mode
                 and type(budget['attempts'])is int and 0<=budget['attempts']<=128
                 and now+2>=budget['lastObservedAt'] and mono>=budget['lastMonotonic'],
                 'AUTHORIZATION_OBSERVATION_HISTORY_OR_CLOCK_DRIFT')
@@ -545,7 +590,7 @@ class AuthorizationDelta:
                 raise AuthorizationPaused('AUTHORIZATION_READ_RETRY_NOT_DUE',observation=stage,
                     nextAttemptAt=budget['nextAttemptAt'])
             save('ATTEMPTING',attempts=budget['attempts']+1)
-            try:result=self.verify()
+            try:result=self.verify_read_observation(stage)
             except AuthorizationPaused as error:
                 self.guard()
                 transient=error.reason in ('AUTHORIZATION_HTTP_408','AUTHORIZATION_HTTP_429',
@@ -586,6 +631,7 @@ class AuthorizationDelta:
             or budget.get('policy')!=OBSERVATION_POLICY or budget.get('planHash')!=self.hash
             or error.detail.get('nextAttemptAt')!=budget.get('nextAttemptAt')):return None
         return {'observation':stage,'failureReason':budget['failureReason'],
+            'roleObservationMode':budget['roleObservationMode'],
             'nextAttemptAt':budget['nextAttemptAt'],'attempts':budget['attempts'],
             'remainingAttempts':128-budget['attempts'],'deadline':budget['expiresAt'],'budgetReset':False}
 

@@ -52,6 +52,12 @@ def validate_authorization_rebind(previous,current):
         from tools.chatbot_file_cohort.authorization import OBSERVATION_POLICY
         require(right['observationPolicy']==OBSERVATION_POLICY,'EXACT_AUTHORIZATION_READ_POLICY_REQUIRED')
         right.pop('observationPolicy');left.pop('observationPolicy',None)
+    # This read-only cache binding is separately tied to immutable native owner
+    # evidence in collect; every business permission/role/IAM delta stays exact.
+    if 'retainedRoleObservation' in right:
+        from tools.chatbot_file_cohort.authorization import authorization_scope
+        authorization_scope(current)
+        right.pop('retainedRoleObservation');left.pop('retainedRoleObservation',None)
     require(left==right and not right.get('addedDescriptors') and not right.get('roleProposal')
         and not right.get('scopeBindings'),'POSTGRANT_NEW_AUTHORIZATION_WRITES_DENIED')
 
@@ -124,6 +130,17 @@ def collect(args,*,paused=False,mounted=False,signed=False,backup=False,migratio
         if gateway:
             from tools.chatbot_file_cohort.authorization import OBSERVATION_POLICY
             authorization['plan']['observationPolicy']=copy.deepcopy(OBSERVATION_POLICY)
+            if 'retainedGatewayAttempt' in previous:
+                receipt=previous['payloads']['before']['QUIESCE_PRODUCERS']['ownerEvidence']
+                require(receipt.get('status')=='OWNER_POLICY_ROLES_SCOPES_RECONCILED'
+                    and receipt.get('roleCatalogueHash')==digest(authorization['plan']['targetRoles'])
+                    and digest(receipt)==proof['retainedNumericGateway']['authorizationReceiptHash'],
+                    'EXACT_PRE_QUIESCENCE_ROLE_OBSERVATION_REQUIRED')
+                authorization['plan']['retainedRoleObservation']={
+                    'profile':'ouf.authorization-retained-role-observation.v1','ownerReceiptHash':digest(receipt),
+                    'policyRef':receipt['policyRef'],'policyHash':receipt['policyHash'],
+                    'roleCatalogueHash':receipt['roleCatalogueHash'],'allowedStage':'AFTER_GATEWAY',
+                    'forceFreshMcpBeforeRelease':True,'ownerPublicationContract':'LOCKED_ATOMIC_ROLE_AND_POLICY_PUBLICATION'}
         validate_authorization_rebind(old['authorization']['plan'],authorization['plan'])
         if backup:
             from tools.chatbot_file_cohort.databases import mcp_backup_preflight,compile_mcp_backup_reader

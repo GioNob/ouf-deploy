@@ -58,6 +58,12 @@ class GatewayWorker(unittest.TestCase):
         def complete_phase5(prepared):
             from tools.chatbot_file_cohort.authorization import OBSERVATION_POLICY
             prepared['authorization']['plan']['observationPolicy']=copy.deepcopy(OBSERVATION_POLICY)
+            prepared['authorization']['plan']['retainedRoleObservation']={
+                'profile':'ouf.authorization-retained-role-observation.v1','ownerReceiptHash':'d'*64,
+                'policyRef':prepared['authorization']['plan']['baseline']['active']['policyRef'],
+                'policyHash':'4'*64,'roleCatalogueHash':base.fingerprint(prepared['authorization']['plan']['targetRoles']),
+                'allowedStage':'AFTER_GATEWAY','forceFreshMcpBeforeRelease':True,
+                'ownerPublicationContract':'LOCKED_ATOMIC_ROLE_AND_POLICY_PUBLICATION'}
             from tools.chatbot_file_cohort import gateway_runtime as r
             prepared['gatewayRuntimePlan']={'schema':r.PROFILE,'sameExistingImageRequired':True,
                 'automaticRollbackAllowed':False,'automaticWriteReplayAllowed':False,
@@ -76,6 +82,7 @@ class GatewayWorker(unittest.TestCase):
             'sourceCommit':gateway_retained.SOURCE,'reviewHash':gateway_retained.REVIEW,
             'authorityHash':gateway_retained.AUTHORITY,'runtimeJournalHash':gateway_retained.RUNTIME,
             'runtimeBindingHash':gateway_retained.NATIVE,'runtimePlanHash':'a'*64,'gatewayPlanHash':'b'*64,
+            'authorizationReceiptHash':'d'*64,
             'historicalEffects':8,'newLifecycleEffectsAllowed':False,'newWorkerPreviouslyInstalled':False,
             'originalContinuationClaimHash':'c'*64}
         review=base.PostGrantOwner.compile_complete_review(self,complete_phase5)

@@ -272,7 +272,9 @@ def terminal_decision(review, review_path):
          'La sessione precedente scaduta con zero grant resta intatta.\n'
          'Questa nuova decisione apre un solo budget distinto: massimo un grant cumulativo e 300 secondi.\n'
           if (review.get('scopes',{}).get('policyTokenOwnerInstallation',{}).get('pregrantRecovery') or {}).get('priorCredentialMutationAttempts')==1 else '')+
-        ('I ruoli OUF risultano già pubblicati: vengono riletti, senza nuova proposta se invariati.\n'
+        ('Ruoli già provati prima della quiescenza, accettati solo con policy owner riletta identica.\n'
+          'Dopo l\'avvio del nuovo MCP si richiede una lettura MCP nuova prima del rilascio produttori.\n' if retained_gateway else
+          'I ruoli OUF risultano già pubblicati: vengono riletti, senza nuova proposta se invariati.\n'
           if review.get('authorizationReview',{}).get('requiresNewRoleConfirmation') is False else
           'Eventuale conferma dei ruoli: apri il link browser esplicito; la proposta dura 15 minuti.\n')+
         ('Dopo il Gateway: sostituzione Ingestion e MCP, verifica complessiva e rilascio produttori.\n' if gateway else

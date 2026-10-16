@@ -48,7 +48,8 @@ class RetainedAttempt(unittest.TestCase):
             ('AUTHORIZATION',authh),('RUNTIME',runtimeh),('NATIVE',digest(pin))]:stack.enter_context(patch.object(r,name,value))
         stack.enter_context(patch.object(r.evidence,'PARENT',parent))
         stack.enter_context(patch.object(postgrant_recovery,'stopped_process'))
-        previous={'recordBindings':[],'prepared':{'databasePlan':prepared['databasePlan'],'cohortPlan':prepared['cohortPlan']}}
+        previous={'recordBindings':[],'prepared':{'databasePlan':prepared['databasePlan'],'cohortPlan':prepared['cohortPlan']},
+            'payloads':{'before':{'QUIESCE_PRODUCERS':{'ownerEvidence':{'syntheticOwnerReceipt':True}}}}}
         self.root,self.row,self.plan,self.previous=root,row,plan,previous
         self.write=write
         return previous

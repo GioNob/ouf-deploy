@@ -315,7 +315,12 @@ class Delivery:
         if 'observationPolicy' not in owner.plan:return owner.verify()
         while True:
             self.current(require_worker)
-            try:return owner.verify_resilient(stage)
+            try:
+                result=owner.verify_resilient(stage)
+                if stage=='AFTER_GATEWAY' and 'retainedRoleObservation' in owner.plan:
+                    self.report('QUIESCENT_ROLE_PROOF_BOUND_TO_CURRENT_OWNER_POLICY',
+                        freshMcpRoleReadRequiredBeforeProducerRelease=True)
+                return result
             except AuthorizationPaused as error:
                 retry=owner.observation_retry_status(error)
                 if retry is None:raise

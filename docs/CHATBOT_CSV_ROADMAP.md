@@ -233,10 +233,35 @@ firmato e conserva il vecchio claim consumato. Nessun nuovo stop/create/start,
 nessuna ristadiazione di configurazione o asset. La chain resta lo stesso profilo
 Gateway e lo stesso incidente con una ricevuta tipizzata di adozione completata.
 Una prenotazione nuova e distinta richiede un nuovo HUMAN review; non ripete
-nessun effetto precedente. Le letture di autorizzazione prima e dopo il rilascio
+nessun effetto precedente. Le letture di autorizzazione dopo APISIX e prima del rilascio
 coorte hanno un profilo firmato `ouf.authorization-finite-observation.v1`,
 128 tentativi e 3600 secondi entro la scadenza HUMAN, backoff 5/15/60/300/900,
 jitter massimo 20%, Retry-After, contatori persistenti, nessun rinnovo automatico.
 Crash in ATTEMPTING, drift, revoca, rifiuti permanenti e budget esaurito bloccano.
 Gli esiti ambigui di scrittura restano fuori da questi retry di sola lettura.
 La nuova versione deve superare la qualifica Docker prima del launcher operativo.
+
+### Dipendenza circolare della verifica ruoli, corretta prima del rilascio
+
+Il planner `file_only_preparation.phase_intents` include tutte le vecchie
+generazioni sostituite nei produttori quiescenti. MCP viene sostituito soltanto
+dopo le route, nella fase 7; quindi una nuova lettura MCP dei ruoli prima di
+installarlo può restare 503. Nel processo iniziale `OwnerTransport.roles` conserva
+la cache ottenuta prima della quiescenza; un processo di ripresa la perde.
+Il solo retry non elimina tale dipendenza. Non è una prova del corpo interno
+dell'errore storico, ma è un vincolo dimostrabile del flusso corrente.
+
+La ripresa ricostruisce quella cache dalla ricevuta owner immutabile
+`before/QUIESCE_PRODUCERS.ownerEvidence`, dopo averne verificato l'hash con il
+nuovo scope firmato. Il catalogo pianificato deve avere esattamente il medesimo
+roleCatalogueHash. Prima e durante l'osservazione preliminare, policyRef e
+contentHash vengono riletti dall'owner HTTPS e devono restare identici alla
+ricevuta. L'owner pubblica ruoli e policy nella stessa transazione bloccata
+(OufRoleCatalogueStore.stage / PermissionProposalService.decide); questo è lo
+stesso contratto già usato dalla cache in-process, non un nuovo endpoint o un
+accesso diretto al DB. Policy diversa o gara di pubblicazione blocca senza
+interrogare MCP fermo. Gli altri controlli di policy, descriptor e OAuth sono
+comunque riletti. Dopo l'avvio del nuovo MCP la cache viene svuotata e la lettura
+MCP reale è obbligatoria prima di rilasciare i produttori. Test specifici provano
+assenza di chiamate MCP durante la quiescenza, gara/drift e refresh finale con
+503, attesa e recupero. Nessun permesso o ruolo applicativo viene modificato.

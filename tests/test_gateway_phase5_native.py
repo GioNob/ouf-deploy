@@ -150,6 +150,7 @@ class NativePhaseFive(unittest.TestCase):
             'authorityHash':action.authority_hash,'runtimeJournalHash':g.digest(historical_runtime),
             'runtimeBindingHash':g.digest(historical_runtime['effects'][-1]['evidence']['runtimeBinding']),
             'runtimePlanHash':g.digest(runtime),'gatewayPlanHash':g.digest(planned),'historicalEffects':8,
+            'authorizationReceiptHash':'d'*64,
             'newLifecycleEffectsAllowed':False,'newWorkerPreviouslyInstalled':False,'originalContinuationClaimHash':'a'*64}
         attempt={'prepared':{'gatewayRuntimePlan':runtime},'journal':historical_runtime,'receipt':receipt}
         previous={'prepared':{'gatewayPlan':old},'gatewayJournal':journal,'retainedGatewayAttempt':attempt}
