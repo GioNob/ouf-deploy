@@ -192,11 +192,24 @@ def current_paused_native(previous,engine,native,*,running=False):
         if view.exists():
             a=view.stat();b=Path(item['source']).stat()
             require((a.st_dev,a.st_ino)!=(b.st_dev,b.st_ino),'PRIVATE_BIND_VISIBLE_IN_PAUSED_IMAGE_SCAN')
-    require(rootfs_seal(root,config['rootfsLimits'],budget)==ROOTFS_SEAL,'PAUSED_INDEPENDENT_RETAINED_IMAGE_SEAL_DRIFT')
+    if running:
+        from tools.chatbot_file_cohort.running_rootfs import observe
+        observe(root,config['rootfsLimits'],budget,ROOTFS_SEAL,native['State']['Pid'])
+    else:
+        require(rootfs_seal(root,config['rootfsLimits'],budget)==ROOTFS_SEAL,'PAUSED_INDEPENDENT_RETAINED_IMAGE_SEAL_DRIFT')
+    after=engine.inspect(SimpleNamespace(context=previous['transition']['contextHash']))
     require(process.observe(native['State']['Pid'])==before and path.read_bytes()==raw
-        and engine.inspect(SimpleNamespace(context=previous['transition']['contextHash']))==native,
+        and (same_running_native(native,after) if running else after==native),
         'PAUSED_NATIVE_GENERATION_CHANGED_DURING_PREFLIGHT')
     return {'completeOci':True,'independentRootfs':True,'samePausedGate':not running,'sameReleasedApplication':running,'privateBindContentsRead':False}
+
+def same_running_native(before,after):
+    # Docker health log samples may advance while scanning a live JVM. Every
+    # configuration/generation binding and lifecycle flag remains exact; fresh
+    # application readiness is independently required by backup_recovery.
+    return Engine.runtime_binding(before)==Engine.runtime_binding(after) and all(
+        v['RestartCount']==0 and v['State']['Running']is True and v['State']['Paused']is False
+        and v['State']['Status']=='running' for v in(before,after))
 
 def proof_scope(previous,actor):
     require(actor=={k:previous['prepared']['authorization']['plan']['selection'][k]for k in ('issuer','tenant','subject')},

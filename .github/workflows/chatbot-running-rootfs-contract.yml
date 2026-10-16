@@ -24,6 +24,12 @@ jobs:
           ref: 8bff54a52a0ce15daccaf2aee932004f106dd178
           path: frozen-source
           persist-credentials: false
+      - name: Unit tests on the exact running-image predicate
+        run: |
+          sudo install -d -m 700 /var/lib/ouf-rootfs-contract-unit
+          sudo cp -R . /var/lib/ouf-rootfs-contract-unit/repository
+          sudo chown -R root:root /var/lib/ouf-rootfs-contract-unit
+          sudo python3 -I -B -m unittest discover -s /var/lib/ouf-rootfs-contract-unit/repository/tests -p test_running_rootfs_contract.py -v
       - name: Download the retained original semantic artifact without rebuilding
         env: {GH_TOKEN: '${{ github.token }}'}
         run: |
@@ -67,6 +73,7 @@ jobs:
           sudo cp scripts/diagnose-chatbot-rootfs-baseline.py /var/lib/ouf-rootfs-program/baseline.py
           sudo cp scripts/qualify-chatbot-running-rootfs.py /var/lib/ouf-rootfs-program/diagnose.py
           sudo cp -R frozen-source /var/lib/ouf-rootfs-program/source
+          sudo cp -R tools /var/lib/ouf-rootfs-program/tools
           sudo chown -R root:root /var/lib/ouf-rootfs-program
           sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
             python3 -I -B -S /var/lib/ouf-rootfs-program/diagnose.py \

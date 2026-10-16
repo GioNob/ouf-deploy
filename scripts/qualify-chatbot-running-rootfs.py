@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Start the frozen image in disposable CI; synthetic DB/OIDC, no target access."""
-import base64,argparse,importlib.util,json,os,re,subprocess,tempfile,time,uuid,urllib.request,threading,http.server
+import sys,base64,argparse,importlib.util,json,os,re,subprocess,tempfile,time,uuid,urllib.request,threading,http.server
 from pathlib import Path
 spec=importlib.util.spec_from_file_location('baseline',Path(__file__).with_name('baseline.py'))
 b=importlib.util.module_from_spec(spec);spec.loader.exec_module(b)
+sys.path[:0]=[str(Path(__file__).parent),str(Path(__file__).parent/'tools/semantic_cohort_admission/cohort-draft')]
+from tools.chatbot_file_cohort import running_rootfs as contract
 EXPECTED={'schema':'ouf.semantic-rootfs-seal.v1','entries':9302,'bytes':1719645735,
           'sha256':'a73d7520737345d67030baaa2405478b3784fc84060f6ec6ccc6109f98ac2f11'}
 
@@ -91,12 +93,29 @@ def main():
                     if v['kind']=='file':
                         raw=(root/k).read_bytes();(a.output/'runtime-file.bin').write_bytes(raw)
                 time.sleep(1)
+            proof=contract.observe(root,b.LIMITS,b.Budget(),EXPECTED,pid)
+            denied=[]
+            # Disposable fixtures exercise the actual predicate, never target files.
+            for label,relative,operation,undo in [
+                ('unexpected-file','tmp/unqualified.txt',lambda q:q.write_bytes(b'unqualified'),lambda q:q.unlink()),
+                ('original-mode','app/application.jar',lambda q:q.chmod(0o600),lambda q:q.chmod(original_mode)),
+                ('runtime-mode','tmp/hsperfdata_ouf',lambda q:q.chmod(0o777),lambda q:q.chmod(0o755))]:
+                q=root/relative;original_mode=q.stat().st_mode&0o7777 if q.exists()else None;operation(q)
+                try:
+                    try:contract.observe(root,b.LIMITS,b.Budget(),EXPECTED,pid)
+                    except ValueError:denied.append(label)
+                    else:raise AssertionError('NEGATIVE_RUNTIME_DELTA_ACCEPTED')
+                finally:undo(q)
+            try:contract.mapped_file(root,contract.PERF_PATH,inspect(pg)['State']['Pid'],b.Budget())
+            except ValueError:denied.append('other-process')
+            else:raise AssertionError('OTHER_PROCESS_MAPPING_ACCEPTED')
+            contract.observe(root,b.LIMITS,b.Budget(),EXPECTED,pid)
             (a.output/'process-maps.txt').write_text(proc.joinpath('maps').read_text())
             result={'schema':'ouf.chatbot-frozen-running-rootfs-ci.v1','baselineSeal':pre,'observations':observations,
                 'moduleSource':b.SOURCE,'configurationImageId':b.IMAGE,'archiveSha256':b.sha(work/'package/image.docker.tar'),
                 'sameJavaPid':True,'livenessUp':True,'syntheticDatabase':True,'syntheticOidcMetadata':True,'authorizationBundleAbsent':True,
                 'vpsAccesses':0,'runtimeAuthorityIssued':False,'acceptanceGranted':False,'notReleaseAcceptance':True,
-                'postgresFixtureImage':pgimage['Id'],'dockerVersion':info['ServerVersion']}
+                'runningRootfsProof':proof,'nativeNegativeChecks':denied,'postgresFixtureImage':pgimage['Id'],'dockerVersion':info['ServerVersion']}
             (a.output/'summary.json').write_bytes(b.encoded(result)+b'\n');print(b.encoded(result).decode())
         finally:
             if server:server.shutdown();server.server_close()

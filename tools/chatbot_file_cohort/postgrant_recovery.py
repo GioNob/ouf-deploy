@@ -281,7 +281,12 @@ def current_baseline(predecessor,engine):
         from tools.chatbot_file_cohort.paused_recovery import current_paused_native
         current_paused_native(predecessor,engine,actual,running=running)
     require(actual['Id']==CREATED_ID and actual.get('RestartCount')==0,'POSTGRANT_EXACT_ALREADY_CREATED_CONTAINER_REQUIRED')
-    require(engine.inspect(transition)==actual,'POSTGRANT_CREATED_GENERATION_UNSTABLE')
+    after=engine.inspect(transition)
+    if running:
+        from tools.chatbot_file_cohort.paused_recovery import same_running_native
+        require(same_running_native(actual,after),'POSTGRANT_CREATED_GENERATION_UNSTABLE')
+    else:
+        require(after==actual,'POSTGRANT_CREATED_GENERATION_UNSTABLE')
     # Existing owner predicate understands the stopped host policy and detached
     # old Registry network. Never compare post-stop PID with pre-stop PID pins.
     quiescence=prepared['registry']['intents']['QUIESCE_PRODUCERS']

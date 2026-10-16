@@ -15,6 +15,31 @@ from cutover_executor import Executor
 from transition_journal import Transition
 from file_only_profile import PHASES
 
+class RunningPreflightBinding(unittest.TestCase):
+    def test_health_samples_may_advance_but_no_generation_configuration_or_lifecycle_change(self):
+        from tools.chatbot_file_cohort.paused_recovery import same_running_native
+        native={'Id':'a'*64,'Image':'sha256:'+'b'*64,'RestartCount':0,'Config':{},'HostConfig':{},'Mounts':[],
+            'NetworkSettings':{},'State':{'Pid':42,'StartedAt':'fixed','Running':True,'Paused':False,'Status':'running','Health':{'Log':['old']}}}
+        after=copy.deepcopy(native);after['State']['Health']['Log']=['new'];self.assertTrue(same_running_native(native,after))
+        for field,value in [('Pid',43),('StartedAt','new'),('Running',False),('Paused',True),('Status','paused')]:
+            changed=copy.deepcopy(after);changed['State'][field]=value
+            with self.subTest(field=field):self.assertFalse(same_running_native(native,changed))
+        for field,value in [('RestartCount',1),('Config',{'new':True}),('HostConfig',{'new':True}),('Mounts',[{}]),('NetworkSettings',{'new':True}),('Image','other')]:
+            changed=copy.deepcopy(after);changed[field]=value
+            with self.subTest(field=field):self.assertFalse(same_running_native(native,changed))
+    def test_current_full_human_scope_must_bind_running_rootfs_qualification(self):
+        previous={'signedPredecessor':{},'transition':{'effects':[]},'backupRoot':'/fixture',
+            'prepared':{'databasePlan':{}},'recordBindings':[]}
+        with patch.object(b.signed,'proof_scope',return_value={'oldAuthorityExtended':False}):proof=b.proof_scope(previous,{})
+        self.assertEqual(proof['runningRootfsQualification'],b.RUNNING_ROOTFS_QUALIFICATION)
+        with patch.object(b,'ARCHIVES',{}):
+            b.retained_bindings(proof)
+            for change in ('absent','different'):
+                bad=copy.deepcopy(proof)
+                if change=='absent':del bad['runningRootfsQualification']
+                else:bad['runningRootfsQualification']['genericTmpExclusion']=True
+                with self.subTest(change=change),self.assertRaises(Exception):b.retained_bindings(bad)
+
 
 class VerifiedRegistrySuccessor(unittest.TestCase):
     def setUp(self):

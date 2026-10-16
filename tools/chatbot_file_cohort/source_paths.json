@@ -70,6 +70,7 @@
   "tools.chatbot_file_cohort.plan": "tools/chatbot_file_cohort/plan.py",
   "tools.chatbot_file_cohort.postgrant_recovery": "tools/chatbot_file_cohort/postgrant_recovery.py",
   "tools.chatbot_file_cohort.review": "tools/chatbot_file_cohort/review.py",
+  "tools.chatbot_file_cohort.running_rootfs": "tools/chatbot_file_cohort/running_rootfs.py",
   "tools.chatbot_file_cohort.signed_recovery": "tools/chatbot_file_cohort/signed_recovery.py",
   "tools.materialize_semantic_shared_faces": "tools/semantic_cohort_admission/cohort-draft/tools/materialize_semantic_shared_faces.py",
   "tools.materialize_southbound_kernel": "tools/semantic_cohort_admission/cohort-draft/tools/materialize_southbound_kernel.py",

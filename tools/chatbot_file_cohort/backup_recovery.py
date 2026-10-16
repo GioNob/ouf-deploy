@@ -21,6 +21,7 @@ from tools.chatbot_file_cohort.action_process import observed_private_json, priv
 from tools.chatbot_file_cohort import postgrant_recovery as original, signed_recovery as signed
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.semantic_policy_token_owner.producer import protected_directory
+from tools.chatbot_file_cohort.running_rootfs import QUALIFICATION as RUNNING_ROOTFS_QUALIFICATION
 
 PROFILE='ouf.chatbot-verified-registry-mcp-backup-recovery.v1'
 SOURCE='e70ca5957772e170bc762dd937e1c46a40051f0a'
@@ -173,6 +174,7 @@ def proof_scope(previous,actor):
         'databaseJournalHash':DATABASE_HASH,'retainedCohortBackupDirectory':previous['backupRoot'],
         'originalDatabasePlanHash':digest(previous['prepared']['databasePlan']),
         'recordBindings':copy.deepcopy(previous['recordBindings']),
+        'runningRootfsQualification':copy.deepcopy(RUNNING_ROOTFS_QUALIFICATION),
         'newBudget':{'actor':copy.deepcopy(actor),'reason':'EXPLICIT_MCP_BACKUP_READER_AND_VERIFIED_REGISTRY_CONTINUATION',
             'decisionRef':'CURRENT_EXACT_FULL_ACTION_HUMAN_DECISION','priorControlledGrantAttempts':5,
             'priorWorkerGrantAttempts':1,'maximumNewWorkerAttempts':128,'maximumSeconds':3600,'automaticRenewalAllowed':False},
@@ -187,6 +189,7 @@ def retained_bindings(proof):
         and proof.get('cancelledWorkerHash')==WORKER_HASH and proof.get('workerSessionHash')==SESSION_HASH
         and proof.get('databaseJournalHash')==DATABASE_HASH and proof.get('newBudget',{}).get('priorControlledGrantAttempts')==5
         and proof.get('registryPhaseReplayAllowed') is False and proof.get('newNodeAttestationAllowed') is False
+        and proof.get('runningRootfsQualification')==RUNNING_ROOTFS_QUALIFICATION
         and proof.get('oldAuthorityExtended') is False,'EXACT_VERIFIED_BACKUP_RECOVERY_PROOF_REQUIRED')
     for binding in proof['recordBindings']:private_file(binding,8388608)
     for module in ARCHIVES:archive_bytes(proof['retainedCohortBackupDirectory'],module)

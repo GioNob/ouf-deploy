@@ -28,6 +28,7 @@
     "tools/chatbot_file_cohort/postgrant_recovery.py",
     "tools/chatbot_file_cohort/preparation.py",
     "tools/chatbot_file_cohort/review.py",
+    "tools/chatbot_file_cohort/running_rootfs.py",
     "tools/chatbot_file_cohort/runtime.py",
     "tools/chatbot_file_cohort/signed_recovery.py",
     "tools/chatbot_file_cohort/source_paths.json",
