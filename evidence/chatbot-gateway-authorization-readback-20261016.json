@@ -1,0 +1,37 @@
+{
+  "ci": {
+    "conclusion": "success",
+    "jobId": 116845217363,
+    "runId": 38861702379
+  },
+  "functionalMilestonesProven": 0,
+  "historicalHttpFailureCauseNotAssumed": true,
+  "launcherSha256": "c0523f95312b71eb85d901b47c6b7733137037e683316b6bcc4a08a5c4c4590c",
+  "limits": {
+    "databaseCalls": 0,
+    "gatewayWrites": 0,
+    "grantRequests": 0,
+    "iamCalls": 0,
+    "maximumGatewayReads": 2,
+    "maximumLogLines": 200,
+    "maximumLogReads": 1,
+    "maximumSeconds": 150,
+    "mcpCalls": 0,
+    "serviceMutations": 0
+  },
+  "localTestsPassed": 4,
+  "rawLogLinesPrinted": false,
+  "readerSha256": "25cf3e6b5bf495035c7280002652db860d93dcfe684c4ee609eeafaf7a8af10d",
+  "reconciliationPerformed": false,
+  "retainedRecordsMustRemainUnchanged": true,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.chatbot-gateway-authorization-readback-qualification.v1",
+  "sourceCommit": "1b098a98f46aaa0717000e322d971622b4540e53",
+  "targetAccess": false,
+  "targetAuthorityHash": "08417d9c20401f26e5ea1223f753b016e1f35047e83d06e7aa8469af9432c852",
+  "targetFailure": "AuthorizationPaused",
+  "targetFailurePosition": "AFTER_GATEWAY_RUNTIME_APPLY_BEFORE_NEW_WORKER_INSTALL",
+  "targetReviewHash": "57e0e293fef4abbaac5e45d214f30b3a1e312780f441c04c7f8c008c9fcf3209",
+  "targetStateNeedsReadback": true,
+  "technicalPhase": 5
+}

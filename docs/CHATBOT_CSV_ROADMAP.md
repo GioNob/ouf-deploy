@@ -202,3 +202,9 @@ massimo 200 righe di log del nuovo container. Pubblica solo conteggi di codici
 HTTP; nessuna nuova chiamata MCP, refresh, IAM, grant, SQL, dump o scrittura
 Gateway. L'assenza di access log riconoscibili è dichiarata senza inventare la
 causa. Non costituisce ripresa né nuova autorità.
+
+La diagnosi `1b098a98f46aaa0717000e322d971622b4540e53` supera i quattro test
+mirati locali e la CI reader 38861702379 (job 116845217363, PASS). Il nuovo
+launcher di sola lettura è `scripts/launch-chatbot-gateway-authorization-20261016.sh`.
+Attendere il suo readback prima di predisporre una prosecuzione: la nuova
+configurazione APISIX è un effetto già consumato da riconciliare, non da ripetere.

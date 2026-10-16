@@ -1,5 +1,11 @@
 # Fase 5: correzione della preparazione con Binds null
 
+**Tentativo sul VPS già approvato e consumato. Non ripetere questo launcher.**
+Si è fermato dopo `GatewayRuntime.apply()` alla verifica dei ruoli con
+`AuthorizationPaused`. Usare soltanto la diagnosi
+`scripts/launch-chatbot-gateway-authorization-20261016.sh`;
+[stato e vincoli](../docs/CHATBOT_CSV_ROADMAP.md).
+
 Sorgente: `5d9c9b6b944e71b25cd006994c511397295b4f4f`.
 Questo launcher sostituisce quello pubblicato in `add1a8a53216ce35f1f8ece08b110417f5f8ec66`.
 
