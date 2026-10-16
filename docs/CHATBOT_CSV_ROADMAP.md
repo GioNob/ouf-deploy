@@ -10,7 +10,7 @@ Analisi successiva: la CI `38837043139`, sorgente `adaa828255be7437a06b405db759c
 
 | # | Fase tecnica | Stato |
 |---|---|---|
-| 1 | Riconciliare il backup interrotto e completare i backup dei quattro database | Superata nel flusso eseguito; rilettura degli archivi e del journal della nuova sessione da acquisire |
+| 1 | Riconciliare il backup interrotto e completare i backup dei quattro database | COMPLETATA: quattro archivi COMPLETE, hash e journal verificati sul VPS; nessun nuovo dump nella ripresa |
 | 2 | Applicare le migrazioni MCP e verificare la revoca dei privilegi temporanei | **Sospesa: MCP_MIGRATION_ROLE_NATIVE_IDENTITY_DRIFT** |
 | 3 | Sostituire UDP e verificarne schema e avvio | Da eseguire |
 | 4 | Sostituire Onboarding e verificarne schema e avvio | Da eseguire |
@@ -28,7 +28,15 @@ Analisi successiva: la CI `38837043139`, sorgente `adaa828255be7437a06b405db759c
 | 5 | Importare nuovamente lo stesso CSV e dimostrare il riuso degli oggetti senza duplicazioni | Da dimostrare |
 | 6 | Verificare entrambe le acquisizioni e la conservazione degli otto oggetti Cinema esistenti | Da dimostrare |
 
-## Evidenza e limiti al 16 ottobre 2026
+## Ultima conferma VPS (16 ottobre 2026, 03:56 Europe/Rome)
+
+Diagnosi `ouf.chatbot-mcp-migration-readback.v1` conclusa con `complete=true`, zero mutazioni/dump/grant. Fase 1 definitivamente confermata per questo checkpoint: UDP 247357 byte, Onboarding 325831, Ingestion 94318, MCP 250874, tutti COMPLETE e immutati. Il nuovo MCP ha SHA256 `b050f7706b650199a09115e24828858de509179f26896c92072cab6ae9946dc4`.
+
+Fase 2: container `e502ee4e5ebd13ca6cbc8857756d895668a06bd9ca4a44a0b27ed1b0232a12c6`, stato created, mai avviato, PID 0, restart 0. Soli confronti falliti: Env e Labels; entrambi coincidono con immagine più richiesta. Nove migrazioni, identiche alla baseline pre-migrazione; risultato atteso non ancora raggiunto. Ruolo audit BOOTSTRAPPED/NOLOGIN, membership SET=1, CREATE schema=true, TRIGGER temporaneo=1; proprietario/OID/ACL preesistenti preservati. Revoca ancora da eseguire e verificare.
+
+Worker CANCELLED con 1 nuovo tentativo e 1 pubblicazione; **6 grant cumulativi**, predecessori 5. Admission BLOCKED. Registry READY v30 con dieci effetti APPLIED; zero effetti nei journal containers/authorization/gateway. Archivi e journal immutati durante la lettura. I controlli di integrità restano obbligatori: non equivalgono a ripetere la fase 1. La nuova prosecuzione deve usare tutti e quattro gli archivi e il container già creato, senza dump/create ripetuti; conserva i sei tentativi.
+
+## Evidenza storica della sospensione al 16 ottobre 2026
 
 Ultimo sorgente runtime: `b93e3570bd3e43b6c8e99d2237743bb819e43304`; release `cc8921b87a55d17f2a548f6be59eb592b9bd7581`. Il preflight del Registry già in esecuzione e del filesystem è passato sul VPS. Le dieci fasi Registry precedenti restano conservate.
 

@@ -148,7 +148,7 @@ def current_paused_native(previous,engine,native,*,running=False):
     from tools.semantic_provider_deployment_authentication import attributes,ancestors,decode
     from compile_file_only_frame_policy import compile_policy,private_bridge_namespace_name
     from tools.chatbot_file_cohort.backup_recovery import PROFILE as BACKUP_PROFILE
-    require(not running or previous.get('recoveryProfile')==BACKUP_PROFILE,'EXACT_RUNNING_BACKUP_RECOVERY_REQUIRED')
+    require(not running or previous.get('recoveryProfile') in (BACKUP_PROFILE,'ouf.chatbot-created-mcp-migration-continuation.v1'),'EXACT_RUNNING_BACKUP_RECOVERY_REQUIRED')
     registry=previous['prepared']['registry'];request=registry['creationRequest'];recipe=proposed_recipe(registry,retained_mount=running or previous.get('recoveryProfile')in('ouf.chatbot-paused-unsigned-attestation-reprocessing.v2','ouf.chatbot-signed-paused-admission-reprocessing.v1'))
     stage=previous['payloads']['evidence']['STAGE_PAUSED_REPLACEMENT']
     require(native['Id']==original.CREATED_ID and native['RestartCount']==0

@@ -52,7 +52,7 @@ def validate_authorization_rebind(previous,current):
         and not right.get('scopeBindings'),'POSTGRANT_NEW_AUTHORIZATION_WRITES_DENIED')
 
 
-def collect(args,*,paused=False,mounted=False,signed=False,backup=False):
+def collect(args,*,paused=False,mounted=False,signed=False,backup=False,migration=False):
     source,stage=Path(args.source_directory),Path(args.staging_directory)
     profile=None;claim=CLAIM
     if paused:
@@ -67,6 +67,9 @@ def collect(args,*,paused=False,mounted=False,signed=False,backup=False):
     if backup:
         from tools.chatbot_file_cohort.backup_recovery import PROFILE as BACKUP,CLAIM as BACKUP_CLAIM
         profile=BACKUP;claim=BACKUP_CLAIM
+    if migration:
+        from tools.chatbot_file_cohort.migration_recovery import PROFILE as MIGRATION,CLAIM as MIGRATION_CLAIM
+        profile=MIGRATION;claim=MIGRATION_CLAIM
     require(not os.path.lexists(evidence.PARENT/claim),'POSTGRANT_CONTINUATION_ALREADY_RESERVED_INSPECT_ONLY')
     report('POSTGRANT_RETAINED_HISTORY_PREFLIGHT')
     previous=read_predecessor(profile);old=previous['prepared'];bundle=previous['bundle']

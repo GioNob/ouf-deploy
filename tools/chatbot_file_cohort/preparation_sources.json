@@ -19,6 +19,8 @@
     "tools/chatbot_file_cohort/human_session.py",
     "tools/chatbot_file_cohort/iam_session.py",
     "tools/chatbot_file_cohort/images.py",
+    "tools/chatbot_file_cohort/migration_native.py",
+    "tools/chatbot_file_cohort/migration_recovery.py",
     "tools/chatbot_file_cohort/mounted_recovery.py",
     "tools/chatbot_file_cohort/owner_preparation.py",
     "tools/chatbot_file_cohort/package_custody.py",

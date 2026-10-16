@@ -105,7 +105,7 @@ def transient_registry_observation(application,error):
     if type(error)is RegistryRecoveryReadinessPending:
         row=application.executor.t.read()
         recovery=(application.executor.aggregate_scope or {}).get('postGrantRecovery') or {}
-        if recovery.get('profile')==BACKUP_PROFILE and row.get('state')=='READY' and row.get('nextPhase')==10:
+        if recovery.get('profile') in (BACKUP_PROFILE,'ouf.chatbot-created-mcp-migration-continuation.v1') and row.get('state')=='READY' and row.get('nextPhase')==10:
             return 'VERIFY_APPLICATION'
         return None
     if type(error)is not CutoverDenied or str(error)!='NATIVE_AMBIGUITY_OR_NO_EFFECT_STOPS_CUTOVER':return None
@@ -435,6 +435,9 @@ class Delivery:
             containers.initialize(); databases.initialize(); gateway.initialize()
             if recovery is not None and recovery.get('profile')=='ouf.chatbot-verified-registry-mcp-backup-recovery.v1':
                 from tools.chatbot_file_cohort.backup_recovery import adopt_backups
+                adopt_backups(databases,previous,recovery)
+            if recovery is not None and recovery.get('profile')=='ouf.chatbot-created-mcp-migration-continuation.v1':
+                from tools.chatbot_file_cohort.migration_recovery import adopt_backups
                 adopt_backups(databases,previous,recovery)
             containers.accept_owner_gate('authorization',plan['authorizationPlanHash'],digest(auth_evidence))
             profile = evidence.decode(governance.public_input(governance.PROFILE))

@@ -326,6 +326,10 @@ class CohortDatabases:
         if recovery is not None:
             require(recovery.get('state')=='COMPLETE_ARCHIVES_COPIED_NEW_MCP_ATTEMPT_REQUIRED',
                 'PARTIAL_BACKUP_ADOPTION_REQUIRES_RECONCILIATION')
+        recovery=row.get('governedMigrationRecovery')
+        if recovery is not None:
+            require(recovery.get('state')=='COMPLETE_ARCHIVES_AND_CHECKPOINTS_COPIED',
+                'PARTIAL_MIGRATION_ADOPTION_REQUIRES_RECONCILIATION')
         return row
 
     def quiescence(self):
@@ -626,6 +630,9 @@ class CohortDatabases:
             status, actual = self.engine.request('GET','/v1.44/containers/'+quote(name,safe='')+'/json')
             require(status in (200,404), 'MCP_MIGRATION_CONTAINER_READ_UNAVAILABLE')
             if status == 404:return None
+            if self.record().get('governedMigrationRecovery') is not None:
+                from tools.chatbot_file_cohort.migration_recovery import native as recovered_native
+                return recovered_native(self,request,name,actual)
             require(actual['Name'] == '/'+name and actual['Image'] == request['Image']
                     and all(actual['Config'].get(k) == request[k] for k in
                             ('User','Entrypoint','Cmd','WorkingDir','Env','Labels'))
@@ -651,11 +658,20 @@ class CohortDatabases:
                         'MCP_UNEXPECTED_MIGRATION_HISTORY')
                 return {'pendingMigrationCount':0,'historyHash':digest(binding['expectedMigrations'])}
             role_state = previous.get('mcpAuditRole') or {}
-            if role_state.get('state') not in ('CLEANUP_CLAIMED','CLEAN'):
+            if previous.get('governedMigrationRecovery') is not None:
+                require(role_state.get('state') in ('BOOTSTRAPPED','CLEANUP_CLAIMED','CLEAN'),
+                    'RETAINED_AUDIT_BOOTSTRAP_MUST_NOT_REPEAT')
+                if role_state['state']=='BOOTSTRAPPED':
+                    state=self.audit_role_state(binding)
+                    require(state['roleExists'] and state['noLogin'] and state['schemaCreate']
+                        and state['appMembership']==state['membershipCount']==1,'RETAINED_AUDIT_PRIVILEGES_DRIFT')
+                    self.incident_state(state,True)
+            elif role_state.get('state') not in ('CLEANUP_CLAIMED','CLEAN'):
                 self.prepare_mcp_audit_role(binding)
             previous = self.record()
             claim = previous.get('mcpMigration')
             if claim is None:
+                require(previous.get('governedMigrationRecovery') is None,'MIGRATION_RECOVERY_CREATE_DENIED')
                 require(current() == binding['beforeMigrations'] and native() is None,
                         'MCP_MIGRATION_PRECONDITION_DRIFT')
                 following = copy.deepcopy(previous)
@@ -674,8 +690,12 @@ class CohortDatabases:
                 require(claim.get('name') == name and claim.get('intentHash') == intent
                         and claim.get('state') in ('CLAIMED','COMPLETE'),
                         'MCP_MIGRATION_RETAINED_INTENT_DRIFT')
+            if previous.get('governedMigrationRecovery') is not None:
+                from tools.chatbot_file_cohort.migration_recovery import start_existing
+                start_existing(self,request,name,native(),current)
             deadline = time.monotonic()+120
             while True:
+                self.guard();self.quiescence()
                 actual = native()
                 require(actual is not None, 'MCP_MIGRATION_ABSENT_REQUIRES_HUMAN_RECONCILIATION')
                 state = actual['State']

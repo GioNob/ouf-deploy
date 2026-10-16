@@ -62,8 +62,8 @@ def validate_cutover_seed(row,intents,authority_hash=None):
 
 
 def recovery_component(profile):
-    from tools.chatbot_file_cohort import paused_recovery,mounted_recovery,signed_recovery,backup_recovery
-    components={x.PROFILE:x for x in(paused_recovery,mounted_recovery,signed_recovery,backup_recovery)}
+    from tools.chatbot_file_cohort import paused_recovery,mounted_recovery,signed_recovery,backup_recovery,migration_recovery
+    components={x.PROFILE:x for x in(paused_recovery,mounted_recovery,signed_recovery,backup_recovery,migration_recovery)}
     require(profile in components,'EXACT_RECOVERY_PROFILE_REQUIRED')
     return components[profile]
 
@@ -274,7 +274,7 @@ def current_baseline(predecessor,engine):
     profile=FileOnlyProfile(prepared['registry']['creationRequest'],prepared['registry']['configtree'])
     transition=Transition.__new__(Transition);transition.context=row['contextHash']
     from tools.chatbot_file_cohort.backup_recovery import PROFILE as BACKUP_PROFILE
-    running=predecessor.get('recoveryProfile')==BACKUP_PROFILE
+    running=predecessor.get('recoveryProfile') in (BACKUP_PROFILE,'ouf.chatbot-created-mcp-migration-continuation.v1')
     paused=predecessor.get('recoveryProfile') is not None
     actual=engine.matching_configuration(transition,prepared['registry']['creationRequest'],engine.inspect(transition))if paused else engine.matching_created(transition,prepared['registry']['creationRequest'],engine.inspect(transition))
     if paused:
@@ -305,7 +305,11 @@ def current_baseline(predecessor,engine):
         'POSTGRANT_POSTGRES_GENERATION_DRIFT')
     if running:
         from tools.chatbot_file_cohort.backup_recovery import current_registry,current_databases
-        current_registry(predecessor,engine);current_databases(predecessor)
+        current_registry(predecessor,engine)
+        if predecessor.get('recoveryProfile')=='ouf.chatbot-created-mcp-migration-continuation.v1':
+            from tools.chatbot_file_cohort.migration_recovery import current_databases,migration_observation
+            migration_observation(predecessor,engine)
+        current_databases(predecessor)
     from database_gate import Psql
     from fenced_backup_adapter import FencedBackupAdapter
     admin=Psql(pgpin['containerId'],prepared['registry']['intents']['FENCED_BACKUP']['user'],
