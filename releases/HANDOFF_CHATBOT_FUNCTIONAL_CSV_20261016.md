@@ -1,5 +1,32 @@
 ## 16 ottobre — candidato target verificato; composizione token-only in qualifica
 
+## 16 ottobre 15:23 — Ctrl-C osservato; prossimo passo solo readback
+
+L'operatore ha riportato BEGIN seguito da ^C, senza STOP o prompt HUMAN.
+Questo non prova l'uscita del figlio né zero effetti. Non ripetere il launcher
+operativo, neppure quello corretto con -u, prima della riconciliazione.
+
+Comando successivo: launcher `scripts/launch-chatbot-semantic-token-interruption-readback-20261016.sh`
+dal commit immutabile `32605941a0295bb870878be1f4719273a8d08370`, SHA256
+`c6176140271e392052e81268138df416e0bb1b0532a8371f197f6e586560d924`.
+Lettore nel commit89521f6d8a69ca3a62caab888ac74cce0b0f838b,
+SHA2563c8dc3a3d81d53e2a8e04466e42e2ece5822c57b4ae7049e15f1d376023bfebb.
+Eseguirlo in un secondo terminale VPS. Legge solo metadata e record storici
+hash-bound: processi Python del namespace esatto/della directory CajgP8EI,
+predecessori, presenza dei file di autorità/firme, nuovo journal, fence e directory
+OAuth. Non apre recovery.json/token della sessione HUMAN, non legge environ,
+non mostra argv, non chiama Engine/systemd/IAM/MCP/DB, non cancella o riparte.
+PRE_AUTHORITY_PREPARATION_ONLY_OBSERVED è una classificazione locale vincolata,
+non una concessione di riavvio; budget e stato OAuth restano esplicitamente
+non dimostrati. Nessuna scelta automatica del contesto più recente.
+
+CI Linux [38908406629](https://github.com/GioNob/ouf-deploy/actions/runs/38908406629),
+job116997739972:11test PASS, inclusa scansione procfs con vero figlio Python,
+wrapper root con byte verificati e rifiuto di manomissione. Sei prove metadata
+PASS localmente; procfs indisponibile in Work, obbligatorio e superato nella CI.
+Qualifica precedente del fix buffering:38907391680 PASS. Sorgente runtime72test
+invariato. Stato target8/8tecniche,0/6funzionali, nessuna nuova authority provata.
+
 ## 16 ottobre — arresto operatore prima di ripartenza dopo buffering del login
 
 Output target mostrato dall'operatore: solo BEGIN, nessun login visibile.
