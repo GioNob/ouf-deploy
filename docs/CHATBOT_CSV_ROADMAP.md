@@ -4,6 +4,33 @@ Roadmap confermata dall'utente il 16 ottobre 2026. Numerazione stabile fino alla
 
 ## Stato corrente
 
+**Ultimo output VPS: fasi tecniche 1–8 superate nell'esecuzione; tappe CSV 0/6.**
+Runtime d7bbb768970aad1a001ca4d085bcc87c58a29cec, review
+07ee9e8adf0d645018fb70212884f43c22e85cf3c7288bd78dad5bf0d02413bc,
+autorità a604f4981d38dc19977e551402674b70146bca8768df07c631c2054c6cc727ca,
+unit ouf-file-cohort-16e5f80e40d09772048f1575850b643a.service.
+Dopo l'attesa Ingestion il flusso ha superato sostituzione MCP, verifica completa,
+nuova verifica autorizzazioni FINAL_COHORT e release_after_cohort_verification.
+Stato COHORT_READY_FOR_ACTUAL_CHATBOT_CSV_ACCEPTANCE,
+evidenza cohort 724b79922d99e1582f294ba9447011d713686fda7eaefa80575560b481b015aa.
+È prova di esecuzione riportata dall'operatore, non una qualifica indipendente
+permanente né accettazione CSV.
+
+Il processo rimane nella stessa invocazione finita per osservare gli effetti
+applicativi reali: controllo ogni 30 secondi, stampa soltanto se il digest cambia.
+Perciò il silenzio dopo ACTUAL_CSV_OWNER_ACCEPTANCE_OBSERVED è previsto e
+non richiede rilancio. Il ciclo user CSV deve essere eseguito entro la finestra;
+non viene creato automaticamente dal solo observer. Scadenza1792148226 =
+2026-10-16 12:57:06 Europe/Rome; nessun rinnovo automatico o autorità permanente.
+Prima osservazione owner: NOT_PROVEN, zero sorgenti/ACK/commit, nessuna nuova
+ricerca chatbot; otto Cinema preservati ed asset Teatri riutilizzabile.
+Prossimo obiettivo: review semantica Teatri e onboarding HUMAN nei THS,
+poi commit13/ricerca/reimport senza duplicati/verifica finale. Dieci grant
+predecessori conservati; il conteggio del nuovo worker non è stampato e non
+va dedotto dal solo avvio. Non rinnovare né ripetere l'installazione.
+
+### Cronologia precedente alla disponibilità tecnica
+
 **Fasi tecniche 1–5 confermate complete; fase 6/8 sospesa su Ingestion; CSV 0/6.**
 Readback VPS allegato il 16 ottobre: 28/28 nuove modifiche Gateway APPLIED,
 74 route, due mappe uguali al piano finale (hash a6504c3d830019e84ca73e76fd62cb3a47ea6d07efe00d106a0e475fe770d574).
