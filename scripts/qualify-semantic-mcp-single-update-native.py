@@ -20,7 +20,7 @@ assert os.geteuid()==0 and os.environ.get('OUF_NATIVE_MCP_UPDATE_FIXTURE')=='EPH
 
 def cli(*args,input=None):
  p=subprocess.run(['docker',*args],input=input,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=90)
- assert p.returncode==0,'NATIVE_DOCKER_FIXTURE_FAILED'
+ assert p.returncode==0,'NATIVE_DOCKER_FIXTURE_FAILED: '+p.stderr.decode(errors='replace')[:2048]
  assert len(p.stdout)<=2097152 and len(p.stderr)<=2097152
  return p.stdout.strip()
 def inspect(reference):return json.loads(cli('inspect',reference))[0]
@@ -40,7 +40,7 @@ with tempfile.TemporaryDirectory(dir='/root',prefix='mcp-update-native-fixture-'
   cli('network','create',network)
   pgid=cli('run','-d','--name',pgname,'--network',network,'--network-alias','pg-fixture','-e','POSTGRES_USER=mcp','-e','POSTGRES_PASSWORD=mcp','-e','POSTGRES_DB=mcp_update_fixture','postgres:17').decode();containers.append(pgid)
   for _ in range(100):
-   ready=subprocess.run(['docker','exec',pgid,'pg_isready','-U','mcp','-d','mcp_update_fixture'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+   ready=subprocess.run(['docker','exec',pgid,'pg_isready','-h','127.0.0.1','-U','mcp','-d','mcp_update_fixture'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
    if ready.returncode==0:break
    time.sleep(.1)
   else:raise AssertionError('NATIVE_POSTGRES_NOT_READY')

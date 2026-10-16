@@ -91,8 +91,8 @@ class NativePorts:
  def request(self,method,path,body=None):
   self.engine.check_socket();return self.engine.request(method,path,body)
  def inspect(self,kind,reference):
-  require(kind in('containers','images')and re.fullmatch('[A-Za-z0-9_.:-]{1,128}',reference),'EXACT_ENGINE_REFERENCE_REQUIRED')
-  status,value=self.request('GET','/v1.44/'+kind+'/'+quote(reference,safe='')+'/json')
+  require(kind in('containers','images','networks')and re.fullmatch('[A-Za-z0-9_.:-]{1,128}',reference),'EXACT_ENGINE_REFERENCE_REQUIRED')
+  status,value=self.request('GET','/v1.44/'+kind+'/'+quote(reference,safe='')+(''if kind=='networks'else'/json'))
   if status==404:return None
   require(status==200 and type(value)is dict,'NATIVE_OBSERVATION_FAILED');return value
  def runtime(self,actual):
@@ -108,10 +108,17 @@ class NativePorts:
   require(old['Image']==self.plan['oldRuntimeBinding']['imageId']and digest(old['Config'])==self.plan['oldRuntimeBinding']['configHash']and digest(old['Mounts'])==self.plan['oldRuntimeBinding']['mountsHash'],'OLD_MCP_CONFIG_CHANGED')
   n=STAGES.index(stage)
   require(old['State']['StartedAt']==self.plan['oldRuntimeBinding']['startedAt'],'OLD_MCP_PROCESS_REPLACED')
-  if n<STAGES.index('DETACH_OLD_ENDPOINT'):
+  if old['State']['Running']:
    require(digest(old['NetworkSettings'])==self.plan['oldRuntimeBinding']['networkSettingsHash'],'OLD_ENDPOINT_CHANGED')
-  elif n>STAGES.index('DETACH_OLD_ENDPOINT'):
-   require(old['NetworkSettings']['Networks']=={},'OLD_ENDPOINT_REINTRODUCED')
+  else:
+   networks=old['NetworkSettings']['Networks'];require(set(networks)<={self.plan['network']['name']},'OLD_NETWORK_PROFILE_CHANGED')
+   if networks:
+    endpoint=networks[self.plan['network']['name']]
+    require(endpoint['NetworkID']==self.plan['network']['id']and endpoint.get('IPAddress','')in('',self.plan['network']['ip'])
+     and endpoint.get('MacAddress','').lower()in('',self.plan['network']['mac'].lower()),'STOPPED_ENDPOINT_PROFILE_CHANGED')
+  if n>STAGES.index('DETACH_OLD_ENDPOINT'):
+   live=self.inspect('networks',self.plan['network']['id'])
+   require(live is not None and old['Id']not in(live.get('Containers')or{}),'OLD_ENDPOINT_REINTRODUCED')
   if n<STAGES.index('RENAME_OLD'):require(old['Name']=='/'+self.plan['replacement']['name'],'OLD_NAME_CHANGED')
   elif n>STAGES.index('RENAME_OLD'):require(old['Name']=='/'+self.plan['replacement']['retiredName'],'RETIRED_NAME_CHANGED')
   host=copy.deepcopy(self.plan['oldHostConfig'])
@@ -213,7 +220,9 @@ class NativePorts:
     require(time.monotonic()<end,'MIGRATOR_EXIT_UNPROVEN');self.guard_current(stage);time.sleep(.2)
    require(self.migration_state()['migrations']==p['database']['after'],'MIGRATION_13_NOT_PROVEN')
   elif stage=='DETACH_OLD_ENDPOINT':
-   status,_=self.request('POST','/v1.44/networks/'+p['network']['id']+'/disconnect',{'Container':old,'Force':False});require(status==200,'ENDPOINT_RELEASE_UNPROVEN')
+   live=self.inspect('networks',p['network']['id']);require(live is not None,'EXACT_NETWORK_REQUIRED')
+   if old in(live.get('Containers')or{}):
+    status,_=self.request('POST','/v1.44/networks/'+p['network']['id']+'/disconnect',{'Container':old,'Force':False});require(status==200,'ENDPOINT_RELEASE_UNPROVEN')
   elif stage=='RENAME_OLD':
    status,_=self.request('POST','/v1.44/containers/'+old+'/rename?name='+quote(p['replacement']['retiredName'],safe=''));require(status==204,'OLD_RENAME_UNPROVEN')
   elif stage=='PUBLISH_PUBLIC_METADATA':
@@ -268,7 +277,8 @@ class NativePorts:
    return 'APPLIED',{'containerId':actual['Id'],'configHash':digest(actual['Config']),'startedAt':actual['State']['StartedAt']}
   if stage=='VERIFY_MIGRATION':
    state=self.migration_state();return ('APPLIED',{'databaseStateHash':digest(state),'committedMemberships':0})if state['migrations']==p['database']['after']else('UNKNOWN',{})
-  if stage=='DETACH_OLD_ENDPOINT':return ('APPLIED',{'oldEndpointReleased':True})if old['NetworkSettings']['Networks']=={}else('UNKNOWN',{})
+  if stage=='DETACH_OLD_ENDPOINT':
+   live=self.inspect('networks',p['network']['id']);return ('APPLIED',{'oldEndpointReleased':True})if live is not None and old['Id']not in(live.get('Containers')or{})else('UNKNOWN',{})
   if stage=='RENAME_OLD':return ('APPLIED',{'retiredContainerId':old['Id']})if old['Name']=='/'+p['replacement']['retiredName']else('UNKNOWN',{})
   if stage=='PUBLISH_PUBLIC_METADATA':
    directory=Path(p['metadata']['directory']);s=directory.lstat();require(stat.S_ISDIR(s.st_mode)and s.st_uid==0 and s.st_gid==p['metadata']['gid']and stat.S_IMODE(s.st_mode)==0o750,'PUBLIC_DIRECTORY_CUSTODY_REQUIRED')
