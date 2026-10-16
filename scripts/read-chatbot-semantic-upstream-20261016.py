@@ -650,7 +650,7 @@ try:
         result.append({'rcode':rcode,'dnsUnavailable':dns_unavailable,'addressCount':len(addresses),'matchesRegistry':bool(matches),
             'onlyRegistryAddresses':bool(addresses)and set(addresses)<=allowed,
             'matchedTcpReachable':reachable,'directRegistryTcpReachable':direct})
-    sys.stdout.write(json.dumps(result))
+    sys.stdout.write(json.dumps(result));sys.stdout.flush()
 except BaseException:os._exit(1)
 os._exit(0)
 '''
