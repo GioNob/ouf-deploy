@@ -23,6 +23,32 @@ conserva anche le 28 modifiche Gateway: zero nuove scritture route. Qualifiche c
 con sorgente runtime a2132d7ee330f9f0ce7d4fc9316dd880acad4f3f.
 Questo rilascio non avanza lo stato target: serve la nuova esecuzione HUMAN
 e la verifica del relativo esito sul VPS.
+### Ripresa PATH qualificata, in attesa di esecuzione VPS
+
+Runtime d7bbb768970aad1a001ca4d085bcc87c58a29cec: CI mirata 38882690699 PASS,
+29 test di storico/ripresa e tre prove native Docker/APISIX; backup 38882690674
+PASS. Nuovo controllo preventivo del PATH nel planner. Launcher
+scripts/launch-chatbot-ingestion-image-path-20261016.sh pronto per nuova revisione
+HUMAN. Suite generale aggiuntiva 38882690718 ancora in corso al rilascio.
+Questa qualifica non avanza lo stato target, che resta fase6 sospesa/CSV0di6.
+L'analisi dei possibili blocchi successivi è in
+releases/CHATBOT_INGESTION_IMAGE_PATH_20261016.md e distingue prove e limiti.
+
+### Causa del blocco di fase 6 provata: PATH ereditato
+
+Secondo readback VPS: Entrypoint java coincide con immagine e richiesta,
+Docker riporta executable file not found in $PATH; il PATH della richiesta
+sovrascrive quello dell'immagine ed esclude JAVA_HOME/bin. JAVA_HOME coincide
+con l'immagine. UDP e Onboarding hanno PATH/JavaHOME coerenti e restano attivi.
+I dieci grant cumulativi sono confermati, senza ulteriori richieste dei due
+lettori; il prossimo nuovo grant sarà l'undicesimo. Route 74 conformi,
+backup e migrazioni precedenti conservati, stato fase6 sospesa/CSV0di6 invariato.
+La ripresa preparata conserva il CID fallito tramite una rinomina prenotata,
+poi crea un nuovo CID dalla stessa immagine, cambiando soltanto PATH secondo
+i metadati verificati dell'immagine. Il vecchio start CLAIMED e i journal restano
+immutati. Nessun nuovo dump/restore, migrazione MCP, replay UDP/Onboarding/Registry
+o scrittura route. Nuova revisione HUMAN finita, non rinnovo del mandato precedente.
+
 ### Readback VPS: start Ingestion fallito prima del processo
 
 Diagnosi allegata: stesso CID cbf3067d946cf21a8f4abbb03ed47a217f2f39624ed1a5fb23a642325129ee35,
