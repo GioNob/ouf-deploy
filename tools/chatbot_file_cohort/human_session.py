@@ -83,7 +83,7 @@ class HumanSession:
     def binding(self):
         return self.current()
 
-    def _check(self, row):
+    def _check_identity_and_budget(self, row):
         binding = row.get('binding', {})
         require(row.get('schema') == 'ouf.chatbot-human-session.private.v1'
                 and binding.get('selectionHash') == digest(self.selection)
@@ -97,17 +97,91 @@ class HumanSession:
                 and binding.get('retryProfile') == PROFILE
                 and row.get('budgetReset') is False and row.get('bootId') == self._boot(),
                 'HUMAN_SESSION_BINDING_OR_HISTORY_DRIFT')
+        require(type(row.get('attempts')) is int and 0 <= row['attempts'] <= PROFILE['maximumAttempts'],
+                'HUMAN_SESSION_BUDGET_DRIFT')
+        if 'governedWindowRenewal' in row:
+            receipt=row['governedWindowRenewal'];review=receipt['review'];decision=receipt['decision']
+            require(review['maximumCumulativeOAuthAttempts']==PROFILE['maximumAttempts']
+                and row['attempts']>=review['priorOAuthAttempts']
+                and decision['reviewHash']==digest(review)
+                and binding['createdAt']==decision['approvedAt']
+                and binding['expiresAt']==decision['expiresAt']
+                and decision['expiresAt']-decision['approvedAt']==PROFILE['maximumElapsedSeconds'],
+                'RENEWED_HUMAN_WINDOW_CUMULATIVE_HISTORY_REQUIRED')
+
+    def _check(self, row):
+        self._check_identity_and_budget(row)
         now = time.time()
         require(now + 2 >= row['lastObservedAt'] and now < self.expires_at
                 and time.monotonic() < row['monotonicDeadline'], 'HUMAN_SESSION_WINDOW_EXPIRED_OR_CLOCK_DRIFT')
-        require(type(row.get('attempts')) is int and 0 <= row['attempts'] <= PROFILE['maximumAttempts'],
-                'HUMAN_SESSION_BUDGET_DRIFT')
         if self.action is not None:
             scope = json.loads(self.action.raw).get('chatbotFileAuthorization', {})
-            require(scope.get('sessionBinding') == binding, 'EXACT_SIGNED_HUMAN_SESSION_BINDING_REQUIRED')
+            require(scope.get('sessionBinding') == row['binding'], 'EXACT_SIGNED_HUMAN_SESSION_BINDING_REQUIRED')
             self.action.guard('chatbotFileAuthorization', scope)
         if self.failure is not None:
             raise self.failure
+
+    def expired_window_review(self, operation_binding):
+        """Read-only qualification; no renewed time window or request is issued."""
+        require(self.action is None, 'PRE_AUTHORITY_EXPIRED_LOGIN_ONLY')
+        row=self._read();self._check_identity_and_budget(row);now=time.time()
+        require('governedWindowRenewal' not in row
+            and now>=self.expires_at and time.monotonic()>=row['monotonicDeadline']
+            and now+2>=row['lastObservedAt'], 'ORIGINAL_EXPIRED_HUMAN_WINDOW_REQUIRED')
+        require(row['state']=='DEVICE_POLL' and type(row.get('deviceDeadline'))in(int,float)
+            and 0<row['deviceDeadline']<=self.expires_at
+            and type(row.get('deviceCode'))is str and bool(row['deviceCode'])
+            and not any(row.get(k)for k in ('accessToken','refreshToken','publishedAccessToken'))
+            and not os.path.lexists(self.token_path), 'EXPIRED_PRE_TOKEN_POLL_ONLY_NO_AMBIGUOUS_REQUEST')
+        require(row['attempts']<PROFILE['maximumAttempts'], 'HUMAN_CUMULATIVE_OAUTH_BUDGET_EXHAUSTED')
+        require(type(operation_binding)is dict and operation_binding
+            and all(type(k)is str and type(v)is str and len(v)==64
+                and all(c in '0123456789abcdef'for c in v)for k,v in operation_binding.items()),
+                'EXACT_LOGIN_RENEWAL_OPERATION_BINDING_REQUIRED')
+        return {'schema':'ouf.human-expired-login-window-review.v1',
+            'predecessorDirectory':str(self.directory),'predecessorRowHash':digest(row),
+            'predecessorBindingHash':digest(row['binding']),'predecessorExpiredAt':self.expires_at,
+            'selectionHash':digest(self.selection),'bootId':row['bootId'],
+            'priorOAuthAttempts':row['attempts'],'maximumCumulativeOAuthAttempts':PROFILE['maximumAttempts'],
+            'maximumRemainingOAuthAttempts':PROFILE['maximumAttempts']-row['attempts'],
+            'newWindowSeconds':PROFILE['maximumElapsedSeconds'],'operationBinding':copy.deepcopy(operation_binding),
+            'automaticRenewalAllowed':False,'budgetReset':False,'runtimeAuthorityIssued':False}
+
+    def start_approved_window(self, review, decision, destination):
+        """New private journal after exact operator consent; old journal unchanged.
+
+        This terminal consent only opens the login window. Authenticated HUMAN
+        verification and the existing dual-role infrastructure decision follow.
+        """
+        from tools.semantic_policy_token_owner.producer import protected_directory
+        require(review==self.expired_window_review(review['operationBinding']),
+                'EXPIRED_HUMAN_PREDECESSOR_CHANGED')
+        now=time.time()
+        require(set(decision)=={'schema','reviewHash','decision','approvedAt','expiresAt'}
+            and decision['schema']=='ouf.human-login-window-terminal-consent.v1'
+            and decision['reviewHash']==digest(review)
+            and decision['decision']=='OPEN_ONE_LOGIN_WINDOW_NO_RUNTIME_AUTHORITY'
+            and type(decision['approvedAt'])is int and type(decision['expiresAt'])is int
+            and decision['approvedAt']<=now<decision['approvedAt']+60
+            and decision['expiresAt']-decision['approvedAt']==PROFILE['maximumElapsedSeconds'],
+            'EXACT_CURRENT_LOGIN_WINDOW_CONSENT_REQUIRED')
+        destination=Path(destination)
+        require(destination==self.directory.parent/'human-session-window2',
+                'EXACT_SINGLE_RENEWED_HUMAN_DIRECTORY_REQUIRED')
+        with protected_directory(destination.parent)as directory:
+            os.mkdir(destination.name,0o700,dir_fd=directory);os.fsync(directory)
+        following=HumanSession(self.selection,destination,destination/'human-access.jwt',decision['expiresAt'])
+        binding={'sessionId':str(uuid.uuid4()),'selectionHash':digest(self.selection),
+            **{k:self.selection[k]for k in ('subject','issuer','tenant')},
+            'clientId':CLIENT,'scopes':SCOPES,'tokenPath':str(following.token_path),
+            'sessionDirectory':str(destination),'createdAt':decision['approvedAt'],
+            'expiresAt':decision['expiresAt'],'retryProfile':PROFILE}
+        following.journal.initialize({'schema':'ouf.chatbot-human-session.private.v1','binding':binding,
+            'bootId':self._boot(),'monotonicDeadline':time.monotonic()+decision['expiresAt']-now,
+            'lastObservedAt':now,'attempts':review['priorOAuthAttempts'],'state':'NEW','budgetReset':False,
+            'governedWindowRenewal':{'review':copy.deepcopy(review),'decision':copy.deepcopy(decision)}})
+        following._check(following._read())
+        return following
 
     def _save(self, row, **updates):
         self._check(row)

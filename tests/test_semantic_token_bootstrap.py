@@ -13,6 +13,7 @@ def module(name,path):
     value=importlib.util.module_from_spec(spec);spec.loader.exec_module(value);return value
 executor=module('token_bootstrap','scripts/execute-chatbot-semantic-token-session-20261016.py')
 resume_executor=module('resume_token_bootstrap','scripts/continue-chatbot-semantic-token-session-20261016.py')
+renew_executor=module('renew_token_bootstrap','scripts/reopen-chatbot-semantic-login-window-20261016.py')
 runtime=module('token_runtime','tools/chatbot_file_cohort/runtime.py')
 
 class Bootstrap(unittest.TestCase):
@@ -81,5 +82,14 @@ print('SEALED_TOKEN_ENTRY_IMPORTED_NO_ACTIONS')
         loader,sources=resume_executor.decode_sources(bundle)
         self.assertEqual(set(resume_executor.OVERLAYS),set(executor.OVERLAYS)|{name})
         runtime.compile_sources(sources)
+
+    def test_expired_login_bootstrap_retains_exact_scope_and_uses_explicit_consent_mode(self):
+        self.assertEqual(renew_executor.RESUME_BINDING,resume_executor.RESUME_BINDING)
+        self.assertEqual(renew_executor.RETAINED,resume_executor.RETAINED)
+        self.assertEqual(renew_executor.OVERLAYS,resume_executor.OVERLAYS)
+        loader,sources=renew_executor.decode_sources(self.bundle())
+        runtime.compile_sources(sources)
+        body=(ROOT/'scripts/reopen-chatbot-semantic-login-window-20261016.py').read_text()
+        self.assertIn("'priorOAuthAttempts':42,'predecessorExpiredAt':1792163893",body)
 
 if __name__=='__main__':unittest.main()

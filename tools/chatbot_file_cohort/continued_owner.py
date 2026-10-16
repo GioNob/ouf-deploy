@@ -305,7 +305,7 @@ TOKEN_STAGE_SOURCE = {
 
 def token_only_session_main(prepared,sources,closure,proposal,proposal_binding,candidate,candidate_binding,
                             records,first_receipt,context_path,executor_binding,emit=print,*,transport=None,
-                            interrupted_preparation=None):
+                            interrupted_preparation=None,expired_login_window=None):
     """One sealed foreground invocation; no old delivery/phase executor is called."""
     import signal
     import threading
@@ -379,7 +379,32 @@ def token_only_session_main(prepared,sources,closure,proposal,proposal_binding,c
     human=HumanSession(prepared['authorization']['plan']['selection'],human_directory,
         human_directory/'human-access.jwt',human_expiry)
     continuation=None
-    if interrupted_preparation is not None:
+    window_receipt=None
+    if expired_login_window:
+        require(interrupted_preparation is not None,'BOUND_INTERRUPTED_PREPARATION_REQUIRED')
+        from tools.chatbot_file_cohort.review import terminal_login_window_decision
+        operation_binding={'sourceClosureHash':digest(closure),'privateReviewHash':digest(proposal),
+            'candidateHash':digest(candidate),'preparationHash':digest(interrupted_preparation),
+            'executorBindingHash':digest(executor_binding)}
+        window_review=human.expired_window_review(operation_binding)
+        require(type(expired_login_window)is dict
+            and set(expired_login_window)=={'schema','priorOAuthAttempts','predecessorExpiredAt'}
+            and expired_login_window['schema']=='ouf.expired-human-login-readback.v1'
+            and all(window_review[k]==expired_login_window[k]for k in ('priorOAuthAttempts','predecessorExpiredAt')),
+            'EXACT_OBSERVED_OAUTH_ACCOUNTING_REQUIRED')
+        emit('OUF_TOKEN_SESSION_PHASE=EXPIRED_LOGIN_WINDOW_REVIEW technical=8/8 functional=0/6')
+        window_decision=terminal_login_window_decision(window_review)
+        require(window_review==human.expired_window_review(operation_binding),'EXPIRED_HUMAN_PREDECESSOR_CHANGED')
+        window_receipt={'schema':'ouf.human-login-window-reopening-receipt.v1',
+            'review':window_review,'decision':window_decision,'budgetReset':False,'runtimeAuthorityIssued':False}
+        with protected_directory(context)as directory:
+            require(set(os.listdir(directory))=={'human-session'},'UNISSUED_INTERRUPTED_CONTEXT_REQUIRED')
+            require(publish(directory,'login-window-reopening.json',encoded(window_receipt)),
+                    'LOGIN_WINDOW_REOPENING_ALREADY_CONSUMED')
+        human=human.start_approved_window(window_review,window_decision,context/'human-session-window2')
+        human_directory=human.directory;human_expiry=human.expires_at
+        emit('OUF_TOKEN_SESSION_PHASE=EXPLICIT_NEW_HUMAN_LOGIN_WINDOW technical=8/8 functional=0/6')
+    if interrupted_preparation is not None and not expired_login_window:
         human._check(previous_human)
         continuation={'schema':'ouf.pre-authority-token-login-continuation-receipt.v1',
             'binding':copy.deepcopy(interrupted_preparation),'previousHumanRowHash':digest(previous_human),
@@ -397,7 +422,7 @@ def token_only_session_main(prepared,sources,closure,proposal,proposal_binding,c
                 if error.retry_at is None:raise
                 emit('OUF_HUMAN_LOGIN_WAIT='+error.reason)
                 threading.Event().wait(min(30,max(0,error.retry_at-time.time())))
-    else:emit('OUF_TOKEN_SESSION_PHASE=FRESH_HUMAN_LOGIN technical=8/8 functional=0/6')
+    elif not expired_login_window:emit('OUF_TOKEN_SESSION_PHASE=FRESH_HUMAN_LOGIN technical=8/8 functional=0/6')
     human_binding=human.login(emit=emit)
     profile=evidence.decode(governance.public_input(governance.PROFILE))
     role_policy=evidence.decode(governance.public_input(governance.POLICY))
@@ -406,14 +431,17 @@ def token_only_session_main(prepared,sources,closure,proposal,proposal_binding,c
         'TOKEN_SESSION_WINDOW_EXCEEDS_EXISTING_ROLE_AUTHORITY')
     final=compile_token_review(closure,planned.scopes(),proposal_binding,candidate_binding,human_binding,context)
     final['executorBinding']=dict(executor_binding)
-    if continuation is not None:
-        final['preAuthorityContinuation']=continuation
+    if window_receipt is not None:
+        final['explicitLoginWindowReopening']=window_receipt
+    if interrupted_preparation is not None:
+        if continuation is not None:final['preAuthorityContinuation']=continuation
         planned.journal.check_directory()
         with protected_directory(journal)as directory:
             require(not os.listdir(directory),'UNINITIALIZED_WORKER_REQUIRED_BEFORE_DECISION')
         with protected_directory(context)as directory:
             require([os.fstat(directory).st_dev,os.fstat(directory).st_ino]==interrupted_preparation['directoryIdentity']
-                and set(os.listdir(directory))=={'human-session','preparation-continuation.json'},
+                and set(os.listdir(directory))==({'human-session','human-session-window2','login-window-reopening.json'}
+                    if expired_login_window else {'human-session','preparation-continuation.json'}),
                 'INTERRUPTED_CONTEXT_CHANGED_BEFORE_DECISION')
     # Recheck target generation and cancellation after the possibly long login.
     raw=encoded(planned.scopes())

@@ -160,6 +160,37 @@ def terminal_token_decision(review, review_path):
         'decision':TOKEN_DECISION,'state':'ACTIVE'}
 
 
+def terminal_login_window_decision(review):
+    """Local operator consent only; this is not an authenticated HUMAN mandate."""
+    require(review.get('schema')=='ouf.human-expired-login-window-review.v1',
+            'EXACT_EXPIRED_LOGIN_REVIEW_REQUIRED')
+    review_hash=digest(review)
+    summary=('\nRiapertura esplicita della sola finestra di login HUMAN.\n'
+        'Il login precedente e scaduto; il suo journal resta intatto.\n'
+        'Tentativi OAuth gia consumati: '+str(review['priorOAuthAttempts'])+'; residui massimi: '
+        +str(review['maximumRemainingOAuthAttempts'])+'; cumulativo massimo: '
+        +str(review['maximumCumulativeOAuthAttempts'])+'.\n'
+        'Nuova finestra: 7200 secondi. Nessun rinnovo automatico.\n'
+        'Questo consenso locale non autentica HUMAN e non autorizza il worker.\n'
+        'Seguono login nel browser e revisione esatta separata prima delle firme.\n'
+        'Revisione SHA256: '+review_hash+'\n'
+        'Per aprire il login scrivi: RIAPRO LOGIN '+review_hash+'\n> ')
+    fd=os.open('/dev/tty',os.O_RDWR|os.O_NOCTTY|os.O_NOFOLLOW)
+    try:
+        require(stat.S_ISCHR(os.fstat(fd).st_mode)and os.isatty(fd),'CONTROLLING_HUMAN_TERMINAL_REQUIRED')
+        termios.tcflush(fd,termios.TCIFLUSH);os.write(fd,summary.encode('utf-8'))
+        for attempt in range(1,TERMINAL_ATTEMPTS+1):
+            answer,count=terminal_line(fd)
+            accepted,detail=terminal_answer(answer,('RIAPRO LOGIN '+review_hash).encode('ascii'),count)
+            if accepted:break
+            os.write(fd,b'\n'+encoded({'status':'NOT_ACCEPTED','attempt':attempt,**detail})+b'\n> ')
+        require(accepted,'LOGIN_WINDOW_NOT_APPROVED')
+    finally:os.close(fd)
+    now=int(time.time())
+    return {'schema':'ouf.human-login-window-terminal-consent.v1','reviewHash':review_hash,
+        'decision':'OPEN_ONE_LOGIN_WINDOW_NO_RUNTIME_AUTHORITY','approvedAt':now,'expiresAt':now+7200}
+
+
 def issue_token_action(review, decision, human_session):
     """Issue with existing scoped keys only after fresh authenticated exact approval."""
     from tools.chatbot_file_cohort.human_session import HumanSession

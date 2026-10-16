@@ -7,6 +7,7 @@ on:
       - tools/chatbot_file_cohort/review.py
       - tools/chatbot_file_cohort/human_session.py
       - scripts/continue-chatbot-semantic-token-session-20261016.py
+      - scripts/reopen-chatbot-semantic-login-window-20261016.py
       - tests/test_interrupted_human_login.py
       - scripts/execute-chatbot-semantic-token-session-20261016.py
       - tests/test_semantic_token_execution.py
@@ -21,6 +22,7 @@ on:
       - tools/chatbot_file_cohort/review.py
       - tools/chatbot_file_cohort/human_session.py
       - scripts/continue-chatbot-semantic-token-session-20261016.py
+      - scripts/reopen-chatbot-semantic-login-window-20261016.py
       - tests/test_interrupted_human_login.py
       - scripts/execute-chatbot-semantic-token-session-20261016.py
       - tests/test_semantic_token_execution.py
