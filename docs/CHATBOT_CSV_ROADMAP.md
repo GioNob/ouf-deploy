@@ -72,6 +72,20 @@ indirizzo hardcoded/default riusabile: è una nuova revisione privata da autoriz
 Porta, pesi, contratti e proprietà delle route rimangono conservati. Nessuna
 estensione della finestra o applicazione della correzione è stata eseguita.
 
+### Revisione privata pronta:15 binding Registry,59 route invariate
+
+L'operatore ha completato la preparazione: review71e8c444f6164cd077e25c13429f218c27bf909131b4031529c836e28687ccfa,
+uno snapshot privato; nessuna scrittura Gateway/DB/servizio o grant. Il nome del
+Registry ha un'unica etichetta di85caratteri (non DNS-valida). Il profilo
+ouf.reviewed-retained-static-registry-address.v1 ha superato il controllo del
+request approvato/rete corrente e TCP dal Gateway. Prevede15route con solo nodes
+aggiornato e59route integre. Non è ancora applicato o accettato.
+Prossimo passo: approvazione terminale dell'esecuzione esatta, firme dei due ruoli
+infrastrutturali esistenti e applicazione con claim durevoli, fencing esclusivo
+e GET dell'intera mappa prima/dopo ogni PUT. Nessun replay di claim ambiguo.
+Scadenza esistente12:57:06 invariata; authority correzione massimo180secondi
+entro tale limite. Nessun nuovo worker/grant, restart, backup o migrazione.
+
 ### Tappa funzionale 1/6: profilo confermato, consultazione semantica 503
 
 Dal chatbot, account ouf-admin: source.file.preview conferma asset
