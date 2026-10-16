@@ -13,6 +13,8 @@ on:
       - tests/test_gateway_postgateway_container_readback.py
       - scripts/read-chatbot-ingestion-start-20261016.py
       - tests/test_gateway_ingestion_start_readback.py
+      - scripts/read-chatbot-ingestion-exec-20261016.py
+      - tests/test_gateway_ingestion_exec_readback.py
       - .github/workflows/chatbot-gateway-readback.yml
 permissions: {contents: read}
 jobs:
