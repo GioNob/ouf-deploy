@@ -93,7 +93,17 @@ def main():
                     if v['kind']=='file':
                         raw=(root/k).read_bytes();(a.output/'runtime-file.bin').write_bytes(raw)
                 time.sleep(1)
-            proof=contract.observe(root,b.LIMITS,b.Budget(),EXPECTED,pid)
+            native_mapping=contract.mapped_file;observed_identities=[]
+            def traced_mapping(*args):
+                result=native_mapping(*args);observed_identities.append(result[2]);return result
+            contract.mapped_file=traced_mapping
+            try:proof=contract.observe(root,b.LIMITS,b.Budget(),EXPECTED,pid)
+            except Exception:
+                if len(observed_identities)==2:
+                    fields=['dev','ino','mode','uid','gid','nlink','size','mtime_ns','ctime_ns']
+                    print('CI_RUNTIME_IDENTITY_CHANGED_FIELDS='+json.dumps([k for k,x,y in zip(fields,*observed_identities)if x!=y]),flush=True)
+                raise
+            finally:contract.mapped_file=native_mapping
             denied=[]
             # Disposable fixtures exercise the actual predicate, never target files.
             for label,relative,operation,undo in [
