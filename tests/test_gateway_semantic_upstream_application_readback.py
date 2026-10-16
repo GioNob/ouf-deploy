@@ -60,10 +60,10 @@ class Application(unittest.TestCase):
             raw=private.read_bytes();public=subprocess.run(['/usr/bin/openssl','pkey','-in',str(private),'-pubout','-outform','DER'],capture_output=True,check=True).stdout[-32:]
             program={'path':'/usr/bin/openssl','sha256':hashlib.sha256(Path('/usr/bin/openssl').read_bytes()).hexdigest()}
             profile={'keyBindings':{'installer':{'path':str(private),'sha256':hashlib.sha256(raw).hexdigest()}}}
-            key={'keyRef':'fixture-key','issuerRef':'fixture-installer','publicKey':public.hex()};authority={'scope':'exact-test','expiresAt':2000000000}
+            key={'keyRef':'fixture-key','issuerRef':'fixture-installer','publicKey':public.hex()};authority={'scope':'exact-test','expiresAt':2000000000,'installationRef':'fixture-installation','entityRef':'fixture-entity'}
             signatures=r.sign_and_verify(authority,profile,key,program,folder);r.verify_signatures(authority,signatures,key,program,folder)
             self.assertEqual(len(signatures),2);bad=copy.deepcopy(authority);bad['scope']='tampered'
-            with self.assertRaisesRegex(r.ReadDenied,'SIGNED_BYTES_DRIFT'):r.verify_signatures(bad,signatures,key,program,folder)
+            with self.assertRaisesRegex(r.ReadDenied,'SIGNATURE_HEADER_REQUIRED'):r.verify_signatures(bad,signatures,key,program,folder)
     def test_native_namespace_put_sends_only_selected_route_and_checks_ack(self):
         try:info=os.stat('/proc/self/ns/net')
         except FileNotFoundError:

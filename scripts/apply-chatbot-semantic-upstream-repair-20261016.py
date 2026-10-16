@@ -925,7 +925,7 @@ def public_governance(now):
 
 def crypto_call(program,args,raw=None):
     result=subprocess.run([executable(program),*args],input=raw,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,
-        timeout=10,env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'})
+        timeout=10,env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C','OPENSSL_CONF':'/dev/null'})
     require(result.returncode==0 and len(result.stdout)<=16384,'EXISTING_AUTHORITY_CRYPTO_FAILED');return result.stdout
 
 def sign_and_verify(authority,profile,key,program,directory):
@@ -936,13 +936,17 @@ def sign_and_verify(authority,profile,key,program,directory):
     os.chmod(directory/'public.der',0o600)
     signatures=[]
     for role in ('DEPLOYMENT_INTENT','FINAL_DEPLOYMENT_APPROVAL'):
-        envelope=encoded({'schema':'ouf.semantic-upstream-role-signature-payload.v1','role':role,
-            'authorityHash':hashlib.sha256(payload).hexdigest(),'authority':authority})
+        header={'schema':'ouf.semantic-deployment-detached-signature.v1','algorithm':'Ed25519',
+            'keyRef':key['keyRef'],'role':role,'issuerRef':key['issuerRef'],
+            'installationRef':authority['installationRef'],'entityRef':authority['entityRef'],'payloadHash':digest(authority)}
+        encoded_header=encoded(header)
+        envelope=b'OUF-DEPLOYMENT-EVIDENCE\x00V1\x00'+len(encoded_header).to_bytes(4,'big')+encoded_header+len(payload).to_bytes(4,'big')+payload
         path=directory/(role+'.payload.json');path.write_bytes(envelope);path.chmod(0o600)
         signature=crypto_call(program,['pkeyutl','-sign','-rawin','-inkey',profile['keyBindings']['installer']['path'],'-in',str(path)])
         require(len(signature)==64,'ED25519_SIGNATURE_REQUIRED');sig=directory/(role+'.sig');sig.write_bytes(signature);sig.chmod(0o600)
         crypto_call(program,['pkeyutl','-verify','-rawin','-pubin','-keyform','DER','-inkey',str(directory/'public.der'),'-in',str(path),'-sigfile',str(sig)])
-        signatures.append({'role':role,'keyRef':key['keyRef'],'issuerRef':key['issuerRef'],'signature':signature.hex()})
+        signatures.append({**header,'signature':signature.hex()})
+    following,_=private_config(profile['keyBindings']['installer']['path']);require(following==raw,'PRIVATE_SIGNING_KEY_CHANGED')
     del raw
     atomic_record(directory/'signatures.json',signatures,exclusive=True);return signatures
 
@@ -950,8 +954,13 @@ def verify_signatures(authority,signatures,key,program,directory):
     require(len(signatures)==2 and {v['role']for v in signatures}=={'DEPLOYMENT_INTENT','FINAL_DEPLOYMENT_APPROVAL'},'BOTH_REPAIR_SIGNATURES_REQUIRED')
     for item in signatures:
         role=item['role'];require(item['keyRef']==key['keyRef']and item['issuerRef']==key['issuerRef'],'REPAIR_SIGNER_POLICY_DRIFT')
-        expected=encoded({'schema':'ouf.semantic-upstream-role-signature-payload.v1','role':role,
-            'authorityHash':digest(authority),'authority':authority})
+        header={k:v for k,v in item.items()if k!='signature'}
+        require(header=={'schema':'ouf.semantic-deployment-detached-signature.v1','algorithm':'Ed25519',
+            'keyRef':key['keyRef'],'role':role,'issuerRef':key['issuerRef'],
+            'installationRef':authority['installationRef'],'entityRef':authority['entityRef'],'payloadHash':digest(authority)},
+            'EXACT_REPAIR_SIGNATURE_HEADER_REQUIRED')
+        encoded_header=encoded(header);payload=encoded(authority)
+        expected=b'OUF-DEPLOYMENT-EVIDENCE\x00V1\x00'+len(encoded_header).to_bytes(4,'big')+encoded_header+len(payload).to_bytes(4,'big')+payload
         require((directory/(role+'.payload.json')).read_bytes()==expected
             and (directory/(role+'.sig')).read_bytes()==bytes.fromhex(item['signature'])
             and (directory/'public.der').read_bytes()==bytes.fromhex('302a300506032b6570032100'+key['publicKey']),
@@ -971,7 +980,9 @@ def terminal_repair_decision(review,folder):
     try:
         require(os.isatty(fd),'CONTROLLING_HUMAN_TERMINAL_REQUIRED');termios.tcflush(fd,termios.TCIFLUSH);os.write(fd,message.encode())
         require(select.select([fd],[],[],90)[0],'REPAIR_DECISION_TIME_EXHAUSTED')
-        raw=os.read(fd,128);require(raw in (('APPROVO '+fingerprint+'\n').encode(),('APPROVO '+fingerprint+'\r\n').encode()),'EXACT_REPAIR_NOT_APPROVED')
+        raw=os.read(fd,128)
+        if raw.startswith(b'\x1b[200~')and b'\x1b[201~'in raw:raw=raw[6:].replace(b'\x1b[201~',b'',1)
+        require(raw in (('APPROVO '+fingerprint+'\n').encode(),('APPROVO '+fingerprint+'\r\n').encode()),'EXACT_REPAIR_NOT_APPROVED')
     finally:os.close(fd)
     return {'approvedExecutionReviewHash':fingerprint,'approvedAt':int(time.time()),'decision':'APPROVE_EXACT_FINITE_REGISTRY_ROUTE_BINDING_REPAIR'}
 
