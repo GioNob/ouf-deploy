@@ -1,5 +1,37 @@
 ## 16 ottobre — candidato target verificato; composizione token-only in qualifica
 
+## 16 ottobre — consegna del solo token policy pronta alla decisione HUMAN
+
+Stato target: **8/8 fasi tecniche, 0/6 risultati funzionali**. Il candidato v2
+è completo ma non conferisce autorità: SHA256 `0f89461b7ec0d34078dbacc28d3281c935ca2f5c60dd185f2f763f4ffd3650b4`.
+Il nuovo esecutore è confezionato; usare esclusivamente la consegna descritta in
+[CHATBOT_SEMANTIC_TOKEN_SESSION_EXECUTION_20261016.md](../releases/CHATBOT_SEMANTIC_TOKEN_SESSION_EXECUTION_20261016.md).
+I precedenti riferimenti a entrypoint mancante sono superati dalla nuova consegna.
+
+Sorgente immutabile: `c3e39aaf5783be6428fdb95dff1a3836748c0ce3`.
+Launcher pubblicato nel commit `3a500b77081d9ee109468748db55e2d99954b55c`:
+`scripts/launch-chatbot-semantic-token-session-20261016.sh`, SHA256
+`df509e9c44b7b1e08ce6acc3e4e0847aa18d0bcda7eadc525a808d3ba806f7ac`.
+CI del sorgente [38902222309](https://github.com/GioNob/ouf-deploy/actions/runs/38902222309):72test PASS;
+CI della consegna [38902296302](https://github.com/GioNob/ouf-deploy/actions/runs/38902296302):2test PASS.
+La prova OAuth e il consenso terminale sono fixture nelle prove composte;
+nessuna decisione HUMAN target o esecuzione VPS è inferita dalla CI.
+
+Sul VPS: nuovo login selezionato e `APPROVO <hash della revisione finale>`
+prima di emissione con le due firme esistenti. Foreground, massimo3600secondi
+dalla decisione; Ctrl-C/HUP/TERM e scadenza impediscono anche pubblicazioni
+tardive. Vecchio CANCELLED_BY_OWNER e69tentativi controllati immutati; massimo128
+nuovi, cumulativo controllato197, gap legacy UNKNOWN. Fence persistente unico,
+nuovo journal, nessun primo grant ripetuto, rotazione, lifecycle, DB, Gateway,
+modifica grant o MCP/proposta. Non rilanciare dopo STOP senza riconciliazione.
+
+L'operatore deve ancora eseguire il comando: riportare STARTED e primo STATUS,
+lasciando aperto il terminale. ACTIVE del worker non prova policy effettiva
+Registry, receipt semantica, approvazione THS o risultati CSV. Riconciliare lo
+stesso commandKey prima di riprendere semantic.propose; nessun retry403 o cambio
+account. Tutte le precedenti prove e i sei traguardi funzionali restano validi.
+
+
 Fasi tecniche8/8 conservate; funzionali0/6.
 Preparatore candidato v2 ENDcomplete=true. Artefatto privato:
 /etc/ouf/deploy-snapshots/semantic-session-candidate-048rn2ec/candidate.json,
