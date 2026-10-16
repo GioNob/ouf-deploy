@@ -29,6 +29,27 @@ poi commit13/ricerca/reimport senza duplicati/verifica finale. Dieci grant
 predecessori conservati; il conteggio del nuovo worker non è stampato e non
 va dedotto dal solo avvio. Non rinnovare né ripetere l'installazione.
 
+### Tappa funzionale 1/6: profilo confermato, consultazione semantica 503
+
+Dal chatbot, account ouf-admin: source.file.preview conferma asset
+6609b245-86ed-4315-8ce0-73f2a8555bf3, profilo7984c39c-7396-4248-ab0a-f2efc390b49c
+versione1, CSV13righe/20colonne. Nessun nuovo upload/profiling. Il nome del teatro
+è una chiave candidata proposta, non ancora approvata; CAP è profilato LONG e
+richiede una mappatura che conservi la semantica testuale del codice postale.
+Nessuna sorgente o proposta creata. semantic.search(q=Teatri,limit20) restituisce
+Status503 e codice wrapper INVALID_ARGUMENT senza dettaglio: non è prova di
+argomento invalido né della causa dell'indisponibilità. ouf.system.status restituisce
+MCP HEALTHY/PUBLIC_OPERATIONAL: non certifica ogni dipendenza funzionale.
+Fasi tecniche superate8/8, CSV0/6. Prima tappa funzionale bloccata sulla lettura
+semantica; non riaprire la fase tecnica1 o ripetere l'installazione.
+
+Diagnosi GET-only legata alla review07ee9e8... e autoritàa604f498..., invocazione
+live3733354: due mappe route, stato Registry, presenza/forma/exposure dei riferimenti
+signing NGINX senza valori, due letture log bounded con classificazione fissa.
+Non ferma il processo, non esegue chiamate MCP/DB/IAM, grant, scritture o nuovi
+mandati; scadenza esistente12:57:06 invariata. Eseguire in una seconda sessione.
+Qualifica38886152124/job116924263413: 50test PASS senza skip.
+
 ### Cronologia precedente alla disponibilità tecnica
 
 **Fasi tecniche 1–5 confermate complete; fase 6/8 sospesa su Ingestion; CSV 0/6.**
