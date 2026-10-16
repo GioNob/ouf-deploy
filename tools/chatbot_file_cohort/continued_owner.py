@@ -379,24 +379,31 @@ def token_only_session_main(prepared,sources,closure,proposal,proposal_binding,c
     decision=terminal_token_decision(final,context/'review.json')
     emit('OUF_TOKEN_SESSION_PHASE=EXISTING_ROLE_ISSUANCE technical=8/8 functional=0/6')
     action=issue_token_action(final,decision,human)
-    installer=GovernedSemanticOwnerContinuation(action,*args,transport=transport)
-    require(installer.scopes()==final['scopes'],'TOKEN_ONLY_APPROVED_SCOPE_CHANGED')
-    # Live checks and exclusive persistent claim precede staging and new grants.
-    emit('OUF_TOKEN_SESSION_PHASE=GUARDED_TOKEN_INSTALLATION technical=8/8 functional=0/6')
-    worker=installer.install()
     stop=threading.Event();remaining=decision['expiresAt']-time.time()
     require(0<remaining<=3600,'TOKEN_SESSION_AUTHORITY_EXPIRED_BEFORE_SERVE')
+    # Restrict the SAME typed, dual-signed authority while a request is in
+    # flight. Publication rechecks this clock, so cancellation cannot publish
+    # a late token response before the outer loop observes its stop event.
+    def current_session_time():
+        require(not stop.is_set(),'TOKEN_SESSION_CANCELLED_OR_EXPIRED')
+        return time.time()
+    action.authority.clock=current_session_time
     timer=threading.Timer(remaining,stop.set);timer.daemon=True
     previous={}
     for sig in (signal.SIGINT,signal.SIGTERM,signal.SIGHUP):
         previous[sig]=signal.signal(sig,lambda *_:stop.set())
-    emit('OUF_TOKEN_SESSION_STARTED='+encoded({'authorityPath':str(context/'authority.json'),
-        'authorityHash':action.authority_hash,'reviewHash':digest(final),'journalPath':str(journal),
-        'priorControlledGrantAttempts':69,'maximumCumulativeGrantAttempts':197,
-        'expiresAt':decision['expiresAt'],'completedTechnicalPhases':8,'functionalMilestonesProven':0,
-        'registryEffectivePolicyProven':False,'acceptanceGranted':False,'budgetReset':False}).decode())
     timer.start()
-    try:serve(worker,stop,OwnerReporter(worker.r.journal,emit))
+    try:
+        installer=GovernedSemanticOwnerContinuation(action,*args,transport=transport)
+        require(installer.scopes()==final['scopes'],'TOKEN_ONLY_APPROVED_SCOPE_CHANGED')
+        emit('OUF_TOKEN_SESSION_PHASE=GUARDED_TOKEN_INSTALLATION technical=8/8 functional=0/6')
+        worker=installer.install()
+        emit('OUF_TOKEN_SESSION_STARTED='+encoded({'authorityPath':str(context/'authority.json'),
+            'authorityHash':action.authority_hash,'reviewHash':digest(final),'journalPath':str(journal),
+            'priorControlledGrantAttempts':69,'maximumCumulativeGrantAttempts':197,
+            'expiresAt':decision['expiresAt'],'completedTechnicalPhases':8,'functionalMilestonesProven':0,
+            'registryEffectivePolicyProven':False,'acceptanceGranted':False,'budgetReset':False}).decode())
+        serve(worker,stop,OwnerReporter(worker.r.journal,emit))
     finally:
         stop.set();timer.cancel()
         for sig,handler in previous.items():signal.signal(sig,handler)

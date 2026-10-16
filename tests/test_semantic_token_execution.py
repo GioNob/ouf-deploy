@@ -101,7 +101,7 @@ class Execution(unittest.TestCase):
             with self.assertRaises(Exception):r.issue_token_action(self.review,self.decision(),self.human)
         self.assertFalse((self.context/'issuance.claim.json').exists())
 
-    def main(self,rejected=False):
+    def main(self,rejected=False,cancel_after_response=False):
         # New directory creation belongs to this dispatcher rather than the component fixture.
         self.f.journal.rmdir()
         prepared={'owner':self.f.value,'engine':self.f.engine_binding,
@@ -109,7 +109,14 @@ class Execution(unittest.TestCase):
         sources={module:self.f.base.files[name]for name,module in STAGE_SOURCE.items()}
         rows=[];before=self.f.grants()
         def once(worker,stop,reporter):
-            row=worker.tick();rows.append(row);reporter.report(worker.status(row));stop.set()
+            from tools.semantic_policy_token_owner.producer import HttpsGrant
+            original=HttpsGrant.request
+            def late_response(granter,*args):
+                value=original(granter,*args);stop.set();return value
+            if cancel_after_response:
+                with patch.object(HttpsGrant,'request',late_response):row=worker.tick()
+            else:row=worker.tick()
+            rows.append(row);reporter.report(worker.status(row));stop.set()
         approve=(lambda *a:(_ for _ in ()).throw(ValueError('SYNTHETIC_REJECTION')))if rejected else lambda review,path:self.decision(review)
         with patch.object(HumanSession,'login',return_value=self.hb),patch.object(HumanSession,'current',return_value=self.hb),\
              patch.object(r,'stdlib_binding',return_value={'fileHashes':{}}),patch.object(r,'terminal_token_decision',side_effect=approve),\
@@ -125,6 +132,17 @@ class Execution(unittest.TestCase):
         self.assertEqual(rows[0]['controlledCumulativeGrantAttempts'],70)
         self.assertEqual(self.f.grants(),before+1)
         for name,raw in self.f.before.items():self.assertEqual((self.f.installed.journal.root/name).read_bytes(),raw)
+
+    def test_cancellation_after_real_grant_response_prevents_late_publication(self):
+        target=Path(self.f.installed.first.binding.output_directory)/self.f.installed.first.binding.output_member
+        previous=target.stat();raw=target.read_bytes()
+        before,rows=self.main(cancel_after_response=True)
+        self.assertEqual(self.f.grants(),before+1)
+        self.assertNotEqual(rows[0]['state'],'ACTIVE')
+        self.assertEqual(rows[0]['publicationCount'],0)
+        self.assertEqual(rows[0]['controlledCumulativeGrantAttempts'],70)
+        self.assertEqual(target.read_bytes(),raw)
+        self.assertEqual((target.stat().st_ino,target.stat().st_mtime_ns),(previous.st_ino,previous.st_mtime_ns))
 
     def test_terminal_rejection_has_no_signatures_fence_or_workload_grant(self):
         before=self.f.grants()
