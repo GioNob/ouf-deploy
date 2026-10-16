@@ -1,5 +1,8 @@
 # Prosecuzione Gateway, fase tecnica 5/8
 
+**Procedura corrente: [APISIX conservato e autorizzazioni riconciliate](CHATBOT_GATEWAY_RETAINED_AUTHORIZATION_20261016.md).**
+I launcher di questa pagina restano storici e non vanno ripetuti.
+
 **Launcher superato dopo il blocco di preparazione sul VPS.** Usare la
 [correzione Binds null](CHATBOT_GATEWAY_PHASE5_NULL_BINDS_20261016.md).
 Le evidenze sotto descrivono la precedente qualifica, che non copriva tale variante.

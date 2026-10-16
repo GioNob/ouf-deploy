@@ -1,5 +1,8 @@
 # Fase 5: correzione della preparazione con Binds null
 
+**Procedura corrente: [APISIX conservato e autorizzazioni riconciliate](CHATBOT_GATEWAY_RETAINED_AUTHORIZATION_20261016.md).**
+I launcher di questa pagina restano storici e non vanno ripetuti.
+
 **Tentativo sul VPS già approvato e consumato. Non ripetere questo launcher.**
 Si è fermato dopo `GatewayRuntime.apply()` alla verifica dei ruoli con
 `AuthorizationPaused`. Usare soltanto la diagnosi

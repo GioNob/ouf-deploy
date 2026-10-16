@@ -265,3 +265,29 @@ comunque riletti. Dopo l'avvio del nuovo MCP la cache viene svuotata e la lettur
 MCP reale è obbligatoria prima di rilasciare i produttori. Test specifici provano
 assenza di chiamate MCP durante la quiescenza, gara/drift e refresh finale con
 503, attesa e recupero. Nessun permesso o ruolo applicativo viene modificato.
+
+## Prosecuzione qualificata: APISIX già completato, ruoli e budget riconciliati
+
+Sorgente `495d46f6ff7320c6d6248438895a52c8dc4c0818`, capsula di 129 membri
+`ae6cb82723a0273e64a198354eb5ed2d826b8a80f8a3db201a2a8d6deb73db8d`.
+CI nativa 38865027512 PASS (job 116855740434: adozione degli otto passi APISIX con
+zero nuove operazioni, nove modifiche conservate e 28 residue; job 116855740112:
+revisione completa, otto grant TLS conservati e nono effettivo, sei test budget/ruoli,
+tre custodia/adozione e due orchestration). Regressione generale 38865027539 PASS:
+484 test in 65 suite, zero errori o skip. Regressione backup 38865028729 PASS.
+
+Launcher operativo `scripts/launch-chatbot-gateway-retained-20261016.sh`, SHA256
+`d3f2f1b24a14475fc02a5074d53dd9483480e0860b7c9d519d55823ef470db13`.
+[Procedura completa](../releases/CHATBOT_GATEWAY_RETAINED_AUTHORIZATION_20261016.md),
+[evidenza](../evidence/chatbot-gateway-retained-authorization-20261016.json).
+Il comando prepara una nuova revisione completa prima di APPROVO; adotta APISIX
+con controllo delle generazioni e non ripete stop/create/start. I ruoli prima
+della quiescenza sono accettati solo con identico policyRef/contentHash owner
+appena riletti; lettura MCP nuova obbligatoria prima del rilascio produttori.
+Fasi 1–4, quattro backup, migrazioni CLEAN, UDP/Onboarding e Registry sono conservati.
+Otto grant storici restano conteggiati; una nuova finestra HUMAN finita, nessun
+primo grant o budget storico ripetuto. URL e legami di rete restano quelli
+approvati; adattatore Docker/netns specifico, non qualifica multi-host generale.
+
+Nessuna nuova esecuzione target durante questa qualifica: **fase 5 ancora sospesa,
+fasi 6–8 da completare, CSV 0/6**. Solo il prossimo output VPS può avanzare la roadmap.
