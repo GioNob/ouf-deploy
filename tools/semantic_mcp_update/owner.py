@@ -12,6 +12,8 @@ STAGES=('VERIFY_INPUTS','IMPORT_IMAGE','DISABLE_OLD_RESTART','STOP_OLD','BACKUP_
  'CREATE_MIGRATOR','START_MIGRATOR','VERIFY_MIGRATION','DETACH_OLD_ENDPOINT','RENAME_OLD',
  'PUBLISH_PUBLIC_METADATA','CREATE_REPLACEMENT','START_REPLACEMENT','READINESS','RESTORE_RESTART_POLICY','VERIFY_FINAL')
 PROFILE='ouf.mcp-single-update-atomic-migration.v1'
+STAGE_WINDOW_SECONDS={name:45 for name in STAGES}
+STAGE_WINDOW_SECONDS.update(IMPORT_IMAGE=210,BACKUP_DATABASE=150,VERIFY_MIGRATION=90)
 class UpdateDenied(RuntimeError):pass
 class UpdatePaused(RuntimeError):pass
 def require(ok,reason):
@@ -28,7 +30,7 @@ def scope(plan):
  require(plan['logicalUpdateRef']==digest({'oldContainerId':plan['oldRuntimeBinding']['containerId'],'databaseOid':plan['database']['oid'],'predecessorAttemptId':plan['retainedClaim']['attemptId']}),'LOGICAL_UPDATE_SCOPE_CHANGED')
  return {'profile':PROFILE,'planHash':digest(plan),'logicalUpdateRef':plan['logicalUpdateRef'],
   'predecessorReviewHash':plan['predecessorReviewHash'],'stages':list(STAGES),
-  'maximumExecutionSeconds':900,'maximumEffectAttemptsPerStage':1,'automaticReplayAllowed':False,
+  'maximumExecutionSeconds':900,'minimumRemainingStageSeconds':dict(STAGE_WINDOW_SECONDS),'maximumEffectAttemptsPerStage':1,'automaticReplayAllowed':False,
   'tokenRenewalAllowed':False,'semanticDispatchAllowed':False,'acceptanceGranted':False}
 
 class SingleMcpUpdate:
@@ -101,6 +103,9 @@ class SingleMcpUpdate:
      if row['incidentState']!='RECOVERED':row=self.save(row,incidentState='RECOVERED')
      return {'complete':True,'applicationReady':True,'acceptanceGranted':False,'semanticDispatchPerformed':False,'journalVersion':row['version']}
     stage=STAGES[n];self.ports.guard_current(stage)
+    wall,mono=self.clock()
+    if min(row['expiresAt']-wall,row['expiresMonotonic']-mono,self.expires-wall)<STAGE_WINDOW_SECONDS[stage]:
+     raise UpdatePaused('INSUFFICIENT_AUTHORITY_WINDOW_FOR_STAGE')
     if stage=='READINESS':
      if len(row['effects'])==n:
       effect={'stage':stage,'state':'CLAIMED','intentHash':digest({'planHash':self.scope['planHash'],'stage':stage})}

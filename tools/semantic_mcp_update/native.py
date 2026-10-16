@@ -175,8 +175,13 @@ class NativePorts:
   host=copy.deepcopy(request['HostConfig']);alternate=copy.deepcopy(host);alternate['RestartPolicy']=p['replacement']['restoreRestartPolicy']
   require(requested_host_config_matches(host,actual['HostConfig'],started=actual['State']['Running'])or requested_host_config_matches(alternate,actual['HostConfig'],started=actual['State']['Running']),'NEW_MCP_HOST_CONFIG_CHANGED')
   network=p['network'];networks=actual['NetworkSettings']['Networks']
-  require(set(networks)=={network['name']}and networks[network['name']]['NetworkID']==network['id']
-   and networks[network['name']]['IPAddress']==network['ip']and networks[network['name']]['MacAddress'].lower()==network['mac'].lower(),'NEW_MCP_ENDPOINT_CHANGED')
+  require(set(networks)=={network['name']}and networks[network['name']]['NetworkID']==network['id'],'NEW_MCP_NETWORK_CHANGED')
+  endpoint=networks[network['name']]
+  if actual['State']['Status']=='created'and actual['State']['Pid']==0:
+   require((endpoint.get('IPAMConfig')or{}).get('IPv4Address')==network['ip']
+    and endpoint.get('IPAddress','')in('',network['ip'])and endpoint.get('MacAddress','').lower()in('',network['mac'].lower()),'CREATED_ENDPOINT_CONFIGURATION_CHANGED')
+  else:
+   require(endpoint['IPAddress']==network['ip']and endpoint['MacAddress'].lower()==network['mac'].lower(),'NEW_MCP_ENDPOINT_CHANGED')
   expected={(m['Type'],m['Source'],m['Destination'],m['RW'])for m in p['oldMounts']}
   expected.add(('bind',p['metadata']['directory'],p['metadata']['target'],False))
   require({(m['Type'],m['Source'],m['Destination'],m['RW'])for m in actual['Mounts']}==expected,'NEW_MCP_MOUNT_CHANGED')

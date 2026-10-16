@@ -102,7 +102,7 @@ with tempfile.TemporaryDirectory(dir='/root',prefix='mcp-update-native-fixture-'
    'network':{'name':network,'id':net['NetworkID'],'ip':net['IPAddress'],'mac':net['MacAddress']},'readiness':{'port':8080,'path':'/health/ready'},
    'maximumExecutionSeconds':900,'automaticRollbackAllowed':False,'databaseRestoreAllowed':False,'semanticDispatchAllowed':False}
   plan['logicalUpdateRef']=digest({'oldContainerId':oldid,'databaseOid':data['oid'],'predecessorAttemptId':attempt})
-  c=crypto;c.now=int(time.time());c.approval['issuedAt']=c.now;c.approval['expiresAt']=c.now+180;c.authority=signed.encoded({'schema':'ouf.semantic-cutover-execution-authority.v1',**{k:v for k,v in c.expected.items()if k!='intakeHash'},'issuedAt':c.now,'expiresAt':c.now+120,'mcpSingleUpdate':scope(plan)})
+  c=crypto;c.now=int(time.time());c.approval['issuedAt']=c.now;c.approval['expiresAt']=min(c.now+500,c.grant['expiresAt']);c.authority=signed.encoded({'schema':'ouf.semantic-cutover-execution-authority.v1',**{k:v for k,v in c.expected.items()if k!='intakeHash'},'issuedAt':c.now,'expiresAt':min(c.now+480,c.grant['expiresAt']-5),'mcpSingleUpdate':scope(plan)})
   c.approval['executionAuthorityHash']=signed.sha(c.authority);c.write(c.mandate,signed.encoded(c.approval));c.approved=signed.sha(c.mandate.read_bytes())
   for role in c.grant['roles']:c.sign(role)
   action=AggregateAction(c.gate(),c.authority,c.expected['sourceClosureHash']);ports=NativePorts(action,engine,plan)

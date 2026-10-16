@@ -42,8 +42,8 @@ class Owner(unittest.TestCase):
    'maximumExecutionSeconds':900,'automaticRollbackAllowed':False,'databaseRestoreAllowed':False,'semanticDispatchAllowed':False}
   self.plan['logicalUpdateRef']=digest({'oldContainerId':'1'*64,'databaseOid':42,'predecessorAttemptId':'fixture-previous'})
   c.authority=crypto.encoded({'schema':'ouf.semantic-cutover-execution-authority.v1',**{k:v for k,v in c.expected.items()if k!='intakeHash'},
-   'issuedAt':c.now,'expiresAt':c.now+120,'mcpSingleUpdate':scope(self.plan)})
-  c.approval['executionAuthorityHash']=crypto.sha(c.authority);c.write(c.mandate,crypto.encoded(c.approval));c.approved=crypto.sha(c.mandate.read_bytes())
+   'issuedAt':c.now,'expiresAt':c.now+480,'mcpSingleUpdate':scope(self.plan)})
+  c.approval['expiresAt']=c.now+500;c.approval['executionAuthorityHash']=crypto.sha(c.authority);c.write(c.mandate,crypto.encoded(c.approval));c.approved=crypto.sha(c.mandate.read_bytes())
   for role in c.grant['roles']:c.sign(role)
   self.action=AggregateAction(c.gate(),c.authority,c.expected['sourceClosureHash'])
   self.journal=Journal(directory);self.ports=FixturePorts(self.action,self.plan);self.mono=500
@@ -95,6 +95,12 @@ class Owner(unittest.TestCase):
   with self.assertRaises(UpdateDenied):self.owner.run()
   self.assertEqual(self.ports.calls,[])
   with self.assertRaises(FileExistsError):self.ports.claim_logical_scope()
+ def test_short_remaining_authority_cannot_start_long_import(self):
+  self.ports.fail_after='VERIFY_INPUTS'
+  with self.assertRaises(OSError):self.owner.run()
+  self.ports.fail_after=None;self.owner.reconcile_claim();self.advance(300)
+  with self.assertRaisesRegex(UpdatePaused,'INSUFFICIENT_AUTHORITY_WINDOW'):self.owner.run()
+  self.assertNotIn('IMPORT_IMAGE',self.ports.calls)
  def test_corrupt_role_signature_cannot_authorize_any_native_effect(self):
   path=self.crypto.signatures/(crypto.sha(self.crypto.authority)+'.FINAL_DEPLOYMENT_APPROVAL.json')
   path.unlink()
