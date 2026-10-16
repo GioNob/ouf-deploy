@@ -1,4 +1,4 @@
-name: Gateway phase 5 governed continuation native
+name: Gateway and Ingestion governed continuation native
 on:
   push:
     branches: [fix/cohort-mcp-backup-recovery-20261016]
@@ -34,6 +34,7 @@ jobs:
           set -euo pipefail
           OUF_FIXTURE_ROOT="/var/lib/ouf-phase5-${GITHUB_RUN_ID}"
           sudo env OUF_NATIVE_GATEWAY_PHASE5=1 OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" "$OUF_FIXTURE_ROOT/repository/.phase5-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_gateway_phase5_native.py -v
+          sudo env OUF_NATIVE_INGESTION=1 OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" "$OUF_FIXTURE_ROOT/repository/.phase5-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_ingestion_phase6_native.py -v
 
   finite-history:
     runs-on: ubuntu-24.04
@@ -63,6 +64,6 @@ jobs:
           sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
           sudo chown -R root:root "$OUF_FIXTURE_ROOT"
           sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" "$OUF_FIXTURE_ROOT/repository/.phase5-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_gateway_recovery.py -v
-          for suite in test_chatbot_cohort_authorization_observation.py test_chatbot_cohort_gateway_retained.py test_chatbot_cohort_delivery_cleanup.py; do
+          for suite in test_policy_token_ingestion_recovery.py test_chatbot_cohort_ingestion_recovery.py test_chatbot_cohort_authorization_observation.py test_chatbot_cohort_gateway_retained.py test_chatbot_cohort_delivery_cleanup.py; do
             sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" "$OUF_FIXTURE_ROOT/repository/.phase5-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p "$suite" -v
           done

@@ -272,6 +272,9 @@ def current_baseline(predecessor,engine):
     original=evidence.decode(legacy.private(evidence.PARENT/legacy.CONTEXT/'review.json',legacy.REVIEW))
     pregrant_native_readback(original,legacy.AUTHORITY,
         gateway_successor=predecessor if 'retainedGatewayAttempt' in predecessor else None)
+    if 'ingestionAttempt' in predecessor:
+        from tools.chatbot_file_cohort.ingestion_recovery import native_readback
+        native_readback(predecessor,engine)
     profile=FileOnlyProfile(prepared['registry']['creationRequest'],prepared['registry']['configtree'])
     transition=Transition.__new__(Transition);transition.context=row['contextHash']
     from tools.chatbot_file_cohort.backup_recovery import PROFILE as BACKUP_PROFILE

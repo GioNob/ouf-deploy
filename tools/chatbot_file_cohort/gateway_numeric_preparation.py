@@ -55,7 +55,8 @@ def prepare_continuation(previous,engine,source,output_directory,cohort_id):
         transport=NamespaceAdmin(engine,binding);transport.check()
         retained=previous['retainedGatewayAttempt']['prepared']
         plan=retained['gatewayPlan']
-        require(transport.routes()==plan['previousRoutes'] and transport.routes()==plan['previousRoutes'],
+        expected=plan['proposedRoutes'] if 'ingestionAttempt' in previous else plan['previousRoutes']
+        require(transport.routes()==expected and transport.routes()==expected,
             'RETAINED_NUMERIC_GATEWAY_ROUTE_PREFIX_DRIFT')
         transport.check()
         return copy.deepcopy(plan),copy.deepcopy(retained['gatewayRuntimePlan'])

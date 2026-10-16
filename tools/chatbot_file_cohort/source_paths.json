@@ -68,6 +68,7 @@
   "tools.chatbot_file_cohort.gateway_runtime": "tools/chatbot_file_cohort/gateway_runtime.py",
   "tools.chatbot_file_cohort.human_session": "tools/chatbot_file_cohort/human_session.py",
   "tools.chatbot_file_cohort.images": "tools/chatbot_file_cohort/images.py",
+  "tools.chatbot_file_cohort.ingestion_recovery": "tools/chatbot_file_cohort/ingestion_recovery.py",
   "tools.chatbot_file_cohort.migration_native": "tools/chatbot_file_cohort/migration_native.py",
   "tools.chatbot_file_cohort.migration_recovery": "tools/chatbot_file_cohort/migration_recovery.py",
   "tools.chatbot_file_cohort.mounted_recovery": "tools/chatbot_file_cohort/mounted_recovery.py",

@@ -502,7 +502,8 @@ class Delivery:
                     self.await_container(containers,module)
                 databases.verify_module(module)
             self.current(True)
-            self.report('PUBLISHING_REVIEWED_GATEWAY_ROUTES')
+            self.report('VERIFYING_COMPLETED_GATEWAY_ROUTES_NO_WRITES' if recovery is not None
+                and 'retainedCreatedIngestion' in recovery else 'PUBLISHING_REVIEWED_GATEWAY_ROUTES')
             gateway.apply(); gateway_evidence = gateway.verify()
             containers.accept_owner_gate('gateway',plan['gatewayPlanHash'],digest(gateway_evidence))
             for module in ('ingestion','mcp'):

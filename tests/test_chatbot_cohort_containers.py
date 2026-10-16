@@ -82,6 +82,7 @@ class DockerFixture:
     def request(self,method,path,body):
         path=urlsplit(path);parts=path.path.split('/');identity=unquote(parts[3]);stage=parts[-1]
         if method=='GET':
+            if parts[2]=='images':return 200,{'Id':identity,'Config':{'Env':[]}},False
             value=self.find(identity)
             return (200,copy.deepcopy(value),False) if value is not None else (404,None,False)
         if identity=='create':stage='create'

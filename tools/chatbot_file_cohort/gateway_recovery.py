@@ -38,6 +38,9 @@ ARCHIVES=prior.ARCHIVES
 
 
 def validate_worker(first,worker,admission,session):
+    if worker.get('controlledCumulativeGrantAttempts')==9:
+        from tools.chatbot_file_cohort.ingestion_recovery import validate_worker
+        return validate_worker(first,worker,admission,session)
     require(digest(first)==original.FIRST_HASH and digest(worker)==WORKER_HASH
         and digest(admission)==ADMISSION_HASH and digest(session)==SESSION_HASH
         and worker.get('state')=='CANCELLED' and worker.get('attempts')==worker.get('publicationCount')==2
@@ -151,7 +154,9 @@ def read_predecessor():
         'payloads':payloads,'recordBindings':bindings,'databaseJournal':database,'backupRoot':backup_root,
         'containerJournal':containers,'gatewayJournal':gateway,'gatewayRuntimeJournal':runtime_journal}
     from tools.chatbot_file_cohort import gateway_retained
-    return gateway_retained.enrich(result) if gateway_retained.available() else result
+    result=gateway_retained.enrich(result) if gateway_retained.available() else result
+    from tools.chatbot_file_cohort import ingestion_recovery
+    return ingestion_recovery.enrich(result) if ingestion_recovery.available() else result
 
 
 def proof_scope(previous,actor):
@@ -176,10 +181,19 @@ def proof_scope(previous,actor):
     if 'retainedGatewayAttempt' in previous:
         result['retainedNumericGateway']=copy.deepcopy(previous['retainedGatewayAttempt']['receipt'])
         result['newBudget']['reason']='READ_ONLY_AUTHORIZATION_RECOVERY_AFTER_COMPLETED_GATEWAY'
+    if 'ingestionAttempt' in previous:
+        from tools.chatbot_file_cohort import ingestion_recovery as tail
+        result['retainedCreatedIngestion']=copy.deepcopy(previous['ingestionAttempt']['receipt'])
+        result['cancelledWorkerHash']=tail.WORKER;result['workerSessionHash']=tail.SESSION
+        result['newBudget'].update(priorControlledGrantAttempts=9,priorWorkerGrantAttempts=1,
+            reason='CREATED_INGESTION_IMAGE_DEFAULT_ENVIRONMENT_RECONCILIATION')
     return result
 
 
 def claim_for(proof=None):
+    if proof is not None and 'retainedCreatedIngestion' in proof:
+        from tools.chatbot_file_cohort import ingestion_recovery as tail
+        tail.validate_proof(proof);return tail.CLAIM
     from tools.chatbot_file_cohort import gateway_retained
     if proof is not None and 'retainedNumericGateway' in proof:
         gateway_retained.validate_proof(proof)
@@ -188,15 +202,19 @@ def claim_for(proof=None):
 
 
 def retained_bindings(proof):
+    worker_hash,session_hash,prior=WORKER_HASH,SESSION_HASH,8
+    if 'retainedCreatedIngestion' in proof:
+        from tools.chatbot_file_cohort import ingestion_recovery as tail
+        tail.validate_proof(proof);worker_hash,session_hash,prior=tail.WORKER,tail.SESSION,9
     if 'retainedNumericGateway' in proof:
         from tools.chatbot_file_cohort.gateway_retained import validate_proof
         validate_proof(proof)
     require(proof.get('profile')==PROFILE and proof.get('gatewayPredecessorAuthorityHash')==AUTHORITY
         and proof.get('gatewayPredecessorSource')==SOURCE and proof.get('gatewayPredecessorReviewHash')==REVIEW
-        and proof.get('predecessorTransitionHash')==TRANSITION_HASH and proof.get('cancelledWorkerHash')==WORKER_HASH
-        and proof.get('workerSessionHash')==SESSION_HASH and proof.get('databaseJournalHash')==DATABASE_HASH
+        and proof.get('predecessorTransitionHash')==TRANSITION_HASH and proof.get('cancelledWorkerHash')==worker_hash
+        and proof.get('workerSessionHash')==session_hash and proof.get('databaseJournalHash')==DATABASE_HASH
         and proof.get('containerJournalHash')==CONTAINERS_HASH and proof.get('gatewayJournalHash')==GATEWAY_HASH
-        and proof.get('newBudget',{}).get('priorControlledGrantAttempts')==8
+        and proof.get('newBudget',{}).get('priorControlledGrantAttempts')==prior
         and proof.get('registryPhaseReplayAllowed')is False and proof.get('newNodeAttestationAllowed')is False
         and proof.get('runningRootfsQualification')==RUNNING_ROOTFS_QUALIFICATION
         and proof.get('newMcpArchiveMaximumAttempts')==proof.get('migrationStartMaximumAttempts')==0
@@ -328,6 +346,9 @@ def guard_database_scope(owner,proof):
 
 
 def adopt_containers(owner,previous,proof):
+    if 'retainedCreatedIngestion' in proof:
+        from tools.chatbot_file_cohort.ingestion_recovery import adopt_containers
+        return adopt_containers(owner,previous,proof)
     from tools.chatbot_file_cohort.containers import CohortContainers
     require(type(owner)is CohortContainers,'REAL_SIGNED_CONTAINER_OWNER_REQUIRED')
     owner.guard();retained_bindings(proof)

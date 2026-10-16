@@ -189,9 +189,37 @@ class NativePhaseFive(unittest.TestCase):
             self.assertEqual(owner.transport().routes(),planned['proposedRoutes'])
             self.assertEqual(g.encoded(journal),preserved)
             for rid in expected:self.assertEqual(planned['proposedRoutes'][rid],expected[rid])
+            from tools.chatbot_file_cohort import ingestion_recovery as tail
+            from test_chatbot_cohort_ingestion_recovery import receipt as tail_receipt
+            frozen_routes=publisher.journal.record.read_bytes()
+            for name,value in [('AUTHORITY',action.authority_hash),('GATEWAY',g.digest(publisher.record())),
+                ('ROUTES',g.digest(planned['proposedRoutes']))]:stack.enter_context(patch.object(tail,name,value))
+            completed_receipt=tail_receipt();proof['retainedCreatedIngestion']=completed_receipt
+            previous['ingestionAttempt']={'receipt':completed_receipt,'prepared':{'gatewayPlan':planned},'gateway':publisher.record()}
+            signed=json.loads(f.authority);signed['applicationRegistryCutover']['postGrantRecovery']=proof
+            f.authority=fixture.crypto.encoded(signed);f.approval['executionAuthorityHash']=fixture.crypto.sha(f.authority)
+            f.write(f.mandate,fixture.crypto.encoded(f.approval));f.approved=fixture.crypto.sha(f.mandate.read_bytes())
+            for role in f.grant['roles']:f.sign(role)
+            following_action=g.AggregateAction(f.gate(),f.authority,f.expected['sourceClosureHash'])
+            runtime_dir=private/'following-runtime';runtime_dir.mkdir(mode=0o700)
+            following_runtime=r.GatewayRuntime(following_action,engine,runtime,Journal(runtime_dir))
+            following_runtime.initialize();following_runtime.apply()
+            following_routes=private/'following-routes';following_routes.mkdir(mode=0o700)
+            transport=following_runtime.transport();route_mutations=[];request_routes=transport.request
+            def observed_request(method,path,body=None):
+                if method!='GET':route_mutations.append(method)
+                return request_routes(method,path,body)
+            transport.request=observed_request
+            following=g.GatewayRoutes(following_action,cohort,planned,Journal(following_routes),transport)
+            following.initialize();following.apply();following.apply()
+            self.assertEqual(following.record()['nextStep'],28);self.assertEqual(route_mutations,[])
+            self.assertEqual(native_writes,[]);self.assertEqual(publisher.journal.record.read_bytes(),frozen_routes)
+            with self.assertRaisesRegex(Exception,'ALREADY_CONSUMED'):following.initialize()
             f.approval['state']='REVOKED';f.write(f.mandate,fixture.crypto.encoded(f.approval))
-            with self.assertRaises(Exception):publisher.apply()
+            with self.assertRaises(Exception):following.apply()
         print(json.dumps({'check':'GOVERNED_PHASE5_NATIVE','routes':37,'retainedEffects':9,'newWrites':28,
-            'historicalClaimUnchanged':True,'numericReadOnlyMounts':2,'retainedBindsNull':True,'adoptedRuntimeSteps':8,'additionalLifecycleOperations':len(native_writes),'targetAccess':False}),flush=True)
+            'historicalClaimUnchanged':True,'numericReadOnlyMounts':2,'retainedBindsNull':True,'adoptedRuntimeSteps':8,
+            'completedGatewayAdoptedEffects':28,'followingGatewayWrites':len(route_mutations),
+            'additionalLifecycleOperations':len(native_writes),'targetAccess':False}),flush=True)
 
 if __name__=='__main__':unittest.main()

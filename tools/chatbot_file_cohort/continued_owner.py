@@ -74,7 +74,7 @@ class ContinuedOwnerInstallation:
         self.worker_scope=finite_worker_scope(old_session['logicalOwnerScopeHash'],receipt['operation'],receipt['scopeHash'],
             self.policy,self.context,self.generation,self.interval,
             **({'predecessor_attempts':proof['newBudget']['priorControlledGrantAttempts'],'cancelled_worker_hash':proof['cancelledWorkerHash'],
-                'predecessor_session_hash':proof['workerSessionHash']}if proof['newBudget']['priorControlledGrantAttempts']in(2,3,4,5,6,8) else{}))
+                'predecessor_session_hash':proof['workerSessionHash']}if proof['newBudget']['priorControlledGrantAttempts']in(2,3,4,5,6,8,9) else{}))
         self.worker_scope['newBudget']=copy.deepcopy(proof['newBudget'])
         self.worker_scope['predecessorCancelledWorkerHash']=proof['cancelledWorkerHash']
         from tools.semantic_policy_token_owner.supervisor import ScheduledRecovery
@@ -135,7 +135,7 @@ class ContinuedOwnerInstallation:
             'legacyHistory':copy.deepcopy(self.predecessor['worker']['legacyHistory']),
             'controlledPredecessorGrantAttempts':self.proof['newBudget']['priorControlledGrantAttempts'],
             'controlledCumulativeGrantAttempts':self.proof['newBudget']['priorControlledGrantAttempts'],'bootId':receipt['bootId']}
-        if row['controlledPredecessorGrantAttempts']in(2,3,4,5,6,8):
+        if row['controlledPredecessorGrantAttempts']in(2,3,4,5,6,8,9):
             row.update({k:self.worker_scope[k]for k in('controlledHistoryProfile','predecessorCancelledWorkerHash','predecessorWorkerSessionHash')})
         with protected_directory(self.journal.root)as directory:
             for name,value in (('owner-first-grant.json',receipt),('owner-session.json',self.worker_scope),
@@ -143,7 +143,7 @@ class ContinuedOwnerInstallation:
                     'contextRef':self.context,'generationRef':self.generation,'version':0,'state':'BLOCKED',
                     'tokenHash':None,'blockedAttempt':None})):
                 OwnerInstallation._write_once(self,directory,name,evidence.encoded(value))
-        if row['controlledPredecessorGrantAttempts']in(2,3,4,5,6,8):
+        if row['controlledPredecessorGrantAttempts']in(2,3,4,5,6,8,9):
             with protected_directory(self.journal.root)as directory:
                 for name,value in(('owner-predecessor-worker.json',self.predecessor['worker']),('owner-predecessor-session.json',self.predecessor['session'])):
                     OwnerInstallation._write_once(self,directory,name,evidence.encoded(value))

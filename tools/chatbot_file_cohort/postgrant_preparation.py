@@ -85,6 +85,8 @@ def collect(args,*,paused=False,mounted=False,signed=False,backup=False,migratio
         profile=GATEWAY;claim=GATEWAY_CLAIM
         from tools.chatbot_file_cohort import gateway_retained
         if gateway_retained.available():claim=gateway_retained.CLAIM
+        from tools.chatbot_file_cohort import ingestion_recovery
+        if ingestion_recovery.available():claim=ingestion_recovery.CLAIM
     require(not os.path.lexists(evidence.PARENT/claim),'POSTGRANT_CONTINUATION_ALREADY_RESERVED_INSPECT_ONLY')
     report('POSTGRANT_RETAINED_HISTORY_PREFLIGHT')
     previous=read_predecessor(profile);old=previous['prepared'];bundle=previous['bundle']

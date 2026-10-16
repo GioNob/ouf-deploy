@@ -100,7 +100,8 @@ def compile_review(*, source_closure, execution_profile, scopes, phase_intents,
     backup=type(recovery)is dict and recovery.get('profile')=='ouf.chatbot-verified-registry-mcp-backup-recovery.v1'
     migration=type(recovery)is dict and recovery.get('profile')=='ouf.chatbot-created-mcp-migration-continuation.v1'
     gateway=type(recovery)is dict and recovery.get('profile')=='ouf.chatbot-gateway-schema-continuation.v1'
-    prior=8 if gateway else 6 if migration else 5 if backup else 4 if paused and recovery['profile']=='ouf.chatbot-signed-paused-admission-reprocessing.v1'else(3 if paused and recovery['profile'].endswith('.v2')else(2 if paused else 1))
+    ingestion=gateway and 'retainedCreatedIngestion' in recovery
+    prior=9 if ingestion else 8 if gateway else 6 if migration else 5 if backup else 4 if paused and recovery['profile']=='ouf.chatbot-signed-paused-admission-reprocessing.v1'else(3 if paused and recovery['profile'].endswith('.v2')else(2 if paused else 1))
     if paused or backup or migration or gateway:
         require(worker.get('schema')=='ouf.policy-token-new-finite-worker-session.v'+str(prior)
             and worker.get('predecessorCancelledWorkerHash')==recovery['cancelledWorkerHash']
@@ -198,18 +199,25 @@ def terminal_decision(review, review_path):
     require(Path(review_path).is_absolute(), 'PUBLISHED_PRIVATE_REVIEW_PATH_REQUIRED')
     gateway=review.get('postGrantRecoveryReview',{}).get('profile')=='ouf.chatbot-gateway-schema-continuation.v1'
     retained_gateway=bool(review.get('postGrantRecoveryReview',{}).get('retainedNumericGateway'))
+    ingestion='retainedCreatedIngestion' in review.get('postGrantRecoveryReview',{})
     summary = ('\nRevisione unica del ciclo CSV/chatbot.\n'
         'Documento privato completo: '+str(review_path)+'\n'
         'SHA256: '+review_hash+'\n'
-        +('Fase tecnica 5/8: ripresa Gateway; fasi 1–4 completate e conservate.\n'
+        +(('Fase tecnica 6/8: Ingestion già creato e mai avviato; fasi 1–5 completate e conservate.\n' if ingestion else
+          'Fase tecnica 5/8: ripresa Gateway; fasi 1–4 completate e conservate.\n')+
           'Quattro backup verificati: zero nuovi dump o restore; migrazioni MCP COMPLETE e privilegi CLEAN.\n'
           'Nessun bootstrap audit, start migrazione, sostituzione UDP/Onboarding o replay Registry.\n'
           +('APISIX già sostituito: otto passi conservati, verifica soltanto; nessun nuovo stop/create/start.\n'
             'I due asset numerici verificati restano montati in sola lettura.\n' if retained_gateway else
             'APISIX viene sostituito con la stessa immagine e due asset verificati montati in sola lettura.\n')+
+          ('Gateway completato: nove modifiche storiche e 28 successive conservate; zero nuove scritture.\n'
+            'Le 74 route della mappa finale vengono verificate, comprese quelle estranee preservate.\n'
+            'Nessun nuovo rename o create Ingestion: il claim esistente viene riconciliato in sola lettura.\n'
+            'Env verificato contro immagine esatta e richiesta; un solo start del container mai avviato.\n'
+            'Nove grant restano conteggiati; il prossimo effettivo sarà il decimo cumulativo.\n' if ingestion else
           'Sono conservate nove modifiche Gateway e il decimo claim ambiguo: 28 modifiche restanti,\n'
           'con nuovo intento per lo schema corretto e verifica integrale delle route prima e dopo ogni scrittura.\n'
-          'Otto grant restano conteggiati; il prossimo effettivo sarà il nono cumulativo.\n'
+          'Otto grant restano conteggiati; il prossimo effettivo sarà il nono cumulativo.\n')+
           'La nuova finestra ha massimo 128 tentativi e 3600 secondi, senza rinnovo automatico.\n'
           'Le verifiche di autorizzazione transitorie attendono con budget persistente, jitter e Retry-After.\n'
           if gateway else '')
@@ -277,7 +285,8 @@ def terminal_decision(review, review_path):
           'I ruoli OUF risultano già pubblicati: vengono riletti, senza nuova proposta se invariati.\n'
           if review.get('authorizationReview',{}).get('requiresNewRoleConfirmation') is False else
           'Eventuale conferma dei ruoli: apri il link browser esplicito; la proposta dura 15 minuti.\n')+
-        ('Dopo il Gateway: sostituzione Ingestion e MCP, verifica complessiva e rilascio produttori.\n' if gateway else
+        ('Dopo Ingestion: sostituzione MCP, verifica complessiva e rilascio produttori.\n' if ingestion else
+         'Dopo il Gateway: sostituzione Ingestion e MCP, verifica complessiva e rilascio produttori.\n' if gateway else
          'Include sostituzione dei cinque servizi applicativi, route Gateway, autorizzazioni esplicite,\n')
         +('Nuovo worker finito; checkpoint e storico precedente conservati.\n' if gateway else
           'verifica dei quattro backup esistenti, migrazioni e nuovo worker; storico conservato.\n'

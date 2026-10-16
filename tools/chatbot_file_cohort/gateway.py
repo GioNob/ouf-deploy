@@ -411,6 +411,10 @@ class GatewayRoutes:
 
     def initialize(self):
         self.guard()
+        proof=json.loads(self.action.raw).get('applicationRegistryCutover',{}).get('postGrantRecovery',{})
+        if 'retainedCreatedIngestion' in proof:
+            from tools.chatbot_file_cohort.ingestion_recovery import adopt_gateway
+            return adopt_gateway(self,proof)
         require(self.transport.routes() == self.plan['previousRoutes'], 'GATEWAY_BASELINE_DRIFT')
         self.journal.initialize({'schema':PROFILE, 'planHash':self.plan_hash,
             'authorityHash':self.action.authority_hash, 'version':1, 'nextStep':0,

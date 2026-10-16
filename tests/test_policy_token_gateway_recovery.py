@@ -78,6 +78,7 @@ class GatewayWorker(unittest.TestCase):
             prepared['databasePlan']=database;prepared['cohortPlan']['databasePlanHash']=base.fingerprint(database)
             prepared['registry']['cohortPlanHash']=base.fingerprint(prepared['cohortPlan'])
         from tools.chatbot_file_cohort import gateway_retained
+        self.phase5_transform=complete_phase5
         self.proof['retainedNumericGateway']={'profile':gateway_retained.PROFILE,
             'sourceCommit':gateway_retained.SOURCE,'reviewHash':gateway_retained.REVIEW,
             'authorityHash':gateway_retained.AUTHORITY,'runtimeJournalHash':gateway_retained.RUNTIME,
@@ -104,6 +105,7 @@ class GatewayWorker(unittest.TestCase):
         self.assertEqual(new.tick()['state'],'ACTIVE');self.assertEqual(h.harness.grants(),9)
         self.assertEqual(owner.journal.read()['controlledCumulativeGrantAttempts'],9)
         owner.observer.guard_worker_session(owner.journal.read())
+        self.successor_owner,self.successor_worker,self.sign=owner,new,sign
         token=(Path(owner.observer.binding.output_directory)/owner.observer.binding.output_member).read_text()
         self.assertTrue(owner.observer.admit_mounted(token,30,owner.observer.binding.digest(),time.monotonic()+20))
         with self.assertRaisesRegex(Exception,'ALREADY_CONSUMED'):make().install()

@@ -212,7 +212,7 @@ class InstalledTokenOwner(DomainOwner):
     def guard_worker_session(self,row):
         signed=json.loads(self.raw,object_pairs_hook=unique).get('policyTokenFiniteWorkerSession')
         prior=signed.get('predecessorGrantAttempts')if type(signed)is dict else None
-        check(type(prior)is int and prior in(1,2,3,4,5,6,8))
+        check(type(prior)is int and prior in(1,2,3,4,5,6,8,9))
         check(type(signed)is dict and fingerprint(signed)==row['workerSessionHash']
             and self.configuration.get('workerSessionHash')==row['workerSessionHash']
             and signed.get('schema')=='ouf.policy-token-new-finite-worker-session.v'+str(prior)
@@ -228,7 +228,7 @@ class InstalledTokenOwner(DomainOwner):
             and row.get('controlledCumulativeGrantAttempts')==prior+row['attempts'])
         if prior==1:check('controlledHistoryProfile'not in signed and 'controlledHistoryProfile'not in row)
         with protected_directory(self.journal.root)as directory:
-            if prior in(2,3,4,5,6,8):
+            if prior in(2,3,4,5,6,8,9):
                 check(signed.get('controlledHistoryProfile')==row.get('controlledHistoryProfile')=='ouf.policy-token-cancelled-worker-continuation.v1'
                     and signed.get('newBudget',{}).get('priorControlledGrantAttempts')==prior)
                 for key in('predecessorCancelledWorkerHash','predecessorWorkerSessionHash'):check(signed.get(key)==row.get(key))

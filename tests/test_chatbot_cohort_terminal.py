@@ -9,6 +9,14 @@ from tools.chatbot_file_cohort import review
 
 
 class HumanTerminal(unittest.TestCase):
+    def test_phase6_review_explains_completed_gateway_existing_ingestion_and_ninth_grant(self):
+        value,_=self.fixture();value['postGrantRecoveryReview']={'profile':'ouf.chatbot-gateway-schema-continuation.v1',
+            'retainedNumericGateway':{'synthetic':True},'retainedCreatedIngestion':{'synthetic':True}}
+        with patch.object(self,'fixture',return_value=(value,('APPROVO '+review.digest(value)).encode())):
+            output,_,_=self.interact([('APPROVO '+review.digest(value)).encode()])
+        self.assertIn(b'RESULT_OK=',output);self.assertIn(b'Fase tecnica 6/8',output)
+        self.assertIn(b'zero nuove scritture',output);self.assertIn(b'Nessun nuovo rename o create Ingestion',output)
+        self.assertIn(b'Nove grant',output);self.assertNotIn(b'28 modifiche restanti',output)
     def fixture(self):
         value={'schema':review.SCHEMA,'sourceClosureHash':'a'*64,
             'scopes':{'gatewayRuntimeInstallation':{}},'maximumElapsedSeconds':3600,

@@ -4,6 +4,26 @@ Roadmap confermata dall'utente il 16 ottobre 2026. Numerazione stabile fino alla
 
 ## Stato corrente
 
+**Fasi tecniche 1–5 confermate complete; fase 6/8 sospesa su Ingestion; CSV 0/6.**
+Readback VPS allegato il 16 ottobre: 28/28 nuove modifiche Gateway APPLIED,
+74 route, due mappe uguali al piano finale (hash a6504c3d830019e84ca73e76fd62cb3a47ea6d07efe00d106a0e475fe770d574).
+Undici effetti container APPLIED; ingestion.create CLAIMED, container
+cbf3067d946cf21a8f4abbb03ed47a217f2f39624ed1a5fb23a642325129ee35
+creato e mai avviato. Env è l'unica differenza: 8 voci richieste, 11 osservate,
+composizione esatta dei 6 default immagine con la richiesta, zero chiavi o valori
+estranei. Worker CANCELLED con 9 grant cumulativi (8 predecessori +1), admission
+BLOCKED. Il prossimo effettivo sarà il decimo, in una nuova finestra HUMAN finita.
+Backup COMPLETE e migrazioni COMPLETE/audit CLEAN confermati dal journal; UDP e
+Onboarding nelle medesime generazioni, zero restart. MCP applicativo ancora fermo
+nella vecchia generazione; fase 7 non eseguita, fase 8 pendente.
+La correzione riconcilia la creazione esistente senza nuovo rename/create e
+conserva anche le 28 modifiche Gateway: zero nuove scritture route. Sono in corso
+le qualifiche prima di consegnare il launcher operativo.
+La cronologia seguente resta come evidenza degli arresti precedenti.
+
+### Cronologia precedente
+
+
 **Ultimo output VPS: fase 5 superata nel flusso; sostituzione Ingestion/MCP
 raggiunta (fase 6 almeno, fase esatta 6/7 da journal); CSV 0/6.**
 Sorgente `e2252339dcc127e9237b8120727bf27439f506f0`, review
@@ -46,9 +66,9 @@ Il Gateway ha un claim di scrittura e una mappa riletta non uguale alla mappa at
 | 2 | Applicare le migrazioni MCP e verificare la revoca dei privilegi temporanei | COMPLETATA e confermata sul VPS: 12 migrazioni attese, COMPLETE/CLEAN, privilegi temporanei revocati |
 | 3 | Sostituire UDP e verificarne schema e avvio | COMPLETATA; rilettura VPS conferma generazione running/restart 0 e 35 migrazioni attese |
 | 4 | Sostituire Onboarding e verificarne schema e avvio | COMPLETATA; rilettura VPS conferma generazione running/restart 0 e 34 migrazioni attese |
-| 5 | Pubblicare e verificare le route Gateway | **Superata nel flusso; conferma journal e mappa finale in lettura** |
-| 6 | Sostituire Ingestion e verificarne schema e avvio | **Raggiunta; arresto di configurazione nella coppia Ingestion/MCP, modulo da journal** |
-| 7 | Sostituire MCP e verificarne schema e avvio | Stato da confermare nel journal; non dichiarata completata |
+| 5 | Pubblicare e verificare le route Gateway | **Completa: 28/28 nuove modifiche, mappa finale stabile di 74 route** |
+| 6 | Sostituire Ingestion e verificarne schema e avvio | **Sospesa: create CLAIMED, container mai avviato; soli default Env immagine** |
+| 7 | Sostituire MCP e verificarne schema e avvio | Da eseguire: vecchio container fermo |
 | 8 | Verificare l'insieme e riabilitare i produttori | Da eseguire |
 
 | # | Dimostrazione funzionale | Stato |

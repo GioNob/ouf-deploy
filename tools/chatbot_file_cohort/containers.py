@@ -239,7 +239,18 @@ class CohortContainers:
         for key, value in request.items():
             if key in ('HostConfig','NetworkingConfig') or (key == 'Hostname' and not value):
                 continue
-            require(actual['Config'].get(key) == value, 'COHORT_REPLACEMENT_PROCESS_CONFIG_DRIFT')
+            if key=='Env':
+                from tools.chatbot_file_cohort.plan import environment
+                code,image=self.engine.request('GET','/v1.44/images/'+request['Image']+'/json')
+                require(code==200 and image.get('Id')==request['Image'],'COHORT_REQUEST_IMAGE_DEFAULTS_REQUIRED')
+                observed=environment(actual['Config'].get('Env')or[])
+                require(not(set(row.get('environmentDelta',{}).get('remove',[]))&set(observed)),
+                    'COHORT_REMOVED_ENVIRONMENT_REINTRODUCED')
+                require(observed=={
+                    **environment((image.get('Config')or{}).get('Env')or[]),**environment(value)},
+                    'COHORT_REPLACEMENT_PROCESS_CONFIG_DRIFT')
+            else:
+                require(actual['Config'].get(key) == value, 'COHORT_REPLACEMENT_PROCESS_CONFIG_DRIFT')
         host = copy.deepcopy(request['HostConfig'])
         if restored_policy:
             host['RestartPolicy'] = row['restoreRestartPolicy']

@@ -207,6 +207,11 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
                     retainedNumericGateway=copy.deepcopy(recovery['retainedNumericGateway']),
                     authorizationRoleObservation=copy.deepcopy(prepared['authorization']['plan'].get('retainedRoleObservation')),
                     forceFreshMcpBeforeProducerRelease=True)
+            if 'retainedCreatedIngestion' in recovery:
+                review['completedTechnicalPhases']=[1,2,3,4,5];review['currentTechnicalPhase']=6
+                review['gatewayContinuationReview'].update(remainingChanges=0,
+                    routeDisposition='COMPLETED_28_SUCCESSOR_EFFECTS_VERIFY_ONLY',
+                    retainedCreatedIngestion=copy.deepcopy(recovery['retainedCreatedIngestion']))
         review['firstControlledGrantMaximumAttempts']=0
         review['firstControlledGrantMaximumSeconds']=0
     require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')
