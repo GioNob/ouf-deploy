@@ -43,7 +43,7 @@ def main():
     net='ouf-admin-reproduction-'+str(os.getpid());etcd=net+'-etcd';apisix=net+'-apisix'
     key='0123456789abcdef0123456789abcdef' # public synthetic CI credential
     report={'schema':'ouf.gateway-admin-native-reproduction.v1','targetAccess':False,'runtimeAuthorityIssued':False,'syntheticFixture':True,'routes':[]}
-    docker('network','create','--internal',net)
+    docker('network','create',net)
     try:
         with tempfile.TemporaryDirectory()as directory:
             root=Path(directory);root.chmod(0o755)
@@ -81,6 +81,11 @@ def main():
                 report['routes'].append(observed);print(json.dumps(observed),flush=True)
             report['complete']=True
             a.report.write_text(json.dumps(report,indent=2)+'\n')
+    except Exception:
+        for name in (apisix,etcd):
+            diag=subprocess.run(['docker','logs','--tail','25',name],capture_output=True,text=True,timeout=30)
+            print(name,diag.stdout,diag.stderr,flush=True)
+        raise
     finally:
         for name in (apisix,etcd):subprocess.run(['docker','rm','-f',name],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=30)
         subprocess.run(['docker','network','rm',net],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=30)
