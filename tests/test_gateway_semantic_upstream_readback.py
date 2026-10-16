@@ -100,7 +100,7 @@ class SemanticUpstream(unittest.TestCase):
         network={'NetworkID':'n','IPAddress':'127.0.0.1','Aliases':['current-registry']}
         registry={'Name':'/current-registry','NetworkSettings':{'Networks':{'selected':network}}}
         gateway={'State':{'Pid':os.getpid()},'NetworkSettings':{'Networks':{'selected':{'NetworkID':'n'}}}}
-        info=os.stat('/proc/self/ns/net')
+        namespace=tempfile.TemporaryFile();self.addCleanup(namespace.close);info=os.fstat(namespace.fileno())
         transport={'networkNamespace':{'device':info.st_dev,'inode':info.st_ino},'pythonExecutable':{}}
         routes={'selected':{'uri':'/internal/capabilities/v1/execute/semantic/search','upstream':{
             'nodes':{'old-registry:8080':1},'checks':{'active':{'http_path':'/actuator/health/readiness'}}}}}
@@ -112,7 +112,8 @@ class SemanticUpstream(unittest.TestCase):
             def poll(self):return 0
             def wait(self,timeout):return 0
         child=Child()
-        with patch.object(r,'resolver_selection',return_value='127.0.0.11'),patch.object(r,'gateway_check'),\
+        with patch.object(r.os,'open',side_effect=lambda path,flags:os.dup(namespace.fileno())),\
+            patch.object(r,'resolver_selection',return_value='127.0.0.11'),patch.object(r,'gateway_check'),\
             patch.object(r,'executable',return_value='/usr/bin/python3'),patch.object(r.subprocess,'Popen',return_value=child):
             result=r.upstream_metadata({'engine':{}},routes,gateway,registry,transport)
         self.assertEqual(result['configuredAliasesMatchCurrentRegistry'],[False])
