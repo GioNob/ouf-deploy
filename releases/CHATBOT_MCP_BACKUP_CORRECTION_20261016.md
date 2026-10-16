@@ -1,3 +1,10 @@
+# Running target update — 2026-10-16
+
+The delivered recovery is now blocked on the running Registry rootfs seal before
+new HUMAN review. Do not repeat that launcher. See
+[the read-only diagnostic handoff](CHATBOT_RUNNING_ROOTFS_DIAGNOSIS_20261016.md)
+for the observed failure, test coverage limit and next pinned command.
+
 # MCP backup role correction and retained recovery boundary
 
 The operator's readback confirms three complete retained archives and an empty

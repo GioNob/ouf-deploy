@@ -138,5 +138,13 @@
   "chatbotEndToEndProven": false,
   "notReleaseAcceptance": true,
   "fullSuiteIncludesActualSixthTlsGrantAndV5ReviewCompilation": true,
-  "deliveryBytesReadBackFromPublishedSourceAndMatched": true
+  "deliveryBytesReadBackFromPublishedSourceAndMatched": true,
+  "targetExecutionUpdate": {
+    "status": "BLOCKED_BEFORE_REVIEW",
+    "reason": "PAUSED_INDEPENDENT_RETAINED_IMAGE_SEAL_DRIFT",
+    "evidence": "evidence/chatbot-running-rootfs-preflight-block-20261016.json",
+    "nextAction": "READ_ONLY_ROOTFS_DIAGNOSIS",
+    "repeatRecoveryLauncher": false,
+    "priorTestsDidNotCoverCompleteRunningJavaRootfs": true
+  }
 }
