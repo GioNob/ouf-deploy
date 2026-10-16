@@ -17,6 +17,8 @@ on:
       - tests/test_gateway_ingestion_exec_readback.py
       - scripts/read-chatbot-semantic-consultation-20261016.py
       - tests/test_gateway_semantic_consultation_readback.py
+      - scripts/read-chatbot-semantic-upstream-20261016.py
+      - tests/test_gateway_semantic_upstream_readback.py
       - .github/workflows/chatbot-gateway-readback.yml
 permissions: {contents: read}
 jobs:
