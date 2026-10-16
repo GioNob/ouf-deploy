@@ -1,5 +1,6 @@
 """Signed readiness persistence and exact numeric mounts; no target operations."""
 import copy
+import hashlib
 import json
 from pathlib import Path
 import unittest
@@ -10,6 +11,40 @@ from tools.chatbot_file_cohort.gateway_numeric_preparation import numeric_config
 
 
 class NumericPreparation(unittest.TestCase):
+    def test_numeric_assets_accept_null_absent_and_empty_binds_with_structured_mounts(self):
+        fixture=Fixture();self.addCleanup(fixture.doCleanups)
+        owner,native,f=fixture.fixture()
+        base=owner.inspect(owner.plan['oldName']);base['Image']=r.NUMERIC_IMAGE
+        source=owner.plan['oldConfigBinding']['path']
+        base['HostConfig']['Mounts']=[{'Type':'bind','Source':source,
+            'Target':'/usr/local/apisix/conf/config.yaml','ReadOnly':True}]
+        assets=[]
+        for destination,expected in sorted(r.NUMERIC_ASSETS.items()):
+            path=Path(__file__).resolve().parents[1]/'tools/chatbot_file_cohort/assets/apisix'/Path(destination).name
+            raw=path.read_bytes();self.assertEqual(hashlib.sha256(raw).hexdigest(),expected)
+            staged=f.root/Path(destination).name;staged.write_bytes(raw);staged.chmod(0o444)
+            _,binding=g.private_config(staged)
+            assets.append({'destination':destination,'binding':binding,'readOnly':True})
+        for representation in ('null','absent','empty','legacy'):
+            old=copy.deepcopy(base)
+            if representation=='null':old['HostConfig']['Binds']=None
+            elif representation=='absent':old['HostConfig'].pop('Binds')
+            elif representation=='empty':old['HostConfig']['Binds']=[]
+            else:old['HostConfig'].pop('Mounts')
+            before=copy.deepcopy(old)
+            with self.subTest(representation=representation):
+                plan=r.compile_runtime(old,owner.plan['oldConfigBinding'],owner.plan['newConfigBinding'],
+                    'PROPOSAL_KEY',KEY,hashlib.sha256(KEY.encode()).hexdigest(),'fixture',numeric_assets=assets)
+                host=plan['creationRequest']['HostConfig']
+                self.assertEqual(host['Binds'][-2:],[a['binding']['path']+':'+a['destination']+':ro' for a in assets])
+                self.assertEqual(len(plan['expectedMounts']),3)
+                self.assertEqual(plan['oldHostConfig'],before['HostConfig'])
+                self.assertEqual(plan['oldRuntimeBinding'],r.runtime_pin(before))
+                self.assertEqual(old,before)
+                if representation!='legacy':
+                    self.assertEqual(host['Mounts'],[{**before['HostConfig']['Mounts'][0],
+                        'Source':owner.plan['newConfigBinding']['path']}])
+
     def test_mount_binding_ignores_only_order_preserves_fields_and_rejects_duplicates(self):
         fixture=Fixture();self.addCleanup(fixture.doCleanups)
         owner,native,_=fixture.fixture()

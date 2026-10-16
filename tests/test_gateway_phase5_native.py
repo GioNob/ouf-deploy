@@ -56,7 +56,8 @@ class NativePhaseFive(unittest.TestCase):
         config.write_bytes(raw);config.chmod(0o444)
         cid=docker('run','-d','--name','ouf-apisix','--user','apisix','--network','ouf-backend',
             '--network-alias','ouf-apisix','--restart','unless-stopped',
-            '--env','SEMANTIC_PROPOSAL_KEY='+key,'-v',str(config)+':/usr/local/apisix/conf/config.yaml:ro',image)
+            '--env','SEMANTIC_PROPOSAL_KEY='+key,'--mount',
+            'type=bind,src='+str(config)+',dst=/usr/local/apisix/conf/config.yaml,readonly',image)
         self.addCleanup(remove,'rm','-f',cid)
         docker('network','connect','--alias','ouf-apisix','ouf-gateway-control',cid)
         info=os.stat('/var/run/docker.sock',follow_symlinks=False)
@@ -95,6 +96,8 @@ class NativePhaseFive(unittest.TestCase):
         _,old_config=g.private_config(config)
         updated,assets=prepare(fixture.ROOT,private,image_id,old_config)
         status,actual=engine.request('GET','/v1.44/containers/'+cid+'/json');self.assertEqual(status,200)
+        self.assertIsNone(actual['HostConfig']['Binds'])
+        self.assertEqual(actual['HostConfig']['Mounts'][0]['Target'],'/usr/local/apisix/conf/config.yaml')
         runtime=r.compile_runtime(actual,old_config,updated,'SEMANTIC_PROPOSAL_KEY',key,hashlib.sha256(key.encode()).hexdigest(),
             'phase5-native',numeric_assets=assets)
         planned=compile_remaining(old,journal,preserved_map,transport.routes(),r.proposed_transport(runtime),g.digest(runtime))
@@ -153,6 +156,6 @@ class NativePhaseFive(unittest.TestCase):
             f.approval['state']='REVOKED';f.write(f.mandate,fixture.crypto.encoded(f.approval))
             with self.assertRaises(Exception):publisher.apply()
         print(json.dumps({'check':'GOVERNED_PHASE5_NATIVE','routes':37,'retainedEffects':9,'newWrites':28,
-            'historicalClaimUnchanged':True,'numericReadOnlyMounts':2,'targetAccess':False}),flush=True)
+            'historicalClaimUnchanged':True,'numericReadOnlyMounts':2,'retainedBindsNull':True,'targetAccess':False}),flush=True)
 
 if __name__=='__main__':unittest.main()

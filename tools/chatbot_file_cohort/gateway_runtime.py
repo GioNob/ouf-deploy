@@ -73,12 +73,16 @@ def compile_runtime(old, old_config_binding, new_config_binding, new_key_env, ke
     selected[0]['Source']=new_config_binding['path']
     if numeric_assets is not None:
         validate_numeric_assets(old['Image'],numeric_assets)
+        # Engine inspect reports Binds=null when existing binds use Mounts.
+        # Only the new request gains a list; retained native identity stays exact.
+        if host.get('Binds') is None:host['Binds']=[]
+        require(type(host['Binds']) is list,'EXACT_APISIX_BINDS_LIST_REQUIRED')
         destinations={m['Destination'] for m in mounts}
         for asset in numeric_assets:
             destination=asset['destination'];binding=asset['binding']
             require(destination not in destinations,'NUMERIC_ASSET_MOUNT_ALREADY_PRESENT')
             require(':' not in binding['path'],'LITERAL_NUMERIC_ASSET_BIND_PATH_REQUIRED')
-            host.setdefault('Binds',[]).append(binding['path']+':'+destination+':ro')
+            host['Binds'].append(binding['path']+':'+destination+':ro')
             mounts.append({'Type':'bind','Source':binding['path'],'Destination':destination,'RW':False})
             destinations.add(destination)
     values=environment(config.get('Env') or [])

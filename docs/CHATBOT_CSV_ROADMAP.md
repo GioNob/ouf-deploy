@@ -153,3 +153,19 @@ rilasciato: [procedura di fase 5](../releases/CHATBOT_GATEWAY_PHASE5_CONTINUATIO
 Nessuna modifica target da queste prove; fasi 1–4 conservate, fase 5/8 sospesa,
 CSV 0/6. Prossimo passo: nuova revisione privata completa sul VPS e decisione
 HUMAN esatta, poi esecuzione e lettura dell’esito.
+
+## Readback del 16 ottobre, 08:18 CEST: preparazione fase 5 bloccata
+
+Il launcher `add1a8a53216ce35f1f8ece08b110417f5f8ec66` ha superato lo
+storico conservato (otto grant, dieci effetti Registry) e la sessione IAM, ma
+si è fermato prima della revisione HUMAN con `AttributeError` in
+`gateway_runtime.compile_runtime` riga 81. `runtimeAuthorityIssued=false`.
+Le fasi 1–4 restano acquisite, fase 5 non completata, CSV 0/6.
+
+Il test locale riproduce lo stesso errore: `HostConfig.Binds=null` con
+montaggi già espressi in `HostConfig.Mounts` causava `.append()` su `None`.
+La correzione crea la lista solo nella nuova richiesta di creazione; conserva
+identità e configurazione storiche e tutti i montaggi strutturati. Il test
+nativo usa ora `--mount` e richiede esplicitamente `Binds=null` prima della
+sostituzione. Il vecchio test Docker usava `-v` e non copriva questa variante.
+Il launcher precedente è superato; attendere il nuovo pin qualificato.
