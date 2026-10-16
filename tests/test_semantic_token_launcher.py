@@ -35,6 +35,7 @@ class Launcher(unittest.TestCase):
         synthetic=b'''import json,os,stat,sys
 from pathlib import Path
 assert sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode
+assert sys.stdout.write_through, 'HUMAN login instructions must reach tee immediately'
 d=Path(sys.argv[1]);package=json.loads((d/'package.json').read_bytes())
 assert package['sourceCommit']==sys.argv[2]
 for p in d.iterdir():

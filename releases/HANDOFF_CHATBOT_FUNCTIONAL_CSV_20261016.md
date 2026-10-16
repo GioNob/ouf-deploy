@@ -1,5 +1,22 @@
 ## 16 ottobre — candidato target verificato; composizione token-only in qualifica
 
+## 16 ottobre — arresto operatore prima di ripartenza dopo buffering del login
+
+Output target mostrato dall'operatore: solo BEGIN, nessun login visibile.
+Difetto del launcher riprodotto: il figlio Python che passa in tee bufferizza
+le istruzioni device flow emesse tramite print. Correzione: avvio figlio con -u,
+con nuova regressione sul wrapper realmente eseguito. Due test locali PASS;
+CI di consegna da rileggere. Sorgente runtime c3e39aaf resta invariato.
+Nuovo SHA256 launcher: aba71a62a9455d78ce7cc7dc137180e627ef7cb8c0f9732a33a03d14b8400e9d.
+Il comando storico fissato a3a500b resta immutabile e NON va ripetuto.
+L'operatore deve interrompere una volta con Ctrl-C e riportare l'output.
+Prima di qualsiasi ripartenza riconciliare la preparazione privata, lo stato
+OAuth, eventuale issuance claim, nuovo journal e fence; il journal deterministico
+può esistere già dalla preparazione. Non cancellare directory o claim, non
+presumere zero grant dalla sola schermata, non azzerare il budget OAuth.
+Autorità e grant target non dimostrati da questa schermata. Stato8/8tecniche,
+0/6funzionali; nessuna approvazione, accettazione o nuova esecuzione inferita.
+
 ## 16 ottobre — consegna del solo token policy pronta alla decisione HUMAN
 
 Stato target: **8/8 fasi tecniche, 0/6 risultati funzionali**. Il candidato v2

@@ -64,7 +64,7 @@ package={'sourceCommit':commit,'executorSha256':expected['execute.py'],
 with (directory/'package.json').open('x')as output:
  json.dump(package,output,sort_keys=True,separators=(',',':'));output.flush();os.fsync(output.fileno())
 (directory/'package.json').chmod(0o600)
-result=subprocess.run([sys.executable,'-I','-B','-S',str(directory/'execute.py'),str(directory),commit],
+result=subprocess.run([sys.executable,'-u','-I','-B','-S',str(directory/'execute.py'),str(directory),commit],
  stdin=subprocess.DEVNULL,env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C'},timeout=11000)
 raise SystemExit(result.returncode)
 PY
