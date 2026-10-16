@@ -1,6 +1,8 @@
 # Fase 5: APISIX conservato e verifica autorizzazioni resiliente
 
-Sorgente runtime: `495d46f6ff7320c6d6248438895a52c8dc4c0818`.
+Sorgente runtime corrente: `e2252339dcc127e9237b8120727bf27439f506f0`.
+La precedente `495d46f6ff7320c6d6248438895a52c8dc4c0818` è stata bloccata
+nel preflight originale con `PREGRANT_APISIX_GENERATION_DRIFT`, prima di nuova authority.
 Launcher: `scripts/launch-chatbot-gateway-retained-20261016.sh`.
 
 ## Stato effettivamente confermato sul VPS
@@ -102,3 +104,32 @@ il documento privato completo prima di APPROVO. Il riepilogo deve dichiarare
 APISIX già completato, zero nuovi stop/create/start, fasi 1–4 conservate, otto grant,
 28 modifiche residue e una nuova finestra finita. Non ripetere i launcher consumati.
 Una sospensione successiva conserva il nuovo stato per riconciliazione.
+
+
+## Successione del controllo pregrant
+
+Il nuovo launcher corregge anche il controllo iniziale, oltre all'adozione runtime.
+La ricevuta immutabile deve collegare esattamente l'effetto APISIX originale al
+vecchio runtime del piano di sostituzione completato. Il vecchio candidato deve
+ora risultare conservato e fermo, con medesimo StartedAt e nessun restart; il nuovo
+runtime deve corrispondere agli otto effetti e a due osservazioni stabili della
+configurazione, montaggi, processo e namespace. Le cinque immagini e il più vecchio
+container ritirato mantengono le verifiche originali. Identità diversa, cronologia
+diversa o instabilità bloccano. Nessun nuovo stop/create/start o replay.
+
+CI Gateway `38871464959` PASS: il job Docker reale `116876301244` attraversa
+questo controllo prima di adottare gli otto effetti, senza scritture di ciclo di vita.
+Il job `116876301590` comprende cinque test di custodia e lineage oltre alle prove
+ruoli/budget e storia TLS. Il successo resta qualificazione di fixture.
+
+
+Qualifica completa della correzione pregrant: CI `38871464818`, job
+`116876298761`, PASS: 487 test in 65 suite, nessun fallimento o skip.
+Regressione backup `38871464977`, job `116876299223`, PASS.
+Launcher corrente `scripts/launch-chatbot-gateway-retained-20261016.sh`,
+SHA256 `5fb2c9f42e28b18f4e16705642587322f227d889b27f4a375d78e338e7183ed2`;
+sorgente runtime `e2252339dcc127e9237b8120727bf27439f506f0`, capsula di 129
+membri `9ca1c537e02de4fb2fa988edd244a46613fa115332d9a16de32db4fd0bd49991`.
+Il precedente launcher vincolato a 495d46 è superato: usare questo rilascio.
+Nessuna nuova esecuzione VPS durante la qualifica: fase 5 ancora sospesa,
+fasi 1–4 conservate, otto grant storici, 28 modifiche residue, CSV 0/6.

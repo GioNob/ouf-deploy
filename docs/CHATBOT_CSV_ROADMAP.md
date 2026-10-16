@@ -4,13 +4,21 @@ Roadmap confermata dall'utente il 16 ottobre 2026. Numerazione stabile fino alla
 
 ## Stato corrente
 
+Ultimo tentativo VPS: sorgente `495d46f6ff7320c6d6248438895a52c8dc4c0818`,
+bloccato nel preflight con `PREGRANT_APISIX_GENERATION_DRIFT`, prima di login IAM,
+revisione o emissione di nuova authority runtime. Il controllo originale pretendeva
+ancora viva la generazione APISIX già sostituita: errore della ripresa, senza
+nuovo avanzamento target. La correzione verifica la catena del predecessore
+conservato e fermo verso il successore approvato e stabile; nessun replay.
+Otto grant conservati; 28 modifiche Gateway residue, fasi 1–4 complete, CSV 0/6.
+
 **Fase tecnica 5/8 sospesa; dimostrazione funzionale 0/6.**
 
-L'esecuzione della prosecuzione `70af66b26d9a8dfdd7151c55f44eb5795fcc84a8` è arrivata a `PUBLISHING_REVIEWED_GATEWAY_ROUTES`, poi si è fermata con `GATEWAY_WRITE_OUTCOME_UNPROVEN_NO_REPLAY`. L'ordine del codice impone prima `migrate_mcp()` (con revoca verificata), quindi sostituzione/readiness e `verify_module()` di UDP e Onboarding. Le fasi 2–4 sono quindi superate nel flusso. La lettura VPS successiva conferma la fase 2 COMPLETE/CLEAN e la generazione UDP; la diagnosi completa successiva conferma entrambe le generazioni e le storie schema UDP/Onboarding. Non scambiare il successo del flusso precedente per disponibilità permanente dopo la cancellazione del worker.
+Storico del primo arresto Gateway: l'esecuzione della prosecuzione `70af66b26d9a8dfdd7151c55f44eb5795fcc84a8` è arrivata a `PUBLISHING_REVIEWED_GATEWAY_ROUTES`, poi si è fermata con `GATEWAY_WRITE_OUTCOME_UNPROVEN_NO_REPLAY`. L'ordine del codice impone prima `migrate_mcp()` (con revoca verificata), quindi sostituzione/readiness e `verify_module()` di UDP e Onboarding. Le fasi 2–4 sono quindi superate nel flusso. La lettura VPS successiva conferma la fase 2 COMPLETE/CLEAN e la generazione UDP; la diagnosi completa successiva conferma entrambe le generazioni e le storie schema UDP/Onboarding. Non scambiare il successo del flusso precedente per disponibilità permanente dopo la cancellazione del worker.
 
 **La fase 1 non è stata ripetuta:** vengono copiati/verificati i quattro archivi già COMPLETE, senza nuovi dump. I messaggi generici del launcher (`REGISTRY_REPLACEMENT_AND_VERIFICATION`, preparazione completa) descrivono passaggi comuni: in questa prosecuzione i dieci effetti Registry restano conservati e non vengono rieseguiti. Le autenticazioni/revisioni rinnovano la sola sessione finita, non la fase backup.
 
-Il Gateway ha un claim di scrittura e una mappa riletta non uguale alla mappa attesa. L'ACK della PUT non è conservato dal codice corrente: dai soli log non si può distinguere mancata applicazione, normalizzazione lato APISIX o altra differenza. **Non rilanciare il delivery né ripetere la PUT.** Diagnosi già eseguita: [diagnosi GET/SELECT di fase 5](../releases/CHATBOT_GATEWAY_PHASE5_READBACK_20261016.md), vincolata al contesto, con differenze strutturali redatte e verifica delle fasi già superate. Il primo reader, pur avendo superato CI `38841644559`, si è fermato sul VPS per una collisione del campo riservato `readOnly` prima di leggere Gateway. Il test del flusso aveva una fixture SQL incompleta: la correzione mantiene il guard e annida i risultati SQL sotto `facts`. Nuovo sorgente `26defb34e5573f535f03be869050fe3811725fd5`, CI `38842513682`: 12 test passati senza skip, inclusi PostgreSQL e namespace reali; il nuovo test riproduce il difetto sulla vecchia riga. Diagnosi VPS corretta completata: due GET stabili, nove effetti applicati, decima route assente e mappa esattamente precedente al claim.
+Il Gateway ha un claim di scrittura e una mappa riletta non uguale alla mappa attesa. L'ACK della PUT non è conservato dal codice corrente: dai soli log non si può distinguere mancata applicazione, normalizzazione lato APISIX o altra differenza. **Non ripetere quel delivery o quella PUT: usare solo la prosecuzione governata corrente, dopo la riconciliazione.** Diagnosi già eseguita: [diagnosi GET/SELECT di fase 5](../releases/CHATBOT_GATEWAY_PHASE5_READBACK_20261016.md), vincolata al contesto, con differenze strutturali redatte e verifica delle fasi già superate. Il primo reader, pur avendo superato CI `38841644559`, si è fermato sul VPS per una collisione del campo riservato `readOnly` prima di leggere Gateway. Il test del flusso aveva una fixture SQL incompleta: la correzione mantiene il guard e annida i risultati SQL sotto `facts`. Nuovo sorgente `26defb34e5573f535f03be869050fe3811725fd5`, CI `38842513682`: 12 test passati senza skip, inclusi PostgreSQL e namespace reali; il nuovo test riproduce il difetto sulla vecchia riga. Diagnosi VPS corretta completata: due GET stabili, nove effetti applicati, decima route assente e mappa esattamente precedente al claim.
 
 | # | Fase tecnica | Stato |
 |---|---|---|
@@ -18,7 +26,7 @@ Il Gateway ha un claim di scrittura e una mappa riletta non uguale alla mappa at
 | 2 | Applicare le migrazioni MCP e verificare la revoca dei privilegi temporanei | COMPLETATA e confermata sul VPS: 12 migrazioni attese, COMPLETE/CLEAN, privilegi temporanei revocati |
 | 3 | Sostituire UDP e verificarne schema e avvio | COMPLETATA; rilettura VPS conferma generazione running/restart 0 e 35 migrazioni attese |
 | 4 | Sostituire Onboarding e verificarne schema e avvio | COMPLETATA; rilettura VPS conferma generazione running/restart 0 e 34 migrazioni attese |
-| 5 | Pubblicare e verificare le route Gateway | **Sospesa: GATEWAY_WRITE_OUTCOME_UNPROVEN_NO_REPLAY** |
+| 5 | Pubblicare e verificare le route Gateway | **Sospesa: correzione del preflight APISIX successore qualificata; in attesa di esecuzione VPS, 28 modifiche residue** |
 | 6 | Sostituire Ingestion e verificarne schema e avvio | Da eseguire |
 | 7 | Sostituire MCP e verificarne schema e avvio | Da eseguire |
 | 8 | Verificare l'insieme e riabilitare i produttori | Da eseguire |
@@ -291,3 +299,41 @@ approvati; adattatore Docker/netns specifico, non qualifica multi-host generale.
 
 Nessuna nuova esecuzione target durante questa qualifica: **fase 5 ancora sospesa,
 fasi 6–8 da completare, CSV 0/6**. Solo il prossimo output VPS può avanzare la roadmap.
+
+
+## Correzione del preflight verso APISIX già sostituito
+
+Il launcher precedente, sorgente `495d46f6ff7320c6d6248438895a52c8dc4c0818`,
+si è fermato prima della revisione con `PREGRANT_APISIX_GENERATION_DRIFT`.
+`current_baseline` invocava il lettore pregrant originale senza indicargli la
+sostituzione APISIX già completata. Il lettore richiedeva ancora viva la vecchia
+generazione: errore nel percorso di ripresa, non prova di nuovo drift operativo.
+Il tentativo non ha emesso authority runtime; nessun nuovo grant o avanzamento.
+
+La sorgente `e2252339dcc127e9237b8120727bf27439f506f0` passa esplicitamente
+il predecessore riconciliato al lettore. Restano obbligatorie le prove delle
+cinque immagini e del più vecchio container ritirato. Solo con la ricevuta esatta
+si segue il collegamento oldRuntimeBinding del piano approvato: identico pin
+dell'effetto originale, identica HostConfig originaria, predecessore conservato
+fermo senza nuovo avvio/restart, otto effetti APPLIED e successore attuale stabile
+verificato due volte. Non si accetta un container arbitrario né si elimina un
+controllo di identità. Percorsi senza questa ricevuta mantengono il predicato
+precedente e respingono generazioni cambiate.
+
+CI Gateway `38871464959` PASS: job `116876301244` prova il nuovo controllo
+pregrant con Docker reale prima dell'adozione, zero operazioni di ciclo di vita
+aggiuntive e 28 scritture residue; job `116876301590` prova la storia finita e
+cinque test di custodia/lineage, compresi drift e instabilità respinti.
+La qualifica CI non avanza il target: fasi 1–4 complete, fase 5 sospesa, CSV 0/6.
+
+
+Qualifica completa della correzione pregrant: CI `38871464818`, job
+`116876298761`, PASS: 487 test in 65 suite, nessun fallimento o skip.
+Regressione backup `38871464977`, job `116876299223`, PASS.
+Launcher corrente `scripts/launch-chatbot-gateway-retained-20261016.sh`,
+SHA256 `5fb2c9f42e28b18f4e16705642587322f227d889b27f4a375d78e338e7183ed2`;
+sorgente runtime `e2252339dcc127e9237b8120727bf27439f506f0`, capsula di 129
+membri `9ca1c537e02de4fb2fa988edd244a46613fa115332d9a16de32db4fd0bd49991`.
+Il precedente launcher vincolato a 495d46 è superato: usare questo rilascio.
+Nessuna nuova esecuzione VPS durante la qualifica: fase 5 ancora sospesa,
+fasi 1–4 conservate, otto grant storici, 28 modifiche residue, CSV 0/6.

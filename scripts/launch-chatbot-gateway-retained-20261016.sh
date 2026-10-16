@@ -7,9 +7,9 @@ if [ -z "$ouf_gh" ]; then echo 'Client GitHub non trovato; nessuna esecuzione su
 ouf_archive="$HOME/ouf-chatbot-file-delivery-126e49f3830667934bf8f8d7/cohort/cohort.zip"
 if [ ! -f "$ouf_archive" ]; then echo 'Archivio originale non trovato; nessuna esecuzione sudo.' >&2; exit 1; fi
 ouf_launch="$(mktemp -d "$HOME/ouf-gateway-retained-launch.XXXXXXXX")"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/scripts/deliver-chatbot-file-cohort.py?ref=495d46f6ff7320c6d6248438895a52c8dc4c0818' --jq .content | base64 --decode > "$ouf_launch/deliver.py"
-printf '%s  %s\n' '1619e91ae502454b83f20f417f5f54019221a7bd57f174ca995e2764201cf83b' "$ouf_launch/deliver.py" | sha256sum --check -
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/scripts/deliver-chatbot-file-cohort.py?ref=e2252339dcc127e9237b8120727bf27439f506f0' --jq .content | base64 --decode > "$ouf_launch/deliver.py"
+printf '%s  %s\n' '59d0950b636e0881ee6d8f1045bf1095bba8e2f9872dfd57b5ea069dc60bbfd0' "$ouf_launch/deliver.py" | sha256sum --check -
 echo "Log della sessione: $ouf_launch/run.log"
 /usr/bin/python3 -I -B "$ouf_launch/deliver.py" \
-  --source-commit 495d46f6ff7320c6d6248438895a52c8dc4c0818 \
+  --source-commit e2252339dcc127e9237b8120727bf27439f506f0 \
   --package-archive "$ouf_archive" 2>&1 | tee "$ouf_launch/run.log"
