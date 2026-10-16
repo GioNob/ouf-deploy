@@ -51,12 +51,23 @@ def main():
             hook=root/'ouf_json_precision.lua'
             hook.write_text("local expected=9007199254740991\nfor _,name in ipairs({'cjson','cjson.safe'}) do\n local json=require(name)\n json.encode_number_precision(16)\n assert(json.decode(json.encode(expected))==expected, 'OUF_JSON_INTEGER_ROUNDTRIP_REQUIRED')\nend\n")
             hook.chmod(0o644)
+            # Qualify a narrowly scoped upstream compiler fix: Lua's %s rounds
+            # numeric constants while generating the range comparison code.
+            image_ref='apache/apisix@sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d'
+            source=docker('run','--rm','--entrypoint','cat',image_ref,'/usr/local/apisix/deps/share/lua/5.1/jsonschema.lua')+'\n'
+            anchor='local function addRangeCheck(ctx, op, reference, msg)\n'
+            assert source.count(anchor)==1, 'RANGE_COMPILER_SOURCE_DRIFT'
+            patched=source.replace(anchor,anchor+"  reference = sformat('%.17g', reference)\n")
+            validator=root/'jsonschema.lua';validator.write_text(patched);validator.chmod(0o644)
+            report['rangeCompilerOriginalSha256']=hashlib.sha256(source.encode()).hexdigest()
+            report['rangeCompilerPatchedSha256']=hashlib.sha256(patched.encode()).hexdigest()
+            print(json.dumps({k:v for k,v in report.items() if k.startswith('rangeCompiler')}),flush=True)
             cfg['apisix'].update(extra_lua_path='/usr/local/apisix/conf/?.lua',lua_module_hook='ouf_json_precision')
             config=root/'config.yaml';config.write_text(yaml.safe_dump(cfg));config.chmod(0o644)
             docker('run','-d','--name',etcd,'--network',net,'quay.io/coreos/etcd:v3.5.17','etcd','--listen-client-urls=http://0.0.0.0:2379','--advertise-client-urls=http://'+etcd+':2379')
             env=['-e','OIDC_SECRET=synthetic-ci-only']
             for i,name in enumerate(cfg['nginx_config']['envs'][1:]):env+=['-e',name+'='+str(i+1)*64]
-            docker('run','-d','--name',apisix,'--network',net,'-p','127.0.0.1::9180','-p','127.0.0.1::9080',*env,'-v',str(config)+':/usr/local/apisix/conf/config.yaml:ro','-v',str(hook)+':/usr/local/apisix/conf/ouf_json_precision.lua:ro','apache/apisix@sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d')
+            docker('run','-d','--name',apisix,'--network',net,'-p','127.0.0.1::9180','-p','127.0.0.1::9080',*env,'-v',str(config)+':/usr/local/apisix/conf/config.yaml:ro','-v',str(hook)+':/usr/local/apisix/conf/ouf_json_precision.lua:ro','-v',str(validator)+':/usr/local/apisix/deps/share/lua/5.1/jsonschema.lua:ro',image_ref)
             port=int(docker('port',apisix,'9180/tcp').rsplit(':',1)[1])
             def request(method,path,body=None):
                 conn=http.client.HTTPConnection('127.0.0.1',port,timeout=10)
