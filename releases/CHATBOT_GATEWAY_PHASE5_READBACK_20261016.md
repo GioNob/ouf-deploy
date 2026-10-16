@@ -11,8 +11,9 @@ una PUT con `GATEWAY_WRITE_OUTCOME_UNPROVEN_NO_REPLAY`.
 L'ordine di `delivery.run()` richiede prima il completamento di
 `databases.migrate_mcp()` (inclusa revoca verificata), sostituzione/readiness UDP
 più `databases.verify_module('udp')`, quindi gli stessi controlli di Onboarding.
-Le fasi tecniche 2, 3 e 4 sono superate nel flusso. Il prossimo reader acquisisce
-la conferma persistita e lo stato corrente. Fasi 6–8 non raggiunte, CSV 0/6.
+Le fasi tecniche 2, 3 e 4 sono superate nel flusso. Il primo readback ha confermato fase 2 COMPLETE/CLEAN, 12 migrazioni attese,
+revoca dei privilegi temporanei e generazione UDP running/restart 0. Si è
+fermato prima di Onboarding e delle letture Gateway; serve il reader corretto. Fasi 6–8 non raggiunte, CSV 0/6.
 La cancellazione del worker finito non costituisce accettazione permanente.
 
 La fase 1 non viene rieseguita: la prosecuzione copia e verifica i quattro
@@ -31,13 +32,33 @@ differenza. Il log non consente di distinguere queste possibilità. Il reader
 non può ricostruire un ACK non conservato. Non rilanciare il delivery, la PUT,
 i container già sostituiti o le migrazioni completate.
 
+## Correzione del difetto diagnostico RESERVED_OUTPUT_FIELD
+
+Il reader precedente `ebdcf153c450ea5ab55c1783d281f1b963c5c29c`, distribuito
+con release `1713aeb4114f7289fd4fff4e9bd932339e1a360f`, ha raggiunto la query
+schema UDP ma non l'emissione del risultato: `readOnly` era presente sia
+nel risultato SQL sia nell'involucro riservato. Il guard ha bloccato l'output.
+La correzione annida i risultati di schema sotto `facts`, lasciando invariati
+guard, query, custody, limiti, criteri Gateway e ogni codice di mutazione.
+
+La vecchia CI `38841644559` aveva passato 12 test, ma la fixture del flusso
+ometteva `readOnly`. Ora usa la forma completa del risultato di produzione e
+verifica entrambi gli output schema e le due GET successive. Reintroducendo
+localmente la vecchia riga, il test fallisce con lo stesso errore VPS; con la
+correzione passa. La nuova CI riportata sotto esegue anche le prove native.
+Il precedente risultato CI resta storico, non una prova di assenza del bug.
+
+La diagnosi parziale conferma 8 grant cumulativi (6 precedenti, 2 nella
+sessione), worker CANCELLED e admission BLOCKED. Non ha raggiunto i controlli
+finali di stabilità né riconciliato alcun journal. [Evidenza target](../evidence/chatbot-gateway-target-partial-readback-20261016.json).
+
 ## Reader esatto
 
-Sorgente diagnostico: `ebdcf153c450ea5ab55c1783d281f1b963c5c29c`.
+Sorgente diagnostico: `26defb34e5573f535f03be869050fe3811725fd5`.
 Script: `scripts/read-chatbot-gateway-state-20261016.py`.
-SHA256: `fa88de46ffe5b772b155a71ba0945d068fa16570e8e5768ade496fef1dad20d1`.
+SHA256: `0be8ce0e1385c360c185484234668a6b33d7058d8f4e16380acee341a415002d`.
 Launcher: `scripts/launch-chatbot-gateway-state-20261016.sh`.
-SHA256: `660c4a75612b483b727dd2f6dd5cc54532e902c0ca10b9ba9a9b729d43c1df67`.
+SHA256: `803283687b1c7fbd9e396e2660403f64b3da45267ce59c0bedd0a2d650be8ce0`.
 
 Il reader è vincolato alla revisione sopra, all'autorità
 `0e3a1a76b5528704c3295eff50c92b269a4f69c7d5eeff3304b193e991b54cb8`
@@ -75,8 +96,8 @@ emissione di autorità. Directory temporanee e log sono gli unici nuovi file.
 
 ## Qualificazione e prossimo passo
 
-CI [38841644559](https://github.com/GioNob/ouf-deploy/actions/runs/38841644559),
-job `116782864580`: **12 test passati, zero failure/error/skip** sul sorgente
+CI [38842513682](https://github.com/GioNob/ouf-deploy/actions/runs/38842513682),
+job `116785594619`: **12 test passati, zero failure/error/skip** sul sorgente
 esatto. Comprende namespace GET reale con credenziale sintetica, due letture,
 rifiuto di inode/config cambiati e namespace del padre preservato; query
 Flyway esatta su PostgreSQL 17 reale per UDP/Onboarding; fixture completa dei
@@ -84,8 +105,18 @@ record privati, redazione, differenze tipizzate, claim errato, mutazioni
 concorrenti, confronto delle funzioni custody/parser con il sorgente runtime.
 Il server HTTP della prova è una fixture, non APISIX: questa CI qualifica il
 trasporto in sola lettura, non identifica la causa sul VPS né qualifica una
-correzione runtime. Il reader non ha ancora letto il nuovo stato target.
+correzione runtime. Il reader corretto non ha ancora completato la lettura dello stato target.
 
 Eseguire il nuovo launcher diagnostico e conservare/incollare l'output.
 Il risultato determina se l'effetto è esatto, assente o differente e quali
 verifiche/correzioni governate servono. La roadmap resta fase 5/8, CSV 0/6.
+
+## Confine con il prodotto installabile
+
+Questo reader conserva i binding esatti dell'incidente e il trasporto locale
+nel namespace APISIX qualificato sul profilo corrente. Non è un installer
+generico né prova che endpoint o topologie distribuite siano già supportati.
+I requisiti per Ente, route da artefatti approvati, domini/DNS/endpoint e
+reti/sottoreti configurabili sono registrati in AGENTS.md e nel piano di
+industrializzazione. La parametrizzazione non deve rendere configurabili
+arbitrariamente le capability o aggirare i confini PET.

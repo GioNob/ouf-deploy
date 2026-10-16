@@ -5,13 +5,13 @@ ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
 if [ ! -x "$ouf_gh" ]; then ouf_gh="$(command -v gh || true)"; fi
 if [ -z "$ouf_gh" ]; then echo 'Client GitHub non trovato; nessuna esecuzione sudo.' >&2; exit 1; fi
 ouf_read="$(mktemp -d "$HOME/ouf-gateway-state.XXXXXXXX")"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/scripts/read-chatbot-gateway-state-20261016.py?ref=ebdcf153c450ea5ab55c1783d281f1b963c5c29c' --jq .content | base64 --decode > "$ouf_read/read.py"
-printf '%s  %s\n' 'fa88de46ffe5b772b155a71ba0945d068fa16570e8e5768ade496fef1dad20d1' "$ouf_read/read.py" | sha256sum --check -
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/scripts/read-chatbot-gateway-state-20261016.py?ref=26defb34e5573f535f03be869050fe3811725fd5' --jq .content | base64 --decode > "$ouf_read/read.py"
+printf '%s  %s\n' '0be8ce0e1385c360c185484234668a6b33d7058d8f4e16380acee341a415002d' "$ouf_read/read.py" | sha256sum --check -
 echo "Log della diagnosi: $ouf_read/read.log"
 sudo /usr/bin/python3 -I -B - "$ouf_read/read.py" <<'PY' 2>&1 | tee "$ouf_read/read.log"
 import hashlib,os,stat,subprocess,sys,tempfile
 from pathlib import Path
-expected='fa88de46ffe5b772b155a71ba0945d068fa16570e8e5768ade496fef1dad20d1'
+expected='0be8ce0e1385c360c185484234668a6b33d7058d8f4e16380acee341a415002d'
 assert os.geteuid()==0 and sys.flags.isolated
 fd=os.open(sys.argv[1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
 try:
