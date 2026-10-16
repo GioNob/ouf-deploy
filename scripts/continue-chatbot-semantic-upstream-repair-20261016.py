@@ -1114,7 +1114,7 @@ def apply_main():
         require(gateway_read(p['engine'],transport)==before,'REPAIR_INITIAL_MAP_DRIFT')
         profile,policy,key=public_governance(int(time.time()))
         review={'schema':'ouf.semantic-upstream-execution-review.v1','preparedRepairHash':BASE_REVIEW_HASH,
-            'applicatorSha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'beforeMapHash':repair['beforeMapHash'],
+            'applicatorSha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'beforeMapHash':digest(before),'originalPreparedBeforeMapHash':repair['beforeMapHash'],
             'afterMapHash':repair['afterMapHash'],'maximumWrites':14,'unchangedRouteCount':59,'maximumSeconds':180,
             'predecessorAuthorityHash':REPAIR_AUTHORITY,'predecessorJournalHash':digest(prior),
             'adoptedAppliedCount':1,'predecessorWriteAttempts':1,'maximumCumulativeWriteAttempts':15,
