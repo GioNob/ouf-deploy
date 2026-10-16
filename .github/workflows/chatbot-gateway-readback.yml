@@ -9,6 +9,8 @@ on:
       - tests/test_gateway_schema_readback.py
       - scripts/read-chatbot-gateway-authorization-20261016.py
       - tests/test_gateway_authorization_readback.py
+      - scripts/read-chatbot-postgateway-container-20261016.py
+      - tests/test_gateway_postgateway_container_readback.py
       - .github/workflows/chatbot-gateway-readback.yml
 permissions: {contents: read}
 jobs:

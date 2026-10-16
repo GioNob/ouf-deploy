@@ -4,6 +4,26 @@ Roadmap confermata dall'utente il 16 ottobre 2026. Numerazione stabile fino alla
 
 ## Stato corrente
 
+**Ultimo output VPS: fase 5 superata nel flusso; sostituzione Ingestion/MCP
+raggiunta (fase 6 almeno, fase esatta 6/7 da journal); CSV 0/6.**
+Sorgente `e2252339dcc127e9237b8120727bf27439f506f0`, review
+`50b5e2348c950ab9832cf890c7d0129f6ba92c8b05eb5d853fcd94ad1574b8cb`,
+authority `50ce40e69082a813ba92b7dd9defacc1e6ccb904a3be8ef20226f80fca468893`.
+Contesto `chatbot-file-cohort-signed-9e843050f99e2da257ec6c33221ae0c963f78412c7d31c119af97ae81dfa442f`.
+Otto passi APISIX adottati senza replay; nuovo worker finito avviato; il codice
+ha completato gateway.apply/verify prima di await_container nella coppia
+Ingestion/MCP. Arresto: `COHORT_REPLACEMENT_PROCESS_CONFIG_DRIFT` nel confronto
+Config effettiva/richiesta. Non assumere che sia Env o Labels prima di leggere
+la differenza. Nessun rilancio del delivery consumato. Fasi 1–4 conservate;
+la mappa Gateway completa e il journal devono essere riletti per conferma
+persistente. Il totale grant corrente va riletto dal worker, non fissato a otto.
+Diagnosi in sola lettura: `scripts/read-chatbot-postgateway-container-20261016.py`,
+GET Docker/route, zero chiamate DB/IAM/MCP/grant, zero nuovi dump o scritture.
+La sezione seguente conserva la cronologia dei tentativi precedenti.
+
+### Cronologia precedente
+
+
 Ultimo tentativo VPS: sorgente `495d46f6ff7320c6d6248438895a52c8dc4c0818`,
 bloccato nel preflight con `PREGRANT_APISIX_GENERATION_DRIFT`, prima di login IAM,
 revisione o emissione di nuova authority runtime. Il controllo originale pretendeva
@@ -26,9 +46,9 @@ Il Gateway ha un claim di scrittura e una mappa riletta non uguale alla mappa at
 | 2 | Applicare le migrazioni MCP e verificare la revoca dei privilegi temporanei | COMPLETATA e confermata sul VPS: 12 migrazioni attese, COMPLETE/CLEAN, privilegi temporanei revocati |
 | 3 | Sostituire UDP e verificarne schema e avvio | COMPLETATA; rilettura VPS conferma generazione running/restart 0 e 35 migrazioni attese |
 | 4 | Sostituire Onboarding e verificarne schema e avvio | COMPLETATA; rilettura VPS conferma generazione running/restart 0 e 34 migrazioni attese |
-| 5 | Pubblicare e verificare le route Gateway | **Sospesa: correzione del preflight APISIX successore qualificata; in attesa di esecuzione VPS, 28 modifiche residue** |
-| 6 | Sostituire Ingestion e verificarne schema e avvio | Da eseguire |
-| 7 | Sostituire MCP e verificarne schema e avvio | Da eseguire |
+| 5 | Pubblicare e verificare le route Gateway | **Superata nel flusso; conferma journal e mappa finale in lettura** |
+| 6 | Sostituire Ingestion e verificarne schema e avvio | **Raggiunta; arresto di configurazione nella coppia Ingestion/MCP, modulo da journal** |
+| 7 | Sostituire MCP e verificarne schema e avvio | Stato da confermare nel journal; non dichiarata completata |
 | 8 | Verificare l'insieme e riabilitare i produttori | Da eseguire |
 
 | # | Dimostrazione funzionale | Stato |
