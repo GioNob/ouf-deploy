@@ -1125,7 +1125,12 @@ def apply_main():
             'newGrantAuthorized':False,'serviceLifecycleAuthorized':False,'databaseMutationAuthorized':False,
             'automaticReplayAllowed':False,'automaticRollbackAllowed':False,'budgetReset':False}
         folder=BASE_REVIEW.parent/'execution-continuation-v2';folder.mkdir(mode=0o700)
-        decision=terminal_repair_decision(review,folder);atomic_record(folder/'decision.json',decision,exclusive=True)
+        decision=terminal_repair_decision(review,folder)
+        decision.update(actor={'kind':'CONTROLLING_TERMINAL_OPERATOR','infrastructureIssuerRef':profile['authorities']['approvalIssuerRef']},
+            decisionRef='semantic-upstream-repair-v2-'+BASE_REVIEW_HASH,reason=review['reason'],
+            maximumAdditionalWriteAttempts=14,predecessorWriteAttempts=1,maximumCumulativeWriteAttempts=15,
+            maximumSessionSeconds=180,renewOriginalApplicationWindow=False)
+        atomic_record(folder/'decision.json',decision,exclusive=True)
         now=int(time.time());require(now<review['expiresAt'],'REPAIR_WINDOW_EXPIRED_AFTER_DECISION')
         authority={'schema':'ouf.semantic-upstream-finite-execution-authority.v1','reviewHash':digest(review),'decisionHash':digest(decision),
             'installationRef':policy['installationRef'],'entityRef':policy['entityRef'],'issuedAt':now,
