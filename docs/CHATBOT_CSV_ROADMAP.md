@@ -29,6 +29,20 @@ poi commit13/ricerca/reimport senza duplicati/verifica finale. Dieci grant
 predecessori conservati; il conteggio del nuovo worker non è stampato e non
 va dedotto dal solo avvio. Non rinnovare né ripetere l'installazione.
 
+### Diagnosi target della consultazione semantica
+
+Readback operatore: finestra finita ancora attiva nello stato
+ACTUAL_CSV_OWNER_ACCEPTANCE_OBSERVED; 74 route finali stabili, Registry running
+senza restart; riferimenti di firma presenti, chiavi della forma prevista e
+variabili esposte da Nginx. Un accesso semanticSearch503 coincide nel campione
+con un marker NO_LIVE_UPSTREAMS. Questo orienta il controllo verso l'upstream,
+ma non identifica da solo la causa: nessuna correzione o riconciliazione eseguita.
+L'osservatore può attendere regolarmente mentre il503 impedisce la consultazione
+necessaria alla preparazione CSV. Le fasi tecniche completate non si ripetono.
+Controllo successivo limitato: alias e DNS dal namespace APISIX, confronto con
+il Registry corrente e apertura TCP senza payload solo verso i suoi indirizzi
+indipendentemente riletti. Nessun valore DNS/IP o segreto pubblicato.
+
 ### Tappa funzionale 1/6: profilo confermato, consultazione semantica 503
 
 Dal chatbot, account ouf-admin: source.file.preview conferma asset
