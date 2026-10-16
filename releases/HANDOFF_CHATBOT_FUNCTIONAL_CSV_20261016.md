@@ -1,3 +1,22 @@
+## 2026-10-16 17:58 Europe/Rome — explicit semantic reprocessing authorized; MCP retained claim blocks dispatch
+
+Operator explicitly authorized ONE new unchanged Teatri DRAFT submission using the same account and commandKey. One semantic.propose tool invocation was made with the exact retained importCommand, ouf-admin link and `teatri-semantic-draft-be74308e098aa3a6-20261016`. Result: `SEMANTIC_RECEIPT_READ_REQUIRED`, retryable=false; no DRAFT/owner receipt was returned. One subsequent receipt reconciliation read returned owner404 `PROPOSAL_RECEIPT_NOT_FOUND`. No further create invocation, alternate key, account switch, claim deletion or admission reset was performed. Operator authorization is recorded; it does not bypass MCP admission or authorize THS semantic approval.
+
+Source analysis: ouf-mcp-server `f7ecaeb210d8fcead478b90c62645db13a7d8226`, internal/adapter/postgres/store.go Reserve/reserveOnce returns Replay for an existing matching idempotency claim unless outcome UNKNOWN/UNRESOLVED; internal/orchestration/service.go returns empty Replay before Gateway dispatch; internal/kernel/kernel.go maps that empty semantic replay to SEMANTIC_RECEIPT_READ_REQUIRED. Receipt READ is independent and does not rearm that claim. This source-level path explains the observed marker, but exact persisted claim state and deployment source still require target readback. Do not clear the claim or invent a fresh key. A native governed reprocessing path may need implementation/qualification after state is known.
+
+Prepared installation-specific metadata reader:
+- Source commit `72923e0bfd5a8d7a1e72afd4684784446ce5d57b`, script `scripts/read-chatbot-semantic-mcp-claim-20261016.py`, SHA256 `2e775c9c47fd42f410fa975a5341087f30112e9ab25412800e471984f48c589a`.
+- Reuses the current signed16e5 retained source/review/authority/prepared bundle and exact PostgreSQL runtime/database OID, Docker executable and Engine socket. No external credentials are read or printed. Existing signed database administrator selected explicitly, no role fallback.
+- One bounded psql session through the existing pinned PostgreSQL container. PGOPTIONS default_transaction_read_only=on plus BEGIN READ ONLY, statement10s/lock3s/CLI15s, total reader120s, SELECT only and ROLLBACK. No container lifecycle, token issuance, IAM/MCP request, SQL mutation or rearm.
+- Exact tenant from retained HUMAN selection, exact subject/owner/capability/COMMAND/key. Up to4 claims, explicit total count checked against returned rows; no silent truncation. Only attempt UUID/hash, safe states, lock version, reservation counts and context-presence flag can be emitted. Unknown/redaction-invalid data fail closed.
+- Two Engine observations fence the PostgreSQL generation before/after. Other records/processes may change independently; this is not a global atomic snapshot or runtime authority.
+- GitHub Actions run38928870195/job117067391349: **PASS6**, including exact SQL scope/injection refusal, projection limits/redaction, full main with synthetic SQL/metadata port, post-read generation drift, SQL failure and real bounded CLI output. These tests do not execute actual target PostgreSQL; target operator readback remains required. Launcher bash -n passed.
+- Launcher `scripts/launch-chatbot-semantic-mcp-claim-readback-20261016.sh` SHA256 `c78b7f3bd49fd56ff2f1f4d07d4916e0876f9be32e99d53b0dd582b81a5f7de9`. Downloads exact pinned reader, verifies before sudo, private root copy and safe error output. Use second terminal while original finite policy-token worker continues; do not stop or renew it.
+
+**8/8 technical,0/6 functional**. No semantic draft creation, approval or publication proven. Next: acquire EXACT_MCP_CLAIM/END target metadata, then prepare a governed owner-side correction with retained history and finite authority if required. The explicit semantic reprocessing instruction does not permit unreviewed deployment/SQL resets.
+
+---
+
 ## 2026-10-16 17:55 Europe/Rome — policy token recovered; original semantic receipt read reconciled
 
 Roadmap remains **8/8 technical;0/6 functional**. Operator is now on PC and can use multiple SSH terminals; keep the finite token worker active in its original foreground terminal while running diagnostics in a second.

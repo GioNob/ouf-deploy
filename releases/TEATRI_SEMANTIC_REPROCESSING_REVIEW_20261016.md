@@ -1,6 +1,6 @@
 # Teatri semantic DRAFT reprocessing review — 2026-10-16
 
-Status: PREPARED_AWAITING_EXPLICIT_OPERATOR_INSTRUCTION. No new semantic mutation executed.
+Status: EXPLICIT_ONE_ATTEMPT_AUTHORIZED; MCP_RETURNED_SEMANTIC_RECEIPT_READ_REQUIRED. One tool invocation returned the admission replay marker; subsequent owner receipt read404. No DRAFT creation is confirmed. Preserve original claim/key and obtain read-only target claim metadata before recovery design.
 
 One new attempt to submit the existing ontology as DRAFT via the native semantic.propose owner contract. The prior create request was denied403; the renewed-token diagnostic now returns policy40/HTTP200 and one owner receipt read returns404 PROPOSAL_RECEIPT_NOT_FOUND. The new attempt is a deliberate operator decision after reconciliation, not an automatic retry of a permanent denial.
 
