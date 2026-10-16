@@ -14,6 +14,7 @@ import socketserver
 import sys
 import threading
 import time
+import traceback
 import unittest
 from unittest.mock import patch
 from http.server import BaseHTTPRequestHandler
@@ -136,19 +137,20 @@ class Composed(unittest.TestCase):
     def test_two_operator_installations_share_one_exclusive_global_claim(self):
         from tools.semantic_policy_token_owner.owner_installation import OwnerInstallation
         first,second=self.make(),self.make();before=self.grants();barrier=threading.Barrier(2)
-        original=OwnerInstallation._write_once;outcomes=[]
+        original=OwnerInstallation._write_once;outcomes=[];diagnostics=[]
         def write(installer,directory,name,raw):
             if name.endswith('.fence.json'):barrier.wait(timeout=20)
             return original(installer,directory,name,raw)
         def run(installer):
             try:installer.install();outcomes.append('INSTALLED')
             except FileExistsError:outcomes.append('ALREADY_CLAIMED')
-            except Exception as error:outcomes.append(type(error).__name__)
+            except Exception as error:
+                outcomes.append(type(error).__name__);diagnostics.append(traceback.format_exc())
         with patch.object(OwnerInstallation,'_write_once',write):
             threads=[threading.Thread(target=run,args=(i,))for i in(first,second)]
             for thread in threads:thread.start()
             for thread in threads:thread.join(40)
-        self.assertEqual(sorted(outcomes),['ALREADY_CLAIMED','INSTALLED'])
+        self.assertEqual(sorted(outcomes),['ALREADY_CLAIMED','INSTALLED'],'\n'.join(diagnostics))
         self.assertEqual(self.grants(),before)
 
     def test_exhausted_cumulative_budget_cannot_issue_an_extra_grant(self):
