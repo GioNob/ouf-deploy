@@ -5,11 +5,15 @@ on:
     paths:
       - scripts/launch-chatbot-semantic-token-session-20261016.sh
       - tests/test_semantic_token_launcher.py
+      - scripts/read-chatbot-semantic-token-interruption-20261016.py
+      - tests/test_semantic_token_interruption_reader.py
       - .github/workflows/semantic-token-delivery.yml
   pull_request:
     paths:
       - scripts/launch-chatbot-semantic-token-session-20261016.sh
       - tests/test_semantic_token_launcher.py
+      - scripts/read-chatbot-semantic-token-interruption-20261016.py
+      - tests/test_semantic_token_interruption_reader.py
       - .github/workflows/semantic-token-delivery.yml
 permissions: {contents: read}
 jobs:
@@ -26,4 +30,6 @@ jobs:
           sudo mkdir -m 700 "$OUF_DELIVERY_ROOT"
           sudo cp -R . "$OUF_DELIVERY_ROOT/repository"
           sudo chown -R root:root "$OUF_DELIVERY_ROOT"
-          sudo python3 -I -B -m unittest discover -s "$OUF_DELIVERY_ROOT/repository/tests" -p test_semantic_token_launcher.py -v
+          for suite in test_semantic_token_launcher.py test_semantic_token_interruption_reader.py; do
+            sudo env OUF_NATIVE_UIDS=1 python3 -I -B -m unittest discover -s "$OUF_DELIVERY_ROOT/repository/tests" -p "$suite" -v
+          done
