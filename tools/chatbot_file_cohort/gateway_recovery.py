@@ -38,6 +38,9 @@ ARCHIVES=prior.ARCHIVES
 
 
 def validate_worker(first,worker,admission,session):
+    if worker.get('controlledCumulativeGrantAttempts')==10:
+        from tools.chatbot_file_cohort.ingestion_path_recovery import validate_worker
+        return validate_worker(first,worker,admission,session)
     if worker.get('controlledCumulativeGrantAttempts')==9:
         from tools.chatbot_file_cohort.ingestion_recovery import validate_worker
         return validate_worker(first,worker,admission,session)
@@ -156,7 +159,9 @@ def read_predecessor():
     from tools.chatbot_file_cohort import gateway_retained
     result=gateway_retained.enrich(result) if gateway_retained.available() else result
     from tools.chatbot_file_cohort import ingestion_recovery
-    return ingestion_recovery.enrich(result) if ingestion_recovery.available() else result
+    result=ingestion_recovery.enrich(result) if ingestion_recovery.available() else result
+    from tools.chatbot_file_cohort import ingestion_path_recovery
+    return ingestion_path_recovery.enrich(result) if ingestion_path_recovery.available() else result
 
 
 def proof_scope(previous,actor):
@@ -187,10 +192,19 @@ def proof_scope(previous,actor):
         result['cancelledWorkerHash']=tail.WORKER;result['workerSessionHash']=tail.SESSION
         result['newBudget'].update(priorControlledGrantAttempts=9,priorWorkerGrantAttempts=1,
             reason='CREATED_INGESTION_IMAGE_DEFAULT_ENVIRONMENT_RECONCILIATION')
+    if 'failedIngestionAttempt' in previous:
+        from tools.chatbot_file_cohort import ingestion_path_recovery as tail
+        result['retainedFailedIngestion']=copy.deepcopy(previous['failedIngestionAttempt']['receipt'])
+        result['cancelledWorkerHash']=tail.WORKER;result['workerSessionHash']=tail.SESSION
+        result['newBudget'].update(priorControlledGrantAttempts=10,priorWorkerGrantAttempts=1,
+            reason='FAILED_INGESTION_IMAGE_PATH_GOVERNED_REPROCESSING')
     return result
 
 
 def claim_for(proof=None):
+    if proof is not None and 'retainedFailedIngestion' in proof:
+        from tools.chatbot_file_cohort import ingestion_path_recovery as tail
+        tail.validate_proof(proof);return tail.CLAIM
     if proof is not None and 'retainedCreatedIngestion' in proof:
         from tools.chatbot_file_cohort import ingestion_recovery as tail
         tail.validate_proof(proof);return tail.CLAIM
@@ -206,6 +220,9 @@ def retained_bindings(proof):
     if 'retainedCreatedIngestion' in proof:
         from tools.chatbot_file_cohort import ingestion_recovery as tail
         tail.validate_proof(proof);worker_hash,session_hash,prior_count=tail.WORKER,tail.SESSION,9
+    if 'retainedFailedIngestion' in proof:
+        from tools.chatbot_file_cohort import ingestion_path_recovery as tail
+        tail.validate_proof(proof);worker_hash,session_hash,prior_count=tail.WORKER,tail.SESSION,10
     if 'retainedNumericGateway' in proof:
         from tools.chatbot_file_cohort.gateway_retained import validate_proof
         validate_proof(proof)
@@ -346,6 +363,9 @@ def guard_database_scope(owner,proof):
 
 
 def adopt_containers(owner,previous,proof):
+    if 'retainedFailedIngestion' in proof:
+        from tools.chatbot_file_cohort.ingestion_path_recovery import adopt_containers
+        return adopt_containers(owner,previous,proof)
     if 'retainedCreatedIngestion' in proof:
         from tools.chatbot_file_cohort.ingestion_recovery import adopt_containers
         return adopt_containers(owner,previous,proof)

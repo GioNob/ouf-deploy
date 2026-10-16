@@ -26,7 +26,7 @@ class ScheduledRecovery(Recovery):
     def validate(self,row):
         if 'workerSessionHash' in row:
             prior=row.get('controlledPredecessorGrantAttempts')
-            require(type(prior)is int and (prior==1 and 'controlledHistoryProfile'not in row or prior in(2,3,4,5,6,8,9)
+            require(type(prior)is int and (prior==1 and 'controlledHistoryProfile'not in row or prior in(2,3,4,5,6,8,9,10)
                 and row.get('controlledHistoryProfile')=='ouf.policy-token-cancelled-worker-continuation.v1'
                 and all(type(row.get(k))is str and len(row[k])==64 and all(c in '0123456789abcdef'for c in row[k])
                     for k in('predecessorCancelledWorkerHash','predecessorWorkerSessionHash')))

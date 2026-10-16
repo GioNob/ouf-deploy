@@ -189,13 +189,13 @@ class NativePhaseFive(unittest.TestCase):
             self.assertEqual(owner.transport().routes(),planned['proposedRoutes'])
             self.assertEqual(g.encoded(journal),preserved)
             for rid in expected:self.assertEqual(planned['proposedRoutes'][rid],expected[rid])
-            from tools.chatbot_file_cohort import ingestion_recovery as tail
-            from test_chatbot_cohort_ingestion_recovery import receipt as tail_receipt
+            from tools.chatbot_file_cohort import ingestion_path_recovery as tail
+            from test_chatbot_cohort_ingestion_path_recovery import receipt as tail_receipt
             frozen_routes=publisher.journal.record.read_bytes()
             for name,value in [('AUTHORITY',action.authority_hash),('GATEWAY',g.digest(publisher.record())),
                 ('ROUTES',g.digest(planned['proposedRoutes']))]:stack.enter_context(patch.object(tail,name,value))
-            completed_receipt=tail_receipt();proof['retainedCreatedIngestion']=completed_receipt
-            previous['ingestionAttempt']={'receipt':completed_receipt,'prepared':{'gatewayPlan':planned},'gateway':publisher.record()}
+            completed_receipt=tail_receipt();proof['retainedFailedIngestion']=completed_receipt
+            previous['failedIngestionAttempt']={'receipt':completed_receipt,'prepared':{'gatewayPlan':planned},'gateway':publisher.record()}
             signed=json.loads(f.authority);signed['applicationRegistryCutover']['postGrantRecovery']=proof
             f.authority=fixture.crypto.encoded(signed);f.approval['executionAuthorityHash']=fixture.crypto.sha(f.authority)
             f.write(f.mandate,fixture.crypto.encoded(f.approval));f.approved=fixture.crypto.sha(f.mandate.read_bytes())

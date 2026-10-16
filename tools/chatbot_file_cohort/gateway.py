@@ -412,6 +412,9 @@ class GatewayRoutes:
     def initialize(self):
         self.guard()
         proof=json.loads(self.action.raw).get('applicationRegistryCutover',{}).get('postGrantRecovery',{})
+        if 'retainedFailedIngestion' in proof:
+            from tools.chatbot_file_cohort.ingestion_path_recovery import adopt_gateway
+            return adopt_gateway(self,proof)
         if 'retainedCreatedIngestion' in proof:
             from tools.chatbot_file_cohort.ingestion_recovery import adopt_gateway
             return adopt_gateway(self,proof)

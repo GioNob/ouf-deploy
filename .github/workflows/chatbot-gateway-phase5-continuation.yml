@@ -64,6 +64,6 @@ jobs:
           sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
           sudo chown -R root:root "$OUF_FIXTURE_ROOT"
           sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" "$OUF_FIXTURE_ROOT/repository/.phase5-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_policy_token_gateway_recovery.py -v
-          for suite in test_policy_token_ingestion_recovery.py test_chatbot_cohort_ingestion_recovery.py test_chatbot_cohort_authorization_observation.py test_chatbot_cohort_gateway_retained.py test_chatbot_cohort_delivery_cleanup.py; do
+          for suite in test_policy_token_ingestion_path_recovery.py test_chatbot_cohort_ingestion_path_recovery.py test_policy_token_ingestion_recovery.py test_chatbot_cohort_ingestion_recovery.py test_chatbot_cohort_authorization_observation.py test_chatbot_cohort_gateway_retained.py test_chatbot_cohort_delivery_cleanup.py; do
             sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" "$OUF_FIXTURE_ROOT/repository/.phase5-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p "$suite" -v
           done

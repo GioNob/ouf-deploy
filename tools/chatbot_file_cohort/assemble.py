@@ -212,6 +212,10 @@ def assemble(*,prepared,sources,loader,bootstrap,closure,staging_directory,linea
                 review['gatewayContinuationReview'].update(remainingChanges=0,
                     routeDisposition='COMPLETED_28_SUCCESSOR_EFFECTS_VERIFY_ONLY',
                     retainedCreatedIngestion=copy.deepcopy(recovery['retainedCreatedIngestion']))
+        if 'retainedFailedIngestion' in recovery:
+            require(digest(prepared['cohortPlan']['replacements'][2])==recovery['retainedFailedIngestion']['proposedIngestionPlanHash'],
+                'REVIEWED_INGESTION_PATH_INTENT_REQUIRED')
+            review['ingestionPathReprocessingReview']=copy.deepcopy(recovery['retainedFailedIngestion'])
         review['firstControlledGrantMaximumAttempts']=0
         review['firstControlledGrantMaximumSeconds']=0
     require(len(encoded(review))<=262144,'BOUNDED_WHOLE_ACTION_REVIEW_REQUIRED')

@@ -106,5 +106,6 @@
   "tools.semantic_provider_preexec": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_preexec.py",
   "tools.semantic_provider_preexec_native": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_preexec_native.py",
   "tools.semantic_target_review.prepare_application_runtime_inputs": "tools/semantic_target_review/prepare_application_runtime_inputs.py",
-  "transition_journal": "tools/semantic_application_cutover/transition_journal.py"
+  "transition_journal": "tools/semantic_application_cutover/transition_journal.py",
+  "tools.chatbot_file_cohort.ingestion_path_recovery": "tools/chatbot_file_cohort/ingestion_path_recovery.py"
 }

@@ -238,7 +238,16 @@ class CohortContainers:
                 'COHORT_REPLACEMENT_IDENTITY_DRIFT')
         if row['module']=='ingestion' and hasattr(self,'action'):
             proof=json.loads(self.action.raw).get('applicationRegistryCutover',{}).get('postGrantRecovery',{})
-            if 'retainedCreatedIngestion' in proof:
+            if 'retainedFailedIngestion' in proof:
+                from tools.chatbot_file_cohort.ingestion_path_recovery import validate_proof
+                pin=validate_proof(proof)
+                retirement=self.record().get('failedIngestionRetirement',{})
+                require(actual['Id']!=pin['createdContainerId']
+                    and retirement.get('state')=='APPLIED'
+                    and retirement.get('intent',{}).get('failedContainerId')==pin['createdContainerId']
+                    and retirement['intent'].get('newModulePlanHash')==digest(row),
+                    'FAILED_INGESTION_NEW_GENERATION_REQUIRED')
+            elif 'retainedCreatedIngestion' in proof:
                 from tools.chatbot_file_cohort.ingestion_recovery import validate_proof
                 pin=validate_proof(proof)
                 require(actual['Id']==pin['createdContainerId'],'CREATED_INGESTION_SIGNED_ID_DRIFT')

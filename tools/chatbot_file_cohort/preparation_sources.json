@@ -26,6 +26,7 @@
     "tools/chatbot_file_cohort/human_session.py",
     "tools/chatbot_file_cohort/iam_session.py",
     "tools/chatbot_file_cohort/images.py",
+    "tools/chatbot_file_cohort/ingestion_path_recovery.py",
     "tools/chatbot_file_cohort/ingestion_recovery.py",
     "tools/chatbot_file_cohort/migration_native.py",
     "tools/chatbot_file_cohort/migration_recovery.py",

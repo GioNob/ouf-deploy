@@ -17,6 +17,19 @@ class HumanTerminal(unittest.TestCase):
         self.assertIn(b'RESULT_OK=',output);self.assertIn(b'Fase tecnica 6/8',output)
         self.assertIn(b'zero nuove scritture',output);self.assertIn(b'Nessun nuovo rename o create Ingestion',output)
         self.assertIn(b'Nove grant',output);self.assertNotIn(b'28 modifiche restanti',output)
+    def test_path_reprocessing_review_explains_new_container_and_ten_preserved_grants(self):
+        value,_=self.fixture();value['postGrantRecoveryReview']={'profile':'ouf.chatbot-gateway-schema-continuation.v1',
+            'retainedNumericGateway':{'synthetic':True},'retainedCreatedIngestion':{'synthetic':True},
+            'retainedFailedIngestion':{'synthetic':True}}
+        expected=('APPROVO '+review.digest(value)).encode()
+        with patch.object(self,'fixture',return_value=(value,expected)):
+            output,_,_=self.interact([expected])
+        self.assertIn(b'RESULT_OK=',output);self.assertIn(b'correzione PATH Ingestion',output)
+        self.assertIn(b'Dieci grant',output);self.assertIn('undicesimo cumulativo'.encode(),output)
+        self.assertIn(b'Nuovo container dalla stessa immagine',output)
+        self.assertNotIn(b'Nessun nuovo rename o create Ingestion',output)
+        self.assertIn(b'zero nuove scritture',output)
+
     def fixture(self):
         value={'schema':review.SCHEMA,'sourceClosureHash':'a'*64,
             'scopes':{'gatewayRuntimeInstallation':{}},'maximumElapsedSeconds':3600,

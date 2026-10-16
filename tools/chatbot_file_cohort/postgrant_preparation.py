@@ -87,6 +87,8 @@ def collect(args,*,paused=False,mounted=False,signed=False,backup=False,migratio
         if gateway_retained.available():claim=gateway_retained.CLAIM
         from tools.chatbot_file_cohort import ingestion_recovery
         if ingestion_recovery.available():claim=ingestion_recovery.CLAIM
+        from tools.chatbot_file_cohort import ingestion_path_recovery
+        if ingestion_path_recovery.available():claim=ingestion_path_recovery.CLAIM
     require(not os.path.lexists(evidence.PARENT/claim),'POSTGRANT_CONTINUATION_ALREADY_RESERVED_INSPECT_ONLY')
     report('POSTGRANT_RETAINED_HISTORY_PREFLIGHT')
     previous=read_predecessor(profile);old=previous['prepared'];bundle=previous['bundle']
@@ -156,6 +158,9 @@ def collect(args,*,paused=False,mounted=False,signed=False,backup=False,migratio
                 new_directory(stage,'gateway-numeric'),digest(closure)[:24])
             prepared['gatewayPlan']=gateway_plan;prepared['gatewayRuntimePlan']=gateway_runtime
             prepared['cohortPlan']['gatewayPlanHash']=digest(gateway_plan)
+        if 'failedIngestionAttempt' in previous:
+            from tools.chatbot_file_cohort.ingestion_path_recovery import corrected_row
+            prepared['cohortPlan']['replacements'][2]=corrected_row(previous['failedIngestionAttempt']['prepared'])
         prepared['cohortPlan']['authorizationPlanHash']=digest(authorization['plan'])
         cohort_hash=digest(prepared['cohortPlan'])
         registry=prepared['registry'];registry['postGrantRecovery']=copy.deepcopy(proof)

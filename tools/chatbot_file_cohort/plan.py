@@ -109,6 +109,21 @@ def host_config_matches(expected, actual):
     return True
 
 
+def validate_packaged_search_path(request,image_config):
+    """Reject inherited environment that hides the packaged Java launcher.
+
+    Paths come from the authenticated image, never an installation default.
+    Changing an explicit installation PATH requires a reviewed environment delta.
+    """
+    entry=request.get('Entrypoint')or[]
+    if not entry or entry[0]!='java':return
+    inherited=environment(image_config.get('Env')or[])
+    home=inherited.get('JAVA_HOME')
+    if not home:return
+    effective={**inherited,**environment(request.get('Env')or[])}
+    require(home.rstrip('/')+'/bin'in effective.get('PATH','').split(':'),
+        'PACKAGED_JAVA_SEARCH_PATH_REQUIRES_EXPLICIT_REVIEW')
+
 def compile_replacement(module, old, image, package, cohort_id, env_changes):
     require(module in MODULES and re.fullmatch(r'[a-z0-9-]{1,60}', cohort_id or '') is not None,
             'EXACT_COHORT_MODULE_AND_ID_REQUIRED')
@@ -172,6 +187,7 @@ def compile_replacement(module, old, image, package, cohort_id, env_changes):
         config[key] = deepcopy(candidate.get(key))
     require(type(config.get('Entrypoint')) is list and config['Entrypoint'],
             'PACKAGED_ENTRYPOINT_REQUIRED')
+    validate_packaged_search_path(config,candidate)
     require(not config.get('Healthcheck') or config['Healthcheck'] == candidate.get('Healthcheck'),
             'EXISTING_HEALTHCHECK_REQUIRES_EXACT_REVIEW')
     if config.get('Hostname') == old['Id'][:12]:

@@ -52,6 +52,7 @@ class IngestionWorker(unittest.TestCase):
         with self.assertRaisesRegex(Exception,'ALREADY_CONSUMED'):make().install()
         self.assertEqual(RenewalWorker(new.r).tick()['state'],'RECONCILE_REQUIRED')
         for path,value in frozen.items():self.assertEqual(path.read_bytes(),value)
+        self.h=h;self.owner=owner;self.worker=new
         h.f.f.mandate.write_bytes(b'{}')
         with self.assertRaises(Exception):make().install()
         self.assertEqual(h.harness.grants(),10);h.unchanged()
