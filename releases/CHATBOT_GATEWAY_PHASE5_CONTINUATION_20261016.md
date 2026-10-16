@@ -1,5 +1,9 @@
 # Prosecuzione Gateway, fase tecnica 5/8
 
+**Launcher superato dopo il blocco di preparazione sul VPS.** Usare la
+[correzione Binds null](CHATBOT_GATEWAY_PHASE5_NULL_BINDS_20261016.md).
+Le evidenze sotto descrivono la precedente qualifica, che non copriva tale variante.
+
 Sorgente qualificato: `aeeb625ddacc5837e4520788d73a6598aaa5734f`.
 Stato target invariato: fasi 1–4 completate, fase 5 sospesa a nove modifiche su 37,
 otto grant cumulativi; dimostrazione CSV 0/6.

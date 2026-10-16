@@ -169,3 +169,10 @@ identità e configurazione storiche e tutti i montaggi strutturati. Il test
 nativo usa ora `--mount` e richiede esplicitamente `Binds=null` prima della
 sostituzione. Il vecchio test Docker usava `-v` e non copriva questa variante.
 Il launcher precedente è superato; attendere il nuovo pin qualificato.
+
+La correzione `5d9c9b6b944e71b25cd006994c511397295b4f4f` supera la CI nativa
+38860719163 con `Binds=null`, 9 effetti conservati, 28 scritture e 37 route;
+regressione backup 38860719021 PASS. Il nuovo launcher e le evidenze sono nella
+[procedura corretta](../releases/CHATBOT_GATEWAY_PHASE5_NULL_BINDS_20261016.md).
+La regressione generale 38860719114 è ancora in corso alla pubblicazione.
+Nessuna nuova esecuzione target: fase 5, CSV 0/6.
