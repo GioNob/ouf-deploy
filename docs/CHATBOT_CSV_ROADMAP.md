@@ -86,6 +86,20 @@ e GET dell'intera mappa prima/dopo ogni PUT. Nessun replay di claim ambiguo.
 Scadenza esistente12:57:06 invariata; authority correzione massimo180secondi
 entro tale limite. Nessun nuovo worker/grant, restart, backup o migrazione.
 
+### Applicazione correzione sospesa: prima scrittura non confermata
+
+L'operatore ha emesso autorità correzione
+e1b672b93ba670849690860c99426683eee06fb88ff6c111f6428fde4ab0f496,
+scadenza1792148012. Subito dopo: REPAIR_WRITE_ACK_UNPROVEN_NO_REPLAY.
+La prima PUT può aver avuto effetto: nessuna scrittura è provata APPLIED e non
+si deve rilanciare l'applicatore. Il claim durevole precede la PUT; occorre
+rileggere journal e mappa Gateway, senza riconciliazione o replay automatico.
+Il lettore dedicato distingue mappa prima/dopo il claim o drift estraneo,
+con due letture e metadati limitati del log admin. Funziona anche dopo la scadenza
+dell'autorità di correzione e non richiede che il processo finito sia attivo.
+Non rinnova la finestra originaria12:57:06, non legge chiavi di firma e non firma.
+Fasi tecniche1–8 conservate, CSV0/6; la correzione resta incompleta/non accettata.
+
 ### Tappa funzionale 1/6: profilo confermato, consultazione semantica 503
 
 Dal chatbot, account ouf-admin: source.file.preview conferma asset
