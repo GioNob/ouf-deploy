@@ -100,6 +100,26 @@ dell'autorità di correzione e non richiede che il processo finito sia attivo.
 Non rinnova la finestra originaria12:57:06, non legge chiavi di firma e non firma.
 Fasi tecniche1–8 conservate, CSV0/6; la correzione resta incompleta/non accettata.
 
+### Prima PUT provata applicata:14 residue, vecchia finestra scaduta
+
+Readback operatore: due mappe stabili coincidono esattamente con il risultato
+della prima PUT, hash a58eb2bc7dc2c226eddd17e6b2b649129437e379ecd761326cda5a6a0b762ea0;
+un solo admin PUT200 nel campione. Il journal precedente resta CLAIMED,
+nextStep0; nessuna riconciliazione è stata eseguita dal lettore.
+La risposta originale non è conservata: non sono provati i campi del confronto
+immediato fallito. La continuazione conserva HTTP200/201 come requisito e rende
+obbligatorio il confronto integrale della mappa dopo ciascuna PUT; la forma della
+risposta immediata è solo metadato diagnostico.
+La prima PUT non va ripetuta. Nuova sessione infrastrutturale da approvare:
+riconciliazione separata della prima modifica,14PUT residue, massimo180secondi,
+1tentativo storico conservato e15massimi cumulativi. Journal originario immutato,
+nuovo journal/decisione/firme/fence; actor/reason/decisionRef/limiti persistenti.
+La finestra CSV originaria è scaduta alle12:57:06: non viene rinnovata. Lo stato
+effettivo del processo dopo la scadenza deve essere riletto, non dedotto.
+Questa sessione corregge soltanto route; nessun worker/token/grant/start applicativo
+o accettazione CSV. La ripresa funzionale richiederà autorità applicativa valida.
+Fasi tecniche1–8 conservate, CSV0/6; correzione ancora da completare.
+
 ### Tappa funzionale 1/6: profilo confermato, consultazione semantica 503
 
 Dal chatbot, account ouf-admin: source.file.preview conferma asset
