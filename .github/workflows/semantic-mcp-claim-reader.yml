@@ -1,0 +1,24 @@
+name: Semantic MCP claim read-only diagnostic
+on:
+  push:
+    branches: [fix/cohort-mcp-backup-recovery-20261016]
+    paths:
+      - scripts/read-chatbot-semantic-mcp-claim-20261016.py
+      - scripts/launch-chatbot-semantic-mcp-claim-readback-20261016.sh
+      - tests/test_semantic_mcp_claim_reader.py
+      - .github/workflows/semantic-mcp-claim-reader.yml
+  pull_request:
+    paths:
+      - scripts/read-chatbot-semantic-mcp-claim-20261016.py
+      - tests/test_semantic_mcp_claim_reader.py
+      - .github/workflows/semantic-mcp-claim-reader.yml
+permissions: {contents: read}
+jobs:
+  bounded-projection:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Closed SQL, metadata limits, redaction, drift and real bounded CLI fixture
+        run: sudo python3 -I -B -m unittest discover -s "$GITHUB_WORKSPACE/tests" -p test_semantic_mcp_claim_reader.py -v
