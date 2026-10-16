@@ -1,5 +1,7 @@
 """Real private metadata fixture; no credential contents, network or writes by reader."""
 import copy
+import ast
+import hashlib
 import importlib.util
 import json
 import os
@@ -92,5 +94,32 @@ class Reader(unittest.TestCase):
             stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
         try:self.assertIn(child.pid,m.processes())
         finally:child.terminate();child.wait(timeout=3)
+
+    def launcher_body(self):
+        shell=(ROOT/'scripts/launch-chatbot-semantic-token-interruption-readback-20261016.sh').read_text()
+        body=shell.split("<<'PY' 2>&1 | tee \"$ouf_read/read.log\"\n",1)[1].rsplit('\nPY',1)[0]
+        return shell,body
+
+    def test_reader_launcher_pins_match_and_are_unbuffered(self):
+        shell,body=self.launcher_body();ast.parse(body)
+        digest=hashlib.sha256((ROOT/'scripts/read-chatbot-semantic-token-interruption-20261016.py').read_bytes()).hexdigest()
+        self.assertEqual(shell.count(digest),2)
+        self.assertIn('python3 -u -I -B -S -',shell)
+        self.assertLess(shell.index('sha256sum --check'),shell.index('sudo /usr/bin/python3'))
+
+    def test_root_reader_wrapper_executes_only_verified_synthetic_bytes(self):
+        shell,body=self.launcher_body()
+        actual=hashlib.sha256((ROOT/'scripts/read-chatbot-semantic-token-interruption-20261016.py').read_bytes()).hexdigest()
+        synthetic=b"import sys\nassert sys.flags.isolated and sys.flags.no_site and sys.stdout.write_through\nprint('VERIFIED_READONLY_WRAPPER_FIXTURE')\n"
+        body=body.replace(actual,hashlib.sha256(synthetic).hexdigest())
+        source=self.root/'synthetic.py';source.write_bytes(synthetic);source.chmod(0o600)
+        result=subprocess.run([sys.executable,'-u','-I','-B','-S','-',str(source)],input=body.encode(),
+            stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=10)
+        self.assertEqual(result.returncode,0,result.stderr.decode())
+        self.assertEqual(result.stdout,b'VERIFIED_READONLY_WRAPPER_FIXTURE\n')
+        source.write_bytes(b'CHANGED')
+        result=subprocess.run([sys.executable,'-u','-I','-B','-S','-',str(source)],input=body.encode(),
+            stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=10)
+        self.assertNotEqual(result.returncode,0);self.assertEqual(result.stdout,b'')
 
 if __name__=='__main__':unittest.main()
