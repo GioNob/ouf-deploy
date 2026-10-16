@@ -7,7 +7,8 @@ from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from test_chatbot_semantic_policy_refresh_reader import Tests as Metadata
-import test_governed_owner_composed as suite
+import importlib
+suite=importlib.import_module(sys.argv[1] if len(sys.argv)>1 else 'test_governed_owner_composed')
 adapter=Metadata();rmdir=os.rmdir;unlink=os.unlink;native_open=os.open;io_open=io.open
 native_socket=socket.socket;native_stat=os.stat;sockets={}
 class LoopbackUnixFixture:

@@ -4,6 +4,10 @@ on:
     branches: [fix/cohort-mcp-backup-recovery-20261016]
     paths:
       - tools/chatbot_file_cohort/continued_owner.py
+      - tools/chatbot_file_cohort/review.py
+      - scripts/execute-chatbot-semantic-token-session-20261016.py
+      - tests/test_semantic_token_execution.py
+      - tests/test_semantic_token_bootstrap.py
       - tools/semantic_policy_token_owner/installed_owner.py
       - tools/semantic_policy_token_owner/supervisor.py
       - tests/test_governed_owner_composed.py
@@ -11,6 +15,10 @@ on:
   pull_request:
     paths:
       - tools/chatbot_file_cohort/continued_owner.py
+      - tools/chatbot_file_cohort/review.py
+      - scripts/execute-chatbot-semantic-token-session-20261016.py
+      - tests/test_semantic_token_execution.py
+      - tests/test_semantic_token_bootstrap.py
       - tools/semantic_policy_token_owner/installed_owner.py
       - tests/test_governed_owner_composed.py
       - .github/workflows/governed-semantic-owner.yml
@@ -36,6 +44,6 @@ jobs:
         run: |
           set -euo pipefail
           OUF_QUALIFICATION_ROOT="/var/lib/ouf-governed-session-${GITHUB_RUN_ID}"
-          for suite in test_governed_owner_composed.py test_governed_semantic_session_contract.py test_cutover_authority_native.py test_policy_token_owner_installation.py test_installed_token_owner.py; do
+          for suite in test_semantic_token_execution.py test_semantic_token_bootstrap.py test_chatbot_cohort_human_session.py test_governed_owner_composed.py test_governed_semantic_session_contract.py test_cutover_authority_native.py test_policy_token_owner_installation.py test_installed_token_owner.py; do
             sudo env OUF_NATIVE_UIDS=1 python3 -I -B -m unittest discover -s "$OUF_QUALIFICATION_ROOT/repository/tests" -p "$suite" -v
           done

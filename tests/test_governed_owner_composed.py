@@ -81,7 +81,7 @@ class Composed(unittest.TestCase):
                 'maximumSeconds':3600,'renewalIntervalSeconds':60,'automaticRenewalAllowed':False},
             'requiredOwnerDecision':{'explicitContinuationAfterOwnerCancellationRequired':True,
                 'freshAuthenticatedHumanDecisionRequired':True,'newJournalAndPersistentFencingRequired':True},
-            'requestedHumanActor':{'issuer':'fixture','tenant':'fixture','subject':'fixture'},
+            'requestedHumanActor':{'issuer':'https://human.fixture.invalid','tenant':'fixture','subject':'fixture'},
             'commandKey':'stable-command','proposalHash':'f'*64,'logicalOperation':'fixture-semantic-session'}
         self.review_path=self.f.root/'semantic-review.json';self.f.f.write(self.review_path,fixture.fixture.binding.encoded(self.review))
         scope=compile_governed_session(self.review,self.records,self.first,old_session['policy'],

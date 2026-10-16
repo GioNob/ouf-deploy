@@ -63,6 +63,157 @@ def command_matches(program):
     return True
 
 
+TOKEN_REVIEW = 'ouf.semantic-token-only-execution-review.v1'
+TOKEN_DECISION = 'APPROVE_NEW_FINITE_POLICY_TOKEN_SESSION_AFTER_CANCELLATION'
+TOKEN_SCOPES = frozenset({'policyTokenOwnerInstallation', 'policyTokenFiniteWorkerSession',
+    'tokenOwnerRuntime', 'semanticFunctionalRuntime'})
+
+
+def compile_token_review(closure, scopes, proposal_binding, candidate_binding, human_binding, context):
+    """Compile only the four token-owner scopes; no application phase authority."""
+    require(type(scopes) is dict and set(scopes) == TOKEN_SCOPES,
+            'EXACT_TOKEN_ONLY_SCOPES_REQUIRED')
+    worker = scopes['policyTokenFiniteWorkerSession']
+    require(worker.get('schema') == 'ouf.policy-token-governed-worker-session.v1'
+        and worker.get('predecessorGrantAttempts') == 69
+        and worker.get('maximumCumulativeGrantAttempts') == 197
+        and worker.get('policy', {}).get('max_attempts') == 128
+        and worker['policy'].get('max_elapsed') == 3600
+        and worker.get('automaticBudgetRenewalAllowed') is False,
+        'EXACT_REVIEWED_TOKEN_ONLY_BUDGET_REQUIRED')
+    require(type(closure) is dict and set(closure) == {'declaration','executables','stdlibHash','stdlibFileCount'}
+        and closure['declaration'].get('requiredPythonFlags') == ['-I','-B','-S']
+        and scopes['policyTokenOwnerInstallation'].get('sourceClosureHash') == digest(closure),
+        'EXACT_TOKEN_EXECUTABLE_CLOSURE_REQUIRED')
+    require(worker.get('reviewHash') == proposal_binding.get('sha256')
+        and all(human_binding.get(k) == worker['requestedHumanActor'][k] for k in ('issuer','subject','tenant'))
+        and type(human_binding.get('sessionId')) is str,
+        'FRESH_EXACT_HUMAN_AND_PROPOSAL_REQUIRED')
+    for value in (proposal_binding,candidate_binding):
+        require(set(value) == {'path','sha256'} and Path(value['path']).is_absolute()
+            and re.fullmatch('[0-9a-f]{64}',value['sha256']), 'EXACT_TOKEN_REVIEW_INPUT_BINDING_REQUIRED')
+    require(Path(context).parent == evidence.PARENT
+        and re.fullmatch('semantic-token-execution-[A-Za-z0-9_-]{8,64}',Path(context).name),
+        'EXACT_PRIVATE_TOKEN_EXECUTION_CONTEXT_REQUIRED')
+    return {'schema':TOKEN_REVIEW,'sourceClosure':copy.deepcopy(closure),'sourceClosureHash':digest(closure),
+        'scopes':copy.deepcopy(scopes),'proposalBinding':dict(proposal_binding),'candidateBinding':dict(candidate_binding),
+        'authenticatedHuman':copy.deepcopy(human_binding),'authorityDirectory':str(context),
+        'creationRequestHash':digest(scopes),'predecessorHistoryHash':digest(worker['predecessorRecordHashes']),
+        'predecessorIncidentRef':worker['logicalOwnerScopeHash'],
+        'maximumElapsedSeconds':3600,'priorControlledGrantAttempts':69,'maximumNewTokenGrantAttempts':128,
+        'maximumCumulativeGrantAttempts':197,'firstGrantReplayAuthorized':False,
+        'credentialRotationAuthorized':False,'applicationLifecycleAuthorized':False,
+        'authorizationGrantChangesAuthorized':False,'databaseMutationsAuthorized':False,
+        'gatewayWritesAuthorized':False,'semanticApprovalAuthorized':False,'semanticProposeRetryAuthorized':False,
+        'executionMode':'FOREGROUND_NO_RESTART_CANCEL_ON_TERMINAL_SIGNAL',
+        'completedTechnicalPhases':8,'functionalMilestonesProven':0,
+        'budgetReset':False,'automaticRenewalAllowed':False,'acceptanceGranted':False}
+
+
+def validate_token_decision(review, decision, now):
+    require(review.get('schema') == TOKEN_REVIEW and set(review.get('scopes',{})) == TOKEN_SCOPES,
+            'CURRENT_TOKEN_ONLY_REVIEW_REQUIRED')
+    require(set(decision) == {'schema','approvalRef','reviewHash','sourceClosureHash','humanSessionHash',
+            'approvedAt','expiresAt','decision','state'}
+        and decision['schema'] == 'ouf.semantic-token-only-terminal-decision.v1'
+        and decision['decision'] == TOKEN_DECISION and decision['state'] == 'ACTIVE'
+        and re.fullmatch('semantic-token-[0-9a-f]{24}-[0-9]+', decision['approvalRef'])
+        and decision['reviewHash'] == digest(review)
+        and decision['sourceClosureHash'] == review['sourceClosureHash']
+        and decision['humanSessionHash'] == digest(review['authenticatedHuman'])
+        and type(decision['approvedAt']) is int and type(decision['expiresAt']) is int
+        and decision['approvedAt'] <= now < decision['expiresAt']
+        and decision['expiresAt']-decision['approvedAt'] == review['maximumElapsedSeconds'] == 3600,
+        'EXACT_CURRENT_TOKEN_ONLY_DECISION_REQUIRED')
+
+
+def terminal_token_decision(review, review_path):
+    require(review.get('schema') == TOKEN_REVIEW, 'TOKEN_REVIEW_BEFORE_TERMINAL_DECISION_REQUIRED')
+    review_hash = digest(review)
+    summary = ('\nNuova sessione finita del solo token di lettura policy.\n'
+        'Fasi tecniche 8/8 conservate; funzionali 0/6.\n'
+        'Revisione privata: '+str(review_path)+'\nSHA256: '+review_hash+'\n'
+        'Il worker precedente resta CANCELLED_BY_OWNER. Questa decisione apre una nuova sessione.\n'
+        '69 tentativi controllati precedenti conservati; massimo 128 nuovi, cumulativo massimo 197.\n'
+        'Massimo 3600 secondi dalla decisione; nessun rinnovo automatico o replay del primo grant.\n'
+        'Riusa la credenziale esistente; pubblica solo il token policy. Nessuna rotazione o modifica grant.\n'
+        'Nessuna operazione su container, database, Gateway o proposta semantica.\n'
+        'La readiness Registry deve ancora essere provata; le approvazioni semantiche restano nel THS.\n'
+        'Il comando resta in primo piano: lascia aperto questo terminale. Ctrl-C cancella la sessione.\n'
+        'Per approvare la revisione esatta scrivi: APPROVO '+review_hash+'\n> ')
+    fd = os.open('/dev/tty', os.O_RDWR|os.O_NOCTTY|os.O_NOFOLLOW)
+    try:
+        require(stat.S_ISCHR(os.fstat(fd).st_mode) and os.isatty(fd), 'CONTROLLING_HUMAN_TERMINAL_REQUIRED')
+        termios.tcflush(fd,termios.TCIFLUSH);os.write(fd,summary.encode('utf-8'))
+        for attempt in range(1,TERMINAL_ATTEMPTS+1):
+            answer,count=terminal_line(fd)
+            accepted,detail=terminal_answer(answer,('APPROVO '+review_hash).encode('ascii'),count)
+            if accepted:break
+            os.write(fd,b'\n'+encoded({'status':'NOT_ACCEPTED','attempt':attempt,**detail})+b'\n> ')
+        require(accepted,'TOKEN_ONLY_SESSION_NOT_APPROVED')
+    finally:os.close(fd)
+    now=int(time.time())
+    return {'schema':'ouf.semantic-token-only-terminal-decision.v1',
+        'approvalRef':'semantic-token-'+review_hash[:24]+'-'+str(now),
+        'reviewHash':review_hash,'sourceClosureHash':review['sourceClosureHash'],
+        'humanSessionHash':digest(review['authenticatedHuman']),'approvedAt':now,'expiresAt':now+3600,
+        'decision':TOKEN_DECISION,'state':'ACTIVE'}
+
+
+def issue_token_action(review, decision, human_session):
+    """Issue with existing scoped keys only after fresh authenticated exact approval."""
+    from tools.chatbot_file_cohort.human_session import HumanSession
+    require(type(human_session) is HumanSession and human_session.current() == review['authenticatedHuman'],
+            'FRESH_AUTHENTICATED_TOKEN_SESSION_DECISION_REQUIRED')
+    now=int(time.time());validate_token_decision(review,decision,now)
+    for program in review['sourceClosure']['executables'].values():command_matches(program)
+    library=stdlib_binding()
+    require(digest(library) == review['sourceClosure']['stdlibHash']
+        and len(library['fileHashes']) == review['sourceClosure']['stdlibFileCount'], 'APPROVED_PYTHON_STDLIB_CHANGED')
+    profile=evidence.decode(governance.public_input(governance.PROFILE))
+    policy=evidence.decode(governance.public_input(governance.POLICY))
+    governance.authority_metadata(profile,policy,now)
+    expected={k:review[k] for k in ('sourceClosureHash','creationRequestHash','predecessorHistoryHash','predecessorIncidentRef')}
+    expected['intakeHash']=digest(review)
+    raw=encoded({'schema':'ouf.semantic-cutover-execution-authority.v1',
+        **{k:v for k,v in expected.items() if k!='intakeHash'},'issuedAt':now,'expiresAt':decision['expiresAt'],
+        **review['scopes'],'semanticTokenOnlyExecution':{'reviewHash':digest(review),
+            'humanSessionHash':decision['humanSessionHash'],'approvalRef':decision['approvalRef']},
+        'automaticReplayAllowed':False,'databaseRestoreAuthorized':False,'r12ReplayAuthorized':False})
+    mandate=encoded({'schema':'ouf.semantic-cutover-human-mandate.v1','approvalRef':decision['approvalRef'],
+        'decision':'APPROVE_FINITE_INFRASTRUCTURE_CUTOVER_ONLY','state':'ACTIVE',
+        'issuedAt':decision['approvedAt'],'expiresAt':decision['expiresAt'],
+        'executionAuthorityHash':hashlib.sha256(raw).hexdigest(),**expected})
+    from tools.semantic_policy_token_owner.producer import protected_directory
+    context=Path(review['authorityDirectory'])
+    require(context.parent==evidence.PARENT,'EXACT_TOKEN_EXECUTION_AUTHORITY_PARENT_REQUIRED')
+    from tools.chatbot_file_cohort.action_process import private_file
+    require(private_file({'path':str(context/'review.json'),'sha256':digest(review)},8388608)==encoded(review),
+            'EXACT_PUBLISHED_TOKEN_REVIEW_REQUIRED')
+    with protected_directory(context) as directory:
+        require(publish(directory,'issuance.claim.json',encoded({'reviewHash':digest(review),
+            'decisionHash':digest(decision),'automaticReplayAllowed':False})), 'TOKEN_ISSUANCE_ALREADY_CONSUMED')
+        for name,body in (('decision.json',encoded(decision)),('human.json',mandate),('authority.json',raw)):
+            require(publish(directory,name,body),'TOKEN_ISSUANCE_ARTIFACT_ALREADY_EXISTS')
+        verifier=DetachedAuthenticator(governance.POLICY,str(context),review['sourceClosure']['executables']['openssl'])
+        mandate_hash=hashlib.sha256(mandate).hexdigest()
+        gate=CutoverAuthority(verifier,{'path':str(context/'human.json'),'sha256':mandate_hash},
+            mandate_hash,governance.CONTEXT,expected)
+        for role,issuer_key in (('DEPLOYMENT_INTENT','intentIssuerRef'),('FINAL_DEPLOYMENT_APPROVAL','approvalIssuerRef')):
+            gate.mandate(raw);validate_token_decision(review,decision,int(time.time()))
+            require(human_session.current()==review['authenticatedHuman']
+                and evidence.decode(governance.public_input(governance.PROFILE))==profile
+                and evidence.decode(governance.public_input(governance.POLICY))==policy,
+                'TOKEN_SIGNING_HUMAN_OR_ROLE_POLICY_CHANGED')
+            signer=ExistingEd25519Signer(profile['keyBindings']['installer'],profile['keyRefs']['installer'],verifier,
+                {'role':role,'issuerRef':governance.CONTEXT[issuer_key],
+                    'installationRef':governance.CONTEXT['installationRef'],'entityRef':governance.CONTEXT['entityRef']})
+            require(publish(directory,hashlib.sha256(raw).hexdigest()+'.'+role+'.json',signer.sign(raw)),
+                    'TOKEN_SIGNATURE_ALREADY_EXISTS')
+        gate(raw)
+    return AggregateAction(gate,raw,review['sourceClosureHash'])
+
+
 def compile_review(*, source_closure, execution_profile, scopes, phase_intents,
                    lineage, input_hashes, maximum_seconds=3600):
     require(type(execution_profile) is FileOnlyProfile,

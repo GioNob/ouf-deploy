@@ -294,3 +294,110 @@ class GovernedSemanticOwnerContinuation:
         self.observer=InstalledTokenOwner(self.first.binding,self.first.credential,self.admission,self.journal,
             self.context,self.generation,self.manifest,self.action.authority,self.action.raw,observer=True)
         return worker
+
+
+TOKEN_STAGE_SOURCE = {
+    'bounded-recovery.py':'tools.semantic_lease_recovery.bounded_recovery',
+    'recovery-journal.py':'tools.semantic_lease_recovery.recovery_journal',
+    **{name.replace('_','-')+'.py':'tools.semantic_policy_token_owner.'+name for name in
+       ('producer','supervisor','mount_observation','source_stage','installed_owner','worker_entry','reporter','iam_admission')}}
+
+
+def token_only_session_main(prepared,sources,closure,proposal,proposal_binding,candidate,candidate_binding,
+                            records,first_receipt,context_path,executor_binding,emit=print,*,transport=None):
+    """One sealed foreground invocation; no old delivery/phase executor is called."""
+    import signal
+    import threading
+    import iam_governance_intake as governance
+    from iam_owner_action import publish
+    from cutover_authority import CutoverAuthority
+    from tools.semantic_provider_deployment_authentication import DetachedAuthenticator
+    from tools.chatbot_file_cohort.human_session import HumanSession
+    from tools.chatbot_file_cohort.review import (compile_token_review,terminal_token_decision,
+        issue_token_action,command_matches,digest,encoded,require)
+    from tools.semantic_policy_token_owner.installed_owner import compile_governed_session
+    from tools.semantic_policy_token_owner.reporter import OwnerReporter
+    from tools.semantic_policy_token_owner.worker_entry import serve
+
+    require(candidate.get('schema')=='ouf.semantic-functional-session-candidate.v1'
+        and candidate.get('privateReviewHash')==proposal_binding['sha256']
+        and candidate.get('firstGrantReceiptHash')==digest(first_receipt)
+        and candidate.get('nativeQualification')=={'nativeUidGidModeProven':True,'atomicPublisherCodeUsed':True,
+            'syntheticDataOnly':True,'fixtureRemoved':True,'applicationReadinessProven':False}
+        and candidate.get('runtimeAuthorityIssued')is False and candidate.get('readyForExecution')is False,
+        'EXACT_UNISSUED_NATIVE_CANDIDATE_REQUIRED')
+    require(digest(proposal)==proposal_binding['sha256'] and digest(candidate)==candidate_binding['sha256'],
+        'EXACT_TOKEN_SESSION_CANDIDATE_AND_PROPOSAL_BYTES_REQUIRED')
+    require({k:prepared['authorization']['plan']['selection'][k] for k in ('issuer','tenant','subject')}
+        ==proposal['requestedHumanActor'],'EXACT_RETAINED_AUTHENTICATED_HUMAN_SELECTION_REQUIRED')
+    for program in closure['executables'].values():command_matches(program)
+    context=Path(context_path)
+    expected={'sourceClosureHash':digest(closure),'creationRequestHash':digest(proposal),
+        'predecessorHistoryHash':digest(proposal['predecessorRecordHashes']),
+        'predecessorIncidentRef':records['owner-session.json']['logicalOwnerScopeHash'],
+        'intakeHash':digest(proposal)}
+    verifier=DetachedAuthenticator(governance.POLICY,str(context),closure['executables']['openssl'])
+    absent={'path':str(context/'UNISSUED-human.json'),'sha256':evidence.sha(b'UNISSUED_TOKEN_ONLY_PREPARATION')}
+    unissued=AggregateAction(CutoverAuthority(verifier,absent,absent['sha256'],governance.CONTEXT,expected),
+        encoded({'schema':'ouf.semantic-token-only-unissued-preparation.v1'}),digest(closure))
+    scope=compile_governed_session(proposal,records,first_receipt,candidate['compiledSessionScope']['policy'],
+        candidate['compiledSessionScope']['contextRef'],candidate['compiledSessionScope']['generationRef'],60)
+    require(scope==candidate['compiledSessionScope'],'NATIVE_CANDIDATE_SCOPE_CHANGED')
+    fence=Path(scope['fenceBinding']['path']);journal=Path(scope['fenceBinding']['value']['journalPath'])
+    require(not os.path.lexists(fence),'TOKEN_LOGICAL_SCOPE_ALREADY_CLAIMED_RECONCILIATION_REQUIRED')
+    with protected_directory(journal.parent)as directory:
+        # New private preparation only; never clear/reuse a prior attempt.
+        os.mkdir(journal.name,0o700,dir_fd=directory);os.fsync(directory)
+    files={name:sources[module]for name,module in TOKEN_STAGE_SOURCE.items()}
+    args=(prepared['owner'],files,closure['declaration']['sourceCommit'],proposal,records,first_receipt,
+        proposal_binding,prepared['engine'],journal)
+    planned=GovernedSemanticOwnerContinuation(unissued,*args,transport=transport)
+    # Scope construction above cannot use the absent preparation mandate.
+    with protected_directory(context)as directory:
+        os.mkdir('human-session',0o700,dir_fd=directory);os.fsync(directory)
+    human_directory=context/'human-session'
+    human=HumanSession(prepared['authorization']['plan']['selection'],human_directory,
+        human_directory/'human-access.jwt',int(time.time())+7200)
+    emit('OUF_TOKEN_SESSION_PHASE=FRESH_HUMAN_LOGIN technical=8/8 functional=0/6')
+    human_binding=human.login(emit=emit)
+    profile=evidence.decode(governance.public_input(governance.PROFILE))
+    role_policy=evidence.decode(governance.public_input(governance.POLICY))
+    windows=governance.authority_metadata(profile,role_policy,int(time.time()))
+    require(all(row['expiresAt']>=int(time.time())+3600 for row in windows),
+        'TOKEN_SESSION_WINDOW_EXCEEDS_EXISTING_ROLE_AUTHORITY')
+    final=compile_token_review(closure,planned.scopes(),proposal_binding,candidate_binding,human_binding,context)
+    final['executorBinding']=dict(executor_binding)
+    # Recheck target generation and cancellation after the possibly long login.
+    raw=encoded(planned.scopes())
+    old_raw=planned.raw;planned.raw=raw
+    try:InstalledTokenOwner.guard_governed_registry(planned,planned.worker_scope)
+    finally:planned.raw=old_raw
+    require(not os.path.lexists(fence),'TOKEN_LOGICAL_SCOPE_ALREADY_CLAIMED_RECONCILIATION_REQUIRED')
+    with protected_directory(context)as directory:
+        require(publish(directory,'review.json',encoded(final)),'TOKEN_REVIEW_ALREADY_PUBLISHED')
+    emit('OUF_TOKEN_SESSION_PHASE=EXACT_HUMAN_REVIEW technical=8/8 functional=0/6')
+    decision=terminal_token_decision(final,context/'review.json')
+    emit('OUF_TOKEN_SESSION_PHASE=EXISTING_ROLE_ISSUANCE technical=8/8 functional=0/6')
+    action=issue_token_action(final,decision,human)
+    installer=GovernedSemanticOwnerContinuation(action,*args,transport=transport)
+    require(installer.scopes()==final['scopes'],'TOKEN_ONLY_APPROVED_SCOPE_CHANGED')
+    # Live checks and exclusive persistent claim precede staging and new grants.
+    emit('OUF_TOKEN_SESSION_PHASE=GUARDED_TOKEN_INSTALLATION technical=8/8 functional=0/6')
+    worker=installer.install()
+    stop=threading.Event();remaining=decision['expiresAt']-time.time()
+    require(0<remaining<=3600,'TOKEN_SESSION_AUTHORITY_EXPIRED_BEFORE_SERVE')
+    timer=threading.Timer(remaining,stop.set);timer.daemon=True
+    previous={}
+    for sig in (signal.SIGINT,signal.SIGTERM,signal.SIGHUP):
+        previous[sig]=signal.signal(sig,lambda *_:stop.set())
+    emit('OUF_TOKEN_SESSION_STARTED='+encoded({'authorityPath':str(context/'authority.json'),
+        'authorityHash':action.authority_hash,'reviewHash':digest(final),'journalPath':str(journal),
+        'priorControlledGrantAttempts':69,'maximumCumulativeGrantAttempts':197,
+        'expiresAt':decision['expiresAt'],'completedTechnicalPhases':8,'functionalMilestonesProven':0,
+        'registryEffectivePolicyProven':False,'acceptanceGranted':False,'budgetReset':False}).decode())
+    timer.start()
+    try:serve(worker,stop,OwnerReporter(worker.r.journal,emit))
+    finally:
+        stop.set();timer.cancel()
+        for sig,handler in previous.items():signal.signal(sig,handler)
+    emit('OUF_TOKEN_SESSION_ENDED=NO_AUTOMATIC_RESTART_OR_BUDGET_RESET')
