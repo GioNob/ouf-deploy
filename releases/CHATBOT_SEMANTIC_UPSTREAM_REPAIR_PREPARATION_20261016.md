@@ -45,3 +45,31 @@ ambiguity-safe route applicator are still required after the target review.
 This is installation-specific retained-host preparation, not generalized
 multi-host/network transport qualification. PET contracts and resiliencev3
 remain normative; histories/budgets/first-grant references remain retained.
+
+## Superseding preparation after target probe stop
+
+The operator ran the earlier preparer; it stopped with
+BOUNDED_NAMESPACE_DNS_READ_UNAVAILABLE before publishing a private repair review.
+The precise probe cause is not proven; no mutation/reconciliation/authority
+issuance occurred. The prior current-name proposal is not target-qualified.
+
+Source3e593502fa39d061b5f71b641cc2f850e670bdfa supersedes that proposal.
+It classifies child failure stage without raw errors, reports current-name DNS
+label-length validity as metadata, and explicitly proposes the versioned
+ouf.reviewed-retained-static-registry-address.v1 binding instead. The address
+is read from current Registry metadata and must exactly equal the IPv4Address
+in the already signed creationRequest; NetworkID must match both reviewed
+request and old Registry binding. APISIX/Registry common-network and exact native
+generations remain required. No arbitrary endpoint, guessed address or DNS
+fallback is used. This new intent is private preparation only and still needs
+its own concrete approval/authority before any Gateway write.
+
+The TCP probe accepts the independently bound static address and sends no
+application payload. Full HTTP/semantic readiness and acceptance remain unproven.
+The current-name diagnostic does not assert that a long label caused the prior
+stop; it supplies evidence for that possibility. The existing12:57:06 expiry is
+unchanged. No rerun of backups/migrations/container lifecycle or first grant.
+
+Qualification run38888763925/job116932872170:67tests PASS, zero skipped,
+including the updated native DNS/TCP child and reviewed static-address drift
+rejection. Target execution of the new preparer is not yet proven.

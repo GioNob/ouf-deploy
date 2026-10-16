@@ -59,6 +59,19 @@ per tutte le route che usano l'esatto binding Registry storico. Tutte le altre
 proprietà/route, grant e journal precedenti restano immutati. Nessuna scrittura
 Gateway o autorità runtime emessa dal preparatore. Scadenza esistente invariata.
 
+### Preparazione correzione: stop del probe, nessuna modifica
+
+L'operatore riporta BOUNDED_NAMESPACE_DNS_READ_UNAVAILABLE prima della
+pubblicazione della review; la causa interna del probe non è ancora dimostrata.
+Nessuna route/servizio/database/grant modificato. La prima proposta basata sul
+nome corrente non è qualificata sul target. Il controllo ora distingue lo stadio
+del fallimento e propone esplicitamente un profilo diverso: indirizzo statico
+già nel creationRequest approvato, accettato soltanto se NetworkID e IPv4Address
+coincidono con il Registry corrente e la rete del Gateway. Non è fallback né
+indirizzo hardcoded/default riusabile: è una nuova revisione privata da autorizzare.
+Porta, pesi, contratti e proprietà delle route rimangono conservati. Nessuna
+estensione della finestra o applicazione della correzione è stata eseguita.
+
 ### Tappa funzionale 1/6: profilo confermato, consultazione semantica 503
 
 Dal chatbot, account ouf-admin: source.file.preview conferma asset
