@@ -100,4 +100,20 @@ class Owner(unittest.TestCase):
   path.unlink()
   with self.assertRaises(Exception):self.owner.run()
   self.assertEqual(self.ports.calls,[])
+class NativeBackupReadback(unittest.TestCase):
+ def test_partial_custom_archive_without_success_marker_cannot_be_accepted(self):
+  base=tempfile.TemporaryDirectory(dir=os.environ.get('OUF_TEST_ROOT',str(ROOT)));self.addCleanup(base.cleanup)
+  path=Path(base.name)/'partial.dump';path.write_bytes(b'PGDMPpartial-custom-archive');path.chmod(0o600)
+  ports=NativePorts.__new__(NativePorts)
+  ports.plan={'oldRuntimeBinding':{'containerId':'1'*64},'database':{'backupPath':str(path),'maximumBackupBytes':1048576}}
+  ports.inspect=lambda kind,reference:{'Id':reference}
+  with self.assertRaises(FileNotFoundError):ports.observe('BACKUP_DATABASE')
+ def test_backup_marker_cannot_accept_different_archive_bytes(self):
+  base=tempfile.TemporaryDirectory(dir=os.environ.get('OUF_TEST_ROOT',str(ROOT)));self.addCleanup(base.cleanup)
+  path=Path(base.name)/'partial.dump';path.write_bytes(b'PGDMPpartial-custom-archive');path.chmod(0o600)
+  marker=path.with_name(path.name+'.complete.json');marker.write_text(json.dumps({'customFormatHeader':True,'bytes':path.stat().st_size,'sha256':'0'*64}));marker.chmod(0o600)
+  ports=NativePorts.__new__(NativePorts)
+  ports.plan={'oldRuntimeBinding':{'containerId':'1'*64},'database':{'backupPath':str(path),'maximumBackupBytes':1048576}}
+  ports.inspect=lambda kind,reference:{'Id':reference}
+  with self.assertRaises(UpdateDenied):ports.observe('BACKUP_DATABASE')
 if __name__=='__main__':unittest.main()

@@ -57,6 +57,11 @@ with tempfile.TemporaryDirectory(dir='/root',prefix='mcp-update-native-fixture-'
   oldid=cli('run','-d','--name',oldname,'--network',network,'--user','10005:10005','--read-only','--restart','no','--entrypoint','/bin/sh','alpine:3.22','-c','while true; do sleep 1; done').decode();containers.append(oldid)
   old=inspect(oldid);pg=inspect(pgid);net=old['NetworkSettings']['Networks'][network]
   sock=Path('/var/run/docker.sock').resolve();info=sock.lstat();engine=Engine(str(sock),(info.st_dev,info.st_ino,info.st_uid,info.st_gid,stat.S_IMODE(info.st_mode)))
+  # Build fixture pins through the same explicitly reviewed Engine API as the
+  # production observer; CLI inspect uses a newer API projection.
+  old=engine.request('GET','/v1.44/containers/'+oldid+'/json')[1]
+  pg=engine.request('GET','/v1.44/containers/'+pgid+'/json')[1]
+  net=old['NetworkSettings']['Networks'][network]
   dirname=root/'action';dirname.mkdir(mode=0o700);journal=Journal(dirname)
   def pin(actual):return {'containerId':actual['Id'],'imageId':actual['Image'],'pid':actual['State']['Pid'],'startedAt':actual['State']['StartedAt'],**{n+'Hash':digest(actual[k])for n,k in(('config','Config'),('hostConfig','HostConfig'),('mounts','Mounts'),('networkSettings','NetworkSettings'))}}
   audit=None;archive=dirname/'image.tagless.tar';nativeinfo=json.loads(cli('info','--format','{{json .}}'))
