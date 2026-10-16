@@ -931,7 +931,9 @@ def crypto_call(program,args,raw=None):
 def sign_and_verify(authority,profile,key,program,directory):
     payload=encoded(authority);atomic_record(directory/'authority.json',authority,exclusive=True)
     raw,binding=private_config(profile['keyBindings']['installer']['path'])
-    require(hashlib.sha256(raw).hexdigest()==profile['keyBindings']['installer']['sha256'],'EXISTING_INSTALLER_PRIVATE_KEY_DRIFT')
+    require(0<len(raw)<=4096 and binding['metadata'][2]==binding['metadata'][3]==0
+        and stat.S_IMODE(binding['metadata'][4])in(0o400,0o600)
+        and hashlib.sha256(raw).hexdigest()==profile['keyBindings']['installer']['sha256'],'EXISTING_INSTALLER_PRIVATE_KEY_DRIFT')
     public=bytes.fromhex('302a300506032b6570032100'+key['publicKey']);(directory/'public.der').write_bytes(public)
     os.chmod(directory/'public.der',0o600)
     signatures=[]
@@ -1086,12 +1088,12 @@ def apply_main():
             read(BASE_REVIEW,8388608,BASE_REVIEW_HASH);read(CONTEXT/'review.json',8388608,REVIEW)
             read(CONTEXT/'authority.json',131072,AUTHORITY);read(process['bundle']['path'],8388608,process['bundle']['sha256'])
             for path,value in snapshots.items():require(read(path,8388608)==value,'REPAIR_PREDECESSOR_JOURNAL_DRIFT')
-        guard();emit('EXACT_REPAIR_AUTHORITY_ISSUED',authorityHash=digest(authority),expiresAt=authority['expiresAt'],maximumWrites=15)
+        guard();emit('EXACT_REPAIR_AUTHORITY_ISSUED',runtimeAuthorityIssued=True,authorityHash=digest(authority),expiresAt=authority['expiresAt'],maximumWrites=15)
         apply_route_changes(repair,p['gatewayPlan']['proposedRoutes'],lambda:gateway_read(p['engine'],transport),
             lambda rid,row:gateway_put(p['engine'],transport,rid,row),guard,
             lambda value,exclusive:atomic_record(journal_path,{**value,'executionAuthorityHash':digest(authority)},exclusive=exclusive))
         guard();require(gateway_read(p['engine'],transport)==repair['proposedRoutes'],'REPAIR_FINAL_READBACK_DRIFT')
-        emit('END',complete=True,gatewayWrites=15,completedTechnicalPhases=8,functionalMilestonesProven=0,
+        emit('END',complete=True,runtimeAuthorityIssued=True,gatewayWrites=15,completedTechnicalPhases=8,functionalMilestonesProven=0,
             predecessorJournalsUnchanged=True,databaseCalls=0,grantRequests=0,serviceMutations=0,
             chatbotEndToEndProven=False,permanentRuntimeAcceptance=False,routeMapHash=repair['afterMapHash'])
     finally:os.close(lock)
