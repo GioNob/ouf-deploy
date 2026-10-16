@@ -1,6 +1,8 @@
 import importlib.util
+import os
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('candidate',ROOT/'scripts/prepare-chatbot-semantic-session-candidate-20261016.py')
@@ -20,5 +22,17 @@ class Tests(unittest.TestCase):
         m.definitions(raw,{'GOVERNED_SESSION','GOVERNED_HISTORY','compile_governed_session'},ns)
         f=fixture.fixture()
         self.assertEqual(ns['compile_governed_session'](*f,'7'*64,'8'*64,60),fixture.compile_fixture(f))
+
+    def test_complete_fixture_with_launcher_umask077_and_simulated_ownership_only(self):
+        from test_chatbot_semantic_policy_refresh_reader import Tests as OwnershipFixture
+        raw=(ROOT/'tools/semantic_policy_token_owner/producer.py').read_bytes()
+        adapter=OwnershipFixture()
+        previous=os.umask(0o077)
+        try:
+            with adapter.ownership_adapter(),patch.object(m,'CONTEXT',ROOT/'unused-context'):
+                result=m.qualify_native_publication(raw)
+            self.assertTrue(result['fixtureRemoved'])
+            self.assertTrue(result['atomicPublisherCodeUsed'])
+        finally:os.umask(previous)
 
 if __name__=='__main__':unittest.main()

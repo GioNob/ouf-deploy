@@ -159,6 +159,8 @@ def qualify_native_publication(raw):
     # Synthetic expired data only. No IAM/credential/authority object is created.
     with tempfile.TemporaryDirectory(prefix='semantic-session-native-fixture-',dir=CONTEXT.parent)as d:
         directory=Path(d)/'tokens';directory.mkdir(mode=0o750);os.chown(directory,0,10001)
+        # Only this new fixture: mkdir's mode is reduced by launcher umask077.
+        directory.chmod(0o750)
         binding=SimpleNamespace(output_directory=str(directory),output_member='fixture.jwt',output_gid=10001,
             digest=lambda:'f'*64)
         writer=ns['AtomicTokenFile'](binding);writer.check_custody()

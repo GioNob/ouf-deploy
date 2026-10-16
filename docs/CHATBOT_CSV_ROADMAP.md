@@ -1,3 +1,34 @@
+## 16 ottobre — candidato fermato sulla fixture umask; correzione preparatore
+
+Fasi tecniche8/8, funzionali0/6. Output operatore:
+STOP NATIVE_PUBLICATION_CONTRACT_FAILED nel preparatore8bcd9165….
+Il flusso aveva già verificato reviewbeefc7f2…, quattro record, ricevuta originale,
+generazione Registry e compilato lo scope puro; non ha raggiunto save_candidate.
+Nessun candidato, sessione, firma, token grant o runtime authority è stato creato.
+La stringa sintetica non è un token reale; nessuna credenziale è stata aperta.
+
+Errore riprodotto localmente: launcherumask077 e directory.mkdir(mode0750)
+producono directory0700. protected_directory del publisher richiede0750.
+Il preparatore corretto applica chmod0750 ESCLUSIVAMENTE alla nuova directory
+tokens della fixture temporanea, dopo creazione e chown0:10001.
+Nessun permesso esistente/live o ancestor viene cambiato.
+Il produttore, i suoi vincoli e i componenti runtime candidati restano invariati.
+
+Aggiunta regressione che esegue tutta qualify_native_publication con umask077,
+I/O/mode/fsync/rename reali e SOLTANTO metadati UID/GID emulati per il limite
+del filesystem Work.25test locali chatbotsemantic +7contratto =32PASS.
+Non è ancora prova kernel nativa sul VPS; quella è il prossimo input necessario.
+Stessi limiti: sola preparazione privata, massimo120s, due GET Docker metadata,
+nessuna IAM/API/DB, firma, credential read, modifica servizi/grant o avvio.
+La qualifica/composizione completa dell'esecutore rimane aperta; nessuna nuova
+decisione HUMAN va chiesta da questo preparatore non eseguibile.
+Review target e cumulativo69 conservati. Usare il launcher candidato v2,
+non rieseguire la v1. Preparatore SHA256
+6524065f69f8c45e5190435b369673b8b5a54e7efbdd09f260f9bac9c547f556.
+
+
+---
+
 ## 16 ottobre — review privata disponibile; candidato di continuazione da compilare sul target
 
 Fasi tecniche8/8 conservate, funzionali0/6.
