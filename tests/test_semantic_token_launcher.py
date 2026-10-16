@@ -9,7 +9,7 @@ import tempfile
 import unittest
 
 ROOT=Path(__file__).resolve().parents[1]
-SHELL=ROOT/'scripts/launch-chatbot-semantic-token-session-20261016.sh'
+SHELL=ROOT/'scripts/launch-chatbot-semantic-token-continue-20261016.sh'
 
 class Launcher(unittest.TestCase):
     def parsed(self):
@@ -23,7 +23,7 @@ class Launcher(unittest.TestCase):
         return raw,[line.split()for line in table.splitlines()],body,assignments
     def test_download_and_root_copy_pins_match_delivered_sources(self):
         raw,rows,body,values=self.parsed()
-        self.assertEqual(len(rows),7)
+        self.assertEqual(len(rows),8)
         self.assertEqual({name:sha for path,sha,name in rows},values['expected'])
         for path,sha,name in rows:self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),sha,path)
         self.assertEqual(set(values['modules'].values()),set(values['expected'])-{'execute.py'})

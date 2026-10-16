@@ -4,6 +4,7 @@ on:
     branches: [fix/cohort-mcp-backup-recovery-20261016]
     paths:
       - scripts/launch-chatbot-semantic-token-session-20261016.sh
+      - scripts/launch-chatbot-semantic-token-continue-20261016.sh
       - tests/test_semantic_token_launcher.py
       - scripts/read-chatbot-semantic-token-interruption-20261016.py
       - scripts/launch-chatbot-semantic-token-interruption-readback-20261016.sh
@@ -12,6 +13,7 @@ on:
   pull_request:
     paths:
       - scripts/launch-chatbot-semantic-token-session-20261016.sh
+      - scripts/launch-chatbot-semantic-token-continue-20261016.sh
       - tests/test_semantic_token_launcher.py
       - scripts/read-chatbot-semantic-token-interruption-20261016.py
       - scripts/launch-chatbot-semantic-token-interruption-readback-20261016.sh
