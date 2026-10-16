@@ -53,6 +53,29 @@ class GatewayWorker(unittest.TestCase):
         def make():
             action=AggregateAction(f.f.gate(),f.f.authority,f.f.expected['sourceClosureHash'])
             return ContinuedOwnerInstallation(action,value,h.harness.files,proof,previous,directory,f.clock,transport=f.transport)
+        self.f=f;self.harness=h.harness;self.value=value;self.proof=proof
+        self.predecessor=previous;self.directory=directory;self.old=old;self.unchanged=h.unchanged
+        def complete_phase5(prepared):
+            from tools.chatbot_file_cohort import gateway_runtime as r
+            prepared['gatewayRuntimePlan']={'schema':r.PROFILE,'sameExistingImageRequired':True,
+                'automaticRollbackAllowed':False,'automaticWriteReplayAllowed':False,
+                'oldRuntimeBinding':{'containerId':'1'*64,'imageId':r.NUMERIC_IMAGE},'proposalKeyHash':'3'*64,
+                'numericCompatibility':{'profile':r.NUMERIC_PROFILE,'syntheticAssetBindings':True},
+                'newConfigBinding':{'syntheticConfigBinding':True},'readinessPolicy':copy.deepcopy(r.APISIX_READINESS_POLICY)}
+            prepared['gatewayPlan'].update(changes=[{'syntheticPlannedChange':i}for i in range(28)],
+                governedReprocessing={'newIntentHash':'4'*64})
+            database={'modules':[{'module':'mcp','database':'fixture_mcp','user':'fixture_app'}],
+                'mcpAuditRoleAdministration':{'admin':'fixture_admin'},'mcpAuditRolePreflight':{'syntheticCompletedAudit':True},
+                'mcpBackupReader':{'syntheticRetainedReader':True}}
+            prepared['databasePlan']=database;prepared['cohortPlan']['databasePlanHash']=base.fingerprint(database)
+            prepared['registry']['cohortPlanHash']=base.fingerprint(prepared['cohortPlan'])
+        review=base.PostGrantOwner.compile_complete_review(self,complete_phase5)
+        self.assertEqual(review['completedTechnicalPhases'],[1,2,3,4]);self.assertEqual(review['currentTechnicalPhase'],5)
+        self.assertEqual(review['gatewayContinuationReview']['remainingChanges'],28)
+        self.assertEqual(review['scopes']['policyTokenFiniteWorkerSession']['predecessorGrantAttempts'],8)
+        self.assertEqual(review['mcpMigrationReview']['disposition'],'COMPLETE_CLEAN_VERIFY_ONLY_NO_REPLAY')
+        self.assertEqual(review['mcpBackupReaderReview']['disposition'],'RETAINED_ARCHIVE_ONLY_ZERO_NEW_DUMPS')
+        self.assertFalse(review['chatbotEndToEndProven']);self.assertEqual(h.harness.grants(),8)
         sign(make().scopes(),'EXACT_V8_GATEWAY_FINITE_HUMAN_DECISION')
         owner=make();new=owner.install();initial=owner.journal.read()
         self.assertEqual(initial['controlledCumulativeGrantAttempts'],8);self.assertEqual(initial['attempts'],0)

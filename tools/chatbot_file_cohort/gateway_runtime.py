@@ -133,9 +133,9 @@ def runtime_scope(plan):
     require(plan.get('schema')==PROFILE and plan.get('sameExistingImageRequired') is True
             and plan.get('automaticRollbackAllowed') is False and plan.get('automaticWriteReplayAllowed') is False,
             'EXACT_GOVERNED_APISIX_RUNTIME_PLAN_REQUIRED')
-    require(plan.get('readinessPolicy')==APISIX_READINESS_POLICY,'EXACT_APISIX_READINESS_POLICY_REQUIRED')
-    require(plan.get('runtimeBindingProfile')==(MOUNT_SET_BINDING if plan.get('numericCompatibility')is not None else None),
-        'EXACT_APISIX_RUNTIME_BINDING_PROFILE_REQUIRED')
+    # Historical scope hashing must remain compatible with retained journals.
+    # Current execution policy is enforced by GatewayRuntime.guard, never by a
+    # read-only reconstruction of a previously completed owner's scope.
     return {'profile':PROFILE,'planHash':digest(plan),'oldContainerId':plan['oldRuntimeBinding']['containerId'],
             'sameImageId':plan['oldRuntimeBinding']['imageId'],'proposalKeyHash':plan['proposalKeyHash'],
             'automaticRollbackAllowed':False,'automaticWriteReplayAllowed':False}
@@ -159,6 +159,9 @@ class GatewayRuntime:
         self.plan=copy.deepcopy(plan);self.scope=runtime_scope(plan)
     def guard(self):
         require(runtime_scope(self.plan)==self.scope,'APISIX_RUNTIME_PLAN_DRIFT')
+        require(self.plan.get('readinessPolicy')==APISIX_READINESS_POLICY,'EXACT_APISIX_READINESS_POLICY_REQUIRED')
+        require(self.plan.get('runtimeBindingProfile')==(MOUNT_SET_BINDING if self.plan.get('numericCompatibility')is not None else None),
+            'EXACT_APISIX_RUNTIME_BINDING_PROFILE_REQUIRED')
         self.action.guard('gatewayRuntimeInstallation',self.scope);self.engine.check_socket()
         private_config(self.plan['oldConfigBinding']['path'],self.plan['oldConfigBinding'])
         private_config(self.plan['newConfigBinding']['path'],self.plan['newConfigBinding'])

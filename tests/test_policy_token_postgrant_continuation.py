@@ -125,6 +125,9 @@ class PostGrantOwner(unittest.TestCase):
         self.assertEqual(self.harness.grants(),1);self.unchanged()
 
     def test_complete_review_compiles_new_worker_with_retained_output_and_backup_without_effects(self):
+        PostGrantOwner.compile_complete_review(self)
+
+    def compile_complete_review(self,transform=None):
         baseline_grants=self.harness.grants()
         # Only the selected target observations are synthetic; constructors,
         # root receipts, output inode, source closure and review are concrete.
@@ -173,6 +176,7 @@ class PostGrantOwner(unittest.TestCase):
             'imagePlan':{'schema':'ouf.chatbot-cohort-image-import-plan.v1','cohortManifestHash':'e'*64,
                 'images':[{'module':module}for module in ('semantic','udp','onboarding','ingestion','mcp')],
                 'maximumImportSecondsPerImage':180,'maximumImportAttemptsPerImage':1,'retagAllowed':False,'automaticReplayAllowed':False}}
+        if transform is not None:transform(prepared)
         with (patch.object(p,'read_predecessor',return_value=self.predecessor),
             patch.object(p,'proof_scope',return_value=proof),
             patch.object(compiler.governance,'POLICY',self.f.f.binding(self.f.f.policy)),
@@ -187,6 +191,7 @@ class PostGrantOwner(unittest.TestCase):
         self.assertNotIn(str(backup),compiled['processPlan']['directoryPlan'].values())
         self.assertEqual(list(self.directory.iterdir()),[]);self.assertFalse(Path(context).exists())
         self.assertEqual(self.harness.grants(),baseline_grants);self.unchanged()
+        return review
 
 
 if __name__=='__main__':unittest.main()
