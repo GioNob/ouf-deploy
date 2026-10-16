@@ -17,8 +17,12 @@ Backup COMPLETE e migrazioni COMPLETE/audit CLEAN confermati dal journal; UDP e
 Onboarding nelle medesime generazioni, zero restart. MCP applicativo ancora fermo
 nella vecchia generazione; fase 7 non eseguita, fase 8 pendente.
 La correzione riconcilia la creazione esistente senza nuovo rename/create e
-conserva anche le 28 modifiche Gateway: zero nuove scritture route. Sono in corso
-le qualifiche prima di consegnare il launcher operativo.
+conserva anche le 28 modifiche Gateway: zero nuove scritture route. Qualifiche concluse:
+494 test in 67 suite nella CI generale 38876888992; CI specifica
+38877206131 e backup 38876889037 PASS. Launcher di fase 6 pubblicato
+con sorgente runtime a2132d7ee330f9f0ce7d4fc9316dd880acad4f3f.
+Questo rilascio non avanza lo stato target: serve la nuova esecuzione HUMAN
+e la verifica del relativo esito sul VPS.
 La cronologia seguente resta come evidenza degli arresti precedenti.
 
 ### Cronologia precedente
