@@ -2,7 +2,7 @@ name: Gateway phase 5 governed continuation native
 on:
   push:
     branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths: ['tools/chatbot_file_cohort/**', 'tests/test_chatbot_cohort_gateway_phase5_native.py', '.github/workflows/chatbot-gateway-phase5-continuation.yml']
+    paths: ['tools/chatbot_file_cohort/**', 'tests/test_gateway_phase5_native.py', '.github/workflows/chatbot-gateway-phase5-continuation.yml']
 permissions: {contents: read}
 concurrency:
   group: gateway-phase5-${{ github.ref }}
@@ -33,4 +33,4 @@ jobs:
         run: |
           set -euo pipefail
           OUF_FIXTURE_ROOT="/var/lib/ouf-phase5-${GITHUB_RUN_ID}"
-          sudo env OUF_NATIVE_GATEWAY_PHASE5=1 OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" "$OUF_FIXTURE_ROOT/repository/.phase5-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_gateway_phase5_native.py -v
+          sudo env OUF_NATIVE_GATEWAY_PHASE5=1 OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" "$OUF_FIXTURE_ROOT/repository/.phase5-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_gateway_phase5_native.py -v
