@@ -81,6 +81,25 @@ def engine_get(engine,kind,reference):
         return None if reply.status==404 else json.loads(raw,object_pairs_hook=unique)
     finally:conn.close()
 
+def engine_info(engine):
+    path=engine['socketPath'];pin=tuple(engine['socketBinding'])
+    def guard():
+        s=os.stat(path,follow_symlinks=False)
+        require(stat.S_ISSOCK(s.st_mode) and s.st_uid==0 and
+            (s.st_dev,s.st_ino,s.st_uid,s.st_gid,stat.S_IMODE(s.st_mode))==pin,'ENGINE_SOCKET_DRIFT')
+    guard()
+    class Local(http.client.HTTPConnection):
+        def connect(self):
+            self.sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+            self.sock.settimeout(10);self.sock.connect(path)
+    conn=Local('localhost',timeout=10)
+    try:
+        conn.request('GET','/v1.44/info')
+        reply=conn.getresponse();raw=reply.read(2097153)
+        require(reply.status==200 and len(raw)<=2097152,'ENGINE_READ_UNAVAILABLE');guard()
+        return json.loads(raw,object_pairs_hook=unique)
+    finally:conn.close()
+
 def bounded(argv, seconds=15, maximum=2097152, discard=False):
     """Drain both pipes concurrently; cap bytes/time and kill the CLI on exit."""
     proc=subprocess.Popen(argv,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,
@@ -204,9 +223,10 @@ def project(facts,binding):
     facts['preflight']=preflight
     return facts
 
-def main():
+def observe(*,report=True):
+    report_event=emit if report else lambda *args,**kwargs:None
     require(os.geteuid()==0 and sys.flags.isolated,'ROOT_ISOLATED_READER_REQUIRED');signal.alarm(120)
-    emit('BEGIN',maximumSeconds=120,maximumSqlSessions=1,maximumClaims=4,maximumEngineReads=4,
+    report_event('BEGIN',maximumSeconds=120,maximumSqlSessions=1,maximumClaims=4,maximumEngineReads=4,
         credentialFilesRead=0,databaseMutations=0,serviceMutations=0,grantRequests=0,mcpCalls=0,
         claimDeletionAllowed=False,claimRearmAllowed=False)
     review=read(CONTEXT/'review.json',8388608,REVIEW);authority=read(CONTEXT/'authority.json',131072,AUTHORITY)
@@ -223,7 +243,7 @@ def main():
         'EXACT_MCP_SOURCE_COMMIT_REQUIRED')
     mcp=engine_get(p['engine'],'containers',module['name'])
     observed_source=(mcp or {}).get('Config',{}).get('Labels',{}).get('org.opencontainers.image.revision')
-    emit('MCP_PACKAGE_CHECKS',reviewedSourceCommit=module['sourceCommit'],containerPresent=mcp is not None,
+    report_event('MCP_PACKAGE_CHECKS',reviewedSourceCommit=module['sourceCommit'],containerPresent=mcp is not None,
         nativeSourceCommit=observed_source if type(observed_source)is str and re.fullmatch('[0-9a-f]{40}',observed_source)else None,
         nativeImageMatchesReviewed=mcp is not None and mcp['Image']==module['creationRequest']['Image'],
         nativeSourceLabelMatchesReviewed=observed_source==module['sourceCommit'],configurationValuesPrinted=False)
@@ -259,16 +279,23 @@ def main():
     read(process['bundle']['path'],8388608,process['bundle']['sha256'])
     after=engine_get(p['engine'],'containers',mcp['Id'])
     require(after is not None and runtime_pin(after)==mcp_pin,'MCP_CHANGED_DURING_READ')
-    emit('MCP_RELEASE_BINDING',sourceCommit=module['sourceCommit'],imageId=mcp['Image'],
+    report_event('MCP_RELEASE_BINDING',sourceCommit=module['sourceCommit'],imageId=mcp['Image'],
         containerId=mcp['Id'],runtimeBindingHash=digest(mcp_pin),runtimeBinding=mcp_pin,
         nativeSourceLabelMatchesReviewed=True,configurationValuesPrinted=False)
-    emit('MIGRATION_ROLE_PREFLIGHT',facts=facts.pop('preflight'),migrationPrefixMatchesInstalledSource=True,
+    preflight=facts.pop('preflight')
+    report_event('MIGRATION_ROLE_PREFLIGHT',facts=preflight,migrationPrefixMatchesInstalledSource=True,
         privilegeChangesPerformed=False,migrationPerformed=False)
-    emit('EXACT_MCP_CLAIM',facts=facts,rawSqlOutputPrinted=False,claimRearmed=False,
+    report_event('EXACT_MCP_CLAIM',facts=facts,rawSqlOutputPrinted=False,claimRearmed=False,
         semanticMutationDispatchedByReader=False)
-    emit('END',complete=True,completedTechnicalPhases=8,functionalMilestonesProven=0,
+    report_event('END',complete=True,completedTechnicalPhases=8,functionalMilestonesProven=0,
         reconciliationPerformed=False,runtimeAuthorityIssued=False,databaseMutations=0,
         automaticRestart=False,budgetResetPreserved=True)
+    return {'prepared':p,'module':module,'mcp':mcp,'runtimeBinding':mcp_pin,
+        'claimFacts':facts,'rolePreflight':preflight,'programs':programs,
+        'sourceReviewHash':REVIEW,'sourceAuthorityHash':AUTHORITY}
+
+def main():
+    observe()
 
 if __name__=='__main__':
     try:main()
