@@ -347,6 +347,8 @@ class NamespaceAdmin:
 
 class GatewayRoutes:
     def __init__(self, action, cohort_plan, plan, journal, transport):
+        require('governedReprocessing' not in plan,
+                'GATEWAY_REPROCESSING_EXECUTOR_NOT_YET_QUALIFIED')
         require(type(action) is AggregateAction and type(journal) is Journal
                 and type(transport) is NamespaceAdmin, 'CONCRETE_SIGNED_GATEWAY_COMPONENTS_REQUIRED')
         require(plan.get('schema') == PROFILE and cohort_plan['gatewayPlanHash'] == digest(plan)

@@ -31,6 +31,11 @@ from tools.semantic_lease_recovery.recovery_journal import Journal
 
 
 class GatewayPublication(unittest.TestCase):
+    def test_offline_reprocessing_cannot_be_executed_by_ordinary_publisher(self):
+        for marker in ({'executionIntegrationQualified':False}, {'executionIntegrationQualified':True}):
+            with self.assertRaisesRegex(ValueError,'REPROCESSING_EXECUTOR_NOT_YET_QUALIFIED'):
+                g.GatewayRoutes(None,None,{'governedReprocessing':marker},None,None)
+
     def fixture(self):
         f=crypto.SignedCutover();f.setUp();self.addCleanup(f.doCleanups)
         before={'retained':{'id':'retained','uri':'/other','methods':['GET']},
