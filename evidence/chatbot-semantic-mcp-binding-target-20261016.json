@@ -1,0 +1,33 @@
+{
+  "acceptanceGranted": false,
+  "budgetReset": false,
+  "claim": {
+    "actorType": "HUMAN",
+    "actualToolCalls": 1,
+    "admissionContextPresent": true,
+    "attemptId": "9d676b80-8f5f-4160-ac9e-57f0935f78be",
+    "dispatchState": "ACKNOWLEDGED",
+    "expectedDenialCodeProven": true,
+    "lockVersion": 2,
+    "manifestChecksum": "09981c1cd01f47bed227250b70448dd24d2a66e4d36e7878df4f6235b783fd4a",
+    "requestHash": "b8bc4ccb0f8fe48764ecf87340fd2ff209520c0b5b947a3ee6a1e461fc57a112",
+    "reservationState": "RECONCILED",
+    "reservedToolCalls": 1,
+    "servicePrincipalId": "ouf-chatgpt",
+    "state": "FAILED"
+  },
+  "claimRearmed": false,
+  "completedTechnicalPhases": 8,
+  "containerId": "6e6cbbb1e30011bd70ff6f20d9985c34ec9625afc8137759051fd455c0d1657d",
+  "correctionDeployed": false,
+  "databaseOid": 21560,
+  "functionalMilestonesProven": 0,
+  "imageId": "sha256:a00779989378d260cc9ed963a79d44e280540ea3dc6b3f2b4c6feb18bac51a73",
+  "readOnly": true,
+  "runtimeBindingHash": "f31e9c1951f79765287b3cb9263294785446430f7b0833a2d87b0a7783b7950d",
+  "schema": "ouf.chatbot-semantic-mcp-release-binding-observed.v1",
+  "sourceCommit": "f249b3dcc58c2a96742092d90fa09fd90b705bd0",
+  "targetLog": "/home/oufadmin/ouf-semantic-mcp-binding-read.wkknNUge/read.log",
+  "tokenAuthorityDeadlineUTC": "2026-10-16T16:47:18Z",
+  "tokenOwnerFinalReceiptObserved": false
+}
