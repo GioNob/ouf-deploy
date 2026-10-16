@@ -134,6 +134,25 @@ class Composed(unittest.TestCase):
         with self.assertRaises(Exception):self.make().install()
         self.assertEqual(self.grants(),before)
 
+    def test_root_validation_keeps_unrelated_evidence_parent_stable(self):
+        from contextlib import contextmanager
+        from tools.chatbot_file_cohort.continued_owner import roots
+        binding=roots.binding;expected=binding.PARENT;original=binding.protected_parent
+        calls=[]
+        @contextmanager
+        def observe(path=None):
+            self.assertEqual(binding.PARENT,expected)
+            with original(path)as directory:
+                # An independent evidence reader must still find its own ledger.
+                with original()as evidence:
+                    self.assertEqual(os.fstat(evidence).st_ino,expected.stat().st_ino)
+                calls.append(path)
+                yield directory
+            self.assertEqual(binding.PARENT,expected)
+        with patch.object(binding,'protected_parent',observe):
+            self.make().guard(fence_required=False)
+        self.assertTrue(any(path is not None for path in calls))
+
     def test_two_operator_installations_share_one_exclusive_global_claim(self):
         from tools.semantic_policy_token_owner.owner_installation import OwnerInstallation
         first,second=self.make(),self.make();before=self.grants();barrier=threading.Barrier(2)

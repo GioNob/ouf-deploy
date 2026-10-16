@@ -87,11 +87,7 @@ def completed_roots(host_raw, evidence_hash, source_closure_hash):
         with ExitStack()as held:
             identities={}
             for role,path in ROLES.items():
-                previous=binding.PARENT
-                try:
-                    binding.PARENT=Path(path)
-                    fd=held.enter_context(binding.protected_parent())
-                finally:binding.PARENT=previous
+                fd=held.enter_context(binding.protected_parent(path))
                 info=os.fstat(fd)
                 binding.require(metadata(info,len(Path(path).parts)-1)==expected[path],
                     'COMPLETED_ROOT_DESCRIPTOR_DRIFT')
@@ -327,12 +323,8 @@ class TokenOutputCustody:
                         finally:os.close(fd)
                     # Enter with the explicit parent binding; the protected
                     # reader captures that path and holds its ancestry FDs.
-                    previous=binding.PARENT
-                    try:
-                        binding.PARENT=Path(self.parent_identity['path'])
-                        parent_context=binding.protected_parent()
-                        parent=parent_context.__enter__()
-                    finally:binding.PARENT=previous
+                    parent_context=binding.protected_parent(self.parent_identity['path'])
+                    parent=parent_context.__enter__()
                     try:
                         p=os.fstat(parent)
                         binding.require({'device':p.st_dev,'inode':p.st_ino}==
