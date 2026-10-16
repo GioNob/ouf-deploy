@@ -176,3 +176,29 @@ regressione backup 38860719021 PASS. Il nuovo launcher e le evidenze sono nella
 [procedura corretta](../releases/CHATBOT_GATEWAY_PHASE5_NULL_BINDS_20261016.md).
 La regressione generale 38860719114 è ancora in corso alla pubblicazione.
 Nessuna nuova esecuzione target: fase 5, CSV 0/6.
+
+## Tentativo approvato del 16 ottobre, 08:27 CEST: verifica autorizzazioni
+
+La revisione `57e0e293fef4abbaac5e45d214f30b3a1e312780f441c04c7f8c008c9fcf3209`
+è stata approvata. Authority `08417d9c20401f26e5ea1223f753b016e1f35047e83d06e7aa8469af9432c852`,
+contesto `chatbot-file-cohort-signed-594c62d1be7fc0274bcd90097e014736dc4aac636ab34bd7f8be1920fc875081`,
+sorgente `5d9c9b6b944e71b25cd006994c511397295b4f4f`.
+
+Il difetto Binds null è superato. L'esecuzione si ferma in `delivery.run` riga
+413, `auth_owner.verify()`, con `AuthorizationPaused` durante la lettura MCP
+`authorization.permissions.read` dei ruoli. Il flusso raggiunge questa riga
+soltanto dopo `GatewayRuntime.apply()` e prima di `owner.install()`; indica
+avanzamento della sostituzione APISIX, da confermare tramite journal e stato
+nativo. Non dimostra pubblicazione delle 28 route, nuovo grant o fase 5 completa.
+Fasi 1–4 acquisite, fase 5 sospesa, CSV 0/6. Non ripetere il launcher consumato.
+
+La verifica finale legge il trasporto direttamente: non ha un budget durevole
+per le osservazioni transitorie; `AuthorizationPaused` perde inoltre il codice
+HTTP nell'output sicuro corrente. Prima di ammettere retry occorre distinguere
+transitorio da rifiuto permanente e riconciliare i nuovi effetti APISIX.
+Il reader `scripts/read-chatbot-gateway-authorization-20261016.py` è vincolato a
+questa esatta review/authority/unità e legge journal, due mappe Gateway e al
+massimo 200 righe di log del nuovo container. Pubblica solo conteggi di codici
+HTTP; nessuna nuova chiamata MCP, refresh, IAM, grant, SQL, dump o scrittura
+Gateway. L'assenza di access log riconoscibili è dichiarata senza inventare la
+causa. Non costituisce ripresa né nuova autorità.
