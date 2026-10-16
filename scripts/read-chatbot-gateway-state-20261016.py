@@ -735,7 +735,7 @@ def main():
             row=next(r for r in plan['modules'] if r['module']==module)
             state=module_native(p,container_journal,module);observations[module]=state
             emit('COMPLETED_MODULE_NATIVE',**state,currentReadinessProbed=False)
-            emit('COMPLETED_MODULE_SCHEMA',module=module,**module_schema_read(binary,p,config,row))
+            emit('COMPLETED_MODULE_SCHEMA',module=module,facts=module_schema_read(binary,p,config,row))
     gateway_plan=p['gatewayPlan']
     require(digest(gateway_plan)==p['cohortPlan']['gatewayPlanHash'],'GATEWAY_PLAN_BINDING_DRIFT')
     transport=transport_binding(p,dirs,record)

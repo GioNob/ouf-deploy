@@ -126,7 +126,8 @@ class Reader(unittest.TestCase):
                  patch.object(r,'executable',return_value='/docker'),patch.object(r,'engine_get',side_effect=engine),\
                  patch.object(r,'sql_read',return_value=r.database_projection(facts,b,plan)),\
                  patch.object(r,'module_native',side_effect=lambda p,j,m:{'module':m,'generationMatches':True}),\
-                 patch.object(r,'module_schema_read',return_value={'expectedMigrationsMatch':True}),\
+                 patch.object(r,'module_schema_read',return_value={'databaseOid':42,'readOnly':True,
+                     'migrationCount':2,'historyHash':'a'*64,'expectedMigrationsMatch':True}),\
                  patch.object(r,'transport_binding',return_value={'runtimeBinding':{'containerId':'a'*64}}),\
                  patch.object(r,'gateway_read',side_effect=get),contextlib.redirect_stdout(output):r.main()
             self.assertNotIn('PRIVATE_SENTINEL',output.getvalue())
@@ -136,6 +137,12 @@ class Reader(unittest.TestCase):
         self.assertTrue(end['complete']);self.assertEqual(end['technicalPhase'],5);self.assertEqual(end['gatewayWrites'],0)
         self.assertEqual(next(x for x in rows if x['check']=='DATABASE_CHECKPOINT')['auditRoleState'],'CLEAN')
         self.assertEqual(next(x for x in rows if x['check']=='WORKER')['controlledCumulativeGrantAttempts'],7)
+        schemas=[x for x in rows if x['check']=='COMPLETED_MODULE_SCHEMA']
+        self.assertEqual([x['module'] for x in schemas],['udp','onboarding'])
+        for row in schemas:
+            self.assertTrue(row['readOnly']);self.assertTrue(row['facts']['readOnly'])
+            self.assertTrue(row['facts']['expectedMigrationsMatch'])
+        self.assertEqual(sum(x['check'] in ('GATEWAY_FIRST_READ','GATEWAY_SECOND_READ') for x in rows),2)
     def test_concurrent_journal_change_blocks_completion(self):
         with self.assertRaisesRegex(r.ReadDenied,'RETAINED_RECORD_CHANGED_DURING_READ'):self.full(mutate=True)
 
