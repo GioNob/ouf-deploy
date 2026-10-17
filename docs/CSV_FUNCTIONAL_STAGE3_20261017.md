@@ -1,4 +1,19 @@
 
+## Causa del blocco e preparazione del recupero — 18 ottobre 2026
+
+Il [preflight target completo](csv-semantic-policy-channel-failure-target-20261018.json), log `/home/oufadmin/ouf-csv-reference-read.P7fk3eF0/read.log`, identifica il diniego nel Semantic Registry: `SEM_CAPABILITY_REQUIRED:ouf.semantic.read`. Il token UDP non è scaduto alla lettura, contiene lo scope richiesto e corrisponde ad audience/guard della route conservata. Nella **policy pubblicata 41** esiste un grant `ouf.semantic.read` valido che corrisponde all'identità UDP; descrittore SERVICE/READ corretto. Il token con cui il Semantic Registry legge tale policy è invece **scaduto**, e il canale configurato della policy risponde **401**. Il contenuto effettivamente caricato in memoria non è provato; la disponibilità del trasporto policy è certamente interrotta.
+
+Il fence corrente punta al worker `e787ac35…`: CANCELLED_BY_OWNER, una pubblicazione/tentativo nella sessione, predecessore317, cumulativo **318**, tetto **444**, residuo **126**, lock non detenuto. Non è consentita la ripartenza automatica del worker cancellato. La preparazione riusa il compilatore nativo `compile_governed_session` della sorgente esistente hash-verificata, per una **nuova sessione ancora da autorizzare**, mantenendo tetto, fence e intera cronologia. Nessun primo grant viene ripetuto.
+
+`prepare-csv-last-row-recovery-20261018.py` vincola il piano al rollout55, al solo job `c5692362-8a22-4656-97b6-46b5ba8ce17f` versione11 e ai record cancellati esatti. Produce un documento privato root-owned con proposta di scope nativo318→444, metadati della sessione HUMAN senza stamparne credenziali, template del permesso limitato a job/sorgente/run/tipo/access label verificati e prerequisiti dell'applicazione. Non apre login, modifica permessi, avvia worker o riprende job. **readyForExecution=false e runtimeAuthorityIssued=false**; la sola scrittura è il nuovo artefatto privato di preparazione.
+
+[Qualifica del compilatore e della selezione 39075042131](https://github.com/GioNob/ouf-deploy/actions/runs/39075042131): **7 PASS**, cronologia immutata318/444, cancellazione/admission/conteggi alterati rifiutati, sorgente nativa e prima ricevuta non sostituibili, un solo job identico ammesso. Il SQL del record è quello già qualificato nel preflight v2 su PostgreSQL17; non si dichiara una nuova prova runtime.
+
+Dopo la preparazione privata servono le autorità runtime correnti: nuova decisione HUMAN dopo cancellazione; eventuale solo grant job-specifico tramite API owner preservando la policy; ripristino del credential owner già esistente; review nativa con contratto disponibile e baseline identica; una ripresa con versione/snapshot e operationId durevole; readback13/13. La delega ai repository non sostituisce tale autorità. La sessione finita di recupero **non dimostra operatività continuativa** del rinnovo credenziali per future fonti o scheduler: quel requisito rimane esplicito nell'accettazione end-to-end.
+
+**Tecniche 8/8; funzionali 2/6; 12/13 commit. Nessuna decisione d'identità da ripetere.**
+
+
 ## Consegna qualificata del preflight completo — 18 ottobre 2026
 
 [Run 39074601464](https://github.com/GioNob/ouf-deploy/actions/runs/39074601464), job 117519046015: **8 test PASS, zero fallimenti/errori/skip**, SQL su PostgreSQL 17 reale, sintassi launcher e corrispondenza dell'impronta della sorgente consegnata. [Prova di qualifica](csv-semantic-access-full-preflight-qualified-20261018.json). Il lettore include anche tipo sorgente, run e access label RAW richiesti per circoscrivere l'eventuale recupero del singolo job, senza indovinarli.
