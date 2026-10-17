@@ -1,3 +1,15 @@
+# Piano corrente: CSV end-to-end gestibile dalla chat — 17 ottobre 2026
+
+**Tecniche 8/8; funzionali 2/6.** Il [piano completo CSV → semantica → onboarding → ingestion → identità/proprietà → grafo → riscontro](CHATBOT_CSV_END_TO_END_PLAN_20261017.md) versione1.1 organizza il riuso e il lavoro residuo in R0–R10, con owner, dipendenze e criteri di accettazione. Non rinumera le fasi/milestone storiche né chiude quelle non provate.
+
+L'[audit dei sette repository](CHATBOT_CSV_REPOSITORY_AUDIT_20261017.md) ha verificato codice, branch/PR ed evidenze: esiste già una [CI end-to-end con MCP reale riuscita](https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/38534866913) (36check, limiti fixture dichiarati). Upload, revisione, pipeline, ricerca, relazioni e recovery vanno riusati. Il residuo comprende integrazione delle proiezioni già sviluppate, mapping valori→vocabolari nel CSV, pubblicazione del profilo e collaudo target/client. Prima di inventare un nuovo hold, qualificare la disabilitazione nativa della fonte già implementata.
+
+Le correzioni XSD UDP44/Onboarding45 e il pacchetto39069142370 sono qualificati; la [preparazione deploy38](https://github.com/GioNob/ouf-deploy/pull/38) resta distinta dall'installazione e dalla pubblicazione nativa. Le20 regole risultano ancora non attivate dall'ultimo readback. La nuova pubblicazione MANAGED può riarmare l'acquisizione: serve un effetto esplicito e verificato. Le11 decisioni CREATE_NEW già materializzate non si ripetono; il caso volontariamente in quarantena resta esplicito.
+
+Il traguardo comprende due client MCP indipendenti, percorso senza MCP Apps, conferme HUMAN nella THS con ritorno in chat, vera seconda acquisizione senza duplicati, provenance e grafo, recovery e conservazione degli8 Cinema. Il normale utente non deve usare terminale/SQL/VPS. Questa è pianificazione: nessuna mutazione runtime o nuova accettazione è stata eseguita per pubblicarla.
+
+---
+
 # Resolution: rollout UDP completato dall'operatore; lettura browser da provare — 2026-10-17
 
 **Tecniche8/8; funzionali2/6.** Operatore riporta `OUF_UDP_RESOLUTION_UPDATE_RESULT`: contesto `/etc/ouf/deploy-snapshots/udp-resolution-execution-65h5kjt8`, journalVersion31, complete=true, applicationReady=true, maximumGatewayWrites=0, newPolicyWorkerStarted=false, identityDecisionsPerformed=false e semanticDispatchPerformed=false. Evidenza di esecuzione del percorso qualificato, non readback indipendente della generazione target o dell'accesso autorizzato al pacchetto.
