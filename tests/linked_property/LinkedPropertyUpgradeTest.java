@@ -9,9 +9,18 @@ import static org.junit.jupiter.api.Assertions.*;
 class LinkedPropertyUpgradeTest {
   @Test void upgradesPopulatedV34WithoutRewritingEvidenceAndRemainsIdempotent() throws Exception {
     String url=System.getenv("OUF_UDP_DB_URL"), user=System.getenv("OUF_UDP_DB_USER"), password=System.getenv("OUF_UDP_DB_PASSWORD");
+    try(Connection c=DriverManager.getConnection(url,user,password); Statement s=c.createStatement()) {
+      assertEquals("false",one(s,"select (rolsuper or rolcreaterole or rolcreatedb)::text from pg_roles where rolname=current_user"));
+    }
     var old=Flyway.configure().dataSource(url,user,password).schemas("ouf_udp").defaultSchema("ouf_udp").target("34").load();
     assertEquals(34,old.migrate().migrationsExecuted);
+    // Historical V1 creates the schema. V35 is qualified after removing that
+    // bootstrap privilege; the application keeps only schema/table ownership.
+    try(Connection admin=DriverManager.getConnection(url,"ci_admin",System.getenv("OUF_UPGRADE_ADMIN_PASSWORD")); Statement s=admin.createStatement()) {
+      s.execute("revoke create on database ouf_upgrade from ouf_udp");
+    }
     try(Connection c=DriverManager.getConnection(url,user,password); Statement s=c.createStatement()) {
+      assertEquals("false",one(s,"select has_database_privilege(current_user,current_database(),'CREATE')::text"));
       s.execute("insert into ouf_udp.handoff_intake(handoff_id,ingestion_run_id,ingestion_id,source_id,type_code,source_object_id,content_hash,payload_json,receipt_ref) values('upgrade-h','upgrade-run','upgrade-in','api-source','asset','record-1','hash','{}','receipt-upgrade')");
       s.execute("insert into ouf_udp.urban_object(urban_object_id,canonical_type) values('00000000-0000-0000-0000-000000000001','urn:asset')");
       s.execute("insert into ouf_udp.object_revision(revision_id,urban_object_id,revision_no,canonical_hash,authority_hash,authority_state,canonical_payload,access_labels,source_handoff_id,bundle_ref,semantic_publication_ref) values('00000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000001',1,'canonical','authority','{}','{\"name\":\"Retained\"}','[\"OPEN\"]','upgrade-h','bundle:1','semantic:1')");
