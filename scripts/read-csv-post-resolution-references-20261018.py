@@ -4,12 +4,14 @@
 Reuses the existing post-rollout transport and post-resolution receipt proof.
 No source values, tokens, retries, profile publication or database writes.
 """
-import base64,hashlib,http.client,json,os,re,selectors,shlex,signal,socket,ssl,stat,subprocess,sys,tempfile,time
+import fcntl,base64,hashlib,http.client,json,os,re,selectors,shlex,signal,socket,ssl,stat,subprocess,sys,tempfile,time
 from urllib.parse import urlsplit,urlencode
 from pathlib import Path
 BOOT=Path('/etc/ouf/deploy-snapshots/semantic-mcp-update-executor-code-yrvtskkt/execute.py')
 BOOT_HASH='b02d9737af6d143903910654d34e91a1a82a52b6082d2429d5dbfd070d160af2'
 CONTEXT=Path('/etc/ouf/deploy-snapshots/linked-property-execution-cjecd1en')
+POLICY_CONTEXT=Path('/etc/ouf/deploy-snapshots/ingestion-readiness-execution-d0bmyv9g')
+POLICY_REVIEW='c42181ac012cd41417e2e9ec3c0f37908d3a5c0c379cc3805c918505f4bed5cd'
 SOURCE='teatri-csv-6609b245'
 VERSION='9860853e-e8f3-4b93-b9d2-03521a039962'
 def require(ok,code):
@@ -62,7 +64,7 @@ def literal(value):
 
 CREDENTIAL_FILES_READ=0
 def emit(check,**values):
- fields=dict(schema='ouf.csv-post-resolution-reference-read.v1',check=check,readOnly=True,
+ fields=dict(schema='ouf.csv-post-resolution-reference-read.v2',check=check,readOnly=True,
   automaticRetry=False,budgetReset=False,credentialFilesRead=CREDENTIAL_FILES_READ,credentialValuesPrinted=False,
   databaseMutations=0,grantRequests=0,oauthRequests=0,serviceMutations=0,profilePublications=0,
   jobsRetried=0,completedTechnicalPhases=8,functionalMilestonesProven=2,installationSpecific=True)
@@ -260,7 +262,7 @@ def mounted_file(actual,root,target,maximum):
  finally:
   for fd in reversed(fds):os.close(fd)
 
-def configured_properties(actual,root):
+def configured_properties(actual,root,required=("ouf.udp.execution.gateway-url","ouf.udp.execution.token-file")):
  env={};values={}
  for row in actual['Config'].get('Env')or[]:
   key,value=row.split('=',1);require(key not in env,'UNIQUE_ENVIRONMENT_REQUIRED');env[key]=value
@@ -274,12 +276,18 @@ def configured_properties(actual,root):
    else:add(path,value)
  for key,value in env.items():add(key,value)
  if env.get('SPRING_APPLICATION_JSON'):flatten(json.loads(env['SPRING_APPLICATION_JSON']))
+ if required==('spring.datasource.url','spring.datasource.username'):
+  for alias,key in(('OUF_SEM_DB_URL',required[0]),('OUF_SEM_DB_USER',required[1])):
+   if env.get(alias):add(key,env[alias])
+ if required==('ouf.authorization.registry-url','ouf.authorization.registry-token-file'):
+  for alias,key in(('REGISTRY_URL',required[0]),('REGISTRY_TOKEN_FILE',required[1])):
+   if env.get(alias):add(key,env[alias])
  argv=(actual['Config'].get('Entrypoint')or[])+(actual['Config'].get('Cmd')or[])
  for key in('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','JAVA_OPTS'):argv+=shlex.split(env.get(key,''))
  for arg in argv:
   if arg.startswith(('-D','--'))and '='in arg:
    k,v=arg[2:].split('=',1);add(k,v)
- required=('ouf.udp.execution.gateway-url','ouf.udp.execution.token-file')
+
  def one(key):
   found=values.get(normal(key),set())-set(['']);require(len(found)==1,'EXACT_CONFIGURED_RUNTIME_CHANNEL_REQUIRED');return next(iter(found))
  # Explicit process environment / Spring JSON outrank ordinary application files.
@@ -318,7 +326,7 @@ def configured_properties(actual,root):
 
 def safe_get(origin,path,token):
  u=urlsplit(origin);require(u.scheme=='https'and u.hostname and not u.username and not u.password and not u.query and not u.fragment and u.path in('','/'),'REVIEWED_HTTPS_ORIGIN_REQUIRED')
- require(path.startswith('/api/')and '\r'not in path and '\n'not in path,'BOUNDED_DEPENDENCY_PATH_REQUIRED')
+ require((path.startswith('/api/')or path=='/internal/capabilities/v1/authorization/policy-bundle/active')and '\r'not in path and '\n'not in path,'BOUNDED_DEPENDENCY_PATH_REQUIRED')
  credential=token.decode('ascii').strip();require(0<len(credential)<=16384 and not any(x.isspace()for x in credential),'PRIVATE_WORKLOAD_TOKEN_REQUIRED')
  conn=http.client.HTTPSConnection(u.hostname,u.port or 443,timeout=5,context=ssl.create_default_context())
  try:
@@ -328,13 +336,13 @@ def safe_get(origin,path,token):
   except(ValueError,UnicodeError):body={}
   if type(body)is not dict:body={}
   safe={'httpStatus':response.status,'hostTransportOnly':True,'responseValuesPrinted':False,'ownerAuthorizationDeniedDetail':body.get('detail')=='Owner authorization denied'}
-  for key in('code','errorCode','reason'):
+  for key in('code','errorCode','reason','error','message','detail'):
    v=body.get(key)
-   if type(v)is str and re.fullmatch('[A-Z][A-Z0-9_:.-]{0,119}',v):safe[key]=v
+   if type(v)is str and (re.fullmatch('(SEM_|UDP_|OUF_|AUTHORIZATION_)[A-Z0-9_:.-]{1,110}',v)or v in('insufficient_scope','invalid_token','access_denied','Forbidden','Unauthorized','SEM_CAPABILITY_REQUIRED:ouf.semantic.read','SEM_AUTHENTICATION_REQUIRED')):safe[key]=v
   return safe,body
  finally:conn.close()
 
-def probe_dependencies(actual,refs,origin):
+def probe_dependencies(actual,refs,origin,plan):
  global CREDENTIAL_FILES_READ
  pid=actual['State']['Pid'];require(type(pid)is int and pid>1,'CURRENT_UDP_PROCESS_REQUIRED')
  def process_pin():
@@ -347,6 +355,7 @@ def probe_dependencies(actual,refs,origin):
   require(len(parts)==3 and all(re.fullmatch('[A-Za-z0-9_-]+',p)for p in parts),'WORKLOAD_JWT_SHAPE_REQUIRED')
   claims=json.loads(base64.urlsafe_b64decode(parts[1]+'='*((-len(parts[1]))%4)));expiry=claims.get('exp');require(type(expiry)is int,'WORKLOAD_EXPIRY_REQUIRED')
   emit('UDP_EXECUTION_TOKEN_METADATA',configured=True,expiredAtRead=expiry<=time.time(),expiryEpoch=expiry,claimsAreMetadataOnly=True,signatureVerifiedLocally=False,configFileSha256=config_hash)
+  emit_route_access_metadata(plan,claims)
   bundle=refs.get('bundleRef');require(type(bundle)is str and 0<len(bundle)<=2048,'EXACT_PINNED_BUNDLE_REFERENCE_REQUIRED')
   safe,envelope=safe_get(origin,'/api/onboarding/v1/runtime/publications/resolve?'+urlencode({'bundleRef':bundle}),token)
   emit('PINNED_PUBLICATION_GET',**safe)
@@ -360,12 +369,140 @@ def probe_dependencies(actual,refs,origin):
     if safe['httpStatus']!=200:break
    emit('REFERENCE_PROBE_COVERAGE',semanticBindings=len(bindings),maximumSemanticGets=2,allSemanticDependenciesChecked=False)
   require(before==process_pin(),'UDP_PROCESS_CHANGED_DURING_DEPENDENCY_READ')
+  return claims
  finally:os.close(root)
+
+
+def emit_route_access_metadata(plan,claims):
+ scope=claims.get('scope');scope=set(scope.split())if type(scope)is str else set(scope or[])
+ actor=claims.get('ouf_actor_type');service=claims.get('client_id')or claims.get('azp');aud=claims.get('aud');aud=[aud]if type(aud)is str else aud or[]
+ rows=[route for route in plan['gateway']['afterRoutes'].values()if route.get('uri')=='/api/semantic/v1/references:resolve'and 'GET'in route.get('methods',[])]
+
+ if len(rows)!=1:
+  emit('RETAINED_ROUTE_AND_TOKEN_METADATA',exactRouteCount=len(rows),routeMetadataIsRetained=True,liveRouteInventoryProven=False,semanticReadScopePresent='ouf.semantic.read'in scope,actorIsService=actor=='SERVICE');return
+ route=rows[0];plugins=route.get('plugins')or{};oidc=plugins.get('openid-connect')or{}
+ required=oidc.get('required_scopes')or[];require(type(required)is list and len(required)<=16 and all(type(v)is str and len(v)<=128 for v in required),'BOUNDED_ROUTE_SCOPE_METADATA_REQUIRED')
+ functions=(plugins.get('serverless-post-function')or{}).get('functions')or[]
+ tables={'services':[],'actors':[]}
+ for kind,key in(('services','allowed_services'),('actors','allowed_actors')):
+  for fn in functions:
+   matches=re.findall(r'local '+key+r'=\{([^}]+)\}',fn)
+   for body in matches:
+    for value in re.findall(r'\[("(?:[^"\\]|\\.)*")\]=true',body):tables[kind].append(json.loads(value))
+ emit('RETAINED_ROUTE_AND_TOKEN_METADATA',routeId=route['id'],routeMetadataIsRetained=True,liveRouteInventoryProven=False,
+  requiredScopes=required,requiredScopesPresentInToken=all(v in scope for v in required),
+  semanticReadScopePresent='ouf.semantic.read'in scope,actorIsService=actor=='SERVICE',
+  principalCategory='UDP'if service=='ouf-udp'else'INGESTION'if service=='ouf-ingestion'else'OTHER',
+  audienceMatchesRoute=oidc.get('client_id')in aud,bearerOnly=oidc.get('bearer_only')is True,
+  workloadGuardMetadataParsed=bool(tables['services'])and bool(tables['actors']),
+  servicePrincipalAllowedByRetainedGuard=service in tables['services'],actorAllowedByRetainedGuard=actor in tables['actors'])
+
+def policy_metadata(doc,claims):
+ bundle=doc.get('bundle');version=doc.get('bundleVersion')
+ require(type(bundle)is dict and type(version)is int,'ACTIVE_OWNER_POLICY_ENVELOPE_REQUIRED')
+ caps=bundle.get('capabilities');grants=bundle.get('grants')
+ require(type(caps)is list and type(grants)is list and len(caps)<=10000 and len(grants)<=10000 and all(type(v)is dict for v in caps+grants),'BOUNDED_OWNER_POLICY_PAYLOAD_REQUIRED')
+ compact=json.dumps(bundle,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+ checksum=hashlib.sha256(compact).hexdigest()==doc.get('contentHash')
+ result={'bundleVersion':version,'compactBundleHashMatchesEnvelope':checksum,'loadedOwnerSnapshotProven':False}
+ if not checksum:return result
+ tenant=claims.get('tenant_id');subject=claims.get('ouf_subject')or claims.get('sub');service=claims.get('client_id')or claims.get('azp')
+ require(all(type(v)is str and 0<len(v)<=256 for v in(tenant,subject,service)),'UDP_IDENTITY_METADATA_REQUIRED')
+ result['capabilities']=[c for c in caps if c.get('capabilityId')=='ouf.semantic.read']
+ selected=[g for g in grants if g.get('capabilityId')=='ouf.semantic.read'and g.get('tenantId')==tenant]
+ require(len(selected)<=64,'BOUNDED_SEMANTIC_READ_GRANTS_REQUIRED');rows=[]
+ def instant(value):
+  if type(value)is not str:return None
+  from datetime import datetime
+  return datetime.fromisoformat(value.replace('Z','+00:00')).timestamp()
+ for g in selected:
+  constraints=g.get('constraints')or{};require(type(constraints)is dict,'OWNER_GRANT_CONSTRAINT_SHAPE_REQUIRED')
+  start=instant(g.get('validFrom'));end=instant(g.get('validUntil'));attrs=constraints.get('resourceAttributes')or{}
+  require(type(attrs)is dict,'OWNER_RESOURCE_ATTRIBUTES_SHAPE_REQUIRED')
+  rows.append({'subjectMatchesToken':not g.get('subjectId')or g.get('subjectId')==subject,
+   'servicePrincipalMatchesToken':not g.get('servicePrincipalId')or g.get('servicePrincipalId')==service,
+   'organizationRestricted':bool(g.get('organizationId')),
+   'validAtRead':start is not None and end is not None and start<=time.time()<end,
+   'resourceTypeMatchesValidation':not constraints.get('resourceType')or constraints.get('resourceType')=='semantic.validation',
+   'resourceIdMatchesUnspecified':not constraints.get('resourceId'),
+   'moduleConstraintMatches':all(k=='module'and v=='SEMANTIC'for k,v in attrs.items()),'constraints':constraints})
+ result['grants']=rows
+ return result
+
+def probe_owner_policy_channel(actual,origin,udp_claims=None):
+ global CREDENTIAL_FILES_READ
+ pid=actual['State']['Pid'];require(type(pid)is int and pid>1,'CURRENT_SEMANTIC_PROCESS_REQUIRED')
+ def pin():
+  raw=Path('/proc/'+str(pid)+'/stat').read_text();return(raw[raw.rfind(')')+2:].split()[19],os.readlink('/proc/'+str(pid)+'/ns/mnt'))
+ before=pin();root=os.open('/proc/'+str(pid)+'/root',os.O_RDONLY|os.O_DIRECTORY)
+ try:
+  endpoint,target,config_hash=configured_properties(actual,root,('ouf.authorization.registry-url','ouf.authorization.registry-token-file'))
+  path='/internal/capabilities/v1/authorization/policy-bundle/active'
+  require(endpoint==origin.rstrip('/')+path,'REVIEWED_OWNER_POLICY_ENDPOINT_REQUIRED')
+  token=mounted_file(actual,root,target,16384);CREDENTIAL_FILES_READ+=1
+  parts=token.decode('ascii').strip().split('.');require(len(parts)==3,'OWNER_POLICY_JWT_SHAPE_REQUIRED')
+  claims=json.loads(base64.urlsafe_b64decode(parts[1]+'='*((-len(parts[1]))%4)));expiry=claims.get('exp');require(type(expiry)is int,'OWNER_POLICY_TOKEN_EXPIRY_REQUIRED')
+  emit('OWNER_POLICY_TOKEN_METADATA',configured=True,expiredAtRead=expiry<=time.time(),expiryEpoch=expiry,claimsAreMetadataOnly=True,signatureVerifiedLocally=False,configFileSha256=config_hash)
+  safe,body=safe_get(origin,path,token)
+  version=body.get('bundleVersion');version=version if type(version)is int else body.get('version')if type(body.get('version'))is int else None
+  emit('OWNER_POLICY_TRANSPORT_GET',activeBundleVersion=version,loadedOwnerSnapshotProven=False,**safe)
+  if safe['httpStatus']==200 and udp_claims is not None:
+   emit('SEMANTIC_OWNER_POLICY_METADATA',facts=policy_metadata(body,udp_claims),policyObtainedFromConfiguredRegistryChannel=True,loadedOwnerSnapshotProven=False,rawPolicyPrinted=False)
+  require(before==pin(),'SEMANTIC_PROCESS_CHANGED_DURING_POLICY_READ')
+ finally:os.close(root)
+
+
+def reviewed_registry(ns,engine):
+ # Bind by the immutable reviewed identity, never by a guessed container name.
+ review=ns['read'](POLICY_CONTEXT/'review.json',8388608,POLICY_REVIEW)
+ link=review.get('workerReviewBinding',{})
+ require(link.get('path')==str(POLICY_CONTEXT/'worker-review.json')and re.fullmatch('[0-9a-f]{64}',str(link.get('sha256',''))),'EXACT_WORKER_REVIEW_LINK_REQUIRED')
+ worker=ns['read'](link['path'],8388608,link['sha256'])
+ pin=worker['registryGeneration']
+ require(type(pin)is dict and re.fullmatch('[0-9a-f]{64}',str(pin.get('containerId',''))),'EXACT_REVIEWED_REGISTRY_ID_REQUIRED')
+ actual=ns['engine_get'](engine,'containers',pin['containerId'])
+ require(actual is not None and actual['State']['Running']is True and ns['runtime_pin'](actual)==pin,'CURRENT_REVIEWED_REGISTRY_GENERATION_REQUIRED')
+ return actual
+
+def semantic_policy_query(tenant,claims):
+ t=literal(tenant);subject=literal(claims.get('ouf_subject')or claims.get('sub'));service=literal(claims.get('client_id')or claims.get('azp'))
+ return """BEGIN READ ONLY; SET LOCAL statement_timeout='10s'; SET LOCAL lock_timeout='3s';
+ WITH active AS (SELECT b.version,b.bundle_payload FROM ouf_authorization.active_policy_bundle a JOIN ouf_authorization.policy_bundle b ON b.bundle_id=a.bundle_id AND b.version=a.version WHERE a.singleton_key=true),
+ selected AS (SELECT g FROM active a CROSS JOIN LATERAL jsonb_array_elements(a.bundle_payload->'grants') g WHERE g->>'capabilityId'='ouf.semantic.read' AND g->>'tenantId'="""+t+""")
+ SELECT jsonb_build_object('database',current_database(),'databaseOid',(SELECT oid::bigint FROM pg_database WHERE datname=current_database()),'role',current_user,'transactionReadOnly',current_setting('transaction_read_only')='on',
+ 'bundleCount',(SELECT count(*) FROM active),'bundleVersion',(SELECT version FROM active),
+ 'capabilities',coalesce((SELECT jsonb_agg(c) FROM active a CROSS JOIN LATERAL jsonb_array_elements(a.bundle_payload->'capabilities') c WHERE c->>'capabilityId'='ouf.semantic.read'),'[]'::jsonb),
+ 'grants',coalesce((SELECT jsonb_agg(jsonb_build_object('servicePrincipalMatchesToken',coalesce(g->>'servicePrincipalId','')=''OR g->>'servicePrincipalId'="""+service+""",'subjectMatchesToken',coalesce(g->>'subjectId','')=''OR g->>'subjectId'="""+subject+""",'validAtRead',(g->>'validFrom')::timestamptz<=clock_timestamp()AND clock_timestamp()<(g->>'validUntil')::timestamptz,'organizationRestricted',coalesce(g->>'organizationId','')<>'','resourceTypeMatchesValidation',coalesce(g->'constraints'->>'resourceType','')IN('','semantic.validation'),'resourceIdMatchesUnspecified',coalesce(g->'constraints'->>'resourceId','')='','moduleConstraintMatches',coalesce(g->'constraints'->'resourceAttributes','{}'::jsonb)IN('null'::jsonb,'{}'::jsonb,'{"module":"SEMANTIC"}'::jsonb),'constraints',g->'constraints'))FROM selected),'[]'::jsonb)); ROLLBACK;"""
+
+def unlocked(path):
+ fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+ try:
+  info=os.fstat(fd);require(stat.S_ISREG(info.st_mode)and info.st_uid==info.st_gid==0 and stat.S_IMODE(info.st_mode)==0o600,'PRIVATE_INVOCATION_LOCK_REQUIRED')
+  try:fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+  except BlockingIOError:return False
+  fcntl.flock(fd,fcntl.LOCK_UN);return True
+ finally:os.close(fd)
+
+def policy_worker_metadata(ns):
+ read=ns['read'];base=read(POLICY_CONTEXT/'review.json',8388608,POLICY_REVIEW)
+ prior=base['scopes']['policyTokenFiniteWorkerSession'];path=Path(prior['fenceBinding']['path'])
+ fence=read(path,16384)
+ require(fence.get('schema')=='ouf.semantic-functional-session-fence.v1'and fence.get('logicalOwnerScopeHash')==prior['logicalOwnerScopeHash'],'EXACT_LOGICAL_OWNER_FENCE_REQUIRED')
+ journal=Path(fence['journalPath'])
+ require(journal.parent==path.parent and journal.name=='semantic-functional-worker-'+fence['reviewHash'],'EXACT_CURRENT_WORKER_DIRECTORY_REQUIRED')
+ rows={n:read(journal/n,131072)for n in('owner-session.json','owner-session-review.json','recovery.json','owner-status.json','owner-admission.json')}
+ signed=rows['owner-session.json'];row=rows['recovery.json'];worker_review=rows['owner-session-review.json']
+ require(signed['fenceBinding']=={'path':str(path),'value':fence}and digest(worker_review)==signed['reviewHash']==fence['reviewHash'],'CURRENT_WORKER_REVIEW_CHAIN_REQUIRED')
+ prior_count=signed['predecessorGrantAttempts'];attempts=row['attempts'];ceiling=signed['maximumCumulativeGrantAttempts']
+ require(type(attempts)is int and type(prior_count)is int and type(ceiling)is int and 0<=attempts<=signed['policy']['max_attempts']<=128 and row['controlledPredecessorGrantAttempts']==prior_count and row['controlledCumulativeGrantAttempts']==prior_count+attempts<=ceiling,'EXACT_CURRENT_CUMULATIVE_BUDGET_REQUIRED')
+ state=row['state'];reason=row.get('reason');require(state in('NEW','ACTIVE','RETRY_WAIT','CANCELLED','FAILED','BLOCKED','EXHAUSTED')and(reason is None or re.fullmatch('[A-Z_]{1,100}',reason)),'SAFE_WORKER_STATE_REQUIRED')
+ emit('CURRENT_POLICY_WORKER_HISTORY',journalPath=str(journal),state=state,reason=reason,attempts=attempts,publications=row.get('publicationCount'),priorControlledGrantAttempts=prior_count,controlledCumulativeGrantAttempts=prior_count+attempts,maximumCumulativeGrantAttempts=ceiling,remainingControlledGrantAttempts=ceiling-prior_count-attempts,invocationLockUnheldAtRead=unlocked(journal/'invocation.lock'),workerReviewHash=digest(worker_review),recordHashes={n:digest(v)for n,v in rows.items()},newWorkerStarted=False)
+ require(read(path,16384)==fence and all(read(journal/n,131072)==v for n,v in rows.items()),'RECOVERY_METADATA_CHANGED_DURING_READ')
 
 
 def main():
  require(os.geteuid()==os.getegid()==0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,'ISOLATED_ROOT_READ_REQUIRED')
- signal.signal(signal.SIGALRM,lambda *_:(_ for _ in ()).throw(ValueError('READ_DEADLINE')));signal.alarm(90)
+ signal.signal(signal.SIGALRM,lambda *_:(_ for _ in ()).throw(ValueError('READ_DEADLINE')));signal.alarm(120)
  fd=os.open(BOOT,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
  try:
   s=os.fstat(fd);require(stat.S_ISREG(s.st_mode)and s.st_uid==s.st_gid==0 and s.st_nlink==1 and stat.S_IMODE(s.st_mode)==0o600 and 0<s.st_size<=131072,'RETAINED_HELPER_CUSTODY_REQUIRED')
@@ -425,12 +562,31 @@ def main():
  refs=facts.pop('contractRefs');require(facts['selectedJobCount']==1 and type(refs)is dict,'EXACT_SINGLE_RESOLVED_ROW_REQUIRED')
  emit('REFERENCE_JOB_METADATA',facts=facts,rawSqlOutputPrinted=False,propertyValuesPrinted=False)
  udp=ns['engine_get'](prepared['engine'],'containers',proofs['udp']['runtimeBinding']['containerId'])
- probe_dependencies(udp,refs,selection['origin'])
+ claims=probe_dependencies(udp,refs,selection['origin'],plan)
+ registry=reviewed_registry(ns,prepared['engine']);registry_pin=runtime_pin(registry)
+ try:probe_owner_policy_channel(registry,selection['origin'],claims)
+ except Exception as failure:
+  reason=str(failure)if type(failure)is ValueError and re.fullmatch('[A-Z_]+',str(failure))else type(failure).__name__
+  emit('OWNER_POLICY_CHANNEL_UNPROVEN',reason=reason,exceptionMessagePrinted=False)
+ binding=next(r for r in db['modules']if r['module']=='onboarding')
+ for v in(admin,binding['database']):require(type(v)is str and re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,62}',v),'EXACT_DATABASE_ROLE_REQUIRED')
+ with tempfile.TemporaryDirectory(prefix='ouf-csv-policy-read-')as config:
+  argv=[executable(old['sourceClosure']['executables']['docker']),'--host','unix://'+prepared['engine']['socketPath'],'--config',config,'exec',pg['Id'],'env','LC_ALL=C',
+   'PGOPTIONS=-c default_transaction_read_only=on -c statement_timeout=10000 -c lock_timeout=3000','timeout','-s','KILL','15','psql','-X','-q','-A','-t','-v','ON_ERROR_STOP=1',
+   '-U',admin,'-d',binding['database'],'-c',semantic_policy_query(selection['tenant'],claims)]
+  code,raw,err,_=bounded(argv,seconds=20,maximum=65536);require(code==0,'READ_ONLY_SEMANTIC_POLICY_SQL_FAILED');policy_facts=json.loads(raw)
+ require(policy_facts['database']==binding['database']and policy_facts['databaseOid']==binding['databaseOid']and policy_facts['role']==admin and policy_facts['transactionReadOnly']is True,'EXACT_POLICY_DATABASE_REQUIRED')
+ emit('PUBLISHED_SEMANTIC_READ_GRANTS',facts=policy_facts,loadedRegistrySnapshotProven=False,rawPolicyPrinted=False)
+ try:policy_worker_metadata(ns)
+ except Exception as failure:
+  reason=str(failure)if type(failure)is ValueError and re.fullmatch('[A-Z_]+',str(failure))else type(failure).__name__
+  emit('POLICY_WORKER_HISTORY_UNPROVEN',reason=reason,exceptionMessagePrinted=False,newWorkerStarted=False)
+ require(runtime_pin(ns['engine_get'](prepared['engine'],'containers',registry['Id']))==registry_pin,'SEMANTIC_GENERATION_CHANGED_DURING_READ')
  require(runtime_pin(ns['engine_get'](prepared['engine'],'containers',pg['Id']))==db['postgresRuntimeBinding'],'POSTGRES_GENERATION_CHANGED_DURING_READ')
  applications();require(ns['read'](CONTEXT/'recovery.json',131072)==record,'ROLLOUT_RECORD_CHANGED')
  emit('END',complete=True,dependencyProbeComplete=True,functionalStage3Proven=False,runtimeAuthorityIssued=False,rootCauseRequiresReadback=True)
 if __name__=='__main__':
- emit('BEGIN',maximumSeconds=90,maximumEngineReads=7,maximumSqlSessions=2,maximumRows=13,maximumCredentialFiles=1,maximumGatewayGets=3)
+ emit('BEGIN',maximumSeconds=120,maximumEngineReads=9,maximumSqlSessions=3,maximumRows=13,maximumCredentialFiles=2,maximumGatewayGets=4)
  try:main()
  except Exception as error:
   reason=str(error)if type(error)is ValueError and re.fullmatch('[A-Z_]+',str(error))else type(error).__name__

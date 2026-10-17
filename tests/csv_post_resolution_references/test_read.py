@@ -26,6 +26,22 @@ class Contract(unittest.TestCase):
   with patch.object(m,'CREDENTIAL_FILES_READ',1),contextlib.redirect_stdout(io.StringIO())as out:m.emit('TEST')
   value=json.loads(out.getvalue());self.assertEqual(value['credentialFilesRead'],1)
   self.assertEqual(value['jobsRetried'],0);self.assertEqual(value['oauthRequests'],0)
+
+ def test_safe_semantic_error_identifies_layer_without_echoing_values(self):
+  response=Mock(status=403);response.read.return_value=b'{"message":"SEM_CAPABILITY_REQUIRED:ouf.semantic.read","detail":"PRIVATE_SUBJECT_AND_TOKEN"}'
+  conn=Mock();conn.getresponse.return_value=response
+  with patch.object(m.http.client,'HTTPSConnection',return_value=conn):
+   safe,_=m.safe_get('https://approved.example','/api/semantic/v1/references:resolve',b'PRIVATE_TOKEN')
+  self.assertEqual(safe['message'],'SEM_CAPABILITY_REQUIRED:ouf.semantic.read')
+  self.assertNotIn('PRIVATE_',json.dumps(safe))
+ def test_retained_route_scope_is_metadata_and_not_live_proof(self):
+  import contextlib,io
+  route={'id':'fixture','uri':'/api/semantic/v1/references:resolve','methods':['GET'],'plugins':{'openid-connect':{'required_scopes':['ouf.semantic.read'],'client_id':'owner','bearer_only':True}}}
+  with contextlib.redirect_stdout(io.StringIO())as out:
+   m.emit_route_access_metadata({'gateway':{'afterRoutes':{'fixture':route}}},{'scope':'other','client_id':'ouf-udp','ouf_actor_type':'SERVICE','aud':['owner']})
+  result=json.loads(out.getvalue());self.assertFalse(result['requiredScopesPresentInToken'])
+  self.assertFalse(result['liveRouteInventoryProven']);self.assertTrue(result['audienceMatchesRoute'])
+
 @unittest.skipUnless(os.environ.get('OUF_NATIVE_SQL')=='1','actual PostgreSQL17 required')
 class NativeSql(unittest.TestCase):
  def cli(self,*args):
@@ -57,4 +73,15 @@ class NativeSql(unittest.TestCase):
   self.assertEqual(row['integrity_attempts'],5);self.assertEqual(row['state_version'],17);self.assertEqual(row['binding_count'],0)
   self.assertEqual(row['safe_failure_code'],'UDP_REFERENCE_INTEGRITY_MISSING')
   self.assertEqual(json.loads(sql(m.reference_query('udp','other-tenant')))['selectedJobCount'],0)
+
+  caps=[{'capabilityId':'ouf.semantic.read','allowedActors':['SERVICE'],'requiredScope':'ouf.semantic.read','operation':'READ'}]
+  grants=[{'capabilityId':'ouf.semantic.read','tenantId':tenant,'servicePrincipalId':service,'subjectId':'PRIVATE_SUBJECT','validFrom':'2020-01-01T00:00:00Z','validUntil':expiry,'constraints':{'effect':'ALLOW','resourceType':resource,'resourceAttributes':{'module':'SEMANTIC'}}} for tenant,service,resource,expiry in [('ouf-lab','ouf-udp','semantic.validation','2099-01-01T00:00:00Z'),('ouf-lab','ouf-udp','semantic.validation','2020-01-02T00:00:00Z'),('ouf-lab','other','semantic.artifact','2099-01-01T00:00:00Z'),('other','ouf-udp','semantic.validation','2099-01-01T00:00:00Z')]]
+  payload=json.dumps({'capabilities':caps,'grants':grants})
+  sql("create schema ouf_authorization;create table ouf_authorization.policy_bundle(bundle_id text,version bigint,bundle_payload jsonb);create table ouf_authorization.active_policy_bundle(singleton_key boolean,bundle_id text,version bigint);insert into ouf_authorization.policy_bundle values('fixture',42,'"+payload+"');insert into ouf_authorization.active_policy_bundle values(true,'fixture',42);")
+  raw=sql(m.semantic_policy_query('ouf-lab',{'sub':'PRIVATE_SUBJECT','client_id':'ouf-udp'}));result=json.loads(raw)
+  self.assertTrue(result['transactionReadOnly']);self.assertEqual(result['bundleVersion'],42)
+  self.assertNotIn('PRIVATE_',raw);self.assertEqual(len(result['grants']),3)
+  matches=[g for g in result['grants']if g['servicePrincipalMatchesToken'] and g['subjectMatchesToken'] and g['resourceTypeMatchesValidation']]
+  self.assertEqual(len(matches),2);self.assertEqual(sum(g['validAtRead'] for g in matches),1)
+
 if __name__=='__main__':unittest.main()
