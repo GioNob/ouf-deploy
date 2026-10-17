@@ -144,6 +144,9 @@ def main():
  code=Path(sys.argv[1]);commit=sys.argv[2];mode=sys.argv[3]
  require(re.fullmatch('[0-9a-f]{40}',commit)and mode in('TOKEN_SESSION','MCP_UPDATE'),'EXACT_SCOPED_MODE_REQUIRED')
  signal.alarm(120)
+ emit('BEGIN',mode=mode,preparationMaximumSeconds=120,completedTechnicalPhases=8,functionalMilestonesProven=0,
+  runtimeAuthorityIssued=False,priorHumanOAuthAttempts=49,maximumCumulativeHumanOAuthAttempts=128,
+  priorControlledGrantAttempts=128,maximumCumulativeGrantAttempts=197)
  old=read(CONTEXT/'review.json',8388608,REVIEW);old_authority=read(CONTEXT/'authority.json',131072,AUTHORITY)
  require(old['sourceClosure']['declaration']['sourceCommit']==SOURCE
   and all(old_authority[k]==v for k,v in old['scopes'].items()),'RETAINED_WHOLE_COHORT_INPUTS_CHANGED')
@@ -167,7 +170,7 @@ def main():
  code_bytes(code/'execute.py',package['executorSha256'])
  case=read(code/'case.json',131072,package['caseSha256'])
  require(case.get('schema')=='ouf.semantic-mcp-scoped-execution-selection.v1'
-  and case.get('mcpReviewBinding')==MCP_REVIEW,'EXACT_SEALED_EXECUTION_SELECTION_REQUIRED')
+  and case.get('mcpReviewBinding')==MCP_REVIEW and case.get('mode')==mode,'EXACT_SEALED_EXECUTION_SELECTION_REQUIRED')
  resources={'mcpReview':private,'mcpReviewBinding':MCP_REVIEW}
  if mode=='TOKEN_SESSION':
   old_policy=read(POLICY_CONTEXT/'authority.json',131072,POLICY_AUTHORITY)
