@@ -192,4 +192,19 @@ class Protocol(unittest.TestCase):
    changed['policyTokenOwnerInstallation']['workerSessionScopeHash']=p.digest(changed['policyTokenFiniteWorkerSession'])
    with self.assertRaises(Exception):authority.scopes_valid('POLICY_TEST_SESSION',changed,'c'*64)
 
+
+ def test_delivered_package_matches_every_real_overlay_and_bootstrap(self):
+  package_path=ROOT/'releases/csv-last-row-recovery-code-package-20261018.json'
+  package=json.loads(package_path.read_bytes())
+  self.assertEqual(set(package['sourceHashes']),set(bootstrap.OVERLAYS))
+  self.assertFalse(package['runtimeAuthorityIssued'])
+  for name,(filename,path)in bootstrap.OVERLAYS.items():
+   self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),package['sourceHashes'][name],name)
+  for path,key in(('scripts/execute-csv-last-row-recovery-20261018.py','executorSha256'),('tools/csv_last_row_recovery/runtime.py','loaderSha256'),('releases/csv-last-row-recovery-selection-20261018.json','caseSha256')):
+   self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),package[key],key)
+  launcher=(ROOT/'scripts/launch-csv-last-row-recovery-20261018.sh').read_text()
+  self.assertIn(hashlib.sha256(package_path.read_bytes()).hexdigest(),launcher)
+  for value in package['sourceHashes'].values():self.assertIn(value,launcher)
+  self.assertIn(package['sourceCommit'],launcher)
+
 if __name__=='__main__':unittest.main(verbosity=2)
