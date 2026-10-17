@@ -77,22 +77,22 @@ class NativeSql(unittest.TestCase):
   def sql(raw):return self.cli('exec',cid,'psql','-U','postgres','-X','-q','-A','-t','-v','ON_ERROR_STOP=1','-c',raw)
   sql("""
   create schema ouf_udp;
-  create table ouf_udp.handoff_intake(handoff_id text,state text,payload_json jsonb,source_id text,type_code text,source_object_id text,raw_lake_object_id uuid);
+  create table ouf_udp.handoff_intake(handoff_id text,state text,payload_json jsonb,source_id text,type_code text,source_object_id text,raw_lake_object_id uuid,ingestion_run_id text);
   create table ouf_udp.materialization_job(handoff_id text,job_id uuid,state text,state_version bigint,attempts int,integrity_attempts int,safe_failure_code text,missing_ref_hashes jsonb,integrity_baseline_hash text,claimed_by text,lease_until timestamptz);
   create table ouf_udp.resolution_issue(handoff_id text,issue_id uuid,state text,tenant_id text);
   create table ouf_udp.human_resolution_decision(issue_id uuid,action text,decided_at timestamptz);
-  create table ouf_udp.lake_object(lake_object_id uuid,tenant_id text,state text);
+  create table ouf_udp.lake_object(lake_object_id uuid,tenant_id text,state text,access_label text);
   create table ouf_udp.source_binding(first_handoff_id text,source_id text,type_code text,source_object_id text);
   create table ouf_udp.materialization_observation(handoff_id text);
   create table ouf_udp.property_contribution(handoff_id text);
-  insert into ouf_udp.handoff_intake values('9fde61f1-8d3c-4de7-b3fe-b534b32e45e3','DURABLE','{"contractRefs":{"bundleRef":"urn:fixture"},"canonicalPayload":{"PRIVATE_VALUE":"PRIVATE_VALUE"}}','teatri-csv-6609b245','TYPE','PRIVATE_OBJECT_ID',null);
+  insert into ouf_udp.handoff_intake values('9fde61f1-8d3c-4de7-b3fe-b534b32e45e3','DURABLE','{"contractRefs":{"bundleRef":"urn:fixture"},"canonicalPayload":{"PRIVATE_VALUE":"PRIVATE_VALUE"}}','teatri-csv-6609b245','TYPE','PRIVATE_OBJECT_ID',null,'a3208f2f-ebfd-415d-bddc-79ab05dea78f');
   insert into ouf_udp.materialization_job values('9fde61f1-8d3c-4de7-b3fe-b534b32e45e3',md5('job')::uuid,'QUARANTINED',17,1,5,'UDP_REFERENCE_INTEGRITY_MISSING','["sha256:fixture"]','sha256:baseline',null,null);
   insert into ouf_udp.resolution_issue values('9fde61f1-8d3c-4de7-b3fe-b534b32e45e3','e16fec6e-311d-49f3-b1de-f274cb5a92d1','RESOLVED','ouf-lab');
   insert into ouf_udp.human_resolution_decision values('e16fec6e-311d-49f3-b1de-f274cb5a92d1','CREATE_NEW',now());
   """)
   raw=sql(m.reference_query('udp','ouf-lab'));self.assertNotIn('PRIVATE_',raw);facts=json.loads(raw)
   self.assertTrue(facts['transactionReadOnly']);self.assertEqual(facts['selectedJobCount'],1)
-  row=facts['jobs'][0];self.assertEqual(row['issue_state'],'RESOLVED');self.assertEqual(row['latest_action'],'CREATE_NEW')
+  row=facts['jobs'][0];self.assertEqual(row['type_code'],'TYPE');self.assertEqual(row['source_id'],'teatri-csv-6609b245');self.assertEqual(row['issue_state'],'RESOLVED');self.assertEqual(row['latest_action'],'CREATE_NEW')
   self.assertEqual(row['integrity_attempts'],5);self.assertEqual(row['state_version'],17);self.assertEqual(row['binding_count'],0)
   self.assertEqual(row['safe_failure_code'],'UDP_REFERENCE_INTEGRITY_MISSING')
   self.assertEqual(json.loads(sql(m.reference_query('udp','other-tenant')))['selectedJobCount'],0)

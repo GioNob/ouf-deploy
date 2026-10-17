@@ -224,10 +224,10 @@ def reference_query(module,tenant):
  require(module=='udp','ONLY_UDP_READ_REQUIRED');t=literal(tenant);s=literal(SOURCE)
  return "BEGIN READ ONLY; SET LOCAL statement_timeout='10s'; SET LOCAL lock_timeout='3s'; "+"""
  WITH selected AS (
- SELECT h.handoff_id,h.state intake_state,h.payload_json->'contractRefs' refs,
+ SELECT h.handoff_id,h.ingestion_run_id,h.source_id,h.type_code,h.state intake_state,h.payload_json->'contractRefs' refs,
  j.job_id,j.state,j.state_version,j.attempts,j.integrity_attempts,j.safe_failure_code,
  j.missing_ref_hashes,j.integrity_baseline_hash,(j.claimed_by IS NOT NULL OR j.lease_until IS NOT NULL) lease_present,
- l.state lake_state,q.state issue_state,d.action latest_action,
+ l.state lake_state,l.access_label raw_access_label,q.state issue_state,d.action latest_action,
  (SELECT count(*) FROM ouf_udp.source_binding b WHERE b.first_handoff_id=h.handoff_id OR
  (b.source_id=h.source_id AND b.type_code=h.type_code AND b.source_object_id=h.source_object_id)) binding_count,
  (SELECT count(*) FROM ouf_udp.materialization_observation o WHERE o.handoff_id=h.handoff_id) observation_count,
