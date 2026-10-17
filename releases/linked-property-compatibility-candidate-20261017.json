@@ -1,0 +1,25 @@
+{
+  "schema": "ouf.ingestion-readiness-source-lock.v1",
+  "cohortId": "linked-property-xsd-compatibility-20261017",
+  "modules": [
+    {
+      "module": "udp",
+      "repository": "ouf-udp-object-resolution",
+      "commit": "e66e6df0833a872f15170eb46a43f85e50dd859b",
+      "kind": "DOCKER_SAVE"
+    },
+    {
+      "module": "onboarding",
+      "repository": "ouf-source-onboarding",
+      "commit": "b8b2eb23e36ea3166012edf84fb8c1fc3441dfca",
+      "kind": "DOCKER_SAVE"
+    }
+  ],
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "requiredUdpMigration": "V35__linked_property_reconciliation.sql",
+  "nativeProfilePublicationRequired": true,
+  "scope": "Exact XSD string compatibility for generic linked-property reconciliation. Package only; no target update, new migration, publication or replay.",
+  "migrationChangeRequired": false
+}
