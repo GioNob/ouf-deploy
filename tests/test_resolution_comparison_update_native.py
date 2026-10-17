@@ -145,14 +145,14 @@ class NativeEndToEnd(unittest.TestCase):
    'databaseMigrationsAllowed':False,'grantChangesAllowed':False,'semanticDispatchAllowed':False,
    'engine':{'socketPath':str(sock),'socketBinding':[s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode&0o777]},
    'images':images,'candidateModules':{n:{'sourceCommit':'c'*40}for n in images},
-   'gateway':{'proposedRoute':{'id':'fixture-new-read','uri':'/api/udp/v1/governance/resolution/issues/package/confirm','methods':['POST'],'plugins':{'openid-connect':{'bearer_only':True,'required_scopes':['resolution.match.approve']},'request-validation':{'body_schema':{'type':'object','required':['configuration'],'properties':{'configuration':{'type':'object'}}}}}},'targetProjectionBinding':projection_binding}}
+   'gateway':{'proposedRoute':{'id':'fixture-new-read','uri':'/new-service-read','methods':['GET']},'targetProjectionBinding':projection_binding}}
   private=c.root/'private-review.json';c.write(private,json.dumps(review,sort_keys=True,separators=(',',':')).encode())
   binding={'path':str(private),'sha256':digest(review)};context=c.root/'native-update';context.mkdir(mode=0o700)
   selection={n:{'readinessPort':8080,'readinessPath':'/actuator/health/readiness'}for n in images}
   plan=compile_plan(review,binding,context,actuals,transport,routes,selection)
   docker=Path(shutil.which('docker')).resolve();plan['programs']={'docker':{'path':str(docker),'sha256':hashlib.sha256(docker.read_bytes()).hexdigest()}}
   # The already-installed read route is preserved, never republished by this owner.
-  route=review['gateway']['proposedRoute'];status,_=admin.request('PUT','/apisix/admin/routes/'+route['id'],route);self.assertEqual(status,200)
+  route={**review['gateway']['proposedRoute'],'uri':'/api/udp/v1/governance/resolution/issues/package/confirm','methods':['POST'],'plugins':{'openid-connect':{'bearer_only':True,'required_scopes':['resolution.match.approve']},'request-validation':{'body_schema':{'type':'object','required':['configuration']}}}};status,_=admin.request('PUT','/apisix/admin/routes/'+route['id'],route);self.assertEqual(status,200)
   plan['gateway']['beforeRoutes']={**routes,route['id']:route}
   plan['schema']='ouf.resolution-review-refinement-native-update-plan.v1';plan['maximumGatewayWrites']=1
   from tools.resolution_comparison_update.plan import confirmation_route

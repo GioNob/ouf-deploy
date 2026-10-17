@@ -75,6 +75,15 @@ class Owner(unittest.TestCase):
   self.ports.fail_after=None;self.owner.reconcile_claim();self.owner.run()
   self.assertEqual(self.ports.calls.count('udp.STOP_OLD'),1)
   self.assertEqual(self.ports.calls.count('onboarding.STOP_OLD'),1)
+ def test_lost_confirm_schema_put_is_reconciled_without_a_second_write(self):
+  self.ports.fail_after='PUBLISH_CONFIRM_SCHEMA'
+  with self.assertRaises(OSError):self.owner.run()
+  before=list(self.ports.calls)
+  with self.assertRaises(UpdatePaused):self.owner.run()
+  self.assertEqual(before,self.ports.calls)
+  self.ports.fail_after=None;self.owner.reconcile_claim();self.owner.run()
+  self.assertEqual(self.ports.calls.count('PUBLISH_CONFIRM_SCHEMA'),1)
+  self.assertEqual(self.ports.calls.count('udp.STOP_OLD'),1)
  def test_transient_readiness_preserves_budget_and_backoff(self):
   self.ports.transient=1
   with self.assertRaises(UpdatePaused):self.owner.run()
