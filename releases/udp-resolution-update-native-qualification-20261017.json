@@ -1,0 +1,35 @@
+{
+  "schema": "ouf.udp-resolution-native-update-qualification.v1",
+  "sourceCommit": "198d0bd9c2968f1fa5bfa61d1c7da8efab2c13bb",
+  "runId": 39035231628,
+  "jobId": 117403587830,
+  "conclusion": "success",
+  "tests": 23,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "nativeDocker": true,
+  "realRootCustody": true,
+  "realExistingRoleSignatures": true,
+  "syntheticApplicationAndGatewayFixtures": true,
+  "scope": {
+    "applications": [
+      "udp"
+    ],
+    "maximumGatewayWrites": 0,
+    "newPolicyWorkerStarted": false,
+    "identityDecisionsAllowed": false,
+    "databaseMigrationsAllowed": false,
+    "maximumExecutionSeconds": 900,
+    "maximumEffectAttemptsPerStage": 1
+  },
+  "candidateRunId": 39034093831,
+  "candidateArtifactId": 12101592347,
+  "packageSha256": "7206968444cf40b778efc75b7bb4243d1ba26aeebf800de60c9c0de87ae46903",
+  "targetDeploymentPerformed": false,
+  "endToEndResolutionAccessProven": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2,
+  "installationSpecific": true,
+  "independentMultiHostQualificationProven": false
+}
