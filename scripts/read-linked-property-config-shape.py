@@ -40,7 +40,7 @@ def shape(actual):
                 row['matchesUdpDatabase'] = value.startswith('jdbc:postgresql:') and value.split('?',1)[0].endswith('/ouf_udp')
                 row['matchesUdpRole'] = value == 'ouf_udp'
             rows.append(row)
-    return {'properties': rows, 'javaOverrideChannelsPresent': any(env.get(k) for k in ('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','JAVA_OPTS','_JAVA_OPTIONS')),
+    return {'properties': rows, 'overrideChannels': [{'property':k,'nonempty':bool(v),'kind':type(v).__name__} for k,v in env.items() if normal(k).startswith(('spring','loader'))], 'springJsonProperties': [{'property':k,'kind':type(v).__name__,'isNull':v is None}for k,v in flat.items()], 'javaOverrideChannelsPresent': any(env.get(k) for k in ('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','JAVA_OPTS','_JAVA_OPTIONS')),
             'argumentOverridePresent': any(a.startswith(('--spring.', '-Dspring.')) for a in (actual['Config'].get('Entrypoint') or []) + (actual['Config'].get('Cmd') or [])),
             'mountedConfigurationCount':len([m for m in actual['Mounts'] if m['Destination'].endswith(('.yaml','.yml','.properties'))]),
             'credentialValuesPrinted': False, 'effectiveFlywayConfigurationProven': False}
@@ -75,3 +75,4 @@ if __name__ == '__main__':
     except Exception as error:
         report.update(complete=False, reason=str(error) if type(error) is ValueError else type(error).__name__)
     print('OUF_LINKED_PROPERTY_CONFIGURATION_SHAPE='+json.dumps(report, sort_keys=True))
+
