@@ -75,9 +75,12 @@ def acquisition_query(module,tenant):
   WHERE package_id='a5183503-04ff-4e10-850f-e22bf874365e' AND tenant_id="""+t+"""
    AND actor_subject='b93d8cf6-cd14-4ee6-91d7-84cd76c4f500'
  ), intake AS (
-  SELECT h.* FROM ouf_udp.handoff_intake h JOIN ouf_udp.lake_object l ON l.lake_object_id=h.raw_lake_object_id
-  WHERE h.source_id="""+s+""" AND h.ingestion_run_id='a3208f2f-ebfd-415d-bddc-79ab05dea78f'
-   AND h.type_code='https://schema.org/PerformingArtsTheater' AND l.tenant_id="""+t+"""
+  SELECT h.* FROM ouf_udp.handoff_intake h
+  WHERE h.source_id="""+s+""" AND (
+   EXISTS(SELECT 1 FROM ouf_udp.resolution_issue q WHERE q.handoff_id=h.handoff_id AND q.tenant_id="""+t+""")
+   OR EXISTS(SELECT 1 FROM ouf_udp.source_binding b JOIN ouf_udp.urban_object o ON o.urban_object_id=b.urban_object_id
+     WHERE b.source_id=h.source_id AND b.type_code=h.type_code AND b.source_object_id=h.source_object_id AND o.tenant_id="""+t+""")
+   OR EXISTS(SELECT 1 FROM ouf_udp.lake_object l WHERE l.lake_object_id=h.raw_lake_object_id AND l.tenant_id="""+t+"""))
  ), decisions AS (
   SELECT d.*,q.handoff_id,q.state issue_state FROM ouf_udp.human_resolution_decision d
   JOIN ouf_udp.resolution_issue q ON q.issue_id=d.issue_id JOIN intake h USING(handoff_id)

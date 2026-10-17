@@ -6,7 +6,7 @@ class Contract(unittest.TestCase):
  def test_single_readonly_transaction_closed_inputs_and_no_property_values(self):
   raw=m.acquisition_query('udp','ouf-lab');self.assertTrue(raw.startswith('BEGIN READ ONLY;'));self.assertTrue(raw.endswith('ROLLBACK;'))
   self.assertNotRegex(raw,r'(?i)\b(insert|update|delete|truncate|alter|create|grant|revoke)\b')
-  self.assertNotIn('value_json',raw);self.assertNotIn('payload_json',raw);self.assertIn('a5183503-04ff-4e10-850f-e22bf874365e',raw)
+  self.assertNotIn("h.type_code='https://schema.org/PerformingArtsTheater'",raw);self.assertNotIn("h.ingestion_run_id=",raw);self.assertNotIn('value_json',raw);self.assertNotIn('payload_json',raw);self.assertIn('a5183503-04ff-4e10-850f-e22bf874365e',raw)
   for module,tenant in [('ingestion','ouf-lab'),('udp',"x'; drop table x;--")]:
    with self.assertRaises(ValueError):m.acquisition_query(module,tenant)
  def test_receipt_alone_or_one_missing_revision_cannot_prove_materialization(self):
@@ -40,11 +40,11 @@ class NativeSql(unittest.TestCase):
    create table ouf_udp.property_contribution(handoff_id text,urban_object_id uuid);
    insert into ouf_udp.resolution_review_package_confirmation values('a5183503-04ff-4e10-850f-e22bf874365e','ouf-lab','b93d8cf6-cd14-4ee6-91d7-84cd76c4f500','2026-10-17T16:00:00Z','fixture-auth',11);
    insert into ouf_udp.lake_object select md5(n::text)::uuid,case when n=14 then 'other-tenant' else 'ouf-lab' end from generate_series(1,14)n;
-   insert into ouf_udp.handoff_intake select 'h'||n,'teatri-csv-6609b245','a3208f2f-ebfd-415d-bddc-79ab05dea78f','https://schema.org/PerformingArtsTheater',md5(n::text)::uuid,case when n=13 then 'DURABLE' else 'PROCESSED' end,'PRIVATE_SOURCE_'||n from generate_series(1,14)n;
+   insert into ouf_udp.handoff_intake select 'h'||n,'teatri-csv-6609b245','run-ref:source-envelope','SOURCE_ROW_TYPE',null,case when n=13 then 'DURABLE' else 'PROCESSED' end,'PRIVATE_SOURCE_'||n from generate_series(1,14)n;
    insert into ouf_udp.resolution_issue select md5(n::text)::uuid,'h'||n,case when n=13 then 'OPEN' else 'RESOLVED' end,case when n=14 then 'other-tenant' else 'ouf-lab' end,'UNRESOLVED_IDENTITY' from generate_series(2,14)n;
    insert into ouf_udp.human_resolution_decision select md5(n::text)::uuid,'CREATE_NEW','b93d8cf6-cd14-4ee6-91d7-84cd76c4f500','2026-10-17T16:00:00Z','fixture-auth' from generate_series(2,12)n;
    insert into ouf_udp.materialization_job select 'h'||n,case when n=13 then 'QUARANTINED' else 'SUCCEEDED' end,case when n=13 then 'UDP_IDENTITY_REVIEW_REQUIRED' else null end from generate_series(1,14)n;
-   insert into ouf_udp.source_binding select 'teatri-csv-6609b245','https://schema.org/PerformingArtsTheater','PRIVATE_SOURCE_'||n,md5(n::text)::uuid,'ACTIVE' from generate_series(1,12)n;
+   insert into ouf_udp.source_binding select 'teatri-csv-6609b245','SOURCE_ROW_TYPE','PRIVATE_SOURCE_'||n,md5(n::text)::uuid,'ACTIVE' from generate_series(1,12)n;
    insert into ouf_udp.urban_object select md5(n::text)::uuid,'ouf-lab','ACTIVE',md5(('rev'||n))::uuid from generate_series(1,12)n;
    insert into ouf_udp.materialization_observation select 'h'||n,md5(n::text)::uuid,md5(('rev'||n))::uuid from generate_series(1,12)n;
    insert into ouf_udp.object_revision select md5(n::text)::uuid,md5(('rev'||n))::uuid from generate_series(1,12)n;
