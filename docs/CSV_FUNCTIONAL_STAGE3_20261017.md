@@ -1,4 +1,13 @@
 
+## Consegna qualificata del preflight completo — 18 ottobre 2026
+
+[Run 39074601464](https://github.com/GioNob/ouf-deploy/actions/runs/39074601464), job 117519046015: **8 test PASS, zero fallimenti/errori/skip**, SQL su PostgreSQL 17 reale, sintassi launcher e corrispondenza dell'impronta della sorgente consegnata. [Prova di qualifica](csv-semantic-access-full-preflight-qualified-20261018.json). Il lettore include anche tipo sorgente, run e access label RAW richiesti per circoscrivere l'eventuale recupero del singolo job, senza indovinarli.
+
+L'utente ha ricevuto il comando hash-verificato per la sessione VPS esistente. In attesa del riscontro v2: nessun nuovo login, grant, worker, job retry o decisione d'identità. Il 403 resta un diniego da spiegare, non un transitorio da ritentare automaticamente. Il preflight non attesta il contenuto effettivamente caricato in memoria dal registry, l'inventario live delle route o una nuova autorità HUMAN; espone le rispettive prove e lacune. Se il canale owner non è verificabile, le letture SQL indipendenti vengono comunque raccolte, senza adottare un'altra identità o generazione.
+
+**Avanzamento invariato: tecniche 8/8, funzionali 2/6.** La decisione CREATE_NEW è risolta; il commit dell'ultima riga non è ancora provato.
+
+
 ## Ultimo record: pubblicazione accessibile, riferimento semantico negato — 18 ottobre 2026
 
 Il [riscontro VPS](csv-last-row-semantic-access-target-20261018.json), log `/home/oufadmin/ouf-csv-reference-read.TDxght8L/read.log`, prova **HTTP 200** per la pubblicazione storica e **HTTP 403** per il suo unico riferimento semantico. Il token UDP non risultava scaduto al momento della lettura; questo non prova la validità futura né identifica ancora lo strato che nega l'accesso. `ownerAuthorizationDeniedDetail=false` non esclude un diniego owner con un altro formato di errore.
