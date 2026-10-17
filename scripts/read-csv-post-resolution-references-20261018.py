@@ -563,8 +563,10 @@ def main():
  emit('REFERENCE_JOB_METADATA',facts=facts,rawSqlOutputPrinted=False,propertyValuesPrinted=False)
  udp=ns['engine_get'](prepared['engine'],'containers',proofs['udp']['runtimeBinding']['containerId'])
  claims=probe_dependencies(udp,refs,selection['origin'],plan)
- registry=reviewed_registry(ns,prepared['engine']);registry_pin=runtime_pin(registry)
- try:probe_owner_policy_channel(registry,selection['origin'],claims)
+ registry=None;registry_pin=None
+ try:
+  registry=reviewed_registry(ns,prepared['engine']);registry_pin=runtime_pin(registry)
+  probe_owner_policy_channel(registry,selection['origin'],claims)
  except Exception as failure:
   reason=str(failure)if type(failure)is ValueError and re.fullmatch('[A-Z_]+',str(failure))else type(failure).__name__
   emit('OWNER_POLICY_CHANNEL_UNPROVEN',reason=reason,exceptionMessagePrinted=False)
@@ -581,7 +583,7 @@ def main():
  except Exception as failure:
   reason=str(failure)if type(failure)is ValueError and re.fullmatch('[A-Z_]+',str(failure))else type(failure).__name__
   emit('POLICY_WORKER_HISTORY_UNPROVEN',reason=reason,exceptionMessagePrinted=False,newWorkerStarted=False)
- require(runtime_pin(ns['engine_get'](prepared['engine'],'containers',registry['Id']))==registry_pin,'SEMANTIC_GENERATION_CHANGED_DURING_READ')
+ if registry is not None:require(runtime_pin(ns['engine_get'](prepared['engine'],'containers',registry['Id']))==registry_pin,'SEMANTIC_GENERATION_CHANGED_DURING_READ')
  require(runtime_pin(ns['engine_get'](prepared['engine'],'containers',pg['Id']))==db['postgresRuntimeBinding'],'POSTGRES_GENERATION_CHANGED_DURING_READ')
  applications();require(ns['read'](CONTEXT/'recovery.json',131072)==record,'ROLLOUT_RECORD_CHANGED')
  emit('END',complete=True,dependencyProbeComplete=True,functionalStage3Proven=False,runtimeAuthorityIssued=False,rootCauseRequiresReadback=True)
