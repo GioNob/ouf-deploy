@@ -35,7 +35,7 @@ def compile_governed_session(review,records,first,policy,context,generation,inte
     Counts derive from bound retained records, never from a schema suffix.
     Legacy, unknown earlier accounting remains explicitly unreconciled.
     """
-    check(type(review)is dict and review.get('schema')in('ouf.chatbot-semantic-functional-session-review.v1','ouf.chatbot-semantic-functional-session-review.v2')
+    check(type(review)is dict and review.get('schema')in('ouf.chatbot-semantic-functional-session-review.v1','ouf.chatbot-semantic-functional-session-review.v2','ouf.chatbot-semantic-functional-session-review.v3')
         and review.get('readyForExecution')is False and review.get('runtimeAuthorityIssued')is False
         and review.get('humanApprovalGranted')is False)
     required={'recovery.json','owner-session.json','owner-admission.json','owner-status.json'}
@@ -61,14 +61,26 @@ def compile_governed_session(review,records,first,policy,context,generation,inte
         and first.get('scopeHash')==session.get('predecessorFirstGrantScopeHash')
         and first.get('bootId')==old.get('bootId'))
     budget=review.get('proposedFiniteBudget');decision=review.get('requiredOwnerDecision')
-    bounded=review['schema']=='ouf.chatbot-semantic-functional-session-review.v2'
+    test_budget=review['schema']=='ouf.chatbot-semantic-functional-session-review.v3'
+    bounded=review['schema']in('ouf.chatbot-semantic-functional-session-review.v2','ouf.chatbot-semantic-functional-session-review.v3')
     limit=budget.get('maximumNewTokenGrantAttempts')if type(budget)is dict else None
     check(type(limit)is int and 1<=limit<=128 and (bounded or limit==128))
     if bounded:
         check(type(session.get('maximumCumulativeGrantAttempts'))is int
-            and prior+limit==session['maximumCumulativeGrantAttempts']
+            and (test_budget or prior+limit==session['maximumCumulativeGrantAttempts'])
             and review.get('predecessorFenceBinding')==session.get('fenceBinding')
             and review['predecessorJournalDirectory']==session['fenceBinding']['value']['journalPath'])
+    if test_budget:
+        profile=review.get('finiteTestProfile')
+        check(type(profile)is dict and set(profile)=={'schema','maximumNewTokenGrantAttempts','maximumSeconds','renewalIntervalSeconds','automaticRenewalAllowed','purpose','preserveCumulativeHistory'}
+            and profile.get('schema')=='ouf.policy-token-test-session-profile.v1'
+            and type(profile.get('maximumNewTokenGrantAttempts'))is int and profile['maximumNewTokenGrantAttempts']==limit
+            and type(profile.get('maximumSeconds'))is int and profile['maximumSeconds']==3600
+            and type(profile.get('renewalIntervalSeconds'))is int and profile['renewalIntervalSeconds']==60
+            and profile.get('purpose')=='CONFIGURATION_AND_VALIDATION'
+            and profile.get('automaticRenewalAllowed')is False and profile.get('preserveCumulativeHistory')is True
+            and decision.get('explicitNewTestBudgetRequired')is True
+            and decision.get('newCumulativeCeilingRequiresFreshHumanDecision')is True)
     check(type(budget)is dict and budget.get('priorControlledGrantAttempts')==prior
         and budget.get('predecessorWorkerAttempts')==count
         and budget.get('maximumNewTokenGrantAttempts')==limit
@@ -89,12 +101,19 @@ def compile_governed_session(review,records,first,policy,context,generation,inte
         and '..'not in predecessor.parts and predecessor!=Path('/')
         and decision.get('newJournalAndPersistentFencingRequired')is True)
     parent=predecessor.parent;logical=session['logicalOwnerScopeHash'];review_hash=fingerprint(review)
+    if test_budget:
+        prior_fence=review['predecessorFenceBinding']
+        check(prior_fence.get('path')==str(parent/('semantic-functional-session-'+logical+'.fence.json'))
+            and prior_fence.get('value',{}).get('logicalOwnerScopeHash')==logical
+            and prior_fence['value'].get('active')is True)
     journal=str(parent/('semantic-functional-worker-'+review_hash))
     fence={'path':str(parent/('semantic-functional-session-'+logical+'.fence.json')),
         'value':{'schema':'ouf.semantic-functional-session-fence.v1','logicalOwnerScopeHash':logical,
             'reviewHash':review_hash,'journalPath':journal,'predecessorWorkerHash':fingerprint(old),'active':True}}
     return {'schema':GOVERNED_SESSION,'controlledHistoryProfile':GOVERNED_HISTORY,
         **({'predecessorFenceBinding':copy.deepcopy(review['predecessorFenceBinding'])}if bounded else{}),
+        **({'testBudgetProfileHash':fingerprint(review['finiteTestProfile']),
+            'predecessorCumulativeCeiling':session['maximumCumulativeGrantAttempts']}if test_budget else{}),
         'operation':'OPEN_NEW_FINITE_WORKER_AFTER_EXPLICIT_CANCELLED_PREDECESSOR_REVIEW',
         'reviewHash':fingerprint(review),'predecessorRecordHashes':copy.deepcopy(review['predecessorRecordHashes']),
         'predecessorGrantAttempts':prior,'maximumCumulativeGrantAttempts':prior+policy['max_attempts'],

@@ -194,7 +194,7 @@ class GovernedSemanticOwnerContinuation:
         credential=CredentialFile(Path(self.roots['ownerCredential']['path'])/'client-secret')
         self.first=RetainedGrantReference(binding,credential,profile,transport)
         self.policy=Policy(max_attempts=(review['proposedFiniteBudget']['maximumNewTokenGrantAttempts']
-            if review.get('schema')=='ouf.chatbot-semantic-functional-session-review.v2'else 128),max_elapsed=3600,attempt_timeout=30)
+            if review.get('schema')in('ouf.chatbot-semantic-functional-session-review.v2','ouf.chatbot-semantic-functional-session-review.v3')else 128),max_elapsed=3600,attempt_timeout=30)
         self.context=fingerprint({'operation':review['logicalOperation'],'reviewHash':fingerprint(review)})
         self.generation=fingerprint(review['registryGeneration']);self.interval=60
         self.worker_scope=compile_governed_session(review,records,first_receipt,
@@ -264,7 +264,7 @@ class GovernedSemanticOwnerContinuation:
         fence=self.worker_scope['fenceBinding'];path=Path(fence['path'])
         with protected_directory(path.parent)as directory:
             # Exclusive stable-scope claim survives failure; never auto replace.
-            if self.review.get('schema')=='ouf.chatbot-semantic-functional-session-review.v2':
+            if self.review.get('schema')in('ouf.chatbot-semantic-functional-session-review.v2','ouf.chatbot-semantic-functional-session-review.v3'):
                 advance_worker_fence(self.action,self.worker_scope,self.review['predecessorJournalDirectory'])
             else:OwnerInstallation._write_once(self,directory,path.name,evidence.encoded(fence['value']))
         self.guard(fence_required=True)
