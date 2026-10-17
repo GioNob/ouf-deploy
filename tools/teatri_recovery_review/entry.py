@@ -101,7 +101,13 @@ def main(prepared,sources,closure,case,context,read,ns,emit):
  human=HumanSession(selection,Path(hb['sessionDirectory']),Path(hb['tokenPath']),hb['expiresAt'])
  require(human._read()['binding']==hb,'EXACT_CURRENT_AUTHENTICATED_HUMAN_REQUIRED')
  token=token_metadata(human,selection);transport=OwnerTransport(selection,human.token_path,human.token_path)
- iam,iam_private=iam_metadata(transport)
+ if token['recoveryScopePresent']:
+  iam={'recoveryScopeAlreadyInObservedToken':True,'iamCalls':0,'iamMutations':0};iam_private={}
+ else:
+  try:iam,iam_private=iam_metadata(transport)
+  except Exception as error:
+   reason=str(error)if type(error).__name__ in('AuthorizationPaused','UpdateDenied')and re.fullmatch('[A-Z_]{1,160}',str(error))else type(error).__name__
+   iam={'metadataAvailable':False,'reason':reason,'iamMutations':0};iam_private={}
  private=read(case['preparedReview']['path'],8388608,case['preparedReview']['sha256'])
  jobs=preflight.sql_fact(prepared,ns,closure['executables']['docker'],'udp',preflight.jobs_query(selection['tenant']))
  permissions.verify_jobs(jobs['jobs'],private['recoveryPreflight']['jobs']['jobs'])
