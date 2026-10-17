@@ -136,7 +136,7 @@ OVERLAYS={'iam_binding_candidate':'iam_binding_candidate.py','migration_root_cus
 
 def emit(check,**values):
  print(json.dumps(dict(schema='ouf.semantic-mcp-scoped-bootstrap.v1',check=check,
-  automaticRetry=False,automaticRenewal=False,budgetReset=False,acceptanceGranted=False,**values),sort_keys=True),flush=True)
+  automaticCommandRetry=False,automaticSessionRenewal=False,budgetReset=False,acceptanceGranted=False,**values),sort_keys=True),flush=True)
 
 def main():
  require(os.geteuid()==os.getegid()==0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode
