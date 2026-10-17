@@ -70,7 +70,10 @@ def main(prepared,sources,closure,case,context,read,ns,emit):
   and compiled['predecessorGrantAttempts']==318 and compiled['maximumCumulativeGrantAttempts']==444,'EXACT_PREPARED318_TO444_SCOPE_REQUIRED')
  status,udp_runtime=engine.request('GET','/v1.44/containers/'+pins['udp']['containerId']+'/json')
  require(status==200 and runtime(udp_runtime)==pins['udp'],'CURRENT_UDP_GENERATION_REQUIRED')
- policy_cache_wait=permissions.refresh_seconds(udp_runtime)+12
+ registry_generation=future['registryGeneration']
+ status,registry_runtime=engine.request('GET','/v1.44/containers/'+registry_generation['containerId']+'/json')
+ require(status==200 and permissions.registry_pin(registry_runtime)==registry_generation,'CURRENT_REGISTRY_GENERATION_REQUIRED')
+ policy_cache_wait=max(permissions.refresh_seconds(udp_runtime),permissions.refresh_seconds(registry_runtime))+12
  require(policy_cache_wait<=600,'FINITE_ACTION_POLICY_PROPAGATION_WINDOW_REQUIRED')
  authority.current_authorities(int(time.time())+3610)
  hb=private['human']['sessionBinding'];human=HumanSession(selection,Path(hb['sessionDirectory']),Path(hb['tokenPath']),hb['expiresAt'])
@@ -139,11 +142,14 @@ def main(prepared,sources,closure,case,context,read,ns,emit):
    state=worker.r.journal.read()
    if state['state']=='ACTIVE'and state['publicationCount']>=1:break
    require(state['state']in('NEW','ATTEMPTING','PUBLISHING','ACTIVE'),'POLICY_WORKER_NOT_ACTIVE');stop.wait(1)
-  def command_guard():worker_guard();guard_apps()
+  def command_guard():
+   worker_guard();guard_apps()
+   status,actual=engine.request('GET','/v1.44/containers/'+registry_generation['containerId']+'/json')
+   require(status==200 and permissions.registry_pin(actual)==registry_generation,'CURRENT_REGISTRY_GENERATION_REQUIRED')
   command_guard();guard_job()
   published=permissions.publish(transport,human,permission,review,decision,context,command_guard)
   emit('OUF_LAST_ROW_PERMISSION_PUBLISHED='+encoded(published).decode())
-  # The policy owner has published a new version; allow the configured UDP refresher to load it.
+  # The policy owner has published a new version; allow both configured service refreshers to load it.
   # This is a single propagation wait, not retries of an explicit authorization denial.
   require(decision['expiresAt']-time.time()>policy_cache_wait+90,'CURRENT_POLICY_PROPAGATION_WINDOW_REQUIRED')
   cache_deadline=time.monotonic()+policy_cache_wait

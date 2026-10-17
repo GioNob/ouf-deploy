@@ -220,4 +220,13 @@ class Protocol(unittest.TestCase):
   with self.assertRaises(Exception):p.configured_refresh_properties(bad,None)
   with self.assertRaises(Exception):p.configured_refresh_properties({'Config':{'Env':['SPRING_CONFIG_IMPORT=configserver:https://other']}},None)
 
+
+ def test_registry_pin_matches_retained_sorted_mount_generation(self):
+  actual={'Id':'registry','Image':'image','Config':{},'HostConfig':{},'NetworkSettings':{},
+   'State':{'Running':True,'Pid':13,'StartedAt':'then'},'Mounts':[{'Destination':'/z'},{'Destination':'/a'}]}
+  observed=p.registry_pin(actual);self.assertEqual(observed['mountsHash'],p.digest(sorted(actual['Mounts'],key=lambda m:m['Destination'])))
+  self.assertEqual(observed['containerId'],'registry')
+  actual['State']['Running']=False
+  with self.assertRaises(Exception):p.registry_pin(actual)
+
 if __name__=='__main__':unittest.main(verbosity=2)

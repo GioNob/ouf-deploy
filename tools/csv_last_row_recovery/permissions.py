@@ -1,5 +1,5 @@
 """Exact native permission and retry intent for one already reviewed durable job."""
-import copy,json,os,re,shlex,time,uuid
+import copy,hashlib,json,os,re,shlex,time,uuid
 from datetime import datetime,timezone
 from tools.teatri_materialization_apply.owner import require,digest
 from tools.teatri_materialization_apply.preparation import publish_json
@@ -187,3 +187,10 @@ def refresh_seconds(actual):
   require(re.fullmatch('[0-9]{1,4}',value)is not None and 1<=int(value)<=3600,'BOUNDED_AUTHORIZATION_REFRESH_REQUIRED')
   return int(value)
  finally:os.close(root)
+
+def registry_pin(actual):
+ require(actual['State'].get('Running')is True,'RUNNING_REGISTRY_REQUIRED')
+ return {'containerId':actual['Id'],'imageId':actual['Image'],'pid':actual['State']['Pid'],
+  'startedAt':actual['State']['StartedAt'],'mountsHash':digest(sorted(actual['Mounts'],key=lambda m:m['Destination'])),
+  **{name+'Hash':digest(actual[key])for name,key in
+   (('config','Config'),('hostConfig','HostConfig'),('networkSettings','NetworkSettings'))}}
