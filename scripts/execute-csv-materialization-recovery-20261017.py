@@ -62,6 +62,6 @@ if __name__=='__main__':
  try:main()
  except (Exception,KeyboardInterrupt)as error:
   known=type(error).__name__ in ('ValueError','UpdateDenied','UpdatePaused','PlanDenied','HumanSessionPaused','ReadDenied')
-  reason=str(error)if known and re.fullmatch('[A-Z_]{1,160}',str(error))else type(error).__name__
+  reason=str(error)if known and re.fullmatch('[A-Z][A-Z0-9_:.-]{0,159}',str(error))else type(error).__name__
   emit('STOP',reason=reason,exceptionMessagePrinted=False,reconciliationRequired=True)
   raise SystemExit(2)
