@@ -1,3 +1,13 @@
+# Ripresa pronta dopo refresh HUMAN bloccato — 2026-10-17
+
+**Fasi tecniche8/8; funzionali1/6.** Eseguire solo il launcher aggiornato `scripts/launch-onboarding-audit-fix-20261017.sh`, SHA256 `6ef642a3481be972825030801ebba9693da136ca79248a92924a014cd055389b`. Source closure `91738314175dc1f5c912a3f4a760a76b0b736476`; manifest `7e72b854366970d54b9bd41f1c144683415cc9f5` / SHA256 `6aa5285e71afe06a986cc8b382713964150f5b6a2c4f54240c7d0d12f8dbd506`. Tutti29 file sorgente confrontati byte per byte con GitHub e manifest remoto verificato. [GitHub qualification39023344933](https://github.com/GioNob/ouf-deploy/actions/runs/39023344933):41 test, zero skip, real root/signatures/Docker; issuer sintetico nei fixture, nessuna nuova prova funzionale sul VPS.
+
+Il launcher riconcilia l'esatto contesto fz4p79t2 fermato prima dell'autorità (artefatti assenti), lega i suoi tre record di preparazione e la riga HUMAN bloccata a81 tentativi. Propone RIAPRO LOGIN con hash esatto, login browser nuovo, poi APPROVO worker residuo248+68=316, poi APPROVO solo Onboarding compatibilità. Il vecchio refresh non si ripete, il vecchio journal resta BLOCKED, nessun token precedente è copiato, nessun reset. Il nuovo login parte da81 con47 richieste OAuth residue; il nuovo journal NEW non costituisce autorità. Trasporto ambiguo/interruzione, drift, autorizzazioni preesistenti nel contesto fallito, mutazione conteggi o claim di nuovo login già consumato fanno STOP. Finestra7200s; worker massimo3600s entro scadenza HUMAN. Usare terminale PC e lasciarlo aperto per worker e successiva ripresa THS. Riusa cache candidato39020189836 già scaricata/verificata. Onboarding34488428 ancora da installare, sorgente ancora da attivare; nessuna nuova proposta semantica o approvazione sorgente.
+
+In caso di STOP non rilanciare: conservare log e riconciliare. Dopo successo leggere configurazione e compatibilità con la medesima credenziale corrente; nel THS aggiornare stato/riprendere verifica, non riapprovare la sorgente. Il GET200 configurazione precedente non dimostra il GET compatibilità né il completamento della readiness.
+
+---
+
 # HUMAN refresh bloccato: nuovo login esplicito da qualificare — 2026-10-17
 
 **Fasi tecniche8/8; funzionali1/6.** Readback operatore: contesto `/etc/ouf/deploy-snapshots/onboarding-audit-execution-fz4p79t2`; nessun review/decision/human/authority/issuance.claim/login-window-receipt presente. HUMAN BLOCKED, operazione REFRESH, motivo HUMAN_OAUTH_REVOKED_OR_PERMANENT_OR_UNKNOWN,81 tentativi consumati,47 residui su128, finestra non ancora scaduta al controllo. Il motivo aggrega risposte OAuth ricevute non transitorie e non dimostra la causa di revoca. Il refresh non si ripete e il blocco non si cancella.
