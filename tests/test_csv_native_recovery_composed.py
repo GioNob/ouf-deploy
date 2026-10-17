@@ -2,7 +2,9 @@
 
 This fixture never contacts a real issuer or changes target services.
 """
-import copy,json,os,unittest
+import copy,json,os,unittest,threading
+from tools.semantic_policy_token_owner.worker_entry import serve
+from tools.semantic_policy_token_owner.reporter import OwnerReporter
 from pathlib import Path
 import test_governed_owner_composed as composed
 import test_policy_token_owner_installation as installation_fixture
@@ -34,7 +36,21 @@ class RemainderComposed(unittest.TestCase):
   worker=c.make().install()
   self.assertEqual(c.grants(),before_grants)
   self.assertEqual(worker.r.journal.read()['controlledCumulativeGrantAttempts'],316)
-  row=worker.tick();self.assertEqual(row['state'],'ACTIVE');self.assertEqual(row['controlledCumulativeGrantAttempts'],317)
+  stop=threading.Event();published=threading.Event();statuses=[]
+  def emit(value):
+   statuses.append(value)
+   if '"state":"ACTIVE"' in value:published.set()
+  thread=threading.Thread(target=serve,args=(worker,stop,OwnerReporter(worker.r.journal,emit)))
+  # Hold the observer transaction while the actual background loop enters its
+  # guard. This used to turn local lock contention into BLOCKED at attempt zero.
+  with worker.r.journal.transaction():
+   thread.start();self.assertFalse(published.wait(.1))
+  try:
+   self.assertTrue(published.wait(20),statuses)
+   row=worker.r.journal.read();self.assertEqual(row['state'],'ACTIVE');self.assertEqual(row['controlledCumulativeGrantAttempts'],317)
+  finally:stop.set();thread.join(10)
+  self.assertFalse(thread.is_alive())
+  self.assertFalse(any('LOCAL_AUTHORITY_UNPROVEN' in value for value in statuses))
   self.assertEqual(c.grants(),before_grants+1)
   self.assertEqual(json.loads(Path(scope['fenceBinding']['path']).read_bytes()),scope['fenceBinding']['value'])
   for name,raw in before.items():self.assertEqual((c.installed.journal.root/name).read_bytes(),raw)
