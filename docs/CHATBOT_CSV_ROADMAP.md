@@ -1,3 +1,13 @@
+# Tappa3 — ultima review chiusa, verifica del commit finale in corso,17ottobre2026
+
+**Tecniche8/8; funzionali2/6 verificati.** L'utente ha trattato il caso residuo nella THS; la pagina conferma0casi incerti aperti. La ricerca MCP restituisce ancora i12oggetti precedenti, revisione1. Questo è compatibile con più esiti: la tappa3 richiede13righe committate e provenienza, non13oggetti distinti, e non si chiude sulla sola scomparsa della review.
+
+Il lettore v3 aggiunge azione HUMAN più recente e codice sicuro del job per handoff. CI39073074291:12test PASS,0skip, con controesempi reali PostgreSQL17 e13commit verso12oggetti. Il nuovo END riporta functionalStage3Proven=true e funzionali3/6 soltanto dopo la prova dei13commit e del lineage. Nessun nuovo tentativo sudo sul runner: consegna verificata per la sessione VPS esistente.
+
+[Stato della verifica](CSV_FUNCTIONAL_STAGE3_20261017.md), [THS e ricerca dopo la decisione](../evidence/csv-functional-stage3-after-ths-20261017.json), [qualifica v3](../evidence/csv-functional-stage3-final-reader-qualified-20261017.json). Il readback precedente12commit+1quarantena resta prova storica, superabile soltanto dal nuovo riscontro.
+
+---
+
 # Tappa funzionale3 — rendiconto e provenienza verificati,17ottobre2026
 
 **Tecniche8/8; funzionali2/6. Tappa3:12commit+1eccezione conservata, tutte13le righe rendicontate.** Readback VPS del lettore v2 qualificato:13handoff ACKED con ricevuta e lineage,12job SUCCEEDED e12oggetti distinti con revisione/osservazione verificata,20contributi ciascuno; una quarantena DURABLE senza binding/contributi. Tutte11le decisioni CREATE_NEW risultano materializzate e l'oggetto originario è conservato. Gli ID coincidono esattamente con la ricerca MCP precedente.
