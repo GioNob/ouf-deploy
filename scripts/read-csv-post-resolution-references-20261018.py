@@ -311,73 +311,7 @@ def configured_properties(actual,root):
    elif value.startswith("'"):
     require(value.endswith("'"),'LITERAL_YAML_STRING_REQUIRED');value=value[1:-1].replace("''", "'")
    else:
-    require(not value.startswith(('{','[','&','*','!','|','>')),'LITERAL_YAML_SCALAR_REQUIRED');value=re.sub(r' +#.*
- require(os.geteuid()==os.getegid()==0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,'ISOLATED_ROOT_READ_REQUIRED')
- signal.signal(signal.SIGALRM,lambda *_:(_ for _ in ()).throw(ValueError('READ_DEADLINE')));signal.alarm(90)
- fd=os.open(BOOT,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
- try:
-  s=os.fstat(fd);require(stat.S_ISREG(s.st_mode)and s.st_uid==s.st_gid==0 and s.st_nlink==1 and stat.S_IMODE(s.st_mode)==0o600 and 0<s.st_size<=131072,'RETAINED_HELPER_CUSTODY_REQUIRED')
-  raw=os.read(fd,131073);require(len(raw)==s.st_size and hashlib.sha256(raw).hexdigest()==BOOT_HASH,'RETAINED_HELPER_HASH_CHANGED')
- finally:os.close(fd)
- ns={'__name__':'linked_property_read_helpers'};exec(compile(raw,'<verified-retained-read-helpers>','exec'),ns)
- old=ns['read'](ns['CONTEXT']/'review.json',8388608,ns['REVIEW']);link=old['scopes']['finiteActionProcess']['bundle']
- prepared=ns['read'](link['path'],8388608,link['sha256'])['prepared']
- require(digest(prepared)==old['privateInputHashes']['preparedInputs'],'PREPARED_INPUT_BINDING_CHANGED')
- review=ns['read'](CONTEXT/'review.json',8388608);plan=ns['read'](CONTEXT/'execution-plan.json',8388608)
- record=ns['read'](CONTEXT/'recovery.json',131072);authority=ns['read'](CONTEXT/'authority.json',131072)
- scope=review['scopes']['linkedPropertyUpdate']
- require(review['authorityDirectory']==str(CONTEXT)and digest(plan)==scope['planHash']
-  and record['scopeHash']==digest(scope)and authority['linkedPropertyUpdate']==scope and digest(authority)==record['authorityHash']
-  and record['version']==55 and record['incidentState']=='RECOVERED'and record['nextStage']==len(record['effects'])==len(scope['stages'])
-  and [e['stage']for e in record['effects']]==scope['stages']and scope['stages'][-1]=='VERIFY_FINAL'
-  and all(e['state']=='APPLIED'and e['intentHash']==digest({'planHash':scope['planHash'],'stage':e['stage']})for e in record['effects']),
-  'EXACT_COMPLETED_LINKED_PROPERTY_UPDATE_REQUIRED')
- proofs=record['effects'][-1]['evidence']['applications']
- def applications():
-  for module in('udp','onboarding'):
-   actual=ns['engine_get'](prepared['engine'],'containers',proofs[module]['runtimeBinding']['containerId'])
-   require(actual and actual['State']['Running']is True and application_pin(actual)==proofs[module]['runtimeBinding'],'CURRENT_APPLICATION_GENERATION_CHANGED')
- applications()
- db=prepared['databasePlan'];pg=ns['engine_get'](prepared['engine'],'containers',db['postgresRuntimeBinding']['containerId'])
- admin=db['mcpAuditRoleAdministration']['admin']
- require(pg and pg['State']['Running']is True and runtime_pin(pg)==db['postgresRuntimeBinding'],'EXACT_POSTGRES_GENERATION_REQUIRED')
- require([v.split('=',1)[1]for v in pg['Config']['Env']if v.startswith('POSTGRES_USER=')]==[admin],'EXISTING_ADMINISTRATOR_BINDING_REQUIRED')
- emit('ROLLOUT_READBACK',contextPath=str(CONTEXT),journalVersion=55,reviewSha256=digest(review),rootArtifactReviewLinksMatch=True,
-      reviewSignaturesVerifiedLocally=False,applicationGenerationsMatch=True,backupEvidencePresent=any(e['stage']=='BACKUP_UDP'and e['evidence'].get('payloadParsed')is True for e in record['effects']))
- selection=prepared['authorization']['plan']['selection'];results={}
- with tempfile.TemporaryDirectory(prefix='ouf-linked-property-read-')as config:
-  for module in('udp',):
-   binding=next(r for r in db['modules']if r['module']==module)
-   for v in(admin,binding['database']):require(type(v)is str and re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,62}',v),'EXACT_DATABASE_ROLE_REQUIRED')
-   argv=[executable(old['sourceClosure']['executables']['docker']),'--host','unix://'+prepared['engine']['socketPath'],'--config',config,'exec',pg['Id'],'env','LC_ALL=C',
-    'PGOPTIONS=-c default_transaction_read_only=on -c statement_timeout=10000 -c lock_timeout=3000','timeout','-s','KILL','15','psql','-X','-q','-A','-t','-v','ON_ERROR_STOP=1',
-    '-U',admin,'-d',binding['database'],'-c',(ingestion_query(module,selection['tenant']) if module=='ingestion' else acquisition_query(module,selection['tenant']))]
-   code,raw,err,_=bounded(argv,seconds=20,maximum=524288);require(code==0,'READ_ONLY_PROFILE_SQL_FAILED');facts=json.loads(raw)
-   require(facts['database']==binding['database']and facts['databaseOid']==binding['databaseOid']and facts['role']==admin and facts['transactionReadOnly']is True,'EXACT_DATABASE_FACTS_REQUIRED')
-   results[module]=facts
-   if module=='udp':
-    validate_history(facts,plan['database']['expected'][module])
-    require(facts['migrations'][-1]['version']=='35','V35_SCHEMA_UNPROVEN')
-    require(len(facts['sourceDetails'])<=13 and len(facts['details'])<=13,'BOUNDED_SOURCE_FACTS_REQUIRED')
-   else:
-    require(len(facts['schedules'])<=1 and len(facts['runs'])<=3 and all(len(r.get('handoffDetails',[]))<=13 for r in facts['runs']),'BOUNDED_INGESTION_FACTS_REQUIRED')
-   emit('ACQUISITION_DATABASE',module=module,facts=facts,rawSqlOutputPrinted=False,propertyValuesPrinted=False)
- require(runtime_pin(ns['engine_get'](prepared['engine'],'containers',pg['Id']))==db['postgresRuntimeBinding'],'POSTGRES_GENERATION_CHANGED_DURING_READ')
- applications();require(ns['read'](CONTEXT/'recovery.json',131072)==record,'ROLLOUT_RECORD_CHANGED')
- ledger=row_ledger(results['udp']);linked=upstream_matches(results['ingestion'],results['udp'])
- stage3=linked and ledger['allThirteenMaterializedProven'] and ledger['confirmedElevenMaterialized'] and ledger['originalObjectRetained']
- emit('END',complete=True,udpMigrationVersion=35,rowLedger=ledger,upstreamHandoffsAndLineageMatch=linked,
-  functionalStage3Proven=stage3,functionalMilestonesProven=3 if stage3 else 2,
-  confirmedElevenMaterialized=ledger['confirmedElevenMaterialized'],allThirteenMaterializedProven=ledger['allThirteenMaterializedProven'],
-  readbackProven=linked and ledger['allRowsAccounted'],profileActivationProven=False,runtimeAuthorityIssued=False)
-if __name__=='__main__':
- emit('BEGIN',maximumSeconds=90,maximumEngineReads=7,maximumSqlSessions=2,maximumRows=13,maximumCredentialFiles=1,maximumGatewayGets=3)
- try:main()
- except Exception as error:
-  reason=str(error)if type(error)is ValueError and re.fullmatch('[A-Z_]+',str(error))else type(error).__name__
-  emit('STOP',reason=reason,exceptionMessagePrinted=False)
-  raise SystemExit(2)
-,'',value).strip()
+    require(not value.startswith(('{','[','&','*','!','|','>')),'LITERAL_YAML_SCALAR_REQUIRED');value=re.sub(r' +#.*$','',value).strip()
    add(key,value)
 
  return one(required[0]),one(required[1]),hashlib.sha256(raw).hexdigest()
