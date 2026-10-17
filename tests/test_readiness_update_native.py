@@ -6,6 +6,7 @@ contracts are synthetic; production application/route tests run in their repos.
 import copy,hashlib,http.client,importlib.util,json,os,shutil,subprocess,sys,tempfile,time,unittest
 from pathlib import Path
 from unittest.mock import patch
+from types import SimpleNamespace
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_policy_token_owner'),str(ROOT/'tools/semantic_application_cutover'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
 import test_cutover_authority_native as crypto
@@ -41,6 +42,21 @@ class H(http.server.BaseHTTPRequestHandler):
  def log_message(self,*a):pass
 http.server.HTTPServer(('0.0.0.0',9180),H).serve_forever()
 """
+@unittest.skipUnless(os.geteuid()==0,'private input custody requires root')
+class NativeInputReadback(unittest.TestCase):
+ def test_reconciliation_cannot_accept_changed_image_or_changed_route_inventory(self):
+  with tempfile.TemporaryDirectory(dir=os.environ.get('OUF_TEST_ROOT',str(ROOT)))as d:
+   image=Path(d)/'candidate.tar';image.write_bytes(b'original reviewed bytes');image.chmod(0o600)
+   before={'retained':{'id':'retained','uri':'/preserved'}}
+   ports=NativePorts.__new__(NativePorts)
+   ports.plan={'privateReviewBinding':{'sha256':'a'*64},'gateway':{'beforeRoutes':before},
+    'replacements':{'onboarding':{'imageArchive':{'path':str(image),'sha256':hashlib.sha256(image.read_bytes()).hexdigest()},'retiredName':'retired'}}}
+   ports.gateway=SimpleNamespace(routes=lambda:copy.deepcopy(before));ports.inspect=lambda *a:None
+   self.assertEqual(ports.observe('VERIFY_INPUTS')[0],'APPLIED')
+   image.write_bytes(b'changed bytes after review')
+   with self.assertRaisesRegex(Exception,'PRIVATE_FILE_BYTES_CHANGED'):ports.observe('VERIFY_INPUTS')
+   ports.gateway=SimpleNamespace(routes=lambda:{'foreign':{'id':'foreign'}})
+   with self.assertRaisesRegex(Exception,'COMPLETE_GATEWAY_ROUTE_MAP_CHANGED'):ports.observe('VERIFY_INPUTS')
 @unittest.skipUnless(os.environ.get('OUF_READINESS_DOCKER_NATIVE')=='1','explicit real-Docker qualification only')
 class NativeEndToEnd(unittest.TestCase):
  def cli(self,*args):
