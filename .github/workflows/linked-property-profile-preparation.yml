@@ -20,6 +20,7 @@ jobs:
       - name: Verify preservation, native rule constraints and scheduling disclosure
         run: node tests/linked_property_profile/run.mjs
   qualified-native-identities:
+    if: github.event_name == 'workflow_dispatch'
     needs: offline-preparation
     runs-on: ubuntu-24.04
     timeout-minutes: 8

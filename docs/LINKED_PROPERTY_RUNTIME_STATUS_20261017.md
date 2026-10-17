@@ -24,3 +24,5 @@ A concrete20-property proposal preserves datatype, labels, authority and the out
 
 Ingestion derives one-shot behavior from MANAGED, independently of top-level triggerOnce. A new publication may re-arm acquisition. No publication, job retry, source disable or identity decision was performed. See [the preparation, PET traceability and native publication path](LINKED_PROPERTY_ACTIVATION_PREPARATION_20261017.md). Technical8/8; functional2/6 unchanged.
 
+
+La preparazione ha inoltre verificato con successo le immagini correnti via runner VPS: [39069079580](https://github.com/GioNob/ouf-deploy/actions/runs/39069079580), [evidenza](../evidence/linked-property-activation-images-20261017.json). Nessuna lettura fresca di profilo/schedule da questo controllo. Correzione XSD qualificata nei moduli; nuovo pacchetto CI in preparazione, nessuna installazione. Tecniche8/8; funzionali2/6.

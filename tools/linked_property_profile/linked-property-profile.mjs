@@ -38,15 +38,14 @@ function validate(property, rule, profile, geometry) {
 /** The caller supplies a fresh complete owner configuration, never just the projected property list. */
 export function prepare(snapshot, proposal) {
   requireThat(plain(snapshot) && plain(proposal), 'INPUT_OBJECT_REQUIRED');
-  requireThat(proposal.schema==='ouf.linked-property-profile-proposal.v1', 'PROPOSAL_SCHEMA_REQUIRED');
+  requireThat(proposal.schema==='ouf.linked-property-profile-proposal.v1' && plain(proposal.expected), 'PROPOSAL_SCHEMA_REQUIRED');
   for(const key of ['sourceId','onboardingVersionId','configurationHash']) {
     requireThat(text(snapshot[key]) && snapshot[key]===proposal.expected[key], 'BASELINE_IDENTITY_DRIFT');
   }
   requireThat(/^sha256:[a-f0-9]{64}$/.test(snapshot.configurationHash), 'OWNER_CONFIGURATION_HASH_REQUIRED');
   const configuration=snapshot.configuration;
   requireThat(plain(configuration) && plain(configuration.bundle) && plain(configuration.semanticMapping)
-    && plain(configuration.syncProfile) && plain(configuration.sourceObjectIdentityPolicy)
-    && plain(configuration.changeRepresentationProfile) && Array.isArray(configuration.dataAccessPolicies), 'COMPLETE_CONFIGURATION_REQUIRED');
+    && plain(configuration.syncProfile) && plain(configuration.extractionProfile), 'COMPLETE_CONFIGURATION_REQUIRED');
   requireThat(configuration.bundle.source?.sourceId===snapshot.sourceId, 'SOURCE_BINDING_DRIFT');
   const udp=configuration.extractionProfile?.runtime?.udp;
   const profile=udp?.materialization;

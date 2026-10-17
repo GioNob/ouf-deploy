@@ -44,7 +44,7 @@ if __name__=='__main__':
         qualified=json.loads((root/'releases/linked-property-qualified-20261017.json').read_text())
         if 'sha256:'+selection['qualifiedZipSha256']!=qualified['package']['githubArtifactDigest']:
             raise ValueError('QUALIFIED_PACKAGE_BINDING_REQUIRED')
-        report.update(complete=True,applications=run(selection),nativeProfilePublished=False,
+        report.update(complete=True,applications=run(selection),profileReadPerformed=False,
           xsdCompatibleUpdateInstalled=False,scope='Installed pre-fix images only; no profile or scheduler read')
     except Exception as failure:
         report.update(complete=False,reason=str(failure) if type(failure) is ValueError else type(failure).__name__)

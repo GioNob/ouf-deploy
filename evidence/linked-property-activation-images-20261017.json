@@ -1,0 +1,54 @@
+{
+  "schema": "ouf.linked-property-activation-preparation-evidence.v1",
+  "workflowRunId": 39069079580,
+  "workflowSourceCommit": "6fc33e4ee10ab4e5ab7f63bded20b15b70a324bd",
+  "observedAt": "2026-10-17T21:01:11Z",
+  "imageRead": {
+    "applications": [
+      {
+        "configHash": "32d1af83c3a2991b5bd61b0b273a9fbba93dfa250d0ff53650527ed39a08aa81",
+        "containerId": "8dc539b0756beb40cee0d45b2b223a18eee1a53d8cdb4389d7d914dbda66aad9",
+        "imageId": "sha256:b5f09f8b0273e4c2c6d99003b7d10e2f79e733811f5de18185843c7ed8e9b80d",
+        "module": "onboarding",
+        "running": true,
+        "stableDuringRead": true
+      },
+      {
+        "configHash": "1b7fa80c793e6232b9f645e4d4b3ab473ed6af674c15744374412e7568273230",
+        "containerId": "8054ac2f5101d285947fdd47d86d7a6d13b8ec6500523afcd81b9ac6a82df97c",
+        "imageId": "sha256:d2aebe8c3db9b92b6071d94a5c9747378bdc4b6f9caff72df75705b55bf9be40",
+        "module": "udp",
+        "running": true,
+        "stableDuringRead": true
+      }
+    ],
+    "complete": true,
+    "completedTechnicalPhases": 8,
+    "credentialFilesRead": 0,
+    "credentialValuesPrinted": false,
+    "databaseCalls": 0,
+    "functionalMilestonesProven": 2,
+    "installationSpecific": true,
+    "jobsRetried": 0,
+    "nativeProfilePublished": false,
+    "oauthRequests": 0,
+    "profilePublications": 0,
+    "readOnly": true,
+    "schema": "ouf.linked-property-activation-image-read.v1",
+    "scope": "Installed pre-fix images only; no profile or scheduler read",
+    "serviceMutations": 0,
+    "xsdCompatibleUpdateInstalled": false
+  },
+  "limits": [
+    "Image metadata only: no fresh profile, database, semantic or scheduler state was read.",
+    "nativeProfilePublished=false in reader output is the carried baseline, not a new publication observation.",
+    "No target changes or acquisitions were executed."
+  ],
+  "initialReaderFailure": {
+    "runId": 39068802755,
+    "reason": "Configuration image digest was incorrectly used as containerd manifest identity",
+    "resolved": true
+  },
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2
+}
