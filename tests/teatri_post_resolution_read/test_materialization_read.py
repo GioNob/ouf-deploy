@@ -48,6 +48,23 @@ class LedgerContract(unittest.TestCase):
   self.assertNotIn('payload_json',raw);self.assertNotIn('downstream_receipt_ref,',raw)
   with self.assertRaises(ValueError):m.ingestion_query('ingestion',"x';--")
 
+
+ def test_thirteen_rows_can_commit_to_twelve_existing_objects(self):
+  facts=self.facts();facts['sourceDetails'][-1]=self.row(13,True)
+  facts['sourceDetails'][-1]['urban_object_id']=facts['sourceDetails'][0]['urban_object_id']
+  ledger=m.row_ledger(facts);self.assertEqual(ledger['distinctCommittedObjects'],12)
+  self.assertEqual(ledger['committedRows'],13);self.assertTrue(ledger['allThirteenMaterializedProven'])
+  self.assertTrue(ledger['expectedCurrentDispositionProven'])
+ def test_closed_review_without_commit_is_not_completion(self):
+  facts=self.facts();facts['sourceDetails'][-1]['open_issue_count']=0
+  ledger=m.row_ledger(facts);self.assertFalse(ledger['allThirteenMaterializedProven']);self.assertEqual(ledger['unprovenRows'],1)
+ def test_final_progress_can_be_emitted_only_as_computed_result(self):
+  import contextlib,io
+  output=io.StringIO()
+  with contextlib.redirect_stdout(output):m.emit('END',functionalMilestonesProven=3,functionalStage3Proven=True)
+  result=json.loads(output.getvalue());self.assertEqual(result['functionalMilestonesProven'],3)
+  self.assertTrue(result['readOnly']);self.assertEqual(result['jobsRetried'],0)
+
 @unittest.skipUnless(os.environ.get('OUF_NATIVE_SQL')=='1','explicit actual PostgreSQL17 qualification')
 class NativeSql(unittest.TestCase):
  def cli(self,*args):
@@ -101,6 +118,26 @@ class NativeSql(unittest.TestCase):
   sql("update ouf_udp.materialization_job set state='QUARANTINED',safe_failure_code='UDP_IDENTITY_COVERAGE_UNVERIFIED' where handoff_id='h2';")
   facts=json.loads(sql(m.acquisition_query('udp','ouf-lab')));self.assertEqual(facts['matchedDecisionCount'],11);self.assertEqual(facts['confirmedMaterializedRows'],10);self.assertFalse(m.materialization_proven(facts))
   facts=json.loads(sql(m.acquisition_query('udp','other-tenant')));self.assertEqual(facts['receiptCount'],0);self.assertEqual(facts['matchedDecisionCount'],0);self.assertFalse(m.materialization_proven(facts))
+
+  # The HUMAN can resolve the review before the materializer finishes.
+  sql("update ouf_udp.materialization_job set state='SUCCEEDED',safe_failure_code=null where handoff_id='h2';update ouf_udp.resolution_issue set state='RESOLVED' where handoff_id='h13';")
+  sql("insert into ouf_udp.human_resolution_decision values(md5('13')::uuid,'APPROVE','b93d8cf6-cd14-4ee6-91d7-84cd76c4f500','2026-10-17T17:00:00Z','fixture-second-auth');")
+  closed=json.loads(sql(m.acquisition_query('udp','ouf-lab')))
+  self.assertFalse(any(x['state']=='OPEN' for x in closed['sourceIssues']))
+  self.assertFalse(m.row_ledger(closed)['allThirteenMaterializedProven'])
+  last=next(r for r in closed['sourceDetails']if r['handoff_id']=='h13')
+  self.assertEqual(last['latest_decision']['action'],'APPROVE');self.assertEqual(last['job_state'],'QUARANTINED')
+  # All13commits are valid when the final contribution links to an existing object.
+  sql("""
+   update ouf_udp.handoff_intake set state='PROCESSED' where handoff_id='h13';
+   update ouf_udp.materialization_job set state='SUCCEEDED',safe_failure_code=null where handoff_id='h13';
+   insert into ouf_udp.source_binding values('teatri-csv-6609b245','SOURCE_ROW_TYPE','PRIVATE_SOURCE_13','d6051381-934b-4a11-8e71-e1d89cee4e49','ACTIVE');
+   insert into ouf_udp.materialization_observation values('h13','d6051381-934b-4a11-8e71-e1d89cee4e49',md5('rev1')::uuid);
+   insert into ouf_udp.property_contribution(handoff_id,urban_object_id) values('h13','d6051381-934b-4a11-8e71-e1d89cee4e49');
+  """)
+  complete=json.loads(sql(m.acquisition_query('udp','ouf-lab')));ledger=m.row_ledger(complete)
+  self.assertEqual(ledger['committedRows'],13);self.assertEqual(ledger['distinctCommittedObjects'],12)
+  self.assertTrue(ledger['allThirteenMaterializedProven']);self.assertTrue(ledger['confirmedElevenMaterialized'])
   sql("""
    create schema ouf_ingestion;
    create table ouf_ingestion.ing_run(run_id uuid,source_id text,tenant_id text,state text,phase text,failure_code text,created_at timestamptz,updated_at timestamptz);

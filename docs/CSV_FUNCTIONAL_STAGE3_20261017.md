@@ -90,3 +90,11 @@ L'eccezione è l'handoff9fde61f1-8d3c-4de7-b3fe-b534b32e45e3, lineage419ec184-71
 **Verifica della tappa3 conclusa per l'esito scelto:12commit+1eccezione, tutte13le righe rendicontate e tracciate.** Il criterio storico13commit rimane aperto: allThirteenMaterializedProven=false,historicalCriterionChanged=false. Contatore formale ancora funzionali2/6, con tappa3 documentata come “rendiconto verificato con eccezione conservata”. Non richiedere un altro import o una decisione sulla quarantena per ripetere questa prova.
 
 L'attivazione del profilo proprietà rimane un gate distinto: profileActivationProven=false e nessuna pubblicazione è stata eseguita. Il readback dimostra contributi persistiti; non risolve da solo la ricerca che restituisce properties vuoto. Il prossimo controllo funzionale è la tappa4: completare il riscontro dal chatbot sui dati autorizzati, riusando i12ID già ottenuti e questa provenienza.
+
+## Verifica successiva alla nuova decisione HUMAN
+
+L'utente riferisce di aver trattato il caso rimasto in quarantena. La THS /trusted-human/resolution/ consultata nel browser mostra “Non ci sono casi incerti aperti per questo tenant”. Una nuova ricerca MCP restituisce ancora i12ID precedenti, revisione1 e properties vuoto. Questo non distingue un collegamento a un oggetto esistente da un commit in attesa o un'altra azione: la chiusura della review da sola non incrementa il contatore.
+
+Il lettore v3 conserva i controlli precedenti e aggiunge l'azione HUMAN più recente e il safe_failure_code per handoff. Il criterio è13righe committate, non13oggetti distinti: un APPROVE può riusare un oggetto. Il risultato readbackProven descrive il rendiconto; functionalStage3Proven richiede tutti13i commit più provenienza,11decisioni precedenti e oggetto originario. Solo allora END può riportare funzionali3/6.
+
+Qualifica su PostgreSQL dei controesempi “review chiusa, job ancora in quarantena” e “13commit verso12oggetti”. Nessun nuovo tentativo sudo sul runner, già accertato non disponibile. Occorre il riscontro finale del lettore nella sessione VPS per verificare il commit dell'ultimo handoff9fde61f1-8d3c-4de7-b3fe-b534b32e45e3.

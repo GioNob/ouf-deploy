@@ -60,10 +60,12 @@ def literal(value):
 
 
 def emit(check,**values):
- print(json.dumps(dict(schema='ouf.teatri-post-resolution-materialization-read.v2',check=check,readOnly=True,
+ fields=dict(schema='ouf.teatri-post-resolution-materialization-read.v3',check=check,readOnly=True,
   automaticRetry=False,budgetReset=False,credentialFilesRead=0,credentialValuesPrinted=False,
   databaseMutations=0,grantRequests=0,oauthRequests=0,serviceMutations=0,profilePublications=0,
-  jobsRetried=0,completedTechnicalPhases=8,functionalMilestonesProven=2,installationSpecific=True,**values),sort_keys=True),flush=True)
+  jobsRetried=0,completedTechnicalPhases=8,functionalMilestonesProven=2,installationSpecific=True)
+ fields.update(values)
+ print(json.dumps(fields,sort_keys=True),flush=True)
 
 def application_pin(actual):
  value=runtime_pin(actual);value['mountsHash']=digest(sorted(actual['Mounts'],key=lambda m:m['Destination']));return value
@@ -104,6 +106,10 @@ def acquisition_query(module,tenant):
   SELECT h.handoff_id,h.state intake_state,h.content_hash,h.ingestion_run_id,
    (SELECT count(*) FROM ouf_udp.materialization_job j WHERE j.handoff_id=h.handoff_id) job_count,
    (SELECT j.state FROM ouf_udp.materialization_job j WHERE j.handoff_id=h.handoff_id ORDER BY j.state LIMIT 1) job_state,
+   (SELECT j.safe_failure_code FROM ouf_udp.materialization_job j WHERE j.handoff_id=h.handoff_id ORDER BY j.state LIMIT 1) job_safe_failure_code,
+   (SELECT jsonb_build_object('action',d.action,'issueId',q.issue_id,'issueState',q.state)
+      FROM ouf_udp.human_resolution_decision d JOIN ouf_udp.resolution_issue q USING(issue_id)
+      WHERE q.handoff_id=h.handoff_id AND q.tenant_id="""+t+""" ORDER BY d.decided_at DESC,d.issue_id DESC LIMIT 1) latest_decision,
    (SELECT count(*) FROM ouf_udp.source_binding b JOIN ouf_udp.urban_object o USING(urban_object_id)
       WHERE b.source_id=h.source_id AND b.type_code=h.type_code AND b.source_object_id=h.source_object_id
        AND o.tenant_id="""+t+""" AND b.state='ACTIVE' AND o.status='ACTIVE') binding_count,
@@ -131,7 +137,7 @@ def acquisition_query(module,tenant):
  'decisionActions',coalesce((SELECT jsonb_agg(x) FROM (SELECT action,count(*) count FROM decisions GROUP BY action ORDER BY action)x),'[]'::jsonb),
  'sourceRowCount',(SELECT count(*) FROM intake),
  'migrations',(SELECT jsonb_agg(x ORDER BY installed_rank) FROM (SELECT installed_rank,version,script,checksum,success FROM ouf_udp.flyway_schema_history ORDER BY installed_rank LIMIT 100)x),
- 'sourceDetails',coalesce((SELECT jsonb_agg(x) FROM (SELECT handoff_id,intake_state,content_hash,ingestion_run_id,job_count,job_state,binding_count,urban_object_id,verified_observations,contribution_count,open_issue_count,in_confirmed_package FROM source_details ORDER BY handoff_id LIMIT 14)x),'[]'::jsonb),
+ 'sourceDetails',coalesce((SELECT jsonb_agg(x) FROM (SELECT handoff_id,intake_state,content_hash,ingestion_run_id,job_count,job_state,job_safe_failure_code,latest_decision,binding_count,urban_object_id,verified_observations,contribution_count,open_issue_count,in_confirmed_package FROM source_details ORDER BY handoff_id LIMIT 14)x),'[]'::jsonb),
  'sourceJobs',coalesce((SELECT jsonb_agg(x) FROM (SELECT j.state,j.safe_failure_code,count(*) count FROM ouf_udp.materialization_job j JOIN intake h USING(handoff_id) GROUP BY j.state,j.safe_failure_code ORDER BY j.state,j.safe_failure_code)x),'[]'::jsonb),
  'sourceIssues',coalesce((SELECT jsonb_agg(x) FROM (SELECT q.state,q.reason_code,count(*) count FROM ouf_udp.resolution_issue q JOIN intake h USING(handoff_id) WHERE q.tenant_id="""+t+""" GROUP BY q.state,q.reason_code ORDER BY q.state,q.reason_code)x),'[]'::jsonb),
  'confirmedDistinctObjects',(SELECT count(DISTINCT urban_object_id) FROM details),
@@ -187,11 +193,11 @@ def row_ledger(facts):
  return {'expectedRows':13,'committedRows':len(committed),'quarantinedRows':len(quarantined),
   'unprovenRows':len(unproven),'distinctCommittedObjects':len(set(objects)),
   'originalObjectRetained':'d6051381-934b-4a11-8e71-e1d89cee4e49' in objects,
-  'expectedCurrentDispositionProven':len(committed)==len(set(objects))==12 and len(quarantined)==1 and not unproven and materialization_proven(facts) and 'd6051381-934b-4a11-8e71-e1d89cee4e49' in objects,
+  'expectedCurrentDispositionProven':len(committed)==len(set(objects))==12 and len(quarantined)==1 and not unproven and materialization_proven(facts) and 'd6051381-934b-4a11-8e71-e1d89cee4e49' in objects or len(committed)==13 and not quarantined and not unproven,
   'confirmedElevenMaterialized':materialization_proven(facts),
   'allRowsAccounted':len(committed)+len(quarantined)==13 and not unproven,
-  'allThirteenMaterializedProven':len(committed)==len(set(objects))==13 and not quarantined and not unproven,
-  'quarantineIntentionEvidence':'User instruction in current chat; not a new HUMAN decision',
+  'allThirteenMaterializedProven':len(committed)==13 and not quarantined and not unproven,
+  'quarantineIntentionEvidence':'Historical exception; user now reports resolving it in THS. This read issues no decisions.',
   'historicalCriterionChanged':False}
 
 def upstream_matches(ingestion,udp):
@@ -264,9 +270,11 @@ def main():
  require(runtime_pin(ns['engine_get'](prepared['engine'],'containers',pg['Id']))==db['postgresRuntimeBinding'],'POSTGRES_GENERATION_CHANGED_DURING_READ')
  applications();require(ns['read'](CONTEXT/'recovery.json',131072)==record,'ROLLOUT_RECORD_CHANGED')
  ledger=row_ledger(results['udp']);linked=upstream_matches(results['ingestion'],results['udp'])
+ stage3=linked and ledger['allThirteenMaterializedProven'] and ledger['confirmedElevenMaterialized'] and ledger['originalObjectRetained']
  emit('END',complete=True,udpMigrationVersion=35,rowLedger=ledger,upstreamHandoffsAndLineageMatch=linked,
+  functionalStage3Proven=stage3,functionalMilestonesProven=3 if stage3 else 2,
   confirmedElevenMaterialized=ledger['confirmedElevenMaterialized'],allThirteenMaterializedProven=ledger['allThirteenMaterializedProven'],
-  readbackProven=linked and ledger['expectedCurrentDispositionProven'],profileActivationProven=False,runtimeAuthorityIssued=False)
+  readbackProven=linked and ledger['allRowsAccounted'],profileActivationProven=False,runtimeAuthorityIssued=False)
 if __name__=='__main__':
  emit('BEGIN',maximumSeconds=65,maximumEngineReads=6,maximumSqlSessions=2,maximumRows=13)
  try:main()
