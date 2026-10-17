@@ -49,10 +49,16 @@ class Contract(unittest.TestCase):
   self.assertFalse(json.loads(out.getvalue())['requiredScopesPresentInToken'])
   with contextlib.redirect_stdout(io.StringIO())as out:m.emit_route_access_metadata({'gateway':{'afterRoutes':{}}},claims)
   self.assertEqual(json.loads(out.getvalue())['exactRouteCount'],0)
- def test_owner_policy_query_is_readonly_and_binds_exact_service_subject_and_validation_resource(self):
-  sql=m.policy_query('ouf-lab','service-subject','ouf-udp');self.assertTrue(sql.startswith('BEGIN READ ONLY;'));self.assertTrue(sql.endswith('ROLLBACK;'));self.assertNotRegex(sql,r'(?i)\b(insert|update|delete|truncate|alter|create|grant|revoke)\b');self.assertIn('semantic.validation',sql)
-  with self.assertRaises(ValueError):m.policy_query('ouf-lab',"x';drop table x",'ouf-udp')
-
+ def test_owner_metadata_matches_service_scope_and_resource_without_exposing_subject(self):
+  import hashlib
+  bundle={'capabilities':[{'capabilityId':'ouf.semantic.read','requiredScope':'ouf.semantic.read','allowedActors':['SERVICE']}],
+   'grants':[{'capabilityId':'ouf.semantic.read','tenantId':'ouf-lab','servicePrincipalId':principal,'subjectId':'PRIVATE_SUBJECT','validFrom':'2020-01-01T00:00:00Z','validUntil':'2099-01-01T00:00:00Z','constraints':{'effect':'ALLOW','resourceType':resource,'resourceAttributes':{'module':'SEMANTIC'}}}for principal,resource in [('ouf-udp','semantic.validation'),('ouf-ingestion','semantic.artifact')]]}
+  doc={'bundleVersion':40,'bundle':bundle,'contentHash':hashlib.sha256(json.dumps(bundle,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()}
+  claims={'tenant_id':'ouf-lab','sub':'PRIVATE_SUBJECT','client_id':'ouf-udp'}
+  facts=m.policy_metadata(doc,claims);self.assertTrue(facts['compactBundleHashMatchesEnvelope']);self.assertFalse(facts['loadedOwnerSnapshotProven']);self.assertEqual(len(facts['grants']),2)
+  matches=[g for g in facts['grants']if g['servicePrincipalMatchesToken']];self.assertEqual(len(matches),1);self.assertTrue(matches[0]['resourceTypeMatchesValidation']);self.assertTrue(matches[0]['subjectMatchesToken']);self.assertNotIn('PRIVATE_SUBJECT',json.dumps(facts))
+  doc['contentHash']='0'*64;self.assertNotIn('grants',m.policy_metadata(doc,claims))
+  claims['tenant_id']='other-tenant';doc['contentHash']=hashlib.sha256(json.dumps(bundle,separators=(',',':'),ensure_ascii=False).encode()).hexdigest();self.assertEqual(m.policy_metadata(doc,claims)['grants'],[])
  def test_owner_transport_probe_reads_one_additional_token_and_never_prints_it(self):
   import base64,contextlib,io
   claims=base64.urlsafe_b64encode(json.dumps({'exp':4102444800}).encode()).rstrip(b'=')
@@ -78,11 +84,4 @@ class NativeSql(unittest.TestCase):
   refs=facts.pop('contractRefs');self.assertIn('bundleRef',refs);self.assertNotIn('bundleRef',json.dumps(facts))
   self.assertEqual(facts['jobGroups'][0]['safe_failure_code'],'UDP_REFERENCE_INTEGRITY_MISSING');self.assertEqual(facts['jobGroups'][0]['count'],11)
   other=json.loads(sql(m.acquisition_query('udp','other-tenant')));self.assertEqual(other['confirmedJobCount'],0)
-  sql("create schema ouf_authorization; create table ouf_authorization.policy_bundle(bundle_id text,version bigint,bundle_payload jsonb); create table ouf_authorization.active_policy_bundle(singleton_key boolean,bundle_id text,version bigint);")
-  policy={'capabilities':[{'capabilityId':'ouf.semantic.read','allowedActors':['SERVICE'],'requiredScope':'ouf.semantic.read'}],
-   'grants':[{'capabilityId':'ouf.semantic.read','tenantId':'ouf-lab','servicePrincipalId':service,'subjectId':'service-subject','validFrom':'2020-01-01T00:00:00Z','validUntil':'2099-01-01T00:00:00Z','constraints':{'effect':'ALLOW','resourceType':resource,'resourceAttributes':{'module':'SEMANTIC'}}}for service,resource in [('ouf-udp','semantic.validation'),('ouf-ingestion','semantic.artifact')]]}
-  payload=json.dumps(policy)
-  sql("insert into ouf_authorization.policy_bundle values('fixture',40,'"+payload+"');insert into ouf_authorization.active_policy_bundle values(true,'fixture',40);")
-  facts=json.loads(sql(m.policy_query('ouf-lab','service-subject','ouf-udp')));self.assertTrue(facts['transactionReadOnly']);self.assertEqual(facts['bundleVersion'],40);self.assertEqual(len(facts['grants']),2)
-  matches=[g for g in facts['grants']if g['servicePrincipalMatchesToken']];self.assertEqual(len(matches),1);self.assertTrue(matches[0]['resourceTypeMatchesValidation']);self.assertTrue(matches[0]['subjectMatchesToken']);self.assertTrue(matches[0]['moduleConstraintMatches'])
 if __name__=='__main__':unittest.main()

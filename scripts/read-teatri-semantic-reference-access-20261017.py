@@ -20,7 +20,7 @@ def encoded(v):return json.dumps(v,sort_keys=True,separators=(',',':'),allow_nan
 def digest(v):return hashlib.sha256(encoded(v)).hexdigest()
 CREDENTIAL_FILES_READ=0
 def emit(check,**values):
- print(json.dumps(dict(schema='ouf.teatri-semantic-reference-access-read.v1',check=check,readOnly=True,
+ print(json.dumps(dict(schema='ouf.teatri-semantic-reference-access-read.v2',check=check,readOnly=True,
   automaticRetry=False,budgetReset=False,installationSpecific=True,credentialFilesRead=CREDENTIAL_FILES_READ,credentialValuesPrinted=False,
   databaseMutations=0,grantRequests=0,readinessCalls=0,serviceMutations=0,
   completedTechnicalPhases=8,functionalMilestonesProven=2,**values),sort_keys=True),flush=True)
@@ -119,6 +119,9 @@ def configured_properties(actual,root,required=("ouf.udp.execution.gateway-url",
    else:add(path,value)
  for key,value in env.items():add(key,value)
  if env.get('SPRING_APPLICATION_JSON'):flatten(json.loads(env['SPRING_APPLICATION_JSON']))
+ if required==('spring.datasource.url','spring.datasource.username'):
+  for alias,key in(('OUF_SEM_DB_URL',required[0]),('OUF_SEM_DB_USER',required[1])):
+   if env.get(alias):add(key,env[alias])
  if required==('ouf.authorization.registry-url','ouf.authorization.registry-token-file'):
   for alias,key in(('REGISTRY_URL',required[0]),('REGISTRY_TOKEN_FILE',required[1])):
    if env.get(alias):add(key,env[alias])
@@ -236,29 +239,39 @@ def emit_route_access_metadata(plan,claims):
   workloadGuardMetadataParsed=bool(tables['services'])and bool(tables['actors']),
   servicePrincipalAllowedByRetainedGuard=service in tables['services'],actorAllowedByRetainedGuard=actor in tables['actors'])
 
-def policy_query(tenant,subject,service):
- t=literal(tenant);h=literal(subject);p=literal(service)
- return """BEGIN READ ONLY; SET LOCAL statement_timeout='10s'; SET LOCAL lock_timeout='3s';
- WITH active AS (
- SELECT b.version,b.bundle_payload FROM ouf_authorization.active_policy_bundle a JOIN ouf_authorization.policy_bundle b ON b.bundle_id=a.bundle_id AND b.version=a.version WHERE a.singleton_key=true
- ), selected AS (
- SELECT g FROM active a CROSS JOIN LATERAL jsonb_array_elements(a.bundle_payload->'grants') g
- WHERE g->>'capabilityId'='ouf.semantic.read' AND g->>'tenantId'="""+t+"""
- )
- SELECT jsonb_build_object('database',current_database(),'databaseOid',(SELECT oid::bigint FROM pg_database WHERE datname=current_database()),'role',current_user,'transactionReadOnly',current_setting('transaction_read_only')='on',
- 'bundleCount',(SELECT count(*) FROM active),'bundleVersion',(SELECT version FROM active),
- 'capabilities',coalesce((SELECT jsonb_agg(c) FROM active a CROSS JOIN LATERAL jsonb_array_elements(a.bundle_payload->'capabilities') c WHERE c->>'capabilityId'='ouf.semantic.read'),'[]'::jsonb),
- 'grants',coalesce((SELECT jsonb_agg(jsonb_build_object(
- 'subjectMatchesToken',coalesce(g->>'subjectId','')=''OR g->>'subjectId'="""+h+""",
- 'servicePrincipalMatchesToken',coalesce(g->>'servicePrincipalId','')=''OR g->>'servicePrincipalId'="""+p+""",
- 'validAtRead',(g->>'validFrom')::timestamptz<=clock_timestamp()AND clock_timestamp()<(g->>'validUntil')::timestamptz,
- 'organizationRestricted',coalesce(g->>'organizationId','')<>'','constraints',g->'constraints',
- 'resourceTypeMatchesInterchange',coalesce(g->'constraints'->>'resourceType','')IN('','semantic.interchange'),
- 'resourceTypeMatchesValidation',coalesce(g->'constraints'->>'resourceType','')IN('','semantic.validation'),
- 'resourceTypeMatchesArtifact',coalesce(g->'constraints'->>'resourceType','')IN('','semantic.artifact'),
- 'moduleConstraintMatches',coalesce(g->'constraints'->'resourceAttributes','{}'::jsonb)IN('null'::jsonb,'{}'::jsonb,'{"module":"SEMANTIC"}'::jsonb)))FROM selected),'[]'::jsonb));ROLLBACK;"""
+def policy_metadata(doc,claims):
+ bundle=doc.get('bundle');version=doc.get('bundleVersion')
+ require(type(bundle)is dict and type(version)is int,'ACTIVE_OWNER_POLICY_ENVELOPE_REQUIRED')
+ caps=bundle.get('capabilities');grants=bundle.get('grants')
+ require(type(caps)is list and type(grants)is list and len(caps)<=10000 and len(grants)<=10000 and all(type(v)is dict for v in caps+grants),'BOUNDED_OWNER_POLICY_PAYLOAD_REQUIRED')
+ compact=json.dumps(bundle,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+ checksum=hashlib.sha256(compact).hexdigest()==doc.get('contentHash')
+ result={'bundleVersion':version,'compactBundleHashMatchesEnvelope':checksum,'loadedOwnerSnapshotProven':False}
+ if not checksum:return result
+ tenant=claims.get('tenant_id');subject=claims.get('ouf_subject')or claims.get('sub');service=claims.get('client_id')or claims.get('azp')
+ require(all(type(v)is str and 0<len(v)<=256 for v in(tenant,subject,service)),'UDP_IDENTITY_METADATA_REQUIRED')
+ result['capabilities']=[c for c in caps if c.get('capabilityId')=='ouf.semantic.read']
+ selected=[g for g in grants if g.get('capabilityId')=='ouf.semantic.read'and g.get('tenantId')==tenant]
+ require(len(selected)<=64,'BOUNDED_SEMANTIC_READ_GRANTS_REQUIRED');rows=[]
+ def instant(value):
+  if type(value)is not str:return None
+  from datetime import datetime
+  return datetime.fromisoformat(value.replace('Z','+00:00')).timestamp()
+ for g in selected:
+  constraints=g.get('constraints')or{};require(type(constraints)is dict,'OWNER_GRANT_CONSTRAINT_SHAPE_REQUIRED')
+  start=instant(g.get('validFrom'));end=instant(g.get('validUntil'));attrs=constraints.get('resourceAttributes')or{}
+  require(type(attrs)is dict,'OWNER_RESOURCE_ATTRIBUTES_SHAPE_REQUIRED')
+  rows.append({'subjectMatchesToken':not g.get('subjectId')or g.get('subjectId')==subject,
+   'servicePrincipalMatchesToken':not g.get('servicePrincipalId')or g.get('servicePrincipalId')==service,
+   'organizationRestricted':bool(g.get('organizationId')),
+   'validAtRead':start is not None and end is not None and start<=time.time()<end,
+   'resourceTypeMatchesValidation':not constraints.get('resourceType')or constraints.get('resourceType')=='semantic.validation',
+   'resourceIdMatchesUnspecified':not constraints.get('resourceId'),
+   'moduleConstraintMatches':all(k=='module'and v=='SEMANTIC'for k,v in attrs.items()),'constraints':constraints})
+ result['grants']=rows
+ return result
 
-def probe_owner_policy_channel(actual,origin):
+def probe_owner_policy_channel(actual,origin,udp_claims=None):
  global CREDENTIAL_FILES_READ
  pid=actual['State']['Pid'];require(type(pid)is int and pid>1,'CURRENT_SEMANTIC_PROCESS_REQUIRED')
  def pin():
@@ -275,6 +288,8 @@ def probe_owner_policy_channel(actual,origin):
   safe,body=safe_get(origin,path,token)
   version=body.get('bundleVersion');version=version if type(version)is int else body.get('version')if type(body.get('version'))is int else None
   emit('OWNER_POLICY_TRANSPORT_GET',activeBundleVersion=version,loadedOwnerSnapshotProven=False,**safe)
+  if safe['httpStatus']==200 and udp_claims is not None:
+   emit('SEMANTIC_OWNER_POLICY_METADATA',facts=policy_metadata(body,udp_claims),policyObtainedFromConfiguredRegistryChannel=True,loadedOwnerSnapshotProven=False,rawPolicyPrinted=False)
   require(before==pin(),'SEMANTIC_PROCESS_CHANGED_DURING_POLICY_READ')
  finally:os.close(root)
 
@@ -329,25 +344,18 @@ def main():
   emit('REFERENCE_JOB_METADATA',facts=facts,rawSqlOutputPrinted=False,propertyValuesPrinted=False)
   udp=ns['engine_get'](prepared['engine'],'containers',pins['udp']['containerId'])
   claims=probe_dependencies(udp,refs,selection['origin'],plan)
-  semantic_bindings=[row for row in db['modules']if 'semantic'in row['module']or row['module']=='registry'or row['database']=='ouf_semantic']
-  require(len(semantic_bindings)==1,'EXACT_SEMANTIC_DATABASE_BINDING_REQUIRED')
-  owner_binding=semantic_bindings[0]
-  owner_sql=policy_query(tenant,claims.get('ouf_subject')or claims.get('sub'),claims.get('client_id')or claims.get('azp'))
-  with tempfile.TemporaryDirectory(prefix='ouf-semantic-policy-read-')as config:
-   argv=[executable(old['sourceClosure']['executables']['docker']),'--host','unix://'+prepared['engine']['socketPath'],'--config',config,'exec',pg['Id'],'env','LC_ALL=C',
-    'PGOPTIONS=-c default_transaction_read_only=on -c statement_timeout=10000 -c lock_timeout=3000','timeout','-s','KILL','15','psql','-X','-q','-A','-t','-v','ON_ERROR_STOP=1','-U',admin,'-d',owner_binding['database'],'-c',owner_sql]
-   code,raw,err,_=bounded(argv,seconds=20,maximum=65536);require(code==0,'READ_ONLY_SEMANTIC_POLICY_SQL_FAILED');owner_facts=json.loads(raw)
-  require(owner_facts['database']==owner_binding['database']and owner_facts['databaseOid']==owner_binding['databaseOid']and owner_facts['role']==admin and owner_facts['transactionReadOnly']is True,'EXACT_SEMANTIC_OWNER_DATABASE_REQUIRED')
-  emit('SEMANTIC_OWNER_POLICY_METADATA',facts=owner_facts,loadedOwnerSnapshotProven=False,rawSqlOutputPrinted=False)
+  registry=None
   for name in('ouf-semantic-registry','ouf-semantic'):
-   registry=ns['engine_get'](prepared['engine'],'containers',name)
-   if registry is not None:
-    emit('SEMANTIC_RUNTIME_METADATA',containerPresent=True,sourceCommitLabel=registry['Config'].get('Labels',{}).get('org.opencontainers.image.revision'))
-    try:probe_owner_policy_channel(registry,selection['origin'])
-    except Exception as failure:
-     reason=str(failure)if type(failure)is ValueError and re.fullmatch('[A-Z_]+',str(failure))else type(failure).__name__
-     emit('OWNER_POLICY_CHANNEL_UNPROVEN',reason=reason,exceptionMessagePrinted=False)
-    break
+   candidate=ns['engine_get'](prepared['engine'],'containers',name)
+   if candidate is not None:registry=candidate;break
+  require(registry is not None and registry['State']['Running']is True,'CURRENT_SEMANTIC_CONTAINER_REQUIRED')
+  registry_pin=runtime_pin(registry)
+  emit('SEMANTIC_RUNTIME_METADATA',containerPresent=True,sourceCommitLabel=registry['Config'].get('Labels',{}).get('org.opencontainers.image.revision'))
+  try:probe_owner_policy_channel(registry,selection['origin'],claims)
+  except Exception as failure:
+   reason=str(failure)if type(failure)is ValueError and re.fullmatch('[A-Z_]+',str(failure))else type(failure).__name__
+   emit('OWNER_POLICY_CHANNEL_UNPROVEN',reason=reason,exceptionMessagePrinted=False)
+  require(runtime_pin(ns['engine_get'](prepared['engine'],'containers',registry['Id']))==registry_pin,'SEMANTIC_GENERATION_CHANGED_DURING_READ')
  require(runtime_pin(ns['engine_get'](prepared['engine'],'containers',pg['Id']))==db['postgresRuntimeBinding'],'POSTGRES_GENERATION_CHANGED_DURING_READ')
  for name,pin in pins.items():
   require(current_pin(ns['engine_get'](prepared['engine'],'containers',pin['containerId']))==pin,'APPLICATION_CHANGED_DURING_READ')
@@ -356,7 +364,7 @@ def main():
   runtimeAuthorityIssued=False,confirmationReceipt='a5183503-04ff-4e10-850f-e22bf874365e',
   allThirteenMaterializedProven=False,cinemaHistoricalEqualityProven=False)
 if __name__=='__main__':
- emit('BEGIN',maximumSeconds=90,maximumEngineReads=12,maximumSqlSessions=2,maximumCredentialFiles=2,maximumGatewayGets=4)
+ emit('BEGIN',maximumSeconds=90,maximumEngineReads=13,maximumSqlSessions=1,maximumCredentialFiles=2,maximumGatewayGets=4)
  try:main()
  except Exception as error:
   reason=str(error)if type(error)is ValueError and re.fullmatch('[A-Z_]+',str(error))else type(error).__name__
