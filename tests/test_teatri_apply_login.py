@@ -1,5 +1,5 @@
 """Same test ceiling with real loopback OAuth and unchanged blocked predecessor."""
-import copy,json,os,sys,unittest,uuid
+import copy,json,os,sys,tempfile,unittest,uuid
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -12,7 +12,10 @@ from tools.semantic_lease_recovery.recovery_journal import Journal
 
 class Login(unittest.TestCase):
  def setUp(self):
-  c=oauth.HumanSessionTest();c.setUp();self.addCleanup(c.doCleanups);self.c=c
+  base=tempfile.TemporaryDirectory(dir=os.environ.get('OUF_TEST_ROOT',str(ROOT)));self.addCleanup(base.cleanup)
+  c=oauth.HumanSessionTest()
+  with patch.object(oauth,'ROOT',Path(base.name)):c.setUp()
+  self.addCleanup(c.doCleanups);self.c=c
   self.old=c.directory/'blocked-test';self.old.mkdir(mode=0o700);self.context=c.directory/'materialization';self.context.mkdir(mode=0o700)
   now=int(c.clock.time());self.hb={'sessionId':'current-test','selectionHash':digest(c.selection),**{k:c.selection[k]for k in('issuer','tenant','subject')},'clientId':h.CLIENT,'scopes':list(h.SCOPES),'tokenPath':str(self.old/'human-access.jwt'),'sessionDirectory':str(self.old),'createdAt':now-500,'expiresAt':now+6700,'retryProfile':copy.deepcopy(h.PROFILE)}
   review={'schema':'ouf.human-explicit-test-budget-review.v2','purpose':'CONFIGURATION_AND_VALIDATION','predecessorMaximumCumulativeOAuthAttempts':128,'priorOAuthAttempts':125,'maximumCumulativeOAuthAttempts':256}
