@@ -1,0 +1,16 @@
+name: Read installed release boundary through existing fixed helper
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['.github/workflows/chat-only-recovery-installed-read.yml']
+permissions: {contents: read}
+concurrency:
+  group: ouf-discovery-release
+  cancel-in-progress: false
+jobs:
+  installed-read:
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 3
+    steps:
+      - name: Use only the existing no-argument read-only helper
+        run: sudo -n /usr/local/sbin/ouf-discovery-preflight
