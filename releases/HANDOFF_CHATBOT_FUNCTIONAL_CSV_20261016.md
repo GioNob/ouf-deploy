@@ -1,3 +1,11 @@
+# Correzione della preparazione privata Gateway — 2026-10-17
+
+**Fasi tecniche8/8; funzionali1/6.** Il preparatore precedente ha verificato entrambe le immagini, poi si è fermato con ROOT_INPUT_ANCESTRY_REQUIRED sul profilo Gateway selezionato. Nessun servizio, configurazione, grant, database o budget è stato modificato. Il pacchetto908MB resta nella cache verificata dell'operatore.
+
+La correzione riutilizza le tre funzioni di custodia del modulo Gateway qualificato e le sue selezioni di proprietà già osservate, estraendole tramite AST da byte SHA256 fissati senza importare il publisher. Legge esclusivamente /opt/ouf/installation/active-projection.json e richiede uguaglianza dell'intero binding conservato (percorso, hash, identità e metadati). Tutti gli altri input protetti mantengono la custodia root. Nessun chown sul target. La verifica precede ora copia e analisi delle immagini e viene ripetuta alla fine. Il launcher riutilizza la cache e verifica quattro dipendenze prima di sudo.
+
+La preparazione produce solo una nuova revisione privata: restano da qualificare l'esecutore limitato e la sua decisione HUMAN prima di rollout o nuova sessione worker. Le approvazioni semantiche e della sorgente restano conservate.
+
 # Binding VPS confermati e profilo di collaudo rinnovabile esplicitamente — 2026-10-17
 
 **Fasi tecniche8/8; funzionali1/6.** Il readback operatore delle09:07:13 CEST conferma le tre generazioni Onboarding/Ingestion/APISIX stabili e il worker terminato:60 tentativi/pubblicazioni,128 precedenti, **188 controllati cumulativi su197**,9 residui sotto la vecchia revisione. CANCELLED_BY_OWNER, autorità scaduta, lock libero, admissionBLOCKED; i quattro record hash sono in evidence/ingestion-readiness-current-bindings-and-test-profile-20261017.json. Ora il totale188 è provato dal readback, non solo calcolato sul report del terminale.
