@@ -1,3 +1,13 @@
+# Linked-property activation preparation — 17 October 2026
+
+**Tecniche8/8; funzionali2/6.** V35 e implementazione generica installate; readback operatore conferma20regole ancora null. Le11decisioni CREATE_NEW materializzate restano conservate; un ulteriore caso resta volontariamente in quarantena. Non ripetere il rollout o quelle decisioni.
+
+La preparazione ha individuato il datatype XSD string non accettato dai nuovi validatori: UDP PR44 e Onboarding PR45 correggono l'alias esatto preservando la configurazione. CI mirata77test e CI complete PASS; correzioni non installate. Profilo concreto20proprietà predisposto con default conservativo approvato, priorità/etichette/tipi invariati, nessuna cancellazione o revisione inventata. Una nuova pubblicazione MANAGED può riarmare lo scheduler: nessuna pubblicazione o acquisizione implicita.
+
+[Preparazione, PET allegati, prove e percorso nativo](LINKED_PROPERTY_ACTIVATION_PREPARATION_20261017.md). Restano installazione delle correzioni, lettura completa owner/schedule/vincoli, approvazione HUMAN degli effetti e collaudo funzionale. La lettura semantica owner esatta è stata negata403; nessun grant o login avviato.
+
+---
+
 # Resolution: rollout UDP completato dall'operatore; lettura browser da provare — 2026-10-17
 
 **Tecniche8/8; funzionali2/6.** Operatore riporta `OUF_UDP_RESOLUTION_UPDATE_RESULT`: contesto `/etc/ouf/deploy-snapshots/udp-resolution-execution-65h5kjt8`, journalVersion31, complete=true, applicationReady=true, maximumGatewayWrites=0, newPolicyWorkerStarted=false, identityDecisionsPerformed=false e semanticDispatchPerformed=false. Evidenza di esecuzione del percorso qualificato, non readback indipendente della generazione target o dell'accesso autorizzato al pacchetto.
@@ -1726,3 +1736,4 @@ Zero nuovi dump, backup letti, DB/IAM/MCP/grant o scritture di servizio/Gateway.
 Launcher `scripts/launch-chatbot-postgateway-container-20261016.sh`, SHA256
 `ad9ac7854ca025f0b097a6164d22e3fe3539951f2af7b6001a438d39c4326b24`.
 Il vecchio delivery non va rilanciato: contiene effetti ormai consumati.
+

@@ -1,0 +1,30 @@
+{
+  "schema": "ouf.linked-property-activation-preparation-selection.v1",
+  "installationSpecific": true,
+  "expectedInstalledImages": {
+    "udp": "sha256:a75e09ad7f4c50557619c126d9608b774f209c490b7eccbb8994922284a12989",
+    "onboarding": "sha256:b5ca06ed2c8453b62753cf6747db20a52bc8f7a9d0916cc5c6ff306ada2e6b42"
+  },
+  "sourceCandidates": {
+    "udp": {
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "e66e6df0833a872f15170eb46a43f85e50dd859b",
+      "pr": 44
+    },
+    "onboarding": {
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "b8b2eb23e36ea3166012edf84fb8c1fc3441dfca",
+      "pr": 45
+    }
+  },
+  "expectedTarget": {
+    "udpMigrationVersion": 35,
+    "journalVersion": 55,
+    "contextPath": "/etc/ouf/deploy-snapshots/linked-property-execution-cjecd1en",
+    "nativeProfilePublished": false
+  },
+  "scope": "Read-only metadata and offline native profile proposal; no activation or acquisition",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2,
+  "runtimeAuthorityIssued": false
+}

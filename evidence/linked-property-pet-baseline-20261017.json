@@ -1,0 +1,62 @@
+{
+  "verifiedDocumentCount": 11,
+  "documents": [
+    {
+      "path": "docs/external-readonly/OUF_Linee_Indirizzo_API_Verticali_v2_3(3).docx",
+      "sha256": "2a1f538f02b95c9637f127728dd857f7a5150f240916fc18eb3cf93f669f5fba",
+      "matches": true
+    },
+    {
+      "path": "docs/l0/OUF_Cross_Module_Alignment_Matrix_v1_7_Channel_Neutral_OA_Aligned.docx",
+      "sha256": "d48a3b36ea3dd23622da380ec498f753fcd37f49f534735fe7ef904def387b1b",
+      "matches": true
+    },
+    {
+      "path": "docs/l0/OUF_Normative_Terminology_Supersession_Notice_v1_1.docx",
+      "sha256": "9a93fe9dd8134b0302d67f140cafac0a5fbed76ad1f692c7bd4b13919d18567f",
+      "matches": true
+    },
+    {
+      "path": "docs/l0/OUF_System_Integration_Development_Blueprint_v0_3.docx",
+      "sha256": "732dbff800d5ea5b971125817dc383eab5d760a92d5c9749fc75825e956122fd",
+      "matches": true
+    },
+    {
+      "path": "docs/l1/OUF_MCP_Server_v1_4_Go_Channel_Neutral_Operational_Awareness.docx",
+      "sha256": "83165c93197bc4d9fca9bfbbb346b48977931b0e0527849e57b894078cec1008",
+      "matches": true
+    },
+    {
+      "path": "docs/l1/OUF_PET_Authorization_Access_Control_v1_5_Operational_Awareness.docx",
+      "sha256": "c02e54faf7aa8e93b6653d5b6f6bcb7d00657bfbe09b2e77fcc723acd2054c26",
+      "matches": true
+    },
+    {
+      "path": "docs/l1/OUF_PET_Data_Lake_UDP_Urban_Object_Registry_v1_3_Development_Ready.docx",
+      "sha256": "77700b8741f312b88348ff00f7e98780b5636e55e76c6c6407999a6d08d25e8d",
+      "matches": true
+    },
+    {
+      "path": "docs/l1/OUF_PET_EF_Ingestion_Runtime_v1_3_Operational_Awareness.docx",
+      "sha256": "b9eb1b3011854535e89ba23ce395553c736f6a34bcca7e51c13d512e81dd8886",
+      "matches": true
+    },
+    {
+      "path": "docs/l1/OUF_PET_Semantic_Model_Registry_v1_3_Development_Ready.docx",
+      "sha256": "c28c4dbb1ca04d877890c00e3cfe5a52725d3aa2a51f7afec9177cae11514175",
+      "matches": true
+    },
+    {
+      "path": "docs/l1/OUF_PET_Source_Onboarding_Configuration_THS_v1_6_Operational_Awareness.docx",
+      "sha256": "a69ab5923405467198f56fe00e9a5ff286e18291156b5040bd928399dadffbca",
+      "matches": true
+    },
+    {
+      "path": "docs/l1/OUF_PET_Urban_API_Gateway_v1_5_Channel_Neutral_Operational_Awareness.docx",
+      "sha256": "d5ac46d60f5d34819cc28c87a8bb81b84aa232ece9925d81c369ddbcb301db72",
+      "matches": true
+    }
+  ],
+  "package": "OUF_Reality_Baseline_Package_v1_7.zip",
+  "scope": "Integrity of attached DOCX documents; relevant sections read, not full PET acceptance"
+}

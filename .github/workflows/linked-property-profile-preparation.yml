@@ -1,0 +1,30 @@
+name: Linked property profile preparation
+on:
+  push:
+    branches: [feat/linked-property-profile-preparation-20261017]
+    paths: ['tools/linked_property_profile/**', 'tests/linked_property_profile/**', 'scripts/read-linked-property-activation-images.py', 'releases/linked-property-profile-proposal-20261017.json', 'releases/linked-property-activation-preparation-20261017.json', '.github/workflows/linked-property-profile-preparation.yml']
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: linked-property-profile-preparation
+  cancel-in-progress: false
+jobs:
+  offline-preparation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Verify preservation, native rule constraints and scheduling disclosure
+        run: node tests/linked_property_profile/run.mjs
+  retained-vps-images:
+    needs: offline-preparation
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Read exact pre-fix application images without entering containers
+        run: python3 -I -B scripts/read-linked-property-activation-images.py
