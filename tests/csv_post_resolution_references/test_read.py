@@ -33,7 +33,7 @@ class NativeSql(unittest.TestCase):
  def test_exact_job_metadata_and_tenant_isolation(self):
   self.cli('pull','postgres:17-alpine');cid=self.cli('run','-d','--rm','-e','POSTGRES_HOST_AUTH_METHOD=trust','postgres:17-alpine');self.addCleanup(lambda:self.cli('rm','-f',cid))
   end=time.monotonic()+30
-  while subprocess.run(['docker','exec',cid,'pg_isready','-U','postgres'],capture_output=True).returncode:
+  while subprocess.run(['docker','exec',cid,'pg_isready','-h','127.0.0.1','-U','postgres'],capture_output=True).returncode:
    self.assertLess(time.monotonic(),end);time.sleep(.2)
   def sql(raw):return self.cli('exec',cid,'psql','-U','postgres','-X','-q','-A','-t','-v','ON_ERROR_STOP=1','-c',raw)
   sql("""
