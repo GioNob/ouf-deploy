@@ -1,3 +1,19 @@
+# Resolution: correzione contesto owner qualificata, non installata — 2026-10-17
+
+**Tecniche8/8; funzionali2/6.** Il readback target `ouf.resolution-owner-policy-metadata-read.v1` mostra bundle40: entrambi i grant HUMAN Resolution sono validi, subject corretto, resourceType nullo e attributi risorsa vuoti. Non è un mismatch capability/resolution-issues. I grant vincolano però tutte5etichette e tutti4livelli; il valutatore SDK richiede i rispettivi attributi, assenti nel vecchio contesto servlet.
+
+UDP [PR41](https://github.com/GioNob/ouf-udp-object-resolution/pull/41), sorgente `a4d432d7788cc1c205c0eaafa5ae3b46036de09f`: GET browser, POST delegato di lettura e conferma pacchetto valutano risorse owner sullo stesso snapshot autenticato. Il pacchetto attuale comprende evidenze miste dell'intero tenant senza classificazione per issue: richiede copertura completa delle5etichette×4livelli, con attributi solo server. Nessuna etichetta permissiva predefinita o presunta gerarchia; accessi parziali negati. Nessuna modifica grant, SDK, migrazione o scelta di identità.
+
+CI boundary [39034028566](https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39034028566):13PASS,0skip (7nuovi+6pairwise), più10test SDK. CI modulo [39034028565](https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39034028565):successo; Maven216test,0errori/fallimenti,2skip preesistenti (GovernedGridRuntimeTest e ObjectSearchReceiptFilterTest); recupero PostgreSQL/MinIO, prestazioni, build nonroot/packaging SDK e supply-chain completati. Ulteriori workflow push continuità, recovery e CRS completati.
+
+Candidate [39034093831](https://github.com/GioNob/ouf-deploy/actions/runs/39034093831):SUCCESS, artifact12101592347, ZIP SHA256 e87f068a879fa996a91fa518c5ad3a114008e23e0e28b13dde5a7476ae7b1f42 (313246590byte); imageId3040e430…, scansione HIGH/CRITICAL/UNKNOWN inclusi unfixed superata e attestazione publisher verificata in CI. Identità nativa target/tagless ancora da qualificare sullo store del VPS.
+
+**Non installato.** Nessun token/grant/worker/riavvio/decisione target eseguito da questa correzione. Lo snapshot UDP effettivamente caricato e il token browser restano da verificare nel percorso finale: il test riproduce il bug con i vincoli osservati, non prova da solo il recupero target. Occorre predisporre rollout del solo UDP con conservazione container/mount/rete/ambiente e senza nuove decisioni; preparare pacchetto e input prima di nuovo login/APPROVO. Non rinnovare il worker per attendere CI. Milestone3 ferma a1materializzato+12quarantene dall'ultimo readback.
+
+Evidenza: `releases/resolution-owner-context-qualification-20261017.json`.
+
+---
+
 # Resolution: rifiuto owner UDP confermato; confronto vincoli grant — 2026-10-17
 
 **Tecniche8/8; funzionali2/6.** Screenshot operatore del GET autenticato `/trusted-human/resolution/api/package` restituisce ProblemDetail `title=Forbidden,status=403,detail=Owner authorization denied,instance=/api/udp/v1/governance/resolution/issues/package`. Raggiunto l'owner UDP tramite il proxy browser; non è il precedente404Gateway. La tabella vuota non dimostra assenza di issue. Nessuna decisione confermata, nessuna nuova mutazione.
