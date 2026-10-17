@@ -262,7 +262,7 @@ def bounded(argv):
         proc.stderr.close()
 
 
-def database_facts(ns, prepared, executable, module):
+def database_facts(ns, prepared, executable, module, config_directory):
     plan = prepared['databasePlan']
     binding = next(r for r in plan['modules'] if r['module'] == module)
     admin = plan['mcpAuditRoleAdministration']['admin']
@@ -296,7 +296,8 @@ def database_facts(ns, prepared, executable, module):
             'EXACT_POSTGRES_GENERATION_REQUIRED')
     require([r.split('=', 1)[1] for r in actual['Config']['Env'] if r.startswith('POSTGRES_USER=')] == [admin],
             'EXACT_EXISTING_ADMINISTRATOR_REQUIRED')
-    args = [executable, '--host', 'unix://' + prepared['engine']['socketPath'], 'exec', pg['containerId'],
+    args = [executable, '--host', 'unix://' + prepared['engine']['socketPath'], '--config', str(config_directory),
+            'exec', pg['containerId'],
             'env', 'LC_ALL=C', 'PGOPTIONS=-c default_transaction_read_only=on -c statement_timeout=10000 -c lock_timeout=3000',
             'timeout', '-s', 'KILL', '20', 'psql', '-X', '-q', '-A', '-t', '-v', 'ON_ERROR_STOP=1',
             '-U', admin, '-d', binding['database'], '-c', sql]
@@ -421,7 +422,7 @@ def main(code, archive_path, package_hash, progress):
             result[module] = actual
         return result
     actuals = applications()
-    facts = {m: database_facts(ns, prepared, program['path'], m) for m in MODULES}
+    facts = {m: database_facts(ns, prepared, program['path'], m, context) for m in MODULES}
     verify_history(facts['udp']['migrations'], manifest['migrations'][:-1], 'ouf_udp')
     require(facts['udp']['profileTablePresent'] is False and facts['udp']['evidenceColumnPresent'] is False,
             'UDP_V35_ALREADY_PRESENT_OR_PARTIAL')
