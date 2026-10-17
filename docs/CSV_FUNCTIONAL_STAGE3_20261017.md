@@ -25,4 +25,19 @@ Le righe sono identificate dall'handoff durevole: l'ordine tecnico dell'elenco n
 
 Il workflow csv-functional-stage3-read.yml esegue prima le prove su PostgreSQL17 e i controesempi. Solo dopo usa il runner VPS già esistente e un tentativo di sudo non interattivo, con hash dei byte verificato prima dell'esecuzione root. Non cambia permessi, non apre login e non cerca trasporti alternativi se l'accesso è negato.
 
-Risultati CI e target da aggiungere dopo l'esecuzione; i test non sostituiscono il readback del VPS. Il contatore funzionale resta2/6 finché il criterio storico non è soddisfatto o rivisto esplicitamente.
+Risultati aggiornati nella sezione seguente; i test non sostituiscono il readback del VPS. Il contatore funzionale resta2/6 finché il criterio storico non è soddisfatto o rivisto esplicitamente.
+
+## Qualifica conclusa e limite di trasporto accertato
+
+[CI39072444327](https://github.com/GioNob/ouf-deploy/actions/runs/39072444327), job117512659326: **9test PASS,0skip**. Il test PostgreSQL17 esegue entrambe le query e verifica anche ACK assente, lineage mancante, revisione mancante, job duplicato, isolamento tenant e omissione dei valori. Il launcher supera il controllo sintattico. La prima fixture è stata corretta aggiungendo il campo source_id della contribution; nessuna modifica di semantica del reader per superare il test.
+
+Il tentativo sul runner in [CI39072364964](https://github.com/GioNob/ouf-deploy/actions/runs/39072364964), job117512471194, termina con **sudo: a password is required**. Il lettore root non viene eseguito:0sessioni SQL e0mutazioni target. Questo è un limite accertato del trasporto non interattivo, non una richiesta di ulteriore consenso utente. Nessun tentativo automatico successivo: il job target è disabilitato dopo il rifiuto.
+
+La consegna è un solo launcher da eseguire come oufadmin nella sessione VPS già usata. Riusa il client GitHub portabile e l'autenticazione già presenti, scarica i byte prima di sudo e verifica SHA256 sia nel download sia nel processo privilegiato. Non richiede OAuth o un worker temporaneo. Non stampa né richiede token.
+
+| Artefatto | Commit immutabile | SHA256 |
+| --- | --- | --- |
+| Lettore | 19f7da2cee7d4367181feb8b7fbb95eafa600306 | a026c82c257e1929677976484760ba669eb94c64fb8f7e84075cdbd3ecac7730 |
+| Launcher | ca119dc9292cbf2e127da9e96d5245d1c44fccaa | 777c102bb313a984f85b04ff9c169d0dbe5852240dac5484f3ffeff7d53e83ee |
+
+[Evidenza di qualifica e blocco di trasporto](../evidence/csv-functional-stage3-reader-qualified-20261017.json). Dopo l'esecuzione servono i record ACQUISITION_DATABASE e END: solo quelli possono completare il rendiconto corrente delle13righe. complete=true significa lettura terminata; readbackProven, expectedCurrentDispositionProven e allThirteenMaterializedProven hanno significati distinti. Il contatore resta2/6; nessuna ridefinizione tacita della tappa3.

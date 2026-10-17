@@ -2,7 +2,7 @@
 
 **Tecniche8/8; funzionali2/6.** Nuova lettura dalla chat: source ACTIVE con configurazione/pubblicazione conservate; ricerca MCP completa con12oggetti ACTIVE, revisione1, incluso l'oggetto originario. La ricerca non espone proprietà/provenienza: il conteggio da solo non chiude il criterio di commit13/13.
 
-Conservate le11decisioni CREATE_NEW già materializzate e la quarantena volontaria. Ingestion.status restituisce authorization denied; nessun retry, cambio account o modifica di grant. Si riusa ed estende il lettore post-resolution, aggiornato al contesto corrente linked-property/journal55, per il rendiconto per handoff e il confronto con il lineage Ingestion. Qualifica prima del tentativo di lettura sul runner esistente, usando soltanto sudo non interattivo già disponibile.
+Conservate le11decisioni CREATE_NEW già materializzate e la quarantena volontaria. Ingestion.status restituisce authorization denied; nessun retry, cambio account o modifica di grant. Si riusa ed estende il lettore post-resolution, aggiornato al contesto corrente linked-property/journal55, per il rendiconto per handoff e il confronto con il lineage Ingestion. CI39072444327:9test PASS,0skip, incluse entrambe le query su PostgreSQL17. Il tentativo target39072364964 si è fermato prima del reader: sudo richiede password,0sessioni SQL. Retry automatico disabilitato; pronto un unico launcher verificato per la sessione VPS esistente.
 
 [Stato e percorso di verifica](CSV_FUNCTIONAL_STAGE3_20261017.md), [evidenza delle letture dalla chat](../evidence/csv-functional-stage3-chat-readback-20261017.json). Nessun avanzamento funzionale attribuito alla sola ricerca degli ID.
 
