@@ -52,7 +52,7 @@ def remainder_review(base,records,journal):
  return review
 
 
-def token_main(prepared,sources,closure,resources,context,emit=print):
+def token_main(prepared,sources,closure,resources,context,emit=print,*,transport=None):
  authority.closure_valid(closure)
  context=Path(context);records=resources['workerRecords'];first=resources['firstGrant']
  review=remainder_review(resources['baseWorkerReview'],records,resources['workerJournal'])
@@ -72,7 +72,7 @@ def token_main(prepared,sources,closure,resources,context,emit=print):
   encoded({'schema':'ouf.unissued-policy-remainder-preparation.v1'}),digest(closure))
  files={name:sources[module]for name,module in TOKEN_STAGE_SOURCE.items()}
  args=(prepared['owner'],files,closure['declaration']['sourceCommit'],review,records,first,review_binding,prepared['engine'],journal)
- planned=GovernedSemanticOwnerContinuation(unissued,*args)
+ planned=GovernedSemanticOwnerContinuation(unissued,*args,transport=transport)
  require(planned.worker_scope==worker_scope,'EXACT_COMPILED_REMAINDER_SCOPE_REQUIRED');retained_registry(planned)
  selection=prepared['authorization']['plan']['selection'];previous_directory=Path(resources['previousHumanDirectory'])
  previous=HumanSession(selection,previous_directory,previous_directory/'human-access.jwt',resources['previousHumanExpiry'])
@@ -114,7 +114,7 @@ def token_main(prepared,sources,closure,resources,context,emit=print):
  def current_time():require(not stop.is_set(),'POLICY_REMAINDER_CANCELLED_OR_EXPIRED');return time.time()
  action.authority.clock=current_time
  try:
-  installed=GovernedSemanticOwnerContinuation(action,*args);worker=installed.install()
+  installed=GovernedSemanticOwnerContinuation(action,*args,transport=transport);worker=installed.install()
   emit('OUF_POLICY_REMAINDER_STARTED='+encoded({'contextPath':str(context),'authorityHash':action.authority_hash,
    'workerJournal':str(journal),'humanDirectory':str(human.directory),'humanExpiry':human.expires_at,
    'mcpReviewBinding':resources['mcpReviewBinding'],'priorControlledGrantAttempts':128,
