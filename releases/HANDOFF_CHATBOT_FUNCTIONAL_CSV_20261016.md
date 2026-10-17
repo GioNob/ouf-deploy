@@ -1,3 +1,21 @@
+# Binding VPS confermati e profilo di collaudo rinnovabile esplicitamente — 2026-10-17
+
+**Fasi tecniche8/8; funzionali1/6.** Il readback operatore delle09:07:13 CEST conferma le tre generazioni Onboarding/Ingestion/APISIX stabili e il worker terminato:60 tentativi/pubblicazioni,128 precedenti, **188 controllati cumulativi su197**,9 residui sotto la vecchia revisione. CANCELLED_BY_OWNER, autorità scaduta, lock libero, admissionBLOCKED; i quattro record hash sono in evidence/ingestion-readiness-current-bindings-and-test-profile-20261017.json. Ora il totale188 è provato dal readback, non solo calcolato sul report del terminale.
+
+Chiarimento dell'operatore09:09:08 CEST: siamo in configurazione/collaudo e il budget non deve costringere a ripercorrere il bootstrap. Il nuovo profilo versionato consente una **nuova sessione da128 tentativi/3600s**, conservando188 e portando il nuovo tetto a316 solo dopo nuova decisione HUMAN corrente. Non modifica il vecchio tetto197 o i suoi record e non azzera contatori. Reviewv3 conserva il fence del predecessore, richiede il profilo esatto e la decisione esplicita di nuovo budget; niente rinnovo automatico né replay del primo grant. Rimangono separati storico OAuth e approvazioni di dominio già confermate.
+
+CI native39013288278 **PASS**: test nuovi/precedenti, root custody, firme esistenti, handoff persistente del fence, primo grant TLS reale nella fixture,188->189 senza modifica del predecessore e rifiuto del replay. Questo qualifica il proprietario del nuovo budget, non ne avvia una sessione sul target. Il futuro entrypoint di esecuzione deve ancora integrare e qualificare questa nuova review.
+
+Pacchetto candidati39011934307 **SUCCESS**, artifact12092994033, ZIP908091225 byte, SHA2560f744ae117672199ccf7309988122b75e48bf37fb5da98796a428abb70a30033, publisher88140b19828466c584432d3c793f7e09408ddff3; attestazione publisher verificata dalla CI. Due immagini e pacchetto Gateway a SHA esatti già riportati nella source lock. Nessuna migrazione nuova:33 fileSQL Onboarding e18 Ingestion identici al sorgente installato.
+
+Preparatore privato: scripts/prepare-ingestion-readiness-update-review-20261017.py a16860a78811da6da60a645680a64df3d3ac08a0, SHA2568c2ddda5d90b7516ee5443468589bcc220119e5c125589996d6d1aa583fc6d4e. Selection SHA25618ff5a8436d2058c6e9c6820cf8b017facb58e42ce718eee4bf0c1591781ae40. Scarica/cache del solo artifact nuovo; verifica ZIP/hash completi, configura immagini tagless con image_custody già qualificato, deriva la sola route interna usando la proiezione target conservata e il materializzatore Gateway autentico. Nessun token, firma, grant, stop, load immagine, migrazione o PUT Gateway. Produce una nuova review root0600 con readyForExecution:false e i gate ancora necessari.
+
+Prima di avviare login/worker: completare qualificazione entrypoint nativo ristretto per due immagini e una route, collegare la review privata prodotta sul VPS, guardare generazioni correnti/assenza della route e solo allora ottenere decisione corrente per rollout e nuova sessione di collaudo. Fonte APPROVED/CONFIRMED e semantica ACTIVE restano conservate. Dopo rollout: HUMAN riprende espressamente il blocco403 e avvia una verifica distinta; poi ingestione/UDP ACK/lineage/ricerca/seconda acquisizione/preservazione Cinema.
+
+Nota di integrità: il nuovo codice del budget richiede l'aggiornamento dei due hash nella capsula corrente e del relativo pin nel deliverer. Le versioni Git storiche e i loro comandi restano immutabili; non rilanciare la consegna originaria delle8 fasi.
+
+---
+
 # Fonte Teatri approvata: verifica bloccata dal percorso SERVICE/HUMAN — 2026-10-17
 
 **Fasi tecniche 8/8; funzionali 1/6.** La semantica è ACTIVE. La fonte teatri-csv-6609b245, versione9860853e-e8f3-4b93-b9d2-03521a039962, è **APPROVED/lock3**, challenge ecf36c5c-10b2-4393-bf81-0ff7d28b8d5b **CONFIRMED**, hash sha256:ae7f46b4214d09c55a9885530920026258f0dcd588462c353b06d82185e12c9b. La conferma è conservata anche se il termine originale della challenge è trascorso. Attivazione BLOCKED, attempt1/generation1, ONB_READINESS_DEPENDENCY_403; compatibilità Ingestion non ancora provata. Non ricreare source/versione/challenge né ripetere semantic.propose.
