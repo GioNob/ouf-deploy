@@ -1,4 +1,17 @@
 
+## Ultimo record: pubblicazione accessibile, riferimento semantico negato — 18 ottobre 2026
+
+Il [riscontro VPS](csv-last-row-semantic-access-target-20261018.json), log `/home/oufadmin/ouf-csv-reference-read.TDxght8L/read.log`, prova **HTTP 200** per la pubblicazione storica e **HTTP 403** per il suo unico riferimento semantico. Il token UDP non risultava scaduto al momento della lettura; questo non prova la validità futura né identifica ancora lo strato che nega l'accesso. `ownerAuthorizationDeniedDetail=false` non esclude un diniego owner con un altro formato di errore.
+
+Il job è `c5692362-8a22-4656-97b6-46b5ba8ce17f`, versione **11**, QUARANTINED con cinque tentativi e cinque controlli di integrità già consumati. RAW VERIFIED, nessuna lease, nessun binding, contributo o osservazione; la decisione CREATE_NEW è RESOLVED. Baseline storica `sha256:0a276d062d3447a243d6e2611d9a618dd1ba2b8cf64668d02dad7aa5c75eccdb`. Restano **tecniche 8/8, funzionali 2/6**, con 12/13 commit.
+
+Il preflight v2 riusa i componenti già presenti di `read-teatri-reference-recovery-preflight-20261017.py`: metadati scope/audience/guard della route conservata (esplicitamente non prova live della route), errore semantico redatto con allowlist, canale policy configurato nel Semantic Registry, confronto dei grant pubblicati con l'identità UDP e cronologia del worker puntata dal fence esistente. Nessuna modifica di accessi o avvio sessioni. I contatori cumulativi sono verificati, non rinnovati. Se la generazione del registry o la catena del fence non coincidono, si dichiara la parte non provata; non si adotta un container arbitrario. Limiti: 120 secondi, nove letture engine, tre sessioni SQL read-only, due file di credenziali, quattro GET.
+
+Ordine del recupero: identificare il diniego preciso; ripristinare solo l'accesso previsto dalla configurazione approvata attraverso il proprietario competente; ottenere una review nativa aggiornata del singolo job con `contractReady=true` e baseline identica; usare l'API governata esistente con versione/snapshot attesi e identificativo idempotente; provare osservazione/revisione/contributi e 13/13 commit. Nessuna scrittura SQL correttiva, cambio di semantica, ripetizione della decisione di identità o reset di tentativi. Un 403 non viene ritentato automaticamente. Qualunque nuova autorità o budget runtime rimane distinto dalla delega allo sviluppo.
+
+[Qualifica v2 39074407807](https://github.com/GioNob/ouf-deploy/actions/runs/39074407807): 7 test PASS, zero skip, PostgreSQL 17 reale, confronto di grant validi/scaduti e isolamento tenant, redazione del diniego, metadati route e verifica dei contatori cumulativi. Nessun recupero runtime ancora eseguito.
+
+
 ## Qualifica finale e prossimo riscontro — 18 ottobre 2026
 
 **Stato runtime invariato: tecniche 8/8, funzionali 2/6; 12 righe committate e una quarantena tecnica dopo CREATE_NEW risolto.** [Qualifica finale 39073880515](https://github.com/GioNob/ouf-deploy/actions/runs/39073880515) PASS: 4 test, zero skip su PostgreSQL 17 reale e sintassi del launcher verificata. La readiness del database di test ora attende il server TCP finale, evitando la finestra del socket provvisorio d'inizializzazione. Il codice lettore consegnato è quello già qualificato al commit `37e7150ca150ab861ee1b5794e8091b8776cca51`; il launcher è fissato al commit `ce0c86d727040441fe0cac412896232c93e81095` e all'impronta documentata nella [prova normalizzata](csv-post-resolution-continuity-qualified-20261018.json).

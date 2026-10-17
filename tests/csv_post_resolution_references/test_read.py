@@ -3,6 +3,12 @@ from pathlib import Path
 from unittest.mock import Mock,patch
 s=importlib.util.spec_from_file_location('diag',Path(__file__).resolve().parents[2]/'scripts/read-csv-post-resolution-references-20261018.py');m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
 class Contract(unittest.TestCase):
+ def test_delivered_source_matches_pinned_hash(self):
+  import hashlib
+  root=Path(__file__).resolve().parents[2]
+  source=(root/'scripts/read-csv-post-resolution-references-20261018.py').read_bytes()
+  launcher=(root/'scripts/launch-csv-post-resolution-references-20261018.sh').read_text()
+  self.assertIn(hashlib.sha256(source).hexdigest(),launcher)
  def test_exact_read_only_scope(self):
   raw=m.reference_query('udp','ouf-lab')
   self.assertTrue(raw.startswith('BEGIN READ ONLY;'));self.assertTrue(raw.endswith('ROLLBACK;'))
