@@ -72,7 +72,7 @@ class NativeSql(unittest.TestCase):
    create table ouf_udp.urban_object(urban_object_id uuid,tenant_id text,status text,current_revision_id uuid);
    create table ouf_udp.materialization_observation(handoff_id text,urban_object_id uuid,revision_id uuid);
    create table ouf_udp.object_revision(urban_object_id uuid,revision_id uuid);
-   create table ouf_udp.property_contribution(handoff_id text,urban_object_id uuid);
+   create table ouf_udp.property_contribution(handoff_id text,urban_object_id uuid,source_id text default 'teatri-csv-6609b245');
    insert into ouf_udp.resolution_review_package_confirmation values('a5183503-04ff-4e10-850f-e22bf874365e','ouf-lab','b93d8cf6-cd14-4ee6-91d7-84cd76c4f500','2026-10-17T16:00:00Z','fixture-auth',11);
    insert into ouf_udp.lake_object select md5(n::text)::uuid,case when n=14 then 'other-tenant' else 'ouf-lab' end from generate_series(1,14)n;
    insert into ouf_udp.handoff_intake(handoff_id,source_id,ingestion_run_id,type_code,raw_lake_object_id,state,source_object_id) select 'h'||n,'teatri-csv-6609b245','run-ref:source-envelope','SOURCE_ROW_TYPE',null,case when n=13 then 'DURABLE' else 'PROCESSED' end,'PRIVATE_SOURCE_'||n from generate_series(1,14)n;
@@ -83,7 +83,7 @@ class NativeSql(unittest.TestCase):
    insert into ouf_udp.urban_object select case when n=1 then 'd6051381-934b-4a11-8e71-e1d89cee4e49'::uuid else md5(n::text)::uuid end,'ouf-lab','ACTIVE',md5(('rev'||n))::uuid from generate_series(1,12)n;
    insert into ouf_udp.materialization_observation select 'h'||n,case when n=1 then 'd6051381-934b-4a11-8e71-e1d89cee4e49'::uuid else md5(n::text)::uuid end,md5(('rev'||n))::uuid from generate_series(1,12)n;
    insert into ouf_udp.object_revision select case when n=1 then 'd6051381-934b-4a11-8e71-e1d89cee4e49'::uuid else md5(n::text)::uuid end,md5(('rev'||n))::uuid from generate_series(1,12)n;
-   insert into ouf_udp.property_contribution select 'h'||n,case when n=1 then 'd6051381-934b-4a11-8e71-e1d89cee4e49'::uuid else md5(n::text)::uuid end from generate_series(1,12)n;
+   insert into ouf_udp.property_contribution(handoff_id,urban_object_id) select 'h'||n,case when n=1 then 'd6051381-934b-4a11-8e71-e1d89cee4e49'::uuid else md5(n::text)::uuid end from generate_series(1,12)n;
   """)
   raw=sql(m.acquisition_query('udp','ouf-lab'));self.assertNotIn('PRIVATE_SOURCE_',raw);facts=json.loads(raw)
   self.assertTrue(facts['transactionReadOnly']);self.assertEqual(facts['sourceRowCount'],13);self.assertTrue(m.materialization_proven(facts));self.assertEqual(len(facts['details']),11)
