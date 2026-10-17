@@ -5,7 +5,7 @@ from engine_creation import Engine
 from image_custody import loaded,runtime_image_id
 from tools.chatbot_file_cohort.gateway import NamespaceAdmin
 from tools.chatbot_file_cohort.human_session import HumanSession,HumanSessionPaused
-from tools.semantic_mcp_update.entry import publish_json
+from tools.resolution_comparison_update.preparation import publish_json
 from tools.semantic_mcp_update import session
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.resolution_comparison_update import authority,preparation,plan as compiler

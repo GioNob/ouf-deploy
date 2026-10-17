@@ -2,6 +2,8 @@
 import hashlib,http.client,io,json,os,re,socket,stat,tarfile,zipfile
 from pathlib import Path,PurePosixPath
 import image_custody as custody
+from tools.semantic_policy_token_owner.producer import protected_directory
+from tools.chatbot_file_cohort.action_process import private_file
 LIMIT=1200000000
 def require(ok,code):
  if not ok:raise ValueError(code)
@@ -34,6 +36,30 @@ def write_new(path,raw):
  try:
   with os.fdopen(os.dup(fd),'wb')as f:f.write(raw);f.flush();os.fsync(f.fileno())
  finally:os.close(fd)
+
+DOCUMENT_LIMIT=8388608
+DOCUMENT_NAMES=frozenset(('candidate-review.json','prepared-plan.json','execution-plan.json','review.json','login-review.json'))
+
+def publish_json(context,name,value):
+ """Publish one bounded private document and verify its exact durable bytes.
+
+ The route inventory can exceed the IAM snapshot helper's 512 KiB limit.
+ Use the same 8 MiB bound as the plan/review readers, scoped to this update.
+ Existing files are never overwritten or adopted after an uncertain write.
+ """
+ require(name in DOCUMENT_NAMES,'EXACT_COMPARISON_DOCUMENT_REQUIRED')
+ raw=encoded(value)
+ require(0<len(raw)<=DOCUMENT_LIMIT,'COMPARISON_DOCUMENT_BOUND_EXHAUSTED')
+ with protected_directory(context)as directory:
+  fd=os.open(name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=directory)
+  try:
+   with os.fdopen(os.dup(fd),'wb')as stream:
+    stream.write(raw);stream.flush();os.fsync(stream.fileno())
+   os.fsync(directory)
+  finally:os.close(fd)
+  binding={'path':str(Path(context)/name),'sha256':hashlib.sha256(raw).hexdigest()}
+  require(private_file(binding,DOCUMENT_LIMIT)==raw,'COMPARISON_DOCUMENT_PUBLICATION_UNPROVEN')
+
 
 def copy_artifact(path,target,expected):
  fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
