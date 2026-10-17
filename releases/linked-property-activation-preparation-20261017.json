@@ -1,10 +1,6 @@
 {
   "schema": "ouf.linked-property-activation-preparation-selection.v1",
   "installationSpecific": true,
-  "expectedInstalledImages": {
-    "udp": "sha256:a75e09ad7f4c50557619c126d9608b774f209c490b7eccbb8994922284a12989",
-    "onboarding": "sha256:b5ca06ed2c8453b62753cf6747db20a52bc8f7a9d0916cc5c6ff306ada2e6b42"
-  },
   "sourceCandidates": {
     "udp": {
       "repository": "GioNob/ouf-udp-object-resolution",
@@ -26,5 +22,9 @@
   "scope": "Read-only metadata and offline native profile proposal; no activation or acquisition",
   "completedTechnicalPhases": 8,
   "functionalMilestonesProven": 2,
-  "runtimeAuthorityIssued": false
+  "runtimeAuthorityIssued": false,
+  "expectedInstalledConfigurationImages": {
+    "udp": "sha256:a75e09ad7f4c50557619c126d9608b774f209c490b7eccbb8994922284a12989",
+    "onboarding": "sha256:b5ca06ed2c8453b62753cf6747db20a52bc8f7a9d0916cc5c6ff306ada2e6b42"
+  }
 }

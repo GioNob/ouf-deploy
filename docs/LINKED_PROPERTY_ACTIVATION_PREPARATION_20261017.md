@@ -68,3 +68,7 @@ Il workflow [linked-property-profile-preparation.yml](../.github/workflows/linke
 | Profilo nativo | Proposta concreta pronta; non pubblicata |
 | Scheduler e vincoli completi correnti | Verifica operativa residua; nessuna acquisizione autorizzata implicitamente |
 | Collaudo funzionale VPS | Non avanzato; tecniche8/8, funzionali2/6 |
+
+## Correzione della prima verifica immagini
+
+Il run [39068802755](https://github.com/GioNob/ouf-deploy/actions/runs/39068802755) ha passato i 16 test offline e fermato la lettura VPS con `ONE_RUNNING_EXPECTED_APPLICATION_REQUIRED`. Il lettore aveva usato il digest della configurazione Docker come identità nativa del manifest containerd: il fallimento non prova drift del target. La verifica corretta deriva il digest nativo dagli stessi byte del pacchetto qualificato (ZIP fissato per ID, dimensione e SHA256; archivio, configurazione, sorgente e layer verificati con il modulo di custody già usato dal rollout). La derivazione avviene su runner GitHub, senza import di immagini; al VPS arrivano solo le identità pubbliche attese. Il confronto resta esatto, senza fallback su nomi o label.

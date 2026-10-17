@@ -19,7 +19,7 @@ def call(arguments):
 
 def run(selection):
     rows=[]
-    for module,expected in selection['expectedInstalledImages'].items():
+    for module,expected in selection['expectedInstalledNativeImages'].items():
         ids=call(['ps','--no-trunc','--filter','ancestor='+expected,'--format','{{.ID}}']).decode().splitlines()
         if len(ids)!=1:raise ValueError('ONE_RUNNING_EXPECTED_APPLICATION_REQUIRED')
         before=json.loads(call(['inspect',ids[0]]))[0]
@@ -40,7 +40,10 @@ if __name__=='__main__':
       'serviceMutations':0,'profilePublications':0,'oauthRequests':0,'jobsRetried':0,
       'completedTechnicalPhases':8,'functionalMilestonesProven':2}
     try:
-        selection=json.loads((root/'releases/linked-property-activation-preparation-20261017.json').read_text())
+        selection=json.loads(Path(sys.argv[1]).read_text())
+        qualified=json.loads((root/'releases/linked-property-qualified-20261017.json').read_text())
+        if 'sha256:'+selection['qualifiedZipSha256']!=qualified['package']['githubArtifactDigest']:
+            raise ValueError('QUALIFIED_PACKAGE_BINDING_REQUIRED')
         report.update(complete=True,applications=run(selection),nativeProfilePublished=False,
           xsdCompatibleUpdateInstalled=False,scope='Installed pre-fix images only; no profile or scheduler read')
     except Exception as failure:
