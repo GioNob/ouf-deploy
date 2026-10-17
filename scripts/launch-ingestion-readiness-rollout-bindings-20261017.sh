@@ -5,7 +5,7 @@ ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
 if [ ! -x "$ouf_gh" ]; then ouf_gh="$(command -v gh || true)"; fi
 [ -n "$ouf_gh" ] && [ -x "$ouf_gh" ] || { echo 'Client GitHub non disponibile; nessuna lettura sudo.' >&2; exit 1; }
 ouf_read="$(mktemp -d "$HOME/ouf-readiness-rollout-binding-read.XXXXXXXX")"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/scripts/read-ingestion-readiness-rollout-bindings-20261017.py?ref=960d03e1a296c771a42197a0061ee5dc4b864cba' --jq .content |
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/scripts/read-ingestion-readiness-rollout-bindings-20261017.py?ref=4e94d374ea9576149ef00482ea7e552d342f1275' --jq .content |
   base64 --decode > "$ouf_read/read.py"
 printf '%s  %s\n' 'f4dc42a9ffe2488e01b7bab26e064e1f44b83d803a889c9837ee929b0dc444e5' "$ouf_read/read.py" | sha256sum --check -
 echo "Log del controllo in sola lettura: $ouf_read/read.log"
