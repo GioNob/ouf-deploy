@@ -1,3 +1,19 @@
+# Fonte Teatri approvata: verifica bloccata dal percorso SERVICE/HUMAN — 2026-10-17
+
+**Fasi tecniche 8/8; funzionali 1/6.** La semantica è ACTIVE. La fonte teatri-csv-6609b245, versione9860853e-e8f3-4b93-b9d2-03521a039962, è **APPROVED/lock3**, challenge ecf36c5c-10b2-4393-bf81-0ff7d28b8d5b **CONFIRMED**, hash sha256:ae7f46b4214d09c55a9885530920026258f0dcd588462c353b06d82185e12c9b. La conferma è conservata anche se il termine originale della challenge è trascorso. Attivazione BLOCKED, attempt1/generation1, ONB_READINESS_DEPENDENCY_403; compatibilità Ingestion non ancora provata. Non ricreare source/versione/challenge né ripetere semantic.propose.
+
+Il readback operatore delle08:49:47 CEST osserva Ingestion c48ee4b1873a474e81c6e1be70d393854021e2c1, generazione stabile, token non scaduti: GET configurazione frozen403, GET policy200/v40. Trasporto dal solo host: non prova lo snapshot caricato né identifica da solo ogni hop della chiamata originaria. Il sorgente conferma l'incompatibilità: PublicationGatewayClient usa il wildcard lifecycle /api/onboarding/v1/sources/*, materializzato solo HUMAN, con bearer SERVICE.
+
+Correzioni draft coordinate: [Onboarding42](https://github.com/GioNob/ouf-source-onboarding/pull/42)382cbec4…, [Ingestion42](https://github.com/GioNob/ouf-ingestion-runtime/pull/42)f869d8b8…, [Gateway78](https://github.com/GioNob/ouf-api-gateway/pull/78)425a0377…. Nuovo GET interno con capability configuration.read esistente, solo identità Ingestion proiettata; owner verifica policy corrente, tenant del managed review, stato APPROVED, conferma e hash/versione. Nessuna estensione del wildcard HUMAN. Ripresa THS esplicita del solo blocco403 con hash/lock/generazione/codice attesi e audit; conserva tentativi e inizio budget, incrementa il fence, non attiva automaticamente. Esaurimento e ambiguità restano bloccati.
+
+CI: browser THS39011677971 PASS; Ingestion39011682281 PASS (Java/PostgreSQL, restore drill, image/SBOM/scan); Gateway425a…39011806193 e39011806192 PASS. Onboarding39011677968: test Java/PostgreSQL e packaging superati, ultimi gate immagine ancora in corso al salvataggio. Nuovo workflow ingestion-readiness-candidates produce solo due immagini e il pacchetto Gateway, da SHA esatti e con scan HIGH/CRITICAL/UNKNOWN inclusi unfixed, hash completi e attestazione publisher; **nessuna autorità target**.
+
+L'operatore riporta policy remainder terminato al ciclo60 con CANCELLED_BY_OWNER e NO_AUTOMATIC_RESTART_OR_RESET. Storico controllato prima di questa sessione128, massimo197: 188/197 e9 residui sono solo calcolo sul report del ciclo60, da riconciliare sul journal prima di qualunque nuova review; non sono readback indipendente. OAuth HUMAN resta separato, nessun reset o rinnovo automatico. Prima di una nuova sessione preparare l'intervento concreto e i binding correnti, non consumare login durante build/CI.
+
+Prossimi passi: completare qualification e pacchetto; leggere generazioni, route e ledger correnti in sola lettura; preparare revisione privata del rollout Onboarding/Ingestion e della sola route nuova senza migrazioni o grant; approvazione runtime secondo percorso esistente, poi HUMAN riprende e avvia la verifica. Restano ingestione13 righe, ACK/lineage UDP, ricerca chatbot e seconda acquisizione con riuso/no duplicati e preservazione degli8 Cinema. Nessun commit UDP o accettazione end-to-end provato.
+
+---
+
 # Fonte Teatri IN_REVIEW: pronta per decisione HUMAN e attivazione separata — 2026-10-17
 
 Dopo autorizzazione esplicita dell'operatore alle08:33:51 CEST, una sola source.onboarding.create è stata eseguita con l'esatto createDraft della revisione695f12a4…: **DRAFT** sourceId teatri-csv-6609b245, onboardingVersionId9860853e-e8f3-4b93-b9d2-03521a039962, stesso asset6609b245… / profilo7984c39c…v1. Lettura owner corrente DRAFT/lock0 riconciliata prima della preparazione. Non ricreare fonte/versione né ricaricare il CSV.
