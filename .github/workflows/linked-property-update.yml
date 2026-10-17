@@ -14,11 +14,11 @@ jobs:
         with: {persist-credentials: false}
       - name: Root-owned isolated fixtures with real local signatures
         run: |
-          sudo install -d -m 0700 /opt/ouf-linked-property-tests
-          sudo cp -a . /opt/ouf-linked-property-tests/repo
-          sudo chown -R root:root /opt/ouf-linked-property-tests
-          sudo chmod -R go-w /opt/ouf-linked-property-tests
-          sudo sh -c 'cd /opt/ouf-linked-property-tests/repo && OUF_NATIVE_UIDS=1 OUF_TEST_ROOT=/opt/ouf-linked-property-tests python3 -B -m unittest discover -s tests -p "test_linked_property_*.py" -v'
+          sudo install -d -m 0700 /root/ouf-linked-property-tests
+          sudo cp -a . /root/ouf-linked-property-tests/repo
+          sudo chown -R root:root /root/ouf-linked-property-tests
+          sudo chmod -R go-w /root/ouf-linked-property-tests
+          sudo sh -c 'cd /root/ouf-linked-property-tests/repo && OUF_NATIVE_UIDS=1 OUF_TEST_ROOT=/root/ouf-linked-property-tests python3 -B -m unittest discover -s tests -p "test_linked_property_*.py" -v'
       - name: Verify operator launcher shell when present
         run: |
           if [ -f scripts/launch-linked-property-update-20261017.sh ]; then
