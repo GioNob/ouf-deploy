@@ -6,20 +6,20 @@ if [ ! -x "$ouf_gh" ]; then ouf_gh="$(command -v gh || true)"; fi
 [ -n "$ouf_gh" ] && [ -x "$ouf_gh" ] || { echo "Client GitHub non disponibile." >&2; exit 1; }
 ouf_stage="$(mktemp -d "$HOME/ouf-linked-property-review.XXXXXXXX")"
 echo 'Preparo la revisione privata delle policy generiche. Tecniche8/8; funzionali2/6.'
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/linked_property_rollout/preparation.py?ref=f2f715cca7de3812eb1542647ce18a49b236d9a5' --jq .content | base64 --decode > "$ouf_stage/prepare.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_application_cutover/image_custody.py?ref=f2f715cca7de3812eb1542647ce18a49b236d9a5' --jq .content | base64 --decode > "$ouf_stage/image_custody.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/releases/linked-property-qualified-20261017.json?ref=f2f715cca7de3812eb1542647ce18a49b236d9a5' --jq .content | base64 --decode > "$ouf_stage/release.json"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/releases/linked-property-migration-manifest-20261017.json?ref=f2f715cca7de3812eb1542647ce18a49b236d9a5' --jq .content | base64 --decode > "$ouf_stage/migrations.json"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/releases/linked-property-preparation-selection-20261017.json?ref=f2f715cca7de3812eb1542647ce18a49b236d9a5' --jq .content | base64 --decode > "$ouf_stage/selection.json"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/linked_property_rollout/preparation.py?ref=a18f9bafe4db8888cff16c94327f9134956e7bc8' --jq .content | base64 --decode > "$ouf_stage/prepare.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_application_cutover/image_custody.py?ref=a18f9bafe4db8888cff16c94327f9134956e7bc8' --jq .content | base64 --decode > "$ouf_stage/image_custody.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/releases/linked-property-qualified-20261017.json?ref=a18f9bafe4db8888cff16c94327f9134956e7bc8' --jq .content | base64 --decode > "$ouf_stage/release.json"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/releases/linked-property-migration-manifest-20261017.json?ref=a18f9bafe4db8888cff16c94327f9134956e7bc8' --jq .content | base64 --decode > "$ouf_stage/migrations.json"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/releases/linked-property-preparation-selection-20261017.json?ref=a18f9bafe4db8888cff16c94327f9134956e7bc8' --jq .content | base64 --decode > "$ouf_stage/selection.json"
 cat > "$ouf_stage/package.json" <<'PACKAGE'
-{"files":{"image_custody.py":"9391a7d497943bd0412d96405d51359cd11a2b0db7106d30f272d28e8f0fc6b2","migrations.json":"93e05a9aa02ecc8cea2983fdb095459a027c8ff27bdfea3b9ab347d20bad08aa","prepare.py":"e24879915f67d73927ef8a5c16e69cbc68edfe8930138ae5208810529337eb04","release.json":"d53893fd97e44e3b532910202bb86cef6d9725bb735932019e6a711e53776e7f","selection.json":"518b91f88a34e103382940f05eb567c064d401b659e633be282084a3880f07ce"},"runtimeAuthorityIssued":false,"schema":"ouf.linked-property-private-preparation-code.v1","sourceCommit":"f2f715cca7de3812eb1542647ce18a49b236d9a5"}
+{"files":{"image_custody.py":"9391a7d497943bd0412d96405d51359cd11a2b0db7106d30f272d28e8f0fc6b2","migrations.json":"93e05a9aa02ecc8cea2983fdb095459a027c8ff27bdfea3b9ab347d20bad08aa","prepare.py":"800e7e04fe2a5898f7ca6d28f6eea241c71ee72314706f52c4962a0cd1955100","release.json":"d53893fd97e44e3b532910202bb86cef6d9725bb735932019e6a711e53776e7f","selection.json":"0bb8e41ae68a220d7b56d67acb64cde64f22cddc3b96a5d5dc8267378362c988"},"runtimeAuthorityIssued":false,"schema":"ouf.linked-property-private-preparation-code.v1","sourceCommit":"a18f9bafe4db8888cff16c94327f9134956e7bc8"}
 PACKAGE
-printf '%s  %s\n' 'e24879915f67d73927ef8a5c16e69cbc68edfe8930138ae5208810529337eb04' "$ouf_stage/prepare.py" | sha256sum --check -
+printf '%s  %s\n' '800e7e04fe2a5898f7ca6d28f6eea241c71ee72314706f52c4962a0cd1955100' "$ouf_stage/prepare.py" | sha256sum --check -
 printf '%s  %s\n' '9391a7d497943bd0412d96405d51359cd11a2b0db7106d30f272d28e8f0fc6b2' "$ouf_stage/image_custody.py" | sha256sum --check -
 printf '%s  %s\n' 'd53893fd97e44e3b532910202bb86cef6d9725bb735932019e6a711e53776e7f' "$ouf_stage/release.json" | sha256sum --check -
 printf '%s  %s\n' '93e05a9aa02ecc8cea2983fdb095459a027c8ff27bdfea3b9ab347d20bad08aa' "$ouf_stage/migrations.json" | sha256sum --check -
-printf '%s  %s\n' '518b91f88a34e103382940f05eb567c064d401b659e633be282084a3880f07ce' "$ouf_stage/selection.json" | sha256sum --check -
-printf '%s  %s\n' '7d32214e953a34b256be587c4084273318ad0fee27180a19688c9b540484b242' "$ouf_stage/package.json" | sha256sum --check -
+printf '%s  %s\n' '0bb8e41ae68a220d7b56d67acb64cde64f22cddc3b96a5d5dc8267378362c988' "$ouf_stage/selection.json" | sha256sum --check -
+printf '%s  %s\n' 'c77894b5e1f9990e25e9a3d813ea03985ae6bc30da1a80dd96ba2027b4ecfe99' "$ouf_stage/package.json" | sha256sum --check -
 ouf_cache="$HOME/ouf-linked-property-candidate-39062596949"
 mkdir -p "$ouf_cache"
 ouf_archive="$ouf_cache/candidate.zip"
@@ -55,8 +55,8 @@ def read(name,expected):
   assert len(raw)==before.st_size and pin(before)==pin(os.fstat(fd)) and hashlib.sha256(raw).hexdigest()==expected
   return bytes(raw)
  finally:os.close(fd)
-manifest=read('package.json','7d32214e953a34b256be587c4084273318ad0fee27180a19688c9b540484b242'); package=json.loads(manifest)
-assert package['sourceCommit']=='f2f715cca7de3812eb1542647ce18a49b236d9a5' and set(package['files'])=={'prepare.py','image_custody.py','release.json','migrations.json','selection.json'}
+manifest=read('package.json','c77894b5e1f9990e25e9a3d813ea03985ae6bc30da1a80dd96ba2027b4ecfe99'); package=json.loads(manifest)
+assert package['sourceCommit']=='a18f9bafe4db8888cff16c94327f9134956e7bc8' and set(package['files'])=={'prepare.py','image_custody.py','release.json','migrations.json','selection.json'}
 verified={'package.json':manifest,**{n:read(n,h)for n,h in package['files'].items()}}
 parent=Path('/etc/ouf/deploy-snapshots')
 for p in(parent,*parent.parents):
@@ -70,6 +70,6 @@ for name,raw in verified.items():
 fd=os.open(code,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
 try:os.fsync(fd)
 finally:os.close(fd)
-sys.argv=[str(code/'prepare.py'),str(code),str(archive),'7d32214e953a34b256be587c4084273318ad0fee27180a19688c9b540484b242']
+sys.argv=[str(code/'prepare.py'),str(code),str(archive),'c77894b5e1f9990e25e9a3d813ea03985ae6bc30da1a80dd96ba2027b4ecfe99']
 exec(compile(verified['prepare.py'],'<verified-linked-property-private-preparation>','exec'),{'__name__':'__main__'})
 ROOTPY
