@@ -6,60 +6,60 @@ if [ ! -x "$ouf_gh" ]; then ouf_gh="$(command -v gh || true)"; fi
 [ -n "$ouf_gh" ] && [ -x "$ouf_gh" ] || { echo "Client GitHub non disponibile." >&2; exit 1; }
 ouf_stage="$(mktemp -d "$HOME/ouf-resolution-comparison-execution.XXXXXXXX")"
 echo 'Correzione HTTP400 e nota facoltativa. Tecniche8/8; funzionali2/6. Due immagini verificate, nessun nuovo worker policy.'
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/scripts/execute-resolution-comparison-update-20261017.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/execute.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_comparison_update/runtime.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/runtime.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/releases/resolution-comparison-update-selection-20261017.json?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/case.json"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_policy_token_owner/iam_binding_candidate.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/iam_binding_candidate.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_application_cutover/image_custody.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/image_custody.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_policy_token_owner/migration_root_custody.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/migration_root_custody.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/chatbot_file_cohort/continued_owner.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/continued_owner.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/chatbot_file_cohort/gateway.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/gateway.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/chatbot_file_cohort/human_session.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/human_session.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/chatbot_file_cohort/review.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/review.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/ingestion_readiness_update/authority.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/readiness_authority.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/ingestion_readiness_update/entry.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/readiness_entry.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/ingestion_readiness_update/native.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/readiness_native.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/ingestion_readiness_update/owner.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/readiness_owner.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/ingestion_readiness_update/plan.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/readiness_plan.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/onboarding_audit_update/authority.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/audit_authority.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/onboarding_audit_update/entry.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/audit_entry.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/onboarding_audit_update/native.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/audit_native.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/onboarding_audit_update/owner.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/audit_owner.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/onboarding_audit_update/preparation.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/audit_preparation.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_comparison_update/authority.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/comparison_authority.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_comparison_update/entry.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/comparison_entry.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_comparison_update/native.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/comparison_native.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_comparison_update/owner.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/comparison_owner.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_comparison_update/plan.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/comparison_plan.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_comparison_update/preparation.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/comparison_preparation.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_configuration/authority.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/config_authority.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_configuration/entry.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/config_entry.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_configuration/native.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/config_native.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_configuration/owner.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/config_owner.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_configuration/plan.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/config_plan.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_update/authority.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/resolution_authority.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_update/entry.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/resolution_entry.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_update/native.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/resolution_native.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_update/owner.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/resolution_owner.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_update/plan.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/resolution_plan.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_mcp_update/authority.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/mcp_authority.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_mcp_update/entry.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/mcp_entry.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_mcp_update/native.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/mcp_native.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_mcp_update/owner.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/mcp_owner.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_mcp_update/permit.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/mcp_permit.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_mcp_update/plan.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/mcp_plan.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_mcp_update/session.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/mcp_session.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_policy_token_owner/installed_owner.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/installed_owner.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_policy_token_owner/supervisor.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/supervisor.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/udp_resolution_update/authority.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/udp_authority.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/udp_resolution_update/entry.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/udp_entry.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/udp_resolution_update/native.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/udp_native.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/udp_resolution_update/owner.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/udp_owner.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/udp_resolution_update/plan.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/udp_plan.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/udp_resolution_update/preparation.py?ref=241590c417089743f154c7728be54bb3c602f671' --jq .content | base64 --decode > "$ouf_stage/udp_preparation.py"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/releases/resolution-comparison-update-code-package-20261017.json?ref=bac9f9d45c052175db15eb73e04dca59c37395fc' --jq .content | base64 --decode > "$ouf_stage/package.json"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/scripts/execute-resolution-comparison-update-20261017.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/execute.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_comparison_update/runtime.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/runtime.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/releases/resolution-comparison-update-selection-20261017.json?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/case.json"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_policy_token_owner/iam_binding_candidate.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/iam_binding_candidate.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_application_cutover/image_custody.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/image_custody.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_policy_token_owner/migration_root_custody.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/migration_root_custody.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/chatbot_file_cohort/continued_owner.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/continued_owner.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/chatbot_file_cohort/gateway.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/gateway.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/chatbot_file_cohort/human_session.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/human_session.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/chatbot_file_cohort/review.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/review.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/ingestion_readiness_update/authority.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/readiness_authority.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/ingestion_readiness_update/entry.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/readiness_entry.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/ingestion_readiness_update/native.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/readiness_native.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/ingestion_readiness_update/owner.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/readiness_owner.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/ingestion_readiness_update/plan.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/readiness_plan.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/onboarding_audit_update/authority.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/audit_authority.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/onboarding_audit_update/entry.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/audit_entry.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/onboarding_audit_update/native.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/audit_native.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/onboarding_audit_update/owner.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/audit_owner.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/onboarding_audit_update/preparation.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/audit_preparation.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_comparison_update/authority.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/comparison_authority.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_comparison_update/entry.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/comparison_entry.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_comparison_update/native.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/comparison_native.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_comparison_update/owner.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/comparison_owner.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_comparison_update/plan.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/comparison_plan.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_comparison_update/preparation.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/comparison_preparation.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_configuration/authority.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/config_authority.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_configuration/entry.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/config_entry.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_configuration/native.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/config_native.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_configuration/owner.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/config_owner.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_configuration/plan.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/config_plan.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_update/authority.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/resolution_authority.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_update/entry.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/resolution_entry.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_update/native.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/resolution_native.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_update/owner.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/resolution_owner.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/resolution_ths_update/plan.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/resolution_plan.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_mcp_update/authority.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/mcp_authority.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_mcp_update/entry.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/mcp_entry.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_mcp_update/native.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/mcp_native.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_mcp_update/owner.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/mcp_owner.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_mcp_update/permit.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/mcp_permit.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_mcp_update/plan.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/mcp_plan.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_mcp_update/session.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/mcp_session.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_policy_token_owner/installed_owner.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/installed_owner.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/semantic_policy_token_owner/supervisor.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/supervisor.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/udp_resolution_update/authority.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/udp_authority.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/udp_resolution_update/entry.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/udp_entry.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/udp_resolution_update/native.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/udp_native.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/udp_resolution_update/owner.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/udp_owner.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/udp_resolution_update/plan.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/udp_plan.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/tools/udp_resolution_update/preparation.py?ref=d6da86415abe673d9ac1a692118bd2d0a218b644' --jq .content | base64 --decode > "$ouf_stage/udp_preparation.py"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/releases/resolution-comparison-update-code-package-20261017.json?ref=f5e0b3045ca9920a81edf899b9823695e64248cb' --jq .content | base64 --decode > "$ouf_stage/package.json"
 printf '%s  %s\n' \
- '495f79d52fa694c3f73ad0a9caa588d28512ee1c0b39d1f8d08e82aa5367dd46' "$ouf_stage/execute.py" \
+ 'f00f07db0a706cd65466fea24305b635d464b330f409870f740de49a8a445d03' "$ouf_stage/execute.py" \
  '849c3c676007ceb9903f3e2505db36fdd3e3fc15b772849418ae2dbbd69d071a' "$ouf_stage/runtime.py" \
  '2472ded7aa9d18d7925b9045f378b16ea87ae84d016026b88f7894fda21f26c1' "$ouf_stage/case.json" \
  'dcfab9f362ddfd9be95dcd41ee8281d5cecc074918e4ed3995e19dd17da1801b' "$ouf_stage/iam_binding_candidate.py" \
@@ -80,11 +80,11 @@ printf '%s  %s\n' \
  '3e026425a90e30c782a32ea0bd202595e43fdc1b68b6145bb5797d010950c204' "$ouf_stage/audit_owner.py" \
  'ab2d9b62473e81bb58ff4e2f4a5e999b0d092abb2bd8031a9bd7a760bef61e22' "$ouf_stage/audit_preparation.py" \
  '38f6fcf5839bf41569d3eb017341a428647bcf8ee140bfecc316b4f6c1ebd975' "$ouf_stage/comparison_authority.py" \
- '7cd88ad6fa85c26ff50a391d47f0ba6d00a589a9c3bd8298ab7821e414e6d13b' "$ouf_stage/comparison_entry.py" \
+ '5f75bd1093dc411c98356bad8784f01c72e43df05b04b48bab6ec507c6bd555d' "$ouf_stage/comparison_entry.py" \
  '8caf9d0d2a7e884b4e1dd0942a3867c9a1f513e0e00befa4c1f97397bcb20a29' "$ouf_stage/comparison_native.py" \
  '525121cd5f4f727b8cac655694a13a3f5cd76c268334d1db3183890ed393c1fd' "$ouf_stage/comparison_owner.py" \
  '4134ce4f901088715db566c1fbe824b185ad1e04659db3c28cf06534b3a244ef' "$ouf_stage/comparison_plan.py" \
- '0d04dcd08ba8e30cad0b3dc0bf7c5e63df81658053856e6f458c4b0e51db7502' "$ouf_stage/comparison_preparation.py" \
+ '6708ce1dfbdda8b33cd4bab40b9832f5c7b070ca6bba3e1f15cac0b41426ac55' "$ouf_stage/comparison_preparation.py" \
  '6b3b59e9020271587fd087d29085e380833bf0f479744aaacdd9f037713b735a' "$ouf_stage/config_authority.py" \
  'e621fb8960f411427ed3dc8cdebb6163b6068181f7220211740974381016e1b2' "$ouf_stage/config_entry.py" \
  'e39a4771b02f59ddf572d5aca47a8e952ad9cc157e65badbd37abeab2cca4df8' "$ouf_stage/config_native.py" \
@@ -110,7 +110,7 @@ printf '%s  %s\n' \
  '5de5a2131f2f0392887e169d2f8cd091e719ebdabced0550bd29b03e8bdbedbe' "$ouf_stage/udp_owner.py" \
  'bc563f96a68512c0a8fff2de11697725856c66112168ce0c3c5d21933d1bbe37' "$ouf_stage/udp_plan.py" \
  '1a3d70690bc381c901f7abf6b385cf69b9c746c7ae4985e9cf3737f727ebe36e' "$ouf_stage/udp_preparation.py" \
- '8819ca44d434f72b3ee104236f30510bf4ed495e57a015edc46b677081758d0f' "$ouf_stage/package.json" | sha256sum --check -
+ 'f8c87874b0485eb3de8cbcc39e44fd1c3c0f637104d13585948a622990325921' "$ouf_stage/package.json" | sha256sum --check -
 ouf_cache="$HOME/ouf-resolution-comparison-candidate-39044384475"
 mkdir -p "$ouf_cache"
 ouf_archive="$ouf_cache/candidate.zip"
@@ -148,8 +148,8 @@ def read(name,expected,maximum=262144):
   assert len(raw)==before.st_size and pin(before)==pin(os.fstat(fd))and hashlib.sha256(raw).hexdigest()==expected
   return bytes(raw)
  finally:os.close(fd)
-manifest_raw=read('package.json','8819ca44d434f72b3ee104236f30510bf4ed495e57a015edc46b677081758d0f');package=json.loads(manifest_raw)
-assert package['sourceCommit']=='241590c417089743f154c7728be54bb3c602f671'
+manifest_raw=read('package.json','f8c87874b0485eb3de8cbcc39e44fd1c3c0f637104d13585948a622990325921');package=json.loads(manifest_raw)
+assert package['sourceCommit']=='d6da86415abe673d9ac1a692118bd2d0a218b644'
 files={'package.json':manifest_raw,'execute.py':read('execute.py',package['executorSha256']),
  'runtime.py':read('runtime.py',package['loaderSha256']),'case.json':read('case.json',package['caseSha256'])}
 # Only this verified bootstrap's static overlay declaration selects source names.
@@ -169,6 +169,6 @@ fd=os.open(code,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
 try:os.fsync(fd)
 finally:os.close(fd)
 print('OUF_RESOLUTION_COMPARISON_EXECUTOR_CODE='+str(code),flush=True)
-sys.argv=[str(code/'execute.py'),str(code),'241590c417089743f154c7728be54bb3c602f671','8819ca44d434f72b3ee104236f30510bf4ed495e57a015edc46b677081758d0f',str(archive)]
+sys.argv=[str(code/'execute.py'),str(code),'d6da86415abe673d9ac1a692118bd2d0a218b644','f8c87874b0485eb3de8cbcc39e44fd1c3c0f637104d13585948a622990325921',str(archive)]
 exec(compile(files['execute.py'],'<verified-scoped-readiness-bootstrap>','exec'),{'__name__':'__main__'})
 ROOTPY
