@@ -1,3 +1,11 @@
+# Reader Resolution THS qualificato; pronto per dati configurazione — 2026-10-17
+
+**Tecniche8/8; funzionali2/6.** Comando successivo scripts/launch-resolution-ths-bindings-read-20261017.sh, SHA256 a9d5670a54087e2436ca46ff8ceb706d82184d3228775ea7b46932b8c84f44aa. Sorgenti f771762981c79c24754e584ee0201b2734aa9b2f: reader c1a6ca54dbf16cc7abf2e33218a1ca26f45a34ca02eeeb3ba55ecd1dfef6e724 e gateway custody5e7182d8… confrontati byte per byte remoto. Qualifica GitHub39024872193/job117373777165:4 test PASS,0skip con custodia root reale/no-follow/stale binding, parser letterale/ambiguità/env/indici, nessun segreto stampato e riconoscimento route catch-all. Non prova caricamento effettivo Spring, route live né disponibilità target della pagina.
+
+Il reader usa contesto ybmis4le/reviewb258 e generazione Onboarding esatti; legge una configurazione THS montata RO con custodia preesistente, due letture Engine,35s,0SQL/0token/0IAM/0grant/0Gatewaywrite. Le route vengono dallo snapshot storico firmato31ad562f…: prima di un apply occorre comunque inventario Gateway corrente completo. Nessuna modifica di servizi o decisione UDP è autorizzata dal reader. La correzione concreta deve coprire pagina browser, configurazione conditional THS e backend package GET/confirm POST con owner scopes; non basta inventare un link case/challenge non previsto dal codice. Domanda UX sul collegamento al caso specifico conservata.
+
+---
+
 # Pagina Resolution non instradata; URL comune autenticato, nessun challenge implementato — 2026-10-17
 
 **Tecniche8/8; funzionali2/6.** Screenshot operatore image(9).png osservato direttamente nel workspace: https://api.ouf-lab.it/trusted-human/resolution/ restituisce APISIX JSON error_msg404 Route Not Found. Non attribuire a login/permessi owner né inventare un URL personale. La pagina era stata proposta sulla base del codice, senza prova di esposizione target: indicazione prematura riconosciuta.
