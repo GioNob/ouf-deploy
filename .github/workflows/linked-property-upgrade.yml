@@ -1,0 +1,47 @@
+name: Linked property V34 to V35 upgrade
+on:
+  push:
+    branches: [feat/linked-property-release-20261017]
+    paths: ['.github/workflows/linked-property-upgrade.yml', 'tests/linked_property/**']
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  populated-upgrade:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgis/postgis:17-3.5-alpine
+        env: {POSTGRES_DB: ouf_upgrade, POSTGRES_USER: ouf_udp, POSTGRES_PASSWORD: ci-only-password}
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U ouf_udp -d ouf_upgrade" --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      OUF_UDP_DB_URL: jdbc:postgresql://127.0.0.1:5432/ouf_upgrade
+      OUF_UDP_DB_USER: ouf_udp
+      OUF_UDP_DB_PASSWORD: ci-only-password
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {path: deploy, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-udp-object-resolution
+          ref: 4660b08fdf982f7f7ecc35a378fd8fcad30aa273
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '21'}
+      - name: Qualify populated schema upgrade in an isolated checkout
+        working-directory: source
+        run: |
+          cp ../deploy/tests/linked_property/LinkedPropertyUpgradeTest.java src/test/java/it/comune/trieste/ouf/udp/
+          bash scripts/install-authorization-sdk.sh
+          mvn -B -ntp -Dtest=LinkedPropertyUpgradeTest test
+          python3 - <<'PY'
+          import xml.etree.ElementTree as E
+          r=E.parse('target/surefire-reports/TEST-it.comune.trieste.ouf.udp.LinkedPropertyUpgradeTest.xml').getroot()
+          assert int(r.attrib['tests'])==1 and all(int(r.attrib.get(k,0))==0 for k in ('failures','errors','skipped'))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with: {name: 'linked-property-upgrade-${{ github.run_id }}', path: 'source/target/surefire-reports/', retention-days: 30}
