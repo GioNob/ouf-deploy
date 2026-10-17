@@ -1,0 +1,32 @@
+{
+  "schema": "ouf.resolution-ths-rollout-and-browser-denial-observation.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2,
+  "operatorResult": {
+    "contextPath": "/etc/ouf/deploy-snapshots/resolution-config-execution-q91d2ut7",
+    "journalVersion": 37,
+    "complete": true,
+    "applicationReady": true,
+    "newRouteCount": 3,
+    "sameImageOnly": true,
+    "newPolicyWorkerStarted": false,
+    "identityDecisionsPerformed": false,
+    "semanticDispatchPerformed": false
+  },
+  "browserScreenshot": {
+    "pageRendered": true,
+    "packageReadHttpStatus": 403,
+    "caseCountProven": false,
+    "confirmationEnabled": false
+  },
+  "denialLayerProven": false,
+  "expiredPolicyWorkerProvesCause": false,
+  "independentTargetReadbackPerformed": false,
+  "nextObservation": {
+    "method": "GET",
+    "path": "/trusted-human/resolution/api/package",
+    "useExistingHumanBrowserSession": true,
+    "confirmationRequired": false
+  },
+  "noNewWorkerOrGrantAuthorizedByObservation": true
+}

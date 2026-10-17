@@ -1,3 +1,15 @@
+# Resolution: aggiornamento completato, lettura browser403 — 2026-10-17
+
+**Tecniche8/8; funzionali2/6.** Operatore ha confermato `OUF_RESOLUTION_CONFIGURATION_RESULT`: contesto `/etc/ouf/deploy-snapshots/resolution-config-execution-q91d2ut7`, journalVersion37, complete=true, applicationReady=true, newRouteCount3, sameImageOnly=true, newPolicyWorkerStarted=false, identityDecisionsPerformed=false, semanticDispatchPerformed=false. Dal percorso qualificato: stesso binario Onboarding ricreato con JSON browser additivo, tre route applicate/verificate, inventory finale e probe anonimi completati. È evidenza di flusso eseguito, non nuovo readback indipendente target o accettazione dati.
+
+Screenshot successivo mostra la pagina `/trusted-human/resolution/?continue` renderizzata, titolo Casi incerti di identità, tabella vuota e `Lettura non disponibile (HTTP403)`, pulsante conferma disabilitato. Non interpretare la tabella vuota come zero issue: l'elenco non è stato letto. Pagina esposta e sessione browser arrivata alla UI; accesso package non provato. Nessuna decisione di identità confermata in questa operazione.
+
+Codice owner UDP b49c0d6f…: TrustedHumanApi.trusted risolve principal e snapshot SDK; LocalAuthorization rifiuta NO_POLICY_BUNDLE/STALE_POLICY_BUNDLE, poi package.prepare richiede resolution.issue.read. Scope/token/Gateway/actor/tenant/grant restano possibili livelli di rifiuto. Onboarding34488428 ResolutionThsApi.prepare inoltra corpo e status upstream, mentre la UI riduce il messaggio a HTTP403. Worker policy scaduto è un possibile fattore, non causa provata da screenshot. Non aprire una nuova sessione worker o cambiare grant alla cieca.
+
+Prossima osservazione minima: risposta del GET `/trusted-human/resolution/api/package` nello stesso browser HUMAN autenticato, riportando il solo corpo errore. Non ripetere approvazioni, import, rollback, container replacement o conferma pacchetto. Distinguere blocco Gateway da owner e policy stantia da permesso prima del rimedio. Deep link per caso/source resta non implementato; `?continue` non seleziona casi nel controller. Restano1materializzato+12quarantene dall'ultimo readback acquisizione; nessun avanzamento milestone3 senza13materializzazioni e provenienza.
+
+---
+
 # Continuazione esatta dopo refresh HUMAN bloccato — 2026-10-17 13:32 CEST
 
 **Tecniche8/8; funzionali2/6.** Target: preparazione privata completata in `/etc/ouf/deploy-snapshots/resolution-config-execution-e1zic7co`; stessa immagine9da9e4d4…,3scopepreservati+2Resolution. STOP al refresh `HUMAN_OAUTH_REVOKED_OR_PERMANENT_OR_UNKNOWN`, prima del review/APPROVO e di authority/effects. Non interpretare il codice come revoca indipendentemente provata. Nessuna nuova route/container mutato da questo tentativo. La prosecuzione non chiama il vecchio refresh.
