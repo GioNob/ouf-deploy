@@ -1,7 +1,7 @@
 name: Linked property V34 to V35 upgrade
 on:
   push:
-    branches: [feat/linked-property-release-20261017]
+    branches: [feat/linked-property-release-20261017, feat/linked-property-rollout-20261017]
     paths: ['.github/workflows/linked-property-upgrade.yml', 'tests/linked_property/**']
   workflow_dispatch:
 permissions: {contents: read}
@@ -12,10 +12,10 @@ jobs:
     services:
       postgres:
         image: postgis/postgis:17-3.5-alpine
-        env: {POSTGRES_DB: ouf_upgrade, POSTGRES_USER: ouf_udp, POSTGRES_PASSWORD: ci-only-password}
+        env: {POSTGRES_DB: ouf_upgrade, POSTGRES_USER: ci_admin, POSTGRES_PASSWORD: ci-only-admin-password}
         ports: ['5432:5432']
         options: >-
-          --health-cmd "pg_isready -U ouf_udp -d ouf_upgrade" --health-interval 5s --health-timeout 5s --health-retries 12
+          --health-cmd "pg_isready -U ci_admin -d ouf_upgrade" --health-interval 5s --health-timeout 5s --health-retries 12
     env:
       OUF_UDP_DB_URL: jdbc:postgresql://127.0.0.1:5432/ouf_upgrade
       OUF_UDP_DB_USER: ouf_udp
@@ -31,6 +31,16 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-java@v4
         with: {distribution: temurin, java-version: '21'}
+      - name: Provision isolated application owner without superuser or role administration
+        env: {PGPASSWORD: ci-only-admin-password}
+        run: |
+          psql -h 127.0.0.1 -U ci_admin -d ouf_upgrade -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE ROLE ouf_udp LOGIN PASSWORD 'ci-only-password' NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION;
+          CREATE EXTENSION IF NOT EXISTS postgis;
+          CREATE EXTENSION IF NOT EXISTS pgcrypto;
+          CREATE SCHEMA ouf_udp AUTHORIZATION ouf_udp;
+          GRANT CONNECT ON DATABASE ouf_upgrade TO ouf_udp;
+          SQL
       - name: Qualify populated schema upgrade in an isolated checkout
         working-directory: source
         run: |

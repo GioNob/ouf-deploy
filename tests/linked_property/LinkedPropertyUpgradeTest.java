@@ -9,6 +9,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class LinkedPropertyUpgradeTest {
   @Test void upgradesPopulatedV34WithoutRewritingEvidenceAndRemainsIdempotent() throws Exception {
     String url=System.getenv("OUF_UDP_DB_URL"), user=System.getenv("OUF_UDP_DB_USER"), password=System.getenv("OUF_UDP_DB_PASSWORD");
+    try(Connection c=DriverManager.getConnection(url,user,password); Statement s=c.createStatement()) {
+      assertEquals("false",one(s,"select (rolsuper or rolcreaterole or rolcreatedb)::text from pg_roles where rolname=current_user"));
+    }
     var old=Flyway.configure().dataSource(url,user,password).schemas("ouf_udp").defaultSchema("ouf_udp").target("34").load();
     assertEquals(34,old.migrate().migrationsExecuted);
     try(Connection c=DriverManager.getConnection(url,user,password); Statement s=c.createStatement()) {

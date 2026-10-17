@@ -1,0 +1,16 @@
+{
+  "schema": "ouf.linked-property-private-preparation-selection.v1",
+  "installationSpecific": true,
+  "privateParent": "/etc/ouf/deploy-snapshots",
+  "retainedBootstrap": {
+    "path": "/etc/ouf/deploy-snapshots/semantic-mcp-update-executor-code-yrvtskkt/execute.py",
+    "sha256": "b02d9737af6d143903910654d34e91a1a82a52b6082d2429d5dbfd070d160af2"
+  },
+  "configHashes": {
+    "udp": "813f7cacbb119cd433e26ba2fa6d2a518ef490301d72b835b92de5bdac95bfec",
+    "onboarding": "16aa30b86c796fb012f724172279facf8aa4630b3d50afbc9c361fd2d6bbeac1"
+  },
+  "databaseMutationsAllowed": false,
+  "serviceMutationsAllowed": false,
+  "runtimeAuthorityIssued": false
+}
