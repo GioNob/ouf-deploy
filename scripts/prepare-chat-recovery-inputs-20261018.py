@@ -3,7 +3,7 @@
 
 No tokens, profile publication, scheduler activation, grants or database writes.
 """
-import hashlib,http.client,json,os,re,selectors,signal,socket,stat,subprocess,sys,tempfile,time
+import hashlib,http.client,json,os,re,selectors,signal,socket,stat,subprocess,sys,tempfile,time,traceback
 from pathlib import Path
 BOOT=Path('/etc/ouf/deploy-snapshots/semantic-mcp-update-executor-code-yrvtskkt/execute.py')
 BOOT_HASH='b02d9737af6d143903910654d34e91a1a82a52b6082d2429d5dbfd070d160af2'
@@ -138,7 +138,7 @@ def main(profile):
  require([v.split('=',1)[1] for v in pg['Config']['Env'] if v.startswith('POSTGRES_USER=')]==[admin],'DATABASE_ADMINISTRATOR_CHANGED')
  parent=Path(profile['privateParent']);root_dir(parent)
  context=Path(tempfile.mkdtemp(prefix='chat-recovery-prepared-',dir=parent));context.chmod(0o700)
- emit('PRIVATE_CONTEXT',contextPath=str(context),runtimeReadOnly=True)
+ emit('PRIVATE_CONTEXT',contextPath=str(context))
  facts={}
  for module in('udp','mcp'):
   binding=next(v for v in db['modules'] if v['module']==module)
@@ -173,5 +173,6 @@ if __name__=='__main__':
   require(len(sys.argv)==1,'NO_ARGUMENTS_REQUIRED')
   main(PROFILE)
  except Exception as error:
-  emit('STOP',errorClass=type(error).__name__,exceptionMessagePrinted=False,readyForExecution=False)
+  emit('STOP',errorClass=type(error).__name__,exceptionMessagePrinted=False,readyForExecution=False,
+   frames=[{'file':Path(f.filename).name,'function':f.name,'line':f.lineno} for f in traceback.extract_tb(error.__traceback__)[-6:]])
   raise SystemExit(2)

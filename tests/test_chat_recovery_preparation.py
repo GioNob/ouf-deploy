@@ -1,4 +1,5 @@
-import copy,importlib.util,json,os,tempfile,unittest
+import contextlib,copy,hashlib,importlib.util,io,json,os,signal,tempfile,unittest
+from unittest.mock import patch
 from pathlib import Path
 SOURCE=Path(__file__).resolve().parents[1]/'scripts/prepare-chat-recovery-inputs-20261018.py'
 spec=importlib.util.spec_from_file_location('preparation',SOURCE)
@@ -38,4 +39,78 @@ class MigrationContract(unittest.TestCase):
    root=Path(tmp);root.chmod(0o700);p.root_dir(root)
    root.chmod(0o777)
    with self.assertRaises(ValueError):p.root_dir(root)
+
+class WholePreparation(MigrationContract):
+ def exercise(self, mode='success', duplicate=False):
+  if os.geteuid()!=0:self.skipTest('root fixture')
+  with tempfile.TemporaryDirectory(dir='/root')as tmp:
+   root=Path(tmp);root.chmod(0o700)
+   profile=copy.deepcopy(p.PROFILE);profile['privateParent']=str(root)
+   actuals={}
+   for name,row in profile['components'].items():
+    actuals[row['id']]={'Id':row['id'],'Image':row['image'],
+     'State':{'Running':True,'Paused':False,'Restarting':False,'Pid':7,'StartedAt':'fixture'},
+     'Config':{'Labels':{'org.opencontainers.image.revision':row['revision']},'Env':['FIXTURE=PRIVATE_CANARY']},
+     'HostConfig':{},'Mounts':[],'NetworkSettings':{}}
+   pg={'Id':'postgres-fixture','Image':'sha256:fixture','State':{'Running':True,'Pid':9,'StartedAt':'fixture'},
+       'Config':{'Env':['POSTGRES_USER=fixture_admin']},'HostConfig':{},'Mounts':[],'NetworkSettings':{}}
+   actuals[pg['Id']]=pg
+   db={'postgresRuntimeBinding':p.runtime_pin(pg),'mcpAuditRoleAdministration':{'admin':'fixture_admin'},
+    'modules':[{'module':m,'user':'fixture_app','database':'fixture_'+m,'databaseOid':i}for i,m in enumerate(('udp','mcp'),1)]}
+   prepared={'engine':{'socketPath':'/fixture'},'databasePlan':db}
+   old={'scopes':{'finiteActionProcess':{'bundle':{'path':'/fixture/bundle','sha256':'fixture'}}},
+    'privateInputHashes':{'preparedInputs':p.digest(prepared)},'sourceClosure':{'executables':{'docker':{'path':'/fixture/docker'}}}}
+   documents={'/fixture/review.json':old,'/fixture/bundle':{'prepared':prepared}}
+   helper=("from pathlib import Path\nimport json\nCONTEXT=Path('/fixture');REVIEW='fixture'\n"
+    +"documents=json.loads("+repr(json.dumps(documents))+")\n"
+    +"actuals=json.loads("+repr(json.dumps(actuals))+")\n"
+    +"def read(path,*args):return documents[str(path)]\n"
+    +"def engine_get(engine,kind,cid):return actuals[cid]\n")
+   boot=root/'execute.py';boot.write_text(helper);boot.chmod(0o600)
+   source=p.__dict__
+   if duplicate:
+    source={'__name__':'reproduction'}
+    raw=SOURCE.read_text().replace("emit('PRIVATE_CONTEXT',contextPath=str(context))","emit('PRIVATE_CONTEXT',contextPath=str(context),runtimeReadOnly=True)")
+    exec(compile(raw,str(SOURCE),'exec'),source)
+   sql_calls=[]
+   def bounded(argv,**kwargs):
+    sql_calls.append(argv)
+    self.assertIn('BEGIN READ ONLY;',argv[-1]);self.assertTrue(argv[-1].endswith('ROLLBACK;'))
+    if mode=='sql_failure':return 1,b'',b'PRIVATE_CANARY',0
+    module=argv[argv.index('-d')+1].removeprefix('fixture_')
+    fact=self.udp() if module=='udp' else {'transactionReadOnly':True,'migrations':profile['mcpMigrations']}
+    if mode=='history_drift':fact['migrations']=[]
+    binding=next(v for v in db['modules']if v['module']==module)
+    fact.update(database=binding['database'],databaseOid=binding['databaseOid'],role='fixture_admin')
+    return 0,json.dumps(fact).encode(),b'',0
+   output=io.StringIO()
+   with patch.dict(source,BOOT=boot,BOOT_HASH=hashlib.sha256(helper.encode()).hexdigest(),
+        executable=lambda binding:binding['path'],bounded=bounded),contextlib.redirect_stdout(output):
+    try:
+     if duplicate:
+      with self.assertRaises(TypeError):source['main'](profile)
+     elif mode!='success':
+      with self.assertRaises(ValueError):source['main'](profile)
+     else:source['main'](profile)
+    finally:signal.alarm(0)
+   self.assertNotIn('PRIVATE_CANARY',output.getvalue())
+   contexts=list(root.glob('chat-recovery-prepared-*'));self.assertEqual(len(contexts),1)
+   plan=contexts[0]/'prepared-inputs.json'
+   if duplicate:
+    self.assertEqual(sql_calls,[]);self.assertEqual(list(contexts[0].iterdir()),[])
+   elif mode!='success':self.assertFalse(plan.exists())
+   else:
+    self.assertEqual(len(sql_calls),2)
+    events=[json.loads(line)for line in output.getvalue().splitlines()]
+    self.assertEqual([r['check']for r in events],['PRIVATE_CONTEXT','DATABASE_PREFLIGHT','DATABASE_PREFLIGHT','END'])
+    self.assertTrue(events[-1]['complete']);self.assertFalse(events[-1]['readyForExecution'])
+    self.assertEqual(events[-1]['preparedInputsSha256'],hashlib.sha256(plan.read_bytes()).hexdigest())
+    self.assertEqual(plan.stat().st_mode&0o777,0o600)
+    self.assertIn('PRIVATE_CANARY',plan.read_text())
+    self.assertEqual(json.loads(plan.read_bytes())['beforeApplications']['mcp'],p.runtime_pin(actuals[profile['components']['mcp']['id']]))
+ def test_original_duplicate_reproduces_before_sql(self):self.exercise(duplicate=True)
+ def test_whole_preparation_saves_private_plan(self):self.exercise()
+ def test_sql_failure_never_publishes_plan(self):self.exercise('sql_failure')
+ def test_history_drift_never_publishes_plan(self):self.exercise('history_drift')
 if __name__=='__main__':unittest.main()
+
