@@ -1,25 +1,23 @@
 {
   "artifact": {
-    "artifactId": 12102614320,
+    "artifactId": 12105197726,
     "imageIds": {
-      "onboarding": "sha256:c445a2b993b19da824d190e443ee65c7b84fa8fe15dc70ddf8ac2945abd38894",
-      "udp": "sha256:ca11bec417497a9ba92d0cfdb416601364910c2ffc11923ff13272ec1c9228ed"
+      "onboarding": "sha256:1ced0cd3eac6db8b56ef5a325046bf40fa4bcafb81eaa318e15863b313247608",
+      "udp": "sha256:c91ef94255dd79323bfd597f9aa7b8d0f4ac07901f24d34c0bbe4a07f15bfaf9"
     },
-    "runId": 39037997551,
-    "sourceLockSha256": "dcc8222af55bba01ad7213429bbb9d4b4f8d0f7a80bfae8be4b0356afb950dc0",
-    "zipSha256": "18589706434abdeec6568ae23cdb4e4b88e81825e575a626320d60e3ddba7af5"
+    "runId": 39044384475,
+    "sourceLockSha256": "3bdd80d3e55cb209497936db97806e41ca0a27756b08a2d110f241191a9702f6",
+    "zipSha256": "9c6e549ea643fa20f76c0d61c9a2353219ccec23eff784f320db1ec68b617afb"
   },
   "candidateSourceCommits": {
-    "onboarding": "dec8f6f53f263f264a1ed14f17b51ab31dc9afad",
-    "udp": "5a5a45b07b3f52fab50e10234f12ce87bb1a6aa6"
+    "onboarding": "9d7b64cbbf45f87c0219394e2e908cfe8fddc0bc",
+    "udp": "6a306b0b8235ad1696dff13d5053c5157750752d"
   },
   "completedTechnicalPhases": 8,
-  "configurationContext": "/etc/ouf/deploy-snapshots/resolution-config-execution-q91d2ut7",
-  "configurationSourceCommit": "d830edbcdbf41c495672833b86aa698546e215a6",
   "databaseMigrationsAllowed": false,
   "deployedSourceCommits": {
-    "onboarding": "34488428ac8eee6b919cb1b5982cf9ba62361292",
-    "udp": "a4d432d7788cc1c205c0eaafa5ae3b46036de09f"
+    "onboarding": "dec8f6f53f263f264a1ed14f17b51ab31dc9afad",
+    "udp": "5a5a45b07b3f52fab50e10234f12ce87bb1a6aa6"
   },
   "expectedMigrationTrees": {
     "onboarding": [
@@ -431,7 +429,7 @@
   },
   "functionalMilestonesProven": 2,
   "identityDecisionsAllowed": false,
-  "maximumGatewayWrites": 0,
+  "maximumGatewayWrites": 1,
   "newPolicyWorkerStarted": false,
   "readiness": {
     "onboarding": {
@@ -447,9 +445,10 @@
     "path": "/etc/ouf/deploy-snapshots/semantic-mcp-update-executor-code-yrvtskkt/execute.py",
     "sha256": "b02d9737af6d143903910654d34e91a1a82a52b6082d2429d5dbfd070d160af2"
   },
+  "retainedConfirmRouteId": "ths-resolution-package-confirm",
   "retainedReadRouteId": "ths-resolution-package-read",
-  "rolloutContext": "/etc/ouf/deploy-snapshots/udp-resolution-execution-65h5kjt8",
-  "rolloutSourceCommit": "198d0bd9c2968f1fa5bfa61d1c7da8efab2c13bb",
+  "rolloutContext": "/etc/ouf/deploy-snapshots/resolution-comparison-execution-fdqv48fp",
+  "rolloutSourceCommit": "39b91860730c227f8177dce881e075f1f6e2e70b",
   "schema": "ouf.resolution-comparison-update-selection.v1",
   "scope": "RETAINED_SINGLE_HOST_RESOLUTION_COMPARISON_AND_SELECTIVE_REVIEW"
 }

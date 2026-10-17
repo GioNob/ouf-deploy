@@ -13,7 +13,6 @@ jobs:
         with: {persist-credentials: false}
       - name: Reproduce inherited configuration schema and validate exact confirmation contract
         run: |
-          sudo python3 -m pip install --break-system-packages jsonschema==4.23.0
           python3 -I -B -m unittest discover -s tests -p 'test_resolution_confirm_schema.py' -v
       - name: Closed graph with effects disabled and pure request invariants
         run: |

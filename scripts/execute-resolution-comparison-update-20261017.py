@@ -54,7 +54,7 @@ def main():
  declaration=memory['declaration'](commit,sources,loader,pins,extra);closure={**old['sourceClosure'],'declaration':declaration}
  entry,_=memory['load_entry'](commit,sources,loader,digest(declaration),pins,extra)
  context=Path(tempfile.mkdtemp(prefix='resolution-comparison-execution-',dir=ns['CONTEXT'].parent));context.chmod(0o700)
- emit('PREPARED',contextPath=str(context),newPolicyWorkerStarted=False,maximumGatewayWrites=0,runtimeAuthorityIssued=False)
+ emit('PREPARED',contextPath=str(context),newPolicyWorkerStarted=False,maximumGatewayWrites=1,runtimeAuthorityIssued=False)
  entry.main(prepared,sources,closure,case,context,archive,ns['read'],ns,emit=lambda value:print(value,flush=True))
 if __name__=='__main__':
  try:main()
