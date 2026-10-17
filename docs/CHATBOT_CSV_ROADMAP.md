@@ -1,3 +1,13 @@
+# Recupero del journal dopo chiusura terminali — 2026-10-17
+
+Stato invariato: **fasi tecniche 8/8; milestone funzionali 0/6**. L’operatore ha chiuso i terminali dopo la scadenza della sessione; le ultime righe del reporter non sono più disponibili. Non assumere che questo abbia cancellato il journal o che `live:true` salvato in precedenza rappresenti un processo attuale.
+
+Il reader specifico dell’installazione `scripts/read-chatbot-semantic-expired-worker-20261017.py` recupera esclusivamente la precedente authority con hash noto e i quattro record del worker esatto. Lock di invocazione condiviso non bloccante, solo file già esistenti aperti in lettura, doppio snapshot e controlli di custodia/hash/conteggi. Distingue journal e ultimo reporter; il cumulativo è il conteggio **controllato**, non la storia legacy sconosciuta. Nessuna lettura del journal HUMAN/credenziale, rinnovo, restart, reset, grant, chiamata MCP o mutazione DB/servizi. Il budget OAuth HUMAN corrente rimane non provato.
+
+Qualificazione: [CI GitHub Actions 38998389486](https://github.com/GioNob/ouf-deploy/actions/runs/38998389486), 7 test su file privati reali, esclusione del worker, drift, conteggi, redazione e CLI. Il primo run 38998355985 ha correttamente rifiutato l’ancestry del checkout appartenente al runner; il fixture è stato spostato sotto `/root`, senza indebolire il reader. Wrapper locale: byte verificati eseguiti, byte alterati rifiutati. Questa evidenza non costituisce readback del VPS; occorre l’output del nuovo comando prima di stabilire i conteggi finali o preparare un’altra sessione.
+
+---
+
 ## 2026-10-16 — Native single-component adapter qualification passed; token history input still needed
 
 GitHub Actions run38941859703/job117111207270 passed on source d2e91c5c75ab2df52127836c201647c845063db8: eleven signed fixture tests plus sixteen ordered native fixture stages with real Docker, PostgreSQL17 atomic migration, completed custom backup/native restore-list verification, endpoint preservation, retained stopped old generation and public metadata custody. The replacement HTTP process is explicitly synthetic BusyBox; this is not actual MCP server bootstrap, production target OCI/lease acceptance, current owner policy or E2E proof. No target operation, native semantic call or live runtime authority was performed by this qualification. Evidence: evidence/chatbot-semantic-mcp-single-update-qualification-20261016.json. This supersedes only the earlier pending-adapter qualification status; production authenticated entrypoint/fresh reviewed package binding/permit and current authority remain incomplete.
