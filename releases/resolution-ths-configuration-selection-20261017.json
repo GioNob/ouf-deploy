@@ -1,0 +1,22 @@
+{
+  "completedTechnicalPhases": 8,
+  "containerLifecycleAllowed": true,
+  "failedRouteContext": "/etc/ouf/deploy-snapshots/resolution-route-execution-zt7l5a8h",
+  "functionalMilestonesProven": 2,
+  "identityDecisionsAllowed": false,
+  "maximumGatewayWrites": 3,
+  "newPolicyWorkerStarted": false,
+  "originalPolicyContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-execution-d0bmyv9g",
+  "originalPolicyReviewSha256": "c42181ac012cd41417e2e9ec3c0f37908d3a5c0c379cc3805c918505f4bed5cd",
+  "retainedBootstrap": {
+    "path": "/etc/ouf/deploy-snapshots/semantic-mcp-update-executor-code-yrvtskkt/execute.py",
+    "sha256": "b02d9737af6d143903910654d34e91a1a82a52b6082d2429d5dbfd070d160af2"
+  },
+  "retainedRouteMapSha256": "31ad562fa32c98472ee262bb0d8a800e3626443762e913b7863cce359e219d1d",
+  "rolloutContext": "/etc/ouf/deploy-snapshots/onboarding-audit-execution-ybmis4le",
+  "rolloutReviewSha256": "b258d70a9ec1e6257be8508bdce62b69b60e7b78a671356dd5defb8490796ca3",
+  "sameImageOnly": true,
+  "schema": "ouf.resolution-ths-configuration-execution-selection.v1",
+  "scope": "RETAINED_SAME_IMAGE_ONBOARDING_CONFIGURATION_AND_THREE_RESOLUTION_ROUTES",
+  "thsConfigSha256": "6d546047448495746d7eaad6d83e7942fa2950f137d4a240a3aef9309f7f39be"
+}
