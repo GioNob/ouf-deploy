@@ -83,3 +83,4 @@ if __name__=='__main__':
  except Exception as error:
   reason=str(error)if type(error)is ValueError and re.fullmatch('[A-Z_]+',str(error))else type(error).__name__
   emit('STOP',reason=reason,exceptionMessagePrinted=False)
+
