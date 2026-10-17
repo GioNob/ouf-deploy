@@ -41,3 +41,52 @@ La consegna è un solo launcher da eseguire come oufadmin nella sessione VPS gi�
 | Launcher | ca119dc9292cbf2e127da9e96d5245d1c44fccaa | 777c102bb313a984f85b04ff9c169d0dbe5852240dac5484f3ffeff7d53e83ee |
 
 [Evidenza di qualifica e blocco di trasporto](../evidence/csv-functional-stage3-reader-qualified-20261017.json). Dopo l'esecuzione servono i record ACQUISITION_DATABASE e END: solo quelli possono completare il rendiconto corrente delle13righe. complete=true significa lettura terminata; readbackProven, expectedCurrentDispositionProven e allThirteenMaterializedProven hanno significati distinti. Il contatore resta2/6; nessuna ridefinizione tacita della tappa3.
+
+## Readback VPS ricevuto: rendiconto e provenienza verificati
+
+L'operatore ha eseguito il launcher qualificato e fornito i record BEGIN, ROLLOUT_READBACK, ACQUISITION_DATABASE(Ingestion/UDP) ed END. Il risultato supera il limite di trasporto del runner per questa lettura: non occorre ripeterla. [Evidenza target normalizzata](../evidence/csv-functional-stage3-target-readback-20261017.json).
+
+| Controllo | Risultato |
+| --- | --- |
+| Generazioni applicative e contesto rollout | Coerenti, journal55; UDP35 checksum -376865285 |
+| Run Ingestion conservata | Una run SUCCEEDED,13tentativi,0fallimenti |
+| Handoff e lineage | 13ACKED,13ricevute,13lineage verificati; gli stessi13handoff presenti in UDP |
+| Materializzazione | 12job SUCCEEDED,12binding/oggetti distinti,12osservazioni con revisione verificata |
+| Proprietà persistite | 20contributi per ogni oggetto materializzato;240totali derivati dal rendiconto |
+| Decisioni CREATE_NEW | 11decisioni consumate,11oggetti distinti con revisione e contributi verificati |
+| Oggetto precedente alle11decisioni | d6051381-934b-4a11-8e71-e1d89cee4e49 conservato |
+| Quarantena | Un handoff DURABLE, job QUARANTINED, una issue OPEN, nessun binding/contributo; escluso dal pacchetto confermato |
+| Confronto con ricerca MCP | Gli ID dei12oggetti coincidono esattamente con quelli della ricerca precedente |
+| Schedule | DISABLED, triggerOnce=true, pubblicazione1 già consumata,0failure e activationBlocked=false |
+| Esito del lettore | complete=true,readbackProven=true,allRowsAccounted=true,upstreamHandoffsAndLineageMatch=true |
+| Effetti | 0mutazioni,0retry job,0pubblicazioni,0grant,0OAuth |
+
+La schedule disabilitata è coerente con il consumo della pubblicazione MANAGED corrente; non è un hold preventivo già qualificato per una nuova pubblicazione.
+
+### Rendiconto per handoff
+
+Questo elenco segue l'ordine degli ID tecnici, non l'ordine delle righe del CSV. I lineage completi sono conservati nell'evidenza JSON. Nessun valore di proprietà è pubblicato qui.
+
+| Handoff | Oggetto UDP | Esito | Contributi |
+| --- | --- | --- | --- |
+| 0aab7d69-624e-4d76-853c-ce3fbc778255 | 63d4fde8-044f-4f36-9db0-86debe078973 | SUCCEEDED | 20 |
+| 0aff252f-f9a6-46eb-9149-d64219030cc9 | d6051381-934b-4a11-8e71-e1d89cee4e49 | SUCCEEDED | 20 |
+| 387f2a31-444c-4f80-b724-026cdeb7a296 | 2606bba6-2799-4275-833e-00cf10f7e03b | SUCCEEDED | 20 |
+| 54ca77cc-165e-4b17-9e63-412f57ad0b34 | f4f18054-8b90-48be-b355-c8358a2d019d | SUCCEEDED | 20 |
+| 62ddbb50-a5e1-4720-a628-5a9d55d56ce3 | 3db3a213-05f2-4817-a643-475cf7b3868b | SUCCEEDED | 20 |
+| 77327abb-c7ec-4427-9b50-aa70515c4b42 | 76d5d321-6585-4c8a-92a0-588bf691a0cd | SUCCEEDED | 20 |
+| 7e1c39ab-6733-4a4b-9229-9869158ab9e4 | ec6897bf-74e2-4534-94e0-3fff1204c250 | SUCCEEDED | 20 |
+| 9fde61f1-8d3c-4de7-b3fe-b534b32e45e3 | — | QUARANTINED | 0 |
+| a82a4173-132d-4baa-a538-3705c8db535a | 43d6d5c7-1b01-4fbb-9ec0-a7575399981a | SUCCEEDED | 20 |
+| b09a9644-0ee6-4218-be30-3e4949b9aa38 | c2f83340-bf65-44f1-803b-347ae1246e5d | SUCCEEDED | 20 |
+| b3176149-cddb-4e44-a594-fdf99c89bda2 | fe0f7632-96bb-4fc7-8641-5dca487f1c75 | SUCCEEDED | 20 |
+| e9709c11-b8e4-46ee-b09f-ab42667299e5 | 535ea2cc-163a-49f0-94f0-1797dc31e521 | SUCCEEDED | 20 |
+| ea3f1144-e1db-47c5-965b-157232168062 | 96aa4cb9-c51c-4316-8c9e-472c11c8e302 | SUCCEEDED | 20 |
+
+L'eccezione è l'handoff9fde61f1-8d3c-4de7-b3fe-b534b32e45e3, lineage419ec184-7116-4ce8-b57c-6106938c65fb. Il codice del job è UDP_RESOLUTION_REVIEW_REQUIRED; la issue resta UNRESOLVED_IDENTITY/OPEN. La volontà di lasciarla in quarantena proviene dalla conversazione, non da una nuova decisione HUMAN creata dal lettore.
+
+### Significato dell'avanzamento
+
+**Verifica della tappa3 conclusa per l'esito scelto:12commit+1eccezione, tutte13le righe rendicontate e tracciate.** Il criterio storico13commit rimane aperto: allThirteenMaterializedProven=false,historicalCriterionChanged=false. Contatore formale ancora funzionali2/6, con tappa3 documentata come “rendiconto verificato con eccezione conservata”. Non richiedere un altro import o una decisione sulla quarantena per ripetere questa prova.
+
+L'attivazione del profilo proprietà rimane un gate distinto: profileActivationProven=false e nessuna pubblicazione è stata eseguita. Il readback dimostra contributi persistiti; non risolve da solo la ricerca che restituisce properties vuoto. Il prossimo controllo funzionale è la tappa4: completare il riscontro dal chatbot sui dati autorizzati, riusando i12ID già ottenuti e questa provenienza.
