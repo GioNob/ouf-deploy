@@ -1,0 +1,216 @@
+{
+  "schema": "ouf.chatbot-csv-repository-reuse-audit.v1",
+  "observedDate": "2026-10-17",
+  "scope": "Repository inventories, selected source/test/docs and existing CI; no fresh runtime acceptance",
+  "repositories": [
+    {
+      "repository": "GioNob/ouf-deploy",
+      "selectedAuditRef": "a5a7271a4ddb349a3c086ccd2d13afd3a6569157",
+      "branchInventoryCount": 44,
+      "prInventoryCount": 39,
+      "recursiveTreeTruncated": false,
+      "allBranchesFullyReviewed": false,
+      "refIsInstallationAttestation": false
+    },
+    {
+      "repository": "GioNob/ouf-mcp-server",
+      "selectedAuditRef": "f00e7e3bfcaee9272b9b6d204a7fa3ea79a563a4",
+      "branchInventoryCount": 81,
+      "prInventoryCount": 69,
+      "recursiveTreeTruncated": false,
+      "allBranchesFullyReviewed": false,
+      "refIsInstallationAttestation": false
+    },
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "selectedAuditRef": "b8b2eb23e36ea3166012edf84fb8c1fc3441dfca",
+      "branchInventoryCount": 67,
+      "prInventoryCount": 45,
+      "recursiveTreeTruncated": false,
+      "allBranchesFullyReviewed": false,
+      "refIsInstallationAttestation": false
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "selectedAuditRef": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+      "branchInventoryCount": 49,
+      "prInventoryCount": 40,
+      "recursiveTreeTruncated": false,
+      "allBranchesFullyReviewed": false,
+      "refIsInstallationAttestation": false
+    },
+    {
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "selectedAuditRef": "f869d8b86b892a0c03c147dac9bb40cd5f873ff2",
+      "branchInventoryCount": 53,
+      "prInventoryCount": 42,
+      "recursiveTreeTruncated": false,
+      "allBranchesFullyReviewed": false,
+      "refIsInstallationAttestation": false
+    },
+    {
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "selectedAuditRef": "e66e6df0833a872f15170eb46a43f85e50dd859b",
+      "branchInventoryCount": 55,
+      "prInventoryCount": 43,
+      "recursiveTreeTruncated": false,
+      "allBranchesFullyReviewed": false,
+      "refIsInstallationAttestation": false
+    },
+    {
+      "repository": "GioNob/ouf-api-gateway",
+      "selectedAuditRef": "425a0377c278ff52e00ce962ffd24809ee66f2e5",
+      "branchInventoryCount": 92,
+      "prInventoryCount": 77,
+      "recursiveTreeTruncated": false,
+      "allBranchesFullyReviewed": false,
+      "refIsInstallationAttestation": false
+    }
+  ],
+  "existingIntegratedQualification": {
+    "repository": "GioNob/ouf-ingestion-runtime",
+    "pullRequest": 41,
+    "merged": true,
+    "runId": 38534866913,
+    "runUrl": "https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/38534866913",
+    "headSha": "98e33a16839e9253b37bf74f37e77cc20dc938e7",
+    "jobId": 115755187540,
+    "workflowConclusion": "success",
+    "summaryStatus": "PASS",
+    "checkCount": 36,
+    "checks": [
+      "twenty_field_semantic_proposal_loaded",
+      "mcp_semantic_import_is_draft_without_authority",
+      "mcp_semantic_validation_passed",
+      "mcp_semantic_review_requires_human",
+      "human_http_card_exact_revision",
+      "mcp_reads_actual_active_semantic_pin",
+      "mcp_semantic_snapshot_digest_preserved",
+      "mcp_semantic_receipt_reconciles_original_draft",
+      "baseline_mcp_created_only_draft",
+      "baseline_review_frozen_without_activation",
+      "baseline_same_command_replay_does_not_redispatch",
+      "baseline_explicit_fixture_human_confirmed",
+      "baseline_explicit_fixture_human_activated",
+      "baseline_product_all_row_compatibility_attested",
+      "baseline_product_identity_coverage",
+      "baseline_object_materialized",
+      "incoming_mcp_created_only_draft",
+      "incoming_review_frozen_without_activation",
+      "incoming_same_command_replay_does_not_redispatch",
+      "incoming_explicit_fixture_human_confirmed",
+      "incoming_explicit_fixture_human_activated",
+      "incoming_product_all_row_compatibility_attested",
+      "incoming_product_identity_coverage",
+      "two_input_rows_match_one_existing_and_create_one_new",
+      "baseline_object_identity_retained",
+      "existing_object_commit_has_new_revision",
+      "exactly_three_durable_handoffs",
+      "three_exact_durable_ack_receipts",
+      "ack_and_content_hash_reconciled_to_durable_rows",
+      "mcp_search_exact_ids_count_and_complete_page",
+      "real_mcp_search_returns_both_objects",
+      "lexical_postal_code_leading_zero_retained",
+      "new_property_committed_on_existing_object",
+      "restricted_source_facts_not_returned",
+      "lineage_preserves_both_real_sources",
+      "mcp_created_and_prepared_both_sources"
+    ],
+    "cohortFromJobSummary": {
+      "R4A_ONBOARDING": "e700ef9e39b7de8396d1d704d4155649812b5643",
+      "R4A_SEMANTIC": "039f044f6063bc37b4e04b189b95b0b234ae1de5",
+      "R4A_UDP": "d683f12d8acd30f13e1dbae0f3f47501b771a8b8",
+      "R4A_MCP": "1323f9e3fb35d96fd0ac5d1b17bcc3a80268ec64",
+      "ingestion": "272e715ed80fc22f20e53bd816a37e06dbcfa0d2"
+    },
+    "level": "FOUR_REAL_OWNER_JVMS_REAL_MCP_POSTGRES_MINIO",
+    "limitations": [
+      "Disposable synthetic CSV rows with the real 20-field semantic proposal; not the user VPS asset or its 13 rows",
+      "Gateway mediation, browser sign-in and IAM are explicitly declared test fixtures; semantic/source proposal and HUMAN owner actions use actual HTTP APIs",
+      "Raw CSV registration/profile uses real owner services behind a fixture transport; host chat attachment/picker tested separately",
+      "No production authority or runtime acceptance issued"
+    ],
+    "notProvenByThisRun": [
+      "VPS 13-row acceptance",
+      "same CSV second acquisition",
+      "merge of two pre-existing canonical objects",
+      "V35 linked-property profile activation",
+      "two independent chatbot clients with real IAM and Gateway"
+    ]
+  },
+  "recoverableBranchWork": [
+    {
+      "repository": "GioNob/ouf-mcp-server",
+      "pr": 48,
+      "head": "d7d5330d2b2588b3f896ea23e2c47e19b7b905a1",
+      "purpose": "resolution.issue.read",
+      "state": "open",
+      "comparisonToAuditedMcp": {
+        "status": "diverged",
+        "ahead": 11,
+        "behind": 267
+      },
+      "instruction": "Reconcile narrow delta with current cohort; do not replace current branch or rebuild equivalent tool"
+    },
+    {
+      "repository": "GioNob/ouf-api-gateway",
+      "pr": 55,
+      "head": "b368284b3f6a7675863f85eeafc42d67bf9187dc",
+      "state": "open",
+      "purpose": "Gateway review package capability and routing"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "CSV_VOCABULARY_APPLICATION",
+      "status": "implementation_gap_in_audited_managed_path",
+      "evidence": [
+        "ManagedFileExecutionProposal: IDENTITY only and vocabularyMappings empty/absent",
+        "CanonicalRecordPipeline: transform other than IDENTITY rejected"
+      ],
+      "reuse": "Registry semantic artifacts and existing mapping/lineage contracts"
+    },
+    {
+      "id": "SOURCE_ADMISSION_WHEN_REPUBLISHING",
+      "status": "qualification_gap_before_new_design",
+      "existing": "Onboarding source status PATCH with ETag; sourceStatus publication feed; DISABLED decode; activation reconciliation",
+      "missingProof": "Full source disable/new publication/restart/re-enable scenario, active leases, governed user surface and exact intended acquisition"
+    },
+    {
+      "id": "PROFILE_ACTIVATION",
+      "status": "configuration_and_target_acceptance_pending",
+      "existing": "V35 plus generic reconciliation installed; XSD candidate qualified; 20-rule proposal prepared"
+    },
+    {
+      "id": "REVIEW_PACKAGE_MCP",
+      "status": "existing_branch_work_to_reconcile",
+      "reuse": "MCP48/Gateway55 and current UDP/THS comparisons"
+    },
+    {
+      "id": "TARGET_CLIENT_ACCEPTANCE",
+      "status": "not_proven",
+      "reuse": "R4a harness, operational tools, related_search, owner recovery and graph suites"
+    }
+  ],
+  "preservedBaseline": {
+    "completedTechnicalPhases": 8,
+    "totalTechnicalPhases": 8,
+    "functionalMilestonesProven": 2,
+    "totalFunctionalMilestones": 6,
+    "alreadyMaterializedCreateNewDecisions": 11,
+    "intentionallyQuarantinedCase": true,
+    "udpMigrationVersion": 35,
+    "publishedNativeProfile": false,
+    "propertiesWithoutReconciliationAtLastConfirmedReadback": 20,
+    "freshTargetReadbackDuringAudit": false
+  },
+  "sideEffects": {
+    "runtimeMutations": 0,
+    "deployments": 0,
+    "profilePublications": 0,
+    "jobsRetried": 0,
+    "identityDecisionsPerformed": 0,
+    "newCiDispatches": 0,
+    "repositoryDocumentationUpdated": true
+  }
+}

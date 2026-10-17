@@ -1,9 +1,9 @@
 # OUF — piano completo CSV da chat al grafo urbano
-Versione 1.0 · 17 ottobre 2026 · fuso di riferimento Europe/Rome
+Versione 1.1 · 17 ottobre 2026 · fuso di riferimento Europe/Rome
 
 **Obiettivo:** un utente autorizzato collega un chatbot compatibile all'endpoint MCP OUF, scopre le capability, carica un CSV, ne definisce il significato con ontologie e vocabolari, completa l'onboarding, segue l'acquisizione immediata, verifica identità e proprietà, e ritrova oggetti e relazioni nel grafo urbano. Nessun terminale, SQL, accesso al VPS o ricostruzione manuale degli ID deve essere necessario nel normale percorso utente.
 
-Questo documento è un piano di lavoro, non prova dell'implementazione o dell'attivazione delle attività elencate. **Stato accertato: tecniche 8/8; funzionali 2/6.** Le attività R0–R10 sotto sono pacchetti di lavoro del completamento; non sostituiscono né rinumerano le otto fasi tecniche e le sei milestone storiche.
+Questo documento organizza il riuso e il completamento del percorso già costruito. **R0–R10 non sono dieci componenti da riscrivere.** L'[audit dei sette repository](CHATBOT_CSV_REPOSITORY_AUDIT_20261017.md) distingue codice esistente, prove CI, installazione e residuo; corregge la formulazione troppo generica della versione1.0. I requisiti sotto restano criteri di uscita, non prova automatica della loro attivazione. **Stato accertato: tecniche 8/8; funzionali 2/6.** Le attività R0–R10 sotto sono pacchetti di lavoro del completamento; non sostituiscono né rinumerano le otto fasi tecniche e le sei milestone storiche.
 
 ## 1. Perimetro e significato di “tutto dalla chat”
 
@@ -69,6 +69,26 @@ Un ACK durevole UDP prova la presa in carico, non il completamento del commit o 
 
 La lettura del manifest MCP al commit `f7ecaeb210d8fcead478b90c62645db13a7d8226` è evidenza del sorgente, non dell'immagine installata. Il manifest contiene urban.object.search e urban.object.related_search, ma non dimostra esposizione di tutto il percorso di confronto, provenance, neighbors/traverse. source.file.upload.status risulta anche nella registrazione dinamica: R1 deve riconciliare manifest, registrazione e discovery effettiva.
 
+## 3.1 Riuso obbligatorio prima di nuovo sviluppo
+
+È già riuscita la [CI con MCP reale38534866913](https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/38534866913), con36check: proposta/revisione semantica, onboarding, readiness/attivazione, acquisizione, collegamento a un oggetto esistente, creazione di uno nuovo, proprietà/provenance e ricerca MCP. Gateway, IAM, browser e trasporto iniziale del file sono fixture dichiarate: questa prova non chiude il collaudo VPS o quello da due chatbot.
+
+| Attività | Classificazione del residuo dopo audit |
+| --- | --- |
+| R0 | Integrazione/installazione delle correzioni già qualificate e readback |
+| R1 | Qualifica della discovery e ripresa; recupero del lavoro MCP48/Gateway55 su review package, senza regredire le linee attuali |
+| R2 | Riuso del picker/profiler già funzionante; verifica portabilità e casi non coperti |
+| R3 | Riuso del Registry; diagnosi403 e completamento generico del mapping valori→vocabolari nel percorso CSV |
+| R4 | Configurazione, pubblicazione e collaudo del riconciliatore già installato |
+| R5 | Qualifica prioritaria di source DISABLED/feed/reconcile già esistenti; nuovo controllo solo se provatamente insufficiente |
+| R6 | Riuso della pipeline qualificata; rendiconto e prova sul target |
+| R7 | Integrazione delle proiezioni di revisione già sviluppate; collaudo proprietà/commit |
+| R8 | Riuso del motore edge e dei tool object.search/related_search; qualifica del mapping e della navigazione reale |
+| R9 | Riuso di recovery/budget/incidenti; prova seconda acquisizione e cambio conversazione |
+| R10 | Accettazione della coorte finale su due client e dossier delle evidenze |
+
+Per codice, pin, PR, test e limiti vedere l'[audit](CHATBOT_CSV_REPOSITORY_AUDIT_20261017.md) e la relativa [evidenza strutturata](../evidence/chatbot-csv-reuse-audit-20261017.json). Il normale ciclo parte da ciò che è già implementato e aggiunge soltanto il delta. Le prove storiche superate da evidenze successive non riaprono upload, onboarding o decisioni già completati.
+
 ## 4. Responsabilità
 
 | Responsabilità | Owner e repository |
@@ -99,9 +119,11 @@ Non si trasferiscono nel MCP le decisioni di dominio degli owner. Il coordinamen
 | R9 | Reimport, recovery e isolamento | R5–R8 | Seconda acquisizione reale senza duplicati; ripresa dopo fault con budget/storia conservati |
 | R10 | Collaudo portabile e accettazione completa | R1–R9 | Due client indipendenti completano il percorso; dossier di accettazione e baseline preservata |
 
-Le attività possono svilupparsi in parallelo, ma i gate di uscita non possono essere saltati. Percorso critico sul caso corrente: **R0 → R3/R4 → R5 → R6/R7 → R8 → R9 → R10**. R1 e R2 procedono in parallelo fin dall'inizio; devono essere completati prima del collaudo integrale.
+Le verifiche indipendenti possono procedere in parallelo, ma i gate di uscita non possono essere saltati. Le attività già coperte da codice e prove sono riusate; si aggiungono test o implementazioni solo per lacune documentate. Percorso critico sul caso corrente: **R0 → R3/R4 → R5 → R6/R7 → R8 → R9 → R10**. R1 e R2 procedono in parallelo fin dall'inizio; devono essere completati prima del collaudo integrale.
 
 ### R0 — Chiudere le dipendenze già note
+
+**Base da riusare:** PR38, UDP44 e Onboarding45, pacchetto39069142370 e controlli di continuità/readback esistenti. L'audit include branch candidate: non distribuire automaticamente main né ripetere migrazioni per uniformarlo.
 
 1. Integrare le PR qualificate [UDP44](https://github.com/GioNob/ouf-udp-object-resolution/pull/44), [Onboarding45](https://github.com/GioNob/ouf-source-onboarding/pull/45) e la preparazione [deploy38](https://github.com/GioNob/ouf-deploy/pull/38), verificando eventuale drift delle basi.
 2. Usare il pacchetto esatto qualificato nel run39069142370; predisporre nuova revisione operativa, senza riutilizzare l'autorità consumata del rollout precedente.
@@ -113,6 +135,8 @@ Le attività possono svilupparsi in parallelo, ma i gate di uscita non possono e
 **Uscita:** dossier corrente sufficiente per preparare un solo intervento operativo coerente. Gli hash delle immagini non sostituiscono le prove sui dati.
 
 ### R1 — Rendere il percorso scopribile e riprendibile da qualsiasi client conforme
+
+**Base da riusare:** manifest, tool source/semantic/read, ricevute durevoli e stato/storia/incidenti già presenti. MCP48 e Gateway55 contengono la proiezione resolution.issue.read: riconciliare quel lavoro con la linea attuale e i contratti owner, senza ricrearla né sostituire la coorte con una branch obsoleta.
 
 - Definire il profilo minimo di compatibilità OUF e una suite di conformità: endpoint, autenticazione, discovery, schema input/output, errori, versioni e limiti.
 - Confrontare catalogo, tool registrati e discovery reale per lo stesso principal/tenant. Il client usa solo capability effettivamente disponibili.
@@ -127,6 +151,8 @@ Le attività possono svilupparsi in parallelo, ma i gate di uscita non possono e
 
 ### R2 — File intake e profiling CSV
 
+**Base da riusare:** picker Gateway/Onboarding, staging, profiling e handoff alla chat già implementati; gli upload Cinema/Teatri sono evidenze pregresse. Le voci sotto verificano copertura delle suite e portabilità; non autorizzano a rifare l'intake storico.
+
 - Picker OUF come percorso base, handoff vincolato all'utente e risultato recuperabile; integrazione con allegati host solo se esplicitamente supportata e qualificata.
 - Upload durevole con content hash, dimensione, formato, ownership, retention e stato. Nessun URL arbitrario recuperato dal modello.
 - Profiling deterministico: encoding/BOM, delimitatore, quoting, newline nelle celle, intestazioni duplicate/mancanti, righe incoerenti, null/vuoto, decimali/date e limiti di file. Le inferenze devono essere presentate come proposte.
@@ -137,6 +163,8 @@ Le attività possono svilupparsi in parallelo, ma i gate di uscita non possono e
 **Uscita:** il file è acquisito nello staging, non ancora dichiarato integrato in UDP. Prova su CSV ordinario e CSV con errori/parziali.
 
 ### R3 — Semantica: classi, proprietà e vocabolari
+
+**Base da riusare:** Registry, semantic.search/get/propose/review e THS già implementati e qualificati nella CI R4a. **Gap concreto:** ManagedFileExecutionProposal ammette solo IDENTITY e vocabularyMappings vuoto/assente; CanonicalRecordPipeline rifiuta trasformazioni diverse da IDENTITY. Estendere coerentemente il percorso esistente per codice→concetto e provenienza, senza creare un secondo Registry. La discovery esterna disabilitata nel profilo file-first è una scelta esplicita.
 
 - Cercare prima nel Registry adottato e leggere i riferimenti immutabili selezionati.
 - Mappare colonne→proprietà, tipo record→classi, codici/valori categoriali→concetti di vocabolario. Conservare codice originale, concetto e versione.
@@ -150,6 +178,8 @@ Le attività possono svilupparsi in parallelo, ma i gate di uscita non possono e
 
 ### R4 — Profilo nativo e anteprima del risultato
 
+**Base da riusare:** LinkedPropertyReconciler, preview/evidence e V35 già installati, preparatore/proposta20regole di PR38. Il residuo è compatibilità XSD, vincoli/configurazione esatta, pubblicazione e collaudo; non una nuova implementazione della riconciliazione.
+
 - Partire dalla configurazione completa dell'owner; aggiungere esclusivamente il delta necessario. Conservare authorityOrder, datatype, accessLabel, identità, geometria, contratto temporale e opzioni sconosciute.
 - Applicare la specifica [LINKED_OBJECT_PROPERTY_RECONCILIATION_V1](https://github.com/GioNob/ouf-deploy/blob/83e2e85a0ae4107ba52486de7bdcbfe4502761cc/docs/LINKED_OBJECT_PROPERTY_RECONCILIATION_V1.md).
 - La proposta corrente SINGLE/EXACT_TYPED/SOURCE_INTERVAL deriva dal default conservativo approvato e dai soli intervalli già disponibili: non è un'affermazione di cardinalità ontologica. Verificare eventuali vincoli contrari prima di pubblicare.
@@ -162,18 +192,22 @@ Le attività possono svilupparsi in parallelo, ma i gate di uscita non possono e
 
 ### R5 — Pubblicare senza acquisizioni implicite
 
+**Base da riusare:** clone/validazione/review/attivazione Onboarding; PATCH dello stato fonte con ETag e attore HUMAN; sourceStatus nel feed; DISABLED nel decode/reconcile Ingestion; lease e snapshot già testati. PAUSE/RESUME di una run non equivale al blocco preventivo della fonte.
+
 Problema provato: nel runtime Ingestion esaminato, MANAGED implica one-shot; una nuova publicationId può rendere la fonte nuovamente dovuta anche se la precedente acquisizione è consumata. triggerOnce=null non è una protezione.
 
 - Esplicitare tre intenzioni: prima acquisizione del nuovo file, sola modifica di configurazione, riacquisizione deliberata.
 - Prima del publish, rileggere pubblicazione/schedule/lease e impedire race con run già in corso; le run conservano il bundle fissato all'avvio.
-- Per il caso corrente, progettare e qualificare un **blocco nativo persistente dell'ammissione per la sola fonte** se serve pubblicare senza riacquisire. È lavoro da verificare/implementare, non un flag già provato disponibile.
-- Il blocco deve sopravvivere a reconcile, riavvio e cambio pubblicazione; avere controllo di versione e rilascio HUMAN esplicito per la precisa acquisizione. Non si falsifica un consumed checkpoint e non si arresta l'intero scheduler come soluzione applicativa.
+- Per il caso corrente, qualificare prima la composizione nativa **fonte DISABLED → pubblicazione → fonte ancora disabilitata → riabilitazione deliberata**. Sono già presenti le primitive; manca la prova completa di questo scenario, inclusa l'esposizione governata necessaria. Un nuovo blocco di ammissione si progetta solo se un test dimostra che il controllo esistente non soddisfa il requisito.
+- La protezione deve sopravvivere a reconcile, riavvio e cambio pubblicazione; avere controllo di versione e rilascio HUMAN esplicito per la precisa acquisizione. Verificare lease già attive e conferma owner prima di considerare l'ammissione fermata. Non si falsifica un consumed checkpoint e non si arresta l'intero scheduler come soluzione applicativa.
 - Il flusso nuovo CSV approvato ammette automaticamente il lavoro una tantum previsto, senza attendere un intervallo periodico. “Subito” significa messo in esecuzione/coda appena readiness e capacità lo consentono, non successo sincrono.
 - Usare clone/nuova DRAFT, validazione, ETag, revisione THS e pubblicazione owner secondo i contratti nativi; non riusare challenge consumate. Un timeout ambiguo richiede lettura di riconciliazione, non un'altra clone o activate.
 
 **Uscita:** test di concorrenza/restart e readback dimostrano una sola acquisizione deliberata; una modifica di profilo non riprocessa silenziosamente il file storico.
 
 ### R6 — Ingestion e consegna durevole
+
+**Base da riusare:** parser/pipeline, bundle fissati, outbox, ACK e checkpoint, già presenti nella CI R4a e nelle suite dedicate. Il lavoro riguarda proiezione del rendiconto, prove target e sole lacune di copertura.
 
 - Il run fissa asset/hash, schema, mapping, profilo, semantica e bundle; nessun hot reload.
 - Per ogni riga produrre source identity, payload canonico, classificazione, raw reference e lineage.
@@ -185,6 +219,8 @@ Problema provato: nel runtime Ingestion esaminato, MANAGED implica one-shot; una
 **Uscita:** tutte le righe rendicontate; nessun “import completato” basato sul solo upload o ACK.
 
 ### R7 — Identità, proprietà, merge e commit con revisione guidata
+
+**Base da riusare:** identità governata, ResolutionReviewPackageService, confronto selettivo THS, materializer e commit/provenance. Recuperare la proiezione MCP48/Gateway55 e preservare le comparazioni UDP42/Onboarding43. Il test R4a linked-existing non dimostra il merge di due oggetti preesistenti.
 
 - Gli abbinamenti deterministici seguono esclusivamente la policy approvata; i casi ambigui sono proposte con candidati ed evidenze.
 - Presentare crea nuovo/collega/rinvia secondo le azioni realmente supportate. La decisione collega la source identity e non sostituisce automaticamente i valori.
@@ -199,11 +235,13 @@ Problema provato: nel runtime Ingestion esaminato, MANAGED implica one-shot; una
 
 ### R8 — Grafo urbano e ricerca dal chatbot
 
+**Base da riusare:** materializzatore relazioni UDP e suite PublishedRelationshipBinding/RelationshipMaterializer/GraphQuery. Il manifest corrente contiene già urban.object.related_search e urban.object.search, con capability Gateway per related_search. Verificare discovery, autorizzazione e sufficienza delle proiezioni sul target; non costruire un primo motore grafo o un tool equivalente.
+
 - Verificare identità canonica, classi, proprietà, revisioni e source binding del nodo.
 - Materializzare solo edge previsti da mapping approvati: source, relationIri, target, validità, evidence e provenance devono essere coerenti.
 - Target assente/ambiguo produce stato esplicito e ripresa governata; non un edge verso il candidato più vicino per intuizione.
 - Verificare deduplica e storia degli edge; non cancellare relazioni perché una colonna non è presente senza il relativo contratto.
-- Riconciliare API UDP, binding Gateway, autorizzazioni e tool MCP necessari: ricerca oggetti, lettura dell'oggetto, provenienza e navigazione relazionale limitata. Le API GraphApi esistenti non provano la loro accessibilità MCP.
+- Riconciliare API UDP, binding Gateway, autorizzazioni e tool MCP esistenti: object.search e related_search sono già a catalogo. Verificare se lettura dell'oggetto, provenienza e navigazione richiesta sono completamente servite; aggiungere solo proiezioni mancanti. Manifest/API presenti non provano discovery o successo sul target per ogni principal.
 - Una nuova ricerca deve ritrovare i dati effettivi, non ripetere il testo del CSV o la cache della conversazione.
 - Mostrare anche conflitti, dati parziali e ritardi di materializzazione quando autorizzati; accesso applicato a oggetti, proprietà, edge e conteggi.
 - Se il CSV non giustifica alcuna relazione, dichiarare zero edge attesi per quella fonte. Provare comunque il ramo grafo con una fixture relazionale esplicita e approvata, senza alterare Teatri per fabbricare collegamenti.
@@ -211,6 +249,8 @@ Problema provato: nel runtime Ingestion esaminato, MANAGED implica one-shot; una
 **Uscita:** query per classe/proprietà e almeno un percorso relazionale previsto dalla fixture risultano corretti, tracciabili e senza fuga di dati.
 
 ### R9 — Secondo import, recovery e operatività duratura
+
+**Base da riusare:** RunLifecycleService, recovery HUMAN con budget durevole, fencing e quarantena; tool MCP ingestion.status/history e operations.incidents/explain/summary. Il residuo è la qualifica end-to-end, inclusa la vera seconda acquisizione dello stesso CSV.
 
 Qualificare separatamente:
 1. Ripetizione della stessa richiesta con la stessa chiave: stesso esito, nessun duplicato.
@@ -228,6 +268,8 @@ Applicare la [policy di resilienza v3](OUF_RESILIENCE_POLICY.md): retry solo tra
 **Uscita:** l'utente può allontanarsi e poi chiedere “a che punto siamo?” ottenendo stato, incidenti e prossima azione corretti. Le notifiche opzionali non sostituiscono la consultazione persistente.
 
 ### R10 — Accettazione da due client e rilascio
+
+**Base da riusare:** harness R4a con MCP reale e suite owner/Gateway/picker. Aggiornare pin e ampliare solo i rami mancanti; il passaggio successivo è la prova sul sistema installato con identità/Gateway reali e due client.
 
 - Eseguire l'intero percorso su due client MCP indipendenti: uno con sole capacità base e collegamenti web, uno con UI incorporata se disponibile.
 - Usare una conversazione nuova e un CSV di collaudo governato; nessuna conoscenza nascosta del client, prompt locale obbligatorio, script VPS o SQL nel percorso utente.
@@ -285,7 +327,7 @@ Gli ID PLAN-CSV sotto sono identificatori locali del piano. Non sostituiscono gl
 
 ## 8. Metodo di esecuzione e CI/CD
 
-Per ogni pacchetto: requisito PET/spec → modifica nei repository owner → test di contratto/unitari appropriati → integrazione con identità e Gateway → pacchetto immutabile/scansione → preparazione operativa completa → eventuale decisione HUMAN necessaria → distribuzione → readback target → test funzionale → aggiornamento stato.
+Per ogni pacchetto: requisito PET/spec → codice, branch e test esistenti → evidenza riusabile e gap preciso → eventuale delta nel repository owner → test pertinenti → integrazione della coorte con identità e Gateway → pacchetto immutabile/scansione → preparazione operativa completa → decisione HUMAN richiesta dal contratto → distribuzione → readback target → test funzionale → aggiornamento stato. Se il gap è solo di prova o configurazione, non aprire un progetto di reimplementazione.
 
 Usare il runner VPS esistente in ouf-deploy per le verifiche e operazioni per cui dispone del trasporto autorizzato. La sua presenza non dimostra privilegi per database o deploy. Non aggirare sudo/owner/IAM con container o credenziali alternative.
 
@@ -301,7 +343,7 @@ Evidenze separate, per ciascun requisito:
 
 Non elevare uno stato sulla base dello stato precedente. CI verde non implica installazione; installazione non implica regole pubblicate; pubblicazione non implica successo dei dati.
 
-Le stime di calendario vanno costruite dopo R0/R1, quando risultano dimensionati gap MCP, blocco nativo di ammissione e copertura delle relazioni. Il piano non attribuisce tempi certi a diagnosi ancora aperte.
+Le stime di calendario vanno costruite sul residuo dell'audit: integrazione delle proiezioni esistenti, mapping dei vocabolari, qualifica del controllo fonte e copertura target/client. Il piano non attribuisce tempi certi a diagnosi ancora aperte.
 
 ## 9. Estensione successiva ad API, altri file e layer
 
@@ -314,10 +356,10 @@ Le API verticali non richiedono che un chatbot resti connesso: scheduler e run s
 
 ## 10. Ordine operativo immediato
 
-1. Consolidare R0: integrazione delle correzioni già qualificate, piano di aggiornamento e lettura corrente completa; diagnosi mirata del 403.
-2. Avviare R1 con una matrice effettiva tool→capability→owner→route→stato, includendo i passi oggi non interamente disponibili da chat.
+1. Usare l'audit dei sette repository come baseline di riuso; consolidare R0 con correzioni già qualificate, piano di aggiornamento e lettura corrente completa; diagnosi mirata del403.
+2. Riconciliare le proiezioni MCP/Gateway già sviluppate, preservando la linea installata, e verificare la matrice tool→capability→owner→route→stato. Completare solo i collegamenti mancanti.
 3. Chiudere R4/R5 prima di pubblicare le 20 regole: vincoli verificati e acquisizione esplicita, nessun replay storico.
-4. Completare R6–R8 con input nuovi controllati e revisione guidata: rendiconto, proprietà, grafo e ricerca.
+4. Riusare la pipeline e la CI R4a per R6–R8; qualificare i delta del profilo con input controllati, quindi rendiconto, proprietà, grafo e ricerca sul target. Completare il mapping valori→vocabolari di R3 con fixture appropriata.
 5. Eseguire R9: seconda acquisizione deliberata, fault/recovery e baseline Cinema.
 6. Eseguire R10 da due client e chiudere solo i criteri effettivamente provati.
 
@@ -325,6 +367,7 @@ Il lavoro successivo non riparte dal vecchio upload e non riapre le 11 decisioni
 
 ## 11. Riferimenti ed evidence
 
+- [Audit repository e matrice di riuso](CHATBOT_CSV_REPOSITORY_AUDIT_20261017.md), [evidenza strutturata](../evidence/chatbot-csv-reuse-audit-20261017.json), [CI integrata già riuscita](https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/38534866913).
 - [Specifica proprietà approvata, commit83e2e85](https://github.com/GioNob/ouf-deploy/blob/83e2e85a0ae4107ba52486de7bdcbfe4502761cc/docs/LINKED_OBJECT_PROPERTY_RECONCILIATION_V1.md).
 - [Roadmap storica 8+6](CHATBOT_CSV_ROADMAP.md): cronologia da preservare, stato corrente da leggere nelle evidenze più recenti.
 - [Preparazione profilo e rischi scheduler, commit5b33cf0](https://github.com/GioNob/ouf-deploy/blob/5b33cf042bd6877187aa234ec8b5933df65ba7df/docs/LINKED_PROPERTY_ACTIVATION_PREPARATION_20261017.md).
