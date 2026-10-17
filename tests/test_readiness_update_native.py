@@ -59,7 +59,7 @@ class NativeEndToEnd(unittest.TestCase):
   self.addCleanup(lambda:[self.cli('rm','-f',cid)for cid in reversed(created)])
   self.cli('pull','python:3.13-alpine')
   pinned=self.cli('image','inspect','python:3.13-alpine','--format','{{index .RepoDigests 0}}')
-  build=root/'build';build.mkdir(mode=0o700);(build/'Dockerfile').write_text('FROM '+pinned+'\nLABEL org.opencontainers.image.revision="'+'c'*40+'"\n')
+  build=root/'build';build.mkdir(mode=0o700);(build/'Dockerfile').write_text('FROM '+pinned+'\nLABEL org.opencontainers.image.revision="'+'c'*40+'"\nUSER 0:0\nWORKDIR /\n')
   self.cli('build','--quiet','--tag',image,str(build))
   image_id=self.cli('image','inspect',image,'--format','{{.Id}}');archive=root/'image.tar';self.cli('save','-o',str(archive),image);archive.chmod(0o600)
   archive_hash=hashlib.sha256(archive.read_bytes()).hexdigest()
@@ -71,6 +71,8 @@ class NativeEndToEnd(unittest.TestCase):
   tagged.chmod(0o600)
   with tagged.open('rb')as f:audit=image_custody.archive(f,derived['derivedArchiveSha256'],image_id,'c'*40)
   if containerd:audit['nativeIdentity']=image_custody.native_identity(audit)
+  inspected=json.loads(self.cli('image','inspect',image_id))[0]
+  self.assertEqual({k:inspected['Config'].get(k)for k in image_custody.FIELDS},{k:audit['imageConfig'].get(k)for k in image_custody.FIELDS})
   sock=Path('/var/run/docker.sock').resolve();s=sock.stat();engine=Engine(str(sock),(s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode&0o777))
   def create(name,ip,program,binds=None):
    request={'Image':image_id,'User':'0:0','Entrypoint':None,'Cmd':['python3','-B','-u','-c',program],
