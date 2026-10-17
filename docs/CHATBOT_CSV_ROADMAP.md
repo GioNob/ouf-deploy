@@ -1,4 +1,11 @@
 
+## Qualifica finale e prossimo riscontro — 18 ottobre 2026
+
+**Stato runtime invariato: tecniche 8/8, funzionali 2/6; 12 righe committate e una quarantena tecnica dopo CREATE_NEW risolto.** [Qualifica finale 39073880515](https://github.com/GioNob/ouf-deploy/actions/runs/39073880515) PASS: 4 test, zero skip su PostgreSQL 17 reale e sintassi del launcher verificata. La readiness del database di test ora attende il server TCP finale, evitando la finestra del socket provvisorio d'inizializzazione. Il codice lettore consegnato è quello già qualificato al commit `37e7150ca150ab861ee1b5794e8091b8776cca51`; il launcher è fissato al commit `ce0c86d727040441fe0cac412896232c93e81095` e all'impronta documentata nella [prova normalizzata](csv-post-resolution-continuity-qualified-20261018.json).
+
+Anche [CI completa UDP 39073660012](https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39073660012) PASS per tutti e quattro i job (Java/PostgreSQL, supply chain, disaster recovery, prestazioni). La PR UDP 45 è pronta per revisione, sovrapposta alla PR 44, senza dichiarare installazione. Il comando della diagnosi è stato consegnato all'utente per la sessione VPS esistente. **In attesa dell'output host; nessuna ripresa del job eseguita dall'agente.**
+
+
 ## Qualifica della continuità e diagnosi mirata — 18 ottobre 2026
 
 [UDP PR 45](https://github.com/GioNob/ouf-udp-object-resolution/pull/45) conserva il profilo delle proprietà nel percorso pubblicato prima della review HUMAN. Test integrati APPROVE e CREATE_NEW verificano la conferma THS, la ripresa del medesimo job, binding, contributi, osservazione/revisione e assenza di duplicati al tick successivo. Configurazione pubblicata e reference gate sono confini simulati dichiarati; PostgreSQL e servizi di dominio reali. [Run 39073660064](https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39073660064): **95 test PASS, zero errori/fallimenti/skip**, inclusi 18 della suite di candidati. Questo fix è separato dal blocco dei riferimenti e non è ancora installato.
