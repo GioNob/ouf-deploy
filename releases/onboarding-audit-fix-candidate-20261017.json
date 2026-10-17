@@ -5,7 +5,7 @@
     {
       "module": "onboarding",
       "repository": "ouf-source-onboarding",
-      "commit": "e02def25b47f653a1800db854594c73fadd9ba87",
+      "commit": "34488428ac8eee6b919cb1b5982cf9ba62361292",
       "kind": "DOCKER_SAVE"
     }
   ],
