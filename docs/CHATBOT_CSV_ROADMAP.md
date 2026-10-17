@@ -1,3 +1,7 @@
+## Aggiornamento preparazione rilascio — 18 ottobre 2026
+
+Tecniche **8/8**, funzionali **3/6**. La custodia amministrativa delle immagini UDP/MCP candidate è confermata dal [log target ricevuto](../evidence/chat-recovery-root-custody-target-20261018.json). Nessuna immagine importata, nessun backup o aggiornamento dei servizi; piano non ancora eseguibile. Questo avanzamento riguarda la preparazione del rilascio e non modifica le tappe funzionali. Vedere lo [stato corrente e i passaggi residui](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
+
 ## Tappa funzionale3 completata sul target — 18 ottobre 2026
 
 **Stato corrente: tecniche8/8; funzionali3/6;13/13 righe committate;13 oggetti distinti; zero quarantene residue per la sorgente di collaudo.** Questo esito supera i precedenti checkpoint2/6 e12/13, conservati sotto come storia.

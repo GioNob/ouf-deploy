@@ -1,3 +1,13 @@
+## Current release checkpoint — root custody complete, execution pending
+
+Technical **8/8**, functional **3/6**. The latest operator-supplied target receipt proves root custody of both candidate images. [Recorded receipt](../evidence/chat-recovery-root-custody-target-20261018.json). Review SHA256 `f4fb8b687dac1733ee41c17c4aa80fa3d4b875737e996289474ae1d4003dfd61`. This supersedes the pending root-custody statements in the history below. No image import, backup, service/database mutation or runtime authority has occurred. `readyForExecution=false` remains correct.
+
+A fresh OUF MCP system-status call returned HEALTHY, actionRequired=false, partial=false. This is current MCP operational health, not evidence of candidate installation or end-to-end acceptance.
+
+The next release must preserve the exact prepared input/root review bindings, verify current generations and effective native Flyway configuration, obtain the existing native HUMAN authority, stop the reviewed writers, verify a private backup, apply UDP V35→V36 through native startup and replace MCP code without rerunning its unchanged migrations. Preserve Onboarding, grants, mounts and reprocessing metadata. Reconcile ambiguous effects against the durable journal; never repeat mutations on a timeout. Existing V34→V35 and MCP migration-13 executors are not interchangeable with this release.
+
+Readiness differs by owner: UDP uses the reviewed Spring readiness response (HTTP 200 and JSON status UP); MCP uses its reviewed readiness endpoint (HTTP 204 with an empty body). The response classifier in `tools/chat_recovery_update/readiness.py` is a pure component for the pending executor, with bounded payloads, explicit transient statuses and Retry-After parsing. It does not issue requests, implement durable retry scheduling, grant authority or deploy anything. Integration into the sealed executor remains pending; isolated tests are not target acceptance.
+
 # CSV chat-only completion: qualified components and remaining gates
 
 Evidence update: 2026-10-18 Europe/Rome.
