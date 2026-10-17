@@ -1,3 +1,9 @@
+# Pubblicazione Resolution THS qualificata; attende APPROVO sul VPS — 2026-10-17
+
+**Tecniche8/8; funzionali2/6.** [Procedura tre route](../releases/RESOLUTION_THS_ROUTES_20261017.md), sorgente `90c59b5d437ce85fbd8d72d72024b6bf914dca7d`, CI39025774179/job117376342948:21PASS,0skip. Package hashc5e56f24…; launcherSHA1e605d83…. Nessuna azione target eseguita dalla CI. Correzione limitata a tre route nuove, nessun import/grant/DB/container/decisione UDP; pagina per ultima. Conserva mappe complete e sessione worker corrente248+68≤316, verifica Spring JSON, richiede nuova revisione HUMAN e due firme. Timeout PUT blocca su claim senza replay; riconciliazione readonly qualificata con namespace reale e Admin fixture. Caso/source nel deep link resta gap UX; link comune protetto da login/tenant. Milestone3 resta aperta:13ACK,1materializzato e12quarantene dall'ultimo reader.
+
+---
+
 # Reader Resolution THS qualificato; pronto per dati configurazione — 2026-10-17
 
 **Tecniche8/8; funzionali2/6.** Comando successivo scripts/launch-resolution-ths-bindings-read-20261017.sh, SHA256 a9d5670a54087e2436ca46ff8ceb706d82184d3228775ea7b46932b8c84f44aa. Sorgenti f771762981c79c24754e584ee0201b2734aa9b2f: reader c1a6ca54dbf16cc7abf2e33218a1ca26f45a34ca02eeeb3ba55ecd1dfef6e724 e gateway custody5e7182d8… confrontati byte per byte remoto. Qualifica GitHub39024872193/job117373777165:4 test PASS,0skip con custodia root reale/no-follow/stale binding, parser letterale/ambiguità/env/indici, nessun segreto stampato e riconoscimento route catch-all. Non prova caricamento effettivo Spring, route live né disponibilità target della pagina.
