@@ -1,3 +1,19 @@
+# Resolution: comando UDP qualificato e pronto per esecuzione operatore — 2026-10-17
+
+**Tecniche8/8; funzionali2/6.** Correzione applicativa UDP a4d432d7… gia qualificata; preparato il rollout del solo UDP con sorgente executor `198d0bd9c2968f1fa5bfa61d1c7da8efab2c13bb`. Profile installation-specific `releases/udp-resolution-update-selection-20261017.json`: baseline UDP b49c0d6f…, candidato artifact12101592347, predecessore Resolution q91d2ut7/journal37/source d830, tre route conservate. I valori dell'installazione rimangono nel caso versionato e negli input conservati, senza nuovi default di rete/issuer/tenant.
+
+CI [39035231628](https://github.com/GioNob/ouf-deploy/actions/runs/39035231628), job117403587830: **23PASS,0skip**. Docker reale/root e firme dei due ruoli esistenti, archivio con prefisso UDP/hash completo/identita nativa senza tag, migrazioni identiche, sostituzione con IP/MAC/mount/ambiente conservati, peer e route immutati, autorita breve/scaduta/revocata, outage, doppia invocazione e risposta mutativa persa senza replay. Fixture HTTP e dati sintetici: non sono prova di accesso browser/owner target.
+
+La preparazione verifica la catena review/plan/scope/authority/effects del rollout q91 e la generazione attuale dei peer; legge l'immagine UDP corrente confrontandola con l'audit conservato. Verifica/copia tutti i byte prima di OAuth e APPROVO. Se necessario riapre esplicitamente il login, preservando cumulativo e vecchio journal; un refresh permanentemente rifiutato non viene ripetuto, un esito ambiguo/transitorio non apre login successori. APPROVO autorizza solo import immagine e lifecycle UDP, massimo900s e un tentativo per effetto. Zero nuovi worker policy, Gatewaywrite, migrazioni nuove, grant o decisioni di identita. Un esito ambiguo blocca per riconciliazione.
+
+Delivery [39035578424](https://github.com/GioNob/ouf-deploy/actions/runs/39035578424): **3PASS**,46file checksum/manifest, rifiuto byte modificati, esatto inoltro archivio e download prima di sudo/login. Launcher pubblicato `0b35f5b77809cf2c3b3f3446a25fbea09e0ea24e`, SHA256 **6f053134dca15c5ebc9464db017bbdd8d4868879a9a6c04f73862da3502d1b8a**, byte riletti da GitHub e ricontrollati. Manifest commit9c0c4b44…, SHA72069684…. Download313246590byte senza aprire finestre OAuth; eventuale copia locale viene riusata solo dopo verifica esatta.
+
+**Target non ancora modificato da questo rollout.** Atteso operatore sul VPS: login/APPROVO solo dopo preparazione, poi `OUF_UDP_RESOLUTION_UPDATE_RESULT`. Il processo termina al risultato; non lascia worker policy da mantenere un'ora. Dopo serve rilettura della pagina con sessione browser e policy owner correnti, prima di qualunque scelta di identita. Il token policy precedente puo essere scaduto: nessun refresh/grant viene implicitamente avviato per dimostrare readiness. Casi12in quarantena e milestone3 non avanzano su CI o sul solo health UP.
+
+Evidenza `releases/udp-resolution-update-native-qualification-20261017.json`. Profilo conservato su singolo host; nessuna qualifica distribuita multi-host o accettazione PET generale dichiarata.
+
+---
+
 # Resolution: correzione contesto owner qualificata, non installata — 2026-10-17
 
 **Tecniche8/8; funzionali2/6.** Il readback target `ouf.resolution-owner-policy-metadata-read.v1` mostra bundle40: entrambi i grant HUMAN Resolution sono validi, subject corretto, resourceType nullo e attributi risorsa vuoti. Non è un mismatch capability/resolution-issues. I grant vincolano però tutte5etichette e tutti4livelli; il valutatore SDK richiede i rispettivi attributi, assenti nel vecchio contesto servlet.

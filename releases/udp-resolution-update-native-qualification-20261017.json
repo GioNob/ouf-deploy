@@ -31,5 +31,15 @@
   "completedTechnicalPhases": 8,
   "functionalMilestonesProven": 2,
   "installationSpecific": true,
-  "independentMultiHostQualificationProven": false
+  "independentMultiHostQualificationProven": false,
+  "delivery": {
+    "commit": "0b35f5b77809cf2c3b3f3446a25fbea09e0ea24e",
+    "runId": 39035578424,
+    "jobId": 117404579373,
+    "tests": 3,
+    "conclusion": "success",
+    "launcherSha256": "6f053134dca15c5ebc9464db017bbdd8d4868879a9a6c04f73862da3502d1b8a",
+    "remoteLauncherBytesRechecked": true,
+    "all45SourceBlobsMatchQualifiedRef": true
+  }
 }
