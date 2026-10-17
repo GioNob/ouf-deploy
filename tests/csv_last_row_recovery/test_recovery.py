@@ -164,4 +164,32 @@ class Protocol(unittest.TestCase):
   self.assertEqual(json.loads(sql(p.job_query(self.one,'another-tenant')))['jobs'],[])
   sql("update ouf_udp.materialization_job set state_version=12")
   with self.assertRaises(Exception):p.verify_job(json.loads(sql(p.job_query(self.one,'tenant')))['jobs'],self.row)
+
+ def test_explicit_native_denial_is_one_read_without_automatic_retry(self):
+  for status in(401,403):
+   client=Mock();client.request.side_effect=ValueError('NATIVE_RECOVERY_HTTP_'+str(status))
+   with self.assertRaises(ValueError):retry.prepare(client,[self.one],'binding',self.now+200)
+   self.assertEqual(client.request.call_count,1)
+ def test_only_one_runtime_consent_is_present_in_composed_entry(self):
+  import ast
+  tree=ast.parse((ROOT/'tools/csv_last_row_recovery/run.py').read_bytes())
+  calls=[n for n in ast.walk(tree)if isinstance(n,ast.Call)and isinstance(n.func,ast.Attribute)and n.func.attr=='terminal_consent']
+  self.assertEqual(len(calls),1)
+ def test_worker_authority_accepts_only_preserved318_and126_scope(self):
+  worker={'schema':'ouf.policy-token-governed-worker-session.v1','predecessorGrantAttempts':318,'maximumCumulativeGrantAttempts':444,
+   'policy':{'delays':[5,15,60,300,900],'max_attempts':126,'max_elapsed':3600,'attempt_timeout':30,'jitter':.2},
+   'automaticBudgetRenewalAllowed':False,'consumedClaimReplayAllowed':False,'predecessorFenceBinding':{},'reviewHash':'review'}
+  owner={'sourceClosureHash':'c'*64,'workerSessionScopeHash':p.digest(worker),
+   'operation':'INSTALL_TOKEN_ONLY_GOVERNED_CONTINUATION_NO_FIRST_GRANT','initializeJournalOnlyIfAbsent':True,
+   'automaticReplayAllowed':False,'applicationAcceptanceGranted':False,'ownerBindingHash':'owner'}
+  scopes={'policyTokenFiniteWorkerSession':worker,'policyTokenOwnerInstallation':owner,
+   'tokenOwnerRuntime':{'operation':'RENEW_EXISTING_POLICY_READ_CREDENTIAL','ownerBindingHash':'owner',
+    'automaticBudgetResetAllowed':False,'legacyWriterMustBeMasked':True,'credentialReestablishmentRequired':True},
+   'semanticFunctionalRuntime':{'reviewHash':'review'}}
+  authority.scopes_valid('POLICY_TEST_SESSION',scopes,'c'*64)
+  for key,value in(('predecessorGrantAttempts',317),('maximumCumulativeGrantAttempts',445)):
+   changed=copy.deepcopy(scopes);changed['policyTokenFiniteWorkerSession'][key]=value
+   changed['policyTokenOwnerInstallation']['workerSessionScopeHash']=p.digest(changed['policyTokenFiniteWorkerSession'])
+   with self.assertRaises(Exception):authority.scopes_valid('POLICY_TEST_SESSION',changed,'c'*64)
+
 if __name__=='__main__':unittest.main(verbosity=2)

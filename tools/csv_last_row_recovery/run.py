@@ -57,6 +57,10 @@ def main(prepared,sources,closure,case,context,read,ns,emit):
   found=preflight.sql_fact(prepared,ns,closure['executables']['docker'],'udp',permissions.job_query(one,selection['tenant']))
   permissions.verify_job(found['jobs'],private['job'])
  guard_apps();guard_job()
+ from tools.csv_materialization_recovery import readback
+ migration_facts=preflight.sql_fact(prepared,ns,closure['executables']['docker'],'udp',readback.acquisition_query('udp',selection['tenant']))
+ readback.validate_history(migration_facts,update_plan['database']['expected']['udp'])
+ require(migration_facts['migrations'][-1]['version']=='35','EXPECTED_UDP_MIGRATION35_REQUIRED')
  future=private['workerReview'];compiled=private['workerScope'];prior=private['workerPredecessorRecords'];journal=Path(prior['journalPath'])
  records={n:read(journal/n,131072,prior['hashes'][n])for n in('recovery.json','owner-session.json','owner-admission.json','owner-status.json')}
  first=read(journal/'owner-first-grant.json',16384,records['recovery.json']['firstGrantReceiptHash'])
@@ -153,6 +157,8 @@ def main(prepared,sources,closure,case,context,read,ns,emit):
   from tools.csv_materialization_recovery import readback
   whole=preflight.sql_fact(prepared,ns,closure['executables']['docker'],'udp',readback.acquisition_query('udp',selection['tenant']))
   upstream=preflight.sql_fact(prepared,ns,closure['executables']['docker'],'ingestion',readback.ingestion_query('ingestion',selection['tenant']))
+  readback.validate_history(whole,update_plan['database']['expected']['udp'])
+  require(whole['migrations'][-1]['version']=='35','UDP_MIGRATION_CHANGED_DURING_RECOVERY')
   ledger=readback.row_ledger(whole);linked=readback.upstream_matches(upstream,whole)
   stage3=complete and linked and ledger['allThirteenMaterializedProven']and ledger['confirmedElevenMaterialized']and ledger['originalObjectRetained']
   retry.document(context,'materialization-proof.json',{'singleJob':proof,'rowLedger':ledger,'upstreamHandoffsAndLineageMatch':linked,
