@@ -28,7 +28,7 @@ class Delivery(unittest.TestCase):
   self.assertIsInstance(argv.elts[4],ast.Call);self.assertEqual(argv.elts[4].args[0].id,'archive')
   self.assertIn('source=Path(sys.argv[1]);archive=Path(sys.argv[2])',body)
  def test_candidate_download_precedes_root_and_login_is_not_launched_by_shell(self):
-  self.assertIn('18589706434abdeec6568ae23cdb4e4b88e81825e575a626320d60e3ddba7af5',self.script)
-  self.assertLess(self.script.index('actions/artifacts/12102614320/zip'),self.script.index('sudo /usr/bin/python3'))
+  self.assertIn('9c6e549ea643fa20f76c0d61c9a2353219ccec23eff784f320db1ec68b617afb',self.script)
+  self.assertLess(self.script.index('actions/artifacts/12105197726/zip'),self.script.index('sudo /usr/bin/python3'))
   self.assertNotIn('grant_type=',self.script);self.assertIn('command -v gh || true',self.script)
 if __name__=='__main__':unittest.main()
