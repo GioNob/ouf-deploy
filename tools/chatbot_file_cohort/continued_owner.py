@@ -4,6 +4,7 @@ The independent owner installer keeps its original closed dependency graph.
 This continuation is included only in the authenticated full cohort closure.
 """
 import copy
+import json
 import dataclasses
 import os
 from pathlib import Path
@@ -192,7 +193,8 @@ class GovernedSemanticOwnerContinuation:
             and transport.trust_digest()==value['tlsTrustSetHash'],'CURRENT_RETAINED_IAM_TRUST_REQUIRED')
         credential=CredentialFile(Path(self.roots['ownerCredential']['path'])/'client-secret')
         self.first=RetainedGrantReference(binding,credential,profile,transport)
-        self.policy=Policy(max_attempts=128,max_elapsed=3600,attempt_timeout=30)
+        self.policy=Policy(max_attempts=(review['proposedFiniteBudget']['maximumNewTokenGrantAttempts']
+            if review.get('schema')=='ouf.chatbot-semantic-functional-session-review.v2'else 128),max_elapsed=3600,attempt_timeout=30)
         self.context=fingerprint({'operation':review['logicalOperation'],'reviewHash':fingerprint(review)})
         self.generation=fingerprint(review['registryGeneration']);self.interval=60
         self.worker_scope=compile_governed_session(review,records,first_receipt,
@@ -262,7 +264,9 @@ class GovernedSemanticOwnerContinuation:
         fence=self.worker_scope['fenceBinding'];path=Path(fence['path'])
         with protected_directory(path.parent)as directory:
             # Exclusive stable-scope claim survives failure; never auto replace.
-            OwnerInstallation._write_once(self,directory,path.name,evidence.encoded(fence['value']))
+            if self.review.get('schema')=='ouf.chatbot-semantic-functional-session-review.v2':
+                advance_worker_fence(self.action,self.worker_scope,self.review['predecessorJournalDirectory'])
+            else:OwnerInstallation._write_once(self,directory,path.name,evidence.encoded(fence['value']))
         self.guard(fence_required=True)
         ProtectedTokenSourceStage(self.manifest,self.files,self.action.authority,self.action.raw).stage()
         self.guard(fence_required=True);wall,mono=self.clock()
@@ -484,3 +488,36 @@ def token_only_session_main(prepared,sources,closure,proposal,proposal_binding,c
         stop.set();timer.cancel()
         for sig,handler in previous.items():signal.signal(sig,handler)
     emit('OUF_TOKEN_SESSION_ENDED=NO_AUTOMATIC_RESTART_OR_BUDGET_RESET')
+
+
+def advance_worker_fence(action,scope,predecessor_directory):
+ require=evidence.require;digest=fingerprint;encoded=evidence.encoded
+ from tools.semantic_policy_token_owner.installed_owner import read_private,unique
+ from iam_owner_action import publish
+ require(type(action)is AggregateAction,'REAL_SIGNED_FENCE_HANDOFF_AUTHORITY_REQUIRED')
+ action.guard('policyTokenFiniteWorkerSession',scope)
+ previous=scope.get('predecessorFenceBinding');following=scope['fenceBinding']
+ require(type(previous)is dict and previous.get('path')==following.get('path')
+  and previous['value']['logicalOwnerScopeHash']==following['value']['logicalOwnerScopeHash']
+  and previous['value']['journalPath']==str(predecessor_directory)
+  and previous['value']['reviewHash']!=following['value']['reviewHash'],'SAME_LOGICAL_FENCE_SUCCESSOR_REQUIRED')
+ path=Path(following['path']);prior=Journal(predecessor_directory)
+ with prior.invocation(),protected_directory(path.parent)as directory:
+  old=read_private(directory,path.name,16384)
+  require(json.loads(old,object_pairs_hook=unique)==previous['value'],'PREDECESSOR_GLOBAL_FENCE_CHANGED')
+  # The signed scope binds the complete parent records. Check terminality under
+  # its actual invocation lock before consuming the one-use handoff claim.
+  with protected_directory(predecessor_directory)as predecessor:
+   row=json.loads(read_private(predecessor,'recovery.json',131072),object_pairs_hook=unique)
+   require(row.get('state')=='CANCELLED'and row.get('reason')=='CANCELLED_BY_OWNER'
+    and digest(row)==scope['predecessorRecordHashes']['recovery.json'],'EXACT_CANCELLED_WORKER_BEFORE_HANDOFF_REQUIRED')
+  claim_name=path.name+'.successor-'+digest(previous['value'])+'.claim.json'
+  claim={'schema':'ouf.policy-token-fence-handoff-claim.v1','authorityHash':action.authority_hash,
+   'predecessor':previous,'successor':following,'budgetReset':False,'automaticReplayAllowed':False}
+  require(publish(directory,claim_name,encoded(claim)),'WORKER_HANDOFF_ALREADY_CLAIMED_RECONCILIATION_REQUIRED')
+  temporary=path.name+'.next-'+digest(following['value'])
+  require(publish(directory,temporary,encoded(following['value'])),'FENCE_HANDOFF_TEMPORARY_ALREADY_PRESENT')
+  action.guard('policyTokenFiniteWorkerSession',scope)
+  require(read_private(directory,path.name,16384)==old,'FENCE_CHANGED_BEFORE_ATOMIC_HANDOFF')
+  os.replace(temporary,path.name,src_dir_fd=directory,dst_dir_fd=directory);os.fsync(directory)
+  require(json.loads(read_private(directory,path.name,16384),object_pairs_hook=unique)==following['value'],'FENCE_HANDOFF_READBACK_UNPROVEN')

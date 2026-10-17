@@ -35,7 +35,7 @@ def compile_governed_session(review,records,first,policy,context,generation,inte
     Counts derive from bound retained records, never from a schema suffix.
     Legacy, unknown earlier accounting remains explicitly unreconciled.
     """
-    check(type(review)is dict and review.get('schema')=='ouf.chatbot-semantic-functional-session-review.v1'
+    check(type(review)is dict and review.get('schema')in('ouf.chatbot-semantic-functional-session-review.v1','ouf.chatbot-semantic-functional-session-review.v2')
         and review.get('readyForExecution')is False and review.get('runtimeAuthorityIssued')is False
         and review.get('humanApprovalGranted')is False)
     required={'recovery.json','owner-session.json','owner-admission.json','owner-status.json'}
@@ -61,17 +61,25 @@ def compile_governed_session(review,records,first,policy,context,generation,inte
         and first.get('scopeHash')==session.get('predecessorFirstGrantScopeHash')
         and first.get('bootId')==old.get('bootId'))
     budget=review.get('proposedFiniteBudget');decision=review.get('requiredOwnerDecision')
+    bounded=review['schema']=='ouf.chatbot-semantic-functional-session-review.v2'
+    limit=budget.get('maximumNewTokenGrantAttempts')if type(budget)is dict else None
+    check(type(limit)is int and 1<=limit<=128 and (bounded or limit==128))
+    if bounded:
+        check(type(session.get('maximumCumulativeGrantAttempts'))is int
+            and prior+limit==session['maximumCumulativeGrantAttempts']
+            and review.get('predecessorFenceBinding')==session.get('fenceBinding')
+            and review['predecessorJournalDirectory']==session['fenceBinding']['value']['journalPath'])
     check(type(budget)is dict and budget.get('priorControlledGrantAttempts')==prior
         and budget.get('predecessorWorkerAttempts')==count
-        and budget.get('maximumNewTokenGrantAttempts')==128
-        and budget.get('maximumCumulativeGrantAttempts')==prior+128
+        and budget.get('maximumNewTokenGrantAttempts')==limit
+        and budget.get('maximumCumulativeGrantAttempts')==prior+limit
         and budget.get('maximumSeconds')==3600 and budget.get('renewalIntervalSeconds')==interval==60
         and budget.get('automaticRenewalAllowed')is False
         and decision.get('explicitContinuationAfterOwnerCancellationRequired')is True
         and decision.get('freshAuthenticatedHumanDecisionRequired')is True)
     check(type(policy)is dict and set(policy)=={'delays','max_attempts','max_elapsed','attempt_timeout','jitter'}
         and policy['delays']==[5,15,60,300,900]and type(policy['max_attempts'])is int
-        and 1<=policy['max_attempts']<=128 and type(policy['max_elapsed'])is int
+        and 1<=policy['max_attempts']<=limit and (not bounded or policy['max_attempts']==limit) and type(policy['max_elapsed'])is int
         and type(policy['attempt_timeout'])is int
         and 1<=policy['attempt_timeout']<=policy['max_elapsed']<=3600 and policy['jitter']==.2)
     check(all(type(x)is str and len(x)==64 and all(c in '0123456789abcdef'for c in x)
@@ -86,6 +94,7 @@ def compile_governed_session(review,records,first,policy,context,generation,inte
         'value':{'schema':'ouf.semantic-functional-session-fence.v1','logicalOwnerScopeHash':logical,
             'reviewHash':review_hash,'journalPath':journal,'predecessorWorkerHash':fingerprint(old),'active':True}}
     return {'schema':GOVERNED_SESSION,'controlledHistoryProfile':GOVERNED_HISTORY,
+        **({'predecessorFenceBinding':copy.deepcopy(review['predecessorFenceBinding'])}if bounded else{}),
         'operation':'OPEN_NEW_FINITE_WORKER_AFTER_EXPLICIT_CANCELLED_PREDECESSOR_REVIEW',
         'reviewHash':fingerprint(review),'predecessorRecordHashes':copy.deepcopy(review['predecessorRecordHashes']),
         'predecessorGrantAttempts':prior,'maximumCumulativeGrantAttempts':prior+policy['max_attempts'],
