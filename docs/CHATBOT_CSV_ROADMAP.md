@@ -1,3 +1,5 @@
+> Aggiornamento preparazione proprietà 17 ottobre 2026: **tecniche8/8; funzionali2/6**. Correzioni XSD qualificate nei due moduli; pacchetto firmato [39069142370](https://github.com/GioNob/ouf-deploy/actions/runs/39069142370), 18 test preparatore [39069287155](https://github.com/GioNob/ouf-deploy/actions/runs/39069287155), immagini precedenti verificate sul VPS [39069079580](https://github.com/GioNob/ouf-deploy/actions/runs/39069079580). [Profilo e percorso nativo](LINKED_PROPERTY_ACTIVATION_PREPARATION_20261017.md). Nessuna installazione della correzione, pubblicazione, decisione di identità o ripresa job; nuova pubblicazione MANAGED può riarmare l'acquisizione.
+
 # Linked-property activation preparation — 17 October 2026
 
 **Tecniche8/8; funzionali2/6.** V35 e implementazione generica installate; readback operatore conferma20regole ancora null. Le11decisioni CREATE_NEW materializzate restano conservate; un ulteriore caso resta volontariamente in quarantena. Non ripetere il rollout o quelle decisioni.

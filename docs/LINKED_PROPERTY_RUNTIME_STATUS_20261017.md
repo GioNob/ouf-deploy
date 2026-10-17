@@ -26,3 +26,5 @@ Ingestion derives one-shot behavior from MANAGED, independently of top-level tri
 
 
 La preparazione ha inoltre verificato con successo le immagini correnti via runner VPS: [39069079580](https://github.com/GioNob/ouf-deploy/actions/runs/39069079580), [evidenza](../evidence/linked-property-activation-images-20261017.json). Nessuna lettura fresca di profilo/schedule da questo controllo. Correzione XSD qualificata nei moduli; nuovo pacchetto CI in preparazione, nessuna installazione. Tecniche8/8; funzionali2/6.
+
+Pacchetto compatibilità XSD qualificato: [39069142370](https://github.com/GioNob/ouf-deploy/actions/runs/39069142370), [manifest](../releases/linked-property-compatibility-qualified-20261017.json). Build/scansione/firma/verifica PASS; 18 test offline PASS in39069287155. Nessun aggiornamento target o profilo; i requisiti semantici e l'effetto scheduler rimangono aperti.
