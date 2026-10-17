@@ -12,4 +12,8 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
       - name: Real Ed25519 and TLS IAM worker continuation, native HTTP claims and PostgreSQL17 proof
-        run: sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SQL=1 OUF_TEST_ROOT=/root python3 -B -m unittest discover -s tests -p 'test_csv_native_recovery*.py' -v
+        run: |
+          if ! getent group 10001 >/dev/null; then sudo groupadd --gid 10001 ouf-csv-fixture; fi
+          sudo cp -a "$GITHUB_WORKSPACE" /root/ouf-csv-native-fixture
+          sudo chown -R root:root /root/ouf-csv-native-fixture
+          sudo bash -c "cd /root/ouf-csv-native-fixture && OUF_NATIVE_UIDS=1 OUF_NATIVE_SQL=1 OUF_TEST_ROOT=/root python3 -B -m unittest discover -s tests -p 'test_csv_native_recovery*.py' -v"
