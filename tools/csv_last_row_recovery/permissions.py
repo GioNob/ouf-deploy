@@ -1,9 +1,10 @@
 """Exact native permission and retry intent for one already reviewed durable job."""
-import copy,re,time,uuid
+import copy,json,os,re,shlex,time,uuid
 from datetime import datetime,timezone
 from tools.teatri_materialization_apply.owner import require,digest
 from tools.teatri_materialization_apply.preparation import publish_json
 from tools.chatbot_file_cohort.authorization import ADMIN
+from tools.teatri_materialization_apply.preflight import normal,mounted_file
 CAP='udp.materialization.retry'
 def stamp(value):return datetime.fromtimestamp(value,timezone.utc).isoformat().replace('+00:00','Z')
 def job(row,issue):
@@ -109,3 +110,80 @@ def publish(transport,human,review,approved,decision,context,guard):
  result={'complete':True,'policyRef':current['policyRef'],'policyHash':current['contentHash'],'addedGrants':1,
   'composedReviewHash':digest(approved),'existingGrantsPreserved':True,'capabilitiesPreserved':True,'jobsRetried':0}
  publish_json(context,'permission-publication.json',result);return result
+
+def configured_refresh_properties(actual,root):
+ required=('ouf.authorization.refresh-seconds','ouf.authorization.refresh-seconds')
+ env={};values={}
+ for row in actual['Config'].get('Env')or[]:
+  key,value=row.split('=',1);require(key not in env,'UNIQUE_ENVIRONMENT_REQUIRED');env[key]=value
+ def add(key,value):
+  if type(value)in(str,int,bool):values.setdefault(normal(key),set()).add(str(value))
+ def flatten(obj,prefix='',depth=0):
+  require(type(obj)is dict and depth<16,'BOUNDED_SPRING_JSON_REQUIRED')
+  for key,value in obj.items():
+   path=prefix+'.'+key if prefix else key
+   if type(value)is dict:flatten(value,path,depth+1)
+   else:add(path,value)
+ for key,value in env.items():add(key,value)
+ if env.get('SPRING_APPLICATION_JSON'):flatten(json.loads(env['SPRING_APPLICATION_JSON']))
+ if required==('spring.datasource.url','spring.datasource.username'):
+  for alias,key in(('OUF_SEM_DB_URL',required[0]),('OUF_SEM_DB_USER',required[1])):
+   if env.get(alias):add(key,env[alias])
+ if required==('ouf.authorization.registry-url','ouf.authorization.registry-token-file'):
+  for alias,key in(('REGISTRY_URL',required[0]),('REGISTRY_TOKEN_FILE',required[1])):
+   if env.get(alias):add(key,env[alias])
+ argv=(actual['Config'].get('Entrypoint')or[])+(actual['Config'].get('Cmd')or[])
+ for key in('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','JAVA_OPTS'):argv+=shlex.split(env.get(key,''))
+ for arg in argv:
+  if arg.startswith(('-D','--'))and '='in arg:
+   k,v=arg[2:].split('=',1);add(k,v)
+
+ def one(key):
+  found=values.get(normal(key),set())-set(['']);
+  if not found:return '30' # SDK AuthorizationAutoConfiguration default, pinned in the UDP source.
+  require(len(found)==1,'EXACT_CONFIGURED_RUNTIME_CHANNEL_REQUIRED');return next(iter(found))
+ # Explicit process environment / Spring JSON outrank ordinary application files.
+ # Contradictory visible channels are rejected rather than silently selected.
+ if all(values.get(normal(key),set())-set([''])for key in required):
+  return one(required[0]),one(required[1]),None
+ locations=[v for k,vs in values.items()if k in('springconfiglocation','springconfigadditionallocation','springconfigimport')for v in vs if v]
+ if not locations:return one(required[0]),one(required[1]),None
+ require(len(locations)==1,'ONE_EXPLICIT_RUNTIME_CONFIG_SELECTOR_REQUIRED')
+ location=locations[0].removeprefix('optional:');require(location.startswith('file:')and location.endswith(('.properties','.yaml','.yml'))and ','not in location,'LITERAL_PROPERTIES_CONFIG_REQUIRED')
+ target=location[5:];raw=mounted_file(actual,root,target,262144)
+ require(b'\\'not in raw and b'${'not in raw and b'\0'not in raw,'LITERAL_RUNTIME_CONFIGURATION_REQUIRED');seen=set()
+ if location.endswith('.properties'):
+  for line in raw.decode().splitlines():
+   if not line.strip()or line.lstrip().startswith(('#','!')):continue
+   m=re.fullmatch(r'[ \t]*([A-Za-z0-9_.-]+)[ \t]*[=:][ \t]*([^\r\n]*)',line);require(m is not None,'LITERAL_PROPERTY_REQUIRED')
+   key=normal(m[1]);require(key not in seen,'UNIQUE_RUNTIME_PROPERTY_REQUIRED');seen.add(key);add(m[1],m[2].strip())
+ else:
+  stack=[]
+  for line in raw.decode().splitlines():
+   if not line.strip()or line.lstrip().startswith('#'):continue
+   require('\t'not in line,'LITERAL_YAML_INDENT_REQUIRED')
+   m=re.fullmatch(r'( *)([A-Za-z0-9_.-]+):(?: +(.*))?',line);require(m is not None,'LITERAL_YAML_MAPPING_REQUIRED')
+   indent=len(m[1]);value=m[3]
+   while stack and stack[-1][0]>=indent:stack.pop()
+   key='.'.join([part for _,part in stack]+[m[2]]);normalized=normal(key)
+   require(normalized not in seen,'UNIQUE_RUNTIME_PROPERTY_REQUIRED');seen.add(normalized)
+   if value is None:stack.append((indent,m[2]));continue
+   if value.startswith('"'):value=json.loads(value);require(type(value)is str,'LITERAL_YAML_STRING_REQUIRED')
+   elif value.startswith("'"):
+    require(value.endswith("'"),'LITERAL_YAML_STRING_REQUIRED');value=value[1:-1].replace("''", "'")
+   else:
+    require(not value.startswith(('{','[','&','*','!','|','>')),'LITERAL_YAML_SCALAR_REQUIRED');value=re.sub(r' +#.*$','',value).strip()
+   add(key,value)
+
+ return one(required[0]),one(required[1]),hashlib.sha256(raw).hexdigest()
+
+
+
+def refresh_seconds(actual):
+ pid=actual['State']['Pid'];require(type(pid)is int and pid>1,'CURRENT_UDP_PROCESS_REQUIRED')
+ root=os.open('/proc/'+str(pid)+'/root',os.O_RDONLY|os.O_DIRECTORY)
+ try:
+  value,_,_=configured_refresh_properties(actual,root)
+  require(re.fullmatch('[0-9]{1,4}',value)is not None and 1<=int(value)<=3600,'BOUNDED_AUTHORIZATION_REFRESH_REQUIRED')
+  return int(value)
+ finally:os.close(root)

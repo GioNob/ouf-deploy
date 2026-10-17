@@ -68,6 +68,10 @@ def main(prepared,sources,closure,case,context,read,ns,emit):
  policy={'delays':[5,15,60,300,900],'max_attempts':126,'max_elapsed':3600,'attempt_timeout':30,'jitter':.2}
  require(compile_governed_session(future,records,first,policy,digest({'operation':future['logicalOperation'],'reviewHash':digest(future)}),digest(future['registryGeneration']),60)==compiled
   and compiled['predecessorGrantAttempts']==318 and compiled['maximumCumulativeGrantAttempts']==444,'EXACT_PREPARED318_TO444_SCOPE_REQUIRED')
+ status,udp_runtime=engine.request('GET','/v1.44/containers/'+pins['udp']['containerId']+'/json')
+ require(status==200 and runtime(udp_runtime)==pins['udp'],'CURRENT_UDP_GENERATION_REQUIRED')
+ policy_cache_wait=permissions.refresh_seconds(udp_runtime)+12
+ require(policy_cache_wait<=600,'FINITE_ACTION_POLICY_PROPAGATION_WINDOW_REQUIRED')
  authority.current_authorities(int(time.time())+3610)
  hb=private['human']['sessionBinding'];human=HumanSession(selection,Path(hb['sessionDirectory']),Path(hb['tokenPath']),hb['expiresAt'])
  require(digest(human._read())==private['human']['journalBinding']['sha256']and human._read()['binding']==hb,'PREPARED_HUMAN_JOURNAL_CHANGED')
@@ -139,6 +143,14 @@ def main(prepared,sources,closure,case,context,read,ns,emit):
   command_guard();guard_job()
   published=permissions.publish(transport,human,permission,review,decision,context,command_guard)
   emit('OUF_LAST_ROW_PERMISSION_PUBLISHED='+encoded(published).decode())
+  # The policy owner has published a new version; allow the configured UDP refresher to load it.
+  # This is a single propagation wait, not retries of an explicit authorization denial.
+  require(decision['expiresAt']-time.time()>policy_cache_wait+90,'CURRENT_POLICY_PROPAGATION_WINDOW_REQUIRED')
+  cache_deadline=time.monotonic()+policy_cache_wait
+  emit('OUF_LAST_ROW_POLICY_PROPAGATION_WAIT='+encoded({'maximumSeconds':policy_cache_wait,'authorizationRetries':0,'jobsRetried':0}).decode())
+  while time.monotonic()<cache_deadline:
+   worker_guard();stop.wait(min(10,max(0,cache_deadline-time.monotonic())))
+  command_guard()
   client=retry.Client(transport)
   # Explicit 401/403 are not automatically retried. A denied native read stops before any retry POST.
   native=retry.prepare(client,[one],digest(selected),min(decision['expiresAt'],int(time.time())+900))

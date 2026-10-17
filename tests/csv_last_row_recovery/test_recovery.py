@@ -207,4 +207,17 @@ class Protocol(unittest.TestCase):
   for value in package['sourceHashes'].values():self.assertIn(value,launcher)
   self.assertIn(package['sourceCommit'],launcher)
 
+
+ def test_policy_propagation_uses_explicit_refresh_or_actual_sdk_default(self):
+  value={'Config':{'Env':['OUF_AUTHORIZATION_REFRESH_SECONDS=5']}}
+  self.assertEqual(p.configured_refresh_properties(value,None)[0],'5')
+  self.assertEqual(p.configured_refresh_properties({'Config':{'Env':[]}},None)[0],'30')
+  yaml=b'ouf:\n  authorization:\n    refresh-seconds: 7\n'
+  with patch.object(p,'mounted_file',return_value=yaml):
+   self.assertEqual(p.configured_refresh_properties({'Config':{'Env':['SPRING_CONFIG_LOCATION=file:/run/config.yml']}},None)[0],'7')
+ def test_conflicting_or_opaque_refresh_configuration_is_not_guessed(self):
+  bad={'Config':{'Env':['OUF_AUTHORIZATION_REFRESH_SECONDS=5','SPRING_APPLICATION_JSON={"ouf":{"authorization":{"refresh-seconds":10}}}']}}
+  with self.assertRaises(Exception):p.configured_refresh_properties(bad,None)
+  with self.assertRaises(Exception):p.configured_refresh_properties({'Config':{'Env':['SPRING_CONFIG_IMPORT=configserver:https://other']}},None)
+
 if __name__=='__main__':unittest.main(verbosity=2)
