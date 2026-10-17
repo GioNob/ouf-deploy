@@ -20,7 +20,7 @@ def encoded(v):return json.dumps(v,sort_keys=True,separators=(',',':'),allow_nan
 def digest(v):return hashlib.sha256(encoded(v)).hexdigest()
 CREDENTIAL_FILES_READ=0
 def emit(check,**values):
- print(json.dumps(dict(schema='ouf.teatri-semantic-reference-access-read.v2',check=check,readOnly=True,
+ print(json.dumps(dict(schema='ouf.teatri-semantic-reference-access-read.v3',check=check,readOnly=True,
   automaticRetry=False,budgetReset=False,installationSpecific=True,credentialFilesRead=CREDENTIAL_FILES_READ,credentialValuesPrinted=False,
   databaseMutations=0,grantRequests=0,readinessCalls=0,serviceMutations=0,
   completedTechnicalPhases=8,functionalMilestonesProven=2,**values),sort_keys=True),flush=True)
@@ -294,6 +294,18 @@ def probe_owner_policy_channel(actual,origin,udp_claims=None):
  finally:os.close(root)
 
 
+def reviewed_registry(ns,engine):
+ # Bind by the immutable reviewed identity, never by a guessed container name.
+ review=ns['read'](POLICY_CONTEXT/'review.json',8388608,POLICY_REVIEW)
+ link=review.get('workerReviewBinding',{})
+ require(link.get('path')==str(POLICY_CONTEXT/'worker-review.json')and re.fullmatch('[0-9a-f]{64}',str(link.get('sha256',''))),'EXACT_WORKER_REVIEW_LINK_REQUIRED')
+ worker=ns['read'](link['path'],8388608,link['sha256'])
+ pin=worker['registryGeneration']
+ require(type(pin)is dict and re.fullmatch('[0-9a-f]{64}',str(pin.get('containerId',''))),'EXACT_REVIEWED_REGISTRY_ID_REQUIRED')
+ actual=ns['engine_get'](engine,'containers',pin['containerId'])
+ require(actual is not None and actual['State']['Running']is True and ns['runtime_pin'](actual)==pin,'CURRENT_REVIEWED_REGISTRY_GENERATION_REQUIRED')
+ return actual
+
 def main():
  require(os.geteuid()==os.getegid()==0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,'ISOLATED_ROOT_READ_REQUIRED')
  signal.signal(signal.SIGALRM,lambda *_:(_ for _ in ()).throw(ValueError('READ_DEADLINE')));signal.alarm(90)
@@ -344,11 +356,7 @@ def main():
   emit('REFERENCE_JOB_METADATA',facts=facts,rawSqlOutputPrinted=False,propertyValuesPrinted=False)
   udp=ns['engine_get'](prepared['engine'],'containers',pins['udp']['containerId'])
   claims=probe_dependencies(udp,refs,selection['origin'],plan)
-  registry=None
-  for name in('ouf-semantic-registry','ouf-semantic'):
-   candidate=ns['engine_get'](prepared['engine'],'containers',name)
-   if candidate is not None:registry=candidate;break
-  require(registry is not None and registry['State']['Running']is True,'CURRENT_SEMANTIC_CONTAINER_REQUIRED')
+  registry=reviewed_registry(ns,prepared['engine'])
   registry_pin=runtime_pin(registry)
   emit('SEMANTIC_RUNTIME_METADATA',containerPresent=True,sourceCommitLabel=registry['Config'].get('Labels',{}).get('org.opencontainers.image.revision'))
   try:probe_owner_policy_channel(registry,selection['origin'],claims)
@@ -364,7 +372,7 @@ def main():
   runtimeAuthorityIssued=False,confirmationReceipt='a5183503-04ff-4e10-850f-e22bf874365e',
   allThirteenMaterializedProven=False,cinemaHistoricalEqualityProven=False)
 if __name__=='__main__':
- emit('BEGIN',maximumSeconds=90,maximumEngineReads=13,maximumSqlSessions=1,maximumCredentialFiles=2,maximumGatewayGets=4)
+ emit('BEGIN',maximumSeconds=90,maximumEngineReads=12,maximumSqlSessions=1,maximumCredentialFiles=2,maximumGatewayGets=4)
  try:main()
  except Exception as error:
   reason=str(error)if type(error)is ValueError and re.fullmatch('[A-Z_]+',str(error))else type(error).__name__

@@ -4,6 +4,21 @@ from unittest.mock import Mock,patch
 ROOT=Path(__file__).resolve().parents[2]
 s=importlib.util.spec_from_file_location('reader',ROOT/'scripts/read-teatri-semantic-reference-access-20261017.py');m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
 class Contract(unittest.TestCase):
+ def test_registry_is_bound_to_hash_verified_review_and_not_service_name(self):
+  pin={'containerId':'a'*64,'imageId':'sha256:reviewed'}
+  link={'path':str(m.POLICY_CONTEXT/'worker-review.json'),'sha256':'b'*64}
+  actual={'State':{'Running':True}}
+  read=Mock(side_effect=[{'workerReviewBinding':link},{'registryGeneration':pin}]);get=Mock(return_value=actual)
+  ns={'read':read,'engine_get':get,'runtime_pin':lambda a:pin}
+  self.assertIs(m.reviewed_registry(ns,{'socketPath':'fixture'}),actual)
+  self.assertEqual(read.call_args_list[0].args,(m.POLICY_CONTEXT/'review.json',8388608,m.POLICY_REVIEW))
+  self.assertEqual(read.call_args_list[1].args,(link['path'],8388608,link['sha256']))
+  self.assertEqual(get.call_args.args[2],'a'*64);get.assert_called_once()
+  ns['read']=Mock(side_effect=[{'workerReviewBinding':link},{'registryGeneration':pin}]);ns['runtime_pin']=lambda a:{**pin,'imageId':'changed'}
+  with self.assertRaisesRegex(ValueError,'CURRENT_REVIEWED_REGISTRY_GENERATION_REQUIRED'):m.reviewed_registry(ns,{})
+  ns['read']=Mock(return_value={'workerReviewBinding':{**link,'path':'/unreviewed/file'}});get.reset_mock()
+  with self.assertRaisesRegex(ValueError,'EXACT_WORKER_REVIEW_LINK_REQUIRED'):m.reviewed_registry(ns,{})
+  get.assert_not_called()
  def test_single_readonly_transaction_and_only_contract_refs_from_payload(self):
   sql=m.acquisition_query('udp','ouf-lab');self.assertTrue(sql.startswith('BEGIN READ ONLY;'));self.assertTrue(sql.endswith('ROLLBACK;'));self.assertNotRegex(sql,r'(?i)\b(insert|update|delete|truncate|alter|create|grant|revoke)\b')
   self.assertIn("payload_json->'contractRefs'",sql);self.assertNotIn('canonicalPayload',sql)
