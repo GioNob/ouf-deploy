@@ -1,3 +1,16 @@
+## Resilienza nel percorso da chat — conferma owner 18 ottobre 2026
+
+L'owner richiede gestione automatica anche di latenza, perdita pacchetti e interruzioni di rete. Si applica la [policy di resilienza v3](OUF_RESILIENCE_POLICY.md), già normativa; questa conferma non introduce budget nuovi né prova conformità dei runtime.
+
+- Errori esplicitamente transitori: timeout per tentativo e retry con backoff/jitter e Retry-After, entro budget durevoli. Default v3:5/15/60/300/900 secondi, jitter fino20%, massimo128 tentativi e24 ore, salvo profilo finito versionato. Restart e nuova chat non azzerano contatori o progresso.
+- Risposta persa dopo una scrittura: esito ambiguo, da riconciliare con l'owner prima di rispedire. Stessa idempotency key per la stessa operazione; ACK, receipt e commit verificati prima di avanzare. Un timeout non dimostra che la scrittura sia fallita.
+- Dipendenza indisponibile: pausa/circuito condiviso, incidente correlato e lavoro indipendente attivo. Non trasformare ogni record dipendente in una quarantena separata; ripresa graduale e limitata quando disponibilità e autorità tornano verificabili.
+- Problema isolato sul record o budget esaurito: quarantena/blocco del più piccolo scope indipendente consentito dal contratto, conservando input durevole, configurazione/versioni, lineage, tentativi, effetti noti e causa. Nessuna perdita silenziosa o successo fittizio; nessun superamento dei checkpoint se vietato dall'owner.
+- Errore permanente, revoca o integrità/configurazione non verificabile: blocco motivato, senza retry ciechi. Esiti incerti richiedono riconciliazione; un eventuale nuovo budget HUMAN preserva lo storico e passa dal flusso supportato MCP/THS.
+- La chat mostra stato, causa sicura, prossimo tentativo, budget residuo e azioni ammesse tramite le capability operative esistenti. Le attese, la persistenza e la ripresa sono compiti del backend e continuano senza mantenere aperta la chat o richiedere comandi sul VPS.
+
+L'accettazione del percorso CSV richiede fault injection su latenza/perdita rete/disconnessioni prima e dopo effetti, risposte e ACK persi o tardivi, restart durante attesa, indisponibilità prolungata, esaurimento budget, revoca/cancellazione durante pausa e recupero graduale. Verificare: niente duplicati o perdita dati, checkpoint e contatori conservati, isolamento corretto e stato MCP concordante con gli owner. Distinguere prove con tempo simulato da prove reali dei trasporti configurati. **Tecniche8/8 e funzionali2/6 restano invariati finché non arrivano le relative prove target.**
+
 ## Requisito di accettazione: intero percorso da chat, senza VPS — decisione owner 18 ottobre 2026
 
 L'utente conferma che il percorso ordinario e il recupero dopo THS devono essere automatici attraverso qualsiasi chatbot compatibile con l'endpoint MCP. **Nessun accesso al VPS, comando shell, launcher specifico, operazione SQL o riavvio manuale può essere richiesto all'utente per completare la pipeline.** Il comando operativo consegnato per il singolo incidente è uno strumento transitorio: non soddisfa questo criterio e non chiude l'end-to-end.
