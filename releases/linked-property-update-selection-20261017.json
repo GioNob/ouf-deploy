@@ -40,5 +40,9 @@
   "maximumGatewayWrites": 0,
   "newPolicyWorkerStarted": false,
   "nativeProfilePublished": false,
-  "identityDecisionsAllowed": false
+  "identityDecisionsAllowed": false,
+  "predecessorPreparationStop": {
+    "contextPath": "/etc/ouf/deploy-snapshots/linked-property-execution-6qs8pvnr",
+    "reason": "UNREVIEWED_SPRING_OVERRIDE_CHANNEL"
+  }
 }

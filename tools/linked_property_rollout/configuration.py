@@ -1,15 +1,49 @@
 """Verify the supported native Spring/Flyway binding without changing properties."""
-import hashlib,os,re,zipfile
+import hashlib,json,os,re,zipfile
 from pathlib import Path
 from urllib.parse import urlsplit
 from tools.linked_property_rollout.owner import require
 from tools.semantic_mcp_update.native import env,private_file
 
+def application_json_metadata(raw):
+    """Accept only the reviewed non-migration application settings, never arbitrary JSON."""
+    require(type(raw)is str and 0<len(raw.encode())<=65536,'BOUNDED_SPRING_JSON_REQUIRED')
+    def unique(pairs):
+        result={}
+        for key,value in pairs:
+            require(key not in result,'DUPLICATE_SPRING_JSON_KEY')
+            result[key]=value
+        return result
+    try:value=json.loads(raw,object_pairs_hook=unique)
+    except (ValueError,TypeError):require(False,'VALID_SPRING_JSON_OBJECT_REQUIRED')
+    allowed={'oufudpexecutionenabled':bool,'oufudpexecutiongatewayurl':str,
+             'oufudpexecutiontokenfile':str,'oufudplaketenantid':str}
+    observed={}
+    def flatten(obj,prefix='',depth=0):
+        require(type(obj)is dict and obj and depth<=12,'BOUNDED_SPRING_JSON_OBJECT_REQUIRED')
+        for key,item in obj.items():
+            require(type(key)is str and re.fullmatch('[A-Za-z0-9_.-]{1,128}',key),'EXACT_SPRING_JSON_PROPERTY_REQUIRED')
+            path=prefix+'.'+key if prefix else key
+            if type(item)is dict:flatten(item,path,depth+1)
+            else:
+                normalized=re.sub('[^a-z0-9]','',path.lower())
+                require(normalized in allowed and type(item)is allowed[normalized], 'UNREVIEWED_SPRING_JSON_PROPERTY')
+                require(normalized not in observed,'AMBIGUOUS_SPRING_JSON_PROPERTY')
+                require(type(item)is bool or 0<len(item)<=8192,'BOUNDED_APPLICATION_SETTING_REQUIRED')
+                observed[normalized]=type(item).__name__
+    flatten(value)
+    return {'reviewedApplicationSettings':len(observed),'migrationOverridePresent':False,'configurationValuesPrinted':False}
+
 def verify(actual,candidate,postgres,expected_yaml_hash,root=None):
     values=env(actual['Config']['Env'])
-    # Any higher-priority Spring source needs its own reviewed resolver. This
-    # installation has none; reject drift instead of guessing precedence.
+    # The entire container Config is already pinned by the retained review.
+    # Parse the application JSON channel; unrelated settings must not be mistaken
+    # for datasource/Flyway overrides. All other Spring channels remain denied.
+    json_metadata=None
     for key,value in values.items():
+        if key=='SPRING_APPLICATION_JSON' and value:
+            json_metadata=application_json_metadata(value)
+            continue
         normalized=re.sub('[^a-z0-9]','',key.lower())
         require(not value or not (normalized.startswith(('spring','loader')) or key in ('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','JAVA_OPTS','_JAVA_OPTIONS')),
                 'UNREVIEWED_SPRING_OVERRIDE_CHANNEL')
@@ -47,5 +81,5 @@ def verify(actual,candidate,postgres,expected_yaml_hash,root=None):
             require(not any(resolved.iterdir()),'EXTERNAL_CONFIG_SUBDIRECTORY_REQUIRES_REVIEW')
     return {'configurationSha256':expected_yaml_hash,'nativeFlywayEnabledByDefault':True,
             'sameDatasourceAsApplication':True,'databaseMatches':True,'roleMatches':True,
-            'higherPriorityOverridesAbsent':True,'externalDefaultConfigurationAbsent':True,
+            'higherPriorityMigrationOverridesAbsent':True,'applicationJson':json_metadata,'externalDefaultConfigurationAbsent':True,
             'configurationValuesPrinted':False}

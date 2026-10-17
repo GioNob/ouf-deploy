@@ -48,6 +48,12 @@ def current_human(binding,selection,read):
 
 def main(prepared,sources,closure,case,context,read,ns,emit):
     authority.closure_valid(closure);context=Path(context)
+    stopped=Path(case['predecessorPreparationStop']['contextPath']);preparation.root_directory(stopped)
+    require(stopped.parent==context.parent and stopped!=context and stopped.name.startswith('linked-property-execution-')
+            and case['predecessorPreparationStop']['reason']=='UNREVIEWED_SPRING_OVERRIDE_CHANNEL'
+            and not any(stopped.iterdir()),'PREVIOUS_PREPARATION_HAS_ARTIFACTS_RECONCILE')
+    emit('OUF_LINKED_PROPERTY_PREPARATION_RECONCILED='+encoded({'previousContext':str(stopped),'privateArtifactsAbsent':True,
+         'previousRuntimeAuthorityIssued':False,'serviceMutations':0,'databaseMutations':0,'automaticRetry':False}).decode())
     private=read(case['preparedReview']['path'],8388608,case['preparedReview']['sha256'])
     binding=private['preparedPlanBinding'];require(binding==case['preparedPlanBinding'],'EXACT_PRIVATE_PLAN_REQUIRED')
     retained=read(binding['path'],8388608,binding['sha256'])

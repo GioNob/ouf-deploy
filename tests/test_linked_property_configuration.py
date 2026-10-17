@@ -39,3 +39,32 @@ class Configuration(unittest.TestCase):
  def test_unknown_profile_configuration_is_rejected(self):
   with zipfile.ZipFile(self.jar,'a')as z:z.writestr('BOOT-INF/classes/application-prod.yml','spring.flyway.enabled: false')
   with self.assertRaises(Exception):self.verify()
+
+ def test_reviewed_application_json_is_preserved_and_not_printed(self):
+  for value in [
+   {'ouf':{'udp':{'execution':{'enabled':True,'gateway-url':'https://reviewed.invalid','token-file':'/run/secrets/private-reference'},'lake':{'tenant-id':'fixture-tenant'}}}},
+   {'ouf.udp.execution.enabled':True,'ouf.udp.execution.gateway-url':'https://reviewed.invalid','ouf.udp.execution.token-file':'/run/secrets/private-reference','ouf.udp.lake.tenant-id':'fixture-tenant'}]:
+   self.actual['Config']['Env'].append('SPRING_APPLICATION_JSON='+json.dumps(value))
+   before=copy.deepcopy(self.actual)
+   result=self.verify()
+   self.assertEqual(result['applicationJson']['reviewedApplicationSettings'],4)
+   self.assertTrue(result['higherPriorityMigrationOverridesAbsent'])
+   self.assertEqual(self.actual,before)
+   for secret in ['reviewed.invalid','private-reference','fixture-tenant']:self.assertNotIn(secret,json.dumps(result))
+   self.actual['Config']['Env'].pop()
+ def test_application_json_cannot_smuggle_migration_or_bootstrap_settings(self):
+  for key in ['spring.flyway.enabled','spring.datasource.url','spring.config.import','spring.profiles.active','spring.main.sources','loader.path','unknown.setting']:
+   for value in [{key:'x'},dict(ouf={'udp':{'execution':{'enabled':True}}},**{key:'x'})]:
+    with self.subTest(key=key):
+     self.actual['Config']['Env'].append('SPRING_APPLICATION_JSON='+json.dumps(value))
+     with self.assertRaises(Exception):self.verify()
+     self.actual['Config']['Env'].pop()
+ def test_ambiguous_malformed_and_wrong_type_json_rejected(self):
+  for raw in ['[]','null','{}','{','{"ouf.udp.execution.enabled":true,"ouf.udp.execution.enabled":false}',
+   '{"ouf.udp.execution.enabled":true,"ouf":{"udp":{"execution":{"enabled":true}}}}',
+   '{"ouf.udp.execution.enabled":"true"}','{"ouf.udp.execution.gateway-url":null}',
+   '{"ouf.udp.execution.gateway-url":["x"]}','{"spring":{"flyway":{"enabled":false}}}']:
+   with self.subTest(raw=raw):
+    self.actual['Config']['Env'].append('SPRING_APPLICATION_JSON='+raw)
+    with self.assertRaises(Exception):self.verify()
+    self.actual['Config']['Env'].pop()
