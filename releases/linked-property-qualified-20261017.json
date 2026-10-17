@@ -38,12 +38,25 @@
     "runId": 39062665870,
     "observedAt": "2026-10-17T19:29:22Z",
     "generationsStable": true,
-    "udp": {"sourceCommit": "3bc856dd67baa0358d4b9c20759245ed18f09b8c", "containerId": "02d4e24cd47181b68d7321c1fa192dfbffb6914bb5905b8c2e3f5fc362e1db8c", "imageId": "sha256:9d0c76828beef09591d71d552dd688d07c3e5081f70be46d6bf5269eca9a8792"},
-    "onboarding": {"sourceCommit": "9d7b64cbbf45f87c0219394e2e908cfe8fddc0bc", "containerId": "6d410a407ec13ab3d72495dd2b2b61f10a4451a5a558b02e8ed265190104b161", "imageId": "sha256:67acd28e3e797008ce25947c751d1458dc23c3eebf2ea4c60a4a69f23c7a5847"},
+    "udp": {
+      "sourceCommit": "3bc856dd67baa0358d4b9c20759245ed18f09b8c",
+      "containerId": "02d4e24cd47181b68d7321c1fa192dfbffb6914bb5905b8c2e3f5fc362e1db8c",
+      "imageId": "sha256:9d0c76828beef09591d71d552dd688d07c3e5081f70be46d6bf5269eca9a8792"
+    },
+    "onboarding": {
+      "sourceCommit": "9d7b64cbbf45f87c0219394e2e908cfe8fddc0bc",
+      "containerId": "6d410a407ec13ab3d72495dd2b2b61f10a4451a5a558b02e8ed265190104b161",
+      "imageId": "sha256:67acd28e3e797008ce25947c751d1458dc23c3eebf2ea4c60a4a69f23c7a5847"
+    },
     "migrationReadRunId": 39062922689,
-    "migrationReadStatus": "BLOCKED_BEFORE_EXECUTION",
-    "migrationReadReason": "RUNNER_SUDO_REQUIRES_INTERACTIVE_PASSWORD",
-    "databaseMigrationStateProven": false
+    "migrationReadStatus": "OPERATOR_READ_SUCCEEDED",
+    "migrationReadReason": null,
+    "databaseMigrationStateProven": true,
+    "udpInstalledVersion": 34,
+    "udpMigrationChecksumsMatched": 34,
+    "udpProfileTablePresent": false,
+    "udpEvidenceColumnPresent": false,
+    "migrationEvidence": "Operator supplied OUF_LINKED_PROPERTY_MIGRATION_READ; one read-only SQL transaction, databaseOid 21556"
   },
   "completedTechnicalPhases": 8,
   "functionalMilestonesProven": 2,

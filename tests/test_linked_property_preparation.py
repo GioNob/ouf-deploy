@@ -22,6 +22,7 @@ class PreparationTest(unittest.TestCase):
             mutated = [observed[0],{**observed[1],key:bad}]
             with self.assertRaises(ValueError): p.verify_history(mutated, expected, 'ouf_udp')
         with self.assertRaises(ValueError): p.verify_history(observed+observed[1:],expected,'ouf_udp')
+        p.verify_history(observed[1:],expected,'ouf_udp',allow_existing_schema=True)
 
     def test_jar_flyway_checksum_ignores_bom_and_line_endings(self):
         with tempfile.TemporaryDirectory() as d:

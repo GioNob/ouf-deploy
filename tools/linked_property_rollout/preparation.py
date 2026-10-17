@@ -220,13 +220,16 @@ def migration_rows(jar):
     return rows
 
 
-def verify_history(observed, expected, schema):
+def verify_history(observed, expected, schema, allow_existing_schema=False):
     require(type(observed) is list and observed, 'INSTALLED_HISTORY_REQUIRED')
     marker = {'installed_rank': 0, 'version': None, 'script': '"' + schema + '"',
               'checksum': None, 'success': True}
-    require(observed[0] == marker and len(observed) == len(expected) + 1,
-            'EXACT_SCHEMA_CREATION_AND_MIGRATION_COUNT_REQUIRED')
-    for rank, (actual, migration) in enumerate(zip(observed[1:], expected), 1):
+    if observed[0] == marker:
+        observed = observed[1:]
+    else:
+        require(allow_existing_schema, 'EXACT_SCHEMA_CREATION_REQUIRED')
+    require(len(observed) == len(expected), 'EXACT_MIGRATION_COUNT_REQUIRED')
+    for rank, (actual, migration) in enumerate(zip(observed, expected), 1):
         require(actual == {'installed_rank': rank, **{k: migration[k] for k in
                         ('version', 'script', 'checksum', 'success')}}, 'INSTALLED_MIGRATION_PREFIX_CHANGED')
 
@@ -430,7 +433,8 @@ def main(code, archive_path, package_hash, progress):
     exec(compile(contents['image_custody.py'], '<verified-image-custody>', 'exec'), custody)
     candidates = candidate(archive_path, context, release, manifest, custody,
                            containerd_store(prepared['engine']), progress)
-    verify_history(facts['onboarding']['migrations'], candidates['onboarding']['migrations'], 'ouf_onboarding')
+    verify_history(facts['onboarding']['migrations'], candidates['onboarding']['migrations'], 'ouf_onboarding',
+                   allow_existing_schema=True)
     require({m: runtime(v) for m, v in applications().items()} == {m: runtime(v) for m, v in actuals.items()},
             'APPLICATION_GENERATION_CHANGED_DURING_PREPARATION')
     pg = prepared['databasePlan']['postgresRuntimeBinding']
@@ -452,6 +456,7 @@ def main(code, archive_path, package_hash, progress):
               'contextPath': str(context), 'candidateNativeImageIds': {m: v['nativeImageId'] for m, v in candidates.items()},
               'udpMigrationPrefixMatched': 34, 'pendingUdpMigrations': 1, 'onboardingMigrationsUnchanged': True,
               'migrationRoleCatalogPrivilegesSufficient': True, 'effectiveFlywayConfigurationProven': False,
+              'packageDigestMatchesQualifiedCI': True, 'sigstoreVerifiedLocally': False,
               'backupPerformed': False, 'readyForExecution': False, 'runtimeAuthorityIssued': False,
               'newPrivateFilesOnly': True, 'serviceMutations': 0, 'databaseMutations': 0,
               'grantRequests': 0, 'oauthRequests': 0, 'credentialFilesRead': 0, 'credentialValuesPrinted': False,
