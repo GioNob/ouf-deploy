@@ -1,0 +1,455 @@
+{
+  "artifact": {
+    "artifactId": 12102614320,
+    "imageIds": {
+      "onboarding": "sha256:c445a2b993b19da824d190e443ee65c7b84fa8fe15dc70ddf8ac2945abd38894",
+      "udp": "sha256:ca11bec417497a9ba92d0cfdb416601364910c2ffc11923ff13272ec1c9228ed"
+    },
+    "runId": 39037997551,
+    "sourceLockSha256": "dcc8222af55bba01ad7213429bbb9d4b4f8d0f7a80bfae8be4b0356afb950dc0",
+    "zipSha256": "18589706434abdeec6568ae23cdb4e4b88e81825e575a626320d60e3ddba7af5"
+  },
+  "candidateSourceCommits": {
+    "onboarding": "dec8f6f53f263f264a1ed14f17b51ab31dc9afad",
+    "udp": "5a5a45b07b3f52fab50e10234f12ce87bb1a6aa6"
+  },
+  "completedTechnicalPhases": 8,
+  "configurationContext": "/etc/ouf/deploy-snapshots/resolution-config-execution-q91d2ut7",
+  "configurationSourceCommit": "d830edbcdbf41c495672833b86aa698546e215a6",
+  "databaseMigrationsAllowed": false,
+  "deployedSourceCommits": {
+    "onboarding": "34488428ac8eee6b919cb1b5982cf9ba62361292",
+    "udp": "a4d432d7788cc1c205c0eaafa5ae3b46036de09f"
+  },
+  "expectedMigrationTrees": {
+    "onboarding": [
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V10__runtime_projection_schema_surveillance.sql",
+        "sha": "d340ba46341f1afcb203908a91c2146b5379b980",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V11__trusted_human_protected_operations.sql",
+        "sha": "5e85b30cd75bb5dcea7c97c0e51849cc8a7f1255",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V12__semantic_gap_workflow.sql",
+        "sha": "b6e6f4fc770a634ae457f7b987cb811a2c308464",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V13__managed_file_quarantine.sql",
+        "sha": "0d6c4203612fbb52f8bdb1e94cddaead6eefda1b",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V14__schema_mapping_governance.sql",
+        "sha": "27c87d093f2fd83b6df65598150e642d203c88b6",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V15__authorization_policy_registry.sql",
+        "sha": "e25b2409050418ec00099ad539fcb00de9570f61",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V16__authorization_admin_lifecycle.sql",
+        "sha": "73366c05f99482cca1be652a99d904dbce5d775d",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V17__geopackage_profiles.sql",
+        "sha": "6770c43d096fdb2f3eaee0b78ef426f43cbf5679",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V18__access_profiles.sql",
+        "sha": "fff44792dc9a1e295d87a2380c5350c9795741d5",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V19__access_semantic_proposals.sql",
+        "sha": "2f0999a657a919afcacd2d15372c42a75ea33e97",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V1__onboarding_core.sql",
+        "sha": "168b129896d0dcd5725197aae71698206b0213a3",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V20__authorization_bootstrap_latch.sql",
+        "sha": "cd04ed35fab0f36cabc338f1eca6954ad56e15a3",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V21__installation_configuration_lifecycle.sql",
+        "sha": "d1b1535b56046e8165b4b9cef561a9ccb8e4f260",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V22__installation_environment_validation.sql",
+        "sha": "f3f2d6a08c9191b802f1844202b4dfad9eb9fcf5",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V23__installation_projection_export_audit.sql",
+        "sha": "52c4f1cc866695e1d80ea4d7e70463b476c4d273",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V24__installation_environment_validation_correlation.sql",
+        "sha": "0520bd2b20a182f1a9083a779311f2b4c2b2627e",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V25__candidate_installation_projection_export.sql",
+        "sha": "e4abfd9f482ecdbfddfb2af609cceecfee43d362",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V26__protected_superadmin_role.sql",
+        "sha": "b90638b45822813f69ce1758cf025a3ade360f31",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V27__authorization_permission_proposals.sql",
+        "sha": "73fc1571dd60c2fbb952d4f3b561ee688517416d",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V28__nominal_superadmin.sql",
+        "sha": "11c4f9e7c14944857622ed7af99853a1d614c16d",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V29__ouf_role_catalogue.sql",
+        "sha": "bc254ff38407450a8338ce0cfa4a0ae70196d67d",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V2__validation_engine.sql",
+        "sha": "1e92cb36bfb1002d7062e8674aaa6235a061bb0d",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V30__managed_file_onboarding_idempotency.sql",
+        "sha": "ab94663abb455a66e348b9d2148c3c7d9b2a381e",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V31__managed_file_upload_idempotency.sql",
+        "sha": "6cc231d30f709b464353d6c7428d2c693ddb1d0e",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V32__managed_onboarding_review_handoff.sql",
+        "sha": "b0555213ae6bf72d0814f2dfd64816c62b88713d",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V33__managed_review_activation_progress.sql",
+        "sha": "0f07b0c5905d2ca211e34ca56cb29bffba859935",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V3__technical_discovery.sql",
+        "sha": "19f147178cd149a2ed7241df4d4f614a8d6438ea",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V4__mapping_workspace.sql",
+        "sha": "5bd8c7b937e12030a3c3ffdc007059cedff77a2f",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V5__managed_file_profiles.sql",
+        "sha": "6862db82411d06306260166442925ccbea50cab8",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V6__initial_ingestion_and_pull_scheduler.sql",
+        "sha": "b25b216ab1a257edd327c4ceb77b123843190c80",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V7__restore_onboarding_boundary.sql",
+        "sha": "6e599f823604843409099498197120963101a738",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V8__managed_file_preview.sql",
+        "sha": "8fc9833897c3c88e5d7c39012d81e3a9388d5e40",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V9__managed_file_contract_hardening.sql",
+        "sha": "13cdba365197ee82c520ce74f1a294d9375dc181",
+        "type": "blob"
+      }
+    ],
+    "udp": [
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V10__lake_object_lifecycle.sql",
+        "sha": "02ce975d0868523550fef24e191604b99b0a54fa",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V11__handoff_raw_lake_reference.sql",
+        "sha": "7a6117f2c733f1b83a9ba7f868e01cc21aa4557e",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V12__lake_maintenance_scheduler.sql",
+        "sha": "b69244f632646b71709d51ba151c50db6e75050e",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V13__lake_shadow_rebuild.sql",
+        "sha": "e118efc0acae15ce224b9bea66a7e21546b903e0",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V14__shadow_rebuild_fencing_and_rollback.sql",
+        "sha": "fa260d1ced51aefd65c39fa1a8fc14a3fba2643b",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V15__historical_reproduce.sql",
+        "sha": "e87025dae8793b3b66a40ffd0af2e4cc0a6f77e8",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V16__materialization_reference_integrity.sql",
+        "sha": "320d626fe7bd0dca348bddf9df60d365da028488",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V17__selective_bitemporal_delta_history.sql",
+        "sha": "037a61dbfa80ea536cf698535986fc5097d5c216",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V18__capability_retry_guard.sql",
+        "sha": "dc731138fdc6e799e2c37287c5ba17017d684bb0",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V19__source_raw_handoff_reference.sql",
+        "sha": "15e5c00bf070b5744840b7ba643542b626f94ee7",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V1__handoff_and_resolution_core.sql",
+        "sha": "4c7528f1bfb2bce710c8203f8c10edd0432146db",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V20__governed_coordinate_transformations.sql",
+        "sha": "878eb089f0dbec97b9a1e49173bf1ea825713f4a",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V21__pinned_relationship_reconciliation.sql",
+        "sha": "abeaf7b9d93a1df80c28cb96f7f3dc6fa58f76cb",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V22__weighted_identity_evidence.sql",
+        "sha": "94bde780313624467333ff87f165cd7326715096",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V23__geometry_authority_conflict.sql",
+        "sha": "419bdeac944f4eea01aca01762be8e63f12a77cf",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V24__human_geometry_decisions.sql",
+        "sha": "7be27237d4a8314832e475bc731f804db099091a",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V25__human_property_decisions.sql",
+        "sha": "a8e343e3fc98824f95c2720613053e7f6fba4376",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V26__geometry_roles_and_validity.sql",
+        "sha": "bec04095f79d4126d8d158fa59461b1846f57833",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V27__identity_scope_serialization.sql",
+        "sha": "10c9ddbe5cfb0a9c34a62f3120d01fb5cc0598d9",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V28__identity_value_lookup.sql",
+        "sha": "999b6ed054681c2db89e69b30adc2623be448f56",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V29__identity_field_shape_catalog.sql",
+        "sha": "0a861aeda2f285b3a1198471774af78cd9cb18b2",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V2__canonical_revision_authority.sql",
+        "sha": "48fe86e803e6e2e5ac6487f53ea1e265ac5a75e5",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V30__resolution_review_package.sql",
+        "sha": "2ef5aa8a7e3d340909ea4428823612c85737a9a2",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V31__serialize_identity_coverage_invalidation.sql",
+        "sha": "b17ba62531be7be177c2010b5c53d294b3247820",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V32__governed_identity_preactivation_attestation.sql",
+        "sha": "35055c3df2749031354a676f16b2ae1cbaa82a37",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V33__human_new_identity_decision.sql",
+        "sha": "cd1fff22f0c30463e833aebc805c1dd9e56661eb",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V34__repeat_human_review_after_stale_coverage.sql",
+        "sha": "31a01405ee2b423e2d3555a205530ec98d403f22",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V3__relationship_resolution.sql",
+        "sha": "fbea83ca659d5ab1d7074d74f8737cbdbf0b0fee",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V4__spatial_resolution.sql",
+        "sha": "c247da666f07b9396ae4c1cb9f2b5537c4ab335b",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V5__human_resolution_merge_split.sql",
+        "sha": "d2f86c489c4624825eedc8980360753b18766120",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V6__merge_repoint_and_contribution_links.sql",
+        "sha": "9f5b138162fe3bf61208d88b287dcff6041ced99",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V7__governed_serving.sql",
+        "sha": "b4816889f4dcd7625d4d08724f1b14e7f94d71f4",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V8__query_complexity_budget.sql",
+        "sha": "89a743d1227cbcd774f4b86e0f7eac9a9eac011a",
+        "type": "blob"
+      },
+      {
+        "mode": "100644",
+        "path": "src/main/resources/db/migration/V9__spatial_query_budget.sql",
+        "sha": "c3483b09d7d62d29fe318255144db41aac2218bb",
+        "type": "blob"
+      }
+    ]
+  },
+  "functionalMilestonesProven": 2,
+  "identityDecisionsAllowed": false,
+  "maximumGatewayWrites": 0,
+  "newPolicyWorkerStarted": false,
+  "readiness": {
+    "onboarding": {
+      "readinessPath": "/actuator/health/readiness",
+      "readinessPort": 8080
+    },
+    "udp": {
+      "readinessPath": "/actuator/health/readiness",
+      "readinessPort": 8080
+    }
+  },
+  "retainedBootstrap": {
+    "path": "/etc/ouf/deploy-snapshots/semantic-mcp-update-executor-code-yrvtskkt/execute.py",
+    "sha256": "b02d9737af6d143903910654d34e91a1a82a52b6082d2429d5dbfd070d160af2"
+  },
+  "retainedReadRouteId": "ths-resolution-package-read",
+  "rolloutContext": "/etc/ouf/deploy-snapshots/udp-resolution-execution-65h5kjt8",
+  "rolloutSourceCommit": "198d0bd9c2968f1fa5bfa61d1c7da8efab2c13bb",
+  "schema": "ouf.resolution-comparison-update-selection.v1",
+  "scope": "RETAINED_SINGLE_HOST_RESOLUTION_COMPARISON_AND_SELECTIVE_REVIEW"
+}
