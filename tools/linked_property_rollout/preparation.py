@@ -498,3 +498,14 @@ if __name__ == '__main__':
         progress('STOP', reason=reason, exceptionMessagePrinted=False, automaticRetry=False,
                  databaseMutations=0, serviceMutations=0, grantRequests=0, credentialValuesPrinted=False)
         raise SystemExit(2)
+
+
+def publish_json(context,name,value):
+    """One immutable private rollout document, including a fresh-login receipt."""
+    require(name in ('candidate-review.json','prepared-plan.json','execution-plan.json','review.json','login-review.json','login-window-receipt.json'), 'EXACT_ROLLOUT_DOCUMENT_REQUIRED')
+    raw=encoded(value);require(0<len(raw)<=DOCUMENT_LIMIT,'PRIVATE_DOCUMENT_BOUND_EXHAUSTED')
+    root_directory(context);path=Path(context)/name;write_new(path,raw)
+    fd=os.open(context,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+    try:os.fsync(fd)
+    finally:os.close(fd)
+    require(read_file(path,hashlib.sha256(raw).hexdigest())==raw,'PRIVATE_DOCUMENT_READBACK_FAILED')
