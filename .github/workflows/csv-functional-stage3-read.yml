@@ -14,9 +14,13 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
+      - name: Validate retained delivery shell
+        run: bash -n scripts/launch-teatri-post-resolution-materialization-read-20261017.sh
       - name: Verify actual PostgreSQL row ledger, redaction and counterexamples
         run: OUF_NATIVE_SQL=1 python3 -I -B -m unittest discover -s tests/teatri_post_resolution_read -v
   target-read:
+    # Run39072364964 proved sudo requires a password; no automatic repeat.
+    if: ${{ false }}
     needs: qualification
     runs-on: [self-hosted, Linux, X64, ouf-vps-test]
     timeout-minutes: 2

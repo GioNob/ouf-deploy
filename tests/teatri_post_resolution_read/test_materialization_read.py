@@ -89,6 +89,7 @@ class NativeSql(unittest.TestCase):
   self.assertTrue(facts['transactionReadOnly']);self.assertEqual(facts['sourceRowCount'],13);self.assertTrue(m.materialization_proven(facts));self.assertEqual(len(facts['details']),11)
   ledger=m.row_ledger(facts);self.assertEqual(ledger['committedRows'],12);self.assertEqual(ledger['quarantinedRows'],1)
   self.assertTrue(ledger['allRowsAccounted']);self.assertTrue(ledger['originalObjectRetained']);self.assertFalse(ledger['allThirteenMaterializedProven'])
+  self.assertTrue(ledger['expectedCurrentDispositionProven'])
   # A current revision without a verified observation is not a materialized row proof.
   sql("delete from ouf_udp.object_revision where urban_object_id='d6051381-934b-4a11-8e71-e1d89cee4e49';")
   missing=json.loads(sql(m.acquisition_query('udp','ouf-lab')));self.assertFalse(m.row_ledger(missing)['allRowsAccounted'])
@@ -100,4 +101,26 @@ class NativeSql(unittest.TestCase):
   sql("update ouf_udp.materialization_job set state='QUARANTINED',safe_failure_code='UDP_IDENTITY_COVERAGE_UNVERIFIED' where handoff_id='h2';")
   facts=json.loads(sql(m.acquisition_query('udp','ouf-lab')));self.assertEqual(facts['matchedDecisionCount'],11);self.assertEqual(facts['confirmedMaterializedRows'],10);self.assertFalse(m.materialization_proven(facts))
   facts=json.loads(sql(m.acquisition_query('udp','other-tenant')));self.assertEqual(facts['receiptCount'],0);self.assertEqual(facts['matchedDecisionCount'],0);self.assertFalse(m.materialization_proven(facts))
+  sql("""
+   create schema ouf_ingestion;
+   create table ouf_ingestion.ing_run(run_id uuid,source_id text,tenant_id text,state text,phase text,failure_code text,created_at timestamptz,updated_at timestamptz);
+   create table ouf_ingestion.ing_schedule(source_id text,tenant_id text,state text,publication_id uuid,publication_sequence bigint,trigger_once boolean,publication_enabled boolean,consumed_publication_id uuid,activation_failures integer,activation_blocked boolean,discovery_verified_at timestamptz,next_run_at timestamptz);
+   create table ouf_ingestion.ing_partition(run_id uuid);
+   create table ouf_ingestion.processing_attempt(run_id uuid,state text);
+   create table ouf_ingestion.ing_lineage(lineage_id uuid,run_id uuid);
+   create table ouf_ingestion.handoff_outbox(handoff_id text,run_id uuid,lineage_id uuid,state text,downstream_receipt_ref text);
+   create table ouf_ingestion.ing_quarantine(run_id uuid,state text,reason_code text);
+   create table ouf_ingestion.source_health(source_id text,status text,consecutive_failures integer,last_error_code text,updated_at timestamptz);
+   insert into ouf_ingestion.ing_run values('a3208f2f-ebfd-415d-bddc-79ab05dea78f','teatri-csv-6609b245','ouf-lab','SUCCEEDED','MANAGED_ONCE',null,now(),now());
+   insert into ouf_ingestion.ing_lineage select md5(n::text)::uuid,'a3208f2f-ebfd-415d-bddc-79ab05dea78f'::uuid from generate_series(1,13)n;
+   insert into ouf_ingestion.handoff_outbox select 'h'||n,'a3208f2f-ebfd-415d-bddc-79ab05dea78f'::uuid,md5(n::text)::uuid,'ACKED','PRIVATE_RECEIPT' from generate_series(1,13)n;
+  """)
+  raw=sql(m.ingestion_query('ingestion','ouf-lab'));self.assertNotIn('PRIVATE_',raw);up=json.loads(raw)
+  down=json.loads(sql(m.acquisition_query('udp','ouf-lab')))
+  self.assertTrue(m.upstream_matches(up,down));self.assertTrue(up['transactionReadOnly'])
+  sql("update ouf_ingestion.handoff_outbox set downstream_receipt_ref=null where handoff_id='h1';")
+  self.assertFalse(m.upstream_matches(json.loads(sql(m.ingestion_query('ingestion','ouf-lab'))),down))
+  sql("update ouf_ingestion.handoff_outbox set downstream_receipt_ref='PRIVATE_RECEIPT';delete from ouf_ingestion.ing_lineage where lineage_id=md5('1')::uuid;")
+  self.assertFalse(m.upstream_matches(json.loads(sql(m.ingestion_query('ingestion','ouf-lab'))),down))
+
 if __name__=='__main__':unittest.main()
