@@ -18,7 +18,7 @@ from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_policy_token_owner.producer import protected_directory
 from tools.onboarding_audit_update.owner import require,digest,encoded,STAGES,PROFILE
 
-KINDS={'ONBOARDING_AUDIT_FIX'}
+KINDS={'ONBOARDING_AUDIT_FIX','POLICY_TEST_SESSION'}
 
 def closure_valid(closure):
  require(type(closure)is dict and set(closure)=={'declaration','executables','stdlibHash','stdlibFileCount'}
@@ -32,6 +32,32 @@ def closure_valid(closure):
 
 
 def scopes_valid(kind,scopes,closure_hash):
+ if kind=='POLICY_TEST_SESSION':
+  require(type(scopes)is dict and set(scopes)=={'policyTokenOwnerInstallation','policyTokenFiniteWorkerSession','tokenOwnerRuntime','semanticFunctionalRuntime'},'ONLY_REMAINDER_POLICY_SESSION_SCOPES_ALLOWED')
+  worker=scopes['policyTokenFiniteWorkerSession'];policy=worker.get('policy',{})
+  profile={'schema':'ouf.policy-token-test-session-profile.v1','maximumNewTokenGrantAttempts':68,
+   'maximumSeconds':3600,'renewalIntervalSeconds':60,'automaticRenewalAllowed':False,
+   'purpose':'CONFIGURATION_AND_VALIDATION','preserveCumulativeHistory':True}
+  require(worker.get('schema')=='ouf.policy-token-governed-worker-session.v1'
+   and worker.get('predecessorGrantAttempts')==248 and worker.get('maximumCumulativeGrantAttempts')==316
+   and worker.get('predecessorCumulativeCeiling')==316 and worker.get('testBudgetProfileHash')==digest(profile)
+   and policy=={'delays':[5,15,60,300,900],'max_attempts':68,'max_elapsed':3600,'attempt_timeout':30,'jitter':.2}
+   and worker.get('automaticBudgetRenewalAllowed')is False and worker.get('consumedClaimReplayAllowed')is False
+   and type(worker.get('predecessorFenceBinding'))is dict
+   and scopes['policyTokenOwnerInstallation'].get('sourceClosureHash')==closure_hash
+   and scopes['policyTokenOwnerInstallation'].get('workerSessionScopeHash')==digest(worker)
+   and scopes['policyTokenOwnerInstallation'].get('operation')=='INSTALL_TOKEN_ONLY_GOVERNED_CONTINUATION_NO_FIRST_GRANT'
+   and scopes['policyTokenOwnerInstallation'].get('initializeJournalOnlyIfAbsent')is True
+   and scopes['policyTokenOwnerInstallation'].get('automaticReplayAllowed')is False
+   and scopes['policyTokenOwnerInstallation'].get('applicationAcceptanceGranted')is False
+   and scopes['tokenOwnerRuntime'].get('operation')=='RENEW_EXISTING_POLICY_READ_CREDENTIAL'
+   and scopes['tokenOwnerRuntime'].get('ownerBindingHash')==scopes['policyTokenOwnerInstallation'].get('ownerBindingHash')
+   and scopes['tokenOwnerRuntime'].get('automaticBudgetResetAllowed')is False
+   and scopes['tokenOwnerRuntime'].get('legacyWriterMustBeMasked')is True
+   and scopes['tokenOwnerRuntime'].get('credentialReestablishmentRequired')is True
+   and scopes['semanticFunctionalRuntime'].get('reviewHash')==worker.get('reviewHash'),
+   'EXACT_248_PLUS68_UNCHANGED316_POLICY_SESSION_REQUIRED')
+  return
  require(kind=='ONBOARDING_AUDIT_FIX' and type(scopes)is dict and set(scopes)=={'onboardingAuditUpdate'},'ONLY_ONE_ONBOARDING_AUDIT_FIX_SCOPE_ALLOWED')
  scope=scopes['onboardingAuditUpdate']
  require(scope.get('profile')==PROFILE and scope.get('stages')==list(STAGES)

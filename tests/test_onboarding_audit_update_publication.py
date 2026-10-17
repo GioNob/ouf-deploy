@@ -15,7 +15,7 @@ class Publication(unittest.TestCase):
   tree=ast.parse(source.read_text());fn=next(n for n in tree.body if isinstance(n,ast.FunctionDef)and n.name=='read_active_publication')
   ns={'time':time,'require':require,'digest':digest,'encoded':encoded}
   exec(compile(ast.Module(body=[fn],type_ignores=[]),str(source),'exec'),ns)
-  self.read=ns['read_active_publication'];self.worker={'scope':'same-signed-worker'};self.now=1000.;self.waits=[];self.guards=0
+  self.read=ns['read_active_publication'];self.worker={'scope':'same-signed-worker','predecessorGrantAttempts':188,'maximumCumulativeGrantAttempts':316};self.now=1000.;self.waits=[];self.guards=0
   self.row={'workerSessionHash':digest(self.worker),'state':'ACTIVE','reason':'RECOVERED','attempts':27,'controlledPredecessorGrantAttempts':188,'controlledCumulativeGrantAttempts':215,'publicationCount':27,'tokenExpiresWall':1292.,'lastWall':993.}
  def run_rows(self,rows):
   outer=self

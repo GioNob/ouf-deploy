@@ -77,4 +77,16 @@ class Issuance(unittest.TestCase):
   self.c.policy.write_bytes(old)
   self.c.write(self.context/'review.json',m.encoded({**self.review,'unapproved':'change'}))
   with self.assertRaises(Exception):m.issue_action(self.review,self.decision(),self.human)
+ def test_remainder_policy_has_real_two_role_signatures_and_same316_ceiling(self):
+  from test_onboarding_audit_update_remainder import fixture,scopes
+  _,_,_,worker=fixture();self.scopes=scopes(worker,m.digest(self.closure))
+  self.review=m.compile_action_review('POLICY_TEST_SESSION',self.closure,self.scopes,self.hb,self.context,
+   {'predecessorHistoryHash':'b'*64,'predecessorIncidentRef':'c'*64},3600)
+  self.c.write(self.context/'review.json',m.encoded(self.review))
+  action=m.issue_action(self.review,self.decision(),self.human)
+  for name,value in self.scopes.items():self.assertTrue(action.guard(name,value))
+  self.assertEqual(json.loads(action.raw)['policyTokenFiniteWorkerSession']['maximumCumulativeGrantAttempts'],316)
+  self.assertEqual(len(list(self.context.glob('*.DEPLOYMENT_INTENT.json'))),1)
+  self.assertEqual(len(list(self.context.glob('*.FINAL_DEPLOYMENT_APPROVAL.json'))),1)
+  self.assertFalse((self.c.root/'UNREAD-ATTESTOR.pem').exists())
 if __name__=='__main__':unittest.main()

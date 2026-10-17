@@ -1,11 +1,11 @@
 {
   "artifact": {
-    "artifactId": 12095189192,
-    "runId": 39018776176,
-    "sourceLockSha256": "d755bc32ea467a5aa91160c3fb3002bdc867b8742647757621c956e3b5900e40",
-    "zipSha256": "e83b63904b0fe05b67c82a61f1c6290a1ba3d0dfdd2334e65594d294629194cb"
+    "artifactId": 12096422563,
+    "runId": 39020189836,
+    "sourceLockSha256": "e95227a3a63d3c946295ebde966e394b5f735457280091f38402f16a87d859b3",
+    "zipSha256": "92e52ae392d52260f20c7e399d0c6e2c1a8825aa2c9c0ca3830568055d73081f"
   },
-  "candidateSourceCommit": "e02def25b47f653a1800db854594c73fadd9ba87",
+  "candidateSourceCommit": "34488428ac8eee6b919cb1b5982cf9ba62361292",
   "completedTechnicalPhases": 8,
   "expectedMigrationTree": [
     {
@@ -213,15 +213,16 @@
   "policyAuthoritySha256": "eec4345a68d09686909653238e5b0f9104b77f091f74084039a8f1666b01e39c",
   "policyContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-execution-d0bmyv9g",
   "policyReviewSha256": "c42181ac012cd41417e2e9ec3c0f37908d3a5c0c379cc3805c918505f4bed5cd",
-  "predecessorJournalVersion": 31,
+  "predecessorJournalVersion": 29,
   "predecessorScopeKey": "onboardingAuditUpdate",
   "retainedBootstrap": {
     "path": "/etc/ouf/deploy-snapshots/semantic-mcp-update-executor-code-yrvtskkt/execute.py",
     "sha256": "b02d9737af6d143903910654d34e91a1a82a52b6082d2429d5dbfd070d160af2"
   },
   "retainedRouteMapHash": "31ad562fa32c98472ee262bb0d8a800e3626443762e913b7863cce359e219d1d",
-  "rolloutContext": "/etc/ouf/deploy-snapshots/onboarding-audit-execution-md__yy6p",
-  "rolloutReviewSha256": "b0e04a406ccda2dbfc6dd5743373866fa5ac1417b42ebfcbd57b2c3b6370e3ca",
+  "rolloutContext": "/etc/ouf/deploy-snapshots/onboarding-audit-execution-i220f2c0",
+  "rolloutReviewSha256": "21ca88f1c5aa682eb74612ead95c9bc6154ddf79a18a52af8f5d281e32abc605",
   "schema": "ouf.onboarding-audit-fix-execution-selection.v1",
-  "scope": "RETAINED_SINGLE_HOST_SINGLE_ONBOARDING_AUDIT_FIX"
+  "scope": "RETAINED_SINGLE_HOST_SINGLE_ONBOARDING_AUDIT_FIX",
+  "startPolicyRemainder": true
 }
