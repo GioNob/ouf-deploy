@@ -1,3 +1,11 @@
+# Resolution: rollout UDP completato dall'operatore; lettura browser da provare — 2026-10-17
+
+**Tecniche8/8; funzionali2/6.** Operatore riporta `OUF_UDP_RESOLUTION_UPDATE_RESULT`: contesto `/etc/ouf/deploy-snapshots/udp-resolution-execution-65h5kjt8`, journalVersion31, complete=true, applicationReady=true, maximumGatewayWrites=0, newPolicyWorkerStarted=false, identityDecisionsPerformed=false e semanticDispatchPerformed=false. Evidenza di esecuzione del percorso qualificato, non readback indipendente della generazione target o dell'accesso autorizzato al pacchetto.
+
+Il rollout ha raggiunto la verifica finale del solo UDP. `sourceActivationProven=false` significa che questa operazione non prova l'attivazione della sorgente, non che abbia revocato la precedente attivazione. Nessun avanzamento milestone3 sulla sola health. Prossima verifica: pagina THS Resolution nella sessione HUMAN corrente, Aggiorna i casi, ispezione delle proposte prima di confermare. Non riavviare il rollout o riaprire un worker policy senza un errore corrente che ne dimostri la necessità. Un eventuale403 richiede il corpo dell'errore owner; snapshot/token browser correnti restano distinti dalla correzione codice installata. Ultimo readback dati resta1materializzato+12quarantene.
+
+---
+
 # Resolution: comando UDP qualificato e pronto per esecuzione operatore — 2026-10-17
 
 **Tecniche8/8; funzionali2/6.** Correzione applicativa UDP a4d432d7… gia qualificata; preparato il rollout del solo UDP con sorgente executor `198d0bd9c2968f1fa5bfa61d1c7da8efab2c13bb`. Profile installation-specific `releases/udp-resolution-update-selection-20261017.json`: baseline UDP b49c0d6f…, candidato artifact12101592347, predecessore Resolution q91d2ut7/journal37/source d830, tre route conservate. I valori dell'installazione rimangono nel caso versionato e negli input conservati, senza nuovi default di rete/issuer/tenant.
