@@ -4,7 +4,7 @@ Only the sealed host bootstrap supplies retained private inputs and bindings.
 No original eight-phase delivery, first grant, credential rotation, Gateway
 write, semantic tool invocation, or automatic login restart is reachable here.
 """
-import copy,dataclasses,hashlib,json,os,re,signal,threading,time
+import copy,dataclasses,hashlib,json,os,re,signal,stat,threading,time
 from pathlib import Path
 from urllib.parse import quote,urlsplit,urlunsplit
 import iam_binding_candidate as evidence
@@ -23,7 +23,7 @@ from tools.chatbot_file_cohort.continued_owner import GovernedSemanticOwnerConti
 from tools.chatbot_file_cohort.human_session import HumanSession
 from tools.chatbot_file_cohort.action_process import private_file
 from tools.semantic_mcp_update import authority,session,permit,plan as compiler
-from tools.semantic_mcp_update.owner import SingleMcpUpdate,UpdatePaused,require,digest,encoded,scope
+from tools.semantic_mcp_update.owner import SingleMcpUpdate,UpdateDenied,UpdatePaused,require,digest,encoded,scope
 from tools.semantic_mcp_update.native import NativePorts,env
 
 
@@ -151,16 +151,69 @@ def live_policy_session(context,closure,read):
  return action,review
 
 
+def configured_admin_password(actual,values):
+ direct=values.get('POSTGRES_PASSWORD');selected=values.get('POSTGRES_PASSWORD_FILE')
+ require(not(direct and selected),'AMBIGUOUS_ADMIN_CREDENTIAL_CHANNEL')
+ if not selected:
+  require(type(direct)is str and 0<len(direct.encode())<=16384 and '\0'not in direct,
+   'EXISTING_EXPLICIT_ADMIN_CREDENTIAL_CHANNEL_REQUIRED')
+  return direct
+ # Only the exact existing read-only bind mount of the pinned PostgreSQL is eligible.
+ require(type(selected)is str and Path(selected).is_absolute()and str(Path(selected))==selected
+  and '..'not in Path(selected).parts and not any(c in selected for c in('\0','\n','\r')),
+  'EXACT_CONFIGURED_ADMIN_SECRET_PATH_REQUIRED')
+ candidates=[]
+ for mount in actual['Mounts']:
+  destination=mount.get('Destination')
+  if type(destination)is str and(selected==destination or selected.startswith(destination.rstrip('/')+'/')):
+   candidates.append(mount)
+ require(bool(candidates),'CONFIGURED_ADMIN_SECRET_MOUNT_REQUIRED')
+ longest=max(len(m['Destination'])for m in candidates);candidates=[m for m in candidates if len(m['Destination'])==longest]
+ require(len(candidates)==1,'UNIQUE_ADMIN_SECRET_MOUNT_REQUIRED');mount=candidates[0]
+ require(mount.get('Type')=='bind'and mount.get('RW')is False,'READ_ONLY_ADMIN_SECRET_BIND_REQUIRED')
+ destination=Path(mount['Destination']);source=mount.get('Source')
+ require(type(source)is str and Path(source).is_absolute()and str(Path(source))==source
+  and '..'not in Path(source).parts,'EXACT_ADMIN_SECRET_HOST_SOURCE_REQUIRED')
+ path=Path(source)/Path(selected).relative_to(destination)
+ for parent in path.parents:
+  info=parent.lstat()
+  require(stat.S_ISDIR(info.st_mode)and info.st_uid==0 and not info.st_mode&0o022,
+   'ROOT_CONTROLLED_ADMIN_SECRET_ANCESTRY_REQUIRED')
+ fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+ try:
+  before=os.fstat(fd)
+  require(stat.S_ISREG(before.st_mode)and before.st_uid==0 and before.st_nlink==1
+   and stat.S_IMODE(before.st_mode)in(0o400,0o440,0o600,0o640)and 0<before.st_size<=16384,
+   'PRIVATE_BOUNDED_ADMIN_SECRET_REQUIRED')
+  raw=bytearray()
+  while len(raw)<=16384:
+   part=os.read(fd,min(4096,16385-len(raw)))
+   if not part:break
+   raw.extend(part)
+  identity=lambda s:tuple(getattr(s,k)for k in('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns'))
+  require(len(raw)==before.st_size and identity(before)==identity(os.fstat(fd))==identity(path.lstat()),
+   'ADMIN_SECRET_CHANGED_DURING_READ')
+ finally:os.close(fd)
+ # Match the official PostgreSQL entrypoint's shell command substitution semantics.
+ try:password=bytes(raw).rstrip(b'\n').decode('utf-8')
+ except UnicodeError:raise UpdateDenied('ADMIN_SECRET_UTF8_REQUIRED')from None
+ require(bool(password)and '\0'not in password,'NONEMPTY_ADMIN_SECRET_REQUIRED')
+ return password
+
+
 def admin_database_url(private_review,engine):
  pin=private_review['database']['postgresRuntimeBinding'];status,actual=engine.request('GET','/v1.44/containers/'+pin['containerId']+'/json')
  require(status==200 and Engine.runtime_binding(actual)==pin and actual['State']['Running']is True,'CURRENT_SELECTED_POSTGRES_REQUIRED')
  values=env(actual['Config']['Env']);admin=private_review['database']['backupReader']
- require(values.get('POSTGRES_USER')==admin and type(values.get('POSTGRES_PASSWORD'))is str
-  and values['POSTGRES_PASSWORD']and 'POSTGRES_PASSWORD_FILE'not in values,'EXISTING_EXPLICIT_ADMIN_CREDENTIAL_CHANNEL_REQUIRED')
+ require(values.get('POSTGRES_USER')==admin,'EXACT_REVIEWED_ADMINISTRATOR_REQUIRED')
+ password=configured_admin_password(actual,values)
+ status,after=engine.request('GET','/v1.44/containers/'+pin['containerId']+'/json')
+ require(status==200 and Engine.runtime_binding(after)==pin and after['State']['Running']is True,
+  'POSTGRES_CHANGED_DURING_CREDENTIAL_READ')
  app=urlsplit(env(private_review['oldNativeConfig']['Env'])['MCP_DATABASE_URL'])
  require(app.hostname and app.port and app.path=='/'+private_review['database']['binding']['database'],
   'EXISTING_EXPLICIT_DATABASE_ENDPOINT_REQUIRED')
- netloc=quote(admin,safe='')+':'+quote(values['POSTGRES_PASSWORD'],safe='')+'@'+('['+app.hostname+']'if ':'in app.hostname else app.hostname)+':'+str(app.port)
+ netloc=quote(admin,safe='')+':'+quote(password,safe='')+'@'+('['+app.hostname+']'if ':'in app.hostname else app.hostname)+':'+str(app.port)
  return urlunsplit((app.scheme,netloc,app.path,app.query,''))
 
 

@@ -222,7 +222,7 @@ def main():
 if __name__=='__main__':
  try:main()
  except (Exception,KeyboardInterrupt)as error:
-  reason=str(error)if type(error).__name__in('ReadDenied','UpdateDenied','HumanSessionPaused','PlanDenied')else type(error).__name__
+  reason=str(error)if type(error).__name__ in ('ReadDenied','UpdateDenied','HumanSessionPaused','PlanDenied')else type(error).__name__
   emit('STOP',reason=reason if re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,100}',reason)else'LOCAL_EXECUTION_UNPROVEN',
    exceptionMessagePrinted=False,reconciliationRequired=True,runtimeAuthorityIssued=False)
   sys.exit(2)

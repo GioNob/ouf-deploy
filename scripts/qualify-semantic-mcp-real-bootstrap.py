@@ -16,6 +16,7 @@ from engine_creation import Engine
 import image_custody as custody
 from tools.semantic_mcp_update.owner import SingleMcpUpdate,UpdatePaused,digest,scope
 from tools.semantic_mcp_update.native import NativePorts
+from tools.semantic_mcp_update.entry import admin_database_url
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 assert os.geteuid()==0 and os.environ.get('OUF_NATIVE_MCP_UPDATE_FIXTURE')=='EPHEMERAL_RUNNER_ONLY'
@@ -70,7 +71,8 @@ with tempfile.TemporaryDirectory(dir='/root',prefix='mcp-update-native-fixture-'
   tls_context.load_cert_chain(str(ca),str(tlskey));tls_server.socket=tls_context.wrap_socket(tls_server.socket,server_side=True)
   tls_thread=threading.Thread(target=tls_server.serve_forever,daemon=True);tls_thread.start()
   tls_origin='https://'+gateway+':'+str(tls_server.server_port)
-  pgid=cli('run','-d','--name',pgname,'--network',network,'--network-alias','pg-fixture','-e','POSTGRES_USER=mcp','-e','POSTGRES_PASSWORD=mcp','-e','POSTGRES_DB=mcp_update_fixture','postgres:17').decode();containers.append(pgid)
+  pg_secret=root/'postgres-password';pg_secret.write_bytes(b'mcp:@/ file\n\n');pg_secret.chmod(0o440)
+  pgid=cli('run','-d','--name',pgname,'--network',network,'--network-alias','pg-fixture','--volume',str(pg_secret)+':/run/secrets/postgres-password:ro','-e','POSTGRES_USER=mcp','-e','POSTGRES_PASSWORD_FILE=/run/secrets/postgres-password','-e','POSTGRES_DB=mcp_update_fixture','postgres:17').decode();containers.append(pgid)
   for _ in range(100):
    ready=subprocess.run(['docker','exec',pgid,'pg_isready','-h','127.0.0.1','-U','mcp','-d','mcp_update_fixture'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
    if ready.returncode==0:break
@@ -102,6 +104,8 @@ with tempfile.TemporaryDirectory(dir='/root',prefix='mcp-update-native-fixture-'
   # production observer; CLI inspect uses a newer API projection.
   old=engine.request('GET','/v1.44/containers/'+oldid+'/json')[1]
   pg=engine.request('GET','/v1.44/containers/'+pgid+'/json')[1]
+  fixture_admin_review={'database':{'postgresRuntimeBinding':Engine.runtime_binding(pg),'backupReader':'mcp','binding':{'database':'mcp_update_fixture'}},'oldNativeConfig':{'Env':['MCP_DATABASE_URL=postgres://fixture_application:fixture-application@pg-fixture:5432/mcp_update_fixture?sslmode=disable']}}
+  selected_admin_url=admin_database_url(fixture_admin_review,engine)
   net=old['NetworkSettings']['Networks'][network]
   dirname=root/'action';dirname.mkdir(mode=0o700);journal=Journal(dirname)
   def pin(actual):return {'containerId':actual['Id'],'imageId':actual['Image'],'pid':actual['State']['Pid'],'startedAt':actual['State']['StartedAt'],**{n+'Hash':digest(actual[k])for n,k in(('config','Config'),('hostConfig','HostConfig'),('mounts','Mounts'),('networkSettings','NetworkSettings'))}}
@@ -150,7 +154,7 @@ with tempfile.TemporaryDirectory(dir='/root',prefix='mcp-update-native-fixture-'
    'MCP_REPROCESSING_EXISTING_POLICY_FILE='+metadata['target']+'/policy.json']
   host={'NetworkMode':network,'RestartPolicy':{'Name':'no','MaximumRetryCount':0},'ReadonlyRootfs':True,'AutoRemove':False}
   migration_request={'Image':nativeimage,'User':'10005:10005','Entrypoint':['/usr/local/bin/ouf-mcp'],'Cmd':['migrate-semantic-reprocessing'],'WorkingDir':'/app',
-   'Env':['MCP_DATABASE_URL=postgres://mcp:mcp@pg-fixture:5432/mcp_update_fixture?sslmode=disable','MCP_MIGRATION_APPLICATION_ROLE=fixture_application','MCP_MIGRATION_DATABASE_OID='+str(data['oid']),'MCP_MIGRATION_RETENTION_FUNCTION_SHA256='+data['functionHash']],
+   'Env':['MCP_DATABASE_URL='+selected_admin_url,'MCP_MIGRATION_APPLICATION_ROLE=fixture_application','MCP_MIGRATION_DATABASE_OID='+str(data['oid']),'MCP_MIGRATION_RETENTION_FUNCTION_SHA256='+data['functionHash']],
    'HostConfig':host,'NetworkingConfig':{'EndpointsConfig':{network:{'NetworkID':net['NetworkID']}}}}
   replacement={'Image':nativeimage,'User':'10005:10005','Entrypoint':['/usr/local/bin/ouf-mcp'],
    'Cmd':['server','--http',':8080'],'WorkingDir':'/app','Env':app_env,
