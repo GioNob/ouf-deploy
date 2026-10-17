@@ -1,0 +1,18 @@
+name: Expired semantic token worker readback
+on:
+  push:
+    branches: [fix/cohort-mcp-backup-recovery-20261016]
+    paths:
+      - scripts/read-chatbot-semantic-expired-worker-20261017.py
+      - tests/test_semantic_expired_worker_reader.py
+      - .github/workflows/semantic-expired-worker-reader.yml
+permissions: {contents: read}
+jobs:
+  persistent-readback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Native private journal, lock exclusion, counts, drift, redaction and CLI
+        run: sudo python3 -I -B -S -m unittest discover -s "$GITHUB_WORKSPACE/tests" -p 'test_semantic_expired_worker_reader.py' -v
