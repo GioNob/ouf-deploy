@@ -12,6 +12,12 @@
     "path": "/etc/ouf/deploy-snapshots/semantic-mcp-update-executor-code-yrvtskkt/execute.py",
     "sha256": "b02d9737af6d143903910654d34e91a1a82a52b6082d2429d5dbfd070d160af2"
   },
+  "retainedConfigurationPreparation": {
+    "contextPath": "/etc/ouf/deploy-snapshots/resolution-config-execution-e1zic7co",
+    "observedStopReason": "HUMAN_OAUTH_REVOKED_OR_PERMANENT_OR_UNKNOWN",
+    "sourceCommit": "e6fa281acc7be3e6d8f0a0db7066535c455e4697"
+  },
+  "retainedIntentCaseHash": "6ae9f730d5369113f93ee034f60b39429c1b310c102ef61876f4c7c301fe2acd",
   "retainedRouteMapSha256": "31ad562fa32c98472ee262bb0d8a800e3626443762e913b7863cce359e219d1d",
   "rolloutContext": "/etc/ouf/deploy-snapshots/onboarding-audit-execution-ybmis4le",
   "rolloutReviewSha256": "b258d70a9ec1e6257be8508bdce62b69b60e7b78a671356dd5defb8490796ca3",
