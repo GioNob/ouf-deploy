@@ -1,14 +1,22 @@
 {
   "schema": "ouf.linked-property-private-preparation-selection.v1",
   "installationSpecific": true,
+  "engineApiVersion": "1.44",
   "privateParent": "/etc/ouf/deploy-snapshots",
   "retainedBootstrap": {
     "path": "/etc/ouf/deploy-snapshots/semantic-mcp-update-executor-code-yrvtskkt/execute.py",
     "sha256": "b02d9737af6d143903910654d34e91a1a82a52b6082d2429d5dbfd070d160af2"
   },
   "configHashes": {
-    "udp": "813f7cacbb119cd433e26ba2fa6d2a518ef490301d72b835b92de5bdac95bfec",
-    "onboarding": "16aa30b86c796fb012f724172279facf8aa4630b3d50afbc9c361fd2d6bbeac1"
+    "udp": "dcedcabb880496514432a0b1968d14511bac3f1a1c7c074f687077924687e183",
+    "onboarding": "91c18387b013830c17a66856ec47d63287fbc401acdb23c5fc7d624f86b810bf"
+  },
+  "configHashEvidence": {
+    "runId": 39064674432,
+    "sameRuntimeAcrossApiVersions": true,
+    "stableAcrossReads": true,
+    "differentConfigFields": ["MacAddress"],
+    "configurationFieldsExcludedFromHash": []
   },
   "databaseMutationsAllowed": false,
   "serviceMutationsAllowed": false,
