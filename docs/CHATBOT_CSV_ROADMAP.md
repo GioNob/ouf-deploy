@@ -1,3 +1,147 @@
+## Tappa funzionale3 completata sul target — 18 ottobre 2026
+
+**Stato corrente: tecniche8/8; funzionali3/6;13/13 righe committate;13 oggetti distinti; zero quarantene residue per la sorgente di collaudo.** Questo esito supera i precedenti checkpoint2/6 e12/13, conservati sotto come storia.
+
+Il log fornito dall'utente `/home/oufadmin/ouf-csv-last-row-recovery.sHJ0mSn1/run.log` riporta `OUF_LAST_ROW_RECOVERY_RESULT.complete=true`, `singleJobCommitted=true`, `functionalStage3Proven=true` e `upstreamHandoffsAndLineageMatch=true`. Sono confermati il commit di tutte13 le righe, gli11 oggetti CREATE_NEW precedentemente verificati e la conservazione dell'oggetto originario; nessuna riga non provata. [Evidenza target redatta](csv-functional-stage3-target-proof-20261018.json). È evidenza del log target ricevuto, non una nuova interrogazione live dell'agente.
+
+Il job residuo `c5692362-8a22-4656-97b6-46b5ba8ce17f` ha ricevuto **una sola ripresa nativa accettata** ed è arrivato al commit senza ripetere la decisione d'identità. Un grant aggiunto tramite owner ha pubblicato `ouf-lab-authorization:42`, hash `75834f0c64d929cc40401867aa65542b4ba15bb3e4bc32a6fd4ca719bab79fb1`, conservando grant preesistenti e capabilities. Nessuna nuova pubblicazione della fonte o reset di budget. La sessione del credential owner ha effettuato un tentativo/una pubblicazione oltre i318 conservati, entro il tetto444.
+
+Lo stato finale `CANCELLED_BY_OWNER` del worker è la terminazione prevista del recupero finito dopo il successo; non annulla il commit. Il campo `applicationReady=false` del reporter del token owner non è una valutazione della disponibilità complessiva OUF né una prova di accettazione end-to-end. `continuousCredentialLifecycleProven=false` resta esplicito.
+
+La verifica funzionale successiva è la **tappa4: ritrovare i dati con una nuova ricerca dal chatbot**; seguono la5 (seconda importazione dello stesso CSV senza duplicazioni) e la6 (verifica di entrambe le acquisizioni e conservazione degli8 Cinema preesistenti). Prima della ripetizione, valutare gli effetti di pubblicazione/scheduler e le policy effettive senza inventare cardinalità o priorità. Il successo della tappa3 non dimostra l'attivazione di un profilo nativo di riconciliazione, il caso merge/collegamento a oggetto esistente, il rinnovo continuativo o il percorso interamente da chat. Restano criteri di accettazione anche resilienza di rete, ripresa durevole e nessun comando VPS per l'utente.
+
+## Resilienza nel percorso da chat — conferma owner 18 ottobre 2026
+
+L'owner richiede gestione automatica anche di latenza, perdita pacchetti e interruzioni di rete. Si applica la [policy di resilienza v3](OUF_RESILIENCE_POLICY.md), già normativa; questa conferma non introduce budget nuovi né prova conformità dei runtime.
+
+- Errori esplicitamente transitori: timeout per tentativo e retry con backoff/jitter e Retry-After, entro budget durevoli. Default v3:5/15/60/300/900 secondi, jitter fino20%, massimo128 tentativi e24 ore, salvo profilo finito versionato. Restart e nuova chat non azzerano contatori o progresso.
+- Risposta persa dopo una scrittura: esito ambiguo, da riconciliare con l'owner prima di rispedire. Stessa idempotency key per la stessa operazione; ACK, receipt e commit verificati prima di avanzare. Un timeout non dimostra che la scrittura sia fallita.
+- Dipendenza indisponibile: pausa/circuito condiviso, incidente correlato e lavoro indipendente attivo. Non trasformare ogni record dipendente in una quarantena separata; ripresa graduale e limitata quando disponibilità e autorità tornano verificabili.
+- Problema isolato sul record o budget esaurito: quarantena/blocco del più piccolo scope indipendente consentito dal contratto, conservando input durevole, configurazione/versioni, lineage, tentativi, effetti noti e causa. Nessuna perdita silenziosa o successo fittizio; nessun superamento dei checkpoint se vietato dall'owner.
+- Errore permanente, revoca o integrità/configurazione non verificabile: blocco motivato, senza retry ciechi. Esiti incerti richiedono riconciliazione; un eventuale nuovo budget HUMAN preserva lo storico e passa dal flusso supportato MCP/THS.
+- La chat mostra stato, causa sicura, prossimo tentativo, budget residuo e azioni ammesse tramite le capability operative esistenti. Le attese, la persistenza e la ripresa sono compiti del backend e continuano senza mantenere aperta la chat o richiedere comandi sul VPS.
+
+L'accettazione del percorso CSV richiede fault injection su latenza/perdita rete/disconnessioni prima e dopo effetti, risposte e ACK persi o tardivi, restart durante attesa, indisponibilità prolungata, esaurimento budget, revoca/cancellazione durante pausa e recupero graduale. Verificare: niente duplicati o perdita dati, checkpoint e contatori conservati, isolamento corretto e stato MCP concordante con gli owner. Distinguere prove con tempo simulato da prove reali dei trasporti configurati. **Tecniche8/8 e funzionali2/6 restano invariati finché non arrivano le relative prove target.**
+
+## Requisito di accettazione: intero percorso da chat, senza VPS — decisione owner 18 ottobre 2026
+
+L'utente conferma che il percorso ordinario e il recupero dopo THS devono essere automatici attraverso qualsiasi chatbot compatibile con l'endpoint MCP. **Nessun accesso al VPS, comando shell, launcher specifico, operazione SQL o riavvio manuale può essere richiesto all'utente per completare la pipeline.** Il comando operativo consegnato per il singolo incidente è uno strumento transitorio: non soddisfa questo criterio e non chiude l'end-to-end.
+
+Il chatbot scopre capabilities, schemi e prerequisiti dall'endpoint. L'onboarding e l'arricchimento semantico precedono la pubblicazione; per i file autorizzati l'ingestion e la successiva materializzazione proseguono tramite i contratti owner. Una decisione THS risolta deve rendere proseguibile il job originale verso creazione o collegamento/merge, riconciliazione delle proprietà, commit e integrazione nel grafo urbano, con esito e provenienza leggibili dalla chat. Se rimane un impedimento tecnico, la chat deve mostrarne stato e causa e guidare il recupero supportato; non deve dichiarare completamento sulla sola chiusura dell'issue.
+
+Credenziali dei servizi e relativo rinnovo, propagazione delle policy, riattivazione delle lavorazioni ammissibili e controllo degli esiti appartengono al runtime, con stato durevole, budget cumulativi, fencing e idempotenza. Le decisioni HUMAN richieste dai contratti restano esplicite tramite flussi MCP/THS collegati alla chat; l'automazione non fabbrica identità o consensi né interpreta un diniego permanente come transitorio. Eventuale autenticazione dell'utente usa il flusso supportato dal client, senza terminale VPS.
+
+Il runner CI/CD esistente in ouf-deploy è il percorso di distribuzione da riusare per le modifiche qualificate; la pipeline utente non deve dipendere dal suo impiego come shell remota. Teatri resta soltanto il collaudo: implementazione generica per file e altri connettori, preservando il percorso scheduler per API/delta/layer dinamici.
+
+**Prova richiesta:** un CSV nuovo seguito interamente da chat, più casi controllati di quarantena risolta con CREATE_NEW e collegamento/merge a oggetto esistente; verifica del commit, proprietà concorrenti/provenienza, visibilità nel grafo, assenza di duplicati al riavvio e ripresa dopo interruzione delle dipendenze. Evidenze di installazione, pubblicazione profilo, singolo recupero e accettazione end-to-end devono restare distinte. Stato attuale invariato: tecniche8/8, funzionali2/6; rinnovo continuativo e percorso senza operazioni VPS non ancora provati.
+
+## Piano privato acquisito e recupero operativo unico — 18 ottobre 2026
+
+La preparazione sul target è **completa**, log `/home/oufadmin/ouf-csv-last-row-prepare.prOtPeUF/prepare.log`. Piano privato `/etc/ouf/deploy-snapshots/csv-last-row-prepared-o9ziuyhf/prepared-plan.json`, SHA256 `9993b1ca7f3877ba7632c3530d3b54da013f8059a762c48239b21f2f080cfb6c`. Una sola scrittura privata, zero login/grant/worker/retry e nessuna mutazione runtime. `readyForExecution=false` è atteso: la preparazione non emette autorità.
+
+Il solo job residuo `c5692362-8a22-4656-97b6-46b5ba8ce17f`, versione11, conserva cinque tentativi e baseline `sha256:0a276d062d3447a243d6e2611d9a618dd1ba2b8cf64668d02dad7aa5c75eccdb`; decisione CREATE_NEW/RESOLVED già presente. Restano12/13 righe committate; nessun nuovo oggetto o contributo sul job residuo. **Tecniche8/8; funzionali2/6.**
+
+Il [pacchetto operativo](../releases/csv-last-row-recovery-code-package-20261018.json) e il [launcher](../scripts/launch-csv-last-row-recovery-20261018.sh) vincolano tutti i52 overlay, bootstrap, loader e selezione al commit sorgente `73bf5767e4ee2e3397ef5cf9193b91589d0522d6` e all'impronta del piano privato. La revisione completa si presenta dopo il login della sessione HUMAN scaduta (160/256 tentativi conservati): una sola approvazione runtime composta per nuova sessione del credential owner già esistente, un grant temporaneo esatto e massimo una ripresa del job.
+
+Il credential owner conserva318 tentativi, massimo126 nuovi, tetto444, fence e cronologia precedenti. La policy41→42 aggiunge solo il grant `udp.materialization.retry` per l'identità HUMAN e il job/sorgente/run/tipo/access label verificati, preservando tutte le altre voci. Il contratto nativo deve confermare idoneità, versione11, stessa baseline e snapshot fresco prima dell'unico POST con operationId stabile e claim durevole. Non si ripetono decisioni d'identità, pubblicazioni della fonte o ingestion CSV.
+
+Prima della prima lettura nativa, il processo attende il maggiore intervallo di aggiornamento policy fra UDP e Semantic Registry, ricavato dalle rispettive configurazioni correnti, più12 secondi; default30 solo se assente, come negli SDK verificati. Generazioni e route restano vincolate. Dinieghi espliciti401/403 e risultati di mutazioni incerti arrestano il flusso senza replay automatico. Nessun riavvio di servizi, aggiornamento immagini, modifica IAM o riattivazione scheduler.
+
+Il comando prosegue fino al readback finale: commit del job, ledger13/13,11 CREATE_NEW storici e oggetto originario conservati,13 ACK e lineage Ingestion/UDP concordanti. Solo questo risultato può attestare la tappa3 e portare il contatore a3/6. A fine operazione o STOP il worker termina. La sessione finita **non dimostra il rinnovo credenziali continuativo** richiesto per future sorgenti e scheduler.
+
+[Qualifica completa 39076417852](https://github.com/GioNob/ouf-deploy/actions/runs/39076417852), job117524391524: **22 PASS, zero errori/fallimenti/skip**, sintassi launcher valida, query selettiva su PostgreSQL17 reale. Verificati import isolato della chiusura di sorgenti senza effetti, tutte le impronte della consegna, versioni/identità/baseline alterate, una sola approvazione operativa e nessun replay di mutazioni ambigue. I trasporti owner dei test sono simulati e le sorgenti onboarding esterne sono stub solo per la prova d'import: questa CI **non prova l'esecuzione sul VPS**. [Impronte e limiti](csv-last-row-composed-recovery-qualified-20261018.json).
+
+La consegna eseguibile è fissata al commit `d51d2ea0b663ea0cfc6c8b1a9cde086bcc56e906`, launcher SHA256 `a5fe60b324eb62005f39a0e35e1a8ba6e93575dcd6819f9884bbe287e0190bbf`. Il comando locale `OUF_Tappa3_Recupero_Operativo_VPS.txt` scarica e verifica tale launcher nella sessione VPS esistente. Atteso login nuovo perché la sessione è scaduta e un consenso runtime composto secondo [AGENTS.md](../AGENTS.md), «Development delegation is not runtime HUMAN authority». Nessuna nuova autorizzazione ai repository richiesta. In attesa del risultato target; nessun effetto runtime attribuito alla CI o alla preparazione.
+
+
+## Preparazione nativa qualificata e consegnata — 18 ottobre 2026
+
+[Qualifica finale 39075109515](https://github.com/GioNob/ouf-deploy/actions/runs/39075109515): **7 PASS, zero errori/fallimenti/skip**, sintassi launcher valida. [Impronte e limiti](csv-last-row-private-preparation-qualified-20261018.json). Il comando è consegnato per creare sul VPS la revisione privata del recupero, ancora senza autorità runtime. In attesa di percorso/impronta del piano e contatori HUMAN raccolti dal target; nessun nuovo login, worker, grant o retry dell'agente. Il contatore318/444 non viene né azzerato né aumentato nella preparazione.
+
+
+## Causa del blocco e preparazione del recupero — 18 ottobre 2026
+
+Il [preflight target completo](csv-semantic-policy-channel-failure-target-20261018.json), log `/home/oufadmin/ouf-csv-reference-read.P7fk3eF0/read.log`, identifica il diniego nel Semantic Registry: `SEM_CAPABILITY_REQUIRED:ouf.semantic.read`. Il token UDP non è scaduto alla lettura, contiene lo scope richiesto e corrisponde ad audience/guard della route conservata. Nella **policy pubblicata 41** esiste un grant `ouf.semantic.read` valido che corrisponde all'identità UDP; descrittore SERVICE/READ corretto. Il token con cui il Semantic Registry legge tale policy è invece **scaduto**, e il canale configurato della policy risponde **401**. Il contenuto effettivamente caricato in memoria non è provato; la disponibilità del trasporto policy è certamente interrotta.
+
+Il fence corrente punta al worker `e787ac35…`: CANCELLED_BY_OWNER, una pubblicazione/tentativo nella sessione, predecessore317, cumulativo **318**, tetto **444**, residuo **126**, lock non detenuto. Non è consentita la ripartenza automatica del worker cancellato. La preparazione riusa il compilatore nativo `compile_governed_session` della sorgente esistente hash-verificata, per una **nuova sessione ancora da autorizzare**, mantenendo tetto, fence e intera cronologia. Nessun primo grant viene ripetuto.
+
+`prepare-csv-last-row-recovery-20261018.py` vincola il piano al rollout55, al solo job `c5692362-8a22-4656-97b6-46b5ba8ce17f` versione11 e ai record cancellati esatti. Produce un documento privato root-owned con proposta di scope nativo318→444, metadati della sessione HUMAN senza stamparne credenziali, template del permesso limitato a job/sorgente/run/tipo/access label verificati e prerequisiti dell'applicazione. Non apre login, modifica permessi, avvia worker o riprende job. **readyForExecution=false e runtimeAuthorityIssued=false**; la sola scrittura è il nuovo artefatto privato di preparazione.
+
+[Qualifica del compilatore e della selezione 39075042131](https://github.com/GioNob/ouf-deploy/actions/runs/39075042131): **7 PASS**, cronologia immutata318/444, cancellazione/admission/conteggi alterati rifiutati, sorgente nativa e prima ricevuta non sostituibili, un solo job identico ammesso. Il SQL del record è quello già qualificato nel preflight v2 su PostgreSQL17; non si dichiara una nuova prova runtime.
+
+Dopo la preparazione privata servono le autorità runtime correnti: nuova decisione HUMAN dopo cancellazione; eventuale solo grant job-specifico tramite API owner preservando la policy; ripristino del credential owner già esistente; review nativa con contratto disponibile e baseline identica; una ripresa con versione/snapshot e operationId durevole; readback13/13. La delega ai repository non sostituisce tale autorità. La sessione finita di recupero **non dimostra operatività continuativa** del rinnovo credenziali per future fonti o scheduler: quel requisito rimane esplicito nell'accettazione end-to-end.
+
+**Tecniche 8/8; funzionali 2/6; 12/13 commit. Nessuna decisione d'identità da ripetere.**
+
+
+## Consegna qualificata del preflight completo — 18 ottobre 2026
+
+[Run 39074601464](https://github.com/GioNob/ouf-deploy/actions/runs/39074601464), job 117519046015: **8 test PASS, zero fallimenti/errori/skip**, SQL su PostgreSQL 17 reale, sintassi launcher e corrispondenza dell'impronta della sorgente consegnata. [Prova di qualifica](csv-semantic-access-full-preflight-qualified-20261018.json). Il lettore include anche tipo sorgente, run e access label RAW richiesti per circoscrivere l'eventuale recupero del singolo job, senza indovinarli.
+
+L'utente ha ricevuto il comando hash-verificato per la sessione VPS esistente. In attesa del riscontro v2: nessun nuovo login, grant, worker, job retry o decisione d'identità. Il 403 resta un diniego da spiegare, non un transitorio da ritentare automaticamente. Il preflight non attesta il contenuto effettivamente caricato in memoria dal registry, l'inventario live delle route o una nuova autorità HUMAN; espone le rispettive prove e lacune. Se il canale owner non è verificabile, le letture SQL indipendenti vengono comunque raccolte, senza adottare un'altra identità o generazione.
+
+**Avanzamento invariato: tecniche 8/8, funzionali 2/6.** La decisione CREATE_NEW è risolta; il commit dell'ultima riga non è ancora provato.
+
+
+## Ultimo record: pubblicazione accessibile, riferimento semantico negato — 18 ottobre 2026
+
+Il [riscontro VPS](csv-last-row-semantic-access-target-20261018.json), log `/home/oufadmin/ouf-csv-reference-read.TDxght8L/read.log`, prova **HTTP 200** per la pubblicazione storica e **HTTP 403** per il suo unico riferimento semantico. Il token UDP non risultava scaduto al momento della lettura; questo non prova la validità futura né identifica ancora lo strato che nega l'accesso. `ownerAuthorizationDeniedDetail=false` non esclude un diniego owner con un altro formato di errore.
+
+Il job è `c5692362-8a22-4656-97b6-46b5ba8ce17f`, versione **11**, QUARANTINED con cinque tentativi e cinque controlli di integrità già consumati. RAW VERIFIED, nessuna lease, nessun binding, contributo o osservazione; la decisione CREATE_NEW è RESOLVED. Baseline storica `sha256:0a276d062d3447a243d6e2611d9a618dd1ba2b8cf64668d02dad7aa5c75eccdb`. Restano **tecniche 8/8, funzionali 2/6**, con 12/13 commit.
+
+Il preflight v2 riusa i componenti già presenti di `read-teatri-reference-recovery-preflight-20261017.py`: metadati scope/audience/guard della route conservata (esplicitamente non prova live della route), errore semantico redatto con allowlist, canale policy configurato nel Semantic Registry, confronto dei grant pubblicati con l'identità UDP e cronologia del worker puntata dal fence esistente. Nessuna modifica di accessi o avvio sessioni. I contatori cumulativi sono verificati, non rinnovati. Se la generazione del registry o la catena del fence non coincidono, si dichiara la parte non provata; non si adotta un container arbitrario. Limiti: 120 secondi, nove letture engine, tre sessioni SQL read-only, due file di credenziali, quattro GET.
+
+Ordine del recupero: identificare il diniego preciso; ripristinare solo l'accesso previsto dalla configurazione approvata attraverso il proprietario competente; ottenere una review nativa aggiornata del singolo job con `contractReady=true` e baseline identica; usare l'API governata esistente con versione/snapshot attesi e identificativo idempotente; provare osservazione/revisione/contributi e 13/13 commit. Nessuna scrittura SQL correttiva, cambio di semantica, ripetizione della decisione di identità o reset di tentativi. Un 403 non viene ritentato automaticamente. Qualunque nuova autorità o budget runtime rimane distinto dalla delega allo sviluppo.
+
+[Qualifica v2 39074407807](https://github.com/GioNob/ouf-deploy/actions/runs/39074407807): 7 test PASS, zero skip, PostgreSQL 17 reale, confronto di grant validi/scaduti e isolamento tenant, redazione del diniego, metadati route e verifica dei contatori cumulativi. Nessun recupero runtime ancora eseguito.
+
+
+## Qualifica finale e prossimo riscontro — 18 ottobre 2026
+
+**Stato runtime invariato: tecniche 8/8, funzionali 2/6; 12 righe committate e una quarantena tecnica dopo CREATE_NEW risolto.** [Qualifica finale 39073880515](https://github.com/GioNob/ouf-deploy/actions/runs/39073880515) PASS: 4 test, zero skip su PostgreSQL 17 reale e sintassi del launcher verificata. La readiness del database di test ora attende il server TCP finale, evitando la finestra del socket provvisorio d'inizializzazione. Il codice lettore consegnato è quello già qualificato al commit `37e7150ca150ab861ee1b5794e8091b8776cca51`; il launcher è fissato al commit `ce0c86d727040441fe0cac412896232c93e81095` e all'impronta documentata nella [prova normalizzata](csv-post-resolution-continuity-qualified-20261018.json).
+
+Anche [CI completa UDP 39073660012](https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39073660012) PASS per tutti e quattro i job (Java/PostgreSQL, supply chain, disaster recovery, prestazioni). La PR UDP 45 è pronta per revisione, sovrapposta alla PR 44, senza dichiarare installazione. Il comando della diagnosi è stato consegnato all'utente per la sessione VPS esistente. **In attesa dell'output host; nessuna ripresa del job eseguita dall'agente.**
+
+
+## Qualifica della continuità e diagnosi mirata — 18 ottobre 2026
+
+[UDP PR 45](https://github.com/GioNob/ouf-udp-object-resolution/pull/45) conserva il profilo delle proprietà nel percorso pubblicato prima della review HUMAN. Test integrati APPROVE e CREATE_NEW verificano la conferma THS, la ripresa del medesimo job, binding, contributi, osservazione/revisione e assenza di duplicati al tick successivo. Configurazione pubblicata e reference gate sono confini simulati dichiarati; PostgreSQL e servizi di dominio reali. [Run 39073660064](https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39073660064): **95 test PASS, zero errori/fallimenti/skip**, inclusi 18 della suite di candidati. Questo fix è separato dal blocco dei riferimenti e non è ancora installato.
+
+Il nuovo `read-csv-post-resolution-references-20261018.py` riusa i lettori installati e gli adattatori di accesso già esistenti, vincolati al rollout journal 55. Legge metadati del solo job residuo (versione, tentativi, hash mancanti, baseline, assenza/presenza effetti) e verifica la pubblicazione storica più al massimo due riferimenti semantici tramite l'identità di servizio già configurata. Nessun token o valore della fonte stampato, nessun rinnovo OAuth, grant, mutazione, decisione o retry. Limiti: 90 secondi, due sessioni SQL read-only, sette letture engine, un file di credenziale, tre GET. La copertura semantica limitata è dichiarata; non prova da sola l'intero catalogo.
+
+[Qualifica sorgente 39073782611](https://github.com/GioNob/ouf-deploy/actions/runs/39073782611): **4 test PASS, zero skip**, SQL realmente eseguito su PostgreSQL 17, isolamento tenant e redazione delle risposte, incluse risposte 401/403/302 senza redirect. SHA256 sorgente `30f10c26a9d51265b1941d048845b51ae5c77510bd0b888f060333cfff19c52e`, commit `37e7150ca150ab861ee1b5794e8091b8776cca51`. Il launcher non apre login; usa la sessione VPS esistente. La lettura del token configurato resta in memoria. L'esecuzione host richiede la sessione VPS dell'utente perché il runner ha già provato che sudo non interattivo richiede password: nessun nuovo tentativo del rifiuto.
+
+
+## Riscontro VPS dopo la decisione THS — 18 ottobre 2026
+
+La decisione HUMAN **CREATE_NEW** per il caso `e16fec6e-311d-49f3-b1de-f274cb5a92d1` è **RESOLVED**. Il job del medesimo handoff `9fde61f1-8d3c-4de7-b3fe-b534b32e45e3` resta però **QUARANTINED / UDP_REFERENCE_INTEGRITY_MISSING**, intake DURABLE, nessun binding, osservazione, contributo o oggetto creato. La ripresa ha raggiunto il controllo dei riferimenti; il riferimento preciso e la causa del mancato accesso non sono ancora provati.
+
+Il log `/home/oufadmin/ouf-csv-stage3-read.KsMUTYp4/read.log` conferma 13 handoff ACKED con lineage coerente, 12 job SUCCEEDED e 12 oggetti, tutte le 11 precedenti creazioni conservate. Nessuna review d’identità aperta. **Tecniche 8/8; funzionali 2/6; tappa 3 non completa.** Il contatore `unprovenRows=1` del reader v3 include questa quarantena tecnica: `quarantinedRows=0` non significa che non vi siano job in quarantena.
+
+Prova normalizzata: [csv-functional-stage3-reference-block-20261018.json](csv-functional-stage3-reference-block-20261018.json). Non ripetere la decisione THS, non importare nuovamente il CSV e non riarmare lo scheduler. Il recupero deve usare il job esistente e il percorso tecnico governato già implementato, dopo verifica dei riferimenti storici e dello stato/versione attesi. Nessun reset dei contatori o cancellazione dello storico. Pubblicazione del profilo e prova funzionale restano fasi distinte.
+
+# Tappa3 — ultima review chiusa, verifica del commit finale in corso,17ottobre2026
+
+**Tecniche8/8; funzionali2/6 verificati.** L'utente ha trattato il caso residuo nella THS; la pagina conferma0casi incerti aperti. La ricerca MCP restituisce ancora i12oggetti precedenti, revisione1. Questo è compatibile con più esiti: la tappa3 richiede13righe committate e provenienza, non13oggetti distinti, e non si chiude sulla sola scomparsa della review.
+
+Il lettore v3 aggiunge azione HUMAN più recente e codice sicuro del job per handoff. CI39073074291:12test PASS,0skip, con controesempi reali PostgreSQL17 e13commit verso12oggetti. Il nuovo END riporta functionalStage3Proven=true e funzionali3/6 soltanto dopo la prova dei13commit e del lineage. Nessun nuovo tentativo sudo sul runner: consegna verificata per la sessione VPS esistente.
+
+[Stato della verifica](CSV_FUNCTIONAL_STAGE3_20261017.md), [THS e ricerca dopo la decisione](../evidence/csv-functional-stage3-after-ths-20261017.json), [qualifica v3](../evidence/csv-functional-stage3-final-reader-qualified-20261017.json). Il readback precedente12commit+1quarantena resta prova storica, superabile soltanto dal nuovo riscontro.
+
+---
+
+# Tappa funzionale3 — rendiconto e provenienza verificati,17ottobre2026
+
+**Tecniche8/8; funzionali2/6. Tappa3:12commit+1eccezione conservata, tutte13le righe rendicontate.** Readback VPS del lettore v2 qualificato:13handoff ACKED con ricevuta e lineage,12job SUCCEEDED e12oggetti distinti con revisione/osservazione verificata,20contributi ciascuno; una quarantena DURABLE senza binding/contributi. Tutte11le decisioni CREATE_NEW risultano materializzate e l'oggetto originario è conservato. Gli ID coincidono esattamente con la ricerca MCP precedente.
+
+ENDcomplete=true,readbackProven=true,upstreamHandoffsAndLineageMatch=true,allRowsAccounted=true,unprovenRows=0. Il criterio storico13commit resta aperto:allThirteenMaterializedProven=false,historicalCriterionChanged=false; il contatore non viene aumentato tacitamente. L'intenzione di mantenere la quarantena è documentata nella chat.
+
+Schedule MANAGED DISABLED per pubblicazione1 consumata;0failure. Generazioni coerenti col rollout linked-property/journal55 e UDP35. Nessuna mutazione, pubblicazione, riacquisizione o ripetizione di decisioni. Il readback operatore supera il precedente limite sudo del runner per questa sola lettura; non occorre ripeterla.
+
+[Evidenza target](../evidence/csv-functional-stage3-target-readback-20261017.json), [rendiconto per handoff e limiti](CSV_FUNCTIONAL_STAGE3_20261017.md). Prossimo controllo: tappa4, riscontro dal chatbot sulle proprietà autorizzate; la ricerca degli ID è già riuscita ma restituiva properties vuoto. Pubblicazione del profilo di riconciliazione ancora distinta e non provata da questa lettura.
+
+---
+
 # Resolution: rollout UDP completato dall'operatore; lettura browser da provare — 2026-10-17
 
 **Tecniche8/8; funzionali2/6.** Operatore riporta `OUF_UDP_RESOLUTION_UPDATE_RESULT`: contesto `/etc/ouf/deploy-snapshots/udp-resolution-execution-65h5kjt8`, journalVersion31, complete=true, applicationReady=true, maximumGatewayWrites=0, newPolicyWorkerStarted=false, identityDecisionsPerformed=false e semanticDispatchPerformed=false. Evidenza di esecuzione del percorso qualificato, non readback indipendente della generazione target o dell'accesso autorizzato al pacchetto.
@@ -1405,7 +1549,7 @@ Il Gateway ha un claim di scrittura e una mappa riletta non uguale alla mappa at
 |---|---|---|
 | 1 | Approvare la configurazione semantica del CSV Teatri | Da dimostrare |
 | 2 | Completare l'onboarding con approvazione umana | Da dimostrare |
-| 3 | Ottenere il commit effettivo in UDP delle 13 righe, con provenienza verificata | Da dimostrare |
+| 3 | Ottenere il commit effettivo in UDP delle 13 righe, con provenienza verificata | COMPLETATA:13/13 commit,13 oggetti distinti, zero quarantene; log target18 ottobre2026 |
 | 4 | Ritrovare i dati con una nuova ricerca dal chatbot | Da dimostrare |
 | 5 | Importare nuovamente lo stesso CSV e dimostrare il riuso degli oggetti senza duplicazioni | Da dimostrare |
 | 6 | Verificare entrambe le acquisizioni e la conservazione degli otto oggetti Cinema esistenti | Da dimostrare |
