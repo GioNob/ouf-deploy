@@ -16,7 +16,7 @@ class NativeSql(unittest.TestCase):
  def test_real_postgres17_returns_bounded_resource_match_metadata_without_mutation(self):
   self.cli('pull','postgres:17-alpine');cid=self.cli('run','-d','--rm','-e','POSTGRES_HOST_AUTH_METHOD=trust','postgres:17-alpine');self.addCleanup(lambda:self.cli('rm','-f',cid))
   end=time.monotonic()+30
-  while subprocess.run(['docker','exec',cid,'pg_isready','-U','postgres'],capture_output=True).returncode:
+  while subprocess.run(['docker','exec',cid,'pg_isready','-h','127.0.0.1','-U','postgres'],capture_output=True).returncode:
    self.assertLess(time.monotonic(),end);time.sleep(.2)
   caps=[{'capabilityId':cap,'operation':'READ'if cap.endswith('read')else'COMMAND','requiredScope':cap,'allowedActors':['HUMAN']}for cap in('resolution.issue.read','resolution.match.approve')]
   grants=[{'capabilityId':cap,'tenantId':'tenant-a','subjectId':'human-1','validFrom':'2020-01-01T00:00:00Z','validUntil':'2099-01-01T00:00:00Z','constraints':{'effect':'ALLOW','resourceType':'resolution-issues','resourceAttributes':{}}}for cap in('resolution.issue.read','resolution.match.approve')]
