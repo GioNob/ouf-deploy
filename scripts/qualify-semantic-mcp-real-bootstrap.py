@@ -104,7 +104,8 @@ with tempfile.TemporaryDirectory(dir='/root',prefix='mcp-update-native-fixture-'
   # production observer; CLI inspect uses a newer API projection.
   old=engine.request('GET','/v1.44/containers/'+oldid+'/json')[1]
   pg=engine.request('GET','/v1.44/containers/'+pgid+'/json')[1]
-  fixture_admin_review={'database':{'postgresRuntimeBinding':Engine.runtime_binding(pg),'backupReader':'mcp','binding':{'database':'mcp_update_fixture'}},'oldNativeConfig':{'Env':['MCP_DATABASE_URL=postgres://fixture_application:fixture-application@pg-fixture:5432/mcp_update_fixture?sslmode=disable']}}
+  reviewed_pg_pin=Engine.runtime_binding(pg);reviewed_pg_pin['mountsHash']=digest(sorted(pg['Mounts'],key=lambda m:m['Destination']))
+  fixture_admin_review={'database':{'postgresRuntimeBinding':reviewed_pg_pin,'backupReader':'mcp','binding':{'database':'mcp_update_fixture'}},'oldNativeConfig':{'Env':['MCP_DATABASE_URL=postgres://fixture_application:fixture-application@pg-fixture:5432/mcp_update_fixture?sslmode=disable']}}
   selected_admin_url=admin_database_url(fixture_admin_review,engine)
   net=old['NetworkSettings']['Networks'][network]
   dirname=root/'action';dirname.mkdir(mode=0o700);journal=Journal(dirname)
@@ -163,7 +164,7 @@ with tempfile.TemporaryDirectory(dir='/root',prefix='mcp-update-native-fixture-'
    'NetworkingConfig':{'EndpointsConfig':{network:{'NetworkID':net['NetworkID'],'Aliases':[oldname],
     'IPAMConfig':{'IPv4Address':net['IPAddress']},'MacAddress':net['MacAddress']}}}}
   plan={'schema':'ouf.mcp-single-update-execution-plan.v1','authorityDirectory':str(dirname),'predecessorReviewPath':str(predecessor),'predecessorReviewHash':hashlib.sha256(predecessor.read_bytes()).hexdigest(),
-   'oldRuntimeBinding':pin(old),'oldHostConfig':old['HostConfig'],'oldMounts':old['Mounts'],'postgresRuntimeBinding':pin(pg),
+   'oldRuntimeBinding':pin(old),'oldHostConfig':old['HostConfig'],'oldMounts':old['Mounts'],'postgresRuntimeBinding':reviewed_pg_pin,'postgresMounts':pg['Mounts'],
    'engine':{'socketPath':str(sock)},'programs':{'docker':program},'metadata':metadata,'imageAudit':audit,'imageImport':{'path':str(archive)},
    'database':{'name':'mcp_update_fixture','admin':'mcp','oid':data['oid'],'before':continuity['before'],'after':continuity['candidate'],'backupPath':str(dirname/'backup.dump'),'maximumBackupBytes':1073741824},
    'retainedClaim':{'attemptId':attempt,'state':'FAILED','dispatchState':'ACKNOWLEDGED','lockVersion':2,'requestHash':requesthash},

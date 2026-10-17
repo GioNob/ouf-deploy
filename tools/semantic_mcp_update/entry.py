@@ -201,20 +201,28 @@ def configured_admin_password(actual,values):
  return password
 
 
-def admin_database_url(private_review,engine):
+def admin_database_url(private_review,engine,*,include_observation=False):
  pin=private_review['database']['postgresRuntimeBinding'];status,actual=engine.request('GET','/v1.44/containers/'+pin['containerId']+'/json')
- require(status==200 and Engine.runtime_binding(actual)==pin and actual['State']['Running']is True,'CURRENT_SELECTED_POSTGRES_REQUIRED')
+ actual_pin=Engine.runtime_binding(actual)if status==200 else{}
+ if status==200:actual_pin['mountsHash']=digest(sorted(actual['Mounts'],key=lambda m:m['Destination']))
+ require(status==200 and actual_pin==pin and actual['State']['Running']is True,'CURRENT_SELECTED_POSTGRES_REQUIRED')
  values=env(actual['Config']['Env']);admin=private_review['database']['backupReader']
  require(values.get('POSTGRES_USER')==admin,'EXACT_REVIEWED_ADMINISTRATOR_REQUIRED')
  password=configured_admin_password(actual,values)
  status,after=engine.request('GET','/v1.44/containers/'+pin['containerId']+'/json')
- require(status==200 and Engine.runtime_binding(after)==pin and after['State']['Running']is True,
+ after_pin=Engine.runtime_binding(after)if status==200 else{}
+ if status==200:
+  require(digest(sorted(after['Mounts'],key=lambda m:m['Destination']))==digest(sorted(actual['Mounts'],key=lambda m:m['Destination'])),
+   'POSTGRES_MOUNTS_CHANGED_DURING_CREDENTIAL_READ')
+  after_pin['mountsHash']=pin['mountsHash']
+ require(status==200 and after_pin==pin and after['State']['Running']is True,
   'POSTGRES_CHANGED_DURING_CREDENTIAL_READ')
  app=urlsplit(env(private_review['oldNativeConfig']['Env'])['MCP_DATABASE_URL'])
  require(app.hostname and app.port and app.path=='/'+private_review['database']['binding']['database'],
   'EXISTING_EXPLICIT_DATABASE_ENDPOINT_REQUIRED')
  netloc=quote(admin,safe='')+':'+quote(password,safe='')+'@'+('['+app.hostname+']'if ':'in app.hostname else app.hostname)+':'+str(app.port)
- return urlunsplit((app.scheme,netloc,app.path,app.query,''))
+ result=urlunsplit((app.scheme,netloc,app.path,app.query,''))
+ return(result,actual)if include_observation else result
 
 
 def update_main(prepared,closure,resources,context,read,emit=print):
@@ -227,7 +235,7 @@ def update_main(prepared,closure,resources,context,read,emit=print):
  proof=resources['ownerReceiptAbsence'];permit.owner_absence_valid(proof,private_review,time.time(),resources['ownerConnectionRef'])
  # Resolve from the retained installation selection; no new URL or default host.
  engine=Engine(prepared['engine']['socketPath'],tuple(prepared['engine']['socketBinding']))
- admin_url=admin_database_url(private_review,engine)
+ admin_url,postgres_observation=admin_database_url(private_review,engine,include_observation=True)
  selection={'schema':'ouf.mcp-single-update-execution-selection.v1',
   'oldContainerName':next(row['name']for row in prepared['cohortPlan']['replacements']if row['module']=='mcp'),
   'metadataMountTarget':resources['executionSelection']['metadataMountTarget'],
@@ -241,7 +249,7 @@ def update_main(prepared,closure,resources,context,read,emit=print):
   'Questa decisione firma il permesso privato; nessuna proposta o approvazione semantica viene inviata.\n'
   'Segue una revisione separata prima di aggiornare MCP e migrare il suo database.')
  files=permit.issue(pr,pd,human,private_review)
- plan=compiler.compile_plan(private_review,binding,context,selection,files,admin_url)
+ plan=compiler.compile_plan(private_review,binding,context,selection,files,admin_url,postgres_mounts=postgres_observation['Mounts'])
  publish_json(context,'execution-plan.json',plan)
  remaining=pr['absoluteExpiresAt']-int(time.time());require(remaining>=210,'PERMIT_WINDOW_TOO_SHORT_BEFORE_INFRASTRUCTURE_REVIEW')
  final=authority.compile_action_review('MCP_SINGLE_UPDATE',closure,{'mcpSingleUpdate':scope(plan)},hb,context,

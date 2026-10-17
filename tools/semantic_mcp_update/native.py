@@ -103,9 +103,19 @@ class NativePorts:
   self.action.guard('mcpSingleUpdate',scope(self.plan));self.engine.check_socket()
   private_file(self.plan['predecessorReviewPath'],self.plan['predecessorReviewHash'],8388608)
   pg=self.inspect('containers',self.plan['postgresRuntimeBinding']['containerId'])
-  require(pg is not None and self.runtime(pg)==self.plan['postgresRuntimeBinding']and pg['State']['Running']is True and pg['State']['Paused']is False,'POSTGRES_RUNTIME_CHANGED')
+  pg_pin=self.runtime(pg)if pg is not None else{}
+  if pg is not None and 'postgresMounts'in self.plan:
+   retained=self.plan['postgresMounts']
+   require(digest(sorted(retained,key=lambda m:m['Destination']))==self.plan['postgresRuntimeBinding']['mountsHash']
+    and digest(sorted(pg['Mounts'],key=lambda m:m['Destination']))==digest(sorted(retained,key=lambda m:m['Destination'])),
+    'POSTGRES_MOUNTS_CHANGED')
+   pg_pin['mountsHash']=self.plan['postgresRuntimeBinding']['mountsHash']
+  require(pg is not None and pg_pin==self.plan['postgresRuntimeBinding']and pg['State']['Running']is True and pg['State']['Paused']is False,'POSTGRES_RUNTIME_CHANGED')
   old=self.inspect('containers',self.plan['oldRuntimeBinding']['containerId']);require(old is not None,'RETAINED_MCP_ABSENT')
-  require(old['Image']==self.plan['oldRuntimeBinding']['imageId']and digest(old['Config'])==self.plan['oldRuntimeBinding']['configHash']and digest(old['Mounts'])==self.plan['oldRuntimeBinding']['mountsHash'],'OLD_MCP_CONFIG_CHANGED')
+  require(old['Image']==self.plan['oldRuntimeBinding']['imageId']and digest(old['Config'])==self.plan['oldRuntimeBinding']['configHash']
+   and digest(self.plan['oldMounts'])==self.plan['oldRuntimeBinding']['mountsHash']
+   and digest(sorted(old['Mounts'],key=lambda m:m['Destination']))==digest(sorted(self.plan['oldMounts'],key=lambda m:m['Destination'])),
+   'OLD_MCP_CONFIG_CHANGED')
   n=STAGES.index(stage)
   require(old['State']['StartedAt']==self.plan['oldRuntimeBinding']['startedAt'],'OLD_MCP_PROCESS_REPLACED')
   if old['State']['Running']:

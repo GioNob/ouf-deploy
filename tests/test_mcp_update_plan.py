@@ -77,4 +77,11 @@ class Compiler(unittest.TestCase):
   fixture[0]['oldRuntimeBinding']['mountsHash']=m.digest(sorted(mounts,key=lambda row:row['Destination']));fixture[1]['sha256']=m.digest(fixture[0])
   plan=m.compile_plan(*fixture);self.assertEqual(plan['oldMounts'],mounts)
   self.assertEqual(plan['oldRuntimeBinding']['mountsHash'],m.digest(mounts))
+ def test_observed_postgres_mounts_are_bound_without_order_dependency(self):
+  fixture=list(self.fixture());mounts=[{'Destination':'/z','Source':'/secret','RW':False},{'Destination':'/a','Source':'/data','RW':True}]
+  fixture[0]['database']['postgresRuntimeBinding']={'mountsHash':m.digest(sorted(mounts,key=lambda row:row['Destination']))}
+  fixture[1]['sha256']=m.digest(fixture[0]);plan=m.compile_plan(*fixture,postgres_mounts=mounts)
+  self.assertEqual(plan['postgresMounts'],mounts)
+  changed=copy.deepcopy(mounts);changed[0]['Source']='/changed'
+  with self.assertRaisesRegex(Exception,'EXACT_OBSERVED_POSTGRES_MOUNTS_REQUIRED'):m.compile_plan(*fixture,postgres_mounts=changed)
 if __name__=='__main__':unittest.main()

@@ -58,7 +58,7 @@ def metadata_binding(files,claim,history):
  return h(files['profile.json'].encode()),permit
 
 
-def compile_plan(review,review_binding,directory,selection,files,admin_url):
+def compile_plan(review,review_binding,directory,selection,files,admin_url,*,postgres_mounts=None):
  require(review.get('schema')=='ouf.mcp-one-component-update-private-review.v2'
   and review.get('readyForExecution')is False and review.get('runtimeAuthorityIssued')is False
   and digest(review)==review_binding.get('sha256'),'EXACT_UNEXECUTED_PRIVATE_REVIEW_REQUIRED')
@@ -132,6 +132,13 @@ def compile_plan(review,review_binding,directory,selection,files,admin_url):
   'network':{'name':name,'id':endpoint['NetworkID'],'ip':ip,'mac':mac},
   'readiness':{'port':selection['readinessPort'],'path':'/health/ready'},'permitExpiresAt':permit['expiresAt'],
   'maximumExecutionSeconds':900,'automaticRollbackAllowed':False,'databaseRestoreAllowed':False,'semanticDispatchAllowed':False}
+ if postgres_mounts is not None:
+  require(type(postgres_mounts)is list and len(postgres_mounts)<=128
+   and all(type(m)is dict and type(m.get('Destination'))is str for m in postgres_mounts)
+   and len({m['Destination']for m in postgres_mounts})==len(postgres_mounts)
+   and digest(sorted(postgres_mounts,key=lambda m:m['Destination']))==review['database']['postgresRuntimeBinding']['mountsHash'],
+   'EXACT_OBSERVED_POSTGRES_MOUNTS_REQUIRED')
+  plan['postgresMounts']=copy.deepcopy(postgres_mounts)
  plan['logicalUpdateRef']=digest({'oldContainerId':old_pin['containerId'],'databaseOid':db['databaseOid'],
   'predecessorAttemptId':plan['retainedClaim']['attemptId']})
  return plan

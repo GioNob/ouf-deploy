@@ -20,9 +20,29 @@ class Channel(unittest.TestCase):
   for mounts in ([],[{'Destination':'/run/secrets','Source':'/unused','Type':'bind','RW':True}],
    [{'Destination':'/run/secrets','Source':'/unused','Type':'volume','RW':False}]):
    with self.assertRaises(m.UpdateDenied):m.configured_admin_password({'Mounts':mounts},{'POSTGRES_PASSWORD_FILE':'/run/secrets/password'})
+ def test_native_guard_accepts_order_only_and_rejects_any_mount_change(self):
+  import types
+  from tools.semantic_mcp_update import native,owner
+  mounts=[{'Destination':'/z','Source':'/secret','RW':False},{'Destination':'/a','Source':'/data','RW':True}]
+  pg={'Id':'pg','Image':'pg-image','State':{'Pid':10,'StartedAt':'pg-start','Running':True,'Paused':False},'Config':{},'HostConfig':{},'Mounts':mounts,'NetworkSettings':{}}
+  old={'Id':'old','Name':'/fixture-mcp','Image':'old-image','State':{'Pid':20,'StartedAt':'old-start','Running':True},'Config':{},'HostConfig':{},'Mounts':mounts,'NetworkSettings':{}}
+  holder=types.SimpleNamespace()
+  holder.runtime=lambda actual:native.NativePorts.runtime(holder,actual)
+  pgpin=holder.runtime(pg);pgpin['mountsHash']=m.digest(sorted(mounts,key=lambda v:v['Destination']))
+  holder.plan={'postgresRuntimeBinding':pgpin,'postgresMounts':copy.deepcopy(mounts),'oldRuntimeBinding':holder.runtime(old),
+   'oldMounts':copy.deepcopy(mounts),'oldHostConfig':{},'predecessorReviewPath':'fixture','predecessorReviewHash':'0'*64,'replacement':{'name':'fixture-mcp'}}
+  holder.action=types.SimpleNamespace(guard=lambda *args:None);holder.engine=types.SimpleNamespace(check_socket=lambda:None)
+  pg['Mounts']=list(reversed(mounts));old['Mounts']=list(reversed(mounts))
+  holder.inspect=lambda kind,reference:pg if reference=='pg'else old
+  with patch.object(owner,'scope',return_value={}),patch.object(native,'private_file'):
+   native.NativePorts.guard_current(holder,'VERIFY_INPUTS')
+   pg['Mounts']=copy.deepcopy(pg['Mounts']);pg['Mounts'][0]['RW']=not pg['Mounts'][0]['RW']
+   with self.assertRaisesRegex(m.UpdateDenied,'POSTGRES_MOUNTS_CHANGED'):native.NativePorts.guard_current(holder,'VERIFY_INPUTS')
+   pg['Mounts']=copy.deepcopy(mounts);old['Mounts']=copy.deepcopy(mounts);old['Mounts'][0]['Source']='/changed'
+   with self.assertRaisesRegex(m.UpdateDenied,'OLD_MCP_CONFIG_CHANGED'):native.NativePorts.guard_current(holder,'VERIFY_INPUTS')
  def test_same_selected_database_and_generation_guard(self):
   actual={'State':{'Running':True},'Config':{'Env':['POSTGRES_USER=administrator','POSTGRES_PASSWORD=synthetic:@/ pass']},'Mounts':[]}
-  pin={'containerId':'fixture-pg'}
+  pin={'containerId':'fixture-pg','mountsHash':m.digest([])}
   review={'database':{'postgresRuntimeBinding':pin,'backupReader':'administrator','binding':{'database':'fixture_db'}},
    'oldNativeConfig':{'Env':['MCP_DATABASE_URL=postgresql://application:old@pg.fixture:5432/fixture_db?sslmode=disable']}}
   class Engine:
