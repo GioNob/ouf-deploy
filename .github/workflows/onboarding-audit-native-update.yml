@@ -2,7 +2,7 @@ name: Single Onboarding audit fix native qualification
 on:
   push:
     branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths: ['tools/onboarding_audit_update/**', 'scripts/execute-onboarding-audit-fix-20261017.py', 'releases/onboarding-audit-fix-execution-selection-20261017.json', 'tests/test_onboarding_audit_update_*.py', '.github/workflows/onboarding-audit-native-update.yml']
+    paths: ['tools/onboarding_audit_update/**', 'tools/semantic_mcp_update/session.py', 'scripts/execute-onboarding-audit-fix-20261017.py', 'releases/onboarding-audit-fix-execution-selection-20261017.json', 'tests/test_onboarding_audit_update_*.py', '.github/workflows/onboarding-audit-native-update.yml']
 permissions: {contents: read}
 jobs:
   native-scoped-update:

@@ -34,10 +34,38 @@ def expired_login_review(previous,operation_binding):
   'runtimeAuthorityIssued':False}
 
 
+def blocked_refresh_login_review(previous,operation_binding):
+ """Fresh device authentication only; a terminally failed refresh stays sealed.
+
+ A received nontransient response does not prove revocation. Neither this
+ review nor its local consent restores old credentials or runtime authority.
+ Transport-ambiguous and interrupted requests remain reconciliation-only.
+ """
+ require(type(previous)is HumanSession and previous.action is None,'RETAINED_REAL_PRE_AUTHORITY_HUMAN_SESSION_REQUIRED')
+ row=previous._read();previous._check_identity_and_budget(row)
+ require(row.get('state')=='BLOCKED' and row.get('operation')=='REFRESH'
+  and row.get('reason')=='HUMAN_OAUTH_REVOKED_OR_PERMANENT_OR_UNKNOWN'
+  and time.time()+2>=row['lastObservedAt'],'TERMINAL_RECEIVED_REFRESH_FAILURE_REQUIRED')
+ require(row['attempts']<PROFILE['maximumAttempts'],'HUMAN_CUMULATIVE_OAUTH_BUDGET_EXHAUSTED')
+ require(type(operation_binding)is dict and operation_binding and all(type(k)is str and type(v)is str
+  and len(v)==64 and all(c in '0123456789abcdef'for c in v)for k,v in operation_binding.items()),
+  'EXACT_SUCCESSOR_OPERATION_BINDING_REQUIRED')
+ return {'schema':'ouf.human-blocked-refresh-new-login-review.v1','predecessorDirectory':str(previous.directory),
+  'predecessorRowHash':digest(row),'predecessorBindingHash':digest(row['binding']),
+  'predecessorExpiredAt':previous.expires_at,'priorOAuthAttempts':row['attempts'],
+  'maximumCumulativeOAuthAttempts':128,'maximumRemainingOAuthAttempts':128-row['attempts'],
+  'newWindowSeconds':7200,'selectionHash':digest(previous.selection),'bootId':row['bootId'],
+  'operationBinding':copy.deepcopy(operation_binding),'automaticRenewalAllowed':False,'budgetReset':False,
+  'runtimeAuthorityIssued':False,'failedRefreshReplayAllowed':False,'oldCredentialsReusable':False,
+  'freshIssuerAuthenticationRequired':True,'predecessorState':'BLOCKED','predecessorOperation':'REFRESH',
+  'predecessorReason':row['reason']}
+
+
 def open_approved_login(previous,review,decision):
  require(type(previous)is HumanSession,'REAL_HUMAN_SESSION_REQUIRED')
  with previous.journal.invocation():
-  require(review==expired_login_review(previous,review['operationBinding']),'SUCCESSOR_HUMAN_PREDECESSOR_CHANGED')
+  reviewer=blocked_refresh_login_review if review.get('schema')=='ouf.human-blocked-refresh-new-login-review.v1' else expired_login_review
+  require(review==reviewer(previous,review['operationBinding']),'SUCCESSOR_HUMAN_PREDECESSOR_CHANGED')
   now=time.time()
   require(set(decision)=={'schema','reviewHash','decision','approvedAt','expiresAt'}
    and decision['schema']=='ouf.human-login-window-terminal-consent.v1'

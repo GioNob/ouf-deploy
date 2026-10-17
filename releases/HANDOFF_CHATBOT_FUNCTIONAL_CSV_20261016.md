@@ -1,3 +1,11 @@
+# HUMAN refresh bloccato: nuovo login esplicito da qualificare — 2026-10-17
+
+**Fasi tecniche8/8; funzionali1/6.** Readback operatore: contesto `/etc/ouf/deploy-snapshots/onboarding-audit-execution-fz4p79t2`; nessun review/decision/human/authority/issuance.claim/login-window-receipt presente. HUMAN BLOCKED, operazione REFRESH, motivo HUMAN_OAUTH_REVOKED_OR_PERMANENT_OR_UNKNOWN,81 tentativi consumati,47 residui su128, finestra non ancora scaduta al controllo. Il motivo aggrega risposte OAuth ricevute non transitorie e non dimostra la causa di revoca. Il refresh non si ripete e il blocco non si cancella.
+
+Implementato un percorso separato per nuova autenticazione device, con consenso locale esatto: conserva il journal BLOCKED, lega hash del predecessore e della preparazione fallita, inizializza un nuovo journal NEW a81 senza copiare vecchi token. Seguono autenticazione issuer/userinfo e nuove decisioni worker e Onboarding. Richieste interrotte o trasporto ambiguo sono escluse. La sola scadenza non sblocca il vecchio login. Worker cancellato:248 cumulativi,68 residui,tetto316. Onboarding attuale e02def25; correzione compatibilità34488428 scaricata ma non installata. Riutilizzare candidato39020189836 verificato; nessuna nuova immagine. Consegna ancora in qualificazione, nessuna autorità runtime emessa da questa modifica.
+
+---
+
 # Compatibilità owner corretta e sessione residua qualificata: pronto per due decisioni — 2026-10-17
 
 **Fasi tecniche8/8; funzionali1/6.** Readback SQL dell'operatore: databaseouf_onboarding/OID21552, ruoloouf_admin, transazioneREADONLY, policy40. READ configuration.read SERVICE grantouf-ingestion vincolato a published-configuration/moduleONBOARDING; attestazione ingestion.configuration.attest SERVICE operationCOMMAND grantouf-ingestion presente senza vincoli aggiuntivi; configuration.write HUMAN operationCOMMAND presente per il soggetto selezionato. Revisione Teatri APPROVED/CONFIRMED, hash esatto, compatibilityCount0, readinessBLOCKED/ONB_READINESS_DEPENDENCY_403, attempts2/generation3. Worker precedente CANCELLED/expired,60 pubblicazioni,248 cumulativi,ceiling316. Nessun reset o riavvio eseguito dal lettore.

@@ -189,6 +189,23 @@ def remainder_worker_review(base,records,journal):
  return review
 
 
+def blocked_preparation_binding(case,read,human):
+ """Qualify the exact pre-authority STOP; never edits its private records."""
+ retained=case['blockedHumanPreparation'];path=Path(retained['contextPath'])
+ require(path.is_absolute() and path.resolve()==path and path.parent==Path(case['policyContext']).parent,
+  'EXACT_BLOCKED_PREPARATION_CONTEXT_REQUIRED')
+ artifacts=('review.json','decision.json','human.json','authority.json','issuance.claim.json','login-window-receipt.json')
+ require(not any(os.path.lexists(path/name)for name in artifacts),'BLOCKED_PREPARATION_AUTHORITY_ARTIFACT_PRESENT')
+ row=human._read();human._check_identity_and_budget(row)
+ require(row.get('attempts')==retained['oauthAttempts']==81 and row.get('state')=='BLOCKED'
+  and row.get('operation')=='REFRESH' and row.get('reason')=='HUMAN_OAUTH_REVOKED_OR_PERMANENT_OR_UNKNOWN',
+  'EXACT_OBSERVED_BLOCKED_HUMAN_HISTORY_REQUIRED')
+ records={name:digest(read(path/name,8388608))for name in('candidate-review.json','execution-plan.json','worker-review.json')}
+ require(row==human._read(),'BLOCKED_HUMAN_CHANGED_DURING_RECONCILIATION')
+ return digest({'contextPath':str(path),'recordHashes':records,'humanRowHash':digest(row),
+  'authorityArtifactsAbsent':list(artifacts),'failedRefreshReplayAllowed':False})
+
+
 def run_policy_remainder_and_update(prepared,sources,closure,case,context,plan,read,emit):
  # Every archive, image, source migration and current application/Gateway pin is
  # already prepared before any HUMAN refresh, terminal decision or new grant.
@@ -216,7 +233,18 @@ def run_policy_remainder_and_update(prepared,sources,closure,case,context,plan,r
  receipt=read(Path(case['policyContext'])/'login-window-receipt.json',131072);human_dir=Path(receipt['directory'])
  human=HumanSession(prepared['authorization']['plan']['selection'],human_dir,human_dir/'human-access.jwt',receipt['expiresAt'])
  signal.alarm(0)
- if time.time()>=human.expires_at:
+ if case.get('blockedHumanPreparation'):
+  retained_hash=blocked_preparation_binding(case,read,human)
+  login_review=session.blocked_refresh_login_review(human,{'workerReviewHash':digest(review),
+   'rolloutPlanHash':digest(plan),'sourceClosureHash':digest(closure),'blockedPreparationHash':retained_hash})
+  publish_json(context,'login-review.json',login_review)
+  consent=authority.terminal_consent(login_review,
+   'Nuovo login HUMAN dopo il refresh bloccato; il vecchio journal resta BLOCKED e non viene riusato.\n'
+   'OAuth:81 consumati, massimo47 ulteriori, cumulativo128. Nessun reset o rinnovo del vecchio token.\n'
+   'Seguono autenticazione nel browser, APPROVO worker248+68=316 e APPROVO separato per Onboarding.',login=True)
+  require(retained_hash==blocked_preparation_binding(case,read,human),'BLOCKED_PREPARATION_CHANGED')
+  human=session.open_approved_login(human,login_review,consent);human.login(emit=emit)
+ elif time.time()>=human.expires_at:
   login_review=session.expired_login_review(human,{'workerReviewHash':digest(review),'rolloutPlanHash':digest(plan),'sourceClosureHash':digest(closure)})
   publish_json(context,'login-review.json',login_review)
   consent=authority.terminal_consent(login_review,

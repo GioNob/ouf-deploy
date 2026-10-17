@@ -5,6 +5,10 @@
     "sourceLockSha256": "e95227a3a63d3c946295ebde966e394b5f735457280091f38402f16a87d859b3",
     "zipSha256": "92e52ae392d52260f20c7e399d0c6e2c1a8825aa2c9c0ca3830568055d73081f"
   },
+  "blockedHumanPreparation": {
+    "contextPath": "/etc/ouf/deploy-snapshots/onboarding-audit-execution-fz4p79t2",
+    "oauthAttempts": 81
+  },
   "candidateSourceCommit": "34488428ac8eee6b919cb1b5982cf9ba62361292",
   "completedTechnicalPhases": 8,
   "expectedMigrationTree": [
