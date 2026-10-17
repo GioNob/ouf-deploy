@@ -1,8 +1,8 @@
 name: Linked property private preparation checks
 on:
   push:
-    branches: [feat/linked-property-rollout-20261017]
-    paths: ['tools/linked_property_rollout/**', 'tests/test_linked_property_preparation.py', 'scripts/launch-linked-property-private-review-20261017.sh', '.github/workflows/linked-property-preparation.yml']
+    branches: [feat/linked-property-rollout-20261017, fix/linked-property-runtime-binding-20261017]
+    paths: ['tools/linked_property_rollout/**', 'tests/test_linked_property_preparation.py', 'scripts/launch-linked-property-private-review-20261017.sh', '.github/workflows/linked-property-preparation.yml', 'releases/linked-property-preparation-selection-20261017.json']
   workflow_dispatch:
 permissions: {contents: read}
 jobs:

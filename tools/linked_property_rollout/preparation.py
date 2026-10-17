@@ -123,6 +123,21 @@ def runtime(actual):
                 ('networkSettings', 'NetworkSettings'))}}
 
 
+def application_checks(actual, expected, config_hash):
+    """Compare one API1.44 observation without removing compatibility fields."""
+    if not actual:
+        return {'containerPresent': False}
+    return {
+        'containerPresent': True,
+        'running': actual['State']['Running'] is True,
+        'notPaused': actual['State']['Paused'] is False,
+        'containerIdMatches': actual['Id'] == expected['containerId'],
+        'imageIdMatches': actual['Image'] == expected['imageId'],
+        'sourceCommitMatches': actual['Config'].get('Labels', {}).get('org.opencontainers.image.revision') == expected['sourceCommit'],
+        'configurationHashMatches': digest(actual['Config']) == config_hash,
+    }
+
+
 def copy_package(source, target, expected):
     fd = os.open(source, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
     try:
@@ -396,6 +411,7 @@ def main(code, archive_path, package_hash, progress):
     require(set(contents) == {'prepare.py', 'image_custody.py', 'release.json', 'migrations.json', 'selection.json'},
             'EXACT_PREPARATION_CODE_PACKAGE_REQUIRED')
     release, manifest, selection = (parsed(contents[k]) for k in ('release.json', 'migrations.json', 'selection.json'))
+    require(selection.get('engineApiVersion') == '1.44', 'RETAINED_ENGINE_API_VERSION_REQUIRED')
     ns = {'__name__': 'verified_linked_property_retained_helpers'}
     boot = selection['retainedBootstrap']
     exec(compile(read_file(boot['path'], boot['sha256'], 131072), '<verified-retained-helper>', 'exec'), ns)
@@ -415,10 +431,11 @@ def main(code, archive_path, package_hash, progress):
         for module in MODULES:
             expected = release['targetRead'][module]
             actual = ns['engine_get'](prepared['engine'], 'containers', expected['containerId'])
-            require(actual and actual['State']['Running'] and not actual['State']['Paused']
-                    and actual['Id'] == expected['containerId'] and actual['Image'] == expected['imageId']
-                    and actual['Config'].get('Labels', {}).get('org.opencontainers.image.revision') == expected['sourceCommit']
-                    and digest(actual['Config']) == selection['configHashes'][module], 'EXACT_CURRENT_APPLICATION_REQUIRED')
+            checks = application_checks(actual, expected, selection['configHashes'][module])
+            if not all(checks.values()):
+                progress('APPLICATION_BINDING_MISMATCH', module=module, engineApiVersion='1.44',
+                         checks=checks, configurationValuesPrinted=False)
+                require(False, 'EXACT_CURRENT_APPLICATION_REQUIRED')
             result[module] = actual
         return result
     actuals = applications()
@@ -442,6 +459,7 @@ def main(code, archive_path, package_hash, progress):
     require(runtime(ns['engine_get'](prepared['engine'], 'containers', pg['containerId'])) == pg,
             'POSTGRES_GENERATION_CHANGED_DURING_PREPARATION')
     plan = {'schema': 'ouf.linked-property-private-preparation.v1', 'installationSpecific': True,
+            'engineApiVersion': '1.44',
             'retainedBootstrap': boot, 'releaseHash': digest(release), 'candidatePackageHash': release['package']['githubArtifactDigest'],
             'beforeApplications': {m: runtime(v) for m, v in actuals.items()},
             'privateApplicationObservations': actuals, 'databaseFacts': facts,

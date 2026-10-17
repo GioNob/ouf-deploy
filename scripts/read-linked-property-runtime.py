@@ -2,12 +2,14 @@
 """Bounded read-only container metadata, never configuration or credential values."""
 import hashlib
 import json
+import os
 import re
 import subprocess
 
 def call(args):
     try:
-        result = subprocess.run(args, capture_output=True, timeout=10, check=False)
+        result = subprocess.run(args, capture_output=True, timeout=10, check=False,
+                                env={**os.environ, 'DOCKER_API_VERSION':'1.44'})
         return result.stdout if result.returncode == 0 else None
     except (OSError, subprocess.TimeoutExpired):
         return None
@@ -33,10 +35,12 @@ def read(prefix, name):
 def main():
     prefix = None
     for candidate in (['docker'], ['sudo', '-n', 'docker']):
-        if call(candidate + ['version', '--format', '{{.Server.Version}}']) is not None:
+        version = call(candidate + ['version', '--format', '{{.Client.APIVersion}}'])
+        if version is not None and version.strip() == b'1.44':
             prefix = candidate
             break
     report = {'schema': 'ouf.linked-property-runtime-read.v1', 'readOnly': True,
+              'engineApiVersion': '1.44',
               'serviceMutations': 0, 'credentialFilesRead': 0, 'credentialValuesPrinted': False,
               'databaseCalls': 0, 'databaseMigrationStateProven': False,
               'completedTechnicalPhases': 8, 'functionalMilestonesProven': 2}

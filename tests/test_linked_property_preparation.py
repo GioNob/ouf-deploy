@@ -1,5 +1,6 @@
 """Integrity boundaries for private release preparation; no host access needed."""
 import importlib.util
+import copy
 import io
 from pathlib import Path
 import tempfile
@@ -13,6 +14,28 @@ spec.loader.exec_module(p)
 
 
 class PreparationTest(unittest.TestCase):
+    def test_api_projection_mismatch_is_not_silently_normalized(self):
+        config={'Labels':{'org.opencontainers.image.revision':'a'*40},'Env':['NON_SECRET_TEST=value']}
+        expected={'containerId':'c'*64,'imageId':'sha256:'+'b'*64,'sourceCommit':'a'*40}
+        actual={'Id':expected['containerId'],'Image':expected['imageId'],
+                'State':{'Running':True,'Paused':False},'Config':{**config,'MacAddress':'02:00:00:00:00:01'}}
+        self.assertFalse(p.application_checks(actual,expected,p.digest(config))['configurationHashMatches'])
+        correct=p.digest(actual['Config'])
+        self.assertTrue(all(p.application_checks(actual,expected,correct).values()))
+        changed=copy.deepcopy(actual);changed['Config']['MacAddress']='02:00:00:00:00:02'
+        self.assertFalse(p.application_checks(changed,expected,correct)['configurationHashMatches'])
+        changed=copy.deepcopy(actual);changed['Config']['Env']=['NON_SECRET_TEST=changed']
+        self.assertFalse(p.application_checks(changed,expected,correct)['configurationHashMatches'])
+
+    def test_binding_diagnostic_reports_failure_without_configuration_values(self):
+        self.assertEqual(p.application_checks(None,{},'unused'),{'containerPresent':False})
+        expected={'containerId':'c','imageId':'i','sourceCommit':'s'}
+        actual={'Id':'different','Image':'i','State':{'Running':False,'Paused':True},
+                'Config':{'Labels':{'org.opencontainers.image.revision':'s'},'Env':['hidden']}}
+        checks=p.application_checks(actual,expected,p.digest(actual['Config']))
+        self.assertEqual({k for k,v in checks.items() if not v},{'containerIdMatches','running','notPaused'})
+        self.assertTrue(all(type(v) is bool for v in checks.values()))
+
     def test_installed_prefix_drift_is_rejected(self):
         expected = [{'version':'1','script':'V1__one.sql','checksum':123,'success':True}]
         observed = [{'installed_rank':0,'version':None,'script':'"ouf_udp"','checksum':None,'success':True},
