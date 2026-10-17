@@ -46,3 +46,11 @@ A bounded diagnostic for that installed helper is prepared in scripts/diagnose-i
 Physical operator action is now needed to run that exact diagnostic through interactive administrative authentication, because its execution is outside the existing fixed-helper sudo rule. This is not another request for repository/MCP permission. No runtime installation, policy publication or credential-owner restart is included. Use the diagnostic output to repair the supported administrative path before preparing a current private activation review. Do not replay the old 34->35 launcher: the next UDP transition is 35->36.
 
 Technical status remains 8/8; functional status 3/6. Packaging and delivery do not establish target installation or chat-only E2E.
+
+## Fixed-helper diagnostic result and masked observer failure
+
+The operator supplied a read-only diagnostic receipt: installed helper SHA256 65c8caa661005a7bf4bfe7eb1c5f45932a32c3e024095db861882f6c52998618, ValueError at collect line 76, no runtime mutations. That hash exactly matches the v3 source. The pointer, selected receipt and observer loading completed; the final runtimeCustodyVerified gate rejected the report. The v2 collector catches the observer exception before v3 checks that gate, hiding the original location. The underlying native failure is not yet established.
+
+The v2 diagnostic observes exception propagation at the sealed observer's observe boundary and reports only class and source frames, including a failure swallowed by the legacy collector. It pins the exact installed v3 helper hash, restores the prior tracing hook, retains the 90-second bound and all custody checks, and does not change helper/observer files, receipts, sudo policy or runtime authority. A direct helper replacement would also violate the observer's own pinned HELPER_V3_HASH; do not replace it as an isolated observability fix.
+
+The previous operator diagnostic step is complete. The deeper diagnostic is required only because the original error is masked; its result must precede any claim about historical cohort drift or a runtime repair. Technical 8/8 and functional 3/6 remain unchanged.

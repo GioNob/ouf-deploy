@@ -13,6 +13,28 @@ import sys
 import traceback
 
 HELPER = Path('/usr/local/sbin/ouf-discovery-preflight')
+EXPECTED_HELPER_SHA256 = '65c8caa661005a7bf4bfe7eb1c5f45932a32c3e024095db861882f6c52998618'
+
+def safe_failure(error, trace=None):
+    return {'errorClass': type(error).__name__, 'frames': [
+        {'file': Path(frame.filename).name, 'line': frame.lineno, 'function': frame.name}
+        for frame in traceback.extract_tb(trace if trace is not None else error.__traceback__)[-12:]]}
+
+def observe_call(call, result):
+    """Observe the sealed observer's swallowed failure without changing its result."""
+    previous = sys.gettrace()
+    def trace(frame, event, arg):
+        if event == 'exception' and frame.f_code.co_name == 'observe' and Path(frame.f_code.co_filename).name == 'transition-source.py':
+            # Store metadata only, never exception objects, arguments or locals.
+            error = arg[1]
+            result['observerFailure'] = safe_failure(error, arg[2])
+        return trace
+    try:
+        sys.settrace(trace)
+        return call()
+    finally:
+        sys.settrace(previous)
+
 
 def inspect():
     if len(sys.argv) != 1 or os.geteuid() != 0 or not sys.flags.isolated or not sys.flags.no_site or not sys.dont_write_bytecode:
@@ -31,19 +53,20 @@ def inspect():
             raise ValueError('ROOT_HELPER_CHANGED')
     finally:
         os.close(fd)
-    result = {'schema': 'ouf.fixed-helper-diagnostic.v1', 'helperSha256': hashlib.sha256(raw).hexdigest(), 'runtimeMutations': 0, 'payloadPrinted': False, 'exceptionMessagePrinted': False}
+    if hashlib.sha256(raw).hexdigest() != EXPECTED_HELPER_SHA256:
+        raise ValueError('INSTALLED_HELPER_CHANGED')
+    result = {'schema': 'ouf.fixed-helper-diagnostic.v2', 'helperSha256': hashlib.sha256(raw).hexdigest(), 'runtimeMutations': 0, 'payloadPrinted': False, 'exceptionMessagePrinted': False}
     signal.signal(signal.SIGALRM, lambda *_: (_ for _ in ()).throw(TimeoutError()))
     signal.alarm(90)
     try:
         module = {'__name__': 'ouf_fixed_read_diagnostic', '__file__': str(HELPER)}
         with open(os.devnull, 'w') as sink, contextlib.redirect_stdout(sink), contextlib.redirect_stderr(sink):
             exec(compile(raw, str(HELPER), 'exec'), module)
-            module['collect']()
+            observe_call(module['collect'], result)
         result['readSucceeded'] = True
     except Exception as error:
         result['readSucceeded'] = False
-        result['errorClass'] = type(error).__name__
-        result['frames'] = [{'file': Path(frame.filename).name, 'line': frame.lineno, 'function': frame.name} for frame in traceback.extract_tb(error.__traceback__)[-12:]]
+        result.update(safe_failure(error))
     finally:
         signal.alarm(0)
     return result
@@ -52,5 +75,5 @@ if __name__ == '__main__':
     try:
         print(json.dumps(inspect(), sort_keys=True))
     except Exception as error:
-        print(json.dumps({'schema': 'ouf.fixed-helper-diagnostic.v1', 'readSucceeded': False, 'errorClass': type(error).__name__, 'payloadPrinted': False, 'exceptionMessagePrinted': False}, sort_keys=True))
+        print(json.dumps({'schema': 'ouf.fixed-helper-diagnostic.v2', 'readSucceeded': False, 'errorClass': type(error).__name__, 'payloadPrinted': False, 'exceptionMessagePrinted': False}, sort_keys=True))
         raise SystemExit(2)
