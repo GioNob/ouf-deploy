@@ -1,0 +1,24 @@
+{
+  "schema": "ouf.ingestion-readiness-source-lock.v1",
+  "cohortId": "chat-only-recovery-20261018",
+  "modules": [
+    {
+      "module": "udp",
+      "repository": "ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "kind": "DOCKER_SAVE"
+    },
+    {
+      "module": "mcp",
+      "repository": "ouf-mcp-server",
+      "commit": "5124178d5856b564691ca4274817efd45a0bb991",
+      "kind": "DOCKER_SAVE"
+    }
+  ],
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "requiredUdpMigration": "V36__publication_dependency_recovery.sql",
+  "nativeProfilePublicationRequired": true,
+  "scope": "Generic deferred resolution and bounded dependency recovery plus MCP permission schema portability. Packaging only; no target changes, replay or identity decision."
+}
