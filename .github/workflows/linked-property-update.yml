@@ -1,0 +1,26 @@
+name: Linked property native rollout qualification
+on:
+  push:
+    branches: [feat/linked-property-migration-rollout-20261017]
+    paths: ['tools/linked_property_rollout/**', 'tests/test_linked_property_*.py', 'scripts/*linked-property-update*', 'releases/linked-property-update*', '.github/workflows/linked-property-update.yml']
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  integrity-and-fencing:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Root-owned isolated fixtures with real local signatures
+        run: |
+          sudo install -d -m 0700 /root/ouf-linked-property-tests
+          sudo cp -a . /root/ouf-linked-property-tests/repo
+          sudo chown -R root:root /root/ouf-linked-property-tests
+          sudo chmod -R go-w /root/ouf-linked-property-tests
+          sudo sh -c 'cd /root/ouf-linked-property-tests/repo && OUF_NATIVE_UIDS=1 OUF_TEST_ROOT=/root/ouf-linked-property-tests python3 -B -m unittest discover -s tests -p "test_linked_property_*.py" -v'
+      - name: Verify operator launcher shell when present
+        run: |
+          if [ -f scripts/launch-linked-property-update-20261017.sh ]; then
+            bash -n scripts/launch-linked-property-update-20261017.sh
+          fi
