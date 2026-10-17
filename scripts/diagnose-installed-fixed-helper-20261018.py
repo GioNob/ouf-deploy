@@ -27,7 +27,7 @@ def inspect():
         if not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or info.st_gid != 0 or info.st_nlink != 1 or stat.S_IMODE(info.st_mode) != 0o755 or not 0 < info.st_size <= 131072:
             raise ValueError('ROOT_HELPER_CUSTODY_UNPROVEN')
         raw = os.read(fd, 131073)
-        if len(raw) != info.st_size or os.fstat(fd) != info:
+        if len(raw) != info.st_size or any(getattr(os.fstat(fd), k) != getattr(info, k) for k in ('st_dev', 'st_ino', 'st_mode', 'st_uid', 'st_gid', 'st_nlink', 'st_size', 'st_mtime_ns', 'st_ctime_ns')):
             raise ValueError('ROOT_HELPER_CHANGED')
     finally:
         os.close(fd)
