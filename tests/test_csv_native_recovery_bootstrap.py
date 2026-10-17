@@ -20,7 +20,7 @@ def sources():
  result.update({'tools.resolution_ths_configuration.'+n:(ROOT/'tools/resolution_ths_configuration'/ (n+'.py')).read_bytes()for n in('entry','authority','owner','native','plan')})
  result.update({'tools.teatri_materialization_apply.'+n:(ROOT/'tools/teatri_materialization_apply'/(n+'.py')).read_bytes()for n in('entry','authority','owner','native','plan','preparation','preflight','permissions','login')})
  result['tools.chatbot_file_cohort.human_session']=(ROOT/'tools/csv_materialization_recovery/human_session.py').read_bytes()
- result.update({'tools.csv_materialization_recovery.'+n:(ROOT/'tools/csv_materialization_recovery'/(n+'.py')).read_bytes()for n in('entry','authority','run','retry','journal')})
+ result.update({'tools.csv_materialization_recovery.'+n:(ROOT/'tools/csv_materialization_recovery'/(n+'.py')).read_bytes()for n in('entry','authority','run','retry','journal','continuation')})
  return result
 class Bootstrap(unittest.TestCase):
  def test_actual_closed_entry_imports_in_isolated_process_with_all_effects_disabled(self):
@@ -42,7 +42,7 @@ for n in('entry','authority','owner','native','plan'):
 sources.update({'tools.resolution_ths_configuration.'+n:(root/'tools/resolution_ths_configuration'/(n+'.py')).read_bytes()for n in('entry','authority','owner','native','plan')})
 sources.update({'tools.teatri_materialization_apply.'+n:(root/'tools/teatri_materialization_apply'/(n+'.py')).read_bytes()for n in('entry','authority','owner','native','plan','preparation','preflight','permissions','login')})
 sources['tools.chatbot_file_cohort.human_session']=(root/'tools/csv_materialization_recovery/human_session.py').read_bytes()
-sources.update({'tools.csv_materialization_recovery.'+n:(root/'tools/csv_materialization_recovery'/(n+'.py')).read_bytes()for n in('entry','authority','run','retry','journal')})
+sources.update({'tools.csv_materialization_recovery.'+n:(root/'tools/csv_materialization_recovery'/(n+'.py')).read_bytes()for n in('entry','authority','run','retry','journal','continuation')})
 pins={'ouf-deploy':'a'*40,'ouf-onboarding':'b'*40};extra={'executorSha256':'c'*64,'caseSha256':'d'*64,'mode':'CSV_MATERIALIZATION_RECOVERY'}
 d=ns['declaration']('a'*40,sources,loader,pins,extra)
 def denied(*a,**k):raise AssertionError('NO_EFFECTS_DURING_CLOSED_IMPORT')

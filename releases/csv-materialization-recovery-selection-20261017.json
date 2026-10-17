@@ -15,5 +15,19 @@
     "path": "/etc/ouf/deploy-snapshots/csv-recovery-login-szpbk24_/review.json",
     "sha256": "89e180c82984690add51942018d5569898e86044a5f8d3341d7475d4610e42d7"
   },
-  "maximumGrantExpiry": "2026-10-17T18:51:11Z"
+  "maximumGrantExpiry": "2026-10-17T18:51:11Z",
+  "interruptedSession": {
+    "contextPath": "/etc/ouf/deploy-snapshots/csv-materialization-recovery-grdk3ael",
+    "workerJournal": "/etc/ouf/deploy-snapshots/chatbot-file-intake-9f754dbcf7caf450d1d1eef50c0288f2102cfac191a65cfc60a5c1fcbf60ba5e/attempt-f8d38137fc4cca9d36910c19/semantic-functional-worker-2af1928d087c14a1215b19e34ea916ea28fcf91a3426caf6ab326bf4d0491fd6",
+    "reviewHash": "058c1f5a1162bb17e5ba9504afaeb529d8ddedf1fed7773efdb4952e33950875",
+    "authorityHash": "e3914663172d0ca7089ed8a80ea218eca3bc6fe103c33429b11602627edd0117",
+    "recordHashes": {
+      "owner-admission.json": "a15010b9d31f91cc77b94ee7a5537a8096c709303bd3e09c503a3f30a4dee05b",
+      "owner-first-grant.json": "4bb904ea93df0766647641fd397cac7d8504f1ca81252ce597d1db363a86105a",
+      "owner-session-review.json": "2af1928d087c14a1215b19e34ea916ea28fcf91a3426caf6ab326bf4d0491fd6",
+      "owner-session.json": "45504b7b5f92f22add595c7a0678a43cb80a846a1a032d17a0859ec1926e94f0",
+      "owner-status.json": "be50772f52c01732dbea3e941f1933b434d3a7fe1ae473983feb82f9c957f5d5",
+      "recovery.json": "808f0291455f8be225837f7d2d66725e0011ad516a7c27a7af1fd6aa57e8dd16"
+    }
+  }
 }

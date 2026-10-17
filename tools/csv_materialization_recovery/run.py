@@ -25,8 +25,8 @@ from tools.teatri_materialization_apply import preflight,permissions
 from tools.teatri_materialization_apply.native import runtime
 from tools.teatri_materialization_apply.owner import require,digest,encoded
 from tools.teatri_materialization_apply.preparation import publish_json
-from tools.csv_materialization_recovery import authority,retry
-from tools.csv_materialization_recovery.journal import synchronize
+from tools.csv_materialization_recovery import authority,retry,continuation
+from tools.csv_materialization_recovery.journal import synchronize,report_guard_errors
 
 def main(prepared,sources,closure,case,context,read,ns,emit):
  authority.closure_valid(closure);context=Path(context)
@@ -51,6 +51,7 @@ def main(prepared,sources,closure,case,context,read,ns,emit):
  guard_apps();jobs=plan['jobs']
  current=preflight.sql_fact(prepared,ns,closure['executables']['docker'],'udp',preflight.jobs_query(selection['tenant']))
  permissions.verify_jobs(current['jobs'],jobs)
+ plan=continuation.prepare(plan,case['interruptedSession'],read)
  future=plan['workerReview'];journal=Path(future['predecessorJournalDirectory'])
  records={n:read(journal/n,131072,h)for n,h in future['predecessorRecordHashes'].items()};first=read(journal/'owner-first-grant.json',16384)
  policy={'delays':[5,15,60,300,900],'max_attempts':128,'max_elapsed':3600,'attempt_timeout':30,'jitter':.2}
@@ -74,7 +75,7 @@ def main(prepared,sources,closure,case,context,read,ns,emit):
  review=authority.compile_action_review('POLICY_TEST_SESSION',closure,planned.scopes(),hb,context,
   {'predecessorHistoryHash':digest(future['predecessorRecordHashes']),'predecessorIncidentRef':compiled['logicalOwnerScopeHash']},3600)
  review['absoluteExpiresAt']=min(grant_expiry,human.expires_at-5);review['workerReviewBinding']=worker_binding
- review['nativeRecoveryPlanBinding']=selected;publish_json(context,'review.json',review)
+ review['nativeRecoveryPlanBinding']=selected;review['reconciledPredecessor']=copy.deepcopy(case['interruptedSession']);publish_json(context,'review.json',review)
  stop=threading.Event();handlers={};worker_thread=None;timer=None
  for sig in(signal.SIGINT,signal.SIGTERM,signal.SIGHUP):handlers[sig]=signal.signal(sig,lambda *_:stop.set())
  human.start_refresh(stop,emit=emit)
@@ -90,7 +91,7 @@ def main(prepared,sources,closure,case,context,read,ns,emit):
   def clock():require(not stop.is_set(),'CSV_RECOVERY_CANCELLED');return time.time()
   action.authority.clock=clock
   worker=GovernedSemanticOwnerContinuation(action,*args).install()
-  synchronize(worker.r.journal)
+  synchronize(worker.r.journal);report_guard_errors(worker,emit)
   timer=threading.Timer(max(0,decision['expiresAt']-time.time()),stop.set);timer.daemon=True;timer.start()
   worker_thread=threading.Thread(target=serve,args=(worker,stop,OwnerReporter(worker.r.journal,emit)),daemon=True);worker_thread.start()
   emit('OUF_CSV_RECOVERY_POLICY_STARTED='+encoded({'contextPath':str(context),'workerJournal':str(next_journal),'priorControlledGrantAttempts':316,

@@ -2,7 +2,7 @@ name: Generic CSV native materialization recovery qualification
 on:
   push:
     branches: [fix/cohort-mcp-backup-recovery-20261016]
-    paths: ['tools/csv_materialization_recovery/journal.py', 'tools/csv_materialization_recovery/authority.py', 'tools/csv_materialization_recovery/run.py', 'tools/csv_materialization_recovery/retry.py', 'tools/csv_materialization_recovery/run_runtime.py', 'scripts/execute-csv-materialization-recovery-20261017.py', 'releases/csv-materialization-recovery-selection-20261017.json', 'tests/test_csv_native_recovery*.py', '.github/workflows/csv-native-materialization-recovery.yml']
+    paths: ['tools/csv_materialization_recovery/continuation.py', 'tools/csv_materialization_recovery/journal.py', 'tools/csv_materialization_recovery/authority.py', 'tools/csv_materialization_recovery/run.py', 'tools/csv_materialization_recovery/retry.py', 'tools/csv_materialization_recovery/run_runtime.py', 'scripts/execute-csv-materialization-recovery-20261017.py', 'releases/csv-materialization-recovery-selection-20261017.json', 'tests/test_csv_native_recovery*.py', '.github/workflows/csv-native-materialization-recovery.yml']
 permissions: {contents: read}
 jobs:
   native-crypto-http-postgres17:

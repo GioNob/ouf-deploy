@@ -21,7 +21,7 @@ PACKAGES=frozenset(['tools', 'tools.chatbot_file_cohort', 'tools.semantic_lease_
 MODULES=MODULES | frozenset('tools.teatri_materialization_apply.'+n for n in ('entry','authority','owner','native','plan','preparation','preflight','permissions','login'))
 PACKAGES=PACKAGES | frozenset({'tools.semantic_mcp_update','tools.ingestion_readiness_update','tools.onboarding_audit_update','tools.resolution_ths_update','tools.resolution_ths_configuration'})
 PACKAGES=PACKAGES | frozenset({'tools.teatri_materialization_apply','tools.csv_materialization_recovery'})
-MODULES=MODULES | frozenset('tools.csv_materialization_recovery.'+n for n in('entry','authority','run','retry','journal'))
+MODULES=MODULES | frozenset('tools.csv_materialization_recovery.'+n for n in('entry','authority','run','retry','journal','continuation'))
 STDLIB=frozenset(['__future__', 'abc', 'argparse', 'ast', 'base64', 'contextlib', 'copy', 'ctypes', 'dataclasses', 'datetime', 'email', 'errno', 'fcntl', 'gzip', 'hashlib', 'hmac', 'http', 'importlib', 'io', 'ipaddress', 'json', 'math', 'os', 'pathlib', 'pwd', 're', 'resource', 'secrets', 'select', 'selectors', 'shutil', 'signal', 'socket', 'ssl', 'stat', 'subprocess', 'sys', 'sysconfig', 'tarfile', 'tempfile', 'termios', 'threading', 'time', 'traceback', 'types', 'urllib', 'uuid', 'zipfile', 'zlib'])
 
 class RuntimeDenied(RuntimeError):pass

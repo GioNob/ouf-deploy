@@ -4,6 +4,7 @@ This fixture never contacts a real issuer or changes target services.
 """
 import copy,json,os,unittest,threading
 from tools.csv_materialization_recovery.journal import synchronize
+from tools.csv_materialization_recovery.continuation import review_after_zero
 from tools.semantic_policy_token_owner.worker_entry import serve
 from tools.semantic_policy_token_owner.reporter import OwnerReporter
 from pathlib import Path
@@ -35,9 +36,23 @@ class RemainderComposed(unittest.TestCase):
   c.journal=Path(scope['fenceBinding']['value']['journalPath']);c.journal.mkdir(mode=0o700)
   c.sign(c.make().scopes());before_grants=c.grants()
   worker=c.make().install()
-  synchronize(worker.r.journal)
   self.assertEqual(c.grants(),before_grants)
   self.assertEqual(worker.r.journal.read()['controlledCumulativeGrantAttempts'],316)
+  # Reconcile the real zero-attempt cancellation and install its bounded
+  # successor. This must retain 444, rather than add another 128 to that cap.
+  cancelled=worker.r.step(cancelled=True)
+  OwnerReporter(worker.r.journal,lambda value:None).report(worker.status(cancelled))
+  zero_root=worker.r.journal.root
+  zero_records={name:json.loads((zero_root/name).read_bytes())for name in c.records}
+  zero_before={name:(zero_root/name).read_bytes()for name in zero_records}
+  c.review=review_after_zero(c.review,zero_records,zero_root);c.records=zero_records
+  c.review_path=c.f.root/'zero-continuation-review.json'
+  c.f.f.write(c.review_path,installation_fixture.fixture.binding.encoded(c.review))
+  scope=compile_governed_session(c.review,c.records,c.first,policy,fingerprint({'operation':c.review['logicalOperation'],'reviewHash':fingerprint(c.review)}),fingerprint(c.review['registryGeneration']),60)
+  self.assertEqual(scope['maximumCumulativeGrantAttempts'],444)
+  c.journal=Path(scope['fenceBinding']['value']['journalPath']);c.journal.mkdir(mode=0o700)
+  c.sign(c.make().scopes());worker=c.make().install();synchronize(worker.r.journal)
+  self.assertEqual(c.grants(),before_grants)
   stop=threading.Event();published=threading.Event();statuses=[]
   def emit(value):
    statuses.append(value)
@@ -55,6 +70,7 @@ class RemainderComposed(unittest.TestCase):
   self.assertFalse(any('LOCAL_AUTHORITY_UNPROVEN' in value for value in statuses))
   self.assertEqual(c.grants(),before_grants+1)
   self.assertEqual(json.loads(Path(scope['fenceBinding']['path']).read_bytes()),scope['fenceBinding']['value'])
+  for name,raw in zero_before.items():self.assertEqual((zero_root/name).read_bytes(),raw)
   for name,raw in before.items():self.assertEqual((c.installed.journal.root/name).read_bytes(),raw)
   with self.assertRaises(Exception):c.make().install()
   self.assertEqual(c.grants(),before_grants+1)

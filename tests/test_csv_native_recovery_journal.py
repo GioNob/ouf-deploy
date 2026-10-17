@@ -2,7 +2,7 @@
 import json,subprocess,sys,tempfile,threading,unittest
 from pathlib import Path
 from tools.semantic_lease_recovery.recovery_journal import Journal
-from tools.csv_materialization_recovery.journal import synchronize
+from tools.csv_materialization_recovery.journal import synchronize,report_guard_errors
 
 class ConcurrentJournal(unittest.TestCase):
  def test_observer_waits_for_local_transaction_without_false_authority_failure(self):
@@ -36,3 +36,14 @@ else: raise AssertionError('SECOND_PROCESS_MUST_NOT_ENTER')
    self.assertEqual(result.returncode,0,result.stderr.decode())
    self.assertEqual(result.stdout,b'CROSS_PROCESS_FENCE_PRESERVED\n')
    self.assertEqual(journal.record.read_bytes(),before)
+
+ def test_guard_diagnostic_retains_denial_and_omits_message_and_locals(self):
+  from types import SimpleNamespace
+  outputs=[]
+  def denied():raise ValueError('SYNTHETIC_SECRET_MUST_NOT_BE_PRINTED')
+  worker=SimpleNamespace(r=SimpleNamespace(adapter=SimpleNamespace(guard=denied)))
+  report_guard_errors(worker,outputs.append)
+  with self.assertRaises(ValueError):worker.r.adapter.guard()
+  self.assertEqual(len(outputs),1)
+  self.assertNotIn('SYNTHETIC_SECRET',outputs[0])
+  self.assertIn('ValueError',outputs[0]);self.assertIn('denied',outputs[0])

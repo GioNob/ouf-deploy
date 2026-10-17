@@ -40,7 +40,7 @@ def scopes_valid(kind,scopes,closure_hash):
    'purpose':'CONFIGURATION_AND_VALIDATION','preserveCumulativeHistory':True}
   require(worker.get('schema')=='ouf.policy-token-governed-worker-session.v1'
    and worker.get('predecessorGrantAttempts')==316 and worker.get('maximumCumulativeGrantAttempts')==444
-   and worker.get('predecessorCumulativeCeiling')==316 and worker.get('testBudgetProfileHash')==digest(profile)
+   and 'predecessorCumulativeCeiling'not in worker and 'testBudgetProfileHash'not in worker
    and policy=={'delays':[5,15,60,300,900],'max_attempts':128,'max_elapsed':3600,'attempt_timeout':30,'jitter':.2}
    and worker.get('automaticBudgetRenewalAllowed')is False and worker.get('consumedClaimReplayAllowed')is False
    and type(worker.get('predecessorFenceBinding'))is dict

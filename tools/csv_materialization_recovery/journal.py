@@ -19,3 +19,21 @@ def synchronize(journal):
                 yield
     journal.transaction=transaction
     return journal
+
+def report_guard_errors(worker,emit):
+    """Report only exception class and frame names; never arguments or locals."""
+    import json
+    original=worker.r.adapter.guard
+    def guard():
+        try:return original()
+        except Exception as error:
+            frames=[];trace=error.__traceback__
+            while trace is not None:
+                frames.append({'function':trace.tb_frame.f_code.co_name,'line':trace.tb_lineno})
+                trace=trace.tb_next
+            try:emit('OUF_CSV_POLICY_GUARD_DIAGNOSTIC='+json.dumps({
+                'exceptionType':type(error).__name__,'frames':frames[-8:],
+                'exceptionMessagePrinted':False,'credentialValuesPrinted':False},sort_keys=True))
+            except Exception:pass
+            raise
+    worker.r.adapter.guard=guard
