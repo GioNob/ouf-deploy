@@ -1,3 +1,15 @@
+## Requisito di accettazione: intero percorso da chat, senza VPS — decisione owner 18 ottobre 2026
+
+L'utente conferma che il percorso ordinario e il recupero dopo THS devono essere automatici attraverso qualsiasi chatbot compatibile con l'endpoint MCP. **Nessun accesso al VPS, comando shell, launcher specifico, operazione SQL o riavvio manuale può essere richiesto all'utente per completare la pipeline.** Il comando operativo consegnato per il singolo incidente è uno strumento transitorio: non soddisfa questo criterio e non chiude l'end-to-end.
+
+Il chatbot scopre capabilities, schemi e prerequisiti dall'endpoint. L'onboarding e l'arricchimento semantico precedono la pubblicazione; per i file autorizzati l'ingestion e la successiva materializzazione proseguono tramite i contratti owner. Una decisione THS risolta deve rendere proseguibile il job originale verso creazione o collegamento/merge, riconciliazione delle proprietà, commit e integrazione nel grafo urbano, con esito e provenienza leggibili dalla chat. Se rimane un impedimento tecnico, la chat deve mostrarne stato e causa e guidare il recupero supportato; non deve dichiarare completamento sulla sola chiusura dell'issue.
+
+Credenziali dei servizi e relativo rinnovo, propagazione delle policy, riattivazione delle lavorazioni ammissibili e controllo degli esiti appartengono al runtime, con stato durevole, budget cumulativi, fencing e idempotenza. Le decisioni HUMAN richieste dai contratti restano esplicite tramite flussi MCP/THS collegati alla chat; l'automazione non fabbrica identità o consensi né interpreta un diniego permanente come transitorio. Eventuale autenticazione dell'utente usa il flusso supportato dal client, senza terminale VPS.
+
+Il runner CI/CD esistente in ouf-deploy è il percorso di distribuzione da riusare per le modifiche qualificate; la pipeline utente non deve dipendere dal suo impiego come shell remota. Teatri resta soltanto il collaudo: implementazione generica per file e altri connettori, preservando il percorso scheduler per API/delta/layer dinamici.
+
+**Prova richiesta:** un CSV nuovo seguito interamente da chat, più casi controllati di quarantena risolta con CREATE_NEW e collegamento/merge a oggetto esistente; verifica del commit, proprietà concorrenti/provenienza, visibilità nel grafo, assenza di duplicati al riavvio e ripresa dopo interruzione delle dipendenze. Evidenze di installazione, pubblicazione profilo, singolo recupero e accettazione end-to-end devono restare distinte. Stato attuale invariato: tecniche8/8, funzionali2/6; rinnovo continuativo e percorso senza operazioni VPS non ancora provati.
+
 ## Piano privato acquisito e recupero operativo unico — 18 ottobre 2026
 
 La preparazione sul target è **completa**, log `/home/oufadmin/ouf-csv-last-row-prepare.prOtPeUF/prepare.log`. Piano privato `/etc/ouf/deploy-snapshots/csv-last-row-prepared-o9ziuyhf/prepared-plan.json`, SHA256 `9993b1ca7f3877ba7632c3530d3b54da013f8059a762c48239b21f2f080cfb6c`. Una sola scrittura privata, zero login/grant/worker/retry e nessuna mutazione runtime. `readyForExecution=false` è atteso: la preparazione non emette autorità.
