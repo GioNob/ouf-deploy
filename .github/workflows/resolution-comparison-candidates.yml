@@ -15,10 +15,10 @@ jobs:
         include:
           - module: udp
             repository: ouf-udp-object-resolution
-            commit: 5a5a45b07b3f52fab50e10234f12ce87bb1a6aa6
+            commit: 6a306b0b8235ad1696dff13d5053c5157750752d
           - module: onboarding
             repository: ouf-source-onboarding
-            commit: dec8f6f53f263f264a1ed14f17b51ab31dc9afad
+            commit: 9d7b64cbbf45f87c0219394e2e908cfe8fddc0bc
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {path: deploy, persist-credentials: false}
