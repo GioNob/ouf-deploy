@@ -69,6 +69,7 @@ def compile_routes(before):
   require(set(row['plugins'].get('proxy-rewrite',{}))<= {'uri'},'UNREVIEWED_UDP_REWRITE_CHANNEL')
   if 'proxy-rewrite'in row['plugins']:row['plugins']['proxy-rewrite']['uri']=path
   require('vars'not in row and 'filter_func'not in row,'UNREVIEWED_TEMPLATE_PATH_CONDITION')
+  if method=='POST':row['plugins'].setdefault('request-validation',{})['body_schema']=copy.deepcopy(CONFIRM_SCHEMA)
   row['plugins']['client-control']={'max_body_size':1048576}
   row['upstream']['timeout']={'connect':3,'send':3,'read':20}
  page.update(id=ROUTES[2],uri=PAGE);page.pop('uris',None)
@@ -80,3 +81,15 @@ def compile_routes(before):
    paths=[existing['uri']]if'uri'in existing else existing.get('uris',[])
    require(row['uri']not in paths,'RESOLUTION_PATH_ALREADY_BOUND_RECONCILE')
  return {row['id']:row for row in(read,confirm,page)}
+
+
+UUID_PATTERN='^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+CONFIRM_SCHEMA={'type':'object','additionalProperties':False,'required':['snapshotHash','choices'],
+ 'properties':{'snapshotHash':{'type':'string','pattern':'^sha256:[0-9a-f]{64}$'},'choices':{'type':'array','items':{
+  'type':'object','additionalProperties':False,'required':['issueId','expectedVersion','action'],'properties':{
+   'issueId':{'type':'string','pattern':UUID_PATTERN},'expectedVersion':{'type':'integer','minimum':0},
+   'action':{'type':'string','enum':['APPROVE','CREATE_NEW','DISMISS']},
+   'reason':{'type':['string','null'],'maxLength':1000},
+   'targetUrbanObjectId':{'type':['string','null'],'pattern':UUID_PATTERN},
+   'expectedReviewHash':{'type':['string','null'],'pattern':'^sha256:[0-9a-f]{64}$'}}}}}}
+

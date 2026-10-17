@@ -87,9 +87,11 @@ class NativePorts:
    and actual.get('RestartCount')==0,'NEW_APPLICATION_NOT_FIRST_RUNNING_GENERATION')
   return actual
  def route_inventory(self,after=False):
-  actual=self.gateway.routes();expected=copy.deepcopy(self.plan['gateway']['beforeRoutes'])
-  # Gateway is observed only; this profile has zero PUT/DELETE authority.
-  require(actual==expected,'COMPLETE_GATEWAY_ROUTE_MAP_CHANGED');return actual
+  actual=self.gateway.routes();gateway=self.plan['gateway'];effects=self.journal.read()['effects']if hasattr(self,'journal')else[]
+  published=any(e['stage']=='PUBLISH_CONFIRM_SCHEMA'and e['state']=='APPLIED'for e in effects)
+  claimed=any(e['stage']=='PUBLISH_CONFIRM_SCHEMA'and e['state']=='CLAIMED'for e in effects)
+  expected=gateway['afterRoutes']if after or published else gateway['beforeRoutes']
+  require(actual==expected or claimed and actual==gateway['afterRoutes'],'COMPLETE_GATEWAY_ROUTE_MAP_CHANGED');return actual
  def verify_inputs(self):
   self.route_inventory()
   for name,row in self.plan['replacements'].items():
@@ -100,6 +102,10 @@ class NativePorts:
   p=self.plan
   if stage=='VERIFY_INPUTS':self.verify_inputs();return
   if stage=='VERIFY_FINAL':return
+  if stage=='PUBLISH_CONFIRM_SCHEMA':
+   require(self.gateway.routes()==p['gateway']['beforeRoutes'],'CONFIRM_ROUTE_CHANGED_BEFORE_SINGLE_PUT')
+   route=p['gateway']['route'];status,_=self.gateway.request('PUT','/apisix/admin/routes/'+quote(route['id'],safe=''),route)
+   require(status in(200,201),'CONFIRM_SCHEMA_PUT_ACKNOWLEDGEMENT_UNPROVEN');return
   name,operation=stage.split('.');row=p['replacements'][name];old=row['oldRuntimeBinding']['containerId']
   if operation=='IMPORT_IMAGE':
    if self.inspect('images',runtime_image_id(row['imageAudit']))is None:
@@ -148,6 +154,9 @@ class NativePorts:
   finally:client.close()
  def observe(self,stage):
   if stage=='VERIFY_INPUTS':return 'APPLIED',self.verify_inputs()
+  if stage=='PUBLISH_CONFIRM_SCHEMA':
+   actual=self.gateway.routes()
+   return ('APPLIED',{'routeMapHash':digest(actual),'routeHash':digest(self.plan['gateway']['route'])})if actual==self.plan['gateway']['afterRoutes']else('UNKNOWN',{})
   if stage=='VERIFY_FINAL':
    proofs={}
    for name in self.plan['replacements']:

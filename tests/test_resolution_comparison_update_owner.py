@@ -9,6 +9,7 @@ from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.resolution_comparison_update.owner import ReadinessUpdate,UpdateDenied,UpdatePaused,STAGES,digest,scope
 from tools.resolution_comparison_update.native import NativePorts
+from tools.resolution_comparison_update.plan import confirmation_route
 
 class FixturePorts(NativePorts):
  def __init__(self,action,plan):
@@ -36,10 +37,10 @@ class Owner(unittest.TestCase):
   with patch.object(crypto,'ROOT',Path(base.name)):self.crypto.setUp()
   self.addCleanup(self.crypto.doCleanups)
   c=self.crypto;directory=c.root/'update';directory.mkdir(mode=0o700)
-  self.plan={'schema':'ouf.resolution-comparison-get-native-update-plan.v1','authorityDirectory':str(directory),
+  self.plan={'schema':'ouf.resolution-review-refinement-native-update-plan.v1','authorityDirectory':str(directory),
    'privateReviewBinding':{'path':str(directory/'private.json'),'sha256':'a'*64},
    'replacements':{'udp':{'oldRuntimeBinding':{'containerId':'1'*64}},'onboarding':{'oldRuntimeBinding':{'containerId':'2'*64}}},
-   'gateway':{'route':{'id':'fixture-route'}},'maximumExecutionSeconds':900,'maximumEffectAttemptsPerStage':1,'maximumGatewayWrites':0,
+   'gateway':{'route':confirmation_route({'id':'fixture-route','uri':'/api/udp/v1/governance/resolution/issues/package/confirm','methods':['POST'],'plugins':{'openid-connect':{'bearer_only':True,'required_scopes':['resolution.match.approve']},'request-validation':{'body_schema':{'type':'object','required':['configuration'],'properties':{'configuration':{'type':'object'}}}}}}),'beforeRoutes':{'fixture-route':{'id':'fixture-route','uri':'/api/udp/v1/governance/resolution/issues/package/confirm','methods':['POST'],'plugins':{'openid-connect':{'bearer_only':True,'required_scopes':['resolution.match.approve']},'request-validation':{'body_schema':{'type':'object','required':['configuration'],'properties':{'configuration':{'type':'object'}}}}}}},'afterRoutes':{'fixture-route':confirmation_route({'id':'fixture-route','uri':'/api/udp/v1/governance/resolution/issues/package/confirm','methods':['POST'],'plugins':{'openid-connect':{'bearer_only':True,'required_scopes':['resolution.match.approve']},'request-validation':{'body_schema':{'type':'object','required':['configuration'],'properties':{'configuration':{'type':'object'}}}}}})}},'maximumExecutionSeconds':900,'maximumEffectAttemptsPerStage':1,'maximumGatewayWrites':1,
    'automaticReplayAllowed':False,'databaseMigrationsAllowed':False,'grantChangesAllowed':False,
    'semanticDispatchAllowed':False,'automaticRollbackAllowed':False,'identityDecisionsAllowed':False}
   self.plan['logicalUpdateRef']=digest({'retiredContainerIds':['1'*64,'2'*64],'routeId':'fixture-route'})

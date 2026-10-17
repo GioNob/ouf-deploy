@@ -36,7 +36,7 @@ def scopes_valid(kind,scopes,closure_hash):
  value=scopes['resolutionComparisonUpdate']
  require(value.get('profile')==PROFILE and value.get('stages')==list(STAGES)
   and value.get('maximumExecutionSeconds')==900 and value.get('maximumEffectAttemptsPerStage')==1
-  and value.get('maximumGatewayWrites')==0
+  and value.get('maximumGatewayWrites')==1
   and all(value.get(k)is False for k in('automaticReplayAllowed','databaseMigrationsAllowed','grantChangesAllowed','semanticDispatchAllowed','automaticRollbackAllowed','identityDecisionsAllowed')),
   'EXACT_SINGLE_UDP_NO_DOMAIN_DECISION_SCOPE_REQUIRED')
 

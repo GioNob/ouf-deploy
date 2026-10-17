@@ -37,8 +37,7 @@ class H(http.server.BaseHTTPRequestHandler):
  def do_PUT(self):
   if self.headers.get('X-API-KEY')!='EXISTING_FIXTURE_ADMIN_KEY_123456':return self.reply(403,{})
   rid=self.path.rsplit('/',1)[-1]
-  if rid in routes:return self.reply(409,{})
-  routes[rid]=json.loads(self.rfile.read(int(self.headers['Content-Length'])));return self.reply(201,{'value':routes[rid]})
+  routes[rid]=json.loads(self.rfile.read(int(self.headers['Content-Length'])));return self.reply(200,{'value':routes[rid]})
  def log_message(self,*a):pass
 http.server.HTTPServer(('0.0.0.0',9180),H).serve_forever()
 """
@@ -146,16 +145,18 @@ class NativeEndToEnd(unittest.TestCase):
    'databaseMigrationsAllowed':False,'grantChangesAllowed':False,'semanticDispatchAllowed':False,
    'engine':{'socketPath':str(sock),'socketBinding':[s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode&0o777]},
    'images':images,'candidateModules':{n:{'sourceCommit':'c'*40}for n in images},
-   'gateway':{'proposedRoute':{'id':'fixture-new-read','uri':'/new-service-read','methods':['GET']},'targetProjectionBinding':projection_binding}}
+   'gateway':{'proposedRoute':{'id':'fixture-new-read','uri':'/api/udp/v1/governance/resolution/issues/package/confirm','methods':['POST'],'plugins':{'openid-connect':{'bearer_only':True,'required_scopes':['resolution.match.approve']},'request-validation':{'body_schema':{'type':'object','required':['configuration'],'properties':{'configuration':{'type':'object'}}}}}},'targetProjectionBinding':projection_binding}}
   private=c.root/'private-review.json';c.write(private,json.dumps(review,sort_keys=True,separators=(',',':')).encode())
   binding={'path':str(private),'sha256':digest(review)};context=c.root/'native-update';context.mkdir(mode=0o700)
   selection={n:{'readinessPort':8080,'readinessPath':'/actuator/health/readiness'}for n in images}
   plan=compile_plan(review,binding,context,actuals,transport,routes,selection)
   docker=Path(shutil.which('docker')).resolve();plan['programs']={'docker':{'path':str(docker),'sha256':hashlib.sha256(docker.read_bytes()).hexdigest()}}
   # The already-installed read route is preserved, never republished by this owner.
-  route=review['gateway']['proposedRoute'];status,_=admin.request('PUT','/apisix/admin/routes/'+route['id'],route);self.assertEqual(status,201)
+  route=review['gateway']['proposedRoute'];status,_=admin.request('PUT','/apisix/admin/routes/'+route['id'],route);self.assertEqual(status,200)
   plan['gateway']['beforeRoutes']={**routes,route['id']:route}
-  plan['schema']='ouf.resolution-comparison-get-native-update-plan.v1';plan['maximumGatewayWrites']=0
+  plan['schema']='ouf.resolution-review-refinement-native-update-plan.v1';plan['maximumGatewayWrites']=1
+  from tools.resolution_comparison_update.plan import confirmation_route
+  plan['gateway']['route']=confirmation_route(route);plan['gateway']['afterRoutes']={**plan['gateway']['beforeRoutes'],route['id']:plan['gateway']['route']}
   plan['unchangedApplications']={'ingestion':runtime(peer)};plan['humanBinding']={'fixture':'human'};plan['identityDecisionsAllowed']=False
   plan['replacements']['udp']=plan['replacements'].pop('onboarding');plan['replacements']['onboarding']=plan['replacements'].pop('ingestion')
   plan['logicalUpdateRef']=digest({'retiredContainerIds':sorted([actuals['onboarding']['Id'],actuals['ingestion']['Id']]),'routeId':route['id']})
@@ -171,7 +172,7 @@ class NativeEndToEnd(unittest.TestCase):
     except UpdatePaused as paused:
      self.assertEqual(str(paused),'READINESS_RETRY_WAIT');time.sleep(.5)
    self.assertTrue(result['applicationReady']);self.assertFalse(result['sourceActivationProven'])
-   self.assertEqual(admin.routes(),{**routes,'fixture-new-read':review['gateway']['proposedRoute']})
+   self.assertEqual(admin.routes(),plan['gateway']['afterRoutes'])
    for name,row in plan['replacements'].items():
     live=ports.candidate(name,True);created.append(live['Id'])
     old=ports.inspect('containers',row['oldRuntimeBinding']['containerId']);self.assertFalse(old['State']['Running'])

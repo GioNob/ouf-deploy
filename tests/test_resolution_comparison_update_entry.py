@@ -5,7 +5,7 @@ from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tools/semantic_application_cutover'),str(ROOT/'tools/semantic_policy_token_owner'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
 from tools.resolution_comparison_update import entry
-from tools.udp_resolution_update.owner import STAGES
+STAGES=('VERIFY_INPUTS',)+tuple(n+'.'+s for n in('udp','onboarding')for s in('IMPORT_IMAGE','DISABLE_OLD_RESTART','STOP_OLD','DETACH_OLD_ENDPOINT','RENAME_OLD','CREATE_REPLACEMENT','START_REPLACEMENT','READINESS','RESTORE_RESTART_POLICY'))+('VERIFY_FINAL',)
 from tools.chatbot_file_cohort.human_session import HumanSessionPaused
 
 class Preparation(unittest.TestCase):
@@ -13,9 +13,9 @@ class Preparation(unittest.TestCase):
   context=Path('/fixture/completed');case={'rolloutContext':str(context),'rolloutSourceCommit':'a'*40};plan={'retained':'fixture'}
   selected={'planHash':entry.digest(plan),'stages':list(STAGES)}
   closure={'declaration':{'sourceCommit':'a'*40}}
-  review={'kind':'UDP_RESOLUTION_UPDATE','authorityDirectory':str(context),'sourceClosure':closure,'sourceClosureHash':entry.digest(closure),'scopes':{'udpResolutionUpdate':selected}}
-  issued={'sourceClosureHash':entry.digest(closure),'udpResolutionUpdate':selected}
-  record={'version':31,'incidentState':'RECOVERED','scopeHash':entry.digest(selected),'authorityHash':entry.digest(issued),'nextStage':11,'effects':[{'stage':s,'state':'APPLIED','intentHash':entry.digest({'planHash':selected['planHash'],'stage':s})}for s in STAGES]}
+  review={'kind':'RESOLUTION_COMPARISON_UPDATE','authorityDirectory':str(context),'sourceClosure':closure,'sourceClosureHash':entry.digest(closure),'scopes':{'resolutionComparisonUpdate':selected}}
+  issued={'sourceClosureHash':entry.digest(closure),'resolutionComparisonUpdate':selected}
+  record={'version':51,'incidentState':'RECOVERED','scopeHash':entry.digest(selected),'authorityHash':entry.digest(issued),'nextStage':20,'effects':[{'stage':s,'state':'APPLIED','intentHash':entry.digest({'planHash':selected['planHash'],'stage':s})}for s in STAGES]}
   records={'review.json':review,'execution-plan.json':plan,'recovery.json':record,'authority.json':issued}
   return case,records,lambda path,maximum:copy.deepcopy(records[Path(path).name])
  def test_completed_predecessor_is_bound_to_plan_scope_authority_and_order(self):

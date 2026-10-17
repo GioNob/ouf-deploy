@@ -9,8 +9,8 @@ from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
 
 APPLICATION_STAGES=('IMPORT_IMAGE','DISABLE_OLD_RESTART','STOP_OLD','DETACH_OLD_ENDPOINT','RENAME_OLD','CREATE_REPLACEMENT','START_REPLACEMENT','READINESS','RESTORE_RESTART_POLICY')
-STAGES=('VERIFY_INPUTS',)+tuple(name+'.'+stage for name in ('udp','onboarding')for stage in APPLICATION_STAGES)+('VERIFY_FINAL',)
-PROFILE='ouf.resolution-comparison-get-native-update.v1'
+STAGES=('VERIFY_INPUTS',)+tuple(name+'.'+stage for name in ('udp','onboarding')for stage in APPLICATION_STAGES)+('PUBLISH_CONFIRM_SCHEMA','VERIFY_FINAL')
+PROFILE='ouf.resolution-review-refinement-native-update.v1'
 STAGE_WINDOW_SECONDS={name:(210 if name.endswith('IMPORT_IMAGE')else 20 if name.endswith('READINESS')else 45)for name in STAGES}
 class UpdateDenied(RuntimeError):pass
 class UpdatePaused(RuntimeError):pass
@@ -19,16 +19,19 @@ def require(ok,reason):
 def encoded(v):return json.dumps(v,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
 def digest(v):return hashlib.sha256(encoded(v)).hexdigest()
 def scope(plan):
- require(type(plan)is dict and plan.get('schema')=='ouf.resolution-comparison-get-native-update-plan.v1'
+ require(type(plan)is dict and plan.get('schema')=='ouf.resolution-review-refinement-native-update-plan.v1'
   and set(plan.get('replacements',{}))=={'udp','onboarding'}
   and plan.get('maximumExecutionSeconds')==900 and plan.get('maximumEffectAttemptsPerStage')==1
-  and plan.get('maximumGatewayWrites')==0
+  and plan.get('maximumGatewayWrites')==1
   and all(plan.get(k)is False for k in ('automaticReplayAllowed','databaseMigrationsAllowed','grantChangesAllowed','semanticDispatchAllowed','automaticRollbackAllowed','identityDecisionsAllowed')),
   'EXACT_SINGLE_UDP_NO_GATEWAY_WRITE_PLAN_REQUIRED')
+ from tools.resolution_comparison_update.plan import confirmation_route
+ rid=plan['gateway']['route']['id'];before=plan['gateway']['beforeRoutes']
+ require(plan['gateway']['route']==confirmation_route(before[rid])and plan['gateway']['afterRoutes']=={**before,rid:plan['gateway']['route']},'ONLY_REVIEWED_CONFIRM_BODY_SCHEMA_MAY_CHANGE')
  require(plan['logicalUpdateRef']==digest({'retiredContainerIds':sorted(r['oldRuntimeBinding']['containerId']for r in plan['replacements'].values()),'routeId':plan['gateway']['route']['id']}),'LOGICAL_READINESS_UPDATE_CHANGED')
  return {'profile':PROFILE,'planHash':digest(plan),'logicalUpdateRef':plan['logicalUpdateRef'],
   'privateReviewHash':plan['privateReviewBinding']['sha256'],'stages':list(STAGES),'maximumExecutionSeconds':900,
-  'maximumEffectAttemptsPerStage':1,'maximumGatewayWrites':0,'automaticReplayAllowed':False,'databaseMigrationsAllowed':False,
+  'maximumEffectAttemptsPerStage':1,'maximumGatewayWrites':1,'automaticReplayAllowed':False,'databaseMigrationsAllowed':False,
   'grantChangesAllowed':False,'semanticDispatchAllowed':False,'automaticRollbackAllowed':False,'identityDecisionsAllowed':False}
 
 class ReadinessUpdate:
@@ -51,14 +54,14 @@ class ReadinessUpdate:
   require(remaining>0,'CURRENT_FINITE_UPDATE_AUTHORITY_REQUIRED')
   self.action.guard('resolutionComparisonUpdate',self.scope)
   self.ports.claim_logical_scope()
-  self.journal.initialize({'schema':'ouf.resolution-comparison-update-journal.v1','scopeHash':digest(self.scope),
+  self.journal.initialize({'schema':'ouf.resolution-review-refinement-update-journal.v1','scopeHash':digest(self.scope),
    'authorityHash':self.action.authority_hash,'bootId':self.ports.boot(),'version':0,'nextStage':0,'effects':[],
    'createdAt':wall,'expiresAt':wall+remaining,'expiresMonotonic':mono+remaining,'lastWall':wall,'lastMonotonic':mono,
    'readinessAttempts':0,'nextReadAt':wall,'nextReadMonotonic':mono,'readinessState':'IDLE','budgetReset':False,
    'incidentState':'OPEN','applicationAcceptanceGranted':False})
  def record(self):
   row=self.journal.read();n=row.get('nextStage')
-  require(row.get('schema')=='ouf.resolution-comparison-update-journal.v1'and row.get('scopeHash')==digest(self.scope)
+  require(row.get('schema')=='ouf.resolution-review-refinement-update-journal.v1'and row.get('scopeHash')==digest(self.scope)
    and row.get('authorityHash')==self.action.authority_hash and row.get('budgetReset')is False
    and type(n)is int and 0<=n<=len(STAGES)and len(row['effects'])in(n,n+1)
    and [e['stage']for e in row['effects']]==list(STAGES[:len(row['effects'])])

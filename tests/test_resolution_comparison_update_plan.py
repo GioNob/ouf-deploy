@@ -2,7 +2,7 @@ import copy,sys,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tools/semantic_application_cutover'),str(ROOT/'tools/semantic_policy_token_owner'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
-from tools.resolution_comparison_update.plan import replacement
+from tools.resolution_comparison_update.plan import replacement,confirmation_route
 from tools.resolution_comparison_update.owner import scope,digest
 
 class Replacement(unittest.TestCase):
@@ -31,9 +31,9 @@ class Replacement(unittest.TestCase):
    with self.assertRaises(Exception):replacement(saved,actual,image,case,"udp")
  def test_signed_scope_rejects_extra_apps_domain_decisions_and_gateway_writes(self):
   saved,actual,image,case=self.fixture();row=replacement(saved,actual,image,case,"udp")
-  plan={'schema':'ouf.resolution-comparison-get-native-update-plan.v1','replacements':{'udp':row,'onboarding':row},'maximumExecutionSeconds':900,'maximumEffectAttemptsPerStage':1,'maximumGatewayWrites':0,'gateway':{'route':{'id':'retained-route'}},'privateReviewBinding':{'sha256':'f'*64},**{k:False for k in('automaticReplayAllowed','databaseMigrationsAllowed','grantChangesAllowed','semanticDispatchAllowed','automaticRollbackAllowed','identityDecisionsAllowed')}}
-  plan['logicalUpdateRef']=digest({'retiredContainerIds':[actual['Id'],actual['Id']],'routeId':'retained-route'});scope(plan)
+  plan={'schema':'ouf.resolution-review-refinement-native-update-plan.v1','replacements':{'udp':row,'onboarding':row},'maximumExecutionSeconds':900,'maximumEffectAttemptsPerStage':1,'maximumGatewayWrites':1,'gateway':{'route':confirmation_route({'id':'fixture-route','uri':'/api/udp/v1/governance/resolution/issues/package/confirm','methods':['POST'],'plugins':{'openid-connect':{'bearer_only':True,'required_scopes':['resolution.match.approve']},'request-validation':{'body_schema':{'type':'object','required':['configuration'],'properties':{'configuration':{'type':'object'}}}}}}),'beforeRoutes':{'fixture-route':{'id':'fixture-route','uri':'/api/udp/v1/governance/resolution/issues/package/confirm','methods':['POST'],'plugins':{'openid-connect':{'bearer_only':True,'required_scopes':['resolution.match.approve']},'request-validation':{'body_schema':{'type':'object','required':['configuration'],'properties':{'configuration':{'type':'object'}}}}}}},'afterRoutes':{'fixture-route':confirmation_route({'id':'fixture-route','uri':'/api/udp/v1/governance/resolution/issues/package/confirm','methods':['POST'],'plugins':{'openid-connect':{'bearer_only':True,'required_scopes':['resolution.match.approve']},'request-validation':{'body_schema':{'type':'object','required':['configuration'],'properties':{'configuration':{'type':'object'}}}}}})}},'privateReviewBinding':{'sha256':'f'*64},**{k:False for k in('automaticReplayAllowed','databaseMigrationsAllowed','grantChangesAllowed','semanticDispatchAllowed','automaticRollbackAllowed','identityDecisionsAllowed')}}
+  plan['logicalUpdateRef']=digest({'retiredContainerIds':[actual['Id'],actual['Id']],'routeId':'fixture-route'});scope(plan)
   for key in('identityDecisionsAllowed','databaseMigrationsAllowed','grantChangesAllowed','maximumGatewayWrites'):
-   with self.assertRaises(Exception):scope({**plan,key:True})
+   with self.assertRaises(Exception):scope({**plan,key:2 if key=='maximumGatewayWrites'else True})
   with self.assertRaises(Exception):scope({**plan,'replacements':{**plan['replacements'],'ingestion':row}})
 if __name__=='__main__':unittest.main()

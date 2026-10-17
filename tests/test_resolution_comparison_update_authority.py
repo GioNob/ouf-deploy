@@ -40,7 +40,7 @@ class Issuance(unittest.TestCase):
   self.closure={'declaration':{'entryModule':'tools.resolution_comparison_update.entry','requiredPythonFlags':['-I','-B','-S']},
    'executables':{'openssl':c.verifier.openssl_binding},'stdlibHash':m.digest(self.library),'stdlibFileCount':len(self.library['fileHashes'])}
   self.scopes={'resolutionComparisonUpdate':{'profile':PROFILE,'planHash':'a'*64,'stages':list(STAGES),
-   'maximumExecutionSeconds':900,'maximumEffectAttemptsPerStage':1,'maximumGatewayWrites':0,'automaticReplayAllowed':False,
+   'maximumExecutionSeconds':900,'maximumEffectAttemptsPerStage':1,'maximumGatewayWrites':1,'automaticReplayAllowed':False,
    'databaseMigrationsAllowed':False,'grantChangesAllowed':False,'automaticRollbackAllowed':False,'semanticDispatchAllowed':False,'identityDecisionsAllowed':False}}
   self.review=m.compile_action_review('RESOLUTION_COMPARISON_UPDATE',self.closure,self.scopes,self.hb,self.context,
    {'predecessorHistoryHash':'b'*64,'predecessorIncidentRef':'c'*64},480)
