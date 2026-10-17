@@ -22,6 +22,10 @@ class Contract(unittest.TestCase):
   actual={'Config':{'Env':['OUF_UDP_EXECUTION_GATEWAY_URL=https://approved.example','OUF_UDP_EXECUTION_TOKEN_FILE=/run/secrets/token']}}
   with patch.object(m,'mounted_file',side_effect=AssertionError('no file read required')):
    self.assertEqual(m.configured_properties(actual,None),('https://approved.example','/run/secrets/token',None))
+  owner={'Config':{'Env':['REGISTRY_URL=https://approved.example/internal/capabilities/v1/authorization/policy-bundle/active','REGISTRY_TOKEN_FILE=/run/secrets/policy']}}
+  with patch.object(m,'mounted_file',side_effect=AssertionError('no file read required')):
+   endpoint,token,_=m.configured_properties(owner,None,('ouf.authorization.registry-url','ouf.authorization.registry-token-file'))
+  self.assertTrue(endpoint.endswith('/active'));self.assertEqual(token,'/run/secrets/policy')
   actual={'Config':{'Env':['SPRING_CONFIG_LOCATION=file:/run/secrets/udp.yml']}}
   raw=b'ouf:\n  udp:\n    execution:\n      gateway-url: https://approved.example\n      token-file: /run/secrets/token\n'
   with patch.object(m,'mounted_file',return_value=raw):

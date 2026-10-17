@@ -119,6 +119,9 @@ def configured_properties(actual,root,required=("ouf.udp.execution.gateway-url",
    else:add(path,value)
  for key,value in env.items():add(key,value)
  if env.get('SPRING_APPLICATION_JSON'):flatten(json.loads(env['SPRING_APPLICATION_JSON']))
+ if required==('ouf.authorization.registry-url','ouf.authorization.registry-token-file'):
+  for alias,key in(('REGISTRY_URL',required[0]),('REGISTRY_TOKEN_FILE',required[1])):
+   if env.get(alias):add(key,env[alias])
  argv=(actual['Config'].get('Entrypoint')or[])+(actual['Config'].get('Cmd')or[])
  for key in('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','JAVA_OPTS'):argv+=shlex.split(env.get(key,''))
  for arg in argv:
