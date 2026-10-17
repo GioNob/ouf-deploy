@@ -92,15 +92,20 @@ def main(prepared,sources,closure,resources,context,emit=print):
   'Dopo il primo token segue APPROVO separato per il rollout. Questo terminale resta aperto sul PC.\n'
   'Revisione privata: '+str(context/'review.json'))
  token_action=authority.issue_action(token_review,decision,human)
- stop=threading.Event();failure=[];handlers={}
+ stop=threading.Event();failure=[];snapshot=[None];handlers={}
  for sig in(signal.SIGINT,signal.SIGTERM,signal.SIGHUP):handlers[sig]=signal.signal(sig,lambda *_:stop.set())
  def current_time():require(not stop.is_set(),'READINESS_SESSION_CANCELLED');return time.time()
  token_action.authority.clock=current_time
  timer=threading.Timer(max(0,decision['expiresAt']-time.time()),stop.set);timer.daemon=True;timer.start()
  try:
   installed=GovernedSemanticOwnerContinuation(token_action,*args);worker=installed.install()
+  def worker_emit(value):
+   # Only the owner thread reads its CAS journal; the rollout observes an
+   # immutable completed snapshot and cannot contend with a grant transaction.
+   snapshot[0]=worker.r.journal.read()if value.startswith('OUF_POLICY_TOKEN_OWNER_STATUS=')else None
+   emit(value)
   def run_worker():
-   try:serve(worker,stop,OwnerReporter(worker.r.journal,emit))
+   try:serve(worker,stop,OwnerReporter(worker.r.journal,worker_emit))
    except BaseException as error:failure.append(type(error).__name__);stop.set()
   thread=threading.Thread(target=run_worker,name='finite-policy-owner',daemon=True);thread.start()
   emit('OUF_READINESS_POLICY_STARTED='+encoded({'contextPath':str(context),'workerJournal':str(journal),
@@ -109,7 +114,7 @@ def main(prepared,sources,closure,resources,context,emit=print):
   until=time.monotonic()+90
   while True:
    require(not stop.is_set()and not failure,'POLICY_OWNER_STOPPED_BEFORE_ROLLOUT')
-   row=worker.r.journal.read()
+   row=snapshot[0]or{}
    if row.get('state')=='ACTIVE'and row.get('publicationCount',0)>=1 and row.get('tokenExpiresWall',0)>time.time()+30:break
    require(time.monotonic()<until,'FIRST_POLICY_PUBLICATION_NOT_READY');stop.wait(.5)
   # New finite context allows independent exact review and two-role signatures.
@@ -130,7 +135,7 @@ def main(prepared,sources,closure,resources,context,emit=print):
   require(not stop.is_set(),'POLICY_SESSION_NOT_LIVE');retained_registry(installed)
   action=authority.issue_action(final,approval,human)
   def rollout_time():
-   now=current_time();latest=worker.r.journal.read()
+   now=current_time();latest=snapshot[0]or{}
    require(thread.is_alive()and not failure and latest.get('publicationCount',0)>0
     and latest.get('state')not in('BLOCKED','CANCELLED','PAUSED_EXHAUSTED')
     and latest.get('tokenExpiresWall',0)>now+5,'CURRENT_FINITE_POLICY_PUBLICATION_REQUIRED')
@@ -146,7 +151,7 @@ def main(prepared,sources,closure,resources,context,emit=print):
     stop.wait(min(5,max(0,row['nextReadAt']-time.time())))
   emit('OUF_READINESS_UPDATE_PHASE=KEEP_POLICY_OWNER_RUNNING_FOR_THS_RESUME technical=8/8 functional=1/6')
   while not stop.wait(1):
-   require(not failure and worker.r.journal.read().get('state')in('ACTIVE','RETRY_WAIT','NEW'),'POLICY_OWNER_NO_LONGER_ACTIVE')
+   require(not failure and snapshot[0]is not None and snapshot[0].get('state')in('ACTIVE','RETRY_WAIT','NEW'),'POLICY_OWNER_NO_LONGER_ACTIVE')
  finally:
   stop.set();timer.cancel()
   if 'thread'in locals():thread.join(45)
