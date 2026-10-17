@@ -1,3 +1,15 @@
+# Pagina Resolution non instradata; URL comune autenticato, nessun challenge implementato — 2026-10-17
+
+**Tecniche8/8; funzionali2/6.** Screenshot operatore image(9).png osservato direttamente nel workspace: https://api.ouf-lab.it/trusted-human/resolution/ restituisce APISIX JSON error_msg404 Route Not Found. Non attribuire a login/permessi owner né inventare un URL personale. La pagina era stata proposta sulla base del codice, senza prova di esposizione target: indicazione prematura riconosciuta.
+
+Il codice Onboarding34488428 contiene ResolutionThsApi @RequestMapping /trusted-human/resolution, pagina GET/, GET/api/package e POST/api/package/confirm. Non riceve query param challenge/source/issue né restituisce link personalizzato. PermissionThsSecurity richiede OAuth2 server session ouf-ths e principal HUMAN. UDP TrustedHumanApi/ResolutionReviewPackageService applicano permission e tenant, snapshot/hash/versioni. URL pubblico conoscibile non equivale ad accesso anonimo autorizzato; né la segretezza di un link sostituisce l'autorizzazione. La superficie attuale elenca l'intero pacchetto autorizzato del tenant: riferimento visibile al singolo caso/source e un deep link selettivo non risultano implementati. Non aggiungere un parametro arbitrario fingendo che sia interpretato.
+
+Il materializzatore Gateway425a0377 tools/materialize_onboarding_review.py aggiunge le pagine Onboarding/Semantic, non Resolution. Le route package UDP e la proprietà condizionale ouf.resolution.ths.gateway-base-url richiedono verifica congiunta prima di una proposta concreta. Nuovo reader scripts/read-resolution-ths-bindings-20261017.py:35s,2EngineGET, zeroSQL/token/worker/grant/Gatewaywrites; verifica contesto ybmis4le e review b258d70a… esatti, legge solo metadati dalla configurazione THS montata RO con la custodia nominale preesistente e ispeziona lo snapshot route firmato del rollout31ad562f…. Snapshot storico NON inventario route live, proprietà dichiarate NON effective config/framework snapshot. Non stampa client secret, raw config, cookie o token. Helper custody5e7182d8… già qualificato e riusato tramite AST limitato. Qualifica parser/redazione/no-follow/version drift in corso; nessuna pubblicazione route eseguita.
+
+Le13ricezioni durabili e12quarantene UDP restano quelle del checkpoint precedente. Prima delle decisioni HUMAN va ripristinato e verificato il percorso browser+owner completo; non confermare collegamenti preselezionati né fare POST da agente/VPS. La domanda operatore sul riferimento specifico al caso va mantenuta nel lavoro UX; non è prova che esista un URL personale nascosto.
+
+---
+
 # Prima acquisizione consegnata;12 identità UDP da verificare — 2026-10-17
 
 **Tecniche8/8; funzionali2/6.** Reader target completo: contesto ybmis4le/review b258d70a9ec1e6257be8508bdce62b69b60e7b78a671356dd5defb8490796ca3/journal29. Ingestion run a3208f2f-ebfd-415d-bddc-79ab05dea78f SUCCEEDED/MANAGED_ONCE:13 processing attempt,13 lineage,13 handoff ACKED con receipt,0fail/0quarantena, sorgente HEALTHY. Schedule DISABLED con triggerOnce true e pubblicazione996d58ca… consumata: è esecuzione una tantum conclusa, non un errore di attivazione.
