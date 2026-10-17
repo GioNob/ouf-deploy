@@ -5,9 +5,9 @@ ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
 if [ ! -x "$ouf_gh" ]; then ouf_gh="$(command -v gh || true)"; fi
 [ -n "$ouf_gh" ] && [ -x "$ouf_gh" ] || { echo 'Client GitHub non disponibile; nessuna lettura sudo.' >&2; exit 1; }
 ouf_read="$(mktemp -d "$HOME/ouf-semantic-access-read.XXXXXXXX")"
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/scripts/read-teatri-semantic-reference-access-20261017.py?ref=4a67f32c351c8e15c319905cdec2f187b07753ba' --jq .content |
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/scripts/read-teatri-semantic-reference-access-20261017.py?ref=00c98ac45705b49d0c5dddefaa8ef65d25a99f01' --jq .content |
   base64 --decode > "$ouf_read/read.py"
-printf '%s  %s\n' '7c945a0abaf8f3e3f06ad7bf9680ac74ced9dac097d3fe36cb2669bfac125ce4' "$ouf_read/read.py" | sha256sum --check -
+printf '%s  %s\n' '63e5d549476ebf20b0761ff880f7a2385200d268d1d5d94297c50cbb6913800c' "$ouf_read/read.py" | sha256sum --check -
 echo 'Tecniche8/8; funzionali2/6. Verifico route, scope e policy effettivamente pubblicata sul canale owner: metadati di massimo2 token e massimo4 GET. Nessun rinnovo, grant, riavvio o modifica dati.'
 echo "Log del controllo in sola lettura: $ouf_read/read.log"
 sudo /usr/bin/python3 -u -I -B -S - "$ouf_read/read.py" <<'PY' 2>&1 | tee "$ouf_read/read.log"
@@ -20,7 +20,7 @@ try:
  raw=os.read(fd,131073);after=os.fstat(fd)
  pin=lambda s:(s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)
  assert len(raw)==before.st_size and pin(before)==pin(after)
- assert hashlib.sha256(raw).hexdigest()=='7c945a0abaf8f3e3f06ad7bf9680ac74ced9dac097d3fe36cb2669bfac125ce4'
+ assert hashlib.sha256(raw).hexdigest()=='63e5d549476ebf20b0761ff880f7a2385200d268d1d5d94297c50cbb6913800c'
 finally:os.close(fd)
 exec(compile(raw,'<verified-teatri-active-acquisition-reader>','exec'),{'__name__':'__main__'})
 PY
