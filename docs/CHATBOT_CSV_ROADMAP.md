@@ -1,3 +1,13 @@
+# STOP preparatorio riconciliato: pubblicazione policy corrente valida — 2026-10-17 10:31 CEST
+
+**Fasi tecniche8/8; funzionali1/6.** Il primo lancio audit-fix ha restituito CURRENT_ACTIVE_POLICY_PUBLICATION_REQUIRED. Tutte le invocazioni di questo controllo precedono issue_action e gli effetti nativi: nessun aggiornamento Onboarding è stato eseguito. Il readback dell'operatore ha poi rilevato ACTIVE/RECOVERED, sessionHashMatches=true, attempts27, prior188, cumulative215, publications27, lastUpdateAgeSeconds7.619 e tokenRemainingSeconds291.946. Questo snapshot soddisfa tutte le condizioni precedenti; è compatibile con una lettura durante il rinnovo, ma lo stato esatto al momento dello STOP non è stato persistito e la causalità puntuale non è provata.
+
+Esecutore corretto4f021a833a781df278ece094a1b30b347e5ebf8b: il lettore osserva soltanto NEW/SCHEDULED_RENEWAL_DUE, ATTEMPTING/FRESH_ATTEMPT o PUBLISHING/FRESH_EVIDENCE_READY già avviati dall'owner; massimo3 letture/30 secondi, attese5/15 secondi con jitter20%, nessuna chiamata grant o scrittura journal. Ogni lettura rivalida l'autorità firmata e hash/conteggi/pubblicazione/scadenza/freschezza. ACTIVE viene accettato soltanto con tutti i controlli validi. Stati terminali, ambigui, non conosciuti o campi incoerenti si fermano subito con codici distinti. Sei nuove regressioni coprono lo snapshot reale, tutti gli stati di rinnovo, stati bloccanti, integrità, limite di attesa e scadenza durante l'attesa. Manifest032b645c29493a705f064c7050954da9155a3d43751688173646e277f825caeb.
+
+La nuova consegna riusa lo stesso candidato39016711997 già in cache sul VPS e ripresenta una sola review HUMAN per il solo Onboarding. Il worker corrente prosegue nello stesso primo terminale, con massimo316 cumulativi e scadenza11:04:42 CEST; nessun reset, nuovo login o sessione implicita. Il risultato target della correzione resta da ottenere e verificare.
+
+GitHub Actions39017759772 verde:23 test root, incluso percorso Docker reale e6 regressioni della pubblicazione concorrente; due test import isolato verdi. La regressione applicativa PostgreSQL e l'immagine candidata restano quelle già qualificate.
+
 # Audit Onboarding: correzione qualificata, esecuzione target ancora da fare — 2026-10-17
 
 **Fasi tecniche8/8; funzionali1/6.** Il readback successivo al rollout conferma journal57 e le generazioni correnti. La nuova GET SERVICE configurazione esatta risponde503 ONB_PERSISTENCE_FAILURE; policy200/bundle40. Questo non prova ancora l'autorizzazione effettiva della GET né l'attivazione della sorgente. Nessuna approvazione o proposta è stata ripetuta.

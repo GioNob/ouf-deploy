@@ -33,14 +33,18 @@
     "scanPassed": true
   },
   "executor": {
-    "commit": "0a665af6cb5c5d3b97744e61a277de8aa31410c5",
-    "nativeQualificationRun": 39017241967,
-    "rootTestsPassed": 17,
+    "commit": "4f021a833a781df278ece094a1b30b347e5ebf8b",
+    "nativeQualificationRun": 39017759772,
+    "rootTestsPassed": 23,
     "actualDockerFixture": true,
     "fixtureApplicationsSynthetic": true,
     "sourceFilesRemotelyCompared": 29,
-    "manifestSha256": "d558467ddbae517ad4cb20ca6f95a07f0bfa7c76e17f180f574f06746d442317",
-    "targetExecuted": false
+    "manifestSha256": "032b645c29493a705f064c7050954da9155a3d43751688173646e277f825caeb",
+    "targetExecuted": false,
+    "publicationObservationMaximumReads": 3,
+    "publicationObservationMaximumSeconds": 30,
+    "publicationObservationWrites": 0,
+    "publicationSnapshotTestsPassed": 6
   },
   "scope": {
     "module": "onboarding",
@@ -63,5 +67,22 @@
     "Qualification Docker service fixtures are synthetic; target health and effective authorization require target readback.",
     "Finite local-host retained transport is installation-specific; no distributed deployment qualification.",
     "Ambiguous mutations require reconciliation; launcher does not replay effects automatically."
-  ]
+  ],
+  "preparationStop": {
+    "code": "CURRENT_ACTIVE_POLICY_PUBLICATION_REQUIRED",
+    "beforeNativeEffects": true,
+    "exactStopSnapshotAvailable": false,
+    "subsequentReadback": {
+      "state": "ACTIVE",
+      "reason": "RECOVERED",
+      "attempts": 27,
+      "prior": 188,
+      "cumulative": 215,
+      "publications": 27,
+      "sessionHashMatches": true,
+      "lastUpdateAgeSeconds": 7.619195938110352,
+      "tokenRemainingSeconds": 291.9459640979767
+    },
+    "renewalRaceCompatibleButNotIndependentlyProven": true
+  }
 }
