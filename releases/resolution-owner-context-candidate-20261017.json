@@ -1,0 +1,16 @@
+{
+  "schema": "ouf.ingestion-readiness-source-lock.v1",
+  "cohortId": "resolution-owner-context-20261017",
+  "modules": [
+    {
+      "module": "udp",
+      "repository": "ouf-udp-object-resolution",
+      "commit": "a4d432d7788cc1c205c0eaafa5ae3b46036de09f",
+      "kind": "DOCKER_SAVE"
+    }
+  ],
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "scope": "One UDP application image only; preserve identity decisions, source approvals, Onboarding, Ingestion, Gateway, IAM and database schema"
+}
