@@ -1,0 +1,56 @@
+{
+  "schema": "ouf.linked-property-qualified-candidate.v1",
+  "package": {
+    "repository": "GioNob/ouf-deploy",
+    "workflow": ".github/workflows/linked-property-candidates.yml",
+    "workflowSourceCommit": "00cd044f5d066beb2681ff6077cb9ae6dd57d75d",
+    "workflowRef": "refs/heads/feat/linked-property-release-20261017",
+    "runId": 39062596949,
+    "artifactId": 12111508257,
+    "artifactName": "linked-property-candidate-39062596949",
+    "artifactBytes": 867626940,
+    "githubArtifactDigest": "sha256:97a1b432522e14da85b137cd378e12ee97f96ef0e98280dfe80299e03c62e6dc",
+    "sourceLockSha256": "33a7ce082b91f165181dddd4fd2297d12261a9cf4bc0c4fa75704352813458bb",
+    "scanGate": "PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED",
+    "sigstoreVerificationPassedInCI": true
+  },
+  "candidateImageIds": {
+    "udp": "sha256:a75e09ad7f4c50557619c126d9608b774f209c490b7eccbb8994922284a12989",
+    "onboarding": "sha256:b5ca06ed2c8453b62753cf6747db20a52bc8f7a9d0916cc5c6ff306ada2e6b42"
+  },
+  "sourceTreesMatchQualifiedPrHeads": true,
+  "migrationQualification": {
+    "runId": 39062821776,
+    "versionBefore": 34,
+    "versionAfter": 35,
+    "migrationSha256": "d9937d14b53471ea718ea3ec91c8fc729a48f4e9fbe9bfd23f9673e718705c1f",
+    "populatedDatabase": true,
+    "existingValuesRevisionsAndContributionsUnchanged": true,
+    "secondMigrationAppliedCount": 0,
+    "nativeProfileAppendOnlyVerified": true,
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "targetRoleQualificationProven": false
+  },
+  "targetRead": {
+    "runId": 39062665870,
+    "observedAt": "2026-10-17T19:29:22Z",
+    "generationsStable": true,
+    "udp": {"sourceCommit": "3bc856dd67baa0358d4b9c20759245ed18f09b8c", "containerId": "02d4e24cd47181b68d7321c1fa192dfbffb6914bb5905b8c2e3f5fc362e1db8c", "imageId": "sha256:9d0c76828beef09591d71d552dd688d07c3e5081f70be46d6bf5269eca9a8792"},
+    "onboarding": {"sourceCommit": "9d7b64cbbf45f87c0219394e2e908cfe8fddc0bc", "containerId": "6d410a407ec13ab3d72495dd2b2b61f10a4451a5a558b02e8ed265190104b161", "imageId": "sha256:67acd28e3e797008ce25947c751d1458dc23c3eebf2ea4c60a4a69f23c7a5847"},
+    "migrationReadRunId": 39062922689,
+    "migrationReadStatus": "BLOCKED_BEFORE_EXECUTION",
+    "migrationReadReason": "RUNNER_SUDO_REQUIRES_INTERACTIVE_PASSWORD",
+    "databaseMigrationStateProven": false
+  },
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2,
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "nativeProfilePublished": false,
+  "targetServicesUpdated": false,
+  "identityDecisionsPerformed": false,
+  "jobsRetried": 0
+}
