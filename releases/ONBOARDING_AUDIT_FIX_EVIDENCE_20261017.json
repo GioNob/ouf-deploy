@@ -10,7 +10,20 @@
     "policyGetStatus": 200,
     "policyBundleVersion": 40,
     "sourceActivationProven": false,
-    "retainedRouteMapHash": "31ad562fa32c98472ee262bb0d8a800e3626443762e913b7863cce359e219d1d"
+    "retainedRouteMapHash": "31ad562fa32c98472ee262bb0d8a800e3626443762e913b7863cce359e219d1d",
+    "auditFixOperatorResult": {
+      "complete": true,
+      "applicationReady": true,
+      "journalVersion": 31,
+      "contextPath": "/etc/ouf/deploy-snapshots/onboarding-audit-execution-md__yy6p",
+      "reviewSha256": "b0e04a406ccda2dbfc6dd5743373866fa5ac1417b42ebfcbd57b2c3b6370e3ca",
+      "maximumGatewayWrites": 0,
+      "newPolicyWorkerStarted": false,
+      "semanticDispatchPerformed": false,
+      "sourceActivationProven": false,
+      "acceptanceGranted": false,
+      "independentGetReadbackPending": true
+    }
   },
   "cause": {
     "codeVerified": true,
@@ -40,7 +53,7 @@
     "fixtureApplicationsSynthetic": true,
     "sourceFilesRemotelyCompared": 29,
     "manifestSha256": "032b645c29493a705f064c7050954da9155a3d43751688173646e277f825caeb",
-    "targetExecuted": false,
+    "targetExecuted": true,
     "publicationObservationMaximumReads": 3,
     "publicationObservationMaximumSeconds": 30,
     "publicationObservationWrites": 0,
