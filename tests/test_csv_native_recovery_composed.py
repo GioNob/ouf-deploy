@@ -4,7 +4,7 @@ This fixture never contacts a real issuer or changes target services.
 """
 import copy,json,os,unittest,threading
 from tools.csv_materialization_recovery.journal import synchronize
-from tools.csv_materialization_recovery.continuation import review_after_zero
+from tools.csv_materialization_recovery.continuation import review_after_zero,review_after_cancelled
 from tools.semantic_policy_token_owner.worker_entry import serve
 from tools.semantic_policy_token_owner.reporter import OwnerReporter
 from pathlib import Path
@@ -74,3 +74,22 @@ class RemainderComposed(unittest.TestCase):
   for name,raw in before.items():self.assertEqual((c.installed.journal.root/name).read_bytes(),raw)
   with self.assertRaises(Exception):c.make().install()
   self.assertEqual(c.grants(),before_grants+1)
+
+  # The real first publication was consumed before cancellation. Its successor
+  # has only 127 slots and must preserve this journal byte-for-byte as well.
+  one_root=worker.r.journal.root
+  one_records={name:json.loads((one_root/name).read_bytes())for name in c.records}
+  one_before={name:(one_root/name).read_bytes()for name in one_records}
+  self.assertEqual(one_records['recovery.json']['attempts'],1)
+  c.review=review_after_cancelled(c.review,one_records,one_root,1,317);c.records=one_records
+  c.review_path=c.f.root/'one-publication-continuation-review.json'
+  c.f.f.write(c.review_path,installation_fixture.fixture.binding.encoded(c.review))
+  policy={**policy,'max_attempts':127}
+  scope=compile_governed_session(c.review,c.records,c.first,policy,fingerprint({'operation':c.review['logicalOperation'],'reviewHash':fingerprint(c.review)}),fingerprint(c.review['registryGeneration']),60)
+  self.assertEqual(scope['predecessorGrantAttempts'],317);self.assertEqual(scope['maximumCumulativeGrantAttempts'],444)
+  c.journal=Path(scope['fenceBinding']['value']['journalPath']);c.journal.mkdir(mode=0o700)
+  c.sign(c.make().scopes());worker=c.make().install();synchronize(worker.r.journal)
+  row=worker.tick();self.assertEqual(row['state'],'ACTIVE');self.assertEqual(row['controlledCumulativeGrantAttempts'],318)
+  self.assertEqual(c.grants(),before_grants+2)
+  for name,raw in one_before.items():self.assertEqual((one_root/name).read_bytes(),raw)
+  with self.assertRaises(Exception):c.make().install()

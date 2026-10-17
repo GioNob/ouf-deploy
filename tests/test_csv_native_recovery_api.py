@@ -60,3 +60,16 @@ class API(unittest.TestCase):
   self.assertNotIn('UPDATE ',q.upper());self.assertNotIn('INSERT ',q.upper());self.assertNotIn('DELETE ',q.upper())
   for j in self.jobs:self.assertIn(j['jobId'],q);self.assertIn(j['issueId'],q)
   with self.assertRaises(Exception):retry.proof_query(self.jobs,"tenant';DROP TABLE x")
+
+ def test_only_transient_reference_reads_wait_and_never_dispatch(self):
+  ident=self.jobs[0]['jobId'];ready=copy.deepcopy(self.views[ident]);waits=[]
+  self.views[ident].update(contractReady=False,contractCheck='MISSING',verifiedBaselineHash=None)
+  def wait(seconds):waits.append(seconds);self.views[ident]=copy.deepcopy(ready)
+  review=retry.prepare_when_ready(self.client,self.jobs,'c'*64,int(time.time())+60,wait,lambda:None,lambda _:None)
+  self.assertEqual(len(review['jobs']),2);self.assertEqual(waits,[15]);self.assertEqual(self.posts,[])
+  self.views[ident].update(contractReady=False,contractCheck='CATALOG_UNAVAILABLE',verifiedBaselineHash=None);waits=[]
+  with self.assertRaises(retry.ReviewDenied):retry.prepare_when_ready(self.client,self.jobs,'c'*64,int(time.time())+60,waits.append,lambda:None,lambda _:None)
+  self.assertEqual(waits,[15,15,15]);self.assertEqual(self.posts,[])
+  self.views[ident]=copy.deepcopy(ready);self.views[ident]['verifiedBaselineHash']='sha256:'+'f'*64;waits=[]
+  with self.assertRaises(retry.ReviewDenied):retry.prepare_when_ready(self.client,self.jobs,'c'*64,int(time.time())+60,waits.append,lambda:None,lambda _:None)
+  self.assertEqual(waits,[]);self.assertEqual(self.posts,[])

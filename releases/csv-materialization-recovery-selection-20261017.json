@@ -17,17 +17,23 @@
   },
   "maximumGrantExpiry": "2026-10-17T18:51:11Z",
   "interruptedSession": {
-    "contextPath": "/etc/ouf/deploy-snapshots/csv-materialization-recovery-grdk3ael",
-    "workerJournal": "/etc/ouf/deploy-snapshots/chatbot-file-intake-9f754dbcf7caf450d1d1eef50c0288f2102cfac191a65cfc60a5c1fcbf60ba5e/attempt-f8d38137fc4cca9d36910c19/semantic-functional-worker-2af1928d087c14a1215b19e34ea916ea28fcf91a3426caf6ab326bf4d0491fd6",
-    "reviewHash": "058c1f5a1162bb17e5ba9504afaeb529d8ddedf1fed7773efdb4952e33950875",
-    "authorityHash": "e3914663172d0ca7089ed8a80ea218eca3bc6fe103c33429b11602627edd0117",
+    "contextPath": "/etc/ouf/deploy-snapshots/csv-materialization-recovery-gxclmpxg",
+    "workerJournal": "/etc/ouf/deploy-snapshots/chatbot-file-intake-9f754dbcf7caf450d1d1eef50c0288f2102cfac191a65cfc60a5c1fcbf60ba5e/attempt-f8d38137fc4cca9d36910c19/semantic-functional-worker-8c46ccca7a6f04d33004cfb9d788c694bd509e72e057837b3c5f6548cc22e93c",
+    "authorityHash": "6a9ad182107279f4955084eebf6cd34490ccf00d4d76176e938d860a5f47d7f5",
+    "reviewHash": "81e60491023705004e3b03b9aa4a4c814cdf15113878f03ae340c35b355ef9c1",
+    "reconciledAttempts": 1,
+    "reconciledCumulative": 317,
+    "preparedPlanBinding": {
+      "path": "/etc/ouf/deploy-snapshots/teatri-recovery-review-j9zv_7sz/prepared-plan.json",
+      "sha256": "eed179bb8d9179c772bbf722c78963ee288b4313728ed0a903d80ad3bbcdf5ae"
+    },
     "recordHashes": {
-      "owner-admission.json": "a15010b9d31f91cc77b94ee7a5537a8096c709303bd3e09c503a3f30a4dee05b",
+      "owner-admission.json": "2f419727a8922841a682f36365dc65bf7ec34f7ff0fcc7cca3585932d4280dff",
       "owner-first-grant.json": "4bb904ea93df0766647641fd397cac7d8504f1ca81252ce597d1db363a86105a",
-      "owner-session-review.json": "2af1928d087c14a1215b19e34ea916ea28fcf91a3426caf6ab326bf4d0491fd6",
-      "owner-session.json": "45504b7b5f92f22add595c7a0678a43cb80a846a1a032d17a0859ec1926e94f0",
-      "owner-status.json": "be50772f52c01732dbea3e941f1933b434d3a7fe1ae473983feb82f9c957f5d5",
-      "recovery.json": "808f0291455f8be225837f7d2d66725e0011ad516a7c27a7af1fd6aa57e8dd16"
+      "owner-session-review.json": "8c46ccca7a6f04d33004cfb9d788c694bd509e72e057837b3c5f6548cc22e93c",
+      "owner-session.json": "b8971a1c02de54467e4316bcdd7b7e9acbf6113d40e3e683f87d7f4812f45cec",
+      "owner-status.json": "d306048211b469843027a10b09898832720061e71fea6e55b9212d4c4af35c18",
+      "recovery.json": "478277d44ab1076adaff0a2222f6ab65117dddce575e388d4dd9ce0b52e299a2"
     }
   }
 }

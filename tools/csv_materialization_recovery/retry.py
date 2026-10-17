@@ -34,15 +34,35 @@ class Client:
    raise ValueError('NATIVE_RECOVERY_HTTP_'+str(error.code))from None
   except (urllib.error.URLError,TimeoutError,OSError):raise ValueError('NATIVE_RECOVERY_OUTCOME_UNPROVEN')from None
 
+class ReviewDenied(ValueError):
+ def __init__(self,value,job,failed,pending):
+  super().__init__('NATIVE_JOB_REFERENCES_PENDING'if pending else'EXACT_ELIGIBLE_NATIVE_JOB_AND_BASELINE_REQUIRED')
+  self.pending=pending;self.safe={'jobId':job['jobId'],'failedChecks':failed,
+   'contractCheck':value.get('contractCheck')if value.get('contractCheck')in('READY','MISSING','CATALOG_UNAVAILABLE','CONTRACT_INVALID','NOT_ELIGIBLE')else'UNKNOWN',
+   'retryEligible':value.get('retryEligible')is True,'contractReady':value.get('contractReady')is True}
+
 def qualify(value,job):
- require(value.get('jobId')==job['jobId']and value.get('handoffId')==job['handoffId']
-  and value.get('sourceId')==job['sourceId']and value.get('ingestionRunId')==job['ingestionRunId']
-  and value.get('state')=='QUARANTINED'and value.get('stateVersion')==job['jobVersion']
-  and value.get('intakeState')=='DURABLE'and value.get('integrityAttempts')==job['integrityAttempts']
-  and value.get('safeFailureCode')==job['safeFailureCode']and value.get('retryEligible')is True
-  and value.get('contractReady')is True and value.get('contractCheck')=='READY'
-  and value.get('verifiedBaselineHash')==job['baselineHash']
-  and re.fullmatch('sha256:[0-9a-f]{64}',str(value.get('snapshotHash',''))),'EXACT_ELIGIBLE_NATIVE_JOB_AND_BASELINE_REQUIRED')
+ expected={**{k:job[k]for k in('jobId','handoffId','sourceId','ingestionRunId','integrityAttempts','safeFailureCode')},
+  'state':'QUARANTINED','stateVersion':job['jobVersion'],'intakeState':'DURABLE','retryEligible':True,
+  'contractReady':True,'contractCheck':'READY','verifiedBaselineHash':job['baselineHash']}
+ failed=[key for key,item in expected.items()if value.get(key)!=item]
+ if not re.fullmatch('sha256:[0-9a-f]{64}',str(value.get('snapshotHash',''))):failed.append('snapshotHashFormat')
+ if failed:
+  pending=set(failed)<=set(('contractReady','contractCheck','verifiedBaselineHash'))and value.get('retryEligible')is True and value.get('contractReady')is False and value.get('contractCheck')in('MISSING','CATALOG_UNAVAILABLE')
+  raise ReviewDenied(value,job,failed,pending)
+
+def prepare_when_ready(client,jobs,binding,expires_at,wait,guard,emit):
+ for attempt in range(1,5):
+  guard()
+  try:return prepare(client,jobs,binding,expires_at)
+  except ValueError as error:
+   pending=isinstance(error,ReviewDenied)and error.pending
+   if isinstance(error,ReviewDenied):emit('OUF_CSV_NATIVE_REVIEW_CHECK='+encoded(error.safe).decode())
+   if not pending and str(error)!='NATIVE_RECOVERY_HTTP_403':raise
+   if attempt==4:raise
+   emit('OUF_CSV_NATIVE_READINESS_WAIT='+encoded({'readPass':attempt,'maximumReadPasses':4,'jobMutations':0}).decode())
+   wait(15)
+
 
 def prepare(client,jobs,binding,expires_at):
  rows=[];require(len({j['jobId']for j in jobs})==len(jobs)>0,'EXACT_DISTINCT_JOB_SET_REQUIRED')

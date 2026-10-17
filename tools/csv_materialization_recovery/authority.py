@@ -35,13 +35,13 @@ def scopes_valid(kind,scopes,closure_hash):
  if kind=='POLICY_TEST_SESSION':
   require(type(scopes)is dict and set(scopes)=={'policyTokenOwnerInstallation','policyTokenFiniteWorkerSession','tokenOwnerRuntime','semanticFunctionalRuntime'},'ONLY_REMAINDER_POLICY_SESSION_SCOPES_ALLOWED')
   worker=scopes['policyTokenFiniteWorkerSession'];policy=worker.get('policy',{})
-  profile={'schema':'ouf.policy-token-test-session-profile.v1','maximumNewTokenGrantAttempts':128,
+  profile={'schema':'ouf.policy-token-test-session-profile.v1','maximumNewTokenGrantAttempts':127,
    'maximumSeconds':3600,'renewalIntervalSeconds':60,'automaticRenewalAllowed':False,
    'purpose':'CONFIGURATION_AND_VALIDATION','preserveCumulativeHistory':True}
   require(worker.get('schema')=='ouf.policy-token-governed-worker-session.v1'
-   and worker.get('predecessorGrantAttempts')==316 and worker.get('maximumCumulativeGrantAttempts')==444
+   and worker.get('predecessorGrantAttempts')==317 and worker.get('maximumCumulativeGrantAttempts')==444
    and 'predecessorCumulativeCeiling'not in worker and 'testBudgetProfileHash'not in worker
-   and policy=={'delays':[5,15,60,300,900],'max_attempts':128,'max_elapsed':3600,'attempt_timeout':30,'jitter':.2}
+   and policy=={'delays':[5,15,60,300,900],'max_attempts':127,'max_elapsed':3600,'attempt_timeout':30,'jitter':.2}
    and worker.get('automaticBudgetRenewalAllowed')is False and worker.get('consumedClaimReplayAllowed')is False
    and type(worker.get('predecessorFenceBinding'))is dict
    and scopes['policyTokenOwnerInstallation'].get('sourceClosureHash')==closure_hash
@@ -56,7 +56,7 @@ def scopes_valid(kind,scopes,closure_hash):
    and scopes['tokenOwnerRuntime'].get('legacyWriterMustBeMasked')is True
    and scopes['tokenOwnerRuntime'].get('credentialReestablishmentRequired')is True
    and scopes['semanticFunctionalRuntime'].get('reviewHash')==worker.get('reviewHash'),
-   'EXACT_PRESERVED316_PLUS128_POLICY_SESSION_REQUIRED')
+   'EXACT_PRESERVED317_PLUS127_POLICY_SESSION_REQUIRED')
   return
  require(False,'ONLY_POLICY_RESTORATION_ALLOWED')
 

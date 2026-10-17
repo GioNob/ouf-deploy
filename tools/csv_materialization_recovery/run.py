@@ -54,9 +54,9 @@ def main(prepared,sources,closure,case,context,read,ns,emit):
  plan=continuation.prepare(plan,case['interruptedSession'],read)
  future=plan['workerReview'];journal=Path(future['predecessorJournalDirectory'])
  records={n:read(journal/n,131072,h)for n,h in future['predecessorRecordHashes'].items()};first=read(journal/'owner-first-grant.json',16384)
- policy={'delays':[5,15,60,300,900],'max_attempts':128,'max_elapsed':3600,'attempt_timeout':30,'jitter':.2}
+ policy={'delays':[5,15,60,300,900],'max_attempts':127,'max_elapsed':3600,'attempt_timeout':30,'jitter':.2}
  compiled=compile_governed_session(future,records,first,policy,digest({'operation':future['logicalOperation'],'reviewHash':digest(future)}),digest(future['registryGeneration']),60)
- require(compiled==plan['workerScope']and future['retainedOwnerInputsHash']==digest(prepared['owner']),'EXACT_PREPARED316_PLUS128_WORKER_SCOPE_REQUIRED')
+ require(compiled==plan['workerScope']and future['retainedOwnerInputsHash']==digest(prepared['owner']),'EXACT_RECONCILED317_PLUS127_WORKER_SCOPE_REQUIRED')
  next_journal=Path(compiled['fenceBinding']['value']['journalPath'])
  publish_json(context,'candidate-review.json',future);worker_binding={'path':str(context/'candidate-review.json'),'sha256':digest(future)}
  with protected_directory(next_journal.parent)as directory:os.mkdir(next_journal.name,0o700,dir_fd=directory);os.fsync(directory)
@@ -82,7 +82,7 @@ def main(prepared,sources,closure,case,context,read,ns,emit):
  try:
   decision=authority.terminal_consent(review,
    'Sessione worker per completare il collaudo del flusso CSV generico. Tecniche8/8; funzionali2/6.\n'
-   '316 tentativi controllati conservati; massimo128 ulteriori, cumulativo444. Nessun reset o replay del primo grant.\n'
+   '317 tentativi controllati conservati; massimo127 ulteriori, cumulativo444. Nessun reset o replay del primo grant.\n'
    'Il worker termina comunque entro la scadenza dei permessi temporanei: '+case['maximumGrantExpiry']+'.\n'
    'Questo APPROVO avvia solo il token policy. Seguono letture native degli11 job e APPROVO separato per la loro ripresa.\n'
    'Nessun cambio servizi, IAM, grant o identita. Lascia aperto il terminale; Ctrl-C cancella.\n'
@@ -94,13 +94,13 @@ def main(prepared,sources,closure,case,context,read,ns,emit):
   synchronize(worker.r.journal);report_guard_errors(worker,emit)
   timer=threading.Timer(max(0,decision['expiresAt']-time.time()),stop.set);timer.daemon=True;timer.start()
   worker_thread=threading.Thread(target=serve,args=(worker,stop,OwnerReporter(worker.r.journal,emit)),daemon=True);worker_thread.start()
-  emit('OUF_CSV_RECOVERY_POLICY_STARTED='+encoded({'contextPath':str(context),'workerJournal':str(next_journal),'priorControlledGrantAttempts':316,
+  emit('OUF_CSV_RECOVERY_POLICY_STARTED='+encoded({'contextPath':str(context),'workerJournal':str(next_journal),'priorControlledGrantAttempts':317,
    'maximumCumulativeGrantAttempts':444,'expiresAt':decision['expiresAt'],'budgetReset':False}).decode())
   def worker_guard():
    require(not stop.is_set()and time.time()<decision['expiresAt'],'CURRENT_NATIVE_RECOVERY_WINDOW_REQUIRED')
    human.current();row=worker.r.journal.read()
-   require(row['state']in('ACTIVE','ATTEMPTING','PUBLISHING')and row['publicationCount']>=1 and row['controlledPredecessorGrantAttempts']==316
-    and row['controlledCumulativeGrantAttempts']==316+row['attempts']<=444 and row.get('tokenExpiresWall',0)>time.time()+5,
+   require(row['state']in('ACTIVE','ATTEMPTING','PUBLISHING')and row['publicationCount']>=1 and row['controlledPredecessorGrantAttempts']==317
+    and row['controlledCumulativeGrantAttempts']==317+row['attempts']<=444 and row.get('tokenExpiresWall',0)>time.time()+5,
     'CURRENT_POLICY_PUBLICATION_REQUIRED')
   deadline=min(time.time()+120,decision['expiresAt'])
   while True:
@@ -110,12 +110,7 @@ def main(prepared,sources,closure,case,context,read,ns,emit):
    require(state['state']in('NEW','ATTEMPTING','PUBLISHING','ACTIVE'),'POLICY_WORKER_NOT_ACTIVE');stop.wait(1)
   worker_guard();guard_apps()
   client=retry.Client(OwnerTransport(selection,human.token_path,human.token_path,human_session=human))
-  for read_attempt in range(1,5):
-   try:
-    job_review=retry.prepare(client,jobs,digest(selected),min(decision['expiresAt'],int(time.time())+900));break
-   except ValueError as error:
-    if str(error)!='NATIVE_RECOVERY_HTTP_403'or read_attempt==4:raise
-    emit('OUF_CSV_OWNER_POLICY_WAIT='+encoded({'readAttempt':read_attempt,'maximumReadAttempts':4,'jobMutations':0}).decode());stop.wait(15);worker_guard()
+  job_review=retry.prepare_when_ready(client,jobs,digest(selected),min(decision['expiresAt'],int(time.time())+900),stop.wait,worker_guard,emit)
   job_review.update(authenticatedHuman=hb,sourceClosureHash=digest(closure),workerAuthorityHash=action.authority_hash)
   retry.document(context,'native-retry-review.json',job_review)
   approved=authority.terminal_consent(job_review,
