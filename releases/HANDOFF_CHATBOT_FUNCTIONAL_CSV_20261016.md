@@ -1,3 +1,17 @@
+# Prima acquisizione consegnata;12 identità UDP da verificare — 2026-10-17
+
+**Tecniche8/8; funzionali2/6.** Reader target completo: contesto ybmis4le/review b258d70a9ec1e6257be8508bdce62b69b60e7b78a671356dd5defb8490796ca3/journal29. Ingestion run a3208f2f-ebfd-415d-bddc-79ab05dea78f SUCCEEDED/MANAGED_ONCE:13 processing attempt,13 lineage,13 handoff ACKED con receipt,0fail/0quarantena, sorgente HEALTHY. Schedule DISABLED con triggerOnce true e pubblicazione996d58ca… consumata: è esecuzione una tantum conclusa, non un errore di attivazione.
+
+UDP:1handoff PROCESSED e12 DURABLE,1job SUCCEEDED e12 QUARANTINED,1binding/oggetto/revisione/osservazione,20 contributi,12 issue OPEN UNRESOLVED_IDENTITY. ACK di ricezione durevole non equivale a13 oggetti materializzati. Non rispedire import, cambiare idempotency key, cancellare issue o forzare collegamenti. Il risultato Cinema0 riguarda SOLO schema:MovieTheater: tipo baseline ancora da riconciliare; nessuna prova di perdita degli8Cinema.
+
+Analisi sorgente UDP b49c0d6f: GovernedIdentityEngine considera distinti i candidati solo se tutti i segnali condivisi sono DISAGREE; accordo su alcuni e disaccordo su altri richiede HUMAN. ScopedIdentityCandidateRepository recupera l'unione dei match per ogni campo. Questa logica spiega un possibile percorso primo-oggetto/12revisioni, coerente col codice osservato; non è ancora lettura delle12evidenze target né motivo per allentare la policy approvata.
+
+Percorso già implementato in Onboarding34488428: ResolutionThsApi /trusted-human/resolution/ con package owner UDP tramite Gateway e autenticazione HUMAN, conferma CSRF/expected snapshot e versioni. Pagina offre Collega a un oggetto, Crea un oggetto distinto (con coverage valida), Chiudi il caso. **La UI preseleziona APPROVE se il candidato è uno: non è una raccomandazione e può fondere Teatri distinti se confermata alla cieca.** Servono revisione concreta e scelta HUMAN; nessuna conferma da agente. Prima aprire la pagina nello stesso browser THS e osservare numero casi/opzioni/errori. Origine approvata https://api.ouf-lab.it. Runtime disponibilità di questa specifica pagina non ancora provata.
+
+Limite da tenere presente: ResolutionReviewPackageService conferma tutte le issue visibili del tenant in transazione; IdentityGovernanceService e GovernedIdentityResolutionService ricontrollano coverage per CREATE_NEW e possono riaprire casi se cambia durante la materializzazione. Non promettere risoluzione automatica delle12 o successo in un unico batch; non indebolire il fence per evitare una seconda revisione. Restano da qualificare comportamento di batch CREATE_NEW e presentazione di dati utili alla scelta, se la superficie osservata non basta. Le decisioni sono dirette HUMAN, non endpoint chiamati da MCP/VPS.
+
+---
+
 # Controllo acquisizione pronto: sorgente ACTIVE, milestone2/6 — 2026-10-17
 
 **Tecniche8/8; funzionali2/6.** La lettura owner source.onboarding.read conferma ACTIVE/lock4, pubblicazione996d58ca… attiva, compatibilità osservata, readiness ACTIVE/attempt3/generation5. Non ripetere approvazione/attivazione sorgente. Il worker policy resta nella finestra autorizzata dal nuovo login, senza reset/rinnovi automatici. Fonte di prova: evidence/chatbot-teatri-source-active-20261017.json.
