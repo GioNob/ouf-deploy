@@ -14,4 +14,6 @@ jobs:
       - name: Native root group and isolated complete graph
         run: |
           if ! getent group 10001 >/dev/null; then sudo groupadd --gid 10001 ouf-policy-fixture; fi
-          sudo env OUF_NATIVE_UIDS=1 python3 -B -m unittest discover -s tests -p 'test_teatri_policy_restore*.py' -v
+          sudo cp -a "$GITHUB_WORKSPACE" /root/ouf-policy-restore-fixture
+          sudo chown -R root:root /root/ouf-policy-restore-fixture
+          sudo bash -c "cd /root/ouf-policy-restore-fixture && OUF_NATIVE_UIDS=1 python3 -B -m unittest discover -s tests -p 'test_teatri_policy_restore*.py' -v"
