@@ -1,0 +1,15 @@
+name: CSV last row native recovery preparation
+on:
+  push:
+    branches: [fix/csv-functional-stage3-ledger-20261017]
+    paths: ['scripts/prepare-csv-last-row-recovery-20261018.py', 'scripts/launch-csv-last-row-preparation-20261018.sh', 'tests/csv_last_row_preparation/**', '.github/workflows/csv-last-row-preparation.yml']
+permissions: {contents: read}
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Qualify existing native compiler, preserved history and single-job scope
+        run: python3 -I -B -m unittest discover -s tests/csv_last_row_preparation -v
