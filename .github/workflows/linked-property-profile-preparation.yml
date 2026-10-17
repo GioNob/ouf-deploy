@@ -1,0 +1,53 @@
+name: Linked property profile preparation
+on:
+  push:
+    branches: [feat/linked-property-profile-preparation-20261017]
+    paths: ['tools/linked_property_profile/**', 'tests/linked_property_profile/**', 'scripts/*linked-property*images.py', 'releases/linked-property-profile-proposal-20261017.json', 'releases/linked-property-activation-preparation-20261017.json', '.github/workflows/linked-property-profile-preparation.yml']
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: linked-property-profile-preparation
+  cancel-in-progress: false
+jobs:
+  offline-preparation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Verify preservation, native rule constraints and scheduling disclosure
+        run: node tests/linked_property_profile/run.mjs
+  qualified-native-identities:
+    if: github.event_name == 'workflow_dispatch'
+    needs: offline-preparation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    permissions: {contents: read, actions: read}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Read exact qualified artifact through GitHub Actions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api repos/GioNob/ouf-deploy/actions/artifacts/12111508257/zip > qualified.zip
+      - name: Verify ZIP and archive bytes, then derive native identities
+        run: python3 -I -B scripts/derive-linked-property-native-images.py qualified.zip native-identities.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: qualified-native-identities
+          path: native-identities.json
+          if-no-files-found: error
+          retention-days: 7
+  retained-vps-images:
+    needs: qualified-native-identities
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with: {name: qualified-native-identities, path: qualified-identity}
+      - name: Read exact pre-fix application images without entering containers
+        run: python3 -I -B scripts/read-linked-property-activation-images.py qualified-identity/native-identities.json

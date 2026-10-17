@@ -1,0 +1,540 @@
+{
+  "schema": "ouf.linked-property-profile-proposal.v1",
+  "status": "PREPARED_NOT_APPROVED_OR_PUBLISHED",
+  "installationTestFixture": true,
+  "expected": {
+    "sourceId": "teatri-csv-6609b245",
+    "onboardingVersionId": "9860853e-e8f3-4b93-b9d2-03521a039962",
+    "configurationHash": "sha256:ae7f46b4214d09c55a9885530920026258f0dcd588462c353b06d82185e12c9b"
+  },
+  "normativeSpecification": "https://github.com/GioNob/ouf-deploy/blob/83e2e85a0ae4107ba52486de7bdcbfe4502761cc/docs/LINKED_OBJECT_PROPERTY_RECONCILIATION_V1.md",
+  "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+  "scope": {
+    "historicalReprocessing": false,
+    "identityDecisions": false,
+    "jobRetry": false,
+    "automaticPublication": false
+  },
+  "properties": [
+    {
+      "propertyIri": "https://schema.org/name",
+      "expectedCurrent": {
+        "sourceField": "https://schema.org/name",
+        "propertyIri": "https://schema.org/name",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://schema.org/additionalType",
+      "expectedCurrent": {
+        "sourceField": "https://schema.org/additionalType",
+        "propertyIri": "https://schema.org/additionalType",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#toponimo",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#civico",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#civico",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#cap",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#cap",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#citta",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#citta",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#provincia",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#latitudine",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#longitudine",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#capienza_posti",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#note",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#note",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    },
+    {
+      "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica",
+      "expectedCurrent": {
+        "sourceField": "https://api.ouf-lab.it/semantic/teatri#data_verifica",
+        "propertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "accessLabel": "RESTRICTED",
+        "authorityOrder": [
+          "teatri-csv-6609b245"
+        ]
+      },
+      "reconciliation": {
+        "policyRef": "urn:ouf:policy:linked-object-property-reconciliation:v1",
+        "cardinality": "SINGLE",
+        "normalizerRef": "EXACT_TYPED",
+        "normalizerVersion": 1,
+        "validity": "SOURCE_INTERVAL"
+      },
+      "basis": {
+        "cardinality": "Approved policy defaults.unconfiguredCardinality=SINGLE_VALUE_CONSERVATIVE; operational conflict handling, not an inferred semantic maxCount. Explicit contrary semantic/source constraints require separate review.",
+        "normalization": "Approved policy defaults.unconfiguredNormalization=EXACT_TYPED_CANONICAL_VALUE_ONLY; preserve original XML Schema string datatype.",
+        "validity": "Honor only sourceIdentity.validFrom/validTo already supplied under the existing temporal contract; do not derive intervals, observations or revisions. Review existing temporalMapping before approval.",
+        "sourceAuthority": "Preserve expectedCurrent.authorityOrder exactly; no new source priority.",
+        "deletion": "No revisionField or deletionField; no inferred deletion or supersession contract."
+      }
+    }
+  ]
+}

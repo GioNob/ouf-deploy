@@ -1,0 +1,93 @@
+{
+  "schema": "ouf.linked-property-compatibility-qualified.v1",
+  "package": {
+    "repository": "GioNob/ouf-deploy",
+    "workflow": ".github/workflows/linked-property-compatibility-candidates.yml",
+    "workflowSourceCommit": "41bd18fe28ca0a455507939fb3e3a9b7c881e996",
+    "runId": 39069142370,
+    "artifactId": 12114298116,
+    "artifactName": "linked-property-compatibility-candidate-39069142370",
+    "artifactBytes": 867638834,
+    "githubArtifactDigest": "sha256:129a914ce5ce25e158490c0c2d4c4b2ab523c637de5aeffd6e3fd7d7f081b017",
+    "expiresAt": "2026-11-16T21:04:11Z",
+    "sourceLockSha256": "907902d539f1bee067b9d97834c8bd482257f730ebb4f9b6cdd7d2b9e01c9ab0",
+    "scanGate": "PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED",
+    "sigstoreVerificationPassedInCI": true
+  },
+  "modules": [
+    {
+      "artifactKind": "DOCKER_SAVE",
+      "budgetReset": false,
+      "futureBuildByteReproducibilityProven": false,
+      "imageId": "sha256:210d6b25f3a0615879f481bf68e30166cd648cc3f73a6a10da9b41df0955d1a2",
+      "module": "onboarding",
+      "notReleaseAcceptance": true,
+      "r12Touched": false,
+      "repository": "GioNob/ouf-source-onboarding",
+      "runtimeAuthorityIssued": false,
+      "scanGate": "PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED",
+      "schema": "ouf.ingestion-readiness-module-package.v1",
+      "signatureIssued": false,
+      "sourceCommit": "b8b2eb23e36ea3166012edf84fb8c1fc3441dfca",
+      "sourceLockSha256": "907902d539f1bee067b9d97834c8bd482257f730ebb4f9b6cdd7d2b9e01c9ab0",
+      "targetApplyAuthorized": false,
+      "vpsOperations": 0
+    },
+    {
+      "artifactKind": "DOCKER_SAVE",
+      "budgetReset": false,
+      "futureBuildByteReproducibilityProven": false,
+      "imageId": "sha256:f2f2a233ef11dd76d62bd1fda6be741c8c7cabad5f8393d6265250ad3f5ce875",
+      "module": "udp",
+      "notReleaseAcceptance": true,
+      "r12Touched": false,
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "runtimeAuthorityIssued": false,
+      "scanGate": "PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED",
+      "schema": "ouf.ingestion-readiness-module-package.v1",
+      "signatureIssued": false,
+      "sourceCommit": "e66e6df0833a872f15170eb46a43f85e50dd859b",
+      "sourceLockSha256": "907902d539f1bee067b9d97834c8bd482257f730ebb4f9b6cdd7d2b9e01c9ab0",
+      "targetApplyAuthorized": false,
+      "vpsOperations": 0
+    }
+  ],
+  "qualification": {
+    "udp": {
+      "targetedRunId": 39068244324,
+      "targetedTests": 77,
+      "moduleRunId": 39068244334,
+      "crsRunId": 39068244339
+    },
+    "onboarding": {
+      "moduleRunId": 39068142487,
+      "browserRunId": 39068142455
+    },
+    "profilePreparation": {
+      "runId": 39069287155,
+      "tests": 18
+    },
+    "installedImageRead": {
+      "runId": 39069079580,
+      "evidence": "evidence/linked-property-activation-images-20261017.json"
+    }
+  },
+  "migrationChangeRequired": false,
+  "expectedInstalledUdpMigration": 35,
+  "targetServicesUpdated": false,
+  "nativeProfilePublished": false,
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "readyForExecution": false,
+  "jobsRetried": 0,
+  "identityDecisionsPerformed": false,
+  "historicalReprocessing": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2,
+  "remaining": [
+    "Fresh complete owner configuration, published semantic constraints, temporal contract and scheduler/in-flight evidence",
+    "Qualified new target update plan and HUMAN authority: do not reuse prior consumed rollout",
+    "Native candidate validation, HUMAN/THS approval and explicit scheduling effects",
+    "Native profile publication readback and separate functional acceptance"
+  ]
+}

@@ -15,3 +15,16 @@ The approved specification remains the normative comparison policy. Each affecte
 Creating a new active source publication may be observed by the Ingestion scheduler, including `triggerOnce` sources. Profile deployment must therefore be distinguished from activation, reacquisition and historical reprocessing. The post-rollout reader exposes the currently published property rules and scheduling metadata to prepare an exact review before any such effect.
 
 Status remains technical phases **8/8**, functional milestones **2/6**. Installed code and schema do not prove that a native profile has been published or consumed.
+
+## Activation preparation and XSD compatibility
+
+The reported post-rollout read confirms all20 reconciliation entries are null and V35 checksum is -376865285. Preparation found that the installed validators reject the unchanged XML Schema string datatype when reconciliation is added. UDP PR44 and Onboarding PR45 add exact string-IRI compatibility; both are qualified in CI but not installed.
+
+A concrete20-property proposal preserves datatype, labels, authority and the outer materialization policy. It uses the approved conservative SINGLE default, EXACT_TYPED v1, existing source intervals only, no revision/deletion contract. Native semantic constraint read returned403 SEM_READ_RECEIPT_OR_POLICY_DENIED; no login or grant was opened. Full owner configuration and temporal/semantic constraints remain activation gates.
+
+Ingestion derives one-shot behavior from MANAGED, independently of top-level triggerOnce. A new publication may re-arm acquisition. No publication, job retry, source disable or identity decision was performed. See [the preparation, PET traceability and native publication path](LINKED_PROPERTY_ACTIVATION_PREPARATION_20261017.md). Technical8/8; functional2/6 unchanged.
+
+
+La preparazione ha inoltre verificato con successo le immagini correnti via runner VPS: [39069079580](https://github.com/GioNob/ouf-deploy/actions/runs/39069079580), [evidenza](../evidence/linked-property-activation-images-20261017.json). Nessuna lettura fresca di profilo/schedule da questo controllo. Correzione XSD qualificata nei moduli; nuovo pacchetto CI in preparazione, nessuna installazione. Tecniche8/8; funzionali2/6.
+
+Pacchetto compatibilità XSD qualificato: [39069142370](https://github.com/GioNob/ouf-deploy/actions/runs/39069142370), [manifest](../releases/linked-property-compatibility-qualified-20261017.json). Build/scansione/firma/verifica PASS; 18 test offline PASS in39069287155. Nessun aggiornamento target o profilo; i requisiti semantici e l'effetto scheduler rimangono aperti.
