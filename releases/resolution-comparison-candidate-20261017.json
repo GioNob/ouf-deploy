@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.ingestion-readiness-source-lock.v1",
+  "cohortId": "resolution-comparison-20261017",
+  "modules": [
+    {
+      "module": "udp",
+      "repository": "ouf-udp-object-resolution",
+      "commit": "5a5a45b07b3f52fab50e10234f12ce87bb1a6aa6",
+      "kind": "DOCKER_SAVE"
+    },
+    {
+      "module": "onboarding",
+      "repository": "ouf-source-onboarding",
+      "commit": "dec8f6f53f263f264a1ed14f17b51ab31dc9afad",
+      "kind": "DOCKER_SAVE"
+    }
+  ],
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "scope": "UDP and Onboarding object comparison and selective HUMAN review; preserve Ingestion, Gateway, IAM, schema and identity decisions"
+}
