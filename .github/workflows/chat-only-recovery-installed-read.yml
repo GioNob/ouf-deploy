@@ -1,8 +1,8 @@
-name: Read installed release boundary through existing fixed helper
+name: Read current application generations for chat recovery
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['.github/workflows/chat-only-recovery-installed-read.yml']
+    paths: ['.github/workflows/chat-only-recovery-installed-read.yml', 'scripts/read-chat-recovery-current-inventory.py']
 permissions: {contents: read}
 concurrency:
   group: ouf-discovery-release
@@ -12,5 +12,7 @@ jobs:
     runs-on: [self-hosted, Linux, X64, ouf-vps-test]
     timeout-minutes: 3
     steps:
-      - name: Use only the existing no-argument read-only helper
-        run: sudo -n /usr/local/sbin/ouf-discovery-preflight
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Read current application metadata through existing runner access
+        run: python3 -I -S -B scripts/read-chat-recovery-current-inventory.py
