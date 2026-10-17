@@ -58,7 +58,7 @@ class NativeEndToEnd(unittest.TestCase):
   self.addCleanup(lambda:self.cli('network','rm',net));created=[]
   self.addCleanup(lambda:[self.cli('rm','-f',cid)for cid in reversed(created)])
   self.cli('pull','python:3.13-alpine')
-  pinned=self.cli('image','inspect','python:3.13-alpine','--format','{{.Id}}')
+  pinned=self.cli('image','inspect','python:3.13-alpine','--format','{{index .RepoDigests 0}}')
   build=root/'build';build.mkdir(mode=0o700);(build/'Dockerfile').write_text('FROM '+pinned+'\nLABEL org.opencontainers.image.revision="'+'c'*40+'"\n')
   self.cli('build','--quiet','--tag',image,str(build))
   image_id=self.cli('image','inspect',image,'--format','{{.Id}}');archive=root/'image.tar';self.cli('save','-o',str(archive),image);archive.chmod(0o600)

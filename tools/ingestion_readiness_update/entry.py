@@ -128,7 +128,14 @@ def main(prepared,sources,closure,resources,context,emit=print):
    'Dopo il rollout resta da riprendere e verificare la sorgente nel THS.\n'
    'Revisione privata: '+str(rollout/'review.json'))
   require(not stop.is_set(),'POLICY_SESSION_NOT_LIVE');retained_registry(installed)
-  action=authority.issue_action(final,approval,human);action.authority.clock=current_time
+  action=authority.issue_action(final,approval,human)
+  def rollout_time():
+   now=current_time();latest=worker.r.journal.read()
+   require(thread.is_alive()and not failure and latest.get('publicationCount',0)>0
+    and latest.get('state')not in('BLOCKED','CANCELLED','PAUSED_EXHAUSTED')
+    and latest.get('tokenExpiresWall',0)>now+5,'CURRENT_FINITE_POLICY_PUBLICATION_REQUIRED')
+   return now
+  action.authority.clock=rollout_time
   ports=NativePorts(action,engine,plan);update=ReadinessUpdate(action,Journal(rollout),plan,ports);update.initialize()
   while True:
    try:

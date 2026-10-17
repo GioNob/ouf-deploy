@@ -54,7 +54,7 @@ class NativePorts:
    if n>STAGES.index(name+'.STOP_OLD'):
     require(old['State']['Running']is False and old['State']['Pid']==0,'OLD_APPLICATION_NOT_QUIESCENT')
    if n>STAGES.index(name+'.START_REPLACEMENT'):
-    self.candidate(name,True)
+    require(self.candidate(name,True)is not None,'STARTED_APPLICATION_DISAPPEARED')
  def candidate(self,name,running=False):
   row=self.plan['replacements'][name];actual=self.inspect('containers',row['name'])
   if actual is None:return None
