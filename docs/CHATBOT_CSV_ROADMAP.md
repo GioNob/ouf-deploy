@@ -1,3 +1,15 @@
+# Continuazione esatta dopo refresh HUMAN bloccato — 2026-10-17 13:32 CEST
+
+**Tecniche8/8; funzionali2/6.** Target: preparazione privata completata in `/etc/ouf/deploy-snapshots/resolution-config-execution-e1zic7co`; stessa immagine9da9e4d4…,3scopepreservati+2Resolution. STOP al refresh `HUMAN_OAUTH_REVOKED_OR_PERMANENT_OR_UNKNOWN`, prima del review/APPROVO e di authority/effects. Non interpretare il codice come revoca indipendentemente provata. Nessuna nuova route/container mutato da questo tentativo. La prosecuzione non chiama il vecchio refresh.
+
+Nuovo sorgente `d830edbcdbf41c495672833b86aa698546e215a6`, package `d2cbd3d27cb0e6486b67258152a322bb2e3c2453` SHA2262cd31…; CI39029245665/job117386201568:26PASS,0skip. Confronta per uguaglianza l'intero prepared-plan conservato con gli input correnti, cambia solo authorityDirectory e riusa candidate-review originale con hash. Mantiene il medesimo retiredName/logicalUpdateRef, rifiuta presenza di autorità/review/claim/effects precedenti. Fallisce su drift; nuova directory non permette replay. Il vecchio piano e journal HUMAN restano intatti.
+
+Dopo questa preparazione: `RIAPRO LOGIN` esplicito per una nuova finestra device HUMAN7200s, ereditando il numero effettivo di tentativi OAuth e tetto128. Non si copiano bearer/refresh token; il vecchio journal resta BLOCKED e un claim one-use impedisce un secondo successore. Sono respinti errore di trasporto ambiguo, richiesta interrotta, operazione diversa da REFRESH, budget128 esaurito e consenso/storia cambiati. Seguono autenticazione issuer nuova e APPROVO separato per lo stesso intervento infrastrutturale, due firme correnti, massimo900s. Nessun worker policy o suo budget viene riaperto. Authority scope e limiti dell'aggiornamento invariati.
+
+Launcher corrente `scripts/launch-resolution-ths-configuration-20261017.sh`, SHA113bedf981f820a70985b483e45905da55054fce0ab20482c264b706d13293b0. Sostituisce il precedente pin02dc7c9b…, da non rilanciare. Prima riapertura locale e browser; poi APPROVO infrastruttura. Incollare `OUF_RESOLUTION_CONFIGURATION_RESULT`; in caso diSTOP conservare il log. Il risultato non prova ancora decisioni identità, binding IAM live, policy owner corrente o13materializzazioni conprovenienza. I limiti fixture descritti sotto restano validi.
+
+---
+
 # Resolution: pronto aggiornamento stessa immagine e scope browser — 2026-10-17
 
 **Tecniche8/8; funzionali2/6.** Readback proprietà13:15 CEST: la lista Spring JSON contiene3scope e non richiede resolution.issue.read/resolution.match.approve; enabled resta inconclusivo per YAML flow. Non cambiare grant o rigiocare import/approvazioni. [Procedura concreta](../releases/RESOLUTION_THS_CONFIGURATION_20261017.md): conserva tutti gli scope, aggiunge i due e rende THS esplicito nel JSON; stessa immagine Onboarding, precedente conservato, Ingestion invariato; poi3route. Nuovo profilo infrastrutturale firmato/HUMAN, nessun nuovo worker/budget o autorizzazione decisioni dati. Non dipende da worker scaduto per il provisioning; policy corrente e autorizzazione owner restano obbligatorie per i successivi atti THS.
