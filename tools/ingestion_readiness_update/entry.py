@@ -71,6 +71,7 @@ def main(prepared,sources,closure,resources,context,emit=print):
  files={name:sources[module]for name,module in TOKEN_STAGE_SOURCE.items()}
  args=(prepared['owner'],files,closure['declaration']['sourceCommit'],review,records,first,worker_binding,prepared['engine'],journal)
  planned=GovernedSemanticOwnerContinuation(unissued,*args);require(planned.worker_scope==worker_scope,'EXACT_COMPILED_TEST_WORKER_REQUIRED');retained_registry(planned)
+ authority.current_authorities(int(time.time())+3610)
  previous_path=Path(resources['previousHumanDirectory']);previous=HumanSession(prepared['authorization']['plan']['selection'],previous_path,previous_path/'human-access.jwt',resources['previousHumanExpiry'])
  login_review=session.expired_login_review(previous,{'workerReviewHash':digest(review),'rolloutPlanHash':digest(plan),'sourceClosureHash':digest(closure)})
  publish_json(context,'login-review.json',login_review)

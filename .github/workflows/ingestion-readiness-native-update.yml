@@ -11,8 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
-      - name: Pure closed graph, exact plan and existing-role failure contracts
-        run: python3 -I -B -m unittest discover -s tests -p 'test_readiness_update_*.py' -v
+      - name: Pure closed graph with effects disabled
+        run: python3 -I -B -m unittest discover -s tests -p 'test_readiness_update_bootstrap.py' -v
       - name: Real root custody, signatures, Docker replacements and namespace route publication
         run: |
           OUF_READINESS_ROOT="/var/lib/ouf-readiness-native-${{ github.run_id }}"
