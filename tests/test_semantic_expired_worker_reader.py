@@ -16,7 +16,7 @@ m=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(m)
 
 class Reader(unittest.TestCase):
     def setUp(self):
-        self.tmp=tempfile.TemporaryDirectory(dir=ROOT);self.addCleanup(self.tmp.cleanup)
+        self.tmp=tempfile.TemporaryDirectory(dir='/root' if os.environ.get('OUF_NATIVE_UIDS')=='1' else ROOT);self.addCleanup(self.tmp.cleanup)
         self.root=Path(self.tmp.name);self.root.chmod(0o700)
         self.journal=self.root/'worker';self.journal.mkdir(mode=0o700)
         self.context=self.root/'context';self.context.mkdir(mode=0o700)

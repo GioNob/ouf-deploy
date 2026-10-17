@@ -15,4 +15,4 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
       - name: Native private journal, lock exclusion, counts, drift, redaction and CLI
-        run: sudo python3 -I -B -S -m unittest discover -s "$GITHUB_WORKSPACE/tests" -p 'test_semantic_expired_worker_reader.py' -v
+        run: sudo env OUF_NATIVE_UIDS=1 python3 -I -B -S -m unittest discover -s "$GITHUB_WORKSPACE/tests" -p 'test_semantic_expired_worker_reader.py' -v
