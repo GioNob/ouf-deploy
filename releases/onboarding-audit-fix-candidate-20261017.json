@@ -1,0 +1,16 @@
+{
+  "schema": "ouf.ingestion-readiness-source-lock.v1",
+  "cohortId": "onboarding-audit-fix-20261017",
+  "modules": [
+    {
+      "module": "onboarding",
+      "repository": "ouf-source-onboarding",
+      "commit": "e11680f84a646e616d7cf9b40e396dbb29bb8602",
+      "kind": "DOCKER_SAVE"
+    }
+  ],
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "scope": "One Onboarding application image only; preserve source approvals, Ingestion, Gateway, IAM and database schema"
+}
