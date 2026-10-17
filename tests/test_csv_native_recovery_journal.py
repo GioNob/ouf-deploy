@@ -2,11 +2,12 @@
 import json,subprocess,sys,tempfile,threading,unittest
 from pathlib import Path
 from tools.semantic_lease_recovery.recovery_journal import Journal
+from tools.csv_materialization_recovery.journal import synchronize
 
 class ConcurrentJournal(unittest.TestCase):
  def test_observer_waits_for_local_transaction_without_false_authority_failure(self):
   with tempfile.TemporaryDirectory() as directory:
-   journal=Journal(Path(directory).resolve());journal.initialize({'state':'NEW','attempts':0})
+   journal=synchronize(Journal(Path(directory).resolve()));journal.initialize({'state':'NEW','attempts':0})
    started=threading.Event();done=threading.Event();results=[]
    def observe():
     started.set()
@@ -21,7 +22,7 @@ class ConcurrentJournal(unittest.TestCase):
 
  def test_other_process_is_still_denied_without_reset_or_write(self):
   with tempfile.TemporaryDirectory() as directory:
-   journal=Journal(Path(directory).resolve());journal.initialize({'state':'NEW','attempts':0})
+   journal=synchronize(Journal(Path(directory).resolve()));journal.initialize({'state':'NEW','attempts':0})
    before=journal.record.read_bytes()
    script="""from pathlib import Path
 import sys

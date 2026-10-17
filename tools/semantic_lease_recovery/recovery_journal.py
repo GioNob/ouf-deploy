@@ -10,7 +10,6 @@ import json
 import os
 from pathlib import Path
 import stat
-import threading
 import uuid
 
 def require(ok, code):
@@ -39,7 +38,6 @@ class Journal:
                 and stat.S_IMODE(s.st_mode) == 0o700, 'PRIVATE_DIRECTORY_CUSTODY_REQUIRED')
         self.directory_id = (s.st_dev, s.st_ino)
         self.record, self.lock = self.root / 'recovery.json', self.root / 'recovery.lock'
-        self._thread_lock = threading.Lock()
 
     def check_directory(self):
         s = self.root.lstat()
@@ -93,15 +91,6 @@ class Journal:
 
     @contextmanager
     def transaction(self):
-        # A local observer and its worker share this Journal. flock on separate
-        # descriptors also conflicts within one process; serialize only these
-        # short transactions before taking the unchanged nonblocking OS fence.
-        with self._thread_lock:
-            with self._transaction():
-                yield
-
-    @contextmanager
-    def _transaction(self):
         self.check_directory()
         fd = os.open(self.lock, os.O_RDWR | os.O_NOFOLLOW | os.O_NONBLOCK)
         try:

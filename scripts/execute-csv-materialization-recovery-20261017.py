@@ -33,9 +33,8 @@ OVERLAYS.update({'tools.resolution_ths_update.'+n:('resolution_'+n+'.py','tools/
 OVERLAYS.update({'tools.resolution_ths_configuration.'+n:('config_'+n+'.py','tools/resolution_ths_configuration/'+n+'.py')for n in('entry','authority','owner','native','plan')})
 OVERLAYS.update({'tools.teatri_materialization_apply.'+n:('udp_'+n+'.py','tools/teatri_materialization_apply/'+n+'.py')for n in('entry','authority','owner','native','plan','preparation','preflight','permissions','login')})
 OVERLAYS['tools.chatbot_file_cohort.human_session']=('human_session.py','tools/csv_materialization_recovery/human_session.py')
-OVERLAYS['tools.semantic_lease_recovery.recovery_journal']=('recovery_journal.py','tools/semantic_lease_recovery/recovery_journal.py')
 OVERLAYS['tools.csv_materialization_recovery.entry']=('recovery_entry.py','tools/csv_materialization_recovery/entry.py')
-OVERLAYS.update({'tools.csv_materialization_recovery.'+n:('csv_'+n+'.py','tools/csv_materialization_recovery/'+n+'.py')for n in('authority','run','retry')})
+OVERLAYS.update({'tools.csv_materialization_recovery.'+n:('csv_'+n+'.py','tools/csv_materialization_recovery/'+n+'.py')for n in('authority','run','retry','journal')})
 def main():
  require(os.geteuid()==os.getegid()==0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode and len(sys.argv)==4,'ISOLATED_ROOT_AUDIT_FIX_BOOTSTRAP_REQUIRED')
  code=Path(sys.argv[1]);commit=sys.argv[2];manifest_sha=sys.argv[3]

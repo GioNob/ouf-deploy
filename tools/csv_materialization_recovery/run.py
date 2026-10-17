@@ -26,6 +26,7 @@ from tools.teatri_materialization_apply.native import runtime
 from tools.teatri_materialization_apply.owner import require,digest,encoded
 from tools.teatri_materialization_apply.preparation import publish_json
 from tools.csv_materialization_recovery import authority,retry
+from tools.csv_materialization_recovery.journal import synchronize
 
 def main(prepared,sources,closure,case,context,read,ns,emit):
  authority.closure_valid(closure);context=Path(context)
@@ -89,6 +90,7 @@ def main(prepared,sources,closure,case,context,read,ns,emit):
   def clock():require(not stop.is_set(),'CSV_RECOVERY_CANCELLED');return time.time()
   action.authority.clock=clock
   worker=GovernedSemanticOwnerContinuation(action,*args).install()
+  synchronize(worker.r.journal)
   timer=threading.Timer(max(0,decision['expiresAt']-time.time()),stop.set);timer.daemon=True;timer.start()
   worker_thread=threading.Thread(target=serve,args=(worker,stop,OwnerReporter(worker.r.journal,emit)),daemon=True);worker_thread.start()
   emit('OUF_CSV_RECOVERY_POLICY_STARTED='+encoded({'contextPath':str(context),'workerJournal':str(next_journal),'priorControlledGrantAttempts':316,

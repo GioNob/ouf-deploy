@@ -3,6 +3,7 @@
 This fixture never contacts a real issuer or changes target services.
 """
 import copy,json,os,unittest,threading
+from tools.csv_materialization_recovery.journal import synchronize
 from tools.semantic_policy_token_owner.worker_entry import serve
 from tools.semantic_policy_token_owner.reporter import OwnerReporter
 from pathlib import Path
@@ -34,6 +35,7 @@ class RemainderComposed(unittest.TestCase):
   c.journal=Path(scope['fenceBinding']['value']['journalPath']);c.journal.mkdir(mode=0o700)
   c.sign(c.make().scopes());before_grants=c.grants()
   worker=c.make().install()
+  synchronize(worker.r.journal)
   self.assertEqual(c.grants(),before_grants)
   self.assertEqual(worker.r.journal.read()['controlledCumulativeGrantAttempts'],316)
   stop=threading.Event();published=threading.Event();statuses=[]
