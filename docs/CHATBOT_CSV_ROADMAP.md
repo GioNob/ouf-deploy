@@ -1,3 +1,11 @@
+# Resolution: pronto aggiornamento stessa immagine e scope browser — 2026-10-17
+
+**Tecniche8/8; funzionali2/6.** Readback proprietà13:15 CEST: la lista Spring JSON contiene3scope e non richiede resolution.issue.read/resolution.match.approve; enabled resta inconclusivo per YAML flow. Non cambiare grant o rigiocare import/approvazioni. [Procedura concreta](../releases/RESOLUTION_THS_CONFIGURATION_20261017.md): conserva tutti gli scope, aggiunge i due e rende THS esplicito nel JSON; stessa immagine Onboarding, precedente conservato, Ingestion invariato; poi3route. Nuovo profilo infrastrutturale firmato/HUMAN, nessun nuovo worker/budget o autorizzazione decisioni dati. Non dipende da worker scaduto per il provisioning; policy corrente e autorizzazione owner restano obbligatorie per i successivi atti THS.
+
+Sorgente `e6fa281acc7be3e6d8f0a0db7066535c455e4697`, CI39028393385/job117383811364:19PASS,0skip, replacement Docker e namespace reali, fixture Admin/app sintetici. Target apply pendente; milestone3 non avanzata. LauncherSHA02dc7c9b…; package5ea6a324…. Prima tutta la preparazione, poi HUMAN attuale o RIAPRO LOGIN esplicito a finestra scaduta e APPROVO infrastruttura separato. Nessun rollback/replay automatico. Binding IAM live e token browser effettivo non ancora provati; richiesta scope non equivale a grant.
+
+---
+
 # Resolution: STOP prima del consenso, dichiarazione THS da riconciliare — 2026-10-17 13:00 CEST
 
 **Tecniche8/8; funzionali2/6.** Operatore: executor resolution-route-executor-code-5r6p38we, nuova directory resolution-route-execution-zt7l5a8h. Bootstrap PREPARED poi STOP `EXPLICIT_THS_AUTHENTICATION_ENABLED_REQUIRED`, runtimeAuthorityIssued=false. Dal flusso entry.py configuration() precede inventario Gateway, piano/review, decisione e ogni PUT: nessuna autorità o nuova route emessa da questo tentativo. Non rilanciare il launcher route. Non attribuire ancora il problema a THS disabilitato: il parser letterale non prova il valore Spring effettivo. Codice owner34488428 in GioNob/ouf-source-onboarding conferma chiave `ouf.authorization.ths.enabled` e la catena OAuth/CSRF HUMAN.
