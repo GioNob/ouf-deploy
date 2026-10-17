@@ -17,6 +17,7 @@ def sources():
   result['tools.onboarding_audit_update.'+name]=(ROOT/'tools/onboarding_audit_update'/str(name+'.py')).read_bytes()
  for name in('entry','authority'):
   result['tools.teatri_policy_restore.'+name]=(ROOT/'tools/teatri_policy_restore'/str(name+'.py')).read_bytes()
+ result['tools.chatbot_file_cohort.human_session']=(ROOT/'tools/teatri_policy_restore/human_session_v2.py').read_bytes()
  return result
 class Bootstrap(unittest.TestCase):
  def test_actual_closed_entry_imports_in_isolated_process_with_all_effects_disabled(self):
@@ -34,6 +35,7 @@ for n in('entry','authority','owner','native','preparation'):
  sources['tools.onboarding_audit_update.'+n]=(root/'tools/onboarding_audit_update'/str(n+'.py')).read_bytes()
 for n in('entry','authority'):
  sources['tools.teatri_policy_restore.'+n]=(root/'tools/teatri_policy_restore'/str(n+'.py')).read_bytes()
+sources['tools.chatbot_file_cohort.human_session']=(root/'tools/teatri_policy_restore/human_session_v2.py').read_bytes()
 pins={'ouf-deploy':'a'*40,'ouf-onboarding':'b'*40};extra={'executorSha256':'c'*64,'caseSha256':'d'*64,'mode':'TEATRI_POLICY_RESTORE'}
 d=ns['declaration']('a'*40,sources,loader,pins,extra)
 def denied(*a,**k):raise AssertionError('NO_EFFECTS_DURING_CLOSED_IMPORT')

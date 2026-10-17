@@ -18,9 +18,10 @@
   },
   "maximumNewGrantAttempts": 8,
   "maximumCumulativeGrantAttempts": 316,
-  "maximumNewHumanOAuthAttempts": 4,
-  "maximumCumulativeHumanOAuthAttempts": 128,
+  "maximumCumulativeHumanOAuthAttempts": 256,
   "maximumExecutionSeconds": 600,
   "automaticRestart": false,
-  "budgetReset": false
+  "budgetReset": false,
+  "failedPreparationContext": "/etc/ouf/deploy-snapshots/teatri-policy-restore-execution-oy3axaz7",
+  "explicitNewHumanTestBudgetRequired": true
 }
