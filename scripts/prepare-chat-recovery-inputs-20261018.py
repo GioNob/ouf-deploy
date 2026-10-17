@@ -57,7 +57,7 @@ def literal(value):
 
 
 def emit(check,**values):
- print(json.dumps(dict(schema='ouf.chat-recovery-private-preparation.v1',check=check,readOnly=True,
+ print(json.dumps(dict(schema='ouf.chat-recovery-private-preparation.v1',check=check,readOnly=False,runtimeReadOnly=True,preparationOnly=True,
   automaticRetry=False,budgetReset=False,credentialFilesRead=0,credentialValuesPrinted=False,
   databaseMutations=0,grantRequests=0,oauthRequests=0,serviceMutations=0,profilePublications=0,
   jobsRetried=0,completedTechnicalPhases=8,functionalMilestonesProven=3,installationSpecific=True,**values),sort_keys=True),flush=True)
@@ -73,16 +73,20 @@ def validate_history(facts,expected):
 
 
 def validate_database(module, facts, profile):
+ require(module in('udp','mcp'),'EXACT_DATABASE_MODULE_REQUIRED')
  require(facts['transactionReadOnly'] is True,'READ_ONLY_DATABASE_REQUIRED')
  if module=='udp':
   expected=profile['udpMigrations'][:-1]
   validate_history(facts,expected)
+  rows=[r for r in facts['migrations'] if r['version'] is not None]
+  require([r['installed_rank'] for r in rows]==list(range(1,36)),'MIGRATION_RANK_DRIFT')
   require(len(expected)==35 and profile['udpMigrations'][-1]['version']=='36','EXACT_V35_V36_REQUIRED')
   require(facts['ownsMaterializationJob'] is True and facts['recoveryColumnCount']==0,'V36_PREFLIGHT_UNPROVEN')
  else:
   require(facts['migrations']==profile['mcpMigrations'],'EXACT_MCP_HISTORY_REQUIRED')
 
 def sql(module, app):
+ require(module in('udp','mcp'),'EXACT_DATABASE_MODULE_REQUIRED')
  require(re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,62}',app) is not None,'EXACT_APPLICATION_ROLE_REQUIRED')
  common="'database',current_database(),'role',current_user,'transactionReadOnly',current_setting('transaction_read_only')='on','databaseOid',(select oid::bigint from pg_database where datname=current_database()),'databaseBytes',pg_database_size(current_database())"
  if module=='udp':
