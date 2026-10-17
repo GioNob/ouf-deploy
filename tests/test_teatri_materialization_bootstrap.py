@@ -53,6 +53,10 @@ print('SEALED_SCOPED_MCP_ENTRY_IMPORTED_WITHOUT_EFFECTS')
   result=subprocess.run([sys.executable,'-I','-B','-S','-c',script,str(ROOT)],capture_output=True,timeout=20)
   self.assertEqual(result.returncode,0,result.stderr.decode());self.assertEqual(result.stdout,b'SEALED_SCOPED_MCP_ENTRY_IMPORTED_WITHOUT_EFFECTS\n')
  def test_bootstrap_bytes_selection_mode_and_source_maps_are_bound(self):
+  for module,(name,path) in bootstrap.OVERLAYS.items():
+   if module.startswith('tools.teatri_materialization_update.'):
+    self.assertEqual(path,'tools/teatri_materialization_update/'+module.rsplit('.',1)[1]+'.py')
+   self.assertEqual((ROOT/path).read_bytes(),sources()[module])
   source=sources();loader=(ROOT/'tools/teatri_materialization_update/runtime.py').read_bytes()
   pins={'ouf-deploy':'a'*40,'ouf-onboarding':'b'*40};extra={'executorSha256':'c'*64,'caseSha256':'d'*64,'mode':'TEATRI_MATERIALIZATION_PREPARE'}
   d=runtime.declaration('a'*40,source,loader,pins,extra)

@@ -31,7 +31,7 @@ OVERLAYS={
 OVERLAYS.update({'tools.onboarding_audit_update.'+n:('audit_'+n+'.py','tools/onboarding_audit_update/'+n+'.py')for n in('entry','authority','owner','native','preparation')})
 OVERLAYS.update({'tools.resolution_ths_update.'+n:('resolution_'+n+'.py','tools/resolution_ths_update/'+n+'.py')for n in('entry','authority','owner','native','plan')})
 OVERLAYS.update({'tools.resolution_ths_configuration.'+n:('config_'+n+'.py','tools/resolution_ths_configuration/'+n+'.py')for n in('entry','authority','owner','native','plan')})
-OVERLAYS.update({'tools.teatri_materialization_update.'+n:('udp_'+n+'.py','tools/udp_resolution_update/'+n+'.py')for n in('entry','authority','owner','native','plan','preparation','preflight')})
+OVERLAYS.update({'tools.teatri_materialization_update.'+n:('udp_'+n+'.py','tools/teatri_materialization_update/'+n+'.py')for n in('entry','authority','owner','native','plan','preparation','preflight')})
 OVERLAYS['tools.chatbot_file_cohort.human_session']=('human_session.py','tools/teatri_policy_restore/human_session_v2.py')
 def main():
  require(os.geteuid()==os.getegid()==0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode and len(sys.argv)==5,'ISOLATED_ROOT_AUDIT_FIX_BOOTSTRAP_REQUIRED')
