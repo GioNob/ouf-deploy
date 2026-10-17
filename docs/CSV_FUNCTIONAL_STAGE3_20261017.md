@@ -1,4 +1,13 @@
 
+## Qualifica della continuità e diagnosi mirata — 18 ottobre 2026
+
+[UDP PR 45](https://github.com/GioNob/ouf-udp-object-resolution/pull/45) conserva il profilo delle proprietà nel percorso pubblicato prima della review HUMAN. Test integrati APPROVE e CREATE_NEW verificano la conferma THS, la ripresa del medesimo job, binding, contributi, osservazione/revisione e assenza di duplicati al tick successivo. Configurazione pubblicata e reference gate sono confini simulati dichiarati; PostgreSQL e servizi di dominio reali. [Run 39073660064](https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39073660064): **95 test PASS, zero errori/fallimenti/skip**, inclusi 18 della suite di candidati. Questo fix è separato dal blocco dei riferimenti e non è ancora installato.
+
+Il nuovo `read-csv-post-resolution-references-20261018.py` riusa i lettori installati e gli adattatori di accesso già esistenti, vincolati al rollout journal 55. Legge metadati del solo job residuo (versione, tentativi, hash mancanti, baseline, assenza/presenza effetti) e verifica la pubblicazione storica più al massimo due riferimenti semantici tramite l'identità di servizio già configurata. Nessun token o valore della fonte stampato, nessun rinnovo OAuth, grant, mutazione, decisione o retry. Limiti: 90 secondi, due sessioni SQL read-only, sette letture engine, un file di credenziale, tre GET. La copertura semantica limitata è dichiarata; non prova da sola l'intero catalogo.
+
+[Qualifica sorgente 39073782611](https://github.com/GioNob/ouf-deploy/actions/runs/39073782611): **4 test PASS, zero skip**, SQL realmente eseguito su PostgreSQL 17, isolamento tenant e redazione delle risposte, incluse risposte 401/403/302 senza redirect. SHA256 sorgente `30f10c26a9d51265b1941d048845b51ae5c77510bd0b888f060333cfff19c52e`, commit `37e7150ca150ab861ee1b5794e8091b8776cca51`. Il launcher non apre login; usa la sessione VPS esistente. La lettura del token configurato resta in memoria. L'esecuzione host richiede la sessione VPS dell'utente perché il runner ha già provato che sudo non interattivo richiede password: nessun nuovo tentativo del rifiuto.
+
+
 ## Riscontro VPS dopo la decisione THS — 18 ottobre 2026
 
 La decisione HUMAN **CREATE_NEW** per il caso `e16fec6e-311d-49f3-b1de-f274cb5a92d1` è **RESOLVED**. Il job del medesimo handoff `9fde61f1-8d3c-4de7-b3fe-b534b32e45e3` resta però **QUARANTINED / UDP_REFERENCE_INTEGRITY_MISSING**, intake DURABLE, nessun binding, osservazione, contributo o oggetto creato. La ripresa ha raggiunto il controllo dei riferimenti; il riferimento preciso e la causa del mancato accesso non sono ancora provati.
