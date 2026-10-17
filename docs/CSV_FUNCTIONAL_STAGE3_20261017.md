@@ -1,4 +1,9 @@
 
+## Preparazione nativa qualificata e consegnata — 18 ottobre 2026
+
+[Qualifica finale 39075109515](https://github.com/GioNob/ouf-deploy/actions/runs/39075109515): **7 PASS, zero errori/fallimenti/skip**, sintassi launcher valida. [Impronte e limiti](csv-last-row-private-preparation-qualified-20261018.json). Il comando è consegnato per creare sul VPS la revisione privata del recupero, ancora senza autorità runtime. In attesa di percorso/impronta del piano e contatori HUMAN raccolti dal target; nessun nuovo login, worker, grant o retry dell'agente. Il contatore318/444 non viene né azzerato né aumentato nella preparazione.
+
+
 ## Causa del blocco e preparazione del recupero — 18 ottobre 2026
 
 Il [preflight target completo](csv-semantic-policy-channel-failure-target-20261018.json), log `/home/oufadmin/ouf-csv-reference-read.P7fk3eF0/read.log`, identifica il diniego nel Semantic Registry: `SEM_CAPABILITY_REQUIRED:ouf.semantic.read`. Il token UDP non è scaduto alla lettura, contiene lo scope richiesto e corrisponde ad audience/guard della route conservata. Nella **policy pubblicata 41** esiste un grant `ouf.semantic.read` valido che corrisponde all'identità UDP; descrittore SERVICE/READ corretto. Il token con cui il Semantic Registry legge tale policy è invece **scaduto**, e il canale configurato della policy risponde **401**. Il contenuto effettivamente caricato in memoria non è provato; la disponibilità del trasporto policy è certamente interrotta.
