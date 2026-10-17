@@ -1,3 +1,17 @@
+# Journal token recuperato e candidato MCP atomico — 2026-10-17
+
+**Fasi tecniche 8/8; milestone funzionali 0/6.** Readback VPS fornito dall’operatore: `CANCELLED/CANCELLED_BY_OWNER`, 59 tentativi e 59 pubblicazioni; 69 tentativi controllati precedenti, cumulativo **128**. Authority scaduta, ammissione `BLOCKED`, journal stabile e reporter coincidente; lock di invocazione non detenuto dal worker durante la lettura. `liveStateProven:false`: non trasformare il vecchio campo `live` in prova di processo attuale. Evidenza: `evidence/chatbot-semantic-expired-worker-target-20261017.json`, log VPS `/home/oufadmin/ouf-expired-worker-read.SGJH8IdL/read.log`. Chiusura terminali non ha cancellato questi registri.
+
+Il tetto precedente 197 non è una nuova autorizzazione: la capacità numerica residua 69 non è automaticamente riutilizzabile. Il conteggio OAuth HUMAN e la storia legacy completa restano non provati; nessun azzeramento o rinnovo implicito.
+
+Nuovo preparatore `scripts/prepare-chatbot-semantic-mcp-atomic-review-20261017.py`: preserva la revisione privata `02590e54312e90c27093adfa1bea057a2111c4702cf3e50507a7af07d4833c9a`, verifica i quattro hash del worker recuperato e collega una nuova revisione al pacchetto atomico MCP `f00e7e3bfcaee9272b9b6d204a7fa3ea79a563a4` (artifact 12062235842, run pacchetto 38938286063). Migrazione: solo CLI nativa, GRANT/DDL/checksum/REVOKE nella stessa transazione; membership committata vietata. Preparazione limitata a nuova directory privata: nessuna lettura credenziali/HUMAN, firma, import immagine nel VPS, stop, grant, migrazione o chiamata semantica.
+
+[CI GitHub Actions 39000091791](https://github.com/GioNob/ouf-deploy/actions/runs/39000091791), job117300988947: PASS19 controlli reader +6 test revisione con pacchetto reale e derivazione tagless per entrambi i profili archivio; import e verifica nativa sul runner `overlay2` PASS. Non è un readback della nuova revisione sul VPS né un test del bootstrap applicativo MCP.
+
+**Restano da completare** l’entrypoint autenticato di produzione e la qualifica del bootstrap MCP reale; quindi decisione finita separata sul reprocessing, prova fresca owner receipt e revisione esatta infrastrutturale con i due ruoli installer esistenti. Preparare prima il percorso eseguibile; aprire il login solo quando serve, senza lasciare scadere una finestra durante lo sviluppo. La nuova revisione resta `readyForExecution:false` e non autorizza il deployment. Il vecchio claim MCP resta immutato; nessun nuovo `semantic_propose`, retry403 o reset.
+
+---
+
 # Recupero del journal dopo chiusura terminali — 2026-10-17
 
 Stato invariato: **fasi tecniche 8/8; milestone funzionali 0/6**. L’operatore ha chiuso i terminali dopo la scadenza della sessione; le ultime righe del reporter non sono più disponibili. Non assumere che questo abbia cancellato il journal o che `live:true` salvato in precedenza rappresenti un processo attuale.
