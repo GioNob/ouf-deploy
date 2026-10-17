@@ -1,0 +1,67 @@
+{
+  "schema": "ouf.onboarding-audit-fix-evidence.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 1,
+  "target": {
+    "rolloutComplete": true,
+    "journalVersion": 57,
+    "activationGetStatus": 503,
+    "activationGetCode": "ONB_PERSISTENCE_FAILURE",
+    "policyGetStatus": 200,
+    "policyBundleVersion": 40,
+    "sourceActivationProven": false,
+    "retainedRouteMapHash": "31ad562fa32c98472ee262bb0d8a800e3626443762e913b7863cce359e219d1d"
+  },
+  "cause": {
+    "codeVerified": true,
+    "targetSqlStateIndependentlyRead": false,
+    "mechanism": "Read-only Spring transaction rejects the real authorization registry mandatory audit INSERT with PostgreSQL SQLSTATE25006.",
+    "fix": "Transactional service boundary permits the mandatory authorization audit; source configuration/version/approval remain unchanged."
+  },
+  "source": {
+    "repository": "GioNob/ouf-source-onboarding",
+    "commit": "c071be165a27fddbf73d9358d72dbf6448e34c85",
+    "postgresRegressionRun": 39016712521,
+    "browserRun": 39016712526,
+    "passed": true
+  },
+  "candidate": {
+    "runId": 39016711997,
+    "artifactId": 12094604621,
+    "bytes": 554159389,
+    "zipSha256": "7d20d2266d30c4647e52426af68ea24e8f908fa0fb4436bcc86b88d26e82b02c",
+    "scanPassed": true
+  },
+  "executor": {
+    "commit": "0a665af6cb5c5d3b97744e61a277de8aa31410c5",
+    "nativeQualificationRun": 39017241967,
+    "rootTestsPassed": 17,
+    "actualDockerFixture": true,
+    "fixtureApplicationsSynthetic": true,
+    "sourceFilesRemotelyCompared": 29,
+    "manifestSha256": "d558467ddbae517ad4cb20ca6f95a07f0bfa7c76e17f180f574f06746d442317",
+    "targetExecuted": false
+  },
+  "scope": {
+    "module": "onboarding",
+    "maximumGatewayWrites": 0,
+    "newPolicyWorkerStarted": false,
+    "newLoginStarted": false,
+    "maximumSeconds": 900,
+    "existingPolicyExpiry": 1792227882,
+    "sourceApprovalReplayed": false,
+    "databaseMigrationsAllowed": false,
+    "semanticDispatchAllowed": false
+  },
+  "remaining": [
+    "Target one-app execution and journal readback",
+    "Exact SERVICE GET200 and exact configuration hash",
+    "HUMAN readiness resume then separate verification",
+    "Source activation and remaining functional milestones"
+  ],
+  "limitations": [
+    "Qualification Docker service fixtures are synthetic; target health and effective authorization require target readback.",
+    "Finite local-host retained transport is installation-specific; no distributed deployment qualification.",
+    "Ambiguous mutations require reconciliation; launcher does not replay effects automatically."
+  ]
+}
