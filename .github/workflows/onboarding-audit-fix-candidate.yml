@@ -15,7 +15,7 @@ jobs:
         include:
           - module: onboarding
             repository: ouf-source-onboarding
-            commit: e11680f84a646e616d7cf9b40e396dbb29bb8602
+            commit: c071be165a27fddbf73d9358d72dbf6448e34c85
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {path: deploy, persist-credentials: false}
