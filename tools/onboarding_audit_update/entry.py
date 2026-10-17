@@ -15,6 +15,29 @@ from tools.onboarding_audit_update.owner import ReadinessUpdate,UpdatePaused,req
 from tools.onboarding_audit_update.native import NativePorts,runtime
 
 
+def read_active_publication(journal,worker,guard,clock=time.time,monotonic=time.monotonic,wait=time.sleep,jitter=None,emit=print):
+ """Observe an existing renewal; never drive, restart or write the worker."""
+ if jitter is None:jitter=lambda: int.from_bytes(os.urandom(2),'big')/65535
+ started=monotonic();delays=(5,15)
+ transitions={'NEW':'SCHEDULED_RENEWAL_DUE','ATTEMPTING':'FRESH_ATTEMPT','PUBLISHING':'FRESH_EVIDENCE_READY'}
+ for attempt in range(3):
+  guard();row=journal.private_read();now=clock()
+  require(row.get('workerSessionHash')==digest(worker),'CURRENT_POLICY_SESSION_HASH_MISMATCH')
+  count=row.get('attempts');prior=row.get('controlledPredecessorGrantAttempts');total=row.get('controlledCumulativeGrantAttempts')
+  require(type(count)is int and count>=1 and prior==188 and total==prior+count<=316,'CURRENT_POLICY_CONTROLLED_HISTORY_MISMATCH')
+  require(type(row.get('publicationCount'))is int and row['publicationCount']>0,'CURRENT_POLICY_PUBLICATION_ABSENT')
+  require(type(row.get('tokenExpiresWall'))in(int,float)and row['tokenExpiresWall']>now+10,'CURRENT_POLICY_TOKEN_WINDOW_INSUFFICIENT')
+  require(type(row.get('lastWall'))in(int,float)and now-90<=row['lastWall']<=now,'CURRENT_POLICY_PUBLICATION_CLOCK_INVALID')
+  if row.get('state')=='ACTIVE':return row
+  require(row.get('state')in transitions and row.get('reason')==transitions[row['state']],'CURRENT_POLICY_WORKER_NOT_ACTIVE')
+  require(attempt<len(delays),'CURRENT_POLICY_RENEWAL_NOT_COMPLETED')
+  noise=jitter();require(type(noise)in(int,float)and 0<=noise<=1,'POLICY_READ_JITTER_INVALID')
+  delay=delays[attempt]*(0.8+0.4*noise)
+  require(monotonic()+delay-started<=30,'CURRENT_POLICY_READ_WINDOW_EXHAUSTED')
+  emit('OUF_ONBOARDING_AUDIT_FIX_POLICY_WAIT='+encoded({'readOnly':True,'state':row['state'],'readAttempt':attempt+1,'waitSeconds':delay}).decode())
+  wait(delay)
+
+
 def current_policy(case,closure,read,prepared):
  context=Path(case['policyContext']);review=read(context/'review.json',8388608,case['policyReviewSha256'])
  require(review.get('kind')=='POLICY_TEST_SESSION','EXACT_ACTIVE_TEST_POLICY_SESSION_REQUIRED')
@@ -25,12 +48,8 @@ def current_policy(case,closure,read,prepared):
  gate=CutoverAuthority(verifier,{'path':str(context/'human.json'),'sha256':mh},mh,governance.CONTEXT,expected)
  action=AggregateAction(gate,raw,review['sourceClosureHash']);worker=review['scopes']['policyTokenFiniteWorkerSession']
  action.guard('policyTokenFiniteWorkerSession',worker)
- row=Journal(worker['fenceBinding']['value']['journalPath']).private_read()
- now=time.time()
- require(row.get('workerSessionHash')==digest(worker)and row.get('state')=='ACTIVE'
-  and row.get('controlledPredecessorGrantAttempts')==188 and row.get('controlledCumulativeGrantAttempts')==188+row.get('attempts',-1000)<=316
-  and row.get('publicationCount',0)>0 and row.get('tokenExpiresWall',0)>now+10
-  and now-90<=row.get('lastWall',0)<=now,'CURRENT_ACTIVE_POLICY_PUBLICATION_REQUIRED')
+ read_active_publication(Journal(worker['fenceBinding']['value']['journalPath']),worker,
+  lambda:action.guard('policyTokenFiniteWorkerSession',worker))
  require(read(worker['fenceBinding']['path'],16384)==worker['fenceBinding']['value'],'CURRENT_EXISTING_POLICY_FENCE_REQUIRED')
  registry=review['scopes']['semanticFunctionalRuntime']['registryGeneration']
  engine=Engine(prepared['engine']['socketPath'],tuple(prepared['engine']['socketBinding']))
