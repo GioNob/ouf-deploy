@@ -20,6 +20,7 @@ jobs:
       OUF_UDP_DB_URL: jdbc:postgresql://127.0.0.1:5432/ouf_upgrade
       OUF_UDP_DB_USER: ouf_udp
       OUF_UDP_DB_PASSWORD: ci-only-password
+      OUF_UPGRADE_ADMIN_PASSWORD: ci-only-admin-password
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {path: deploy, persist-credentials: false}
@@ -39,7 +40,7 @@ jobs:
           CREATE EXTENSION IF NOT EXISTS postgis;
           CREATE EXTENSION IF NOT EXISTS pgcrypto;
           CREATE SCHEMA ouf_udp AUTHORIZATION ouf_udp;
-          GRANT CONNECT ON DATABASE ouf_upgrade TO ouf_udp;
+          GRANT CONNECT, CREATE ON DATABASE ouf_upgrade TO ouf_udp;
           SQL
       - name: Qualify populated schema upgrade in an isolated checkout
         working-directory: source
