@@ -15,7 +15,7 @@ jobs:
         env: {POSTGRES_DB: ouf_upgrade, POSTGRES_USER: ci_admin, POSTGRES_PASSWORD: ci-only-admin-password}
         ports: ['5432:5432']
         options: >-
-          --health-cmd "pg_isready -U ci_admin -d ouf_upgrade" --health-interval 5s --health-timeout 5s --health-retries 12
+          --health-cmd "pg_isready -h 127.0.0.1 -U ci_admin -d ouf_upgrade" --health-interval 5s --health-timeout 5s --health-retries 12
     env:
       OUF_UDP_DB_URL: jdbc:postgresql://127.0.0.1:5432/ouf_upgrade
       OUF_UDP_DB_USER: ouf_udp
