@@ -124,7 +124,8 @@ def route_metadata(routes,origin_host):
   uris=[r['uri']]if type(r.get('uri'))is str else r.get('uris',[])
   require(type(uris)is list and all(type(u)is str for u in uris),'BOUNDED_ROUTE_URIS_REQUIRED')
   def path_matches(u,path):return u==path or u.endswith('*')and path.startswith(u[:-1])
-  relevant=any('/trusted-human/'in u or '/oauth2/'in u or '/api/udp/v1/governance/'in u for u in uris)
+  relevant=any('/trusted-human/'in u or '/oauth2/'in u or '/api/udp/v1/governance/'in u
+   or path_matches(u,'/trusted-human/resolution/')for u in uris)
   if not relevant:continue
   p=r.get('plugins')or{};oidc=p.get('openid-connect')or{};upstream=r.get('upstream')or{}
   selected.append({'id':rid,'uris':uris,'methods':r.get('methods'),

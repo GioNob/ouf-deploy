@@ -42,6 +42,8 @@ spring:
   self.assertNotIn('PRIVATE_',json.dumps(value));self.assertFalse(value['liveRouteInventoryRead'])
   route['uri']='/trusted-human/resolution/*';value=m.route_metadata({'onboarding':route},'fixture.invalid')
   self.assertEqual(value['resolutionPageMatchesByPathAndMethod'],['onboarding'])
+  route['uri']='/*';value=m.route_metadata({'onboarding':route},'fixture.invalid')
+  self.assertEqual(value['resolutionPageMatchesByPathAndMethod'],['onboarding'])
  @unittest.skipUnless(os.geteuid()==0,'root fixture required')
  def test_qualified_no_follow_custody_rejects_symlink_and_stale_binding(self):
   read=m.custody_reader(ROOT/'tools/chatbot_file_cohort/gateway.py')
