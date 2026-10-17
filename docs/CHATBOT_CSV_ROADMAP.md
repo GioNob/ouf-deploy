@@ -1,3 +1,12 @@
+
+## Riscontro VPS dopo la decisione THS — 18 ottobre 2026
+
+La decisione HUMAN **CREATE_NEW** per il caso `e16fec6e-311d-49f3-b1de-f274cb5a92d1` è **RESOLVED**. Il job del medesimo handoff `9fde61f1-8d3c-4de7-b3fe-b534b32e45e3` resta però **QUARANTINED / UDP_REFERENCE_INTEGRITY_MISSING**, intake DURABLE, nessun binding, osservazione, contributo o oggetto creato. La ripresa ha raggiunto il controllo dei riferimenti; il riferimento preciso e la causa del mancato accesso non sono ancora provati.
+
+Il log `/home/oufadmin/ouf-csv-stage3-read.KsMUTYp4/read.log` conferma 13 handoff ACKED con lineage coerente, 12 job SUCCEEDED e 12 oggetti, tutte le 11 precedenti creazioni conservate. Nessuna review d’identità aperta. **Tecniche 8/8; funzionali 2/6; tappa 3 non completa.** Il contatore `unprovenRows=1` del reader v3 include questa quarantena tecnica: `quarantinedRows=0` non significa che non vi siano job in quarantena.
+
+Prova normalizzata: [csv-functional-stage3-reference-block-20261018.json](csv-functional-stage3-reference-block-20261018.json). Non ripetere la decisione THS, non importare nuovamente il CSV e non riarmare lo scheduler. Il recupero deve usare il job esistente e il percorso tecnico governato già implementato, dopo verifica dei riferimenti storici e dello stato/versione attesi. Nessun reset dei contatori o cancellazione dello storico. Pubblicazione del profilo e prova funzionale restano fasi distinte.
+
 # Tappa3 — ultima review chiusa, verifica del commit finale in corso,17ottobre2026
 
 **Tecniche8/8; funzionali2/6 verificati.** L'utente ha trattato il caso residuo nella THS; la pagina conferma0casi incerti aperti. La ricerca MCP restituisce ancora i12oggetti precedenti, revisione1. Questo è compatibile con più esiti: la tappa3 richiede13righe committate e provenienza, non13oggetti distinti, e non si chiude sulla sola scomparsa della review.
