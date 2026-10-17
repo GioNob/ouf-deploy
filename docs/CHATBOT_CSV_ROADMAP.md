@@ -1,3 +1,13 @@
+# Tappa funzionale3 — verifica delle13righe avviata,17ottobre2026
+
+**Tecniche8/8; funzionali2/6.** Nuova lettura dalla chat: source ACTIVE con configurazione/pubblicazione conservate; ricerca MCP completa con12oggetti ACTIVE, revisione1, incluso l'oggetto originario. La ricerca non espone proprietà/provenienza: il conteggio da solo non chiude il criterio di commit13/13.
+
+Conservate le11decisioni CREATE_NEW già materializzate e la quarantena volontaria. Ingestion.status restituisce authorization denied; nessun retry, cambio account o modifica di grant. Si riusa ed estende il lettore post-resolution, aggiornato al contesto corrente linked-property/journal55, per il rendiconto per handoff e il confronto con il lineage Ingestion. Qualifica prima del tentativo di lettura sul runner esistente, usando soltanto sudo non interattivo già disponibile.
+
+[Stato e percorso di verifica](CSV_FUNCTIONAL_STAGE3_20261017.md), [evidenza delle letture dalla chat](../evidence/csv-functional-stage3-chat-readback-20261017.json). Nessun avanzamento funzionale attribuito alla sola ricerca degli ID.
+
+---
+
 # Resolution: rollout UDP completato dall'operatore; lettura browser da provare — 2026-10-17
 
 **Tecniche8/8; funzionali2/6.** Operatore riporta `OUF_UDP_RESOLUTION_UPDATE_RESULT`: contesto `/etc/ouf/deploy-snapshots/udp-resolution-execution-65h5kjt8`, journalVersion31, complete=true, applicationReady=true, maximumGatewayWrites=0, newPolicyWorkerStarted=false, identityDecisionsPerformed=false e semanticDispatchPerformed=false. Evidenza di esecuzione del percorso qualificato, non readback indipendente della generazione target o dell'accesso autorizzato al pacchetto.
