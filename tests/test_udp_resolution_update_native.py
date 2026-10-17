@@ -90,6 +90,27 @@ class NativeEndToEnd(unittest.TestCase):
   inspected=json.loads(self.cli('image','inspect',image_id))[0]
   self.assertEqual({k:inspected['Config'].get(k)for k in image_custody.FIELDS},{k:audit['imageConfig'].get(k)for k in image_custody.FIELDS})
   sock=Path('/var/run/docker.sock').resolve();s=sock.stat();engine=Engine(str(sock),(s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode&0o777))
+  # Exercise the exact new UDP artifact prefix, aggregate hashes and native store custody.
+  import zipfile
+  from tools.udp_resolution_update import preparation
+  prefix='parts/resolution-owner-context-part-udp-123/'
+  lock=b'{"fixture":"source-lock"}'
+  meta={'sourceCommit':'c'*40,'module':'udp','sourceLockSha256':hashlib.sha256(lock).hexdigest(),'scanGate':'PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED','targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'imageId':image_id}
+  files={'source-lock.json':lock,prefix+'candidate-manifest.json':json.dumps(meta).encode(),prefix+'source-inventory.json':b'{"truncated":false,"tree":[]}',prefix+'image.docker.tar':archive.read_bytes()}
+  files['SHA256SUMS']=''.join(hashlib.sha256(raw).hexdigest()+'  '+name+'\n'for name,raw in files.items()).encode()
+  files['SHA256SUMS.sigstore.json']=b'{"syntheticFixtureOnly":true}'
+  package=root/'candidate.zip'
+  with zipfile.ZipFile(package,'w',compression=zipfile.ZIP_STORED)as zipped:
+   for name,raw in files.items():zipped.writestr(name,raw)
+  case={'candidateSourceCommit':'c'*40,'expectedMigrationTree':[],'artifact':{'zipSha256':hashlib.sha256(package.read_bytes()).hexdigest(),'sourceLockSha256':hashlib.sha256(lock).hexdigest(),'runId':123,'imageId':image_id}}
+  custody_context=root/'candidate-custody';custody_context.mkdir(mode=0o700)
+  accepted=preparation.candidate(package,case,custody_context,{'socketPath':str(sock),'socketBinding':[s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode&0o777]}, {})
+  self.assertTrue(accepted['migrationFilesUnchanged']);self.assertEqual(accepted['nativeImageId'],image_custody.runtime_image_id(audit));self.assertEqual(accepted['imageAudit']['repositoryTags'],[])
+  audit=accepted['imageAudit'];tagged=Path(accepted['imageArchive']['path']);derived['derivedArchiveSha256']=accepted['imageArchive']['sha256']
+  denied=root/'denied-custody';denied.mkdir(mode=0o700)
+  bad=copy.deepcopy(case);bad['artifact']['imageId']='sha256:'+'f'*64
+  with self.assertRaisesRegex(ValueError,'EXACT_AUDIT_FIX_PACKAGE_REQUIRED'):
+   preparation.candidate(package,bad,denied,{'socketPath':str(sock),'socketBinding':[s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode&0o777]}, {})
   def create(name,ip,program,binds=None):
    request={'Image':image_id,'User':'0:0','Entrypoint':None,'Cmd':['python3','-B','-u','-c',program],
     'Env':['FIXTURE_SECRET=synthetic-only'],'WorkingDir':'/','Labels':{'org.opencontainers.image.revision':'a'*40},

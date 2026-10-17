@@ -4,7 +4,7 @@ from pathlib import Path
 from engine_creation import Engine
 from image_custody import loaded,runtime_image_id
 from tools.chatbot_file_cohort.gateway import NamespaceAdmin
-from tools.chatbot_file_cohort.human_session import HumanSession
+from tools.chatbot_file_cohort.human_session import HumanSession,HumanSessionPaused
 from tools.semantic_mcp_update.entry import publish_json
 from tools.semantic_mcp_update import session
 from tools.semantic_lease_recovery.recovery_journal import Journal
@@ -13,16 +13,37 @@ from tools.udp_resolution_update.owner import require,digest,encoded,scope,Readi
 from tools.udp_resolution_update.native import NativePorts,runtime
 
 def predecessor(case,read):
- context=Path(case['rolloutContext']);review=read(context/'review.json',8388608);plan=read(context/'execution-plan.json',8388608);record=read(context/'recovery.json',131072)
+ context=Path(case['rolloutContext']);review=read(context/'review.json',8388608);plan=read(context/'execution-plan.json',8388608);record=read(context/'recovery.json',131072);issued=read(context/'authority.json',131072)
  selected=review['scopes']['resolutionConfigurationUpdate']
  require(review['kind']=='RESOLUTION_THS_CONFIGURATION'and review['authorityDirectory']==str(context)
   and review['sourceClosure']['declaration']['sourceCommit']==case['rolloutSourceCommit']
+  and digest(review['sourceClosure'])==review['sourceClosureHash']==issued['sourceClosureHash']
+  and digest(issued)==record['authorityHash']and issued['resolutionConfigurationUpdate']==selected
   and digest(plan)==selected['planHash']and record['scopeHash']==digest(selected)
   and record['version']==37 and record['incidentState']=='RECOVERED'
   and record['nextStage']==len(record['effects'])==len(selected['stages'])==13
-  and [e['stage']for e in record['effects']]==selected['stages']and all(e['state']=='APPLIED'for e in record['effects']),
+  and [e['stage']for e in record['effects']]==selected['stages']and all(e['state']=='APPLIED'and e['intentHash']==digest({'planHash':selected['planHash'],'stage':e['stage']})for e in record['effects']),
   'EXACT_COMPLETED_RESOLUTION_CONFIGURATION_REQUIRED')
  return review,plan,record
+
+def authenticate(human,plan,closure,previous,context,emit):
+ if human._read().get('state')=='BLOCKED':
+  login=session.blocked_refresh_login_review(human,{'udpUpdatePlanHash':digest(plan),'sourceClosureHash':digest(closure),'completedPredecessorHash':digest(previous)})
+  publish_json(context,'login-review.json',login)
+  consent=authority.terminal_consent(login,'Nuovo login HUMAN per il solo aggiornamento UDP dopo un refresh rifiutato. Il vecchio journal resta bloccato; nessun refresh viene ripetuto.\nOAuth conservati: '+str(login['priorOAuthAttempts'])+'; residui: '+str(login['maximumRemainingOAuthAttempts'])+'. Nessun worker policy. Input gia preparati.',login=True)
+  human=session.open_approved_login(human,login,consent);human.login(emit=emit)
+ elif time.time()>=human.expires_at:
+  login=session.expired_login_review(human,{'udpUpdatePlanHash':digest(plan),'sourceClosureHash':digest(closure)})
+  publish_json(context,'login-review.json',login)
+  consent=authority.terminal_consent(login,'Nuova finestra HUMAN per aggiornare solo UDP. OAuth conservati: '+str(login['priorOAuthAttempts'])+'; residui: '+str(login['maximumRemainingOAuthAttempts'])+'.\nNessun nuovo worker policy. Seguono browser e APPROVO separato; immagini e input sono gia preparati.',login=True)
+  human=session.open_approved_login(human,login,consent);human.login(emit=emit)
+ else:
+  try:human.refresh_if_due()
+  except HumanSessionPaused as error:
+   if error.reason!='HUMAN_OAUTH_REVOKED_OR_PERMANENT_OR_UNKNOWN':raise
+   return authenticate(human,plan,closure,previous,context,emit)
+ return human
+
 
 def main(prepared,sources,closure,case,context,archive,read,ns,emit):
  authority.closure_valid(closure);context=Path(context)
@@ -51,17 +72,7 @@ def main(prepared,sources,closure,case,context,archive,read,ns,emit):
  emit('OUF_UDP_RESOLUTION_PREPARED='+encoded({'contextPath':str(context),'newImageId':row['request']['Image'],'migrationFilesUnchanged':True,'newPolicyWorkerStarted':False,'completedTechnicalPhases':8,'functionalMilestonesProven':2}).decode())
  hb=previous['authenticatedHuman'];human=HumanSession(prepared['authorization']['plan']['selection'],Path(hb['sessionDirectory']),Path(hb['tokenPath']),hb['expiresAt'])
  require(human._read()['binding']==hb,'EXACT_RETAINED_HUMAN_BINDING_REQUIRED');signal.alarm(0)
- if human._read().get('state')=='BLOCKED':
-  login=session.blocked_refresh_login_review(human,{'udpUpdatePlanHash':digest(plan),'sourceClosureHash':digest(closure),'completedPredecessorHash':digest(previous)})
-  publish_json(context,'login-review.json',login)
-  consent=authority.terminal_consent(login,'Nuovo login HUMAN per il solo aggiornamento UDP dopo un refresh rifiutato. Il vecchio journal resta bloccato; nessun refresh viene ripetuto.\nOAuth conservati: '+str(login['priorOAuthAttempts'])+'; residui: '+str(login['maximumRemainingOAuthAttempts'])+'. Nessun worker policy. Input gia preparati.',login=True)
-  human=session.open_approved_login(human,login,consent);human.login(emit=emit)
- elif time.time()>=human.expires_at:
-  login=session.expired_login_review(human,{'udpUpdatePlanHash':digest(plan),'sourceClosureHash':digest(closure)})
-  publish_json(context,'login-review.json',login)
-  consent=authority.terminal_consent(login,'Nuova finestra HUMAN per aggiornare solo UDP. OAuth conservati: '+str(login['priorOAuthAttempts'])+'; residui: '+str(login['maximumRemainingOAuthAttempts'])+'.\nNessun nuovo worker policy. Seguono browser e APPROVO separato; immagini e input sono gia preparati.',login=True)
-  human=session.open_approved_login(human,login,consent);human.login(emit=emit)
- else:human.refresh_if_due()
+ human=authenticate(human,plan,closure,previous,context,emit)
  hb=human.current();plan['humanBinding']=hb;scope(plan);publish_json(context,'execution-plan.json',plan)
  seconds=min(900,human.expires_at-int(time.time())-10);require(seconds>=300,'HUMAN_WINDOW_TOO_SHORT_FOR_UDP_UPDATE')
  review=authority.compile_action_review('UDP_RESOLUTION_UPDATE',closure,{'udpResolutionUpdate':scope(plan)},hb,context,{'predecessorHistoryHash':digest(previous),'predecessorIncidentRef':plan['logicalUpdateRef']},seconds)
