@@ -30,3 +30,19 @@ A subsequent actual MCP operations-summary call for the source returned HTTP 403
 7. Complete remaining functional milestones with the previously agreed evidence, including a separate chat, second CSV and preservation of prior objects.
 
 No new source publication, historical re-ingestion, identity decision, target deployment or blanket retry was performed in this update. Full chat-only end-to-end is not yet proven.
+
+## Release integration and runner delivery — 2026-10-18
+
+MCP PR71 merged into its integration branch (52bbc121d39760c74a9b86cde17ab04af958d576). UDP PR46 and PR45 merged, followed by PR44 into feat/resolution-object-comparison-20261017 (e15e54bbe8df036aa44d7c9224928054b2bec4b8). The UDP intermediate merge tree was checked against the qualified source tree. Packaging still pins the exact CI-tested source commits rather than moving branch names.
+
+[Candidate build/scan/attestation 39078879773](https://github.com/GioNob/ouf-deploy/actions/runs/39078879773) passed for both components. Aggregate artifact 12117443634, 351856568 bytes, ZIP digest sha256:b615d85bd6c23bcbc0364a95c0c7a1b02cf5da40775a28eed4116f3bc058f481. Publisher identity and all aggregate file checksums were verified on the existing VPS runner.
+
+[Persistent delivery 39079129729](https://github.com/GioNob/ouf-deploy/actions/runs/39079129729) passed. Verified package directory: /home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-chat-recovery-39079129729. This directory is outside runner temporary cleanup, private to the runner, and is NOT root custody or installation authority. Earlier temporary delivery 39079059327 was superseded for persistence. Neither delivery uses privileged commands or changes runtime services.
+
+The existing no-argument root discovery helper was invoked through its existing sudo rule in [39079096885](https://github.com/GioNob/ouf-deploy/actions/runs/39079096885). It executed and returned OUF_DISCOVERY_PRIVILEGED_PREFLIGHT=BLOCKED READ_FAILED NO_RAW_OUTPUT=true. Therefore the current obstacle is not proven to be a blanket sudo denial: that fixed helper can execute but its protected read fails. General administrative deployment access remains unproven. No broader sudo command or alternate root path was attempted.
+
+A bounded diagnostic for that installed helper is prepared in scripts/diagnose-installed-fixed-helper-20261018.py at ffd8064be4a0bb7698d4cfdfe39292c1c38a9f79, SHA256 fb4105323c5ed2836f0cf41efb01f9709bfb0b8494a8fc99e7f6a760a487f9bf. It requires isolated administrative execution, validates root-owned helper custody, suppresses helper stdout/stderr and payloads, and returns only helper hash, exception class and source-frame locations. No exception message or local variables are emitted. [Qualification 39079288553](https://github.com/GioNob/ouf-deploy/actions/runs/39079288553) passed real root-custody success/failure/redaction tests and rejection of writable helper code.
+
+Physical operator action is now needed to run that exact diagnostic through interactive administrative authentication, because its execution is outside the existing fixed-helper sudo rule. This is not another request for repository/MCP permission. No runtime installation, policy publication or credential-owner restart is included. Use the diagnostic output to repair the supported administrative path before preparing a current private activation review. Do not replay the old 34->35 launcher: the next UDP transition is 35->36.
+
+Technical status remains 8/8; functional status 3/6. Packaging and delivery do not establish target installation or chat-only E2E.
