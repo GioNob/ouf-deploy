@@ -1,3 +1,17 @@
+# Resolution: rifiuto owner UDP confermato; confronto vincoli grant — 2026-10-17
+
+**Tecniche8/8; funzionali2/6.** Screenshot operatore del GET autenticato `/trusted-human/resolution/api/package` restituisce ProblemDetail `title=Forbidden,status=403,detail=Owner authorization denied,instance=/api/udp/v1/governance/resolution/issues/package`. Raggiunto l'owner UDP tramite il proxy browser; non è il precedente404Gateway. La tabella vuota non dimostra assenza di issue. Nessuna decisione confermata, nessuna nuova mutazione.
+
+Nel sorgente UDP b49c0d6f… il GET browser TrustedHumanApi.reviewPackage usa trusted(request), che chiama ServletAuthorization.resolve senza ResourceContext specifico: default `capability`. Il percorso delegato interno dello stesso package usa OwnerAuthorization.require con `resolution-issues`, tenant da principal e attributi vuoti. Differenza di contesto dimostrata dal codice; incompatibilità con i grant target ancora da provare. Non cambiare permessi o riavviare worker sulla sola ipotesi. Risposta OwnerAuthorizationErrors indica SecurityException owner, non specifica da sola quale constraint neghi.
+
+Reader `scripts/launch-resolution-owner-policy-read-20261017.sh`, SHA7549fd5c149c9dcdaf3f23ff07d3df15e5409e8551b61c2307e38f0b2b7a545d; sorgente `e9616724d8f608b06e1bb354c5828659c5e0a4e6`, readerSHAce2dae60…. CI39033405393/job117398338540:3PASS,0skip, SQL su PostgreSQL17 reale. Il primo testfixture39033358709 era fallito per socket temporaneo initdb; corretto soltanto il readinessTCP del fixture, reader immutato byte-per-byte.
+
+Diagnosi installation-specific entro40s: contesto rollout q91d2ut7/journal37/source d830, scope resolutionConfigurationUpdate e13effects APPLIED; generazione Onboarding corrente e PostgreSQL due volte. Una sola transazione BEGIN READ ONLY/ROLLBACK, statement timeout10s/lock3s, cap2/grant≤32, database/OID/ruolo esatti da piano conservato. Legge solo i metadati della policy attiva nell'owner Authorization Onboarding: descrittori, matching subject/tenant/validità e constraint pubblicati, confrontando i resourceType capability/resolution-issues e attributi vuoti. Non è prova dello snapshot UDP caricato o del JWT browser. Zero token/OAuth/IAM/grant/Gatewaywrite/readiness/decisioni e nessun segreto/rawSQL stampato. Attende output VPS prima di scegliere correzione contesto o altra causa.
+
+Il connettore MCP permissions.read non ha effettuato la lettura: adattatore ha richiesto link_id non fornito dalla superficie tool. Nessuna proposta/permesso pubblicato. Si usa il reader target già autorizzato, senza probing di sessioni browser o estrazione di cookie/bearer.
+
+---
+
 # Resolution: aggiornamento completato, lettura browser403 — 2026-10-17
 
 **Tecniche8/8; funzionali2/6.** Operatore ha confermato `OUF_RESOLUTION_CONFIGURATION_RESULT`: contesto `/etc/ouf/deploy-snapshots/resolution-config-execution-q91d2ut7`, journalVersion37, complete=true, applicationReady=true, newRouteCount3, sameImageOnly=true, newPolicyWorkerStarted=false, identityDecisionsPerformed=false, semanticDispatchPerformed=false. Dal percorso qualificato: stesso binario Onboarding ricreato con JSON browser additivo, tre route applicate/verificate, inventory finale e probe anonimi completati. È evidenza di flusso eseguito, non nuovo readback indipendente target o accettazione dati.
