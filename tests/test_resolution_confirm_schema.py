@@ -2,7 +2,7 @@
 import copy,sys,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-sys.path[:0]=[str(ROOT),str(ROOT/'tools/semantic_application_cutover'),str(ROOT/'tools/semantic_policy_token_owner'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
+sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_application_cutover'),str(ROOT/'tools/semantic_policy_token_owner'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
 from tools.resolution_comparison_update.plan import confirmation_route,CONFIRM_SCHEMA
 from tools.resolution_ths_update.plan import compile_routes
 from jsonschema import Draft4Validator
@@ -24,6 +24,14 @@ class Schema(unittest.TestCase):
   del payload['choices'][0]['reason'];validator.validate(payload)
   del payload['choices'][0]['expectedReviewHash'];validator.validate(payload)
   self.assertEqual(confirmation_route(old),updated)
+ def test_future_materialization_replaces_only_post_preflight_schema(self):
+  from test_resolution_routes_plan import templates
+  before=templates();before['ths-identity-preflight-create']['plugins']['request-validation']=self.route()['plugins']['request-validation']
+  before['ths-identity-preflight-read']['plugins']['request-validation']={'header_schema':{'type':'object'}}
+  original=copy.deepcopy(before);routes=compile_routes(before)
+  self.assertEqual(before,original)
+  self.assertEqual(routes['ths-resolution-package-confirm']['plugins']['request-validation']['body_schema'],CONFIRM_SCHEMA)
+  self.assertEqual(routes['ths-resolution-package-read']['plugins']['request-validation'],before['ths-identity-preflight-read']['plugins']['request-validation'])
  def test_only_body_schema_changes_and_malformed_requests_are_still_rejected(self):
   old=self.route();before=copy.deepcopy(old);updated=confirmation_route(old)
   self.assertEqual(old,before)

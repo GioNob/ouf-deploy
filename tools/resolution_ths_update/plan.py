@@ -69,7 +69,7 @@ def compile_routes(before):
   require(set(row['plugins'].get('proxy-rewrite',{}))<= {'uri'},'UNREVIEWED_UDP_REWRITE_CHANNEL')
   if 'proxy-rewrite'in row['plugins']:row['plugins']['proxy-rewrite']['uri']=path
   require('vars'not in row and 'filter_func'not in row,'UNREVIEWED_TEMPLATE_PATH_CONDITION')
-  if method=='POST':row['plugins'].setdefault('request-validation',{})['body_schema']=copy.deepcopy(CONFIRM_SCHEMA)
+  if row.get('methods')==['POST']:row['plugins'].setdefault('request-validation',{})['body_schema']=copy.deepcopy(CONFIRM_SCHEMA)
   row['plugins']['client-control']={'max_body_size':1048576}
   row['upstream']['timeout']={'connect':3,'send':3,'read':20}
  page.update(id=ROUTES[2],uri=PAGE);page.pop('uris',None)
