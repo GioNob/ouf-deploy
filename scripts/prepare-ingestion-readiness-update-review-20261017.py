@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Installation-specific candidate staging and private review. No runtime effects."""
-import copy,fcntl,hashlib,http.client,importlib.util,io,json,os,re,signal,socket,stat,sys,tarfile,tempfile,time,zipfile
+import ast,copy,fcntl,hashlib,http.client,importlib.util,io,json,os,re,signal,socket,stat,sys,tarfile,tempfile,time,zipfile
 from pathlib import Path,PurePosixPath
 BOOT=Path('/etc/ouf/deploy-snapshots/semantic-mcp-update-executor-code-yrvtskkt/execute.py')
 BOOT_SHA='b02d9737af6d143903910654d34e91a1a82a52b6082d2429d5dbfd070d160af2'
 CASE_SHA='18ff5a8436d2058c6e9c6820cf8b017facb58e42ce718eee4bf0c1591781ae40'
 CUSTODY_SHA='9391a7d497943bd0412d96405d51359cd11a2b0db7106d30f272d28e8f0fc6b2'
+GATEWAY_CUSTODY_SHA='5e7182d899a25a299b103d63f6bf81822280f09e58b963c38f735aa2a4fee72f'
 LIMIT=1200000000
 def require(ok,code):
  if not ok:raise ValueError(code)
@@ -39,6 +40,21 @@ def input_bytes(path,expected,maximum,protected=False):
 def module(raw,name):
  spec=importlib.util.spec_from_loader(name,loader=None);m=importlib.util.module_from_spec(spec)
  exec(compile(raw,'<verified-private-preparation:'+name+'>','exec'),m.__dict__);return m
+def projection_reader(raw):
+ # Reuse only the qualified custody reader; never import the Gateway publisher.
+ require(hashlib.sha256(raw).hexdigest()==GATEWAY_CUSTODY_SHA,'GATEWAY_CUSTODY_SOURCE_DRIFT')
+ names={'EXTERNAL_ADMIN_KEY','_EXISTING_CONFIG_CUSTODY','selected_directory_custody','selected_file_custody','private_config'}
+ nodes=[];seen=set()
+ for node in ast.parse(raw).body:
+  name=node.name if isinstance(node,ast.FunctionDef)else node.targets[0].id if isinstance(node,ast.Assign)and len(node.targets)==1 and isinstance(node.targets[0],ast.Name)else None
+  if name in names:nodes.append(node);seen.add(name)
+ require(seen==names,'GATEWAY_CUSTODY_READER_REQUIRED')
+ ns={'os':os,'stat':stat,'Path':Path,'hashlib':hashlib,'require':require}
+ exec(compile(ast.Module(body=nodes,type_ignores=[]),'<qualified-gateway-custody-reader>','exec'),ns)
+ def read(binding):
+  require(binding.get('path')=='/opt/ouf/installation/active-projection.json','EXACT_SELECTED_PROJECTION_REQUIRED')
+  return json.loads(ns['private_config'](binding['path'],binding)[0])
+ return read
 def write_new(path,raw):
  fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
  try:
@@ -151,11 +167,15 @@ def tar_sources(z,index,prefix,wanted):
     result[row.name]=tar.extractfile(row).read(1048577)
  require(set(result)==set(wanted),'PACKAGE_HELPER_MISSING')
  return result
-def prepare(archive_path,case_path,custody_path):
+def prepare(archive_path,case_path,custody_path,gateway_custody_path):
  case=json.loads(input_bytes(case_path,CASE_SHA,1048576))
  ns={'__name__':'preparation_read_only'};exec(compile(input_bytes(BOOT,BOOT_SHA,131072,True),'<verified-retained-helper>','exec'),ns)
  old=ns['read'](ns['CONTEXT']/'review.json',8388608,ns['REVIEW']);b=old['scopes']['finiteActionProcess']['bundle']
  prepared=ns['read'](b['path'],8388608,b['sha256'])['prepared'];engine=prepared['engine']
+ projection=prepared['gatewayPlan']['projectionBinding']
+ read_projection=projection_reader(input_bytes(gateway_custody_path,GATEWAY_CUSTODY_SHA,131072))
+ profile=read_projection(projection)
+ emit('SELECTED_PROJECTION_CUSTODY',exactRetainedBindingMatched=True,configurationValuesPrinted=False)
  actual={name:ns['engine_get'](engine,'containers',name)for name in case['expectedRuntimeBindings']}
  require(all(v and v['State']['Running']and ns['runtime_pin'](v)==case['expectedRuntimeBindings'][name]for name,v in actual.items()),'CURRENT_REVIEWED_GENERATION_CHANGED')
  worker=check_worker(ns,case);containerd=engine_info(ns,engine)
@@ -211,8 +231,6 @@ def prepare(archive_path,case_path,custody_path):
     for key,raw in source.items():
      entry=next(r for r in inventory['tree']if r['path']==key)
      require(hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()==entry['sha'],'SOURCE_HELPER_IDENTITY_DRIFT')
-    projection=prepared['gatewayPlan']['projectionBinding']
-    profile=json.loads(input_bytes(projection['path'],projection['sha256'],4194304,True))
     projector=module(source[wanted[0]],'projector');materializer=module(source[wanted[1]],'materializer')
     compiled=json.loads(member(z,index,prefix+'compiled-route-declarations.json',8388608))
     runtime=projector.apply_projection(compiled,profile)
@@ -226,6 +244,7 @@ def prepare(archive_path,case_path,custody_path):
  for name,expected in case['expectedRuntimeBindings'].items():
   require(ns['runtime_pin'](ns['engine_get'](engine,'containers',name))==expected,'RUNTIME_CHANGED_DURING_PREPARATION')
  check_worker(ns,case)
+ require(read_projection(projection)==profile,'SELECTED_PROJECTION_CHANGED_DURING_PREPARATION')
  finite=case['finiteTestProfile'];require(finite['maximumNewTokenGrantAttempts']==128 and finite['maximumSeconds']==3600,'EXACT_TEST_PROFILE_REQUIRED')
  review={'schema':'ouf.ingestion-readiness-update-private-review.v1','authorityDirectory':str(output),
   'engine':engine,'candidateArtifact':case['artifact'],'candidateModules':metas,'images':images,'gateway':route,
@@ -248,7 +267,7 @@ def prepare(archive_path,case_path,custody_path):
   newWorkerSessionStarted=False)
 def main():
  require(os.geteuid()==0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,'ISOLATED_ROOT_REQUIRED')
- require(len(sys.argv)==4,'EXACT_PREPARATION_ARGUMENTS_REQUIRED');os.umask(0o077)
+ require(len(sys.argv)==5,'EXACT_PREPARATION_ARGUMENTS_REQUIRED');os.umask(0o077)
  signal.signal(signal.SIGALRM,lambda *_:(_ for _ in()).throw(ValueError('PREPARATION_DEADLINE')));signal.alarm(300)
  emit('BEGIN',maximumSeconds=300,maximumEngineReads=7,newPrivateFilesOnly=True)
  prepare(*sys.argv[1:])

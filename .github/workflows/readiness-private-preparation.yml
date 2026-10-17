@@ -22,6 +22,7 @@ jobs:
           sudo mkdir -m700 "$OUF_TEST_BUDGET_ROOT"
           sudo cp -R . "$OUF_TEST_BUDGET_ROOT/repository"
           sudo chown -R root:root "$OUF_TEST_BUDGET_ROOT"
+          sudo python3 -I -B -m unittest discover -s "$OUF_TEST_BUDGET_ROOT/repository/tests" -p test_ingestion_readiness_private_preparation.py -v
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT=/root python3 -I -B -m unittest discover -s "$OUF_TEST_BUDGET_ROOT/repository/tests" -p test_governed_owner_composed.py -v
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT=/root python3 -I -B -m unittest discover -s "$OUF_TEST_BUDGET_ROOT/repository/tests" -p test_policy_token_explicit_test_budget_native.py -v
 
