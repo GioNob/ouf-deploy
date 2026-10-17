@@ -1,3 +1,21 @@
+## Piano privato acquisito e recupero operativo unico — 18 ottobre 2026
+
+La preparazione sul target è **completa**, log `/home/oufadmin/ouf-csv-last-row-prepare.prOtPeUF/prepare.log`. Piano privato `/etc/ouf/deploy-snapshots/csv-last-row-prepared-o9ziuyhf/prepared-plan.json`, SHA256 `9993b1ca7f3877ba7632c3530d3b54da013f8059a762c48239b21f2f080cfb6c`. Una sola scrittura privata, zero login/grant/worker/retry e nessuna mutazione runtime. `readyForExecution=false` è atteso: la preparazione non emette autorità.
+
+Il solo job residuo `c5692362-8a22-4656-97b6-46b5ba8ce17f`, versione11, conserva cinque tentativi e baseline `sha256:0a276d062d3447a243d6e2611d9a618dd1ba2b8cf64668d02dad7aa5c75eccdb`; decisione CREATE_NEW/RESOLVED già presente. Restano12/13 righe committate; nessun nuovo oggetto o contributo sul job residuo. **Tecniche8/8; funzionali2/6.**
+
+Il [pacchetto operativo](../releases/csv-last-row-recovery-code-package-20261018.json) e il [launcher](../scripts/launch-csv-last-row-recovery-20261018.sh) vincolano tutti i52 overlay, bootstrap, loader e selezione al commit sorgente `73bf5767e4ee2e3397ef5cf9193b91589d0522d6` e all'impronta del piano privato. La revisione completa si presenta dopo il login della sessione HUMAN scaduta (160/256 tentativi conservati): una sola approvazione runtime composta per nuova sessione del credential owner già esistente, un grant temporaneo esatto e massimo una ripresa del job.
+
+Il credential owner conserva318 tentativi, massimo126 nuovi, tetto444, fence e cronologia precedenti. La policy41→42 aggiunge solo il grant `udp.materialization.retry` per l'identità HUMAN e il job/sorgente/run/tipo/access label verificati, preservando tutte le altre voci. Il contratto nativo deve confermare idoneità, versione11, stessa baseline e snapshot fresco prima dell'unico POST con operationId stabile e claim durevole. Non si ripetono decisioni d'identità, pubblicazioni della fonte o ingestion CSV.
+
+Prima della prima lettura nativa, il processo attende il maggiore intervallo di aggiornamento policy fra UDP e Semantic Registry, ricavato dalle rispettive configurazioni correnti, più12 secondi; default30 solo se assente, come negli SDK verificati. Generazioni e route restano vincolate. Dinieghi espliciti401/403 e risultati di mutazioni incerti arrestano il flusso senza replay automatico. Nessun riavvio di servizi, aggiornamento immagini, modifica IAM o riattivazione scheduler.
+
+Il comando prosegue fino al readback finale: commit del job, ledger13/13,11 CREATE_NEW storici e oggetto originario conservati,13 ACK e lineage Ingestion/UDP concordanti. Solo questo risultato può attestare la tappa3 e portare il contatore a3/6. A fine operazione o STOP il worker termina. La sessione finita **non dimostra il rinnovo credenziali continuativo** richiesto per future sorgenti e scheduler.
+
+[Qualifica completa 39076417852](https://github.com/GioNob/ouf-deploy/actions/runs/39076417852), job117524391524: **22 PASS, zero errori/fallimenti/skip**, sintassi launcher valida, query selettiva su PostgreSQL17 reale. Verificati import isolato della chiusura di sorgenti senza effetti, tutte le impronte della consegna, versioni/identità/baseline alterate, una sola approvazione operativa e nessun replay di mutazioni ambigue. I trasporti owner dei test sono simulati e le sorgenti onboarding esterne sono stub solo per la prova d'import: questa CI **non prova l'esecuzione sul VPS**. [Impronte e limiti](csv-last-row-composed-recovery-qualified-20261018.json).
+
+La consegna eseguibile è fissata al commit `d51d2ea0b663ea0cfc6c8b1a9cde086bcc56e906`, launcher SHA256 `a5fe60b324eb62005f39a0e35e1a8ba6e93575dcd6819f9884bbe287e0190bbf`. Il comando locale `OUF_Tappa3_Recupero_Operativo_VPS.txt` scarica e verifica tale launcher nella sessione VPS esistente. Atteso login nuovo perché la sessione è scaduta e un consenso runtime composto secondo [AGENTS.md](../AGENTS.md), «Development delegation is not runtime HUMAN authority». Nessuna nuova autorizzazione ai repository richiesta. In attesa del risultato target; nessun effetto runtime attribuito alla CI o alla preparazione.
+
 
 ## Preparazione nativa qualificata e consegnata — 18 ottobre 2026
 
