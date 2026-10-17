@@ -1,0 +1,32 @@
+
+   create schema ouf_udp;
+   create table ouf_udp.resolution_review_package_confirmation(package_id uuid,tenant_id text,actor_subject text,confirmed_at timestamptz,authorization_decision_ref text,issue_count integer);
+   create table ouf_udp.lake_object(lake_object_id uuid,tenant_id text);
+   create table ouf_udp.handoff_intake(handoff_id text,source_id text,ingestion_run_id text,type_code text,raw_lake_object_id uuid,state text,source_object_id text);
+   create table ouf_udp.human_resolution_decision(issue_id uuid,action text,actor_subject text,decided_at timestamptz,authorization_decision_ref text);
+   create table ouf_udp.resolution_issue(issue_id uuid,handoff_id text,state text,tenant_id text,reason_code text);
+   create table ouf_udp.materialization_job(handoff_id text,state text,safe_failure_code text);
+   create table ouf_udp.source_binding(source_id text,type_code text,source_object_id text,urban_object_id uuid,state text);
+   create table ouf_udp.urban_object(urban_object_id uuid,tenant_id text,status text,current_revision_id uuid);
+   create table ouf_udp.materialization_observation(handoff_id text,urban_object_id uuid,revision_id uuid);
+   create table ouf_udp.object_revision(urban_object_id uuid,revision_id uuid);
+   create table ouf_udp.property_contribution(handoff_id text,urban_object_id uuid);
+   insert into ouf_udp.resolution_review_package_confirmation values('a5183503-04ff-4e10-850f-e22bf874365e','ouf-lab','b93d8cf6-cd14-4ee6-91d7-84cd76c4f500','2026-10-17T16:00:00Z','fixture-auth',11);
+   insert into ouf_udp.lake_object select md5(n::text)::uuid,case when n=14 then 'other-tenant' else 'ouf-lab' end from generate_series(1,14)n;
+   insert into ouf_udp.handoff_intake select 'h'||n,'teatri-csv-6609b245','run-ref:source-envelope','SOURCE_ROW_TYPE',null,case when n=13 then 'DURABLE' else 'PROCESSED' end,'PRIVATE_SOURCE_'||n from generate_series(1,14)n;
+   insert into ouf_udp.resolution_issue select md5(n::text)::uuid,'h'||n,case when n=13 then 'OPEN' else 'RESOLVED' end,case when n=14 then 'other-tenant' else 'ouf-lab' end,'UNRESOLVED_IDENTITY' from generate_series(2,14)n;
+   insert into ouf_udp.human_resolution_decision select md5(n::text)::uuid,'CREATE_NEW','b93d8cf6-cd14-4ee6-91d7-84cd76c4f500','2026-10-17T16:00:00Z','fixture-auth' from generate_series(2,12)n;
+   insert into ouf_udp.materialization_job select 'h'||n,case when n=13 then 'QUARANTINED' else 'SUCCEEDED' end,case when n=13 then 'UDP_IDENTITY_REVIEW_REQUIRED' else null end from generate_series(1,14)n;
+   insert into ouf_udp.source_binding select 'teatri-csv-6609b245','SOURCE_ROW_TYPE','PRIVATE_SOURCE_'||n,md5(n::text)::uuid,'ACTIVE' from generate_series(1,12)n;
+   insert into ouf_udp.urban_object select md5(n::text)::uuid,'ouf-lab','ACTIVE',md5(('rev'||n))::uuid from generate_series(1,12)n;
+   insert into ouf_udp.materialization_observation select 'h'||n,md5(n::text)::uuid,md5(('rev'||n))::uuid from generate_series(1,12)n;
+   insert into ouf_udp.object_revision select md5(n::text)::uuid,md5(('rev'||n))::uuid from generate_series(1,12)n;
+   insert into ouf_udp.property_contribution select 'h'||n,md5(n::text)::uuid from generate_series(1,12)n;
+  
+alter table ouf_udp.handoff_intake add column payload_json jsonb;
+update ouf_udp.handoff_intake set payload_json='{"contractRefs":{"bundleRef":"fixture-bundle:1:sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","sourceSchemaRef":"fixture-schema"},"canonicalPayload":{"PRIVATE_PROPERTY":"NEVER_PRINT"}}';
+alter table ouf_udp.materialization_job add column state_version bigint default 1;
+alter table ouf_udp.materialization_job add column integrity_attempts integer default 5;
+alter table ouf_udp.materialization_job add column integrity_baseline_hash text;
+alter table ouf_udp.materialization_job add column missing_ref_hashes jsonb default '["sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"]';
+update ouf_udp.materialization_job set state='QUARANTINED',safe_failure_code='UDP_REFERENCE_INTEGRITY_MISSING' where handoff_id not in('h1','h13','h14');
