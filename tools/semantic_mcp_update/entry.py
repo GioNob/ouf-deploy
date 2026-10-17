@@ -151,10 +151,67 @@ def live_policy_session(context,closure,read):
  return action,review
 
 
-def configured_admin_password(actual,values):
+def secret_bytes(fd,restat,uid,gid,modes):
+ before=os.fstat(fd)
+ require(stat.S_ISREG(before.st_mode)and before.st_uid==uid and(gid is None or before.st_gid==gid)
+  and before.st_nlink==1 and stat.S_IMODE(before.st_mode)in modes and 0<before.st_size<=16384,
+  'PRIVATE_BOUNDED_ADMIN_SECRET_REQUIRED')
+ raw=bytearray()
+ while len(raw)<=16384:
+  part=os.read(fd,min(4096,16385-len(raw)))
+  if not part:break
+  raw.extend(part)
+ identity=lambda s:tuple(getattr(s,k)for k in('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns'))
+ require(len(raw)==before.st_size and identity(before)==identity(os.fstat(fd))==identity(restat()),
+  'ADMIN_SECRET_CHANGED_DURING_READ')
+ return bytes(raw)
+
+
+def namespace_secret(actual,selected,destination,custody):
+ require(type(custody)is dict and set(custody)=={'schema','route','uid','gid','mode','singleLink','mountType','mountReadOnly'}
+  and custody['schema']=='ouf.postgres-mounted-secret-custody.v1'and custody['route']=='PINNED_POSTGRES_ROOT_FD'
+  and all(type(custody[k])is int and 0<=custody[k]<2**31 for k in('uid','gid'))
+  and type(custody['mode'])is int and custody['mode']in(0o400,0o440,0o600,0o640)
+  and custody['singleLink']is True and custody['mountType']=='bind'and custody['mountReadOnly']is True,
+  'EXACT_OBSERVED_ADMIN_SECRET_CUSTODY_REQUIRED')
+ pid=actual['State']['Pid'];require(type(pid)is int and pid>1,'CURRENT_POSTGRES_PROCESS_REQUIRED')
+ proc=Path('/proc')/str(pid)
+ def generation():
+  raw=(proc/'stat').read_bytes();require(0<len(raw)<=8192 and raw.startswith((str(pid)+' (').encode()),'BOUNDED_POSTGRES_PROCESS_STAT_REQUIRED')
+  rest=raw[raw.rfind(b')')+2:].split();require(len(rest)>=20,'POSTGRES_START_TICKS_REQUIRED')
+  ns=(proc/'ns'/'mnt').stat();return(rest[19],ns.st_dev,ns.st_ino)
+ before=generation();fds=[]
+ try:
+  # /proc/<pinned PID>/root is a kernel link to the running workload's actual root.
+  cursor=os.open(proc/'root',os.O_PATH|os.O_DIRECTORY|os.O_CLOEXEC);fds.append(cursor)
+  parts=Path(selected).parts[1:];require(bool(parts),'CONFIGURED_SECRET_LEAF_REQUIRED')
+  for part in parts[:-1]:
+   cursor=os.open(part,os.O_PATH|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=cursor);fds.append(cursor)
+  fd=os.open(parts[-1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK|os.O_CLOEXEC,dir_fd=cursor);fds.append(fd)
+  fdinfo=Path('/proc/self/fdinfo')/str(fd);info=fdinfo.read_bytes();require(len(info)<=8192,'BOUNDED_SECRET_FDINFO_REQUIRED')
+  mount_ids=[line.split(b':',1)[1].strip()for line in info.splitlines()if line.startswith(b'mnt_id:')]
+  require(len(mount_ids)==1 and mount_ids[0].isdigit(),'EXACT_OPENED_SECRET_MOUNT_ID_REQUIRED')
+  mountinfo=(proc/'mountinfo').read_bytes();require(len(mountinfo)<=1048576,'BOUNDED_POSTGRES_MOUNTINFO_REQUIRED')
+  rows=[line.split(b' - ',1)[0].split()for line in mountinfo.splitlines()if line.split(b' ',1)[0]==mount_ids[0]]
+  require(len(rows)==1 and len(rows[0])>=6,'OPENED_SECRET_MOUNT_REQUIRED')
+  unescape=lambda value:re.sub(rb'\\([0-7]{3})',lambda match:bytes([int(match[1],8)]),value).decode('utf-8')
+  require(unescape(rows[0][4])==str(destination)and b'ro'in rows[0][5].split(b','),
+   'OPENED_SECRET_MUST_BE_SELECTED_READ_ONLY_MOUNT')
+  raw=secret_bytes(fd,lambda:os.stat(parts[-1],dir_fd=cursor,follow_symlinks=False),custody['uid'],custody['gid'],(custody['mode'],))
+  following=(proc/'mountinfo').read_bytes();require(len(following)<=1048576,'BOUNDED_POSTGRES_MOUNTINFO_REQUIRED')
+  same=[line.split(b' - ',1)[0].split()for line in following.splitlines()if line.split(b' ',1)[0]==mount_ids[0]]
+  require(same==rows,'POSTGRES_SECRET_MOUNT_CHANGED_DURING_READ')
+  require(generation()==before,'POSTGRES_PROCESS_CHANGED_DURING_SECRET_READ')
+  return raw
+ finally:
+  for fd in reversed(fds):os.close(fd)
+
+
+def configured_admin_password(actual,values,*,custody=None):
  direct=values.get('POSTGRES_PASSWORD');selected=values.get('POSTGRES_PASSWORD_FILE')
  require(not(direct and selected),'AMBIGUOUS_ADMIN_CREDENTIAL_CHANNEL')
  if not selected:
+  require(custody is None,'SELECTED_FILE_CUSTODY_REQUIRES_CONFIGURED_FILE')
   require(type(direct)is str and 0<len(direct.encode())<=16384 and '\0'not in direct,
    'EXISTING_EXPLICIT_ADMIN_CREDENTIAL_CHANNEL_REQUIRED')
   return direct
@@ -174,26 +231,17 @@ def configured_admin_password(actual,values):
  destination=Path(mount['Destination']);source=mount.get('Source')
  require(type(source)is str and Path(source).is_absolute()and str(Path(source))==source
   and '..'not in Path(source).parts,'EXACT_ADMIN_SECRET_HOST_SOURCE_REQUIRED')
- path=Path(source)/Path(selected).relative_to(destination)
- for parent in path.parents:
-  info=parent.lstat()
-  require(stat.S_ISDIR(info.st_mode)and info.st_uid==0 and not info.st_mode&0o022,
-   'ROOT_CONTROLLED_ADMIN_SECRET_ANCESTRY_REQUIRED')
- fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
- try:
-  before=os.fstat(fd)
-  require(stat.S_ISREG(before.st_mode)and before.st_uid==0 and before.st_nlink==1
-   and stat.S_IMODE(before.st_mode)in(0o400,0o440,0o600,0o640)and 0<before.st_size<=16384,
-   'PRIVATE_BOUNDED_ADMIN_SECRET_REQUIRED')
-  raw=bytearray()
-  while len(raw)<=16384:
-   part=os.read(fd,min(4096,16385-len(raw)))
-   if not part:break
-   raw.extend(part)
-  identity=lambda s:tuple(getattr(s,k)for k in('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns'))
-  require(len(raw)==before.st_size and identity(before)==identity(os.fstat(fd))==identity(path.lstat()),
-   'ADMIN_SECRET_CHANGED_DURING_READ')
- finally:os.close(fd)
+ if custody is not None:
+  raw=namespace_secret(actual,selected,destination,custody)
+ else:
+  path=Path(source)/Path(selected).relative_to(destination)
+  for parent in path.parents:
+   info=parent.lstat()
+   require(stat.S_ISDIR(info.st_mode)and info.st_uid==0 and not info.st_mode&0o022,
+    'ROOT_CONTROLLED_ADMIN_SECRET_ANCESTRY_REQUIRED')
+  fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+  try:raw=secret_bytes(fd,path.lstat,0,None,(0o400,0o440,0o600,0o640))
+  finally:os.close(fd)
  # Match the official PostgreSQL entrypoint's shell command substitution semantics.
  try:password=bytes(raw).rstrip(b'\n').decode('utf-8')
  except UnicodeError:raise UpdateDenied('ADMIN_SECRET_UTF8_REQUIRED')from None
@@ -201,14 +249,14 @@ def configured_admin_password(actual,values):
  return password
 
 
-def admin_database_url(private_review,engine,*,include_observation=False):
+def admin_database_url(private_review,engine,*,include_observation=False,custody=None):
  pin=private_review['database']['postgresRuntimeBinding'];status,actual=engine.request('GET','/v1.44/containers/'+pin['containerId']+'/json')
  actual_pin=Engine.runtime_binding(actual)if status==200 else{}
  if status==200:actual_pin['mountsHash']=digest(sorted(actual['Mounts'],key=lambda m:m['Destination']))
  require(status==200 and actual_pin==pin and actual['State']['Running']is True,'CURRENT_SELECTED_POSTGRES_REQUIRED')
  values=env(actual['Config']['Env']);admin=private_review['database']['backupReader']
  require(values.get('POSTGRES_USER')==admin,'EXACT_REVIEWED_ADMINISTRATOR_REQUIRED')
- password=configured_admin_password(actual,values)
+ password=configured_admin_password(actual,values,custody=custody)
  status,after=engine.request('GET','/v1.44/containers/'+pin['containerId']+'/json')
  after_pin=Engine.runtime_binding(after)if status==200 else{}
  if status==200:
@@ -235,7 +283,8 @@ def update_main(prepared,closure,resources,context,read,emit=print):
  proof=resources['ownerReceiptAbsence'];permit.owner_absence_valid(proof,private_review,time.time(),resources['ownerConnectionRef'])
  # Resolve from the retained installation selection; no new URL or default host.
  engine=Engine(prepared['engine']['socketPath'],tuple(prepared['engine']['socketBinding']))
- admin_url,postgres_observation=admin_database_url(private_review,engine,include_observation=True)
+ admin_url,postgres_observation=admin_database_url(private_review,engine,include_observation=True,
+  custody=resources['executionSelection'].get('adminSecretCustody'))
  selection={'schema':'ouf.mcp-single-update-execution-selection.v1',
   'oldContainerName':next(row['name']for row in prepared['cohortPlan']['replacements']if row['module']=='mcp'),
   'metadataMountTarget':resources['executionSelection']['metadataMountTarget'],

@@ -16,7 +16,8 @@ from engine_creation import Engine
 import image_custody as custody
 from tools.semantic_mcp_update.owner import SingleMcpUpdate,UpdatePaused,digest,scope
 from tools.semantic_mcp_update.native import NativePorts
-from tools.semantic_mcp_update.entry import admin_database_url
+from tools.semantic_mcp_update.entry import admin_database_url,configured_admin_password
+from tools.semantic_mcp_update.owner import UpdateDenied
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 assert os.geteuid()==0 and os.environ.get('OUF_NATIVE_MCP_UPDATE_FIXTURE')=='EPHEMERAL_RUNNER_ONLY'
@@ -71,7 +72,8 @@ with tempfile.TemporaryDirectory(dir='/root',prefix='mcp-update-native-fixture-'
   tls_context.load_cert_chain(str(ca),str(tlskey));tls_server.socket=tls_context.wrap_socket(tls_server.socket,server_side=True)
   tls_thread=threading.Thread(target=tls_server.serve_forever,daemon=True);tls_thread.start()
   tls_origin='https://'+gateway+':'+str(tls_server.server_port)
-  pg_secret=root/'postgres-password';pg_secret.write_bytes(b'mcp:@/ file\n\n');pg_secret.chmod(0o440)
+  operator_secrets=root/'operator-secrets';operator_secrets.mkdir(mode=0o700);os.chown(operator_secrets,1000,1000)
+  pg_secret=operator_secrets/'postgres-password';pg_secret.write_bytes(b'mcp:@/ file\n\n');os.chown(pg_secret,1000,1000);pg_secret.chmod(0o600)
   pgid=cli('run','-d','--name',pgname,'--network',network,'--network-alias','pg-fixture','--volume',str(pg_secret)+':/run/secrets/postgres-password:ro','-e','POSTGRES_USER=mcp','-e','POSTGRES_PASSWORD_FILE=/run/secrets/postgres-password','-e','POSTGRES_DB=mcp_update_fixture','postgres:17').decode();containers.append(pgid)
   for _ in range(100):
    ready=subprocess.run(['docker','exec',pgid,'pg_isready','-h','127.0.0.1','-U','mcp','-d','mcp_update_fixture'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
@@ -106,7 +108,16 @@ with tempfile.TemporaryDirectory(dir='/root',prefix='mcp-update-native-fixture-'
   pg=engine.request('GET','/v1.44/containers/'+pgid+'/json')[1]
   reviewed_pg_pin=Engine.runtime_binding(pg);reviewed_pg_pin['mountsHash']=digest(sorted(pg['Mounts'],key=lambda m:m['Destination']))
   fixture_admin_review={'database':{'postgresRuntimeBinding':reviewed_pg_pin,'backupReader':'mcp','binding':{'database':'mcp_update_fixture'}},'oldNativeConfig':{'Env':['MCP_DATABASE_URL=postgres://fixture_application:fixture-application@pg-fixture:5432/mcp_update_fixture?sslmode=disable']}}
-  selected_admin_url=admin_database_url(fixture_admin_review,engine)
+  mounted_custody={'schema':'ouf.postgres-mounted-secret-custody.v1','route':'PINNED_POSTGRES_ROOT_FD',
+   'uid':1000,'gid':1000,'mode':0o600,'singleLink':True,'mountType':'bind','mountReadOnly':True}
+  try:admin_database_url(fixture_admin_review,engine)
+  except UpdateDenied as denied:assert str(denied)=='ROOT_CONTROLLED_ADMIN_SECRET_ANCESTRY_REQUIRED'
+  else:raise AssertionError('HOST_OPERATOR_ANCESTRY_MUST_REMAIN_UNTRUSTED')
+  wrong_custody={**mounted_custody,'uid':1001}
+  try:admin_database_url(fixture_admin_review,engine,custody=wrong_custody)
+  except UpdateDenied as denied:assert str(denied)=='PRIVATE_BOUNDED_ADMIN_SECRET_REQUIRED'
+  else:raise AssertionError('WRONG_SELECTED_SECRET_OWNER_MUST_FAIL')
+  selected_admin_url=admin_database_url(fixture_admin_review,engine,custody=mounted_custody)
   net=old['NetworkSettings']['Networks'][network]
   dirname=root/'action';dirname.mkdir(mode=0o700);journal=Journal(dirname)
   def pin(actual):return {'containerId':actual['Id'],'imageId':actual['Image'],'pid':actual['State']['Pid'],'startedAt':actual['State']['StartedAt'],**{n+'Hash':digest(actual[k])for n,k in(('config','Config'),('hostConfig','HostConfig'),('mounts','Mounts'),('networkSettings','NetworkSettings'))}}
@@ -240,7 +251,7 @@ with tempfile.TemporaryDirectory(dir='/root',prefix='mcp-update-native-fixture-'
   assert sql('SELECT count(*) FROM ouf_mcp.semantic_reprocessing_session')==b'0'
   assert sql('SELECT count(*) FROM ouf_mcp.tool_attempt')==b'1'
   print(json.dumps({'realMcpBootstrapChecks':{'embeddedManifestPersisted':True,'nonrootApplication':True,
-   'tlsPolicyBootstrap':True,'bothHealthEndpoints':True,'unsignedIngressRejected':True,
+   'tlsPolicyBootstrap':True,'postgresNamespaceSecretCustody':True,'operatorUidGid1000Mode0600':True,'wrongSecretOwnerRejected':True,'hostAncestryStillRejected':True,'bothHealthEndpoints':True,'unsignedIngressRejected':True,
    'wrongProfileRejected':True,'badSignatureRejected':True,'writableProfileRejected':True,
    'retentionMemberships':0,'semanticReprocessingSessions':0,'toolAttemptsUnchanged':True}}))
   print(json.dumps({'schema':'ouf.mcp-single-update-native-fixture-qualification.v1','realDockerEffects':True,'realPostgreSQL17AtomicMigration':True,'backupRestoreListProven':True,

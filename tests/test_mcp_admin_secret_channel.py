@@ -40,6 +40,14 @@ class Channel(unittest.TestCase):
    with self.assertRaisesRegex(m.UpdateDenied,'POSTGRES_MOUNTS_CHANGED'):native.NativePorts.guard_current(holder,'VERIFY_INPUTS')
    pg['Mounts']=copy.deepcopy(mounts);old['Mounts']=copy.deepcopy(mounts);old['Mounts'][0]['Source']='/changed'
    with self.assertRaisesRegex(m.UpdateDenied,'OLD_MCP_CONFIG_CHANGED'):native.NativePorts.guard_current(holder,'VERIFY_INPUTS')
+ def test_namespace_route_requires_exact_versioned_custody_and_configured_file(self):
+  actual={'Mounts':[{'Destination':'/run/secret','Source':'/operator/secret','Type':'bind','RW':False}]}
+  valid={'schema':'ouf.postgres-mounted-secret-custody.v1','route':'PINNED_POSTGRES_ROOT_FD','uid':1000,'gid':1000,'mode':0o600,'singleLink':True,'mountType':'bind','mountReadOnly':True}
+  for alteration in ({'route':'HOST_PATH_FALLBACK'},{'mode':0o644},{'uid':True},{'singleLink':False},{'mountReadOnly':False}):
+   with self.assertRaisesRegex(m.UpdateDenied,'EXACT_OBSERVED_ADMIN_SECRET_CUSTODY_REQUIRED'):
+    m.namespace_secret(actual,'/run/secret',Path('/run/secret'),{**valid,**alteration})
+  with self.assertRaisesRegex(m.UpdateDenied,'SELECTED_FILE_CUSTODY_REQUIRES_CONFIGURED_FILE'):
+   m.configured_admin_password(actual,{'POSTGRES_PASSWORD':'synthetic'},custody=valid)
  def test_same_selected_database_and_generation_guard(self):
   actual={'State':{'Running':True},'Config':{'Env':['POSTGRES_USER=administrator','POSTGRES_PASSWORD=synthetic:@/ pass']},'Mounts':[]}
   pin={'containerId':'fixture-pg','mountsHash':m.digest([])}
