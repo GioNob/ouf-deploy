@@ -85,14 +85,15 @@ class NativePorts:
   actual=self.gateway.routes();expected=copy.deepcopy(self.plan['gateway']['beforeRoutes'])
   if after:expected[self.plan['gateway']['route']['id']]=self.plan['gateway']['route']
   require(actual==expected,'COMPLETE_GATEWAY_ROUTE_MAP_CHANGED');return actual
+ def verify_inputs(self):
+  self.route_inventory()
+  for name,row in self.plan['replacements'].items():
+   private_file(row['imageArchive']['path'],row['imageArchive']['sha256'],1200000000)
+   require(self.inspect('containers',row['retiredName'])is None,'RETIRED_APPLICATION_NAME_ALREADY_EXISTS')
+  return {'privateReviewHash':self.plan['privateReviewBinding']['sha256']}
  def apply(self,stage):
   p=self.plan
-  if stage=='VERIFY_INPUTS':
-   self.route_inventory()
-   for name,row in p['replacements'].items():
-    private_file(row['imageArchive']['path'],row['imageArchive']['sha256'],1200000000)
-    require(self.inspect('containers',row['retiredName'])is None,'RETIRED_APPLICATION_NAME_ALREADY_EXISTS')
-   return
+  if stage=='VERIFY_INPUTS':self.verify_inputs();return
   if stage=='PUBLISH_GATEWAY_ROUTE':
    self.route_inventory();route=p['gateway']['route'];status,_=self.gateway.request('PUT','/apisix/admin/routes/'+quote(route['id'],safe=''),route)
    require(status in(200,201),'GATEWAY_PUT_OUTCOME_UNPROVEN');return
@@ -144,7 +145,7 @@ class NativePorts:
   except(OSError,http.client.HTTPException):return 'TRANSIENT',{'retryAfterSeconds':0}
   finally:client.close()
  def observe(self,stage):
-  if stage=='VERIFY_INPUTS':return 'APPLIED',{'privateReviewHash':self.plan['privateReviewBinding']['sha256']}
+  if stage=='VERIFY_INPUTS':return 'APPLIED',self.verify_inputs()
   if stage=='PUBLISH_GATEWAY_ROUTE':return 'APPLIED',{'routeMapHash':digest(self.route_inventory(True))}
   if stage=='VERIFY_FINAL':
    proofs={}
