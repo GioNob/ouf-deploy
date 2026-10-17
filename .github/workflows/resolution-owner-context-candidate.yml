@@ -15,7 +15,7 @@ jobs:
         include:
           - module: udp
             repository: ouf-udp-object-resolution
-            commit: a4d432d7788cc1c205c0eaafa5ae3b46036de09f
+            commit: 3bc856dd67baa0358d4b9c20759245ed18f09b8c
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {path: deploy, persist-credentials: false}
