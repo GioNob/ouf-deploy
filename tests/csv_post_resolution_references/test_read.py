@@ -42,6 +42,23 @@ class Contract(unittest.TestCase):
   result=json.loads(out.getvalue());self.assertFalse(result['requiredScopesPresentInToken'])
   self.assertFalse(result['liveRouteInventoryProven']);self.assertTrue(result['audienceMatchesRoute'])
 
+
+ def test_worker_history_preserves_cumulative_budget_without_new_session(self):
+  import contextlib,io
+  review={'retained':'fixture'};review_hash=m.digest(review);journal=m.POLICY_CONTEXT.parent/('semantic-functional-worker-'+review_hash)
+  fence_path=journal.parent/'semantic-functional-session-fixture.fence.json'
+  fence={'schema':'ouf.semantic-functional-session-fence.v1','logicalOwnerScopeHash':'fixture','reviewHash':review_hash,'journalPath':str(journal)}
+  signed={'fenceBinding':{'path':str(fence_path),'value':fence},'reviewHash':review_hash,'predecessorGrantAttempts':248,'maximumCumulativeGrantAttempts':316,'policy':{'max_attempts':68}}
+  row={'state':'CANCELLED','reason':'CANCELLED_BY_OWNER','attempts':60,'publicationCount':60,'controlledPredecessorGrantAttempts':248,'controlledCumulativeGrantAttempts':308}
+  files={str(m.POLICY_CONTEXT/'review.json'):{'scopes':{'policyTokenFiniteWorkerSession':{'fenceBinding':{'path':str(fence_path)},'logicalOwnerScopeHash':'fixture'}}},str(fence_path):fence,str(journal/'owner-session.json'):signed,str(journal/'owner-session-review.json'):review,str(journal/'recovery.json'):row,str(journal/'owner-status.json'):{},str(journal/'owner-admission.json'):{}}
+  read=Mock(side_effect=lambda p,*args:files[str(p)])
+  with patch.object(m,'unlocked',return_value=True),contextlib.redirect_stdout(io.StringIO())as out:
+   m.policy_worker_metadata({'read':read})
+  result=json.loads(out.getvalue());self.assertEqual(result['controlledCumulativeGrantAttempts'],308)
+  self.assertEqual(result['remainingControlledGrantAttempts'],8);self.assertFalse(result['newWorkerStarted'])
+  row['controlledCumulativeGrantAttempts']=1
+  with self.assertRaisesRegex(ValueError,'EXACT_CURRENT_CUMULATIVE_BUDGET_REQUIRED'):m.policy_worker_metadata({'read':read})
+
 @unittest.skipUnless(os.environ.get('OUF_NATIVE_SQL')=='1','actual PostgreSQL17 required')
 class NativeSql(unittest.TestCase):
  def cli(self,*args):
