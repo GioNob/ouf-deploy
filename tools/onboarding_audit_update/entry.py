@@ -58,22 +58,34 @@ def current_policy(case,closure,read,prepared):
  return review,json.loads(raw)['expiresAt']
 
 
+def predecessor_application_pins(plan,final):
+ require(set(plan['replacements'])in({'onboarding','ingestion'},{'onboarding'}),'EXACT_PREDECESSOR_APPLICATION_SET_REQUIRED')
+ require(set(final['applications'])==set(plan['replacements']),'PREDECESSOR_FINAL_APPLICATIONS_MISMATCH')
+ pins={name:row['runtimeBinding']for name,row in final['applications'].items()}
+ if 'ingestion'not in pins:
+  require(plan.get('maximumGatewayWrites')==0 and type(plan.get('unchangedIngestionRuntimeBinding'))is dict,'PREDECESSOR_RETAINED_INGESTION_REQUIRED')
+  pins['ingestion']=plan['unchangedIngestionRuntimeBinding']
+ require(set(pins)=={'onboarding','ingestion'}and all(type(row.get('containerId'))is str for row in pins.values()),'PREDECESSOR_RUNTIME_PINS_REQUIRED')
+ return pins
+
+
 def main(prepared,sources,closure,case,context,archive,read,ns,emit=print):
  authority.closure_valid(closure);context=Path(context)
  policy_review,policy_expiry=current_policy(case,closure,read,prepared)
  previous=read(Path(case['rolloutContext'])/'review.json',8388608,case['rolloutReviewSha256'])
  previous_plan=read(Path(case['rolloutContext'])/'execution-plan.json',8388608)
  record=read(Path(case['rolloutContext'])/'recovery.json',65536)
- require(digest(previous_plan)==previous['scopes']['ingestionReadinessUpdate']['planHash']
-  and record.get('scopeHash')==digest(previous['scopes']['ingestionReadinessUpdate'])
-  and record.get('incidentState')=='RECOVERED'and record.get('version')==57
-  and record.get('nextStage')==len(previous['scopes']['ingestionReadinessUpdate']['stages'])
+ previous_scope=previous['scopes'][case.get('predecessorScopeKey','ingestionReadinessUpdate')]
+ require(digest(previous_plan)==previous_scope['planHash']
+  and record.get('scopeHash')==digest(previous_scope)
+  and record.get('incidentState')=='RECOVERED'and record.get('version')==case.get('predecessorJournalVersion',57)
+  and record.get('nextStage')==len(previous_scope['stages'])
   and all(e['state']=='APPLIED'for e in record['effects']),'EXACT_COMPLETE_PREDECESSOR_ROLLOUT_REQUIRED')
- final=record['effects'][-1]['evidence'];engine=Engine(prepared['engine']['socketPath'],tuple(prepared['engine']['socketBinding']))
+ final=record['effects'][-1]['evidence'];pins=predecessor_application_pins(previous_plan,final);engine=Engine(prepared['engine']['socketPath'],tuple(prepared['engine']['socketBinding']))
  actuals={}
  for name in('onboarding','ingestion'):
-  status,actual=engine.request('GET','/v1.44/containers/'+previous_plan['replacements'][name]['name']+'/json')
-  require(status==200 and actual['State']['Running']is True and runtime(actual)==final['applications'][name]['runtimeBinding'],'PREDECESSOR_APPLICATION_GENERATION_CHANGED')
+  status,actual=engine.request('GET','/v1.44/containers/'+pins[name]['containerId']+'/json')
+  require(status==200 and actual['State']['Running']is True and runtime(actual)==pins[name],'PREDECESSOR_APPLICATION_GENERATION_CHANGED')
   actuals[name]=actual
  transport=copy.deepcopy(previous_plan['gateway']['transport']);admin=NamespaceAdmin(engine,transport);routes=admin.routes()
  require(digest(routes)==final['routeMapHash']==case['retainedRouteMapHash'],'PRESERVED_GATEWAY_ROUTE_MAP_REQUIRED')
@@ -118,7 +130,7 @@ def main(prepared,sources,closure,case,context,archive,read,ns,emit=print):
  final_review['absoluteExpiresAt']=min(policy_expiry-5,human.expires_at)
  publish_json(context,'review.json',final_review)
  decision=authority.terminal_consent(final_review,
-  'Correzione del solo Onboarding: lettura configurazione con audit di autorizzazione. Tecniche8/8; funzionali1/6.\n'
+  'Correzione del solo Onboarding: risorsa pubblicata e modulo ONBOARDING per il grant esistente. Tecniche8/8; funzionali1/6.\n'
   'Una nuova immagine; vecchio Onboarding fermato e conservato; stessi mount, ambiente, rete, IP e MAC.\n'
   'Ingestion e Gateway invariati. Nessuna migrazione DB, modifica grant, ripetizione approvazioni o proposta semantica.\n'
   'Riutilizzo della sessione HUMAN e del worker policy attivi: nessun nuovo login o budget.\n'
