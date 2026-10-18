@@ -1,3 +1,9 @@
+## Tappa funzionale4 completata — ricerca chatbot con proprietà leggibili
+
+**Tecniche8/8; funzionali4/6.** Dopo la conferma HUMAN, proposta94306235-fc45-4433-a05e-0ead3f83a9f8 PUBLISHED e policy43. La ricerca diretta MCP restituisce13 oggetti distinti ACTIVE con20 proprietà ciascuno, pagina completa; oggetto originario conservato. [Prova diretta](../evidence/csv-functional-stage4-chat-proof-20261018.json).
+
+Restano tappa5 (seconda acquisizione controllata dello stesso CSV senza duplicati) e tappa6 (riscontro di entrambe le acquisizioni e conservazione degli8Cinema). Il profilo generico di riconciliazione non è ancora pubblicato. Nessuna nuova decisione d'identità o ripresa dei vecchi job.
+
 ## Blocco di visibilità individuato — revisione nativa dei permessi pronta
 
 Tecniche **8/8**, funzionali **3/6**. Dopo il rinnovo della connessione MCP, GRANTS funziona e conferma policy42. La proprietà RESTRICTED è bloccata da un vincolo operativo detailLevel presente nel solo grant di ruolo della ricerca; la risorsa dati non lo dichiara. **13 test superati** con lo SDK installato. Proposta nativa 94306235-fc45-4433-a05e-0ead3f83a9f8 PENDING: rimuove quel solo vincolo da admin/urban.object.search, conserva etichette, ruoli, assegnazioni e tutte le altre regole. [Evidenza e link THS](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md). Dopo conferma umana occorre nuova ricerca delle proprietà per provare la tappa4. Nessuna nuova acquisizione o pubblicazione del profilo.

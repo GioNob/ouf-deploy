@@ -1,3 +1,11 @@
+## Current functional checkpoint — stage4 proven through MCP
+
+Technical **8/8**, functional **4/6**. Native proposal94306235-fc45-4433-a05e-0ead3f83a9f8 is PUBLISHED, revision1, finalPolicyRef=ouf-lab-authorization:43. A subsequent direct MCP exact-class search returns all13 distinct ACTIVE objects, each with20 visible properties, nextCursor=null and partial=false. The original object remains present. [Redacted stage4 proof](../evidence/csv-functional-stage4-chat-proof-20261018.json). No actual property values are copied into this documentation.
+
+This is direct evidence that property visibility was restored by the scoped native permission correction. It supersedes earlier empty-property and pending-proposal checkpoints. No source/profile publication, ingestion replay, identity decision, new materialization retry or historical rewrite was performed by the agent.
+
+Next: stage5 requires an explicitly controlled second acquisition of the same source, preserving source identity and proving no duplicate objects; stage6 verifies both acquisitions and all8 original Cinema objects. Native reconciliation profile publication remains a distinct outstanding activation requirement. The native clone/revise/review lifecycle for the existing ACTIVE source must be exposed safely through MCP; creating a different source or replaying a completed launcher is not an equivalent operation.
+
 ## Current step — property authorization correction prepared for native human review
 
 The user refreshed the OUF MCP connection; GRANTS read now succeeds. A complete78-grant subject projection confirms active policy ouf-lab-authorization:42 with transport hash sha256:75834f0c64d929cc40401867aa65542b4ba15bb3e4bc32a6fd4ca719bab79fb1. No backend deployment or permission change was needed for this read. The catalogue remains configured-grant evidence, not an effective permission verdict.
