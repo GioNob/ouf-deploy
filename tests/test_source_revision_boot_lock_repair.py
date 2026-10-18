@@ -1,4 +1,4 @@
-import copy,importlib.util,json,os,subprocess,unittest
+import copy,hashlib,importlib.util,json,os,re,subprocess,sys,unittest
 from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
@@ -45,6 +45,17 @@ class Recovery(unittest.TestCase):
   self.assertEqual(self.lock.read_bytes(),b'keep');self.lock.unlink();self.lock.symlink_to(self.ownerpath)
   with self.assertRaises(ValueError):self.planned()
   self.assertTrue(self.lock.is_symlink())
+ def test_recovery_delivery_pins_and_stops_before_import_on_tamper(self):
+  launch=(ROOT/'scripts/launch-semantic-boot-lock-recovery-20261018.sh').read_text()
+  loader=re.search(r'(?ms)^import hashlib,json,os,re,signal,stat,sys,traceback,types\n.*?(?=^OUF_VERIFIED_BOOT_RECOVERY$)',launch).group()
+  for path in ('scripts/read-source-revision-boot-guard.py','scripts/repair-semantic-boot-lock.py',
+               'releases/source-revision-boot-read-selection-20261018.json','releases/semantic-boot-lock-recovery-selection-20261018.json'):
+   self.assertIn(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),loader)
+  delivery=self.fixture.tmp/'delivery';delivery.mkdir();(delivery/'reader.py').write_text('PRIVATE_CANARY')
+  result=subprocess.run([sys.executable,'-I','-B','-S','-',str(delivery)],input=loader.encode(),capture_output=True,timeout=10)
+  self.assertEqual(result.returncode,2);self.assertNotIn(b'PRIVATE_CANARY',result.stdout+result.stderr)
+  self.assertEqual(json.loads(result.stdout)['reason'],'DELIVERY_CHANGED')
+  self.assertFalse(Path(self.recovery['incidentPointer']).exists())
  def test_real_systemd_ordering_is_acyclic(self):
   value=self.planned();units=self.fixture.tmp/'units';units.mkdir()
   for unit,extra in (('fixture-docker.service',''),('fixture-guard.service','Before=fixture-docker.service\n'),
