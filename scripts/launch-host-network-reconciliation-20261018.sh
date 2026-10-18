@@ -6,7 +6,7 @@ ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
 if [ ! -x "$ouf_gh" ]; then ouf_gh="$(command -v gh || true)"; fi
 [ -n "$ouf_gh" ] && [ -x "$ouf_gh" ] || { echo 'Client GitHub non disponibile.' >&2; exit 1; }
 ouf_case="$(mktemp -d "$HOME/ouf-host-network-correction.XXXXXXXX")"
-ouf_source=c784e5fb2207316c2dcdc581562e208407dafd62
+ouf_source=15ccf48affe567218b66beeb6a4179e2db1f5c39
 for ouf_pair in 'tools/host_network_reconciliation.py:owner.py' 'scripts/reconcile-host-network-20261018.py:bootstrap.py' 'releases/host-network-reconciliation-20261018.json:installation.json' 'releases/host-network-reconciliation-execution-20261018.json:execution.json' 'scripts/read-source-revision-boot-guard.py:guard_reader.py' 'releases/source-revision-boot-read-selection-20261018.json:guard_selection.json' 'scripts/read-preboot-network-contract.py:contracts.py' 'releases/preboot-network-contract-read-selection-20261018.json:contracts_selection.json'; do
   ouf_path="${ouf_pair%:*}";ouf_name="${ouf_pair#*:}"
   "$ouf_gh" api "repos/GioNob/ouf-deploy/contents/$ouf_path?ref=$ouf_source" --jq .content | base64 --decode > "$ouf_case/$ouf_name"
@@ -14,7 +14,7 @@ done
 (
 cd "$ouf_case"
 printf '%s\n' '06d11ae791d497c701caa75c7b0d164fa4d44017727e3f977d10af1c04809511  owner.py' \
-  '0550e1813076d7c6bfaea5aa4c2dc4f40284d14a46af4980f7e26ebf5579c4c4  bootstrap.py' \
+  'b1dfe900c1710d0cda7234e83b49c7308fbd59c28304e01a62ca981545bf5c6c  bootstrap.py' \
   '92ef26cbc1341c3d7de15fac7ed8d1856a0bc6d03b859d16e4a86ba2a22f2afb  installation.json' \
   '0f06b63f51d068e74f09477e56493b2197880f76e7929796b11085cbd1427b74  execution.json' \
   'c63ee1872d4e78c16bead93c80c0c0fefa694814222a89cf93d23e084b4b63fd  guard_reader.py' \
@@ -22,7 +22,7 @@ printf '%s\n' '06d11ae791d497c701caa75c7b0d164fa4d44017727e3f977d10af1c04809511 
   '997b3ba99a474c051efb32cfd69dc706de68ade1d332609f577955f58f0d3c79  contracts.py' \
   'e7d72bfd63b182919f2b34088408950ef39a2b59f89600abca54c397643259af  contracts_selection.json' | sha256sum --check -
 )
-printf '%s\n' 'Tecniche8/8; funzionali4/6. Correzione amministrativa dei sei endpoint dinamici della rete backend.' 'APISIX:5->15; MinIO:6->16. Keycloak2, PostgreSQL3, Caddy4 e Gateway owner8 mantengono gli indirizzi, ora fissi.' 'Stessi container, immagini, processi, volumi, MAC e alias. Reti di controllo/ingresso preservate.' 'Sono possibili brevi interruzioni di rete anche per database, autenticazione e accesso pubblico.' 'Poi un solo avvio del container UDP installato. Worker esistenti possono riprendere; nessun comando retry job.' 'Semantic/provider restano subordinati alla riconciliazione nativa; nessuna nuova authority, migrazione o pubblicazione.' 'Massimo300 secondi e13 scritture Docker. Se STOP/non completo: non rilanciare; conservare il log e riconciliare il medesimo incidente.' "Log: $ouf_case/run.log"
+printf '%s\n' 'Tecniche8/8; funzionali4/6. Correzione amministrativa dei sei endpoint dinamici della rete backend.' 'APISIX:5->15; MinIO:6->16. Keycloak2, PostgreSQL3, Caddy4 e Gateway owner8 mantengono gli indirizzi, ora fissi.' 'Stessi container, immagini, processi, volumi, MAC e alias. Reti di controllo/ingresso preservate.' 'Sono possibili brevi interruzioni di rete anche per database, autenticazione e accesso pubblico.' 'Poi un solo avvio del container UDP installato. Worker esistenti possono riprendere; nessun comando retry job.' 'Riconcilia lo STOP senza effetti del primo controllo; verifica tabelle native vuote e authority revocata anche nello stato BLOCKED.' 'Semantic/provider restano subordinati alla riconciliazione nativa; nessuna nuova authority, migrazione o pubblicazione.' 'Massimo300 secondi e13 scritture Docker. Se STOP/non completo: non rilanciare; conservare il log e riconciliare il medesimo incidente.' "Log: $ouf_case/run.log"
 sudo /usr/bin/python3 -I -B -S - "$ouf_case" <<'OUF_VERIFIED_HOST_NETWORK_CORRECTION' | tee "$ouf_case/run.log"
 import hashlib,json,os,re,signal,stat,sys,traceback,types
 from pathlib import Path
@@ -38,7 +38,7 @@ def verified(path,expected):
  finally:os.close(fd)
 try:
  if os.geteuid()!=0 or os.getegid()!=0 or not(sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode)or len(sys.argv)!=2:raise ValueError('ISOLATED_HOST_ADMINISTRATOR_REQUIRED')
- signal.alarm(300);root=Path(sys.argv[1]);hashes={"guard_selection.json":"36c47400fc3dc7669b04d6bc18e204a70ca7502f3749d8d92a292ddf4bdc0978","contracts_selection.json":"e7d72bfd63b182919f2b34088408950ef39a2b59f89600abca54c397643259af","execution.json":"0f06b63f51d068e74f09477e56493b2197880f76e7929796b11085cbd1427b74","contracts.py":"997b3ba99a474c051efb32cfd69dc706de68ade1d332609f577955f58f0d3c79","bootstrap.py":"0550e1813076d7c6bfaea5aa4c2dc4f40284d14a46af4980f7e26ebf5579c4c4","guard_reader.py":"c63ee1872d4e78c16bead93c80c0c0fefa694814222a89cf93d23e084b4b63fd","owner.py":"06d11ae791d497c701caa75c7b0d164fa4d44017727e3f977d10af1c04809511","installation.json":"92ef26cbc1341c3d7de15fac7ed8d1856a0bc6d03b859d16e4a86ba2a22f2afb"}
+ signal.alarm(300);root=Path(sys.argv[1]);hashes={"guard_selection.json":"36c47400fc3dc7669b04d6bc18e204a70ca7502f3749d8d92a292ddf4bdc0978","contracts_selection.json":"e7d72bfd63b182919f2b34088408950ef39a2b59f89600abca54c397643259af","execution.json":"0f06b63f51d068e74f09477e56493b2197880f76e7929796b11085cbd1427b74","contracts.py":"997b3ba99a474c051efb32cfd69dc706de68ade1d332609f577955f58f0d3c79","bootstrap.py":"b1dfe900c1710d0cda7234e83b49c7308fbd59c28304e01a62ca981545bf5c6c","guard_reader.py":"c63ee1872d4e78c16bead93c80c0c0fefa694814222a89cf93d23e084b4b63fd","owner.py":"06d11ae791d497c701caa75c7b0d164fa4d44017727e3f977d10af1c04809511","installation.json":"92ef26cbc1341c3d7de15fac7ed8d1856a0bc6d03b859d16e4a86ba2a22f2afb"}
  payload={name:verified(root/name,digest)for name,digest in hashes.items()}
  modules={}
  for name in ('owner','bootstrap','guard_reader','contracts'):

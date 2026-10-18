@@ -10,7 +10,7 @@ class Delivery(unittest.TestCase):
  def test_syntax_and_all_eight_exact_source_bindings(self):
   ast.parse(self.body());script=(ROOT/'scripts/launch-host-network-reconciliation-20261018.sh').read_text()
   for path,name in SPEC:self.assertIn(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),script)
-  self.assertIn('maximumEngineWrites',self.body());self.assertIn('source=c784e5fb2207316c2dcdc581562e208407dafd62',script)
+  self.assertIn('maximumEngineWrites',self.body());self.assertIn('source=15ccf48affe567218b66beeb6a4179e2db1f5c39',script)
  def cli(self,corrupt=False,isolated=True):
   self.assertFalse(Path('/etc/ouf/deploy-snapshots').exists(),'CLI probe forbidden on an installed OUF host')
   temp=tempfile.TemporaryDirectory(dir='/root');self.addCleanup(temp.cleanup);case=Path(temp.name);case.chmod(0o700)
