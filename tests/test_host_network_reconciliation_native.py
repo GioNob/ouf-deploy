@@ -21,14 +21,14 @@ class Native(unittest.TestCase):
    self.cli('start',app);self.cli('stop','--time','1',app)
    gw=self.cli('run','-d','--name',prefix+'-gateway','--restart','unless-stopped','--network',prefix+'-control',image,'sh','-c','mkdir -p /www; echo fixture > /www/index.html; exec httpd -f -p 8000 -h /www');containers.append(gw)
    self.cli('network','connect',net['Name'],gw)
-   store=self.cli('run','-d','--name',prefix+'-store','--restart','unless-stopped','--network',net['Name'],'--publish','127.0.0.1:18080:8000','--volume',str(data)+':/data:rw',image,'sh','-c','echo fixture > /data/index.html; exec httpd -f -p 8000 -h /data');containers.append(store)
-   client=self.cli('run','-d','--name',prefix+'-client','--restart','unless-stopped','--network',net['Name'],image,'sleep','3600');containers.append(client)
+   store=self.cli('run','-d','--name',prefix+'-store','--restart','unless-stopped','--network',net['Name'],'--volume',str(data)+':/data:rw',image,'sh','-c','echo fixture > /data/index.html; exec httpd -f -p 8000 -h /data');containers.append(store)
+   client=self.cli('run','-d','--name',prefix+'-client','--restart','unless-stopped','--network',net['Name'],'--publish','127.0.0.1:18080:8000',image,'sh','-c','mkdir -p /www; echo fixture > /www/index.html; exec httpd -f -p 8000 -h /www');containers.append(client);self.cli('network','connect',prefix+'-control',client)
    rows=[self.inspect(cid)for cid in (gw,store,app)];self.assertEqual(rows[0]['NetworkSettings']['Networks'][net['Name']]['IPAddress'],old)
    p={'schema':'ouf.host-network-reconciliation.v1','engineVersion':'29.8.1','socketPath':'/var/run/docker.sock','maximumContainers':128,'configurationOwnerUids':[0], 'network':{'id':backend,'name':net['Name'],'subnet':str(subnet),'gateway':gateway,'internal':True},'reservedIPv4':[old,rows[1]['NetworkSettings']['Networks'][net['Name']]['IPAddress']],'moves':[],'restart':{'containerId':app,'imageId':image,'name':prefix+'-application'}}
    for row,index in zip(rows[:2],(15,16)):
     p['moves'].append({'containerId':row['Id'],'imageId':row['Image'],'name':row['Name'][1:],'oldIPv4':row['NetworkSettings']['Networks'][net['Name']]['IPAddress'],'newIPv4':str(subnet.network_address+index),'servicePorts':[8000],'configurationDestinations':[]})
    client_row=self.inspect(client);client_ip=client_row['NetworkSettings']['Networks'][net['Name']]['IPAddress'];p['moves'].append({'containerId':client,'imageId':image,'name':client_row['Name'][1:],'oldIPv4':client_ip,'newIPv4':client_ip,'servicePorts':[8000],'configurationDestinations':[]})
-   print(json.dumps({'syntheticFixtureOnly':True,'beforePublishedPorts':self.inspect(store)['NetworkSettings']['Ports']},sort_keys=True))
+   print(json.dumps({'syntheticFixtureOnly':True,'beforePublishedPorts':self.inspect(client)['NetworkSettings']['Ports']},sort_keys=True))
    self.assertEqual(urllib.request.urlopen('http://127.0.0.1:18080',timeout=5).read().strip(),b'fixture','initial fixture published port must work before correction')
    api=m.Engine(p['socketPath'],p['engineVersion']);original_write=api.write;write_count=[0]
    def lost_response(path,value):
