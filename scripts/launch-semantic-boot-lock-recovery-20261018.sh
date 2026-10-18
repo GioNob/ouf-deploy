@@ -6,7 +6,7 @@ ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
 if [ ! -x "$ouf_gh" ]; then ouf_gh="$(command -v gh || true)"; fi
 [ -n "$ouf_gh" ] && [ -x "$ouf_gh" ] || { echo 'Client GitHub non disponibile.' >&2; exit 1; }
 ouf_case="$(mktemp -d "$HOME/ouf-boot-lock-recovery.XXXXXXXX")"
-ouf_source=6b4efc97fe522b4476452401a70afd1077465687
+ouf_source=396fd1ef61399f0e223c492036a7d7464ce66586
 for ouf_pair in 'scripts/read-source-revision-boot-guard.py:reader.py' 'scripts/repair-semantic-boot-lock.py:repair.py' 'releases/source-revision-boot-read-selection-20261018.json:selection.json' 'releases/semantic-boot-lock-recovery-selection-20261018.json:recovery.json'; do
   ouf_path="${ouf_pair%:*}";ouf_name="${ouf_pair#*:}"
   "$ouf_gh" api "repos/GioNob/ouf-deploy/contents/$ouf_path?ref=$ouf_source" --jq .content | base64 --decode > "$ouf_case/$ouf_name"
