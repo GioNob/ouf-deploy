@@ -58,6 +58,8 @@ def compile_plan(p,api,scan_configuration):
   for destination in pin['configurationDestinations']:
    selected=[v for v in row['Mounts']if v['Destination']==destination];require(len(selected)==1 and selected[0]['Type']=='bind'and selected[0].get('RW')is False,'RETAINED_CONFIGURATION_MOUNT_REQUIRED')
   require(row['State']['Running']and row['HostConfig'].get('NetworkMode')in row['NetworkSettings']['Networks'],'LIVE_INDEPENDENT_NETWORK_MODE_REQUIRED')
+  for bindings in(row['HostConfig'].get('PortBindings')or{}).values():
+   for binding in bindings or[]:require(re.fullmatch('[0-9]{1,5}',binding.get('HostPort',''))and 0<int(binding['HostPort'])<65536,'FIXED_PUBLISHED_PORT_BINDING_REQUIRED')
   e=endpoint(row,n['name']);require(e['NetworkID']==n['id']and e['IPAddress']==pin['oldIPv4']and not e.get('IPAMConfig')and not e.get('Links')and not e.get('DriverOpts')and e.get('GwPriority',0)==0,'EXACT_LEGACY_DYNAMIC_ENDPOINT_REQUIRED')
   require(not e.get('GlobalIPv6Address')and re.fullmatch('[a-f0-9]{2}(:[a-f0-9]{2}){5}',e['MacAddress']),'SINGLE_IPV4_ENDPOINT_REQUIRED')
   aliases=e.get('Aliases');require(aliases is None or(type(aliases)is list and all(re.fullmatch('[A-Za-z0-9_.-]{1,128}',a)for a in aliases)),'RETAINED_ALIAS_SCHEMA')
@@ -72,11 +74,14 @@ def compile_plan(p,api,scan_configuration):
 
 def verify_move(api,plan,move,disconnected=False,connected=False):
  row=api.get('/containers/'+move['pin']['containerId']+'/json');identity(row,move['pin']);n=plan['profile']['network']['name']
- require(immutable(row)==move['immutableHash']and process(row)==move['process']and other_networks(row,n)==move['otherNetworksHash'],'RETAINED_PROCESS_CONFIGURATION_OR_OTHER_NETWORK_CHANGED')
+ require(immutable(row)==move['immutableHash'],'RETAINED_CONTAINER_CONFIGURATION_CHANGED')
+ require(process(row)==move['process'],'RETAINED_PROCESS_CHANGED')
+ require(other_networks(row,n)==move['otherNetworksHash'],'INDEPENDENT_CONTROL_NETWORK_CHANGED')
  if disconnected:require(n not in row['NetworkSettings']['Networks'],'DISCONNECT_NOT_PROVEN')
  else:
   e=endpoint(row,n);old=move['before']['NetworkSettings']['Networks'][n]
   if connected:
+   require(row['NetworkSettings'].get('Ports')==move['before']['NetworkSettings'].get('Ports'),'PUBLISHED_PORT_BINDING_CHANGED')
    require(e['IPAddress']==move['pin']['newIPv4'],'NEW_STATIC_ADDRESS_NOT_PROVEN')
    require(e.get('IPAMConfig')=={'IPv4Address':move['pin']['newIPv4']},'NEW_STATIC_IPAM_DECLARATION_NOT_PROVEN')
    require(e['MacAddress']==old['MacAddress'],'RETAINED_ENDPOINT_MAC_NOT_PROVEN')

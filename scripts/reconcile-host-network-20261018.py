@@ -41,7 +41,7 @@ def configuration_scanner(reader,profile,owner):
  def scan(row,_):
   for entry in row['Config'].get('Env')or[]:
    key,sep,value=entry.partition('=');owner.require(sep,'ENVIRONMENT_SCHEMA')
-   if not re.search('SECRET|PASSWORD|TOKEN|PRIVATE_KEY',key):reject_literal_dependencies(value.encode(),profile,owner)
+   if not re.search(r'(?:SECRET|PASSWORD|TOKEN|PRIVATE_KEY)$',key):reject_literal_dependencies(value.encode(),profile,owner)
   for mount in row.get('Mounts')or[]:
    destination=mount['Destination']
    if mount['Type']=='bind'and destination.endswith(CONFIG_SUFFIXES):
@@ -67,7 +67,7 @@ def run(owner,reader,contracts,profile,selection,contract_selection,parent,point
   for item in (directory,*directory.parents):
    info=item.lstat();owner.require(stat.S_ISDIR(info.st_mode)and info.st_uid==0 and not info.st_mode&0o022,'ROOT_PRIVATE_PARENT_REQUIRED')
  owner.require(not os.path.lexists(pointer),'INCIDENT_EXISTS_RECONCILE_DO_NOT_RELAUNCH')
- native=provider_guard(reader,selection,owner);boot=reader.parse(reader.sealed(native['loadedBinding']['profile'],native['loadedBinding']['sha256']))
+ native=provider_guard(reader,selection,owner);owner.require(native['loadedBinding']['profile']==contract_selection['bootProfile']['path']and native['loadedBinding']['sha256']==contract_selection['bootProfile']['sha256'],'PREBOOT_NATIVE_PROFILE_CHANGED');boot=reader.parse(reader.sealed(native['loadedBinding']['profile'],native['loadedBinding']['sha256']))
  coordinated=reader.parse(reader.sealed(boot['coordinatedConfiguration'],boot['coordinatedConfigurationHash']))
  lock=Path(coordinated['commonLockFile']);fd=os.open(lock,os.O_RDWR|os.O_NOFOLLOW|os.O_NONBLOCK);case=None;record=None
  try:

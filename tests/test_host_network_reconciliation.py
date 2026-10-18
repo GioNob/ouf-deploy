@@ -91,14 +91,14 @@ class Bootstrap(unittest.TestCase):
   return root,p,api,reader,contracts,selection,report
  def test_real_private_journal_claims_and_no_relaunch(self):
   root,p,api,reader,contracts,selection,_=self.setup_case();pointer=root/'incident.json';out=io.StringIO()
-  with patch.object(m,'Engine',return_value=api),redirect_stdout(out):result=b.run(m,reader,contracts,p,selection,{'preparedPlan':{'path':'fixture','sha256':'f'*64}},root,pointer)
+  with patch.object(m,'Engine',return_value=api),redirect_stdout(out):result=b.run(m,reader,contracts,p,selection,{'preparedPlan':{'path':'fixture','sha256':'f'*64},'bootProfile':{'path':'fixture-boot','sha256':'a'*64}},root,pointer)
   self.assertTrue(result['complete']);journal=json.loads((Path(result['contextPath'])/'journal.json').read_bytes());self.assertEqual(journal['state'],'COMPLETE');self.assertEqual(len(journal['claims']),5);self.assertNotIn('SECRET_CANARY',out.getvalue());self.assertEqual(pointer.stat().st_mode&0o777,0o600)
   before=len(api.writes)
   with self.assertRaisesRegex(ValueError,'INCIDENT_EXISTS'):b.run(m,reader,contracts,p,selection,{},root,pointer)
   self.assertEqual(len(api.writes),before)
  def test_ambiguous_effect_remains_fenced_in_persistent_incident(self):
   root,p,api,reader,contracts,selection,_=self.setup_case();api.fail_before=1
-  with patch.object(m,'Engine',return_value=api),redirect_stdout(io.StringIO()):result=b.run(m,reader,contracts,p,selection,{'preparedPlan':{'path':'fixture','sha256':'f'*64}},root,root/'incident.json')
+  with patch.object(m,'Engine',return_value=api),redirect_stdout(io.StringIO()):result=b.run(m,reader,contracts,p,selection,{'preparedPlan':{'path':'fixture','sha256':'f'*64},'bootProfile':{'path':'fixture-boot','sha256':'a'*64}},root,root/'incident.json')
   self.assertFalse(result['complete']);self.assertEqual(result['writesClaimed'],1);self.assertNotIn('SECRET_CANARY',json.dumps(result));journal=json.loads((Path(result['contextPath'])/'journal.json').read_bytes());self.assertEqual(journal['state'],'STOPPED');self.assertEqual(len(api.writes),1)
  def test_active_native_provider_authority_blocks_before_engine_or_private_claim(self):
   root,p,api,reader,contracts,selection,report=self.setup_case();report['ownerJournal']['metadata']['leaseAuthorized']=True
