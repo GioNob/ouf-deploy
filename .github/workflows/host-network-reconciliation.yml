@@ -1,0 +1,56 @@
+name: Host network reconciliation qualification
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['tools/host_network_reconciliation.py','scripts/reconcile-host-network-20261018.py','tests/test_host_network_reconciliation*.py','releases/host-network-reconciliation-20261018.json','.github/workflows/host-network-reconciliation.yml']
+permissions: {contents: read}
+jobs:
+  root-journal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: |
+          fixture="/root/ouf-network-owner-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a tools scripts tests releases "$fixture/"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo python3 -I -B -S -m unittest discover -s "$fixture/tests" -p test_host_network_reconciliation.py -v
+  real-docker-29:
+    needs: root-journal
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Isolated official Docker29 daemon; never the VPS runner
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-network.tgz
+          sha256sum /tmp/ouf-docker-network.tgz
+          sudo install -d -m 755 /opt/ouf-network-docker-29
+          sudo tar -xzf /tmp/ouf-docker-network.tgz --strip-components=1 -C /opt/ouf-network-docker-29
+          sudo chown -R root:root /opt/ouf-network-docker-29
+          sudo systemctl stop docker.service docker.socket
+          sudo systemctl start containerd.service
+          sudo install -d -m 700 "/var/lib/ouf-network-contract-${GITHUB_RUN_ID}"
+          printf '%s\n' '{"features":{"containerd-snapshotter":true},"exec-opts":["native.cgroupdriver=systemd"]}' > /tmp/ouf-network-contract-daemon.json
+          sudo systemd-run --unit=ouf-network-contract-daemon --property=Restart=no --setenv=PATH=/opt/ouf-network-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            /opt/ouf-network-docker-29/dockerd --config-file=/tmp/ouf-network-contract-daemon.json --host=unix:///var/run/docker.sock \
+            --data-root="/var/lib/ouf-network-contract-${GITHUB_RUN_ID}" --exec-root=/run/docker --pidfile=/run/ouf-network-contract.pid --containerd=/run/containerd/containerd.sock
+          for attempt in $(seq 1 60); do
+            if sudo /opt/ouf-network-docker-29/docker info >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          test "$(sudo /opt/ouf-network-docker-29/docker version --format '{{.Server.Version}}')" = 29.8.1
+      - name: Real endpoint moves, response loss, DNS and daemon restart
+        run: |
+          fixture="/root/ouf-network-native-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a tools scripts tests releases "$fixture/"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env PATH=/opt/ouf-network-docker-29:/usr/sbin:/usr/bin:/sbin:/bin OUF_NETWORK_NATIVE_TEST=1 GITHUB_RUN_ID="$GITHUB_RUN_ID" \
+            python3 -I -B -S -m unittest discover -s "$fixture/tests" -p test_host_network_reconciliation_native.py -v
