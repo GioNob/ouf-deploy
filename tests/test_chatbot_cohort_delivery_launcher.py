@@ -54,7 +54,12 @@ class DeliveryLauncherTest(unittest.TestCase):
         manifest = json.loads(raw)
         selected = json.loads((ROOT/'tools/chatbot_file_cohort/preparation_sources.json').read_bytes())['files']
         self.assertEqual(set(manifest['files']), set(selected))
-        # A published capsule remains immutable when a shared library gains a new\n        # separately qualified profile. Compare its exact retained source snapshot,\n        # never rewrite historical hashes to authorize today's different bytes.\n        historical = {'tools/chatbot_file_cohort/authorization.py':\n            ROOT/'tests/fixtures/historical-cohort/authorization-8987585e7cf4.py.txt'}\n        for name, expected in manifest['files'].items():
+        # A published capsule remains immutable when a shared library gains a new
+        # separately qualified profile. Compare its exact retained source snapshot,
+        # never rewrite historical hashes to authorize today's different bytes.
+        historical = {'tools/chatbot_file_cohort/authorization.py':
+            ROOT/'tests/fixtures/historical-cohort/authorization-8987585e7cf4.py.txt'}
+        for name, expected in manifest['files'].items():
             with self.subTest(member=name):
                 self.assertEqual(sha(historical.get(name,ROOT/name).read_bytes()), expected)
         def constants(path):
