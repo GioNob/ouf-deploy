@@ -20,5 +20,15 @@
   "automaticRetry": false,
   "budgetReset": false,
   "technicalPhases": 8,
-  "functionalMilestones": 4
+  "functionalMilestones": 4,
+  "propertyDiagnosticQualification": {
+    "sourceCommit": "2f5e21d6a13b68ab9a0844992281df8f85781531",
+    "runId": 39164070132,
+    "jobId": 117783229045,
+    "testsPassed": 11,
+    "status": "completed",
+    "conclusion": "success",
+    "scriptSha256": "22209dfec60a0578ca4fddb31fc3554fc23836b46448b3d1ef01792011b3bdac",
+    "targetReadPerformed": false
+  }
 }
