@@ -9,10 +9,10 @@ def sha(path):
  with path.open('rb')as source:
   for block in iter(lambda:source.read(1048576),b''):h.update(block)
  return h.hexdigest()
-def main(root,output):
+def main(root,output,manifest_sha='0bfff43df9281fbf664eaa24a703936f8fe3de1301fa88c45e99ac8542f73817',build_run='39078879773'):
  root=Path(root);output=Path(output)
  require(root.is_dir() and not root.is_symlink() and all(not p.is_symlink()for p in root.parents),'PACKAGE_ROOT_REQUIRED')
- require(sha(root/'SHA256SUMS')=='0bfff43df9281fbf664eaa24a703936f8fe3de1301fa88c45e99ac8542f73817','QUALIFIED_MANIFEST_REQUIRED')
+ require(sha(root/'SHA256SUMS')==manifest_sha,'QUALIFIED_MANIFEST_REQUIRED')
  hashes={}
  for line in(root/'SHA256SUMS').read_text().splitlines():
   digest,name=line.split('  ',1)
@@ -30,7 +30,7 @@ def main(root,output):
  custody=runpy.run_path(str(Path(__file__).resolve().parents[1]/'tools/linked_property_rollout/image_custody.py'))
  output.mkdir(mode=0o700);audits={}
  for module in('udp','mcp'):
-  prefix='parts/chat-only-recovery-part-'+module+'-39078879773/'
+  prefix='parts/chat-only-recovery-part-'+module+'-'+build_run+'/'
   meta=json.loads(member(prefix+'candidate-manifest.json').read_bytes())
   original=member(prefix+'image.docker.tar')
   derived=output/(module+'.tagless.tar')

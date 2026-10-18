@@ -12,6 +12,7 @@ jobs:
     runs-on: [self-hosted, Linux, X64, ouf-vps-test]
     timeout-minutes: 12
     steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Reserve a persistent private runner staging directory
         env:
           OUF_PACKAGE_DIRECTORY: ${{ runner.workspace }}/ouf-chat-recovery-${{ github.run_id }}
@@ -21,8 +22,8 @@ jobs:
           mkdir -m 700 "$OUF_PACKAGE_DIRECTORY"
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: chat-only-recovery-candidate-39078879773
-          run-id: 39078879773
+          name: chat-only-recovery-candidate-39081627088
+          run-id: 39081627088
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: GioNob/ouf-deploy
           path: ${{ runner.workspace }}/ouf-chat-recovery-${{ github.run_id }}
@@ -33,9 +34,9 @@ jobs:
           OUF_PACKAGE_DIRECTORY: ${{ runner.workspace }}/ouf-chat-recovery-${{ github.run_id }}
         run: |
           set -euo pipefail
-          cosign verify-blob "$OUF_PACKAGE_DIRECTORY/SHA256SUMS" --bundle "$OUF_PACKAGE_DIRECTORY/SHA256SUMS.sigstore.json" --certificate-identity "https://github.com/GioNob/ouf-deploy/.github/workflows/chat-only-recovery-candidates.yml@refs/heads/feat/chat-only-recovery-package-20261018" --certificate-oidc-issuer https://token.actions.githubusercontent.com --certificate-github-workflow-repository GioNob/ouf-deploy --certificate-github-workflow-sha 2b7648f2b05275d7022cd006a40eef2422dc36ff
+          cosign verify-blob "$OUF_PACKAGE_DIRECTORY/SHA256SUMS" --bundle "$OUF_PACKAGE_DIRECTORY/SHA256SUMS.sigstore.json" --certificate-identity "https://github.com/GioNob/ouf-deploy/.github/workflows/chat-only-recovery-candidates.yml@refs/heads/feat/chat-only-recovery-package-20261018" --certificate-oidc-issuer https://token.actions.githubusercontent.com --certificate-github-workflow-repository GioNob/ouf-deploy --certificate-github-workflow-sha 680d1838121e35e83e8a0d434abb0bde047ffe90
           python3 - <<'PY'
-          import hashlib,json,os
+          import hashlib,json,os,runpy
           from pathlib import Path,PurePosixPath
           root=Path(os.environ['OUF_PACKAGE_DIRECTORY'])
           assert root.is_dir() and not root.is_symlink()
@@ -53,15 +54,19 @@ jobs:
               entries[name]=wanted
           assert set(entries)=={p.relative_to(root).as_posix() for p in root.rglob('*') if p.is_file()}-{'SHA256SUMS','SHA256SUMS.sigstore.json'}
           lock=json.loads((root/'source-lock.json').read_text())
-          expected={'udp':'0d40da05408a14db31d4d41af2372d6a71480291','mcp':'5124178d5856b564691ca4274817efd45a0bb991'}
+          expected={'udp':'0d40da05408a14db31d4d41af2372d6a71480291','mcp':'15b49f495267ef8da9edd23f03b6e5018ec98d5e'}
           assert {m['module']:m['commit'] for m in lock['modules']}==expected
           assert lock['targetApplyAuthorized'] is False and lock['runtimeAuthorityIssued'] is False
           for module,commit in expected.items():
-              part=root/'parts'/('chat-only-recovery-part-'+module+'-39078879773')
+              part=root/'parts'/('chat-only-recovery-part-'+module+'-39081627088')
               manifest=json.loads((part/'candidate-manifest.json').read_text())
               assert manifest['sourceCommit']==commit and manifest['module']==module
               assert manifest['sourceLockSha256']==hashlib.sha256((root/'source-lock.json').read_bytes()).hexdigest()
               assert manifest['scanGate']=='PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED'
               assert manifest['targetApplyAuthorized'] is False
           print(json.dumps({'schema':'ouf.chat-recovery-runner-staging.v1','packageVerified':True,'sourceCommits':expected,'packageDirectory':str(root),'privilegedCommands':0,'runtimeMutations':0,'targetApplyAuthorized':False,'rootCustodyProven':False,'installationReady':False,'completedTechnicalPhases':8,'functionalMilestonesProven':3},sort_keys=True))
+          manifest_sha=hashlib.sha256((root/'SHA256SUMS').read_bytes()).hexdigest()
+          print(json.dumps({'manifestSha256':manifest_sha,'sourceLockSha256':hashlib.sha256((root/'source-lock.json').read_bytes()).hexdigest()}))
+          auditor=runpy.run_path('scripts/audit-chat-recovery-images.py')
+          auditor['main'](root,root.parent/('ouf-chat-image-review-'+os.environ['GITHUB_RUN_ID']),manifest_sha,'39081627088')
           PY
