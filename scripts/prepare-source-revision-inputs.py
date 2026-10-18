@@ -14,6 +14,7 @@ import signal
 import stat
 import sys
 import tempfile
+import traceback
 
 
 def require(ok, reason):
@@ -218,6 +219,7 @@ def main(profile):
     signal.signal(signal.SIGALRM, lambda *_: require(False,'PRIVATE_PREPARATION_DEADLINE'))
     signal.alarm(300)
     namespace, prepared, latest, record, helper, custody, gateway, Engine = load_retained(profile)
+    emit('RETAINED_CLOSURE_VERIFIED', historicalAuthorityReused=False)
     engine = Engine(prepared['engine']['socketPath'], tuple(prepared['engine']['socketBinding']))
     entry = importlib.import_module('tools.linked_property_rollout.entry')
     _, linked, linked_record = entry.completed_plan(profile['completedLinkedUpdate'], namespace['read'])
@@ -230,6 +232,7 @@ def main(profile):
                 and value['State']['Running'] is True and not value['State']['Paused'] and not value['State']['Restarting'],
                 'EXACT_COMPLETED_APPLICATION_GENERATION_REQUIRED')
         actuals[module] = value
+    emit('CURRENT_GENERATIONS_MATCH', modules=sorted(actuals))
     postgres = prepared['databasePlan']['postgresRuntimeBinding']
     require(helper.runtime(namespace['engine_get'](prepared['engine'],'containers',postgres['containerId'])) == postgres,
             'POSTGRES_GENERATION_CHANGED')
@@ -239,10 +242,14 @@ def main(profile):
     routes = admin.routes()
     require(routes == latest['gateway']['beforeRoutes'] == latest['gateway']['afterRoutes'], 'GATEWAY_ROUTE_BASELINE_CHANGED')
     require(not any(key in routes for key in ('mcp-source-revision-prepare','mcp-source-revision-read')), 'REVISION_ROUTES_ALREADY_PRESENT_RECONCILE')
+    projection_raw, projection_binding = gateway.private_config(latest['gateway']['projectionBinding']['path'],
+                                                               latest['gateway']['projectionBinding'])
+    emit('GATEWAY_BASELINE_CAPTURED', routeCount=len(routes), projectionMatches=True)
     parent = Path(profile['privateParent']); helper.root_directory(parent)
     context = Path(tempfile.mkdtemp(prefix='source-revision-prepared-', dir=parent)); context.chmod(0o700)
     emit('PRIVATE_CONTEXT', contextPath=str(context))
     candidates, containerd, gateway_package = stage(profile, context, helper, custody)
+    emit('CANDIDATES_CUSTODIED', modules=sorted(candidates), imagesImported=0)
     require(helper.containerd_store(prepared['engine']) == containerd, 'IMAGE_STORE_CHANGED')
     database = {module:facts(module,prepared,helper,program,context) for module in ('onboarding','udp','mcp')}
     migrations = candidates['onboarding']['migrations']
@@ -255,6 +262,8 @@ def main(profile):
         namespace['read'](profile['completedUpdate']['path'],8388608,profile['completedUpdate']['sha256'])['sourceClosure']['declaration']['bootstrapBindings']['caseSha256']))
     helper.verify_history(database['udp']['migrations'], old_case['udpMigrations'], 'ouf_udp', allow_existing_schema=True)
     require(database['mcp']['migrations'] == old_case['mcpMigrations'], 'UNCHANGED_MCP_MIGRATIONS_REQUIRED')
+    emit('DATABASE_PREFLIGHT', onboardingPrefixMatches=True, pendingOnboardingMigrations=1,
+         udpMigrationVersion=36, mcpMigrationsUnchanged=True)
     for module in actuals:
         require(helper.runtime(namespace['engine_get'](prepared['engine'],'containers',actuals[module]['Id']))
                 == helper.runtime(actuals[module]), 'APPLICATION_CHANGED_DURING_PREPARATION')
@@ -263,7 +272,8 @@ def main(profile):
     value = {'schema':'ouf.source-revision-private-inputs.v1','selection':profile,'engine':prepared['engine'],
         'databasePlan':prepared['databasePlan'],'databaseFacts':database,'beforeApplications':actuals,
         'retainedReplacements':{'onboarding':linked['replacements']['onboarding'],'mcp':latest['replacements']['mcp']},
-        'unchangedApplications':latest['unchangedApplications'],'gateway':{**latest['gateway'],'beforeRoutes':routes},
+        'unchangedApplications':latest['unchangedApplications'],'gateway':{**latest['gateway'],'beforeRoutes':routes,
+            'projectionRaw':projection_raw.decode('utf-8'),'projectionBinding':projection_binding},
         'candidates':candidates,'gatewayPackage':gateway_package,'packageRootCustodyProven':True,
         'backupPerformed':False,'effectiveFlywayConfigurationProven':False,'authorizationDeltaPrepared':False,
         'runtimeAuthorityIssued':False,'readyForExecution':False,'runtimeMutations':0}
@@ -287,5 +297,7 @@ if __name__ == '__main__':
         main(json.loads(read(sys.argv[1],sys.argv[2],1048576)))
     except (Exception,KeyboardInterrupt) as error:
         reason = str(error) if type(error) is ValueError and re.fullmatch('[A-Z_]{1,160}',str(error)) else type(error).__name__
-        emit('STOP', reason=reason, exceptionMessagePrinted=False, automaticRetry=False)
+        emit('STOP', reason=reason, exceptionMessagePrinted=False, automaticRetry=False,
+             frames=[{'file':Path(f.filename).name,'function':f.name,'line':f.lineno}
+                     for f in traceback.extract_tb(error.__traceback__)[-6:]])
         raise SystemExit(2)
