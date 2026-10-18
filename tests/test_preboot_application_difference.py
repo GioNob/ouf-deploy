@@ -1,4 +1,4 @@
-import copy,importlib.util,json,sys,types,unittest
+import ast,copy,hashlib,importlib.util,json,os,subprocess,sys,tempfile,types,unittest
 from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
@@ -54,4 +54,28 @@ class ProtectedRead(unittest.TestCase):
   case=self.fixture();(case[0]/'incident.json').write_text('{}')
   with self.assertRaisesRegex(ValueError,'INCIDENT_EXISTS'):self.run_case(case)
   self.assertEqual(case[8],[])
+class Delivery(unittest.TestCase):
+ SPEC=(('tools/host_network_reconciliation.py','owner.py'),('scripts/reconcile-host-network-20261018.py','bootstrap.py'),('releases/host-network-reconciliation-20261018.json','installation.json'),('releases/host-network-reconciliation-execution-20261018.json','execution.json'),('scripts/read-source-revision-boot-guard.py','guard_reader.py'),('releases/source-revision-boot-read-selection-20261018.json','guard_selection.json'),('scripts/read-preboot-network-contract.py','contracts.py'),('releases/preboot-network-contract-read-selection-20261018.json','contracts_selection.json'),('scripts/read-preboot-application-difference.py','diagnostic.py'))
+ def body(self):
+  text=(ROOT/'scripts/launch-preboot-application-difference-20261018.sh').read_text();return text.split("<<'OUF_VERIFIED_APPLICATION_DIFFERENCE'",1)[1].split('\n',1)[1].rsplit('\nOUF_VERIFIED_APPLICATION_DIFFERENCE',1)[0]
+ def test_syntax_exact_nine_payloads_and_get_only_diagnostic(self):
+  text=(ROOT/'scripts/launch-preboot-application-difference-20261018.sh').read_text();ast.parse(self.body())
+  for path,name in self.SPEC:self.assertIn(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),text)
+  self.assertIn('signal.alarm(120)',self.body());self.assertNotIn("modules['bootstrap'].run(",self.body())
+  tree=ast.parse((ROOT/'scripts/read-preboot-application-difference.py').read_text())
+  for node in ast.walk(tree):
+   if isinstance(node,ast.Call)and isinstance(node.func,ast.Attribute):
+    self.assertNotIn(node.func.attr,('write','apply','restore','revoke','publish'))
+    if node.func.attr=='request':self.assertEqual(ast.literal_eval(node.args[0]),'GET')
+ def cli(self,corrupt=False,isolated=True):
+  self.assertFalse(Path('/etc/ouf/deploy-snapshots').exists(),'not permitted on installed OUF host')
+  temp=tempfile.TemporaryDirectory(dir='/root');self.addCleanup(temp.cleanup);root=Path(temp.name);root.chmod(0o700)
+  for path,name in self.SPEC:(root/name).write_bytes((ROOT/path).read_bytes());(root/name).chmod(0o600)
+  if corrupt:(root/'diagnostic.py').write_bytes(b'raise RuntimeError("PRIVATE_EXECUTION_CANARY")\n')
+  result=subprocess.run(['/usr/bin/python3',*(['-I']if isolated else[]),'-B','-S','-',str(root)],input=self.body().encode(),capture_output=True,timeout=20)
+  self.assertEqual(result.returncode,2);self.assertEqual(result.stderr,b'');self.assertNotIn(b'PRIVATE_EXECUTION_CANARY',result.stdout);self.assertFalse(Path('/etc/ouf/host-network-reconciliation-20261018.json').exists());return json.loads(result.stdout)
+ def test_corrupt_diagnostic_never_executes(self):self.assertEqual(self.cli(corrupt=True)['reason'],'DELIVERY_CHANGED')
+ def test_uninstalled_root_fixture_stops_without_effects(self):
+  result=self.cli();self.assertEqual(result['runtimeMutations'],0);self.assertEqual(result['engineWrites'],0);self.assertFalse(result['complete'])
+ def test_nonisolated_interpreter_rejected(self):self.assertEqual(self.cli(isolated=False)['reason'],'ISOLATED_HOST_ADMINISTRATOR_REQUIRED')
 if __name__=='__main__':unittest.main()
