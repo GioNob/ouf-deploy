@@ -1,3 +1,5 @@
+> **STOP on target:** context `source-revision-postboot-prepared-f6w3lo6z`, overlay syntax rejected before completed preparation. The command below is historical and suspended. Preserve all files and the operator log; a bounded read-only reconciliation is required before a successor can be considered. See `evidence/source-revision-postboot-stop-20261018.json`.
+
 # Postboot preparation successor — qualified code; target preparation pending
 
 Technical8/8; functional4/6. This is preparation only, not installation or functional acceptance. The completed host correction and run39158332027 are not repeated. Historical handoff drafts remain unchanged and must not be executed.
@@ -28,7 +30,7 @@ Staged path: `/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revis
 
 The immutable delivery is source783925566360b96d3ea4869b986df6d79156024d, launcher SHA256 `04bf87e0a5374df9e3262ed6b855861aebdb9f061a8af1840c8412f2b3a84f19`. Delivery CI [39160838538](https://github.com/GioNob/ouf-deploy/actions/runs/39160838538), job117773616467, completed successfully: **4 tests PASS**. Four delivery tests cover the exact pinned closure and refusal of changed manifest, changed module and linked dispatcher. Target protected access is intercepted by the fixture before any file is opened; no target result is claimed.
 
-## Required target step
+## Historical target step — already attempted, DO NOT REPLAY
 
 The cloud runner cannot read all protected root inputs. An operator with physical sudo access must run the following **once on the VPS as oufadmin**. This only prepares new private documents and frozen code under the original lock, after checking the completed host recovery and original custody. It allows four read-only database sessions, has a300-second bound, and does not issue runtime authority or execute a release. Keep the printed log and return its redacted result; do not upload private documents. A STOP requires reconciliation before retry, with no budget reset.
 

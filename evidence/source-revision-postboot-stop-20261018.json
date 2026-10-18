@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.postboot-stop-operator-evidence.v1",
+  "source": "operator pasted redacted output",
+  "contextPath": "/etc/ouf/deploy-snapshots/source-revision-postboot-prepared-f6w3lo6z",
+  "logPath": "/home/oufadmin/ouf-source-revision-postboot.25sjyckG/run.log",
+  "checksObserved": [
+    "BEGIN",
+    "QUALIFIED_LIBRARIES_LOADED",
+    "PRIVATE_CONTEXT"
+  ],
+  "complete": false,
+  "exceptionClass": "UpdateDenied",
+  "failureLocation": "tools.source_revision_update.configuration.overlay_text:67",
+  "reasonInferredFromExactQualifiedSource": "UNREVIEWED_OWNER_OVERLAY_SYNTAX",
+  "actualOverlayFormatKnown": false,
+  "targetArtifactCustodyIndependentlyRead": false,
+  "runtimeAuthorityIssued": false,
+  "automaticRetry": false,
+  "budgetReset": false,
+  "technicalPhases": 8,
+  "functionalMilestones": 4
+}

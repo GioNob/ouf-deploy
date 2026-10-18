@@ -1,3 +1,7 @@
+## Current checkpoint — postboot preparation STOP; do not replay
+
+**Tecniche8/8; funzionali4/6.** Il tentativo ha creato il contesto privato `source-revision-postboot-prepared-f6w3lo6z`, poi si è fermato in `configuration.overlay_text:67`, prima di candidate-review, piano completo e authority. Il sorgente qualificato identifica `UNREVIEWED_OWNER_OVERLAY_SYNTAX`: il formato effettivo non è ancora noto e non va confuso con un override Flyway dimostrato. Conservare log e originali; il precedente comando di preparazione è sospeso. [Ricevuta operatore](../evidence/source-revision-postboot-stop-20261018.json). È in qualificazione una lettura di sola riconciliazione: inventario esatto dei file residui, binding e classificazione del formato senza valori. Nessun retry o nuovo budget.
+
 ## Checkpoint cloud — successore postboot qualificato
 
 **Tecniche8/8; funzionali4/6.** PET originali v1.7 verificati:323 checksum PASS. CI39160533382:74 regressioni native +11 prove postboot PASS; pacchetto di preparazione depositato sul runner. Nuovi case/executor/closure ricaricano esplicitamente il prepared riconciliato. Rimane la preparazione protetta sul VPS con sudo fisico; nessuna nuova sessione HUMAN, installazione o pubblicazione. [Qualification and target command](../releases/SOURCE_REVISION_POSTBOOT_PREPARATION_20261018.md).
