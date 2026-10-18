@@ -19,7 +19,7 @@ jobs:
                   'completedTechnicalPhases':8,'functionalMilestonesProven':4,'installationSpecific':True}
           units={}
           allowed={'ActiveState','SubState','Result','NRestarts','MainPID','LoadState',
-                   'ConditionResult','AssertResult','After','Requires','NeedDaemonReload','RuntimeDirectory','RuntimeDirectoryMode','RuntimeDirectoryPreserve','StateDirectory','RootDirectory','ReadWritePaths','ReadOnlyPaths','InaccessiblePaths','TemporaryFileSystem','ProtectSystem','ProtectHome','PrivateMounts','PrivateTmp','User','Group','Type','RemainAfterExit','CanStart','RefuseManualStart','UnitFileState',
+                   'ConditionResult','AssertResult','After','Requires','NeedDaemonReload','RuntimeDirectory','RuntimeDirectoryMode','RuntimeDirectoryPreserve','StateDirectory','RootDirectory','ReadWritePaths','ReadOnlyPaths','InaccessiblePaths','TemporaryFileSystem','ProtectSystem','ProtectHome','PrivateMounts','PrivateTmp','CapabilityBoundingSet','AmbientCapabilities','NoNewPrivileges','PrivateNetwork','NetworkNamespacePath','RestrictAddressFamilies','User','Group','Type','RemainAfterExit','CanStart','RefuseManualStart','UnitFileState',
                    'InactiveEnterTimestamp','ActiveEnterTimestamp','StateChangeTimestamp',
                    'ExecMainCode','ExecMainStatus','FragmentPath','DropInPaths','TriggeredBy','Job'}
           for unit in ('docker.service','docker.socket','containerd.service','ouf-semantic-boot-guard.service'):
