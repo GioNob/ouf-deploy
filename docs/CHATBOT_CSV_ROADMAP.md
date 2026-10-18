@@ -1,3 +1,9 @@
+## Aggiornamento — liste DNS vuote confermate, recupero rete qualificato
+
+**Tecniche8/8; funzionali4/6.** Il runner ha verificato che tutte e tre le liste DNS sono vuote. Il successore accetta soltanto HostConfig.Dns null→[], mantenendo invariati riferimento storico e configurazioni reali; blocca ogni altra differenza e qualsiasi cambiamento fra confronto e piano. **29 prove passate**, incluse integrazioni reali Docker29.8.1 e avvio a freddo dei metadati legacy. [Prove, consegna immutabile e stato](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
+
+Il recupero host corretto non è ancora eseguito: resta una sola operazione sudo per lo stesso perimetro13scritture/300secondi,6endpoint e1avvio UDP esistente. Nessuna nuova authority, migrazione, pubblicazione o ripresa esplicita dei job. Provider BLOCKED/vuoto resta non autorizzato. La diagnosi completata e i vecchi launcher non vanno ripetuti. Seguono disponibilità applicativa/provider, binding postboot, rilascio nativo revisione fonte e tappe5/6; nessuna nuova funzione è dichiarata completata.
+
 ## Aggiornamento — differenza circoscritta a HostConfig.Dns
 
 **Tecniche8/8; funzionali4/6.** La lettura protetta è completa: API1.44 mostra solo HostConfig.Dns da null a lista sulle tre applicazioni; identità, Config e mount uguali. Non è ancora dimostrato che la lista sia vuota. Il provider è confermato BLOCKED/vuoto e non autorizzato all'avvio. È in qualificazione la sola equivalenza null→lista effettivamente vuota, mantenendo invariati riferimento storico, configurazioni e limiti. Non viene introdotta un'eccezione generale ai controlli. [Stato e prove](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
