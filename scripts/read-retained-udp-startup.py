@@ -30,6 +30,15 @@ def safe_state(value):
     for key in ('StartedAt','FinishedAt'):
         require(type(state[key])is str and re.fullmatch(r'[0-9TZ:.-]{1,48}',state[key]),'TIMESTAMP_REQUIRED');out[key]=state[key]
     error=state.get('Error','');require(type(error)is str,'ERROR_SCHEMA');out['engineErrorPresent']=bool(error)
+    out['engineErrorMarkers']={name:bool(re.search(pattern,error,re.I))for name,pattern in {
+        'missingMountSource':r'bind source path does not exist|no such file or directory',
+        'mountTypeMismatch':r'not a directory|mount a directory onto a file|mount a file onto a directory',
+        'portAlreadyAllocated':r'address already in use|port is already allocated|failed to bind host port',
+        'networkSetupFailure':r'failed to set up container networking|failed programming external connectivity|network.*not found',
+        'packetFilterFailure':r'iptables|nftables|ip6tables',
+        'runtimeCreateFailure':r'OCI runtime create failed|failed to create task|failed to create shim',
+        'permissionDenied':r'permission denied|operation not permitted',
+        'readOnlyFilesystem':r'read-only file system'}.items()}
     policy=value['restartPolicy'];require(policy['Name']in ('no','always','on-failure','unless-stopped',''),'RESTART_POLICY_SCHEMA')
     out['restartPolicy']=policy['Name'];return out
 def log_metadata(raw):
