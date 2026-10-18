@@ -16,7 +16,7 @@ def json_properties(raw):
     value=json.loads(raw,object_pairs_hook=unique,parse_constant=lambda _:(_ for _ in ()).throw(ValueError()))
     result=[];seen=set()
     def visit(obj,prefix='',depth=0):
-        assert type(obj)is dict and obj and depth<=12
+        assert type(obj)is dict and depth<=12
         for key,item in obj.items():
             assert type(key)is str and re.fullmatch('[A-Za-z0-9_.-]{1,128}',key)
             full=prefix+'.'+key if prefix else key

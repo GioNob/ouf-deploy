@@ -24,6 +24,8 @@ class Redaction(unittest.TestCase):
   rows=reader.json_properties('{"ouf":{"onboarding":{"udp-identity":{"gateway-url":"PRIVATE_CANARY"}}}}')
   self.assertEqual(rows,[{'property':'oufonboardingudpidentitygatewayurl','type':'str'}])
   self.assertNotIn('PRIVATE_CANARY',json.dumps(rows))
+ def test_empty_json_object_has_no_leaf_overrides(self):
+  self.assertEqual(reader.json_properties('{}'),[])
  def test_json_duplicates_and_relaxed_aliases_are_rejected(self):
   for raw in ('{"ouf.a":1,"ouf.a":2}','{"ouf.a":1,"ouf-a":2}'):
    with self.assertRaises(AssertionError):reader.json_properties(raw)
