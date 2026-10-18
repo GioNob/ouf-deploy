@@ -255,3 +255,14 @@ class RetainedPostbootStop(unittest.TestCase):
  def test_missing_member_does_not_accept_old_hash(self):
   with Files().temporary() as temp:
    with self.assertRaises(ValueError):b.reconcile_postboot_stop({'path':temp,'closureSha256':'0'*64},r)
+
+class BothRetainedStops(unittest.TestCase):
+ def test_both_contexts_are_checked_and_no_stop_can_be_silently_omitted(self):
+  from unittest.mock import patch
+  profile={'previousPostbootStops':[{'path':'/exact/first','closureSha256':'a'*64},{'path':'/exact/second','closureSha256':'b'*64}]}
+  with patch.object(b,'reconcile_postboot_stop',side_effect=lambda binding,reader:binding) as verify:
+   self.assertEqual(b.reconcile_postboot_stops(profile,r),profile['previousPostbootStops']);self.assertEqual(verify.call_count,2)
+  with patch.object(b,'reconcile_postboot_stop',side_effect=[{},ValueError('CHANGED')]):
+   with self.assertRaises(ValueError):b.reconcile_postboot_stops(profile,r)
+  for bindings in ([],profile['previousPostbootStops'][:1],[profile['previousPostbootStops'][0]]*2):
+   with self.assertRaises(ValueError):b.reconcile_postboot_stops({'previousPostbootStops':bindings},r)

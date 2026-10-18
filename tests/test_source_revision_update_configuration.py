@@ -157,3 +157,33 @@ class OwnerJson(unittest.TestCase):
         for _ in range(18):value={'a':value}
         for value in ({'ouf':value},{'ouf':{str('a'+str(i)):True for i in range(513)}}):
             with self.assertRaises(UpdateDenied):c.overlay_text(json.dumps(value).encode())
+
+class SessionJson(unittest.TestCase):
+    def properties(self):
+        return {'server.servlet.session.cookie.http-only':True,'server.servlet.session.cookie.secure':True,'server.servlet.session.cookie.same-site':'lax','server.servlet.session.timeout':'30m'}
+    def test_exact_four_properties_validate_without_values(self):
+        for duration in ('30m','1800','PT30M','P1D','PT0.5S'):
+            value=self.properties();value['server.servlet.session.timeout']=duration
+            result=c.overlay_text(json.dumps(value).encode());self.assertTrue(result['retainedSessionSecurityValidated']);self.assertEqual(result['propertyCount'],4);self.assertNotIn(duration,json.dumps(result))
+    def test_weakened_or_wrongly_typed_cookie_settings_denied(self):
+        for key,value in (('http-only',False),('secure',False),('secure','true'),('http-only',1),('same-site','unknown'),('same-site',None)):
+            props=self.properties();props['server.servlet.session.cookie.'+key]=value
+            with self.subTest(key=key,value=value),self.assertRaises(UpdateDenied):c.overlay_text(json.dumps(props).encode())
+    def test_incomplete_security_quartet_and_unrelated_server_channels_denied(self):
+        for key in self.properties():
+            props=self.properties();del props[key]
+            with self.subTest(key=key),self.assertRaises(UpdateDenied):c.overlay_text(json.dumps(props).encode())
+        for key in ('server.port','server.servlet.context-path','server.servlet.session.store-dir','server.servlet.session.cookie.domain','spring.session.timeout'):
+            props=self.properties();props[key]='secret'
+            with self.subTest(key=key),self.assertRaises(UpdateDenied):c.overlay_text(json.dumps(props).encode())
+    def test_timeout_infinite_zero_invalid_interpolated_and_wrong_type_denied(self):
+        for value in ('0','0s','-1','PT0S','P','PT','P1DT','${SECRET}','infinite','999999999999s',30,True):
+            props=self.properties();props['server.servlet.session.timeout']=value
+            with self.subTest(value=value),self.assertRaises(UpdateDenied):c.overlay_text(json.dumps(props).encode())
+    def test_json_session_overlay_keeps_native_jar_datasource_and_custody_checks(self):
+        fixture=Configuration();fixture.setUp();self.addCleanup(fixture.doCleanups)
+        path=fixture.root/'owner.yaml';path.write_bytes(json.dumps({'server':{'servlet':{'session':{'cookie':{'http-only':True,'same-site':'lax','secure':True},'timeout':'30m'}}}}).encode());path.chmod(0o600)
+        fixture.actual['Config']['Env'].append('SPRING_CONFIG_ADDITIONAL_LOCATION=file:/run/owner.yaml');fixture.actual['Mounts']=[{'Destination':'/run/owner.yaml','Source':str(path),'Type':'bind','RW':False}]
+        result=fixture.verify();self.assertTrue(result['sameDatasourceAsApplication']);self.assertTrue(result['ownerOverlays'][0]['metadata']['retainedSessionSecurityValidated'])
+        fixture.actual['Config']['Env'].append('SPRING_FLYWAY_ENABLED=false')
+        with self.assertRaises(UpdateDenied):fixture.verify()

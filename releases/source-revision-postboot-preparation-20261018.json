@@ -19,10 +19,20 @@
   "configurationSuccessor": {
     "module": "tools.source_revision_update.configuration",
     "previousSha256": "1092ba1ece16a38a5d3d7f3002304f1bfd7cb79948cde73787c3ef8cf753ff5f",
-    "sha256": "7a6b85afdd842e93b329806d2ac3c722ad28661ded33be5fabbd6907c9910b03"
+    "sha256": "d3bb5a29d4e0e626cd34c797326e868050c3c16421901357faa8c73b48e83018"
   },
   "previousPostbootStop": {
     "path": "/etc/ouf/deploy-snapshots/source-revision-postboot-prepared-f6w3lo6z",
     "closureSha256": "e693804def0e2494404cfb7cc025bef1f5ee6c80cac1b9dfdadb51a4db7a86e1"
-  }
+  },
+  "previousPostbootStops": [
+    {
+      "path": "/etc/ouf/deploy-snapshots/source-revision-postboot-prepared-f6w3lo6z",
+      "closureSha256": "e693804def0e2494404cfb7cc025bef1f5ee6c80cac1b9dfdadb51a4db7a86e1"
+    },
+    {
+      "path": "/etc/ouf/deploy-snapshots/source-revision-postboot-prepared-q7bq1ex3",
+      "closureSha256": "e44977b8fd421cd4280ce2792e56c1819d7f7b301f70009c092a975aad57a818"
+    }
+  ]
 }

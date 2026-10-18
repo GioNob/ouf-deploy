@@ -89,6 +89,12 @@ def reconcile_postboot_stop(binding,reader):
  return {'contextPath':str(path),'closureSha256':binding['closureSha256'],'files':90,'retainedFilesPreserved':True,'authorityArtifactsAbsent':True}
 
 
+def reconcile_postboot_stops(profile,reader):
+ bindings=profile['previousPostbootStops']
+ require(type(bindings)is list and len(bindings)==2 and len({b['path'] for b in bindings})==2,'EXACT_TWO_RETAINED_POSTBOOT_STOPS_REQUIRED')
+ return [reconcile_postboot_stop(binding,reader) for binding in bindings]
+
+
 def freeze_code(context,case,profile,executor_raw,files,package,loader,shared,reader,overlays):
  ns={'__name__':'postboot_executor_declaration'}
  exec(compile(executor_raw,'<verified-postboot-executor>','exec'),ns)
@@ -133,7 +139,7 @@ def run(profile,reader,owner,boot_reader,bootstrap,policy,guard_selection,execut
   current_original,current,proof=policy.project(original,historical,observed,private_engine,transport,raw_runtime,native_update.runtime,lambda before,actual:bootstrap.preboot_application_proof(before,actual,owner))
   sources_partial=prep.gateway.source_members(reader.read(current['gatewayPackage']['path'],current['gatewayPackage']['sha256'],67108864),json.loads(prep.package_files(current)('gateway','source-inventory.json')))
   stopped=reconcile_partial(profile['previousPreparationStop'],sources_partial,reader)
-  postboot_stop=reconcile_postboot_stop(profile['previousPostbootStop'],reader) if configuration_raw is not None else None
+  postboot_stop=reconcile_postboot_stops(profile,reader) if configuration_raw is not None else None
   shared.root_directory(Path(profile['privateParent']));context=Path(tempfile.mkdtemp(prefix='source-revision-postboot-prepared-',dir=profile['privateParent']));context.chmod(0o700);emit('PRIVATE_CONTEXT',contextPath=str(context))
   original_binding=document(context,'current-original-preparation.json',current_original,shared,reader)
   program=closure['executables']['docker'];reader.read(program['path'],program['sha256'],134217728)
@@ -156,7 +162,7 @@ def run(profile,reader,owner,boot_reader,bootstrap,policy,guard_selection,execut
   plan,primitives,compiled_private=prep.compile_private(current_original,closure,proposed_case,context,ns['read'],ns)
   importlib.import_module('tools.source_revision_update.authority').closure_valid(closure)
   require(reconcile_partial(profile['previousPreparationStop'],sources_partial,reader)==stopped,'PARTIAL_STOP_CHANGED')
-  if postboot_stop is not None:require(reconcile_postboot_stop(profile['previousPostbootStop'],reader)==postboot_stop,'POSTBOOT_STOP_CHANGED')
+  if postboot_stop is not None:require(reconcile_postboot_stops(profile,reader)==postboot_stop,'POSTBOOT_STOP_CHANGED')
   for cid,before in observed.items():
    after=api.get('/containers/'+cid+'/json')
    require(owner.immutable(after)==owner.immutable(before) and owner.process(after)==owner.process(before)
