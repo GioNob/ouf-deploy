@@ -1,3 +1,9 @@
+## Source-revision preflight stopped before authority or release
+
+Technical **8/8**, functional **4/6**. The operator ran the pinned launcher. Context `/etc/ouf/deploy-snapshots/source-revision-execution-55e7sduq`, executor `/etc/ouf/deploy-snapshots/source-revision-executor-code-zu0056o_`. The retained Spring verifier stopped with `UNREVIEWED_SPRING_OVERRIDE_CHANNEL` during private preparation, before fresh HUMAN authentication, action issuance, backup, migration or service replacement. Preserve that context and do not replay the launcher. The previous protected input remains immutable; its preparation is not repeated.
+
+A bounded runner diagnostic is being qualified to classify the existing Onboarding environment channels without logging configuration/credential values, reading protected credential files, using sudo or modifying runtime state. Qualify the exact observed channel semantics before changing the verifier; never accept arbitrary Spring overrides to make deployment pass. Native profile publication, historical job replay and identity decisions remain absent.
+
 ## Source-revision release qualified and staged — runtime release still pending
 
 Technical **8/8**, functional **4/6**. [Qualification and code-only delivery39107413248](https://github.com/GioNob/ouf-deploy/actions/runs/39107413248) passed **70 tests**, including real two-role signatures, closed memory import with external effects disabled, PostgreSQL V34 under the application role, the complete private-preparation wiring, route/lost-write recovery, and durable role observation under transient network errors, revocation and wrong-proposal responses. [Versioned evidence](../evidence/source-revision-native-release-qualified-20261018.json).
