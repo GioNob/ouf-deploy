@@ -72,6 +72,7 @@ def run(owner,reader,contracts,profile,selection,contract_selection,parent,point
  lock=Path(coordinated['commonLockFile']);fd=os.open(lock,os.O_RDWR|os.O_NOFOLLOW|os.O_NONBLOCK);case=None;record=None
  try:
   info=os.fstat(fd);owner.require(stat.S_ISREG(info.st_mode)and info.st_uid==info.st_gid==0 and info.st_nlink==1 and stat.S_IMODE(info.st_mode)==0o600,'COMMON_LOCK_CUSTODY_REQUIRED');fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+  owner.require(not os.path.lexists(pointer),'INCIDENT_EXISTS_RECONCILE_DO_NOT_RELAUNCH')
   owner.require((lock.lstat().st_dev,lock.lstat().st_ino)==(info.st_dev,info.st_ino),'COMMON_LOCK_REPLACED')
   provider_guard(reader,selection,owner)
   historical=contracts.collect(contract_selection);owner.require(historical['complete'],'SEALED_PREBOOT_INPUTS_REQUIRED')

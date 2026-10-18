@@ -90,6 +90,14 @@ class Plan(unittest.TestCase):
   p,api,_=fixture();api.rows['d'*64]['NetworkSettings']['Networks']['fixture-net']['IPAMConfig']=None
   with self.assertRaisesRegex(ValueError,'UNREVIEWED_DYNAMIC'):m.compile_plan(p,api,lambda r,p:None)
   self.assertEqual(api.writes,[])
+ def test_six_endpoint_profile_has_exact_thirteen_claims(self):
+  p,api,rows=fixture()
+  for letter,ip in (('d','10.80.0.7'),('e','10.80.0.8'),('f','10.80.0.9'),('1','10.80.0.10')):
+   row=copy.deepcopy(rows[3]);row['Id']=letter*64;row['Name']='/pin-'+letter
+   row['NetworkSettings']['Networks']['fixture-net'].update(IPAddress=ip,IPAMConfig=None,MacAddress='02:00:00:00:00:'+letter*2)
+   api.rows[row['Id']]=row;p['moves'].append({'containerId':row['Id'],'imageId':row['Image'],'name':row['Name'][1:],'oldIPv4':ip,'newIPv4':ip,'servicePorts':[8000],'configurationDestinations':[]})
+  plan=m.compile_plan(p,api,lambda r,p:None);claims=[];result=m.apply(plan,api,lambda n,r:claims.append(n))
+  self.assertEqual(len(claims),13);self.assertEqual(result['engineWrites'],13);self.assertEqual(len(api.writes),13)
 class Bootstrap(unittest.TestCase):
  def setup_case(self):
   temp=tempfile.TemporaryDirectory(dir='/root');self.addCleanup(temp.cleanup);root=Path(temp.name);root.chmod(0o700)

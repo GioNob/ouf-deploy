@@ -2,7 +2,7 @@ name: Host network reconciliation qualification
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['tools/host_network_reconciliation.py','scripts/reconcile-host-network-20261018.py','tests/test_host_network_reconciliation*.py','releases/host-network-reconciliation-20261018.json','.github/workflows/host-network-reconciliation.yml']
+    paths: ['tools/host_network_reconciliation.py','scripts/reconcile-host-network-20261018.py','tests/test_host_network_reconciliation*.py','releases/host-network-reconciliation-20261018.json','releases/host-network-reconciliation-execution-20261018.json','scripts/launch-host-network-reconciliation-20261018.sh','.github/workflows/host-network-reconciliation.yml']
 permissions: {contents: read}
 jobs:
   root-journal:
