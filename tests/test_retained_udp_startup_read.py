@@ -28,4 +28,13 @@ class Read(unittest.TestCase):
   with patch.object(m,'invoke',return_value=json.dumps(value).encode()):
    with self.assertRaises(ValueError):m.collect(selection)
   with self.assertRaises(ValueError):m.log_metadata(b'x'*524289)
+ def test_port_and_network_overlap_are_only_candidate_evidence(self):
+  target=self.state();target.update(bindings={'8092/tcp':[{'HostIp':'0.0.0.0','HostPort':'18092'}]},
+    networks={'fixture':{'IPAMConfig':{'IPv4Address':'10.1.2.3'}}})
+  other=self.state();other.update(id='d'*64,bindings=target['bindings'],ports=target['bindings'],networks=target['networks'])
+  with patch.object(m,'invoke',side_effect=[json.dumps(other['id']).encode(),json.dumps(other).encode()]),patch('subprocess.run',return_value=type('Reply',(),{'returncode':0,'stdout':b'LISTEN 0 4096 0.0.0.0:18092 0.0.0.0:*\n'})()):
+   result=m.network_conflicts(target,target['id'])
+  self.assertEqual(result['candidateConflicts'][0]['containerId'],other['id'])
+  self.assertEqual(result['candidateConflicts'][0]['networkAddressOverlapCount'],1)
+  self.assertFalse(result['ownerStopOrRestartPerformed'])
 if __name__=='__main__':unittest.main()

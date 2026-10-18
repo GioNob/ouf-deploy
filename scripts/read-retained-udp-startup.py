@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Bounded retained-generation startup diagnosis: no raw logs, config, credentials or mutations."""
-import json,re,subprocess,sys,traceback
+import hashlib,ipaddress,json,re,subprocess,sys,traceback
 from pathlib import Path
 
-FORMAT='{"id":{{json .Id}},"image":{{json .Image}},"revision":{{json (index .Config.Labels "org.opencontainers.image.revision")}},"state":{{json .State}},"restartPolicy":{{json .HostConfig.RestartPolicy}}}'
+FORMAT='{"id":{{json .Id}},"image":{{json .Image}},"revision":{{json (index .Config.Labels "org.opencontainers.image.revision")}},"state":{{json .State}},"restartPolicy":{{json .HostConfig.RestartPolicy}},"bindings":{{json .HostConfig.PortBindings}},"ports":{{json .NetworkSettings.Ports}},"networks":{{json .NetworkSettings.Networks}}}'
+CANDIDATE_FORMAT='{"id":{{json .Id}},"image":{{json .Image}},"revision":{{json (index .Config.Labels "org.opencontainers.image.revision")}},"bindings":{{json .HostConfig.PortBindings}},"ports":{{json .NetworkSettings.Ports}},"networks":{{json .NetworkSettings.Networks}}}'
 KNOWN_EXCEPTIONS=set(('java.net.ConnectException','java.net.UnknownHostException','java.net.SocketTimeoutException',
  'java.sql.SQLException','java.lang.IllegalStateException','java.lang.IllegalArgumentException','java.io.FileNotFoundException',
  'java.nio.file.AccessDeniedException','java.lang.OutOfMemoryError','org.postgresql.util.PSQLException',
@@ -55,6 +56,63 @@ def log_metadata(raw):
     return {'exceptionClasses':sorted(set(classes)&KNOWN_EXCEPTIONS),'otherExceptionClassCount':len(set(classes)-KNOWN_EXCEPTIONS),
         'stackFrameCount':len(frames),
         'markers':markers,'rawLogsPrinted':False,'exceptionMessagesPrinted':False}
+def ports(value):
+    result=[]
+    for key,bindings in (value or {}).items():
+        match=re.fullmatch(r'([0-9]{1,5})/(tcp|udp)',key);require(match is not None,'PORT_SCHEMA')
+        for item in bindings or []:
+            port=item['HostPort'];require(re.fullmatch('[0-9]{1,5}',port)is not None and 0<int(port)<=65535,'HOST_PORT_SCHEMA')
+            address=item['HostIp'];require(address==''or str(ipaddress.ip_address(address))==address,'HOST_IP_SCHEMA')
+            result.append({'hostIp':address,'hostPort':int(port),'protocol':match[2],'containerPort':int(match[1])})
+    return result
+def addresses(value):
+    result=[]
+    for name,item in (value or {}).items():
+        configured=item.get('IPAMConfig')or{}
+        for field in ('IPv4Address','IPv6Address'):
+            address=configured.get(field)or item.get('IPAddress'if field=='IPv4Address'else'GlobalIPv6Address')
+            if address:
+                require(str(ipaddress.ip_address(address))==address,'NETWORK_IP_SCHEMA')
+                result.append((name,address))
+    return result
+def network_conflicts(target,reference):
+    wanted=ports(target.get('bindings'));target_ips=set(addresses(target.get('networks')))
+    ids=[json.loads(line)for line in invoke(['ps','--no-trunc','--format','{{json .ID}}']).splitlines()if line]
+    require(len(ids)<=64 and all(re.fullmatch('[a-f0-9]{64}',i)for i in ids),'RUNNING_ID_BOUND')
+    matches=[]
+    if ids:
+        rows=invoke(['inspect','--type','container','--format',CANDIDATE_FORMAT,*ids]).splitlines()
+        require(len(rows)==len(ids),'RUNNING_INSPECT_BOUND')
+        for line in rows:
+            value=json.loads(line);require(value['id']in ids,'RUNNING_GENERATION_SCHEMA')
+            if value['id']==reference:continue
+            live=ports(value.get('ports')or value.get('bindings'));overlap=[]
+            for left in wanted:
+                for right in live:
+                    if left['protocol']==right['protocol']and left['hostPort']==right['hostPort']:
+                        if left['hostIp']==right['hostIp']or left['hostIp']in ('','0.0.0.0','::')or right['hostIp']in ('','0.0.0.0','::'):
+                            overlap.append({'hostPort':left['hostPort'],'protocol':left['protocol']})
+            ip_overlap=target_ips&set(addresses(value.get('networks')))
+            if overlap or ip_overlap:
+                revision=value.get('revision');require(revision is None or re.fullmatch('[a-f0-9]{40}',revision),'REVISION_SCHEMA')
+                matches.append({'containerId':value['id'],'imageId':value['image'],'sourceCommit':revision,
+                    'possibleHostPortOverlaps':overlap,'networkAddressOverlapCount':len(ip_overlap)})
+    listeners=[];listener_available=False
+    try:
+        result=subprocess.run(['/usr/bin/ss','-H','-ltn'],stdin=subprocess.DEVNULL,capture_output=True,timeout=5,
+            env={'PATH':'/usr/bin:/bin','LC_ALL':'C'})
+        if result.returncode==0 and len(result.stdout)<=131072:
+            listener_available=True
+            for line in result.stdout.decode().splitlines():
+                fields=line.split()
+                if len(fields)>=5:
+                    _,separator,port=fields[3].rpartition(':')
+                    if separator and port.isdigit()and any(v['protocol']=='tcp'and v['hostPort']==int(port)for v in wanted):
+                        listeners.append({'hostPort':int(port),'protocol':'tcp'})
+    except (FileNotFoundError,subprocess.TimeoutExpired):pass
+    return {'targetBindings':wanted,'runningContainersRead':len(ids),'candidateConflicts':matches,
+        'kernelListenerReadAvailable':listener_available,'matchingKernelListeners':listeners,
+        'ownerStopOrRestartPerformed':False,'rawEngineErrorPrinted':False}
 def collect(selection):
     target=selection['currentApplications']['udp'];reference=target['containerId'];require(re.fullmatch('[a-f0-9]{64}',reference),'EXACT_REFERENCE')
     def inspect():
@@ -63,9 +121,10 @@ def collect(selection):
         return value
     before=inspect();state=safe_state(before)
     metadata=log_metadata(invoke(['logs','--tail','160','--since',state['StartedAt'],reference]))
+    network=network_conflicts(before,reference)if(state['engineErrorMarkers']['networkSetupFailure']or state['engineErrorMarkers']['portAlreadyAllocated'])else None
     after=inspect();require(safe_state(after)==state,'PROCESS_CHANGED_DURING_READ')
     return {'schema':'ouf.retained-udp-startup-read.v1','complete':True,'generationMatches':True,
-        'sourceCommit':target['sourceCommit'],'state':state,'startup':metadata,'runtimeMutations':0,
+        'sourceCommit':target['sourceCommit'],'state':state,'startup':metadata,'network':network,'runtimeMutations':0,
         'jobsRetried':0,'profilePublications':0,'databaseCalls':0,'credentialFilesRead':0,'credentialValuesPrinted':False,
         'automaticRetry':False,'completedTechnicalPhases':8,'functionalMilestonesProven':4}
 if __name__=='__main__':
