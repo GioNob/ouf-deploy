@@ -243,7 +243,7 @@ class NativeDockerContract(unittest.TestCase):
                     self.assertLess(time.monotonic(),deadline);time.sleep(.02)
                 finally:client.close()
             owner=object.__new__(CohortContainers);owner.engine=engine
-            row={'name':Engine.name(transition),'creationRequest':request,'oldRuntimeBinding':{'containerId':'f'*64},
+            row={'module':'udp','name':Engine.name(transition),'creationRequest':request,'oldRuntimeBinding':{'containerId':'f'*64},
                 'oldMounts':[{'Type':t,'Source':s,'Destination':d,'RW':rw} for t,s,d,rw in expected_mounts],
                 'restoreRestartPolicy':{'Name':'unless-stopped','MaximumRetryCount':0}}
             running=owner.running(row);self.assertEqual(running['Id'],cid)
