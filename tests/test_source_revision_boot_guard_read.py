@@ -58,6 +58,7 @@ class Reader(unittest.TestCase):
     self.file(source/'scripts'/path.name,path.read_bytes())
   cli=r.load_known(source/'scripts/run_semantic_coordinated_lease_owner.py',r.KNOWN['owner'],'fixture_read_only_owner')
   for name in cli.FILES:self.file(source/name,(native/name).read_bytes())
+  self.file(source/'tools/semantic_provider_boot_coordination.py',(native/'tools/semantic_provider_boot_coordination.py').read_bytes())
   nft=self.file(ctx/'nft',b'fixture only: never executed',0o700)
   common=self.file(ctx/'common.lock');journal=self.data(ctx/'owner-journal.json',{'state':'BLOCKED','leaseAuthorized':False,'secret':'PRIVATE_CANARY'})
   bootjournal=self.data(ctx/'boot-journal.json',{'schema':'ouf.semantic-runtime-transition.v1','state':'RUNTIME_EMPTY','startAuthorized':False})
@@ -72,6 +73,7 @@ class Reader(unittest.TestCase):
    'expectedFootprint':'b'*64,'journalFile':str(bootjournal),'transactionId':'c'*64,'lockFile':str(common)}
   bootpath=self.data(ctx/'boot.json',boot);restorer=source/'scripts/restore_semantic_runtime_boot_guard.py'
   profile={'schema':'ouf.semantic-coordinated-boot-profile.v1',
+   'sourceHashes':{name:r.sha((source/name).read_bytes())for name in ('scripts/run_semantic_coordinated_boot_guard.py','tools/semantic_provider_boot_coordination.py')},
    'coordinatedConfiguration':str(ownerpath),'coordinatedConfigurationHash':r.sha(ownerpath.read_bytes()),
    'bootConfiguration':str(bootpath),'bootConfigurationHash':r.sha(bootpath.read_bytes()),
    'bootGuardFile':str(restorer),'bootGuardHash':r.sha(restorer.read_bytes())}

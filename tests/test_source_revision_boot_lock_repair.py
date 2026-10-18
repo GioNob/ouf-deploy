@@ -12,7 +12,7 @@ class Recovery(unittest.TestCase):
   self.fixture=fixtures.Reader('runTest');self.fixture.setUp();self.addCleanup(self.fixture.doCleanups)
   self.reader=fixtures.r;self.selection,self.observe,self.ownerpath,_=self.fixture.fixture()
   owner=json.loads(self.ownerpath.read_bytes());self.lock=Path(owner['commonLockFile']);self.lock.unlink()
-  journal=Path(owner['journalFile']);stored=json.loads(journal.read_bytes());stored['state']='QUIESCED';journal.write_text(json.dumps(stored))
+  journal=Path(owner['journalFile']);stored=json.loads(journal.read_bytes());stored.update(state='QUIESCED',startAuthorized=False);journal.write_text(json.dumps(stored))
   with patch.object(self.reader,'command',side_effect=self.observe):self.before=self.reader.collect(self.selection)
   self.before['units']['fixture-docker.service']['ActiveState']='inactive'
   # The fixture intentionally rejects the bootstrap kernel; transport is simulated here only.
