@@ -1,6 +1,10 @@
-## Aggiornamento — STOP prima delle modifiche alla rete
+## Aggiornamento — successore del recupero rete qualificato
 
-**Tecniche8/8; funzionali4/6.** Il tentativo amministrativo è stato eseguito e si è fermato al primo controllo del provider, prima di creare l'incidente o usare Docker. Il vecchio launcher non va ripetuto. Il contratto nativo prevede anche BLOCKED dopo il ripristino vuoto al boot; la consegna accettava soltanto QUIESCED. Il successore è in qualificazione con prova del kernel vuoto e autorizzazioni revocate, senza abilitare provider o ripetere effetti. [Dettagli e limiti](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
+**Tecniche8/8; funzionali4/6.** Il tentativo precedente si è fermato al primo controllo del provider, prima degli effetti sulla rete; il vecchio launcher è ritirato. Il contratto nativo può mantenere BLOCKED dopo il ripristino vuoto al boot. Il successore lo riconosce soltanto con autorizzazioni revocate, journal originali validi e prova delle tabelle native vuote, senza cambiare lo stato o avviare il provider.
+
+**23 prove superate**, inclusa integrazione Docker29.8.1 e5 regressioni sul codice nativo del provider. [Stato, prova e consegna immutabile](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md). Resta un unico passaggio sudo sul VPS, necessario per i profili amministrativi protetti; non richiede nuovi consensi repository/MCP o login OUF. Il successore non è ancora stato eseguito sul target. Nessuna pubblicazione o nuovo collaudo funzionale dimostrato. Restano disponibilità applicativa/provider, binding dopo il boot, rilascio nativo revisione fonte e tappe5/6.
+
+## Storico precedente allo STOP
 
 ## Preparazione tappa5 — correzione dell'infrastruttura qualificata, target da eseguire
 
