@@ -18,6 +18,11 @@ jobs:
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
           sudo python3 -I -B -S -m unittest discover -s "$fixture/tests" -p test_host_network_reconciliation.py -v
+      - name: Exact delivery hashes, shell and isolated root CLI rejection
+        run: |
+          fixture="/root/ouf-network-owner-${GITHUB_RUN_ID}"
+          sudo env OUF_NETWORK_DELIVERY_TEST=1 python3 -I -B -S -m unittest discover -s "$fixture/tests" -p test_host_network_reconciliation_delivery.py -v
+          bash -n scripts/launch-host-network-reconciliation-20261018.sh
   real-docker-29:
     needs: root-journal
     runs-on: ubuntu-24.04
