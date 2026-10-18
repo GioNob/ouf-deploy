@@ -1,6 +1,8 @@
-## Current checkpoint — retained postboot STOP reconciled; JSON successor in qualification
+## Current checkpoint — retained postboot STOP reconciled; JSON successor qualified
 
-**Tecniche8/8; funzionali4/6.** La lettura protetta conferma90file, assenza authority/ricevuta finale, consumer originale riconciliato e overlay JSON invariato rispetto al piano host (hash6d546047…). Nessuna generazione corrente certificata dalla sola diagnosi. [Ricevuta target](../evidence/source-revision-postboot-stop-read-target-20261018.json). È in qualificazione un successore esplicito del verificatore: JSON owner/THS OAuth, nessun datasource/Flyway/import/profili/loader. Mantiene76 moduli e loader c750, cambia solo configuration.py; il nuovo case/package/closure vincola tale delta. Contesto f6w3lo6z preservato e ricontrollato con closureSHAe693804d… prima/dopo la preparazione. Nessun replay del vecchio comando, login HUMAN o nuovo budget runtime.
+**Tecniche8/8; funzionali4/6.** La lettura protetta conferma90file, assenza authority/ricevuta finale, consumer originale riconciliato e overlay JSON invariato rispetto al piano host (hash6d546047…). Nessuna generazione corrente certificata dalla sola diagnosi. [Ricevuta target](../evidence/source-revision-postboot-stop-read-target-20261018.json). È qualificato in CI un successore esplicito del verificatore: JSON owner/THS OAuth, nessun datasource/Flyway/import/profili/loader. Mantiene76 moduli e loader c750, cambia solo configuration.py; il nuovo case/package/closure vincola tale delta. Contesto f6w3lo6z preservato e ricontrollato con closureSHAe693804d… prima/dopo la preparazione. Nessun replay del vecchio comando, login HUMAN o nuovo budget runtime.
+
+**CI PASS:80 nativi +13 postboot +5 consegna.** Nuovo pacchetto depositato sul runner; preparazione target ancora da eseguire. [Qualifica, limiti e comando immutabile](../releases/SOURCE_REVISION_POSTBOOT_JSON_SUCCESSOR_20261018.md).
 
 ## Current checkpoint — postboot preparation STOP; do not replay
 
