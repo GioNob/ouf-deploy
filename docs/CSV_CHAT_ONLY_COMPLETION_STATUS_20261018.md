@@ -1,3 +1,13 @@
+## Release gate: retained MCP metadata and changed manifest
+
+The native update core is implemented for UDP V35→V36 plus MCP code replacement, with unchanged Onboarding, no MCP migration replay, quiesced backup/readback, one-use effect claims and cumulative readiness attempts. [Qualification 39081238864](https://github.com/GioNob/ouf-deploy/actions/runs/39081238864) at a404d522eff5c52e5b52eefb265e79da36c80eeb passed 56 tests, including existing preparation/custody fixtures, real fixture signatures, backup failure boundaries and actual stop-stage guard reconciliation. This is CI qualification, not target deployment or a completed sealed entrypoint.
+
+A blocking compatibility issue was found before release: candidate MCP changes capabilities.json and therefore the manifest checksum. configureReprocessing currently validates retained metadata strictly against that new checksum before handling expiry. A previously signed expired permit for the old manifest can thus prevent bootstrap. The exact current private permit payload has not been read by the agent; the risk follows from the retained mounted configuration contract and source code. Do not remove or reissue historical metadata or deploy the existing MCP candidate to evade this gate.
+
+[ouf-mcp-server PR72](https://github.com/GioNob/ouf-mcp-server/pull/72) adds bootstrap-only recognition of fully verified expired historical permits. Strict per-operation current-manifest verification remains unchanged. Active/future/malformed/unsigned/widened permits remain rejected. Qualification includes real root-owned signed metadata through configureReprocessing; no target effect. A newly qualified MCP artifact and updated custody must supersede the old candidate before activation. Existing root custody evidence remains valid evidence of those old bytes, not authorization for a different artifact.
+
+Technical **8/8**, functional **3/6**. No new login, target authority, profile publication, retry or deployment has occurred. Complete executable preparation and qualification before another physical operator step.
+
 ## Current release checkpoint — root custody complete, execution pending
 
 Technical **8/8**, functional **3/6**. The latest operator-supplied target receipt proves root custody of both candidate images. [Recorded receipt](../evidence/chat-recovery-root-custody-target-20261018.json). Review SHA256 `f4fb8b687dac1733ee41c17c4aa80fa3d4b875737e996289474ae1d4003dfd61`. This supersedes the pending root-custody statements in the history below. No image import, backup, service/database mutation or runtime authority has occurred. `readyForExecution=false` remains correct.
