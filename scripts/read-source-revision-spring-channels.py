@@ -70,7 +70,15 @@ def inspect(reference,format):
     reply=subprocess.run(['/usr/bin/docker','inspect','--type','container','--format',format,reference],
         stdin=subprocess.DEVNULL,capture_output=True,timeout=15,
         env={'PATH':'/usr/bin:/bin','LC_ALL':'C','DOCKER_HOST':'unix:///var/run/docker.sock','DOCKER_API_VERSION':'1.44'})
-    assert reply.returncode==0 and 0<len(reply.stdout)<=131072,'ENGINE_READ_UNPROVEN'
+    if reply.returncode:
+        failure=reply.stderr.lower()
+        if b'no such'in failure:reason='RETAINED_CONTAINER_ABSENT'
+        elif b'permission denied'in failure:reason='ENGINE_READ_PERMISSION_DENIED'
+        elif b'cannot connect'in failure or b'error during connect'in failure:reason='ENGINE_UNAVAILABLE'
+        elif b'template'in failure:reason='INSPECT_TEMPLATE_REJECTED'
+        else:reason='ENGINE_READ_UNPROVEN'
+        raise AssertionError(reason)
+    assert 0<len(reply.stdout)<=131072,'ENGINE_RESPONSE_BOUND'
     return json.loads(reply.stdout)
 
 def main(selection):
