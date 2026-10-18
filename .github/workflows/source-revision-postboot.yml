@@ -1,0 +1,74 @@
+name: Source revision postboot preparation qualification
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/*source-revision-postboot*.py', 'releases/source-revision-postboot-preparation-20261018.json', 'tests/test_source_revision_postboot.py', '.github/workflows/source-revision-postboot.yml']
+permissions: {contents: read}
+jobs:
+  native-owner:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17-alpine
+        ports: ['5432:5432']
+        env: {POSTGRES_USER: postgres, POSTGRES_HOST_AUTH_METHOD: trust}
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: be388e1462778438a208c2e00e166370fee32189
+          path: .pairwise/onboarding
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: dd8553da90d7a6cfc1083e1cf4d9075c09ee389b
+          path: .pairwise/gateway
+          persist-credentials: false
+      - name: Produce only a disposable compiled Gateway fixture from the pinned compiler
+        run: |
+          python3 -m venv .gateway-fixture-venv
+          .gateway-fixture-venv/bin/python -m pip install -r .pairwise/gateway/requirements-dev.txt
+          .gateway-fixture-venv/bin/python -I -B - <<'PY'
+          import json,sys
+          from pathlib import Path
+          source=Path('.pairwise/gateway').resolve()
+          sys.path.insert(0,str(source))
+          from tools.compile_config import compile_config
+          Path('.gateway-compiled-fixture.json').write_text(json.dumps(compile_config(source/'ouf-config')))
+          PY
+      - name: Real signed authority, root file custody and application-role V34
+        run: |
+          set -euo pipefail
+          fixture="/root/ouf-source-revision-native-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" OUF_NATIVE_REVISION_PG=1 \
+            OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" \
+            OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" \
+            OUF_REVISION_OWNER_ROOT="$fixture/repository/.pairwise/onboarding" \
+            OUF_REVISION_GATEWAY_ROOT="$fixture/repository/.pairwise/gateway" \
+            OUF_REVISION_COMPILED_FIXTURE="$fixture/repository/.gateway-compiled-fixture.json" \
+            python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_source_revision_update_*.py' -v
+          sudo env OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_source_revision_postboot.py' -v
+
+  stage-code-only:
+    needs: native-owner
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Stage qualified preparation bytes only; never execute preparation or deploy
+        env:
+          OUF_CODE_DIRECTORY: ${{ runner.workspace }}/ouf-source-revision-postboot-code-${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 -I -B -S scripts/stage-source-revision-postboot.py "$GITHUB_WORKSPACE" "$OUF_CODE_DIRECTORY" "$GITHUB_SHA"

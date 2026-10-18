@@ -6,6 +6,8 @@ Follow [the stable 8 technical phases and 6 functional milestones](docs/CHATBOT_
 
 ## Installation configuration and PET authority
 
+Owner reaffirmation, 2026-10-18: consult the original current Matrix/PET baseline at the start of every sprint and every relevant coherence/acceptance decision. Record exact versions and sections actually consulted; never substitute a historical summary for unavailable originals or claim complete compliance from integrity checks. Cloud attachment integrity and normative precedence are recorded in evidence/pet-baseline-cloud-integrity-20261018.json (archive e63df67e8817eec38a9d4b3eb736b020f693b932f3360dc02f4555330f2201ce, all323 checksums PASS). Repository/MCP development authorization is standing; runtime HUMAN/THS authority remains separately enforced.
+
 Owner reminder, 2026-10-16: keep every installation-dependent value in a validated, versioned installation/bootstrap profile: public/internal domains, DNS, service/admin endpoint references, scheme/ports, deployment-specific route hosts/prefixes/upstreams, issuer/audience/trust, secret references, host placement, network/subnet bindings, storage and runtime identity. Do not embed this municipality's values or assume one server, localhost reachability, a shared Docker network or shared filesystem across services.
 
 Preserve PET-defined API paths, capability identities and owner contracts. Resolve their environment-specific route bindings from approved configuration; do not make contract/security semantics arbitrary configuration. Validate endpoint references, reachability, TLS identities and independent egress allowlists. Never substitute a client-supplied URL or silently fall back to a local backend.

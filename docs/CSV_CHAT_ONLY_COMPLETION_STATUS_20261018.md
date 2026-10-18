@@ -1,3 +1,7 @@
+## Cloud — original PET baseline available; postboot successor in qualification
+
+**Technical8/8; functional4/6.** Original baseline v1.7 now accessible and all323 checksums PASS. The current postboot preparation has explicit original/private/case/source-closure bindings and fixes the draft writer and final generation checks. Eleven cloud-workspace tests pass; native CI and target preparation are still pending. No login, authority, deployment, host recovery replay or publication occurred. [Scoped PET consultation, defects, tests and remaining gates](../releases/SOURCE_REVISION_POSTBOOT_PREPARATION_20261018.md).
+
 ## Current checkpoint — host network correction and bounded native readback COMPLETE
 
 Technical **8/8**, functional **4/6**. The operator's immutable75c6fd delivery completed all6 endpoint corrections and13 Docker writes, with one retained UDP start. The result proves preserved scope,5 narrowly allowed derived Config.MacAddress metadata additions, actual empty-DNS preboot equivalence on all3 apps and an unchanged historical baseline. All5 mounted configuration reads/custody checks passed, including the previously protected files. Context /etc/ouf/deploy-snapshots/host-network-reconciliation-c_zpdhof, plan SHA256 e8dd1322daea4ee8b2f1b8fbe332c76014d998ff89577443fca0ba0ccd2d2b0b. [Target completion receipt](../evidence/host-network-reconciliation-target-complete-20261018.json). This is the user-provided executor result; an independent root journal readback has not yet been performed. The completed launcher must never be replayed.

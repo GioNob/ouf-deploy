@@ -1,3 +1,7 @@
+## Cloud — original PET baseline available; postboot successor in qualification
+
+**Technical8/8; functional4/6.** Original baseline v1.7 now accessible and all323 checksums PASS. The current postboot preparation has explicit original/private/case/source-closure bindings and fixes the draft writer and final generation checks. Eleven cloud-workspace tests pass; native CI and target preparation are still pending. No login, authority, deployment, host recovery replay or publication occurred. [Scoped PET consultation, defects, tests and remaining gates](../releases/SOURCE_REVISION_POSTBOOT_PREPARATION_20261018.md).
+
 ## Aggiornamento cloud — readback nativo completato con successo
 
 **Tecniche8/8; funzionali4/6.** Run39158332027, commit ce132bbcb3bd8239689415797371afe636db7762: completed/success riconfermato. Sei endpoint fissi e nove identità/processi stabili; UDP200UP, Onboarding200UP, MCP204 pronto. Tre sole GET native, zero mutazioni/SQL/retry/pubblicazioni. [Ricevuta](../evidence/post-host-network-native-read-target-20261018.json). Questa prova non dimostra Semantic/provider/grafo né il journal root. Il recupero host completato non va rilanciato.

@@ -1,0 +1,19 @@
+{
+ "schema":"ouf.source-revision-postboot-preparation-selection.v1",
+ "installationSpecific":true,
+ "maximumSeconds":300,
+ "privateParent":"/etc/ouf/deploy-snapshots",
+ "hostContext":"/etc/ouf/deploy-snapshots/host-network-reconciliation-c_zpdhof",
+ "hostPlanSha256":"e8dd1322daea4ee8b2f1b8fbe332c76014d998ff89577443fca0ba0ccd2d2b0b",
+ "hostIncidentPointer":"/etc/ouf/host-network-reconciliation-20261018.json",
+ "historicalPrivateInputs":{
+  "path":"/etc/ouf/deploy-snapshots/source-revision-prepared-lssxnowq/prepared-plan.json",
+  "sha256":"c23ec15b43427c4558b5b06bf36c2c1b4fa73943efbc0e081ad2731b69c9bc89"
+ },
+ "stagedExecutor":{
+  "directory":"/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revision-code-39147241974",
+  "packageSha256":"c6d6cc3b63336aa3060a434eb20d019496cbc63ca4b25b37965d7fe3d062a423",
+  "sourceCommit":"c750125eb2995789d499e369d06b9223fc869811"
+ },
+ "previousPreparationStop":"/etc/ouf/deploy-snapshots/source-revision-execution-55e7sduq"
+}
