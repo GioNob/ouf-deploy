@@ -14,6 +14,7 @@ class Recovery(unittest.TestCase):
   owner=json.loads(self.ownerpath.read_bytes());self.lock=Path(owner['commonLockFile']);self.lock.unlink()
   journal=Path(owner['journalFile']);stored=json.loads(journal.read_bytes());stored['state']='QUIESCED';journal.write_text(json.dumps(stored))
   with patch.object(self.reader,'command',side_effect=self.observe):self.before=self.reader.collect(self.selection)
+  self.before['units']['fixture-docker.service']['ActiveState']='inactive'
   # The fixture intentionally rejects the bootstrap kernel; transport is simulated here only.
   # The actual pinned native owner validator is exercised unmodified after lock provisioning.
   self.before['nativeBootValidation']={'passed':True,'metadata':True}
@@ -44,6 +45,17 @@ class Recovery(unittest.TestCase):
   self.assertEqual(self.lock.read_bytes(),b'keep');self.lock.unlink();self.lock.symlink_to(self.ownerpath)
   with self.assertRaises(ValueError):self.planned()
   self.assertTrue(self.lock.is_symlink())
+ def test_real_systemd_ordering_is_acyclic(self):
+  value=self.planned();units=self.fixture.tmp/'units';units.mkdir()
+  for unit,extra in (('fixture-docker.service',''),('fixture-guard.service','Before=fixture-docker.service\n'),
+                     ('systemd-tmpfiles-setup.service','')):
+   (units/unit).write_text('[Unit]\nDefaultDependencies=no\n'+extra+'[Service]\nType=oneshot\nExecStart=/usr/bin/true\nRemainAfterExit=yes\n')
+  for unit,path in self.recovery['dropins'].items():
+   directory=units/(unit+'.d');directory.mkdir();(directory/'20-lock.conf').write_bytes(value['files'][Path(path)])
+  result=subprocess.run(['/usr/bin/systemd-analyze','verify',str(units/'fixture-docker.service'),
+     str(units/'fixture-guard.service'),str(units/'systemd-tmpfiles-setup.service')],capture_output=True,
+     env={'PATH':'/usr/bin:/bin','LC_ALL':'C','SYSTEMD_UNIT_PATH':str(units)},timeout=20)
+  self.assertEqual(result.returncode,0,result.stderr.decode())
  def test_actual_tmpfiles_native_owner_and_simulated_manager_recovery(self):
   value=self.planned();calls=[]
   def call(argv,timeout=20):
