@@ -1,0 +1,40 @@
+name: Source revision bounded Engine availability read
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['.github/workflows/source-revision-engine-availability.yml']
+permissions: {contents: read}
+jobs:
+  public-service-state:
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 2
+    steps:
+      - name: Read public systemd state only, without sudo, logs or configuration values
+        run: |
+          python3 -I -B -S - <<'PY'
+          import json,os,socket,stat,subprocess,time
+          result={'schema':'ouf.source-revision-engine-availability.v1','runtimeMutations':0,
+                  'credentialFilesRead':0,'credentialValuesPrinted':False,'automaticRetry':False,
+                  'completedTechnicalPhases':8,'functionalMilestonesProven':4,'installationSpecific':True}
+          units={}
+          allowed={'ActiveState','SubState','Result','NRestarts','MainPID','LoadState'}
+          for unit in ('docker.service','docker.socket','containerd.service'):
+              reply=subprocess.run(['/usr/bin/systemctl','show','--no-pager',
+                  '--property='+','.join(sorted(allowed)),unit],capture_output=True,timeout=10,
+                  env={'PATH':'/usr/bin:/bin','LC_ALL':'C'})
+              row={'returnCode':reply.returncode}
+              if reply.returncode==0 and len(reply.stdout)<=4096:
+                  for line in reply.stdout.decode().splitlines():
+                      key,separator,value=line.partition('=')
+                      assert separator and key in allowed and len(value)<=64
+                      row[key]=value
+              units[unit]=row
+          result['units']=units
+          try:
+              info=os.stat('/var/run/docker.sock')
+              result['socket']={'present':True,'isSocket':stat.S_ISSOCK(info.st_mode),
+                  'uid':info.st_uid,'gid':info.st_gid,'mode':oct(stat.S_IMODE(info.st_mode))}
+          except FileNotFoundError:result['socket']={'present':False}
+          except PermissionError:result['socket']={'accessDenied':True}
+          print(json.dumps(result,sort_keys=True))
+          PY
