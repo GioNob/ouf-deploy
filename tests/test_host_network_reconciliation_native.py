@@ -54,8 +54,11 @@ class Native(unittest.TestCase):
    r=subprocess.run(['systemctl','restart','ouf-network-contract-daemon'],capture_output=True,timeout=90);self.assertEqual(r.returncode,0,'fixture daemon restart failed')
    deadline=time.monotonic()+30
    while time.monotonic()<deadline:
-    if all(self.inspect(cid)['State']['Running']for cid in containers):break
+    probes=[subprocess.run(['docker','inspect',cid],capture_output=True,text=True,timeout=3)for cid in containers]
+    if all(reply.returncode==0 and json.loads(reply.stdout)[0]['State']['Running']for reply in probes):break
     time.sleep(0.2)
+   else:self.fail('fixture daemon did not restore all selected containers within30seconds')
+   with self.assertRaisesRegex(ValueError,'ENGINE_SOCKET_REPLACED'):api.get('/containers/'+app+'/json')
    for cid,pin in [(gw,p['moves'][0]),(store,p['moves'][1])]:
     after=self.inspect(cid);self.assertTrue(after['State']['Running']);e=after['NetworkSettings']['Networks'][net['Name']];self.assertEqual(e['IPAddress'],pin['newIPv4']);self.assertEqual(e['IPAMConfig'],{'IPv4Address':pin['newIPv4']})
    self.assertTrue(self.inspect(app)['State']['Running']);self.assertEqual(self.inspect(app)['NetworkSettings']['Networks'][net['Name']]['IPAddress'],old)
