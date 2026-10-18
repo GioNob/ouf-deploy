@@ -1,5 +1,5 @@
 name: Source revision bounded Engine availability read
-# Diagnostic v2: unit conditions and structured manager events; never raw journal text.
+# Reconcile the stopped boot-lock recovery ct030dx0: observations only, no start or Engine probe.
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
@@ -19,7 +19,7 @@ jobs:
                   'completedTechnicalPhases':8,'functionalMilestonesProven':4,'installationSpecific':True}
           units={}
           allowed={'ActiveState','SubState','Result','NRestarts','MainPID','LoadState',
-                   'ConditionResult','AssertResult','CanStart','RefuseManualStart','UnitFileState',
+                   'ConditionResult','AssertResult','After','Requires','NeedDaemonReload','ExecMainStartTimestamp','ExecMainExitTimestamp','CanStart','RefuseManualStart','UnitFileState',
                    'InactiveEnterTimestamp','ActiveEnterTimestamp','StateChangeTimestamp',
                    'ExecMainCode','ExecMainStatus','FragmentPath','DropInPaths','TriggeredBy','Job'}
           for unit in ('docker.service','docker.socket','containerd.service','ouf-semantic-boot-guard.service'):
