@@ -1,0 +1,34 @@
+name: Qualify and stage complete chat recovery executor
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['.github/workflows/chat-recovery-executor-delivery.yml']
+permissions: {contents: read}
+jobs:
+  native-owner:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Isolated root fixtures and existing dual-role signatures
+        run: |
+          sudo install -d -m 0700 /root/ouf-chat-recovery-tests
+          sudo cp -a . /root/ouf-chat-recovery-tests/repo
+          sudo chown -R root:root /root/ouf-chat-recovery-tests
+          sudo chmod -R go-w /root/ouf-chat-recovery-tests
+          sudo sh -c 'cd /root/ouf-chat-recovery-tests/repo && OUF_NATIVE_UIDS=1 OUF_TEST_ROOT=/root/ouf-chat-recovery-tests python3 -I -B -S -m unittest discover -s tests -p "test_chat_recovery_*.py" -v'
+  stage-code-only:
+    needs: native-owner
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Bind all executable sources without root or target changes
+        env:
+          OUF_CODE_DIRECTORY: ${{ runner.workspace }}/ouf-chat-recovery-code-${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 -I -B -S scripts/stage-chat-recovery-executor.py "$GITHUB_WORKSPACE" "$OUF_CODE_DIRECTORY" "$GITHUB_SHA"
