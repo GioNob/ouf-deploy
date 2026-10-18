@@ -2,7 +2,7 @@
 import contextlib,hashlib,importlib.util,io,json,os,subprocess,sys,tempfile,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-COMMIT='6c5d54953a661b0a01ad54a9aea52d5f23b8cbc1'
+COMMIT='6f8493ec372f8ca3e12c8a4e6df19552e28fd383'
 class Delivery(unittest.TestCase):
  def exercise(self,change):
   spec=importlib.util.spec_from_file_location('stage',ROOT/'scripts/stage-source-revision-postboot.py')
@@ -10,7 +10,7 @@ class Delivery(unittest.TestCase):
   with tempfile.TemporaryDirectory(dir=os.environ.get('OUF_TEST_ROOT',str(ROOT.parent))) as temp:
    directory=Path(temp)/'stage'
    with contextlib.redirect_stdout(io.StringIO()):m.stage(ROOT,directory,COMMIT)
-   self.assertEqual(hashlib.sha256((directory/'manifest.json').read_bytes()).hexdigest(),'a904ca6614bed530b80b1bac40469fbf8d3227d2c50371f8d874d89a1ce4a68f')
+   self.assertEqual(hashlib.sha256((directory/'manifest.json').read_bytes()).hexdigest(),'dc310b977508915af520792d48e1bf970abcdffcf2b4a6d9b33a8c72f77c4ccf')
    if change=='manifest':(directory/'manifest.json').write_bytes(b'PRIVATE_CANARY')
    if change=='configuration':(directory/'configuration.py').write_bytes(b'PRIVATE_CANARY')
    if change=='member':(directory/'prepare.py').write_bytes(b'PRIVATE_CANARY')
