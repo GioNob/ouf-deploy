@@ -1,0 +1,22 @@
+name: Retained UDP startup bounded read
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/read-retained-udp-startup.py','tests/test_retained_udp_startup_read.py','.github/workflows/retained-udp-startup-read.yml']
+permissions: {contents: read}
+jobs:
+  redaction:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: python3 -I -B -S -m unittest discover -s tests -p test_retained_udp_startup_read.py -v
+  target-read:
+    needs: redaction
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: timeout -s KILL 50 python3 -I -B -S scripts/read-retained-udp-startup.py releases/source-revision-private-preparation-20261018.json
