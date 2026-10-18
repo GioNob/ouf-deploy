@@ -64,7 +64,7 @@ def compile_plan(p,api,scan_configuration):
   request={'Container':row['Id'],'EndpointConfig':{'IPAMConfig':{'IPv4Address':pin['newIPv4']},'Aliases':copy.deepcopy(aliases),'MacAddress':e['MacAddress']}}
   moves.append({'pin':copy.deepcopy(pin),'before':row,'immutableHash':immutable(row),'otherNetworksHash':other_networks(row,n['name']),'process':process(row),'request':request})
  restart=rows.get(p['restart']['containerId']);require(restart is not None,'RESTART_TARGET_MISSING');identity(restart,p['restart'])
- require(not restart['State']['Running']and restart['HostConfig']['RestartPolicy']['Name']=='unless-stopped','STOPPED_RETAINED_RESTART_TARGET_REQUIRED')
+ require(not restart['State']['Running']and restart['State']['Status']=='exited'and restart['State']['Pid']==0 and not restart['State']['StartedAt'].startswith('0001-')and restart['HostConfig']['RestartPolicy']['Name']=='unless-stopped','STOPPED_RETAINED_RESTART_TARGET_REQUIRED')
  scan_configuration(restart,p)
  e=endpoint(restart,n['name']);require(e['NetworkID']==n['id']and(e.get('IPAMConfig')or{}).get('IPv4Address')in p['reservedIPv4'],'RETAINED_APPLICATION_RESERVATION_REQUIRED')
  unaffected={cid:{'immutable':immutable(row),'process':process(row),'networks':digest(row['NetworkSettings'])}for cid,row in rows.items()if cid not in {v['pin']['containerId']for v in moves}and cid!=restart['Id']}

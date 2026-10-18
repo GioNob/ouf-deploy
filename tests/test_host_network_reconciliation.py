@@ -11,7 +11,7 @@ def fixture():
  network={'name':'fixture-net','id':'9'*64,'subnet':'10.80.0.0/24','gateway':'10.80.0.1','internal':True}
  def row(letter,name,ip,static=False,running=True,other=False):
   e={'NetworkID':network['id'],'IPAddress':ip if running else'','IPAMConfig':{'IPv4Address':ip}if static else None,'Aliases':[name],'MacAddress':'02:00:00:00:00:'+letter*2,'DriverOpts':None,'GwPriority':0,'Links':None}
-  return {'Id':letter*64,'Image':'sha256:'+'f'*64,'Name':'/'+name,'Config':{'Env':['PASSWORD=SECRET_CANARY']},'HostConfig':{'NetworkMode':network['name'],'RestartPolicy':{'Name':'unless-stopped'},'Privileged':False,'AutoRemove':False},'Mounts':[],'State':{'Running':running,'Paused':False,'Restarting':False,'Dead':False,'Pid':100 if running else 0,'StartedAt':'fixture'},'NetworkSettings':{'Networks':{network['name']:e,**({'control':{'NetworkID':'8'*64,'IPAddress':'10.90.0.2'}}if other else{})}}}
+  return {'Id':letter*64,'Image':'sha256:'+'f'*64,'Name':'/'+name,'Config':{'Env':['PASSWORD=SECRET_CANARY']},'HostConfig':{'NetworkMode':network['name'],'RestartPolicy':{'Name':'unless-stopped'},'Privileged':False,'AutoRemove':False},'Mounts':[],'State':{'Status':'running'if running else'exited','Running':running,'Paused':False,'Restarting':False,'Dead':False,'Pid':100 if running else 0,'StartedAt':'fixture'},'NetworkSettings':{'Networks':{network['name']:e,**({'control':{'NetworkID':'8'*64,'IPAddress':'10.90.0.2'}}if other else{})}}}
  rows=[row('a','gateway','10.80.0.5',other=True),row('b','store','10.80.0.6'),row('c','application','10.80.0.5',static=True,running=False),row('d','independent','10.80.0.7',static=True)]
  p={'schema':'ouf.host-network-reconciliation.v1','engineVersion':'fixture','socketPath':'/fixture.sock','network':network,'maximumContainers':128,'configurationOwnerUids':[0], 'reservedIPv4':['10.80.0.5','10.80.0.6'],'moves':[],'restart':{k:rows[2][v]for k,v in [('containerId','Id'),('imageId','Image')]}}
  p['restart']['name']='application'
@@ -31,7 +31,7 @@ def fixture():
    elif path.endswith('/connect'):
     cfg=value['EndpointConfig'];r['NetworkSettings']['Networks'][network['name']]={'NetworkID':network['id'],'IPAddress':cfg['IPAMConfig']['IPv4Address'],**copy.deepcopy(cfg),'GwPriority':0}
    else:
-    r['State'].update(Running=True,Pid=300);r['NetworkSettings']['Networks'][network['name']]['IPAddress']=r['NetworkSettings']['Networks'][network['name']]['IPAMConfig']['IPv4Address']
+    r['State'].update(Running=True,Pid=300,Status="running");r['NetworkSettings']['Networks'][network['name']]['IPAddress']=r['NetworkSettings']['Networks'][network['name']]['IPAMConfig']['IPv4Address']
    if self.fail_after==len(self.writes):raise TimeoutError('SECRET_CANARY')
  return p,API(),rows
 class Plan(unittest.TestCase):

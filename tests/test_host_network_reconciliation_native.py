@@ -1,5 +1,5 @@
 """Real Docker29 endpoint moves/restart; synthetic HTTP services, no OUF authority."""
-import importlib.util,ipaddress,json,os,re,subprocess,unittest
+import importlib.util,ipaddress,json,os,re,subprocess,time,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('network_owner',ROOT/'tools/host_network_reconciliation.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
@@ -18,6 +18,7 @@ class Native(unittest.TestCase):
    net=json.loads(self.cli('network','inspect',backend))[0];subnet=ipaddress.IPv4Network(net['IPAM']['Config'][0]['Subnet']);gateway=net['IPAM']['Config'][0]['Gateway'];old=str(subnet.network_address+2)
    self.cli('pull','busybox:1.37.0');image=self.cli('image','inspect','--format','{{.Id}}','busybox:1.37.0')
    app=self.cli('create','--name',prefix+'-application','--restart','unless-stopped','--network',net['Name'],'--ip',old,image,'sleep','3600');containers.append(app)
+   self.cli('start',app);self.cli('stop','--time','1',app)
    gw=self.cli('run','-d','--name',prefix+'-gateway','--restart','unless-stopped','--network',prefix+'-control',image,'sh','-c','mkdir -p /www; echo fixture > /www/index.html; exec httpd -f -p 8000 -h /www');containers.append(gw)
    self.cli('network','connect',net['Name'],gw)
    store=self.cli('run','-d','--name',prefix+'-store','--restart','unless-stopped','--network',net['Name'],image,'sh','-c','mkdir -p /www; echo fixture > /www/index.html; exec httpd -f -p 8000 -h /www');containers.append(store)
@@ -27,13 +28,22 @@ class Native(unittest.TestCase):
    for row,index in zip(rows[:2],(15,16)):
     p['moves'].append({'containerId':row['Id'],'imageId':row['Image'],'name':row['Name'][1:],'oldIPv4':row['NetworkSettings']['Networks'][net['Name']]['IPAddress'],'newIPv4':str(subnet.network_address+index),'servicePorts':[8000],'configurationDestinations':[]})
    client_row=self.inspect(client);client_ip=client_row['NetworkSettings']['Networks'][net['Name']]['IPAddress'];p['moves'].append({'containerId':client,'imageId':image,'name':client_row['Name'][1:],'oldIPv4':client_ip,'newIPv4':client_ip,'servicePorts':[8000],'configurationDestinations':[]})
-   api=m.Engine(p['socketPath'],p['engineVersion']);plan=m.compile_plan(p,api,lambda r,p:None);claims=[];result=m.apply(plan,api,lambda name,request:claims.append(name));self.assertTrue(result['complete']);self.assertEqual(len(claims),7)
+   api=m.Engine(p['socketPath'],p['engineVersion']);original_write=api.write;write_count=[0]
+   def lost_response(path,value):
+    original_write(path,value);write_count[0]+=1
+    if write_count[0]in (1,2):raise TimeoutError('synthetic response loss after real effect')
+   api.write=lost_response
+   plan=m.compile_plan(p,api,lambda r,p:None);claims=[];result=m.apply(plan,api,lambda name,request:claims.append(name));self.assertTrue(result['complete']);self.assertEqual(len(claims),7);self.assertEqual(write_count[0],7)
    for before in rows[:2]:
     after=self.inspect(before['Id']);self.assertEqual(after['State']['Pid'],before['State']['Pid']);self.assertEqual(after['State']['StartedAt'],before['State']['StartedAt']);self.assertEqual(after['Mounts'],before['Mounts'])
    self.assertEqual(self.inspect(gw)['NetworkSettings']['Networks'][prefix+'-control'],rows[0]['NetworkSettings']['Networks'][prefix+'-control'])
    for role in ('gateway','store'):self.assertEqual(self.cli('exec',client,'wget','-q','-T','5','-O','-','http://'+prefix+'-'+role+':8000'),'fixture')
    # Fresh transport required after daemon restart; no old socket binding is adopted.
    r=subprocess.run(['systemctl','restart','ouf-network-contract-daemon'],capture_output=True,timeout=90);self.assertEqual(r.returncode,0,'fixture daemon restart failed')
+   deadline=time.monotonic()+30
+   while time.monotonic()<deadline:
+    if all(self.inspect(cid)['State']['Running']for cid in containers):break
+    time.sleep(0.2)
    for cid,pin in [(gw,p['moves'][0]),(store,p['moves'][1])]:
     after=self.inspect(cid);self.assertTrue(after['State']['Running']);e=after['NetworkSettings']['Networks'][net['Name']];self.assertEqual(e['IPAddress'],pin['newIPv4']);self.assertEqual(e['IPAMConfig'],{'IPv4Address':pin['newIPv4']})
    self.assertTrue(self.inspect(app)['State']['Running']);self.assertEqual(self.inspect(app)['NetworkSettings']['Networks'][net['Name']]['IPAddress'],old)
