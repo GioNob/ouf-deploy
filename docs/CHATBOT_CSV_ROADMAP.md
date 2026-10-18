@@ -1,3 +1,9 @@
+## Aggiornamento — recupero rete completato, UDP avviato
+
+**Tecniche8/8; funzionali4/6.** L'esecuzione75c6 ha completato6endpoint/13scritture Docker e avviato UDP, con tutti i controlli di configurazione e custodia superati. Il comando completato non va ripetuto. Provider BLOCKED/vuoto resta revocato; disponibilità applicativa ancora da provare. Nessuna migrazione, pubblicazione o ripresa esplicita dei job. [Ricevuta e stato](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
+
+Sono in preparazione le letture native sul runner e il successore esplicito degli input privati dopo il boot. MCP HEALTHY riguarda solo il suo modulo; il riepilogo operativo403 resta non verificato. Non si riutilizzano PID/socket/binding scaduti né vecchie authority. Restano rilascio nativo Onboarding/MCP, pubblicazione governata del profilo e collaudi5/6.
+
 ## Aggiornamento — profilo di custodia circoscritto qualificato
 
 **Tecniche8/8; funzionali4/6.** Provider e confronto preboot erano passati; lo STOP successivo riguarda la custodia dei mount, prima degli effetti. Metadati del runner e ACL confermano il file applicativo0400 intestato all'utente dichiarato e il Caddyfile0664 con il solo operatore1000 come scrittore. Il profilo v2 è vincolato a file/container/mount esatti, senza nuovi utenti fidati globali o modifiche a contenuti e permessi. **37 prove superate**. [Stato, prove e consegna](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).

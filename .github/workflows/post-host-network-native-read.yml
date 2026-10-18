@@ -1,0 +1,22 @@
+name: Post host network native read
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/read-post-host-network-native.py','tests/test_post_host_network_native_read.py','releases/post-host-network-native-health-20261018.json','.github/workflows/post-host-network-native-read.yml']
+permissions: {contents: read}
+jobs:
+  bounded-redaction:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: python3 -I -B -S -m unittest discover -s tests -p test_post_host_network_native_read.py -v
+  target-read:
+    needs: bounded-redaction
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: timeout -s KILL 50 python3 -I -B -S scripts/read-post-host-network-native.py releases/host-network-reconciliation-20261018.json releases/source-revision-private-preparation-20261018.json releases/post-host-network-native-health-20261018.json

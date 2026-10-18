@@ -1,3 +1,17 @@
+## Current checkpoint — host network correction COMPLETE; native readback in progress
+
+Technical **8/8**, functional **4/6**. The operator's immutable75c6fd delivery completed all6 endpoint corrections and13 Docker writes, with one retained UDP start. The result proves preserved scope,5 narrowly allowed derived Config.MacAddress metadata additions, actual empty-DNS preboot equivalence on all3 apps and an unchanged historical baseline. All5 mounted configuration reads/custody checks passed, including the previously protected files. Context /etc/ouf/deploy-snapshots/host-network-reconciliation-c_zpdhof, plan SHA256 e8dd1322daea4ee8b2f1b8fbe332c76014d998ff89577443fca0ba0ccd2d2b0b. [Target completion receipt](../evidence/host-network-reconciliation-target-complete-20261018.json). This is the user-provided executor result; an independent root journal readback has not yet been performed. The completed launcher must never be replayed.
+
+The native provider remains BLOCKED/empty/revoked, with reconciliation required and no provider start allowed. applicationReadinessProven=false. No source-revision release, migration, profile publication, new identity decision or explicit historical job retry occurred; existing workers may have resumed normally.
+
+Direct MCP system status returns HEALTHY for module MCP only. The authorized-account operations-summary call returned403 (tool wrapper INVALID_ARGUMENT); it is recorded as unavailable and is not retried or replaced by protected business SQL. No conclusion about absence of operational incidents is drawn.
+
+A bounded runner read is being qualified for6 exact fixed endpoints,9 retained container identities/processes, and one native public health GET per application. Health bodies, raw errors, configuration/env and credentials are not printed; redirects are not followed, failures are not retried. The probes use the installed source contracts (UDP/Onboarding Actuator readiness and MCP /health/ready); dependency/owner availability is not inferred from a live process. Whole graph/provider acceptance remains unproven.
+
+Next preparation must create an explicit postboot/private-input successor bound to the completed host plan and original c23 custody. Preboot PIDs, Engine socket, PG/APISIX namespace and hashes must not be silently substituted. Existing candidate archives and qualified Spring7-property verifier are reused; no duplicate implementation or new temporary HUMAN session is opened before preparation is complete. Native Onboarding33→34/MCP release, governed profile publication and functional5/6 remain outstanding.
+
+## Historical checkpoints before host completion
+
 ## Current checkpoint — exact mounted-file custody qualified; target execution pending
 
 Technical **8/8**, functional **4/6**. The prior54d3 operator attempt passed native provider, DNS and preboot checks, then stopped in configuration_bytes during plan compilation at CONFIGURATION_CUSTODY_REQUIRED. No plan/incident or Docker write was reached. This was a compound file-custody predicate, not evidence of altered configuration values. Earlier scanner reads may have read protected credential-bearing configuration privately; the failure itself occurred before reading the failed file. No file values were printed.
