@@ -6,6 +6,31 @@ from pathlib import Path
 RUNTIME_FORMAT='{"id":{{json .Id}},"image":{{json .Image}},"running":{{json .State.Running}},"pid":{{json .State.Pid}},"revision":{{json (index .Config.Labels "org.opencontainers.image.revision")}}}'
 JVM=('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','JAVA_OPTS','_JAVA_OPTIONS')
 
+def json_properties(raw):
+    assert type(raw)is str and 0<len(raw.encode())<=65536
+    def unique(rows):
+        result={}
+        for key,value in rows:
+            assert key not in result;result[key]=value
+        return result
+    value=json.loads(raw,object_pairs_hook=unique,parse_constant=lambda _:(_ for _ in ()).throw(ValueError()))
+    result=[];seen=set()
+    def visit(obj,prefix='',depth=0):
+        assert type(obj)is dict and obj and depth<=12
+        for key,item in obj.items():
+            assert type(key)is str and re.fullmatch('[A-Za-z0-9_.-]{1,128}',key)
+            full=prefix+'.'+key if prefix else key
+            if type(item)is dict:visit(item,full,depth+1)
+            else:
+                normalized=re.sub('[^a-z0-9]','',full.lower())
+                assert normalized not in seen and len(seen)<64;seen.add(normalized)
+                row={'property':normalized,'type':type(item).__name__}
+                if normalized in ('springflywayenabled','springflywaybaselineonmigrate','springflywayvalidateonmigrate')and type(item)is bool:
+                    row['classification']='EXPLICIT_TRUE'if item else'EXPLICIT_FALSE'
+                result.append(row)
+    visit(value)
+    return sorted(result,key=lambda r:r['property'])
+
 def jvm(value):
     if value=='':return 'EMPTY_JVM_NO_OPTIONS'
     if len(value)>4096:return 'UNCLASSIFIED'
@@ -35,7 +60,9 @@ def channels(entries):
         normalized=re.sub('[^a-z0-9]','',key.lower())
         if normalized.startswith(('spring','loader'))or key in JVM:
             assert re.fullmatch('[A-Za-z_][A-Za-z0-9_]{0,127}',key)
-            result.append({'name':key,'classification':classify(key,value)})
+            row={'name':key,'classification':classify(key,value)}
+            if key=='SPRING_APPLICATION_JSON':row['properties']=json_properties(value)
+            result.append(row)
     return sorted(result,key=lambda r:r['name'])
 
 def inspect(reference,format):

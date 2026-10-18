@@ -20,5 +20,12 @@ class Redaction(unittest.TestCase):
  def test_duplicate_and_malformed_entries_are_rejected(self):
   for value in (['A=1','A=2'],['missing-equals'],['SPRING_SECRET\nCANARY=value']):
    with self.assertRaises(AssertionError):reader.channels(value)
+ def test_json_property_shapes_do_not_include_values(self):
+  rows=reader.json_properties('{"ouf":{"onboarding":{"udp-identity":{"gateway-url":"PRIVATE_CANARY"}}}}')
+  self.assertEqual(rows,[{'property':'oufonboardingudpidentitygatewayurl','type':'str'}])
+  self.assertNotIn('PRIVATE_CANARY',json.dumps(rows))
+ def test_json_duplicates_and_relaxed_aliases_are_rejected(self):
+  for raw in ('{"ouf.a":1,"ouf.a":2}','{"ouf.a":1,"ouf-a":2}'):
+   with self.assertRaises(AssertionError):reader.json_properties(raw)
 
 if __name__=='__main__':unittest.main()
