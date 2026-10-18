@@ -1,3 +1,9 @@
+## Latest receipt — obsolete launcher executed again
+
+The operator transcript from /home/oufadmin/ouf-chat-recovery-update.6i2cE5LP/run.log explicitly selects old code package 39082232187, source be0fbb12eb23d36a73d8fd7027788a17e32349d8 and manifest 7d6755397e709ce810f1de0127f1ba06a1981b7b250238342b8e9671c54da296. It stopped again with RETAINED_HOST_CONFIGURATION_CHANGED in /etc/ouf/deploy-snapshots/chat-recovery-execution-14co9v43 before runtime authority. This is not execution evidence for corrected package 39082554565. Retain this additional private context; no cleanup or runtime replay was requested. [Receipt](../evidence/chat-recovery-obsolete-launch-receipt-20261018.json).
+
+The corrected command is now delivered under a distinct local filename, OUF_Aggiornamento_UDP_MCP_CORRETTO_39082554565.txt, with identical bytes to the qualified current launcher. Its package selector must end in 39082554565. Reusing the earlier output filename made the handoff ambiguous; historical copied text still selects the obsolete immutable package. Technical 8/8 and functional 3/6 remain unchanged.
+
 ## Current target preparation stop — restored restart policy comparison
 
 Operator receipt: code context /etc/ouf/deploy-snapshots/chat-recovery-executor-code-pznqmb02; preparation context /etc/ouf/deploy-snapshots/chat-recovery-execution-gifk1h2d. Bootstrap stopped with RETAINED_HOST_CONFIGURATION_CHANGED before runtime authority. Technical 8/8, functional 3/6; no successful update is claimed.
