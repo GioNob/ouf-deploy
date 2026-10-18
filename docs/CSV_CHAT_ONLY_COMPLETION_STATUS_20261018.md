@@ -1,3 +1,9 @@
+## Protected preparation completed — exact target inputs retained
+
+Technical **8/8**, functional **4/6**. The operator completed the single protected preparation. [Redacted receipt](../evidence/source-revision-private-preparation-target-20261018.json): private context `/etc/ouf/deploy-snapshots/source-revision-prepared-lssxnowq`, prepared-plan SHA256 `c23ec15b43427c4558b5b06bf36c2c1b4fa73943efbc0e081ad2731b69c9bc89`. Both images are under root custody without import; Onboarding33→34 is the sole pending migration, UDP36 and MCP history are retained, all3 application generations and the complete78-route Gateway baseline match. No historical authority was reused and all runtime mutation/publication/retry counts are zero.
+
+This supersedes the previous password boundary: no second preparation/login is required to acknowledge that completed work. Next implementation work must consume these exact immutable private inputs, complete effective Flyway configuration/backup/execution bindings and the separately scoped authorization delta, and only then present the finite native release review. `readyForExecution=false` remains explicit.
+
 ## Current protected-preparation boundary — no new runtime release
 
 Technical **8/8**, functional **4/6**. The existing native authorization owner now supports an explicit profile for only `ouf.onboarding.revision.read` and `ouf.onboarding.revision.prepare`. [Qualification39105270949](https://github.com/GioNob/ouf-deploy/actions/runs/39105270949):22 legacy authorization tests,6 durable observation tests and11 revision-profile tests pass, including actual dual-role signed authority, Java owner constraints, HUMAN confirmation, lost-response reconciliation and revocation. [Evidence](../evidence/source-revision-authorization-qualified-20261018.json). This is implementation qualification; no capabilities, scopes, grants or policies have been published on the target.
