@@ -17,4 +17,4 @@ jobs:
           sudo cp -a . /root/ouf-chat-recovery-tests/repo
           sudo chown -R root:root /root/ouf-chat-recovery-tests
           sudo chmod -R go-w /root/ouf-chat-recovery-tests
-          sudo sh -c 'cd /root/ouf-chat-recovery-tests/repo && OUF_NATIVE_UIDS=1 OUF_TEST_ROOT=/root/ouf-chat-recovery-tests python3 -B -m unittest discover -s tests -p "test_chat_recovery_*.py" -v'
+          sudo sh -c 'cd /root/ouf-chat-recovery-tests/repo && OUF_NATIVE_UIDS=1 OUF_TEST_ROOT=/root/ouf-chat-recovery-tests python3 -I -B -S -m unittest discover -s tests -p "test_chat_recovery_*.py" -v'
