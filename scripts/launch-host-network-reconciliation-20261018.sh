@@ -6,7 +6,7 @@ ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
 if [ ! -x "$ouf_gh" ]; then ouf_gh="$(command -v gh || true)"; fi
 [ -n "$ouf_gh" ] && [ -x "$ouf_gh" ] || { echo 'Client GitHub non disponibile.' >&2; exit 1; }
 ouf_case="$(mktemp -d "$HOME/ouf-host-network-correction.XXXXXXXX")"
-ouf_source=cc293d0b9859abd92a1ff62fdc05dcfef97c3569
+ouf_source=1209e34f943db46e641ae854d86be63da69463d4
 for ouf_pair in 'tools/host_network_reconciliation.py:owner.py' 'scripts/reconcile-host-network-20261018.py:bootstrap.py' 'releases/host-network-reconciliation-20261018.json:installation.json' 'releases/host-network-reconciliation-execution-20261018.json:execution.json' 'scripts/read-source-revision-boot-guard.py:guard_reader.py' 'releases/source-revision-boot-read-selection-20261018.json:guard_selection.json' 'scripts/read-preboot-network-contract.py:contracts.py' 'releases/preboot-network-contract-read-selection-20261018.json:contracts_selection.json'; do
   ouf_path="${ouf_pair%:*}";ouf_name="${ouf_pair#*:}"
   "$ouf_gh" api "repos/GioNob/ouf-deploy/contents/$ouf_path?ref=$ouf_source" --jq .content | base64 --decode > "$ouf_case/$ouf_name"
@@ -14,7 +14,7 @@ done
 (
 cd "$ouf_case"
 printf '%s\n' '06d11ae791d497c701caa75c7b0d164fa4d44017727e3f977d10af1c04809511  owner.py' \
-  '258097c4927b503c7c7dc114dbf194f9c0eb391df17bb6440dc64e92bfccb272  bootstrap.py' \
+  '02ff108697dfa8fd2f0b9f6fe6a4bf76f841180b533c2e992ca63bc5c240778b  bootstrap.py' \
   '92ef26cbc1341c3d7de15fac7ed8d1856a0bc6d03b859d16e4a86ba2a22f2afb  installation.json' \
   '0f06b63f51d068e74f09477e56493b2197880f76e7929796b11085cbd1427b74  execution.json' \
   'c63ee1872d4e78c16bead93c80c0c0fefa694814222a89cf93d23e084b4b63fd  guard_reader.py' \
@@ -38,7 +38,7 @@ def verified(path,expected):
  finally:os.close(fd)
 try:
  if os.geteuid()!=0 or os.getegid()!=0 or not(sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode)or len(sys.argv)!=2:raise ValueError('ISOLATED_HOST_ADMINISTRATOR_REQUIRED')
- signal.alarm(300);root=Path(sys.argv[1]);hashes={"guard_selection.json":"36c47400fc3dc7669b04d6bc18e204a70ca7502f3749d8d92a292ddf4bdc0978","contracts_selection.json":"e7d72bfd63b182919f2b34088408950ef39a2b59f89600abca54c397643259af","execution.json":"0f06b63f51d068e74f09477e56493b2197880f76e7929796b11085cbd1427b74","contracts.py":"997b3ba99a474c051efb32cfd69dc706de68ade1d332609f577955f58f0d3c79","bootstrap.py":"258097c4927b503c7c7dc114dbf194f9c0eb391df17bb6440dc64e92bfccb272","guard_reader.py":"c63ee1872d4e78c16bead93c80c0c0fefa694814222a89cf93d23e084b4b63fd","owner.py":"06d11ae791d497c701caa75c7b0d164fa4d44017727e3f977d10af1c04809511","installation.json":"92ef26cbc1341c3d7de15fac7ed8d1856a0bc6d03b859d16e4a86ba2a22f2afb"}
+ signal.alarm(300);root=Path(sys.argv[1]);hashes={"guard_selection.json":"36c47400fc3dc7669b04d6bc18e204a70ca7502f3749d8d92a292ddf4bdc0978","contracts_selection.json":"e7d72bfd63b182919f2b34088408950ef39a2b59f89600abca54c397643259af","execution.json":"0f06b63f51d068e74f09477e56493b2197880f76e7929796b11085cbd1427b74","contracts.py":"997b3ba99a474c051efb32cfd69dc706de68ade1d332609f577955f58f0d3c79","bootstrap.py":"02ff108697dfa8fd2f0b9f6fe6a4bf76f841180b533c2e992ca63bc5c240778b","guard_reader.py":"c63ee1872d4e78c16bead93c80c0c0fefa694814222a89cf93d23e084b4b63fd","owner.py":"06d11ae791d497c701caa75c7b0d164fa4d44017727e3f977d10af1c04809511","installation.json":"92ef26cbc1341c3d7de15fac7ed8d1856a0bc6d03b859d16e4a86ba2a22f2afb"}
  payload={name:verified(root/name,digest)for name,digest in hashes.items()}
  modules={}
  for name in ('owner','bootstrap','guard_reader','contracts'):
