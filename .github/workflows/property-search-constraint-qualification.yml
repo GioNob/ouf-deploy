@@ -23,4 +23,5 @@ jobs:
         run: |
           cp deploy/tests/fixtures/PropertySearchConstraintQualificationTest.java source/src/test/java/it/comune/trieste/ouf/udp/
           cd source
+          mvn -B -f vendor/authorization-sdk/pom.xml install
           mvn -B -Dtest=PropertySearchConstraintQualificationTest -DfailIfNoTests=true test
