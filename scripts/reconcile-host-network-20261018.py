@@ -114,10 +114,13 @@ def run(owner,reader,contracts,profile,selection,contract_selection,parent,point
   provider_guard(reader,selection,owner)
   historical=contracts.collect(contract_selection);owner.require(historical['complete'],'SEALED_PREBOOT_INPUTS_REQUIRED')
   private=contracts.read(contract_selection['preparedPlan']);api=owner.Engine(profile['socketPath'],profile['engineVersion'])
-  representation_proofs={}
+  representation_proofs={};preboot_actual_hashes={}
   for role,before in private['beforeApplications'].items():
-   actual=api.get('/containers/'+before['Id']+'/json');representation_proofs[role]=preboot_application_proof(before,actual,owner)
+   actual=api.get('/containers/'+before['Id']+'/json');representation_proofs[role]=preboot_application_proof(before,actual,owner);preboot_actual_hashes[actual['Id']]=owner.immutable(actual)
   scan,files=configuration_scanner(reader,profile,owner);plan=owner.compile_plan(profile,api,scan)
+  frozen={cid:value['immutable']for cid,value in plan['unaffected'].items()}
+  frozen.update({move['before']['Id']:move['immutableHash']for move in plan['moves']});frozen[plan['restartBefore']['Id']]=owner.immutable(plan['restartBefore'])
+  owner.require(all(frozen.get(cid)==expected for cid,expected in preboot_actual_hashes.items()),'APPLICATION_CHANGED_BETWEEN_PREBOOT_PROOF_AND_PLAN')
   # Source profile and route data are untouched. This is a new host-admin plan,
   # with current process/engine/endpoint bindings, not reuse of prior authority.
   plan['configurationFileBindings']=files;plan['prebootPreparedBinding']=contract_selection['preparedPlan'];plan['nativeBootBinding']=native['loadedBinding'];plan['engineSocketBinding']=list(api.pin);plan['prebootRepresentationProofs']=representation_proofs

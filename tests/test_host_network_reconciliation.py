@@ -147,4 +147,10 @@ class Bootstrap(unittest.TestCase):
   root,p,api,reader,contracts,selection,_=self.setup_case();baseline=contracts.read({})['beforeApplications'];baseline['udp']['HostConfig']['Dns']=None;contracts.read=lambda _:copy.deepcopy({'beforeApplications':baseline});api.rows['c'*64]['HostConfig']['Dns']=['192.0.2.53']
   with patch.object(m,'Engine',return_value=api),self.assertRaises(ValueError):b.run(m,reader,contracts,p,selection,{'preparedPlan':{'path':'fixture','sha256':'f'*64},'bootProfile':{'path':'fixture-boot','sha256':'a'*64}},root,root/'incident.json')
   self.assertEqual(api.writes,[]);self.assertFalse((root/'incident.json').exists())
+ def test_configuration_change_between_proof_and_plan_is_not_adopted(self):
+  root,p,api,reader,contracts,selection,_=self.setup_case();baseline=contracts.read({})['beforeApplications'];baseline['udp']['HostConfig']['Dns']=None;contracts.read=lambda _:copy.deepcopy({'beforeApplications':baseline});api.rows['c'*64]['HostConfig']['Dns']=[];compile_original=m.compile_plan
+  def raced(*args):
+   api.rows['c'*64]['Config']['Env']=['SECRET_CANARY_CHANGED_AFTER_PROOF'];return compile_original(*args)
+  with patch.object(m,'Engine',return_value=api),patch.object(m,'compile_plan',side_effect=raced),self.assertRaisesRegex(ValueError,'BETWEEN_PREBOOT_PROOF_AND_PLAN'):b.run(m,reader,contracts,p,selection,{'preparedPlan':{'path':'fixture','sha256':'f'*64},'bootProfile':{'path':'fixture-boot','sha256':'a'*64}},root,root/'incident.json')
+  self.assertEqual(api.writes,[]);self.assertFalse((root/'incident.json').exists())
 if __name__=='__main__':unittest.main()
