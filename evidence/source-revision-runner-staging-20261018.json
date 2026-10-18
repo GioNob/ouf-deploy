@@ -1,0 +1,74 @@
+{
+  "schema": "ouf.source-revision-staging-evidence.v1",
+  "observedAt": "2026-10-18T06:30:00Z",
+  "producerRun": {
+    "id": 39085780635,
+    "url": "https://github.com/GioNob/ouf-deploy/actions/runs/39085780635",
+    "conclusion": "success",
+    "commit": "ccfbd3eb48c2141ce855fb8f9098546f44af56b9"
+  },
+  "deliveryRun": {
+    "id": 39086004570,
+    "jobId": 117552595508,
+    "url": "https://github.com/GioNob/ouf-deploy/actions/runs/39086004570",
+    "conclusion": "success",
+    "commit": "467ac8e89de4cdd2f46510f151435bf36c81e05d"
+  },
+  "receipts": [
+    {
+      "completedTechnicalPhases": 8,
+      "functionalMilestonesProven": 4,
+      "installationReady": false,
+      "packageDirectory": "/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revision-39086004570",
+      "packageVerified": true,
+      "privilegedCommands": 0,
+      "rootCustodyProven": false,
+      "runtimeMutations": 0,
+      "schema": "ouf.source-revision-runner-staging.v1",
+      "sourceCommits": {
+        "gateway": "dd8553da90d7a6cfc1083e1cf4d9075c09ee389b",
+        "mcp": "a79b139c7a26d64a584b0a432ebb8df8c32a52ed",
+        "onboarding": "be388e1462778438a208c2e00e166370fee32189"
+      },
+      "targetApplyAuthorized": false
+    },
+    {
+      "manifestSha256": "83c8d7fc8f28e954960899f8e066a31e1dc06de86f89431c6f607c79219c9ee7",
+      "sourceLockSha256": "9fd9fd3e3ac03db209457992ffa89e6fe43be57741d8c0113909b5c32fc79d6d"
+    },
+    {
+      "check": "IMAGE_VERIFIED",
+      "layerCount": 10,
+      "module": "onboarding",
+      "nativeImageId": "sha256:f6c005160610cbf35d2296e1e1eb107469ad527c97196f94cbda21946d65e85e",
+      "runtimeMutations": 0,
+      "sourceCommit": "be388e1462778438a208c2e00e166370fee32189"
+    },
+    {
+      "check": "IMAGE_VERIFIED",
+      "layerCount": 4,
+      "module": "mcp",
+      "nativeImageId": "sha256:e03ae46ae6cf1c2742549b208b7611ac97f4fe9ffa25189ff5087b07c3a6f7e5",
+      "runtimeMutations": 0,
+      "sourceCommit": "a79b139c7a26d64a584b0a432ebb8df8c32a52ed"
+    },
+    {
+      "check": "END",
+      "complete": true,
+      "completedTechnicalPhases": 8,
+      "functionalMilestonesProven": 4,
+      "imageReviewPath": "/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revision-image-review-39086004570/image-review.json",
+      "imageReviewSha256": "86aefab423e06295cd221256a3f21c15d43fcdb65d8aafa97308e14b1b3cb1bb",
+      "imagesImported": 0,
+      "rootCustodyProven": false,
+      "runtimeMutations": 0
+    }
+  ],
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "rootCustodyProven": false,
+  "installationReady": false,
+  "runtimeMutations": 0,
+  "profilePublications": 0,
+  "jobsRetried": 0
+}
