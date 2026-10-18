@@ -1,4 +1,4 @@
-import hashlib,importlib.util,json,os,tempfile,unittest
+import ast,hashlib,importlib.util,json,os,tempfile,unittest
 from pathlib import Path
 from unittest.mock import patch
 spec=importlib.util.spec_from_file_location('preboot',Path(__file__).resolve().parents[1]/'scripts/read-preboot-network-contract.py')
@@ -27,4 +27,10 @@ class Read(unittest.TestCase):
  def test_malformed_or_adversarial_literal_not_emitted(self):
   self.assertEqual(m.ipv4_literals({'secret':'SECRET_CANARY 999.2.3.4','10.9.0.2':'x'}),['10.9.0.2'])
   with self.assertRaises(ValueError):m.unique([('key',1),('key',2)])
+ def test_launcher_compiles_and_pins_exact_executable_and_selection(self):
+  root=Path(__file__).resolve().parents[1];launcher=(root/'scripts/launch-preboot-network-contract-read-20261018.sh').read_text()
+  body=launcher.split("<<'OUF_VERIFIED_PREBOOT_NETWORK_READ'",1)[1].split('\n',1)[1].rsplit('\nOUF_VERIFIED_PREBOOT_NETWORK_READ',1)[0]
+  ast.parse(body)
+  for name in ('scripts/read-preboot-network-contract.py','releases/preboot-network-contract-read-selection-20261018.json'):
+   self.assertIn(hashlib.sha256((root/name).read_bytes()).hexdigest(),launcher)
 if __name__=='__main__':unittest.main()
