@@ -1,5 +1,5 @@
 """Bounded mounted-file metadata only. Never open file contents or mutate."""
-import hashlib,importlib.util,json,os,signal,stat,sys
+import grp,hashlib,importlib.util,json,os,pwd,signal,stat,sys
 from pathlib import Path
 spec=importlib.util.spec_from_file_location('retained_read',Path(__file__).with_name('read-retained-udp-startup.py'));m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 SUFFIXES=('.yaml','.yml','.conf','.properties','/Caddyfile')
@@ -16,10 +16,14 @@ def inspect_path(path,approved):
   try:info=metadata(parent,approved);out['ancestors'].append({'path':str(parent),'directory':info['directory'],'ownerApproved':info['ownerApproved'],'groupOrOtherWritable':info['groupOrOtherWritable'],'uid':info['uid'],'gid':info['gid'],'mode':info['mode']})
   except OSError as error:out['ancestors'].append({'path':str(parent),'errorClass':type(error).__name__})
  return out
+def group_writers(gid,approved):
+ group=grp.getgrgid(gid);uids={entry.pw_uid for entry in pwd.getpwall()if entry.pw_gid==gid}
+ uids.update(pwd.getpwnam(name).pw_uid for name in group.gr_mem)
+ return {'gid':gid,'enumeratedMemberUids':sorted(uids),'allEnumeratedWritersApproved':bool(uids)and uids.issubset(set(approved)),'identityValuesAreNotCredentials':True}
 def collect(profile):
  m.require(profile['schema']=='ouf.host-network-reconciliation.v1'and 1<=profile['maximumContainers']<=160,'FINITE_INSTALLATION_REQUIRED')
  ids=m.invoke(['ps','--all','--quiet','--no-trunc']).decode().splitlines();m.require(0<len(ids)<=profile['maximumContainers']and len(ids)==len(set(ids))and all(len(v)==64 and all(c in'0123456789abcdef'for c in v)for v in ids),'FLEET_BOUND')
- fmt='{"id":{{json .Id}},"running":{{json .State.Running}},"mounts":{{json .Mounts}}}'
+ fmt='{"id":{{json .Id}},"running":{{json .State.Running}},"user":{{json .Config.User}},"mounts":{{json .Mounts}}}'
  rows=[json.loads(line)for line in m.invoke(['inspect','--type','container','--format',fmt,*ids]).splitlines()if line];m.require(len(rows)==len(ids)and {v['id']for v in rows}==set(ids),'EXACT_FLEET_REQUIRED')
  files=[]
  for row in rows:
@@ -27,8 +31,15 @@ def collect(profile):
   for mount in row['mounts']or[]:
    if mount['Type']!='bind'or not mount['Destination'].endswith(SUFFIXES):continue
    m.require(len(files)<64,'CONFIGURATION_FILE_COUNT_BOUND');path=Path(mount['Source']);m.require(path.is_absolute()and'..'not in path.parts,'EXACT_BIND_PATH_REQUIRED')
-   files.append({'containerId':row['id'],'destination':mount['Destination'],'mountReadOnly':mount.get('RW')is False,**inspect_path(path,profile['configurationOwnerUids'])})
- return {'schema':'ouf.mounted-configuration-custody-metadata.v1','complete':True,'files':files,'filesObserved':len(files),'fleetCount':len(rows),'credentialFilesRead':0,'fileContentsRead':0,'runtimeMutations':0,'engineWrites':0,'pathCoordinatesPrinted':True,'configurationValuesPrinted':False,'metadataNotActivationAuthority':True,'completedTechnicalPhases':8,'functionalMilestonesProven':4}
+   files.append({'containerId':row['id'],'configuredContainerUser':row.get('user'),'destination':mount['Destination'],'mountReadOnly':mount.get('RW')is False,**inspect_path(path,profile['configurationOwnerUids'])})
+ groups={}
+ for value in files:
+  file=value.get('file',{})
+  if file.get('groupOrOtherWritable'):
+   gid=file['gid']
+   try:groups[str(gid)]=group_writers(gid,profile['configurationOwnerUids'])
+   except (OSError,KeyError)as error:groups[str(gid)]={'errorClass':type(error).__name__}
+ return {'schema':'ouf.mounted-configuration-custody-metadata.v1','complete':True,'files':files,'filesObserved':len(files),'fleetCount':len(rows),'groupWriterMetadata':groups,'credentialFilesRead':0,'fileContentsRead':0,'runtimeMutations':0,'engineWrites':0,'pathCoordinatesPrinted':True,'configurationValuesPrinted':False,'metadataNotActivationAuthority':True,'completedTechnicalPhases':8,'functionalMilestonesProven':4}
 if __name__=='__main__':
  signal.alarm(45)
  try:result=collect(json.loads(Path(sys.argv[1]).read_bytes()))
