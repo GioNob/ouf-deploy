@@ -22,7 +22,7 @@ jobs:
                    'ConditionResult','AssertResult','CanStart','RefuseManualStart','UnitFileState',
                    'InactiveEnterTimestamp','ActiveEnterTimestamp','StateChangeTimestamp',
                    'ExecMainCode','ExecMainStatus','FragmentPath','DropInPaths','TriggeredBy','Job'}
-          for unit in ('docker.service','docker.socket','containerd.service'):
+          for unit in ('docker.service','docker.socket','containerd.service','ouf-semantic-boot-guard.service'):
               reply=subprocess.run(['/usr/bin/systemctl','show','--no-pager',
                   '--property='+','.join(sorted(allowed)),unit],capture_output=True,timeout=10,
                   env={'PATH':'/usr/bin:/bin','LC_ALL':'C'})
@@ -56,5 +56,35 @@ jobs:
                   if row:events.append(row)
           result['managerEvents']={'returnCode':reply.returncode,'rows':events,'rawMessagePrinted':False,
               'truncatedOrUnavailable':reply.returncode!=0 or len(reply.stdout)>262144}
+          import hashlib,re
+          from pathlib import Path
+          guards={}
+          for filename in ('/etc/systemd/system/docker.service.d/90-ouf-semantic-boot-guard.conf',
+                           '/etc/systemd/system/ouf-semantic-boot-guard.service'):
+              path=Path(filename);row={}
+              try:
+                  raw=path.read_bytes();assert len(raw)<=65536
+                  row['sha256']=hashlib.sha256(raw).hexdigest();conditions=[];directives=[]
+                  for line in raw.decode().splitlines():
+                      line=line.strip()
+                      if not line or line.startswith(('#',';','[')):continue
+                      key,separator,value=line.partition('=')
+                      if not separator:continue
+                      directives.append(key)
+                      if key.startswith(('ConditionPath','AssertPath')):
+                          assert re.fullmatch(r'[!|]*/[A-Za-z0-9_./-]+',value)
+                          selected=value.lstrip('!|');assert '..'not in Path(selected).parts
+                          conditions.append({'directive':key,'reference':value,'pathExists':Path(selected).exists()})
+                      if key in ('ExecStart','ExecStartPre'):
+                          row['coordinatedGuardCommand']='run_semantic_coordinated_boot_guard.py'in value
+                          row['sealedGuardCommand']='sealed_semantic_boot_guard'in value
+                          row['sourceContexts']=sorted(set(re.findall(r'/etc/ouf/deploy-snapshots/[A-Za-z0-9_-]+',value)))
+                  row['conditions']=conditions;row['directives']=directives
+              except (PermissionError,FileNotFoundError)as error:row['readErrorClass']=type(error).__name__
+              guards[filename]=row
+          result['guardReferences']=guards
+          result['boot']={'uptimeSeconds':int(time.clock_gettime(time.CLOCK_BOOTTIME)),
+                          'observedAtUtc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())}
+          result['managerEvents']['accessHintSuppressed']=b'not seeing'in reply.stderr.lower()
           print(json.dumps(result,sort_keys=True))
           PY
