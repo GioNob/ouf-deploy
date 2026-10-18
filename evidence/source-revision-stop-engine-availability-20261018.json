@@ -82,5 +82,143 @@
   "profilePublications": 0,
   "jobsRetried": 0,
   "configurationChangePerformed": false,
-  "userMaintenanceIntentRequired": true
+  "userMaintenanceIntentRequired": false,
+  "userMaintenanceStatement": {
+    "intentionalDockerStop": false,
+    "source": "User statement in current chat: no access to PC since morning"
+  },
+  "bootGuardObservation": {
+    "run": 39142789856,
+    "job": 117720459755,
+    "snapshot": {
+      "automaticRetry": false,
+      "boot": {
+        "observedAtUtc": "2026-10-18T15:57:19Z",
+        "uptimeSeconds": 27363
+      },
+      "completedTechnicalPhases": 8,
+      "credentialFilesRead": 0,
+      "credentialValuesPrinted": false,
+      "functionalMilestonesProven": 4,
+      "guardReferences": {
+        "/etc/systemd/system/docker.service.d/90-ouf-semantic-boot-guard.conf": {
+          "readErrorClass": "PermissionError"
+        },
+        "/etc/systemd/system/ouf-semantic-boot-guard.service": {
+          "readErrorClass": "PermissionError"
+        }
+      },
+      "installationSpecific": true,
+      "managerEvents": {
+        "accessHintSuppressed": false,
+        "rawMessagePrinted": false,
+        "returnCode": 0,
+        "rows": [],
+        "truncatedOrUnavailable": false
+      },
+      "runtimeMutations": 0,
+      "schema": "ouf.source-revision-engine-availability.v1",
+      "socket": {
+        "gid": 990,
+        "isSocket": true,
+        "mode": "0o660",
+        "present": true,
+        "uid": 0
+      },
+      "units": {
+        "containerd.service": {
+          "ActiveEnterTimestamp": "Sun 2026-10-18 10:21:22 CEST",
+          "ActiveState": "active",
+          "AssertResult": "yes",
+          "CanStart": "yes",
+          "ConditionResult": "yes",
+          "DropInPaths": "",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "FragmentPath": "/usr/lib/systemd/system/containerd.service",
+          "InactiveEnterTimestamp": "",
+          "Job": "",
+          "LoadState": "loaded",
+          "MainPID": "980",
+          "NRestarts": "0",
+          "RefuseManualStart": "no",
+          "Result": "success",
+          "StateChangeTimestamp": "Sun 2026-10-18 10:21:22 CEST",
+          "SubState": "running",
+          "TriggeredBy": "",
+          "UnitFileState": "enabled",
+          "returnCode": 0
+        },
+        "docker.service": {
+          "ActiveEnterTimestamp": "",
+          "ActiveState": "inactive",
+          "AssertResult": "no",
+          "CanStart": "yes",
+          "ConditionResult": "no",
+          "DropInPaths": "/etc/systemd/system/docker.service.d/90-ouf-semantic-boot-guard.conf",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "FragmentPath": "/usr/lib/systemd/system/docker.service",
+          "InactiveEnterTimestamp": "",
+          "Job": "",
+          "LoadState": "loaded",
+          "MainPID": "0",
+          "NRestarts": "0",
+          "RefuseManualStart": "no",
+          "Result": "success",
+          "StateChangeTimestamp": "",
+          "SubState": "dead",
+          "TriggeredBy": "docker.socket",
+          "UnitFileState": "enabled",
+          "returnCode": 0
+        },
+        "docker.socket": {
+          "ActiveEnterTimestamp": "Sun 2026-10-18 17:40:07 CEST",
+          "ActiveState": "active",
+          "AssertResult": "yes",
+          "CanStart": "yes",
+          "ConditionResult": "yes",
+          "DropInPaths": "",
+          "FragmentPath": "/usr/lib/systemd/system/docker.socket",
+          "InactiveEnterTimestamp": "Sun 2026-10-18 17:39:56 CEST",
+          "Job": "",
+          "LoadState": "loaded",
+          "RefuseManualStart": "no",
+          "Result": "success",
+          "StateChangeTimestamp": "Sun 2026-10-18 17:57:10 CEST",
+          "SubState": "listening",
+          "TriggeredBy": "",
+          "UnitFileState": "enabled",
+          "returnCode": 0
+        },
+        "ouf-semantic-boot-guard.service": {
+          "ActiveEnterTimestamp": "",
+          "ActiveState": "failed",
+          "AssertResult": "yes",
+          "CanStart": "yes",
+          "ConditionResult": "yes",
+          "DropInPaths": "",
+          "ExecMainCode": "1",
+          "ExecMainStatus": "1",
+          "FragmentPath": "/etc/systemd/system/ouf-semantic-boot-guard.service",
+          "InactiveEnterTimestamp": "Sun 2026-10-18 17:57:10 CEST",
+          "Job": "",
+          "LoadState": "loaded",
+          "MainPID": "0",
+          "NRestarts": "0",
+          "RefuseManualStart": "no",
+          "Result": "exit-code",
+          "StateChangeTimestamp": "Sun 2026-10-18 17:57:10 CEST",
+          "SubState": "failed",
+          "TriggeredBy": "",
+          "UnitFileState": "disabled",
+          "returnCode": 0
+        }
+      }
+    },
+    "approximateHostBootLocal": "2026-10-18T10:21:00+02:00",
+    "rootCauseProven": false,
+    "privilegedReadRequired": true,
+    "guardBypassPerformed": false
+  }
 }

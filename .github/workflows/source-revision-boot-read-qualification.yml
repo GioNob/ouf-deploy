@@ -1,0 +1,23 @@
+name: Protected boot diagnosis qualification
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths:
+      - scripts/read-source-revision-boot-guard.py
+      - tests/test_source_revision_boot_guard_read.py
+      - .github/workflows/source-revision-boot-read-qualification.yml
+permissions: {contents: read}
+jobs:
+  read-only-root-fixtures:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: df103735c1fe75a31e6d4c752360e9368e6aa52d
+          path: native-source
+      - name: Qualify actual pinned native readers and root custody with no target effects
+        run: |
+          sudo env OUF_GATEWAY_SOURCE="$GITHUB_WORKSPACE/native-source" python3 -I -B -S -m unittest discover -s tests -p test_source_revision_boot_guard_read.py -v
