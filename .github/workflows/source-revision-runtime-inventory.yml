@@ -1,5 +1,5 @@
 name: Source revision read-only target generation inventory
-# Reconcile Engine metadata availability after the pre-authority Spring stop; no runtime authority.
+# Fresh application generations after native host recovery journal-sandbox-_jz3lj9r; read only.
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
