@@ -1,0 +1,27 @@
+{
+  "schema": "ouf.source-revision-native-release-qualification.v1",
+  "qualifiedCommit": "242c9656ce6a0daefc25482484db5450c8ee615b",
+  "qualificationRun": 39107413248,
+  "qualificationJob": 117616164437,
+  "tests": 70,
+  "qualified": true,
+  "stageJob": 117616327157,
+  "stageComplete": true,
+  "codeDirectory": "/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revision-code-39107413248",
+  "packageSha256": "6d96003f48df54d2c9e13b64a496c87b04e8ec7b13e8a2de10be5a3fc6cdfeb0",
+  "executableFileCount": 81,
+  "preparedInputsBinding": {
+    "path": "/etc/ouf/deploy-snapshots/source-revision-prepared-lssxnowq/prepared-plan.json",
+    "sha256": "c23ec15b43427c4558b5b06bf36c2c1b4fa73943efbc0e081ad2731b69c9bc89"
+  },
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "targetRuntimeReleasePerformed": false,
+  "runtimeMutations": 0,
+  "runtimeAuthorityIssued": false,
+  "profilePublications": 0,
+  "jobsRetried": 0,
+  "freshChatClientTokenScopesProven": false,
+  "functionalStage5Proven": false,
+  "functionalStage6Proven": false
+}
