@@ -1,3 +1,7 @@
+## Correzione del controllo preliminare — 18 ottobre 2026
+
+Tecniche **8/8**, funzionali **3/6**. Il tentativo di aggiornamento si è fermato prima dell'autorità runtime con RETAINED_HOST_CONFIGURATION_CHANGED: il compilatore confrontava la policy di riavvio temporanea della creazione con quella finale già ripristinata. Corretto il confronto senza accettare modifiche non previste; **73 test superati** nel [rilascio qualificato 39082554565](https://github.com/GioNob/ouf-deploy/actions/runs/39082554565). La nuova esecuzione riconcilia gli artefatti privati del tentativo fermato prima del login. Aggiornamento target ancora da provare; usare soltanto il launcher aggiornato. [Stato e limiti](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
+
 ## Aggiornamento corrente — esecutore completo qualificato, presenza HUMAN necessaria
 
 Tecniche **8/8**, funzionali **3/6**. Correzione MCP PR72 unita, nuovo pacchetto firmato verificato e preparato dal runner; [69 test della preparazione/esecuzione superati](https://github.com/GioNob/ouf-deploy/actions/runs/39082232187). Il launcher unico prepara la custodia privata delle nuove immagini, verifica generazioni e storia, quindi richiede l'autorità HUMAN nativa per backup e aggiornamento UDP V35→V36/MCP. Nessuna modifica dei servizi è ancora avvenuta. Le evidenze di custodia precedenti riguardano il vecchio pacchetto e restano storiche.

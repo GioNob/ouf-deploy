@@ -2,10 +2,11 @@
 # Installation-specific, one finite release; no automatic retry.
 set -euo pipefail
 umask 077
-ouf_code='/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-chat-recovery-code-39082232187'
+ouf_code='/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-chat-recovery-code-39082554565'
 [ -d "$ouf_code" ] && [ ! -L "$ouf_code" ] || { echo 'Pacchetto qualificato assente: fermarsi.' >&2; exit 1; }
 ouf_stage="$(mktemp -d "$HOME/ouf-chat-recovery-update.XXXXXXXX")"
 echo "Log della sessione: $ouf_stage/run.log"
+echo 'Riconcilio prima il tentativo fermato: nessuna autorita precedente e sole immagini/JAR verificati.'
 echo 'Tecniche8/8; funzionali3/6. Un solo aggiornamento UDP/MCP: preparazione completa prima del login, backup verificato, V36 e verifica finale.'
 echo 'Le immagini sono gia sul runner. Nessuna pubblicazione profili, decisione di identita o ripresa job.'
 echo 'Se HUMAN e scaduto: RIAPRO LOGIN e autenticazione browser; poi APPROVO per la revisione precisa mostrata dal programma.'
@@ -30,8 +31,8 @@ def read(name,expected,maximum=262144):
   assert len(raw)==before.st_size and pin(before)==pin(os.fstat(fd))and hashlib.sha256(raw).hexdigest()==expected
   return bytes(raw)
  finally:os.close(fd)
-manifest_raw=read('package.json','7d6755397e709ce810f1de0127f1ba06a1981b7b250238342b8e9671c54da296');package=json.loads(manifest_raw)
-assert package['sourceCommit']=='be0fbb12eb23d36a73d8fd7027788a17e32349d8'
+manifest_raw=read('package.json','6cd9f2fbeaeb899809030d3d29400ca64e4782d30bd5cbd3c108f13573ff2be4');package=json.loads(manifest_raw)
+assert package['sourceCommit']=='8f79567998aa7231c7255805596a8fd4c9709664'
 files={'package.json':manifest_raw,'execute.py':read('execute.py',package['executorSha256']),
  'runtime.py':read('runtime.py',package['loaderSha256']),'case.json':read('case.json',package['caseSha256'])}
 # Only this verified bootstrap's static overlay declaration selects source names.
@@ -51,6 +52,6 @@ fd=os.open(code,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
 try:os.fsync(fd)
 finally:os.close(fd)
 print('OUF_CHAT_RECOVERY_EXECUTOR_CODE='+str(code),flush=True)
-sys.argv=[str(code/'execute.py'),str(code),'be0fbb12eb23d36a73d8fd7027788a17e32349d8','7d6755397e709ce810f1de0127f1ba06a1981b7b250238342b8e9671c54da296']
+sys.argv=[str(code/'execute.py'),str(code),'8f79567998aa7231c7255805596a8fd4c9709664','6cd9f2fbeaeb899809030d3d29400ca64e4782d30bd5cbd3c108f13573ff2be4']
 exec(compile(files['execute.py'],'<verified-scoped-readiness-bootstrap>','exec'),{'__name__':'__main__'})
 ROOTPY
