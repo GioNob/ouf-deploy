@@ -5,7 +5,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 spec=importlib.util.spec_from_file_location('startup',Path(__file__).with_name('read-retained-udp-startup.py'))
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
-FORMAT='{"id":{{json .Id}},"name":{{json .Name}},"image":{{json .Image}},"env":{{json .Config.Env}},"networkMode":{{json .HostConfig.NetworkMode}},"networks":{{json .NetworkSettings.Networks}}}'
+FORMAT='{"id":{{json .Id}},"name":{{json .Name}},"image":{{json .Image}},"env":{{json .Config.Env}},"networkMode":{{json .HostConfig.NetworkMode}},"bindings":{{json .HostConfig.PortBindings}},"ports":{{json .NetworkSettings.Ports}},"networks":{{json .NetworkSettings.Networks}}}'
 def digest(v):return hashlib.sha256(json.dumps(v,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 def dependencies(values):
  result=[];literal={ip:0 for ip in ('172.18.0.5','172.18.0.6')}
@@ -27,7 +27,7 @@ def collect():
  for row in rows:
   m.require(row['id']in ids and re.fullmatch('/[A-Za-z0-9_.-]{1,128}',row['name']),'IDENTITY_SCHEMA')
   output.append({'containerId':row['id'],'name':row['name'],'imageId':row['image'],'dependencies':dependencies(row['env']),
-   'endpointMetadataSha256':digest(row['networks']),'networkMode':row['networkMode'],
+   'endpointMetadataSha256':digest(row['networks']),'networkMode':row['networkMode'],'publishedPorts':m.ports(row.get('ports')),'declaredHostBindings':m.ports(row.get('bindings')),
    'endpointSettings':[{k:v.get(k)for k in ('NetworkID','IPAMConfig','Aliases','MacAddress','DriverOpts','GwPriority','IPAddress')}for v in row['networks'].values()]})
  return {'schema':'ouf.retained-network-dependency-read.v1','complete':True,'containers':output,'runtimeMutations':0,'credentialFilesRead':0,'credentialValuesPrinted':False,'automaticRetry':False,'completedTechnicalPhases':8,'functionalMilestonesProven':4}
 if __name__=='__main__':
