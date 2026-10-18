@@ -6,7 +6,7 @@ ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
 if [ ! -x "$ouf_gh" ]; then ouf_gh="$(command -v gh || true)"; fi
 [ -n "$ouf_gh" ] && [ -x "$ouf_gh" ] || { echo 'Client GitHub non disponibile.' >&2; exit 1; }
 ouf_case="$(mktemp -d "$HOME/ouf-boot-journal-resume.XXXXXXXX")"
-ouf_source=e165cbc8321e8e9a25f6bf5cd4962cb6378e8a59
+ouf_source=8ace6a38770cffba55bfc9dc8f2c08db936c31e9
 for ouf_pair in 'scripts/read-source-revision-boot-guard.py:reader.py' 'scripts/resume-semantic-boot-journal.py:resume.py' 'releases/source-revision-boot-read-selection-20261018.json:selection.json' 'releases/boot-journal-recovery-selection-20261018.json:recovery.json'; do
   ouf_path="${ouf_pair%:*}";ouf_name="${ouf_pair#*:}"
   "$ouf_gh" api "repos/GioNob/ouf-deploy/contents/$ouf_path?ref=$ouf_source" --jq .content | base64 --decode > "$ouf_case/$ouf_name"

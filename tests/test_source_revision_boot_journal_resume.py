@@ -99,23 +99,26 @@ class ActualSystemdSandbox(unittest.TestCase):
  def test_actual_native_atomic_journal_with_sibling_mount_protection(self):
   root=Path(tempfile.mkdtemp(prefix='ouf-journal-sandbox-ci-',dir='/var/lib'));root.chmod(0o700)
   self.addCleanup(shutil.rmtree,root)
-  source=root/'native.py';source.write_bytes((Path(os.environ['OUF_GATEWAY_SOURCE'])/'tools/semantic_provider_lease_coordination.py').read_bytes());source.chmod(0o600)
+  directory=root/'source';directory.mkdir(mode=0o700)
+  source=directory/'native.py';source.write_bytes((Path(os.environ['OUF_GATEWAY_SOURCE'])/'tools/semantic_provider_lease_coordination.py').read_bytes());source.chmod(0o600)
   journal=root/'coordination-journal.json';journal.write_text('{"state":"QUIESCED","startAuthorized":false}');journal.chmod(0o600)
   sealed=root/'sealed-profile.json';sealed.write_text('{"private":"fixture"}');sealed.chmod(0o600)
   entry=root/'entry.py';entry.write_text('''import errno,json,sys,types
 from pathlib import Path
 root=Path(sys.argv[1]);expected=sys.argv[2]=='yes'
-m=types.ModuleType('actual_native_coordination');exec(compile((root/'native.py').read_bytes(),str(root/'native.py'),'exec'),m.__dict__)
+m=types.ModuleType('actual_native_coordination');exec(compile((root/'source/native.py').read_bytes(),str(root/'source/native.py'),'exec'),m.__dict__)
 owner=m.PrivateJournal(root/'coordination-journal.json');before=owner.read();changed={**before,'state':'BLOCKED'}
 try:
  owner.write(before,changed);writable=True
 except OSError as error:
  assert error.errno==errno.EROFS;writable=False
 assert writable==expected
-try:
- (root/'sealed-profile.json').write_text('must be denied');protected=False
-except OSError as error:
- assert error.errno==errno.EROFS;protected=True
+protected=True
+for path in (root/'sealed-profile.json',root/'source/native.py'):
+ try:
+  path.write_text('must be denied');protected=False
+ except OSError as error:
+  assert error.errno==errno.EROFS
 assert protected
 print(json.dumps({'nativeJournalWritable':writable,'sealedSiblingProtected':protected,'authorityIssued':False}))
 ''');entry.chmod(0o600)
@@ -124,7 +127,7 @@ print(json.dumps({'nativeJournalWritable':writable,'sealedSiblingProtected':prot
      '--property=ProtectSystem=strict','--property=ProtectHome=yes','--property=PrivateTmp=yes',
      '--property=CapabilityBoundingSet=CAP_NET_ADMIN','--property=AmbientCapabilities=CAP_NET_ADMIN',
      '--property=NoNewPrivileges=yes','--property=RestrictAddressFamilies=AF_NETLINK AF_UNIX']
-   if writable:command+=['--property=ReadWritePaths='+str(root),'--property=ReadOnlyPaths='+' '.join(map(str,(source,sealed,entry)))]
+   if writable:command+=['--property=ReadWritePaths='+str(root),'--property=ReadOnlyPaths='+' '.join(map(str,(directory,sealed,entry)))]
    command+=['/usr/bin/python3','-I','-B','-S',str(entry),str(root),'yes'if writable else'no']
    result=subprocess.run(command,capture_output=True,timeout=40)
    self.assertEqual(result.returncode,0,result.stderr.decode());report=json.loads(result.stdout)
