@@ -1,3 +1,11 @@
+## Direct MCP readback after completed rollout
+
+The agent independently called MCP system status (HEALTHY, actionRequired=false, partial=false) and source.onboarding.read: the owned version remains ACTIVE, lockVersion4, configuration hash and publication996d58ca-43d6-42f5-a42a-311940e742f9 unchanged. [Redacted live observations](../evidence/chat-recovery-post-rollout-mcp-read-20261018.json).
+
+A preliminary urban search used the acquisition type FILE instead of the canonical urban class; its empty response is not source-object absence evidence. The subsequent exact-class search for https://schema.org/PerformingArtsTheater was denied with "orchestration budget exhausted", retryable=false. No retry, alternate identity, budget reset or grant change was issued. Functional stage4 remains unproven.
+
+Source inspection at installed MCP source15b49f495267ef8da9edd23f03b6e5018ec98d5e locates the error in admission reserveOnce, before downstream dispatch. It compares persisted reserved/consumed calls, bytes and object debt against the admission-window budget. Default window limits are derived from Maximum and RetryThreshold; this is distinct from the 256-attempt HUMAN OAuth continuation ceiling. No live counters were read, so the exhausted dimension and exact current remaining capacity are not established. Preserve the owner budget and improve the governed recovery/observability path rather than inferring renewed runtime authority.
+
 ## Current target checkpoint — UDP V36/MCP rollout completed
 
 The operator supplied the completed result from /home/oufadmin/ouf-chat-recovery-update.sqMdJt0P/run.log: applicationReady=true, complete=true, journalVersion=55, udpMigrationVersion=36; execution context /etc/ouf/deploy-snapshots/chat-recovery-execution-4kokhxpd. [Redacted result](../evidence/chat-recovery-rollout-target-receipt-20261018.json). Review SHA256 97d20117bfc0d784f38aecb667950dd3af8feae2bb72f3ba98e1a7b87721e60b. No device code or credentials are retained in this evidence.
