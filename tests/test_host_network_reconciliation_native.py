@@ -28,6 +28,8 @@ class Native(unittest.TestCase):
    for row,index in zip(rows[:2],(15,16)):
     p['moves'].append({'containerId':row['Id'],'imageId':row['Image'],'name':row['Name'][1:],'oldIPv4':row['NetworkSettings']['Networks'][net['Name']]['IPAddress'],'newIPv4':str(subnet.network_address+index),'servicePorts':[8000],'configurationDestinations':[]})
    client_row=self.inspect(client);client_ip=client_row['NetworkSettings']['Networks'][net['Name']]['IPAddress'];p['moves'].append({'containerId':client,'imageId':image,'name':client_row['Name'][1:],'oldIPv4':client_ip,'newIPv4':client_ip,'servicePorts':[8000],'configurationDestinations':[]})
+   print(json.dumps({'syntheticFixtureOnly':True,'beforePublishedPorts':self.inspect(store)['NetworkSettings']['Ports']},sort_keys=True))
+   self.assertEqual(urllib.request.urlopen('http://127.0.0.1:18080',timeout=5).read().strip(),b'fixture','initial fixture published port must work before correction')
    api=m.Engine(p['socketPath'],p['engineVersion']);original_write=api.write;write_count=[0]
    def lost_response(path,value):
     original_write(path,value);write_count[0]+=1
