@@ -1,3 +1,11 @@
+## Current target checkpoint — UDP V36/MCP rollout completed
+
+The operator supplied the completed result from /home/oufadmin/ouf-chat-recovery-update.sqMdJt0P/run.log: applicationReady=true, complete=true, journalVersion=55, udpMigrationVersion=36; execution context /etc/ouf/deploy-snapshots/chat-recovery-execution-4kokhxpd. [Redacted result](../evidence/chat-recovery-rollout-target-receipt-20261018.json). Review SHA256 97d20117bfc0d784f38aecb667950dd3af8feae2bb72f3ba98e1a7b87721e60b. No device code or credentials are retained in this evidence.
+
+Technical **8/8**, functional **3/6**. This is operator-supplied runtime completion evidence, not an independent database query by the agent. The native sequence includes verified private backup before application-owned V36 and final readiness. Repeated WAIT messages at attempt 2 have the same nextReadAt and do not represent additional dispatched attempts.
+
+Native profile publication, source activation, a new policy worker, semantic dispatch, identity decisions and job retries all remain false/zero. Installation completion does not establish automatic recovery activation, continuous credential lifecycle or functional milestones4–6. Prior preparation stops and old-launcher receipts below are historical and superseded as current rollout status. Do not repeat the completed launcher.
+
 ## Latest receipt — obsolete launcher executed again
 
 The operator transcript from /home/oufadmin/ouf-chat-recovery-update.6i2cE5LP/run.log explicitly selects old code package 39082232187, source be0fbb12eb23d36a73d8fd7027788a17e32349d8 and manifest 7d6755397e709ce810f1de0127f1ba06a1981b7b250238342b8e9671c54da296. It stopped again with RETAINED_HOST_CONFIGURATION_CHANGED in /etc/ouf/deploy-snapshots/chat-recovery-execution-14co9v43 before runtime authority. This is not execution evidence for corrected package 39082554565. Retain this additional private context; no cleanup or runtime replay was requested. [Receipt](../evidence/chat-recovery-obsolete-launch-receipt-20261018.json).

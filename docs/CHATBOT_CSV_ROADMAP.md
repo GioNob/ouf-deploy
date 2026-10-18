@@ -1,3 +1,9 @@
+## Aggiornamento installato — UDP V36 e MCP pronti
+
+Tecniche **8/8**, funzionali **3/6**. Il risultato target ricevuto conferma complete=true, applicationReady=true, journalVersion=55 e UDP V36 nel contesto chat-recovery-execution-4kokhxpd. [Evidenza](../evidence/chat-recovery-rollout-target-receipt-20261018.json). Il precedente blocco di preparazione è superato; non ripetere il launcher completato.
+
+Restano distinti la pubblicazione nativa del profilo, l'attivazione del recupero e il ciclo continuo delle credenziali: il risultato non li dichiara eseguiti. Nessuna decisione d'identità o ripresa job ripetuta. Proseguire con verifica delle capabilities effettive, configurazione e percorso nativo, poi collaudi funzionali4–6.
+
 ## Correzione del controllo preliminare — 18 ottobre 2026
 
 Tecniche **8/8**, funzionali **3/6**. Il tentativo di aggiornamento si è fermato prima dell'autorità runtime con RETAINED_HOST_CONFIGURATION_CHANGED: il compilatore confrontava la policy di riavvio temporanea della creazione con quella finale già ripristinata. Corretto il confronto senza accettare modifiche non previste; **73 test superati** nel [rilascio qualificato 39082554565](https://github.com/GioNob/ouf-deploy/actions/runs/39082554565). La nuova esecuzione riconcilia gli artefatti privati del tentativo fermato prima del login. Aggiornamento target ancora da provare; usare soltanto il launcher aggiornato. [Stato e limiti](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
