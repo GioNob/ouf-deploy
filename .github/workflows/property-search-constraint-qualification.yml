@@ -1,0 +1,26 @@
+name: Property search constraints with installed SDK
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['.github/workflows/property-search-constraint-qualification.yml', 'tests/fixtures/PropertySearchConstraintQualificationTest.java']
+permissions: {contents: read}
+jobs:
+  real-evaluator:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {path: deploy, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-udp-object-resolution
+          ref: 0d40da05408a14db31d4d41af2372d6a71480291
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '21', cache: maven}
+      - name: Qualify scoped policy correction with production evaluator
+        run: |
+          cp deploy/tests/fixtures/PropertySearchConstraintQualificationTest.java source/src/test/java/it/comune/trieste/ouf/udp/
+          cd source
+          mvn -B -Dtest=PropertySearchConstraintQualificationTest -DfailIfNoTests=true test
