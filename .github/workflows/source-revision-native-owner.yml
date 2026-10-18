@@ -23,6 +23,24 @@ jobs:
           ref: be388e1462778438a208c2e00e166370fee32189
           path: .pairwise/onboarding
           persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: dd8553da90d7a6cfc1083e1cf4d9075c09ee389b
+          path: .pairwise/gateway
+          persist-credentials: false
+      - name: Produce only a disposable compiled Gateway fixture from the pinned compiler
+        run: |
+          python3 -m venv .gateway-fixture-venv
+          .gateway-fixture-venv/bin/python -m pip install -r .pairwise/gateway/requirements-dev.txt
+          .gateway-fixture-venv/bin/python -I -B - <<'PY'
+          import json,sys
+          from pathlib import Path
+          source=Path('.pairwise/gateway').resolve()
+          sys.path.insert(0,str(source))
+          from tools.compile_config import compile_config
+          Path('.gateway-compiled-fixture.json').write_text(json.dumps(compile_config(source/'ouf-config')))
+          PY
       - name: Real signed authority, root file custody and application-role V34
         run: |
           set -euo pipefail
@@ -33,4 +51,6 @@ jobs:
           sudo chmod -R go-w "$fixture"
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" OUF_NATIVE_REVISION_PG=1 \
             OUF_REVISION_OWNER_ROOT="$fixture/repository/.pairwise/onboarding" \
+            OUF_REVISION_GATEWAY_ROOT="$fixture/repository/.pairwise/gateway" \
+            OUF_REVISION_COMPILED_FIXTURE="$fixture/repository/.gateway-compiled-fixture.json" \
             python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_source_revision_update_*.py' -v
