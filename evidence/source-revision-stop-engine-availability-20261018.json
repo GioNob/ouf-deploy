@@ -220,5 +220,17 @@
     "rootCauseProven": false,
     "privilegedReadRequired": true,
     "guardBypassPerformed": false
+  },
+  "protectedDiagnosisQualification": {
+    "sourceCommit": "5fd40b5e0af165f6b41faa5036fa8f607c5f5cf6",
+    "readerSha256": "c63ee1872d4e78c16bead93c80c0c0fefa694814222a89cf93d23e084b4b63fd",
+    "selectionSha256": "36c47400fc3dc7669b04d6bc18e204a70ca7502f3749d8d92a292ddf4bdc0978",
+    "deliveryCommit": "fee259ee376769b0cbb2db2c60b765ebf01a93f1",
+    "launcherSha256": "ab000350521e63682892cff70466d34d5ba6c1027c8f5cb4b670cdd69247571a",
+    "run": 39143446165,
+    "job": 117722368895,
+    "testsPassed": 7,
+    "targetReadPerformed": false,
+    "targetRecoveryPerformed": false
   }
 }
