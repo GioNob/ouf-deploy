@@ -1,3 +1,11 @@
+## Target STOP — mounted configuration custody before plan creation
+
+Technical8/8; functional4/6. The operator ran immutable delivery54d3f48. Native empty-provider and preboot empty-DNS/application comparison passed. compile_plan then stopped in configuration_scanner/configuration_bytes at CONFIGURATION_CUSTODY_REQUIRED. The exact source evaluates this condition before reading that file's contents and before plan/context/incident creation or any Docker write. Earlier successfully scanned files may have been read privately by the bounded dependency scanner; no file values were printed. The failed compound predicate does not identify whether type, UID, link count, mode or size failed. No cause is assumed or custody guard waived.
+
+A bounded runner-only metadata inventory of exactly the scanner's live-container plus retained-UDP bind-mount scope is being qualified. It inspects all applicable file/ancestor lstat facts, readonly mount flags and each custody predicate; it never opens file contents. Permission-denied metadata remains explicit evidence rather than a reason to escalate through containers. No host changes, new OUF login or operator command are proposed until metadata has been examined. Prior corrective launchers remain retired after STOP; no job/publication is replayed.
+
+## Prior qualified checkpoint and history
+
 ## Current checkpoint — empty-DNS equivalence proven; host successor qualified
 
 Technical **8/8**, functional **4/6**. The protected diagnostic completed with no mutations/incident and showed one legacy1.44 mismatch per retained app: HostConfig.Dns was null in the sealed preboot snapshot and is now a list. A fresh runner read now proves **all3 current lists are empty**, with no explicit per-container DNS override: [CI39152137523](https://github.com/GioNob/ouf-deploy/actions/runs/39152137523), job117747814810; [target receipt](../evidence/preboot-dns-shape-target-receipt-20261018.json). Its3 redaction/closed-scope tests passed before the target read. UDP remains stopped; MCP/Onboarding run. This is evidence for a narrow representation equivalence, not acceptance of arbitrary configuration changes.

@@ -1,3 +1,7 @@
+## Aggiornamento — confronti superati, STOP sulla custodia di un mount
+
+**Tecniche8/8; funzionali4/6.** Il tentativo54d3 ha superato provider e confronto DNS/preboot; durante la preparazione del piano ha incontrato CONFIGURATION_CUSTODY_REQUIRED. Nessun piano/incidente o cambiamento Docker è stato raggiunto. Il requisito preciso non è stampato e non viene ignorato. È in qualificazione un inventario dei soli metadati di tutti i file interessati, tramite il runner, senza contenuti o nuove richieste sudo. [Stato e confine](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
+
 ## Aggiornamento — liste DNS vuote confermate, recupero rete qualificato
 
 **Tecniche8/8; funzionali4/6.** Il runner ha verificato che tutte e tre le liste DNS sono vuote. Il successore accetta soltanto HostConfig.Dns null→[], mantenendo invariati riferimento storico e configurazioni reali; blocca ogni altra differenza e qualsiasi cambiamento fra confronto e piano. **29 prove passate**, incluse integrazioni reali Docker29.8.1 e avvio a freddo dei metadati legacy. [Prove, consegna immutabile e stato](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
