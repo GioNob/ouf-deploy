@@ -11,7 +11,7 @@
     {
       "module": "mcp",
       "repository": "ouf-mcp-server",
-      "commit": "5124178d5856b564691ca4274817efd45a0bb991",
+      "commit": "15b49f495267ef8da9edd23f03b6e5018ec98d5e",
       "kind": "DOCKER_SAVE"
     }
   ],
@@ -20,5 +20,5 @@
   "budgetReset": false,
   "requiredUdpMigration": "V36__publication_dependency_recovery.sql",
   "nativeProfilePublicationRequired": true,
-  "scope": "Generic deferred resolution and bounded dependency recovery plus MCP permission schema portability. Packaging only; no target changes, replay or identity decision."
+  "scope": "Generic deferred resolution and bounded dependency recovery plus MCP permission schema portability. Packaging only; no target changes, replay or identity decision. Includes bootstrap-only compatibility for fully expired signed recovery metadata across catalog upgrades; strict dispatch verification remains unchanged."
 }

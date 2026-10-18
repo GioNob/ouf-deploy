@@ -18,7 +18,7 @@ jobs:
             commit: 0d40da05408a14db31d4d41af2372d6a71480291
           - module: mcp
             repository: ouf-mcp-server
-            commit: 5124178d5856b564691ca4274817efd45a0bb991
+            commit: 15b49f495267ef8da9edd23f03b6e5018ec98d5e
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {path: deploy, persist-credentials: false}
