@@ -13,6 +13,7 @@ on:
       - scripts/resume-semantic-boot-journal.py
       - tests/test_source_revision_boot_journal_resume.py
       - releases/boot-journal-recovery-selection-20261018.json
+      - scripts/launch-semantic-boot-journal-resume-20261018.sh
       - .github/workflows/source-revision-boot-read-qualification.yml
 permissions: {contents: read}
 jobs:
@@ -30,4 +31,5 @@ jobs:
         run: |
           bash -n scripts/launch-source-revision-boot-read-20261018.sh
           bash -n scripts/launch-semantic-boot-lock-recovery-20261018.sh
+          bash -n scripts/launch-semantic-boot-journal-resume-20261018.sh
           sudo env OUF_GATEWAY_SOURCE="$GITHUB_WORKSPACE/native-source" python3 -I -B -S -m unittest discover -s tests -p 'test_source_revision_boot*.py' -v

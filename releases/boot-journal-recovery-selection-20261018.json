@@ -19,7 +19,10 @@
   },
   "expectedSandbox": {
     "ProtectSystem": "strict", "ProtectHome": "yes", "PrivateTmp": "yes",
-    "RuntimeDirectoryPreserve": "yes", "ReadWritePaths": "/run/ouf-semantic-boot-guard"
+    "RuntimeDirectoryPreserve": "yes", "ReadWritePaths": "/run/ouf-semantic-boot-guard",
+    "CapabilityBoundingSet": "cap_net_admin", "AmbientCapabilities": "cap_net_admin",
+    "NoNewPrivileges": "yes", "PrivateNetwork": "no", "NetworkNamespacePath": "",
+    "RestrictAddressFamilies": "AF_NETLINK AF_UNIX"
   },
   "managedDropin": "/etc/systemd/system/ouf-semantic-boot-guard.service.d/99-ouf-journal-state.conf",
   "existingGuardDropinName": "99-ouf-boot-lock.conf",

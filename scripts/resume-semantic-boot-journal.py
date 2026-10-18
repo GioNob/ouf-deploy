@@ -19,7 +19,8 @@ def new(path,raw,mode=0o600):
     finally:os.close(fd)
 def properties(reader,selection):
     fields=('ProtectSystem','ProtectHome','PrivateTmp','RuntimeDirectoryPreserve','ReadWritePaths','ReadOnlyPaths',
-            'NeedDaemonReload','DropInPaths','ActiveState','SubState','Result')
+            'NeedDaemonReload','DropInPaths','ActiveState','SubState','Result','CapabilityBoundingSet',
+            'AmbientCapabilities','NoNewPrivileges','PrivateNetwork','NetworkNamespacePath','RestrictAddressFamilies')
     reply=reader.command([selection['systemctl'],'show','--no-pager','--property='+','.join(fields),selection['guardUnit']],65536)
     require(reply.returncode==0,'GUARD_PROPERTIES_UNAVAILABLE')
     return dict(line.split('=',1)for line in reply.stdout.decode().splitlines()if'='in line)
@@ -138,9 +139,15 @@ def apply(reader,value):
             'existingServicesMayAutoResume':True,'completedTechnicalPhases':8,'functionalMilestonesProven':4}
     except Exception as error:
         import traceback
-        return {'complete':False,'contextPath':str(root),'previousContext':str(case),'phase':phase,
+        result={'complete':False,'contextPath':str(root),'previousContext':str(case),'phase':phase,
             'errorClass':type(error).__name__,'exceptionMessagePrinted':False,'automaticRetry':False,'reconciliationRequired':True,
             'frames':[{'file':Path(f.filename).name,'function':f.name,'line':f.lineno}for f in traceback.extract_tb(error.__traceback__)[-4:]],
             'runtimeAuthorityIssued':False,'completedTechnicalPhases':8,'functionalMilestonesProven':4}
+        # One passive readback in the same finite window, never a second start or mutation.
+        try:result['failureReadback']=reader.collect(selection)
+        except Exception as observed:result['failureReadbackErrorClass']=type(observed).__name__
+        try:result['failureSandbox']=properties(reader,selection)
+        except Exception as observed:result['failureSandboxErrorClass']=type(observed).__name__
+        return result
     finally:
         if lockfd is not None:os.close(lockfd)

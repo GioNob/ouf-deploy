@@ -1,4 +1,4 @@
-import copy,importlib.util,json,os,subprocess,tempfile,unittest,uuid,shutil
+import copy,hashlib,importlib.util,json,os,re,subprocess,sys,tempfile,unittest,uuid,shutil
 from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
@@ -64,6 +64,17 @@ class Recovery(unittest.TestCase):
   self.profile['stoppedContext']=old
   path=Path(self.owner['journalFile']);value=json.loads(path.read_bytes());value['leaseAuthorized']=True;path.write_text(json.dumps(value))
   with self.assertRaises(ValueError):self.planned()
+ def test_delivery_memory_loader_pins_and_redaction(self):
+  launcher=(ROOT/'scripts/launch-semantic-boot-journal-resume-20261018.sh').read_text()
+  loader=re.search(r'(?ms)^import hashlib,json,os,re,signal,stat,sys,traceback,types\n.*?(?=^OUF_VERIFIED_BOOT_JOURNAL_RESUME$)',launcher).group()
+  for path in ('scripts/read-source-revision-boot-guard.py','scripts/resume-semantic-boot-journal.py',
+               'releases/source-revision-boot-read-selection-20261018.json','releases/boot-journal-recovery-selection-20261018.json'):
+   self.assertIn(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),loader)
+  directory=self.fixture.tmp/'delivery';directory.mkdir();(directory/'reader.py').write_text('PRIVATE_CANARY')
+  result=subprocess.run([sys.executable,'-I','-B','-S','-',str(directory)],input=loader.encode(),capture_output=True,timeout=10)
+  self.assertEqual(result.returncode,2);self.assertNotIn(b'PRIVATE_CANARY',result.stdout+result.stderr)
+  self.assertEqual(json.loads(result.stdout)['reason'],'DELIVERY_CHANGED')
+  self.assertFalse((self.case/'successor.json').exists())
  def test_stopped_history_and_lock_preserved_on_ambiguous_start(self):
   value=self.planned();old=(self.case/'journal.json').read_bytes();inode=value['lock'].stat().st_ino;calls=[]
   afterprops={**self.props,'ReadWritePaths':self.props['ReadWritePaths']+' '+str(value['journal'].parent),
@@ -110,7 +121,9 @@ print(json.dumps({'nativeJournalWritable':writable,'sealedSiblingProtected':prot
 ''');entry.chmod(0o600)
   for writable in (False,True):
    command=['/usr/bin/systemd-run','--quiet','--wait','--pipe','--collect','--unit=ouf-journal-ci-'+uuid.uuid4().hex,
-     '--property=ProtectSystem=strict','--property=ProtectHome=yes','--property=PrivateTmp=yes']
+     '--property=ProtectSystem=strict','--property=ProtectHome=yes','--property=PrivateTmp=yes',
+     '--property=CapabilityBoundingSet=CAP_NET_ADMIN','--property=AmbientCapabilities=CAP_NET_ADMIN',
+     '--property=NoNewPrivileges=yes','--property=RestrictAddressFamilies=AF_NETLINK AF_UNIX']
    if writable:command+=['--property=ReadWritePaths='+str(root),'--property=ReadOnlyPaths='+' '.join(map(str,(source,sealed,entry)))]
    command+=['/usr/bin/python3','-I','-B','-S',str(entry),str(root),'yes'if writable else'no']
    result=subprocess.run(command,capture_output=True,timeout=40)
