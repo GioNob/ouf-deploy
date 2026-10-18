@@ -8,7 +8,7 @@ t=load('custody_base_fixture',ROOT/'tests/test_host_network_reconciliation.py');
 class Custody(unittest.TestCase):
  def setUp(self):
   self.assertFalse(Path('/etc/ouf/deploy-snapshots').exists(),'never run mutation fixtures on installed OUF host')
-  self.root=Path(tempfile.mkdtemp(prefix='ouf-custody-fixture-',dir='/opt'));self.addCleanup(shutil.rmtree,self.root);self.root.chmod(0o700)
+  self.root=Path(tempfile.mkdtemp(prefix='ouf-custody-fixture-',dir='/root'));self.addCleanup(shutil.rmtree,self.root);self.root.chmod(0o700)
   self.path=self.root/'file.yaml';self.path.write_bytes(b'retained private fixture');self.p,_,_=t.fixture();self.p['schema']='ouf.host-network-reconciliation.v2';self.p['configurationCustody']={'schema':'ouf.mounted-file-custody.v1','applicationReadOnlyFiles':[],'operatorGroupFiles':[]}
  def app(self):
   self.path.chmod(0o400);os.chown(self.path,10003,10003)
@@ -35,8 +35,13 @@ class Custody(unittest.TestCase):
   with self.assertRaises(ValueError):b.configuration_bytes(self.path,self.p,m)
   self.path.chmod(0o400);os.chown(self.path,10004,10003)
   with self.assertRaises(ValueError):b.configuration_bytes(self.path,self.p,m)
-  os.chown(self.path,10003,10003);self.root.chmod(0o755)
-  with self.assertRaises(ValueError):b.configuration_bytes(self.path,self.p,m)
+  os.chown(self.path,10003,10003);self.root.chmod(0o755);original=Path.lstat
+  def public_root(path):
+   info=original(path)
+   if path==Path('/root'):
+    values=list(info);values[0]=(info.st_mode&~0o777)|0o755;return os.stat_result(values)
+   return info
+  with patch.object(Path,'lstat',public_root),self.assertRaises(ValueError):b.configuration_bytes(self.path,self.p,m)
  def test_exact_operator_group_with_no_acl_introduces_no_new_writer(self):
   self.group();before=self.path.stat();self.assertEqual(b.configuration_bytes(self.path,self.p,m),b'retained private fixture');self.assertEqual(self.path.stat().st_mode,before.st_mode)
  def test_additional_writer_extended_acl_or_unknown_acl_error_is_rejected(self):
