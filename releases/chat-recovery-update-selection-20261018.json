@@ -1,0 +1,349 @@
+{
+  "schema": "ouf.chat-recovery-update-selection.v1",
+  "installationSpecific": true,
+  "privateParent": "/etc/ouf/deploy-snapshots",
+  "mcpMetadataMountTarget": "/run/ouf-mcp-reprocessing",
+  "retainedBootstrap": {
+    "path": "/etc/ouf/deploy-snapshots/semantic-mcp-update-executor-code-yrvtskkt/execute.py",
+    "sha256": "b02d9737af6d143903910654d34e91a1a82a52b6082d2429d5dbfd070d160af2"
+  },
+  "preparedPlanBinding": {
+    "path": "/etc/ouf/deploy-snapshots/chat-recovery-prepared-fi3s6kbv/prepared-inputs.json",
+    "sha256": "67e36adf226b618d2d2a0749700a1d6b5118b7a8ea1849d011c95ee2f8f7e351"
+  },
+  "completedLinkedUpdate": {
+    "path": "/etc/ouf/deploy-snapshots/linked-property-execution-cjecd1en/review.json",
+    "sha256": "813ca39bb74d6ee5a1315c51fa5c689bd9989c8f90d6fd3e5f9abde925f70290",
+    "scope": "linkedPropertyUpdate"
+  },
+  "humanReviewBinding": {
+    "path": "/etc/ouf/deploy-snapshots/csv-recovery-login-szpbk24_/review.json",
+    "sha256": "89e180c82984690add51942018d5569898e86044a5f8d3341d7475d4610e42d7"
+  },
+  "runnerImageReview": {
+    "path": "/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-chat-image-review-39082052587/image-review.json",
+    "sha256": "e66082950b0c62ada3a325a5c0f3f9dfafa7e528efc9f4e25e48c45f79b33498"
+  },
+  "package": {
+    "directory": "/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-chat-recovery-39082052587",
+    "manifestSha256": "e535f9f0e4f7d827063477c84aedb7cca5d2c1d725151771c80bf06477f0a120",
+    "udpJarRelativePath": "parts/chat-only-recovery-part-udp-39081627088/application.jar"
+  },
+  "candidateSourceCommits": {
+    "udp": "0d40da05408a14db31d4d41af2372d6a71480291",
+    "mcp": "15b49f495267ef8da9edd23f03b6e5018ec98d5e"
+  },
+  "deployedSourceCommits": {
+    "udp": "4660b08fdf982f7f7ecc35a378fd8fcad30aa273",
+    "mcp": "f00e7e3bfcaee9272b9b6d204a7fa3ea79a563a4"
+  },
+  "udpApplicationConfigurationSha256": "aabfb583f5158bda988f7773cfbb9a52728f34bdd0ebf7f21fb17cc55df44182",
+  "udpMigrations": [
+    {
+      "checksum": -52230585,
+      "script": "V1__handoff_and_resolution_core.sql",
+      "sha256": "1b5ea3387b9a964ab58f5da4a8439f8ae2652f2d799effd115076859a7ebc314",
+      "success": true,
+      "version": "1"
+    },
+    {
+      "checksum": -744760032,
+      "script": "V2__canonical_revision_authority.sql",
+      "sha256": "fa450cbe250ea4391d71418028f55503e08159c9b4aac1e7c30ca5996a54bb5f",
+      "success": true,
+      "version": "2"
+    },
+    {
+      "checksum": 647181559,
+      "script": "V3__relationship_resolution.sql",
+      "sha256": "f535e17a08b7b570333cd7ed42132ceeb23f01b0002c8f0292c84dd1790eb660",
+      "success": true,
+      "version": "3"
+    },
+    {
+      "checksum": -1155247595,
+      "script": "V4__spatial_resolution.sql",
+      "sha256": "7a95b46d260e9767f25d0dd9cd69139f6992f0bde1df518b180e9d4bc7329173",
+      "success": true,
+      "version": "4"
+    },
+    {
+      "checksum": -1800875911,
+      "script": "V5__human_resolution_merge_split.sql",
+      "sha256": "3c1e3381e6b9fe955e3d7dd20245ed96aba246b6e18c9cc1db38a6130465257f",
+      "success": true,
+      "version": "5"
+    },
+    {
+      "checksum": 887404116,
+      "script": "V6__merge_repoint_and_contribution_links.sql",
+      "sha256": "b55c6fbaa460ac6035613b5c22e27b5a0439711481747a22060f95a216165d7c",
+      "success": true,
+      "version": "6"
+    },
+    {
+      "checksum": -1523353946,
+      "script": "V7__governed_serving.sql",
+      "sha256": "bf8a874226296a72d57471d3655f11f1643a4040e9cb1bb38dcfec38a3438739",
+      "success": true,
+      "version": "7"
+    },
+    {
+      "checksum": 518442206,
+      "script": "V8__query_complexity_budget.sql",
+      "sha256": "c416c4be18099730eb4c6cd7525623d60d906212429115a36fa06829de2b7b31",
+      "success": true,
+      "version": "8"
+    },
+    {
+      "checksum": -199210382,
+      "script": "V9__spatial_query_budget.sql",
+      "sha256": "ce7122f87f83a35df8a004011b09cd27fdbc3fbbfae647d1dfb38dae88c10389",
+      "success": true,
+      "version": "9"
+    },
+    {
+      "checksum": 491818960,
+      "script": "V10__lake_object_lifecycle.sql",
+      "sha256": "fba0dcc22de4cd98e51f46f9667d7283bba8c42e9addf10727d453233a52a24b",
+      "success": true,
+      "version": "10"
+    },
+    {
+      "checksum": -1824633093,
+      "script": "V11__handoff_raw_lake_reference.sql",
+      "sha256": "5fcaa3ac5aa5db81c2bdcad955cbedc7a5cd1894e9782b3cf0a46747c802ab32",
+      "success": true,
+      "version": "11"
+    },
+    {
+      "checksum": 908347656,
+      "script": "V12__lake_maintenance_scheduler.sql",
+      "sha256": "7ed3f5ba9431176918dc328e2193546665a1323a07a4c8e870ea343af268ab28",
+      "success": true,
+      "version": "12"
+    },
+    {
+      "checksum": 739027995,
+      "script": "V13__lake_shadow_rebuild.sql",
+      "sha256": "5c9d5efe92076880e83a32fe8f2c4e8e483ca3df4f95e0e2ceffd27ea1689b80",
+      "success": true,
+      "version": "13"
+    },
+    {
+      "checksum": 61207461,
+      "script": "V14__shadow_rebuild_fencing_and_rollback.sql",
+      "sha256": "dad5e2f33b70177f87f4919e1508e7eb2f69e96c112575465654905f9aaa820d",
+      "success": true,
+      "version": "14"
+    },
+    {
+      "checksum": -1718975492,
+      "script": "V15__historical_reproduce.sql",
+      "sha256": "ee3fee6101ee2547fac4403d98958caeda3796f3543f0517066f13bd0d44c5c9",
+      "success": true,
+      "version": "15"
+    },
+    {
+      "checksum": -969460423,
+      "script": "V16__materialization_reference_integrity.sql",
+      "sha256": "bf4c02fe476be49ace79a0e71ec50202c9ea3fe99d9388617e00028ac95949e9",
+      "success": true,
+      "version": "16"
+    },
+    {
+      "checksum": 490009295,
+      "script": "V17__selective_bitemporal_delta_history.sql",
+      "sha256": "5f5e6fb2da7f5770b9fa6ca8ac2ba76b9d322b1a362eb3e0ace8d81224896814",
+      "success": true,
+      "version": "17"
+    },
+    {
+      "checksum": -1000976960,
+      "script": "V18__capability_retry_guard.sql",
+      "sha256": "f83874c5277783e3b7c182579dcc8f4f562810e4a682a47701ed6f1b6ce6a251",
+      "success": true,
+      "version": "18"
+    },
+    {
+      "checksum": 169180654,
+      "script": "V19__source_raw_handoff_reference.sql",
+      "sha256": "6736643837d0cbc43acf99b5c1cc65163b5ee0bc4698883d50d43fd0209f0e82",
+      "success": true,
+      "version": "19"
+    },
+    {
+      "checksum": 26228480,
+      "script": "V20__governed_coordinate_transformations.sql",
+      "sha256": "716157ae957f9cf55214f00f6e17f8c2d1c702ecdc5c2c51f88ecdd75084f478",
+      "success": true,
+      "version": "20"
+    },
+    {
+      "checksum": 672268981,
+      "script": "V21__pinned_relationship_reconciliation.sql",
+      "sha256": "2855fdecff9ca4038d746e67fa057568b6b05d1dcf03b620b846dbb85706bdde",
+      "success": true,
+      "version": "21"
+    },
+    {
+      "checksum": -252379595,
+      "script": "V22__weighted_identity_evidence.sql",
+      "sha256": "543ee9a5461139b3698edef4c01dae33026e61a11fc1514ae7b31699bc9d69fc",
+      "success": true,
+      "version": "22"
+    },
+    {
+      "checksum": 561679179,
+      "script": "V23__geometry_authority_conflict.sql",
+      "sha256": "fecc2f227b1ce6895f9d2a55f6c8ea524fd9cbcd869e876d7efaa6a0cb69445b",
+      "success": true,
+      "version": "23"
+    },
+    {
+      "checksum": -835784960,
+      "script": "V24__human_geometry_decisions.sql",
+      "sha256": "b4e2f023335a16ba9b424dfcc3f18f200712fae324de9da128b441161f5c2ed8",
+      "success": true,
+      "version": "24"
+    },
+    {
+      "checksum": -1491487699,
+      "script": "V25__human_property_decisions.sql",
+      "sha256": "1e432653d62c82dd3c1ed3c5c9d9a27682b835d40479d873183d44fb1252c44f",
+      "success": true,
+      "version": "25"
+    },
+    {
+      "checksum": -369310849,
+      "script": "V26__geometry_roles_and_validity.sql",
+      "sha256": "53e84a127549f91d3520e6f8afeaedc88bfeffe1da2186873659064e91e4700e",
+      "success": true,
+      "version": "26"
+    },
+    {
+      "checksum": -971238326,
+      "script": "V27__identity_scope_serialization.sql",
+      "sha256": "cd1b07587c8f24e204c20fd5125e8575c77a7a262d3f0f1d9ae81b1a5362aabe",
+      "success": true,
+      "version": "27"
+    },
+    {
+      "checksum": 1298756818,
+      "script": "V28__identity_value_lookup.sql",
+      "sha256": "324a69e64ff1faf20627bf2519d9ee069807c8649aa12c6b7ddb12b3d1be5652",
+      "success": true,
+      "version": "28"
+    },
+    {
+      "checksum": 2068388741,
+      "script": "V29__identity_field_shape_catalog.sql",
+      "sha256": "17fe08e0cbd8df76d30babadb2124a2d0aa3019904728bf94159f97c76914859",
+      "success": true,
+      "version": "29"
+    },
+    {
+      "checksum": -419854425,
+      "script": "V30__resolution_review_package.sql",
+      "sha256": "f64538ba09fd526b84926f91bf0188d754e22e5a9e3fcc176e4e64c1f9e193f8",
+      "success": true,
+      "version": "30"
+    },
+    {
+      "checksum": 80452861,
+      "script": "V31__serialize_identity_coverage_invalidation.sql",
+      "sha256": "e600eb4818afd4a60f1a4dc90f1215410cb12a3cf9bf510bc1a4aa0fe06906c0",
+      "success": true,
+      "version": "31"
+    },
+    {
+      "checksum": 909978875,
+      "script": "V32__governed_identity_preactivation_attestation.sql",
+      "sha256": "070c29c16b43d49f6aa2827f407373d5a0d5e2628e6225dfd9a9b3c55a048313",
+      "success": true,
+      "version": "32"
+    },
+    {
+      "checksum": -819055726,
+      "script": "V33__human_new_identity_decision.sql",
+      "sha256": "8a1f8049781ea13aef864cc4d35f0a379bba1960fe9916c99d5eaaf095b2ee91",
+      "success": true,
+      "version": "33"
+    },
+    {
+      "checksum": 592479726,
+      "script": "V34__repeat_human_review_after_stale_coverage.sql",
+      "sha256": "13735a76f1cba075d5f7a600cc9a9676c823c9c398f59d6de2aa8a13dc1672ac",
+      "success": true,
+      "version": "34"
+    },
+    {
+      "checksum": -376865285,
+      "script": "V35__linked_property_reconciliation.sql",
+      "sha256": "d9937d14b53471ea718ea3ec91c8fc729a48f4e9fbe9bfd23f9673e718705c1f",
+      "success": true,
+      "version": "35"
+    },
+    {
+      "checksum": -1335086670,
+      "script": "V36__publication_dependency_recovery.sql",
+      "sha256": "9e9c045383561a333c177e7582abc718f84b02b9820388df80a7e5d8e8601c24",
+      "success": true,
+      "version": "36"
+    }
+  ],
+  "mcpMigrations": [
+    {
+      "version": 1,
+      "checksum": "a70a2389352f5f8387f96b6051becf97f64f1e922aba9c353545449e0fa0b225"
+    },
+    {
+      "version": 2,
+      "checksum": "138614ca67d9365e7525c0d56313ab1514e3ea9f1fe32b5095a3d85e3ecbb74d"
+    },
+    {
+      "version": 3,
+      "checksum": "044d5d6fe3fdd5f77179a4f677885aa3ca4f72ca1bc52f6f10c44b57306bfb3e"
+    },
+    {
+      "version": 4,
+      "checksum": "9bae68eb83dabf8bd80fcfdf38189c54cced1228b3b22a7128c4c5cda3b7c72c"
+    },
+    {
+      "version": 5,
+      "checksum": "3dc65eeee6668444e77e3a08982a71a1412fda53c3e8b90cbddd7d6959e5ad54"
+    },
+    {
+      "version": 6,
+      "checksum": "8973286df97ef30dd7281dfaf5bfb251ca078d4a2862de235b6988bc5e5eb375"
+    },
+    {
+      "version": 7,
+      "checksum": "ad1e6b93b10ae2b6e407015f4bfb5026f2cd633a8565d30584fddd98e274f174"
+    },
+    {
+      "version": 8,
+      "checksum": "2e279669f11a1b4949c93e17522d127003aa7c3f54cd2af0461500676f2bef28"
+    },
+    {
+      "version": 9,
+      "checksum": "798ec17290d8952a6824871739d4b352bc3984f4e600fda9c704d6784d704dd2"
+    },
+    {
+      "version": 10,
+      "checksum": "64b586222b534976c379dbec667e4bcb3f7c58087b436b02f79f588e3bb9b0a5"
+    },
+    {
+      "version": 11,
+      "checksum": "d6393214c1b83da875015018e5e50833fe6fe4ea0571adf98d5f34fbe390995e"
+    },
+    {
+      "version": 12,
+      "checksum": "de64bdcfa45b1e373807d07e603cd1940defe056cec4a21e0db4c7667330cc68"
+    },
+    {
+      "version": 13,
+      "checksum": "fe9ab352cbf649efecc708b08a9f61ff3c9aadb358211ebd763011ee9fd695b5"
+    }
+  ]
+}

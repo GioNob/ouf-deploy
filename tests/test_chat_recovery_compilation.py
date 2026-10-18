@@ -25,6 +25,7 @@ class Compilation(unittest.TestCase):
    'runtimeAuthorityIssued':False,'engine':engine,'beforeApplications':{m:p.raw_runtime(actual[m]) for m in ('udp','mcp','onboarding')},
    'databasePlan':{'postgresRuntimeBinding':p.raw_runtime(actual['postgres'])},'databaseFacts':before}
   case.update(preparedPlanBinding={'path':'/fixture/prepared','sha256':'a'*64},
+   runnerImageReview={'path':'/fixture/images','sha256':'e'*64},
    completedLinkedUpdate={'path':'/fixture/linked','sha256':'b'*64},
    udpMigrations=[{**MIGRATION,'version':'36'}],mcpMigrations=[],udpApplicationConfigurationSha256='f'*64)
   previous={'gateway':{'beforeRoutes':{},'afterRoutes':{},'transport':{}},'replacements':saved,'unchangedApplications':{}}
