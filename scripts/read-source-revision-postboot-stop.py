@@ -1,10 +1,10 @@
-"""Installation-specific read-only reconciliation of f6w3lo6z; no retry/apply."""
+"""Installation-specific read-only reconciliation of q7bq1ex3; no retry/apply."""
 import hashlib,importlib,json,os,re,signal,stat,sys,types,traceback
 from pathlib import Path
-STAGE=Path('/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revision-postboot-code-39160533382')
-MANIFEST='a1a82e66441f10ac8a564ab25c18e5bfcdac20993b73f62308253bfa4556e336'
-CONTEXT=Path('/etc/ouf/deploy-snapshots/source-revision-postboot-prepared-f6w3lo6z')
-SOURCE='31092e92171c031facb9e65c5fc27db82e0f9844'
+STAGE=Path('/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revision-postboot-code-39163565894')
+MANIFEST='a904ca6614bed530b80b1bac40469fbf8d3227d2c50371f8d874d89a1ce4a68f'
+CONTEXT=Path('/etc/ouf/deploy-snapshots/source-revision-postboot-prepared-q7bq1ex3')
+SOURCE='6c5d54953a661b0a01ad54a9aea52d5f23b8cbc1'
 def require(ok):
  if not ok:raise ValueError('READ_RECONCILIATION_UNPROVEN')
 def digest(raw):return hashlib.sha256(raw).hexdigest()
@@ -55,6 +55,41 @@ def classify(raw):
  except (ValueError,UnicodeError,RecursionError):result['jsonParseFailed']=True
  return result
 
+# Closed public property vocabulary. Unknown/map-key segments are redacted.
+PROPERTY_WORDS=frozenset('spring security oauth2 resourceserver jwt opaque token introspectionuri client registration provider clientid clientsecret clientauthenticationmethod authorizationgranttype redirecturi scope issueruri jwkseturi userinfouri usernameattribute authorizationuri tokenuri audiences jwsalgorithms principalclaimname authoritiesclaimname authorityprefix ouf authorization ths enabled publicorigin gatewaybaseurl gatewayurl tokenfile workflow resolution onboarding udpidentity managedfilepicker gatewayuploadurl server port address servlet contextpath session cookie secure httponly samesite timeout forwardheadersstrategy ssl management endpoints web exposure include exclude endpoint health showdetails probes metrics logging level root datasource url username password flyway baselineonmigrate validateonmigrate schemas defaultschema locations config import activate onprofile profiles active include loader path sql init mode'.split())
+def property_metadata(raw,verifier):
+ def unique(rows):
+  obj={}
+  for k,v in rows:require(k not in obj);obj[k]=v
+  return obj
+ obj=json.loads(raw,object_pairs_hook=unique,parse_constant=lambda _:(_ for _ in ()).throw(ValueError()))
+ require(type(obj)is dict)
+ def reason(value):
+  try:verifier(json.dumps(value,separators=(',',':'),allow_nan=False).encode());return 'ACCEPTED'
+  except Exception as error:
+   message=str(error)
+   return message if type(error).__name__=='UpdateDenied' and re.fullmatch('[A-Z_]{1,100}',message) else 'UNCLASSIFIED_VERIFIER_FAILURE'
+ rows=[];nodes=0
+ def visit(value,path=(),depth=0):
+  nonlocal nodes
+  require(type(value)is dict and depth<=16)
+  for key,item in value.items():
+   nodes+=1;require(nodes<=512 and type(key)is str and len(key)<=128)
+   segments=path+tuple(key.split('.'));require(len(segments)<=32)
+   if type(item)is dict:visit(item,segments,depth+1);continue
+   canonical=tuple(re.sub('[^a-z0-9]','',p.lower()) for p in segments)
+   selected=item
+   for part in reversed(segments):selected={part:selected}
+   public=[]
+   for i,part in enumerate(canonical):
+    map_key=i==5 and canonical[:4]==('spring','security','oauth2','client') and canonical[4] in ('registration','provider')
+    public.append('<map-key>' if map_key else part if part in PROPERTY_WORDS else '<redacted-key>')
+   rows.append({'propertyShape':'.'.join(public),'valueType':type(item).__name__,
+                'verifierResult':reason(selected),'literalInterpolationPresent':type(item)is str and any(v in item for v in ('${','#{'))})
+ visit(obj)
+ return {'wholeDocumentVerifierResult':reason(obj),'properties':rows,'configurationValuesPrinted':False,'unknownPropertyNamesPrinted':False,'mapKeyNamesPrinted':False}
+
+
 def exact_tree(context,expected,reader):
  require(len(expected)<=100)
  directories={'.'}
@@ -82,8 +117,8 @@ def main():
   raw=read(STAGE/(name+'.py'),manifest['files'][name+'.py'],262144)
   m=types.ModuleType('verified_diagnostic_'+name);m.__file__=str(STAGE/(name+'.py'));exec(compile(raw,'<verified-diagnostic-helper>','exec'),m.__dict__);modules[name]=m
  reader=modules['reader'];prepare=modules['prepare']
- profile=json.loads(read(STAGE/'selection.json',manifest['files']['selection.json'],65536))
- ns,original,oldcase,closure,files,package,loader,memory,sources,pins,overlays=prepare.load_staged(profile,reader)
+ profile=json.loads(read(STAGE/'selection.json',manifest['files']['selection.json'],65536));profile['successorSourceCommit']=SOURCE
+ ns,original,oldcase,closure,files,package,loader,memory,sources,pins,overlays=prepare.load_staged(profile,reader,read(STAGE/'configuration.py',manifest['files']['configuration.py'],262144))
  executor_raw=read(STAGE/'executor.py',manifest['files']['executor.py'],262144)
  executor={'__name__':'read_only_consumer'};exec(compile(executor_raw,'<verified-consumer-declaration>','exec'),executor)
  code=CONTEXT/'executor-code';case_raw=reader.read(code/'case.json');case=json.loads(case_raw)
@@ -102,6 +137,8 @@ def main():
  require(len(compiler_sources)==7)
  expected={**{'executor-code/'+k:v for k,v in expected_code.items()},**{'gateway-compiler/'+k:v for k,v in compiler_sources.items()},'current-original-preparation.json':reader.encoded(reconciled),'postboot-private-inputs.json':private_raw}
  before=exact_tree(CONTEXT,expected,reader)
+ prior=prepare.reconcile_postboot_stop(profile['previousPostbootStop'],reader)
+ require(case['configurationSuccessor']==profile['configurationSuccessor'] and case['previousPostbootStop']==prior)
  config=importlib.import_module('tools.source_revision_update.configuration')
  actual=private['beforeApplications']['onboarding'];env=config.env(actual['Config']['Env']);location=config.additional_location(env['SPRING_CONFIG_ADDITIONAL_LOCATION'])
  mounts=[m for m in actual['Mounts'] if m['Destination']==location];require(len(mounts)==1 and mounts[0]['Type']=='bind' and mounts[0]['RW']is False)
@@ -109,9 +146,10 @@ def main():
  expected_sha=host['configurationFileBindings'][mounts[0]['Source']]
  raw,binding=config.private_config(mounts[0]['Source']);require(digest(raw)==expected_sha)
  classification=classify(raw)
+ properties=property_metadata(raw,config.owner_json_overlay)
  raw_after,binding_after=config.private_config(mounts[0]['Source'],binding);require(raw_after==raw and binding_after==binding)
- require(exact_tree(CONTEXT,expected,reader)==before)
- return {'schema':'ouf.postboot-stop-read.v1','complete':True,'contextPath':str(CONTEXT),'contextFiles':len(expected),'contextClosureSha256':reader.digest(before),'exactFrozenCodeFiles':81,'exactCompilerSources':7,'exactPrivateDocuments':2,'authorityArtifactsAbsent':True,'completionReceiptAbsent':True,'originalConsumerBindingVerified':True,'overlaySha256':expected_sha,'overlayMatchesCompletedHostPlan':True,'overlayClassification':classification,'targetGenerationRevalidated':False,'preparationRetried':False,'runtimeAuthorityIssued':False,'runtimeMutations':0,'databaseCalls':0,'engineCalls':0,'credentialValuesPrinted':False,'configurationValuesPrinted':False,'automaticRetry':False,'budgetReset':False,'completedTechnicalPhases':8,'functionalMilestonesProven':4}
+ require(exact_tree(CONTEXT,expected,reader)==before and prepare.reconcile_postboot_stop(profile['previousPostbootStop'],reader)==prior)
+ return {'schema':'ouf.postboot-stop-read.v1','complete':True,'contextPath':str(CONTEXT),'contextFiles':len(expected),'contextClosureSha256':reader.digest(before),'exactFrozenCodeFiles':81,'exactCompilerSources':7,'exactPrivateDocuments':2,'authorityArtifactsAbsent':True,'completionReceiptAbsent':True,'originalConsumerBindingVerified':True,'overlaySha256':expected_sha,'overlayMatchesCompletedHostPlan':True,'overlayClassification':classification,'propertyDiagnostics':properties,'previousStopReconciliation':prior,'targetGenerationRevalidated':False,'preparationRetried':False,'runtimeAuthorityIssued':False,'runtimeMutations':0,'databaseCalls':0,'engineCalls':0,'credentialValuesPrinted':False,'configurationValuesPrinted':False,'automaticRetry':False,'budgetReset':False,'completedTechnicalPhases':8,'functionalMilestonesProven':4}
 if __name__=='__main__':
  try:result=main()
  except (Exception,KeyboardInterrupt) as error:result={'schema':'ouf.postboot-stop-read.v1','complete':False,'exceptionClass':type(error).__name__,'frames':[{'file':Path(f.filename).name,'function':f.name,'line':f.lineno} for f in traceback.extract_tb(error.__traceback__)[-4:]],'rawErrorPrinted':False,'runtimeAuthorityIssued':False,'runtimeMutations':0,'automaticRetry':False,'budgetReset':False}

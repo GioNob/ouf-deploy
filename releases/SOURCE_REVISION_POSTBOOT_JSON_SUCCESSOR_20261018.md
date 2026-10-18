@@ -1,3 +1,5 @@
+> **TARGET STOP:** q7bq1ex3, configuration.visit:85 / UNREVIEWED_OWNER_JSON_NAMESPACE. The following preparation command is suspended. Retain all files and log; no namespace extension is approved by the previous syntax-only diagnosis. See evidence/source-revision-postboot-json-stop-20261018.json.
+
 # Explicit postboot JSON verifier successor
 
 Technical8/8; functional4/6. The operator's completed read reconciled the90-file f6w3lo6z context against closure SHA256 e693804def0e2494404cfb7cc025bef1f5ee6c80cac1b9dfdadb51a4db7a86e1. Authority and completion receipt absent; original consumer binding verified. Overlay6d546047448495746d7eaad6d83e7942fa2950f137d4a240a3aef9309f7f39be is strict JSON,21 scalar leaves, no duplicate keys or excessive depth, and matches the completed host plan. Diagnostic counts do not identify all property names or revalidate current runtime generations.
@@ -22,7 +24,7 @@ Delivery source:55e236da98b45321750dae570723234285df7b3f. Launcher SHA256 f6aff6
 
 The next target step is one new preparation using these immutable bytes, with sudo for protected reads. Maximum300seconds; four readonly DB sessions; only new private preparation artifacts are written. Stop rather than automatically retry if any new evidence differs. Preserve the new context/log and reconcile the result before runtime authority is considered.
 
-## Target command — execute once as oufadmin
+## Historical target command — STOP, DO NOT REPLAY
 
 ```bash
 (

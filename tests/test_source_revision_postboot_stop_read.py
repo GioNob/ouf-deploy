@@ -48,3 +48,28 @@ class Custody(unittest.TestCase):
    p=Path(temp)/'code';p.write_bytes(b'code');sha=m.digest(b'code');self.assertEqual(m.read(p,sha),b'code');p.write_bytes(b'evil')
    with self.assertRaises(ValueError):m.read(p,sha)
 if __name__=='__main__':unittest.main()
+
+class PropertyDiagnostics(unittest.TestCase):
+ def verifier(self):
+  import test_source_revision_update_configuration
+  return test_source_revision_update_configuration.c.owner_json_overlay
+ def test_exact_namespace_failure_is_exposed_without_values(self):
+  raw=json.dumps({'spring':{'security':{'oauth2':{'resourceserver':{'jwt':{'issuer-uri':'PRIVATE_VALUE_CANARY'}},'client':{'registration':{'ouf-ths':{'client-id':'OTHER_SECRET_CANARY'}}}}}}}).encode()
+  result=m.property_metadata(raw,self.verifier());self.assertEqual(result['wholeDocumentVerifierResult'],'UNREVIEWED_OWNER_JSON_NAMESPACE')
+  self.assertEqual(result['properties'][0]['propertyShape'],'spring.security.oauth2.resourceserver.jwt.issueruri')
+  self.assertEqual(result['properties'][0]['verifierResult'],'UNREVIEWED_OWNER_JSON_NAMESPACE');self.assertEqual(result['properties'][1]['verifierResult'],'ACCEPTED');self.assertNotIn('CANARY',json.dumps(result));self.assertNotIn('ouf-ths',json.dumps(result))
+ def test_unknown_names_dynamic_map_keys_and_exception_messages_redacted(self):
+  raw=json.dumps({'PRIVATE_KEY_CANARY':{'other':'SECRET_CANARY'},'spring.security.oauth2.client.provider.PRIVATE_MAP_CANARY.issuer-uri':'secret'}).encode()
+  result=m.property_metadata(raw,self.verifier());text=json.dumps(result);self.assertNotIn('CANARY',text);self.assertIn('<redacted-key>',text);self.assertIn('<map-key>',text)
+  def failure(value):raise RuntimeError('PRIVATE_CANARY')
+  self.assertNotIn('CANARY',json.dumps(m.property_metadata(b'{"ouf":{"enabled":true}}',failure)))
+ def test_duplicates_depth_and_node_bound(self):
+  raw=b'{"spring":{},"spring":{}}'
+  with self.assertRaises(ValueError):m.property_metadata(raw,self.verifier())
+  value={'enabled':True}
+  for _ in range(18):value={'ouf':value}
+  for value in (value,{'ouf':{'a'+str(i):True for i in range(513)}}):
+   with self.assertRaises(ValueError):m.property_metadata(json.dumps(value).encode(),self.verifier())
+ def test_all_leaf_types_and_individual_reasons_are_reported(self):
+  result=m.property_metadata(b'{"ouf":{"enabled":true,"scope":["secret"],"port":1,"null":null,"gatewayurl":"${SECRET}"}}',self.verifier())
+  self.assertEqual(len(result['properties']),5);self.assertTrue(result['properties'][-1]['literalInterpolationPresent']);self.assertNotIn('SECRET',json.dumps(result))
