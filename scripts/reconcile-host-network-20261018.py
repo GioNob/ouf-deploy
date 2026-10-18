@@ -50,13 +50,39 @@ def configuration_scanner(reader,profile,owner):
     bindings[str(source)]=hashlib.sha256(raw).hexdigest();count[0]+=1;owner.require(count[0]<=32,'CONFIGURATION_FILE_COUNT_BOUND')
  return scan,bindings
 
+def prove_empty_provider(reader,report,owner):
+ # Read the ORIGINAL sealed empty-only owner's proof. Never call restore,
+ # revoke, publish, adopt handles, or create authority to pass this gate.
+ binding=report['loadedBinding'];profile=reader.parse(reader.sealed(binding['profile'],binding['sha256']))
+ source_root=Path(binding['source']).parents[1]
+ for name,expected in profile['sourceHashes'].items():reader.sealed(source_root/name,expected)
+ coordinated=reader.parse(reader.sealed(profile['coordinatedConfiguration'],profile['coordinatedConfigurationHash']))
+ boot=reader.parse(reader.sealed(profile['bootConfiguration'],profile['bootConfigurationHash']))
+ owner.require(boot['kernel']==coordinated['kernel']and boot['nftPath']==coordinated['nftPath']and boot['lockFile']==coordinated['commonLockFile']and boot['journalFile']!=coordinated['journalFile'],'NATIVE_PROFILE_PAIR_CHANGED')
+ journal=reader.parse(reader.read(coordinated['journalFile']))
+ owner.require(set(journal)=={'schema',*coordinated['binding'],'state','leaseAuthorized','startAuthorized','leaseAddresses'}and journal['schema']=='ouf.semantic-lease-coordination.v1'and all(journal[k]==v for k,v in coordinated['binding'].items()),'NATIVE_OWNER_JOURNAL_BINDING_REQUIRED')
+ owner.require(journal['state']in('QUIESCED','BLOCKED')and journal['leaseAuthorized']is False and journal['startAuthorized']is False,'NATIVE_PROVIDER_AUTHORITY_MUST_REMAIN_REVOKED')
+ owner.require(type(journal['leaseAddresses'])is list and len(journal['leaseAddresses'])==len(coordinated['kernel']['providerFlows'])and all(type(row)is list and not row for row in journal['leaseAddresses']),'NATIVE_EMPTY_LEASE_RECEIPTS_REQUIRED')
+ empty=reader.parse(reader.read(boot['journalFile']))
+ owner.require(empty.get('schema')=='ouf.semantic-runtime-transition.v1'and empty.get('state')=='RUNTIME_EMPTY'and empty.get('startAuthorized')is False and empty.get('transactionId')==boot['transactionId']and empty.get('configurationHash')==profile['bootConfigurationHash'],'NATIVE_EMPTY_TRANSITION_BINDING_REQUIRED')
+ native=reader.load_known(Path(profile['bootGuardFile']),profile['bootGuardHash'],'verified_empty_provider_read_only')
+ native.validate(boot)
+ owner.require(native.membership(boot)=={'inet','bridge'},'NATIVE_EMPTY_TABLE_PAIR_REQUIRED')
+ tables=native.tables(boot)
+ owner.require(native.footprint(tables)==boot['expectedFootprint']and native.sets_empty(tables),'NATIVE_EMPTY_KERNEL_PROOF_REQUIRED')
+ owner.require(reader.parse(reader.read(coordinated['journalFile']))==journal and reader.parse(reader.read(boot['journalFile']))==empty,'NATIVE_JOURNAL_CHANGED_DURING_EMPTY_PROOF')
+ return {'ownerState':journal['state'],'emptyKernelProven':True,'providerStartAllowed':False,'nativeReconciliationStillRequired':journal['state']=='BLOCKED'}
+
 def provider_guard(reader,selection,owner):
  report=reader.collect(selection)
  owner.require(report.get('readComplete')and report.get('knownBootSource')and report.get('compilerMatchesProfile')and report.get('restorerMatchesProfile')and report.get('nftExecutableMatches'),'NATIVE_BOOT_CLOSURE_REQUIRED')
  owner.require(report['units'][selection['dockerUnit']]['ActiveState']=='active'and report['units'][selection['guardUnit']]['Result']=='success','NATIVE_DOCKER_GUARD_NOT_SUCCESSFUL')
  for name in ('ownerJournal','bootJournal'):owner.require(report[name]['passed'],'NATIVE_JOURNAL_READ_REQUIRED')
  current=report['ownerJournal']['metadata'];empty=report['bootJournal']['metadata']
- owner.require(current.get('leaseAuthorized')is False and current.get('startAuthorized')is False and current.get('state')=='QUIESCED'and empty.get('startAuthorized')is False and empty.get('state')=='RUNTIME_EMPTY','PROVIDER_MUST_REMAIN_QUIESCED')
+ owner.require(current.get('leaseAuthorized')is False and current.get('startAuthorized')is False and current.get('state')in('QUIESCED','BLOCKED')and empty.get('startAuthorized')is False and empty.get('state')=='RUNTIME_EMPTY','PROVIDER_MUST_REMAIN_QUIESCED')
+ owner.require(all(value.get('passed')and value.get('metadata',{}).get('matches')is True for value in report['ownerSourceHashesMatch'].values())and report['ownerSourceHashesMatch'],'NATIVE_OWNER_SOURCE_CLOSURE_REQUIRED')
+ owner.require(all(report[name].get('passed')and report[name].get('metadata')is True for name in ('nativeOwnerReadConfiguration','nativeBootValidation')),'NATIVE_PURE_VALIDATION_REQUIRED')
+ report['emptyProviderProof']=prove_empty_provider(reader,report,owner)
  return report
 
 def run(owner,reader,contracts,profile,selection,contract_selection,parent,pointer):

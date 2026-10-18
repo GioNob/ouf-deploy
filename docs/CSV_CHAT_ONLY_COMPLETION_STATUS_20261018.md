@@ -1,3 +1,11 @@
+## Target STOP — provider lifecycle gate before host effects
+
+Technical8/8; functional4/6. Operator execution of delivery8bed stopped at the first provider_guard with PROVIDER_MUST_REMAIN_QUIESCED. Source control-flow proves this point precedes the common lock, c23 input read, Engine construction, incident creation and all network/container writes. No retry or historical authority reuse is justified. The previous operator launcher is retired.
+
+The pinned native Gateway boot coordinator (df103735c1fe75a31e6d4c752360e9368e6aa52d, tools/semantic_provider_boot_coordination.py) intentionally publishes BLOCKED with leaseAuthorized=false after missing-table restoration or changed structure handles. Its successful Docker structural gate does not authorize providers. The correction had accepted only QUIESCED. This is a source-proven candidate explanation; the submitted STOP alone does not identify the actual current journal state.
+
+A successor is being qualified. It keeps revoked start/lease authority mandatory and admits BLOCKED only after original bound journals, empty lease receipts, paired native profiles, exact original empty footprint and actual empty kernel sets are proven through sealed native read functions. It never restores tables, adopts handles, changes the journal, or starts the provider. Scope and budgets remain six endpoint declarations, one retained UDP start,13 writes/300seconds. No new OUF session is opened. No replacement operator command is ready until qualification and immutable delivery are complete.
+
 ## Current checkpoint — host network correction qualified; administrator execution pending
 
 Technical **8/8**, functional **4/6**. The protected contract read is complete. The corrective [installation profile](../releases/host-network-reconciliation-20261018.json), [finite execution profile](../releases/host-network-reconciliation-execution-20261018.json) and [immutable delivery](../scripts/launch-host-network-reconciliation-20261018.sh) are now qualified. [Complete delivery39149585487](https://github.com/GioNob/ouf-deploy/actions/runs/39149585487) passes **13 root-journal tests,4 delivery/security probes and1 real Docker29.8.1 integration test**. [Evidence and exact hashes](../evidence/host-network-reconciliation-qualified-20261018.json).

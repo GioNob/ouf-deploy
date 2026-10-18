@@ -1,3 +1,11 @@
+## Target STOP — provider lifecycle gate before host effects
+
+Technical8/8; functional4/6. Operator execution of delivery8bed stopped at the first provider_guard with PROVIDER_MUST_REMAIN_QUIESCED. Source control-flow proves this point precedes the common lock, c23 input read, Engine construction, incident creation and all network/container writes. No retry or historical authority reuse is justified. The previous operator launcher is retired.
+
+The pinned native Gateway boot coordinator (df103735c1fe75a31e6d4c752360e9368e6aa52d, tools/semantic_provider_boot_coordination.py) intentionally publishes BLOCKED with leaseAuthorized=false after missing-table restoration or changed structure handles. Its successful Docker structural gate does not authorize providers. The correction had accepted only QUIESCED. This is a source-proven candidate explanation; the submitted STOP alone does not identify the actual current journal state.
+
+A successor is being qualified. It keeps revoked start/lease authority mandatory and admits BLOCKED only after original bound journals, empty lease receipts, paired native profiles, exact original empty footprint and actual empty kernel sets are proven through sealed native read functions. It never restores tables, adopts handles, changes the journal, or starts the provider. Scope and budgets remain six endpoint declarations, one retained UDP start,13 writes/300seconds. No new OUF session is opened. No replacement operator command is ready until qualification and immutable delivery are complete.
+
 # Postboot host network correction — explicit installation scope
 
 Technical8/8, functional4/6. The protected preboot contract read is complete; its receipt is evidence/preboot-network-contract-target-receipt-20261018.json. The current dependency read39147714237 confirms DNS-based references to APISIX and MinIO in the observed live environment. No credential values were printed. Mounted configuration and the retained UDP configuration still require preflight checks by the corrective program.

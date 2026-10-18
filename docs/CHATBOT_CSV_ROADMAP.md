@@ -1,3 +1,7 @@
+## Aggiornamento — STOP prima delle modifiche alla rete
+
+**Tecniche8/8; funzionali4/6.** Il tentativo amministrativo è stato eseguito e si è fermato al primo controllo del provider, prima di creare l'incidente o usare Docker. Il vecchio launcher non va ripetuto. Il contratto nativo prevede anche BLOCKED dopo il ripristino vuoto al boot; la consegna accettava soltanto QUIESCED. Il successore è in qualificazione con prova del kernel vuoto e autorizzazioni revocate, senza abilitare provider o ripetere effetti. [Dettagli e limiti](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
+
 ## Preparazione tappa5 — correzione dell'infrastruttura qualificata, target da eseguire
 
 **Tecniche8/8; funzionali4/6.** La lettura protetta dei contratti precedenti è completa. La correzione circoscritta della rete è qualificata:13 prove del journal privato,4 della consegna e1 integrazione reale Docker29.8.1, inclusi risposte perse, identità, DNS/HTTP pubblico, dati persistenti e riavvio del daemon di collaudo. [Stato, prove e limite amministrativo corrente](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md). Sul VPS non è ancora stata eseguita.

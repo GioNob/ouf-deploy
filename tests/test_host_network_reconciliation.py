@@ -99,11 +99,14 @@ class Plan(unittest.TestCase):
   plan=m.compile_plan(p,api,lambda r,p:None);claims=[];result=m.apply(plan,api,lambda n,r:claims.append(n))
   self.assertEqual(len(claims),13);self.assertEqual(result['engineWrites'],13);self.assertEqual(len(api.writes),13)
 class Bootstrap(unittest.TestCase):
+ def setUp(self):
+  self.proof=patch.object(b,'prove_empty_provider',return_value={'emptyKernelProven':True});self.proof.start();self.addCleanup(self.proof.stop)
  def setup_case(self):
   temp=tempfile.TemporaryDirectory(dir='/root');self.addCleanup(temp.cleanup);root=Path(temp.name);root.chmod(0o700)
   lock=root/'common.lock';lock.write_bytes(b'');lock.chmod(0o600)
   p,api,rows=fixture();selection={'dockerUnit':'docker','guardUnit':'guard'}
   report={'readComplete':True,'knownBootSource':True,'compilerMatchesProfile':True,'restorerMatchesProfile':True,'nftExecutableMatches':True,'units':{'docker':{'ActiveState':'active'},'guard':{'Result':'success'}},'ownerJournal':{'passed':True,'metadata':{'leaseAuthorized':False,'startAuthorized':False,'state':'QUIESCED'}},'bootJournal':{'passed':True,'metadata':{'startAuthorized':False,'state':'RUNTIME_EMPTY'}},'loadedBinding':{'profile':'fixture-boot','sha256':'a'*64}}
+  report.update(ownerSourceHashesMatch={'fixture':{'passed':True,'metadata':{'matches':True}}},nativeOwnerReadConfiguration={'passed':True,'metadata':True},nativeBootValidation={'passed':True,'metadata':True})
   reader=types.SimpleNamespace(collect=lambda _:copy.deepcopy(report),parse=json.loads,sealed=lambda path,h:json.dumps({'coordinatedConfiguration':'fixture-owner','coordinatedConfigurationHash':'b'*64}if path=='fixture-boot'else{'commonLockFile':str(lock)}).encode())
   contracts=types.SimpleNamespace(collect=lambda _:{'complete':True},read=lambda _:{'beforeApplications':{'udp':copy.deepcopy(rows[2])}})
   return root,p,api,reader,contracts,selection,report
