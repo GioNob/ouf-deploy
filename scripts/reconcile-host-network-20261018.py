@@ -1,5 +1,5 @@
 """Root host repair bootstrap. Native provider guards are only read, never bypassed."""
-import copy,fcntl,hashlib,json,os,re,signal,stat,tempfile,time
+import copy,errno,fcntl,grp,hashlib,json,os,pwd,re,signal,stat,tempfile,time
 from pathlib import Path
 
 CONFIG_SUFFIXES=('.yaml','.yml','.conf','.properties','/Caddyfile')
@@ -25,14 +25,40 @@ def reject_literal_dependencies(raw,profile,owner):
   for match in re.finditer(pattern,text):
    port=match[1];owner.require(port is not None and int(port)not in move['servicePorts'],'LITERAL_MOVING_SERVICE_DEPENDENCY_REQUIRES_OWNER_REVIEW')
 
+def custody_rule(path,profile):
+ custody=profile.get('configurationCustody',{})
+ for kind in ('applicationReadOnlyFiles','operatorGroupFiles'):
+  for value in custody.get(kind,[]):
+   if value['sourcePath']==str(path):return kind,value
+ return None,None
+
+def operator_group_proof(fd,rule,owner):
+ # For this exact legacy file, group write introduces no additional principal:
+ # prove local NSS primary/supplementary writers and reject any extended ACL.
+ group=grp.getgrgid(rule['gid']);uids={item.pw_uid for item in pwd.getpwall()if item.pw_gid==rule['gid']}
+ uids.update(pwd.getpwnam(name).pw_uid for name in group.gr_mem)
+ owner.require(uids==set(rule['writerUids']),'OPERATOR_GROUP_WRITERS_CHANGED')
+ try:os.getxattr(fd,'system.posix_acl_access')
+ except OSError as error:owner.require(error.errno in (errno.ENODATA,errno.ENOTSUP,errno.EOPNOTSUPP),'CONFIGURATION_ACL_READ_UNPROVEN')
+ else:owner.require(False,'EXTENDED_CONFIGURATION_ACL_REQUIRES_OWNER_REVIEW')
+
 def configuration_bytes(path,profile,owner):
  path=Path(path);owner.require(path.is_absolute()and'..'not in path.parts,'CONFIGURATION_PATH_REQUIRED')
+ ancestors=[]
  for parent in path.parents:
   info=parent.lstat();owner.require(stat.S_ISDIR(info.st_mode)and info.st_uid in profile['configurationOwnerUids']and not info.st_mode&0o022,'CONFIGURATION_ANCESTRY_CHANGED')
+  ancestors.append(info)
  fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
  try:
-  first=os.fstat(fd);owner.require(stat.S_ISREG(first.st_mode)and first.st_uid in profile['configurationOwnerUids']and first.st_nlink==1 and not first.st_mode&0o022 and 0<first.st_size<=2097152,'CONFIGURATION_CUSTODY_REQUIRED')
-  raw=os.read(fd,2097153);last=os.fstat(fd);pin=lambda i:(i.st_dev,i.st_ino,i.st_size,i.st_mtime_ns,i.st_ctime_ns)
+  first=os.fstat(fd);kind,rule=custody_rule(path,profile)
+  approved=first.st_uid in profile['configurationOwnerUids']and not first.st_mode&0o022
+  if not approved and rule is not None:
+   exact=(first.st_uid,first.st_gid,stat.S_IMODE(first.st_mode))==(rule['uid'],rule['gid'],int(rule['mode'],8))
+   if kind=='applicationReadOnlyFiles':
+    approved=exact and any(info.st_uid!=first.st_uid and not stat.S_IMODE(info.st_mode)&0o077 for info in ancestors)
+   elif kind=='operatorGroupFiles'and exact:operator_group_proof(fd,rule,owner);approved=True
+  owner.require(stat.S_ISREG(first.st_mode)and first.st_nlink==1 and approved and 0<first.st_size<=2097152,'CONFIGURATION_CUSTODY_REQUIRED')
+  raw=os.read(fd,2097153);last=os.fstat(fd);pin=lambda i:(i.st_dev,i.st_ino,i.st_uid,i.st_gid,i.st_mode,i.st_nlink,i.st_size,i.st_mtime_ns,i.st_ctime_ns)
   owner.require(len(raw)==first.st_size and pin(first)==pin(last)==pin(path.lstat()),'CONFIGURATION_CHANGED_DURING_READ');return raw
  finally:os.close(fd)
 
@@ -46,7 +72,11 @@ def configuration_scanner(reader,profile,owner):
    destination=mount['Destination']
    if mount['Type']=='bind'and destination.endswith(CONFIG_SUFFIXES):
     owner.require(mount.get('RW')is False,'CONFIGURATION_MOUNT_MUST_BE_READONLY')
-    source=Path(mount['Source']);raw=configuration_bytes(source,profile,owner);reject_literal_dependencies(raw,profile,owner)
+    source=Path(mount['Source']);kind,rule=custody_rule(source,profile)
+    if rule is not None:
+     owner.require(row['Id']==rule['containerId']and destination==rule['destination'],'EXACT_CUSTODY_MOUNT_BINDING_REQUIRED')
+     if kind=='applicationReadOnlyFiles':owner.require(row['Config'].get('User')==rule['containerUser'],'CUSTODY_APPLICATION_USER_CHANGED')
+    raw=configuration_bytes(source,profile,owner);reject_literal_dependencies(raw,profile,owner)
     bindings[str(source)]=hashlib.sha256(raw).hexdigest();count[0]+=1;owner.require(count[0]<=32,'CONFIGURATION_FILE_COUNT_BOUND')
  return scan,bindings
 

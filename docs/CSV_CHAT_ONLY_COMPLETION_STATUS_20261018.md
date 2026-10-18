@@ -1,3 +1,13 @@
+## Metadata read complete — exact custody rules in qualification, no permission changes
+
+Technical8/8; functional4/6. Runner metadata read39152546712 confirms Onboarding's readonly secret is UID/GID10003,0400,single-link behind a0700 trusted directory, matching declared Config.User10003:10003. Caddyfile is UID/GID1000,0664,single-link,readonly mount; group1000 enumerates only UID1000, already an approved operator. Two protected file stats are permission-denied to the runner; these are NOT claimed proven. Ingestion declares User10002:10002; its optional readonly0400 delegation will only apply if root independently observes that exact leaf identity/mode and private ancestry. Otherwise existing strict default ownership must pass. APISIX protected assets retain the strict default, not a guessed exception.
+
+The v2 installation profile is being qualified with path/container/destination-bound custody rules. Generic reader code allows a declared numeric application's0400 single-link file only behind trusted private non-searchable ancestry and with matching readonly container mount/User. It allows this exact0664 operator file only when native NSS primary/supplementary writers exactly match the approved UID list and no extended POSIX ACL exists. Unknown membership/ACL/error, world-write, wrong identity/mount, writable application leaf, symlink/hardlink, changed metadata and all unlisted owners remain rejected. Trusted default UIDs stay0/1000; UID10003 is not added globally. No chmod/chown, contents change, host authority, or extra engine write is introduced. All checks re-run with hash reads before each claimed write; inode UID/GID/mode/link count are now included in in-flight stability pins.
+
+The scope remains13Docker writes/300seconds, six existing endpoint declarations and one retained UDP start. No new operator command until exact payload and native integrations pass. Native provider stays BLOCKED/revoked; no policy publication, identity decision or explicit retry.
+
+## Previous checkpoint and history
+
 ## Target STOP — mounted configuration custody before plan creation
 
 Technical8/8; functional4/6. The operator ran immutable delivery54d3f48. Native empty-provider and preboot empty-DNS/application comparison passed. compile_plan then stopped in configuration_scanner/configuration_bytes at CONFIGURATION_CUSTODY_REQUIRED. The exact source evaluates this condition before reading that file's contents and before plan/context/incident creation or any Docker write. Earlier successfully scanned files may have been read privately by the bounded dependency scanner; no file values were printed. The failed compound predicate does not identify whether type, UID, link count, mode or size failed. No cause is assumed or custody guard waived.

@@ -21,7 +21,7 @@ def group_writers(gid,approved):
  uids.update(pwd.getpwnam(name).pw_uid for name in group.gr_mem)
  return {'gid':gid,'enumeratedMemberUids':sorted(uids),'allEnumeratedWritersApproved':bool(uids)and uids.issubset(set(approved)),'identityValuesAreNotCredentials':True}
 def collect(profile):
- m.require(profile['schema']=='ouf.host-network-reconciliation.v1'and 1<=profile['maximumContainers']<=160,'FINITE_INSTALLATION_REQUIRED')
+ m.require(profile['schema']in('ouf.host-network-reconciliation.v1','ouf.host-network-reconciliation.v2')and 1<=profile['maximumContainers']<=160,'FINITE_INSTALLATION_REQUIRED')
  ids=m.invoke(['ps','--all','--quiet','--no-trunc']).decode().splitlines();m.require(0<len(ids)<=profile['maximumContainers']and len(ids)==len(set(ids))and all(len(v)==64 and all(c in'0123456789abcdef'for c in v)for v in ids),'FLEET_BOUND')
  fmt='{"id":{{json .Id}},"running":{{json .State.Running}},"user":{{json .Config.User}},"mounts":{{json .Mounts}}}'
  rows=[json.loads(line)for line in m.invoke(['inspect','--type','container','--format',fmt,*ids]).splitlines()if line];m.require(len(rows)==len(ids)and {v['id']for v in rows}==set(ids),'EXACT_FLEET_REQUIRED')

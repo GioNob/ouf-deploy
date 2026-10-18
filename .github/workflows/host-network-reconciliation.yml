@@ -24,6 +24,7 @@ jobs:
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
           sudo python3 -I -B -S -m unittest discover -s "$fixture/tests" -p test_host_network_reconciliation.py -v
+          sudo python3 -I -B -S -m unittest discover -s "$fixture/tests" -p test_host_network_reconciliation_custody.py -v
           sudo env OUF_GATEWAY_SOURCE="$GITHUB_WORKSPACE/native-source" python3 -I -B -S -m unittest discover -s "$fixture/tests" -p test_host_network_reconciliation_provider.py -v
       - name: Exact delivery hashes, shell and isolated root CLI rejection
         run: |

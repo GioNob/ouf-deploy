@@ -1,3 +1,7 @@
+## Aggiornamento — custodia dei mount ricostruita, nessuna modifica ai permessi
+
+**Tecniche8/8; funzionali4/6.** Metadati del runner: il file Onboarding0400 appartiene al suo utente applicativo10003; il gruppo1000 del Caddyfile0664 contiene solo l'operatore1000. È in qualificazione un profilo di custodia limitato agli esatti file/container/mount, con verifica nativa degli scrittori e assenza di ACL aggiuntive. Nessuna fiducia globale a nuovi utenti, chmod/chown o esclusione dei file dalle verifiche. Due metadati protetti restano da verificare con root prima di qualunque effetto. [Stato e limiti](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
+
 ## Aggiornamento — confronti superati, STOP sulla custodia di un mount
 
 **Tecniche8/8; funzionali4/6.** Il tentativo54d3 ha superato provider e confronto DNS/preboot; durante la preparazione del piano ha incontrato CONFIGURATION_CUSTODY_REQUIRED. Nessun piano/incidente o cambiamento Docker è stato raggiunto. Il requisito preciso non è stampato e non viene ignorato. È in qualificazione un inventario dei soli metadati di tutti i file interessati, tramite il runner, senza contenuti o nuove richieste sudo. [Stato e confine](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).

@@ -21,7 +21,19 @@ def endpoint(row,network):
 def other_networks(row,network):return digest({k:v for k,v in row['NetworkSettings']['Networks'].items()if k!=network})
 def process(row):return {k:row['State'][k]for k in ('Pid','StartedAt','Running','Paused','Restarting')}
 def validate_profile(p):
- require(set(p)=={'schema','engineVersion','socketPath','network','moves','restart','reservedIPv4','maximumContainers','configurationOwnerUids'}and p['schema']=='ouf.host-network-reconciliation.v1','CLOSED_PROFILE_REQUIRED')
+ base={'schema','engineVersion','socketPath','network','moves','restart','reservedIPv4','maximumContainers','configurationOwnerUids'}
+ require((set(p)==base and p['schema']=='ouf.host-network-reconciliation.v1')or(set(p)==base|{'configurationCustody'}and p['schema']=='ouf.host-network-reconciliation.v2'),'CLOSED_PROFILE_REQUIRED')
+ if 'configurationCustody'in p:
+  custody=p['configurationCustody'];require(set(custody)=={'schema','applicationReadOnlyFiles','operatorGroupFiles'}and custody['schema']=='ouf.mounted-file-custody.v1','CLOSED_CUSTODY_PROFILE_REQUIRED')
+  seen_paths=set()
+  for kind in ('applicationReadOnlyFiles','operatorGroupFiles'):
+   require(type(custody[kind])is list and len(custody[kind])<=8,'CUSTODY_EXCEPTION_BOUND')
+   for item in custody[kind]:
+    fields={'sourcePath','containerId','destination','uid','gid','mode'}|({'containerUser'}if kind=='applicationReadOnlyFiles'else{'writerUids'})
+    require(set(item)==fields and item['sourcePath'].startswith('/')and'..'not in item['sourcePath'].split('/')and item['sourcePath']not in seen_paths and item['destination'].startswith('/')and re.fullmatch('[a-f0-9]{64}',item['containerId']),'EXACT_CUSTODY_FILE_SCOPE_REQUIRED');seen_paths.add(item['sourcePath'])
+    require(all(type(item[k])is int and 0<item[k]<2147483647 for k in ('uid','gid')),'EXACT_CUSTODY_IDENTITIES_REQUIRED')
+    if kind=='applicationReadOnlyFiles':require(item['mode']=='0400'and item['containerUser']==str(item['uid'])+':'+str(item['gid']),'READ_ONLY_APPLICATION_IDENTITY_REQUIRED')
+    else:require(item['mode']=='0664'and type(item['writerUids'])is list and item['writerUids']and set(item['writerUids']).issubset(set(p['configurationOwnerUids']))and item['uid']in p['configurationOwnerUids'],'AUTHORIZED_OPERATOR_WRITERS_REQUIRED')
  require(type(p['moves'])is list and 1<=len(p['moves'])<=8 and 1<=p['maximumContainers']<=160,'FINITE_SCOPE_REQUIRED')
  require(type(p['configurationOwnerUids'])is list and p['configurationOwnerUids']and all(type(v)is int and 0<=v<65536 for v in p['configurationOwnerUids']),'CONFIGURATION_UID_SCOPE_REQUIRED')
  n=p['network'];require(set(n)=={'name','id','subnet','gateway','internal'}and re.fullmatch('[a-f0-9]{64}',n['id'])and re.fullmatch('[A-Za-z0-9_.-]{1,128}',n['name']),'NETWORK_PROFILE_SCHEMA')
