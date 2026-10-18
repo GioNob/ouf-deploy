@@ -22,7 +22,7 @@ class Redaction(unittest.TestCase):
    with self.assertRaises(AssertionError):reader.channels(value)
  def test_json_property_shapes_do_not_include_values(self):
   rows=reader.json_properties('{"ouf":{"onboarding":{"udp-identity":{"gateway-url":"PRIVATE_CANARY"}}}}')
-  self.assertEqual(rows,[{'property':'oufonboardingudpidentitygatewayurl','type':'str'}])
+  self.assertEqual(rows,[{'property':'oufonboardingudpidentitygatewayurl','canonicalProperty':'ouf.onboarding.udpidentity.gatewayurl','type':'str'}])
   self.assertNotIn('PRIVATE_CANARY',json.dumps(rows))
  def test_empty_json_object_has_no_leaf_overrides(self):
   self.assertEqual(reader.json_properties('{}'),[])

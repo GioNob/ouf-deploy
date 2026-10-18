@@ -24,7 +24,11 @@ def json_properties(raw):
             else:
                 normalized=re.sub('[^a-z0-9]','',full.lower())
                 assert normalized not in seen and len(seen)<64,'JSON_ALIAS_OR_BOUND';seen.add(normalized)
-                row={'property':normalized,'type':type(item).__name__}
+                segments=full.split('.')
+                canonical=[re.sub('[^a-z0-9]','',part.lower())for part in segments]
+                if canonical[:5]==['spring','security','oauth2','client','registration']and len(segments)>5:
+                    canonical[5]=segments[5]
+                row={'property':normalized,'canonicalProperty':'.'.join(canonical),'type':type(item).__name__}
                 if normalized in ('springflywayenabled','springflywaybaselineonmigrate','springflywayvalidateonmigrate')and type(item)is bool:
                     row['classification']='EXPLICIT_TRUE'if item else'EXPLICIT_FALSE'
                 result.append(row)
