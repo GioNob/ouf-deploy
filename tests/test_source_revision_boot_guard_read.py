@@ -1,4 +1,4 @@
-import importlib.util,json,os,shutil,subprocess,tempfile,unittest
+import ast,hashlib,importlib.util,json,os,re,shutil,stat,subprocess,sys,tempfile,unittest
 from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
@@ -35,6 +35,22 @@ class Reader(unittest.TestCase):
   r.independent(report,'one',failed);r.independent(report,'two',lambda:True)
   self.assertTrue(report['two']['passed']);self.assertNotIn('PRIVATE_CANARY',json.dumps(report))
   self.assertEqual(r.failure(ValueError('nft executable drift'))['reason'],'NFT_EXECUTABLE_DRIFT')
+ def test_operator_memory_loader_hashes_and_tamper_rejection(self):
+  launcher=(ROOT/'scripts/launch-source-revision-boot-read-20261018.sh').read_text()
+  loader=re.search(r'(?ms)^import hashlib,json,os,signal,stat,sys\n.*?(?=^OUF_VERIFIED_BOOT_READ$)',launcher).group()
+  tree=ast.parse(loader);definition=next(n for n in tree.body if isinstance(n,ast.FunctionDef)and n.name=='verified')
+  namespace={'hashlib':hashlib,'os':os,'stat':stat}
+  exec(compile(ast.Module(body=[definition],type_ignores=[]),'<actual-memory-loader>','exec'),namespace)
+  source=(ROOT/'scripts/read-source-revision-boot-guard.py').read_bytes()
+  selection=(ROOT/'releases/source-revision-boot-read-selection-20261018.json').read_bytes()
+  for raw in (source,selection):self.assertIn(hashlib.sha256(raw).hexdigest(),loader)
+  path=self.file(self.tmp/'delivered',source)
+  self.assertEqual(namespace['verified'](path,hashlib.sha256(source).hexdigest()),source)
+  path.write_bytes(b'PRIVATE_CANARY')
+  with self.assertRaises(ValueError):namespace['verified'](path,hashlib.sha256(source).hexdigest())
+  reply=subprocess.run([sys.executable,'-I','-B','-S','-',str(path),str(path)],input=loader.encode(),capture_output=True,timeout=10)
+  self.assertEqual(reply.returncode,2);self.assertNotIn(b'PRIVATE_CANARY',reply.stdout+reply.stderr)
+  self.assertEqual(json.loads(reply.stdout)['runtimeMutations'],0)
  def fixture(self):
   native=Path(os.environ['OUF_GATEWAY_SOURCE']);ctx=self.tmp/'case';source=ctx/'source'
   for path in native.joinpath('scripts').glob('*.py'):
