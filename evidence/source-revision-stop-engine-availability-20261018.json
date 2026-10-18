@@ -1,0 +1,86 @@
+{
+  "schema": "ouf.source-revision-preauthority-stop-and-engine-read.v1",
+  "sourceRevisionStop": {
+    "executorCodeDirectory": "/etc/ouf/deploy-snapshots/source-revision-executor-code-zu0056o_",
+    "contextPath": "/etc/ouf/deploy-snapshots/source-revision-execution-55e7sduq",
+    "reason": "UNREVIEWED_SPRING_OVERRIDE_CHANNEL",
+    "runtimeAuthorityIssued": false,
+    "targetReleaseStarted": false
+  },
+  "originalChannelRead": {
+    "run": 39109086419,
+    "job": 117621159471,
+    "generationMatches": true,
+    "channels": [
+      {
+        "name": "SPRING_APPLICATION_JSON",
+        "classification": "UNCLASSIFIED"
+      },
+      {
+        "name": "SPRING_CONFIG_ADDITIONAL_LOCATION",
+        "classification": "RETAINED_LOCATION_REQUIRES_EXISTING_FILE_BINDING"
+      }
+    ],
+    "propertyValuesProven": false
+  },
+  "engineAvailability": {
+    "run": 39141595806,
+    "job": 117716982900,
+    "snapshot": {
+      "automaticRetry": false,
+      "completedTechnicalPhases": 8,
+      "credentialFilesRead": 0,
+      "credentialValuesPrinted": false,
+      "functionalMilestonesProven": 4,
+      "installationSpecific": true,
+      "runtimeMutations": 0,
+      "schema": "ouf.source-revision-engine-availability.v1",
+      "socket": {
+        "gid": 990,
+        "isSocket": true,
+        "mode": "0o660",
+        "present": true,
+        "uid": 0
+      },
+      "units": {
+        "containerd.service": {
+          "ActiveState": "active",
+          "LoadState": "loaded",
+          "MainPID": "980",
+          "NRestarts": "0",
+          "Result": "success",
+          "SubState": "running",
+          "returnCode": 0
+        },
+        "docker.service": {
+          "ActiveState": "inactive",
+          "LoadState": "loaded",
+          "MainPID": "0",
+          "NRestarts": "0",
+          "Result": "success",
+          "SubState": "dead",
+          "returnCode": 0
+        },
+        "docker.socket": {
+          "ActiveState": "active",
+          "LoadState": "loaded",
+          "Result": "success",
+          "SubState": "listening",
+          "returnCode": 0
+        }
+      }
+    }
+  },
+  "mcpSystemRead": {
+    "succeeded": false,
+    "error": "MCP_INTERNAL_ERROR",
+    "rootCauseProven": false
+  },
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "serviceRestartPerformed": false,
+  "profilePublications": 0,
+  "jobsRetried": 0,
+  "configurationChangePerformed": false,
+  "userMaintenanceIntentRequired": true
+}
