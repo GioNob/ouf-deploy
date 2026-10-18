@@ -1,9 +1,10 @@
 """Verify the retained native Spring datasource/Flyway channels before login.
 
-Only the packaged configuration and one already-mounted non-Spring owner overlay
-are supported. No configuration, role, mount or credential is modified.
+Only the packaged configuration, the closed retained owner JSON surface and one
+already-mounted owner overlay are supported. No value, role, mount or credential is modified.
 """
 import hashlib
+import json
 import os
 from pathlib import Path
 import re
@@ -12,6 +13,46 @@ import zipfile
 from tools.chatbot_file_cohort.gateway import private_config
 from tools.semantic_mcp_update.native import env, private_file
 from tools.source_revision_update.owner import require
+
+def application_json_metadata(raw):
+    """Classify only existing owner/THS bindings; never rewrite or emit values.
+
+    Dotted boundaries remain significant and the OAuth registration map key is
+    literal. Datasource, migration, loader, profiles and other Spring properties
+    stay outside this closed source-owner contract.
+    """
+    require(type(raw)is str and 0<len(raw.encode())<=65536,'BOUNDED_SPRING_JSON_REQUIRED')
+    def unique(rows):
+        result={}
+        for key,value in rows:
+            require(key not in result,'DUPLICATE_SPRING_JSON_KEY');result[key]=value
+        return result
+    try:value=json.loads(raw,object_pairs_hook=unique,
+        parse_constant=lambda _:require(False,'NONFINITE_SPRING_JSON'))
+    except (ValueError,TypeError):require(False,'VALID_SPRING_JSON_REQUIRED')
+    require(type(value)is dict,'SPRING_JSON_OBJECT_REQUIRED')
+    allowed={'ouf.authorization.ths.enabled':bool,'ouf.managedfilepicker.gatewayuploadurl':str,
+        'ouf.onboarding.udpidentity.gatewayurl':str,'ouf.onboarding.udpidentity.tokenfile':str,
+        'ouf.resolution.ths.gatewaybaseurl':str,'ouf.workflow.ths.gatewaybaseurl':str,
+        'spring.security.oauth2.client.registration.ouf-ths.scope':list}
+    found={}
+    def visit(obj,prefix='',depth=0):
+        require(type(obj)is dict and depth<=12 and(depth==0 or bool(obj)),'BOUNDED_NONEMPTY_JSON_BRANCH_REQUIRED')
+        for key,item in obj.items():
+            require(type(key)is str and re.fullmatch('[A-Za-z0-9_.-]{1,128}',key),'SPRING_JSON_KEY_SCHEMA')
+            full=prefix+'.'+key if prefix else key
+            if type(item)is dict:visit(item,full,depth+1);continue
+            parts=full.split('.');canonical=[re.sub('[^a-z0-9]','',part.lower())for part in parts]
+            if canonical[:5]==['spring','security','oauth2','client','registration']and len(parts)>5:canonical[5]=parts[5]
+            name='.'.join(canonical)
+            require(name in allowed and name not in found,'UNREVIEWED_OR_DUPLICATE_OWNER_JSON_PROPERTY')
+            require(type(item)is allowed[name]and(type(item)is not list or all(type(v)is str for v in item)),
+                'OWNER_JSON_PROPERTY_TYPE_CHANGED')
+            found[name]={'property':name,'type':type(item).__name__}
+    visit(value)
+    return {'emptyObject':not bool(value),'propertyOverrides':len(found),'migrationOverridePresent':False,
+        'retainedOwnerBindingsOnly':True,'rawSha256':hashlib.sha256(raw.encode()).hexdigest(),
+        'properties':[found[key]for key in sorted(found)],'configurationValuesPrinted':False}
 
 
 def overlay_text(raw):
@@ -47,10 +88,12 @@ def additional_location(value):
 def verify(actual, candidate, postgres, binding, native_port, yaml_sha256, *, root=None):
     values = env(actual['Config']['Env'])
     require(type(native_port) is int and 1 <= native_port <= 65535, 'APPROVED_POSTGRES_PORT_REQUIRED')
-    location = None
+    location = None; json_metadata = None
     for key,value in values.items():
         normalized = re.sub('[^a-z0-9]','',key.lower())
-        if key == 'SPRING_CONFIG_ADDITIONAL_LOCATION' and value:
+        if key == 'SPRING_APPLICATION_JSON':
+            json_metadata = application_json_metadata(value)
+        elif key == 'SPRING_CONFIG_ADDITIONAL_LOCATION' and value:
             location = additional_location(value)
         else:
             require(not (normalized.startswith(('spring','loader'))
@@ -109,5 +152,5 @@ def verify(actual, candidate, postgres, binding, native_port, yaml_sha256, *, ro
                 require(location == target, 'EXTERNAL_SPRING_CONFIG_REQUIRES_REVIEW')
     return {'configurationSha256':yaml_sha256,'nativeFlywayEnabledByDefault':True,
         'sameDatasourceAsApplication':True,'databaseMatches':True,'roleMatches':True,
-        'higherPriorityMigrationOverridesAbsent':True,'ownerOverlays':overlays,
+        'higherPriorityMigrationOverridesAbsent':True,'ownerOverlays':overlays,'applicationJson':json_metadata,
         'externalUnreviewedConfigurationAbsent':True,'configurationValuesPrinted':False}

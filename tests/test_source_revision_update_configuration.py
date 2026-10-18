@@ -1,6 +1,7 @@
 """Real private files/JAR, source-selected endpoints and Spring override denial."""
 import copy
 import hashlib
+import json
 import os
 from pathlib import Path
 import sys
@@ -54,12 +55,51 @@ class Configuration(unittest.TestCase):
 
     def test_higher_priority_spring_and_java_channels_fail_before_start(self):
         valid = copy.deepcopy(self.actual)
-        for value in ('SPRING_FLYWAY_ENABLED=false','SPRING_FLYWAY_ENABLED=','SPRING_APPLICATION_JSON={}',
+        for value in ('SPRING_FLYWAY_ENABLED=false','SPRING_FLYWAY_ENABLED=','SPRING_APPLICATION_JSON={"spring.flyway.enabled":false}',
                       'JAVA_TOOL_OPTIONS=-Dspring.flyway.url=jdbc:unapproved','SPRING_PROFILES_ACTIVE=other'):
             self.actual = copy.deepcopy(valid); self.actual['Config']['Env'].append(value)
             with self.subTest(value=value),self.assertRaises(UpdateDenied): self.verify()
         self.actual = valid; self.actual['Config']['Cmd'] = ['--spring.flyway.enabled=false']
         with self.assertRaises(UpdateDenied): self.verify()
+
+    def test_retained_root_empty_json_has_no_override_and_is_preserved(self):
+        self.actual['Config']['Env'].append('SPRING_APPLICATION_JSON= {} ')
+        before=copy.deepcopy(self.actual)
+        result=self.verify()
+        self.assertEqual(result['applicationJson']['propertyOverrides'],0)
+        self.assertFalse(result['applicationJson']['migrationOverridePresent'])
+        self.assertEqual(self.actual,before)
+
+    def test_nonempty_duplicate_malformed_and_nonobject_json_stay_blocked(self):
+        for raw in ('[]','null','true','invalid','{"ouf":{"setting":true}}',
+                    '{"spring":{"flyway":{"enabled":false}}}',
+                    '{"spring.flyway.enabled":true,"spring.flyway.enabled":false}'):
+            with self.subTest(raw=raw),self.assertRaises(UpdateDenied):c.application_json_metadata(raw)
+
+    def test_observed_owner_json_keeps_values_and_literal_oauth_identity(self):
+        value={'ouf.authorization.ths.enabled':True,
+            'ouf.managed-file-picker.gateway-upload-url':'https://fixture.invalid/PRIVATE_CANARY',
+            'ouf.onboarding.udp-identity.gateway-url':'https://fixture.invalid/PRIVATE_CANARY',
+            'ouf.onboarding.udp-identity.token-file':'/run/PRIVATE_CANARY',
+            'ouf.resolution.ths.gateway-base-url':'https://fixture.invalid/PRIVATE_CANARY',
+            'ouf.workflow.ths.gateway-base-url':'https://fixture.invalid/PRIVATE_CANARY',
+            'spring.security.oauth2.client.registration.ouf-ths.scope':['openid','PRIVATE_CANARY']}
+        raw=json.dumps(value);self.actual['Config']['Env'].append('SPRING_APPLICATION_JSON='+raw)
+        before=copy.deepcopy(self.actual);result=self.verify()
+        self.assertEqual(result['applicationJson']['propertyOverrides'],7)
+        self.assertEqual(result['applicationJson']['rawSha256'],hashlib.sha256(raw.encode()).hexdigest())
+        self.assertEqual(self.actual,before);self.assertNotIn('PRIVATE_CANARY',json.dumps(result))
+
+    def test_json_contract_rejects_type_alias_map_identity_and_migration_drift(self):
+        for raw in ('{"ouf.authorization.ths.enabled":"true"}',
+            '{"ouf.onboarding.udp-identity.gateway-url":"one","ouf.onboarding.udpIdentity.gatewayUrl":"two"}',
+            '{"spring.security.oauth2.client.registration.oufths.scope":["openid"]}',
+            '{"spring.security.oauth2.client.registration.ouf-ths.client-secret":"PRIVATE_CANARY"}',
+            '{"spring.security.oauth2.client.registration.ouf-ths.scope":[true]}',
+            '{"spring.datasource.url":"PRIVATE_CANARY"}','{"spring":{}}',
+            '{"ouf.authorization.ths.enabled":NaN}',
+            '{"ouf.authorization-ths.enabled":true}'):
+            with self.subTest(raw=raw),self.assertRaises(UpdateDenied):c.application_json_metadata(raw)
 
     def test_existing_readonly_owner_overlay_is_hashed_and_retained(self):
         overlay = self.root/'owner.yaml'; overlay.write_bytes(b'ouf:\n  onboarding:\n    issuer: https://auth.fixture.invalid\n')
