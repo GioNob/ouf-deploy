@@ -16,7 +16,7 @@ class Compilation(unittest.TestCase):
    a['Id']=str(i+1)*64;a['State'].update(Paused=False,Restarting=False)
    actual[module]=a
    if module in ('udp','mcp'):
-    saved[module]={'name':s['name'],'request':s['creationRequest'],'readiness':c['readiness'][module]}
+    saved[module]={'name':s['name'],'request':s['creationRequest'],'readiness':c['readiness'][module],'restoreRestartPolicy':s['restoreRestartPolicy']}
     candidates[module]=image
     case['candidateSourceCommits'][module]='c'*40;case['deployedSourceCommits'][module]='a'*40
   engine={'socketPath':'/fixture/socket','socketBinding':[1,2,3]}
@@ -44,7 +44,6 @@ class Compilation(unittest.TestCase):
    admin=stack.enter_context(patch.object(p,'NamespaceAdmin'));admin.return_value.routes.return_value={}
    stack.enter_context(patch.object(p.configuration,'verify',return_value={'verified':True}))
    stack.enter_context(patch.object(p.compiler,'runtime_image_id',return_value='sha256:'+'d'*64))
-   stack.enter_context(patch.object(p.compiler,'requested_host_config_matches',return_value=True))
    if drift or database_error:
     with self.assertRaises((UpdateDenied,ValueError)):p.compile_private({'engine':engine},{'executables':{'docker':{}}},case,context,lambda *a:None,ns)
     self.assertFalse((context/'prepared-plan.json').exists())

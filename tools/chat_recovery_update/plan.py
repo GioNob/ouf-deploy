@@ -9,7 +9,13 @@ def replacement(saved,actual,image,case,module):
  require(module in('udp','mcp')and saved.get('module')==module and saved.get('name')==actual.get('Name','')[1:],'RETAINED_UDP_CREATION_REQUIRED')
  require(actual['State']['Running']is True and actual['Config'].get('Labels',{}).get('org.opencontainers.image.revision')==case['deployedSourceCommits'][module],'EXACT_DEPLOYED_UDP_SOURCE_REQUIRED')
  request=copy.deepcopy(saved['creationRequest']);config=actual['Config'];audit=image['imageAudit']
- require(requested_host_config_matches(request['HostConfig'],actual['HostConfig'],started=True),'RETAINED_HOST_CONFIGURATION_CHANGED')
+ # The completed predecessor restored its reviewed restart policy after
+ # creating with restart disabled. Compare that final state, not the interim
+ # creation request; all other retained fields remain strictly checked.
+ restored=saved.get('restoreRestartPolicy')
+ require(type(restored)is dict and restored==actual['HostConfig'].get('RestartPolicy'),'RETAINED_RESTART_POLICY_CHANGED')
+ expected_host=copy.deepcopy(request['HostConfig']);expected_host['RestartPolicy']=copy.deepcopy(restored)
+ require(requested_host_config_matches(expected_host,actual['HostConfig'],started=True),'RETAINED_HOST_CONFIGURATION_CHANGED')
  require(audit['imageConfig'].get('Labels',{}).get('org.opencontainers.image.revision')==case['candidateSourceCommits'][module],'CANDIDATE_SOURCE_CHANGED')
  require(all(config.get(k)==audit['imageConfig'].get(k)for k in('User','Entrypoint','Cmd','WorkingDir')),'UDP_NATIVE_PROCESS_CONTRACT_CHANGED')
  require(len(actual['NetworkSettings']['Networks'])==1,'ONE_RETAINED_UDP_NETWORK_REQUIRED')

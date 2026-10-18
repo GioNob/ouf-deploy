@@ -1,3 +1,9 @@
+## Current target preparation stop — restored restart policy comparison
+
+Operator receipt: code context /etc/ouf/deploy-snapshots/chat-recovery-executor-code-pznqmb02; preparation context /etc/ouf/deploy-snapshots/chat-recovery-execution-gifk1h2d. Bootstrap stopped with RETAINED_HOST_CONFIGURATION_CHANGED before runtime authority. Technical 8/8, functional 3/6; no successful update is claimed.
+
+Source diagnosis: both completed predecessor plans create replacement containers with RestartPolicy=no, then restore the separately reviewed restoreRestartPolicy. The new compiler incorrectly compared current HostConfig with the interim creation request. Earlier generation checks and completed-history checks precede this comparison. The fix must compare the predecessor's final reviewed restart policy, preserve strict matching of all other HostConfig fields and reject missing or changed restoration proof. Prior tests mocked this matcher and did not exercise the actual lifecycle; new regressions use the real matcher. Target recovery remains pending qualification and reconciliation of the private preparation context; do not rerun the old launcher.
+
 ## Current release checkpoint — qualified replacement staged, target not updated
 
 Technical **8/8**, functional **3/6**. OUF MCP system status returned HEALTHY, actionRequired=false, partial=false on 2026-10-18. This does not prove candidate activation.

@@ -15,15 +15,16 @@ class Replacement(unittest.TestCase):
           'Config':config,'HostConfig':host,'Mounts':[{'Type':'bind','Source':'/root/retained','Destination':'/run/reprocessing','RW':False}],
           'State':{'Running':True,'Pid':7,'StartedAt':'original'},
           'NetworkSettings':{'Networks':{'fixture':{'IPAddress':'10.90.0.2','MacAddress':'02:00:00:00:00:01','NetworkID':'n'*64}}}}
-  saved={'module':module,'name':'fixture-'+module,'creationRequest':{'HostConfig':copy.deepcopy(host),
+  saved={'module':module,'name':'fixture-'+module,'restoreRestartPolicy':copy.deepcopy(host['RestartPolicy']),'creationRequest':{'HostConfig':copy.deepcopy(host),
          'NetworkingConfig':{'EndpointsConfig':{'fixture':{'Aliases':['retained-alias']}}}}}
   image={'imageArchive':{'path':'/root/image.tar','sha256':'f'*64},
          'imageAudit':{'imageConfig':{**copy.deepcopy(config),'Labels':{'org.opencontainers.image.revision':'c'*40}}}}
   case={'candidateSourceCommits':{module:'c'*40},'deployedSourceCommits':{module:'a'*40},
         'readiness':{module:{'readinessPort':8080,'readinessPath':'/health/ready' if module=='mcp' else '/actuator/health/readiness'}}}
+  saved['creationRequest']['HostConfig']['RestartPolicy']={'Name':'no','MaximumRetryCount':0}
   return saved,actual,image,case
  def compile(self,args,module):
-  with patch.object(p,'runtime_image_id',return_value='sha256:'+'d'*64),patch.object(p,'requested_host_config_matches',return_value=True):
+  with patch.object(p,'runtime_image_id',return_value='sha256:'+'d'*64):
    return p.replacement(*args,module)
  def test_both_contracts_preserve_environment_mounts_network_and_restart(self):
   for module in ('udp','mcp'):
@@ -47,4 +48,18 @@ class Replacement(unittest.TestCase):
  def test_saved_host_request_must_match_current_host_configuration(self):
   with patch.object(p,'requested_host_config_matches',return_value=False):
    with self.assertRaises(UpdateDenied):p.replacement(*self.fixture('udp'),'udp')
+ def test_real_matcher_accepts_only_completed_restored_policy(self):
+  for module in ('udp','mcp'):
+   args=self.fixture(module)
+   self.assertEqual(args[0]['creationRequest']['HostConfig']['RestartPolicy']['Name'],'no')
+   self.assertEqual(self.compile(args,module)['restoreRestartPolicy']['Name'],'unless-stopped')
+   args[1]['HostConfig']['RestartPolicy']={'Name':'always','MaximumRetryCount':0}
+   with self.assertRaisesRegex(UpdateDenied,'RETAINED_RESTART_POLICY_CHANGED'):self.compile(args,module)
+ def test_real_matcher_rejects_unrelated_host_drift_and_missing_proof(self):
+  for change in ('bind','network','missing-proof'):
+   args=self.fixture('udp')
+   if change=='bind':args[1]['HostConfig']['Binds']=['/other:/run/reprocessing:ro']
+   if change=='network':args[1]['HostConfig']['NetworkMode']='other'
+   if change=='missing-proof':args[0].pop('restoreRestartPolicy')
+   with self.subTest(change=change),self.assertRaises(UpdateDenied):self.compile(args,'udp')
 if __name__=='__main__':unittest.main()

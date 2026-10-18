@@ -112,7 +112,7 @@ def compile_private(prepared,closure,case,context,read,ns):
     readiness={'udp':saved['udp']['readiness'],
                'mcp':{'readinessPort':mcp['readiness']['port'],'readinessPath':mcp['readiness']['path']}}
     replacements={module:compiler.replacement(
-        {'module':module,'name':saved[module]['name'],'creationRequest':saved[module]['request']},
+        {'module':module,'name':saved[module]['name'],'creationRequest':saved[module]['request'],'restoreRestartPolicy':saved[module]['restoreRestartPolicy']},
         actuals[module],candidates[module],{**case,'readiness':readiness},module) for module in ('udp','mcp')}
     pg_pin=retained['databasePlan']['postgresRuntimeBinding']
     pg=ns['engine_get'](prepared['engine'],'containers',pg_pin['containerId'])
