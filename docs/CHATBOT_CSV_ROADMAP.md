@@ -1,3 +1,9 @@
+## Preparazione tappa5 — correzione dell'infrastruttura qualificata, target da eseguire
+
+**Tecniche8/8; funzionali4/6.** La lettura protetta dei contratti precedenti è completa. La correzione circoscritta della rete è qualificata:13 prove del journal privato,4 della consegna e1 integrazione reale Docker29.8.1, inclusi risposte perse, identità, DNS/HTTP pubblico, dati persistenti e riavvio del daemon di collaudo. [Stato, prove e limite amministrativo corrente](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md). Sul VPS non è ancora stata eseguita.
+
+Il passaggio corrente richiede soltanto l'amministrazione host già disponibile tramite sudo; non un nuovo consenso ai repository/MCP né un login OUF. Questo recupero infrastrutturale non sostituisce il requisito del percorso ordinario interamente da chat. Restano da provare disponibilità applicativa/provider, nuovi binding dopo il boot, rilascio nativo della revisione fonte, pubblicazione governata del profilo e tappe5/6. Nessuna nuova pubblicazione, decisione d'identità o ripresa esplicita dei job storici.
+
 ## Tappa funzionale4 completata — ricerca chatbot con proprietà leggibili
 
 **Tecniche8/8; funzionali4/6.** Dopo la conferma HUMAN, proposta94306235-fc45-4433-a05e-0ead3f83a9f8 PUBLISHED e policy43. La ricerca diretta MCP restituisce13 oggetti distinti ACTIVE con20 proprietà ciascuno, pagina completa; oggetto originario conservato. [Prova diretta](../evidence/csv-functional-stage4-chat-proof-20261018.json).
