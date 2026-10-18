@@ -1,3 +1,9 @@
+## Aggiornamento corrente — esecutore completo qualificato, presenza HUMAN necessaria
+
+Tecniche **8/8**, funzionali **3/6**. Correzione MCP PR72 unita, nuovo pacchetto firmato verificato e preparato dal runner; [69 test della preparazione/esecuzione superati](https://github.com/GioNob/ouf-deploy/actions/runs/39082232187). Il launcher unico prepara la custodia privata delle nuove immagini, verifica generazioni e storia, quindi richiede l'autorità HUMAN nativa per backup e aggiornamento UDP V35→V36/MCP. Nessuna modifica dei servizi è ancora avvenuta. Le evidenze di custodia precedenti riguardano il vecchio pacchetto e restano storiche.
+
+La pubblicazione delle policy, l'attivazione effettiva del recupero e la continuità delle credenziali restano verifiche distinte; non dichiarare automatico il percorso finché queste non sono provate. Seguono le tappe funzionali4–6. Dettagli e impronte nello [stato aggiornato](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
+
 ## Aggiornamento preparazione rilascio — 18 ottobre 2026
 
 Tecniche **8/8**, funzionali **3/6**. La custodia amministrativa delle immagini UDP/MCP candidate è confermata dal [log target ricevuto](../evidence/chat-recovery-root-custody-target-20261018.json). Nessuna immagine importata, nessun backup o aggiornamento dei servizi; piano non ancora eseguibile. Questo avanzamento riguarda la preparazione del rilascio e non modifica le tappe funzionali. Vedere lo [stato corrente e i passaggi residui](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
