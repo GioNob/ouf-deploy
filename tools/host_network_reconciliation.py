@@ -72,9 +72,19 @@ def compile_plan(p,api,scan_configuration):
  unaffected={cid:{'immutable':immutable(row),'process':process(row),'networks':digest(row['NetworkSettings'])}for cid,row in rows.items()if cid not in {v['pin']['containerId']for v in moves}and cid!=restart['Id']}
  return {'schema':'ouf.host-network-reconciliation-plan.v1','profile':copy.deepcopy(p),'moves':moves,'restartBefore':restart,'unaffected':unaffected,'fleetIds':sorted(ids),'runtimeAuthorityIssued':False}
 
+def endpoint_configuration_hash(row,move,network,connected):
+ # Docker's legacy v1.44 inspect projection gains Config.MacAddress when an
+ # explicit endpoint MAC is retained on the primary network. Accept only that
+ # exact derived value; all application/host/mount data remains byte-equivalent.
+ before=move['before'];normalized=copy.deepcopy(row)
+ if connected and before['HostConfig']['NetworkMode']==network and before['Config'].get('MacAddress')in(None,'')and row['Config'].get('MacAddress')==endpoint(before,network)['MacAddress']:
+  if 'MacAddress'in before['Config']:normalized['Config']['MacAddress']=before['Config']['MacAddress']
+  else:normalized['Config'].pop('MacAddress',None)
+ return immutable(normalized)
+
 def verify_move(api,plan,move,disconnected=False,connected=False):
  row=api.get('/containers/'+move['pin']['containerId']+'/json');identity(row,move['pin']);n=plan['profile']['network']['name']
- require(immutable(row)==move['immutableHash'],'RETAINED_CONTAINER_CONFIGURATION_CHANGED')
+ require(endpoint_configuration_hash(row,move,n,connected)==move['immutableHash'],'RETAINED_CONTAINER_CONFIGURATION_CHANGED')
  require(process(row)==move['process'],'RETAINED_PROCESS_CHANGED')
  require(other_networks(row,n)==move['otherNetworksHash'],'INDEPENDENT_CONTROL_NETWORK_CHANGED')
  if disconnected:require(n not in row['NetworkSettings']['Networks'],'DISCONNECT_NOT_PROVEN')
@@ -112,11 +122,14 @@ def apply(plan,api,claim):
  effects+=1
  after=api.get('/containers/'+restart['Id']+'/json');identity(after,p['restart']);require(immutable(after)==immutable(restart)and after['State']['Running'],'RETAINED_APPLICATION_START_UNPROVEN')
  expected_ip=endpoint(restart,n['name'])['IPAMConfig']['IPv4Address'];actual_endpoint=endpoint(after,n['name']);require(actual_endpoint['IPAddress']==expected_ip and actual_endpoint.get('IPAMConfig')=={'IPv4Address':expected_ip},'RETAINED_APPLICATION_ADDRESS_UNPROVEN')
- for move in plan['moves']:verify_move(api,plan,move,connected=True)
+ adjustments=0
+ for move in plan['moves']:
+  final=verify_move(api,plan,move,connected=True)
+  if immutable(final)!=move['immutableHash']:adjustments+=1
  require(sorted(v['Id']for v in api.get('/containers/json?all=1'))==plan['fleetIds'],'FLEET_CHANGED_DURING_CORRECTION')
  for cid,pin in plan['unaffected'].items():
   row=api.get('/containers/'+cid+'/json');require({'immutable':immutable(row),'process':process(row),'networks':digest(row['NetworkSettings'])}==pin,'INDEPENDENT_CONTAINER_CHANGED')
- return {'schema':'ouf.host-network-reconciliation-result.v1','complete':True,'endpointCorrections':len(plan['moves']),'engineWrites':effects,'retainedApplicationRunning':True,'applicationReadinessProven':False,'providerReconciliationRequired':True,'sourceRevisionReleasePerformed':False,'runtimeAuthorityIssued':False,'explicitJobRetries':0,'existingWorkersMayResume':True,'profilePublications':0,'credentialValuesPrinted':False,'completedTechnicalPhases':8,'functionalMilestonesProven':4}
+ return {'schema':'ouf.host-network-reconciliation-result.v1','complete':True,'endpointCorrections':len(plan['moves']),'engineWrites':effects,'derivedMacMetadataUpdates':adjustments,'configurationRepresentationProfile':'ouf.retained-endpoint-derived-mac.v1','retainedApplicationRunning':True,'applicationReadinessProven':False,'providerReconciliationRequired':True,'sourceRevisionReleasePerformed':False,'runtimeAuthorityIssued':False,'explicitJobRetries':0,'existingWorkersMayResume':True,'profilePublications':0,'credentialValuesPrinted':False,'completedTechnicalPhases':8,'functionalMilestonesProven':4}
 
 class Engine:
  def __init__(self,path,version):

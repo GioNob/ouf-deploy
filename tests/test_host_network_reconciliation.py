@@ -29,7 +29,9 @@ def fixture():
    cid=value['Container']if value else path.split('/')[2];r=self.rows[cid]
    if path.endswith('/disconnect'):r['NetworkSettings']['Networks'].pop(network['name'])
    elif path.endswith('/connect'):
-    cfg=value['EndpointConfig'];r['NetworkSettings']['Networks'][network['name']]={'NetworkID':network['id'],'IPAddress':cfg['IPAMConfig']['IPv4Address'],**copy.deepcopy(cfg),'GwPriority':0}
+    cfg=value['EndpointConfig']
+    if not r['NetworkSettings']['Networks']:r['Config']['MacAddress']=cfg['MacAddress']
+    r['NetworkSettings']['Networks'][network['name']]={'NetworkID':network['id'],'IPAddress':cfg['IPAMConfig']['IPv4Address'],**copy.deepcopy(cfg),'GwPriority':0}
    else:
     r['State'].update(Running=True,Pid=300,Status="running");r['NetworkSettings']['Networks'][network['name']]['IPAddress']=r['NetworkSettings']['Networks'][network['name']]['IPAMConfig']['IPv4Address']
    if self.fail_after==len(self.writes):raise TimeoutError('SECRET_CANARY')
@@ -80,6 +82,14 @@ class Plan(unittest.TestCase):
   p,_,_=fixture();b.reject_literal_dependencies(b'http://gateway:9000',p,m)
   for raw in (b'http://10.80.0.5:9000',b'upstream=10.80.0.6'):
    with self.assertRaises(ValueError):b.reject_literal_dependencies(raw,p,m)
+ def test_only_exact_derived_legacy_mac_is_accepted(self):
+  p,api,_=fixture();plan=m.compile_plan(p,api,lambda r,p:None);m.apply(plan,api,lambda n,r:None)
+  api.rows['b'*64]['Config']['MacAddress']='02:00:00:00:00:ee'
+  with self.assertRaises(ValueError):m.verify_move(api,plan,plan['moves'][1],connected=True)
+ def test_unknown_live_dynamic_peer_blocks_without_adopting_it(self):
+  p,api,_=fixture();api.rows['d'*64]['NetworkSettings']['Networks']['fixture-net']['IPAMConfig']=None
+  with self.assertRaisesRegex(ValueError,'UNREVIEWED_DYNAMIC'):m.compile_plan(p,api,lambda r,p:None)
+  self.assertEqual(api.writes,[])
 class Bootstrap(unittest.TestCase):
  def setup_case(self):
   temp=tempfile.TemporaryDirectory(dir='/root');self.addCleanup(temp.cleanup);root=Path(temp.name);root.chmod(0o700)
