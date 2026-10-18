@@ -10,6 +10,9 @@ on:
       - tests/test_source_revision_boot_lock_repair.py
       - scripts/launch-semantic-boot-lock-recovery-20261018.sh
       - releases/semantic-boot-lock-recovery-selection-20261018.json
+      - scripts/resume-semantic-boot-journal.py
+      - tests/test_source_revision_boot_journal_resume.py
+      - releases/boot-journal-recovery-selection-20261018.json
       - .github/workflows/source-revision-boot-read-qualification.yml
 permissions: {contents: read}
 jobs:
