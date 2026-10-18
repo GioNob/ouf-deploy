@@ -77,7 +77,11 @@ def verify_move(api,plan,move,disconnected=False,connected=False):
  else:
   e=endpoint(row,n);old=move['before']['NetworkSettings']['Networks'][n]
   if connected:
-   require(e['IPAddress']==move['pin']['newIPv4']and e.get('IPAMConfig')=={'IPv4Address':move['pin']['newIPv4']}and e['MacAddress']==old['MacAddress']and set(e.get('Aliases')or[])==set(old.get('Aliases')or[])and e['NetworkID']==old['NetworkID']and e.get('GwPriority',0)==0,'EXACT_NEW_STATIC_ENDPOINT_NOT_PROVEN')
+   require(e['IPAddress']==move['pin']['newIPv4'],'NEW_STATIC_ADDRESS_NOT_PROVEN')
+   require(e.get('IPAMConfig')=={'IPv4Address':move['pin']['newIPv4']},'NEW_STATIC_IPAM_DECLARATION_NOT_PROVEN')
+   require(e['MacAddress']==old['MacAddress'],'RETAINED_ENDPOINT_MAC_NOT_PROVEN')
+   require(set(e.get('Aliases')or[])==set(old.get('Aliases')or[]),'RETAINED_ENDPOINT_ALIASES_NOT_PROVEN')
+   require(e['NetworkID']==old['NetworkID']and e.get('GwPriority',0)==0,'RETAINED_ENDPOINT_NETWORK_PRIORITY_NOT_PROVEN')
   else:require(e==old,'ENDPOINT_CHANGED_BEFORE_WRITE')
  return row
 
