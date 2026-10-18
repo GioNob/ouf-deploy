@@ -1,3 +1,13 @@
+## Protected target comparison COMPLETE — one retained DNS representation difference
+
+Technical8/8; functional4/6. The operator diagnostic completed with zero writes/mutations and no incident pointer. In legacy API1.44 all3 apps retain exactly the same Id/Image/Name/Config/Mounts; only HostConfig.Dns differs (old null, current list). The list contents/length were not printed, so empty is NOT yet assumed. Current-server inspect additionally omits deprecated Config.MacAddress; the corrective owner continues using1.44 and does not waive this field. Native provider is confirmed BLOCKED with empty kernel sets, revoked authority, reconciliation still required and start disallowed.
+
+A narrow preboot-only profile is being qualified: explicit HostConfig.Dns null to an actually empty list, with all other immutable fields strict. Nonempty lists, missing keys, other types and all unrelated differences remain rejected. Neither original c23 inputs nor live DNS configuration is rewritten; the correction plan freezes the actual current bytes after this proof. Post-plan runtime comparison remains exact. The existing finite host scope, pointer,13write/300second budget and no-provider-start rule are unchanged.
+
+Docker's native InitDNSHostConfig initializes nil DNS arrays on metadata load; primary-source context: https://github.com/moby/moby/blob/v28.5.1/container/container.go#L222-L245 and #L560-L581. This source is not presented as the current daemon version; a new isolated Docker29.8.1 cold-load fixture will verify the actual supported runtime before delivery. The failed v29.8.1 GitHub source URL was not treated as evidence.
+
+## Previous checkpoint and history
+
 ## Current checkpoint — protected application comparison qualified; target read pending
 
 Technical **8/8**, functional **4/6**. The operator's second STOP, PREBOOT_APPLICATION_CONFIGURATION_CHANGED, occurred after the native provider proof passed but before creating a plan/incident or changing any endpoint/container. [Exact boundary](../evidence/host-network-application-comparison-stop-20261018.json). The former corrective launcher is retired; it must not be rerun.

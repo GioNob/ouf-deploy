@@ -1,3 +1,7 @@
+## Aggiornamento — differenza circoscritta a HostConfig.Dns
+
+**Tecniche8/8; funzionali4/6.** La lettura protetta è completa: API1.44 mostra solo HostConfig.Dns da null a lista sulle tre applicazioni; identità, Config e mount uguali. Non è ancora dimostrato che la lista sia vuota. Il provider è confermato BLOCKED/vuoto e non autorizzato all'avvio. È in qualificazione la sola equivalenza null→lista effettivamente vuota, mantenendo invariati riferimento storico, configurazioni e limiti. Non viene introdotta un'eccezione generale ai controlli. [Stato e prove](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
+
 ## Aggiornamento — confronto protetto delle configurazioni qualificato
 
 **Tecniche8/8; funzionali4/6.** Il controllo nativo del provider è superato; il confronto applicativo preboot ha fermato l'intervento prima di creare incidenti o modificare la rete. La causa concreta della differenza non è ancora stampata e non viene presunta innocua. Una lettura unica delle tre applicazioni, con entrambe le rappresentazioni Docker e senza valori riservati, ha superato **10 prove**. [Consegna immutabile e stato](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md). Il solo passaggio fisico necessario è sudo per leggere il riferimento c23 protetto. Nessun nuovo login OUF o consenso repository/MCP. Il vecchio launcher resta ritirato; nessuna tappa funzionale aggiuntiva è dimostrata.

@@ -1,14 +1,42 @@
 """Real Docker29 endpoint moves/restart; synthetic HTTP services, no OUF authority."""
-import importlib.util,ipaddress,json,os,re,subprocess,tempfile,time,unittest,urllib.request
+import copy,importlib.util,ipaddress,json,os,re,subprocess,tempfile,time,unittest,urllib.request
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('network_owner',ROOT/'tools/host_network_reconciliation.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+spec=importlib.util.spec_from_file_location('network_bootstrap',ROOT/'scripts/reconcile-host-network-20261018.py');b=importlib.util.module_from_spec(spec);spec.loader.exec_module(b)
 @unittest.skipUnless(os.environ.get('OUF_NETWORK_NATIVE_TEST')=='1','isolated Docker fixture only')
 class Native(unittest.TestCase):
  def cli(self,*args):
   r=subprocess.run(['docker',*args],stdin=subprocess.DEVNULL,capture_output=True,text=True,timeout=90)
   self.assertEqual(r.returncode,0,'fixture command failed: '+args[0]);return r.stdout.strip()
  def inspect(self,cid):return json.loads(self.cli('inspect',cid))[0]
+ def test_native_cold_load_initializes_legacy_null_dns_to_empty_only(self):
+  root=Path(self.cli('info','--format','{{.DockerRootDir}}'));self.assertRegex(str(root),r'^/var/lib/ouf-network-contract-[0-9]+$');self.assertEqual(self.cli('version','--format','{{.Server.Version}}'),'29.8.1')
+  self.cli('pull','busybox:1.37.0');cid=self.cli('create','--name','ouf-dns-representation-'+os.environ['GITHUB_RUN_ID'],'--network','none','busybox:1.37.0','sleep','3600');self.assertRegex(cid,r'^[a-f0-9]{64}$')
+  stopped=False
+  try:
+   api=m.Engine('/var/run/docker.sock','29.8.1');before=api.get('/containers/'+cid+'/json')
+   # Model an old persisted null field in this dedicated, non-OUF CI daemon.
+   # No production path or installed host is eligible for this fixture.
+   r=subprocess.run(['systemctl','stop','ouf-network-contract-daemon'],capture_output=True,timeout=45);self.assertEqual(r.returncode,0);stopped=True
+   path=root/'containers'/cid/'hostconfig.json';self.assertTrue(path.is_file());persisted=json.loads(path.read_bytes());persisted['Dns']=None
+   raw=json.dumps(persisted,sort_keys=True,separators=(',',':')).encode();fd,name=tempfile.mkstemp(prefix='.fixture-null-dns-',dir=path.parent)
+   with os.fdopen(fd,'wb')as stream:os.fchmod(stream.fileno(),0o600);stream.write(raw);stream.flush();os.fsync(stream.fileno())
+   os.replace(name,path);before['HostConfig']['Dns']=None
+   r=subprocess.run(['systemctl','start','ouf-network-contract-daemon'],capture_output=True,timeout=45);self.assertEqual(r.returncode,0);stopped=False
+   deadline=time.monotonic()+30
+   while True:
+    try:fresh=m.Engine('/var/run/docker.sock','29.8.1');after=fresh.get('/containers/'+cid+'/json');break
+    except (OSError,ValueError):
+     if time.monotonic()>=deadline:raise
+     time.sleep(0.2)
+   self.assertEqual(after['HostConfig']['Dns'],[]);proof=b.preboot_application_proof(before,after,m);self.assertTrue(proof['emptyDnsRepresentationOnly']);self.assertEqual(before['Id'],after['Id']);self.assertFalse(after['State']['Running'])
+   after['HostConfig']['Dns']=['192.0.2.53']
+   with self.assertRaises(ValueError):b.preboot_application_proof(before,after,m)
+   print(json.dumps({'syntheticFixtureOnly':True,'nativeColdLoadNullToEmptyDnsProven':True,'actualDaemonVersion':'29.8.1','nonemptyDnsRejected':True,'targetMutations':0},sort_keys=True))
+  finally:
+   if stopped:subprocess.run(['systemctl','start','ouf-network-contract-daemon'],capture_output=True,timeout=45)
+   subprocess.run(['docker','rm','-f',cid],capture_output=True,timeout=20)
  def test_real_collision_correction_dns_secondary_network_and_daemon_restart(self):
   root=self.cli('info','--format','{{.DockerRootDir}}');self.assertRegex(root,r'^/var/lib/ouf-network-contract-[0-9]+$');self.assertEqual(self.cli('version','--format','{{.Server.Version}}'),'29.8.1')
   prefix='ouf-network-'+os.environ['GITHUB_RUN_ID'];containers=[];networks=[];payload=tempfile.TemporaryDirectory(dir='/root');data=Path(payload.name)/'data';data.mkdir(mode=0o700);(data/'canary').write_text('retained fixture payload')

@@ -1,5 +1,5 @@
 """Root host repair bootstrap. Native provider guards are only read, never bypassed."""
-import fcntl,hashlib,json,os,re,signal,stat,tempfile,time
+import copy,fcntl,hashlib,json,os,re,signal,stat,tempfile,time
 from pathlib import Path
 
 CONFIG_SUFFIXES=('.yaml','.yml','.conf','.properties','/Caddyfile')
@@ -85,6 +85,17 @@ def provider_guard(reader,selection,owner):
  report['emptyProviderProof']=prove_empty_provider(reader,report,owner)
  return report
 
+def preboot_application_proof(before,actual,owner):
+ # Native Docker readHostConfig initializes nil DNS slices after loading old
+ # metadata. Accept ONLY explicit null -> [] for this one field, retaining
+ # strict legacy1.44 comparison for every other immutable byte/value.
+ normalized=copy.deepcopy(actual);changed=False
+ old=before['HostConfig'];current=actual['HostConfig']
+ if 'Dns'in old and old['Dns']is None and 'Dns'in current and type(current['Dns'])is list and len(current['Dns'])==0:
+  normalized['HostConfig']['Dns']=None;changed=True
+ owner.require(owner.immutable(normalized)==owner.immutable(before),'PREBOOT_APPLICATION_CONFIGURATION_CHANGED')
+ return {'profile':'ouf.preboot-empty-dns-representation.v1','emptyDnsRepresentationOnly':changed,'allOtherImmutableFieldsMatch':True,'historicalBaselineChanged':False}
+
 def run(owner,reader,contracts,profile,selection,contract_selection,parent,pointer):
  owner.require(os.geteuid()==os.getegid()==0,'HOST_ADMINISTRATOR_REQUIRED');owner.validate_profile(profile)
  parent=Path(parent);pointer=Path(pointer)
@@ -103,12 +114,13 @@ def run(owner,reader,contracts,profile,selection,contract_selection,parent,point
   provider_guard(reader,selection,owner)
   historical=contracts.collect(contract_selection);owner.require(historical['complete'],'SEALED_PREBOOT_INPUTS_REQUIRED')
   private=contracts.read(contract_selection['preparedPlan']);api=owner.Engine(profile['socketPath'],profile['engineVersion'])
+  representation_proofs={}
   for role,before in private['beforeApplications'].items():
-   actual=api.get('/containers/'+before['Id']+'/json');owner.require(owner.immutable(actual)==owner.immutable(before),'PREBOOT_APPLICATION_CONFIGURATION_CHANGED')
+   actual=api.get('/containers/'+before['Id']+'/json');representation_proofs[role]=preboot_application_proof(before,actual,owner)
   scan,files=configuration_scanner(reader,profile,owner);plan=owner.compile_plan(profile,api,scan)
   # Source profile and route data are untouched. This is a new host-admin plan,
   # with current process/engine/endpoint bindings, not reuse of prior authority.
-  plan['configurationFileBindings']=files;plan['prebootPreparedBinding']=contract_selection['preparedPlan'];plan['nativeBootBinding']=native['loadedBinding'];plan['engineSocketBinding']=list(api.pin)
+  plan['configurationFileBindings']=files;plan['prebootPreparedBinding']=contract_selection['preparedPlan'];plan['nativeBootBinding']=native['loadedBinding'];plan['engineSocketBinding']=list(api.pin);plan['prebootRepresentationProofs']=representation_proofs
   case=Path(tempfile.mkdtemp(prefix='host-network-reconciliation-',dir=parent));case.chmod(0o700)
   atomic(case/'plan.json',plan,owner);plan_hash=hashlib.sha256((case/'plan.json').read_bytes()).hexdigest()
   record={'schema':'ouf.host-network-reconciliation-journal.v1','state':'PREPARED','planSha256':plan_hash,'createdAt':int(time.time()),'maximumEngineWrites':2*len(profile['moves'])+1,'claims':[],'runtimeAuthorityIssued':False}
@@ -127,7 +139,7 @@ def run(owner,reader,contracts,profile,selection,contract_selection,parent,point
    record['state']=name+'_INTENT';record['claims'].append({'name':name,'requestSha256':owner.digest(request)});atomic(case/'journal.json',record,owner)
   result=owner.apply(plan,api,claim)
   after=provider_guard(reader,selection,owner);owner.require(after['loadedBinding']==native['loadedBinding'],'NATIVE_BOOT_BINDING_CHANGED')
-  record['state']='COMPLETE';atomic(case/'journal.json',record,owner);result.update(contextPath=str(case),planSha256=plan_hash);return result
+  record['state']='COMPLETE';atomic(case/'journal.json',record,owner);result.update(contextPath=str(case),planSha256=plan_hash,prebootRepresentationProofs=representation_proofs,emptyProviderProof=after['emptyProviderProof']);return result
  except Exception as error:
   if record is not None:
    record.update(failedPhase=record['state'],state='STOPPED',errorClass=type(error).__name__,reconciliationRequired=True);atomic(case/'journal.json',record,owner)

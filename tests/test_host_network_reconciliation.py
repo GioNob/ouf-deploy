@@ -125,4 +125,26 @@ class Bootstrap(unittest.TestCase):
   root,p,api,reader,contracts,selection,report=self.setup_case();report['ownerJournal']['metadata']['leaseAuthorized']=True
   with patch.object(m,'Engine',return_value=api),self.assertRaises(ValueError):b.run(m,reader,contracts,p,selection,{},root,root/'incident.json')
   self.assertEqual(api.writes,[]);self.assertFalse((root/'incident.json').exists())
+ def test_empty_dns_representation_only_and_original_inputs_unchanged(self):
+  _,_,rows=fixture();before=copy.deepcopy(rows[2]);before['HostConfig']['Dns']=None;actual=copy.deepcopy(before);actual['HostConfig']['Dns']=[];pin=copy.deepcopy((before,actual))
+  result=b.preboot_application_proof(before,actual,m)
+  self.assertTrue(result['emptyDnsRepresentationOnly']);self.assertEqual((before,actual),pin);self.assertFalse(result['historicalBaselineChanged'])
+ def test_nonempty_dns_missing_key_and_unrelated_changes_never_normalized(self):
+  _,_,rows=fixture();before=copy.deepcopy(rows[2]);before['HostConfig']['Dns']=None
+  for label,value in [('server',['192.0.2.53']),('blank',['']),('string',''),('boolean',False),('mapping',{})]:
+   actual=copy.deepcopy(before);actual['HostConfig']['Dns']=value
+   with self.subTest(label=label),self.assertRaises(ValueError):b.preboot_application_proof(before,actual,m)
+  actual=copy.deepcopy(before);del actual['HostConfig']['Dns']
+  with self.assertRaises(ValueError):b.preboot_application_proof(before,actual,m)
+  actual=copy.deepcopy(before);actual['HostConfig']['Dns']=[];actual['Config']['Env']=['SECRET_CANARY_CHANGED']
+  with self.assertRaises(ValueError):b.preboot_application_proof(before,actual,m)
+ def test_bootstrap_freezes_actual_empty_dns_and_keeps_strict_runtime_guards(self):
+  root,p,api,reader,contracts,selection,_=self.setup_case();baseline=contracts.read({})['beforeApplications'];baseline['udp']['HostConfig']['Dns']=None;contracts.read=lambda _:copy.deepcopy({'beforeApplications':baseline})
+  api.rows['c'*64]['HostConfig']['Dns']=[]
+  with patch.object(m,'Engine',return_value=api),redirect_stdout(io.StringIO()):result=b.run(m,reader,contracts,p,selection,{'preparedPlan':{'path':'fixture','sha256':'f'*64},'bootProfile':{'path':'fixture-boot','sha256':'a'*64}},root,root/'incident.json')
+  self.assertTrue(result['complete']);plan=json.loads((Path(result['contextPath'])/'plan.json').read_bytes());self.assertEqual(plan['restartBefore']['HostConfig']['Dns'],[]);self.assertTrue(result['prebootRepresentationProofs']['udp']['emptyDnsRepresentationOnly']);self.assertIsNone(baseline['udp']['HostConfig']['Dns'])
+ def test_unexpected_dns_blocks_before_claim_without_any_write(self):
+  root,p,api,reader,contracts,selection,_=self.setup_case();baseline=contracts.read({})['beforeApplications'];baseline['udp']['HostConfig']['Dns']=None;contracts.read=lambda _:copy.deepcopy({'beforeApplications':baseline});api.rows['c'*64]['HostConfig']['Dns']=['192.0.2.53']
+  with patch.object(m,'Engine',return_value=api),self.assertRaises(ValueError):b.run(m,reader,contracts,p,selection,{'preparedPlan':{'path':'fixture','sha256':'f'*64},'bootProfile':{'path':'fixture-boot','sha256':'a'*64}},root,root/'incident.json')
+  self.assertEqual(api.writes,[]);self.assertFalse((root/'incident.json').exists())
 if __name__=='__main__':unittest.main()
