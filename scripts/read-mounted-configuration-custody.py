@@ -1,5 +1,5 @@
 """Bounded mounted-file metadata only. Never open file contents or mutate."""
-import grp,hashlib,importlib.util,json,os,pwd,signal,stat,sys
+import errno,grp,hashlib,importlib.util,json,os,pwd,signal,stat,sys
 from pathlib import Path
 spec=importlib.util.spec_from_file_location('retained_read',Path(__file__).with_name('read-retained-udp-startup.py'));m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 SUFFIXES=('.yaml','.yml','.conf','.properties','/Caddyfile')
@@ -8,7 +8,14 @@ def metadata(path,approved):
  return {'regular':stat.S_ISREG(info.st_mode),'directory':stat.S_ISDIR(info.st_mode),'symlink':stat.S_ISLNK(info.st_mode),'uid':info.st_uid,'gid':info.st_gid,'mode':format(stat.S_IMODE(info.st_mode),'04o'),'linkCount':info.st_nlink,'size':info.st_size,'ownerApproved':info.st_uid in approved,'groupOrOtherWritable':bool(info.st_mode&0o022),'nonemptyBoundedFile':0<info.st_size<=2097152,'singleLink':info.st_nlink==1}
 def inspect_path(path,approved):
  out={'sourcePath':str(path),'contentReads':0}
- try:out['file']=metadata(path,approved)
+ try:
+  out['file']=metadata(path,approved)
+  if out['file']['regular']:
+   try:os.getxattr(path,'system.posix_acl_access',follow_symlinks=False)
+   except OSError as error:
+    if error.errno in(errno.ENODATA,errno.ENOTSUP,errno.EOPNOTSUPP):out['file']['accessAclPresent']=False
+    else:out['file']['aclMetadataErrorClass']=type(error).__name__
+   else:out['file']['accessAclPresent']=True
  except OSError as error:out['file']={'readableMetadata':False,'errorClass':type(error).__name__}
  out['ancestors']=[]
  m.require(len(path.parents)<=32,'ANCESTRY_BOUND')
