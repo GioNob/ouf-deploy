@@ -35,6 +35,6 @@ class Read(unittest.TestCase):
   with patch.object(m,'invoke',side_effect=[json.dumps(other['id']).encode(),json.dumps(other).encode()]),patch('subprocess.run',return_value=type('Reply',(),{'returncode':0,'stdout':b'LISTEN 0 4096 0.0.0.0:18092 0.0.0.0:*\n'})()):
    result=m.network_conflicts(target,target['id'])
   self.assertEqual(result['candidateConflicts'][0]['containerId'],other['id'])
-  self.assertEqual(result['candidateConflicts'][0]['networkAddressOverlapCount'],1)
+  self.assertEqual(result['candidateConflicts'][0]['configuredAddressOverlapCount'],1)
   self.assertFalse(result['ownerStopOrRestartPerformed'])
 if __name__=='__main__':unittest.main()

@@ -4,7 +4,7 @@ import hashlib,ipaddress,json,re,subprocess,sys,traceback
 from pathlib import Path
 
 FORMAT='{"id":{{json .Id}},"image":{{json .Image}},"revision":{{json (index .Config.Labels "org.opencontainers.image.revision")}},"state":{{json .State}},"restartPolicy":{{json .HostConfig.RestartPolicy}},"bindings":{{json .HostConfig.PortBindings}},"ports":{{json .NetworkSettings.Ports}},"networks":{{json .NetworkSettings.Networks}}}'
-CANDIDATE_FORMAT='{"id":{{json .Id}},"image":{{json .Image}},"revision":{{json (index .Config.Labels "org.opencontainers.image.revision")}},"bindings":{{json .HostConfig.PortBindings}},"ports":{{json .NetworkSettings.Ports}},"networks":{{json .NetworkSettings.Networks}}}'
+CANDIDATE_FORMAT='{"id":{{json .Id}},"name":{{json .Name}},"image":{{json .Image}},"revision":{{json (index .Config.Labels "org.opencontainers.image.revision")}},"bindings":{{json .HostConfig.PortBindings}},"ports":{{json .NetworkSettings.Ports}},"networks":{{json .NetworkSettings.Networks}}}'
 KNOWN_EXCEPTIONS=set(('java.net.ConnectException','java.net.UnknownHostException','java.net.SocketTimeoutException',
  'java.sql.SQLException','java.lang.IllegalStateException','java.lang.IllegalArgumentException','java.io.FileNotFoundException',
  'java.nio.file.AccessDeniedException','java.lang.OutOfMemoryError','org.postgresql.util.PSQLException',
@@ -65,15 +65,25 @@ def ports(value):
             address=item['HostIp'];require(address==''or str(ipaddress.ip_address(address))==address,'HOST_IP_SCHEMA')
             result.append({'hostIp':address,'hostPort':int(port),'protocol':match[2],'containerPort':int(match[1])})
     return result
-def addresses(value):
+def addresses(value,actual=False):
     result=[]
     for name,item in (value or {}).items():
         configured=item.get('IPAMConfig')or{}
         for field in ('IPv4Address','IPv6Address'):
-            address=configured.get(field)or item.get('IPAddress'if field=='IPv4Address'else'GlobalIPv6Address')
+            current=item.get('IPAddress'if field=='IPv4Address'else'GlobalIPv6Address')
+            address=current if actual else configured.get(field)or current
             if address:
                 require(str(ipaddress.ip_address(address))==address,'NETWORK_IP_SCHEMA')
                 result.append((name,address))
+    return result
+def network_metadata(value):
+    result=[]
+    for name,item in (value or {}).items():
+        configured=item.get('IPAMConfig')or{};row={'networkReferenceSha256':hashlib.sha256(name.encode()).hexdigest()}
+        for label,raw in (('configuredIPv4',configured.get('IPv4Address')),('configuredIPv6',configured.get('IPv6Address')),
+                          ('currentIPv4',item.get('IPAddress')),('currentIPv6',item.get('GlobalIPv6Address'))):
+            require(not raw or str(ipaddress.ip_address(raw))==raw,'ADDRESS_SCHEMA');row[label]=raw or None
+        result.append(row)
     return result
 def network_conflicts(target,reference):
     wanted=ports(target.get('bindings'));target_ips=set(addresses(target.get('networks')))
@@ -92,11 +102,14 @@ def network_conflicts(target,reference):
                     if left['protocol']==right['protocol']and left['hostPort']==right['hostPort']:
                         if left['hostIp']==right['hostIp']or left['hostIp']in ('','0.0.0.0','::')or right['hostIp']in ('','0.0.0.0','::'):
                             overlap.append({'hostPort':left['hostPort'],'protocol':left['protocol']})
-            ip_overlap=target_ips&set(addresses(value.get('networks')))
-            if overlap or ip_overlap:
+            ip_overlap=target_ips&set(addresses(value.get('networks'),actual=True))
+            configured_overlap=target_ips&set(addresses(value.get('networks')))
+            if overlap or ip_overlap or configured_overlap:
                 revision=value.get('revision');require(revision is None or re.fullmatch('[a-f0-9]{40}',revision),'REVISION_SCHEMA')
-                matches.append({'containerId':value['id'],'imageId':value['image'],'sourceCommit':revision,
-                    'possibleHostPortOverlaps':overlap,'networkAddressOverlapCount':len(ip_overlap)})
+                name=value.get('name');require(name is None or re.fullmatch(r'/[A-Za-z0-9_.-]{1,128}',name),'CONTAINER_NAME_SCHEMA')
+                matches.append({'containerId':value['id'],'containerName':name,'imageId':value['image'],'sourceCommit':revision,
+                    'possibleHostPortOverlaps':overlap,'networkAddressOverlapCount':len(ip_overlap),
+                    'configuredAddressOverlapCount':len(configured_overlap),'networks':network_metadata(value.get('networks'))})
     listeners=[];listener_available=False
     try:
         result=subprocess.run(['/usr/bin/ss','-H','-ltn'],stdin=subprocess.DEVNULL,capture_output=True,timeout=5,
@@ -110,7 +123,7 @@ def network_conflicts(target,reference):
                     if separator and port.isdigit()and any(v['protocol']=='tcp'and v['hostPort']==int(port)for v in wanted):
                         listeners.append({'hostPort':int(port),'protocol':'tcp'})
     except (FileNotFoundError,subprocess.TimeoutExpired):pass
-    return {'targetBindings':wanted,'runningContainersRead':len(ids),'candidateConflicts':matches,
+    return {'targetBindings':wanted,'targetNetworks':network_metadata(target.get('networks')),'runningContainersRead':len(ids),'candidateConflicts':matches,
         'kernelListenerReadAvailable':listener_available,'matchingKernelListeners':listeners,
         'ownerStopOrRestartPerformed':False,'rawEngineErrorPrinted':False}
 def collect(selection):
