@@ -50,6 +50,7 @@ jobs:
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" OUF_NATIVE_REVISION_PG=1 \
+            OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" \
             OUF_REVISION_OWNER_ROOT="$fixture/repository/.pairwise/onboarding" \
             OUF_REVISION_GATEWAY_ROOT="$fixture/repository/.pairwise/gateway" \
             OUF_REVISION_COMPILED_FIXTURE="$fixture/repository/.gateway-compiled-fixture.json" \

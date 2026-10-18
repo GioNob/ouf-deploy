@@ -53,7 +53,7 @@ def verify(actual, candidate, postgres, binding, native_port, yaml_sha256, *, ro
         if key == 'SPRING_CONFIG_ADDITIONAL_LOCATION' and value:
             location = additional_location(value)
         else:
-            require(not value or not (normalized.startswith(('spring','loader'))
+            require(not (normalized.startswith(('spring','loader'))
                     or key in ('JAVA_TOOL_OPTIONS','JDK_JAVA_OPTIONS','JAVA_OPTS','_JAVA_OPTIONS')),
                     'UNREVIEWED_SPRING_OVERRIDE_CHANNEL')
     arguments = (actual['Config'].get('Entrypoint') or []) + (actual['Config'].get('Cmd') or [])

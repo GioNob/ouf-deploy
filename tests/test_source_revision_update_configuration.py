@@ -54,7 +54,7 @@ class Configuration(unittest.TestCase):
 
     def test_higher_priority_spring_and_java_channels_fail_before_start(self):
         valid = copy.deepcopy(self.actual)
-        for value in ('SPRING_FLYWAY_ENABLED=false','SPRING_APPLICATION_JSON={}',
+        for value in ('SPRING_FLYWAY_ENABLED=false','SPRING_FLYWAY_ENABLED=','SPRING_APPLICATION_JSON={}',
                       'JAVA_TOOL_OPTIONS=-Dspring.flyway.url=jdbc:unapproved','SPRING_PROFILES_ACTIVE=other'):
             self.actual = copy.deepcopy(valid); self.actual['Config']['Env'].append(value)
             with self.subTest(value=value),self.assertRaises(UpdateDenied): self.verify()
