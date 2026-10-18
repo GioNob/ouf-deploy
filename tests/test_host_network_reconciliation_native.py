@@ -6,6 +6,17 @@ spec=importlib.util.spec_from_file_location('network_owner',ROOT/'tools/host_net
 spec=importlib.util.spec_from_file_location('network_bootstrap',ROOT/'scripts/reconcile-host-network-20261018.py');b=importlib.util.module_from_spec(spec);spec.loader.exec_module(b)
 @unittest.skipUnless(os.environ.get('OUF_NETWORK_NATIVE_TEST')=='1','isolated Docker fixture only')
 class Native(unittest.TestCase):
+ def start_fixture_daemon(self,root):
+  # A stopped transient systemd-run unit is collected; recreate the same
+  # isolated test unit rather than trying to start a unit that no longer exists.
+  args=['systemd-run','--unit=ouf-network-contract-daemon','--property=Restart=no','--setenv=PATH=/opt/ouf-network-docker-29:/usr/sbin:/usr/bin:/sbin:/bin','/opt/ouf-network-docker-29/dockerd','--config-file=/tmp/ouf-network-contract-daemon.json','--host=unix:///var/run/docker.sock','--data-root='+str(root),'--exec-root=/run/docker','--pidfile=/run/ouf-network-contract.pid','--containerd=/run/containerd/containerd.sock']
+  deadline=time.monotonic()+10
+  while True:
+   state=subprocess.run(['systemctl','show','--property=LoadState','--value','ouf-network-contract-daemon'],capture_output=True,text=True,timeout=3)
+   if state.stdout.strip()=='not-found':break
+   if time.monotonic()>=deadline:raise AssertionError('isolated transient unit not collected')
+   time.sleep(0.2)
+  r=subprocess.run(args,capture_output=True,timeout=45);self.assertEqual(r.returncode,0,'isolated fixture unit recreation failed')
  def cli(self,*args):
   r=subprocess.run(['docker',*args],stdin=subprocess.DEVNULL,capture_output=True,text=True,timeout=90)
   self.assertEqual(r.returncode,0,'fixture command failed: '+args[0]);return r.stdout.strip()
@@ -23,7 +34,7 @@ class Native(unittest.TestCase):
    raw=json.dumps(persisted,sort_keys=True,separators=(',',':')).encode();fd,name=tempfile.mkstemp(prefix='.fixture-null-dns-',dir=path.parent)
    with os.fdopen(fd,'wb')as stream:os.fchmod(stream.fileno(),0o600);stream.write(raw);stream.flush();os.fsync(stream.fileno())
    os.replace(name,path);before['HostConfig']['Dns']=None
-   r=subprocess.run(['systemctl','start','ouf-network-contract-daemon'],capture_output=True,timeout=45);self.assertEqual(r.returncode,0);stopped=False
+   self.start_fixture_daemon(root);stopped=False
    deadline=time.monotonic()+30
    while True:
     try:fresh=m.Engine('/var/run/docker.sock','29.8.1');after=fresh.get('/containers/'+cid+'/json');break
@@ -35,7 +46,7 @@ class Native(unittest.TestCase):
    with self.assertRaises(ValueError):b.preboot_application_proof(before,after,m)
    print(json.dumps({'syntheticFixtureOnly':True,'nativeColdLoadNullToEmptyDnsProven':True,'actualDaemonVersion':'29.8.1','nonemptyDnsRejected':True,'targetMutations':0},sort_keys=True))
   finally:
-   if stopped:subprocess.run(['systemctl','start','ouf-network-contract-daemon'],capture_output=True,timeout=45)
+   if stopped:self.start_fixture_daemon(root)
    subprocess.run(['docker','rm','-f',cid],capture_output=True,timeout=20)
  def test_real_collision_correction_dns_secondary_network_and_daemon_restart(self):
   root=self.cli('info','--format','{{.DockerRootDir}}');self.assertRegex(root,r'^/var/lib/ouf-network-contract-[0-9]+$');self.assertEqual(self.cli('version','--format','{{.Server.Version}}'),'29.8.1')
