@@ -1,3 +1,11 @@
+## Current implementation checkpoint — generic same-source revision candidates
+
+Technical **8/8**, functional **4/6**. The generic active-source revision path is implemented in [Onboarding PR46](https://github.com/GioNob/ouf-source-onboarding/pull/46), [Gateway PR79](https://github.com/GioNob/ouf-api-gateway/pull/79) and [MCP PR74](https://github.com/GioNob/ouf-mcp-server/pull/74). These are code candidates undergoing complete qualification; they are not installed or a published profile. [Exact activation plan and limits](SOURCE_PROPERTY_REVISION_ACTIVATION_PLAN_20261018.md).
+
+The new path preserves source identity/configuration, prepares one native review with durable exact-command deduplication, and makes the possible new acquisition explicit before HUMAN activation. It reconciles a lost preparation response by the original parentVersionId and commandKey. No approval authority, implicit historical replay, priority or deletion semantics are introduced.
+
+A fresh direct MCP check also proves all8 original Cinema objects remain ACTIVE with the exact baseline IDs and property IRIs, partial=false and no cursor. [Redacted evidence](../evidence/cinema-pre-second-acquisition-20261018.json). This is the baseline before the intended second acquisition; functional stage6 is not yet accepted.
+
 ## Current functional checkpoint — stage4 proven through MCP
 
 Technical **8/8**, functional **4/6**. Native proposal94306235-fc45-4433-a05e-0ead3f83a9f8 is PUBLISHED, revision1, finalPolicyRef=ouf-lab-authorization:43. A subsequent direct MCP exact-class search returns all13 distinct ACTIVE objects, each with20 visible properties, nextCursor=null and partial=false. The original object remains present. [Redacted stage4 proof](../evidence/csv-functional-stage4-chat-proof-20261018.json). No actual property values are copied into this documentation.
