@@ -6,6 +6,8 @@ on:
       - scripts/read-source-revision-boot-guard.py
       - tests/test_source_revision_boot_guard_read.py
       - scripts/launch-source-revision-boot-read-20261018.sh
+      - scripts/repair-semantic-boot-lock.py
+      - tests/test_source_revision_boot_lock_repair.py
       - .github/workflows/source-revision-boot-read-qualification.yml
 permissions: {contents: read}
 jobs:
@@ -22,4 +24,4 @@ jobs:
       - name: Qualify actual pinned native readers and root custody with no target effects
         run: |
           bash -n scripts/launch-source-revision-boot-read-20261018.sh
-          sudo env OUF_GATEWAY_SOURCE="$GITHUB_WORKSPACE/native-source" python3 -I -B -S -m unittest discover -s tests -p test_source_revision_boot_guard_read.py -v
+          sudo env OUF_GATEWAY_SOURCE="$GITHUB_WORKSPACE/native-source" python3 -I -B -S -m unittest discover -s tests -p 'test_source_revision_boot*.py' -v
