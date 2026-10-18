@@ -1,4 +1,4 @@
-name: Qualify and stage complete chat recovery executor
+name: Qualify and stage reconciled chat recovery executor
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]

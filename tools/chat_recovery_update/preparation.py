@@ -18,6 +18,15 @@ def protected_review(binding,read):
 
 def stage_candidates(case,context):
     """Copy and re-audit the exact attested runner artifacts before any login."""
+    previous=None
+    if 'previousPreparationStop' in case:
+        stopped=case['previousPreparationStop'];previous=Path(stopped['contextPath'])
+        require(stopped['reason']=='RETAINED_HOST_CONFIGURATION_CHANGED'
+            and previous.parent==Path(case['privateParent']) and previous!=context
+            and previous.name.startswith('chat-recovery-execution-'),'EXACT_PREPARATION_STOP_REQUIRED')
+        root_directory(previous)
+        require({p.name for p in previous.iterdir()}=={'udp.tagless.tar','mcp.tagless.tar','application.jar'},
+            'PREVIOUS_PREPARATION_HAS_AUTHORITY_OR_UNKNOWN_ARTIFACTS')
     binding=case['runnerImageReview']
     path=Path(binding['path'])
     require(path.is_absolute() and path.resolve()==path,'EXACT_IMAGE_REVIEW_PATH_REQUIRED')
@@ -33,6 +42,7 @@ def stage_candidates(case,context):
         audit=row['imageAudit']
         require(audit['sourceCommit']==case['candidateSourceCommits'][module],
                 'CANDIDATE_SOURCE_CHANGED')
+        if previous is not None:source=previous/(module+'.tagless.tar')
         target=context/(module+'.tagless.tar')
         copy_package(source,target,row['imageArchive']['sha256'])
         with target.open('rb') as stream:
@@ -53,6 +63,7 @@ def stage_candidates(case,context):
     relative=package['udpJarRelativePath'];source=root/relative
     require(not Path(relative).is_absolute() and '..' not in Path(relative).parts
         and source.resolve()==source and relative in mapping,'EXACT_QUALIFIED_JAR_REQUIRED')
+    if previous is not None:source=previous/'application.jar'
     target=context/'application.jar'
     copy_package(source,target,mapping[relative])
     candidates['udp']['jar']={'path':str(target),'sha256':mapping[relative]}
@@ -128,7 +139,8 @@ def compile_private(prepared,closure,case,context,read,ns):
         'preparedPlanBinding':case['preparedPlanBinding'],'runnerImageReview':case['runnerImageReview'],
         'completedMcpReview':mcp_binding,'completedLinkedUpdate':case['completedLinkedUpdate'],
         'candidates':candidates,'nativeFlywayConfiguration':flyway,
-        'databaseMigration':MIGRATION,'runtimeAuthorityIssued':False,'readyForExecution':False}
+        'databaseMigration':MIGRATION,'runtimeAuthorityIssued':False,'readyForExecution':False,
+        'previousPreparationStop':copy.deepcopy(case.get('previousPreparationStop'))}
     publish_json(context,'candidate-review.json',review)
     plan={'schema':'ouf.chat-recovery-native-update-plan.v1','authorityDirectory':str(context),
         'privateReviewBinding':{'path':str(context/'candidate-review.json'),'sha256':digest(review)},

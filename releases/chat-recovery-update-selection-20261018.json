@@ -345,5 +345,9 @@
       "version": 13,
       "checksum": "fe9ab352cbf649efecc708b08a9f61ff3c9aadb358211ebd763011ee9fd695b5"
     }
-  ]
+  ],
+  "previousPreparationStop": {
+    "contextPath": "/etc/ouf/deploy-snapshots/chat-recovery-execution-gifk1h2d",
+    "reason": "RETAINED_HOST_CONFIGURATION_CHANGED"
+  }
 }
