@@ -1,4 +1,4 @@
-# Postboot preparation successor — qualification in progress
+# Postboot preparation successor — qualified code; target preparation pending
 
 Technical8/8; functional4/6. This is preparation only, not installation or functional acceptance. The completed host correction and run39158332027 are not repeated. Historical handoff drafts remain unchanged and must not be executed.
 
@@ -22,6 +22,29 @@ All77 overlay source files plus the loader are byte-identical to c750 (the stage
 
 Eleven cloud-workspace tests pass: complete synthetic preparation with real private files, changed-PID refusal, exact13 host claims using the native owner fixture, original/authorization/history preservation, v1 rejection, no missing-input fallback, hash/parent/archive drift, seven-source partial custody and exact81-file successor assembly. External Engine/SQL/compiler boundaries in the orchestration fixture are explicit doubles; this is not a target read or native database proof.
 
-CI runs these tests together with the existing full source-revision native regression suite, including signed authority, real root custody, PostgreSQL and the qualified Spring override verifier. The postboot workflow may stage code on the existing runner only after qualification; it does not run the preparer or deploy.
+Native CI [39160533382](https://github.com/GioNob/ouf-deploy/actions/runs/39160533382) completed successfully at source31092e92171c031facb9e65c5fc27db82e0f9844: **74 native regressions +11 postboot tests PASS**. Job117772707233 includes signed authority, real root custody, PostgreSQL and the Spring override verifier. Job117772912210 staged code only, without target preparation or deployment.
 
-Still required before any execution handoff: green CI, pinned delivery bytes and launcher qualification; then protected preparation on the VPS, retaining its result and exact hashes. Target c23 reconciliation and55e readback remain unproven until that step. If interactive sudo is needed, it is physical target access, not a new generic repository/MCP consent. No HUMAN login is opened during preparation. Native role decisions, installation authority and later profile publication remain separate gates.
+Staged path: `/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revision-postboot-code-39160533382`. Manifest SHA256 `a1a82e66441f10ac8a564ab25c18e5bfcdac20993b73f62308253bfa4556e336`;11 files. Cloud reconstruction gives the same manifest hash.
+
+The immutable delivery is source783925566360b96d3ea4869b986df6d79156024d, launcher SHA256 `04bf87e0a5374df9e3262ed6b855861aebdb9f061a8af1840c8412f2b3a84f19`. Delivery CI [39160838538](https://github.com/GioNob/ouf-deploy/actions/runs/39160838538), job117773616467, completed successfully: **4 tests PASS**. Four delivery tests cover the exact pinned closure and refusal of changed manifest, changed module and linked dispatcher. Target protected access is intercepted by the fixture before any file is opened; no target result is claimed.
+
+## Required target step
+
+The cloud runner cannot read all protected root inputs. An operator with physical sudo access must run the following **once on the VPS as oufadmin**. This only prepares new private documents and frozen code under the original lock, after checking the completed host recovery and original custody. It allows four read-only database sessions, has a300-second bound, and does not issue runtime authority or execute a release. Keep the printed log and return its redacted result; do not upload private documents. A STOP requires reconciliation before retry, with no budget reset.
+
+```bash
+(
+  set -euo pipefail
+  umask 077
+  ouf_delivery_dir="$(mktemp -d)"
+  curl --fail --silent --show-error --location \
+    'https://raw.githubusercontent.com/GioNob/ouf-deploy/783925566360b96d3ea4869b986df6d79156024d/scripts/launch-source-revision-postboot-20261018.sh' \
+    -o "$ouf_delivery_dir/prepare.sh"
+  printf '%s  %s\n' \
+    '04bf87e0a5374df9e3262ed6b855861aebdb9f061a8af1840c8412f2b3a84f19' \
+    "$ouf_delivery_dir/prepare.sh" | sha256sum --check --status
+  bash "$ouf_delivery_dir/prepare.sh"
+)
+```
+
+Target c23 reconciliation,55e seven-file custody, current socket/PID/namespace/PG checks and native compilation remain unproven until this target step succeeds. `readyForExecution=false` is deliberate: no executor delivery or new HUMAN session is opened yet. After the result is reconciled, installation authority, Onboarding33→34/MCP release, governed generic profile publication and functional milestones5/6 remain separate native gates. Preserve13 Teatri objects/ACKs/lineage,20 properties/identity choices and8 Cinema objects.

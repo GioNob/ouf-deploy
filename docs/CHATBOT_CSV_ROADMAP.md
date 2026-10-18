@@ -1,6 +1,6 @@
-## Cloud — original PET baseline available; postboot successor in qualification
+## Checkpoint cloud — successore postboot qualificato
 
-**Technical8/8; functional4/6.** Original baseline v1.7 now accessible and all323 checksums PASS. The current postboot preparation has explicit original/private/case/source-closure bindings and fixes the draft writer and final generation checks. Eleven cloud-workspace tests pass; native CI and target preparation are still pending. No login, authority, deployment, host recovery replay or publication occurred. [Scoped PET consultation, defects, tests and remaining gates](../releases/SOURCE_REVISION_POSTBOOT_PREPARATION_20261018.md).
+**Tecniche8/8; funzionali4/6.** PET originali v1.7 verificati:323 checksum PASS. CI39160533382:74 regressioni native +11 prove postboot PASS; pacchetto di preparazione depositato sul runner. Nuovi case/executor/closure ricaricano esplicitamente il prepared riconciliato. Rimane la preparazione protetta sul VPS con sudo fisico; nessuna nuova sessione HUMAN, installazione o pubblicazione. [Qualification and target command](../releases/SOURCE_REVISION_POSTBOOT_PREPARATION_20261018.md).
 
 ## Aggiornamento cloud — readback nativo completato con successo
 
