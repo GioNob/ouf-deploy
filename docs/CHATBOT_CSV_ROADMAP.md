@@ -1,3 +1,11 @@
+## Verifica diretta dopo V36 — 13 identità visibili, proprietà da chiarire
+
+Tecniche **8/8**, funzionali **3/6**. Ricerca MCP fresca:13 oggetti distinti ACTIVE/revisione1, ma proprietà vuote. Il runner conferma che il ciclo automatico UDP è già abilitato; anche l'API HUMAN delle riprese tecniche è abilitata. Sono due funzioni diverse. Riferimento e mount delle credenziali presenti, continuità della rotazione ancora da provare. [Evidenza](../evidence/chat-recovery-runtime-and-chat-verification-20261018.json).
+
+La lettura GRANTS dal collegamento attuale fallisce nello schema, mentre ROLES funziona. MCP PR73 aggiunge una regressione di protocollo reale, superata con tutte14 CI e unita: nessuna modifica produttiva o prova della causa del problema client. Occorre riconciliare discovery/serializzazione senza modificare policy o budget.
+
+Il profilo concreto conserva i20 campi; nessuna pubblicazione nuova. Il percorso nativo esistente richiede DRAFT/clone, modifica con versione attesa, validazione e revisione; manca ancora la sua esposizione generica di revisione da MCP. Non trattare la review della versione ACTIVE come un aggiornamento del profilo.
+
 ## Aggiornamento installato — UDP V36 e MCP pronti
 
 Tecniche **8/8**, funzionali **3/6**. Il risultato target ricevuto conferma complete=true, applicationReady=true, journalVersion=55 e UDP V36 nel contesto chat-recovery-execution-4kokhxpd. [Evidenza](../evidence/chat-recovery-rollout-target-receipt-20261018.json). Il precedente blocco di preparazione è superato; non ripetere il launcher completato.

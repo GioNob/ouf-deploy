@@ -1,0 +1,137 @@
+{
+  "schema": "ouf.chat-recovery-runtime-and-chat-verification.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 3,
+  "search": {
+    "canonicalType": "https://schema.org/PerformingArtsTheater",
+    "objects": 13,
+    "distinctObjects": 13,
+    "allActive": true,
+    "allRevisionOne": true,
+    "objectsWithVisibleProperties": 0,
+    "partial": false,
+    "nextCursor": null,
+    "functionalStage4Proven": false
+  },
+  "runtime": {
+    "completedTechnicalPhases": 8,
+    "configHash": "8c9dfe5a84c0bf0673bd332f95efc4ad9e6195a402f3cb5522f3dd3a906c723f",
+    "containerId": "946fd69972ada2e310c32f72da27f19a04e7a2043dc330f116e8ba1c507e6e3b",
+    "credentialFilesRead": 0,
+    "credentialValuesPrinted": false,
+    "executionTokenCoveringMounts": 1,
+    "executionTokenMountReadOnly": true,
+    "executionTokenReferenceConfigured": true,
+    "functionalMilestonesProven": 3,
+    "governedTechnicalRetryApiEnabled": true,
+    "publishedResolutionLoopEnabled": true,
+    "readOnly": true,
+    "running": true,
+    "runtimeMutations": 0,
+    "schema": "ouf.chat-recovery-effective-flags-read.v1",
+    "sourceCommit": "0d40da05408a14db31d4d41af2372d6a71480291"
+  },
+  "permissionRead": {
+    "rolesViewSucceeded": true,
+    "grantsViewFailure": "oneOf argument validation",
+    "minimalSubjectSelectorFailure": "oneOf argument validation",
+    "readBypassed": false,
+    "grantChanges": 0
+  },
+  "sdkQualification": {
+    "qualifiedSource": "2acb84800a66f664316ff417d83c3a4e715d4be3",
+    "workflows": [
+      {
+        "id": 39083549670,
+        "name": "Incident priority resilience v3",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 39083549625,
+        "name": "Operational aggregate delegated context qualification",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 39083549699,
+        "name": "Operational control budget PostgreSQL qualification",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 39083549649,
+        "name": "Operational incident cursor HTTP qualification",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 39083549615,
+        "name": "Operational cursor metadata PostgreSQL qualification",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 39083549620,
+        "name": "Authorization Java Go conformance",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 39083549727,
+        "name": "Persistent publication vector PostgreSQL qualification",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 39083549661,
+        "name": "Chatbot dispatch Gateway schemas",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 39083549672,
+        "name": "Semantic proposal channel qualification",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 39083549667,
+        "name": "Permission read real SDK regression",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 39083549628,
+        "name": "Publication HTTP and MCP tool qualification",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 39083549641,
+        "name": "Bounded publication composition qualification",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 39083549614,
+        "name": "Private operational audit capture qualification",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 39083549770,
+        "name": "MCP evidence and late recovery",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "pullRequest": 73,
+    "mergeCommit": "682c3d2acfa6f541583388717611389377c0ad95",
+    "productionChanges": false,
+    "liveFailureReproduced": false
+  },
+  "nativeProfilePublished": false,
+  "jobsRetried": 0,
+  "identityDecisionsPerformed": false
+}
