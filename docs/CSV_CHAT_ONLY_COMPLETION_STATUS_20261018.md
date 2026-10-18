@@ -1,3 +1,17 @@
+## Current checkpoint — host recovered; UDP network collision blocks readiness
+
+Technical **8/8**, functional **4/6**. The operator completed the journal-sandbox successor: Docker is active and the original native boot guard passed. The result explicitly leaves application readiness unproven and requires provider reconciliation. No new OUF authority was issued. The completed host launcher must not be replayed; a subsequent real reboot remains untested.
+
+Fresh runner reads retain the intended application identities. MCP and Onboarding run; UDP remains exited. Direct MCP system status is HEALTHY, partial=false; this is not whole-platform health. The source-scoped Ingestion status call was denied, nonretryable; no retry, account substitution or SQL bypass was used.
+
+[UDP read39146903579](https://github.com/GioNob/ouf-deploy/actions/runs/39146903579) identifies a concrete address collision: intended UDP reserves172.18.0.5 on the retained backend network, while running APISIX currently holds that address through dynamic allocation. UDP has no published host-port binding; the broad engine-error marker alone must not be described as proof of a TCP-port collision. No container was stopped, disconnected, readdressed or started by the diagnostics. APISIX is a live shared gateway: correction requires an explicit current network/route ownership plan, not a blind restart or invented replacement address.
+
+[Spring read39146762310](https://github.com/GioNob/ouf-deploy/actions/runs/39146762310) proves the retained JSON contains seven owner/THS properties, including the literal OAuth registration key ouf-ths. It is not an empty object. Values and credentials were suppressed. A closed verifier change is being prepared against actual owner contracts; it is not yet qualified or installed.
+
+Preboot prepared input c23ec15b43427c4558b5b06bf36c2c1b4fa73943efbc0e081ad2731b69c9bc89 remains immutable, but process start/PID, engine socket and endpoint bindings need explicit postboot reconciliation. Historical authority or old launchers cannot silently adopt the new runtime. Preserve image custody, migration/route baselines and the stopped source-revision context. [Versioned receipt and bounded reads](../evidence/post-boot-runtime-reconciliation-20261018.json).
+
+Next: reconcile network ownership and restore intended UDP through a finite fenced correction; verify actual application/provider readiness; qualify the closed Spring verifier and postboot input successor; then finish the native source-revision release. Profile publication and any disclosed new acquisition remain separate. Stages5/6 are pending.
+
 ## Host boot recovery — first attempt reconciled; journal sandbox successor qualified
 
 Technical **8/8**, functional **4/6**. The operator executed the first bounded recovery. It stopped at `DOCKER_START_INTENT`, context `/etc/ouf/deploy-snapshots/boot-lock-recovery-ct030dx0`, with `ValueError` from the nonzero native operation. Reaching that phase proves the3 artifacts were installed/read back, the unit graph verified, the common lock created and validated through the original native owner reader, and manager reload/effective ordering completed. The lock reference is now proven: `/run/ouf-semantic-boot-guard/guard.lock`. This is a partially applied host repair, not a no-effect stop or a successful Docker recovery. Never replay the first launcher.
