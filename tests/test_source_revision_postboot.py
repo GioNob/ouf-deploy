@@ -236,3 +236,22 @@ class Orchestration(unittest.TestCase):
        self.assertTrue(Path(result['contextPath'],'postboot-preparation-result.json').is_file())
      self.assertEqual(calls,['compile']);self.assertNotIn('SECRET_CANARY',out.getvalue());self.assertNotIn('KEEP',out.getvalue())
     finally:signal.alarm(0)
+
+class RetainedPostbootStop(unittest.TestCase):
+ def test_exact_retained_closure_and_changed_or_extra_files(self):
+  for change in (None,'bytes','extra','link','mode'):
+   with self.subTest(change=change),Files().temporary() as temp:
+    root=Path(temp);expected={}
+    for i in range(90):
+     path=root/('file'+str(i));raw=('retained'+str(i)).encode();Files().shared().write_new(path,raw);expected[path.name]=hashlib.sha256(raw).hexdigest()
+    binding={'path':str(root),'closureSha256':r.digest(expected)}
+    if change=='bytes':(root/'file0').write_bytes(b'changed')
+    if change=='extra':Files().shared().write_new(root/'authority.json',b'{}')
+    if change=='link':(root/'file0').unlink();(root/'file0').symlink_to(root/'file1')
+    if change=='mode':(root/'file0').chmod(0o644)
+    if change:
+     with self.assertRaises(ValueError):b.reconcile_postboot_stop(binding,r)
+    else:self.assertEqual(b.reconcile_postboot_stop(binding,r)['files'],90)
+ def test_missing_member_does_not_accept_old_hash(self):
+  with Files().temporary() as temp:
+   with self.assertRaises(ValueError):b.reconcile_postboot_stop({'path':temp,'closureSha256':'0'*64},r)

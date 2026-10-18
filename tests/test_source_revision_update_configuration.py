@@ -133,3 +133,27 @@ class Configuration(unittest.TestCase):
 
 
 if __name__ == '__main__': unittest.main()
+
+class OwnerJson(unittest.TestCase):
+    def test_retained_ths_json_accepts_owner_and_oauth_without_values(self):
+        raw=json.dumps({'ouf':{'authorization':{'ths':{'enabled':True,'public-origin':'https://fixture.invalid'}}},'spring':{'security':{'oauth2':{'client':{'registration':{'ouf-ths':{'client-id':'PRIVATE_CANARY','client-secret':'SECRET_CANARY','authorization-grant-type':'authorization_code','provider':'fixture','scope':['openid','profile']}},'provider':{'fixture':{'issuer-uri':'https://fixture.invalid/realms/test'}}}}}}}).encode()
+        result=c.overlay_text(raw);self.assertEqual(result['format'],'STRICT_JSON');self.assertFalse(result['migrationOverridePresent']);self.assertNotIn('CANARY',json.dumps(result))
+    def test_spring_loader_datasource_profile_import_sql_and_env_aliases_denied(self):
+        for key in ('spring.flyway.enabled','spring.datasource.url','spring.config.import','spring.profiles.active','spring.sql.init.mode','loader.path','SPRING_FLYWAY_ENABLED','springFlywayEnabled','ouf.onb.db.password','OUF_ONB_DB_PASSWORD','java.tool.options'):
+            with self.subTest(key=key),self.assertRaises(UpdateDenied):c.overlay_text(json.dumps({key:'CANARY'}).encode())
+    def test_duplicate_canonical_and_prefix_conflicts_denied(self):
+        for raw in (b'{"ouf":{"a":true,"a":false}}',b'{"ouf":{"a-b":1,"ab":2}}',b'{"ouf.a":1,"ouf":{"a":{"b":2}}}',b'{"ouf..a":1}',b'{"ouf":{"a":NaN}}'):
+            with self.subTest(raw=raw),self.assertRaises(UpdateDenied):c.overlay_text(raw)
+    def test_interpolation_lists_objects_null_and_unknown_oauth_denied(self):
+        for value in ('${spring.flyway.enabled}','#{secret}',None,[{'spring.flyway.enabled':True}]):
+            with self.subTest(value=value),self.assertRaises(UpdateDenied):c.overlay_text(json.dumps({'ouf':{'value':value}}).encode())
+        for key in ('spring.security.oauth2.client.registration.other.client-id','spring.security.oauth2.client.registration.ouf-ths.unknown','spring.security.oauth2.client.provider.fixture.loader.path'):
+            with self.subTest(key=key),self.assertRaises(UpdateDenied):c.overlay_text(json.dumps({key:'CANARY'}).encode())
+    def test_json_does_not_enable_yaml_tags_merges_or_multi_documents(self):
+        for raw in (b'{"ouf":{"a":1}}\n---\nspring: {}',b'{"ouf":{<<: *alias}}',b'{"ouf":{"a":!tag value}}'):
+            with self.subTest(raw=raw),self.assertRaises(UpdateDenied):c.overlay_text(raw)
+    def test_json_depth_and_property_limits(self):
+        value={'a':True}
+        for _ in range(18):value={'a':value}
+        for value in ({'ouf':value},{'ouf':{str('a'+str(i)):True for i in range(513)}}):
+            with self.assertRaises(UpdateDenied):c.overlay_text(json.dumps(value).encode())

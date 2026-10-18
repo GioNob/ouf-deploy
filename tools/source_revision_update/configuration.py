@@ -55,8 +55,55 @@ def application_json_metadata(raw):
         'properties':[found[key]for key in sorted(found)],'configurationValuesPrinted':False}
 
 
+def owner_json_overlay(raw):
+    """Closed JSON owner/OAuth configuration; no Spring loading/migration channels."""
+    def unique(rows):
+        value={}
+        for key,item in rows:
+            require(key not in value,'DUPLICATE_OWNER_OVERLAY_KEY');value[key]=item
+        return value
+    try:
+        value=json.loads(raw,object_pairs_hook=unique,
+            parse_constant=lambda _:require(False,'NONFINITE_OWNER_OVERLAY'))
+    except (ValueError,TypeError,RecursionError):require(False,'STRICT_OWNER_JSON_REQUIRED')
+    require(type(value)is dict and bool(value),'OWNER_JSON_OBJECT_REQUIRED')
+    found=set();nodes=0
+    def visit(obj,prefix=(),depth=0):
+        nonlocal nodes
+        require(type(obj)is dict and bool(obj) and depth<=16,'BOUNDED_OWNER_JSON_OBJECT')
+        for key,item in obj.items():
+            nodes+=1;require(nodes<=512 and type(key)is str and re.fullmatch('[A-Za-z_][A-Za-z0-9_.-]{0,127}',key),'OWNER_JSON_KEY_SCHEMA')
+            parts=prefix+tuple(key.split('.'))
+            require(all(parts),'OWNER_JSON_EMPTY_SEGMENT')
+            canonical=tuple(re.sub('[^a-z0-9]','',part.lower()) for part in parts)
+            require(all(canonical),'OWNER_JSON_EMPTY_CANONICAL_SEGMENT')
+            if type(item)is dict:visit(item,parts,depth+1);continue
+            name='.'.join(canonical)
+            require(not any(name==old or name.startswith(old+'.') or old.startswith(name+'.') for old in found),'AMBIGUOUS_OWNER_JSON_PROPERTY');found.add(name)
+            owner=canonical[:1]==('ouf',) and not ''.join(canonical).startswith('oufonbdb')
+            oauth=canonical[:5]==('spring','security','oauth2','client','registration') or canonical[:5]==('spring','security','oauth2','client','provider')
+            require(owner or oauth,'UNREVIEWED_OWNER_JSON_NAMESPACE')
+            if oauth:
+                require(len(parts)==7 and (parts[5]=='ouf-ths' if canonical[4]=='registration' else re.fullmatch('[A-Za-z0-9_-]{1,128}',parts[5])),'EXACT_THS_OAUTH_MAP_KEY_REQUIRED')
+                fields={'clientid','clientsecret','clientauthenticationmethod','authorizationgranttype','redirecturi','scope','provider'} if canonical[4]=='registration' else {'issueruri','authorizationuri','tokenuri','userinfouri','usernameattribute','jwkseturi'}
+                require(canonical[-1] in fields,'UNREVIEWED_THS_OAUTH_PROPERTY')
+            require(type(item) in (str,bool,int,list),'OWNER_JSON_SCALAR_TYPE')
+            values=item if type(item)is list else [item]
+            require(len(values)<=256 and all(type(v)in(str,bool,int) for v in values),'OWNER_JSON_SCALAR_LIST')
+            if oauth:
+                require(type(item)is str or canonical[-1]=='scope' and type(item)is list and all(type(v)is str for v in item),'THS_OAUTH_PROPERTY_TYPE')
+            for v in values:
+                require(type(v)is not str or len(v)<=65536 and not any(c in v for c in ('${','#{','\x00')),'LITERAL_OWNER_JSON_VALUES_REQUIRED')
+    visit(value)
+    return {'format':'STRICT_JSON','ownerAndThsOAuthOnly':True,'migrationOverridePresent':False,
+            'propertyCount':len(found),'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),
+            'configurationValuesPrinted':False}
+
+
 def overlay_text(raw):
     require(type(raw) is bytes and 0 < len(raw) <= 1048576, 'BOUNDED_OWNER_OVERLAY_REQUIRED')
+    if raw.lstrip().startswith(b'{'):
+        return owner_json_overlay(raw)
     # A deliberately closed YAML surface: aliases, directives, complex/quoted
     # mapping keys and flow documents need separate qualification. Values are
     # never returned, logged or interpolated by this verifier.

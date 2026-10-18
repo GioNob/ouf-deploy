@@ -2,6 +2,7 @@
 import hashlib,json,os,re,sys
 from pathlib import Path
 FILES={
+ 'configuration.py':'tools/source_revision_update/configuration.py',
  'reader.py':'scripts/prepare-source-revision-inputs.py',
  'owner.py':'tools/host_network_reconciliation.py',
  'boot_reader.py':'scripts/read-source-revision-boot-guard.py',

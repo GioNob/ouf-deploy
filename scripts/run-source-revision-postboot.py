@@ -1,7 +1,7 @@
 """Hash-bound root dispatcher for PREPARATION ONLY. Never invoke executor.main."""
 import hashlib,json,os,re,signal,stat,sys,types,traceback
 from pathlib import Path
-NAMES={'reader.py','owner.py','boot_reader.py','bootstrap.py','policy.py','prepare.py','executor.py','run.py','guard_selection.json','selection.json'}
+NAMES={'reader.py','owner.py','boot_reader.py','bootstrap.py','policy.py','prepare.py','executor.py','run.py','guard_selection.json','selection.json','configuration.py'}
 def require(ok,code):
  if not ok:raise ValueError(code)
 def parse(raw):
@@ -32,7 +32,7 @@ def main(directory,manifest_sha):
   m=types.ModuleType('verified_postboot_'+name);m.__file__=str(directory/(name+'.py'))
   exec(compile(raw[name+'.py'],'<verified-postboot-'+name+'>','exec'),m.__dict__);modules[name]=m
  selection=parse(raw['selection.json']);selection['successorSourceCommit']=manifest['sourceCommit']
- modules['prepare'].run(selection,modules['reader'],modules['owner'],modules['boot_reader'],modules['bootstrap'],modules['policy'],parse(raw['guard_selection.json']),raw['executor.py'])
+ modules['prepare'].run(selection,modules['reader'],modules['owner'],modules['boot_reader'],modules['bootstrap'],modules['policy'],parse(raw['guard_selection.json']),raw['executor.py'],raw['configuration.py'])
 if __name__=='__main__':
  try:
   require(len(sys.argv)==3,'EXACT_POSTBOOT_ARGUMENTS_REQUIRED');main(*sys.argv[1:])
