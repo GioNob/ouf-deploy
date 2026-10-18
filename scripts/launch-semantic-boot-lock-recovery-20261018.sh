@@ -29,9 +29,9 @@ try:
     if os.geteuid()!=0 or os.getegid()!=0 or not(sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode)or len(sys.argv)!=2:raise ValueError('ISOLATED_ROOT_REQUIRED')
     signal.alarm(300);root=Path(sys.argv[1]);payload={}
     for name,digest in {'reader.py':'c63ee1872d4e78c16bead93c80c0c0fefa694814222a89cf93d23e084b4b63fd',
-      'repair.py':'98923583c8abe078af888876e2acfdbf6f8bd6ed2d7d0a6ea6790b501ad3004d',
+      'repair.py':'cab86f80059c58f38084d3fc554ea5ae549a993ac8fd7753a47fff698b81ae14',
       'selection.json':'36c47400fc3dc7669b04d6bc18e204a70ca7502f3749d8d92a292ddf4bdc0978',
-      'recovery.json':'149c3180522392612ff90bc42950205e6191f4d567a00bf49a26d4ac44a1a826'}.items():payload[name]=verified(root/name,digest)
+      'recovery.json':'acc0e51e4782f7700a89049085af7b6e435332e48bd1a70220e65569b78aeb8a'}.items():payload[name]=verified(root/name,digest)
     modules={}
     for name in ('reader','repair'):
         module=types.ModuleType('verified_'+name);module.__file__=str(root/(name+'.py'))

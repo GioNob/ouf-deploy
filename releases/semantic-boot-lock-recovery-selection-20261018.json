@@ -10,9 +10,11 @@
   "tmpfilesExecutable": "/usr/bin/systemd-tmpfiles",
   "tmpfilesSetupUnit": "systemd-tmpfiles-setup.service",
   "systemctl": "/usr/bin/systemctl",
+  "systemdAnalyze": "/usr/bin/systemd-analyze",
+  "unitFilesToVerify": ["/etc/systemd/system/ouf-semantic-boot-guard.service", "/usr/lib/systemd/system/docker.service"],
   "dropins": {
-    "ouf-semantic-boot-guard.service": "/etc/systemd/system/ouf-semantic-boot-guard.service.d/20-ouf-boot-lock.conf",
-    "docker.service": "/etc/systemd/system/docker.service.d/20-ouf-boot-lock.conf"
+    "ouf-semantic-boot-guard.service": "/etc/systemd/system/ouf-semantic-boot-guard.service.d/99-ouf-boot-lock.conf",
+    "docker.service": "/etc/systemd/system/docker.service.d/99-ouf-boot-lock.conf"
   },
   "incidentPointer": "/etc/ouf/boot-lock-recovery-20261018.json"
 }

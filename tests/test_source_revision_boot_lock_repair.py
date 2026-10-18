@@ -23,6 +23,7 @@ class Recovery(unittest.TestCase):
    'expectedUnitHashes':{self.selection['unitFiles'][0]:repair.sha(Path(self.selection['unitFiles'][0]).read_bytes())},
    'volatileRoots':['/run'],'tmpfilesRule':str(ctx/'tmpfiles.conf'),'tmpfilesExecutable':'/usr/bin/systemd-tmpfiles',
    'tmpfilesSetupUnit':'systemd-tmpfiles-setup.service','systemctl':'/usr/bin/systemctl',
+   'systemdAnalyze':'/usr/bin/systemd-analyze','unitFilesToVerify':self.selection['unitFiles'],
    'dropins':{unit:str(ctx/(unit+'.d')/'20-lock.conf')for unit in ('fixture-guard.service','fixture-docker.service')},
    'incidentPointer':str(ctx/'incident.json')}
  def planned(self):
@@ -32,6 +33,11 @@ class Recovery(unittest.TestCase):
   after=copy.deepcopy(self.before);after['nativeOwnerReadConfiguration']={'passed':True}
   after['units']['fixture-docker.service']['ActiveState']='active';after['units']['fixture-guard.service']['Result']='success'
   after['ownedTableFamilies']=['bridge','inet'];return after
+ def manager(self,argv):
+  if argv[0]=='/usr/bin/systemd-tmpfiles':return repair.invoke(argv)
+  if len(argv)>1 and argv[1]=='show':
+   return ('After=systemd-tmpfiles-setup.service\nRequires=systemd-tmpfiles-setup.service\nNeedDaemonReload=no\nDropInPaths='+self.recovery['dropins'][argv[-1]]+'\n').encode()
+  return b''
  def test_plan_has_no_effect_and_rejects_drift(self):
   before={str(p):p.read_bytes()for p in self.fixture.tmp.rglob('*')if p.is_file()}
   self.planned();self.assertEqual(before,{str(p):p.read_bytes()for p in self.fixture.tmp.rglob('*')if p.is_file()})
@@ -63,7 +69,7 @@ class Recovery(unittest.TestCase):
    (units/unit).write_text('[Unit]\nDefaultDependencies=no\n'+extra+'[Service]\nType=oneshot\nExecStart=/usr/bin/true\nRemainAfterExit=yes\n')
   for unit,path in self.recovery['dropins'].items():
    directory=units/(unit+'.d');directory.mkdir();(directory/'20-lock.conf').write_bytes(value['files'][Path(path)])
-  result=subprocess.run(['/usr/bin/systemd-analyze','verify',str(units/'fixture-docker.service'),
+  result=subprocess.run(['/usr/bin/systemd-analyze','verify','--man=no',str(units/'fixture-docker.service'),
      str(units/'fixture-guard.service'),str(units/'systemd-tmpfiles-setup.service')],capture_output=True,
      env={'PATH':'/usr/bin:/bin','LC_ALL':'C','SYSTEMD_UNIT_PATH':str(units)},timeout=20)
   self.assertEqual(result.returncode,0,result.stderr.decode())
@@ -71,11 +77,10 @@ class Recovery(unittest.TestCase):
   value=self.planned();calls=[]
   def call(argv,timeout=20):
    calls.append(argv)
-   if argv[0]=='/usr/bin/systemd-tmpfiles':return repair.invoke(argv,timeout)
-   return b''
+   return self.manager(argv)
   with patch.object(self.reader,'collect',return_value=self.after()):result=repair.apply(self.reader,value,call)
   self.assertTrue(result['complete'],result);self.assertFalse(result['applicationReadinessProven'])
-  self.assertEqual([c[1]for c in calls],['--create','daemon-reload','start'])
+  self.assertEqual([c[1]for c in calls],['verify','--create','daemon-reload','show','show','start'])
   self.assertEqual(json.loads(Path(result['contextPath'],'journal.json').read_bytes())['phase'],'COMPLETE')
   inode=self.lock.stat().st_ino;self.lock.write_bytes(b'kept, never truncated')
   repair.invoke(['/usr/bin/systemd-tmpfiles','--create',self.recovery['tmpfilesRule']])
@@ -84,9 +89,8 @@ class Recovery(unittest.TestCase):
   value=self.planned();calls=[]
   def call(argv,timeout=20):
    calls.append(argv)
-   if argv[0]=='/usr/bin/systemd-tmpfiles':return repair.invoke(argv,timeout)
    if argv[1]=='start':raise subprocess.TimeoutExpired(argv,timeout)
-   return b''
+   return self.manager(argv)
   result=repair.apply(self.reader,value,call)
   self.assertFalse(result['complete']);self.assertEqual(result['phase'],'DOCKER_START_INTENT')
   self.assertTrue(result['reconciliationRequired']);self.assertEqual(len([c for c in calls if c[1]=='start']),1)
@@ -99,16 +103,24 @@ class Recovery(unittest.TestCase):
   source.write_bytes(b'changed')
   def call(argv,timeout=20):
    calls.append(argv)
+   if argv[1]=='verify':return b''
    if argv[0]=='/usr/bin/systemd-tmpfiles':return repair.invoke(argv,timeout)
    raise AssertionError('manager must not be called')
   result=repair.apply(self.reader,value,call)
-  self.assertFalse(result['complete']);self.assertEqual(len(calls),1)
+  self.assertFalse(result['complete']);self.assertEqual(len(calls),2)
  def test_revocation_in_readback_is_preserved(self):
   value=self.planned();after=self.after();after['ownerJournal']['metadata']['leaseAuthorized']=True
   def call(argv,timeout=20):
-   if argv[0]=='/usr/bin/systemd-tmpfiles':return repair.invoke(argv,timeout)
-   return b''
+   return self.manager(argv)
   with patch.object(self.reader,'collect',return_value=after):result=repair.apply(self.reader,value,call)
   self.assertFalse(result['complete']);self.assertEqual(result['phase'],'READBACK')
+ def test_missing_effective_ordering_prevents_start(self):
+  value=self.planned();calls=[]
+  def call(argv,timeout=20):
+   calls.append(argv)
+   if argv[1]=='show':return b'After=\nRequires=\nDropInPaths=\nNeedDaemonReload=no\n'
+   return self.manager(argv)
+  result=repair.apply(self.reader,value,call)
+  self.assertFalse(result['complete']);self.assertFalse(any(c[1]=='start'for c in calls))
 
 if __name__=='__main__':unittest.main()

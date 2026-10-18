@@ -70,7 +70,7 @@ def plan(reader,selection,recovery):
         if path.parent.exists():parents(path)
         files[path]=dropin
     require(len(recovery['dropins'])==2 and all(not os.path.lexists(p)for p in files),'EXISTING_MANAGED_ARTIFACT')
-    for path in (recovery['systemctl'],recovery['tmpfilesExecutable']):
+    for path in (recovery['systemctl'],recovery['tmpfilesExecutable'],recovery['systemdAnalyze']):
         # Native package-manager executable: root-owned, executable, no writable ancestors or aliases.
         info=Path(path).lstat();parents(Path(path))
         require(stat.S_ISREG(info.st_mode)and info.st_uid==info.st_gid==0 and info.st_mode&0o111 and not info.st_mode&0o022,'EXECUTABLE_CUSTODY')
@@ -98,6 +98,8 @@ def apply(reader,value,call=invoke):
         for path,raw in value['files'].items():
             if not path.parent.exists():path.parent.mkdir(mode=0o755)
             new(path,raw,0o644);require(reader.read(path)==raw,'ARTIFACT_READBACK')
+        record('UNIT_GRAPH_VERIFY')
+        call([recovery['systemdAnalyze'],'verify','--man=no',*recovery['unitFilesToVerify']])
         record('LOCK_PROVISION_INTENT')
         # f creates a missing file; no f+, truncation, chmod of an existing lock, unlink or replacement.
         call([recovery['tmpfilesExecutable'],'--create',recovery['tmpfilesRule']])
@@ -112,6 +114,14 @@ def apply(reader,value,call=invoke):
         native.read_configuration(Path(value['profile']['coordinatedConfiguration']),value['profile']['coordinatedConfigurationHash'],source.parents[1])
         fcntl.flock(fd,fcntl.LOCK_UN);os.close(fd);fd=None
         record('MANAGER_RELOAD_INTENT');call([recovery['systemctl'],'daemon-reload'])
+        for unit,path in recovery['dropins'].items():
+            raw=call([recovery['systemctl'],'show','--no-pager',
+                '--property=After,Requires,DropInPaths,NeedDaemonReload',unit])
+            properties=dict(line.split('=',1)for line in raw.decode().splitlines()if'='in line)
+            require(recovery['tmpfilesSetupUnit']in properties.get('After','').split()
+                and recovery['tmpfilesSetupUnit']in properties.get('Requires','').split()
+                and path in properties.get('DropInPaths','').split()
+                and properties.get('NeedDaemonReload')=='no','EFFECTIVE_BOOT_ORDER_UNPROVEN')
         # Restore/start only through the existing unit dependencies and original sealed boot guard.
         # No guard invocation replacement, sentinel, cached lease or provider authorization is supplied.
         record('DOCKER_START_INTENT');call([recovery['systemctl'],'start',selection['dockerUnit']],120)
