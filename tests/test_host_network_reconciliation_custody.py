@@ -44,6 +44,10 @@ class Custody(unittest.TestCase):
   with patch.object(Path,'lstat',public_root),self.assertRaises(ValueError):b.configuration_bytes(self.path,self.p,m)
  def test_exact_operator_group_with_no_acl_introduces_no_new_writer(self):
   self.group();before=self.path.stat();self.assertEqual(b.configuration_bytes(self.path,self.p,m),b'retained private fixture');self.assertEqual(self.path.stat().st_mode,before.st_mode)
+ def test_real_native_nss_and_fd_acl_probe_without_mocks(self):
+  fd=os.open(self.path,os.O_RDONLY|os.O_NOFOLLOW)
+  try:b.operator_group_proof(fd,{'gid':0,'writerUids':[0]},m)
+  finally:os.close(fd)
  def test_additional_writer_extended_acl_or_unknown_acl_error_is_rejected(self):
   self.group()
   with patch.object(b.pwd,'getpwall',return_value=[types.SimpleNamespace(pw_uid=42,pw_gid=1000)]),self.assertRaisesRegex(ValueError,'WRITERS_CHANGED'):b.configuration_bytes(self.path,self.p,m)
