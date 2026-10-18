@@ -1,3 +1,11 @@
+## Aggiornamento cloud — readback nativo completato con successo
+
+**Tecniche8/8; funzionali4/6.** Run39158332027, commit ce132bbcb3bd8239689415797371afe636db7762: completed/success riconfermato. Sei endpoint fissi e nove identità/processi stabili; UDP200UP, Onboarding200UP, MCP204 pronto. Tre sole GET native, zero mutazioni/SQL/retry/pubblicazioni. [Ricevuta](../evidence/post-host-network-native-read-target-20261018.json). Questa prova non dimostra Semantic/provider/grafo né il journal root. Il recupero host completato non va rilanciato.
+
+Le due bozze conservate nell'handoff50a1966 restano NON QUALIFICATE e non sono state eseguite. Il successore deve legare esplicitamente case, hash, closure e caricamento del prepared originale riconciliato, preservare c23/custodia/budget e verificare le generazioni prima e dopo la compilazione. Nessuna nuova sessione HUMAN è stata aperta. [Stato corrente](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
+
+## Checkpoint precedenti (superati nel perimetro del readback sopra)
+
 ## Aggiornamento — recupero rete completato, UDP avviato
 
 **Tecniche8/8; funzionali4/6.** L'esecuzione75c6 ha completato6endpoint/13scritture Docker e avviato UDP, con tutti i controlli di configurazione e custodia superati. Il comando completato non va ripetuto. Provider BLOCKED/vuoto resta revocato; disponibilità applicativa ancora da provare. Nessuna migrazione, pubblicazione o ripresa esplicita dei job. [Ricevuta e stato](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
