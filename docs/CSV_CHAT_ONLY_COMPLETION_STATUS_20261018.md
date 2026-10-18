@@ -1,3 +1,11 @@
+## Current release checkpoint — all three generic revision implementations integrated
+
+Technical **8/8**, functional **4/6**. Onboarding PR46, Gateway PR79 and MCP PR74 are merged after complete qualification. [Versioned code evidence](../evidence/source-revision-code-qualified-20261018.json):261 Onboarding tests plus10 shared SDK tests;486 Gateway tests with separate live APISIX gate; fresh real-Lua signatures accepted by the actual Java owner; all14 MCP pipelines including real SDK revision transport and closed discovery pass. No runtime deployment or profile publication is inferred from these merges.
+
+[Read-only runner39085780604](https://github.com/GioNob/ouf-deploy/actions/runs/39085780604) confirms stable running generations for the existing Onboarding, MCP and UDP. [Redacted target inventory](../evidence/source-revision-current-target-inventory-20261018.json). The active source was re-read through MCP: parent9860853e-e8f3-4b93-b9d2-03521a039962 remains ACTIVE at lock4 with its original configuration hash/publication and observed Ingestion compatibility. Its historical challenge expiry does not invalidate or renew the already active publication.
+
+The concrete20-rule revision request is [prepared, not submitted](../releases/source-property-revision-proposal-20261018.json), bound to that parent/hash/lock and a stable commandKey. New tool/route/grant activation and fresh rule readback remain prerequisites. Native HUMAN review must show the possible new acquisition before activation. [Qualified fixed-source package build39085780635](https://github.com/GioNob/ouf-deploy/actions/runs/39085780635) is being sealed/delivered without runtime effects; no target login is opened.
+
 ## Current implementation checkpoint — generic same-source revision candidates
 
 Technical **8/8**, functional **4/6**. The generic active-source revision path is implemented in [Onboarding PR46](https://github.com/GioNob/ouf-source-onboarding/pull/46), [Gateway PR79](https://github.com/GioNob/ouf-api-gateway/pull/79) and [MCP PR74](https://github.com/GioNob/ouf-mcp-server/pull/74). These are code candidates undergoing complete qualification; they are not installed or a published profile. [Exact activation plan and limits](SOURCE_PROPERTY_REVISION_ACTIVATION_PLAN_20261018.md).
