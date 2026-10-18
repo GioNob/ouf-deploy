@@ -1,5 +1,5 @@
 name: Source revision bounded Engine availability read
-# Reconcile the stopped boot-lock recovery ct030dx0: observations only, no start or Engine probe.
+# Read boot guard filesystem/lifecycle constraints after the reconciled failed start; no Engine/start.
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
@@ -19,7 +19,7 @@ jobs:
                   'completedTechnicalPhases':8,'functionalMilestonesProven':4,'installationSpecific':True}
           units={}
           allowed={'ActiveState','SubState','Result','NRestarts','MainPID','LoadState',
-                   'ConditionResult','AssertResult','After','Requires','NeedDaemonReload','ExecMainStartTimestamp','ExecMainExitTimestamp','CanStart','RefuseManualStart','UnitFileState',
+                   'ConditionResult','AssertResult','After','Requires','NeedDaemonReload','RuntimeDirectory','RuntimeDirectoryMode','RuntimeDirectoryPreserve','StateDirectory','RootDirectory','ReadWritePaths','ReadOnlyPaths','InaccessiblePaths','TemporaryFileSystem','ProtectSystem','ProtectHome','PrivateMounts','PrivateTmp','User','Group','Type','RemainAfterExit','CanStart','RefuseManualStart','UnitFileState',
                    'InactiveEnterTimestamp','ActiveEnterTimestamp','StateChangeTimestamp',
                    'ExecMainCode','ExecMainStatus','FragmentPath','DropInPaths','TriggeredBy','Job'}
           for unit in ('docker.service','docker.socket','containerd.service','ouf-semantic-boot-guard.service'):
