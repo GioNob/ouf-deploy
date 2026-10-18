@@ -1,3 +1,9 @@
+## Aggiornamento — profilo di custodia circoscritto qualificato
+
+**Tecniche8/8; funzionali4/6.** Provider e confronto preboot erano passati; lo STOP successivo riguarda la custodia dei mount, prima degli effetti. Metadati del runner e ACL confermano il file applicativo0400 intestato all'utente dichiarato e il Caddyfile0664 con il solo operatore1000 come scrittore. Il profilo v2 è vincolato a file/container/mount esatti, senza nuovi utenti fidati globali o modifiche a contenuti e permessi. **37 prove superate**. [Stato, prove e consegna](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
+
+Il successore host non è ancora eseguito: resta un solo passaggio sudo, stesso budget13Docker scritture/300secondi,6endpoint e1avvio UDP. I due file protetti non verificabili dal runner sono controllati da root prima degli effetti. Nessuna nuova authority, migrazione, pubblicazione o ripresa esplicita dei job; provider BLOCKED resta non autorizzato. Seguono disponibilità reale, binding postboot, rilascio nativo revisione fonte e tappe5/6. I vecchi launcher non vanno ripetuti.
+
 ## Aggiornamento — custodia dei mount ricostruita, nessuna modifica ai permessi
 
 **Tecniche8/8; funzionali4/6.** Metadati del runner: il file Onboarding0400 appartiene al suo utente applicativo10003; il gruppo1000 del Caddyfile0664 contiene solo l'operatore1000. È in qualificazione un profilo di custodia limitato agli esatti file/container/mount, con verifica nativa degli scrittori e assenza di ACL aggiuntive. Nessuna fiducia globale a nuovi utenti, chmod/chown o esclusione dei file dalle verifiche. Due metadati protetti restano da verificare con root prima di qualunque effetto. [Stato e limiti](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
