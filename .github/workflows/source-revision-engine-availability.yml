@@ -1,4 +1,5 @@
 name: Source revision bounded Engine availability read
+# Diagnostic v2: unit conditions and structured manager events; never raw journal text.
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
@@ -17,16 +18,19 @@ jobs:
                   'credentialFilesRead':0,'credentialValuesPrinted':False,'automaticRetry':False,
                   'completedTechnicalPhases':8,'functionalMilestonesProven':4,'installationSpecific':True}
           units={}
-          allowed={'ActiveState','SubState','Result','NRestarts','MainPID','LoadState'}
+          allowed={'ActiveState','SubState','Result','NRestarts','MainPID','LoadState',
+                   'ConditionResult','AssertResult','CanStart','RefuseManualStart','UnitFileState',
+                   'InactiveEnterTimestamp','ActiveEnterTimestamp','StateChangeTimestamp',
+                   'ExecMainCode','ExecMainStatus','FragmentPath','DropInPaths','TriggeredBy','Job'}
           for unit in ('docker.service','docker.socket','containerd.service'):
               reply=subprocess.run(['/usr/bin/systemctl','show','--no-pager',
                   '--property='+','.join(sorted(allowed)),unit],capture_output=True,timeout=10,
                   env={'PATH':'/usr/bin:/bin','LC_ALL':'C'})
               row={'returnCode':reply.returncode}
-              if reply.returncode==0 and len(reply.stdout)<=4096:
+              if reply.returncode==0 and len(reply.stdout)<=8192:
                   for line in reply.stdout.decode().splitlines():
                       key,separator,value=line.partition('=')
-                      assert separator and key in allowed and len(value)<=64
+                      assert separator and key in allowed and len(value)<=1024
                       row[key]=value
               units[unit]=row
           result['units']=units
@@ -36,5 +40,21 @@ jobs:
                   'uid':info.st_uid,'gid':info.st_gid,'mode':oct(stat.S_IMODE(info.st_mode))}
           except FileNotFoundError:result['socket']={'present':False}
           except PermissionError:result['socket']={'accessDenied':True}
+          reply=subprocess.run(['/usr/bin/journalctl','--no-pager','-n','80','-u','docker.service','-o','json'],
+              capture_output=True,timeout=10,env={'PATH':'/usr/bin:/bin','LC_ALL':'C'})
+          events=[]
+          if reply.returncode==0 and len(reply.stdout)<=262144:
+              fields={'MESSAGE_ID','UNIT','JOB_TYPE','JOB_RESULT','SERVICE_RESULT','RESULT','__REALTIME_TIMESTAMP'}
+              for line in reply.stdout.splitlines():
+                  event=json.loads(line)
+                  if event.get('_PID')!='1':continue
+                  row={}
+                  for key in fields:
+                      value=event.get(key)
+                      if isinstance(value,str) and len(value)<=128:
+                          row[key]=value
+                  if row:events.append(row)
+          result['managerEvents']={'returnCode':reply.returncode,'rows':events,'rawMessagePrinted':False,
+              'truncatedOrUnavailable':reply.returncode!=0 or len(reply.stdout)>262144}
           print(json.dumps(result,sort_keys=True))
           PY
