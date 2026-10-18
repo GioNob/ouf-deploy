@@ -2,7 +2,7 @@
 import contextlib,hashlib,importlib.util,io,json,os,subprocess,sys,tempfile,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-COMMIT='31092e92171c031facb9e65c5fc27db82e0f9844'
+COMMIT='6c5d54953a661b0a01ad54a9aea52d5f23b8cbc1'
 class Delivery(unittest.TestCase):
  def exercise(self,change):
   spec=importlib.util.spec_from_file_location('stage',ROOT/'scripts/stage-source-revision-postboot.py')
@@ -10,8 +10,9 @@ class Delivery(unittest.TestCase):
   with tempfile.TemporaryDirectory(dir=os.environ.get('OUF_TEST_ROOT',str(ROOT.parent))) as temp:
    directory=Path(temp)/'stage'
    with contextlib.redirect_stdout(io.StringIO()):m.stage(ROOT,directory,COMMIT)
-   self.assertEqual(hashlib.sha256((directory/'manifest.json').read_bytes()).hexdigest(),'a1a82e66441f10ac8a564ab25c18e5bfcdac20993b73f62308253bfa4556e336')
+   self.assertEqual(hashlib.sha256((directory/'manifest.json').read_bytes()).hexdigest(),'a904ca6614bed530b80b1bac40469fbf8d3227d2c50371f8d874d89a1ce4a68f')
    if change=='manifest':(directory/'manifest.json').write_bytes(b'PRIVATE_CANARY')
+   if change=='configuration':(directory/'configuration.py').write_bytes(b'PRIVATE_CANARY')
    if change=='member':(directory/'prepare.py').write_bytes(b'PRIVATE_CANARY')
    if change=='link':(directory/'run.py').unlink();(directory/'run.py').symlink_to(directory/'reader.py')
    text=(ROOT/'scripts/launch-source-revision-postboot-20261018.sh').read_text()
@@ -40,5 +41,6 @@ except SystemExit as error:print(json.dumps({'fixtureExit':error.code,'protected
  def test_exact_payload_reaches_only_first_protected_read_and_redacts_error(self):self.exercise(None)
  def test_changed_manifest_stops_before_protected_reads(self):self.exercise('manifest')
  def test_changed_module_stops_before_protected_reads(self):self.exercise('member')
+ def test_changed_configuration_successor_stops_before_protected_reads(self):self.exercise('configuration')
  def test_linked_dispatcher_stops_before_protected_reads(self):self.exercise('link')
 if __name__=='__main__':unittest.main()

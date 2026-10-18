@@ -2,10 +2,10 @@
 # Installation-specific PREPARATION ONLY. No deployment, HUMAN login or replay.
 set -euo pipefail
 umask 077
-ouf_postboot_code='/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revision-postboot-code-39160533382'
+ouf_postboot_code='/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revision-postboot-code-39163565894'
 [ -d "$ouf_postboot_code" ] && [ ! -L "$ouf_postboot_code" ] || { echo 'Pacchetto qualificato assente: fermarsi.' >&2; exit 1; }
 ouf_postboot_log="$(mktemp -d "$HOME/ouf-source-revision-postboot.XXXXXXXX")"
-printf '%s\n' 'Tecniche8/8; funzionali4/6. Preparazione privata postboot, massimo300 secondi.' 'Verifico il recupero host gia completato, gli input originali, le generazioni correnti e il provider vuoto/revocato.' 'Conservo immagini e documenti originali; produco nuovi input, case, codice e piano privati.' 'Nessun login HUMAN, authority, avvio/stop servizi, migrazione, pubblicazione o retry job.' 'Dopo STOP non rilanciare: conservare il log per riconciliazione.' "Log: $ouf_postboot_log/run.log"
+printf '%s\n' 'Tecniche8/8; funzionali4/6. Preparazione privata postboot, massimo300 secondi.' 'Verifico il recupero host gia completato, gli input originali, le generazioni correnti e il provider vuoto/revocato.' 'Verifico anche i90file del tentativo f6w3lo6z; conservo tutto e preparo un successore con verificatore JSON qualificato.' 'Nessun login HUMAN, authority, avvio/stop servizi, migrazione, pubblicazione o retry job.' 'Dopo STOP non rilanciare: conservare il log per riconciliazione.' "Log: $ouf_postboot_log/run.log"
 sudo /usr/bin/python3 -u -I -B -S - "$ouf_postboot_code" <<'OUF_POSTBOOT_PREPARATION' | tee "$ouf_postboot_log/run.log"
 import hashlib,json,os,re,stat,sys
 from pathlib import Path
@@ -22,9 +22,9 @@ def read(path,expected):
  finally:os.close(fd)
 try:
  if os.geteuid()!=0 or os.getegid()!=0 or not(sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode) or len(sys.argv)!=2:raise ValueError('ISOLATED_ROOT_PREPARATION_REQUIRED')
- code=Path(sys.argv[1]);sha='a1a82e66441f10ac8a564ab25c18e5bfcdac20993b73f62308253bfa4556e336'
+ code=Path(sys.argv[1]);sha='a904ca6614bed530b80b1bac40469fbf8d3227d2c50371f8d874d89a1ce4a68f'
  manifest=json.loads(read(code/'manifest.json',sha))
- if manifest['sourceCommit']!='31092e92171c031facb9e65c5fc27db82e0f9844':raise ValueError('EXACT_POSTBOOT_SOURCE_REQUIRED')
+ if manifest['sourceCommit']!='6c5d54953a661b0a01ad54a9aea52d5f23b8cbc1':raise ValueError('EXACT_POSTBOOT_SOURCE_REQUIRED')
  raw=read(code/'run.py',manifest['files']['run.py'])
  sys.argv=[str(code/'run.py'),str(code),sha]
  exec(compile(raw,'<verified-postboot-preparation>','exec'),{'__name__':'__main__'})
