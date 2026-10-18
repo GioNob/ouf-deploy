@@ -115,7 +115,7 @@ def apply(plan,api,claim):
 
 class Engine:
  def __init__(self,path,version):
-  require(os.path.isabs(path),'ABSOLUTE_SOCKET_REQUIRED');self.path=path;self.pin=self.socket_pin();v=self.request('GET','/version',None,False);require(v['Version']==version,'ENGINE_VERSION_CHANGED')
+  require(os.path.isabs(path),'ABSOLUTE_SOCKET_REQUIRED');self.path=path;self.pin=self.socket_pin();v=self.request('GET','/version',None,False);require(v['Version']==version,'ENGINE_VERSION_CHANGED');self.serverApiVersion=v['ApiVersion'];require(tuple(map(int,self.serverApiVersion.split('.'))) >= (1,54),'MAC_PRESERVING_NETWORK_API_REQUIRED')
  def socket_pin(self):
   info=os.lstat(self.path);require(stat.S_ISSOCK(info.st_mode)and info.st_uid==0 and not info.st_mode&0o002,'ROOT_ENGINE_SOCKET_REQUIRED');return(info.st_dev,info.st_ino,info.st_uid,info.st_gid,stat.S_IMODE(info.st_mode))
  def request(self,method,path,value,versioned=True):
@@ -126,7 +126,8 @@ class Engine:
    def connect(self):self.sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);self.sock.settimeout(15);self.sock.connect(outer.path)
   c=Connection('localhost',timeout=15)
   try:
-   c.request(method,('/v1.44'if versioned else'')+path,body=None if value is None else encoded(value),headers={'Content-Type':'application/json'});r=c.getresponse();raw=r.read(8388609)
+   api_version='1.54'if method=='POST'and path.endswith('/connect')else'1.44'
+   c.request(method,('/v'+api_version if versioned else'')+path,body=None if value is None else encoded(value),headers={'Content-Type':'application/json'});r=c.getresponse();raw=r.read(8388609)
    require(len(raw)<=8388608 and r.status in (200,201,204),'ENGINE_RESPONSE_UNPROVEN');return json.loads(raw)if raw else None
   finally:c.close()
  def get(self,path):return self.request('GET',path,None)
