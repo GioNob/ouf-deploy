@@ -1,3 +1,7 @@
+## Aggiornamento — controllo provider superato, differenza applicativa da identificare
+
+**Tecniche8/8; funzionali4/6.** Il successore2c597 ha superato il controllo nativo del provider ma si è fermato sul confronto con le configurazioni sigillate prima del boot. Nessuna modifica rete, avvio UDP o creazione di un incidente è stata raggiunta. Il launcher va conservato e non ripetuto. È in qualificazione una lettura unica delle tre applicazioni per distinguere valori modificati, ordine dei mount e rappresentazioni Docker, senza stampare configurazioni o adottare un nuovo riferimento. [Stato e limiti](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md).
+
 ## Aggiornamento — successore del recupero rete qualificato
 
 **Tecniche8/8; funzionali4/6.** Il tentativo precedente si è fermato al primo controllo del provider, prima degli effetti sulla rete; il vecchio launcher è ritirato. Il contratto nativo può mantenere BLOCKED dopo il ripristino vuoto al boot. Il successore lo riconosce soltanto con autorizzazioni revocate, journal originali validi e prova delle tabelle native vuote, senza cambiare lo stato o avviare il provider.

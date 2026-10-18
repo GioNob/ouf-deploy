@@ -1,3 +1,13 @@
+## Target STOP at sealed application comparison — no host writes
+
+Technical8/8; functional4/6. Operator execution of delivery2c597b8c passed the strengthened native provider gate, then stopped with PREBOOT_APPLICATION_CONFIGURATION_CHANGED at bootstrap run line107. The exact delivered flow reaches this comparison after acquiring the common lock and constructing the read-only Engine, but before configuration scanning, plan/context/incident creation or any Engine write. The first provider diagnosis is resolved; no host network mutation or UDP start was reached. The current launcher is retired pending evidence, not replayed.
+
+The failing role and changed fields were not printed, so neither configuration corruption nor a harmless Docker projection/order change is asserted. A single protected read of all3 applications is being qualified: immutable preboot c23 reference versus both current legacy1.44 and server-native inspect, field/type differences only, array order classification, final configuration stability check, original native empty-provider proof, incident absence check. No configuration values, dynamic keys, labels, credentials, new baseline, private incident or mutation are emitted/created. It preserves the old sealed inputs and never normalizes unknown differences to pass.
+
+The chat and runner cannot read the protected credential-bearing c23 inputs through their available administrative surfaces. One physical sudo read will be required once exact immutable diagnostic delivery is qualified. No new OUF login or repository/MCP permission is required. Application readiness, source-revision release and functional stages5/6 remain pending.
+
+## Previous qualified successor and historical record
+
 ## Current checkpoint — pre-effect STOP reconciled; successor qualified
 
 Technical **8/8**, functional **4/6**. The previous operator execution stopped at the first provider_guard with PROVIDER_MUST_REMAIN_QUIESCED, before lock acquisition, Engine construction, private incident creation or network/container effects. [Exact reported boundary](../evidence/host-network-pre-effect-stop-20261018.json). Delivery8bed is retired, not replayed.
