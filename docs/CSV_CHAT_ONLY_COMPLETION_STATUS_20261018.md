@@ -1,3 +1,17 @@
+## Current step — property authorization correction prepared for native human review
+
+The user refreshed the OUF MCP connection; GRANTS read now succeeds. A complete78-grant subject projection confirms active policy ouf-lab-authorization:42 with transport hash sha256:75834f0c64d929cc40401867aa65542b4ba15bb3e4bc32a6fd4ca719bab79fb1. No backend deployment or permission change was needed for this read. The catalogue remains configured-grant evidence, not an effective permission verdict.
+
+The SDK source identifies a concrete authorization barrier: admin urban.object.search has both allowedDataLabels and allowedDetailLevels constraints. UDP property resources supply dataAccessLabel but no detailLevel. GrantConstraints.matches requires both when both lists are populated; the legacy unconstrained grant admits OPEN identity but cannot admit RESTRICTED values. This explains a proven denial condition; stored property counts and successful post-correction display remain separate acceptance evidence.
+
+[Qualification39084112030](https://github.com/GioNob/ouf-deploy/actions/runs/39084112030) uses the actual SDK from installed UDP source0d40da05408a14db31d4d41af2372d6a71480291:10 SDK tests and3 focused tests pass, zero failures/errors/skips. Wrong subject/tenant, missing scope, unknown labels, source constraints and explicit DENY remain enforced. The earlier CI attempt failed only because the source-local SDK had not been built; the workflow now builds that pinned SDK before the focused test.
+
+A one-field correction was prepared through authorization.permissions.propose, operation REPLACE_ROLES: /roles/1/permissions/28/constraints/allowedDetailLevels becomes an empty list, for role admin and capability urban.object.search only. All data labels, both roles, both assignments and every other permission/constraint are identical. The tool preserves role-derived grant management instead of editing a generated grant.
+
+Proposal 94306235-fc45-4433-a05e-0ead3f83a9f8, revision0, PENDING, expires 2026-10-18T01:04:14.587513Z. [Native THS review](https://api.ouf-lab.it/trusted-human/authorization/?proposal=94306235-fc45-4433-a05e-0ead3f83a9f8). [Preparation evidence](../evidence/property-search-role-correction-prepared-20261018.json). Confirmation is a direct authenticated HUMAN action; the native service checks the frozen base/hash and publishes/activates the resulting policy transactionally. The agent has not confirmed it. Do not repeat proposal creation after ambiguity; reconcile this proposal's state first.
+
+Technical **8/8**, functional **3/6**. After native confirmation: read the exact proposal and active grant projection, then run one bounded exact-class search to verify actual properties. No source/profile publication, identity decision, ingestion or job retry is part of this correction.
+
 ## Current activation checkpoint — automatic loop already enabled, property read still incomplete
 
 Technical **8/8**, functional **3/6**. A fresh exact-class MCP search returned all 13 distinct ACTIVE objects at revision1, nextCursor=null and partial=false; all property maps remain empty. This confirms continued identity visibility but not stage4 property acceptance. No further search was repeated after this result.

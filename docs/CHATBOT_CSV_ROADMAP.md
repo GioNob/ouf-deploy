@@ -1,3 +1,7 @@
+## Blocco di visibilità individuato — revisione nativa dei permessi pronta
+
+Tecniche **8/8**, funzionali **3/6**. Dopo il rinnovo della connessione MCP, GRANTS funziona e conferma policy42. La proprietà RESTRICTED è bloccata da un vincolo operativo detailLevel presente nel solo grant di ruolo della ricerca; la risorsa dati non lo dichiara. **13 test superati** con lo SDK installato. Proposta nativa 94306235-fc45-4433-a05e-0ead3f83a9f8 PENDING: rimuove quel solo vincolo da admin/urban.object.search, conserva etichette, ruoli, assegnazioni e tutte le altre regole. [Evidenza e link THS](CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md). Dopo conferma umana occorre nuova ricerca delle proprietà per provare la tappa4. Nessuna nuova acquisizione o pubblicazione del profilo.
+
 ## Verifica diretta dopo V36 — 13 identità visibili, proprietà da chiarire
 
 Tecniche **8/8**, funzionali **3/6**. Ricerca MCP fresca:13 oggetti distinti ACTIVE/revisione1, ma proprietà vuote. Il runner conferma che il ciclo automatico UDP è già abilitato; anche l'API HUMAN delle riprese tecniche è abilitata. Sono due funzioni diverse. Riferimento e mount delle credenziali presenti, continuità della rotazione ancora da provare. [Evidenza](../evidence/chat-recovery-runtime-and-chat-verification-20261018.json).

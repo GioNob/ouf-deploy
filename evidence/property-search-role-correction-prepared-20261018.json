@@ -1,0 +1,73 @@
+{
+  "schema": "ouf.property-search-role-correction-prepared.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 3,
+  "basePolicyRef": "ouf-lab-authorization:42",
+  "basePolicyHash": "sha256:75834f0c64d929cc40401867aa65542b4ba15bb3e4bc32a6fd4ca719bab79fb1",
+  "subjectReadCount": 78,
+  "subjectReadComplete": true,
+  "change": [
+    {
+      "path": "/roles/1/permissions/28/constraints/allowedDetailLevels",
+      "before": [
+        "PUBLIC_OPERATIONAL",
+        "RESTRICTED_OPERATIONAL",
+        "SECURITY_SENSITIVE",
+        "TENANT_OPERATIONAL"
+      ],
+      "after": []
+    }
+  ],
+  "targetRole": "admin",
+  "targetCapability": "urban.object.search",
+  "preserved": {
+    "dataLabels": [
+      "ANONYMOUS",
+      "OPEN",
+      "PERSONAL",
+      "RESTRICTED",
+      "SENSITIVE"
+    ],
+    "roles": 2,
+    "assignments": 2,
+    "sourceScope": true,
+    "tenantScope": true,
+    "grantValidity": true,
+    "otherPermissions": true
+  },
+  "reason": "Data-property resources carry a data label but no operational detailLevel. The current role permission conjunctively requires both; the unconstrained legacy grant permits public object identity but not RESTRICTED property values.",
+  "runtimePolicyChanged": false,
+  "nativeHumanConfirmationRequired": true,
+  "connectionRefresh": {
+    "reportedByUser": true,
+    "grantsReadSucceeded": true,
+    "backendPolicyRefUnchanged": "ouf-lab-authorization:42"
+  },
+  "qualification": {
+    "runId": 39084112030,
+    "qualifiedSdkSource": "0d40da05408a14db31d4d41af2372d6a71480291",
+    "sdkTests": 10,
+    "focusedTests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "coverage": [
+      "current combined constraints allow OPEN identity through legacy grant and deny RESTRICTED property",
+      "scoped correction allows exactly configured data labels",
+      "wrong subject, tenant, missing scope and unknown label remain denied",
+      "source restrictions and explicit DENY remain enforced"
+    ]
+  },
+  "proposal": {
+    "proposalId": "94306235-fc45-4433-a05e-0ead3f83a9f8",
+    "revision": 0,
+    "state": "PENDING",
+    "expiresAt": "2026-10-18T01:04:14.587513Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=94306235-fc45-4433-a05e-0ead3f83a9f8",
+    "finalPolicyRef": null
+  },
+  "nativeProfilePublished": false,
+  "sourcePublicationChanged": false,
+  "identityDecisionsPerformed": false,
+  "jobsRetried": 0
+}
