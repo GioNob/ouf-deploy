@@ -1,4 +1,13 @@
-## Current checkpoint — policy47 published; MCP-only HUMAN update pending; functional4/6
+## Current checkpoint — policy47 published; MCP update STOP_RECONCILE; functional4/6
+
+### STOP mbbleugm: preparazione immagine completata, sessione HUMAN da riconciliare — 2026-10-19,12:08 Europe/Rome
+
+Checkpoint corrente: tecniche8/8, funzionali4/6. Il launcher MCP distinto è stato eseguito UNA VOLTA. Preparazione completata nel contesto `/etc/ouf/deploy-snapshots/mcp-ingestion-read-transport-execution-mbbleugm`, packageHash f4552fa8894c2050e67f025df9d6c14eb02b04a7c6d18d4a9019994d8bda1de9, sourceClosureHash6e2a0e4ec523c7de9c337ce71f18e3b1983205738a2aaccecf2c97319bb313ee. Sorgente MCP1f2c28d verificata; immagine containerd derivata sha256:a0a6f9562ba0b28ba3fef2b3a78bf46e90d9e14c99448d413bacf5d5cb75f182, stessi config/layer originali, imageRebuiltfalse. Prima del bootstrap contatore216/256 e runtimeAuthorityIssuedfalse.
+
+Bootstrap ha attraversato VERIFY_SOURCE_CLOSURE poi EXISTING_HUMAN_SESSION ed è terminato HumanSessionPaused/STOP_RECONCILE. Il flusso non ha raggiunto compilazione piano, review HUMAN, emissione authority o effetti sul MCP. Il motivo esatto e il contatore DOPO l'eventuale refresh restano da leggere: non inferire revoca, scadenza, throttle o errore transitorio dalla sola classe. Non rilanciare preparazione/bootstrap/launcher; claim preparazione e runtime conservati. Non avviare login o nuova finestra, non azzerare il cumulativo.
+
+Reader distinto `scripts/read-mcp-ingestion-transport-stop.py`: verifica esatta capsula mbbleugm, package/case/sorgenti e claim; inventaria senza aprire authority/chiavi; solo lettura del journal HUMAN già vincolato, senza aprire bearer o stampare valori/hash delle credenziali. Espone solo enum/codice presente nei sorgenti sigillati, contatore, tempi e artefatti. Zero OAuth/owner/engine/database/scritture journal. Nessuna chiamata a main storico/install/readback o refresh.5test di proiezione/negazione/redazione passati in locale. PET originali consultati: Authorization1.5§109.6; policy resilienzav3§§3–7 (ambiguità/permanenti non ritentabili). Il reader non concede autorità di ripresa. Solo dopo il suo risultato scegliere un recupero finito e una nuova review nativa se consentiti, senza replay degli effetti o delle richieste rotanti ambigue.
+
 
 ### Policy47 pubblicata; correzione trasporto MCP qualificata, applicazione HUMAN pendente — 2026-10-19,12:06 Europe/Rome
 
