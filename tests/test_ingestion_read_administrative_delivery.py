@@ -45,7 +45,7 @@ class PrivateDelivery(unittest.TestCase):
     def test_bootstrap_diagnostic_never_exposes_uppercase_exception_text(self):
         import subprocess
         path=ROOT/'scripts/execute-ingestion-read-authorization.py'
-        harness='import runpy,sys;sys.argv=[sys.argv[1],"PRIVATE_CANARY","bad"];runpy.run_path(sys.argv[1],run_name="__main__")'
+        harness='import os,sys;path=sys.argv[1];raw=open(path).read();sys.argv=[path,"unused","bad"];os.geteuid=lambda:(_ for _ in ()).throw(RuntimeError("PRIVATE_CANARY"));exec(compile(raw,path,"exec"),{"__name__":"__main__","__file__":path})'
         result=subprocess.run([sys.executable,'-I','-B','-S','-c',harness,str(path)],capture_output=True,timeout=15)
         self.assertEqual(result.returncode,2)
         self.assertNotIn(b'PRIVATE_CANARY',result.stdout+result.stderr)
