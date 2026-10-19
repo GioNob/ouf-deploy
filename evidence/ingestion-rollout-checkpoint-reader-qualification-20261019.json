@@ -30,5 +30,11 @@
   "budgetReset": false,
   "newLoginPerformed": false,
   "refreshPerformed": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "deliveryCommit": "572e51ba671b3ed9cad6fb331dda1ab42dc261cd",
+  "deliveryRunId": 39330473495,
+  "deliveryTestsPassed": 2,
+  "launcherGitBlob": "e85f310def01786f5a07819dbfcd8afc277b3954",
+  "launcherSha256": "5cdcb7ac13e98b96a6e04f2db5c85bc3ddf38e756c14fa29857f483275337fcf"
 }
+
