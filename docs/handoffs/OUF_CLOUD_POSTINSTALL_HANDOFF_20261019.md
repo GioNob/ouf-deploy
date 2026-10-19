@@ -1,5 +1,15 @@
 # OUF cloud handoff after independent source-revision installation readback
 
+### Azione amministrativa completata; grant finito in THS — 2026-10-19,11:33 Europe/Rome
+
+Tecniche **8/8**, funzionali **4/6**. Ricevuta target `ADMINISTRATIVE_READBACK_COMPLETE` nella capsula `/etc/ouf/deploy-snapshots/ingestion-read-authorization-execution-1lxoo2ws`: policy `ouf-lab-authorization:46`, SHA256 `41b6aa5970c59b86b8d8f571d1e47989d7eaecfd05f9ce29d2b0c1e60f4df84f`, owner policy/roles/scopes riconciliati; grant e assegnazioni conservati, zero nuovi grant, ruoli invariati, zero effetti infrastrutturali e nessuna attivazione della fonte. OAuth cumulativo216/256, nessun login/budget nuovo. Questa azione è completata: non ripetere preparazione, launcher o readback amministrativo per riconoscerla; installazione/readback uow4n8lp restano acquisiti e non vanno ripetuti.
+
+Letture MCP indipendenti con ouf-admin confermano policy46/hash esatto,2ruoli/2assegnazioni e80grant configurati del soggetto (pagina completa, non conteggio totale104 della policy). Nessun grant ingestion.operations.read già configurato per quel soggetto. Scope del token ChatGPT nuovo ancora NON provato; una proposta riuscita non lo dimostra.
+
+Creata una sola proposta nativa `c94ca071-b465-47e6-a01d-06cc7984785a`, revisione0, PENDING: grant diretto `grant-ingestion-operations-read-teatri-csv-6609b245-20261019-24h`, capability ingestion.operations.read, tenant ouf-lab, soggetto b93d8cf6-cd14-4ee6-91d7-84cd76c4f500, resourceType operational, attributi module=INGESTION/sourceRef=teatri-csv-6609b245, solo TENANT_OPERATIONAL. Validità2026-10-19T09:34:16Z→2026-10-20T09:34:16Z, esattamente24ore; non eredita la scadenza2036 delle assegnazioni. [Conferma diretta THS](https://api.ouf-lab.it/trusted-human/authorization/?proposal=c94ca071-b465-47e6-a01d-06cc7984785a); proposta da decidere entro2026-10-19T09:49:23.832698Z (11:49:23italiane). MCP prepara, non approva o pubblica. Nessun nuovo grant ancora pubblicato al momento di questa ricevuta.
+
+Dopo decisione HUMAN: riconciliare questa esatta proposta con authorization.proposal.read, senza crearne un'altra; verificare grant/policy finali e il token/scope ChatGPT tramite i tool owner. Poi leggere Ingestion status/history e lo stato della fonte prima dell'attivazione HUMAN separata. Non ripetere review della revisione c9fec43c già APPROVED/lock3; l'attivazione può avviare acquisizione secondo lo scheduler conservato. Milestone5 richiede la seconda acquisizione controllata dello stesso CSV senza duplicare13Teatri; milestone6 richiede provenance/ACK delle due acquisizioni,20proprietà e8Cinema preservati. Nessun avanzamento funzionale è dedotto dalla sola amministrazione dei permessi.
+
 ### Publisher amministrativo corretto; prosecuzione governata distinta — 2026-10-19
 
 La ricevuta del reader ojz9hai3 prova bootstrap/piano/primitivi owner/hash eseguibili+stdlib/finestre pubbliche validi,181moduli e nessun piano/review/authority/issuance/journal amministrativo presente. Nessun token aperto o contatore corrente letto. Nel codice consegnato il publisher rollout `tools.linked_property_rollout.preparation.publish_json` rifiuta `authorization-plan.json` e `administrative-result.json` con ValueError(EXACT_ROLLOUT_DOCUMENT_REQUIRED), prima delle scritture. I test precedenti lo simulavano e non verificavano questo confine.12 nuove prove con i helper reali riproducono il rifiuto e verificano piano/review/risultato reali, custodia, O_EXCL, readback e flusso fino al risultato con risposte HUMAN/owner/firme simulate.
@@ -66,7 +76,7 @@ Perimetro: registrazione `ingestion.operations.read`, aggiunta del descrittore n
 La preparazione root e l'esecuzione sul target restano **NON ESEGUITE**: dal CLOUD manca un terminale operatore autenticato per i gate nativi. CI e staging non dimostrano pubblicazione della capability o token aggiornati. Tappe5–6 ancora aperte.
 
 
-## Current checkpoint — source APPROVED; Ingestion registration profile qualified, 2026-10-19
+## Current checkpoint — source APPROVED; Ingestion administration complete; finite grant pending THS, 2026-10-19
 
 Technical8/8; functional4/6. User confirmed source approval; direct ouf-admin revision.read and a later owner read independently prove c9fec43c-19b3-4ffb-9111-781bc347c5b0 APPROVED, lock3, challenge9bca610c… CONFIRMED, hashb13c5fe2… unchanged. The latter read reports challengeExpired=true while approval remains APPROVED/CONFIRMED; do not interpret historical challenge expiry as loss of the recorded decision or recreate the source review. Activation/readiness remain NOT_STARTED/0, compatibility unobserved; no publication or second acquisition.
 
