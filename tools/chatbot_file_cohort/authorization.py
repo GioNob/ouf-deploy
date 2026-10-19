@@ -32,6 +32,8 @@ from tools.chatbot_file_cohort.plan import digest, encoded, require
 
 PROFILE = 'ouf.chatbot-file-authorization.v1'
 REVISION_PROFILE = 'ouf.source-property-revision-authorization.v1'
+INGESTION_READ_PROFILE = 'ouf.ingestion-operational-read-authorization.v1'
+INGESTION_READ = {'ingestion.operations.read': ('ingestion', 'READ', 'operational')}
 RETRY = {'maximumAttempts':128,'maximumElapsedSeconds':86400,'backoffSeconds':[5,15,60,300,900],'maximumJitterPercent':20}
 OBSERVATION_POLICY={'profile':'ouf.authorization-finite-observation.v1','maximumAttempts':128,
     'maximumElapsedSeconds':3600,'backoffSeconds':[5,15,60,300,900],'maximumJitterPercent':20,
@@ -58,7 +60,10 @@ REVISION = {
 
 
 def profile_definition(profile):
-    """Two fixed owner contracts, never caller-selected capability semantics."""
+    """Fixed owner contracts, never caller-selected capability semantics."""
+    if profile == INGESTION_READ_PROFILE:
+        return {'new':copy.deepcopy(INGESTION_READ),'catalogue':copy.deepcopy(INGESTION_READ),
+                'chat':list(INGESTION_READ),'browser':[]}
     if profile == PROFILE:
         return {'new':copy.deepcopy(NEW),'catalogue':copy.deepcopy(NEW),
                 'chat':list(CHAT),'browser':list(BROWSER)}
@@ -376,13 +381,19 @@ def owner_permission_constraints(resource, attributes, detail_levels=None):
         'requiredAmr':[],'maxAuthenticationAgeSeconds':None}
 
 
-def compile_plan(observed, primitives, selection, *, role_id='admin', include_ingestion_status=True, now=None, session_binding=None):
+def compile_plan(observed, primitives, selection, *, role_id='admin', include_ingestion_status=True, now=None, session_binding=None, source_id=None):
     require(type(primitives) is OwnerPrimitives, 'QUALIFIED_EXISTING_OWNER_PRIMITIVES_REQUIRED')
     primitives.validate_descriptors()
     definition = profile_definition(primitives.profile)
     new = definition['new']
     require(primitives.profile != REVISION_PROFILE or include_ingestion_status is False,
             'REVISION_PROFILE_EXCLUDES_UNRELATED_STATUS_DELTA')
+    if primitives.profile == INGESTION_READ_PROFILE:
+        require(include_ingestion_status is False and type(source_id) is str
+                and re.fullmatch('[A-Za-z0-9_.:-]{1,160}', source_id),
+                'EXPLICIT_INGESTION_SOURCE_SCOPE_REQUIRED')
+    else:
+        require(source_id is None, 'UNREVIEWED_SOURCE_SCOPE_PARAMETER')
     active, roles = observed['active'], observed['roles']
     require(set(roles) == {'issuer','roles','assignments'} and roles['issuer'] == selection['issuer'],
             'COMPLETE_CURRENT_ROLE_CATALOGUE_REQUIRED')
@@ -400,8 +411,10 @@ def compile_plan(observed, primitives, selection, *, role_id='admin', include_in
     caps = {c['capabilityId']:c for c in active['policy']['capabilities']}
     additions = []
     for cap, (_, _, resource) in new.items():
+        attributes = ({'module':'INGESTION','sourceRef':source_id} if primitives.profile == INGESTION_READ_PROFILE
+                      else {'module':'SEMANTIC'} if resource == 'semantic.proposalcommand' else {})
         additions.append({'capabilityId':cap,'constraints':owner_permission_constraints(resource,
-            {'module':'SEMANTIC'} if resource == 'semantic.proposalcommand' else {})})
+            attributes, ['TENANT_OPERATIONAL'] if primitives.profile == INGESTION_READ_PROFILE else [])})
     if include_ingestion_status:
         cap = 'ingestion.operations.read'; registered = observed['registrations'].get(cap)
         require(registered is not None and registered['descriptor'] == caps.get(cap)
@@ -454,6 +467,8 @@ def compile_plan(observed, primitives, selection, *, role_id='admin', include_in
             'scopeCreations':scope_creations,'scopeBindings':scope_bindings,'requiredScopes':required,
             'roleProposal':{'operation':'REPLACE_ROLES','reason':('Enable generic same-source property revision preparation/read; activation remains a separate native HUMAN review.'
                                       if primitives.profile == REVISION_PROFILE else
+                                      'Enable only source-scoped ingestion operational READ; no run, replay, activation or protected logs.'
+                                      if primitives.profile == INGESTION_READ_PROFILE else
                                       'Complete the reviewed CSV chatbot workflow and its bounded status reads.'),
                             'roleCatalogue':target_roles} if new_permissions else None,
             'preserveExistingGrants':True,'preserveRoleAssignments':True,'revokeSessions':False,
