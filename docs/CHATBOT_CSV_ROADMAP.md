@@ -1,3 +1,11 @@
+> **CLOUD RESUMPTION — current-state diagnostic qualified, target not yet read (19 October 2026).**
+>
+> Technical8/8 and functional4/6 are unchanged. Owner7 and projection7 remain COMPLETE/consumed; no historical launcher or installation readback was replayed. Original attached baseline integrity:323/323 PASS. Current ouf-admin connector `ouf.system.status` returned MCP HEALTHY, actionRequired=false, partial=false; typed `ouf.ingestion.status` for teatri-csv-6609b245 returned401. This does not establish the specific backend401 cause, HUMAN budget on the VPS, native profile acceptance or ingestion health. No further retry was made for the permanent/unknown401.
+>
+> New standalone reader source `685c7a4e8def4a2955392b5f236437cc936c2e90`, native CI [39330230780](https://github.com/GioNob/ouf-deploy/actions/runs/39330230780), job118326247818:15PASS including real private-file custody and Unix HTTP GET allowlist/budget/socket drift. Reader SHA256 `405bd89926d801ecaa4042e4463b805674788d780796fb71b4c89aa06005c422`, immutable blob `e998b677171e02f45d557ac8c9c1277bf11f7105`. It reads the current successful v7 HUMAN journal twice privately, reconciles consumed publication claims/local projection, and makes exactly6 bounded Docker inspect GETs. No retained code is executed. It performs zero OAuth, refresh, login, owner/Gateway API or DB requests and issues no runtime authority. Expired windows are reported, never renewed. A local READY snapshot is not provider verification.
+>
+> This reader is a new pre-rollout diagnosis, not a repeated installation/readback or completed publication action. The current target counter remains **unobserved**;278/288 and00:57:44 Europe/Rome remain retained evidence only. No target run has occurred in CLOUD. The next target action is solely this reader; preserve its log and all existing contexts/claims after STOP. DB admission, native rollout executor, native client profile and functional5–6 remain open. See `releases/INGESTION_ROLLOUT_CHECKPOINT_READ_20261019.md` for exact scope and limits.
+
 > **CURRENT TARGET — OWNER7 ACTIVE PROJECTION PUBLISHED; DO NOT RELAUNCH.**
 >
 > Latest operator-supplied target result: `OWNER7_ACTIVE_PROJECTION_PUBLISHED`, complete, context `/etc/ouf/deploy-snapshots/ingestion-profile-publication-execution-0gd3mwft`. Owner revision7/generation7 and active installation projection now aligned: SHA256 `dd31d2b7de5ae66582275e5ac841584ff784065aa6e362ed0279d45fb6cdbc66`. Exactly1 active projection write; zero owner POST/export, Gateway writes, containers, DB/migrations, grants, key generation or jobs. Owner action was not replayed. Both completed launchers are consumed.
@@ -2629,3 +2637,4 @@ Zero nuovi dump, backup letti, DB/IAM/MCP/grant o scritture di servizio/Gateway.
 Launcher `scripts/launch-chatbot-postgateway-container-20261016.sh`, SHA256
 `ad9ac7854ca025f0b097a6164d22e3fe3539951f2af7b6001a438d39c4326b24`.
 Il vecchio delivery non va rilanciato: contiene effetti ormai consumati.
+
