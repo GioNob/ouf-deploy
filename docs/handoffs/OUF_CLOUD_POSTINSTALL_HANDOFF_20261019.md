@@ -1,5 +1,7 @@
 # OUF cloud handoff after independent source-revision installation readback
 
+Qualifica della continuazione:97 test owner/firme/sessione PASS in CI39227850265;4 test della consegna immutabile PASS in CI39228097092. Launcher58961af73532eae5a1b504c934c0931a76a21a99, SHA2563d4e7c6b31cbd83b3835e52618e2f97ad80c7b36b9323ccd42178bcfd014ab3a. Esecuzione target della continuazione ancora pendente al gate nativo APPROVO. Vedi [rilascio](../../releases/INGESTION_EXISTING_SESSION_ADMINISTRATION_20261019.md).
+
 ### Preflight target acquisito; continuazione amministrativa distinta — 2026-10-19
 
 Tecniche **8/8**, funzionali **4/6**. L'operatore ha restituito il preflight riuscito in `/etc/ouf/deploy-snapshots/ingestion-read-preflight-0jvu7qzh`: piano SHA256 `9216f0bae1056f1a6f8c8bf8627915d9a70f126e476fe6700e65f0d58112b53b`, policy `ouf-lab-authorization:45`,104 grant conservati e2 ruoli. Una registrazione, un descrittore, una creazione scope e un binding ChatGPT da eseguire; nessuna authority emessa. Refresh nativo210→212/256, medesima finestra fino a2026-10-19T10:32:43Z. Il vecchio STOP non è riprodotto; la sua causa esatta resta indeterminata. Non ripetere preflight, login, launcher consumati o installazione/readback uow4n8lp.
