@@ -1,7 +1,7 @@
 """One private governed continuation capsule from preserved kfy inputs and READY HUMAN.
 No IAM login, new HUMAN window or runtime effects during preparation.
 """
-import copy,fcntl,hashlib,importlib,json,os,re,signal,stat,sys,tempfile,types
+import copy,fcntl,hashlib,importlib,json,os,re,signal,stat,sys,tempfile,types,traceback
 from pathlib import Path
 
 def require(ok,code):
@@ -88,7 +88,7 @@ def run(directory,manifest_sha):
   for path,expected in host['configurationFileBindings'].items():require(sha(bootstrap.configuration_bytes(path,host['profile'],owner))==expected,'HOST_CONFIGURATION_CHANGED')
   package=json.loads(read(code/'package.json',BASE_PROFILE['packageSha256']));case=json.loads(read(code/'case.json',BASE_PROFILE['caseSha256']))
   boot=case['retainedBootstrap'];ns={'__name__':'retained_read_helpers'};exec(compile(read(boot['path'],boot['sha256']),'<verified-retained-helpers>','exec'),ns)
-  old=ns['read'](ns['CONTEXT']/'review.json',8388608,ns['REVIEW']);b=old['scopes']['finiteActionProcess']['bundle'];bundle=ns['read'](b['path'],8388608,b['sha256']);_,sources=ns['decode_sources'](bundle)
+  old=ns['read'](ns['CONTEXT']/'review.json',8388608,ns['REVIEW']);b=old['scopes']['finiteActionProcess']['bundle'];bundle=ns['read'](b['path'],8388608,b['sha256']);require(digest(bundle['prepared'])==old['privateInputHashes']['preparedInputs'],'RETAINED_ORIGINAL_PREPARATION_CHANGED');_,sources=ns['decode_sources'](bundle)
   declaration={'__name__':'verified_executor_declaration'};exec(compile(executor_raw,'<verified-executor>','exec'),declaration);overlays=declaration['OVERLAYS'];files={}
   for module,(name,_)in overlays.items():files[name]=read(code/name,package['sourceHashes'][module],262144);sources[module]=files[name]
   changes={}
@@ -141,12 +141,12 @@ def run(directory,manifest_sha):
  finally:os.close(fd)
  # A new interpreter discards all preparation imports and reconstructs only the new sealed closure.
  executor=context/'executor-code/execute.py'
- verifier="import hashlib,os,sys; p=sys.argv.pop(); expected=sys.argv.pop(); raw=open(p,'rb').read(); assert hashlib.sha256(raw).hexdigest()==expected; sys.argv=[p]+sys.argv[1:]; exec(compile(raw,'<verified-governed-executor>','exec'),{'__name__':'__main__','__file__':p})"
+ verifier="import hashlib,os,sys; p=sys.argv.pop(); expected=sys.argv.pop(); fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK); raw=os.read(fd,262145); os.close(fd); assert hashlib.sha256(raw).hexdigest()==expected; sys.argv=[p]+sys.argv[1:]; exec(compile(raw,'<verified-governed-executor>','exec'),{'__name__':'__main__','__file__':p})"
  emit('NATIVE_HANDOFF',contextPath=str(context),preparationResultSha256=completion['sha256'],freshProcessRequired=True)
  os.execv('/usr/bin/python3',['/usr/bin/python3','-u','-I','-B','-S','-c',verifier,str(context/'executor-code'),manifest['sourceCommit'],binding['packageSha256'],completion['sha256'],new_package['executorSha256'],str(executor)])
 if __name__=='__main__':
  try:
   require(len(sys.argv)==3,'EXACT_GOVERNED_PREPARATION_ARGUMENTS_REQUIRED');run(*sys.argv[1:])
  except (Exception,KeyboardInterrupt)as error:
-  emit('STOP',complete=False,exceptionClass=type(error).__name__,rawErrorPrinted=False,reconciliationRequired=True)
+  emit('STOP',complete=False,exceptionClass=type(error).__name__,rawErrorPrinted=False,reconciliationRequired=True,frames=[{'file':Path(f.filename).name,'function':f.name,'line':f.lineno}for f in traceback.extract_tb(error.__traceback__)[-5:]])
   raise SystemExit(2)

@@ -2,7 +2,7 @@ name: Governed source revision continuation qualification
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/*source-revision-governed*.py', 'tools/source_revision_update/governed_*.py', 'tests/test_source_revision_update_governed_continuation.py', '.github/workflows/source-revision-governed.yml']
+    paths: ['scripts/*source-revision-governed*.py', 'tools/source_revision_update/governed_*.py', 'tests/test_source_revision_update_governed_continuation.py', 'tests/test_source_revision_governed_capsule.py', '.github/workflows/source-revision-governed.yml']
 permissions: {contents: read}
 jobs:
   native-owner:
@@ -52,7 +52,7 @@ jobs:
           sudo cp "$fixture/repository/tools/source_revision_update/governed_authorization.py" "$fixture/repository/tools/chatbot_file_cohort/authorization.py"
           sudo cp "$fixture/repository/tools/source_revision_update/governed_entry.py" "$fixture/repository/tools/source_revision_update/entry.py"
           sudo cp "$fixture/repository/tools/source_revision_update/governed_login.py" "$fixture/repository/tools/source_revision_update/login.py"
-          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" OUF_NATIVE_REVISION_PG=1 \
+          sudo env OUF_GOVERNED_CONTINUATION=1 OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" OUF_NATIVE_REVISION_PG=1 \
             OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" \
             OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" \
             OUF_REVISION_OWNER_ROOT="$fixture/repository/.pairwise/onboarding" \
@@ -61,6 +61,7 @@ jobs:
             python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_source_revision_update_*.py' -v
           sudo env OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_source_revision_authorization.py' -v
           sudo env OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_source_revision_postboot.py' -v
+          sudo env OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_source_revision_governed_capsule.py' -v
 
   stage-code-only:
     needs: native-owner

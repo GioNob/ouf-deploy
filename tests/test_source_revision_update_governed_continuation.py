@@ -9,6 +9,7 @@ from tools.chatbot_file_cohort import authorization as auth
 from tools.csv_materialization_recovery import human_session as native
 from tools.semantic_lease_recovery.recovery_journal import Journal
 ROOT=Path(__file__).resolve().parents[1]
+@unittest.skipUnless(os.environ.get('OUF_GOVERNED_CONTINUATION')=='1','explicit governed sealed-source fixture required')
 class Governed(unittest.TestCase):
  def environment(self):
   stack=contextlib.ExitStack()
