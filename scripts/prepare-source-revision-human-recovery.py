@@ -117,6 +117,8 @@ def run(directory,manifest_sha):
    name,_=overlays[module];changes[module]={'previousSha256':package['sourceHashes'][module],'sha256':sha(raw),'sourcePath':MODULES[module][1]};files[name]=raw;sources[module]=raw
   loader=read(code/'runtime.py',package['loaderSha256'],65536);memory={'__name__':'verified_capsule_loader'};exec(compile(loader,'<verified-memory-loader>','exec'),memory)
   stopped=Path(before['executionReconciliation']['contextPath']);prior=case['postbootResumedHuman']
+  human_parent=Path(prior['binding']['sessionDirectory']).parent;parent_info=human_parent.lstat()
+  require(stat.S_ISDIR(parent_info.st_mode)and parent_info.st_uid==parent_info.st_gid==0 and stat.S_IMODE(parent_info.st_mode)==0o700,'NATIVE_HUMAN_SUCCESSOR_PARENT_CUSTODY_REQUIRED')
   row=json.loads(reader.read(Path(prior['binding']['sessionDirectory'])/'recovery.json',maximum=65536))
   blocked={'schema':'ouf.source-revision-blocked-human-predecessor.v1','binding':row['binding'],
    'loginReviewBinding':prior['loginReviewBinding'],'loginReceiptBinding':prior['loginReceiptBinding'],
@@ -140,7 +142,10 @@ def run(directory,manifest_sha):
   decl=memory['declaration'](manifest['sourceCommit'],sources,loader,pins,extra);closure={**old['sourceClosure'],'declaration':decl}
   entry,verified=memory['load_entry'](manifest['sourceCommit'],sources,loader,digest(decl),pins,extra);require(verified==decl,'NEW_SOURCE_CLOSURE_UNPROVEN')
   require(declaration['select_prepared'](new_case,bundle['prepared'],ns['read'])==original,'RECONCILED_ORIGINAL_CONSUMER_CHANGED')
-  importlib.import_module('tools.source_revision_update.login').blocked_human(new_case,original['authorization']['plan']['selection'],ns['read'])
+  login_module=importlib.import_module('tools.source_revision_update.login');blocked_human=login_module.blocked_human(new_case,original['authorization']['plan']['selection'],ns['read'])
+  login_review=login_module.qualify(blocked_human,blocked_human._read(),new_case,closure)
+  require(not os.path.lexists(blocked_human.directory.parent/('human-source-revision-successor-'+digest(login_review))),'NATIVE_LOGIN_SUCCESSOR_DESTINATION_ALREADY_EXISTS')
+  native_login_review=write_new(context,'native-login-review-candidate.json',encoded(login_review))
   plan,primitives,private=importlib.import_module('tools.source_revision_update.preparation').compile_private(original,closure,new_case,context,ns['read'],ns)
   continued=importlib.import_module('tools.source_revision_update.native').bind_custody_continuation(plan,custody)
   continuation_plan=write_new(context,'continuation-plan.json',encoded(continued))
@@ -156,7 +161,7 @@ def run(directory,manifest_sha):
    'currentOriginalPreparationBinding':case['postbootOriginalPreparationBinding'],'preparedInputsBinding':case['preparedPlanBinding'],
    'sourceClosureSha256':digest(closure),'nativePlanBinding':{'path':str(context/'prepared-plan.json'),'sha256':digest(plan)},
    'runtimeAuthorityIssued':False,'readyForExecution':False,'privateArtifactsOnly':True,'databaseReadOnlySessions':4,'preparationElapsedSeconds':round(time.monotonic()-started,3),
-   'previousExecutionReconciliation':{'contextPath':str(stopped),'files':9,'contextClosureSha256':STOP_CLOSURE,'authorityAndLoginArtifactsAbsent':True},'continuationPlanBinding':continuation_plan,'retainedHumanAttempts':189,'newHumanSessionOpened':False,
+   'previousExecutionReconciliation':{'contextPath':str(stopped),'files':9,'contextClosureSha256':STOP_CLOSURE,'authorityAndLoginArtifactsAbsent':True},'continuationPlanBinding':continuation_plan,'retainedHumanAttempts':189,'nativeLoginReviewBinding':native_login_review,'newHumanSessionOpened':False,
    'oauthRequests':0,'runtimeMutations':0,'profilePublications':0,'jobsRetried':0,'candidateArchivesReused':True,'imagesImported':0,'backupPerformed':False}
   require(time.monotonic()-started<300,'PRIVATE_PREPARATION_DEADLINE_EXCEEDED')
   completion=write_new(context,'postboot-preparation-result.json',encoded(result))

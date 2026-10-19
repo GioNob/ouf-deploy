@@ -222,6 +222,7 @@ def blocked_human(case,selection,read):
   'EXACT_BLOCKED_HUMAN_PREDECESSOR_REQUIRED')
  binding=reference['binding'];directory=Path(binding['sessionDirectory'])
  human=HumanSession(selection,directory,Path(binding['tokenPath']),binding['expiresAt'])
+ with protected_directory(directory.parent):pass  # Native destination custody before any successor claim/consent.
  row=human._read();human._check_identity_and_budget(row)
  review_ref=reference['loginReviewBinding'];receipt_ref=reference['loginReceiptBinding']
  review=read(review_ref['path'],65536,review_ref['sha256']);receipt=read(receipt_ref['path'],65536,receipt_ref['sha256'])

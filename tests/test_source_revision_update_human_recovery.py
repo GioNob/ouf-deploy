@@ -19,7 +19,7 @@ class Recovery(unittest.TestCase):
   for name in ('HumanSession','PROFILE','CLIENT','SCOPES','LEGACY_SCOPES'):stack.enter_context(patch.object(l,name,getattr(native,name)))
   return stack
  def fixture(self,root):
-  case,selection,directory,row=fixture.Diagnostic().fixture(root);ref=case['postbootResumedHuman'];case['postbootBlockedHuman']={'schema':'ouf.source-revision-blocked-human-predecessor.v1',**{k:ref[k]for k in ('binding','loginReviewBinding','loginReceiptBinding')},'attempts':189,'maximumCumulativeOAuthAttempts':256,'blockedRefreshReplayAllowed':False,'newLoginRequiresNativeConsent':True};context=root/'new-execution';context.mkdir(mode=0o700)
+  case,selection,directory,row=fixture.Diagnostic().fixture(root);directory.parent.chmod(0o700);ref=case['postbootResumedHuman'];case['postbootBlockedHuman']={'schema':'ouf.source-revision-blocked-human-predecessor.v1',**{k:ref[k]for k in ('binding','loginReviewBinding','loginReceiptBinding')},'attempts':189,'maximumCumulativeOAuthAttempts':256,'blockedRefreshReplayAllowed':False,'newLoginRequiresNativeConsent':True};context=root/'new-execution';context.mkdir(mode=0o700)
   for name in ('recovery.lock','invocation.lock'):p=directory/name;p.write_bytes(b'');p.chmod(0o600)
   return case,selection,directory,row,context
  def test_native_login_after_explicit_consent_preserves189_then_actual_device_grant_reaches_ready(self):
@@ -57,7 +57,7 @@ class Recovery(unittest.TestCase):
    with patch.object(native.HumanSession,'login')as login,self.assertRaises(Exception):l.blocked_human(case,selection,self.read)
    login.assert_not_called()
  def test_exact_counter_boot_reason_operation_and_old_receipt_drift_block(self):
-  for change in ('counter','boot','reason','operation','claim','receipt','budget'):
+  for change in ('counter','boot','reason','operation','claim','receipt','budget','parent'):
    with self.subTest(change=change),self.temp()as temp,self.environment():
     case,selection,directory,row,context=self.fixture(Path(temp))
     if change=='counter':row['attempts']=190
@@ -65,6 +65,7 @@ class Recovery(unittest.TestCase):
     if change=='reason':row['reason']='HUMAN_OAUTH_OUTCOME_UNPROVEN'
     if change=='operation':row['operation']='USERINFO'
     if change=='budget':row['budgetReset']=True
+    if change=='parent':directory.parent.chmod(0o755)
     if change=='claim':(directory/'successor-window.claim.json').write_bytes(b'{}')
     if change=='receipt':Path(case['postbootBlockedHuman']['loginReceiptBinding']['path']).write_bytes(b'{}')
     (directory/'recovery.json').write_bytes(l.encoded(row))
