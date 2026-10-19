@@ -82,13 +82,18 @@ def load_capsule():
   codes.update(public_codes(sources[name]))
  return entry,sources,case,original,package,receipt,codes
 
-def existing_human(entry,case,selection):
+def existing_human(entry,case,selection,closure):
  reference=read(CONTEXT/'login-window-receipt.json',65536);review=read(CONTEXT/'login-review.json',65536)
  require(reference['reviewHash']==digest(review)and reference['budgetReset']is False
   and reference['maximumCumulativeOAuthAttempts']==256 and review['maximumCumulativeOAuthAttempts']==256
   and review['budgetReset']is False and review['runtimeAuthorityIssued']is False
   and reference['priorOAuthAttempts']==review['priorOAuthAttempts'],'EXACT_EXISTING_LOGIN_RECEIPT_REQUIRED')
- previous=case['humanBinding'];entry.authorization.validate_session_binding(previous,selection,profile=entry.authorization.INGESTION_READ_PROFILE)
+ previous=case['humanBinding']
+ require(review.get('selectionHash')==digest(selection)and review.get('predecessorDirectory')==previous['sessionDirectory']
+  and review.get('predecessorBindingHash')==digest(previous)
+  and review.get('operationBinding')=={'preparedReviewHash':case['preparedPlanBinding']['sha256'],'sourceClosureHash':digest(closure)},
+  'EXACT_EXISTING_LOGIN_OPERATION_BINDING_REQUIRED')
+ entry.authorization.validate_session_binding(previous,selection,profile=entry.authorization.INGESTION_READ_PROFILE)
  previous_dir=Path(previous['sessionDirectory']);following=Path(reference['directory'])
  require(following.parent==previous_dir.parent and following.name=='human-ingestion-read-successor-'+digest(review),
   'EXACT_EXISTING_HUMAN_SUCCESSOR_REQUIRED')
@@ -172,7 +177,7 @@ def bounded_preflight(entry,sources,case,selection,human,owner,report,save):
 
 
 def safe_failure(error,codes):
- reason=str(error)
+ reason=str(error);codes=set(codes)|{'AUTHORIZATION_HTTP_'+str(n)for n in(400,401,403,404,408,409,412,429,500,502,503,504)}
  return {'exceptionClass':type(error).__name__ if type(error).__name__ in {
   'ValueError','PreflightDenied','AuthorizationPaused','HumanSessionPaused','FileNotFoundError','PermissionError','RuntimeDenied','KeyError','TypeError'}else'OTHER_ERROR',
   'reasonCode':reason if reason in codes else'PRIVATE_DETAILS_REDACTED','rawErrorPrinted':False}
@@ -196,7 +201,7 @@ def main():
   entry,sources,case,original,package,receipt,native_codes=load_capsule();codes.update(native_codes)
   report['phase']='QUALIFIED_OWNER_PRIMITIVES';owner=entry.primitives(sources)
   selection=original['authorization']['plan']['selection']
-  report['phase']='EXISTING_LOGIN_RECEIPT_AND_HUMAN_WINDOW';human,row=existing_human(entry,case,selection)
+  report['phase']='EXISTING_LOGIN_RECEIPT_AND_HUMAN_WINDOW';human,row=existing_human(entry,case,selection,package['closure'])
   report['oauthAttemptsBefore']=row['attempts'];report['originalHumanWindowExpiresAt']=human.expires_at
   claim_name='ingestion-read-preflight-'+digest({'context':str(CONTEXT),'packageHash':receipt['packageHash']})+'.claim.json'
   directory=Path(tempfile.mkdtemp(prefix='ingestion-read-preflight-',dir=ROOT))

@@ -89,6 +89,23 @@ class ExistingWindow(unittest.TestCase):
   try:raise ValueError('PRIVATE_TOKEN_CANARY')
   except Exception as e:result=m.safe_failure(e,{'PUBLIC_CODE'})
   self.assertNotIn('PRIVATE_TOKEN_CANARY',json.dumps(result));self.assertEqual(result['reasonCode'],'PRIVATE_DETAILS_REDACTED')
+ def test_another_operation_login_cannot_supply_this_capsule_session(self):
+  selection={'issuer':'fixture','tenant':'fixture','subject':'human'}
+  previous={'sessionDirectory':'/fixture/previous'};case={'humanBinding':previous,'preparedPlanBinding':{'sha256':'a'*64}}
+  closure={'fixture':'closure'}
+  review={'selectionHash':m.digest(selection),'predecessorDirectory':previous['sessionDirectory'],
+   'predecessorBindingHash':m.digest(previous),'operationBinding':{'preparedReviewHash':'a'*64,'sourceClosureHash':'other'},
+   'priorOAuthAttempts':203,'maximumCumulativeOAuthAttempts':256,'budgetReset':False,'runtimeAuthorityIssued':False}
+  receipt={'reviewHash':m.digest(review),'budgetReset':False,'maximumCumulativeOAuthAttempts':256,'priorOAuthAttempts':203}
+  entry=types.SimpleNamespace(HumanSession=unittest.mock.Mock())
+  with patch.object(m,'read',side_effect=[receipt,review]):
+   with self.assertRaisesRegex(m.PreflightDenied,'EXACT_EXISTING_LOGIN_OPERATION_BINDING_REQUIRED'):
+    m.existing_human(entry,case,selection,closure)
+  entry.HumanSession.assert_not_called()
+ def test_public_owner_http_status_remains_actionable_without_response_payload(self):
+  try:raise ValueError('AUTHORIZATION_HTTP_403')
+  except Exception as error:result=m.safe_failure(error,set())
+  self.assertEqual(result['reasonCode'],'AUTHORIZATION_HTTP_403');self.assertFalse(result['rawErrorPrinted'])
  def test_program_contains_no_login_authority_or_administrative_dispatch_calls(self):
   calls={n.func.attr for n in ast.walk(ast.parse(SCRIPT.read_bytes()))if isinstance(n,ast.Call)and isinstance(n.func,ast.Attribute)}
   self.assertFalse(calls&{'login','authenticate','issue_action','apply','main','start_refresh'})
