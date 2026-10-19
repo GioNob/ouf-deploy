@@ -1,3 +1,11 @@
+> **CURRENT TARGET — OWNER7 ACTIVE PROJECTION PUBLISHED; DO NOT RELAUNCH.**
+>
+> Latest operator-supplied target result: `OWNER7_ACTIVE_PROJECTION_PUBLISHED`, complete, context `/etc/ouf/deploy-snapshots/ingestion-profile-publication-execution-0gd3mwft`. Owner revision7/generation7 and active installation projection now aligned: SHA256 `dd31d2b7de5ae66582275e5ac841584ff784065aa6e362ed0279d45fb6cdbc66`. Exactly1 active projection write; zero owner POST/export, Gateway writes, containers, DB/migrations, grants, key generation or jobs. Owner action was not replayed. Both completed launchers are consumed.
+>
+> HUMAN last reported **278/288, 10 remaining**, no reset or new login, unchanged window1792450664 (**20October2026 00:57:44 Europe/Rome**). This is retained evidence, not a fresh session check or renewable authority. Technical **8/8**, functional **4/6**. Native chatbot profile/readback, DB admission and rollout executor remain unproven; source inactive, no release acceptance.
+>
+> **Start the next CLOUD chat from [the complete current handoff](https://github.com/GioNob/ouf-deploy/blob/feat/chat-only-recovery-package-20261018/docs/handoffs/OUF_CLOUD_OWNER7_PROJECTION_COMPLETE_HANDOFF_20261019.md).** Exact target receipt: [evidence](https://github.com/GioNob/ouf-deploy/blob/feat/chat-only-recovery-package-20261018/evidence/ingestion-owner7-projection-published-target-20261019.json). Earlier pending/not-run instructions below are preserved history and superseded by this completed result. Do not execute historical launch commands or reuse approvals.
+
 > **QUALIFIED NEXT ACTION — publish only owner7 active installation projection.**
 >
 > Owner7/d6o9cpwd remains COMPLETE and must not be replayed. Next source `ccbba4ebd986e98b465df733bce0149f8e730fb2`: [native CI39326331436](https://github.com/GioNob/ouf-deploy/actions/runs/39326331436), job118313041336, **115PASS**. This includes both real Ed25519 role signatures, journal fencing, actual FD/flock/CAS/rename/fsync, approved nonroot-parent custody, failure after rename, existing verified refresh limits and historical source provenance. Earlier114-test source29da0353 is superseded by the final before-request REFRESH→USERINFO sequence cap.
