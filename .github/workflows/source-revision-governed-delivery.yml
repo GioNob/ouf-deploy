@@ -14,4 +14,8 @@ jobs:
       - name: Exact staged manifest, root shim and no read before helper hash
         run: |
           bash -n scripts/launch-source-revision-governed-20261019.sh
-          python3 -I -B -S -m unittest discover -s tests -p 'test_source_revision_governed_delivery.py' -v
+          fixture="/root/ouf-governed-delivery-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_source_revision_governed_delivery.py' -v
