@@ -1,0 +1,62 @@
+{
+  "schema": "ouf.source-revision-custody-human-oauth-stop-target.v1",
+  "provenance": "User-supplied protected target read and native output, 2026-10-19; current stopped context still requires protected readback",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "preparedContextPath": "/etc/ouf/deploy-snapshots/source-revision-custody-continuation-dvf517sr",
+  "preparationResultSha256": "1de8d0f6740573bc2b4aa4125a67a806a1b6016c1e56a319aa666cb7bb8c0b91",
+  "preparedSourceClosureSha256": "b056490dac4e72d4bee23e2539706b1ac7ca584dae800c59d425806df11dccd2",
+  "frozenFilesVerified": 81,
+  "priorExecutionReadback": {
+    "contextPath": "/etc/ouf/deploy-snapshots/source-revision-execution-kcw73ask",
+    "contextFiles": 9,
+    "contextClosureSha256": "153581a3f2294823d08c3668fb98433d49a34dd51a95056a24111379a4d07e9f",
+    "authorityAndLoginArtifactsAbsent": true,
+    "exactCompilerSourcesMatch": true,
+    "nativePlanBound": true,
+    "candidateReviewBound": true,
+    "retainedFilesPreserved": true
+  },
+  "humanBeforeIAMLogin": {
+    "state": "READY",
+    "attempts": 188,
+    "maximumAttempts": 256,
+    "remainingAttempts": 68,
+    "windowRemainingSecondsAtRead": 1464,
+    "currentBootMatches": true,
+    "originalWindowPreserved": true,
+    "bindingPreserved": true
+  },
+  "preparedClosureReadback": {
+    "continuationPlanBound": true,
+    "frozenFilesVerified": 81,
+    "originalScopeUnchanged": true,
+    "successorClaimAbsent": true
+  },
+  "iamLogin": {
+    "check": "IAM_GET_RECONCILED",
+    "maximumLoginAttempts": 1,
+    "passwordReadByDelivery": false,
+    "runtimeAuthorityIssued": false,
+    "automaticRetry": false,
+    "budgetReset": false
+  },
+  "iamOneUseFence": "/etc/ouf/deploy-snapshots/source-revision-custody-iam-resume-kcw73ask",
+  "newNativeProcessHandoff": true,
+  "executionContextPath": "/etc/ouf/deploy-snapshots/source-revision-execution-inmfuoj2",
+  "providerSessionMetadataRead": true,
+  "newExecutorStop": {
+    "reason": "HUMAN_OAUTH_REVOKED_OR_PERMANENT_OR_UNKNOWN",
+    "reconciliationRequired": true,
+    "automaticRetry": false,
+    "automaticSessionRenewal": false,
+    "budgetReset": false
+  },
+  "currentStoppedContextInventoryRead": false,
+  "currentHumanOperationAndCounter": "UNRECONCILED",
+  "runtimeAuthorityAbsenceAfterNewStop": "NOT_ASSUMED_PENDING_READ",
+  "revocationProven": false,
+  "frozenFailurePathPersistsIssuerStatusOrError": false,
+  "nativeFailurePath": "REFRESH or USERINFO failure passes the same generic permanent-or-unknown classifier; no status/result retained by that path. Do not infer invalid_grant or retry refresh.",
+  "logPath": "/home/oufadmin/ouf-custody-iam-resume.XotbL91G/read.log"
+}

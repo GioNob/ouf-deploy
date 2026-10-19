@@ -1,5 +1,10 @@
 ## Current checkpoint — governed capsule complete; APPROVO accepted; custody STOP
 
+## Current checkpoint — IAM reconciled, HUMAN OAuth STOP, 2026-10-19
+
+Technical8/8; functional4/6. The operator's protected read proved kcw73ask nine-file closure153581a3f2294823d08c3668fb98433d49a34dd51a95056a24111379a4d07e9f, no authority/login artifacts, full81-file verification and HUMAN READY188/256 at observation. One IAM admin login/GET succeeded; the new native process inmfuoj2 reached provider metadata then stopped on HUMAN_OAUTH_REVOKED_OR_PERMANENT_OR_UNKNOWN. Do not replay IAM login or HUMAN refresh. Revocation is not proven by this generic reason; current counter/operation and authority absence require protected readback. [Evidence](../evidence/source-revision-custody-human-oauth-stop-20261019.json), [read-only delivery qualification](../releases/SOURCE_REVISION_CUSTODY_HUMAN_STOP_READ_20261019.md). Earlier remaining-window observations are historical.
+
+
 ## Current checkpoint — custody prepared, IAM STOP, 2026-10-19
 
 Technical8/8; functional4/6. Custody preparation completed with new case/package/closure, four read-only DB sessions and zero OAuth/runtime effects. Existing kfy inputs and candidate archives preserved. Fresh executor kcw73ask stopped on EXISTING_IAM_SESSION_EXPIRED before the existing-HUMAN refresh/new APPROVO. Do not replay preparation or old launchers. Protected inventory plus one-use native IAM resume passed18 root CI tests (run39209506145), with immutable delivery and no target execution; no authority absence is assumed until readback. [Evidence](../evidence/source-revision-custody-iam-stop-20261019.json), [reconciliation/resume](../releases/SOURCE_REVISION_CUSTODY_IAM_RESUME_20261019.md).
