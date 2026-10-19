@@ -134,7 +134,7 @@ class FreshLogin(unittest.TestCase):
    return l.authenticate(self.old.selection,self.row['binding'],self.context,self.closure,e.publish_json,self.old.emits.append,self.case)
  def test_actual_frozen_guard_four_requests_251_to255_after_ack_no_old_credentials(self):
   following=self.authenticate();row=following._read();self.assertEqual(row['attempts'],255);self.assertEqual(len(self.old.calls),4);self.assertEqual(self.ack,1)
-  self.assertEqual(row['governedWindowRenewal'],self.row['governedWindowRenewal']);self.assertEqual(row['monotonicDeadline'],self.row['monotonicDeadline']);self.assertEqual(following.expires_at,self.human.expires_at)
+  self.assertEqual(row['governedWindowRenewal']['review']['schema'],'ouf.human-explicit-test-continuation-review.v3');self.assertEqual(row['governedWindowRenewal']['review']['priorOAuthAttempts'],251);self.assertEqual(row['binding']['expiresAt']-row['binding']['createdAt'],7200)
   self.assertEqual(self.human._read(),self.row);self.assertFalse((self.context/'authority.json').exists());self.assertNotIn('DO_NOT_',str(self.old.calls))
   with self.assertRaises(Exception):self.authenticate()
  def test_declined_native_consent_creates_no_successor_or_oauth(self):

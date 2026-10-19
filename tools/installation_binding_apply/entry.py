@@ -13,7 +13,7 @@ from tools.installation_binding_apply import baseline,authority,login
 from tools.installation_binding_apply.owner import require,digest,encoded,scope,scope_key,FiniteUpdate,FORBIDDEN
 from tools.installation_binding_apply.native import Ports,OwnerHttp,baseline_runtime
 
-SCHEMAS={'login-review.json':'ouf.installation-binding-reauth251-review.v1','login-decision.json':'ouf.installation-binding-reauth251-decision.v1',
+SCHEMAS={'login-review.json':'ouf.human-explicit-test-continuation-review.v3','login-decision.json':'ouf.installation-binding-reauth251-decision.v1',
  'login-window-receipt.json':'ouf.installation-binding-reauth251-receipt.v1','execution-plan.json':'ouf.installation-binding-native-plan.v1',
  'review.json':'ouf.semantic-scoped-infrastructure-review.v1','owner-result.json':'ouf.installation-binding-owner-result.v1',
  'update-result.json':'ouf.installation-binding-projection-routes-result.v1'}

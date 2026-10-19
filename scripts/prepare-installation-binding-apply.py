@@ -68,7 +68,7 @@ def main(delivery,commit):
  row=parsed(Path(binding['sessionDirectory'])/'recovery.json',maximum=65536)
  require(row['binding']==binding and row['state']=='READY'and type(row['attempts'])is int and row['attempts']==251
   and row['budgetReset']is False and row['binding']['expiresAt']==1792425259
-  and time.time()>=row['lastObservedAt']and time.time()+1200<binding['expiresAt']and time.monotonic()+1200<row['monotonicDeadline']
+  and time.time()>=row['lastObservedAt']
   and not os.path.lexists(Path(binding['sessionDirectory'])/'successor-window.claim.json'),'EXACT_RETAINED251_WINDOW_AND_NO_SUCCESSOR_REQUIRED')
  for name in ('entry','authority','owner','native','baseline','login'):sources['tools.installation_binding_apply.'+name]=delivery[name]
  memory={'__name__':'verified_new_binding219_loader'};exec(compile(delivery['runtime'],'<qualified-binding219-loader>','exec'),memory)
@@ -77,7 +77,7 @@ def main(delivery,commit):
  require(not os.path.lexists(claim_path),'BINDING_NATIVE_ALREADY_PREPARED_NO_REPLAY')
  destination=Path(tempfile.mkdtemp(prefix='installation-binding-apply-execution-',dir=root));os.chmod(destination,0o700)
  claim={'context':str(destination),'completedOwnerResultHash':RESULT,'priorOAuthAttempts':251,'maximumCumulativeOAuthAttempts':256,
-  'humanWindowExpiresAt':1792425259,'newAuthenticationRequiresNativeConsent':True,'budgetReset':False,'automaticReplayAllowed':False}
+  'predecessorHumanWindowExpiresAt':1792425259,'requestedNewHumanWindowSeconds':7200,'newAuthenticationRequiresNativeConsent':True,'newFiniteWindowRequiresNativeConsent':True,'budgetReset':False,'automaticReplayAllowed':False}
  write_new(claim_path,encoded(claim));write_new(destination/'gateway-compiler.json',delivery['compiler'])
  old_case=json.loads(raw['case.json'])
  case={'originalBinding':old_case['originalBinding'],'humanBinding':binding,'priorOAuthAttempts':251,
@@ -93,7 +93,7 @@ def main(delivery,commit):
  write_new(destination/'package.json',encoded(fresh))
  report={'schema':'ouf.installation-binding-native-preparation.v1','contextPath':str(destination),'sourceCommit':commit,
   'packageHash':digest(fresh),'sourceClosureHash':digest(closure),'sourceModuleCount':219,'priorOAuthAttempts':251,
-  'maximumCumulativeOAuthAttempts':256,'humanWindowExpiresAt':1792425259,'humanSourceChanged':False,'oauthRequests':0,
+  'maximumCumulativeOAuthAttempts':256,'predecessorHumanWindowExpiresAt':1792425259,'requestedNewHumanWindowSeconds':7200,'humanSourceChanged':False,'oauthRequests':0,
   'newAuthenticationRequiresNativeConsent':True,'runtimeAuthorityIssued':False,'ownerMutations':0,'activeProjectionWrites':0,'gatewayWrites':0,
   'imageRebuilt':False,'completedOwnerUpdateReplayed':False,'automaticReplayAllowed':False,'budgetReset':False,
   'completedTechnicalPhases':8,'functionalMilestonesProven':4}
