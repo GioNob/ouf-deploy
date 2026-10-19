@@ -39,11 +39,11 @@ Physical sudo and the controlling terminal are necessary for protected preparati
   ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
   [[ -x "$ouf_gh" ]] || ouf_gh="$(command -v gh)"
   ouf_dir="$(mktemp -d "$HOME/ouf-postboot-human-successor.XXXXXXXX")"
-  "$ouf_gh" api \\
-    'repos/GioNob/ouf-deploy/contents/scripts/launch-source-revision-postboot-human-20261019.sh?ref=fedbeb707580a67dad7948d045eba7f9ba340b32' \\
+  "$ouf_gh" api \
+    'repos/GioNob/ouf-deploy/contents/scripts/launch-source-revision-postboot-human-20261019.sh?ref=fedbeb707580a67dad7948d045eba7f9ba340b32' \
     --jq '.content' | base64 --decode > "$ouf_dir/run.sh"
-  printf '%s  %s\\n' \\
-    '0addc1dca90061e7d81cc4dbd3bad9f637943e2d6fcac39fb194b58a36cb9ff3' \\
+  printf '%s  %s\n' \
+    '0addc1dca90061e7d81cc4dbd3bad9f637943e2d6fcac39fb194b58a36cb9ff3' \
     "$ouf_dir/run.sh" | sha256sum --check
   bash "$ouf_dir/run.sh"
 )
