@@ -2,7 +2,7 @@ name: Source revision postboot delivery qualification
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/launch-source-revision-postboot-20261018.sh', 'tests/test_source_revision_postboot_delivery.py', '.github/workflows/source-revision-postboot-delivery.yml']
+    paths: ['scripts/launch-source-revision-postboot-20261018.sh', 'scripts/launch-source-revision-postboot-human-20261019.sh', 'tests/test_source_revision_postboot_delivery.py', '.github/workflows/source-revision-postboot-delivery.yml']
 permissions: {contents: read}
 jobs:
   delivery:
@@ -14,7 +14,7 @@ jobs:
       - name: Validate pinned delivery without target access
         run: |
           set -euo pipefail
-          bash -n scripts/launch-source-revision-postboot-20261018.sh
+          bash -n scripts/launch-source-revision-postboot-human-20261019.sh
           fixture="/root/ouf-postboot-delivery-${GITHUB_RUN_ID}"
           sudo install -d -m 0700 "$fixture"
           sudo cp -a . "$fixture/repository"

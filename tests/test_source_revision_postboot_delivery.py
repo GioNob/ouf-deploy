@@ -2,7 +2,7 @@
 import contextlib,hashlib,importlib.util,io,json,os,subprocess,sys,tempfile,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-COMMIT='6f8493ec372f8ca3e12c8a4e6df19552e28fd383'
+COMMIT='32f86add5b6fb1b17110ca916ed045b28a240c5e'
 class Delivery(unittest.TestCase):
  def exercise(self,change):
   spec=importlib.util.spec_from_file_location('stage',ROOT/'scripts/stage-source-revision-postboot.py')
@@ -10,12 +10,13 @@ class Delivery(unittest.TestCase):
   with tempfile.TemporaryDirectory(dir=os.environ.get('OUF_TEST_ROOT',str(ROOT.parent))) as temp:
    directory=Path(temp)/'stage'
    with contextlib.redirect_stdout(io.StringIO()):m.stage(ROOT,directory,COMMIT)
-   self.assertEqual(hashlib.sha256((directory/'manifest.json').read_bytes()).hexdigest(),'dc310b977508915af520792d48e1bf970abcdffcf2b4a6d9b33a8c72f77c4ccf')
+   self.assertEqual(hashlib.sha256((directory/'manifest.json').read_bytes()).hexdigest(),'345999734e39e5e1bae941ba41d7c6825d71459f444d2febd98e02cd2ff479fb')
+   if change in ('entry','login'):(directory/(change+'.py')).write_bytes(b'PRIVATE_CANARY')
    if change=='manifest':(directory/'manifest.json').write_bytes(b'PRIVATE_CANARY')
    if change=='configuration':(directory/'configuration.py').write_bytes(b'PRIVATE_CANARY')
    if change=='member':(directory/'prepare.py').write_bytes(b'PRIVATE_CANARY')
    if change=='link':(directory/'run.py').unlink();(directory/'run.py').symlink_to(directory/'reader.py')
-   text=(ROOT/'scripts/launch-source-revision-postboot-20261018.sh').read_text()
+   text=(ROOT/'scripts/launch-source-revision-postboot-human-20261019.sh').read_text()
    payload=text.split("<<'OUF_POSTBOOT_PREPARATION' | tee",1)[1].split('\n',1)[1].rsplit('\nOUF_POSTBOOT_PREPARATION',1)[0]
    code='''import os,sys,json
 source=sys.argv[1];stage=sys.argv[2];raw=open(source).read();actual_open=os.open;actual_stat=os.stat;protected=[]
@@ -42,5 +43,7 @@ except SystemExit as error:print(json.dumps({'fixtureExit':error.code,'protected
  def test_changed_manifest_stops_before_protected_reads(self):self.exercise('manifest')
  def test_changed_module_stops_before_protected_reads(self):self.exercise('member')
  def test_changed_configuration_successor_stops_before_protected_reads(self):self.exercise('configuration')
+ def test_changed_entry_successor_stops_before_protected_reads(self):self.exercise('entry')
+ def test_changed_login_successor_stops_before_protected_reads(self):self.exercise('login')
  def test_linked_dispatcher_stops_before_protected_reads(self):self.exercise('link')
 if __name__=='__main__':unittest.main()
