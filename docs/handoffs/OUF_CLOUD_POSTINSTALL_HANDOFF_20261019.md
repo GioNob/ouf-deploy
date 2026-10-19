@@ -1,5 +1,8 @@
 # OUF cloud handoff after independent source-revision installation readback
 
+> **Consegna corretta dopo riconciliazione STOP, 19 ottobre 2026:** target219 autenticato, HUMAN SHA256305c7804b084b02f0bf7d6c1521c3c5a4f8e7f4e2fb0a15e27f5886a2a685dcc; nuova claim assente. Il guard conserva il ramo MCP storico. La nuova preparazione controlla l'intera sorgente esatta, indipendentemente dal formato ast.dump di Python3.13. Sorgente `6e36d6f5faa8c0c8e129aac7d843fcf9e7d535e4`, consegna `01c7b8e0e4b763b0b5b3cb64e86c131bd6c234cb`; 18+3 test CI PASS. La consegna precedente92c0c78 resta ritirata. Budget264 proposto,255 consumati conservati, consensi nativi distinti ancora necessari; avvio prima20:35:55, scadenza20:55:55 italiane invariata. Owner6/gen6 e rename già completati non si ripetono. Tecniche8/8, funzionali4/6; target E2E non ancora provato.
+
+
 > **STOP target — 19 ottobre 2026:** la consegna `92c0c78c6b5dcb4dcfd7f923df1906988c235127` si è fermata in PREPARATION con `EXACT_FROZEN256_PREDECESSOR_GUARD_REQUIRED`. Il comando operativo sotto è ritirato: **non rilanciarlo**. Nessun consenso budget264 è stato raccolto; ultimo consumo riferito255/256. Il test usava un guard esportato da una capsula precedente e non provava il guard della capsula219 attuale. Prossima azione: sola lettura autenticata della sorgente e presenza della claim, senza credenziali, OAuth o mutazioni. Owner6/gen6 e file pubblicato non vanno ripetuti; journal resta da riconciliare. Tecniche8/8, funzionali4/6.
 
 

@@ -1,9 +1,11 @@
 # Native route reconciliation and explicit budget264 review —19October2026
 
-> **STOP target — 19 ottobre 2026:** la consegna `92c0c78c6b5dcb4dcfd7f923df1906988c235127` si è fermata in PREPARATION con `EXACT_FROZEN256_PREDECESSOR_GUARD_REQUIRED`. Il comando operativo sotto è ritirato: **non rilanciarlo**. Nessun consenso budget264 è stato raccolto; ultimo consumo riferito255/256. Il test usava un guard esportato da una capsula precedente e non provava il guard della capsula219 attuale. Prossima azione: sola lettura autenticata della sorgente e presenza della claim, senza credenziali, OAuth o mutazioni. Owner6/gen6 e file pubblicato non vanno ripetuti; journal resta da riconciliare. Tecniche8/8, funzionali4/6.
+> **Consegna corretta dopo riconciliazione STOP, 19 ottobre 2026:** target219 autenticato, HUMAN SHA256305c7804b084b02f0bf7d6c1521c3c5a4f8e7f4e2fb0a15e27f5886a2a685dcc; nuova claim assente. Il guard conserva il ramo MCP storico. La nuova preparazione controlla l'intera sorgente esatta, indipendentemente dal formato ast.dump di Python3.13. Sorgente `6e36d6f5faa8c0c8e129aac7d843fcf9e7d535e4`, consegna `01c7b8e0e4b763b0b5b3cb64e86c131bd6c234cb`; 18+3 test CI PASS. La consegna precedente92c0c78 resta ritirata. Budget264 proposto,255 consumati conservati, consensi nativi distinti ancora necessari; avvio prima20:35:55, scadenza20:55:55 italiane invariata. Owner6/gen6 e rename già completati non si ripetono. Tecniche8/8, funzionali4/6; target E2E non ancora provato.
 
 
-Technical8/8,functional4/6. This package is NOT executed or authorized merely by publication. Source **8ff69df5a19cd161ac185b2b15729e821bba2383**; authenticated11-file delivery **92c0c78c6b5dcb4dcfd7f923df1906988c235127**; launcher SHA256 **80dd9d9f7e5e78805a298b15fe02c0ac35d73a2f3a8501981aa7e1d03c54839f**.20CItests PASS (17source+3delivery).
+
+
+Technical8/8,functional4/6. This package is NOT executed or authorized merely by publication. Source **6e36d6f5faa8c0c8e129aac7d843fcf9e7d535e4**; authenticated11-file delivery **01c7b8e0e4b763b0b5b3cb64e86c131bd6c234cb**; launcher SHA256 **8c4aa8efdf4d95252cf41f20b0e1ba376d00232015516086e149eaf28b4d1052**.21CItests PASS (18source+3delivery).
 
 ## Scope and gates
 
@@ -32,11 +34,11 @@ Preparation/login requires20minutes remaining; start **before20:35:55 Europe/Rom
 
   ouf_launcher="$(mktemp "$HOME/ouf-route-reconcile.XXXXXXXX.sh")"
   "$ouf_gh" api \
-    'repos/GioNob/ouf-deploy/contents/scripts/launch-installation-route-reconcile-20261019.sh?ref=92c0c78c6b5dcb4dcfd7f923df1906988c235127' \
+    'repos/GioNob/ouf-deploy/contents/scripts/launch-installation-route-reconcile-20261019.sh?ref=01c7b8e0e4b763b0b5b3cb64e86c131bd6c234cb' \
     --jq '.content' |
     base64 --decode > "$ouf_launcher"
   printf '%s  %s\n' \
-    '80dd9d9f7e5e78805a298b15fe02c0ac35d73a2f3a8501981aa7e1d03c54839f' \
+    '8c4aa8efdf4d95252cf41f20b0e1ba376d00232015516086e149eaf28b4d1052' \
     "$ouf_launcher" | sha256sum --check
   bash "$ouf_launcher"
 )
@@ -49,3 +51,9 @@ Keep the process open. Return only public OUF_INSTALLATION_ROUTE_PREPARED/HUMAN/
 Source CI39296553970/job118210477015:7real signed-authority/journal route-only tests,8fresh-login/budget checks,2isolated226-module preparation checks. Delivery CI39296750272/job118211142285:3exact11file/tamper/missing-client/root-recheck tests. Provider/terminal and Gateway replies are test fixtures. Local missing boot-ID is fixture-only; CI uses actual boot. Preparation fixture substitutes retained paths/hashes and traps old main/reader/bootstrap so they cannot be replayed. These do not prove live target effects. See ../evidence/installation-route-reconciliation-qualification-20261019.json.
 
 A successful result completes only this administrative continuation. It does not prove fresh ChatGPT read, complete503resolution, final governed native MCP profile, source activation, functional5–6 or release acceptance. Maintain separate HUMAN/THS domain approvals.
+
+## Requalification after exact-source STOP
+
+The read-only target receipt proves no new preparation claim and no source execution/OAuth/journal writes by that diagnostic. The exact source includes the previously approved MCP reauthentication schema branch. Python3.13 omits optional empty lists from ast.dump by default (https://docs.python.org/3.13/library/ast.html#ast.dump). Whole-source SHA256 is now authoritative; no byte of the retained source is changed. Budget264 is appended only in the new sealed capsule and requires native consent. Earlier sealed capsules remain unchanged.
+
+CI: https://github.com/GioNob/ouf-deploy/actions/runs/39299796409 (18 tests), https://github.com/GioNob/ouf-deploy/actions/runs/39299839291 (3 tests). Provider and Gateway exchanges remain fixtures; they are not target runtime or end-to-end proof. The synthetic preparation fixture substitutes its full-source pin explicitly; an additional regression checks the production305c7804 pin, exact prefix preservation, and rejection of any byte drift.
