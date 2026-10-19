@@ -7,8 +7,11 @@ class Read(unittest.TestCase):
  def test_public_pinned_metadata_matches_but_strict_native_private_custody_fails(self):
   with self.temp()as temp:
    path=Path(temp)/'policy.json';raw=b'{"private":"CREDENTIAL_CANARY"}';path.write_bytes(raw);path.chmod(0o644)
+   import test_source_revision_update_configuration
+   from tools.semantic_mcp_update.native import private_file
+   with self.assertRaisesRegex(Exception,'PRIVATE_FILE_CUSTODY_REQUIRED'):private_file(path,m.sha(raw),65536)
    result=m.probe(path,m.sha(raw));self.assertTrue(result['expectedHashMatches']);self.assertFalse(result['nativePrivateCustodyPass']);self.assertEqual(result['mode'],'0644');self.assertNotIn('CANARY',json.dumps(result));self.assertEqual(path.read_bytes(),raw)
-   path.chmod(0o600);self.assertTrue(m.probe(path,m.sha(raw))['nativePrivateCustodyPass'])
+   path.chmod(0o600);self.assertTrue(m.probe(path,m.sha(raw))['nativePrivateCustodyPass']);self.assertEqual(private_file(path,m.sha(raw),65536)['sha256'],m.sha(raw))
  def test_untrusted_writable_or_linked_file_is_not_accepted_or_opened(self):
   with self.temp()as temp:
    path=Path(temp)/'file';path.write_bytes(b'CANARY');path.chmod(0o666);result=m.probe(path,m.sha(b'CANARY'));self.assertIsNone(result['expectedHashMatches']);self.assertFalse(result['nativePrivateCustodyPass'])
