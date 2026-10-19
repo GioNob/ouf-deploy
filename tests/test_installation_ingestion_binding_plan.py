@@ -1,7 +1,7 @@
 """Finite HUMAN scope successor, actual frozen guard and immutable owner baseline."""
 import ast,base64,copy,hashlib,importlib.util,json,os,sys,tempfile,time,types,unittest,urllib.error
 from pathlib import Path
-from unittest.mock import Mock,patch
+from unittest.mock import Mock,MagicMock,patch
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_policy_token_owner'),str(ROOT/'tools/semantic_application_cutover'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
 from tools.chatbot_file_cohort import human_session as h
@@ -68,7 +68,7 @@ class OwnerPlan(unittest.TestCase):
   human=Mock(token_path=Path('/fixture/human-access.jwt'));selection={'origin':'https://fixture.invalid'}
   with patch.object(p,'OwnerTransport')as credentials:
    credentials.return_value.token.return_value='fixture-token'
-   reader=p.InstallationReader(selection,human,'fixture',4);reader.opener=Mock()
+   reader=p.InstallationReader(selection,human,'fixture',4);reader.opener=MagicMock()
    reply=Mock(status=200);reply.read.return_value=b'{"revision":4}'
    reader.opener.open.return_value.__enter__.return_value=reply
    for _ in range(3):self.assertEqual(reader.get_next(),{'revision':4})
@@ -77,7 +77,7 @@ class OwnerPlan(unittest.TestCase):
    self.assertEqual([r.full_url for r in requests],['https://fixture.invalid/api/trusted-human/v1/installations/fixture/'+x for x in('active','revisions/4','active')])
    with self.assertRaises(Exception):reader.get_next()
    self.assertEqual(reader.opener.open.call_count,3)
-   reader=p.InstallationReader(selection,human,'fixture',4);reader.opener=Mock();reader.opener.open.side_effect=urllib.error.URLError('private-details')
+   reader=p.InstallationReader(selection,human,'fixture',4);reader.opener=MagicMock();reader.opener.open.side_effect=urllib.error.URLError('private-details')
    with self.assertRaisesRegex(ValueError,'INSTALLATION_OWNER_READ_STOP_NO_RETRY'):reader.get_next()
    self.assertEqual(reader.calls,1);self.assertEqual(reader.opener.open.call_count,1)
  def test_plan_entry_contains_no_mutating_owner_or_engine_dispatch(self):
@@ -189,6 +189,7 @@ class PreparedCapsule(unittest.TestCase):
   data['case.json']['humanBinding']={'sessionDirectory':'/DO_NOT_USE_OLD_CASE'}
   data['case.json']['preparationClaimBinding']['path']=str(self.completed/'preparation-fence.json')
   data['preparation-fence.json']['context']=str(self.completed)
+  data['case.json']['preparationClaimBinding']['sha256']=self.prep.digest(data['preparation-fence.json'])
   data['update-result.json']['contextPath']=str(self.completed)
   sources={n:b'pass\n'for n in old_loader.MODULES};sources['tools.chatbot_file_cohort.human_session']=full_fixture()
   data['sources.json']={n:base64.b64encode(raw).decode()for n,raw in sources.items()}
