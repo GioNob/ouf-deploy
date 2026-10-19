@@ -1,4 +1,16 @@
-## Current checkpoint — budget diagnosed; native source review prepared, 2026-10-19
+## Current checkpoint — source APPROVED; Ingestion registration profile qualified, 2026-10-19
+
+Technical8/8; functional4/6. User confirmed source approval; direct ouf-admin revision.read and a later owner read independently prove c9fec43c-19b3-4ffb-9111-781bc347c5b0 APPROVED, lock3, challenge9bca610c… CONFIRMED, hashb13c5fe2… unchanged. The latter read reports challengeExpired=true while approval remains APPROVED/CONFIRMED; do not interpret historical challenge expiry as loss of the recorded decision or recreate the source review. Activation/readiness remain NOT_STARTED/0, compatibility unobserved; no publication or second acquisition.
+
+[Current evidence and remaining native boundary](../evidence/source-approved-ingestion-read-qualified-20261019.json). A new narrow authorization profile is implemented in source64554957a6b1f944c654064f5acbc48e94ed9db8 and passes CI39220098048/job117953125583:50tests (22existing authorization +6durable observations +11revision +11new profile). Tests include real signed AggregateAction/private journals, lost-response reconciliation, revocation, no duplicate draft/dispatch and exact Java owner serialization. HTTP/IAM are explicit fixtures; no target policy modification is claimed.
+
+Profile ouf.ingestion-operational-read-authorization.v1 plans only registration/immutable policy addition for ingestion.operations.read and its exact ChatGPT scope binding. It preserves every grant, role, assignment, session and unrelated OAuth binding. The source ID is explicit and validated; the plan binds operational/INGESTION/sourceRef with TENANT_OPERATIONAL. No role permission is added: a separate finite direct human grant must later be proposed and confirmed in THS, so this read privilege does not silently inherit the existing admin assignment's long expiry. [Design and limits](INGESTION_OPERATIONAL_READ_AUTHORIZATION_20261019.md).
+
+Still required before native execution: new full-current owner/IAM observations and validated installation bindings, a separate finite administrative review/authority and completed private capsule/delivery. No operator launcher is released yet and no new login or authority has been opened. There is no MCP capability-registration tool; existing native HUMAN administrative APIs are the required path. Source approval does not authorize this separate policy change. Preserve expired uow4n8lp authority and successful installation/readback; do not replay them, alter frozen modules, write policy through SQL, use raw RPC or switch accounts. After registration/policy/scope reconciliation, prepare the finite scoped grant and verify actual fresh scope/status/history before the separate source activation. Functional5/6 remain pending.
+
+Original PET sections actually consulted for this decision: Matrix1.7 §1, Authorization1.5 §§20–22/109.6, Onboarding1.6 §103 and Ingestion1.3 §46. No subagent or automation.
+
+## Historical checkpoint — budget diagnosed; native source review prepared, 2026-10-19
 
 Technical8/8; functional4/6. [Qualified current diagnosis and native receipts](../evidence/cloud-admission-resolution-and-source-review-20261019.json). CI39218769408:7testsPASS including real PostgreSQL17 read-only SELECT fixture; target job117948975848 completes2READ ONLY metadata sessions through existing runner Docker access. No sudo, credential/token/HUMAN-journal reads, database writes or budget reset.
 
