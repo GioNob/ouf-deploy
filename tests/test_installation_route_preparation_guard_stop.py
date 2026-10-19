@@ -26,14 +26,14 @@ class Read(unittest.TestCase):
   for name,data in [('sources.json',raw),('package.json',m.encoded(p))]:
    path=m.CONTEXT/name;path.write_bytes(data);path.chmod(0o600)
  def test_authenticated_full_read_is_read_only(self):
-  with tempfile.TemporaryDirectory()as d:
+  with tempfile.TemporaryDirectory(dir=HERE)as d:
    self.fixture(Path(d));before={p:p.read_bytes()for p in m.CONTEXT.iterdir()}
    with patch.object(m.sys,'flags',SimpleNamespace(isolated=True,no_site=True)):
     result=m.main()
    self.assertTrue(result['complete']);self.assertFalse(result['sourceExecuted']);self.assertEqual(result['credentialJournalsOpened'],0);self.assertFalse(result['newPreparationClaimPresent'])
    self.assertEqual(before,{p:p.read_bytes()for p in m.CONTEXT.iterdir()})
  def test_tampered_sources_denied(self):
-  with tempfile.TemporaryDirectory()as d:
+  with tempfile.TemporaryDirectory(dir=HERE)as d:
    self.fixture(Path(d));(m.CONTEXT/'sources.json').write_bytes(b'{}')
    with patch.object(m.sys,'flags',SimpleNamespace(isolated=True,no_site=True)):
     with self.assertRaisesRegex(ValueError,'PRIVATE_BYTES_CHANGED'):m.main()
