@@ -1,5 +1,14 @@
 # OUF cloud handoff after independent source-revision installation readback
 
+### STOP nativo riportato — 2026-10-19,10:33 Europe/Rome
+
+L'operatore ha eseguito la consegna b836891c7c899c549482f81945046ad592b92f6f e riportato `STOP_RECONCILE / ValueError / PRIVATE_DETAILS_REDACTED`. Non è dimostrata la fase del guasto né l'assenza di effetti parziali; nessun rilancio autorizzato dal solo STOP. Tecniche8/8, funzionali4/6.
+
+La diagnosi separata `scripts/read-ingestion-administration-stop.py` legge il codice/storia già sotto custodia e gli eventuali claim/journal della sola azione amministrativa. Compila soltanto il prefisso AST che termina prima di mkdtemp/claim; non chiama main/run del preparer, dell'installer o del runtime, non ripete installazione/readback e non apre token o journal HUMAN. L'audit nega scritture, rete e processi esterni; watchdog unico120secondi. Espone soltanto codici costanti dei sorgenti pubblici verificati, unità/riga del guard e metadati/stati autorizzativi minimizzati. Il test del canary privato rimane oscuro.8 test locali PASS; la qualifica CI e il read sul target sono distinti e vanno acquisiti.
+
+Nessuna riapertura di budget, nuova authority, nuova sessione/login, pubblicazione policy, grant, attivazione fonte o retry job durante la diagnosi. Consultati gli originali Matrix1.7 §1, Authorization1.5 §109.6 eTHS1.6 THS-A02/A08/A09. Vedi `evidence/ingestion-administration-stop-20261019.json`.
+
+
 Consegna finale qualificata: [run39223108393](https://github.com/GioNob/ouf-deploy/actions/runs/39223108393), job117962847831,6 test PASS (3 regressioni shim storico e3 controlli del nuovo launcher). Launcher immutabile: [b836891c7c899c549482f81945046ad592b92f6f](https://github.com/GioNob/ouf-deploy/blob/b836891c7c899c549482f81945046ad592b92f6f/scripts/launch-ingestion-human-administration-20261019.sh), SHA256 `636330a0b5d54dad590969d2ada8799bdb47b49c02aa8af297d65da199da16cd`. La qualifica conferma manifest, hash preparer e STOP prima di qualsiasi lettura privata su codice alterato. Il canary delle eccezioni resta oscurato. **La preparazione root e l'azione sul target attendono ancora il terminale HUMAN.**
 
 
