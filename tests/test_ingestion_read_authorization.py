@@ -32,11 +32,15 @@ class IngestionOperationalReadPlan(unittest.TestCase):
   plan=self.compile()
   self.assertEqual(plan['registrationAdditions'],self.primitives.catalogue)
   self.assertEqual(plan['addedDescriptors'],[self.primitives.catalogue[0]['descriptor']])
-  permission=plan['addedPermissions'][0]
+  permission=plan['readScope']
   self.assertEqual(permission['capabilityId'],'ingestion.operations.read')
   self.assertEqual(permission['constraints']['resourceType'],'operational')
   self.assertEqual(permission['constraints']['resourceAttributes'],{'module':'INGESTION','sourceRef':'fixture-source'})
   self.assertEqual(permission['constraints']['allowedDetailLevels'],['TENANT_OPERATIONAL'])
+  self.assertEqual(plan['addedPermissions'],[]);self.assertIsNone(plan['roleProposal'])
+  self.assertEqual(plan['targetRoles'],self.observed['roles'])
+  self.assertTrue(plan['readScope']['separateFiniteGrantReviewRequired'])
+  self.assertFalse(plan['readScope']['grantPublicationAllowed'])
   self.assertEqual(existing.owner_constraint_roundtrip(plan['targetRoles']),plan['targetRoles'])
  def test_preserves_prior_policy_roles_assignments_and_oauth(self):
   before=copy.deepcopy(self.observed);plan=self.compile()
@@ -53,12 +57,13 @@ class IngestionOperationalReadPlan(unittest.TestCase):
    with self.assertRaises(Exception):self.compile(source_id=source)
   with self.assertRaises(Exception):
    auth.compile_plan(self.observed,self.primitives,self.selection,source_id='fixture-source')
- def test_conflicting_existing_descriptor_and_existing_role_constraint_block(self):
+ def test_conflicting_existing_descriptor_blocks_and_other_role_permissions_remain(self):
   self.observed['registrations']['ingestion.operations.read']={'ownerRef':'wrong','descriptor':self.primitives.catalogue[0]['descriptor']}
   with self.assertRaises(Exception):self.compile()
   self.observed['registrations'].clear()
   self.observed['roles']['roles'][0]['permissions']=[{'capabilityId':'ingestion.operations.read','constraints':auth.owner_permission_constraints('operational',{'module':'INGESTION','sourceRef':'other-source'},['TENANT_OPERATIONAL'])}]
-  with self.assertRaises(Exception):self.compile()
+  plan=self.compile()
+  self.assertEqual(plan['targetRoles'],self.observed['roles']);self.assertIsNone(plan['roleProposal'])
  def test_exact_existing_registration_is_reused_without_republication(self):
   row=copy.deepcopy(self.primitives.catalogue[0]);self.observed['registrations']['ingestion.operations.read']=row
   self.observed['active']['policy']['capabilities'].append(row['descriptor'])
@@ -97,30 +102,19 @@ class IngestionReadSignedOwner(unittest.TestCase):
         self.delta.initialize()
 
     def prepare(self):
-        with self.assertRaisesRegex(auth.AuthorizationPaused, 'HUMAN_OWNER_ROLE_CONFIRMATION_REQUIRED'):
-            self.delta.apply()
+        return self.delta.apply()
 
-    def test_native_human_confirmation_and_exact_resume_preserve_old_grants(self):
-        self.prepare()
-        self.assertEqual(self.owner.roles(), self.plan['baseline']['roles'])
-        self.assertEqual(self.owner.active()['policy']['grants'], self.plan['baseline']['active']['policy']['grants'])
-        self.prepare()
-        self.assertEqual(len(self.owner.drafts), 1); self.assertEqual(len(self.owner.proposals), 1)
-        self.owner.human_confirms()
-        receipt = self.delta.apply()
+    def test_real_signed_registration_scope_and_resume_never_publish_a_grant(self):
+        receipt=self.prepare()
         self.assertTrue(receipt['existingGrantsPreserved'])
-        self.assertTrue(receipt['existingRoleAssignmentsPreserved'])
         self.assertFalse(receipt['freshClientTokenScopesProven'])
-        self.assertEqual(self.owner.calls.count(('POST', auth.ADMIN+'/capabilities')), 1)
-        mutations = [c for c in self.owner.calls if c[0] in
-                     ('POST','KC:create','KC:update','KC:delete','authorization.permissions.propose')]
+        self.assertEqual(self.owner.roles(),self.plan['baseline']['roles'])
+        self.assertEqual(self.owner.active()['policy']['grants'],self.plan['baseline']['active']['policy']['grants'])
+        self.assertEqual(len(self.owner.proposals),0)
+        self.assertEqual(self.owner.calls.count(('POST',auth.ADMIN+'/capabilities')),1)
+        mutations=[c for c in self.owner.calls if c[0] in ('POST','KC:create','KC:update','KC:delete','authorization.permissions.propose')]
         self.delta.apply()
-        self.assertEqual(mutations, [c for c in self.owner.calls if c[0] in
-                         ('POST','KC:create','KC:update','KC:delete','authorization.permissions.propose')])
-        again = auth.compile_plan(self.owner.observe(), self.primitives, self.selection,
-                                  include_ingestion_status=False, source_id='fixture-source')
-        self.assertIsNone(again['roleProposal']); self.assertFalse(again['addedDescriptors'])
-        self.assertFalse(again['scopeCreations']); self.assertFalse(again['scopeBindings'])
+        self.assertEqual(mutations,[c for c in self.owner.calls if c[0] in ('POST','KC:create','KC:update','KC:delete','authorization.permissions.propose')])
 
     def test_lost_registration_reply_reconciles_without_duplicate_dispatch(self):
         self.owner.lost = ('POST', auth.ADMIN+'/capabilities')

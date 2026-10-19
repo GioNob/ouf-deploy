@@ -411,6 +411,8 @@ def compile_plan(observed, primitives, selection, *, role_id='admin', include_in
     caps = {c['capabilityId']:c for c in active['policy']['capabilities']}
     additions = []
     for cap, (_, _, resource) in new.items():
+        if primitives.profile == INGESTION_READ_PROFILE:
+            continue  # Registration/scope only. A finite human grant is a later THS proposal.
         attributes = ({'module':'INGESTION','sourceRef':source_id} if primitives.profile == INGESTION_READ_PROFILE
                       else {'module':'SEMANTIC'} if resource == 'semantic.proposalcommand' else {})
         additions.append({'capabilityId':cap,'constraints':owner_permission_constraints(resource,
@@ -473,6 +475,11 @@ def compile_plan(observed, primitives, selection, *, role_id='admin', include_in
                             'roleCatalogue':target_roles} if new_permissions else None,
             'preserveExistingGrants':True,'preserveRoleAssignments':True,'revokeSessions':False,
             'issueTokens':False,'runtimeAuthorityIssued':False,'notReleaseAcceptance':True}
+    if primitives.profile == INGESTION_READ_PROFILE:
+        plan['readScope'] = {'capabilityId':'ingestion.operations.read',
+            'constraints':owner_permission_constraints('operational',
+                {'module':'INGESTION','sourceRef':source_id},['TENANT_OPERATIONAL']),
+            'grantPublicationAllowed':False,'separateFiniteGrantReviewRequired':True}
     if session_binding is not None:
         validate_session_binding(session_binding, selection)
         plan['sessionBinding'] = copy.deepcopy(session_binding)
