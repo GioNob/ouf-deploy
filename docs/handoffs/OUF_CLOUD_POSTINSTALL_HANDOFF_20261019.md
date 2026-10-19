@@ -1,12 +1,28 @@
 # OUF cloud handoff after independent source-revision installation readback
 
+## Current checkpoint — refreshed tools verified; native preparation blocked before dispatch, 2026-10-19
+
+Technical8/8; functional4/6. This supersedes the missing-tool discovery boundary below. Both revision tools are exposed among26 tools. Direct ouf-admin revision.read succeeds: same ACTIVE parent9860853e-e8f3-4b93-b9d2-03521a039962, lock4, unchanged configuration hash and all20 property rules. MCP is HEALTHY. Fresh serving reads confirm the same13 ACTIVE Teatri with20 properties and all8 original ACTIVE Cinema with2 properties, complete pages. The attached baseline matches e63df67e… and all323 checksums PASS; consulted original Matrix1.7 §1, Onboarding1.6 §§91.2/103/106, Authorization1.5 §109.6 and MCP1.4 §§10.1–12/error taxonomy.
+
+One native revision.prepare was attempted with the explicit20 SINGLE/EXACT_TYPED v1/SOURCE_INTERVAL rules and commandKey `linked-property-v1:teatri-csv-6609b245:9860853e`. It returned `orchestration budget exhausted`, retryable=false. Exact revision.read reconciliation returns ABSENT/newCommandAuthorized=false: no owner revision/challenge was created. Do not retry automatically, change key/account, reset budgets or route commands around admission. This response does not prove all fresh token scopes. Installation and completed readback uow4n8lp were not repeated.
+
+Independent ouf.ingestion.status for this source returned authorization denied/retryable=false. No account bypass or grant change. Permission catalogue inspection is blocked by connector routing/schema: the schema omits link_id, omission is rejected by the connector, and the exact ouf-admin link_id is rejected by argument oneOf validation. Neither failure proves which grant/scope is missing.
+
+Installed MCP source a79b139c… raises the budget error in Reserve before Dispatch. Its business window shares principal/tenant/manifest identity and derives ceilings from each invocation's maximum times3; a revision reserves1 object/65536bytes, so different-size tool traffic can conflict with its smaller ceiling. Exact live counters and exhausted dimension were not read; do not claim a measured root cause or a HUMAN OAuth-budget exhaustion. Original MCP1.4 distinguishes orchestration admission and runtime human authority and marks this exhaustion non-retryable.
+
+Next: bounded approved admission evidence (window counters/reservations/debt and attempt context), plus native owner evidence for ingestion.operations.read and connector account-schema reconciliation. No sudo/readback/install replay is required merely to repeat completed infrastructure proof. Preserve the exact source/parent/command and reconcile before any governed continuation. Only after a usable native review and restored verification visibility may HUMAN approve/activate; activation may start the controlled second acquisition using retained scheduler settings. Profile publication, second acquisition/ACK/provenance and functional5/6 remain unproven. No source activation, historical replay, identity decision, automation or subagent.
+
+Evidence: [fresh discovery, attempted command and reconciled STOP](../../evidence/source-revision-cloud-admission-stop-20261019.json).
+
+
+
 ## Current checkpoint: technical8/8; functional4/6
 
 This checkpoint supersedes pre-installation STOPs and pending-readback wording. On2026-10-19 at09:28:42 Europe/Rome the operator supplied the qualified protected readback: complete, allStagesApplied, journalVersion57, Onboarding34, UDP36, MCP migrations unchanged, revision table owned by the application with append-only trigger,80 Gateway routes with all78 original routes preserved and exactly2 added. New Onboarding readiness200/UP and MCP204; unchanged UDP/Ingestion; old Onboarding/MCP containers retained, stopped and restart disabled; existing0440 MCP metadata exact custody/hashes preserved.81 frozen files and original private inputs verified. No token/HUMAN journal/dump opened;3 explicit READ ONLY SQL sessions, no journal write/authority/publication/job retry. Backup current custody/size/receipt proven; new full dump checksum explicitly NOT proven. Current authority expired and not accepted for execution.
 
 Exact target receipt plus a NEW direct ouf-admin MCP owner read: [evidence](../../evidence/source-revision-postinstallation-target-20261019.json). The direct read confirms Teatri source ACTIVE, lockVersion4, unchanged config/publication. The expired historical challenge is not revived or reused.
 
-## Next actionable boundary: ChatGPT tool discovery, not another rollout
+## Historical discovery boundary — superseded by the current checkpoint above
 
 The installed MCP manifest at sourcea79b139c7a26d64a584b0a432ebb8df8c32a52ed includes two ACTIVE/toolEligible native tools:
 
