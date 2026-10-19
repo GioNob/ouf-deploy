@@ -18,7 +18,7 @@ def document(context,name,value,shared,reader):
  require(reader.read(path,sha)==raw,'POSTBOOT_DOCUMENT_READBACK_FAILED')
  return {'path':str(path),'sha256':sha}
 
-def load_staged(profile,reader,configuration_raw=None):
+def load_staged(profile,reader,configuration_raw=None,owner_successors=None):
  pin=profile['stagedExecutor'];code=Path(pin['directory']);package=json.loads(reader.read(code/'package.json',pin['packageSha256'],131072,protected=False));require(package['schema']=='ouf.source-revision-executable-package.v1'and package['sourceCommit']==pin['sourceCommit'],'EXACT_QUALIFIED_STAGED_PACKAGE_REQUIRED')
  raw=reader.read(code/'execute.py',package['executorSha256'],131072,protected=False);decl={'__name__':'verified_staged_declaration','__file__':str(code/'execute.py')};exec(compile(raw,'<verified-staged-declaration>','exec'),decl)
  require(set(package['sourceHashes'])==set(decl['OVERLAYS']),'EXACT_STAGED_SOURCE_CLOSURE_REQUIRED')
@@ -35,6 +35,13 @@ def load_staged(profile,reader,configuration_raw=None):
   require(hashlib.sha256(files[name]).hexdigest()==successor['previousSha256'] and hashlib.sha256(configuration_raw).hexdigest()==successor['sha256'],'EXACT_CONFIGURATION_SUCCESSOR_REQUIRED')
   files[name]=configuration_raw;sources[module]=configuration_raw
   package={**package,'sourceCommit':profile['successorSourceCommit'],'sourceHashes':{**package['sourceHashes'],module:successor['sha256']}}
+ if owner_successors is not None:
+  require(set(owner_successors)==set(profile['ownerSuccessors'])=={'tools.source_revision_update.entry','tools.source_revision_update.login'},'EXACT_POSTBOOT_OWNER_SUCCESSORS_REQUIRED')
+  for module,successor_raw in owner_successors.items():
+   name,_=decl['OVERLAYS'][module];successor=profile['ownerSuccessors'][module]
+   require(hashlib.sha256(files[name]).hexdigest()==successor['previousSha256'] and hashlib.sha256(successor_raw).hexdigest()==successor['sha256'],'POSTBOOT_OWNER_SUCCESSOR_HASH_CHANGED')
+   files[name]=successor_raw;sources[module]=successor_raw
+   package={**package,'sourceCommit':profile['successorSourceCommit'],'sourceHashes':{**package['sourceHashes'],module:successor['sha256']}}
  loader=reader.read(code/'runtime.py',package['loaderSha256'],65536,protected=False);memory={'__name__':'verified_staged_read_only_memory'};exec(compile(loader,'<verified-staged-memory-loader>','exec'),memory)
  pins={**bundle['declaration']['sourcePins'],'ouf-deploy':package['sourceCommit'],'ouf-onboarding':case['candidateOwnerSourceCommit']};extra={'executorSha256':package['executorSha256'],'caseSha256':package['caseSha256'],'mode':'SOURCE_REVISION_UPDATE'}
  declaration=memory['declaration'](package['sourceCommit'],sources,loader,pins,extra);entry,verified=memory['load_entry'](package['sourceCommit'],sources,loader,reader.digest(declaration),pins,extra);require(verified==declaration,'STAGED_LIBRARY_DECLARATION_CHANGED')
@@ -68,7 +75,7 @@ def reconcile_partial(path,sources,reader):
          'PARTIAL_CONTEXT_CHANGED_DURING_READ')
  return {'contextPath':str(path),'exactCompilerSourcesMatch':True,'authorityArtifactsAbsent':True,'retainedFilesPreserved':True}
 
-def reconcile_postboot_stop(binding,reader):
+def reconcile_postboot_stop(binding,reader,expected_files=90):
  path=Path(binding['path']);require(path.is_absolute() and path.resolve()==path,'EXACT_STOP_PATH_REQUIRED')
  found={};directories={};total=0
  def walk(p,depth=0):
@@ -80,13 +87,13 @@ def reconcile_postboot_stop(binding,reader):
    info=child.lstat()
    if stat.S_ISDIR(info.st_mode):walk(child,depth+1)
    else:
-    require(len(found)<90 and stat.S_ISREG(info.st_mode) and info.st_uid==info.st_gid==0 and stat.S_IMODE(info.st_mode)==0o600,'STOP_FILE_CUSTODY')
+    require(len(found)<expected_files and stat.S_ISREG(info.st_mode) and info.st_uid==info.st_gid==0 and stat.S_IMODE(info.st_mode)==0o600,'STOP_FILE_CUSTODY')
     raw=reader.read(child,maximum=8388608);total+=len(raw);require(total<=33554432,'STOP_BYTE_BOUND')
     found[str(child.relative_to(path))]=hashlib.sha256(raw).hexdigest()
  walk(path)
- require(len(found)==90 and reader.digest(found)==binding['closureSha256'],'STOP_CLOSURE_CHANGED')
+ require(len(found)==expected_files and reader.digest(found)==binding['closureSha256'],'STOP_CLOSURE_CHANGED')
  require(all(reader.pin((path/name).lstat())==pin for name,pin in directories.items()),'STOP_TREE_CHANGED')
- return {'contextPath':str(path),'closureSha256':binding['closureSha256'],'files':90,'retainedFilesPreserved':True,'authorityArtifactsAbsent':True}
+ return {'contextPath':str(path),'closureSha256':binding['closureSha256'],'files':expected_files,'retainedFilesPreserved':True,'authorityArtifactsAbsent':True}
 
 
 def reconcile_postboot_stops(profile,reader):
@@ -115,7 +122,7 @@ def freeze_code(context,case,profile,executor_raw,files,package,loader,shared,re
  finally:os.close(fd)
  return successor,{'directory':str(code),'packageSha256':reader.digest(successor),'sourceCommit':profile['successorSourceCommit']}
 
-def run(profile,reader,owner,boot_reader,bootstrap,policy,guard_selection,executor_raw,configuration_raw=None):
+def run(profile,reader,owner,boot_reader,bootstrap,policy,guard_selection,executor_raw,configuration_raw=None,owner_successors=None):
  require(os.geteuid()==os.getegid()==0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,'ISOLATED_ROOT_PREPARATION_REQUIRED');require(profile['schema']=='ouf.source-revision-postboot-preparation-selection.v1','VERSIONED_POSTBOOT_SELECTION_REQUIRED');os.umask(0o077);require(type(profile['maximumSeconds']) is int and 30<=profile['maximumSeconds']<=300,'FINITE_POSTBOOT_PREPARATION_REQUIRED');signal.alarm(profile['maximumSeconds'])
  emit('BEGIN',maximumSeconds=profile['maximumSeconds'],newHumanSessionOpened=False)
  root=Path(profile['hostContext']);plan_raw=reader.read(root/'plan.json',profile['hostPlanSha256'],8388608);host=json.loads(plan_raw);journal_raw=reader.read(root/'journal.json',maximum=1048576);journal=json.loads(journal_raw);pointer=json.loads(reader.read(profile['hostIncidentPointer'],maximum=65536));host_proof=policy.completed_host(host,journal,pointer,profile,owner)
@@ -125,7 +132,7 @@ def run(profile,reader,owner,boot_reader,bootstrap,policy,guard_selection,execut
   bootstrap.provider_guard(boot_reader,guard_selection,owner);api=owner.Engine(host['profile']['socketPath'],host['profile']['engineVersion']);require(list(api.pin)==host['engineSocketBinding'],'COMPLETED_HOST_ENGINE_GENERATION_CHANGED')
   for move in host['moves']:owner.verify_move(api,host,move,connected=True)
   for path,expected in host['configurationFileBindings'].items():require(hashlib.sha256(bootstrap.configuration_bytes(path,host['profile'],owner)).hexdigest()==expected,'COMPLETED_HOST_CONFIGURATION_BYTES_CHANGED')
-  ns,original,case,closure,files,package,loader,memory,sources,pins,overlays=load_staged(profile,reader,configuration_raw);emit('QUALIFIED_LIBRARIES_LOADED',libraryOnly=True,newHumanSessionOpened=False)
+  ns,original,case,closure,files,package,loader,memory,sources,pins,overlays=load_staged(profile,reader,configuration_raw,owner_successors);emit('QUALIFIED_LIBRARIES_LOADED',libraryOnly=True,newHumanSessionOpened=False)
   historical=json.loads(reader.read(profile['historicalPrivateInputs']['path'],profile['historicalPrivateInputs']['sha256'],8388608));private_engine={**historical['engine'],'socketBinding':list(api.pin)}
   Engine=importlib.import_module('engine_creation').Engine;engine=Engine(private_engine['socketPath'],tuple(private_engine['socketBinding']));gateway=importlib.import_module('tools.chatbot_file_cohort.gateway');shared=importlib.import_module('tools.linked_property_rollout.preparation');prep=importlib.import_module('tools.source_revision_update.preparation');native_update=importlib.import_module('tools.source_revision_update.native');raw_runtime=importlib.import_module('tools.source_revision_update.database').raw_runtime
   selected_config=historical['gateway']['transport']['configBinding']['path'];transport=gateway.NamespaceAdmin.observe(engine,selected_config,binding_profile=gateway.MOUNT_SET_BINDING);admin=gateway.NamespaceAdmin(engine,transport);require(admin.routes()==historical['gateway']['beforeRoutes'],'HISTORICAL_GATEWAY_ROUTES_CHANGED')
@@ -140,6 +147,7 @@ def run(profile,reader,owner,boot_reader,bootstrap,policy,guard_selection,execut
   sources_partial=prep.gateway.source_members(reader.read(current['gatewayPackage']['path'],current['gatewayPackage']['sha256'],67108864),json.loads(prep.package_files(current)('gateway','source-inventory.json')))
   stopped=reconcile_partial(profile['previousPreparationStop'],sources_partial,reader)
   postboot_stop=reconcile_postboot_stops(profile,reader) if configuration_raw is not None else None
+  execution_stop=reconcile_postboot_stop(profile['previousExecutionStop'],reader,9) if owner_successors is not None else None
   shared.root_directory(Path(profile['privateParent']));context=Path(tempfile.mkdtemp(prefix='source-revision-postboot-prepared-',dir=profile['privateParent']));context.chmod(0o700);emit('PRIVATE_CONTEXT',contextPath=str(context))
   original_binding=document(context,'current-original-preparation.json',current_original,shared,reader)
   program=closure['executables']['docker'];reader.read(program['path'],program['sha256'],134217728)
@@ -150,7 +158,8 @@ def run(profile,reader,owner,boot_reader,bootstrap,policy,guard_selection,execut
    'preparedPlanBinding':private_binding,'postbootOriginalPreparationBinding':original_binding,
    'historicalPreparedPlanBinding':profile['historicalPrivateInputs'],
    'completedHostPlanSha256':profile['hostPlanSha256'],'completedHostContext':profile['hostContext'],
-   'qualifiedLibraryPackage':profile['stagedExecutor'],'configurationSuccessor':profile.get('configurationSuccessor'),'previousPostbootStop':postboot_stop,'qualifiedSourceHashesSha256':reader.digest(package['sourceHashes']),'qualifiedLoaderSha256':package['loaderSha256']}
+   'qualifiedLibraryPackage':profile['stagedExecutor'],'configurationSuccessor':profile.get('configurationSuccessor'),'ownerSuccessors':profile.get('ownerSuccessors'),'previousPostbootStop':postboot_stop,'postbootHumanHistory':profile.get('postbootHumanHistory'),'previousExecutionStop':execution_stop,'qualifiedSourceHashesSha256':reader.digest(package['sourceHashes']),'qualifiedLoaderSha256':package['loaderSha256']}
+  if owner_successors is None:proposed_case.pop('postbootHumanHistory',None)
   package,code_binding=freeze_code(context,proposed_case,profile,executor_raw,files,package,loader,shared,reader,overlays)
   extra={'executorSha256':package['executorSha256'],'caseSha256':package['caseSha256'],'mode':'SOURCE_REVISION_UPDATE'}
   pins={**pins,'ouf-deploy':profile['successorSourceCommit']}
@@ -163,6 +172,7 @@ def run(profile,reader,owner,boot_reader,bootstrap,policy,guard_selection,execut
   importlib.import_module('tools.source_revision_update.authority').closure_valid(closure)
   require(reconcile_partial(profile['previousPreparationStop'],sources_partial,reader)==stopped,'PARTIAL_STOP_CHANGED')
   if postboot_stop is not None:require(reconcile_postboot_stops(profile,reader)==postboot_stop,'POSTBOOT_STOP_CHANGED')
+  if execution_stop is not None:require(reconcile_postboot_stop(profile['previousExecutionStop'],reader,9)==execution_stop,'EXECUTION_STOP_CHANGED')
   for cid,before in observed.items():
    after=api.get('/containers/'+cid+'/json')
    require(owner.immutable(after)==owner.immutable(before) and owner.process(after)==owner.process(before)
@@ -173,6 +183,6 @@ def run(profile,reader,owner,boot_reader,bootstrap,policy,guard_selection,execut
   require(admin.routes()==historical['gateway']['beforeRoutes']and json.loads(reader.read(root/'journal.json',maximum=1048576))==journal,'GATEWAY_OR_COMPLETED_HOST_JOURNAL_CHANGED')
   require(bootstrap.provider_guard(boot_reader,guard_selection,owner)['loadedBinding']==native['loadedBinding'],'NATIVE_BOOT_BINDING_CHANGED_DURING_PREPARATION')
   require((lock.lstat().st_dev,lock.lstat().st_ino)==(info.st_dev,info.st_ino),'COMMON_LOCK_REPLACED')
-  result={'schema':'ouf.source-revision-postboot-preparation-result.v1','contextPath':str(context),'hostCompletionReadbackProven':True,'postbootSuccessorPrepared':True,'nativePlanCompilationProven':True,'effectiveFlywayConfigurationProven':True,'currentOriginalPreparationBinding':original_binding,'preparedInputsBinding':private_binding,'caseBinding':{'path':str(context/'executor-code'/'case.json'),'sha256':package['caseSha256']},'executorCodeBinding':code_binding,'sourceClosureSha256':reader.digest(closure),'nativePlanBinding':{'path':str(context/'prepared-plan.json'),'sha256':shared.digest(plan)},'previousStopReconciliation':stopped,'previousPostbootStopReconciliation':postboot_stop,'privateArtifactsOnly':True,'databaseReadOnlySessions':4,'candidateArchivesReused':True,'imagesImported':0,'backupPerformed':False,'onboardingFromVersion':33,'onboardingToVersion':34,'udpMigrationVersion':36,'mcpMigrationsUnchanged':True,'routeCount':len(historical['gateway']['beforeRoutes']),'profilePublications':0,'runtimeAuthorityIssued':False,'readyForExecution':False}
+  result={'schema':'ouf.source-revision-postboot-preparation-result.v1','contextPath':str(context),'hostCompletionReadbackProven':True,'postbootSuccessorPrepared':True,'nativePlanCompilationProven':True,'effectiveFlywayConfigurationProven':True,'currentOriginalPreparationBinding':original_binding,'preparedInputsBinding':private_binding,'caseBinding':{'path':str(context/'executor-code'/'case.json'),'sha256':package['caseSha256']},'executorCodeBinding':code_binding,'sourceClosureSha256':reader.digest(closure),'nativePlanBinding':{'path':str(context/'prepared-plan.json'),'sha256':shared.digest(plan)},'previousStopReconciliation':stopped,'previousPostbootStopReconciliation':postboot_stop,'previousExecutionStopReconciliation':execution_stop,'privateArtifactsOnly':True,'databaseReadOnlySessions':4,'candidateArchivesReused':True,'imagesImported':0,'backupPerformed':False,'onboardingFromVersion':33,'onboardingToVersion':34,'udpMigrationVersion':36,'mcpMigrationsUnchanged':True,'routeCount':len(historical['gateway']['beforeRoutes']),'profilePublications':0,'runtimeAuthorityIssued':False,'readyForExecution':False}
   document(context,'postboot-preparation-result.json',result,shared,reader);emit('END',complete=True,**{k:v for k,v in result.items()if k!='schema'});return result
  finally:os.close(fd)

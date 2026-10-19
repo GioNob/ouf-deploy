@@ -92,7 +92,11 @@ def main(original,sources,closure,case,context,read,ns,emit):
     authority.closure_valid(closure); context = Path(context)
     plan,primitives,private = preparation.compile_private(original,closure,case,context,read,ns)
     selection = original['authorization']['plan']['selection']
-    human = current_human(case['humanReviewBinding'],selection,read)
+    postboot_history = None
+    if 'postbootHumanHistory' in case:
+        human,postboot_history = login.historical_human(case,selection,read)
+    else:
+        human = current_human(case['humanReviewBinding'],selection,read)
     transport = authorization.OwnerTransport(selection,human.token_path,human.token_path,human_session=human)
     # Detect an unavailable existing provider-admin session before opening any
     # fresh HUMAN window. oauth() performs fixed metadata GETs only; no login,
@@ -105,7 +109,8 @@ def main(original,sources,closure,case,context,read,ns,emit):
         'completedTechnicalPhases':8,'functionalMilestonesProven':4,'profilePublications':0,'jobsRetried':0}).decode())
     authority.current_authorities(int(time.time())+910)
     signal.alarm(0)
-    human = login.authenticate(human,case,context,closure,read,emit)
+    human = (login.authenticate_postboot(human,postboot_history,case,context,closure,read,emit)
+        if postboot_history is not None else login.authenticate(human,case,context,closure,read,emit))
     transport = authorization.OwnerTransport(selection,human.token_path,human.token_path,human_session=human)
     observed = transport.observe()
     require(observed['oauth'] == provider_baseline,'PROVIDER_METADATA_CHANGED_DURING_HUMAN_AUTHENTICATION')

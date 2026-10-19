@@ -266,3 +266,52 @@ class BothRetainedStops(unittest.TestCase):
    with self.assertRaises(ValueError):b.reconcile_postboot_stops(profile,r)
   for bindings in ([],profile['previousPostbootStops'][:1],[profile['previousPostbootStops'][0]]*2):
    with self.assertRaises(ValueError):b.reconcile_postboot_stops({'previousPostbootStops':bindings},r)
+
+class NativeHandoff(unittest.TestCase):
+ def fixture(self,root):
+  code=root/'executor-code';code.mkdir(mode=0o700);raw=b'import sys,json\nassert not any(n.startswith("tools.")for n in sys.modules)\nprint(json.dumps({"fixtureArgs":sys.argv[1:]}))\n'
+  shared=Files().shared();shared.write_new(code/'execute.py',raw)
+  package={'sourceCommit':'a'*40,'executorSha256':hashlib.sha256(raw).hexdigest()};shared.write_new(code/'package.json',r.encoded(package))
+  result={'contextPath':str(root),'postbootSuccessorPrepared':True,'nativePlanCompilationProven':True,'runtimeAuthorityIssued':False,'readyForExecution':False,'executorCodeBinding':{'directory':str(code),'sourceCommit':'a'*40,'packageSha256':r.digest(package)}}
+  shared.write_new(root/'postboot-preparation-result.json',r.encoded(result));return result,raw
+ def test_complete_preparation_enters_a_fresh_isolated_process_with_exact_args(self):
+  from unittest.mock import patch
+  import subprocess,contextlib,io
+  run=load('dispatch','scripts/run-source-revision-postboot.py')
+  with Files().temporary()as temp:
+   result,raw=self.fixture(Path(temp));called=[]
+   with patch.object(run.os,'execv',side_effect=lambda path,args:called.append((path,args))),contextlib.redirect_stdout(io.StringIO()):run.handoff(result,raw,r)
+   self.assertEqual(called[0][0],'/usr/bin/python3');args=called[0][1];self.assertEqual(args[1:6],['-u','-I','-B','-S','-c'])
+   # Use the actual shell-free verifier in a new isolated interpreter; fixture executable only.
+   child=subprocess.run([__import__('sys').executable,*args[1:]],capture_output=True,timeout=20)
+   self.assertEqual(child.returncode,0,child.stderr.decode());self.assertEqual(json.loads(child.stdout)['fixtureArgs'],[result['executorCodeBinding']['directory'],'a'*40,result['executorCodeBinding']['packageSha256'],r.digest(result)])
+ def test_incomplete_or_changed_preparation_cannot_dispatch(self):
+  from unittest.mock import patch
+  import contextlib,io
+  run=load('dispatch_fail','scripts/run-source-revision-postboot.py')
+  for change in ('incomplete','receipt','executor'):
+   with self.subTest(change=change),Files().temporary()as temp:
+    result,raw=self.fixture(Path(temp))
+    if change=='incomplete':result['nativePlanCompilationProven']=False
+    if change=='receipt':(Path(temp)/'postboot-preparation-result.json').write_bytes(b'changed')
+    if change=='executor':(Path(temp)/'executor-code/execute.py').write_bytes(b'changed')
+    with patch.object(run.os,'execv')as dispatch,contextlib.redirect_stdout(io.StringIO()),self.assertRaises(ValueError):run.handoff(result,raw,r)
+    dispatch.assert_not_called()
+ def test_actual_fresh_verifier_rejects_executor_change_after_dispatch(self):
+  from unittest.mock import patch
+  import subprocess,contextlib,io
+  run=load('dispatch_hash','scripts/run-source-revision-postboot.py')
+  with Files().temporary()as temp:
+   result,raw=self.fixture(Path(temp));called=[]
+   with patch.object(run.os,'execv',side_effect=lambda path,args:called.append(args)),contextlib.redirect_stdout(io.StringIO()):run.handoff(result,raw,r)
+   (Path(temp)/'executor-code/execute.py').write_bytes(b'print("PRIVATE_CANARY")')
+   child=subprocess.run([__import__('sys').executable,*called[0][1:]],capture_output=True,timeout=20)
+   self.assertNotEqual(child.returncode,0);self.assertNotIn(b'PRIVATE_CANARY',child.stdout)
+ def test_nine_file_execution_stop_is_bound_without_allowing_extra_artifacts(self):
+  with Files().temporary()as temp:
+   root=Path(temp);expected={}
+   for i in range(9):
+    raw=('retained'+str(i)).encode();Files().shared().write_new(root/('file'+str(i)),raw);expected['file'+str(i)]=hashlib.sha256(raw).hexdigest()
+   binding={'path':str(root),'closureSha256':r.digest(expected)};self.assertEqual(b.reconcile_postboot_stop(binding,r,9)['files'],9)
+   Files().shared().write_new(root/'authority.json',b'{}')
+   with self.assertRaises(ValueError):b.reconcile_postboot_stop(binding,r,9)
