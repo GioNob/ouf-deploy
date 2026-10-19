@@ -1,5 +1,16 @@
 ## Current checkpoint — source APPROVED; Ingestion registration profile qualified, 2026-10-19
 
+### Azione amministrativa HUMAN distinta — 2026-10-19, preparata per avvio nativo
+
+Tecniche **8/8**, funzionali **4/6**. Il codice standalone `a47e3edef6bba579d0df05859cc9eb7d8f8ca17d` ha superato72 test nella run [39221983431](https://github.com/GioNob/ouf-deploy/actions/runs/39221983431), con firme Ed25519 reali/journal privati e fixture HTTP/IAM esplicite. Il job117959623863 ha predisposto10 file pubblici qualificati sul server; nessun input privato letto, login, authority o effetto amministrativo eseguito.
+
+Lo stage è `/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-ingestion-read-administrative-code-39221983431`; manifest SHA256 `6462f6f506dee6904123fcc94975b16727476d482969f5020f03d43ddb69e09c`. Il nuovo launcher `scripts/launch-ingestion-human-administration-20261019.sh` verifica gli hash prima del processo root. La preparazione privata verifica solo la storia/frozen custody già acquisita, costruisce una nuova closure isolata e non richiama installazione o readback uow4n8lp. Dopo PREPARED, la fase nativa verifica la sessione IAM e HUMAN; eventuale RIAPRO LOGIN conserva il cumulativo256, poi APPROVO vincola il piano corrente a massimo900secondi.
+
+Perimetro: registrazione `ingestion.operations.read`, aggiunta del descrittore nella policy immutabile e relativo scope OAuth del client ChatGPT. Ruoli, assegnazioni e grant rimangono invariati. Il successivo grant temporaneo sulla fonte `teatri-csv-6609b245` richiede una proposta e decisione THS distinte. Nessuna attivazione della revisione approvata, acquisizione, modifica infrastrutturale o retry job. Dopo STOP/interruzione: conservare il contesto e riconciliare, senza rilanciare il launcher.
+
+La preparazione root e l'esecuzione sul target restano **NON ESEGUITE**: dal CLOUD manca un terminale operatore autenticato per i gate nativi. CI e staging non dimostrano pubblicazione della capability o token aggiornati. Tappe5–6 ancora aperte.
+
+
 Technical8/8; functional4/6. User confirmed source approval; direct ouf-admin revision.read and a later owner read independently prove c9fec43c-19b3-4ffb-9111-781bc347c5b0 APPROVED, lock3, challenge9bca610c… CONFIRMED, hashb13c5fe2… unchanged. The latter read reports challengeExpired=true while approval remains APPROVED/CONFIRMED; do not interpret historical challenge expiry as loss of the recorded decision or recreate the source review. Activation/readiness remain NOT_STARTED/0, compatibility unobserved; no publication or second acquisition.
 
 [Current evidence and remaining native boundary](../evidence/source-approved-ingestion-read-qualified-20261019.json). A new narrow authorization profile is implemented in source64554957a6b1f944c654064f5acbc48e94ed9db8 and passes CI39220098048/job117953125583:50tests (22existing authorization +6durable observations +11revision +11new profile). Tests include real signed AggregateAction/private journals, lost-response reconciliation, revocation, no duplicate draft/dispatch and exact Java owner serialization. HTTP/IAM are explicit fixtures; no target policy modification is claimed.

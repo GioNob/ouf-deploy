@@ -1,0 +1,40 @@
+{
+  "schema": "ouf.ingestion-read-administrative-cloud-handoff.v1",
+  "sourceCommit": "a47e3edef6bba579d0df05859cc9eb7d8f8ca17d",
+  "qualification": {
+    "workflowRun": 39221983431,
+    "signedOwnerJob": 117959189356,
+    "tests": 72,
+    "status": "PASS",
+    "cryptography": "REAL_ED25519",
+    "httpIam": "EXPLICIT_FIXTURES"
+  },
+  "stage": {
+    "completedTechnicalPhases": 8,
+    "filesStaged": 10,
+    "functionalMilestonesProven": 4,
+    "infrastructureEffects": 0,
+    "manifestSha256": "6462f6f506dee6904123fcc94975b16727476d482969f5020f03d43ddb69e09c",
+    "preparerSha256": "68068635b76b54bb0911a5321cae6e3b09149c2256b81c5b8b958f0297e8b3fc",
+    "privateInputsRead": false,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.ingestion-read-administrative-stage-receipt.v1",
+    "sourceCommit": "a47e3edef6bba579d0df05859cc9eb7d8f8ca17d",
+    "stagePath": "/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-ingestion-read-administrative-code-39221983431",
+    "jobId": 117959623863
+  },
+  "targetPrivatePreparationExecuted": false,
+  "targetAdministrationExecuted": false,
+  "nativeHumanGatePending": true,
+  "grantsPublished": 0,
+  "sourceActivated": false,
+  "technicalPhasesProven": 8,
+  "functionalMilestonesProven": 4,
+  "completedInstallationAndReadbackReplayed": false,
+  "petConsulted": [
+    "Matrix1.7 §1",
+    "Authorization1.5 §§20–22/109.6",
+    "Onboarding-THS1.6 §103/THS-A02/A09",
+    "Ingestion1.3 §46/46.3/OA-ING-05"
+  ]
+}

@@ -1,8 +1,8 @@
-name: Native HUMAN recovery source revision immutable delivery
+name: Immutable native HUMAN delivery qualification
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/launch-source-revision-human-recovery-20261019.sh', 'tests/test_source_revision_human_recovery_delivery.py', '.github/workflows/source-revision-human-recovery-delivery.yml']
+    paths: ['scripts/launch-source-revision-human-recovery-20261019.sh', 'scripts/launch-ingestion-human-administration-20261019.sh', 'tests/test_ingestion_human_administration_delivery.py', 'tests/test_source_revision_human_recovery_delivery.py', '.github/workflows/source-revision-human-recovery-delivery.yml']
 permissions: {contents: read}
 jobs:
   delivery:
@@ -14,8 +14,11 @@ jobs:
       - name: Exact staged manifest, root shim and no read before helper hash
         run: |
           bash -n scripts/launch-source-revision-human-recovery-20261019.sh
+          bash -n scripts/launch-ingestion-human-administration-20261019.sh
           fixture="/root/ouf-human-recovery-delivery-${GITHUB_RUN_ID}"
           sudo install -d -m 0700 "$fixture"
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_source_revision_human_recovery_delivery.py' -v
+          sudo python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_ingestion_human_administration_delivery.py' -v
+
