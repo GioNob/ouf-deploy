@@ -60,6 +60,7 @@ def main(original,sources,closure,case,context,read,emit):
   'Azione owner distinta: aggiungo SOLO secrets.references.ingestionReadOwnerKey dal DRAFT verificato.\n'
   'Creo UNA revisione immutabile, valido ambiente e attivo con If-Match revisione/checksum/generazione.\n'
   'Massimo3POST e1export autorevole privato,210secondi,un tentativo per effetto e readback del payload.\n'
+  'Nuova autorita firmata dai due ruoli nativi, limitata al solo scope owner.\n'
   'NON genero chiavi e NON pubblico la proiezione attiva; resta quella precedente fino ad APPROVO distinto.\n'
   'Zero scritture Gateway, container, DB diretto, IAM/grant, fonte/job o metadati MCP. Il runtime non legge ancora la nuova chiave.\n'
   'Questo non e un rollout: DB e aggiornamenti runtime richiedono ammissione ed esecutore qualificato separati.\n'

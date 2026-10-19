@@ -32,7 +32,10 @@ class Preparation(unittest.TestCase):
    m.write_new(first/'execution-plan.json',m.encoded({'humanBinding':{'sessionDirectory':str(root/'NO_HUMAN_READ'),'expiresAt':1792436155}}))
    proposal={'private':'draft'};dh=m.digest(proposal);m.write_new(draft/'draft-plan.json',m.encoded(proposal))
    m.write_new(draft/'preparation-result.json',m.encoded({'complete':True,'draftPlanHash':dh,'runtimeAuthorityIssued':False,'installedSqlResourceEqualityProven':True,'candidateRootfsByteCustodyProven':True}))
-   before={p:p.read_bytes()for p in first.iterdir()};delivery={n:(PKG/(n+'.py')).read_bytes()for n in m.NAMES if n not in('prepare','predecessor_extension')};delivery.update(prepare=PREP.read_bytes(),predecessor_extension=v5)
+   before={p:p.read_bytes()for p in first.iterdir()};delivery={n:(PKG/(n+'.py')).read_bytes()for n in m.NAMES if n not in('prepare','predecessor_extension','bootstrap')}
+   bootstrap=HERE/'bootstrap.py'
+   if not bootstrap.exists():bootstrap=ROOT/'scripts/execute-ingestion-owner-reference.py'
+   delivery.update(prepare=PREP.read_bytes(),predecessor_extension=v5,bootstrap=bootstrap.read_bytes())
    dispatched=[];flags=types.SimpleNamespace(isolated=True,no_site=True)
    with (patch.object(m,'FIRST',first),patch.object(m,'DRAFT',draft),patch.object(m,'DRAFT_HASH',dh),patch.object(m,'PACKAGE',m.digest(package)),patch.object(m,'CLOSURE',m.digest(closure)),
     patch.object(m,'FROZEN256',m.sha(prefix)),patch.object(m.sys,'flags',flags),patch.object(m.sys,'dont_write_bytecode',True),patch.object(m.os,'execv',side_effect=lambda *a:dispatched.append(a))):

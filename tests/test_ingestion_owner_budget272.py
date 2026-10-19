@@ -83,6 +83,15 @@ class Budget(unittest.TestCase):
   self.prompt.side_effect=ValueError('DECLINED')
   with self.assertRaises(Exception):self.run_flow()
   self.assertEqual(self.calls,[]);self.assertFalse((self.directory/'successor-window.claim.json').exists())
+ def test_declined_browser_ack_makes_no_token_request_and_preserves_old_journal(self):
+  original=self.phrase
+  def consent(summary,phrase):
+   if phrase.startswith('LOGIN COMPLETATO '):raise ValueError('DECLINED_ACK')
+   return original(summary,phrase)
+  self.prompt.side_effect=consent
+  with self.assertRaises(Exception):self.run_flow()
+  self.assertEqual(len(self.calls),2);self.assertFalse(any(url.endswith('/token')for url,_,_ in self.calls))
+  self.assertEqual(self.human._read(),self.row);self.assertFalse((self.context/'authority.json').exists())
  def test_predecessor_cannot_refresh_or_spend_even_with_remaining_budget(self):
   self.human._check_identity_and_budget(self.row)
   with self.assertRaises(Exception):self.human._request(self.row,'REFRESH','https://issuer.fixture.invalid/token')
