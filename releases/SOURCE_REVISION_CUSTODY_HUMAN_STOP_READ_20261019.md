@@ -1,6 +1,6 @@
 # Custody successor HUMAN OAuth STOP protected read — 2026-10-19
 
-Technical8/8; functional4/6. Read-only delivery qualification pending; no target execution by cloud development.
+Technical8/8; functional4/6. Read-only delivery qualification PASS:11 tests; target protected read remains the physical gate.
 
 ## New target evidence
 
@@ -19,3 +19,25 @@ No login, refresh, successor creation, clock/boot change, authority, publication
 ## PET review
 
 Consulted the original Authorization PET1.5 §109.6 (fail closed and no application retry for invalid JWT) and Matrix1.7 §1 (owner enforcement and THS HUMAN authority), from the verified baseline attachment. The generic stop does not prove an invalid JWT or a particular issuer cause; these rules do not justify guessing it. No complete PET compliance or functional5/6 completion is claimed.
+
+## Qualification and immutable command
+
+[Run39210618716](https://github.com/GioNob/ouf-deploy/actions/runs/39210618716), job117922938238, source75e0423505be0a45c3400880954ca17bd987f191: **11 tests PASS**, no skips. Includes the complete reader main against real root-private81-file/plan/claim/IAM/HUMAN fixtures, with all bytes preserved; REFRESH189 versus USERINFO190; expired windows; identity/budget/boot/custody drift; no full-module execution; exact/tampered root shim. This does not report either counter as an actual target fact. Both immutable Git blobs were independently fetched via GitHub and matched byte-for-byte.
+
+Helper blob0735a43a18fb062f63f65d1e6117925486ed610f, SHA256aba445960c26e1e01daf847055a63147afc3bb6e104f9fe87ee424fe5ae8aab8. Launcher blob29ada938a4a9359b247fb39ae1c228aba29810d6, SHA2560b2612e660a3c57161ecd32c869bc71bcd5019f87739efef71cab9c500b6cd40. See `evidence/source-revision-custody-human-stop-read-qualified-20261019.json` for boundaries.
+
+Execute once on the VPS. The only interactive gate is sudo for protected read access; no IAM or HUMAN login opens. Return the printed log; after failure/interruption do not rerun.
+
+```bash
+(
+  set -euo pipefail
+  umask 077
+  ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+  [[ -x "$ouf_gh" ]] || ouf_gh="$(command -v gh)"
+  [[ -x "$ouf_gh" ]] || exit 1
+  ouf_launch="$(mktemp -d "$HOME/ouf-custody-human-read-launch.XXXXXXXX")"
+  "$ouf_gh" api repos/GioNob/ouf-deploy/git/blobs/29ada938a4a9359b247fb39ae1c228aba29810d6 --jq .content | base64 --decode > "$ouf_launch/read.sh"
+  printf '%s  %s\n' '0b2612e660a3c57161ecd32c869bc71bcd5019f87739efef71cab9c500b6cd40' "$ouf_launch/read.sh" | sha256sum --check
+  bash "$ouf_launch/read.sh"
+)
+```
