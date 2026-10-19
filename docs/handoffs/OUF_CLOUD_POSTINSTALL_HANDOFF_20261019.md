@@ -1,5 +1,19 @@
 # OUF cloud handoff after independent source-revision installation readback
 
+### Binding owner attivato; STOP custodia durante il secondo ambito — nessun replay
+
+Ricevute target19ottobre2026: login HUMAN251→255, stesso massimo256, nuova finestra esplicitamente consentita fino alle **20:55:55 Europe/Rome** (`1792436155`). La disponibilità futura del token non è provata da tale scadenza: non avviare refresh/login impliciti né cambiare budget. Owner scope46iexg9c completato: **ACTIVE revisione6/generazione6**, checksum **ded675196fa5b7f9c398b249f737ff19df26d66e81afa65ddcf9a5ecfb034a98**;3POST e1export autorevole **10b378c05f6ce38d46b8ba9d66a0fa1f9d5ceb0383975ca6c43ba604e9bf599d**. Owner NON va riattivato/ripetuto.
+
+Secondo scope7x21g1fg: APPROVO registrato, authority/issuance/recovery presenti, update-result assente; STOP `PRIVATE_ROOT_ANCESTRY_REQUIRED`. Il lettore privato `baseline.read` richiede antenati root mentre il Gateway ha già custodia approvata per `/opt/ouf` uid/gid1000/mode0750 e sottodirectory installationroot0700/file0600. **Difetto del codice di readback:** `native.publish_active_projection` esegue rename+fsync PRIMA di usare quel lettore; anche `guard_current` lo usa dopo la pubblicazione. Quindi la proiezione potrebbe già essere nuova mentre lo stage rimane CLAIMED. L'output da solo NON prova zero effetti nel secondo scope né lo stato corrente delle rotte. Nessun chown/chmod o replay per superare il guard.
+
+Diagnosi pronta, **non ancora eseguita sul VPS**: `scripts/read-installation-binding-custody-stop.py`, source **0a6438cad877dd356e0cc512c9883e52c5c37583**, SHA256 **c159ee9c93cb5ccd0e6404542296976e200f9ea218df53c53ea3f0e39d306ff4**. **8test CI passati**, run39290858181/job118190816178, con antenato UID/GID1000 reale.8test locali passati con virtualizzazione proprietario limitata al solo inode fixture (filesystem locale rifiuta chown nonzero). Verifica pacchetto219 de440e..., closure2fb31d..., entrambi i piani/review/journal/claim e completamento owner; importa via AST solo i cinque nodi dei lettori di custodia dal Gateway autenticato, senza main/runtime/autorità. Confronta file attivo con vecchia proiezione conservata e export nuovo, segnala CLAIMED+nuovi byte e presenza di claim Gateway. Nessuna rete, Engine, OAuth, journal o altra scrittura; non apre credenziali, chiavi o authority.
+
+Output atteso `ouf.installation-binding-custody-stop-read.v1`. La diagnosi distingue `APPROVED_NEW_EXPORT`, `RETAINED_OLD_PROJECTION`, `OTHER_CUSTODIED_BYTES`; non dichiara risoluzione/release. Dopo il read si prepara una riconciliazione distinta con nuova autorità finita, controllo owner/rotte correnti, senza ripetere owner/post/export completati o una pubblicazione già provata. Nessuna modifica ai permessi o all'autorità consumata; eventuali effetti nuovi restano soggetti ai gate HUMAN/THS. Tecniche **8/8**, funzionali **4/6**; profilo governato, fonte e tappe5–6 ancora aperti.
+
+Ricevute pubbliche in `evidence/installation-binding-owner-completed-20261019.json` e `evidence/installation-binding-projection-custody-stop-20261019.json`; nessun codice device/credential archiviato. Qualifica in `evidence/installation-binding-custody-stop-qualification-20261019.json`. Le CI del launcher precedente39280839526 e39280897367 risultano ora entrambe SUCCESS: distinguere tale qualifica dal difetto di custodia rilevato sul target.
+
+---
+
 ### Ultimo checkpoint: CAS fermato senza OAuth; azione completa con tre consensi nativi
 
 **Stato target provato: tecniche8/8, funzionali4/6.** Onboarding owner atomico hnfn0zwg completato e sano; non ripeterne update o readback. L'ultimo piano CAS si è fermato in `CHECK_COMPLETED_OWNER_HUMAN_NO_REFRESH`, `CURRENT_HUMAN_SESSION_REFRESH_PENDING`: sessione READY251/256, zero OAuth, nessuna autorità; il piano target non è stato completato. Ricevuta completa in `evidence/installation-binding-cas-plan-target-stop-20261019.json`.
