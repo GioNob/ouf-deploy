@@ -3,7 +3,7 @@
   "evidenceSource": "operator pasted redacted END receipt",
   "privateResultReconstructedFromExactQualifiedSource": true,
   "expectedPrivateResultSha256": "a9ecda1c812236605a91415d776d4a69c5487087d2e47dda1642847845d6535e",
-  "privateResultHashIndependentlyRead": false,
+  "privateResultHashIndependentlyRead": true,
   "result": {
     "schema": "ouf.source-revision-postboot-preparation-result.v1",
     "contextPath": "/etc/ouf/deploy-snapshots/source-revision-postboot-prepared-gezxi85l",
@@ -71,5 +71,6 @@
   },
   "technicalPhases": 8,
   "functionalMilestones": 4,
-  "deploymentPerformed": false
+  "deploymentPerformed": false,
+  "privateResultHashReadbackEvidence": "source-revision-execution-human-stop-20261019.json:VERIFIED_PREPARED_EXECUTOR"
 }

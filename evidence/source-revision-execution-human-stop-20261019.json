@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.source-revision-execution-stop-operator-evidence.v1",
+  "evidenceSource": "operator pasted redacted output",
+  "deliveryCheck": "VERIFIED_PREPARED_EXECUTOR",
+  "preparationResultSha256": "a9ecda1c812236605a91415d776d4a69c5487087d2e47dda1642847845d6535e",
+  "preparationResultHashIndependentlyRead": true,
+  "frozenFilesVerified": 81,
+  "sourceClosureSha256": "1820bcea2dc55f605d73381aa7e8318b68e3206601b785ef6f11c4ff051f2d1b",
+  "preparedContext": "/etc/ouf/deploy-snapshots/source-revision-postboot-prepared-gezxi85l",
+  "executionContext": "/etc/ouf/deploy-snapshots/source-revision-execution-k6rk22xj",
+  "executionCheck": "STOP",
+  "reason": "HUMAN_SESSION_BINDING_OR_HISTORY_DRIFT",
+  "reconciliationRequired": true,
+  "automaticRetry": false,
+  "automaticSessionRenewal": false,
+  "budgetReset": false,
+  "runtimeAuthorityIssuedBeforeStop": false,
+  "authorityAbsenceIndependentlyRead": false,
+  "specificFailedPredicateKnown": false,
+  "technicalPhases": 8,
+  "functionalMilestones": 4
+}

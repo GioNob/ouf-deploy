@@ -1,3 +1,5 @@
+> **TARGET STOP:** k6rk22xj / HUMAN_SESSION_BINDING_OR_HISTORY_DRIFT before native login/authority gates. The command below is suspended. Successful preparation gezxi85l and its independently verified receipt remain retained. Reconcile execution artifacts and HUMAN history before any successor invocation.
+
 # Successful postboot preparation — delivery to existing native release gates
 
 Technical8/8; functional4/6. Target END complete=true for `/etc/ouf/deploy-snapshots/source-revision-postboot-prepared-gezxi85l`: host completion readback, native plan compilation and effective Flyway configuration proven; four readonly DB sessions; candidate archives reused, no image import or backup; no authority/publication/runtime mutation. The two90-file postboot contexts and55e seven-file compiler are reconciled and retained. Baseline78 routes, UDP36, Onboarding33→34, MCP migrations unchanged. [Operator receipt and exact bindings](../evidence/source-revision-postboot-preparation-target-success-20261019.json).
@@ -24,7 +26,7 @@ The native executor and its77-module frozen package are unchanged by this delive
 
 CI [39190694557](https://github.com/GioNob/ouf-deploy/actions/runs/39190694557), job117862601203:7 delivery tests PASS. Logs independently retrieved; shell syntax and the exact isolated root shim are covered. No target executor invocation has occurred yet. The operator must run the pinned launcher once on the VPS because root custody and the controlling HUMAN terminal are unavailable to the cloud runner. Keep the terminal in foreground, preserve log/new execution context, and do not replay after STOP/interruption or an ambiguous effect. This preserves existing journals, idempotency and budgets; no generic repository/MCP consent is requested.
 
-## Target command — once in the foreground
+## Historical target command — attempted; DO NOT REPLAY
 
 ```bash
 (
