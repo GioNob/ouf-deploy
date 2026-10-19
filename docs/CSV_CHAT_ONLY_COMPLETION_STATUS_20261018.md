@@ -1,5 +1,10 @@
 ## Current checkpoint — governed capsule complete; APPROVO accepted; custody STOP
 
+## Current checkpoint — custody prepared, IAM STOP, 2026-10-19
+
+Technical8/8; functional4/6. Custody preparation completed with new case/package/closure, four read-only DB sessions and zero OAuth/runtime effects. Existing kfy inputs and candidate archives preserved. Fresh executor kcw73ask stopped on EXISTING_IAM_SESSION_EXPIRED before the existing-HUMAN refresh/new APPROVO. Do not replay preparation or old launchers. Protected inventory plus one-use native IAM resume is under qualification; no authority absence is assumed until readback. [Evidence](../evidence/source-revision-custody-iam-stop-20261019.json), [reconciliation/resume](../releases/SOURCE_REVISION_CUSTODY_IAM_RESUME_20261019.md).
+
+
 ## Current checkpoint — protected custody read, 2026-10-19
 
 Technical8/8; functional4/6. The operator's protected dvf517sr read proves an expired issued authority and consumed claim, journal version0/nextStage0/effects[], no backup and unchanged running applications. MCP permit/policy/profile hashes match; root:10005/0440 explains the generic private-reader stop. Preserve all bytes/permissions/claims/budgets. An explicit fresh-review custody successor passed136 tests including immutable delivery (runs39206613640/39206831574), with source-only staging and no target execution; physical sudo and a new native APPROVO remain; do not replay dvf or the governed launcher. [Evidence](../evidence/source-revision-after-approval-custody-target-20261019.json), [successor qualification record](../releases/SOURCE_REVISION_CUSTODY_CONTINUATION_20261019.md). Older readiness/checkpoints below do not supersede this stop.
