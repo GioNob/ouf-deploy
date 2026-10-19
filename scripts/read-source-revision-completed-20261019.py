@@ -262,9 +262,16 @@ except BaseException:os._exit(1)
 os._exit(0)
 '''
 
+def gateway_runtime_pin(actual,binding):
+    profile=binding.get('runtimeBindingProfile')
+    require(profile in (None,'ouf.apisix-runtime-binding.mount-set.v1'),'UNKNOWN_GATEWAY_BINDING_PROFILE')
+    value=runtime_pin(actual)
+    if profile is None:value['mountsHash']=digest(actual['Mounts'])
+    return value
+
 def gateway_check(engine,binding):
     actual=engine_get(engine,'containers',binding['runtimeBinding']['containerId'])
-    require(actual is not None and runtime_pin(actual)==binding['runtimeBinding'] and
+    require(actual is not None and gateway_runtime_pin(actual,binding)==binding['runtimeBinding'] and
         actual['Name']=='/ouf-apisix' and actual['State']['Running'] is True and
         actual['State']['Paused'] is False,'GATEWAY_GENERATION_DRIFT')
     mounts=[m for m in actual['Mounts'] if m.get('Destination')=='/usr/local/apisix/conf/config.yaml']
@@ -408,6 +415,7 @@ def applications(plan,row,final):
   predecessor=engine_get(plan['engine'],'containers',r['oldRuntimeBinding']['containerId'])
   require(predecessor is not None and predecessor['Name']=='/'+r['retiredName'] and predecessor['State']['Running']is False
    and predecessor['State']['Pid']==0 and predecessor['HostConfig']['RestartPolicy']=={'Name':'no','MaximumRetryCount':0}
+   and predecessor['State']['StartedAt']==r['oldRuntimeBinding']['startedAt']
    and predecessor['Image']==r['oldRuntimeBinding']['imageId'] and digest(predecessor['Config'])==r['oldRuntimeBinding']['configHash']
    and digest(sorted(predecessor['Mounts'],key=lambda m:m['Destination']))==r['oldRuntimeBinding']['mountsHash'],'RETAINED_OLD_CONTAINER_DRIFT')
   out[name]={'containerId':actual['Id'],'pid':actual['State']['Pid'],'startedAt':actual['State']['StartedAt'],'runtimeBindingVerified':True,'restartPolicyPreserved':True}

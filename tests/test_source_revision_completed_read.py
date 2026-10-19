@@ -151,3 +151,10 @@ except SystemExit as e:print(json.dumps({'privateReads':len(calls),'exit':str(e.
     self.assertEqual(r.returncode,0,r.stderr.decode());self.assertEqual(r.stderr,b'');self.assertNotIn(b'PRIVATE_CANARY',r.stdout)
     rows=[json.loads(x)for x in r.stdout.splitlines()];self.assertEqual(rows[-1]['privateReads'],0 if tamper else 1)
     if not tamper:self.assertFalse(rows[0]['complete'])
+
+class GatewayProfile(unittest.TestCase):
+ def test_versioned_mount_order_matches_native_contract_without_fallback(self):
+  a={'Id':'a','Image':'i','State':{'Pid':1,'StartedAt':'same'},'Config':{},'HostConfig':{},'NetworkSettings':{},'Mounts':[{'Destination':'/z'},{'Destination':'/a'}]}
+  raw=m.gateway_runtime_pin(a,{});versioned=m.gateway_runtime_pin(a,{'runtimeBindingProfile':'ouf.apisix-runtime-binding.mount-set.v1'})
+  self.assertEqual(raw['mountsHash'],m.digest(a['Mounts']));self.assertEqual(versioned['mountsHash'],m.digest(list(reversed(a['Mounts']))));self.assertNotEqual(raw,versioned)
+  with self.assertRaises(m.ReadDenied):m.gateway_runtime_pin(a,{'runtimeBindingProfile':'unreviewed'})
