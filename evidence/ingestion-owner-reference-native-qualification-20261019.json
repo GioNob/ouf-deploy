@@ -1,11 +1,24 @@
 {
   "schema": "ouf.ingestion-owner-reference-native-qualification.v1",
   "sourceCommit": "cea5627fea0a517061e01fbac505da159bc63371",
-  "ciRunId": 39311690920,
-  "jobId": 118262619710,
-  "testsPassed": 19,
+  "deliveryCommit": "e5e1efddd0c4eade5f61083cfcb9a9326deed54f",
+  "nativeCi": {
+    "runId": 39311690920,
+    "jobId": 118262619710,
+    "passed": 19,
+    "failed": 0
+  },
+  "deliveryCi": {
+    "runId": 39312379001,
+    "jobId": 118265004784,
+    "passed": 3,
+    "failed": 0
+  },
   "scope": "OWNER_REFERENCE_ONLY_NOT_RUNTIME_ROLLOUT",
   "sourceModuleCount": 232,
+  "bundleSha256": "c58ce2620bf31a77a605adf6c278dcef89fd6cd8ca8487f82428095f6923a442",
+  "bundleGitBlobSha": "5633382da7701e41bd793de9dae9bb1131c3e1a1",
+  "launcherSha256": "33e179b6c90e6c023430267903e03458aa4079fe8ea292f55ce75e9fca175613",
   "targetExecuted": false,
   "liveOwnerWritePerformedByCI": false,
   "providerRepliesMockedInCI": true,
