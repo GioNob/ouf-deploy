@@ -34,5 +34,13 @@
   "doNotRerunLauncher": true,
   "completedTechnicalPhases": 8,
   "functionalMilestonesProven": 4,
-  "completedInstallationReadbackReplayed": false
+  "completedInstallationReadbackReplayed": false,
+  "diagnosticQualification": {
+    "commit": "3a2de521bdb0467791954bd56d74b38276e2ea17",
+    "sha256": "2a4d855d4a034673c3ec7bca933bb246a7a4ca38534597e7c3eb12ddb4a07074",
+    "runId": 39229041547,
+    "jobId": 117982270177,
+    "testsPassed": 8,
+    "targetReadComplete": false
+  }
 }
