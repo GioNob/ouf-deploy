@@ -48,7 +48,7 @@ Keep the process open. Return only public OUF_INSTALLATION_ROUTE_PREPARED/HUMAN/
 
 ## Qualification and limits
 
-Source CI39296553970/job118210477015:7real signed-authority/journal route-only tests,8fresh-login/budget checks,2isolated226-module preparation checks. Delivery CI39296750272/job118211142285:3exact11file/tamper/missing-client/root-recheck tests. Provider/terminal and Gateway replies are test fixtures. Local missing boot-ID is fixture-only; CI uses actual boot. Preparation fixture substitutes retained paths/hashes and traps old main/reader/bootstrap so they cannot be replayed. These do not prove live target effects. See ../evidence/installation-route-reconciliation-qualification-20261019.json.
+Source CI39299796409/job118221669926:7 real signed-authority/journal route-only tests,8 fresh-login/budget checks,3 isolated preparation/full-source-pin checks. Delivery CI39299839291/job118221820698:3 exact11-file/tamper/missing-client/root-recheck tests. Provider/terminal and Gateway replies are fixtures. Local missing boot-ID is fixture-only; CI uses actual boot. Preparation fixture substitutes retained paths/package hashes and its synthetic full-source hash, and traps old main/reader/bootstrap. These do not prove live target effects. See ../evidence/installation-route-exact-source-requalification-20261019.json.
 
 A successful result completes only this administrative continuation. It does not prove fresh ChatGPT read, complete503resolution, final governed native MCP profile, source activation, functional5–6 or release acceptance. Maintain separate HUMAN/THS domain approvals.
 
