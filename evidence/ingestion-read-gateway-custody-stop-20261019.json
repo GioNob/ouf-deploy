@@ -23,6 +23,10 @@
     "authorityFilesOpened": false,
     "privateKeyFilesOpened": 0,
     "sourceExecuted": false,
-    "readerSha256": "54d46f5a0c8d5a7ab503c3e73c66f41b025e23e918e781d5ed7395e0f6bb4eff"
+    "readerSha256": "54d46f5a0c8d5a7ab503c3e73c66f41b025e23e918e781d5ed7395e0f6bb4eff",
+    "qualificationRun": 39252207836,
+    "qualificationJob": 118058522352,
+    "qualificationTestsPassed": 9,
+    "sourceCommit": "edf0fd8ef600c4855fb2ed64d9cd199587e9efd3"
   }
 }
