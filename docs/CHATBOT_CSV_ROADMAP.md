@@ -1,5 +1,23 @@
 ## Current checkpoint — DNS target SERVFAIL;native installation binding plan ready;functional4/6
 
+### Ultimo checkpoint: CAS fermato senza OAuth; azione completa con tre consensi nativi
+
+**Stato target provato: tecniche8/8, funzionali4/6.** Onboarding owner atomico hnfn0zwg completato e sano; non ripeterne update o readback. L'ultimo piano CAS si è fermato in `CHECK_COMPLETED_OWNER_HUMAN_NO_REFRESH`, `CURRENT_HUMAN_SESSION_REFRESH_PENDING`: sessione READY251/256, zero OAuth, nessuna autorità; il piano target non è stato completato. Ricevuta completa in `evidence/installation-binding-cas-plan-target-stop-20261019.json`.
+
+È preparata l'azione distinta219 moduli, source **9600d850e5d4b4b42004e68028a5aa6e49c20d35**, delivery **cb66752e13c5e345bc68a929a31285f6cc417f7e**, launcher `scripts/launch-installation-binding-apply-20261019.sh`, SHA256 **d0a647bbaf538b2371b1566a05031a8efada5f2c044461db8b00486a26caf717**. **NON ancora eseguita sul VPS.** Non usare delivery4105a861/vecchi launcher: mantenevano la vecchia finestra ed erano precedenti alla nuova revisione esplicita.
+
+La finestra precedente scade il19ottobre2026 alle17:54:19 Europe/Rome. Il nuovo percorso richiede il consenso terminale **`RIAPRO LOGIN <hash>`** per UNA NUOVA finestra7200s dal consenso. Il contatore riparte dallo storico **251/256**, con soli5residui, budgetResetfalse: nessun reset, credenziale/device/refresh precedente riutilizzato o rinnovo automatico. Il validatore HUMAN resta byte-identico; si usa il suo schema già supportato `ouf.human-explicit-test-continuation-review.v3`. Dopo device URL/codice, la pausa rilascia il lock d'invocazione; **`LOGIN COMPLETATO <hash>`** va scritto solo dopo successo nel browser e precede il primo polling token. Provider rifiuto/esaurimento/STOP richiedono riconciliazione. Nessun login è stato effettuato da questa preparazione.
+
+Dopo verifica token/scopes/userinfo, nuove letture correnti controllano5generazioni container, metadata0440, mappa82rotte, DNS owner alias e ACTIVE/revisione/ACTIVE con ETag forte. Il candidato resta quello del piano6bebb5...: aggiunge un solo binding Ingestion, checksumded675.... Gate owner **`APPROVO <hash>`**: massimo3POST(create/validate/activate If-Match) e1export auditato autorevole, scope210s con due ruoli e firme reali. Gate successivo distinto **`APPROVO <hash>`**:1pubblicazione atomica/CAS della proiezione autorevole e2PUT Gateway, solo host upstream status/history;80altre rotte e porte/metodi/OIDC/delegazione/plugin invariati. Journal durevole registra CLAIMED prima di ogni effetto; esito ambiguo non viene rispedito. Nessun rollback automatico.
+
+Il risultato completo proverebbe binding, proiezione attiva e2rotte, **non** profilo nativo MCP finale, sorgente attiva, lettura chat fresca o acceptance. Nessun container lifecycle, migrazione/SQL manuale, grant/IAM, retry job o metadata MCP. Tappe5–6 ancora aperte; seguiranno prove governate sul client fresco e percorso funzionale secondo PET e gate HUMAN/THS.
+
+Qualifica:13test CI passati sulla precedente revisione4224a093 (run39277961487), comprendono HTTPS owner If-Match/export, vere firme2ruoli/journal, scope distinti, publisher CAS e login. Revisione nuova:5test login locali,2preparazione isolata219 e3delivery passati; CI nuova run39280839526 e delivery39280897367 inizialmente in coda, aggiornare l'evidenza con l'esito prima della consegna finale. I test locali simulano provider/terminale e bootID (assente nel filesystem locale), non provano autenticazione o apply sul target. Dettagli in `evidence/installation-binding-native-qualification-20261019.json`.
+
+Output da raccogliere: `OUF_INSTALLATION_BINDING_PREPARED`, `OUF_INSTALLATION_BINDING_HUMAN`, `OUF_INSTALLATION_BINDING_OWNER_RESULT`, `OUF_INSTALLATION_BINDING_APPLY_RESULT` oppure STOP con contesto/fase. **Un solo lancio: dopo STOP/interruzione conservare artefatti, non rilanciare, non azzerare budget.** Installazioneuow4n8lp, Gatewayazxw328z, MCPsrz6__wf e ownerhnfn0zwg restano conclusi.
+
+---
+
 ### Piano CAS distinto qualificato — tre GET owner, zero OAuth
 
 Pronto `scripts/prepare-installation-binding-cas-plan.py`, source **49714c8dd20cc501154ee65205ac6db40e1d3c21**, SHA256 **c578e5eae5a8d037f04e934a763320ce7026609eebca3a162e28766f78d0c1cd**. **7 test passati** run **39274642879**, job **118135653181**: ETag/generazione forte, rifiuto stale/ABA e candidato diverso, tre soli GET con ETag conservato e nessun replay dopo errore; assenza nel codice di login/refresh/emissione autorità/mutazioni owner. Qualifica in `evidence/installation-binding-cas-plan-qualification-20261019.json`.

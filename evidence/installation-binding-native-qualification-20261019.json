@@ -1,0 +1,38 @@
+{
+  "schema": "ouf.installation-binding-native-qualification.v1",
+  "sourceCommit": "9600d850e5d4b4b42004e68028a5aa6e49c20d35",
+  "deliveryCommit": "cb66752e13c5e345bc68a929a31285f6cc417f7e",
+  "launcherSha256": "d0a647bbaf538b2371b1566a05031a8efada5f2c044461db8b00486a26caf717",
+  "sourceModules": 219,
+  "completedOwnerContext": "/etc/ouf/deploy-snapshots/installation-owner-update-execution-hnfn0zwg",
+  "completedOwnerReceiptHash": "704c8708d668161f0ddea45b997e493ef53dabd48c9db08128362223a33ba46c",
+  "priorOAuthAttempts": 251,
+  "maximumCumulativeOAuthAttempts": 256,
+  "requestedNewHumanWindowSeconds": 7200,
+  "newWindowRequiresNativeConsent": true,
+  "newWindowExecuted": false,
+  "humanValidatorSourceChanged": false,
+  "local": {
+    "freshLoginTests": 5,
+    "isolatedPreparationTests": 2,
+    "deliveryTests": 3,
+    "passed": true,
+    "limitations": "Provider and terminal are fixtures; local boot ID is a fixture because /proc/sys/kernel/random/boot_id is absent. Preparation uses fixture-only completed-context paths and coherent receipt/journal files. No live owner or OAuth exercised."
+  },
+  "ci": {
+    "previousSource": "4224a093470b478e29067912214cf5bd8256048b",
+    "previousRun": 39277961487,
+    "previousJob": 118146835535,
+    "previousTests": 13,
+    "previousPassed": true,
+    "currentRun": 39280839526,
+    "currentStatus": "queued",
+    "deliveryRun": 39280897367,
+    "deliveryStatus": "queued"
+  },
+  "runtimeEffectsExecutedByThisWork": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "automaticReplayAllowed": false,
+  "budgetReset": false
+}
