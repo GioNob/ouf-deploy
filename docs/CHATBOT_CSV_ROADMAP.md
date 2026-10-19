@@ -1,4 +1,13 @@
-## Current checkpoint — policy47 published; distinct HUMAN reauthentication pending; functional4/6
+## Current checkpoint — policy47 published; reauthentication PlanDenied STOP_RECONCILE; functional4/6
+
+### Nuovo STOP PlanDenied: fase e contatore da riconciliare — 2026-10-19,13:15 Europe/Rome
+
+Tecniche8/8, funzionali4/6. L'operatore ha restituito solo il JSON terminale schemaouf.mcp-ingestion-read-transport-stop.v1, exceptionClassPlanDenied, STOP_RECONCILE, runtimeCompletionProvenfalse, automaticReplayAllowedfalse/budgetResetfalse. Mancano le righe preparazione/fasi e l'eventuale ricevuta login: NON è provato da questo solo messaggio se il login sia completato, se la seconda review/authority esista o se siano iniziati effetti MCP.217/256 resta l'ultimo contatore provato del predecessore, non quello della nuova sessione. Non rilanciare launcher, bootstrap, login o refresh; non assumere stage applicati o assenti. Nessuna nuova diagnosi OAuth o modifica runtime avviata in cloud.
+
+Preparato `scripts/read-mcp-reauthentication-stop.py`: risolve SOLO il claim deterministico della preparazione distinta (package predecessoref4552fa8 + candidate imagea0a6f956), poi la capsula esatta senza scansione delle altre sessioni. Verifica sorgentec9d3ca8/closure188,3moduli aggiunti e loader con hash pubblici indipendenti,185sorgenti conservati con package185f455 ancora ancorato. Inventario dei9artefatti azione +2login; eventuale journal native proiettato nei soli stage/state e contatori finiti; authority/chiavi/bearer non aperti. Segue solo il successor-claim del vecchio HUMAN e legge in privato l'eventuale nuovo journal per contatore/stato/receipt, senza valori o hash di credenziali.
+
+Carica le sole definizioni sigillate e invoca solo validate_session_binding e _check_identity_and_budget/_check sui dati già letti: nessun main, authenticate, current, login, refresh, compile_current, signing o network. Mostra codici di guardia solo se literal nei sorgenti sigillati; JWT eventualmente persistito viene decodificato localmente nei soli predicati issuer/sub/tenant/actor/client/audience/assurance e scope pubblici mancanti, mai come nuova prova di firma. Verifiche di scadenza sono esplicitamente al tempo della diagnosi, non prova automatica della causa originale. Se il token non è stato persistito non viene recuperato o richiesto.7test locali passati (redazione, whitelist codici, journal CLAIMED, JWT mancanti/predicati, drift budget e superficie di sola lettura). Reader vincolato120secondi, zero OAuth/owner/Engine/processi/scritture; anche errori del reader espongono solo fase e codice locale whitelistato. Nessuna autorità di ripresa concessa.
+
 
 ### Correlazione non attribuita; nuova autenticazione HUMAN distinta pronta, NON eseguita — 2026-10-19,12:29 Europe/Rome
 
