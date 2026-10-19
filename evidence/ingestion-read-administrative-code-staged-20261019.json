@@ -1,10 +1,10 @@
 {
-  "schema": "ouf.ingestion-read-administrative-cloud-handoff.v1",
-  "sourceCommit": "a47e3edef6bba579d0df05859cc9eb7d8f8ca17d",
+  "schema": "ouf.ingestion-read-administrative-cloud-handoff.v2",
+  "sourceCommit": "1e1a9f9eddca649e64db36fe018f59f2f15a2105",
   "qualification": {
-    "workflowRun": 39221983431,
-    "signedOwnerJob": 117959189356,
-    "tests": 72,
+    "workflowRun": 39222837925,
+    "signedOwnerJob": 117961959442,
+    "tests": 73,
     "status": "PASS",
     "cryptography": "REAL_ED25519",
     "httpIam": "EXPLICIT_FIXTURES"
@@ -14,14 +14,22 @@
     "filesStaged": 10,
     "functionalMilestonesProven": 4,
     "infrastructureEffects": 0,
-    "manifestSha256": "6462f6f506dee6904123fcc94975b16727476d482969f5020f03d43ddb69e09c",
-    "preparerSha256": "68068635b76b54bb0911a5321cae6e3b09149c2256b81c5b8b958f0297e8b3fc",
+    "manifestSha256": "633bbf2a17dc0395dd362694833b2264e7aef9501a06d5ce3fc54a4569e879c2",
+    "preparerSha256": "76116a25164d49c0aa02343927a6b86082946c16c64646e54b690fc73c9ba22d",
     "privateInputsRead": false,
     "runtimeAuthorityIssued": false,
     "schema": "ouf.ingestion-read-administrative-stage-receipt.v1",
-    "sourceCommit": "a47e3edef6bba579d0df05859cc9eb7d8f8ca17d",
-    "stagePath": "/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-ingestion-read-administrative-code-39221983431",
-    "jobId": 117959623863
+    "sourceCommit": "1e1a9f9eddca649e64db36fe018f59f2f15a2105",
+    "stagePath": "/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-ingestion-read-administrative-code-39222837925",
+    "jobId": 117962337255
+  },
+  "superseded": {
+    "stageRun": 39221983431,
+    "deliveryCommit": "7f7773990f25a86c9a0c8ded945e79fa4e59c5c3",
+    "reason": "ARBITRARY_STOP_DIAGNOSTIC_NOW_FULLY_REDACTED",
+    "failedDeliveryRun": 39222473524,
+    "testHarnessCorrectionRun": 39222602801,
+    "targetExecuted": false
   },
   "targetPrivatePreparationExecuted": false,
   "targetAdministrationExecuted": false,

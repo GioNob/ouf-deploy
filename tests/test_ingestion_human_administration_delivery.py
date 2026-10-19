@@ -5,10 +5,10 @@ class Delivery(unittest.TestCase):
  def test_manifest_and_preparer_match_qualified_source_commit(self):
   files={'prepare.py':'scripts/prepare-ingestion-read-authorization.py','bootstrap.py':'scripts/execute-ingestion-read-authorization.py','reader.py':'scripts/read-source-revision-completed-20261019.py','selection.json':'releases/ingestion-read-administrative-installation-20261019.json'}
   files.update({name+'.py':'tools/ingestion_read_authorization/'+name+'.py' for name in ('entry','authority','authorization','login','iam','runtime')})
-  manifest={'schema':'ouf.ingestion-read-administrative-code.v1','sourceCommit':'a47e3edef6bba579d0df05859cc9eb7d8f8ca17d','installationSpecific':True,'runtimeAuthorityIssued':False,'privateInputsRead':False,'files':{k:hashlib.sha256((ROOT/v).read_bytes()).hexdigest()for k,v in files.items()}}
-  self.assertEqual(hashlib.sha256(json.dumps(manifest,sort_keys=True,separators=(',',':')).encode()).hexdigest(),'6462f6f506dee6904123fcc94975b16727476d482969f5020f03d43ddb69e09c')
+  manifest={'schema':'ouf.ingestion-read-administrative-code.v1','sourceCommit':'1e1a9f9eddca649e64db36fe018f59f2f15a2105','installationSpecific':True,'runtimeAuthorityIssued':False,'privateInputsRead':False,'files':{k:hashlib.sha256((ROOT/v).read_bytes()).hexdigest()for k,v in files.items()}}
+  self.assertEqual(hashlib.sha256(json.dumps(manifest,sort_keys=True,separators=(',',':')).encode()).hexdigest(),'633bbf2a17dc0395dd362694833b2264e7aef9501a06d5ce3fc54a4569e879c2')
   launcher=(ROOT/'scripts/launch-ingestion-human-administration-20261019.sh').read_text();self.assertIn(manifest['files']['prepare.py'],launcher)
-  self.assertIn('ouf-ingestion-read-administrative-code-39221983431',launcher)
+  self.assertIn('ouf-ingestion-read-administrative-code-39222837925',launcher)
  def exercise(self,tamper):
   text=(ROOT/'scripts/launch-ingestion-human-administration-20261019.sh').read_text();payload=text.split("<<'OUF_INGESTION_ADMIN' | tee",1)[1].split('\n',1)[1].rsplit('\nOUF_INGESTION_ADMIN',1)[0]
   with tempfile.TemporaryDirectory()as temp:
@@ -19,7 +19,7 @@ def checked(path,*args,**kwargs):
  if str(path).endswith('/manifest.json'):
   reads.append(str(path));raise RuntimeError('PRIVATE_CANARY')
  return original(path,*args,**kwargs)
-os.open=checked;sys.argv=['delivery',stage,'6462f6f506dee6904123fcc94975b16727476d482969f5020f03d43ddb69e09c']
+os.open=checked;sys.argv=['delivery',stage,'633bbf2a17dc0395dd362694833b2264e7aef9501a06d5ce3fc54a4569e879c2']
 try:exec(compile(payload,'<exact-root-shim>','exec'),{'__name__':'__main__'})
 except SystemExit as error:print(json.dumps({'fixtureExit':error.code,'stageReads':len(reads)}))
 '''
