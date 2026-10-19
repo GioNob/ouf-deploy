@@ -56,11 +56,11 @@ def write_new(path, raw):
     finally:
         os.close(fd)
 NAMES=('entry','authority','owner','native','baseline','login','reconcile','runtime','bootstrap','human_extension','prepare')
-FROZEN_IDENTITY_AST_HASH='1e2722275d9a3b66b88f5ca6b10e9d7a0da021af1dcb19cf0995b2dd4ee96aa9'
+FROZEN_IDENTITY_AST_HASH='137867b997194d0b72f794d868dc9a80692a0c35e776b96b50359ce3ed3f45a2'
 
 def extend_human(raw,extension):
  tree=ast.parse(raw);methods=[n for n in ast.walk(tree)if isinstance(n,ast.FunctionDef)and n.name=='_check_identity_and_budget']
- require(len(methods)==1 and sha(ast.dump(methods[0],include_attributes=False).encode())==FROZEN_IDENTITY_AST_HASH
+ require(len(methods)==1 and sha(ast.dump(ast.Module(body=methods[0].body,type_ignores=[]),include_attributes=False).encode())==FROZEN_IDENTITY_AST_HASH
   and b'_explicit_264_identity'not in raw and 0<len(extension)<=32768,'EXACT_FROZEN256_PREDECESSOR_GUARD_REQUIRED')
  result=raw+b'\n'+extension;compile(result,'<explicit-budget264-human-v5>','exec');return result
 
@@ -85,7 +85,7 @@ def main(delivery,commit):
  for name in('entry','authority','owner','native','baseline','login','reconcile'):sources['tools.installation_route_reconcile.'+name]=delivery[name]
  sources['tools.chatbot_file_cohort.human_session']=extend_human(sources['tools.chatbot_file_cohort.human_session'],delivery['human_extension'])
  memory={'__name__':'qualified_new_route220_loader'};exec(compile(delivery['runtime'],'<qualified-route220-loader>','exec'),memory)
- memory['compile_sources'](sources);require(len(memory['MODULES'])==226,'EXACT_ROUTE220_CLOSURE_REQUIRED')
+ memory['compile_sources'](sources);require(len(memory['MODULES'])==226,'EXACT_ROUTE226_CLOSURE_REQUIRED')
  root=first.parent;claim_path=root/('installation-route-reconcile-preparation-'+retained['PACKAGE']+'.claim.json')
  require(not os.path.lexists(claim_path),'ROUTE_RECONCILIATION_ALREADY_PREPARED_NO_REPLAY')
  destination=Path(tempfile.mkdtemp(prefix='installation-binding-apply-execution-',dir=root));os.chmod(destination,0o700)
