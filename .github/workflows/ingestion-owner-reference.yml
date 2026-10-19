@@ -1,0 +1,59 @@
+name: Governed HUMAN272 and owner-only secret reference
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['tools/ingestion_read_owner_reference/**', 'scripts/prepare-ingestion-owner-reference.py', 'scripts/execute-ingestion-owner-reference.py', 'tests/test_ingestion_owner_reference.py', 'tests/test_ingestion_owner_budget272.py', 'tests/test_ingestion_owner_reference_preparation.py', '.github/workflows/ingestion-owner-reference.yml']
+permissions: {contents: read}
+jobs:
+  signed-owner:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: 84828f74ac586bae09a78f0fb197b75b1a3d98d1
+          path: .pairwise/legacy
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: be388e1462778438a208c2e00e166370fee32189
+          path: .pairwise/revision
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: f831d80d41b5b9687116671899c538dd7024d478
+          path: .pairwise/gateway
+          persist-credentials: false
+      - name: Actual Java owner role constraints
+        run: |
+          set -euo pipefail
+          mvn -B -q -f tests/fixtures/owner-role-roundtrip/pom.xml org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath -Dmdep.outputFile="$GITHUB_WORKSPACE/.owner-roundtrip.classpath"
+          mkdir .owner-roundtrip-classes
+          javac -cp "$(cat .owner-roundtrip.classpath)" -d .owner-roundtrip-classes \
+            .pairwise/revision/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/{AuthorizationPolicy,PrincipalContext,ResourceContext}.java \
+            tests/fixtures/owner-role-roundtrip/OwnerConstraintRoundTrip.java
+      - name: Real signed authority and durable owner journals in isolated root fixture
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-revision-authorization-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          failed=0
+          for suite in test_ingestion_owner_reference.py test_ingestion_owner_budget272.py test_ingestion_owner_reference_preparation.py; do
+            if ! sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" \
+              OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/legacy" \
+              OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/revision" \
+              OUF_INGESTION_GATEWAY_ROOT="$fixture/repository/.pairwise/gateway" \
+              OUF_OWNER_JAVA_CLASSPATH="$fixture/repository/.owner-roundtrip-classes:$(cat .owner-roundtrip.classpath)" \
+              python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v; then
+              failed=1
+            fi
+          done
+          exit "$failed"
