@@ -82,7 +82,7 @@ def main(delivery,commit):
   and all(sha(raw)==package['closure']['declaration']['sourceHashes'][n]for n,raw in sources.items())
   and all(sha(sources[n])==pin for n,pin in PINS.items()),'EXACT_RETAINED198_SOURCE_CLOSURE_REQUIRED')
  image=parsed(case['imageBinding']['path'],case['imageBinding']['sha256'])
- require(image['sourceCommit']=='1f2c28d7abadae78680b040ba7b58be62ef85ee9','EXACT_RETAINED_MCP_CANDIDATE_REQUIRED')
+ require(image['imageAudit']['sourceCommit']=='1f2c28d7abadae78680b040ba7b58be62ef85ee9','EXACT_RETAINED_MCP_CANDIDATE_REQUIRED')
  # Preserve original logical MCP operation identity and one-use fence.
  logical=digest({'oldContainerId':'c6fc3a462f4e1faf1e8121fee13ca445f7a3f7f1f39df65d738ea9cc1d4185f4',
   'candidateSourceCommit':'1f2c28d7abadae78680b040ba7b58be62ef85ee9',

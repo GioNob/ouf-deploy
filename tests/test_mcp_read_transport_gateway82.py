@@ -145,4 +145,31 @@ class CryptoAndJournal(unittest.TestCase):
    self.assertEqual(stat.S_IMODE((self.context/name).stat().st_mode),0o600)
    with self.assertRaises(Exception):e.publish_json(self.context,name,value)
 
+class MetadataGuard(unittest.TestCase):
+ def test_actual_native_guard_reads_three0440_files_without_chmod_or_private_reader_relaxation(self):
+  with tempfile.TemporaryDirectory(dir=os.environ.get('OUF_TEST_ROOT',str(ROOT)))as directory:
+   context=Path(directory);p=fixture(context);p['engine']={};p['gateway'].update(transport={},projectionBinding={'path':'/fixture'})
+   p['privateReviewBinding']={'path':str(context/'candidate-review.json'),'sha256':o.digest({})}
+   (context/'candidate-review.json').write_bytes(b'{}');(context/'candidate-review.json').chmod(0o600)
+   p['retainedMcpMetadata']=[]
+   for name in ('profile.json','policy.json','permit.json'):
+    path=context/name;path.write_bytes(b'{}');path.chmod(0o440);info=path.stat()
+    p['retainedMcpMetadata'].append({'path':str(path),'sha256':o.digest({}),
+     'custody':{k:getattr(info,k)for k in ('st_dev','st_ino','st_uid','st_gid','st_mode','st_nlink','st_size')}})
+   old={'Image':'sha256:'+'e'*64,'Config':{},'Mounts':[],'HostConfig':{},'State':{'Running':True,'StartedAt':'retained','Pid':1}}
+   pin={'containerId':o.OLD_MCP,'imageId':old['Image'],'configHash':o.digest({}),'mountsHash':o.digest([]),'hostConfigHash':o.digest({}),'startedAt':'retained'}
+   p['replacements']['mcp'].update(oldRuntimeBinding=pin,oldNativeHostConfig={})
+   p['unchangedApplications']={k:{'containerId':str(i)*64}for i,k in enumerate(('onboarding','udp','ingestion'),1)}
+   port=n.NativePorts.__new__(n.NativePorts);port.plan=p;port.action=Mock();port.engine=Mock();port.gateway=Mock();port.human=Mock();port.human.current.return_value=p['humanBinding']
+   port.gateway.routes.return_value=p['gateway']['beforeRoutes']
+   port.inspect=Mock(side_effect=lambda kind,ref:old if ref==o.OLD_MCP else {'State':{'Running':True},'ref':ref})
+   def runtime(value):return pin if value is old else {'containerId':value['ref']}
+   with patch.object(o,'ROUTE_HASH',o.digest(p['gateway']['beforeRoutes'])),patch.object(n,'private_config'),patch.object(n,'runtime',side_effect=runtime):
+    port.guard_current('VERIFY_INPUTS')
+    for binding in p['retainedMcpMetadata']:
+     self.assertEqual(stat.S_IMODE(Path(binding['path']).stat().st_mode),0o440)
+     with self.assertRaises(Exception):n.private_file(binding['path'],binding['sha256'],65536)
+    binding=p['retainedMcpMetadata'][0];Path(binding['path']).chmod(0o600)
+    with self.assertRaises(Exception):port.guard_current('VERIFY_INPUTS')
+
 if __name__=='__main__':unittest.main()
