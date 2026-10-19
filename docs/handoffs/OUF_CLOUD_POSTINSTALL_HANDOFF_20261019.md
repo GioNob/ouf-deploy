@@ -1,5 +1,8 @@
 # OUF cloud handoff after independent source-revision installation readback
 
+Consegna finale qualificata: [run39223108393](https://github.com/GioNob/ouf-deploy/actions/runs/39223108393), job117962847831,6 test PASS (3 regressioni shim storico e3 controlli del nuovo launcher). Launcher immutabile: [b836891c7c899c549482f81945046ad592b92f6f](https://github.com/GioNob/ouf-deploy/blob/b836891c7c899c549482f81945046ad592b92f6f/scripts/launch-ingestion-human-administration-20261019.sh), SHA256 `636330a0b5d54dad590969d2ada8799bdb47b49c02aa8af297d65da199da16cd`. La qualifica conferma manifest, hash preparer e STOP prima di qualsiasi lettura privata su codice alterato. Il canary delle eccezioni resta oscurato. **La preparazione root e l'azione sul target attendono ancora il terminale HUMAN.**
+
+
 ### Azione amministrativa HUMAN distinta — 2026-10-19, preparata per avvio nativo
 
 Tecniche **8/8**, funzionali **4/6**. Il codice standalone `1e1a9f9eddca649e64db36fe018f59f2f15a2105` ha superato73 test nella run [39222837925](https://github.com/GioNob/ouf-deploy/actions/runs/39222837925), con firme Ed25519 reali/journal privati e fixture HTTP/IAM esplicite. Il job117962337255 ha predisposto10 file pubblici qualificati sul server; nessun input privato letto, login, authority o effetto amministrativo eseguito.

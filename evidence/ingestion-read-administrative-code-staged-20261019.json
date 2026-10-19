@@ -1,5 +1,5 @@
 {
-  "schema": "ouf.ingestion-read-administrative-cloud-handoff.v2",
+  "schema": "ouf.ingestion-read-administrative-cloud-handoff.v3",
   "sourceCommit": "1e1a9f9eddca649e64db36fe018f59f2f15a2105",
   "qualification": {
     "workflowRun": 39222837925,
@@ -44,5 +44,13 @@
     "Authorization1.5 §§20–22/109.6",
     "Onboarding-THS1.6 §103/THS-A02/A09",
     "Ingestion1.3 §46/46.3/OA-ING-05"
-  ]
+  ],
+  "deliveryQualification": {
+    "workflowRun": 39223108393,
+    "job": 117962847831,
+    "status": "PASS",
+    "tests": 6,
+    "sourceCommit": "b836891c7c899c549482f81945046ad592b92f6f",
+    "launcherSha256": "636330a0b5d54dad590969d2ada8799bdb47b49c02aa8af297d65da199da16cd"
+  }
 }
