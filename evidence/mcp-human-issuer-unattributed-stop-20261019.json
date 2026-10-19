@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.mcp-human-issuer-unattributed-stop.v1",
+  "issuerGenerationVerified": true,
+  "windowSince": 1792404450,
+  "windowUntil": 1792404520,
+  "engineGetRequests": 3,
+  "clientErrorCountInWindow": 1,
+  "clientErrorsWithoutExactSubject": 1,
+  "matchedErrorClassCount": 0,
+  "matchingIssuerEventProven": false,
+  "specificIssuerReasonProven": false,
+  "oauthRequests": 0,
+  "iamAdminRequests": 0,
+  "journalWrites": 0,
+  "newHumanLoginAllowed": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "correlationReaderSha256": "3a3b78270b1f59c008fdbdf54b07a98154509c651be7d02f05a1cc7f1ad2649a",
+  "localTestsPassed": 8,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4
+}
