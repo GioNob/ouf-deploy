@@ -13,11 +13,12 @@
   "newWindowExecuted": false,
   "humanValidatorSourceChanged": false,
   "local": {
-    "freshLoginTests": 5,
+    "freshLoginTests": 6,
     "isolatedPreparationTests": 2,
     "deliveryTests": 3,
     "passed": true,
-    "limitations": "Provider and terminal are fixtures; local boot ID is a fixture because /proc/sys/kernel/random/boot_id is absent. Preparation uses fixture-only completed-context paths and coherent receipt/journal files. No live owner or OAuth exercised."
+    "limitations": "Provider and terminal are fixtures; local boot ID is a fixture because /proc/sys/kernel/random/boot_id is absent. Preparation uses fixture-only completed-context paths and coherent receipt/journal files. No live owner or OAuth exercised.",
+    "qualificationGateTests": 3
   },
   "ci": {
     "previousSource": "4224a093470b478e29067912214cf5bd8256048b",
@@ -28,11 +29,20 @@
     "currentRun": 39280839526,
     "currentStatus": "queued",
     "deliveryRun": 39280897367,
-    "deliveryStatus": "queued"
+    "deliveryStatus": "queued",
+    "executionBlockedUntilExactCurrentSourceAndDeliveryRunsPass": true
   },
   "runtimeEffectsExecutedByThisWork": false,
   "completedTechnicalPhases": 8,
   "functionalMilestonesProven": 4,
   "automaticReplayAllowed": false,
-  "budgetReset": false
+  "budgetReset": false,
+  "currentOufAdminRead": {
+    "module": "MCP",
+    "status": "HEALTHY",
+    "actionRequired": false,
+    "partial": false,
+    "visibilityClass": "PUBLIC_OPERATIONAL",
+    "redacted": true
+  }
 }
