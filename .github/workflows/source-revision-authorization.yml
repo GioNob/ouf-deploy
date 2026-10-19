@@ -2,7 +2,7 @@ name: Source revision authorization owner
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['tools/chatbot_file_cohort/authorization.py', 'tests/test_source_revision_authorization.py', 'tests/test_ingestion_read_authorization.py', '.github/workflows/source-revision-authorization.yml']
+    paths: ['tools/chatbot_file_cohort/authorization.py', 'tests/test_source_revision_authorization.py', 'tests/test_ingestion_read_authorization.py', 'tools/ingestion_read_authorization/**', 'scripts/*ingestion-read-authorization*', 'tests/test_ingestion_read_*', '.github/workflows/source-revision-authorization.yml']
 permissions: {contents: read}
 jobs:
   signed-owner:
@@ -39,10 +39,27 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          for suite in test_chatbot_cohort_authorization.py test_chatbot_cohort_authorization_observation.py test_source_revision_authorization.py test_ingestion_read_authorization.py; do
+          for suite in test_chatbot_cohort_authorization.py test_chatbot_cohort_authorization_observation.py test_source_revision_authorization.py test_ingestion_read_authorization.py test_ingestion_read_governed_owner.py test_ingestion_read_administrative_authority.py test_ingestion_read_administrative_delivery.py; do
             sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" \
               OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/legacy" \
               OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/revision" \
               OUF_OWNER_JAVA_CLASSPATH="$fixture/repository/.owner-roundtrip-classes:$(cat .owner-roundtrip.classpath)" \
               python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v
           done
+
+
+  stage-ingestion-administrative-code:
+    needs: signed-owner
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Stage qualified standalone code only
+        env:
+          OUF_CODE_DIRECTORY: ${{ runner.workspace }}/ouf-ingestion-read-administrative-code-${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 -I -B -S scripts/stage-ingestion-read-authorization.py "$GITHUB_WORKSPACE" "$OUF_CODE_DIRECTORY" "$GITHUB_SHA"
