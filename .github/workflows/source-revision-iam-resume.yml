@@ -2,7 +2,7 @@ name: Preserved source revision IAM resume qualification
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/resume-source-revision-iam-20261019.py', 'tests/test_source_revision_iam_resume.py', '.github/workflows/source-revision-iam-resume.yml']
+    paths: ['scripts/resume-source-revision-iam-20261019.py', 'tests/test_source_revision_iam_resume.py', 'scripts/launch-source-revision-iam-resume-20261019.sh', '.github/workflows/source-revision-iam-resume.yml']
 permissions: {contents: read}
 jobs:
   delivery:
@@ -14,6 +14,7 @@ jobs:
       - name: Root custody, complete bindings and refusal before fixture gate
         run: |
           set -euo pipefail
+          bash -n scripts/launch-source-revision-iam-resume-20261019.sh
           fixture="/root/ouf-prepared-delivery-${GITHUB_RUN_ID}"
           sudo install -d -m 0700 "$fixture"
           sudo cp -a . "$fixture/repository"

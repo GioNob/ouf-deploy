@@ -85,3 +85,26 @@ class Resume(unittest.TestCase):
    with patch.object(m,'reconcile',side_effect=lambda:events.append('reconcile')),patch.object(m,'verify_prepared',side_effect=lambda profile:(events.append('verify')or(code,raw,{}))),patch.object(m,'admin_login',side_effect=lambda *args:events.append('admin')),self.assertRaises(SystemExit)as stopped:m.run(m.PROFILE)
    self.assertEqual(stopped.exception.code,0);self.assertEqual(events,['reconcile','verify','admin','reconcile','verify'])
 if __name__=='__main__':unittest.main()
+
+class ExactRootShim(unittest.TestCase):
+ def exercise(self,tamper):
+  import subprocess,sys
+  text=(ROOT/'scripts/launch-source-revision-iam-resume-20261019.sh').read_text();payload=text.split("<<'OUF_PREPARED_RELEASE' | tee",1)[1].split('\n',1)[1].rsplit('\nOUF_PREPARED_RELEASE',1)[0]
+  with tempfile.TemporaryDirectory(dir=os.environ.get('OUF_TEST_ROOT',str(ROOT.parent))) as temp:
+   helper=Path(temp)/'helper.py';helper.write_bytes(b'print("PRIVATE_CANARY")'if tamper else(ROOT/'scripts/resume-source-revision-iam-20261019.py').read_bytes())
+   harness='''import os,sys,json
+raw=sys.argv[1];helper=sys.argv[2];original_stat=os.stat;protected=[]
+def checked(path,*args,**kwargs):
+ if str(path).startswith('/etc/ouf/'):
+  protected.append(str(path));raise RuntimeError('PRIVATE_CANARY')
+ return original_stat(path,*args,**kwargs)
+os.stat=checked;sys.argv=['delivery',helper]
+try:exec(compile(raw,'<root-shim>','exec'),{'__name__':'__main__'})
+except SystemExit as error:print(json.dumps({'fixtureExit':error.code,'protectedReadAttempts':len(protected)}))
+'''
+   result=subprocess.run([sys.executable,'-I','-B','-S','-c',harness,payload,str(helper)],capture_output=True,timeout=20)
+   self.assertEqual(result.returncode,0,result.stderr.decode());self.assertEqual(result.stderr,b'');self.assertNotIn(b'PRIVATE_CANARY',result.stdout)
+   rows=[json.loads(line)for line in result.stdout.splitlines()];self.assertEqual(rows[-1]['protectedReadAttempts'],0 if tamper else 1)
+   if not tamper:self.assertFalse(rows[0]['complete']);self.assertTrue(rows[0]['reconciliationRequired']);self.assertEqual(rows[-1]['fixtureExit'],2)
+ def test_exact_shell_shim_reaches_first_protected_read_only(self):self.exercise(False)
+ def test_shell_shim_tampered_helper_never_reaches_protected_read(self):self.exercise(True)
