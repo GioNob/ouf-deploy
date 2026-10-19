@@ -41,6 +41,14 @@ jobs:
           from tools.compile_config import compile_config
           Path('.gateway-compiled-fixture.json').write_text(json.dumps(compile_config(source/'ouf-config')))
           PY
+      - name: Compile unchanged Java role constraint owner for signed revision regression
+        run: |
+          set -euo pipefail
+          mvn -B -q -f tests/fixtures/owner-role-roundtrip/pom.xml org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath -Dmdep.outputFile="$GITHUB_WORKSPACE/.owner-roundtrip.classpath"
+          mkdir .owner-roundtrip-classes
+          javac -cp "$(cat .owner-roundtrip.classpath)" -d .owner-roundtrip-classes \
+            .pairwise/onboarding/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/{AuthorizationPolicy,PrincipalContext,ResourceContext}.java \
+            tests/fixtures/owner-role-roundtrip/OwnerConstraintRoundTrip.java
       - name: Real signed authority, root file custody and application-role V34
         run: |
           set -euo pipefail
@@ -59,7 +67,7 @@ jobs:
             OUF_REVISION_GATEWAY_ROOT="$fixture/repository/.pairwise/gateway" \
             OUF_REVISION_COMPILED_FIXTURE="$fixture/repository/.gateway-compiled-fixture.json" \
             python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_source_revision_update_*.py' -v
-          sudo env OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_source_revision_authorization.py' -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" OUF_OWNER_JAVA_CLASSPATH="$fixture/repository/.owner-roundtrip-classes:$(cat .owner-roundtrip.classpath)" OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_source_revision_authorization.py' -v
           sudo env OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_source_revision_postboot.py' -v
           sudo env OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_source_revision_governed_capsule.py' -v
 
