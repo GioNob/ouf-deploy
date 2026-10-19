@@ -8,4 +8,22 @@ One private continuation capsule preserves kfy691gh original and private inputs 
 
 Only after private completion readback does a fresh isolated interpreter reload the sealed closure. Native executor revalidates current generations/provider/plan, reads IAM metadata without login, then invokes native refresh on the existing HUMAN session. Expired window, changed attempts/claim, IAM expiry, revoked/ambiguous refresh or integrity drift stop; no automatic session renewal, consumed predecessor replay or budget reset. New APPROVO binds the new sourceclosure and plan before backup/Onboarding33→34/Onboarding-MCP replacement/two additive routes. Role confirmation remains separate native THS. Generic profile publication and second CSV acquisition remain subsequent governed steps; preserve13Teatri/ACK/lineage20properties/identity choices and8Cinema. No functional milestone advance is asserted.
 
-PET consulted: original Onboarding1.6 §§109.14–109.15 on current owner decisions, expired challenge semantics and retained history/observability. Scoped consistency only, not full PET compliance. CI and immutable delivery are pending; no new capsule, refresh or runtime approval has run on the target.
+PET consulted: original Onboarding1.6 §§109.14–109.15 on current owner decisions, expired challenge semantics and retained history/observability. Scoped consistency only, not full PET compliance. CI completed:95native owner tests +11signed/Java authorization owner tests +18postboot tests +5capsule tests in run39203223055/job117900428910 PASS. Source-only staging job117900732916 PASS:5files, manifest2c106bf3456a42de6024980379af2f9ebc0e3d8f56cf94e928f471e72b1a7ac4, independently reconstructed in cloud. Delivery3tests PASS in run39203509294/job117901290607 with real isolated root flags; helper tamper denied before manifest/private reads. Total132tests. [Qualification receipt](../evidence/source-revision-governed-continuation-qualified-20261019.json). No new capsule, refresh or runtime approval has run on the target. Native HTTP/IAM effects are explicit test boundaries in CI; this is not live refresh/rollout or functional acceptance. The source capsule remains subject to current target state and native gates.
+
+## One VPS command
+
+Requires existing physical sudo/operator terminal. No new login or generic permission request. Read the actual review before deciding APPROVO; role remains native THS. After any STOP/interruption preserve log, new context and HUMAN journal, do not rerun/delete the capsule or retry refresh.
+
+```bash
+(
+set -euo pipefail
+umask 077
+ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
+[[ -n "$ouf_gh" && -x "$ouf_gh" ]] || exit 1
+ouf_launch_dir="$(mktemp -d "$HOME/ouf-governed-launch.XXXXXXXX")"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/scripts/launch-source-revision-governed-20261019.sh?ref=8743073c3a9be04bdde9797162d22ad7f1225c7d' --jq '.content' | base64 --decode > "$ouf_launch_dir/run.sh"
+printf '%s  %s\n' '7852798eab5a97c083a42bfe3e6558f21bee042912f53a9d47c3ad15f503c70c' "$ouf_launch_dir/run.sh" | sha256sum --check
+bash "$ouf_launch_dir/run.sh"
+)
+```
