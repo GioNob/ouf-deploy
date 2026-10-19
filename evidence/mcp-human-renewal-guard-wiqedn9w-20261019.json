@@ -23,5 +23,7 @@
   "automaticReplayAllowed": false,
   "budgetReset": false,
   "completedTechnicalPhases": 8,
-  "functionalMilestonesProven": 4
+  "functionalMilestonesProven": 4,
+  "guardSourceQualificationRun": 39245110835,
+  "guardSourceTestsPassed": 4
 }
