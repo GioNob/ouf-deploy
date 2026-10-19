@@ -1,0 +1,10 @@
+# Protected read of the distinct native administrative STOP
+
+### ojz9hai3: preparazione riuscita, nuovo STOP da riconciliare — 2026-10-19,11:12 Europe/Rome
+
+La ricevuta operatore prova la nuova capsula ojz9hai3, package b2b01238a1c760a5e0334f0ed7770b4d03746ee9fdfc271a96798ff282327e84, closure4152ca6bcd44e745ea3a03dc884b67a948d1f91536a80c752a82c27afd9fc657, piano9216f0ba e contatore212 alla preparazione. Segue STOP_RECONCILE/ValueError redatto: fase, contatore successivo ed eventuali effetti non sono provati. Non rilanciare launcher58961af, preparazione, preflight o login; conservare tutti i claim. Tecniche8/8, funzionali4/6; uow4n8lp resta completato e non va ripetuto.
+
+Diagnosi distinta `scripts/read-ingestion-existing-session-stop.py`: verifica solo questa capsula/piano, ricostruisce il prefisso originale bootstrap prima della riga52 (claim runtime), poi controlli puri su riferimenti del piano, primitivi owner, hash eseguibili/stdlib e metadati pubblici dell'autorità. Audit nega scritture, socket, processi, credenziali HUMAN e chiavi private. Nessun refresh, OAuth, IAM, owner request o main esecutivo. Nessuna esecuzione OpenSSL/version viene tentata; quella verifica resta esplicitamente non provata. L'inventario rileva presenza degli artefatti e stati del journal senza aprire authority/decisioni. Qualifica CI e ricevuta diagnostica target ancora da acquisire. Il solo numero di test precedenti non prova l'azione amministrativa riuscita.
+
+
+Normative originals consulted for this diagnostic boundary: Matrix1.7 §1; Authorization1.5 §§20–22,109.6; THS1.6 §103 and THS-A02/A08/A09; Ingestion1.3 persistent operational event model §46.3. Diagnostic development permission supplies no runtime HUMAN/THS authority. Unknown errors remain blocked; no claim, retry budget or authority is reset. Single retained-host transport only; no general multi-host qualification is inferred.
