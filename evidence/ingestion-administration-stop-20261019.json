@@ -24,7 +24,15 @@
     "networkAndChildProcessesDeniedByAudit": true,
     "humanCredentialFilesOpened": 0,
     "qualificationLocalTests": 8,
-    "targetDiagnosisExecuted": false
+    "targetDiagnosisExecuted": false,
+    "qualificationCI": {
+      "run": 39224438289,
+      "job": 117967183765,
+      "tests": 8,
+      "status": "PASS"
+    },
+    "sourceCommit": "2d5739281ab33f024a560e340838c75f58d629e8",
+    "scriptSha256": "069c189f29344ad4e508c0a78db246abf07b2abd1befaa4c99e3fe6f0fc35134"
   },
   "completedInstallationReadbackReplayed": false,
   "technicalPhasesProven": 8,

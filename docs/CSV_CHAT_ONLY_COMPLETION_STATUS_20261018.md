@@ -1,5 +1,13 @@
 ## Current checkpoint — source APPROVED; Ingestion registration profile qualified, 2026-10-19
 
+
+### STOP amministrativo da riconciliare — 2026-10-19,10:33 Europe/Rome
+
+Tecniche8/8, funzionali4/6. L'operatore ha riportato `STOP_RECONCILE / ValueError / PRIVATE_DETAILS_REDACTED` dopo il launcher amministrativo. La fase e gli eventuali effetti parziali restano sconosciuti; non dedurre assenza di effetti o autorizzare un rilancio. Installazione/readback uow4n8lp restano acquisiti.
+
+La diagnosi separata [read-ingestion-administration-stop.py](https://github.com/GioNob/ouf-deploy/blob/2d5739281ab33f024a560e340838c75f58d629e8/scripts/read-ingestion-administration-stop.py) ha superato8 test CI nella [run39224438289](https://github.com/GioNob/ouf-deploy/actions/runs/39224438289), job117967183765. SHA256069c189f29344ad4e508c0a78db246abf07b2abd1befaa4c99e3fe6f0fc35134. Legge solo il prefisso verificato precedente al primo claim e i metadati/journal della sola azione amministrativa; audit indipendente nega scritture, rete e processi esterni. Non chiama installer/runtime/preparer main, non apre credenziali HUMAN, non ripete readback, non riapre budget o authority. Il read sul target è ancora da acquisire.
+
+
 Consegna finale qualificata: [run39223108393](https://github.com/GioNob/ouf-deploy/actions/runs/39223108393), job117962847831,6 test PASS (3 regressioni shim storico e3 controlli del nuovo launcher). Launcher immutabile: [b836891c7c899c549482f81945046ad592b92f6f](https://github.com/GioNob/ouf-deploy/blob/b836891c7c899c549482f81945046ad592b92f6f/scripts/launch-ingestion-human-administration-20261019.sh), SHA256 `636330a0b5d54dad590969d2ada8799bdb47b49c02aa8af297d65da199da16cd`. La qualifica conferma manifest, hash preparer e STOP prima di qualsiasi lettura privata su codice alterato. Il canary delle eccezioni resta oscurato. **La preparazione root e l'azione sul target attendono ancora il terminale HUMAN.**
 
 
