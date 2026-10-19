@@ -43,6 +43,8 @@ def scope(plan):
  require(type(plan)is dict and plan.get('schema')=='ouf.installation-binding-owner-update-plan.v1'
   and set(plan.get('replacements',{}))=={'onboarding'}and {'mcp','udp','ingestion'}<=set(plan.get('unchangedApplications',{}))
   and 'onboarding'not in plan['unchangedApplications']and len(plan['unchangedApplications'])<=8
+  and type(plan.get('nativeFlywayConfiguration'))is dict
+  and type(plan['nativeFlywayConfiguration'].get('ownerOverlays',[]))is list
   and plan.get('onboardingMigrationsUnchanged')is True and plan.get('publicMetadataUnchanged')is True
   and plan.get('maximumExecutionSeconds')==900 and plan.get('maximumEffectAttemptsPerStage')==1
   and plan.get('maximumGatewayWrites')==0 and plan.get('databaseMigration')is None

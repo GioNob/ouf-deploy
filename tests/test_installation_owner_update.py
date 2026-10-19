@@ -19,7 +19,7 @@ def fixture(context=Path('/fixture/installation-owner-update-execution-abcdefgh'
    'imageAudit':{'imageId':image,'sourceCommit':o.NEW_SOURCE}}},
   'unchangedApplications':{'mcp':{},'udp':{},'ingestion':{}},
   'gateway':{'beforeRoutes':routes,'afterRoutes':copy.deepcopy(routes),'additions':{}},
-  'onboardingMigrationsUnchanged':True,'publicMetadataUnchanged':True,'maximumExecutionSeconds':900,
+  'nativeFlywayConfiguration':{'ownerOverlays':[]},'onboardingMigrationsUnchanged':True,'publicMetadataUnchanged':True,'maximumExecutionSeconds':900,
   'maximumEffectAttemptsPerStage':1,'maximumGatewayWrites':0,'databaseMigration':None,
   'humanBinding':human or {'sessionId':'fixture','issuer':'https://fixture.invalid','tenant':'fixture','subject':'human'},
   **{k:False for k in o.FORBIDDEN}}
@@ -160,16 +160,27 @@ class MetadataGuard(unittest.TestCase):
    pin={'containerId':o.OLD_ONBOARDING,'imageId':old['Image'],'configHash':o.digest({}),'mountsHash':o.digest([]),'hostConfigHash':o.digest({}),'startedAt':'retained'}
    p['replacements']['onboarding'].update(oldRuntimeBinding=pin,oldNativeHostConfig={})
    p['unchangedApplications']={k:{'containerId':str(i)*64}for i,k in enumerate(('mcp','udp','ingestion'),1)}
+   overlay_path=context/'onboarding.properties';overlay_path.write_bytes(b'spring.flyway.enabled=true\n');overlay_path.chmod(0o600)
+   overlay_stat=overlay_path.stat();overlay_binding={'path':str(overlay_path),'sha256':hashlib.sha256(overlay_path.read_bytes()).hexdigest(),
+    'metadata':[getattr(overlay_stat,k)for k in('st_dev','st_ino','st_uid','st_gid','st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns')]}
+   p['nativeFlywayConfiguration']={'ownerOverlays':[{'binding':overlay_binding}]}
    port=n.NativePorts.__new__(n.NativePorts);port.plan=p;port.action=Mock();port.engine=Mock();port.gateway=Mock();port.human=Mock();port.human.current.return_value=p['humanBinding']
    port.gateway.routes.return_value=p['gateway']['beforeRoutes']
    port.inspect=Mock(side_effect=lambda kind,ref:old if ref==o.OLD_ONBOARDING else {'State':{'Running':True},'ref':ref})
    def runtime(value):return pin if value is old else {'containerId':value['ref']}
-   with patch.object(o,'ROUTE_HASH',o.digest(p['gateway']['beforeRoutes'])),patch.object(n,'private_config'),patch.object(n,'runtime',side_effect=runtime):
+   original_private_config=n.private_config
+   def selected_config(path,binding):
+    if path=='/fixture':return b'{}'
+    return original_private_config(path,binding)
+   with patch.object(o,'ROUTE_HASH',o.digest(p['gateway']['beforeRoutes'])),patch.object(n,'private_config',side_effect=selected_config),patch.object(n,'runtime',side_effect=runtime):
     port.guard_current('VERIFY_INPUTS')
     for binding in p['retainedMcpMetadata']:
      self.assertEqual(stat.S_IMODE(Path(binding['path']).stat().st_mode),0o440)
      with self.assertRaises(Exception):n.private_file(binding['path'],binding['sha256'],65536)
     binding=p['retainedMcpMetadata'][0];Path(binding['path']).chmod(0o600)
+    with self.assertRaises(Exception):port.guard_current('VERIFY_INPUTS')
+    Path(binding['path']).chmod(0o440)
+    overlay_path.write_bytes(b'spring.flyway.enabled=false\n')
     with self.assertRaises(Exception):port.guard_current('VERIFY_INPUTS')
 
 if __name__=='__main__':unittest.main()

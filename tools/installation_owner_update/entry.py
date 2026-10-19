@@ -88,7 +88,8 @@ def compile_current(case,context,read,human):
   'engine':copy.deepcopy(previous['engine']),'programs':copy.deepcopy(old['programs']),
   'replacements':{'onboarding':row},'unchangedApplications':expected,
   'gateway':{**copy.deepcopy(previous['gateway']),'beforeRoutes':routes,'afterRoutes':copy.deepcopy(routes),'additions':{}},
-  'retainedMcpMetadata':metadata,'humanBinding':human.current(),'onboardingMigrationsUnchanged':True,'publicMetadataUnchanged':True,
+  'retainedMcpMetadata':metadata,'nativeFlywayConfiguration':copy.deepcopy(old['nativeFlywayConfiguration']),
+  'humanBinding':human.current(),'onboardingMigrationsUnchanged':True,'publicMetadataUnchanged':True,
   'maximumExecutionSeconds':900,'maximumEffectAttemptsPerStage':1,'maximumGatewayWrites':0,'databaseMigration':None,
   **{k:False for k in FORBIDDEN}}
  plan['logicalUpdateRef']=digest({'oldContainerId':OLD_ONBOARDING,'candidateSourceCommit':NEW_SOURCE,'candidateImageId':runtime_image_id(row['imageAudit']),'profile':'ouf.installation-binding-owner-update.v1'})

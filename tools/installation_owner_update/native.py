@@ -35,6 +35,8 @@ class NativePorts(ExistingPorts):
   private_file(p['privateReviewBinding']['path'],p['privateReviewBinding']['sha256'],8388608)
   private_config(p['gateway']['projectionBinding']['path'],p['gateway']['projectionBinding'])
   self.gateway.check();self.route_inventory()
+  for overlay in p['nativeFlywayConfiguration'].get('ownerOverlays',[]):
+   binding=overlay['binding'];private_config(binding['path'],binding)
   for binding in p['retainedMcpMetadata']:
    metadata_file(binding)
   require(self.human.current()==p['humanBinding'],'SAME_CURRENT_HUMAN_REQUIRED')
