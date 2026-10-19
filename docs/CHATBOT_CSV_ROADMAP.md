@@ -1,5 +1,18 @@
 ## Current checkpoint — DNS target SERVFAIL;native installation binding plan ready;functional4/6
 
+### Piano CAS distinto qualificato — tre GET owner, zero OAuth
+
+Pronto `scripts/prepare-installation-binding-cas-plan.py`, source **49714c8dd20cc501154ee65205ac6db40e1d3c21**, SHA256 **c578e5eae5a8d037f04e934a763320ce7026609eebca3a162e28766f78d0c1cd**. **7 test passati** run **39274642879**, job **118135653181**: ETag/generazione forte, rifiuto stale/ABA e candidato diverso, tre soli GET con ETag conservato e nessun replay dopo errore; assenza nel codice di login/refresh/emissione autorità/mutazioni owner. Qualifica in `evidence/installation-binding-cas-plan-qualification-20261019.json`.
+
+Lettura storico owner completa vincolata al checksum **704c8708d668161f0ddea45b997e493ef53dabd48c9db08128362223a33ba46c**, pacchetto213 sorgente bcd33... e entry hash1ce40..., journal RECOVERED29, scope/review/decisione/nuova sessione. Importa esclusivamente i primitivi dal loader213 verificato senza chiamare main storici; verifica gli eseguibili e stdlib conservati. Tre inspect Engine correnti Onboarding/Ingestion/Gateway, verifica proiezione privata conservata; poi massimo tre GET owner ACTIVE/revisione/ACTIVE,45s. Piano conserva lo stesso candidato ded675... e aggiunge il vero ETag/generazione in un nuovo artefatto privato con claim O_EXCL. Non esegue una prova live di scrittura.
+
+La verifica HUMAN avviene prima di HTTP/Engine e non avvia refresh/worker. Se access non è già corrente con almeno90s residui, **STOP senza richieste OAuth**, conservando il budget osservato. Non è una nuova autorizzazione login. Lo stato251/256 della ricevuta precedente non prova token ancora valido al momento di lancio. Zero mutazioni owner, export, proiezioni attive, Gateway, DB o container; nessuna autorità. Le sole scritture previste sono claim e nuovi artefatti privati di pianificazione dopo esito dei controlli. DNS e route map rimangono prove conservate, da rileggere nel futuro gate di apply.
+
+Piano target non ancora eseguito/provato. Output atteso `OUF_INSTALLATION_BINDING_CAS_PLAN_RESULT`, oppure STOP senza rilancio. Aggiornamento owner hnfn0zwg e precedenti installazioni/readback rimangono completati e non vengono ripetuti. Tecniche8/8,funzionali4/6; binding, fonte e acceptance ancora non provati.
+
+---
+
+
 ### Owner Onboarding aggiornato — readback completato;251/256; binding ancora da applicare
 
 Ricevuta utente integrale in `evidence/installation-owner-completed-readback-20261019.json`: **ONBOARDING_OWNER_UPDATE_READBACK_COMPLETE**, contesto **hnfn0zwg**, sorgente **b0f5e3dacbe59ebf87e22dd6af2575e41249f51d**, immagine runtime **sha256:c124a832a1f9f07967a8f3ef9ba9692610ab5c97aa4719e614867f44e6aa63ae**, container **0165a7d260a9c146101ac1471c843b1300587c579a18e99ea0c3a78cadcb0aae**, PID **335586**, start **2026-10-19T14:55:21.10058135Z**. Health **200**, readinessAttempts1, journalVersion29/complete/applicationReady. La ripetizione degli stessi messaggi WAIT non è una seconda mutazione. Nessuna migrazione, Gateway PUT, grant, job, metadato pubblico, attivazione fonte o accettazione. Rotte82/mapd5a e binding delle altre applicazioni conservati. **Aggiornamento completato: non rilanciare.**
