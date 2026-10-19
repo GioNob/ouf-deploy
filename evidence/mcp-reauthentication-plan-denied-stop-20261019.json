@@ -16,5 +16,8 @@
   "readerSourceSha256": "4d956321e87f9d2202e25a80173f9ab33f0a355207dff3f2f360e8e735d15116",
   "localTestsPassed": 7,
   "completedTechnicalPhases": 8,
-  "functionalMilestonesProven": 4
+  "functionalMilestonesProven": 4,
+  "readerQualificationRun": 39244135128,
+  "readerQualificationJob": 118031813793,
+  "readerTestsPassed": 7
 }
