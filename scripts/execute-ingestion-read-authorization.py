@@ -60,6 +60,6 @@ if __name__=='__main__':
         require(len(sys.argv)==3,'EXACT_CONTEXT_AND_PACKAGE_HASH_REQUIRED');main(sys.argv[1],sys.argv[2])
     except (Exception,KeyboardInterrupt)as error:
         print(encoded({'schema':'ouf.ingestion-read-administrative-stop.v1','status':'STOP_RECONCILE',
-            'exceptionClass':type(error).__name__,'reason':str(error)if re.fullmatch('[A-Z0-9_]{1,160}',str(error))else'PRIVATE_DETAILS_REDACTED',
+            'exceptionClass':type(error).__name__,'reason':'PRIVATE_DETAILS_REDACTED',
             'automaticReplayAllowed':False,'budgetReset':False,'runtimeCompletionProven':False}).decode(),flush=True)
         raise SystemExit(2)

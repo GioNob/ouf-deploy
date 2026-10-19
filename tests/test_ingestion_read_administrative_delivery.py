@@ -42,6 +42,14 @@ class PrivateDelivery(unittest.TestCase):
         self.assertEqual(prep.stage_read(path,h),b'qualified')
         path.write_bytes(b'changed')
         with self.assertRaises(Exception):prep.stage_read(path,h)
+    def test_bootstrap_diagnostic_never_exposes_uppercase_exception_text(self):
+        import subprocess
+        path=ROOT/'scripts/execute-ingestion-read-authorization.py'
+        harness='import runpy,sys;sys.argv=[sys.argv[1],"PRIVATE_CANARY","bad"];runpy.run_path(sys.argv[1],run_name="__main__")'
+        result=subprocess.run([sys.executable,'-I','-B','-S','-c',harness,str(path)],capture_output=True,timeout=15)
+        self.assertEqual(result.returncode,2)
+        self.assertNotIn(b'PRIVATE_CANARY',result.stdout+result.stderr)
+        self.assertEqual(json.loads(result.stdout)['reason'],'PRIVATE_DETAILS_REDACTED')
 
 class GovernedSession(unittest.TestCase):
     def setUp(self):
