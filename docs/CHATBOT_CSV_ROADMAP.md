@@ -1,4 +1,8 @@
-## Current checkpoint — governed capsule complete; APPROVO accepted; custody STOP
+## Current checkpoint — native THS role published, 2026-10-19
+
+Technical8/8; functional4/6. The operator confirmed the native THS publication; one direct ouf-admin `authorization.proposal.read` independently returned proposal `f25d9028-b81f-4eec-a567-43fa160f869b`, revision1, `PUBLISHED`, finalPolicyRef `ouf-lab-authorization:45`. Prior Onboarding readiness WAIT and role PENDING observations are superseded. The original native process must consume this outcome and emit its final result. No independent infrastructure readback or final execution receipt has yet been received. Role policy publication does not prove generic ingestion-profile publication or functional stages5/6. Keep the original process open; after STOP preserve and reconcile, with no replay. [Bounded receipt](../evidence/source-revision-native-role-published-20261019.json).
+
+## Historical checkpoint — governed capsule complete; APPROVO accepted; custody STOP
 
 ## Current checkpoint — blocked REFRESH189 reconciled, 2026-10-19
 
