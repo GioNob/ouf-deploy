@@ -2,7 +2,7 @@ name: Conditional installation Onboarding native owner update
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['tools/installation_owner_update/**', 'scripts/*installation-owner-update.py', 'tests/test_installation_owner_update*.py', '.github/workflows/installation-owner-update.yml']
+    paths: ['tools/installation_owner_update/**', 'scripts/*installation-owner-update.py', 'tests/test_installation_owner_update.py', 'tests/test_installation_owner_update_preparation.py', '.github/workflows/installation-owner-update.yml']
 permissions: {contents: read}
 jobs:
   signed-owner:
@@ -45,9 +45,15 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" \
-            OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/legacy" \
-            OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/revision" \
-            OUF_INGESTION_GATEWAY_ROOT="$fixture/repository/.pairwise/gateway" \
-            OUF_OWNER_JAVA_CLASSPATH="$fixture/repository/.owner-roundtrip-classes:$(cat .owner-roundtrip.classpath)" \
-            python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_installation_owner_update*.py' -v
+          failed=0
+          for suite in test_installation_owner_update.py test_installation_owner_update_preparation.py; do
+            if ! sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" \
+              OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/legacy" \
+              OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/revision" \
+              OUF_INGESTION_GATEWAY_ROOT="$fixture/repository/.pairwise/gateway" \
+              OUF_OWNER_JAVA_CLASSPATH="$fixture/repository/.owner-roundtrip-classes:$(cat .owner-roundtrip.classpath)" \
+              python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v; then
+              failed=1
+            fi
+          done
+          exit "$failed"
