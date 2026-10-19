@@ -143,3 +143,25 @@ class SealedProfile(unittest.TestCase):
    {'executorSha256':'d'*64,'caseSha256':'e'*64,'mode':'MCP_READ_TRANSPORT_UPDATE'})
   self.assertEqual(d['entryModule'],'tools.mcp_read_transport_gateway82_continuation.entry')
 if __name__=='__main__':unittest.main()
+
+class NativeInfrastructureAuthority(unittest.TestCase):
+ @classmethod
+ def setUpClass(cls):
+  import test_mcp_read_transport_gateway82 as core
+  core.CryptoAndJournal.setUpClass()
+ def setUp(self):
+  import test_mcp_read_transport_gateway82 as core
+  self.prior=core.CryptoAndJournal();self.prior.setUp();self.addCleanup(self.prior.doCleanups)
+  self.closure=copy.deepcopy(self.prior.closure);self.closure['declaration']['entryModule']='tools.mcp_read_transport_gateway82_continuation.entry';self.closure['declaration']['moduleCount']=205
+  self.review=a.compile_action_review('MCP_READ_TRANSPORT_UPDATE',self.closure,self.prior.scopes,self.prior.hb,
+   self.prior.context,{'predecessorHistoryHash':'b'*64,'predecessorIncidentRef':self.prior.plan['logicalUpdateRef']},480)
+  self.prior.c.write(self.prior.context/'review.json',a.encoded(self.review))
+ def test_real_two_role_signatures_remain_mcp_only_after_separate_login(self):
+  self.prior.review=self.review;action=a.issue_action(self.review,self.prior.decision(),self.prior.human)
+  self.assertTrue(action.guard('mcpReadTransportUpdate',self.prior.scopes['mcpReadTransportUpdate']))
+  self.assertEqual(len(list(self.prior.context.glob('*.DEPLOYMENT_INTENT.json'))),1)
+  self.assertEqual(len(list(self.prior.context.glob('*.FINAL_DEPLOYMENT_APPROVAL.json'))),1)
+ def test_login_scope_cannot_become_runtime_authority(self):
+  with self.assertRaises(Exception):a.compile_action_review('MCP_READ_TRANSPORT_UPDATE',self.closure,
+   {**self.prior.scopes,'login':{'allowed':True}},self.prior.hb,self.prior.context,
+   {'predecessorHistoryHash':'b'*64,'predecessorIncidentRef':'c'*64},480)
