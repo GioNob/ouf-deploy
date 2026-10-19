@@ -10,4 +10,22 @@ The two pure binding predicates are extracted by AST from exact package-hashed f
 
 Before implementing a successor, use this outcome to bind the existing consumed login and preserve actual attempts/window. A READY session must not be replaced by an implicit new login; expired/ambiguous states require their native governed reconciliation. Any new source/case/closure must be explicit and reviewed before APPROVO; IAM/HUMAN/THS gates remain native. Preserve original images/documents,13Teatri/ACK/lineage20properties/identity choices and8Cinema. No functional stage advance follows this read.
 
-PET consulted: original Onboarding1.6 §§109.14–109.15 on expired challenge owner authority, retained audit/history and observability. No full PET compliance is inferred. Cloud qualification and immutable command will be recorded once CI passes. Physical protected target read requires existing sudo; no new login or generic authorization requested.
+PET consulted: original Onboarding1.6 §§109.14–109.15 on expired challenge owner authority, retained audit/history and observability. No full PET compliance is inferred. Cloud qualification completed: run39202029955/job117896840412 success,10tests PASS at delivery44804c35fa199c6361e805e6018f9bc7042605eb. Root fixtures cover isolated guard mismatch, READY/DEVICE_POLL/expiry, journal preservation/redaction/stability, claim/receipt drift, compiler/authority refusal and exact hash-checked shell/root shim. This is not live login/authorization or target acceptance. [Qualification receipt](../evidence/source-revision-human-binding-stop-read-qualified-20261019.json). Physical protected target read requires existing sudo; no new login or generic authorization requested.
+
+## One readonly VPS command
+
+```bash
+(
+set -euo pipefail
+umask 077
+ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
+[[ -n "$ouf_gh" && -x "$ouf_gh" ]] || exit 1
+ouf_read_dir="$(mktemp -d "$HOME/ouf-human-binding-read.XXXXXXXX")"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/scripts/launch-source-revision-human-binding-stop-read-20261019.sh?ref=44804c35fa199c6361e805e6018f9bc7042605eb' --jq '.content' | base64 --decode > "$ouf_read_dir/read.sh"
+printf '%s  %s\n' '0fd4cd5537b38d31719382d4ffde7aefddf1f6f375d28faba41ed8a9f57ef4d0' "$ouf_read_dir/read.sh" | sha256sum --check
+bash "$ouf_read_dir/read.sh"
+)
+```
+
+Return redacted final JSON. Do not repeat login, browser challenge, consumed IAM delivery or any STOP execution.
