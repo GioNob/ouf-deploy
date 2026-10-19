@@ -1,5 +1,8 @@
 # Native route reconciliation and explicit budget264 review —19October2026
 
+> **STOP target — 19 ottobre 2026:** la consegna `92c0c78c6b5dcb4dcfd7f923df1906988c235127` si è fermata in PREPARATION con `EXACT_FROZEN256_PREDECESSOR_GUARD_REQUIRED`. Il comando operativo sotto è ritirato: **non rilanciarlo**. Nessun consenso budget264 è stato raccolto; ultimo consumo riferito255/256. Il test usava un guard esportato da una capsula precedente e non provava il guard della capsula219 attuale. Prossima azione: sola lettura autenticata della sorgente e presenza della claim, senza credenziali, OAuth o mutazioni. Owner6/gen6 e file pubblicato non vanno ripetuti; journal resta da riconciliare. Tecniche8/8, funzionali4/6.
+
+
 Technical8/8,functional4/6. This package is NOT executed or authorized merely by publication. Source **8ff69df5a19cd161ac185b2b15729e821bba2383**; authenticated11-file delivery **92c0c78c6b5dcb4dcfd7f923df1906988c235127**; launcher SHA256 **80dd9d9f7e5e78805a298b15fe02c0ac35d73a2f3a8501981aa7e1d03c54839f**.20CItests PASS (17source+3delivery).
 
 ## Scope and gates

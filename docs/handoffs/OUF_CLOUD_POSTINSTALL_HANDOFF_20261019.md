@@ -1,5 +1,8 @@
 # OUF cloud handoff after independent source-revision installation readback
 
+> **STOP target — 19 ottobre 2026:** la consegna `92c0c78c6b5dcb4dcfd7f923df1906988c235127` si è fermata in PREPARATION con `EXACT_FROZEN256_PREDECESSOR_GUARD_REQUIRED`. Il comando operativo sotto è ritirato: **non rilanciarlo**. Nessun consenso budget264 è stato raccolto; ultimo consumo riferito255/256. Il test usava un guard esportato da una capsula precedente e non provava il guard della capsula219 attuale. Prossima azione: sola lettura autenticata della sorgente e presenza della claim, senza credenziali, OAuth o mutazioni. Owner6/gen6 e file pubblicato non vanno ripetuti; journal resta da riconciliare. Tecniche8/8, funzionali4/6.
+
+
 ### Ultimo stato: token scaduto255/256; proposta264 e continuazione completa qualificata
 
 La lettura target `ouf.installation-binding-continuation-readiness.v1` prova sessione READY **255/256**, accessExpiresAt **1792429331**, token scaduto; finestra ancora aperta fino **1792436155 =20:55:55 Europe/Rome del19ottobre2026**. Rimane1tentativo mentre REFRESH+USERINFO richiedono almeno2: **non avviare rinnovo parziale**, non spendere il256esimo come prova e non azzerare contatori. Restano provati proiezione attiva10b378... già pubblicata, stage CLAIMED/version3 del7x21g1fg e zero dispatch Gateway da quell'azione; owner46iexg9c completato6/generazione6. Nessuna nuova autorità o budget concessi dalla diagnosi. Ricevuta completa in `evidence/installation-binding-continuation-readiness-target-20261019.json`.
