@@ -1,5 +1,22 @@
 # OUF cloud handoff after independent source-revision installation readback
 
+### Prossima azione qualificata — riautenticazione244 nella stessa finestra, poi gate owner distinto
+
+Il reader target ha confermato **complete/readOnly**, nessuna autorità o journal owner, nessun dispatch Onboarding da questa azione, nessun successore; HUMAN **BLOCKED244/256** dopo REFRESH, access registrato scaduto, **12** tentativi residui e finestra wall/monotonic ancora aperta fino alle **17:54:19 Europe/Rome**. Zero richieste OAuth/owner/Engine, scritture, bearer/key aperti o sorgenti owner eseguiti. Causa specifica issuer **non provata**. La ricevuta integrale è in `evidence/installation-owner-same-window-reauth244-qualified-checkpoint-20261019.json`.
+
+Qualificata una capsula distinta da **213 moduli**, sorgente **bcd33c71c7a906ec867c7ab2ccac40e4545a4f31**: cambia soltanto il modulo entrypoint, fornito dal file autenticato `tools/installation_owner_reauthentication/entry.py` e sigillato sotto il nome chiuso `tools.installation_owner_update.entry`. **Tutti gli altri212moduli, incluso HUMAN, sono byte identici** al package fermato; loader, bootstrap, codice owner e guard restano invariati. Test AST verificano identiche le funzioni current_human/compile_current/main owner (solo main rinominato owner_main). Riutilizza prove e immagine già preparate: nessuna nuova preparazione immagine o rebuild, né esecuzione di reader/main storici.
+
+Primo gate sul VPS: **APPROVO RIAUTENTICAZIONE + hash** autorizza un solo nuovo device login nello stesso issuer/soggetto/tenant/client/11scope; il provider può negare. NON riusa access/refresh/device credential precedenti, NON estende o riapre la finestra e NON azzera244/256. Il successore mantiene `binding.createdAt/expiresAt` come date della **finestra originaria**, il suo identico `governedWindowRenewal` v4 e la deadline monotonic originaria; il consenso nuovo ha timestamp corrente ed è registrato **separatamente** in login-review/login-decision/sameWindowReauthentication. Nessuna data di approvazione precedente viene riscritta o attribuita al nuovo consenso. Il precedente journal resta identico; un claim persistente recinta ogni secondo avvio.
+
+Solo dopo login verificato, stato corrente e margine budget (massimo252tentativi prima dell'ammissione owner) viene letto il piano corrente. Secondo gate **APPROVO + hash** e firme native dei due ruoli autorizzano esclusivamente l'aggiornamento Onboarding già qualificato, massimo900s, con almeno20min residui nella finestra. Il login non emette autorità infrastrutturale. Nessun profilo creato/attivato/esportato, proiezione sostituita, Gateway PUT, grant/IAM, fonte o acquisizione. Source b0f5 e immagine runtime c124 rimangono quelle già verificate. Dopo STOP/interruzione nessun rilancio: riconciliare la capsula selezionata e il relativo claim.
+
+Qualifica **11 test** passati run **39272635912**, job **118128669999**: vero device flow con guard congelato, conservazione date/receipt/deadline/budget, consenso negato, rifiuto issuer durevole, budget consumato dai poll, deriva concorrente e preparazione in subprocess isolato con tutti i file storici intatti e claim one-use. Delivery **3 test** passati run **39272792659**, job **118129225377**: client portable gh autenticato, due pin esatti, sostituzione/mancanza client bloccate prima di sudo/exec. Delivery immutabile **abb9edfe6b2407f519baba350de1c55dfdac2679**, `scripts/launch-installation-owner-reauth244-20261019.sh`, SHA256 **01a41bd821b6a7c00d65d7fd367b7dbbe8b2cb26f78ed33abca0cc0c024f8b08**.
+
+Questa qualifica cloud non ha fatto OAuth, owner/Engine request o operazioni container sul target. Riautenticazione, aggiornamento Onboarding e applicazione del binding **non ancora provati**. Tecniche **8/8**, funzionali **4/6**. Vecchio launcher consumato, installazione uow4n8lp/readback MCP/piano ofjxmhff non si ripetono. Profilo governato e tappe5–6 restano aperti.
+
+---
+
+
 ### STOP corrente — HUMAN BLOCKED244/256; nessun aggiornamento owner avviato
 
 **Il launcher owner precedente è consumato: non rilanciarlo.** Preparazione213 riuscita in `installation-owner-update-execution-cr_wsios`: package **174b8f8325a2721eddc90480a0a6851f5b060de10790115e4f655cbd096a3e4a**, chiusura **64f6139235d2f06a5c3cc0a7b2393ec6e213c1c4a56b2e392372c2790e9695fd**, immagine runtime containerd **sha256:c124a832a1f9f07967a8f3ef9ba9692610ab5c97aa4719e614867f44e6aa63ae**, prova34migrazioni **d1b046b00ca761e04eb810402840c87e0dcbe7022051ea1ede80adcce68fb99a**. Nessun rebuild o replay delle fasi completate.
