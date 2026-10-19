@@ -23,5 +23,14 @@
   "budgetReset": false,
   "completedTechnicalPhases": 8,
   "functionalMilestonesProven": 4,
-  "diagnosticSha256": "bc820d7f8c0f6ce9e4d32ad6d83d77dd288c0e3b542fed8e7114607ddecce608"
+  "diagnosticSha256": "bc820d7f8c0f6ce9e4d32ad6d83d77dd288c0e3b542fed8e7114607ddecce608",
+  "readQualification": {
+    "sourceCommit": "3e597af8ca23d2cd42a6ebef84f86138e513fd3d",
+    "runId": 39196652906,
+    "jobId": 117880777098,
+    "conclusion": "success",
+    "testsPassed": 2,
+    "fixtureCases": 8,
+    "targetReadPerformed": false
+  }
 }
