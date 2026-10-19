@@ -2,7 +2,7 @@ name: Existing HUMAN administrative continuation qualification
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/prepare-ingestion-existing-session-action.py', 'scripts/ingestion-existing-session-entry.py', 'tests/test_ingestion_existing_session_action.py', '.github/workflows/ingestion-existing-session-action.yml']
+    paths: ['scripts/prepare-ingestion-publication-repair.py', 'scripts/ingestion-publication-repair-entry.py', 'tests/test_ingestion_publication_repair.py', 'scripts/prepare-ingestion-existing-session-action.py', 'scripts/ingestion-existing-session-entry.py', 'tests/test_ingestion_existing_session_action.py', '.github/workflows/ingestion-existing-session-action.yml']
 permissions: {contents: read}
 jobs:
   signed-owner:
@@ -39,7 +39,7 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          for suite in test_chatbot_cohort_authorization.py test_chatbot_cohort_authorization_observation.py test_source_revision_authorization.py test_ingestion_read_authorization.py test_ingestion_read_governed_owner.py test_ingestion_read_administrative_authority.py test_ingestion_read_administrative_delivery.py test_ingestion_existing_session_preflight.py test_ingestion_existing_session_action.py; do
+          for suite in test_chatbot_cohort_authorization.py test_chatbot_cohort_authorization_observation.py test_source_revision_authorization.py test_ingestion_read_authorization.py test_ingestion_read_governed_owner.py test_ingestion_read_administrative_authority.py test_ingestion_read_administrative_delivery.py test_ingestion_existing_session_preflight.py test_ingestion_existing_session_action.py test_ingestion_publication_repair.py; do
             sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" \
               OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/legacy" \
               OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/revision" \
