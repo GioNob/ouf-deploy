@@ -23,5 +23,7 @@
   "issuerCauseProven": false,
   "nextReaderSha256": "90fff124528d39a7265017e0ca3249bdbbf6791e1427226d6a09902bdfe6bed6",
   "completedTechnicalPhases": 8,
-  "functionalMilestonesProven": 4
+  "functionalMilestonesProven": 4,
+  "issuerReaderQualificationRun": 39236073207,
+  "issuerReaderTestsPassed": 5
 }
