@@ -24,5 +24,9 @@
   "newHumanLoginAllowed": false,
   "originalHumanWindowExpiresAt": 1792405963,
   "completedTechnicalPhases": 8,
-  "functionalMilestonesProven": 4
+  "functionalMilestonesProven": 4,
+  "deliveryQualificationRun": 39235070853,
+  "deliveryQualificationJob": 118002052188,
+  "deliveryTestsPassed": 4,
+  "deliverySourceCommit": "f28d6b60a764c755c7be324dced698afa7a315f8"
 }
