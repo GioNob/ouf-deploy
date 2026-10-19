@@ -19,5 +19,9 @@
   "runtimeCompletionProven": false,
   "completedTechnicalPhases": 8,
   "functionalMilestonesProven": 4,
-  "launcherSha256": "fc14871dac371106f849ce8e822bf16eff2dd8041cecb062041d4a27202a99f9"
+  "launcherSha256": "fc14871dac371106f849ce8e822bf16eff2dd8041cecb062041d4a27202a99f9",
+  "deliveryQualificationRun": 39247854928,
+  "deliveryQualificationJob": 118044074922,
+  "deliveryQualificationTestsPassed": 4,
+  "deliveryCommit": "d8e8280434bf016df8d0aec0e271a8ad0854ec21"
 }
