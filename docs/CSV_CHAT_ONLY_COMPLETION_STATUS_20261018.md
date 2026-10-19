@@ -1,5 +1,10 @@
 ## Current checkpoint — governed capsule complete; APPROVO accepted; custody STOP
 
+## Current checkpoint — protected custody read, 2026-10-19
+
+Technical8/8; functional4/6. The operator's protected dvf517sr read proves an expired issued authority and consumed claim, journal version0/nextStage0/effects[], no backup and unchanged running applications. MCP permit/policy/profile hashes match; root:10005/0440 explains the generic private-reader stop. Preserve all bytes/permissions/claims/budgets. An explicit fresh-review custody successor is under qualification; do not replay dvf or the governed launcher. [Evidence](../evidence/source-revision-after-approval-custody-target-20261019.json), [successor qualification record](../releases/SOURCE_REVISION_CUSTODY_CONTINUATION_20261019.md). Older readiness/checkpoints below do not supersede this stop.
+
+
 **Tecniche8/8; funzionali4/6.** Capsula privata completa: ricevuta a0dd0cd5…, case00054f41…, package2c50390d…, closure be575708…. Nuovo processo dvf517sr: refresh HUMAN186→188 riuscito,68residui e finestra preservata; APPROVO55384120… accettato. STOP `PRIVATE_FILE_CUSTODY_REQUIRED`. Non inferire assenza authority o effetti dal log: lettura protetta di journal, claim, firme/authority, file vincolati e generazioni ancora necessaria. Non ripetere launcher, preparazione, refresh, APPROVO o claim. Nessun chmod/chown o guard allentato. [Ricevuta](../evidence/source-revision-after-approval-stop-20261019.json). [Riconciliazione readonly](../releases/SOURCE_REVISION_AFTER_APPROVAL_CUSTODY_READ_20261019.md): CI39204570304,7test PASS; blob e SHA verificati, lettura target ancora pendente. Nessun guard o permesso file modificato.
 
 ## Current checkpoint — READY HUMAN186 preserved; governed continuation qualified
