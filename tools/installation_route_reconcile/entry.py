@@ -38,21 +38,26 @@ def approved_action(kind,plan,closure,human,context,summary,cancelled):
 
 from tools.installation_route_reconcile import reconcile as retained
 
-def live_preconditions(plan,human,http):
- human.current();engine=Engine(plan['engine']['socketPath'],tuple(plan['engine']['socketBinding']))
+def infrastructure_preconditions(plan):
+ engine=Engine(plan['engine']['socketPath'],tuple(plan['engine']['socketBinding']))
  for name,pin in plan['currentApplications'].items():
   status,actual=engine.request('GET','/v1.44/containers/'+pin['containerId']+'/json')
   require(status==200 and baseline_runtime(actual,name,plan)==pin,'CURRENT_GENERATION_DRIFT')
  for binding in plan['retainedMcpMetadata']:metadata_file(binding)
  from tools.installation_route_reconcile.native import approved_projection_bytes
  approved_projection_bytes(plan['projectionBinding']['path'],plan['projectionHash'])
- require(http.active()=={**plan['bindingPlan']['expectedActive'],'etag':plan['bindingPlan']['expectedActiveETag']},'CURRENT_OWNER_ACTIVE6_DRIFT')
  routes=NamespaceAdmin(engine,plan['gateway']['transport']).routes()
  require(routes==plan['gateway']['beforeRoutes'],'CURRENT_GATEWAY_BEFORE82_DRIFT')
  require(digest(retained.parsed(plan['predecessorJournalBinding']['path']))==plan['predecessorJournalBinding']['sha256'],'PREDECESSOR_JOURNAL_DRIFT')
 
+def live_preconditions(plan,human,http):
+ human.current();infrastructure_preconditions(plan)
+ require(http.active()=={**plan['bindingPlan']['expectedActive'],'etag':plan['bindingPlan']['expectedActiveETag']},'CURRENT_OWNER_ACTIVE6_DRIFT')
+
 def main(original,sources,closure,case,context,read,emit):
  context=Path(context);authority.closure_valid(closure);alarm(120)
+ emit('OUF_BINDING_PHASE=PUBLIC_ROLES_BEFORE_OAUTH')
+ authority.current_authorities(min(int(time.time())+1200,1792436155-5))
  diagnostic=retained.continuation_readiness();alarm(120)
  require(diagnostic['publicationBytesPresentButJournalUnreconciled']and diagnostic['noGatewayDispatchByThisActionProven']
   and diagnostic['human']['attempts']==255 and diagnostic['human']['windowStillOpen']and not diagnostic['human']['recordedAccessHas240SecondsMargin'],
@@ -62,6 +67,8 @@ def main(original,sources,closure,case,context,read,emit):
   'EXACT_PREPARED_PREDECESSOR_UNCHANGED')
  claim=read(case['preparationClaimBinding']['path'],expected=case['preparationClaimBinding']['sha256'])
  require(claim['context']==str(context)and claim['priorOAuthAttempts']==255 and claim['maximumCumulativeOAuthAttempts']==264,'EXACT_ROUTE_PREPARATION_CLAIM_REQUIRED')
+ emit('OUF_BINDING_PHASE=INFRASTRUCTURE_READS_BEFORE_OAUTH');alarm(90)
+ infrastructure_preconditions({**predecessor,'predecessorJournalBinding':case['predecessorJournalBinding']})
  emit('OUF_BINDING_PHASE=EXPLICIT_BUDGET264_FRESH_HUMAN');alarm(600)
  human=login.authenticate(original['authorization']['plan']['selection'],predecessor['humanBinding'],context,closure,publish_json,emit,case)
  plan={**copy.deepcopy(predecessor),'kind':'INSTALLATION_ROUTE_RECONCILIATION','authorityDirectory':str(context),'humanBinding':human.current(),

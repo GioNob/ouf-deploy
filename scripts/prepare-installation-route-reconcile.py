@@ -80,7 +80,7 @@ def main(delivery,commit):
  predecessor=retained['parsed'](second/'execution-plan.json');journal=retained['parsed'](second/'recovery.json');binding=predecessor['humanBinding']
  row=retained['parsed'](Path(binding['sessionDirectory'])/'recovery.json',maximum=65536)
  require(row['binding']==binding and row['attempts']==255 and row['state']=='READY'and row['budgetReset']is False
-  and time.time()<1792436155-600 and not os.path.lexists(Path(binding['sessionDirectory'])/'successor-window.claim.json'),
+  and time.time()<1792436155-1200 and not os.path.lexists(Path(binding['sessionDirectory'])/'successor-window.claim.json'),
   'EXACT_UNCLAIMED255_HUMAN_WITH_REMAINING_WINDOW_REQUIRED')
  for name in('entry','authority','owner','native','baseline','login','reconcile'):sources['tools.installation_route_reconcile.'+name]=delivery[name]
  sources['tools.chatbot_file_cohort.human_session']=extend_human(sources['tools.chatbot_file_cohort.human_session'],delivery['human_extension'])

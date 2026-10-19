@@ -31,7 +31,7 @@ def qualify(human,row,closure,logical_ref):
  require(row['state']=='READY'and row['attempts']==255 and row['budgetReset']is False
   and row['binding']['retryProfile']['maximumAttempts']==256 and row['binding']['expiresAt']==EXPIRES
   and row['binding']['scopes']==SCOPES and len(SCOPES)==11 and PROFILE['maximumAttempts']==264
-  and time.time()>=row['lastObservedAt']and time.time()<EXPIRES-600 and time.monotonic()<row['monotonicDeadline']
+  and time.time()>=row['lastObservedAt']and time.time()<EXPIRES-1200 and time.monotonic()<row['monotonicDeadline']
   and row['accessExpiresAt']<=time.time()+5 and not os.path.lexists(human.directory/'successor-window.claim.json')
   and closure['declaration']['moduleCount']==226,'EXACT_EXPIRED_READY255_BUDGET_INSUFFICIENT_REQUIRED')
  review=row['governedWindowRenewal']['review']
