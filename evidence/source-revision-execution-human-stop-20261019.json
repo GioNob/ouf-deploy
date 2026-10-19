@@ -18,5 +18,13 @@
   "authorityAbsenceIndependentlyRead": false,
   "specificFailedPredicateKnown": false,
   "technicalPhases": 8,
-  "functionalMilestones": 4
+  "functionalMilestones": 4,
+  "readQualification": {
+    "sourceCommit": "3f3c5cc04663948a840d64a0f75ca9579f5e9733",
+    "sha256": "a49343e52fb15d70f822e3b6bbf0b4851f0f00d42a3dd3e1a801591d0167086a",
+    "runId": 39192641238,
+    "jobId": 117868574490,
+    "testsPassed": 8,
+    "targetHistoryReadPerformed": false
+  }
 }
