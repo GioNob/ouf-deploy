@@ -1,3 +1,4 @@
+import gzip,io,tarfile,zipfile
 import ast,base64,hashlib,importlib.util,json,os,subprocess,time,unittest
 from pathlib import Path
 HERE=Path(__file__).resolve().parent;ROOT=HERE.parent;PACKAGE=HERE
@@ -46,7 +47,9 @@ class Preparation(fixture.Read):
   self.actual_custody={'parents':{str(self.ouf):(1000 if self.native_uid else 0,1000 if self.native_uid else 0,0o750),str(self.directory):(0,0,0o700)},'file':(0,0,0o600)}
  def child(self):
   values={'FIRST':str(self.first),'PACKAGE':self.package,'CLOSURE':self.closure,'OWNER_REVIEW':self.r1,'ROUTE_REVIEW':self.r2,'EXPORT':self.export,'ACTIVE_PATH':str(self.profile),'APPROVED_CUSTODY':self.actual_custody,'HUMAN_REVIEW':self.hreview}
-  code='''import ast,json,sys\nfrom pathlib import Path\np={"__name__":"qualified_route_preparer"};exec(compile(Path(sys.argv[1]).read_bytes(),sys.argv[1],"exec"),p)\nroot=Path(sys.argv[2]);vals=json.loads(sys.argv[3]);vals["APPROVED_CUSTODY"]={"parents":{k:tuple(v)for k,v in vals["APPROVED_CUSTODY"]["parents"].items()},"file":tuple(vals["APPROVED_CUSTODY"]["file"])};delivery={n:(root/(n+".py")).read_bytes()for n in p["NAMES"]}\ntree=ast.parse(delivery["reconcile"]);targets=set(vals)\nfor n in tree.body:\n if isinstance(n,ast.Assign)and len(n.targets)==1 and isinstance(n.targets[0],ast.Name)and n.targets[0].id in targets:\n  k=n.targets[0].id;n.value=ast.parse("Path("+repr(vals[k])+")"if k=="FIRST"else repr(vals[k]),mode="eval").body\nraw=ast.unparse(ast.fix_missing_locations(tree))\nif not Path("/proc/sys/kernel/random/boot_id").exists():raw=raw.replace("Path('/proc/sys/kernel/random/boot_id').read_text().strip()",repr("fixture-boot"))\ndelivery["reconcile"]=raw.encode()\np["time"].time=lambda:1792430000.\ndef dispatched(*args):print("NEW_ROUTE_BOOTSTRAP_DISPATCH_REACHED",flush=True);raise SystemExit(0)\np["os"].execv=dispatched\np["main"](delivery,"a"*40)\n'''
+  code='''import ast,json,sys\nfrom pathlib import Path\np={"__name__":"qualified_route_preparer"};exec(compile(Path(sys.argv[1]).read_bytes(),sys.argv[1],"exec"),p)\nroot=Path(sys.argv[2]);vals=json.loads(sys.argv[3]);vals["APPROVED_CUSTODY"]={"parents":{k:tuple(v)for k,v in vals["APPROVED_CUSTODY"]["parents"].items()},"file":tuple(vals["APPROVED_CUSTODY"]["file"])};delivery={n:(root/(n+".py")).read_bytes()for n in p["NAMES"]}\ntree=ast.parse(delivery["reconcile"]);targets=set(vals)\nfor n in tree.body:\n if isinstance(n,ast.Assign)and len(n.targets)==1 and isinstance(n.targets[0],ast.Name)and n.targets[0].id in targets:\n  k=n.targets[0].id;n.value=ast.parse("Path("+repr(vals[k])+")"if k=="FIRST"else repr(vals[k]),mode="eval").body\nraw=ast.unparse(ast.fix_missing_locations(tree))\nif not Path("/proc/sys/kernel/random/boot_id").exists():raw=raw.replace("Path('/proc/sys/kernel/random/boot_id').read_text().strip()",repr("fixture-boot"))\ndelivery["reconcile"]=raw.encode()\np["FROZEN_HUMAN_SOURCE_HASH"]=p["sha"](__import__("base64").b64decode(json.loads((Path(vals["FIRST"])/"sources.json").read_bytes())["tools.chatbot_file_cohort.human_session"]))\np["time"].time=lambda:1792430000.\ndef dispatched(*args):print("NEW_ROUTE_BOOTSTRAP_DISPATCH_REACHED",flush=True);raise SystemExit(0)\np["os"].execv=dispatched\np["main"](delivery,"a"*40)\n'''
+  # Only fixture paths/package pins and the synthetic full-source hash are substituted.
+  # The retained public method includes the exact target MCP compatibility branch.
   # Script paths are staged under their module aliases solely inside the isolated fixture.
   delivery=self.root/'delivery';delivery.mkdir(exist_ok=True,mode=0o700)
   for name in('entry','authority','owner','native','baseline','login','reconcile','runtime','human_extension'):(delivery/(name+'.py')).write_bytes((PACKAGE/(name+'.py')).read_bytes())
@@ -66,5 +69,14 @@ class Preparation(fixture.Read):
  def test_changed_current_counter_blocks_before_preparation_claim(self):
   self.setup_package();row=json.loads(self.hpath.read_bytes());row['attempts']=256;self.write(self.hpath,row);result=self.child()
   self.assertNotEqual(result.returncode,0);self.assertEqual(list(self.root.glob('installation-route-reconcile-preparation-*.claim.json')),[])
-def load_tests(loader,tests,pattern):return unittest.TestSuite(Preparation(n)for n in('test_actual_isolated226_preparation_preserves_history_and_denies_second_claim','test_changed_current_counter_blocks_before_preparation_claim'))
+ def test_full_source_pin_preserves_exact_prefix_and_rejects_any_byte_drift(self):
+  ns={'__name__':'qualified_preparation_guard'};exec(compile(PREPARE.read_bytes(),str(PREPARE),'exec'),ns)
+  self.assertEqual(ns['FROZEN_HUMAN_SOURCE_HASH'],'305c7804b084b02f0bf7d6c1521c3c5a4f8e7f4e2fb0a15e27f5886a2a685dcc')
+  raw=(BUDGET_FIXTURES/'frozen_guard_fixture.py').read_bytes();self.assertIn(b'ouf.mcp-read-transport-human-reauthentication-review.v1',raw)
+  ns['FROZEN_HUMAN_SOURCE_HASH']=ns['sha'](raw) # Synthetic fixture full-source pin only.
+  extension=(PACKAGE/'human_extension.py').read_bytes()
+  result=ns['extend_human'](raw,extension);self.assertEqual(result,raw+b'\n'+extension)
+  for changed in(raw+b'\n# byte drift',raw.replace(b'== 217',b'== 218'),result):
+   with self.subTest(changed=ns['sha'](changed)),self.assertRaisesRegex(ValueError,'EXACT_FROZEN256_PREDECESSOR_GUARD_REQUIRED'):ns['extend_human'](changed,extension)
+def load_tests(loader,tests,pattern):return unittest.TestSuite(Preparation(n)for n in('test_actual_isolated226_preparation_preserves_history_and_denies_second_claim','test_changed_current_counter_blocks_before_preparation_claim','test_full_source_pin_preserves_exact_prefix_and_rejects_any_byte_drift'))
 if __name__=='__main__':unittest.main()

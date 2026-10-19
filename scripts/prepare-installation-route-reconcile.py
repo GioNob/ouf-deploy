@@ -56,11 +56,12 @@ def write_new(path, raw):
     finally:
         os.close(fd)
 NAMES=('entry','authority','owner','native','baseline','login','reconcile','runtime','bootstrap','human_extension','prepare')
-FROZEN_IDENTITY_AST_HASH='137867b997194d0b72f794d868dc9a80692a0c35e776b96b50359ce3ed3f45a2'
+# Exact authenticated target bytes: independent of ast.dump changes in Python3.13.
+FROZEN_HUMAN_SOURCE_HASH='305c7804b084b02f0bf7d6c1521c3c5a4f8e7f4e2fb0a15e27f5886a2a685dcc'
 
 def extend_human(raw,extension):
  tree=ast.parse(raw);methods=[n for n in ast.walk(tree)if isinstance(n,ast.FunctionDef)and n.name=='_check_identity_and_budget']
- require(len(methods)==1 and sha(ast.dump(ast.Module(body=methods[0].body,type_ignores=[]),include_attributes=False).encode())==FROZEN_IDENTITY_AST_HASH
+ require(sha(raw)==FROZEN_HUMAN_SOURCE_HASH and len(methods)==1
   and b'_explicit_264_identity'not in raw and 0<len(extension)<=32768,'EXACT_FROZEN256_PREDECESSOR_GUARD_REQUIRED')
  result=raw+b'\n'+extension;compile(result,'<explicit-budget264-human-v5>','exec');return result
 
