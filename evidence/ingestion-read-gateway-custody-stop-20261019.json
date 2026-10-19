@@ -1,0 +1,28 @@
+{
+  "schema": "ouf.ingestion-read-gateway-custody-stop-checkpoint.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "contextPath": "/etc/ouf/deploy-snapshots/mcp-ingestion-read-transport-execution-s_qwngj5",
+  "authorityIssuedByPriorAction": true,
+  "runtimeCompletionProven": false,
+  "observedStop": "PRIVATE_FILE_CUSTODY_REQUIRED",
+  "lastPhase": "TWO_GATEWAY_PUTS_AND_READBACK",
+  "lastObservedHumanState": "READY",
+  "lastObservedOAuthAttempts": 227,
+  "maximumCumulativeOAuthAttempts": 256,
+  "humanWindowExpiresAt": 1792415703,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "routeEffectStateProven": false,
+  "diagnostic": {
+    "readOnly": true,
+    "maximumSeconds": 60,
+    "localTestsPassed": 9,
+    "engineCalls": 0,
+    "oauthRequests": 0,
+    "authorityFilesOpened": false,
+    "privateKeyFilesOpened": 0,
+    "sourceExecuted": false,
+    "readerSha256": "54d46f5a0c8d5a7ab503c3e73c66f41b025e23e918e781d5ed7395e0f6bb4eff"
+  }
+}

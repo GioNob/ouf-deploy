@@ -40,6 +40,10 @@ class Journal(unittest.TestCase):
   with self.assertRaises(Exception):r.journal_projection(row,review,plan)
   row,review,plan=self.data();review['scopes']['ingestionReadGatewayUpdate']['maximumGatewayWrites']=3
   with self.assertRaises(Exception):r.journal_projection(row,review,plan)
+ def test_only_sealed_private_file_guard_is_exported_without_other_constants_or_execution(self):
+  raw=b"HIDDEN='NEVER_PRINT_THIS'\ndef private_file(path,expected,maximum):\n require(stat.S_IMODE(s.st_mode)==0o600,'PRIVATE_FILE_CUSTODY_REQUIRED')\n"
+  result=r.sealed_private_guard(raw);self.assertIn('384',result['custodyGuardExpression']);self.assertNotIn('NEVER_PRINT_THIS',json.dumps(result))
+  with self.assertRaises(Exception):r.sealed_private_guard(b'pass\n')
  def test_reader_has_no_target_exec_network_private_authority_or_write_surface(self):
   tree=ast.parse(SCRIPT.read_bytes());calls=[ast.unparse(n.func)for n in ast.walk(tree)if isinstance(n,ast.Call)]
   self.assertFalse(set(calls)&{'exec','eval','compile','os.chmod','os.chown','os.write','os.execv','subprocess.run','subprocess.Popen'})

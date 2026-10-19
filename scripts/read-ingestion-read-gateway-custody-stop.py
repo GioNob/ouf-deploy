@@ -27,6 +27,16 @@ NEW_SOURCE_HASHES={'entry': '29bbf1578f6ffaa99eeb5660e0cbe435e820c823f2fba745d12
 PROFILE='ouf.ingestion-read-gateway-publication.v1'
 BEFORE='9b022a247a5777347cd7794733507bb90a9142ffd62c6497ae3e3c1cbd66fcd2'
 STAGES=('VERIFY_INPUTS','GATEWAY_STATUS_ROUTE','GATEWAY_HISTORY_ROUTE','VERIFY_FINAL')
+def sealed_private_guard(raw):
+ require(type(raw)is bytes and 0<len(raw)<=262144,'BOUNDED_SEALED_NATIVE_SOURCE_REQUIRED')
+ tree=ast.parse(raw);methods=[n for n in tree.body if isinstance(n,ast.FunctionDef)and n.name=='private_file']
+ require(len(methods)==1,'EXACT_SEALED_PRIVATE_FILE_FUNCTION_REQUIRED')
+ guards=[n for n in ast.walk(methods[0])if isinstance(n,ast.Call)and isinstance(n.func,ast.Name)and n.func.id=='require'
+  and len(n.args)==2 and isinstance(n.args[1],ast.Constant)and n.args[1].value=='PRIVATE_FILE_CUSTODY_REQUIRED']
+ require(len(guards)==1,'EXACT_SEALED_PRIVATE_CUSTODY_GUARD_REQUIRED')
+ expression=ast.unparse(guards[0].args[0]);require(len(expression)<=4096,'BOUNDED_PUBLIC_CUSTODY_EXPRESSION_REQUIRED')
+ return {'sourceSha256':sha(raw),'custodyGuardExpression':expression}
+
 def custody_projection(binding,private=False):
  path=Path(binding['path']);require(path.is_absolute()and path.resolve()==path,'EXACT_METADATA_PATH_REQUIRED')
  for parent in path.parents:
@@ -99,6 +109,7 @@ def diagnose(parse=parsed,project=custody_projection,exists=os.path.lexists):
  return {'schema':'ouf.ingestion-read-gateway-custody-stop-read.v1','complete':True,'readOnly':True,'contextPath':str(CONTEXT),
   'packageHash':package_hash,'sourceClosureHash':digest(package['closure']),'sourceModuleCount':195,
   'artifactInventory':{name:exists(CONTEXT/name)for name in ARTIFACTS},'journal':projection,'fileCustodyChecks':checks,'planHash':digest(plan),'reviewHash':digest(review),
+  'sealedPrivateFileGuard':sealed_private_guard(base64.b64decode(sources['tools.semantic_mcp_update.native'],validate=True)),
   'authorityExpiresAt':decision['expiresAt'],'authorityFilesOpened':False,'privateKeyFilesOpened':0,
   'humanCredentialJournalsRead':0,'bearerFilesOpened':0,'oauthRequests':0,'engineCalls':0,'ownerRequests':0,
   'processDispatches':0,'journalWrites':0,'sourceExecuted':False,'liveGatewayRequeried':False,
