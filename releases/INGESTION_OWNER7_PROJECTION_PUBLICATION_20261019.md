@@ -1,3 +1,15 @@
+> **QUALIFIED NEXT ACTION — publish only owner7 active installation projection.**
+>
+> Owner7/d6o9cpwd remains COMPLETE and must not be replayed. Next source `ccbba4ebd986e98b465df733bce0149f8e730fb2`: [native CI39326331436](https://github.com/GioNob/ouf-deploy/actions/runs/39326331436), job118313041336, **115PASS**. This includes both real Ed25519 role signatures, journal fencing, actual FD/flock/CAS/rename/fsync, approved nonroot-parent custody, failure after rename, existing verified refresh limits and historical source provenance. Earlier114-test source29da0353 is superseded by the final before-request REFRESH→USERINFO sequence cap.
+>
+> Immutable delivery `5471e60dd8df1e3801f44b9999a66e95abf1c50a`: [delivery CI39326530756](https://github.com/GioNob/ouf-deploy/actions/runs/39326530756), job118313721205, **3PASS**; exact GitHub readback of bundle/launcher PASS. Launcher `scripts/launch-ingestion-profile-publication-20261019.sh` SHA256 `f52b5068398c475fe7540b9942cf4c489ba52524d4a4bc4a5c67fd75c758a563`; bundle Git blob `d758b5613c71ac009b2544bb9e47a35a9fa42dec`, SHA256 `a72cc64cfc212d2acca817aa2b93726bd87b69d83742377a49a8d6e684e660d1`. General background contract workflows are separate; this finite qualification is the evidence for this delivery.
+>
+> No target projection preparation/publication has run yet. First native `VERIFICO SESSIONE +hash` authorizes only use of the successful v7 session and, if required for margin, at most ONE REFRESH followed by ONE USERINFO within the already-authorized288 and unchanged window1792450664. Per-request sequence enforcement also denies an implicit second refresh for an unusually short-lived token. No new login, budget/window, old272 credentials, periodic refresh worker or request loop. A permanent/ambiguous failure stops without rotating-credential replay.
+>
+> Then3read-only owner GETs prove current ACTIVE7 and full payload before a SEPARATE native `APPROVO +hash`. Fresh dual-role authority120s permits one local CAS/atomic rename/readback of the exact private exportdd31d2b7…, preserving original6 bytes and all82routes. No owner POST/export, Gateway PUT, containers, DB/migrations, IAM/grants, new secrets, source/jobs or public MCP metadata. New244-source capsule preserves every238 old source byte and all old claims. New preparation/runtime/logical-publication claims are once-only too: STOP/interruption retains everything and requires reconciliation, never relaunch or automatic rollback.
+>
+> Installation projection publication is distinct from the governed native chatbot profile and fresh-client readback. DB admission and Ingestion/Gateway rollout executor remain open; no container starts before those gates. Technical8/8, functional4/6; no source activation or release acceptance. Normative originals: Matrix1.7 §1; Onboarding/THS1.6 §2 P-07/P-08/P-09/P-12/P-14/P-15; resiliencev3 rules4–7/11–16.
+
 # Owner7 active installation projection publication
 
 > **CURRENT TARGET — owner7 COMPLETE; active projection publication pending.**
