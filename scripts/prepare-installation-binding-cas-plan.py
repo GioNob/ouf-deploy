@@ -88,7 +88,9 @@ def history():
  review=parsed(COMPLETED/'review.json');decision=parsed(COMPLETED/'decision.json')
  stages=['VERIFY_INPUTS']+['onboarding.'+n for n in('IMPORT_IMAGE','DISABLE_OLD_RESTART','STOP_OLD','DETACH_OLD_ENDPOINT','RENAME_OLD','CREATE_REPLACEMENT','START_REPLACEMENT','READINESS','RESTORE_RESTART_POLICY')]+['VERIFY_FINAL']
  require(review['sourceClosureHash']==digest(package['closure'])and review['scopes']['installationOwnerUpdate']['planHash']==digest(plan)
-  and decision['reviewHash']==digest(review)and journal['version']==29 and journal['nextStage']==len(stages)
+  and decision['reviewHash']==digest(review)and decision['humanSessionHash']==digest(plan['humanBinding'])
+  and review['authenticatedHuman']==plan['humanBinding']and journal['scopeHash']==digest(review['scopes']['installationOwnerUpdate'])
+  and journal['schema']=='ouf.installation-binding-owner-update-journal.v1'and journal['version']==29 and journal['nextStage']==len(stages)
   and len(journal['effects'])==len(stages)and [r['stage']for r in journal['effects']]==stages
   and all(r['state']=='APPLIED'and r['intentHash']==digest({'planHash':digest(plan),'stage':r['stage']})for r in journal['effects'])
   and journal['incidentState']=='RECOVERED'and journal['budgetReset']is False
@@ -126,7 +128,7 @@ def compile_cas(active,revision,after,projection,prior,bindings,compiler):
  require(result['candidatePayload']==prior['candidatePayload']and result['candidatePayloadChecksum']==prior['candidatePayloadChecksum'],
   'UNCHANGED_REVIEWED_CANDIDATE_PAYLOAD_REQUIRED')
  result.update(schema='ouf.installation-ingestion-binding-cas-plan.v1',expectedActive={k:active[k]for k in('installationId','revision','checksum','generation')},
-  expectedActiveETag=active['etag'],atomicOwnerReadContractProven=True,atomicOwnerApiLiveWriteTestPerformed=False,
+  expectedActiveETag=active['etag'],atomicOwnerActivePreconditionSupportProven=True,atomicOwnerReadContractProven=True,atomicOwnerApiLiveWriteTestPerformed=False,
   installedOwnerSourceCommit='b0f5e3dacbe59ebf87e22dd6af2575e41249f51d',retainedDnsProofOnly=True,
   ownerApplyAuthorized=False,futureNativeConsentRequired=True)
  return result
@@ -181,7 +183,8 @@ def main():
  active,etag=transport.next();first=strong_active(active,etag);revision,_=transport.next();after,etag_after=transport.next();last=strong_active(after,etag_after)
  compiled=compile_cas(first,revision,last,projection,prior,{'completedOwnerResultHash':RESULT_HASH,
   'completedOwnerPackageHash':digest(package),'humanBinding':binding,'ownerRuntimeBinding':expected['onboarding'],
-  'retainedGatewayRouteMapHash':result['finalEvidence']['routeMapHash'],'previousInstallationPlanHash':PLAN_HASH},p.compile_plan)
+  'retainedGatewayRouteMapHash':result['finalEvidence']['routeMapHash'],'previousInstallationPlanHash':PLAN_HASH,
+  'projectionBinding':projection_binding,'currentApplications':expected},p.compile_plan)
  require(human._read()==row,'HUMAN_JOURNAL_CHANGED_DURING_READ_ONLY_PLAN')
  PHASE='RETAIN_NEW_PRIVATE_CAS_PLAN_NO_AUTHORITY'
  claim_path=COMPLETED.parent/('installation-binding-cas-plan-'+RESULT_HASH+'.claim.json')
