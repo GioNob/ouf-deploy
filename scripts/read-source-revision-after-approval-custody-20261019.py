@@ -66,7 +66,7 @@ def inventory(directory):
     require(depth>0 and str(path.relative_to(directory)).startswith('gateway-compiler')or depth==0 and child.name in ('gateway-compiler','authorization'));walk(child,depth+1)
    else:
     require(stat.S_ISREG(info.st_mode)and info.st_uid==info.st_gid==0 and stat.S_IMODE(info.st_mode)==0o600 and info.st_nlink==1)
-    require(relative.startswith('gateway-compiler/')or child.name in known or re.fullmatch('[a-f0-9]{64}\.(DEPLOYMENT_INTENT|FINAL_DEPLOYMENT_APPROVAL)\.json',child.name))
+    require(relative.startswith('gateway-compiler/')or child.name in known or re.fullmatch(r'[a-f0-9]{64}\.(DEPLOYMENT_INTENT|FINAL_DEPLOYMENT_APPROVAL)\.json',child.name))
     files[relative]={'bytes':info.st_size,'metadata':pin(info)}
  walk(directory)
  require(all(pin(Path(path).lstat())==value for path,value in dirs.items()))
@@ -144,7 +144,7 @@ def main():
  return {'schema':'ouf.source-revision-after-approval-custody-read.v1','complete':True,'contextPath':str(EXECUTION),'contextFiles':len(before),
   'reviewSha256':REVIEW,'sourceClosureSha256':SOURCE_CLOSURE,'authorityArtifactsObserved':authority_present,
   'issuanceClaimPresent':'issuance.claim.json'in before,'decisionPresent':'decision.json'in before,'decisionReviewBound':decision_bound,'issuanceDecisionBound':issuance_bound,
-  'signatureFilesPresent':sum(bool(re.fullmatch('[a-f0-9]{64}\.(DEPLOYMENT_INTENT|FINAL_DEPLOYMENT_APPROVAL)\.json',n))for n in before),
+  'signatureFilesPresent':sum(bool(re.fullmatch(r'[a-f0-9]{64}\.(DEPLOYMENT_INTENT|FINAL_DEPLOYMENT_APPROVAL)\.json',n))for n in before),
   'logicalScopeClaimPresent':logical_exists,'logicalScopeClaimBound':logical_bound,'updateJournal':journal_status,
   'backupDumpPresent':'onboarding.dump'in before,'backupReceiptPresent':'backup.json'in before,'fileCustody':probes,
   'containerReadback':engine,'engineReadOnlyCalls':len(engine),'databaseCalls':0,'humanSession':public_human,
