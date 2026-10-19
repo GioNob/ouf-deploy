@@ -1,5 +1,12 @@
 # OUF cloud handoff after independent source-revision installation readback
 
+### Diagnosi dyvd8zal acquisita — 2026-10-19,10:43 Europe/Rome
+
+Il read sul target conferma: preparazione e closure181 moduli riuscite; claim logico/runtime presenti; ricevute di login native presenti; piano autorizzativo, review APPROVO, authority e journal degli effetti assenti. Lo STOP è nel tratto dopo il login riuscito e prima della pubblicazione del piano autorizzativo. Non rilanciare il launcher e non ripetere login.
+
+La verifica mirata `scripts/diagnose-ingestion-administrative-preflight.py` verifica per primi i primitivi owner puri; poi riusa il successore HUMAN esatto indicato dalle ricevute/claim. Ammette una sola invocazione di refresh nativo nella finestra già approvata: journal/counter credenziali possono avanzare, nessun login, nuova finestra o reset del cumulativo256. Scrive un claim diagnostico separato e snapshot privati; non modifica la capsula originale. Massimo180secondi,8GET owner,1lettura MCP ROLES e8GET IAM; guard bloccano ogni comando amministrativo/di firma/pubblicazione.10 test fixture locali PASS; target preflight non ancora eseguito. Tecniche8/8, funzionali4/6. Vedi `evidence/ingestion-administrative-stopped-context-dyvd8zal-20261019.json`.
+
+
 
 ### STOP amministrativo da riconciliare — 2026-10-19,10:33 Europe/Rome
 
