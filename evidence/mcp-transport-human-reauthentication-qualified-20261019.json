@@ -28,5 +28,8 @@
   "unattributedClientReasonCode": "TOKEN_NOT_ACTIVE",
   "vpsServiceEffects": 0,
   "completedTechnicalPhases": 8,
-  "functionalMilestonesProven": 4
+  "functionalMilestonesProven": 4,
+  "deliveryQualificationRun": 39237861394,
+  "deliveryTestsPassed": 4,
+  "deliverySourceCommit": "bc8c101a25b9c2114ad920d602260e2843d44e95"
 }
