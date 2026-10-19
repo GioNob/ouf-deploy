@@ -52,8 +52,18 @@
     "cause": "Fixture semantic parent had0755 instead of native producer-required0700. Native guard blocked it. Added early parent/destination/login-review qualification and explicit fixture0700; no production chmod or guard weakening.",
     "stagingSkipped": true
   },
-  "deliveryQualification": "pending",
+  "deliveryQualification": {
+    "runId": 39212428373,
+    "jobId": 117928599560,
+    "conclusion": "success",
+    "testsPassed": 3,
+    "commit": "72c4cb625f73529e8c67606064b4ae4962c50b76",
+    "launcherGitBlob": "b6ccc2b1ba51399413063c66a6158303dc4af4ab",
+    "launcherSha256": "f62b3fa1a84af644be284a4bfb4d7a05c41f7476687c73d02c8f445337c0dec6",
+    "remoteBlobIndependentlyReadAndMatched": true
+  },
   "boundaries": "Actual root custody, signed Ed25519 owner, PostgreSQL/application-role V34, unchanged Java role constraint owner. Network/Engine/IAM/terminal responses are explicitly bounded CI fixtures, not target completion.",
   "runtimeAuthorityIssuedByCI": false,
-  "targetRuntimeMutationsByCI": 0
+  "targetRuntimeMutationsByCI": 0,
+  "totalPassedIncludingDelivery": 144
 }

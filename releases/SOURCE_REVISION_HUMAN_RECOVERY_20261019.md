@@ -1,6 +1,6 @@
 # Explicit blocked HUMAN native recovery — 2026-10-19
 
-Technical8/8; functional4/6. Source qualification PASS:141 tests; immutable launcher qualification pending.
+Technical8/8; functional4/6. Source and immutable delivery qualification PASS:144 tests. Target private preparation/login/runtime remain unexecuted by cloud development.
 
 ## Authoritative checkpoint
 
@@ -27,3 +27,25 @@ Consulted original PET Onboarding/Configuration/THS1.6 §§109.14–109.15, Auth
 Initial qualification correctly rejected a0755 fixture parent. The new adapter now checks the native root:root0700 successor parent BEFORE consent/claim, and private preparation validates it before new capsule creation. It additionally compiles the finite native login review privately and checks the exact destination absent before END. No existing target mode/group/bytes are repaired. The final source passed all suites; initial stage was skipped.
 
 Source-only stage job117927789030 succeeded: `/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revision-human-recovery-code-39212047375`, four files, manifestSHA256a84ffb91c6ca6ea8ac6ecfef4aa7554f826b99f1d6f9dfcb914ed3a8fc4f00c9. Receipt records zero authority/runtime mutations; private preparation and HUMAN login were not executed on target by CI. Exact hashes and boundaries: `evidence/source-revision-human-recovery-qualified-20261019.json`.
+
+## Immutable delivery qualified; native gates remain
+
+[Run39212428373](https://github.com/GioNob/ouf-deploy/actions/runs/39212428373), job117928599560: three delivery tests PASS. Total144 passed; five older governed-only fixture skips remain separately reported. Commit72c4cb625f73529e8c67606064b4ae4962c50b76 contains the launcher, Git blobb6ccc2b1ba51399413063c66a6158303dc4af4ab, SHA256f62b3fa1a84af644be284a4bfb4d7a05c41f7476687c73d02c8f445337c0dec6. Blob independently fetched through GitHub and matched byte-for-byte. No private preparation, HUMAN session or runtime authority was executed by CI/staging.
+
+Execute ONCE on the VPS. First sudo/private preparation revalidates the current target and completes its new case/closure/base/continuation/finite-login-review candidates within300seconds, with zero OAuth. Only after END: native IAM metadata preflight (if explicitly expired, one terminal password prompt), then new-process native RIAPRO LOGIN hash, issuer device login, fresh APPROVO and later THS role confirmation. The blocked refresh is not repeated; a new HUMAN journal inherits189 attempts, maximum256 unchanged. The owner verifies the new actor/token independently. Earlier residual wall time is historical and is never rebased.
+
+```bash
+(
+  set -euo pipefail
+  umask 077
+  ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+  [[ -x "$ouf_gh" ]] || ouf_gh="$(command -v gh)"
+  [[ -x "$ouf_gh" ]] || exit 1
+  ouf_launch="$(mktemp -d "$HOME/ouf-human-recovery-launch.XXXXXXXX")"
+  "$ouf_gh" api repos/GioNob/ouf-deploy/git/blobs/b6ccc2b1ba51399413063c66a6158303dc4af4ab --jq .content | base64 --decode > "$ouf_launch/run.sh"
+  printf '%s  %s\n' 'f62b3fa1a84af644be284a4bfb4d7a05c41f7476687c73d02c8f445337c0dec6' "$ouf_launch/run.sh" | sha256sum --check
+  bash "$ouf_launch/run.sh"
+)
+```
+
+Password only in Keycloak terminal; new RIAPRO LOGIN and APPROVO decisions only at their native prompts/hash. No generic repository/MCP consent is needed; development authorization does not supply runtime HUMAN or THS authority. After STOP/interruption preserve the printed log and reconcile; never rerun. Profile publication, controlled second CSV acquisition and combined verification preserving8Cinema remain subsequent functional work, not implicitly authorized by this review.
