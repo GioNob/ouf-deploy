@@ -29,5 +29,10 @@
   "automaticReplayAllowed": false,
   "budgetReset": false,
   "runtimeAuthorityIssuedByCloud": false,
-  "runtimeCompletionProven": false
+  "runtimeCompletionProven": false,
+  "deliveryQualificationRun": 39254420058,
+  "deliveryQualificationJob": 118065994867,
+  "deliveryQualificationTestsPassed": 4,
+  "deliveryCommit": "de35b02e55ff7d6b15424711030071249a0e29fb",
+  "sixPayloadFilesVerifiedAgainstPinnedGitTree": true
 }
