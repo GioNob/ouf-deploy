@@ -12,4 +12,22 @@ After a proven current IAM GET and stable generation, repeat retained-context an
 
 PET consulted from original baseline: Onboarding1.6 §§109.14–109.15 on expired challenges/owner authority and operational signals. Admin renewal is distinct from HUMAN/THS authority. Prior documented admin login flow: POLICY_TOKEN_ADMIN_REAUTH_AND_RESUME_20261013.md (obsolete preparation continuation must not run). Reusable policy-token iam_session helper has a different retained snapshot; the new wrapper preserves its terminal/fence/readback pattern with explicit source-revision bindings instead of adopting the unrelated snapshot.
 
-Qualification and immutable operator command will be recorded after CI. Target login/resume remain pending; this cloud workspace cannot supply the physical sudo/operator terminal. After STOP or interruption do not relaunch; retain log, fence and any new execution context for reconciliation.
+Qualification completed: GitHub run39200215260/job117891435456 success,13tests PASS at delivery commit e55d180884f0b335711b84a0c0f38ebd0f9888e6. Exact launcher root shim rejects a tampered helper before protected reads; fixture tests cover all pinned classes, preservation, one-use fence including incomplete claim, cancellation, generation/executable drift, timeout reconciliation with one GET and native-gate order. This is orchestration/fixture evidence, not a live IAM or release result. [Qualification receipt](../evidence/source-revision-iam-resume-qualified-20261019.json). Target login/resume remain pending; this cloud workspace cannot supply the physical sudo/operator terminal. After STOP or interruption do not relaunch; retain log, fence and any new execution context for reconciliation.
+
+## One VPS command
+
+```bash
+(
+set -euo pipefail
+umask 077
+ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
+[[ -n "$ouf_gh" && -x "$ouf_gh" ]] || exit 1
+ouf_resume_dir="$(mktemp -d "$HOME/ouf-iam-resume-launch.XXXXXXXX")"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/contents/scripts/launch-source-revision-iam-resume-20261019.sh?ref=e55d180884f0b335711b84a0c0f38ebd0f9888e6' --jq '.content' | base64 --decode > "$ouf_resume_dir/run.sh"
+printf '%s  %s\n' 'dcaba25fea69447456b9fc3db90bbe86c1622fbb7f7c608b21eb32b43bad2133' "$ouf_resume_dir/run.sh" | sha256sum --check
+bash "$ouf_resume_dir/run.sh"
+)
+```
+
+Read the actual native reviews and type decisions only if intended. No command is provided to delete the fence, reset budgets or accept expired authority. Return final redacted JSON/output; after STOP retain logs and do not rerun.
