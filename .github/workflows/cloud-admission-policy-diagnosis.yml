@@ -19,7 +19,7 @@ jobs:
         image: postgres:17
         env: {POSTGRES_USER: fixture, POSTGRES_PASSWORD: fixture, POSTGRES_DB: fixture}
         ports: ['5432:5432']
-        options: --health-cmd 'pg_isready -U fixture -d fixture' --health-interval 5s --health-timeout 5s --health-retries 10
+        options: --health-cmd "pg_isready -U fixture -d fixture" --health-interval 5s --health-timeout 5s --health-retries 10
     env: {PGHOST: localhost, PGPORT: '5432', PGUSER: fixture, PGPASSWORD: fixture, PGDATABASE: fixture, OUF_NATIVE_METADATA_SQL: '1'}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
