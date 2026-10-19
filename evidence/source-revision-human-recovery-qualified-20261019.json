@@ -1,0 +1,59 @@
+{
+  "schema": "ouf.source-revision-human-recovery-qualified.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "sourceCommit": "b829415351f7b0576f72a20b7e36e913294b447a",
+  "runId": 39212047375,
+  "nativeJobId": 117927398201,
+  "stageJobId": 117927789030,
+  "conclusion": "success",
+  "nativeSuite": {
+    "discovered": 110,
+    "passed": 105,
+    "skipped": 5,
+    "skipReason": "Older governed-only source fixture tests; all custody and HUMAN recovery tests enabled."
+  },
+  "signedJavaOwnerTestsPassed": 11,
+  "postbootTestsPassed": 18,
+  "humanRecoveryCapsuleTestsPassed": 7,
+  "totalPassed": 141,
+  "stage": {
+    "directory": "/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revision-human-recovery-code-39212047375",
+    "fileCount": 4,
+    "manifestSha256": "a84ffb91c6ca6ea8ac6ecfef4aa7554f826b99f1d6f9dfcb914ed3a8fc4f00c9",
+    "runtimeAuthorityIssued": false,
+    "runtimeMutations": 0
+  },
+  "sourceHashes": {
+    "prepare.py": "28ab555e2eb38e7928c4f1ded7e84ad69449c26bc407bb78506a45862ead550f",
+    "entry.py": "f44e301293ac4df85afb041184f82284c76b73157b83eaa3087668ea89f0811b",
+    "login.py": "a3797360d89a1ca24d2364d7a8b0adb3737e3537018552c7fa4a319c37ea98e7"
+  },
+  "newSealedModules": [
+    "tools.source_revision_update.entry",
+    "tools.source_revision_update.login"
+  ],
+  "nativeCustodyAdapterUnchanged": true,
+  "nativeDeviceGrantFixture": {
+    "priorAttempts": 189,
+    "resultState": "READY",
+    "resultAttempts": 193,
+    "newWindowOnlyAfterExplicitConsent": true,
+    "predecessorJournalBytesPreserved": true,
+    "failedRefreshReplayed": false,
+    "issuerNetworkBoundary": "explicit _http fixture; native discovery/device/poll/userinfo/publication logic real"
+  },
+  "singleAbsolutePreparationWatchdogSeconds": 300,
+  "embeddedNativeAdminImplementationUnchanged": true,
+  "initialQualification": {
+    "runId": 39211770484,
+    "sourceCommit": "1f0cc65f0e70c2819435f84a19383a4f1dcb37dd",
+    "status": "failed",
+    "cause": "Fixture semantic parent had0755 instead of native producer-required0700. Native guard blocked it. Added early parent/destination/login-review qualification and explicit fixture0700; no production chmod or guard weakening.",
+    "stagingSkipped": true
+  },
+  "deliveryQualification": "pending",
+  "boundaries": "Actual root custody, signed Ed25519 owner, PostgreSQL/application-role V34, unchanged Java role constraint owner. Network/Engine/IAM/terminal responses are explicitly bounded CI fixtures, not target completion.",
+  "runtimeAuthorityIssuedByCI": false,
+  "targetRuntimeMutationsByCI": 0
+}

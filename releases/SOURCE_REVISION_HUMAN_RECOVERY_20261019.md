@@ -1,6 +1,6 @@
 # Explicit blocked HUMAN native recovery — 2026-10-19
 
-Technical8/8; functional4/6. New source qualification pending; do not run development bytes.
+Technical8/8; functional4/6. Source qualification PASS:141 tests; immutable launcher qualification pending.
 
 ## Authoritative checkpoint
 
@@ -19,3 +19,11 @@ A fresh isolated process then reloads only the new sealed executor. Native priva
 ## PET and boundaries
 
 Consulted original PET Onboarding/Configuration/THS1.6 §§109.14–109.15, Authorization1.5 §109.6 and Matrix1.7 §1 from the verified1.7 attachment: expired challenges are not revived, invalid/unknown authorization fails closed, owner/THS authority is not replaced by development permission. The existing native finite login workflow is reused; this is an installation-specific configuration/validation continuation, not a reusable installer or proof of complete PET compliance. No new HUMAN session is opened by CI or preparation. Physical sudo, any observed-expired IAM password prompt, RIAPRO LOGIN, fresh APPROVO and THS remain real native gates.
+
+## Source qualification and native destination preflight
+
+[Run39212047375](https://github.com/GioNob/ouf-deploy/actions/runs/39212047375), sourceb829415351f7b0576f72a20b7e36e913294b447a: **141 tests PASS** (native105 passed of110 discovered, five older governed-only fixture skips; signed Java owner11; postboot18; capsule7). Actual native device-flow logic in the issuer fixture advances189→193 and READY only after explicit consent, retains predecessor journal bytes, and never calls the blocked refresh. Refusal, interrupted issuer call, consumed claim, budget/boot/receipt/reason/operation drift and expired historical windows are covered. Conditional IAM preflight opens no login if current, one native terminal login only after explicit session-expired classification, and none for unknown failures.
+
+Initial qualification correctly rejected a0755 fixture parent. The new adapter now checks the native root:root0700 successor parent BEFORE consent/claim, and private preparation validates it before new capsule creation. It additionally compiles the finite native login review privately and checks the exact destination absent before END. No existing target mode/group/bytes are repaired. The final source passed all suites; initial stage was skipped.
+
+Source-only stage job117927789030 succeeded: `/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revision-human-recovery-code-39212047375`, four files, manifestSHA256a84ffb91c6ca6ea8ac6ecfef4aa7554f826b99f1d6f9dfcb914ed3a8fc4f00c9. Receipt records zero authority/runtime mutations; private preparation and HUMAN login were not executed on target by CI. Exact hashes and boundaries: `evidence/source-revision-human-recovery-qualified-20261019.json`.
