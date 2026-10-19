@@ -1,5 +1,11 @@
 # OUF cloud handoff after independent source-revision installation readback
 
+### Preflight target acquisito; continuazione amministrativa distinta — 2026-10-19
+
+Tecniche **8/8**, funzionali **4/6**. L'operatore ha restituito il preflight riuscito in `/etc/ouf/deploy-snapshots/ingestion-read-preflight-0jvu7qzh`: piano SHA256 `9216f0bae1056f1a6f8c8bf8627915d9a70f126e476fe6700e65f0d58112b53b`, policy `ouf-lab-authorization:45`,104 grant conservati e2 ruoli. Una registrazione, un descrittore, una creazione scope e un binding ChatGPT da eseguire; nessuna authority emessa. Refresh nativo210→212/256, medesima finestra fino a2026-10-19T10:32:43Z. Il vecchio STOP non è riprodotto; la sua causa esatta resta indeterminata. Non ripetere preflight, login, launcher consumati o installazione/readback uow4n8lp.
+
+Lettura MCP con ouf-admin: revisione `c9fec43c-19b3-4ffb-9111-781bc347c5b0` APPROVED/lock3; challenge CONFIRMED storico, activation NOT_STARTED/0tentativi. Non ricreare la revisione o la review della fonte. La continuazione sigilla una nuova entry e un nuovo case nella closure181moduli, mantiene tutti i claim predecessori e usa un claim figlio O_EXCL distinto. Rilegge il piano verificato e confronta integralmente la baseline prima della review nativa APPROVO; nessun nuovo login o recupero IAM. Eventuali drift/scadenza/esiti incerti fermano il flusso per riconciliazione. Pubblicazione di grant, attivazione e acquisizione restano gate successivi. Preparazione/esecuzione della continuazione sul target ancora da acquisire; test CI non sostituiscono tale ricevuta.
+
 
 ### Preflight vincolato alla sessione già aperta — qualifica acquisita
 
