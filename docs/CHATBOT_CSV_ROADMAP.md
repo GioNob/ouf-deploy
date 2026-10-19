@@ -1,5 +1,16 @@
 ## Current checkpoint — DNS target SERVFAIL;native installation binding plan ready;functional4/6
 
+### STOP corrente — HUMAN BLOCKED244/256; nessun aggiornamento owner avviato
+
+**Il launcher owner precedente è consumato: non rilanciarlo.** Preparazione213 riuscita in `installation-owner-update-execution-cr_wsios`: package **174b8f8325a2721eddc90480a0a6851f5b060de10790115e4f655cbd096a3e4a**, chiusura **64f6139235d2f06a5c3cc0a7b2393ec6e213c1c4a56b2e392372c2790e9695fd**, immagine runtime containerd **sha256:c124a832a1f9f07967a8f3ef9ba9692610ab5c97aa4719e614867f44e6aa63ae**, prova34migrazioni **d1b046b00ca761e04eb810402840c87e0dcbe7022051ea1ede80adcce68fb99a**. Nessun rebuild o replay delle fasi completate.
+
+Lo stato riportato si ferma in **EXISTING_HUMAN_SESSION_NO_NEW_LOGIN**, prima di compile_current, gate APPROVO, autorità ed effetti: **HumanSessionPaused**, **HUMAN_OAUTH_REVOKED_OR_PERMANENT_OR_UNKNOWN**, contatore **244/256**, sessione **BLOCKED**, scadenza invariata **17:54:19 Europe/Rome**. Il codice aggrega cause permanenti/revoca/sconosciute: **non prova la causa specifica issuer**. Inventario riportato: execution-plan/review/issuance/authority/recovery/update-result assenti. La preparazione non è prova di aggiornamento installato; binding e fonte non applicati. Tecniche8/8,funzionali4/6.
+
+Ricevute complete in `evidence/installation-owner-update-stop-checkpoint-20261019.json`. Prossimo passo: reader `scripts/read-installation-owner-update-stop.py`, vincolato a questo package/context/source/closure; nessun sorgente owner eseguito, bearer/key aperto, richiesta OAuth/owner/Engine, scrittura journal o rilancio. Legge il journal HUMAN solo per proiettare stato, budget e scadenze senza valori credenziali. Un eventuale nuovo login richiede un'azione distinta con consenso HUMAN esplicito, custodia cumulativa244/256 e nessun replay del refresh fallito; non è autorizzato dal reader. Nessun successore creato da questa continuazione cloud.
+
+---
+
+
 ### Checkpoint corrente — piano target completato; correzione owner qualificata; aggiornamento distinto pronto
 
 Tecniche **8/8**, funzionali **4/6**. Ricevute utente registrate integralmente in `evidence/installation-owner-update-qualified-checkpoint-20261019.json`. Completato il piano di sola lettura **ofjxmhff** / **6bebb5d19b337d4156bd63be78e4068c7117ecec3f3199ef142046cb20d695e9**: ACTIVE **5**, checksum sorgente **e9bea44bf977b17c94d9a9d1a1f2f2ddfff188360df3dbe11d20ee31460298b4**, candidato **ded675196fa5b7f9c398b249f737ff19df26d66e81afa65ddcf9a5ecfb034a98**, un binding aggiunto, altri campi conservati. Tre owner GET, zero mutazioni, export, proiezioni, Gateway PUT, SQL o cicli container. Nessuna autorità di apply: **non rilanciare piano/login/installazione/readback MCP completati**.
