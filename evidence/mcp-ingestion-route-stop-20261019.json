@@ -1,0 +1,31 @@
+{
+  "schema": "ouf.mcp-ingestion-route-stop-checkpoint.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "contextPath": "/etc/ouf/deploy-snapshots/mcp-ingestion-read-transport-execution-zzp9gqcs",
+  "operatorReceipt": {
+    "oauthAttemptsAfter": 225,
+    "maximumCumulativeOAuthAttempts": 256,
+    "expiresAt": 1792415703,
+    "newLoginWindowOpened": false,
+    "originalLoginConsentPreserved": true,
+    "stateAtStop": "READY",
+    "lastPhase": "READ_ONLY_CURRENT_PLAN",
+    "reasonCode": "REVIEWED_INGESTION_GATEWAY_ROUTE_MISSING"
+  },
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "runtimeAuthorityIssued": false,
+  "runtimeCompletionProven": false,
+  "diagnostic": {
+    "readOnly": true,
+    "retainedSnapshotOnly": true,
+    "credentialJournalsRead": 0,
+    "oauthRequests": 0,
+    "engineCalls": 0,
+    "sourceExecuted": false,
+    "maximumSeconds": 60,
+    "localTestsPassed": 8,
+    "readerSha256": "07761592ab3cfa272dd563a4ccc4bc4899f9c0a2e285b20df74988892b32a7c1"
+  }
+}
