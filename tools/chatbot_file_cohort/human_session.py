@@ -42,6 +42,15 @@ class HumanSessionPaused(RuntimeError):
         self.reason, self.retry_at = reason, retry_at
 
 
+class HumanBrowserConfirmationRequired(HumanSessionPaused):
+    """A durable pending challenge, never proof of browser authentication."""
+    def __init__(self, row):
+        super().__init__('HUMAN_BROWSER_CONFIRMATION_REQUIRED', retry_at=row['nextPollAt'])
+        self.row_hash = digest(row)
+        self.challenge = {key: row[key] for key in
+                          ('verificationUri', 'userCode', 'deviceDeadline', 'attempts')}
+
+
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         raise HumanSessionPaused('HUMAN_OAUTH_REDIRECT_DENIED')
@@ -289,6 +298,11 @@ class HumanSession:
 
     def _request(self, row, operation, url, values=None, bearer=None):
         require(row['attempts'] < PROFILE['maximumAttempts'], 'HUMAN_SESSION_BUDGET_EXHAUSTED')
+        # Do not acquire a new credential with no remaining request to verify it.
+        # A browser acknowledgement can be premature; it must never consume this reserve.
+        reserve = {'DISCOVERY':4, 'DEVICE_START':3, 'DEVICE_POLL':2, 'REFRESH':2}.get(operation, 1)
+        require(PROFILE['maximumAttempts']-row['attempts'] >= reserve,
+                'HUMAN_VERIFICATION_BUDGET_RESERVED')
         row = self._save(row, state='REQUESTING', operation=operation,
                          attempts=row['attempts']+1, resumeState=row['state'])
         try:
@@ -392,7 +406,46 @@ class HumanSession:
                          consecutiveFailures=0)
         return copy.deepcopy(row['binding'])
 
-    def login(self, emit=print, stop=None):
+    def login(self, emit=print, stop=None, confirm_browser=None):
+        """At most one token poll per browser confirmation; wait outside invocation locks.
+
+        The callback receives only URL/code/deadline/count and must return True.
+        A missing callback pauses before the first poll. Pending provider replies
+        require another confirmation of the SAME durable challenge, not a new login.
+        """
+        stopper = stop or threading.Event()
+        confirmed = None
+        while not stopper.is_set():
+            try:
+                return self._login_locked(emit, stopper, confirmed)
+            except HumanBrowserConfirmationRequired as error:
+                confirmed = None
+                if confirm_browser is None:
+                    raise
+                while time.time() < error.retry_at and not stopper.is_set():
+                    self._check(self._read())
+                    stopper.wait(min(5, error.retry_at-time.time()))
+                if stopper.is_set():
+                    break
+                self._check(self._read())
+                require(time.time() < error.challenge['deviceDeadline'], 'HUMAN_DEVICE_LOGIN_EXPIRED')
+                # Always redisplay the URL and code at the point of acknowledgement.
+                emit('OPEN_IN_BROWSER='+error.challenge['verificationUri'])
+                emit('ENTER_DEVICE_CODE='+error.challenge['userCode'])
+                require(confirm_browser(copy.deepcopy(error.challenge)) is True,
+                        'HUMAN_BROWSER_CONFIRMATION_NOT_GIVEN')
+                confirmed = error.row_hash
+            except HumanSessionPaused as error:
+                confirmed = None
+                if error.retry_at is None:
+                    raise
+                emit('HUMAN_SESSION_PAUSED='+error.reason)
+                while time.time() < error.retry_at and not stopper.is_set():
+                    self._check(self._read())
+                    stopper.wait(min(5, error.retry_at-time.time()))
+        raise HumanSessionPaused('HUMAN_SESSION_CANCELLED')
+
+    def _login_locked(self, emit, stopper, confirmed):
         """Print only the provider's verification URL and HUMAN entry code."""
         require(self.action is None, 'INITIAL_DEVICE_LOGIN_PRECEDES_AGGREGATE_ACTION')
         if not os.path.lexists(self.journal.record):
@@ -406,7 +459,6 @@ class HumanSession:
             self.journal.initialize({'schema':'ouf.chatbot-human-session.private.v1', 'binding':binding,
                 'bootId':self._boot(), 'monotonicDeadline':time.monotonic()+self.expires_at-now,
                 'lastObservedAt':time.time(), 'attempts':0, 'state':'NEW', 'budgetReset':False})
-        stopper = stop or threading.Event()
         with self.journal.invocation():
             while not stopper.is_set():
                 row = self._read(); self._check(row)
@@ -420,7 +472,7 @@ class HumanSession:
                 try:
                     if row['state'] == 'RETRY_WAIT':
                         if time.time() < row['nextAttemptAt']:
-                            stopper.wait(min(5, row['nextAttemptAt']-time.time())); continue
+                            raise HumanSessionPaused('HUMAN_OAUTH_TEMPORARILY_UNAVAILABLE', retry_at=row['nextAttemptAt'])
                         row = self._save(row, state=row['resumeState'])
                     if row['state'] == 'READY':
                         return self._refresh_ready(row)
@@ -454,8 +506,13 @@ class HumanSession:
                         emit('OPEN_IN_BROWSER='+uri); emit('ENTER_DEVICE_CODE='+code)
                     if row['state'] == 'DEVICE_POLL':
                         require(time.time() < row['deviceDeadline'], 'HUMAN_DEVICE_LOGIN_EXPIRED')
+                        require(PROFILE['maximumAttempts']-row['attempts'] >= 2,
+                                'HUMAN_VERIFICATION_BUDGET_RESERVED')
+                        if confirmed != digest(row):
+                            raise HumanBrowserConfirmationRequired(row)
                         if time.time() < row['nextPollAt']:
-                            stopper.wait(min(5,row['nextPollAt']-time.time())); continue
+                            raise HumanBrowserConfirmationRequired(row)
+                        confirmed = None
                         row, status, result, retry = self._request(row, 'DEVICE_POLL', row['endpoints']['token_endpoint'],
                             {'client_id':CLIENT, 'grant_type':'urn:ietf:params:oauth:grant-type:device_code',
                              'device_code':row['deviceCode']})
@@ -469,8 +526,7 @@ class HumanSession:
                     if row['state'] == 'VERIFYING':
                         return self._verify_and_publish(row)
                 except HumanSessionPaused as error:
-                    if error.retry_at is None: raise
-                    emit('HUMAN_SESSION_PAUSED='+error.reason)
+                    raise
             raise HumanSessionPaused('HUMAN_SESSION_CANCELLED')
 
     def current(self):

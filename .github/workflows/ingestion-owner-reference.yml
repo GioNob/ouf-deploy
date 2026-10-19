@@ -1,8 +1,8 @@
-name: Governed HUMAN272 and owner-only secret reference
+name: HUMAN device confirmation, read-only reconciliation and owner regression
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['tools/ingestion_read_owner_reference/**', 'scripts/prepare-ingestion-owner-reference.py', 'scripts/execute-ingestion-owner-reference.py', 'tests/test_ingestion_owner_reference.py', 'tests/test_ingestion_owner_budget272.py', 'tests/test_ingestion_owner_reference_preparation.py', '.github/workflows/ingestion-owner-reference.yml']
+    paths: ['tools/chatbot_file_cohort/human_session.py', 'tests/test_human_device_confirmation.py', 'tests/test_ingestion_owner_stop_read.py', 'tests/test_ingestion_owner_stop_read_delivery.py', 'tests/test_chatbot_cohort_human_session.py', 'tests/test_interrupted_human_login.py', 'scripts/read-ingestion-owner-reference-stop-20261019.py', 'scripts/launch-ingestion-owner-reference-stop-read-20261019.sh', 'tools/ingestion_read_owner_reference/**', 'scripts/prepare-ingestion-owner-reference.py', 'scripts/execute-ingestion-owner-reference.py', 'tests/test_ingestion_owner_reference.py', 'tests/test_ingestion_owner_budget272.py', 'tests/test_ingestion_owner_reference_preparation.py', '.github/workflows/ingestion-owner-reference.yml']
 permissions: {contents: read}
 jobs:
   signed-owner:
@@ -46,7 +46,7 @@ jobs:
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
           failed=0
-          for suite in test_ingestion_owner_reference.py test_ingestion_owner_budget272.py test_ingestion_owner_reference_preparation.py; do
+          for suite in test_ingestion_owner_reference.py test_ingestion_owner_budget272.py test_ingestion_owner_reference_preparation.py test_human_device_confirmation.py test_ingestion_owner_stop_read.py test_ingestion_owner_stop_read_delivery.py test_chatbot_cohort_human_session.py test_interrupted_human_login.py; do
             if ! sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" \
               OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/legacy" \
               OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/revision" \
