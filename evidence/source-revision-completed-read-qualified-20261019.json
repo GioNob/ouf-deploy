@@ -1,0 +1,38 @@
+{
+  "schema": "ouf.source-revision-completed-read-qualification.v1",
+  "sourceCommit": "a8f091898ac73dd0e89ec17a80adb5d8e71240e5",
+  "workflowRun": 39215600588,
+  "jobId": 117938599307,
+  "testsPassed": 12,
+  "readerBlob": "eea4ade6adca7f6e328070255e6659b2f1e0b34a",
+  "readerSha256": "e9b06ec3b073e961d3347425304fa8c35c2a3396f2a5ed6f2d4752b4b2f422af",
+  "launcherBlob": "bab60d035379ed4d8c06ca3af3a3f64ba4692357",
+  "launcherSha256": "d463f322bad830ad27c2b8cfd4ead5f8b2a73f7f2437786383a4fabe401c82b6",
+  "remoteBlobsIndependentlyMatched": true,
+  "targetExecutionPerformedByQualification": false,
+  "targetContext": "/etc/ouf/deploy-snapshots/source-revision-execution-uow4n8lp",
+  "runtimeAuthorityIssued": false,
+  "automaticRetry": false,
+  "budgetReset": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "freshClientScopesProven": false,
+  "directMcpHealthRead": {
+    "module": "MCP",
+    "status": "HEALTHY",
+    "actionRequired": false,
+    "partial": false,
+    "visibilityClass": "PUBLIC_OPERATIONAL",
+    "redacted": true
+  },
+  "limitations": [
+    "Root CI uses real private files and Unix socket GET; main domain IO and SQL results use explicit fixtures, not target PostgreSQL.",
+    "Backup dump not opened: current full checksum not claimed.",
+    "Current target readback and fresh client scopes remain pending."
+  ],
+  "petConsulted": [
+    "Matrix1.7 section1",
+    "Onboarding1.6 sections109.14-109.16",
+    "Authorization1.5 section109.6"
+  ]
+}
