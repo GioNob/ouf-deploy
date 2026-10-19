@@ -100,7 +100,7 @@ class CompletedMain(unittest.TestCase):
   with self.temp()as tmp:
    root=Path(tmp);execution=root/'source-revision-execution-uow4n8lp';prep=root/'prepared';old=root/'source-revision-execution-dvf517sr'
    claim=root/'source-revision-update-logical.claim.json';self.write(claim,{'historical':'retained'})
-   plan={'authorityDirectory':str(execution),'logicalUpdateRef':'logical','logicalScopeSuccessor':{'context':str(old),'claimBinding':{'path':str(claim),'sha256':m.digest({'historical':'retained'})},'authorityBinding':{'sha256':'a'*64}},'gateway':{'beforeRoutes':{'old':{}},'afterRoutes':{'old':{},'prepare':{},'read':{}},'transport':{}},'retainedMcpMetadata':[],'retainedMcpMetadataCustody':{}}
+   plan={'engine':{},'authorityDirectory':str(execution),'logicalUpdateRef':'logical','logicalScopeSuccessor':{'context':str(old),'claimBinding':{'path':str(claim),'sha256':m.digest({'historical':'retained'})},'authorityBinding':{'sha256':'a'*64}},'gateway':{'beforeRoutes':{'old':{}},'afterRoutes':{'old':{},'prepare':{},'read':{}},'transport':{}},'retainedMcpMetadata':[],'retainedMcpMetadataCustody':{}}
    review={'authorityDirectory':str(execution),'sourceClosureHash':'closure','scopes':{'sourceRevisionUpdate':{'planHash':m.digest(plan)}}}
    authority={'sourceClosureHash':'closure','scopedExecution':{'reviewHash':m.digest(review)},'canary':'CREDENTIAL_CANARY'}
    auth={'owner':'same'};ar={'schema':'ouf.chatbot-file-authorization-journal.v1','planHash':m.digest(auth),'authorityHash':m.digest(authority),'budgetReset':False,'effects':{'one':{'state':'APPLIED'}}}
@@ -134,12 +134,16 @@ class RootShim(unittest.TestCase):
    with tempfile.TemporaryDirectory(dir=os.environ.get('OUF_TEST_ROOT',str(ROOT.parent)))as temp:
     p=Path(temp)/'helper';p.write_bytes(b'print("PRIVATE_CANARY")'if tamper else(ROOT/'scripts/read-source-revision-completed-20261019.py').read_bytes())
     harness="""import os,sys,json
-payload,p=sys.argv[1:];original=os.open;calls=[]
+payload,p=sys.argv[1:];original=os.open;original_lstat=os.lstat;calls=[]
 def guarded(path,*a,**kw):
  if str(path).startswith('/etc/ouf/'):
   calls.append(str(path));raise RuntimeError('PRIVATE_CANARY')
  return original(path,*a,**kw)
-os.open=guarded;sys.argv=['shim',p]
+def guarded_lstat(path,*a,**kw):
+ if str(path).startswith('/etc/ouf/'):
+  calls.append(str(path));raise RuntimeError('PRIVATE_CANARY')
+ return original_lstat(path,*a,**kw)
+os.open=guarded;os.lstat=guarded_lstat;sys.argv=['shim',p]
 try:exec(compile(payload,'<shim>','exec'),{'__name__':'__main__'})
 except SystemExit as e:print(json.dumps({'privateReads':len(calls),'exit':str(e.code)}))
 """
