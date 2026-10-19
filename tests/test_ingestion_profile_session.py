@@ -41,6 +41,12 @@ class ExistingSession(unittest.TestCase):
   self.expire();human=self.run_flow();row=human._read();self.assertEqual(row['attempts'],278);self.assertEqual(row['state'],'READY')
   self.assertEqual(len(self.calls),2);self.assertEqual(row['binding'],self.before['binding']);self.assertEqual(row['monotonicDeadline'],self.before['monotonicDeadline'])
   self.assertGreater(row['accessExpiresAt']-time.time(),240);self.assertFalse((self.context/'authority.json').exists())
+ def test_expiring_new_token_cannot_trigger_second_rotation_or_exceed_two_calls(self):
+  self.expire();self.ttl=6;original=self.h.HumanSession._retain_tokens
+  def retain(instance,row,result):
+   received=original(instance,row,result);self.t.t.elapsed+=2;return received
+  with patch.object(self.h.HumanSession,'_retain_tokens',retain),self.assertRaisesRegex(ValueError,'EXACT_ONE_VERIFIED_REFRESH_REQUEST_SEQUENCE_REQUIRED'):self.run_flow()
+  self.assertEqual(len(self.calls),1);self.assertEqual(self.human._read()['state'],'VERIFYING')
  def test_declined_reuse_has_no_network_or_journal_change(self):
   self.expire();self.prompt.side_effect=ValueError('DECLINED')
   with self.assertRaisesRegex(ValueError,'DECLINED'):self.run_flow()

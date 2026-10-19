@@ -5,6 +5,16 @@ from tools.chatbot_file_cohort.human_session import HumanSession
 from tools.ingestion_read_owner_reference.login import terminal_phrase
 from tools.ingestion_profile_publication.owner import require,digest,encoded
 
+def refresh_once(human,row):
+ original=human._request;before=row['attempts']
+ def capped(current,operation,url,values=None,bearer=None):
+  index=current['attempts']-before
+  require(index in(0,1)and operation==('REFRESH','USERINFO')[index],'EXACT_ONE_VERIFIED_REFRESH_REQUEST_SEQUENCE_REQUIRED')
+  return original(current,operation,url,values,bearer)
+ human._request=capped
+ try:return human._verify_and_publish(human._renew(row))
+ finally:human._request=original
+
 def authenticate(selection,binding,context,publish_json,emit):
  human=HumanSession(selection,Path(binding['sessionDirectory']),Path(binding['tokenPath']),binding['expiresAt'])
  row=human._read();human._check(row)
@@ -28,7 +38,7 @@ def authenticate(selection,binding,context,publish_json,emit):
   require(human._read()==row,'SUCCESSFUL_HUMAN_CHANGED_DURING_SESSION_REVIEW');human._check(row)
   if row['accessExpiresAt']<=time.time()+300:
    require(288-row['attempts']>=2,'VERIFIED_REFRESH_BUDGET_INSUFFICIENT_NO_LOGIN')
-   human._verify_and_publish(human._renew(row));refreshed=True
+   refresh_once(human,row);refreshed=True
   else:human.current()
  fresh=human._read();require(human.current()==binding and fresh['state']=='READY'and 0<=fresh['attempts']-row['attempts']<=2
   and fresh['accessExpiresAt']>time.time()+240,'EXISTING_VERIFIED_SESSION_MARGIN_REQUIRED')
