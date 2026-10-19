@@ -1,5 +1,19 @@
 ## Current checkpoint — policy47 published; NEW217 renewal guard stop; functional4/6
 
+### Compatibilità del guard congelato qualificata; stessa finestra HUMAN — 2026-10-19,13:54 Europe/Rome
+
+Tecniche **8/8**, funzionali **4/6**. L'AST esportato dal target (humanSourceSha256 2e96cfc5278f25d0cbf62f445636df2e7e576d3971e1db785ed818c0ac14e285) prova che la guardia ammette solo review v2/v3/v4: rifiuta la review già approvata schema ouf.mcp-read-transport-human-reauthentication-review.v1. La causa del PlanDenied è riprodotta; non deriva da reset richiesto o finestra nuova necessaria.
+
+Nuovo codice qualificato f0ecc3ec7db6a97c5bd331a2a0bd07b5752c976e: transformer vincolato al SHA originale aggiunge un solo ramo OR per lo schema esatto e prova equivalenza dell'intero AST rimuovendo quel ramo. Identità, scope, budget, decisionHash, timestamp e guardie esterne invariati. Non modifica review, decisione o journal originali. Aggiunge namespace tools.mcp_read_transport_compatibility (191 moduli), capsula e fence distinti; NON rilancia wiqedn9w/mbbleugm/installazione uow4n8lp/admin1lxoo2ws.
+
+Riusa SOLO la sessione NEW217 esistente, già approvata alle13:15:03, scadenza15:15:03 Europe/Rome del19ottobre2026 (1792408503–1792415703);217/256 consumati,39residui. Nessuna nuova finestra o proroga. Preparazione e ripresa richiedono almeno1200secondi residui: avvio prima14:55:03. Stato/token/contatore diversi, claim già presente o scadenza provocano STOP; nessun replay automatico.
+
+Gate nativo APPROVO COMPATIBILITA <hash> autorizza la nuova chiusura eseguibile per iniziare UN login già consentito: necessario perché cambia il codice eseguito, non rinnova il consenso o il tempo. Provider verifica nuovamente lo stesso account; segue distinto APPROVO <hash> per il SOLO aggiornamento MCP1f2c28d con immagine già custodita a0a6f956. Nessuna autorità infrastrutturale dal primo gate. Gateway80rotte, grant/policy47, metadati0440, altri servizi, revisioni/fonte e job esclusi. Refresh fallito e credenziali precedenti mai riusati.
+
+CI [39247144428](https://github.com/GioNob/ouf-deploy/actions/runs/39247144428), job118041708029:150test PASS, inclusi rifiuto esatto/correzione, schema legacy, negativi identità/budget/tempi/consenso/permessi, login completo con provider di prova e metodo esportato, doppio avvio fenced e firme reali dei due ruoli sull'entry distinta. Limite: CI usa l'esatto metodo pubblico esportato nel runtime fixture; sorgente h completo congelato rimane sul target e viene autenticato dal transformer prima di modificarlo. Nessuna prova di esecuzione/accettazione target dalla CI.
+
+Launcher con7file pinned f0ecc3e, controlli prima di sudo e ripetuti da root, SHA256 fc14871dac371106f849ce8e822bf16eff2dd8041cecb062041d4a27202a99f9;4test consegna locali PASS. STOP ora include fase/codice sicuro whitelistato e inventario senza token. Nessuna OAuth, authority o sostituzione runtime eseguita in CLOUD da questa preparazione. PET originali consultati: Authorization1.5 §§20–22,109.6; THS1.6 §106 THS-A02/A08/A09; resilienza v3 punti5–7,14–16. Nessuna dichiarazione di conformità completa.
+
 ### wiqedn9w riconciliato:NEW217, nessuna OAuth; guardia rinnovo incompatibile da isolare — 2026-10-19,13:26 Europe/Rome
 
 Tecniche8/8, funzionali4/6. Reader188 completo nella capsula `/etc/ouf/deploy-snapshots/mcp-ingestion-read-transport-execution-wiqedn9w`, packageHash4c63051ba4f22d3f83c33b96a5cc150824a6aadf79b9a6948ff09972b8c601be, sourceClosureHash2eb74254682d3fec8e49f2c5c08acaa83ff87b1f5d736b38124b7380e2a99a76. Tutti i9artefatti piano/review/authority/issuance/journal/result MCP ASSENTI; login-review presente, login-window-receipt assente, runtimeclaim consumato. Nessuna autorità o sostituzione MCP iniziata. Successor HUMAN creato ma stateNEW, attempts217, nessuna operation/token/accessExpiresAt/refresh; OAuth non ancora invocata dal nuovo login,39residui conservati.
