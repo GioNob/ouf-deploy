@@ -155,3 +155,41 @@ class FreshLogin(unittest.TestCase):
   claim=json.loads((self.human.directory/'successor-window.claim.json').read_bytes());row=json.loads((Path(claim['destination'])/'recovery.json').read_bytes());self.assertEqual(row['attempts'],253);self.assertEqual(row['state'],'BLOCKED');self.assertEqual(self.ack,0)
   self.assertFalse((self.context/'authority.json').exists())
 if __name__=='__main__':unittest.main()
+
+def actual_owner_protocol(self):
+ source=prior.OwnerPlan();source.setUp();self.plan['sourceProjection']=source.projection
+ action=self.issue();b=self.plan['bindingPlan'];active=copy.deepcopy(b['expectedActive']);calls=[]
+ class Response:
+  def __init__(self,body,headers=None,status=200):self.status=status;self.headers=headers or{};self.raw=o.encoded(body)
+  def read(self,maximum):return self.raw[:maximum]
+  def __enter__(self):return self
+  def __exit__(self,*args):pass
+ def opened(req,timeout):
+  nonlocal active
+  method=req.get_method();url=req.full_url;calls.append((method,url,req.get_header('If-match')))
+  if url.endswith('/active'):return Response(active,{'ETag':'"'+str(active['revision'])+':'+active['checksum']+':'+str(active['generation'])+'"'})
+  if method=='POST'and url.endswith('/revisions'):
+   self.assertEqual(json.loads(req.data),b['candidatePayload']);return Response({'installationId':active['installationId'],'revision':5,'checksum':b['candidatePayloadChecksum'],'payload':b['candidatePayload'],'validationState':'VALIDATED','validationFindings':[]},status=201)
+  if url.endswith(':validate-environment'):return Response({'installationId':active['installationId'],'revision':5,'overallStatus':'PASS','validationId':'fixture-validation'})
+  if url.endswith(':activate'):
+   self.assertEqual(req.get_header('If-match'),b['expectedActiveETag']);active={**active,'revision':5,'checksum':b['candidatePayloadChecksum'],'generation':2};return Response(active)
+  if '/projection?revision=5'in url:
+   projection=copy.deepcopy(source.projection);projection.update(revision=5,checksum=b['candidatePayloadChecksum']);projection['services']['bindings']={**projection['services']['bindings'],**b['addedBindings']}
+   return Response(projection,{'X-OUF-Installation-Revision':'5','X-OUF-Installation-Checksum':b['candidatePayloadChecksum']})
+  raise AssertionError('UNEXPECTED_OWNER_HTTP')
+ credentials=Mock();credentials.token.return_value='FIXTURE_BEARER'
+ with patch.object(n,'OwnerTransport',return_value=credentials),patch.object(n.urllib.request,'build_opener')as opener:
+  opener.return_value.open.side_effect=opened
+  http=n.OwnerHttp({'origin':'https://owner.fixture.invalid'},self.old.human,active['installationId'],'fixed-correlation')
+  http.human=Mock();http.human._read.return_value={'accessExpiresAt':time.time()+600}
+  parent=self
+  class P(n.Ports):
+   def __init__(self):self.action=action;self.plan=copy.deepcopy(parent.plan);self.human=parent.old.human;self.http=http;self.context=parent.context
+   def guard_current(self,stage,row):
+    observed=self.http.active();done=self.evidence(row,'ACTIVATE_EXPECTED');expected=done['active']if done else{**b['expectedActive'],'etag':b['expectedActiveETag']}
+    parent.assertEqual(observed,expected)
+  update=o.FiniteUpdate(action,self.plan,P(),Journal(self.context));update.initialize();row=update.run()
+ self.assertEqual(row['incidentState'],'RECOVERED');self.assertEqual(http.posts,3);self.assertEqual(http.exports,1)
+ self.assertEqual(sum(method=='POST'for method,_,_ in calls),3);self.assertTrue((self.context/'owner-active-projection.json').exists())
+ self.assertEqual(next(e['evidence']['active']['generation']for e in row['effects']if e['stage']=='ACTIVATE_EXPECTED'),2)
+CryptoAndJournal.test_actual_https_owner_sequence_uses_if_match_and_retains_export=actual_owner_protocol
