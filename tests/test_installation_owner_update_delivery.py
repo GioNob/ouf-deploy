@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 LAUNCH=ROOT/'scripts/launch-installation-owner-update-20261019.sh'
 PINS=ROOT/'evidence/installation-owner-update-delivery-pins-20261019.json'
-COMMIT='b46a99b23f12ef33ef04393ecefb07a6569e8b74'
+COMMIT='15827c6d5ee9ed761ce9a534441e689ea6007dfa'
 PATHS={**{n:'tools/installation_owner_update/'+n+'.py'for n in('entry','authority','owner','native','runtime')},'prepare':'scripts/prepare-installation-owner-update.py','bootstrap':'scripts/execute-installation-owner-update.py'}
 class Delivery(unittest.TestCase):
  def setUp(self):

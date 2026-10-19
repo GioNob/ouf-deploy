@@ -4,20 +4,20 @@ umask 077
 ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
 if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
 [[ -n "$ouf_gh" && -x "$ouf_gh" ]] || { echo 'STOP: client GitHub approvato non disponibile; nessun sudo.' >&2; exit 1; }
-ouf_commit='b46a99b23f12ef33ef04393ecefb07a6569e8b74'
+ouf_commit='15827c6d5ee9ed761ce9a534441e689ea6007dfa'
 ouf_delivery="$(mktemp -d "$HOME/ouf-installation-owner-update.XXXXXXXX")"
-"$ouf_gh" api "repos/GioNob/ouf-deploy/contents/tools/installation_owner_update/entry.py?ref=b46a99b23f12ef33ef04393ecefb07a6569e8b74" --jq .content | base64 --decode > "$ouf_delivery/entry.py"
-"$ouf_gh" api "repos/GioNob/ouf-deploy/contents/tools/installation_owner_update/authority.py?ref=b46a99b23f12ef33ef04393ecefb07a6569e8b74" --jq .content | base64 --decode > "$ouf_delivery/authority.py"
-"$ouf_gh" api "repos/GioNob/ouf-deploy/contents/tools/installation_owner_update/owner.py?ref=b46a99b23f12ef33ef04393ecefb07a6569e8b74" --jq .content | base64 --decode > "$ouf_delivery/owner.py"
-"$ouf_gh" api "repos/GioNob/ouf-deploy/contents/tools/installation_owner_update/native.py?ref=b46a99b23f12ef33ef04393ecefb07a6569e8b74" --jq .content | base64 --decode > "$ouf_delivery/native.py"
-"$ouf_gh" api "repos/GioNob/ouf-deploy/contents/tools/installation_owner_update/runtime.py?ref=b46a99b23f12ef33ef04393ecefb07a6569e8b74" --jq .content | base64 --decode > "$ouf_delivery/runtime.py"
-"$ouf_gh" api "repos/GioNob/ouf-deploy/contents/scripts/prepare-installation-owner-update.py?ref=b46a99b23f12ef33ef04393ecefb07a6569e8b74" --jq .content | base64 --decode > "$ouf_delivery/prepare.py"
-"$ouf_gh" api "repos/GioNob/ouf-deploy/contents/scripts/execute-installation-owner-update.py?ref=b46a99b23f12ef33ef04393ecefb07a6569e8b74" --jq .content | base64 --decode > "$ouf_delivery/bootstrap.py"
+"$ouf_gh" api "repos/GioNob/ouf-deploy/contents/tools/installation_owner_update/entry.py?ref=15827c6d5ee9ed761ce9a534441e689ea6007dfa" --jq .content | base64 --decode > "$ouf_delivery/entry.py"
+"$ouf_gh" api "repos/GioNob/ouf-deploy/contents/tools/installation_owner_update/authority.py?ref=15827c6d5ee9ed761ce9a534441e689ea6007dfa" --jq .content | base64 --decode > "$ouf_delivery/authority.py"
+"$ouf_gh" api "repos/GioNob/ouf-deploy/contents/tools/installation_owner_update/owner.py?ref=15827c6d5ee9ed761ce9a534441e689ea6007dfa" --jq .content | base64 --decode > "$ouf_delivery/owner.py"
+"$ouf_gh" api "repos/GioNob/ouf-deploy/contents/tools/installation_owner_update/native.py?ref=15827c6d5ee9ed761ce9a534441e689ea6007dfa" --jq .content | base64 --decode > "$ouf_delivery/native.py"
+"$ouf_gh" api "repos/GioNob/ouf-deploy/contents/tools/installation_owner_update/runtime.py?ref=15827c6d5ee9ed761ce9a534441e689ea6007dfa" --jq .content | base64 --decode > "$ouf_delivery/runtime.py"
+"$ouf_gh" api "repos/GioNob/ouf-deploy/contents/scripts/prepare-installation-owner-update.py?ref=15827c6d5ee9ed761ce9a534441e689ea6007dfa" --jq .content | base64 --decode > "$ouf_delivery/prepare.py"
+"$ouf_gh" api "repos/GioNob/ouf-deploy/contents/scripts/execute-installation-owner-update.py?ref=15827c6d5ee9ed761ce9a534441e689ea6007dfa" --jq .content | base64 --decode > "$ouf_delivery/bootstrap.py"
 printf '%s  %s\n' \
- '06b64ef0900347ea61a70983551705ebc7bdb81fc5bcb572b7a67ec3f63e7468' "$ouf_delivery/entry.py" \
+ '08ada66b6449a317d564e4f577c5d73e924fb78eb85c57e79cb9aae813866bf0' "$ouf_delivery/entry.py" \
  '6d9b716f6ca3d04126cd7fe466ea68afab4c25eb7414906fb1e51dd9b1d54e09' "$ouf_delivery/authority.py" \
- 'b847d1dfd1d589d4cd9b650ab92ddb25c316e73a478251e38a1d6b37e453cd48' "$ouf_delivery/owner.py" \
- 'ab1ea5a5949495fa72c50c5c61711727f640b1962682abfc1cd615afbebeb737' "$ouf_delivery/native.py" \
+ '85e6d803c42fd0310c7e1d096f4ec2b996969e4b23299d000ffbcb44b8c4f224' "$ouf_delivery/owner.py" \
+ '2b62a322682eb3c59041cf6a624c794e47a9ab74614a0ff92655a92baee3dcb9' "$ouf_delivery/native.py" \
  'c5bf88a3487e46e83bb18215ad035f43a4a0dbd00e8749d9a2513ad41b153034' "$ouf_delivery/runtime.py" \
  '4adb8f7c474918f87ed3214a5da6f1da42a74bebc423ce1fd5f8c6f810a61f1d' "$ouf_delivery/prepare.py" \
  'd0c06c33c1ad2a3483e58ded25b91ea1a2f0042aace2128338b92f8ec05fa7d0' "$ouf_delivery/bootstrap.py" | sha256sum --check
@@ -26,10 +26,10 @@ sudo /usr/bin/python3 -u -I -B -S - "$ouf_delivery" "$ouf_commit" <<'OUF_INSTALL
 import ast,hashlib,json,os,re,stat,sys
 from pathlib import Path
 directory=Path(sys.argv[1]);commit=sys.argv[2]
-expected={'entry': '06b64ef0900347ea61a70983551705ebc7bdb81fc5bcb572b7a67ec3f63e7468', 'authority': '6d9b716f6ca3d04126cd7fe466ea68afab4c25eb7414906fb1e51dd9b1d54e09', 'owner': 'b847d1dfd1d589d4cd9b650ab92ddb25c316e73a478251e38a1d6b37e453cd48', 'native': 'ab1ea5a5949495fa72c50c5c61711727f640b1962682abfc1cd615afbebeb737', 'runtime': 'c5bf88a3487e46e83bb18215ad035f43a4a0dbd00e8749d9a2513ad41b153034', 'prepare': '4adb8f7c474918f87ed3214a5da6f1da42a74bebc423ce1fd5f8c6f810a61f1d', 'bootstrap': 'd0c06c33c1ad2a3483e58ded25b91ea1a2f0042aace2128338b92f8ec05fa7d0'}
+expected={'entry': '08ada66b6449a317d564e4f577c5d73e924fb78eb85c57e79cb9aae813866bf0', 'authority': '6d9b716f6ca3d04126cd7fe466ea68afab4c25eb7414906fb1e51dd9b1d54e09', 'owner': '85e6d803c42fd0310c7e1d096f4ec2b996969e4b23299d000ffbcb44b8c4f224', 'native': '2b62a322682eb3c59041cf6a624c794e47a9ab74614a0ff92655a92baee3dcb9', 'runtime': 'c5bf88a3487e46e83bb18215ad035f43a4a0dbd00e8749d9a2513ad41b153034', 'prepare': '4adb8f7c474918f87ed3214a5da6f1da42a74bebc423ce1fd5f8c6f810a61f1d', 'bootstrap': 'd0c06c33c1ad2a3483e58ded25b91ea1a2f0042aace2128338b92f8ec05fa7d0'}
 codes=set()
 try:
- if commit!='b46a99b23f12ef33ef04393ecefb07a6569e8b74':raise ValueError()
+ if commit!='15827c6d5ee9ed761ce9a534441e689ea6007dfa':raise ValueError()
  delivery={}
  for name,wanted in expected.items():
   fd=os.open(directory/(name+'.py'),os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
