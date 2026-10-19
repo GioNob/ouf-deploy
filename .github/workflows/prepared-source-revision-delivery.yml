@@ -2,7 +2,7 @@ name: Prepared source revision execution delivery
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/deliver-prepared-source-revision-20261019.py', 'tests/test_prepared_source_revision_delivery.py', 'evidence/source-revision-postboot-preparation-target-success-20261019.json', '.github/workflows/prepared-source-revision-delivery.yml']
+    paths: ['scripts/deliver-prepared-source-revision-20261019.py', 'scripts/launch-prepared-source-revision-20261019.sh', 'tests/test_prepared_source_revision_delivery.py', 'evidence/source-revision-postboot-preparation-target-success-20261019.json', '.github/workflows/prepared-source-revision-delivery.yml']
 permissions: {contents: read}
 jobs:
   delivery:
@@ -14,6 +14,7 @@ jobs:
       - name: Root custody, complete bindings and refusal before fixture gate
         run: |
           set -euo pipefail
+          bash -n scripts/launch-prepared-source-revision-20261019.sh
           fixture="/root/ouf-prepared-delivery-${GITHUB_RUN_ID}"
           sudo install -d -m 0700 "$fixture"
           sudo cp -a . "$fixture/repository"

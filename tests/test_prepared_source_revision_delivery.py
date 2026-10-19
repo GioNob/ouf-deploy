@@ -55,3 +55,26 @@ class PreparedDelivery(unittest.TestCase):
   evidence=json.loads((ROOT/'evidence/source-revision-postboot-preparation-target-success-20261019.json').read_bytes());result=evidence['result'];profile=m.PROFILE
   self.assertEqual(profile['preparationResultSha256'],m.digest(m.encoded(result)));self.assertEqual(profile['contextPath'],result['contextPath']);self.assertEqual(profile['packageSha256'],result['executorCodeBinding']['packageSha256']);self.assertEqual(profile['caseSha256'],result['caseBinding']['sha256']);self.assertEqual(profile['nativePlanSha256'],result['nativePlanBinding']['sha256']);self.assertEqual(profile['sourceClosureSha256'],result['sourceClosureSha256']);self.assertEqual(profile['executorSha256'],m.digest((ROOT/'scripts/execute-source-revision-postboot.py').read_bytes()))
 if __name__=='__main__':unittest.main()
+
+class ExactRootShim(unittest.TestCase):
+ def exercise(self,tamper):
+  import subprocess,sys
+  text=(ROOT/'scripts/launch-prepared-source-revision-20261019.sh').read_text();payload=text.split("<<'OUF_PREPARED_RELEASE' | tee",1)[1].split('\n',1)[1].rsplit('\nOUF_PREPARED_RELEASE',1)[0]
+  with tempfile.TemporaryDirectory(dir=os.environ.get('OUF_TEST_ROOT',str(ROOT.parent))) as temp:
+   helper=Path(temp)/'helper.py';helper.write_bytes(b'print("PRIVATE_CANARY")'if tamper else(ROOT/'scripts/deliver-prepared-source-revision-20261019.py').read_bytes())
+   harness='''import os,sys,json
+raw=sys.argv[1];helper=sys.argv[2];original_stat=os.stat;protected=[]
+def checked(path,*args,**kwargs):
+ if str(path).startswith('/etc/ouf/'):
+  protected.append(str(path));raise RuntimeError('PRIVATE_CANARY')
+ return original_stat(path,*args,**kwargs)
+os.stat=checked;sys.argv=['delivery',helper]
+try:exec(compile(raw,'<root-shim>','exec'),{'__name__':'__main__'})
+except SystemExit as error:print(json.dumps({'fixtureExit':error.code,'protectedReadAttempts':len(protected)}))
+'''
+   result=subprocess.run([sys.executable,'-I','-B','-S','-c',harness,payload,str(helper)],capture_output=True,timeout=20)
+   self.assertEqual(result.returncode,0,result.stderr.decode());self.assertEqual(result.stderr,b'');self.assertNotIn(b'PRIVATE_CANARY',result.stdout)
+   rows=[json.loads(line)for line in result.stdout.splitlines()];self.assertEqual(rows[-1]['protectedReadAttempts'],0 if tamper else 1)
+   if not tamper:self.assertFalse(rows[0]['complete']);self.assertTrue(rows[0]['reconciliationRequired']);self.assertEqual(rows[-1]['fixtureExit'],2)
+ def test_exact_shell_shim_reaches_first_protected_read_only(self):self.exercise(False)
+ def test_shell_shim_tampered_helper_never_reaches_protected_read(self):self.exercise(True)
