@@ -1,6 +1,6 @@
 # MCP retained metadata custody continuation — 2026-10-19
 
-Technical8/8; functional4/6. Source qualification PASS; immutable launcher qualification pending.
+Technical8/8; functional4/6. Source and immutable delivery qualification PASS:136 tests. VPS private preparation and runtime are not yet executed.
 
 ## New target evidence takes precedence
 
@@ -29,3 +29,25 @@ Run [39206613640](https://github.com/GioNob/ouf-deploy/actions/runs/39206613640)
 Source-only stage job117911056668 succeeded: `/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revision-custody-code-39206613640`, manifestSHA256 `7145b253a4946fdc6e85de99de59a67cf2516d40ea261c5e6bfe3dc7df85101b`, five files. Stage receipt reports zero authority and zero runtime mutations. See the exact hashes and test boundaries in `evidence/source-revision-custody-continuation-qualified-20261019.json`.
 
 Also consulted original Authorization PET1.5 §109.6 (fail closed; no application retry for invalid JWT; bounded recovery) and Matrix1.7 §1 (frozen ownership and THS authority). No relaxation of these contracts is inferred from development authorization.
+
+## Immutable delivery qualified; physical gate remaining
+
+[Run39206831574](https://github.com/GioNob/ouf-deploy/actions/runs/39206831574), job117911401418: three delivery tests PASS. Total136 passed; five explicit old-source fixture skips remain separately reported. Commit14c6e69b0d0b0142588859ecf4f05076d20080de contains the immutable launcher. Its Git blob19dc4c2498620699a09f104b6298c80e5677cbd5 was independently fetched through the GitHub connector and matched byte-for-byte. SHA256 `9d185110b3ec1f53d0ffb50f18151f609ef6a17aca2726fe40883af4268d94da`. No private preparation or runtime authority was executed by these CI jobs.
+
+Execute ONCE as oufadmin on the VPS. The existing authenticated GitHub client fetches only the immutable verified launcher; sudo and the actual new APPROVO remain physical/native gates. No generic repository/MCP consent is needed. If the existing IAM/HUMAN context is unavailable or too short, STOP; no implicit login is opened. After any STOP/interruption, preserve the printed log and reconcile before further action.
+
+```bash
+(
+  set -euo pipefail
+  umask 077
+  ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+  [[ -x "$ouf_gh" ]] || ouf_gh="$(command -v gh)"
+  [[ -x "$ouf_gh" ]] || { echo 'STOP: gh non disponibile'; exit 1; }
+  ouf_launch="$(mktemp -d "$HOME/ouf-custody-launch.XXXXXXXX")"
+  "$ouf_gh" api repos/GioNob/ouf-deploy/git/blobs/19dc4c2498620699a09f104b6298c80e5677cbd5 --jq .content | base64 --decode > "$ouf_launch/run.sh"
+  printf '%s  %s\n' '9d185110b3ec1f53d0ffb50f18151f609ef6a17aca2726fe40883af4268d94da' "$ouf_launch/run.sh" | sha256sum --check
+  bash "$ouf_launch/run.sh"
+)
+```
+
+The old dvf authority and old launchers must not be replayed. The new source appends one bound child claim only after fresh native approval and signed authority; it does not reset or renew the expired original. Role publication still requires THS. Generic profile publication and functional5/6 remain outside this runtime review.

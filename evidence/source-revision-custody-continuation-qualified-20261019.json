@@ -47,7 +47,17 @@
     "cause": "Signed test fixture created retained policy.json over its signing-policy fixture; strict native custody rejected it. Metadata fixture isolated in child directory; production private guard unchanged.",
     "stageSkipped": true
   },
-  "deliveryQualification": "pending",
+  "deliveryQualification": {
+    "runId": 39206831574,
+    "jobId": 117911401418,
+    "conclusion": "success",
+    "testsPassed": 3,
+    "commit": "14c6e69b0d0b0142588859ecf4f05076d20080de",
+    "launcherGitBlobSha": "19dc4c2498620699a09f104b6298c80e5677cbd5",
+    "launcherSha256": "9d185110b3ec1f53d0ffb50f18151f609ef6a17aca2726fe40883af4268d94da",
+    "remoteBlobIndependentlyReadAndMatched": true
+  },
   "runtimeAuthorityIssuedByDevelopment": false,
-  "targetRuntimeMutationsByDevelopment": 0
+  "targetRuntimeMutationsByDevelopment": 0,
+  "totalPassedIncludingDelivery": 136
 }
