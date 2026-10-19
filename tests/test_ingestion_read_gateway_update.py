@@ -25,7 +25,7 @@ def inputs():
 def fixture(context,hb):
  bundle,projection,before=inputs();gateway=g.compile_routes(bundle,projection,before,context)
  plan={'schema':'ouf.ingestion-read-gateway-plan.v1','authorityDirectory':str(context),'privateReviewBinding':{'path':str(context/'candidate-review.json'),'sha256':o.digest({})},
-  'engine':{},'gateway':{**gateway,'transport':{},'projectionBinding':{}},'unchangedApplications':{name:{'containerId':str(n)*64}for n,name in enumerate(('mcp','onboarding','udp','ingestion'),1)},
+  'engine':{},'gateway':{**gateway,'transport':{},'projectionBinding':{'path':'/fixture/projection.json'}},'unchangedApplications':{name:{'containerId':str(n)*64}for n,name in enumerate(('mcp','onboarding','udp','ingestion'),1)},
   'retainedMcpMetadata':[],'humanBinding':hb,'replacements':{},'databaseMigration':None,'maximumExecutionSeconds':900,'maximumEffectAttemptsPerStage':1,'maximumGatewayWrites':2,
   **{k:False for k in o.FORBIDDEN}}
  return plan
