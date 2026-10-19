@@ -1,5 +1,8 @@
 # Native route reconciliation and explicit budget264 review —19October2026
 
+> **TARGET COMPLETATO — 19 ottobre 2026, contesto w8nfc1ko:** riconciliazione journal e2PUT Gateway complete; owner6/gen6, proiezione10b378c05 e80altre rotte conservati. Mappa82rotte SHA256ed619aa9415b2e70f61689c3830b3fc89135bc9ab72fc90f24daeba1e7bed8c7. Vecchio journal7x21g1fg riconciliato versione5, scadenza1792429299 preservata.255→259/264, scadenzaHUMAN20:55:55 italiana invariata. **Non rilanciare alcun launcher di applicazione/riconciliazione completato.** Letture correnti dal clientouf-admin: MCP HEALTHY; fonte APPROVED/lock3 e attivazione NOT_STARTED; Ingestion status/history401. Tecniche8/8, funzionali4/6. Il401 è un incidente distinto: nessuna nuova autorità o mutazione è implicata; proseguire con sola diagnosi del contratto auth. Ricevute: evidence/installation-route-reconciliation-target-20261019.json e evidence/installation-route-post-client-read-20261019.json.
+
+
 > **Consegna corretta dopo riconciliazione STOP, 19 ottobre 2026:** target219 autenticato, HUMAN SHA256305c7804b084b02f0bf7d6c1521c3c5a4f8e7f4e2fb0a15e27f5886a2a685dcc; nuova claim assente. Il guard conserva il ramo MCP storico. La nuova preparazione controlla l'intera sorgente esatta, indipendentemente dal formato ast.dump di Python3.13. Sorgente `6e36d6f5faa8c0c8e129aac7d843fcf9e7d535e4`, consegna `01c7b8e0e4b763b0b5b3cb64e86c131bd6c234cb`; 18+3 test CI PASS. La consegna precedente92c0c78 resta ritirata. Budget264 proposto,255 consumati conservati, consensi nativi distinti ancora necessari; avvio prima20:35:55, scadenza20:55:55 italiane invariata. Owner6/gen6 e rename già completati non si ripetono. Tecniche8/8, funzionali4/6; target E2E non ancora provato.
 
 
@@ -21,28 +24,7 @@ Preparation/login requires20minutes remaining; start **before20:35:55 Europe/Rom
 
 ## Command in existing oufadmin VPS session
 
-```bash
-(
-  set -euo pipefail
-  umask 077
-  ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
-  if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
-  [[ -n "$ouf_gh" && -x "$ouf_gh" ]] || {
-    echo 'STOP: client GitHub non disponibile.'
-    exit 1
-  }
-
-  ouf_launcher="$(mktemp "$HOME/ouf-route-reconcile.XXXXXXXX.sh")"
-  "$ouf_gh" api \
-    'repos/GioNob/ouf-deploy/contents/scripts/launch-installation-route-reconcile-20261019.sh?ref=01c7b8e0e4b763b0b5b3cb64e86c131bd6c234cb' \
-    --jq '.content' |
-    base64 --decode > "$ouf_launcher"
-  printf '%s  %s\n' \
-    '8c4aa8efdf4d95252cf41f20b0e1ba376d00232015516086e149eaf28b4d1052' \
-    "$ouf_launcher" | sha256sum --check
-  bash "$ouf_launcher"
-)
-```
+**Comando ritirato: esecuzione target completata in w8nfc1ko. Non rilanciare.**
 
 Keep the process open. Return only public OUF_INSTALLATION_ROUTE_PREPARED/HUMAN/RESULT or STOP lines; do not share device codes, credential values or private files. Do not rerun after preparation, STOP, ambiguity or disconnection.
 
