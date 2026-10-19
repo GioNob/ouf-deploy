@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 LAUNCH=ROOT/'scripts/launch-installation-binding-apply-20261019.sh'
 PINS=ROOT/'evidence/installation-binding-apply-delivery-pins-20261019.json'
-COMMIT='4224a093470b478e29067912214cf5bd8256048b'
+COMMIT='9600d850e5d4b4b42004e68028a5aa6e49c20d35'
 PATHS={**{n:'tools/installation_binding_apply/'+n+'.py'for n in('entry','authority','owner','native','baseline','login','runtime')},'prepare':'scripts/prepare-installation-binding-apply.py','bootstrap':'scripts/execute-installation-binding-apply.py','compiler':'releases/installation-binding-gateway-compiler-20261019.json'}
 class Delivery(unittest.TestCase):
  def setUp(self):
