@@ -73,7 +73,7 @@ class Native(unittest.TestCase):
   bindings={}
   for key,(name,value)in records.items():
    path=origin/name;self.c.write(path,o.encoded(value));bindings[key]={'path':str(path),'sha256':o.digest(value)}
-  old_fence=origin.parent/('ingestion-read-gateway-'+('c'*64)+'.claim.json');self.c.write(old_fence,b'{}')
+  old_fence=origin.parent/('ingestion-read-gateway-'+o.logical_ref()+'.claim.json');self.c.write(old_fence,b'{}')
   bindings['logicalClaim']={'path':str(old_fence),'sha256':o.digest({})}
   expiry=int(time.time())-60
   for key,value in(('ORIGIN',origin),('ORIGIN_PLAN',bindings['plan']['sha256']),('ORIGIN_REVIEW',bindings['review']['sha256']),('PREDECESSOR_EXPIRES',expiry)):

@@ -86,7 +86,7 @@ def main(delivery,commit):
  memory={'__name__':'qualified_custody_correction_closed_loader'}
  exec(compile(delivery['runtime'],'<qualified-custody-correction-loader>','exec'),memory);memory['compile_sources'](sources)
  require(len(sources)==198,'EXACT198_SOURCE_CLOSURE_REQUIRED')
- logical=digest({'profile':PROFILE,'beforeRouteMapHash':BEFORE,'originPackageHash':PACKAGE,'capabilities':['ouf.ingestion.status','ouf.ingestion.history']})
+ logical=digest({'profile':'ouf.ingestion-read-gateway-publication.v1','beforeRouteMapHash':BEFORE,'capabilities':['ouf.ingestion.status','ouf.ingestion.history']})
  require(not os.path.lexists(CONTEXT.parent/('ingestion-read-gateway-custody-'+logical+'.claim.json')),'CUSTODY_CORRECTION_LOGICAL_ACTION_ALREADY_CLAIMED')
  destination=Path(tempfile.mkdtemp(prefix='mcp-ingestion-read-transport-execution-',dir=CONTEXT.parent))
  claim_name='ingestion-read-gateway-custody-preparation-'+logical+'.claim.json'

@@ -75,7 +75,7 @@ ORIGIN_PLAN='a316deb877fc9d2506ee41da98915fd43c582ec9f9fc2b7188af90452f19c617'
 ORIGIN_REVIEW='f1222de6ac5ab736120fb9cd159443992e4089186296891c8cc61cb2ab50dbd3'
 PREDECESSOR_EXPIRES=1792413359
 def logical_ref():
- return digest({'profile':PROFILE,'beforeRouteMapHash':BEFORE_HASH,'originPackageHash':ORIGIN_PACKAGE,
+ return digest({'profile':'ouf.ingestion-read-gateway-publication.v1','beforeRouteMapHash':BEFORE_HASH,
   'capabilities':['ouf.ingestion.status','ouf.ingestion.history']})
 def predecessor_shape(value):
  require(type(value)is dict and set(value)=={'originContext','originPackageHash','originPlanHash','originReviewHash','originalAuthorityExpiresAt','bindings'}
@@ -89,7 +89,7 @@ def predecessor_shape(value):
   path=Path(binding['path'])
   wanted={'plan':'execution-plan.json','review':'review.json','journal':'recovery.json','runtimeClaim':'runtime.claim.json'}
   if key in wanted:require(path==ORIGIN/wanted[key],'EXACT_PREDECESSOR_MEMBER_PATH_REQUIRED')
-  else:require(path.parent==ORIGIN.parent and re.fullmatch(r'ingestion-read-gateway-[0-9a-f]{64}\.claim\.json',path.name),'EXACT_ORIGINAL_LOGICAL_FENCE_REQUIRED')
+  else:require(path==ORIGIN.parent/('ingestion-read-gateway-'+logical_ref()+'.claim.json'),'EXACT_ORIGINAL_LOGICAL_FENCE_REQUIRED')
  require(bindings['plan']['sha256']==ORIGIN_PLAN and bindings['review']['sha256']==ORIGIN_REVIEW,'EXACT_ORIGINAL_PLAN_AND_REVIEW_HASH_REQUIRED')
 def predecessor_unchanged(value,now):
  predecessor_shape(value);require(now>PREDECESSOR_EXPIRES,'PREDECESSOR_AUTHORITY_STILL_LIVE_NO_REPLACEMENT')
