@@ -2,7 +2,7 @@
 
 ## Current checkpoint — custody prepared, IAM STOP, 2026-10-19
 
-Technical8/8; functional4/6. Custody preparation completed with new case/package/closure, four read-only DB sessions and zero OAuth/runtime effects. Existing kfy inputs and candidate archives preserved. Fresh executor kcw73ask stopped on EXISTING_IAM_SESSION_EXPIRED before the existing-HUMAN refresh/new APPROVO. Do not replay preparation or old launchers. Protected inventory plus one-use native IAM resume is under qualification; no authority absence is assumed until readback. [Evidence](../evidence/source-revision-custody-iam-stop-20261019.json), [reconciliation/resume](../releases/SOURCE_REVISION_CUSTODY_IAM_RESUME_20261019.md).
+Technical8/8; functional4/6. Custody preparation completed with new case/package/closure, four read-only DB sessions and zero OAuth/runtime effects. Existing kfy inputs and candidate archives preserved. Fresh executor kcw73ask stopped on EXISTING_IAM_SESSION_EXPIRED before the existing-HUMAN refresh/new APPROVO. Do not replay preparation or old launchers. Protected inventory plus one-use native IAM resume passed18 root CI tests (run39209506145), with immutable delivery and no target execution; no authority absence is assumed until readback. [Evidence](../evidence/source-revision-custody-iam-stop-20261019.json), [reconciliation/resume](../releases/SOURCE_REVISION_CUSTODY_IAM_RESUME_20261019.md).
 
 
 ## Current checkpoint — protected custody read, 2026-10-19
