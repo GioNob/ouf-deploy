@@ -2,7 +2,7 @@ name: Source revision after-APPROVO custody read qualification
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['scripts/read-source-revision-after-approval-custody-20261019.py', 'tests/test_source_revision_after_approval_custody_read.py', '.github/workflows/source-revision-after-approval-custody-read.yml']
+    paths: ['scripts/read-source-revision-after-approval-custody-20261019.py', 'tests/test_source_revision_after_approval_custody_read.py', 'scripts/launch-source-revision-after-approval-custody-read-20261019.sh', '.github/workflows/source-revision-after-approval-custody-read.yml']
 permissions: {contents: read}
 jobs:
   read-only:
@@ -14,6 +14,7 @@ jobs:
       - name: Private/public custody diagnosis, preserved journals, exact readonly Engine and redaction
         run: |
           set -euo pipefail
+          bash -n scripts/launch-source-revision-after-approval-custody-read-20261019.sh
           fixture="/root/ouf-human-history-${GITHUB_RUN_ID}"
           sudo install -d -m 0700 "$fixture"
           sudo cp -a . "$fixture/repository"
