@@ -208,6 +208,6 @@ def refresh_resumed_human(human,case,context,read,emit):
   'attemptsBefore':before['attempts'],'attemptsAfter':after['attempts'],'maximumCumulativeOAuthAttempts':256,
   'remainingOAuthAttempts':256-after['attempts'],'originalWindowPreserved':True,'newLoginOpened':False,
   'budgetReset':False,'runtimeAuthorityIssued':False}
- publish_json(context,'resumed-human-receipt.json',receipt)
+ publish_json(context,'login-window-receipt.json',receipt)
  emit('OUF_SOURCE_REVISION_EXISTING_HUMAN='+encoded(receipt).decode())
  return human
