@@ -36,5 +36,10 @@
   "runtimeAuthorityIssued": false,
   "runtimeCompletionProven": false,
   "targetPublicationPerformedByCloud": false,
-  "separateMcpUpdateRequired": true
+  "separateMcpUpdateRequired": true,
+  "deliveryQualificationRun": 39251110599,
+  "deliveryQualificationJob": 118054843144,
+  "deliveryQualificationTestsPassed": 5,
+  "deliveryCommit": "9d7e2e7db1f4d6a4c86f90ca36464251d829ff21",
+  "deliveredEightFilesVerifiedAgainstPinnedGitTree": true
 }
