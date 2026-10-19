@@ -13,7 +13,7 @@ import test_ingestion_read_administrative_authority as existing_crypto
 def fixture(context=Path('/fixture/installation-owner-update-execution-abcdefgh'),human=None):
  routes={str(i):{'id':str(i)}for i in range(82)}
  image='sha256:'+'a'*64
- p={'schema':'ouf.installation-binding-owner-update-update-plan.v1','authorityDirectory':str(context),
+ p={'schema':'ouf.installation-binding-owner-update-plan.v1','authorityDirectory':str(context),
   'privateReviewBinding':{'path':str(context/'candidate-review.json'),'sha256':'b'*64},
   'replacements':{'onboarding':{'oldRuntimeBinding':{'containerId':o.OLD_ONBOARDING},
    'imageAudit':{'imageId':image,'sourceCommit':o.NEW_SOURCE}}},
@@ -137,9 +137,9 @@ class CryptoAndJournal(unittest.TestCase):
  def test_actual_private_document_writer_accepts_all_new_owner_document_schemas(self):
   (self.context/'review.json').unlink()
   for name,schema in (('candidate-review.json','ouf.installation-owner-private-selection.v1'),
-   ('execution-plan.json','ouf.installation-binding-owner-update-update-plan.v1'),
+   ('execution-plan.json','ouf.installation-binding-owner-update-plan.v1'),
    ('review.json','ouf.semantic-scoped-infrastructure-review.v1'),
-   ('update-result.json','ouf.installation-binding-owner-update-update-result.v1')):
+   ('update-result.json','ouf.installation-binding-owner-update-result.v1')):
    value={'schema':schema};e.publish_json(self.context,name,value)
    self.assertEqual((self.context/name).read_bytes(),e.encoded(value))
    self.assertEqual(stat.S_IMODE((self.context/name).stat().st_mode),0o600)

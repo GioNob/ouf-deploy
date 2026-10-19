@@ -45,11 +45,9 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          for suite in test_installation_owner_update.py test_installation_owner_update_preparation.py; do
-            sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" \
-              OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/legacy" \
-              OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/revision" \
-              OUF_INGESTION_GATEWAY_ROOT="$fixture/repository/.pairwise/gateway" \
-              OUF_OWNER_JAVA_CLASSPATH="$fixture/repository/.owner-roundtrip-classes:$(cat .owner-roundtrip.classpath)" \
-              python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v
-          done
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" \
+            OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/legacy" \
+            OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/revision" \
+            OUF_INGESTION_GATEWAY_ROOT="$fixture/repository/.pairwise/gateway" \
+            OUF_OWNER_JAVA_CLASSPATH="$fixture/repository/.owner-roundtrip-classes:$(cat .owner-roundtrip.classpath)" \
+            python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_installation_owner_update*.py' -v

@@ -72,14 +72,14 @@ if __name__=='__main__':
     except (Exception,KeyboardInterrupt)as error:
         report={'schema':'ouf.installation-owner-update-stop.v1','status':'STOP_RECONCILE',
             'exceptionClass':type(error).__name__,'reasonCode':str(error)if str(error)in SAFE_CODES else'PRIVATE_DETAILS_REDACTED',
-            'humanSnapshotRole':'RETAINED_PREDECESSOR','currentSuccessorStateRequeried':False,'lastPhase':LAST_PHASE,'contextPath':str(SAFE_CONTEXT)if SAFE_CONTEXT is not None else None,
+            'humanSnapshotRole':'EXISTING_SESSION_STOP_READ','currentSuccessorStateRequeried':False,'lastPhase':LAST_PHASE,'contextPath':str(SAFE_CONTEXT)if SAFE_CONTEXT is not None else None,
             'automaticReplayAllowed':False,'budgetReset':False,'runtimeCompletionProven':False}
         if SAFE_CONTEXT is not None:
             report['artifactInventory']={n:os.path.lexists(SAFE_CONTEXT/n)for n in('execution-plan.json','review.json','issuance.claim.json','authority.json','recovery.json','update-result.json','login-window-receipt.json','compatibility-review.json','compatibility-decision.json')}
         try:
             if SAFE_CASE is not None:
                 binding=SAFE_CASE['humanBinding'];row=read(Path(binding['sessionDirectory'])/'recovery.json',65536)
-                if row.get('binding')==binding and row.get('state')in('NEW','DEVICE_START','DEVICE_POLL','REQUESTING','RETRY_WAIT','VERIFYING','READY','BLOCKED')and type(row.get('attempts'))is int and 217<=row['attempts']<=256:
+                if row.get('binding')==binding and row.get('state')in('NEW','DEVICE_START','DEVICE_POLL','REQUESTING','RETRY_WAIT','VERIFYING','READY','BLOCKED')and type(row.get('attempts'))is int and 243<=row['attempts']<=256:
                     report['human']={'state':row['state'],'attempts':row['attempts'],'maximumCumulativeOAuthAttempts':256,'windowExpiresAt':binding['expiresAt']}
         except Exception:report['humanSnapshotAvailable']=False
         print(encoded(report).decode(),flush=True)
