@@ -1,0 +1,17 @@
+name: Governed source revision immutable delivery
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/launch-source-revision-governed-20261019.sh', 'tests/test_source_revision_governed_delivery.py', '.github/workflows/source-revision-governed-delivery.yml']
+permissions: {contents: read}
+jobs:
+  delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Exact staged manifest, root shim and no read before helper hash
+        run: |
+          bash -n scripts/launch-source-revision-governed-20261019.sh
+          python3 -I -B -S -m unittest discover -s tests -p 'test_source_revision_governed_delivery.py' -v
