@@ -54,7 +54,7 @@ class Ports:
   current=self.http.active();expected=activated['active']if activated else{**self.plan['bindingPlan']['expectedActive'],'etag':self.plan['bindingPlan']['expectedActiveETag']}
   require(current==expected,'OWNER_ACTIVE_VERSION_GENERATION_DRIFT')
   projected=not owner and self.evidence(row,'PUBLISH_ACTIVE_PROJECTION')is not None
-  if projected:require(baseline.sha(baseline.read(self.plan['projectionBinding']['path']))==self.plan['projectionHash'],'PUBLISHED_ACTIVE_PROJECTION_DRIFT')
+  if projected:approved_projection_bytes(self.plan['projectionBinding']['path'],self.plan['projectionHash'])
   else:private_config(self.plan['projectionBinding']['path'],self.plan['projectionBinding'])
   expected_routes=copy.deepcopy(self.plan['gateway']['beforeRoutes'])
   if not owner:
@@ -109,6 +109,12 @@ def baseline_runtime(actual,name,plan):
  from tools.installation_binding_plan.discovery import runtime as observed
  return observed(actual,ordered)
 
+def approved_projection_bytes(path,expected_sha256):
+ # Reuse the exact, pre-approved installation path custody; do not require root ownership of /opt/ouf.
+ raw,_=private_config(path)
+ require(hashlib.sha256(raw).hexdigest()==expected_sha256,'PUBLISHED_ACTIVE_PROJECTION_DRIFT')
+ return raw
+
 def publish_active_projection(binding,raw,logical_ref):
  # All network/owner checks happen before this short local critical section.
  path=Path(binding['path']);require(path.is_absolute()and path.resolve()==path and path.name=='active-projection.json','EXACT_ACTIVE_PROJECTION_PATH_REQUIRED')
@@ -124,7 +130,7 @@ def publish_active_projection(binding,raw,logical_ref):
   # Recheck the reviewed path identity while holding the common publisher lock.
   private_config(path,binding)
   os.replace(temporary,path.name,src_dir_fd=parent,dst_dir_fd=parent);os.fsync(parent)
-  require(baseline.read(path)==raw,'ACTIVE_PROJECTION_ATOMIC_PUBLICATION_READBACK_REQUIRED')
+  require(approved_projection_bytes(path,hashlib.sha256(raw).hexdigest())==raw,'ACTIVE_PROJECTION_ATOMIC_PUBLICATION_READBACK_REQUIRED')
  finally:
   if target is not None:os.close(target)
   if lock is not None:os.close(lock)

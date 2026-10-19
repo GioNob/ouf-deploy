@@ -3,6 +3,9 @@ on:
   push:
     paths:
       - 'scripts/read-installation-binding-custody-stop.py'
+      - 'scripts/read-installation-binding-continuation-readiness.py'
+      - 'tools/installation_binding_apply/native.py'
+      - 'tests/test_installation_binding_custody_fix.py'
       - 'tests/test_installation_binding_custody_stop.py'
       - 'tests/fixtures/installation-binding-custody-gateway.py'
       - '.github/workflows/installation-binding-custody-stop.yml'
@@ -22,4 +25,8 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          sudo env OUF_NATIVE_UIDS=1 python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_installation_binding_custody_stop.py -v
+          failed=0
+          for suite in test_installation_binding_custody_stop.py test_installation_binding_custody_fix.py; do
+            if ! sudo env OUF_NATIVE_UIDS=1 python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v; then failed=1; fi
+          done
+          exit "$failed"
