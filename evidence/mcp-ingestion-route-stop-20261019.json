@@ -26,6 +26,10 @@
     "sourceExecuted": false,
     "maximumSeconds": 60,
     "localTestsPassed": 8,
-    "readerSha256": "07761592ab3cfa272dd563a4ccc4bc4899f9c0a2e285b20df74988892b32a7c1"
+    "readerSha256": "07761592ab3cfa272dd563a4ccc4bc4899f9c0a2e285b20df74988892b32a7c1",
+    "qualificationRun": 39248598167,
+    "qualificationJob": 118046548784,
+    "qualificationTestsPassed": 8,
+    "sourceCommit": "166a8c8a6bdbb5c0e16b3c74bba0f1ea8702e1b0"
   }
 }
