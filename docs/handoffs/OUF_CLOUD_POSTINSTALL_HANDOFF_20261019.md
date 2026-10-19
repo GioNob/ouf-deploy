@@ -1,5 +1,18 @@
 # OUF cloud handoff after independent source-revision installation readback
 
+### Owner Onboarding aggiornato — readback completato;251/256; binding ancora da applicare
+
+Ricevuta utente integrale in `evidence/installation-owner-completed-readback-20261019.json`: **ONBOARDING_OWNER_UPDATE_READBACK_COMPLETE**, contesto **hnfn0zwg**, sorgente **b0f5e3dacbe59ebf87e22dd6af2575e41249f51d**, immagine runtime **sha256:c124a832a1f9f07967a8f3ef9ba9692610ab5c97aa4719e614867f44e6aa63ae**, container **0165a7d260a9c146101ac1471c843b1300587c579a18e99ea0c3a78cadcb0aae**, PID **335586**, start **2026-10-19T14:55:21.10058135Z**. Health **200**, readinessAttempts1, journalVersion29/complete/applicationReady. La ripetizione degli stessi messaggi WAIT non è una seconda mutazione. Nessuna migrazione, Gateway PUT, grant, job, metadato pubblico, attivazione fonte o accettazione. Rotte82/mapd5a e binding delle altre applicazioni conservati. **Aggiornamento completato: non rilanciare.**
+
+L'API owner con precondizione atomica è installata; **non è stata fatta una prova live di scrittura**. Il piano d'installazione6bebb5d1 resta non applicato, ACTIVE previsto5. Counter HUMAN riportato **251/256**, cinque tentativi residui; finestra invariata fino alle **17:54:19 Europe/Rome**. Non dedurre una nuova scadenza access dal solo risultato. La sessione autenticata da selezionare per le prossime letture è quella in `execution-plan.json.humanBinding`, confermata dalla login-window-receipt; il case pre-login resta legato al predecessore BLOCKED244 e non va riutilizzato come selezione corrente.
+
+Prossima preparazione distinta: rileggere ACTIVE/revisione5/ACTIVE dall'owner nuovo, verificare ETag forte revisione/checksum/generazione identico prima/dopo e conservare lo stesso candidato ded675... per futura review nativa. Verificare le generazioni correnti Onboarding/Ingestion/Gateway senza ripetere l'installazione/readback. Nessun refresh, login, richiesta OAuth, export o mutazione owner/Gateway/proiezione. Richiede un access token già corrente con90s di margine; altrimenti STOP conservando251/256 e senza tentare il refresh fallito. La futura applicazione con If-Match, pubblicazione della proiezione e due rotte avrà gate distinto, verifica DNS/Gateway live e fencing nativo. Tecniche **8/8**, funzionali **4/6**; profilo governato e tappe5–6 aperti.
+
+PET consultati per questa decisione: Matrix1.7§1; Onboarding/Configurazione/THS1.6§§103–106,THS-A02/A08/A09. L'ETag va acquisito dal nuovo owner: non inventare la generazione dal precedente piano. Nessuna rivendicazione di conformità completa, acceptance o risoluzione end-to-end503.
+
+---
+
+
 ### Prossima azione qualificata — riautenticazione244 nella stessa finestra, poi gate owner distinto
 
 Il reader target ha confermato **complete/readOnly**, nessuna autorità o journal owner, nessun dispatch Onboarding da questa azione, nessun successore; HUMAN **BLOCKED244/256** dopo REFRESH, access registrato scaduto, **12** tentativi residui e finestra wall/monotonic ancora aperta fino alle **17:54:19 Europe/Rome**. Zero richieste OAuth/owner/Engine, scritture, bearer/key aperti o sorgenti owner eseguiti. Causa specifica issuer **non provata**. La ricevuta integrale è in `evidence/installation-owner-same-window-reauth244-qualified-checkpoint-20261019.json`.
