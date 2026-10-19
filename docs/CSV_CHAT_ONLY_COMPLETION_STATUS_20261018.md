@@ -1,5 +1,10 @@
 ## Current checkpoint — source APPROVED; Ingestion registration profile qualified, 2026-10-19
 
+### Diagnosi amministrativa acquisita — 2026-10-19,10:43 Europe/Rome
+
+La preparazione è riuscita (181 moduli); login HUMAN/IAM già eseguiti; piano autorizzativo, review APPROVO, authority e journal degli effetti assenti nella capsula dyvd8zal. Lo STOP è dopo il login e prima del piano; nessun rilancio del vecchio launcher. Il preflight vincolato alla sessione esistente passa12 test CI39226412775, ma non è ancora eseguito sul target. Una sola invocazione refresh nella finestra già approvata, cumulativo256 preservato;8GET owner,1ROLES MCP,8GET IAM massimi; nessuna mutazione amministrativa, firma o nuovo login. Tecniche8/8, funzionali4/6. Installazione/readback uow4n8lp acquisiti e non ripetuti. Vedi evidence/ingestion-administrative-stopped-context-dyvd8zal-20261019.json.
+
+
 
 ### STOP amministrativo da riconciliare — 2026-10-19,10:33 Europe/Rome
 

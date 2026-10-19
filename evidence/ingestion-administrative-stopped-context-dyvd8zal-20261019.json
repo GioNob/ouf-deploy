@@ -52,7 +52,15 @@
     "maximumIamGETs": 8,
     "ownerMutationsAllowed": false,
     "authorityIssuanceAllowed": false,
-    "localFixtureTests": 10,
-    "targetExecuted": false
+    "localFixtureTests": 12,
+    "targetExecuted": false,
+    "qualificationCI": {
+      "run": 39226412775,
+      "job": 117973672386,
+      "tests": 12,
+      "status": "PASS"
+    },
+    "sourceCommit": "0c654ff46d6a44de32557247ae0790873d67d079",
+    "sha256": "661726c94b71aeb2b820ecf945ea5b15e7fdd9bca4b6f08f55275528f556da1b"
   }
 }
