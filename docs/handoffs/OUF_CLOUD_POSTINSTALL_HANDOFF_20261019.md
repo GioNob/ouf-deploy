@@ -1,5 +1,8 @@
 # OUF cloud handoff after independent source-revision installation readback
 
+> **Diagnosi401, lettura ambiente completata:** capsula w8nfc1ko SHA2564b21a573/closure1191c381 verificata, generazioni correnti verificate. Variabili OUF_ING_IAM_ENABLED/ISSUER/AUDIENCE non abilitate/configurate; il conflitto bearer ipotizzato non è provato. Nessun OAuth o effetto. Non modificare rotte o IAM per deduzione da questi soli flag. Prossima lettura: JAR /app/app.jar del container Ingestion477ea664, entrypoint e generazione verificati, massimo1GET archivio256MiB e2inspect,120s; solo bytecode/configurazione selezionata, nessun Java/exec/log/credenziale/OAuth/mutazione. Classi sul disco non provano da sole le classi caricate dal JVM; causa401 e accettazione restano aperte. Tecniche8/8,funzionali4/6,ultimo259/264. Ricevuta completa: evidence/ingestion401-auth-contract-target-20261019.json.
+
+
 > **TARGET COMPLETATO — 19 ottobre 2026, contesto w8nfc1ko:** riconciliazione journal e2PUT Gateway complete; owner6/gen6, proiezione10b378c05 e80altre rotte conservati. Mappa82rotte SHA256ed619aa9415b2e70f61689c3830b3fc89135bc9ab72fc90f24daeba1e7bed8c7. Vecchio journal7x21g1fg riconciliato versione5, scadenza1792429299 preservata.255→259/264, scadenzaHUMAN20:55:55 italiana invariata. **Non rilanciare alcun launcher di applicazione/riconciliazione completato.** Letture correnti dal clientouf-admin: MCP HEALTHY; fonte APPROVED/lock3 e attivazione NOT_STARTED; Ingestion status/history401. Tecniche8/8, funzionali4/6. Il401 è un incidente distinto: nessuna nuova autorità o mutazione è implicata; proseguire con sola diagnosi del contratto auth. Ricevute: evidence/installation-route-reconciliation-target-20261019.json e evidence/installation-route-post-client-read-20261019.json.
 
 
