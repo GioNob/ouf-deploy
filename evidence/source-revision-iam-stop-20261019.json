@@ -17,7 +17,7 @@
   "freshProcessObserved": true,
   "runtimeAuthorityIssued": false,
   "newHumanSessionObserved": false,
-  "authorityAbsenceIndependentlyRead": false,
+  "authorityAbsenceIndependentlyRead": true,
   "reconciliationRequired": true,
   "automaticRetry": false,
   "budgetReset": false,
@@ -31,6 +31,29 @@
     "conclusion": "success",
     "testsPassed": 2,
     "fixtureCases": 8,
-    "targetReadPerformed": false
+    "targetReadPerformed": true
+  },
+  "targetRead": {
+    "complete": true,
+    "executionReconciliation": {
+      "authorityAndLoginArtifactsAbsent": true,
+      "candidateReviewBound": true,
+      "contextClosureSha256": "e93fd92cae1105c6f5b69e617c5352d8324f65e5c3b13ac758a39dbc3e87a8bc",
+      "contextFiles": 9,
+      "contextPath": "/etc/ouf/deploy-snapshots/source-revision-execution-tvc2ilnv",
+      "exactCompilerSourcesMatch": true,
+      "nativePlanBound": true,
+      "retainedFilesPreserved": true
+    },
+    "preparedReceiptHashIndependentlyRead": true,
+    "humanJournalsRead": 0,
+    "tokenFilesOpened": 0,
+    "iamSessionRenewed": false,
+    "runtimeAuthorityIssued": false,
+    "engineCalls": 0,
+    "databaseCalls": 0,
+    "journalWrites": 0,
+    "automaticRetry": false,
+    "budgetReset": false
   }
 }
