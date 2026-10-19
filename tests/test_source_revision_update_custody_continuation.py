@@ -23,9 +23,9 @@ class Custody(unittest.TestCase):
   plan={'logicalUpdateRef':logical};plan_binding=self.put(context/'execution-plan.json',plan)
   review={'authorityDirectory':str(context),'sourceClosureHash':'c'*64,'scopes':{'sourceRevisionUpdate':{'planHash':digest(plan)}}}
   review_binding=self.put(context/'review.json',review)
-  authority={'expiresAt':time.time()-120,'sourceClosureHash':'c'*64,'scopedExecution':{'reviewHash':review_binding['sha256']}}
+  authority={'sourceRevisionUpdate':review['scopes']['sourceRevisionUpdate'],'expiresAt':time.time()-120,'sourceClosureHash':'c'*64,'scopedExecution':{'reviewHash':review_binding['sha256']}}
   authority_binding=self.put(context/'authority.json',authority)
-  row={'schema':'ouf.source-revision-update-journal.v1','version':0,'nextStage':0,'effects':[],'budgetReset':False,'readinessAttempts':0,'cumulativeReadinessAttempts':0,'authorityHash':authority_binding['sha256'],'scopeHash':digest(review['scopes']['sourceRevisionUpdate']),'bootId':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),'expiresAt':time.time()-120,'expiresMonotonic':time.monotonic()-120}
+  row={'incidentState':'OPEN','readinessState':'IDLE','applicationAcceptanceGranted':False,'schema':'ouf.source-revision-update-journal.v1','version':0,'nextStage':0,'effects':[],'budgetReset':False,'readinessAttempts':0,'cumulativeReadinessAttempts':0,'authorityHash':authority_binding['sha256'],'scopeHash':digest(review['scopes']['sourceRevisionUpdate']),'bootId':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),'expiresAt':time.time()-120,'expiresMonotonic':time.monotonic()-120}
   Journal(context).initialize(row);journal_binding={'path':str(context/'recovery.json'),'sha256':hashlib.sha256((context/'recovery.json').read_bytes()).hexdigest()}
   claim_binding=self.put(root/('source-revision-update-'+logical+'.claim.json'),{'planHash':digest(plan),'authorityHash':authority_binding['sha256'],'context':str(context),'automaticReplayAllowed':False})
   ref={'schema':'ouf.source-revision-zero-effect-expired-scope.v1','context':str(context),'logicalUpdateRef':logical,'journalBinding':journal_binding,'authorityBinding':authority_binding,'planBinding':plan_binding,'reviewBinding':review_binding,'claimBinding':claim_binding}
@@ -134,7 +134,7 @@ class SignedSuccessor(unittest.TestCase):
   from tools.source_revision_update.owner import ReadinessUpdate,scope,STAGES
   from tools.semantic_policy_token_owner.owner_installation import AggregateAction
   original=fixture.Owner();original.setUp();self.addCleanup(original.doCleanups);c=original.crypto;helper=Custody()
-  old,row=helper.predecessor(c.root,original.plan['logicalUpdateRef']);bindings,pins=helper.metadata(c.root)
+  old,row=helper.predecessor(c.root,original.plan['logicalUpdateRef']);metadata_root=c.root/'retained-mcp';metadata_root.mkdir(mode=0o700);bindings,pins=helper.metadata(metadata_root)
   directory=c.root/'new-signed-successor';directory.mkdir(mode=0o700);plan=copy.deepcopy(original.plan);plan.update(authorityDirectory=str(directory),retainedMcpMetadata=bindings)
   plan=n.bind_custody_continuation(plan,{'schema':'ouf.source-revision-mcp-custody-continuation.v1','metadataPins':pins,'scopeSuccessor':old['logicalScopeSuccessor']})
   with self.assertRaises(Exception):original.action.guard('sourceRevisionUpdate',scope(plan))

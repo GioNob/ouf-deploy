@@ -46,6 +46,8 @@ def reconcile():
  report=diagnostic['main']();human=report['humanSession'];journal=report['updateJournal']
  require(report['contextFiles']==22 and report['authorityArtifactsObserved']is True and report['signatureFilesPresent']==2
   and report['decisionReviewBound']is True and report['issuanceDecisionBound']is True and report['logicalScopeClaimBound']is True
+  and report['backupDumpPresent']is False and report['backupReceiptPresent']is False and report['retainedFilesPreserved']is True
+  and journal['authorityHashBound']is True and journal['currentBootMatches']is True and journal['budgetReset']is False
   and journal['version']==journal['nextStage']==journal['effectCount']==0 and journal['effects']==[] and journal['expiredByWallClock']is True
   and all(v['identityMatchesExpected']and v['running']and not v['paused']and not v['restarting']for v in report['containerReadback'].values()),
   'EXPIRED_ZERO_EFFECT_SCOPE_RECONCILIATION_REQUIRED')

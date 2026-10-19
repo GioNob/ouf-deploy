@@ -36,7 +36,9 @@ def retained_metadata_file(binding,pin):
 def historical_document(binding):
  private_file(binding['path'],binding['sha256'],8388608)
  fd=os.open(binding['path'],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
- try:raw=os.read(fd,8388609)
+ try:
+  before=os.fstat(fd);raw=os.read(fd,8388609)
+  require(custody_pin(before)==custody_pin(os.fstat(fd))==custody_pin(Path(binding['path']).lstat()),'HISTORICAL_SCOPE_CUSTODY_CHANGED')
  finally:os.close(fd)
  require(len(raw)<=8388608 and hashlib.sha256(raw).hexdigest()==binding['sha256'],'HISTORICAL_SCOPE_BYTES_CHANGED')
  return json.loads(raw)
@@ -53,6 +55,8 @@ def zero_effect_predecessor(reference,logical):
  row=historical_document(reference['journalBinding']);authority=historical_document(reference['authorityBinding']);plan=historical_document(reference['planBinding']);review=historical_document(reference['reviewBinding']);claim=historical_document(reference['claimBinding'])
  require(row['schema']=='ouf.source-revision-update-journal.v1'and row['version']==0 and row['nextStage']==0 and row['effects']==[]
   and row['budgetReset']is False and row['readinessAttempts']==row['cumulativeReadinessAttempts']==0
+  and all(type(row[k])is int for k in ('version','nextStage','readinessAttempts','cumulativeReadinessAttempts'))
+  and row['incidentState']=='OPEN'and row['readinessState']=='IDLE'and row['applicationAcceptanceGranted']is False
   and row['authorityHash']==reference['authorityBinding']['sha256'] and row['scopeHash']==digest(review['scopes']['sourceRevisionUpdate'])
   and row['bootId']==Path('/proc/sys/kernel/random/boot_id').read_text().strip()
   and time.time()>=max(row['expiresAt'],authority['expiresAt'])and time.monotonic()>=row['expiresMonotonic'],
@@ -61,7 +65,8 @@ def zero_effect_predecessor(reference,logical):
   'context':str(context),'automaticReplayAllowed':False}
   and review['authorityDirectory']==str(context)and review['scopes']['sourceRevisionUpdate']['planHash']==digest(plan)
   and authority['scopedExecution']['reviewHash']==reference['reviewBinding']['sha256']
-  and authority['sourceClosureHash']==review['sourceClosureHash'],'PREDECESSOR_SCOPE_LINEAGE_CHANGED')
+  and authority['sourceClosureHash']==review['sourceClosureHash']
+  and authority['sourceRevisionUpdate']==review['scopes']['sourceRevisionUpdate'],'PREDECESSOR_SCOPE_LINEAGE_CHANGED')
  return context
 
 def bind_custody_continuation(plan,reference):
