@@ -101,3 +101,48 @@ class ClosedCode(unittest.TestCase):
   self.assertFalse(any(x.endswith(('.request','.login','.refresh_if_due','.issue_action','.import_image'))for x in calls))
   self.assertEqual(len([x for x in ast.walk(tree)if isinstance(x,ast.Call)and ast.unparse(x.func)=='os.execv']),1)
 if __name__=='__main__':unittest.main()
+
+class Preparation(unittest.TestCase):
+ def setUp(self):
+  self.tmp=tempfile.TemporaryDirectory(dir=os.environ['OUF_TEST_ROOT']);self.addCleanup(self.tmp.cleanup);self.root=Path(self.tmp.name);self.root.chmod(0o700)
+  self.stopped=self.root/'installation-owner-update-execution-fixture1';self.stopped.mkdir(mode=0o700)
+  self.human=self.root/'human';self.human.mkdir(mode=0o700)
+  self.write=lambda path,value:(path.write_bytes(prep.encoded(value)),path.chmod(0o600))
+  self.row={'binding':{'sessionDirectory':str(self.human),'expiresAt':1792425259,'scopes':['s'+str(i)for i in range(11)],'retryProfile':{'maximumAttempts':256}},'state':'BLOCKED','attempts':244,'operation':'REFRESH','reason':'HUMAN_OAUTH_REVOKED_OR_PERMANENT_OR_UNKNOWN','budgetReset':False,'lastObservedAt':1792420000,'monotonicDeadline':time.monotonic()+7200}
+  self.write(self.human/'recovery.json',self.row)
+  claim={'context':str(self.stopped),'priorOAuthAttempts':243,'budgetReset':False,'automaticReplayAllowed':False,
+   'candidateSourceCommit':'b0f5e3dacbe59ebf87e22dd6af2575e41249f51d','completedInstallationPlanHash':m.PLAN_HASH,'maximumCumulativeOAuthAttempts':256}
+  self.claim=self.root/'old.claim.json';self.write(self.claim,claim)
+  case={'humanBinding':self.row['binding'],'priorOAuthAttempts':243,'preparationClaimBinding':{'path':str(self.claim),'sha256':prep.digest(claim)}}
+  for key in('imageBinding','candidateMigrationEvidenceBinding'):
+   path=self.stopped/(key+'.json');self.write(path,{'proof':'retained'});case[key]={'path':str(path),'sha256':prep.digest({'proof':'retained'})}
+  sources={n:b'raise RuntimeError("OLD_SOURCE_MAIN_MUST_NOT_EXECUTE")\n'for n in loader.MODULES}
+  raw_loader=(ROOT/'tools/installation_owner_update/runtime.py').read_bytes()
+  members={'runtime.py':raw_loader,'bootstrap.py':(ROOT/'scripts/execute-installation-owner-update.py').read_bytes(),'case.json':prep.encoded(case),
+   'reader.py':b'raise RuntimeError("NO_OLD_READER_REPLAY")\n','sources.json':prep.encoded({n:base64.b64encode(v).decode()for n,v in sources.items()})}
+  commit='15827c6d5ee9ed761ce9a534441e689ea6007dfa';pins={'ouf-deploy':commit,'ouf-onboarding':'b'*40,'ouf-mcp-server':'c'*40}
+  execution={'executorSha256':prep.sha(members['bootstrap.py']),'caseSha256':prep.digest(case),'mode':'INSTALLATION_OWNER_UPDATE'}
+  closure={'declaration':loader.declaration(commit,sources,raw_loader,pins,execution),'executables':{},'stdlibHash':'a'*64,'stdlibFileCount':1}
+  package={'sourceCommit':commit,'closure':closure,'executionPins':execution,'sourcePins':pins,'runtimeAuthorityIssued':False,'fileHashes':{n:prep.sha(v)for n,v in members.items()}}
+  self.package_hash=prep.digest(package);self.closure_hash=prep.digest(closure)
+  for n,v in members.items():(self.stopped/n).write_bytes(v);(self.stopped/n).chmod(0o600)
+  self.write(self.stopped/'package.json',package);self.write(self.stopped/'runtime.claim.json',{'packageHash':self.package_hash,'automaticReplayAllowed':False})
+  self.write(self.stopped/'preparation-result.json',{'packageHash':self.package_hash,'sourceClosureHash':self.closure_hash,'candidateImageId':'sha256:c124a832a1f9f07967a8f3ef9ba9692610ab5c97aa4719e614867f44e6aa63ae','migrationEvidenceHash':'d1b046b00ca761e04eb810402840c87e0dcbe7022051ea1ede80adcce68fb99a'})
+ def child(self):
+  import subprocess
+  code='''import importlib.util,json,sys\nfrom pathlib import Path\nspec=importlib.util.spec_from_file_location('prepared',sys.argv[1]);p=importlib.util.module_from_spec(spec);spec.loader.exec_module(p)\np.STOPPED=Path(sys.argv[2]);p.PACKAGE=sys.argv[3];p.CLOSURE=sys.argv[4];p.time.time=lambda:1792421000\ndef done(*args):print('FRESH_BOOTSTRAP_EXEC_REACHED',flush=True);raise SystemExit(0)\np.os.execv=done\np.main({'entry':Path(sys.argv[5]).read_bytes(),'prepare':Path(sys.argv[1]).read_bytes()},'e'*40)\n'''
+  return subprocess.run(['/usr/bin/python3','-I','-B','-S','-',str(ROOT/'scripts/prepare-installation-owner-reauth244.py'),str(self.stopped),self.package_hash,self.closure_hash,str(ROOT/'tools/installation_owner_reauthentication/entry.py')],input=code.encode(),capture_output=True,timeout=40)
+ def test_actual_isolated_preparation_seals213_preserves_all_history_and_claims_once(self):
+  before={p:p.read_bytes()for p in self.stopped.iterdir()};human=(self.human/'recovery.json').read_bytes();result=self.child()
+  self.assertEqual(result.returncode,0,(result.stdout+result.stderr).decode());self.assertIn(b'FRESH_BOOTSTRAP_EXEC_REACHED',result.stdout)
+  self.assertTrue(all(p.read_bytes()==v for p,v in before.items()));self.assertEqual((self.human/'recovery.json').read_bytes(),human)
+  claims=list(self.root.glob('installation-owner-reauth244-*.claim.json'));self.assertEqual(len(claims),1)
+  context=Path(json.loads(claims[0].read_bytes())['context']);report=json.loads((context/'preparation-result.json').read_bytes());case=json.loads((context/'case.json').read_bytes())
+  self.assertEqual(report['sourceModuleCount'],213);self.assertEqual(report['priorOAuthAttempts'],244);self.assertFalse(report['humanSourceChanged']);self.assertFalse(report['runtimeAuthorityIssued'])
+  self.assertEqual(case['humanBinding'],self.row['binding']);self.assertFalse((context/'authority.json').exists())
+  new=json.loads((context/'sources.json').read_bytes());old=json.loads((self.stopped/'sources.json').read_bytes())
+  self.assertEqual([n for n in old if old[n]!=new[n]],['tools.installation_owner_update.entry'])
+  again=self.child();self.assertNotEqual(again.returncode,0);self.assertIn(b'DISTINCT_REAUTH244_PREPARATION_ALREADY_CLAIMED',again.stderr)
+ def test_changed_counter_denies_before_new_claim_or_capsule(self):
+  self.write(self.human/'recovery.json',{**self.row,'attempts':245});result=self.child();self.assertNotEqual(result.returncode,0)
+  self.assertEqual(list(self.root.glob('installation-owner-reauth244-*.claim.json')),[])
