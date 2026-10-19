@@ -27,7 +27,7 @@ class Signed(old.CryptoAndJournal):
  def fixture_prior(self):
   self.prior_context=self.old.c.root/'installation-binding-apply-execution-predecessor';self.prior_context.mkdir(mode=0o700)
   raw=b'{"authoritative":true}';profile=self.old.c.root/'active-projection.json';profile.write_bytes(raw);profile.chmod(0o600)
-  _,binding=n.private_config(profile);self.plan['projectionBinding']=binding;self.plan['projectionHash']=o.digest({'authoritative':True})
+  _,binding=n.private_config(profile);self.plan['projectionBinding']=binding;self.plan['currentPublishedProjectionBinding']=binding;self.plan['projectionHash']=o.digest({'authoritative':True})
   self.plan['predecessorPlanHash']='d'*64;self.plan['reconciliationSourceClosureHash']=a.digest(self.closure)
   effects=[{'stage':stage,'state':state,'intentHash':o.digest({'planHash':self.plan['predecessorPlanHash'],'stage':stage})}for stage,state in[('VERIFY_INPUTS','APPLIED'),('PUBLISH_ACTIVE_PROJECTION','CLAIMED')]]
   now=time.time();self.prior_row={'schema':'ouf.installation-binding-native-journal.v1','version':3,'nextStage':1,'effects':effects,'incidentState':'OPEN','expiresAt':now-100,

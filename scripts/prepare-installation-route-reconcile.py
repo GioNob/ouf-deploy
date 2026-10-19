@@ -69,7 +69,7 @@ def main(delivery,commit):
  require(set(delivery)==set(NAMES)and re.fullmatch('[0-9a-f]{40}',commit),'EXACT_ROUTE_RECONCILIATION_DELIVERY_REQUIRED')
  os.umask(0o077);signal.signal(signal.SIGALRM,lambda *_:(_ for _ in ()).throw(ValueError('PREPARATION_DEADLINE')));signal.alarm(120)
  retained={'__name__':'qualified_exact_predecessor_readiness'};exec(compile(delivery['reconcile'],'<qualified-predecessor-readiness>','exec'),retained)
- diagnostic=retained['continuation_readiness']()
+ diagnostic=retained['continuation_readiness']();signal.alarm(120)
  require(diagnostic['publicationBytesPresentButJournalUnreconciled']and diagnostic['noGatewayDispatchByThisActionProven']
   and diagnostic['human']['state']=='READY'and diagnostic['human']['attempts']==255 and diagnostic['human']['remainingOAuthAttempts']==1
   and diagnostic['human']['windowStillOpen']and not diagnostic['human']['recordedAccessHas240SecondsMargin'],

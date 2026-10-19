@@ -53,7 +53,7 @@ def live_preconditions(plan,human,http):
 
 def main(original,sources,closure,case,context,read,emit):
  context=Path(context);authority.closure_valid(closure);alarm(120)
- diagnostic=retained.continuation_readiness()
+ diagnostic=retained.continuation_readiness();alarm(120)
  require(diagnostic['publicationBytesPresentButJournalUnreconciled']and diagnostic['noGatewayDispatchByThisActionProven']
   and diagnostic['human']['attempts']==255 and diagnostic['human']['windowStillOpen']and not diagnostic['human']['recordedAccessHas240SecondsMargin'],
   'EXACT_PUBLISHED_PROFILE_AND_INSUFFICIENT_READY255_REQUIRED')
@@ -72,6 +72,7 @@ def main(original,sources,closure,case,context,read,emit):
  emit('OUF_BINDING_PHASE=CURRENT_OWNER_PROFILE_AND_GATEWAY_READS');alarm(90)
  http=OwnerHttp(human.selection,human,plan['bindingPlan']['expectedActive']['installationId'],'ouf-routes-'+plan['logicalRef'][:32],read_only=True)
  live_preconditions(plan,human,http)
+ plan['currentPublishedProjectionBinding']=private_config(plan['projectionBinding']['path'])[1]
  cancelled=threading.Event();handlers={}
  for sig in(signal.SIGINT,signal.SIGTERM,signal.SIGHUP):handlers[sig]=signal.signal(sig,lambda *_:cancelled.set())
  try:

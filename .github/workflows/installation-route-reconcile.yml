@@ -2,7 +2,7 @@ name: Governed budget264 and route-only publication reconciliation
 on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
-    paths: ['tools/installation_route_reconcile/**', 'scripts/prepare-installation-route-reconcile.py', 'tests/test_installation_route_reconcile.py', 'tests/test_installation_route_budget264.py', 'tests/fixtures/installation-route-budget264/**', '.github/workflows/installation-route-reconcile.yml']
+    paths: ['tools/installation_route_reconcile/**', 'scripts/prepare-installation-route-reconcile.py', 'tests/test_installation_route_reconcile.py', 'tests/test_installation_route_budget264.py', 'tests/test_installation_route_preparation.py', 'tests/fixtures/installation-route-budget264/**', '.github/workflows/installation-route-reconcile.yml']
 permissions: {contents: read}
 jobs:
   signed-owner:
@@ -46,7 +46,7 @@ jobs:
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
           failed=0
-          for suite in test_installation_route_reconcile.py test_installation_route_budget264.py; do
+          for suite in test_installation_route_reconcile.py test_installation_route_budget264.py test_installation_route_preparation.py; do
             if ! sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" \
               OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/legacy" \
               OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/revision" \

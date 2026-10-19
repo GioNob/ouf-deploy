@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest.mock import patch
 HERE=Path(__file__).resolve().parent
 ROOT=HERE/'fixtures'
-if not ROOT.exists():ROOT=HERE.parent/'tests/fixtures/installation-route-budget264'
+if not(ROOT/'human_source.py').exists():ROOT=HERE.parent/'tests/fixtures/installation-route-budget264'
 PACKAGE=HERE
 if not(PACKAGE/'login.py').exists():PACKAGE=HERE.parent/'tools/installation_route_reconcile'
 

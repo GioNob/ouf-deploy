@@ -55,7 +55,8 @@ class Ports:
   current=self.http.active();expected=activated['active']if activated else{**self.plan['bindingPlan']['expectedActive'],'etag':self.plan['bindingPlan']['expectedActiveETag']}
   require(current==expected,'OWNER_ACTIVE_VERSION_GENERATION_DRIFT')
   route_only=self.plan['kind']=='INSTALLATION_ROUTE_RECONCILIATION'
-  if route_only:verify_predecessor(self.plan,row)
+  if route_only:
+   verify_predecessor(self.plan,row);private_config(self.plan['projectionBinding']['path'],self.plan['currentPublishedProjectionBinding'])
   projected=route_only or not owner and self.evidence(row,'PUBLISH_ACTIVE_PROJECTION')is not None
   if projected:approved_projection_bytes(self.plan['projectionBinding']['path'],self.plan['projectionHash'])
   else:private_config(self.plan['projectionBinding']['path'],self.plan['projectionBinding'])
@@ -152,11 +153,13 @@ def reconcile_published(ports,plan,row):
  require(plan['kind']=='INSTALLATION_ROUTE_RECONCILIATION','EXACT_RECONCILIATION_KIND_REQUIRED')
  # All remote/authority checks are outside this short local predecessor transition.
  ports.action.guard(scope_key(plan['kind']),scope(plan))
+ private_config(plan['projectionBinding']['path'],plan['currentPublishedProjectionBinding'])
  raw=approved_projection_bytes(plan['projectionBinding']['path'],plan['projectionHash'])
  from tools.semantic_lease_recovery.recovery_journal import Journal
  prior=Journal(Path(plan['predecessorJournalBinding']['path']).parent)
  with prior.invocation():
   old=verify_predecessor(plan,row)
+  private_config(plan['projectionBinding']['path'],plan['currentPublishedProjectionBinding'])
   require(old['nextStage']==1 and old['version']==3 and old['incidentState']=='OPEN'and len(old['effects'])==2
    and old['effects'][1]['stage']=='PUBLISH_ACTIVE_PROJECTION'and old['effects'][1]['state']=='CLAIMED'
    and not any(e['stage'].startswith('GATEWAY_')for e in old['effects']),'EXACT_CLAIMED_PUBLICATION_WITH_NO_GATEWAY_EFFECT_REQUIRED')
@@ -178,6 +181,7 @@ def reconcile_completion(ports,plan,row):
  prior=Journal(Path(plan['predecessorJournalBinding']['path']).parent)
  with prior.invocation():
   old=verify_predecessor(plan,row)
+  private_config(plan['projectionBinding']['path'],plan['currentPublishedProjectionBinding'])
   require(old['version']==4 and old['nextStage']==2 and len(old['effects'])==2 and old['effects'][1]['state']=='APPLIED','EXACT_PREDECESSOR_PUBLICATION_RECONCILED_REQUIRED')
   following=copy.deepcopy(old)
   for stage in('GATEWAY_STATUS_ROUTE','GATEWAY_HISTORY_ROUTE','VERIFY_FINAL'):
