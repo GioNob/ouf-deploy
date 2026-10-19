@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 LAUNCH=ROOT/'scripts/launch-installation-route-reconcile-20261019.sh'
 PINS=ROOT/'evidence/installation-route-reconcile-delivery-pins-20261019.json'
-COMMIT='d34f13643d7049489537f50b790a83f8fac920fd'
+COMMIT='8ff69df5a19cd161ac185b2b15729e821bba2383'
 PATHS={**{n:'tools/installation_route_reconcile/'+n+'.py'for n in('entry','authority','owner','native','baseline','login','reconcile','runtime','human_extension')},'prepare':'scripts/prepare-installation-route-reconcile.py','bootstrap':'scripts/execute-installation-route-reconcile.py'}
 class Delivery(unittest.TestCase):
  def setUp(self):
