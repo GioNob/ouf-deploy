@@ -82,7 +82,9 @@ class Custody(unittest.TestCase):
     plan,row=self.predecessor(Path(temp));ref=plan['logicalScopeSuccessor'];path=Path(ref[key]['path']);path.write_bytes(b'{}')
     with self.assertRaises(Exception):n.zero_effect_predecessor(ref,plan['logicalUpdateRef'])
  def test_sealed_fixture_uses_only_explicit_successors(self):
-  for name in ('native','entry','login'):self.assertEqual((ROOT/f'tools/source_revision_update/{name}.py').read_bytes(),(ROOT/f'tools/source_revision_update/custody_{name}.py').read_bytes())
+  for name in ('native','entry','login'):
+   prefix='human_recovery_'if os.environ.get('OUF_HUMAN_RECOVERY')=='1'and name in ('entry','login')else'custody_'
+   self.assertEqual((ROOT/f'tools/source_revision_update/{name}.py').read_bytes(),(ROOT/f'tools/source_revision_update/{prefix}{name}.py').read_bytes())
 
 @unittest.skipUnless(os.environ.get('OUF_CUSTODY_CONTINUATION')=='1','explicit custody sealed-source fixture required')
 class CurrentHuman(unittest.TestCase):

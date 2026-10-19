@@ -1,5 +1,10 @@
 ## Current checkpoint — governed capsule complete; APPROVO accepted; custody STOP
 
+## Current checkpoint — blocked REFRESH189 reconciled, 2026-10-19
+
+Technical8/8; functional4/6. Protected target read proves inmfuoj2 nine-file closure9a829a8a70ca4c86d0653119ebe7737ba67a7af37347443d276a90b3d301c0df and no authority/login artifacts. HUMAN BLOCKED/REFRESH189/256,67 attempts remain; the failed refresh is not replayable and revocation is not proven by its generic reason. Both old successor claims absent; original custody capsule/all81files/kfy inputs and consumed kcw IAM fence preserved. A two-module explicit private successor reusing the existing native RIAPRO LOGIN/APPROVO/THS path is under qualification. No HUMAN/session/window/budget reset by preparation. [Target proof](../evidence/source-revision-human-blocked-read-target-20261019.json), [recovery qualification](../releases/SOURCE_REVISION_HUMAN_RECOVERY_20261019.md).
+
+
 ## Current checkpoint — IAM reconciled, HUMAN OAuth STOP, 2026-10-19
 
 Technical8/8; functional4/6. The operator's protected read proved kcw73ask nine-file closure153581a3f2294823d08c3668fb98433d49a34dd51a95056a24111379a4d07e9f, no authority/login artifacts, full81-file verification and HUMAN READY188/256 at observation. One IAM admin login/GET succeeded; the new native process inmfuoj2 reached provider metadata then stopped on HUMAN_OAUTH_REVOKED_OR_PERMANENT_OR_UNKNOWN. Do not replay IAM login or HUMAN refresh. Revocation is not proven by this generic reason; current counter/operation and authority absence require protected readback. [Evidence](../evidence/source-revision-custody-human-oauth-stop-20261019.json), [read-only delivery qualification](../releases/SOURCE_REVISION_CUSTODY_HUMAN_STOP_READ_20261019.md). Earlier remaining-window observations are historical. The dedicated read-only delivery passed11 root CI tests (run39210618716), including complete diagnostic/file preservation; no target execution or token request. Physical sudo readback remains required.
