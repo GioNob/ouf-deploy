@@ -1,6 +1,6 @@
 # MCP retained metadata custody continuation — 2026-10-19
 
-Technical8/8; functional4/6. Qualification pending; do not run development sources.
+Technical8/8; functional4/6. Source qualification PASS; immutable launcher qualification pending.
 
 ## New target evidence takes precedence
 
@@ -21,3 +21,11 @@ Private preparation revalidates host/provider/generations, all81 frozen files, a
 Consulted original PET Source Onboarding/Configuration/THS1.6 §§109.14–109.15 from the checksum-verified1.7 baseline attachment: expired challenges are not revived; owner remains authoritative; evidence/observability remains explicit. Matrix1.7 precedence remains unchanged. This is an installation-specific retained recovery, not a reusable distributed installer or proof of complete PET compliance.
 
 No target successor was executed by cloud development. The operator still supplies sudo and the actual fresh native APPROVO; authorization in chat does not substitute runtime authority or THS.
+
+## Source qualification and staged bytes
+
+Run [39206613640](https://github.com/GioNob/ouf-deploy/actions/runs/39206613640), source5571f70b501fffa81b6c9e18b5bb67b0957ed2d9: **133 tests PASS** (native100 of105 discovered, five older governed-only fixture tests explicitly skipped; signed Java-owner11; postboot18; custody-capsule4). The exact81-file verifier successfully reloads the original private preparation from its separate retained kfy context; it does not assume copies in the governed capsule. Initial signed-fixture name collision was corrected and the final source fully qualified; no target preparation was attempted.
+
+Source-only stage job117911056668 succeeded: `/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revision-custody-code-39206613640`, manifestSHA256 `7145b253a4946fdc6e85de99de59a67cf2516d40ea261c5e6bfe3dc7df85101b`, five files. Stage receipt reports zero authority and zero runtime mutations. See the exact hashes and test boundaries in `evidence/source-revision-custody-continuation-qualified-20261019.json`.
+
+Also consulted original Authorization PET1.5 §109.6 (fail closed; no application retry for invalid JWT; bounded recovery) and Matrix1.7 §1 (frozen ownership and THS authority). No relaxation of these contracts is inferred from development authorization.

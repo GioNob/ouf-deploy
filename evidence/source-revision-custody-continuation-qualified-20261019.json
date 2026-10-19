@@ -1,0 +1,53 @@
+{
+  "schema": "ouf.source-revision-custody-continuation-qualified.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "sourceCommit": "5571f70b501fffa81b6c9e18b5bb67b0957ed2d9",
+  "runId": 39206613640,
+  "nativeJobId": 117910729934,
+  "stageJobId": 117911056668,
+  "conclusion": "success",
+  "nativeSuite": {
+    "discovered": 105,
+    "passed": 100,
+    "skipped": 5,
+    "skips": "Older governed-continuation fixture requires its own explicit source set; no custody tests skipped."
+  },
+  "signedJavaOwnerTestsPassed": 11,
+  "postbootTestsPassed": 18,
+  "capsuleTestsPassed": 4,
+  "totalPassed": 133,
+  "stage": {
+    "directory": "/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-source-revision-custody-code-39206613640",
+    "manifestSha256": "7145b253a4946fdc6e85de99de59a67cf2516d40ea261c5e6bfe3dc7df85101b",
+    "fileCount": 5,
+    "runtimeAuthorityIssued": false,
+    "runtimeMutations": 0
+  },
+  "sourceHashes": {
+    "prepare.py": "5a245e1907b28e1131b2c756e6283440f5f1384d16fc4a6bbb37a7a904b1237f",
+    "native.py": "0fd00d837306a3de2deeb90ea25f380c8fffa2667a1a58f84a024752af05dc14",
+    "entry.py": "0a5d93eb6412c062f6393269dabe2fdbfa93c4124395c8d861cf1d9d8781ce1b",
+    "login.py": "13863557c80f97e1aef22549da190b2abac16e6b56ba3dcaa83221063e54d630"
+  },
+  "nativeBoundaries": "Actual root file custody, real Ed25519 roles, PostgreSQL/application-role V34, unchanged Java role owner; network/Engine effects remain explicit CI fixture boundaries. No target execution is inferred.",
+  "regressions": [
+    "Exact root service-group0440 metadata and strict private-reader rejection preserved",
+    "Hash/inode/GID/mode/link/symlink/pin drift blocks",
+    "Expired zero-effect predecessor only; wall and monotonic expiry/current boot",
+    "One exclusive child claim; original bytes preserved; concurrent lock and stale authority/context blocked",
+    "New signed scope rejects old authority; ordered stages and no duplicate effects in native owner fixture",
+    "Native HUMAN188\u2192190 preserves original window and256 cumulative budget",
+    "Ambiguous refresh stops after189 without a second network request",
+    "All81 prepared files and original private input reload from actual retained kfy paths"
+  ],
+  "initialQualificationFailure": {
+    "runId": 39206495730,
+    "sourceCommit": "abe3d444a7fc5bb4882d23c831dddf601765f224",
+    "cause": "Signed test fixture created retained policy.json over its signing-policy fixture; strict native custody rejected it. Metadata fixture isolated in child directory; production private guard unchanged.",
+    "stageSkipped": true
+  },
+  "deliveryQualification": "pending",
+  "runtimeAuthorityIssuedByDevelopment": false,
+  "targetRuntimeMutationsByDevelopment": 0
+}
