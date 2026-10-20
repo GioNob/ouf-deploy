@@ -18,7 +18,7 @@ import iam_governance_intake as governance
 from engine_creation import Engine
 from tools.ingestion_rollout_execution.contract import AUTHORITY_KEY,require,scope,digest,path,hashed
 from tools.ingestion_rollout_execution.replacement import EngineReader
-from tools.ingestion_rollout_execution import database_policy as policy
+from tools.ingestion_rollout_execution import database_policy as policy,runtime_bindings
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.chatbot_file_cohort.human_session import HumanSession
@@ -35,9 +35,10 @@ def runtime_binding(binding):
 
 def validate_profile(p):
     require(type(p)is dict and set(p)=={'schema','engineBinding','postgresRuntimeBinding','postgresRestartCount',
-            'identity','dockerExecutable','dockerConfigDirectory','dockerConfigIdentity','containerPrograms','unixSocketDirectory'},
+            'identity','dockerExecutable','dockerConfigDirectory','dockerConfigIdentity','containerPrograms','unixSocketDirectory','runtimeBindingProfile'},
             'EXACT_DATABASE_CONTROL_PROFILE_REQUIRED')
     require(p['schema']=='ouf.ingestion-rollout-native-database-read.v1','QUALIFIED_LOCAL_DATABASE_CHANNEL_REQUIRED')
+    require(p['runtimeBindingProfile']in runtime_bindings.PROFILES,'EXPLICIT_DATABASE_RUNTIME_BINDING_PROFILE_REQUIRED')
     runtime_binding(p['postgresRuntimeBinding'])
     require(type(p['postgresRestartCount'])is int and p['postgresRestartCount']>=0,'EXPLICIT_POSTGRES_RESTART_COUNT_REQUIRED')
     engine=p['engineBinding']
@@ -135,7 +136,7 @@ class NativeDatabaseRead:
         require(empty_config_directory(self.profile['dockerConfigDirectory'])==self.config_identity,
                 'DATABASE_DOCKER_CONFIG_DIRECTORY_CHANGED')
         pg=self.reader.container(self.profile['postgresRuntimeBinding']['containerId']);state=pg['State']
-        require(Engine.runtime_binding(pg)==self.profile['postgresRuntimeBinding']and state['Running']is True
+        require(runtime_bindings.observed(pg,self.profile['runtimeBindingProfile'])==self.profile['postgresRuntimeBinding']and state['Running']is True
                 and state['Paused']is False and state['Restarting']is False
                 and pg['RestartCount']==self.profile['postgresRestartCount'],'CURRENT_POSTGRES_GENERATION_CHANGED')
         return row

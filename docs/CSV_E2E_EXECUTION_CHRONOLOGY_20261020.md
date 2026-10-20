@@ -25,7 +25,7 @@ Origine di riferimento: **20 ottobre2026,11:07:49Europe/Rome**, timestamp della 
 
 Previsioni centrali conservate:G0 H+0,5;G1 H+3;G2 H+14;G3 H+19;F5 H+22;F6/M1 H+24;G5 H+35;G6 H+46;G7/M2 H+55. La data di osservazione non sostituisce la prova del gate.
 
-Il primo intervallo misurato è durato **22.00minuti**, con lavoro WP1 e preparazione WP2 intercalati; la suddivisione esatta fra i due WP non è stata inventata. L'intervallo iniziale non segmentato dura **8.96minuti** e resta esplicito. Il secondo intervallo misurato va dalle **11:38:46 alle11:53:01**. Un terzo intervallo attivo WP2 è aperto dalle **11:53:01**. Il registro conserva il tempo trascorso, l'effort misurato, la precisione e le eventuali attese su assi distinti.
+Il primo intervallo misurato è durato **22.00minuti**, con lavoro WP1 e preparazione WP2 intercalati; la suddivisione esatta fra i due WP non è stata inventata. L'intervallo iniziale non segmentato dura **8.96minuti** e resta esplicito. Il secondo intervallo misurato va dalle **11:38:46 alle11:53:01**. Gli intervalli WP2 successivi e le relative chiusure sono conservati nel registro eventi; i checkpoint sotto aggiornano il consuntivo. Il registro conserva il tempo trascorso, l'effort misurato, la precisione e le eventuali attese su assi distinti.
 
 Nessuna attesa passiva è stata finora imputata: mentre le CI lavoravano, proseguiva la preparazione indipendente. La cancellazione della vecchia CI è una perdita di tempo di calendario/computazione del runner, non una seconda spesa dell'effort dell'agent nello stesso intervallo. Ogni ulteriore attesa e intervento HUMAN avrà una registrazione propria quando misurabile.
 
@@ -71,3 +71,17 @@ Checkpoint20/10/2026, 12:15:14: CI39405867174 terminata **12:09:46Europe/Rome**,
 Checkpoint20/10/2026, 12:30:51: CI39406640241 terminata **12:16:10Europe/Rome**,76testPASS,0skip. Composizione NativePorts ancora in corso: corretta l'interazione CAS fra contatori dei componenti e statoRunner;8testlocaliPASS,7testguardruntimePASS,3testprofiloreadinessPASS. Cinque casi namespace/HTTP Linux attendonoCI. NessunG2 o admissiontarget anticipato.
 
 Checkpoint20/10/2026, 12:45:39: CI39408488591 terminata **12:32:27Europe/Rome**,99testPASS,0skip; inclusi namespace/HTTP Linux reali con osservazioniEngine simulate. G2aperto. Dopo l'avviso utente12:41:55, branch/head/evidenze sono riconciliati senza replay. L'intervallo **12:34:57–12:42:11** (7.24minuti) è marcato **continuità non verificata** ed escluso dall'effort misurato, senza chiamarlo attesaHUMAN. Il nuovo intervallo attivo riparte dalla prima operazione verificata12:42:11. Quattro test locali del confine Gateway conservato sonoPASS; nessuna nuova lettura o mutazione target.
+
+
+Checkpoint20/10/2026,12:54:20: CI39410225377 terminata **12:47:07Europe/Rome**,104testPASS,0skip. Successivi31testlocali binding/Owner/DB/Gateway e7test di composizione profiliPASS. Il nuovo compilatore verifica Engine unico, canaleDocker esplicito senza credenziali, stessa generazione Onboarding/Owner, payload e riferimento chiave del piano Owner già concluso, config Gateway prima/dopo e budget finiti. È preparazione privata: G2 resta aperto, nessuna authority o operazione target.
+
+Consuntivo prudente misurato chiuso: **86.16minuti (1.436ore)**, più8,96minuti iniziali non segmentati. Anche12:47:51–12:52:01 è escluso dalla misura: contiene lavoro locale e risposte di stato, ma il momento esatto di fine attività precedente non fu marcato. Non viene classificato come attesaHUMAN. Nuovo intervallo attivo dal checkpoint12:54:20.
+
+| Gate | Baseline centrale cumulativa | Consuntivo confrontabile | Stato |
+| --- | --- | --- | --- |
+| G1 |3h|0,604–0,753h, inclusa preparazioneWP2|PASS11:53:01|
+| G2 |14h|1.436h misurate cumulative al checkpoint, lavoro ancora aperto|Nessuna varianza finale finché il gate non è provato|
+| G3 / M1 |19h /24h|Non raggiunti|Gate runtime e accettazione ancora necessari|
+| M2 |55h centrale;40–70h intervallo|Non raggiunto|Forecast invariato fino al riesameG2|
+
+I timestamp di inizio/fine attività sono separati da quelli di completamentoCI e decisione dei gate. Nessun tempo di calendario non verificato viene trasformato in effort; il rapporto fra ore spese e55h previste non equivale alla percentuale funzionale completata.

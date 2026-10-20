@@ -7,7 +7,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_policy_token_owner'),
              str(ROOT/'tools/semantic_application_cutover'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
 from engine_creation import Engine
-from tools.ingestion_rollout_execution import runtime_guard as g,contract as c
+from tools.ingestion_rollout_execution import runtime_guard as g,contract as c,runtime_bindings as bindings
 from test_ingestion_rollout_execution import review_fixture
 
 class OldGeneration(unittest.TestCase):
@@ -29,7 +29,7 @@ class OldGeneration(unittest.TestCase):
                 'State':{'Running':True,'Paused':False,'Restarting':False,'Pid':41,'StartedAt':'fixture-old-process'},
                 'NetworkSettings':{'Networks':networks,'SandboxID':'old-sandbox','SandboxKey':'old-key',
                                    'Ports':{'8080/tcp':[{'HostIp':'127.0.0.1','HostPort':'18080'}]}}}
-        inputs['expectedRuntimeBindings']={m:Engine.runtime_binding(v)for m,v in before.items()}
+        inputs['expectedRuntimeBindings']={m:bindings.observed(v,bindings.SORTED)for m,v in before.items()}
         packet['expectedRuntimeBindings']=inputs['expectedRuntimeBindings'];packet['verifiedInputsHash']=c.digest(inputs)
         self.packet=packet;self.review=c.compile_review(packet,{'path':'/fixture/packet','sha256':c.digest(packet)},inputs,
             review['humanBinding'],'/fixture/execution')
@@ -38,7 +38,7 @@ class OldGeneration(unittest.TestCase):
         self.unchanged={}
         for index,name in enumerate(('onboarding','mcp','udp'),3):
             actual=copy.deepcopy(before['ingestion']);actual['Id']=str(index)*64
-            self.profile['unchangedApplications'][name]={'binding':Engine.runtime_binding(actual),'restartCount':actual['RestartCount']}
+            self.profile['unchangedApplications'][name]={'binding':bindings.observed(actual,bindings.SORTED),'restartCount':actual['RestartCount'],'bindingProfile':bindings.SORTED}
             self.unchanged[name]=actual
         g.validate_profile(self.profile,self.packet)
     def row(self,name,attempted=False):
@@ -104,6 +104,28 @@ class OldGeneration(unittest.TestCase):
     def test_unrelated_unchanged_application_restart_or_config_drift_blocks(self):
         actual=copy.deepcopy(self.unchanged['udp']);actual['RestartCount']+=1
         with self.assertRaises(c.Denied):g.unchanged(actual,self.profile['unchangedApplications']['udp'])
+
+    def test_retained_mount_encoding_is_explicit_and_does_not_rewrite_input(self):
+        actual=copy.deepcopy(self.unchanged['udp'])
+        actual['Mounts']=[{'Destination':'/z','Source':'/fixture/z'},
+                          {'Destination':'/a','Source':'/fixture/a'}]
+        original=copy.deepcopy(actual)
+        native=bindings.observed(actual,bindings.NATIVE)
+        ordered=bindings.observed(actual,bindings.SORTED)
+        self.assertNotEqual(native['mountsHash'],ordered['mountsHash'])
+        self.assertEqual(actual,original)
+        pin={'binding':ordered,'restartCount':actual['RestartCount'],'bindingProfile':bindings.SORTED}
+        g.unchanged(actual,pin)
+        pin['bindingProfile']=bindings.NATIVE
+        with self.assertRaises(c.Denied):g.unchanged(actual,pin)
+        self.assertEqual(pin['binding'],ordered)
+
+    def test_unknown_binding_profile_and_duplicate_mount_destination_are_denied(self):
+        actual=copy.deepcopy(self.unchanged['udp'])
+        with self.assertRaises(c.Denied):bindings.observed(actual,'implicit')
+        actual['Mounts']=[{'Destination':'/same'},{'Destination':'/same'}]
+        for profile in bindings.PROFILES:
+            with self.assertRaises(c.Denied):bindings.observed(actual,profile)
         actual=copy.deepcopy(self.unchanged['udp']);actual['Config']['Env'].append('FOREIGN=1')
         with self.assertRaises(c.Denied):g.unchanged(actual,self.profile['unchangedApplications']['udp'])
 

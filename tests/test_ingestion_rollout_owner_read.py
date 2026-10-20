@@ -25,7 +25,7 @@ def profile(file,program=None):
     return {'schema':'ouf.ingestion-rollout-owner-local-namespace-http.v1',
         'runtimeBinding':{'containerId':'a'*64,'imageId':'sha256:'+'b'*64,'pid':42,'startedAt':'fixture-first-start',
                           **dict.fromkeys(('configHash','hostConfigHash','mountsHash','networkSettingsHash'),'d'*64)},
-        'restartCount':3,'networkNamespace':{'device':1,'inode':2},'endpoint':{'host':'127.0.0.2','port':18080},
+        'restartCount':3,'runtimeBindingProfile':'ouf.runtime-binding.mounts-sorted-destination.v1','networkNamespace':{'device':1,'inode':2},'endpoint':{'host':'127.0.0.2','port':18080},
         'pythonExecutable':program or {'path':'/fixture/ente-python','sha256':'e'*64},
         'installationId':'ente-fixture','expectedActive':active,
         'expectedPayload':{'installationId':'ente-fixture','fixture':'retained-payload'},'projection':binding(file)}

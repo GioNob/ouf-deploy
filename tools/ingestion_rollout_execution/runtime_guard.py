@@ -9,6 +9,7 @@ import copy
 from engine_creation import Engine
 from tools.ingestion_rollout_execution.contract import require,digest
 from tools.ingestion_rollout_execution.database_read import runtime_binding
+from tools.ingestion_rollout_execution import runtime_bindings
 
 NO_RESTART={'Name':'no','MaximumRetryCount':0}
 RELEASED_STRINGS={'EndpointID','Gateway','IPAddress','IPv6Gateway','GlobalIPv6Address','MacAddress'}
@@ -23,21 +24,22 @@ def validate_profile(profile,packet):
             'EXACT_TWO_REPLACED_AND_THREE_UNCHANGED_APPLICATIONS_REQUIRED')
     for module,before in profile['beforeContainers'].items():
         runtime_binding(packet['expectedRuntimeBindings'][module])
-        require(Engine.runtime_binding(before)==packet['expectedRuntimeBindings'][module]
+        require(runtime_bindings.observed(before,runtime_bindings.SORTED)==packet['expectedRuntimeBindings'][module]
                 and before['Name']=='/'+packet['frames'][module]['name']
                 and before['State']['Running']is True and before['State']['Paused']is False
                 and before['State']['Restarting']is False and type(before['RestartCount'])is int and before['RestartCount']>=0,
                 'FULL_APPROVED_RUNNING_PREDECESSOR_REQUIRED')
     ids={p['containerId']for p in packet['expectedRuntimeBindings'].values()}
     for pin in profile['unchangedApplications'].values():
-        require(type(pin)is dict and set(pin)=={'binding','restartCount'}and type(pin['restartCount'])is int
+        require(type(pin)is dict and set(pin)=={'binding','restartCount','bindingProfile'}and type(pin['restartCount'])is int
                 and pin['restartCount']>=0,'EXACT_UNCHANGED_APPLICATION_GENERATION_REQUIRED')
+        require(pin['bindingProfile']in runtime_bindings.PROFILES,'EXPLICIT_UNCHANGED_BINDING_PROFILE_REQUIRED')
         runtime_binding(pin['binding']);ids.add(pin['binding']['containerId'])
     require(len(ids)==5,'EXACT_FIVE_DISTINCT_RUNTIME_APPLICATIONS_REQUIRED')
     return profile
 
 def unchanged(actual,pin):
-    require(Engine.runtime_binding(actual)==pin['binding']and actual['RestartCount']==pin['restartCount']
+    require(runtime_bindings.observed(actual,pin['bindingProfile'])==pin['binding']and actual['RestartCount']==pin['restartCount']
             and actual['State']['Running']is True and actual['State']['Paused']is False
             and actual['State']['Restarting']is False,'UNCHANGED_APPLICATION_GENERATION_DRIFT')
 

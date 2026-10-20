@@ -24,7 +24,7 @@ def fixture_profile(directory,program=None):
         'State':{'Pid':42,'StartedAt':'retained-process','Running':True,'Paused':False,'Restarting':False}}
     p={'schema':'ouf.ingestion-rollout-native-database-read.v1',
         'engineBinding':{'socketPath':'/ente-fixture/engine.sock','socketBinding':[1,2,0,0,0o600]},
-        'postgresRuntimeBinding':Engine.runtime_binding(pg),'postgresRestartCount':2,
+        'runtimeBindingProfile':'ouf.runtime-binding.native-mount-order.v1','postgresRuntimeBinding':Engine.runtime_binding(pg),'postgresRestartCount':2,
         'identity':{'database':'ente_db','user':'ente_runtime','databaseOid':42,'postgresPort':15432},
         'dockerExecutable':program or {'path':'/ente-fixture/docker','sha256':'c'*64},
         'dockerConfigDirectory':str(directory),'dockerConfigIdentity':d.empty_config_directory(str(directory)),

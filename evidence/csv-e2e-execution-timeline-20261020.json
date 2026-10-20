@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T10:45:39.678Z",
+  "lastUpdatedAt": "2026-10-20T10:54:20.502Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -427,6 +427,47 @@
       "skipped": 0,
       "gateG2Passed": false,
       "note": "GET-only old route inventory; stopped/changed predecessor rejected before namespace access; existing FD closed without rebinding."
+    },
+    {
+      "id": "CSV-EV-0030",
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T10:54:20.502Z",
+      "occurredAt": "2026-10-20T10:47:07Z",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "commit": "6d221e5ae87062c97d3ecff6bbc38e9d26c514b2",
+      "runId": 39410225377,
+      "jobId": 118585881354,
+      "tests": 104,
+      "skipped": 0,
+      "gateG2Passed": false
+    },
+    {
+      "id": "CSV-EV-0031",
+      "kind": "LOCAL_BINDING_AND_PROFILE_COMPOSITION_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T10:54:20.502Z",
+      "tests": {
+        "ownerRead": 10,
+        "databaseRead": 8,
+        "runtimeGuard": 9,
+        "retainedGateway": 4,
+        "nativeReview": 7
+      },
+      "gateG2Passed": false,
+      "proofLevel": "ACTUAL_ROLE_CAS_COMPONENTS_AND_PURE_CROSS_PROFILE_VALIDATION_SYNTHETIC_BACKENDS",
+      "note": "Explicit raw/sorted mount binding encodings preserve historical hashes. Pure native review joins retained owner result/payload/key and transport profiles; does not grant authority. First review fixture reused a PostgreSQL CID, correctly rejected; distinct fixture ID corrected, no production relaxation."
+    },
+    {
+      "id": "CSV-EV-0032",
+      "kind": "NORMATIVE_COHERENCE_REVIEW",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T10:54:20.502Z",
+      "sources": [
+        "Blueprint0.3 sections9-10 original",
+        "Ingestion1.3 sections146-146.1 original"
+      ],
+      "gateG2Passed": false
     }
   ],
   "activeIntervals": [
@@ -477,9 +518,27 @@
     {
       "id": "CSV-TIME-0005",
       "startedAt": "2026-10-20T10:42:11.142Z",
-      "endedAt": null,
+      "endedAt": "2026-10-20T10:47:51.672Z",
       "workPackage": "WP2",
       "activity": "RETAINED_ROUTE_BOUNDARY_AND_NATIVE_COMPOSITION",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 340.53
+    },
+    {
+      "id": "CSV-TIME-0006",
+      "startedAt": "2026-10-20T10:52:01.597Z",
+      "endedAt": "2026-10-20T10:54:20.502Z",
+      "workPackage": "WP2",
+      "activity": "EXPLICIT_BINDING_AND_NATIVE_PROFILE_COMPOSITION",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 138.905
+    },
+    {
+      "id": "CSV-TIME-0007",
+      "startedAt": "2026-10-20T10:54:20.502Z",
+      "endedAt": null,
+      "workPackage": "WP2",
+      "activity": "NATIVE_PORTS_COMPOSITION_AND_QUALIFICATION",
       "classification": "ACTIVE_TECHNICAL",
       "seconds": null
     }
@@ -664,6 +723,15 @@
       "classification": "UNVERIFIED_EXECUTION_CONTINUITY",
       "includedInMeasuredEffort": false,
       "reason": "User reports chat connection interrupted; do not infer technical effort or passive/HUMAN wait from the unverified interval."
+    },
+    {
+      "id": "CSV-UNCERTAIN-0002",
+      "startedAt": "2026-10-20T10:47:51.672Z",
+      "endedAt": "2026-10-20T10:52:01.597Z",
+      "seconds": 249.925,
+      "classification": "UNSEGMENTED_STATUS_TURN_BOUNDARY",
+      "includedInMeasuredEffort": false,
+      "reason": "Local work and status replies occurred in this window, but the exact end of active work before the final reply was not clocked. Conservatively excluded, not passive or HUMAN wait."
     }
   ]
 }

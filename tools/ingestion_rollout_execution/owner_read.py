@@ -18,7 +18,7 @@ from engine_creation import Engine
 from tools.ingestion_rollout_execution.contract import AUTHORITY_KEY,require,scope,digest,encoded,path,hashed
 from tools.ingestion_rollout_execution.replacement import EngineReader
 from tools.ingestion_rollout_execution.namespace import identity
-from tools.ingestion_rollout_execution import private_file
+from tools.ingestion_rollout_execution import private_file,runtime_bindings
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.chatbot_file_cohort.human_session import HumanSession
@@ -59,9 +59,10 @@ os._exit(0)
 
 def validate_profile(p):
     require(type(p)is dict and set(p)=={'schema','runtimeBinding','networkNamespace','endpoint','pythonExecutable',
-            'installationId','expectedActive','expectedPayload','projection','restartCount'},'EXACT_OWNER_CONTROL_PROFILE_REQUIRED')
+            'installationId','expectedActive','expectedPayload','projection','restartCount','runtimeBindingProfile'},'EXACT_OWNER_CONTROL_PROFILE_REQUIRED')
     require(p['schema']=='ouf.ingestion-rollout-owner-local-namespace-http.v1','QUALIFIED_OWNER_LOCAL_TRANSPORT_REQUIRED')
     require(type(p['restartCount'])is int and p['restartCount']>=0,'EXPLICIT_RETAINED_OWNER_RESTART_COUNT_REQUIRED')
+    require(p['runtimeBindingProfile']in runtime_bindings.PROFILES,'EXPLICIT_OWNER_RUNTIME_BINDING_PROFILE_REQUIRED')
     binding=p['runtimeBinding']
     require(type(binding)is dict and set(binding)=={'containerId','imageId','pid','startedAt','configHash',
             'hostConfigHash','mountsHash','networkSettingsHash'}and hashed(binding['containerId'])
@@ -114,7 +115,7 @@ class OwnerNamespacePin:
     def path(self):return '/proc/'+str(self.profile['runtimeBinding']['pid'])+'/ns/net'
     def check(self):
         actual=self.reader.container(self.profile['runtimeBinding']['containerId']);state=actual['State']
-        require(Engine.runtime_binding(actual)==self.profile['runtimeBinding']and state['Running']is True
+        require(runtime_bindings.observed(actual,self.profile['runtimeBindingProfile'])==self.profile['runtimeBinding']and state['Running']is True
                 and state['Paused']is False and state['Restarting']is False and actual['RestartCount']==self.profile['restartCount'],
                 'UNCHANGED_RUNNING_OWNER_GENERATION_REQUIRED')
         require(identity(os.stat(self.path))==self.profile['networkNamespace'],'OWNER_NAMESPACE_PROCESS_CHANGED')

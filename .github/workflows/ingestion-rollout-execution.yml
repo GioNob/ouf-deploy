@@ -32,3 +32,4 @@ jobs:
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_runner_composition.py -v
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_readiness.py -v
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_retained_gateway.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_native_review.py -v
