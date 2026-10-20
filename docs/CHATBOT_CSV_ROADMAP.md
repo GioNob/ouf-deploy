@@ -1,3 +1,15 @@
+> **CURRENT — MAC frame STOP; parameterized reconciliation qualified (20 October 2026).**
+>
+> Technical8/8,functional4/6. User receipt:0wd4wyuf stopped at COMPLETE_FRAME_TEMPLATES/ENDPOINT_MAC_ONLY_PROFILE_REQUIRED after Gateway config staging; original archive remainskkj_njiz. Preserve both contexts/claims. Previous packet/config-staging launchers are withdrawn, not replayable.
+>
+> Owner reaffirmed: all Ente-specific installation values, including host/interface/network MACs, derive from each Ente's validated profile. AGENTS now records this explicitly. Compiler MAC/IP/network values are authenticated runtime inputs; only isolated CI fixtures contain fixed example addresses. Legacy Config.MacAddress must match a current endpoint before conversion to per-network settings; all observed endpoint MACs/IPs/stable aliases are preserved. Null OOM policy is now preserved exactly.
+>
+> New source843a30f43852f051d2ba7bba1c0e0784401eeb49, [CI39387529191](https://github.com/GioNob/ouf-deploy/actions/runs/39387529191), job118510842460:10PASS/zero skips. Two distinct installation profiles; complete private reconciliation over5real Unix GETs; physical Docker29.8.1/containerd/API1.44 Ingestion and Gateway-shaped complete-frame create/start tests with2networks each. This qualifies Docker configuration semantics in CI, not APISIX readiness, signed executor, current HUMAN or target acceptance.
+>
+> Only next operator action: `scripts/launch-ingestion-frame-mac-reconcile-20261020.sh`, once. Recheck exact qualified archive bytes/header, reuse completed rootfs/JAR/18SQL proof and config already staged in0wd4wyuf; no archive audit/recreation/download or config staging replay.5EngineGET/120s, compile before new successor claim, then private verified inputs/plan/result only. ZERO SQL/OAuth/owner/Gateway API/lifecycle/secret generation. Last HUMAN278/288/window1792450664 remains expired. Owner7/projection7/bootstrap/DB preflight stay complete and unreplayed.
+>
+> [Current handoff](handoffs/OUF_CLOUD_MAC_FRAME_RECONCILIATION_HANDOFF_20261020.md). Full signed runtime executor/current native review/fresh DB admission, governed native profile and functional5–6 remain open. Earlier next-action blocks below are history.
+
 > **CURRENT — private packet STOP; retained-archive/config reconciliation qualified (20 October 2026).**
 >
 > Technical8/8,functional4/6. Target packet `kkj_njiz` stopped at GATEWAY_CONFIG_AND_KEY_METADATA with QUALIFIED_GATEWAY_CONFIG_READER_IDENTITY_REQUIRED. Preserve its original two archives/claim; withdraw the old packet launcher. Defect: after the exact Owner7-bound config was accepted, staging still imposed historical636:636/0400. Actual target UID/GID/mode is not supplied; do not invent it or change the original file.
