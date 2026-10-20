@@ -132,7 +132,14 @@
       "acceptanceTestRefs": [
         "CSV-AT-21",
         "CSV-AT-22"
-      ]
+      ],
+      "preparationStatus": "IN_PROGRESS_COMPONENT_QUALIFIED",
+      "componentEvidence": {
+        "commit": "af1172ba4127a78cb42a812a90bab3c3c60cb159",
+        "runId": 39401710478,
+        "tests": 23,
+        "fullG2Proven": false
+      }
     },
     {
       "id": "WP3",
@@ -2357,7 +2364,12 @@
       "additionalHumanHours": null,
       "initialWindowPreciselySegmented": false,
       "waitingIntervals": [],
-      "runtimeBudgetsUnchanged": true
+      "runtimeBudgetsUnchanged": true,
+      "executionBranch": "feat/csv-e2e-native-completion-20261020",
+      "lastObservedAt": "2026-10-20T09:39:51.362Z",
+      "activeTechnicalHoursPreciselyMeasuredAfterTracking": 0.36662249999999996,
+      "initialUnsegmentedHours": 0.14933416666666666,
+      "perPackageAllocationPrecise": false
     }
   }
 }

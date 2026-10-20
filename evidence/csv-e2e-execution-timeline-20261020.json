@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T09:16:46.603Z",
+  "lastUpdatedAt": "2026-10-20T09:39:51.362Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -139,14 +139,109 @@
       "observedAt": "2026-10-20T09:16:46.603Z",
       "qualificationStatus": "PENDING_CI",
       "targetEffects": 0
+    },
+    {
+      "id": "CSV-EV-0008",
+      "kind": "MODULE_QUALIFICATION_PASS",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "runId": 39399340219,
+      "jobId": 118549841083,
+      "occurredAt": "2026-10-20T09:18:04Z",
+      "observedAt": "2026-10-20T09:19:17.468Z",
+      "timestampConfidence": "GITHUB_JOB_COMPLETION_TIMESTAMP",
+      "status": "PASS",
+      "note": "Fresh full module qualification on WP1 branch; deployment and G1 remain separate"
+    },
+    {
+      "id": "CSV-EV-0009",
+      "kind": "MODULE_QUALIFICATION_PASS",
+      "repository": "GioNob/ouf-mcp-server",
+      "runId": 39399343702,
+      "jobId": 118549851550,
+      "occurredAt": "2026-10-20T09:18:30Z",
+      "observedAt": "2026-10-20T09:19:17.468Z",
+      "timestampConfidence": "GITHUB_JOB_COMPLETION_TIMESTAMP",
+      "status": "PASS",
+      "note": "Fresh full module qualification on WP1 branch; deployment and G1 remain separate"
+    },
+    {
+      "id": "CSV-EV-0010",
+      "kind": "WP2_COMPONENT_PREPARATION",
+      "observedAt": "2026-10-20T09:34:48.388Z",
+      "workPackage": "WP2",
+      "commit": "af1172ba4127a78cb42a812a90bab3c3c60cb159",
+      "note": "Lifecycle/key sealing component written while final WP1 regression is pending; not full G2 qualification",
+      "qualificationStatus": "PENDING_NATIVE_CI"
+    },
+    {
+      "id": "CSV-EV-0011",
+      "kind": "WORKFLOW_CANCELLED",
+      "repository": "GioNob/ouf-deploy",
+      "runId": 39399655535,
+      "occurredAt": "2026-10-20T09:35:05Z",
+      "observedAt": "2026-10-20T09:38:46.444Z",
+      "timestampConfidence": "GITHUB_JOB_COMPLETION_TIMESTAMP",
+      "cause": "Existing cancel-in-progress workflow was superseded by WP2 commit; not PASS and not runtime replay",
+      "replacementRunId": 39401717480
+    },
+    {
+      "id": "CSV-EV-0012",
+      "kind": "COMPONENT_QUALIFICATION_PASS",
+      "workPackage": "WP2",
+      "runId": 39401710478,
+      "jobId": 118557741572,
+      "occurredAt": "2026-10-20T09:35:14Z",
+      "observedAt": "2026-10-20T09:38:46.444Z",
+      "timestampConfidence": "GITHUB_JOB_COMPLETION_TIMESTAMP",
+      "counts": {
+        "coreRegression": 16,
+        "newLifecycle": 7,
+        "skipped": 0
+      },
+      "notProven": "Full native Ports, actual Engine lifecycle roundtrip, current owner/DB/Gateway/issuer/entrypoint and G2"
+    },
+    {
+      "id": "CSV-EV-0013",
+      "kind": "ISOLATED_WORK_BRANCH_CREATED",
+      "observedAt": "2026-10-20T09:38:46.444Z",
+      "branch": "feat/csv-e2e-native-completion-20261020",
+      "base": "af1172ba4127a78cb42a812a90bab3c3c60cb159",
+      "note": "Further commits will not interrupt PR41 native cohort regression"
+    },
+    {
+      "id": "CSV-EV-0014",
+      "kind": "RETAINED_CAPSULE_QUALIFICATION_PASS",
+      "workPackage": "WP1",
+      "runId": 39399647915,
+      "jobId": 118550873242,
+      "occurredAt": "2026-10-20T09:18:04Z",
+      "observedAt": "2026-10-20T09:39:51.362Z",
+      "timestampConfidence": "GITHUB_JOB_COMPLETION_TIMESTAMP",
+      "tests": 15,
+      "skipped": 0,
+      "note": "Exact historical capsule comparison and current-byte rejection pass; full cohort regression remains separate"
     }
   ],
   "activeIntervals": [
     {
       "id": "CSV-TIME-0001",
       "startedAt": "2026-10-20T09:16:46.603Z",
+      "endedAt": "2026-10-20T09:38:46.444Z",
+      "workPackage": null,
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 1319.841,
+      "workPackages": [
+        "WP1",
+        "WP2_PREPARATION"
+      ],
+      "perPackageAllocationKnown": false,
+      "note": "Continuous measured technical interval; initial WP1/WP2 attribution was not segmented. Do not invent per-package hours."
+    },
+    {
+      "id": "CSV-TIME-0002",
+      "startedAt": "2026-10-20T09:38:46.444Z",
       "endedAt": null,
-      "workPackage": "WP1",
+      "workPackage": "WP2",
       "classification": "ACTIVE_TECHNICAL",
       "seconds": null
     }
@@ -311,5 +406,15 @@
     "loginPerformed": false,
     "refreshPerformed": false,
     "budgetReset": false
+  },
+  "effortAtLastClosedInterval": {
+    "measuredSeconds": 1319.841,
+    "initialUnsegmentedSeconds": 537.603,
+    "totalTechnicalEffortBoundsSeconds": [
+      1319.841,
+      1857.444
+    ],
+    "perPackageVarianceAvailable": false,
+    "note": "Bounds exclude the currently open measured interval; initial window is not assigned invented point effort."
   }
 }
