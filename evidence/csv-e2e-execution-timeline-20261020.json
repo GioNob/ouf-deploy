@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T12:54:32.221Z",
+  "lastUpdatedAt": "2026-10-20T13:30:00.000Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -793,6 +793,48 @@
       ],
       "gateG5Passed": false,
       "note": "Typed rules/datatype and linked-policy validation aligned. Composed typed materialization, vocab and relationship cases still open."
+    },
+    {
+      "id": "CSV-EV-0058",
+      "kind": "WP5_COMPOSED_OWNER_FIXTURE_PUBLISHED",
+      "commit": "e56f335f07a20f5574b1f31989f52735cab0acbc",
+      "observedAt": "2026-10-20T13:10:11.000Z",
+      "status": "PENDING_CI",
+      "modulePins": {
+        "onboarding": "17a68aea8dccb603405ec4761cb9f52666692a32",
+        "ingestion": "bcc13544afdea6f5d331292f93eef86726587e2b",
+        "udp": "df1f4c38d31da8a8ac63d5a5cb2532f633778979"
+      },
+      "gateG5Passed": false,
+      "targetOperations": 0,
+      "note": "Three real JVM phases and separate disposable PG databases; two deliberately new acquisitions, canonical identity/revision/provenance oracle. Synthetic semantic/lake ports; no ACK/watermark/provider acceptance claim."
+    },
+    {
+      "id": "CSV-EV-0059",
+      "kind": "WP5_COMPOSED_TYPED_OWNER_PASS",
+      "commit": "1d21d4f415481c069e586a4936bebc0ca6583938",
+      "runId": 39428578919,
+      "jobId": 118647330860,
+      "observedAt": "2026-10-20T13:19:16.651Z",
+      "gateG5Passed": false,
+      "canonicalObjects": 1,
+      "canonicalRevisions": 1,
+      "acquisitions": 2,
+      "materializationObservations": 2,
+      "syntheticSemanticAndLakeBindings": true,
+      "notReleaseAcceptance": true,
+      "note": "All3realJVMphases PASS; G5 vocabulary/relationship and live ACK/watermark/provider acceptance remain separate."
+    },
+    {
+      "id": "CSV-EV-0060",
+      "kind": "WP6_OWNER_RECOVERY_CI_PASS",
+      "observedAt": "2026-10-20T13:30:00.000Z",
+      "commit": "701ae74b41cc81e4301ee592e3bcb3d13ead5106",
+      "runId": 39430243461,
+      "jobId": 118653094869,
+      "pullRequest": 49,
+      "gateG6Passed": false,
+      "note": "Bounded tenant/subject ASSETS and LATEST owner recovery; MCP and composed client evidence remain pending."
     }
   ],
   "activeIntervals": [
@@ -1011,11 +1053,51 @@
     {
       "id": "CSV-TIME-0020",
       "startedAt": "2026-10-20T12:54:32.221Z",
-      "endedAt": null,
-      "seconds": null,
+      "endedAt": "2026-10-20T13:00:42.022Z",
+      "seconds": 369.801,
       "classification": "ACTIVE_TECHNICAL",
       "workPackage": "WP5",
       "activity": "COMPOSED_TYPED_CSV_QUALIFICATION_AND_VOCABULARY_MAPPING"
+    },
+    {
+      "id": "CSV-TIME-0021",
+      "startedAt": "2026-10-20T13:03:51.698Z",
+      "endedAt": "2026-10-20T13:10:11.000Z",
+      "seconds": 379.302,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP5",
+      "activity": "COMPOSED_TYPED_OWNER_FIXTURE_IMPLEMENTATION"
+    },
+    {
+      "id": "CSV-TIME-0022",
+      "startedAt": "2026-10-20T13:10:11.000Z",
+      "endedAt": "2026-10-20T13:19:16.651Z",
+      "seconds": 545.651,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackages": [
+        "WP5_QUALIFICATION",
+        "WP6_OWNER_RECOVERY_REAUDIT"
+      ],
+      "perPackageAllocationKnown": false,
+      "activity": "COMPOSED_CI_AND_DURABLE_CHAT_RECOVERY"
+    },
+    {
+      "id": "CSV-TIME-0023",
+      "startedAt": "2026-10-20T13:19:16.651Z",
+      "endedAt": "2026-10-20T13:30:00.000Z",
+      "seconds": 643.349,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP6",
+      "activity": "DURABLE_TENANT_OWNER_RECOVERY_API_AND_TESTS"
+    },
+    {
+      "id": "CSV-TIME-0024",
+      "startedAt": "2026-10-20T13:30:00.000Z",
+      "endedAt": null,
+      "seconds": null,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP6",
+      "activity": "MCP_DURABLE_RECOVERY_WIRING_AND_QUALIFICATION"
     }
   ],
   "waitingIntervals": [],
@@ -1249,6 +1331,15 @@
       "includedInMeasuredEffort": false,
       "classification": "UNVERIFIED_CHAT_CONTINUITY",
       "reason": "User reports another interruption. Conservative exclusion between last confirmed clock and resumed tool observation."
+    },
+    {
+      "id": "CSV-UNCERTAIN-0005",
+      "startedAt": "2026-10-20T13:00:42.022Z",
+      "endedAt": "2026-10-20T13:03:51.698Z",
+      "seconds": 189.676,
+      "includedInMeasuredEffort": false,
+      "classification": "UNVERIFIED_CHAT_CONTINUITY",
+      "reason": "User reported connection interrupted again; interval excluded conservatively."
     }
   ],
   "qualificationState": {
