@@ -1,0 +1,16 @@
+{
+  "schema": "ouf.ingestion-human-timing-case.v1",
+  "purpose": "EXACT_RETAINED_INSTALLATION_DIAGNOSTIC_NOT_PORTABLE_DEFAULT",
+  "humanControlPath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-ba456a2fd7a540473de5fdb084d0195ac857997b1aa5ab7d4571f07a9bcadd07",
+  "humanSourceClosureHash": "e212c14d2dd49c0418943265a0a1ba9d2124d6da816670087221b41508303376",
+  "ownerPlanBinding": {
+    "path": "/etc/ouf/deploy-snapshots/ingestion-owner-recovery-execution-d6o9cpwd/execution-plan.json",
+    "sha256": "e5f69f89aa40b8c9b963134d38a6aecaf864499346f9e366539c1eb1aefa0938"
+  },
+  "productionContextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-native-7fs9r6md",
+  "productionControlSourceHash": "1ef3bac5a90a39589da496ba91a840ca9f4fd7b8f44e7a97bb457fc2778c0057",
+  "productionCaseHash": "1406e5d2d158e069d6812091032612549ff297e05abe55e641a65761edaa227a",
+  "expectedAttempts": 282,
+  "maximumCumulativeOAuthAttempts": 288,
+  "requiredTokenMarginSeconds": 930
+}
