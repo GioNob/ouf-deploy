@@ -65,3 +65,5 @@ reale, startup, currentOwner o HUMAN. WP2 resta aperto fino al G2 completo.
 Prima revisione del forecast aG1: intervalliM1 **18–30h** eM2 **40–70h**, centrali24/55h, conservati fino al checkpointG2. Motivo: l'effortWP1 non è separabile con precisione dalla preparazioneWP2 e il componente nativo completo non è ancora qualificato. Nessun moltiplicatore di produttività applicato una seconda volta.
 
 Checkpoint 20/10/2026, 12:08:55: CI39404688204 terminata **20/10/2026,12:00:19Europe/Rome**;47testPASS,0skip. Componenti nuovi Owner/SQL:10+8testlocaliPASS, osservati a questo checkpoint; backend/processi simulati, firme/CAS reali. G2rimaneaperto.
+
+Checkpoint20/10/2026, 12:15:14: CI39405867174 terminata **12:09:46Europe/Rome**,65testPASS,0skip. Importazione daFD verificato:11testlocaliPASS con loaderDocker sintetico. IntervalloWP2 2026-10-20T09:53:01.026Z–2026-10-20T10:15:14.724Z: **22.23minuti**. Nuova attività di composizione NativePorts avviata esattamente a questo checkpoint; non è aperturaG2. Totale tecnico misurato chiuso: **58.47minuti**, più8,96iniziali non segmentati; nessuna attesa passiva o effortHUMAN inventato.

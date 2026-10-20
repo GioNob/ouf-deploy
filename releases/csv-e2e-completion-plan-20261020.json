@@ -156,9 +156,12 @@
         "localDatabasePolicyTests": 9,
         "fullExecutorQualified": false,
         "databasePolicyRunId": 39404688204,
-        "qualifiedComponentTests": 47,
+        "qualifiedComponentTests": 65,
         "localOwnerReadTests": 10,
-        "localDatabaseReadTests": 8
+        "localDatabaseReadTests": 8,
+        "currentReadRunId": 39405867174,
+        "currentReadCommit": "d321d7a90606e7e797c9ad83bd16f6b532be6948",
+        "localImageImportTests": 11
       },
       "startedAt": null,
       "startBounds": {
@@ -2391,11 +2394,11 @@
       "waitingIntervals": [],
       "runtimeBudgetsUnchanged": true,
       "executionBranch": "feat/csv-e2e-native-completion-20261020",
-      "lastObservedAt": "2026-10-20T10:08:55.013Z",
-      "activeTechnicalHoursPreciselyMeasuredAfterTracking": 0.6040063888888888,
+      "lastObservedAt": "2026-10-20T10:15:14.724Z",
+      "activeTechnicalHoursPreciselyMeasuredAfterTracking": 0.9744780555555556,
       "initialUnsegmentedHours": 0.14933416666666666,
       "perPackageAllocationPrecise": false,
-      "currentOpenIntervalStartedAt": "2026-10-20T09:53:01.026Z"
+      "currentOpenIntervalStartedAt": "2026-10-20T10:15:14.724Z"
     }
   }
 }

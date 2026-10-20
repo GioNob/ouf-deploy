@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T10:08:55.013Z",
+  "lastUpdatedAt": "2026-10-20T10:15:14.724Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -321,6 +321,43 @@
       "ownerMutations": 0,
       "targetSqlSessions": 0,
       "note": "Owner/DB current reads compose finite persisted budgets but full NativePorts/issuer/qualification still missing."
+    },
+    {
+      "id": "CSV-EV-0022",
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "occurredAt": "2026-10-20T10:09:46Z",
+      "observedAt": "2026-10-20T10:15:14.724Z",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "commit": "d321d7a90606e7e797c9ad83bd16f6b532be6948",
+      "runId": 39405867174,
+      "jobId": 118571521988,
+      "tests": 65,
+      "skipped": 0,
+      "gateG2Passed": false,
+      "proofLevel": "ACTUAL_ROLES_CAS_FILE_CUSTODY_SYNTHETIC_BACKENDS"
+    },
+    {
+      "id": "CSV-EV-0023",
+      "kind": "LOCAL_IMAGE_IMPORT_COMPONENT_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T10:15:14.724Z",
+      "timestampConfidence": "OBSERVED_AFTER_LOCAL_TEST_COMPLETION",
+      "tests": 11,
+      "skipped": 0,
+      "proofLevel": "ACTUAL_ARCHIVE_FD_ROLES_CAS_SYNTHETIC_DOCKER_LOAD",
+      "gateG2Passed": false,
+      "note": "No target image import, archive audit, recreation, download or completed effect replay."
+    },
+    {
+      "id": "CSV-EV-0024",
+      "kind": "ACTIVITY_STARTED",
+      "workPackage": "WP2",
+      "activity": "NATIVE_PORTS_COMPOSITION_AND_REVIEW",
+      "occurredAt": "2026-10-20T10:15:14.724Z",
+      "observedAt": "2026-10-20T10:15:14.724Z",
+      "timestampConfidence": "EXACT_OBSERVED_ACTIVITY_START",
+      "gateG2Passed": false
     }
   ],
   "activeIntervals": [
@@ -354,8 +391,17 @@
     {
       "id": "CSV-TIME-0003",
       "startedAt": "2026-10-20T09:53:01.026Z",
+      "endedAt": "2026-10-20T10:15:14.724Z",
+      "workPackage": "WP2",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 1333.698
+    },
+    {
+      "id": "CSV-TIME-0004",
+      "startedAt": "2026-10-20T10:15:14.724Z",
       "endedAt": null,
       "workPackage": "WP2",
+      "activity": "NATIVE_PORTS_COMPOSITION_AND_REVIEW",
       "classification": "ACTIVE_TECHNICAL",
       "seconds": null
     }
