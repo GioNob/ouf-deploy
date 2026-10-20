@@ -1,3 +1,13 @@
+> **CURRENT — target MAC packet COMPLETE; signed stage/key components qualified (20 October 2026).**
+>
+> Technical8/8,functional4/6. User receipt qfcpqd9f is COMPLETE/RECONCILED_COMPLETE_FRAMES_NO_AUTHORITY: packet hashad1bdb240483f85785b989f28cd895a72394ea964baabd85ad3062b10180fe5c, verified inputsc556d7ea44bc7f7e1f337358e166e2cde11c90e6459a76cc703c178218bd9907.5GETs/stable runtimes; legacy MAC normalized for Ingestion only; all IP/MACs/config metadata/old claims preserved. Dedicated key MISSING, unread/ungenerated. All previous preparers/diagnostics are completed or stopped and must not be replayed. Exact receipt and retained case recorded.
+>
+> New source186fa8d5a1bcdfa64005d227fda042151260690c, [CI39389651698](https://github.com/GioNob/ouf-deploy/actions/runs/39389651698), job118517798977:16PASS/zero skips. New unsigned finite-review compiler, real dual-role signed stage/CAS engine and physically tested exclusive key component. Stable old-runtime/image/key logical fence prevents new contexts/metadata resetting the same work; effects claimed once, ambiguity reconciled without replay, cumulative128read/900second budget, revocation/expiry/boot/clock checks. Key values/hashes never returned; partial files retained. All installation/network/MAC/path/UID/GID values derive from reviewed inputs.
+>
+> This is component CI qualification: effect ports/HUMAN boundary are fixtures except local key filesystem operations. Full native Engine/Gateway/current-owner/DB ports, new-scope issuer, full executable closure and production entrypoint remain unqualified/absent. runtimeExecutorQualified/runtimeAuthorityIssued/databaseAdmissionProven remain FALSE. No new target command now; finish those adapters before a concrete native runtime review. Last HUMAN278/288/window1792450664 stays expired; no journal/bearer/login/refresh/window/budget operation or target secret/runtime effect.
+>
+> [Current handoff](handoffs/OUF_CLOUD_PACKET_COMPLETE_SIGNED_CORE_HANDOFF_20261020.md). Owner7/projection7 stay COMPLETE. Governed native profile and functional5–6 remain open; earlier next-action blocks below are superseded history.
+
 > **CURRENT — MAC frame STOP; parameterized reconciliation qualified (20 October 2026).**
 >
 > Technical8/8,functional4/6. User receipt:0wd4wyuf stopped at COMPLETE_FRAME_TEMPLATES/ENDPOINT_MAC_ONLY_PROFILE_REQUIRED after Gateway config staging; original archive remainskkj_njiz. Preserve both contexts/claims. Previous packet/config-staging launchers are withdrawn, not replayable.
