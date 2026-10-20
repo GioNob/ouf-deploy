@@ -1,3 +1,9 @@
+> **CURRENT — Mini-PET v1.1 with effort schedule (20 October 2026).**
+>
+> Technical8/8,functional4/6 unchanged. [Current Mini-PET v1.1](OUF_CSV_E2E_COMPLETION_MINIPET_v1_1_20261020.md), sections15.1–15.7, adds30sequential activity allocations and cumulative lean/central/prudent hour scenarios. Central forecast:G0 H+0.5,G1 H+3,G2 H+14,G3 H+19,F5 H+22,G4/F6/M1 H+24,G5 H+35,G6 H+46,G7/M2 H+55. Existing ranges18–30hours forM1 and40–70total forM2 remain unchanged; separate HUMAN participation3–6hours and external waits are explicit.
+>
+> [Structured plan](../releases/csv-e2e-completion-plan-20261020.json) now includes the schedule and actual/remaining/wait tracking fields. These are planning counters, not runtime authority or resettable HUMAN budgets. Gates require evidence, not elapsed hours. Independent WP5/WP6 may be advanced during waits sequentially, with cumulative offsets recalculated and no double counting. No implementation/runtime action started; next remains WP0/WP1. v1.0 remains historical; retained contexts/claims and all no-replay/no-login/no-reset constraints are unchanged.
+
 > **CURRENT — CSV end-to-end Mini-PET v1.0 ready (20 October 2026).**
 >
 > Technical8/8,functional4/6 unchanged. The owner requested a precise plan before resuming implementation. Start with [Mini-PET v1.0](OUF_CSV_E2E_COMPLETION_MINIPET_v1_0_20261020.md), [structured work/acceptance register](../releases/csv-e2e-completion-plan-20261020.json), and [planning handoff](handoffs/OUF_CLOUD_CSV_E2E_MINIPET_HANDOFF_20261020.md). WP0–WP7 are local work packages, not replacements for the stable eight technical phases or six functional milestones.

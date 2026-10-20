@@ -2,10 +2,17 @@
 
 20 October 2026. Planning/documentation only. Technical8/8,functional4/6 unchanged.
 
-Start from [Mini-PET v1.0](../OUF_CSV_E2E_COMPLETION_MINIPET_v1_0_20261020.md),
+Start from [Mini-PET v1.1](../OUF_CSV_E2E_COMPLETION_MINIPET_v1_1_20261020.md),
 [structured plan](../../releases/csv-e2e-completion-plan-20261020.json),
 [repository audit](../CSV_REPOSITORY_REAUDIT_AND_EFFORT_20261020.md).
 User requested this precise roadmap as the basis for the next session; no implementation or target action was started after that request.
+
+Update20October10:58Europe/Rome request: version1.1 adds a cumulative effort schedule,
+30activity allocations, all gate/milestone forecasts, HUMAN participation and passive
+wait/actual-effort tracking. Central sequence reaches G1 at3h,G2 at14h,G3 at19h,
+F5 at22h,F6/G4/M1 at24h,G5 at35h,G6 at46h,G7/M2 at55h.
+Ranges stay18–30h forM1 and40–70h total; HUMAN3–6h is separate. Runtime authority
+and finite budgets are unchanged. No implementation started by this document update.
 
 Next action: WP0/WP1. Pin current heads and diagnose the three observed CI findings:
 Ingestion39380500855 (RunControl schedules/fixture isolation hypothesis),

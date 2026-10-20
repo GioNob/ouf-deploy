@@ -1,10 +1,10 @@
 {
   "schema": "ouf.csv-e2e-completion-plan.v1",
   "documentId": "OUF-MP-CSV-E2E",
-  "version": "1.0",
+  "version": "1.1",
   "createdDate": "2026-10-20",
   "timezone": "Europe/Rome",
-  "document": "docs/OUF_CSV_E2E_COMPLETION_MINIPET_v1_0_20261020.md",
+  "document": "docs/OUF_CSV_E2E_COMPLETION_MINIPET_v1_1_20261020.md",
   "planIsRuntimeAuthority": false,
   "planIsExecutableLauncher": false,
   "technicalProgress": {
@@ -933,6 +933,12 @@
       "WP1",
       "WP2",
       "WP5/WP6"
+    ],
+    "centralM1": 24,
+    "centralM2Total": 55,
+    "accountingTotalIncludingSeparateHuman": [
+      43,
+      76
     ]
   },
   "firstNextAction": "WP0/WP1 repository/CI diagnosis; no target launcher.",
@@ -943,5 +949,1389 @@
     "New proximity/affinity search modes",
     "General multi-host installer qualification",
     "Merge of two pre-existing canonical objects as a separate governed operation"
-  ]
+  ],
+  "updatedDate": "2026-10-20",
+  "previousPlan": {
+    "version": "1.0",
+    "document": "docs/OUF_CSV_E2E_COMPLETION_MINIPET_v1_0_20261020.md",
+    "commit": "a49d5e3025c646256b19bd8466c15948f5c3becf"
+  },
+  "schedule": {
+    "version": "1.0",
+    "timeBasis": "cumulative active assisted technical effort hours, not wall-clock time",
+    "clockOrigin": "Start of WP0 in next implementation session; prior completed audit/planning excluded",
+    "referenceSequence": "WP0/WP1 -> WP2 -> WP3 -> WP4 -> WP5 -> WP6 -> WP7, one agent, no parallel delegation",
+    "scenarios": [
+      "lean",
+      "central",
+      "prudent"
+    ],
+    "phaseWindows": [
+      {
+        "group": "WP0+WP1",
+        "workPackages": [
+          "WP0",
+          "WP1"
+        ],
+        "title": "Baseline, diagnosi CI e coorte",
+        "hours": {
+          "lean": 2,
+          "central": 3,
+          "prudent": 4
+        },
+        "start": {
+          "lean": 0,
+          "central": 0,
+          "prudent": 0
+        },
+        "end": {
+          "lean": 2,
+          "central": 3,
+          "prudent": 4
+        },
+        "additionalHumanHours": [
+          0.25,
+          0.5
+        ],
+        "exitGate": "G1",
+        "milestone": null
+      },
+      {
+        "group": "WP2",
+        "workPackages": [
+          "WP2"
+        ],
+        "title": "Executor completo qualificato",
+        "hours": {
+          "lean": 8,
+          "central": 11,
+          "prudent": 14
+        },
+        "start": {
+          "lean": 2,
+          "central": 3,
+          "prudent": 4
+        },
+        "end": {
+          "lean": 10,
+          "central": 14,
+          "prudent": 18
+        },
+        "additionalHumanHours": [
+          0.25,
+          0.5
+        ],
+        "exitGate": "G2",
+        "milestone": null
+      },
+      {
+        "group": "WP3",
+        "workPackages": [
+          "WP3"
+        ],
+        "title": "Ammissione, rollout e profilo pubblicato",
+        "hours": {
+          "lean": 4,
+          "central": 5,
+          "prudent": 6
+        },
+        "start": {
+          "lean": 10,
+          "central": 14,
+          "prudent": 18
+        },
+        "end": {
+          "lean": 14,
+          "central": 19,
+          "prudent": 24
+        },
+        "additionalHumanHours": [
+          1,
+          2
+        ],
+        "exitGate": "G3",
+        "milestone": null
+      },
+      {
+        "group": "WP4",
+        "workPackages": [
+          "WP4"
+        ],
+        "title": "Seconda acquisizione e verifica completa",
+        "hours": {
+          "lean": 4,
+          "central": 5,
+          "prudent": 6
+        },
+        "start": {
+          "lean": 14,
+          "central": 19,
+          "prudent": 24
+        },
+        "end": {
+          "lean": 18,
+          "central": 24,
+          "prudent": 30
+        },
+        "additionalHumanHours": [
+          0.25,
+          0.5
+        ],
+        "exitGate": "G4",
+        "milestone": "M1"
+      },
+      {
+        "group": "WP5",
+        "workPackages": [
+          "WP5"
+        ],
+        "title": "Semantica, tipi e relazioni CSV",
+        "hours": {
+          "lean": 8,
+          "central": 11,
+          "prudent": 14
+        },
+        "start": {
+          "lean": 18,
+          "central": 24,
+          "prudent": 30
+        },
+        "end": {
+          "lean": 26,
+          "central": 35,
+          "prudent": 44
+        },
+        "additionalHumanHours": [
+          0.5,
+          1
+        ],
+        "exitGate": "G5",
+        "milestone": null
+      },
+      {
+        "group": "WP6",
+        "workPackages": [
+          "WP6"
+        ],
+        "title": "Percorso chat, ripresa e client",
+        "hours": {
+          "lean": 8,
+          "central": 11,
+          "prudent": 14
+        },
+        "start": {
+          "lean": 26,
+          "central": 35,
+          "prudent": 44
+        },
+        "end": {
+          "lean": 34,
+          "central": 46,
+          "prudent": 58
+        },
+        "additionalHumanHours": [
+          0.25,
+          0.5
+        ],
+        "exitGate": "G6",
+        "milestone": null
+      },
+      {
+        "group": "WP7",
+        "workPackages": [
+          "WP7"
+        ],
+        "title": "Rilascio finale e accettazione E2E",
+        "hours": {
+          "lean": 6,
+          "central": 9,
+          "prudent": 12
+        },
+        "start": {
+          "lean": 34,
+          "central": 46,
+          "prudent": 58
+        },
+        "end": {
+          "lean": 40,
+          "central": 55,
+          "prudent": 70
+        },
+        "additionalHumanHours": [
+          0.5,
+          1
+        ],
+        "exitGate": "G7",
+        "milestone": "M2"
+      }
+    ],
+    "centralActivities": [
+      {
+        "id": "CSV-H-01",
+        "workPackage": "WP0",
+        "nominalHours": 0.5,
+        "startHour": 0,
+        "endHour": 0.5,
+        "activity": "Fissare baseline, contesti e selezione",
+        "output": "Ledger iniziale; G0",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [],
+        "acceptanceTestRefs": [],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-02",
+        "workPackage": "WP1",
+        "nominalHours": 0.75,
+        "startHour": 0.5,
+        "endHour": 1.25,
+        "activity": "Diagnosticare e correggere CI Ingestion",
+        "output": "Causa dimostrata e correzione mirata",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [],
+        "acceptanceTestRefs": [],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-03",
+        "workPackage": "WP1",
+        "nominalHours": 0.5,
+        "startHour": 1.25,
+        "endHour": 1.75,
+        "activity": "Diagnosticare il gate prestazionale MCP",
+        "output": "Profilo/risultato spiegati e verifica pertinente",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [],
+        "acceptanceTestRefs": [],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-04",
+        "workPackage": "WP1",
+        "nominalHours": 0.75,
+        "startHour": 1.75,
+        "endHour": 2.5,
+        "activity": "Riconciliare i pin storici Deploy",
+        "output": "Binding pacchetto/capsule corretto senza alterare claim consumati",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [],
+        "acceptanceTestRefs": [],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-05",
+        "workPackage": "WP1",
+        "nominalHours": 0.5,
+        "startHour": 2.5,
+        "endHour": 3,
+        "activity": "Fissare coorte e chiudere le regressioni pertinenti",
+        "output": "G1; checkpoint di ristima",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [],
+        "acceptanceTestRefs": [],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-06",
+        "workPackage": "WP2",
+        "nominalHours": 3,
+        "startHour": 3,
+        "endHour": 6,
+        "activity": "Integrare effetti NativePorts e persistenza delle identità",
+        "output": "Effetti claimed-once e riconciliazione",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R22",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-21",
+          "CSV-AT-22"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-07",
+        "workPackage": "WP2",
+        "nominalHours": 2,
+        "startHour": 6,
+        "endHour": 8,
+        "activity": "Integrare guard HUMAN/Owner/DB e generazioni",
+        "output": "Controlli correnti, failure e scadenza verificati in fixture",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R22",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-21",
+          "CSV-AT-22"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-08",
+        "workPackage": "WP2",
+        "nominalHours": 2,
+        "startHour": 8,
+        "endHour": 10,
+        "activity": "Integrare nuovo namespace e trasporto Gateway",
+        "output": "Route e generazione nuova verificabili",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R22",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-21",
+          "CSV-AT-22"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-09",
+        "workPackage": "WP2",
+        "nominalHours": 1.5,
+        "startHour": 10,
+        "endHour": 11.5,
+        "activity": "Comporre issuer, scope, closure ed entrypoint",
+        "output": "Pacchetto eseguibile qualificabile",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R22",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-21",
+          "CSV-AT-22"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-10",
+        "workPackage": "WP2",
+        "nominalHours": 2.5,
+        "startHour": 11.5,
+        "endHour": 14,
+        "activity": "Qualificare executor nativo e casi avversariali",
+        "output": "G2; checkpoint di ristima",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R22",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-21",
+          "CSV-AT-22"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-11",
+        "workPackage": "WP3",
+        "nominalHours": 1.5,
+        "startHour": 14,
+        "endHour": 15.5,
+        "activity": "Preparare review concreta e verificare ammissione corrente",
+        "output": "Prerequisiti per i nuovi effetti; solo con authority pertinente",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-23"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-12",
+        "workPackage": "WP3",
+        "nominalHours": 2,
+        "startHour": 15.5,
+        "endHour": 17.5,
+        "activity": "Eseguire rollout governato e verificare readiness/route",
+        "output": "Ricevuta e postcondizioni native",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-23"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-13",
+        "workPackage": "WP3",
+        "nominalHours": 1.5,
+        "startHour": 17.5,
+        "endHour": 19,
+        "activity": "Pubblicare il profilo attraverso THS e verificare i consumer",
+        "output": "G3; profilo nativo attivo esatto",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R23"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-23"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-14",
+        "workPackage": "WP4",
+        "nominalHours": 2,
+        "startHour": 19,
+        "endHour": 21,
+        "activity": "Ammettere e seguire la seconda acquisizione deliberata",
+        "output": "Nuova run della stessa fonte/CSV e stato owner",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R12",
+          "CSV-R15",
+          "CSV-R17",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-14",
+          "CSV-AT-16"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-15",
+        "workPackage": "WP4",
+        "nominalHours": 1,
+        "startHour": 21,
+        "endHour": 22,
+        "activity": "Verificare esiti delle13 righe e identità/proprietà",
+        "output": "F5 provata, se tutte le asserzioni sono soddisfatte",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R12",
+          "CSV-R15",
+          "CSV-R17",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-14",
+          "CSV-AT-16"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-16",
+        "workPackage": "WP4",
+        "nominalHours": 2,
+        "startHour": 22,
+        "endHour": 24,
+        "activity": "Confrontare entrambe le acquisizioni e preservare8 Cinema",
+        "output": "F6 + G4/M1; ACK, commit e provenienza completi",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R12",
+          "CSV-R15",
+          "CSV-R17",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-14",
+          "CSV-AT-16"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-17",
+        "workPackage": "WP5",
+        "nominalHours": 2,
+        "startHour": 24,
+        "endHour": 26,
+        "activity": "Fissare contratti/fixture di vocabolari, tipi e temporalità",
+        "output": "Delta compatibile con gli owner e gli storici",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R10",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-09",
+          "CSV-AT-12",
+          "CSV-AT-13"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-18",
+        "workPackage": "WP5",
+        "nominalHours": 3,
+        "startHour": 26,
+        "endHour": 29,
+        "activity": "Estendere proposta, compilazione e validazione",
+        "output": "Configurazione dichiarata accettata dal consumer",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R10",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-09",
+          "CSV-AT-12",
+          "CSV-AT-13"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-19",
+        "workPackage": "WP5",
+        "nominalHours": 3,
+        "startHour": 29,
+        "endHour": 32,
+        "activity": "Integrare mapping valori e tipi nella pipeline",
+        "output": "Originali, concetti/versioni e tipi deterministici",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R10",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-09",
+          "CSV-AT-12",
+          "CSV-AT-13"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-20",
+        "workPackage": "WP5",
+        "nominalHours": 3,
+        "startHour": 32,
+        "endHour": 35,
+        "activity": "Comporre relazioni e completare prove/compatibilità",
+        "output": "G5; fixture positiva e casi di rifiuto",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R10",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-09",
+          "CSV-AT-12",
+          "CSV-AT-13"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-21",
+        "workPackage": "WP6",
+        "nominalHours": 3,
+        "startHour": 35,
+        "endHour": 38,
+        "activity": "Raccordare review package e binding MCP/Gateway",
+        "output": "Review accessibile nel percorso governato",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R08",
+          "CSV-R12",
+          "CSV-R15",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-14",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-22",
+        "workPackage": "WP6",
+        "nominalHours": 3,
+        "startHour": 38,
+        "endHour": 41,
+        "activity": "Completare riepilogo per riga, esiti e lineage",
+        "output": "Stati owner e parzialità distinguibili",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R08",
+          "CSV-R12",
+          "CSV-R15",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-14",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-23",
+        "workPackage": "WP6",
+        "nominalHours": 3,
+        "startHour": 41,
+        "endHour": 44,
+        "activity": "Qualificare recupero dopo nuova chat o interruzione",
+        "output": "Riferimenti durevoli, nessuna fonte/run implicita",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R08",
+          "CSV-R12",
+          "CSV-R15",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-14",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-24",
+        "workPackage": "WP6",
+        "nominalHours": 2,
+        "startHour": 44,
+        "endHour": 46,
+        "activity": "Qualificare superfici su due client e confini THS",
+        "output": "G6; checkpoint di ristima, E2E completo ancora WP7",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R08",
+          "CSV-R12",
+          "CSV-R15",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-14",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-25",
+        "workPackage": "WP7",
+        "nominalHours": 1.5,
+        "startHour": 46,
+        "endHour": 47.5,
+        "activity": "Comporre coorte finale, CI e piano di rilascio del delta",
+        "output": "Pin finali e regressioni giustificate",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R10",
+          "CSV-R11",
+          "CSV-R12",
+          "CSV-R13",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16",
+          "CSV-R17",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21",
+          "CSV-R22",
+          "CSV-R23",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-09",
+          "CSV-AT-10",
+          "CSV-AT-11",
+          "CSV-AT-12",
+          "CSV-AT-13",
+          "CSV-AT-14",
+          "CSV-AT-15",
+          "CSV-AT-16",
+          "CSV-AT-17",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20",
+          "CSV-AT-21",
+          "CSV-AT-22",
+          "CSV-AT-23",
+          "CSV-AT-24"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-26",
+        "workPackage": "WP7",
+        "nominalHours": 1.5,
+        "startHour": 47.5,
+        "endHour": 49,
+        "activity": "Distribuire governatamente il solo delta finale",
+        "output": "Immagini collaudate, nessun replay WP3",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R10",
+          "CSV-R11",
+          "CSV-R12",
+          "CSV-R13",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16",
+          "CSV-R17",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21",
+          "CSV-R22",
+          "CSV-R23",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-09",
+          "CSV-AT-10",
+          "CSV-AT-11",
+          "CSV-AT-12",
+          "CSV-AT-13",
+          "CSV-AT-14",
+          "CSV-AT-15",
+          "CSV-AT-16",
+          "CSV-AT-17",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20",
+          "CSV-AT-21",
+          "CSV-AT-22",
+          "CSV-AT-23",
+          "CSV-AT-24"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-27",
+        "workPackage": "WP7",
+        "nominalHours": 2,
+        "startHour": 49,
+        "endHour": 51,
+        "activity": "Eseguire nuovo CSV e reimport invariato sui client",
+        "output": "DS1/DS1R, identità e revisioni coerenti",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R10",
+          "CSV-R11",
+          "CSV-R12",
+          "CSV-R13",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16",
+          "CSV-R17",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21",
+          "CSV-R22",
+          "CSV-R23",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-09",
+          "CSV-AT-10",
+          "CSV-AT-11",
+          "CSV-AT-12",
+          "CSV-AT-13",
+          "CSV-AT-14",
+          "CSV-AT-15",
+          "CSV-AT-16",
+          "CSV-AT-17",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20",
+          "CSV-AT-21",
+          "CSV-AT-22",
+          "CSV-AT-23",
+          "CSV-AT-24"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-28",
+        "workPackage": "WP7",
+        "nominalHours": 2,
+        "startHour": 51,
+        "endHour": 53,
+        "activity": "Completare fault/revoca e secondo profilo Ente",
+        "output": "Casi negativi e ENV-A/B nel livello previsto",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R10",
+          "CSV-R11",
+          "CSV-R12",
+          "CSV-R13",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16",
+          "CSV-R17",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21",
+          "CSV-R22",
+          "CSV-R23",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-09",
+          "CSV-AT-10",
+          "CSV-AT-11",
+          "CSV-AT-12",
+          "CSV-AT-13",
+          "CSV-AT-14",
+          "CSV-AT-15",
+          "CSV-AT-16",
+          "CSV-AT-17",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20",
+          "CSV-AT-21",
+          "CSV-AT-22",
+          "CSV-AT-23",
+          "CSV-AT-24"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-29",
+        "workPackage": "WP7",
+        "nominalHours": 1.5,
+        "startHour": 53,
+        "endHour": 54.5,
+        "activity": "Consolidare dossier, guida utente e runbook",
+        "output": "Prove per ogni requisito e limiti espliciti",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R10",
+          "CSV-R11",
+          "CSV-R12",
+          "CSV-R13",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16",
+          "CSV-R17",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21",
+          "CSV-R22",
+          "CSV-R23",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-09",
+          "CSV-AT-10",
+          "CSV-AT-11",
+          "CSV-AT-12",
+          "CSV-AT-13",
+          "CSV-AT-14",
+          "CSV-AT-15",
+          "CSV-AT-16",
+          "CSV-AT-17",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20",
+          "CSV-AT-21",
+          "CSV-AT-22",
+          "CSV-AT-23",
+          "CSV-AT-24"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      },
+      {
+        "id": "CSV-H-30",
+        "workPackage": "WP7",
+        "nominalHours": 0.5,
+        "startHour": 54.5,
+        "endHour": 55,
+        "activity": "Registrare esito dell'accettazione e chiudere il miniprogetto",
+        "output": "G7/M2 solo dopo accettazione HUMAN",
+        "status": "PLANNED",
+        "actualHours": null,
+        "requirementIds": [
+          "CSV-R01",
+          "CSV-R02",
+          "CSV-R03",
+          "CSV-R04",
+          "CSV-R05",
+          "CSV-R06",
+          "CSV-R07",
+          "CSV-R08",
+          "CSV-R09",
+          "CSV-R10",
+          "CSV-R11",
+          "CSV-R12",
+          "CSV-R13",
+          "CSV-R14",
+          "CSV-R15",
+          "CSV-R16",
+          "CSV-R17",
+          "CSV-R18",
+          "CSV-R19",
+          "CSV-R20",
+          "CSV-R21",
+          "CSV-R22",
+          "CSV-R23",
+          "CSV-R24"
+        ],
+        "acceptanceTestRefs": [
+          "CSV-AT-01",
+          "CSV-AT-02",
+          "CSV-AT-03",
+          "CSV-AT-04",
+          "CSV-AT-05",
+          "CSV-AT-06",
+          "CSV-AT-07",
+          "CSV-AT-08",
+          "CSV-AT-09",
+          "CSV-AT-10",
+          "CSV-AT-11",
+          "CSV-AT-12",
+          "CSV-AT-13",
+          "CSV-AT-14",
+          "CSV-AT-15",
+          "CSV-AT-16",
+          "CSV-AT-17",
+          "CSV-AT-18",
+          "CSV-AT-19",
+          "CSV-AT-20",
+          "CSV-AT-21",
+          "CSV-AT-22",
+          "CSV-AT-23",
+          "CSV-AT-24"
+        ],
+        "additionalHumanActualHours": null,
+        "passiveWaitingHours": null,
+        "remainingHoursForecast": null,
+        "evidenceRefs": []
+      }
+    ],
+    "gateForecasts": [
+      {
+        "gate": "G0",
+        "centralHour": 0.5,
+        "includedIn": "WP0+WP1",
+        "status": "PLANNED"
+      },
+      {
+        "gate": "G1",
+        "leanHour": 2,
+        "centralHour": 3,
+        "prudentHour": 4,
+        "milestone": null,
+        "status": "PLANNED"
+      },
+      {
+        "gate": "G2",
+        "leanHour": 10,
+        "centralHour": 14,
+        "prudentHour": 18,
+        "milestone": null,
+        "status": "PLANNED"
+      },
+      {
+        "gate": "G3",
+        "leanHour": 14,
+        "centralHour": 19,
+        "prudentHour": 24,
+        "milestone": null,
+        "status": "PLANNED"
+      },
+      {
+        "gate": "G4",
+        "leanHour": 18,
+        "centralHour": 24,
+        "prudentHour": 30,
+        "milestone": "M1",
+        "status": "PLANNED"
+      },
+      {
+        "gate": "G5",
+        "leanHour": 26,
+        "centralHour": 35,
+        "prudentHour": 44,
+        "milestone": null,
+        "status": "PLANNED"
+      },
+      {
+        "gate": "G6",
+        "leanHour": 34,
+        "centralHour": 46,
+        "prudentHour": 58,
+        "milestone": null,
+        "status": "PLANNED"
+      },
+      {
+        "gate": "G7",
+        "leanHour": 40,
+        "centralHour": 55,
+        "prudentHour": 70,
+        "milestone": "M2",
+        "status": "PLANNED"
+      }
+    ],
+    "functionalForecasts": [
+      {
+        "milestone": "F5",
+        "centralHour": 22,
+        "requires": "All retained second-acquisition assertions; elapsed effort alone does not prove F5"
+      },
+      {
+        "milestone": "F6",
+        "centralHour": 24,
+        "requires": "Both-acquisition ACK/commit/provenance and baseline preservation evidence"
+      }
+    ],
+    "totals": {
+      "technical": {
+        "lean": 40,
+        "central": 55,
+        "prudent": 70
+      },
+      "m1Technical": {
+        "lean": 18,
+        "central": 24,
+        "prudent": 30
+      },
+      "additionalHuman": {
+        "min": 3,
+        "central": 4.5,
+        "max": 6
+      },
+      "accountingSumNotCalendar": {
+        "min": 43,
+        "central": 59.5,
+        "max": 76
+      }
+    },
+    "dailyCapacityExamples": [
+      {
+        "technicalHoursPerDay": 4,
+        "m1DaysRoundedUp": 6,
+        "m2DaysRoundedUp": 14
+      },
+      {
+        "technicalHoursPerDay": 6,
+        "m1DaysRoundedUp": 4,
+        "m2DaysRoundedUp": 10
+      },
+      {
+        "technicalHoursPerDay": 8,
+        "m1DaysRoundedUp": 3,
+        "m2DaysRoundedUp": 7
+      }
+    ],
+    "rules": [
+      "Gate closure requires evidence, never elapsed time alone",
+      "WP0 half-hour allocation is inside WP0/WP1 central 3 hours, not additional",
+      "Passive waits do not consume active effort; active diagnosis does",
+      "Additional HUMAN effort is separate from technical effort and from wait",
+      "Runtime budgets and TTLs are unchanged; these are project tracking counters only",
+      "During HUMAN waits, independent WP5/WP6 may advance sequentially; recalculate milestone offsets without double counting",
+      "Final WP5/WP6 governed delta rollout is included in WP7",
+      "No automatic login, refresh, budget reset, replay, subagent or scheduled automation",
+      "Forecast equals actual active technical effort plus revised remaining effort",
+      "Reforecast after G1, G2, G5/G6, or when a package exceeds its upper estimate"
+    ],
+    "actualTracking": {
+      "implementationStarted": false,
+      "scope": "Residual implementation after this plan; does not reset or reinterpret retained runtime budgets",
+      "activeTechnicalHours": 0,
+      "additionalHumanHours": 0,
+      "waitingIntervals": []
+    }
+  }
 }
