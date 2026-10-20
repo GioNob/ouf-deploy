@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T09:39:51.362Z",
+  "lastUpdatedAt": "2026-10-20T09:58:52.414Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -220,6 +220,76 @@
       "tests": 15,
       "skipped": 0,
       "note": "Exact historical capsule comparison and current-byte rejection pass; full cohort regression remains separate"
+    },
+    {
+      "id": "CSV-EV-0015",
+      "workPackage": "WP1",
+      "gate": "G1",
+      "occurredAt": "2026-10-20T09:51:37Z",
+      "observedAt": "2026-10-20T09:53:01.026Z",
+      "source": "GitHub Actions job118557847434/run39401717480",
+      "commit": "af1172ba4127a78cb42a812a90bab3c3c60cb159",
+      "status": "PASS",
+      "note": "Complete native cohort regression passed on unchanged PR41. Relevant WP1 fixes/capsule/MCP/Ingestion independently qualified. G1 decision recorded separately from provider completion.",
+      "kind": "QUALIFICATION_PASSED",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP"
+    },
+    {
+      "id": "CSV-EV-0016",
+      "workPackage": "WP1",
+      "gate": "G1",
+      "occurredAt": "2026-10-20T09:53:01.026Z",
+      "observedAt": "2026-10-20T09:53:01.026Z",
+      "status": "PASS",
+      "evidence": [
+        "39399340219",
+        "39399343702",
+        "39399647915",
+        "39401717480"
+      ],
+      "runtimeAuthorityIssued": false,
+      "notReleaseAcceptance": true,
+      "kind": "GATE_DECISION",
+      "timestampConfidence": "EXACT_OBSERVED_DECISION_TIME"
+    },
+    {
+      "id": "CSV-EV-0017",
+      "workPackage": "WP2",
+      "occurredAt": "2026-10-20T09:50:01Z",
+      "observedAt": "2026-10-20T09:53:01.026Z",
+      "status": "FAILED_TEST_EXPECTATION",
+      "commit": "2e2d5add738589a9caef802efa615da6cff02f70",
+      "source": "39403466107/118563615992",
+      "note": "One combined negative test expected Denied after a retained claim; Runner correctly Paused. Scenarios separated, no production relaxation.",
+      "kind": "COMPONENT_QUALIFICATION_FAILED",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP"
+    },
+    {
+      "id": "CSV-EV-0018",
+      "workPackage": "WP2",
+      "occurredAt": "2026-10-20T09:51:46Z",
+      "observedAt": "2026-10-20T09:53:01.026Z",
+      "status": "PASS",
+      "commit": "c3042a0696875f538a6476df5866f507d414b667",
+      "source": "39403673060/118564293098",
+      "tests": 38,
+      "skipped": 0,
+      "proofLevel": "ACTUAL_SIGNATURES_CAS_FILE_CUSTODY_SYNTHETIC_ENGINE_AND_ROUTE_HTTP",
+      "gateG2Passed": false,
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP"
+    },
+    {
+      "id": "CSV-EV-0019",
+      "kind": "LOCAL_DATABASE_POLICY_COMPONENT_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T09:58:52.414Z",
+      "timestampConfidence": "OBSERVED_AFTER_LOCAL_TEST_COMPLETION",
+      "tests": 9,
+      "skipped": 0,
+      "proofLevel": "SYNTHETIC_FACTS_STRICT_POLICY",
+      "gateG2Passed": false,
+      "note": "Fixed release SQL/history reused without executing or selecting the retained diagnostic. Only added serverPort observation; native collector/admission remains open."
     }
   ],
   "activeIntervals": [
@@ -240,6 +310,19 @@
     {
       "id": "CSV-TIME-0002",
       "startedAt": "2026-10-20T09:38:46.444Z",
+      "endedAt": "2026-10-20T09:53:01.026Z",
+      "workPackage": null,
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 854.582,
+      "workPackages": [
+        "WP1_QUALIFICATION_OBSERVATION",
+        "WP2_PREPARATION"
+      ],
+      "perPackageAllocationKnown": false
+    },
+    {
+      "id": "CSV-TIME-0003",
+      "startedAt": "2026-10-20T09:53:01.026Z",
       "endedAt": null,
       "workPackage": "WP2",
       "classification": "ACTIVE_TECHNICAL",
@@ -268,11 +351,21 @@
       "milestone": null,
       "status": "PLANNED",
       "baselineCentralHour": 3,
-      "actualObservedAt": null,
+      "actualObservedAt": "2026-10-20T09:53:01.026Z",
       "actualEffortHours": null,
       "effortVarianceHours": null,
-      "observedStatus": "NOT_PASSED",
-      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+      "observedStatus": "PASS",
+      "measurementNote": "Cumulative effort bounded, per-WP allocation unknown; WP2 preparation interleaved during CI.",
+      "dependencyCompletedAt": "2026-10-20T09:51:37Z",
+      "actualEffortHoursBounds": [
+        0.6040063888888888,
+        0.7533405555555555
+      ],
+      "cumulativeVarianceFromBaselineBounds": [
+        -2.3959936111111113,
+        -2.2466594444444445
+      ],
+      "wp1OnlyEffortVarianceHours": null
     },
     {
       "gate": "G2",
@@ -406,15 +499,5 @@
     "loginPerformed": false,
     "refreshPerformed": false,
     "budgetReset": false
-  },
-  "effortAtLastClosedInterval": {
-    "measuredSeconds": 1319.841,
-    "initialUnsegmentedSeconds": 537.603,
-    "totalTechnicalEffortBoundsSeconds": [
-      1319.841,
-      1857.444
-    ],
-    "perPackageVarianceAvailable": false,
-    "note": "Bounds exclude the currently open measured interval; initial window is not assigned invented point effort."
   }
 }

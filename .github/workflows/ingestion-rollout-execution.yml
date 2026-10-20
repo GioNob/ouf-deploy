@@ -4,7 +4,7 @@ on:
     branches: [feat/chat-only-recovery-package-20261018]
     paths: ['tools/ingestion_rollout_execution/*.py', 'tests/test_ingestion_rollout_execution.py', 'tests/test_ingestion_rollout_lifecycle.py', '.github/workflows/ingestion-rollout-execution.yml']
   pull_request:
-    paths: ['tools/ingestion_rollout_execution/*.py', 'tests/test_ingestion_rollout_execution.py', 'tests/test_ingestion_rollout_lifecycle.py', 'tests/test_ingestion_rollout_gateway_transport.py', '.github/workflows/ingestion-rollout-execution.yml']
+    paths: ['tools/ingestion_rollout_execution/*.py', 'tests/test_ingestion_rollout_execution.py', 'tests/test_ingestion_rollout_lifecycle.py', 'tests/test_ingestion_rollout_gateway_transport.py', 'tests/test_ingestion_rollout_database_policy.py', '.github/workflows/ingestion-rollout-execution.yml']
 permissions: {contents: read}
 jobs:
   signed-core:
@@ -24,3 +24,4 @@ jobs:
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_execution.py -v
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_lifecycle.py -v
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_gateway_transport.py -v
+          sudo env OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_database_policy.py -v

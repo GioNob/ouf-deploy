@@ -98,13 +98,27 @@
         "cohort pins",
         "impact-based regression list"
       ],
-      "status": "IN_PROGRESS",
+      "status": "COMPLETE",
       "entryAuthorizationGranted": false,
       "acceptanceTestRefs": [],
       "actualStartedAt": null,
       "startTimeBounds": {
         "earliest": "2026-10-20T11:07:49+02:00",
         "latest": "2026-10-20T09:16:46.603Z"
+      },
+      "completedAt": "2026-10-20T09:53:01.026Z",
+      "gateEvidence": {
+        "gate": "G1",
+        "status": "PASS",
+        "dependencyCompletedAt": "2026-10-20T09:51:37Z",
+        "decisionObservedAt": "2026-10-20T09:53:01.026Z",
+        "runIds": [
+          39399340219,
+          39399343702,
+          39399647915,
+          39401717480
+        ],
+        "nativeTargetAuthority": false
       }
     },
     {
@@ -127,18 +141,25 @@
         "scope issuer and immutable executable closure",
         "native no-replay qualification"
       ],
-      "status": "PLANNED",
+      "status": "IN_PROGRESS",
       "entryAuthorizationGranted": false,
       "acceptanceTestRefs": [
         "CSV-AT-21",
         "CSV-AT-22"
       ],
-      "preparationStatus": "IN_PROGRESS_COMPONENT_QUALIFIED",
+      "preparationStatus": "LIFECYCLE_AND_GATEWAY_COMPONENTS_QUALIFIED_NOT_G2",
       "componentEvidence": {
-        "commit": "af1172ba4127a78cb42a812a90bab3c3c60cb159",
-        "runId": 39401710478,
-        "tests": 23,
-        "fullG2Proven": false
+        "signedCoreLifecycleGatewayTests": 38,
+        "skipped": 0,
+        "gatewayCommit": "c3042a0696875f538a6476df5866f507d414b667",
+        "gatewayRunId": 39403673060,
+        "localDatabasePolicyTests": 9,
+        "fullExecutorQualified": false
+      },
+      "startedAt": null,
+      "startBounds": {
+        "earliest": "2026-10-20T11:07:49+02:00",
+        "latest": "2026-10-20T09:35:14Z"
       }
     },
     {
@@ -954,7 +975,7 @@
       76
     ]
   },
-  "firstNextAction": "WP0/WP1 repository/CI diagnosis; no target launcher.",
+  "firstNextAction": "Continue WP2 complete native current HUMAN/Owner/DB guards, image import, issuer/closure/entrypoint and representative isolated native qualification. G1 PASS; G2 OPEN; no target operations.",
   "outOfScope": [
     "Additional file formats",
     "API verticals",
@@ -2366,10 +2387,11 @@
       "waitingIntervals": [],
       "runtimeBudgetsUnchanged": true,
       "executionBranch": "feat/csv-e2e-native-completion-20261020",
-      "lastObservedAt": "2026-10-20T09:39:51.362Z",
-      "activeTechnicalHoursPreciselyMeasuredAfterTracking": 0.36662249999999996,
+      "lastObservedAt": "2026-10-20T09:58:52.414Z",
+      "activeTechnicalHoursPreciselyMeasuredAfterTracking": 0.6040063888888888,
       "initialUnsegmentedHours": 0.14933416666666666,
-      "perPackageAllocationPrecise": false
+      "perPackageAllocationPrecise": false,
+      "currentOpenIntervalStartedAt": "2026-10-20T09:53:01.026Z"
     }
   }
 }
