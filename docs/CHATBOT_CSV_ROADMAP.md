@@ -1,3 +1,25 @@
+> **CURRENT — CSV end-to-end Mini-PET v1.0 ready (20 October 2026).**
+>
+> Technical8/8,functional4/6 unchanged. The owner requested a precise plan before resuming implementation. Start with [Mini-PET v1.0](OUF_CSV_E2E_COMPLETION_MINIPET_v1_0_20261020.md), [structured work/acceptance register](../releases/csv-e2e-completion-plan-20261020.json), and [planning handoff](handoffs/OUF_CLOUD_CSV_E2E_MINIPET_HANDOFF_20261020.md). WP0–WP7 are local work packages, not replacements for the stable eight technical phases or six functional milestones.
+>
+> Next: WP0/WP1 source selection and CI diagnosis, then complete native executor WP2. M1=retained F5/F6 (18–30active assisted hours); M2=general repeatable CSV including vocabulary mapping, recovery and two real clients (40–70total).24requirements,24acceptance tests, explicit gates and canonical E2E references are recorded. Estimates already assume advanced-agent assistance; no unmeasured10×/20× factor is applied again.
+>
+> This is documentation only: no new runtime actions, login/refresh/renewal/reset, replay, subagents or scheduled automation. Owner7/projection7, retained contexts and consumed claims stay unchanged. Last HUMAN278/288 window is expired; no current authority inferred. Full executor/current DB admission/native profile publication/F5/F6 remain unproven. All Ente-specific values, including MAC addresses, stay in validated profiles.
+>
+> The audit and previous component checkpoint follow as dated history; their evidence remains valid within its stated scope.
+
+> **CURRENT — CSV repository re-audit and effort correction (20 October 2026).**
+>
+> Technical8/8,functional4/6 unchanged. [Source/test/CI audit and revised estimate](CSV_REPOSITORY_REAUDIT_AND_EFFORT_20261020.md), [evidence](../evidence/csv-repository-effort-reaudit-20261020.json): existing source revision, semantic review, CSV execution, identity/property reconciliation and recovery are reused. Plan18–30active agent-assisted hours for retained F5–F6 closure;40–70total for the declared general repeatable CSV path. These are estimates, not runtime acceptance or measured10×/20× productivity.
+>
+> Current CI has three findings to resolve: Ingestion39380500855(2failure/1error among185tests, likely fixture isolation pending verification); MCP39232083000(p95performance gate, same-head push passed); Deploy39392193693(historical human_session.py package pin mismatch). Existing component qualification does not qualify the complete cohort.
+>
+> Real implementation gaps remain: complete native rollout Ports/issuer/closure and IDENTITY-only CSV mapping without vocabulary value application; client/review/resumption and final target acceptance require qualification. ouf-admin is an account routing reference; absence of an exact tool/plugin name is not evidence of connector absence.26OUF tool definitions remain exposed; no protected authentication probe occurred.
+>
+> Owner7/projection7 and all completed installation/readback/preparation contexts remain retained, consumed and unreplayed. No target commands, login/refresh/renewal/reset, subagents or scheduled automation. Last HUMAN278/288 window expired; no current authority inferred. No change to nativeProfilePublished/databaseAdmissionProven or F5/F6.
+>
+> Original baseline consulted: Matrix1.7§1;Blueprint0.3§9;UDP PET1.3§§4–4.1,11.1–12,20–20.1. Detailed previous component checkpoint follows unchanged.
+
 > **CURRENT — replacement observers and new Gateway namespace component qualified (20 October 2026).**
 >
 > Technical8/8,functional4/6. Retained target qfcpqd9f remains COMPLETE/no authority; Owner7/projection7 and all completed preparation/readback/DB/MAC steps stay consumed and unreplayed. No new target launcher or target command is issued.
