@@ -236,7 +236,7 @@ def compile_draft(owner, draft, actual):
 
 def write_new(path, value):
     raw=encoded(value)
-    require(0 < len(raw) <= 2097152, 'BOUNDED_PRIVATE_DRAFT_REQUIRED')
+    require(0 < len(raw) <= 8388608, 'BOUNDED_PRIVATE_DRAFT_REQUIRED')
     fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
     try:
         with os.fdopen(os.dup(fd),'wb')as f:f.write(raw);f.flush();os.fsync(f.fileno())

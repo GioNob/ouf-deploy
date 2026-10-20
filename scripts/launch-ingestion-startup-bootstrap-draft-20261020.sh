@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Postboot-bound DB read preflight. No migration, login, refresh or runtime authority.
+# Private bootstrap DRAFT only. No SQL, credentials, OAuth, services or runtime authority.
 set -euo pipefail
 umask 077
 ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
@@ -8,10 +8,10 @@ if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
 ouf_read="$(mktemp -d "$HOME/ouf-startup-bootstrap-draft.XXXXXXXX")"
 ouf_report_log() { printf 'Log diagnostico conservato: %s/read.log\n' "$ouf_read"; }
 trap ouf_report_log EXIT
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/70add3af3a7d465f179eb50769fa6af125dbbcc8' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/read.py"
-printf '%s  %s\n' 'de36227d3f8f98a01ca05f03aa401595ac3524a8cf119ec3e497fb8fd977b981' "$ouf_read/read.py" | sha256sum -c -
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/8a317dd8c60db8e0b22724e805663b1d09fdc9f1' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/read.py"
+printf '%s  %s\n' 'fdd0e8144e3799579ff277a4560c933e48835e8f0133467d0a1e30f791f7113e' "$ouf_read/read.py" | sha256sum -c -
 printf '%s\n' 'PREPARAZIONE DRAFT PRIVATO: quattro GET Engine; solo Cmd/env proposti e due funzioni Gateway gia compilate.' 'Scrive soltanto nuovi file privati di proposta. ZERO SQL, credenziali, OAuth, servizi avviati, rotte applicate o autorita runtime.'
-sudo /usr/bin/python3 -I -B -S - "$ouf_read/read.py" 'de36227d3f8f98a01ca05f03aa401595ac3524a8cf119ec3e497fb8fd977b981' <<'OUF_READ' | tee "$ouf_read/read.log"
+sudo /usr/bin/python3 -I -B -S - "$ouf_read/read.py" 'fdd0e8144e3799579ff277a4560c933e48835e8f0133467d0a1e30f791f7113e' <<'OUF_READ' | tee "$ouf_read/read.log"
 import hashlib,os,stat,sys
 try:
  fd=os.open(sys.argv[1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
