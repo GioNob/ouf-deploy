@@ -85,3 +85,8 @@ Consuntivo prudente misurato chiuso: **86.16minuti (1.436ore)**, più8,96minuti 
 | M2 |55h centrale;40–70h intervallo|Non raggiunto|Forecast invariato fino al riesameG2|
 
 I timestamp di inizio/fine attività sono separati da quelli di completamentoCI e decisione dei gate. Nessun tempo di calendario non verificato viene trasformato in effort; il rapporto fra ore spese e55h previste non equivale alla percentuale funzionale completata.
+
+
+Checkpoint20/10/2026,13:03:17: CI39411288606 terminata **12:56:36Europe/Rome**,113testPASS,0skip. Nuovi testlocali:6canaleEngine+7composizioneNativePorts+9policyDB PASS. La query nuova usa floor(epoch) per non generare osservazioni future per arrotondamento: nessuna tolleranza aggiunta alla freschezza5s, nessun replay del preflight storico. Composizione completa scritta, ma issuer/chiusura/entrypoint e qualifica rappresentativa ancora aperti; G2NONPASS.
+
+Effort cumulativo chiuso **95.11minuti (1.585h)**, più8,96minuti iniziali non segmentati e con i due intervalli incerti esclusi. Nuova attività issuer/chiusura/qualifica dal checkpoint13:03:17. Baseline centrali immutate: G2H+14, G3H+19, M1H+24, M2H+55. Nessuna percentuale di completamento derivata dal rapporto delle ore.

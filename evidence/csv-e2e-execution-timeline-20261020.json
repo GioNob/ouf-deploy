@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T10:54:20.502Z",
+  "lastUpdatedAt": "2026-10-20T11:03:17.182Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -468,6 +468,38 @@
         "Ingestion1.3 sections146-146.1 original"
       ],
       "gateG2Passed": false
+    },
+    {
+      "id": "CSV-EV-0033",
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:03:17.182Z",
+      "occurredAt": "2026-10-20T10:56:36Z",
+      "commit": "c3438c5f0b906d137465923624f5e5f6e3604684",
+      "runId": 39411288606,
+      "jobId": 118589402720,
+      "tests": 113,
+      "skipped": 0,
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "gateG2Passed": false
+    },
+    {
+      "id": "CSV-EV-0034",
+      "kind": "NATIVE_PORTS_LOCAL_COMPOSITION_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:03:17.182Z",
+      "tests": {
+        "engineChannel": 6,
+        "nativePorts": 7,
+        "databasePolicy": 9
+      },
+      "gateG2Passed": false,
+      "notProven": [
+        "immutableClosure",
+        "newIssuerEntrypoint",
+        "representativeDockerAPISIXJVMPostgres"
+      ],
+      "note": "Direct Engine budget shared across components; once-only POST reservation. Native Ports composes Owner/DB/generations/readiness/new Gateway and retained CAS namespace. Epoch floors explicitly, no future timestamp tolerance; historical preflight untouched."
     }
   ],
   "activeIntervals": [
@@ -536,9 +568,18 @@
     {
       "id": "CSV-TIME-0007",
       "startedAt": "2026-10-20T10:54:20.502Z",
-      "endedAt": null,
+      "endedAt": "2026-10-20T11:03:17.182Z",
       "workPackage": "WP2",
       "activity": "NATIVE_PORTS_COMPOSITION_AND_QUALIFICATION",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 536.68
+    },
+    {
+      "id": "CSV-TIME-0008",
+      "startedAt": "2026-10-20T11:03:17.182Z",
+      "endedAt": null,
+      "workPackage": "WP2",
+      "activity": "ISSUER_IMMUTABLE_CLOSURE_AND_REPRESENTATIVE_QUALIFICATION",
       "classification": "ACTIVE_TECHNICAL",
       "seconds": null
     }

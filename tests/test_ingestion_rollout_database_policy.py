@@ -85,7 +85,7 @@ class SnapshotPolicy(unittest.TestCase):
         tree=ast.parse(source)
         sql=next(ast.literal_eval(n.value)for n in tree.body if isinstance(n,ast.Assign)
                  and any(getattr(t,'id',None)=='SQL'for t in n.targets))
-        self.assertEqual(p.SQL,sql.replace("'observedAtUnix',","'serverPort',current_setting('port')::integer,\n 'observedAtUnix',",1))
+        self.assertEqual(p.SQL,sql.replace("extract(epoch FROM transaction_timestamp())::bigint", "floor(extract(epoch FROM transaction_timestamp()))::bigint").replace("'observedAtUnix',","'serverPort',current_setting('port')::integer,\n 'observedAtUnix',",1))
         self.assertTrue(p.SQL.startswith('-- Closed read-only'))
         self.assertIn('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY;',p.SQL)
         self.assertTrue(p.SQL.rstrip().endswith('ROLLBACK;'))

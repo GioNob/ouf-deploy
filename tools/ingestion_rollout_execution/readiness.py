@@ -93,7 +93,7 @@ class NativeIngestionReadiness:
             require(identity(os.fstat(fd))==binding,'INGESTION_NAMESPACE_FD_CHANGED');self.guard()
             child=subprocess.Popen([self.profile['pythonExecutable']['path'],'-I','-B','-S','-c',CHILD_SOURCE,str(fd)],
                 stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,pass_fds=(fd,),close_fds=True,cwd='/',env={'LC_ALL':'C'})
-            try:output,_=child.communicate(__import__('json').dumps(self.profile['endpoint']).encode(),timeout=15)
+            try:output,_=child.communicate(json.dumps(self.profile['endpoint']).encode(),timeout=15)
             except subprocess.TimeoutExpired:require(False,'INGESTION_READINESS_CHILD_UNPROVEN')
             require(child.returncode==0 and 0<len(output)<=90000,'INGESTION_READINESS_CHILD_UNPROVEN')
             self.guard()
