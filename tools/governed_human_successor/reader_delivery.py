@@ -29,7 +29,15 @@ def generate(root,case):
     declaration={'schema':'ouf.human-successor-read-only-closure.v1','sourceHashes':hashes,
         'caseHash':hashlib.sha256(encoded(case)).hexdigest(),'readOnly':True,'runtimeAuthorityIssued':False}
     closure_hash=hashlib.sha256(encoded(declaration)).hexdigest()
-    header='SOURCES='+repr(sources)+'\nCASE='+repr(case)+'\nDECLARATION='+repr(declaration)+'\nCLOSURE_HASH='+repr(closure_hash)+'\n'
+    safe_reasons=set()
+    for source in sources.values():
+        for node in ast.walk(ast.parse(source)):
+            if isinstance(node,ast.Call)and isinstance(node.func,ast.Name):
+                index=1 if node.func.id=='require'else 0 if node.func.id=='ValueError'else None
+                if index is not None and len(node.args)>index and isinstance(node.args[index],ast.Constant):
+                    value=node.args[index].value
+                    if type(value)is str:safe_reasons.add(value)
+    header='SOURCES='+repr(sources)+'\nCASE='+repr(case)+'\nDECLARATION='+repr(declaration)+'\nCLOSURE_HASH='+repr(closure_hash)+'\nSAFE_REASONS='+repr(sorted(safe_reasons))+'\n'
     body='''
 import hashlib,importlib.abc,importlib.util,json,os,signal,sys
 def encoded(value):return json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
@@ -66,9 +74,12 @@ def main():
  print(encoded(result).decode(),flush=True)
 if __name__=='__main__':
  try:main()
- except (Exception,KeyboardInterrupt):
+ except (Exception,KeyboardInterrupt)as error:
+  reason=str(error)if type(error).__name__ in ('Denied','ValueError')and str(error)in SAFE_REASONS else 'EXACT_CURRENT_HISTORY_OR_CUSTODY_NOT_PROVEN_PRIVATE_DETAILS_REDACTED'
+  module=sys.modules.get('tools.governed_human_successor.inspection')
+  phase=getattr(module,'CHECKPOINT',{'phase':'SEALED_READ_ONLY_ENTRY'})['phase']
   print(encoded({'schema':'ouf.human-expired-ready-successor-inspection.v1','status':'STOP_RECONCILE',
-   'reasonCode':'EXACT_CURRENT_HISTORY_OR_CUSTODY_NOT_PROVEN_PRIVATE_DETAILS_REDACTED',
+   'reasonCode':reason,'checkpoint':{'phase':phase},
    'complete':False,'readOnly':True,'automaticReplayAllowed':False,'budgetReset':False,
    'runtimeAuthorityIssued':False}).decode(),flush=True)
   raise SystemExit(2)

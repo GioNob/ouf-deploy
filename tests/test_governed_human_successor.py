@@ -129,6 +129,13 @@ class GovernedSuccessor(unittest.TestCase):
             window.initialize(self.review,self.decision,self.selected,self.selection,self.history)
         self.assertEqual(self.old.record.read_bytes(),self.old_bytes)
 
+    def test_concurrent_initializer_cannot_consume_a_second_claim(self):
+        with self.old.invocation():
+            with self.assertRaises(BlockingIOError):
+                window.initialize(self.review,self.decision,self.selected,self.selection,self.history)
+        self.assertFalse((self.previous/'successor-window.claim.json').exists())
+        self.assertEqual(self.old.record.read_bytes(),self.old_bytes)
+
     def test_fresh_provider_path_is_four_requests_in_four_explicit_steps(self):
         session=self.session()
         with patch.object(session,'_http')as http:
@@ -391,6 +398,7 @@ class GovernedSuccessor(unittest.TestCase):
         self.assertEqual(value['journalWrites'],0);self.assertEqual(value['oauthRequests'],0)
         self.assertFalse(any(s in result.stdout for s in('old-access','old-refresh','old-published')))
         for p,content in before.items():self.assertEqual(p.read_bytes(),content)
+
         # Corrupt the embedded declaration while retaining its expected digest.
         tampered=raw.replace(b"'readOnly': True",b"'readOnly': False",1)
         self.assertNotEqual(tampered,raw);script.write_bytes(tampered)
@@ -398,5 +406,11 @@ class GovernedSuccessor(unittest.TestCase):
             capture_output=True,timeout=50)
         self.assertEqual(result.returncode,2);self.assertEqual(json.loads(result.stdout)['status'],'STOP_RECONCILE')
         for p,content in before.items():self.assertEqual(p.read_bytes(),content)
+
+    def test_checked_in_reader_is_exactly_reproducible_from_selected_sources(self):
+        script=ROOT/'scripts/read-human-successor-candidate-20261020.py'
+        namespace={'__name__':'fixture_not_main'};exec(compile(script.read_bytes(),'<fixture-reader>','exec'),namespace)
+        raw,_=reader_delivery.generate(ROOT,namespace['CASE'])
+        self.assertEqual(script.read_bytes(),raw)
 
 if __name__=='__main__':unittest.main()

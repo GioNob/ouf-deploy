@@ -14,6 +14,7 @@ import time
 from tools.ingestion_rollout_execution.contract import require,digest,path,hashed
 from tools.ingestion_rollout_execution import private_file
 from tools.governed_human_successor import contract,window
+CHECKPOINT={'phase':'NOT_STARTED'}
 
 def decode(raw):
     def unique(pairs):
@@ -61,12 +62,14 @@ def read_selected(selected):
         for fd in reversed(fds):os.close(fd)
 
 def inspect_retained(case,source_closure_hash):
+    CHECKPOINT['phase']='EXACT_RETAINED_CASE_SELECTION'
     require(type(case)is dict and case.get('schema')=='ouf.ingestion-rollout-retained-case.v1'
         and case.get('purpose')=='EXACT_RETAINED_INSTALLATION_CASE_NOT_PORTABLE_DEFAULT'
         and case.get('runtimeAuthorityIssued')is False and case.get('budgetReset')is False,
         'EXACT_RETAINED_INSTALLATION_SELECTION_REQUIRED')
     artifacts={};seals={}
     for key in('packetBinding','verifiedInputsBinding','ownerPlanBinding','ownerResultBinding'):
+        CHECKPOINT['phase']='RETAINED_'+key.upper()
         binding=case.get(key)
         require(type(binding)is dict and set(binding)=={'path','sha256'}and hashed(binding['sha256']),
                 'EXACT_RETAINED_NONCREDENTIAL_ARTIFACT_BINDING_REQUIRED')
@@ -89,13 +92,17 @@ def inspect_retained(case,source_closure_hash):
     binding=plan.get('humanBinding')
     require(type(binding)is dict,'EXACT_COMPLETED_OWNER_HUMAN_BINDING_REQUIRED')
     directory=path(binding.get('sessionDirectory'))
+    CHECKPOINT['phase']='RETAINED_SUCCESSFUL_HUMAN_JOURNAL'
     row,journal=read_selected(directory+'/recovery.json')
     require(row.get('binding')==binding,'SAME_SUCCESSFUL_OWNER_SESSION_JOURNAL_REQUIRED')
     selection={k:binding[k]for k in('issuer','tenant','subject')}
     operations={k:digest(v)for k,v in artifacts.items()}
+    CHECKPOINT['phase']='EXPIRED_READY_PUBLIC_HISTORY'
     review=contract.compile_review(selection,row,history,operations,source_closure_hash,
         now=time.time(),monotonic=time.monotonic(),boot_id=window.boot_id())
+    CHECKPOINT['phase']='FINAL_FILE_CUSTODY'
     for seal in [*seals.values(),journal]:private_file.check_metadata(seal)
+    CHECKPOINT['phase']='COMPLETE'
     # This bundle contains private seals. Only review/public_status may be
     # printed; do not serialize the bundle as an operator diagnostic.
     return review,{'selection':selection,'history':history,'predecessorJournal':journal}

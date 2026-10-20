@@ -47,9 +47,27 @@ Python3.12 and3.13.5 in root custody.
 
 These are synthetic qualification fixtures, not target IAM authentication,
 THS approval, DB admission, runtime rollout or release acceptance. The package
-currently has no operator launcher or approved target review; it must not be
-used on the VPS until sealed delivery and explicit consent are qualified.
+has no approved authentication launcher or target consent. The separate
+`scripts/launch-human-successor-read-20261020.sh` delivers only the six-source
+read-only inspection. Its embedded policy module contains just CLIENT/SCOPES/
+PROFILE constants, and its boot module just reads the Linux boot identifier.
+No authentication, journal writer, initializer or signing implementation is
+included. The embedded installation case binds the already retained packet,
+inputs, owner plan and completed result. It derives the session directory from
+that exact completed plan, rather than assuming a sibling directory layout.
+The launcher verifies the pinned script before sudo; root rechecks the bounded
+file and digest and executes those verified bytes in isolated memory. Target
+artifacts are not changed. A local private download/log directory is retained.
+Failure exposes only a fixed checkpoint and an allowlisted static reason code.
+No login or new window is authorized by running this diagnostic.
 Technical phases remain8/8; functional milestones remain4/6; G3 stays open.
+
+Authorization PET1.5 §§0,6 and the actor/HUMAN-only guards were consulted.
+The product HUMAN flow prescribed in §6 is Authorization Code+PKCE through a
+trusted client/BFF or THS. The existing `ouf-human-admin` device path reused in
+these fixtures is an installation operator recovery profile; this work does
+not claim product PKCE, federation or THS acceptance from it, create users,
+change IAM client configuration, or turn terminal consent into THS approval.
 
 CI success, VPS readiness and CSV end-to-end acceptance are distinct evidence
 classes. The operator reports roughly30% first-pass VPS success after CI from

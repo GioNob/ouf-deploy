@@ -5,6 +5,7 @@ on:
       - 'tools/governed_human_successor/**'
       - 'tests/test_governed_human_successor.py'
       - 'scripts/read-human-successor-candidate-20261020.py'
+      - 'scripts/launch-human-successor-read-20261020.sh'
       - '.github/workflows/governed-human-successor.yml'
 permissions: {contents: read}
 jobs:
