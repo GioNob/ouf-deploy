@@ -132,7 +132,9 @@ class NativeDatabase(unittest.TestCase):
 
     def test_complete_native_docker_and_psql_adapter_without_target_authority(self):
         before = self.admin('SELECT count(*) FROM ouf_ingestion.audit_event')
+        context_before = (list(self.root.iterdir()),m.metadata(self.root.stat()))
         with patch.object(m,'REFERENCE_CATALOG_SHA256',self.reference): report = m.collect(self.selected)
+        self.assertEqual((list(self.root.iterdir()),m.metadata(self.root.stat())),context_before)
         self.assertTrue(report['databaseReadPrerequisitesProven'])
         self.assertEqual(report['engineGetRequests'],4)
         self.assertEqual(report['nativeSqlSessions'],1)

@@ -427,7 +427,8 @@ def collect(selected, engine_type=EngineReader, execute=bounded_command, executa
     startup = selected_config_matches(app, pg, selected)
     executable = executable_check(selected['docker'])
     require(not os.path.lexists(Path(selected['dockerConfigDirectory']) / 'config.json'), 'EMPTY_RETAINED_DOCKER_CLI_CONFIG_REQUIRED')
-    DB_PROGRESS.update(phase='EXACT_DATABASE_AND_RUNTIME_BINDINGS_VERIFIED', engineGetRequests=reader.calls)
+    DB_PROGRESS.update(phase='EXACT_DATABASE_AND_RUNTIME_BINDINGS_VERIFIED', engineGetRequests=reader.calls,
+                       runtimeBindingsRechecked=False)
     if before_read is not None: before_read()
     DB_PROGRESS.update(phase='FIXED_READ_ONLY_DATABASE_SESSION', nativeSqlSessionsStarted=1)
     code, raw, errors = execute(native_arguments(selected, executable))
@@ -440,11 +441,12 @@ def collect(selected, engine_type=EngineReader, execute=bounded_command, executa
     DB_PROGRESS.update(phase='DATABASE_FACTS_OBSERVED', databaseFacts=report)
     require(runtime(reader.get(selected['postgres']['containerId']), ordered=False) == selected['postgres']
             and runtime(reader.get(selected['ingestion']['containerId'])) == selected['ingestion'], 'GENERATIONS_CHANGED_DURING_DATABASE_READ')
+    DB_PROGRESS.update(runtimeBindingsRechecked=True, engineGetRequests=reader.calls)
     require(executable_check(selected['docker']) == executable
             and not os.path.lexists(Path(selected['dockerConfigDirectory']) / 'config.json'), 'NATIVE_CHANNEL_CHANGED_DURING_READ')
     return {'schema':'ouf.ingestion-db-read-preflight.v1','complete':True,'readOnly':True,
             'observedAtUnix':facts['observedAtUnix'],**report,**startup,'engineGetRequests':reader.calls,
-            'nativeSqlSessions':1,'maximumNativeSqlSessions':1,'maximumSeconds':90,
+            'nativeSqlSessions':1,'maximumNativeSqlSessions':1,'maximumSeconds':90,'runtimeBindingsStableThroughoutRead':True,
             'schemaOrDataMutations':0,'databaseMigrationPerformed':False,'runtimeAuthorityIssued':False,
             'databaseAdmissionProven':False,'runtimeStartupMigrationPolicyProven':False,
             'freshRuntimeHUMANAndOwnerReadStillRequired':True,'currentOwnerActiveRequeried':False,
@@ -460,10 +462,11 @@ def main():
             and sys.flags.no_site and sys.dont_write_bytecode, 'ISOLATED_ROOT_NO_ARGUMENTS_REQUIRED')
     def expired(*_): raise Denied('FINITE_DB_PREFLIGHT_DEADLINE')
     signal.signal(signal.SIGALRM, expired); signal.alarm(90)
-    DB_PROGRESS.clear(); DB_PROGRESS.update(phase='RETAINED_DATABASE_SELECTION')
+    DB_PROGRESS.clear(); DB_PROGRESS.update(phase='RETAINED_DATABASE_SELECTION', retainedSelectionRechecked=False)
     chosen = selection()
     report = collect(chosen)
     require(selection() == chosen, 'RETAINED_DATABASE_SELECTION_CHANGED_DURING_READ')
+    DB_PROGRESS.update(retainedSelectionRechecked=True)
     print(encoded(report).decode(), flush=True)
 
 
