@@ -78,9 +78,14 @@ class NativeDatabase(unittest.TestCase):
                  '-e','OUF_ING_DB_USER='+cls.user,'-e','OUF_ING_DB_PASSWORD=CI_ONLY_NEVER_PRINT',
                  'postgres:17-alpine','sleep','600'])
         socket = Path('/var/run/docker.sock').resolve(); info = socket.stat()
-        pg,app = cls.inspect(cls.pg),cls.inspect(cls.app)
+        pg_cli,app_cli = cls.inspect(cls.pg),cls.inspect(cls.app)
+        engine_binding = {'socketPath':str(socket),'socketBinding':[info.st_dev,info.st_ino,info.st_uid,info.st_gid,stat.S_IMODE(info.st_mode)]}
+        # Pins must use the exact retained API1.44 representation, not the
+        # current Docker CLI's newer negotiated inspect representation.
+        reader = m.EngineReader(engine_binding,[pg_cli['Id'],app_cli['Id']])
+        pg,app = reader.get(pg_cli['Id']),reader.get(app_cli['Id'])
         oid = int(cls.admin("SELECT oid FROM pg_database WHERE datname='"+cls.db+"'").strip())
-        cls.selected = {'engine':{'socketPath':str(socket),'socketBinding':[info.st_dev,info.st_ino,info.st_uid,info.st_gid,stat.S_IMODE(info.st_mode)]},
+        cls.selected = {'engine':engine_binding,
                         'postgres':m.runtime(pg,False),'ingestion':m.runtime(app),'database':cls.db,'user':cls.user,'databaseOid':oid,
                         'docker':{'path':cls.docker,'sha256':hashlib.sha256(Path(cls.docker).read_bytes()).hexdigest()},
                         'dockerConfigDirectory':str(cls.root)}
