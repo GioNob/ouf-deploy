@@ -50,6 +50,14 @@ def review_fixture(context='/fixture/execution',key_path=None):
     return c.compile_review(packet,binding,inputs,human,context),packet,inputs
 
 class ReviewContract(unittest.TestCase):
+    def test_new_packet_metadata_or_context_does_not_create_a_new_logical_budget(self):
+        review,packet,inputs=review_fixture();packet['diagnosticNote']='new presentation, same operation'
+        following=c.compile_review(packet,{'path':'/fixture/another-packet','sha256':c.digest(packet)},inputs,
+                                   review['humanBinding'],'/fixture/another-execution-context')
+        self.assertNotEqual(review['packetBinding']['sha256'],following['packetBinding']['sha256'])
+        self.assertEqual(review['logicalOperationRef'],following['logicalOperationRef'])
+        self.assertNotEqual(c.scope(review)['reviewHash'],c.scope(following)['reviewHash'])
+
     def test_exact_packet_to_finite_key_two_runtime_two_put_intents(self):
         review,packet,inputs=review_fixture();scope=c.scope(review)
         self.assertTrue(all(review[k]is False for k in c.FORBIDDEN));self.assertEqual(review['maximumGatewayPuts'],2)

@@ -25,6 +25,13 @@ def path(value):
     return value
 def hashed(value):return type(value)is str and re.fullmatch('[0-9a-f]{64}',value)is not None
 
+def logical_operation(stages):
+    intents={s['name']:s['intent']for s in stages}
+    return digest({'operation':'INGESTION_GATEWAY_ROLLOUT',
+        'oldContainerIds':{m:intents[m+'.DISABLE_OLD_RESTART']['oldContainerId']for m in ('ingestion','gateway')},
+        'candidateNativeImageId':intents['IMPORT_INGESTION_IMAGE']['nativeImageId'],
+        'dedicatedKeyReference':intents['CREATE_DEDICATED_KEY']['path']})
+
 def compile_review(packet,packet_binding,inputs,human_binding,execution_context):
     require(type(packet)is dict and packet.get('schema')=='ouf.ingestion-rollout-private-packet.v3'
             and packet.get('kind')=='PRIVATE_TEMPLATES_NOT_EXECUTABLE_AUTHORITY'
@@ -108,7 +115,7 @@ def compile_review(packet,packet_binding,inputs,human_binding,execution_context)
     add('VERIFY_RESTORED_FINAL','READ',{'bothRuntimeGenerationsAndRestartPoliciesRequired':True,'all82RoutesRequired':True})
     return {'schema':'ouf.ingestion-rollout-execution-review.v1','profile':PROFILE,'packetBinding':copy.deepcopy(packet_binding),
         'verifiedInputsHash':digest(inputs),'executionContext':path(execution_context),'humanBinding':copy.deepcopy(human_binding),
-        'logicalOperationRef':digest({'profile':PROFILE,'packetHash':packet_binding['sha256']}),'stages':stages,
+        'logicalOperationRef':logical_operation(stages),'stages':stages,
         'maximumExecutionSeconds':900,'maximumEffectAttemptsPerStage':1,'maximumGatewayPuts':2,
         'maximumSecretCreations':1,'maximumImageImports':1,'readinessPolicy':copy.deepcopy(READINESS),
         **{k:False for k in FORBIDDEN},'runtimeAuthorityIssued':False,'nativeProfilePublished':False,
@@ -125,6 +132,7 @@ def scope(review):
             and len({s['name']for s in stages})==len(stages)
             and all(s['kind']in('READ','EFFECT')and s['intentHash']==digest(s['intent'])for s in stages),
             'EXACT_BOUNDED_ORDERED_INTENTS_REQUIRED')
+    require(review.get('logicalOperationRef')==logical_operation(stages),'STABLE_LOGICAL_OPERATION_FENCE_REQUIRED')
     return {'profile':PROFILE,'reviewHash':digest(review),'packetHash':review['packetBinding']['sha256'],
         'logicalOperationRef':review['logicalOperationRef'],'executionContext':review['executionContext'],
         'humanBinding':copy.deepcopy(review['humanBinding']),'maximumExecutionSeconds':900,
