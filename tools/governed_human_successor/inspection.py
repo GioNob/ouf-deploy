@@ -91,17 +91,43 @@ def inspect_retained(case,source_closure_hash):
         'ownerPlanHash':digest(plan),'completedResultHash':digest(result)}
     binding=plan.get('humanBinding')
     require(type(binding)is dict,'EXACT_COMPLETED_OWNER_HUMAN_BINDING_REQUIRED')
+    # The completed plan pins the hash of the FULL original selection. The
+    # issuer/tenant/subject projection is not its preimage. Recover the exact
+    # original document through the retained capsule, never invent a reduced
+    # selection or relax that hash check.
+    CHECKPOINT['phase']='RETAINED_OWNER_CAPSULE_SELECTION_REFERENCE'
+    context=path(plan.get('authorityDirectory'))
+    require(context==str(PurePosixPath(case['ownerPlanBinding']['path']).parent),
+            'OWNER_CAPSULE_MUST_MATCH_COMPLETED_PLAN_DIRECTORY')
+    capsule,capsule_seal=read_selected(context+'/case.json')
+    original_binding=capsule.get('originalBinding')if type(capsule)is dict else None
+    require(type(original_binding)is dict and set(original_binding)=={'path','sha256'}
+        and hashed(original_binding['sha256']),'EXACT_RETAINED_ORIGINAL_SELECTION_DOCUMENT_REQUIRED')
+    CHECKPOINT['phase']='RETAINED_ORIGINAL_FULL_SELECTION'
+    original,original_seal=read_selected(original_binding['path'])
+    require(original_seal['sha256']==original_binding['sha256'],
+            'RETAINED_ORIGINAL_DOCUMENT_BYTES_CHANGED')
+    require(type(original)is dict and original.get('schema')=='ouf.chatbot-file-cohort-prepared-inputs.v1'
+        and original.get('engine')==plan.get('engine')and type(original.get('engine'))is dict
+        and type(original.get('authorization'))is dict
+        and type(original['authorization'].get('plan'))is dict
+        and type(original['authorization']['plan'].get('selection'))is dict,
+        'ORIGINAL_AUTHORIZATION_PLAN_FULL_SELECTION_REQUIRED')
+    selection=original['authorization']['plan']['selection']
+    require(digest(selection)==binding.get('selectionHash')
+        and all(selection.get(k)==binding.get(k)for k in('issuer','tenant','subject')),
+        'FULL_ORIGINAL_SELECTION_MUST_MATCH_PINNED_OWNER_BINDING')
     directory=path(binding.get('sessionDirectory'))
     CHECKPOINT['phase']='RETAINED_SUCCESSFUL_HUMAN_JOURNAL'
     row,journal=read_selected(directory+'/recovery.json')
     require(row.get('binding')==binding,'SAME_SUCCESSFUL_OWNER_SESSION_JOURNAL_REQUIRED')
-    selection={k:binding[k]for k in('issuer','tenant','subject')}
     operations={k:digest(v)for k,v in artifacts.items()}
+    operations['retainedFullSelectionHash']=digest(selection)
     CHECKPOINT['phase']='EXPIRED_READY_PUBLIC_HISTORY'
     review=contract.compile_review(selection,row,history,operations,source_closure_hash,
         now=time.time(),monotonic=time.monotonic(),boot_id=window.boot_id())
     CHECKPOINT['phase']='FINAL_FILE_CUSTODY'
-    for seal in [*seals.values(),journal]:private_file.check_metadata(seal)
+    for seal in [*seals.values(),capsule_seal,original_seal,journal]:private_file.check_metadata(seal)
     CHECKPOINT['phase']='COMPLETE'
     # This bundle contains private seals. Only review/public_status may be
     # printed; do not serialize the bundle as an operator diagnostic.

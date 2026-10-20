@@ -1,6 +1,7 @@
 """Synthetic provider only; durable finite successor, zero target operations."""
 import base64
 import copy
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -37,7 +38,11 @@ class GovernedSuccessor(unittest.TestCase):
         self.temp=tempfile.TemporaryDirectory(dir=os.environ.get('OUF_TEST_ROOT',str(ROOT)));self.addCleanup(self.temp.cleanup)
         self.root=Path(self.temp.name);self.root.chmod(0o700)
         self.previous=self.root/'previous';self.previous.mkdir(mode=0o700)
-        self.selection={'issuer':'https://fixture.invalid','tenant':'tenant-fixture','subject':'human-fixture'}
+        self.selection={'issuer':'https://fixture.invalid','tenant':'tenant-fixture','subject':'human-fixture',
+            'origin':'https://fixture-gateway.invalid','docker':{'path':'/fixture/docker','sha256':'e'*64},
+            'keycloakContainer':'f'*64,'realm':'fixture-realm',
+            'clients':{'chatgpt':{'clientId':'fixture-chatgpt','requestedScopes':[]},
+                'ths':{'clientId':'fixture-ths','requestedScopes':['openid']}}}
         self.scopes=h.SCOPES+['fixture.scope.'+str(i)for i in range(5)]
         retry={**copy.deepcopy(h.PROFILE),'id':'ouf.human.ingestion-owner-recovery288.v7','maximumAttempts':288}
         b={'sessionId':'expired-fixture','selectionHash':digest(self.selection),**self.selection,'clientId':h.CLIENT,
@@ -326,7 +331,7 @@ class GovernedSuccessor(unittest.TestCase):
         self.assertEqual(self.old.record.read_bytes(),self.old_bytes)
 
     def retained_case(self):
-        plan={'humanBinding':self.row['binding']}
+        plan={'humanBinding':self.row['binding'],'authorityDirectory':str(self.root),'engine':{'fixture':'engine'}}
         result={'complete':True,'planHash':digest(plan),'oauthAttemptsAfter':278,
             'maximumCumulativeOAuthAttempts':288}
         inputs={'synthetic':'retained-inputs'}
@@ -337,6 +342,11 @@ class GovernedSuccessor(unittest.TestCase):
         case={'schema':'ouf.ingestion-rollout-retained-case.v1',
             'purpose':'EXACT_RETAINED_INSTALLATION_CASE_NOT_PORTABLE_DEFAULT',
             'runtimeAuthorityIssued':False,'budgetReset':False}
+        original=self.root/'original.json';original.write_bytes(encoded({
+            'schema':'ouf.chatbot-file-cohort-prepared-inputs.v1','engine':plan['engine'],
+            'authorization':{'plan':{'selection':self.selection}}}));original.chmod(0o600)
+        capsule=self.root/'case.json';capsule.write_bytes(encoded({'originalBinding':{
+            'path':str(original),'sha256':hashlib.sha256(original.read_bytes()).hexdigest()}}));capsule.chmod(0o600)
         for name,value in zip(('packetBinding','verifiedInputsBinding','ownerPlanBinding','ownerResultBinding'),
                               (packet,inputs,plan,result)):
             p=self.root/(name+'.json');p.write_bytes(encoded(value));p.chmod(0o600)
@@ -358,6 +368,27 @@ class GovernedSuccessor(unittest.TestCase):
         changed=json.loads(p.read_text());changed['maximumCumulativeOAuthAttempts']=999;p.write_bytes(encoded(changed))
         with self.assertRaisesRegex(Denied,'RETAINED_CANONICAL_ARTIFACT_CHANGED'):
             inspection.inspect_retained(case,'d'*64)
+        self.assertFalse((self.previous/'successor-window.claim.json').exists())
+
+    def test_three_field_projection_cannot_replace_full_original_selection(self):
+        case=self.retained_case()
+        review,private=inspection.inspect_retained(case,'d'*64)
+        self.assertEqual(private['selection'],self.selection)
+        self.assertEqual(review['selectionHash'],digest(self.selection))
+        reduced={k:self.selection[k]for k in('issuer','tenant','subject')}
+        self.assertNotEqual(digest(reduced),digest(self.selection))
+        with self.assertRaisesRegex(Denied,'EXACT_RETAINED_HUMAN_SELECTION_REQUIRED'):
+            self.compile(self.row,reduced)
+
+    def test_capsule_cannot_rebind_full_selection_even_with_same_issuer_tenant_subject(self):
+        case=self.retained_case();original=self.root/'original.json';value=json.loads(original.read_text())
+        value['authorization']['plan']['selection']['origin']='https://foreign-fixture.invalid'
+        original.write_bytes(encoded(value));capsule=self.root/'case.json'
+        capsule.write_bytes(encoded({'originalBinding':{'path':str(original),
+            'sha256':hashlib.sha256(original.read_bytes()).hexdigest()}}))
+        with self.assertRaisesRegex(Denied,'FULL_ORIGINAL_SELECTION_MUST_MATCH_PINNED_OWNER_BINDING'):
+            inspection.inspect_retained(case,'d'*64)
+        self.assertEqual(self.old.record.read_bytes(),self.old_bytes)
         self.assertFalse((self.previous/'successor-window.claim.json').exists())
 
     def test_retained_symlink_and_duplicate_json_are_rejected(self):
@@ -392,7 +423,7 @@ class GovernedSuccessor(unittest.TestCase):
             capture_output=True,timeout=50)
         self.assertEqual(result.returncode,0,result.stdout+result.stderr)
         value=json.loads(result.stdout)
-        self.assertEqual(value['status'],'REVIEW_COMPILED_NO_AUTHORITY')
+        self.assertEqual(value['status'],'SELECTION_RECONCILED_REVIEW_NO_AUTHORITY')
         self.assertEqual((value['priorOAuthAttempts'],value['remainingAttempts']),(278,10))
         self.assertEqual(value['credentialJournalsOpened'],1)
         self.assertEqual(value['journalWrites'],0);self.assertEqual(value['oauthRequests'],0)
@@ -408,7 +439,7 @@ class GovernedSuccessor(unittest.TestCase):
         for p,content in before.items():self.assertEqual(p.read_bytes(),content)
 
     def test_checked_in_reader_is_exactly_reproducible_from_selected_sources(self):
-        script=ROOT/'scripts/read-human-successor-candidate-20261020.py'
+        script=ROOT/'scripts/reconcile-human-successor-selection-20261020.py'
         namespace={'__name__':'fixture_not_main'};exec(compile(script.read_bytes(),'<fixture-reader>','exec'),namespace)
         raw,_=reader_delivery.generate(ROOT,namespace['CASE'])
         self.assertEqual(script.read_bytes(),raw)
