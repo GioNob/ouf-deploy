@@ -4,12 +4,15 @@ on:
     paths:
       - 'tools/governed_human_successor/**'
       - 'tests/test_governed_human_successor.py'
+      - 'tests/test_governed_human_operator.py'
       - 'scripts/read-human-successor-candidate-20261020.py'
       - 'scripts/launch-human-successor-read-20261020.sh'
       - 'scripts/reconcile-human-successor-selection-20261020.py'
       - 'scripts/launch-human-successor-selection-reconcile-20261020.sh'
       - 'scripts/reconcile-human-successor-custody-20261020.py'
       - 'scripts/launch-human-successor-custody-reconcile-20261020.sh'
+      - 'scripts/human-successor-explicit-operator-20261020.py'
+      - 'scripts/launch-human-successor-operator-20261020.sh'
       - '.github/workflows/governed-human-successor.yml'
 permissions: {contents: read}
 jobs:
@@ -36,3 +39,4 @@ jobs:
           sudo "$pythonLocation/bin/python3" -I -B -S -c 'from pathlib import Path; assert Path("/proc/sys/kernel/random/boot_id").is_file()'
           sudo env OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_governed_human_successor.py -v
           sudo env OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_human_reader.py -v
+          sudo env OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_governed_human_operator.py -v
