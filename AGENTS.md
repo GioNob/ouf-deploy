@@ -57,3 +57,7 @@ Alerts are actionable, deduplicated and configuration-governed, with finite dura
 
 The current oufadmin VPS does not expose gh in PATH. Historical working deliveries use the existing portable executable at $HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh. Target commands must check this executable first, then optionally command -v gh, and fail before sudo or mutations if unavailable. Never assume raw curl can fetch this private repository anonymously. Preserve existing authentication; do not request or print tokens. This is a retained-host delivery binding, not a portable installation default.
 
+
+## IAM administration through APIs
+
+Owner instruction, 2026-10-20: do not ask the owner to visit the Keycloak console to inspect or edit IAM settings. Prepare and qualify the API path and use it within current authority. Do not delegate routine administrative discovery to the owner. If an operator terminal is the only qualified VPS execution channel, provide one exact pinned command with explicit expected output. If credentials or human consent are indispensable, prepare a separately explicit terminal/API step; never silently log in, refresh, reset budgets/windows, or replay claims. Passwords and token values must not enter chat, command arguments, environment, or logs. A supposedly read-only kcadm call can refresh automatically and is not an acceptable substitute for a no-refresh reader.

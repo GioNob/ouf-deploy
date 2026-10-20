@@ -1,3 +1,17 @@
+> **CURRENT — 20 October 2026, IAM API path qualified; console instruction withdrawn.**
+>
+> Owner explicitly declines further Keycloak-console work. Use qualified APIs; do not ask the owner to inspect/edit the console. The previous console-metadata request is withdrawn. Source224757b25696eb154948e60eb0de3be716cc0b3f adds a sealed reader that never invokes kcadm/login/refresh. CI39490969842 Python3.12/3.13.5 each13PASS/zero skips, including physical Docker archives and namespace dispatch against a simulated Admin API; all prior regressions PASS. This is not target readback or real-provider qualification.
+>
+> One exact-profile VPS read via existing gh+sudo is now required: max7Engine GET/HEAD, max3AdminGET,90seconds, cached current admin bearer only, exact selected Keycloak namespace. No OAuth/token endpoint or mutation. Expired credentials return a diagnostic without login/refresh; new private safe journal/context/claim only. Existing HUMAN journals/bearers and all prior contexts/claims remain untouched. Operator returns one public JSON and read.log path, no console/code/browser.
+>
+> Technical8/8,functional4/6; G0–G2PASS,G3open. Issued300second token vs>930 guard remains the proven blocker; current actual IAM policy still unknown. Latest HUMAN282/288,sixremaining; no new authentication or policy change authorized. [Current handoff](handoffs/OUF_CLOUD_IAM_API_POLICY_READ_READY_HANDOFF_20261020.md), [qualification](../evidence/iam-current-policy-read-delivery-pins-20261020.json), [current timeline](../evidence/csv-e2e-execution-timeline-current.json).
+>
+> Measured technical active effort6.836065h at2026-10-20T20:21:11.312Z; frozen central G3 H+19/M1 H+24/M2 H+55 unchanged. Gate evidence, not elapsed hours, determines completion.
+
+---
+
+Previous checkpoints below are dated historical evidence; previous CURRENT/next-action/console instructions are superseded above. No completed action replay.
+
 > **CURRENT — 20 October 2026, issued300seconds proven on VPS.**
 >
 > Technical8/8,functional4/6; G0–G2PASS,G3open. Exact completed timing receipt proves recorded issuance20:56:35→expiry21:01:35Europe/Rome:300seconds, impossible to satisfy prepared>930second guard from issuance. This is not operator delay. Timing inspection complete/read-only, do not replay.282/288,sixremaining, no further OAuth, runtime or journal writes. Current IAM policy is still unproven; the two-hour HUMAN window is not bearer lifetime.
