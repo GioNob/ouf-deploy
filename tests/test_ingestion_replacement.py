@@ -42,7 +42,12 @@ class ReplacementObservation(unittest.TestCase):
 
     def test_created_endpoints_unallocated_then_first_running_generation(self):
         for module in('ingestion','gateway'):
-            args=observation(module,'CREATED');self.assertTrue(r.validate(*args[:4],**args[4])['neverStarted'])
+            args=observation(module,'CREATED');args[1]['HostConfig']['OomKillDisable']=False
+            self.assertTrue(r.validate(*args[:4],**args[4])['neverStarted'])
+            self.assertIsNone(args[0]['requestTemplate']['HostConfig']['OomKillDisable'])
+            args[1]['HostConfig']['OomKillDisable']=True
+            with self.assertRaises(Denied):r.validate(*args[:4],**args[4])
+            args[1]['HostConfig']['OomKillDisable']=False
             args[1]['State']['Status']='exited'
             with self.assertRaises(Denied):r.validate(*args[:4],**args[4])
 

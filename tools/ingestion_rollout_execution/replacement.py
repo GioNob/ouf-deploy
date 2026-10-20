@@ -49,7 +49,8 @@ def validate(frame,actual,image_config,old_id,*,created_id,process=None,phase='R
     Docker injects the new CID alias and a default hostname. API1.44 also reports
     the explicit primary endpoint MAC in Config, even when omitted at create.
     That compatibility echo must equal the reviewed primary endpoint; it never
-    becomes a new request parameter. Native OomKillDisable remains None. CREATED
+    becomes a new request parameter. Native OomKillDisable remains None; only
+    CREATED may echo that unset value as false before the kernel start check.
     permits only Docker's still-unallocated endpoint fields, never another IP.
     The resolved Gateway key is supplied in memory by a separately governed port.
     """
@@ -95,6 +96,7 @@ def validate(frame,actual,image_config,old_id,*,created_id,process=None,phase='R
     if restart_restored:host['RestartPolicy']=frame['restoreRestartPolicy']
     for key,value in host.items():
         require(re.fullmatch('[A-Za-z][A-Za-z0-9]{0,63}',key),'CLOSED_NATIVE_HOST_FIELD_REQUIRED')
+        if key=='OomKillDisable'and phase=='CREATED'and value is None and actual['HostConfig'].get(key)is False:continue
         require(actual['HostConfig'].get(key)==value,'REPLACEMENT_HOST_CONFIG_CHANGED_'+key)
     expected_mounts=_mounts(frame);observed={}
     for mount in actual['Mounts']:
