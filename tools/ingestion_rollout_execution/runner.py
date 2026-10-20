@@ -122,6 +122,9 @@ class Runner:
             elif stage['kind']=='EFFECT':raise Paused('CLAIMED_EFFECT_RECONCILIATION_REQUIRED')
             if stage['kind']=='EFFECT':
                 self.guard();self.ports.guard_current(stage);self.ports.apply(stage)
+                # A native port may persist resource identity while the effect
+                # remains CLAIMED. Observe against that newest CAS version.
+                row=self.guard()
             result=self.observe(row,stage)
             return {'complete':False,'completedStage':stage['name'],'journalVersion':result['version'],'runtimeAuthorityIssued':False}
 

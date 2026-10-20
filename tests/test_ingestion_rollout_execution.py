@@ -19,8 +19,10 @@ from tools.ingestion_rollout_execution import contract as c
 from tools.ingestion_rollout_preparation import frames
 from test_ingestion_rollout_packet import fixture
 
-def review_fixture(context='/fixture/execution'):
+def review_fixture(context='/fixture/execution',key_path=None):
     actual,draft,image=fixture();key=draft['ingestion']['readOnlyBindAddition']['Source']
+    if key_path is not None:
+        key=key_path;draft['ingestion']['readOnlyBindAddition']['Source']=key
     gateway=copy.deepcopy(actual);gateway['Id']='d'*64;gateway['Name']='/gateway'
     gateway['Mounts']=[{'Type':'bind','Source':'/fixture/old.yaml','Destination':frames.CONFIG_DESTINATION,'RW':False}]
     gateway['HostConfig']['Binds']=['/fixture/old.yaml:'+frames.CONFIG_DESTINATION+':ro']
@@ -96,7 +98,8 @@ if os.environ.get('OUF_NATIVE_UIDS')=='1':
             with patch.object(crypto,'ROOT',root):self.crypto.setUp()
             self.addCleanup(self.crypto.doCleanups);q=self.crypto
             self.context=q.root/'rollout-execution';self.context.mkdir(mode=0o700)
-            self.review,_,_=review_fixture(str(self.context));self.scope=c.scope(self.review);self.mono=100.
+            self.key_path=self.context/'new-dedicated-fixture-key'
+            self.review,_,_=review_fixture(str(self.context),str(self.key_path));self.scope=c.scope(self.review);self.mono=100.
             self.clock=lambda:(float(q.now),self.mono)
             authority=json.loads(q.authority);authority[c.AUTHORITY_KEY]=self.scope;authority['expiresAt']=q.now+480
             q.authority=c.encoded(authority);q.approval['expiresAt']=q.now+540;q.approval['executionAuthorityHash']=c.digest(authority)
@@ -188,5 +191,53 @@ if os.environ.get('OUF_NATIVE_UIDS')=='1':
             self.assertEqual(row['nextReadAt'],self.crypto.now+1000);self.assertEqual(row['readAttempts'],1)
             with self.assertRaises(c.Paused):self.runner.step()
             self.assertEqual(self.runner.record()['readAttempts'],1);self.assertEqual(self.ports.effects,[])
+
+        def key_component(self):
+            from tools.ingestion_rollout_execution.key import NativeKey
+            from tools.chatbot_file_cohort.human_session import HumanSession
+            human=HumanSession.__new__(HumanSession)
+            current=patch.object(human,'current',return_value=self.scope['humanBinding']);current.start();self.addCleanup(current.stop)
+            key=NativeKey(self.action,self.runner.journal,self.review,human)
+            original_apply=self.ports.apply;original_observe=self.ports.observe
+            self.ports.apply=lambda stage:key.create()if stage['name']=='CREATE_DEDICATED_KEY'else original_apply(stage)
+            self.ports.observe=lambda stage:key.observe()if stage['name']=='CREATE_DEDICATED_KEY'else original_observe(stage)
+            return key,human
+
+        def test_actual_exclusive_key_inode_owner_mode_and_no_value_or_hash_in_proof(self):
+            key,human=self.key_component()
+            with self.assertRaises(c.Denied):key.create()
+            self.runner.step();self.runner.step()
+            status,proof=key.observe();self.assertEqual(status,'APPLIED')
+            self.assertFalse(proof['credentialValueReturned']);self.assertFalse(proof['credentialHashReturned'])
+            self.assertEqual((proof['uid'],proof['gid'],proof['mode'],proof['bytes']),(10002,10002,0o400,64))
+            raw=self.key_path.read_bytes();self.assertEqual(len(raw),64);self.assertTrue(all(v in b'0123456789abcdef'for v in raw))
+            self.assertNotIn(raw.decode(),c.encoded(proof).decode())
+            self.assertNotIn(__import__('hashlib').sha256(raw).hexdigest(),c.encoded(proof).decode())
+            with self.assertRaises(c.Denied):key.create()
+            self.assertEqual(self.key_path.read_bytes(),raw)
+
+        def test_existing_file_is_not_read_overwritten_or_consumed_as_our_generation(self):
+            key,human=self.key_component();self.key_path.write_bytes(b'fixture-existing-preserve');self.key_path.chmod(0o600)
+            before=self.key_path.stat();self.runner.step()
+            with patch('tools.ingestion_rollout_execution.key.secrets.token_hex')as random:
+                with self.assertRaises(FileExistsError):self.runner.step()
+                random.assert_not_called()
+            self.assertEqual(self.key_path.read_bytes(),b'fixture-existing-preserve');self.assertEqual(self.key_path.stat().st_ino,before.st_ino)
+            self.assertEqual(key.observe(),('UNKNOWN',{}))
+            with self.assertRaises(c.Denied):key.create()
+            with self.assertRaises(c.Paused):self.runner.reconcile()
+
+        def test_crash_after_entropy_keeps_partial_file_claim_and_denies_regeneration(self):
+            key,human=self.key_component();self.runner.step()
+            with patch('tools.ingestion_rollout_execution.key.os.fchown',side_effect=RuntimeError('FIXTURE_CRASH')):
+                with self.assertRaises(RuntimeError):self.runner.step()
+            self.assertEqual(self.key_path.stat().st_size,64);self.assertEqual(key.observe(),('UNKNOWN',{}))
+            with self.assertRaises(c.Denied):key.create()
+            with self.assertRaises(c.Paused):self.runner.step()
+
+        def test_changed_current_human_denies_key_creation_before_entropy(self):
+            key,human=self.key_component();self.runner.step();human.current.return_value={**self.scope['humanBinding'],'subject':'other'}
+            with self.assertRaises(c.Denied):self.runner.step()
+            self.assertFalse(self.key_path.exists())
 
 if __name__=='__main__':unittest.main()
