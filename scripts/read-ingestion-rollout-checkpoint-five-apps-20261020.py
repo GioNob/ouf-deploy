@@ -327,7 +327,7 @@ def inspect(context=CONTEXT, owner=OWNER, parse=parsed, file_read=read, engine_t
             'SUCCESSFUL_V7_SESSION_LINEAGE_REQUIRED')
     human = human_snapshot(row, binding, wall, mono, boot_read())
     PUBLIC_PROGRESS.update(phase='LOCAL_HUMAN_OBSERVED', human=human,
-                           humanSnapshotRechecked=False, engineGetRequestsStarted=0)
+                           humanSnapshotRechecked=False, engineGetAttemptsStarted=0)
     applications = retained_applications(plan, owner_plan)
     PUBLIC_PROGRESS.update(phase='PINNED_APPLICATIONS_VERIFIED', applicationNames=sorted(applications),
                            applicationCount=len(applications))
@@ -337,7 +337,7 @@ def inspect(context=CONTEXT, owner=OWNER, parse=parsed, file_read=read, engine_t
         for name, pin in applications.items():
             ordered = name != 'gateway' or plan['gateway']['transport'].get('runtimeBindingProfile') == 'ouf.apisix-runtime-binding.mount-set.v1'
             PUBLIC_PROGRESS.update(phase='RUNTIME_INSPECTION', currentApplication=name,
-                                   engineGetRequestsStarted=reader.calls + 1)
+                                   engineGetAttemptsStarted=reader.calls + 1)
             values[name] = runtime(reader.get(pin['containerId']), ordered)
         return values
     first = observation()

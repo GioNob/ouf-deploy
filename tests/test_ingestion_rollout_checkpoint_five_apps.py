@@ -173,7 +173,7 @@ class FullDiagnostic(unittest.TestCase):
         self.assertEqual(m.PUBLIC_PROGRESS['human']['attempts'], 278)
         self.assertFalse(m.PUBLIC_PROGRESS['humanSnapshotRechecked'])
         self.assertEqual(m.PUBLIC_PROGRESS['applicationCount'], 5)
-        self.assertEqual(m.PUBLIC_PROGRESS['engineGetRequestsStarted'], 1)
+        self.assertEqual(m.PUBLIC_PROGRESS['engineGetAttemptsStarted'], 1)
         self.assertEqual(m.PUBLIC_PROGRESS['currentApplication'], 'onboarding')
         for private in ('SECRET_TOKEN', 'NEVER_PRINT_ME', 'retained-human-origin'):
             self.assertNotIn(private, m.encoded(m.PUBLIC_PROGRESS).decode())
