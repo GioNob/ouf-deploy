@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T20:21:11.312Z",
+  "lastUpdatedAt": "2026-10-20T20:57:57.995Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1132,6 +1132,32 @@
       "cumulativeMeasuredActiveHours": 6.836064718333334,
       "gatePassed": false,
       "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-TARGET-IAM-ADMIN-CONTEXT-STOP",
+      "observedAt": "2026-10-20T20:44:09.496Z",
+      "targetOccurredAt": null,
+      "classification": "TARGET_STOP_RECONCILE_RECEIPT",
+      "reasonCode": "EXACT_RECORDED_ADMIN_SESSION_CONTEXT_REQUIRED",
+      "evidenceRef": "evidence/iam-current-policy-read-stop-target-20261020.json",
+      "contextPath": "/etc/ouf/deploy-snapshots/iam-policy-read-7120rnka",
+      "oauthRequests": 0,
+      "runtimeAuthorityIssued": false,
+      "gatePassed": false
+    },
+    {
+      "id": "CSV-EVENT-IAM-CONTEXT-RECONCILER-QUALIFIED",
+      "observedAt": "2026-10-20T20:57:57.995Z",
+      "occurredAt": "2026-10-20T20:55:57.3017706Z",
+      "timestampConfidence": "EXACT_PROVIDER_LOG_COMPLETION",
+      "classification": "ACTUAL_DOCKER_PROCESS_ROOT_AND_SEALED_FIXTURE_NOT_TARGET_RECONCILIATION",
+      "sourceCommit": "af55edd84e05ee5e0191fc2f6cbcbe60bc191287",
+      "runId": 39496135244,
+      "testsEachPython": 10,
+      "skips": 0,
+      "cumulativeMeasuredActiveHours": 7.066203415833334,
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false
     }
   ],
   "activeIntervals": [
@@ -1545,6 +1571,15 @@
       "classification": "ACTIVE_TECHNICAL",
       "workPackage": "WP3_PREPARATION",
       "activity": "OWNER_API_ONLY_IAM_DIRECTIVE_AND_NO_REFRESH_NAMESPACE_POLICY_READER_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0041",
+      "startedAt": "2026-10-20T20:44:09.496Z",
+      "endedAt": "2026-10-20T20:57:57.995Z",
+      "seconds": 828.499311,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "FAILED_ADMIN_CONTEXT_PREDICATE_DIAGNOSIS_AND_SAME_BUDGET_RECONCILIATION_QUALIFICATION"
     }
   ],
   "waitingIntervals": [],
@@ -1627,8 +1662,8 @@
       "observedStatus": "NOT_PASSED",
       "measurementNote": "Initial technical effort not retrospectively inferred from wall time",
       "lastCheckpoint": {
-        "observedAt": "2026-10-20T20:21:11.312Z",
-        "cumulativeMeasuredEffortHours": 6.836064718333334,
+        "observedAt": "2026-10-20T20:57:57.995Z",
+        "cumulativeMeasuredEffortHours": 7.066203415833334,
         "gatePassed": false,
         "targetProductionBootstrapPrepared": true,
         "humanReadyAtReceipt": true,
@@ -1638,7 +1673,9 @@
         "recordedIssuedTokenLifetimeSeconds": 300,
         "currentProviderPolicyProven": false,
         "iamApiReaderCiPassed": true,
-        "iamApiTargetReadPending": true
+        "iamApiTargetReadPending": false,
+        "iamApiTargetStatus": "STOP_RECONCILE",
+        "iamContextReconciliationPending": true
       }
     },
     {
@@ -1859,7 +1896,13 @@
     "durationPlannerWiredIntoProductionLogin": false,
     "existingIamApiReaderQualifiedCommit": "224757b25696eb154948e60eb0de3be716cc0b3f",
     "existingIamApiReaderQualificationRun": 39490969842,
-    "existingIamApiReaderTargetReadPending": true
+    "existingIamApiReaderTargetReadPending": false,
+    "existingIamApiReaderTargetReadComplete": false,
+    "existingIamApiReaderTargetStatus": "STOP_RECONCILE",
+    "adminContextFailedPredicateKnown": false,
+    "sameBudgetIamContextReconcilerQualifiedCommit": "af55edd84e05ee5e0191fc2f6cbcbe60bc191287",
+    "sameBudgetIamContextReconcilerQualificationRun": 39496135244,
+    "sameBudgetIamContextTargetReadPending": true
   },
   "developmentCandidates": [
     {
@@ -1901,9 +1944,9 @@
       "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
       "G7_ACCEPTANCE"
     ],
-    "currentRequiredHumanAction": "RUN_PINNED_IAM_API_READ_ON_VPS_NO_CONSOLE_NO_AUTHENTICATION",
+    "currentRequiredHumanAction": "RUN_PINNED_SAME_CONTEXT_IAM_METADATA_RECONCILIATION_NO_REPLAY",
     "remainingAttempts": 6,
-    "reasonCode": "ISSUED_TOKEN300_BELOW_PREPARED_MARGIN930_CURRENT_IAM_POLICY_REQUIRED",
+    "reasonCode": "EXACT_RECORDED_ADMIN_SESSION_CONTEXT_REQUIRED",
     "newLoginRequested": false,
     "ownerConsoleReadRequested": false,
     "consoleReadInstructionWithdrawn": true
@@ -1992,6 +2035,13 @@
       "startedAt": "2026-10-20T20:01:06.573Z",
       "endedAt": "2026-10-20T20:05:05.621Z",
       "classification": "STATUS_AND_OWNER_STEERING_INTERVAL_NOT_PRECISELY_MEASURED",
+      "countedAsActive": false,
+      "humanEffortKnown": false
+    },
+    {
+      "startedAt": "2026-10-20T20:21:11.312Z",
+      "endedAt": "2026-10-20T20:44:09.496Z",
+      "classification": "OPERATOR_EXECUTION_COMMAND_REDELIVERY_AND_TURN_INTERVAL_NOT_SEGMENTED",
       "countedAsActive": false,
       "humanEffortKnown": false
     }

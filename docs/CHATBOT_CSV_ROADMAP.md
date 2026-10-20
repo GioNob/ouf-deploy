@@ -1,3 +1,15 @@
+> **CURRENT — 20 October 2026, retained IAM STOP; same-context metadata reconciliation qualified.**
+>
+> Target policy reader stopped at EXACT_RECORDED_ADMIN_SESSION_CONTEXT_REQUIRED in /etc/ouf/deploy-snapshots/iam-policy-read-7120rnka. The failing issuer/client/username/expiry predicate remains unknown. Preserve the original STOP and claim; do not rerun the original read launcher.
+>
+> New source af55edd84e05ee5e0191fc2f6cbcbe60bc191287 qualifies one metadata reconciliation in that exact context: validate stored Engine5/Admin0 first, use only two remaining Engine GETs to original ceiling7, retain original completefalse/STOP. No Admin API request, OAuth, login, refresh, IAM mutation or runtime authority. CI39496135244: ten tests per Python3.12/3.13.5, zero skips, including actual Docker UID1000/process-root/sealed-process coverage; all existing regressions PASS. CI is not VPS acceptance.
+>
+> Next action: execute only the pinned new reconciliation launcher once, then return public JSON and reconcile.log. See docs/handoffs/OUF_CLOUD_IAM_SESSION_CONTEXT_RECONCILE_READY_HANDOFF_20261020.md and evidence/iam-session-context-reconcile-delivery-pins-20261020.json. After consumed reconciliation claim, status only; no replay. No Keycloak console work.
+>
+> Recorded effort checkpoint 2026-10-20T20:57:57.995Z: 7.066203 technical active hours; excluded unsegmented operator/status/redelivery waits. Technical8/8,functional4/6,G0–G2PASS,G3open. Frozen MiniPET1.1 central G3 H+19/M1 H+24/M2 H+55 unchanged; mixed-WP effort is not a residual forecast. Last confirmed HUMAN282/288,sixremaining; recorded window has elapsed, no runtime authority. DB admission/current policy/native client publication/F5/F6 remain open.
+>
+> Earlier CURRENT blocks and next-action instructions below are historical and superseded by this block.
+
 > **CURRENT — 20 October 2026, IAM API path qualified; console instruction withdrawn.**
 >
 > Owner explicitly declines further Keycloak-console work. Use qualified APIs; do not ask the owner to inspect/edit the console. The previous console-metadata request is withdrawn. Source224757b25696eb154948e60eb0de3be716cc0b3f adds a sealed reader that never invokes kcadm/login/refresh. CI39490969842 Python3.12/3.13.5 each13PASS/zero skips, including physical Docker archives and namespace dispatch against a simulated Admin API; all prior regressions PASS. This is not target readback or real-provider qualification.

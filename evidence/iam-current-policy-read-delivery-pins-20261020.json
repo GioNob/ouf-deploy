@@ -37,7 +37,7 @@
   "localTestsPassed": 12,
   "localPhysicalTestSkipped": true,
   "ciPhysicalTestSkipped": false,
-  "targetExecuted": false,
+  "targetExecuted": true,
   "currentProviderPolicyProven": false,
   "runtimeAuthorityIssued": false,
   "notReleaseAcceptance": true,
@@ -76,5 +76,11 @@
       "path": "AuthUtil.java",
       "usedFor": "Confirmed CLI can automatically refresh; no CLI invoked."
     }
-  ]
+  ],
+  "targetComplete": false,
+  "targetStatus": "STOP_RECONCILE",
+  "targetReasonCode": "EXACT_RECORDED_ADMIN_SESSION_CONTEXT_REQUIRED",
+  "targetContextPath": "/etc/ouf/deploy-snapshots/iam-policy-read-7120rnka",
+  "targetReceiptRef": "evidence/iam-current-policy-read-stop-target-20261020.json",
+  "targetReadMustNotReplay": true
 }
