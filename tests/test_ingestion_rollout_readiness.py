@@ -88,6 +88,17 @@ class NativeChildReadiness(unittest.TestCase):
         status,proof=self.native.observe();self.assertEqual(status,'APPLIED')
         self.assertEqual(self.paths,['/actuator/health/readiness']);self.assertTrue(proof['readinessNamespaceBound'])
         self.assertEqual(self.runner.record()['nativeIngestionReadinessGets'],1)
+    def test_generation_probe_shared_get_counter_cannot_stale_readiness_cas(self):
+        original=self.native.lifecycle.replacement
+        def replacement(*args,**kwargs):
+            row=self.runner.journal.read()
+            self.runner.journal.compare_and_save(row,{**row,'nativeDirectEngineGets':row.get('nativeDirectEngineGets',0)+1,
+                'version':row['version']+1})
+            return original(*args,**kwargs)
+        self.native.lifecycle.replacement=replacement
+        status,_=self.native.observe();self.assertEqual(status,'APPLIED')
+        row=self.runner.record();self.assertEqual(row['nativeIngestionReadinessGets'],1)
+        self.assertGreater(row['nativeDirectEngineGets'],0)
     def test_actual_503_respects_retry_after_without_child_retry(self):
         self.status=503;self.body=b'not ready';self.retry='1000'
         status,proof=self.native.observe();self.assertEqual(status,'TRANSIENT');self.assertEqual(proof['retryAfterSeconds'],1000)

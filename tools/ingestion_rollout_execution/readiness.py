@@ -15,6 +15,7 @@ import iam_governance_intake as governance
 from tools.ingestion_rollout_execution.contract import AUTHORITY_KEY,require,scope,digest,path,hashed
 from tools.ingestion_rollout_execution.lifecycle import NativeLifecycle
 from tools.ingestion_rollout_execution.namespace import identity
+from tools.ingestion_rollout_execution.engine_channel import after_reads
 from tools.chat_recovery_update.readiness import classify
 MAX_GETS=128
 CHILD_SOURCE=r'''import base64,http.client,ipaddress,json,os,re,signal,sys
@@ -79,7 +80,7 @@ class NativeIngestionReadiness:
         actual,_=native.replacement('ingestion',phase='RUNNING',process=start,restored=restored)
         program=self.profile['pythonExecutable']
         require(program==governance.executable(program['path']),'READINESS_PROGRAM_CHANGED')
-        return row,actual
+        return after_reads(native.journal,row),actual
     def observe(self):
         row,actual=self.guard();count=row.get('nativeIngestionReadinessGets',0)
         require(count<MAX_GETS,'CUMULATIVE_INGESTION_READINESS_BUDGET_EXHAUSTED')

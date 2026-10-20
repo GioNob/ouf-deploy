@@ -167,5 +167,6 @@ class NativeDatabaseRead:
             'requiredRuntimePrivilegesAvailable','runtimeRoleBroadFlagsAbsent','postgres17Utf8',
             'pressureAndControlHeadroomWithinReadProfile','runtimeWorkDrainedAtSnapshot',
             'observedConnectionHeadroom','storedPressureState','workCountsLowerBounds')}
+        self.last_report['connectionControlCounts']=copy.deepcopy(facts['connections'])
         self.check();require(report['databaseReadPrerequisitesProven']is True,'CURRENT_DATABASE_READ_PREREQUISITES_NOT_PROVEN')
         return report
