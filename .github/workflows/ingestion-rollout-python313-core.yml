@@ -1,0 +1,50 @@
+name: Ingestion rollout Python3.13.5 component qualification
+on:
+  pull_request:
+    paths: ['.github/workflows/ingestion-rollout-python313-*.yml']
+permissions: {contents: read, actions: read}
+jobs:
+  signed-core:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13.5'}
+      - name: Custodied Python3.13.5 for isolated executor qualification
+        run: |
+          set -euo pipefail
+          sudo install -d -m 0755 /var/lib/ouf-python313
+          sudo cp -a "$pythonLocation/." /var/lib/ouf-python313/
+          sudo chown -R root:root /var/lib/ouf-python313
+          sudo chmod -R go-w /var/lib/ouf-python313
+          /var/lib/ouf-python313/bin/python3.13 -I -B -S -c 'import sys; assert sys.version_info[:3] == (3,13,5)'
+      - name: Real Ed25519 role gates, durable claims, ambiguity and finite budgets
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-rollout-core-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_execution.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_lifecycle.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_gateway_transport.py -v
+          sudo env OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_database_policy.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_owner_read.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_database_read.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_image_import.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_runtime_guard.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_runner_composition.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_readiness.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_retained_gateway.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_native_review.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_engine_channel.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_native.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_authority.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_entry.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_runtime.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_guard_transient.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_owner_transient.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_PYTHON=/var/lib/ouf-python313/bin/python3.13 OUF_TEST_ROOT="$fixture" /var/lib/ouf-python313/bin/python3.13 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_human_reader.py -v

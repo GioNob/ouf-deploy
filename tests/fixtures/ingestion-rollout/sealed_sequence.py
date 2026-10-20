@@ -51,6 +51,21 @@ try:
         'syntheticConsentAndQualification':True,'runtimeAuthorityIssued':False,'notReleaseAcceptance':True}))
 except BaseException as error:
     reason=str(error)
+    # Diagnose only the already-redacted predicate report of the concrete DB
+    # collector. Do not print frames, SQL rows, bindings, credentials or payloads.
+    predicates=None;trace=error.__traceback__
+    for unused in range(32):
+        if trace is None:break
+        frame=trace.tb_frame
+        if frame.f_globals.get('__name__')=='tools.ingestion_rollout_execution.database_read' and frame.f_code.co_name=='snapshot':
+            selected=getattr(frame.f_locals.get('self'),'last_report',None)
+            fields={'sqlHistoryMatchesCandidate','runtimeCatalogMatchesQualifiedCandidate',
+                'requiredRuntimePrivilegesAvailable','runtimeRoleBroadFlagsAbsent','postgres17Utf8',
+                'pressureAndControlHeadroomWithinReadProfile','runtimeWorkDrainedAtSnapshot',
+                'observedConnectionHeadroom','storedPressureState','workCountsLowerBounds','connectionControlCounts'}
+            if type(selected)is dict and set(selected)==fields:predicates=selected
+        trace=trace.tb_next
     print(json.dumps({'sealedEntrySequenceComplete':False,'errorType':type(error).__name__,
-        'reasonCode':reason if re.fullmatch('[A-Z][A-Z0-9_]{0,127}',reason)else'NON_CODE_ERROR_REDACTED'}))
+        'reasonCode':reason if re.fullmatch('[A-Z][A-Z0-9_]{0,127}',reason)else'NON_CODE_ERROR_REDACTED',
+        'databaseAdmissionPredicates':predicates,'diagnosticOnly':True}))
     sys.exit(2)
