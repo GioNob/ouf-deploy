@@ -1,3 +1,6 @@
+> SUPERSEDED NEXT ACTION: target DB preflight is COMPLETE; do not replay the reader.
+> Continue with [startup/image qualification and private bootstrap draft](OUF_CLOUD_DB_COMPLETE_STARTUP_IMAGE_QUALIFIED_HANDOFF_20261020.md).
+
 # OUF CLOUD — retained selection reconciled; postboot-bound DB reader ready
 
 Technical8/8; functional4/6. Owner7/projection7 remain complete and consumed.
