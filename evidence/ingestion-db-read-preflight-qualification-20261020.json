@@ -35,5 +35,12 @@
   "budgetReset": false,
   "completedTechnicalPhases": 8,
   "functionalMilestonesProven": 4,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "deliveryCommit": "6570c3ded856683e123b85878b8a806cb23ab5b9",
+  "deliveryRunId": 39375641953,
+  "deliveryJobId": 118473042469,
+  "deliveryTestsPassed": 3,
+  "deliveryConclusion": "success",
+  "launcherGitBlob": "95f8ad314cc0d5df492a0094b9b2a06b6ed7ec83",
+  "launcherSha256": "2efa46430dca73bf132c6075a747ae0065313c825d3e2089f3c2e98d5ba2250f"
 }
