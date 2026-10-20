@@ -51,7 +51,7 @@ try:
   refs=[a.name for a in node.names]if isinstance(node,ast.Import)else []
   if isinstance(node,ast.ImportFrom):
    require(node.level==0 and node.module is not None,'RELATIVE_PRODUCTION_CONTROL_IMPORT_DENIED');refs=[node.module]
-  for ref in refs:require(ref.split('.')[0]in('hashlib','json','os','pathlib','re','stat','subprocess','sys','tempfile','time'),'STDLIB_ONLY_PRODUCTION_CONTROL_REQUIRED')
+  for ref in refs:require(ref.split('.')[0]in('hashlib','ipaddress','json','os','pathlib','re','stat','subprocess','sys','tempfile','time'),'STDLIB_ONLY_PRODUCTION_CONTROL_REQUIRED')
   require(not(isinstance(node,ast.Call)and isinstance(node.func,ast.Name)and node.func.id=='__import__'),'DYNAMIC_PRODUCTION_CONTROL_IMPORT_DENIED')
  control_globals={'__name__':'verified_foreground_production_control'}
  exec(compile(tree,'<qualified-production-control>','exec'),control_globals)

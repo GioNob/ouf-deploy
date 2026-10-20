@@ -15,12 +15,12 @@ if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
 ouf_read="$(mktemp -d "$HOME/ouf-rollout-production.XXXXXXXX")"
 ouf_report() { printf 'Launcher conservato: %s\nLog conservato: %s/control.log\n' "${BASH_SOURCE[0]}" "$ouf_read"; }
 trap ouf_report EXIT
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/e283132a4ee14a9646586d0c60cd506aeccbcd1c' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/control.py"
-printf '%s  %s\n' '8fb19df1baea882ad59104518e48c1ee887034e26092a5cf413cec7d95b49fee' "$ouf_read/control.py" | sha256sum -c -
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/807f789d82df8768e9b05c7c44a01449361aba7d' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/control.py"
+printf '%s  %s\n' '42b2569a0ba1f2234dfbcc011588cdf133d0e5c97a3f3433b903750f010448ea' "$ouf_read/control.py" | sha256sum -c -
 ouf_args=("$ouf_mode")
 if [[ "$#" -ge 2 ]]; then ouf_args+=("$2"); fi
 if [[ "$#" -eq 3 ]]; then ouf_args+=("$3"); fi
-sudo python3 -I -B -S - "$ouf_read/control.py" '8fb19df1baea882ad59104518e48c1ee887034e26092a5cf413cec7d95b49fee' "${ouf_args[@]}" <<'OUF_OPERATOR' | tee "$ouf_read/control.log"
+sudo python3 -I -B -S - "$ouf_read/control.py" '42b2569a0ba1f2234dfbcc011588cdf133d0e5c97a3f3433b903750f010448ea' "${ouf_args[@]}" <<'OUF_OPERATOR' | tee "$ouf_read/control.log"
 import hashlib,os,stat,sys
 try:
  fd=os.open(sys.argv[1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)

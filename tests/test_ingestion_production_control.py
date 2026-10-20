@@ -6,6 +6,7 @@ are separate. This fixture exercises real private journals and HUMAN reader.
 import ast
 import copy
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -238,6 +239,21 @@ class SealedProductionDelivery(unittest.TestCase):
         case=json.loads((ROOT/'releases/ingestion-rollout-production-case-20261020.json').read_text())
         name=next(iter(case['qualifiedNativeSource']['gitBlobPins']));case['qualifiedNativeSource']['gitBlobPins'][name]='f'*40
         with self.assertRaisesRegex(ValueError,'QUALIFIED_NATIVE_GIT_BYTES_CHANGED'):production_delivery.generate(ROOT,case)
+
+class Ipv6ControlMetadata(unittest.TestCase):
+    def test_assigned_loopback_uses_selected_namespace_and_observed_interface(self):
+        raw=b'00000000000000000000000000000001 01 80 10 80 ente-selected-loopback\n'
+        with patch.object(p.os,'stat',return_value=SimpleNamespace(st_dev=4,st_ino=99)),patch.object(Path,'open',return_value=io.BytesIO(raw)):
+            value=p.ipv6_loopback_metadata(SimpleNamespace(c=c),123,{'device':4,'inode':99},{'host':'::1','port':18888})
+        self.assertTrue(value['assignedInPinnedNamespace']);self.assertFalse(value['tcpReachabilityProven'])
+        self.assertEqual(p.ipv6_loopback_metadata(SimpleNamespace(c=c),123,{}, {'host':'127.0.0.1','port':18888}),{'required':False})
+    def test_missing_tentative_or_foreign_namespace_loopback_cannot_pass(self):
+        for raw in(b'',b'00000000000000000000000000000001 01 80 10 c0 fixture-loop\n'):
+            with patch.object(p.os,'stat',return_value=SimpleNamespace(st_dev=4,st_ino=99)),patch.object(Path,'open',return_value=io.BytesIO(raw)):
+                with self.assertRaisesRegex(c.Denied,'LOOPBACK_NOT_ASSIGNED'):p.ipv6_loopback_metadata(SimpleNamespace(c=c),123,{'device':4,'inode':99},{'host':'::1','port':18888})
+        with patch.object(p.os,'stat',return_value=SimpleNamespace(st_dev=4,st_ino=88)),patch.object(Path,'open')as opened:
+            with self.assertRaisesRegex(c.Denied,'PROCESS_NAMESPACE_CHANGED'):p.ipv6_loopback_metadata(SimpleNamespace(c=c),123,{'device':4,'inode':99},{'host':'::1','port':18888})
+            opened.assert_not_called()
 
 @unittest.skipUnless(os.environ.get('OUF_NATIVE_UIDS')=='1','actual disposable Ed25519 fixture required')
 class NativeOperatorBinding(unittest.TestCase):

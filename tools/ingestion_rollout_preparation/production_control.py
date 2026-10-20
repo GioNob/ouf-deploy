@@ -5,6 +5,7 @@ imports are added to the frozen native module graph. Each call is one explicit
 mode. Preparation never opens HUMAN credentials or issues runtime authority.
 """
 import hashlib
+import ipaddress
 import json
 import os
 from pathlib import Path
@@ -87,6 +88,26 @@ def qualification(entry,manifest,case,packet):
     entry.c.require(all(v['repository']=='GioNob/ouf-deploy'and v['sourceCommit']==manifest['sourceCommit']for v in q['evidenceRefs'].values()),
         'EXACT_PINNED_NATIVE_QUALIFICATION_REFERENCES_REQUIRED')
 
+def ipv6_loopback_metadata(entry,pid,namespace,endpoint):
+    c=entry.c;address=ipaddress.ip_address(endpoint['host'])
+    if address.version!=6:return {'required':False}
+    c.require(address.is_loopback and type(pid)is int and pid>0,'EXACT_SELECTED_IPV6_LOOPBACK_REQUIRED')
+    selected=Path('/proc')/str(pid)/'ns/net';before=os.stat(selected)
+    c.require({'device':before.st_dev,'inode':before.st_ino}==namespace,'SELECTED_IPV6_PROCESS_NAMESPACE_CHANGED')
+    with(Path('/proc')/str(pid)/'net/if_inet6').open('rb')as stream:raw=stream.read(16385)
+    c.require(len(raw)<=16384,'BOUNDED_IPV6_INTERFACE_METADATA_REQUIRED')
+    rows=raw.decode('ascii').splitlines();c.require(len(rows)<=128,'BOUNDED_IPV6_INTERFACE_ROWS_REQUIRED')
+    assigned=False
+    for row in rows:
+        fields=row.split();c.require(len(fields)==6 and re.fullmatch('[0-9a-fA-F]{32}',fields[0]),
+            'TYPED_IPV6_INTERFACE_METADATA_REQUIRED')
+        if ipaddress.IPv6Address(bytes.fromhex(fields[0]))==address:
+            c.require(all(re.fullmatch('[0-9a-fA-F]{1,8}',v)for v in fields[1:5]),'EXACT_IPV6_INTERFACE_FLAGS_REQUIRED')
+            assigned|=int(fields[1],16)>0 and int(fields[2],16)==128 and int(fields[3],16)==0x10 and not int(fields[4],16)&0x48
+    c.require(assigned,'SELECTED_IPV6_LOOPBACK_NOT_ASSIGNED_IN_PINNED_NAMESPACE')
+    after=os.stat(selected);c.require((before.st_dev,before.st_ino)==(after.st_dev,after.st_ino),'SELECTED_IPV6_PROCESS_NAMESPACE_CHANGED')
+    return {'required':True,'assignedInPinnedNamespace':True,'tcpReachabilityProven':False}
+
 def prepare(entry,manifest,case,control_hash):
     c=entry.c;a=entry.authority;started=time.time();clock=time.monotonic();CHECKPOINT['phase']='RETAINED_PRIVATE_PROFILES'
     selected,profiles,seals,parent=retained(entry,case);packet=selected['packetBinding'];qualification(entry,manifest,case,packet)
@@ -117,13 +138,22 @@ def prepare(entry,manifest,case,control_hash):
     match=re.match(rb'OpenSSL ([0-9]+\.[0-9]+\.[0-9]+[a-z]?)\b',observed.stdout)
     c.require(observed.returncode==0 and len(observed.stdout)<=256 and match is not None,'EXACT_NATIVE_OPENSSL_VERSION_REQUIRED')
     programs['openssl']={**program,'version':match[1].decode('ascii')}
+    CHECKPOINT['phase']='SELECTED_IPV6_LOOPBACK_METADATA'
+    ipv6={}
+    for name in('owner','ingestion'):
+        key='ownerControlProfile'if name=='owner'else'ingestionReadinessProfile';endpoint=profiles[key]['endpoint']
+        if ipaddress.ip_address(endpoint['host']).version==6:
+            binding=profiles['ownerControlProfile']['runtimeBinding']if name=='owner'else packet['expectedRuntimeBindings']['ingestion']
+            namespace=profiles['ownerControlProfile']['networkNamespace']if name=='owner'else case['nativeProfiles']['observedNamespaces']['ingestion']
+            ipv6[name]=ipv6_loopback_metadata(entry,binding['pid'],namespace,endpoint)
+        else:ipv6[name]={'required':False}
     CHECKPOINT['phase']='EXACT_NATIVE_STDLIB_CLOSURE';library=a.stdlib_binding()
     closure={'declaration':manifest,'executables':programs,'stdlibHash':c.digest(library),'stdlibFileCount':len(library['fileHashes'])}
     a.closure_shape(closure)
     for seal in seals.values():a.private_file.check_metadata(seal)
     a.current_issuer(issuer,int(time.time())+900)
     prepared={'schema':'ouf.ingestion-rollout-production-preparation.v1','caseHash':c.digest(case),'controlSourceHash':control_hash,
-        'sourceClosure':closure,'issuerProfile':issuer,'retainedDocuments':seals,'qualification':case['qualification'],
+        'sourceClosure':closure,'issuerProfile':issuer,'retainedDocuments':seals,'qualification':case['qualification'],'ipv6EndpointMetadata':ipv6,
         'runtimeAuthorityIssued':False,'budgetReset':False,'automaticReplayAllowed':False}
     write(entry,context,'preparation.json',prepared)
     update(journal,state='PRIVATE_READY',preparationHash=c.digest(prepared))
@@ -131,7 +161,8 @@ def prepare(entry,manifest,case,control_hash):
     return {'status':'PRODUCTION_BOOTSTRAP_PREPARED_NO_AUTHORITY','complete':True,'contextPath':str(context),
         'startedAtUnix':started,'finishedAtUnix':time.time(),'elapsedSeconds':time.monotonic()-clock,
         'sourceModuleCount':manifest['moduleCount'],'currentExistingIssuerPolicyProvenForSeconds':900,
-        'nativeControlProfilesReused':True,'humanWindowOpeningAuthorized':False,'freshHumanStillRequired':True,
+        'nativeControlProfilesReused':True,'selectedIpv6LoopbacksChecked':sum(v['required']for v in ipv6.values()),
+        'serviceReachabilityProven':False,'humanWindowOpeningAuthorized':False,'freshHumanStillRequired':True,
         'signaturesIssued':0,'privateKeysRead':0,'humanCredentialJournalsRead':0,'bearerFilesOpened':0,
         'oauthRequests':0,'engineRequests':0,'databaseCalls':0,'gatewayRequests':0,'ownerRequests':0,'containerLifecycleOperations':0,
         'runtimeAuthorityIssued':False,'budgetReset':False,'automaticReplayAllowed':False,'newLoginPerformed':False,

@@ -34,6 +34,20 @@
         "host": "::1",
         "port": 8080
       }
+    },
+    "observedNamespaces": {
+      "gateway": {
+        "device": 4,
+        "inode": 4026532675
+      },
+      "ingestion": {
+        "device": 4,
+        "inode": 4026532368
+      },
+      "onboarding": {
+        "device": 4,
+        "inode": 4026532422
+      }
     }
   },
   "existingIssuer": {
