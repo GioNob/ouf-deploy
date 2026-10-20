@@ -121,3 +121,12 @@ Consuntivo tecnico chiuso **136.42minuti (2.274h)**, più8,96iniziali nonsegment
 Effort tecnico misurato cumulativo: **2.763 h**; baseline cumulativa G2 **14 h**, gate ancora aperto: scostamento finale non determinabile. L’intervallo non verificato 12:12:28–12:21:06.540 UTC è escluso. WP5: sola ricognizione dei contratti intercalata, nessuna allocazione oraria inventata.
 
 Le prove PostgreSQL17 restano PASS. La sequenza reale Docker29/APISIX/JVM ha superato i precedenti confini e si arresta alla creazione Gateway per un campo di configurazione ereditato non coincidente; run39419681503, completato12:12:29Z. I casi di risposta CREATE persa e bearer scaduto passano. G2 non superato. Diagnostica limitata al nome del campo, senza valori privati. Il nuovo lettore HUMAN conserva contatori e ricevuta governata senza eseguire login/rinnovo; 5 test sintetici PASS. Nessuna autorità o operazione sul target.
+
+
+## G2 PASS — 2026-10-20T12:51:39.940Z
+
+Il gate G2 è superato sul sorgente24c2d9b8c7b3f4f8a4a61125b86877ffbd635dba:162test componenti,3PG17,3sequenza/adversariali reali, inclusa esecuzione tramite closure114moduli, issuer e entrypoint isolato. Dossier: CSV_E2E_G2_NATIVE_EXECUTOR_QUALIFICATION_20261020.md. Qualifica completata dal provider12:49:12Z, decisione12:51:39.940Z. Nessuna operazione o autorità target.
+
+Effort cumulativo misurato al gate:3.160557h; limite conservativo includendo ogni intervallo iniziale/non verificato:3.730817h; baseline14h. Differenza cumulativa tra−10.839443 e−10.269183h. Include WP5 intercalato, non è il solo effort WP2 e non è una previsione del tempo residuo. Baseline immutata.
+
+WP5: Ingestionbcc1354, CI39423704214 PASS197test,2skip; Onboarding17a68ae, CI39425216528 PASS273test,0skip; UDPdf1f4c3, CI39424531492 PASS267test,2skip. I casi di conversione, compatibilità/outbox/quarantine e datatype owner sono verdi nei moduli. G5 resta aperto: manca prova composta dei nuovi pin, vocabolari/relazione. WP3 attende HUMAN/THS corrente ed executor target qualificato; si prosegue nelle attività indipendenti. Tecniche8/8, funzionali4/6.
