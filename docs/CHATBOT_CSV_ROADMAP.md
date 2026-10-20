@@ -1,3 +1,13 @@
+> **CURRENT — bootstrap target COMPLETE; private rollout packet qualified (20 October 2026).**
+>
+> Technical8/8,functional4/6. Exact target DRAFT retained at `/etc/ouf/deploy-snapshots/ingestion-startup-bootstrap-draft-rms0te4b`, hash5dfdb800…. No replay of that completed DRAFT, DB preflight, Owner7, projection7 or installation/readback. Last HUMAN278/288/window1792450664 remains expired; no new journal/login/refresh/reset.
+>
+> New private preparer source1ceb6d66a12f75eafdf17809dd548961781e7e8c, [CI39384690724](https://github.com/GioNob/ouf-deploy/actions/runs/39384690724), job118501619351:13PASS/zero skips. Original scanned ZIP/rootfs JAR/exact18SQL authenticated, tagless native image identity physically loaded/checked on Docker29.8.1 containerd in CI only. Complete Config/HostConfig/network frame templates, unresolved key reference, exact selected Gateway-config/Nginx allowlist preparation. New native identityea645110… is distinct from config image5dfdf223…; same config/layer bytes.
+>
+> Only next operator action: `scripts/launch-ingestion-rollout-packet-20261020.sh`, once. New private root context/claim;5EngineGET maximum,300s. Candidate remains unimported on target. May stage a distinct Gateway config and PROPOSE one bind source change for Nginx env exposure; old config untouched. Key metadata only, never content/generation. No SQL, OAuth, owner/Gateway API, lifecycle, authority or repeated completed reader. Full native create round-trip/signed executor/current HUMAN/Owner7 ETag/live82routes/freshDB admission remain open.
+>
+> [Current handoff](handoffs/OUF_CLOUD_PRIVATE_ROLLOUT_PACKET_QUALIFIED_HANDOFF_20261020.md). The earlier checkpoint blocks below are historical; their old “next action” commands are superseded.
+
 > **CURRENT — target DB preflight COMPLETE; startup/readiness fixed, exact scanned image qualified; private bootstrap DRAFT next (20 October 2026).**
 >
 > Technical8/8,functional4/6. Operator DB receipt at1792477298 proves postboot pair/current DB identity, role, exact18SQL/catalog, no privilege gaps, NORMAL pressure, drained work and61connection headroom.4EngineGETs/oneREADONLYSQL, no effects/authority. Do not repeat that completed reader, installation/readback, Owner7 or projection7. Last HUMAN278/288/window1792450664 remains expired; no journal/login/refresh/budget/window operation.
