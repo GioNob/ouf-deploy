@@ -1,6 +1,6 @@
-"""Signed authority + persistent finite stage engine; no native rollout entrypoint.
+"""Signed authority and persistent finite stage engine.
 
-Native ports/issuer/executable closure still require separate qualification.
+Native ports/issuer/executable closure have separate qualification gates.
 This module does not import Engine, OAuth, SQL, key-generation or Gateway ports.
 """
 from abc import ABC,abstractmethod
@@ -8,7 +8,7 @@ import copy
 import json
 from pathlib import Path
 import time
-from tools.ingestion_rollout_execution.contract import AUTHORITY_KEY,READINESS,Denied,Paused,require,encoded,digest,scope
+from tools.ingestion_rollout_execution.contract import AUTHORITY_KEY,READINESS,Denied,Paused,ReadTransient,require,encoded,digest,scope
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_policy_token_owner.producer import protected_directory
 from tools.semantic_lease_recovery.recovery_journal import Journal
@@ -17,8 +17,8 @@ from iam_owner_action import publish
 class Ports(ABC):
     """Native implementation must independently check HUMAN, DB, owner and generation.
 
-    There is no production implementation or automatic transport discovery here.
-    Tests use disposable ports under real fixture role signatures.
+    The native implementation is explicit; this interface discovers no transport.
+    Tests also use disposable ports under real fixture role signatures.
     """
     @abstractmethod
     def guard_current(self,stage):raise NotImplementedError
@@ -112,13 +112,28 @@ class Runner:
         return self.save(row,effects=effects,nextStage=row['nextStage']+1,stageReadAttempts=0,readState='IDLE',
                          nextReadAt=self.clock()[0],nextReadMonotonic=self.clock()[1])
 
+    def guard_native(self,row,stage,*,reserved=False,reconcile=False):
+        try:self.ports.guard_current(stage)
+        except ReadTransient as error:
+            # Each native component has already persisted its HTTP/SQL attempt.
+            # Record this operation-level pause too, without resetting either
+            # budget or treating a claimed effect as permission to apply again.
+            row=self.after_native(row)
+            if not reserved:row=self.reserve_read(row,reconcile=reconcile)
+            claimed_effect=stage['kind']=='EFFECT'and len(row['effects'])==row['nextStage']+1
+            return self.retry_read(row,{'retryAfterSeconds':error.retry_after_seconds},reconcile_only=claimed_effect)
+        return self.after_native(row)
+
     def observe(self,row,stage,*,reconcile=False):
-        row=self.reserve_read(row,reconcile=reconcile);self.guard();self.ports.guard_current(stage)
-        row=self.after_native(row)
+        row=self.reserve_read(row,reconcile=reconcile);self.guard()
+        row=self.guard_native(row,stage,reserved=True,reconcile=reconcile)
         status,proof=self.ports.observe(stage);row=self.after_native(row)
         if status=='APPLIED':return self.finish(row,proof)
         if stage['kind']=='EFFECT'or status!='TRANSIENT':
             self.save(row,readState='RECONCILE_REQUIRED');raise Paused('EFFECT_OR_OBSERVATION_UNPROVEN_NO_REPLAY')
+        return self.retry_read(row,proof)
+
+    def retry_read(self,row,proof,*,reconcile_only=False):
         require(type(proof)is dict and type(proof.get('retryAfterSeconds',0))in(int,float),'FINITE_RETRY_AFTER_REQUIRED')
         retry=proof.get('retryAfterSeconds',0);require(0<=retry<float('inf'),'FINITE_NONNEGATIVE_RETRY_AFTER_REQUIRED')
         import hashlib
@@ -126,7 +141,10 @@ class Runner:
         jitter=int.from_bytes(hashlib.sha256((self.scope['reviewHash']+str(row['nextStage'])+str(attempt)).encode()).digest()[:2],'big')/65535*.2
         delay=max(retry,base*(1+jitter));wall,mono=self.clock()
         exhausted=row['readAttempts']>=128 or wall+delay>=row['expiresAt']or mono+delay>=row['expiresMonotonic']
-        self.save(row,readState='EXHAUSTED'if exhausted else'RETRY_WAIT',nextReadAt=wall+delay,nextReadMonotonic=mono+delay)
+        self.save(row,readState='EXHAUSTED'if exhausted else'RECONCILE_REQUIRED'if reconcile_only else'RETRY_WAIT',
+                  nextReadAt=wall+delay,nextReadMonotonic=mono+delay)
+        if exhausted:raise Paused('FINITE_READ_BUDGET_EXHAUSTED')
+        if reconcile_only:raise Paused('CLAIMED_EFFECT_READ_TRANSIENT_RECONCILE_ONLY')
         raise Paused('FINITE_READ_BUDGET_EXHAUSTED'if exhausted else'FINITE_READ_RETRY_WAIT')
 
     def step(self):
@@ -140,14 +158,14 @@ class Runner:
             stage=self.stages[n]
             if len(row['effects'])==n+1 and stage['kind']=='EFFECT':raise Paused('CLAIMED_EFFECT_RECONCILIATION_REQUIRED')
             self.check_read_window(row)
-            self.ports.guard_current(stage);row=self.after_native(row)
+            row=self.guard_native(row,stage)
             wall,mono=self.clock();minimum=210 if stage['name']=='IMPORT_INGESTION_IMAGE'else 45
             if min(row['expiresAt']-wall,row['expiresMonotonic']-mono,self.expires-wall)<minimum:raise Paused('INSUFFICIENT_CURRENT_STAGE_WINDOW')
             if len(row['effects'])==n:
                 row=self.save(row,effects=row['effects']+[{'stage':stage['name'],'intentHash':stage['intentHash'],'state':'CLAIMED'}])
             elif stage['kind']=='EFFECT':raise Paused('CLAIMED_EFFECT_RECONCILIATION_REQUIRED')
             if stage['kind']=='EFFECT':
-                self.guard();self.ports.guard_current(stage);row=self.after_native(row)
+                self.guard();row=self.guard_native(row,stage)
                 self.ports.apply(stage)
                 # A native port may persist resource identity while the effect
                 # remains CLAIMED. Observe against that newest CAS version.
@@ -161,6 +179,6 @@ class Runner:
             row=self.guard();n=row['nextStage']
             require(n<len(self.stages)and len(row['effects'])==n+1,'EXISTING_CLAIM_REQUIRED')
             stage=self.stages[n];self.check_read_window(row,reconcile=True)
-            self.ports.guard_current(stage);row=self.after_native(row)
+            row=self.guard_native(row,stage,reconcile=True)
             result=self.observe(row,stage,reconcile=True)
             return {'reconciledStage':stage['name'],'effectReplayed':False,'journalVersion':result['version']}

@@ -15,11 +15,12 @@ import stat
 import time
 import iam_governance_intake as governance
 from engine_creation import Engine
-from tools.ingestion_rollout_execution.contract import AUTHORITY_KEY,require,scope,digest,encoded,path,hashed
+from tools.ingestion_rollout_execution.contract import AUTHORITY_KEY,require,scope,digest,encoded,path,hashed,ReadTransient
 from tools.ingestion_rollout_execution.replacement import EngineReader
 from tools.ingestion_rollout_execution.namespace import identity
 from tools.ingestion_rollout_execution import private_file,runtime_bindings
 from tools.ingestion_rollout_execution.engine_channel import after_reads
+from tools.ingestion_rollout_execution.gateway_transport import retry_after_seconds
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.chatbot_file_cohort.human_session import HumanSession
@@ -43,13 +44,15 @@ try:
     client.request('GET',v['path'],headers={'Authorization':'Bearer '+v['bearer'],'Accept':'application/json',
         'X-Correlation-ID':v['correlation'],'Connection':'close'})
     response=client.getresponse();raw=response.read(2097153)
-    if not 0<len(raw)<=2097152:raise ValueError()
+    if len(raw)>2097152:raise ValueError()
     tag=response.getheader('ETag','')
     if len(tag)>256 or any(ord(c)<32 or ord(c)>126 for c in tag):raise ValueError()
-    # Only successful closed GETs are accepted; no redirects, proxy, retries,
-    # projection export, authority refresh or owner mutation.
-    if response.status!=200:raise ValueError()
-    result=json.dumps({'status':response.status,'body':json.loads(raw),'etag':tag},
+    # Successful reads or explicit finite transient classifications only.
+    # No redirects, proxy, child retries, projection export or owner mutation.
+    if response.status not in (200,429,502,503,504):raise ValueError()
+    retry=response.getheader('Retry-After','')
+    if len(retry)>128 or any(ord(c)<32 or ord(c)>126 for c in retry):raise ValueError()
+    result=json.dumps({'status':response.status,'body':json.loads(raw)if response.status==200 else{},'etag':tag,'retryAfter':retry},
         sort_keys=True,separators=(',',':'),allow_nan=False).encode()
     if len(result)>2162688:raise ValueError()
     sys.stdout.buffer.write(result);sys.stdout.buffer.flush();client.close()
@@ -187,9 +190,12 @@ class NativeOwnerRead:
             except subprocess.TimeoutExpired:require(False,'OWNER_READ_UNPROVEN_RETAIN_BUDGET')
             require(child.returncode==0 and 0<len(output)<=2162688,'OWNER_READ_UNPROVEN_RETAIN_BUDGET')
             self.check();result=json.loads(output)
-            require(type(result)is dict and set(result)=={'status','body','etag'}and result['status']==200
-                    and type(result['body'])is dict and type(result['etag'])is str,'EXACT_OWNER_READ_RESPONSE_REQUIRED')
-            return result
+            require(type(result)is dict and set(result)=={'status','body','etag','retryAfter'}and type(result['status'])is int
+                    and result['status']in(200,429,502,503,504)and type(result['body'])is dict
+                    and type(result['etag'])is str,'EXACT_OWNER_READ_RESPONSE_REQUIRED')
+            delay=retry_after_seconds(result['retryAfter'])
+            if result['status']!=200:raise ReadTransient(delay)
+            return {k:result[k]for k in('status','body','etag')}
         finally:
             if child is not None:
                 if child.poll()is None:child.kill()

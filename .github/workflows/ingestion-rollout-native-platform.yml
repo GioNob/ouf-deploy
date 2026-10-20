@@ -65,7 +65,9 @@ jobs:
         run: |
           set -euo pipefail
           curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
-          sha256sum /tmp/ouf-docker-29.8.1.tgz
+          sha256sum --check <<'OUF_DOCKER_SHA'
+          d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70  /tmp/ouf-docker-29.8.1.tgz
+          OUF_DOCKER_SHA
           sudo install -d -m 755 /opt/ouf-docker-29
           sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
           sudo chown -R root:root /opt/ouf-docker-29
@@ -88,9 +90,9 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          sudo env PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin OUF_NATIVE_UIDS=1 OUF_ISOLATED_NATIVE_PLATFORM=1 OUF_TEST_ROOT="$fixture" \\
-            OUF_FIXTURE_APISIX_IMAGE=apache/apisix:3.18.0-debian OUF_FIXTURE_ETCD_IMAGE=quay.io/coreos/etcd:v3.5.17 OUF_FIXTURE_OWNER_IMAGE=python:3.12-alpine \\
-            OUF_CANDIDATE_ZIP="$RUNNER_TEMP/ouf-candidate.zip" OUF_FIXTURE_JAVA="$JAVA_HOME/bin/java" \\
-            OUF_INGESTION_SQL_ROOT="$fixture/repository/.pairwise/ingestion/src/main/resources/db/migration" \\
-            OUF_FLYWAY_CLASSPATH="$fixture/repository/tests/fixtures/ingestion-db-preflight/target/classes:$(cat .ingestion-db.classpath)" \\
+          sudo env PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin OUF_NATIVE_UIDS=1 OUF_ISOLATED_NATIVE_PLATFORM=1 OUF_TEST_ROOT="$fixture" \
+            OUF_FIXTURE_APISIX_IMAGE=apache/apisix:3.18.0-debian OUF_FIXTURE_ETCD_IMAGE=quay.io/coreos/etcd:v3.5.17 OUF_FIXTURE_OWNER_IMAGE=python:3.12-alpine \
+            OUF_CANDIDATE_ZIP="$RUNNER_TEMP/ouf-candidate.zip" OUF_FIXTURE_JAVA="$JAVA_HOME/bin/java" \
+            OUF_INGESTION_SQL_ROOT="$fixture/repository/.pairwise/ingestion/src/main/resources/db/migration" \
+            OUF_FLYWAY_CLASSPATH="$fixture/repository/tests/fixtures/ingestion-db-preflight/target/classes:$(cat .ingestion-db.classpath)" \
             /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_native_platform.py -v

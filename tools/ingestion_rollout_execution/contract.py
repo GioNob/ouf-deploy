@@ -15,6 +15,12 @@ FORBIDDEN=('budgetReset','automaticReplayAllowed','automaticRollbackAllowed','ne
 
 class Denied(RuntimeError):pass
 class Paused(RuntimeError):pass
+class ReadTransient(RuntimeError):
+    def __init__(self,retry_after_seconds=0):
+        require(type(retry_after_seconds)in(int,float)and 0<=retry_after_seconds<float('inf'),
+                'FINITE_READ_TRANSIENT_RETRY_AFTER_REQUIRED')
+        super().__init__('EXPLICIT_NATIVE_READ_TRANSIENT')
+        self.retry_after_seconds=retry_after_seconds
 def require(ok,code):
     if not ok:raise Denied(code)
 def encoded(value):return json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
