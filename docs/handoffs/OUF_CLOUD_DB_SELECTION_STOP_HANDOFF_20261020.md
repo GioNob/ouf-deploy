@@ -67,3 +67,7 @@ Service owners retain enforcement; normal application startup must not migrate.
 No automatic DDL, grants or configuration repair is introduced. DB admission,
 qualified Ingestion/Gateway rollout, governed native profile and functional5–6
 remain open, with separate current HUMAN/THS gates.
+
+## Immutable delivery CI complete
+
+Source `f075089480ac6a0d25372178d28ab679515eb912`; [CI39378354961](https://github.com/GioNob/ouf-deploy/actions/runs/39378354961), job118481489496:8PASS/zero skips, actual producer regression included. Launcher blob `aceb36d9fbaf131f893b648fca69961c1150da5d`, SHA256 `eca156f26d5a683f9daa0adc9ca9c17fc42968c62b3e096a5c564ea3881db01d`. Target reconciliation has not run. Qualification receipt: evidence/ingestion-db-selection-reconcile-qualification-20261020.json.
