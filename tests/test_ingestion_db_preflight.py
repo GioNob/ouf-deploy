@@ -75,6 +75,7 @@ class ReadContract(unittest.TestCase):
         result = self.result()
         self.assertTrue(result['sqlHistoryMatchesCandidate'])
         self.assertFalse(result['runtimeCatalogMatchesQualifiedCandidate'])
+        self.assertIsNone(result['catalogDigest'])
         self.assertFalse(result['databaseReadPrerequisitesProven'])
 
     def test_privilege_gap_or_broad_membership_blocks_preflight(self):

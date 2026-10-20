@@ -407,7 +407,7 @@ def analyze(facts, selected):
     return {'databaseIdentityAndRoleMatched':True,'transactionReadOnly':True,
             'installedSqlMigrationCount':len(actual),'schemaCreationMarkerRetained':marker,
             'sqlHistoryMatchesCandidate':history_matches,'noSqlResourcesPendingByHistory':history_matches,
-            'catalogDigest':catalog_hash,'catalogReferenceQualified':reference_qualified,
+            'catalogDigest':REFERENCE_CATALOG_SHA256 if catalog_matches else None,'catalogReferenceQualified':reference_qualified,
             'runtimeCatalogMatchesQualifiedCandidate':catalog_matches,'catalogWithinBounds':catalog_bounded,
             'runtimeTableCount':len(TABLES),'requiredRuntimePrivilegesAvailable':privileges_match,'privilegeGaps':gaps,
             'runtimeRoleBroadFlagsAbsent':narrow_role,'runtimeRoleFlags':facts['roleFlags'],
