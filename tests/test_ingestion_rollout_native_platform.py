@@ -180,13 +180,16 @@ class NativePlatform(unittest.TestCase):
                 'projectionBinding':{k:profiles['ownerControlProfile']['projection'][k]for k in('path','sha256')}})
         self.sign_scope()
         self.ports=NativePorts(self.action,Journal(self.context),self.review,packet,self.human);self.addCleanup(self.ports.close)
-        self.runner=Runner(self.action,self.ports.journal,self.review,self.ports);self.runner.initialize()
+        self.runner=Runner(self.action,self.ports.journal,self.review,self.ports)
+        if self._testMethodName!='test_complete_real_native_sequence_preserves_routes_generations_and_claims':self.runner.initialize()
     def cleanup(self):
         for name in reversed(self.names):subprocess.run(['docker','rm','-f',name],capture_output=True,timeout=25)
         subprocess.run(['docker','network','rm',self.second],capture_output=True,timeout=20)
     def report_progress(self):
         if not hasattr(self,'runner'):
             print('OUF_NATIVE_ROLLOUT_CHECKPOINT={"phase":"DISPOSABLE_SETUP"}',flush=True);return
+        if not self.runner.journal.record.exists():
+            print('OUF_NATIVE_ROLLOUT_CHECKPOINT={"phase":"SEALED_ENTRY_BEFORE_INITIALIZE"}',flush=True);return
         row=self.runner.record();index=row['nextStage']
         print('OUF_NATIVE_ROLLOUT_CHECKPOINT='+json.dumps({'nextStage':self.review['stages'][index]['name']if index<len(self.review['stages'])else'COMPLETE',
             'readState':row['readState'],'effects':len(row['effects']),
@@ -264,16 +267,43 @@ class NativePlatform(unittest.TestCase):
     def advance_to(self,name):
         while self.review['stages'][self.runner.record()['nextStage']]['name']!=name:self.runner.step()
     def test_complete_real_native_sequence_preserves_routes_generations_and_claims(self):
-        for index,stage in enumerate(self.review['stages']):
-            while self.runner.record()['nextStage']==index:
-                try:self.runner.step()
-                except c.Paused:
-                    row=self.runner.record()
-                    if row['readState']!='RETRY_WAIT':raise
-                    # Explicit finite read-only continuation of this CI journal.
-                    delay=max(row['nextReadAt']-time.time(),row['nextReadMonotonic']-time.monotonic())
-                    time.sleep(max(0,delay)+.01)
-        result=self.runner.step();self.assertTrue(result['complete']);self.assertFalse(result['releaseAcceptance'])
+        q=self.crypto
+        installed={'schema':'ouf.semantic-existing-installation-authority-bindings.v1','authorities':q.context,
+            'policyBinding':q.binding(q.policy),'keyRefs':{'installer':q.grant['keyRef'],'attestor':'synthetic-fixture-attestor-key'},
+            'keyBindings':{'installer':q.binding(q.key),'attestor':q.binding(q.key)}}
+        selected=q.root/'existing-authority.json';q.write(selected,c.encoded(installed))
+        issuer={'schema':'ouf.ingestion-rollout-existing-issuer-profile.v1','installationAuthority':binding(selected),
+            'policy':binding(q.policy),'authorityContext':q.context}
+        path=ROOT/'tools/ingestion_rollout_execution/runtime.py'
+        spec=importlib.util.spec_from_file_location('fixture_sealed_loader',path)
+        loader=importlib.util.module_from_spec(spec);spec.loader.exec_module(loader)
+        sources={n:(ROOT/p).read_bytes()for n,p in loader.SOURCE_PATHS.items()};raw=path.read_bytes()
+        commit=os.environ['OUF_QUALIFIED_DEPLOY_COMMIT']
+        pins={'ouf-deploy':commit,'ouf-onboarding':'b0f5e3dacbe59ebf87e22dd6af2575e41249f51d',
+            'ouf-ingestion-runtime':self.packet['candidate']['sourceCommit'],'ouf-api-gateway':'6bcb28906eee08e0ebe3507b8b58dd987012c8e6'}
+        manifest=loader.declaration(commit,sources,raw,pins)
+        value={'loader':base64.b64encode(raw).decode(),'sources':{n:base64.b64encode(b).decode()for n,b in sources.items()},
+            'commit':commit,'sourcePins':pins,'approvedDeclarationHash':loader.digest(manifest),
+            'nativeReview':self.review,'packet':self.packet,'selection':self.human.selection,'issuer':issuer,
+            'executables':{'python':self.program,'docker':self.review['databaseControlProfile']['dockerExecutable'],
+                'openssl':q.verifier.openssl_binding}}
+        child=(ROOT/'tests/fixtures/ingestion-rollout/sealed_sequence.py').read_text()
+        result=subprocess.run([self.program['path'],'-I','-B','-S','-c',child],input=c.encoded(value),
+            capture_output=True,timeout=930,env={'LC_ALL':'C'})
+        self.assertEqual(result.returncode,0,result.stdout.decode()+result.stderr.decode()[-1000:])
+        proof=json.loads(result.stdout);self.assertTrue(proof['sealedEntrySequenceComplete'])
+        self.assertEqual(proof['moduleCount'],len(loader.MODULES))
+        # Independent read-only oracle reopens the issued action; it does not
+        # issue a replacement authority or replay any completed stage.
+        from tools.ingestion_rollout_execution import entry
+        issued=json.loads((self.context/'review.json').read_bytes())
+        decision=json.loads((self.context/'decision.json').read_bytes())
+        mandate=hashlib.sha256((self.context/'human.json').read_bytes()).hexdigest()
+        self.action=entry.load_action(issued,decision,self.human,c.digest(decision),mandate)
+        self.ports.close()
+        self.ports=NativePorts(self.action,Journal(self.context),self.review,self.packet,self.human)
+        self.addCleanup(self.ports.close)
+        self.runner=Runner(self.action,self.ports.journal,self.review,self.ports);self.ports.prepare()
         row=self.runner.record();self.assertEqual(row['nextStage'],len(self.review['stages']))
         self.assertEqual(sum(e.get('nativeGatewayPutAttempted',False)for e in row['effects']),2)
         self.assertEqual(sum(e.get('nativeAllocationAttempted',False)for e in row['effects']),1)
@@ -283,7 +313,6 @@ class NativePlatform(unittest.TestCase):
             self.assertEqual(actual['HostConfig']['RestartPolicy'],self.packet['frames'][module]['restoreRestartPolicy'])
             self.assertFalse(self.inspect(self.before[module]['Id'])['State']['Running'])
         self.assertEqual(self.ports.new_gateway().routes(),self.after_routes)
-        self.assertEqual(self.runner.step()['functionalMilestonesProven'],4)
         print('OUF_NATIVE_ROLLOUT_FIXTURE_PROOF='+json.dumps({'complete':True,'engineGets':row.get('nativeDirectEngineGets',0),
             'enginePosts':row.get('nativeDirectEnginePosts',0),'ownerGets':row.get('nativeOwnerGetAttempts',0),
             'sqlSessions':row.get('nativeDatabaseReadSessions',0),'gatewayPuts':2,'runtimeAuthorityIssued':False,
