@@ -102,3 +102,8 @@ Checkpoint20/10/2026,13:18:23: qualifica PostgreSQL reale39413446807 **PASS13:14
 Issuer/entrypoint/chiusura scritti:6testissuer con firmeEd25519reali di fixture;4testletturaautorità;5testloader con importisolato reale di113moduli, nessun fallback disco. Ricevutequalifica/HUMAN dei test sono sintetiche: **non provanoG2néautoritàtarget**. L'issuer rifiuta qualifica rappresentativa mancante/incompleta e consuma il claim prima delle firme; l'entrypoint separa initialize/step/reconcile senza autenticazione o loop. RestanoAPISIX/JVM e avversariali sull'executor completo.
 
 Effort misurato chiuso **110.21minuti (1.837h)**, più8,96iniziali non segmentati; intervalli incerti esclusi. Nuova attività13:18:23. G1chiuso, G2aperto rispettoH+14; M1centrale24h/M2centrale55h non riscritti. Tecniche8/8, funzionali4/6.
+
+
+Checkpoint20/10/2026,13:32:01: CI39414076923 **PASS13:20:44**, compresi issuer/entrypoint/importisolato113moduli; anchePG39414076927PASS. Preparata la sequenza completa suDocker29, APISIX/etcd,PG17 e immagineJVMqualificata, con perdita della rispostaCREATE giàeffettuata e bearerpubblicatoscaduto. Il serverOwnerGET e l'identitàHUMAN sono fixture sintetiche dichiarate; gli oggetti/firme/journal/custodia e i runtime sono reali diCI. G3 dovrà verificareHUMAN/Owner attuali deltarget; nessuna acquisizioneF5/F6 dichiarata.
+
+Effort cumulativo chiuso **123.85minuti (2.064h)** contro baseline cumulativaG2 **14h**. Il gate è ancora aperto: la differenza dalle14h è budget teorico non ancora consumato, non una stima certificata del residuo. M1centrale24h/M2centrale55h restano le previsioni congelate fino al riesameG2. Ulteriore intervallo attivo dal13:32:01;8,96min iniziali non segmentati e intervalli incerti separati.

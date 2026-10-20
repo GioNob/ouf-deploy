@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T11:18:23.438Z",
+  "lastUpdatedAt": "2026-10-20T11:32:01.642Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -568,6 +568,27 @@
       },
       "gateG2Passed": false,
       "note": "Existing scoped infrastructure consent functions extracted unchanged; all installation issuer/policy paths are explicit. Qualification receipt mandatory before issuing. Actual unit Ed25519 keys and CAS, synthetic HUMAN/qualification; no target issuance. Real isolated import -I -B -S rejects source drift/fallback."
+    },
+    {
+      "id": "CSV-EV-0040",
+      "kind": "ISSUER_ENTRY_CLOSURE_CI_PASSED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:32:01.642Z",
+      "occurredAt": "2026-10-20T11:20:44Z",
+      "commit": "5244bc525864ebf63f7c434ac011b0a65dcb62fa",
+      "runId": 39414076923,
+      "jobId": 118598699463,
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "gateG2Passed": false,
+      "note": "Root component regression, exact issuer/readback and real isolated 113-module import passed. Native PG qualification39414076927 also PASS. Full APISIX/JVM sequence still pending."
+    },
+    {
+      "id": "CSV-EV-0041",
+      "kind": "FULL_NATIVE_PLATFORM_FIXTURE_PREPARED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:32:01.642Z",
+      "gateG2Passed": false,
+      "note": "Explicit disposable Docker29/APISIX/etcd/PG17/candidate JVM fixture; full sequence, lost actual CREATE reply, expired published bearer. Owner GET protocol and prepopulated HUMAN identity explicitly synthetic. No target operations, no completed target effects replayed."
     }
   ],
   "activeIntervals": [
@@ -663,9 +684,18 @@
     {
       "id": "CSV-TIME-0010",
       "startedAt": "2026-10-20T11:18:23.438Z",
-      "endedAt": null,
+      "endedAt": "2026-10-20T11:32:01.642Z",
       "workPackage": "WP2",
       "activity": "APISIX_JVM_AND_COMPLETE_NATIVE_PLATFORM_QUALIFICATION",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 818.204
+    },
+    {
+      "id": "CSV-TIME-0011",
+      "startedAt": "2026-10-20T11:32:01.642Z",
+      "endedAt": null,
+      "workPackage": "WP2",
+      "activity": "FULL_NATIVE_PLATFORM_CI_DIAGNOSIS_AND_QUALIFICATION",
       "classification": "ACTIVE_TECHNICAL",
       "seconds": null
     }
@@ -720,7 +750,12 @@
       "actualEffortHours": null,
       "effortVarianceHours": null,
       "observedStatus": "NOT_PASSED",
-      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+      "measurementNote": "Initial technical effort not retrospectively inferred from wall time",
+      "lastCheckpoint": {
+        "observedAt": "2026-10-20T11:32:01.642Z",
+        "cumulativeMeasuredEffortHours": 2.06417,
+        "gatePassed": false
+      }
     },
     {
       "gate": "G3",

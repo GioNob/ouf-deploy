@@ -1,8 +1,8 @@
 name: Ingestion rollout native PostgreSQL channel qualification
 on:
   pull_request:
-    paths: ['tools/ingestion_rollout_execution/**', 'tests/test_ingestion_rollout_native_database_platform.py', '.github/workflows/ingestion-rollout-native-platform.yml']
-permissions: {contents: read}
+    paths: ['tools/ingestion_rollout_execution/**', 'tests/test_ingestion_rollout_native*platform.py', 'tests/fixtures/ingestion-rollout/**', '.github/workflows/ingestion-rollout-native-platform.yml']
+permissions: {contents: read, actions: read}
 jobs:
   postgres17-native:
     runs-on: ubuntu-24.04
@@ -35,3 +35,62 @@ jobs:
             OUF_INGESTION_SQL_ROOT="$fixture/repository/.pairwise/ingestion/src/main/resources/db/migration" \
             OUF_FLYWAY_CLASSPATH="$fixture/repository/tests/fixtures/ingestion-db-preflight/target/classes:$(cat .ingestion-db.classpath)" \
             /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_native_database_platform.py -v
+
+  docker29-apisix-jvm-sequence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-ingestion-runtime
+          ref: 0fe0de60c6d980fe97610acf195d4bfd46d3777f
+          path: .pairwise/ingestion
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '21', cache: maven}
+      - name: Existing qualified image artifact for isolated fixture only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/GioNob/ouf-deploy/actions/artifacts/12245228551/zip > "$RUNNER_TEMP/ouf-candidate.zip"
+          printf '%s  %s\\n' '02974a024e66d2f3adb9933f654954868598f6dfcec8899bf76daced9a1aeb02' "$RUNNER_TEMP/ouf-candidate.zip" | sha256sum -c -
+      - name: Exact Flyway fixture
+        run: |
+          set -euo pipefail
+          mvn -B -ntp -q -f tests/fixtures/ingestion-db-preflight/pom.xml compile org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath -Dmdep.outputFile="$GITHUB_WORKSPACE/.ingestion-db.classpath"
+      - name: Disposable Docker29 containerd Engine matching the qualified API adapter
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          sha256sum /tmp/ouf-docker-29.8.1.tgz
+          sudo install -d -m 755 /opt/ouf-docker-29
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
+          sudo chown -R root:root /opt/ouf-docker-29
+          sudo systemctl stop docker.service docker.socket
+          sudo systemctl start containerd.service
+          sudo install -d -m 700 /var/lib/ouf-docker-29
+          printf '%s\\n' '{"features":{"containerd-snapshotter":true},"exec-opts":["native.cgroupdriver=systemd"]}' > /tmp/ouf-docker-29.json
+          sudo systemd-run --unit=ouf-rollout-docker-contract-daemon --property=Restart=no --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid --containerd=/run/containerd/containerd.sock
+          for OUF_DOCKER_POLL in $(seq 1 60); do
+            if sudo docker info > /tmp/ouf-rollout-docker-29-info.txt 2>/dev/null; then break; fi
+            sleep 1
+          done
+          test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
+          test "$(sudo docker info --format '{{.Driver}}')" = overlayfs
+      - name: Full finite native sequence and ambiguity/expiry boundaries
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-rollout-sequence-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin OUF_NATIVE_UIDS=1 OUF_ISOLATED_NATIVE_PLATFORM=1 OUF_TEST_ROOT="$fixture" \\
+            OUF_FIXTURE_APISIX_IMAGE=apache/apisix:3.18.0-debian OUF_FIXTURE_ETCD_IMAGE=quay.io/coreos/etcd:v3.5.17 OUF_FIXTURE_OWNER_IMAGE=python:3.12-alpine \\
+            OUF_CANDIDATE_ZIP="$RUNNER_TEMP/ouf-candidate.zip" OUF_FIXTURE_JAVA="$JAVA_HOME/bin/java" \\
+            OUF_INGESTION_SQL_ROOT="$fixture/repository/.pairwise/ingestion/src/main/resources/db/migration" \\
+            OUF_FLYWAY_CLASSPATH="$fixture/repository/tests/fixtures/ingestion-db-preflight/target/classes:$(cat .ingestion-db.classpath)" \\
+            /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_native_platform.py -v
