@@ -17,6 +17,7 @@ class Delivery(unittest.TestCase):
         self.assertLess(text.index('sha256sum -c -'), text.index('sudo /usr/bin/python3'))
         self.assertLess(text.index('ouf-gh-2.102.0.PNoFbF'), text.index('command -v gh'))
         self.assertIn('set -euo pipefail', text)
+        self.assertIn('trap ouf_report_log EXIT', text)
         self.assertIn('os.O_NOFOLLOW', text)
         self.assertNotRegex(text, r'gh (auth|api.*login)|docker (start|run|restart)|\b(curl|ssh)\b')
         subprocess.run(['bash', '-n', str(launcher)], check=True)

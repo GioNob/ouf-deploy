@@ -6,6 +6,8 @@ ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
 if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
 [[ -n "$ouf_gh" && -x "$ouf_gh" ]] || { printf '%s\n' 'STOP: client GitHub non disponibile; nessun sudo.' >&2; exit 2; }
 ouf_read="$(mktemp -d "$HOME/ouf-rollout-five-apps.XXXXXXXX")"
+ouf_report_log() { printf 'Log diagnostico conservato: %s/read.log\n' "$ouf_read"; }
+trap ouf_report_log EXIT
 "$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/f30dc711ea081f7c06a3a4746854f055dacb884f' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/read.py"
 printf '%s  %s\n' 'd65de8d9365e38350caee1fd2ac7d934f31b8a90bab9fe301d54d215ef1dd2f7' "$ouf_read/read.py" | sha256sum -c -
 printf '%s\n' 'SOLO LETTURA: riconciliazione distinta di cinque applicazioni dal piano Owner7, dieci GET Docker al massimo. Nessun login, refresh, owner, Gateway o DB.' 'Un journal contenente credenziali viene letto privatamente; nessun valore o hash delle credenziali viene stampato.'
@@ -25,5 +27,4 @@ try:
 except Exception:
  print('STOP_RECONCILE: consegna diagnostica non verificata; nessun replay.',flush=True);raise SystemExit(2)
 OUF_READ
-printf 'Log diagnostico: %s/read.log\n' "$ouf_read"
 
