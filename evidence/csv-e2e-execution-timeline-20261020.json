@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T13:49:22.000Z",
+  "lastUpdatedAt": "2026-10-20T13:50:44.000Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1198,8 +1198,8 @@
     {
       "id": "CSV-TIME-0026",
       "startedAt": "2026-10-20T13:47:19.000Z",
-      "endedAt": null,
-      "seconds": null,
+      "endedAt": "2026-10-20T13:50:44.000Z",
+      "seconds": 205,
       "classification": "ACTIVE_TECHNICAL",
       "workPackages": [
         "WP5_QUALIFICATION",
@@ -1486,5 +1486,23 @@
       "scope": "RECOVERY_AND_TYPED_DISPATCH_SCHEMAS",
       "runtimePublished": false
     }
-  ]
+  ],
+  "runtimeBlockers": {
+    "gate": "G3",
+    "humanInterventionRequired": true,
+    "reasons": [
+      "CURRENT_HUMAN_THS_AUTHORITY_REQUIRED",
+      "QUALIFIED_OUF_ADMIN_VPS_EXECUTOR_CHANNEL_REQUIRED"
+    ],
+    "historicalAttempts": 278,
+    "maximumCumulativeAttempts": 288,
+    "resetAllowed": false,
+    "automaticLoginAllowed": false,
+    "retainedClaimsPreserved": true,
+    "independentRemainingWork": [
+      "G5_VOCABULARY_AND_RELATIONSHIPS",
+      "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
+      "G7_ACCEPTANCE"
+    ]
+  }
 }

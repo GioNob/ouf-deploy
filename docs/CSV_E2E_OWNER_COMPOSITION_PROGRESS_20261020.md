@@ -1,6 +1,6 @@
 # CSV E2E — checkpoint di avanzamento verificato
 
-Checkpoint: 20 ottobre 2026, 15:49:22 Europe/Rome (13:49:22 UTC).
+Checkpoint: 20 ottobre 2026, 15:50:44 Europe/Rome (13:50:44 UTC).
 Baseline Mini-PET v1.1 congelata: d190193773116c9a59403aa42ccc9f89423eb959.
 
 ## Stato rispetto alla baseline
@@ -8,7 +8,7 @@ Baseline Mini-PET v1.1 congelata: d190193773116c9a59403aa42ccc9f89423eb959.
 | Voce | Effettivo verificato | Baseline centrale |
 | --- | --- | --- |
 | G2, decisione alle14:51:39 italiane | 3.16056 ore attive cumulative; intervallo conservativo3.16056–3.73082h | 14h cumulative |
-| Lavoro attivo al checkpoint corrente | circa4.02h, comprendenti attività WP5/WP6 intercalate | Nessun confronto con un gate successivo ancora aperto |
+| Lavoro attivo al checkpoint corrente | circa4.04h, comprendenti attività WP5/WP6 intercalate | Nessun confronto con un gate successivo ancora aperto |
 | M1 / F5–F6 | aperto | 24h cumulative (18–30h) |
 | M2 / CSV completo | aperto | 55h cumulative (40–70h) |
 
