@@ -48,7 +48,11 @@ class NativeDatabase(unittest.TestCase):
                  '-p','127.0.0.1::5432','-e','POSTGRES_PASSWORD=ci-only-admin',
                  '-e','POSTGRES_DB='+cls.db,'postgres:17-alpine'])
         for attempt in range(30):
-            ready = subprocess.run([cls.docker,'exec',cls.pg,'pg_isready','-U','postgres'],capture_output=True,timeout=5)
+            # Entrypoint's temporary init server accepts Unix probes before the
+            # requested DB exists. Require the final TCP server and real DB.
+            ready = subprocess.run([cls.docker,'exec','-e','PGPASSWORD=ci-only-admin',cls.pg,
+                                    'psql','-X','-w','-q','-A','-t','-h','127.0.0.1',
+                                    '-U','postgres','-d',cls.db,'-c','SELECT 1'],capture_output=True,timeout=5)
             if ready.returncode == 0: break
             if attempt == 29: raise RuntimeError('FIXTURE_POSTGRES_READINESS_EXHAUSTED')
             time.sleep(.5)
