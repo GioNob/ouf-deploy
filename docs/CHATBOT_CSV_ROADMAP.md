@@ -1,3 +1,13 @@
+> **CURRENT — private packet STOP; retained-archive/config reconciliation qualified (20 October 2026).**
+>
+> Technical8/8,functional4/6. Target packet `kkj_njiz` stopped at GATEWAY_CONFIG_AND_KEY_METADATA with QUALIFIED_GATEWAY_CONFIG_READER_IDENTITY_REQUIRED. Preserve its original two archives/claim; withdraw the old packet launcher. Defect: after the exact Owner7-bound config was accepted, staging still imposed historical636:636/0400. Actual target UID/GID/mode is not supplied; do not invent it or change the original file.
+>
+> Distinct reconciliation sourcebfd2a657ded5abfa0593eb16e09f7a0c03ffd772; [CI39385921215](https://github.com/GioNob/ouf-deploy/actions/runs/39385921215), job118505615231:9PASS/zero skips. Exact selected reader metadata is preserved, with root600/root644/historical6360400 physical tests and complete main() over5real Unix HTTP GETs using the original qualified image envelope. Archive one-byte corruption blocks; original archives/config/claim unchanged; no key generated or authority issued.
+>
+> Only next operator action: `scripts/launch-ingestion-rollout-packet-reconcile-20261020.sh`, once. Read retained tagless archive against CI-qualified fixed SHA256; no image download/recreation/import. New private reconciliation claim/context, exact pinned Owner7/bootstrap/old-claim selection,5EngineGET maximum/180s, proposed config bind only. ZERO SQL/OAuth/owner/Gateway API/container lifecycle; no replay of DB preflight, bootstrap, Owner7 or publication7. Last HUMAN278/288/window1792450664 remains expired; no credentials/login/refresh/reset.
+>
+> [Current handoff](handoffs/OUF_CLOUD_RETAINED_PACKET_RECONCILE_HANDOFF_20261020.md). Target reconciliation, signed executor/native create, fresh current HUMAN/DB admission, governed native profile and functional5–6 remain open. Earlier “next action” blocks below are superseded history.
+
 > **CURRENT — bootstrap target COMPLETE; private rollout packet qualified (20 October 2026).**
 >
 > Technical8/8,functional4/6. Exact target DRAFT retained at `/etc/ouf/deploy-snapshots/ingestion-startup-bootstrap-draft-rms0te4b`, hash5dfdb800…. No replay of that completed DRAFT, DB preflight, Owner7, projection7 or installation/readback. Last HUMAN278/288/window1792450664 remains expired; no new journal/login/refresh/reset.
