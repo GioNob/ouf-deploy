@@ -9,7 +9,13 @@
   "readerGitBlob": "f30dc711ea081f7c06a3a4746854f055dacb884f",
   "actualPinnedPlanConstructorExercised": true,
   "completeFiveApplicationDiagnosticOverRealUnixHttp": true,
-  "expectedApplications": ["onboarding", "mcp", "udp", "ingestion", "gateway"],
+  "expectedApplications": [
+    "onboarding",
+    "mcp",
+    "udp",
+    "ingestion",
+    "gateway"
+  ],
   "maximumEngineGetRequests": 10,
   "maximumSeconds": 60,
   "exactEqualityWithPinnedOwner7ApplicationMapRequired": true,
@@ -30,5 +36,11 @@
   "functionalMilestonesProven": 4,
   "databaseAdmissionProven": false,
   "runtimeRolloutExecutorQualified": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "deliveryCommit": "6551b7e8b2a3800eebf122a1144d7da6ee2a65d9",
+  "deliveryRunId": 39371890715,
+  "deliveryJobId": 118461378621,
+  "deliveryTestsPassed": 2,
+  "launcherGitBlob": "768c6b527874b8a5ba6e8a17919bbf6d9953b9ac",
+  "launcherSha256": "30aadd4bd1871536005165e7ce7072ba0d25f1c39e222709632541cc5067ac11"
 }
