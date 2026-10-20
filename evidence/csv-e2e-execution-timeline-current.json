@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T14:55:22.783Z",
+  "lastUpdatedAt": "2026-10-20T16:16:07.693Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -949,6 +949,21 @@
       "humanEffortKnown": false,
       "runtimeAuthorityIssued": false,
       "gatePassed": false
+    },
+    {
+      "id": "CSV-VPS-READ-0003",
+      "userReceiptReceivedAt": "2026-10-20T15:35:47Z",
+      "targetCommandStartedAt": null,
+      "targetCommandEndedAt": null,
+      "status": "SELECTION_RECONCILED_REVIEW_NO_AUTHORITY",
+      "sourceCommit": "174a49c870ffb57a4dfe57c82a7ae6b34bae3b92",
+      "readOnly": true,
+      "originalSizeBytes": 1444170,
+      "priorOAuthAttempts": 278,
+      "maximumCumulativeOAuthAttempts": 288,
+      "runtimeAuthorityIssued": false,
+      "gatePassed": false,
+      "humanEffortKnown": false
     }
   ],
   "activeIntervals": [
@@ -1281,6 +1296,15 @@
       "workPackage": "WP3_PREPARATION",
       "activity": "SECOND_VPS_STOP_HISTORICAL_DOCUMENT_PROFILE_ALIGNMENT_AND_SAFE_METADATA_QUALIFICATION",
       "isTargetRuntimeExecutionTime": false
+    },
+    {
+      "id": "CSV-TIME-0032",
+      "startedAt": "2026-10-20T15:36:01.000Z",
+      "endedAt": "2026-10-20T16:16:07.693Z",
+      "seconds": 2406.693,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "EXPLICIT_HUMAN_OPERATOR_QUALIFICATION_AND_INITIAL_RUNTIME_INPUT_READINESS_AUDIT"
     }
   ],
   "waitingIntervals": [],
@@ -1545,7 +1569,13 @@
     "targetSelectionReconciliationPending": false,
     "targetSelectionReconciliationResult": "STOP_RECONCILE",
     "custodyReconcileCiQualifiedCommit": "174a49c870ffb57a4dfe57c82a7ae6b34bae3b92",
-    "targetOriginalCustodyReconciliationPending": true
+    "targetOriginalCustodyReconciliationPending": false,
+    "targetOriginalCustodyReconciliationResult": "SELECTION_RECONCILED_REVIEW_NO_AUTHORITY",
+    "successfulTargetReviewHash": "86e3105a6f86af81b52f38cc51ae3fb41e743b3e6a8360aa94fc59cb12a53f4e",
+    "explicitHumanOperatorQualifiedCommit": "b760de48a41e2b073c135489399aefb4a14627ab",
+    "operatorQualificationRun": 39453670347,
+    "targetWindowOpened": false,
+    "targetOAuthAttemptsUnchanged": 278
   },
   "developmentCandidates": [
     {
@@ -1587,7 +1617,8 @@
       "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
       "G7_ACCEPTANCE"
     ],
-    "currentRequiredHumanAction": "EXECUTE_DISTINCT_QUALIFIED_ORIGINAL_DOCUMENT_CUSTODY_RECONCILIATION"
+    "currentRequiredHumanAction": "NONE_UNTIL_RUNTIME_INPUT_PREPARATION_REVIEWABLE",
+    "windowOpeningDeferredReason": "PRESERVE_FINITE7200_WINDOW_AND10_REMAINING_OAUTH_ATTEMPTS_WHILE_OFFLINE_RUNTIME_PREPARATION_CONTINUES"
   },
   "unsegmentedFollowupWindows": [
     {
@@ -1615,6 +1646,13 @@
       "startedAt": "2026-10-20T14:47:45.944Z",
       "endedAt": "2026-10-20T14:49:07.000Z",
       "classification": "TURN_AND_OPERATOR_COMMAND_WINDOW_NOT_MEASURED",
+      "countedAsActive": false,
+      "humanEffortKnown": false
+    },
+    {
+      "startedAt": "2026-10-20T14:55:22.783Z",
+      "endedAt": "2026-10-20T15:36:01.000Z",
+      "classification": "OPERATOR_WAIT_AND_TURN_TRANSITION_NOT_MEASURED",
       "countedAsActive": false,
       "humanEffortKnown": false
     }
