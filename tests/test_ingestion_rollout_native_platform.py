@@ -190,7 +190,9 @@ class NativePlatform(unittest.TestCase):
             print('OUF_NATIVE_ROLLOUT_CHECKPOINT={"phase":"DISPOSABLE_SETUP"}',flush=True);return
         if not self.runner.journal.record.exists():
             print('OUF_NATIVE_ROLLOUT_CHECKPOINT={"phase":"SEALED_ENTRY_BEFORE_INITIALIZE"}',flush=True);return
-        row=self.runner.record();index=row['nextStage']
+        # A failed sealed child can leave a retained stage requiring reconcile.
+        # Teardown diagnostics must not invoke execution guards or mask it.
+        row=self.runner.journal.read();index=row['nextStage']
         print('OUF_NATIVE_ROLLOUT_CHECKPOINT='+json.dumps({'nextStage':self.review['stages'][index]['name']if index<len(self.review['stages'])else'COMPLETE',
             'readState':row['readState'],'effects':len(row['effects']),
             'engineGets':row.get('nativeDirectEngineGets',0),'enginePosts':row.get('nativeDirectEnginePosts',0),
