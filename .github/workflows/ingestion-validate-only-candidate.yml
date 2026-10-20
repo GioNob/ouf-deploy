@@ -1,0 +1,66 @@
+name: Ingestion validate-only scanned candidate
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/package-ingestion-validate-only-candidate.py', 'releases/ingestion-validate-only-candidate-20261020.json', '.github/workflows/ingestion-validate-only-candidate.yml']
+permissions: {contents: read, actions: read}
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {path: deploy, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-ingestion-runtime
+          ref: 0fe0de60c6d980fe97610acf195d4bfd46d3777f
+          path: source
+          persist-credentials: false
+      - name: Require successful exact native startup qualification
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/GioNob/ouf-deploy/actions/runs/39380669962 > "$RUNNER_TEMP/ouf-startup-qualification.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          run=json.loads((Path(os.environ['RUNNER_TEMP'])/'ouf-startup-qualification.json').read_text())
+          assert run['head_sha']=='2690a4e755d266e7076aacda52fc1c81b14d016f' and run['status']=='completed' and run['conclusion']=='success'
+          assert run['name']=='Ingestion validate-only startup and compatibility qualification'
+          PY
+      - name: Build exact Ingestion candidate without target access
+        run: python3 deploy/scripts/package-ingestion-validate-only-candidate.py build --source source --module ingestion --output package
+      - name: Scan exact Ingestion image
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          image-ref: ouf-cohort-ingestion:0fe0de60c6d980fe97610acf195d4bfd46d3777f
+          format: json
+          output: package/trivy-image.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: HIGH,CRITICAL,UNKNOWN
+          ignore-unfixed: false
+          exit-code: 1
+      - name: Export and verify scanned source-locked package
+        run: |
+          python3 deploy/scripts/package-ingestion-validate-only-candidate.py export --source source --module ingestion --output package
+          cd package
+          sha256sum --check SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ingestion-validate-only-candidate-${{ github.run_id }}
+          path: package/
+          retention-days: 30
+          compression-level: 0
+          if-no-files-found: error
+      - name: Retain bounded packaging denial evidence
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ingestion-validate-only-denial-${{ github.run_id }}
+          path: |
+            package/diagnostics.json
+            package/trivy-image.json
+            package/package-record.json
+          retention-days: 30
