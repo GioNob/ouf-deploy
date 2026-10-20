@@ -1,0 +1,14 @@
+{
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "checkpoint": {
+    "phase": "RETAINED_ORIGINAL_FULL_SELECTION"
+  },
+  "complete": false,
+  "predecessorReasonCode": "EXACT_RETAINED_HUMAN_SELECTION_REQUIRED",
+  "readOnly": true,
+  "reasonCode": "EXACT_PRIVATE_RETAINED_FILE_CUSTODY_REQUIRED",
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.human-expired-ready-successor-selection-reconcile.v1",
+  "status": "STOP_RECONCILE"
+}
