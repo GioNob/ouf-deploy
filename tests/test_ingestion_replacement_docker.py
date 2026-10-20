@@ -88,10 +88,11 @@ class NativeReplacement(unittest.TestCase):
             if module=='gateway':
                 namespace=identity(os.stat('/proc/'+str(process['pid'])+'/ns/net'))
                 with self.assertRaises(Denied):
-                    GatewayNamespacePin(self.reader,frame,self.image_config,old,new,process,namespace,namespace,**kwargs)
+                    GatewayNamespacePin(self.reader,frame,self.image_config,old,new,changed,namespace,old_namespace,**kwargs)
                 with GatewayNamespacePin(self.reader,frame,self.image_config,old,new,process,namespace,old_namespace,**kwargs)as pin:
                     self.assertEqual(pin.check()['namespace'],identity(os.fstat(pin.fd)))
                     self.assertFalse(pin.check()['oldNamespaceReused'])
+                    self.assertEqual(pin.check()['matchesPreviousNamespaceInode'],namespace==old_namespace)
                     engine('POST','/containers/'+new+'/pause')
                     with self.assertRaises(Denied):pin.check()
                 self.assertIsNone(pin.fd)
