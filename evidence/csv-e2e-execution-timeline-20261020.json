@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T10:15:14.724Z",
+  "lastUpdatedAt": "2026-10-20T10:30:51.147Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -358,6 +358,36 @@
       "observedAt": "2026-10-20T10:15:14.724Z",
       "timestampConfidence": "EXACT_OBSERVED_ACTIVITY_START",
       "gateG2Passed": false
+    },
+    {
+      "id": "CSV-EV-0025",
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "occurredAt": "2026-10-20T10:16:10Z",
+      "observedAt": "2026-10-20T10:30:51.147Z",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "commit": "92e7007fcc5ad5e916e05909d13c9e4aef042e31",
+      "runId": 39406640241,
+      "jobId": 118574055490,
+      "tests": 76,
+      "skipped": 0,
+      "gateG2Passed": false,
+      "proofLevel": "SIGNED_COMPONENTS_AND_ACTUAL_ARCHIVE_FD_SYNTHETIC_LOAD"
+    },
+    {
+      "id": "CSV-EV-0026",
+      "kind": "COMPOSITION_DEFECT_FIXED_LOCAL_TESTS_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T10:30:51.147Z",
+      "timestampConfidence": "OBSERVED_AFTER_TEST_COMPLETION",
+      "tests": {
+        "stageAwareRuntimeGuard": 7,
+        "runnerNativeJournalComposition": 8,
+        "readinessProfile": 3,
+        "readinessLinuxCasesPending": 5
+      },
+      "gateG2Passed": false,
+      "note": "Runner reloaded after native counters/resources; protected progress/deadlines/history; no probes during retained retry wait, no effect without remaining observation budget. Actual readiness setns/HTTP still awaiting CI."
     }
   ],
   "activeIntervals": [

@@ -67,3 +67,5 @@ Prima revisione del forecast aG1: intervalliM1 **18–30h** eM2 **40–70h**, ce
 Checkpoint 20/10/2026, 12:08:55: CI39404688204 terminata **20/10/2026,12:00:19Europe/Rome**;47testPASS,0skip. Componenti nuovi Owner/SQL:10+8testlocaliPASS, osservati a questo checkpoint; backend/processi simulati, firme/CAS reali. G2rimaneaperto.
 
 Checkpoint20/10/2026, 12:15:14: CI39405867174 terminata **12:09:46Europe/Rome**,65testPASS,0skip. Importazione daFD verificato:11testlocaliPASS con loaderDocker sintetico. IntervalloWP2 2026-10-20T09:53:01.026Z–2026-10-20T10:15:14.724Z: **22.23minuti**. Nuova attività di composizione NativePorts avviata esattamente a questo checkpoint; non è aperturaG2. Totale tecnico misurato chiuso: **58.47minuti**, più8,96iniziali non segmentati; nessuna attesa passiva o effortHUMAN inventato.
+
+Checkpoint20/10/2026, 12:30:51: CI39406640241 terminata **12:16:10Europe/Rome**,76testPASS,0skip. Composizione NativePorts ancora in corso: corretta l'interazione CAS fra contatori dei componenti e statoRunner;8testlocaliPASS,7testguardruntimePASS,3testprofiloreadinessPASS. Cinque casi namespace/HTTP Linux attendonoCI. NessunG2 o admissiontarget anticipato.

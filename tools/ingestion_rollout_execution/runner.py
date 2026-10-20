@@ -77,12 +77,34 @@ class Runner:
         wall,mono=self.clock();following={**row,**changes,'version':row['version']+1,'lastWall':wall,'lastMonotonic':mono}
         self.journal.compare_and_save(row,following);return following
 
-    def reserve_read(self,row,*,reconcile=False):
+    def check_read_window(self,row,*,reconcile=False):
         wall,mono=self.clock()
         if row['readState']=='EXHAUSTED'or row['readAttempts']>=128:raise Paused('CUMULATIVE_READ_BUDGET_EXHAUSTED')
         if not reconcile and row['readState']in('ATTEMPTING','RECONCILE_REQUIRED'):raise Paused('INTERRUPTED_READ_RECONCILIATION_REQUIRED')
         if wall<row['nextReadAt']or mono<row['nextReadMonotonic']:raise Paused('FINITE_READ_RETRY_WAIT')
+
+    def reserve_read(self,row,*,reconcile=False):
+        self.check_read_window(row,reconcile=reconcile)
         return self.save(row,readAttempts=row['readAttempts']+1,stageReadAttempts=row['stageReadAttempts']+1,readState='ATTEMPTING')
+
+    def after_native(self,before):
+        """Reload native CAS counters/resources, never accept native progress/reset."""
+        after=self.guard()
+        require(after['nextStage']==before['nextStage']and len(after['effects'])==len(before['effects'])
+                and after['version']>=before['version'],'NATIVE_PORT_CHANGED_RUNNER_PROGRESS')
+        for key,value in before.items():
+            if key in('version','effects'):continue
+            require(key in after,'NATIVE_PORT_REMOVED_PERSISTENT_HISTORY')
+            if key.startswith('native')and type(value)is int:
+                require(type(after[key])is int and after[key]>=value,'NATIVE_PORT_RESET_CUMULATIVE_COUNTER')
+            else:require(encoded(after[key])==encoded(value),'NATIVE_PORT_CHANGED_RUNNER_BUDGET_OR_HISTORY')
+        require(all(k.startswith('native')for k in set(after)-set(before)),'UNREVIEWED_NATIVE_JOURNAL_FIELD')
+        for index,(old,new)in enumerate(zip(before['effects'],after['effects'])):
+            require(all(k in new and encoded(new[k])==encoded(v) for k,v in old.items())
+                    and all(k.startswith('native')for k in set(new)-set(old)),
+                    'NATIVE_PORT_REWROTE_RETAINED_EFFECT_OR_CLAIM')
+            if index<before['nextStage']:require(new==old,'APPLIED_EFFECT_METADATA_IMMUTABLE')
+        return after
 
     def finish(self,row,proof):
         require(type(proof)is dict and proof and len(encoded(proof))<=2048,'BOUNDED_REDACTED_NATIVE_PROOF_REQUIRED')
@@ -92,7 +114,8 @@ class Runner:
 
     def observe(self,row,stage,*,reconcile=False):
         row=self.reserve_read(row,reconcile=reconcile);self.guard();self.ports.guard_current(stage)
-        status,proof=self.ports.observe(stage);self.guard()
+        row=self.after_native(row)
+        status,proof=self.ports.observe(stage);row=self.after_native(row)
         if status=='APPLIED':return self.finish(row,proof)
         if stage['kind']=='EFFECT'or status!='TRANSIENT':
             self.save(row,readState='RECONCILE_REQUIRED');raise Paused('EFFECT_OR_OBSERVATION_UNPROVEN_NO_REPLAY')
@@ -114,17 +137,21 @@ class Runner:
                 if row['incidentState']!='RECOVERED':self.save(row,incidentState='RECOVERED')
                 return {'complete':True,'runtimeEffectsAcceptedByPorts':True,'releaseAcceptance':False,
                         'nativeProfilePublished':False,'functionalMilestonesProven':4,'budgetReset':False}
-            stage=self.stages[n];self.ports.guard_current(stage)
+            stage=self.stages[n]
+            if len(row['effects'])==n+1 and stage['kind']=='EFFECT':raise Paused('CLAIMED_EFFECT_RECONCILIATION_REQUIRED')
+            self.check_read_window(row)
+            self.ports.guard_current(stage);row=self.after_native(row)
             wall,mono=self.clock();minimum=210 if stage['name']=='IMPORT_INGESTION_IMAGE'else 45
             if min(row['expiresAt']-wall,row['expiresMonotonic']-mono,self.expires-wall)<minimum:raise Paused('INSUFFICIENT_CURRENT_STAGE_WINDOW')
             if len(row['effects'])==n:
                 row=self.save(row,effects=row['effects']+[{'stage':stage['name'],'intentHash':stage['intentHash'],'state':'CLAIMED'}])
             elif stage['kind']=='EFFECT':raise Paused('CLAIMED_EFFECT_RECONCILIATION_REQUIRED')
             if stage['kind']=='EFFECT':
-                self.guard();self.ports.guard_current(stage);self.ports.apply(stage)
+                self.guard();self.ports.guard_current(stage);row=self.after_native(row)
+                self.ports.apply(stage)
                 # A native port may persist resource identity while the effect
                 # remains CLAIMED. Observe against that newest CAS version.
-                row=self.guard()
+                row=self.after_native(row)
             result=self.observe(row,stage)
             return {'complete':False,'completedStage':stage['name'],'journalVersion':result['version'],'runtimeAuthorityIssued':False}
 
@@ -133,5 +160,7 @@ class Runner:
         with self.journal.invocation():
             row=self.guard();n=row['nextStage']
             require(n<len(self.stages)and len(row['effects'])==n+1,'EXISTING_CLAIM_REQUIRED')
-            stage=self.stages[n];self.ports.guard_current(stage);result=self.observe(row,stage,reconcile=True)
+            stage=self.stages[n];self.check_read_window(row,reconcile=True)
+            self.ports.guard_current(stage);row=self.after_native(row)
+            result=self.observe(row,stage,reconcile=True)
             return {'reconciledStage':stage['name'],'effectReplayed':False,'journalVersion':result['version']}
