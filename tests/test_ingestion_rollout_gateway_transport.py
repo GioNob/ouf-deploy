@@ -182,7 +182,10 @@ class SignedRouteClaims(unittest.TestCase):
     def test_changed_generation_or_human_blocks_put(self):
         self.runner.step();self.generation_current=False
         with self.assertRaises(c.Denied):self.runner.step()
-        self.assertEqual(self.puts,[]);self.generation_current=True
+        self.assertEqual(self.puts,[])
+        with self.assertRaises(c.Paused):self.runner.step()
+    def test_changed_human_blocks_before_first_put(self):
+        self.runner.step()
         self.human.current.return_value={**self.scope['humanBinding'],'subject':'other'}
         with self.assertRaises(c.Denied):self.runner.step()
         self.assertEqual(self.puts,[])
