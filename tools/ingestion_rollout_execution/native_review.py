@@ -5,6 +5,7 @@ publication results are inputs to reconciliation, never executable predecessor
 actions. A representative qualification and a fresh HUMAN/THS issue are separate.
 """
 import copy
+import re
 from tools.ingestion_rollout_execution import contract as c
 from tools.ingestion_rollout_execution import runtime_guard,owner_read,database_read,image_import,gateway_transport,readiness
 
@@ -50,6 +51,11 @@ def validate_profiles(profiles,packet):
     cmd=packet['frames']['ingestion']['requestTemplate'].get('Cmd')
     c.require(type(cmd)is list and cmd[-2:]==['--spring.flyway.enabled=false',
               '--ouf.ingestion.startup.schema-mode=VALIDATE_ONLY'],'EXPLICIT_VALIDATE_ONLY_STARTUP_REQUIRED')
+    candidate=packet['candidate'];source=candidate.get('sourceCommit')
+    c.require(type(source)is str and re.fullmatch('[0-9a-f]{40}',source)
+              and candidate['imageConfig'].get('Labels',{}).get('org.opencontainers.image.revision')==source
+              and packet['frames']['ingestion']['requestTemplate'].get('Labels',{}).get('org.opencontainers.image.revision')==source,
+              'SAME_QUALIFIED_CANDIDATE_SOURCE_AND_RUNTIME_LABEL_REQUIRED')
     return profiles
 
 def reconcile_owner(packet,profiles,owner_plan,completed_result):

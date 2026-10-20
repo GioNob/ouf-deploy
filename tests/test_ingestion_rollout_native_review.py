@@ -23,6 +23,9 @@ class NativeReview(unittest.TestCase):
             p=root/name;p.write_bytes(('isolated '+name+' fixture').encode());p.chmod(0o600);selected[name]=binding(p)
         old=runtime_fixture.OldGeneration();old.setUp()
         self.packet=copy.deepcopy(old.packet);self.human=old.review['humanBinding']
+        self.packet['candidate']['sourceCommit']='1'*40
+        self.packet['candidate']['imageConfig'].setdefault('Labels',{})['org.opencontainers.image.revision']='1'*40
+        self.packet['frames']['ingestion']['requestTemplate'].setdefault('Labels',{})['org.opencontainers.image.revision']='1'*40
         for key,name in(('gatewayConfigBefore','old'),('retainedGatewayConfig','new')):
             self.packet[key]={k:selected[name][k]for k in('path','sha256','metadata')}
         self.packet['candidate']['nativeArchiveBinding']={k:selected['archive'][k]for k in('path','sha256','metadata')}

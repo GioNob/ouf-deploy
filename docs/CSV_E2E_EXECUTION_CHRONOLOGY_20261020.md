@@ -95,3 +95,10 @@ Effort cumulativo chiuso **95.11minuti (1.585h)**, più8,96minuti iniziali non s
 Checkpoint20/10/2026,13:13:10: composizioneCI39412298239PASS, completata13:05:20. Prima qualifica PostgreSQL reale39412833943 **FAILED13:08:54**,3erroriCAS: i GETEngine con budget condiviso rendevano obsoleta la versione restituita dai controlliDB/Owner. Corretto il riaggancio della sola versione/contatoreGET; nessuna modifica a fencing, claim, scadenze o budgetSQL.28testlocaliPASS (8Engine+9DB+11Owner). La nuova qualifica PostgreSQL è necessaria: la run fallita non diventaPASS per una correzione locale.
 
 Totale tecnico misurato chiuso **105.00minuti (1.750h)**, più8,96iniziali non segmentati; intervalli incerti sempre esclusi. G2aperto controH+14; nessuna varianza finale o nuova previsione di accettazione. Nuovo intervallo attivo13:13:10. Nessuna operazioneVPS/login/refresh/reset/replay.
+
+
+Checkpoint20/10/2026,13:18:23: qualifica PostgreSQL reale39413446807 **PASS13:14:20**,3test,0skip, catalogo0ae9e4f3fda6fd7f4432c1816139a53eba471077730badf2beb61712585ed209. Query nuova ripetuta, checksum alterato e membership broad verificati, tentativi conservati. Prima run fallita39412833943 resta registrata. Regressione componenti39413446767PASS13:15:06.
+
+Issuer/entrypoint/chiusura scritti:6testissuer con firmeEd25519reali di fixture;4testletturaautorità;5testloader con importisolato reale di113moduli, nessun fallback disco. Ricevutequalifica/HUMAN dei test sono sintetiche: **non provanoG2néautoritàtarget**. L'issuer rifiuta qualifica rappresentativa mancante/incompleta e consuma il claim prima delle firme; l'entrypoint separa initialize/step/reconcile senza autenticazione o loop. RestanoAPISIX/JVM e avversariali sull'executor completo.
+
+Effort misurato chiuso **110.21minuti (1.837h)**, più8,96iniziali non segmentati; intervalli incerti esclusi. Nuova attività13:18:23. G1chiuso, G2aperto rispettoH+14; M1centrale24h/M2centrale55h non riscritti. Tecniche8/8, funzionali4/6.

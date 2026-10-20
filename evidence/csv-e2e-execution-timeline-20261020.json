@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T11:13:10.604Z",
+  "lastUpdatedAt": "2026-10-20T11:18:23.438Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -539,6 +539,35 @@
       },
       "gateG2Passed": false,
       "note": "After generation probes, adopt only monotonic direct-GET reservations/version. Claim/progress/deadline/non-GET changes rejected. Real PostgreSQL rerun required."
+    },
+    {
+      "id": "CSV-EV-0038",
+      "kind": "REAL_POSTGRES_PLATFORM_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:18:23.438Z",
+      "commit": "a6d3a36173fe0a5adb3d6d46d95c9dfe68b30494",
+      "runId": 39413446807,
+      "jobId": 118596615363,
+      "occurredAt": "2026-10-20T11:14:20Z",
+      "tests": 3,
+      "skipped": 0,
+      "catalogDigest": "0ae9e4f3fda6fd7f4432c1816139a53eba471077730badf2beb61712585ed209",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "gateG2Passed": false,
+      "targetSqlSessions": 0
+    },
+    {
+      "id": "CSV-EV-0039",
+      "kind": "LOCAL_ISSUER_ENTRY_AND_SEALED_IMPORT_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:18:23.438Z",
+      "tests": {
+        "existingKeyDualRoleIssuer": 6,
+        "entryReadback": 4,
+        "isolated113ModuleClosure": 5
+      },
+      "gateG2Passed": false,
+      "note": "Existing scoped infrastructure consent functions extracted unchanged; all installation issuer/policy paths are explicit. Qualification receipt mandatory before issuing. Actual unit Ed25519 keys and CAS, synthetic HUMAN/qualification; no target issuance. Real isolated import -I -B -S rejects source drift/fallback."
     }
   ],
   "activeIntervals": [
@@ -625,9 +654,18 @@
     {
       "id": "CSV-TIME-0009",
       "startedAt": "2026-10-20T11:13:10.604Z",
-      "endedAt": null,
+      "endedAt": "2026-10-20T11:18:23.438Z",
       "workPackage": "WP2",
       "activity": "IMMUTABLE_CLOSURE_AND_PLATFORM_DEFECT_REQUALIFICATION",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 312.834
+    },
+    {
+      "id": "CSV-TIME-0010",
+      "startedAt": "2026-10-20T11:18:23.438Z",
+      "endedAt": null,
+      "workPackage": "WP2",
+      "activity": "APISIX_JVM_AND_COMPLETE_NATIVE_PLATFORM_QUALIFICATION",
       "classification": "ACTIVE_TECHNICAL",
       "seconds": null
     }
