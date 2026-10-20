@@ -15,6 +15,7 @@ from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.chatbot_file_cohort.human_session import HumanSession
 
 def identity(s):return (s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode)
+def metadata(s):return list(identity(s)) + [s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns]
 
 class NativeKey:
     def __init__(self,action,journal,review,human):
@@ -86,7 +87,11 @@ class NativeKey:
             with os.fdopen(os.dup(fd),'wb')as stream:stream.write(raw);stream.flush();os.fsync(stream.fileno())
             os.lseek(fd,0,os.SEEK_SET);require(secrets.compare_digest(os.read(fd,65),raw),'NEW_KEY_PRIVATE_READBACK_REQUIRED')
             self.guard();os.fchown(fd,self.intent['uid'],self.intent['gid']);os.fchmod(fd,self.intent['mode']);os.fsync(fd)
-            self.recheck(pins);os.fsync(parent);self.guard()
+            self.recheck(pins);os.fsync(parent)
+            row,effect=self.guard();effects=copy.deepcopy(row['effects'])
+            effects[self.index]['nativeFinalMetadata']=metadata(os.fstat(fd))
+            self.journal.compare_and_save(row,{**row,'effects':effects,'version':row['version']+1})
+            self.guard()
         finally:
             for fd in reversed(fds):os.close(fd)
         status,proof=self.observe();require(status=='APPLIED','NEW_KEY_METADATA_RECONCILIATION_REQUIRED')
@@ -100,11 +105,39 @@ class NativeKey:
             try:s=os.stat(self.path.name,dir_fd=parent,follow_symlinks=False)
             except FileNotFoundError:return 'UNKNOWN',{}
             self.recheck(pins);self.guard()
-            if not(stat.S_ISREG(s.st_mode)and s.st_nlink==1 and s.st_dev==allocated['device']and s.st_ino==allocated['inode']
+            if not(effect.get('nativeFinalMetadata')==metadata(s)and stat.S_ISREG(s.st_mode)and s.st_nlink==1 and s.st_dev==allocated['device']and s.st_ino==allocated['inode']
                    and s.st_uid==self.intent['uid']and s.st_gid==self.intent['gid']
                    and stat.S_IMODE(s.st_mode)==self.intent['mode']and s.st_size==64):return 'UNKNOWN',{}
             return 'APPLIED',{'exclusiveKeyMaterializationProven':True,'device':s.st_dev,'inode':s.st_ino,
                              'uid':s.st_uid,'gid':s.st_gid,'mode':stat.S_IMODE(s.st_mode),'bytes':s.st_size,
                              'credentialValueReturned':False,'credentialHashReturned':False}
+        finally:
+            for fd in reversed(fds):os.close(fd)
+
+    def read_for_gateway(self):
+        """Private in-memory resolution of our already proven exclusive key.
+
+        No credential hash or value enters journal/proof/public output.
+        """
+        status,proof=self.observe()
+        require(status=='APPLIED','EXCLUSIVE_GENERATED_KEY_METADATA_REQUIRED')
+        _,effect=self.guard();sealed=effect['nativeFinalMetadata']
+        parent,fds,pins=self.parent()
+        try:
+            self.guard();self.recheck(pins)
+            fd=os.open(self.path.name,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=parent)
+            fds.append(fd);s=os.fstat(fd)
+            require(stat.S_ISREG(s.st_mode)and s.st_nlink==1
+                    and (s.st_dev,s.st_ino,s.st_uid,s.st_gid,stat.S_IMODE(s.st_mode),s.st_size)
+                    ==(proof['device'],proof['inode'],proof['uid'],proof['gid'],proof['mode'],proof['bytes']),
+                    'SAME_EXCLUSIVE_KEY_INODE_REQUIRED')
+            raw=os.read(fd,65)
+            require(len(raw)==64 and all(v in b'0123456789abcdef'for v in raw),
+                    'EXACT_PRIVATE_KEY_ENCODING_REQUIRED')
+            require(metadata(s)==sealed==metadata(os.fstat(fd))
+                    ==metadata(os.stat(self.path.name,dir_fd=parent,follow_symlinks=False)),
+                    'GENERATED_KEY_CHANGED_DURING_PRIVATE_READ')
+            self.recheck(pins);self.guard()
+            return raw.decode('ascii')
         finally:
             for fd in reversed(fds):os.close(fd)
