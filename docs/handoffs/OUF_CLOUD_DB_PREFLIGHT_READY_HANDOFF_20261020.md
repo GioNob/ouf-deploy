@@ -1,3 +1,7 @@
+> SUPERSEDED NEXT ACTION: the target DB reader stopped at retained selection.
+> Do not replay it. Continue with [DB selection STOP reconciliation](OUF_CLOUD_DB_SELECTION_STOP_HANDOFF_20261020.md).
+> Earlier qualification below does not prove the failed target provenance predicate.
+
 # OUF CLOUD — checkpoint complete, finite native DB preflight ready
 
 Technical8/8, functional4/6. No subagents, automations, completed action replay or

@@ -1,4 +1,12 @@
-> **CURRENT — five-application target checkpoint COMPLETE; native DB read preflight qualified (20 October 2026).**
+> **CURRENT — DB preflight STOP at retained selection; files-only reconciliation (20 October 2026).**
+>
+> Technical8/8,functional4/6. Operator log `/home/oufadmin/ouf-ingestion-db-read.vXzy92vP/read.log`: `STOP_RECONCILE/EXACT_ORIGINAL_DATABASE_PLAN_REQUIRED`, phase RETAINED_DATABASE_SELECTION, before Engine/SQL execution. All contexts/claims remain retained. No replay of this preflight, Owner7/projection7, five-app diagnostic or completed installation/readback. Last observed HUMAN278/288 is expired; no new login/refresh/renewal/reset.
+>
+> The earlier guard conflated3predicates. The actual unchanged postboot producer updates Engine/PG runtime generation while retaining the old cohortPlan.databasePlanHash; a regression test reproduces the mismatch. The target-specific failed predicate is not yet proved. New reader reports all3booleans, verifies originalBinding bytes and rechecks8retained documents: zero Engine, SQL, OAuth, credential journal/bearer reads, runtime effects or authority.8local qualification tests PASS; no target admission inferred. Next action is ONLY `scripts/launch-ingestion-db-selection-reconcile-20261020.sh`. Its result is metadata reconciliation, not DB admission. [Current handoff](handoffs/OUF_CLOUD_DB_SELECTION_STOP_HANDOFF_20261020.md).
+>
+> Ingestion PET1.3 §83.1 startup-migrate gate remains open. Qualified rollout, governed native profile and functional5–6 remain open under distinct current HUMAN/THS gates.
+
+> **HISTORY — five-application checkpoint complete; DB reader CI qualification before target STOP.**
 >
 > Operator receipt `ouf.ingestion-rollout-checkpoint-reconcile.v3` at1792472533 confirms all5generations match and are stable, active projection7 bytes/exact metadata unchanged,244source hashes and consumed claims retained. Actual HUMAN counter **278/288**,10remaining; READY is historical local state only: access token expired, window1792450664 expired, no provider revalidation or runtime authority. Log `/home/oufadmin/ouf-rollout-five-apps.wbwPYkt9/read.log`. Zero OAuth, owner/Gateway/DB calls, mutation, login/refresh/renewal or replay in that checkpoint. The corrected diagnostic is COMPLETE; do not run it again as the next gate.
 >
