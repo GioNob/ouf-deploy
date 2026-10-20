@@ -1,0 +1,315 @@
+{
+  "schema": "ouf.csv-e2e-execution-timeline.v1",
+  "timezone": "Europe/Rome",
+  "baseline": {
+    "version": "1.1",
+    "commit": "d190193773116c9a59403aa42ccc9f89423eb959",
+    "document": "docs/OUF_CSV_E2E_COMPLETION_MINIPET_v1_1_20261020.md",
+    "register": "releases/csv-e2e-completion-plan-20261020.json",
+    "forecastRewritten": false
+  },
+  "sessionOrigin": {
+    "requestedAt": "2026-10-20T11:07:49+02:00",
+    "source": "user execution instruction timestamp supplied by conversation",
+    "isExactFirstToolStart": false
+  },
+  "trackingStartedAt": "2026-10-20T09:16:46.603Z",
+  "lastUpdatedAt": "2026-10-20T09:16:46.603Z",
+  "initialUnsegmentedWindow": {
+    "from": "2026-10-20T11:07:49+02:00",
+    "to": "2026-10-20T09:16:46.603Z",
+    "technicalEffortPreciselyMeasured": false,
+    "reason": "Dedicated event timing requested after work started; preceding task start times are retained as bounded/reconstructed, never invented"
+  },
+  "clockRules": {
+    "timestamps": "ISO8601 UTC; display Europe/Rome",
+    "technicalEffort": "Measured active session intervals; passive waits separated; initial unsegmented window remains explicitly uncertain",
+    "humanEffort": "Recorded only when measured or supplied, never inferred from calendar wait",
+    "runtimeBudgetsChanged": false
+  },
+  "sourceHeads": [
+    {
+      "repo": "ouf-semantic-registry",
+      "ref": "main",
+      "selected": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+      "head": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+      "selectedMatches": true
+    },
+    {
+      "repo": "ouf-source-onboarding",
+      "ref": "fix/installation-active-precondition-20261019",
+      "selected": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "head": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "selectedMatches": true
+    },
+    {
+      "repo": "ouf-ingestion-runtime",
+      "ref": "fix/validate-only-startup-readiness-20261020",
+      "selected": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+      "head": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+      "selectedMatches": true
+    },
+    {
+      "repo": "ouf-udp-object-resolution",
+      "ref": "fix/publication-dependency-recovery-20261018",
+      "selected": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "head": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "selectedMatches": true
+    },
+    {
+      "repo": "ouf-mcp-server",
+      "ref": "fix/ingestion-read-gateway-binding-20261019",
+      "selected": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+      "head": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+      "selectedMatches": true
+    },
+    {
+      "repo": "ouf-api-gateway",
+      "ref": "fix/ingestion-read-auth-20261019",
+      "selected": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+      "head": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+      "selectedMatches": true
+    }
+  ],
+  "events": [
+    {
+      "id": "CSV-EV-0001",
+      "kind": "SESSION_REQUESTED",
+      "occurredAt": "2026-10-20T11:07:49+02:00",
+      "timestampConfidence": "EXACT_USER_MESSAGE_TIMESTAMP",
+      "note": "User authorizes persistent execution of mini-PET; runtime HUMAN/THS restrictions remain"
+    },
+    {
+      "id": "CSV-EV-0002",
+      "kind": "WP0_SELECTION_RECONCILED",
+      "workPackage": "WP0",
+      "observedAt": "2026-10-20T09:16:46.603Z",
+      "timestampConfidence": "OBSERVED_CHECKPOINT_TIME",
+      "note": "Six selected module branches match retained refs; deploy plan head d190193 verified. Original baseline and retained contexts read; no target calls"
+    },
+    {
+      "id": "CSV-EV-0003",
+      "kind": "GATE_PASSED",
+      "gate": "G0",
+      "observedAt": "2026-10-20T09:16:46.603Z",
+      "timestampConfidence": "OBSERVED_CHECKPOINT_TIME",
+      "baselineCentralHour": 0.5,
+      "evidenceRefs": [
+        "sourceHeads",
+        "docs/OUF_CSV_E2E_COMPLETION_MINIPET_v1_1_20261020.md"
+      ],
+      "note": "Repository selection/baseline gate only; no runtime admission"
+    },
+    {
+      "id": "CSV-EV-0004",
+      "kind": "WP1_IN_PROGRESS",
+      "workPackage": "WP1",
+      "observedAt": "2026-10-20T09:16:46.603Z",
+      "startedAt": null,
+      "startTimeBounds": {
+        "earliest": "2026-10-20T11:07:49+02:00",
+        "latest": "2026-10-20T09:16:46.603Z"
+      },
+      "timestampConfidence": "INITIAL_START_RECONSTRUCTED_WITHIN_BOUNDS",
+      "note": "Preliminary diagnosis overlapped WP0 selection. Local test fixes prepared; ingestion/MCP qualification branches pushed, fresh CI pending"
+    },
+    {
+      "id": "CSV-EV-0005",
+      "kind": "LOCAL_TEST_RESULT",
+      "testRef": "DeliveryLauncherTest except published full-closure comparison",
+      "observedAt": "2026-10-20T09:16:46.603Z",
+      "passCount": 14,
+      "failureCount": 0,
+      "notProven": "Full retained capsule closure CI remains required"
+    },
+    {
+      "id": "CSV-EV-0006",
+      "kind": "QUALIFICATION_COMMIT_CREATED",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "8a15d8c7e7c20fac09ea18b3a1013f659934f128",
+      "observedAt": "2026-10-20T09:16:46.603Z",
+      "qualificationStatus": "PENDING_CI",
+      "targetEffects": 0
+    },
+    {
+      "id": "CSV-EV-0007",
+      "kind": "QUALIFICATION_COMMIT_CREATED",
+      "repository": "GioNob/ouf-mcp-server",
+      "commit": "e7e9d961a7555b149a760299a0fe183c8bf4eccb",
+      "observedAt": "2026-10-20T09:16:46.603Z",
+      "qualificationStatus": "PENDING_CI",
+      "targetEffects": 0
+    }
+  ],
+  "activeIntervals": [
+    {
+      "id": "CSV-TIME-0001",
+      "startedAt": "2026-10-20T09:16:46.603Z",
+      "endedAt": null,
+      "workPackage": "WP1",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": null
+    }
+  ],
+  "waitingIntervals": [],
+  "gateComparison": [
+    {
+      "gate": "G0",
+      "centralHour": 0.5,
+      "includedIn": "WP0+WP1",
+      "status": "PLANNED",
+      "baselineCentralHour": 0.5,
+      "actualObservedAt": "2026-10-20T09:16:46.603Z",
+      "actualEffortHours": null,
+      "effortVarianceHours": null,
+      "observedStatus": "PASS",
+      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+    },
+    {
+      "gate": "G1",
+      "leanHour": 2,
+      "centralHour": 3,
+      "prudentHour": 4,
+      "milestone": null,
+      "status": "PLANNED",
+      "baselineCentralHour": 3,
+      "actualObservedAt": null,
+      "actualEffortHours": null,
+      "effortVarianceHours": null,
+      "observedStatus": "NOT_PASSED",
+      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+    },
+    {
+      "gate": "G2",
+      "leanHour": 10,
+      "centralHour": 14,
+      "prudentHour": 18,
+      "milestone": null,
+      "status": "PLANNED",
+      "baselineCentralHour": 14,
+      "actualObservedAt": null,
+      "actualEffortHours": null,
+      "effortVarianceHours": null,
+      "observedStatus": "NOT_PASSED",
+      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+    },
+    {
+      "gate": "G3",
+      "leanHour": 14,
+      "centralHour": 19,
+      "prudentHour": 24,
+      "milestone": null,
+      "status": "PLANNED",
+      "baselineCentralHour": 19,
+      "actualObservedAt": null,
+      "actualEffortHours": null,
+      "effortVarianceHours": null,
+      "observedStatus": "NOT_PASSED",
+      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+    },
+    {
+      "gate": "G4",
+      "leanHour": 18,
+      "centralHour": 24,
+      "prudentHour": 30,
+      "milestone": "M1",
+      "status": "PLANNED",
+      "baselineCentralHour": 24,
+      "actualObservedAt": null,
+      "actualEffortHours": null,
+      "effortVarianceHours": null,
+      "observedStatus": "NOT_PASSED",
+      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+    },
+    {
+      "gate": "G5",
+      "leanHour": 26,
+      "centralHour": 35,
+      "prudentHour": 44,
+      "milestone": null,
+      "status": "PLANNED",
+      "baselineCentralHour": 35,
+      "actualObservedAt": null,
+      "actualEffortHours": null,
+      "effortVarianceHours": null,
+      "observedStatus": "NOT_PASSED",
+      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+    },
+    {
+      "gate": "G6",
+      "leanHour": 34,
+      "centralHour": 46,
+      "prudentHour": 58,
+      "milestone": null,
+      "status": "PLANNED",
+      "baselineCentralHour": 46,
+      "actualObservedAt": null,
+      "actualEffortHours": null,
+      "effortVarianceHours": null,
+      "observedStatus": "NOT_PASSED",
+      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+    },
+    {
+      "gate": "G7",
+      "leanHour": 40,
+      "centralHour": 55,
+      "prudentHour": 70,
+      "milestone": "M2",
+      "status": "PLANNED",
+      "baselineCentralHour": 55,
+      "actualObservedAt": null,
+      "actualEffortHours": null,
+      "effortVarianceHours": null,
+      "observedStatus": "NOT_PASSED",
+      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+    }
+  ],
+  "milestoneComparison": [
+    {
+      "id": "F5",
+      "baselineCentralHour": 22,
+      "status": "OPEN",
+      "startedAt": null,
+      "completedAt": null
+    },
+    {
+      "id": "F6",
+      "baselineCentralHour": 24,
+      "status": "OPEN",
+      "startedAt": null,
+      "completedAt": null
+    },
+    {
+      "id": "M1",
+      "baselineHours": [
+        18,
+        24,
+        30
+      ],
+      "status": "OPEN",
+      "startedAt": null,
+      "completedAt": null
+    },
+    {
+      "id": "M2",
+      "baselineHours": [
+        40,
+        55,
+        70
+      ],
+      "status": "OPEN",
+      "startedAt": null,
+      "completedAt": null
+    }
+  ],
+  "runtimeState": {
+    "technicalCompleted": 8,
+    "functionalProven": 4,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "completedActionsReplayed": false,
+    "loginPerformed": false,
+    "refreshPerformed": false,
+    "budgetReset": false
+  }
+}

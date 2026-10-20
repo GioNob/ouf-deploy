@@ -1,3 +1,9 @@
+> **CURRENT — Mini-PET execution started; G0 recorded (20 October 2026).**
+>
+> Technical8/8,functional4/6 unchanged. [Execution chronology](CSV_E2E_EXECUTION_CHRONOLOGY_20261020.md) and [timestamped ledger](../evidence/csv-e2e-execution-timeline-20261020.json) compare actual progress with the immutable [v1.1 baseline](OUF_CSV_E2E_COMPLETION_MINIPET_v1_1_20261020.md), commit d190193773116c9a59403aa42ccc9f89423eb959. Session requested11:07:49Europe/Rome; G0 observed/pass11:16:46. Initial task timestamps are bounded/reconstructed, not invented; subsequent active/wait intervals are recorded separately.
+>
+> WP1 in progress: Ingestion scheduler fixture isolation and MCP separate mandatory LAN latency qualification pushed to qualification branches; fresh CI pending. Deploy retained HUMAN snapshot exactly matches its historical capsule pin;14local launcher tests pass, full closure qualification pending. No full G1/G2 or runtime acceptance claimed. No target operations, login/refresh/reset/replay, subagents or scheduled automation. Next: verify CI and complete WP1, then WP2.
+
 > **CURRENT — Mini-PET v1.1 with effort schedule (20 October 2026).**
 >
 > Technical8/8,functional4/6 unchanged. [Current Mini-PET v1.1](OUF_CSV_E2E_COMPLETION_MINIPET_v1_1_20261020.md), sections15.1–15.7, adds30sequential activity allocations and cumulative lean/central/prudent hour scenarios. Central forecast:G0 H+0.5,G1 H+3,G2 H+14,G3 H+19,F5 H+22,G4/F6/M1 H+24,G5 H+35,G6 H+46,G7/M2 H+55. Existing ranges18–30hours forM1 and40–70total forM2 remain unchanged; separate HUMAN participation3–6hours and external waits are explicit.

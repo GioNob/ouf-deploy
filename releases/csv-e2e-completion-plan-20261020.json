@@ -72,9 +72,10 @@
         "retained claims/contexts ledger",
         "selected source/image/contract refs"
       ],
-      "status": "PLANNED",
+      "status": "COMPLETE",
       "entryAuthorizationGranted": false,
-      "acceptanceTestRefs": []
+      "acceptanceTestRefs": [],
+      "completionObservedAt": "2026-10-20T09:16:46.603Z"
     },
     {
       "id": "WP1",
@@ -97,9 +98,14 @@
         "cohort pins",
         "impact-based regression list"
       ],
-      "status": "PLANNED",
+      "status": "IN_PROGRESS",
       "entryAuthorizationGranted": false,
-      "acceptanceTestRefs": []
+      "acceptanceTestRefs": [],
+      "actualStartedAt": null,
+      "startTimeBounds": {
+        "earliest": "2026-10-20T11:07:49+02:00",
+        "latest": "2026-10-20T09:16:46.603Z"
+      }
     },
     {
       "id": "WP2",
@@ -1174,14 +1180,15 @@
         "endHour": 0.5,
         "activity": "Fissare baseline, contesti e selezione",
         "output": "Ledger iniziale; G0",
-        "status": "PLANNED",
+        "status": "COMPLETE",
         "actualHours": null,
         "requirementIds": [],
         "acceptanceTestRefs": [],
         "additionalHumanActualHours": null,
         "passiveWaitingHours": null,
         "remainingHoursForecast": null,
-        "evidenceRefs": []
+        "evidenceRefs": [],
+        "completionObservedAt": "2026-10-20T09:16:46.603Z"
       },
       {
         "id": "CSV-H-02",
@@ -1191,14 +1198,19 @@
         "endHour": 1.25,
         "activity": "Diagnosticare e correggere CI Ingestion",
         "output": "Causa dimostrata e correzione mirata",
-        "status": "PLANNED",
+        "status": "IN_PROGRESS",
         "actualHours": null,
         "requirementIds": [],
         "acceptanceTestRefs": [],
         "additionalHumanActualHours": null,
         "passiveWaitingHours": null,
         "remainingHoursForecast": null,
-        "evidenceRefs": []
+        "evidenceRefs": [],
+        "actualStartedAt": null,
+        "startTimeBounds": {
+          "earliest": "2026-10-20T11:07:49+02:00",
+          "latest": "2026-10-20T09:16:46.603Z"
+        }
       },
       {
         "id": "CSV-H-03",
@@ -1208,14 +1220,19 @@
         "endHour": 1.75,
         "activity": "Diagnosticare il gate prestazionale MCP",
         "output": "Profilo/risultato spiegati e verifica pertinente",
-        "status": "PLANNED",
+        "status": "IN_PROGRESS",
         "actualHours": null,
         "requirementIds": [],
         "acceptanceTestRefs": [],
         "additionalHumanActualHours": null,
         "passiveWaitingHours": null,
         "remainingHoursForecast": null,
-        "evidenceRefs": []
+        "evidenceRefs": [],
+        "actualStartedAt": null,
+        "startTimeBounds": {
+          "earliest": "2026-10-20T11:07:49+02:00",
+          "latest": "2026-10-20T09:16:46.603Z"
+        }
       },
       {
         "id": "CSV-H-04",
@@ -1225,14 +1242,19 @@
         "endHour": 2.5,
         "activity": "Riconciliare i pin storici Deploy",
         "output": "Binding pacchetto/capsule corretto senza alterare claim consumati",
-        "status": "PLANNED",
+        "status": "IN_PROGRESS",
         "actualHours": null,
         "requirementIds": [],
         "acceptanceTestRefs": [],
         "additionalHumanActualHours": null,
         "passiveWaitingHours": null,
         "remainingHoursForecast": null,
-        "evidenceRefs": []
+        "evidenceRefs": [],
+        "actualStartedAt": null,
+        "startTimeBounds": {
+          "earliest": "2026-10-20T11:07:49+02:00",
+          "latest": "2026-10-20T09:16:46.603Z"
+        }
       },
       {
         "id": "CSV-H-05",
@@ -2327,11 +2349,15 @@
       "Reforecast after G1, G2, G5/G6, or when a package exceeds its upper estimate"
     ],
     "actualTracking": {
-      "implementationStarted": false,
-      "scope": "Residual implementation after this plan; does not reset or reinterpret retained runtime budgets",
-      "activeTechnicalHours": 0,
-      "additionalHumanHours": 0,
-      "waitingIntervals": []
+      "implementationStarted": true,
+      "executionRequestedAt": "2026-10-20T11:07:49+02:00",
+      "dedicatedTrackingStartedAt": "2026-10-20T09:16:46.603Z",
+      "timelineRef": "evidence/csv-e2e-execution-timeline-20261020.json",
+      "activeTechnicalHours": null,
+      "additionalHumanHours": null,
+      "initialWindowPreciselySegmented": false,
+      "waitingIntervals": [],
+      "runtimeBudgetsUnchanged": true
     }
   }
 }

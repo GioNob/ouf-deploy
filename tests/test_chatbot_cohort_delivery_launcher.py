@@ -58,7 +58,9 @@ class DeliveryLauncherTest(unittest.TestCase):
         # separately qualified profile. Compare its exact retained source snapshot,
         # never rewrite historical hashes to authorize today's different bytes.
         historical = {'tools/chatbot_file_cohort/authorization.py':
-            ROOT/'tests/fixtures/historical-cohort/authorization-8987585e7cf4.py.txt'}
+            ROOT/'tests/fixtures/historical-cohort/authorization-8987585e7cf4.py.txt',
+            'tools/chatbot_file_cohort/human_session.py':
+            ROOT/'tests/fixtures/historical-cohort/human-session-11dc195dfa0f.py.txt'}
         for name, expected in manifest['files'].items():
             with self.subTest(member=name):
                 self.assertEqual(sha(historical.get(name,ROOT/name).read_bytes()), expected)
@@ -74,15 +76,23 @@ class DeliveryLauncherTest(unittest.TestCase):
         self.assertEqual(sha((ROOT/'scripts/download-file-cohort.py').read_bytes()), launcher.DOWNLOADER_SHA256)
 
     def test_retained_capsule_accepts_its_exact_snapshot_and_rejects_the_new_profile(self):
-        name='tools/chatbot_file_cohort/authorization.py'
-        old=(ROOT/'tests/fixtures/historical-cohort/authorization-8987585e7cf4.py.txt').read_bytes()
-        current=(ROOT/name).read_bytes()
-        expected='8987585e7cf471f4906830cc1f7ffa0c2a25331bea9ddd982dcd4ddc3bbb346b'
-        manifest={'schema':'ouf.chatbot-file-preparation-capsule.v1','files':{name:expected}}
-        self.assertEqual(sha(old),expected);self.assertNotEqual(sha(current),expected)
-        self.assertEqual(self.select(self.archive([('repo/'+name,old,tarfile.REGTYPE)]),manifest),{name:old})
-        with self.assertRaisesRegex(ValueError,'SOURCE_HASH_MISMATCH'):
-            self.select(self.archive([('repo/'+name,current,tarfile.REGTYPE)]),manifest)
+        cases = [
+            ('authorization.py', 'authorization-8987585e7cf4.py.txt',
+             '8987585e7cf471f4906830cc1f7ffa0c2a25331bea9ddd982dcd4ddc3bbb346b'),
+            ('human_session.py', 'human-session-11dc195dfa0f.py.txt',
+             '11dc195dfa0fa63a35e9ba3bf0b6a65fd73e3d76be7efa9fed8b4d2f852e8d75'),
+        ]
+        for member, fixture, expected in cases:
+            with self.subTest(member=member):
+                name = 'tools/chatbot_file_cohort/' + member
+                old = (ROOT/'tests/fixtures/historical-cohort'/fixture).read_bytes()
+                current = (ROOT/name).read_bytes()
+                manifest = {'schema':'ouf.chatbot-file-preparation-capsule.v1','files':{name:expected}}
+                self.assertEqual(sha(old), expected)
+                self.assertNotEqual(sha(current), expected)
+                self.assertEqual(self.select(self.archive([('repo/'+name,old,tarfile.REGTYPE)]),manifest),{name:old})
+                with self.assertRaisesRegex(ValueError,'SOURCE_HASH_MISMATCH'):
+                    self.select(self.archive([('repo/'+name,current,tarfile.REGTYPE)]),manifest)
 
     def setUp(self):
         self.assertEqual((os.geteuid(), os.getegid()), (0, 0), 'native root-custody fixture required')
