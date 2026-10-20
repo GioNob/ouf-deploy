@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T11:03:17.182Z",
+  "lastUpdatedAt": "2026-10-20T11:13:10.604Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -500,6 +500,45 @@
         "representativeDockerAPISIXJVMPostgres"
       ],
       "note": "Direct Engine budget shared across components; once-only POST reservation. Native Ports composes Owner/DB/generations/readiness/new Gateway and retained CAS namespace. Epoch floors explicitly, no future timestamp tolerance; historical preflight untouched."
+    },
+    {
+      "id": "CSV-EV-0035",
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:13:10.604Z",
+      "commit": "990f30c6bb018003784f628f059e21c950d193de",
+      "runId": 39412298239,
+      "jobId": 118592772504,
+      "occurredAt": "2026-10-20T11:05:20Z",
+      "gateG2Passed": false,
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP"
+    },
+    {
+      "id": "CSV-EV-0036",
+      "kind": "REAL_POSTGRES_PLATFORM_QUALIFICATION_FAILED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:13:10.604Z",
+      "commit": "727d7d79d144ab31d1b2370f01bf88b4765cdcaf",
+      "runId": 39412833943,
+      "jobId": 118594558275,
+      "occurredAt": "2026-10-20T11:08:54Z",
+      "errors": 3,
+      "reasonCode": "RECOVERY_CAS_CONFLICT",
+      "gateG2Passed": false,
+      "note": "Actual Engine shared GET reservations updated the same journal after DB.check loaded its row. No SQL dispatch reached by new component; fixture-only migrations/tamper cleaned up. Failure retained, never marked PASS."
+    },
+    {
+      "id": "CSV-EV-0037",
+      "kind": "CROSS_COMPONENT_CAS_DEFECT_FIXED_LOCAL",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:13:10.604Z",
+      "tests": {
+        "engineChannel": 8,
+        "databaseRead": 9,
+        "ownerRead": 11
+      },
+      "gateG2Passed": false,
+      "note": "After generation probes, adopt only monotonic direct-GET reservations/version. Claim/progress/deadline/non-GET changes rejected. Real PostgreSQL rerun required."
     }
   ],
   "activeIntervals": [
@@ -577,9 +616,18 @@
     {
       "id": "CSV-TIME-0008",
       "startedAt": "2026-10-20T11:03:17.182Z",
-      "endedAt": null,
+      "endedAt": "2026-10-20T11:13:10.604Z",
       "workPackage": "WP2",
       "activity": "ISSUER_IMMUTABLE_CLOSURE_AND_REPRESENTATIVE_QUALIFICATION",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 593.422
+    },
+    {
+      "id": "CSV-TIME-0009",
+      "startedAt": "2026-10-20T11:13:10.604Z",
+      "endedAt": null,
+      "workPackage": "WP2",
+      "activity": "IMMUTABLE_CLOSURE_AND_PLATFORM_DEFECT_REQUALIFICATION",
       "classification": "ACTIVE_TECHNICAL",
       "seconds": null
     }

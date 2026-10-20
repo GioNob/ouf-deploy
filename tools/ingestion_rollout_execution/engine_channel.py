@@ -17,6 +17,18 @@ LIMITS={'GET':4096,'POST':32}
 COUNTERS={'GET':'nativeDirectEngineGets','POST':'nativeDirectEnginePosts'}
 GET=re.compile(r'/v1\.44/(?:containers/[0-9a-f]{64}|images/sha256%3A[0-9a-f]{64})/json')
 
+def after_reads(journal,before):
+    """Adopt only direct-GET reservations made during a native generation probe."""
+    after=journal.read();key=COUNTERS['GET']
+    require(type(after.get('version'))is int and after['version']>=before['version']
+            and set(after)-set(before)<={key},'NATIVE_READ_PROBE_CHANGED_JOURNAL_SHAPE')
+    require(all(k in after and encoded(after[k])==encoded(v)for k,v in before.items()if k not in('version',key)),
+            'NATIVE_READ_PROBE_CHANGED_HISTORY_OR_NON_GET_BUDGET')
+    require(type(after.get(key,0))is int and type(before.get(key,0))is int
+            and 0<=before.get(key,0)<=after.get(key,0)<=LIMITS['GET'],
+            'NATIVE_READ_PROBE_RESET_DIRECT_GET_COUNTER')
+    return after
+
 class NativeEngineChannel:
     def __init__(self,action,journal,review,human,engine):
         require(type(action)is AggregateAction and type(journal)is Journal and type(human)is HumanSession

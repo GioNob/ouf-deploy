@@ -19,6 +19,7 @@ from tools.ingestion_rollout_execution.contract import AUTHORITY_KEY,require,sco
 from tools.ingestion_rollout_execution.replacement import EngineReader
 from tools.ingestion_rollout_execution.namespace import identity
 from tools.ingestion_rollout_execution import private_file,runtime_bindings
+from tools.ingestion_rollout_execution.engine_channel import after_reads
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.chatbot_file_cohort.human_session import HumanSession
@@ -146,7 +147,7 @@ class NativeOwnerRead:
         require(self.profile['pythonExecutable']==governance.executable(self.profile['pythonExecutable']['path']),
                 'OWNER_NAMESPACE_PROGRAM_CHANGED')
         require(self.pin.profile==self.profile,'OWNER_PIN_PROFILE_DRIFT')
-        self.pin.check();return row
+        self.pin.check();return after_reads(self.journal,row)
     def reserve(self):
         row=self.check();count=row.get('nativeOwnerGetAttempts',0)
         require(count<MAX_GETS,'CUMULATIVE_OWNER_READ_BUDGET_EXHAUSTED')

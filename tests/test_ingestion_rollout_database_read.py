@@ -96,6 +96,19 @@ class SignedDatabaseReads(unittest.TestCase):
             with self.assertRaises(OSError):self.native.snapshot()
             self.assertEqual(native.call_count,1)
         self.assertEqual(self.runner.record()['nativeDatabaseReadSessions'],1)
+    def test_generation_probe_shared_get_reservation_cannot_stale_sql_cas(self):
+        original=self.reader.container
+        def read(cid):
+            row=self.runner.journal.read()
+            self.runner.journal.compare_and_save(row,{**row,'nativeDirectEngineGets':row.get('nativeDirectEngineGets',0)+1,
+                'version':row['version']+1})
+            return original(cid)
+        self.reader.container=read
+        snapshot=facts();snapshot['observedAtUnix']=int(time.time())
+        with patch.object(d,'bounded_read',return_value=(0,c.encoded(snapshot),b'')),patch.object(policy,'REFERENCE_CATALOG_SHA256',c.digest(snapshot['catalog'])):
+            self.assertTrue(self.native.snapshot()['databaseReadPrerequisitesProven'])
+        row=self.runner.journal.read();self.assertEqual(row['nativeDatabaseReadSessions'],1)
+        self.assertGreater(row['nativeDirectEngineGets'],0)
     def test_exhausted_session_budget_cannot_be_reset_by_another_component_instance(self):
         row=self.runner.record();self.runner.journal.compare_and_save(row,{**row,'nativeDatabaseReadSessions':127,'version':row['version']+1})
         self.native.reserve()

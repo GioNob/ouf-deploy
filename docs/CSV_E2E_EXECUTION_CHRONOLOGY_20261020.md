@@ -90,3 +90,8 @@ I timestamp di inizio/fine attività sono separati da quelli di completamentoCI 
 Checkpoint20/10/2026,13:03:17: CI39411288606 terminata **12:56:36Europe/Rome**,113testPASS,0skip. Nuovi testlocali:6canaleEngine+7composizioneNativePorts+9policyDB PASS. La query nuova usa floor(epoch) per non generare osservazioni future per arrotondamento: nessuna tolleranza aggiunta alla freschezza5s, nessun replay del preflight storico. Composizione completa scritta, ma issuer/chiusura/entrypoint e qualifica rappresentativa ancora aperti; G2NONPASS.
 
 Effort cumulativo chiuso **95.11minuti (1.585h)**, più8,96minuti iniziali non segmentati e con i due intervalli incerti esclusi. Nuova attività issuer/chiusura/qualifica dal checkpoint13:03:17. Baseline centrali immutate: G2H+14, G3H+19, M1H+24, M2H+55. Nessuna percentuale di completamento derivata dal rapporto delle ore.
+
+
+Checkpoint20/10/2026,13:13:10: composizioneCI39412298239PASS, completata13:05:20. Prima qualifica PostgreSQL reale39412833943 **FAILED13:08:54**,3erroriCAS: i GETEngine con budget condiviso rendevano obsoleta la versione restituita dai controlliDB/Owner. Corretto il riaggancio della sola versione/contatoreGET; nessuna modifica a fencing, claim, scadenze o budgetSQL.28testlocaliPASS (8Engine+9DB+11Owner). La nuova qualifica PostgreSQL è necessaria: la run fallita non diventaPASS per una correzione locale.
+
+Totale tecnico misurato chiuso **105.00minuti (1.750h)**, più8,96iniziali non segmentati; intervalli incerti sempre esclusi. G2aperto controH+14; nessuna varianza finale o nuova previsione di accettazione. Nuovo intervallo attivo13:13:10. Nessuna operazioneVPS/login/refresh/reset/replay.

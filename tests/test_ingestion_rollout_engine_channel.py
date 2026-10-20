@@ -85,5 +85,17 @@ class SignedEngineChannel(unittest.TestCase):
         another=self.instance();e.NativeEngineChannel(self.action,self.runner.journal,self.review,self.human,another)
         with self.assertRaises(c.Denied):another.request('POST',path,{'RestartPolicy':stage['intent']['restartPolicy']})
         self.assertEqual(len(self.calls),1)
+    def test_probe_can_adopt_get_counter_only_without_changing_other_history(self):
+        before=self.runner.journal.read();self.engine.request('GET',self.path)
+        after=e.after_reads(self.runner.journal,before);self.assertEqual(after['nativeDirectEngineGets'],1)
+        self.save(nativeDirectEnginePosts=1)
+        with self.assertRaises(c.Denied):e.after_reads(self.runner.journal,after)
+    def test_probe_rejects_progress_and_direct_get_counter_reset(self):
+        self.engine.request('GET',self.path);before=self.runner.journal.read()
+        self.save(nativeDirectEngineGets=0)
+        with self.assertRaises(c.Denied):e.after_reads(self.runner.journal,before)
+        self.save(nativeDirectEngineGets=1);before=self.runner.journal.read()
+        self.claim()
+        with self.assertRaises(c.Denied):e.after_reads(self.runner.journal,before)
 
 if __name__=='__main__':unittest.main()

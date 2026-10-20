@@ -126,6 +126,17 @@ class SignedOwnerControl(unittest.TestCase):
         for unused in range(2):
             with self.assertRaises(c.Denied):self.native.reserve()
         self.assertEqual(self.runner.record()['nativeOwnerGetAttempts'],512)
+    def test_owner_generation_probe_shared_get_reservation_cannot_stale_cas(self):
+        original=self.pin.check
+        def check():
+            row=self.runner.journal.read()
+            self.runner.journal.compare_and_save(row,{**row,'nativeDirectEngineGets':row.get('nativeDirectEngineGets',0)+1,
+                'version':row['version']+1})
+            original()
+        self.pin.check=check
+        self.assertTrue(self.native.verify()['ownerActiveAndStrongEtagMatched'])
+        row=self.runner.journal.read();self.assertEqual(row['nativeOwnerGetAttempts'],3)
+        self.assertGreater(row['nativeDirectEngineGets'],0)
     def test_revoked_role_or_changed_profile_blocks_before_get(self):
         self.native.profile['endpoint']['port']+=1
         with self.assertRaises(c.Denied):self.native.verify()

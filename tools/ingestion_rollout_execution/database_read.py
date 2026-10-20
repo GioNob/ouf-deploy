@@ -19,6 +19,7 @@ from engine_creation import Engine
 from tools.ingestion_rollout_execution.contract import AUTHORITY_KEY,require,scope,digest,path,hashed
 from tools.ingestion_rollout_execution.replacement import EngineReader
 from tools.ingestion_rollout_execution import database_policy as policy,runtime_bindings
+from tools.ingestion_rollout_execution.engine_channel import after_reads
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.chatbot_file_cohort.human_session import HumanSession
@@ -139,7 +140,7 @@ class NativeDatabaseRead:
         require(runtime_bindings.observed(pg,self.profile['runtimeBindingProfile'])==self.profile['postgresRuntimeBinding']and state['Running']is True
                 and state['Paused']is False and state['Restarting']is False
                 and pg['RestartCount']==self.profile['postgresRestartCount'],'CURRENT_POSTGRES_GENERATION_CHANGED')
-        return row
+        return after_reads(self.journal,row)
     def reserve(self):
         row=self.check();count=row.get('nativeDatabaseReadSessions',0)
         require(count<MAX_SESSIONS,'CUMULATIVE_DATABASE_READ_BUDGET_EXHAUSTED')
