@@ -46,8 +46,10 @@ def validate(frame,actual,image_config,old_id,*,created_id,process=None,phase='R
              restart_restored=False,resolved_owner_key=None):
     """Compare private values internally; emit only non-secret resource identity.
 
-    Docker injects the new CID alias and a default hostname. Those are the only
-    generation substitutions. Empty native OomKillDisable remains None. CREATED
+    Docker injects the new CID alias and a default hostname. API1.44 also reports
+    the explicit primary endpoint MAC in Config, even when omitted at create.
+    That compatibility echo must equal the reviewed primary endpoint; it never
+    becomes a new request parameter. Native OomKillDisable remains None. CREATED
     permits only Docker's still-unallocated endpoint fields, never another IP.
     The resolved Gateway key is supplied in memory by a separately governed port.
     """
@@ -77,7 +79,13 @@ def validate(frame,actual,image_config,old_id,*,created_id,process=None,phase='R
             require(config.get(key)=={**(image_config.get(key)or{}),**(value or{})},'REPLACEMENT_LABELS_CHANGED')
         elif key=='Hostname'and value=='':require(config.get(key)==created_id[:12],'NEW_GENERATION_HOSTNAME_REQUIRED')
         else:require(config.get(key)==value,'REPLACEMENT_PROCESS_CONFIG_CHANGED')
-    require(config.get('MacAddress')in(None,''),'LEGACY_CONTAINER_MAC_REINTRODUCED')
+    require('MacAddress'not in request,'ENDPOINT_ONLY_CREATE_MAC_PROFILE_REQUIRED')
+    echo=config.get('MacAddress')
+    if echo not in(None,''):
+        primary=request['HostConfig'].get('NetworkMode')
+        endpoints=request['NetworkingConfig']['EndpointsConfig']
+        require(type(echo)is str and primary in endpoints
+                and echo.lower()==endpoints[primary]['MacAddress'].lower(),'LEGACY_MAC_ECHO_MUST_MATCH_REVIEWED_PRIMARY_ENDPOINT')
     # Unknown fields require a reviewed profile change, not silent acceptance.
     require(set(config)<=set(image_config)|set(request)|{'MacAddress'},'UNREVIEWED_CONTAINER_CONFIG_FIELD')
     for key,value in image_config.items():

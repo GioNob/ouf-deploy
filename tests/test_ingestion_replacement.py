@@ -46,6 +46,16 @@ class ReplacementObservation(unittest.TestCase):
             args[1]['State']['Status']='exited'
             with self.assertRaises(Denied):r.validate(*args[:4],**args[4])
 
+    def test_api144_config_mac_echo_requires_the_exact_primary_endpoint(self):
+        args=observation();frame,actual=args[:2]
+        primary=next(iter(frame['requestTemplate']['NetworkingConfig']['EndpointsConfig']))
+        frame['requestTemplate']['HostConfig']['NetworkMode']=primary
+        actual['HostConfig']['NetworkMode']=primary
+        actual['Config']['MacAddress']=frame['requestTemplate']['NetworkingConfig']['EndpointsConfig'][primary]['MacAddress']
+        self.assertEqual(r.validate(*args[:4],**args[4])['pid'],123)
+        actual['Config']['MacAddress']='02:42:00:00:00:99'
+        with self.assertRaises(Denied):r.validate(*args[:4],**args[4])
+
     def test_network_identity_address_mac_alias_options_and_extra_network_block(self):
         for mutation in('network_id','ipv4','ipv6','mac','alias','duplicate_alias','ipam','driver','priority','extra_network'):
             args=observation();actual=args[1];networks=actual['NetworkSettings']['Networks'];ep=next(iter(networks.values()))
