@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T16:29:44.449Z",
+  "lastUpdatedAt": "2026-10-20T17:24:31.158Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -981,6 +981,33 @@
       "gatePassed": false,
       "cumulativeMeasuredActiveHours": 5.639993060555556,
       "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-TARGET-NATIVE-INPUT-CAPTURE-COMPLETE",
+      "at": "2026-10-20T19:11:14.148877+02:00",
+      "classification": "TARGET_READ_ONLY_PREPARATION_EVIDENCE",
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-native-inputs-qs8zybi4",
+      "targetExecutionSeconds": 0.23161670597619377,
+      "technicalEffortSameAsTargetSeconds": false,
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-PRIVATE-NATIVE-PROFILE-PREPARATION-QUALIFIED",
+      "at": "2026-10-20T17:24:31.158Z",
+      "classification": "CI_QUALIFICATION_ONLY",
+      "sourceCommit": "af94b95b90226fe84d89e28ec966720e3fcbc3c0",
+      "runId": 39465549162,
+      "testsEachPython": 12,
+      "pythonVersions": [
+        "3.12",
+        "3.13.5"
+      ],
+      "zeroSkips": true,
+      "targetExecuted": false,
+      "gatePassed": false,
+      "cumulativeMeasuredActiveHours": 5.853349329166666,
+      "runtimeAuthorityIssued": false
     }
   ],
   "activeIntervals": [
@@ -1331,6 +1358,15 @@
       "classification": "ACTIVE_TECHNICAL",
       "workPackage": "WP3_PREPARATION",
       "activity": "BOUNDED_NATIVE_RUNTIME_INPUT_CAPTURE_WITHOUT_HUMAN_WINDOW"
+    },
+    {
+      "id": "CSV-TIME-0034",
+      "startedAt": "2026-10-20T17:11:43.076Z",
+      "endedAt": "2026-10-20T17:24:31.158Z",
+      "seconds": 768.082567,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "SUCCESSFUL_VPS_NATIVE_INPUT_RECONCILIATION_AND_PROFILE_COMPILATION"
     }
   ],
   "waitingIntervals": [],
@@ -1413,10 +1449,11 @@
       "observedStatus": "NOT_PASSED",
       "measurementNote": "Initial technical effort not retrospectively inferred from wall time",
       "lastCheckpoint": {
-        "observedAt": "2026-10-20T16:29:44.449Z",
-        "cumulativeMeasuredEffortHours": 5.639993060555556,
+        "observedAt": "2026-10-20T17:24:31.158Z",
+        "cumulativeMeasuredEffortHours": 5.853349329166666,
         "gatePassed": false,
-        "targetNativeInputCapturePending": true
+        "targetNativeInputCapturePending": false,
+        "targetPrivateNativeProfilePreparationPending": true
       }
     },
     {
@@ -1610,7 +1647,12 @@
     "targetOAuthAttemptsUnchanged": 278,
     "nativeInputCaptureQualifiedCommit": "10a9552ec7c1608f1de4d102a9644d11fc7f17d6",
     "nativeInputCaptureRun": 39457653516,
-    "nativeInputCaptureTargetExecuted": false
+    "nativeInputCaptureTargetExecuted": true,
+    "nativeInputCaptureTargetComplete": true,
+    "nativeInputCaptureContext": "/etc/ouf/deploy-snapshots/ingestion-native-inputs-qs8zybi4",
+    "nativeProfilePreparationQualifiedCommit": "af94b95b90226fe84d89e28ec966720e3fcbc3c0",
+    "nativeProfilePreparationRun": 39465549162,
+    "nativeProfilePreparationTargetExecuted": false
   },
   "developmentCandidates": [
     {
@@ -1652,7 +1694,7 @@
       "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
       "G7_ACCEPTANCE"
     ],
-    "currentRequiredHumanAction": "RUN_QUALIFIED_BOUNDED_NATIVE_INPUT_CAPTURE_ON_OUFADMIN_NO_AUTHENTICATION",
+    "currentRequiredHumanAction": "RUN_QUALIFIED_PRIVATE_PROFILE_PREPARATION_ON_OUFADMIN_NO_AUTHENTICATION",
     "windowOpeningDeferredReason": "PRESERVE_FINITE7200_WINDOW_AND10_REMAINING_OAUTH_ATTEMPTS_WHILE_OFFLINE_RUNTIME_PREPARATION_CONTINUES"
   },
   "unsegmentedFollowupWindows": [
@@ -1690,6 +1732,14 @@
       "classification": "OPERATOR_WAIT_AND_TURN_TRANSITION_NOT_MEASURED",
       "countedAsActive": false,
       "humanEffortKnown": false
+    },
+    {
+      "startedAt": "2026-10-20T16:29:44.449Z",
+      "endedAt": "2026-10-20T17:11:43.076Z",
+      "classification": "OPERATOR_WAIT_AND_CHAT_REDELIVERY_NOT_MEASURED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Contains status/command re-delivery; neither the wall wait nor unknown human effort is counted as technical effort."
     }
   ],
   "deliveryAccounting": {
