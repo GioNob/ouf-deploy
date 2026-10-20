@@ -154,7 +154,11 @@
         "gatewayCommit": "c3042a0696875f538a6476df5866f507d414b667",
         "gatewayRunId": 39403673060,
         "localDatabasePolicyTests": 9,
-        "fullExecutorQualified": false
+        "fullExecutorQualified": false,
+        "databasePolicyRunId": 39404688204,
+        "qualifiedComponentTests": 47,
+        "localOwnerReadTests": 10,
+        "localDatabaseReadTests": 8
       },
       "startedAt": null,
       "startBounds": {
@@ -2387,7 +2391,7 @@
       "waitingIntervals": [],
       "runtimeBudgetsUnchanged": true,
       "executionBranch": "feat/csv-e2e-native-completion-20261020",
-      "lastObservedAt": "2026-10-20T09:58:52.414Z",
+      "lastObservedAt": "2026-10-20T10:08:55.013Z",
       "activeTechnicalHoursPreciselyMeasuredAfterTracking": 0.6040063888888888,
       "initialUnsegmentedHours": 0.14933416666666666,
       "perPackageAllocationPrecise": false,

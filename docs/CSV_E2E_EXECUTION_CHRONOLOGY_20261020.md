@@ -63,3 +63,5 @@ I test positivi su catalogo sintetico sono dichiarati unitari e non provano DB
 reale, startup, currentOwner o HUMAN. WP2 resta aperto fino al G2 completo.
 
 Prima revisione del forecast aG1: intervalliM1 **18–30h** eM2 **40–70h**, centrali24/55h, conservati fino al checkpointG2. Motivo: l'effortWP1 non è separabile con precisione dalla preparazioneWP2 e il componente nativo completo non è ancora qualificato. Nessun moltiplicatore di produttività applicato una seconda volta.
+
+Checkpoint 20/10/2026, 12:08:55: CI39404688204 terminata **20/10/2026,12:00:19Europe/Rome**;47testPASS,0skip. Componenti nuovi Owner/SQL:10+8testlocaliPASS, osservati a questo checkpoint; backend/processi simulati, firme/CAS reali. G2rimaneaperto.

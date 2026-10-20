@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T09:58:52.414Z",
+  "lastUpdatedAt": "2026-10-20T10:08:55.013Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -290,6 +290,37 @@
       "proofLevel": "SYNTHETIC_FACTS_STRICT_POLICY",
       "gateG2Passed": false,
       "note": "Fixed release SQL/history reused without executing or selecting the retained diagnostic. Only added serverPort observation; native collector/admission remains open."
+    },
+    {
+      "id": "CSV-EV-0020",
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "occurredAt": "2026-10-20T10:00:19Z",
+      "observedAt": "2026-10-20T10:08:55.013Z",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "commit": "0e85369769904d76d135f1c0b394a713dc33dc6a",
+      "runId": 39404688204,
+      "jobId": 118567661976,
+      "tests": 47,
+      "skipped": 0,
+      "gateG2Passed": false,
+      "proofLevel": "SIGNED_CORE_LIFECYCLE_GATEWAY_AND_STRICT_SNAPSHOT_POLICY_COMPONENTS"
+    },
+    {
+      "id": "CSV-EV-0021",
+      "kind": "LOCAL_COMPONENT_TESTS_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T10:08:55.013Z",
+      "timestampConfidence": "OBSERVED_AFTER_LOCAL_TEST_COMPLETION",
+      "components": {
+        "ownerRead": 10,
+        "databaseRead": 8
+      },
+      "proofLevel": "ACTUAL_ED25519_CAS_AND_CLOSED_CHILD_REJECTION_SYNTHETIC_BACKENDS",
+      "gateG2Passed": false,
+      "ownerMutations": 0,
+      "targetSqlSessions": 0,
+      "note": "Owner/DB current reads compose finite persisted budgets but full NativePorts/issuer/qualification still missing."
     }
   ],
   "activeIntervals": [
