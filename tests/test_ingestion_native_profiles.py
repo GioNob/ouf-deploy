@@ -177,7 +177,10 @@ class Profiles(unittest.TestCase):
         for n,v in actual.items():
             s=os.stat('/proc/'+str(v['State']['Pid'])+'/ns/net');namespaces[n]={'device':s.st_dev,'inode':s.st_ino}
         plan['currentApplications']={n:v for n,v in pins.items()if n!='postgres'}
-        executable=governance.executable(sys.executable)
+        # Root-custodied distro program is a fixture metadata reference. The
+        # matrix interpreter lives in a runner-writable toolcache and must not
+        # be mislabeled as a qualified runtime transport executable.
+        executable=governance.executable('/usr/bin/python3')
         plan['gateway']={'transport':{'runtimeBinding':apisix_runtime_binding(actual['gateway']),
             'networkNamespace':namespaces['gateway'],'configBinding':packet['gatewayConfigBefore'],
             'adminKeyBinding':None,'pythonExecutable':executable,'port':29180}}

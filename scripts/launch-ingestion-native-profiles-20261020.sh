@@ -14,11 +14,11 @@ if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
 ouf_read="$(mktemp -d "$HOME/ouf-native-profiles.XXXXXXXX")"
 ouf_report() { printf 'Launcher conservato: %s\nLog conservato: %s/profiles.log\n' "${BASH_SOURCE[0]}" "$ouf_read"; }
 trap ouf_report EXIT
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/9d9d50d699d2d47d66b61a220aef8230376c474c' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/profiles.py"
-printf '%s  %s\n' '53af006aa34096a7cc910e01a04677ab472a992f6f6cdf4110d960182a4afad4' "$ouf_read/profiles.py" | sha256sum -c -
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/1e8d5306fb6c294628aeccb4b3fcbd3f966e2cf0' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/profiles.py"
+printf '%s  %s\n' 'ddb03c262ff06f53591708ddf8ac9204244ef15e7edd6e82010bf998c1781602' "$ouf_read/profiles.py" | sha256sum -c -
 ouf_args=("$ouf_mode")
 if [[ "$#" -eq 2 ]]; then ouf_args+=("$2"); fi
-sudo python3 -I -B -S - "$ouf_read/profiles.py" '53af006aa34096a7cc910e01a04677ab472a992f6f6cdf4110d960182a4afad4' "${ouf_args[@]}" <<'OUF_OPERATOR' | tee "$ouf_read/profiles.log"
+sudo python3 -I -B -S - "$ouf_read/profiles.py" 'ddb03c262ff06f53591708ddf8ac9204244ef15e7edd6e82010bf998c1781602' "${ouf_args[@]}" <<'OUF_OPERATOR' | tee "$ouf_read/profiles.log"
 import hashlib,os,stat,sys
 try:
  fd=os.open(sys.argv[1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)

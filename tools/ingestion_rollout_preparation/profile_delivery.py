@@ -35,7 +35,7 @@ class ClosedOperator(importlib.abc.MetaPathFinder,importlib.abc.Loader):
    exec(self.compiled[module.__name__],module.__dict__)
 def main():
  require(os.geteuid()==os.getegid()==0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,'ISOLATED_ROOT_OPERATOR_REQUIRED')
- require(len(sys.argv)==2and sys.argv[1]in('prepare',),'ONE_EXPLICIT_OPERATOR_MODE_REQUIRED')
+ require(len(sys.argv)in(2,3)and sys.argv[1]in('prepare','inspect'),'ONE_EXPLICIT_OPERATOR_MODE_REQUIRED')
  require((sys.argv[1]=='prepare')==(len(sys.argv)==2),'EXACT_PRIVATE_PROFILE_ARGUMENT_REQUIRED')
  require(hashlib.sha256(BOOTSTRAP.encode()).hexdigest()==DECLARATION['loaderHash'],'OPERATOR_LOADER_CHANGED')
  require(hashlib.sha256(encoded(DECLARATION)).hexdigest()==CLOSURE_HASH,'OPERATOR_DECLARATION_CHANGED')
