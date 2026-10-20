@@ -64,7 +64,7 @@ class NativeDatabase(unittest.TestCase):
             assert hashlib.sha256((cls.sql_root/row['script']).read_bytes()).hexdigest() == row['resourceSha256']
         env = dict(os.environ,OUF_FIXTURE_JDBC='jdbc:postgresql://127.0.0.1:'+port+'/'+cls.db,
                    OUF_FIXTURE_USER=cls.user,OUF_FIXTURE_PASSWORD='ci-only-runtime')
-        native = command(['java','-cp',os.environ['OUF_FLYWAY_CLASSPATH'],'NativeFlyway','migrate',str(cls.sql_root)],90,env)
+        native = command([os.environ['OUF_FIXTURE_JAVA'],'-cp',os.environ['OUF_FLYWAY_CLASSPATH'],'NativeFlyway','migrate',str(cls.sql_root)],90,env)
         observed = {}
         for line in native.decode().splitlines():
             if line.startswith('OUF_NATIVE_SQL_CHECKSUM='):

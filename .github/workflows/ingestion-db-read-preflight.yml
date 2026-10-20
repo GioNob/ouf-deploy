@@ -32,6 +32,7 @@ jobs:
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
           sudo env OUF_TEST_ROOT="$fixture" \
+            OUF_FIXTURE_JAVA="$JAVA_HOME/bin/java" \
             OUF_INGESTION_SQL_ROOT="$fixture/repository/.pairwise/ingestion/src/main/resources/db/migration" \
             OUF_FLYWAY_CLASSPATH="$fixture/repository/tests/fixtures/ingestion-db-preflight/target/classes:$(cat .ingestion-db.classpath)" \
             python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_ingestion_db_preflight*.py' -v
