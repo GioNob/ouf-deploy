@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T16:16:07.693Z",
+  "lastUpdatedAt": "2026-10-20T16:29:44.449Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -964,6 +964,23 @@
       "runtimeAuthorityIssued": false,
       "gatePassed": false,
       "humanEffortKnown": false
+    },
+    {
+      "id": "CSV-EVENT-NATIVE-INPUT-CAPTURE-QUALIFIED",
+      "at": "2026-10-20T16:29:44.449Z",
+      "classification": "CI_QUALIFICATION_ONLY",
+      "sourceCommit": "10a9552ec7c1608f1de4d102a9644d11fc7f17d6",
+      "runId": 39457653516,
+      "testsEachPython": 10,
+      "pythonVersions": [
+        "3.12",
+        "3.13.5"
+      ],
+      "zeroSkips": true,
+      "targetExecuted": false,
+      "gatePassed": false,
+      "cumulativeMeasuredActiveHours": 5.639993060555556,
+      "runtimeAuthorityIssued": false
     }
   ],
   "activeIntervals": [
@@ -1305,6 +1322,15 @@
       "classification": "ACTIVE_TECHNICAL",
       "workPackage": "WP3_PREPARATION",
       "activity": "EXPLICIT_HUMAN_OPERATOR_QUALIFICATION_AND_INITIAL_RUNTIME_INPUT_READINESS_AUDIT"
+    },
+    {
+      "id": "CSV-TIME-0033",
+      "startedAt": "2026-10-20T16:16:34.878Z",
+      "endedAt": "2026-10-20T16:29:44.449Z",
+      "seconds": 789.571018,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "BOUNDED_NATIVE_RUNTIME_INPUT_CAPTURE_WITHOUT_HUMAN_WINDOW"
     }
   ],
   "waitingIntervals": [],
@@ -1385,7 +1411,13 @@
       "actualEffortHours": null,
       "effortVarianceHours": null,
       "observedStatus": "NOT_PASSED",
-      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+      "measurementNote": "Initial technical effort not retrospectively inferred from wall time",
+      "lastCheckpoint": {
+        "observedAt": "2026-10-20T16:29:44.449Z",
+        "cumulativeMeasuredEffortHours": 5.639993060555556,
+        "gatePassed": false,
+        "targetNativeInputCapturePending": true
+      }
     },
     {
       "gate": "G4",
@@ -1575,7 +1607,10 @@
     "explicitHumanOperatorQualifiedCommit": "b760de48a41e2b073c135489399aefb4a14627ab",
     "operatorQualificationRun": 39453670347,
     "targetWindowOpened": false,
-    "targetOAuthAttemptsUnchanged": 278
+    "targetOAuthAttemptsUnchanged": 278,
+    "nativeInputCaptureQualifiedCommit": "10a9552ec7c1608f1de4d102a9644d11fc7f17d6",
+    "nativeInputCaptureRun": 39457653516,
+    "nativeInputCaptureTargetExecuted": false
   },
   "developmentCandidates": [
     {
@@ -1617,7 +1652,7 @@
       "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
       "G7_ACCEPTANCE"
     ],
-    "currentRequiredHumanAction": "NONE_UNTIL_RUNTIME_INPUT_PREPARATION_REVIEWABLE",
+    "currentRequiredHumanAction": "RUN_QUALIFIED_BOUNDED_NATIVE_INPUT_CAPTURE_ON_OUFADMIN_NO_AUTHENTICATION",
     "windowOpeningDeferredReason": "PRESERVE_FINITE7200_WINDOW_AND10_REMAINING_OAUTH_ATTEMPTS_WHILE_OFFLINE_RUNTIME_PREPARATION_CONTINUES"
   },
   "unsegmentedFollowupWindows": [
