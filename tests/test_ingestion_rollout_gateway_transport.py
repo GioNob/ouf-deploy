@@ -123,7 +123,7 @@ class SignedRouteClaims(unittest.TestCase):
             packet['verifiedInputsHash']=c.digest(inputs)
             review=c.compile_review(packet,{'path':'/fixture/packet-plan','sha256':c.digest(packet)},inputs,
                                     review['humanBinding'],context)
-            review['gatewayTransportProfile']=copy.deepcopy(self.profile)
+            review['gatewayTransportProfile']=copy.deepcopy(self.profile);review['maximumGatewayGetAttempts']=512
             return review,packet,inputs
         with patch.object(core,'review_fixture',side_effect=fixture):core.SignedFiniteRunner.setUp(self)
         _,self.packet,_=fixture(str(self.context),str(self.key_path))
@@ -184,6 +184,13 @@ class SignedRouteClaims(unittest.TestCase):
         with self.assertRaises(c.Denied):self.runner.step()
         self.assertEqual(self.puts,[])
         with self.assertRaises(c.Paused):self.runner.step()
+    def test_gateway_read_budget_is_shared_persistent_and_cannot_reset(self):
+        row=self.runner.record()
+        self.runner.journal.compare_and_save(row,{**row,'nativeGatewayGetAttempts':511,'version':row['version']+1})
+        self.native.reserve_get()
+        self.assertEqual(self.runner.record()['nativeGatewayGetAttempts'],512)
+        with self.assertRaises(c.Denied):self.native.reserve_get()
+        self.assertEqual(self.runner.record()['nativeGatewayGetAttempts'],512)
     def test_changed_human_blocks_before_first_put(self):
         self.runner.step()
         self.human.current.return_value={**self.scope['humanBinding'],'subject':'other'}

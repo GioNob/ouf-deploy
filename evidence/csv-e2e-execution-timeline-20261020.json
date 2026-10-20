@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T10:30:51.147Z",
+  "lastUpdatedAt": "2026-10-20T10:45:39.678Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -388,6 +388,45 @@
       },
       "gateG2Passed": false,
       "note": "Runner reloaded after native counters/resources; protected progress/deadlines/history; no probes during retained retry wait, no effect without remaining observation budget. Actual readiness setns/HTTP still awaiting CI."
+    },
+    {
+      "id": "CSV-EV-0027",
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "occurredAt": "2026-10-20T10:32:27Z",
+      "observedAt": "2026-10-20T10:45:39.678Z",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "commit": "45aa4071070e85c42a34afa6a1e9934e50a6e672",
+      "runId": 39408488591,
+      "jobId": 118580149924,
+      "tests": 99,
+      "skipped": 0,
+      "gateG2Passed": false,
+      "proofLevel": "SIGNED_CAS_COMPONENTS_ACTUAL_LINUX_SETNS_HTTP_SYNTHETIC_ENGINE"
+    },
+    {
+      "id": "CSV-EV-0028",
+      "kind": "CHAT_INTERRUPTION_REPORTED_AND_CONTEXT_RECONCILED",
+      "occurredAt": "2026-10-20T12:41:55+02:00",
+      "observedAt": "2026-10-20T10:45:39.678Z",
+      "timestampConfidence": "EXACT_USER_MESSAGE_TIMESTAMP",
+      "gitHeadRechecked": "45aa4071070e85c42a34afa6a1e9934e50a6e672",
+      "targetCalls": 0,
+      "newLoginPerformed": false,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "note": "Retained GitHub head and timeline reconciled; local pending code preserved. No target contexts, claims or completed actions replayed."
+    },
+    {
+      "id": "CSV-EV-0029",
+      "kind": "LOCAL_RETAINED_GATEWAY_BOUNDARY_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T10:45:39.678Z",
+      "timestampConfidence": "OBSERVED_AFTER_LOCAL_TEST_COMPLETION",
+      "tests": 4,
+      "skipped": 0,
+      "gateG2Passed": false,
+      "note": "GET-only old route inventory; stopped/changed predecessor rejected before namespace access; existing FD closed without rebinding."
     }
   ],
   "activeIntervals": [
@@ -429,9 +468,18 @@
     {
       "id": "CSV-TIME-0004",
       "startedAt": "2026-10-20T10:15:14.724Z",
-      "endedAt": null,
+      "endedAt": "2026-10-20T10:34:57.040Z",
       "workPackage": "WP2",
       "activity": "NATIVE_PORTS_COMPOSITION_AND_REVIEW",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 1182.316
+    },
+    {
+      "id": "CSV-TIME-0005",
+      "startedAt": "2026-10-20T10:42:11.142Z",
+      "endedAt": null,
+      "workPackage": "WP2",
+      "activity": "RETAINED_ROUTE_BOUNDARY_AND_NATIVE_COMPOSITION",
       "classification": "ACTIVE_TECHNICAL",
       "seconds": null
     }
@@ -606,5 +654,16 @@
     "loginPerformed": false,
     "refreshPerformed": false,
     "budgetReset": false
-  }
+  },
+  "unverifiedIntervals": [
+    {
+      "id": "CSV-UNCERTAIN-0001",
+      "startedAt": "2026-10-20T10:34:57.040Z",
+      "endedAt": "2026-10-20T10:42:11.142Z",
+      "seconds": 434.102,
+      "classification": "UNVERIFIED_EXECUTION_CONTINUITY",
+      "includedInMeasuredEffort": false,
+      "reason": "User reports chat connection interrupted; do not infer technical effort or passive/HUMAN wait from the unverified interval."
+    }
+  ]
 }

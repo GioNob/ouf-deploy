@@ -33,6 +33,7 @@ try:
     method,path,body,key=(v[n] for n in ('method','path','body','key'))
     if method not in ('GET','PUT') or type(path)is not str:raise ValueError()
     if path!='/apisix/admin/routes' and not re.fullmatch(r'/apisix/admin/routes/[A-Za-z0-9._-]{1,128}',path):raise ValueError()
+    if method=='PUT' and path=='/apisix/admin/routes':raise ValueError()
     if (method=='GET' and body is not None) or (method=='PUT' and type(body)is not dict):raise ValueError()
     if type(key)is not str or not 16<=len(key)<=4096 or not all(33<=ord(c)<=126 for c in key):raise ValueError()
     host,port=v['host'],v['port']
@@ -108,7 +109,8 @@ class NativeGatewayTransport:
         selected=self.profile['config']
         require({k:selected[k]for k in ('path','sha256','metadata')}==packet['retainedGatewayConfig']
                 and digest(packet)==review['packetBinding']['sha256']
-                and str(journal.root)==review['executionContext'],'SAME_RETAINED_PACKET_CONFIG_AND_JOURNAL_REQUIRED')
+                and str(journal.root)==review['executionContext']and review.get('maximumGatewayGetAttempts')==512,
+                'SAME_RETAINED_PACKET_CONFIG_AND_JOURNAL_REQUIRED')
         require(pin.created_id!=pin.old_id and pin.old_id==packet['expectedRuntimeBindings']['gateway']['containerId']
                 and pin.frame==packet['frames']['gateway'],'SAME_REVIEWED_NEW_GATEWAY_GENERATION_REQUIRED')
         self.indices={s['name']:i for i,s in enumerate(review['stages'])};self.retry_after=''
@@ -128,7 +130,14 @@ class NativeGatewayTransport:
                 and started.get('nativeResource')==self.pin.process,'DURABLE_NEW_GATEWAY_AND_FIRST_PROCESS_REQUIRED')
         require(self.profile['pythonExecutable']==governance.executable(self.profile['pythonExecutable']['path']),
                 'NAMESPACE_EXECUTABLE_CHANGED')
+        count=row.get('nativeGatewayGetAttempts',0)
+        require(type(count)is int and 0<=count<=512,'PERSISTENT_GATEWAY_READ_BUDGET_REQUIRED')
         self.pin.check()
+    def reserve_get(self):
+        self.check();row=self.journal.read();count=row.get('nativeGatewayGetAttempts',0)
+        require(type(count)is int and 0<=count<512,'CUMULATIVE_GATEWAY_GET_BUDGET_EXHAUSTED')
+        self.journal.compare_and_save(row,{**row,'nativeGatewayGetAttempts':count+1,'version':row['version']+1})
+        self.check()
     def _request(self,method,resource,body=None):
         require(method in('GET','PUT')and (resource=='/apisix/admin/routes'or ROUTE.fullmatch(resource))
                 and (method!='PUT'or resource!='/apisix/admin/routes')
@@ -143,6 +152,7 @@ class NativeGatewayTransport:
         child=None;self.retry_after=''
         try:
             self.check()
+            if method=='GET':self.reserve_get()
             child=subprocess.Popen([profile['pythonExecutable']['path'],'-I','-B','-S','-c',CHILD_SOURCE,str(self.pin.fd)],
                 stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,pass_fds=(self.pin.fd,),
                 close_fds=True,cwd='/',env={'LC_ALL':'C'})

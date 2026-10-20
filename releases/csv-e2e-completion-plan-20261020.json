@@ -156,7 +156,7 @@
         "localDatabasePolicyTests": 9,
         "fullExecutorQualified": false,
         "databasePolicyRunId": 39404688204,
-        "qualifiedComponentTests": 76,
+        "qualifiedComponentTests": 99,
         "localOwnerReadTests": 10,
         "localDatabaseReadTests": 8,
         "currentReadRunId": 39405867174,
@@ -167,7 +167,10 @@
         "localRuntimeGuardTests": 7,
         "localRunnerCompositionTests": 8,
         "localReadinessProfileTests": 3,
-        "pendingLinuxReadinessCases": 5
+        "pendingLinuxReadinessCases": 5,
+        "compositionRunId": 39408488591,
+        "compositionCommit": "45aa4071070e85c42a34afa6a1e9934e50a6e672",
+        "localRetainedGatewayBoundaryTests": 4
       },
       "startedAt": null,
       "startBounds": {
@@ -2400,11 +2403,22 @@
       "waitingIntervals": [],
       "runtimeBudgetsUnchanged": true,
       "executionBranch": "feat/csv-e2e-native-completion-20261020",
-      "lastObservedAt": "2026-10-20T10:30:51.147Z",
-      "activeTechnicalHoursPreciselyMeasuredAfterTracking": 0.9744780555555556,
+      "lastObservedAt": "2026-10-20T10:45:39.678Z",
+      "activeTechnicalHoursPreciselyMeasuredAfterTracking": 1.3028991666666667,
       "initialUnsegmentedHours": 0.14933416666666666,
       "perPackageAllocationPrecise": false,
-      "currentOpenIntervalStartedAt": "2026-10-20T10:15:14.724Z"
+      "currentOpenIntervalStartedAt": "2026-10-20T10:42:11.142Z",
+      "unverifiedIntervals": [
+        {
+          "id": "CSV-UNCERTAIN-0001",
+          "startedAt": "2026-10-20T10:34:57.040Z",
+          "endedAt": "2026-10-20T10:42:11.142Z",
+          "seconds": 434.102,
+          "classification": "UNVERIFIED_EXECUTION_CONTINUITY",
+          "includedInMeasuredEffort": false,
+          "reason": "User reports chat connection interrupted; do not infer technical effort or passive/HUMAN wait from the unverified interval."
+        }
+      ]
     }
   }
 }
