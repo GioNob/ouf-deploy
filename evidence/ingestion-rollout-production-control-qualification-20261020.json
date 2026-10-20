@@ -80,7 +80,7 @@
     "actualEd25519TestMocksOnlyExecutableStdlibMaterializationAsInExistingNativeIssuerFixture": true,
     "newTargetRuntimeAuthorityProven": false
   },
-  "targetBootstrapPrepared": false,
+  "targetBootstrapPrepared": true,
   "targetRuntimeRolloutExecuted": false,
   "runtimeAuthorityIssued": false,
   "databaseAdmissionProven": false,
@@ -122,5 +122,8 @@
         "12.1"
       ]
     }
-  ]
+  ],
+  "targetBootstrapReceiptRef": "evidence/ingestion-rollout-production-bootstrap-target-20261020.json",
+  "targetBootstrapContext": "/etc/ouf/deploy-snapshots/ingestion-rollout-native-7fs9r6md",
+  "targetBootstrapObservedAt": "2026-10-20T18:37:43.360Z"
 }

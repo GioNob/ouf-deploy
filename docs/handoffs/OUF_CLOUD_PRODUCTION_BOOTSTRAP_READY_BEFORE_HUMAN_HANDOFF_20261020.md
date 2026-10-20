@@ -108,3 +108,11 @@ by this bootstrap. Distributed/multi-host acceptance remains explicitly open.
 
 Original normative sections reread this step: Matrix1.7§1, Blueprint0.3§§9–10,
 IngestionPET1.3§§146–146.1, AuthorizationPET1.5§§11.1–11.3/12.1.
+
+## Target preparation completed — next explicit HUMAN intervention
+
+Checkpoint 2026-10-20T18:37:43.360Z; measured active technical effort 6.292620h. Exact target receipt: `evidence/ingestion-rollout-production-bootstrap-target-20261020.json`. Actual start 2026-10-20T20:34:16.181269+02:00, end 2026-10-20T20:34:16.451319+02:00, elapsed 0.2700500470236875s. Context `/etc/ouf/deploy-snapshots/ingestion-rollout-native-7fs9r6md`. Launcher `/home/oufadmin/ouf-rollout-bootstrap-launcher.84fOiF2L`; log `/home/oufadmin/ouf-rollout-production.3ELOneFX/control.log`. This supersedes the pending-target instruction above: DO NOT replay prepare.
+
+Two selected IPv6 loopbacks and existing public issuer policy for900s passed at observation; this is no ongoing authority or service reachability proof. Zero OAuth, HUMAN-journal, keys, signatures, Engine, SQL, Owner, Gateway and lifecycle operations. Technical8/8, functional4/6, G3 remains open.
+
+Next: qualified HUMAN operator b760de48a41e2b073c135489399aefb4a14627ab, launcher SHA256 e308baa0f4ddc7187feae07c968dd48fcf085bcfc272374ebc6b4b661b9b4081. Open-window once only after exact controlling-terminal consent, then four separately confirmed requests nominal278→282 of288; never automatic login/poll/refresh. Return only final public JSON, log and private HUMAN read-profile path. STOP retains claims and context; do not reopen or replay. After READY, production review uses this retained control context and returned exact HUMAN profile. Infrastructure APPROVO remains separate; no THS/source/semantic approval inferred. AuthorizationPET1.5 §§11.1–11.3/12.1 reread for this transition. Operator/turn gap excluded; no human hours inferred.
