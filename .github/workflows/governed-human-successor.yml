@@ -4,6 +4,7 @@ on:
     paths:
       - 'tools/governed_human_successor/**'
       - 'tests/test_governed_human_successor.py'
+      - 'scripts/read-human-successor-candidate-20261020.py'
       - '.github/workflows/governed-human-successor.yml'
 permissions: {contents: read}
 jobs:
@@ -27,5 +28,6 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
+          sudo "$pythonLocation/bin/python3" -I -B -S -c 'from pathlib import Path; assert Path("/proc/sys/kernel/random/boot_id").is_file()'
           sudo env OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_governed_human_successor.py -v
           sudo env OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_human_reader.py -v

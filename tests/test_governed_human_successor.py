@@ -18,6 +18,8 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_policy_token_owner'),
     str(ROOT/'tools/semantic_application_cutover'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
 from tools.governed_human_successor import contract as c,window
+from tools.governed_human_successor import inspection
+from tools.governed_human_successor import reader_delivery
 from tools.governed_human_successor.session import ExplicitFreshSession
 from tools.chatbot_file_cohort import human_session as h
 from tools.chatbot_file_cohort.plan import PlanDenied
@@ -315,5 +317,86 @@ class GovernedSuccessor(unittest.TestCase):
         self.assertEqual(result['attempts'],282);self.assertEqual(result['remainingAttempts'],6)
         self.assertEqual([verb for verb,_ in seen],['GET','POST','POST','GET'])
         self.assertEqual(self.old.record.read_bytes(),self.old_bytes)
+
+    def retained_case(self):
+        plan={'humanBinding':self.row['binding']}
+        result={'complete':True,'planHash':digest(plan),'oauthAttemptsAfter':278,
+            'maximumCumulativeOAuthAttempts':288}
+        inputs={'synthetic':'retained-inputs'}
+        packet={'schema':'ouf.ingestion-rollout-private-packet.v3',
+            'kind':'PRIVATE_TEMPLATES_NOT_EXECUTABLE_AUTHORITY','verifiedInputsHash':digest(inputs),
+            'ownerPlanSha256':digest(plan),**{k:False for k in('runtimeAuthorityIssued',
+                'targetApplyAuthorized','automaticReplayAllowed','budgetReset','newLoginAllowed')}}
+        case={'schema':'ouf.ingestion-rollout-retained-case.v1',
+            'purpose':'EXACT_RETAINED_INSTALLATION_CASE_NOT_PORTABLE_DEFAULT',
+            'runtimeAuthorityIssued':False,'budgetReset':False}
+        for name,value in zip(('packetBinding','verifiedInputsBinding','ownerPlanBinding','ownerResultBinding'),
+                              (packet,inputs,plan,result)):
+            p=self.root/(name+'.json');p.write_bytes(encoded(value));p.chmod(0o600)
+            case[name]={'path':str(p),'sha256':digest(value)}
+        return case
+
+    def test_retained_inspection_joins_actual_files_without_writes_or_bearer_reads(self):
+        case=self.retained_case();before={p:p.read_bytes()for p in self.root.rglob('*')if p.is_file()}
+        with patch.object(h.HumanSession,'_http')as http:
+            review,private=inspection.inspect_retained(case,'d'*64);http.assert_not_called()
+        self.assertEqual(review['priorOAuthAttempts'],278)
+        self.assertEqual(review['maximumRemainingOAuthAttempts'],10)
+        self.assertEqual(private['predecessorJournal']['path'],str(self.old.record))
+        self.assertFalse(any(v in json.dumps(review)for v in('old-access','old-refresh','old-published')))
+        self.assertEqual({p:p.read_bytes()for p in self.root.rglob('*')if p.is_file()},before)
+
+    def test_changed_retained_artifact_is_not_adopted(self):
+        case=self.retained_case();p=Path(case['ownerResultBinding']['path'])
+        changed=json.loads(p.read_text());changed['maximumCumulativeOAuthAttempts']=999;p.write_bytes(encoded(changed))
+        with self.assertRaisesRegex(Denied,'RETAINED_CANONICAL_ARTIFACT_CHANGED'):
+            inspection.inspect_retained(case,'d'*64)
+        self.assertFalse((self.previous/'successor-window.claim.json').exists())
+
+    def test_retained_symlink_and_duplicate_json_are_rejected(self):
+        case=self.retained_case();p=Path(case['packetBinding']['path']);renamed=p.with_suffix('.retained')
+        p.rename(renamed);p.symlink_to(renamed)
+        with self.assertRaises(OSError):inspection.inspect_retained(case,'d'*64)
+        p.unlink();p.write_bytes(b'{"schema":"one","schema":"two"}');p.chmod(0o600)
+        with self.assertRaisesRegex(Denied,'DUPLICATE_RETAINED_JSON_FIELD'):
+            inspection.inspect_retained(case,'d'*64)
+
+    def test_read_only_delivery_contains_no_authentication_or_journal_writer(self):
+        raw,declaration=reader_delivery.generate(ROOT,self.retained_case())
+        self.assertEqual(len(declaration['sourceHashes']),6)
+        namespace={'__name__':'fixture_reader_not_main'};exec(compile(raw,'<fixture-reader>','exec'),namespace)
+        policy=namespace['SOURCES']['tools.chatbot_file_cohort.human_session']
+        self.assertNotIn('def ',policy)
+        for source in namespace['SOURCES'].values():
+            self.assertNotIn('def authenticate(',source)
+            self.assertNotIn('def _request(',source)
+            self.assertNotIn('def initialize(',source)
+            self.assertNotIn('compare_and_save(',source)
+
+    def test_isolated_read_only_delivery_joins_retained_case_and_rejects_tamper(self):
+        kernel_boot=Path('/proc/sys/kernel/random/boot_id')
+        if not kernel_boot.is_file():self.skipTest('Real Linux boot identifier required; qualified in root CI')
+        case=self.retained_case();row=copy.deepcopy(self.row);row['bootId']=kernel_boot.read_text().strip()
+        self.old.compare_and_save(self.row,row)
+        before={p:p.read_bytes()for p in self.root.rglob('*')if p.is_file()}
+        raw,declaration=reader_delivery.generate(ROOT,case)
+        script=self.root/'reader.py';script.write_bytes(raw);script.chmod(0o600)
+        result=subprocess.run([sys.executable,'-I','-B','-S',str(script)],text=True,
+            capture_output=True,timeout=50)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        value=json.loads(result.stdout)
+        self.assertEqual(value['status'],'REVIEW_COMPILED_NO_AUTHORITY')
+        self.assertEqual((value['priorOAuthAttempts'],value['remainingAttempts']),(278,10))
+        self.assertEqual(value['credentialJournalsOpened'],1)
+        self.assertEqual(value['journalWrites'],0);self.assertEqual(value['oauthRequests'],0)
+        self.assertFalse(any(s in result.stdout for s in('old-access','old-refresh','old-published')))
+        for p,content in before.items():self.assertEqual(p.read_bytes(),content)
+        # Corrupt the embedded declaration while retaining its expected digest.
+        tampered=raw.replace(b"'readOnly': True",b"'readOnly': False",1)
+        self.assertNotEqual(tampered,raw);script.write_bytes(tampered)
+        result=subprocess.run([sys.executable,'-I','-B','-S',str(script)],text=True,
+            capture_output=True,timeout=50)
+        self.assertEqual(result.returncode,2);self.assertEqual(json.loads(result.stdout)['status'],'STOP_RECONCILE')
+        for p,content in before.items():self.assertEqual(p.read_bytes(),content)
 
 if __name__=='__main__':unittest.main()
