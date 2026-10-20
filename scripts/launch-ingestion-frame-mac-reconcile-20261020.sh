@@ -8,10 +8,10 @@ if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
 ouf_read="$(mktemp -d "$HOME/ouf-frame-mac-reconcile.XXXXXXXX")"
 ouf_report_log() { printf 'Log diagnostico conservato: %s/read.log\n' "$ouf_read"; }
 trap ouf_report_log EXIT
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/1a908cf497a919faa0a5d1946ba8575fb402f96b' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/read.py"
-printf '%s  %s\n' '4e7dbb2f35cd2e628cebc6d2d30006ee1694505d1c1a297b815cdb66ab28ce29' "$ouf_read/read.py" | sha256sum -c -
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/48b347e90671b83a0f66d63a4fbb188d1d75acea' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/read.py"
+printf '%s  %s\n' '1c045b6ec83f5ef9e0e4d876d25bf76b71f1b7c52d7bd244bfd47d1df1fd38ab' "$ouf_read/read.py" | sha256sum -c -
 printf '%s\n' 'RICONCILIAZIONE FRAME: kkj_njiz e config gia preparato in 0wd4wyuf; cinque GET Engine.' 'Solo piano privato: MAC legacy verificato e preservato per endpoint. ZERO staging config, download/import, SQL, OAuth o lifecycle.'
-sudo /usr/bin/python3 -I -B -S - "$ouf_read/read.py" '4e7dbb2f35cd2e628cebc6d2d30006ee1694505d1c1a297b815cdb66ab28ce29' <<'OUF_READ' | tee "$ouf_read/read.log"
+sudo /usr/bin/python3 -I -B -S - "$ouf_read/read.py" '1c045b6ec83f5ef9e0e4d876d25bf76b71f1b7c52d7bd244bfd47d1df1fd38ab' <<'OUF_READ' | tee "$ouf_read/read.log"
 import hashlib,os,stat,sys
 try:
  fd=os.open(sys.argv[1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)

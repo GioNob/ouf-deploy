@@ -34,6 +34,7 @@ class LegacyMac(unittest.TestCase):
                 actual['NetworkSettings']['Networks']['second_net']=extra;before=copy.deepcopy(actual)
                 result=r.frames.frame(name,actual,actual['Image'],image,draft)
                 self.assertTrue(result['legacyContainerMacMovedToExplicitEndpoints'])
+                self.assertIsNone(result['requestTemplate']['HostConfig']['OomKillDisable'])
                 self.assertNotIn('MacAddress',result['requestTemplate']);self.assertEqual(actual,before)
                 ep=result['requestTemplate']['NetworkingConfig']['EndpointsConfig']
                 self.assertEqual(ep['fixture_net']['MacAddress'],'02:42:c0:00:02:08')

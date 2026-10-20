@@ -88,7 +88,6 @@ def frame(module,actual,image_id,candidate_config,draft,new_gateway_config_path=
     require(restart in(NO_RESTART,{'Name':'unless-stopped','MaximumRetryCount':0}),'REVIEWED_RESTART_POLICY_REQUIRED')
     if 'OomKillDisable'in host:
         require(host['OomKillDisable']is None or type(host['OomKillDisable'])is bool,'EXACT_OOM_POLICY_REQUIRED')
-        if host['OomKillDisable']is None:host['OomKillDisable']=False
     host['RestartPolicy']=copy.deepcopy(NO_RESTART)
     values=environment(config.get('Env')or[])
     retained_endpoints=endpoints(actual)
