@@ -68,7 +68,17 @@ class NativeReplacement(unittest.TestCase):
             for nid in ids:engine('POST','/networks/'+nid+'/disconnect',{'Container':old,'Force':False})
             engine('POST','/containers/'+old+'/rename?name='+label+'-retained')
             new=engine('POST','/containers/create?name='+frame['name'],request)['Id'];containers.append(new)
-            proof=validate(frame,self.reader.container(new),self.image_config,old,created_id=new,phase='CREATED',**kwargs)
+            created=self.reader.container(new)
+            try:proof=validate(frame,created,self.image_config,old,created_id=new,phase='CREATED',**kwargs)
+            except Denied:
+                # Fixture-only diagnostics: field names and boolean/null/number
+                # differences, never environment, strings, paths or key bytes.
+                for field,value in frame['requestTemplate']['HostConfig'].items():
+                    observed=created['HostConfig'].get(field)
+                    if observed!=value:
+                        safe=lambda v:v if v is None or type(v)in(bool,int)else type(v).__name__
+                        print('NATIVE_HOST_DIFFERENCE',field,safe(value),safe(observed),flush=True)
+                raise
             self.assertTrue(proof['neverStarted'])
             engine('POST','/containers/'+new+'/start')
             running=self.reader.container(new);process=generation(running)

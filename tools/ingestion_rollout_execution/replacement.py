@@ -93,7 +93,9 @@ def validate(frame,actual,image_config,old_id,*,created_id,process=None,phase='R
     host=copy.deepcopy(request['HostConfig'])
     require(host['RestartPolicy']==NO_RESTART,'RESTART_DISABLED_CREATE_FRAME_REQUIRED')
     if restart_restored:host['RestartPolicy']=frame['restoreRestartPolicy']
-    for key,value in host.items():require(actual['HostConfig'].get(key)==value,'REPLACEMENT_HOST_CONFIG_CHANGED')
+    for key,value in host.items():
+        require(re.fullmatch('[A-Za-z][A-Za-z0-9]{0,63}',key),'CLOSED_NATIVE_HOST_FIELD_REQUIRED')
+        require(actual['HostConfig'].get(key)==value,'REPLACEMENT_HOST_CONFIG_CHANGED_'+key)
     expected_mounts=_mounts(frame);observed={}
     for mount in actual['Mounts']:
         destination=mount['Destination'];require(destination not in observed,'DUPLICATE_ACTUAL_MOUNT')
