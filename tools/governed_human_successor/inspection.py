@@ -91,6 +91,18 @@ def inspect_retained(case,source_closure_hash):
         'ownerPlanHash':digest(plan),'completedResultHash':digest(result)}
     binding=plan.get('humanBinding')
     require(type(binding)is dict,'EXACT_COMPLETED_OWNER_HUMAN_BINDING_REQUIRED')
+    recorded=case.get('lastReportedHuman')
+    require(type(recorded)is dict and type(recorded.get('attempts'))is int
+        and type(history['minimumRetainedOAuthAttempts'])is int
+        and type(history['maximumCumulativeOAuthAttempts'])is int
+        and history['minimumRetainedOAuthAttempts']<=recorded['attempts']<=history['maximumCumulativeOAuthAttempts']
+        and recorded.get('maximumCumulativeOAuthAttempts')==history['maximumCumulativeOAuthAttempts']
+        and recorded.get('windowExpiresAt')==binding.get('expiresAt')
+        and recorded.get('snapshotIsRuntimeAuthority')is False,
+        'RETAINED_POST_PUBLICATION_CUMULATIVE_HUMAN_FLOOR_REQUIRED')
+    # Publication can consume attempts after Owner7 completes. Its retained
+    # public floor must survive even though the owner result has an older count.
+    history['minimumRetainedOAuthAttempts']=recorded['attempts']
     # The completed plan pins the hash of the FULL original selection. The
     # issuer/tenant/subject projection is not its preimage. Recover the exact
     # original document through the retained capsule, never invent a reduced

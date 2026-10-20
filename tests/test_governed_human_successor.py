@@ -341,7 +341,9 @@ class GovernedSuccessor(unittest.TestCase):
                 'targetApplyAuthorized','automaticReplayAllowed','budgetReset','newLoginAllowed')}}
         case={'schema':'ouf.ingestion-rollout-retained-case.v1',
             'purpose':'EXACT_RETAINED_INSTALLATION_CASE_NOT_PORTABLE_DEFAULT',
-            'runtimeAuthorityIssued':False,'budgetReset':False}
+            'runtimeAuthorityIssued':False,'budgetReset':False,
+            'lastReportedHuman':{'attempts':278,'maximumCumulativeOAuthAttempts':288,
+                'windowExpiresAt':self.row['binding']['expiresAt'],'snapshotIsRuntimeAuthority':False}}
         original=self.root/'original.json';original.write_bytes(encoded({
             'schema':'ouf.chatbot-file-cohort-prepared-inputs.v1','engine':plan['engine'],
             'authorization':{'plan':{'selection':self.selection}}}));original.chmod(0o600)
@@ -389,6 +391,17 @@ class GovernedSuccessor(unittest.TestCase):
         with self.assertRaisesRegex(Denied,'FULL_ORIGINAL_SELECTION_MUST_MATCH_PINNED_OWNER_BINDING'):
             inspection.inspect_retained(case,'d'*64)
         self.assertEqual(self.old.record.read_bytes(),self.old_bytes)
+        self.assertFalse((self.previous/'successor-window.claim.json').exists())
+
+    def test_later_publication_attempt_floor_cannot_regress_to_older_owner_count(self):
+        case=self.retained_case();p=Path(case['ownerResultBinding']['path']);result=json.loads(p.read_text())
+        result['oauthAttemptsAfter']=276;p.write_bytes(encoded(result));case['ownerResultBinding']['sha256']=digest(result)
+        review,private=inspection.inspect_retained(case,'d'*64)
+        self.assertEqual(private['history']['minimumRetainedOAuthAttempts'],278)
+        self.assertEqual(review['priorOAuthAttempts'],278)
+        regressed={**self.row,'attempts':277};self.old.compare_and_save(self.row,regressed)
+        with self.assertRaisesRegex(Denied,'SAME_RETAINED_CUMULATIVE_ATTEMPTS_REQUIRED'):
+            inspection.inspect_retained(case,'d'*64)
         self.assertFalse((self.previous/'successor-window.claim.json').exists())
 
     def test_retained_symlink_and_duplicate_json_are_rejected(self):

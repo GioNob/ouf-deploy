@@ -9,10 +9,10 @@ if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
 ouf_read="$(mktemp -d "$HOME/ouf-human-selection-reconcile.XXXXXXXX")"
 ouf_report_log() { printf 'Log diagnostico conservato: %s/read.log\n' "$ouf_read"; }
 trap ouf_report_log EXIT
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/523030cc21be4ee99e0dfc592d0685a6516af5b7' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/read.py"
-printf '%s  %s\n' '379f5a35c3441510ef243779056b87d2c8fa12c58b117b30737110512049999a' "$ouf_read/read.py" | sha256sum -c -
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/b700dea6419d7ce509f759fdbc6c914fb02ae4dc' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/read.py"
+printf '%s  %s\n' 'b06ea53113c4501b0cf915d08556780da53bb9f8e3aabaac8c6f5dd36ab9e193' "$ouf_read/read.py" | sha256sum -c -
 printf '%s\n' 'RICONCILIAZIONE SOLA: selezione ORIGINALE COMPLETA dal capsule Owner7 conservato; nessuna selezione ridotta.' 'Nessun bearer aperto, login, rinnovo, reset, scrittura di journal, SQL, Engine, Gateway o owner API.'
-sudo python3 -I -B -S - "$ouf_read/read.py" '379f5a35c3441510ef243779056b87d2c8fa12c58b117b30737110512049999a' <<'OUF_READ' | tee "$ouf_read/read.log"
+sudo python3 -I -B -S - "$ouf_read/read.py" 'b06ea53113c4501b0cf915d08556780da53bb9f8e3aabaac8c6f5dd36ab9e193' <<'OUF_READ' | tee "$ouf_read/read.log"
 import hashlib,os,stat,sys
 try:
  fd=os.open(sys.argv[1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
