@@ -86,17 +86,24 @@ class NativeCreation(unittest.TestCase):
             new=engine('POST','/containers/create?name='+frame['name'],request)['Id'];containers.append(new)
             engine('POST','/containers/'+new+'/start');engine('POST','/containers/'+new+'/pause')
             observed=engine('GET','/containers/'+new+'/json')
+            differences=[]
+            def same(actual_value,expected_value,field):
+                if actual_value!=expected_value:differences.append((field,actual_value,expected_value))
             for name,endpoint in actual['NetworkSettings']['Networks'].items():
                 after=observed['NetworkSettings']['Networks'][name]
                 for field in ('NetworkID','IPAddress','GlobalIPv6Address','MacAddress'):
-                    self.assertEqual(after.get(field),endpoint.get(field),(module,name,field))
-                self.assertEqual(sorted(after.get('Aliases')or[]),sorted(request['NetworkingConfig']['EndpointsConfig'][name]['Aliases']))
+                    same(after.get(field),endpoint.get(field),(module,name,field))
+                # API1.44 injects the new container short ID as its own DNS
+                # alias. Only that generation identity may differ.
+                aliases=[v for v in after.get('Aliases')or[]if v not in(new,new[:12])]
+                same(sorted(aliases),sorted(request['NetworkingConfig']['EndpointsConfig'][name]['Aliases']),(module,name,'Aliases'))
             for key,value in request['HostConfig'].items():
-                self.assertEqual(observed['HostConfig'].get(key),value,(module,'HostConfig',key))
+                same(observed['HostConfig'].get(key),value,(module,'HostConfig',key))
             for key,value in request.items():
                 if key in('HostConfig','NetworkingConfig','Hostname','MacAddress'):continue
-                if key=='Env':self.assertEqual(r.frames.environment(observed['Config']['Env']),r.frames.environment(value));continue
-                self.assertEqual(observed['Config'].get(key),value,(module,'Config',key))
+                if key=='Env':same(r.frames.environment(observed['Config']['Env']),r.frames.environment(value),(module,'Config',key));continue
+                same(observed['Config'].get(key),value,(module,'Config',key))
+            self.assertEqual(differences,[])
             self.assertEqual(observed['Config']['Hostname'],new[:12]);self.assertEqual(observed['Image'],self.image)
             self.assertFalse(frame['targetApplyAuthorized'])
         finally:
