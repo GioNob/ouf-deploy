@@ -186,6 +186,8 @@ class NativePlatform(unittest.TestCase):
             'engineGets':row.get('nativeDirectEngineGets',0),'enginePosts':row.get('nativeDirectEnginePosts',0),
             'ownerGets':row.get('nativeOwnerGetAttempts',0),'sqlSessions':row.get('nativeDatabaseReadSessions',0),
             'runtimeAuthorityIssued':False,'notReleaseAcceptance':True},sort_keys=True),flush=True)
+        if hasattr(self,'ports')and hasattr(self.ports,'database')and self.ports.database.last_report is not None:
+            print('OUF_NATIVE_DATABASE_ADMISSION_PREDICATES='+json.dumps(self.ports.database.last_report,sort_keys=True),flush=True)
     def launch(self,name,image,arguments,*,binds=(),environment=None,second=False,entrypoint=None):
         self.names.append(name);args=['run','-d','--name',name,'--network',self.first,'--network-alias',name,
             '--restart','unless-stopped']

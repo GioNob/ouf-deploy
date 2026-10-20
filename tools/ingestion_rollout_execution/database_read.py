@@ -118,6 +118,7 @@ class NativeDatabaseRead:
         self.action,self.journal,self.human,self.reader=action,journal,human,reader
         self.review=copy.deepcopy(review);self.scope=scope(self.review)
         self.profile=copy.deepcopy(review.get('databaseControlProfile'));validate_profile(self.profile)
+        self.last_report=None
         require(review.get('maximumDatabaseReadSessions')==MAX_SESSIONS
                 and str(journal.root)==review['executionContext'],'SAME_SIGNED_FINITE_DATABASE_READ_PROFILE_REQUIRED')
         self.config_identity=copy.deepcopy(self.profile['dockerConfigIdentity']);self.check()
@@ -160,5 +161,11 @@ class NativeDatabaseRead:
         try:facts=json.loads(raw,object_pairs_hook=unique)
         except(ValueError,UnicodeError):require(False,'EXACT_NATIVE_DATABASE_JSON_REQUIRED')
         report=policy.qualify_snapshot(facts,self.profile['identity'],now=time.time())
+        # Fixed non-secret admission diagnostics only. Never retain SQL rows,
+        # connection strings, credentials or application payloads for logging.
+        self.last_report={k:report[k]for k in('sqlHistoryMatchesCandidate','runtimeCatalogMatchesQualifiedCandidate',
+            'requiredRuntimePrivilegesAvailable','runtimeRoleBroadFlagsAbsent','postgres17Utf8',
+            'pressureAndControlHeadroomWithinReadProfile','runtimeWorkDrainedAtSnapshot',
+            'observedConnectionHeadroom','storedPressureState','workCountsLowerBounds')}
         self.check();require(report['databaseReadPrerequisitesProven']is True,'CURRENT_DATABASE_READ_PREREQUISITES_NOT_PROVEN')
         return report
