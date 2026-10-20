@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T14:37:24.284Z",
+  "lastUpdatedAt": "2026-10-20T14:47:45.944Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -922,6 +922,19 @@
       "functionalMilestonesProven": 4,
       "runtimePublished": false,
       "authorityIssued": false
+    },
+    {
+      "id": "CSV-VPS-READ-0001",
+      "userReceiptReceivedAt": "2026-10-20T14:38:43Z",
+      "targetCommandStartedAt": null,
+      "targetCommandEndedAt": null,
+      "status": "STOP_RECONCILE",
+      "reasonCode": "EXACT_RETAINED_HUMAN_SELECTION_REQUIRED",
+      "checkpoint": "EXPIRED_READY_PUBLIC_HISTORY",
+      "sourceCommit": "c711c119ce589a421f0c27195a16522b39e879bf",
+      "humanEffortKnown": false,
+      "runtimeAuthorityIssued": false,
+      "gatePassed": false
     }
   ],
   "activeIntervals": [
@@ -1234,6 +1247,16 @@
       "classification": "ACTIVE_TECHNICAL",
       "workPackage": "WP3_PREPARATION",
       "activity": "PERSIST_QUALIFICATION_AND_PREPARE_OPERATOR_READ_ONLY_HANDOFF"
+    },
+    {
+      "id": "CSV-TIME-0030",
+      "startedAt": "2026-10-20T14:38:51.000Z",
+      "endedAt": "2026-10-20T14:47:45.944Z",
+      "seconds": 534.944,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "FIRST_VPS_STOP_DIAGNOSIS_FULL_SELECTION_CORRECTION_AND_QUALIFICATION",
+      "isTargetRuntimeExecutionTime": false
     }
   ],
   "waitingIntervals": [],
@@ -1492,7 +1515,10 @@
     "loaderSha256": "3898173a6303317ea91e350dd867f6292b634341930daddaeef91b25f2756b1a",
     "python313CiQualifiedCommit": "502a9fb823d06e899031f226011d601266981695",
     "explicitSuccessorCiQualifiedCommit": "c711c119ce589a421f0c27195a16522b39e879bf",
-    "targetSuccessorInspectionPending": true
+    "targetSuccessorInspectionPending": false,
+    "targetSuccessorInspectionResult": "STOP_RECONCILE",
+    "selectionReconcileCiQualifiedCommit": "103889784a46a3814db2f5206f4829c6aed9b428",
+    "targetSelectionReconciliationPending": true
   },
   "developmentCandidates": [
     {
@@ -1534,7 +1560,7 @@
       "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
       "G7_ACCEPTANCE"
     ],
-    "currentRequiredHumanAction": "EXECUTE_QUALIFIED_READ_ONLY_INSPECTION_ON_EXISTING_VPS_TERMINAL"
+    "currentRequiredHumanAction": "EXECUTE_DISTINCT_QUALIFIED_SELECTION_RECONCILIATION_ON_EXISTING_VPS_TERMINAL"
   },
   "unsegmentedFollowupWindows": [
     {
@@ -1550,6 +1576,13 @@
       "classification": "TURN_TRANSITION_AND_EARLY_RESUMPTION_NOT_PRECISELY_SEGMENTED",
       "countedAsActive": false,
       "note": "Includes early successor TLS implementation; no retrospective allocation inferred before first explicit UTC clock observation."
+    },
+    {
+      "startedAt": "2026-10-20T14:37:24.284Z",
+      "endedAt": "2026-10-20T14:38:51.000Z",
+      "classification": "TURN_BOUNDARY_AND_OPERATOR_COMMAND_WINDOW_NOT_MEASURED",
+      "countedAsActive": false,
+      "humanEffortKnown": false
     }
   ],
   "deliveryAccounting": {
