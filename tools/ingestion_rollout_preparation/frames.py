@@ -76,6 +76,8 @@ def endpoints(actual):
     return result
 
 def frame(module,actual,image_id,candidate_config,draft,new_gateway_config_path=None):
+    # The caller binds actual to its approved installation/runtime profile.
+    # Network IDs, names, addresses and MACs below are parameters, never defaults.
     require(module in('ingestion','gateway')and re.fullmatch('sha256:[0-9a-f]{64}',image_id),'EXACT_TWO_MODULE_FRAME_REQUIRED')
     config=copy.deepcopy(actual['Config']);host=copy.deepcopy(actual['HostConfig'])
     require(host.get('AutoRemove')is not True and host.get('Privileged')is not True
@@ -89,7 +91,11 @@ def frame(module,actual,image_id,candidate_config,draft,new_gateway_config_path=
         if host['OomKillDisable']is None:host['OomKillDisable']=False
     host['RestartPolicy']=copy.deepcopy(NO_RESTART)
     values=environment(config.get('Env')or[])
-    require(not config.get('MacAddress'),'ENDPOINT_MAC_ONLY_PROFILE_REQUIRED')
+    retained_endpoints=endpoints(actual)
+    legacy_mac=config.pop('MacAddress',None)
+    require(legacy_mac in(None,'') or type(legacy_mac)is str and re.fullmatch('[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}',legacy_mac)
+            and legacy_mac.lower()in{row['MacAddress'].lower()for row in retained_endpoints.values()},
+            'LEGACY_CONTAINER_MAC_MUST_MATCH_OBSERVED_ENDPOINT')
     if module=='ingestion':
         require(config.get('User')==candidate_config.get('User')=='10002:10002'
                 and config.get('Entrypoint')==candidate_config.get('Entrypoint')==['java','-jar','/app/app.jar']
@@ -127,8 +133,9 @@ def frame(module,actual,image_id,candidate_config,draft,new_gateway_config_path=
     require(not config.get('Healthcheck')or module=='gateway'or config['Healthcheck']==candidate_config.get('Healthcheck'),
             'REVIEWED_EXISTING_HEALTHCHECK_REQUIRED')
     return {'schema':'ouf.ingestion-local-docker-frame-template.v1','module':module,'name':actual['Name'].lstrip('/'),
-        'requestTemplate':{**config,'HostConfig':host,'NetworkingConfig':{'EndpointsConfig':endpoints(actual)}},
+        'requestTemplate':{**config,'HostConfig':host,'NetworkingConfig':{'EndpointsConfig':retained_endpoints}},
         'restoreRestartPolicy':restart,'oldMounts':copy.deepcopy(actual['Mounts']),
         'preserveObservedAddressesAndMacs':True,'resolveGatewaySecretAfterNativeAuthorityRequired':module=='gateway',
+        'legacyContainerMacMovedToExplicitEndpoints':bool(legacy_mac),
         'nativeCreationRoundTripQualified':False,
         'runtimeAuthorityIssued':False,'targetApplyAuthorized':False}
