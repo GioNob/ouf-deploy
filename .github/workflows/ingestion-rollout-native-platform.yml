@@ -1,0 +1,37 @@
+name: Ingestion rollout native PostgreSQL channel qualification
+on:
+  pull_request:
+    paths: ['tools/ingestion_rollout_execution/**', 'tests/test_ingestion_rollout_native_database_platform.py', '.github/workflows/ingestion-rollout-native-platform.yml']
+permissions: {contents: read}
+jobs:
+  postgres17-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-ingestion-runtime
+          ref: 0fe0de60c6d980fe97610acf195d4bfd46d3777f
+          path: .pairwise/ingestion
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '21', cache: maven}
+      - name: Exact candidate BOM and native Flyway fixture
+        run: |
+          set -euo pipefail
+          mvn -B -ntp -q -f tests/fixtures/ingestion-db-preflight/pom.xml compile org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath -Dmdep.outputFile="$GITHUB_WORKSPACE/.ingestion-db.classpath"
+      - name: New finite native channels against disposable PostgreSQL17
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-rollout-platform-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env OUF_NATIVE_UIDS=1 OUF_ISOLATED_NATIVE_PLATFORM=1 OUF_TEST_ROOT="$fixture" \
+            OUF_FIXTURE_JAVA="$JAVA_HOME/bin/java" \
+            OUF_INGESTION_SQL_ROOT="$fixture/repository/.pairwise/ingestion/src/main/resources/db/migration" \
+            OUF_FLYWAY_CLASSPATH="$fixture/repository/tests/fixtures/ingestion-db-preflight/target/classes:$(cat .ingestion-db.classpath)" \
+            /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_native_database_platform.py -v
