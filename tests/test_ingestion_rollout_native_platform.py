@@ -169,8 +169,15 @@ class NativePlatform(unittest.TestCase):
             'ingestionReadinessProfile':{'schema':'ouf.ingestion-rollout-ingestion-readiness-local-ns.v1',
                 'endpoint':{'host':'127.0.0.1','port':8080},'pythonExecutable':self.program}}
         self.context=self.root/'execution';self.context.mkdir(mode=0o700)
+        owner_plan.update(engine=copy.deepcopy(engine),currentApplications={**copy.deepcopy(packet['expectedRuntimeBindings']),
+            **{m:rb.observed(v,rb.SORTED)for m,v in applications.items()}})
+        owner_plan['bindingPlan']['candidatePayloadChecksum']=active['checksum']
+        packet['ownerPlanSha256']=c.digest(owner_plan)
         self.review=native_review.compile_native_review(packet,{'path':str(self.root/'packet'),'sha256':c.digest(packet)},inputs,
-            self.human.current(),str(self.context),profiles,owner_plan,{'complete':True,'planHash':c.digest(owner_plan)})
+            self.human.current(),str(self.context),profiles,owner_plan,{'complete':True,'planHash':c.digest(owner_plan),
+                'active':active,'ownerPayloadReadbackProven':True,
+                'oauthAttemptsAfter':1,'maximumCumulativeOAuthAttempts':human_module.PROFILE['maximumAttempts'],
+                'projectionBinding':{k:profiles['ownerControlProfile']['projection'][k]for k in('path','sha256')}})
         self.sign_scope()
         self.ports=NativePorts(self.action,Journal(self.context),self.review,packet,self.human);self.addCleanup(self.ports.close)
         self.runner=Runner(self.action,self.ports.journal,self.review,self.ports);self.runner.initialize()

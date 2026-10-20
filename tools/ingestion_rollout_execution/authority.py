@@ -10,7 +10,7 @@ import hashlib
 import json
 from pathlib import Path
 import time
-from tools.ingestion_rollout_execution import contract as c,native_review,private_file
+from tools.ingestion_rollout_execution import contract as c,native_review,private_file,human_reader
 from tools.ingestion_rollout_execution.infrastructure_consent import terminal_consent,decision_valid
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_policy_token_owner.producer import protected_directory
@@ -133,6 +133,7 @@ def verify_closure(closure):
 
 def issue_action(review,decision,human,explicitly_approved_decision_hash):
     validate_action_review(review)
+    human_reader.require_profile(human,review['executionReview'])
     c.require(c.hashed(explicitly_approved_decision_hash)and c.digest(decision)==explicitly_approved_decision_hash,
               'INDEPENDENT_EXACT_HUMAN_DECISION_HASH_REQUIRED')
     decision_valid(review,decision,human,time.time());verify_closure(review['sourceClosure'])

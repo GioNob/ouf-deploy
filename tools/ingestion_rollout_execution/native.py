@@ -7,7 +7,7 @@ import copy
 import os
 import time
 from engine_creation import Engine
-from tools.ingestion_rollout_execution import contract as c,native_review,runtime_guard
+from tools.ingestion_rollout_execution import contract as c,native_review,runtime_guard,human_reader
 from tools.ingestion_rollout_execution.runner import Ports
 from tools.ingestion_rollout_execution.engine_channel import NativeEngineChannel
 from tools.ingestion_rollout_execution.replacement import EngineReader,validate
@@ -31,6 +31,7 @@ class NativePorts(Ports):
         native_review.validate_review(review,packet)
         self.action,self.journal,self.human=action,journal,human
         self.review,self.packet=copy.deepcopy(review),copy.deepcopy(packet);self.scope=c.scope(self.review)
+        human_reader.require_profile(human,self.review)
         c.require(str(journal.root)==review['executionContext'],'SAME_SIGNED_NATIVE_PORTS_CONTEXT_REQUIRED')
         self.indices={s['name']:i for i,s in enumerate(review['stages'])}
         self.engine=self.owner_pin=self.gateway=None;self.last_gates=None
@@ -39,6 +40,7 @@ class NativePorts(Ports):
         c.require(c.scope(self.review)==self.scope and c.digest(self.packet)==self.review['packetBinding']['sha256'],
                   'NATIVE_PORTS_REVIEW_OR_PACKET_DRIFT')
         self.action.guard(c.AUTHORITY_KEY,self.scope)
+        human_reader.require_profile(self.human,self.review)
         c.require(self.human.current()==self.scope['humanBinding'],'SAME_CURRENT_AUTHENTICATED_HUMAN_REQUIRED')
         row=self.journal.read()
         c.require(row.get('scopeHash')==c.digest(self.scope)and row.get('authorityHash')==self.action.authority_hash

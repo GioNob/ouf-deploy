@@ -7,7 +7,7 @@ actions. A representative qualification and a fresh HUMAN/THS issue are separate
 import copy
 import re
 from tools.ingestion_rollout_execution import contract as c
-from tools.ingestion_rollout_execution import runtime_guard,owner_read,database_read,image_import,gateway_transport,readiness
+from tools.ingestion_rollout_execution import runtime_guard,owner_read,database_read,image_import,gateway_transport,readiness,human_reader
 
 PROFILE='ouf.ingestion-rollout-native-local-profile-set.v1'
 BUDGETS={'maximumOwnerGetAttempts':512,'maximumDatabaseReadSessions':128,
@@ -64,17 +64,46 @@ def reconcile_owner(packet,profiles,owner_plan,completed_result):
     c.require(type(completed_result)is dict and completed_result.get('complete')is True
               and completed_result.get('planHash')==packet['ownerPlanSha256'],
               'EXACT_COMPLETED_OWNER_RESULT_REQUIRED')
+    expected={**packet['expectedRuntimeBindings'],
+              **{name:pin['binding']for name,pin in profiles['runtimeGuardProfile']['unchangedApplications'].items()}}
+    c.require(owner_plan.get('engine')==profiles['engineBinding']
+              and c.encoded(owner_plan.get('currentApplications'))==c.encoded(expected),
+              'EXACT_COMPLETED_OWNER_ENGINE_AND_FIVE_APPLICATION_BINDINGS_REQUIRED')
     payload=owner_plan.get('bindingPlan',{}).get('candidatePayload')
     c.require(type(payload)is dict and c.encoded(payload)==c.encoded(profiles['ownerControlProfile']['expectedPayload']),
               'OWNER_CONTROL_PAYLOAD_MUST_MATCH_COMPLETED_PLAN')
+    owner=profiles['ownerControlProfile']
+    c.require(c.encoded(completed_result.get('active'))==c.encoded(owner['expectedActive'])
+              and completed_result.get('ownerPayloadReadbackProven')is True
+              and owner['expectedActive']['checksum']==owner_plan.get('bindingPlan',{}).get('candidatePayloadChecksum'),
+              'EXACT_COMPLETED_OWNER_ACTIVE_ETAG_AND_CHECKSUM_REQUIRED')
+    exported=completed_result.get('projectionBinding')
+    c.require(type(exported)is dict and exported.get('sha256')==owner['projection']['sha256'],
+              'ACTIVE_PROJECTION_BYTES_MUST_MATCH_COMPLETED_OWNER_EXPORT')
+    prior,maximum=completed_result.get('oauthAttemptsAfter'),completed_result.get('maximumCumulativeOAuthAttempts')
+    c.require(type(prior)is type(maximum)is int and 0<=prior<=maximum<=4096,
+              'RETAINED_OWNER_CUMULATIVE_HUMAN_HISTORY_REQUIRED')
     c.require(payload.get('secrets',{}).get('references',{}).get('ingestionReadOwnerKey')
               ==packet['dedicatedOwnerKey']['path'],'COMPLETED_OWNER_DEDICATED_KEY_REFERENCE_REQUIRED')
     return {'ownerPlanHash':c.digest(owner_plan),'completedResultHash':c.digest(completed_result),
             'completedOwnerActionReplayed':False,'completedPublicationReplayed':False,
-            'retainedClaimsHash':c.digest(packet['retainedClaims'])}
+            'retainedClaimsHash':c.digest(packet['retainedClaims']),
+            'minimumRetainedOAuthAttempts':prior,'maximumCumulativeOAuthAttempts':maximum}
+
+def validate_human_history(review,history):
+    binding=review['humanBinding'];retry=binding.get('retryProfile',{})
+    c.require(type(retry.get('maximumAttempts'))is int
+              and retry['maximumAttempts']==history['maximumCumulativeOAuthAttempts'],
+              'CURRENT_HUMAN_MUST_RETAIN_ORIGINAL_CUMULATIVE_LIMIT')
+    if review.get('humanReadProfile')is not None:
+        p=review['humanReadProfile'];human_reader.validate(p)
+        c.require(p['expectedBinding']==binding
+                  and p['minimumCumulativeAttempts']>=history['minimumRetainedOAuthAttempts']
+                  and p['maximumCumulativeAttempts']==history['maximumCumulativeOAuthAttempts'],
+                  'CURRENT_HUMAN_MUST_RETAIN_CONSUMED_OAUTH_HISTORY')
 
 def compile_native_review(packet,packet_binding,inputs,human_binding,execution_context,
-                          profiles,owner_plan,completed_result):
+                          profiles,owner_plan,completed_result,*,human_read_profile=None):
     review=c.compile_review(packet,packet_binding,inputs,human_binding,execution_context)
     validate_profiles(profiles,packet)
     history=reconcile_owner(packet,profiles,owner_plan,completed_result)
@@ -82,6 +111,11 @@ def compile_native_review(packet,packet_binding,inputs,human_binding,execution_c
     review.update(BUDGETS)
     review.update(nativeProfileSetSchema=PROFILE,retainedOwnerHistory=history,
                   nativeExecutorQualified=False,representativeQualificationRequired=True)
+    if human_read_profile is not None:
+        human_reader.validate(human_read_profile)
+        c.require(human_read_profile['expectedBinding']==human_binding,'SAME_RETAINED_HUMAN_BINDING_REQUIRED')
+        review['humanReadProfile']=copy.deepcopy(human_read_profile)
+    validate_human_history(review,history)
     c.scope(review)
     return review
 
@@ -96,10 +130,15 @@ def validate_review(review,packet):
     validate_profiles({'schema':PROFILE,**{k:review.get(k)for k in FIELDS-{'schema'}}},packet)
     history=review.get('retainedOwnerHistory')
     c.require(type(history)is dict and set(history)=={'ownerPlanHash','completedResultHash',
-              'completedOwnerActionReplayed','completedPublicationReplayed','retainedClaimsHash'}
+              'completedOwnerActionReplayed','completedPublicationReplayed','retainedClaimsHash',
+              'minimumRetainedOAuthAttempts','maximumCumulativeOAuthAttempts'}
               and history['ownerPlanHash']==packet.get('ownerPlanSha256')
               and c.hashed(history['completedResultHash'])
               and history['retainedClaimsHash']==c.digest(packet['retainedClaims'])
               and history['completedOwnerActionReplayed']is history['completedPublicationReplayed']is False,
               'RETAINED_OWNER_HISTORY_RECONCILIATION_REQUIRED')
+    c.require(type(history['minimumRetainedOAuthAttempts'])is type(history['maximumCumulativeOAuthAttempts'])is int
+              and 0<=history['minimumRetainedOAuthAttempts']<=history['maximumCumulativeOAuthAttempts']<=4096,
+              'RETAINED_CUMULATIVE_HUMAN_LIMITS_REQUIRED')
+    validate_human_history(review,history)
     return review

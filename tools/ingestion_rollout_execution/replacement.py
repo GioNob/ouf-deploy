@@ -90,7 +90,7 @@ def validate(frame,actual,image_config,old_id,*,created_id,process=None,phase='R
     # Unknown fields require a reviewed profile change, not silent acceptance.
     require(set(config)<=set(image_config)|set(request)|{'MacAddress'},'UNREVIEWED_CONTAINER_CONFIG_FIELD')
     for key,value in image_config.items():
-        if key not in request:require(config.get(key)==value,'UNREVIEWED_IMAGE_CONFIG_INHERITANCE')
+        if key not in request:require(config.get(key)==value,'UNREVIEWED_IMAGE_CONFIG_INHERITANCE_'+key)
     host=copy.deepcopy(request['HostConfig'])
     require(host['RestartPolicy']==NO_RESTART,'RESTART_DISABLED_CREATE_FRAME_REQUIRED')
     if restart_restored:host['RestartPolicy']=frame['restoreRestartPolicy']

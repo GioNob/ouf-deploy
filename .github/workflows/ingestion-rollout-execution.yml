@@ -40,3 +40,4 @@ jobs:
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_runtime.py -v
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_guard_transient.py -v
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_owner_transient.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_human_reader.py -v

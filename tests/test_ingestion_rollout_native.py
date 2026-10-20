@@ -29,6 +29,7 @@ class NativeComposition(unittest.TestCase):
         row=self.runner.journal.read();mono=time.monotonic()
         self.runner.journal.compare_and_save(row,{**row,'expiresMonotonic':mono+480,'version':row['version']+1})
         self.human=HumanSession.__new__(HumanSession);self.human.current=lambda:self.scope['humanBinding']
+        self.human._read=lambda:{'attempts':278}
         self.native=n.NativePorts(self.action,self.runner.journal,self.review,self.fixture.packet,self.human)
         self.addCleanup(self.native.close)
         self.stage=self.review['stages'][0]

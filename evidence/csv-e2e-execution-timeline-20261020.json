@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T11:44:35.638Z",
+  "lastUpdatedAt": "2026-10-20T12:22:36.152Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -642,6 +642,58 @@
       "reasonCode": "LOCAL_FCHOWN_10002_EINVAL",
       "gateG2Passed": false,
       "note": "Known CLOUD scratch UID mapping limitation; no test or custody guard weakened. Actual root CI remains authoritative for the exclusive key ownership test."
+    },
+    {
+      "id": "CSV-EV-0046",
+      "kind": "FULL_NATIVE_PLATFORM_QUALIFICATION_FAILED",
+      "workPackage": "WP2",
+      "runId": 39417209985,
+      "occurredAt": "2026-10-20T11:46:53Z",
+      "observedAt": "2026-10-20T12:22:36.152Z",
+      "reasonCode": "EXECUTABLE_ANCESTRY_UNPROVEN",
+      "gateG2Passed": false,
+      "targetOperations": 0
+    },
+    {
+      "id": "CSV-EV-0047",
+      "kind": "FULL_NATIVE_PLATFORM_QUALIFICATION_FAILED",
+      "workPackage": "WP2",
+      "runId": 39417611176,
+      "occurredAt": "2026-10-20T11:52:39Z",
+      "observedAt": "2026-10-20T12:22:36.152Z",
+      "reasonCode": "DATABASE_READ_PREREQUISITES_UNPROVEN",
+      "gateG2Passed": false,
+      "targetOperations": 0
+    },
+    {
+      "id": "CSV-EV-0048",
+      "kind": "FULL_NATIVE_PLATFORM_QUALIFICATION_FAILED",
+      "workPackage": "WP2",
+      "runId": 39418496750,
+      "occurredAt": "2026-10-20T12:00:50Z",
+      "observedAt": "2026-10-20T12:22:36.152Z",
+      "reasonCode": "READINESS_SHARED_JOURNAL_CAS_CONFLICT",
+      "gateG2Passed": false,
+      "targetOperations": 0
+    },
+    {
+      "id": "CSV-EV-0049",
+      "kind": "FULL_NATIVE_PLATFORM_QUALIFICATION_FAILED",
+      "workPackage": "WP2",
+      "runId": 39419681503,
+      "occurredAt": "2026-10-20T12:12:29Z",
+      "observedAt": "2026-10-20T12:22:36.152Z",
+      "reasonCode": "UNREVIEWED_IMAGE_CONFIG_INHERITANCE",
+      "gateG2Passed": false,
+      "targetOperations": 0
+    },
+    {
+      "id": "CSV-EV-0050",
+      "kind": "LOCAL_READ_ONLY_HUMAN_HISTORY_COMPONENT_PASS",
+      "observedAt": "2026-10-20T12:22:36.152Z",
+      "tests": 5,
+      "gateG2Passed": false,
+      "note": "Synthetic 278/288 retained journal: read-only binding, expired-window precheck, no authentication/write, counter-reset and profile-drift rejection. Fixture boot identity explicit because CLOUD lacks proc boot_id. Native review9/native7/issuer6/entry4 also PASS."
     }
   ],
   "activeIntervals": [
@@ -755,11 +807,25 @@
     {
       "id": "CSV-TIME-0012",
       "startedAt": "2026-10-20T11:44:35.638Z",
-      "endedAt": null,
-      "workPackage": "WP2",
+      "endedAt": "2026-10-20T12:12:28.000Z",
+      "workPackage": null,
       "activity": "FULL_PLATFORM_REQUALIFICATION_AND_CURRENT_GUARD_RESILIENCE",
       "classification": "ACTIVE_TECHNICAL",
-      "seconds": null
+      "seconds": 1672.362,
+      "workPackages": [
+        "WP2",
+        "WP5_CONTRACT_PREAUDIT"
+      ],
+      "perPackageAllocationKnown": false
+    },
+    {
+      "id": "CSV-TIME-0013",
+      "startedAt": "2026-10-20T12:21:06.540Z",
+      "endedAt": "2026-10-20T12:22:36.152Z",
+      "seconds": 89.612,
+      "workPackage": "WP2",
+      "classification": "ACTIVE_TECHNICAL",
+      "activity": "READ_ONLY_HUMAN_HISTORY_AND_REAL_GATEWAY_INHERITANCE_DIAGNOSIS"
     }
   ],
   "waitingIntervals": [],
@@ -814,8 +880,8 @@
       "observedStatus": "NOT_PASSED",
       "measurementNote": "Initial technical effort not retrospectively inferred from wall time",
       "lastCheckpoint": {
-        "observedAt": "2026-10-20T11:44:35.638Z",
-        "cumulativeMeasuredEffortHours": 2.273613333333333,
+        "observedAt": "2026-10-20T12:22:36.152Z",
+        "cumulativeMeasuredEffortHours": 2.763050555555555,
         "gatePassed": false
       }
     },
@@ -956,6 +1022,15 @@
       "classification": "UNSEGMENTED_STATUS_TURN_BOUNDARY",
       "includedInMeasuredEffort": false,
       "reason": "Local work and status replies occurred in this window, but the exact end of active work before the final reply was not clocked. Conservatively excluded, not passive or HUMAN wait."
+    },
+    {
+      "id": "CSV-UNCERTAIN-0003",
+      "startedAt": "2026-10-20T12:12:28.000Z",
+      "endedAt": "2026-10-20T12:21:06.540Z",
+      "seconds": 518.54,
+      "classification": "UNVERIFIED_TURN_CONTINUITY",
+      "includedInMeasuredEffort": false,
+      "reason": "Conservative exclusion across context checkpoint and resumed user turn; do not infer active effort."
     }
   ]
 }

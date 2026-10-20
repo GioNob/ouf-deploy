@@ -114,3 +114,10 @@ Checkpoint20/10/2026,13:44:35: setup della prova completa fallito due volte per 
 Aggiunta la pausa persistente dei GETOwner429/502/503/504:Retry-After, budgetcumulativo e assenza di probe duranteattesa. Un effetto conclaim consente solo riconciliazione, maiapplyautomatico.5nuovi testlocaliPASS;8regressioniRunner+7NativePorts+5loaderPASS;3testHTTPnamespace attendonoCI. La suitecore16 ha15PASS e il noto errorelocale fchown(10002,10002)=EINVAL: non è stata indebolita; il test devepassare sulrunnerroot reale.
 
 Consuntivo tecnico chiuso **136.42minuti (2.274h)**, più8,96iniziali nonsegmentati; intervalliincerti esclusi. G2aperto contro14hcentrali;M1H+24/M2H+55immutati. Ulteriore intervalloattivo13:44:35. Nessun targetcall/login/refresh/reset/replay.
+
+
+## Checkpoint 2026-10-20T12:22:36.152Z
+
+Effort tecnico misurato cumulativo: **2.763 h**; baseline cumulativa G2 **14 h**, gate ancora aperto: scostamento finale non determinabile. L’intervallo non verificato 12:12:28–12:21:06.540 UTC è escluso. WP5: sola ricognizione dei contratti intercalata, nessuna allocazione oraria inventata.
+
+Le prove PostgreSQL17 restano PASS. La sequenza reale Docker29/APISIX/JVM ha superato i precedenti confini e si arresta alla creazione Gateway per un campo di configurazione ereditato non coincidente; run39419681503, completato12:12:29Z. I casi di risposta CREATE persa e bearer scaduto passano. G2 non superato. Diagnostica limitata al nome del campo, senza valori privati. Il nuovo lettore HUMAN conserva contatori e ricevuta governata senza eseguire login/rinnovo; 5 test sintetici PASS. Nessuna autorità o operazione sul target.

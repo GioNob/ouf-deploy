@@ -7,7 +7,7 @@ import hashlib
 import json
 import time
 from pathlib import Path
-from tools.ingestion_rollout_execution import contract as c,authority
+from tools.ingestion_rollout_execution import contract as c,authority,human_reader
 from tools.ingestion_rollout_execution.runner import Runner
 from tools.ingestion_rollout_execution.native import NativePorts
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
@@ -33,6 +33,7 @@ def validate_raw(review,raw):
 def load_action(review,decision,human,approved_decision_hash,approved_mandate_hash):
     """Read existing issued artifacts; never issue, reconstruct or reset them."""
     authority.validate_action_review(review)
+    human_reader.require_profile(human,review['executionReview'])
     c.require(c.hashed(approved_decision_hash)and c.digest(decision)==approved_decision_hash
               and c.hashed(approved_mandate_hash),'INDEPENDENT_APPROVED_DECISION_AND_MANDATE_HASHES_REQUIRED')
     authority.decision_valid(review,decision,human,time.time())

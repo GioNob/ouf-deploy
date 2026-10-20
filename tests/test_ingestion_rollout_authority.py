@@ -47,6 +47,7 @@ class NativeIssuer(unittest.TestCase):
         self.native_review=native;self.review=self.compile()
         self.human=HumanSession.__new__(HumanSession)
         self.human.current=lambda:self.review['authenticatedHuman'];self.human.expires_at=int(time.time())+500
+        self.human._read=lambda:{'attempts':278}
         now=int(time.time());self.decision={'schema':'ouf.semantic-scoped-terminal-decision.v1',
             'reviewHash':c.digest(self.review),'approvalRef':'mcp-scoped-'+c.digest(self.review)[:24]+'-'+str(now),
             'sourceClosureHash':self.review['sourceClosureHash'],'humanSessionHash':c.digest(self.review['authenticatedHuman']),

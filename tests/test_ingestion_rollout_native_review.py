@@ -23,6 +23,7 @@ class NativeReview(unittest.TestCase):
             p=root/name;p.write_bytes(('isolated '+name+' fixture').encode());p.chmod(0o600);selected[name]=binding(p)
         old=runtime_fixture.OldGeneration();old.setUp()
         self.packet=copy.deepcopy(old.packet);self.human=old.review['humanBinding']
+        self.human['retryProfile']={'maximumAttempts':288}
         self.packet['candidate']['sourceCommit']='1'*40
         self.packet['candidate']['imageConfig'].setdefault('Labels',{})['org.opencontainers.image.revision']='1'*40
         self.packet['frames']['ingestion']['requestTemplate'].setdefault('Labels',{})['org.opencontainers.image.revision']='1'*40
@@ -51,6 +52,14 @@ class NativeReview(unittest.TestCase):
             self.profiles[field]={'schema':'ouf.ingestion-rollout-gateway-transport.v1',
                 'endpoint':{'host':'127.0.0.2','port':19280},'pythonExecutable':owner['pythonExecutable'],
                 'config':selected[name],'adminKey':None}
+        self.owner_plan.update(engine=copy.deepcopy(self.profiles['engineBinding']),
+            currentApplications={**copy.deepcopy(self.packet['expectedRuntimeBindings']),
+                **{name:copy.deepcopy(pin['binding'])for name,pin in self.profiles['runtimeGuardProfile']['unchangedApplications'].items()}})
+        self.owner_plan['bindingPlan']['candidatePayloadChecksum']=owner['expectedActive']['checksum']
+        self.packet['ownerPlanSha256']=c.digest(self.owner_plan);self.completed['planHash']=self.packet['ownerPlanSha256']
+        self.completed.update(active=copy.deepcopy(owner['expectedActive']),ownerPayloadReadbackProven=True,
+            projectionBinding={k:owner['projection'][k]for k in('path','sha256')},
+            oauthAttemptsAfter=278,maximumCumulativeOAuthAttempts=288)
         self.inputs={k:copy.deepcopy(self.packet[k])for k in('candidate','expectedRuntimeBindings',
             'gatewayConfigBefore','retainedGatewayConfig','dedicatedOwnerKey','retainedClaims')}
         self.packet['verifiedInputsHash']=c.digest(self.inputs)
@@ -111,5 +120,19 @@ class NativeReview(unittest.TestCase):
             for value in(True,n.BUDGETS[key]+1):
                 changed=copy.deepcopy(review);changed[key]=value
                 with self.assertRaises(c.Denied):n.validate_review(changed,self.packet)
+    def test_rehashed_foreign_owner_engine_or_missing_application_cannot_reconcile(self):
+        for mutation in('engine','application'):
+            original=copy.deepcopy(self.owner_plan)
+            if mutation=='engine':self.owner_plan['engine']['socketPath']='/foreign/engine.sock'
+            else:self.owner_plan['currentApplications'].pop('udp')
+            self.packet['ownerPlanSha256']=c.digest(self.owner_plan);self.completed['planHash']=self.packet['ownerPlanSha256']
+            with self.assertRaises(c.Denied):self.compile()
+            self.owner_plan=original
+    def test_another_active_revision_with_same_payload_or_export_substitution_blocks(self):
+        original=copy.deepcopy(self.completed)
+        self.completed['active']['generation']+=1
+        with self.assertRaises(c.Denied):self.compile()
+        self.completed=original;self.completed['projectionBinding']['sha256']='f'*64
+        with self.assertRaises(c.Denied):self.compile()
 
 if __name__=='__main__':unittest.main()
