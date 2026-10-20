@@ -37,7 +37,7 @@
     }
   ],
   "proofLevel": "REAL_CUSTODIED_RETAINED_FILES_AND_ISOLATED_PROCESS_SYNTHETIC_PROVIDER_HISTORY",
-  "targetExecuted": false,
+  "targetExecuted": true,
   "runtimeAuthorityIssued": false,
   "notReleaseAcceptance": true,
   "launcherSha256": "67d2f36d8231e1e6d39f5883bf30d53dae1eade9b5a45b65bef681bbeb98940a",
@@ -83,5 +83,8 @@
         "146.1"
       ]
     }
-  ]
+  ],
+  "targetComplete": true,
+  "targetReceiptRef": "evidence/ingestion-human-timing-target-20261020.json",
+  "targetObservedAtUnix": 1792525952.6442502
 }

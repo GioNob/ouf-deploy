@@ -1,3 +1,17 @@
+> **CURRENT — 20 October 2026, issued300seconds proven on VPS.**
+>
+> Technical8/8,functional4/6; G0–G2PASS,G3open. Exact completed timing receipt proves recorded issuance20:56:35→expiry21:01:35Europe/Rome:300seconds, impossible to satisfy prepared>930second guard from issuance. This is not operator delay. Timing inspection complete/read-only, do not replay.282/288,sixremaining, no further OAuth, runtime or journal writes. Current IAM policy is still unproven; the two-hour HUMAN window is not bearer lifetime.
+>
+> Unsigned duration-preparation planner7e10bde6e460908eb8644c8da53aa227181bc314 qualified: CI39488060246 each Python3.12/3.13.5 passes12timing+6planner tests, zero skips; HUMAN/capture/profile/production regressions PASS. Generic candidate1200second lifetime requires actual client/realm/session metadata, full selection binding and separate governed policy review; not wired into a new authentication entrypoint, no mutation or fresh login authorized. Four new HUMAN requests would nominally282→286, leaving2; additional administrative OAuth is not silently treated as free.
+>
+> Next necessary input: administrative read of actual ouf-human-admin client/realm timeouts, without Save/refresh/login scripts. [Current handoff](handoffs/OUF_CLOUD_HUMAN_300S_DURATION_BLOCK_HANDOFF_20261020.md), [target receipt](../evidence/ingestion-human-timing-target-20261020.json), [planning qualification](../evidence/ingestion-human-duration-proposal-20261020.json), [current timeline](../evidence/csv-e2e-execution-timeline-current.json).
+>
+> Measured active technical effort6.567817h at2026-10-20T20:01:06.573Z. Frozen central G3 H+19/M1 H+24/M2 H+55 unchanged. G3 is open; waits excluded, no residual forecast by subtraction.
+
+---
+
+All previous CURRENT checkpoints and next-action instructions below are dated history superseded by the checkpoint above. Preserve completed contexts and consumed claims without replay.
+
 > **CURRENT — 20 October 2026, HUMAN timing diagnosis.**
 >
 > Technical8/8, functional4/6; G0–G2 PASS, G3 open. Production bootstrap completed on VPS; HUMAN provider verification completed at282/288, six remaining. The READY receipt reported258seconds of bearer validity; prepared production review/approve requires>930seconds. No runtime review, issuance or rollout was dispatched. Window duration is not token lifetime; original issued lifetime remains unknown until target timing inspection. No login/refresh/reset/replay requested.
