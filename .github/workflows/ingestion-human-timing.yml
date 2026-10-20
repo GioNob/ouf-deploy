@@ -4,7 +4,9 @@ on:
     paths:
       - 'tools/ingestion_rollout_preparation/human_timing.py'
       - 'tools/ingestion_rollout_preparation/timing_delivery.py'
+      - 'tools/ingestion_rollout_preparation/duration_profile.py'
       - 'tests/test_ingestion_human_timing.py'
+      - 'tests/test_ingestion_duration_profile.py'
       - 'releases/ingestion-human-timing-case-20261020.json'
       - 'scripts/ingestion-human-timing-inspection-20261020.py'
       - 'scripts/launch-ingestion-human-timing-20261020.sh'
@@ -32,3 +34,4 @@ jobs:
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
           sudo env GITHUB_ACTIONS=true OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_human_timing.py -v
+          sudo env GITHUB_ACTIONS=true OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_duration_profile.py -v
