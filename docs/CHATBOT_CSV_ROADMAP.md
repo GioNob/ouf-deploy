@@ -1,3 +1,15 @@
+> **CURRENT — 20 October 2026, HUMAN timing diagnosis.**
+>
+> Technical8/8, functional4/6; G0–G2 PASS, G3 open. Production bootstrap completed on VPS; HUMAN provider verification completed at282/288, six remaining. The READY receipt reported258seconds of bearer validity; prepared production review/approve requires>930seconds. No runtime review, issuance or rollout was dispatched. Window duration is not token lifetime; original issued lifetime remains unknown until target timing inspection. No login/refresh/reset/replay requested.
+>
+> Offline retained timing reader c0fc4124f6e9c59475914e5e179cf0898f52bfb5 qualified: CI39484202890, Python3.12/3.13.5 each12PASS/zero skips; production/profile regressions PASS. Target read is pending, not runtime authority. One exact-profile root read is now the necessary operator step. [Current handoff](handoffs/OUF_CLOUD_HUMAN_TIMING_INSPECTION_READY_HANDOFF_20261020.md), [qualification](../evidence/ingestion-human-timing-delivery-pins-20261020.json), [current chronology](../evidence/csv-e2e-execution-timeline-current.json).
+>
+> Measured technical effort6.441926h at2026-10-20T19:33:31.073Z; frozen cumulative G3central19h/M1central24h/M2central55h unchanged. Waits uncounted; no gate completion from elapsed hours.
+
+---
+
+The checkpoints below are dated historical evidence. Their previous CURRENT labels and next-action instructions are superseded by the checkpoint above; completed actions and claims must not be replayed.
+
 > **CURRENT — Mini-PET execution started; G0 recorded (20 October 2026).**
 
 ## Checkpoint esecutivo corrente — 2026-10-20T12:54:32.221Z

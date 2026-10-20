@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T19:01:41.636Z",
+  "lastUpdatedAt": "2026-10-20T19:33:31.073Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1058,6 +1058,24 @@
       "runtimeAuthorityIssued": false,
       "gatePassed": false,
       "cumulativeMeasuredActiveHours": 6.31312638
+    },
+    {
+      "id": "CSV-EVENT-HUMAN-TIMING-INSPECTION-QUALIFIED",
+      "observedAt": "2026-10-20T19:33:31.073Z",
+      "occurredAt": "2026-10-20T19:31:54.3760506Z",
+      "timestampConfidence": "EXACT_PROVIDER_LOG_COMPLETION",
+      "classification": "CI_QUALIFICATION_NOT_TARGET_PROOF",
+      "sourceCommit": "c0fc4124f6e9c59475914e5e179cf0898f52bfb5",
+      "runId": 39484202890,
+      "jobs": [
+        118840266830,
+        118840267378
+      ],
+      "testsEachPython": 12,
+      "skips": 0,
+      "cumulativeMeasuredActiveHours": 6.441925766111111,
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false
     }
   ],
   "activeIntervals": [
@@ -1444,6 +1462,15 @@
       "classification": "ACTIVE_TECHNICAL",
       "workPackage": "WP3_PREPARATION",
       "activity": "READY_RECEIPT_RECONCILIATION_AND_TOKEN_DURATION_COMPATIBILITY_DIAGNOSIS"
+    },
+    {
+      "id": "CSV-TIME-0038",
+      "startedAt": "2026-10-20T19:25:47.396Z",
+      "endedAt": "2026-10-20T19:33:31.073Z",
+      "seconds": 463.67779,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "OFFLINE_RETAINED_READY_TIMING_DIAGNOSIS_IMPLEMENTATION_AND_PYTHON_MATRIX_QUALIFICATION"
     }
   ],
   "waitingIntervals": [],
@@ -1526,12 +1553,14 @@
       "observedStatus": "NOT_PASSED",
       "measurementNote": "Initial technical effort not retrospectively inferred from wall time",
       "lastCheckpoint": {
-        "observedAt": "2026-10-20T19:01:41.636Z",
-        "cumulativeMeasuredEffortHours": 6.31312638,
+        "observedAt": "2026-10-20T19:33:31.073Z",
+        "cumulativeMeasuredEffortHours": 6.441925766111111,
         "gatePassed": false,
         "targetProductionBootstrapPrepared": true,
         "humanReadyAtReceipt": true,
-        "tokenDurationCompatible": false
+        "tokenDurationCompatible": false,
+        "retainedTimingReaderCiPassed": true,
+        "retainedTimingTargetReadPending": true
       }
     },
     {
@@ -1740,7 +1769,10 @@
     "targetCumulativeOAuthAttempts": 282,
     "targetHumanProviderVerificationCompleted": true,
     "targetHumanStateAtReceipt": "READY",
-    "productionTokenDurationCompatible": false
+    "productionTokenDurationCompatible": false,
+    "retainedHumanTimingReaderQualifiedCommit": "c0fc4124f6e9c59475914e5e179cf0898f52bfb5",
+    "retainedHumanTimingReaderQualificationRun": 39484202890,
+    "retainedHumanTimingTargetReadPending": true
   },
   "developmentCandidates": [
     {
@@ -1782,7 +1814,7 @@
       "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
       "G7_ACCEPTANCE"
     ],
-    "currentRequiredHumanAction": "NONE_PENDING_QUALIFIED_TOKEN_DURATION_RESOLUTION",
+    "currentRequiredHumanAction": "RUN_PINNED_OFFLINE_HUMAN_TIMING_INSPECTION",
     "remainingAttempts": 6,
     "reasonCode": "READY_TOKEN_MARGIN_BELOW_PREPARED_ROLLOUT_REQUIREMENT",
     "newLoginRequested": false
@@ -1852,6 +1884,13 @@
       "countedAsActive": false,
       "humanEffortKnown": false,
       "note": "Includes manual HUMAN window/discovery/device/provider verification and assistant instruction turns; exact active effort not inferred."
+    },
+    {
+      "startedAt": "2026-10-20T19:01:41.636Z",
+      "endedAt": "2026-10-20T19:25:47.396Z",
+      "classification": "STATUS_AND_TURN_RESUMPTION_NOT_PRECISELY_MEASURED",
+      "countedAsActive": false,
+      "humanEffortKnown": false
     }
   ],
   "deliveryAccounting": {
