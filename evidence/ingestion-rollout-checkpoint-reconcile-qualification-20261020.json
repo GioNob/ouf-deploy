@@ -26,5 +26,11 @@
   "functionalMilestonesProven": 4,
   "databaseAdmissionProven": false,
   "runtimeRolloutExecutorQualified": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "deliveryCommit": "440592f0c93119d03a59de5e1fbdf017a675b46f",
+  "deliveryRunId": 39370254681,
+  "deliveryJobId": 118456279184,
+  "deliveryTestsPassed": 2,
+  "launcherGitBlob": "2d1f3cb93298a2d04001b236fe1212f129132d7f",
+  "launcherSha256": "e8cea13737a5658717d2b7350f14af19f86f972929ad0841e297049685be7218"
 }
