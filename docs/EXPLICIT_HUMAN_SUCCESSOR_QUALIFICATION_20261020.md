@@ -109,3 +109,37 @@ ouf.human-expired-ready-successor-selection-reconcile.v1 and records the
 predecessor reason. Full eight-field selection, reduced-projection rejection
 and a changed-original-profile attack now have explicit fixture coverage.
 CI remains qualification; current VPS reconciliation is still required.
+
+
+## Target original-document custody STOP and historical read profile
+
+Operator receipt2026-10-20T14:49:00Z stopped at RETAINED_ORIGINAL_FULL_SELECTION
+with EXACT_PRIVATE_RETAINED_FILE_CUSTODY_REQUIRED. No original content was read:
+this compound guard precedes the first read. It combines file type, root UID/
+GID,0600mode, single link, positive size and1MiB limit, so the receipt alone
+does not identify the failed predicate. Do not claim a target size or mode.
+
+Directly consulted historical read-ingestion-db-postboot-preflight-20261020.py
+read/parsed and originalBinding selection, plus installation_binding_apply/
+baseline.py: the original prepared-inputs document was read with a finite
+8MiB maximum, root UID/GID,0600mode and one link. The inspection's1MiB limit
+was an unqualified narrowing of this historical document contract.
+
+A distinct custody reconciliation uses an explicit versioned
+originalDocumentReadProfile in its sealed installation case, maximum8388608.
+Only that original document uses the profile; packet, input, owner plan/result,
+capsule and journal retain their1MiB bounds. Full hash/metadata/ancestry
+verification remains unchanged. Separate errors distinguish regular file,
+root ownership,0600mode, single link and bounded size. Safe original-only
+metadata is returned on success or pre-content guard failure, never a path,
+credential, credential digest or journal metadata. If size exceeds1MiB, the
+result explicitly reports that fact; until then size is only a possible cause.
+No chmod/chown, automatic custody repair, reset, journal/claim write, OAuth,
+service request or runtime authority is introduced. Both preceding diagnostic
+readers and launchers remain retained without replay.
+
+Regression fixtures cover an original above1MiB within its8MiB profile,
+rejection by the unchanged default1MiB profile, wrong0600mode, hardlinks and
+content beyond8MiB, with rejection before decode/content read. New diagnostic
+paths: scripts/reconcile-human-successor-custody-20261020.py and
+scripts/launch-human-successor-custody-reconcile-20261020.sh.

@@ -26,7 +26,7 @@ def generate(root,case):
     sources['tools.chatbot_file_cohort.human_session']='\n'.join(k+'='+repr(v)for k,v in constants.items())+'\n'
     sources['tools.governed_human_successor.window']="from pathlib import Path\ndef boot_id():return Path('/proc/sys/kernel/random/boot_id').read_text().strip()\n"
     hashes={n:hashlib.sha256(v.encode()).hexdigest()for n,v in sorted(sources.items())}
-    declaration={'schema':'ouf.human-successor-selection-reconcile-read-only-closure.v1','sourceHashes':hashes,
+    declaration={'schema':'ouf.human-successor-selection-custody-reconcile-read-only-closure.v1','sourceHashes':hashes,
         'caseHash':hashlib.sha256(encoded(case)).hexdigest(),'readOnly':True,'runtimeAuthorityIssued':False}
     closure_hash=hashlib.sha256(encoded(declaration)).hexdigest()
     safe_reasons=set()
@@ -61,12 +61,14 @@ def main():
  sys.meta_path.insert(0,ClosedReader())
  from tools.governed_human_successor.inspection import inspect_retained
  review,private=inspect_retained(CASE,CLOSURE_HASH)
- result={'schema':'ouf.human-expired-ready-successor-selection-reconcile.v1','status':'SELECTION_RECONCILED_REVIEW_NO_AUTHORITY',
+ result={'schema':'ouf.human-expired-ready-successor-selection-reconcile.v2','status':'SELECTION_RECONCILED_REVIEW_NO_AUTHORITY',
   'complete':True,'readOnly':True,'reviewHash':hashlib.sha256(encoded(review)).hexdigest(),
   'priorOAuthAttempts':review['priorOAuthAttempts'],'maximumCumulativeOAuthAttempts':review['maximumCumulativeOAuthAttempts'],
   'remainingAttempts':review['maximumRemainingOAuthAttempts'],'proposedWindowSeconds':review['newWindowSeconds'],
   'expiredReadyHistoryReconciled':True,'freshTerminalConsentStillRequired':True,
-  'predecessorReasonCode':'EXACT_RETAINED_HUMAN_SELECTION_REQUIRED',
+  'predecessorReasonCode':'EXACT_PRIVATE_RETAINED_FILE_CUSTODY_REQUIRED',
+  'originalDocumentMaximumBytes':CASE['originalDocumentReadProfile']['maximumBytes'],
+  'originalDocumentMetadata':private['originalDocumentMetadata'],
   'fullOriginalSelectionMatchedPinnedOwnerHash':True,'reducedIdentityProjectionUsed':False,
   'oauthRequests':0,'databaseCalls':0,'engineRequests':0,'gatewayRequests':0,'ownerRequests':0,
   'journalWrites':0,'bearerFilesOpened':0,'credentialJournalsOpened':1,
@@ -80,9 +82,11 @@ if __name__=='__main__':
   reason=str(error)if type(error).__name__ in ('Denied','ValueError')and str(error)in SAFE_REASONS else 'EXACT_CURRENT_HISTORY_OR_CUSTODY_NOT_PROVEN_PRIVATE_DETAILS_REDACTED'
   module=sys.modules.get('tools.governed_human_successor.inspection')
   phase=getattr(module,'CHECKPOINT',{'phase':'SEALED_READ_ONLY_ENTRY'})['phase']
-  print(encoded({'schema':'ouf.human-expired-ready-successor-selection-reconcile.v1','status':'STOP_RECONCILE',
-   'predecessorReasonCode':'EXACT_RETAINED_HUMAN_SELECTION_REQUIRED',
+  metadata=getattr(module,'FILE_METADATA',{})if phase=='RETAINED_ORIGINAL_FULL_SELECTION'else {}
+  print(encoded({'schema':'ouf.human-expired-ready-successor-selection-reconcile.v2','status':'STOP_RECONCILE',
+   'predecessorReasonCode':'EXACT_PRIVATE_RETAINED_FILE_CUSTODY_REQUIRED',
    'reasonCode':reason,'checkpoint':{'phase':phase},
+   'originalDocumentMetadata':metadata,
    'complete':False,'readOnly':True,'automaticReplayAllowed':False,'budgetReset':False,
    'runtimeAuthorityIssued':False}).decode(),flush=True)
   raise SystemExit(2)

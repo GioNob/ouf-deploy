@@ -15,6 +15,7 @@ from tools.ingestion_rollout_execution.contract import require,digest,path,hashe
 from tools.ingestion_rollout_execution import private_file
 from tools.governed_human_successor import contract,window
 CHECKPOINT={'phase':'NOT_STARTED'}
+FILE_METADATA={}
 
 def decode(raw):
     def unique(pairs):
@@ -25,8 +26,10 @@ def decode(raw):
     def nonfinite(value):raise ValueError('NONFINITE_RETAINED_JSON')
     return json.loads(raw,object_pairs_hook=unique,parse_constant=nonfinite)
 
-def read_selected(selected):
+def read_selected(selected,*,maximum=1048576):
     """FD-relative no-follow root custody; return a private full file seal."""
+    require(type(maximum)is int and 1<=maximum<=8388608,'FINITE_SELECTED_DOCUMENT_READ_BOUND_REQUIRED')
+    FILE_METADATA.clear()
     path(selected);p=PurePosixPath(selected);fds=[];ancestors=[]
     identity=lambda s:[s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode]
     try:
@@ -45,10 +48,14 @@ def read_selected(selected):
         ancestors.append({'path':current,'identity':identity(s)})
         fd=os.open(p.name,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=parent);fds.append(fd)
         before=os.fstat(fd)
-        require(stat.S_ISREG(before.st_mode)and before.st_uid==before.st_gid==0
-            and stat.S_IMODE(before.st_mode)==0o600 and before.st_nlink==1 and 0<before.st_size<=1048576,
-            'EXACT_PRIVATE_RETAINED_FILE_CUSTODY_REQUIRED')
-        with os.fdopen(os.dup(fd),'rb')as stream:raw=stream.read(1048577)
+        FILE_METADATA.update(regularFile=stat.S_ISREG(before.st_mode),uid=before.st_uid,gid=before.st_gid,
+            mode=stat.S_IMODE(before.st_mode),linkCount=before.st_nlink,sizeBytes=before.st_size,maximumBytes=maximum)
+        require(stat.S_ISREG(before.st_mode),'RETAINED_DOCUMENT_MUST_BE_REGULAR_FILE')
+        require(before.st_uid==before.st_gid==0,'RETAINED_DOCUMENT_ROOT_UID_GID_REQUIRED')
+        require(stat.S_IMODE(before.st_mode)==0o600,'RETAINED_DOCUMENT_EXACT_MODE0600_REQUIRED')
+        require(before.st_nlink==1,'RETAINED_DOCUMENT_SINGLE_LINK_REQUIRED')
+        require(0<before.st_size<=maximum,'RETAINED_DOCUMENT_SIZE_OUTSIDE_SELECTED_BOUND')
+        with os.fdopen(os.dup(fd),'rb')as stream:raw=stream.read(maximum+1)
         require(len(raw)==before.st_size and private_file.metadata(before)==private_file.metadata(os.fstat(fd))
             ==private_file.metadata(os.stat(p.name,dir_fd=parent,follow_symlinks=False)),
             'RETAINED_FILE_CHANGED_DURING_READ')
@@ -56,7 +63,7 @@ def read_selected(selected):
             'metadata':private_file.metadata(before),'ancestors':ancestors}
         # Recheck every held ancestor and the path binding, without a second
         # credential-content read or permission changes.
-        private_file.check_metadata(seal)
+        private_file.check_metadata(seal,maximum=maximum)
         return decode(raw),seal
     finally:
         for fd in reversed(fds):os.close(fd)
@@ -116,7 +123,14 @@ def inspect_retained(case,source_closure_hash):
     require(type(original_binding)is dict and set(original_binding)=={'path','sha256'}
         and hashed(original_binding['sha256']),'EXACT_RETAINED_ORIGINAL_SELECTION_DOCUMENT_REQUIRED')
     CHECKPOINT['phase']='RETAINED_ORIGINAL_FULL_SELECTION'
-    original,original_seal=read_selected(original_binding['path'])
+    FILE_METADATA.clear()
+    profile=case.get('originalDocumentReadProfile')
+    require(type(profile)is dict and set(profile)=={'schema','maximumBytes'}
+        and profile['schema']=='ouf.retained-prepared-inputs-read-profile.v1'
+        and type(profile['maximumBytes'])is int and 1048576<=profile['maximumBytes']<=8388608,
+        'EXPLICIT_QUALIFIED_ORIGINAL_DOCUMENT_READ_PROFILE_REQUIRED')
+    original_maximum=profile['maximumBytes']
+    original,original_seal=read_selected(original_binding['path'],maximum=original_maximum)
     require(original_seal['sha256']==original_binding['sha256'],
             'RETAINED_ORIGINAL_DOCUMENT_BYTES_CHANGED')
     require(type(original)is dict and original.get('schema')=='ouf.chatbot-file-cohort-prepared-inputs.v1'
@@ -139,8 +153,14 @@ def inspect_retained(case,source_closure_hash):
     review=contract.compile_review(selection,row,history,operations,source_closure_hash,
         now=time.time(),monotonic=time.monotonic(),boot_id=window.boot_id())
     CHECKPOINT['phase']='FINAL_FILE_CUSTODY'
-    for seal in [*seals.values(),capsule_seal,original_seal,journal]:private_file.check_metadata(seal)
+    for seal in [*seals.values(),capsule_seal,journal]:private_file.check_metadata(seal)
+    private_file.check_metadata(original_seal,maximum=original_maximum)
     CHECKPOINT['phase']='COMPLETE'
     # This bundle contains private seals. Only review/public_status may be
     # printed; do not serialize the bundle as an operator diagnostic.
-    return review,{'selection':selection,'history':history,'predecessorJournal':journal}
+    m=original_seal['metadata']
+    original_metadata={'regularFile':True,'uid':m[2],'gid':m[3],'mode':stat.S_IMODE(m[4]),
+        'linkCount':m[5],'sizeBytes':m[6],'maximumBytes':original_maximum,
+        'exceedsPredecessor1MiBBound':m[6]>1048576}
+    return review,{'selection':selection,'history':history,'predecessorJournal':journal,
+        'originalDocumentMetadata':original_metadata}

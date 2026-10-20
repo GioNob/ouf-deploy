@@ -8,6 +8,8 @@ on:
       - 'scripts/launch-human-successor-read-20261020.sh'
       - 'scripts/reconcile-human-successor-selection-20261020.py'
       - 'scripts/launch-human-successor-selection-reconcile-20261020.sh'
+      - 'scripts/reconcile-human-successor-custody-20261020.py'
+      - 'scripts/launch-human-successor-custody-reconcile-20261020.sh'
       - '.github/workflows/governed-human-successor.yml'
 permissions: {contents: read}
 jobs:

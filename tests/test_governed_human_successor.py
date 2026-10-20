@@ -343,7 +343,8 @@ class GovernedSuccessor(unittest.TestCase):
             'purpose':'EXACT_RETAINED_INSTALLATION_CASE_NOT_PORTABLE_DEFAULT',
             'runtimeAuthorityIssued':False,'budgetReset':False,
             'lastReportedHuman':{'attempts':278,'maximumCumulativeOAuthAttempts':288,
-                'windowExpiresAt':self.row['binding']['expiresAt'],'snapshotIsRuntimeAuthority':False}}
+                'windowExpiresAt':self.row['binding']['expiresAt'],'snapshotIsRuntimeAuthority':False},
+            'originalDocumentReadProfile':{'schema':'ouf.retained-prepared-inputs-read-profile.v1','maximumBytes':8388608}}
         original=self.root/'original.json';original.write_bytes(encoded({
             'schema':'ouf.chatbot-file-cohort-prepared-inputs.v1','engine':plan['engine'],
             'authorization':{'plan':{'selection':self.selection}}}));original.chmod(0o600)
@@ -404,6 +405,48 @@ class GovernedSuccessor(unittest.TestCase):
             inspection.inspect_retained(case,'d'*64)
         self.assertFalse((self.previous/'successor-window.claim.json').exists())
 
+    def test_original_document_uses_explicit_historical_8mib_profile_only(self):
+        case=self.retained_case();p=self.root/'original.json';original=json.loads(p.read_text())
+        original['syntheticPadding']='x'*1048576;p.write_bytes(encoded(original))
+        capsule=self.root/'case.json';capsule.write_bytes(encoded({'originalBinding':{
+            'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}}))
+        with patch.object(inspection,'decode')as decode:
+            with self.assertRaisesRegex(Denied,'RETAINED_DOCUMENT_SIZE_OUTSIDE_SELECTED_BOUND'):
+                inspection.read_selected(str(p))
+            decode.assert_not_called()
+        review,private=inspection.inspect_retained(case,'d'*64)
+        self.assertEqual(review['priorOAuthAttempts'],278)
+        meta=private['originalDocumentMetadata']
+        self.assertTrue(meta['exceedsPredecessor1MiBBound']);self.assertEqual(meta['maximumBytes'],8388608)
+        self.assertEqual(meta['mode'],0o600);self.assertEqual(self.old.record.read_bytes(),self.old_bytes)
+
+    def test_historical_size_profile_never_relaxes_mode_or_hardlink_custody(self):
+        self.retained_case();p=self.root/'original.json';p.chmod(0o640)
+        with patch.object(inspection,'decode')as decode:
+            with self.assertRaisesRegex(Denied,'RETAINED_DOCUMENT_EXACT_MODE0600_REQUIRED'):
+                inspection.read_selected(str(p),maximum=8388608)
+            decode.assert_not_called()
+        self.assertEqual(inspection.FILE_METADATA['mode'],0o640);p.chmod(0o600)
+        os.link(p,self.root/'original-hardlink')
+        with patch.object(inspection,'decode')as decode:
+            with self.assertRaisesRegex(Denied,'RETAINED_DOCUMENT_SINGLE_LINK_REQUIRED'):
+                inspection.read_selected(str(p),maximum=8388608)
+            decode.assert_not_called()
+        self.assertEqual(inspection.FILE_METADATA['linkCount'],2)
+
+    def test_original_bound_remains_finite_and_oversized_content_is_not_read(self):
+        case=self.retained_case();p=self.root/'original.json'
+        with p.open('r+b')as stream:stream.truncate(8388609)
+        with patch.object(inspection,'decode')as decode:
+            with self.assertRaisesRegex(Denied,'RETAINED_DOCUMENT_SIZE_OUTSIDE_SELECTED_BOUND'):
+                inspection.read_selected(str(p),maximum=8388608)
+            decode.assert_not_called()
+        self.assertEqual(inspection.FILE_METADATA['sizeBytes'],8388609)
+        case['originalDocumentReadProfile']['maximumBytes']=8388609
+        with self.assertRaisesRegex(Denied,'EXPLICIT_QUALIFIED_ORIGINAL_DOCUMENT_READ_PROFILE_REQUIRED'):
+            inspection.inspect_retained(case,'d'*64)
+        self.assertEqual(self.old.record.read_bytes(),self.old_bytes)
+
     def test_retained_symlink_and_duplicate_json_are_rejected(self):
         case=self.retained_case();p=Path(case['packetBinding']['path']);renamed=p.with_suffix('.retained')
         p.rename(renamed);p.symlink_to(renamed)
@@ -452,7 +495,7 @@ class GovernedSuccessor(unittest.TestCase):
         for p,content in before.items():self.assertEqual(p.read_bytes(),content)
 
     def test_checked_in_reader_is_exactly_reproducible_from_selected_sources(self):
-        script=ROOT/'scripts/reconcile-human-successor-selection-20261020.py'
+        script=ROOT/'scripts/reconcile-human-successor-custody-20261020.py'
         namespace={'__name__':'fixture_not_main'};exec(compile(script.read_bytes(),'<fixture-reader>','exec'),namespace)
         raw,_=reader_delivery.generate(ROOT,namespace['CASE'])
         self.assertEqual(script.read_bytes(),raw)
