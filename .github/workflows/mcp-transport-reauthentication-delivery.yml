@@ -1,0 +1,16 @@
+name: MCP HUMAN reauthentication pinned delivery
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/launch-mcp-transport-reauthentication-20261019.sh', 'tests/test_mcp_transport_reauthentication_delivery.py', '.github/workflows/mcp-transport-reauthentication-delivery.yml']
+permissions: {contents: read}
+jobs:
+  delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: |
+          bash -n scripts/launch-mcp-transport-reauthentication-20261019.sh
+          python3 -B -m unittest discover -s tests -p test_mcp_transport_reauthentication_delivery.py -v

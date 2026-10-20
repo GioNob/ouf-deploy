@@ -1,0 +1,22 @@
+name: Stopped checkpoint reconciliation with successful v7 session provenance
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/read-ingestion-rollout-checkpoint-reconcile-20261020.py', 'tests/test_ingestion_rollout_checkpoint_reconcile.py', '.github/workflows/ingestion-rollout-checkpoint-reconcile.yml']
+permissions: {contents: read}
+jobs:
+  read-boundaries:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Root-owned private filesystem and actual Unix HTTP read boundary
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-checkpoint-v2-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_checkpoint_reconcile.py -v

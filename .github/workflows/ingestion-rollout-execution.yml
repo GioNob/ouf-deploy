@@ -1,0 +1,23 @@
+name: Ingestion finite rollout review and signed journal core
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['tools/ingestion_rollout_execution/*.py', 'tests/test_ingestion_rollout_execution.py', 'tests/test_ingestion_rollout_lifecycle.py', '.github/workflows/ingestion-rollout-execution.yml']
+permissions: {contents: read}
+jobs:
+  signed-core:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Real Ed25519 role gates, durable claims, ambiguity and finite budgets
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-rollout-core-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_execution.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_lifecycle.py -v

@@ -1,0 +1,70 @@
+import hashlib,importlib.util,json,os,socket,tempfile,threading,time,unittest
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1]
+spec=importlib.util.spec_from_file_location('custody_read',ROOT/'scripts/read-source-revision-after-approval-custody-20261019.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+class Read(unittest.TestCase):
+ def temp(self):return tempfile.TemporaryDirectory(dir=os.environ.get('OUF_TEST_ROOT',str(ROOT.parent)))
+ def test_public_pinned_metadata_matches_but_strict_native_private_custody_fails(self):
+  with self.temp()as temp:
+   path=Path(temp)/'policy.json';raw=b'{"private":"CREDENTIAL_CANARY"}';path.write_bytes(raw);path.chmod(0o644)
+   import test_source_revision_update_configuration
+   from tools.semantic_mcp_update.native import private_file
+   with self.assertRaisesRegex(Exception,'PRIVATE_FILE_CUSTODY_REQUIRED'):private_file(path,m.sha(raw),65536)
+   result=m.probe(path,m.sha(raw));self.assertTrue(result['expectedHashMatches']);self.assertFalse(result['nativePrivateCustodyPass']);self.assertEqual(result['mode'],'0644');self.assertNotIn('CANARY',json.dumps(result));self.assertEqual(path.read_bytes(),raw)
+   path.chmod(0o600);self.assertTrue(m.probe(path,m.sha(raw))['nativePrivateCustodyPass']);self.assertEqual(private_file(path,m.sha(raw),65536)['sha256'],m.sha(raw))
+ def test_untrusted_writable_or_linked_file_is_not_accepted_or_opened(self):
+  with self.temp()as temp:
+   path=Path(temp)/'file';path.write_bytes(b'CANARY');path.chmod(0o666);result=m.probe(path,m.sha(b'CANARY'));self.assertIsNone(result['expectedHashMatches']);self.assertFalse(result['nativePrivateCustodyPass'])
+   link=Path(temp)/'link';link.symlink_to(path)
+   with self.assertRaises(ValueError):m.probe(link,m.sha(b'CANARY'))
+ def test_zero_and_claimed_effects_are_reported_without_accepting_or_replaying_authority(self):
+  row={'schema':'ouf.source-revision-update-journal.v1','budgetReset':False,'effects':[],'authorityHash':'a'*64,'nextStage':0,'version':0,'expiresAt':time.time()-1,'bootId':Path('/proc/sys/kernel/random/boot_id').read_text().strip()}
+  result=m.journal_report(row,{},'a'*64);self.assertEqual(result['effectCount'],0);self.assertTrue(result['expiredByWallClock']);self.assertFalse(result['journalHashPrinted'])
+  row['effects']=[{'stage':'onboarding.STOP_OLD','state':'CLAIMED'}];result=m.journal_report(row,{},'a'*64);self.assertEqual(result['effects'][0]['state'],'CLAIMED')
+  with self.assertRaises(ValueError):m.journal_report(row,{},'b'*64)
+ def test_inventory_preserves_known_authority_locks_and_rejects_unknown_or_symlink(self):
+  with self.temp()as temp:
+   root=Path(temp);p=root/'authority.json';p.write_bytes(b'{}');p.chmod(0o600);lock=root/'recovery.lock';lock.write_bytes(b'');lock.chmod(0o600)
+   report=m.inventory(root);self.assertEqual(set(report),{'authority.json','recovery.lock'});self.assertNotIn('sha256',json.dumps(report))
+   unknown=root/'unknown';unknown.write_bytes(b'CANARY');unknown.chmod(0o600)
+   with self.assertRaises(ValueError):m.inventory(root)
+   unknown.unlink();p.unlink();p.symlink_to(lock)
+   with self.assertRaises(ValueError):m.inventory(root)
+ def test_exact_plan_engine_get_reads_and_redacts_environment(self):
+  with self.temp()as temp:
+   root=Path(temp);path=root/'engine.sock';server=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);server.bind(str(path));path.chmod(0o600);server.listen();requests=[]
+   actual={'Id':'a'*64,'Image':'sha256:fixture','Config':{'Env':['SECRET=CREDENTIAL_CANARY']},'HostConfig':{},'Mounts':[],'NetworkSettings':{},'State':{'Pid':123,'StartedAt':'fixture-generation','Running':True,'Paused':False,'Restarting':False}}
+   expected={'containerId':actual['Id'],'imageId':actual['Image'],'pid':123,'startedAt':'fixture-generation','configHash':m.digest(actual['Config']),'hostConfigHash':m.digest({}),'mountsHash':m.digest([]),'networkSettingsHash':m.digest({})}
+   st=path.stat();plan={'engine':{'socketPath':str(path),'socketBinding':[st.st_dev,st.st_ino,st.st_uid,st.st_gid,st.st_mode&0o777]},'replacements':{'mcp':{'oldRuntimeBinding':expected}},'unchangedApplications':{}}
+   def serve():
+    client,_=server.accept()
+    with client:
+     requests.append(client.recv(4096));raw=m.encoded(actual);client.sendall(b'HTTP/1.1 200 OK\r\nContent-Length: '+str(len(raw)).encode()+b'\r\nConnection: close\r\n\r\n'+raw)
+   thread=threading.Thread(target=serve);thread.start()
+   try:result=m.observe_engine(plan)
+   finally:thread.join(10);server.close()
+   self.assertTrue(result['mcp']['identityMatchesExpected']);self.assertTrue(requests[0].startswith(b'GET /v1.44/containers/'+b'a'*64+b'/json '));self.assertNotIn('CANARY',json.dumps(result))
+if __name__=='__main__':unittest.main()
+
+class ExactRootShim(unittest.TestCase):
+ def exercise(self,tamper):
+  import subprocess,sys
+  text=(ROOT/'scripts/launch-source-revision-after-approval-custody-read-20261019.sh').read_text();payload=text.split("<<'OUF_HUMAN_HISTORY_READ' | tee",1)[1].split('\n',1)[1].rsplit('\nOUF_HUMAN_HISTORY_READ',1)[0]
+  with tempfile.TemporaryDirectory(dir=os.environ.get('OUF_TEST_ROOT',str(ROOT.parent))) as temp:
+   helper=Path(temp)/'helper.py';helper.write_bytes(b'print("PRIVATE_CANARY")'if tamper else(ROOT/'scripts/read-source-revision-after-approval-custody-20261019.py').read_bytes())
+   harness='''import os,sys,json
+raw=sys.argv[1];helper=sys.argv[2];original_stat=os.stat;protected=[]
+def checked(path,*args,**kwargs):
+ if str(path).startswith('/etc/ouf/'):
+  protected.append(str(path));raise RuntimeError('PRIVATE_CANARY')
+ return original_stat(path,*args,**kwargs)
+os.stat=checked;sys.argv=['delivery',helper]
+try:exec(compile(raw,'<root-shim>','exec'),{'__name__':'__main__'})
+except SystemExit as error:print(json.dumps({'fixtureExit':error.code,'protectedReadAttempts':len(protected)}))
+'''
+   result=subprocess.run([sys.executable,'-I','-B','-S','-c',harness,payload,str(helper)],capture_output=True,timeout=20)
+   self.assertEqual(result.returncode,0,result.stderr.decode());self.assertEqual(result.stderr,b'');self.assertNotIn(b'PRIVATE_CANARY',result.stdout)
+   rows=[json.loads(line)for line in result.stdout.splitlines()];self.assertEqual(rows[-1]['protectedReadAttempts'],0 if tamper else 1)
+   if not tamper:self.assertFalse(rows[0]['complete']);self.assertTrue(rows[0]['reconciliationRequired']);self.assertEqual(rows[-1]['fixtureExit'],2)
+ def test_exact_shell_shim_reaches_first_protected_read_only(self):self.exercise(False)
+ def test_shell_shim_tampered_helper_never_reaches_protected_read(self):self.exercise(True)

@@ -1,0 +1,1050 @@
+{
+  "schema": "ouf.csv-repository-effort-reaudit.v1",
+  "observedDate": "2026-10-20",
+  "scope": "Selected repository code, tests, retained receipts and existing GitHub CI; no target verification",
+  "repositories": [
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "selectedRef": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+      "mainRef": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+      "recursiveTreeTruncated": false,
+      "openPullRequestsInspected": 15,
+      "runs": [
+        {
+          "id": 38532258325,
+          "name": "Shared Authorization SDK pairwise",
+          "headSha": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-semantic-registry/actions/runs/38532258325"
+        },
+        {
+          "id": 38532258528,
+          "name": "Authorization Semantic pairwise",
+          "headSha": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-semantic-registry/actions/runs/38532258528"
+        },
+        {
+          "id": 38532258338,
+          "name": "Semantic Gateway live pairwise",
+          "headSha": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-semantic-registry/actions/runs/38532258338"
+        },
+        {
+          "id": 38532258365,
+          "name": "Semantic Registry module CI",
+          "headSha": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-semantic-registry/actions/runs/38532258365"
+        }
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "selectedRef": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "mainRef": "84828f74ac586bae09a78f0fb197b75b1a3d98d1",
+      "recursiveTreeTruncated": false,
+      "openPullRequestsInspected": 6,
+      "runs": [
+        {
+          "id": 39265859608,
+          "name": "Source Onboarding module CI",
+          "headSha": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/39265859608"
+        },
+        {
+          "id": 39265859613,
+          "name": "R2f trusted review browser",
+          "headSha": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/39265859613"
+        },
+        {
+          "id": 39265848999,
+          "name": "R2f trusted review browser",
+          "headSha": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/39265848999"
+        },
+        {
+          "id": 39265848953,
+          "name": "Source Onboarding module CI",
+          "headSha": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/39265848953"
+        }
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "selectedRef": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+      "mainRef": "c48ee4b1873a474e81c6e1be70d393854021e2c1",
+      "recursiveTreeTruncated": false,
+      "openPullRequestsInspected": 6,
+      "runs": [
+        {
+          "id": 39380501019,
+          "name": "R4a frozen configuration consumer probe",
+          "headSha": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/39380501019"
+        },
+        {
+          "id": 39380501124,
+          "name": "Shared Authorization SDK pairwise",
+          "headSha": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/39380501124"
+        },
+        {
+          "id": 39380501067,
+          "name": "Operational priority PostgreSQL qualification",
+          "headSha": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/39380501067"
+        },
+        {
+          "id": 39380501112,
+          "name": "R2e GeoPackage features and governed camera-cabinet relations",
+          "headSha": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/39380501112"
+        },
+        {
+          "id": 39380500982,
+          "name": "Retained live source continuity",
+          "headSha": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/39380500982"
+        },
+        {
+          "id": 39380500976,
+          "name": "R2a Onboarding automatic activation",
+          "headSha": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/39380500976"
+        },
+        {
+          "id": 39380500970,
+          "name": "R2b source to authorized serving",
+          "headSha": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/39380500970"
+        },
+        {
+          "id": 39380500855,
+          "name": "Ingestion Runtime module CI",
+          "headSha": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/39380500855"
+        },
+        {
+          "id": 39380501003,
+          "name": "R2c governed publication to historical serving",
+          "headSha": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-ingestion-runtime/actions/runs/39380501003"
+        }
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "selectedRef": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "mainRef": "b49c0d6f50c574c11684361ce4e8040e9cbddee2",
+      "recursiveTreeTruncated": false,
+      "openPullRequestsInspected": 5,
+      "runs": [
+        {
+          "id": 39077784500,
+          "name": "Retained live source continuity",
+          "headSha": "0d40da05408a14db31d4d41af2372d6a71480291",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39077784500"
+        },
+        {
+          "id": 39077784465,
+          "name": "Shared Authorization SDK pairwise",
+          "headSha": "0d40da05408a14db31d4d41af2372d6a71480291",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39077784465"
+        },
+        {
+          "id": 39077784479,
+          "name": "UDP materialization recovery tests",
+          "headSha": "0d40da05408a14db31d4d41af2372d6a71480291",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39077784479"
+        },
+        {
+          "id": 39077784470,
+          "name": "R2d governed CRS and grid execution",
+          "headSha": "0d40da05408a14db31d4d41af2372d6a71480291",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39077784470"
+        },
+        {
+          "id": 39077784466,
+          "name": "Linked property reconciliation",
+          "headSha": "0d40da05408a14db31d4d41af2372d6a71480291",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39077784466"
+        },
+        {
+          "id": 39077784467,
+          "name": "UDP Object Resolution module CI",
+          "headSha": "0d40da05408a14db31d4d41af2372d6a71480291",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39077784467"
+        },
+        {
+          "id": 39077782045,
+          "name": "Retained live source continuity",
+          "headSha": "0d40da05408a14db31d4d41af2372d6a71480291",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39077782045"
+        },
+        {
+          "id": 39077781978,
+          "name": "Shared Authorization SDK pairwise",
+          "headSha": "0d40da05408a14db31d4d41af2372d6a71480291",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39077781978"
+        },
+        {
+          "id": 39077781916,
+          "name": "Linked property reconciliation",
+          "headSha": "0d40da05408a14db31d4d41af2372d6a71480291",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39077781916"
+        },
+        {
+          "id": 39077781947,
+          "name": "R2d governed CRS and grid execution",
+          "headSha": "0d40da05408a14db31d4d41af2372d6a71480291",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39077781947"
+        },
+        {
+          "id": 39077781908,
+          "name": "UDP materialization recovery tests",
+          "headSha": "0d40da05408a14db31d4d41af2372d6a71480291",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39077781908"
+        },
+        {
+          "id": 39077781930,
+          "name": "UDP Object Resolution module CI",
+          "headSha": "0d40da05408a14db31d4d41af2372d6a71480291",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-udp-object-resolution/actions/runs/39077781930"
+        }
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-mcp-server",
+      "selectedRef": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+      "mainRef": "f7ecaeb210d8fcead478b90c62645db13a7d8226",
+      "recursiveTreeTruncated": false,
+      "openPullRequestsInspected": 18,
+      "runs": [
+        {
+          "id": 39232082817,
+          "name": "Incident priority resilience v3",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232082817"
+        },
+        {
+          "id": 39232082929,
+          "name": "Semantic proposal channel qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232082929"
+        },
+        {
+          "id": 39232082942,
+          "name": "Generic source revision MCP qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232082942"
+        },
+        {
+          "id": 39232082876,
+          "name": "Authorization Java Go conformance",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232082876"
+        },
+        {
+          "id": 39232082909,
+          "name": "Operational incident cursor HTTP qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232082909"
+        },
+        {
+          "id": 39232082809,
+          "name": "Private operational audit capture qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232082809"
+        },
+        {
+          "id": 39232082902,
+          "name": "Publication HTTP and MCP tool qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232082902"
+        },
+        {
+          "id": 39232082816,
+          "name": "Operational aggregate delegated context qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232082816"
+        },
+        {
+          "id": 39232082855,
+          "name": "Bounded publication composition qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232082855"
+        },
+        {
+          "id": 39232083000,
+          "name": "MCP evidence and late recovery",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232083000"
+        },
+        {
+          "id": 39232082848,
+          "name": "Operational cursor metadata PostgreSQL qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232082848"
+        },
+        {
+          "id": 39232083010,
+          "name": "Chatbot dispatch Gateway schemas",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232083010"
+        },
+        {
+          "id": 39232082947,
+          "name": "Operational control budget PostgreSQL qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232082947"
+        },
+        {
+          "id": 39232082881,
+          "name": "Persistent publication vector PostgreSQL qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232082881"
+        },
+        {
+          "id": 39232077138,
+          "name": "Chatbot dispatch Gateway schemas",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232077138"
+        },
+        {
+          "id": 39232077207,
+          "name": "Semantic proposal channel qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232077207"
+        },
+        {
+          "id": 39232077176,
+          "name": "Authorization Java Go conformance",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232077176"
+        },
+        {
+          "id": 39232077149,
+          "name": "Generic source revision MCP qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232077149"
+        },
+        {
+          "id": 39232077334,
+          "name": "Incident priority resilience v3",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232077334"
+        },
+        {
+          "id": 39232077099,
+          "name": "Bounded publication composition qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232077099"
+        },
+        {
+          "id": 39232077213,
+          "name": "Persistent publication vector PostgreSQL qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232077213"
+        },
+        {
+          "id": 39232077313,
+          "name": "Ingestion exact Gateway route qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232077313"
+        },
+        {
+          "id": 39232077107,
+          "name": "Private operational audit capture qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232077107"
+        },
+        {
+          "id": 39232077077,
+          "name": "MCP evidence and late recovery",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232077077"
+        },
+        {
+          "id": 39232077090,
+          "name": "Operational incident cursor HTTP qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232077090"
+        },
+        {
+          "id": 39232077228,
+          "name": "Operational control budget PostgreSQL qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232077228"
+        },
+        {
+          "id": 39232077209,
+          "name": "Publication HTTP and MCP tool qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232077209"
+        },
+        {
+          "id": 39232077148,
+          "name": "Operational aggregate delegated context qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232077148"
+        },
+        {
+          "id": 39232077082,
+          "name": "Operational cursor metadata PostgreSQL qualification",
+          "headSha": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-mcp-server/actions/runs/39232077082"
+        }
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-api-gateway",
+      "selectedRef": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+      "mainRef": "bf179e96200deb84942ad32507edef52a4284cd0",
+      "recursiveTreeTruncated": false,
+      "openPullRequestsInspected": 15,
+      "runs": [
+        {
+          "id": 39304810510,
+          "name": "Semantic proposal Gateway qualification",
+          "headSha": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-api-gateway/actions/runs/39304810510"
+        },
+        {
+          "id": 39304810482,
+          "name": "Generic source revision owner interoperability",
+          "headSha": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-api-gateway/actions/runs/39304810482"
+        },
+        {
+          "id": 39304810463,
+          "name": "Gateway control-plane and MCP mediation",
+          "headSha": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-api-gateway/actions/runs/39304810463"
+        },
+        {
+          "id": 39304032477,
+          "name": "Gateway control-plane and MCP mediation",
+          "headSha": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-api-gateway/actions/runs/39304032477"
+        },
+        {
+          "id": 39304032423,
+          "name": "Ingestion READ materialization",
+          "headSha": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-api-gateway/actions/runs/39304032423"
+        },
+        {
+          "id": 39304032427,
+          "name": "Semantic proposal Gateway qualification",
+          "headSha": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-api-gateway/actions/runs/39304032427"
+        },
+        {
+          "id": 39304032535,
+          "name": "Generic source revision owner interoperability",
+          "headSha": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-api-gateway/actions/runs/39304032535"
+        }
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-deploy",
+      "selectedRef": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+      "mainRef": null,
+      "recursiveTreeTruncated": false,
+      "openPullRequestsInspected": 8,
+      "runs": [
+        {
+          "id": 39392193699,
+          "name": "Governed semantic token-only continuation",
+          "headSha": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/39392193699"
+        },
+        {
+          "id": 39392193732,
+          "name": "Chat recovery readiness contracts",
+          "headSha": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/39392193732"
+        },
+        {
+          "id": 39392193706,
+          "name": "Remaining Docker lifecycle contracts on 29.8.1",
+          "headSha": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/39392193706"
+        },
+        {
+          "id": 39392193693,
+          "name": "Chatbot cohort delivery native owners",
+          "headSha": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/39392193693"
+        }
+      ]
+    }
+  ],
+  "selectedFiles": [
+    {
+      "repo": "ouf-deploy",
+      "ref": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+      "path": "docs/CSV_CHAT_ONLY_COMPLETION_STATUS_20261018.md"
+    },
+    {
+      "repo": "ouf-deploy",
+      "ref": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+      "path": "evidence/csv-functional-stage4-chat-proof-20261018.json"
+    },
+    {
+      "repo": "ouf-deploy",
+      "ref": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+      "path": "docs/csv-functional-stage3-target-proof-20261018.json"
+    },
+    {
+      "repo": "ouf-deploy",
+      "ref": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+      "path": "releases/source-revision-candidate-20261018.json"
+    },
+    {
+      "repo": "ouf-deploy",
+      "ref": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+      "path": "evidence/source-revision-code-qualified-20261018.json"
+    },
+    {
+      "repo": "ouf-deploy",
+      "ref": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+      "path": "evidence/source-revision-native-update-completed-20261019.json"
+    },
+    {
+      "repo": "ouf-deploy",
+      "ref": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+      "path": "releases/chat-only-recovery-candidate-20261018.json"
+    },
+    {
+      "repo": "ouf-deploy",
+      "ref": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+      "path": "releases/linked-property-qualified-20261017.json"
+    },
+    {
+      "repo": "ouf-semantic-registry",
+      "ref": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/application/ProposalCommandService.java",
+      "blobSha": "3d222f1221ae6b4466720b46eacb6f63169ef725"
+    },
+    {
+      "repo": "ouf-semantic-registry",
+      "ref": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/application/GovernanceService.java",
+      "blobSha": "b79f1a2cd64832ae8d03633b497b58bbd8608c9b"
+    },
+    {
+      "repo": "ouf-semantic-registry",
+      "ref": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/SemanticConsultationTest.java",
+      "blobSha": "c985b37b2897ca3a26ecbddc9c4f6e1c0cf5e928"
+    },
+    {
+      "repo": "ouf-source-onboarding",
+      "ref": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileChatHandoff.java",
+      "blobSha": "efdd709e2d76a6006f34e27d38b1a1425ed32364"
+    },
+    {
+      "repo": "ouf-source-onboarding",
+      "ref": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileExecutionProposal.java",
+      "blobSha": "f890b6400301dae4767e7dfbec66e539b89d9251"
+    },
+    {
+      "repo": "ouf-source-onboarding",
+      "ref": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/SourceRevisionService.java",
+      "blobSha": "d0a0c1f30c920f91ee8842147364ec7171293062"
+    },
+    {
+      "repo": "ouf-source-onboarding",
+      "ref": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/SourceRevisionRuntimeTest.java",
+      "blobSha": "16dad8788889ee1803cf6301c896d68a31f95596"
+    },
+    {
+      "repo": "ouf-source-onboarding",
+      "ref": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/SourceRevisionPreservationTest.java",
+      "blobSha": "d721a364c67869246bad6a6cc9c5b3cabd8100d1"
+    },
+    {
+      "repo": "ouf-source-onboarding",
+      "ref": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileMcpApiTest.java",
+      "blobSha": "a3f5354a6a910dda537e83e8c011aabbd51fd454"
+    },
+    {
+      "repo": "ouf-ingestion-runtime",
+      "ref": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/RunExecutionWorker.java",
+      "blobSha": "ee879f8810458e38231b046c137690d608d009a9"
+    },
+    {
+      "repo": "ouf-ingestion-runtime",
+      "ref": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/OutboxDispatcher.java",
+      "blobSha": "34613b042cebf19b617d1b73be4842cf25b297f9"
+    },
+    {
+      "repo": "ouf-ingestion-runtime",
+      "ref": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+      "path": "src/test/java/it/comune/trieste/ouf/ingestion/RunExecutionWorkerRuntimeTest.java",
+      "blobSha": "6bd895035b8c8cf67a0ee1e8af1899a70dca111b"
+    },
+    {
+      "repo": "ouf-ingestion-runtime",
+      "ref": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+      "path": "src/test/java/it/comune/trieste/ouf/ingestion/CanonicalRecordPipelineRuntimeTest.java",
+      "blobSha": "fd20a4e4b5b48b22cbf6c97d1c76bdfd41835ab6"
+    },
+    {
+      "repo": "ouf-ingestion-runtime",
+      "ref": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+      "path": "src/test/java/it/comune/trieste/ouf/ingestion/HumanRecoveryBudgetRuntimeTest.java",
+      "blobSha": "1c384d1c4c203e1a26bd0bde633628e9ba4a0aba"
+    },
+    {
+      "repo": "ouf-ingestion-runtime",
+      "ref": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+      "path": "src/test/java/it/comune/trieste/ouf/ingestion/DurableAckTest.java",
+      "blobSha": "43157c4aa433f8de87bf200b9b0a8c31ae4d6fd8"
+    },
+    {
+      "repo": "ouf-ingestion-runtime",
+      "ref": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+      "path": "src/test/java/it/comune/trieste/ouf/ingestion/ManagedTabularAdapterTest.java",
+      "blobSha": "da8c04c197e9dc49e37bbd74777181f00756aa0c"
+    },
+    {
+      "repo": "ouf-udp-object-resolution",
+      "ref": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/GovernedIdentityEngine.java",
+      "blobSha": "cdeb178d3e0a6379c786d8c76f8c725dcc0c64dc"
+    },
+    {
+      "repo": "ouf-udp-object-resolution",
+      "ref": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/GovernedIdentityResolutionService.java",
+      "blobSha": "14d35bb32c4d2fd3840311c2cec5be799c754fb1"
+    },
+    {
+      "repo": "ouf-udp-object-resolution",
+      "ref": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/ObjectResolutionService.java",
+      "blobSha": "b5d5ff0242023f32debf51a993b73615125e9ec4"
+    },
+    {
+      "repo": "ouf-udp-object-resolution",
+      "ref": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/MaterializationRecoveryService.java",
+      "blobSha": "12e817c0632006b3f28bd26ce6824f84030f5931"
+    },
+    {
+      "repo": "ouf-udp-object-resolution",
+      "ref": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/test/java/it/comune/trieste/ouf/udp/GovernedIdentityEngineTest.java",
+      "blobSha": "df649d58484107473c534fd7c9f75bef1595d9a5"
+    },
+    {
+      "repo": "ouf-udp-object-resolution",
+      "ref": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/test/java/it/comune/trieste/ouf/udp/MaterializationRecoveryRuntimeTest.java",
+      "blobSha": "bd0eecd082d06f4879844f8dcc950b817ddc19df"
+    },
+    {
+      "repo": "ouf-udp-object-resolution",
+      "ref": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/test/java/it/comune/trieste/ouf/udp/HandoffLakeCommitRuntimeTest.java",
+      "blobSha": "a81f9e058076f84b4f2421e8f6cd81f51365c8a8"
+    },
+    {
+      "repo": "ouf-mcp-server",
+      "ref": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+      "path": "internal/kernel/kernel.go",
+      "blobSha": "315901bf5f1a8b23673328a0f9d28d32456b31d9"
+    },
+    {
+      "repo": "ouf-mcp-server",
+      "ref": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+      "path": "internal/kernel/managed_file_test.go",
+      "blobSha": "b52c14a7e0b239f7baf092abc39edfb2cce5720b"
+    },
+    {
+      "repo": "ouf-mcp-server",
+      "ref": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+      "path": "internal/kernel/source_revision_test.go",
+      "blobSha": "dd4a3f6b6be946bd9578a0abcd7bff113a3792ea"
+    },
+    {
+      "repo": "ouf-mcp-server",
+      "ref": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+      "path": "internal/kernel/semantic_proposal_test.go",
+      "blobSha": "17550aa2c3664ec89d9b7d64a7b9756ff0a8154f"
+    },
+    {
+      "repo": "ouf-mcp-server",
+      "ref": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+      "path": ".github/workflows/source-revision.yml",
+      "blobSha": "4ec9ead53c7fd528f8c68a38f92bc048b449f40d"
+    },
+    {
+      "repo": "ouf-api-gateway",
+      "ref": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+      "path": "tools/materialize_source_revision.py",
+      "blobSha": "8a3648f154a1bd3f4862151e8de41a2268ea1189"
+    },
+    {
+      "repo": "ouf-api-gateway",
+      "ref": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+      "path": "tests/test_source_revision.py",
+      "blobSha": "502563e0595b5ce78ff6cbdffbcf309b7a956d4f"
+    },
+    {
+      "repo": "ouf-api-gateway",
+      "ref": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+      "path": "tools/materialize_managed_file_mcp.py",
+      "blobSha": "2a490afcc401137b07c55ffe1f33728128d0d4cf"
+    },
+    {
+      "repo": "ouf-api-gateway",
+      "ref": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+      "path": ".github/workflows/source-revision-owner.yml",
+      "blobSha": "af7032918a21cb584933dcdfeb311e43a654b555"
+    },
+    {
+      "repo": "ouf-deploy",
+      "ref": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+      "path": "tools/source_revision_update/native.py",
+      "blobSha": "899ff58cc85c13f3ade30bdb67e0a20a494e6389"
+    },
+    {
+      "repo": "ouf-deploy",
+      "ref": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+      "path": "tools/ingestion_rollout_execution/runner.py",
+      "blobSha": "6e575b07b183f50a77c4e26a502bd6e13999178e"
+    },
+    {
+      "repo": "ouf-deploy",
+      "ref": "ed2f2523555d7023d7fc0a274fc6262327a33941",
+      "path": "tools/ingestion_rollout_execution/contract.py",
+      "blobSha": "3e21af5192d249998f0a144419b3673c3fb753c3"
+    },
+    {
+      "repo": "ouf-ingestion-runtime",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/CanonicalRecordPipeline.java",
+      "ref": "0fe0de60c6d980fe97610acf195d4bfd46d3777f"
+    },
+    {
+      "repo": "ouf-ingestion-runtime",
+      "path": "pairwise/r4a_chatbot_vertical.py",
+      "ref": "0fe0de60c6d980fe97610acf195d4bfd46d3777f"
+    },
+    {
+      "repo": "ouf-ingestion-runtime",
+      "path": ".github/workflows/r4a-chatbot-vertical.yml",
+      "ref": "0fe0de60c6d980fe97610acf195d4bfd46d3777f"
+    },
+    {
+      "repo": "ouf-udp-object-resolution",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LinkedPropertyReconciler.java",
+      "ref": "0d40da05408a14db31d4d41af2372d6a71480291"
+    },
+    {
+      "repo": "ouf-mcp-server",
+      "path": "internal/manifest/capabilities.json",
+      "ref": "1f2c28d7abadae78680b040ba7b58be62ef85ee9"
+    },
+    {
+      "repo": "ouf-deploy",
+      "path": "docs/handoffs/OUF_CLOUD_ROLLOUT_OBSERVERS_HANDOFF_20261020.md",
+      "ref": "ed2f2523555d7023d7fc0a274fc6262327a33941"
+    },
+    {
+      "repo": "ouf-udp-object-resolution",
+      "path": "src/test/java/it/comune/trieste/ouf/udp/LinkedPropertyRuntimeTest.java",
+      "ref": "0d40da05408a14db31d4d41af2372d6a71480291"
+    },
+    {
+      "repo": "ouf-udp-object-resolution",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/PublishedResolutionLoop.java",
+      "ref": "0d40da05408a14db31d4d41af2372d6a71480291"
+    },
+    {
+      "repo": "ouf-ingestion-runtime",
+      "path": "src/test/java/it/comune/trieste/ouf/ingestion/RunControlRuntimeTest.java",
+      "ref": "0fe0de60c6d980fe97610acf195d4bfd46d3777f"
+    }
+  ],
+  "priorAudit": {
+    "ref": "d33ea6e275365c069bcd6e319ed872819ebfba0b",
+    "pullRequest": 39
+  },
+  "jobLogsRead": [
+    115755187540,
+    118488288969,
+    117992198553,
+    118526246206,
+    117528422498,
+    118105120405
+  ],
+  "findings": {
+    "existingOnboardingTests": 270,
+    "existingUdpPropertyTests": 95,
+    "existingIntegratedChecks": 36,
+    "selectedIngestionModuleCiGreen": false,
+    "mcpSameHeadPushGreenPrPerformanceFailure": true,
+    "deployHistoricalPackagePinMismatch": true,
+    "genericSourceRevisionImplemented": true,
+    "fullNewRolloutNativePortsQualified": false,
+    "csvVocabularyValueApplicationImplementedInSelectedPath": false,
+    "ouFAdminExactNameAbsenceProvesConnectorAbsent": false
+  },
+  "estimate": {
+    "unit": "active technical hours with advanced-agent assistance, sequential",
+    "currentCase": [
+      18,
+      30
+    ],
+    "completeRepeatableCsv": [
+      40,
+      70
+    ],
+    "additionalHumanActiveHours": [
+      3,
+      6
+    ],
+    "automaticProductivityFactorApplied": false,
+    "waitsIncludedInActiveHours": false,
+    "confidence": "medium; not measured throughput"
+  },
+  "state": {
+    "technicalCompleted": 8,
+    "functionalProven": 4,
+    "functionalTotal": 6,
+    "targetRuntimeAuthorityIssued": false,
+    "targetDatabaseAdmissionProven": false,
+    "nativeProfilePublished": false
+  },
+  "sideEffects": {
+    "targetOperations": 0,
+    "oauthRequests": 0,
+    "newLoginPerformed": false,
+    "refreshPerformed": false,
+    "budgetReset": false,
+    "completedActionsReplayed": false,
+    "subagents": 0,
+    "scheduledAutomations": 0,
+    "newCiDispatches": 0,
+    "repositoryDocumentationUpdated": true
+  }
+}

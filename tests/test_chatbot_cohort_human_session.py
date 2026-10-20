@@ -155,7 +155,7 @@ class HumanSessionTest(unittest.TestCase):
         return session
 
     def login(self):
-        return self.session.login(self.output.append,ImmediateFixtureWait(self.clock))
+        return self.session.login(self.output.append,ImmediateFixtureWait(self.clock), confirm_browser=lambda _:True)
 
     def due(self): self.clock.advance(250)
 

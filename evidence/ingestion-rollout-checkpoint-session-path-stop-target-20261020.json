@@ -1,0 +1,33 @@
+{
+  "schema": "ouf.ingestion-rollout-checkpoint-session-path-stop-target.v1",
+  "evidenceOrigin": "operator supplied exact diagnostic JSON",
+  "sourceCommit": "685c7a4e8def4a2955392b5f236437cc936c2e90",
+  "readerSha256": "405bd89926d801ecaa4042e4463b805674788d780796fb71b4c89aa06005c422",
+  "targetReceipt": {
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "complete": false,
+    "readOnly": true,
+    "reasonCode": "EXACT_SESSION_DIRECTORY_REQUIRED",
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.ingestion-rollout-checkpoint-read.v1",
+    "status": "STOP_RECONCILE"
+  },
+  "diagnosis": "Reader incorrectly required the successful HUMAN directory parent to equal the publication context parent. The pinned v7 creator inherits the predecessor HUMAN directory parent.",
+  "targetCounterObserved": false,
+  "humanJournalReadBeforeThisReasonInQualifiedSource": false,
+  "engineGetsBeforeThisReasonInQualifiedSource": 0,
+  "earlierChecksReachedBySourceControlFlowOnly": true,
+  "newTargetExecutionIndependentReadback": false,
+  "originalHumanWindowExpiresAt": 1792450664,
+  "originalWindowExpiredAtResumption": true,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "newLoginPerformed": false,
+  "newBudgetAuthorized": false,
+  "completedOwnerActionReplayed": false,
+  "completedPublicationReplayed": false,
+  "databaseAdmissionProven": false,
+  "runtimeRolloutExecutorQualified": false,
+  "notReleaseAcceptance": true
+}

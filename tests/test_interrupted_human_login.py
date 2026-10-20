@@ -18,7 +18,7 @@ class Continuation(unittest.TestCase):
         class StopAfterPending:
             def is_set(self):return f.fixture.polls>=1
             def wait(self,delay):f.clock.advance(delay)
-        with self.assertRaises(m.HumanSessionPaused):f.session.login(f.output.append,StopAfterPending())
+        with self.assertRaises(m.HumanSessionPaused):f.session.login(f.output.append,StopAfterPending(),confirm_browser=lambda _:True)
         self.before=f.session.journal.read()
         self.assertEqual(self.before['state'],'DEVICE_POLL')
     def expired(self):self.f.clock.advance(601)
@@ -101,7 +101,7 @@ class ExpiredWindow(unittest.TestCase):
         self.assertEqual(renewed.journal.read()['attempts'],42)
         self.assertEqual(f.session.journal.record.read_bytes(),before)
         renewed.opener=f.session.opener;f.fixture.approve_after=f.fixture.polls+1
-        output=[];renewed.login(output.append,fixture.ImmediateFixtureWait(f.clock))
+        output=[];renewed.login(output.append,fixture.ImmediateFixtureWait(f.clock),confirm_browser=lambda _:True)
         self.assertEqual(renewed.journal.read()['attempts'],42+len(f.fixture.calls)-calls)
         self.assertEqual(f.session.journal.record.read_bytes(),before)
         self.assertNotIn('private-device-fixture',' '.join(output))

@@ -1,0 +1,22 @@
+name: Ingestion administrative STOP read qualification
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/read-ingestion-administration-stop.py', 'tests/test_ingestion_administrative_stop_read.py', '.github/workflows/ingestion-administrative-stop-read.yml']
+permissions: {contents: read}
+jobs:
+  read-only-boundary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Hash-bound pre-claim prefix and effect-denying audit in isolated root fixture
+        run: |
+          set -euo pipefail
+          fixture="/root/ouf-ingestion-stop-read-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_ingestion_administrative_stop_read.py' -v

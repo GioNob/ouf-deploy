@@ -1,0 +1,14 @@
+name: MCP HUMAN issuer stop bounded read
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/read-mcp-human-issuer-stop.py', 'tests/test_mcp_human_issuer_stop_read.py', '.github/workflows/mcp-human-issuer-stop-read.yml']
+permissions: {contents: read}
+jobs:
+  reader:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: python3 -B -m unittest discover -s tests -p test_mcp_human_issuer_stop_read.py -v

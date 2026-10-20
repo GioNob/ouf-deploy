@@ -1,0 +1,49 @@
+{
+  "qualificationRun": 39152137523,
+  "targetJob": 117747814810,
+  "redactionJob": 117747787331,
+  "sourceCommit": "e80a79319e8874dc0cde255e48153fe3bc128375",
+  "receipt": {
+    "applications": {
+      "mcp": {
+        "containerId": "c2c2893f1b2f03a7a5216a3b21601c5c639ab5f4f7b193d5a960271ba19b0696",
+        "dns": {
+          "count": 0,
+          "explicitOverridePresent": false,
+          "kind": "list",
+          "valuesPrinted": false
+        },
+        "running": true
+      },
+      "onboarding": {
+        "containerId": "8dc539b0756beb40cee0d45b2b223a18eee1a53d8cdb4389d7d914dbda66aad9",
+        "dns": {
+          "count": 0,
+          "explicitOverridePresent": false,
+          "kind": "list",
+          "valuesPrinted": false
+        },
+        "running": true
+      },
+      "udp": {
+        "containerId": "946fd69972ada2e310c32f72da27f19a04e7a2043dc330f116e8ba1c507e6e3b",
+        "dns": {
+          "count": 0,
+          "explicitOverridePresent": false,
+          "kind": "list",
+          "valuesPrinted": false
+        },
+        "running": false
+      }
+    },
+    "complete": true,
+    "completedTechnicalPhases": 8,
+    "configurationValuesPrinted": false,
+    "credentialValuesPrinted": false,
+    "dnsValuesPrinted": false,
+    "engineWrites": 0,
+    "functionalMilestonesProven": 4,
+    "runtimeMutations": 0,
+    "schema": "ouf.preboot-dns-shape-read.v1"
+  }
+}

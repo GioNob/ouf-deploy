@@ -1,0 +1,56 @@
+{
+  "schema": "ouf.ingestion-read-administrative-cloud-handoff.v3",
+  "sourceCommit": "1e1a9f9eddca649e64db36fe018f59f2f15a2105",
+  "qualification": {
+    "workflowRun": 39222837925,
+    "signedOwnerJob": 117961959442,
+    "tests": 73,
+    "status": "PASS",
+    "cryptography": "REAL_ED25519",
+    "httpIam": "EXPLICIT_FIXTURES"
+  },
+  "stage": {
+    "completedTechnicalPhases": 8,
+    "filesStaged": 10,
+    "functionalMilestonesProven": 4,
+    "infrastructureEffects": 0,
+    "manifestSha256": "633bbf2a17dc0395dd362694833b2264e7aef9501a06d5ce3fc54a4569e879c2",
+    "preparerSha256": "76116a25164d49c0aa02343927a6b86082946c16c64646e54b690fc73c9ba22d",
+    "privateInputsRead": false,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.ingestion-read-administrative-stage-receipt.v1",
+    "sourceCommit": "1e1a9f9eddca649e64db36fe018f59f2f15a2105",
+    "stagePath": "/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-ingestion-read-administrative-code-39222837925",
+    "jobId": 117962337255
+  },
+  "superseded": {
+    "stageRun": 39221983431,
+    "deliveryCommit": "7f7773990f25a86c9a0c8ded945e79fa4e59c5c3",
+    "reason": "ARBITRARY_STOP_DIAGNOSTIC_NOW_FULLY_REDACTED",
+    "failedDeliveryRun": 39222473524,
+    "testHarnessCorrectionRun": 39222602801,
+    "targetExecuted": false
+  },
+  "targetPrivatePreparationExecuted": false,
+  "targetAdministrationExecuted": false,
+  "nativeHumanGatePending": true,
+  "grantsPublished": 0,
+  "sourceActivated": false,
+  "technicalPhasesProven": 8,
+  "functionalMilestonesProven": 4,
+  "completedInstallationAndReadbackReplayed": false,
+  "petConsulted": [
+    "Matrix1.7 §1",
+    "Authorization1.5 §§20–22/109.6",
+    "Onboarding-THS1.6 §103/THS-A02/A09",
+    "Ingestion1.3 §46/46.3/OA-ING-05"
+  ],
+  "deliveryQualification": {
+    "workflowRun": 39223108393,
+    "job": 117962847831,
+    "status": "PASS",
+    "tests": 6,
+    "sourceCommit": "b836891c7c899c549482f81945046ad592b92f6f",
+    "launcherSha256": "636330a0b5d54dad590969d2ada8799bdb47b49c02aa8af297d65da199da16cd"
+  }
+}

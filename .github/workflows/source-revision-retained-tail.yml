@@ -1,0 +1,115 @@
+name: Source revision remaining retained contracts
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['.github/workflows/source-revision-retained-tail.yml']
+permissions: {contents: read}
+jobs:
+  signed-native-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17-alpine
+        ports: ['5432:5432']
+        env: {POSTGRES_USER: postgres, POSTGRES_HOST_AUTH_METHOD: trust}
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Checkout the exact qualified Gateway materializers
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: bf179e96200deb84942ad32507edef52a4284cd0
+          path: .pairwise/gateway
+          persist-credentials: false
+      - name: Install pinned materializer dependencies in an isolated test environment
+        run: |
+          set -euo pipefail
+          test "$(git -C .pairwise/gateway rev-parse HEAD)" = bf179e96200deb84942ad32507edef52a4284cd0
+          python3 -m venv .cohort-test-venv
+          .cohort-test-venv/bin/python -m pip install -r .pairwise/gateway/requirements-dev.txt
+      - name: Checkout the exact owner helper and database migration sources
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: 84828f74ac586bae09a78f0fb197b75b1a3d98d1
+          path: .pairwise/onboarding
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-ingestion-runtime
+          ref: c48ee4b1873a474e81c6e1be70d393854021e2c1
+          path: .pairwise/ingestion
+          persist-credentials: false
+      - name: Checkout the exact UDP owner migrations
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-udp-object-resolution
+          ref: b49c0d6f50c574c11684361ce4e8040e9cbddee2
+          path: .pairwise/udp
+          persist-credentials: false
+      - name: Checkout the exact target MCP migration for native privilege qualification
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-mcp-server
+          ref: f249b3dcc58c2a96742092d90fa09fd90b705bd0
+          path: .pairwise/mcp
+          persist-credentials: false
+      - name: Compile the pinned owner GrantConstraints and Jackson round-trip fixture
+        run: |
+          set -euo pipefail
+          mvn -B -q -f tests/fixtures/owner-role-roundtrip/pom.xml org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath -Dmdep.outputFile="$GITHUB_WORKSPACE/.owner-roundtrip.classpath"
+          mkdir .owner-roundtrip-classes
+          javac -cp "$(cat .owner-roundtrip.classpath)" -d .owner-roundtrip-classes \
+            .pairwise/onboarding/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/{AuthorizationPolicy,PrincipalContext,ResourceContext}.java \
+            tests/fixtures/owner-role-roundtrip/OwnerConstraintRoundTrip.java
+      - name: Prove executable sources unchanged from the already qualified prefix
+        run: |
+          git fetch --no-tags --depth=1 origin 13dd61b3004702e3977804b84c1ea00a37342c82
+          git diff --exit-code 13dd61b3004702e3977804b84c1ea00a37342c82 HEAD -- tools scripts releases
+      - name: Seal native root custody fixture
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
+          sudo mkdir -m 700 "$OUF_FIXTURE_ROOT"
+          sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
+          sudo chown -R root:root "$OUF_FIXTURE_ROOT"
+      - name: Signed native journals, effects, revocation and reconciliation
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
+          for suite in test_chatbot_cohort_delivery_launcher.py test_chatbot_cohort_package_custody.py test_chatbot_cohort_iam_session.py test_chatbot_cohort_terminal.py test_chatbot_cohort_predecessor.py test_chatbot_cohort_image_identity.py test_chatbot_cohort_process_native.py test_chatbot_cohort_assemble.py test_chatbot_cohort_entry.py test_file_only_output_custody.py test_file_only_preparation.py test_file_only_bridge_expectation.py test_gated_creation_plan.py test_chatbot_cohort_target_selection.py test_chatbot_cohort_selected_config_custody.py test_chatbot_cohort_plan.py test_chatbot_cohort_preparation.py test_chatbot_cohort_containers.py test_chatbot_cohort_databases.py test_chatbot_cohort_gateway.py test_chatbot_cohort_gateway_runtime.py test_chatbot_cohort_authorization.py test_chatbot_cohort_human_session.py test_chatbot_cohort_closed_runtime.py; do
+            sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" OUF_OWNER_JAVA_CLASSPATH="$OUF_FIXTURE_ROOT/repository/.owner-roundtrip-classes:$(cat .owner-roundtrip.classpath)" "$OUF_FIXTURE_ROOT/repository/.cohort-test-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p "$suite" -v
+          done
+      - name: Real masked failed timer and shared legacy writer fence
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
+          sudo env OUF_NATIVE_SYSTEMD=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_pregrant_systemd_native.py -v
+      - name: Real paired CLI API observations and semantic schema marker preserve fixture
+        env:
+          OUF_PG_CID: ${{ job.services.postgres.id }}
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
+          sudo env OUF_NATIVE_SOCKETS=1 OUF_POSTGRES_CONTAINER_ID="$OUF_PG_CID" python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_inspection_native.py -v
+      - name: Real four-database archives, full payload parsing and retained rows
+        if: ${{ !cancelled() }}
+        env:
+          OUF_PG_CID: ${{ job.services.postgres.id }}
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
+          sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_POSTGRES=1 OUF_POSTGRES_CONTAINER_ID="$OUF_PG_CID" OUF_CHATBOT_MCP_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/mcp" python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_postgres_native.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_POSTGRES=1 python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_images_native.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_NATIVE_NAMESPACES=1 OUF_NATIVE_POSTGRES=1 OUF_POSTGRES_CONTAINER_ID="$OUF_PG_CID" OUF_GATEWAY_SOURCE="$OUF_FIXTURE_ROOT/repository/.pairwise/gateway" "$OUF_FIXTURE_ROOT/repository/.cohort-test-venv/bin/python" -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_gateway_runtime_native.py -v
+      - name: Actual PostgreSQL owner joins distinguish ACK, commit and canonical NOOP
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          command -v psql
+          OUF_FIXTURE_ROOT="/var/lib/ouf-chatbot-cohort-${GITHUB_RUN_ID}"
+          sudo env OUF_CHATBOT_ACCEPTANCE_PG_DSN=postgresql://postgres@127.0.0.1:5432/postgres OUF_CHATBOT_ONBOARDING_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/onboarding" OUF_CHATBOT_INGESTION_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/ingestion" OUF_CHATBOT_UDP_ROOT="$OUF_FIXTURE_ROOT/repository/.pairwise/udp" python3 -I -B -m unittest discover -s "$OUF_FIXTURE_ROOT/repository/tests" -p test_chatbot_cohort_acceptance.py -v
+
