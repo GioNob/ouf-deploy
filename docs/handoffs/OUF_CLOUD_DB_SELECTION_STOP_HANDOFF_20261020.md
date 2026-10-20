@@ -1,3 +1,7 @@
+> SUPERSEDED NEXT ACTION: metadata reconciliation is COMPLETE; only the cohort DB hash predicate failed.
+> Do not rerun this reader. Continue with [the exact postboot-bound DB preflight](OUF_CLOUD_DB_POSTBOOT_PREFLIGHT_HANDOFF_20261020.md).
+> The historical target receipt did not yet check the new whole-postboot pair pins.
+
 # OUF CLOUD — retained DB selection STOP, files-only reconciliation
 
 Technical8/8; functional4/6. Owner7 and projection7 remain complete/consumed.

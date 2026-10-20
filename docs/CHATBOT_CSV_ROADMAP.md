@@ -1,4 +1,12 @@
-> **CURRENT — DB preflight STOP at retained selection; files-only reconciliation (20 October 2026).**
+> **CURRENT — selection reconciled; exact postboot-bound DB preflight qualified (20 October 2026).**
+>
+> Technical8/8,functional4/6. Operator metadata reconciliation COMPLETE: original schema/Engine match Owner7; originalDatabasePlanMatchesCohortHash is false; originalBinding bytes and all retained metadata were rechecked. Zero Engine/SQL/OAuth/effects. Receipt: evidence/ingestion-db-selection-reconciled-target-20261020.json. Do not repeat that completed reader, v1 DB reader, Owner7/projection7 or completed installation/readback. Last observed HUMAN278/288/window1792450664 expired; no new login/refresh/renewal/reset.
+>
+> The postboot producer preserved the historical cohort hash after Engine/PG generation rebinding. New selection requires whole-original b3988d96, private-pair1ab309f7 and preparation-receipt3eb2fd4f SHA256 pins from the completed release, plus exact pair equality and current Owner7 Engine. Historical files/hashes remain unchanged; no fallback or arbitrary DB/role selection. New source 9625c35eee701f75eecb367ae0378da3aa2c894f; [CI39379643028](https://github.com/GioNob/ouf-deploy/actions/runs/39379643028), job118485558537: **32PASS**,24unit/delivery+8actualPG17/Docker/Flyway,18SQLchecksum matches. Target new DB reader NOT executed.
+>
+> Only next operator action: immutable scripts/launch-ingestion-db-postboot-preflight-20261020.sh once.4EngineGETs/one fixed READ ONLY SQL session/90s, existing role, no migrations/grants/container/source/job changes or OAuth. Even green read prerequisites do not establish databaseAdmissionProven, startup-migrate policy or runtime authority. Distinct current HUMAN/THS gates, qualified rollout, governed native profile and functional5–6 remain open. [Current handoff](handoffs/OUF_CLOUD_DB_POSTBOOT_PREFLIGHT_HANDOFF_20261020.md).
+
+> **HISTORY — DB preflight STOP at retained selection; files-only reconciliation (20 October 2026).**
 >
 > Technical8/8,functional4/6. Operator log `/home/oufadmin/ouf-ingestion-db-read.vXzy92vP/read.log`: `STOP_RECONCILE/EXACT_ORIGINAL_DATABASE_PLAN_REQUIRED`, phase RETAINED_DATABASE_SELECTION, before Engine/SQL execution. All contexts/claims remain retained. No replay of this preflight, Owner7/projection7, five-app diagnostic or completed installation/readback. Last observed HUMAN278/288 is expired; no new login/refresh/renewal/reset.
 >
