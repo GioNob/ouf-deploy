@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T14:23:34.312Z",
+  "lastUpdatedAt": "2026-10-20T14:37:24.284Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1216,6 +1216,24 @@
       "classification": "ACTIVE_TECHNICAL",
       "workPackage": "WP3_PREPARATION",
       "activity": "PYTHON313_QUALIFICATION_HOST_RECONCILIATION_AND_EXPLICIT_HUMAN_SUCCESSOR_PREPARATION"
+    },
+    {
+      "id": "CSV-TIME-0028",
+      "startedAt": "2026-10-20T14:28:09.000Z",
+      "endedAt": "2026-10-20T14:36:40.814Z",
+      "seconds": 511.814,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "SEALED_READ_ONLY_TARGET_INSPECTION_DELIVERY_AND_EXPLICIT_SUCCESSOR_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0029",
+      "startedAt": "2026-10-20T14:36:40.814Z",
+      "endedAt": "2026-10-20T14:37:24.284Z",
+      "seconds": 43.47,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "PERSIST_QUALIFICATION_AND_PREPARE_OPERATOR_READ_ONLY_HANDOFF"
     }
   ],
   "waitingIntervals": [],
@@ -1472,7 +1490,9 @@
     "qualifiedSourceCommit": "24c2d9b8c7b3f4f8a4a61125b86877ffbd635dba",
     "sourceClosureModules": 114,
     "loaderSha256": "3898173a6303317ea91e350dd867f6292b634341930daddaeef91b25f2756b1a",
-    "python313CiQualifiedCommit": "502a9fb823d06e899031f226011d601266981695"
+    "python313CiQualifiedCommit": "502a9fb823d06e899031f226011d601266981695",
+    "explicitSuccessorCiQualifiedCommit": "c711c119ce589a421f0c27195a16522b39e879bf",
+    "targetSuccessorInspectionPending": true
   },
   "developmentCandidates": [
     {
@@ -1513,7 +1533,8 @@
       "G5_VOCABULARY_AND_RELATIONSHIPS",
       "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
       "G7_ACCEPTANCE"
-    ]
+    ],
+    "currentRequiredHumanAction": "EXECUTE_QUALIFIED_READ_ONLY_INSPECTION_ON_EXISTING_VPS_TERMINAL"
   },
   "unsegmentedFollowupWindows": [
     {
@@ -1522,6 +1543,13 @@
       "classification": "MIXED_UNSEGMENTED_TECHNICAL_WORK_AND_OPERATOR_WAIT",
       "countedAsActive": false,
       "note": "Includes operator terminal metadata, source diagnosis and Python3.13.5 CI preparation; no retrospective active/wait allocation inferred."
+    },
+    {
+      "startedAt": "2026-10-20T14:23:34.312Z",
+      "endedAt": "2026-10-20T14:28:09.000Z",
+      "classification": "TURN_TRANSITION_AND_EARLY_RESUMPTION_NOT_PRECISELY_SEGMENTED",
+      "countedAsActive": false,
+      "note": "Includes early successor TLS implementation; no retrospective allocation inferred before first explicit UTC clock observation."
     }
   ],
   "deliveryAccounting": {
