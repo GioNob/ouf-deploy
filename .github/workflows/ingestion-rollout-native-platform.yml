@@ -68,14 +68,14 @@ jobs:
           sha256sum --check <<'OUF_DOCKER_SHA'
           d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70  /tmp/ouf-docker-29.8.1.tgz
           OUF_DOCKER_SHA
-          sudo install -d -m 755 /opt/ouf-docker-29
-          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
-          sudo chown -R root:root /opt/ouf-docker-29
+          sudo install -d -m 755 /var/lib/ouf-docker29-tools
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /var/lib/ouf-docker29-tools
+          sudo chown -R root:root /var/lib/ouf-docker29-tools
           sudo systemctl stop docker.service docker.socket
           sudo systemctl start containerd.service
           sudo install -d -m 700 /var/lib/ouf-docker-29
           printf '%s\n' '{"features":{"containerd-snapshotter":true},"exec-opts":["native.cgroupdriver=systemd"]}' > /tmp/ouf-docker-29.json
-          sudo systemd-run --unit=ouf-rollout-docker-contract-daemon --property=Restart=no --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid --containerd=/run/containerd/containerd.sock
+          sudo systemd-run --unit=ouf-rollout-docker-contract-daemon --property=Restart=no --setenv=PATH=/var/lib/ouf-docker29-tools:/usr/sbin:/usr/bin:/sbin:/bin /var/lib/ouf-docker29-tools/dockerd --config-file=/tmp/ouf-docker-29.json --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid --containerd=/run/containerd/containerd.sock
           for OUF_DOCKER_POLL in $(seq 1 60); do
             if sudo docker info > /tmp/ouf-rollout-docker-29-info.txt 2>/dev/null; then break; fi
             sleep 1
@@ -90,7 +90,7 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          sudo env PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin OUF_NATIVE_UIDS=1 OUF_ISOLATED_NATIVE_PLATFORM=1 OUF_TEST_ROOT="$fixture" \
+          sudo env PATH=/var/lib/ouf-docker29-tools:/usr/sbin:/usr/bin:/sbin:/bin OUF_NATIVE_UIDS=1 OUF_ISOLATED_NATIVE_PLATFORM=1 OUF_TEST_ROOT="$fixture" \
             OUF_FIXTURE_APISIX_IMAGE=apache/apisix:3.18.0-debian OUF_FIXTURE_ETCD_IMAGE=quay.io/coreos/etcd:v3.5.17 OUF_FIXTURE_OWNER_IMAGE=python:3.12-alpine \
             OUF_CANDIDATE_ZIP="$RUNNER_TEMP/ouf-candidate.zip" OUF_FIXTURE_JAVA="$JAVA_HOME/bin/java" \
             OUF_INGESTION_SQL_ROOT="$fixture/repository/.pairwise/ingestion/src/main/resources/db/migration" \
