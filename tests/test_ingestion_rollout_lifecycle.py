@@ -118,6 +118,20 @@ class LifecycleClaims(unittest.TestCase):
         with self.assertRaises(c.Paused):self.runner.reconcile()
         self.assertEqual(len(self.posts('/containers/create?')),1)
         self.assertFalse(any('/containers/ingestion/'in p for _,p in self.calls))
+    def test_linux_image_only_args_escaped_omission_does_not_relax_process_or_other_fields(self):
+        from tools.ingestion_rollout_execution.replacement import validate
+        frame=self.packet['frames']['ingestion']
+        actual=self.new_container(frame['requestTemplate'],'f'*64,frame['name']);actual['Platform']='linux'
+        image=copy.deepcopy(self.packet['candidate']['imageConfig']);image['ArgsEscaped']=True
+        frame=self.packet['frames']['ingestion'];old=self.packet['expectedRuntimeBindings']['ingestion']['containerId']
+        def check():return validate(frame,actual,image,old,created_id='f'*64,phase='CREATED')
+        self.assertTrue(check()['neverStarted'])
+        actual['Platform']='windows'
+        with self.assertRaises(c.Denied):check()
+        actual['Platform']='linux';command=actual['Config']['Cmd'];actual['Config']['Cmd']=['unreviewed']
+        with self.assertRaises(c.Denied):check()
+        actual['Config']['Cmd']=command;image['UnreviewedImageField']=True
+        with self.assertRaises(c.Denied):check()
     def test_durable_cid_survives_post_create_read_failure_and_reconciles_without_post(self):
         self.until('ingestion.CREATE_REPLACEMENT');self.fail_read_after_create=True
         with self.assertRaises(OSError):self.runner.step()
@@ -152,3 +166,4 @@ class LifecycleClaims(unittest.TestCase):
         self.assertFalse(self.posts('/update'))
 
 if __name__=='__main__':unittest.main()
+

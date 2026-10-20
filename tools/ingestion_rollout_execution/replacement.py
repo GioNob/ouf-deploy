@@ -90,7 +90,16 @@ def validate(frame,actual,image_config,old_id,*,created_id,process=None,phase='R
     # Unknown fields require a reviewed profile change, not silent acceptance.
     require(set(config)<=set(image_config)|set(request)|{'MacAddress'},'UNREVIEWED_CONTAINER_CONFIG_FIELD')
     for key,value in image_config.items():
-        if key not in request:require(config.get(key)==value,'UNREVIEWED_IMAGE_CONFIG_INHERITANCE')
+        # Moby Config.ArgsEscaped is Windows-specific. Linux API1.44 may
+        # omit this deprecated image-only flag; the reviewed process arrays
+        # above still require exact equality. Never normalize an explicit
+        # requested flag or an actual true flag, nor another platform/field.
+        if key=='ArgsEscaped'and key not in request and config.get(key,False)is False:
+            require(type(value)is bool and actual.get('Platform')=='linux'
+                    and all(k in request for k in('Entrypoint','Cmd')),
+                    'LINUX_ONLY_IMAGE_ARGS_ESCAPED_OMISSION_REQUIRED')
+            continue
+        if key not in request:require(config.get(key)==value,'UNREVIEWED_IMAGE_CONFIG_INHERITANCE_'+key)
     host=copy.deepcopy(request['HostConfig'])
     require(host['RestartPolicy']==NO_RESTART,'RESTART_DISABLED_CREATE_FRAME_REQUIRED')
     if restart_restored:host['RestartPolicy']=frame['restoreRestartPolicy']

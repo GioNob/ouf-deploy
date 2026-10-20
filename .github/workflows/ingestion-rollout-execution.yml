@@ -3,6 +3,8 @@ on:
   push:
     branches: [feat/chat-only-recovery-package-20261018]
     paths: ['tools/ingestion_rollout_execution/*.py', 'tests/test_ingestion_rollout_execution.py', 'tests/test_ingestion_rollout_lifecycle.py', '.github/workflows/ingestion-rollout-execution.yml']
+  pull_request:
+    paths: ['tools/ingestion_rollout_execution/*.py', 'tests/test_ingestion_rollout_execution.py', 'tests/test_ingestion_rollout_lifecycle.py', 'tests/test_ingestion_rollout_gateway_transport.py', 'tests/test_ingestion_rollout_database_policy.py', 'tests/test_ingestion_rollout_owner_read.py', 'tests/test_ingestion_rollout_database_read.py', 'tests/test_ingestion_rollout_image_import.py', 'tests/test_ingestion_rollout_runtime_guard.py', 'tests/test_ingestion_rollout_runner_composition.py', 'tests/test_ingestion_rollout_readiness.py', 'tests/test_ingestion_rollout_retained_gateway.py', '.github/workflows/ingestion-rollout-execution.yml']
 permissions: {contents: read}
 jobs:
   signed-core:
@@ -19,5 +21,23 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_execution.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_execution.py -v
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_lifecycle.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_gateway_transport.py -v
+          sudo env OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_database_policy.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_owner_read.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_database_read.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_image_import.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_runtime_guard.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_runner_composition.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_readiness.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_retained_gateway.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_native_review.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_engine_channel.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_native.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_authority.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_entry.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_runtime.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_guard_transient.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_owner_transient.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_human_reader.py -v

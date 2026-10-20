@@ -1,5 +1,16 @@
 # OUF CLOUD — CSV end-to-end miniproject plan ready
 
+## Checkpoint esecutivo corrente — 2026-10-20T12:54:32.221Z
+
+Mini-PET1.1 invariato. **G0/G1/G2 PASS; tecniche8/8, funzionali4/6**. G2qualificato sui byte24c2d9b8c7b3f4f8a4a61125b86877ffbd635dba:162test componenti,3PG17,3prove native con sequenza completa mediante loader114moduli/issuer/entrypoint isolato. [Dossier G2](../CSV_E2E_G2_NATIVE_EXECUTOR_QUALIFICATION_20261020.md). Nessuna autorità o esecuzione target.
+
+Effort misurato al G2:3.161h, intervallo conservativo3.161–3.731h contro14h cumulative di baseline, comprensivo di WP5 intercalato. Il [registro cronologico](../CSV_E2E_EXECUTION_CHRONOLOGY_20261020.md) conserva gli intervalli non verificati separati e non riscrive la baseline.
+
+WP3 resta bloccato dai gate runtime correnti; ultima finestra HUMAN278/288 scaduta, nessun reset/login/rinnovo automatico. I26tool esposti sono stati ricontrollati come definizioni, con routingouf-admin disponibile; nessuna chiamata protetta è stata usata come probe di autenticazione e manca un executor target qualificato. Contesti/claim/Owner7/proiezione7 invariati.
+
+WP5 in corso: PRIngestion45(bcc1354,197testPASS/2skip), Onboarding48(17a68ae,273PASS/0skip), UDP47(df1f4c3,267PASS/2skip). Conversioni decimale/data e datatype sono implementati e qualificati nei moduli; prova composta, vocabolari e relazione restano aperti. La coorte runtime storica0fe e il packet trattenuto non vengono sostituiti da queste branch. G3–G7 e M1/M2 restano aperti. Quanto segue conserva il piano/handoff iniziale e non supera questo checkpoint.
+
+
 20 October 2026. Planning/documentation only. Technical8/8,functional4/6 unchanged.
 
 Start from [Mini-PET v1.1](../OUF_CSV_E2E_COMPLETION_MINIPET_v1_1_20261020.md),

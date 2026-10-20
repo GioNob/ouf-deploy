@@ -98,13 +98,27 @@
         "cohort pins",
         "impact-based regression list"
       ],
-      "status": "IN_PROGRESS",
+      "status": "COMPLETE",
       "entryAuthorizationGranted": false,
       "acceptanceTestRefs": [],
       "actualStartedAt": null,
       "startTimeBounds": {
         "earliest": "2026-10-20T11:07:49+02:00",
         "latest": "2026-10-20T09:16:46.603Z"
+      },
+      "completedAt": "2026-10-20T09:53:01.026Z",
+      "gateEvidence": {
+        "gate": "G1",
+        "status": "PASS",
+        "dependencyCompletedAt": "2026-10-20T09:51:37Z",
+        "decisionObservedAt": "2026-10-20T09:53:01.026Z",
+        "runIds": [
+          39399340219,
+          39399343702,
+          39399647915,
+          39401717480
+        ],
+        "nativeTargetAuthority": false
       }
     },
     {
@@ -127,12 +141,42 @@
         "scope issuer and immutable executable closure",
         "native no-replay qualification"
       ],
-      "status": "PLANNED",
+      "status": "IN_PROGRESS",
       "entryAuthorizationGranted": false,
       "acceptanceTestRefs": [
         "CSV-AT-21",
         "CSV-AT-22"
-      ]
+      ],
+      "preparationStatus": "LIFECYCLE_AND_GATEWAY_COMPONENTS_QUALIFIED_NOT_G2",
+      "componentEvidence": {
+        "signedCoreLifecycleGatewayTests": 38,
+        "skipped": 0,
+        "gatewayCommit": "c3042a0696875f538a6476df5866f507d414b667",
+        "gatewayRunId": 39403673060,
+        "localDatabasePolicyTests": 9,
+        "fullExecutorQualified": false,
+        "databasePolicyRunId": 39404688204,
+        "qualifiedComponentTests": 99,
+        "localOwnerReadTests": 10,
+        "localDatabaseReadTests": 8,
+        "currentReadRunId": 39405867174,
+        "currentReadCommit": "d321d7a90606e7e797c9ad83bd16f6b532be6948",
+        "localImageImportTests": 11,
+        "imageImportRunId": 39406640241,
+        "imageImportCommit": "92e7007fcc5ad5e916e05909d13c9e4aef042e31",
+        "localRuntimeGuardTests": 7,
+        "localRunnerCompositionTests": 8,
+        "localReadinessProfileTests": 3,
+        "pendingLinuxReadinessCases": 5,
+        "compositionRunId": 39408488591,
+        "compositionCommit": "45aa4071070e85c42a34afa6a1e9934e50a6e672",
+        "localRetainedGatewayBoundaryTests": 4
+      },
+      "startedAt": null,
+      "startBounds": {
+        "earliest": "2026-10-20T11:07:49+02:00",
+        "latest": "2026-10-20T09:35:14Z"
+      }
     },
     {
       "id": "WP3",
@@ -947,7 +991,7 @@
       76
     ]
   },
-  "firstNextAction": "WP0/WP1 repository/CI diagnosis; no target launcher.",
+  "firstNextAction": "Continue WP2 complete native current HUMAN/Owner/DB guards, image import, issuer/closure/entrypoint and representative isolated native qualification. G1 PASS; G2 OPEN; no target operations.",
   "outOfScope": [
     "Additional file formats",
     "API verticals",
@@ -2357,7 +2401,24 @@
       "additionalHumanHours": null,
       "initialWindowPreciselySegmented": false,
       "waitingIntervals": [],
-      "runtimeBudgetsUnchanged": true
+      "runtimeBudgetsUnchanged": true,
+      "executionBranch": "feat/csv-e2e-native-completion-20261020",
+      "lastObservedAt": "2026-10-20T10:45:39.678Z",
+      "activeTechnicalHoursPreciselyMeasuredAfterTracking": 1.3028991666666667,
+      "initialUnsegmentedHours": 0.14933416666666666,
+      "perPackageAllocationPrecise": false,
+      "currentOpenIntervalStartedAt": "2026-10-20T10:42:11.142Z",
+      "unverifiedIntervals": [
+        {
+          "id": "CSV-UNCERTAIN-0001",
+          "startedAt": "2026-10-20T10:34:57.040Z",
+          "endedAt": "2026-10-20T10:42:11.142Z",
+          "seconds": 434.102,
+          "classification": "UNVERIFIED_EXECUTION_CONTINUITY",
+          "includedInMeasuredEffort": false,
+          "reason": "User reports chat connection interrupted; do not infer technical effort or passive/HUMAN wait from the unverified interval."
+        }
+      ]
     }
   }
 }
