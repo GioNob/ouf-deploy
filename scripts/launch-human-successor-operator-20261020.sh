@@ -15,11 +15,11 @@ if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
 ouf_read="$(mktemp -d "$HOME/ouf-human-operator.XXXXXXXX")"
 ouf_report() { printf 'Launcher conservato: %s\nLog conservato: %s/operator.log\n' "${BASH_SOURCE[0]}" "$ouf_read"; }
 trap ouf_report EXIT
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/c2b37d1cb0975cad5c439a2b17f4e88730ece05d' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/operator.py"
-printf '%s  %s\n' '7b57a1c3848ff3fae149e286c34bf7bb609ab80d99f426106b3669f659348c14' "$ouf_read/operator.py" | sha256sum -c -
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/ff39a949b680b608a414c7ecb1cefdeb3e9aabb3' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/operator.py"
+printf '%s  %s\n' 'b59b625ab83f7248a1499c0e523861846559abae543bc649808cb56fb5f983eb' "$ouf_read/operator.py" | sha256sum -c -
 ouf_args=("$ouf_mode")
 if [[ "$#" -eq 2 ]]; then ouf_args+=("$2"); fi
-sudo python3 -I -B -S - "$ouf_read/operator.py" '7b57a1c3848ff3fae149e286c34bf7bb609ab80d99f426106b3669f659348c14' "${ouf_args[@]}" <<'OUF_OPERATOR' | tee "$ouf_read/operator.log"
+sudo python3 -I -B -S - "$ouf_read/operator.py" 'b59b625ab83f7248a1499c0e523861846559abae543bc649808cb56fb5f983eb' "${ouf_args[@]}" <<'OUF_OPERATOR' | tee "$ouf_read/operator.log"
 import hashlib,os,stat,sys
 try:
  fd=os.open(sys.argv[1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)

@@ -3,6 +3,7 @@ import ast
 import base64
 import gzip
 import hashlib
+import io
 import json
 from pathlib import Path
 
@@ -118,7 +119,12 @@ def generate(root,case,confirmed_read):
         'maximumSourceBytes':2097152,'foregroundOnly':True,'runtimeAuthorityIssued':False}
     raw=encoded(sources)
     if len(raw)>2097152:raise ValueError('OPERATOR_SOURCE_CLOSURE_TOO_LARGE')
-    packed=base64.b64encode(gzip.compress(raw,mtime=0)).decode('ascii')
+    # GzipFile emits a canonical OS-independent header on both qualified
+    # Python versions; compress(mtime=0) has version-specific OS-header bytes.
+    compressed=io.BytesIO()
+    with gzip.GzipFile(filename='',mode='wb',fileobj=compressed,mtime=0,compresslevel=9)as stream:
+        stream.write(raw)
+    packed=base64.b64encode(compressed.getvalue()).decode('ascii')
     header='\n'.join(k+'='+repr(v)for k,v in(
         ('PACKED',packed),('DECLARATION',declaration),('CLOSURE_HASH',sha(encoded(declaration))),
         ('CASE',case),('CONFIRMED_READ',confirmed_read),('PACKAGES',sorted(used_packages)),
