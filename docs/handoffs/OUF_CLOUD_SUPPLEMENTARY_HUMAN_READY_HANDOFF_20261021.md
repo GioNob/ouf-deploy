@@ -1,3 +1,9 @@
+# CURRENT — use the new chat-restart handoff
+
+Owner explicitly confirmed the previously proposed open-window command was **not executed** and requested documentation-only transfer. Read [OUF_CLOUD_CHAT_RESTART_BEFORE_HUMAN_WINDOW_HANDOFF_20261021.md](OUF_CLOUD_CHAT_RESTART_BEFORE_HUMAN_WINDOW_HANDOFF_20261021.md) first. State remains284/288,four left,successful preflight,no new window. Original PETs will be attached by owner. No new runtime action was performed during this handoff.
+
+---
+
 # CURRENT — supplementary preflight passed on VPS; explicit HUMAN window consent next
 
 Owner receipt:21October2026 **08:11:16.774650–08:11:16.797031Europe/Rome**, elapsed0.022379seconds. Status SUPPLEMENTARY_HUMAN_REVIEW_READY_NO_AUTHORITY. HUMAN282+administrative283/284 chain matched, retained production preparation matched. Read-only, zeroOAuth, no window/runtime authority. Evidence: evidence/human-supplementary-preflight-target-20261021.json.

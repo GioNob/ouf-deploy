@@ -1,5 +1,9 @@
 # OUF project instructions
 
+## Current chat transfer — 21October2026
+
+Read [the restart handoff](docs/handoffs/OUF_CLOUD_CHAT_RESTART_BEFORE_HUMAN_WINDOW_HANDOFF_20261021.md) and [checkpoint](evidence/csv-e2e-chat-restart-checkpoint-20261021.json) first. Owner explicitly confirms the last open-window command was NOT executed. Latest completed target operation is the successful read-only supplementary preflight,284/288,four left,no new HUMAN window. After reading AGENTS/Mini-PET/original PET attachments/resilience policy, the new chat must present that exact pinned open-window command and terminal consent, not rerun prepare or start another diagnostic/authentication path. No automatic execution. Owner will attach original PETs; do not publish their archive/full text. This is a chat transfer, not a new runtime STOP or authorization.
+
 ## Active CSV/chatbot roadmap
 
 Follow [the stable 8 technical phases and 6 functional milestones](docs/CHATBOT_CSV_ROADMAP.md). Keep its evidence/status current and include the current numbered phase and functional progress in user updates until completion. Internal launcher phases do not replace this roadmap. Distinguish execution-flow evidence, persisted target readback, CI qualification and end-to-end acceptance.

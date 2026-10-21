@@ -1,3 +1,11 @@
+# CURRENT — chat transfer before HUMAN open-window,21October2026
+
+Owner confirms **the last open-window command was NOT executed**. Latest target preflight passed;284/288,four remaining,no new window/login/runtime authority. Current entry point: [restart handoff](handoffs/OUF_CLOUD_CHAT_RESTART_BEFORE_HUMAN_WINDOW_HANDOFF_20261021.md),[checkpoint](../evidence/csv-e2e-chat-restart-checkpoint-20261021.json). New chat reads AGENTS,Mini-PET1.1,original PETs supplied again by owner,resiliencev3,then asks the exact command/consent in handoff§3. Do not replay completed prepare/IAM/Owner7/projection7/install/readback. No subagents or operational automation.
+
+Technical8/8,functional4/6,G0–G2PASS,G3–G7open. Baseline unchanged. This current header supersedes older next-action instructions below; prior proof stays historical evidence, not authority. No new target operation performed for chat transfer.
+
+---
+
 # CURRENT — 21October2026: supplementary preflight passed on VPS
 
 Technical8/8,functional4/6,G3open. Current284/288,remaining4. Exact target preflight08:11:16.774650–08:11:16.797031Europe/Rome passed with zeroOAuth/no window/no runtime authority. Both administrative ledgers retained; production preparation matched. See current [handoff](handoffs/OUF_CLOUD_SUPPLEMENTARY_HUMAN_READY_HANDOFF_20261021.md) and evidence/human-supplementary-preflight-target-20261021.json.

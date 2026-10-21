@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-21T06:13:02.227Z",
+  "lastUpdatedAt": "2026-10-21T06:23:42.108Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1263,6 +1263,20 @@
       "runtimeAuthorityIssued": false,
       "newHumanWindowOpened": false,
       "gatePassed": false
+    },
+    {
+      "id": "CSV-EVENT-OWNER-CONFIRMED-WINDOW-NOT-EXECUTED-CHAT-TRANSFER",
+      "observedAt": "2026-10-21T06:23:42.108Z",
+      "timestampConfidence": "DOCUMENTATION_OBSERVATION_NOT_EXACT_USER_STATEMENT_TIMESTAMP",
+      "classification": "OWNER_EXPLICIT_CHAT_TRANSFER_INSTRUCTION",
+      "evidenceRef": "evidence/csv-e2e-chat-restart-checkpoint-20261021.json",
+      "openWindowExecuted": false,
+      "newHumanWindowOpened": false,
+      "newTargetOperations": 0,
+      "attempts": 284,
+      "remainingAttempts": 4,
+      "runtimeAuthorityIssued": false,
+      "gatePassed": false
     }
   ],
   "activeIntervals": [
@@ -1739,6 +1753,15 @@
       "classification": "ACTIVE_TECHNICAL",
       "workPackage": "WP3_PREPARATION",
       "activity": "TARGET_SUPPLEMENTARY_PREFLIGHT_RECONCILIATION_AND_EXACT_WINDOW_CONSENT_DELIVERY"
+    },
+    {
+      "id": "CSV-TIME-0048",
+      "startedAt": "2026-10-21T06:17:09.025Z",
+      "endedAt": "2026-10-21T06:23:42.108Z",
+      "seconds": 393.083,
+      "classification": "ACTIVE_TECHNICAL_DOCUMENTATION",
+      "workPackage": "WP3_HANDOFF",
+      "activity": "OWNER_REQUESTED_CHAT_RESTART_HANDOFF_NORMATIVE_REFERENCES_AND_RETAINED_CHECKPOINT_NO_TARGET_OPERATIONS"
     }
   ],
   "waitingIntervals": [],
@@ -1821,8 +1844,8 @@
       "observedStatus": "NOT_PASSED",
       "measurementNote": "Initial technical effort not retrospectively inferred from wall time",
       "lastCheckpoint": {
-        "observedAt": "2026-10-21T06:13:02.227Z",
-        "cumulativeMeasuredEffortHours": 8.020976193611112,
+        "observedAt": "2026-10-21T06:23:42.108Z",
+        "cumulativeMeasuredEffortHours": 8.130165915833333,
         "gatePassed": false,
         "targetProductionBootstrapPrepared": true,
         "humanReadyAtReceipt": true,
@@ -1845,7 +1868,9 @@
         "ownerLifetimeFreshnessDecisionPending": false,
         "humanAuthenticationBoundaryClarificationPending": false,
         "supplementaryHumanTargetPreflightPending": false,
-        "supplementaryHumanTargetPreflightPassed": true
+        "supplementaryHumanTargetPreflightPassed": true,
+        "newHumanWindowOpened": false,
+        "ownerConfirmedOpenWindowNotExecuted": true
       }
     },
     {
@@ -1968,7 +1993,10 @@
     "loginPerformedScope": "LATEST_OPERATOR_ADMIN_API_AUTHENTICATION_NOT_NEW_HUMAN_LOGIN",
     "newHumanLoginPerformed": false,
     "currentCumulativeOAuthAttempts": 284,
-    "currentRemainingAttempts": 4
+    "currentRemainingAttempts": 4,
+    "chatTransferPaused": true,
+    "ownerConfirmedNextOpenWindowNotExecuted": true,
+    "currentHandoff": "docs/handoffs/OUF_CLOUD_CHAT_RESTART_BEFORE_HUMAN_WINDOW_HANDOFF_20261021.md"
   },
   "unverifiedIntervals": [
     {
@@ -2154,7 +2182,7 @@
       "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
       "G7_ACCEPTANCE"
     ],
-    "currentRequiredHumanAction": "EXPLICIT_TERMINAL_SUPPLEMENTARY_HUMAN_WINDOW_CONSENT_ZERO_OAUTH",
+    "currentRequiredHumanAction": "NEW_CHAT_READ_RESTART_HANDOFF_THEN_PRESENT_EXACT_OPEN_WINDOW_COMMAND",
     "remainingAttempts": 4,
     "reasonCode": "FRESH_HUMAN_WINDOW_CONSENT_REQUIRED",
     "newLoginRequested": false,
@@ -2302,6 +2330,14 @@
       "countedAsActive": false,
       "humanEffortKnown": false,
       "note": "Target execution has exact independent start/finish clocks; excluded wall interval is not treated as human or technical effort."
+    },
+    {
+      "startedAt": "2026-10-21T06:13:02.227Z",
+      "endedAt": "2026-10-21T06:17:09.025Z",
+      "classification": "COMMAND_DELIVERY_AND_OWNER_CHAT_TRANSFER_REQUEST_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Owner explicitly did not execute the proposed command. No new target execution time inferred."
     }
   ],
   "deliveryAccounting": {
