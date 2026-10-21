@@ -22,6 +22,7 @@ from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.chatbot_file_cohort.human_session import HumanSession
 import test_cutover_authority_native as crypto
 import test_ingestion_rollout_native_review as pf
+import image_custody
 
 def fixture(folder):
     p=pf.NativeReview();p.setUp()
@@ -56,6 +57,16 @@ def fixture(folder):
         'candidateFileBindings':{'image.tar.gz':archive},'parentReviewHash':'d'*64,
         **{k:False for k in ('nativeRuntimeExecutorQualified','targetApplyAuthorized','runtimeAuthorityIssued',
                             'automaticReplayAllowed','budgetReset','sourceActivationAllowed','releaseAcceptance')}}
+    audit={'archiveSha256':archive['sha256'],'imageId':image['Id'],'configSha256':image['Id'][7:],'configBytes':100,
+           'sourceCommit':'2'*40,'imageConfig':copy.deepcopy(image['Config']),
+           'layers':[{'blobSha256':'a'*64,'diffId':'sha256:'+'a'*64,'archiveBytes':100}]}
+    audit['nativeIdentity']=image_custody.native_identity(audit);bundle['nativeArchiveAudit']=audit
+    native_id=image_custody.runtime_image_id(audit)
+    bundle['ingestionFrame']['requestTemplate']['Image']=native_id
+    for stage in bundle['finiteIntentContract']['stages']:
+        if stage['name']=='IMPORT_INGESTION_IMAGE':stage['intent']['nativeImageId']=native_id
+        if stage['name']=='ingestion.CREATE_REPLACEMENT':stage['intent']['requestTemplate']['Image']=native_id
+        stage['intentHash']=c.digest(stage['intent'])
     human={'sessionId':'fixture-session','issuer':'https://fixture.invalid','tenant':'fixture','subject':'fixture-human'}
     review,packet=nr.compile_review(bundle,{'path':str(folder/'inputs.json'),'sha256':c.digest(bundle)},human,str(folder))
     return p,review,packet
@@ -83,6 +94,16 @@ class Contract(unittest.TestCase):
             for s in value['stages']:s['intentHash']=c.digest(s['intent'])
             value['preparedInputsHash']=c.digest(value['preparedInputs'])
             with self.assertRaises(c.Denied):nr.validate_review(value,self.packet)
+    def test_configuration_native_manifest_and_archive_cannot_be_substituted(self):
+        for mutate in (
+            lambda b:b['nativeArchiveAudit']['nativeIdentity'].update(nativeImageId='sha256:'+'9'*64),
+            lambda b:b['nativeArchiveAudit'].update(archiveSha256='9'*64),
+            lambda b:b['nativeArchiveAudit'].update(sourceCommit='9'*40),
+            lambda b:b['ingestionFrame']['requestTemplate'].update(Image=b['candidate']['Id'])):
+            bundle=copy.deepcopy(self.review['preparedInputs']);mutate(bundle)
+            with self.assertRaises((c.Denied,image_custody.ImageCustodyDenied)):
+                nr.compile_review(bundle,{'path':str(self.root/'inputs.json'),'sha256':c.digest(bundle)},
+                    self.review['humanBinding'],str(self.root))
     def test_current_custody_channel_or_budget_drift_is_denied(self):
         for key in ('maximumDirectEnginePosts','maximumDirectEngineGets','maximumOwnerGetAttempts'):
             value=copy.deepcopy(self.review);value[key]+=1

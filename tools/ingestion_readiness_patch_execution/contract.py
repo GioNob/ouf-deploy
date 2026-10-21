@@ -5,6 +5,7 @@ import json
 from pathlib import PurePosixPath
 import re
 from tools.ingestion_rollout_preparation import frames
+import image_custody
 
 PROFILE = 'ouf.ingestion-readiness-patch-finite-execution.v1'
 AUTHORITY_KEY = 'ingestionReadinessPatch'
@@ -38,8 +39,16 @@ def stages(bundle):
             and re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.-]{0,127}',frame['name'])
             and before['Name']=='/'+frame['name'] and hashed(before['Id']), 'EXACT_ONE_INGESTION_FRAME_REQUIRED')
     candidate=bundle['candidate'];meta=candidate['Config'].get('Labels',{})
+    audit=bundle.get('nativeArchiveAudit')
+    require(type(audit) is dict and audit.get('nativeIdentity')==image_custody.native_identity(audit)
+            and audit['imageId']==candidate['Id'] and audit['sourceCommit']==meta.get('org.opencontainers.image.revision')
+            and audit.get('archiveSha256')==bundle['candidateFileBindings']['image.tar.gz']['sha256']
+            and all(encoded(audit['imageConfig'].get(k))==encoded(candidate['Config'].get(k)) for k in image_custody.FIELDS)
+            and candidate['RootFS']=={'Type':'layers','Layers':[r['diffId'] for r in audit['layers']]},
+            'EXACT_AUDITED_CONFIGURATION_AND_NATIVE_MANIFEST_REQUIRED')
+    native_id=image_custody.runtime_image_id(audit)
     require(candidate['Os']=='linux' and candidate['Architecture']=='amd64'
-            and re.fullmatch('sha256:[0-9a-f]{64}',candidate['Id']) and request['Image']==candidate['Id']
+            and re.fullmatch('sha256:[0-9a-f]{64}',candidate['Id']) and request['Image']==native_id
             and candidate['Config']['User']=='10002:10002'
             and candidate['Config']['Entrypoint']==['java','-jar','/app/app.jar']
             and re.fullmatch('[0-9a-f]{40}',meta.get('org.opencontainers.image.revision',''))
@@ -47,7 +56,7 @@ def stages(bundle):
             'EXACT_QUALIFIED_PATCH_CANDIDATE_REQUIRED')
     expected=copy.deepcopy(before['Config']);expected.pop('MacAddress',None)
     if expected.get('Hostname')==before['Id'][:12]:expected['Hostname']=''
-    expected['Image']=candidate['Id']
+    expected['Image']=native_id
     expected['Labels']={**(expected.get('Labels')or{}),'org.opencontainers.image.revision':meta['org.opencontainers.image.revision']}
     host=copy.deepcopy(before['HostConfig']);restore=copy.deepcopy(host['RestartPolicy'])
     require(host.get('AutoRemove')is not True and host.get('Privileged')is not True

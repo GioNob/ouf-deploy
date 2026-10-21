@@ -1,5 +1,6 @@
 """Deterministic one-Ingestion review from the authenticated private input bundle."""
 import copy
+import image_custody
 from tools.ingestion_readiness_patch_execution import contract as c, runtime_bindings, runtime_guard
 from tools.ingestion_readiness_patch_execution import owner_read, database_read, image_import, gateway_transport, readiness, human_reader
 
@@ -17,7 +18,7 @@ def compile_review(bundle,binding,human_binding,execution_context,*,human_read_p
     archive=bundle['candidateFileBindings']['image.tar.gz']
     packet={'schema':'ouf.ingestion-readiness-patch-private-packet.v1','nativeInputs':copy.deepcopy(bundle),
         'frames':frames,'expectedRuntimeBindings':{'ingestion':runtime_bindings.observed(before,runtime_bindings.SORTED)},
-        'candidate':{'nativeImageId':image['Id'],'configurationImageId':image['Id'],
+        'candidate':{'nativeImageId':image_custody.runtime_image_id(bundle['nativeArchiveAudit']),'configurationImageId':image['Id'],
             'sourceCommit':image['Config']['Labels']['org.opencontainers.image.revision'],
             'imageConfig':copy.deepcopy(image['Config']),'rootfs':{'type':'layers','diff_ids':copy.deepcopy(rootfs['Layers'])},
             'nativeArchiveBinding':{k:archive[k] for k in ('path','sha256','metadata')}},

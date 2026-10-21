@@ -7,6 +7,7 @@ target HUMAN/Onboarding authority, functional F5/F6 or release acceptance.
 import base64
 import copy
 import hashlib
+import gzip
 import importlib.util
 import json
 import os
@@ -39,6 +40,7 @@ from tools.semantic_lease_recovery.recovery_journal import Journal
 from tools.chatbot_file_cohort import human_session as human_module
 from tools.chatbot_file_cohort.gateway import route_map
 import iam_governance_intake as governance
+from tools.semantic_application_cutover import image_custody
 from engine_creation import Engine,CreationDenied
 
 def cli(arguments,seconds=90):
@@ -65,12 +67,34 @@ class NativePlatform(unittest.TestCase):
             raise AssertionError('CANDIDATE_ARCHIVE_CHANGED')
         if meta['sourceCommit']!='4165b9e149be467d5d7c6bed35e4e1af4e249db1':
             raise AssertionError('EXACT_CANDIDATE_SOURCE_REQUIRED')
-        cls.archive=folder/'image.tar.gz';cls.image=meta['imageId']
+        cls.configuration_image=meta['imageId']
+        original=folder/'original.tar'
+        with gzip.open(folder/'image.tar.gz','rb') as source, open(original,'xb') as target:
+            expanded=0
+            while True:
+                chunk=source.read(1048576)
+                if not chunk:break
+                expanded+=len(chunk)
+                if expanded>image_custody.LIMIT:raise AssertionError('BOUNDED_EXPANDED_ARCHIVE_REQUIRED')
+                target.write(chunk)
+        with open(original,'rb') as source:
+            original_sha=image_custody.hashed(source,image_custody.LIMIT)[0]
+            audit=image_custody.archive(source,original_sha,cls.configuration_image,meta['sourceCommit'])
+        cls.archive=folder/'native-image.tar'
+        with open(original,'rb') as source, open(cls.archive,'xb') as target:
+            derived=image_custody.tagless_archive(source,target,audit,containerd=True)
+        with open(cls.archive,'rb') as source:
+            cls.native_audit=image_custody.archive(source,derived['derivedArchiveSha256'],
+                cls.configuration_image,meta['sourceCommit'])
+        cls.native_audit['nativeIdentity']=image_custody.native_identity(cls.native_audit)
+        cls.image=image_custody.runtime_image_id(cls.native_audit)
         inspect=json.loads((folder/'image-inspect.json').read_bytes())[0];cls.image_config=inspect['Config']
-        cls.candidate={'sourceCommit':meta['sourceCommit'],'configurationImageId':cls.image,
+        cls.candidate={'sourceCommit':meta['sourceCommit'],'configurationImageId':cls.configuration_image,
             'nativeImageId':cls.image,'imageConfig':cls.image_config,
             'rootfs':{'type':'layers','diff_ids':inspect['RootFS']['Layers']}}
         cli(['load','-i',str(cls.archive)],180)
+        loaded=json.loads(cli(['image','inspect',cls.image]))[0]
+        image_custody.loaded(cls.native_audit,loaded)
         for name in('OUF_FIXTURE_APISIX_IMAGE','OUF_FIXTURE_ETCD_IMAGE','OUF_FIXTURE_OWNER_IMAGE'):
             cli(['pull',os.environ[name]],180)
     def setUp(self):
@@ -192,7 +216,7 @@ class NativePlatform(unittest.TestCase):
         frame={'schema':'ouf.ingestion-local-docker-frame-template.v1','module':'ingestion','name':actual['Name'][1:],
             'requestTemplate':request,'oldMounts':copy.deepcopy(actual['Mounts']),'restoreRestartPolicy':restore,
             'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'resolveGatewaySecretAfterNativeAuthorityRequired':False}
-        logical=c.digest({'operation':'INGESTION_READINESS_WORKLOAD_PATCH','oldContainerId':actual['Id'],'candidateImageId':self.image})
+        logical=c.digest({'operation':'INGESTION_READINESS_WORKLOAD_PATCH','oldContainerId':actual['Id'],'candidateImageId':self.configuration_image})
         stages=[]
         def add(name,kind,intent):stages.append({'name':name,'kind':kind,'intent':intent,'intentHash':c.digest(intent)})
         add('VERIFY_CURRENT_GATES','READ',{'fixtureOnly':True})
@@ -208,12 +232,12 @@ class NativePlatform(unittest.TestCase):
         add('ingestion.RESTORE_RESTART','EFFECT',{'createdIdMustComeFromDurableCreateResponse':True,'restartPolicy':restore})
         add('VERIFY_RESTORED_FINAL','READ',{'fixtureOnly':True})
         unchanged={**applications,'gateway':before_containers['gateway']}
-        inspection={'Id':self.image,'Os':'linux','Architecture':'amd64','Config':self.image_config,
+        inspection={'Id':self.configuration_image,'Os':'linux','Architecture':'amd64','Config':self.image_config,
                     'RootFS':{'Type':'layers','Layers':self.candidate['rootfs']['diff_ids']}}
         bundle={'schema':'ouf.ingestion-readiness-patch-native-inputs.v1','kind':'PRIVATE_NATIVE_INPUTS_NOT_EXECUTABLE_AUTHORITY',
             'finiteIntentContract':{'logicalOperationRef':logical,'stages':stages,'maximumGatewayWrites':0,'maximumSecretCreations':0},
             'ingestionFrame':frame,'beforeIngestion':actual,'candidate':inspection,
-            'candidateFileBindings':{'image.tar.gz':selected_archive},'parentReviewHash':'d'*64,
+            'candidateFileBindings':{'image.tar.gz':selected_archive},'nativeArchiveAudit':copy.deepcopy(self.native_audit),'parentReviewHash':'d'*64,
             'unchangedApplications':{m:{'binding':rb.observed(v,rb.NATIVE),'bindingProfile':rb.NATIVE,'restartCount':v['RestartCount']}
                                      for m,v in unchanged.items()},
             'engineBinding':engine,'ownerControlProfile':profiles['ownerControlProfile'],
