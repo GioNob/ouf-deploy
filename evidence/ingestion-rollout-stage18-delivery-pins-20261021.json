@@ -1,0 +1,46 @@
+{
+  "schema": "ouf.ingestion-rollout-stage18-delivery-pins.v1",
+  "purpose": "EXACT_RETAINED_INSTALLATION_NOT_PORTABLE_DEFAULT",
+  "sourceParent": "afe3d0072feb21765d85bb872b8805a5ec26b211",
+  "files": {
+    "scripts/ingestion-rollout-stage18-human-20261021.py": {
+      "bytes": 644369,
+      "sha256": "bebc1c6a0f5ff81719adbc5d10f7195f3cf2d37acde2a3a7f9d5ce934f3e1234",
+      "blobSha": "79a654491b6bb055f240cc7f32ab38f1ebf2393c"
+    },
+    "scripts/ingestion-rollout-stage18-runtime-20261021.py": {
+      "bytes": 533019,
+      "sha256": "9af3c7456ce7904a2a35d9920d92eb54acc1bdd90e13fb3330b6fa8dd95f0c7f",
+      "blobSha": "d1884acd9e994de3d8ba4c709aee42d76bdfa144"
+    },
+    "scripts/launch-ingestion-rollout-stage18-human-20261021.sh": {
+      "bytes": 2443,
+      "sha256": "916a14c4f6452a694b6ea9ccd07717dee69f2466e1ad61181dcc5b384064ba8a",
+      "blobSha": "e9d965b21d72c37df4bd53c61098372a6a7cdcc4"
+    },
+    "scripts/launch-ingestion-rollout-stage18-runtime-20261021.sh": {
+      "bytes": 2399,
+      "sha256": "212833378b8d0802d181bc4970db5eb9fc6cbd9bf6bbb2fc441ab725cca281c3",
+      "blobSha": "e246d11a7a4772e67aa2f6c7dc8f8964c6edab79"
+    }
+  },
+  "frozen114ModulesAndLoaderChanged": false,
+  "localTests": {
+    "passed": 27,
+    "skipped": 0,
+    "bootEvidence": "SYNTHETIC_WHEN_HOST_PROC_UNAVAILABLE_CI_REQUIRES_REAL_BOOT"
+  },
+  "ciQualification": "PENDING",
+  "targetPreflightCompleted": false,
+  "targetWindowOpened": false,
+  "runtimeAuthorityIssued": false,
+  "technicalCompleted": 8,
+  "functionalProven": 4,
+  "releaseAcceptance": false,
+  "originalsConsulted": [
+    "Matrix1.7 section1",
+    "Authorization1.5 sections2.1,12.1",
+    "Ingestion1.3 sections94,95"
+  ],
+  "resiliencePolicyV3Blob": "0a7068e9655084b412993b9e64ff898a6141b930"
+}

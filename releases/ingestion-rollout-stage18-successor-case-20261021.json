@@ -1,0 +1,168 @@
+{
+  "schema": "ouf.ingestion-rollout-stage18-successor-case.v1",
+  "purpose": "EXACT_RETAINED_INSTALLATION_NOT_PORTABLE_DEFAULT",
+  "budgetCase": {
+    "schema": "ouf.technical-oauth-budget-extension-case.v1",
+    "purpose": "EXACT_RETAINED_INSTALLATION_NOT_PORTABLE_DEFAULT",
+    "journalHash": "c9907ea94b0c5908109e45e5e10be4641f610bc0374bb053de2851781461f2c0",
+    "reviewHash": "b0276204afeb592487428863f7c3f6392d0bb66c6dc0ca99620867b1d23f8521",
+    "logicalOperationRef": "2d41675c88b42cf7b07964fe757b71dff1dfe04902c5a06c3efa63d38cb8a966",
+    "liveInputReceipt": {
+      "additionalOAuthBudgetGranted": false,
+      "applicationReadinessReverified": false,
+      "automaticReplayAllowed": false,
+      "bearerFilesOpened": 0,
+      "budgetReset": false,
+      "complete": true,
+      "completedTechnicalPhases": 8,
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-native-7fs9r6md",
+      "databaseAdmissionProven": false,
+      "databaseCalls": 0,
+      "dedicatedKeyMetadataMatched": true,
+      "elapsedSeconds": 0.09890933200949803,
+      "engineRequests": 18,
+      "finishedAtUnix": 1792583466.5553498,
+      "functionalMilestonesProven": 4,
+      "gatewayKeyValueReverified": false,
+      "gatewayRequests": 0,
+      "gatewayRoutesReverified": false,
+      "humanCredentialJournalsRead": 0,
+      "humanWindowOpened": false,
+      "logicalOperationRef": "2d41675c88b42cf7b07964fe757b71dff1dfe04902c5a06c3efa63d38cb8a966",
+      "matchesPreviousGatewayNamespaceInode": true,
+      "maximumEngineRequests": 18,
+      "namespaceSelectedFromDurableReplacementPid": true,
+      "newGatewayNamespaceMatched": {
+        "device": 4,
+        "inode": 4026532675
+      },
+      "nextStage": 18,
+      "notReleaseAcceptance": true,
+      "oauthRequests": 0,
+      "oldNamespaceReferenceReused": false,
+      "ownerControlReverified": false,
+      "postgresGenerationMatched": true,
+      "predecessorJournalHash": "c9907ea94b0c5908109e45e5e10be4641f610bc0374bb053de2851781461f2c0",
+      "predecessorReviewHash": "b0276204afeb592487428863f7c3f6392d0bb66c6dc0ca99620867b1d23f8521",
+      "priorOAuthAttempts": 288,
+      "privateKeysRead": 0,
+      "proposedAdditionalOAuthAttempts": 4,
+      "proposedCumulativeOAuthCeiling": 292,
+      "readOnly": true,
+      "replacementGenerations": {
+        "gateway": {
+          "containerId": "d36bef2faf3d25c6aaaadd72bfb6ebe0a85b2838ae6bf477a5471f8b68d9d912",
+          "pid": 856013,
+          "startedAt": "2026-10-21T06:52:40.923503871Z"
+        },
+        "ingestion": {
+          "containerId": "ca24aa3dc8d740f648db03ef6ff37a5a5adfec6dbe9dd091b087944fac6c30ad",
+          "pid": 840433,
+          "startedAt": "2026-10-21T06:45:52.538205864Z"
+        }
+      },
+      "replacementRestartPoliciesDisabled": true,
+      "retainedPredecessorsStoppedAndDetached": true,
+      "runtimeAuthorityIssued": false,
+      "runtimeEffectsDispatched": 0,
+      "runtimeMetadataObserved": true,
+      "schema": "ouf.ingestion-rollout-continuation-input-read.v1",
+      "startedAtUnix": 1792583466.4564424,
+      "status": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
+      "unchangedApplicationsMatched": [
+        "onboarding",
+        "mcp",
+        "udp"
+      ],
+      "remainingStages": [
+        {
+          "kind": "READ",
+          "name": "REBIND_GATEWAY_TRANSPORT"
+        },
+        {
+          "kind": "READ",
+          "name": "VERIFY_REBOUND_ROUTE_MAP"
+        },
+        {
+          "kind": "EFFECT",
+          "name": "PUT_ROUTE.mcp-ingestion-history"
+        },
+        {
+          "kind": "READ",
+          "name": "READ_ROUTE.mcp-ingestion-history"
+        },
+        {
+          "kind": "EFFECT",
+          "name": "PUT_ROUTE.mcp-ingestion-status"
+        },
+        {
+          "kind": "READ",
+          "name": "READ_ROUTE.mcp-ingestion-status"
+        },
+        {
+          "kind": "READ",
+          "name": "VERIFY_FINAL"
+        },
+        {
+          "kind": "EFFECT",
+          "name": "ingestion.RESTORE_RESTART"
+        },
+        {
+          "kind": "EFFECT",
+          "name": "gateway.RESTORE_RESTART"
+        },
+        {
+          "kind": "READ",
+          "name": "VERIFY_RESTORED_FINAL"
+        }
+      ]
+    },
+    "maximumAdditionalOAuthAttempts": 4,
+    "proposedCumulativeCeiling": 292,
+    "grantIsRuntimeAuthority": false
+  },
+  "budgetReceipt": {
+    "additionalOAuthAttemptsGranted": 4,
+    "automaticReplayAllowed": false,
+    "bearerFilesOpened": 0,
+    "budgetReset": false,
+    "complete": true,
+    "completedTechnicalPhases": 8,
+    "contextPath": "/etc/ouf/deploy-snapshots/human-oauth-budget-extension-0bf8d9acc497dafbe49320a479ebce51d49496903114669718b6d993b56b1b28",
+    "countsAsOfGrant": true,
+    "currentCumulativeOAuthAttempts": 288,
+    "databaseCalls": 0,
+    "decisionHash": "3342cb2e41561b6a573fe38313d7b20be963cef6caf64469123c613cb4c93b15",
+    "decisionRef": "operator-oauth-budget-0bf8d9acc497dafbe49320a4-1792584605",
+    "engineRequests": 0,
+    "functionalMilestonesProven": 4,
+    "gatewayRequests": 0,
+    "humanCredentialJournalsRead": 0,
+    "maximumCumulativeOAuthAttempts": 292,
+    "newHumanWindowOpened": false,
+    "newLoginPerformed": false,
+    "notReleaseAcceptance": true,
+    "oauthRequests": 0,
+    "oldSessionUnchanged": true,
+    "priorOAuthAttempts": 288,
+    "privateKeysRead": 0,
+    "proposalHash": "0bf8d9acc497dafbe49320a479ebce51d49496903114669718b6d993b56b1b28",
+    "providerPrincipalStillRequiresFreshAuthentication": true,
+    "remainingAdditionalOAuthAttempts": 4,
+    "runtimeAuthorityIssued": false,
+    "runtimeEffectsDispatched": 0,
+    "schema": "ouf.technical-oauth-budget-extension-result.v1",
+    "status": "NEW_TECHNICAL_OAUTH_BUDGET_GRANTED_NO_LOGIN_OR_RUNTIME_AUTHORITY",
+    "subsequentConsumptionNotObserved": true
+  },
+  "nativeDeclarationHash": "bf3f33b7ecc6eb06d1e9f87baf14a238338b633a6e2cd816788b04be0a8077a5",
+  "humanOperatorTransportProfile": {
+    "schema": "ouf.human-operator-platform-tls-direct.v1",
+    "platformSystemTrust": true,
+    "httpsProxyAllowed": false,
+    "environmentTrustOverridesAllowed": false
+  },
+  "commonHash": "5d38baccf2a746a5d57ae661bb577537d50db0221a80036a748afef6654e5050",
+  "runtimeControllerHash": "4feca55b80d215b1ad4c4c26ebb5a84dc735902c97377b257ea2ce5cbd52d82d",
+  "authControllerHash": "54569f287b66201c24f1cbf37aa3dcd11984a4f66efd13279bc4e01921cdae58"
+}
