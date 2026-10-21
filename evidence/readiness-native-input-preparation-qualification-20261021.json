@@ -1,0 +1,37 @@
+{
+  "schema": "ouf.readiness-native-input-preparation-qualification.v1",
+  "sourceCommit": "2001744d01cb7cbda542c67a4e49c24bbef0bd89",
+  "ciRun": 39666732234,
+  "prCiRun": 39666740097,
+  "jobs": [
+    {
+      "id": 119453642515,
+      "name": "offline-template (3.13.5)",
+      "status": "completed",
+      "conclusion": "success",
+      "tests": 18,
+      "skipped": 0
+    },
+    {
+      "id": 119453642595,
+      "name": "offline-template (3.12)",
+      "status": "completed",
+      "conclusion": "success",
+      "tests": 18,
+      "skipped": 0
+    }
+  ],
+  "programSha256": "2dd01b72ccd9c484fd2f174c02a2e986e09ceabafe2934f229649cd193150782",
+  "caseFileSha256": "f71b0b958c90d1a2ed9923ddfe45141c019d02b39d941670812dbc3e53682112",
+  "caseHash": "0b2fd250a4f16e05ad1dc2836878f6438d6c417394b8e5f542c0736f244897df",
+  "parentReviewHash": "45ed8d24c23a82ea4336c56ea4f5c4048f3237299a25263955f80e10d9078bea",
+  "scope": "OFFLINE_PRIVATE_INPUT_PROJECTION_ONLY",
+  "targetPreparationObserved": false,
+  "nativeRuntimeExecutorImplemented": false,
+  "nativeRuntimeExecutorQualified": false,
+  "engineRequests": 0,
+  "oauthRequests": 0,
+  "runtimeAuthorityIssued": false,
+  "runtimeEffectsDispatched": 0,
+  "releaseAcceptance": false
+}
