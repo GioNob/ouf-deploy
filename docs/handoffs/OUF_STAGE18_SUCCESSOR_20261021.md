@@ -1,3 +1,9 @@
+# CURRENT target checkpoint — both preflights succeeded
+
+The supplied public receipts confirm both preflights completed with no new HUMAN window,login/provider request or runtime authority. Counts288/292,four remaining. HUMAN reviewHash `c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a`. Both retained launchers/artifact caches are staged. Next action is the separately explicit `open-window` step2 below, using `/home/oufadmin/ouf-stage18-launchers.tmgmExrv/human.sh`; do not rerun step1. Exact terminal phrase `APRO FINESTRA HUMAN c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a`. The opening sends no OAuth requests or runtime effects and grants no runtime/THS authority. Return the new controlPath/public JSON and log before any provider step. Evidence/log paths are recorded in `evidence/ingestion-rollout-stage18-target-preflight-20261021.json`. This is owner-reported target evidence, not an independent live readback or release acceptance.
+
+---
+
 # Stage18 successor — exact retained installation
 
 Technical8/8,functional4/6,G0–G2PASS,G3OPEN. Existing rollout stopped after18/28 applied stages. OAuth grant complete:288 consumed, cumulative ceiling292, four available AS OF GRANT; subsequent consumption is not observed. No current HUMAN window or runtime authority follows from that grant. Target preflight of this successor is still pending. This document describes qualified source behavior once CI passes, not production acceptance.

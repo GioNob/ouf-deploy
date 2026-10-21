@@ -53,7 +53,7 @@
       }
     ]
   },
-  "targetPreflightCompleted": false,
+  "targetPreflightCompleted": true,
   "targetWindowOpened": false,
   "runtimeAuthorityIssued": false,
   "technicalCompleted": 8,
@@ -66,5 +66,7 @@
   ],
   "resiliencePolicyV3Blob": "0a7068e9655084b412993b9e64ff898a6141b930",
   "retainedFailedQualificationRun": 39633974318,
-  "correction": "AUTH_ARTIFACT_REGENERATED_FROM_EXACT_REPOSITORY_BYTES_INCLUDING_FINAL_NEWLINE_NO_LEGACY_LOGIC_CHANGE"
+  "correction": "AUTH_ARTIFACT_REGENERATED_FROM_EXACT_REPOSITORY_BYTES_INCLUDING_FINAL_NEWLINE_NO_LEGACY_LOGIC_CHANGE",
+  "targetPreflightEvidence": "evidence/ingestion-rollout-stage18-target-preflight-20261021.json",
+  "targetHumanReviewHash": "c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a"
 }
