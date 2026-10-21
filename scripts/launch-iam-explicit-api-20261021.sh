@@ -14,10 +14,10 @@ if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
 ouf_read="$(mktemp -d "$HOME/ouf-iam-explicit-api.XXXXXXXX")"
 ouf_report() { printf 'Launcher conservato: %s\nLog conservato: %s/api.log\n' "${BASH_SOURCE[0]}" "$ouf_read"; }
 trap ouf_report EXIT
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/a20163b27aa15ea74ad70128c101036ace5f428b' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/api.py"
-printf '%s  %s\n' '6c24fd27fd25e749c76a7ba39da09231daf70d35b7f39b82340388a72f99db63' "$ouf_read/api.py" | sha256sum -c -
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/950b5b8994c651f955f4ac352abf9c19da6c42ad' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/api.py"
+printf '%s  %s\n' '97c7140eb114db415d5b98d44ecdf5e924ac3933cc071de0e140f4cf8e31655e' "$ouf_read/api.py" | sha256sum -c -
 ouf_args=("$ouf_mode")
-sudo python3 -I -B -S - "$ouf_read/api.py" '6c24fd27fd25e749c76a7ba39da09231daf70d35b7f39b82340388a72f99db63' "${ouf_args[@]}" <<'OUF_OPERATOR'  | tee "$ouf_read/api.log"
+sudo python3 -I -B -S - "$ouf_read/api.py" '97c7140eb114db415d5b98d44ecdf5e924ac3933cc071de0e140f4cf8e31655e' "${ouf_args[@]}" <<'OUF_OPERATOR'  | tee "$ouf_read/api.log"
 import hashlib,os,stat,sys
 try:
  fd=os.open(sys.argv[1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)

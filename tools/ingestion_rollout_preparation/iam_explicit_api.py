@@ -318,6 +318,21 @@ def run(case, api, files, process_adapter, Journal):
         client = request('CLIENT', token, uuid=listing[0]['id'], expiry=expiry)
         del token, identity
         result = api.policy(realm, listing, client, selection['realm'], old['humanClientId'])
+        flows = {k: client.get(k) for k in ('directAccessGrantsEnabled', 'standardFlowEnabled',
+            'serviceAccountsEnabled', 'publicClient')}
+        require(all(v is None or type(v) is bool for v in flows.values()),
+            'TYPED_CURRENT_HUMAN_CLIENT_FLOW_FLAGS_REQUIRED')
+        device = (client.get('attributes') or {}).get('oauth2.device.authorization.grant.enabled')
+        require(device in (None, 'true', 'false'), 'TYPED_CURRENT_DEVICE_GRANT_FLAG_REQUIRED')
+        revocation = {'realmNotBefore': realm.get('notBefore'), 'clientNotBefore': client.get('notBefore'),
+            'revokeRefreshToken': realm.get('revokeRefreshToken'), 'refreshTokenMaxReuse': realm.get('refreshTokenMaxReuse')}
+        require(all(v is None or type(v) is int and v >= 0 for k, v in revocation.items() if k != 'revokeRefreshToken')
+            and (revocation['revokeRefreshToken'] is None or type(revocation['revokeRefreshToken']) is bool),
+            'TYPED_CURRENT_REVOCATION_METADATA_REQUIRED')
+        result.update(clientFlowFlags=flows, deviceGrantEnabledAttribute=device,
+            revocationMetadata=revocation, revocationFreshnessSlaApproved=False,
+            currentProviderRevocationPolicyProven=False, currentProviderTimeoutMetadataRead=True,
+            adminLoginRealmIsHumanRealm=endpoint['adminRealm'] == selection['realm'])
         require(journal.read()['engineRequestsReserved'] == 1, 'TWO_NEW_ENGINE_GET_CEILING_REQUIRED')
         require(api.generation(engine.request('GET'), selection['keycloakContainer']) == before,
             'ADMIN_CONTAINER_GENERATION_CHANGED_DURING_READ')

@@ -97,6 +97,8 @@ class ExplicitApi(unittest.TestCase):
             return a.run(self.case, p, files, r, Journal)
 
     def test_one_counted_login_lookup_supports_absent_username_old_stop_unchanged(self):
+        self.f.client['directAccessGrantsEnabled'] = False
+        self.f.realm.update(notBefore=0, revokeRefreshToken=True, refreshTokenMaxReuse=0)
         old = (Path(self.c.context) / 'recovery.json').read_bytes()
         human = (self.session / 'recovery.json').read_bytes()
         result = self.invoke()
@@ -107,6 +109,9 @@ class ExplicitApi(unittest.TestCase):
         self.assertEqual(result['adminGetsReserved'], 4)
         self.assertTrue(result['currentProviderPolicyProven'])
         self.assertTrue(result['adminIdentityApiVerified'])
+        self.assertFalse(result['clientFlowFlags']['directAccessGrantsEnabled'])
+        self.assertTrue(result['revocationMetadata']['revokeRefreshToken'])
+        self.assertFalse(result['revocationFreshnessSlaApproved'])
         self.assertFalse(result['runtimeAuthorityIssued'])
         self.assertEqual((Path(self.c.context) / 'recovery.json').read_bytes(), old)
         self.assertEqual((self.session / 'recovery.json').read_bytes(), human)
