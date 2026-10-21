@@ -1,3 +1,17 @@
+> **CURRENT — 21 October 2026, target IAM metadata reconciled; explicit API path qualified.**
+>
+> Target reconciliation is complete in retained iam-policy-read-7120rnka: preferred_username is absent, other recorded context checks match, recorded admin lifetime60seconds and expired. Original policy read stays STOP/completefalse; original Engine7/7 and both claims retained. No replay, OAuth or policy mutation occurred.
+>
+> New explicit source3b205c44e983184e90baf31230b7f5ec1affb6b7 qualifies one controlling-terminal-consented admin password grant and four read-only Admin GETs, with a separately explicit two-GET Engine allowance. No automatic login/refresh/retry, console, policy write or HUMAN-window renewal. Prior282/max288 is carried into a supplementary journal: reserve at most one authentication ->283/five remaining. Original HUMAN journal stays immutable; a supplementary successor claim fences legacy window reuse, and every later HUMAN review must consume the new ledger. No counters reset.
+>
+> CI39541264244:11PASS on Python3.12 and3.13.5, zero skips, including Docker namespace, actual tty/hidden password and actual disposable Keycloak26.2.5. Real-provider fixture uses master/admin-cli, not target OUF. Lightweight subject is resolved from the same fresh response ID token and confirmed through the protected Admin user API; no independent local JWT signature verification or runtime authority is claimed. All regressions PASS;114native modules+loader115Git blobs unchanged; production >930second margin unchanged.
+>
+> Next required operator step: run only the pinned new explicit IAM API launcher once, type the displayed exact consent, then enter the IAM admin password hidden in that terminal (distinct from sudo). Return public JSON and api.log. Never put credentials in chat. On STOP retain context/claims; no execute replay. Handoff: docs/handoffs/OUF_CLOUD_EXPLICIT_IAM_API_READY_HANDOFF_20261021.md; pins: evidence/iam-explicit-api-delivery-pins-20261021.json.
+>
+> Effort checkpoint21October05:58:19Europe/Rome:7.320639 measured active technical hours, approximately7h19; excluded unsegmented overnight/operator/resumption intervals explicitly uncertain. Technical8/8,functional4/6,G0–G2PASS,G3open; frozen central G3 H+19/M1 H+24/M2 H+55 unchanged. Current provider policy, approved revocation SLA, DB admission, native client publication and F5/F6 remain unproven; candidate1200seconds remains unapproved/uninstalled. No residual forecast by subtraction.
+>
+> All earlier CURRENT blocks and next-action commands below are superseded historical records.
+
 > **CURRENT — 20 October 2026, retained IAM STOP; same-context metadata reconciliation qualified.**
 >
 > Target policy reader stopped at EXACT_RECORDED_ADMIN_SESSION_CONTEXT_REQUIRED in /etc/ouf/deploy-snapshots/iam-policy-read-7120rnka. The failing issuer/client/username/expiry predicate remains unknown. Preserve the original STOP and claim; do not rerun the original read launcher.

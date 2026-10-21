@@ -42,7 +42,7 @@
   "localUidFixture": 0,
   "ciUidFixture": 1000,
   "ciPhysicalSkip": false,
-  "targetExecuted": false,
+  "targetExecuted": true,
   "targetContextPath": "/etc/ouf/deploy-snapshots/iam-policy-read-7120rnka",
   "originalStoppedApiSourceUnchanged": true,
   "originalApiSourceHash": "531ab7cade26b1cbaeed72ad3db6f57a838050e6d3418b4a4590e6c40b81246e",
@@ -60,5 +60,14 @@
   "allRegressionConclusions": "success",
   "currentProviderPolicyProven": false,
   "runtimeAuthorityIssued": false,
-  "notReleaseAcceptance": true
+  "notReleaseAcceptance": true,
+  "targetComplete": true,
+  "targetStatus": "RECORDED_ADMIN_CONTEXT_RECONCILED_NO_AUTHORITY",
+  "targetReceiptRef": "evidence/iam-session-context-reconcile-target-20261021.json",
+  "originalReadStillStopped": true,
+  "preferredUsernameClaimPresent": false,
+  "recordedAdminIssuedLifetimeSeconds": 60,
+  "recordedAdminAccessExpired": true,
+  "originalEngineBudgetConsumed": 7,
+  "mustNotReplay": true
 }
