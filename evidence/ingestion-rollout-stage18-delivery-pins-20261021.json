@@ -4,9 +4,9 @@
   "sourceParent": "afe3d0072feb21765d85bb872b8805a5ec26b211",
   "files": {
     "scripts/ingestion-rollout-stage18-human-20261021.py": {
-      "bytes": 644369,
-      "sha256": "bebc1c6a0f5ff81719adbc5d10f7195f3cf2d37acde2a3a7f9d5ce934f3e1234",
-      "blobSha": "79a654491b6bb055f240cc7f32ab38f1ebf2393c"
+      "bytes": 644365,
+      "sha256": "0039b94dd5afd7eaa765a8135b459d43c0a00d307106934943b8df4b3901cccd",
+      "blobSha": "9b81376410abb1b998f43edd777c400c68580b30"
     },
     "scripts/ingestion-rollout-stage18-runtime-20261021.py": {
       "bytes": 533019,
@@ -15,8 +15,8 @@
     },
     "scripts/launch-ingestion-rollout-stage18-human-20261021.sh": {
       "bytes": 2443,
-      "sha256": "916a14c4f6452a694b6ea9ccd07717dee69f2466e1ad61181dcc5b384064ba8a",
-      "blobSha": "e9d965b21d72c37df4bd53c61098372a6a7cdcc4"
+      "sha256": "ad97d3152d46f19fb29fd0370864345694593a9bc1fb2a3e8af98f262f0b4aa2",
+      "blobSha": "e7312777d39d90094179382516fb75af5f547aab"
     },
     "scripts/launch-ingestion-rollout-stage18-runtime-20261021.sh": {
       "bytes": 2399,
@@ -42,5 +42,7 @@
     "Authorization1.5 sections2.1,12.1",
     "Ingestion1.3 sections94,95"
   ],
-  "resiliencePolicyV3Blob": "0a7068e9655084b412993b9e64ff898a6141b930"
+  "resiliencePolicyV3Blob": "0a7068e9655084b412993b9e64ff898a6141b930",
+  "retainedFailedQualificationRun": 39633974318,
+  "correction": "AUTH_ARTIFACT_REGENERATED_FROM_EXACT_REPOSITORY_BYTES_INCLUDING_FINAL_NEWLINE_NO_LEGACY_LOGIC_CHANGE"
 }

@@ -18,13 +18,13 @@ if [[ -e "$ouf_cache" || -L "$ouf_cache" ]]; then
  [[ -f "$ouf_cache" && ! -L "$ouf_cache" ]] || exit 2
  cat -- "$ouf_cache" > "$ouf_stage/operator.py"
 else
- "$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/79a654491b6bb055f240cc7f32ab38f1ebf2393c' --jq .content | tr -d '\n' | base64 --decode > "$ouf_stage/operator.py"
+ "$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/9b81376410abb1b998f43edd777c400c68580b30' --jq .content | tr -d '\n' | base64 --decode > "$ouf_stage/operator.py"
 fi
-printf '%s  %s\n' 'bebc1c6a0f5ff81719adbc5d10f7195f3cf2d37acde2a3a7f9d5ce934f3e1234' "$ouf_stage/operator.py" | sha256sum -c -
+printf '%s  %s\n' '0039b94dd5afd7eaa765a8135b459d43c0a00d307106934943b8df4b3901cccd' "$ouf_stage/operator.py" | sha256sum -c -
 if [[ ! -e "$ouf_cache" && ! -L "$ouf_cache" ]]; then
  ( set -o noclobber; cat -- "$ouf_stage/operator.py" > "$ouf_cache" ) || exit 2
 fi
-sudo python3 -I -B -S - "$ouf_stage/operator.py" 'bebc1c6a0f5ff81719adbc5d10f7195f3cf2d37acde2a3a7f9d5ce934f3e1234' "$@" <<'OUF_STAGE18' | tee "$ouf_stage/operator.log"
+sudo python3 -I -B -S - "$ouf_stage/operator.py" '0039b94dd5afd7eaa765a8135b459d43c0a00d307106934943b8df4b3901cccd' "$@" <<'OUF_STAGE18' | tee "$ouf_stage/operator.log"
 import hashlib,os,stat,sys
 try:
  fd=os.open(sys.argv[1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
