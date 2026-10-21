@@ -237,6 +237,7 @@ def status(control,case,closure):
 
 
 def execute(mode,control,case,confirmed_read,closure):
+    started=time.time();clock=time.monotonic()
     require(confirmed_read=={},'SUPPLEMENTARY_CHAIN_REPLACES_OLD_SUCCESSFUL_READ_SELECTION')
     CHECKPOINT.update(phase='LOAD_SUPPLEMENTARY_CHAIN',controlPath=control)
     require(mode in ('prepare','open-window','step','status'),'ONE_EXPLICIT_SUPPLEMENTARY_MODE_REQUIRED')
@@ -250,4 +251,5 @@ def execute(mode,control,case,confirmed_read,closure):
         'oauthRequestsReservedThisInvocation':0,'maximumCumulativeOAuthAttempts':288,
         'runtimeAuthorityIssued':False,'budgetReset':False,'automaticReplayAllowed':False,
         'completedOwnerActionReplayed':False,'completedPublicationReplayed':False,
-        'completedTechnicalPhases':8,'functionalMilestonesProven':4,'notReleaseAcceptance':True,**result}
+        'completedTechnicalPhases':8,'functionalMilestonesProven':4,'notReleaseAcceptance':True,
+        'startedAtUnix':started,'finishedAtUnix':time.time(),'elapsedSeconds':time.monotonic()-clock,**result}
