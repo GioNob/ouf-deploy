@@ -30,7 +30,29 @@
     "skipped": 0,
     "bootEvidence": "SYNTHETIC_WHEN_HOST_PROC_UNAVAILABLE_CI_REQUIRES_REAL_BOOT"
   },
-  "ciQualification": "PENDING",
+  "ciQualification": {
+    "status": "PASS",
+    "sourceCommit": "5e08760666e177a971a5c466955e4376d10c54ef",
+    "runId": 39634414797,
+    "jobs": [
+      {
+        "jobId": 119340933708,
+        "python": "3.12",
+        "newTests": 27,
+        "frozenNativeCompositionTests": 7,
+        "skipped": 0,
+        "conclusion": "success"
+      },
+      {
+        "jobId": 119340934194,
+        "python": "3.13.5",
+        "newTests": 27,
+        "frozenNativeCompositionTests": 7,
+        "skipped": 0,
+        "conclusion": "success"
+      }
+    ]
+  },
   "targetPreflightCompleted": false,
   "targetWindowOpened": false,
   "runtimeAuthorityIssued": false,
