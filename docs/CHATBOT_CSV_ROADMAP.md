@@ -1,3 +1,11 @@
+# CURRENT — corrected stage18 inputs matched; finite budget prepared, not granted
+
+Corrected target reader PASS: exact replacement CID/PID/start and namespace matched, including recycled inode;18 Engine GETs,zero OAuth/effects. The old rollout remains stopped at nextStage18 with18 applied stages; no readiness/routes/DB/provider authority newly proven. Technical8/8,functional4/6,G0–G2PASS,G3OPEN. OAuth remains288/288; proposed292 ceiling is NOT yet granted.
+
+PR48 prepares a separate explicit terminal decision for four additional technical requests, preserving exhausted history. CI39596994308 at85a30fb4af7ce0bfe74bd20acae3a0124d80f73c:20PASS on each Python3.12/3.13.5,zero skips. No login/window/provider request/runtime authority is implemented. Future provider authentication and runtime consent are separate; do not obtain a fresh token until the successor runtime is qualified. See handoffs/OUF_TECHNICAL_OAUTH_BUDGET_EXTENSION_20261021.md. Previous instructions below are historical.
+
+---
+
 # CURRENT — namespace reader defect corrected; distinct read-only delivery next
 
 The first live input reader returned REPLACEMENT_GATEWAY_MUST_USE_NEW_NAMESPACE. The bridge incorrectly required historical netns inode inequality; the frozen native GatewayNamespacePin already allows reused inode numbers while binding the NEW CID/firstPID/start and stopped/detached predecessor. This is a reader defect,not a proven Gateway failure. Old launcher/log and all contexts/claims are retained; no new login/authority/effect.

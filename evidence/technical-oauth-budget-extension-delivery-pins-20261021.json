@@ -1,0 +1,54 @@
+{
+  "schema": "ouf.technical-oauth-budget-extension-delivery-pins.v1",
+  "purpose": "EXACT_RETAINED_INSTALLATION_NOT_PORTABLE_DEFAULT",
+  "sourceParent": "84385614384d9e2edf474ec84b87cdec8d11747f",
+  "files": {
+    "scripts/technical-oauth-budget-extension-20261021.py": {
+      "sha256": "504237182ef70270de75d919500657c0315723068156056f468cb82f28bcd261",
+      "blobSha": "6fa36ac46ffef0db7f162be3b4a519f8c9fc6911",
+      "bytes": 18605
+    },
+    "scripts/launch-technical-oauth-budget-extension-20261021.sh": {
+      "sha256": "adc4e8d6f09833b0e5e73a1f7499d5238c1f10b7a4540e48f2a67cd599c94a13",
+      "blobSha": "b1291dd794635f86ecf52ea9a53c09396fc18372",
+      "bytes": 2052
+    }
+  },
+  "priorOAuthAttempts": 288,
+  "proposedCumulativeCeiling": 292,
+  "targetBudgetGranted": false,
+  "newHumanWindowOpened": false,
+  "runtimeAuthorityIssued": false,
+  "localQualification": {
+    "testCount": 20,
+    "skipped": 0
+  },
+  "ciQualification": {
+    "status": "PASS",
+    "sourceCommit": "85a30fb4af7ce0bfe74bd20acae3a0124d80f73c",
+    "runId": 39596994308,
+    "jobs": [
+      {
+        "id": 119211650075,
+        "python": "3.12",
+        "tests": 20,
+        "skipped": 0,
+        "conclusion": "success"
+      },
+      {
+        "id": 119211650349,
+        "python": "3.13.5",
+        "tests": 20,
+        "skipped": 0,
+        "conclusion": "success"
+      }
+    ]
+  },
+  "consultedOriginals": [
+    "Matrix1.7 section1",
+    "Authorization1.5 sections2.1,12.1",
+    "Ingestion1.3 sections94,95"
+  ],
+  "resiliencePolicyV3Blob": "0a7068e9655084b412993b9e64ff898a6141b930",
+  "releaseAcceptance": false
+}

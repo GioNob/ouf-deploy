@@ -1,3 +1,11 @@
+# CURRENT — live metadata matched; separate technical budget decision only
+
+Corrected target reader PASS: exact replacement CID/PID/start and namespace matched, including recycled inode;18 Engine GETs,zero OAuth/effects. The old rollout remains stopped at nextStage18 with18 applied stages; no readiness/routes/DB/provider authority newly proven. Technical8/8,functional4/6,G0–G2PASS,G3OPEN. OAuth remains288/288; proposed292 ceiling is NOT yet granted.
+
+PR48 prepares a separate explicit terminal decision for four additional technical requests, preserving exhausted history. CI39596994308 at85a30fb4af7ce0bfe74bd20acae3a0124d80f73c:20PASS on each Python3.12/3.13.5,zero skips. No login/window/provider request/runtime authority is implemented. Future provider authentication and runtime consent are separate; do not obtain a fresh token until the successor runtime is qualified. See docs/handoffs/OUF_TECHNICAL_OAUTH_BUDGET_EXTENSION_20261021.md. Previous instructions below are historical.
+
+---
+
 # CURRENT — corrected live namespace reader required, no runtime action
 
 First input-reader STOP was caused by a bridge inode-inequality defect. Frozen GatewayNamespacePin already supports recycled namespace inode numbers with exact NEW CID/PID/start. See current roadmap and docs/handoffs/OUF_CLOUD_STAGE18_CONTINUATION_INPUTS_20261021.md. Corrected PR47 source84385614…,CI39594157172,19tests each Python/zero skips. Only the corrected pinned read-only reader is next; old launcher/log retained. No login,old step/reconcile/approve/initialize or budget reset. OAuth remains288/288;292proposal unapproved. Older instructions below are historical.
