@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-21T18:06:00.563Z",
+  "lastUpdatedAt": "2026-10-21T18:25:09.188Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1512,6 +1512,22 @@
       "activationResubmitted": false,
       "later503CauseProven": false,
       "releaseAcceptance": false
+    },
+    {
+      "id": "CSV-EVENT-READINESS-PATCH-IMAGE-EXPORTED-INPUT-READER-QUALIFIED",
+      "classification": "DEVELOPMENT_CI_ARTIFACT_AND_READ_ONLY_PREPARATION_NO_TARGET_RECEIPT",
+      "documentedAt": "2026-10-21T18:25:09.188Z",
+      "sourceCommit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "buildRecipeCommit": "6f1870b49fcfba0dcf3ec2b6df26cfa9c4a5ccf5",
+      "imageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+      "imageRunId": 39650459729,
+      "imageArtifactId": 12370330790,
+      "inputReaderCommit": "89ef2102316d1827b9eb0833f49452d35ac679f5",
+      "inputReaderCiRun": 39652227636,
+      "inputReaderTestsPerVersion": 4,
+      "targetExecuted": false,
+      "runtimeAuthorityIssued": false,
+      "evidenceRef": "evidence/ingestion-readiness-patch-delivery-20261021.json"
     }
   ],
   "activeIntervals": [
@@ -2274,7 +2290,7 @@
     "refreshPerformed": false,
     "budgetReset": false,
     "wp3Block": {
-      "status": "NATIVE_PROFILE_APPROVED_ACTIVATION_PAUSED_WORKLOAD_CONTRACT_FIX_QUALIFIED_NOT_INSTALLED",
+      "status": "READINESS_PATCH_IMAGE_EXPORTED_PRIVATE_TARGET_INPUT_CAPTURE_PENDING",
       "nextStage": 28,
       "appliedStages": 28,
       "currentAuthorityProven": false,
@@ -2284,7 +2300,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "NONE_UNTIL_NEW_MINIMAL_PATCH_REVIEW_IS_PREPARED_NO_ACTIVATION_REPLAY",
+      "nextRequiredTargetAction": "EXACT_GET_ONLY_INPUT_CAPTURE_AND_PRIVATE_ARTIFACT_CUSTODY_NO_RUNTIME_AUTHORITY",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2307,7 +2323,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_NATIVE_READINESS_CONTRACT_FIX_20261021.md",
+    "currentHandoff": "docs/handoffs/OUF_INGESTION_READINESS_PATCH_PREPARATION_20261021.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 292,
@@ -2508,6 +2524,54 @@
       "fixtureIsolationOnly": true,
       "targetInstalled": false,
       "scope": "DEVELOPMENT_CI_NOT_TARGET_ACCEPTANCE"
+    },
+    "readinessPatchInputPreparation": {
+      "schema": "ouf.readiness-patch-preparation-delivery.v1",
+      "recordedAt": "2026-10-21T18:25:09.188Z",
+      "sourceRepository": "GioNob/ouf-ingestion-runtime",
+      "sourceCommit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "sourcePullRequest": 46,
+      "buildRecipeCommit": "6f1870b49fcfba0dcf3ec2b6df26cfa9c4a5ccf5",
+      "imageRunId": 39650459729,
+      "imageArtifactId": 12370330790,
+      "imageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+      "imageArchiveSha256": "5f6893d1ac63d5c5ee96c961e5c91a3b1c058a6300af169663961f1d5fbf8be6",
+      "imageArchiveBytes": 136781501,
+      "artifactZipSha256": "f28562307f37e663e90944d45b9f0ca5d6f9011fca6f5154c199679a7b006c64",
+      "readerRepository": "GioNob/ouf-deploy",
+      "readerQualifiedCommit": "89ef2102316d1827b9eb0833f49452d35ac679f5",
+      "readerPath": "tools/readiness_patch_inputs/reader.py",
+      "readerSha256": "c97ae9fd8af1a554df372abd3342e7057c14fc0a7d40acffb82181625e3e9e4d",
+      "casePath": "releases/ingestion-readiness-patch-input-case-20261021.json",
+      "caseFileSha256": "8f92952b1e1a1813921e21536169eca9b93e2d33895f52931f90ab3e6e04a734",
+      "caseCanonicalDigest": "3fea910fc74b8ea6fcfd121fc0f8386a1ed78c5a89063a3e686053ca8180a317",
+      "expectedPrivateContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-patch-inputs-3fea910fc74b8ea6fcfd121fc0f8386a1ed78c5a89063a3e686053ca8180a317",
+      "inputReaderCiRun": 39652227636,
+      "inputReaderPrCiRun": 39652232978,
+      "qualificationJobs": [
+        {
+          "id": 119403239740,
+          "name": "finite-input-capture (3.12)",
+          "conclusion": "success",
+          "tests": 4,
+          "skipped": 0
+        },
+        {
+          "id": 119403239894,
+          "name": "finite-input-capture (3.13.5)",
+          "conclusion": "success",
+          "tests": 4,
+          "skipped": 0
+        }
+      ],
+      "targetInputCapturePerformed": false,
+      "targetInstalled": false,
+      "runtimeAuthorityIssued": false,
+      "oauthRequests": 0,
+      "priorCumulativeOAuthAttempts": 292,
+      "maximumCumulativeOAuthAttempts": 292,
+      "automaticReplayAllowed": false,
+      "releaseAcceptance": false
     }
   },
   "developmentCandidates": [
@@ -2556,6 +2620,13 @@
         "targetInstalled": false,
         "scope": "DEVELOPMENT_CI_NOT_TARGET_ACCEPTANCE"
       }
+    },
+    {
+      "repo": "ouf-deploy",
+      "commit": "89ef2102316d1827b9eb0833f49452d35ac679f5",
+      "scope": "GET_ONLY_PRIVATE_PATCH_INPUT_CAPTURE",
+      "runtimePublished": false,
+      "qualificationRun": 39652227636
     }
   ],
   "runtimeBlockers": {
@@ -2574,7 +2645,7 @@
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "NONE_DO_NOT_REPEAT_ACTIVATION_PREPARE_NEW_PATCH_REVIEW",
+    "currentRequiredHumanAction": "RUN_PINNED_READ_ONLY_TARGET_INPUT_CAPTURE_NO_LOGIN_OR_ACTIVATION",
     "maximumNewOAuthRequests": 0,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
     "profileApplied": true,
