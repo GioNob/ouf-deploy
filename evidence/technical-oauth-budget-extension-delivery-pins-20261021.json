@@ -23,7 +23,27 @@
     "testCount": 20,
     "skipped": 0
   },
-  "ciQualification": "PENDING",
+  "ciQualification": {
+    "status": "PASS",
+    "sourceCommit": "85a30fb4af7ce0bfe74bd20acae3a0124d80f73c",
+    "runId": 39596994308,
+    "jobs": [
+      {
+        "id": 119211650075,
+        "python": "3.12",
+        "tests": 20,
+        "skipped": 0,
+        "conclusion": "success"
+      },
+      {
+        "id": 119211650349,
+        "python": "3.13.5",
+        "tests": 20,
+        "skipped": 0,
+        "conclusion": "success"
+      }
+    ]
+  },
   "consultedOriginals": [
     "Matrix1.7 section1",
     "Authorization1.5 sections2.1,12.1",
