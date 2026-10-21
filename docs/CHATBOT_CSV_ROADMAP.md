@@ -1,3 +1,13 @@
+# CURRENT — BOTH target preflights PASS; next exact HUMAN open-window consent only
+
+Owner receipts confirm runtime STAGE18_RUNTIME_PREFLIGHT_NO_AUTHORITY and HUMAN STAGE18_HUMAN_AND_RUNTIME_PREFLIGHT_NO_WINDOW,288/292,four remaining,reviewHash c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a. No new window/login/OAuth reservation/runtime authority. Evidence: ../evidence/ingestion-rollout-stage18-target-preflight-20261021.json. Cached launchers retained at /home/oufadmin/ouf-stage18-launchers.tmgmExrv/human.sh and runtime.sh.
+
+Next manual action ONLY: verify retained HUMAN launcher SHA256 ad97d3152d46f19fb29fd0370864345694593a9bc1fb2a3e8af98f262f0b4aa2, then invoke it ONCE with `open-window`. Exact terminal phrase: `APRO FINESTRA HUMAN c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a`. This is a separately explicit7200second window consent,zeroOAuth,no runtime/THS approval. Do not rerun prepare/preflight,budget grant or old controls. Return NEW window JSON/controlPath/log, then each provider request needs its own explicit command/confirmation; no automatic login/poll/refresh. After STOP preserve all and do not rerun. Runtime review/consent/import/steps remain separate and must use already qualified source,not development during fresh token lifetime.
+
+Technical8/8,functional4/6,G3OPEN; rollout stays at18/28. Target preflight is not fresh application/DB/Gateway/provider authorization or release acceptance. Full prequalified sequence: handoffs/OUF_STAGE18_SUCCESSOR_20261021.md. Older pending-preflight headers below are historical.
+
+---
+
 # CURRENT — stage18 successor qualified; target preflight only
 
 The separate HUMAN/runtime controllers are implemented in [PR49](https://github.com/GioNob/ouf-deploy/pull/49), qualified source5e08760666e177a971a5c466955e4376d10c54ef. CI39634414797:27new+7frozen-native-composition tests PASS on EACH Python3.12/3.13.5,zero skips. Both artifacts/launchers are immutable and pinned. Frozen114 native modules/loader are unchanged. An initial artifact reproducibility mismatch (extra local EOF newline in five retained HUMAN sources) was corrected by regenerating from exact repository bytes; no legacy logic change. Failed run39633974318 is retained.

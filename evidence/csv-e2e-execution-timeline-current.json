@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-21T16:24:54.893Z",
+  "lastUpdatedAt": "2026-10-21T16:53:08.447Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1442,6 +1442,23 @@
       "evidenceRef": "evidence/ingestion-rollout-stage18-delivery-pins-20261021.json",
       "retainedInitialFailedRun": 39633974318,
       "initialCorrection": "EXACT_REPOSITORY_EOF_BYTES_NO_LEGACY_LOGIC_CHANGE"
+    },
+    {
+      "id": "CSV-EVENT-STAGE18-BOTH-PREFLIGHTS-TARGET-PASS",
+      "classification": "OWNER_PASTED_PUBLIC_TARGET_RECEIPTS",
+      "documentedAt": "2026-10-21T16:53:08.447Z",
+      "sourceCommit": "5e08760666e177a971a5c466955e4376d10c54ef",
+      "qualificationRun": 39634414797,
+      "targetRuntimeStatus": "STAGE18_RUNTIME_PREFLIGHT_NO_AUTHORITY",
+      "targetHumanStatus": "STAGE18_HUMAN_AND_RUNTIME_PREFLIGHT_NO_WINDOW",
+      "attempts": 288,
+      "maximumCumulativeOAuthAttempts": 292,
+      "remainingAttempts": 4,
+      "reviewHash": "c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a",
+      "newHumanWindowOpened": false,
+      "runtimeAuthorityIssued": false,
+      "oauthRequests": 0,
+      "evidenceRef": "evidence/ingestion-rollout-stage18-target-preflight-20261021.json"
     }
   ],
   "activeIntervals": [
@@ -2206,7 +2223,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "PINNED_RUNTIME_PREFLIGHT_THEN_HUMAN_PREPARE_NO_WINDOW_OR_OAUTH",
+      "nextRequiredTargetAction": "ONE_EXPLICIT_HUMAN_OPEN_WINDOW_TERMINAL_CONSENT_ZERO_OAUTH",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2216,10 +2233,10 @@
       "technicalBudgetGrantComplete": true,
       "runtimeSuccessorImplemented": true,
       "runtimeSuccessorQualified": true,
-      "successorTargetPreflightCompleted": false
+      "successorTargetPreflightCompleted": true
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "NEW_TECHNICAL_OAUTH_BUDGET_GRANTED_NO_LOGIN_OR_RUNTIME_AUTHORITY",
+    "latestOperatorConfirmedOperation": "STAGE18_BOTH_TARGET_PREFLIGHTS_NO_AUTHORITY",
     "latestOperatorConfirmedOperationPolicyMutations": 0,
     "loginPerformedScope": "EXPLICIT_SUPPLEMENTARY_HUMAN_LOGIN_COMPLETED_AT_RECEIPT_NOT_CURRENT_AUTHORITY",
     "newHumanLoginPerformed": false,
@@ -2388,7 +2405,8 @@
     "successorRuntimeQualified": true,
     "successorQualifiedSource": "5e08760666e177a971a5c466955e4376d10c54ef",
     "successorQualificationRun": 39634414797,
-    "successorTargetPreflightCompleted": false
+    "successorTargetPreflightCompleted": true,
+    "successorHumanReviewHash": "c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a"
   },
   "developmentCandidates": [
     {
@@ -2418,8 +2436,8 @@
     "humanInterventionRequired": true,
     "reasons": [
       "PARTIAL_ROLLOUT_RECONCILIATION_REQUIRED",
-      "SUCCESSOR_TARGET_PREFLIGHT_PENDING",
-      "FRESH_PROVIDER_IDENTITY_AND_SEPARATE_RUNTIME_CONSENT_STILL_REQUIRED"
+      "FRESH_EXPLICIT_HUMAN_WINDOW_AND_PROVIDER_IDENTITY_REQUIRED",
+      "SEPARATE_RUNTIME_CONSENT_AND_PREFIX_IMPORT_REQUIRED"
     ],
     "historicalAttempts": 288,
     "maximumCumulativeAttempts": 292,
@@ -2427,7 +2445,7 @@
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "RUN_PINNED_BOTH_ARTIFACT_PREFLIGHT_NO_LOGIN_OR_OAUTH",
+    "currentRequiredHumanAction": "ONE_EXPLICIT_HUMAN_OPEN_WINDOW_TERMINAL_CONSENT_ZERO_OAUTH",
     "maximumNewOAuthRequests": 0,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
     "profileApplied": true,
@@ -2625,6 +2643,14 @@
       "countedAsActive": false,
       "humanEffortKnown": false,
       "note": "No active effort or HUMAN runtime/login duration inferred from the wall gap."
+    },
+    {
+      "startedAt": "2026-10-21T16:24:54.893Z",
+      "endedAt": "2026-10-21T16:53:08.447Z",
+      "classification": "PREVIOUS_DELIVERY_OPERATOR_PREFLIGHT_AND_FOLLOWUP_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Receipts supply no process timestamps; no execution or human duration inferred."
     }
   ],
   "deliveryAccounting": {
