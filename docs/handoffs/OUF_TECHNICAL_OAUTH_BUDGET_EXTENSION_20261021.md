@@ -1,3 +1,25 @@
+# CURRENT target result — separate technical budget granted
+
+The operator supplied a successful public target receipt: proposal `0bf8d9acc497dafbe49320a479ebce51d49496903114669718b6d993b56b1b28`, decision `3342cb2e41561b6a573fe38313d7b20be963cef6caf64469123c613cb4c93b15`, decisionRef `operator-oauth-budget-0bf8d9acc497dafbe49320a4-1792584605`. The log is `/home/oufadmin/ouf-oauth-budget-extension.oOiWCKEo/budget.log`; launcher `/home/oufadmin/ouf-oauth-budget-launcher.ecmNUBBA`.
+
+Counts AS OF GRANT:288 consumed, ceiling292, four remaining. No later consumption was observed; this is an owner-pasted receipt, not an independent live readback. No OAuth, new HUMAN window/login, runtime authority or runtime effect occurred. The old session is unchanged. Do not repeat `grant-budget`; preserve all contexts/claims/logs. The pending-budget instructions below are historical.
+
+The runtime successor remains unimplemented/unqualified. The next work is development and CI, not a target login command. A review of the frozen code confirms that ordinary Runner.initialize starts at stage0 and consumes the original logical claim; neither it nor the completed supplementary login can be rerun for continuation. See the development requirements below. No additional target action is requested at this checkpoint.
+
+## Successor development requirements — design, not implementation evidence
+
+1. Validate the private persisted proposal, decision and claim against the exact public grant receipt and immutable predecessor journal/review/logical operation. Do not treat this public JSON alone as executable authority. Bind the new HUMAN session to the same original issuer/subject/tenant/scopes and budget decision; seed cumulative288 with maximum292. Preserve the old288 profile/history and consumed claims unchanged.
+2. Open a new maximum7200second HUMAN window only on separate fresh terminal consent. Reuse the bounded no-refresh TLS/provider session primitives with four explicit requests, no background work, no spare retry budget and no zero-counter initialization. A failed/pending provider response consumes its reserved request. Fresh provider principal validation is mandatory.
+3. Prepare a NEW sibling runtime context and signed review. Preserve the original packet, all28 stage intents and logical operation. Record the new grant as an explicit proof when adapting the new current HUMAN limit; never rewrite the old retained-owner history. Preserve the frozen114-module native execution graph/loader and qualification pins.
+4. Obtain a separate terminal infrastructure consent and new signed authority (at most900seconds, minimum930seconds token margin). No THS/domain approval, source/job activation or client publication is implied. Revalidate current owner, database admission, both runtime generations/readiness and Gateway transport/routes before effects through the original native gates.
+5. Import exactly18 APPLIED records with every evidence/resource field and cumulative read/native counter. Do not call Runner.initialize, reset readAttempts or create stage0 effects. Retain original createdAt/parent journal hash and record a distinct successor session/deadline/authority. A persistent one-use fence must be keyed to the predecessor logical operation and exact prefix; retain it through crashes and prevent concurrent/late workers.
+6. Dispatch at most one of the ten remaining native stages per explicit invocation; reconcile ambiguous claims without apply/replay. Preserve the two-PUT total and existing dedicated key/image; never recreate resources from applied stages. Completion must verify all82 routes, readiness, database admission and restored restart policies. Completion is still not release acceptance.
+7. Qualify exact counts/identity, tampering, changed predecessor/generation/boot/clock, expiry/revocation, partial import, two operators, stale workers, read-budget exhaustion, native resource/counter preservation and no stage replay. Qualify every sealed artifact/launcher and the entire manual flow before requesting a fresh token. Disposable tests cannot establish current production readiness or domain acceptance.
+
+Originals consulted for this checkpoint: Matrix1.7 §1; Authorization1.5 §§2.1/12.1; Ingestion1.3 §§94–95; resilience policy v3 §§14–16. Status remains technical8/8,functional4/6,G3OPEN. The requirements above add no runtime authority.
+
+---
+
 # Separate finite technical OAuth budget — retained installation only
 
 CURRENT: the corrected read-only target receipt is `RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY`. It matched the exact replacement CID/PID/start and namespace selected from the durable replacement PID, despite inode reuse. Eighteen Engine GETs, zero OAuth, zero service calls and zero runtime effects. Target evidence: `evidence/ingestion-continuation-input-matched-target-20261021.json`.
