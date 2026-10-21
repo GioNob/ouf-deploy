@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-21T09:34:34.459Z",
+  "lastUpdatedAt": "2026-10-21T11:45:49.362Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1351,6 +1351,31 @@
       "frozenNativeAndLoaderUnchanged": true,
       "targetExecuted": false,
       "evidenceRef": "evidence/ingestion-rollout-continuation-input-delivery-pins-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-CONTINUATION-INPUT-NAMESPACE-STOP-TARGET",
+      "classification": "OWNER_PASTED_TARGET_STOP_RECEIPT",
+      "documentedAt": "2026-10-21T11:45:49.362Z",
+      "targetInvocationClockKnown": false,
+      "reasonCode": "REPLACEMENT_GATEWAY_MUST_USE_NEW_NAMESPACE",
+      "sourceCommit": "1776f9461e83f83b3a79e4077df551cc9f7ffc4a",
+      "targetRuntimeFailureProven": false,
+      "runtimeAuthorityIssued": false,
+      "newLoginPerformed": false,
+      "evidenceRef": "evidence/ingestion-continuation-input-namespace-stop-target-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-CONTINUATION-INPUT-NAMESPACE-PREDICATE-CORRECTED",
+      "observedAt": "2026-10-21T11:45:49.362Z",
+      "sourceCommit": "84385614384d9e2edf474ec84b87cdec8d11747f",
+      "qualificationRun": 39594157172,
+      "testsPerPython": 19,
+      "skips": 0,
+      "frozenNativeAndLoaderUnchanged": true,
+      "targetExecuted": false,
+      "nativeNamespacePredicateAlreadySupportedInodeReuse": true,
+      "priorNegativeTestFailedAtWrongOwnerCheck": true,
+      "evidenceRef": "evidence/ingestion-rollout-continuation-input-delivery-pins-20261021.json"
     }
   ],
   "activeIntervals": [
@@ -1854,6 +1879,15 @@
       "classification": "ACTIVE_TECHNICAL",
       "workPackage": "WP3_STOP_RECONCILIATION",
       "activity": "FROZEN_NATIVE_LIVE_METADATA_READER_IMPLEMENTATION_PHYSICAL_CI_AND_CURRENT_CHECKPOINT_PUBLICATION"
+    },
+    {
+      "id": "CSV-TIME-0051",
+      "startedAt": "2026-10-21T11:41:30.853Z",
+      "endedAt": "2026-10-21T11:45:49.362Z",
+      "seconds": 258.509,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_STOP_RECONCILIATION",
+      "activity": "READ_ONLY_NAMESPACE_PREDICATE_DEFECT_FIX_NATIVE_SEMANTICS_REGRESSION_CI_AND_RETAINED_DELIVERY_PUBLICATION"
     }
   ],
   "waitingIntervals": [],
@@ -2081,7 +2115,9 @@
       ],
       "nextRequiredTargetAction": "PINNED_READ_ONLY_LIVE_RUNTIME_INPUTS",
       "stoppedPrefixSnapshotProven": true,
-      "pendingStageClaim": false
+      "pendingStageClaim": false,
+      "latestInputReaderStatus": "STOPPED_ON_READER_INODE_INEQUALITY_DEFECT_CORRECTION_QUALIFIED_TARGET_PENDING",
+      "latestInputReaderSource": "84385614384d9e2edf474ec84b87cdec8d11747f"
     },
     "agentDispatchedTargetOperations": 0,
     "latestOperatorConfirmedOperation": "ROLLOUT_STOPPED_METADATA_READ_STAGE18",
@@ -2440,6 +2476,14 @@
       "countedAsActive": false,
       "humanEffortKnown": false,
       "note": "Exact stopped snapshot observation is independent; do not count the wall interval as effort or infer HUMAN duration."
+    },
+    {
+      "startedAt": "2026-10-21T09:34:34.459Z",
+      "endedAt": "2026-10-21T11:41:30.853Z",
+      "classification": "PRIOR_FINAL_DELIVERY_OPERATOR_WAIT_TARGET_READ_AND_EARLY_RESUMPTION_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Target STOP has no supplied invocation clock; no elapsed/human/technical duration inferred."
     }
   ],
   "deliveryAccounting": {

@@ -1,3 +1,13 @@
+# CURRENT — namespace reader defect corrected; distinct read-only delivery next
+
+The first live input reader returned REPLACEMENT_GATEWAY_MUST_USE_NEW_NAMESPACE. The bridge incorrectly required historical netns inode inequality; the frozen native GatewayNamespacePin already allows reused inode numbers while binding the NEW CID/firstPID/start and stopped/detached predecessor. This is a reader defect,not a proven Gateway failure. Old launcher/log and all contexts/claims are retained; no new login/authority/effect.
+
+Corrected source84385614384d9e2edf474ec84b87cdec8d11747f in [PR47](https://github.com/GioNob/ouf-deploy/pull/47),CI39594157172:19PASS perPython3.12/3.13.5,zero skips. Same-inode acceptance is covered alongside changed PID/CID,restarts,MAC/IP,owner namespace and namespace drift between passes. No frozen native/loader change. [Current handoff](handoffs/OUF_CLOUD_STAGE18_CONTINUATION_INPUTS_20261021.md),[retained STOP](../evidence/ingestion-continuation-input-namespace-stop-target-20261021.json),[new delivery pins](../evidence/ingestion-rollout-continuation-input-delivery-pins-20261021.json).
+
+Next target action is ONLY the corrected separately pinned reader,max18EngineGETs,zeroOAuth/effects. Do not rerun old launcher or rollout controls. Corrected target result pending. Technical8/8,functional4/6,G3OPEN;OAuth288/288;proposed292budget NOT granted. This supersedes older next-action instructions below.
+
+---
+
 # CURRENT — 21 October 2026: expired stage18 prefix reconciled; live input read next
 
 Qualified stopped snapshot received:18APPLIED,no pending claim,readStateIDLE,same boot,authority and monotonic remaining0. Reviewb0276204…,journalc9907ea9… . No live runtime observation was made by that snapshot. Current [handoff](handoffs/OUF_CLOUD_STAGE18_CONTINUATION_INPUTS_20261021.md) and [target receipt](../evidence/ingestion-rollout-stopped-snapshot-target-20261021.json).

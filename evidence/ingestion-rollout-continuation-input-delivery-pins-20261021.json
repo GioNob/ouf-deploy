@@ -1,24 +1,24 @@
 {
   "schema": "ouf.ingestion-rollout-continuation-input-delivery-pins.v1",
-  "sourceCommit": "1776f9461e83f83b3a79e4077df551cc9f7ffc4a",
+  "sourceCommit": "84385614384d9e2edf474ec84b87cdec8d11747f",
   "pullRequest": 47,
-  "sourceBlob": "51c8e68a1ad9b36fadf220b8fe67cb3f3df40358",
-  "sourceSha256": "8337fa934ce2fa1204c67783acedf21471bbfcde9cf1aebd685012866660beb0",
-  "launcherBlob": "2d9a2a46c9425261a0375aefd701dba17f5bc66f",
-  "launcherSha256": "553d28d997c55a6653260986b2af35a4dca1eb8bfc7f2eaca9d2bf0f3f7385e8",
-  "qualificationRun": 39577789672,
+  "sourceBlob": "026ef1c6baca385b04c34d98ef959ee3664b1c1c",
+  "sourceSha256": "000c98dd2b31534a58a8e1c2fd20f09543bd43da00abadc5ef3b0a90950242c9",
+  "launcherBlob": "21b22ac7fcef7fc54e62c79c21c967fd0ee6d55b",
+  "launcherSha256": "fe2b4edfabf3c8b33962b027ef6d6c6ea45320c3136aadad016064e98e8cd61b",
+  "qualificationRun": 39594157172,
   "qualificationJobs": [
     {
-      "id": 119147533932,
-      "python": "3.12",
-      "tests": 15,
+      "id": 119202205734,
+      "python": "3.13.5",
+      "tests": 19,
       "skips": 0,
       "conclusion": "success"
     },
     {
-      "id": 119147534248,
-      "python": "3.13.5",
-      "tests": 15,
+      "id": 119202206361,
+      "python": "3.12",
+      "tests": 19,
       "skips": 0,
       "conclusion": "success"
     }
@@ -30,5 +30,41 @@
   "oauthRequests": 0,
   "runtimeEffectsAllowed": false,
   "runtimeAuthorityIssued": false,
-  "newBudgetGranted": false
+  "newBudgetGranted": false,
+  "priorTargetStopRef": "evidence/ingestion-continuation-input-namespace-stop-target-20261021.json",
+  "namespacePredicateCorrection": "CURRENT_DURABLE_CID_PID_START_AND_NAMESPACE_NOT_HISTORICAL_INODE_INEQUALITY",
+  "oldDeliveryRetained": {
+    "schema": "ouf.ingestion-rollout-continuation-input-delivery-pins.v1",
+    "sourceCommit": "1776f9461e83f83b3a79e4077df551cc9f7ffc4a",
+    "pullRequest": 47,
+    "sourceBlob": "51c8e68a1ad9b36fadf220b8fe67cb3f3df40358",
+    "sourceSha256": "8337fa934ce2fa1204c67783acedf21471bbfcde9cf1aebd685012866660beb0",
+    "launcherBlob": "2d9a2a46c9425261a0375aefd701dba17f5bc66f",
+    "launcherSha256": "553d28d997c55a6653260986b2af35a4dca1eb8bfc7f2eaca9d2bf0f3f7385e8",
+    "qualificationRun": 39577789672,
+    "qualificationJobs": [
+      {
+        "id": 119147533932,
+        "python": "3.12",
+        "tests": 15,
+        "skips": 0,
+        "conclusion": "success"
+      },
+      {
+        "id": 119147534248,
+        "python": "3.13.5",
+        "tests": 15,
+        "skips": 0,
+        "conclusion": "success"
+      }
+    ],
+    "frozenNativeAndLoaderUnchanged": true,
+    "frozenNativeModuleCount": 114,
+    "targetExecuted": false,
+    "maximumEngineGets": 18,
+    "oauthRequests": 0,
+    "runtimeEffectsAllowed": false,
+    "runtimeAuthorityIssued": false,
+    "newBudgetGranted": false
+  }
 }

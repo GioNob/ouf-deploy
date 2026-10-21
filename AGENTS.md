@@ -1,3 +1,9 @@
+# CURRENT — corrected live namespace reader required, no runtime action
+
+First input-reader STOP was caused by a bridge inode-inequality defect. Frozen GatewayNamespacePin already supports recycled namespace inode numbers with exact NEW CID/PID/start. See current roadmap and docs/handoffs/OUF_CLOUD_STAGE18_CONTINUATION_INPUTS_20261021.md. Corrected PR47 source84385614…,CI39594157172,19tests each Python/zero skips. Only the corrected pinned read-only reader is next; old launcher/log retained. No login,old step/reconcile/approve/initialize or budget reset. OAuth remains288/288;292proposal unapproved. Older instructions below are historical.
+
+---
+
 # CURRENT — stopped prefix reconciled; live continuation metadata only
 
 Follow docs/handoffs/OUF_CLOUD_STAGE18_CONTINUATION_INPUTS_20261021.md. Owner snapshot confirms18APPLIED,no pending claim,same boot,expired authority. Next target action is the separately qualified read-only live metadata reader(PR47,1776f946…). No old step/reconcile/initialize/approve/login/window or budget reset. Proposed288→292 budget is NOT granted. Older instructions below are historical.
