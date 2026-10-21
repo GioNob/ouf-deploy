@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-21T12:14:24.138Z",
+  "lastUpdatedAt": "2026-10-21T16:24:54.893Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1426,6 +1426,22 @@
       "runtimeEffectsDispatched": 0,
       "oauthRequests": 0,
       "evidenceRef": "evidence/technical-oauth-budget-extension-granted-target-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-STAGE18-SUCCESSOR-QUALIFIED-TARGET-PREFLIGHT-PENDING",
+      "observedAt": "2026-10-21T16:24:54.893Z",
+      "sourceCommit": "5e08760666e177a971a5c466955e4376d10c54ef",
+      "qualificationRun": 39634414797,
+      "newTestsPerPython": 27,
+      "frozenNativeCompositionTestsPerPython": 7,
+      "skips": 0,
+      "old114ModuleGraphAndLoaderUnchanged": true,
+      "targetPreflightCompleted": false,
+      "targetWindowOpened": false,
+      "runtimeAuthorityIssued": false,
+      "evidenceRef": "evidence/ingestion-rollout-stage18-delivery-pins-20261021.json",
+      "retainedInitialFailedRun": 39633974318,
+      "initialCorrection": "EXACT_REPOSITORY_EOF_BYTES_NO_LEGACY_LOGIC_CHANGE"
     }
   ],
   "activeIntervals": [
@@ -1956,6 +1972,15 @@
       "classification": "ACTIVE_TECHNICAL",
       "workPackage": "WP3_STOP_RECONCILIATION",
       "activity": "TARGET_BUDGET_GRANT_EVIDENCE_AND_EXPLICIT_SUCCESSOR_DEVELOPMENT_REQUIREMENTS_CHECKPOINT"
+    },
+    {
+      "id": "CSV-TIME-0054",
+      "startedAt": "2026-10-21T15:58:39.545Z",
+      "endedAt": "2026-10-21T16:24:54.893Z",
+      "seconds": 1575.348,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_STOP_RECONCILIATION",
+      "activity": "STAGE18_GRANTED_BUDGET_HUMAN_CONTROLLER_SIGNED_PREFIX_IMPORT_CACHED_DELIVERY_TESTS_AND_TWO_PYTHON_CI_QUALIFICATION"
     }
   ],
   "waitingIntervals": [],
@@ -2181,7 +2206,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "NONE_UNTIL_SUCCESSOR_DEVELOPMENT_AND_QUALIFICATION_COMPLETE",
+      "nextRequiredTargetAction": "PINNED_RUNTIME_PREFLIGHT_THEN_HUMAN_PREPARE_NO_WINDOW_OR_OAUTH",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2189,8 +2214,9 @@
       "liveRuntimeMetadataMatched": true,
       "namespaceSelectedFromDurableReplacementPid": true,
       "technicalBudgetGrantComplete": true,
-      "runtimeSuccessorImplemented": false,
-      "runtimeSuccessorQualified": false
+      "runtimeSuccessorImplemented": true,
+      "runtimeSuccessorQualified": true,
+      "successorTargetPreflightCompleted": false
     },
     "agentDispatchedTargetOperations": 0,
     "latestOperatorConfirmedOperation": "NEW_TECHNICAL_OAUTH_BUDGET_GRANTED_NO_LOGIN_OR_RUNTIME_AUTHORITY",
@@ -2201,7 +2227,7 @@
     "currentRemainingAttempts": 4,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_TECHNICAL_OAUTH_BUDGET_EXTENSION_20261021.md",
+    "currentHandoff": "docs/handoffs/OUF_STAGE18_SUCCESSOR_20261021.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 292,
@@ -2356,9 +2382,13 @@
     "technicalBudgetQualifiedCommit": "85a30fb4af7ce0bfe74bd20acae3a0124d80f73c",
     "technicalBudgetQualificationRun": 39596994308,
     "technicalBudgetTargetGranted": true,
-    "successorRuntimeImplemented": false,
+    "successorRuntimeImplemented": true,
     "technicalBudgetTargetProposalHash": "0bf8d9acc497dafbe49320a479ebce51d49496903114669718b6d993b56b1b28",
-    "technicalBudgetTargetDecisionHash": "3342cb2e41561b6a573fe38313d7b20be963cef6caf64469123c613cb4c93b15"
+    "technicalBudgetTargetDecisionHash": "3342cb2e41561b6a573fe38313d7b20be963cef6caf64469123c613cb4c93b15",
+    "successorRuntimeQualified": true,
+    "successorQualifiedSource": "5e08760666e177a971a5c466955e4376d10c54ef",
+    "successorQualificationRun": 39634414797,
+    "successorTargetPreflightCompleted": false
   },
   "developmentCandidates": [
     {
@@ -2388,7 +2418,7 @@
     "humanInterventionRequired": true,
     "reasons": [
       "PARTIAL_ROLLOUT_RECONCILIATION_REQUIRED",
-      "QUALIFIED_EXPLICIT_CONTINUATION_NOT_IMPLEMENTED",
+      "SUCCESSOR_TARGET_PREFLIGHT_PENDING",
       "FRESH_PROVIDER_IDENTITY_AND_SEPARATE_RUNTIME_CONSENT_STILL_REQUIRED"
     ],
     "historicalAttempts": 288,
@@ -2397,7 +2427,7 @@
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "NONE_AT_THIS_CHECKPOINT_DEVELOP_SUCCESSOR_BEFORE_LOGIN",
+    "currentRequiredHumanAction": "RUN_PINNED_BOTH_ARTIFACT_PREFLIGHT_NO_LOGIN_OR_OAUTH",
     "maximumNewOAuthRequests": 0,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
     "profileApplied": true,
@@ -2587,6 +2617,14 @@
       "countedAsActive": false,
       "humanEffortKnown": false,
       "note": "Approval timestamp is encoded in the supplied decisionRef; no operator effort or process duration inferred."
+    },
+    {
+      "startedAt": "2026-10-21T12:14:24.138Z",
+      "endedAt": "2026-10-21T15:58:39.545Z",
+      "classification": "PREVIOUS_CHECKPOINT_USER_RECAP_AND_EARLY_CONTINUATION_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "No active effort or HUMAN runtime/login duration inferred from the wall gap."
     }
   ],
   "deliveryAccounting": {

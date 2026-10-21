@@ -1,3 +1,13 @@
+# CURRENT — stage18 successor qualified; target preflight only
+
+The separate HUMAN/runtime controllers are implemented in [PR49](https://github.com/GioNob/ouf-deploy/pull/49), qualified source5e08760666e177a971a5c466955e4376d10c54ef. CI39634414797:27new+7frozen-native-composition tests PASS on EACH Python3.12/3.13.5,zero skips. Both artifacts/launchers are immutable and pinned. Frozen114 native modules/loader are unchanged. An initial artifact reproducibility mismatch (extra local EOF newline in five retained HUMAN sources) was corrected by regenerating from exact repository bytes; no legacy logic change. Failed run39633974318 is retained.
+
+Next target action: download/verify BOTH launchers and run runtime `preflight`, then HUMAN `prepare`. Both are read-only with zero OAuth/service/Engine calls and no new window/authority/effect. This additionally stages verified public artifact caches before the later login/runtime timer. HUMAN prepare reads the sealed expired READY288 journal for its public history; it does not reuse old tokens/open the old bearer file. Return the public JSON/log paths. After STOP preserve all and do not rerun.
+
+Granted budget remains288consumed/292ceiling,four remaining AS OF GRANT; subsequent consumption not observed. The rollout stays stopped after18/28,nextStage18. Technical8/8,functional4/6,G0–G2PASS,G3OPEN. Only AFTER target preflight, the separate exact terminal window consent may open7200seconds, followed by four explicit provider requests. New runtime review/consent/issuance(max900seconds), one-use prefix import and individual residual native steps are separate. No automatic replay/reset/refresh/window renewal, domain approval or acceptance. All commands and STOP rules are in handoffs/OUF_STAGE18_SUCCESSOR_20261021.md; artifact/CI pins in ../evidence/ingestion-rollout-stage18-delivery-pins-20261021.json. Older headers below are historical.
+
+---
+
 # CURRENT — target technical budget granted; no new login or runtime authority
 
 Owner receipt confirms `NEW_TECHNICAL_OAUTH_BUDGET_GRANTED_NO_LOGIN_OR_RUNTIME_AUTHORITY`: prior/current288, four additional requests granted, cumulative ceiling292 and four remaining AS OF GRANT. Proposal0bf8d9acc497dafbe49320a479ebce51d49496903114669718b6d993b56b1b28; decision3342cb2e41561b6a573fe38313d7b20be963cef6caf64469123c613cb4c93b15. The previous HUMAN session is unchanged. No OAuth, login/window, runtime authority or runtime effect occurred in this decision. Subsequent consumption was not observed. Do not rerun grant-budget or any old rollout/login launcher.
