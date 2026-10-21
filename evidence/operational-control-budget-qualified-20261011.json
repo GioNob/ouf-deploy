@@ -1,0 +1,92 @@
+{
+  "schema": "ouf.operational-control-budget-qualification.v1",
+  "candidate": "4ae3e9a10ae54759bf31611d7f07fd9949c5c505",
+  "merge": "652173dd16f4bc5645c70eafac3a713c76e91d9c",
+  "pr": "https://github.com/GioNob/ouf-mcp-server/pull/57",
+  "checks": [
+    {
+      "id": 38125886421,
+      "name": "Authorization Java Go conformance",
+      "event": "pull_request",
+      "conclusion": "success"
+    },
+    {
+      "id": 38125886412,
+      "name": "Incident priority resilience v3",
+      "event": "pull_request",
+      "conclusion": "success"
+    },
+    {
+      "id": 38125886406,
+      "name": "Operational control budget PostgreSQL qualification",
+      "event": "pull_request",
+      "conclusion": "success"
+    },
+    {
+      "id": 38125886416,
+      "name": "Operational aggregate delegated context qualification",
+      "event": "pull_request",
+      "conclusion": "success"
+    },
+    {
+      "id": 38125886402,
+      "name": "Operational cursor metadata PostgreSQL qualification",
+      "event": "pull_request",
+      "conclusion": "success"
+    },
+    {
+      "id": 38125886401,
+      "name": "MCP evidence and late recovery",
+      "event": "pull_request",
+      "conclusion": "success"
+    },
+    {
+      "id": 38125882267,
+      "name": "Authorization Java Go conformance",
+      "event": "push",
+      "conclusion": "success"
+    },
+    {
+      "id": 38125882236,
+      "name": "Incident priority resilience v3",
+      "event": "push",
+      "conclusion": "success"
+    },
+    {
+      "id": 38125882272,
+      "name": "Operational cursor metadata PostgreSQL qualification",
+      "event": "push",
+      "conclusion": "success"
+    },
+    {
+      "id": 38125882213,
+      "name": "Operational aggregate delegated context qualification",
+      "event": "push",
+      "conclusion": "success"
+    },
+    {
+      "id": 38125882240,
+      "name": "Operational control budget PostgreSQL qualification",
+      "event": "push",
+      "conclusion": "success"
+    },
+    {
+      "id": 38125882265,
+      "name": "MCP evidence and late recovery",
+      "event": "push",
+      "conclusion": "success"
+    }
+  ],
+  "realPostgresProven": [
+    "root and two concurrent producer calls charge three calls",
+    "persistent 24-call window exhaustion survives store reopen",
+    "independent business capacity preserved",
+    "third equivalent admission blocked; idempotent replay preserved",
+    "forged control profile rejected before window writes",
+    "fresh cursor readbacks charge one window across immutable page positions"
+  ],
+  "publicCursorReady": false,
+  "operatorConsultationRecorded": false,
+  "targetDeployment": false,
+  "r10Touched": false
+}

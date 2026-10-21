@@ -1,0 +1,45 @@
+name: MCP explicit backup reader qualification
+on:
+  push:
+    branches: [fix/cohort-mcp-backup-recovery-20261016]
+permissions: {contents: read}
+jobs:
+  restricted-role-native-backup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env: {POSTGRES_USER: postgres, POSTGRES_HOST_AUTH_METHOD: trust}
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Root-owned isolated fixture
+        run: |
+          set -euo pipefail
+          sudo mkdir -m 700 /var/lib/ouf-mcp-backup-test
+          sudo cp -R . /var/lib/ouf-mcp-backup-test/repository
+          sudo chown -R root:root /var/lib/ouf-mcp-backup-test
+      - name: Signed owner and fixed preflight unit qualification
+        run: |
+          set -euo pipefail
+          for suite in test_fenced_backup_adapter.py test_chatbot_cohort_registry_readiness.py test_chatbot_cohort_delivery_launcher.py test_chatbot_cohort_backup_recovery.py test_chatbot_cohort_databases.py test_chatbot_mcp_backup_preflight.py; do
+            sudo python3 -I -B -m unittest discover -s /var/lib/ouf-mcp-backup-test/repository/tests -p "$suite" -v
+          done
+      - name: Actual restricted role denial and signed administrative backup
+        env:
+          OUF_PG_CID: ${{ job.services.postgres.id }}
+        run: |
+          set -euo pipefail
+          sudo env OUF_NATIVE_POSTGRES=1 OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 OUF_POSTGRES_CONTAINER_ID="$OUF_PG_CID" python3 -I -B -c '
+          import sys,unittest
+          sys.path.insert(0,"/var/lib/ouf-mcp-backup-test/repository/tests")
+          import test_chatbot_cohort_postgres_native as m
+          suite=unittest.TestSuite(m.NativePostgres(name) for name in (
+              "test_real_archives_preserve_rows_and_owner_migration_identity",
+              "test_restricted_mcp_role_requires_explicit_backup_reader",
+              "test_exact_standalone_preflight_query_on_mixed_catalogue",
+              "test_native_failed_backup_adoption_preserves_three_archives"))
+          result=unittest.TextTestRunner(verbosity=2).run(suite)
+          sys.exit(0 if result.wasSuccessful() and not result.skipped and result.testsRun==4 else 1)'

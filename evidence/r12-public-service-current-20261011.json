@@ -1,0 +1,31 @@
+{
+  "budgetReset": false,
+  "databaseQueries": 0,
+  "firewallWrites": 0,
+  "imageImports": 0,
+  "notReleaseAcceptance": true,
+  "privateValuesPrinted": false,
+  "productionApplyReady": false,
+  "protectedFileReads": 0,
+  "protectedFileWrites": 0,
+  "r12Touched": false,
+  "schema": "ouf.r12-public-service-read.v1",
+  "service": {
+    "ActiveState": "active",
+    "ExecMainCode": "0",
+    "ExecMainExitTimestampMonotonic": "0",
+    "ExecMainStartTimestampMonotonic": "2069250603290",
+    "ExecMainStatus": "0",
+    "LoadState": "loaded",
+    "MainPID": "2446150",
+    "NRestarts": "0",
+    "Restart": "no",
+    "Result": "success",
+    "SubState": "running"
+  },
+  "serviceLifecycleOperations": 0,
+  "status": "PUBLIC_SERVICE_READ_COMPLETED",
+  "observedAtUtc": "2026-10-11T20:48:08Z",
+  "runId": 38173718656,
+  "jobId": 114571545167
+}

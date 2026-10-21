@@ -1,0 +1,41 @@
+name: Ingestion owner draft and exact image preparation
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/compile-ingestion-read-owner-draft.py', 'tools/ingestion_read_owner_preparation/**', 'tests/test_ingestion_read_owner_draft.py', 'tests/test_ingestion_read_owner_image_audit.py', 'releases/ingestion-read-owner-draft-bundle-20261019.json', '.github/workflows/ingestion-read-owner-draft.yml']
+permissions: {contents: read}
+jobs:
+  bounded-preparation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Root custody, exact delta, qualified renderer equality and real archive negative cases
+        run: |
+          set -euo pipefail
+          sudo python3 -I -B -S - <<'PY'
+          import base64,hashlib,json,os
+          from pathlib import Path
+          root=Path('/var/lib/ouf-ingestion-owner-draft-${{ github.run_id }}')
+          root.mkdir(mode=0o700)
+          value=json.loads(Path('releases/ingestion-read-owner-draft-bundle-20261019.json').read_bytes())
+          expected={'base','compiler','audit','jar_reader','image_custody','gateway_renderer','delegation.lua','execute_ingestion_read.lua'}
+          assert set(value['files'])==expected
+          paths={'base':'base.py','compiler':'compile-ingestion-read-owner-draft.py','audit':'audit.py','jar_reader':'jar_reader.py','image_custody':'image_custody.py',
+           'gateway_renderer':'gateway-source/tools/delegation_functions.py','delegation.lua':'gateway-source/tools/lua/delegation.lua','execute_ingestion_read.lua':'gateway-source/tools/lua/execute_ingestion_read.lua'}
+          references={'base':'scripts/prepare-ingestion-read-owner-inputs.py','compiler':'scripts/compile-ingestion-read-owner-draft.py',
+           'audit':'tools/ingestion_read_owner_preparation/audit.py','image_custody':'tools/semantic_application_cutover/image_custody.py',
+           'jar_reader':'scripts/read-ingestion401-deployed-jar.py'}
+          for name,row in value['files'].items():
+              raw=base64.b64decode(row['base64'],validate=True)
+              assert hashlib.sha256(raw).hexdigest()==row['sha256']
+              if name in references: assert raw==Path(references[name]).read_bytes()
+              target=root/paths[name]
+              target.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
+              target.write_bytes(raw);target.chmod(0o600)
+          for origin,target in [('test_ingestion_read_owner_draft.py','test_compile.py'),('test_ingestion_read_owner_image_audit.py','test_audit.py')]:
+              (root/target).write_bytes((Path('tests')/origin).read_bytes());(root/target).chmod(0o600)
+          PY
+          sudo python3 -I -B -S "/var/lib/ouf-ingestion-owner-draft-${{ github.run_id }}/test_compile.py" -v
+          sudo python3 -I -B -S "/var/lib/ouf-ingestion-owner-draft-${{ github.run_id }}/test_audit.py" -v

@@ -1,0 +1,148 @@
+{
+  "schema": "ouf.mcp-operational-audit-capture-qualification.v1",
+  "date": "2026-10-11",
+  "mcp": {
+    "pr": 62,
+    "candidate": "204de2956596d9b5b5409627f124b504f89535c1",
+    "merge": "8756d363061653b200082f53e168d563cf08c621",
+    "gateCount": 22,
+    "runs": [
+      {
+        "id": 38136796400,
+        "name": "Incident priority resilience v3",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136796219,
+        "name": "Authorization Java Go conformance",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136796335,
+        "name": "Operational cursor metadata PostgreSQL qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136796305,
+        "name": "Bounded publication composition qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136796336,
+        "name": "Operational incident cursor HTTP qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136796277,
+        "name": "Private operational audit capture qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136796351,
+        "name": "Persistent publication vector PostgreSQL qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136796245,
+        "name": "Operational aggregate delegated context qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136796170,
+        "name": "Publication HTTP and MCP tool qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136796332,
+        "name": "Operational control budget PostgreSQL qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136796326,
+        "name": "MCP evidence and late recovery",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136793700,
+        "name": "Incident priority resilience v3",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136793681,
+        "name": "Authorization Java Go conformance",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136793787,
+        "name": "Persistent publication vector PostgreSQL qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136793788,
+        "name": "Publication HTTP and MCP tool qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136793707,
+        "name": "Private operational audit capture qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136793750,
+        "name": "Operational aggregate delegated context qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136793824,
+        "name": "Operational cursor metadata PostgreSQL qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136793781,
+        "name": "Bounded publication composition qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136793754,
+        "name": "Operational control budget PostgreSQL qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136793785,
+        "name": "Operational incident cursor HTTP qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38136793695,
+        "name": "MCP evidence and late recovery",
+        "conclusion": "success"
+      }
+    ],
+    "newPostgresRaceGroups": 5,
+    "fullPostgresAndRepositoryRaceVetStaticcheck": "PASS",
+    "govulncheck": "No vulnerabilities found"
+  },
+  "scope": {
+    "existingAuditJournal": true,
+    "atomicOwnerTransaction": true,
+    "sameStateMetadataNoiseSuppressed": true,
+    "protectedValuesExcluded": true,
+    "nologinObserverOwner": true,
+    "writerHasNoNewAuditPrivilege": true,
+    "noPublicationCounterLockInMutation": true,
+    "auditSequenceNotACompletenessBoundary": true
+  },
+  "limits": {
+    "migrationAppliedOnTarget": false,
+    "preMigrationHistoryProven": false,
+    "completeMcpTransitionCoverage": false,
+    "commitSafePublisher": false,
+    "publicMcpSelfHistory": false,
+    "operatorReceipt": false,
+    "operatorCheckpoint": false,
+    "realAlerts": false,
+    "r10Touched": false,
+    "applicationHealthProven": false,
+    "releaseAcceptance": false
+  }
+}

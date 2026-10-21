@@ -1,0 +1,28 @@
+{
+  "schema": "ouf.discovery.runtime-input-preparation-qualification.v1",
+  "sourceCommit": "ecb2b92ba89feddb7fc970b70098cad525e13ebc",
+  "runId": 38042159965,
+  "jobId": 114184390737,
+  "status": "FOUR_NATIVE_ROOT_FILESYSTEM_TESTS_PASS",
+  "roleUidGidCopies": [
+    10001,
+    636
+  ],
+  "exclusiveClaimAndFailureReplayDenied": true,
+  "privateInputHashModeSymlinkDenied": true,
+  "localNegativeChecks": 3,
+  "localActualRoleChownUnavailable": "User namespace rejects foreign UID/GID chown with EINVAL; full native ownership qualification ran on disposable hosted ubuntu root",
+  "productionInputPreparationExecuted": false,
+  "applicationCutoverAuthorized": false,
+  "releaseAcceptance": false,
+  "immutableDelivery": {
+    "commit": "fd1ece9a2c5df8b4690ad2ef05bf2c3bed33b532",
+    "runId": 38042279537,
+    "jobId": 114184735351,
+    "status": "FOUR_NATIVE_CUSTODY_PLUS_THREE_DELIVERY_TESTS_PASS",
+    "launcher": "releases/application-runtime-input-preparation-20261010.sh",
+    "sha256": "67efb9a00e3dee4375a299d88e0045d6abc8ec6646dcb5c3317fe5f64dde100d",
+    "rootEntryHash": "be52da36860fb28dc1d6cb25df7b8400bfbba544c5f3bb523423db1134367f93",
+    "readerHash": "b9ea8aa1a8cf31d28dfa1df0960dcf6930880d11244fe1f84e710bfe0b9ec4cf"
+  }
+}

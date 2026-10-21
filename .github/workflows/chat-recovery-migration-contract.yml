@@ -1,0 +1,16 @@
+name: Verify delivered recovery migration contract
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/inspect-chat-recovery-package.py', '.github/workflows/chat-recovery-migration-contract.yml', 'releases/chat-recovery-source-migrations-20261018.json']
+permissions: {contents: read}
+concurrency: {group: ouf-chat-recovery-package-staging, cancel-in-progress: false}
+jobs:
+  verify:
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Verify retained artifact bytes without application or database access
+        run: python3 -I -S -B scripts/inspect-chat-recovery-package.py /home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-chat-recovery-39079129729 releases/chat-recovery-source-migrations-20261018.json

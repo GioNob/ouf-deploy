@@ -1,0 +1,28 @@
+name: OUF private replacement configuration composition
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/compose-semantic-replacement-draft.py
+      - tests/test_compose_semantic_replacement_draft.py
+      - .github/workflows/replacement-configuration-composition.yml
+permissions:
+  contents: read
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 tests/test_compose_semantic_replacement_draft.py
+  compose:
+    needs: qualification
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Stable metadata and new private draft only; no imports, mounts or lifecycle
+        run: python3 scripts/compose-semantic-replacement-draft.py

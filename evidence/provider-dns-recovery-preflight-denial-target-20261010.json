@@ -1,0 +1,43 @@
+{
+  "schema": "ouf.provider-dns-recovery-target-preflight.v1",
+  "reportedAt": "2026-10-10T07:47:42+02:00",
+  "deliveryCommit": "8c080c5188c8f7d98fafdaeebfd9a25239a34af8",
+  "entrypointSha256": "9fd3e53283e8ceea4aecc67a46483fd2dcbdea08ef9270891d639cbafdd1d379",
+  "downloadDirectory": "/home/oufadmin/ouf-dns-recovery-plan.xij6Bwt9",
+  "outputFile": "/home/oufadmin/ouf-dns-recovery-plan.xij6Bwt9/result.txt",
+  "deliveryChecks": {
+    "launcher": "OK",
+    "entrypoint": "OK",
+    "core": "OK",
+    "dnsReplacement": "OK",
+    "compiler": "OK",
+    "reader": "OK"
+  },
+  "receipt": {
+    "cleanup": "NO_SERVICE_START_IN_THIS_PHASE",
+    "containerLifecycleOperations": 0,
+    "doNotRerunApply": false,
+    "errorType": "ReadDenied",
+    "evidenceDirectory": null,
+    "notReleaseAcceptance": true,
+    "phase": "READ_NEW_DNS_RECOVERY_PRECONDITIONS_WITHOUT_LOCK_OR_AUTHORITY",
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "reason": "METADATA_ONLY_NATIVE_OPERATION_REQUIRED",
+    "schema": "ouf.provider-dns-recovery-activation.v1",
+    "signaturesIssued": 0,
+    "status": "LEASE_ACTIVATION_DENIED"
+  },
+  "exitCode": 1,
+  "launcherPhase": "READ_ONLY_RECOVERY_PRECONDITIONS_NO_LOCK_NO_DNS_NO_GRANT",
+  "interpretation": {
+    "preflightPassed": false,
+    "claimCreated": false,
+    "serviceStarted": false,
+    "applyAttempted": false,
+    "rootCause": "Entrypoint incorrectly used network-only native_read for systemctl show; shape rejected before subprocess. That reader also owns an independent cutover deadline and is unsuitable for service probes.",
+    "readOnlyRetrySafe": true,
+    "oldClaimReset": false,
+    "newAuthorityIssued": false
+  }
+}

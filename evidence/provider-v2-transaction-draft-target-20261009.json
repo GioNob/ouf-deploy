@@ -1,0 +1,70 @@
+{
+  "evidenceSource": "operator_output_in_current_chat",
+  "operatorReportedAt": "2026-10-09T00:45:56+02:00",
+  "independentlyFetchedTargetReceipt": false,
+  "exitCode": 0,
+  "receipt": {
+    "schema": "ouf.semantic-provider-target-input-draft.v1",
+    "status": "UNSIGNED_INPUT_DRAFT_PREPARED",
+    "directory": "/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-draft-g1yrsazc",
+    "scope": "UNSIGNED_REVIEW_INPUTS_ONLY",
+    "sourceClosureHash": "dc87593c5c3b2e4859545de25b92702d93666e8d5c988f03e35fcf2df24c1ae4",
+    "installedOwnerHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+    "roles": {
+      "adapter": {
+        "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+        "applicationHash": "816cdcc143d99047151c337eefefe3df29d5ea8a999d50597f1d0b899cd295f4",
+        "transactionId": "a1c2768460dc488c73a9d5aabc71fa106373512eb8fe58510654326ce3743b07",
+        "transportHash": "bcf108752031439eef2ba1685ebf4aa9781229b2a7dca01ad6c9f97f5eeedab8",
+        "networkBindingCount": 2,
+        "reciprocalPeerDeclarations": 1,
+        "authorityMandatesPresent": false,
+        "inputHashes": {
+          "context": "ede2f4ee4de3b869d11e125cad094cbc5bad900bdb365a10d5d365d3104853ca",
+          "dependencyEvidence": "3e66cfb38a24923e1880cd1c28e53abdbd39d09fdca2f2cdfd105115f16b193b",
+          "deploymentConstraints": "2ea27b1d19bf4bd151b3f9199a651a5f693aced13ad9b02490485452aec82ef7",
+          "framePolicy": "e8047e92e8b3938abe67dc8e57f385fced9de1218db348b4723eb3c6d34867fd",
+          "launch": "061e2bd245d45d7e435ff86e07a6897413ae6c164d2d2c9ade2d455d80846943",
+          "preparerTemplate": "0a9a12a36b9f28eca2edcb3a2ad2c3d741559abb5d3699029bcc105c287dab53",
+          "provenanceEvidence": "0e5de8878e68d8fe555024cd5c0b911361c713e6547f93ebebd243ca34791f9f",
+          "template": "bf536f60c1d511f4cdbeb8546e84f46d426f693019938a0a9b4dbf76b3308e01"
+        }
+      },
+      "southbound": {
+        "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+        "applicationHash": "fc99be8319b210322292a6f468121de97f764800f5e4fb9717e9ac85a9293322",
+        "transactionId": "a2cb1cd204239fba17e43f71530345ee6e50dde60967a2c40a605d9f70cd6266",
+        "transportHash": "494ce1976af397a48c27453eb1991d63c2fcd06b28e1b187931732a99be9f1b7",
+        "networkBindingCount": 3,
+        "reciprocalPeerDeclarations": 1,
+        "authorityMandatesPresent": false,
+        "inputHashes": {
+          "context": "e515366dbe8412bf261711ea98bcaac3e6d9e9d8bc3f77109829613ec166f4eb",
+          "dependencyEvidence": "5c60aa4def36d5ea09cb01f0b2a76ac93640b9df2878b5cdd5b83232b7db53c9",
+          "deploymentConstraints": "e349f6f9c059fa11415b6255a115d4d00972468e892624376b45d43365e718c2",
+          "framePolicy": "f49155fa412bb76d529713cb4ac2c253105884e9e72f7d2d74dfc5ccf9c5c822",
+          "launch": "cbc1f30c200a6a27e92b8055aa5542df30f7d124d08004d6f3bfe7dfb9ed2a39",
+          "preparerTemplate": "7ac15676ff00e38e1ac5bf5bd2356e42c34dbe9b485a5ba38d562380dcb1a894",
+          "provenanceEvidence": "75fc6a4022bbec82cad2e77e1d48fae3b3af77218edb1f8bade4d46c867dfa8b",
+          "template": "0ef8aa503bfb6a5c789000cd73de6e987d1a55688894475e555f4d566581ad05"
+        }
+      }
+    },
+    "newPrivateInputFiles": 16,
+    "newReceiptFiles": 1,
+    "existingConfigurationWrites": 0,
+    "privateValuesPrinted": false,
+    "privateKeysRead": 0,
+    "providerCalls": 0,
+    "containerLifecycleOperations": 0,
+    "roleMandatesCreated": 0,
+    "signaturesIssued": 0,
+    "nativeGuardObservedHere": false,
+    "existingSemanticHostPortIndexAndBridgeVerifiedHere": true,
+    "existingSemanticPeerIfindex": 1377,
+    "semanticPeerPortFreshnessVerifiedHere": false,
+    "acceptanceGranted": false,
+    "startAuthorized": false,
+    "notReleaseAcceptance": true
+  }
+}

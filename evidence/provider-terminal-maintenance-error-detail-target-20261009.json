@@ -1,0 +1,158 @@
+{
+  "schema": "ouf.operator-reported-evidence.v1",
+  "reportedAt": "2026-10-09T15:39:51+02:00",
+  "evidenceSource": "USER_PASTED_OPERATOR_OUTPUT_NOT_INDEPENDENTLY_ACQUIRED",
+  "readerCommit": "a06427c4d7ea4283fef1ffcbb91d40320d77b915",
+  "receipt": {
+    "bundleLogs": {
+      "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": {
+        "bytes": 405,
+        "errorCount": 3,
+        "errorRecords": [
+          {
+            "level": "error",
+            "message": {
+              "recognizedPhrases": [],
+              "wholeMessage": {
+                "bytes": 55,
+                "gateReasons": [],
+                "publicStructure": "<redacted>",
+                "rawLogPrinted": false,
+                "sha256": "6e530332bbdce0404c638e5d46dcc5021a1753f2775e677ff9cb3b5b1bc380e5"
+              }
+            },
+            "time": "2026-10-09T08:36:09.377942+00:00"
+          },
+          {
+            "level": "error",
+            "message": {
+              "recognizedPhrases": [],
+              "wholeMessage": {
+                "bytes": 67,
+                "gateReasons": [],
+                "publicStructure": "<redacted>",
+                "rawLogPrinted": false,
+                "sha256": "d2c5af23fe16a2cd5ff24200d36bb4e469823dac93ab3b6723f64b6927054a6a"
+              }
+            },
+            "time": "2026-10-09T08:36:09.586139+00:00"
+          },
+          {
+            "level": "error",
+            "message": {
+              "recognizedPhrases": [],
+              "wholeMessage": {
+                "bytes": 61,
+                "gateReasons": [],
+                "publicStructure": "<redacted>",
+                "rawLogPrinted": false,
+                "sha256": "7b2b022bf089eaedd96e7836648e847f7fd435918936fdb277a19e6f7d67a950"
+              }
+            },
+            "time": "2026-10-09T11:17:10.546887+00:00"
+          }
+        ],
+        "invalidLineCount": 0,
+        "mode": "0o644",
+        "rawLogPrinted": false,
+        "sha256": "a3915cfb00ef9b5642a675a6fa610d0ff025318a933d70d05d83198ae594e16c",
+        "status": "READ"
+      },
+      "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": {
+        "bytes": 279,
+        "errorCount": 2,
+        "errorRecords": [
+          {
+            "level": "error",
+            "message": {
+              "recognizedPhrases": [],
+              "wholeMessage": {
+                "bytes": 64,
+                "gateReasons": [],
+                "publicStructure": "<redacted>",
+                "rawLogPrinted": false,
+                "sha256": "2e22a6d0ebf0723b5539f5caa3a2f3034ac48c07b59225ef118dc9235a9022c7"
+              }
+            },
+            "time": "2026-10-09T11:17:29.706807+00:00"
+          },
+          {
+            "level": "error",
+            "message": {
+              "recognizedPhrases": [],
+              "wholeMessage": {
+                "bytes": 67,
+                "gateReasons": [],
+                "publicStructure": "<redacted>",
+                "rawLogPrinted": false,
+                "sha256": "d2c5af23fe16a2cd5ff24200d36bb4e469823dac93ab3b6723f64b6927054a6a"
+              }
+            },
+            "time": "2026-10-09T11:17:29.930720+00:00"
+          }
+        ],
+        "invalidLineCount": 0,
+        "mode": "0o644",
+        "rawLogPrinted": false,
+        "sha256": "53c9e1a6e9308150d3904315edc8fa60b3472ad413f39302fac6f2705f2331ba",
+        "status": "READ"
+      }
+    },
+    "cleanupAuthorized": false,
+    "containerLifecycleOperations": 0,
+    "daemonErrors": [
+      {
+        "containerIds": [
+          "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916"
+        ],
+        "daemon": "containerd",
+        "detail": {
+          "error": {
+            "bytes": 117,
+            "gateReasons": [],
+            "publicStructure": "<redacted> error code <redacted> failed to delete task <redacted>",
+            "rawLogPrinted": false,
+            "sha256": "8c0fce1ecfd3a2282149bfc5b5c98c55d67482ef4b8b5ff81d779cdd8d550297"
+          },
+          "msg": {
+            "bytes": 21,
+            "gateReasons": [],
+            "publicStructure": "failed to delete task",
+            "rawLogPrinted": false,
+            "sha256": "b8ac799118b6a64fb5a741e8ec5e18817d010734a023cb284abb2f85ff907af0"
+          },
+          "recognizedPhrases": [
+            "failed to delete task"
+          ],
+          "wholeMessage": {
+            "bytes": 276,
+            "gateReasons": [],
+            "publicStructure": "<redacted> to delete task <redacted> error code <redacted> failed to delete task <redacted>",
+            "rawLogPrinted": false,
+            "sha256": "10d5670b1354676be5b93b0d5baa2fd4da6e6c5933fa544a1caa162946ca34f3"
+          }
+        },
+        "retainedJournalFingerprintMatches": true
+      }
+    ],
+    "doNotRerunApply": true,
+    "existingConfigurationWrites": 0,
+    "notReleaseAcceptance": true,
+    "phase": "READ_EXACT_RETAINED_DAEMON_ERROR",
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "providerCalls": 0,
+    "schema": "ouf.semantic-terminal-maintenance-error-detail-read-only.v1",
+    "signaturesIssued": 0,
+    "startAuthorized": false,
+    "status": "TERMINAL_MAINTENANCE_ERROR_DETAIL_CAPTURED"
+  },
+  "localHashRecognition": {
+    "historicalSouthboundLastError": "SEMANTIC_DOCKER_RUNTIME_BLOCKED_ADAPTER_BINDING_UNPROVEN_L323",
+    "historicalSouthboundLastErrorHash": "7b2b022bf089eaedd96e7836648e847f7fd435918936fdb277a19e6f7d67a950",
+    "daemonErrorExactText": "rpc error: code = Unknown desc = failed to delete task: SEMANTIC_DOCKER_RUNTIME_BLOCKED_ADAPTER_BINDING_UNPROVEN_L323",
+    "daemonErrorHash": "8c0fce1ecfd3a2282149bfc5b5c98c55d67482ef4b8b5ff81d779cdd8d550297",
+    "historicalErrorPredatesMaintenance": true,
+    "currentGateFailureReasonProven": false
+  }
+}

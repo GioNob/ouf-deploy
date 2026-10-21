@@ -1,0 +1,17 @@
+{
+  "schema": "ouf.teatri-active-acquisition-reader-qualification.v1",
+  "sourceCommit": "43a39d7dd48ed591ef31132d9ccade36536bbdf0",
+  "readerSha256": "7fb7dade825ac496d4bd19a7090fda53ea2d2a00f04d47840e718b71e62aa135",
+  "launcherSha256": "ccfa579cae7e2375a543cfd250e2e6e97a6af7e8a30b920880b9bdaefecb8b9d",
+  "runId": 39024067444,
+  "jobId": 117371466286,
+  "tests": 3,
+  "skipped": 0,
+  "conclusion": "success",
+  "actualPostgresMajor": 17,
+  "qualifiedScope": "READ_ONLY_SQL_AGGREGATES_ON_PINNED_SCHEMA_MIGRATIONS",
+  "rootAdapterQualification": "RETAINED_PREVIOUSLY_QUALIFIED_IMPLEMENTATION",
+  "targetReaderExecuted": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2
+}

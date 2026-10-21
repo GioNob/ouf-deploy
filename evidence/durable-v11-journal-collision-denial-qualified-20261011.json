@@ -1,0 +1,20 @@
+{
+  "schema": "ouf.durable-v11-journal-collision-denial-qualified.v1",
+  "status": "PASS_NOT_TARGET_PLAN_ACCEPTANCE",
+  "sourceCommit": "cdf66fc5af6a0fa4c179e896b3251778002197df",
+  "workflowRunId": 38166096436,
+  "jobId": 114548865204,
+  "conclusion": "success",
+  "testCount": 16,
+  "newRegression": "FINAL_STABLE_RECHECK lease journal collision blocks with no retry/draft/claim/budget changes",
+  "programSha256": "7a0e92954684abe12320a0fc56391a5e869e78eb92dbe5f5d0958620bb7bf4e3",
+  "launcherCommit": "8d044bdc4d22d7b2360d2426191a6ef95a102b60",
+  "launcherSha256": "efffc25ea0c23c72c979f1d3f5a64d35febcc9ef09520685cfca23c145d6cac0",
+  "programAndLauncherChanged": false,
+  "simulatedExceptionRegression": true,
+  "exactOriginalArchiveCompatibilityRepeated": true,
+  "benignTargetRenewalProven": false,
+  "automaticRetryImplemented": false,
+  "targetPlanProven": false,
+  "notReleaseAcceptance": true
+}

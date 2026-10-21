@@ -1,0 +1,122 @@
+{
+  "schema": "ouf.source-revision-after-approval-custody-target-evidence.v1",
+  "provenance": "User-supplied protected target read; no independent VPS/root access in cloud",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "contextPath": "/etc/ouf/deploy-snapshots/source-revision-execution-dvf517sr",
+  "contextFiles": 22,
+  "reviewSha256": "55384120f76186225520bfd94e4d74a6cbb8e6e3d981a52ec8b3972682f45478",
+  "sourceClosureSha256": "be5757089d412b3aeef1d44f71ce0b624071146da0b11b09c049f5635b029144",
+  "authorityArtifactsObserved": true,
+  "issuanceClaimPresent": true,
+  "decisionPresent": true,
+  "decisionReviewBound": true,
+  "issuanceDecisionBound": true,
+  "signatureFilesPresent": 2,
+  "logicalScopeClaimPresent": true,
+  "logicalScopeClaimBound": true,
+  "updateJournal": {
+    "stateSchema": "ouf.source-revision-update-journal.v1",
+    "version": 0,
+    "nextStage": 0,
+    "effectCount": 0,
+    "effects": [],
+    "authorityHashBound": true,
+    "budgetReset": false,
+    "currentBootMatches": true,
+    "expiredByWallClock": true
+  },
+  "backupDumpPresent": false,
+  "backupReceiptPresent": false,
+  "humanSession": {
+    "state": "READY",
+    "attempts": 188,
+    "maximumAttempts": 256,
+    "remainingAttempts": 68,
+    "originalBindingPreserved": true,
+    "expiredByWallClock": false,
+    "windowRemainingSecondsAtObservation": 4431
+  },
+  "retainedMetadata": {
+    "permit.json": {
+      "uid": 0,
+      "gid": 10005,
+      "mode": "0440",
+      "links": 1,
+      "bytes": 2462,
+      "regularFile": true,
+      "rootControlledAncestry": true,
+      "expectedHashMatches": true,
+      "nativePrivateCustodyPass": false,
+      "notRuntimeAcceptance": true
+    },
+    "policy.json": {
+      "uid": 0,
+      "gid": 10005,
+      "mode": "0440",
+      "links": 1,
+      "bytes": 660,
+      "regularFile": true,
+      "rootControlledAncestry": true,
+      "expectedHashMatches": true,
+      "nativePrivateCustodyPass": false,
+      "notRuntimeAcceptance": true
+    },
+    "profile.json": {
+      "uid": 0,
+      "gid": 10005,
+      "mode": "0440",
+      "links": 1,
+      "bytes": 375,
+      "regularFile": true,
+      "rootControlledAncestry": true,
+      "expectedHashMatches": true,
+      "nativePrivateCustodyPass": false,
+      "notRuntimeAcceptance": true
+    }
+  },
+  "containerReadback": {
+    "onboarding": {
+      "identityMatchesExpected": true,
+      "running": true,
+      "paused": false,
+      "restarting": false,
+      "pid": 29318,
+      "startedAt": "2026-10-18T16:41:17.137359945Z"
+    },
+    "mcp": {
+      "identityMatchesExpected": true,
+      "running": true,
+      "paused": false,
+      "restarting": false,
+      "pid": 29654,
+      "startedAt": "2026-10-18T16:41:23.505484215Z"
+    },
+    "udp": {
+      "identityMatchesExpected": true,
+      "running": true,
+      "paused": false,
+      "restarting": false,
+      "pid": 66601,
+      "startedAt": "2026-10-18T19:16:12.55247113Z"
+    },
+    "ingestion": {
+      "identityMatchesExpected": true,
+      "running": true,
+      "paused": false,
+      "restarting": false,
+      "pid": 29444,
+      "startedAt": "2026-10-18T16:41:17.983431224Z"
+    }
+  },
+  "journalWrites": 0,
+  "databaseCalls": 0,
+  "engineReadOnlyCalls": 4,
+  "runtimeAuthorityAcceptedByRead": false,
+  "runtimeAuthorityIssuedByRead": false,
+  "automaticRetry": false,
+  "budgetReset": false,
+  "credentialValuesPrinted": false,
+  "credentialJournalHashesPrinted": false,
+  "retainedFilesPreserved": true
+}

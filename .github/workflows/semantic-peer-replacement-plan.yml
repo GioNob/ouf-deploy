@@ -1,0 +1,21 @@
+name: Semantic peer replacement plan native validation
+on:
+  push:
+    branches: [main]
+    paths:
+      - tools/semantic_peer_replacement/**
+      - .github/workflows/semantic-peer-replacement-plan.yml
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install native namespace and nft test tools
+        run: sudo apt-get update && sudo apt-get install -y nftables iproute2
+      - name: Verify pure planner with actual isolated packets and preserved lease tables
+        run: sudo unshare --net --mount --fork python3 -B tools/semantic_peer_replacement/test_peer_rebind_native.py

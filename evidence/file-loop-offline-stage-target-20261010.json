@@ -1,0 +1,36 @@
+{
+  "schema": "ouf.file-loop.offline-candidate-stage.v1",
+  "status": "UNSIGNED_PACKAGES_STAGED_NOT_IMPORTED",
+  "stageDirectory": "/home/oufadmin/ouf-file-loop-offline-stage.LMawhAuO",
+  "packages": [
+    {
+      "module": "semantic",
+      "sourceCommit": "622614b0040cf11be2f6c7e3568733a488ca4ca8",
+      "imageId": "sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85",
+      "checksumsVerified": true,
+      "imageScanGate": "PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED"
+    },
+    {
+      "module": "ingestion",
+      "sourceCommit": "8b908554314617298242eb2ae8312f734f55e817",
+      "imageId": "sha256:98af9d774e446ce621128a52bfa1f9faaa096052cdc185f17dc81f1ea76e9a05",
+      "checksumsVerified": true,
+      "imageScanGate": "PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED"
+    },
+    {
+      "module": "udp",
+      "sourceCommit": "bc336208ce41876f2854c3a4d8623fb6698bdcdd",
+      "imageId": "sha256:7a97979286113c4e3ef6bae87e1bf2d54d2f7195d447ce43b9329f3b90899d28",
+      "checksumsVerified": true,
+      "imageScanGate": "PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED"
+    }
+  ],
+  "imageImports": 0,
+  "containerLifecycleOperations": 0,
+  "applicationCutoverAuthorized": false,
+  "existingConfigurationWrites": 0,
+  "r9Touched": false,
+  "privateKeysRead": 0,
+  "signaturesIssued": 0,
+  "notReleaseAcceptance": true
+}

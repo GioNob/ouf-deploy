@@ -1,0 +1,48 @@
+{
+  "schema": "ouf.semantic-token-producer-path-metadata-receipt.v1",
+  "evidenceSource": "operator_reported_not_independent_live_readback",
+  "reportedAt": "2026-10-12T18:00:01+02:00",
+  "status": "PATH_METADATA_DIAGNOSED_NOT_ACCEPTED",
+  "ancestorCoverageComplete": true,
+  "ancestors": [
+    {
+      "depth": 1,
+      "standardDirectory": "/opt",
+      "uid": 0,
+      "gid": 0,
+      "modeOctal": "0755",
+      "directory": true,
+      "symlink": false,
+      "passesReaderGuard": true
+    },
+    {
+      "depth": 2,
+      "standardDirectory": "/opt/ouf",
+      "uid": 1000,
+      "gid": 1000,
+      "modeOctal": "0750",
+      "directory": true,
+      "symlink": false,
+      "passesReaderGuard": false
+    },
+    {
+      "depth": 3,
+      "standardDirectory": null,
+      "uid": 0,
+      "gid": 0,
+      "modeOctal": "0700",
+      "directory": true,
+      "symlink": false,
+      "passesReaderGuard": true
+    }
+  ],
+  "sourceContentBytesRead": 0,
+  "protectedFileWrites": 0,
+  "serviceMutations": 0,
+  "producerExecuted": false,
+  "baselineRefreshed": false,
+  "r12Touched": false,
+  "notReleaseAcceptance": true,
+  "interpretation": "Root-only producer custody is not established through the UID1000-owned /opt/ouf ancestor. The root-owned 0700 child does not protect its directory entry from rename/replacement by the writable parent owner. This is not evidence of actual tampering. Do not globally chmod/chown /opt/ouf or accept current writer authority.",
+  "nextAction": "Read only direct Python source routing and final source lstat custody; do not open or execute producer. Find approved installation provenance before a scoped corrective proposal."
+}

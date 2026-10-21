@@ -1,0 +1,17 @@
+{
+  "schema": "ouf.discovery.application-input-contract-qualification.v1",
+  "sourceCommit": "88eb054043483a30b54b74ad0af8a2b55091cfe9",
+  "runId": 38055382499,
+  "jobId": 114222649547,
+  "tests": 7,
+  "skippedTests": 0,
+  "status": "PASS",
+  "launcherSyntax": "PASS",
+  "tamperedMainAndDependencyRejectedBeforeExecution": true,
+  "scope": "Four provider/mount/privacy cases plus three real root filesystem UID/GID/mode/symlink/ancestor tests on disposable fixtures",
+  "rootTargetExecuted": false,
+  "credentialFilesOpened": 0,
+  "privateKeyFilesOpened": 0,
+  "productionApplyReady": false,
+  "notReleaseAcceptance": true
+}

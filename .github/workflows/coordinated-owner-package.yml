@@ -1,0 +1,32 @@
+name: OUF coordinated owner package CI
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/coordinated-owner-package.yml
+      - scripts/stage-coordinated-provider-owner.py
+      - scripts/bootstrap-coordinated-owner-package.sh
+      - tests/test_coordinated_owner_package.py
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: a10df126d229dfefd9e0a4d716a07f1f535b6cd6
+          path: gateway-source
+          persist-credentials: false
+      - name: Shell syntax if bootstrap present
+        run: if test -f scripts/bootstrap-coordinated-owner-package.sh; then bash -n scripts/bootstrap-coordinated-owner-package.sh; fi
+      - name: Install isolated native test dependencies
+        run: sudo apt-get update && sudo apt-get install -y nftables iproute2
+      - name: All package boundaries and actual staged root CLI against native nft
+        run: sudo unshare --net --fork env OUF_COORDINATED_STAGE_NATIVE_TEST=1 python3 -I -B tests/test_coordinated_owner_package.py

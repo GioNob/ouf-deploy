@@ -1,0 +1,23 @@
+{
+  "schema": "ouf.cloud-tool-inventory-read.v1",
+  "accountRouteAdvertised": "ouf-admin",
+  "linkId": "link_6aafef96b4148191b767e9af7b756a07",
+  "toolDefinitionCount": 26,
+  "checkedOperations": [
+    "ouf_system_status",
+    "ouf_ingestion_status",
+    "ouf_ingestion_history",
+    "ouf_operations_summary",
+    "source_onboarding_revision_prepare",
+    "source_onboarding_revision_read"
+  ],
+  "inventoryOnly": true,
+  "protectedToolCallPerformed": false,
+  "providerAuthorizationReverified": false,
+  "runtimeAuthorityIssued": false,
+  "newLoginPerformed": false,
+  "refreshPerformed": false,
+  "budgetReset": false,
+  "windowExtended": false,
+  "note": "Current exposed typed definitions and explicit account routing inspected; not runtime availability or functional acceptance."
+}

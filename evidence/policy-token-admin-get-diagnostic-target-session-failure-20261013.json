@@ -1,0 +1,42 @@
+{
+  "schema": "ouf.policy-token-admin-get-diagnostic-target-observation.v1",
+  "evidenceSource": "OPERATOR_SUPPLIED_OUTPUT",
+  "receivedAt": "2026-10-13T13:04:49Z",
+  "receipt": {
+    "budgetReset": false,
+    "credentialFilesRead": 0,
+    "diagnosticCategories": [
+      "SESSION_AUTH_FAILURE_TEXT_OBSERVED"
+    ],
+    "diagnosticCategoriesAreNotRootCauseProof": true,
+    "diagnosticTextTruncated": false,
+    "dockerMetadataReads": 1,
+    "iamGetExitCode": 1,
+    "iamMetadataGetAttempts": 1,
+    "iamMutations": 0,
+    "mountedTokenFilesRead": 0,
+    "notReleaseAcceptance": true,
+    "phase": "EXACT_EXISTING_IAM_GET_DIAGNOSIS",
+    "privateEvidenceWrites": 0,
+    "privateKeysRead": 0,
+    "productionApplyReady": false,
+    "providerCalls": 0,
+    "r12Touched": false,
+    "rawDiagnosticTextPrinted": false,
+    "reason": "EXISTING_IAM_GET_FAILED_CATEGORIES_OBSERVED",
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.policy-token-admin-get-diagnostic.v1",
+    "selectedContainerInspectExitCode": 0,
+    "selectedContainerRunning": true,
+    "serviceMutations": 0,
+    "signaturesIssued": 0,
+    "status": "DIAGNOSIS_OBSERVED_NOT_ACCEPTED",
+    "tokenGrantRequests": 0
+  },
+  "reauthenticationJustifiedByObservedCliSessionFailure": true,
+  "exactExpiryCauseNotProven": true,
+  "reauthenticationPerformed": false,
+  "preparationReplayPerformed": false,
+  "previousAttemptEvidencePreserved": true,
+  "nextStep": "Interactive existing kcadm admin login; only after success resume the same qualified preparation once, retaining a new unique receipt. No new authority system, IAM configuration mutation or consumed activation replay."
+}

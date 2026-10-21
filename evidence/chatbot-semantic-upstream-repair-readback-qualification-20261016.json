@@ -1,0 +1,20 @@
+{
+  "schema": "ouf.chatbot-semantic-upstream-repair-readback-qualification.v1",
+  "sourceCommit": "21cd552503f68351bd909214fdfd62a0dd1d5d76",
+  "qualificationRunId": 38890087614,
+  "qualificationJobId": 116937188614,
+  "testsPassed": 80,
+  "testsSkipped": 0,
+  "targetExecutionProven": false,
+  "gatewayWrites": 0,
+  "databaseCalls": 0,
+  "grantRequests": 0,
+  "serviceMutations": 0,
+  "maximumGatewayReads": 2,
+  "maximumLogReads": 1,
+  "maximumSeconds": 120,
+  "runtimeAuthorityIssued": false,
+  "reconciliationPerformed": false,
+  "readerSha256": "b3d2f86a750dfd126b0581b00f6a2568b58ecad120dba5a5ed7522ca701c2c35",
+  "launcherSha256": "1ea7a191011b8f7daa1ff5e7372751825b630cb164d2c239bf17d083de66b1ff"
+}

@@ -1,0 +1,39 @@
+name: OUF application runtime input custody qualification
+on:
+  push:
+    branches: [main]
+    paths:
+      - tools/semantic_target_review/prepare_application_runtime_inputs.py
+      - tools/semantic_target_review/test_application_runtime_inputs.py
+      - tools/semantic_target_review/test_application_runtime_input_delivery.py
+      - releases/application-runtime-input-preparation-20261010.sh
+      - .github/workflows/application-runtime-input-preparation.yml
+permissions:
+  contents: read
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Actual root filesystem role ownership and replay denial
+        run: |
+          sudo install -d -m0700 /var/lib/ouf-runtime-input-fixture
+          sudo env OUF_ROOT_CUSTODY_TEST_BASE=/var/lib/ouf-runtime-input-fixture /usr/bin/python3 tools/semantic_target_review/test_application_runtime_inputs.py
+      - name: Check delivery when present
+        run: |
+          if [ -f tools/semantic_target_review/test_application_runtime_input_delivery.py ]; then
+            python3 tools/semantic_target_review/test_application_runtime_input_delivery.py
+          fi
+  target-mount-metadata:
+    needs: qualification
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Exact existing APISIX configuration mount metadata only
+        run: python3 tools/semantic_target_review/read_southbound_configuration_mount.py

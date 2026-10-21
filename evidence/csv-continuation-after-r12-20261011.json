@@ -1,0 +1,60 @@
+{
+  "schema": "ouf.csv-continuation-after-r12.v1",
+  "date": "2026-10-11",
+  "status": "POST_R12_PROTECTED_INPUT_PREPARATION_QUALIFIED_TARGET_PENDING",
+  "sourceCommit": "1dcf79829e2f051dcaf10f4bafed003e1d3d8afe",
+  "deliveryCommit": "32a5143cace5cf166b3a7a48e02ec60c7b3f9bb6",
+  "qualification": {
+    "run": 38146862484,
+    "job": 114491948561,
+    "conclusion": "success",
+    "ordinaryPassed": 19,
+    "ordinarySkipped": 1,
+    "hostedRootPassed": 14,
+    "distinctTests": 20,
+    "nativePosixCustody": true,
+    "targetR12ExecutionFixture": false,
+    "downloadTamperPositions": 4,
+    "portableGhWithoutPath": true,
+    "privilegedExitPropagation": true
+  },
+  "delivery": {
+    "path": "releases/semantic-r12-cutover-inputs-20261011.sh",
+    "sha256": "3f7b9b2d26e5e43d1f0e0efde26b3ab13ed0d0aaebf240a885211032ab60e662",
+    "sourceSha256": "693ec0196a60d3a9f6adee96571947306df4a0cffb449905c3dcf8c09a34da1b",
+    "custodySha256": "cb9ff64684243d563da79d327eb7d7e325dbea6a3922c91a0b7791a3ceec9baf"
+  },
+  "liveObservations": {
+    "mcp": "HEALTHY",
+    "ingestion": "AUTHORIZATION_DENIED",
+    "semanticClassSearch": {
+      "teatro": 0,
+      "cinema": 0,
+      "absenceOfPublishedArtifactsProven": false
+    },
+    "cinemaSearch": {
+      "counts": [
+        3,
+        3
+      ],
+      "distinctActiveObjectsObserved": 6,
+      "partialFlags": [
+        false,
+        false
+      ],
+      "paginationComplete": false,
+      "thirdPage": "ORCHESTRATION_BUDGET_EXHAUSTED",
+      "retriedAfterExhaustion": false
+    },
+    "teatriPreview": "AUTO_REVIEW_REJECTED_EXACT_PRIVATE_FILE_AUTHORIZATION_REQUIRED"
+  },
+  "limits": {
+    "targetPreparationExecuted": false,
+    "applicationCutoverExecuted": false,
+    "csvEndToEndProven": false,
+    "releaseAcceptance": false,
+    "platformIndustrializationProven": false,
+    "r12Restarted": false,
+    "recoveryBudgetReset": false
+  }
+}

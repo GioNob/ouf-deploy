@@ -1,0 +1,54 @@
+{
+  "schema": "ouf.semantic-provider-v2-frame-compiler-ci.v1",
+  "sourceCommit": "02be34b4274076c5b83c902b12878417495aa2b8",
+  "workflowRun": 37741307729,
+  "workflowUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/37741307729",
+  "jobs": [
+    {
+      "id": 113192406627,
+      "backend": "classic-vfs",
+      "conclusion": "success"
+    },
+    {
+      "id": 113192406786,
+      "backend": "containerd-overlayfs",
+      "conclusion": "success"
+    }
+  ],
+  "unitTestsPerJob": 12,
+  "nativeTestsPerJob": 1,
+  "sourceHashes": {
+    "compile_creation_frame_policy.py": "94d7bcf52602a4b107cecc98ae77a7d2c3943a0475a253b9e8f4de5bdaaf3c75",
+    "test_compile_creation_frame_policy.py": "d5b7837fd65d8018f0ea2be42820a57138017c9329799b72c8b9f65e6b027b38",
+    "test_compile_creation_frame_policy_native.py": "4ea5262678dad7a49ad13f9e34b7396a642ea3390126fc0f45ec0eeb893a8bea"
+  },
+  "ownerSourceCommit": "3505a2f6bfde9c3905b76a5e670ebc30b40d3d6d",
+  "proofs": {
+    "realDockerShape": true,
+    "runcCreateRefused": true,
+    "applicationNotStarted": true,
+    "secondPolicySealedBeforeOciGeneration": true,
+    "secondExactComparison": true,
+    "existingFixtureKeptRunning": true
+  },
+  "limits": {
+    "syntheticTemplateOnly": true,
+    "independentTemplateApproval": false,
+    "contextAuthenticated": false,
+    "productionPrecreateBindingProven": false,
+    "targetStartAuthorized": false,
+    "acceptanceGranted": false,
+    "controlledRuntimeFullCreateStartProven": false
+  },
+  "failedRunsRetained": [
+    37733127033,
+    37733293739,
+    37733526138,
+    37733639127,
+    37733778917,
+    37733888194,
+    37733985826,
+    37735222474,
+    37736572494
+  ]
+}

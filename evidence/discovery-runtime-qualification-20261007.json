@@ -1,0 +1,83 @@
+{
+  "schema": "ouf.discovery.runtime-qualification.v1",
+  "semantic": {
+    "runId": 37664690994,
+    "jobId": 112940794093,
+    "artifactId": 11503395100,
+    "report": {
+      "acceptanceGranted": false,
+      "archiveByteVerified": true,
+      "imageId": "sha256:05055aab9fc00035adb2595d101295f279f830cd3e001d0a76e84622f0a748e2",
+      "publisherTrustAccepted": false,
+      "releaseApplied": false,
+      "runtimeUser": "10001:10001",
+      "schema": "ouf.semantic.oss-candidate.v1",
+      "severityCounts": {
+        "Critical": 0,
+        "High": 0,
+        "Low": 9,
+        "Medium": 177,
+        "Negligible": 0,
+        "Unknown": 0
+      },
+      "sourceCommit": "67cb426995d7b0723e34bfe54e52ea89ae02b81d",
+      "thresholdMet": true
+    },
+    "packagedMigrationsByteMatched": true,
+    "productionSdkPresent": true
+  },
+  "mcp": {
+    "runId": 37664694124,
+    "jobId": 112940809486,
+    "artifactId": 11501404884,
+    "report": {
+      "acceptanceGranted": false,
+      "archiveByteVerified": true,
+      "imageId": "sha256:eb12365b3f22139273b4cfb8057f4a0de181fe4ad767e11df19b5860e208db04",
+      "publisherTrustAccepted": false,
+      "releaseApplied": false,
+      "runtimeUser": "10005:10005",
+      "schema": "ouf.mcp.static-candidate.v1",
+      "severityCounts": {
+        "Critical": 0,
+        "High": 0,
+        "Low": 1,
+        "Medium": 0,
+        "Negligible": 0,
+        "Unknown": 0
+      },
+      "sourceCommit": "3d51524eeddb539d6f78961447e64d9d640141c4",
+      "thresholdMet": true
+    },
+    "staticRuntimeFilesystemVerified": true,
+    "govulncheck": {
+      "runId": 37664547586,
+      "jobId": 112940299623,
+      "result": "No vulnerabilities found."
+    },
+    "separatePushLatencyFailure": {
+      "runId": 37664542956,
+      "jobId": 112940283540,
+      "p95Ms": 100.736731,
+      "targetMs": 25,
+      "retryRequested": true,
+      "resolved": true,
+      "retry": {
+        "runId": 37664542956,
+        "attempt": 2,
+        "jobId": 112943894350,
+        "conclusion": "success",
+        "sameSourceCommit": "3d51524eeddb539d6f78961447e64d9d640141c4"
+      }
+    }
+  },
+  "publicSignedProducers": {
+    "semantic": "91381f96be0a3fbd75dcdc44c22aeb90c9f12b8a",
+    "mcp": "32bc369b0ab98629db82620c4ae14525ae412650",
+    "result": "VERIFIED_ON_HOSTED_PRODUCERS_AND_TARGET"
+  },
+  "targetLifecycleOperations": 0,
+  "releaseApplied": false,
+  "acceptanceGranted": false,
+  "selectedSignedTargetEvidence": "evidence/discovery-signed-target-stage-20261007.json"
+}

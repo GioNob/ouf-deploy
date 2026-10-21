@@ -1,0 +1,19 @@
+{
+  "acceptanceGranted": false,
+  "account": "ouf-admin",
+  "automaticRetry": false,
+  "budgetReset": false,
+  "commandKey": "teatri-semantic-draft-be74308e098aa3a6-20261016",
+  "completedTechnicalPhases": 8,
+  "date": "2026-10-16",
+  "functionalMilestonesProven": 0,
+  "lastExpiredWorkerFinalCountsObserved": false,
+  "observedHttpStatus": 403,
+  "observedOwnerCode": "SEM_CAPABILITY_REQUIRED:ouf.semantic.proposal.read",
+  "operation": "semantic.proposal.read",
+  "ownerReceiptAbsenceProvenByThisCall": false,
+  "schema": "ouf.chatbot-semantic-proposal-receipt-current-denial.v1",
+  "semanticMutationAttempts": 0,
+  "subject": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+  "tokenRenewalPerformed": false
+}

@@ -1,0 +1,40 @@
+{
+  "schema": "ouf.resolution-ths-configuration-qualification.v1",
+  "sourceCommit": "e6fa281acc7be3e6d8f0a0db7066535c455e4697",
+  "packageCommit": "aec1d389157979292d61e07ab56dfcb98eaab58d",
+  "githubRun": 39028393385,
+  "githubJob": 117383811364,
+  "tests": 19,
+  "failures": 0,
+  "skipped": 0,
+  "launcherSha256": "02dc7c9b0d6dbca331562582bc0ed6abaeb12ce93360560e5f8366c3f13c2847",
+  "sameImageOnly": true,
+  "maximumGatewayWrites": 3,
+  "maximumEffectAttemptsPerStage": 1,
+  "maximumExecutionSeconds": 900,
+  "newPolicyWorkerStarted": false,
+  "identityDecisionsPerformed": false,
+  "grantChangesAllowed": false,
+  "coverage": [
+    "actual existing Ed25519 dual-role authority",
+    "isolated complete graph with all effects disabled",
+    "real Docker same-image replacement, old retained stopped, same network/mounts/IP/MAC",
+    "actual namespace Admin transport with synthetic API contract",
+    "all prior Spring properties and scopes preserved except reviewed enabled field and two additive scope requests",
+    "lost mutation response: persistent claim, read-only reconciliation and no replay",
+    "concurrent commands and logical update fence",
+    "revocation and hours-long outage do not extend authority"
+  ],
+  "limits": [
+    "Admin HTTP and application health/authentication fixtures are synthetic",
+    "target APISIX/application acceptance pending operator execution",
+    "retained OAuth scope registration is historical; live client binding and newly requested token scopes not proven",
+    "no worker or policy publication is accepted by infrastructure-only authority",
+    "owner authorization and current policy remain required for actual Resolution decisions",
+    "case-specific deep link not implemented"
+  ],
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2,
+  "runtimeAuthorityIssued": false,
+  "targetInstallationAccepted": false
+}

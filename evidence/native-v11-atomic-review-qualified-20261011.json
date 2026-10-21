@@ -1,0 +1,19 @@
+{
+  "schema": "ouf.native-v11-atomic-review-qualification.v1",
+  "sourceCommit": "d4edb3286a13a6f1c0bd1fc04848a284f8fae933",
+  "launcherCommit": "d1f539ddc51b65d0b1bed543f4c1b1ed62cef5bd",
+  "launcherSha256": "b022826608582a0a7b7f745fbc60c68bd4eb748d9e680782536bff0fcd45808a",
+  "workflowRunId": 38177677934,
+  "jobId": 114583406130,
+  "conclusion": "success",
+  "atomicFilesystemTests": 7,
+  "sourceCustodyAndDeliveryTests": 11,
+  "targetAtomicIntakePublished": false,
+  "sourcePrivatePlanPrepared": true,
+  "applicationCutoverAuthorized": false,
+  "productionApplyReady": false,
+  "runtimeAuthorityIssued": false,
+  "notReleaseAcceptance": true,
+  "atomicLibraryCommit": "bdcf4594d152ea12d6b9b39b51e0d2533d83b7ef",
+  "partialPrivateWriteNeverClaimedAsZero": true
+}

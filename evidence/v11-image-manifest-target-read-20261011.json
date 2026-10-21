@@ -1,0 +1,203 @@
+{
+  "schema": "ouf.v11-native-manifest-target-read.record.v1",
+  "targetReads": [
+    {
+      "runId": 38169014372,
+      "jobId": 114557481740,
+      "receipt": {
+        "budgetReset": false,
+        "cliExit": 1,
+        "cliStderrHash": "665264b715dbd89b3d8fed4a3fc948531736aaaada158f4a2cc148431d9143d9",
+        "containerLifecycleOperations": 0,
+        "engineVersion": {
+          "ApiVersion": "1.56",
+          "Arch": "amd64",
+          "MinAPIVersion": "1.40",
+          "Os": "linux",
+          "Version": "29.8.1"
+        },
+        "imageCount": 102,
+        "imageImports": 0,
+        "listStatus": 200,
+        "nativeReads": [
+          {
+            "apiVersion": "1.44",
+            "exactPrefixedId": true,
+            "projection": null,
+            "status": 404
+          },
+          {
+            "apiVersion": "1.44",
+            "exactPrefixedId": false,
+            "projection": null,
+            "status": 404
+          },
+          {
+            "apiVersion": "1.56",
+            "exactPrefixedId": true,
+            "projection": null,
+            "status": 404
+          },
+          {
+            "apiVersion": "1.56",
+            "exactPrefixedId": false,
+            "projection": null,
+            "status": 404
+          }
+        ],
+        "notReleaseAcceptance": true,
+        "privateValuesPrinted": false,
+        "protectedFileReads": 0,
+        "protectedFileWrites": 0,
+        "r12Touched": false,
+        "readOnly": true,
+        "schema": "ouf.v11-image-import-engine-read.v1",
+        "sourceMatches": [
+          {
+            "imageId": "sha256:bd48ab35db0441b1f4f48422e7190adaff176a61cddde5f981d93e496ad4b24a",
+            "repoTagCount": 0,
+            "size": 794339707
+          }
+        ],
+        "status": "READ_COMPLETED_NO_IMPORT_REPLAY",
+        "versionStatus": 200
+      }
+    },
+    {
+      "runId": 38169090706,
+      "jobId": 114557707039,
+      "receipt": {
+        "budgetReset": false,
+        "cliExit": 1,
+        "cliStderrHash": "665264b715dbd89b3d8fed4a3fc948531736aaaada158f4a2cc148431d9143d9",
+        "containerLifecycleOperations": 0,
+        "engineVersion": {
+          "ApiVersion": "1.56",
+          "Arch": "amd64",
+          "MinAPIVersion": "1.40",
+          "Os": "linux",
+          "Version": "29.8.1"
+        },
+        "imageCount": 102,
+        "imageImports": 0,
+        "listStatus": 200,
+        "nativeReads": [
+          {
+            "apiVersion": "1.44",
+            "exactPrefixedId": true,
+            "projection": null,
+            "status": 404
+          },
+          {
+            "apiVersion": "1.44",
+            "exactPrefixedId": false,
+            "projection": null,
+            "status": 404
+          },
+          {
+            "apiVersion": "1.56",
+            "exactPrefixedId": true,
+            "projection": null,
+            "status": 404
+          },
+          {
+            "apiVersion": "1.56",
+            "exactPrefixedId": false,
+            "projection": null,
+            "status": 404
+          }
+        ],
+        "notReleaseAcceptance": true,
+        "privateValuesPrinted": false,
+        "protectedFileReads": 0,
+        "protectedFileWrites": 0,
+        "r12Touched": false,
+        "readOnly": true,
+        "schema": "ouf.v11-image-import-engine-read.v1",
+        "sourceCandidateReads": [
+          {
+            "apiVersion": "1.44",
+            "projection": {
+              "architecture": "amd64",
+              "configHash": "55646567ec81a5ee51e1cc2dd01b46cc968bbe493fc5a7976aff8f1b89106c17",
+              "configProjectionHash": "52d4e0beabafa92afc603a5cd1fc9e226a367b5d0cc139db1fb27bb75880cd6b",
+              "descriptor": null,
+              "imageId": "sha256:bd48ab35db0441b1f4f48422e7190adaff176a61cddde5f981d93e496ad4b24a",
+              "manifests": null,
+              "os": "linux",
+              "repoTagCount": 0,
+              "rootfsHash": "11ef2e90fcd021cdcd0a06bf3ab5b0fb3d645b8f575d71affef3f5fb1960d775",
+              "sourceMatches": true
+            },
+            "status": 200
+          },
+          {
+            "apiVersion": "1.56",
+            "projection": {
+              "architecture": "amd64",
+              "configHash": "5813e7d12fd6efb94a62c5ed51e413913021e73522c6f37c410c499937e3dd83",
+              "configProjectionHash": "52d4e0beabafa92afc603a5cd1fc9e226a367b5d0cc139db1fb27bb75880cd6b",
+              "descriptor": {
+                "digest": "sha256:bd48ab35db0441b1f4f48422e7190adaff176a61cddde5f981d93e496ad4b24a",
+                "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+                "size": 1845
+              },
+              "imageId": "sha256:bd48ab35db0441b1f4f48422e7190adaff176a61cddde5f981d93e496ad4b24a",
+              "manifests": [
+                {
+                  "Available": true,
+                  "Descriptor": {
+                    "digest": "sha256:bd48ab35db0441b1f4f48422e7190adaff176a61cddde5f981d93e496ad4b24a",
+                    "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+                    "size": 1845
+                  },
+                  "ID": "sha256:bd48ab35db0441b1f4f48422e7190adaff176a61cddde5f981d93e496ad4b24a",
+                  "ImageData": {
+                    "Containers": null,
+                    "Platform": {
+                      "architecture": "amd64",
+                      "os": "linux"
+                    },
+                    "Size": {
+                      "Unpacked": 401223680
+                    }
+                  },
+                  "Kind": "image",
+                  "Size": {
+                    "Content": 393116027,
+                    "Total": 794339707
+                  }
+                }
+              ],
+              "os": "linux",
+              "repoTagCount": 0,
+              "rootfsHash": "11ef2e90fcd021cdcd0a06bf3ab5b0fb3d645b8f575d71affef3f5fb1960d775",
+              "sourceMatches": true
+            },
+            "status": 200
+          }
+        ],
+        "sourceMatches": [
+          {
+            "imageId": "sha256:bd48ab35db0441b1f4f48422e7190adaff176a61cddde5f981d93e496ad4b24a",
+            "repoTagCount": 0,
+            "size": 794339707
+          }
+        ],
+        "status": "READ_COMPLETED_NO_IMPORT_REPLAY",
+        "versionStatus": 200
+      }
+    }
+  ],
+  "manifestDerivedFromOriginalAuthenticatedArchive": {
+    "digest": "sha256:bd48ab35db0441b1f4f48422e7190adaff176a61cddde5f981d93e496ad4b24a",
+    "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+    "size": 1845
+  },
+  "manifestQualificationRunId": 38169276055,
+  "manifestQualificationJobId": 114558255982,
+  "independentTargetRootJournalRead": false,
+  "targetJournalReconciled": false,
+  "productionApplyReady": false,
+  "notReleaseAcceptance": true
+}

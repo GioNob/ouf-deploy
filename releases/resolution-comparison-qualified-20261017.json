@@ -1,0 +1,39 @@
+{
+  "schema": "ouf.resolution-comparison-qualification.v1",
+  "sourceCommit": "39b91860730c227f8177dce881e075f1f6e2e70b",
+  "testedRuntimeCommit": "12bf46df88199879a8ba2207c1c76590b31ec7bf",
+  "candidateRun": 39037997551,
+  "nativeQualificationRun": 39038120137,
+  "nativeTests": {
+    "tests": 24,
+    "failures": 0,
+    "skipped": 0
+  },
+  "udp": {
+    "source": "5a5a45b07b3f52fab50e10234f12ce87bb1a6aa6",
+    "run": 39037304236,
+    "tests": 219,
+    "failures": 0,
+    "existingSkipped": 2,
+    "identityGovernanceTests": 20
+  },
+  "onboarding": {
+    "source": "dec8f6f53f263f264a1ed14f17b51ab31dc9afad",
+    "moduleRun": 39037526914,
+    "browserRun": 39037526923,
+    "browserTests": 4,
+    "failures": 0,
+    "skipped": 0
+  },
+  "behavior": [
+    "Same field columns for actual incoming and selected candidate objects",
+    "Candidate change updates comparison; raw JSON retained",
+    "Lascia in quarantena excludes a case from submission without modifying it",
+    "Selected decisions atomic; omitted stale cases do not block selected current cases",
+    "Stale selected evidence and duplicate confirmation are rejected"
+  ],
+  "targetUpdated": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2,
+  "acceptanceGranted": false
+}

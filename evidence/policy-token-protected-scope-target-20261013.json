@@ -1,0 +1,120 @@
+{
+  "evidenceSource": "operator_reported_not_independent_live_readback",
+  "reportedAt": "2026-10-13T06:25:47Z",
+  "receipt": {
+    "budgetReset": false,
+    "notReleaseAcceptance": true,
+    "protectedFileWrites": 0,
+    "providerCalls": 0,
+    "r12Touched": false,
+    "roots": {
+      "durableRecovery": {
+        "ancestors": [
+          {
+            "depth": 1,
+            "directory": true,
+            "gid": 0,
+            "modeOctal": "0755",
+            "symlink": false,
+            "uid": 0
+          },
+          {
+            "depth": 2,
+            "directory": true,
+            "gid": 0,
+            "modeOctal": "0755",
+            "symlink": false,
+            "uid": 0
+          }
+        ],
+        "custodyAccepted": false,
+        "depth": 3,
+        "state": "ABSENT"
+      },
+      "ownerCredential": {
+        "ancestors": [
+          {
+            "depth": 1,
+            "directory": true,
+            "gid": 0,
+            "modeOctal": "0755",
+            "symlink": false,
+            "uid": 0
+          },
+          {
+            "depth": 2,
+            "directory": true,
+            "gid": 0,
+            "modeOctal": "0755",
+            "symlink": false,
+            "uid": 0
+          },
+          {
+            "depth": 3,
+            "directory": true,
+            "gid": 0,
+            "modeOctal": "0755",
+            "symlink": false,
+            "uid": 0
+          }
+        ],
+        "custodyAccepted": false,
+        "depth": 4,
+        "state": "ABSENT"
+      },
+      "reviewedCode": {
+        "ancestors": [
+          {
+            "depth": 1,
+            "directory": true,
+            "gid": 0,
+            "modeOctal": "0755",
+            "symlink": false,
+            "uid": 0
+          },
+          {
+            "depth": 2,
+            "directory": true,
+            "gid": 0,
+            "modeOctal": "0755",
+            "symlink": false,
+            "uid": 0
+          },
+          {
+            "depth": 3,
+            "directory": true,
+            "gid": 0,
+            "modeOctal": "0755",
+            "symlink": false,
+            "uid": 0
+          }
+        ],
+        "custodyAccepted": false,
+        "depth": 4,
+        "state": "ABSENT"
+      }
+    },
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.policy-token-protected-scope-observation.v1",
+    "secretOrJournalContentReads": 0,
+    "serviceMutations": 0,
+    "status": "METADATA_OBSERVED_NOT_ACCEPTED",
+    "units": [
+      {
+        "ActiveState": "inactive",
+        "Id": "ouf-policy-token@semantic.service",
+        "LoadState": "loaded",
+        "MainPID": "0",
+        "UnitFileState": "static"
+      },
+      {
+        "ActiveState": "active",
+        "Id": "ouf-policy-token@semantic.timer",
+        "LoadState": "loaded",
+        "UnitFileState": "enabled"
+      }
+    ]
+  },
+  "nextGate": "Complete sealed executable source closure and owner-authenticated IAM/accounting bindings before any legacy writer transition or installation.",
+  "productionApplyReady": false
+}

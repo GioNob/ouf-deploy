@@ -1,0 +1,23 @@
+{
+  "schema": "ouf.discovery.current-r9-transition-access.v1",
+  "readSourceCommit": "f44dae25b77d7e7ff1df59550cc5d3e5fd37d8fe",
+  "runId": 38035986086,
+  "jobId": 114166407352,
+  "status": "OPERATOR_SUDO_REQUIRED",
+  "readOnly": true,
+  "targetApplied": false,
+  "rootReadExecuted": false,
+  "r9CurrentLivenessProven": false,
+  "automaticPrivilegeChange": false,
+  "readerProjectionTests": 4,
+  "readerProjectionStatus": "PASS",
+  "readerProjectionRunId": 38035986086,
+  "deliveryTests": 3,
+  "deliveryRunId": 38036129064,
+  "deliveryStatus": "PASS",
+  "deliverySourceCommit": "a6b51d99b308dd9c45493782685df052c507efe6",
+  "launcher": "releases/current-r9-transition-read-20261010.sh",
+  "launcherSha256": "990d9db39c87e4bf89a2cc8b8907f3145857458a944ceb8fccfdd53ace593010",
+  "requiredOperatorAction": "Run the immutable read-only launcher in the VPS terminal and enter sudo password locally; return its public result",
+  "notReleaseAcceptance": true
+}

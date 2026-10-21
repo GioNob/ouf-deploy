@@ -1,0 +1,52 @@
+{
+  "schema": "ouf.provider-r8-lease-native-validation.v1",
+  "scope": "ISOLATED_HOSTED_CI_NOT_VPS_AUTHORITY",
+  "sourceCommit": "908b69e5b46350e042bec35ad0ef243698d538ec",
+  "runId": 37983913602,
+  "jobId": 114001007971,
+  "conclusion": "success",
+  "markers": [
+    "2026-10-09T19:59:36.7747057Z R8_LEASE_NATIVE=ACTIVE_AND_RENEWED REAL_SYSTEMD=true REAL_DNS=true REAL_NFT=true",
+    "2026-10-09T19:59:53.1670244Z R8_LEASE_NATIVE=DNS_FAILURE_REVOKED ORIGINAL_CAUSE_RETAINED=true REPLAY_DENIED=true TARGET_ACTIONS=0"
+  ],
+  "verifiedOriginalSourceFiles": 8,
+  "reviewedCompilerDelta": {
+    "originalSha256": "1c0d7f1243752fe216ef62eefbc2e3253b8f2503b518fafe11277e4d7721a084",
+    "replacementSha256": "c3160940cf79678cb8e44c036cb0d947016f885ab09acfe6cce571833db5b079",
+    "installedSourceOverwritten": false
+  },
+  "checks": {
+    "actualTransientSystemd": true,
+    "actualDnsUdp": true,
+    "actualNftables": true,
+    "twoFreshCycles": true,
+    "twoInetAndTwoBridgeSets": true,
+    "dnsFailureRevokesAllSets": true,
+    "innerFailureCauseRetained": true,
+    "replayRefused": true
+  },
+  "priorFailure": {
+    "commit": "17644c1be6a5d47522b05d4e77718efa600d778a",
+    "runId": 37983256268,
+    "jobId": 113998780301,
+    "phase": "FIRST_FRESH_TWO_FLOW_REFRESH",
+    "reason": "FRESH_RESOLUTION_UNUSABLE",
+    "rootCause": "Per-flow validation included the sibling's empty baseline",
+    "reproducedUsingOriginalSource": true
+  },
+  "targetActions": 0,
+  "acceptanceGranted": false,
+  "leaseAuthorized": false,
+  "startAuthorized": false,
+  "notReleaseAcceptance": true,
+  "ciLogSha256": "793327d4c0de9b6d0695f7778443763ea8262e4926c9ee27280a97784249296e",
+  "deliveryValidation": {
+    "scope": "LOCAL_DELIVERY_FIXTURE_NO_TARGET_ACTION",
+    "explicitExistingGhPathUsed": true,
+    "threeComponentHashesVerified": true,
+    "rootMemoryBootstrapExecutedPendingEntrypoint": true,
+    "pendingAuthorityRefused": true,
+    "shellSyntaxPassed": true,
+    "launcherSha256": "f44af2c09cdd6f5bce10d68f37db23be72a440aaacfc93b0d7a87801b6f684fb"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "ouf.discovery.runtime-input-preparation-blocked-target.v1",
+  "acquisition": "OPERATOR_REPORTED",
+  "operatorLocalTime": "2026-10-10T13:15:45+02:00",
+  "sourceCommit": "ecb2b92ba89feddb7fc970b70098cad525e13ebc",
+  "launcherCommit": "fd1ece9a2c5df8b4690ad2ef05bf2c3bed33b532",
+  "status": "INPUT_PREPARATION_BLOCKED",
+  "reason": "EXACT_READ_ONLY_SOUTHBOUND_CERTIFICATE_REQUIRED",
+  "evidenceDirectory": null,
+  "claimCreated": false,
+  "administrativeLoginAttemptsIssued": 3,
+  "iamReadRequests": 3,
+  "existingConfigurationWrites": 0,
+  "containerLifecycleOperations": 0,
+  "databaseWrites": 0,
+  "firewallWrites": 0,
+  "r9Touched": false,
+  "doNotRerunApply": false,
+  "notReleaseAcceptance": true,
+  "correction": "The TLS certificate is embedded in the admitted read-only APISIX config.yaml; a separate server.crt mount is not part of the approved OCI. Bind the public certificate/CA through sealed config source metadata and original startup/trust receipts without opening TLS private-key material."
+}

@@ -1,0 +1,24 @@
+name: Current Semantic protected cutover input preparation
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/prepare-current-semantic-cutover-inputs.py
+      - tests/test_current_cutover_*.py
+      - releases/semantic-current-cutover-inputs-20261010.sh
+      - .github/workflows/semantic-current-cutover-inputs.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify live-frame, credential, mount, authority and native-command denial boundaries
+        run: python3 -m unittest discover -s tests -p 'test_current_cutover_*.py' -v
+      - name: Verify actual private POSIX custody and wrong owner mode link denials on disposable fixture
+        run: sudo env OUF_POSIX_FIXTURE_ROOT=/root /usr/bin/python3 -I -B -m unittest discover -s tests -p test_current_cutover_inputs.py -v

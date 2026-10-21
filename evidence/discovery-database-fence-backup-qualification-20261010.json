@@ -1,0 +1,159 @@
+{
+  "schema": "ouf.discovery.database-fence-backup-and-writer-inventory.v1",
+  "date": "2026-10-10",
+  "status": "NATIVE_QUALIFIED_AND_STALE_SMOKE_QUIESCED_PRODUCTION_CUTOVER_NOT_PREPARED",
+  "notReleaseAcceptance": true,
+  "productionDatabaseGateApplied": false,
+  "productionBackupTaken": false,
+  "productionMigrationApplied": false,
+  "applicationHealthProven": false,
+  "tests": {
+    "sourceCommit": "7613b90fb983308a729bdb0eb210838d0bcc527d",
+    "run": 38035267718,
+    "url": "https://github.com/GioNob/ouf-deploy/actions/runs/38035267718",
+    "databaseGateNativeTests": 6,
+    "fencedBackupNativeTests": 4,
+    "status": "PASS",
+    "scope": "Disposable PostgreSQL 17 only; real pg_dump and fresh-database restore; no target migration/restore/reopen"
+  },
+  "databaseGate": {
+    "partialAdmissionCloseDoesNotProveWriterFence": true,
+    "completeFenceTerminatesNonretainedSessions": true,
+    "survivesControllerSigkill": true,
+    "preparedTransactionsDenied": true,
+    "foreignDatabaseUnchanged": true,
+    "automaticReopen": false
+  },
+  "backup": {
+    "dumpAdmittedBeforeAdmissionClose": true,
+    "exclusiveRelationLocksBeforeExportedSnapshot": true,
+    "onlyAcceptedAfterCompletedWriterFence": true,
+    "committedRowsAndSequencePreserved": true,
+    "corruptArchiveDenied": true,
+    "lateWritesNotOverwritten": true,
+    "globalRolesAndAclIncluded": false
+  },
+  "targetSmokeQuiescence": {
+    "R9Touched": false,
+    "containerId": "f1313f339ed65586c35ef8be8e20e89630fd57345d921d1f6226124ee0acc724",
+    "containerLifecycleOperations": 1,
+    "containersRemoved": 0,
+    "containersStarted": 0,
+    "databaseWrites": 0,
+    "decisionRef": "CHAT_OPERATOR_TECHNICAL_DELEGATION_20261010T091230_CEST",
+    "doNotRestartBeforeSchemaCompatibilityReview": true,
+    "evidenceDirectory": "/home/oufadmin/ouf-semantic-smoke-quiescence-c3fd95s6",
+    "imageId": "sha256:34339477b5c3ec9f4472523c607b524acbf4fa2141685d1c1b8082f5ae25405b",
+    "notReleaseAcceptance": true,
+    "primaryContainerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+    "primaryGenerationUnchanged": true,
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "schema": "ouf.discovery.retained-smoke-quiescence.v1",
+    "signaturesIssued": 0,
+    "smokeDatabaseSessions": 0,
+    "smokeExitCode": 143,
+    "status": "SMOKE_RETAINED_STOPPED_PRIMARY_UNCHANGED"
+  },
+  "targetMetadataAfterQuiescence": {
+    "applicationRowsRead": 0,
+    "applyAuthorized": false,
+    "backupPerformed": false,
+    "commonLeaseLockAcquired": false,
+    "containerLifecycleOperations": 0,
+    "databaseWrites": 0,
+    "metadata": {
+      "allowConnections": true,
+      "catalogHash": "b74295628789ced9f3e420e66e476f37b318cbf16d70108ab3ce689ce56fbc3c",
+      "catalogReadVisibilityComplete": false,
+      "currentRole": {
+        "rolbypassrls": false,
+        "rolcanlogin": true,
+        "rolcreatedb": false,
+        "rolcreaterole": false,
+        "rolreplication": false,
+        "rolsuper": false
+      },
+      "databaseNameHash": "35d46b54b523873b96cfa7c240fd399ff40d64a02a812259001b5f187a3b6f12",
+      "databaseOwnerMatchesUser": true,
+      "databaseUserHash": "35d46b54b523873b96cfa7c240fd399ff40d64a02a812259001b5f187a3b6f12",
+      "dedicatedRoleCustodyProven": false,
+      "effectiveWriterRoles": [
+        {
+          "login": true,
+          "roleHash": "52a7cfa3011ba79f91eb87e64b24847be4ac61e7e96334f96e1f0305fb2ab1ef",
+          "sameAsCurrentRole": false,
+          "superuser": true
+        },
+        {
+          "login": true,
+          "roleHash": "35d46b54b523873b96cfa7c240fd399ff40d64a02a812259001b5f187a3b6f12",
+          "sameAsCurrentRole": true,
+          "superuser": false
+        },
+        {
+          "login": false,
+          "roleHash": "e63470a9d7463a3907dbc769ce46b4a4b89838b03b10bd0d995bbaf2ec2010d5",
+          "sameAsCurrentRole": false,
+          "superuser": false
+        }
+      ],
+      "globalRoleLoginFenceRejected": false,
+      "largeObjectCount": 0,
+      "otherDatabaseSessionsUsingSameRole": 0,
+      "preparedTransactionCount": 0,
+      "relationCount": 23,
+      "relationsOutsideSemanticSchema": 0,
+      "replicationSubscriptionCount": 0,
+      "semanticPeerSessionCount": 10,
+      "sessionCount": 10,
+      "sessionGroups": [
+        {
+          "applicationNameHash": "2e3474b54420af566879c7c67a80fe231cb52c9c1e4f0990b69a9753017d9481",
+          "clientAddressHash": "a535ed723efcdb45a6c657c5de1665a0b55428195cfbc05f880e6ae3aedb9b1f",
+          "count": 10,
+          "matchingContainerIds": [
+            "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147"
+          ],
+          "matchingContainers": [
+            {
+              "configurationHash": "15585be7434df637c48af730c60e8d2c53355ebd0847c172dbff2c671aa24e66",
+              "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+              "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+              "name": "/ouf-semantic",
+              "restartPolicy": {
+                "MaximumRetryCount": 0,
+                "Name": "unless-stopped"
+              },
+              "running": true,
+              "startedAt": "2026-10-02T11:45:44.132808507Z"
+            }
+          ],
+          "sameRole": true
+        }
+      ],
+      "sessionsAreObservationalNotFenceAuthority": true,
+      "successfulMigrations": [
+        null,
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
+      ]
+    },
+    "notReleaseAcceptance": true,
+    "postgresContainerId": "50b36d71620ad00fee1bae45aaf0bf652b9171dc09f567fa552798daf12614ea",
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "readConsistencyMode": "STABLE_CATALOG_REREADS_NOT_ATOMIC_TRANSITION_AUTHORITY",
+    "schema": "ouf.discovery.database-cutover-metadata.v1",
+    "semanticContainerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+    "status": "DATABASE_CUTOVER_METADATA_CAPTURED"
+  },
+  "requiredNextInput": "Fresh root-private R9 worker/lease/shared peer/source closure; no replay of consumed R9 claim"
+}

@@ -1,0 +1,95 @@
+{
+  "schema": "ouf.chatbot-file-cohort-release-evidence.v1",
+  "date": "2026-10-14",
+  "sourceTrees": [
+    {
+      "repo": "ouf-ingestion-runtime",
+      "qualified": "98e33a16839e9253b37bf74f37e77cc20dc938e7",
+      "main": "c48ee4b1873a474e81c6e1be70d393854021e2c1",
+      "trees": [
+        "13407f68117ecfed2a75a046a0560db6ba787ec4",
+        "13407f68117ecfed2a75a046a0560db6ba787ec4"
+      ],
+      "equal": true
+    },
+    {
+      "repo": "ouf-source-onboarding",
+      "qualified": "e700ef9e39b7de8396d1d704d4155649812b5643",
+      "main": "84828f74ac586bae09a78f0fb197b75b1a3d98d1",
+      "trees": [
+        "f3fcf523c15b8c1b94542fe4042c2527a0de832a",
+        "f3fcf523c15b8c1b94542fe4042c2527a0de832a"
+      ],
+      "equal": true
+    },
+    {
+      "repo": "ouf-semantic-registry",
+      "qualified": "039f044f6063bc37b4e04b189b95b0b234ae1de5",
+      "main": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+      "trees": [
+        "3f14c0a7b19ec04943e7e2307ecb758f5e7ccdb4",
+        "3f14c0a7b19ec04943e7e2307ecb758f5e7ccdb4"
+      ],
+      "equal": true
+    },
+    {
+      "repo": "ouf-udp-object-resolution",
+      "qualified": "d683f12d8acd30f13e1dbae0f3f47501b771a8b8",
+      "main": "b49c0d6f50c574c11684361ce4e8040e9cbddee2",
+      "trees": [
+        "f8deb851bf8929116d05a192f5cae45083c7f8b9",
+        "f8deb851bf8929116d05a192f5cae45083c7f8b9"
+      ],
+      "equal": true
+    },
+    {
+      "repo": "ouf-mcp-server",
+      "qualified": "1323f9e3fb35d96fd0ac5d1b17bcc3a80268ec64",
+      "main": "f7ecaeb210d8fcead478b90c62645db13a7d8226",
+      "trees": [
+        "67dc105dd015b56571f4c6accb48e2ac661d8998",
+        "67dc105dd015b56571f4c6accb48e2ac661d8998"
+      ],
+      "equal": true
+    },
+    {
+      "repo": "ouf-api-gateway",
+      "qualified": "6ac7b02507125755521b07504f26ee8f1010e53f",
+      "main": "bf179e96200deb84942ad32507edef52a4284cd0",
+      "trees": [
+        "db3ca91bfe20f121a66432a9987f790a3c94f614",
+        "db3ca91bfe20f121a66432a9987f790a3c94f614"
+      ],
+      "equal": true
+    }
+  ],
+  "composedQualification": {
+    "repository": "GioNob/ouf-ingestion-runtime",
+    "commit": "98e33a16839e9253b37bf74f37e77cc20dc938e7",
+    "runId": 38534861649,
+    "jobId": 115755167625,
+    "status": "PASS",
+    "checks": 36,
+    "artifactId": 11879424984,
+    "artifactSha256": "a4c3c2598714031a3d93eb7a8f6e8e6df1218e59fb05a5fab46b6975326cef3e",
+    "vpsAcceptance": false
+  },
+  "package": {
+    "repository": "GioNob/ouf-deploy",
+    "commit": "f31a653ee1da56b29a6171c159f9c601523735b9",
+    "runId": 38536134146,
+    "artifactId": 11880585559,
+    "artifactName": "chatbot-file-cohort-38536134146",
+    "size": 1708468889,
+    "sha256": "be55c6eda4485a4c90da9872f63e2533abe21c741c4926ecc129626cc01530f9"
+  },
+  "deliveryNativeQualification": {
+    "commit": "cb4cea3382654f95c11bf41783744f7b4712e5bb",
+    "jobId": 115757984776,
+    "status": "PASS",
+    "scope": "native Docker/PostgreSQL, preserved data backup, private image import, finite signed action and effect reconciliation; not full CLI or target acceptance"
+  },
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "notReleaseAcceptance": true
+}

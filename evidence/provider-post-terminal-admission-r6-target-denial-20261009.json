@@ -1,0 +1,71 @@
+{
+  "automaticRetryPerformed": false,
+  "candidateObservations": {
+    "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": {
+      "adapterJournalHash": "498be28e1ef00614afbc03214c522e73269fbe54ed5b34a0e88a805d32f1ef6b",
+      "adapterState": "DELETING",
+      "nativeDenialReason": "ADMISSION_PREPARATION_FAILED",
+      "stateHash": "7674a0e65ecc160881ecaa65c30c61c1d64b91a3dab78c3c5c9a9183acb762bc"
+    },
+    "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": {
+      "adapterJournalHash": "5b850802dbc61cd8d9d1ccbfe9c75b57917c52222f9d65d43ffc24930c560198",
+      "adapterState": "DELETING",
+      "nativeDenialReason": "ADMISSION_PREPARATION_FAILED",
+      "stateHash": "90ad7da25dd59e78566b06512e8bf57e4b7022bb101b6e701585ed7a79fcab58"
+    }
+  },
+  "cohortOutcome": "UNPROVEN",
+  "containerLifecycleOperations": null,
+  "contextDirectory": "/etc/ouf/deploy-snapshots/semantic-provider-v2-approved-context-aj1j95xl",
+  "differentFields": [],
+  "doNotRerunApply": true,
+  "dockerResults": {
+    "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": {
+      "errorType": null,
+      "exactCidAcknowledged": false,
+      "exitCode": 1
+    },
+    "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": {
+      "errorType": null,
+      "exactCidAcknowledged": false,
+      "exitCode": 1
+    }
+  },
+  "dockerStartRequests": 2,
+  "errorType": "TransactionDenied",
+  "evidenceDirectory": "/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-aj1j95xl",
+  "exceptionPoints": [
+    {
+      "file": "execute.py",
+      "function": "<module>",
+      "line": 342
+    },
+    {
+      "file": "execute.py",
+      "function": "main",
+      "line": 332
+    },
+    {
+      "file": "provider_transaction_intake.py",
+      "function": "execute_transaction",
+      "line": 321
+    },
+    {
+      "file": "docker_cohort_activation.py",
+      "function": "activate",
+      "line": 129
+    }
+  ],
+  "notReleaseAcceptance": true,
+  "phase": "INVOKE_APPROVED_POST_TERMINAL_TRANSACTION_ONCE",
+  "privateKeysRead": null,
+  "privateValuesPrinted": false,
+  "reason": "COHORT_ADMITTED_RUNNING_STATE_UNPROVEN",
+  "retainedEvidenceDirectory": "/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-155oj3tc",
+  "revisedSourceClosureHash": "702403e9cd99ddc4ddeed7166f3f408c55657fc690e475e0b35bb5d2c2242bb3",
+  "role": "adapter",
+  "secretValuesPrinted": false,
+  "stage": "VERIFY_CONTROLLED_DOCKER_COHORT_READBACK",
+  "startAuthorized": false,
+  "status": "BLOCKED"
+}

@@ -1,0 +1,35 @@
+{
+  "acquisition": "OPERATOR_REPORTED_NOT_INDEPENDENTLY_ACQUIRED",
+  "reportedAt": "2026-10-09T12:52:00+02:00",
+  "readerCommit": "e9ce9d64c6d07c2aacf0081cb3f9b6a09a5df2e1",
+  "exitCode": 0,
+  "report": {
+    "containerLifecycleOperations": 0,
+    "defaultsInferred": false,
+    "existingConfigurationWrites": 0,
+    "notReleaseAcceptance": true,
+    "note": "Absence is scoped to the retained southbound runtime root; no other root is inferred.",
+    "phase": "READ_RUNC_INVENTORY_AT_RETAINED_ROOT",
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "requestedEntriesAtRetainedRoot": {
+      "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": {
+        "entryPresent": false,
+        "pid": null,
+        "status": null
+      },
+      "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": {
+        "entryPresent": false,
+        "pid": null,
+        "status": null
+      }
+    },
+    "runcListExitCode": 0,
+    "runtimeRootHash": "c64c266a92b2d9ff052a8f2b817ee730406b2ddde47d550a52effb822b181342",
+    "runtimeRootSource": "RETAINED_SOUTHBOUND_PHASE_JOURNAL",
+    "schema": "ouf.semantic-r4-retained-runc-read-only.v1",
+    "signaturesIssued": 0,
+    "startAuthorized": false,
+    "status": "RETAINED_RUNC_INVENTORY_CAPTURED"
+  }
+}

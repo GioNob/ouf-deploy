@@ -1,0 +1,46 @@
+{
+  "schema": "ouf.policy-token-minimal-composition-and-policy-observer-qualification.v1",
+  "sourceCommit": "0c028ec51ac7c8f60cd24185ef5ab6b6012a0e1b",
+  "runId": 38438841539,
+  "jobId": 115439820481,
+  "parallelPrRunId": 38438848199,
+  "parallelPrJobId": 115439841097,
+  "conclusion": "success",
+  "testsPassed": 211,
+  "skippedTests": 0,
+  "sourceHashes": {
+    "firstControlledGrant": "57397baf625277f181def185ff8c314fbc8b44db047d24f10f5781ad4e5d7118",
+    "clientPolicyObserverDelivery": "5bcd6556d1f0505456550a3469fe81b6577fc553029e2aa130611a2002822449"
+  },
+  "composition": {
+    "existingDurableOperationsReused": true,
+    "newJournalOrScheduler": false,
+    "retirementAndCredentialCommands": "SIMULATED_FIXTURE",
+    "nativeSignaturesCustodyPersistenceAndTls": true,
+    "issuer": "SYNTHETIC_LOOPBACK_FIXTURE",
+    "ambiguousCredentialBlocksBeforeServiceOrIssuer": true,
+    "completedCredentialResumesWithoutRegeneration": true,
+    "consumedGrantNotReplayed": true
+  },
+  "realKeycloakQualification": {
+    "status": "QUALIFIED_DISPOSABLE_KEYCLOAK_PROTOCOL",
+    "clientPolicyMetadataGetAttempts": 3,
+    "globalPolicyMetadataIncluded": true,
+    "dedicatedCredentialKcadmCommandPassed": true,
+    "previousCredentialDenied": true,
+    "reestablishedCredentialGrantAndIntrospection": true
+  },
+  "targetObservation": "PENDING_OPERATOR_VPS_EXECUTION",
+  "targetEffectivePolicyApplicabilityProven": false,
+  "targetCredentialConsumerScopeProven": false,
+  "fullOwnerInstallerQualified": false,
+  "newTargetIamMutations": 0,
+  "newTargetServiceMutations": 0,
+  "newTargetGrantRequests": 0,
+  "runtimeAuthorityIssued": false,
+  "productionApplyReady": false,
+  "historicalAccountingReconciled": false,
+  "budgetReset": false,
+  "r12Touched": false,
+  "notReleaseAcceptance": true
+}

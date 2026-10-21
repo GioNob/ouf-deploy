@@ -1,0 +1,173 @@
+{
+  "schema": "ouf.provider-target-authority-github-audit.v1",
+  "date": "2026-10-08",
+  "repositories": [
+    {
+      "repository": "GioNob/ouf-deploy",
+      "defaultHead": "7ae11d1914ee8a04331607f8a9419d1a2a2a2842",
+      "treeTruncated": false,
+      "accessVerified": true
+    },
+    {
+      "repository": "GioNob/ouf-api-gateway",
+      "defaultHead": "dbdc24b5481dc9473b21b360ab1142c9aef0194b",
+      "treeTruncated": false,
+      "accessVerified": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "defaultHead": "d188e5e727eca7a22f414f43f164f85c31411bcf",
+      "treeTruncated": false,
+      "accessVerified": true
+    },
+    {
+      "repository": "GioNob/ouf-mcp-server",
+      "defaultHead": "5615fdcad8cbcad9ff41ec3d0ad2ccbf9423c042",
+      "treeTruncated": false,
+      "accessVerified": true
+    },
+    {
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "defaultHead": "a8ba969a5a0e20e9c53977d2875094ce82802f9d",
+      "treeTruncated": false,
+      "accessVerified": true
+    },
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "defaultHead": "21de5f21e903e6e99f4ef4d6617a446d60a54792",
+      "treeTruncated": false,
+      "accessVerified": true
+    },
+    {
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "defaultHead": "6285b733c49b89cb6d3382abe8dc469f8a0e8b1b",
+      "treeTruncated": false,
+      "accessVerified": true
+    }
+  ],
+  "deployDocumentsRead": 96,
+  "deployHead": "7ae11d1914ee8a04331607f8a9419d1a2a2a2842",
+  "scope": "DEFAULT_BRANCH_TREES_DEPLOY_EVIDENCE_AND_RELEASE_DOCUMENTS_RELEVANT_HISTORY_AND_PROVIDER_BRANCHES",
+  "historicalActs": [
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "path": "docs/handoffs/receipts/SEMANTIC_ACCEPTANCE_METADATA_PASS_2026-10-04_OPERATOR.json",
+      "ref": "72310a0f4b0d649854d3abc010509d6724617e4e",
+      "classification": "READ_ONLY_VERIFICATION_RECEIPT",
+      "notV2DeploymentAuthority": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "path": "docs/handoffs/receipts/SEMANTIC_AUTHORITY_KEY_CUSTODY_AUTHORIZED_2026-10-04_OPERATOR.json",
+      "ref": "72310a0f4b0d649854d3abc010509d6724617e4e",
+      "classification": "SCOPED_PREPARATION_OR_READ_AUTHORIZATION",
+      "notV2DeploymentAuthority": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "path": "docs/handoffs/receipts/SEMANTIC_CONFIGURATION_PROVENANCE_PASS_2026-10-04_OPERATOR.json",
+      "ref": "72310a0f4b0d649854d3abc010509d6724617e4e",
+      "classification": "READ_ONLY_VERIFICATION_RECEIPT",
+      "notV2DeploymentAuthority": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "path": "docs/handoffs/receipts/SEMANTIC_CREATION_CONFIGURATION_PASS_2026-10-05_OPERATOR.json",
+      "ref": "72310a0f4b0d649854d3abc010509d6724617e4e",
+      "classification": "READ_ONLY_VERIFICATION_RECEIPT",
+      "notV2DeploymentAuthority": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "path": "docs/handoffs/receipts/SEMANTIC_CREATION_CONFIGURATION_SCOPE_45_AUTHORIZATION_2026-10-05.json",
+      "ref": "72310a0f4b0d649854d3abc010509d6724617e4e",
+      "classification": "SCOPED_PREPARATION_OR_READ_AUTHORIZATION",
+      "notV2DeploymentAuthority": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "path": "docs/handoffs/receipts/SEMANTIC_ENVIRONMENT_BINDING_PASS_2026-10-05_OPERATOR.json",
+      "ref": "72310a0f4b0d649854d3abc010509d6724617e4e",
+      "classification": "READ_ONLY_VERIFICATION_RECEIPT",
+      "notV2DeploymentAuthority": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "path": "docs/handoffs/receipts/SEMANTIC_ENVIRONMENT_BINDING_SCOPE_46_AUTHORIZATION_2026-10-05.json",
+      "ref": "72310a0f4b0d649854d3abc010509d6724617e4e",
+      "classification": "SCOPED_PREPARATION_OR_READ_AUTHORIZATION",
+      "notV2DeploymentAuthority": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "path": "docs/handoffs/receipts/SEMANTIC_IMAGE_BYTES_SCOPE_42_AUTHORIZATION_2026-10-05.json",
+      "ref": "72310a0f4b0d649854d3abc010509d6724617e4e",
+      "classification": "SCOPED_PREPARATION_OR_READ_AUTHORIZATION",
+      "notV2DeploymentAuthority": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "path": "docs/handoffs/receipts/SEMANTIC_IMAGE_INDEX_BYTES_PASS_2026-10-05_OPERATOR.json",
+      "ref": "72310a0f4b0d649854d3abc010509d6724617e4e",
+      "classification": "READ_ONLY_VERIFICATION_RECEIPT",
+      "notV2DeploymentAuthority": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "path": "docs/handoffs/receipts/SEMANTIC_IMAGE_INDEX_BYTES_SCOPE_43_AUTHORIZATION_2026-10-05.json",
+      "ref": "72310a0f4b0d649854d3abc010509d6724617e4e",
+      "classification": "SCOPED_PREPARATION_OR_READ_AUTHORIZATION",
+      "notV2DeploymentAuthority": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "path": "docs/handoffs/receipts/SEMANTIC_IMAGE_LINEAGE_PASS_2026-10-04_OPERATOR.json",
+      "ref": "72310a0f4b0d649854d3abc010509d6724617e4e",
+      "classification": "READ_ONLY_VERIFICATION_RECEIPT",
+      "notV2DeploymentAuthority": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "path": "docs/handoffs/receipts/SEMANTIC_MOUNT_INPUTS_SCOPE_44_AUTHORIZATION_2026-10-05.json",
+      "ref": "72310a0f4b0d649854d3abc010509d6724617e4e",
+      "classification": "SCOPED_PREPARATION_OR_READ_AUTHORIZATION",
+      "notV2DeploymentAuthority": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "path": "docs/handoffs/receipts/SEMANTIC_PRIVATE_TRUST_POLICY_AUTHORIZED_2026-10-04_OPERATOR.json",
+      "ref": "72310a0f4b0d649854d3abc010509d6724617e4e",
+      "classification": "SCOPED_PREPARATION_OR_READ_AUTHORIZATION",
+      "notV2DeploymentAuthority": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "path": "docs/handoffs/receipts/SEMANTIC_TARGET_ACCEPTANCE_PASS_2026-10-04_OPERATOR.json",
+      "ref": "72310a0f4b0d649854d3abc010509d6724617e4e",
+      "classification": "READ_ONLY_VERIFICATION_RECEIPT",
+      "notV2DeploymentAuthority": true
+    }
+  ],
+  "findings": {
+    "existingKeyCustodyAuthorizationFound": true,
+    "existingPrivateVerificationPolicyPreparationAuthorizationFound": true,
+    "previousScopedReadsFound": true,
+    "oldImages": [
+      "sha256:a697bf75bf7d51afadadfaccd3d80537e9a5fb2a08f0d194c6dfd9462e812468",
+      "sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d"
+    ],
+    "v2SignedRoleMandatesFound": false,
+    "v2CompleteFrameAcceptanceFound": false,
+    "privateVpsFileAbsenceProven": false,
+    "negativeGitHubCodeSearchIsNotAbsenceProof": true
+  },
+  "evidence": [
+    "evidence/discovery-creation-issuer-target-installation-20261007.json",
+    "evidence/provider-v2-admission-input-manifest-target-20261008.json",
+    "evidence/discovery-provider-role-artifact-plan-20261007.json"
+  ],
+  "conclusion": "REUSE_EXISTING_AUTHORIZED_CUSTODY_AND_INPUTS_NO_REPLAY_CURRENT_V2_SIGNED_ACCEPTANCE_NOT_REGISTERED_IN_INSPECTED_SOURCES",
+  "targetOperations": 0,
+  "privateKeysRead": 0,
+  "notReleaseAcceptance": true
+}

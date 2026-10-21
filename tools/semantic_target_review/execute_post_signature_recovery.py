@@ -1,0 +1,171 @@
+"""One explicitly approved recovery into new evidence; other refs are denied.
+
+Original package, failed context, signatures and published files are preserved.
+Runtime/observer sources remain sealed. Two orchestration utilities run pinned
+in memory; no target utility file or original authority record is overwritten.
+"""
+import base64
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import sys
+import tempfile
+import time
+import traceback
+
+APPROVAL_REF='OUF_PROVIDER_V2_POST_SIGNATURE_RECOVERY_HUMAN_APPROVAL_20261009_093008'
+APPROVED_AT=1791531008  # 2026-10-09T09:30:08+02:00, actual human approval.
+REVIEW_REF='OUF_PROVIDER_V2_POST_SIGNATURE_RECOVERY_REVIEW_20261009_R3'
+BASE_SHA='e3253513c4220a0a506c117e0a535145d14f76fcba3f58fe292ee894c46bfcd4'
+OLD_CONTEXT=Path('/etc/ouf/deploy-snapshots/semantic-provider-v2-approved-context-kanx36_x')
+OLD_OUTPUT=OLD_CONTEXT.parent/'semantic-provider-v2-transaction-kanx36_x'
+CLAIMS=('runtime-switch-claim.json','runtime-switch-receipt.json','runtime-switch-denial.json',
+        'cohort-activation-claim.json','cohort-activation-receipt.json','cohort-activation-denial.json')
+EXPECTED_STATES={
+    '1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916':'f7a80f9a2805bca4dacc47fb346b2552798f46b63d73da1f9f8faed662becd4d',
+    'f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67':'12024edbc6a87ae2797481b591ff0c36d4bd0f491d0f16c2b6ec575de3814f58'}
+UTILITIES={'guarded_runtime_switch': {'sha256': 'c52889d78ee6c3be80eff56631ddc24cb190b257e1d47152e989d7d4c199035f', 'base64': 'IiIiTG93LWxldmVsIHNpbmdsZS1maWxlIHJ1bnRpbWUgc3dpdGNoOyBuZXZlciBhbiBhdXRob3JpemF0aW9uIHByb2R1Y2VyLgoKTm8gdGFyZ2V0IENMSS4gQSBzZWFsZWQgdGFyZ2V0IG9yY2hlc3RyYXRvciBtdXN0IGF1dGhlbnRpY2F0ZSBmdWxsIHJlY29yZHMgYW5kCm9ic2VydmUgc3RvcHBlZCBjYW5kaWRhdGVzL2VtcHR5IGd1YXJkIGJlZm9yZSBzdXBwbHlpbmcgdGhlIGxvY2tlZCB2ZXJpZmllci4KRmFpbHVyZSBhZnRlciBkdXJhYmxlIGNsYWltIGlzIHJldGFpbmVkLCBpbmNsdWRpbmcgdW5jZXJ0YWluIHN3aXRjaCBvdXRjb21lLgoiIiIKaW1wb3J0IGZjbnRsCmltcG9ydCBvcwpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKaW1wb3J0IHJlCmltcG9ydCBzdGF0Cgpmcm9tIGF1dGhlbnRpY2F0ZV9wcm92aWRlcl90cmFuc2FjdGlvbiBpbXBvcnQgVHJhbnNhY3Rpb25EZW5pZWQsIHJlcXVpcmUKZnJvbSBhc3NlbWJsZV9wcm92aWRlcl9wcm9maWxlcyBpbXBvcnQgZGlnZXN0LCBlbmNvZGVkCmZyb20gcHVibGlzaF9wcm92aWRlcl90cmFuc2FjdGlvbiBpbXBvcnQgZGlyZWN0b3J5LCBwdWJsaXNoX29uY2UsIHN5bmMKCgpkZWYgY3VzdG9keShwYXRoLCBtb2RlKToKICAgIHBhdGggPSBQYXRoKHBhdGgpCiAgICByZXF1aXJlKHBhdGguaXNfYWJzb2x1dGUoKSBhbmQgJy4uJyBub3QgaW4gcGF0aC5wYXJ0cywgJ1ZFUklGWV9SVU5USU1FX1NXSVRDSCcsICdBQlNPTFVURV9TV0lUQ0hfUEFUSF9SRVFVSVJFRCcpCiAgICBmb3IgYW5jZXN0b3IgaW4gKHBhdGgucGFyZW50LCAqcGF0aC5wYXJlbnQucGFyZW50cyk6IGRpcmVjdG9yeShhbmNlc3RvcikKICAgIGZkID0gb3Mub3BlbihwYXRoLCBvcy5PX1JET05MWSB8IG9zLk9fTk9GT0xMT1cgfCBvcy5PX05PTkJMT0NLKQogICAgdHJ5OgogICAgICAgIGJlZm9yZSA9IG9zLmZzdGF0KGZkKQogICAgICAgIHJlcXVpcmUoc3RhdC5TX0lTUkVHKGJlZm9yZS5zdF9tb2RlKSBhbmQgYmVmb3JlLnN0X3VpZCA9PSBiZWZvcmUuc3RfZ2lkID09IDAKICAgICAgICAgICAgICAgIGFuZCBiZWZvcmUuc3RfbmxpbmsgPT0gMSBhbmQgc3RhdC5TX0lNT0RFKGJlZm9yZS5zdF9tb2RlKSA9PSBtb2RlCiAgICAgICAgICAgICAgICBhbmQgYmVmb3JlLnN0X3NpemUgPD0gMTMxMDcyLCAnVkVSSUZZX1JVTlRJTUVfU1dJVENIJywgJ1JPT1RfU1dJVENIX0ZJTEVfUkVRVUlSRUQnKQogICAgICAgIHJhdyA9IG9zLnJlYWQoZmQsIDEzMTA3MykKICAgICAgICBhZnRlciA9IG9zLmZzdGF0KGZkKQogICAgICAgIGZpZWxkcyA9ICgnc3RfZGV2Jywnc3RfaW5vJywnc3RfdWlkJywnc3RfZ2lkJywnc3RfbW9kZScsJ3N0X25saW5rJywnc3Rfc2l6ZScsJ3N0X210aW1lX25zJywnc3RfY3RpbWVfbnMnKQogICAgICAgIGlkZW50aXR5ID0gdHVwbGUoZ2V0YXR0cihiZWZvcmUsaykgZm9yIGsgaW4gZmllbGRzKQogICAgICAgIHJlcXVpcmUobGVuKHJhdykgPT0gYmVmb3JlLnN0X3NpemUgYW5kIGlkZW50aXR5ID09IHR1cGxlKGdldGF0dHIoYWZ0ZXIsaykgZm9yIGsgaW4gZmllbGRzKQogICAgICAgICAgICAgICAgPT0gdHVwbGUoZ2V0YXR0cihwYXRoLmxzdGF0KCksaykgZm9yIGsgaW4gZmllbGRzKSwKICAgICAgICAgICAgICAgICdWRVJJRllfUlVOVElNRV9TV0lUQ0gnLCAnUlVOVElNRV9TV0lUQ0hfQ1VTVE9EWV9DSEFOR0VEJykKICAgICAgICByZXR1cm4gcmF3LCBpZGVudGl0eQogICAgZmluYWxseTogb3MuY2xvc2UoZmQpCgoKZGVmIHdyYXBwZXJfYnl0ZXMocHl0aG9uX3BhdGgsIHNvdXJjZV9yb290LCBjb25maWd1cmF0aW9uKToKICAgIHBhdGhzID0gKHN0cihweXRob25fcGF0aCksIHN0cihQYXRoKHNvdXJjZV9yb290KS8nc2NyaXB0cy9zZW1hbnRpY19wcm92aWRlcl9kb2NrZXJfcnVudGltZS5weScpLCBzdHIoY29uZmlndXJhdGlvbikpCiAgICByZXF1aXJlKGFsbChQYXRoKHApLmlzX2Fic29sdXRlKCkgYW5kICcuLicgbm90IGluIFBhdGgocCkucGFydHMKICAgICAgICAgICAgICAgIGFuZCByZS5mdWxsbWF0Y2gocicvW0EtWmEtejAtOV8uLy1dKycscCkgZm9yIHAgaW4gcGF0aHMpLAogICAgICAgICAgICAnVkVSSUZZX1JVTlRJTUVfU1dJVENIJywgJ0NMT1NFRF9XUkFQUEVSX1BBVEhfUkVRVUlSRUQnKQogICAgcmV0dXJuICgnIyEvYmluL3NoXG5leGVjICcrcGF0aHNbMF0rJyAtSSAtQiAnK3BhdGhzWzFdKycgLS1jb25maWd1cmF0aW9uICcrcGF0aHNbMl0rJyAiJEAiXG4nKS5lbmNvZGUoKQoKCmRlZiB2ZXJpZnlfaW5zdGFsbGVkX3BsYW4ocGxhbik6CiAgICAiIiJSZWNoZWNrIHB1YmxpY2F0aW9uIGFnYWluc3QgYSBmcmVzaGx5IGF1dGhlbnRpY2F0ZWQgaW4tcHJvY2VzcyBwbGFuLgoKICAgIFRoaXMgaXMgZmlsZSBjdXN0b2R5LCBOT1Qgc2lnbmF0dXJlIHZlcmlmaWNhdGlvbi4gVGhlIGNhbGxlciBtdXN0IHJlYnVpbGQKICAgIHBsYW4gdGhyb3VnaCBidWlsZF9pbnN0YWxsX3BsYW4gd2l0aCBhY3R1YWwgbGl2ZSBhdXRoZW50aWNhdGVkIGlucHV0cyBiZWZvcmUKICAgIGV2ZXJ5IHN3aXRjaCBjaGVja3BvaW50OyBhIGRlc2VyaWFsaXplZCBwbGFuL3JlY2VpcHQgY2Fubm90IGNvbmZlciBhdXRob3JpdHkuCiAgICBObyBqb3VybmFscyBtYXkgaGF2ZSBwcm9ncmVzc2VkIGZyb20gdGhlaXIgYXBwcm92ZWQgU1RBR0VEIGJ5dGVzIHlldC4KICAgICIiIgogICAgc3RhZ2U9J1JFQ0hFQ0tfSU5TVEFMTEVEX1RSQU5TQUNUSU9OJwogICAgcmVxdWlyZShwbGFuWydzdGF0dXMnXT09J0FVVEhFTlRJQ0FURURfSU5TVEFMTF9QTEFOX0FTU0VNQkxFRCcKICAgICAgICAgICAgYW5kIHBsYW5bJ3N0YXJ0QXV0aG9yaXplZCddIGlzIEZhbHNlIGFuZCBwbGFuWydsZWFzZUF1dGhvcml6ZWQnXSBpcyBGYWxzZSwKICAgICAgICAgICAgc3RhZ2UsJ0ZSRVNIX0FVVEhFTlRJQ0FURURfUExBTl9SRVFVSVJFRCcpCiAgICBjb25maWd1cmF0aW9uPXBsYW5bJ2FkYXB0ZXJDb25maWd1cmF0aW9uJ107cm9vdD1QYXRoKGNvbmZpZ3VyYXRpb25bJ3JlZ2lzdHJ5Um9vdCddKS5wYXJlbnQKICAgIHNvdXJjZT1yb290Lydzb3VyY2UnCiAgICByZXF1aXJlKGNvbmZpZ3VyYXRpb25bJ3JlZ2lzdHJ5Um9vdCddPT1zdHIocm9vdC8ncmVnaXN0cnknKQogICAgICAgICAgICBhbmQgY29uZmlndXJhdGlvblsnZHJpdmVyUGF0aCddPT1zdHIoc291cmNlLydzY3JpcHRzL3NlbWFudGljX3Byb3ZpZGVyX3ByZWV4ZWNfaG9vay5weScpCiAgICAgICAgICAgIGFuZCBjb25maWd1cmF0aW9uWydhZG1pc3Npb25QYXRoJ109PXN0cihzb3VyY2UvJ3NjcmlwdHMvc2VtYW50aWNfcHJvdmlkZXJfZGVwbG95bWVudF9icm9rZXIucHknKSwKICAgICAgICAgICAgc3RhZ2UsJ0lOU1RBTExFRF9QTEFOX1JPT1RfRFJJRlQnKQogICAgZXhwZWN0ZWQ9eyoqcGxhblsnZmlsZXMnXSxzdHIocm9vdC8ncnVudGltZS1jb25maWd1cmF0aW9uLXByb3Bvc2FsLmpzb24nKTplbmNvZGVkKGNvbmZpZ3VyYXRpb24pfQogICAgZm9yIHBhdGgscmF3IGluIGV4cGVjdGVkLml0ZW1zKCk6CiAgICAgICAgcmVxdWlyZShQYXRoKHBhdGgpLmlzX3JlbGF0aXZlX3RvKHJvb3QpIGFuZCAnLi4nIG5vdCBpbiBQYXRoKHBhdGgpLnBhcnRzCiAgICAgICAgICAgICAgICBhbmQgY3VzdG9keShwYXRoLDBvNjAwKVswXT09cmF3LHN0YWdlLCdJTlNUQUxMRURfUFJPRklMRV9PUl9KT1VSTkFMX0RSSUZUJykKICAgIGZvciBuYW1lLGV4cGVjdGVkX2hhc2ggaW4gcGxhblsnc291cmNlSGFzaGVzJ10uaXRlbXMoKToKICAgICAgICByZXF1aXJlKG5vdCBQYXRoKG5hbWUpLmlzX2Fic29sdXRlKCkgYW5kICcuLicgbm90IGluIFBhdGgobmFtZSkucGFydHMKICAgICAgICAgICAgICAgIGFuZCBkaWdlc3QoY3VzdG9keShzb3VyY2UvbmFtZSwwbzYwMClbMF0pPT1leHBlY3RlZF9oYXNoLAogICAgICAgICAgICAgICAgc3RhZ2UsJ0lOU1RBTExFRF9TT1VSQ0VfQ0xPU1VSRV9EUklGVCcpCiAgICByZXR1cm4geydjb25maWd1cmF0aW9uSGFzaCc6ZGlnZXN0KGVuY29kZWQoY29uZmlndXJhdGlvbikpLCdyb290JzpzdHIocm9vdCl9CgoKZGVmIHN3aXRjaF9leGlzdGluZ193cmFwcGVyKHdyYXBwZXIsIGV4cGVjdGVkX3dyYXBwZXJfaGFzaCwgcHJvcG9zZWRfYnl0ZXMsIGNsYWltX3Jvb3QsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBsb2NrX3BhdGgsIGV4cGVjdGVkX2xvY2tfaWRlbnRpdHksIHZlcmlmeV9sb2NrZWQpOgogICAgIiIiQXRvbWljIENBUyB1bmRlciBleGlzdGluZyBuYXRpdmUgZ3VhcmQgbG9jaywgd2l0aCBubyBpbXBsaWNpdCBhdXRob3JpdHkuCgogICAgdmVyaWZ5X2xvY2tlZChmZCwgcGhhc2UpIE1VU1QgcmFpc2Ugb24gc3RhbGUgYXV0aG9yaXR5LCBjaGFuZ2VkIHNvdXJjZS9wcm9maWxlCiAgICBjdXN0b2R5LCBjYW5kaWRhdGUgZ2VuZXJhdGlvbi9ydW50aW1lL2NvbmZpZyBkcmlmdCBvciBub25lbXB0eSBrZXJuZWwgc2V0cy4KICAgIEl0IG11c3Qgb2JzZXJ2ZSB1c2luZyB0aGUgaGVsZCBsb2NrLCBub3QgcmVhY3F1aXJlIGl0LiBUaGlzIGhlbHBlciBkZWxpYmVyYXRlbHkKICAgIGhhcyBubyBkZWZhdWx0IHZlcmlmaWVyIGFuZCBjYW5ub3QgYmUgaW52b2tlZCBhcyBhbiBvcGVyYXRvciBjb21tYW5kLgogICAgVGhlIHNpZ25lZCB0cmFuc2FjdGlvbi9nZW5lcmF0aW9uIGludGVncmF0aW9uIHJlbWFpbnMgdGhlIGNhbGxlcidzIGR1dHkuCiAgICAiIiIKICAgIHN0YWdlID0gJ1ZFUklGWV9SVU5USU1FX1NXSVRDSCc7IHdyYXBwZXIgPSBQYXRoKHdyYXBwZXIpOyByb290ID0gUGF0aChjbGFpbV9yb290KTsgbG9ja19wYXRoID0gUGF0aChsb2NrX3BhdGgpCiAgICBjbGFpbWVkID0gRmFsc2U7IHJlcGxhY2VkID0gRmFsc2U7IHJlbmFtZV9hdHRlbXB0ZWQgPSBGYWxzZTsgZmQgPSBOb25lOyBzdGFnaW5nID0gTm9uZQogICAgdHJ5OgogICAgICAgIHJlcXVpcmUob3MuZ2V0ZXVpZCgpID09IDAgYW5kIGNhbGxhYmxlKHZlcmlmeV9sb2NrZWQpIGFuZCB0eXBlKHByb3Bvc2VkX2J5dGVzKSBpcyBieXRlcwogICAgICAgICAgICAgICAgYW5kIDAgPCBsZW4ocHJvcG9zZWRfYnl0ZXMpIDw9IDEzMTA3MiBhbmQgcmUuZnVsbG1hdGNoKCdbMC05YS1mXXs2NH0nLGV4cGVjdGVkX3dyYXBwZXJfaGFzaCksCiAgICAgICAgICAgICAgICBzdGFnZSwgJ0VYUExJQ0lUX1ZFUklGSUVEX1JVTlRJTUVfU1dJVENIX1JFUVVJUkVEJykKICAgICAgICBkaXJlY3Rvcnkocm9vdCkKICAgICAgICBmb3IgYW5jZXN0b3IgaW4gcm9vdC5wYXJlbnRzOiBkaXJlY3RvcnkoYW5jZXN0b3IpCiAgICAgICAgcmVxdWlyZShzdGF0LlNfSU1PREUocm9vdC5sc3RhdCgpLnN0X21vZGUpID09IDBvNzAwLHN0YWdlLCdQUklWQVRFX1NXSVRDSF9FVklERU5DRV9SRVFVSVJFRCcpCiAgICAgICAgcmVxdWlyZShub3Qgb3MucGF0aC5sZXhpc3RzKHJvb3QvJ3J1bnRpbWUtc3dpdGNoLWNsYWltLmpzb24nKSxzdGFnZSwnRVhJU1RJTkdfUlVOVElNRV9TV0lUQ0hfQ0xBSU1fUFJFU0VSVkVEJykKICAgICAgICBvcmlnaW5hbCwgd3JhcHBlcl9pZGVudGl0eSA9IGN1c3RvZHkod3JhcHBlciwwbzc1NSkKICAgICAgICByZXF1aXJlKGRpZ2VzdChvcmlnaW5hbCkgPT0gZXhwZWN0ZWRfd3JhcHBlcl9oYXNoLHN0YWdlLCdJTlNUQUxMRURfV1JBUFBFUl9IQVNIX0RSSUZUJykKICAgICAgICBsb2NrX3JhdywgbG9ja19pZGVudGl0eSA9IGN1c3RvZHkobG9ja19wYXRoLDBvNjAwKQogICAgICAgIHJlcXVpcmUobG9ja19yYXcgPT0gYicnIGFuZCB0dXBsZShleHBlY3RlZF9sb2NrX2lkZW50aXR5KSA9PSBsb2NrX2lkZW50aXR5LAogICAgICAgICAgICAgICAgc3RhZ2UsJ0VYSVNUSU5HX05BVElWRV9HVUFSRF9MT0NLX0RSSUZUJykKICAgICAgICBmZCA9IG9zLm9wZW4obG9ja19wYXRoLG9zLk9fUkRXUnxvcy5PX05PRk9MTE9XfG9zLk9fTk9OQkxPQ0spCiAgICAgICAgZmNudGwuZmxvY2soZmQsZmNudGwuTE9DS19FWHxmY250bC5MT0NLX05CKQogICAgICAgIGRlZiBzdGFibGVfbG9jaygpOgogICAgICAgICAgICByZXF1aXJlKGN1c3RvZHkobG9ja19wYXRoLDBvNjAwKVsxXSA9PSBsb2NrX2lkZW50aXR5CiAgICAgICAgICAgICAgICAgICAgYW5kIChvcy5mc3RhdChmZCkuc3RfZGV2LG9zLmZzdGF0KGZkKS5zdF9pbm8pID09IGxvY2tfaWRlbnRpdHlbOjJdLAogICAgICAgICAgICAgICAgICAgIHN0YWdlLCdOQVRJVkVfR1VBUkRfTE9DS19SRVBMQUNFRCcpCiAgICAgICAgZGVmIHZlcmlmeShwaGFzZSk6CiAgICAgICAgICAgIHJlcXVpcmUodmVyaWZ5X2xvY2tlZChmZCxwaGFzZSkgaXMgTm9uZSxzdGFnZSwnTE9DS0VEX1ZFUklGSUVSX01VU1RfUkFJU0VfT05fREVOSUFMJykKICAgICAgICBzdGFibGVfbG9jaygpOyB2ZXJpZnkoJ0JFRk9SRV9DTEFJTScpOyBzdGFibGVfbG9jaygpCiAgICAgICAgcmVxdWlyZShjdXN0b2R5KHdyYXBwZXIsMG83NTUpID09IChvcmlnaW5hbCx3cmFwcGVyX2lkZW50aXR5KSxzdGFnZSwnV1JBUFBFUl9DSEFOR0VEX0JFRk9SRV9DTEFJTScpCiAgICAgICAgIyBUaGlzIGNsYWltIGlzIGlycmV2ZXJzaWJsZSBldmlkZW5jZSBvZiBhbiBhdHRlbXB0ZWQgc3dpdGNoLCBub3QgYXV0aG9yaXR5LgogICAgICAgIHB1Ymxpc2hfb25jZShyb290LydydW50aW1lLXN3aXRjaC1jbGFpbS5qc29uJyxlbmNvZGVkKHsKICAgICAgICAgICAgJ3NjaGVtYSc6J291Zi5zZW1hbnRpYy1wcm92aWRlci1ydW50aW1lLXN3aXRjaC1jbGFpbS52MScsJ3N0YXRlJzonU1dJVENISU5HJywKICAgICAgICAgICAgJ3ByaW9yV3JhcHBlckhhc2gnOmRpZ2VzdChvcmlnaW5hbCksJ3Byb3Bvc2VkV3JhcHBlckhhc2gnOmRpZ2VzdChwcm9wb3NlZF9ieXRlcyksCiAgICAgICAgICAgICdjb250YWluZXJMaWZlY3ljbGVPcGVyYXRpb25zJzowLCdub3RSZWxlYXNlQWNjZXB0YW5jZSc6VHJ1ZX0pKQogICAgICAgIGNsYWltZWQgPSBUcnVlCiAgICAgICAgcHVibGlzaF9vbmNlKHJvb3QvJ3ByaW9yLXJ1bnRpbWUtd3JhcHBlci5zaCcsb3JpZ2luYWwpCiAgICAgICAgc3RhZ2luZyA9IHdyYXBwZXIucGFyZW50LygnLm91Zi1ydW50aW1lLXN3aXRjaC0nK2RpZ2VzdChzdHIocm9vdCkuZW5jb2RlKCkpKQogICAgICAgIHB1Ymxpc2hfb25jZShzdGFnaW5nLHByb3Bvc2VkX2J5dGVzKQogICAgICAgIG9zLmNobW9kKHN0YWdpbmcsMG83NTUpCiAgICAgICAgdG1wZmQ9b3Mub3BlbihzdGFnaW5nLG9zLk9fUkRPTkxZfG9zLk9fTk9GT0xMT1cpCiAgICAgICAgdHJ5Om9zLmZzeW5jKHRtcGZkKQogICAgICAgIGZpbmFsbHk6b3MuY2xvc2UodG1wZmQpCiAgICAgICAgc3luYyhzdGFnaW5nLnBhcmVudCkKICAgICAgICBzdGFnZSA9ICdDT01NSVRfUlVOVElNRV9TV0lUQ0gnCiAgICAgICAgc3RhYmxlX2xvY2soKTsgdmVyaWZ5KCdCRUZPUkVfUkVOQU1FJyk7IHN0YWJsZV9sb2NrKCkKICAgICAgICByZXF1aXJlKGN1c3RvZHkod3JhcHBlciwwbzc1NSkgPT0gKG9yaWdpbmFsLHdyYXBwZXJfaWRlbnRpdHkpCiAgICAgICAgICAgICAgICBhbmQgY3VzdG9keShzdGFnaW5nLDBvNzU1KVswXSA9PSBwcm9wb3NlZF9ieXRlcywKICAgICAgICAgICAgICAgIHN0YWdlLCdXUkFQUEVSX0NIQU5HRURfQkVGT1JFX1JFTkFNRScpCiAgICAgICAgcmVuYW1lX2F0dGVtcHRlZCA9IFRydWUKICAgICAgICBvcy5yZXBsYWNlKHN0YWdpbmcsd3JhcHBlcik7IHJlcGxhY2VkID0gVHJ1ZTsgc3luYyh3cmFwcGVyLnBhcmVudCkKICAgICAgICBzdGFnZSA9ICdWRVJJRllfUlVOVElNRV9TV0lUQ0hfUkVBREJBQ0snCiAgICAgICAgc3RhYmxlX2xvY2soKTsgdmVyaWZ5KCdBRlRFUl9SRU5BTUUnKTsgc3RhYmxlX2xvY2soKQogICAgICAgIHJlcXVpcmUoY3VzdG9keSh3cmFwcGVyLDBvNzU1KVswXSA9PSBwcm9wb3NlZF9ieXRlcyxzdGFnZSwnU1dJVENIRURfV1JBUFBFUl9SRUFEQkFDS19EUklGVCcpCiAgICAgICAgcmVwb3J0PXsnc2NoZW1hJzonb3VmLnNlbWFudGljLXByb3ZpZGVyLXJ1bnRpbWUtc3dpdGNoLnYxJywnc3RhdHVzJzonV1JBUFBFUl9TV0lUQ0hFRCcsCiAgICAgICAgICAgICAgICAncHJpb3JXcmFwcGVySGFzaCc6ZGlnZXN0KG9yaWdpbmFsKSwnaW5zdGFsbGVkV3JhcHBlckhhc2gnOmRpZ2VzdChwcm9wb3NlZF9ieXRlcyksCiAgICAgICAgICAgICAgICAnY29udGFpbmVyTGlmZWN5Y2xlT3BlcmF0aW9ucyc6MCwnZGFlbW9uUmVzdGFydGVkJzpGYWxzZSwnbm90UmVsZWFzZUFjY2VwdGFuY2UnOlRydWV9CiAgICAgICAgcHVibGlzaF9vbmNlKHJvb3QvJ3J1bnRpbWUtc3dpdGNoLXJlY2VpcHQuanNvbicsZW5jb2RlZChyZXBvcnQpKTsgcmV0dXJuIHJlcG9ydAogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlcnJvcjoKICAgICAgICBkaWFnbm9zaXMgPSBlcnJvci5kaWFnbm9zaXMuY29weSgpIGlmIGlzaW5zdGFuY2UoZXJyb3IsVHJhbnNhY3Rpb25EZW5pZWQpIGVsc2UgewogICAgICAgICAgICAnc3RhdHVzJzonQkxPQ0tFRCcsJ3N0YWdlJzpzdGFnZSwncmVhc29uJzonR1VBUkRFRF9SVU5USU1FX1NXSVRDSF9VTlBST1ZFTicsJ3NlY3JldFZhbHVlc1ByaW50ZWQnOkZhbHNlfQogICAgICAgIGlmIG5vdCBpc2luc3RhbmNlKGVycm9yLFRyYW5zYWN0aW9uRGVuaWVkKSBhbmQgaXNpbnN0YW5jZShlcnJvciwoVmFsdWVFcnJvcixSdW50aW1lRXJyb3IpKSBhbmQgcmUuZnVsbG1hdGNoKCdbQS1aXVtBLVowLTlfXXswLDk1fScsc3RyKGVycm9yKSk6CiAgICAgICAgICAgIGRpYWdub3Npc1sncmVhc29uJ109c3RyKGVycm9yKQogICAgICAgIGRpYWdub3Npc1snZXJyb3JUeXBlJ109dHlwZShlcnJvcikuX19uYW1lX18KICAgICAgICBkaWFnbm9zaXMudXBkYXRlKGV2aWRlbmNlRGlyZWN0b3J5PXN0cihyb290KSxkb05vdFJlcnVuQXBwbHk9Y2xhaW1lZCBvciBvcy5wYXRoLmxleGlzdHMocm9vdC8ncnVudGltZS1zd2l0Y2gtY2xhaW0uanNvbicpLAogICAgICAgICAgICAgICAgICAgICAgICAgd3JhcHBlclJlcGxhY2VkPXJlcGxhY2VkLHJlbmFtZUF0dGVtcHRlZD1yZW5hbWVfYXR0ZW1wdGVkLAogICAgICAgICAgICAgICAgICAgICAgICAgc3dpdGNoT3V0Y29tZT0nUkVQTEFDRUQnIGlmIHJlcGxhY2VkIGVsc2UgJ1VOUFJPVkVOJyBpZiByZW5hbWVfYXR0ZW1wdGVkIGVsc2UgJ1VOQ0hBTkdFRCcsCiAgICAgICAgICAgICAgICAgICAgICAgICBjb250YWluZXJMaWZlY3ljbGVPcGVyYXRpb25zPTAsbm90UmVsZWFzZUFjY2VwdGFuY2U9VHJ1ZSkKICAgICAgICBpZiBpc2luc3RhbmNlKGVycm9yLE9TRXJyb3IpOmRpYWdub3Npc1snZXJybm8nXT1lcnJvci5lcnJubwogICAgICAgIGlmIGNsYWltZWQ6CiAgICAgICAgICAgIHRyeTpwdWJsaXNoX29uY2Uocm9vdC8ncnVudGltZS1zd2l0Y2gtZGVuaWFsLmpzb24nLGVuY29kZWQoZGlhZ25vc2lzKSkKICAgICAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbjpkaWFnbm9zaXNbJ2RpYWdub3Npc1NhdmVkJ109RmFsc2UKICAgICAgICBmYWlsdXJlPVRyYW5zYWN0aW9uRGVuaWVkKHN0YWdlLGRpYWdub3Npc1sncmVhc29uJ10pO2ZhaWx1cmUuZGlhZ25vc2lzPWRpYWdub3NpcwogICAgICAgIHJhaXNlIGZhaWx1cmUgZnJvbSBOb25lCiAgICBmaW5hbGx5OgogICAgICAgIGlmIGZkIGlzIG5vdCBOb25lOm9zLmNsb3NlKGZkKQo='}, 'authenticated_runtime_switch': {'sha256': 'ce5625aa645b3da470e84b8544adfa82d5bca8665bb88d8e2d49fd3701548d83', 'base64': 'IiIiQXV0aGVudGljYXRlIGFnYWluIGF0IGV2ZXJ5IGxvY2tlZCBzd2l0Y2ggY2hlY2twb2ludCwgdGhlbiBvYnNlcnZlIG5hdGl2ZWx5LgoKTm8gdGFyZ2V0IENMSSwgc2lnbmluZywgbGlmZWN5Y2xlIG9wZXJhdGlvbiBvciByZWxlYXNlIGFjY2VwdGFuY2UgaXMgcHJvdmlkZWQuClRoZSB0YXJnZXQgY2FsbGVyIG11c3QgcGluIGFjdHVhbCByZWNlaXB0L2F1dGhvcml0eS9jb21tYW5kIGN1c3RvZHkgYW5kIHNvdXJjZQpjbG9zdXJlIGJlZm9yZSBpbnZva2luZyB0aGlzIGZhY3RvcnkuIFN5bnRoZXRpYyBDSSBiaW5kaW5ncyBjb25mZXIgbm8gYXV0aG9yaXR5LgoiIiIKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCgpmcm9tIGF1dGhlbnRpY2F0ZV9wcm92aWRlcl90cmFuc2FjdGlvbiBpbXBvcnQgVEFSR0VUUywgYnVpbGRfaW5zdGFsbF9wbGFuLCByZXF1aXJlCmZyb20gZ3VhcmRlZF9ydW50aW1lX3N3aXRjaCBpbXBvcnQgdmVyaWZ5X2luc3RhbGxlZF9wbGFuCmZyb20gdHJhbnNhY3Rpb25fZ3VhcmRfb2JzZXJ2YXRpb24gaW1wb3J0IG9ic2VydmVfbG9ja2VkCmZyb20gdG9vbHMuc2VtYW50aWNfcHJvdmlkZXJfZGVwbG95bWVudF9hdXRoZW50aWNhdGlvbiBpbXBvcnQgRGV0YWNoZWRBdXRoZW50aWNhdG9yLCBWZXJpZmljYXRpb25CdWRnZXQsIGRlY29kZQoKCmRlZiBtYWtlX2xvY2tlZF9zd2l0Y2hfdmVyaWZpZXIocm9vdCwgcmVjb3JkcywgYXV0aG9yaXR5LCBzb3VyY2VzLCBvYnNlcnZlcl9yYXcsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcHl0aG9uX2JpbmRpbmcsIGNyeXB0bywgZW1wdHlfYWRhcHRlciwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICByZWNlaXB0X2JpbmRpbmcsIGV4cGVjdGVkX293bmVyX2hhc2gsIGNvbW1hbmRfYmluZGluZ3MpOgogICAgIiIiUmV0dXJuIHRoZSB2ZXJpZmllciByZXF1aXJlZCBieSBzd2l0Y2hfZXhpc3Rpbmdfd3JhcHBlci4KCiAgICBSZWJ1aWxkIGZyb20gYWN0dWFsIHNpZ25hdHVyZXMgcmF0aGVyIHRoYW4gdHJ1c3RpbmcgYSBkaXNrIHBsYW4gb3IgcmVjZWlwdC4KICAgIE5hdGl2ZSBlbXB0eSBndWFyZCBtdXN0IG1hdGNoIHRoZSBpbW11dGFibGUgc2lnbmVkIE5JQyBndWFyZCByZWZlcmVuY2VzLgogICAgRG9ja2VyIGNhbmRpZGF0ZSBnZW5lcmF0aW9uL3N0YXR1cyBtdXN0IHJlbWFpbiBpZGVudGljYWwgYWNyb3NzIGNoZWNrcG9pbnRzLgogICAgU291cmNlIHNlYWwsIHRhcmdldCBwcm9maWxlL2NvbW1hbmQgaGFzaGVzIGFuZCBleGFjdCBpbnN0YWxsYXRpb24gcGlucyByZW1haW4KICAgIG1hbmRhdG9yeSBpbiB0aGUgcm9vdCBjYWxsZXI7IHRoaXMgZmFjdG9yeSBkb2VzIG5vdCBjaG9vc2UgdGhlbSBieSBkaXNjb3ZlcnkuCiAgICAiIiIKICAgIHJvb3Q9UGF0aChyb290KTtiYXNlbGluZT1bTm9uZV0KICAgIGNhbmRpZGF0ZXM9e3RhcmdldFsnY29udGFpbmVySWQnXTp7J2ltYWdlTWFuaWZlc3REaWdlc3QnOnRhcmdldFsnaW1hZ2VNYW5pZmVzdERpZ2VzdCddLAogICAgICAgICAgICAgICAgJ3J1bnRpbWVOYW1lJzonb3VmLXNlbWFudGljLWFkbWl0dGVkLXYyJ30gZm9yIHRhcmdldCBpbiBUQVJHRVRTLnZhbHVlcygpfQogICAgZGVmIHZlcmlmeShmZCxwaGFzZSk6CiAgICAgICAgc3RhZ2U9J0FVVEhFTlRJQ0FURV9MT0NLRURfUlVOVElNRV9TV0lUQ0gnCiAgICAgICAgcmVxdWlyZShwaGFzZSBpbiAoJ0JFRk9SRV9DTEFJTScsJ0JFRk9SRV9SRU5BTUUnLCdBRlRFUl9SRU5BTUUnLCdCRUZPUkVfQ09IT1JUX0NMQUlNJywnQkVGT1JFX0NPSE9SVF9TVEFSVCcpLAogICAgICAgICAgICAgICAgc3RhZ2UsJ0VYQUNUX1NXSVRDSF9DSEVDS1BPSU5UX1JFUVVJUkVEJykKICAgICAgICAjIFRoZSBzZWFsZWQgYXV0aGVudGljYXRpb24gYmFja2VuZCBhY2NlcHRzIGF0IG1vc3QgMTggc2Vjb25kcy4KICAgICAgICAjIEtlZXAgaXRzIGJvdW5kOyBlbmxhcmdpbmcgdGhlIGNhbGxlciBjYW5ub3QgZXh0ZW5kIHNpZ25lZCBhdXRob3JpdHkuCiAgICAgICAgYnVkZ2V0PVZlcmlmaWNhdGlvbkJ1ZGdldCgxOCkKICAgICAgICB2ZXJpZmllcj1EZXRhY2hlZEF1dGhlbnRpY2F0b3IoY3J5cHRvWydwb2xpY3lCaW5kaW5nJ10sY3J5cHRvWydzaWduYXR1cmVEaXJlY3RvcnknXSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNyeXB0b1snb3BlbnNzbEJpbmRpbmcnXSxidWRnZXQ9YnVkZ2V0KQogICAgICAgIHBsYW49YnVpbGRfaW5zdGFsbF9wbGFuKHN0cihyb290KSxzdHIocm9vdC8nc291cmNlJykscmVjb3JkcyxhdXRob3JpdHksc291cmNlcywKICAgICAgICAgICAgb2JzZXJ2ZXJfcmF3LHB5dGhvbl9iaW5kaW5nLGNyeXB0byx2ZXJpZmllcixlbXB0eV9hZGFwdGVyKQogICAgICAgIGluc3RhbGxlZD12ZXJpZnlfaW5zdGFsbGVkX3BsYW4ocGxhbikKICAgICAgICBvYnNlcnZhdGlvbj1vYnNlcnZlX2xvY2tlZChmZCxyZWNlaXB0X2JpbmRpbmcsZXhwZWN0ZWRfb3duZXJfaGFzaCxjYW5kaWRhdGVzLGNvbW1hbmRfYmluZGluZ3MpCiAgICAgICAgZm9yIHJvbGUgaW4gVEFSR0VUUzoKICAgICAgICAgICAgdmFsdWU9ZGVjb2RlKHJlY29yZHNbcm9sZV1bJ3ByZXBhcmVyVGVtcGxhdGUnXSwxMzEwNzIpCiAgICAgICAgICAgIGd1YXJkcz1bYmluZGluZ1snbGVhc2VHdWFyZCddIGZvciBiaW5kaW5nIGluIHZhbHVlWydjYW5kaWRhdGUnXVsnbmV0d29ya0JpbmRpbmdzJ10gaWYgJ2xlYXNlR3VhcmQnIGluIGJpbmRpbmddCiAgICAgICAgICAgIHJlcXVpcmUobGVuKGd1YXJkcyk9PTIgYW5kIGFsbChndWFyZFsnY29uZmlndXJhdGlvbkhhc2gnXT09b2JzZXJ2YXRpb25bJ2tlcm5lbENvbmZpZ3VyYXRpb25IYXNoJ10KICAgICAgICAgICAgICAgICAgICBhbmQgZ3VhcmRbJ3RhYmxlTmFtZSddPT1vYnNlcnZhdGlvblsna2VybmVsVGFibGVOYW1lJ10KICAgICAgICAgICAgICAgICAgICBmb3IgZ3VhcmQgaW4gZ3VhcmRzKSxzdGFnZSwnU0lHTkVEX05JQ19BTkRfSU5TVEFMTEVEX0dVQVJEX1NDT1BFX0RSSUZUJyxyb2xlKQogICAgICAgIHN0YXRlPXsnaW5zdGFsbGVkQ29uZmlndXJhdGlvbkhhc2gnOmluc3RhbGxlZFsnY29uZmlndXJhdGlvbkhhc2gnXSwqKm9ic2VydmF0aW9ufQogICAgICAgIGlmIGJhc2VsaW5lWzBdIGlzIE5vbmU6CiAgICAgICAgICAgIHJlcXVpcmUocGhhc2UgaW4gKCdCRUZPUkVfQ0xBSU0nLCdCRUZPUkVfQ09IT1JUX0NMQUlNJyksc3RhZ2UsJ0lOSVRJQUxfTE9DS0VEX1NXSVRDSF9PQlNFUlZBVElPTl9SRVFVSVJFRCcpO2Jhc2VsaW5lWzBdPXN0YXRlCiAgICAgICAgZWxzZTpyZXF1aXJlKHN0YXRlPT1iYXNlbGluZVswXSxzdGFnZSwnTE9DS0VEX1NXSVRDSF9OQVRJVkVfU1RBVEVfQ0hBTkdFRCcpCiAgICAgICAgYnVkZ2V0LmNoZWNrKCkKICAgICAgICAjIEZyZXNoIHNpZ25hdHVyZXMgYW5kIHNjb3BlZCBtYW5kYXRlcyBtdXN0IHN0aWxsIGJlIHZhbGlkIGFmdGVyIHRoZQogICAgICAgICMgbmF0aXZlIG9ic2VydmF0aW9uOyBubyBkaXNrIHBsYW4vQ0kgZmxhZyBjYW4gZXh0ZW5kIHRoZWlyIHdpbmRvd3MuCiAgICAgICAgZnJvbSB0b29scy5zZW1hbnRpY19wcm92aWRlcl9kZXBsb3ltZW50X3Byb3RvY29sIGltcG9ydCB3aW5kb3cKICAgICAgICBpbXBvcnQgdGltZQogICAgICAgIGZvciByb2xlIGluIFRBUkdFVFM6CiAgICAgICAgICAgIGZvciBuYW1lIGluICgncmV2aWV3JywnaW50ZW50JywnbGl2ZUF1dGhvcml6YXRpb24nLCdmaW5hbE1hbmRhdGUnKToKICAgICAgICAgICAgICAgIHdpbmRvdyhkZWNvZGUocmVjb3Jkc1tyb2xlXVtuYW1lXSwxMzEwNzIpLHRpbWUudGltZSgpKQogICAgcmV0dXJuIHZlcmlmeQo='}}
+CONTEXT=None
+PHASE='REQUIRE_EXPLICIT_POST_SIGNATURE_RECOVERY_APPROVAL'
+ATTEMPTED=False
+
+def require(ok,reason):
+    if not ok:raise ValueError(reason)
+
+def validate_retained_failure(denial,present,role_receipts,file_count):
+    require(denial.get('stage')=='VERIFY_RUNTIME_SWITCH'
+        and denial.get('reason')=='GUARDED_RUNTIME_SWITCH_UNPROVEN'
+        and denial.get('switchOutcome')=='UNCHANGED'
+        and denial.get('renameAttempted') is False and denial.get('wrapperReplaced') is False,
+        'EXACT_PRE_SWITCH_FAILURE_REQUIRED')
+    require(set(present)==set(CLAIMS) and not any(present.values()),'NO_SWITCH_OR_COHORT_CLAIM_REQUIRED')
+    require(set(role_receipts)=={'adapter','southbound'} and all(
+        r.get('status')=='ROLE_RECORDS_ISSUED' and type(r.get('signaturesIssued')) is int
+        and r['signaturesIssued']==4 and r.get('startPerformed') is False
+        for r in role_receipts.values()),'EXACT_EIGHT_RETAINED_SIGNATURES_REQUIRED')
+    require(type(file_count) is int and file_count==81,'EXACT_RETAINED_PUBLICATION_REQUIRED')
+
+def install_repairs(sha):
+    require(set(UTILITIES)=={'guarded_runtime_switch','authenticated_runtime_switch'},'EXACT_TWO_ORCHESTRATION_REPAIRS_REQUIRED')
+    for name,item in UTILITIES.items():
+        raw=base64.b64decode(item['base64']);require(sha(raw)==item['sha256'],'REVIEWED_REPAIR_BYTES_DRIFT')
+        module=sys.modules[name];exec(compile(raw,module.__file__,'exec'),module.__dict__)
+    # This sealed consumer imported the original factory by value at load.
+    # Rebind explicitly so the cohort cannot keep the old 40-second function.
+    sys.modules['docker_cohort_activation'].make_locked_switch_verifier=\
+        sys.modules['authenticated_runtime_switch'].make_locked_switch_verifier
+
+def main(approval_ref,base_path):
+    global CONTEXT,PHASE,ATTEMPTED
+    require(APPROVAL_REF!='PENDING_HUMAN_POST_SIGNATURE_RECOVERY_APPROVAL'
+        and approval_ref==APPROVAL_REF and type(APPROVED_AT) is int,
+        'EXPLICIT_POST_SIGNATURE_RECOVERY_APPROVAL_REQUIRED')
+    require(int(time.time())>=APPROVED_AT,'ROOT_CLOCK_BEFORE_HUMAN_APPROVAL')
+    require(os.geteuid()==0 and sys.flags.isolated and sys.dont_write_bytecode,'ISOLATED_ROOT_OPERATOR_REQUIRED')
+    require(Path(base_path).is_absolute(),'PINNED_PRIOR_BRIDGE_PATH_REQUIRED')
+    fd=os.open(base_path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+    try:raw=os.read(fd,131073)
+    finally:os.close(fd)
+    require(hashlib.sha256(raw).hexdigest()==BASE_SHA,'PRIOR_APPROVED_BRIDGE_HASH_DRIFT')
+    base={'__name__':'retained_bridge_definitions','__file__':base_path}
+    exec(compile(raw,base_path,'exec'),base)
+    package=base['PACKAGE'];scope=base['SCOPE'];encoded=base['encoded'];sha=base['sha'];write=base['write']
+    entry_path=package/'provider_transaction_intake.py'
+    entry={'__name__':'post_signature_recovery_entry','__file__':str(entry_path)}
+    require(sha(base['REPAIRED_ENTRY'])==base['REPAIRED_ENTRY_SHA256'],'PRIOR_REPAIRED_ENTRY_HASH_DRIFT')
+    exec(compile(base['REPAIRED_ENTRY'],str(entry_path),'exec'),entry)
+    entry['bound']({'path':str(entry_path),'sha256':scope['package']['entrySha256']})
+    sources,observer=entry['load'](package)
+    require(sha(encoded({**{n:sha(b) for n,b in sources.items()},'frame-observer.py':sha(observer)}))
+        ==scope['package']['sourceClosureHash'],'RETAINED_RUNTIME_OBSERVER_CLOSURE_DRIFT')
+    PHASE='VERIFY_EXACT_RETAINED_FAILED_ATTEMPT'
+    approval=entry['parse'](entry['read'](OLD_CONTEXT/'human-approval-binding.json'))
+    require(approval['approvalRef']=='OUF_PROVIDER_V2_FRESH_DEPENDENCY_ACCEPTANCE_20261009_085303',
+        'EXACT_PRIOR_APPROVAL_REQUIRED')
+    cfg=entry['parse'](entry['bound']({'path':str(OLD_CONTEXT/'execution-configuration.json'),
+        'sha256':approval['configurationHash']}))
+    require(cfg['outputRoot']==str(OLD_OUTPUT),'EXACT_PRIOR_OUTPUT_REQUIRED')
+    claim=entry['parse'](entry['read'](package/'execution-claim.json'))
+    require(claim['outputRoot']==str(OLD_OUTPUT) and claim['configurationHash']==approval['configurationHash'],
+        'EXACT_PRIOR_EXECUTION_CLAIM_REQUIRED')
+    roles={r:entry['parse'](entry['read'](package/'role-authority'/r/'role-issuance-receipt.json'))
+        for r in ('adapter','southbound')}
+    receipt=entry['parse'](entry['read'](OLD_OUTPUT/'installation-receipt.json'))
+    denial=entry['parse'](entry['read'](package/'intake-denial.json'))
+    validate_retained_failure(denial,{n:os.path.lexists(OLD_OUTPUT/n) for n in CLAIMS},roles,len(receipt['fileHashes']))
+    for path,expected in receipt['fileHashes'].items():
+        require(Path(path).is_relative_to(OLD_OUTPUT) and '..' not in Path(path).parts,'RETAINED_FILE_PATH_ESCAPE')
+        entry['bound']({'path':path,'sha256':expected})
+    require(not os.path.lexists(package/'post-signature-recovery-claim.json'),'DO_NOT_REPLAY_POST_SIGNATURE_RECOVERY')
+    records={r:{n:entry['bound'](b) for n,b in values.items()} for r,values in cfg['recordsByRole'].items()}
+    hashes={r:{n:sha(b) for n,b in v.items()} for r,v in records.items()}
+    require(hashes=={r:p['inputHashes'] for r,p in scope['roleProposals'].items()},'ACCEPTED_SIXTEEN_INPUTS_DRIFT')
+    PHASE='OBSERVE_CURRENT_NATIVE_GUARD_BEFORE_ANY_KEYS'
+    pointer=entry['parse'](entry['bound'](cfg['guardPointerBinding']))
+    binding={'path':pointer['receiptFile'],'sha256':pointer['receiptHash']}
+    owner_hash=scope['runtime']['ownerConfigurationSha256']
+    owner=entry['parse'](entry['bound']({'path':str(Path(binding['path']).parent/'coordinated-configuration.json'),'sha256':owner_hash}))
+    from authenticate_provider_transaction import TARGETS,preflight_input_pair
+    from transaction_guard_observation import observe_locked
+    preflight_input_pair(records)
+    candidates={t['containerId']:{'imageManifestDigest':t['imageManifestDigest'],
+        'runtimeName':'ouf-semantic-admitted-v2'} for t in TARGETS.values()}
+    fd=os.open(owner['commonLockFile'],os.O_RDWR|os.O_NOFOLLOW)
+    try:
+        fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        observation=observe_locked(fd,binding,owner_hash,candidates,cfg['commandBindings'])
+        require(observation['candidateStateHashes']==EXPECTED_STATES,'REVIEWED_CANDIDATE_GENERATION_CHANGED')
+    finally:os.close(fd)
+    PHASE='LOAD_ONLY_REVIEWED_IN_MEMORY_ORCHESTRATION_REPAIR'
+    install_repairs(sha)
+    base['APPROVAL_REF']=APPROVAL_REF;base['APPROVED_AT']=APPROVED_AT
+    now=int(time.time());mandates=base['build_mandates'](scope,hashes,now,APPROVAL_REF)
+    PHASE='RESERVE_ONE_FRESH_RECOVERY_CONTEXT'
+    CONTEXT=Path(tempfile.mkdtemp(prefix='semantic-provider-v2-approved-context-',dir=OLD_CONTEXT.parent))
+    CONTEXT.chmod(0o700)
+    write(package/'post-signature-recovery-claim.json',encoded({'schema':'ouf.semantic-provider-post-signature-recovery-claim.v1',
+        'approvalRef':APPROVAL_REF,'reviewRef':REVIEW_REF,'contextDirectory':str(CONTEXT),
+        'retainedContext':str(OLD_CONTEXT),'retainedOutput':str(OLD_OUTPUT),'notReleaseAcceptance':True}))
+    base['sync'](package)
+    bindings={}
+    for role,value in mandates.items():
+        path=CONTEXT/(role+'-mandate.json');raw=encoded(value);write(path,raw)
+        bindings[role]={'path':str(path),'sha256':sha(raw)}
+    cfg={**cfg,'mandatesByRole':bindings,'outputRoot':str(CONTEXT.parent/(
+        'semantic-provider-v2-transaction-'+CONTEXT.name.removeprefix('semantic-provider-v2-approved-context-')))}
+    raw=encoded(cfg);path=CONTEXT/'execution-configuration.json';write(path,raw)
+    write(CONTEXT/'human-approval-binding.json',encoded({'schema':'ouf.semantic-provider-approved-root-context.v1',
+        'approvalRef':APPROVAL_REF,'reviewRef':REVIEW_REF,'configurationHash':sha(raw),
+        'issuedAt':now,'expiresAt':now+240,'retainedContext':str(OLD_CONTEXT),'notReleaseAcceptance':True}))
+    base['sync'](CONTEXT)
+    PHASE='INVOKE_APPROVED_TRANSACTION_IN_NEW_CONTEXT'
+    try:
+        result=entry['execute_transaction'](CONTEXT,path,sha(raw),sources,observer)
+    finally:ATTEMPTED=os.path.lexists(CONTEXT/'execution-claim.json')
+    print('OUF_POST_SIGNATURE_RECOVERY='+encoded(result).decode())
+
+if __name__=='__main__':
+    try:
+        require(len(sys.argv)==3,'EXACT_APPROVAL_AND_PRIOR_BRIDGE_ARGUMENTS_REQUIRED')
+        main(sys.argv[1],sys.argv[2])
+    except Exception as error:
+        report=dict(getattr(error,'diagnosis',{}))
+        report.update(status='BLOCKED',phase=PHASE,errorType=report.get('errorType',type(error).__name__),
+            contextDirectory=str(CONTEXT) if CONTEXT else None,privateValuesPrinted=False,
+            privateKeysRead=None if ATTEMPTED else 0,containerLifecycleOperations=None if ATTEMPTED else 0,
+            startAuthorized=False,notReleaseAcceptance=True,doNotRerunApply=CONTEXT is not None)
+        if 'reason' not in report:
+            report['reason']=str(error) if re.fullmatch('[A-Z][A-Z0-9_]{0,95}',str(error)) else 'POST_SIGNATURE_RECOVERY_UNPROVEN'
+        if isinstance(error,OSError):report['errno']=error.errno
+        report['exceptionPoints']=[{'file':Path(t.filename).name,'function':t.name,'line':t.lineno}
+            for t in traceback.extract_tb(error.__traceback__)[-4:]]
+        if CONTEXT:
+            try:
+                fd=os.open(CONTEXT/'operator-denial.json',os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+                try:os.write(fd,json.dumps(report,sort_keys=True).encode());os.fsync(fd)
+                finally:os.close(fd)
+            except Exception:report['diagnosisSaved']=False
+        print('OUF_POST_SIGNATURE_RECOVERY='+json.dumps(report,sort_keys=True));raise SystemExit(1)

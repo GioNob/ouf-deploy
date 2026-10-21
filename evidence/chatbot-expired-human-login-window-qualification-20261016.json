@@ -1,0 +1,52 @@
+{
+  "schema": "ouf.expired-human-login-window-qualification.v1",
+  "installationSpecific": true,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "acceptanceGranted": false,
+  "runtimeAuthorityIssuedByDevelopment": false,
+  "sourceCommit": "29363efbaf1d509aae02e7b7819ef3f57e1593da",
+  "deliveryCommit": "fc6021e21ed564cf13b7ab8ac8e65be90e2b79b3",
+  "launcherPath": "scripts/launch-chatbot-semantic-login-window-20261016.sh",
+  "launcherSha256": "337502183f63f3e972a82f8e8c1aa76e9978d2d302dd04abbb402634edbc8ef6",
+  "targetReadback": {
+    "state": "DEVICE_POLL",
+    "priorOAuthAttempts": 42,
+    "expired": true,
+    "monotonicExpired": true,
+    "sameBoot": true,
+    "expiresAtUTC": "2026-10-16T15:18:13+00:00",
+    "authorityPresent": false,
+    "issuanceClaimPresent": false,
+    "continuationReceiptPresent": false
+  },
+  "qualification": {
+    "sourceRun": 38925807331,
+    "sourceJob": 117056915019,
+    "sourceTests": 89,
+    "deliveryRun": 38925896612,
+    "deliveryJob": 117057212529,
+    "deliveryTests": 11,
+    "targetExecutionObserved": false
+  },
+  "limits": {
+    "maximumCumulativeOAuthAttempts": 128,
+    "priorOAuthAttempts": 42,
+    "maximumRemainingOAuthAttempts": 86,
+    "explicitNewLoginWindowSeconds": 7200,
+    "priorControlledWorkloadGrantAttempts": 69,
+    "maximumNewWorkloadGrantAttempts": 128,
+    "maximumCumulativeWorkloadGrantAttempts": 197,
+    "maximumWorkloadSessionSeconds": 3600
+  },
+  "controls": [
+    "Exact local RIAPRO LOGIN consent before new authentication window",
+    "Original expired OAuth journal unchanged",
+    "New journal starts attempts at42 and retains predecessor hashes and terminal consent",
+    "Known expired pre-token DEVICE_POLL only; ambiguous mutation or received credentials refuse",
+    "Current pinned HUMAN login and separate exact APPROVO review precede dual-role runtime issuance",
+    "Persistent one-use reopening receipt, deterministic scope fence and no automatic renewal or budget reset",
+    "Semantic approvals remain THS; no semantic propose retry",
+    "Single foreground terminal; preserve partial artifacts and reconcile after STOP"
+  ]
+}

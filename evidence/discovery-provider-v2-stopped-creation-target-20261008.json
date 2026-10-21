@@ -1,0 +1,47 @@
+{
+  "acceptanceGranted": false,
+  "candidates": [
+    {
+      "configDigest": "sha256:62e066bd021f386291f5de21ce0e1f9e67904a74b4146326070c7784493ad320",
+      "configuredAddressesVerified": true,
+      "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+      "imageId": "sha256:277dcefd4744c244f4f6f23f8969f3d0acd64369e2ff1bd67594955c4ca7fbbc",
+      "liveAddressAllocationProven": false,
+      "manifestDigest": "sha256:277dcefd4744c244f4f6f23f8969f3d0acd64369e2ff1bd67594955c4ca7fbbc",
+      "mountsVerified": true,
+      "neverStarted": true,
+      "role": "adapter",
+      "startupVerified": true
+    },
+    {
+      "configDigest": "sha256:d4c47bbeca75d94e2231e17ca14552885b7b339a5f33dbace411e275c79ded04",
+      "configuredAddressesVerified": true,
+      "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+      "imageId": "sha256:c15541037a08276e36715a3c3798c2d07fe6faabf5547d3885a66cd10575e366",
+      "liveAddressAllocationProven": false,
+      "manifestDigest": "sha256:c15541037a08276e36715a3c3798c2d07fe6faabf5547d3885a66cd10575e366",
+      "mountsVerified": true,
+      "neverStarted": true,
+      "role": "southbound",
+      "startupVerified": true
+    }
+  ],
+  "containerLifecycleOperations": 2,
+  "daemonRestarted": false,
+  "directory": "/etc/ouf/deploy-snapshots/semantic-provider-v2-stopped-resume-k5mmsudx",
+  "existingContainerCount": 96,
+  "existingContainerStatesUnchanged": true,
+  "firewallWrites": 0,
+  "imagesImported": 1,
+  "liveAddressAllocationProven": false,
+  "networkAttachmentOperations": 3,
+  "notReleaseAcceptance": true,
+  "privateAuthorityKeysRead": 0,
+  "providerCalls": 0,
+  "retainedSnapshot": "/etc/ouf/deploy-snapshots/semantic-provider-v2-stopped-create-a2kbzv6l",
+  "runtimeAllowlistChanged": false,
+  "schema": "ouf.semantic-provider-v2-stopped-creation.v1",
+  "sourceHash": "2a9fc3d2861faa2e15370c70979b171cb63b2e09a2dfef1e2895ca27fa663861",
+  "startAuthorized": false,
+  "status": "CREATED_STOPPED_AND_READBACK_VERIFIED"
+}

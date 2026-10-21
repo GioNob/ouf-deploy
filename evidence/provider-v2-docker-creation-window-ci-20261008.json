@@ -1,0 +1,56 @@
+{
+  "schema": "ouf.semantic-docker-creation-window-ci.v1",
+  "runId": 37849612355,
+  "sourceCommit": "d9280cc202080dfdd406c2831b603a767f11b07f",
+  "jobs": [
+    {
+      "id": 113558979681,
+      "name": "native-frame-profiles",
+      "conclusion": "success"
+    },
+    {
+      "id": 113558979856,
+      "name": "native-docker-creation-window",
+      "conclusion": "success"
+    },
+    {
+      "id": 113558979889,
+      "name": "profiles",
+      "conclusion": "success"
+    }
+  ],
+  "scope": "CI_ENGINE_CREATION_WINDOW_ONLY",
+  "dockerVersion": "28.0.4",
+  "runcVersion": "1.5.1",
+  "bothActualCreateRuntimeHooksReached": true,
+  "transitionalStates": [
+    "ABSENT_PID_ZERO",
+    "ABSENT_PID_ZERO"
+  ],
+  "bothApplicationsBlockedBeforeRelease": true,
+  "bothExactCidAcknowledgements": true,
+  "bothApplicationMarkersAfterRelease": true,
+  "productionCompleteFrameDockerCohortProven": false,
+  "targetEngineVersionVerifiedByThisTest": false,
+  "targetAuthority": false,
+  "targetOperations": 0,
+  "notReleaseAcceptance": true,
+  "previousFailures": [
+    {
+      "runId": 37849204354,
+      "phase": "RUNNER_SETUP",
+      "reason": "DISTRO_RUNC_REMOVED_DOCKER_CE_CONTAINERD_IO"
+    },
+    {
+      "runId": 37849357736,
+      "phase": "CI_DOCKER_CREATE",
+      "reason": "EXIT_CODE_ONE_WITHOUT_MESSAGE",
+      "changes": "Settings before probe; bounded CI-only diagnostic output"
+    },
+    {
+      "runId": 37849472274,
+      "phase": "READ_CI_NATIVE_TRANSITIONAL_STATE",
+      "reason": "RUNC_LIST_NULL_ARRAY_ASSUMPTION"
+    }
+  ]
+}

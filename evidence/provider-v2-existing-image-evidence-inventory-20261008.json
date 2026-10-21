@@ -1,0 +1,51 @@
+{
+  "schema": "ouf.semantic-provider-v2-existing-image-evidence-inventory.v1",
+  "observationSource": "OPERATOR_REPORTED_NOT_INDEPENDENTLY_ACQUIRED",
+  "directory": "/etc/ouf/deploy-snapshots/semantic-image-remediation-20261006-v2/evidence/attestations",
+  "files": [
+    {
+      "file": "provenance.json",
+      "bytes": 16938,
+      "sha256": "dd647a14dd704c28a19ccb721880fbdbefc2d34878fcab54280ef5bc269e6f08",
+      "exactCurrentManifestOrConfigReferenceFound": false,
+      "reportedChecks": []
+    },
+    {
+      "file": "adapter-sbom-verification.json",
+      "bytes": 1765359,
+      "sha256": "130be704341f05592ea262b71a717b6517b44f1fec1d794bef784e112c11c965",
+      "exactCurrentManifestOrConfigReferenceFound": false,
+      "reportedChecks": []
+    },
+    {
+      "file": "southbound-sbom-verification.json",
+      "bytes": 10342677,
+      "sha256": "1173e841b3138cebf039db7c9b53df28e841fb563058cd63273eb2f7c7b22101",
+      "exactCurrentManifestOrConfigReferenceFound": false,
+      "reportedChecks": []
+    },
+    {
+      "file": "adapter-sbom.json",
+      "bytes": 1011712,
+      "sha256": "17107dfece92a9736f0be9c5fe1bcaa99882125b00c86195d5aea49d31278431",
+      "exactCurrentManifestOrConfigReferenceFound": false,
+      "reportedChecks": []
+    },
+    {
+      "file": "southbound-sbom.json",
+      "bytes": 5912691,
+      "sha256": "ac01cc4dc4d29880f5fc52c70b4758939c906d9a872e0af7ed1946561b5b195a",
+      "exactCurrentManifestOrConfigReferenceFound": false,
+      "reportedChecks": []
+    }
+  ],
+  "diagnosis": {
+    "phase": "RESOLVE_EXISTING_REPORT_FORMAT_AND_IMAGE_BINDING",
+    "reason": "NO_EXACT_JSON_STRING_MATCH_FOR_FOUR_CURRENT_DIGESTS",
+    "meaning": "Image mismatch or rejection not established; composed references or separate bundle manifest remain possible",
+    "rawReportsAcquired": false,
+    "targetAcceptanceGranted": false,
+    "notReleaseAcceptance": true
+  },
+  "targetLifecycleOperations": 0
+}

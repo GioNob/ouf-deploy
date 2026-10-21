@@ -1,0 +1,49 @@
+name: Adaptive finite lease qualification
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/semantic_lease_recovery/**'
+      - '.github/workflows/adaptive-finite-lease.yml'
+      - 'releases/nft-json-units-isolated-probe-20261010.sh'
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: a10df126d229dfefd9e0a4d716a07f1f535b6cd6
+          path: lease-owner-source
+          persist-credentials: false
+      - name: Verify exact installed owner source closure
+        run: |
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          record=json.loads(Path('tools/semantic_lease_activation/installed-owner-source-bindings.json').read_bytes())
+          for name,digest in record['sourceHashes'].items():
+              assert hashlib.sha256((Path('lease-owner-source')/name).read_bytes()).hexdigest()==digest,name
+          print('INSTALLED_SOURCE_CLOSURE_BYTES=PASS')
+          PY
+      - name: Short actual TTL, read latency, delayed wake, authority and failure boundaries
+        run: |
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_adaptive_supervisor.py
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_nft_seconds_backend.py
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_probe_units.py
+      - name: Pinned operator launcher syntax and source hash
+        run: |
+          bash -n releases/nft-json-units-isolated-probe-20261010.sh
+          printf '%s  %s\n' '818254e83191eecb232ecc9eaf22e3290e2675627780511d2294401aaa040bf5' tools/semantic_lease_recovery/probe_installed_nft_units.py | sha256sum -c -
+      - name: Install isolated native fixture dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq nftables iproute2
+      - name: Six real short-TTL DNS and nft cycles, revoke and deny rearm
+        run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_recovery/test_adaptive_native.py lease-owner-source
+      - name: Actual seconds unit probe in a new disposable namespace
+        run: sudo /usr/bin/python3 -B tools/semantic_lease_recovery/probe_native_fixture.py

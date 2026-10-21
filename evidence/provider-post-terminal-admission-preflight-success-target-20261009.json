@@ -1,0 +1,83 @@
+{
+  "schema": "ouf.operator-reported-evidence.v1",
+  "reportedAt": "2026-10-09T16:31:47+02:00",
+  "provenance": "user-pasted operator output; not independently acquired",
+  "readerCommit": "3f96742c9182d70c818fba33d1b752873f895634",
+  "readerSha256": "025e3280abf18ee53e20acea2006f63ffd2ba4d80a8549924772d3372c56b958",
+  "receipt": {
+    "acceptedInputCount": 16,
+    "claimsCreated": 0,
+    "consumedAliasClaimHash": "f797624258939272581dd1d11422d58474e33181bc35a62a3d3dd161c51c6595",
+    "containerLifecycleOperations": 0,
+    "currentEmptyGuard": {
+      "candidateStateHashes": {
+        "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": "02d11a458636fedb4377f8a191e696589b1d0b92e0c272b471f0b03f2f8d92ad",
+        "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": "daa3f41b98479f443d597bbebb28154a16db0192751feec466db843755be35b1"
+      },
+      "configurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+      "containerLifecycleOperations": 0,
+      "kernelConfigurationHash": "0a646e6109d2dc32aabdbbe26436784de8a83bdeb023a36c5b2712315666f5b5",
+      "kernelTableName": "ouf_sem_provider",
+      "lockInodePreserved": true,
+      "notReleaseAcceptance": true,
+      "providerSetsEmpty": true
+    },
+    "existingConfigurationWrites": 0,
+    "freshAdmissionApprovalRequired": true,
+    "notReleaseAcceptance": true,
+    "oldContextsPreserved": true,
+    "phase": "RECHECK_RETAINED_BYTES_AFTER_READS",
+    "priorMandatesUsedAsCurrentAuthority": false,
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "retainedFilesVerified": 91,
+    "reviewedDependencyMetadataCovers240Seconds": true,
+    "roles": {
+      "adapter": {
+        "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+        "containerMetadataHash": "45b95bc5610c03f5db63d48c52070c5d1302d8bde6a5f22c1ef978bb6bcf2868",
+        "inputHashes": {
+          "context": "cfc1bfc12855dc49bfe0bf3eef22d0b2fb1f376d017a5cf68a4e77822dc9dfc6",
+          "dependencyEvidence": "e5b31a2117b2f5abfb5e305b62a04d8861341501c626ab1cd50459e2b07b248d",
+          "deploymentConstraints": "2ea27b1d19bf4bd151b3f9199a651a5f693aced13ad9b02490485452aec82ef7",
+          "framePolicy": "e8047e92e8b3938abe67dc8e57f385fced9de1218db348b4723eb3c6d34867fd",
+          "launch": "061e2bd245d45d7e435ff86e07a6897413ae6c164d2d2c9ade2d455d80846943",
+          "preparerTemplate": "0a9a12a36b9f28eca2edcb3a2ad2c3d741559abb5d3699029bcc105c287dab53",
+          "provenanceEvidence": "0e5de8878e68d8fe555024cd5c0b911361c713e6547f93ebebd243ca34791f9f",
+          "template": "bf536f60c1d511f4cdbeb8546e84f46d426f693019938a0a9b4dbf76b3308e01"
+        },
+        "nativeEntryAbsentAtRetainedRoot": true,
+        "taskAbsent": true
+      },
+      "southbound": {
+        "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+        "containerMetadataHash": "6a39de17aa02d0358dcac7b931645ac84004bbec013443eec29447c6d772f767",
+        "inputHashes": {
+          "context": "ce46668d3652eeb1fbf45ebba78c6fdc15aefa9af62801b536b616635a0f4246",
+          "dependencyEvidence": "17ae54703ac8b29c4d554b9832f2a2f9d6d0067d421ee8cffc8ed89e96da8168",
+          "deploymentConstraints": "e349f6f9c059fa11415b6255a115d4d00972468e892624376b45d43365e718c2",
+          "framePolicy": "f49155fa412bb76d529713cb4ac2c253105884e9e72f7d2d74dfc5ccf9c5c822",
+          "launch": "cbc1f30c200a6a27e92b8055aa5542df30f7d124d08004d6f3bfe7dfb9ed2a39",
+          "preparerTemplate": "7ac15676ff00e38e1ac5bf5bd2356e42c34dbe9b485a5ba38d562380dcb1a894",
+          "provenanceEvidence": "75fc6a4022bbec82cad2e77e1d48fae3b3af77218edb1f8bade4d46c867dfa8b",
+          "template": "0ef8aa503bfb6a5c789000cd73de6e987d1a55688894475e555f4d566581ad05"
+        },
+        "nativeEntryAbsentAtRetainedRoot": true,
+        "taskAbsent": true
+      }
+    },
+    "schema": "ouf.semantic-post-terminal-admission-preflight-read-only.v1",
+    "signaturesIssued": 0,
+    "sourceClosureHash": "702403e9cd99ddc4ddeed7166f3f408c55657fc690e475e0b35bb5d2c2242bb3",
+    "sourceClosureObservation": {
+      "exactSourceNames": true,
+      "expectedSourceCount": 30,
+      "publicationFileCount": 81,
+      "publishedSourceCount": 30,
+      "sourceClosureHash": "702403e9cd99ddc4ddeed7166f3f408c55657fc690e475e0b35bb5d2c2242bb3"
+    },
+    "startAuthorized": false,
+    "status": "POST_TERMINAL_ADMISSION_PREREQUISITES_CAPTURED",
+    "successfulMaintenanceResultHash": "e020175756e905f15c7c03fca34e3ee5b674adab62c760319cada4483c9e43e9"
+  }
+}

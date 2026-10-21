@@ -1,0 +1,19 @@
+name: Provider target routing metadata
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/semantic_transaction_network/read_target_network_metadata.py'
+      - '.github/workflows/provider-v2-target-routing-metadata.yml'
+permissions:
+  contents: read
+jobs:
+  metadata:
+    runs-on: [self-hosted, linux, x64, ouf-vps-test]
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Capture only missing gateway and route metadata
+        run: python3 -B tools/semantic_transaction_network/read_target_network_metadata.py

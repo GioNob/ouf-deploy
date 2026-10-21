@@ -1,0 +1,85 @@
+{
+  "schema": "ouf.ingestion-source-read-finite-grant-proposal-evidence.v1",
+  "account": "ouf-admin",
+  "linkId": "link_6aafef96b4148191b767e9af7b756a07",
+  "basePolicyRef": "ouf-lab-authorization:46",
+  "request": {
+    "operation": "UPSERT",
+    "grantId": "grant-ingestion-operations-read-teatri-csv-6609b245-20261019-24h",
+    "reason": "Lettura operativa Ingestion per il collaudo governato della sola fonte teatri-csv-6609b245, durata24ore. Policy46 e registrazione/descrittore/scope riconciliati. Nessuna attivazione, acquisizione, replay, modifica ruoli o log protetti. Pubblicazione solo dopo decisione HUMAN diretta nella THS.",
+    "grant": {
+      "grantId": "grant-ingestion-operations-read-teatri-csv-6609b245-20261019-24h",
+      "capabilityId": "ingestion.operations.read",
+      "tenantId": "ouf-lab",
+      "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+      "servicePrincipalId": null,
+      "organizationId": null,
+      "validFrom": "2026-10-19T09:34:16Z",
+      "validUntil": "2026-10-20T09:34:16Z",
+      "constraints": {
+        "effect": "ALLOW",
+        "externalRoleRef": null,
+        "resourceType": "operational",
+        "resourceId": null,
+        "resourceAttributes": {
+          "module": "INGESTION",
+          "sourceRef": "teatri-csv-6609b245"
+        },
+        "allowedDataLabels": [],
+        "allowedDetailLevels": [
+          "TENANT_OPERATIONAL"
+        ],
+        "requiredAcr": null,
+        "requiredAmr": [],
+        "maxAuthenticationAgeSeconds": null
+      }
+    }
+  },
+  "proposal": {
+    "proposalId": "c94ca071-b465-47e6-a01d-06cc7984785a",
+    "revision": 1,
+    "state": "PUBLISHED",
+    "expiresAt": "2026-10-19T09:49:23.832698Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=c94ca071-b465-47e6-a01d-06cc7984785a",
+    "finalPolicyRef": "ouf-lab-authorization:47"
+  },
+  "nativeConfirmationByAssistant": false,
+  "grantPublished": true,
+  "freshChatClientTokenScopeProven": false,
+  "sourceActivationPerformed": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "ownerReadback": {
+    "policyRef": "ouf-lab-authorization:47",
+    "policyHash": "sha256:8aa234827edee9271548830a518407309d7042303a634a127ef46ec9e2371f00",
+    "subjectGrantCount": 81,
+    "grant": {
+      "grantId": "grant-ingestion-operations-read-teatri-csv-6609b245-20261019-24h",
+      "capabilityId": "ingestion.operations.read",
+      "tenantId": "ouf-lab",
+      "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+      "servicePrincipalId": null,
+      "organizationId": null,
+      "validFrom": "2026-10-19T09:34:16Z",
+      "validUntil": "2026-10-20T09:34:16Z",
+      "constraints": {
+        "effect": "ALLOW",
+        "externalRoleRef": null,
+        "resourceType": "operational",
+        "resourceId": null,
+        "resourceAttributes": {
+          "module": "INGESTION",
+          "sourceRef": "teatri-csv-6609b245"
+        },
+        "allowedDataLabels": [],
+        "allowedDetailLevels": [
+          "TENANT_OPERATIONAL"
+        ],
+        "requiredAcr": null,
+        "requiredAmr": [],
+        "maxAuthenticationAgeSeconds": null
+      }
+    },
+    "pageComplete": true
+  }
+}

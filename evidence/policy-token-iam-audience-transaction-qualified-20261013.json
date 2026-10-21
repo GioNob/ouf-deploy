@@ -1,0 +1,205 @@
+{
+  "schema": "ouf.policy-token-iam-audience-transaction-qualification.v1",
+  "sourceCommit": "5a4e4c382da1ba027b107cf89a6c99287d3cf3e8",
+  "targetReviewPlanHash": "4a3d1c444012c8f30bf4480a518dea8448d815397cb1d71f97d26d99ad1fef76",
+  "qualifiedDistributionReference": "quay.io/keycloak/keycloak@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+  "localTransactionTests": 7,
+  "sourceSemantics": {
+    "file": "services/src/main/java/org/keycloak/protocol/oidc/mappers/AbstractOIDCProtocolMapper.java",
+    "revision": "26.7.4",
+    "sha256": "343a5a245529142ba723f43725dc89408528631e34731f7cb5ed4fd4cbd07376",
+    "permittedEffectiveModelNormalization": {
+      "userinfo.token.claim": "false"
+    },
+    "allRequestedFieldsMustMatch": true,
+    "unknownFieldsRejected": true,
+    "realizedObjectHashRetained": true,
+    "realizedUuidRetained": true
+  },
+  "preservedFailures": [
+    {
+      "runId": 38386045209,
+      "phase": "SEALED_TLS_FIXTURE",
+      "reason": "FIXTURE_IAT_REGENERATED_ON_INTROSPECTION",
+      "strictAdmissionUnchanged": true
+    },
+    {
+      "runId": 38386713853,
+      "phase": "ACTUAL_SCOPED_IAM_MAPPER_TRANSACTION",
+      "reason": "IAM_EFFECT_RECONCILIATION_REQUIRED"
+    },
+    {
+      "runId": 38387389372,
+      "phase": "ACTUAL_SCOPED_IAM_MAPPER_TRANSACTION",
+      "receipt": {
+        "actualKcadmOwnerMapperEnrichmentPassed": true,
+        "actualKcadmProjectionCompiled": true,
+        "actualRegisteredMapperEffectsReviewed": true,
+        "bindingActorMapperMatched": true,
+        "bindingAudienceMapperMatched": true,
+        "bindingReviewReasons": [
+          "RESERVED_CLAIM_MAPPER_REQUIRES_REVIEW",
+          "UNSUPPORTED_EFFECTIVE_MAPPER"
+        ],
+        "bindingStaticConstraintsComplete": false,
+        "bindingTenantMapperMatched": true,
+        "enrichedKcadmReviewReasons": [
+          "RESERVED_CLAIM_MAPPER_REQUIRES_REVIEW",
+          "UNSUPPORTED_EFFECTIVE_MAPPER"
+        ],
+        "enrichedKcadmUninterpretableMapperCount": 0,
+        "failurePhase": "ACTUAL_SCOPED_IAM_MAPPER_TRANSACTION",
+        "iamEffectDiagnostics": {
+          "managedEffectFindings": [
+            {
+              "configurationExact": false,
+              "expectedConfigurationFieldsMatch": {
+                "access.token.claim": true,
+                "id.token.claim": true,
+                "included.client.audience": true,
+                "introspection.token.claim": true
+              },
+              "idUuidShape": true,
+              "protocolMatches": true,
+              "providerTypeMatches": true
+            }
+          ],
+          "matchingManagedNameCount": 1,
+          "matchingRequestedIdCount": 1
+        },
+        "imageTag": "quay.io/keycloak/keycloak@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+        "kcadmMapperSchemaFindings": {
+          "MAPPER_CONFIGURATION_ABSENT": 7,
+          "MAPPER_PROTOCOL_ABSENT": 7,
+          "MAPPER_TYPE_ABSENT": 7
+        },
+        "kcadmStaticConstraintsComplete": false,
+        "kcadmUninterpretableMapperCount": 7,
+        "notReleaseAcceptance": true,
+        "productionCalls": 0,
+        "r12Touched": false,
+        "realAdminMetadataBindingCompilationPassed": true,
+        "reason": "IAM_EFFECT_RECONCILIATION_REQUIRED",
+        "retainedProjectionPreserved": true,
+        "reviewedClientIdSessionNote": true,
+        "reviewedMapperReasons": [],
+        "reviewedStandardSubject": true,
+        "reviewedStaticMapperConstraintsComplete": true,
+        "schema": "ouf.policy-token-real-keycloak-qualification.v1",
+        "status": "QUALIFICATION_FAILED",
+        "targetCredentialReads": 0
+      }
+    },
+    {
+      "runId": 38388282257,
+      "sourceCommit": "9f3cd756deef069dbb4b3c7d37a5fbe01b8e2a7d",
+      "phase": "REAL_CLIENT_REVOCATION_DENIAL",
+      "reason": "DISPOSABLE_CLIENT_STATE_UNAVAILABLE",
+      "httpStatusNotRecorded": true,
+      "precedingSignedTransactionAndRealIntrospectionPassed": true
+    }
+  ],
+  "targetIamMutations": 0,
+  "targetServiceMutations": 0,
+  "targetTokenGrantRequests": 0,
+  "targetCredentialReads": 0,
+  "runtimeAuthorityIssued": false,
+  "productionApplyReady": false,
+  "budgetReset": false,
+  "r12Touched": false,
+  "notReleaseAcceptance": true,
+  "limits": [
+    "Component only; target sealed source/interpreter/context launcher not yet assembled",
+    "Existing target signer/authority configuration route not identified",
+    "Current target bearer/introspection, historical accounting, six mounts and owner installation remain unproven",
+    "THS and CSV13 end-to-end remain open"
+  ],
+  "priorCompletePositiveQualification": {
+    "runId": 38388289185,
+    "sourceCommit": "9f3cd756deef069dbb4b3c7d37a5fbe01b8e2a7d",
+    "tests": 139,
+    "skips": 0
+  },
+  "status": "QUALIFIED_DISPOSABLE_ONLY_NOT_ACCEPTED",
+  "qualification": {
+    "runId": 38388834700,
+    "jobId": 115267241846,
+    "conclusion": "success",
+    "tests": 139,
+    "skips": 0,
+    "receipt": {
+      "actualDockerArtifactMetadataObserved": true,
+      "actualDockerDistributionMetadataObserved": true,
+      "actualKcadmOwnerMapperEnrichmentPassed": true,
+      "actualKcadmProjectionCompiled": true,
+      "actualRegisteredMapperEffectsReviewed": true,
+      "actualScopedMapperTransactionPassed": true,
+      "bindingActorMapperMatched": true,
+      "bindingAudienceMapperMatched": true,
+      "bindingReviewReasons": [
+        "RESERVED_CLAIM_MAPPER_REQUIRES_REVIEW",
+        "UNSUPPORTED_EFFECTIVE_MAPPER"
+      ],
+      "bindingStaticConstraintsComplete": false,
+      "bindingTenantMapperMatched": true,
+      "completedMapperTransactionNotReplayed": true,
+      "currentDisabledClientDenied": true,
+      "enrichedKcadmReviewReasons": [
+        "RESERVED_CLAIM_MAPPER_REQUIRES_REVIEW",
+        "UNSUPPORTED_EFFECTIVE_MAPPER"
+      ],
+      "enrichedKcadmUninterpretableMapperCount": 0,
+      "fixtureAdminAndRegistrationOnly": true,
+      "fixtureCliHeapMaxMiB": 128,
+      "fixtureCurrentHumanAndRealDualRoleCrypto": true,
+      "fixtureMapperMutations": 1,
+      "fixtureRevocationClientReadHttpStatus": 200,
+      "fixtureRevocationSetupAdminGrantHttpStatus": 200,
+      "fixtureServerHeapMaxMiB": 512,
+      "imageId": "sha256:b2f3e1b85071d17a1da8d2cbcc54707853d19c74ae027071789ea1bb12b3ec89",
+      "imageTag": "quay.io/keycloak/keycloak@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+      "introspectionProtectedFieldPresence": {
+        "aud": true,
+        "client_id": true,
+        "exp": true,
+        "iat": true,
+        "iss": true,
+        "ouf_actor_type": true,
+        "scope": true,
+        "sub": true,
+        "tenant_id": true
+      },
+      "kcadmMapperSchemaFindings": {
+        "MAPPER_CONFIGURATION_ABSENT": 7,
+        "MAPPER_PROTOCOL_ABSENT": 7,
+        "MAPPER_TYPE_ABSENT": 7
+      },
+      "kcadmStaticConstraintsComplete": false,
+      "kcadmUninterpretableMapperCount": 7,
+      "matchesObservedTargetImage": false,
+      "notReleaseAcceptance": true,
+      "observedTargetImageId": "sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+      "observedTargetRepositoryDigestMatched": true,
+      "positiveIntrospectionActive": true,
+      "positiveRealIssuerAdmission": true,
+      "productionCalls": 0,
+      "productionIssuerAccepted": false,
+      "qualifiedImageArchitecture": "amd64",
+      "r12Touched": false,
+      "realAdminMetadataBindingCompilationPassed": true,
+      "retainedProjectionPreserved": true,
+      "reviewedClientIdSessionNote": true,
+      "reviewedMapperReasons": [],
+      "reviewedSourceSemanticsProfile": "keycloak-26.0.8-retained-mapper-effects.v1",
+      "reviewedStandardSubject": true,
+      "reviewedStaticMapperConstraintsComplete": true,
+      "schema": "ouf.policy-token-real-keycloak-qualification.v1",
+      "status": "QUALIFIED_DISPOSABLE_KEYCLOAK_PROTOCOL",
+      "tamperedTokenDenied": true,
+      "targetCredentialReads": 0,
+      "targetInstallerReady": false,
+      "wrongAudienceDenied": true
+    }
+  },
+  "additionalSuccessfulRunId": 38388840832
+}

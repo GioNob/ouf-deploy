@@ -1,0 +1,55 @@
+{
+  "schema": "ouf.semantic-r3-bundle-parent-operator-readback.v1",
+  "origin": "OPERATOR_REPORTED_NOT_INDEPENDENTLY_ACQUIRED",
+  "reportedAt": "2026-10-09T09:44:59+02:00",
+  "targetReport": {
+    "actualRuntimeInvocationBundleCaptured": false,
+    "containerLifecycleOperations": 0,
+    "containerdProcesses": [
+      {
+        "configurationPath": "/etc/containerd/config.toml",
+        "executable": "/usr/bin/containerd",
+        "pid": 1589,
+        "processConfigurationPathExplicit": false,
+        "statePath": null,
+        "stateSource": null
+      }
+    ],
+    "defaultStateInferred": false,
+    "existingConfigurationWrites": 0,
+    "installedWrapperHash": "3234529d94e84c70ed66f6e54a2d86f156e875fc73c9f8e15844b61edbb8ae20",
+    "notReleaseAcceptance": true,
+    "note": "Configured containerd state is metadata, not a retained capture of the failed runtime argv.",
+    "phase": "READ_ACTUAL_CONTAINERD_STATE_METADATA",
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "publishedFileHashesMatched": 81,
+    "roles": {
+      "adapter": {
+        "approvedContextBundleParent": "/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby",
+        "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+        "runtimeBundleParents": [
+          "/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby"
+        ]
+      },
+      "southbound": {
+        "approvedContextBundleParent": "/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby",
+        "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+        "runtimeBundleParents": [
+          "/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby"
+        ]
+      }
+    },
+    "schema": "ouf.semantic-r3-bundle-parent-read-only.v1",
+    "signaturesIssued": 0,
+    "startAuthorized": false,
+    "status": "READ_ONLY_METADATA_CAPTURED",
+    "wrapperSwitchStatus": "WRAPPER_SWITCHED"
+  },
+  "readExit": 0,
+  "previousLegacyRuntimeRuncHypothesisRefuted": true,
+  "effectiveTargetBundleParentStillUnproven": true,
+  "noDefaultStateMaySupplyAuthority": true,
+  "cloudTargetOperations": 0,
+  "notReleaseAcceptance": true
+}

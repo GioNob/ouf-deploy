@@ -1,0 +1,42 @@
+{
+  "schema": "ouf.semantic-provider-offline-rootfs-ci.v1",
+  "sourceCommit": "e5bead716d02527e937be83e1cb22cad74affcbb",
+  "workflowRun": 37770703203,
+  "jobs": [
+    {
+      "id": 113289287644,
+      "name": "offline-rootfs",
+      "conclusion": "success"
+    },
+    {
+      "id": 113289288055,
+      "name": "target-engine-source",
+      "conclusion": "success"
+    }
+  ],
+  "archiveTests": 7,
+  "umociSourceCommit": "1c44d6f2f9e4b50f5d2a99463f540acf9915dd47",
+  "targetEngineCommit": "464cd50c3d9e92877d56940ea160de6fca7bea23",
+  "targetEngineVersion": "29.8.1",
+  "umociSha256": "b21ac9b656fa76035db6ac4793facfd26982165d96f730bae9606d6f0929932e",
+  "dockerInitToolSha256": "be8b8804a0d63990d02cc4b44008c22397778b4fecf16077397103fe8a64cb22",
+  "artifact": [
+    {
+      "id": 11548030614,
+      "name": "ouf-pinned-umoci",
+      "digest": "sha256:0b275821169d900a4cb1a6efa1aff880788b2ea9670b2d984a562270c25e971d"
+    }
+  ],
+  "independentExpectedFilesystemsCompared": true,
+  "originalImageSealRetained": true,
+  "targetOfflinePreparationExecuted": false,
+  "targetRootfsCompared": false,
+  "acceptanceGranted": false,
+  "startAuthorized": false,
+  "proofLines": [
+    "2026-10-08T11:33:05.4702079Z b21ac9b656fa76035db6ac4793facfd26982165d96f730bae9606d6f0929932e  ../umoci",
+    "2026-10-08T11:33:06.9591881Z be8b8804a0d63990d02cc4b44008c22397778b4fecf16077397103fe8a64cb22  ../docker-initlayer",
+    "2026-10-08T11:33:07.5821336Z OFFLINE_IMAGE_ROOTFS_NATIVE=PASS REAL_UMOCI=true INDEPENDENT_EXPECTED_FILESYSTEM=true WHITEOUT_OPAQUE_HARDLINK_SYMLINK_UID_MODE_XATTR=true CONTAINER_OPERATIONS=0 TARGET_ACCEPTANCE=false",
+    "2026-10-08T11:33:07.5824080Z OFFLINE_DOCKER_ROOTFS_NATIVE=PASS OBSERVED_ENGINE_INITLAYER_SOURCE=true INDEPENDENT_EXPECTED_ENGINE_ADDITIONS=true ORIGINAL_IMAGE_SEAL_RETAINED=true CONTAINER_OPERATIONS=0 TARGET_ACCEPTANCE=false"
+  ]
+}

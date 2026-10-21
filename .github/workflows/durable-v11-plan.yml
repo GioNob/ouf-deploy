@@ -1,0 +1,39 @@
+name: Durable V11 source-bound declaration preparation qualification
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/durable-v11-plan.yml
+      - tools/semantic_application_cutover/rebase_verified_package.py
+      - scripts/prepare-current-durable-v11-plan.py
+      - tests/test_durable_v11_*.py
+      - releases/current-durable-v11-plan-20261011.sh
+      - tests/durable_v11_rebind_native.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Preservation, custody/default drift and all-seven-source closure denials
+        run: python3 -m unittest discover -s tests -p 'test_durable_v11_*.py' -v
+      - name: Download both exact original archives; no host image import
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/GioNob/ouf-deploy/actions/artifacts/11676412613/zip > old-semantic.zip
+          gh api repos/GioNob/ouf-semantic-registry/actions/artifacts/11710556577/zip > new-semantic.zip
+          python3 tests/durable_v11_rebind_native.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: durable-v11-rebind-${{ github.run_id }}
+          path: durable-v11-rebind-native-receipt.json
+          if-no-files-found: error
+          retention-days: 30

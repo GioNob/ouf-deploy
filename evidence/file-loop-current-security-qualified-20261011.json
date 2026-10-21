@@ -1,0 +1,131 @@
+{
+  "schema": "ouf.file-loop-current-security-qualification.v1",
+  "sourceCommit": "f834a2b2d55107b13b4f6641f0ce0f4bf5583abf",
+  "run": 38150242010,
+  "conclusion": "success",
+  "images": [
+    {
+      "job": 114502007859,
+      "conclusion": "success",
+      "publisherCryptoFreshlyVerified": true,
+      "receipt": {
+        "freshScannerCoverage": [
+          {
+            "class": "os-pkgs",
+            "type": "alpine"
+          },
+          {
+            "class": "lang-pkgs",
+            "type": "jar"
+          }
+        ],
+        "imageId": "sha256:98af9d774e446ce621128a52bfa1f9faaa096052cdc185f17dc81f1ea76e9a05",
+        "module": "ingestion",
+        "notReleaseAcceptance": true,
+        "scanSha256": "d44d55e5f49983e2d7de5fe036f63f23b6b7100418fa97e7eded8aaeb6961540",
+        "schema": "ouf.fresh-retained-package-security.v1",
+        "severityCounts": {
+          "CRITICAL": 0,
+          "HIGH": 0,
+          "LOW": 0,
+          "MEDIUM": 0,
+          "UNKNOWN": 0
+        },
+        "targetActions": 0,
+        "targetApplyAuthorized": false,
+        "thresholdMet": true,
+        "unfixedIncluded": true,
+        "zipSha256": "29a981ddfaed56265ed1061bdf9a59088e87cd0cac46d5844a7fe9255a7d9c32"
+      }
+    },
+    {
+      "job": 114502007778,
+      "conclusion": "success",
+      "publisherCryptoFreshlyVerified": true,
+      "receipt": {
+        "freshScannerCoverage": [
+          {
+            "class": "os-pkgs",
+            "type": "ubuntu"
+          },
+          {
+            "class": "lang-pkgs",
+            "type": "jar"
+          }
+        ],
+        "imageId": "sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85",
+        "module": "semantic",
+        "notReleaseAcceptance": true,
+        "scanSha256": "f6abbf6a655017e46580af263113cc775dcafa416591bfdd161f0621e739e854",
+        "schema": "ouf.fresh-retained-package-security.v1",
+        "severityCounts": {
+          "CRITICAL": 0,
+          "HIGH": 0,
+          "LOW": 4,
+          "MEDIUM": 40,
+          "UNKNOWN": 0
+        },
+        "targetActions": 0,
+        "targetApplyAuthorized": false,
+        "thresholdMet": true,
+        "unfixedIncluded": true,
+        "zipSha256": "a0c30bbb7d44d3e6405bae28ad80b6c5dcfc28ed2f078d387cf4e26d179e28c3"
+      }
+    },
+    {
+      "job": 114502007940,
+      "conclusion": "success",
+      "publisherCryptoFreshlyVerified": true,
+      "receipt": {
+        "freshScannerCoverage": [
+          {
+            "class": "os-pkgs",
+            "type": "alpine"
+          },
+          {
+            "class": "lang-pkgs",
+            "type": "jar"
+          }
+        ],
+        "imageId": "sha256:7a97979286113c4e3ef6bae87e1bf2d54d2f7195d447ce43b9329f3b90899d28",
+        "module": "udp",
+        "notReleaseAcceptance": true,
+        "scanSha256": "418ad80228fc9d6d31a2981b985698791cd584887672dca839536bdb5062079c",
+        "schema": "ouf.fresh-retained-package-security.v1",
+        "severityCounts": {
+          "CRITICAL": 0,
+          "HIGH": 0,
+          "LOW": 0,
+          "MEDIUM": 1,
+          "UNKNOWN": 0
+        },
+        "targetActions": 0,
+        "targetApplyAuthorized": false,
+        "thresholdMet": true,
+        "unfixedIncluded": true,
+        "zipSha256": "36de53a045bbe94c3cdda80cf6599adfd014c595da1720c817f2aeb586ef14cd"
+      }
+    }
+  ],
+  "scanner": {
+    "actionCommit": "ed142fd0673e97e23eac54620cfb913e5ce36c25",
+    "version": "v0.70.0",
+    "cache": false,
+    "currentDatabasesRequested": true,
+    "policy": "ZERO_HIGH_CRITICAL_UNKNOWN_UNFIXED_INCLUDED",
+    "lowerSeverityFindingsPreserved": true
+  },
+  "priorRun": {
+    "run": 38150088023,
+    "conclusion": "failure",
+    "reason": "WORKFLOW_EXIT_POLICY_REJECTED_LOW_MEDIUM_DESPITE_IMAGE_BOUND_HIGH_CRITICAL_UNKNOWN_GATE_PASS",
+    "fixedWithoutChangingSeverityThreshold": true
+  },
+  "limits": {
+    "targetActions": 0,
+    "installationAuthorityAccepted": false,
+    "completeHostExtendedInventoryProven": false,
+    "targetApplyAuthorized": false,
+    "releaseAcceptance": false
+  }
+}

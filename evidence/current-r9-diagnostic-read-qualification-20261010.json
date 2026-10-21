@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.discovery.current-r9-diagnostic-read-qualification.v1",
+  "sourceCommit": "b70b1638e1e50776ad68d95198c95adcee75a5ed",
+  "sourceSha256": "7daf8e08eb530fe8a89fb56e93386c1d995679a4edff7005ed120ff8e92996dc",
+  "scopeTests": 6,
+  "scopeRunId": 38038365962,
+  "scopeStatus": "PASS",
+  "deliveryCommit": "7265f513a99bc9f52d2cbf1bedfacc4636536488",
+  "deliveryTests": 3,
+  "deliveryRunId": 38038423064,
+  "deliveryStatus": "PASS",
+  "launcher": "releases/current-r9-lease-diagnostics-20261010.sh",
+  "launcherSha256": "b9ba902a8679ff1991d501cd5d9caa474c071f40933453a5aa4064c2cb241827",
+  "originalSealedReaderSha256": "b9ea8aa1a8cf31d28dfa1df0960dcf6930880d11244fe1f84e710bfe0b9ec4cf",
+  "originalLeasePredicateUnchanged": true,
+  "observationalDiagnosticsDoNotGrantLeaseAuthority": true,
+  "workerFactsRetainedWhenLeaseRejected": true,
+  "addressValuesDisclosed": false,
+  "targetExecutionPending": true,
+  "operatorSudoRequired": true,
+  "notReleaseAcceptance": true
+}

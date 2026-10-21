@@ -1,0 +1,34 @@
+name: File-loop target read delivery
+on:
+  push:
+    branches: [main]
+    paths:
+      - tools/file_loop_package/**
+      - releases/file-loop-provenance-trust-r9-read-20261010.sh
+      - .github/workflows/file-loop-target-read-delivery.yml
+  pull_request:
+    paths:
+      - tools/file_loop_package/**
+      - releases/file-loop-provenance-trust-r9-read-20261010.sh
+      - .github/workflows/file-loop-target-read-delivery.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  read-only-delivery:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify public-root deletion and trust-context denials
+        run: python3 -m unittest discover -s tools/file_loop_package -v
+      - name: Verify Python and shell delivery syntax
+        run: |
+          python3 -m py_compile tools/file_loop_package/verify_target_publisher.py tools/file_loop_package/read_candidate_trust_bytes.py
+          bash -n releases/file-loop-provenance-trust-r9-read-20261010.sh
+      - name: Verify sealed target helper bytes before delivery
+        run: |
+          printf '%s  %s\n' \
+            '6bd1e3a54728d3339e5218314e28e5d6a80e7029c3dbd63b8589534c9f1d7c05' tools/file_loop_package/verify_target_publisher.py \
+            '6483cd6f98f092a5e5fd7cb36fab9d964438a54fa2b6f5d96762c058b6ef761e' tools/file_loop_package/read_candidate_trust_bytes.py | sha256sum -c -

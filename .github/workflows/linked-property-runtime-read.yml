@@ -1,0 +1,19 @@
+name: Linked property retained runtime read
+on:
+  push:
+    branches: [feat/linked-property-release-20261017, fix/linked-property-runtime-binding-20261017]
+    paths: ['.github/workflows/linked-property-runtime-read.yml', 'scripts/read-linked-property-runtime.py', 'scripts/read-linked-property-runtime-comparison.py']
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: linked-property-retained-runtime-read
+  cancel-in-progress: false
+jobs:
+  read-only:
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Compare current container bindings through both API projections
+        run: python3 -I -B scripts/read-linked-property-runtime-comparison.py

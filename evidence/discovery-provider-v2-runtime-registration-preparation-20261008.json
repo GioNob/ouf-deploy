@@ -1,0 +1,29 @@
+{
+  "state": "PREPARED_NOT_APPLIED_TO_TARGET",
+  "sourceCommit": "6b74365821a668479eac10c2364b29d5cbab5eff",
+  "sourceHash": "2ee5d624ec653e9cdaf1f1d4c4774735e5d151e0f5a3e41587d766d0be998924",
+  "bootstrapCommit": "9668abd6abec533ba3d45af92e673ae797d6330a",
+  "bootstrapHash": "b647ea7e2fd015b399b8ffa2a014145c784f65e7a6cb9f2c53ecd747e1ace9ec",
+  "gatewayCommit": "ace683b1019f79adaace86796b67e463b93ec12e",
+  "workflowRun": 37724365989,
+  "workflowJob": 113139046098,
+  "unitTestsPassed": 8,
+  "nativeTestsPassed": 1,
+  "skips": 0,
+  "nativeProof": "Actual isolated dockerd reload and unchanged running fixture; actual adapter version and unstaged CID refusal",
+  "simulatedInNativeFixture": [
+    "guard custody preflight",
+    "systemd daemon PID discovery"
+  ],
+  "targetRegistrationPerformed": false,
+  "candidateCount": 0,
+  "startAuthorized": false,
+  "acceptanceGranted": false,
+  "notReleaseAcceptance": true,
+  "earlierFailedRuns": [
+    37724081743,
+    37724206966,
+    37724301966
+  ],
+  "recovery": "Retain partial claim/files; no apply replay or automatic rollback"
+}

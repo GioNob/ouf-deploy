@@ -1,0 +1,50 @@
+name: Continuous resilient finite lease worker
+on:
+  push:
+    branches: [main, 'codex/r10-continuous-*']
+    paths:
+      - 'tools/semantic_lease_recovery/**'
+      - 'scripts/read-resilient-worker-current-intake.py'
+      - 'tests/test_resilient_worker_intake.py'
+      - 'tests/test_resilient_intake_delivery.py'
+      - 'releases/resilient-worker-current-intake-20261011.sh'
+      - '.github/workflows/continuous-resilient-worker.yml'
+      - '.github/workflows/resilient-worker-target-intake.yml'
+  pull_request:
+    paths:
+      - 'tools/semantic_lease_recovery/**'
+      - 'scripts/read-resilient-worker-current-intake.py'
+      - 'tests/test_resilient_worker_intake.py'
+      - 'tests/test_resilient_intake_delivery.py'
+      - 'releases/resilient-worker-current-intake-20261011.sh'
+      - '.github/workflows/continuous-resilient-worker.yml'
+      - '.github/workflows/resilient-worker-target-intake.yml'
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: a10df126d229dfefd9e0a4d716a07f1f535b6cd6
+          path: lease-owner-source
+          persist-credentials: false
+      - name: Continuous lifecycle and durable recovery regression
+        run: |
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_continuous_supervisor.py
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_bounded_recovery.py
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p test_adaptive_supervisor.py
+          python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p 'test_r10_*.py'
+          python3 -B -m unittest discover -v -s tests -p 'test_resilient*py'
+      - name: Install disposable native dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq nftables iproute2
+      - name: Continuous systemd lifecycle with native DNS nft and locks
+        run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_recovery/continuous_worker_native.py lease-owner-source
+      - name: Retained four-hour bounded recovery regression
+        run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_recovery/resilient_lease_native.py lease-owner-source

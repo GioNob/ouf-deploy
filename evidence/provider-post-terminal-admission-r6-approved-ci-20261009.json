@@ -1,0 +1,37 @@
+{
+  "schema": "ouf.semantic-post-terminal-admission-ci.v1",
+  "executorCommit": "a6d7c31e11d9f65bfa4b79082f234e1496048bf9",
+  "runId": 37947771159,
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/37947771159",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "id": 113878404926,
+      "name": "profiles",
+      "conclusion": "success",
+      "htmlUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/37947771159/job/113878404926"
+    },
+    {
+      "id": 113878405330,
+      "name": "native-docker-creation-window",
+      "conclusion": "success",
+      "htmlUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/37947771159/job/113878405330"
+    },
+    {
+      "id": 113878405478,
+      "name": "native-authenticated-docker-cohort",
+      "conclusion": "success",
+      "htmlUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/37947771159/job/113878405478"
+    },
+    {
+      "id": 113878405516,
+      "name": "native-frame-profiles",
+      "conclusion": "success",
+      "htmlUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/37947771159/job/113878405516"
+    }
+  ],
+  "localTests": 9,
+  "launcherFailureScenarios": 4,
+  "targetExecuted": false,
+  "notReleaseAcceptance": true
+}

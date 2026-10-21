@@ -1,0 +1,58 @@
+{
+  "schema": "ouf.semantic-provider-switch-readback-and-budget-diagnosis.v1",
+  "origin": "OPERATOR_REPORTED_NOT_INDEPENDENTLY_ACQUIRED",
+  "targetReceipt": {
+    "claimsPresent": {
+      "runtime-switch-claim.json": false,
+      "runtime-switch-denial.json": false,
+      "runtime-switch-receipt.json": false
+    },
+    "containerLifecycleOperations": 0,
+    "existingConfigurationWrites": 0,
+    "nativeGuardObservation": {
+      "candidateStateHashes": {
+        "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": "f7a80f9a2805bca4dacc47fb346b2552798f46b63d73da1f9f8faed662becd4d",
+        "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": "12024edbc6a87ae2797481b591ff0c36d4bd0f491d0f16c2b6ec575de3814f58"
+      },
+      "configurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+      "containerLifecycleOperations": 0,
+      "kernelConfigurationHash": "0a646e6109d2dc32aabdbbe26436784de8a83bdeb023a36c5b2712315666f5b5",
+      "kernelTableName": "ouf_sem_provider",
+      "lockInodePreserved": true,
+      "notReleaseAcceptance": true,
+      "providerSetsEmpty": true
+    },
+    "notReleaseAcceptance": true,
+    "phase": "OBSERVE_CURRENT_NATIVE_EMPTY_GUARD_READ_ONLY",
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "publishedFilesHashMatched": 81,
+    "roleIssuance": {
+      "adapter": {
+        "signaturesIssued": 4,
+        "startPerformed": false,
+        "status": "ROLE_RECORDS_ISSUED"
+      },
+      "southbound": {
+        "signaturesIssued": 4,
+        "startPerformed": false,
+        "status": "ROLE_RECORDS_ISSUED"
+      }
+    },
+    "schema": "ouf.semantic-guard-switch-read-only-diagnosis.v1",
+    "startAuthorized": false,
+    "status": "READ_ONLY_CHECKS_PASS",
+    "transactionDirectory": "/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-kanx36_x"
+  },
+  "codeDiagnosis": {
+    "phase": "BEFORE_CLAIM_BUDGET_CONSTRUCTION",
+    "callerSeconds": 40,
+    "sealedMaximumSeconds": 18,
+    "reproducedReason": "BOUNDED_AUTHENTICATION_BUDGET_REQUIRED",
+    "historicalStackAcquired": false,
+    "fixedCallerSeconds": 18
+  },
+  "cloudTargetOperations": 0,
+  "recoveryApprovalGranted": false,
+  "notReleaseAcceptance": true
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.semantic-provider-preflight-failure-readback.v1",
+  "observationSource": "OPERATOR_REPORTED",
+  "reportedAt": "2026-10-09T08:24:16+02:00",
+  "containerLifecycleOperations": 0,
+  "privateKeysRead": 0,
+  "targetRuntimeChanged": false,
+  "stage": "PREFLIGHT_BOTH_EXPLICIT_ROOT_MANDATES",
+  "reason": "PRIVATE_TARGET_INTAKE_UNPROVEN",
+  "pathsPresent": {
+    "execution-claim.json": false,
+    "issued-signatures": false,
+    "operator-context-claim.json": true,
+    "role-authority": false
+  },
+  "independentlyAcquiredHere": false,
+  "notReleaseAcceptance": true
+}

@@ -1,0 +1,23 @@
+name: R8 prepared-rootfs recovery boundaries
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/semantic_target_review/*prepared_mountpoint*'
+      - 'evidence/provider-r8-mountpoint-recovery-scope-20261009.json'
+      - 'releases/provider-prepared-mountpoint-recovery-20261009.sh'
+      - '.github/workflows/provider-r8-prepared-recovery.yml'
+permissions:
+  contents: read
+jobs:
+  recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Root approval, immutable review scope, terminal cleanup failures and delivery
+        run: |
+          sudo install -d -m 0700 /root/ouf-r8-recovery-ci
+          sudo env OUF_TRANSACTION_TEST_ROOT=/root/ouf-r8-recovery-ci /usr/bin/python3 -B -m unittest discover -v -s tools/semantic_target_review -p 'test_prepared_mountpoint*.py'

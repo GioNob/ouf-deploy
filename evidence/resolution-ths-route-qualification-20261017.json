@@ -1,0 +1,33 @@
+{
+  "schema": "ouf.resolution-ths-route-qualification.v1",
+  "sourceCommit": "90c59b5d437ce85fbd8d72d72024b6bf914dca7d",
+  "packageCommit": "5e2dbe76925c8711588d3f4313422ceda704c679",
+  "githubRun": 39025774179,
+  "githubJob": 117376342948,
+  "tests": 21,
+  "failures": 0,
+  "skipped": 0,
+  "coverage": [
+    "actual existing Ed25519 dual-role authority",
+    "root no-follow custody",
+    "isolated closed source import",
+    "real Docker socket and network namespace Admin HTTP",
+    "lost first PUT response: durable claim, read-only reconciliation and exactly three total PUTs",
+    "complete retained map and backend preservation",
+    "Spring JSON THS and scope declaration checks"
+  ],
+  "fixtureLimits": [
+    "APISIX Admin HTTP fixture is synthetic",
+    "HUMAN and policy worker guard uses signed fixture in transport test",
+    "production owner/page authentication must pass target anonymous probes; target not executed"
+  ],
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2,
+  "targetInstallationAccepted": false,
+  "runtimeAuthorityIssued": false,
+  "maximumGatewayWrites": 3,
+  "maximumEffectAttemptsPerStage": 1,
+  "automaticReplayAllowed": false,
+  "identityDecisionsPerformed": false,
+  "containerLifecycleOperations": 0
+}

@@ -1,0 +1,75 @@
+{
+  "automaticAmbiguousMutationReplayAllowed": false,
+  "automaticRenewalAllowed": false,
+  "backupRegressionQualification": {
+    "conclusion": "success",
+    "runId": 38857329638
+  },
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "completedTechnicalPhases": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "fullCohortQualification": {
+    "conclusion": "success",
+    "failures": 0,
+    "jobId": 116831899086,
+    "reportedSuites": 63,
+    "reportedTests": 473,
+    "runId": 38857329616,
+    "skips": 0
+  },
+  "functionalMilestonesProven": 0,
+  "gatewaySourceCommit": "d20de6b886bc910cf408685a27eb78c76a910151",
+  "historicalBindingsUnchanged": true,
+  "historicalQualification": {
+    "beforeAndAfterRestartRoutes": 37,
+    "numericPayloadBoundaryRunId": 38851740138,
+    "payloadVectors": 32
+  },
+  "installationScope": "EXACT_RETAINED_DOCKER_NETNS_INSTALLATION_NOT_GENERAL_DISTRIBUTED_TRANSPORT",
+  "launcher": {
+    "deliverySha256": "01467f33c38a2c2c847a8818f5fd894d2aea104b01bab86b83dc6dfbb9f7fa5e",
+    "path": "scripts/launch-chatbot-gateway-phase5-continuation-20261016.sh",
+    "sha256": "ba55b8812c1bed0c6a1ad1d05f1fdc7250c4efa131a958cac195f31b8cc51773",
+    "sourceCommit": "aeeb625ddacc5837e4520788d73a6598aaa5734f"
+  },
+  "launcherReleased": true,
+  "maximumAttempts": 128,
+  "maximumSeconds": 3600,
+  "mountBindingProfile": "ouf.apisix-runtime-binding.mount-set.v1",
+  "mountBindingSemantics": "SORT_COMPLETE_NATIVE_RECORDS_BY_UNIQUE_DESTINATION_ONLY_NO_FIELDS_DROPPED",
+  "nativeQualification": {
+    "conclusion": "success",
+    "jobs": [
+      {
+        "historicalClaimUnchanged": true,
+        "id": 116831632584,
+        "name": "governed-native",
+        "newRouteWrites": 28,
+        "numericReadOnlyMounts": 2,
+        "retainedAppliedChanges": 9,
+        "routes": 37
+      },
+      {
+        "actualFollowingCumulativeGrant": 9,
+        "completeReviewCompiled": true,
+        "duplicateAndRestartReplayBlocked": true,
+        "id": 116831632356,
+        "name": "finite-history",
+        "retainedCumulativeGrants": 8
+      }
+    ],
+    "runId": 38857329614
+  },
+  "newReadinessPolicy": "ouf.apisix-finite-readiness.v2",
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.chatbot-gateway-phase5-continuation-qualification.v1",
+  "sourceCapsuleSha256": "e9a6a3395bc3fd2220cd462eb9cc8b0d8cbc34172f211326f11cb533a4a53905",
+  "sourceCommit": "aeeb625ddacc5837e4520788d73a6598aaa5734f",
+  "targetAccess": false,
+  "technicalPhase": 5
+}

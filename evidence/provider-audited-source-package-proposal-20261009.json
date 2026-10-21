@@ -1,0 +1,21 @@
+{
+  "changedRuntimeFiles": [
+    "scripts/semantic_provider_admission_preparer.py",
+    "scripts/semantic_provider_deployment_broker.py",
+    "scripts/semantic_provider_docker_runtime.py",
+    "scripts/semantic_provider_installer_approval.py",
+    "scripts/semantic_provider_node_attestor.py",
+    "scripts/semantic_provider_preexec_hook.py",
+    "tools/semantic_provider_deployment_producer.py"
+  ],
+  "changedUtilities": [
+    "utility/authenticated_runtime_switch.py",
+    "utility/guarded_runtime_switch.py",
+    "utility/publish_provider_transaction.py"
+  ],
+  "entryHash": "a4e9c02915cc32ab839456de57f88e57d42aa607922ba6db8a320fd27bfdc240",
+  "manifestHash": "72594fc88836cd82c382f10e8ed42adc2e04458a00df6738b05cd258916a65a6",
+  "notReleaseAcceptance": true,
+  "sourceClosureHash": "4b9fbd3149b417a2a696302784aa54d0569b5e87ddc66ac439c153c9ab16bc02",
+  "startAuthorized": false
+}

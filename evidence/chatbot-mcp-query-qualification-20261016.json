@@ -1,0 +1,38 @@
+{
+  "schema": "ouf.chatbot-mcp-backup-query-qualification.v1",
+  "sourceCommit": "500eab9d6ddad1e02865bb333ef66ce946ad58e0",
+  "workflowRunId": 38826095544,
+  "workflowJobId": 116733792428,
+  "workflowUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/38826095544",
+  "conclusion": "success",
+  "testSummariesVerifiedInJobLog": true,
+  "suites": [
+    {"name": "signed database owner", "tests": 22, "failures": 0, "errors": 0, "skipped": 0},
+    {"name": "fixed MCP preflight reader", "tests": 10, "failures": 0, "errors": 0, "skipped": 0},
+    {"name": "actual PostgreSQL backup and exact standalone query", "tests": 3, "failures": 0, "errors": 0, "skipped": 0}
+  ],
+  "totalTests": 35,
+  "readerPath": "scripts/read-chatbot-mcp-backup-preflight-20261016.py",
+  "readerSha256": "b71c10290557cf2f964b38e3519e066ab52d0466438aab8cbbf2e759e9c7ac96",
+  "remoteReaderExactlyMatchesTestedSource": true,
+  "oldQuerySqlStateReproducedOnPostgres17": "42809",
+  "nativeAssertions": [
+    "Old WHERE sequence privilege expression fails on mixed real catalogue",
+    "Corrected exact reader passes using real Docker inspect and PostgreSQL, without SQL or Engine mocks",
+    "Mixed table and sequence privileges produce expected counts and booleans",
+    "Administrative dump probe succeeds and is discarded, backupAccepted remains false",
+    "Application privilege counts remain identical after the probe"
+  ],
+  "limitations": [
+    "Target SQLSTATE was suppressed by the old reader and is unknown",
+    "Corrected target administrative preflight and dump capability await operator readback",
+    "No runtime recovery launcher or new signed capsule is provided by this correction",
+    "Old CLAIMED archive, completed backups, Registry phases and cumulative grants are not reconciled or modified"
+  ],
+  "targetMutationCount": 0,
+  "newRuntimeAuthorityIssued": false,
+  "reconciliationPerformed": false,
+  "budgetReset": false,
+  "chatbotEndToEndProven": false,
+  "notReleaseAcceptance": true
+}

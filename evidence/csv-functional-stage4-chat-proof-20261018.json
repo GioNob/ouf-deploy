@@ -1,0 +1,109 @@
+{
+  "schema": "ouf.csv-functional-stage4-chat-proof.v1",
+  "evidenceSource": "Direct authenticated MCP calls after native HUMAN confirmation",
+  "proposal": {
+    "proposalId": "94306235-fc45-4433-a05e-0ead3f83a9f8",
+    "revision": 1,
+    "state": "PUBLISHED",
+    "expiresAt": "2026-10-18T01:04:14.587513Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=94306235-fc45-4433-a05e-0ead3f83a9f8",
+    "finalPolicyRef": "ouf-lab-authorization:43"
+  },
+  "canonicalType": "https://schema.org/PerformingArtsTheater",
+  "expectedRows": 13,
+  "returnedObjects": 13,
+  "distinctObjects": 13,
+  "objects": [
+    {
+      "urbanObjectId": "2606bba6-2799-4275-833e-00cf10f7e03b",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyCount": 20
+    },
+    {
+      "urbanObjectId": "3969605f-ccaf-4851-9bef-a7834d96fa4c",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyCount": 20
+    },
+    {
+      "urbanObjectId": "3db3a213-05f2-4817-a643-475cf7b3868b",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyCount": 20
+    },
+    {
+      "urbanObjectId": "43d6d5c7-1b01-4fbb-9ec0-a7575399981a",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyCount": 20
+    },
+    {
+      "urbanObjectId": "535ea2cc-163a-49f0-94f0-1797dc31e521",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyCount": 20
+    },
+    {
+      "urbanObjectId": "63d4fde8-044f-4f36-9db0-86debe078973",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyCount": 20
+    },
+    {
+      "urbanObjectId": "76d5d321-6585-4c8a-92a0-588bf691a0cd",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyCount": 20
+    },
+    {
+      "urbanObjectId": "96aa4cb9-c51c-4316-8c9e-472c11c8e302",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyCount": 20
+    },
+    {
+      "urbanObjectId": "c2f83340-bf65-44f1-803b-347ae1246e5d",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyCount": 20
+    },
+    {
+      "urbanObjectId": "d6051381-934b-4a11-8e71-e1d89cee4e49",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyCount": 20
+    },
+    {
+      "urbanObjectId": "ec6897bf-74e2-4534-94e0-3fff1204c250",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyCount": 20
+    },
+    {
+      "urbanObjectId": "f4f18054-8b90-48be-b355-c8358a2d019d",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyCount": 20
+    },
+    {
+      "urbanObjectId": "fe0f7632-96bb-4fc7-8641-5dca487f1c75",
+      "status": "ACTIVE",
+      "revision": 1,
+      "propertyCount": 20
+    }
+  ],
+  "allActive": true,
+  "allTwentyPropertiesVisible": true,
+  "originalObjectRetained": true,
+  "partial": false,
+  "nextCursor": null,
+  "propertyValuesPrinted": false,
+  "functionalStage4Proven": true,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "nativeProfilePublished": false,
+  "jobsRetried": 0,
+  "identityDecisionsPerformed": false,
+  "sourcePublicationChanged": false
+}

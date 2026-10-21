@@ -1,0 +1,80 @@
+name: Current Semantic package configtree startup and recovery
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/semantic-qualified-configtree.yml
+      - tests/qualified_semantic_configtree_fixture.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  qualify-current-package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Download exact retained qualified Semantic ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api repos/GioNob/ouf-deploy/actions/artifacts/11676412613/zip > semantic.zip
+      - name: Verify package and extract exact JAR without importing image
+        run: |
+          python3 - <<'PY'
+          import importlib.util,pathlib,zipfile,shutil
+          s=importlib.util.spec_from_file_location('rebase','scripts/rebase-semantic-package-declaration.py')
+          m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
+          m.package_config('semantic.zip')
+          pathlib.Path('package').mkdir()
+          with zipfile.ZipFile('semantic.zip') as z:
+              jars=[v for v in z.infolist() if pathlib.Path(v.filename).name=='application.jar']
+              m.require(len(jars)==1 and 0<jars[0].file_size<=536870912,'ONE_BOUNDED_QUALIFIED_JAR_REQUIRED')
+              with z.open(jars[0]) as source,open('package/application.jar','xb') as target:
+                  shutil.copyfileobj(source,target,1048576)
+          print('OUF_CURRENT_PACKAGE_BYTES_VERIFIED=PASS')
+          PY
+      - name: Import exact verified runtime image into disposable hosted engine only
+        run: |
+          python3 - <<'PY'
+          import pathlib,shutil,zipfile
+          with zipfile.ZipFile('semantic.zip') as z:
+              members=[i for i in z.infolist() if pathlib.Path(i.filename).name=='image.docker.tar']
+              assert len(members)==1 and 0<members[0].file_size<=2147483648
+              with z.open(members[0]) as src,open('candidate.docker.tar','xb') as dst:
+                  shutil.copyfileobj(src,dst,1048576)
+          PY
+          docker load --input candidate.docker.tar
+          test "$(docker image inspect --format '{{.Id}}' sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85)" = 'sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85'
+      - name: Retrieve previously captured installed JAR for migration-aware compatibility
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/GioNob/ouf-deploy/actions/artifacts/11663175548/zip > installed.zip
+          python3 - <<'PY'
+          import hashlib,pathlib,zipfile
+          assert hashlib.sha256(pathlib.Path('installed.zip').read_bytes()).hexdigest()=='effce27861d4d3a8154c747b012412c58777a2a8ee8df6a11431d1674d49bf12'
+          root=pathlib.Path('old-application-package');root.mkdir()
+          with zipfile.ZipFile('installed.zip') as z:
+              for name,limit in [('application.jar',536870912),('capture-receipt.json',1048576)]:
+                  rows=[i for i in z.infolist() if pathlib.PurePosixPath(i.filename).name==name]
+                  assert len(rows)==1 and 0<rows[0].file_size<=limit
+                  (root/name).write_bytes(z.read(rows[0]))
+          PY
+      - name: Exact application startup with file secret, IAM enforcement, V10 and current restore
+        run: python3 tests/qualified_semantic_configtree_fixture.py --bounded-container --installed-application
+      - uses: actions/upload-artifact@v4
+        with:
+          name: qualified-semantic-configtree-${{ github.run_id }}
+          path: qualified-spring-configtree-receipt.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Remove disposable PostgreSQL fixture
+        if: always()
+        run: docker rm -f ouf-discovery-spring-ci ouf-semantic-resource-ci 2>/dev/null || true

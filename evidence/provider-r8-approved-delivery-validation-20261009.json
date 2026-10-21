@@ -1,0 +1,45 @@
+{
+  "schema": "ouf.semantic-r8-approved-delivery-validation.v1",
+  "status": "APPROVED_DELIVERY_VERIFIED_OPERATOR_EXECUTION_PENDING",
+  "approvalRef": "OUF_PROVIDER_PREPARED_MOUNTPOINT_APPROVED_20261009T203804_CEST_R8",
+  "sourceCommit": "5a7249c1b65e209e468de3baa10e73800f69d53e",
+  "executorCommit": "378c882379502f5b9809e0f24f6a3a64cdacef56",
+  "workflowRun": 37974841444,
+  "job": 113970400777,
+  "workflowConclusion": "success",
+  "jobLogReadHere": true,
+  "testCount": 9,
+  "onlyExecutorChanges": [
+    "APPROVAL_REF",
+    "APPROVED_AT",
+    "APPROVAL_EXPIRES_AT"
+  ],
+  "runtimeClosureUnchanged": true,
+  "scopeUnchanged": true,
+  "remoteFiles": {
+    "tools/semantic_target_review/execute_prepared_mountpoint_recovery.py": {
+      "sha256": "89cba73a29f3e4def5af40f991720766b51a379c6a441c502d2240f4d17f9214",
+      "remoteBytesMatchedLocal": true
+    },
+    "tools/semantic_transaction_profiles/prepare_mountpoint_acceptance.py": {
+      "sha256": "143112ab4051ca166f6d7609c107787f2be3ce35ce7946002dfec755ff1fdd98",
+      "remoteBytesMatchedLocal": true
+    },
+    "evidence/provider-r8-mountpoint-recovery-scope-20261009.json": {
+      "sha256": "24f6c5a25893e1757bb903b74b90155e39d19864d377ed3a31a94e80bfce1a86",
+      "remoteBytesMatchedLocal": true
+    },
+    "releases/provider-prepared-mountpoint-recovery-20261009.sh": {
+      "sha256": "1d5a745cbfc17e8e8877d2184a001a3d107df2cb3604a4589105250712c17c74",
+      "remoteBytesMatchedLocal": true
+    }
+  },
+  "nativeValidationEvidence": "evidence/provider-r8-prepared-rootfs-native-validation-20261009.json",
+  "targetExecutionPerformedHere": false,
+  "targetStartupProven": false,
+  "targetExecutionResultReceived": false,
+  "privateKeysRead": 0,
+  "targetContainerLifecycleOperations": 0,
+  "notReleaseAcceptance": true,
+  "operatorCommandSha256": "cc50bb445f7e8a5eec29444c33ed9fb385b249c96f0331e5f1531be1fc8ebf62"
+}

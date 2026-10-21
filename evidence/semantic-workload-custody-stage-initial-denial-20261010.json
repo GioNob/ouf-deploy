@@ -1,0 +1,29 @@
+{
+  "schema": "ouf.discovery.workload-custody-stage-denial.v1",
+  "sourceCommit": "1d0893d24530b61982f63949c9c2bdb75fd52738",
+  "runId": 38041003433,
+  "jobId": 114181086521,
+  "target": {
+    "containerLifecycleOperations": 0,
+    "errorType": "ValueError",
+    "existingConfigurationWrites": 0,
+    "externalProviderCalls": 0,
+    "iamConfigurationWrites": 0,
+    "notReleaseAcceptance": true,
+    "privateKeyFilesOpened": 0,
+    "privateValuesPrinted": false,
+    "reason": "UNIQUE_GATEWAY_NGINX_IDENTITY_REQUIRED",
+    "roleOwnedRuntimeCredentialInstalled": false,
+    "schema": "ouf.discovery.semantic-workload-credential-stage.v1",
+    "secretRotated": false,
+    "status": "WORKLOAD_CUSTODY_STAGE_BLOCKED",
+    "workloadTokenGrantRequests": 0
+  },
+  "originalReceiptCountersIncomplete": true,
+  "actualIamReadRequestsCompletedBeforeGatewayParserFailure": 4,
+  "actualClientSecretReadInMemory": true,
+  "privateCredentialEnvelopeCreated": false,
+  "iamConfigurationChanged": false,
+  "reasonInterpretation": "Only exact nginx comm was recognized; OpenResty alias now accepted with the same unique numeric worker identity contract",
+  "notReleaseAcceptance": true
+}

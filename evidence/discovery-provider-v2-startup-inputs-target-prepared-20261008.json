@@ -1,0 +1,67 @@
+{
+  "evidenceSource": "Operator supplied target stdout; independent runner readback of private files not yet performed",
+  "observedAt": "2026-10-08T00:16:45+02:00",
+  "report": {
+    "schema": "ouf.semantic-provider-v2-startup-inputs.v1",
+    "status": "PRIVATE_STARTUP_INPUTS_PREPARED",
+    "directory": "/etc/ouf/deploy-snapshots/semantic-provider-v2-inputs-XE7IwlGm",
+    "trustDirectory": "/etc/ouf/deploy-snapshots/semantic-provider-v2-trust-vf7B4SM5",
+    "trustReceiptHash": "bb158aa0eda6c767f6bdf6f4ac6e0f8eefd93cfe6f0ee48196d0f9bf7f521458",
+    "sourceCommit": "ace683b1019f79adaace86796b67e463b93ec12e",
+    "sourceHash": "de06ef9b78cc0c33d7fe0efbedd9019edcac5ad2b680695adf4d2dc224e491b1",
+    "sourceHashes": {
+      "tools/southbound_security.py": "5953e6143fb7141b62a2d5cc26d8cf85ee74147d9eefaa923460f8e1706eb0ec",
+      "tools/semantic_provider_boundary.py": "cae2b1d5970349ce1ebc95fb44ca4dd1bd67d93e43900ad4cbeabb3d5fbd6e69",
+      "tools/semantic_provider_admission.py": "dca670d1f0ced678db6af9810199da07419901a21523385e0ebea623b608bbfc",
+      "tools/semantic_provider_relay.py": "04b33da9b3d599872c19ea20d3775141ef99c5989c7fb7175be6926b74cc7f6f",
+      "tools/semantic_provider_adapter.py": "718f031cd4116d233c3075ee74da2f28170b5ed4efcac1a77deef154f7fd320c",
+      "tools/materialize_semantic_provider.py": "d9ed454412988dddf1737a6b425830a99047ad5764f0574f7fb74bc4b52f8a78",
+      "tools/materialize_semantic_provider_runtime.py": "3a44570e5b2e4e9bfafb11be8f053d2a1d608d959bed64fe4b826c9943b7b056",
+      "tools/materialize_semantic_provider_tls.py": "5b2ad608307455efb8f39802d2264325e1debe76ba774ff78e264551028d0963",
+      "tools/lua/admit_semantic_provider.lua": "ab3d286a1ac7c59e5e34ce4617fc3ba9c79070f60df859e5e8a60d88ed92ca3d"
+    },
+    "outputHashes": {
+      "adapter.json": "cd8780da44599dd392057eb39097f2d8ea62f95b6b6c6acbac3560e1292a6615",
+      "apisix.yaml": "dd340bd652bd5c7763ea47fd53573626bc3541b0a2d97415a113c4877e2c7e80",
+      "binding.json": "3f1872a332da691667a306db11d0749065ec2149080437853eada820ff7ec47a",
+      "config.yaml": "77342a509b0b0e9498728fa366f50ce031c19d78a636d4225de5e95e1ba97140",
+      "runtime-plan.json": "1e85ab77fdd8b1e439cf92542652d65b5ea044cfed50ef2214c89a16170645a2",
+      "southbound.env": "24f485a1a40f582adc26b5c541614939687c906a0d7aef8f4bbbc2a2401d19e7"
+    },
+    "oldSouthboundId": "0e636c96b81da5ed500cee114f1b0c83d5c4ed8e2741eb0a34865f8da8e38307",
+    "oldStageReceiptHash": "768f37067b94b851f3e83ee224955c434dcd083c96717f4618f5675f0b7ae503",
+    "oldTlsReceiptHash": "e17f7fe7db3e179cbdd619f7da79134e7c0d82b467d3513b6f62d0c8d27b3200",
+    "environmentNames": [
+      "OUF_GATEWAY_OIDC_CLIENT_SECRET",
+      "OUF_SEMANTIC_PROVIDER_OWNER_KEY"
+    ],
+    "existingOidcCredentialReused": true,
+    "originalProviderBindingPreserved": true,
+    "oldInputsModified": false,
+    "southboundListenerPort": 10443,
+    "hostnames": {
+      "adapterHostname": "ouf-semantic-provider-v2",
+      "southboundHostname": "ouf-semantic-southbound-v2"
+    },
+    "roleImages": {
+      "adapter": "sha256:62e066bd021f386291f5de21ce0e1f9e67904a74b4146326070c7784493ad320",
+      "southbound": "sha256:d4c47bbeca75d94e2231e17ca14552885b7b339a5f33dbace411e275c79ded04"
+    },
+    "runtimeUsers": {
+      "adapter": "10006:10006",
+      "southbound": "636:636"
+    },
+    "acceptanceGranted": false,
+    "startAuthorized": false,
+    "notReleaseAcceptance": true,
+    "containerLifecycleOperations": 0,
+    "imageImportPerformed": false,
+    "mountsInstalled": false,
+    "rulesChanged": false,
+    "serviceChanges": 0,
+    "providerCalls": 0,
+    "installationAuthorityKeysRead": 0,
+    "offlineCaKeyRead": false,
+    "secretValuesPrinted": false
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "observedAt": "2026-10-10T20:39:22+02:00",
+  "targetResult": {
+    "applicationCutoverAuthorized": false,
+    "configuredTestTimeoutSeconds": 30,
+    "containerLifecycleOperations": 0,
+    "credentialFilesOpened": 0,
+    "dnsQueries": 0,
+    "existingConfigurationWrites": 0,
+    "firstExpiresByFamily": {
+      "bridge": 29,
+      "inet": 29
+    },
+    "hostFirewallWrites": 0,
+    "isolatedNftMutationBatches": 2,
+    "isolatedTestTablesCleaned": true,
+    "jsonExpiryUnit": "SECONDS",
+    "leaseAuthorityGranted": false,
+    "newNetworkNamespaceProven": true,
+    "nftBinaryHash": "57bdb96c8a48844ddd6dd469c267cda951b9a466be93d254c928891ed8c3b7f0",
+    "nftVersionOutputHash": "8731fe5ddefd32a5ea07dd5e896e263aa63871fc2dc9e0117357e34ea01dc329",
+    "notReleaseAcceptance": true,
+    "privateKeysRead": 0,
+    "providerCalls": 0,
+    "r9Touched": false,
+    "schema": "ouf.lease.nft-json-unit-probe.v1",
+    "secondExpiresByFamily": {
+      "bridge": 28,
+      "inet": 28
+    },
+    "serviceRestarts": 0,
+    "status": "INSTALLED_NFT_JSON_SECONDS_PROVEN_IN_ISOLATED_NAMESPACE"
+  },
+  "output": "/home/oufadmin/ouf-nft-unit-probe.5FfkFxZy/result.txt",
+  "exitCode": 0
+}

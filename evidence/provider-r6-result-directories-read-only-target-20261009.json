@@ -1,0 +1,262 @@
+{
+  "brokerOperateInvoked": false,
+  "containerLifecycleOperations": 0,
+  "existingConfigurationWrites": 0,
+  "historicalBrokerExceptionCaptured": true,
+  "installedWrapperHash": "cc4645eefedb2301afb6c7ac898716950f866cc5a19086e8c8ec854d26493d8b",
+  "notReleaseAcceptance": true,
+  "phase": "READ_RETAINED_R6_BROKER_DENIALS",
+  "privateKeysRead": 0,
+  "privateValuesPrinted": false,
+  "retainedCohortDenialHash": "a87bc84ef93af80fb8bd871daae77979604eea9ab77fa352ceca35e828c0bf3d",
+  "roles": {
+    "adapter": {
+      "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+      "docker": {
+        "nativeDenialReason": "ADMISSION_PREPARATION_FAILED",
+        "neverStarted": true,
+        "pid": 0,
+        "running": false,
+        "stateHash": "90ad7da25dd59e78566b06512e8bf57e4b7022bb101b6e701585ed7a79fcab58",
+        "status": "created"
+      },
+      "journals": {
+        "adapter.json": {
+          "present": true,
+          "runtimeRootPresent": true,
+          "sha256": "5b850802dbc61cd8d9d1ccbfe9c75b57917c52222f9d65d43ffc24930c560198",
+          "state": "DELETING"
+        },
+        "admission.json": {
+          "present": false
+        },
+        "approval-emission.json": {
+          "present": false
+        },
+        "approval.json": {
+          "present": false
+        },
+        "attestation-emission.json": {
+          "present": false
+        },
+        "attestation.json": {
+          "present": false
+        },
+        "broker-state.json": {
+          "present": true,
+          "runtimeRootPresent": true,
+          "sha256": "969d92716fcc40ef1387befaec2d567c5a8aefbc22de785ac46da78f8a1f87a8",
+          "state": "PREPARING"
+        },
+        "bundle/config.json": {
+          "present": true,
+          "runtimeRootPresent": false,
+          "sha256": "b136aa79a9da7fbd3ccfbd9636c8d600e2a52f2a80adaaa4e799acbc6fe70ef4"
+        },
+        "creation.json": {
+          "present": false
+        },
+        "deployment.json": {
+          "present": true,
+          "runtimeRootPresent": false,
+          "sha256": "0aefa18a2c5becdfdecd0405516e80040512c964e6f8298ec58eb3e788016319",
+          "state": "CREATED"
+        },
+        "driver.json": {
+          "present": false
+        },
+        "installer-signing-claim.json": {
+          "present": false
+        },
+        "node-signing-claim.json": {
+          "present": false
+        },
+        "preexec.json": {
+          "present": false
+        },
+        "preparer.json": {
+          "present": false
+        }
+      },
+      "retainedBrokerDenials": {
+        "broker-denial-authorize-create.json": {
+          "present": false
+        },
+        "broker-denial-cleanup.json": {
+          "present": false
+        },
+        "broker-denial-cohort-ready.json": {
+          "present": false
+        },
+        "broker-denial-prepare.json": {
+          "diagnosisSaved": true,
+          "errorType": "FileNotFoundError",
+          "exceptionPoints": [
+            {
+              "file": "semantic_provider_deployment_producer.py",
+              "function": "__init__",
+              "line": 194
+            },
+            {
+              "file": "semantic_provider_deployment_authentication.py",
+              "function": "ancestors",
+              "line": 40
+            },
+            {
+              "file": "_abc.py",
+              "function": "lstat",
+              "line": 437
+            },
+            {
+              "file": "_local.py",
+              "function": "stat",
+              "line": 517
+            }
+          ],
+          "phase": "prepare",
+          "present": true,
+          "reason": "BROKER_OPERATION_UNPROVEN",
+          "secretValuesPrinted": false,
+          "sha256": "dd3afc698eab8f2838290fa7c36d550f3a7ae465d29384ec37d40525744a0ae4"
+        },
+        "broker-denial-record-created.json": {
+          "present": false
+        }
+      },
+      "producerResultDirectories": {
+        "approval": {
+          "present": false
+        },
+        "attestation": {
+          "present": false
+        }
+      }
+    },
+    "southbound": {
+      "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+      "docker": {
+        "nativeDenialReason": "ADMISSION_PREPARATION_FAILED",
+        "neverStarted": true,
+        "pid": 0,
+        "running": false,
+        "stateHash": "7674a0e65ecc160881ecaa65c30c61c1d64b91a3dab78c3c5c9a9183acb762bc",
+        "status": "created"
+      },
+      "journals": {
+        "adapter.json": {
+          "present": true,
+          "runtimeRootPresent": true,
+          "sha256": "498be28e1ef00614afbc03214c522e73269fbe54ed5b34a0e88a805d32f1ef6b",
+          "state": "DELETING"
+        },
+        "admission.json": {
+          "present": false
+        },
+        "approval-emission.json": {
+          "present": false
+        },
+        "approval.json": {
+          "present": false
+        },
+        "attestation-emission.json": {
+          "present": false
+        },
+        "attestation.json": {
+          "present": false
+        },
+        "broker-state.json": {
+          "present": true,
+          "runtimeRootPresent": true,
+          "sha256": "dd805e96973f8576a6548077e211597520a0047c296d488bbbdb37b49d2d3a36",
+          "state": "PREPARING"
+        },
+        "bundle/config.json": {
+          "present": true,
+          "runtimeRootPresent": false,
+          "sha256": "0d1353ed138e33a9b56ec7686bda6857c6864bcadffe11e666d494c5fb1e1c75"
+        },
+        "creation.json": {
+          "present": false
+        },
+        "deployment.json": {
+          "present": true,
+          "runtimeRootPresent": false,
+          "sha256": "c58496f3ee17a74b0204054eaf1d3d1da7be11b7608f17ccb4d5c549acec9617",
+          "state": "CREATED"
+        },
+        "driver.json": {
+          "present": false
+        },
+        "installer-signing-claim.json": {
+          "present": false
+        },
+        "node-signing-claim.json": {
+          "present": false
+        },
+        "preexec.json": {
+          "present": false
+        },
+        "preparer.json": {
+          "present": false
+        }
+      },
+      "retainedBrokerDenials": {
+        "broker-denial-authorize-create.json": {
+          "present": false
+        },
+        "broker-denial-cleanup.json": {
+          "present": false
+        },
+        "broker-denial-cohort-ready.json": {
+          "present": false
+        },
+        "broker-denial-prepare.json": {
+          "diagnosisSaved": true,
+          "errorType": "FileNotFoundError",
+          "exceptionPoints": [
+            {
+              "file": "semantic_provider_deployment_producer.py",
+              "function": "__init__",
+              "line": 194
+            },
+            {
+              "file": "semantic_provider_deployment_authentication.py",
+              "function": "ancestors",
+              "line": 40
+            },
+            {
+              "file": "_abc.py",
+              "function": "lstat",
+              "line": 437
+            },
+            {
+              "file": "_local.py",
+              "function": "stat",
+              "line": 517
+            }
+          ],
+          "phase": "prepare",
+          "present": true,
+          "reason": "BROKER_OPERATION_UNPROVEN",
+          "secretValuesPrinted": false,
+          "sha256": "dd3afc698eab8f2838290fa7c36d550f3a7ae465d29384ec37d40525744a0ae4"
+        },
+        "broker-denial-record-created.json": {
+          "present": false
+        }
+      },
+      "producerResultDirectories": {
+        "approval": {
+          "present": false
+        },
+        "attestation": {
+          "present": false
+        }
+      }
+    }
+  },
+  "schema": "ouf.semantic-r6-result-directories-read-only.v1",
+  "signaturesIssued": 0,
+  "startAuthorized": false,
+  "status": "R6_RESULT_DIRECTORY_FACTS_CAPTURED"
+}

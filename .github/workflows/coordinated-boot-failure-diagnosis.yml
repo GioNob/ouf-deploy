@@ -1,0 +1,40 @@
+name: OUF coordinated boot failure read-only diagnosis
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [.github/workflows/coordinated-boot-failure-diagnosis.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: [self-hosted, ouf-vps-test]
+    timeout-minutes: 3
+    steps:
+      - name: Observe known reader and public service metadata without apply
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,re,subprocess
+          from pathlib import Path
+          helper=Path('/usr/local/sbin/ouf-discovery-preflight')
+          known={'a46d0900ca20ed13115572c9ab9b436105c820e81f066d6e67c2a5333292e893':'v2','49c0038410ea7d52e31127cafce914fc7d4fe54d698a0da806ed77d8c511b752':'v3'}
+          digest=hashlib.sha256(helper.read_bytes()).hexdigest()
+          report={'schema':'ouf.coordinated-boot.failure-observation.v1','readOnly':True,'configurationWrites':0,'containerLifecycleOperations':0,'readerVersion':known.get(digest,'UNKNOWN'),'readerHash':digest,'services':{}}
+          if digest in known:
+              p=subprocess.run(['sudo','-n',str(helper)],capture_output=True,text=True,timeout=60)
+              prefix='OUF_DISCOVERY_PRIVILEGED_PREFLIGHT='
+              report['readerReturnCode']=p.returncode
+              if p.stdout.startswith(prefix):
+                  try: report['nativeReport']=json.loads(p.stdout[len(prefix):])
+                  except ValueError: report['readerStatus']='BLOCKED_NO_PARSED_REPORT'
+              else: report['readerStatus']='BLOCKED_NO_PARSED_REPORT'
+          for unit in ('docker.service','ouf-semantic-boot-guard.service'):
+              p=subprocess.run(['systemctl','show',unit,'--property=ActiveState,SubState,MainPID,NeedDaemonReload,ExecStart,ExecStartPre'],capture_output=True,text=True,timeout=15)
+              values=dict(x.split('=',1) for x in p.stdout.splitlines() if '=' in x)
+              commands=' '.join(values.get(x,'') for x in ('ExecStart','ExecStartPre'))
+              report['services'][unit]={x:values.get(x,'UNKNOWN') for x in ('ActiveState','SubState','MainPID','NeedDaemonReload')}
+              report['services'][unit]['coordinatedCommandLoaded']='run_semantic_coordinated_boot_guard.py' in commands
+              report['services'][unit]['installationSnapshots']=sorted(set(re.findall(r'/etc/ouf/deploy-snapshots/semantic-coordinated-boot-install-[A-Za-z0-9_-]+',commands)))
+          print('OUF_COORDINATED_BOOT_FAILURE_OBSERVATION='+json.dumps(report,sort_keys=True))
+          PY

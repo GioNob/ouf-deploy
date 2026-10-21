@@ -1,0 +1,19 @@
+name: OUF frozen replacement application input contract
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/compile-replacement-application-contract.py
+      - tests/test_replacement_application_contract.py
+      - .github/workflows/replacement-application-contract.yml
+permissions:
+  contents: read
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Frozen provider agreement and real role file metadata; fixture secrets only
+        run: sudo env OUF_NATIVE_ROLE_METADATA_TEST=1 /usr/bin/python3 tests/test_replacement_application_contract.py

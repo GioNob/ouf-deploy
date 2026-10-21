@@ -1,0 +1,22 @@
+name: Retained application DNS shape read
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/read-preboot-dns-shape.py','tests/test_preboot_dns_shape.py','releases/preboot-dns-shape-selection-20261018.json','.github/workflows/preboot-dns-shape-read.yml']
+permissions: {contents: read}
+jobs:
+  redaction:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: python3 -I -B -S -m unittest discover -s tests -p test_preboot_dns_shape.py -v
+  target-read:
+    needs: redaction
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: timeout -s KILL 40 python3 -I -B -S scripts/read-preboot-dns-shape.py releases/preboot-dns-shape-selection-20261018.json

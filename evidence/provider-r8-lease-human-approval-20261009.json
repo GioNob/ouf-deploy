@@ -1,0 +1,25 @@
+{
+  "schema": "ouf.provider-r8-two-flow-lease-human-approval.v1",
+  "humanMessage": "Approvo",
+  "humanMessageTime": "2026-10-09T22:21:21+02:00",
+  "approvalRef": "OUF_R8_TWO_FLOW_LEASE_APPROVED_20261009T222121_CEST",
+  "issuedAt": 1791577281,
+  "executionExpiresAt": 1791584481,
+  "firstInvocationDeadline": "2026-10-10T00:21:21+02:00",
+  "reviewCommit": "39130dd288ccbaba4a507d0b6a5703d7576d6694",
+  "scope": "TWO_EXISTING_R8_PROCESS_GENERATIONS_AND_TWO_EXISTING_HTTPS_FLOWS",
+  "containerLifecycleAuthorized": false,
+  "leaseMaximumSeconds": 30,
+  "renewalSeconds": 15,
+  "compilerDeltaExplicitlyApproved": true,
+  "compilerSha256": "c3160940cf79678cb8e44c036cb0d947016f885ab09acfe6cce571833db5b079",
+  "preparedEntrypointSha256": "01a7c766111313aae941f5ecda97a0efc4b8842822bbf0e8a09d188fc8c9648b",
+  "approvedEntrypointSha256": "6038e18a83a085eaab48ce10f94214ff6f8bf15a649e4af85e4640aae9ff0557",
+  "onlyChangedFields": [
+    "APPROVAL_REF",
+    "ISSUED_AT",
+    "EXECUTION_EXPIRES_AT"
+  ],
+  "targetActionPerformedHere": false,
+  "notReleaseAcceptance": true
+}

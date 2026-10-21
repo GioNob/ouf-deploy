@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.semantic-token-untrusted-static-observation-qualification.v1",
+  "sourceCommit": "decc0e2276b0fbbdcdd591a8bf572298faab16f0",
+  "sourcePath": "scripts/observe-semantic-token-source.py",
+  "sourceSha256": "ff796823c8bdd93bbe182f7c578a33d44048260760546660263306abe8026634",
+  "ciRun": 38276202390,
+  "ciJob": 114902165240,
+  "conclusion": "success",
+  "nativeTestsPassed": 9,
+  "nativeTestsSkipped": 0,
+  "scope": "Disposable GitHub-hosted Ubuntu24.04 native file/UID fixtures; not VPS acceptance",
+  "sourceAuthenticationProven": false,
+  "writerAuthorityProven": false,
+  "outputBindingProven": false,
+  "completeSixMountClosureProven": false,
+  "runtimeAuthorityIssued": false,
+  "notReleaseAcceptance": true
+}

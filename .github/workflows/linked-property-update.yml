@@ -1,0 +1,37 @@
+name: Linked property native rollout qualification
+on:
+  push:
+    branches: [feat/linked-property-migration-rollout-20261017]
+    paths: ['tools/linked_property_rollout/**', 'tests/test_linked_property_*.py', 'scripts/*linked-property-update*', 'scripts/*linked-property-post-rollout*', 'releases/linked-property-update*', '.github/workflows/linked-property-update.yml']
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  integrity-and-fencing:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Isolated PostgreSQL query fixture
+        run: |
+          docker run -d --name ouf-linked-read-fixture -e POSTGRES_HOST_AUTH_METHOD=trust postgres:17-alpine
+          for attempt in $(seq 1 30); do
+            if docker exec ouf-linked-read-fixture pg_isready -U postgres; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+      - name: Root-owned isolated fixtures with real local signatures
+        run: |
+          sudo install -d -m 0700 /root/ouf-linked-property-tests
+          sudo cp -a . /root/ouf-linked-property-tests/repo
+          sudo chown -R root:root /root/ouf-linked-property-tests
+          sudo chmod -R go-w /root/ouf-linked-property-tests
+          sudo sh -c 'cd /root/ouf-linked-property-tests/repo && OUF_TEST_POSTGRES_CONTAINER=ouf-linked-read-fixture OUF_NATIVE_UIDS=1 OUF_TEST_ROOT=/root/ouf-linked-property-tests python3 -B -m unittest discover -s tests -p "test_linked_property_*.py" -v'
+      - name: Verify operator launcher shell when present
+        run: |
+          if [ -f scripts/launch-linked-property-update-20261017.sh ]; then
+            bash -n scripts/launch-linked-property-update-20261017.sh
+          fi
+      - name: Remove PostgreSQL fixture
+        if: always()
+        run: docker rm -f ouf-linked-read-fixture

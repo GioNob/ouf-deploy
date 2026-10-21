@@ -1,0 +1,70 @@
+{
+  "applicationCutoverAuthorized": false,
+  "baselineRefreshed": false,
+  "budgetReset": false,
+  "credentialCopiedOrRotated": false,
+  "globalOptOufPermissionChangeProposed": false,
+  "notReleaseAcceptance": true,
+  "preserveCurrentOutputBinding": true,
+  "preserveStaticDelegationKey": true,
+  "preservedIntakeHash": "005f6a7afad7d493a52d9b183816fa0346f1bb1a4de5ab4b63c8b0b39f3fb092",
+  "productionApplyReady": false,
+  "proposedProtectedRoots": {
+    "durableRecovery": "/var/lib/ouf/policy-token/semantic",
+    "ownerCredential": "/etc/ouf/policy-token/credentials/semantic",
+    "reviewedCode": "/usr/local/libexec/ouf-policy-token"
+  },
+  "protectedFileWrites": 0,
+  "providerCalls": 0,
+  "publicFactProjectionHashes": {
+    "correspondence": "221590d264f499d1a671ba221a8fbe84effd502c7f2666ea95375a90cdc40cfb",
+    "custody": "755e7b567b3be634d0d08d652ab3e2aa45c36f29b84e89a6c0ec8b219b3f3f42"
+  },
+  "r12Touched": false,
+  "recoveryProposal": {
+    "ambiguousGrant": "RECONCILE_REQUIRED",
+    "backoffSeconds": [
+      5,
+      15,
+      60,
+      300,
+      900
+    ],
+    "maxAttempts": 128,
+    "maxEpisodeSeconds": 86400,
+    "maxJitterFraction": 0.2,
+    "newZeroBudgetInvented": false,
+    "policyVersion": 3,
+    "previousAccounting": "UNPROVEN"
+  },
+  "reportedEvidenceRefs": [
+    "evidence/semantic-token-shared-custody-ancestor-target-20261012.json",
+    "evidence/semantic-token-private-output-correspondence-v2-target-20261012.json"
+  ],
+  "requiredBeforeAnyApply": [
+    "Independent reviewed producer source and current installation authority",
+    "Existing IAM owner proves credential/client/issuer/audience/scope and finite validity",
+    "Protected credential re-establishment; no blind copy of unauthenticated material",
+    "Persisted fenced incident budgets; reconcile unknown historical accounting",
+    "Owner-proven grant idempotency or ambiguity reconciliation before retry",
+    "Versioned six-mount policy with renewable token and unchanged static delegation key",
+    "Signed current acceptance and scoped HUMAN execution mandate"
+  ],
+  "rootCustodyEstablishedByPlan": false,
+  "rootDestinationsObserved": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.semantic-token-owner-custody-remediation-plan.v1",
+  "scope": {
+    "additionalCredentialDirectoryUnsafe": true,
+    "sharedUnsafeAncestor": "/opt/ouf",
+    "timer": "ouf-policy-token@semantic.timer",
+    "unit": "ouf-policy-token@semantic.service"
+  },
+  "serviceMutations": 0,
+  "signaturesIssued": 0,
+  "sixMountClosureProven": false,
+  "sourceAuthenticationProven": false,
+  "sourceCopiedOrApproved": false,
+  "status": "REVIEW_ONLY_NOT_APPLY_READY",
+  "writerAuthorityProven": false
+}

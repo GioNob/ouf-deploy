@@ -1,0 +1,32 @@
+{
+  "schema": "ouf.discovery.runtime-input-mount-correction.v1",
+  "sourceCommit": "f75a0a101bf675b1e009e7a6eef0f961575ff851",
+  "runId": 38047995064,
+  "custodyJob": 114201305269,
+  "custodyTests": 8,
+  "targetReadJob": 114201327644,
+  "targetResult": {
+    "certificateMountedSeparatelyRequired": false,
+    "configurationFilesOpened": 0,
+    "containerLifecycleOperations": 0,
+    "existingConfigurationWrites": 0,
+    "notReleaseAcceptance": true,
+    "privateKeyFilesOpened": 0,
+    "r9Touched": false,
+    "schema": "ouf.discovery.southbound-configuration-mount-read.v1",
+    "sourceMatchesPreparedStartupInputs": true,
+    "status": "EXACT_READ_ONLY_APISIX_CONFIGURATION_MOUNT_CAPTURED"
+  },
+  "productionInputPreparationExecuted": false,
+  "claimConsumed": false,
+  "APISIXPrivateConfigurationOpened": false,
+  "notReleaseAcceptance": true,
+  "correctedDelivery": {
+    "commit": "3bec64387a0e2d5d21e39b370e9bed9ddb0dff1d",
+    "runId": 38048060049,
+    "status": "SUCCESS",
+    "launcherSha256": "712624c7eccafbb66506a7d7cea500f6269b6da65d35f36c1d634a40a17a7834",
+    "entrySha256": "106b55746b26b2c3f2151bfc41f6496165f239f7d3735b8050b3fe3040da7fcc",
+    "readerSha256": "b9ea8aa1a8cf31d28dfa1df0960dcf6930880d11244fe1f84e710bfe0b9ec4cf"
+  }
+}

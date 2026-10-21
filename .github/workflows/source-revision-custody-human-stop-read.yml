@@ -1,0 +1,22 @@
+name: Custody HUMAN OAuth STOP protected read qualification
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/read-source-revision-custody-human-stop-20261019.py', 'tests/test_source_revision_custody_human_stop_read.py', 'scripts/launch-source-revision-custody-human-stop-read-20261019.sh', '.github/workflows/source-revision-custody-human-stop-read.yml']
+permissions: {contents: read}
+jobs:
+  read-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Frozen identity predicate, blocked OAuth state, consumed IAM fence and no replay
+        run: |
+          set -euo pipefail
+          bash -n scripts/launch-source-revision-custody-human-stop-read-20261019.sh
+          fixture="/root/ouf-human-history-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo env OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_source_revision_custody_human_stop_read.py' -v

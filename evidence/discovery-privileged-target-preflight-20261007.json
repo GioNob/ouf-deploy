@@ -1,0 +1,208 @@
+{
+  "schema": "ouf.discovery.target-preflight-evidence.v1",
+  "runId": 37671471821,
+  "jobId": 112964021220,
+  "helperInstalled": true,
+  "generalSudoGranted": false,
+  "observation": {
+    "configurationWrites": 0,
+    "containerLifecycleOperations": 0,
+    "custodyAcceptanceProven": false,
+    "firewallWrites": 0,
+    "keyFilesRead": false,
+    "mounts": [
+      {
+        "container": "ouf-semantic",
+        "destination": "/run/ouf-semantic-auth",
+        "directory": true,
+        "gid": 10001,
+        "mode": "0o750",
+        "readOnly": true,
+        "regularFile": false,
+        "sourcePresent": true,
+        "symlink": false,
+        "uid": 0
+      },
+      {
+        "container": "ouf-semantic",
+        "destination": "/run/secrets/semantic-read-owner.key",
+        "directory": false,
+        "gid": 10001,
+        "mode": "0o400",
+        "readOnly": true,
+        "regularFile": true,
+        "sourcePresent": true,
+        "symlink": false,
+        "uid": 10001
+      },
+      {
+        "container": "ouf-semantic-provider",
+        "destination": "/run/ouf-semantic-provider/adapter.json",
+        "directory": false,
+        "gid": 10006,
+        "mode": "0o600",
+        "readOnly": true,
+        "regularFile": true,
+        "sourcePresent": true,
+        "symlink": false,
+        "uid": 10006
+      },
+      {
+        "container": "ouf-semantic-provider",
+        "destination": "/run/ouf-semantic-provider/provider-receipt.key",
+        "directory": false,
+        "gid": 10006,
+        "mode": "0o600",
+        "readOnly": true,
+        "regularFile": true,
+        "sourcePresent": true,
+        "symlink": false,
+        "uid": 10006
+      },
+      {
+        "container": "ouf-semantic-provider",
+        "destination": "/run/ouf-semantic-provider/server.crt",
+        "directory": false,
+        "gid": 10006,
+        "mode": "0o600",
+        "readOnly": true,
+        "regularFile": true,
+        "sourcePresent": true,
+        "symlink": false,
+        "uid": 10006
+      },
+      {
+        "container": "ouf-semantic-provider",
+        "destination": "/run/ouf-semantic-provider/server.key",
+        "directory": false,
+        "gid": 10006,
+        "mode": "0o600",
+        "readOnly": true,
+        "regularFile": true,
+        "sourcePresent": true,
+        "symlink": false,
+        "uid": 10006
+      },
+      {
+        "container": "ouf-semantic-provider",
+        "destination": "/run/ouf-semantic-provider/trust-bundle.pem",
+        "directory": false,
+        "gid": 0,
+        "mode": "0o644",
+        "readOnly": true,
+        "regularFile": true,
+        "sourcePresent": true,
+        "symlink": false,
+        "uid": 0
+      },
+      {
+        "container": "ouf-semantic-southbound",
+        "destination": "/run/ouf-semantic-provider/trust-bundle.pem",
+        "directory": false,
+        "gid": 0,
+        "mode": "0o644",
+        "readOnly": true,
+        "regularFile": true,
+        "sourcePresent": true,
+        "symlink": false,
+        "uid": 0
+      },
+      {
+        "container": "ouf-semantic-southbound",
+        "destination": "/usr/local/apisix/conf/apisix.yaml",
+        "directory": false,
+        "gid": 636,
+        "mode": "0o600",
+        "readOnly": true,
+        "regularFile": true,
+        "sourcePresent": true,
+        "symlink": false,
+        "uid": 636
+      },
+      {
+        "container": "ouf-semantic-southbound",
+        "destination": "/usr/local/apisix/conf/config.yaml",
+        "directory": false,
+        "gid": 636,
+        "mode": "0o600",
+        "readOnly": true,
+        "regularFile": true,
+        "sourcePresent": true,
+        "symlink": false,
+        "uid": 636
+      }
+    ],
+    "privilegedReadAvailable": true,
+    "readOnly": true,
+    "receipts": [
+      {
+        "flags": {
+          "notReleaseAcceptance": true,
+          "runtimeRegistered": false,
+          "startAuthorized": false
+        },
+        "receiptName": "source-package-receipt.json",
+        "sha256": "080c9f710024e392a84a8f5104f8c6edf56b90eaf3e2488a924e084a2f2c65c0",
+        "snapshot": "semantic-admission-package-20261004-055825"
+      },
+      {
+        "flags": {
+          "roleSigningAuthorized": false,
+          "startAuthorized": false,
+          "trustPolicyProvisioned": false
+        },
+        "receiptName": "key-custody-receipt.json",
+        "sha256": "a134c4c8e8487860e6a8ed3a672520935a5de753d02507c4005a0475570b2d49",
+        "snapshot": "semantic-authority-provisioning-20261004-164654"
+      },
+      {
+        "flags": {
+          "notReleaseAcceptance": true
+        },
+        "receiptName": "stage-receipt.json",
+        "sha256": "64b5ec653d3b7037795ae380120a1127d9b6d8e10e60d2cfa381eedc87b4438b",
+        "snapshot": "semantic-provider-adapter-20261002-173408"
+      },
+      {
+        "flags": {
+          "notReleaseAcceptance": true,
+          "runtimeFilesMounted": false
+        },
+        "receiptName": "stage-receipt.json",
+        "sha256": "768f37067b94b851f3e83ee224955c434dcd083c96717f4618f5675f0b7ae503",
+        "snapshot": "semantic-provider-runtime-20261002-222530"
+      },
+      {
+        "flags": {
+          "notReleaseAcceptance": true
+        },
+        "receiptName": "trust-receipt.json",
+        "sha256": "8a108a3c4b47f86ef58589c7322572db88991672f4c328a200711a9fd5576776",
+        "snapshot": "semantic-provider-trust-20261002-212033"
+      },
+      {
+        "flags": {
+          "infrastructureAuthorityComplete": false,
+          "leaseLifecycleActivationReady": false,
+          "notReleaseAcceptance": true,
+          "startAuthorized": false
+        },
+        "receiptName": "runtime-stage-receipt.json",
+        "sha256": "ab4476f03d11f6325227b43b786be4a2e4d222b0ec8be29d4f119f354332402f",
+        "snapshot": "semantic-runtime-transition-stage-20261003-160211"
+      }
+    ],
+    "releaseApplied": false,
+    "schema": "ouf.discovery.privileged-preflight.v1",
+    "secretValuesPrinted": false,
+    "semanticSets": [],
+    "semanticTables": [],
+    "startAuthorized": false,
+    "status": "READ_ONLY_OBSERVATION"
+  },
+  "limitations": [
+    "Receipt flags describe historical preparation, not fresh activation acceptance.",
+    "The nft name filter matches semantic only; empty arrays do not prove absence of owned tables."
+  ],
+  "releaseApplied": false
+}

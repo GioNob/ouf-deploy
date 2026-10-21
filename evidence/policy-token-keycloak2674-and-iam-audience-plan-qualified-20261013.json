@@ -1,0 +1,182 @@
+{
+  "schema": "ouf.policy-token-keycloak2674-and-conditional-iam-plan-qualification.v1",
+  "status": "QUALIFIED_DISPOSABLE_PROTOCOL_NOT_TARGET_ACCEPTANCE",
+  "sourceCommit": "286c4aa31fcfdefe15fbb2d195dbc2dc239d2036",
+  "runId": 38382370805,
+  "jobId": 115245687995,
+  "conclusion": "success",
+  "testCounts": [
+    8,
+    16,
+    5,
+    1,
+    3,
+    3,
+    8,
+    12,
+    8,
+    6,
+    6,
+    6,
+    9,
+    19,
+    23
+  ],
+  "totalTests": 133,
+  "skippedTests": 0,
+  "actualKeycloak": {
+    "actualDockerArtifactMetadataObserved": true,
+    "actualDockerDistributionMetadataObserved": true,
+    "actualKcadmOwnerMapperEnrichmentPassed": true,
+    "actualKcadmProjectionCompiled": true,
+    "actualRegisteredMapperEffectsReviewed": true,
+    "bindingActorMapperMatched": true,
+    "bindingAudienceMapperMatched": true,
+    "bindingReviewReasons": [
+      "RESERVED_CLAIM_MAPPER_REQUIRES_REVIEW",
+      "UNSUPPORTED_EFFECTIVE_MAPPER"
+    ],
+    "bindingStaticConstraintsComplete": false,
+    "bindingTenantMapperMatched": true,
+    "currentDisabledClientDenied": true,
+    "enrichedKcadmReviewReasons": [
+      "RESERVED_CLAIM_MAPPER_REQUIRES_REVIEW",
+      "UNSUPPORTED_EFFECTIVE_MAPPER"
+    ],
+    "enrichedKcadmUninterpretableMapperCount": 0,
+    "fixtureAdminAndRegistrationOnly": true,
+    "fixtureCliHeapMaxMiB": 128,
+    "fixtureServerHeapMaxMiB": 512,
+    "imageId": "sha256:b2f3e1b85071d17a1da8d2cbcc54707853d19c74ae027071789ea1bb12b3ec89",
+    "imageTag": "quay.io/keycloak/keycloak:26.7.4",
+    "introspectionProtectedFieldPresence": {
+      "aud": true,
+      "client_id": true,
+      "exp": true,
+      "iat": true,
+      "iss": true,
+      "ouf_actor_type": true,
+      "scope": true,
+      "sub": true,
+      "tenant_id": true
+    },
+    "kcadmMapperSchemaFindings": {
+      "MAPPER_CONFIGURATION_ABSENT": 8,
+      "MAPPER_PROTOCOL_ABSENT": 8,
+      "MAPPER_TYPE_ABSENT": 8
+    },
+    "kcadmStaticConstraintsComplete": false,
+    "kcadmUninterpretableMapperCount": 8,
+    "matchesObservedTargetImage": false,
+    "notReleaseAcceptance": true,
+    "observedTargetImageId": "sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+    "positiveIntrospectionActive": true,
+    "positiveRealIssuerAdmission": true,
+    "productionCalls": 0,
+    "productionIssuerAccepted": false,
+    "qualifiedImageArchitecture": "amd64",
+    "r12Touched": false,
+    "realAdminMetadataBindingCompilationPassed": true,
+    "retainedProjectionPreserved": true,
+    "reviewedClientIdSessionNote": true,
+    "reviewedMapperReasons": [],
+    "reviewedSourceSemanticsProfile": "keycloak-26.0.8-retained-mapper-effects.v1",
+    "reviewedStandardSubject": true,
+    "reviewedStaticMapperConstraintsComplete": true,
+    "schema": "ouf.policy-token-real-keycloak-qualification.v1",
+    "status": "QUALIFIED_DISPOSABLE_KEYCLOAK_PROTOCOL",
+    "tamperedTokenDenied": true,
+    "targetCredentialReads": 0,
+    "targetInstallerReady": false,
+    "wrongAudienceDenied": true
+  },
+  "officialSourceTag": "26.7.4",
+  "officialSourceHashes": [
+    {
+      "path": "services/src/main/java/org/keycloak/protocol/oidc/mappers/UserSessionNoteMapper.java",
+      "sha256": "7e7fd82609cf5382e595bce2f5ae30d78ebfac7c9a26d06b85c1343fa50de96e"
+    },
+    {
+      "path": "services/src/main/java/org/keycloak/protocol/oidc/mappers/SubMapper.java",
+      "sha256": "af82c44e26a5d388d40555cd76109b3c8d6fda224a224468233d9ba2ff6a1929"
+    },
+    {
+      "path": "services/src/main/java/org/keycloak/protocol/oidc/mappers/AcrProtocolMapper.java",
+      "sha256": "3d70c532ee258519686bc802d1db733808325c439d1f661228bf9a41c363e704"
+    },
+    {
+      "path": "services/src/main/java/org/keycloak/protocol/oidc/mappers/AllowedWebOriginsProtocolMapper.java",
+      "sha256": "5aa7e549c1af87ec744c693129b8ba18b6680fb06778c7d629d92572f7948693"
+    },
+    {
+      "path": "services/src/main/java/org/keycloak/protocol/oidc/mappers/OIDCAttributeMapperHelper.java",
+      "sha256": "bd4be995ef4a84026472aa33dea151eba444cd9af68011a5a2165e07805c9b52"
+    },
+    {
+      "path": "services/src/main/java/org/keycloak/protocol/oidc/grants/ClientCredentialsGrantType.java",
+      "sha256": "028d06cd679d7779f0b53db1f246de4822174e192aa6c34ef68b0871650e8ccf"
+    },
+    {
+      "path": "common/src/main/java/org/keycloak/common/constants/ServiceAccountConstants.java",
+      "sha256": "c9c9dc8b868b417caef4011e7803e9855304261a110359e6af69ae434c6864d9"
+    },
+    {
+      "path": "services/src/main/java/org/keycloak/protocol/oidc/AccessTokenIntrospectionProvider.java",
+      "sha256": "3db7d49c3bfe4b3309110c04b295ee3c28568d840a872b7f3d54330b47249e6d"
+    },
+    {
+      "path": "services/src/main/java/org/keycloak/services/managers/ClientManager.java",
+      "sha256": "d70388c94ed71248be82fb38c803b27d2293a11464361a13425ed8861e2dcae8"
+    }
+  ],
+  "conditionalPlannerHash": "ae7e2d81a28a88d4296c88ea6cd074eb96628ac69689fb57abe18d080570e80e",
+  "earlierFixtureFindings": [
+    {
+      "sourceCommit": "81e51cfa4dfc726ac75a39aacb2ed71ca3f7a008",
+      "runId": 38379967306,
+      "phase": "REAL_REGISTERED_MAPPER_EFFECTS_REVIEW",
+      "reason": "REAL_REGISTERED_MAPPER_EFFECTS_UNPROVEN",
+      "resolution": "Register retained standard client-id effect explicitly in fresh26.7.4 fixture; ClientManager now uses service-account scope."
+    },
+    {
+      "sourceCommit": "787749c247eb364f8a4481f38ce7589bc84a7575",
+      "runId": 38380486044,
+      "phase": "REAL_GRANT_AND_INTROSPECTION",
+      "reason": "AUTHORITY_REVOKED",
+      "resolution": "Declare authenticated SERVICE introspection caller among fixture audiences; do not disable checks."
+    }
+  ],
+  "sourceSemanticsProfileRetained": "keycloak-26.0.8-retained-mapper-effects.v1",
+  "crossVersionProtectedStringAndSubjectCasesQualified": true,
+  "targetDeclaredVersion": "26.7.4",
+  "targetImageId": "sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+  "qualifiedImageId": "sha256:b2f3e1b85071d17a1da8d2cbcc54707853d19c74ae027071789ea1bb12b3ec89",
+  "qualifiedImageArchitecture": "amd64",
+  "exactTargetImageMatch": false,
+  "targetProposalHash": "db882da50e7b1da53ade4b8b1a3bb22421b0b421670c1e9977d804680c3b741a",
+  "targetSnapshotHash": "7e0f46ad0f66ee40b2ce0f662fdb70007744f81f933865264fdf279227681927",
+  "targetCallerAudienceAndDistributionPlanExecuted": false,
+  "targetCurrentBearerFailureProven": false,
+  "conditionalIamAdditionNotAuthorized": true,
+  "roleResolvedCallerAudienceUnproven": true,
+  "targetProviderImplementationProven": false,
+  "targetCredentialFilesRead": 0,
+  "targetGrantRequests": 0,
+  "targetIamMutations": 0,
+  "targetServiceMutations": 0,
+  "runtimeAuthorityIssued": false,
+  "productionApplyReady": false,
+  "budgetReset": false,
+  "r12Touched": false,
+  "notReleaseAcceptance": true,
+  "operatorDocument": "releases/POLICY_TOKEN_2674_INTROSPECTION_AUDIENCE_REVIEW_20261013.md",
+  "remainingGates": [
+    "exact target image distribution/implementation",
+    "current target introspection caller audience",
+    "IAM owner credential reestablishment",
+    "actual target bearer admission",
+    "historical accounting reconciliation",
+    "complete governed installation/current HUMAN+dual role signatures/six mounts",
+    "THS and CSV13 ACK/lineage/dedup/merge/search"
+  ]
+}

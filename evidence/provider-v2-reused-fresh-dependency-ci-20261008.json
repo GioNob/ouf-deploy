@@ -1,0 +1,74 @@
+{
+  "schema": "ouf.semantic-fresh-dependency-evidence-ci.v1",
+  "producer": {
+    "runId": 37613612404,
+    "jobId": 112766567743,
+    "sourceCodeCommit": "84e91e199892bfda1d116a49f53a9990f61724c7",
+    "sourceMergeCommit": "00ba8b2ca6caf01902943b6d8d3dba60c00df6a9",
+    "status": "PASS",
+    "artifactId": 11478662099,
+    "artifactBytes": 1158875,
+    "artifactSha256": "a23ee77e6f2e21fc9a7ca1beb144d11f22228cc801693cac5fad47ee30e863ea",
+    "fiveSignaturesVerified": true
+  },
+  "independentReadback": {
+    "runId": 37614224542,
+    "jobId": 112768571933,
+    "sourceCodeCommit": "4c34215c3d93add59dae916dcd87f2ce4ea1c991",
+    "status": "PASS",
+    "testsPassed": 38,
+    "actualDownloadedArtifactVerified": true,
+    "databaseFreshnessVerified": true,
+    "fiveSignaturesVerified": true,
+    "artifactId": 11479327379,
+    "artifactBytes": 45054,
+    "artifactSha256": "23db48299cef6f045cb350c5653caa6c6d54bb6f6464f980e94214dc50c1968b",
+    "downloadedReceiptInspected": true
+  },
+  "databasePin": {
+    "status": "active",
+    "schemaVersion": "v6.1.10",
+    "built": "2026-10-07T06:31:48Z",
+    "path": "vulnerability-db_v6.1.10_2026-10-07T00:34:45Z_1791354708.tar.zst",
+    "checksum": "sha256:008449eb30e10988569b3bd54eb46158f33187211ba723f41ed9326ccfa1e174"
+  },
+  "freshnessEnds": "2026-10-09T06:31:48Z",
+  "sourceArtifactSha256": "2cdd7a73c1fc2a710f1e6604eb6cab2988492e4c45b5252defffa9832b91d9d0",
+  "severityCounts": {
+    "adapter": {
+      "Critical": 0,
+      "High": 0,
+      "Medium": 5,
+      "Low": 0,
+      "Negligible": 0,
+      "Unknown": 0
+    },
+    "southbound": {
+      "Critical": 0,
+      "High": 0,
+      "Medium": 142,
+      "Low": 18,
+      "Negligible": 4,
+      "Unknown": 0
+    }
+  },
+  "imagesModified": false,
+  "targetVerificationPending": true,
+  "targetAttestationCryptoVerified": false,
+  "imageImportPerformed": false,
+  "containerOperations": 0,
+  "publisherTrustAccepted": false,
+  "dependencyCoverageAccepted": false,
+  "acceptanceGranted": false,
+  "runtimeRegistered": false,
+  "startAuthorized": false,
+  "discoveryRequestCreated": false,
+  "vpsWrapper": {
+    "path": "scripts/verify-fresh-national-evidence-vps.sh",
+    "sha256": "4edf6f793c6fed7ef2231923ac391c673e88e513de955ab60838ea19d633a888",
+    "verifierSourceCommit": "4c34215c3d93add59dae916dcd87f2ce4ea1c991",
+    "requiresExistingGithubCliAuthentication": true,
+    "shellSyntaxVerified": true,
+    "runtimeOperations": false
+  }
+}

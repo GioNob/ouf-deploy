@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.semantic-post-terminal-admission-human-approval.v1",
+  "humanMessage": "Autorizzo",
+  "humanMessageLocalTime": "2026-10-09T16:51:18+02:00",
+  "approvedAt": 1791557478,
+  "approvalRef": "OUF_PROVIDER_V2_POST_TERMINAL_ADMISSION_APPROVED_20261009T165118_CEST_R6",
+  "reviewRef": "OUF_PROVIDER_V2_POST_TERMINAL_ADMISSION_REVIEW_20261009_R6",
+  "reviewCommit": "a3946f212bfb97b0f7434022bcb42f5d5e61f43c",
+  "executorCommit": "a6d7c31e11d9f65bfa4b79082f234e1496048bf9",
+  "executorSha256": "c803914d9e1dccf374efb67e681de43d1eceb65bcb83b04f5dfa8db4d2aaf7e5",
+  "launcherSha256": "91af322fb47712648d29e1ef0a8e7befde8f13dd40858ace87167a366930f28d",
+  "singleUse": true,
+  "targetExecutionObserved": false,
+  "notReleaseAcceptance": true,
+  "approvedScope": "One fresh R6 context/claim, two new 240-second mandates, eight role signatures, new publication, guarded wrapper CAS and one concurrent two-candidate controlled cohort through unchanged admitted R5 runtime.",
+  "preInvocationCorrection": {
+    "oldOutput": "/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-155oj3tc",
+    "reason": "Correct stale R4 output constant to exact retained R5 generation already specified in approved review.",
+    "regression": "test_retained_context_and_output_bind_exact_r5_generation",
+    "sourceClosureUnchanged": true
+  }
+}

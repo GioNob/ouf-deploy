@@ -1,0 +1,17 @@
+{
+  "schema": "ouf.endpoint-executor-qualification.v1",
+  "sourceCommit": "1c77496029c3f495fb113a109fe73a2870654b03",
+  "workflowRunId": 38210242728,
+  "jobId": 114682564140,
+  "conclusion": "success",
+  "compositionTests": 3,
+  "nativeEndpointTests": 3,
+  "actualStaticAndDynamicLegacyEndpoints": true,
+  "actualControllerDeath": true,
+  "foreignIpAllocationDenied": true,
+  "independentPeerPreserved": true,
+  "authorityAndLeaseAndDatabaseSynthetic": true,
+  "targetApplied": false,
+  "targetInstallerQualified": false,
+  "notReleaseAcceptance": true
+}

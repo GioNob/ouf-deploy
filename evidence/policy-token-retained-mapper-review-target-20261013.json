@@ -1,0 +1,49 @@
+{
+  "budgetReset": false,
+  "credentialFilesRead": 0,
+  "effectiveMapperCount": 29,
+  "iamMutations": 0,
+  "mountedTokenFilesRead": 0,
+  "notReleaseAcceptance": true,
+  "phase": "REVIEW_CATEGORIES_OBSERVED",
+  "privateEvidenceWrites": 0,
+  "productionApplyReady": false,
+  "providerCalls": 0,
+  "providerTypeCounts": {
+    "OTHER_TYPE_SHA256:84f687b2fa1b64b283570c0fa2d5726c9c2e340b7810ad680db6fe82c77661f1": 1,
+    "oidc-acr-mapper": 1,
+    "oidc-allowed-origins-mapper": 1,
+    "oidc-audience-mapper": 1,
+    "oidc-audience-resolve-mapper": 1,
+    "oidc-full-name-mapper": 1,
+    "oidc-hardcoded-claim-mapper": 2,
+    "oidc-usermodel-attribute-mapper": 14,
+    "oidc-usermodel-client-role-mapper": 1,
+    "oidc-usermodel-property-mapper": 1,
+    "oidc-usermodel-realm-role-mapper": 1,
+    "oidc-usersessionmodel-note-mapper": 4
+  },
+  "r12Touched": false,
+  "reservedMapperCategories": [
+    {
+      "accessToken": "TRUE",
+      "clientIdSessionNote": false,
+      "hardcodedValuePresent": false,
+      "idToken": "TRUE",
+      "introspection": "TRUE",
+      "nestedClaim": false,
+      "providerCategory": "oidc-usersessionmodel-note-mapper",
+      "reservedClaim": "client_id"
+    }
+  ],
+  "reviewReasons": [
+    "RESERVED_CLAIM_MAPPER_REQUIRES_REVIEW",
+    "UNSUPPORTED_EFFECTIVE_MAPPER"
+  ],
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.policy-token-retained-mapper-review.v1",
+  "serviceMutations": 0,
+  "snapshotHash": "7e0f46ad0f66ee40b2ce0f662fdb70007744f81f933865264fdf279227681927",
+  "status": "OBSERVED_NOT_ACCEPTED",
+  "tokenGrantRequests": 0
+}

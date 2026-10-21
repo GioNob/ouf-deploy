@@ -1,0 +1,13 @@
+{
+  "schema": "ouf.rootfs-difference-diagnosis-ci.v1",
+  "sourceCommit": "892480e3313e1de6eaab479e569e847951985732",
+  "runId": 37794014938,
+  "jobId": 113368600283,
+  "conclusion": "success",
+  "targetCauseProven": false,
+  "targetFailure": "TARGET_ROOTFS_DIFFERS_FROM_INDEPENDENT_EXPECTATION",
+  "retainedTargetSnapshot": "/etc/ouf/deploy-snapshots/semantic-provider-v2-rootfs-compare-efz3k9xw",
+  "diagnosticScope": "REUSE_EXISTING_INPUTS_NO_ACCEPTANCE_REPAIR_OR_START",
+  "tests": "One targeted native fixture validates matching seals, altered-content rejection, entry-level diagnostic field counts, no private bind content, unchanged stopped state and released mounts. No repeated offline reconstruction.",
+  "diagnosticEntryCommit": "7e96dd7c0df655c3776ac417dbcec7694cf203d8"
+}

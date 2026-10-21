@@ -1,0 +1,48 @@
+name: Provider v2 admission producers source package
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'releases/provider-v2-producer-sources.sha256'
+      - '.github/workflows/provider-v2-producer-package.yml'
+permissions:
+  contents: read
+jobs:
+  source-custody:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: ace683b1019f79adaace86796b67e463b93ec12e
+          path: gateway
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-semantic-registry
+          ref: 3505a2f6bfde9c3905b76a5e670ebc30b40d3d6d
+          path: semantic
+          persist-credentials: false
+      - name: Verify exact closed source manifest and original observer
+        run: |
+          (cd gateway && sha256sum -c ../releases/provider-v2-producer-sources.sha256)
+          printf '%s  %s\n' d15d290e903e16f64b9d153658453f2b857c5241eb30ded961fd981a3ba436e4 semantic/tools/semantic_creation_frame_observer.py | sha256sum -c -
+          sudo install -d -m 700 /root/ouf-v2-producer-fixture /root/ouf-v2-producer-fixture/source /root/ouf-v2-producer-fixture/source/scripts /root/ouf-v2-producer-fixture/source/tools
+          sudo install -m 600 releases/provider-v2-producer-sources.sha256 /root/ouf-v2-producer-fixture/sources.sha256
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          for row in Path('releases/provider-v2-producer-sources.sha256').read_text().splitlines():
+              _,name=row.split('  ',1)
+              raw=Path('gateway',name).read_bytes();compile(raw,name,'exec')
+              subprocess.run(['sudo','install','-m','600','gateway/'+name,'/root/ouf-v2-producer-fixture/source/'+name],check=True)
+          compile(Path('semantic/tools/semantic_creation_frame_observer.py').read_bytes(),'observer','exec')
+          PY
+      - name: Execute actual reviewed stager apply and readback, no source-body execution
+        run: |
+          sudo /usr/bin/python3 -I -B /root/ouf-v2-producer-fixture/source/scripts/stage_semantic_local_producers_package.py --mode apply --package-root /root/ouf-v2-producer-fixture --source-commit ace683b1019f79adaace86796b67e463b93ec12e --source-manifest-sha256 c1c15a0d92ec7dc953f9f100b19f8426341b0c4ba9f2374d99c8473330eb9ffe
+          sudo /usr/bin/python3 -I -B /root/ouf-v2-producer-fixture/source/scripts/stage_semantic_local_producers_package.py --mode verify --package-root /root/ouf-v2-producer-fixture --source-commit ace683b1019f79adaace86796b67e463b93ec12e --source-manifest-sha256 c1c15a0d92ec7dc953f9f100b19f8426341b0c4ba9f2374d99c8473330eb9ffe

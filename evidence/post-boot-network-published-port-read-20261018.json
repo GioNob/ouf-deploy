@@ -1,0 +1,424 @@
+{
+  "run": 39149020844,
+  "snapshot": {
+    "automaticRetry": false,
+    "complete": true,
+    "completedTechnicalPhases": 8,
+    "containers": [
+      {
+        "containerId": "c2c2893f1b2f03a7a5216a3b21601c5c639ab5f4f7b193d5a960271ba19b0696",
+        "declaredHostBindings": [],
+        "dependencies": {
+          "environmentSha256": "0afaeb702fb039fce151b31bb7c2504c76612f43d2c89533f03cb30c1af73acd",
+          "environmentValuesPrinted": false,
+          "literalAddressCounts": {
+            "172.18.0.5": 0,
+            "172.18.0.6": 0
+          },
+          "references": []
+        },
+        "endpointMetadataSha256": "c98e5cd90b4a3213741156106a858daff390bcb4024d26ff155187ab49c19234",
+        "endpointSettings": [
+          {
+            "Aliases": [
+              "ouf-mcp",
+              "ouf-mcp-server",
+              "c2c2893f1b2f"
+            ],
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "IPAMConfig": {
+              "IPv4Address": "172.18.0.11"
+            },
+            "IPAddress": "172.18.0.11",
+            "MacAddress": "d2:3a:df:93:d9:d8",
+            "NetworkID": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3"
+          }
+        ],
+        "imageId": "sha256:141ee11efe39c1790f85e843bb012928fd17d75c8156ac87277c660c140c6dfb",
+        "name": "/ouf-mcp",
+        "networkMode": "ouf-backend",
+        "publishedPorts": []
+      },
+      {
+        "containerId": "8dc539b0756beb40cee0d45b2b223a18eee1a53d8cdb4389d7d914dbda66aad9",
+        "declaredHostBindings": [],
+        "dependencies": {
+          "environmentSha256": "5806f589cd857420f371004e91d9c18615a3505f74831f4b7fe09572368276bb",
+          "environmentValuesPrinted": false,
+          "literalAddressCounts": {
+            "172.18.0.5": 0,
+            "172.18.0.6": 0
+          },
+          "references": [
+            {
+              "environmentKey": "OUF_ONBOARDING_OBJECT_STORE_GATEWAY_BASE_URL",
+              "host": "ouf-apisix",
+              "port": 9080,
+              "scheme": "http",
+              "userinfoSuppressed": true
+            },
+            {
+              "environmentKey": "OUF_ONBOARDING_STAGING_ENDPOINT",
+              "host": "ouf-minio",
+              "port": 9000,
+              "scheme": "http",
+              "userinfoSuppressed": true
+            },
+            {
+              "environmentKey": "SPRING_APPLICATION_JSON",
+              "host": "ouf-apisix",
+              "port": 9080,
+              "scheme": "http",
+              "userinfoSuppressed": true
+            }
+          ]
+        },
+        "endpointMetadataSha256": "e0ac50635d92697dbc7b858746dc4006b68fd146fa232128a527be0dca4e4734",
+        "endpointSettings": [
+          {
+            "Aliases": [
+              "ouf-onboarding",
+              "8dc539b0756b"
+            ],
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "IPAMConfig": {
+              "IPv4Address": "172.18.0.7"
+            },
+            "IPAddress": "172.18.0.7",
+            "MacAddress": "92:3a:21:03:1e:73",
+            "NetworkID": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3"
+          }
+        ],
+        "imageId": "sha256:b5f09f8b0273e4c2c6d99003b7d10e2f79e733811f5de18185843c7ed8e9b80d",
+        "name": "/ouf-onboarding",
+        "networkMode": "ouf-backend",
+        "publishedPorts": []
+      },
+      {
+        "containerId": "477ea664c97ebae2bf50a9fdb4d2ae92c20275cf28e5941f09c1133354908338",
+        "declaredHostBindings": [],
+        "dependencies": {
+          "environmentSha256": "4745d648b35c67c6adb5cc69ce3b27d1e5f6e867d0d41af0221ca88707720cfb",
+          "environmentValuesPrinted": false,
+          "literalAddressCounts": {
+            "172.18.0.5": 0,
+            "172.18.0.6": 0
+          },
+          "references": []
+        },
+        "endpointMetadataSha256": "f2a2da4af6c75649e26f3c76f613f8356ad17963b4419b12e6fe61eb1ae9dc18",
+        "endpointSettings": [
+          {
+            "Aliases": [
+              "ouf-ingestion",
+              "477ea664c97e"
+            ],
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "IPAMConfig": {
+              "IPv4Address": "172.18.0.10"
+            },
+            "IPAddress": "172.18.0.10",
+            "MacAddress": "36:df:32:f8:93:bd",
+            "NetworkID": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3"
+          }
+        ],
+        "imageId": "sha256:63ed7299f85f57be676bd9633c08cc1dd87144fb84d3b13122e32f23f1e9370a",
+        "name": "/ouf-ingestion",
+        "networkMode": "ouf-backend",
+        "publishedPorts": []
+      },
+      {
+        "containerId": "733c5bdeca250fba778d431e121120e6653296d84c747552d8f95290ad01e8d9",
+        "declaredHostBindings": [],
+        "dependencies": {
+          "environmentSha256": "613bd96e0f6d4c341644363b322ea055ef0ffa20399f29438cbe677ea0fef8bb",
+          "environmentValuesPrinted": false,
+          "literalAddressCounts": {
+            "172.18.0.5": 0,
+            "172.18.0.6": 0
+          },
+          "references": []
+        },
+        "endpointMetadataSha256": "d341b59ac627462ac478076c4136e1d5f32971405bd090bd3bc60ce31452731d",
+        "endpointSettings": [
+          {
+            "Aliases": [
+              "dcfc7a47b09a",
+              "ouf-apisix",
+              "733c5bdeca25"
+            ],
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "IPAMConfig": null,
+            "IPAddress": "172.18.0.5",
+            "MacAddress": "9e:66:1e:fc:17:23",
+            "NetworkID": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3"
+          },
+          {
+            "Aliases": [
+              "dcfc7a47b09a",
+              "ouf-apisix",
+              "733c5bdeca25"
+            ],
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "IPAMConfig": null,
+            "IPAddress": "172.20.0.3",
+            "MacAddress": "6e:97:b4:a8:02:a2",
+            "NetworkID": "1209d67944755d95601b96719c0a5b1860ac2a6f137c10077da7b4e9967637aa"
+          }
+        ],
+        "imageId": "sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d",
+        "name": "/ouf-apisix",
+        "networkMode": "ouf-gateway-control",
+        "publishedPorts": []
+      },
+      {
+        "containerId": "8daa3d7a4afcffeb39bf8c63c0891abf1679d8ce43880d3f29ff41b3f2f7e6e9",
+        "declaredHostBindings": [],
+        "dependencies": {
+          "environmentSha256": "04e11c5c682dee9d002d16e130f7d438649918afff73ff30ef1306751b6bdef8",
+          "environmentValuesPrinted": false,
+          "literalAddressCounts": {
+            "172.18.0.5": 0,
+            "172.18.0.6": 0
+          },
+          "references": []
+        },
+        "endpointMetadataSha256": "2f97cf9e0f1074f7c25934f67fd087f560f768925c64381f003be4c637bbcd94",
+        "endpointSettings": [
+          {
+            "Aliases": [
+              "ouf-gateway-control-plane",
+              "8daa3d7a4afc"
+            ],
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "IPAMConfig": null,
+            "IPAddress": "172.18.0.8",
+            "MacAddress": "ee:90:50:da:e0:fd",
+            "NetworkID": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3"
+          }
+        ],
+        "imageId": "sha256:979de5eb0a554e0adfe924969627eb62362c4165974357afcee5bf30450f8f21",
+        "name": "/ouf-gateway-operational-owner",
+        "networkMode": "ouf-backend",
+        "publishedPorts": []
+      },
+      {
+        "containerId": "a75bd1cbb287518509fc24cd1ec4cf712ae93211ef125fa2ba2bb31ad5353ad3",
+        "declaredHostBindings": [
+          {
+            "containerPort": 443,
+            "hostIp": "",
+            "hostPort": 443,
+            "protocol": "tcp"
+          },
+          {
+            "containerPort": 80,
+            "hostIp": "",
+            "hostPort": 80,
+            "protocol": "tcp"
+          }
+        ],
+        "dependencies": {
+          "environmentSha256": "90a36e1e563aa921b9257b57a4d32877a44af1a6ee38026d543a7d189c7d36d2",
+          "environmentValuesPrinted": false,
+          "literalAddressCounts": {
+            "172.18.0.5": 0,
+            "172.18.0.6": 0
+          },
+          "references": []
+        },
+        "endpointMetadataSha256": "aca50ce9b22995d886c0a637124c1626d479725325bbd1207815908728e2c003",
+        "endpointSettings": [
+          {
+            "Aliases": [
+              "auth.ouf-lab.it",
+              "api.ouf-lab.it",
+              "a75bd1cbb287"
+            ],
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "IPAMConfig": null,
+            "IPAddress": "172.18.0.4",
+            "MacAddress": "2a:b9:32:30:a1:8f",
+            "NetworkID": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3"
+          },
+          {
+            "Aliases": [
+              "a75bd1cbb287"
+            ],
+            "DriverOpts": {},
+            "GwPriority": 0,
+            "IPAMConfig": {},
+            "IPAddress": "172.19.0.2",
+            "MacAddress": "1e:8c:05:46:a6:a0",
+            "NetworkID": "d60139f6aee7765402e68f2e9940f73ce5d57269485aba0af3c9d6a243dbd63a"
+          }
+        ],
+        "imageId": "sha256:13ba145cba2f3e28fa801994876e4c086d1b95d5aa2a520a734765ffb6b12017",
+        "name": "/ouf-caddy",
+        "networkMode": "ouf-backend",
+        "publishedPorts": [
+          {
+            "containerPort": 443,
+            "hostIp": "0.0.0.0",
+            "hostPort": 443,
+            "protocol": "tcp"
+          },
+          {
+            "containerPort": 443,
+            "hostIp": "::",
+            "hostPort": 443,
+            "protocol": "tcp"
+          },
+          {
+            "containerPort": 80,
+            "hostIp": "0.0.0.0",
+            "hostPort": 80,
+            "protocol": "tcp"
+          },
+          {
+            "containerPort": 80,
+            "hostIp": "::",
+            "hostPort": 80,
+            "protocol": "tcp"
+          }
+        ]
+      },
+      {
+        "containerId": "e1ae2262714c841c7fec72d911221191bf69a892434a7c59da1aed8b53afa88f",
+        "declaredHostBindings": [],
+        "dependencies": {
+          "environmentSha256": "7650e4eb483876adc1d17a8b8d0b268e7186aafae1989ba04f77c49ef7a67fbe",
+          "environmentValuesPrinted": false,
+          "literalAddressCounts": {
+            "172.18.0.5": 0,
+            "172.18.0.6": 0
+          },
+          "references": []
+        },
+        "endpointMetadataSha256": "a374e1133caad160cf2a367381098d291ad8e7df48629c6aa50f07d477bfc78c",
+        "endpointSettings": [
+          {
+            "Aliases": [
+              "e1ae2262714c"
+            ],
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "IPAMConfig": null,
+            "IPAddress": "172.20.0.2",
+            "MacAddress": "c2:13:e1:59:7a:4a",
+            "NetworkID": "1209d67944755d95601b96719c0a5b1860ac2a6f137c10077da7b4e9967637aa"
+          }
+        ],
+        "imageId": "sha256:a3ccd299377af4b9968d8cbaaf9722fe354297f11908f74a846075e1e5f4ee89",
+        "name": "/ouf-etcd",
+        "networkMode": "ouf-gateway-control",
+        "publishedPorts": []
+      },
+      {
+        "containerId": "5c3967a7a0cf1a054ba1fec702ddc0b97cf96d1e45bd45d45d27b393f6a1f273",
+        "declaredHostBindings": [],
+        "dependencies": {
+          "environmentSha256": "a08f412ea74cb3a0f182ba6cfb43bf7e2ac5115b9b6ca4b38e11f09c02481526",
+          "environmentValuesPrinted": false,
+          "literalAddressCounts": {
+            "172.18.0.5": 0,
+            "172.18.0.6": 0
+          },
+          "references": []
+        },
+        "endpointMetadataSha256": "ad402aec751491b21025e813df8f604263041df6da03dbbc690d94d1c41002fa",
+        "endpointSettings": [
+          {
+            "Aliases": [
+              "5c3967a7a0cf"
+            ],
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "IPAMConfig": null,
+            "IPAddress": "172.18.0.2",
+            "MacAddress": "e2:c9:7b:ee:ed:54",
+            "NetworkID": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3"
+          }
+        ],
+        "imageId": "sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+        "name": "/ouf-keycloak",
+        "networkMode": "ouf-backend",
+        "publishedPorts": []
+      },
+      {
+        "containerId": "5856be83ef3baa11fbed0f7a1639b54ac88f009738f8938c8707541b3677da34",
+        "declaredHostBindings": [],
+        "dependencies": {
+          "environmentSha256": "4530e1c5fdd2d626dadc1c5a373bc50d510a8e2975752d187f4d89991913a5a8",
+          "environmentValuesPrinted": false,
+          "literalAddressCounts": {
+            "172.18.0.5": 0,
+            "172.18.0.6": 0
+          },
+          "references": []
+        },
+        "endpointMetadataSha256": "bd3d170c966236270c8afd1e6c9b04c07d9acc02d8ba46c549fa097e08671345",
+        "endpointSettings": [
+          {
+            "Aliases": [
+              "5856be83ef3b"
+            ],
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "IPAMConfig": null,
+            "IPAddress": "172.18.0.6",
+            "MacAddress": "22:44:4f:44:46:3e",
+            "NetworkID": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3"
+          }
+        ],
+        "imageId": "sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
+        "name": "/ouf-minio",
+        "networkMode": "ouf-backend",
+        "publishedPorts": []
+      },
+      {
+        "containerId": "50b36d71620ad00fee1bae45aaf0bf652b9171dc09f567fa552798daf12614ea",
+        "declaredHostBindings": [],
+        "dependencies": {
+          "environmentSha256": "abfffe1661d25c55e26a93dfe324408fbd4dbc8114f2ea1869a631b8bbb717d7",
+          "environmentValuesPrinted": false,
+          "literalAddressCounts": {
+            "172.18.0.5": 0,
+            "172.18.0.6": 0
+          },
+          "references": []
+        },
+        "endpointMetadataSha256": "d356cdf969e1f3892ab2950921f0352aba3b3ef41ccdc6c204086b7f453c344a",
+        "endpointSettings": [
+          {
+            "Aliases": [
+              "50b36d71620a"
+            ],
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "IPAMConfig": null,
+            "IPAddress": "172.18.0.3",
+            "MacAddress": "ae:46:74:41:14:aa",
+            "NetworkID": "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3"
+          }
+        ],
+        "imageId": "sha256:894f570c0cf0664ed5576a8fd5d5bfb8fb1b19d592885b686c3a88c8bd90c41f",
+        "name": "/ouf-postgres",
+        "networkMode": "ouf-backend",
+        "publishedPorts": []
+      }
+    ],
+    "credentialFilesRead": 0,
+    "credentialValuesPrinted": false,
+    "functionalMilestonesProven": 4,
+    "runtimeMutations": 0,
+    "schema": "ouf.retained-network-dependency-read.v1"
+  }
+}

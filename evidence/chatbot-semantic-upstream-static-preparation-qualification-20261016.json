@@ -1,0 +1,19 @@
+{
+  "schema": "ouf.chatbot-semantic-upstream-static-preparation-qualification.v1",
+  "sourceCommit": "3e593502fa39d061b5f71b641cc2f850e670bdfa",
+  "qualificationRunId": 38888763925,
+  "qualificationJobId": 116932872170,
+  "testsPassed": 67,
+  "testsSkipped": 0,
+  "targetExecutionProven": false,
+  "proposedBindingProfile": "ouf.reviewed-retained-static-registry-address.v1",
+  "addressDerivedFromSignedCreationRequestAndCurrentNetwork": true,
+  "privateReviewPreparationOnly": true,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "multiHostQualification": false,
+  "readerSha256": "81b82edb8ffd6e8d737d0ab75c71226564f95c2a3ec378d2a3283939175127f1",
+  "launcherSha256": "69eda1e8a64d3a23bd22c2df08b93ca41384479ab8ef9fa3fb2bffa3a42013d5"
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "ouf.installation-route-post-client-read.v1",
+  "account": "ouf-admin",
+  "sourceId": "teatri-csv-6609b245",
+  "onboardingVersionId": "c9fec43c-19b3-4ffb-9111-781bc347c5b0",
+  "reads": [
+    {
+      "capability": "ouf.ingestion.status",
+      "httpStatus": 401,
+      "toolErrorCode": "INVALID_ARGUMENT",
+      "automaticRetry": false
+    },
+    {
+      "capability": "ouf.ingestion.history",
+      "httpStatus": 401,
+      "toolErrorCode": "INVALID_ARGUMENT",
+      "automaticRetry": false
+    },
+    {
+      "capability": "source.onboarding.read",
+      "state": "APPROVED",
+      "lockVersion": 3,
+      "configurationHash": "sha256:b13c5fe234168bdb8b315087917bccfe428ceaa8e136ed1c0f56f5bf43deed3d",
+      "challengeStatus": "CONFIRMED",
+      "challengeExpired": true,
+      "ingestionCompatibilityObserved": false,
+      "activationPhase": "NOT_STARTED",
+      "activationAttempts": 0,
+      "activationGeneration": 0
+    },
+    {
+      "capability": "ouf.system.status",
+      "status": "HEALTHY",
+      "actionRequired": false,
+      "partial": false
+    }
+  ],
+  "routePublicationResultPreserved": true,
+  "newNativeBudgetConsentNotImplied": true,
+  "specific401CauseProven": false,
+  "nextRead": "Read only completed226 result/source/journal files and six whitelisted container inspections; compare retained Gateway header handling to selected owner IAM environment. No credentials, logs, OAuth or backend probes.",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4
+}

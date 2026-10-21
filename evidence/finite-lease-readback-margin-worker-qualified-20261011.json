@@ -1,0 +1,49 @@
+{
+  "schema": "ouf.provider-finite-lease-readback-margin-worker-qualification.v1",
+  "sourceCommit": "113dcfeedb2a885ac0ef82814ebbdcb9b0ba4d00",
+  "runId": 38101472898,
+  "jobId": 114358105225,
+  "conclusion": "success",
+  "candidateCompilerSha256": "814b5321a5fe5772562f50aa17c34c99c2be741b6e2a9d26110a6b8991bdbf1d",
+  "unitTestsPassed": 4,
+  "nativeScenarios": [
+    {
+      "name": "ONE_SECOND_PLAN_INTEGER_ZERO",
+      "reproduced": true,
+      "candidateDeniedWithoutTtlExtension": true,
+      "twoSecondPlanPositive": true,
+      "revocationProven": true
+    },
+    {
+      "name": "FULL_WORKER_TRANSIENT_AND_PERSISTENT_DNS_ZERO",
+      "freshPositiveCycles": 2,
+      "systemdReal": true,
+      "dnsReal": true,
+      "nftReal": true,
+      "oldAddressesDiscarded": true,
+      "persistentDenialRevoked": true,
+      "replayDenied": true,
+      "historicalSourcesPreserved": true
+    },
+    {
+      "name": "FULL_WORKER_POSITIVE_DNS_TTL4_INSUFFICIENT_MARGIN",
+      "freshPositiveCycles": 2,
+      "positiveDnsWindowDeniedBeforeUnsafeAdmission": true,
+      "revocationProven": true,
+      "replayDenied": true,
+      "historicalSourcesPreserved": true
+    }
+  ],
+  "fixtureFailureAndResolution": {
+    "runId": 38101274234,
+    "reason": "CI_SNAPSHOT_PREFIX_REJECTED_BY_UNCHANGED_WORKER",
+    "fix": "KEEP_REQUIRED_R10_SNAPSHOT_PREFIX_IN_DISPOSABLE_FIXTURE",
+    "productionSourceChanged": false
+  },
+  "targetApplied": false,
+  "metadataAndHumanAuthoritySynthetic": true,
+  "fullTargetWorkerClosureQualified": false,
+  "longDurationAvailabilityProven": false,
+  "applicationHealthProven": false,
+  "notReleaseAcceptance": true
+}
