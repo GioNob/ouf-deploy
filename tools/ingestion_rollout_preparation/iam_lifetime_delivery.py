@@ -39,7 +39,7 @@ except (Exception,KeyboardInterrupt)as error:
  counters={}
  try:
   v=reader['status'](CASE,types.SimpleNamespace(**loaded['api']),types.SimpleNamespace(**loaded['files']),loaded['journal']['Journal'])
-  counters={k:v[k]for k in('attempts','remainingAttempts','oauthRequestsReserved','engineRequestsReserved','adminGetsReserved','clientPutsReserved')}
+  counters={k:v[k]for k in('attempts','remainingAttempts','oauthRequestsReserved','engineRequestsReserved','adminGetsReserved','clientPutsReserved','readbackComparison')}
  except BaseException:pass
  print(canonical({'schema':'ouf.iam-client-lifetime-result.v1','status':'STOP_RECONCILE','reasonCode':reason,'checkpoint':reader.get('CHECKPOINT',{'phase':'VERIFY_DELIVERY','contextPath':None}),'complete':False,'readOnly':False,'runtimeAuthorityIssued':False,'automaticReplayAllowed':False,'budgetReset':False,'automaticRollbackAllowed':False,'credentialValuesPrinted':False,'credentialHashesPrinted':False,'contextsAndClaimsRetained':True,**counters}).decode(),flush=True)
  raise SystemExit(2)

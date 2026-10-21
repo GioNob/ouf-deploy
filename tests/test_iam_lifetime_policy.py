@@ -114,6 +114,14 @@ class LifetimePolicy(unittest.TestCase):
         self.invoke()
         self.assertEqual(self.client['attributes']['another-owner-setting'],'retained')
 
+    def test_set_order_is_semantic_but_actual_mapper_or_flow_change_is_rejected(self):
+        first={**self.client,'defaultClientScopes':['profile','openid'],
+            'protocolMappers':[{'id':'a','config':{'claim.name':'a'}},{'id':'b','config':{'claim.name':'b'}}]}
+        second=copy.deepcopy(first);second['defaultClientScopes'].reverse();second['protocolMappers'].reverse()
+        self.assertTrue(all(m.comparison(first,second,p).values()))
+        second['protocolMappers'][0]['config']['claim.name']='different'
+        self.assertFalse(m.comparison(first,second,p)['protocolMappers'])
+
     def test_invalid_duration_and_unapproved_freshness_have_no_terminal_effect(self):
         bad=copy.deepcopy(self.case);bad['installationDurationProfile']['proposedAccessTokenSeconds']=300
         with patch.object(auth,'terminal')as tty:

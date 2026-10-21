@@ -82,6 +82,28 @@ def selected_state(realm, client, api):
         'revokeRefreshToken':realm.get('revokeRefreshToken'),'refreshTokenMaxReuse':realm.get('refreshTokenMaxReuse')}}
 
 
+def canonical_client(client,api):
+    value=copy.deepcopy(client)
+    # These are sets/maps in Keycloak's ClientModel, exposed as JSON arrays.
+    # Preserve every element and every mapper field; only ordering is ignored.
+    for name in ('redirectUris','webOrigins','defaultClientScopes','optionalClientScopes','protocolMappers'):
+        if name in value:
+            require(type(value[name])is list,'TYPED_CLIENT_SET_REPRESENTATION_REQUIRED')
+            value[name]=sorted(value[name],key=api.encoded)
+    return value
+
+
+def comparison(before,after,api):
+    first,second=canonical_client(before,api),canonical_client(after,api)
+    names=('id','clientId','enabled','publicClient','directAccessGrantsEnabled','standardFlowEnabled',
+        'serviceAccountsEnabled','attributes','protocolMappers','defaultClientScopes','optionalClientScopes',
+        'redirectUris','webOrigins','secret','clientAuthenticatorType','authenticationFlowBindingOverrides',
+        'fullScopeAllowed','access','registeredNodes','authorizationServicesEnabled')
+    same={k:first.get(k)==second.get(k) and (k in first)==(k in second)for k in names}
+    same['allOtherFields']=({k:v for k,v in first.items()if k not in names}=={k:v for k,v in second.items()if k not in names})
+    return same
+
+
 PUT_CHILD = r'''import http.client,ipaddress,json,os,re,signal,sys
 signal.alarm(8)
 try:
@@ -223,14 +245,16 @@ def run(case,api,auth,files,process_adapter,Journal):
         # Persist hashes privately for ambiguous-outcome reconciliation, never
         # full responses/attributes/secrets. No provider CAS/ETag is claimed.
         api.save(journal,state='DISPATCHING_PUT',clientPutsReserved=1,
-            originalClientDigest=api.digest(client),expectedClientDigest=api.digest(proposed),
+            originalClientDigest=api.digest(canonical_client(client,api)),expectedClientDigest=api.digest(canonical_client(proposed,api)),
             expectedRealmDigest=api.digest(realm),previousLifetimeAttribute=receipt['clientTimeoutAttributes']['access.token.lifespan'])
         put(api,program,ns,{'host':endpoint['connectHost'],'port':endpoint['connectPort'],
             'realm':selection['realm'],'clientUuid':receipt['clientUuid'],'token':token,
             'attributes':attrs,'lifespan':seconds})
         check()
         after=get('CLIENT',token,expiry=expiry)
-        require(after==proposed,'CLIENT_READBACK_CHANGED_UNRELATED_FIELDS_RECONCILE_NO_ROLLBACK')
+        unchanged=comparison(proposed,after,api)
+        api.save(journal,readbackComparison=unchanged)
+        require(all(unchanged.values()),'CLIENT_READBACK_CHANGED_UNRELATED_FIELDS_RECONCILE_NO_ROLLBACK')
         final_realm=get('REALM',token,expiry=expiry)
         require(final_realm==realm,'REALM_CHANGED_DURING_SCOPED_CLIENT_UPDATE_RECONCILE')
         require(api.generation(engine.request('GET'),selection['keycloakContainer'])==before,
@@ -277,4 +301,5 @@ def status(case,api,files,Journal):
         'oauthRequestsReserved':row['oauthRequestsReserved'],'engineRequestsReserved':row['engineRequestsReserved'],
         'adminGetsReserved':row['adminGetsReserved'],'clientPutsReserved':row['clientPutsReserved'],
         'requestsThisInvocation':0,'readOnly':True,'automaticReplayAllowed':False,'budgetReset':False,
-        'runtimeAuthorityIssued':False,'automaticRollbackAllowed':False}
+        'runtimeAuthorityIssued':False,'automaticRollbackAllowed':False,
+        'readbackComparison':row.get('readbackComparison')}
