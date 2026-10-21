@@ -64,7 +64,9 @@ def fixture():
     review = {'executionReview': {'stages': stages, 'packetBinding': {'path': '/fixture-packet.json', 'sha256': io.digest(packet)}}}
     case = {'schema': 'ouf.readiness-patch-review-case.v1', 'candidateSourceCommit': 'candidate',
             'baselineSourceCommit': 'baseline', 'candidateImageId': next_image, 'oldIngestionId': current_id,
-            'inputContext': '/fixture-input', 'inputCaseHash': io.digest(snapshot['case'])}
+            'inputContext': '/fixture-input', 'inputCaseHash': io.digest(snapshot['case']),
+            'imageDefaultCompatibilityProfile': c.IMAGE_INSPECT_PROFILE,
+            'predecessorReviewCaseHash': '9' * 64, 'reconciledInputSnapshotHash': io.digest(snapshot)}
     return case, snapshot, review, row, packet, candidate
 
 
@@ -123,6 +125,67 @@ class ReviewTests(unittest.TestCase):
         with self.assertRaises(io.Stop):
             self.build(values)
 
+    def test_empty_image_inspect_fields_preserve_actual_container_stdio(self):
+        values = fixture()
+        for key in c.INSPECT_BOOLEAN_FIELDS:
+            values[-1]['Config'][key] = False
+        for key in c.INSPECT_STRING_FIELDS:
+            values[-1]['Config'][key] = ''
+        values[-1]['Config']['StopTimeout'] = None
+        for key in ('AttachStdout', 'AttachStderr'):
+            values[1]['runtimeBefore']['ingestion']['Config'][key] = True
+            values[-2]['frames']['ingestion']['requestTemplate'][key] = True
+        proposal = self.build(values)
+        request = proposal['frame']['requestTemplate']
+        self.assertIs(request['AttachStdout'], True)
+        self.assertIs(request['AttachStderr'], True)
+        self.assertEqual(proposal['emptyImageInspectFieldsChecked'], sorted(c.INSPECT_FIELDS))
+        self.assertNotIn('OpenStdin', request)  # no candidate-image default merged into container config
+
+    def test_inspect_normalization_rejects_nonempty_wrong_types_and_wrong_profile(self):
+        for key in sorted(c.INSPECT_FIELDS):
+            bad_values = ([True, 0, None, 'false'] if key in c.INSPECT_BOOLEAN_FIELDS
+                          else [1, False, None, 'changed'] if key in c.INSPECT_STRING_FIELDS
+                          else [0, False, ''])
+            for bad in bad_values:
+                for index in (-1, -2):
+                    values = fixture()
+                    config = values[index]['Config'] if index == -1 else values[index]['candidate']['imageConfig']
+                    config[key] = bad
+                    with self.subTest(key=key, bad=bad, side=index), self.assertRaises((c.Stop, io.Stop)):
+                        self.build(values)
+        values = fixture();values[0].pop('imageDefaultCompatibilityProfile')
+        with self.assertRaisesRegex(c.Stop, 'RECONCILED_IMAGE_INSPECT_PROFILE_REQUIRED'):
+            self.build(values)
+
+    def test_observed_inspect_shape_roundtrips_with_explicit_live_container_stdio(self):
+        values = fixture()
+        actual = values[1]['runtimeBefore']['ingestion']
+        old_request = values[-2]['frames']['ingestion']['requestTemplate']
+        for key in c.INSPECT_BOOLEAN_FIELDS - {'NetworkDisabled'}:
+            values[-1]['Config'][key] = False
+            actual['Config'][key] = old_request[key] = key in ('AttachStdout', 'AttachStderr')
+        actual['Config']['Domainname'] = old_request['Domainname'] = ''
+        for key in ('Hostname', 'Domainname', 'Image'):
+            values[-1]['Config'][key] = ''
+        proposal = self.build(values)
+        frame = proposal['frame'];request = frame['requestTemplate']
+        new_id = 'c' * 64
+        new = copy.deepcopy(actual)
+        new.update(Id=new_id, Image=values[-1]['Id'])
+        new['Config'] = {k: copy.deepcopy(v) for k, v in request.items() if k not in ('HostConfig', 'NetworkingConfig')}
+        new['Config']['Hostname'] = new_id[:12]
+        new['HostConfig'] = copy.deepcopy(request['HostConfig'])
+        new['NetworkSettings']['Networks'] = copy.deepcopy(request['NetworkingConfig']['EndpointsConfig'])
+        endpoint = new['NetworkSettings']['Networks']['fixture-net']
+        endpoint.update(IPAddress='10.41.0.5', GlobalIPv6Address='')
+        endpoint['Aliases'] += [new_id, new_id[:12]]
+        new['State'].update(Pid=5678, StartedAt='new-fixture-start')
+        self.assertEqual(replacement.validate(frame, new, values[-1]['Config'], actual['Id'],
+                                             created_id=new_id)['pid'], 5678)
+        for key in c.INSPECT_BOOLEAN_FIELDS - {'NetworkDisabled'}:
+            self.assertIs(new['Config'][key], actual['Config'][key])
+
     def test_only_new_ingestion_operation_no_replay_or_implied_authority(self):
         values = fixture();proposal = self.build(values)
         self.assertEqual(len(proposal['stages']), 12)
@@ -178,6 +241,32 @@ class ReviewTests(unittest.TestCase):
                 self.assertNotIn('never-print-this', json.dumps(result))
                 self.assertIn('private-fixture-value', (Path(result['contextPath']) / 'review.json').read_text())
                 with self.assertRaisesRegex(c.Stop, 'REVIEW_ALREADY_EXISTS_DO_NOT_REPLAY'):
+                    c.run(modules, case)
+
+    def test_predecessor_review_or_changed_reconciled_snapshot_blocks_new_review(self):
+        case, snapshot, *_ = fixture()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp);case['snapshotRoot'] = str(root)
+            predecessor = root / ('ingestion-readiness-patch-review-' + case['predecessorReviewCaseHash'])
+            predecessor.mkdir()
+            (predecessor / 'claim.json').write_text('retained')
+            original = Path.lstat
+            def owned(path):
+                s = original(path)
+                return SimpleNamespace(st_uid=0, st_mode=s.st_mode) if path == root else s
+            with patch.object(Path, 'lstat', owned), \
+                    self.assertRaisesRegex(c.Stop, 'PREDECESSOR_REVIEW_EXISTS_RECONCILE_REQUIRED'):
+                c.run(modules, case)
+            self.assertEqual((predecessor / 'claim.json').read_text(), 'retained')
+        with tempfile.TemporaryDirectory() as tmp:
+            case['snapshotRoot'] = tmp
+            root = Path(tmp)
+            case['reconciledInputSnapshotHash'] = 'changed'
+            complete = {'caseHash': case['inputCaseHash'], 'snapshotHash': io.digest(snapshot),
+                        'complete': True, 'runtimeAuthorityIssued': False}
+            with patch.object(Path, 'lstat', owned), \
+                    patch.object(io, 'read_json', side_effect=[(snapshot, b'snapshot'), (complete, b'complete')]):
+                with self.assertRaisesRegex(c.Stop, 'EXACT_RECONCILED_INPUT_SNAPSHOT_REQUIRED'):
                     c.run(modules, case)
 
 

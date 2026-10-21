@@ -1,3 +1,15 @@
+# CURRENT — retained defaults reconciled; corrected offline review requires distinct case
+
+Target receipt RETAINED_DEFAULTS_OBSERVED_NO_AUTHORITY, /home/oufadmin/ouf-readiness-defaults.Gegmu7tp/operator.log, confirms predecessor review context absent and captured snapshot78a5e65f2a7d8f624b1bd40384bd42314547ac9ebf654a0222bd5348c7b910b9. Baseline image omits all reported fields; candidate has six false booleans and three empty strings. Captured container AttachStdout/AttachStderr remain true. No live runtime check or authority/effect occurred.
+
+Corrected compiler uses explicit docker-inspect-empty-non-image-fields.v1 for the twelve Docker-documented container-only image-inspect fields. Only typed default false/empty-string or absent (StopTimeout null/absent) accepted, unknown/nonempty/type drift still blocked. Actual container Config preserved, with existing reviewed identity/MAC projection only. Native114 graph/helpers unchanged. Thirteen combined tests pass locally; CI qualification pending at this commit.
+
+Next candidate terminal action is only OFFLINE template preparation with NEW releases/ingestion-readiness-patch-review-reconciled-case-20261021.json and corrected qualified source once CI passes. It pins the observed snapshot, rechecks predecessor absence before reading and writing, and uses a distinct case/target hash. NEVER replay the old compiler case, reader, capture or rollout. New review remains PRIVATE_TEMPLATE_NOT_EXECUTABLE_AUTHORITY; native execution path still requires qualification before any runtime consent request. No OAuth/window/grant/activation action. Preserve all old logs/contexts/claims. See docs/handoffs/OUF_READINESS_DEFAULTS_CORRECTED_REVIEW_20261021.md.
+
+Technical8/8,functional4/6,G3OPEN,OAuth292/292; candidate4165b9e/image76c38ddf NOT INSTALLED. Later503 root cause remains unproven. Consulted original Matrix1.7 §1, Ingestion1.3 §40 and Onboarding1.6 P-14 for preserved owners, no migration and distinct HUMAN semantics.
+
+---
+
 # CURRENT — offline review STOP on OpenStdin; reconciliation only
 
 Owner receipt: STOP_RECONCILE / CANDIDATE_IMAGE_DEFAULT_CHANGED_OpenStdin, log /home/oufadmin/ouf-readiness-review.XQ3BXw3E/operator.log. No runtime authority/effects. Preserve compiler/input files and all claims; do not rerun the compiler. Candidate image remains NOT INSTALLED. Old/new values and field presence are not established by this reason alone.

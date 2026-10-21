@@ -16,6 +16,25 @@ SUPPORT = {
     'frozen_replacement': 'fd69d6736da0eec13787d4947e1b02a93574da4c6b296517e82389a5f8455352',
 }
 
+IMAGE_INSPECT_PROFILE = 'docker-inspect-empty-non-image-fields.v1'
+# Docker Engine API history, v1.46/v1.50: these are container-only
+# fields historically serialized in image inspect, never image defaults.
+INSPECT_BOOLEAN_FIELDS = frozenset(('AttachStdin', 'AttachStdout', 'AttachStderr',
+                                    'Tty', 'OpenStdin', 'StdinOnce', 'NetworkDisabled'))
+INSPECT_STRING_FIELDS = frozenset(('Hostname', 'Domainname', 'Image', 'MacAddress'))
+INSPECT_FIELDS = INSPECT_BOOLEAN_FIELDS | INSPECT_STRING_FIELDS | {'StopTimeout'}
+
+
+def empty_image_inspect_field(config, key):
+    if key not in config:
+        return True
+    value = config[key]
+    if key in INSPECT_BOOLEAN_FIELDS:
+        return type(value) is bool and value is False
+    if key in INSPECT_STRING_FIELDS:
+        return type(value) is str and value == ''
+    return key == 'StopTimeout' and value is None
+
 
 class Stop(Exception):
     pass
@@ -71,6 +90,8 @@ def binding(io, path, expected, maximum):
 
 
 def build(io, frames, replacement, case, snapshot, old_review, old_row, packet, candidate):
+    require(case.get('imageDefaultCompatibilityProfile') == IMAGE_INSPECT_PROFILE,
+            'RECONCILED_IMAGE_INSPECT_PROFILE_REQUIRED')
     native = old_review['executionReview']
     require(old_row['nextStage'] == len(native['stages']) == len(old_row['effects']) == 28
             and old_row['budgetReset'] is False
@@ -100,7 +121,11 @@ def build(io, frames, replacement, case, snapshot, old_review, old_row, packet, 
     # or a changed base-image default requires a separately qualified review.
     for key in set(old_defaults) | set(new_defaults):
         require(re.fullmatch('[A-Za-z][A-Za-z0-9]{0,63}', key), 'CLOSED_IMAGE_DEFAULT_FIELD_REQUIRED')
-        if key == 'Labels':
+        if key in INSPECT_FIELDS:
+            require(actual.get('Platform') == 'linux'
+                    and all(empty_image_inspect_field(value, key) for value in (old_defaults, new_defaults)),
+                    'NONEMPTY_OR_UNTYPED_IMAGE_INSPECT_FIELD_' + key)
+        elif key == 'Labels':
             old_labels = {k: v for k, v in (old_defaults.get(key) or {}).items()
                           if k != 'org.opencontainers.image.revision'}
             new_labels = {k: v for k, v in (new_defaults.get(key) or {}).items()
@@ -170,6 +195,8 @@ def build(io, frames, replacement, case, snapshot, old_review, old_row, packet, 
     add('VERIFY_RESTORED_FINAL', 'READ', {'exactNewProcessAndRestoredPolicyRequired': True,
                                        'freshOwnerDatabaseGates': True, 'allOtherRuntimeBindingsUnchanged': True})
     return {'schema': 'ouf.ingestion-readiness-patch-review.v1', 'kind': 'PRIVATE_TEMPLATE_NOT_EXECUTABLE_AUTHORITY',
+            'imageDefaultCompatibilityProfile': IMAGE_INSPECT_PROFILE,
+            'emptyImageInspectFieldsChecked': sorted(INSPECT_FIELDS & (set(old_defaults) | set(new_defaults))),
             'logicalOperationRef': logical, 'inputContext': case['inputContext'],
             'oldContainerId': actual['Id'], 'candidateMetadata': meta, 'frame': frame, 'stages': stages,
             'otherRuntimeBefore': {k: v for k, v in snapshot['runtimeBefore'].items() if k != 'ingestion'},
@@ -193,11 +220,18 @@ def run(support, case):
             'ROOT_REVIEW_PARENT_REQUIRED')
     target = base / ('ingestion-readiness-patch-review-' + io.digest(case))
     require(not os.path.lexists(target), 'REVIEW_ALREADY_EXISTS_DO_NOT_REPLAY')
+    predecessor = case.get('predecessorReviewCaseHash', '')
+    require(re.fullmatch('[a-f0-9]{64}', predecessor)
+            and predecessor != io.digest(case), 'DISTINCT_RECONCILED_REVIEW_CASE_REQUIRED')
+    require(not os.path.lexists(base / ('ingestion-readiness-patch-review-' + predecessor)),
+            'PREDECESSOR_REVIEW_EXISTS_RECONCILE_REQUIRED')
     snapshot, snapshot_raw = io.read_json(root / 'snapshot.json', root_owned=True)
     completed, _ = io.read_json(root / 'complete.json', root_owned=True)
     require(io.digest(snapshot['case']) == case['inputCaseHash'] == completed['caseHash']
             and io.digest(snapshot) == completed['snapshotHash'] and completed['complete'] is True
             and completed['runtimeAuthorityIssued'] is False, 'EXACT_COMPLETED_INPUT_SNAPSHOT_REQUIRED')
+    require(completed['snapshotHash'] == case.get('reconciledInputSnapshotHash'),
+            'EXACT_RECONCILED_INPUT_SNAPSHOT_REQUIRED')
     retained = Path(snapshot['case']['retainedContext'])
     old_review, before_review = io.read_json(retained / 'review.json', snapshot['retainedReviewHash'], root_owned=True)
     old_row, before_row = io.read_json(retained / 'recovery.json', snapshot['retainedJournalHash'], root_owned=True)
@@ -218,6 +252,8 @@ def run(support, case):
             and io.read_json(retained / 'review.json', root_owned=True)[1] == before_review
             and io.read_json(retained / 'recovery.json', root_owned=True)[1] == before_row,
             'RETAINED_INPUT_CHANGED_DURING_COMPILATION')
+    require(not os.path.lexists(base / ('ingestion-readiness-patch-review-' + predecessor)),
+            'PREDECESSOR_REVIEW_EXISTS_RECONCILE_REQUIRED')
     os.mkdir(target, 0o700)
     io.sync_directory(base)
     io.write_private(target / 'claim.json', {'caseHash': io.digest(case), 'state': 'COMPILING_TEMPLATE',
@@ -228,6 +264,7 @@ def run(support, case):
                                                'runtimeAuthorityIssued': False})
     io.sync_directory(target)
     return {'schema': 'ouf.readiness-patch-review-result.v1', 'status': 'REVIEW_TEMPLATE_PREPARED_NO_AUTHORITY',
+            'imageDefaultCompatibilityProfile': IMAGE_INSPECT_PROFILE,
             'complete': True, 'contextPath': str(target), 'reviewHash': io.digest(proposal),
             'logicalOperationRef': proposal['logicalOperationRef'], 'candidateImageId': meta['imageId'],
             'plannedStages': len(proposal['stages']), 'fullPriorIngestionFrameMatched': True,
