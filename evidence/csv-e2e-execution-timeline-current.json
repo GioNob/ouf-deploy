@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-21T04:46:51.002Z",
+  "lastUpdatedAt": "2026-10-21T06:04:29.734Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1218,6 +1218,35 @@
       "cumulativeMeasuredActiveHours": 7.691093971388889,
       "gatePassed": false,
       "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-TARGET-CLIENT-LIFETIME-APPLIED",
+      "observedAt": "2026-10-21T05:51:59.360Z",
+      "targetObservationUnix": 1792561801.132501,
+      "targetOccurredAt": "2026-10-21T05:50:01.132501Z",
+      "timestampConfidence": "TARGET_RECEIPT_OBSERVATION_NOT_START_OR_FINISH",
+      "classification": "OWNER_PASTED_TARGET_MUTATION_AND_FULL_READBACK_RECEIPT",
+      "evidenceRef": "evidence/iam-client-lifetime-target-20261021.json",
+      "attempts": 284,
+      "remainingAttempts": 4,
+      "policyMutations": 1,
+      "clientLifetimeSeconds": 1200,
+      "runtimeAuthorityIssued": false,
+      "newHumanWindowOpened": false,
+      "gatePassed": false
+    },
+    {
+      "id": "CSV-EVENT-SUPPLEMENTARY-HUMAN-QUALIFIED",
+      "observedAt": "2026-10-21T06:04:29.734Z",
+      "occurredAt": "2026-10-21T06:03:23.0034978Z",
+      "classification": "CI_QUALIFIED_RETAINED_LEDGER_CHAIN_AND_EXPLICIT_AUTHENTICATION_CONTROL_NOT_TARGET_AUTHENTICATION",
+      "sourceCommit": "5bb47f6654a71dffa2c98c6d105d9c830d542205",
+      "runId": 39553046609,
+      "testsEachPython": 57,
+      "skips": 0,
+      "targetExecuted": false,
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false
     }
   ],
   "activeIntervals": [
@@ -1667,6 +1696,24 @@
       "classification": "ACTIVE_TECHNICAL",
       "workPackage": "WP3_PREPARATION",
       "activity": "QUALIFICATION_EVIDENCE_PERSISTENCE_OWNER_DECISION_REVIEW_AND_CHRONOLOGY"
+    },
+    {
+      "id": "CSV-TIME-0045",
+      "startedAt": "2026-10-21T05:51:59.360Z",
+      "endedAt": "2026-10-21T06:00:04.274Z",
+      "seconds": 484.914,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "SUPPLEMENTARY_HUMAN_LEDGER_CONTROL_IMPLEMENTATION_AND_TWO_PYTHON_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0046",
+      "startedAt": "2026-10-21T06:00:04.274Z",
+      "endedAt": "2026-10-21T06:04:29.734Z",
+      "seconds": 265.46,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "EXACT_OPERATOR_CLOCKS_FINAL_QUALIFICATION_AND_RETAINED_EVIDENCE_PUBLICATION_PREPARATION"
     }
   ],
   "waitingIntervals": [],
@@ -1749,8 +1796,8 @@
       "observedStatus": "NOT_PASSED",
       "measurementNote": "Initial technical effort not retrospectively inferred from wall time",
       "lastCheckpoint": {
-        "observedAt": "2026-10-21T04:46:51.002Z",
-        "cumulativeMeasuredEffortHours": 7.791150360277777,
+        "observedAt": "2026-10-21T06:04:29.734Z",
+        "cumulativeMeasuredEffortHours": 7.999587582499999,
         "gatePassed": false,
         "targetProductionBootstrapPrepared": true,
         "humanReadyAtReceipt": true,
@@ -1769,9 +1816,10 @@
         "explicitAdminApiTargetComplete": true,
         "currentProviderRevocationPolicyProven": false,
         "clientLifetimeProposalCiPassed": true,
-        "clientLifetimeProposalTargetExecuted": false,
-        "ownerLifetimeFreshnessDecisionPending": true,
-        "humanAuthenticationBoundaryClarificationPending": true
+        "clientLifetimeProposalTargetExecuted": true,
+        "ownerLifetimeFreshnessDecisionPending": false,
+        "humanAuthenticationBoundaryClarificationPending": false,
+        "supplementaryHumanTargetPreflightPending": true
       }
     },
     {
@@ -1878,7 +1926,7 @@
     "refreshPerformed": false,
     "budgetReset": false,
     "wp3Block": {
-      "status": "CURRENT_IAM_POLICY_READ_PROFILE_FRESHNESS_DECISION_AND_HUMAN_AUTH_INTERACTION_BOUNDARY_REQUIRED",
+      "status": "SUPPLEMENTARY_HUMAN_PREFLIGHT_THEN_EXPLICIT_WINDOW_AND_AUTHENTICATION_REQUIRED",
       "retainedWindowIsAuthority": false,
       "independentWorkContinues": [
         "WP5",
@@ -1889,12 +1937,12 @@
       "currentHumanTokenStillExpired": true
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "EXPLICIT_ADMIN_API_READ",
-    "latestOperatorConfirmedOperationPolicyMutations": 0,
+    "latestOperatorConfirmedOperation": "CLIENT_LIFETIME_OVERRIDE_READBACK",
+    "latestOperatorConfirmedOperationPolicyMutations": 1,
     "loginPerformedScope": "LATEST_OPERATOR_ADMIN_API_AUTHENTICATION_NOT_NEW_HUMAN_LOGIN",
     "newHumanLoginPerformed": false,
-    "currentCumulativeOAuthAttempts": 283,
-    "currentRemainingAttempts": 5
+    "currentCumulativeOAuthAttempts": 284,
+    "currentRemainingAttempts": 4
   },
   "unverifiedIntervals": [
     {
@@ -1984,7 +2032,7 @@
     "productionControlQualificationRun": 39473913739,
     "targetProductionBootstrapPrepared": true,
     "targetProductionBootstrapContext": "/etc/ouf/deploy-snapshots/ingestion-rollout-native-7fs9r6md",
-    "targetCumulativeOAuthAttempts": 283,
+    "targetCumulativeOAuthAttempts": 284,
     "targetHumanProviderVerificationCompleted": true,
     "targetHumanStateAtReceipt": "READY",
     "productionTokenDurationCompatible": false,
@@ -2023,16 +2071,20 @@
     "currentProviderTimeoutMetadataRead": true,
     "currentProviderRevocationPolicyProven": false,
     "currentHumanClientRealmLifetimeSeconds": 300,
-    "currentHumanClientLifetimeOverride": null,
+    "currentHumanClientLifetimeOverride": 1200,
     "currentHumanDirectAccessGrantsEnabled": false,
     "currentHumanStandardFlowEnabled": false,
     "currentHumanDeviceGrantEnabled": true,
     "clientLifetimeProposalQualifiedCommit": "1852942f47af54ec015764841ebbcddb09ab3e05",
     "clientLifetimeProposalQualificationRun": 39545126657,
-    "clientLifetimeProposalTargetExecuted": false,
-    "clientLifetimeProposalApproved": false,
+    "clientLifetimeProposalTargetExecuted": true,
+    "clientLifetimeProposalApproved": true,
     "newHumanWindowOpened": false,
-    "newHumanAuthenticationPerformed": false
+    "newHumanAuthenticationPerformed": false,
+    "supplementaryHumanQualifiedCommit": "5bb47f6654a71dffa2c98c6d105d9c830d542205",
+    "supplementaryHumanQualificationRun": 39553046609,
+    "supplementaryHumanTargetPreflightPending": true,
+    "supplementaryHumanTargetAuthenticationPerformed": false
   },
   "developmentCandidates": [
     {
@@ -2064,7 +2116,7 @@
       "CURRENT_HUMAN_THS_AUTHORITY_REQUIRED",
       "QUALIFIED_OUF_ADMIN_VPS_EXECUTOR_CHANNEL_REQUIRED"
     ],
-    "historicalAttempts": 283,
+    "historicalAttempts": 284,
     "maximumCumulativeAttempts": 288,
     "resetAllowed": false,
     "automaticLoginAllowed": false,
@@ -2074,27 +2126,28 @@
       "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
       "G7_ACCEPTANCE"
     ],
-    "currentRequiredHumanAction": "CLARIFY_ADMIN_CONSOLE_VERSUS_HUMAN_AUTHENTICATION_INTERACTION_BOUNDARY_AND_REVIEW_1200_PROFILE",
-    "remainingAttempts": 5,
-    "reasonCode": "CLIENT_LIFETIME_AND_HUMAN_INTERACTION_OWNER_DECISION_REQUIRED",
+    "currentRequiredHumanAction": "RUN_PINNED_READ_ONLY_SUPPLEMENTARY_PREFLIGHT_ZERO_OAUTH",
+    "remainingAttempts": 4,
+    "reasonCode": "SUPPLEMENTARY_HUMAN_TARGET_PREFLIGHT_REQUIRED_BEFORE_WINDOW",
     "newLoginRequested": false,
     "ownerConsoleReadRequested": false,
     "consoleReadInstructionWithdrawn": true,
-    "maximumNewOAuthRequests": 1,
-    "projectedCumulativeAttempts": 283,
-    "projectedRemainingAttempts": 5,
+    "maximumNewOAuthRequests": 0,
+    "projectedCumulativeAttempts": 284,
+    "projectedRemainingAttempts": 4,
     "humanWindowRenewalRequested": false,
-    "requiredPassword": "IAM_ADMIN_PASSWORD_ON_CONTROLLING_TERMINAL_ONLY_NOT_SUDO_OR_CHAT",
+    "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD_FOR_PREFLIGHT",
     "futureHumanMustConsumeSupplementaryLedger": true,
     "lifetimeOverrideProposedSeconds": 1200,
     "normalTokenFreshnessBoundApprovalRequiredSeconds": 1200,
-    "profileApplied": false,
+    "profileApplied": true,
     "projectedCumulativeAttemptsAfterOneAdmin": 284,
     "projectedRemainingAfterOneAdmin": 4,
     "projectedAfterAdminAndFourNominalHumanRequests": 288,
     "projectedAdditionalRetryAllowance": 0,
-    "policyMutationApproved": false,
-    "humanAuthenticationRouteNeedsOwnerClarification": true
+    "policyMutationApproved": true,
+    "humanAuthenticationRouteNeedsOwnerClarification": false,
+    "normalTokenFreshnessBoundApprovedSeconds": 1200
   },
   "unsegmentedFollowupWindows": [
     {
@@ -2205,6 +2258,14 @@
       "countedAsActive": false,
       "humanEffortKnown": false,
       "note": "Contains prior publication/final delivery, operator IAM authentication/read and turn transition; exact active/wait split unknown. No human effort inferred."
+    },
+    {
+      "startedAt": "2026-10-21T04:46:51.002Z",
+      "endedAt": "2026-10-21T05:51:59.360Z",
+      "classification": "DELIVERY_OWNER_CLARIFICATION_TARGET_OPERATION_AND_EARLY_UNSEGMENTED_RESUMPTION",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Includes prior status/commands, mobile-console clarification, operator policy mutation and early current work before first explicit UTC clock; no retrospective active/wait split inferred."
     }
   ],
   "deliveryAccounting": {

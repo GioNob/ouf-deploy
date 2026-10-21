@@ -24,9 +24,9 @@
   },
   "launcherSha256": "bd9596cdb20f0316f4e686b0a2fda45466b33c6169084cc2d469e68061557f13",
   "launcherGitBlob": "ab61fe2ff24f76dcdcfb927f3b262640ab9d39b2",
-  "targetExecuted": false,
+  "targetExecuted": true,
   "runtimeAuthorityIssued": false,
-  "policyMutationApproved": false,
+  "policyMutationApproved": true,
   "sourceCommit": "1852942f47af54ec015764841ebbcddb09ab3e05",
   "qualificationRunId": 39545126657,
   "qualificationJobs": [
@@ -73,7 +73,7 @@
   },
   "allRegressionConclusions": "success",
   "normalTokenFreshnessBoundApprovalRequiredSeconds": 1200,
-  "humanAuthenticationRouteNeedsOwnerClarification": true,
+  "humanAuthenticationRouteNeedsOwnerClarification": false,
   "nominalCumulativeAttemptsAfterAdminAndFourHumanRequests": 288,
   "nominalRemainingAttemptsAfterThat": 0,
   "completedActionsReplayed": false,
@@ -101,5 +101,10 @@
     "correctedCommit": "d88168549988214b8611f7744257e6184e702570",
     "error": "MISSING_IN_MEMORY_BASE_TREE_RESTORED_FROM_VERIFIED_PARENT",
     "initialCommitNotTargetDelivery": true
-  }
+  },
+  "targetComplete": true,
+  "targetResultRef": "evidence/iam-client-lifetime-target-20261021.json",
+  "publishedClientLifetimeSeconds": 1200,
+  "currentCumulativeOAuthAttempts": 284,
+  "currentRemainingAttempts": 4
 }

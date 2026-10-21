@@ -1,3 +1,15 @@
+# CURRENT — 21October2026: client lifetime applied, supplementary HUMAN preflight pending
+
+Technical **8/8**, functional **4/6**, G0–G2PASS, G3open. Owner-confirmed API readback: client-only1200seconds applied; flows/roles/unrelated fields and realm300 unchanged;284/288,four requests remain. No new HUMAN window/runtime authority. Do not replay lifetime or completed actions.
+
+Current handoff: [supplementary HUMAN ready](handoffs/OUF_CLOUD_SUPPLEMENTARY_HUMAN_READY_HANDOFF_20261021.md). This supersedes earlier lifetime-application/owner-decision instructions. Administration uses APIs; mobile difficulty concerns the admin console, not trusted HUMAN authentication.
+
+Next: pinned new **prepare**, zero network/writes/OAuth. Only after target preflight succeeds, separately explicit HUMAN window and provider steps carrying BOTH admin ledgers. CI57tests per Python,zero skips; target preflight not yet proven. Four nominal requests end288; no retry allowance. Preserve930second guard/native115blobs and all validated Ente-specific bindings.
+
+Frozen MiniPET1.1: G3H+19/M1H+24/M2H+55. Measured chronology: evidence/csv-e2e-execution-timeline-current.json. No residual forecast by subtraction. DB admission, rollout, governed client publication,F5/F6 and release acceptance remain open.
+
+---
+
 > **CURRENT — 21 October2026, target IAM read complete; scoped lifetime proposal qualified, owner decision pending.**
 >
 > Owner target receipt evidence/iam-explicit-api-target-20261021.json confirms current realm/client metadata and exact admin identity. Cumulative283/288,five remaining. Realm ouf access300seconds, no client timeout overrides; ouf-human-admin is public with device grant enabled, password/standard/service-account flows disabled. Master admin realm is different from HUMAN realm. No policy mutation/new HUMAN window/runtime authority; completed API read and all prior claims stay retained, no replay.
@@ -2866,4 +2878,5 @@ Zero nuovi dump, backup letti, DB/IAM/MCP/grant o scritture di servizio/Gateway.
 Launcher `scripts/launch-chatbot-postgateway-container-20261016.sh`, SHA256
 `ad9ac7854ca025f0b097a6164d22e3fe3539951f2af7b6001a438d39c4326b24`.
 Il vecchio delivery non va rilanciato: contiene effetti ormai consumati.
+
 
