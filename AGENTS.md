@@ -1,3 +1,11 @@
+# CURRENT — target technical budget granted; no new login or runtime authority
+
+Owner receipt confirms `NEW_TECHNICAL_OAUTH_BUDGET_GRANTED_NO_LOGIN_OR_RUNTIME_AUTHORITY`: prior/current288, four additional requests granted, cumulative ceiling292 and four remaining AS OF GRANT. Proposal0bf8d9acc497dafbe49320a479ebce51d49496903114669718b6d993b56b1b28; decision3342cb2e41561b6a573fe38313d7b20be963cef6caf64469123c613cb4c93b15. The previous HUMAN session is unchanged. No OAuth, login/window, runtime authority or runtime effect occurred in this decision. Subsequent consumption was not observed. Do not rerun grant-budget or any old rollout/login launcher.
+
+The rollout remains stopped after18/28 stages, nextStage18 REBIND_GATEWAY_TRANSPORT. Technical8/8,functional4/6,G0–G2PASS,G3OPEN. Next is repository development/qualification of the separate successor controller; it is NOT currently implemented or qualified. Do not obtain a fresh token before the entire continuation, all commands and tests are ready. Fresh provider authentication and an explicit finite runtime consent remain required later. See evidence/technical-oauth-budget-extension-granted-target-20261021.json and docs/handoffs/OUF_TECHNICAL_OAUTH_BUDGET_EXTENSION_20261021.md. This header supersedes the historical pending-budget instructions below.
+
+---
+
 # CURRENT — live metadata matched; separate technical budget decision only
 
 Corrected target reader PASS: exact replacement CID/PID/start and namespace matched, including recycled inode;18 Engine GETs,zero OAuth/effects. The old rollout remains stopped at nextStage18 with18 applied stages; no readiness/routes/DB/provider authority newly proven. Technical8/8,functional4/6,G0–G2PASS,G3OPEN. OAuth remains288/288; proposed292 ceiling is NOT yet granted.

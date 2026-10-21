@@ -16,7 +16,7 @@
   },
   "priorOAuthAttempts": 288,
   "proposedCumulativeCeiling": 292,
-  "targetBudgetGranted": false,
+  "targetBudgetGranted": true,
   "newHumanWindowOpened": false,
   "runtimeAuthorityIssued": false,
   "localQualification": {
@@ -50,5 +50,13 @@
     "Ingestion1.3 sections94,95"
   ],
   "resiliencePolicyV3Blob": "0a7068e9655084b412993b9e64ff898a6141b930",
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "targetGrantEvidence": "evidence/technical-oauth-budget-extension-granted-target-20261021.json",
+  "targetProposalHash": "0bf8d9acc497dafbe49320a479ebce51d49496903114669718b6d993b56b1b28",
+  "targetDecisionHash": "3342cb2e41561b6a573fe38313d7b20be963cef6caf64469123c613cb4c93b15",
+  "countsAsOfGrant": true,
+  "currentCumulativeOAuthAttempts": 288,
+  "maximumCumulativeOAuthAttempts": 292,
+  "remainingAdditionalOAuthAttemptsAsOfGrant": 4,
+  "subsequentConsumptionNotObserved": true
 }
