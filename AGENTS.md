@@ -1,3 +1,13 @@
+# CURRENT — offline review STOP on OpenStdin; reconciliation only
+
+Owner receipt: STOP_RECONCILE / CANDIDATE_IMAGE_DEFAULT_CHANGED_OpenStdin, log /home/oufadmin/ouf-readiness-review.XQ3BXw3E/operator.log. No runtime authority/effects. Preserve compiler/input files and all claims; do not rerun the compiler. Candidate image remains NOT INSTALLED. Old/new values and field presence are not established by this reason alone.
+
+Next is tools/readiness_patch_review/reconcile_defaults.py with the SAME pinned review case, a distinct offline diagnostic. It authenticates retained snapshot/completion/review/journal/packet/candidate-inspect bytes, emits only a closed set of stdin/TTY/attach boolean/null/type observations, and checks the deterministic review-context presence without opening or changing its contents. No Engine/network/owner/OAuth/SQL, no new claim or review, no compatibility exception or runtime authority. Nine combined tests pass locally; target receipt and CI qualification remain pending at this commit. See docs/handoffs/OUF_READINESS_DEFAULTS_RECONCILIATION_20261021.md. Native patch execution qualification remains separate.
+
+Technical8/8,functional4/6,G3OPEN; OAuth292/292. Original Matrix1.7 §1, Ingestion1.3 §22.2 and Onboarding1.6 HUMAN/activation ownership consulted for this read-only evidence decision. Source approval/activation and the later503 cause remain distinct and unproven by this diagnostic.
+
+---
+
 # CURRENT — patch inputs captured; offline review compiler qualified, execution still pending
 
 Operator receipt confirms PRIVATE_INPUTS_CAPTURED_NO_AUTHORITY at /etc/ouf/deploy-snapshots/ingestion-readiness-patch-inputs-3fea910fc74b8ea6fcfd121fc0f8386a1ed78c5a89063a3e686053ca8180a317; log /home/oufadmin/ouf-readiness-patch.DzgBMdIf/operator.log.12Engine GETs,0imports/OAuth/runtime effects. Preserve it; never rerun capture.

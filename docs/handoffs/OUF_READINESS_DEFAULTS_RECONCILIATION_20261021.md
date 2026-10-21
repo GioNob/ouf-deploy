@@ -1,0 +1,9 @@
+# OpenStdin review STOP reconciliation — 21 October 2026
+
+The compiler stopped at the image-default comparison before its write section, but a public STOP does not prove target absence. Preserve /home/oufadmin/ouf-readiness-review.XQ3BXw3E/operator.log and every retained file. Never repeat compilation to diagnose this mismatch.
+
+The new offline reader uses the exact previous review case (file SHA256 295f397df35076d35c3a320ca019b71bacfd2f03ea7d4819662fc863e3fefe1d), the qualified immutable input-reader support (c97ae9fd8af1a554df372abd3342e7057c14fc0a7d40acffb82181625e3e9e4d), and emits only field presence/types plus boolean/null values for OpenStdin, StdinOnce, Tty, AttachStdin/Stdout/Stderr, ArgsEscaped and NetworkDisabled. It compares baseline image, candidate image and captured container; these are retained observations, not fresh runtime proof. Unexpected strings/objects are never printed. Input hash/generation associations and retained bytes are checked; the review context is only tested for existence. Nothing in the private snapshots is modified.
+
+Expected status RETAINED_DEFAULTS_OBSERVED_NO_AUTHORITY, compatibilityEstablished:false, runtimeAuthorityIssued:false. If reviewContextExists:true, preserve it for further reconciliation; this reader does not inspect or clear claims. No result authorizes compiler replay or changes its strict comparisons. Qualify any eventual narrowly defined compatibility rule only after obtaining actual values and primary API evidence. Native executor qualification and fresh authority remain pending.
+
+Tests: nine combined tests locally, including immutable helper, secret redaction for unexpected typed values, no-network/no-write path, both absent and existing contexts, retained claim preservation and changed-input rejection. CI uses the existing Python3.12/3.13.5 review workflow. Frozen114 native modules unchanged. No activation resubmission, OAuth or runtime request is made.
