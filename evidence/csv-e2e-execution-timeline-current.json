@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-21T07:06:42.879Z",
+  "lastUpdatedAt": "2026-10-21T09:34:34.459Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1323,6 +1323,34 @@
       "skips": 0,
       "targetExecuted": false,
       "evidenceRef": "evidence/ingestion-rollout-stopped-reader-delivery-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-STAGE18-STOPPED-SNAPSHOT-TARGET",
+      "classification": "OWNER_PASTED_TARGET_READ_ONLY_RECEIPT",
+      "occurredAt": "2026-10-21T09:12:19.914845Z",
+      "observedAt": "2026-10-21T09:34:34.459Z",
+      "journalHash": "c9907ea94b0c5908109e45e5e10be4641f610bc0374bb053de2851781461f2c0",
+      "reviewHash": "b0276204afeb592487428863f7c3f6392d0bb66c6dc0ca99620867b1d23f8521",
+      "appliedStageCount": 18,
+      "pendingStageClaim": false,
+      "recordedAuthorityExpiredAt": "2026-10-21T06:54:36Z",
+      "sameBoot": true,
+      "oauthRequests": 0,
+      "engineRequests": 0,
+      "runtimeAuthorityIssued": false,
+      "gatePassed": false,
+      "evidenceRef": "evidence/ingestion-rollout-stopped-snapshot-target-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-CONTINUATION-LIVE-INPUT-READER-QUALIFIED",
+      "observedAt": "2026-10-21T09:34:34.459Z",
+      "sourceCommit": "1776f9461e83f83b3a79e4077df551cc9f7ffc4a",
+      "ciRun": 39577789672,
+      "testsEachPython": 15,
+      "skips": 0,
+      "frozenNativeAndLoaderUnchanged": true,
+      "targetExecuted": false,
+      "evidenceRef": "evidence/ingestion-rollout-continuation-input-delivery-pins-20261021.json"
     }
   ],
   "activeIntervals": [
@@ -1817,6 +1845,15 @@
       "classification": "ACTIVE_TECHNICAL_DOCUMENTATION",
       "workPackage": "WP3_STOP_RECONCILIATION",
       "activity": "CI_LOG_VERIFICATION_DELIVERY_PINS_AND_RETAINED_TIMELINE_PUBLICATION"
+    },
+    {
+      "id": "CSV-TIME-0050",
+      "startedAt": "2026-10-21T09:19:36.480Z",
+      "endedAt": "2026-10-21T09:34:34.459Z",
+      "seconds": 897.979,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_STOP_RECONCILIATION",
+      "activity": "FROZEN_NATIVE_LIVE_METADATA_READER_IMPLEMENTATION_PHYSICAL_CI_AND_CURRENT_CHECKPOINT_PUBLICATION"
     }
   ],
   "waitingIntervals": [],
@@ -2041,7 +2078,10 @@
       "independentWorkContinues": [
         "WP5",
         "WP6"
-      ]
+      ],
+      "nextRequiredTargetAction": "PINNED_READ_ONLY_LIVE_RUNTIME_INPUTS",
+      "stoppedPrefixSnapshotProven": true,
+      "pendingStageClaim": false
     },
     "agentDispatchedTargetOperations": 0,
     "latestOperatorConfirmedOperation": "ROLLOUT_STOPPED_METADATA_READ_STAGE18",
@@ -2052,7 +2092,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_CLOUD_ROLLOUT_STAGE18_STOP_20261021.md",
+    "currentHandoff": "docs/handoffs/OUF_CLOUD_STAGE18_CONTINUATION_INPUTS_20261021.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false
   },
@@ -2237,7 +2277,7 @@
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "RUN_PINNED_OFFLINE_STOPPED_SNAPSHOT_READER",
+    "currentRequiredHumanAction": "RUN_PINNED_CONTINUATION_LIVE_METADATA_READER",
     "maximumNewOAuthRequests": 0,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
     "profileApplied": true,
@@ -2246,7 +2286,10 @@
       "G5_VOCABULARY_AND_RELATIONSHIPS",
       "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
       "G7_ACCEPTANCE"
-    ]
+    ],
+    "proposedAdditionalOAuthAttempts": 4,
+    "proposedCumulativeCeiling": 292,
+    "additionalBudgetGranted": false
   },
   "unsegmentedFollowupWindows": [
     {
@@ -2389,6 +2432,14 @@
       "countedAsActive": false,
       "humanEffortKnown": false,
       "note": "Contains exact independently timed HUMAN provider operations, manual rollout stage round trips and reader development/CI. No retrospective effort allocation or per-stage target times inferred."
+    },
+    {
+      "startedAt": "2026-10-21T07:06:42.879Z",
+      "endedAt": "2026-10-21T09:19:36.480Z",
+      "classification": "PRIOR_DELIVERY_OPERATOR_WAIT_STOPPED_SNAPSHOT_AND_EARLY_TURN_DEVELOPMENT_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Exact stopped snapshot observation is independent; do not count the wall interval as effort or infer HUMAN duration."
     }
   ],
   "deliveryAccounting": {

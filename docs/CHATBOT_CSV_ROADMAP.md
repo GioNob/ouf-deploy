@@ -1,3 +1,13 @@
+# CURRENT — 21 October 2026: expired stage18 prefix reconciled; live input read next
+
+Qualified stopped snapshot received:18APPLIED,no pending claim,readStateIDLE,same boot,authority and monotonic remaining0. Reviewb0276204…,journalc9907ea9… . No live runtime observation was made by that snapshot. Current [handoff](handoffs/OUF_CLOUD_STAGE18_CONTINUATION_INPUTS_20261021.md) and [target receipt](../evidence/ingestion-rollout-stopped-snapshot-target-20261021.json).
+
+Next action is only the separately pinned continuation-input METADATA reader in [PR47](https://github.com/GioNob/ouf-deploy/pull/47),commit1776f9461e83f83b3a79e4077df551cc9f7ffc4a,CI39577789672:15PASS perPython3.12/3.13.5,zero skips. It checks8exact container generations plus the Gateway image twice,maximum18EngineGETs,namespaces and key inode metadata;zeroOAuth,zero effects,no token/key-file reads. No application/owner/SQL/route/provider readiness is inferred. [Delivery pins](../evidence/ingestion-rollout-continuation-input-delivery-pins-20261021.json). Target execution pending.
+
+OAuth remains288/288. The four-request288→292 continuation budget is merely a proposal,NOT granted. New HUMAN/finite runtime continuation/import/fencing still require implementation,qualification and explicit decisions after live input reconciliation. Preserve all18effects/counters/claims,>930second token guard and900second runtime limit. Technical8/8,functional4/6,G3OPEN;baseline unchanged. This header supersedes older next-action instructions below.
+
+---
+
 # CURRENT — 21 October 2026: partial rollout stopped after 18/28 stages
 
 Operator receipts confirm supplementary HUMAN READY at288/288, then explicit runtime review/approval/initialize and18stages through both readiness gates. Next step STOPPED with INSUFFICIENT_CURRENT_STAGE_WINDOW. Metadata read: RECONCILE_REQUIRED,nextStage18,readStateIDLE,18effects. No pending claim in reported counts. Remaining starts REBIND_GATEWAY_TRANSPORT; route cutover, final checks and restart-policy restoration remain incomplete. Do not replay step/approve/initialize, renew authority, open a login/window or reset any counter.

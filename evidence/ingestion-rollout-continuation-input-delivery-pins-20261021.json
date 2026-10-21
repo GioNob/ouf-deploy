@@ -1,0 +1,34 @@
+{
+  "schema": "ouf.ingestion-rollout-continuation-input-delivery-pins.v1",
+  "sourceCommit": "1776f9461e83f83b3a79e4077df551cc9f7ffc4a",
+  "pullRequest": 47,
+  "sourceBlob": "51c8e68a1ad9b36fadf220b8fe67cb3f3df40358",
+  "sourceSha256": "8337fa934ce2fa1204c67783acedf21471bbfcde9cf1aebd685012866660beb0",
+  "launcherBlob": "2d9a2a46c9425261a0375aefd701dba17f5bc66f",
+  "launcherSha256": "553d28d997c55a6653260986b2af35a4dca1eb8bfc7f2eaca9d2bf0f3f7385e8",
+  "qualificationRun": 39577789672,
+  "qualificationJobs": [
+    {
+      "id": 119147533932,
+      "python": "3.12",
+      "tests": 15,
+      "skips": 0,
+      "conclusion": "success"
+    },
+    {
+      "id": 119147534248,
+      "python": "3.13.5",
+      "tests": 15,
+      "skips": 0,
+      "conclusion": "success"
+    }
+  ],
+  "frozenNativeAndLoaderUnchanged": true,
+  "frozenNativeModuleCount": 114,
+  "targetExecuted": false,
+  "maximumEngineGets": 18,
+  "oauthRequests": 0,
+  "runtimeEffectsAllowed": false,
+  "runtimeAuthorityIssued": false,
+  "newBudgetGranted": false
+}
