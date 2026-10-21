@@ -18,7 +18,8 @@ class DiagnosticTests(unittest.TestCase):
                              'ING_ACTIVATION_GATEWAY_503_SECRET').encode())
         self.assertEqual(result['safeCodes'], {'ING_ACTIVATION_GATEWAY_503': 2,
                                               'ONB_READINESS_DEPENDENCY_503': 1})
-        self.assertEqual(result['transportCategories'], {'UPSTREAM_CONNECT_REFUSED': 1})
+        self.assertEqual(result['transportCategories'], {'UPSTREAM_CONNECT_REFUSED': 1,
+                                                       'CONNECT_REFUSED_GENERIC': 1})
         encoded = json.dumps(result)
         for value in ('very-private-value', 'password', 'https://', '_SECRET'):
             self.assertNotIn(value, encoded)
@@ -30,6 +31,21 @@ class DiagnosticTests(unittest.TestCase):
         with self.assertRaises(m.Stop):
             m.unframe(frame[:-1], True)
         self.assertEqual(m.unframe(raw, False), raw)
+
+    def test_http_request_metadata_without_path_query_or_message(self):
+        raw = (b'2026-10-21T17:28:00.000Z event="HTTP_REQUEST_COMPLETED" method="POST" '
+               b'route="/api/trusted-human/v1/approval-challenges/private-id/review/activate" '
+               b'status="503" durationMs="5001" secret=never-print\n'
+               b'10.0.0.99 - - [date] "POST /api/trusted-human/v1/ingestion/onboarding-readiness?token=hidden '
+               b'HTTP/1.1" 503 42 "private-agent"\n'
+               b'no valid upstream node, FAILED TO CONNECT')
+        result = m.classify(raw)
+        self.assertEqual([r['status'] for r in result['httpObservations']], [503, 503])
+        self.assertEqual(result['httpObservations'][0]['durationMs'], 5001)
+        self.assertEqual(result['transportCategories']['APISIX_NO_VALID_UPSTREAM'], 1)
+        self.assertEqual(result['transportCategories']['RESTY_CONNECT_FAILED'], 1)
+        for secret in ('private-id', 'never-print', 'hidden', 'private-agent', '10.0.0.99', '?token'):
+            self.assertNotIn(secret, json.dumps(result))
 
     def test_no_default_socket_arbitrary_get_or_extra_budget(self):
         engine = m.Engine({'socketPath': '/fixture/engine'}, {'a' * 64}, 1, 2)
