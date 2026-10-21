@@ -1,0 +1,32 @@
+{
+  "schema": "ouf.ingestion-rollout-stopped-reader-case.v1",
+  "purpose": "EXACT_RETAINED_INSTALLATION_NOT_PORTABLE_DEFAULT",
+  "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-native-7fs9r6md",
+  "productionCaseHash": "1406e5d2d158e069d6812091032612549ff297e05abe55e641a65761edaa227a",
+  "controlSourceHash": "1ef3bac5a90a39589da496ba91a840ca9f4fd7b8f44e7a97bb457fc2778c0057",
+  "sourceDeclarationHash": "bf3f33b7ecc6eb06d1e9f87baf14a238338b633a6e2cd816788b04be0a8077a5",
+  "expectedNextStage": 18,
+  "expectedTotalStages": 28,
+  "expectedNextStageName": "REBIND_GATEWAY_TRANSPORT",
+  "expectedAppliedStages": [
+    "VERIFY_CURRENT_GATES",
+    "CREATE_DEDICATED_KEY",
+    "IMPORT_INGESTION_IMAGE",
+    "ingestion.DISABLE_OLD_RESTART",
+    "ingestion.STOP_OLD",
+    "ingestion.DETACH_113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3",
+    "ingestion.RENAME_OLD",
+    "ingestion.CREATE_REPLACEMENT",
+    "ingestion.START_REPLACEMENT",
+    "ingestion.READINESS",
+    "gateway.DISABLE_OLD_RESTART",
+    "gateway.STOP_OLD",
+    "gateway.DETACH_113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3",
+    "gateway.DETACH_1209d67944755d95601b96719c0a5b1860ac2a6f137c10077da7b4e9967637aa",
+    "gateway.RENAME_OLD",
+    "gateway.CREATE_REPLACEMENT",
+    "gateway.START_REPLACEMENT",
+    "gateway.READINESS"
+  ],
+  "runtimeAuthorityIssued": false
+}
