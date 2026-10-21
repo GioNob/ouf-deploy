@@ -1,3 +1,13 @@
+# CURRENT — native activation PAUSED; source contract fix is a development candidate
+
+Native profile remains APPROVED/CONFIRMED, readiness PAUSED,attempts2,generation3,last ONB_READINESS_DEPENDENCY_503 at the last owner read. Do not repeat approval, review preparation, activation or any completed rollout stage. No further phone screenshots are needed.
+
+The retained Gateway trace records SOURCE_VERSION403, then INGESTION_READINESS403 and SOURCE_REVIEW409; a later attempt records INGESTION_READINESS503 and SOURCE_REVIEW503. These are chronological observations, not proof of one common cause. The installed Ingestion client uses the general source-version path for a SERVICE frozen read, while pinned Onboarding/Gateway provide an exact dedicated workload contract requiring source/version/hash. Candidate fix: GioNob/ouf-ingestion-runtime PR46,commit4165b9e149be467d5d7c6bed35e4e1af4e249db1, based directly on installed0fe0de60. No route/permission broadening or new credentials. The candidate is NOT installed. The later503 remains unexplained.
+
+Rollout28/28 complete,technical8/8,functional4/6,G3OPEN. OAuth292/292 at last technical receipt. Preserve all contexts/claims/logs. New evidence: evidence/native-profile-readiness-http-trace-20261021.json; handoff: docs/handoffs/OUF_NATIVE_READINESS_CONTRACT_FIX_20261021.md. Do not promote code CI or absent logs to target health or release acceptance.
+
+---
+
 # CURRENT — existing approved native revision awaits distinct HUMAN activation
 
 Live native source/revision reads on ouf-admin confirm teatri-csv-6609b245 / c9fec43c-19b3-4ffb-9111-781bc347c5b0 APPROVED, lock3, hash sha256:b13c5fe234168bdb8b315087917bccfe428ceaa8e136ed1c0f56f5bf43deed3d. Existing challenge9bca610c-aa24-4be3-ac29-0e5454e9d877 is CONFIRMED. Preserve it: no revision.prepare, review.prepare or repeated confirmation. The owner-issued THS card supports distinct HUMAN activation subject to current owner guards; publication can start a new acquisition on the same source. Compatibility unobserved, readiness NOT_STARTED0/generation0. Source approval is already complete.
