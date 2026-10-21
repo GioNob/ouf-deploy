@@ -1,3 +1,17 @@
+> **CURRENT — 21 October2026, target IAM read complete; scoped lifetime proposal qualified, owner decision pending.**
+>
+> Owner target receipt evidence/iam-explicit-api-target-20261021.json confirms current realm/client metadata and exact admin identity. Cumulative283/288,five remaining. Realm ouf access300seconds, no client timeout overrides; ouf-human-admin is public with device grant enabled, password/standard/service-account flows disabled. Master admin realm is different from HUMAN realm. No policy mutation/new HUMAN window/runtime authority; completed API read and all prior claims stay retained, no replay.
+>
+> Concrete unsigned proposal: access.token.lifespan=1200 on only the exact selected client, keeping realm/flows/roles/all unrelated fields unchanged. Persistent until explicit policy change; owner must accept up to20minutes normal token/role freshness. No new grant or human authentication is enabled. Source1852942f47af54ec015764841ebbcddb09ab3e05, CI39545126657:12PASS per Python3.12/3.13.5, zero skips, including actual Docker/tty and real Keycloak26.2.5 update/readback plus independently observed new fixture token1200. Real fixture master/admin-cli is not target OUF acceptance. Explicitly carry observed frontchannelLogout to prevent the provider's partial-update side effect; compare every other field, normalizing only set-valued array order. All regressions PASS;114native+loader115Git blobs and production >930second guard unchanged.
+>
+> The proposal remains UNAPPLIED. Required next owner clarification: does refusing Keycloak cover only its administrative console, or also the single trusted HUMAN authentication interaction required by the currently enabled Device Authorization flow? Do not infer consent to the latter or reopen a window. Do not spend more provider budget until route and lifetime/freshness decision are resolved. Review: releases/iam-client-lifetime-review-20261021.json; handoff: docs/handoffs/OUF_CLOUD_IAM_PROFILE_OWNER_DECISION_HANDOFF_20261021.md.
+>
+> If authorized later: one admin authentication ->284/four remaining; four nominal HUMAN provider requests ->288, zero extra retry allowance. Carry both supplementary administrative ledgers; never restart from282. Finite one client PUT/five AdminGETs/two EngineGETs; no automatic rollback/replay/window. Exclusive administrative writer required; no provider CAS/ETag is claimed.
+>
+> Checkpoint21October06:46:51Europe/Rome:7.791150 measured active technical hours, approximately7h47. G0–G2PASS,G3open; technical8/8,functional4/6; frozen central G3 H+19/M1 H+24/M2 H+55 unchanged. Unsegmented operator/turn intervals excluded, no human effort inferred or residual forecast by subtraction. DB admission/startup/runtime/native client publication/F5/F6 remain open; current policy metadata is not release acceptance.
+>
+> All previous CURRENT blocks and next-action commands are historical and superseded.
+
 > **CURRENT — 21 October 2026, target IAM metadata reconciled; explicit API path qualified.**
 >
 > Target reconciliation is complete in retained iam-policy-read-7120rnka: preferred_username is absent, other recorded context checks match, recorded admin lifetime60seconds and expired. Original policy read stays STOP/completefalse; original Engine7/7 and both claims retained. No replay, OAuth or policy mutation occurred.

@@ -24,7 +24,7 @@
   },
   "launcherSha256": "b56bce948d5611a9ce73be46bb6096cd50e4edf44c2db8071e388fdb5a4842e3",
   "launcherGitBlob": "ca5886901b7ad41b1fdc18933c69b5bd502643e9",
-  "targetExecuted": false,
+  "targetExecuted": true,
   "runtimeAuthorityIssued": false,
   "sourceCommit": "3b205c44e983184e90baf31230b7f5ec1affb6b7",
   "qualificationRunId": 39541264244,
@@ -75,6 +75,16 @@
     "reasonCode": "FRESH_ADMIN_PROVIDER_RESPONSE_CONTEXT_REQUIRED",
     "causeConfirmedByPassingCorrectedRealProviderTest": "LIGHTWEIGHT_ACCESS_TOKEN_SUBJECT_NOT_ASSUMED_PRESENT_ID_TOKEN_RESPONSE_USED"
   },
-  "currentProviderPolicyProven": false,
-  "notReleaseAcceptance": true
+  "currentProviderPolicyProven": true,
+  "notReleaseAcceptance": true,
+  "targetComplete": true,
+  "targetStatus": "CURRENT_ADMIN_IDENTITY_AND_IAM_POLICY_READ_NO_AUTHORITY",
+  "targetReceiptRef": "evidence/iam-explicit-api-target-20261021.json",
+  "targetContextPath": "/etc/ouf/deploy-snapshots/iam-policy-read-7120rnka/explicit-admin-api-successor",
+  "targetCumulativeAttempts": 283,
+  "targetRemainingAttempts": 5,
+  "currentProviderTimeoutMetadataRead": true,
+  "currentProviderRevocationPolicyProven": false,
+  "futureHumanIssuedLifetimeProven": false,
+  "mustNotReplay": true
 }
