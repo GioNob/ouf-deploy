@@ -1,0 +1,34 @@
+name: Stopped rollout live continuation input metadata
+on:
+  pull_request:
+    paths:
+      - 'tools/ingestion_rollout_preparation/continuation_inputs.py'
+      - 'tools/ingestion_rollout_preparation/continuation_inputs_delivery.py'
+      - 'tests/test_ingestion_continuation_inputs.py'
+      - 'releases/ingestion-rollout-continuation-input-case-20261021.json'
+      - 'scripts/read-ingestion-rollout-continuation-inputs-20261021.py'
+      - 'scripts/launch-ingestion-rollout-continuation-inputs-20261021.sh'
+      - '.github/workflows/ingestion-continuation-inputs.yml'
+permissions: {contents: read}
+jobs:
+  metadata-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.12', '3.13.5']
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '${{ matrix.python }}'}
+      - name: Actual Unix GET channel, namespace stat, frozen sealed predicates and denied drift
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-cont-inputs-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env GITHUB_ACTIONS=true OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_continuation_inputs.py -v

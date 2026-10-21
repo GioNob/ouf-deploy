@@ -1,0 +1,12 @@
+{
+  "schema": "ouf.ingestion-rollout-continuation-input-case.v1",
+  "purpose": "EXACT_RETAINED_INSTALLATION_NOT_PORTABLE_DEFAULT",
+  "journalHash": "c9907ea94b0c5908109e45e5e10be4641f610bc0374bb053de2851781461f2c0",
+  "reviewHash": "b0276204afeb592487428863f7c3f6392d0bb66c6dc0ca99620867b1d23f8521",
+  "logicalOperationRef": "2d41675c88b42cf7b07964fe757b71dff1dfe04902c5a06c3efa63d38cb8a966",
+  "maximumEngineRequests": 18,
+  "additionalOAuthBudgetGranted": false,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "automaticReplayAllowed": false
+}
