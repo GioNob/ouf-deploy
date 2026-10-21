@@ -98,7 +98,11 @@ def comparison(before,after,api):
     names=('id','clientId','enabled','publicClient','directAccessGrantsEnabled','standardFlowEnabled',
         'serviceAccountsEnabled','attributes','protocolMappers','defaultClientScopes','optionalClientScopes',
         'redirectUris','webOrigins','secret','clientAuthenticatorType','authenticationFlowBindingOverrides',
-        'fullScopeAllowed','access','registeredNodes','authorizationServicesEnabled')
+        'fullScopeAllowed','access','registeredNodes','authorizationServicesEnabled','name','description','type',
+        'rootUrl','baseUrl','adminUrl','surrogateAuthRequired','alwaysDisplayInConsole','registrationAccessToken',
+        'defaultRoles','notBefore','bearerOnly','consentRequired','implicitFlowEnabled','directGrantsOnly',
+        'frontchannelLogout','protocol','nodeReRegistrationTimeout','clientTemplate','useTemplateConfig',
+        'useTemplateScope','useTemplateMappers','authorizationSettings','origin')
     same={k:first.get(k)==second.get(k) and (k in first)==(k in second)for k in names}
     same['allOtherFields']=({k:v for k,v in first.items()if k not in names}=={k:v for k,v in second.items()if k not in names})
     return same
