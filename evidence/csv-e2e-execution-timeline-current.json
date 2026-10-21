@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-21T18:49:40.755Z",
+  "lastUpdatedAt": "2026-10-21T20:01:30.326Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1544,6 +1544,23 @@
       "nativeRuntimeExecutorQualified": false,
       "reviewTemplateCompiledOnTarget": false,
       "releaseAcceptance": false
+    },
+    {
+      "id": "CSV-EVENT-READINESS-PATCH-CORRECTED-REVIEW-COMPLETE",
+      "classification": "OPERATOR_PASTED_TARGET_OFFLINE_REVIEW_RECEIPT_NO_AUTHORITY",
+      "documentedAt": "2026-10-21T20:01:30.326Z",
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-readiness-patch-review-51a014429f1663e4760de93e7e6ae8200fd4ad813a5153c77d21ef5066562bac",
+      "reviewHash": "45ed8d24c23a82ea4336c56ea4f5c4048f3237299a25263955f80e10d9078bea",
+      "logicalOperationRef": "6c7d73cbc2d9c613d5fe0b4fafe5ac20853478a883bf15371dadbb3f201afbc5",
+      "operatorLog": "/home/oufadmin/ouf-readiness-review-corrected.IHzJMZrt/operator.log",
+      "plannedStages": 12,
+      "engineRequests": 0,
+      "oauthRequests": 0,
+      "runtimeEffectsDispatched": 0,
+      "runtimeAuthorityIssued": false,
+      "liveRuntimeReverified": false,
+      "nativeRuntimeExecutorQualified": false,
+      "releaseAcceptance": false
     }
   ],
   "activeIntervals": [
@@ -2306,7 +2323,7 @@
     "refreshPerformed": false,
     "budgetReset": false,
     "wp3Block": {
-      "status": "PATCH_INPUTS_CAPTURED_OFFLINE_REVIEW_COMPILER_QUALIFIED_TARGET_TEMPLATE_PENDING",
+      "status": "PATCH_PRIVATE_REVIEW_COMPLETE_NATIVE_INPUT_PREPARATION_EXECUTOR_PENDING",
       "nextStage": 28,
       "appliedStages": 28,
       "currentAuthorityProven": false,
@@ -2316,7 +2333,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "EXACT_OFFLINE_TEMPLATE_COMPILATION_NO_AUTHORITY_OR_NETWORK",
+      "nextRequiredTargetAction": "OFFLINE_NATIVE_INPUT_PROJECTION_NO_AUTHORITY",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2331,7 +2348,7 @@
       "nativeRolloutComplete": true
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "READINESS_PATCH_INPUT_CAPTURED_NO_AUTHORITY",
+    "latestOperatorConfirmedOperation": "REVIEW_TEMPLATE_PREPARED_NO_AUTHORITY",
     "latestOperatorConfirmedOperationPolicyMutations": 0,
     "loginPerformedScope": "COMPLETED_FRESH_STAGE18_HUMAN_PROVIDER_VERIFICATION_AT292_NO_CURRENT_AUTHORITY_INFERRED",
     "newHumanLoginPerformed": true,
@@ -2339,7 +2356,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_INGESTION_READINESS_PATCH_REVIEW_20261021.md",
+    "currentHandoff": "docs/handoffs/OUF_READINESS_PATCH_NATIVE_INPUTS_20261021.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 292,
@@ -2359,7 +2376,9 @@
     },
     "runtimeContractFixInstalled": false,
     "readinessPatchInputContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-patch-inputs-3fea910fc74b8ea6fcfd121fc0f8386a1ed78c5a89063a3e686053ca8180a317",
-    "readinessPatchRuntimeExecutorQualified": false
+    "readinessPatchRuntimeExecutorQualified": false,
+    "readinessPatchReviewContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-patch-review-51a014429f1663e4760de93e7e6ae8200fd4ad813a5153c77d21ef5066562bac",
+    "readinessPatchReviewHash": "45ed8d24c23a82ea4336c56ea4f5c4048f3237299a25263955f80e10d9078bea"
   },
   "unverifiedIntervals": [
     {
@@ -2592,16 +2611,25 @@
       "releaseAcceptance": false
     },
     "readinessPatchOfflineReview": {
-      "qualifiedCommit": "0d31bc3942b508cddaebe70e45ca2f33efb6375c",
-      "run": 39655532624,
-      "prRun": 39655542979,
-      "pythonVersions": [
-        "3.12",
-        "3.13.5"
-      ],
-      "testsPerVersion": 6,
+      "previous": {
+        "qualifiedCommit": "0d31bc3942b508cddaebe70e45ca2f33efb6375c",
+        "run": 39655532624,
+        "prRun": 39655542979,
+        "pythonVersions": [
+          "3.12",
+          "3.13.5"
+        ],
+        "testsPerVersion": 6,
+        "skipped": 0,
+        "targetCompiled": false,
+        "nativeRuntimeExecutorQualified": false
+      },
+      "qualifiedCommit": "b115721ab091c14b4073a21d82688b9745a543a5",
+      "run": 39658470844,
+      "testsPerVersion": 13,
       "skipped": 0,
-      "targetCompiled": false,
+      "targetCompiled": true,
+      "targetReviewHash": "45ed8d24c23a82ea4336c56ea4f5c4048f3237299a25263955f80e10d9078bea",
       "nativeRuntimeExecutorQualified": false
     }
   },
@@ -2676,7 +2704,7 @@
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "RUN_PINNED_OFFLINE_REVIEW_COMPILER_NO_LOGIN_OR_ACTIVATION",
+    "currentRequiredHumanAction": "RUN_PINNED_OFFLINE_NATIVE_INPUT_PROJECTION_ONLY",
     "maximumNewOAuthRequests": 0,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
     "profileApplied": true,

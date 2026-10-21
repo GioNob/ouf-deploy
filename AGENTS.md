@@ -1,3 +1,13 @@
+# CURRENT — corrected private patch review COMPLETE; native inputs next, executor still pending
+
+Owner receipt REVIEW_TEMPLATE_PREPARED_NO_AUTHORITY: context /etc/ouf/deploy-snapshots/ingestion-readiness-patch-review-51a014429f1663e4760de93e7e6ae8200fd4ad813a5153c77d21ef5066562bac, reviewHash45ed8d24c23a82ea4336c56ea4f5c4048f3237299a25263955f80e10d9078bea,12stages. Log /home/oufadmin/ouf-readiness-review-corrected.IHzJMZrt/operator.log. No runtime authority/effect, Engine/OAuth or independent live gates. NEVER rerun any completed input/default reader/compiler or old rollout.
+
+Next preparation is native_inputs.py plus NEW releases/ingestion-readiness-patch-native-input-case-20261021.json. It binds this exact successful review/snapshot, retains/cross-checks native transport profiles, projects Gateway as unchanged (no lifecycle/PUT/new key), rechecks candidate file custody and writes a separate private native-input bundle. No Engine/SQL/Owner/provider calls or bearer/key-file reads.18combined local tests pass; CI qualification pending at this commit. See docs/handoffs/OUF_READINESS_PATCH_NATIVE_INPUTS_20261021.md.
+
+The frozen114-module native executor is for the previous two-container rollout; it is NOT qualified for the12-stage patch and is unchanged. New one-Ingestion signed scope/controller/Ports/delivery and representative qualification remain implementation work. Historical qualification cannot be reused, and this input bundle is not an executor/authority. Do NOT request tokens or runtime consent until that complete executable path is qualified and concrete. OAuth292/292,technical8/8,functional4/6,G3OPEN. Candidate image not installed; later503 root cause unproven. Original Matrix1.7 §1, Ingestion1.3 §40 and Onboarding1.6 P-14 consulted; owner/HUMAN semantics unchanged.
+
+---
+
 # CURRENT — retained defaults reconciled; corrected offline review requires distinct case
 
 Target receipt RETAINED_DEFAULTS_OBSERVED_NO_AUTHORITY, /home/oufadmin/ouf-readiness-defaults.Gegmu7tp/operator.log, confirms predecessor review context absent and captured snapshot78a5e65f2a7d8f624b1bd40384bd42314547ac9ebf654a0222bd5348c7b910b9. Baseline image omits all reported fields; candidate has six false booleans and three empty strings. Captured container AttachStdout/AttachStderr remain true. No live runtime check or authority/effect occurred.
