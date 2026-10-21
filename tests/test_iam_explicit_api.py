@@ -61,10 +61,14 @@ class ExplicitApi(unittest.TestCase):
     def token(self, remaining=60):
         now = int(time.time())
         claims = {'iss': 'http://localhost:8080/realms/master', 'azp': 'admin-cli',
-            'sub': 'fixture-admin-subject', 'iat': now, 'exp': now + remaining}
-        # Deliberately omit preferred_username, as in the real failed target.
+            'iat': now, 'exp': now + remaining}
+        # Deliberately omit preferred_username AND sub, as in Keycloak26's
+        # default lightweight admin-cli token. ID token carries the subject.
         token = 'fixture.' + base64.urlsafe_b64encode(p.encoded(claims)).decode().rstrip('=') + '.fixture'
+        identity={**claims,'sub':'fixture-admin-subject','aud':'admin-cli'}
+        id_token='fixture.'+base64.urlsafe_b64encode(p.encoded(identity)).decode().rstrip('=')+'.fixture'
         return {'access_token': token, 'token_type': 'Bearer', 'expires_in': remaining,
+            'id_token': id_token,
             'refresh_token': 'PRIVATE-NEW-REFRESH-MUST-NOT-STORE'}
 
     def reply(self, api, program, ns, payload):
@@ -157,6 +161,19 @@ class ExplicitApi(unittest.TestCase):
             self.invoke(lambda *args: self.token(30))
         self.assertEqual(Journal(self.destination).read()['adminGetsReserved'], 0)
         self.assertEqual(Journal(self.destination).read()['attempts'], 283)
+
+    def test_lightweight_subject_requires_fresh_same_response_id_token_audience(self):
+        response=self.token()
+        endpoint=self.f.case['adminReadProfile']
+        bad={k:v for k,v in response.items()if k!='id_token'}
+        with self.assertRaisesRegex(ValueError,'OIDC_ID_TOKEN_REQUIRED'):
+            a.access(p,bad,endpoint,self.f.selection['issuer'],time.time())
+        part=response['id_token'].split('.')[1]
+        identity=json.loads(base64.urlsafe_b64decode(part+'='*(-len(part)%4)))
+        identity['aud']='another-client'
+        bad={**response,'id_token':'fixture.'+base64.urlsafe_b64encode(p.encoded(identity)).decode().rstrip('=')+'.fixture'}
+        with self.assertRaisesRegex(ValueError,'AUDIENCE_MUST_INCLUDE'):
+            a.access(p,bad,endpoint,self.f.selection['issuer'],time.time())
 
     def test_foreign_namespace_endpoint_and_changed_receipt_rejected_before_terminal(self):
         with patch.object(a, 'terminal') as tty:
@@ -361,8 +378,9 @@ def run_terminal(script, markers, responses):
 
 
 PHYSICAL_SERVER = '''import base64,http.server,json,time,urllib.parse
-def token():
- now=int(time.time());claims={'iss':'http://localhost:8080/realms/master','azp':'admin-cli','sub':'fixture-admin-subject','iat':now,'exp':now+60}
+def token(identity=False):
+ now=int(time.time());claims={'iss':'http://localhost:8080/realms/master','azp':'admin-cli','iat':now,'exp':now+60}
+ if identity:claims.update(sub='fixture-admin-subject',aud='admin-cli')
  return 'fixture.'+base64.urlsafe_b64encode(json.dumps(claims).encode()).decode().rstrip('=')+'.fixture'
 issued=None
 class Handler(http.server.BaseHTTPRequestHandler):
@@ -375,7 +393,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
   if not 0<size<8192:self.reply(400,{});return
   v=urllib.parse.parse_qs(self.rfile.read(size).decode())
   if self.path!='/realms/master/protocol/openid-connect/token' or v!={'client_id':['admin-cli'],'grant_type':['password'],'username':['fixture-admin'],'password':['PRIVATE-ADMIN-PASSWORD'],'scope':['openid']}:self.reply(400,{});return
-  issued=token();self.reply(200,{'access_token':issued,'token_type':'Bearer','expires_in':60,'refresh_token':'PRIVATE-RETURNED-REFRESH'})
+  issued=token();self.reply(200,{'access_token':issued,'id_token':token(True),'token_type':'Bearer','expires_in':60,'refresh_token':'PRIVATE-RETURNED-REFRESH'})
  def do_GET(self):
   if issued is None or self.headers.get('Authorization')!='Bearer '+issued:self.reply(401,{});return
   client={'id':'fixture-client-uuid','clientId':'fixture-human-admin','enabled':True,'protocol':'openid-connect','attributes':{'access.token.lifespan':'300'},'secret':'PRIVATE-CLIENT-SECRET'}

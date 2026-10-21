@@ -121,17 +121,42 @@ def access(api, response, endpoint, issuer, requested_at):
     claims = api.decode(base64.b64decode(part + '=' * (-len(part) % 4), altchars=b'-_', validate=True))
     allowed = {issuer.rsplit('/realms/', 1)[0] + '/realms/' + endpoint['adminRealm'],
         endpoint['storedServerUrl'] + '/realms/' + endpoint['adminRealm']}
-    require(type(claims) is dict and claims.get('iss') in allowed
-        and claims.get('azp') == endpoint['adminClientId']
-        and type(claims.get('exp')) is type(claims.get('iat')) is int
-        and requested_at - 10 <= claims['iat'] <= time.time() + 5
-        and re.fullmatch('[A-Za-z0-9_-]{1,128}', claims.get('sub', '')),
-        'FRESH_ADMIN_PROVIDER_RESPONSE_CONTEXT_REQUIRED')
+    require(type(claims) is dict and claims.get('iss') in allowed,
+        'FRESH_ADMIN_ACCESS_ISSUER_MUST_MATCH_SELECTED_PROVIDER')
+    require(claims.get('azp') == endpoint['adminClientId'], 'FRESH_ADMIN_ACCESS_CLIENT_MUST_MATCH')
+    require(type(claims.get('exp')) is type(claims.get('iat')) is int
+        and requested_at - 10 <= claims['iat'] <= time.time() + 5,
+        'FRESH_ADMIN_ACCESS_TIMESTAMPS_REQUIRED')
+    # A lightweight access token can omit BOTH preferred_username and sub.
+    # Resolve the routing subject from the ID token returned in this same
+    # fresh, directly received password-grant response (scope=openid). This is
+    # provider-channel provenance, not independent JWT signature validation.
+    # A protected Admin user lookup must then prove username/id/enabled state.
+    id_token = response.get('id_token')
+    require(type(id_token) is str and len(id_token) <= 16384 and len(id_token.split('.')) == 3,
+        'FRESH_ADMIN_OIDC_ID_TOKEN_REQUIRED_FOR_SUBJECT')
+    part = id_token.split('.')[1]
+    require(re.fullmatch('[A-Za-z0-9_-]+', part) is not None, 'BOUNDED_ADMIN_ID_TOKEN_PAYLOAD_REQUIRED')
+    identity = api.decode(base64.b64decode(part + '=' * (-len(part) % 4), altchars=b'-_', validate=True))
+    require(type(identity) is dict and identity.get('iss') == claims['iss'], 'SAME_PROVIDER_ADMIN_ID_TOKEN_ISSUER_REQUIRED')
+    audience = identity.get('aud')
+    require(audience == endpoint['adminClientId'] or type(audience) is list
+        and endpoint['adminClientId'] in audience and all(type(v) is str for v in audience),
+        'ADMIN_ID_TOKEN_AUDIENCE_MUST_INCLUDE_SELECTED_CLIENT')
+    require(identity.get('azp', endpoint['adminClientId']) == endpoint['adminClientId'],
+        'ADMIN_ID_TOKEN_AUTHORIZED_PARTY_MUST_MATCH')
+    require(type(identity.get('exp')) is type(identity.get('iat')) is int
+        and requested_at - 10 <= identity['iat'] <= time.time() + 5 and identity['exp'] > time.time(),
+        'FRESH_ADMIN_ID_TOKEN_TIMESTAMPS_REQUIRED')
+    require(re.fullmatch('[A-Za-z0-9_-]{1,128}', identity.get('sub', '')),
+        'BOUNDED_ADMIN_ID_TOKEN_SUBJECT_REQUIRED')
+    require(claims.get('sub') is None or claims['sub'] == identity['sub'],
+        'ADMIN_ACCESS_AND_ID_TOKEN_SUBJECTS_MUST_AGREE_WHEN_PRESENT')
     expiry = min(claims['exp'], requested_at + response['expires_in'])
     require(expiry > time.time() + 45, 'FRESH_ADMIN_TOKEN_TOO_SHORT_FOR_FOUR_BOUNDED_GETS')
     # This is routing metadata, never independent JWT signature verification.
     # The provider's protected user endpoint must establish subject identity.
-    return token, expiry, claims['sub']
+    return token, expiry, identity['sub']
 
 
 def base(case, api, files):
@@ -303,6 +328,7 @@ def run(case, api, files, process_adapter, Journal):
         result.update(schema='ouf.iam-explicit-api-result.v1', status='CURRENT_ADMIN_IDENTITY_AND_IAM_POLICY_READ_NO_AUTHORITY',
             contextPath=str(destination), complete=True, readOnly=False, policyReadOnly=True,
             authenticationStateChanged=True, currentProviderPolicyProven=True, adminIdentityApiVerified=True,
+            adminSubjectFromSameFreshProviderIdToken=True, jwtSignatureIndependentlyVerified=False,
             preferredUsernameClaimRequired=False, attempts=counters['attempts'], remainingAttempts=288-counters['attempts'],
             maximumCumulativeOAuthAttempts=288, oauthRequestsReserved=1, engineRequestsThisOperation=2,
             originalEngineRequestsRetained=7, cumulativeDiagnosticEngineRequests=9,
