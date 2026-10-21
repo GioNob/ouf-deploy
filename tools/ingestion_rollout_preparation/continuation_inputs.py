@@ -178,8 +178,15 @@ def runtime_snapshot(native, packet, row, modules, engine, *, namespace_read=nam
     owner_namespace = namespace_read(native['ownerControlProfile']['runtimeBinding']['pid'])
     require(owner_namespace == native['ownerControlProfile']['networkNamespace'], 'OWNER_NAMESPACE_GENERATION_CHANGED')
     gateway_namespace = namespace_read(allocated['gateway.START_REPLACEMENT']['pid'])
-    require(gateway_namespace != native['retainedGatewayNamespace'], 'REPLACEMENT_GATEWAY_MUST_USE_NEW_NAMESPACE')
-    values['namespaces'] = {'owner': owner_namespace, 'gateway': gateway_namespace}
+    # Match GatewayNamespacePin's qualified semantics: netns inode numbers can
+    # be reallocated after destruction. The current CID/first PID/start and
+    # stopped/detached predecessor have already been verified above. Always
+    # read from that NEW process, never open a historical namespace reference.
+    require(type(gateway_namespace) is dict and set(gateway_namespace) == {'device', 'inode'}
+            and all(type(v) is int and v > 0 for v in gateway_namespace.values()),
+            'EXACT_CURRENT_GATEWAY_NAMESPACE_IDENTITY_REQUIRED')
+    values['namespaces'] = {'owner': owner_namespace, 'gateway': gateway_namespace,
+        'matchesPreviousGatewayNamespaceInode': gateway_namespace == native['retainedGatewayNamespace']}
     return values
 
 
@@ -231,6 +238,8 @@ def inspect(case, snapshot, modules, *, engine_type=EngineMetadata, namespace_re
         'retainedPredecessorsStoppedAndDetached': True,
         'replacementGenerations': {m: first['replacement.' + m]['process'] for m in ('ingestion', 'gateway')},
         'replacementRestartPoliciesDisabled': True, 'newGatewayNamespaceMatched': first['namespaces']['gateway'],
+        'matchesPreviousGatewayNamespaceInode': first['namespaces']['matchesPreviousGatewayNamespaceInode'],
+        'namespaceSelectedFromDurableReplacementPid': True, 'oldNamespaceReferenceReused': False,
         'dedicatedKeyMetadataMatched': True, 'gatewayKeyValueReverified': False,
         'runtimeMetadataObserved': True, 'applicationReadinessReverified': False,
         'ownerControlReverified': False, 'databaseAdmissionProven': False, 'gatewayRoutesReverified': False,

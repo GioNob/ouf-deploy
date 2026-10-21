@@ -1,4 +1,40 @@
-# CURRENT — stage18 stopped snapshot reconciled; live input read next
+# CURRENT — live input reader namespace correction; old reader STOP retained
+
+The first live input invocation returned REPLACEMENT_GATEWAY_MUST_USE_NEW_NAMESPACE
+at READ_RETAINED_PREFIX_AND_LIVE_METADATA. Retain
+`/home/oufadmin/ouf-rollout-continuation-inputs.WLdvgBh9/reader.log` and its launcher.
+No new login/authority/effect. The previously delivered bridge1776f946… incorrectly
+required gateway netns inode inequality against the historical reference. The
+frozen native GatewayNamespacePin already documents and supports inode reuse after
+namespace destruction: it binds the durable replacement CID,first PID/start,the
+stopped/detached/renamed predecessor and current `/proc/NEW_PID/ns/net`,plus a held
+FD for subsequent traffic. The input reader must use the same identity semantics.
+
+Correction is limited to the read-only bridge: validate current namespace shape,
+retain both current replacement and predecessor frame/process predicates,select
+the current namespace only through the recorded NEW PID,and require both live
+observations to match. Report matchesPreviousGatewayNamespaceInode explicitly,
+namespaceSelectedFromDurableReplacementPid=true,oldNamespaceReferenceReused=false.
+Never supply a historical namespace FD or substitute a previous PID. This is not
+permission to accept a changed process,CID,MAC/IP,mount,restart policy or namespace
+change between passes. No frozen native module/loader change is needed.
+
+Regression now includes a valid same-inode new-process case and composed public
+output,as well as changed current namespace between passes,owner namespace drift
+and invalid namespace shapes. The old negative test accidentally failed at the
+owner-namespace check and did not exercise the intended gateway condition.
+Its prior CI success did not cover the real target case. The failure is a bridge
+predicate defect,not a proven target Gateway failure. Target runtime health is
+still not established by an incomplete read. Qualify the corrected artifact on
+both Python versions before a distinct pinned read-only invocation; do not reuse
+the old launcher or advance rollout/login/budget.
+
+Normative delta reread: Matrix1.7§1,Authorization1.5§12.1,currentAGENTS; actual
+qualified namespace.py predicates remain the code authority for local identity.
+
+---
+
+# Previous checkpoint — stage18 stopped snapshot reconciled; live input read next
 
 Technical8/8,functional4/6,G3OPEN. No acceptance or current authority.
 The owner supplied the qualified stopped reader result at

@@ -163,9 +163,27 @@ class Predicates(unittest.TestCase):
                 with self.assertRaises(c.Denied): self.read()
                 self.rows[cid]['RestartCount'] -= 1
 
-    def test_namespace_must_be_current_and_different_from_old_gateway(self):
-        self.ns = lambda pid: self.native['retainedGatewayNamespace']
+    def test_current_gateway_process_can_match_destroyed_namespace_inode(self):
+        seen = []
+        def current(pid):
+            seen.append(pid)
+            return copy.deepcopy(self.native['ownerControlProfile']['networkNamespace']
+                                 if pid == 41 else self.native['retainedGatewayNamespace'])
+        self.ns = current
+        result = self.read()
+        self.assertEqual(seen, [41, 1002])
+        self.assertEqual(result['namespaces']['gateway'], self.native['retainedGatewayNamespace'])
+        self.assertTrue(result['namespaces']['matchesPreviousGatewayNamespaceInode'])
+
+    def test_current_owner_namespace_still_requires_exact_generation(self):
+        self.ns = lambda pid: {'device': 88, 'inode': 99}
         with self.assertRaises(m.Denied): self.read()
+
+    def test_current_gateway_namespace_identity_cannot_be_missing_or_invalid(self):
+        for invalid in (None, {}, {'device': 0, 'inode': 3}, {'device': True, 'inode': 3}, {'device': 2, 'inode': 3, 'extra': 4}):
+            with self.subTest(invalid=invalid):
+                self.ns = lambda pid: self.native['ownerControlProfile']['networkNamespace'] if pid == 41 else invalid
+                with self.assertRaises(m.Denied): self.read()
 
     def test_creation_resource_must_equal_first_process_resource(self):
         i = next(i for i, s in enumerate(self.native['stages']) if s['name'] == 'gateway.CREATE_REPLACEMENT')
@@ -217,6 +235,27 @@ class Composition(unittest.TestCase):
         self.assertEqual(len(self.metadata_calls), 2)
         for canary in ('NEVER_PRINT', 'CANARY_PRIVATE', 'ffffffffffffffff'):
             self.assertNotIn(canary, json.dumps(result))
+
+    def test_composed_same_inode_uses_durable_new_process_without_historical_reference(self):
+        self.ns = lambda pid: copy.deepcopy(self.native['ownerControlProfile']['networkNamespace']
+                                           if pid == 41 else self.native['retainedGatewayNamespace'])
+        result = self.composed()
+        self.assertEqual(result['engineRequests'], 18)
+        self.assertTrue(result['matchesPreviousGatewayNamespaceInode'])
+        self.assertTrue(result['namespaceSelectedFromDurableReplacementPid'])
+        self.assertFalse(result['oldNamespaceReferenceReused'])
+        self.assertEqual(result['replacementGenerations']['gateway']['containerId'], '9' * 64)
+        self.assertEqual(result['replacementGenerations']['gateway']['pid'], 1002)
+
+    def test_current_namespace_change_between_passes_is_still_denied(self):
+        gateway_reads = []
+        def changed(pid):
+            if pid == 41: return copy.deepcopy(self.native['ownerControlProfile']['networkNamespace'])
+            gateway_reads.append(pid)
+            return {'device': 3, 'inode': 4 + len(gateway_reads)}
+        self.ns = changed
+        with self.assertRaisesRegex(m.Denied, 'LIVE_GENERATION_CHANGED_DURING_PREFLIGHT'):
+            self.composed()
 
     def test_nonexpired_unknown_boot_or_changed_prefix_blocks_before_engine(self):
         for k, v in [('sameBoot', False), ('wallClockConsistent', False), ('recordedSecondsRemaining', 1),

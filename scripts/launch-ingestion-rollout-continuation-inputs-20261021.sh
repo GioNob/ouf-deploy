@@ -8,9 +8,9 @@ if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
 [[ -n "$ouf_gh" && -x "$ouf_gh" ]] || { printf '%s\n' 'STOP: client GitHub non disponibile; nessun sudo.' >&2; exit 2; }
 ouf_read="$(mktemp -d "$HOME/ouf-rollout-continuation-inputs.XXXXXXXX")"
 trap 'printf "Log conservato: %s/reader.log\n" "$ouf_read"' EXIT
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/51c8e68a1ad9b36fadf220b8fe67cb3f3df40358' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/reader.py"
-printf '%s  %s\n' '8337fa934ce2fa1204c67783acedf21471bbfcde9cf1aebd685012866660beb0' "$ouf_read/reader.py" | sha256sum -c -
-sudo python3 -I -B -S - "$ouf_read/reader.py" '8337fa934ce2fa1204c67783acedf21471bbfcde9cf1aebd685012866660beb0' <<'OUF_READER' | tee "$ouf_read/reader.log"
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/026ef1c6baca385b04c34d98ef959ee3664b1c1c' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/reader.py"
+printf '%s  %s\n' '000c98dd2b31534a58a8e1c2fd20f09543bd43da00abadc5ef3b0a90950242c9' "$ouf_read/reader.py" | sha256sum -c -
+sudo python3 -I -B -S - "$ouf_read/reader.py" '000c98dd2b31534a58a8e1c2fd20f09543bd43da00abadc5ef3b0a90950242c9' <<'OUF_READER' | tee "$ouf_read/reader.log"
 import hashlib,os,stat,sys
 try:
  fd=os.open(sys.argv[1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
