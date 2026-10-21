@@ -1,0 +1,35 @@
+name: Retained IAM session context reconciliation
+on:
+  pull_request:
+    paths:
+      - 'tools/ingestion_rollout_preparation/iam_session_context_reconcile.py'
+      - 'tools/ingestion_rollout_preparation/iam_context_reconcile_delivery.py'
+      - 'tests/test_iam_context_reconcile.py'
+      - 'releases/iam-session-context-reconcile-case-20261020.json'
+      - 'scripts/iam-session-context-reconcile-20261020.py'
+      - 'scripts/launch-iam-session-context-reconcile-20261020.sh'
+      - '.github/workflows/iam-session-context-reconcile.yml'
+permissions: {contents: read}
+jobs:
+  retained-context:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.12', '3.13.5']
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '${{ matrix.python }}'}
+      - name: Reproduce stopped reader, actual Docker process-root, same seven-request budget
+        run: |
+          set -euo pipefail
+          docker info > /dev/null
+          fixture="/var/lib/ouf-iam-context-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env GITHUB_ACTIONS=true OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_iam_context_reconcile.py -v

@@ -1,0 +1,35 @@
+name: Explicit IAM API authentication and policy read
+on:
+  pull_request:
+    paths:
+      - 'tools/ingestion_rollout_preparation/iam_explicit_api.py'
+      - 'tools/ingestion_rollout_preparation/iam_explicit_api_delivery.py'
+      - 'tests/test_iam_explicit_api.py'
+      - 'releases/iam-explicit-api-case-20261021.json'
+      - 'scripts/iam-explicit-api-20261021.py'
+      - 'scripts/launch-iam-explicit-api-20261021.sh'
+      - '.github/workflows/iam-explicit-api.yml'
+permissions: {contents: read}
+jobs:
+  explicit-api:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.12', '3.13.5']
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '${{ matrix.python }}'}
+      - name: Real Docker namespace and tty plus real disposable Keycloak provider
+        run: |
+          set -euo pipefail
+          docker info > /dev/null
+          fixture="/var/lib/ouf-iam-explicit-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env GITHUB_ACTIONS=true OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_iam_explicit_api.py -v
