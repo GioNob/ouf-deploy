@@ -1,3 +1,9 @@
+# CURRENT — stage18 partial rollout STOP, 21 October2026
+
+The HUMAN open-window command below WAS subsequently executed once, all four provider steps completed at288/288, and explicit infrastructure authority was issued. Rollout stopped after18/28stages through both readiness gates: INSUFFICIENT_CURRENT_STAGE_WINDOW. Status RECONCILE_REQUIRED,nextStage18,readStateIDLE. Follow docs/handoffs/OUF_CLOUD_ROLLOUT_STAGE18_STOP_20261021.md and current roadmap header. Next target action is only the separately pinned offline reader; no replay/renewal/login/reset. The older transfer instructions below are historical.
+
+---
+
 # OUF project instructions
 
 ## Current chat transfer — 21October2026

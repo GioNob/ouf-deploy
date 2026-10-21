@@ -1,3 +1,13 @@
+# CURRENT — 21 October 2026: partial rollout stopped after 18/28 stages
+
+Operator receipts confirm supplementary HUMAN READY at288/288, then explicit runtime review/approval/initialize and18stages through both readiness gates. Next step STOPPED with INSUFFICIENT_CURRENT_STAGE_WINDOW. Metadata read: RECONCILE_REQUIRED,nextStage18,readStateIDLE,18effects. No pending claim in reported counts. Remaining starts REBIND_GATEWAY_TRANSPORT; route cutover, final checks and restart-policy restoration remain incomplete. Do not replay step/approve/initialize, renew authority, open a login/window or reset any counter.
+
+Current [stage18 handoff](handoffs/OUF_CLOUD_ROLLOUT_STAGE18_STOP_20261021.md), [target checkpoint](../evidence/ingestion-rollout-stage18-stop-target-20261021.json), [reader pins and CI](../evidence/ingestion-rollout-stopped-reader-delivery-20261021.json). Separately qualified offline reader in [PR46](https://github.com/GioNob/ouf-deploy/pull/46),commit78473183e164e41e590a5a137b9e379e73c0ad5c,run39559474164:17tests perPython3.12/3.13.5,zero skips. Next operator action is only the pinned offline snapshot reader; target execution pending. Technical8/8,functional4/6,G3OPEN. No current runtime health or authority inferred. Frozen baseline unchanged; latest measured effort excludes explicitly unsegmented followup intervals.
+
+This header supersedes all older CURRENT next-action instructions below. Their receipts remain history.
+
+---
+
 # CURRENT — chat transfer before HUMAN open-window,21October2026
 
 Owner confirms **the last open-window command was NOT executed**. Latest target preflight passed;284/288,four remaining,no new window/login/runtime authority. Current entry point: [restart handoff](handoffs/OUF_CLOUD_CHAT_RESTART_BEFORE_HUMAN_WINDOW_HANDOFF_20261021.md),[checkpoint](../evidence/csv-e2e-chat-restart-checkpoint-20261021.json). New chat reads AGENTS,Mini-PET1.1,original PETs supplied again by owner,resiliencev3,then asks the exact command/consent in handoff§3. Do not replay completed prepare/IAM/Owner7/projection7/install/readback. No subagents or operational automation.

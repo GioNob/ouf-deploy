@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-21T06:23:42.108Z",
+  "lastUpdatedAt": "2026-10-21T07:06:42.879Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1277,6 +1277,52 @@
       "remainingAttempts": 4,
       "runtimeAuthorityIssued": false,
       "gatePassed": false
+    },
+    {
+      "id": "CSV-EVENT-SUPPLEMENTARY-HUMAN-WINDOW-OPENED",
+      "classification": "OWNER_PASTED_TARGET_RECEIPT",
+      "startedAt": "2026-10-21T06:30:15.247Z",
+      "finishedAt": "2026-10-21T06:30:37.794Z",
+      "elapsedSeconds": 22.54679130500881,
+      "attempts": 284,
+      "newHumanWindowOpened": true,
+      "oauthRequests": 0,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-SUPPLEMENTARY-HUMAN-READY288",
+      "classification": "OWNER_PASTED_TARGET_RECEIPT",
+      "startedAt": "2026-10-21T06:37:28.780Z",
+      "finishedAt": "2026-10-21T06:37:53.478Z",
+      "elapsedSeconds": 24.697823399008485,
+      "state": "READY",
+      "attempts": 288,
+      "remainingAttempts": 0,
+      "tokenSecondsRemainingAtReceipt": 1133,
+      "currentAuthorityNotInferred": true
+    },
+    {
+      "id": "CSV-EVENT-ROLLOUT-STAGE18-STOP",
+      "classification": "OWNER_PASTED_TARGET_RECEIPTS",
+      "documentedAt": "2026-10-21T07:06:42.879Z",
+      "targetExecutionTimeKnown": false,
+      "nextStage": 18,
+      "appliedStages": 18,
+      "state": "RECONCILE_REQUIRED",
+      "readState": "IDLE",
+      "reasonCode": "INSUFFICIENT_CURRENT_STAGE_WINDOW",
+      "gatePassed": false,
+      "evidenceRef": "evidence/ingestion-rollout-stage18-stop-target-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-STOPPED-ROLLOUT-READER-QUALIFIED",
+      "observedAt": "2026-10-21T07:06:42.879Z",
+      "sourceCommit": "78473183e164e41e590a5a137b9e379e73c0ad5c",
+      "ciRun": 39559474164,
+      "testsPerPython": 17,
+      "skips": 0,
+      "targetExecuted": false,
+      "evidenceRef": "evidence/ingestion-rollout-stopped-reader-delivery-20261021.json"
     }
   ],
   "activeIntervals": [
@@ -1762,6 +1808,15 @@
       "classification": "ACTIVE_TECHNICAL_DOCUMENTATION",
       "workPackage": "WP3_HANDOFF",
       "activity": "OWNER_REQUESTED_CHAT_RESTART_HANDOFF_NORMATIVE_REFERENCES_AND_RETAINED_CHECKPOINT_NO_TARGET_OPERATIONS"
+    },
+    {
+      "id": "CSV-TIME-0049",
+      "startedAt": "2026-10-21T07:05:02.215Z",
+      "endedAt": "2026-10-21T07:06:42.879Z",
+      "seconds": 100.664,
+      "classification": "ACTIVE_TECHNICAL_DOCUMENTATION",
+      "workPackage": "WP3_STOP_RECONCILIATION",
+      "activity": "CI_LOG_VERIFICATION_DELIVERY_PINS_AND_RETAINED_TIMELINE_PUBLICATION"
     }
   ],
   "waitingIntervals": [],
@@ -1977,26 +2032,29 @@
     "refreshPerformed": false,
     "budgetReset": false,
     "wp3Block": {
-      "status": "SUPPLEMENTARY_PREFLIGHT_PASSED_EXPLICIT_WINDOW_CONSENT_REQUIRED",
-      "retainedWindowIsAuthority": false,
+      "status": "PARTIAL_ROLLOUT_REQUIRES_RECONCILIATION_AFTER_INSUFFICIENT_WINDOW",
+      "nextStage": 18,
+      "appliedStages": 18,
+      "currentAuthorityProven": false,
+      "automaticLoginAllowed": false,
+      "automaticRenewalAllowed": false,
       "independentWorkContinues": [
         "WP5",
         "WP6"
-      ],
-      "automaticLoginAllowed": false,
-      "automaticRenewalAllowed": false,
-      "currentHumanTokenStillExpired": true
+      ]
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "CLIENT_LIFETIME_OVERRIDE_READBACK",
-    "latestOperatorConfirmedOperationPolicyMutations": 1,
-    "loginPerformedScope": "LATEST_OPERATOR_ADMIN_API_AUTHENTICATION_NOT_NEW_HUMAN_LOGIN",
-    "newHumanLoginPerformed": false,
-    "currentCumulativeOAuthAttempts": 284,
-    "currentRemainingAttempts": 4,
-    "chatTransferPaused": true,
-    "ownerConfirmedNextOpenWindowNotExecuted": true,
-    "currentHandoff": "docs/handoffs/OUF_CLOUD_CHAT_RESTART_BEFORE_HUMAN_WINDOW_HANDOFF_20261021.md"
+    "latestOperatorConfirmedOperation": "ROLLOUT_STOPPED_METADATA_READ_STAGE18",
+    "latestOperatorConfirmedOperationPolicyMutations": 0,
+    "loginPerformedScope": "EXPLICIT_SUPPLEMENTARY_HUMAN_LOGIN_COMPLETED_AT_RECEIPT_NOT_CURRENT_AUTHORITY",
+    "newHumanLoginPerformed": true,
+    "currentCumulativeOAuthAttempts": 288,
+    "currentRemainingAttempts": 0,
+    "chatTransferPaused": false,
+    "ownerConfirmedNextOpenWindowNotExecuted": false,
+    "currentHandoff": "docs/handoffs/OUF_CLOUD_ROLLOUT_STAGE18_STOP_20261021.md",
+    "runtimeAuthorityWasIssuedInRetainedRollout": true,
+    "runtimeAuthorityCurrentlyProven": false
   },
   "unverifiedIntervals": [
     {
@@ -2169,41 +2227,26 @@
     "gate": "G3",
     "humanInterventionRequired": true,
     "reasons": [
-      "CURRENT_HUMAN_THS_AUTHORITY_REQUIRED",
-      "QUALIFIED_OUF_ADMIN_VPS_EXECUTOR_CHANNEL_REQUIRED"
+      "PARTIAL_ROLLOUT_RECONCILIATION_REQUIRED",
+      "PROVIDER_BUDGET_EXHAUSTED_NO_NEW_BUDGET",
+      "QUALIFIED_EXPLICIT_CONTINUATION_NOT_IMPLEMENTED"
     ],
-    "historicalAttempts": 284,
+    "historicalAttempts": 288,
     "maximumCumulativeAttempts": 288,
+    "remainingAttempts": 0,
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
+    "currentRequiredHumanAction": "RUN_PINNED_OFFLINE_STOPPED_SNAPSHOT_READER",
+    "maximumNewOAuthRequests": 0,
+    "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
+    "profileApplied": true,
+    "normalTokenFreshnessBoundApprovedSeconds": 1200,
     "independentRemainingWork": [
       "G5_VOCABULARY_AND_RELATIONSHIPS",
       "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
       "G7_ACCEPTANCE"
-    ],
-    "currentRequiredHumanAction": "NEW_CHAT_READ_RESTART_HANDOFF_THEN_PRESENT_EXACT_OPEN_WINDOW_COMMAND",
-    "remainingAttempts": 4,
-    "reasonCode": "FRESH_HUMAN_WINDOW_CONSENT_REQUIRED",
-    "newLoginRequested": false,
-    "ownerConsoleReadRequested": false,
-    "consoleReadInstructionWithdrawn": true,
-    "maximumNewOAuthRequests": 0,
-    "projectedCumulativeAttempts": 284,
-    "projectedRemainingAttempts": 4,
-    "humanWindowRenewalRequested": true,
-    "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD_FOR_PREFLIGHT",
-    "futureHumanMustConsumeSupplementaryLedger": true,
-    "lifetimeOverrideProposedSeconds": 1200,
-    "normalTokenFreshnessBoundApprovalRequiredSeconds": 1200,
-    "profileApplied": true,
-    "projectedCumulativeAttemptsAfterOneAdmin": 284,
-    "projectedRemainingAfterOneAdmin": 4,
-    "projectedAfterAdminAndFourNominalHumanRequests": 288,
-    "projectedAdditionalRetryAllowance": 0,
-    "policyMutationApproved": true,
-    "humanAuthenticationRouteNeedsOwnerClarification": false,
-    "normalTokenFreshnessBoundApprovedSeconds": 1200
+    ]
   },
   "unsegmentedFollowupWindows": [
     {
@@ -2338,6 +2381,14 @@
       "countedAsActive": false,
       "humanEffortKnown": false,
       "note": "Owner explicitly did not execute the proposed command. No new target execution time inferred."
+    },
+    {
+      "startedAt": "2026-10-21T06:23:42.108Z",
+      "endedAt": "2026-10-21T07:05:02.215Z",
+      "classification": "CHAT_RESTART_OPERATOR_HUMAN_AND_ROLLOUT_RECEIPTS_STOP_DIAGNOSIS_READER_DEVELOPMENT_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Contains exact independently timed HUMAN provider operations, manual rollout stage round trips and reader development/CI. No retrospective effort allocation or per-stage target times inferred."
     }
   ],
   "deliveryAccounting": {
