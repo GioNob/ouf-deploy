@@ -75,7 +75,7 @@ except (Exception,KeyboardInterrupt)as error:
  raise SystemExit(2)
 '''
 
-def generate(root,case,confirmed_read):
+def generate(root,case,confirmed_read,*,entry=ENTRY,bootstrap=BOOTSTRAP,extra_paths=None):
     root=Path(root)
     tree=ast.parse((root/'tools/ingestion_rollout_execution/runtime.py').read_bytes())
     values={}
@@ -87,6 +87,7 @@ def generate(root,case,confirmed_read):
     paths=values['SOURCE_PATHS'];stdlib=values['STDLIB']
     paths.update({'.'.join(p.relative_to(root).with_suffix('').parts):str(p.relative_to(root))
         for p in(root/'tools/governed_human_successor').glob('*.py')})
+    paths.update(extra_paths or {})
     packages=set()
     for name in paths:
         parts=name.split('.')
@@ -108,13 +109,13 @@ def generate(root,case,confirmed_read):
                 if index is not None and len(node.args)>index and isinstance(node.args[index],ast.Constant):
                     value=node.args[index].value
                     if type(value)is str:safe_reasons.add(value)
-    add(ENTRY)
+    add(entry)
     used_packages=set()
     for name in sources:
         parts=name.split('.');used_packages.update('.'.join(parts[:i])for i in range(1,len(parts)))
-    declaration={'schema':'ouf.human-explicit-operator-source-closure.v1','entryModule':ENTRY,
+    declaration={'schema':'ouf.human-explicit-operator-source-closure.v1','entryModule':entry,
         'moduleCount':len(sources),'sourceHashes':{n:sha(v.encode())for n,v in sorted(sources.items())},
-        'loaderHash':sha(BOOTSTRAP.encode()),'caseHash':sha(encoded(case)),
+        'loaderHash':sha(bootstrap.encode()),'caseHash':sha(encoded(case)),
         'confirmedRead':confirmed_read,'requiredPythonFlags':['-I','-B','-S'],
         'maximumSourceBytes':2097152,'foregroundOnly':True,'runtimeAuthorityIssued':False}
     raw=encoded(sources)
@@ -128,5 +129,5 @@ def generate(root,case,confirmed_read):
     header='\n'.join(k+'='+repr(v)for k,v in(
         ('PACKED',packed),('DECLARATION',declaration),('CLOSURE_HASH',sha(encoded(declaration))),
         ('CASE',case),('CONFIRMED_READ',confirmed_read),('PACKAGES',sorted(used_packages)),
-        ('STDLIB',sorted(stdlib)),('SAFE_REASONS',sorted(safe_reasons)),('BOOTSTRAP',BOOTSTRAP)))
+        ('STDLIB',sorted(stdlib)),('SAFE_REASONS',sorted(safe_reasons)),('BOOTSTRAP',bootstrap)))
     return (header+"\nexec(compile(BOOTSTRAP,'<qualified-human-operator-bootstrap>','exec'))\n").encode(),declaration
