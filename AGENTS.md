@@ -1,3 +1,13 @@
+# CURRENT — exact readiness patch image exported; private target input capture pending
+
+Source fix is PR46 /GioNob/ouf-ingestion-runtime@4165b9e149be467d5d7c6bed35e4e1af4e249db1, qualified25focused tests and186full tests (2skips). Exact image export run39650459729/artifact12370330790 passed security/archive/source/migration checks; image sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc. Not installed.
+
+Next authorized terminal step is GET-only input capture and private file custody using tools/readiness_patch_inputs/reader.py with the exact releases/ingestion-readiness-patch-input-case-20261021.json. It downloads/copies the pinned public archive, inspects six retained container generations twice, writes a private snapshot, and performs no import, lifecycle, OAuth, owner/API/SQL or approval action. Expected PRIVATE_INPUTS_CAPTURED_NO_AUTHORITY; runtimeFrameApproved:false. A STOP or an existing claim requires reconciliation, never a replay. See docs/handoffs/OUF_INGESTION_READINESS_PATCH_PREPARATION_20261021.md.
+
+Existing rollout28/28 and native APPROVED/CONFIRMED review remain retained. Readiness last PAUSED2/generation3/DEPENDENCY503; later503 cause unproven. OAuth292/292, no fresh authority. Technical8/8,functional4/6,G3OPEN. Do not ask for another activation click or replay any old rollout/window/budget operation.
+
+---
+
 # CURRENT — native activation PAUSED; source contract fix is a development candidate
 
 Native profile remains APPROVED/CONFIRMED, readiness PAUSED,attempts2,generation3,last ONB_READINESS_DEPENDENCY_503 at the last owner read. Do not repeat approval, review preparation, activation or any completed rollout stage. No further phone screenshots are needed.

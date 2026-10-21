@@ -192,6 +192,14 @@ def write_private(path, value):
         os.close(fd)
 
 
+def sync_directory(path):
+    fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
 def run(case, artifacts):
     require(case['schema'] == 'ouf.readiness-patch-input-case.v1'
             and case['purpose'] == 'EXACT_RETAINED_INSTALLATION_NOT_PORTABLE_DEFAULT', 'EXACT_CASE_REQUIRED')
@@ -245,8 +253,10 @@ def run(case, artifacts):
             and metadata['imageStartedByCandidateExport'] is False
             and metadata['runtimeAuthorityIssued'] is False, 'EXACT_QUALIFIED_CANDIDATE_REQUIRED')
     os.mkdir(target, 0o700)
+    sync_directory(base)
     write_private(target / 'claim.json', {'caseHash': digest(case), 'state': 'CAPTURING_INPUTS',
                                          'runtimeAuthorityIssued': False})
+    sync_directory(target)
     copied = {}
     require(set(case['files']) == {'image.tar.gz', 'metadata.json', 'image-inspect.json', 'trivy-image.json'},
             'EXACT_FOUR_PUBLIC_CANDIDATE_FILES_REQUIRED')
@@ -268,11 +278,7 @@ def run(case, artifacts):
     write_private(target / 'snapshot.json', snapshot)
     write_private(target / 'complete.json', {'caseHash': digest(case), 'snapshotHash': digest(snapshot),
                                             'complete': True, 'runtimeAuthorityIssued': False})
-    fd = os.open(target, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
-    try:
-        os.fsync(fd)
-    finally:
-        os.close(fd)
+    sync_directory(target)
     return {'schema': 'ouf.readiness-patch-input-result.v1', 'status': 'PRIVATE_INPUTS_CAPTURED_NO_AUTHORITY',
             'complete': True, 'contextPath': str(target), 'candidateImageId': metadata['imageId'],
             'sourceCommit': metadata['sourceCommit'], 'migrationChanges': 0, 'engineGets': engine.calls,
