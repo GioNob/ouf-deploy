@@ -1,6 +1,0 @@
-{
-  "schema": "ouf.deployment.channel-check.v1",
-  "requestId": "initial-20261007",
-  "purpose": "AGENT_CONNECTIVITY_ONLY",
-  "containerOperations": 0
-}

@@ -1,9 +1,0 @@
-{
-  "schema": "ouf.policy-token-test-session-profile.v1",
-  "maximumNewTokenGrantAttempts": 128,
-  "maximumSeconds": 3600,
-  "renewalIntervalSeconds": 60,
-  "automaticRenewalAllowed": false,
-  "purpose": "CONFIGURATION_AND_VALIDATION",
-  "preserveCumulativeHistory": true
-}

@@ -1,5 +1,0 @@
-{
- "schema":"ouf.preboot-network-contract-read-selection.v1",
- "preparedPlan":{"path":"/etc/ouf/deploy-snapshots/source-revision-prepared-lssxnowq/prepared-plan.json","sha256":"c23ec15b43427c4558b5b06bf36c2c1b4fa73943efbc0e081ad2731b69c9bc89"},
- "bootProfile":{"path":"/etc/ouf/deploy-snapshots/semantic-coordinated-boot-install-v2-e4repg0a/boot-profile.json","sha256":"b247b94ac8d77d3604840e052878fcc12f4dc6f7e7e8df548f6971c227504845"}
-}
