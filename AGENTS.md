@@ -1,3 +1,11 @@
+# CURRENT — existing approved native revision awaits distinct HUMAN activation
+
+Live native source/revision reads on ouf-admin confirm teatri-csv-6609b245 / c9fec43c-19b3-4ffb-9111-781bc347c5b0 APPROVED, lock3, hash sha256:b13c5fe234168bdb8b315087917bccfe428ceaa8e136ed1c0f56f5bf43deed3d. Existing challenge9bca610c-aa24-4be3-ac29-0e5454e9d877 is CONFIRMED. Preserve it: no revision.prepare, review.prepare or repeated confirmation. The owner-issued THS card supports distinct HUMAN activation subject to current owner guards; publication can start a new acquisition on the same source. Compatibility unobserved, readiness NOT_STARTED0/generation0. Source approval is already complete.
+
+One native Ingestion status read on that account/source returned authorization denied, retryable:false; no retry or equivalent read bypass. Cause unestablished, no permission mutation. See docs/handoffs/OUF_NATIVE_PROFILE_ACTIVATION_20261021.md and evidence/native-profile-activation-checkpoint-20261021.json. Rollout28/28 remains complete; technical8/8,functional4/6,G3OPEN. No new technical OAuth, runtime authority or rollout replay.
+
+---
+
 # CURRENT — target native rollout COMPLETED28/28; native profile/THS/F5–F6 remain open
 
 Owner receipts confirm a separately consented fresh HUMAN window, four provider requests288→292 and READY with1133s token margin AT RECEIPT; separate900s infrastructure authority; import of18APPLIED/readAttempts18; all10 residual native stages; and final complete:true,runtimeEffectsAcceptedByPorts:true. Both restart-restore stages and VERIFY_RESTORED_FINAL were reported complete. Final log /home/oufadmin/ouf-stage18-runtime.PLmQdXaZ/operator.log. This is owner-pasted target evidence,not independent current live readback. Current authority expiry/revocation is not inferred from runtimeAuthorityIssued:false in the final invocation.
