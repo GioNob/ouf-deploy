@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-21T16:53:08.447Z",
+  "lastUpdatedAt": "2026-10-21T17:15:44.514Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1459,6 +1459,31 @@
       "runtimeAuthorityIssued": false,
       "oauthRequests": 0,
       "evidenceRef": "evidence/ingestion-rollout-stage18-target-preflight-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-STAGE18-SUCCESSOR-NATIVE-ROLLOUT-TARGET-COMPLETE",
+      "classification": "OWNER_PASTED_PUBLIC_TARGET_RECEIPT_CHAIN",
+      "documentedAt": "2026-10-21T17:15:44.514Z",
+      "sourceCommit": "5e08760666e177a971a5c466955e4376d10c54ef",
+      "qualificationRun": 39634414797,
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+      "preservedPrefixStages": 18,
+      "retainedReadAttemptsAtImport": 18,
+      "remainingNativeStagesCompleted": 10,
+      "appliedStageCount": 28,
+      "complete": true,
+      "runtimeEffectsAcceptedByPorts": true,
+      "lastVerificationJournalVersion": 3337,
+      "newFreshHumanAuthenticationReported": true,
+      "oauthAttemptsAtReady": 292,
+      "maximumCumulativeOAuthAttempts": 292,
+      "remainingOAuthAttemptsAtReady": 0,
+      "runtimeAuthorityWasSeparatelyIssued": true,
+      "latestInvocationIssuedAuthority": false,
+      "nativeProfilePublished": false,
+      "releaseAcceptance": false,
+      "duplicatePriorGatewayRestoreReceiptCountedAsStage": false,
+      "evidenceRef": "evidence/ingestion-rollout-stage18-completed-target-20261021.json"
     }
   ],
   "activeIntervals": [
@@ -2078,14 +2103,14 @@
       "actualEffortHours": null,
       "effortVarianceHours": null,
       "observedStatus": "NOT_PASSED",
-      "measurementNote": "Initial technical effort not retrospectively inferred from wall time",
+      "measurementNote": "Native rollout completed on owner-reported target receipts; native profile publication/THS approval remains pending. No gate PASS, current readiness or per-WP effort inferred.",
       "lastCheckpoint": {
-        "observedAt": "2026-10-21T06:23:42.108Z",
+        "observedAt": "2026-10-21T17:15:44.514Z",
         "cumulativeMeasuredEffortHours": 8.130165915833333,
         "gatePassed": false,
         "targetProductionBootstrapPrepared": true,
         "humanReadyAtReceipt": true,
-        "tokenDurationCompatible": false,
+        "tokenDurationCompatible": true,
         "retainedTimingReaderCiPassed": true,
         "retainedTimingTargetReadPending": false,
         "recordedIssuedTokenLifetimeSeconds": 300,
@@ -2105,8 +2130,16 @@
         "humanAuthenticationBoundaryClarificationPending": false,
         "supplementaryHumanTargetPreflightPending": false,
         "supplementaryHumanTargetPreflightPassed": true,
-        "newHumanWindowOpened": false,
-        "ownerConfirmedOpenWindowNotExecuted": true
+        "newHumanWindowOpened": true,
+        "ownerConfirmedOpenWindowNotExecuted": false,
+        "nativeRolloutComplete": true,
+        "nativeProfilePublished": false,
+        "currentProviderIdentityVerifiedAtReady": true,
+        "successorTargetHumanAuthenticationCompleted": true,
+        "targetCumulativeOAuthAttempts": 292,
+        "remainingOAuthAttempts": 0,
+        "profilePublicationAndThsApprovalPending": true,
+        "evidenceRef": "evidence/ingestion-rollout-stage18-completed-target-20261021.json"
       }
     },
     {
@@ -2213,9 +2246,9 @@
     "refreshPerformed": false,
     "budgetReset": false,
     "wp3Block": {
-      "status": "PARTIAL_ROLLOUT_REQUIRES_RECONCILIATION_AFTER_INSUFFICIENT_WINDOW",
-      "nextStage": 18,
-      "appliedStages": 18,
+      "status": "NATIVE_ROLLOUT_COMPLETE_PROFILE_REVIEW_THS_PUBLICATION_AND_G3_ACCEPTANCE_PENDING",
+      "nextStage": 28,
+      "appliedStages": 28,
       "currentAuthorityProven": false,
       "automaticLoginAllowed": false,
       "automaticRenewalAllowed": false,
@@ -2223,7 +2256,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "ONE_EXPLICIT_HUMAN_OPEN_WINDOW_TERMINAL_CONSENT_ZERO_OAUTH",
+      "nextRequiredTargetAction": "NONE_UNTIL_SEPARATE_NATIVE_PROFILE_ACTION_IS_PREPARED_AND_APPROVED_IN_THS",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2233,23 +2266,30 @@
       "technicalBudgetGrantComplete": true,
       "runtimeSuccessorImplemented": true,
       "runtimeSuccessorQualified": true,
-      "successorTargetPreflightCompleted": true
+      "successorTargetPreflightCompleted": true,
+      "nextStageEvidenceScope": "INFERRED_FROM_COMPLETED_28_STAGE_NATIVE_SEQUENCE_NOT_INDEPENDENT_STATUS_READ",
+      "nativeRolloutComplete": true
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "STAGE18_BOTH_TARGET_PREFLIGHTS_NO_AUTHORITY",
+    "latestOperatorConfirmedOperation": "STAGE18_SUCCESSOR_NATIVE_ROLLOUT_COMPLETED_28_OF_28",
     "latestOperatorConfirmedOperationPolicyMutations": 0,
-    "loginPerformedScope": "EXPLICIT_SUPPLEMENTARY_HUMAN_LOGIN_COMPLETED_AT_RECEIPT_NOT_CURRENT_AUTHORITY",
-    "newHumanLoginPerformed": false,
-    "currentCumulativeOAuthAttempts": 288,
-    "currentRemainingAttempts": 4,
+    "loginPerformedScope": "COMPLETED_FRESH_STAGE18_HUMAN_PROVIDER_VERIFICATION_AT292_NO_CURRENT_AUTHORITY_INFERRED",
+    "newHumanLoginPerformed": true,
+    "currentCumulativeOAuthAttempts": 292,
+    "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
     "currentHandoff": "docs/handoffs/OUF_STAGE18_SUCCESSOR_20261021.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 292,
-    "countsAsOfGrant": true,
-    "subsequentConsumptionNotObserved": true
+    "countsAsOfGrant": false,
+    "subsequentConsumptionNotObserved": false,
+    "countsAsOfReadyReceipt": true,
+    "runtimeAuthorityWasIssuedInSuccessor": true,
+    "nativeRolloutComplete": true,
+    "nativeProfilePublished": false,
+    "releaseAcceptance": false
   },
   "unverifiedIntervals": [
     {
@@ -2339,7 +2379,7 @@
     "productionControlQualificationRun": 39473913739,
     "targetProductionBootstrapPrepared": true,
     "targetProductionBootstrapContext": "/etc/ouf/deploy-snapshots/ingestion-rollout-native-7fs9r6md",
-    "targetCumulativeOAuthAttempts": 284,
+    "targetCumulativeOAuthAttempts": 292,
     "targetHumanProviderVerificationCompleted": true,
     "targetHumanStateAtReceipt": "READY",
     "productionTokenDurationCompatible": false,
@@ -2386,8 +2426,8 @@
     "clientLifetimeProposalQualificationRun": 39545126657,
     "clientLifetimeProposalTargetExecuted": true,
     "clientLifetimeProposalApproved": true,
-    "newHumanWindowOpened": false,
-    "newHumanAuthenticationPerformed": false,
+    "newHumanWindowOpened": true,
+    "newHumanAuthenticationPerformed": true,
     "supplementaryHumanQualifiedCommit": "5bb47f6654a71dffa2c98c6d105d9c830d542205",
     "supplementaryHumanQualificationRun": 39553046609,
     "supplementaryHumanTargetPreflightPending": false,
@@ -2406,7 +2446,15 @@
     "successorQualifiedSource": "5e08760666e177a971a5c466955e4376d10c54ef",
     "successorQualificationRun": 39634414797,
     "successorTargetPreflightCompleted": true,
-    "successorHumanReviewHash": "c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a"
+    "successorHumanReviewHash": "c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a",
+    "successorTargetNativeRolloutComplete": true,
+    "successorTargetAppliedStages": 28,
+    "successorTargetRuntimeEffectsAcceptedByPorts": true,
+    "successorTargetHumanWindowWasOpened": true,
+    "successorTargetHumanAuthenticationCompleted": true,
+    "nativeProfilePublished": false,
+    "releaseAcceptance": false,
+    "successorTargetCompletionEvidence": "evidence/ingestion-rollout-stage18-completed-target-20261021.json"
   },
   "developmentCandidates": [
     {
@@ -2435,17 +2483,17 @@
     "gate": "G3",
     "humanInterventionRequired": true,
     "reasons": [
-      "PARTIAL_ROLLOUT_RECONCILIATION_REQUIRED",
-      "FRESH_EXPLICIT_HUMAN_WINDOW_AND_PROVIDER_IDENTITY_REQUIRED",
-      "SEPARATE_RUNTIME_CONSENT_AND_PREFIX_IMPORT_REQUIRED"
+      "NATIVE_PROFILE_REVIEW_APPROVAL_IN_THS_AND_EXACT_PUBLICATION_PENDING",
+      "F5_F6_PROOF_PENDING",
+      "OAUTH_BUDGET_EXHAUSTED_NO_NEW_LOGIN_AUTHORIZED"
     ],
-    "historicalAttempts": 288,
+    "historicalAttempts": 292,
     "maximumCumulativeAttempts": 292,
-    "remainingAttempts": 4,
+    "remainingAttempts": 0,
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "ONE_EXPLICIT_HUMAN_OPEN_WINDOW_TERMINAL_CONSENT_ZERO_OAUTH",
+    "currentRequiredHumanAction": "NONE_AT_THIS_CHECKPOINT_PREPARE_DISTINCT_PROFILE_ACTION_BEFORE_THS_APPROVAL",
     "maximumNewOAuthRequests": 0,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
     "profileApplied": true,
@@ -2458,9 +2506,10 @@
     "proposedAdditionalOAuthAttempts": 4,
     "proposedCumulativeCeiling": 292,
     "additionalBudgetGranted": true,
-    "countsAsOfGrant": true,
-    "subsequentConsumptionNotObserved": true,
-    "newWindowAuthorized": false
+    "countsAsOfGrant": false,
+    "subsequentConsumptionNotObserved": false,
+    "newWindowAuthorized": false,
+    "countsAsOfReadyReceipt": true
   },
   "unsegmentedFollowupWindows": [
     {
@@ -2651,6 +2700,14 @@
       "countedAsActive": false,
       "humanEffortKnown": false,
       "note": "Receipts supply no process timestamps; no execution or human duration inferred."
+    },
+    {
+      "startedAt": "2026-10-21T16:53:08.447Z",
+      "endedAt": "2026-10-21T17:15:44.514Z",
+      "classification": "OPERATOR_HUMAN_WINDOW_PROVIDER_STEPS_AND_EXPLICIT_NATIVE_ROLLOUT_COMPLETION_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "No supplied invocation durations; do not infer active effort,900s authority elapsed time or human consent duration from wall time."
     }
   ],
   "deliveryAccounting": {

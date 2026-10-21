@@ -1,3 +1,13 @@
+# CURRENT — target native rollout COMPLETED28/28; native profile/THS/F5–F6 remain open
+
+Owner receipts confirm a separately consented fresh HUMAN window, four provider requests288→292 and READY with1133s token margin AT RECEIPT; separate900s infrastructure authority; import of18APPLIED/readAttempts18; all10 residual native stages; and final complete:true,runtimeEffectsAcceptedByPorts:true. Both restart-restore stages and VERIFY_RESTORED_FINAL were reported complete. Final log /home/oufadmin/ouf-stage18-runtime.PLmQdXaZ/operator.log. This is owner-pasted target evidence,not independent current live readback. Current authority expiry/revocation is not inferred from runtimeAuthorityIssued:false in the final invocation.
+
+OAuth292/292,zero remaining at READY; no reset/refresh or completed Owner/publication replay. Completed rollout context /etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada. Do NOT execute any old/current rollout step,import,approve,initialize,window or grant again. Preserve all contexts/claims/caches/logs. Full receipt chain and the duplicated prior Gateway-restore transcript are retained in evidence/ingestion-rollout-stage18-completed-target-20261021.json; the duplicate is not another stage.
+
+Technical8/8,functional4/6,G0–G2PASS,G3OPEN. nativeProfilePublished:false and releaseAcceptance:false. Mini-PETv1.1 WP3 requires native profile review via existing generic capabilities, visible diff/acquisition effect, HUMAN approval/activation in THS and exact publication/version readback before WP4/F5–F6. The infrastructure consent cannot substitute for that decision. Next work is preparation/qualification of that distinct profile action; no further VPS command or new login is requested at this checkpoint. Do not count native completion as F5/F6,M1,M2 or release acceptance. See docs/handoffs/OUF_STAGE18_SUCCESSOR_20261021.md. Earlier phase commands below are historical.
+
+---
+
 # CURRENT — BOTH target preflights PASS; next exact HUMAN open-window consent only
 
 Owner receipts confirm runtime STAGE18_RUNTIME_PREFLIGHT_NO_AUTHORITY and HUMAN STAGE18_HUMAN_AND_RUNTIME_PREFLIGHT_NO_WINDOW,288/292,four remaining,reviewHash c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a. No new window/login/OAuth reservation/runtime authority. Evidence: evidence/ingestion-rollout-stage18-target-preflight-20261021.json. Cached launchers retained at /home/oufadmin/ouf-stage18-launchers.tmgmExrv/human.sh and runtime.sh.
