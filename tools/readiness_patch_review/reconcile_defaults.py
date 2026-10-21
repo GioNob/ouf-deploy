@@ -9,7 +9,8 @@ import types
 
 IO_SHA = 'c97ae9fd8af1a554df372abd3342e7057c14fc0a7d40acffb82181625e3e9e4d'
 FIELDS = ('OpenStdin', 'StdinOnce', 'Tty', 'AttachStdin', 'AttachStdout',
-          'AttachStderr', 'ArgsEscaped', 'NetworkDisabled')
+          'AttachStderr', 'ArgsEscaped', 'NetworkDisabled', 'Hostname',
+          'Domainname', 'Image', 'MacAddress', 'StopTimeout')
 
 
 def load_io(root):
@@ -32,6 +33,8 @@ def observation(config, key):
     result = {'present': True, 'type': type(value).__name__}
     if value is None or type(value) is bool:
         result['value'] = value
+    elif type(value) is str:
+        result['isEmpty'] = value == ''
     return result
 
 

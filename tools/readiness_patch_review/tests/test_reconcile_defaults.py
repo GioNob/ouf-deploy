@@ -22,7 +22,9 @@ class DefaultsReconciliationTests(unittest.TestCase):
         self.assertEqual(result['OpenStdin']['oldImage']['value'], False)
         self.assertIsNone(result['OpenStdin']['candidateImage']['value'])
         self.assertEqual(result['OpenStdin']['capturedContainer'], {'present': False})
-        self.assertEqual(result['Tty']['candidateImage'], {'present': True, 'type': 'str'})
+        self.assertEqual(result['Tty']['candidateImage'], {'present': True, 'type': 'str', 'isEmpty': False})
+        self.assertEqual(r.observation({'Hostname': ''}, 'Hostname'),
+                         {'present': True, 'type': 'str', 'isEmpty': True})
         self.assertNotIn('never-print', json.dumps(result))
 
     def test_tampered_helper_never_executes(self):
