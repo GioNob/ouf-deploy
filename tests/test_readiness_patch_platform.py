@@ -55,7 +55,7 @@ class NativePlatform(unittest.TestCase):
         engine=cls.pg.selected['engine'];cls.engine=Engine(engine['socketPath'],tuple(engine['socketBinding']))
         folder=cls.pg.root/'candidate';folder.mkdir(mode=0o700)
         with zipfile.ZipFile(os.environ['OUF_CANDIDATE_ZIP']) as package:
-            expected={'image.tar.gz','metadata.json','image-inspect.json','trivy-image.json'}
+            expected={'image.tar.gz','metadata.json','image-inspect.json','trivy-image.json','SHA256SUMS'}
             if set(package.namelist())!=expected:raise AssertionError('EXACT_CANDIDATE_ARTIFACT_CONTENTS_REQUIRED')
             for name in sorted(expected):
                 if package.getinfo(name).file_size>200_000_000:raise AssertionError('BOUNDED_CANDIDATE_ARTIFACT_REQUIRED')
