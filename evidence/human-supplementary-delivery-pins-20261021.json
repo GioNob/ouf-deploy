@@ -79,7 +79,7 @@
     "runtimeAuthorityIssued": false
   },
   "closureHash": "2b7afc38d25934e1e62fd43a78725e45102fed3f4f2239139a577ed62cada10e",
-  "targetExecuted": false,
+  "targetExecuted": true,
   "newWindowOpened": false,
   "runtimeAuthorityIssued": false,
   "supplementaryTestsEachPython": 13,
@@ -110,5 +110,9 @@
     }
   ],
   "allNineOtherWorkflowRunsPassed": true,
-  "exactInvocationClocksRecorded": true
+  "exactInvocationClocksRecorded": true,
+  "targetExecutionScope": "READ_ONLY_PREPARE_ONLY",
+  "targetPreflightPassed": true,
+  "targetPreflightRef": "evidence/human-supplementary-preflight-target-20261021.json",
+  "targetReviewHash": "981d810332ad855e7b9305d15fc4bbb10796bc50d556241060d7044c43d715dc"
 }

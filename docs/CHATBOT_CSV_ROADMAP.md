@@ -1,3 +1,11 @@
+# CURRENT — 21October2026: supplementary preflight passed on VPS
+
+Technical8/8,functional4/6,G3open. Current284/288,remaining4. Exact target preflight08:11:16.774650–08:11:16.797031Europe/Rome passed with zeroOAuth/no window/no runtime authority. Both administrative ledgers retained; production preparation matched. See current [handoff](handoffs/OUF_CLOUD_SUPPLEMENTARY_HUMAN_READY_HANDOFF_20261021.md) and evidence/human-supplementary-preflight-target-20261021.json.
+
+Next is separately explicit open-window consent on the exact current launcher, zeroOAuth. Do not repeat prepare or completed actions. Actual token acquisition is still pending and manually gated. This supersedes previous preflight-pending/prepare instructions below. Frozen MiniPET1.1 unchanged, G3H+19/M1H+24/M2H+55; measured chronology retains all excluded intervals explicitly.
+
+---
+
 # CURRENT — 21October2026: client lifetime applied, supplementary HUMAN preflight pending
 
 Technical **8/8**, functional **4/6**, G0–G2PASS, G3open. Owner-confirmed API readback: client-only1200seconds applied; flows/roles/unrelated fields and realm300 unchanged;284/288,four requests remain. No new HUMAN window/runtime authority. Do not replay lifetime or completed actions.

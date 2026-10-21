@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-21T06:04:29.734Z",
+  "lastUpdatedAt": "2026-10-21T06:13:02.227Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1247,6 +1247,22 @@
       "targetExecuted": false,
       "gatePassed": false,
       "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-TARGET-SUPPLEMENTARY-PREFLIGHT-PASS",
+      "observedAt": "2026-10-21T06:11:45.228Z",
+      "startedAt": "2026-10-21T06:11:16.774650Z",
+      "finishedAt": "2026-10-21T06:11:16.797031Z",
+      "elapsedSeconds": 0.022378983994713053,
+      "classification": "OWNER_PASTED_TARGET_READ_ONLY_PREFLIGHT_RECEIPT",
+      "evidenceRef": "evidence/human-supplementary-preflight-target-20261021.json",
+      "reviewHash": "981d810332ad855e7b9305d15fc4bbb10796bc50d556241060d7044c43d715dc",
+      "attempts": 284,
+      "remainingAttempts": 4,
+      "oauthRequests": 0,
+      "runtimeAuthorityIssued": false,
+      "newHumanWindowOpened": false,
+      "gatePassed": false
     }
   ],
   "activeIntervals": [
@@ -1714,6 +1730,15 @@
       "classification": "ACTIVE_TECHNICAL",
       "workPackage": "WP3_PREPARATION",
       "activity": "EXACT_OPERATOR_CLOCKS_FINAL_QUALIFICATION_AND_RETAINED_EVIDENCE_PUBLICATION_PREPARATION"
+    },
+    {
+      "id": "CSV-TIME-0047",
+      "startedAt": "2026-10-21T06:11:45.228Z",
+      "endedAt": "2026-10-21T06:13:02.227Z",
+      "seconds": 76.999,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "TARGET_SUPPLEMENTARY_PREFLIGHT_RECONCILIATION_AND_EXACT_WINDOW_CONSENT_DELIVERY"
     }
   ],
   "waitingIntervals": [],
@@ -1796,8 +1821,8 @@
       "observedStatus": "NOT_PASSED",
       "measurementNote": "Initial technical effort not retrospectively inferred from wall time",
       "lastCheckpoint": {
-        "observedAt": "2026-10-21T06:04:29.734Z",
-        "cumulativeMeasuredEffortHours": 7.999587582499999,
+        "observedAt": "2026-10-21T06:13:02.227Z",
+        "cumulativeMeasuredEffortHours": 8.020976193611112,
         "gatePassed": false,
         "targetProductionBootstrapPrepared": true,
         "humanReadyAtReceipt": true,
@@ -1819,7 +1844,8 @@
         "clientLifetimeProposalTargetExecuted": true,
         "ownerLifetimeFreshnessDecisionPending": false,
         "humanAuthenticationBoundaryClarificationPending": false,
-        "supplementaryHumanTargetPreflightPending": true
+        "supplementaryHumanTargetPreflightPending": false,
+        "supplementaryHumanTargetPreflightPassed": true
       }
     },
     {
@@ -1926,7 +1952,7 @@
     "refreshPerformed": false,
     "budgetReset": false,
     "wp3Block": {
-      "status": "SUPPLEMENTARY_HUMAN_PREFLIGHT_THEN_EXPLICIT_WINDOW_AND_AUTHENTICATION_REQUIRED",
+      "status": "SUPPLEMENTARY_PREFLIGHT_PASSED_EXPLICIT_WINDOW_CONSENT_REQUIRED",
       "retainedWindowIsAuthority": false,
       "independentWorkContinues": [
         "WP5",
@@ -2083,8 +2109,10 @@
     "newHumanAuthenticationPerformed": false,
     "supplementaryHumanQualifiedCommit": "5bb47f6654a71dffa2c98c6d105d9c830d542205",
     "supplementaryHumanQualificationRun": 39553046609,
-    "supplementaryHumanTargetPreflightPending": true,
-    "supplementaryHumanTargetAuthenticationPerformed": false
+    "supplementaryHumanTargetPreflightPending": false,
+    "supplementaryHumanTargetAuthenticationPerformed": false,
+    "supplementaryHumanTargetPreflightPassed": true,
+    "supplementaryHumanTargetReviewHash": "981d810332ad855e7b9305d15fc4bbb10796bc50d556241060d7044c43d715dc"
   },
   "developmentCandidates": [
     {
@@ -2126,16 +2154,16 @@
       "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
       "G7_ACCEPTANCE"
     ],
-    "currentRequiredHumanAction": "RUN_PINNED_READ_ONLY_SUPPLEMENTARY_PREFLIGHT_ZERO_OAUTH",
+    "currentRequiredHumanAction": "EXPLICIT_TERMINAL_SUPPLEMENTARY_HUMAN_WINDOW_CONSENT_ZERO_OAUTH",
     "remainingAttempts": 4,
-    "reasonCode": "SUPPLEMENTARY_HUMAN_TARGET_PREFLIGHT_REQUIRED_BEFORE_WINDOW",
+    "reasonCode": "FRESH_HUMAN_WINDOW_CONSENT_REQUIRED",
     "newLoginRequested": false,
     "ownerConsoleReadRequested": false,
     "consoleReadInstructionWithdrawn": true,
     "maximumNewOAuthRequests": 0,
     "projectedCumulativeAttempts": 284,
     "projectedRemainingAttempts": 4,
-    "humanWindowRenewalRequested": false,
+    "humanWindowRenewalRequested": true,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD_FOR_PREFLIGHT",
     "futureHumanMustConsumeSupplementaryLedger": true,
     "lifetimeOverrideProposedSeconds": 1200,
@@ -2266,6 +2294,14 @@
       "countedAsActive": false,
       "humanEffortKnown": false,
       "note": "Includes prior status/commands, mobile-console clarification, operator policy mutation and early current work before first explicit UTC clock; no retrospective active/wait split inferred."
+    },
+    {
+      "startedAt": "2026-10-21T06:04:29.734Z",
+      "endedAt": "2026-10-21T06:11:45.228Z",
+      "classification": "FINAL_DELIVERY_OPERATOR_PREFLIGHT_AND_TURN_TRANSITION_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Target execution has exact independent start/finish clocks; excluded wall interval is not treated as human or technical effort."
     }
   ],
   "deliveryAccounting": {

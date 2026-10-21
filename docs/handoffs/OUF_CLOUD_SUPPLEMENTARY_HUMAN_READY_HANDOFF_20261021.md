@@ -1,3 +1,13 @@
+# CURRENT — supplementary preflight passed on VPS; explicit HUMAN window consent next
+
+Owner receipt:21October2026 **08:11:16.774650–08:11:16.797031Europe/Rome**, elapsed0.022379seconds. Status SUPPLEMENTARY_HUMAN_REVIEW_READY_NO_AUTHORITY. HUMAN282+administrative283/284 chain matched, retained production preparation matched. Read-only, zeroOAuth, no window/runtime authority. Evidence: evidence/human-supplementary-preflight-target-20261021.json.
+
+Review hash **981d810332ad855e7b9305d15fc4bbb10796bc50d556241060d7044c43d715dc**. Current launcher `/home/oufadmin/ouf-human-supplementary-launcher.1gLteQgM` SHA256702e2c42ea94eecdf53a38d85ed42e7fea47341a8bb518db955cd7e55a667026; log `/home/oufadmin/ouf-human-supplementary.KJqJCAKS/operator.log`. Do not replay prepare. Next distinct mode: `open-window` on that exact launcher, after hash verification. Exact tty consent: `APRO FINESTRA HUMAN 981d810332ad855e7b9305d15fc4bbb10796bc50d556241060d7044c43d715dc`. This authorizes one7200second window,zeroOAuth,not login/runtime/THS. Expected NEW,284/288,remaining4,newHumanWindowOpened true. Return JSON and new operator.log; do not run old launchers or infer the next step from an output.
+
+After successful opening, separately confirmed provider steps remain required; stage runtime review/approval commands before obtaining the new token. No automatic login/poll/refresh/renewal/replay. No G3,F5,F6 or release acceptance inferred. Technical8/8,functional4/6. The prior preparation-pending statement below is historical and superseded by this target receipt.
+
+---
+
 # OUF CLOUD — client lifetime applied; supplementary HUMAN successor qualified
 
 21October2026, Europe/Rome. Technical8/8,functional4/6,G0–G2PASS,G3open. Frozen MiniPET1.1 d190193773116c9a59403aa42ccc9f89423eb959 remains authoritative: G3centralH+19,M1H+24,M2H+55. CI qualification, VPS readback and E2E acceptance remain distinct.
