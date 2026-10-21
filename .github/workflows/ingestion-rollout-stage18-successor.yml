@@ -1,0 +1,39 @@
+name: Stage18 continuation without replay
+on:
+  pull_request:
+    paths:
+      - 'tools/ingestion_rollout_preparation/continuation_common.py'
+      - 'tools/ingestion_rollout_preparation/stage18*.py'
+      - 'tools/governed_human_successor/stage18.py'
+      - 'tests/test_stage18*.py'
+      - 'releases/ingestion-rollout-stage18-successor-case-20261021.json'
+      - 'scripts/*ingestion-rollout-stage18*'
+      - '.github/workflows/ingestion-rollout-stage18-successor.yml'
+permissions: {contents: read}
+jobs:
+  signed-prefix-and-explicit-human:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.12', '3.13.5']
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '${{ matrix.python }}'}
+      - name: Actual root, boot, Ed25519 roles, competing processes and isolated launchers
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-stage18-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env GITHUB_ACTIONS=true OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_stage18*.py' -v
+      - name: Frozen native composition regression
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-stage18-${GITHUB_RUN_ID}"
+          sudo env GITHUB_ACTIONS=true OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_rollout_native.py -v
