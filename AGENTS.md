@@ -1,3 +1,13 @@
+# CURRENT — patch inputs captured; offline review compiler qualified, execution still pending
+
+Operator receipt confirms PRIVATE_INPUTS_CAPTURED_NO_AUTHORITY at /etc/ouf/deploy-snapshots/ingestion-readiness-patch-inputs-3fea910fc74b8ea6fcfd121fc0f8386a1ed78c5a89063a3e686053ca8180a317; log /home/oufadmin/ouf-readiness-patch.DzgBMdIf/operator.log.12Engine GETs,0imports/OAuth/runtime effects. Preserve it; never rerun capture.
+
+Next terminal step is the exact OFFLINE review compiler0d31bc3942b508cddaebe70e45ca2f33efb6375c with releases/ingestion-readiness-patch-review-case-20261021.json. CI39655532624/39655542979 passed6tests on Python3.12 and3.13.5. It reads only pinned private metadata/candidate files and writes a new private template; no network/Engine/owner/SQL/provider call or runtime authority. Its captured-frame proof is not live readback. Native patch executor qualification and fresh runtime consent/gates remain pending. Do not ask for fresh consent before the executable path is qualified and concrete.
+
+Source4165b9e/image76c38ddf remain NOT INSTALLED. Normal configured runtime work may resume on a future start; no new activation/job/grant/DB migration is implied. Rollout28/28/source APPROVED/CONFIRMED and readinessPAUSED2/generation3/503 retained; later503 cause unproven. OAuth292/292,technical8/8,functional4/6,G3OPEN. See docs/handoffs/OUF_INGESTION_READINESS_PATCH_REVIEW_20261021.md and evidence/ingestion-readiness-patch-input-target-20261021.json. After STOP conserve every file/claim; no automatic replay.
+
+---
+
 # CURRENT — exact readiness patch image exported; private target input capture pending
 
 Source fix is PR46 /GioNob/ouf-ingestion-runtime@4165b9e149be467d5d7c6bed35e4e1af4e249db1, qualified25focused tests and186full tests (2skips). Exact image export run39650459729/artifact12370330790 passed security/archive/source/migration checks; image sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc. Not installed.

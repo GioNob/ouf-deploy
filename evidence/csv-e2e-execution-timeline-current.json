@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-21T18:25:09.188Z",
+  "lastUpdatedAt": "2026-10-21T18:49:40.755Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1528,6 +1528,22 @@
       "targetExecuted": false,
       "runtimeAuthorityIssued": false,
       "evidenceRef": "evidence/ingestion-readiness-patch-delivery-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-READINESS-PATCH-INPUTS-CAPTURED-AND-OFFLINE-REVIEW-QUALIFIED",
+      "classification": "OPERATOR_PASTED_TARGET_INPUT_RECEIPT_AND_DEVELOPMENT_CI",
+      "documentedAt": "2026-10-21T18:49:40.755Z",
+      "inputContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-patch-inputs-3fea910fc74b8ea6fcfd121fc0f8386a1ed78c5a89063a3e686053ca8180a317",
+      "inputEngineGets": 12,
+      "inputImagesImported": 0,
+      "inputRuntimeEffects": 0,
+      "inputLog": "/home/oufadmin/ouf-readiness-patch.DzgBMdIf/operator.log",
+      "reviewCompilerCommit": "0d31bc3942b508cddaebe70e45ca2f33efb6375c",
+      "reviewCompilerCiRun": 39655532624,
+      "reviewTestsPerPython": 6,
+      "nativeRuntimeExecutorQualified": false,
+      "reviewTemplateCompiledOnTarget": false,
+      "releaseAcceptance": false
     }
   ],
   "activeIntervals": [
@@ -2290,7 +2306,7 @@
     "refreshPerformed": false,
     "budgetReset": false,
     "wp3Block": {
-      "status": "READINESS_PATCH_IMAGE_EXPORTED_PRIVATE_TARGET_INPUT_CAPTURE_PENDING",
+      "status": "PATCH_INPUTS_CAPTURED_OFFLINE_REVIEW_COMPILER_QUALIFIED_TARGET_TEMPLATE_PENDING",
       "nextStage": 28,
       "appliedStages": 28,
       "currentAuthorityProven": false,
@@ -2300,7 +2316,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "EXACT_GET_ONLY_INPUT_CAPTURE_AND_PRIVATE_ARTIFACT_CUSTODY_NO_RUNTIME_AUTHORITY",
+      "nextRequiredTargetAction": "EXACT_OFFLINE_TEMPLATE_COMPILATION_NO_AUTHORITY_OR_NETWORK",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2315,7 +2331,7 @@
       "nativeRolloutComplete": true
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "BOUNDED_READINESS_HTTP_TRACE_NO_MUTATIONS",
+    "latestOperatorConfirmedOperation": "READINESS_PATCH_INPUT_CAPTURED_NO_AUTHORITY",
     "latestOperatorConfirmedOperationPolicyMutations": 0,
     "loginPerformedScope": "COMPLETED_FRESH_STAGE18_HUMAN_PROVIDER_VERIFICATION_AT292_NO_CURRENT_AUTHORITY_INFERRED",
     "newHumanLoginPerformed": true,
@@ -2323,7 +2339,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_INGESTION_READINESS_PATCH_PREPARATION_20261021.md",
+    "currentHandoff": "docs/handoffs/OUF_INGESTION_READINESS_PATCH_REVIEW_20261021.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 292,
@@ -2341,7 +2357,9 @@
       "generation": 3,
       "lastCode": "ONB_READINESS_DEPENDENCY_503"
     },
-    "runtimeContractFixInstalled": false
+    "runtimeContractFixInstalled": false,
+    "readinessPatchInputContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-patch-inputs-3fea910fc74b8ea6fcfd121fc0f8386a1ed78c5a89063a3e686053ca8180a317",
+    "readinessPatchRuntimeExecutorQualified": false
   },
   "unverifiedIntervals": [
     {
@@ -2572,6 +2590,19 @@
       "maximumCumulativeOAuthAttempts": 292,
       "automaticReplayAllowed": false,
       "releaseAcceptance": false
+    },
+    "readinessPatchOfflineReview": {
+      "qualifiedCommit": "0d31bc3942b508cddaebe70e45ca2f33efb6375c",
+      "run": 39655532624,
+      "prRun": 39655542979,
+      "pythonVersions": [
+        "3.12",
+        "3.13.5"
+      ],
+      "testsPerVersion": 6,
+      "skipped": 0,
+      "targetCompiled": false,
+      "nativeRuntimeExecutorQualified": false
     }
   },
   "developmentCandidates": [
@@ -2645,7 +2676,7 @@
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "RUN_PINNED_READ_ONLY_TARGET_INPUT_CAPTURE_NO_LOGIN_OR_ACTIVATION",
+    "currentRequiredHumanAction": "RUN_PINNED_OFFLINE_REVIEW_COMPILER_NO_LOGIN_OR_ACTIVATION",
     "maximumNewOAuthRequests": 0,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
     "profileApplied": true,
