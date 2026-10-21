@@ -112,7 +112,7 @@ PUT_CHILD = r'''import http.client,ipaddress,json,os,re,signal,sys
 signal.alarm(8)
 try:
  v=json.loads(sys.stdin.buffer.read(131073))
- if set(v)!={'host','port','realm','clientUuid','token','attributes','lifespan'}:raise ValueError()
+ if set(v)!={'host','port','realm','clientUuid','token','attributes','lifespan','frontchannelLogout'}:raise ValueError()
  if not ipaddress.ip_address(v['host']).is_loopback or type(v['port'])is not int or not 1<=v['port']<=65535:raise ValueError()
  if not all(type(v[k])is str and re.fullmatch('[A-Za-z0-9._-]{1,128}',v[k])for k in ('realm','clientUuid')):raise ValueError()
  if type(v['token'])is not str or not 0<len(v['token'])<=16384 or any(c.isspace()for c in v['token']):raise ValueError()
@@ -120,7 +120,8 @@ try:
  attrs=v['attributes']
  if type(attrs)is not dict or len(attrs)>256 or attrs.get('access.token.lifespan')!=str(v['lifespan']):raise ValueError()
  if not all(type(k)is str and 0<len(k)<=256 and type(x)is str and len(x)<=8192 for k,x in attrs.items()):raise ValueError()
- raw=json.dumps({'attributes':attrs},sort_keys=True,separators=(',',':'),allow_nan=False).encode()
+ if type(v['frontchannelLogout'])is not bool:raise ValueError()
+ raw=json.dumps({'attributes':attrs,'frontchannelLogout':v['frontchannelLogout']},sort_keys=True,separators=(',',':'),allow_nan=False).encode()
  if len(raw)>65536:raise ValueError()
  fd=int(sys.argv[1]);os.setns(fd,0);os.close(fd)
  c=http.client.HTTPConnection(v['host'],v['port'],timeout=6)
@@ -239,10 +240,16 @@ def run(case,api,auth,files,process_adapter,Journal):
         expected={k:receipt[k]for k in current}
         require(client.get('id')==receipt['clientUuid'] and current==expected,
             'RETAINED_CLIENT_OR_REALM_POLICY_DRIFT_NO_PUT_ALLOWED')
+        # Real Keycloak26.2.5 round trip changes this field when omitted from
+        # the partial representation. Carry its exact observed Boolean; never
+        # infer a value or weaken readback comparison to allow the side effect.
+        require(type(client.get('frontchannelLogout'))is bool,
+            'EXPLICIT_OBSERVED_FRONTCHANNEL_LOGOUT_VALUE_REQUIRED')
         attrs=copy.deepcopy(client.get('attributes')or{})
         attrs['access.token.lifespan']=str(seconds)
         proposed=copy.deepcopy(client);proposed['attributes']=attrs
-        require(len(api.encoded({'attributes':attrs}))<=65536,'BOUNDED_ONE_FIELD_CLIENT_UPDATE_REQUIRED')
+        require(len(api.encoded({'attributes':attrs,'frontchannelLogout':client['frontchannelLogout']}))<=65536,
+            'BOUNDED_ONE_FIELD_CLIENT_UPDATE_REQUIRED')
         CHECKPOINT['phase']='DISPATCH_ONE_REVIEWED_CLIENT_LIFETIME_PUT';check()
         require(expiry>time.time()+12 and journal.read()['clientPutsReserved']==0,
             'CURRENT_ADMIN_TOKEN_AND_UNCONSUMED_SINGLE_PUT_REQUIRED')
@@ -253,7 +260,7 @@ def run(case,api,auth,files,process_adapter,Journal):
             expectedRealmDigest=api.digest(realm),previousLifetimeAttribute=receipt['clientTimeoutAttributes']['access.token.lifespan'])
         put(api,program,ns,{'host':endpoint['connectHost'],'port':endpoint['connectPort'],
             'realm':selection['realm'],'clientUuid':receipt['clientUuid'],'token':token,
-            'attributes':attrs,'lifespan':seconds})
+            'attributes':attrs,'lifespan':seconds,'frontchannelLogout':client['frontchannelLogout']})
         check()
         after=get('CLIENT',token,expiry=expiry)
         unchanged=comparison(proposed,after,api)

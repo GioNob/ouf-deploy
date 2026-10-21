@@ -26,6 +26,7 @@ class LifetimePolicy(unittest.TestCase):
         self.receipt=self.a.invoke()
         self.select_case(self.receipt)
         self.client=copy.deepcopy(self.f.client)
+        self.client['frontchannelLogout']=False
         self.realm=copy.deepcopy(self.f.realm)
         self.operations=[]
 
@@ -55,6 +56,7 @@ class LifetimePolicy(unittest.TestCase):
         self.operations.append('PUT')
         self.assertEqual(Journal(self.destination).read()['clientPutsReserved'],1)
         self.assertEqual(payload['lifespan'],1200)
+        self.assertEqual(payload['frontchannelLogout'],self.client['frontchannelLogout'])
         self.client['attributes']=copy.deepcopy(payload['attributes'])
 
     def invoke(self,put=None,get=None):
@@ -114,6 +116,11 @@ class LifetimePolicy(unittest.TestCase):
         self.invoke()
         self.assertEqual(self.client['attributes']['another-owner-setting'],'retained')
 
+    def test_frontchannel_logout_is_observed_true_or_false_never_defaulted(self):
+        self.client['frontchannelLogout']=True
+        self.invoke()
+        self.assertTrue(self.client['frontchannelLogout'])
+
     def test_set_order_is_semantic_but_actual_mapper_or_flow_change_is_rejected(self):
         first={**self.client,'defaultClientScopes':['profile','openid'],
             'protocolMappers':[{'id':'a','config':{'claim.name':'a'}},{'id':'b','config':{'claim.name':'b'}}]}
@@ -154,7 +161,8 @@ class LifetimePolicy(unittest.TestCase):
         else:
             source=fixture.PHYSICAL_SERVER
             client={'id':'fixture-client-uuid','clientId':'fixture-human-admin','enabled':True,
-                'protocol':'openid-connect','attributes':{'access.token.lifespan':'300'},'secret':'PRIVATE-CLIENT-SECRET'}
+                'protocol':'openid-connect','frontchannelLogout':False,
+                'attributes':{'access.token.lifespan':'300'},'secret':'PRIVATE-CLIENT-SECRET'}
             source=source.replace('issued=None','issued=None\nclient_state='+repr(client))
             source=re.sub(r'(?m)^  client=.*$','  client=client_state',source)
             method=''' def do_PUT(self):
@@ -162,7 +170,7 @@ class LifetimePolicy(unittest.TestCase):
   n=int(self.headers.get('Content-Length','0'))
   if not 0<n<=65536:self.reply(400,{});return
   v=json.loads(self.rfile.read(n))
-  if set(v)!={'attributes'}:self.reply(400,{});return
+  if set(v)!={'attributes','frontchannelLogout'} or v['frontchannelLogout']!=client_state['frontchannelLogout']:self.reply(400,{});return
   client_state['attributes']=v['attributes'];self.send_response(204);self.end_headers()
 '''
             source=source.replace(' def do_GET(self):',method+' def do_GET(self):')

@@ -14,10 +14,10 @@ if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
 ouf_read="$(mktemp -d "$HOME/ouf-iam-client-lifetime.XXXXXXXX")"
 ouf_report() { printf 'Launcher conservato: %s\nLog conservato: %s/policy.log\n' "${BASH_SOURCE[0]}" "$ouf_read"; }
 trap ouf_report EXIT
-"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/70d6f6573b76b85672ceb5dcf0e59a741397f75f' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/policy.py"
-printf '%s  %s\n' '765b57aeaa0c6d456943dd6d31d54e30e625ebc60cdcd3d6dbbb12c97b6ba22c' "$ouf_read/policy.py" | sha256sum -c -
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/88366b1d4f9ad4cb73f10fcd95fd106fe8c0cbe4' --jq .content | tr -d '\n' | base64 --decode > "$ouf_read/policy.py"
+printf '%s  %s\n' '4005c24d7d30b09a8d4432335476c52b74e105e29c4b303dc109272cd0df8fb2' "$ouf_read/policy.py" | sha256sum -c -
 ouf_args=("$ouf_mode")
-sudo python3 -I -B -S - "$ouf_read/policy.py" '765b57aeaa0c6d456943dd6d31d54e30e625ebc60cdcd3d6dbbb12c97b6ba22c' "${ouf_args[@]}" <<'OUF_OPERATOR'  | tee "$ouf_read/policy.log"
+sudo python3 -I -B -S - "$ouf_read/policy.py" '4005c24d7d30b09a8d4432335476c52b74e105e29c4b303dc109272cd0df8fb2' "${ouf_args[@]}" <<'OUF_OPERATOR'  | tee "$ouf_read/policy.log"
 import hashlib,os,stat,sys
 try:
  fd=os.open(sys.argv[1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
