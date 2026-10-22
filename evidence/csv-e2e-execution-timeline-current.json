@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-22T11:43:13Z",
+  "lastUpdatedAt": "2026-10-22T12:15:56Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1799,6 +1799,18 @@
       "publishedPinsMatched": true,
       "nextAction": "ONE_PINNED_CACHED_STAGE8_RUNTIME_PREFLIGHT_ONLY",
       "targetPreflightObserved": false
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-RUNTIME-PREFLIGHT-TARGET-PASS",
+      "observedAt": "2026-10-22T12:15:56Z",
+      "classification": "OWNER_PUBLIC_RECEIPT_NO_EXECUTION_TIME_INFERRED",
+      "appliedStages": 8,
+      "remainingStages": 4,
+      "engineRequests": 0,
+      "oauthRequests": 0,
+      "runtimeEffectsDispatched": 0,
+      "duplicateTranscriptIsNotAdditionalExecution": true,
+      "nextRequiredAction": "ONE_PINNED_STAGE8_HUMAN_PREPARE_ONLY"
     }
   ],
   "activeIntervals": [
@@ -2571,7 +2583,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "ONE_PINNED_CACHED_STAGE8_RUNTIME_PREFLIGHT_ONLY",
+      "nextRequiredTargetAction": "ONE_PINNED_STAGE8_HUMAN_PREPARE_ONLY",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2592,7 +2604,7 @@
       "v2ProductionControllerQualified": true
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "STAGE8_LIVE_METADATA_MATCHED_NO_AUTHORITY",
+    "latestOperatorConfirmedOperation": "STAGE8_CONTINUATION_PREFLIGHT_NO_AUTHORITY",
     "latestOperatorConfirmedOperationPolicyMutations": 0,
     "loginPerformedScope": "COMPLETED_FRESH_STAGE18_HUMAN_PROVIDER_VERIFICATION_AT292_NO_CURRENT_AUTHORITY_INFERRED",
     "newHumanLoginPerformed": true,
@@ -2653,7 +2665,13 @@
     "readinessPatchLiveCaptureHash": "b9063de73e2d7699e3e7616a164f4b9a24346bc0a3fda1ed3762f4dc0dd95ef2",
     "readinessPatchMetadataMatchedAtCapture": true,
     "readinessPatchFourStageDeliveryQualified": true,
-    "readinessPatchFourStagePreflightObserved": false
+    "readinessPatchFourStagePreflightObserved": true,
+    "readinessPatchStage8CachedLaunchers": {
+      "operatorLog": "/home/oufadmin/ouf-stage8-continuation.V5n7KcjC/operator.log",
+      "humanLauncher": "/home/oufadmin/ouf-readiness-launchers.XMzIT1rQ/human.sh",
+      "runtimeLauncher": "/home/oufadmin/ouf-readiness-launchers.XMzIT1rQ/runtime.sh",
+      "setupLauncher": "/home/oufadmin/ouf-stage8-setup.uXBN2xPO"
+    }
   },
   "unverifiedIntervals": [
     {
