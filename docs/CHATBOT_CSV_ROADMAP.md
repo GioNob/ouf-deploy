@@ -1,3 +1,13 @@
+# LATEST — historical chain reconciled; source descriptor and read-only image preflight only
+
+Owner /home/oufadmin/ouf-registry-history.j7S0llGM/operator.log: HISTORICAL_REGISTRY_INPUTS_RECONCILED_NO_RUNTIME_AUTHORITY,20metadata reads,0Engine/DB/OAuth/credentials/effects. Private inputs /etc/ouf/deploy-snapshots/semantic-registry-history-capture-r5cc0fjv/inputs.json SHA2568facd750a673d25c14bfc1a58c8c0ae28d63d8a5ce487ab956b8f2b23dc902c9. Historical gate reconciled;7current gates stay open. Preserve every dossier/context/claim/log; no independent cloud readback claimed.
+
+Next ONLY distinct tools/semantic_registry_recovery_composition: blocked source compatibility map + exact retained candidate contract,6GET/45second image/declaration preflight. Two exact Gateway/Registry/image reads each,2MiB/get,closed identities; drift/404/limits STOP, no fallback/retry. Match historical image audit/rootfs diff IDs/config and4readonly bind declarations; no layer re-audit,live OCI/file custody/token/DB/current route/readiness proof. Write ONLY new root700/root400 private composition.json. No executor/apply/step/issuer/signer/refresh/authority control. Created-only stage adapter and combined unpause/SIGUSR1 release cannot be reused unchanged.18new+69unchanged local tests=87PASS,0skips; native/VPS/CI/recovery qualification pending. See docs/handoffs/OUF_SEMANTIC_REGISTRY_RECOVERY_SOURCE_PREFLIGHT_20261022.md and new history target evidence.
+
+WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. nativeExecutorQualifiedfalse,targetApplyAuthorizedfalse,runtimeAuthorityIssuedfalse. OAuth304/304exhausted,source24hourwindowhistorical;no provider recovery,activation,old rollout/claim/signal replay,budget/window reset,login or release acceptance. Candidate limits are proposals only. Previous next-command headers superseded.
+
+---
+
 # LATEST — gated proposal retained; offline history composition next
 
 Owner /home/oufadmin/ouf-registry-proposal.gEjCBGSF/operator.log:BLOCKED_RECOVERY_PROPOSAL_RETAINED,4/4GETs,gatedfileonlylaunchobserved,privateProposalPath=/etc/ouf/deploy-snapshots/semantic-registry-recovery-proposal-a14asgjz/proposal.json,hash8b1cce8a68003a5c54778f0b61bd92ecb16532d72d1d7eb5510719b857d89624.8gatesopen,nativeExecutorQualifiedfalse,targetApplyAuthorizedfalse,authority/effects/OAuth0. Preserve proposal and all previous contexts.
