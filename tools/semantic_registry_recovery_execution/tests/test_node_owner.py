@@ -3,7 +3,7 @@
 No target credentials or mandates are used. Full native observation is replaced
 only in these tests; the production owner retains the complete native observer.
 """
-import copy,json,sys,unittest
+import copy,json,sys,time,unittest
 from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[3]
@@ -63,11 +63,12 @@ class NodeOwner(unittest.TestCase):
         root=self.temp_root/('semantic-registry-recovery-'+plan['logicalOperationRef']);root.mkdir(mode=0o700)
         (root/'node').mkdir(mode=0o700)
         store=c.Store(root,plan['logicalOperationRef']);self.store=store
-        fresh={'containerId':baseline['Id'],'bootId':'11111111-2222-3333-4444-555555555555',
+        fresh={'containerId':baseline['Id'],'bootId':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
             'pid':4242,'startTicks':1234,'namespaceDevice':4,'namespaceInode':12}
-        initial=c.initial(plan,authority_hash=scope.hash,expires_unix=self.now+110,expires_monotonic=110,
+        mono=time.monotonic()
+        initial=c.initial(plan,authority_hash=scope.hash,expires_unix=self.now+110,expires_monotonic=mono+110,
             boot_id=fresh['bootId'],predecessor_history_hash=self.expected['predecessorHistoryHash'],
-            created_unix=self.now,created_monotonic=10)
+            created_unix=self.now,created_monotonic=mono)
         effects=[]
         for stage in plan['stages'][:6]:
             evidence={'newGeneration':fresh,'durableNativeStartEvidence':True}

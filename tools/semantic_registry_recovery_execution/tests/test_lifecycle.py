@@ -1,5 +1,5 @@
 """Actual Unix HTTP Engine transport with a simulated container, not Docker."""
-import copy,importlib.util,json,os,socketserver,sys,tempfile,threading,unittest
+import copy,importlib.util,json,os,socketserver,sys,tempfile,threading,time,unittest
 from pathlib import Path
 from http.server import BaseHTTPRequestHandler
 from unittest.mock import patch
@@ -49,17 +49,18 @@ class Tests(unittest.TestCase):
              'hostConfigHash':c.digest(self.baseline['HostConfig']),'mountsHash':c.digest([])}
         self.proposal={'registry':pin,'requiredGates':list(proposal_module.GATES),'unresolvedGateCount':8}
         self.plan=proposal_module.candidate_contract(self.proposal,'b'*64,'c'*64)
-        self.new={'containerId':'a'*64,'bootId':'11111111-2222-3333-4444-555555555555',
+        self.wall,self.mono=time.time(),time.monotonic()
+        self.new={'containerId':'a'*64,'bootId':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
                   'pid':4242,'startTicks':12345,'namespaceDevice':4,'namespaceInode':12}
         self.temp=tempfile.TemporaryDirectory(dir=Path.cwd());self.addCleanup(self.temp.cleanup)
         parent=Path(self.temp.name);root=parent/('semantic-registry-recovery-'+self.plan['logicalOperationRef']);root.mkdir(mode=0o700)
         self.store=c.Store(root,self.plan['logicalOperationRef'])
         self.auth=FixtureAuthority(self.request)
-        self.raw=c.encoded({'semanticRegistryRecovery':a.scope(self.plan),'issuedAt':99,'expiresAt':901})
+        self.raw=c.encoded({'semanticRegistryRecovery':a.scope(self.plan),'issuedAt':self.wall-1,'expiresAt':self.wall+801})
         self.patch=patch.object(a,'cutover_type',return_value=FixtureAuthority);self.patch.start();self.addCleanup(self.patch.stop)
         self.authority=a.AuthorityScope(self.auth,self.raw,self.plan,self.request)
-        row=c.initial(self.plan,authority_hash=self.authority.hash,expires_unix=900,expires_monotonic=850,
-            boot_id=self.new['bootId'],predecessor_history_hash='e'*64,created_unix=100,created_monotonic=50)
+        row=c.initial(self.plan,authority_hash=self.authority.hash,expires_unix=self.wall+800,expires_monotonic=self.mono+800,
+            boot_id=self.new['bootId'],predecessor_history_hash='e'*64,created_unix=self.wall,created_monotonic=self.mono)
         self.store.initialize(row)
         socket_path=str(parent/'s');self.server=socketserver.UnixStreamServer(socket_path,Handler)
         os.chmod(socket_path,0o600);info=os.stat(socket_path)

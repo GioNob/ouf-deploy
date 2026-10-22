@@ -35,4 +35,23 @@ jobs:
           python3 -m unittest discover -s tests -p test_file_only_retained_checkpoint.py -v
           python3 -m unittest discover -s tests -p test_file_only_frame_compiler.py -v
           python3 -m unittest discover -s tests -p test_paused_node_acceptance_native.py -v
+          python3 -m unittest discover -s tests -p test_renewable_token_mount.py -v
+          '
+  native-paused-generation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Root-custodied isolated source tree
+        run: |
+          sudo install -d -m 0700 /root/ouf-registry-tests
+          sudo cp -a . /root/ouf-registry-tests/
+          sudo chown -R root:root /root/ouf-registry-tests
+      - name: Real disposable Docker start, pause and kernel generation with actual Ed25519 scope
+        run: |
+          sudo bash -eu -c '
+          cd /root/ouf-registry-tests
+          python3 tools/semantic_registry_recovery_execution/tests/native_paused_recovery.py -v
           '

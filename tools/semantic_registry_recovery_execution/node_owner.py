@@ -72,7 +72,7 @@ class RecoveryNodeOwner:
     def guard(self):
         require(node_scope(self.plan,self.recipe,self.profile)==self.scope
             and self.plan==self.lifecycle.plan,'RECOVERY_NODE_RECIPE_OR_PLAN_CHANGED')
-        native=self.lifecycle;row=native.store.read();native.authority.guard(row)
+        native=self.lifecycle;row=native.journal()
         require(json.loads(native.authority.raw).get('semanticRegistryRecoveryNode')==self.scope,
             'CURRENT_SIGNED_INDEPENDENT_RECOVERY_NODE_SCOPE_REQUIRED')
         s=self.root.lstat()
@@ -157,6 +157,10 @@ class RecoveryNodeOwner:
             nativeAcceptanceHash=hashlib.sha256(raw).hexdigest(),nativeObservationHash=digest(observed))
         self.lifecycle.store.cas(row,{**row,'effects':effects,'version':row['version']+1})
         self.guard()
+        # The durable signature claim must not outlive the exact native pause
+        # observed before it. A changed PID/netns/clock is never signed.
+        current,_,expected=self.native_observation()
+        require(current==observed and expected==raw,'RECOVERY_NODE_CHANGED_BEFORE_SIGNATURE')
         envelope=self.signer.sign(raw)
         publish_once(signature_path,envelope,'RECOVERY_NODE_SIGNATURE_ALREADY_PRESENT')
         publish_once(auth_path,raw,'RECOVERY_NODE_ACCEPTANCE_ALREADY_PRESENT')

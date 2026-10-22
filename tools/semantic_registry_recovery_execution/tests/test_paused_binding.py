@@ -22,9 +22,8 @@ class Binding(unittest.TestCase):
     def prepare(self):
         for target,value in ((p,'profile_type'),):
             mocked=patch.object(target,value,return_value=Profile);mocked.start();self.addCleanup(mocked.stop)
-        for target,value in (('time.time',100),('time.monotonic',50)):
+        for target,value in (('time.time',self.wall),('time.monotonic',self.mono)):
             mocked=patch(target,return_value=value);mocked.start();self.addCleanup(mocked.stop)
-        boot=patch.object(p.Path,'read_text',return_value=self.new['bootId']);boot.start();self.addCleanup(boot.stop)
         stage=self.claim('START_NEW_WAIT_GATE');self.native.apply(stage)
         state,proof=self.native.observe(stage);self.assertEqual(state,'APPLIED')
         self.complete(proof)
@@ -90,7 +89,7 @@ class Binding(unittest.TestCase):
         binding=self.prepare();self.auth.current=False
         with self.assertRaisesRegex(c.RecoveryDenied,'CURRENT_DUAL_ROLE'):binding.observe()
         self.auth.current=True
-        with patch.object(p.time,'time',return_value=901):
+        with patch('time.time',return_value=self.wall+801):
             with self.assertRaisesRegex(c.RecoveryDenied,'CURRENT_FINITE'):binding.observe()
 
     def test_binding_refuses_stage_after_unpause(self):

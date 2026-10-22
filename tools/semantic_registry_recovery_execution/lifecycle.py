@@ -3,9 +3,9 @@
 Component only: no production Ports/factory/CLI is provided. Full native owner
 checkpoints and signed paused OCI attestation must guard dispatch separately.
 """
-import copy,os
+import copy,os,time
 from pathlib import Path
-from .core import require,digest,generation,Store,validate_plan
+from .core import require,digest,generation,Store,validate_plan,validate_current
 from .authorization import AuthorityScope
 
 NAMES={'START_NEW_WAIT_GATE':'start','PAUSE_NEW_WAIT_GATE':'pause',
@@ -43,11 +43,17 @@ class Lifecycle:
                 and proposal['registry']['mountsHash']==digest(sorted(stopped_snapshot['Mounts'],key=lambda m:m['Destination']))
                 and stopped_snapshot['State']['Status']=='exited' and stopped_snapshot['State']['Pid']==0,
                 'EXACT_REVIEWED_STOPPED_REGISTRY_BASELINE_REQUIRED')
+    def journal(self):
+        row=self.store.read()
+        boot=Path('/proc/sys/kernel/random/boot_id').read_text(encoding='ascii').strip()
+        validate_current(self.plan,row,boot,(time.time(),time.monotonic()))
+        self.authority.guard(row)
+        return row
     def current(self,stage):
         require(stage in self.plan['stages'] and stage['name'] in NAMES,'CLOSED_REGISTRY_LIFECYCLE_STAGE_REQUIRED')
         require(digest({'request':self.request,'snapshot':self.baseline,'proposal':self.proposal})==self.binding,
                 'REGISTRY_LIFECYCLE_BASELINE_CHANGED')
-        row=self.store.read();self.authority.guard(row)
+        row=self.journal()
         require(row['planHash']==digest(self.plan) and row['state']=='IN_FLIGHT'
                 and row['nextStage']<len(self.plan['stages']) and self.plan['stages'][row['nextStage']]==stage
                 and row['effects'][-1]['state']=='CLAIMED' and row['effects'][-1]['stage']==stage['name']

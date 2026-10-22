@@ -5,9 +5,8 @@ complete OCI/frame observers may consume this exact typed binding; it grants
 neither node acceptance nor a signature. Only the durably captured first start
 generation, followed by the separately completed pause, can be observed here.
 """
-import copy,time
-from pathlib import Path
-from .core import require,digest,validate_plan,generation,validate_current
+import copy
+from .core import require,digest,validate_plan,generation
 from .lifecycle import Lifecycle
 
 def profile_type():
@@ -30,10 +29,7 @@ class RecoveryPausedBinding:
                 and digest(native.request)==self.request_hash
                 and self.execution_profile.verify(native.request)==self.profile_hash,
                 'RECOVERY_PAUSED_SCOPE_CHANGED')
-        row=native.store.read()
-        boot=Path('/proc/sys/kernel/random/boot_id').read_text(encoding='ascii').strip()
-        validate_current(native.plan,row,boot,(time.time(),time.monotonic()))
-        native.authority.guard(row)
+        row=native.journal()
         require(row['state']=='IN_FLIGHT' and row['nextStage'] in (4,5,6,7)
                 and len(row['effects'])==row['nextStage']+1,
                 'CURRENT_RECOVERY_PAUSED_CHECKPOINT_REQUIRED')
@@ -46,9 +42,10 @@ class RecoveryPausedBinding:
         fresh=generation(row['newGeneration'])
         first=start.get('nativeFirstProcess')
         require(type(first) is dict and first.get('newGeneration')==fresh
-                and first.get('processKind')=='GATE_WAITING' and first.get('paused') is False
+                and first.get('paused') is False
                 and start['nativeEvidence'].get('durableNativeStartEvidence') is True
                 and start['nativeEvidence'].get('newGeneration')==fresh
+                and start['nativeEvidence'].get('processKind')=='GATE_WAITING'
                 and pause['nativeEvidence'].get('newGeneration')==fresh
                 and pause['nativeEvidence'].get('processKind')=='GATE_WAITING'
                 and pause['nativeEvidence'].get('paused') is True
