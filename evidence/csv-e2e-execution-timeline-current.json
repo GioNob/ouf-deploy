@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-22T12:18:50Z",
+  "lastUpdatedAt": "2026-10-22T12:22:05Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1823,6 +1823,19 @@
       "proposalHash": "f3cb92802a19ec9562507ccb103b8b18d883bd8da44b361a8f9d50615d1036e3",
       "proposedCumulativeCeiling": 304,
       "duplicateTranscriptIsNotAdditionalExecution": true
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-TECHNICAL-BUDGET-GRANTED",
+      "observedAt": "2026-10-22T12:22:05Z",
+      "approvedAtUnixFromDecisionRef": 1792671641,
+      "classification": "OWNER_PUBLIC_RECEIPT_NEW_FINITE_BUDGET_NOT_LOGIN_OR_RUNTIME_AUTHORITY",
+      "priorOAuthAttempts": 300,
+      "maximumCumulativeOAuthAttempts": 304,
+      "additionalGranted": 4,
+      "countsAsOfGrant": true,
+      "subsequentConsumptionNotObserved": true,
+      "decisionHash": "aee379b749260d973b20d838427aec1e91dda51e4c09b24ca30449bb2d6f6103",
+      "duplicateTranscriptIsNotAdditionalGrant": true
     }
   ],
   "activeIntervals": [
@@ -2595,7 +2608,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "ONE_EXPLICIT_STAGE8_FOUR_REQUEST_BUDGET_CONSENT",
+      "nextRequiredTargetAction": "ONE_EXPLICIT_STAGE8_HUMAN_WINDOW_CONSENT",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2616,21 +2629,21 @@
       "v2ProductionControllerQualified": true
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "STAGE8_HUMAN_RUNTIME_PREFLIGHT_NO_WINDOW_OR_BUDGET",
+    "latestOperatorConfirmedOperation": "PATCH_TECHNICAL_BUDGET_GRANTED_NO_LOGIN_OR_RUNTIME_AUTHORITY",
     "latestOperatorConfirmedOperationPolicyMutations": 0,
     "loginPerformedScope": "COMPLETED_FRESH_STAGE18_HUMAN_PROVIDER_VERIFICATION_AT292_NO_CURRENT_AUTHORITY_INFERRED",
     "newHumanLoginPerformed": true,
     "currentCumulativeOAuthAttempts": 300,
-    "currentRemainingAttempts": 0,
+    "currentRemainingAttempts": 4,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
     "currentHandoff": "docs/handoffs/OUF_PATCH_STAGE8_CONTINUATION_20261022.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
-    "maximumCumulativeOAuthAttempts": 300,
-    "countsAsOfGrant": false,
-    "subsequentConsumptionNotObserved": false,
-    "countsAsOfReadyReceipt": true,
+    "maximumCumulativeOAuthAttempts": 304,
+    "countsAsOfGrant": true,
+    "subsequentConsumptionNotObserved": true,
+    "countsAsOfReadyReceipt": false,
     "runtimeAuthorityWasIssuedInSuccessor": true,
     "nativeRolloutComplete": true,
     "nativeProfilePublished": false,
@@ -2685,7 +2698,9 @@
       "setupLauncher": "/home/oufadmin/ouf-stage8-setup.uXBN2xPO"
     },
     "readinessPatchStage8HumanPreflightObserved": true,
-    "readinessPatchStage8BudgetProposalHash": "f3cb92802a19ec9562507ccb103b8b18d883bd8da44b361a8f9d50615d1036e3"
+    "readinessPatchStage8BudgetProposalHash": "f3cb92802a19ec9562507ccb103b8b18d883bd8da44b361a8f9d50615d1036e3",
+    "readinessPatchStage8BudgetGranted": true,
+    "readinessPatchStage8BudgetDecisionHash": "aee379b749260d973b20d838427aec1e91dda51e4c09b24ca30449bb2d6f6103"
   },
   "unverifiedIntervals": [
     {

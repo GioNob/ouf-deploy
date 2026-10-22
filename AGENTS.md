@@ -1,3 +1,11 @@
+# CURRENT — target300->304budget GRANTED; separate one-window consent only
+
+Owner receipt PATCH_TECHNICAL_BUDGET_GRANTED_NO_LOGIN_OR_RUNTIME_AUTHORITY:4additional requests granted,prior300/ceiling304,decisionaee379b749260d973b20d838427aec1e91dda51e4c09b24ca30449bb2d6f6103;proposal f3cb92802a19ec9562507ccb103b8b18d883bd8da44b361a8f9d50615d1036e3. Counts AS OF GRANT only; subsequent consumption not observed. Duplicate JSON/log is the SAME decision,not another grant. Preserve /home/oufadmin/ouf-readiness-human.8XV8wXUY/operator.log.0OAuth/newwindow/runtimeauthority/effects in this decision. Never rerun grant-budget/prepare/preflight/setup/completed capture or old controls.
+
+Next ONLY: SHA-checked cached HUMAN /home/oufadmin/ouf-readiness-launchers.XMzIT1rQ/human.sh open-window ONCE. Separate terminal consent opens7200seconds,with0provider requests and no runtime/THS/source authority. Review hash comes from exact private fresh_review; it is not derivable from public grant alone. Copy the COMPLETE exact APRO FINESTRA HUMAN <hash> phrase displayed by the terminal; never invent or reuse an older review hash. Return NEW JSON/controlPath/operator.log. Each of four later provider requests remains a separate explicit manual command/confirmation; do not poll/login/refresh automatically. Patch8/12,technical8/8,functional4/6,G3OPEN. Existing fully qualified runtime/production caches must be reused; no development/download during fresh token lifetime. Older instructions historical.
+
+---
+
 # CURRENT — target HUMAN/runtime preflights PASS; separate budget consent next
 
 Owner receipt STAGE8_HUMAN_RUNTIME_PREFLIGHT_NO_WINDOW_OR_BUDGET:14bounded DockerGETs,live metadata matched,captureb9063de73e2d7699e3e7616a164f4b9a24346bc0a3fda1ed3762f4dc0dd95ef2;proposalf3cb92802a19ec9562507ccb103b8b18d883bd8da44b361a8f9d50615d1036e3.0OAuth/DB/HUMANjournal/runtimeeffects,NO grant/window/authority. Preserve /home/oufadmin/ouf-readiness-human.JAhu7tlD/operator.log and /home/oufadmin/ouf-readiness-launchers.XMzIT1rQ/human.sh. Duplicate transcript is not another execution. Never repeat prepare/preflight/setup/completed capture or old runtime/HUMAN commands.
