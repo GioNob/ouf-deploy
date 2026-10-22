@@ -1,3 +1,11 @@
+# CURRENT — complete four-stage path CI PASS; exact production reproduction pending
+
+Qualified source732a03fb19ada6e2168a585a2bbe78684800e05f: CI39771531964 PASS129tests EACH Python3.12/3.13.5,zero skips; focused platform39771531971/job119799997359 PASS1real Docker29/APISIX/JVM/PG17 test. Exact sealed148 runtime/HUMAN/cached TTY path imports prefix without replay,preserves original bytes/native counters,executes4residual stages with1additional Engine POST,0Gatewaywrites/newimages/keys. Synthetic stop/expiry/HUMAN/Owner/provider replies are explicit; this is NOT current target admission. Every original144 source byte remains unchanged.
+
+Production cases/capsules/cached launchers are generated and locally reproduce exactly. Wait for dedicated two-version exact production reproduction before presenting ONE pinned cached setup/runtime preflight. That preflight reads retained inputs/issuer/closure only:0Engine/OAuth/DB/HUMANjournal/effects,does not grant budget/window/runtime authority. Target remainsOAuth300/300,patch8/12,technical8/8,functional4/6,G3OPEN. Future304ceiling is only a proposed separately consented budget. No fresh login until target preflight and explicit governance; old full300window and token must be expired,not reset or implicitly superseded. Never replay completed capture/old runtime/old HUMAN commands. See docs/handoffs/OUF_PATCH_STAGE8_CONTINUATION_20261022.md. Older headers historical.
+
+---
+
 # Four-stage patch continuation — implementation pending whole-path qualification
 
 Target input receipt and immutable bindings: evidence/ingestion-readiness-stage8-live-target-20261022.json. Private capture hash b9063de73e2d7699e3e7616a164f4b9a24346bc0a3fda1ed3762f4dc0dd95ef2; old native journal b6b53f8740d6cbb02a3a7e4f7e0a16950475275896b4a433482e7701d4e5e17a; prefix2817613ea986a32046fad3066a954219b913189cae5918934a88c1764a439756;controljournalb2d292dde7cc3f2b337ae401d204d1e43f8da5c046a4aefee262169d8db6da2b. Owner log /home/oufadmin/ouf-stage8-live-inputs.SDSJXG92/operator.log. Target readiness/DB admission/Owner/routes still unproven. No VPS command or fresh login requested now.
@@ -11,3 +19,11 @@ Only ingestion.READINESS,VERIFY_FINAL,ingestion.RESTORE_RESTART,VERIFY_RESTORED_
 Separate HUMAN governance retains300exhausted history;304ceiling is a proposal only. Old full window and token must be expired,metadata exact,sameboot. Budget consent,window consent,and each of DISCOVERY/DEVICE_START/oneDEVICE_POLL/USERINFO are distinct. No refresh/automatic login/renewal. Entire path and exact delivery must pass qualification BEFORE asking owner to obtain fresh credentials. If the old full window has not expired,the qualified reader stops; do not weaken this predicate or reset it.
 
 Local9controller tests passed with real root CAS and two-role signatures; runtime transports/HUMAN identities in those units are explicit peers. New9governance tests and dedicated actual Docker29/APISIX/JVM/PG17 whole-path test are pending. No current target admission is inferred from fixtures. Technical8/8,functional4/6,G3OPEN,patch8/12,OAuth300/300. Future actions will be pinned only after completed CI and production reproduction.
+
+Completed whole-path qualification: source732a03fb19ada6e2168a585a2bbe78684800e05f;129tests EACH Python3.12/3.13.5,zero skips,CI39771531964/jobs119800000978,119800001075. Focused platform39771531971/job119799997359 PASS1test,321.375seconds. Native148sources and every original144 unchanged. Fixture stop/expiry and HUMAN/Owner/provider identities are synthetic; old original prefix and old exhausted HUMAN bytes stay unchanged. No current target health/admission/authority follows from this proof.
+
+Retained failed platform runs39770138270(prompt wording parser) and39770821359(missing test imports); corrections change only fixture code,never production runtime predicates. Local workspace fixture nesting also intermittently failed before reaching the new controller; native Linux CI passes all129 on both versions. Do not count a failed local fixture as target evidence or rerun target operations.
+
+Original PET files were not re-read in this continuation turn; normative reconciliation releases/PET_ROADMAP_RECONCILIATION_20261010.md and OUF_RESILIENCE_POLICYv3 were reconsulted,including durable budgets,ambiguity reconciliation,new separately consented finite sessions and no THS substitution. This is not complete PET compliance/acceptance certification.
+
+Exact production pins: evidence/ingestion-readiness-stage8-production-pins-20261022.json. Dedicated production byte reproduction on both Python versions pending. Local pure reproduction PASS1test. No target command delivered yet.

@@ -221,4 +221,16 @@ class Stage8Governance(unittest.TestCase):
         case=copy.deepcopy(self.case);case['governanceSourceHash']='f'*64
         with self.assertRaisesRegex(ValueError,'GOVERNANCE_SOURCE'):d.human_generate(ROOT,case)
 
+class ProductionDelivery(unittest.TestCase):
+    def test_every_exact_production_cache_and_case_reproduces(self):
+        from tools.ingestion_readiness_patch_execution import stage8_production as build
+        pins=json.loads((ROOT/'evidence/ingestion-readiness-stage8-production-pins-20261022.json').read_bytes())
+        files,expected=build.build(ROOT,pins['qualification']);self.assertEqual(pins,expected)
+        for path,raw in files.items():self.assertEqual(raw,(ROOT/path).read_bytes(),path)
+        self.assertEqual(pins['nativeSourceModules'],148)
+        self.assertFalse(pins['newBudgetGranted']);self.assertFalse(pins['targetCommandExecuted'])
+        self.assertEqual(pins['currentCumulativeOAuthAttempts'],300)
+        self.assertEqual(pins['maximumCumulativeOAuthAttempts'],300)
+
+
 if __name__=='__main__':unittest.main()
