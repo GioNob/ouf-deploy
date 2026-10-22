@@ -11,5 +11,7 @@
   "declarationHash": "82da4030d44b4133d28fddeaff5f173e4349a64206b9f6d6a74dcff0a0c92559",
   "generatorHash": "fd8b5783f67e6b7610130e3fd3a729833b69667f71b6722f455086b491b1bf94",
   "caseHash": "86a63c83ae644484400e2e3531db57e5aa4869ca8c5f17bcbec908de889bb6c6",
-  "moduleCount": 139
+  "moduleCount": 139,
+  "artifactCommit": "7a22715eadf10d1b574e6ef4af36f2ae0c0bca48",
+  "launcherSha256": "f3bcc189874e2264c8ab4cefca9ddc9cb11a281607e6d13ee9d1d77d063fefd7"
 }

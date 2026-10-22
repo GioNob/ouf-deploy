@@ -70,4 +70,23 @@ class ArchiveDelivery(unittest.TestCase):
             'PATH':str(binary)+os.pathsep+os.environ['PATH']},capture_output=True,text=True,timeout=30)
         self.assertNotEqual(result.returncode,0);self.assertFalse(marker.exists());self.assertFalse(self.fixture.target.exists())
 
+
+class ReleasedArchiveDelivery(unittest.TestCase):
+    def test_exact_production_capsule_and_generator_reproduce_across_python_versions(self):
+        case=json.loads((ROOT/'releases/ingestion-readiness-native-archive-case-20261022.json').read_bytes())
+        pins=json.loads((ROOT/'evidence/ingestion-native-archive-delivery-pins-20261022.json').read_bytes())
+        raw,declaration=d.generate(ROOT,case,pins['sourceCommit'],pins['sourcePins'])
+        self.assertEqual(raw,(ROOT/'scripts/prepare-ingestion-native-archive-20261022.py').read_bytes())
+        self.assertEqual(d.sha(raw),pins['artifactSha256'])
+        self.assertEqual(d.sha(d.encoded(declaration)),pins['declarationHash'])
+        self.assertEqual(d.sha((ROOT/'tools/ingestion_readiness_patch_execution/archive_delivery.py').read_bytes()),pins['generatorHash'])
+        self.assertEqual(declaration['nativeDeclaration']['moduleCount'],139)
+    def test_exact_production_launcher_reproduces_and_is_shell_valid(self):
+        pins=json.loads((ROOT/'evidence/ingestion-native-archive-delivery-pins-20261022.json').read_bytes())
+        raw=(ROOT/'scripts/prepare-ingestion-native-archive-20261022.py').read_bytes()
+        script=ROOT/'scripts/launch-prepare-ingestion-native-archive-20261022.sh'
+        self.assertEqual(d.launcher(raw,pins['artifactCommit']),script.read_bytes())
+        self.assertEqual(d.sha(script.read_bytes()),pins['launcherSha256'])
+        subprocess.run(['bash','-n',str(script)],check=True,capture_output=True)
+
 if __name__=='__main__':unittest.main()

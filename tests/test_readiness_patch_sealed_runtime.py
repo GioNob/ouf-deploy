@@ -1,7 +1,4 @@
 """Verified-memory import boundary; no target, authority issuance or I/O peers."""
-import ast
-import base64
-import gzip
 import hashlib
 import importlib.util
 import json
@@ -63,11 +60,11 @@ print(json.dumps({'entry':entry.__name__,'modules':actual['moduleCount'],'effect
         self.assertTrue(baseline.MODULES<runtime.MODULES)
         self.assertTrue(all(runtime.SOURCE_PATHS[n]==baseline.SOURCE_PATHS[n] for n in baseline.MODULES))
         self.assertNotEqual(runtime.ENTRY,baseline.ENTRY)
-        raw=(ROOT/'scripts/ingestion-rollout-production-control-20261020.py').read_bytes()
-        self.assertEqual(hashlib.sha256(raw).hexdigest(),'42b2569a0ba1f2234dfbcc011588cdf133d0e5c97a3f3433b903750f010448ea')
-        values={n.targets[0].id:ast.literal_eval(n.value)for n in ast.parse(raw).body
-            if isinstance(n,ast.Assign)and isinstance(n.targets[0],ast.Name)and n.targets[0].id=='DELIVERY'}
-        frozen=values['DELIVERY']['nativeDeclaration']['sourceHashes']
+        raw=(ROOT/'tests/fixtures/ingestion-readiness-patch/frozen-native-source-hashes.json').read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),'7771116d297cb5c0aa7037d294fb5b72c8e489bc308075a95edc39149699822a')
+        original=json.loads(raw)
+        self.assertEqual(original['qualifiedArtifactSha256'],'42b2569a0ba1f2234dfbcc011588cdf133d0e5c97a3f3433b903750f010448ea')
+        frozen=original['nativeDeclaration']['sourceHashes']
         self.assertEqual(set(frozen),baseline.MODULES)
         self.assertTrue(all(hashlib.sha256(self.sources[n]).hexdigest()==expected for n,expected in frozen.items()))
 
