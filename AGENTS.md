@@ -1,3 +1,15 @@
+# CURRENT — fresh Registry native node owner qualified at component boundary;502 OPEN
+
+Source 1769d3446fa69e40f3525c7c2a116a2093ab8365;CI39867055213 PASS:60component/regression+3realDocker tests,0skips;local15corePASS. New actual recovery journal binding, versioned complete paused OCI/frame observers, current actual InstalledTokenOwner witness and scoped Ed25519 node owner are connected at component level. Docker restart produces a new PID/kernel generation;unpause invalidates pause;readonly token mount uses the distinct exact binding. Fixtures are not full Semantic JVM/OCI/token/DB recovery qualification.
+
+All3original shared observer Git blobs are EXACTLY restored;frozen139-source delivery reproduction39867055210PASS. Native repeat test exposed Mounts order changes;distinct recovery report/profile hashes all entries by unique destination,without changing originalEngine/native/history hashes or dropping fields. Full source/limits/remaining path: docs/handoffs/OUF_SEMANTIC_REGISTRY_RECOVERY_NODE_20261023.md; evidence/semantic-registry-recovery-node-ci-20261023.json.
+
+Owner shutdown receipt corroborates Docker/containerd/host shutdown in Registry stopwindow;see evidence/semantic-stop-journal-target-20261023.json and /home/oufadmin/ouf-stop-cause.u6qJqIMi/operator.log. Current route still targets stopped Registry/noendpoint. No more completed diagnostic replay. Correct exact Registry availability,not Gateway routing.502notresolved;originalrequest/stopinitiator/readiness notproven.
+
+Still required: complete productionPorts/factory/canonical-parent fencing/source loader/installer/delivery/launcher;currentDB+tokenowner admission;currentroute+sameauthenticatedrequest;whole-native qualification. NO target recovery command or premature HUMAN/token/window request is ready. Preserve all contexts/claims/logs;oldPID/attestation/claims are never adopted. Full rootfs seal remains mandatory;no running-JVM exception/cleanup for newpausedPID. Cloud has no VPS executor;operator terminal required. Patch12/12,technical8/8,functional4/6,G3OPEN,OAuth304/304exhausted;no budget/window/login/activation/provider replay or release acceptance. Original Matrix1.7 §1 and RegistryPET1.3 §§160.6–160.7 consulted. Earlier next-command headers are historical.
+
+---
+
 # CURRENT — Registry shutdown corroborated; distinct fresh-node owner in qualification
 
 Owner /home/oufadmin/ouf-stop-cause.u6qJqIMi/operator.log: DOCKER_SHUTDOWN_CORROBORATED_IN_REGISTRY_STOP_WINDOW,84rows/98777bytes,oneboot,complete selectedevents. Docker stopping08:09:50.160621Z precedes Registry finish08:09:50.772426142Z; Docker termination/shutdown/containerd/host shutdown observed. See evidence/semantic-stop-journal-target-20261023.json. This is owner evidence,not independent readback; stop initiator and original-request end-to-end closure remain unproven. Completed journal reader MUST NOT be rerun. Current route still targets stopped Registry/noendpoint. Correct exact Registry availability,not Gateway configuration.

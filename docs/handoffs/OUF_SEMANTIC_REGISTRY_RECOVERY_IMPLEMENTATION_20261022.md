@@ -1,3 +1,9 @@
+# Current continuation — 23October2026
+
+See [the current native-node recovery handoff](OUF_SEMANTIC_REGISTRY_RECOVERY_NODE_20261023.md) for implemented source, qualification and remaining production path. The following is preceding implementation history, not the current next command.502remainsOPEN.
+
+---
+
 # Registry availability defect confirmed; recovery implementation in progress
 
 Latest component qualification: source186cb68a117cf9ceb3502ae8c90094146139fbaa, CI39860573897 SUCCESS,23tests PASS/0skips (15core+8actual Unix HTTP transport fixtures). Local15core+99unchanged diagnostics PASS. Evidence `evidence/semantic-registry-recovery-components-ci-20261022.json` separates actual transport from simulated container/process/authority. Complete native Ports/factory/owner integration remains unimplemented and unqualified; no target command or runtime consent request is ready.502is NOT resolved. Earlier qualification counts below describe preceding revisions.
