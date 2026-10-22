@@ -1,3 +1,13 @@
+# LATEST — mandatory502fix; current route/target diagnostic next
+
+Owner explicitly requires resolving502. Latest /home/oufadmin/ouf-registry-composition.4BoWbkCh/operator.log: SOURCE_COMPOSITION_AND_IMAGE_DECLARATIONS_OBSERVED,6GETs,metadata/image+4readonly declarations match,7gatesopen,no runtime authority/effects/OAuth. Private composition /etc/ouf/deploy-snapshots/semantic-registry-recovery-composition-2pygojyp/composition.json hash65717005bcbcd03c342832193cabb5f23160583972635337159a0e5334de7e81. Record owner provenance;no independent cloud readback.
+
+Next ONLY distinct tools/semantic_live_route_diagnostic:6exactEngineGETs+1LIVE APISIX admin GET/55seconds. Read existing selected admin config/key via retained custody profiles; private stdin to sealed readonly child in pinned current Gateway netns. Parent namespace unchanged;no Dockerexec/OAuth/renewal/login/old authority/journal mutation. Compare current exact semanticGET route/address/port with reviewed Registry and current network endpoint occupancy. Complete bounded map,static single inlineIPv4only;drift/ambiguity/indirection/credential failure STOP,no fallback/retry. Print no addresses/rawroutes/secrets.12new+87unchanged=99localPASS,0skips;live target/netns qualification pending. This reader does NOT fix502 or prove data-plane cause. After current target observation, implement/qualify the concrete correction and verify the same authenticated request;no more generic historical inventories. See docs/handoffs/OUF_SEMANTIC_502_LIVE_ROUTE_TARGET_20261022.md.
+
+Cloud has no VPS runtime executor exposed;operator terminal is required for target steps. Preserve all previous contexts/claims/logs. WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. OAuth304/304exhausted,source24hourwindowhistorical. No provider recovery,activation,old rollout/claim/signal replay,budget/window reset,automaticlogin or release acceptance. Mandatory repair goal does not replace current native authority or attestation. Previous next-command headers superseded.
+
+---
+
 # LATEST — historical chain reconciled; source descriptor and read-only image preflight only
 
 Owner /home/oufadmin/ouf-registry-history.j7S0llGM/operator.log: HISTORICAL_REGISTRY_INPUTS_RECONCILED_NO_RUNTIME_AUTHORITY,20metadata reads,0Engine/DB/OAuth/credentials/effects. Private inputs /etc/ouf/deploy-snapshots/semantic-registry-history-capture-r5cc0fjv/inputs.json SHA2568facd750a673d25c14bfc1a58c8c0ae28d63d8a5ce487ab956b8f2b23dc902c9. Historical gate reconciled;7current gates stay open. Preserve every dossier/context/claim/log; no independent cloud readback claimed.
