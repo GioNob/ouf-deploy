@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-22T04:43:36Z",
+  "lastUpdatedAt": "2026-10-22T05:50:30Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1643,6 +1643,24 @@
       "runtimeAuthorityIssued": false,
       "releaseAcceptance": false,
       "evidence": "evidence/ingestion-readiness-operator-qualification-20261022.json"
+    },
+    {
+      "id": "CSV-EVENT-EXACT-PATCH-HUMAN-AND-CACHED-PRODUCTION-DELIVERY-QUALIFIED",
+      "classification": "DEVELOPMENT_CI_NOT_TARGET_EXECUTION",
+      "documentedAt": "2026-10-22T05:50:30Z",
+      "sourceCommit": "e806a9463110b4e88153e95cbdc81c9d1f8737b2",
+      "artifactCommit": "3e80ea4c1f49507c1dd17448291e75e07907ee9b",
+      "ciRun": 39729332417,
+      "pythonTestsPerVersion": 62,
+      "platformTests": 4,
+      "freshHumanGovernanceQualified": true,
+      "productionDeliveryQualified": true,
+      "targetPatchStagesApplied": 0,
+      "targetPreflightObserved": false,
+      "newBudgetGranted": false,
+      "runtimeAuthorityIssued": false,
+      "releaseAcceptance": false,
+      "evidence": "evidence/ingestion-readiness-production-delivery-qualification-20261022.json"
     }
   ],
   "activeIntervals": [
@@ -2405,7 +2423,7 @@
     "refreshPerformed": false,
     "budgetReset": false,
     "wp3Block": {
-      "status": "PATCH_OPERATOR_CONTROL_CI_PASS_FRESH_HUMAN_GOVERNANCE_PENDING",
+      "status": "PATCH_CACHED_PRODUCTION_DELIVERY_CI_PASS_READ_ONLY_PREFLIGHT_READY",
       "nextStage": 28,
       "appliedStages": 28,
       "currentAuthorityProven": false,
@@ -2415,7 +2433,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "NONE_UNTIL_PRODUCTION_CONTROL_AND_HUMAN_GOVERNANCE_QUALIFIED",
+      "nextRequiredTargetAction": "ONE_NEW_CACHED_READ_ONLY_PATCH_PREFLIGHT_NO_LOGIN_OR_BUDGET",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2429,9 +2447,10 @@
       "nextStageEvidenceScope": "INFERRED_FROM_COMPLETED_28_STAGE_NATIVE_SEQUENCE_NOT_INDEPENDENT_STATUS_READ",
       "nativeRolloutComplete": true,
       "offlineNativeArchiveDeliveryQualified": true,
-      "fullProductionExecutionControllerQualified": false,
+      "fullProductionExecutionControllerQualified": true,
       "wholeOperatorControllerCiQualified": true,
-      "freshHumanGovernanceQualified": false
+      "freshHumanGovernanceQualified": true,
+      "cachedProductionDeliveryQualified": true
     },
     "agentDispatchedTargetOperations": 0,
     "latestOperatorConfirmedOperation": "NATIVE_ARCHIVE_INPUTS_PREPARED_NO_AUTHORITY",
@@ -2442,7 +2461,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_PATCH_OPERATOR_CONTROL_20261022.md",
+    "currentHandoff": "docs/handoffs/OUF_PATCH_PRODUCTION_DELIVERY_20261022.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 292,
@@ -2462,7 +2481,7 @@
     },
     "runtimeContractFixInstalled": false,
     "readinessPatchInputContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-patch-inputs-3fea910fc74b8ea6fcfd121fc0f8386a1ed78c5a89063a3e686053ca8180a317",
-    "readinessPatchRuntimeExecutorQualified": false,
+    "readinessPatchRuntimeExecutorQualified": true,
     "readinessPatchReviewContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-patch-review-51a014429f1663e4760de93e7e6ae8200fd4ad813a5153c77d21ef5066562bac",
     "readinessPatchReviewHash": "45ed8d24c23a82ea4336c56ea4f5c4048f3237299a25263955f80e10d9078bea",
     "readinessPatchNativeInputContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-native-inputs-0b2fd250a4f16e05ad1dc2836878f6438d6c417394b8e5f542c0736f244897df",
@@ -2473,7 +2492,9 @@
     "thisDevelopmentTargetOperations": 0,
     "sourceHeadsReverifiedThisUpdate": false,
     "readinessPatchNativeArchiveContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-native-archive-86a63c83ae644484400e2e3531db57e5aa4869ca8c5f17bcbec908de889bb6c6",
-    "readinessPatchNativeArchiveBundleHash": "f56d7989be393211665535a59cc4bf419c20665a912bf51aaf6f01671e2288dd"
+    "readinessPatchNativeArchiveBundleHash": "f56d7989be393211665535a59cc4bf419c20665a912bf51aaf6f01671e2288dd",
+    "readinessPatchRuntimeExecutorQualificationScope": "DISPOSABLE_CI_NOT_CURRENT_TARGET_ADMISSION",
+    "readinessPatchTargetPreflightCompleted": false
   },
   "unverifiedIntervals": [
     {
@@ -2978,6 +2999,183 @@
       "automaticReplayAllowed": false,
       "budgetReset": false,
       "releaseAcceptance": false
+    },
+    "readinessPatchProductionDeliveryQualification": {
+      "schema": "ouf.ingestion-readiness-patch-production-qualification.v1",
+      "recordedAt": "2026-10-22T05:50:30Z",
+      "repository": "GioNob/ouf-deploy",
+      "qualifiedCommit": "e806a9463110b4e88153e95cbdc81c9d1f8737b2",
+      "artifactCommit": "3e80ea4c1f49507c1dd17448291e75e07907ee9b",
+      "ciRun": 39729332417,
+      "ciUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/39729332417",
+      "jobs": [
+        {
+          "id": 119660519862,
+          "python": "3.13.5",
+          "tests": 62,
+          "skipped": 0,
+          "conclusion": "success"
+        },
+        {
+          "id": 119660520192,
+          "python": "3.12",
+          "tests": 62,
+          "skipped": 0,
+          "conclusion": "success"
+        },
+        {
+          "id": 119660520052,
+          "name": "docker29-apisix-jvm-sequence",
+          "tests": 4,
+          "skipped": 0,
+          "conclusion": "success"
+        }
+      ],
+      "wholeControllerProof": {
+        "complete": true,
+        "stages": 13,
+        "enginePosts": 8,
+        "gatewayWrites": 0,
+        "newKeys": 0,
+        "realTtyConsent": true,
+        "newControllerAnd139CoreUnmodifiedInChild": true,
+        "syntheticHumanAndOwner": true,
+        "targetEvidence": false,
+        "notReleaseAcceptance": true,
+        "freshHumanGovernance": {
+          "realBudgetAndWindowTty": true,
+          "cachedHashCheckedForegroundLaunchers": true,
+          "preLoginExactEngineGets": 12,
+          "syntheticProviderRequests": 4,
+          "priorOAuthAttempts": 292,
+          "readyOAuthAttempts": 296,
+          "oldSessionBytesUnchanged": true
+        }
+      },
+      "preLoginMetadataProbe": {
+        "containerCount": 6,
+        "maximumExactEngineGetsPerInvocation": 12,
+        "invocationsInFixture": [
+          "prepare",
+          "grant-budget",
+          "open-window"
+        ],
+        "totalExactEngineGetsAcrossThoseInvocations": 36,
+        "sqlCalls": 0,
+        "ownerCalls": 0,
+        "providerCalls": 0,
+        "readOnly": true,
+        "currentTargetObservation": false
+      },
+      "sourceCustody": {
+        "originalNativeModules": 139,
+        "originalFrozenModules": 114,
+        "unchangedArchiveSourceCarrierSha256": "13335a0aa4ba672c80cc2f63ca1b3e2e9d97b111f876d61c62dbda514d8d4f31",
+        "reusedHumanRuntimeSourceCommit": "5e08760666e177a971a5c466955e4376d10c54ef",
+        "reusedHumanModules": [
+          "operator",
+          "contract",
+          "session",
+          "window",
+          "inspection"
+        ],
+        "reusedHumanRuntimeBytesUnchanged": true,
+        "humanCapsuleReachableModules": 124,
+        "nativeRuntimeCapsuleModules": 139,
+        "all139NativeBuildSourceBytesMatchedCarrier": true
+      },
+      "deliveryPins": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "currentCumulativeOAuthAttempts": 292,
+        "declarationHashes": {
+          "human": "6c344f97170ded263dfac10156e2aba9058d5063e193133e1c49501d26c08770",
+          "runtime": "2afb727970374dfd24d0f7853c720a962a4b4c69f833e1c51e8f2daa437c0f4f"
+        },
+        "files": {
+          "human.sh": {
+            "bytes": 1959,
+            "gitBlob": "e3794cf67c6c7f5246a70ca4b225be1c7f89b999",
+            "path": "scripts/launch-ingestion-readiness-human-20261022.sh",
+            "sha256": "99c5d569e007eaaa9ac9d3ccb6d91f849ae07203c0bd90ed6c7eb79ef833bd01"
+          },
+          "human.sh.operator.py": {
+            "bytes": 664868,
+            "gitBlob": "aa5a61876880f953db2ba0be4c326430f5c15198",
+            "path": "scripts/ingestion-readiness-human-20261022.py",
+            "sha256": "0fbe4f0c52b3cdf778e06d7aebef22f2e06251cfd8a443e954ae7ddc39fc3c31"
+          },
+          "runtime.sh": {
+            "bytes": 1945,
+            "gitBlob": "7dd10b460f119fba814c0fc91d931eff46fc9d22",
+            "path": "scripts/launch-ingestion-readiness-runtime-20261022.sh",
+            "sha256": "0934192a867d6432b5d9a81cc59be51eaf1364cf77cb5a2ac7533dae672d6a4b"
+          },
+          "runtime.sh.operator.py": {
+            "bytes": 609152,
+            "gitBlob": "d101a8e773080508e3e2e241dab45a472f4282ba",
+            "path": "scripts/ingestion-readiness-runtime-20261022.py",
+            "sha256": "42c018231ffc127edd7112309da223c8651d60992769330900c3441ed3b78d49"
+          },
+          "setup.sh": {
+            "bytes": 1852,
+            "gitBlob": "d8663d298535fde69fb15662ba858aaf1cbeacb1",
+            "path": "scripts/prepare-ingestion-readiness-launchers-20261022.sh",
+            "sha256": "cba3460f7ce0b53940cbcd3a92e146014529a28a564fc3c76b09bdd9dcb9174b"
+          }
+        },
+        "humanCaseHash": "4a1ce78c9a6368eb2aea613f1aba21cb990875d08ab398cd0bb70e57c283e640",
+        "maximumCumulativeOAuthAttempts": 292,
+        "nativeInputsHash": "f56d7989be393211665535a59cc4bf419c20665a912bf51aaf6f01671e2288dd",
+        "newBudgetGranted": false,
+        "releaseAcceptance": false,
+        "runtimeAuthorityIssued": false,
+        "runtimeCaseHash": "9f3d63c728295180a431a9d84aa701e3265172d49340f75787f70b9f8edae6ac",
+        "schema": "ouf.ingestion-readiness-patch-production-delivery-pins.v1",
+        "targetCommandExecuted": false,
+        "targetPatchInstalled": false
+      },
+      "qualifiedBoundaries": [
+        "separate actor/reason/decisionRef technical budget with cumulative292-to296 history",
+        "one explicit consented window fenced against partial/concurrent replay",
+        "one explicit provider request per command through unchanged operator",
+        "four synthetic provider replies to a case-bound READY296 reader",
+        "real cached SHA-checked root foreground launchers with controlling-terminal consent",
+        "fresh profile into runtime review, two-role approval, initialization and all native fixture stages",
+        "complete case/capsule/launcher reproduction on both qualified Python versions"
+      ],
+      "limitations": [
+        "provider and Owner fixture identities/replies are synthetic",
+        "four provider confirmation answers are unit fixtures; budget/window/infrastructure approval use real pseudo-terminals",
+        "CI does not establish live target runtime health, Owner control or database admission",
+        "fixture image import adopts an already loaded exact candidate; target image import remains unapplied",
+        "source activation, native profile publication and functional F5/F6 remain separate"
+      ],
+      "priorPlatformQualification": {
+        "commit": "1644487d1b5b52e849d465fa2dc7dc78ec22ec3d",
+        "run": 39728095704,
+        "job": 119656592617,
+        "conclusion": "success"
+      },
+      "productionDeliveryQualified": true,
+      "freshHumanGovernanceQualified": true,
+      "nextTargetAction": "ONE_NEW_CACHED_READ_ONLY_PREFLIGHT_ONLY",
+      "targetPreflightObserved": false,
+      "targetPatchStagesApplied": 0,
+      "targetPatchInstalled": false,
+      "currentCumulativeOAuthAttempts": 292,
+      "maximumCumulativeOAuthAttempts": 292,
+      "remainingOAuthAttempts": 0,
+      "newBudgetGranted": false,
+      "newHumanWindowOpened": false,
+      "newLoginPerformed": false,
+      "runtimeAuthorityIssued": false,
+      "targetRuntimeEffectsDispatched": 0,
+      "completedTechnicalPhases": 8,
+      "functionalMilestonesProven": 4,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "releaseAcceptance": false
     }
   },
   "developmentCandidates": [
@@ -3051,7 +3249,7 @@
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "NONE_DEVELOPMENT_CONTINUES_NO_NEW_LOGIN_OR_REPLAY",
+    "currentRequiredHumanAction": "RUN_ONE_PINNED_READ_ONLY_PATCH_PREFLIGHT_AND_RETURN_PUBLIC_RECEIPT",
     "maximumNewOAuthRequests": 0,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
     "profileApplied": true,
@@ -3067,7 +3265,15 @@
     "countsAsOfGrant": false,
     "subsequentConsumptionNotObserved": false,
     "newWindowAuthorized": false,
-    "countsAsOfReadyReceipt": true
+    "countsAsOfReadyReceipt": true,
+    "futurePatchBudgetProposal": {
+      "priorOAuthAttempts": 292,
+      "additionalOAuthAttempts": 4,
+      "proposedCumulativeCeiling": 296,
+      "granted": false,
+      "newWindowOpened": false,
+      "separateTerminalConsentRequired": true
+    }
   },
   "unsegmentedFollowupWindows": [
     {

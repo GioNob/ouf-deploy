@@ -1,11 +1,29 @@
-# Cached exact patch delivery — qualification pending
+# Exact cached patch delivery — QUALIFIED, 22 October 2026
 
-Both complete production capsules, launchers and a single read-only setup are now concrete. Pins: evidence/ingestion-readiness-production-delivery-pins-20261022.json. Build-only reproduction: tools/ingestion_readiness_patch_execution/production_release.py. Native archive f56 remains complete and immutable. Patch target stages0/12; OAuth292/292; technical8/8,functional4/6,G3OPEN.
+Both full production capsules and cached launchers passed [CI39729332417](https://github.com/GioNob/ouf-deploy/actions/runs/39729332417) at e806a9463110b4e88153e95cbdc81c9d1f8737b2:62tests per Python3.12/3.13.5,zero skips,and4real Docker29/APISIX/JVM/Postgres17 tests. Full proof includes real terminal budget/window/infrastructure consents, unchanged old292session bytes,four synthetic provider replies toREADY296,and all13fixture stages(two networks; target12),8Engine POSTs,0Gateway writes,0new keys. Fixture provider/Owner are synthetic. Image import adopts the exact already loaded candidate; no fresh target import/admission is claimed.
 
-The setup locates the retained authenticated portable gh before sudo, downloads and SHA256-verifies both full code closures and both launchers into one new local directory, then runs HUMAN prepare once. No budget/window/login/runtime authority is requested by prepare. It reads the exact completed native archive metadata and expired292control/profile, verifies current executables/existing issuer and issues exactly12Engine GETs to match six retained runtime generations. It does not test application readiness, Owner identity, SQL admission or activate sources. Public expected status: PATCH_HUMAN_RUNTIME_PREFLIGHT_NO_WINDOW_OR_BUDGET, newBudgetGranted:false,newHumanWindowOpened:false,engineRequests:12,oauthRequests:0.
+Artifact commit3e80ea4c1f49507c1dd17448291e75e07907ee9b. [Pins](../../evidence/ingestion-readiness-production-delivery-pins-20261022.json) and [qualification](../../evidence/ingestion-readiness-production-delivery-qualification-20261022.json) are retained. All139native source bytes match the authenticated frozen source carrier; five HUMAN runtime modules are byte-identical to qualified5e08760666e177a971a5c466955e4376d10c54ef. One test-only fix accepts nested sudo PTY CR/LF framing while preserving exact consent phrase bytes; no operational consent or source changed.
 
-Every later HUMAN/runtime launcher requires its exact local .operator.py cache, verifies SHA before isolated root dispatch, and never downloads code. Each provider request and runtime stage remains separately invoked and consented; no loop, refresh or automatic replay. Budget292->296, one7200second HUMAN window and900second infrastructure authority are distinct terminal decisions. Budget records actor evidence, intended provider identity, reason,decisionRef and cumulative limits. Current292budget remains exhausted; code preparation grants nothing.
+The next target action is ONLY a new read-only preflight. It caches/verifies both complete closures and launchers before any future window/timer,then verifies retained archive/control/profile/executables/existing issuer and double-reads six exact container IDs(12Engine GETs). No old credential journal is opened by this budget preflight. No Owner/API/SQL/provider call or image import/runtime effect occurs. Current target application readiness and database admission remain unproven.
 
-Full CI must pass for the actual sealed HUMAN prepare/budget/window with real controlling terminal, current real Docker generation reads, four explicit synthetic provider replies, exact fresh296profile into runtime review/approval/init and all native stages. The Owner/provider identities are fixtures; no current target health or admission follows. Local11tests pass including deterministic reproduction of every production capsule, case and launcher. First CI failed because a historical test dependency was absent; it was removed in favor of a self-contained fixture. Five unchanged HUMAN runtime sources were restored by immutable Git blobs from qualified5e08760666e177a971a5c466955e4376d10c54ef. The source carrier and139native files remain byte unchanged.
+Expected public status PATCH_HUMAN_RUNTIME_PREFLIGHT_NO_WINDOW_OR_BUDGET; complete:true,newBudgetGranted:false,newHumanWindowOpened:false,engineRequests:12,maximumEngineRequests:12,oauthRequests:0,runtimeAuthorityIssued:false. Return public JSON,operator.log and HUMAN/runtime launcher paths. If STOP,preserve all files/claims and do not rerun. No new budget/window/login or installation is requested by this command.
 
-No target command should be presented until complete composition and production-delivery CI succeed. Preserve /home/oufadmin/ouf-native-archive.KoPhost8/operator.log, the f56 archive successor, all old292sessions/claims and the completed28-stage rollout. Never repeat old input/archive/auth/runtime actions. Once qualified, the next target action is ONLY this new read-only preflight, not budget/window opening or patch installation.
+```bash
+(
+set -euo pipefail
+umask 077
+ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
+[[ -n "$ouf_gh" && -x "$ouf_gh" ]] || { echo "STOP: gh non disponibile; nessun sudo."; exit 2; }
+ouf_setup="$(mktemp "$HOME/ouf-readiness-setup.XXXXXXXX")"
+trap 'printf "Launcher setup conservato: %s\n" "$ouf_setup"' EXIT
+"$ouf_gh" api 'repos/GioNob/ouf-deploy/git/blobs/d8663d298535fde69fb15662ba858aaf1cbeacb1' --jq .content |
+  tr -d '\n' | base64 --decode > "$ouf_setup"
+printf '%s  %s\n' 'cba3460f7ce0b53940cbcd3a92e146014529a28a564fc3c76b09bdd9dcb9174b' "$ouf_setup" | sha256sum -c -
+bash "$ouf_setup"
+)
+```
+
+Subsequent actions are separate and must use the hash-checked cached launchers: technical292->296 grant; one7200second HUMAN window; four individual consented provider requests; runtime review with the resulting exact private profile; explicit900second infrastructure approval; initialize; one step at a time. Never bundle or automate those actions. Starting the replacement may resume normal configured work; source/semantic approval,activation,native client publication and release acceptance remain separate. Preserve consumed claims; partial writes/signatures/requests must not be replayed.
+
+Current target state: archivef56 complete,patch0/12 and NOT INSTALLED,OAuth292/292,technical8/8,functional4/6,G3OPEN. Retain /home/oufadmin/ouf-native-archive.KoPhost8/operator.log and all earlier contexts/claims. The completed28-stage rollout remains complete and is never invoked again. Normative baseline:Matrix1.7 §1,Ingestion1.3 §146,Onboarding1.6 P-14 and policy-v3 finite recovery.
