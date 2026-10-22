@@ -88,4 +88,3 @@ class PausedNodeObservation(NodeObservation):
                 'policyAuthenticationProven':False,'imagePublisherProvenanceVerified':False,'completeCreationAccepted':False,
                 'acceptanceGranted':False,'signaturesIssued':0,'startAuthorized':False}
 
-

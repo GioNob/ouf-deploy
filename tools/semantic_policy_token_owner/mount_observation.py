@@ -127,4 +127,3 @@ class RenewableTokenMountObservation:
                         'completeCreationAccepted':False,'runtimeAuthorityIssued':False,'signaturesIssued':0}
         finally:
             for fd in reversed(fds):os.close(fd)
-

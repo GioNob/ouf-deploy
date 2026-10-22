@@ -67,4 +67,3 @@ class FileOnlyFrameObservation(ProjectedFrameObservation):
             'configuredPolicy':approved,'sourceMountFrame':files,'configtreeMountFrame':directory,'renewableTokenMountFrame':token,
             'fourMountShapeObserved':True,'policyAuthenticationProven':False,'completeCreationAccepted':False,'signaturesIssued':0,'startAuthorized':False}
         return digest(result),{Path(self.configured[k]['path']):v for k,v in private.items()}
-
