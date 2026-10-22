@@ -1,4 +1,5 @@
 """Build a closed one-use read-only metadata capsule; no target I/O at build."""
+import json
 from pathlib import Path
 from tools.governed_human_successor import auth_delivery
 from tools.ingestion_readiness_patch_execution import runtime_successor,operator_delivery_v2
@@ -15,6 +16,7 @@ BOOTSTRAP=BOOTSTRAP.replace('ouf.human-explicit-successor-operator-result.v1','o
 
 
 def generate(root,case):
+    case=json.loads(auth_delivery.encoded(case))
     root=Path(root);paths=dict(runtime_successor.SOURCE_PATHS)
     # Every original139 source is still byte-for-byte the authenticated carrier.
     payload,_=operator_delivery_v2.core(root)
@@ -27,3 +29,14 @@ def generate(root,case):
     raw,declaration=auth_delivery.generate(root,case,{},entry=ENTRY,bootstrap=BOOTSTRAP,extra_paths=paths)
     if len(raw)>1048576:raise ValueError('BOUNDED_STAGE8_CAPTURE_CAPSULE_REQUIRED')
     return raw,declaration
+
+
+def launcher(raw):
+    import re
+    from tools.ingestion_readiness_patch_execution import release_delivery_v2
+    source=release_delivery_v2.launcher('human',raw).decode()
+    source=re.sub(r'case "\$1" in\n.*?\nesac',
+        '[[ "$#" -eq 1 && "$1" == prepare ]] || exit 2',source,count=1,flags=re.S)
+    source=source.replace('ouf-readiness-human.','ouf-stage8-live-inputs.')
+    source=source.replace('Cached exact one-Ingestion patch','Exact one-use GET-only stage8 metadata capture')
+    return source.encode()

@@ -1,0 +1,51 @@
+{
+  "schema": "ouf.ingestion-readiness-stage8-live-qualification.v1",
+  "sourceCommit": "fe173314353ff9ca320098c5f5461268c6e4c84f",
+  "unitRun": 39765003954,
+  "pythonJobs": [
+    {
+      "id": 119778154240,
+      "python": "3.12",
+      "tests": 110,
+      "skipped": 0,
+      "conclusion": "success"
+    },
+    {
+      "id": 119778154404,
+      "python": "3.13.5",
+      "tests": 110,
+      "skipped": 0,
+      "conclusion": "success"
+    }
+  ],
+  "platformRun": 39765004003,
+  "platformJob": {
+    "id": 119778163251,
+    "tests": 1,
+    "skipped": 0,
+    "conclusion": "success"
+  },
+  "proof": {
+    "engineGets": 14,
+    "engineWrites": 0,
+    "sealedSourceModules": 118,
+    "oldPrefixBytesUnchanged": true,
+    "remainingStages": 4,
+    "fixtureAppliedStages": 9,
+    "targetAppliedStages": 8,
+    "syntheticStopAndExpiry": true,
+    "syntheticHumanAndOwner": true,
+    "targetEvidence": false
+  },
+  "productionDeliveryReproduction": "PENDING_FINAL_MATRIX",
+  "target": {
+    "oauthAttempts": 300,
+    "oauthCeiling": 300,
+    "patchStagesApplied": 8,
+    "newBudgetGranted": false,
+    "newWindowOpened": false,
+    "runtimeAuthorityIssued": false,
+    "targetCapturePerformed": false,
+    "releaseAcceptance": false
+  }
+}

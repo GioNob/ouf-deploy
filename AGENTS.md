@@ -1,3 +1,11 @@
+# CURRENT — stage8 live capture core CI PASS; exact delivery111-test matrix pending
+
+Corefe173314353ff9ca320098c5f5461268c6e4c84f matrix39765003954 PASS110tests on EACH Python3.12/3.13.5; focused platform39765004003/job119778163251 PASS1actual Docker29/APISIX/JVM/PG17 test: exact118-source isolated capsule,14GET/0writes,old prefix bytes unchanged,7container generations checked. Fixture9APPLIED(two networks) corresponds to target8; stop/expiry/HUMAN/Owner are explicitly synthetic fixture inputs. This does not prove target current health. Original144 runtime graph/all139 originals unchanged.
+
+Target-specific capture case/capsule/GET-only cached launcher now generated. JSON CASE header is canonicalized after a local insertion-order mismatch; declaration/case/source hashes unchanged. Local5tests PASS. Wait for111-test matrix on both Python versions before presenting ONE pinned new capture command; no login/budget/window/authority/runtime effects. Expected STAGE8_LIVE_METADATA_MATCHED_NO_AUTHORITY,14GETs. Do not rerun any completed snapshot/runtime/auth/prep. Preserve nativehashb6b53f...,controlb2d292...,prefix281761...,review90564c... and /home/oufadmin/ouf-patch-stopped-read.ERBwqHkT/reader.log. OAuth300/300,patch8/12,technical8/8,functional4/6,G3OPEN. Future four-stage runtime continuation is not yet issued/qualified and needs matched current inputs. See docs/handoffs/OUF_PATCH_STAGE8_LIVE_INPUTS_20261022.md. Older instructions below historical.
+
+---
+
 # CURRENT — stage8 stopped snapshot COMPLETE; bounded live-input capture qualification pending
 
 Owner snapshot fixes nativeJournalHash b6b53f8740d6cbb02a3a7e4f7e0a16950475275896b4a433482e7701d4e5e17a,controlHashb2d292dde7cc3f2b337ae401d204d1e43f8da5c046a4aefee262169d8db6da2b,prefixHash2817613ea986a32046fad3066a954219b913189cae5918934a88c1764a439756,review90564cdc2ed759ca1184deea0f2db86eff3cfaf8dfa108c3cb42c54bdbe9e0b5. Prefix8,nextREADINESS,readAttempts8,IDLE,no pending claim,zero authority time. Preserve /home/oufadmin/ouf-patch-stopped-read.ERBwqHkT/reader.log. Never rerun old runtime/auth/prep/snapshot commands. OAuth300/300,technical8/8,functional4/6,patch8/12,G3OPEN.

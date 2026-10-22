@@ -60,5 +60,18 @@ class LiveInputs(unittest.TestCase):
         result=subprocess.run([sys.executable,'-I','-B','-S',str(p),'step'],capture_output=True,text=True)
         self.assertEqual(result.returncode,2,result.stdout+result.stderr)
         self.assertEqual(json.loads(result.stdout)['status'],'STOP_RECONCILE');self.assertEqual(self.gets,[])
+    def test_exact_production_case_and_capsule_reproduce(self):
+        case=json.loads((ROOT/'releases/ingestion-readiness-stage8-live-case-20261022.json').read_bytes())
+        raw,decl=delivery.generate(ROOT,case)
+        self.assertEqual(raw,(ROOT/'scripts/capture-ingestion-readiness-stage8-live-20261022.py').read_bytes())
+        pins=json.loads((ROOT/'evidence/ingestion-readiness-stage8-live-pins-20261022.json').read_bytes())
+        self.assertEqual(pins['artifactSha256'],hashlib.sha256(raw).hexdigest())
+        self.assertEqual(pins['sealedSourceModules'],decl['moduleCount'])
+        self.assertFalse(pins['newBudgetGranted']);self.assertFalse(pins['targetCommandExecuted'])
+        sh=delivery.launcher(raw)
+        self.assertEqual(sh,(ROOT/pins['launcher']['path']).read_bytes())
+        self.assertNotIn(b'grant-budget',sh)
+        import subprocess
+        self.assertEqual(subprocess.run(['bash','-n'],input=sh,capture_output=True).returncode,0)
 
 if __name__=='__main__':unittest.main()
