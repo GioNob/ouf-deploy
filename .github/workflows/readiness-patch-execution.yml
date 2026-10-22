@@ -37,6 +37,9 @@ jobs:
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_readiness_patch_human_governance.py -v
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_readiness_patch_large_review.py -v
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_readiness_patch_unissued_reconcile.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_readiness_patch_successor_control.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_readiness_patch_successor_governance.py -v
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_readiness_patch_successor_delivery.py -v
   docker29-apisix-jvm-sequence:
     runs-on: ubuntu-24.04
     timeout-minutes: 30

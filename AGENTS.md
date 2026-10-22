@@ -1,3 +1,11 @@
+# CURRENT — unissued target reconciliation COMPLETE; V2 successor CI pending
+
+Owner reader confirms stopped oldISSUING/no authority/signatures/issuance or native claim, exact journal af07734945f3b4ea93282f43808634501d4633261617d767b1bfa2f68942c910; preserve /home/oufadmin/ouf-unissued-reconcile.xCVck1X6/reader.log and all old files/claims. Do not rerun reader/approve/review/auth/prep/rollout. OAuth296/296, no budget/window/login or target execution requested. Patch0/12,technical8/8,functional4/6,G3OPEN.
+
+Distinct144-source successor controller/HUMAN governance/cached delivery implemented; all139 originals unchanged. Each mode rechecks exact reconciled predecessor; separate one-use review fence preserves old global claim andISSUING. New source/case requires new signatures and fresh governed HUMAN;296->300 is a proposal only, NOT a grant. Local15controller+10governance+2delivery tests PASS; full Python105tests and actual Docker/APISIX/JVM/PG17 successor path CI is PENDING. No successor target command until full path and delivery are qualified. See docs/handoffs/OUF_PATCH_UNISSUED_SUCCESSOR_20261022.md. Older instructions below are historical.
+
+---
+
 # CURRENT — target patch STOPPED at ISSUING; exact review-size defect confirmed
 
 Target296READY was followed by runtime review/explicit consent, then STOP_RECONCILE/PRIVATE_SNAPSHOT_CUSTODY_UNPROVEN. Read-only owner diagnostic shows review545058bytes>historical524288limit; packet1320265bytes. Both root:root0600,regular,single link. StateISSUING; issuance.claim/decision/human/authority/native recovery absent. DO NOT rerun approve,initialize,step,grant/window/auth or any completed prep. Preserve /home/oufadmin/ouf-readiness-runtime.ONL1Avng/operator.log and NlixQjZy/operator.log. OAuth296/296,zero reserve; no new budget/window/login is requested. Technical8/8,functional4/6,G3OPEN,target patch0/12 and NOT INSTALLED.
