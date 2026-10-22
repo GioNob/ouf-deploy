@@ -1,3 +1,9 @@
+# CURRENT — four-stage continuation implemented; whole-path CI PENDING
+
+Target matched private capture b9063de73e2d7699e3e7616a164f4b9a24346bc0a3fda1ed3762f4dc0dd95ef2 remains immutable. New distinct148-source runtime adds stage8 controller/readers,all144 original runtime sources unchanged. No initialize; one-use exact prefix import under NEW finite signed infrastructure authority preserves APPLIED resources/native/read counters/createdAt. Only four residual stages can advance. Separate300->304 HUMAN governance is PROPOSED ONLY,not granted; requires exhausted expired old300 metadata/token,distinct budget and window terminal consents and four explicit provider requests. No target command/login/budget/window/authority is requested until complete isolated runtime/HUMAN delivery and real Docker/APISIX/JVM/PG17 path PASS. New9controller units PASS locally; newgovernance/delivery/platform qualification PENDING. OAuth target300/300,patch8/12,technical8/8,functional4/6,G3OPEN. Preserve every original context/claim/cache/log; never replay old commands or completed capture. Older headers below historical.
+
+---
+
 # CURRENT — target stage8 live capture MATCHED; four-stage successor development next
 
 Owner receipt STAGE8_LIVE_METADATA_MATCHED_NO_AUTHORITY: captureb9063de73e2d7699e3e7616a164f4b9a24346bc0a3fda1ed3762f4dc0dd95ef2;14GET,0OAuth,0runtimewrites. Replacement first generation,retained predecessor,unchanged apps and PostgreSQL generation matched AT CAPTURE. Preserve /home/oufadmin/ouf-stage8-live-inputs.SDSJXG92/operator.log and cached launcher /home/oufadmin/ouf-stage8-live-capture.YzwrzHYu/capture.sh. Do NOT rerun capture or old runtime/HUMAN controls. OAuth300/300 exhausted,patch8/12,technical8/8,functional4/6,G3OPEN. Readiness/DB admission/Gateway routes/Owner control remain unproven. Current runtime authority absent; old issued authority expired.
