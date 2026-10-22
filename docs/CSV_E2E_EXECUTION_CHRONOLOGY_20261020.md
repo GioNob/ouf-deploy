@@ -1,3 +1,11 @@
+# Checkpoint aggiunto — 22 ottobre 2026, 20:43:58 Europe/Rome
+
+Registrato lo STOP fornito dall'owner: `HISTORICAL_REGISTRY_NOT_RUNNING`, log `/home/oufadmin/ouf-semantic-transport.UIPPICGG/operator.log`. Ora/durata dell'esecuzione target non fornite; il timestamp sopra è di registrazione. Il controllo precedente si arresta prima dei log. Nessuna precisa condizione lifecycle o causa502 stabilita; conservare tutto e non rieseguire.
+
+Preparato il controllo distinto `tools/semantic_stopped_registry_observation`: descrizione dell'esatto container storico e correlazione sulla stessa riga senza assumerlo endpoint corrente. 5GET/35s,0OAuth/credenziali/probe/routeadmin/DB/write. 13testlocali+5regressioni predecessore PASS,0skip,Python3.12.14; socket/HTTP simulati, nessuna qualifica Docker/target/AF_UNIX reale. Nuova esecuzione target pendente. Patch12/12,tecniche8/8,funzionali4/6,G3OPEN,nessuna activation/login/authority/replay. [Evidenza](../evidence/semantic-historical-registry-stop-20261022.json), [handoff](handoffs/OUF_SEMANTIC_HISTORICAL_REGISTRY_STOP_20261022.md). Nessun nuovo effort misurato retrospettivamente o forecast modificato.
+
+---
+
 # OUF CSV E2E — cronostoria effettiva
 
 Baseline congelata: [Mini-PET v1.1](OUF_CSV_E2E_COMPLETION_MINIPET_v1_1_20261020.md), commit d190193773116c9a59403aa42ccc9f89423eb959. Il [registro eventi](../evidence/csv-e2e-execution-timeline-20261020.json) è append-only nella successione dei commit e conserva timestamp/provider, intervalli e prove. La baseline non viene riscritta.
