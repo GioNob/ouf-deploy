@@ -94,5 +94,5 @@ jobs:
             OUF_CANDIDATE_ZIP="$RUNNER_TEMP/ouf-candidate.zip" OUF_FIXTURE_JAVA="$JAVA_HOME/bin/java" \
             OUF_INGESTION_SQL_ROOT="$fixture/repository/.pairwise/ingestion/src/main/resources/db/migration" \
             OUF_FLYWAY_CLASSPATH="$fixture/repository/tests/fixtures/ingestion-db-preflight/target/classes:$(cat .ingestion-db.classpath)" \
-            /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_readiness_patch_platform.py -v
+            /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_readiness_patch*platform.py' -v
 
