@@ -1,3 +1,15 @@
+# LATEST — recovery inputs observed; gated file-only proposal preparation only
+
+Owner /home/oufadmin/ouf-registry-recovery-inputs.xmeDnp6X/operator.log complete6/6GETs+2guardshows:retainedsemanticnode matches historicalRegistryIPAM;historicalRegistry exited143/Pid0;onlysameimagecandidateitself;source labelabsent/otherimagesnotexcluded;132containers,noendpointcandidate. Guardactive/exited/success,bootRUNTIME_EMPTY/startfalse,ownerBLOCKED/leasefalse/startfalse/counts[0,0]. No currentRegistryidentity/liveGatewaymap/readiness/502cause/authority proven.
+
+Source audit establishes file_only_profile disables external discovery/provider use;do not restore provider merely because it is BLOCKED. Original gated stage/release/RunningWorkloadBinding require exact attested generation;newPID cannot reuse old attestation/start/signal claims. Candidate recovery is a NEW scoped gated-generation action,not old cohort/R12/boot replay or bare Dockerstart. Native feasibility/executor/authority remain unqualified.
+
+Next ONLY tools/semantic_registry_recovery_proposal prepare.py/case.json:4exactGETs/35seconds;validate currentGateway/stoppedRegistry/gatedfileonlyflags/security;writeONLYnewprivateblockedproposal(root700/root400). No runtimeeffect,signing/OAuth/budget/window/start/DB/route/providerchange. SuccessBLOCKED_RECOVERY_PROPOSAL_RETAINED has8UNRESOLVEDgates,nativeExecutorQualifiedfalse,targetApplyAuthorizedfalse,runtimeAuthorityIssuedfalse.8newlocaltests+48unchangedregressionsPASS,0skips;nativeDocker/VPS/CI/futurerecoveryqualificationpending. See docs/handoffs/OUF_SEMANTIC_REGISTRY_GATED_RECOVERY_PROPOSAL_20261022.md and new target evidence.
+
+WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. OAuth304/304exhausted;source24hourwindowhistorical;no newbudget/window/login/authority or activation/replay/reset. Eight proposal gates are not roadmap phases. Preserve ALL directories/claims/receipts. Previous nextcommand headers superseded.
+
+---
+
 # LATEST — v2 endpoint inventory completed; recovery-input reconciliation next
 
 Owner /home/oufadmin/ouf-semantic-endpoints-v2.vgdMguZz/operator.log: RETAINED_ENDPOINT_INVENTORY_ONLY,4/4GETs,132containers,one retained literal semantic upstream/no endpoint candidates. No current Registry identity/live route map/readiness/unreachability/502cause proven. v2 map correction target-complete;no current registry replacement selected.
