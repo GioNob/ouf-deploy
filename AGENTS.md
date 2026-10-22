@@ -1,3 +1,13 @@
+# CURRENT — target patch STOPPED at ISSUING; exact review-size defect confirmed
+
+Target296READY was followed by runtime review/explicit consent, then STOP_RECONCILE/PRIVATE_SNAPSHOT_CUSTODY_UNPROVEN. Read-only owner diagnostic shows review545058bytes>historical524288limit; packet1320265bytes. Both root:root0600,regular,single link. StateISSUING; issuance.claim/decision/human/authority/native recovery absent. DO NOT rerun approve,initialize,step,grant/window/auth or any completed prep. Preserve /home/oufadmin/ouf-readiness-runtime.ONL1Avng/operator.log and NlixQjZy/operator.log. OAuth296/296,zero reserve; no new budget/window/login is requested. Technical8/8,functional4/6,G3OPEN,target patch0/12 and NOT INSTALLED.
+
+A distinct V2 adds only3modules to the unchanged139-source core(142total; original114also unchanged). Typed review2MiB/packet4MiB reads preserve root0600/single-link/no-follow/FD/path-change checks; small authority members keep lower limits. Size rejection now occurs during review compilation, before publication/consent/issuance. Local8tests PASS including exact reported sizes,real signatures/load of >512KiBreview,old reader unchanged,and exact isolated142-module loader. Local8additional tests PASS for read-only unissued reconciliation,partial artifacts/concurrency/drift and deterministic target reader. CI is PENDING. V2 production controller/fresh-HUMAN successor path is NOT qualified; do not seek tokens or replay old authority.
+
+Next candidate target action, only after reader CI passes: ONE newly pinned read-only unissued snapshot. It validates retained review/packet/material hashes,original global review claim and ISSUING row,holds a shared invocation lock,and refuses every issuance/signature/native artifact. It writes/deletes nothing,never reads a credential journal or calls any service,and does NOT reset ISSUING. See docs/handoffs/OUF_PATCH_LARGE_REVIEW_RECONCILE_20261022.md. Older ready commands below are historical and MUST NOT be replayed.
+
+---
+
 # CURRENT — full patch HUMAN/runtime delivery CI PASS; new read-only preflight READY
 
 CI39729332417 ate806a9463110b4e88153e95cbdc81c9d1f8737b2 PASSED:62tests on EACH Python3.12/3.13.5,zero skips,plus4real Docker29/APISIX/JVM/Postgres17 tests. Actual cached SHA-checked launchers/real terminal consents, separate292->296 budget/window, four synthetic provider replies toREADY296,and the full native13fixture stages(two networks; target12) pass. Existing139native/114original sources and five reused HUMAN runtime modules remain unchanged. Provider/Owner identities are fixtures; this is not current target admission or source activation.
