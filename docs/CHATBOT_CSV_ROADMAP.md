@@ -1,3 +1,9 @@
+# LATEST — patch12/12 complete; current source MCP read authorization denied
+
+A single bounded generic ingestion status read returned authorization denied,retryable:false. No backend HTTP cause inferred,no retry/activation/publication/IAM action performed. Source lifecycle/publication and functional4/6 remain open despite completed infrastructure patch;OAuth304/304 exhausted. See docs/handoffs/OUF_PATCH_STAGE8_COMPLETE_20261022.md.
+
+---
+
 # CURRENT — target patch COMPLETE12/12; no runtime/HUMAN replay or new authentication
 
 Owner final receipt complete:true,runtimeEffectsAcceptedByPorts:true after ingestion.READINESS(v1158),VERIFY_FINAL(v1299),ingestion.RESTORE_RESTART(v1439),VERIFY_RESTORED_FINAL(v1580),then explicit finalization. Prefix8/import/readAttempts8 were retained. Preserve /home/oufadmin/ouf-stage8-continuation.V8VQpNl3/operator.log and ALL contexts/claims/caches/logs. Duplicate pasted receipts are not additional effects/stages/invocations. Full chain: evidence/ingestion-readiness-stage8-completed-target-20261022.json. Original runtime authority WAS separately issued after approval of review1d40fc4c83d197b0c664fc931a5198df963ea06f56b77a000ab01267bb8edbe4; final runtimeAuthorityIssued:false is per invocation and does not erase that history. Current token/authority validity NOT inferred. OAuth304/304 exhausted; no new budget/window/login/refresh requested.

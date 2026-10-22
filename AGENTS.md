@@ -1,3 +1,9 @@
+# LATEST — bounded source MCP read DENIED; infrastructure patch stays COMPLETE
+
+One read-only ouf.ingestion.status(source teatri-csv-6609b245,limit1,caller account giovanni-chatgpt) returned authorization denied,retryable:false,connector error_code INVALID_ARGUMENT. Do not infer401/403/backend cause. No retry,other-account fallback,IAM/grant change,login,source activation or publication performed. Current source/profile lifecycle remains unverified. Next repository/API work is exact owner/version/caller-authorization reconciliation using retained evidence and generic governed read capabilities. Infrastructure patch12/12 remains COMPLETE;technical8/8,functional4/6,G3OPEN,OAuth304/304 exhausted,nativeProfilePublished:false,releaseAcceptance:false. No new VPS command or fresh authentication is requested. Preserve all completed artifacts; never replay runtime/HUMAN commands. See docs/handoffs/OUF_PATCH_STAGE8_COMPLETE_20261022.md.
+
+---
+
 # CURRENT — target patch COMPLETE12/12; no runtime/HUMAN replay or new authentication
 
 Owner final receipt complete:true,runtimeEffectsAcceptedByPorts:true after ingestion.READINESS(v1158),VERIFY_FINAL(v1299),ingestion.RESTORE_RESTART(v1439),VERIFY_RESTORED_FINAL(v1580),then explicit finalization. Prefix8/import/readAttempts8 were retained. Preserve /home/oufadmin/ouf-stage8-continuation.V8VQpNl3/operator.log and ALL contexts/claims/caches/logs. Duplicate pasted receipts are not additional effects/stages/invocations. Full chain: evidence/ingestion-readiness-stage8-completed-target-20261022.json. Original runtime authority WAS separately issued after approval of review1d40fc4c83d197b0c664fc931a5198df963ea06f56b77a000ab01267bb8edbe4; final runtimeAuthorityIssued:false is per invocation and does not erase that history. Current token/authority validity NOT inferred. OAuth304/304 exhausted; no new budget/window/login/refresh requested.
