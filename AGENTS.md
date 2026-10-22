@@ -1,3 +1,13 @@
+# LATEST — live route targets stopped Registry; corrective components in development
+
+Owner /home/oufadmin/ouf-live-route.ZP4fQDib/operator.log: LIVE_ROUTE_AND_REGISTRY_CORRELATED;all82current routes equal retained;exactsemanticGETtargetsreviewedRegistryaddress/port;Registryexited,no targetnetworkendpoint.6EngineGETs+1adminGET,4credentialreads,0OAuth/DB/writes/effects. New evidence semantic-live-route-target-20261022.json records owner provenance,not independent cloud readback.502notfixed;originalrequestnotreproduced,stopcausenotestablished. No more historical inventories or route rewrites: correct exact Registry availability.
+
+New tools/semantic_registry_recovery_execution contains durable12stage core/fixedscope CAS+invocation fencing,one-attempteffects,read-only reconciliation,fresh first-process custody,current signedscope verifier requiring actual CutoverAuthority,and4closedDocker lifecycle operations. Original stage/release modules unchanged. NOT productionPorts/factory/launcher/executor: full native pausedOCI/rootfs/mount/node signer/currentDB+tokenowner/route/finalauthenticatedrequest composition still MISSING. No target command or premature runtime authority/budget/window request.14core tests localPASS;8Unixsocket transport fixtures locallyBLOCKED by sandboxsocketdenial, dedicatedCIpending. Fixture process/authority are not nativequalification. See docs/handoffs/OUF_SEMANTIC_REGISTRY_RECOVERY_IMPLEMENTATION_20261022.md.
+
+Continue source/native integration and complete representative qualification before runtime review. Mandatory502goal closes only on corrected service and same authenticated request200. WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. Preserve allcontexts/claims/logs. OAuth304/304exhausted,source24hourwindowhistorical;no providerrecovery/activation/rolloutreplay/newlogin/automaticbudgetreset or releaseacceptance. Previous next-command headers superseded.
+
+---
+
 # LATEST — mandatory502fix; current route/target diagnostic next
 
 Owner explicitly requires resolving502. Latest /home/oufadmin/ouf-registry-composition.4BoWbkCh/operator.log: SOURCE_COMPOSITION_AND_IMAGE_DECLARATIONS_OBSERVED,6GETs,metadata/image+4readonly declarations match,7gatesopen,no runtime authority/effects/OAuth. Private composition /etc/ouf/deploy-snapshots/semantic-registry-recovery-composition-2pygojyp/composition.json hash65717005bcbcd03c342832193cabb5f23160583972635337159a0e5334de7e81. Record owner provenance;no independent cloud readback.
