@@ -1,4 +1,4 @@
-# Twelve-stage patch controller — development checkpoint,22 October2026
+# Twelve-stage patch controller — CI qualification checkpoint,22 October2026
 
 ## Retained target boundary
 
@@ -18,8 +18,10 @@ operator_delivery.py packages the new bridge around the authenticated completed 
 
 ## Qualification boundary
 
-Local12 controller tests PASS using real private CAS, real existing-key two-role signatures and a synthetic read-only HUMAN journal. Executable/stdlib observations and native effect peers are explicit unit fakes. These tests are not real target admission or an end-to-end native controller sequence.
+CI39722859248 atf5709378c1cff5847d4824d76bbb57ebaa451178 PASSED. Jobs119640067844(Python3.13.5) and119640067873(Python3.12) each ran51tests with zero skips. This includes12controller tests,2actual isolated-capsule tests with a real pseudo-terminal consent and37retained core/delivery tests. Job119640067704 ran4real Docker29/APISIX/JVM/Postgres17 tests and passed.
 
-Two new CI integration tests exercise the actual isolated capsule: preflight/review, exact pseudo-terminal consent, real signatures and initialization with zero runtime effects; changed case/invalid modes fail closed. They require a real CI boot/TTY and are not locally executed in the workspace where /proc boot identity is unavailable. The fixture HUMAN/qualification and the non-invoked Python Docker slot are synthetic. Full Docker-through-controller composition and complete fresh-HUMAN governance/delivery are still gates before requesting tokens.
+The added whole-controller platform test invokes the actual unchanged controller and139-source core in isolated child processes. Review, real terminal approval, two-role signatures, initialization, all13fixture stages(two networks; target12), explicit finalization and metadata status pass. The native sequence records8Engine POSTs,0Gateway writes and0new keys. Lost-create and expired-HUMAN protection also pass in the retained platform tests. HUMAN and Owner identities are synthetic fixture identities. Candidate image import adopts the exact already loaded image in this fixture; this is not a fresh target import proof.
 
-Immutable139-source core/archive qualification remains CI39718342452(37tests per Python,3actual native platform tests). The new controller/delivery CI is pending. No new target command is ready, and there is no reason to repeat input capture, archive preparation or login. Original normative baseline consulted:Matrix1.7 §1,Ingestion1.3 §146,Onboarding1.6 P-14.
+These results qualify the controller/delivery composition in disposable CI, not live target health, database admission, source activation or release acceptance. The completed target preparation remains unchanged and must not be repeated. Target patch stages applied:0. Fresh292-to-296 budget/HUMAN governance, exact production case and pinned cached operator commands still require implementation/qualification. No296budget has been granted; no fresh login/window/consent or target command is requested yet.
+
+Evidence: [operator qualification](../../evidence/ingestion-readiness-operator-qualification-20261022.json). CI: https://github.com/GioNob/ouf-deploy/actions/runs/39722859248. Original normative baseline consulted:Matrix1.7 §1,Ingestion1.3 §146,Onboarding1.6 P-14. Technical8/8,functional4/6,G3OPEN.
