@@ -57,5 +57,29 @@
     "releaseAcceptance": false
   },
   "scope": "WHOLE_SEALED144_SUCCESSOR_CONTROLLER_HUMAN_GOVERNANCE_CACHED_LAUNCHERS_CI_NOT_TARGET_ADMISSION",
-  "productionDeliveryReproducibility": "PENDING_MATRIX_CHECK"
+  "productionDeliveryReproducibility": {
+    "status": "PASS",
+    "releaseCommit": "fd74119c4c1e094aa3c0e0a33af79aab45e2686a",
+    "runId": 39750337881,
+    "jobs": [
+      {
+        "id": 119729031385,
+        "python": "3.12",
+        "tests": 106,
+        "skipped": 0,
+        "conclusion": "success"
+      },
+      {
+        "id": 119729030774,
+        "python": "3.13.5",
+        "tests": 106,
+        "skipped": 0,
+        "conclusion": "success"
+      }
+    ],
+    "newPlatformRerun": "IN_PROGRESS_AT_RECORDING_NOT_REQUIRED_TO_REPLACE_EXACT_UNCHANGED_E776_144_GRAPH_PROOF",
+    "allPublishedBlobPinsMatched": true,
+    "firstTargetAction": "PINNED_CACHED_SETUP_AND_RUNTIME_PREFLIGHT_ONLY",
+    "targetCommandExecuted": false
+  }
 }
