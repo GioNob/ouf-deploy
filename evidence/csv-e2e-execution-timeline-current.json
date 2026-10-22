@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-22T08:51:35Z",
+  "lastUpdatedAt": "2026-10-22T10:28:24Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1716,6 +1716,31 @@
       "releaseAcceptance": false,
       "evidence": "evidence/ingestion-readiness-successor-qualification-20261022.json",
       "observedAt": "2026-10-22T08:51:35Z"
+    },
+    {
+      "id": "CSV-EVENT-PATCH-READY300-AND-PREFIX8-EXPIRED",
+      "classification": "OWNER_PASTED_TARGET_RECEIPTS",
+      "timestampConfidence": "RECEIPT_TIMESTAMPS_NOT_SUPPLIED",
+      "appliedStages": 8,
+      "lastCompletedStage": "ingestion.START_REPLACEMENT",
+      "lastCompletedJournalVersion": 1058,
+      "controlState": "RECONCILE_REQUIRED",
+      "recordedExpiresAt": 1792664043,
+      "oauthAttempts": 300,
+      "oauthCeiling": 300,
+      "runtimeAuthorityWasIssued": true,
+      "currentRuntimeAuthorityProven": false,
+      "patchComplete": false,
+      "evidence": "evidence/ingestion-readiness-stage8-stop-target-20261022.json"
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STOPPED-METADATA-READER-QUALIFIED",
+      "observedAt": "2026-10-22T10:28:24Z",
+      "classification": "METADATA_READER_CI_NOT_LIVE_RUNTIME_EVIDENCE",
+      "runId": 39762976840,
+      "testsPerPython": 4,
+      "sourceCommit": "e1db6dbd8b285483c9023872374576620dab03af",
+      "targetSnapshotObserved": false
     }
   ],
   "activeIntervals": [
@@ -2478,7 +2503,7 @@
     "refreshPerformed": false,
     "budgetReset": false,
     "wp3Block": {
-      "status": "UNISSUED_SUCCESSOR_FULLY_QUALIFIED_NEW_READ_ONLY_PREFLIGHT_READY",
+      "status": "PATCH_STOPPED_AT8_AUTHORITY_EXPIRED_METADATA_SNAPSHOT_READY",
       "nextStage": 28,
       "appliedStages": 28,
       "currentAuthorityProven": false,
@@ -2488,7 +2513,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "ONE_PINNED_CACHED_SETUP_AND_RUNTIME_PREFLIGHT_ONLY",
+      "nextRequiredTargetAction": "ONE_PINNED_READ_ONLY_STAGE8_STOPPED_SNAPSHOT",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2509,18 +2534,18 @@
       "v2ProductionControllerQualified": true
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "STOPPED_UNISSUED_PATCH_REVIEW_RECONCILED_NO_AUTHORITY",
+    "latestOperatorConfirmedOperation": "PATCH_RETAINED_OPERATOR_METADATA_ONLY",
     "latestOperatorConfirmedOperationPolicyMutations": 0,
     "loginPerformedScope": "COMPLETED_FRESH_STAGE18_HUMAN_PROVIDER_VERIFICATION_AT292_NO_CURRENT_AUTHORITY_INFERRED",
     "newHumanLoginPerformed": true,
-    "currentCumulativeOAuthAttempts": 296,
+    "currentCumulativeOAuthAttempts": 300,
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_PATCH_UNISSUED_SUCCESSOR_20261022.md",
+    "currentHandoff": "docs/handoffs/OUF_PATCH_STAGE8_STOPPED_20261022.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
-    "maximumCumulativeOAuthAttempts": 296,
+    "maximumCumulativeOAuthAttempts": 300,
     "countsAsOfGrant": false,
     "subsequentConsumptionNotObserved": false,
     "countsAsOfReadyReceipt": true,
@@ -2543,7 +2568,7 @@
     "readinessPatchNativeInputContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-native-inputs-0b2fd250a4f16e05ad1dc2836878f6438d6c417394b8e5f542c0736f244897df",
     "readinessPatchNativeInputBundleHash": "ab6c1953b8eb0bed19fdd1ee82c4b34828642726e4582152852eb5b4711f14ec",
     "readinessPatchNativeArchiveTargetPrepared": true,
-    "readinessPatchStagesApplied": 0,
+    "readinessPatchStagesApplied": 8,
     "thisDevelopmentNewLoginPerformed": false,
     "thisDevelopmentTargetOperations": 0,
     "sourceHeadsReverifiedThisUpdate": false,
@@ -2551,7 +2576,7 @@
     "readinessPatchNativeArchiveBundleHash": "f56d7989be393211665535a59cc4bf419c20665a912bf51aaf6f01671e2288dd",
     "readinessPatchRuntimeExecutorQualificationScope": "DISPOSABLE_CI_NOT_CURRENT_TARGET_ADMISSION",
     "readinessPatchTargetPreflightCompleted": true,
-    "readinessPatchOperatorState": "ISSUING",
+    "readinessPatchOperatorState": "RECONCILE_REQUIRED",
     "readinessPatchReviewBytes": 545058,
     "readinessPatchPacketBytes": 1320265,
     "readinessPatchRuntimeAuthorityIssued": false,
@@ -2559,7 +2584,11 @@
     "readinessPatchRetainedJournalHash": "af07734945f3b4ea93282f43808634501d4633261617d767b1bfa2f68942c910",
     "readinessPatchSuccessorQualified": true,
     "readinessPatchSuccessorDeliveryQualified": true,
-    "readinessPatchSuccessorPreflightObserved": false
+    "readinessPatchSuccessorPreflightObserved": false,
+    "readinessPatchReplacementStartedAtLastReceipt": true,
+    "readinessPatchComplete": false,
+    "readinessPatchCurrentLiveRuntimeProven": false,
+    "readinessPatchRecordedExpiresAt": 1792664043
   },
   "unverifiedIntervals": [
     {
@@ -3367,6 +3396,38 @@
         "firstTargetAction": "PINNED_CACHED_SETUP_AND_RUNTIME_PREFLIGHT_ONLY",
         "targetCommandExecuted": false
       }
+    },
+    "readinessPatchStoppedSnapshotReader": {
+      "schema": "ouf.ingestion-readiness-stopped-reader-qualification.v1",
+      "sourceCommit": "e1db6dbd8b285483c9023872374576620dab03af",
+      "runId": 39762976840,
+      "jobs": [
+        {
+          "id": 119771429271,
+          "python": "3.12",
+          "tests": 4,
+          "skipped": 0,
+          "conclusion": "success"
+        },
+        {
+          "id": 119771429693,
+          "python": "3.13.5",
+          "tests": 4,
+          "skipped": 0,
+          "conclusion": "success"
+        }
+      ],
+      "pins": {
+        "sha256": "27b28c604b7cf7de5422f067df375d0f226bf1dff0b336dda03124f7f762720c",
+        "blob": "dbd88b3e53e5146f94e78fc52ddb42275fd57c8f",
+        "bytes": 10305
+      },
+      "scope": "ROOT_PRIVATE_METADATA_ONLY_ACTUAL_CAS_PREFIX_FIXTURES_AND_ISOLATED_READER_REPRODUCTION",
+      "targetSnapshotObserved": false,
+      "currentLiveRuntimeProven": false,
+      "runtimeAuthorityIssued": false,
+      "oauthRequests": 0,
+      "runtimeEffectsDispatched": 0
     }
   },
   "developmentCandidates": [
@@ -3433,15 +3494,16 @@
       "LATER_READINESS_503_CAUSE_UNPROVEN",
       "F5_F6_PROOF_PENDING",
       "OAUTH_BUDGET_EXHAUSTED_NO_NEW_LOGIN_AUTHORIZED",
-      "ISSUING_STOP_REVIEW_EXCEEDS_HISTORICAL_512KIB_LIMIT"
+      "ISSUING_STOP_REVIEW_EXCEEDS_HISTORICAL_512KIB_LIMIT",
+      "PATCH_STOPPED_AT8_FINITE_DIRECT_ENGINE_WINDOW_EXPIRED"
     ],
-    "historicalAttempts": 296,
-    "maximumCumulativeAttempts": 296,
+    "historicalAttempts": 300,
+    "maximumCumulativeAttempts": 300,
     "remainingAttempts": 0,
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "ONE_PINNED_CACHED_SETUP_AND_RUNTIME_PREFLIGHT_ONLY",
+    "currentRequiredHumanAction": "ONE_PINNED_READ_ONLY_STAGE8_STOPPED_SNAPSHOT",
     "maximumNewOAuthRequests": 0,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
     "profileApplied": true,
@@ -3452,7 +3514,7 @@
       "G7_ACCEPTANCE"
     ],
     "proposedAdditionalOAuthAttempts": 0,
-    "proposedCumulativeCeiling": 296,
+    "proposedCumulativeCeiling": 300,
     "additionalBudgetGranted": true,
     "countsAsOfGrant": false,
     "subsequentConsumptionNotObserved": false,
