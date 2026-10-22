@@ -1,3 +1,13 @@
+# CURRENT — offline native archive command READY; full delivery CI PASS
+
+Releasece15587ecfaffaa357ea18740d48dca660f0b18d passed CI39718342452:37tests on EACH Python3.12/3.13.5,zero skipped, plus3real Docker29/APISIX/JVM/Postgres17 tests. Platform fixture completed13stages(two networks)/8Engine POSTs,0Gateway writes/0new keys. Exact image/config/layer and native manifest/tar custody passed. Production capsule/wrapper reproduce; all139 graph source blobs match pinned core commite3dd393a60069e57d3e2f7a1f0441549152c4d6f and all114 original frozen hashes remain equal. See evidence/ingestion-native-archive-delivery-qualification-20261022.json.
+
+Next target action is ONE distinct OFFLINE native archive preparation using the exact command in docs/handoffs/OUF_NATIVE_ARCHIVE_SUCCESSOR_20261022.md. It reuses the retained image bytes and completed parent ab6 unchanged, writes a separate root-private successor and never imports an image or contacts Engine/Owner/SQL/provider. No credentials, OAuth, fresh window, runtime consent or authority is requested. Expect NATIVE_ARCHIVE_INPUTS_PREPARED_NO_AUTHORITY; return public JSON and operator.log. After success or STOP preserve all files/claims; do not rerun. The source patch remains NOT INSTALLED; target preparation has not yet been observed.
+
+Capsule7a22715eadf10d1b574e6ef4af36f2ae0c0bca48 SHA13335a0aa4ba672c80cc2f63ca1b3e2e9d97b111f876d61c62dbda514d8d4f31; launcher at releasece15587 SHA f3bcc189874e2264c8ab4cefca9ddc9cb11a281607e6d13ee9d1d77d063fefd7. Core ports/sealed issuance/initialization are tested, but the complete future execution controller/HUMAN governance/delivery is NOT qualified; do not request fresh tokens until that whole path is concrete and tested. Technical8/8,functional4/6,G3OPEN,OAuth292/292,releaseAcceptance:false. Matrix1.7 §1 and Ingestion1.3 §§40/146 consulted. Older headers are historical.
+
+---
+
 # CURRENT — exact offline native archive capsule packaged; delivery CI pending
 
 The offline capsule is pinned at7a22715eadf10d1b574e6ef4af36f2ae0c0bca48, scripts/prepare-ingestion-native-archive-20261022.py, SHA25613335a0aa4ba672c80cc2f63ca1b3e2e9d97b111f876d61c62dbda514d8d4f31. The wrapper scripts/launch-prepare-ingestion-native-archive-20261022.sh has SHA256f3bcc189874e2264c8ab4cefca9ddc9cb11a281607e6d13ee9d1d77d063fefd7. It uses the retained authenticated portable gh before any sudo, verifies both immutable downloads, runs a single finite offline preparation and retains operator.log. It never imports the image, calls Engine/Owner/SQL/provider, reads credentials or issues authority. Completed/partial preparation claims are reconciliation-only. Parent ab6 remains untouched; no old command is replayed.

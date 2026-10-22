@@ -1,3 +1,15 @@
+# CURRENT — 22 October 2026: readiness patch ports tested; distinct offline archive preparation next
+
+Technical phases8/8,functional milestones4/6,G3OPEN. Completed original rollout remains28/28. Native source approval remains recorded; activation last PAUSED2/generation3/ONB_READINESS_DEPENDENCY_503. The candidate Ingestion fix4165b9e is NOT installed, and the later503 cause remains unproven. OAuth292/292; no new budget/window/login/runtime authority.
+
+Operator receipt confirms native input parent ab6 complete; never repeat its projection or any completed rollout/auth action. CI39718342452 atce15587 passes37tests per Python3.12/3.13.5 and3Docker29/APISIX/JVM/PG17 tests. This qualifies concrete ports, signed/isolated entry boundaries and the new OFFLINE archive capsule, not fresh target health or complete future production execution control.139sealed source modules match pinned core commit; all114 frozen hashes are unchanged.
+
+Next: one pinned offline native archive successor using retained bytes, preserving the parent and logical operation. It produces the exact prequalified native manifest/tar without rebuilding the image and without image import, runtime/API/SQL/provider calls or credentials. Expected NATIVE_ARCHIVE_INPUTS_PREPARED_NO_AUTHORITY; target execution unobserved. No fresh OAuth/consent is requested. Full future execution controller/HUMAN governance/delivery remains a gate before tokens.
+
+See [handoff and exact operator command](handoffs/OUF_NATIVE_ARCHIVE_SUCCESSOR_20261022.md), [qualification](../evidence/ingestion-native-archive-delivery-qualification-20261022.json) and [timeline](../evidence/csv-e2e-execution-timeline-current.json). Do not count CI or offline input completion as F5/F6 or release acceptance. Older headers are historical.
+
+---
+
 # CURRENT — target native rollout COMPLETED28/28; native profile/THS/F5–F6 remain open
 
 Owner receipts confirm a separately consented fresh HUMAN window, four provider requests288→292 and READY with1133s token margin AT RECEIPT; separate900s infrastructure authority; import of18APPLIED/readAttempts18; all10 residual native stages; and final complete:true,runtimeEffectsAcceptedByPorts:true. Both restart-restore stages and VERIFY_RESTORED_FINAL were reported complete. Final log /home/oufadmin/ouf-stage18-runtime.PLmQdXaZ/operator.log. This is owner-pasted target evidence,not independent current live readback. Current authority expiry/revocation is not inferred from runtimeAuthorityIssued:false in the final invocation.

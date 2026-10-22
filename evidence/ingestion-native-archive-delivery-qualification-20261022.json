@@ -1,0 +1,92 @@
+{
+  "schema": "ouf.ingestion-readiness-native-archive-delivery-qualification.v1",
+  "recordedAt": "2026-10-22T03:49:16.931Z",
+  "repository": "GioNob/ouf-deploy",
+  "releaseCommit": "ce15587ecfaffaa357ea18740d48dca660f0b18d",
+  "coreSourceCommit": "e3dd393a60069e57d3e2f7a1f0441549152c4d6f",
+  "ciRun": 39718342452,
+  "jobs": [
+    {
+      "id": 119625743927,
+      "name": "docker29-apisix-jvm-sequence",
+      "conclusion": "success",
+      "tests": 3,
+      "skipped": 0
+    },
+    {
+      "id": 119625744105,
+      "name": "scoped-signatures-cas (3.13.5)",
+      "conclusion": "success",
+      "tests": 37,
+      "skipped": 0
+    },
+    {
+      "id": 119625744130,
+      "name": "scoped-signatures-cas (3.12)",
+      "conclusion": "success",
+      "tests": 37,
+      "skipped": 0
+    }
+  ],
+  "nativeSourceClosureModules": 139,
+  "originalFrozenSourceModules": 114,
+  "originalFrozenSourceHashesMatched": true,
+  "sourceCommitGitMatch": {
+    "sourceCommit": "e3dd393a60069e57d3e2f7a1f0441549152c4d6f",
+    "moduleCount": 139,
+    "mismatches": 0
+  },
+  "artifactCommit": "7a22715eadf10d1b574e6ef4af36f2ae0c0bca48",
+  "artifactPath": "scripts/prepare-ingestion-native-archive-20261022.py",
+  "artifactSha256": "13335a0aa4ba672c80cc2f63ca1b3e2e9d97b111f876d61c62dbda514d8d4f31",
+  "launcherPath": "scripts/launch-prepare-ingestion-native-archive-20261022.sh",
+  "launcherSha256": "f3bcc189874e2264c8ab4cefca9ddc9cb11a281607e6d13ee9d1d77d063fefd7",
+  "caseHash": "86a63c83ae644484400e2e3531db57e5aa4869ca8c5f17bcbec908de889bb6c6",
+  "parentBundleHash": "ab6c1953b8eb0bed19fdd1ee82c4b34828642726e4582152852eb5b4711f14ec",
+  "configurationImageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+  "nativeImageId": "sha256:d173aa8beeb9a1ac29c35a163e254a902e95fedad2871e328886a41831c10697",
+  "nativeArchiveSha256": "d8acfed23e9388d6ba5434a5731789c8b272395208f07272aeae4c7eb4c6026e",
+  "scope": "DISTINCT_OFFLINE_NATIVE_ARCHIVE_PREPARATION_ONLY",
+  "targetPreparationObserved": false,
+  "imageInstalled": false,
+  "currentTargetRuntimeHealthProven": false,
+  "currentDatabaseAdmissionProven": false,
+  "fullProductionExecutionControllerQualified": false,
+  "oauthRequests": 0,
+  "oauthBudgetChanged": false,
+  "priorCumulativeOAuthAttempts": 292,
+  "maximumCumulativeOAuthAttempts": 292,
+  "runtimeAuthorityIssued": false,
+  "runtimeEffectsDispatched": 0,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "releaseAcceptance": false,
+  "normativeBaselineConsulted": [
+    {
+      "document": "Matrix",
+      "version": "1.7",
+      "sections": [
+        "1"
+      ]
+    },
+    {
+      "document": "Ingestion",
+      "version": "1.3",
+      "sections": [
+        "40",
+        "146"
+      ]
+    }
+  ],
+  "platformFixture": {
+    "syntheticHumanAndOwner": true,
+    "networks": 2,
+    "stages": 13,
+    "enginePosts": 8,
+    "gatewayWrites": 0,
+    "secretCreations": 0,
+    "currentTargetEvidence": false
+  }
+}

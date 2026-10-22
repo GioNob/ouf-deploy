@@ -31,3 +31,35 @@ Capsule commit7a22715eadf10d1b574e6ef4af36f2ae0c0bca48, capsule SHA25613335a0aa4
 The release adds two production artifact/launcher reproducibility checks, bringing local focused count to37. Actual root-private archive/capsule/wrapper tests still use isolated synthetic files; no real target was accessed. CI39717720682 Python failures came from an absent historical capsule in a new regression test. The corrected test uses a canonical hash fixture extracted only after verifying original artifact SHA42b2569a0ba1f2234dfbcc011588cdf133d0e5c97a3f3433b903750f010448ea; fixture SHA7771116d297cb5c0aa7037d294fb5b72c8e489bc308075a95edc39149699822a. It compares all114 current frozen source hashes, not just source paths. No policy relaxation or source hash regeneration from the new graph was used.
 
 This version stabilizes only the compressed source-capsule envelope across Python3.12/3.13; image configuration/layer bytes remain unchanged. Before publishing the terminal command, record the final delivery CI outcome and immutable job references. Expected public result is NATIVE_ARCHIVE_INPUTS_PREPARED_NO_AUTHORITY, complete:true,plannedStages:12,imagesImported:0,oauthRequests:0,runtimeEffectsDispatched:0,runtimeAuthorityIssued:false. This input completion is not new runtime health/admission or patch installation.
+
+## FINAL — delivery qualified and exact next terminal command
+
+CI[39718342452](https://github.com/GioNob/ouf-deploy/actions/runs/39718342452), releasece15587ecfaffaa357ea18740d48dca660f0b18d, PASS:37tests per Python3.12/3.13.5,zero skipped;3platform tests. Job119625743927 completed the real fixture sequence and ambiguity/expiry tests. Unit jobs119625744105/119625744130 cover the exact capsule/wrapper and source hashes. All139 source blobs match coree3dd393a60069e57d3e2f7a1f0441549152c4d6f;114original source hashes remain unchanged. Normative consultation: Matrix1.7 §1; Ingestion1.3 §§40/146. No new target or domain acceptance evidence.
+
+Run the following ONCE on the retained oufadmin VPS. The only possible password is sudo for the VPS; no HUMAN/IdP login. It downloads verified public code through the existing authenticated GitHub client, then performs the distinct offline preparation. It does not replay parent preparation, import the image, modify a container, contact runtime/API/SQL/provider endpoints or consume OAuth. Keep all files/claims/logs after success or STOP.
+
+```bash
+(
+set -euo pipefail
+umask 077
+ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+if [ ! -x "$ouf_gh" ]; then
+  ouf_gh="$(command -v gh || true)"
+fi
+if [ -z "$ouf_gh" ] || [ ! -x "$ouf_gh" ]; then
+  printf '%s\n' 'Client GitHub autenticato non disponibile; nessuna modifica eseguita.' >&2
+  exit 2
+fi
+ouf_archive_launcher="$(mktemp "$HOME/ouf-native-archive-launcher.XXXXXXXX")"
+"$ouf_gh" api \
+  'repos/GioNob/ouf-deploy/contents/scripts/launch-prepare-ingestion-native-archive-20261022.sh?ref=ce15587ecfaffaa357ea18740d48dca660f0b18d' \
+  --jq .content | base64 --decode > "$ouf_archive_launcher"
+printf '%s  %s\n' \
+  f3bcc189874e2264c8ab4cefca9ddc9cb11a281607e6d13ee9d1d77d063fefd7 \
+  "$ouf_archive_launcher" | sha256sum -c -
+printf 'Launcher conservato: %s\n' "$ouf_archive_launcher"
+bash "$ouf_archive_launcher"
+)
+```
+
+Return public JSON and operator.log. Expected status NATIVE_ARCHIVE_INPUTS_PREPARED_NO_AUTHORITY,complete:true,plannedStages:12,imagesImported:0,oauthRequests:0,runtimeEffectsDispatched:0,runtimeAuthorityIssued:false. No command after this one is authorized by this handoff; the subsequent native execution/governance path still needs completion/qualification and separate fresh consent. Never obtain fresh tokens while that implementation is pending.
