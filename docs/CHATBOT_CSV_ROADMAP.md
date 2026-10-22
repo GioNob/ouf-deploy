@@ -1,3 +1,13 @@
+# LATEST — endpoint inventory v1 schema STOP reconciled; distinct v2 only
+
+Owner receipt /home/oufadmin/ouf-semantic-endpoints.YZoGEtKg/operator.log: STOP_RECONCILE/BOUNDED_RETAINED_ROUTES_REQUIRED,readOnlytrue,0runtimeeffects,no activation/replay/budgetreset. v1 wrongly required a list; actual producer tools/chatbot_file_cohort/gateway.py route_map returns an ID-keyed dict retained unchanged by NativeGatewayTransport.routes and native_review.compile_review. This is a diagnostic contract defect,not Registry drift or502cause. v1 stops before Engine construction (0DockerGETs source-derived,not a reported target counter). Preserve every stopped reader/case/directory unchanged.
+
+Next ONLY distinct tools/semantic_retained_endpoint_inventory_v2: schema v2,strict bounded ID-keyed map/key==row.id validation,one exact active inline semanticGETroute. Same4GET/35second inventory-only scope,complete patch/packet/Gateway/drift/secrecy guards and no current-route/service/rootcause claim. No list/envelope fallback.11local tests PASS including verbatim producer route_map contract with82synthetic routes/full4GET flow;26unchanged predecessor regressions PASS,0skips. NativeDocker/VPS/CI execution pending. No new OAuth/credentials/probe/routeadmin/DB/writes/lifecycle/activation. See docs/handoffs/OUF_SEMANTIC_ENDPOINT_MAP_SCHEMA_STOP_20261022.md.
+
+WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6,OAuth304/304 exhausted. No new authority/window/budget/login/retry/replay. Source24hour window stays historical. All previous next-command headers are superseded.
+
+---
+
 # LATEST — stopped historical Registry observed; retained endpoint inventory next
 
 Owner receipt /home/oufadmin/ouf-semantic-history.Sg7fpZoS/operator.log is BOUNDED_HISTORICAL_OBSERVATION_ONLY:5/5GETs, historical Registry exited143,finished2026-10-18T08:09:50.772426142Z,0logbytes/0lines. No same-line match,current Registry identity,current route map or502rootcause proven. Exit143 does not establish stopping cause; empty logs do not establish health. Never rerun either historical reader or substitute by name.
