@@ -81,7 +81,7 @@ class NativePlatform(unittest.TestCase):
             original_sha=image_custody.hashed(source,image_custody.LIMIT)[0]
             audit=image_custody.archive(source,original_sha,cls.configuration_image,meta['sourceCommit'])
         cls.archive=folder/'native-image.tar'
-        with open(original,'rb') as source, open(cls.archive,'xb') as target:
+        with open(original,'rb') as source, open(cls.archive,'x+b') as target:
             derived=image_custody.tagless_archive(source,target,audit,containerd=True)
         with open(cls.archive,'rb') as source:
             cls.native_audit=image_custody.archive(source,derived['derivedArchiveSha256'],
