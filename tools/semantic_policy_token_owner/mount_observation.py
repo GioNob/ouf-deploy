@@ -43,9 +43,7 @@ class RenewableTokenMountObservation:
         self.owner,self.deadline,self.clock=owner,deadline,clock
         if pause_binding is not None:
             from paused_workload_binding import PausedWorkloadBinding
-            if type(pause_binding) is not PausedWorkloadBinding:
-                from tools.semantic_registry_recovery_execution.paused_binding import RecoveryPausedBinding
-                require(type(pause_binding) is RecoveryPausedBinding,'TYPED_ENGINE_PAUSE_BINDING_REQUIRED')
+            require(type(pause_binding) is PausedWorkloadBinding,'TYPED_ENGINE_PAUSE_BINDING_REQUIRED')
         require(pause_binding is None or running_binding is None,'ONE_NATIVE_MOUNT_PROCESS_BINDING_REQUIRED')
         if running_binding is not None:
             from gated_process_observation import RunningWorkloadBinding

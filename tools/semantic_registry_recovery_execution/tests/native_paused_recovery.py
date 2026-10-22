@@ -16,6 +16,9 @@ from gated_creation_plan import ENTRY
 from gated_process_observation import GatedProcessObservation
 from cutover_authority import CutoverAuthority
 from tools.semantic_registry_recovery_execution import core as c,authorization as a,lifecycle as l,paused_binding as p
+from tools.semantic_registry_recovery_execution.mount_observation import RecoveryTokenMountObservation
+from tools.semantic_policy_token_owner.mount_observation import generation as mount_generation
+from test_renewable_token_mount import FixtureOwner
 from tools.semantic_registry_recovery_composition.compose import candidate_contract,GATES
 
 class NativePausedRecovery(unittest.TestCase):
@@ -35,11 +38,18 @@ class NativePausedRecovery(unittest.TestCase):
         password=tree/'OUF_SEM_DB_PASSWORD';password.write_bytes(b'DISPOSABLE_FIXTURE');password.chmod(0o400);os.chown(password,10001,10001)
         configtree={'source':str(tree),'target':'/run/fixture-db','readOnly':True,'uid':10001,'gid':10001,
             'directoryMode':0o500,'fileName':password.name,'fileMode':0o400,'maxBytes':64,'sha256':signed.sha(password.read_bytes())}
+        token_root=self.root/'token';token_root.mkdir(mode=0o750);os.chown(token_root,0,10001)
+        token=token_root/'token.jwt';token.write_text('DISPOSABLE_FIXTURE_TOKEN');token.chmod(0o440);os.chown(token,0,10001)
+        info=token_root.stat()
+        self.token_policy={'source':str(token_root),'target':'/run/fixture-token','fileName':token.name,'gid':10001,
+            'directoryDevice':info.st_dev,'directoryInode':info.st_ino,'ownerBindingHash':'a'*64,
+            'maxBytes':16384,'minimumRemainingSeconds':30}
         request={'Image':self.image,'User':'10001:10001','Entrypoint':ENTRY,
             'Cmd':['java','-XX:MaxRAMPercentage=75','-jar','/app/application.jar'],
             'Env':['OUF_SCHEMA_GOV_ENABLED=false','OUF_DISCOVERY_WORKER_ENABLED=false','SPRING_CONFIG_IMPORT=configtree:/run/fixture-db/'],
             'HostConfig':{'NetworkMode':'none','CapDrop':['ALL'],'SecurityOpt':['no-new-privileges'],
-                'RestartPolicy':{'Name':'no','MaximumRetryCount':0},'Binds':[str(tree)+':/run/fixture-db:ro']}}
+                'RestartPolicy':{'Name':'no','MaximumRetryCount':0},
+                'Binds':[str(tree)+':/run/fixture-db:ro',str(token_root)+':/run/fixture-token:ro']}}
         self.profile=FileOnlyProfile(request,configtree)
         socket='/var/run/docker.sock';s=os.stat(socket,follow_symlinks=False)
         engine=Engine(socket,(s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode&0o777));self.engine=engine
@@ -120,5 +130,16 @@ class NativePausedRecovery(unittest.TestCase):
         binding=self.advance_to_paused();binding.observe()
         self.assertEqual(self.engine.request('POST','/v1.44/containers/'+self.cid+'/unpause')[0],204)
         with self.assertRaises(c.RecoveryDenied):binding.observe()
+
+    def test_readonly_token_mount_uses_distinct_native_recovery_binding(self):
+        binding=self.advance_to_paused();report=binding.observe();pid=report['runtimeBinding']['pid']
+        owner=FixtureOwner()
+        observation=RecoveryTokenMountObservation(self.token_policy,owner,time.monotonic()+10,pause_binding=binding)
+        proof=observation.observe(mount_generation(pid,allow_frozen=True))
+        self.assertTrue(proof['sameSourceFileInMountedView'])
+        self.assertTrue(proof['effectiveReadOnlyDirectoryBindingObserved'])
+        self.assertEqual(owner.calls,1)
+        self.assertNotIn('DISPOSABLE_FIXTURE_TOKEN',json.dumps(proof))
+        self.assertFalse(proof['runtimeAuthorityIssued'])
 
 if __name__=='__main__':unittest.main()

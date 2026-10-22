@@ -35,7 +35,7 @@ jobs:
           python3 -m unittest discover -s tests -p test_file_only_retained_checkpoint.py -v
           python3 -m unittest discover -s tests -p test_file_only_frame_compiler.py -v
           python3 -m unittest discover -s tests -p test_paused_node_acceptance_native.py -v
-          python3 -m unittest discover -s tests -p test_renewable_token_mount.py -v
+          OUF_NATIVE_MOUNTS=1 python3 -m unittest discover -s tests -p test_renewable_token_mount.py -v
           '
   native-paused-generation:
     runs-on: ubuntu-24.04

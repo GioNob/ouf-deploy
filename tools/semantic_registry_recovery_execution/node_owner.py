@@ -10,8 +10,8 @@ from .core import require,digest,encoded,validate_plan
 from .lifecycle import Lifecycle
 from .paused_binding import RecoveryPausedBinding
 from file_only_profile import FileOnlyProfile
-from file_only_frame_observation import FileOnlyFrameObservation
-from paused_node_observation import PausedNodeObservation
+from .frame_observation import RecoveryFileOnlyFrameObservation as FileOnlyFrameObservation
+from .node_observation import RecoveryNodeObservation as PausedNodeObservation
 from paused_node_acceptance import PausedNodeAcceptance
 from file_only_node_owner import ObservationBudget
 from compile_file_only_frame_policy import compile_policy,private_bridge_namespace_name
