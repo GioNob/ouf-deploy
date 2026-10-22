@@ -96,7 +96,7 @@ class Stage8Governance(unittest.TestCase):
     @classmethod
     def setUpClass(cls):runtime_fixture.Continuation.setUpClass()
     def setUp(self):
-        self.r=runtime_fixture.Continuation();self.r.setUp();self.addCleanup(self.r.doCleanups)
+        self.r=runtime_fixture.Continuation();self.addCleanup(self.r.doCleanups);self.r.setUp()
         config=expired_previous(self)
         notice=patch.object(operator,'terminal_notice');notice.start();self.addCleanup(notice.stop)
         self.case={'schema':g.SCHEMA,'purpose':'EXACT_RETAINED_INSTALLATION_NOT_PORTABLE_DEFAULT',

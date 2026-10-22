@@ -19,6 +19,37 @@ from tools.governed_human_successor.session import ExplicitFreshSession
 
 @unittest.skipUnless(os.environ.get('OUF_ISOLATED_NATIVE_PLATFORM')=='1','disposable platform required')
 class Stage8ContinuationPlatform(base.WholeControllerPlatform):
+    def tty_mode(self,path,mode,prefix):
+        import fcntl
+        import termios
+        master,slave=os.openpty()
+        def setup():os.setsid();fcntl.ioctl(0,termios.TIOCSCTTY,0)
+        command=['bash',str(path),mode]if path.suffix=='.sh'else['/usr/bin/python3','-I','-B','-S',str(path),mode]
+        child=subprocess.Popen(command,
+            stdin=slave,stdout=slave,stderr=slave,preexec_fn=setup,close_fds=True)
+        os.close(slave);output=bytearray();sent=False;deadline=time.monotonic()+250
+        try:
+            while time.monotonic()<deadline:
+                ready,_,_=select.select([master],[],[],.1)
+                if ready:
+                    try:raw=os.read(master,65536)
+                    except OSError:break
+                    if not raw:break
+                    output.extend(raw)
+                    if not sent and b'> 'in output:
+                        # sudo's own PTY can translate the outer PTY newline
+                        # twice. Accept CR/LF framing only; phrase bytes stay exact.
+                        match=re.search(rb'Scrivi(?: esattamente)?: ([^\r\n]+)[\r\n]+> ',output)
+                        self.assertIsNotNone(match,output.decode(errors='replace'))
+                        phrase=match.group(1);self.assertTrue(phrase.decode().startswith(prefix))
+                        os.write(master,phrase+b'\n');sent=True
+                if child.poll()is not None and not ready:break
+            self.assertTrue(sent,'real controlling-terminal prompt not reached')
+            self.assertEqual(child.wait(timeout=5),0,output.decode(errors='replace'))
+            return next(json.loads(line)for line in reversed(output.decode().splitlines())if line.startswith('{'))
+        finally:
+            if child.poll()is None:child.kill();child.wait(timeout=5)
+            os.close(master)
     def fresh_human_governance(self):
         """Real capsule/TTY/generation probes; only four provider replies mocked."""
         config=human_fixture.expired_previous(self);manifest=self.stage8_manifest

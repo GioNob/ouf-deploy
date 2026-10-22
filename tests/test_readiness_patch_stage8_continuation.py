@@ -22,7 +22,7 @@ class Continuation(unittest.TestCase):
         pins={n:'1'*40 for n in ('ouf-deploy','ouf-onboarding','ouf-ingestion-runtime','ouf-api-gateway')}
         cls.manifest=loader.declaration('1'*40,sources,(ROOT/'tools/ingestion_readiness_patch_execution/runtime_stage8.py').read_bytes(),pins)
     def setUp(self):
-        self.l=fixture.LiveInputs();self.l.setUp();self.addCleanup(self.l.doCleanups)
+        self.l=fixture.LiveInputs();self.addCleanup(self.l.doCleanups);self.l.setUp()
         self.f=self.l.f;self.root=self.f.root;self.boot='synthetic-fixture-boot'
         p=patch.object(control,'boot_id',return_value=self.boot);p.start();self.addCleanup(p.stop)
         j=e.Journal(self.f.target);old=j.read();j.compare_and_save(old,{**old,'bootId':self.boot,
