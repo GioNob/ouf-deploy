@@ -1,0 +1,27 @@
+{
+  "schema": "ouf.ingestion-readiness-stage8-human-window-target-evidence.v1",
+  "observedAt": "2026-10-22T12:25:09Z",
+  "result": {
+    "attempts": 300,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "complete": false,
+    "completedTechnicalPhases": 8,
+    "controlPath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-21e05b55eec1ef1e97a83a006fd3f33d38cfc95185f83c670563bfe59c2be264",
+    "engineRequests": 14,
+    "functionalMilestonesProven": 4,
+    "maximumCumulativeOAuthAttempts": 304,
+    "maximumEngineRequests": 14,
+    "newHumanWindowOpened": true,
+    "notReleaseAcceptance": true,
+    "oauthRequestsReservedThisInvocation": 0,
+    "remainingAttempts": 4,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.ingestion-readiness-stage8-human-governance-result.v1",
+    "state": "NEW",
+    "windowExpiresAt": 1792679049
+  },
+  "operatorLog": "/home/oufadmin/ouf-readiness-human.8510bzNE/operator.log",
+  "completedOperationMustNotBeReplayed": true,
+  "duplicateTranscriptIsNotAnotherWindow": true
+}

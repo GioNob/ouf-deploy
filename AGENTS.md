@@ -1,3 +1,11 @@
+# CURRENT — target stage8 HUMAN window OPEN/NEW300; ONE DISCOVERY only
+
+Owner NEW receipt:control /etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-21e05b55eec1ef1e97a83a006fd3f33d38cfc95185f83c670563bfe59c2be264;300/304,four remaining,expiresAt1792679049,0provider requests reserved in open-window,NO runtimeauthority. Preserve /home/oufadmin/ouf-readiness-human.8510bzNE/operator.log and cached /home/oufadmin/ouf-readiness-launchers.XMzIT1rQ/{human,runtime}.sh. Duplicate transcript is the same window,not another execution. Never rerun open-window/grant/prepare/preflight/setup/capture/oldcontrols.
+
+Next ONLY: SHA-checked HUMAN step with this exact controlPath,one explicit provider DISCOVERY confirmation: ESEGUI DISCOVERY 21e05b55eec1ef1e97a83a006fd3f33d38cfc95185f83c670563bfe59c2be264. Expected301/304 and DEVICE_START. No following DEVICE_START/poll/USERINFO automatic command or retry. Return public JSON/operator.log. Four nominal provider calls each require separate explicit command/confirmation; browser login follows device issuance,not now. Fresh runtime review/consent(max900s),exact prefix import and residual steps remain separate and already qualified. Patch8/12,technical8/8,functional4/6,G3OPEN. Older instructions historical.
+
+---
+
 # CURRENT — target300->304budget GRANTED; separate one-window consent only
 
 Owner receipt PATCH_TECHNICAL_BUDGET_GRANTED_NO_LOGIN_OR_RUNTIME_AUTHORITY:4additional requests granted,prior300/ceiling304,decisionaee379b749260d973b20d838427aec1e91dda51e4c09b24ca30449bb2d6f6103;proposal f3cb92802a19ec9562507ccb103b8b18d883bd8da44b361a8f9d50615d1036e3. Counts AS OF GRANT only; subsequent consumption not observed. Duplicate JSON/log is the SAME decision,not another grant. Preserve /home/oufadmin/ouf-readiness-human.8XV8wXUY/operator.log.0OAuth/newwindow/runtimeauthority/effects in this decision. Never rerun grant-budget/prepare/preflight/setup/completed capture or old controls.
