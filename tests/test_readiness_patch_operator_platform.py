@@ -119,7 +119,9 @@ class WholeControllerPlatform(unittest.TestCase):
                     if not raw:break
                     output.extend(raw)
                     if not sent and b'> 'in output:
-                        match=re.search(rb'Scrivi esattamente: ([^\r\n]+)\r?\n> ',output)
+                        # sudo's own PTY can translate the outer PTY newline
+                        # twice. Accept CR/LF framing only; phrase bytes stay exact.
+                        match=re.search(rb'Scrivi esattamente: ([^\r\n]+)[\r\n]+> ',output)
                         self.assertIsNotNone(match,output.decode(errors='replace'))
                         phrase=match.group(1);self.assertTrue(phrase.decode().startswith(prefix))
                         os.write(master,phrase+b'\n');sent=True
