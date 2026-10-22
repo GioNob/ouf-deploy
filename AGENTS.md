@@ -1,3 +1,11 @@
+# CURRENT — target native archive inputs COMPLETE; no replay, runtime control development next
+
+Operator receipt NATIVE_ARCHIVE_INPUTS_PREPARED_NO_AUTHORITY is COMPLETE: context/etc/ouf/deploy-snapshots/ingestion-readiness-native-archive-86a63c83ae644484400e2e3531db57e5aa4869ca8c5f17bcbec908de889bb6c6, bundleHashf56d7989be393211665535a59cc4bf419c20665a912bf51aaf6f01671e2288dd, native IDd173aa8b, archive SHAd8acfed2, same logical operation6c7d73cb. Log /home/oufadmin/ouf-native-archive.KoPhost8/operator.log. It reports0Engine/OAuth/imports/runtime effects, no credential file read and no runtime authority. This is owner-pasted preparation evidence, not current live runtime/admission. Preserve every file/claim and NEVER rerun the archive capsule, native input projection or any completed rollout/auth operation.
+
+Next work is the distinct exact12-stage operator/controller and delivery, using this immutable successor. Concrete native ports, real signed/isolated issuance/init and archive delivery are qualified(CI39718342452:37tests each Python,3Docker tests); complete production execution control and fresh-HUMAN governance remain pending. Do not request fresh OAuth/window/runtime consent until the entire concrete path is qualified. OAuth292/292,technical8/8,functional4/6,G3OPEN; source patch NOT INSTALLED. Parent ab6, original114source graph, approval/activation states and previous claims remain retained. Evidence: evidence/ingestion-native-archive-completed-target-20261022.json. Older command instructions below are historical.
+
+---
+
 # CURRENT — offline native archive command READY; full delivery CI PASS
 
 Releasece15587ecfaffaa357ea18740d48dca660f0b18d passed CI39718342452:37tests on EACH Python3.12/3.13.5,zero skipped, plus3real Docker29/APISIX/JVM/Postgres17 tests. Platform fixture completed13stages(two networks)/8Engine POSTs,0Gateway writes/0new keys. Exact image/config/layer and native manifest/tar custody passed. Production capsule/wrapper reproduce; all139 graph source blobs match pinned core commite3dd393a60069e57d3e2f7a1f0441549152c4d6f and all114 original frozen hashes remain equal. See evidence/ingestion-native-archive-delivery-qualification-20261022.json.

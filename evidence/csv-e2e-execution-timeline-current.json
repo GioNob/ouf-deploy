@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-22T03:49:16.931Z",
+  "lastUpdatedAt": "2026-10-22T04:03:10.380Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1592,6 +1592,41 @@
       "runtimeAuthorityIssued": false,
       "newOAuthBudgetGranted": false,
       "releaseAcceptance": false
+    },
+    {
+      "id": "CSV-EVENT-NATIVE-ARCHIVE-INPUTS-COMPLETED-TARGET",
+      "classification": "USER_PASTED_OFFLINE_PREPARATION_RECEIPT_NOT_LIVE_RUNTIME_READBACK",
+      "documentedAt": "2026-10-22T04:03:10.380Z",
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "bundleHash": "f56d7989be393211665535a59cc4bf419c20665a912bf51aaf6f01671e2288dd",
+      "complete": true,
+      "completedTechnicalPhases": 8,
+      "configurationImageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-readiness-native-archive-86a63c83ae644484400e2e3531db57e5aa4869ca8c5f17bcbec908de889bb6c6",
+      "credentialFilesOpened": 0,
+      "databaseAdmissionProven": false,
+      "engineRequests": 0,
+      "functionalMilestonesProven": 4,
+      "imageRebuilt": false,
+      "imagesImported": 0,
+      "liveRuntimeReverified": false,
+      "logicalOperationRef": "6c7d73cbc2d9c613d5fe0b4fafe5ac20853478a883bf15371dadbb3f201afbc5",
+      "nativeArchiveSha256": "d8acfed23e9388d6ba5434a5731789c8b272395208f07272aeae4c7eb4c6026e",
+      "nativeImageId": "sha256:d173aa8beeb9a1ac29c35a163e254a902e95fedad2871e328886a41831c10697",
+      "nativeRuntimeExecutorQualified": false,
+      "notReleaseAcceptance": true,
+      "oauthRequests": 0,
+      "parentInputsHash": "ab6c1953b8eb0bed19fdd1ee82c4b34828642726e4582152852eb5b4711f14ec",
+      "plannedStages": 12,
+      "releaseAcceptance": false,
+      "runtimeAuthorityIssued": false,
+      "runtimeEffectsDispatched": 0,
+      "schema": "ouf.ingestion-readiness-native-archive-result.v1",
+      "status": "NATIVE_ARCHIVE_INPUTS_PREPARED_NO_AUTHORITY",
+      "targetApplyAuthorized": false,
+      "operatorLog": "/home/oufadmin/ouf-native-archive.KoPhost8/operator.log",
+      "executionTimeSupplied": false
     }
   ],
   "activeIntervals": [
@@ -2354,7 +2389,7 @@
     "refreshPerformed": false,
     "budgetReset": false,
     "wp3Block": {
-      "status": "PATCH_NATIVE_PORTS_QUALIFIED_DISTINCT_OFFLINE_NATIVE_ARCHIVE_PREPARATION_NEXT",
+      "status": "PATCH_NATIVE_ARCHIVE_INPUTS_COMPLETE_PRODUCTION_CONTROL_PENDING",
       "nextStage": 28,
       "appliedStages": 28,
       "currentAuthorityProven": false,
@@ -2364,7 +2399,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "OFFLINE_NATIVE_ARCHIVE_PREPARATION_NO_AUTHORITY",
+      "nextRequiredTargetAction": "NONE_UNTIL_PRODUCTION_CONTROL_AND_HUMAN_GOVERNANCE_QUALIFIED",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2381,7 +2416,7 @@
       "fullProductionExecutionControllerQualified": false
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "NATIVE_EXECUTION_INPUTS_PREPARED_NO_AUTHORITY",
+    "latestOperatorConfirmedOperation": "NATIVE_ARCHIVE_INPUTS_PREPARED_NO_AUTHORITY",
     "latestOperatorConfirmedOperationPolicyMutations": 0,
     "loginPerformedScope": "COMPLETED_FRESH_STAGE18_HUMAN_PROVIDER_VERIFICATION_AT292_NO_CURRENT_AUTHORITY_INFERRED",
     "newHumanLoginPerformed": true,
@@ -2414,11 +2449,13 @@
     "readinessPatchReviewHash": "45ed8d24c23a82ea4336c56ea4f5c4048f3237299a25263955f80e10d9078bea",
     "readinessPatchNativeInputContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-native-inputs-0b2fd250a4f16e05ad1dc2836878f6438d6c417394b8e5f542c0736f244897df",
     "readinessPatchNativeInputBundleHash": "ab6c1953b8eb0bed19fdd1ee82c4b34828642726e4582152852eb5b4711f14ec",
-    "readinessPatchNativeArchiveTargetPrepared": false,
+    "readinessPatchNativeArchiveTargetPrepared": true,
     "readinessPatchStagesApplied": 0,
     "thisDevelopmentNewLoginPerformed": false,
     "thisDevelopmentTargetOperations": 0,
-    "sourceHeadsReverifiedThisUpdate": false
+    "sourceHeadsReverifiedThisUpdate": false,
+    "readinessPatchNativeArchiveContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-native-archive-86a63c83ae644484400e2e3531db57e5aa4869ca8c5f17bcbec908de889bb6c6",
+    "readinessPatchNativeArchiveBundleHash": "f56d7989be393211665535a59cc4bf419c20665a912bf51aaf6f01671e2288dd"
   },
   "unverifiedIntervals": [
     {
@@ -2888,7 +2925,7 @@
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "RUN_PINNED_OFFLINE_NATIVE_ARCHIVE_PREPARATION_ONCE",
+    "currentRequiredHumanAction": "NONE_DEVELOPMENT_CONTINUES_NO_NEW_LOGIN_OR_REPLAY",
     "maximumNewOAuthRequests": 0,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
     "profileApplied": true,
