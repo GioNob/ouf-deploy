@@ -3,6 +3,7 @@
 Runtime preflight and terminal answers are explicit unit fakes. Actual sealed
 delivery/TTY and platform generations remain separate integration boundaries.
 """
+import base64
 import copy
 import hashlib
 import json
@@ -11,11 +12,11 @@ import os
 from pathlib import Path
 import sys
 import time
+import types
 import unittest
 from unittest.mock import Mock,patch
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests')]
 import test_readiness_patch_operator_control as runtime_fixture
-import test_stage18_successor as old_fixture
 from tools.ingestion_readiness_patch_execution import human_governance as g,operator_control as runtime,entry as e
 from tools.governed_human_successor import operator,window
 from tools.governed_human_successor.session import ExplicitFreshSession
@@ -25,31 +26,69 @@ REAL_PREFLIGHT=g.live_preflight
 
 
 def expired_previous(self):
-    self.old=old_fixture.Fixture();self.old.setUp();self.addCleanup(self.old.doCleanups)
-    boot=patch.object(HumanSession,'_boot',return_value=self.old.boot);boot.start();self.addCleanup(boot.stop)
-    self.old.open();self.oldcontrol=Path(self.old.control)
-    config=json.loads((self.oldcontrol/'control.json').read_bytes())
-    b=json.loads((self.oldcontrol/'binding.json').read_bytes());now=int(time.time())
-    b.update(createdAt=now-14400,expiresAt=now-7200)
-    decision=config['decision'];decision.update(approvedAt=b['createdAt'],expiresAt=b['expiresAt'])
-    oldrow=e.Journal(b['sessionDirectory']).read()
-    oldrow.update(binding=b,state='READY',attempts=292,monotonicDeadline=time.monotonic()-60,
-        lastObservedAt=now-7200,accessExpiresAt=now-7300,
-        governedWindowRenewal={'review':config['review'],'decision':decision},
-        accessToken='PRIVATE_OLD_TOKEN_NEVER_REUSE',refreshToken='PRIVATE_OLD_REFRESH_NEVER_REUSE')
-    self.old.write(Path(b['sessionDirectory'])/'recovery.json',oldrow)
-    self.old.write(self.oldcontrol/'control.json',config);self.old.write(self.oldcontrol/'binding.json',b)
-    claim=Path(config['review']['predecessorDirectory'])/'successor-window.claim.json'
-    fence=json.loads(claim.read_bytes());fence.update(decisionHash=e.c.digest(decision),expiresAt=b['expiresAt'])
-    self.old.write(claim,fence)
-    self.old_profile={'schema':e.human_reader.SCHEMA,'selection':config['selection'],'expectedBinding':b,
-        'journal':seal(Path(b['sessionDirectory'])/'recovery.json'),'minimumCumulativeAttempts':292,
-        'maximumCumulativeAttempts':292,'expectedBootId':oldrow['bootId'],
-        'expectedMonotonicDeadline':oldrow['monotonicDeadline'],
+    # Entire predecessor is an explicit synthetic fixture, constructed without
+    # importing any old stage18 runtime, grant or completed rollout operation.
+    clean={k:v for k,v in os.environ.items()if k.lower()not in
+        ('ssl_cert_file','ssl_cert_dir','https_proxy','http_proxy','all_proxy')}
+    env=patch.dict(os.environ,clean,clear=True);env.start();self.addCleanup(env.stop)
+    root=self.r.root if hasattr(self,'r')else self.root
+    parent=root/'old-human-lineage';parent.mkdir(mode=0o700)
+    previous=parent/'expired-288';previous.mkdir(mode=0o700)
+    now=int(time.time())
+    try:boot=window.boot_id()
+    except FileNotFoundError:
+        boot='synthetic-local-boot'
+        pin=patch.object(window,'boot_id',return_value=boot);pin.start();self.addCleanup(pin.stop)
+    pin=patch.object(HumanSession,'_boot',return_value=boot);pin.start();self.addCleanup(pin.stop)
+    selection={'issuer':'https://fixture.invalid/realm','subject':'fixture-human','tenant':'fixture-tenant'}
+    history={'minimumRetainedOAuthAttempts':288,'maximumCumulativeOAuthAttempts':292,
+        'ownerPlanHash':'1'*64,'completedResultHash':'2'*64}
+    review={'schema':g.contract.SCHEMA,'predecessorDirectory':str(previous),
+        'predecessorPublicHistoryHash':'a'*64,'predecessorBindingHash':'b'*64,
+        'selectionHash':e.c.digest(selection),'bootId':boot,'priorOAuthAttempts':288,
+        'maximumCumulativeOAuthAttempts':292,'maximumRemainingOAuthAttempts':4,
+        'requestedScopes':list(g.contract.SCOPES),'newWindowSeconds':7200,'retainedOwnerHistory':history,
+        'operationBinding':{'stage18CaseHash':'c'*64},'sourceClosureHash':'d'*64,
+        'predecessorWindowExpiresAt':now-18000,'freshIssuerAuthenticationRequired':True,
+        'oldCredentialsReusable':False,'oldRefreshReplayAllowed':False,'browserConfirmationPerPollRequired':True,
+        'automaticRenewalAllowed':False,'automaticReplayAllowed':False,'budgetReset':False,'runtimeAuthorityIssued':False}
+    g.contract.validate_review(review)
+    self.oldcontrol=operator.control_path(review);self.oldcontrol.mkdir(mode=0o700)
+    session=operator.successor_path(review);session.mkdir(mode=0o700)
+    from tools.chatbot_file_cohort.human_session import PROFILE,CLIENT
+    b={'sessionId':'synthetic-exhausted292',**selection,'selectionHash':e.c.digest(selection),
+        'clientId':CLIENT,'scopes':list(g.contract.SCOPES),'sessionDirectory':str(session),
+        'tokenPath':str(session/'human-access.jwt'),'createdAt':now-14400,'expiresAt':now-7200,
+        'retryProfile':{**copy.deepcopy(PROFILE),'id':'fixture292','maximumAttempts':292}}
+    decision={'schema':'ouf.human-login-window-terminal-consent.v1','reviewHash':e.c.digest(review),
+        'decision':'OPEN_ONE_LOGIN_WINDOW_NO_RUNTIME_AUTHORITY','approvedAt':b['createdAt'],'expiresAt':b['expiresAt']}
+    oldrow={'schema':'ouf.chatbot-human-session.private.v1','binding':b,'state':'READY','attempts':292,
+        'monotonicDeadline':time.monotonic()-60,'lastObservedAt':now-7200,'accessExpiresAt':now-7300,
+        'governedWindowRenewal':{'review':review,'decision':decision},'bootId':boot,'budgetReset':False,
+        'accessToken':'PRIVATE_OLD_TOKEN_NEVER_REUSE','refreshToken':'PRIVATE_OLD_REFRESH_NEVER_REUSE'}
+    e.Journal(session).initialize(oldrow)
+    def write(path,value):path.write_bytes(e.c.encoded(value));path.chmod(0o600)
+    config={'schema':operator.CONFIG_SCHEMA,'review':review,'decision':decision,'selection':selection,'history':history,
+        'predecessorJournal':seal(session/'recovery.json'),'sourceClosureHash':'d'*64,
+        'controlDirectory':str(self.oldcontrol),'case':{'humanOperatorTransportProfile':dict(operator.TRANSPORT)},'confirmedRead':{}}
+    write(self.oldcontrol/'control.json',config);write(self.oldcontrol/'binding.json',b)
+    write(previous/'successor-window.claim.json',{'schema':'ouf.human-explicit-successor-claim.v1',
+        'reviewHash':e.c.digest(review),'decisionHash':e.c.digest(decision),'destination':str(session),
+        'priorOAuthAttempts':288,'maximumCumulativeOAuthAttempts':292,'expiresAt':b['expiresAt'],
+        'automaticReplayAllowed':False,'budgetReset':False,'runtimeAuthorityIssued':False})
+    self.old_profile={'schema':e.human_reader.SCHEMA,'selection':selection,'expectedBinding':b,
+        'journal':seal(session/'recovery.json'),'minimumCumulativeAttempts':292,'maximumCumulativeAttempts':292,
+        'expectedBootId':boot,'expectedMonotonicDeadline':oldrow['monotonicDeadline'],
         'governedWindowReceiptHash':e.c.digest(oldrow['governedWindowRenewal']),
         'readOnly':True,'runtimeAuthorityIssued':False,'automaticReplayAllowed':False,'budgetReset':False}
-    self.old.write(self.oldcontrol/'human-read-profile.json',self.old_profile)
-    self.oldbytes=(Path(b['sessionDirectory'])/'recovery.json').read_bytes()
+    write(self.oldcontrol/'human-read-profile.json',self.old_profile)
+    self.oldbytes=(session/'recovery.json').read_bytes()
+    def token(**changes):
+        claims={'iss':selection['issuer'],'sub':selection['subject'],'tenant_id':selection['tenant'],
+            'ouf_actor_type':'HUMAN','azp':CLIENT,'aud':'ouf-api-gateway','scope':' '.join(g.contract.SCOPES),
+            'iat':int(time.time()),'exp':int(time.time())+1200,'acr':'fixture-only',**changes}
+        return 'fixture.'+base64.urlsafe_b64encode(e.c.encoded(claims)).decode().rstrip('=')+'.fixture'
+    self.old=types.SimpleNamespace(selection=selection,boot=boot,write=write,token=token)
     return config
 
 @unittest.skipUnless(os.environ.get('OUF_NATIVE_UIDS')=='1','real root journal custody required')
@@ -59,6 +98,7 @@ class Governance(unittest.TestCase):
     def setUp(self):
         self.r=runtime_fixture.OperatorControl();self.r.setUp();self.addCleanup(self.r.doCleanups)
         config=expired_previous(self)
+        notice=patch.object(operator,'terminal_notice');notice.start();self.addCleanup(notice.stop)
         self.case={'schema':g.SCHEMA,'purpose':'EXACT_RETAINED_INSTALLATION_NOT_PORTABLE_DEFAULT',
             'runtimeCase':copy.deepcopy(self.r.case),'nativeDeclaration':copy.deepcopy(self.r.manifest),
             'predecessorControlPath':str(self.oldcontrol),'predecessorReviewHash':e.c.digest(config['review']),
