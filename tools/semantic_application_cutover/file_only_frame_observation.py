@@ -16,9 +16,15 @@ from tools.semantic_provider_deployment_authentication import decode,attributes
 
 class FileOnlyFrameObservation(ProjectedFrameObservation):
     def __init__(self,configured,budget,owner_gate,paused_binding,execution_profile):
-        require(isinstance(owner_gate,DomainOwner) and type(paused_binding) is PausedWorkloadBinding
+        original=type(paused_binding) is PausedWorkloadBinding
+        if original:binding_profile=getattr(paused_binding.transition,'execution_profile',None)
+        else:
+            from tools.semantic_registry_recovery_execution.paused_binding import RecoveryPausedBinding
+            require(type(paused_binding) is RecoveryPausedBinding,'TYPED_FILE_ONLY_PAUSED_BINDING_REQUIRED')
+            binding_profile=paused_binding.execution_profile
+        require(isinstance(owner_gate,DomainOwner)
                 and type(execution_profile) is FileOnlyProfile,'TYPED_FILE_ONLY_TOKEN_OWNER_AND_PROFILE_REQUIRED')
-        require(getattr(paused_binding.transition,'execution_profile',None) is execution_profile,
+        require(binding_profile is execution_profile,
                 'EXACT_FILE_ONLY_FRAME_TRANSITION_PROFILE_REQUIRED')
         super().__init__(configured,budget)
         self.token_owner,self.pause_binding,self.profile=owner_gate,paused_binding,execution_profile
@@ -67,3 +73,4 @@ class FileOnlyFrameObservation(ProjectedFrameObservation):
             'configuredPolicy':approved,'sourceMountFrame':files,'configtreeMountFrame':directory,'renewableTokenMountFrame':token,
             'fourMountShapeObserved':True,'policyAuthenticationProven':False,'completeCreationAccepted':False,'signaturesIssued':0,'startAuthorized':False}
         return digest(result),{Path(self.configured[k]['path']):v for k,v in private.items()}
+

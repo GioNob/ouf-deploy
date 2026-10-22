@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - tools/semantic_registry_recovery_execution/**
+      - tools/semantic_application_cutover/paused_node_observation.py
+      - tools/semantic_application_cutover/file_only_frame_observation.py
+      - tools/semantic_policy_token_owner/mount_observation.py
       - .github/workflows/semantic-registry-recovery-components.yml
   workflow_dispatch:
 permissions:
@@ -13,7 +16,7 @@ concurrency:
 jobs:
   component-tests:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -28,4 +31,8 @@ jobs:
           sudo bash -eu -c '
           cd /root/ouf-registry-tests
           python3 -m unittest discover -s tools/semantic_registry_recovery_execution/tests -v
+          python3 -m unittest discover -s tests -p test_paused_workload_binding.py -v
+          python3 -m unittest discover -s tests -p test_file_only_retained_checkpoint.py -v
+          python3 -m unittest discover -s tests -p test_file_only_frame_compiler.py -v
+          python3 -m unittest discover -s tests -p test_paused_node_acceptance_native.py -v
           '

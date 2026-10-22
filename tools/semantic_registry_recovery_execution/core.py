@@ -177,6 +177,42 @@ def initial(plan,*,authority_hash,expires_unix,expires_monotonic,boot_id,predece
         'newGeneration':None,'state':'READY','budgetReset':False,'automaticReplayAllowed':False,
         'releaseAcceptance':False,'originalSemanticGetSucceeded':False}
 
+def validate_current(plan,row,boot_id,clocks):
+    """Shared read-only journal check for dispatch and native observers."""
+    plan_hash=validate_plan(plan);wall,mono=clocks
+    require(row['schema']=='ouf.semantic-registry-recovery-journal.v1' and row['planHash']==plan_hash
+            and row['bootId']==boot_id and wall<row['expiresUnix'] and mono<row['expiresMonotonic']
+            and wall>=row['lastUnix']>=row['createdUnix'] and mono>=row['lastMonotonic']>=row['createdMonotonic']
+            and 0<row['expiresUnix']-row['createdUnix']<=900
+            and 0<row['expiresMonotonic']-row['createdMonotonic']<=900
+            and row['budgetReset'] is False and row['automaticReplayAllowed'] is False
+            and row['predecessorIncidentRef']==plan['retainedPredecessorIncidentRef'],
+            'CURRENT_FINITE_RECOVERY_SCOPE_REQUIRED')
+    cursor=row['nextStage'];effects=row['effects']
+    require(type(cursor) is int and 0<=cursor<=len(ORDER) and type(effects) is list
+            and len(effects) in (cursor,cursor+1) and (cursor<len(ORDER) or len(effects)==cursor),
+            'ORDERED_RECOVERY_JOURNAL_REQUIRED')
+    for i,effect in enumerate(effects):
+        stage=plan['stages'][i]
+        require(effect['stage']==stage['name'] and effect['intentHash']==stage['intentHash']
+                and effect['authorityHash']==row['authorityHash']
+                and effect['state']==('APPLIED' if i<cursor else 'CLAIMED'),'SCOPED_DURABLE_RECOVERY_CLAIMS_REQUIRED')
+        if i<cursor:
+            require(type(effect['nativeEvidence']) is dict and effect['nativeEvidenceHash']==digest(effect['nativeEvidence']),
+                    'RECOVERY_NATIVE_EVIDENCE_CHANGED')
+    require(row['maximumReadAttempts']==128 and type(row['readAttempts']) is int
+            and 0<=row['readAttempts']<=128,'FINITE_CUMULATIVE_RECOVERY_READ_BUDGET_REQUIRED')
+    require(row['state']==('COMPLETED' if cursor==len(ORDER) else 'IN_FLIGHT' if len(effects)>cursor else 'READY'),
+            'EXACT_RECOVERY_STATE_REQUIRED')
+    if cursor>=2:
+        generation(row['newGeneration'])
+        start=effects[1]['nativeEvidence']
+        require(row['newGeneration']['containerId']==plan['stages'][0]['intent']['registryId']
+                and start['newGeneration']==row['newGeneration'] and start['durableNativeStartEvidence'] is True,
+                'DURABLE_NEW_GENERATION_REQUIRED')
+    else:require(row['newGeneration'] is None,'NO_HISTORICAL_GENERATION_ADOPTION')
+    return row
+
 class Runner:
     def __init__(self,plan,store,ports,*,boot_id,clock=lambda:(time.time(),time.monotonic())):
         require(type(store) is Store and isinstance(ports,Ports),'TYPED_RECOVERY_STORE_AND_PORTS_REQUIRED')
@@ -186,38 +222,7 @@ class Runner:
     def current(self):
         require(validate_plan(self.plan)==self.plan_hash,'RECOVERY_PLAN_CHANGED')
         row=self.store.read();wall,mono=self.clock()
-        require(row['schema']=='ouf.semantic-registry-recovery-journal.v1' and row['planHash']==self.plan_hash
-                and row['bootId']==self.boot_id and wall<row['expiresUnix'] and mono<row['expiresMonotonic']
-                and wall>=row['lastUnix']>=row['createdUnix'] and mono>=row['lastMonotonic']>=row['createdMonotonic']
-                and 0<row['expiresUnix']-row['createdUnix']<=900
-                and 0<row['expiresMonotonic']-row['createdMonotonic']<=900
-                and row['budgetReset'] is False and row['automaticReplayAllowed'] is False
-                and row['predecessorIncidentRef']==self.plan['retainedPredecessorIncidentRef'],
-                'CURRENT_FINITE_RECOVERY_SCOPE_REQUIRED')
-        cursor=row['nextStage'];effects=row['effects']
-        require(type(cursor) is int and 0<=cursor<=len(ORDER) and type(effects) is list
-                and len(effects) in (cursor,cursor+1) and (cursor<len(ORDER) or len(effects)==cursor),
-                'ORDERED_RECOVERY_JOURNAL_REQUIRED')
-        for i,effect in enumerate(effects):
-            stage=self.plan['stages'][i]
-            require(effect['stage']==stage['name'] and effect['intentHash']==stage['intentHash']
-                    and effect['authorityHash']==row['authorityHash']
-                    and effect['state']==('APPLIED' if i<cursor else 'CLAIMED'),'SCOPED_DURABLE_RECOVERY_CLAIMS_REQUIRED')
-            if i<cursor:
-                require(type(effect['nativeEvidence']) is dict and effect['nativeEvidenceHash']==digest(effect['nativeEvidence']),
-                        'RECOVERY_NATIVE_EVIDENCE_CHANGED')
-        require(row['maximumReadAttempts']==128 and type(row['readAttempts']) is int
-                and 0<=row['readAttempts']<=128,'FINITE_CUMULATIVE_RECOVERY_READ_BUDGET_REQUIRED')
-        require(row['state']==('COMPLETED' if cursor==len(ORDER) else 'IN_FLIGHT' if len(effects)>cursor else 'READY'),
-                'EXACT_RECOVERY_STATE_REQUIRED')
-        if cursor>=2:
-            generation(row['newGeneration'])
-            start=effects[1]['nativeEvidence']
-            require(row['newGeneration']['containerId']==self.plan['stages'][0]['intent']['registryId']
-                    and start['newGeneration']==row['newGeneration'] and start['durableNativeStartEvidence'] is True,
-                    'DURABLE_NEW_GENERATION_REQUIRED')
-        else:require(row['newGeneration'] is None,'NO_HISTORICAL_GENERATION_ADOPTION')
-        return row
+        return validate_current(self.plan,row,self.boot_id,(wall,mono))
     def save(self,before,**changes):
         value=copy.deepcopy(before);value.update(changes,version=before['version']+1)
         value['lastUnix'],value['lastMonotonic']=self.clock()

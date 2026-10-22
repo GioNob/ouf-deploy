@@ -18,6 +18,11 @@ from tools.semantic_provider_preexec_native import NativeBackend
 from tools.semantic_provider_peer_bindings import declarations,collect
 from projected_frame_observation import ProjectedFrameObservation
 
+def paused_binding_type(value):
+    if type(value) is PausedWorkloadBinding:return True
+    from tools.semantic_registry_recovery_execution.paused_binding import RecoveryPausedBinding
+    return type(value) is RecoveryPausedBinding
+
 class PausedNodeObservation(NodeObservation):
     def __init__(self,cfg,budget,paused_binding,frame_observer):
         allowed=(CreatedFrameObserver,ProjectedFrameObservation)
@@ -30,7 +35,7 @@ class PausedNodeObservation(NodeObservation):
         if type(frame_observer) not in allowed:
             from file_only_frame_observation import FileOnlyFrameObservation
             allowed=allowed+(FileOnlyFrameObservation,)
-        require(os.geteuid()==0 and type(paused_binding) is PausedWorkloadBinding
+        require(os.geteuid()==0 and paused_binding_type(paused_binding)
                 and type(frame_observer) in allowed,'TYPED_ROOT_PAUSED_NODE_OBSERVATION_REQUIRED')
         require(set(cfg)=={'runtimeBinding','runtimeRootParents','bundleParents','commands','candidate','rootfsLimits'}
                 and set(cfg['commands'])=={'ip','nsenter'} and set(cfg['candidate'])=={'networkBindings','transport','tableName'},'EXACT_PAUSED_NODE_OBSERVATION_CONFIGURATION_REQUIRED')
@@ -87,4 +92,5 @@ class PausedNodeObservation(NodeObservation):
                 'peerObservations':peers,'creationFrameHash':frame_hash,'frameInputHashes':{str(p):hashlib.sha256(raw).hexdigest() for p,raw in frame_inputs.items()},
                 'policyAuthenticationProven':False,'imagePublisherProvenanceVerified':False,'completeCreationAccepted':False,
                 'acceptanceGranted':False,'signaturesIssued':0,'startAuthorized':False}
+
 
