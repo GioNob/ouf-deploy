@@ -139,4 +139,18 @@ class Tests(unittest.TestCase):
         self.server.actual['HostConfig']['OomKillDisable']=0
         with self.assertRaisesRegex(c.RecoveryDenied,'HOST_CONFIGURATION_CHANGED'):self.native.observe(stage)
 
+    def test_distinct_recovery_binding_is_stable_only_for_mount_order(self):
+        actual=copy.deepcopy(self.baseline)
+        actual['Mounts']=[{'Destination':'/run/b','Source':'/fixture/b','RW':False},
+                          {'Destination':'/run/a','Source':'/fixture/a','RW':False}]
+        before=copy.deepcopy(actual);binding=self.native.runtime_binding(actual)
+        actual['Mounts'].reverse()
+        self.assertEqual(self.native.runtime_binding(actual),binding)
+        self.assertNotEqual(self.engine.runtime_binding(actual),self.engine.runtime_binding(before))
+        for field,value in (('Source','/fixture/changed'),('RW',True),('Destination','/different')):
+            changed=copy.deepcopy(actual);changed['Mounts'][0][field]=value
+            self.assertNotEqual(self.native.runtime_binding(changed),binding)
+        actual['Mounts'].append(copy.deepcopy(actual['Mounts'][0]))
+        with self.assertRaisesRegex(c.RecoveryDenied,'DISTINCT_RECOVERY_MOUNT'):self.native.runtime_binding(actual)
+
 if __name__=='__main__':unittest.main()

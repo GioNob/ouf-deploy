@@ -62,15 +62,16 @@ class RecoveryPausedBinding:
                 and proof['newGeneration']==before['newGeneration']
                 and proof['startedAt']==before['effects'][1]['nativeFirstProcess']['startedAt'],
                 'CURRENT_SAME_PAUSED_RECOVERY_GATE_REQUIRED')
-        binding=native.engine.runtime_binding(actual)
+        binding=native.runtime_binding(actual)
         # Native Engine binding includes image/configuration/network identity.
         # Observe again after the kernel generation check and compare full pins.
         after=native.inspect();again=native.process_evidence(after)
         require(after['State']['Status']=='paused','RECOVERY_PAUSED_ENGINE_STATE_CHANGED_DURING_OBSERVATION')
         require(again==proof,'RECOVERY_PAUSED_PROCESS_CHANGED_DURING_OBSERVATION')
-        require(native.engine.runtime_binding(after)==binding,'RECOVERY_PAUSED_RUNTIME_CHANGED_DURING_OBSERVATION')
+        require(native.runtime_binding(after)==binding,'RECOVERY_PAUSED_RUNTIME_CHANGED_DURING_OBSERVATION')
         require(self.current_row()==before,'RECOVERY_PAUSED_JOURNAL_CHANGED_DURING_OBSERVATION')
-        return {'schema':'ouf.semantic-paused-workload-binding.v1',
+        return {'schema':'ouf.semantic-registry-recovery-paused-workload-binding.v1',
+                'runtimeBindingProfile':'MOUNTS_SORTED_BY_DESTINATION_V1',
                 'transitionContextHash':before['logicalOperationRef'],
                 'creationRequestHash':self.request_hash,
                 'stageEvidenceHash':before['effects'][3]['nativeEvidenceHash'],

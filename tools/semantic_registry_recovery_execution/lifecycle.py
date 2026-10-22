@@ -79,6 +79,19 @@ class Lifecycle:
         new,process=observe_generation(self.process,state['Pid'],self.cid)
         return {'newGeneration':new,'processKind':process['processKind'],'startedAt':state['StartedAt'],
                 'paused':state['Paused'] is True}
+    def runtime_binding(self,actual):
+        # Docker Mounts is an unordered projection of its mount-point map.
+        # This DISTINCT recovery profile hashes every entry in destination
+        # order. Original Engine runtime bindings and historical hashes stay
+        # byte-for-byte unchanged; no member/attribute/default is discarded.
+        mounts=actual['Mounts']
+        require(type(mounts) is list and len(mounts)<=16
+                and all(type(m) is dict and type(m.get('Destination')) is str for m in mounts)
+                and len({m['Destination'] for m in mounts})==len(mounts),
+                'EXACT_DISTINCT_RECOVERY_MOUNT_DESTINATIONS_REQUIRED')
+        value=self.engine.runtime_binding(actual)
+        value['mountsHash']=digest(sorted(mounts,key=lambda m:m['Destination']))
+        return value
     def _save_effect(self,row,**changes):
         effects=copy.deepcopy(row['effects']);effects[-1].update(changes)
         self.store.cas(row,{**row,'effects':effects,'version':row['version']+1})
