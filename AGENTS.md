@@ -1,3 +1,11 @@
+# CURRENT — four-stage continuation and exact production delivery QUALIFIED; ONE new preflight only
+
+Source732a03fb19ada6e2168a585a2bbe78684800e05f CI39771531964 PASS129tests EACH Python3.12/3.13.5,zero skips; focused platform39771531971/job119799997359 PASS1whole-path actual Docker29/APISIX/JVM/PG17 test:148sealed native sources,all144 originals unchanged,prefix/native counters preserved,4residual stages,1additional Engine POST,0Gatewaywrites/newimages/keys. HUMAN/Owner/provider identities and predecessor stop/expiry are explicit fixture inputs; NOT target admission. Production release3e2e1768632876030f3d37de0fc800dabee0d4a3 reproductionCI39772566401/jobs119803468865,119803469193 PASS1test EACH Python3.13.5/3.12. All5published Gitblob/SHA/size pins MATCH.
+
+Next target action ONLY: ONE pinned cached setup + runtime preflight in docs/handoffs/OUF_PATCH_STAGE8_CONTINUATION_20261022.md. Setup SHA42a145fb5cd121242c67765964956f4ad8a0480f434b976ca4aebaca8d2f057e,blob59ad6503ebcfaebab662ee4a2f002c3570bc8a7a. Downloads/checks both full caches BEFORE any timer/consent; runtime preflight only,0Engine/OAuth/SQL/HUMANjournal/effects. Expected STAGE8_CONTINUATION_PREFLIGHT_NO_AUTHORITY. Return public JSON/operator.log/new HUMAN/runtime cached launcher paths. Target preflight NOT yet observed. OAuth300/300,patch8/12,technical8/8,functional4/6,G3OPEN. Proposed304ceiling NOT granted; no new login/window/runtime authority requested now. All old claims/logs/caches/capture stay immutable. No replay of old commands. Old full300HUMANwindow AND token must expire before future governance; do not weaken/reset them. Older headers below historical.
+
+---
+
 # CURRENT — complete four-stage path CI PASS; exact production reproduction pending
 
 Qualified source732a03fb19ada6e2168a585a2bbe78684800e05f: CI39771531964 PASS129tests EACH Python3.12/3.13.5,zero skips; focused platform39771531971/job119799997359 PASS1real Docker29/APISIX/JVM/PG17 test. Exact sealed148 runtime/HUMAN/cached TTY path imports prefix without replay,preserves original bytes/native counters,executes4residual stages with1additional Engine POST,0Gatewaywrites/newimages/keys. Synthetic stop/expiry/HUMAN/Owner/provider replies are explicit; this is NOT current target admission. Every original144 source byte remains unchanged.

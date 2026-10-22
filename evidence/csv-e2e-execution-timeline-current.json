@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-22T11:08:28Z",
+  "lastUpdatedAt": "2026-10-22T11:43:13Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1773,6 +1773,32 @@
       "oauthRequests": 0,
       "applicationReadinessReverified": false,
       "futureRuntimeQualified": false
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-FOUR-STAGE-PATH-QUALIFIED",
+      "observedAt": "2026-10-22T11:43:13Z",
+      "classification": "DISPOSABLE_NATIVE_PLATFORM_AND_SYNTHETIC_HUMAN_NOT_TARGET_ADMISSION",
+      "sourceCommit": "732a03fb19ada6e2168a585a2bbe78684800e05f",
+      "unitRun": 39771531964,
+      "testsPerPython": 129,
+      "platformRun": 39771531971,
+      "platformJob": 119799997359,
+      "stagesResumed": 4,
+      "prefixPreserved": true,
+      "targetStagesApplied": 8,
+      "targetOAuthAttempts": 300,
+      "targetOAuthCeiling": 300
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-PRODUCTION-DELIVERY-REPRODUCED",
+      "observedAt": "2026-10-22T11:43:13Z",
+      "classification": "EXACT_PRODUCTION_BYTES_NOT_TARGET_PREFLIGHT",
+      "releaseCommit": "3e2e1768632876030f3d37de0fc800dabee0d4a3",
+      "run": 39772566401,
+      "testsPerPython": 1,
+      "publishedPinsMatched": true,
+      "nextAction": "ONE_PINNED_CACHED_STAGE8_RUNTIME_PREFLIGHT_ONLY",
+      "targetPreflightObserved": false
     }
   ],
   "activeIntervals": [
@@ -2535,7 +2561,7 @@
     "refreshPerformed": false,
     "budgetReset": false,
     "wp3Block": {
-      "status": "PATCH_STOPPED_AT8_LIVE_INPUTS_MATCHED_SUCCESSOR_NOT_QUALIFIED",
+      "status": "PATCH_STOPPED_AT8_FOUR_STAGE_SUCCESSOR_DELIVERY_QUALIFIED",
       "nextStage": 28,
       "appliedStages": 28,
       "currentAuthorityProven": false,
@@ -2545,7 +2571,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "NONE_PENDING_FOUR_STAGE_SUCCESSOR_QUALIFICATION",
+      "nextRequiredTargetAction": "ONE_PINNED_CACHED_STAGE8_RUNTIME_PREFLIGHT_ONLY",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2574,7 +2600,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_PATCH_STAGE8_LIVE_INPUTS_20261022.md",
+    "currentHandoff": "docs/handoffs/OUF_PATCH_STAGE8_CONTINUATION_20261022.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 300,
@@ -2623,9 +2649,11 @@
     "readinessPatchRecordedExpiresAt": 1792664043,
     "readinessPatchStoppedSnapshotComplete": true,
     "readinessPatchLiveCapturePerformed": true,
-    "readinessPatchFourStageContinuationQualified": false,
+    "readinessPatchFourStageContinuationQualified": true,
     "readinessPatchLiveCaptureHash": "b9063de73e2d7699e3e7616a164f4b9a24346bc0a3fda1ed3762f4dc0dd95ef2",
-    "readinessPatchMetadataMatchedAtCapture": true
+    "readinessPatchMetadataMatchedAtCapture": true,
+    "readinessPatchFourStageDeliveryQualified": true,
+    "readinessPatchFourStagePreflightObserved": false
   },
   "unverifiedIntervals": [
     {
@@ -3544,6 +3572,104 @@
       "recordedAt": "2026-10-22T11:01:57Z",
       "futureFourStageRuntimeQualified": false,
       "targetReceiptEvidence": "evidence/ingestion-readiness-stage8-live-target-20261022.json"
+    },
+    "readinessPatchFourStageContinuation": {
+      "schema": "ouf.ingestion-readiness-stage8-whole-path-qualification.v1",
+      "qualification": {
+        "sourceCommit": "732a03fb19ada6e2168a585a2bbe78684800e05f",
+        "unitRun": 39771531964,
+        "pythonJobs": [
+          {
+            "id": 119800000978,
+            "python": "3.12",
+            "tests": 129,
+            "skipped": 0,
+            "conclusion": "success"
+          },
+          {
+            "id": 119800001075,
+            "python": "3.13.5",
+            "tests": 129,
+            "skipped": 0,
+            "conclusion": "success"
+          }
+        ],
+        "platformRun": 39771531971,
+        "platformJob": {
+          "id": 119799997359,
+          "tests": 1,
+          "skipped": 0,
+          "conclusion": "success"
+        }
+      },
+      "proof": {
+        "complete": true,
+        "sealedNativeModules": 148,
+        "prefixImportedWithoutReplay": true,
+        "oldPrefixBytesUnchanged": true,
+        "nativeCountersPreserved": true,
+        "remainingStagesExecuted": 4,
+        "additionalEnginePosts": 1,
+        "newImagesOrKeys": 0,
+        "gatewayWrites": 0,
+        "syntheticStopAndExpiry": true,
+        "syntheticHumanAndOwner": true,
+        "targetEvidence": false,
+        "humanGovernance": {
+          "realBudgetAndWindowTty": true,
+          "cachedHashCheckedForegroundLaunchers": true,
+          "preLoginExactEngineGets": 14,
+          "syntheticProviderRequests": 4,
+          "priorOAuthAttempts": 300,
+          "readyOAuthAttempts": 304,
+          "oldSessionBytesUnchanged": true
+        }
+      },
+      "productionReproduction": {
+        "status": "PASS",
+        "releaseCommit": "3e2e1768632876030f3d37de0fc800dabee0d4a3",
+        "run": 39772566401,
+        "jobs": [
+          {
+            "id": 119803468865,
+            "python": "3.13.5",
+            "tests": 1,
+            "skipped": 0,
+            "conclusion": "success"
+          },
+          {
+            "id": 119803469193,
+            "python": "3.12",
+            "tests": 1,
+            "skipped": 0,
+            "conclusion": "success"
+          }
+        ],
+        "publishedPinsMatched": true
+      },
+      "failedPlatformRuns": [
+        {
+          "run": 39770138270,
+          "reason": "TEST_TTY_PROMPT_WORDING"
+        },
+        {
+          "run": 39770821359,
+          "reason": "TEST_READER_IMPORTS"
+        }
+      ],
+      "target": {
+        "oauthAttempts": 300,
+        "oauthCeiling": 300,
+        "patchStagesApplied": 8,
+        "fourStagesExecuted": false,
+        "newLoginPerformed": false,
+        "newBudgetGranted": false,
+        "newWindowOpened": false,
+        "runtimeAuthorityIssued": false,
+        "targetCommandExecuted": false,
+        "releaseAcceptance": false
+      },
+      "recordedAt": "2026-10-22T11:43:13Z"
     }
   },
   "developmentCandidates": [

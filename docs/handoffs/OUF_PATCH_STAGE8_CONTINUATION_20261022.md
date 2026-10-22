@@ -1,8 +1,8 @@
-# CURRENT — complete four-stage path CI PASS; exact production reproduction pending
+# CURRENT — four-stage continuation and exact production delivery QUALIFIED; ONE new preflight only
 
-Qualified source732a03fb19ada6e2168a585a2bbe78684800e05f: CI39771531964 PASS129tests EACH Python3.12/3.13.5,zero skips; focused platform39771531971/job119799997359 PASS1real Docker29/APISIX/JVM/PG17 test. Exact sealed148 runtime/HUMAN/cached TTY path imports prefix without replay,preserves original bytes/native counters,executes4residual stages with1additional Engine POST,0Gatewaywrites/newimages/keys. Synthetic stop/expiry/HUMAN/Owner/provider replies are explicit; this is NOT current target admission. Every original144 source byte remains unchanged.
+Source732a03fb19ada6e2168a585a2bbe78684800e05f CI39771531964 PASS129tests EACH Python3.12/3.13.5,zero skips; focused platform39771531971/job119799997359 PASS1whole-path actual Docker29/APISIX/JVM/PG17 test:148sealed native sources,all144 originals unchanged,prefix/native counters preserved,4residual stages,1additional Engine POST,0Gatewaywrites/newimages/keys. HUMAN/Owner/provider identities and predecessor stop/expiry are explicit fixture inputs; NOT target admission. Production release3e2e1768632876030f3d37de0fc800dabee0d4a3 reproductionCI39772566401/jobs119803468865,119803469193 PASS1test EACH Python3.13.5/3.12. All5published Gitblob/SHA/size pins MATCH.
 
-Production cases/capsules/cached launchers are generated and locally reproduce exactly. Wait for dedicated two-version exact production reproduction before presenting ONE pinned cached setup/runtime preflight. That preflight reads retained inputs/issuer/closure only:0Engine/OAuth/DB/HUMANjournal/effects,does not grant budget/window/runtime authority. Target remainsOAuth300/300,patch8/12,technical8/8,functional4/6,G3OPEN. Future304ceiling is only a proposed separately consented budget. No fresh login until target preflight and explicit governance; old full300window and token must be expired,not reset or implicitly superseded. Never replay completed capture/old runtime/old HUMAN commands. See docs/handoffs/OUF_PATCH_STAGE8_CONTINUATION_20261022.md. Older headers historical.
+Next target action ONLY: ONE pinned cached setup + runtime preflight in docs/handoffs/OUF_PATCH_STAGE8_CONTINUATION_20261022.md. Setup SHA42a145fb5cd121242c67765964956f4ad8a0480f434b976ca4aebaca8d2f057e,blob59ad6503ebcfaebab662ee4a2f002c3570bc8a7a. Downloads/checks both full caches BEFORE any timer/consent; runtime preflight only,0Engine/OAuth/SQL/HUMANjournal/effects. Expected STAGE8_CONTINUATION_PREFLIGHT_NO_AUTHORITY. Return public JSON/operator.log/new HUMAN/runtime cached launcher paths. Target preflight NOT yet observed. OAuth300/300,patch8/12,technical8/8,functional4/6,G3OPEN. Proposed304ceiling NOT granted; no new login/window/runtime authority requested now. All old claims/logs/caches/capture stay immutable. No replay of old commands. Old full300HUMANwindow AND token must expire before future governance; do not weaken/reset them. Older headers below historical.
 
 ---
 
@@ -20,10 +20,32 @@ Separate HUMAN governance retains300exhausted history;304ceiling is a proposal o
 
 Local9controller tests passed with real root CAS and two-role signatures; runtime transports/HUMAN identities in those units are explicit peers. New9governance tests and dedicated actual Docker29/APISIX/JVM/PG17 whole-path test are pending. No current target admission is inferred from fixtures. Technical8/8,functional4/6,G3OPEN,patch8/12,OAuth300/300. Future actions will be pinned only after completed CI and production reproduction.
 
-Completed whole-path qualification: source732a03fb19ada6e2168a585a2bbe78684800e05f;129tests EACH Python3.12/3.13.5,zero skips,CI39771531964/jobs119800000978,119800001075. Focused platform39771531971/job119799997359 PASS1test,321.375seconds. Native148sources and every original144 unchanged. Fixture stop/expiry and HUMAN/Owner/provider identities are synthetic; old original prefix and old exhausted HUMAN bytes stay unchanged. No current target health/admission/authority follows from this proof.
+## Completed qualification and exact delivery
 
-Retained failed platform runs39770138270(prompt wording parser) and39770821359(missing test imports); corrections change only fixture code,never production runtime predicates. Local workspace fixture nesting also intermittently failed before reaching the new controller; native Linux CI passes all129 on both versions. Do not count a failed local fixture as target evidence or rerun target operations.
+Whole path: source732a03fb19ada6e2168a585a2bbe78684800e05f,129tests EACH Python3.12/3.13.5,zero skips,run39771531964. Focused real platform run39771531971/job119799997359 PASS1test in321.375s.148sealed runtime modules,all144 original runtime bytes unchanged; prefix/native counters/old exhausted HUMAN bytes preserved;4residual stages;1additional Engine POST restoring restart policy;0Gatewaywrites,newimages,keys. Source fixture uses two networks and9APPLIED prefix stages; target has one network and8. Stop/expiry,HUMAN/Owner/provider replies are synthetic fixture inputs. No current target admission follows.
 
-Original PET files were not re-read in this continuation turn; normative reconciliation releases/PET_ROADMAP_RECONCILIATION_20261010.md and OUF_RESILIENCE_POLICYv3 were reconsulted,including durable budgets,ambiguity reconciliation,new separately consented finite sessions and no THS substitution. This is not complete PET compliance/acceptance certification.
+Initial failed focused runs39770138270(test prompt wording parser) and39770821359(test imports) retained; fixes change fixture only. Exact published release3e2e1768632876030f3d37de0fc800dabee0d4a3 is reproduced by dedicated CI39772566401:Python3.13.5/job119803468865 andPython3.12/job119803469193 eachPASS1pureproductiontest,zero skips. Local puretest PASS too. Every published Gitblob/SHA256/size pin matched. New broad130-test/full-platform reruns may still be running; they do not replace the completed unchanged148-source whole-path proof and dedicated production reproduction.
 
-Exact production pins: evidence/ingestion-readiness-stage8-production-pins-20261022.json. Dedicated production byte reproduction on both Python versions pending. Local pure reproduction PASS1test. No target command delivered yet.
+Reconsulted repository normative reconciliation releases/PET_ROADMAP_RECONCILIATION_20261010.md and OUF_RESILIENCE_POLICYv3 durable budgets/ambiguity reconciliation/new consented finite sessions/THS boundaries. Original PET files were not re-read in this continuation turn; no complete PET compliance/acceptance claim is made.
+
+## Next target action — ONCE, preflight only
+
+```bash
+(
+set -euo pipefail
+umask 077
+ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+if [ ! -x "$ouf_gh" ]; then ouf_gh="$(command -v gh)"; fi
+ouf_setup="$(mktemp "$HOME/ouf-stage8-setup.XXXXXXXX")"
+trap 'printf "\nLauncher setup conservato: %s\n" "$ouf_setup"' EXIT
+"$ouf_gh" api repos/GioNob/ouf-deploy/git/blobs/59ad6503ebcfaebab662ee4a2f002c3570bc8a7a --jq .content |
+  tr -d '\n' | base64 --decode > "$ouf_setup"
+printf '%s  %s\n' \
+  42a145fb5cd121242c67765964956f4ad8a0480f434b976ca4aebaca8d2f057e "$ouf_setup" | sha256sum -c -
+bash "$ouf_setup"
+)
+```
+
+Expected STAGE8_CONTINUATION_PREFLIGHT_NO_AUTHORITY. This caches and verifies code,reads retained metadata/issuer/executable closure only.0Engine requests,0HUMAN credential journal reads,0OAuth,0DB calls,0runtimeeffects. No source activation/new budget/window/login/authority. Return public JSON/operator.log and new retained HUMAN/runtime launcher paths. After STOP preserve all and NEVER rerun. The completed live-capture command and old runtime/HUMAN launchers must not be used again.
+
+Future actions,NOT requested now: governed HUMAN prepare,distinct304budget proposal/grant,one7200swindow,one request per manual command; runtime review/fresh infrastructure consent(max900s),explicit prefix import,individual four residual steps and final metadata completion. Old full300window/token must be expired before governance. All code is cached and qualified before obtaining a fresh token; no development/download during that token window.

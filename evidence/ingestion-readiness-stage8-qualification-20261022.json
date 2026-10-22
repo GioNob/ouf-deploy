@@ -50,7 +50,28 @@
       "oldSessionBytesUnchanged": true
     }
   },
-  "productionReproduction": "LOCAL_PASS1_CI_PENDING",
+  "productionReproduction": {
+    "status": "PASS",
+    "releaseCommit": "3e2e1768632876030f3d37de0fc800dabee0d4a3",
+    "run": 39772566401,
+    "jobs": [
+      {
+        "id": 119803468865,
+        "python": "3.13.5",
+        "tests": 1,
+        "skipped": 0,
+        "conclusion": "success"
+      },
+      {
+        "id": 119803469193,
+        "python": "3.12",
+        "tests": 1,
+        "skipped": 0,
+        "conclusion": "success"
+      }
+    ],
+    "publishedPinsMatched": true
+  },
   "failedPlatformRuns": [
     {
       "run": 39770138270,
@@ -72,5 +93,6 @@
     "runtimeAuthorityIssued": false,
     "targetCommandExecuted": false,
     "releaseAcceptance": false
-  }
+  },
+  "recordedAt": "2026-10-22T11:43:13Z"
 }
