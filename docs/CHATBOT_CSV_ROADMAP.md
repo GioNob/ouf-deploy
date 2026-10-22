@@ -1,3 +1,15 @@
+# LATEST — current availability defect proven;23recovery component tests pass, native composition still incomplete
+
+Owner /home/oufadmin/ouf-live-route.ZP4fQDib/operator.log: current82route map unchanged;exactsemanticGETpoints to reviewed stoppedRegistry address/port;targetnetworkendpoint absent.6EngineGETs+1adminGET,4credentialreads,0OAuth/DB/writes/effects. Evidence semantic-live-route-target-20261022.json is owner-pasted,not independent cloud readback. Originalrequest/stopcause/readiness/502resolution remain unproven. Corrective target is that Registry,not a Gateway rewrite/provider restart.
+
+Recovery source186cb68a117cf9ceb3502ae8c90094146139fbaa implements12stage durable dispatch/fencing,claimed=>observationonly,no oldPID adoption,current actualCutoverAuthority signed-scope requirement,and4closed native lifecycle paths. CI39860573897:23componentPASS/0skips (15core+8actualAF_UNIX HTTP fixtures with simulated Engine/process/authority);local15core+99predecessor diagnosticsPASS. Evidence semantic-registry-recovery-components-ci-20261022.json. This does NOT qualify Docker/fullnative owners or a production executor. No target command,issuer/launcher or premature runtime consent/budget/window request is ready.
+
+Next development REQUIRED: real current pausedOCI/rootfs/mount/node-signature binding,currentDB+tokenowner admission,currentroute checks,originalauthenticatedrequest verification and complete typed NativePorts/factory/qualification. Preserve exact scopes/claims and fresh-generation custody;do not impersonate historical transitions or apply the released-JVM running_rootfs exception to a new paused PID. Native installer must bind one canonical execution directory/fence per logical recovery so alternate parent paths cannot bypass retained claims. No cleanup/relaxed seal/newprovider/tokenrenewal is implied. See docs/handoffs/OUF_SEMANTIC_REGISTRY_RECOVERY_IMPLEMENTATION_20261022.md.
+
+502remainsmandatoryandOPEN. WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. Preserve allcontexts/claims/logs. OAuth304/304exhausted,source24hourwindowhistorical. No runtime authority/effect,automaticlogin/budgetreset/activation/rolloutreplay/releaseacceptance. Earlier next-command and pending-CI headers are historical.
+
+---
+
 # LATEST — live route targets stopped Registry; corrective components in development
 
 Owner /home/oufadmin/ouf-live-route.ZP4fQDib/operator.log: LIVE_ROUTE_AND_REGISTRY_CORRELATED;all82current routes equal retained;exactsemanticGETtargetsreviewedRegistryaddress/port;Registryexited,no targetnetworkendpoint.6EngineGETs+1adminGET,4credentialreads,0OAuth/DB/writes/effects. New evidence semantic-live-route-target-20261022.json records owner provenance,not independent cloud readback.502notfixed;originalrequestnotreproduced,stopcausenotestablished. No more historical inventories or route rewrites: correct exact Registry availability.
