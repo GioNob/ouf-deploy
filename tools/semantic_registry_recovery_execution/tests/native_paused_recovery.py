@@ -134,11 +134,23 @@ class NativePausedRecovery(unittest.TestCase):
     def test_readonly_token_mount_uses_distinct_native_recovery_binding(self):
         binding=self.advance_to_paused();report=binding.observe();pid=report['runtimeBinding']['pid']
         owner=FixtureOwner()
-        observation=RecoveryTokenMountObservation(self.token_policy,owner,time.monotonic()+10,pause_binding=binding)
-        proof=observation.observe(mount_generation(pid,allow_frozen=True))
+        original=self.lifecycle.engine.runtime_binding;bindings=[]
+        def record(actual):
+            value=original(actual);bindings.append(value);return value
+        self.lifecycle.engine.runtime_binding=record
+        try:
+            for _ in range(8):
+                observation=RecoveryTokenMountObservation(self.token_policy,owner,time.monotonic()+10,pause_binding=binding)
+                proof=observation.observe(mount_generation(pid,allow_frozen=True))
+        except BaseException:
+            # Disposable CI diagnostics print field names only, never bindings
+            # or token contents. Production checks remain strict and unchanged.
+            print('FIXTURE_RUNTIME_DIFFERENCE_FIELDS='+json.dumps([
+                sorted(k for k in a if a[k]!=b[k]) for a,b in zip(bindings,bindings[1:]) if a!=b]))
+            raise
         self.assertTrue(proof['sameSourceFileInMountedView'])
         self.assertTrue(proof['effectiveReadOnlyDirectoryBindingObserved'])
-        self.assertEqual(owner.calls,1)
+        self.assertEqual(owner.calls,8)
         self.assertNotIn('DISPOSABLE_FIXTURE_TOKEN',json.dumps(proof))
         self.assertFalse(proof['runtimeAuthorityIssued'])
 

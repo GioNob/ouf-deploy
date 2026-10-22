@@ -66,9 +66,10 @@ class RecoveryPausedBinding:
         # Native Engine binding includes image/configuration/network identity.
         # Observe again after the kernel generation check and compare full pins.
         after=native.inspect();again=native.process_evidence(after)
-        require(after['State']['Status']=='paused' and again==proof
-                and native.engine.runtime_binding(after)==binding
-                and self.current_row()==before,'RECOVERY_PAUSED_CHANGED_DURING_OBSERVATION')
+        require(after['State']['Status']=='paused','RECOVERY_PAUSED_ENGINE_STATE_CHANGED_DURING_OBSERVATION')
+        require(again==proof,'RECOVERY_PAUSED_PROCESS_CHANGED_DURING_OBSERVATION')
+        require(native.engine.runtime_binding(after)==binding,'RECOVERY_PAUSED_RUNTIME_CHANGED_DURING_OBSERVATION')
+        require(self.current_row()==before,'RECOVERY_PAUSED_JOURNAL_CHANGED_DURING_OBSERVATION')
         return {'schema':'ouf.semantic-paused-workload-binding.v1',
                 'transitionContextHash':before['logicalOperationRef'],
                 'creationRequestHash':self.request_hash,
