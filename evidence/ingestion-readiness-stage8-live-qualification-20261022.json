@@ -37,7 +37,7 @@
     "syntheticHumanAndOwner": true,
     "targetEvidence": false
   },
-  "productionDeliveryReproduction": "PENDING_FINAL_MATRIX",
+  "productionDeliveryReproduction": "PASS_EXACT_CASE_CAPSULE_AND_LAUNCHER",
   "target": {
     "oauthAttempts": 300,
     "oauthCeiling": 300,
@@ -47,5 +47,32 @@
     "runtimeAuthorityIssued": false,
     "targetCapturePerformed": false,
     "releaseAcceptance": false
-  }
+  },
+  "deliveryCommit": "2ef75b77e9bf259f79e4dc34b14bab61f0fa4b9a",
+  "deliveryUnitRun": 39766442749,
+  "deliveryPythonJobs": [
+    {
+      "id": 119782957857,
+      "python": "3.12",
+      "tests": 111,
+      "skipped": 0,
+      "conclusion": "success"
+    },
+    {
+      "id": 119782957457,
+      "python": "3.13.5",
+      "tests": 111,
+      "skipped": 0,
+      "conclusion": "success"
+    }
+  ],
+  "deliveryPlatformRun": 39766442872,
+  "deliveryPlatformJob": {
+    "id": 119782957794,
+    "tests": 1,
+    "skipped": 0,
+    "conclusion": "success"
+  },
+  "recordedAt": "2026-10-22T11:01:57Z",
+  "futureFourStageRuntimeQualified": false
 }

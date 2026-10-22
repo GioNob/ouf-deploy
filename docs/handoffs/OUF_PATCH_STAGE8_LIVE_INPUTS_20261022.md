@@ -1,4 +1,4 @@
-# Stage8 continuation inputs — live capture CI PASS; delivery reproduction pending
+# Stage8 continuation inputs — exact capture delivery qualified
 
 Owner stopped snapshot is complete: nativeJournalHash b6b53f8740d6cbb02a3a7e4f7e0a16950475275896b4a433482e7701d4e5e17a, controlJournalHash b2d292dde7cc3f2b337ae401d204d1e43f8da5c046a4aefee262169d8db6da2b, prefixHash2817613ea986a32046fad3066a954219b913189cae5918934a88c1764a439756, reviewHash90564cdc2ed759ca1184deea0f2db86eff3cfaf8dfa108c3cb42c54bdbe9e0b5. Prefix8,nextREADINESS,readAttempts8,IDLE,no pending claim,old authority expiresAt1792664043 and zero remaining. Preserve /home/oufadmin/ouf-patch-stopped-read.ERBwqHkT/reader.log and every original context/claim. Do not replay old step/approve/initialize/auth or either completed snapshot. OAuth300/300; no new budget/window/login/authority is requested.
 
@@ -11,3 +11,28 @@ No credential files,HUMAN journals,private keys or bearer files are opened. Priv
 Local4unit/build tests PASS: actual private journals/fences and immutable predecessor bytes; synthetic GET/generation peers;partial GET reservation and no replay;foreign snapshot denial;closed capsule reproduction/invalid mode. A dedicated real Docker29/APISIX/JVM/Postgres fixture uses a real owned started replacement after APPLIED stages,then explicit modeled stop/expiry,executes the exact sealed reader for14GETs and verifies old bytes unchanged/no reexecution. Dedicated CI39765004003 job119778163251 atfe173314353ff9ca320098c5f5461268c6e4c84f PASSED1test,zero skips: exact118-source isolated reader,14GETs,0Enginewrites,all old prefix bytes unchanged. Two networks yield9fixture APPLIED stages before READINESS; target has8. Explicit modeled stop/expiry and synthetic HUMAN/Owner are fixture limitations. Matrix CI39765003954 jobs119778154240/119778154404 each PASS110tests. These are not current target health/admission evidence. Target-specific delivery is generated; new111-test matrix must confirm capsule/case/launcher byte reproduction before its single read-only target command is shown. Only then generate/hash-pin/reproduce the target-specific capture capsule from the exact owner snapshot; future fresh HUMAN work must wait until the entire concrete runtime continuation path is qualified.
 
 Packaging correction: the initial local production-reproduction check found only JSON insertion-order differences in the CASE header. The builder now canonicalizes the complete case before emission; caseHash,declarationHash and all118 executed source hashes remain unchanged. Local5tests now PASS,including exact production case/capsule/GET-only cached launcher reproduction and Bash syntax. No unqualified command was delivered or run on target. This is not a change to runtime validators or reader effect scope.
+
+Final delivery qualification at 2026-10-22T11:01:57Z: commit2ef75b77e9bf259f79e4dc34b14bab61f0fa4b9a, CI39766442749 PASS111tests EACH Python3.12/3.13.5,zero skips; focused actual-platform CI39766442872/job119782957794 PASS1test,14GET/0writes/118sources/oldprefixbytesunchanged. This supersedes pending statements above. Target capture has NOT run; no current target health is inferred. Future four-stage runtime continuation remains unqualified.
+
+## Next target action — run ONCE
+
+```bash
+(
+set -euo pipefail
+umask 077
+ouf_gh="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
+if [ ! -x "$ouf_gh" ]; then ouf_gh="$(command -v gh)"; fi
+ouf_dir="$(mktemp -d "$HOME/ouf-stage8-live-capture.XXXXXXXX")"
+trap 'printf "\nDirectory conservata: %s\nLog launcher: %s/launcher.log\n" "$ouf_dir" "$ouf_dir"' EXIT
+"$ouf_gh" api repos/GioNob/ouf-deploy/git/blobs/b61ed5dfdfed0e566416ed325b928ae4bee9c2c2 --jq .content |
+  tr -d '\n' | base64 --decode > "$ouf_dir/capture.sh"
+"$ouf_gh" api repos/GioNob/ouf-deploy/git/blobs/6aa239ac2e14171a16eda6fef54e11548b2fa5a1 --jq .content |
+  tr -d '\n' | base64 --decode > "$ouf_dir/capture.sh.operator.py"
+printf '%s  %s\n' \
+  4a05cf4c0006779fa8c8f7d83a703f56624b580038237a52fcb58dc05d77785e "$ouf_dir/capture.sh" \
+  8ca3009d6232f6a0ce166bb22b4594878a1acb1e2e16161315c229a553d894b0 "$ouf_dir/capture.sh.operator.py" | sha256sum -c -
+bash "$ouf_dir/capture.sh" prepare 2>&1 | tee "$ouf_dir/launcher.log"
+)
+```
+
+Return only public JSON and operator.log path. After STOP preserve everything; do not rerun. No new OAuth/budget/window/login requested.

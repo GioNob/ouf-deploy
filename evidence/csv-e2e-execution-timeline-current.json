@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-22T10:28:24Z",
+  "lastUpdatedAt": "2026-10-22T11:05:50Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1741,6 +1741,27 @@
       "testsPerPython": 4,
       "sourceCommit": "e1db6dbd8b285483c9023872374576620dab03af",
       "targetSnapshotObserved": false
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-STOPPED-SNAPSHOT-RECEIVED",
+      "observedAt": "2026-10-22T11:05:50Z",
+      "classification": "OWNER_RECEIPT_NO_EXECUTION_TIME_INFERRED",
+      "appliedStages": 8,
+      "nextStage": "ingestion.READINESS",
+      "liveRuntimeObserved": false,
+      "operatorLog": "/home/oufadmin/ouf-patch-stopped-read.ERBwqHkT/reader.log"
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-LIVE-CAPTURE-DELIVERY-QUALIFIED",
+      "observedAt": "2026-10-22T11:05:50Z",
+      "classification": "CI_QUALIFICATION_NOT_TARGET_HEALTH",
+      "deliveryCommit": "2ef75b77e9bf259f79e4dc34b14bab61f0fa4b9a",
+      "matrixRun": 39766442749,
+      "testsPerPython": 111,
+      "platformRun": 39766442872,
+      "engineGetsInFixture": 14,
+      "engineWritesInFixture": 0,
+      "targetCapturePerformed": false
     }
   ],
   "activeIntervals": [
@@ -2503,7 +2524,7 @@
     "refreshPerformed": false,
     "budgetReset": false,
     "wp3Block": {
-      "status": "PATCH_STOPPED_AT8_AUTHORITY_EXPIRED_METADATA_SNAPSHOT_READY",
+      "status": "PATCH_STOPPED_AT8_LIVE_CAPTURE_DELIVERY_QUALIFIED",
       "nextStage": 28,
       "appliedStages": 28,
       "currentAuthorityProven": false,
@@ -2513,7 +2534,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "ONE_PINNED_READ_ONLY_STAGE8_STOPPED_SNAPSHOT",
+      "nextRequiredTargetAction": "ONE_PINNED_BOUNDED_14_GET_LIVE_INPUT_CAPTURE",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2534,7 +2555,7 @@
       "v2ProductionControllerQualified": true
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "PATCH_RETAINED_OPERATOR_METADATA_ONLY",
+    "latestOperatorConfirmedOperation": "STOPPED_PATCH_PREFIX_RECONCILED_NO_AUTHORITY",
     "latestOperatorConfirmedOperationPolicyMutations": 0,
     "loginPerformedScope": "COMPLETED_FRESH_STAGE18_HUMAN_PROVIDER_VERIFICATION_AT292_NO_CURRENT_AUTHORITY_INFERRED",
     "newHumanLoginPerformed": true,
@@ -2542,7 +2563,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_PATCH_STAGE8_STOPPED_20261022.md",
+    "currentHandoff": "docs/handoffs/OUF_PATCH_STAGE8_LIVE_INPUTS_20261022.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 300,
@@ -2588,7 +2609,10 @@
     "readinessPatchReplacementStartedAtLastReceipt": true,
     "readinessPatchComplete": false,
     "readinessPatchCurrentLiveRuntimeProven": false,
-    "readinessPatchRecordedExpiresAt": 1792664043
+    "readinessPatchRecordedExpiresAt": 1792664043,
+    "readinessPatchStoppedSnapshotComplete": true,
+    "readinessPatchLiveCapturePerformed": false,
+    "readinessPatchFourStageContinuationQualified": false
   },
   "unverifiedIntervals": [
     {
@@ -3423,11 +3447,89 @@
         "bytes": 10305
       },
       "scope": "ROOT_PRIVATE_METADATA_ONLY_ACTUAL_CAS_PREFIX_FIXTURES_AND_ISOLATED_READER_REPRODUCTION",
-      "targetSnapshotObserved": false,
+      "targetSnapshotObserved": true,
       "currentLiveRuntimeProven": false,
       "runtimeAuthorityIssued": false,
       "oauthRequests": 0,
       "runtimeEffectsDispatched": 0
+    },
+    "readinessPatchStage8LiveCapture": {
+      "schema": "ouf.ingestion-readiness-stage8-live-qualification.v1",
+      "sourceCommit": "fe173314353ff9ca320098c5f5461268c6e4c84f",
+      "unitRun": 39765003954,
+      "pythonJobs": [
+        {
+          "id": 119778154240,
+          "python": "3.12",
+          "tests": 110,
+          "skipped": 0,
+          "conclusion": "success"
+        },
+        {
+          "id": 119778154404,
+          "python": "3.13.5",
+          "tests": 110,
+          "skipped": 0,
+          "conclusion": "success"
+        }
+      ],
+      "platformRun": 39765004003,
+      "platformJob": {
+        "id": 119778163251,
+        "tests": 1,
+        "skipped": 0,
+        "conclusion": "success"
+      },
+      "proof": {
+        "engineGets": 14,
+        "engineWrites": 0,
+        "sealedSourceModules": 118,
+        "oldPrefixBytesUnchanged": true,
+        "remainingStages": 4,
+        "fixtureAppliedStages": 9,
+        "targetAppliedStages": 8,
+        "syntheticStopAndExpiry": true,
+        "syntheticHumanAndOwner": true,
+        "targetEvidence": false
+      },
+      "productionDeliveryReproduction": "PASS_EXACT_CASE_CAPSULE_AND_LAUNCHER",
+      "target": {
+        "oauthAttempts": 300,
+        "oauthCeiling": 300,
+        "patchStagesApplied": 8,
+        "newBudgetGranted": false,
+        "newWindowOpened": false,
+        "runtimeAuthorityIssued": false,
+        "targetCapturePerformed": false,
+        "releaseAcceptance": false
+      },
+      "deliveryCommit": "2ef75b77e9bf259f79e4dc34b14bab61f0fa4b9a",
+      "deliveryUnitRun": 39766442749,
+      "deliveryPythonJobs": [
+        {
+          "id": 119782957857,
+          "python": "3.12",
+          "tests": 111,
+          "skipped": 0,
+          "conclusion": "success"
+        },
+        {
+          "id": 119782957457,
+          "python": "3.13.5",
+          "tests": 111,
+          "skipped": 0,
+          "conclusion": "success"
+        }
+      ],
+      "deliveryPlatformRun": 39766442872,
+      "deliveryPlatformJob": {
+        "id": 119782957794,
+        "tests": 1,
+        "skipped": 0,
+        "conclusion": "success"
+      },
+      "recordedAt": "2026-10-22T11:01:57Z",
+      "futureFourStageRuntimeQualified": false
     }
   },
   "developmentCandidates": [

@@ -1,3 +1,9 @@
+# CURRENT — stage8 live-input capture qualified; ONE pinned capture only
+
+Delivery2ef75b77e9bf259f79e4dc34b14bab61f0fa4b9a: CI39766442749 PASS111 tests EACH Python3.12/3.13.5; focused platform39766442872/job119782957794 PASS1 actual Docker test,14GET/0writes,118 sealed sources,old prefix bytes unchanged. Exact production capsule/case/launcher reproduction PASS. This is fixture evidence,not target health. Next ONLY the pinned prepare capture command in docs/handoffs/OUF_PATCH_STAGE8_LIVE_INPUTS_20261022.md. Stores separate private inputs; no old journals modified,no OAuth/budget/window/authority/runtime effect. Expected STAGE8_LIVE_METADATA_MATCHED_NO_AUTHORITY. Target capture NOT yet performed. OAuth300/300,patch8/12,technical8/8,functional4/6,G3OPEN. Future four-stage runtime successor remains unqualified; wait for matched current capture. Preserve all old claims/logs and never replay completed commands. Older headers below are historical.
+
+---
+
 # CURRENT — stage8 live capture core CI PASS; exact delivery111-test matrix pending
 
 Corefe173314353ff9ca320098c5f5461268c6e4c84f matrix39765003954 PASS110tests on EACH Python3.12/3.13.5; focused platform39765004003/job119778163251 PASS1actual Docker29/APISIX/JVM/PG17 test: exact118-source isolated capsule,14GET/0writes,old prefix bytes unchanged,7container generations checked. Fixture9APPLIED(two networks) corresponds to target8; stop/expiry/HUMAN/Owner are explicitly synthetic fixture inputs. This does not prove target current health. Original144 runtime graph/all139 originals unchanged.

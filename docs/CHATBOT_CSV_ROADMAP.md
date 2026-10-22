@@ -1,3 +1,9 @@
+# CURRENT — stage8 live-input capture qualified; ONE pinned capture only
+
+Delivery2ef75b77e9bf259f79e4dc34b14bab61f0fa4b9a: CI39766442749 PASS111 tests EACH Python3.12/3.13.5; focused platform39766442872/job119782957794 PASS1 actual Docker test,14GET/0writes,118 sealed sources,old prefix bytes unchanged. Exact production capsule/case/launcher reproduction PASS. This is fixture evidence,not target health. Next ONLY the pinned prepare capture command in docs/handoffs/OUF_PATCH_STAGE8_LIVE_INPUTS_20261022.md. Stores separate private inputs; no old journals modified,no OAuth/budget/window/authority/runtime effect. Expected STAGE8_LIVE_METADATA_MATCHED_NO_AUTHORITY. Target capture NOT yet performed. OAuth300/300,patch8/12,technical8/8,functional4/6,G3OPEN. Future four-stage runtime successor remains unqualified; wait for matched current capture. Preserve all old claims/logs and never replay completed commands. Older headers below are historical.
+
+---
+
 # CURRENT — target patch STOPPED after8/12; authority expired; read-only stopped snapshot CI PASS
 
 Target receipts: START_REPLACEMENT completed(journal1058,log /home/oufadmin/ouf-readiness-runtime.mJsqjvB7/operator.log), then STOP_RECONCILE/FINITE_CURRENT_DIRECT_ENGINE_WINDOW_REQUIRED(log ZYDl1WlE). Metadata status confirms RECONCILE_REQUIRED,nextStage8,effects8,readAttempts8,IDLE,expiresAt1792664043(2026-10-22T10:14:03Z); statuslog /home/oufadmin/ouf-readiness-runtime.DMt9eFPH/operator.log. Expiry is past at observation. Original authority WAS issued; status runtimeAuthorityIssued:false is per-invocation and does not erase that history. OAuth300/300 exhausted. Technical8/8,functional4/6,G3OPEN. No login,grant,window,approve,initialize,step or effect reconciliation may be replayed under expired authority. Preserve every context/claim/cache/log and completed prefix. Current live health and restart restoration are unproven.
