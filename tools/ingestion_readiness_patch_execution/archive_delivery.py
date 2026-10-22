@@ -3,6 +3,7 @@ import base64
 import gzip
 import hashlib
 import importlib.util
+import io
 import json
 from pathlib import Path
 
@@ -49,7 +50,9 @@ def generate(root,case,source_commit,source_pins):
     declaration={'schema':'ouf.ingestion-readiness-native-archive-delivery.v1','nativeDeclaration':native,
                  'caseHash':sha(encoded(case)),'bootstrapHash':sha(BOOTSTRAP.encode()),'runtimeAuthorityIssued':False}
     payload=encoded({'loader':loader.decode(),'sources':{n:v.decode()for n,v in sorted(sources.items())}})
-    packed=base64.b64encode(gzip.compress(payload,mtime=0)).decode()
+    compressed=io.BytesIO()
+    with gzip.GzipFile(filename='',mode='wb',fileobj=compressed,mtime=0)as stream:stream.write(payload)
+    packed=base64.b64encode(compressed.getvalue()).decode()
     artifact=('CASE='+repr(case)+'\nDELIVERY='+repr(declaration)+'\nDELIVERY_HASH='+repr(sha(encoded(declaration)))+
               '\nPACKED='+repr(packed)+'\nBOOTSTRAP='+repr(BOOTSTRAP)+'\nexec(compile(BOOTSTRAP,"<native-archive-preparation>","exec"))\n').encode()
     if len(artifact)>1048576:raise ValueError('BOUNDED_NATIVE_ARCHIVE_OPERATOR_REQUIRED')
