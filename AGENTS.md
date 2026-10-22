@@ -1,3 +1,11 @@
+# CURRENT — stage8 DEVICE_START terminal consent TIMED OUT/NO_EFFECT; status only
+
+Owner STOP_RECONCILE/HUMAN_TERMINAL_CONFIRMATION_TIMEOUT_NO_EFFECT at EXPLICIT_TERMINAL_PROVIDER_CONFIRMATION,control /etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-21e05b55eec1ef1e97a83a006fd3f33d38cfc95185f83c670563bfe59c2be264. Preserve /home/oufadmin/ouf-readiness-human.OYmSSFdV/operator.log and every context/claim/cache. Last observed count301/304,stateDEVICE_START. Current count/state require metadata status receipt. Do NOT rerun the stopped step or infer a provider response. Immutable operator source confirms terminal_confirm waits60s and returns before session.step/request reservation; this timeout is no-effect,not an ambiguous provider call.
+
+Next ONLY: same SHA-checked cached HUMAN launcher /home/oufadmin/ouf-readiness-launchers.XMzIT1rQ/human.sh status with the exact controlPath. Read local journal/control metadata only; no provider/Engine/DB call,login,grant,window,refresh,issuance or runtime effect. Return public JSON/operator.log; no automatic reconcile-read or provider retry. Once target status is proven,a separately explicit fresh request consent can be prepared if state/budget/window still permit. Terminal consent must be entered in the VPS controlling terminal within60s,never in chat or piped. Patch8/12,technical8/8,functional4/6,G3OPEN. Older next-step instructions historical.
+
+---
+
 # CURRENT — stage8 HUMAN DISCOVERY completed301/304; ONE DEVICE_START next
 
 Owner receipt DEVICE_START at301/304,3remaining,control /etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-21e05b55eec1ef1e97a83a006fd3f33d38cfc95185f83c670563bfe59c2be264,windowExpiresAt1792679049. Preserve /home/oufadmin/ouf-readiness-human.B5cDWgef/operator.log and cached HUMAN /home/oufadmin/ouf-readiness-launchers.XMzIT1rQ/human.sh SHA9e20e4d7df0a67e80ac9df4a97e05e97953a42d5d7c4303cb62b7faf0fc5b24d. Do not replay DISCOVERY/open-window/grant/prepare/preflight/setup/capture/old controls.
