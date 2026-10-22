@@ -1,3 +1,11 @@
+# CURRENT — stage8 HUMAN DISCOVERY completed301/304; ONE DEVICE_START next
+
+Owner receipt DEVICE_START at301/304,3remaining,control /etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-21e05b55eec1ef1e97a83a006fd3f33d38cfc95185f83c670563bfe59c2be264,windowExpiresAt1792679049. Preserve /home/oufadmin/ouf-readiness-human.B5cDWgef/operator.log and cached HUMAN /home/oufadmin/ouf-readiness-launchers.XMzIT1rQ/human.sh SHA9e20e4d7df0a67e80ac9df4a97e05e97953a42d5d7c4303cb62b7faf0fc5b24d. Do not replay DISCOVERY/open-window/grant/prepare/preflight/setup/capture/old controls.
+
+Next ONLY: same SHA-checked HUMAN step with exact controlPath; explicit phrase ESEGUI DEVICE_START 21e05b55eec1ef1e97a83a006fd3f33d38cfc95185f83c670563bfe59c2be264. One provider request; expected302/304 DEVICE_POLL with browser URL/user code. User completes browser login before a separate explicit polling command; no automatic poll/refresh/retry. Runtime review/consent/import/4residual steps remain separate,already qualified. Patch8/12,technical8/8,functional4/6,G3OPEN; no runtime authority. Older instructions historical.
+
+---
+
 # CURRENT — target stage8 HUMAN window OPEN/NEW300; ONE DISCOVERY only
 
 Owner NEW receipt:control /etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-21e05b55eec1ef1e97a83a006fd3f33d38cfc95185f83c670563bfe59c2be264;300/304,four remaining,expiresAt1792679049,0provider requests reserved in open-window,NO runtimeauthority. Preserve /home/oufadmin/ouf-readiness-human.8510bzNE/operator.log and cached /home/oufadmin/ouf-readiness-launchers.XMzIT1rQ/{human,runtime}.sh. Duplicate transcript is the same window,not another execution. Never rerun open-window/grant/prepare/preflight/setup/capture/oldcontrols.

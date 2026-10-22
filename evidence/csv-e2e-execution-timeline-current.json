@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-22T12:25:09Z",
+  "lastUpdatedAt": "2026-10-22T12:28:53Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1848,6 +1848,17 @@
       "windowExpiresAt": 1792679049,
       "oauthRequestsReserved": 0,
       "duplicateTranscriptIsNotAnotherWindow": true
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-HUMAN-DISCOVERY-COMPLETED",
+      "observedAt": "2026-10-22T12:28:53Z",
+      "classification": "OWNER_PUBLIC_RECEIPT_ONE_PROVIDER_REQUEST",
+      "attempts": 301,
+      "ceiling": 304,
+      "remaining": 3,
+      "state": "DEVICE_START",
+      "oauthRequestsReserved": 1,
+      "runtimeAuthorityIssued": false
     }
   ],
   "activeIntervals": [
@@ -2620,7 +2631,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "ONE_EXPLICIT_STAGE8_DISCOVERY_PROVIDER_REQUEST",
+      "nextRequiredTargetAction": "ONE_EXPLICIT_STAGE8_DEVICE_START_PROVIDER_REQUEST",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2641,12 +2652,12 @@
       "v2ProductionControllerQualified": true
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "STAGE8_HUMAN_NEW_WINDOW",
+    "latestOperatorConfirmedOperation": "STAGE8_HUMAN_DISCOVERY_COMPLETED_DEVICE_START",
     "latestOperatorConfirmedOperationPolicyMutations": 0,
     "loginPerformedScope": "COMPLETED_FRESH_STAGE18_HUMAN_PROVIDER_VERIFICATION_AT292_NO_CURRENT_AUTHORITY_INFERRED",
     "newHumanLoginPerformed": true,
-    "currentCumulativeOAuthAttempts": 300,
-    "currentRemainingAttempts": 4,
+    "currentCumulativeOAuthAttempts": 301,
+    "currentRemainingAttempts": 3,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
     "currentHandoff": "docs/handoffs/OUF_PATCH_STAGE8_CONTINUATION_20261022.md",
@@ -2715,7 +2726,7 @@
     "readinessPatchStage8BudgetDecisionHash": "aee379b749260d973b20d838427aec1e91dda51e4c09b24ca30449bb2d6f6103",
     "readinessPatchStage8HumanWindowOpened": true,
     "readinessPatchStage8HumanControlPath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-21e05b55eec1ef1e97a83a006fd3f33d38cfc95185f83c670563bfe59c2be264",
-    "readinessPatchStage8HumanState": "NEW"
+    "readinessPatchStage8HumanState": "DEVICE_START"
   },
   "unverifiedIntervals": [
     {
