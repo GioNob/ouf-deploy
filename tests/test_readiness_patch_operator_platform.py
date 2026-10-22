@@ -22,6 +22,7 @@ import test_readiness_patch_human_governance as human_fixture
 from test_ingestion_rollout_gateway_transport import binding
 from tools.ingestion_readiness_patch_execution import operator_delivery as d,entry as e,operator_control as op,custody
 from tools.ingestion_readiness_patch_execution import human_delivery as hd,human_governance as g
+from tools.ingestion_readiness_patch_execution import release_delivery as release
 from tools.governed_human_successor import operator
 from tools.governed_human_successor.session import ExplicitFreshSession
 
@@ -105,7 +106,8 @@ class WholeControllerPlatform(unittest.TestCase):
         import termios
         master,slave=os.openpty()
         def setup():os.setsid();fcntl.ioctl(0,termios.TIOCSCTTY,0)
-        child=subprocess.Popen(['/usr/bin/python3','-I','-B','-S',str(path),mode],
+        command=['bash',str(path),mode]if path.suffix=='.sh'else['/usr/bin/python3','-I','-B','-S',str(path),mode]
+        child=subprocess.Popen(command,
             stdin=slave,stdout=slave,stderr=slave,preexec_fn=setup,close_fds=True)
         os.close(slave);output=bytearray();sent=False;deadline=time.monotonic()+250
         try:
@@ -136,16 +138,18 @@ class WholeControllerPlatform(unittest.TestCase):
             'predecessorReviewHash':e.c.digest(config['review']),'humanOperatorTransportProfile':dict(operator.TRANSPORT),
             'governanceSourceHash':d.sha((ROOT/'tools/ingestion_readiness_patch_execution/human_governance.py').read_bytes())}
         raw,declaration=hd.generate(ROOT,case);path=self.root/'human-operator.py';path.write_bytes(raw);path.chmod(0o400)
+        launcher=self.root/'human.sh';launcher.write_bytes(release.launcher('human',raw));launcher.chmod(0o600)
+        cache=Path(str(launcher)+'.operator.py');cache.write_bytes(raw);cache.chmod(0o600)
         closure=d.sha(d.encoded(declaration))
         def call(*args):
             value=subprocess.run(['/usr/bin/python3','-I','-B','-S',str(path),*args],capture_output=True,text=True,timeout=250)
             self.assertEqual(value.returncode,0,value.stdout+value.stderr);return json.loads(value.stdout)
         prepared=call('prepare');self.assertEqual(prepared['engineRequests'],12)
         self.assertFalse(prepared['newBudgetGranted']);self.assertFalse(prepared['newHumanWindowOpened'])
-        grant=self.tty_mode(path,'grant-budget','CONCEDO BUDGET OAUTH 292->296 ')
+        grant=self.tty_mode(launcher,'grant-budget','CONCEDO BUDGET OAUTH 292->296 ')
         self.assertEqual(grant['additionalOAuthAttemptsGranted'],4)
         self.assertEqual(call('budget-status')['decisionHash'],grant['decisionHash'])
-        opened=self.tty_mode(path,'open-window','APRO FINESTRA HUMAN ');control=opened['controlPath']
+        opened=self.tty_mode(launcher,'open-window','APRO FINESTRA HUMAN ');control=opened['controlPath']
         self.assertEqual(call('status',control)['attempts'],292)
         issuer=self.old.selection['issuer'];responses=[
             (200,{'issuer':issuer,**{k:issuer+'/protocol/openid-connect/'+k for k in
@@ -177,9 +181,15 @@ class WholeControllerPlatform(unittest.TestCase):
         # payload/revision/generation and all real runtime frames remain fixed.
         data=json.loads(self.native.owner_data.read_bytes());data['bearer']=responses[2][1]['access_token']
         self.native.owner_data.chmod(0o600);self.native.owner_data.write_bytes(e.c.encoded(data));self.native.owner_data.chmod(0o400)
-        return {'realBudgetAndWindowTty':True,'preLoginExactEngineGets':12,'syntheticProviderRequests':4,
+        return {'realBudgetAndWindowTty':True,'cachedHashCheckedForegroundLaunchers':True,
+            'preLoginExactEngineGets':12,'syntheticProviderRequests':4,
             'priorOAuthAttempts':292,'readyOAuthAttempts':296,'oldSessionBytesUnchanged':True}
     def test_whole_capsule_through_real_tty_and_every_native_stage(self):
+        launcher=self.root/'runtime.sh';launcher.write_bytes(release.launcher('runtime',self.path.read_bytes()));launcher.chmod(0o600)
+        cache=Path(str(launcher)+'.operator.py');cache.write_bytes(self.path.read_bytes());cache.chmod(0o600)
+        wrapped=subprocess.run(['bash',str(launcher),'preflight'],capture_output=True,text=True,timeout=190)
+        self.assertEqual(wrapped.returncode,0,wrapped.stdout+wrapped.stderr)
+        self.assertIn('PATCH_RUNTIME_PREFLIGHT_NO_AUTHORITY',wrapped.stdout)
         human_proof=self.fresh_human_governance()
         self.assertEqual(self.call('preflight')['status'],'PATCH_RUNTIME_PREFLIGHT_NO_AUTHORITY')
         self.call('review',str(self.profile));review=json.loads((self.target/'review.json').read_bytes())

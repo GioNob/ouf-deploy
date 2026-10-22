@@ -219,13 +219,29 @@ class Governance(unittest.TestCase):
             with self.assertRaisesRegex(Exception,'GENERATION_CHANGED'):REAL_PREFLIGHT(self.case)
     def test_new_human_capsule_is_deterministic_and_uses_exact_frozen_core(self):
         from tools.ingestion_readiness_patch_execution import human_delivery as d,operator_delivery as rd
+        from tools.ingestion_readiness_patch_execution import release_delivery as release
+        import subprocess
         _,manifest=rd.core(ROOT);case=copy.deepcopy(self.case);case['nativeDeclaration']=manifest
         case['runtimeCase']['nativeDeclarationHash']=e.c.digest(manifest)
         raw,declaration=d.generate(ROOT,case)
         self.assertEqual(raw,d.generate(ROOT,case)[0]);self.assertLess(len(raw),1048576)
         self.assertEqual(declaration['entryModule'],g.__name__)
         self.assertIn('FINITE_PATCH_HUMAN_INVOCATION_DEADLINE',d.BOOTSTRAP)
+        files,_=release.generate(ROOT,case)
+        self.assertEqual(files,release.generate(ROOT,case)[0])
+        for name in ('human.sh','runtime.sh','setup.sh'):
+            checked=subprocess.run(['bash','-n'],input=files[name],capture_output=True)
+            self.assertEqual(checked.returncode,0,checked.stderr.decode())
+        self.assertNotIn(b'gh api',files['human.sh']);self.assertNotIn(b'gh api',files['runtime.sh'])
+        self.assertEqual(files['setup.sh'].count(b'--jq .content'),4)
         case['governanceSourceHash']='f'*64
         with self.assertRaisesRegex(ValueError,'GOVERNANCE_SOURCE'):d.generate(ROOT,case)
+    def test_exact_production_capsules_cases_and_cache_launchers_reproduce(self):
+        from tools.ingestion_readiness_patch_execution import production_release as production
+        evidence=json.loads((ROOT/'evidence/ingestion-native-archive-completed-target-20261022.json').read_bytes())
+        files,pins=production.build(ROOT,evidence)
+        for path,raw in files.items():self.assertEqual((ROOT/path).read_bytes(),raw,path)
+        self.assertFalse(pins['newBudgetGranted']);self.assertEqual(pins['maximumCumulativeOAuthAttempts'],292)
+        self.assertFalse(pins['targetCommandExecuted']);self.assertFalse(pins['runtimeAuthorityIssued'])
 
 if __name__=='__main__':unittest.main()
