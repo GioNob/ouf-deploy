@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-22T12:59:58Z",
+  "lastUpdatedAt": "2026-10-22T13:23:59Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1895,6 +1895,13 @@
       "retryable": false,
       "retried": false,
       "sourceLifecycleProven": false
+    },
+    {
+      "id": "CSV-EVENT-POSTPATCH-SEMANTIC-502-OBSERVED",
+      "observedAt": "2026-10-22T13:23:59Z",
+      "evidenceRef": "evidence/native-profile-postpatch-http-target-20261022.json",
+      "rootCauseEstablished": false,
+      "classification": "BOUNDED_READ_ONLY_TARGET_HTTP_OBSERVATION"
     }
   ],
   "activeIntervals": [
@@ -3817,7 +3824,7 @@
       "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
       "pr": 46,
       "scope": "EXACT_FROZEN_CONFIGURATION_SERVICE_READ",
-      "runtimePublished": false,
+      "runtimePublished": true,
       "qualification": {
         "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
         "focusedCiRun": 39648964212,
@@ -3835,7 +3842,8 @@
         "fixtureIsolationOnly": true,
         "targetInstalled": false,
         "scope": "DEVELOPMENT_CI_NOT_TARGET_ACCEPTANCE"
-      }
+      },
+      "targetEvidenceRef": "evidence/ingestion-readiness-stage8-completed-target-20261022.json"
     },
     {
       "repo": "ouf-deploy",
@@ -3850,20 +3858,17 @@
     "humanInterventionRequired": true,
     "reasons": [
       "NATIVE_PROFILE_APPROVED_ACTIVATION_PAUSED",
-      "WORKLOAD_CONFIGURATION_CLIENT_CONTRACT_FIX_QUALIFIED_NOT_INSTALLED",
-      "LATER_READINESS_503_CAUSE_UNPROVEN",
+      "SEMANTIC_REFERENCE502_WITH_UNCORRELATED_NO_ROUTE_TO_HOST",
       "F5_F6_PROOF_PENDING",
-      "OAUTH_BUDGET_EXHAUSTED_NO_NEW_LOGIN_AUTHORIZED",
-      "ISSUING_STOP_REVIEW_EXCEEDS_HISTORICAL_512KIB_LIMIT",
-      "PATCH_STOPPED_AT8_FINITE_DIRECT_ENGINE_WINDOW_EXPIRED"
+      "OAUTH_BUDGET_EXHAUSTED_NO_NEW_LOGIN_AUTHORIZED"
     ],
-    "historicalAttempts": 300,
-    "maximumCumulativeAttempts": 300,
+    "historicalAttempts": 304,
+    "maximumCumulativeAttempts": 304,
     "remainingAttempts": 0,
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "ONE_PINNED_READ_ONLY_STAGE8_STOPPED_SNAPSHOT",
+    "currentRequiredHumanAction": "ONE_PINNED_READ_ONLY_SEMANTIC_TRANSPORT_CORRELATION",
     "maximumNewOAuthRequests": 0,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
     "profileApplied": true,
@@ -3888,7 +3893,8 @@
       "consumed": true,
       "newWindowOpened": true,
       "separateTerminalConsentRequired": true
-    }
+    },
+    "runtimeAuthorityIssued": false
   },
   "unsegmentedFollowupWindows": [
     {
