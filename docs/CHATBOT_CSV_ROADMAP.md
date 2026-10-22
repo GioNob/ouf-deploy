@@ -1,3 +1,9 @@
+# LATEST — owned source read succeeded; HUMAN activation remains pending
+
+Bounded source.onboarding.read on the historically established owner account returned exact version c9fec43c-19b3-4ffb-9111-781bc347c5b0/source teatri-csv-6609b245,hash sha256:b13c5fe234168bdb8b315087917bccfe428ceaa8e136ed1c0f56f5bf43deed3d,APPROVED/CONFIRMED,lock3,PAUSED dependency503,attempts2/generation3. This is not a retry/account fallback for denied ingestion.status; that denial remains unretried and unexplained. No mutations,permissions,login or runtime replay. Existing exact THS review may be used for a distinct explicit HUMAN Verifica e attiva decision. Source-inspected128attempt/24hour guards preserve start2026-10-21T17:27:58.016Z,deadline2026-10-22T17:27:58.016Z(50second reserve enforced); do not reset or bypass exhaustion. Separate resume endpoint only handles BLOCKED403,not this PAUSED503. Backend must revalidate current state/authority. Infrastructure12/12,technical8/8,functional4/6,G3OPEN; publication and release acceptance remain unproven. See evidence/native-profile-postpatch-owner-read-20261022.json. Older command headers historical.
+
+---
+
 # LATEST — patch12/12 complete; current source MCP read authorization denied
 
 A single bounded generic ingestion status read returned authorization denied,retryable:false. No backend HTTP cause inferred,no retry/activation/publication/IAM action performed. Source lifecycle/publication and functional4/6 remain open despite completed infrastructure patch;OAuth304/304 exhausted. See docs/handoffs/OUF_PATCH_STAGE8_COMPLETE_20261022.md.
