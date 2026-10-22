@@ -72,7 +72,7 @@ if [[ ! -x "$ouf_gh" ]]; then ouf_gh="$(command -v gh || true)"; fi
 ouf_cache="$(mktemp -d "$HOME/ouf-readiness-launchers.XXXXXXXX")"
 trap 'printf "Directory conservata: %s\\nLauncher HUMAN: %s/human.sh\\nLauncher runtime: %s/runtime.sh\\n" "$ouf_cache" "$ouf_cache" "$ouf_cache"' EXIT
 '''+ '\n'.join(commands)+'''
-bash "$ouf_cache/human.sh" prepare
+bash "$ouf_cache/runtime.sh" preflight
 ''').encode()
 
 

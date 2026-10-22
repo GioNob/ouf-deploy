@@ -1,3 +1,11 @@
+# CURRENT — full unissued-successor CI PASS; exact production delivery check pending
+
+CI39748102563 ate776de2a261c7ce2318bcf6e6df5cf82d1028f6e PASSED105tests on EACH Python3.12/3.13.5,zero skips,plus5real Docker29/APISIX/JVM/PG17 tests. The new sealed144-source controller/HUMAN/cached launchers completed13fixture stages(two networks;target12),8EnginePOSTs,0Gatewaywrites/newkeys; realTTY budget/window/infrastructure consent; large >512KiB review; oldISSUING and HUMAN bytes unchanged. Provider/Owner identities are fixtures. All139/114 original sources remain unchanged. This is not target admission/installation.
+
+Separate exact successor capsules/cases/launchers are now generated; a new106-test matrix must establish production byte reproduction before publishing the first target command. It downloads/checks all four caches before sudo and runs runtime preflight ONLY(no credential journal/OAuth/Engine/effects/window/budget/authority). Target296/296,patch0/12,technical8/8,functional4/6,G3OPEN. New300ceiling is ONLY a separately consented future proposal; no new token/window/approval is requested now. OldISSUING/read receipt and claims stay immutable; NEVER rerun previous commands. See docs/handoffs/OUF_PATCH_UNISSUED_SUCCESSOR_20261022.md. Older entries below are historical.
+
+---
+
 # CURRENT — unissued target reconciliation COMPLETE; V2 successor CI pending
 
 Owner reader confirms stopped oldISSUING/no authority/signatures/issuance or native claim, exact journal af07734945f3b4ea93282f43808634501d4633261617d767b1bfa2f68942c910; preserve /home/oufadmin/ouf-unissued-reconcile.xCVck1X6/reader.log and all old files/claims. Do not rerun reader/approve/review/auth/prep/rollout. OAuth296/296, no budget/window/login or target execution requested. Patch0/12,technical8/8,functional4/6,G3OPEN.

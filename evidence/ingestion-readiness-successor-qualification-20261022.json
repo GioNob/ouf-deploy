@@ -1,0 +1,61 @@
+{
+  "schema": "ouf.ingestion-readiness-unissued-successor-qualification.v1",
+  "qualifiedSourceCommit": "e776de2a261c7ce2318bcf6e6df5cf82d1028f6e",
+  "ciRun": 39748102563,
+  "ciUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/39748102563",
+  "pythonJobs": [
+    {
+      "id": 119721536902,
+      "python": "3.12",
+      "tests": 105,
+      "skipped": 0,
+      "conclusion": "success"
+    },
+    {
+      "id": 119721536633,
+      "python": "3.13.5",
+      "tests": 105,
+      "skipped": 0,
+      "conclusion": "success"
+    }
+  ],
+  "platformJob": {
+    "id": 119721536900,
+    "tests": 5,
+    "skipped": 0,
+    "conclusion": "success"
+  },
+  "wholePathProof": {
+    "complete": true,
+    "sealedModules": 144,
+    "original139Unchanged": true,
+    "original114Unchanged": true,
+    "reviewOver512KiB": true,
+    "stoppedIssuingBytesUnchanged": true,
+    "realTtyBudgetWindowAndInfrastructure": true,
+    "fixtureStages": 13,
+    "targetPlannedStages": 12,
+    "fixtureNetworks": 2,
+    "enginePosts": 8,
+    "gatewayWrites": 0,
+    "newKeys": 0,
+    "syntheticProviderRequests": 4,
+    "priorFixtureAttempts": 296,
+    "readyFixtureAttempts": 300,
+    "oldHumanSessionBytesUnchanged": true,
+    "syntheticHumanAndOwner": true,
+    "targetEvidence": false
+  },
+  "target": {
+    "oauthAttempts": 296,
+    "oauthCeiling": 296,
+    "newBudgetGranted": false,
+    "patchStagesApplied": 0,
+    "patchInstalled": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperationsDispatched": 0,
+    "releaseAcceptance": false
+  },
+  "scope": "WHOLE_SEALED144_SUCCESSOR_CONTROLLER_HUMAN_GOVERNANCE_CACHED_LAUNCHERS_CI_NOT_TARGET_ADMISSION",
+  "productionDeliveryReproducibility": "PENDING_MATRIX_CHECK"
+}

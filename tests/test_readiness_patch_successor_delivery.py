@@ -32,10 +32,20 @@ class SuccessorDelivery(unittest.TestCase):
             self.assertEqual(result.returncode,2,result.stdout+result.stderr)
             value=json.loads(result.stdout);self.assertEqual(value['status'],'STOP_RECONCILE')
             self.assertNotIn(value['reasonCode'],('SEALED_INSTALLER_IMPORT_FAILED','INSTALLER_DEPENDENCY_OUTSIDE_CLOSURE'))
+        setup=files['scripts/prepare-ingestion-readiness-successor-20261022.sh']
+        self.assertIn(b'bash \"$ouf_cache/runtime.sh\" preflight',setup)
+        self.assertNotIn(b'bash \"$ouf_cache/human.sh\" prepare',setup)
         for name,raw in files.items():
             if name.endswith('.sh'):
                 check=subprocess.run(['bash','-n'],input=raw,capture_output=True)
                 self.assertEqual(check.returncode,0,check.stderr.decode())
+    def test_exact_qualified_production_files_and_case_pins_reproduce(self):
+        pins=json.loads((ROOT/'evidence/ingestion-readiness-successor-production-pins-20261022.json').read_bytes())
+        files,current=p.build(ROOT,pins['qualification'])
+        self.assertEqual(pins,current)
+        for name,raw in files.items():self.assertEqual((ROOT/name).read_bytes(),raw,name)
+        self.assertEqual(current['qualification']['sourceCommit'],'e776de2a261c7ce2318bcf6e6df5cf82d1028f6e')
+
     def test_incomplete_qualification_cannot_publish_successor(self):
         for key in ('pythonJobs','platformJob','sourceCommit'):
             q=self.qualification();q.pop(key)
