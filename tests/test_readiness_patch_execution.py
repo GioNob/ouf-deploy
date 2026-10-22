@@ -12,7 +12,7 @@ from unittest.mock import Mock,patch
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_policy_token_owner'),
              str(ROOT/'tools/semantic_application_cutover'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
-from tools.ingestion_readiness_patch_execution import contract as c,native_review as nr,native,engine_channel
+from tools.ingestion_readiness_patch_execution import contract as c,native_review as nr,native,engine_channel,archive_projection
 from tools.ingestion_readiness_patch_execution.runner import Runner,Ports
 from tools.ingestion_readiness_patch_execution.lifecycle import NativeLifecycle
 from tools.ingestion_readiness_patch_execution.key import NativeKey
@@ -64,7 +64,8 @@ def fixture(folder):
     native_id=image_custody.runtime_image_id(audit)
     bundle['ingestionFrame']['requestTemplate']['Image']=native_id
     for stage in bundle['finiteIntentContract']['stages']:
-        if stage['name']=='IMPORT_INGESTION_IMAGE':stage['intent']['nativeImageId']=native_id
+        if stage['name']=='IMPORT_INGESTION_IMAGE':stage['intent']={'nativeImageId':native_id,
+            'archiveSha256':archive['sha256'],'maximumArchiveBytes':archive['metadata'][6]}
         if stage['name']=='ingestion.CREATE_REPLACEMENT':stage['intent']['requestTemplate']['Image']=native_id
         stage['intentHash']=c.digest(stage['intent'])
     human={'sessionId':'fixture-session','issuer':'https://fixture.invalid','tenant':'fixture','subject':'fixture-human'}
@@ -99,11 +100,30 @@ class Contract(unittest.TestCase):
             lambda b:b['nativeArchiveAudit']['nativeIdentity'].update(nativeImageId='sha256:'+'9'*64),
             lambda b:b['nativeArchiveAudit'].update(archiveSha256='9'*64),
             lambda b:b['nativeArchiveAudit'].update(sourceCommit='9'*40),
+            lambda b:b['ingestionFrame'].update(preserveObservedAddressesAndMacs=False),
             lambda b:b['ingestionFrame']['requestTemplate'].update(Image=b['candidate']['Id'])):
             bundle=copy.deepcopy(self.review['preparedInputs']);mutate(bundle)
             with self.assertRaises((c.Denied,image_custody.ImageCustodyDenied)):
                 nr.compile_review(bundle,{'path':str(self.root/'inputs.json'),'sha256':c.digest(bundle)},
                     self.review['humanBinding'],str(self.root))
+    def test_native_archive_successor_preserves_parent_and_logical_operation(self):
+        parent=copy.deepcopy(self.review['preparedInputs']);audit=parent.pop('nativeArchiveAudit')
+        audit.update(archiveByteCustodyProven=True,targetApplyAuthorized=False,repositoryTags=[])
+        config=parent['candidate']['Id'];parent['ingestionFrame']['requestTemplate']['Image']=config
+        for stage in parent['finiteIntentContract']['stages']:
+            if stage['name']=='IMPORT_INGESTION_IMAGE':stage['intent']['nativeImageId']=config
+            if stage['name']=='ingestion.CREATE_REPLACEMENT':stage['intent']['requestTemplate']['Image']=config
+            stage['intentHash']=c.digest(stage['intent'])
+        frozen=c.encoded(parent);archive=copy.deepcopy(parent['candidateFileBindings']['image.tar.gz'])
+        projected=archive_projection.project(parent,c.digest(parent),audit,archive)
+        self.assertEqual(c.encoded(parent),frozen)
+        self.assertEqual(projected['finiteIntentContract']['logicalOperationRef'],parent['finiteIntentContract']['logicalOperationRef'])
+        self.assertEqual(projected['nativeArchivePreparation']['parentNativeInputsHash'],c.digest(parent))
+        c.stages(projected)
+        with self.assertRaises(c.Denied):archive_projection.project(projected,c.digest(projected),audit,archive)
+        for key,val in (('repositoryTags',['foreign:tag']),('archiveSha256','f'*64),('sourceCommit','f'*40)):
+            changed=copy.deepcopy(audit);changed[key]=val
+            with self.assertRaises(c.Denied):archive_projection.project(parent,c.digest(parent),changed,archive)
     def test_current_custody_channel_or_budget_drift_is_denied(self):
         for key in ('maximumDirectEnginePosts','maximumDirectEngineGets','maximumOwnerGetAttempts'):
             value=copy.deepcopy(self.review);value[key]+=1

@@ -1,3 +1,13 @@
+# CURRENT — one-Ingestion native archive and sealed loader qualification in progress
+
+The completed parent bundle ab6c1953b8eb0bed19fdd1ee82c4b34828642726e4582152852eb5b4711f14ec remains immutable and MUST NOT be replayed. Its candidate ID76c38ddf is the configuration digest, not Docker29's native manifest identity. The new archive projection preserves the configuration/layers, logical operation and parent provenance; it requires a separately byte-audited tagless archive and never imports an image or grants authority. It is development code, not a target command.
+
+CI39671916290 passed both Python jobs and stopped before tests because the fixture opened an archive write-only. The corrected run39715443157 passed both Python jobs; Docker loaded and byte-verified the exact native image, then reached CREATE_REPLACEMENT. The fixture omitted preserveObservedAddressesAndMacs, so readback correctly refused the incomplete frame. Its lost-create and expired-HUMAN tests passed. A new compilation guard now rejects such a frame before runtime effects. These disposable CI effects are NOT target evidence. Original114 source graph remains unchanged.
+
+Local14 scoped signature/CAS/contract tests and4 verified-memory loader tests pass. New136-module loader selects only the one-Ingestion entry; missing/extra/foreign sources and altered declarations fail closed. Full platform rerun and complete controller/delivery/issuance qualification remain pending. No fresh OAuth budget/window/login/consent or target invocation is ready yet. OAuth292/292,technical8/8,functional4/6,G3OPEN; candidate patch remains NOT INSTALLED. Consulted original Matrix1.7 §1 and Ingestion1.3 migration-safety baseline; ownership and validate-only startup remain unchanged. See docs/handoffs/OUF_READINESS_PATCH_QUALIFICATION_20261022.md.
+
+---
+
 # CURRENT —12-stage native inputs complete; one-Ingestion executor development/qualification
 
 Owner receipt NATIVE_EXECUTION_INPUTS_PREPARED_NO_AUTHORITY: /etc/ouf/deploy-snapshots/ingestion-readiness-native-inputs-0b2fd250a4f16e05ad1dc2836878f6438d6c417394b8e5f542c0736f244897df, bundleHashab6c1953b8eb0bed19fdd1ee82c4b34828642726e4582152852eb5b4711f14ec. Log /home/oufadmin/ouf-readiness-native-inputs.MjhscDx5/operator.log. Completed native-input preparation must NOT be replayed.

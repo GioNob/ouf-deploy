@@ -28,6 +28,7 @@ jobs:
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
           sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_readiness_patch_execution.py -v
+          sudo env OUF_TEST_ROOT="$fixture" "$pythonLocation/bin/python3" -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_readiness_patch_sealed_runtime.py -v
   docker29-apisix-jvm-sequence:
     runs-on: ubuntu-24.04
     timeout-minutes: 30

@@ -33,7 +33,8 @@ def path(v):
 
 def stages(bundle):
     frame=bundle['ingestionFrame'];request=frame['requestTemplate'];before=bundle['beforeIngestion']
-    require(frame['module']=='ingestion' and frame['runtimeAuthorityIssued'] is frame['targetApplyAuthorized'] is False
+    require(frame.get('schema')=='ouf.ingestion-local-docker-frame-template.v1'
+            and frame.get('preserveObservedAddressesAndMacs')is True and frame['module']=='ingestion' and frame['runtimeAuthorityIssued'] is frame['targetApplyAuthorized'] is False
             and frame['resolveGatewaySecretAfterNativeAuthorityRequired'] is False
             and request['HostConfig']['RestartPolicy']=={'Name':'no','MaximumRetryCount':0}
             and re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.-]{0,127}',frame['name'])
@@ -94,6 +95,9 @@ def stages(bundle):
                                               'VERIFY_RESTORED_FINAL') else 'EFFECT'),'CLOSED_PATCH_STAGE_KIND_REQUIRED')
         result.append({'name':name,'kind':s['kind'],'intent':intent,'intentHash':digest(intent)})
     intents={s['name']:s['intent'] for s in result}
+    archive=bundle['candidateFileBindings']['image.tar.gz']
+    require(intents['IMPORT_INGESTION_IMAGE']=={'nativeImageId':native_id,'archiveSha256':archive['sha256'],
+                'maximumArchiveBytes':archive['metadata'][6]},'EXACT_NATIVE_ARCHIVE_IMPORT_INTENT_REQUIRED')
     require(intents['ingestion.CREATE_REPLACEMENT']=={'name':frame['name'],'requestTemplate':request}
             and intents['ingestion.DISABLE_OLD_RESTART']=={'oldContainerId':before['Id'],'restartPolicy':{'Name':'no','MaximumRetryCount':0}}
             and intents['ingestion.STOP_OLD']=={'oldContainerId':before['Id'],'timeoutSeconds':30}

@@ -95,6 +95,9 @@ class NativePlatform(unittest.TestCase):
         cli(['load','-i',str(cls.archive)],180)
         loaded=json.loads(cli(['image','inspect',cls.image]))[0]
         image_custody.loaded(cls.native_audit,loaded)
+        print('OUF_NATIVE_IMAGE_BYTE_CUSTODY='+json.dumps({'configurationImageId':cls.configuration_image,
+            'nativeImageId':cls.image,'archiveSha256':derived['derivedArchiveSha256'],
+            'sourceCommit':meta['sourceCommit'],'imageRebuilt':False,'runtimeAuthorityIssued':False}),flush=True)
         for name in('OUF_FIXTURE_APISIX_IMAGE','OUF_FIXTURE_ETCD_IMAGE','OUF_FIXTURE_OWNER_IMAGE'):
             cli(['pull',os.environ[name]],180)
     def setUp(self):
@@ -215,12 +218,14 @@ class NativePlatform(unittest.TestCase):
         request.update(HostConfig=host,NetworkingConfig={'EndpointsConfig':frames.endpoints(actual)})
         frame={'schema':'ouf.ingestion-local-docker-frame-template.v1','module':'ingestion','name':actual['Name'][1:],
             'requestTemplate':request,'oldMounts':copy.deepcopy(actual['Mounts']),'restoreRestartPolicy':restore,
+            'preserveObservedAddressesAndMacs':True,
             'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'resolveGatewaySecretAfterNativeAuthorityRequired':False}
         logical=c.digest({'operation':'INGESTION_READINESS_WORKLOAD_PATCH','oldContainerId':actual['Id'],'candidateImageId':self.configuration_image})
         stages=[]
         def add(name,kind,intent):stages.append({'name':name,'kind':kind,'intent':intent,'intentHash':c.digest(intent)})
         add('VERIFY_CURRENT_GATES','READ',{'fixtureOnly':True})
-        add('IMPORT_INGESTION_IMAGE','EFFECT',{'nativeImageId':self.image})
+        add('IMPORT_INGESTION_IMAGE','EFFECT',{'nativeImageId':self.image,
+            'archiveSha256':selected_archive['sha256'],'maximumArchiveBytes':selected_archive['metadata'][6]})
         add('ingestion.DISABLE_OLD_RESTART','EFFECT',{'oldContainerId':actual['Id'],'restartPolicy':host['RestartPolicy']})
         add('ingestion.STOP_OLD','EFFECT',{'oldContainerId':actual['Id'],'timeoutSeconds':30})
         for i,endpoint in enumerate(request['NetworkingConfig']['EndpointsConfig'].values(),1):
