@@ -9,6 +9,7 @@ from pathlib import Path
 from .core import require,digest,encoded,validate_plan
 from .lifecycle import Lifecycle
 from .paused_binding import RecoveryPausedBinding
+from .process_binding import RecoveryProcessBinding
 from file_only_profile import FileOnlyProfile
 from .frame_observation import RecoveryFileOnlyFrameObservation as FileOnlyFrameObservation
 from .node_observation import RecoveryNodeObservation as PausedNodeObservation
@@ -19,7 +20,7 @@ from tools.semantic_policy_token_owner.installed_owner import InstalledTokenOwne
 from tools.semantic_provider_deployment_authentication import DetachedAuthenticator,private_bytes,decode,ancestors
 from tools.semantic_provider_deployment_signing import ExistingEd25519Signer
 from tools.semantic_provider_installer_approval import publish_once
-from tools.semantic_provider_node_observation import NodeObservation
+from tools.semantic_provider_node_observation import NodeObservation,rootfs_seal
 from tools.semantic_provider_preexec_native import NativeBackend
 from tools.semantic_provider_deployment_admission import transport_hash
 
@@ -161,6 +162,8 @@ class RecoveryNodeOwner:
         # observed before it. A changed PID/netns/clock is never signed.
         current,_,expected=self.native_observation()
         require(current==observed and expected==raw,'RECOVERY_NODE_CHANGED_BEFORE_SIGNATURE')
+        publish_once(self.root/'paused-observation.json',encoded(observed),
+            'RECOVERY_NODE_OBSERVATION_ALREADY_PRESENT')
         envelope=self.signer.sign(raw)
         publish_once(signature_path,envelope,'RECOVERY_NODE_SIGNATURE_ALREADY_PRESENT')
         publish_once(auth_path,raw,'RECOVERY_NODE_ACCEPTANCE_ALREADY_PRESENT')
@@ -199,4 +202,61 @@ class RecoveryNodeOwner:
         state,proof=self.observe()
         require(state=='APPLIED','CURRENT_RETAINED_RECOVERY_NODE_ACCEPTANCE_REQUIRED')
         return proof
+
+    def retained_signature(self):
+        """Current signature for the durably observed pause, after its unpause.
+
+        This is explicitly retained evidence, never a claim of current pause.
+        The separate active-frame observer rechecks the live generation/files.
+        """
+        row=self.guard();effect=row['effects'][5]
+        require(row['nextStage']>=6 and effect['state']=='APPLIED'
+            and effect.get('nativeAttestationAttempted') is True,
+            'APPLIED_RECOVERY_NODE_ACCEPTANCE_REQUIRED')
+        observed=decode(private_bytes(self.root/'paused-observation.json',131072),131072)
+        require(digest(observed)==effect['nativeObservationHash']
+            and observed['generation']=={k:row['newGeneration'][k] for k in ('pid','startTicks','namespaceInode')},
+            'RETAINED_RECOVERY_PAUSED_OBSERVATION_CHANGED')
+        raw=private_bytes(self.root/'paused-acceptance.json',131072)
+        require(hashlib.sha256(raw).hexdigest()==effect['nativeAcceptanceHash'],
+            'RETAINED_RECOVERY_NODE_ACCEPTANCE_CHANGED')
+        policy_raw=private_bytes(self.root/'frame-policy.json',131072);policy=decode(policy_raw,131072)
+        recipe=self.recipe
+        expected={k:recipe[k] for k in ('sourceClosureHash','qualifiedPackageHash','imageConfigurationHash')}
+        expected.update(applicationHash=digest(policy['expectedOci']),artifactHash=hashlib.sha256(policy_raw).hexdigest(),
+            transportHash=transport_hash(recipe['observationConfiguration']['candidate']),
+            transitionContextHash=self.plan['logicalOperationRef'],creationRequestHash=digest(self.lifecycle.request),
+            phaseIntentHash=self.plan['stages'][5]['intentHash'])
+        authority=self.lifecycle.authority
+        ctx={k:authority.authority.context[k] for k in ('installationRef','entityRef','attestorRef')}
+        proof=PausedNodeAcceptance(self.verifier,ctx,expected,authority.authority.clock).verify(raw,observed,self.lifecycle.cid)
+        require(self.guard()==row,'RECOVERY_CHANGED_DURING_RETAINED_SIGNATURE_READ')
+        return observed,proof
+
+    def active_frame(self):
+        row=self.guard();retained,signature=self.retained_signature()
+        binding=RecoveryProcessBinding(self.lifecycle,self.profile);before=binding.observe()
+        recipe=self.recipe;budget=ObservationBudget(recipe['observationSeconds'])
+        raw=private_bytes(self.root/'frame-policy.json',131072)
+        configured={'source':recipe['frameSourceBinding'],
+            'configuration':{'path':str(self.root/'frame-policy.json'),'sha256':hashlib.sha256(raw).hexdigest()},
+            'bundleParents':recipe['observationConfiguration']['bundleParents']}
+        frame=FileOnlyFrameObservation(configured,budget,self.token_owner,binding,self.profile)
+        generation={k:row['newGeneration'][k] for k in ('pid','startTicks','namespaceInode')}
+        frame_hash,_=frame.observe(generation,Path(retained['bundle'])/'config.json',
+            retained['applicationHash'],configured['configuration']['sha256'])
+        kind=before['process']['processKind']
+        # Before the signal the shell has no permission to mutate image files.
+        # Recheck the complete image seal after unpause and immediately before
+        # dispatch. Never use the historical running-JVM exception here.
+        sealed=False
+        if kind=='GATE_WAITING':
+            require(rootfs_seal(Path(retained['rootfs']),recipe['observationConfiguration']['rootfsLimits'],budget)
+                ==recipe['expectedRootfsSeal'],'ACTIVE_WAIT_GATE_ROOTFS_CHANGED')
+            sealed=True
+        require(binding.observe()==before and self.guard()==row,'RECOVERY_ACTIVE_FRAME_CHANGED')
+        return {'schema':'ouf.semantic-registry-recovery-active-frame.v1','newGeneration':copy.deepcopy(row['newGeneration']),
+            'processKind':kind,'frameHash':frame_hash,'retainedSignatureVerificationHash':digest(signature),
+            'preJavaFullRootfsSealVerified':sealed,'runningJvmRootfsIntegrityProven':False,
+            'runtimeAuthorityIssued':False,'releaseAcceptance':False}
 

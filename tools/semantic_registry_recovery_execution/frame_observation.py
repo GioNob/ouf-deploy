@@ -8,6 +8,7 @@ from pathlib import Path
 from projected_frame_observation import ProjectedFrameObservation
 from configtree_mount_observation import ConfigtreeMountObservation
 from .paused_binding import RecoveryPausedBinding
+from .process_binding import RecoveryProcessBinding
 from file_only_profile import FileOnlyProfile
 from transition_journal import digest,hash_value,require
 from .mount_observation import RecoveryTokenMountObservation as RenewableTokenMountObservation
@@ -17,7 +18,7 @@ from tools.semantic_provider_deployment_authentication import decode,attributes
 
 class RecoveryFileOnlyFrameObservation(ProjectedFrameObservation):
     def __init__(self,configured,budget,owner_gate,paused_binding,execution_profile):
-        require(isinstance(owner_gate,DomainOwner) and type(paused_binding) is RecoveryPausedBinding
+        require(isinstance(owner_gate,DomainOwner) and type(paused_binding) in (RecoveryPausedBinding,RecoveryProcessBinding)
                 and type(execution_profile) is FileOnlyProfile,'TYPED_FILE_ONLY_TOKEN_OWNER_AND_PROFILE_REQUIRED')
         require(paused_binding.execution_profile is execution_profile,
                 'EXACT_FILE_ONLY_FRAME_TRANSITION_PROFILE_REQUIRED')
@@ -59,12 +60,16 @@ class RecoveryFileOnlyFrameObservation(ProjectedFrameObservation):
                 and current['networkNamespaceInode']==generation['namespaceInode'],'FILE_ONLY_FRAME_PROCESS_GENERATION_DRIFT')
         files=frame.source_mount_frame(generation['pid'],current,bundle,policy['sources'],self.budget)
         directory=ConfigtreeMountObservation(policy['configtree'],self.budget).observe(generation)
+        binding=({'pause_binding':self.pause_binding} if type(self.pause_binding) is RecoveryPausedBinding
+            else {'running_binding':self.pause_binding})
         token=RenewableTokenMountObservation(policy['renewableToken'],self.token_owner,time.monotonic()+self.budget.remaining(30),
-            pause_binding=self.pause_binding).observe(token_generation(generation['pid'],allow_frozen=True))
+            **binding).observe(token_generation(generation['pid'],allow_frozen=True))
         key_identity();require(self.pinned()==private and self.bundle(bundle_path)==raw and mounts.generation(generation['pid'],self.budget)==current,
             'FILE_ONLY_FRAME_CHANGED_DURING_OBSERVATION')
         self.budget.check()
-        result={'schema':'ouf.semantic-configured-paused-file-only-four-mount-frame.v1','executionProfileHash':self.profile_hash,
+        schema=('ouf.semantic-configured-paused-file-only-four-mount-frame.v1'
+            if type(self.pause_binding) is RecoveryPausedBinding else 'ouf.semantic-registry-recovery-active-four-mount-frame.v1')
+        result={'schema':schema,'executionProfileHash':self.profile_hash,
             'configuredPolicy':approved,'sourceMountFrame':files,'configtreeMountFrame':directory,'renewableTokenMountFrame':token,
             'fourMountShapeObserved':True,'policyAuthenticationProven':False,'completeCreationAccepted':False,'signaturesIssued':0,'startAuthorized':False}
         return digest(result),{Path(self.configured[k]['path']):v for k,v in private.items()}
