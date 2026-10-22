@@ -1,3 +1,13 @@
+# LATEST — stopped historical Registry observed; retained endpoint inventory next
+
+Owner receipt /home/oufadmin/ouf-semantic-history.Sg7fpZoS/operator.log is BOUNDED_HISTORICAL_OBSERVATION_ONLY:5/5GETs, historical Registry exited143,finished2026-10-18T08:09:50.772426142Z,0logbytes/0lines. No same-line match,current Registry identity,current route map or502rootcause proven. Exit143 does not establish stopping cause; empty logs do not establish health. Never rerun either historical reader or substitute by name.
+
+Next distinct tools/semantic_retained_endpoint_inventory only: exact completed stage8 review/recovery/packet; canonical packet hash; one exact active inline semanticGETroute;4EngineGETs/35seconds. Two exact pinned Gateway inspects and two bounded all-container endpoint summary inventories. This newly explicit discovery is observational and selects no Registry replacement. IDs/states/shared-network flags for retained literal upstream address candidates only; no names/addresses/raw inventory/credentials. Hostnames,indirect/ambiguousroutes,drift/404/limits STOP without fallback. No probes/logs/routeadmin/DB/OAuth/writes/lifecycle/activation. Current routing,service identity,port/readiness/rootcause remain unproven.8new local fixture tests +18unchanged regressions PASS,0skips;nativeDocker/VPS/CI qualification pending. See docs/handoffs/OUF_SEMANTIC_RETAINED_ENDPOINT_INVENTORY_20261022.md.
+
+WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. OAuth304/304 exhausted;no budget/window/login/runtimeauthority or activation retry/replay. Preserve every directory/context/claim/receipt. Historical24hour source window is not renewed. Previous next-command headers below are historical.
+
+---
+
 # LATEST — historical Registry predicate STOP retained; distinct observation only
 
 Owner supplied one semantic_transport_correlation STOP_RECONCILE/HISTORICAL_REGISTRY_NOT_RUNNING at /home/oufadmin/ouf-semantic-transport.UIPPICGG/operator.log. Preserve that directory, all older logs/contexts/claims and the unchanged predecessor reader/case. The exact-ID/running/unpaused/not-restarting combined predicate failed before any Gateway log read; no same-line match, precise lifecycle state, current Registry identity or502cause established. Never rerun that reader or substitute a Registry by name.
