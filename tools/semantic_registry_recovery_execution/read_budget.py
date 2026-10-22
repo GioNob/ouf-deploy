@@ -30,7 +30,9 @@ class ReadBudget:
         This method issues no mandate, permission, window or token budget.
         """
         require(type(store) is Store and type(authority) is AuthorityScope,'ACTUAL_READ_BUDGET_INITIALIZER_REQUIRED')
-        authority.guard(store.read());scope=read_scope(plan,store.root)
+        current=store.read()
+        validate_current(plan,current,Path('/proc/sys/kernel/random/boot_id').read_text().strip(),(time.time(),time.monotonic()))
+        authority.guard(current);scope=read_scope(plan,store.root)
         require(json.loads(authority.raw).get('semanticRegistryRecoveryReads')==scope,'SIGNED_READ_SCOPE_BEFORE_INITIALIZATION_REQUIRED')
         row={'schema':'ouf.semantic-registry-recovery-native-read-journal.v1','scopeHash':digest(scope),
             'authorityHash':authority.hash,'counts':{k:0 for k in LIMITS},'version':0,'budgetReset':False}

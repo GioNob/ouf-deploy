@@ -41,6 +41,12 @@ def factory_scope(context):
         'planHash':digest(context['plan']),'retainedInputsHash':context['retainedInputs']['sha256'],
         'executionRoot':str(root),'originalClaimsRemainConsumed':True,'automaticInitializationAllowed':False}
 
+def require_historical_parent(prepared,execution_root):
+    original=Path(prepared['directoryPlan']['root'])
+    require(original.is_absolute() and original.name=='registry' and '..' not in original.parts
+        and Path(execution_root).parent==original.parent.parent,
+        'RECOVERY_PARENT_MUST_BE_THE_RETAINED_INSTALLATION_EVIDENCE_PARENT')
+
 def build(context,authority,raw,token_owner,verifier,signer):
     scope=factory_scope(context)
     require(type(authority) is cutover_type() and type(raw) is bytes
@@ -66,6 +72,7 @@ def build(context,authority,raw,token_owner,verifier,signer):
         and digest(retained['proposal'])==plan['stages'][0]['intent']['proposalHash'],
         'SAME_RETAINED_HISTORY_PROPOSAL_AND_RECOVERY_PLAN_REQUIRED')
     prepared=retained['registryInputs'];request=prepared['creationRequest']
+    require_historical_parent(prepared,context['executionRoot'])
     recipe=context['nodeRecipe'];historical_recipe=prepared['nodeRecipe']
     require(set(recipe)==set(historical_recipe)
         and all(recipe[k]==v for k,v in historical_recipe.items() if k not in ('sourceClosureHash','renewableToken')),

@@ -55,3 +55,33 @@ jobs:
           cd /root/ouf-registry-tests
           python3 tools/semantic_registry_recovery_execution/tests/native_paused_recovery.py -v
           '
+  native-current-database:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Root-custodied isolated source tree
+        run: |
+          sudo install -d -m 0700 /root/ouf-registry-tests
+          sudo cp -a . /root/ouf-registry-tests/
+          sudo chown -R root:root /root/ouf-registry-tests
+      - name: Actual readonly PostgreSQL17 and Engine generation; synthetic image and token fixtures
+        env:
+          OUF_FIXTURE_POSTGRES: ${{ job.services.postgres.id }}
+        run: |
+          sudo env OUF_FIXTURE_POSTGRES="$OUF_FIXTURE_POSTGRES" bash -eu -c '
+          cd /root/ouf-registry-tests
+          python3 tools/semantic_registry_recovery_execution/tests/native_database.py -v
+          '

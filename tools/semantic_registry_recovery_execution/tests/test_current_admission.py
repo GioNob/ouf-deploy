@@ -52,6 +52,7 @@ class CurrentAdmission(unittest.TestCase):
         program.write_text(source);program.chmod(0o700);self.program=file_profile(program)
         self.audit={'disposableFixtureImageAudit':True}
         self.lifecycle.engine.request=lambda method,path:(200,copy.deepcopy(self.pg) if '/containers/' in path else {'fixtureImage':True})
+        if hasattr(self,'configure_database'):self.configure_database()
         loaded=patch.object(d,'loaded',return_value={'syntheticImageAdmission':True});loaded.start();self.addCleanup(loaded.stop)
         # Compile all extra scopes before signing a new disposable mandate.
         scope=d.database_scope(self.lifecycle,self.readiness,self.pin,self.program,self.audit)
