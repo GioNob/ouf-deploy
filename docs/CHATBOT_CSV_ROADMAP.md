@@ -1,3 +1,15 @@
+# LATEST — user requires502cause and correction; targeted Oct18 stop-window journal next
+
+User explicitly corrected scope: understand the502cause and fix it; generic recovery-component progress is not the outcome. Current Gateway map targets the reviewed stopped Registry/noendpoint (owner log /home/oufadmin/ouf-live-route.ZP4fQDib/operator.log). Do not rewrite that route or treat tests as repair. Recovery components remain incomplete; no target apply/authority is ready.
+
+New causal lead from retained authoritative evidence: Registry stopped2026-10-18T08:09:50.772426142Z/143,noOOM;UDP stopped08:09:50.930047249Z/143 (158ms later). Registry restart policy=no. Host boot was later (estimated08:21:16Z;containerd active08:21:22Z); documented Docker/network/application recovery does not report Registry restoration. Hypothesis: missing Registry recovery after shutdown; temporal proximity is NOT stopping-actor proof. See docs/OUF_SEMANTIC_502_DIAGNOSIS_20261022.md for exact evidence sources.
+
+Next exact target command ONLY scripts/read-semantic-stop-journal-20261022.py, no arguments,root/isolatedPython: one journalctl invocation/selectedDocker-containerd-shutdownunits,Oct18 08:07:50–08:11:50UTC,12secondchild/25secondwhole,4MiB/<2000rows. Closed timestamp/classification output only;no rawmessages/addresses/credentials/Engine/OAuth/SQL/control/effects/authority.6localredaction/scope/absence/truncationtestsPASS. Stop preserveslog;no fallback/rerun. This is direct stop-cause evidence,not a repeated inventory. Use result to choose the actual corrective action and verify the original authenticated semanticGET. Bare start only launches a wait shell;do not replay old signal/attestation/claims.
+
+502OPEN;no originalrequestreproduction or resolution claimed. Preserveallcontexts/claims/logs. Patch12/12,technical8/8,functional4/6,WP3/CSV-H-13,G3OPEN,OAuth304/304exhausted;sourcewindowhistorical. No newbudget/window/login/provider/activation/rolloutreplay or releaseacceptance. Earlier next-command headers are historical.
+
+---
+
 # LATEST — current availability defect proven;23recovery component tests pass, native composition still incomplete
 
 Owner /home/oufadmin/ouf-live-route.ZP4fQDib/operator.log: current82route map unchanged;exactsemanticGETpoints to reviewed stoppedRegistry address/port;targetnetworkendpoint absent.6EngineGETs+1adminGET,4credentialreads,0OAuth/DB/writes/effects. Evidence semantic-live-route-target-20261022.json is owner-pasted,not independent cloud readback. Originalrequest/stopcause/readiness/502resolution remain unproven. Corrective target is that Registry,not a Gateway rewrite/provider restart.
