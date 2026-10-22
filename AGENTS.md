@@ -1,3 +1,11 @@
+# CURRENT — target patch STOPPED after8/12; authority expired; read-only snapshot qualification pending
+
+Target receipts: START_REPLACEMENT completed(journal1058,log /home/oufadmin/ouf-readiness-runtime.mJsqjvB7/operator.log), then STOP_RECONCILE/FINITE_CURRENT_DIRECT_ENGINE_WINDOW_REQUIRED(log ZYDl1WlE). Metadata status confirms RECONCILE_REQUIRED,nextStage8,effects8,readAttempts8,IDLE,expiresAt1792664043(2026-10-22T10:14:03Z); statuslog /home/oufadmin/ouf-readiness-runtime.DMt9eFPH/operator.log. Expiry is past at observation. Original authority WAS issued; status runtimeAuthorityIssued:false is per-invocation and does not erase that history. OAuth300/300 exhausted. Technical8/8,functional4/6,G3OPEN. No login,grant,window,approve,initialize,step or effect reconciliation may be replayed under expired authority. Preserve every context/claim/cache/log and completed prefix. Current live health and restart restoration are unproven.
+
+Four residual stages:ingestion.READINESS,VERIFY_FINAL,ingestion.RESTORE_RESTART,VERIFY_RESTORED_FINAL. New bounded stdlib-only stopped metadata reader binds exact targetcase21a26b94...,prefix8/readAttempts8/expiry,checks protected no-follow FD custody and both invocation locks,retained review/control/native/initialization-claim hashes and exact APPLIED stage intents. It writes nothing,reads no credential journals/keys and calls no services. Reports metadata only,no signature/provider/live-runtime revalidation. Local4tests PASS,Python3.12/3.13.5 CI pending. Only after those pass present ONE pinned stopped-snapshot reader; do not reuse previous snapshot reader for the old unissued9fcontext. No new runtime successor/budget is prepared or authorized by this reader. Older instructions below are historical.
+
+---
+
 # CURRENT — full unissued successor and production delivery qualified; ONE new read-only preflight ready
 
 Coree776de2a261c7ce2318bcf6e6df5cf82d1028f6e CI39748102563 PASSED105tests EACH Python3.12/3.13.5 plus5Docker29/APISIX/JVM/PG17 tests. Exact sealed144 graph, realTTY budget/window/infrastructure consent and all13fixture stages(two networks;target12),8EnginePOSTs,0Gatewaywrites/newkeys; large review and unchanged oldISSUING/HUMAN bytes proven. Provider/Owner identities are fixtures; current target admission is NOT proven. Original139/114 sources remain unchanged.
