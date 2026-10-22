@@ -4,7 +4,7 @@ The request is GET-only through its configured Gateway, in the unchanged
 caller's netns. No HUMAN bearer, owner override, login, refresh, compatibility
 attestation POST, source activation, redirect or latest-reference fallback.
 """
-import copy,hashlib,json,os,subprocess,uuid
+import copy,hashlib,json,os,re,subprocess,uuid
 from pathlib import PurePosixPath
 from urllib.parse import urlsplit
 from .core import require,digest,encoded,hashed
@@ -98,10 +98,14 @@ class OriginalSemanticRequest:
             and frozen['configuration'].get('semanticReferenceBindings')==refs,
             'SAME_ORIGINAL_FROZEN_CONFIGURATION_REFERENCES_REQUIRED')
         configuration=frozen['configuration']
+        mapped=configuration.get('semanticMapping',{}).get('semanticRefs')
+        require(type(mapped) is list and 1<=len(mapped)<=32 and len(set(mapped))==len(mapped)
+            and all(type(v) is str and re.fullmatch(r'[^@\s]+@[^@\s]+',v) for v in mapped),
+            'ORIGINAL_EXACT_FROZEN_REFERENCE_SYNTAX_REQUIRED')
         calculated='sha256:'+hashlib.sha256(json.dumps(configuration,sort_keys=True,separators=(',',':'),
             ensure_ascii=False,allow_nan=False).encode()).hexdigest()
         require(calculated==profile['frozenConfigurationHash']
-            and set(configuration.get('semanticMapping',{}).get('semanticRefs',[]))==seen,
+            and set(mapped)==seen,
             'ORIGINAL_FROZEN_CONFIGURATION_CHECKSUM_AND_REFERENCE_SET_REQUIRED')
         private_file.validate(profile['tokenSource'],maximum=16384)
         target=PurePosixPath(profile['tokenTarget'])

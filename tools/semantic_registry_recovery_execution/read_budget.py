@@ -20,7 +20,8 @@ class ReadBudget:
         self.store.check();row=self.store.read()
         validate_current(self.plan,row,Path('/proc/sys/kernel/random/boot_id').read_text().strip(),(time.time(),time.monotonic()))
         self.authority.guard(row)
-        require(json.loads(self.authority.raw).get('semanticRegistryRecoveryReads')==self.scope,
+        require(read_scope(self.plan,self.store.root)==self.scope
+            and json.loads(self.authority.raw).get('semanticRegistryRecoveryReads')==self.scope,
             'CURRENT_SIGNED_RECOVERY_READ_SCOPE_REQUIRED')
     @classmethod
     def initialize(cls,store,authority,plan):
