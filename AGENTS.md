@@ -1,3 +1,13 @@
+# LATEST — gated proposal retained; offline history composition next
+
+Owner /home/oufadmin/ouf-registry-proposal.gEjCBGSF/operator.log:BLOCKED_RECOVERY_PROPOSAL_RETAINED,4/4GETs,gatedfileonlylaunchobserved,privateProposalPath=/etc/ouf/deploy-snapshots/semantic-registry-recovery-proposal-a14asgjz/proposal.json,hash8b1cce8a68003a5c54778f0b61bd92ecb16532d72d1d7eb5510719b857d89624.8gatesopen,nativeExecutorQualifiedfalse,targetApplyAuthorizedfalse,authority/effects/OAuth0. Preserve proposal and all previous contexts.
+
+NextONLYtools/semantic_registry_history_capture:OFFLINEexactproposal+historicalreview/authority/bundle/consumedprocessclaim/transition/nativeevidencehashchain;0Docker/DB/HTTP/OAuth/subprocess/credentials/dynamicsourcecalls;35seconds,16metadatafilesmax+repeatreads;writeONLYnewroot700/root400privateinputs. Expiredauthorityremainshistory;explicit10phaseprefixbridgeverifiedwithoutrewritingconsumedintents. Candidate12stagegatedcontract separatesstart/pause/attest/unpause/SIGUSR1,NOexecutor/issuer/authority. Ifsuccessful,historicalownergateonlyreconciled;7gatesstayopen,proposalconfigcomparisonisasofsavedproposal,notlivereadback. CurrentRegistryidentity/502causeunproven.13newlocaltests+56unchangedregressionsPASS,0skips;targetcapture/nativequalificationpending. See docs/handoffs/OUF_SEMANTIC_REGISTRY_HISTORY_COMPOSITION_20261022.md.
+
+WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. No providerrecovery,oldrollout/claim/signalreplay,newbudget/window/login/runtimeauthority/sourceactivation. OAuth304/304exhausted;source24hourwindowhistorical. Candidatecapsnotgranted;historicalincidentlineageisnotcauseequivalence. Previousnextcommandheaderssuperseded.
+
+---
+
 # LATEST — recovery inputs observed; gated file-only proposal preparation only
 
 Owner /home/oufadmin/ouf-registry-recovery-inputs.xmeDnp6X/operator.log complete6/6GETs+2guardshows:retainedsemanticnode matches historicalRegistryIPAM;historicalRegistry exited143/Pid0;onlysameimagecandidateitself;source labelabsent/otherimagesnotexcluded;132containers,noendpointcandidate. Guardactive/exited/success,bootRUNTIME_EMPTY/startfalse,ownerBLOCKED/leasefalse/startfalse/counts[0,0]. No currentRegistryidentity/liveGatewaymap/readiness/502cause/authority proven.

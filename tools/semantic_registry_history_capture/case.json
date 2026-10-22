@@ -1,0 +1,11 @@
+{
+  "schema": "ouf.semantic-registry-history-capture-case.v1",
+  "privateParent": "/etc/ouf/deploy-snapshots",
+  "proposalPath": "/etc/ouf/deploy-snapshots/semantic-registry-recovery-proposal-a14asgjz/proposal.json",
+  "proposalHash": "8b1cce8a68003a5c54778f0b61bd92ecb16532d72d1d7eb5510719b857d89624",
+  "historicalContext": "/etc/ouf/deploy-snapshots/chatbot-file-cohort-signed-16e5f80e40d09772048f1575850b643a69d4d46520db1a56ccd79a7b1a9e055b",
+  "historicalReviewHash": "07ee9e8adf0d645018fb70212884f43c22e85cf3c7288bd78dad5bf0d02413bc",
+  "historicalAuthorityHash": "a604f4981d38dc19977e551402674b70146bca8768df07c631c2054c6cc727ca",
+  "historicalSourceCommit": "d7bbb768970aad1a001ca4d085bcc87c58a29cec",
+  "historicalUnit": "ouf-file-cohort-16e5f80e40d09772048f1575850b643a.service"
+}
