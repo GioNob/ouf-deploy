@@ -3,7 +3,7 @@
 Only provider replies, Owner identity and modeled predecessor expiry are
 synthetic. Isolated new runtime/HUMAN capsules are never patched in the child.
 """
-import copy,hashlib,json,os,subprocess,sys,time,unittest
+import copy,hashlib,json,os,re,select,subprocess,sys,time,unittest
 from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests')]
