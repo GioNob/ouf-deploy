@@ -1,3 +1,9 @@
+# CURRENT — patch HUMAN292->296 governance implemented; qualification pending
+
+New human_governance/human_delivery retain the completed292 control/profile and target archivef56 unchanged. Separate prepare/technical-budget consent/window consent/one provider request/status modes; one predecessor fence prevents parallel budget/window reuse. Actor/reason/decisionRef, exact patch/runtime/native-bundle binding and all cumulative attempts are retained. Twelve exact-ID Engine GETs check six current container generations before budget/window, with no runtime mutations or OAuth. Ten local root-private unit/build tests pass; newly composed isolated-capsule, real-TTY and full native platform CI is PENDING. No new target command/login/budget/authority is granted or requested. OAuth292/292; target patch0/12,technical8/8,functional4/6,G3OPEN. Preserve all completed artifacts/claims. Older entries below are historical.
+
+---
+
 # CURRENT — patch controller and isolated delivery CI PASS; fresh-HUMAN governance pending
 
 CI39722859248 atf5709378c1cff5847d4824d76bbb57ebaa451178 PASSED:51tests on EACH Python3.12/3.13.5,zero skipped, plus4real Docker29/APISIX/JVM/Postgres17 tests. The complete new controller/capsule executed13fixture stages(two networks; target12),8Engine POSTs,0Gateway writes/0new keys, with real terminal consent. HUMAN/Owner identities remain synthetic. This qualifies the controller and isolated delivery composition, not a new technical budget/window, current target health, database admission or release acceptance.

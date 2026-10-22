@@ -8,15 +8,22 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
+import select
 import subprocess
 import sys
+import time
 import unittest
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests')]
 import test_readiness_patch_platform as native_fixture
 import test_readiness_patch_operator_delivery as delivery_fixture
+import test_readiness_patch_human_governance as human_fixture
 from test_ingestion_rollout_gateway_transport import binding
-from tools.ingestion_readiness_patch_execution import operator_delivery as d,entry as e,operator_control as op
+from tools.ingestion_readiness_patch_execution import operator_delivery as d,entry as e,operator_control as op,custody
+from tools.ingestion_readiness_patch_execution import human_delivery as hd,human_governance as g
+from tools.governed_human_successor import operator
+from tools.governed_human_successor.session import ExplicitFreshSession
 
 @unittest.skipUnless(os.environ.get('OUF_ISOLATED_NATIVE_PLATFORM')=='1','explicit disposable platform required')
 class WholeControllerPlatform(unittest.TestCase):
@@ -93,7 +100,87 @@ class WholeControllerPlatform(unittest.TestCase):
             if effect['stage']=='ingestion.CREATE_REPLACEMENT':
                 cid=effect.get('nativeResource',{}).get('containerId')
                 if cid:self.native.names.append(cid)
+    def tty_mode(self,path,mode,prefix):
+        import fcntl
+        import termios
+        master,slave=os.openpty()
+        def setup():os.setsid();fcntl.ioctl(0,termios.TIOCSCTTY,0)
+        child=subprocess.Popen(['/usr/bin/python3','-I','-B','-S',str(path),mode],
+            stdin=slave,stdout=slave,stderr=slave,preexec_fn=setup,close_fds=True)
+        os.close(slave);output=bytearray();sent=False;deadline=time.monotonic()+250
+        try:
+            while time.monotonic()<deadline:
+                ready,_,_=select.select([master],[],[],.1)
+                if ready:
+                    try:raw=os.read(master,65536)
+                    except OSError:break
+                    if not raw:break
+                    output.extend(raw)
+                    if not sent and b'> 'in output:
+                        match=re.search(rb'Scrivi esattamente: ([^\r\n]+)\r?\n> ',output)
+                        self.assertIsNotNone(match,output.decode(errors='replace'))
+                        phrase=match.group(1);self.assertTrue(phrase.decode().startswith(prefix))
+                        os.write(master,phrase+b'\n');sent=True
+                if child.poll()is not None and not ready:break
+            self.assertTrue(sent,'real controlling-terminal prompt not reached')
+            self.assertEqual(child.wait(timeout=5),0,output.decode(errors='replace'))
+            return next(json.loads(line)for line in reversed(output.decode().splitlines())if line.startswith('{'))
+        finally:
+            if child.poll()is None:child.kill();child.wait(timeout=5)
+            os.close(master)
+    def fresh_human_governance(self):
+        """Real capsule/TTY/generation probes; only four provider replies mocked."""
+        config=human_fixture.expired_previous(self);_,manifest=d.core(ROOT)
+        case={'schema':g.SCHEMA,'purpose':'EXACT_RETAINED_INSTALLATION_NOT_PORTABLE_DEFAULT',
+            'runtimeCase':self.case,'nativeDeclaration':manifest,'predecessorControlPath':str(self.oldcontrol),
+            'predecessorReviewHash':e.c.digest(config['review']),'humanOperatorTransportProfile':dict(operator.TRANSPORT),
+            'governanceSourceHash':d.sha((ROOT/'tools/ingestion_readiness_patch_execution/human_governance.py').read_bytes())}
+        raw,declaration=hd.generate(ROOT,case);path=self.root/'human-operator.py';path.write_bytes(raw);path.chmod(0o400)
+        closure=d.sha(d.encoded(declaration))
+        def call(*args):
+            value=subprocess.run(['/usr/bin/python3','-I','-B','-S',str(path),*args],capture_output=True,text=True,timeout=250)
+            self.assertEqual(value.returncode,0,value.stdout+value.stderr);return json.loads(value.stdout)
+        prepared=call('prepare');self.assertEqual(prepared['engineRequests'],12)
+        self.assertFalse(prepared['newBudgetGranted']);self.assertFalse(prepared['newHumanWindowOpened'])
+        grant=self.tty_mode(path,'grant-budget','CONCEDO BUDGET OAUTH 292->296 ')
+        self.assertEqual(grant['additionalOAuthAttemptsGranted'],4)
+        self.assertEqual(call('budget-status')['decisionHash'],grant['decisionHash'])
+        opened=self.tty_mode(path,'open-window','APRO FINESTRA HUMAN ');control=opened['controlPath']
+        self.assertEqual(call('status',control)['attempts'],292)
+        issuer=self.old.selection['issuer'];responses=[
+            (200,{'issuer':issuer,**{k:issuer+'/protocol/openid-connect/'+k for k in
+                ('device_authorization_endpoint','token_endpoint','userinfo_endpoint')}},0),
+            (200,{'verification_uri':issuer+'/device','user_code':'FIXTURE','device_code':'PRIVATE','expires_in':600,'interval':5},0),
+            (200,{'access_token':self.old.token(),'refresh_token':'PRIVATE_FRESH_REFRESH','token_type':'Bearer'},0),
+            (200,{'sub':self.old.selection['subject']},0)]
+        # The actual child used unchanged verified-memory sources above. Parent
+        # annotations identify those same bytes only for synthetic HTTP replies;
+        # no production implementation is changed in any isolated child.
+        annotations=[(g,case['governanceSourceHash']),(op,self.case['controlSourceHash']),
+            (e,manifest['sourceHashes'][e.__name__]),(custody,manifest['sourceHashes'][custody.__name__])]
+        from contextlib import ExitStack
+        with ExitStack()as stack:
+            for module,digest in annotations:stack.enter_context(patch.object(module,'__qualified_source_sha256__',digest,create=True))
+            stack.enter_context(patch.object(operator,'terminal_confirm',return_value=True))
+            stack.enter_context(patch.object(operator,'terminal_notice'))
+            http=stack.enter_context(patch.object(ExplicitFreshSession,'_http',side_effect=responses))
+            self.assertEqual(g.execute('step',control,case,{},closure)['attempts'],293)
+            self.assertEqual(g.execute('step',control,case,{},closure)['attempts'],294)
+            _,cfg,b=g.load(control,case,closure);journal=e.Journal(b['sessionDirectory']);row=journal.read()
+            journal.compare_and_save(row,{**row,'nextPollAt':time.time()-1})
+            self.assertEqual(g.execute('step',control,case,{},closure)['attempts'],295)
+            ready=g.execute('step',control,case,{},closure);self.assertEqual(ready['attempts'],296)
+            self.assertEqual(http.call_count,4)
+        self.profile=Path(ready['privateHumanReadProfilePath'])
+        self.assertEqual(self.oldbytes,Path(self.old_profile['journal']['path']).read_bytes())
+        # Fixture server accepts exactly the fresh synthetic bearer. Its Owner
+        # payload/revision/generation and all real runtime frames remain fixed.
+        data=json.loads(self.native.owner_data.read_bytes());data['bearer']=responses[2][1]['access_token']
+        self.native.owner_data.chmod(0o600);self.native.owner_data.write_bytes(e.c.encoded(data));self.native.owner_data.chmod(0o400)
+        return {'realBudgetAndWindowTty':True,'preLoginExactEngineGets':12,'syntheticProviderRequests':4,
+            'priorOAuthAttempts':292,'readyOAuthAttempts':296,'oldSessionBytesUnchanged':True}
     def test_whole_capsule_through_real_tty_and_every_native_stage(self):
+        human_proof=self.fresh_human_governance()
         self.assertEqual(self.call('preflight')['status'],'PATCH_RUNTIME_PREFLIGHT_NO_AUTHORITY')
         self.call('review',str(self.profile));review=json.loads((self.target/'review.json').read_bytes())
         delivery_fixture.OperatorDelivery.tty_approve(self,'APPROVO '+e.c.digest(review))
@@ -111,6 +198,7 @@ class WholeControllerPlatform(unittest.TestCase):
         self.assertFalse(self.native.inspect(self.native.before['ingestion']['Id'])['State']['Running'])
         print('OUF_WHOLE_PATCH_CONTROLLER_PROOF='+json.dumps({'complete':True,'stages':self.case['plannedStages'],
             'enginePosts':8,'gatewayWrites':0,'newKeys':0,'realTtyConsent':True,'newControllerAnd139CoreUnmodifiedInChild':True,
-            'syntheticHumanAndOwner':True,'targetEvidence':False,'notReleaseAcceptance':True}),flush=True)
+            'syntheticHumanAndOwner':True,'targetEvidence':False,'notReleaseAcceptance':True,
+            'freshHumanGovernance':human_proof}),flush=True)
 
 if __name__=='__main__':unittest.main()
