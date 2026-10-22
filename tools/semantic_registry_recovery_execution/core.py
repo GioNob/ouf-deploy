@@ -228,6 +228,7 @@ class Runner:
         with self.store.lock('invocation.lock'):
             row=self.current();index=row['nextStage']
             if index==len(ORDER):return row
+            require(row['readAttempts']<128,'RECOVERY_READ_BUDGET_EXHAUSTED')
             stage=self.plan['stages'][index]
             self.ports.guard(self.plan,row,stage);require(self.current()==row,'RECOVERY_CHANGED_DURING_GUARD')
             new=len(row['effects'])==index

@@ -109,6 +109,13 @@ class Tests(unittest.TestCase):
         with self.assertRaisesRegex(m.RecoveryDenied,'EXISTING_RECOVERY_CLAIMS'):
             self.store.initialize({**self.store.read(),'version':0})
 
+    def test_no_new_effect_is_dispatched_after_observation_budget_exhaustion(self):
+        self.advance(1);row=self.store.read()
+        self.store.cas(row,{**row,'readAttempts':128,'version':row['version']+1})
+        with self.assertRaisesRegex(m.RecoveryDenied,'RECOVERY_READ_BUDGET_EXHAUSTED'):self.runner.step()
+        self.assertEqual(self.ports.calls,[])
+        self.assertEqual(len(self.store.read()['effects']),1)
+
     def test_concurrent_invocation_and_stale_cas_are_rejected(self):
         old=self.store.read()
         with self.store.lock('invocation.lock'):
