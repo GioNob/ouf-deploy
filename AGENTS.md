@@ -1,3 +1,15 @@
+# CURRENT — typed native Registry path and original service GET implemented; 502 OPEN
+
+Qualified source f5937486fcfe1e461caed65abf45ca49887ca33f; CI39871804763 PASS: 82 component/regression +3 real Docker +2 real PostgreSQL17 =87 tests,0skips. All17 changed implementation/test/workflow files read back exactly. Concrete NativePorts/factory now connect current DB/token admission, durable read counters, canonical original-parent fencing, current routes, fresh paused/active node custody and original service-authenticated semantic GET. Original caller source establishes Ingestion service token, NOT HUMAN admin token. Health200 never closes recovery; every exact ACTIVE reference must return200.
+
+This is SOURCE/component qualification,not VPS repair or whole-native JVM qualification. Still required: sealed source closure/loader/current-context collector/installer/issuer/delivery/launcher, exact CURRENT installed token-owner resolution/admission, and full representative native qualification. Factory accepts actual already-admissible owner;it neither selects nor recovers it. Possible running-Registry owner-profile dependence must be checked from selected current evidence,not assumed or bypassed. No target command or premature HUMAN/token/window request is ready. Cloud has no VPS executor;operator terminal remains necessary. Full rootfs seal and consumed claims remain enforced.
+
+Current route targets reviewed stopped Registry/no endpoint; shutdown corroborated. Correct exact Registry availability; no more completed diagnostic replay,Gateway rewrite,provider restoration or activation retry. Source tests are NOT a502fix. Full current path/limits: docs/handoffs/OUF_SEMANTIC_REGISTRY_NATIVE_PATH_20261023.md; evidence/semantic-registry-native-path-ci-20261023.json. Earlier headers are historical.
+
+No target runtime effects/authority;502OPEN;patch12/12,technical8/8,functional4/6,G3OPEN,releaseAcceptancefalse. OAuth304/304 remains exhausted; no automatic auth,old claim/signal/attestation adoption,budget/window reset or source activation. Matrix1.7 §1 and RegistryPET1.3 §§160.6–160.7 consulted.
+
+---
+
 # CURRENT — fresh Registry native node owner qualified at component boundary;502 OPEN
 
 Source 1769d3446fa69e40f3525c7c2a116a2093ab8365;CI39867055213 PASS:60component/regression+3realDocker tests,0skips;local15corePASS. New actual recovery journal binding, versioned complete paused OCI/frame observers, current actual InstalledTokenOwner witness and scoped Ed25519 node owner are connected at component level. Docker restart produces a new PID/kernel generation;unpause invalidates pause;readonly token mount uses the distinct exact binding. Fixtures are not full Semantic JVM/OCI/token/DB recovery qualification.
