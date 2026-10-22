@@ -1,3 +1,13 @@
+# LATEST — v2 endpoint inventory completed; recovery-input reconciliation next
+
+Owner /home/oufadmin/ouf-semantic-endpoints-v2.vgdMguZz/operator.log: RETAINED_ENDPOINT_INVENTORY_ONLY,4/4GETs,132containers,one retained literal semantic upstream/no endpoint candidates. No current Registry identity/live route map/readiness/unreachability/502cause proven. v2 map correction target-complete;no current registry replacement selected.
+
+Oct18postboot/host-network evidence explicitly left provider reconciliation/readiness open. Do not silently connect that provider to Registry or repair only a route. Next distinct tools/semantic_registry_recovery_inputs:6EngineGETs+2systemctl show-only reads,50seconds;exact historical Registry/Gateway and completed patch packet;same-image/source-label observational candidates;loaded exact boot-profile/hash/source path and2sealed configurations/2separate journals. Whitelisted journal state/flags/counts only;no credential/lock/nft/guard/probe/log/DB/OAuth/write/start/activation/retry. Source-label equality is not ownership;otherimagesnotexcluded,providerRegistryAssociationEstablishedfalse. Drift/limits/404 STOP,nofallback.11newlocalfixturetests+37unchangedregressionsPASS,0skips;nativeDocker/systemd/VPS/CI qualificationpending. See docs/handoffs/OUF_SEMANTIC_REGISTRY_RECOVERY_INPUTS_20261022.md.
+
+WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. OAuth304/304 exhausted,no newauthority/window/budget/login. No activation/replay/reset;source24hourwindowhistorical. Preserve allcontexts/claims/directories. Previous next-command headers superseded.
+
+---
+
 # LATEST — endpoint inventory v1 schema STOP reconciled; distinct v2 only
 
 Owner receipt /home/oufadmin/ouf-semantic-endpoints.YZoGEtKg/operator.log: STOP_RECONCILE/BOUNDED_RETAINED_ROUTES_REQUIRED,readOnlytrue,0runtimeeffects,no activation/replay/budgetreset. v1 wrongly required a list; actual producer tools/chatbot_file_cohort/gateway.py route_map returns an ID-keyed dict retained unchanged by NativeGatewayTransport.routes and native_review.compile_review. This is a diagnostic contract defect,not Registry drift or502cause. v1 stops before Engine construction (0DockerGETs source-derived,not a reported target counter). Preserve every stopped reader/case/directory unchanged.
