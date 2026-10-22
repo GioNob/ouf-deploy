@@ -1,5 +1,8 @@
 """Verified-memory import boundary; no target, authority issuance or I/O peers."""
-import copy
+import ast
+import base64
+import gzip
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -38,7 +41,7 @@ print(json.dumps({'entry':entry.__name__,'modules':actual['moduleCount'],'effect
         result=subprocess.run([sys.executable,'-I','-B','-S','-c',source,str(PATH),str(ROOT)],
             capture_output=True,text=True,timeout=30)
         self.assertEqual(result.returncode,0,result.stderr)
-        self.assertEqual(json.loads(result.stdout),{'entry':runtime.ENTRY,'modules':136,'effects':0})
+        self.assertEqual(json.loads(result.stdout),{'entry':runtime.ENTRY,'modules':139,'effects':0})
     def test_missing_extra_or_foreign_import_sources_fail_closed(self):
         for kind in ('missing','extra','foreign'):
             sources=dict(self.sources)
@@ -52,7 +55,7 @@ print(json.dumps({'entry':entry.__name__,'modules':actual['moduleCount'],'effect
         self.assertNotEqual(runtime.digest(other),runtime.digest(self.declaration))
         with self.assertRaisesRegex(runtime.RuntimeDenied,'DECLARATION_DRIFT'):
             runtime.load_entry('1'*40,changed,self.loader,runtime.digest(self.declaration),self.pins)
-    def test_existing_two_container_graph_keeps_same_source_locations(self):
+    def test_existing_two_container_graph_retains_all_114_frozen_source_hashes(self):
         old=ROOT/'tools/ingestion_rollout_execution/runtime.py'
         spec=importlib.util.spec_from_file_location('frozen_rollout_runtime',old)
         baseline=importlib.util.module_from_spec(spec);spec.loader.exec_module(baseline)
@@ -60,5 +63,12 @@ print(json.dumps({'entry':entry.__name__,'modules':actual['moduleCount'],'effect
         self.assertTrue(baseline.MODULES<runtime.MODULES)
         self.assertTrue(all(runtime.SOURCE_PATHS[n]==baseline.SOURCE_PATHS[n] for n in baseline.MODULES))
         self.assertNotEqual(runtime.ENTRY,baseline.ENTRY)
+        raw=(ROOT/'scripts/ingestion-rollout-production-control-20261020.py').read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),'42b2569a0ba1f2234dfbcc011588cdf133d0e5c97a3f3433b903750f010448ea')
+        values={n.targets[0].id:ast.literal_eval(n.value)for n in ast.parse(raw).body
+            if isinstance(n,ast.Assign)and isinstance(n.targets[0],ast.Name)and n.targets[0].id=='DELIVERY'}
+        frozen=values['DELIVERY']['nativeDeclaration']['sourceHashes']
+        self.assertEqual(set(frozen),baseline.MODULES)
+        self.assertTrue(all(hashlib.sha256(self.sources[n]).hexdigest()==expected for n,expected in frozen.items()))
 
 if __name__=='__main__':unittest.main()

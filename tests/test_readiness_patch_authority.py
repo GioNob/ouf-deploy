@@ -217,7 +217,7 @@ print(json.dumps({'initialized':True,'effectsDispatched':0,'moduleCount':actual[
         result=subprocess.run(['/usr/bin/python3','-I','-B','-S','-c',script,str(ROOT)],
             input=c.encoded(payload),capture_output=True,timeout=90)
         self.assertEqual(result.returncode,0,result.stderr.decode())
-        self.assertEqual(json.loads(result.stdout),{'initialized':True,'effectsDispatched':0,'moduleCount':136})
+        self.assertEqual(json.loads(result.stdout),{'initialized':True,'effectsDispatched':0,'moduleCount':139})
 
 if __name__=='__main__':unittest.main()
 

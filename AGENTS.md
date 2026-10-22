@@ -1,3 +1,13 @@
+# CURRENT — native execution tests PASS; offline archive successor delivery qualification
+
+CI39716681130 ata1ed61aba1954c3d62ab60b55723357ad6e38573 PASSED:28 scoped/loader/authority tests on each Python3.12/3.13.5,3 full Docker29/APISIX/JVM/PG17 tests. The native two-network sequence completed13stages/8Engine POSTs with no Gateway writes/new keys; lost-create and expired-HUMAN tests pass. CI39716055766/job119618314393 proves exact config ID76c38ddf -> native IDd173aa8b and tagless tar SHAd8acfed2, without rebuilding config/layers. These are disposable qualification receipts, not current target evidence.
+
+New offline archive preparation/capsule/shell delivery reads the already retained parent bundle/image, creates a distinct byte-audited root-private successor, preserves logical operation/history and refuses every completed/partial replay. No image import, Engine/Owner/SQL/provider call or credential read occurs.139-module loader retains all114 frozen source hashes. New local35 tests pass; full delivery CI remains pending. Publish only the separately pinned offline command after that CI passes. No request for fresh OAuth/runtime consent until the entire execution/controller/governance path is qualified and concrete.
+
+Preserve the completed parent ab6c1953b8eb0bed19fdd1ee82c4b34828642726e4582152852eb5b4711f14ec and all old claims/contexts; do NOT rerun native_inputs.py or any rollout/auth operation. Technical8/8,functional4/6,G3OPEN,OAuth292/292,patch NOT INSTALLED. Owner/source activation and later503 cause remain distinct/unproven. See docs/handoffs/OUF_NATIVE_ARCHIVE_SUCCESSOR_20261022.md. Older headers are historical.
+
+---
+
 # CURRENT — one-Ingestion native archive and sealed loader qualification in progress
 
 The completed parent bundle ab6c1953b8eb0bed19fdd1ee82c4b34828642726e4582152852eb5b4711f14ec remains immutable and MUST NOT be replayed. Its candidate ID76c38ddf is the configuration digest, not Docker29's native manifest identity. The new archive projection preserves the configuration/layers, logical operation and parent provenance; it requires a separately byte-audited tagless archive and never imports an image or grants authority. It is development code, not a target command.
