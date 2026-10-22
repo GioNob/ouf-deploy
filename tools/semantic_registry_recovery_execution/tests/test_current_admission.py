@@ -10,6 +10,7 @@ ROOT=Path(__file__).resolve().parents[3];sys.path[:0]=[str(ROOT/'tests'),str(Pat
 import test_node_owner as base
 from cutover_authority import CutoverAuthority
 from tools.ingestion_readiness_patch_execution import private_file,runtime_bindings
+from tools.ingestion_readiness_patch_execution.contract import Denied
 from tools.semantic_registry_recovery_execution import core as c,authorization as a,database as d,admission as adm
 from tools.semantic_registry_recovery_execution import read_budget as b
 
@@ -97,10 +98,10 @@ class CurrentAdmission(unittest.TestCase):
 
     def test_changed_docker_executable_or_postgres_generation_blocks_session(self):
         self.pg['State']['Pid']+=1
-        with self.assertRaises(ValueError):self.database.snapshot()
+        with self.assertRaises(Denied):self.database.snapshot()
         self.assertFalse(self.argv_path.exists());self.pg['State']['Pid']-=1
         Path(self.program['path']).write_text('#!/bin/false\n')
-        with self.assertRaises(ValueError):self.database.snapshot()
+        with self.assertRaises(Denied):self.database.snapshot()
         self.assertFalse(self.argv_path.exists())
 
     def test_parked_or_revoked_actual_owner_never_passes_admission(self):
