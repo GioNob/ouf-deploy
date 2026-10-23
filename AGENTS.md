@@ -1,3 +1,11 @@
+# CURRENT — target wire preparation stopped at aggregate file-byte budget
+
+Target receipt VhaPF4P9 reports PREPARATION_FILE_BYTE_BUDGET, incomplete, contexts/claims retained, no partial runtime effects. Do not replay wire launcher or change MAX_BYTES speculatively. Existing Files cap is 167772160 bytes across reads, including repeated executable sealing and final verification; receipt does not identify failed read or completed stage. No further preparation/authority/effect authorized by this receipt.
+
+New standalone scripts/inspect-registry-preparation-byte-stop-20261023.py verifies exact retained wire capsule/declaration/case/closure without executing it. Reads only exact failed claim, contiguous fixed Engine marker metadata, and exact historical review; stats fixed preparation artifacts and retained python/docker/openssl sizes (does not open executable or credential bytes). No Engine/Admin/DNS/TLS/HTTP/OAuth/DB/program invocation, no old writes or new preparation. Current executable hash and failed read explicitly unproven. Closed JSON output omits paths/addresses/free text; <=20 metadata reads/16MiB/30seconds. Five local actual filesystem fixture tests PASS (capsule tamper, claim drift, marker gap, symlink/wrong attempt, complete size-only observation). Production preparation/capsule unchanged. Next target action metadata observer only, then size/stage evidence determines repair. Target 502 still OPEN.
+
+---
+
 # CURRENT — frozen wire repair qualified and pinned prepare/review delivery
 
 Source 6860d68886a25e52ef4e04fb638198d91cd0ccde qualified by source CI 39976902080 (all seven jobs), 39976902372 (all three jobs), and 39976902557 (both configured transport jobs). Native JVM test performed real frozen SERVICE GET through caller namespace/private resolver/TLS/peer pin, then real Registry JVM 502 to same-reference 200; frozen endpoint is an explicit synthetic Onboarding fixture, not deployed Onboarding/APISIX qualification.
