@@ -6,11 +6,13 @@ on:
     paths:
       - tools/semantic_registry_operational_owner/**
       - scripts/build-registry-operational-owner-capsule.py
+      - scripts/build-registry-operational-owner-launcher.py
       - .github/workflows/semantic-registry-operational-owner.yml
   pull_request:
     paths:
       - tools/semantic_registry_operational_owner/**
       - scripts/build-registry-operational-owner-capsule.py
+      - scripts/build-registry-operational-owner-launcher.py
       - .github/workflows/semantic-registry-operational-owner.yml
   workflow_dispatch:
 permissions:

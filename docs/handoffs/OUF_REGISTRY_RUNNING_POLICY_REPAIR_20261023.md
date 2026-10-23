@@ -64,35 +64,74 @@ roundtrip fingerprint must equal the retained owner trust hash. Runtime binds
 that file's bytes and uses no additional ambient roots. No service address,
 IP, URL, port or credential location is invented.
 
-`installation.py` currently only compiles configuration and public CA bytes.
-`entry.py` only runs an already installed worker and redacts untrusted errors.
-Neither is a privileged installer. A proposal grants no authority.
+## Qualified installation and delivery
 
-## Validation and limits
+At source commit `4b4c1c7ed2084d4419cf88f3664d1ab23253fbe7`, native CI
+[40037200420, job 120699485359](https://github.com/GioNob/ouf-deploy/actions/runs/40037200420/job/120699485359)
+passed 34 component tests and all 10 native cases (141.007 seconds).
+Direct logs were inspected. These include actual dual Ed25519 authorization,
+exclusive installation claims, unchanged old journals, a late generation-change
+refusal leaving the public fence inactive, real systemd RootDirectory execution,
+TLS grant/admission/publication, process restart, a second renewal after a real
+60-second wait, atomic fence revocation and absence of signing keys, Docker
+socket and host `/proc/1/root` inside the worker.
 
-At commit `cb355dbc764377ac46f568e95930f3c027a34191`, CI run
-`40031446707`, job `120680405205` passed 22 core/store tests and five native
-tests in 64.503 seconds; direct logs were inspected. Native tests use actual
-TLS, Ed25519, IAM admission, root/gid10001 atomic publication, both locks and a
-separate isolated Python process restart. A real 60-second wait precedes a
-second grant with distinct token/attempt and cumulative accounting 321→322→323.
-Revocation, bad signature/trust and changed fence are refused.
+The installer fixtures declare synthetic historical inputs and an Engine API
+representation. Unix HTTP, current host PID/start ticks/network namespace,
+filesystem, locks, signatures, systemd isolation and IAM transport are real.
+This does not establish a full Docker installation or target readiness.
 
-Those are disposable issuer/installation fixtures, not production permission or
-Registry policy acceptance evidence. Subsequent changes add six pure contract
-tests, an independent CA roundtrip case and safe-outage backoff semantics. These
-passed at `8119f9f9e350621f35cedfd7166dcbf02cb141bb`, CI `40031891184`,
-job `120681881745`: 28 component tests and six native cases, 65.918 seconds;
-direct logs inspected. The final public error-boundary changes passed at
-`a1388bf3c17f060e3f96d0b88e027d889b50f35b`, CI `40032178372`, job
-`120682855310`: 30 component tests and six native cases, 65.178 seconds; direct
-logs inspected. Local component tests deliberately skip
-native gid10001 publication because this sandbox cannot perform that CHOWN.
+The source-only capsule contains the eight exact qualified operational modules
+and the unchanged 142 legacy dependencies. All eight local Git blob hashes
+were compared with the qualified Git tree. Capsule SHA256:
+`c33b6467d424489aeec7406c65fafc37534badc08e909bf7c2d78bb1f122d378`.
+The legacy F7 capsule remains unchanged.
 
-Still required before a target installation command: complete source capsule,
-concrete signed installation review and issuer integration, privileged
-single-use installer/fence transition, qualified process-manager sandbox, and a
-rotation-aware final original-caller acceptance check. Keep Kubernetes duties
-with Kubernetes and retain the existing native journal as historical evidence.
-Only actual original-request 200 plus observed continued renewal on the target
-can support closing this repair; then proceed to E2E and the Supervisor.
+One `deploy` invocation prepares the complete private review, requests exact
+`APPROVO <review hash>` on the controlling terminal, signs with the existing
+installation authorities, installs once, enables the specific systemd unit and
+waits up to 45 seconds for its first actual publication. The new signed mandate
+authorizes normal scheduled credential renewal, with distinct attempts at most
+60/hour and prior cumulative count 321 retained. Its finite 900-second window
+covers installation; it is not reuse or extension of the old cutover window.
+No IAM permissions, container lifecycle, gateway routes, database or old native
+journal are changed. The operator does not automatically replay failed phases.
+
+The worker runs in its own private filesystem root with CAP_CHOWN only. It
+binds exact public runtime/configuration material, existing credential and
+public trust directories, shared owner lock, and an atomically replaceable
+public fence directory. Only the separate operational ledger and existing token
+output are writable. Boot identity is bound separately; `InaccessiblePaths`
+and `ReadWritePaths` use the explicit root-relative `+` prefix. The signing
+keys are outside every runtime bind. systemd owns process restart and boot
+activation; this is not the deferred Supervisor and makes no Kubernetes claim.
+
+The launcher must use the existing authenticated GitHub client, first the
+retained portable executable then PATH, before sudo. It checks immutable
+source checksums both before and after copying to a newly created root-owned
+private directory. It preserves operator exit status and logs, and refuses a
+second invocation of an existing private launch. Delivery fixture tests check
+these boundaries separately from native installer qualification.
+
+## Next target evidence and remaining limits
+
+No new target effects or token grants have occurred during this implementation.
+After the one installation command, inspect its actual output. Expected success
+is an ACTIVE worker, an active manager/PID and at least one publication with
+cumulative attempts at least 322. A positive recorded token window alone is not
+current IAM admission proof, application readiness or permanent renewal proof.
+
+Then perform a separately bounded original-caller GET using its current
+configured rotating credential, existing TLS identity and reviewed resolver
+view. Do not replay either completed diagnostic GET or the old final CLAIMED
+native stage. The new install does not rebind that stale caller snapshot.
+The response must establish the exact active reference; a continued 403 needs
+policy/capability investigation without granting permissions or disabling IAM.
+Only actual original-request 200 and observed continued target renewal can
+support closing this repair. Then proceed to E2E and the Supervisor.
+
+Full Registry reboot recovery and durable production caller DNS correction
+remain unproven. Do not change RestartPolicy=no blindly: the historical gated
+bootstrap requires coordinated release. No full platform resilience or release
+acceptance is claimed. Technical phases remain 8/8, functional milestones 4/6,
+G3 OPEN.
