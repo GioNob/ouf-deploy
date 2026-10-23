@@ -133,6 +133,15 @@ class Installation(unittest.TestCase):
         self.manager('daemon-reload');self.manager('start',deny.name)
         denied_pid=int(self.manager('show',deny.name,'--property=MainPID','--value').strip())
         denied_group=self.manager('show',deny.name,'--property=ControlGroup','--value').strip()
+        # Type=simple may return from start before the child has entered its
+        # root. Wait for the exact frame; never weaken the production guard.
+        until=time.monotonic()+10
+        while True:
+            try:
+                probe.frame(denied_pid,denied_group,Path(c['destinations']['installationRoot'])/'sandbox');break
+            except (ValueError,OSError):
+                if time.monotonic()>=until:raise
+                time.sleep(0.05)
         denied=probe.in_worker_group(c,denied_pid,denied_group,ca)
         self.assertFalse(denied['probe']['tcpConnected']);self.assertFalse(denied['probe']['httpGetAttempted'])
         self.assertIn(denied['probe']['errorClass'],('TIMEOUT','CONNECTION_ERROR'))
