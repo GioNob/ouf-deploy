@@ -160,4 +160,48 @@ class Offline(unittest.TestCase):
         self.assertNotIn('http://', SCRIPT.read_text()); self.assertNotIn('https://', SCRIPT.read_text())
 
 
+class Launcher(unittest.TestCase):
+    def fixture(self, directory, content):
+        binary = directory / 'bin'; binary.mkdir()
+        for name, text in {
+            'gh': '#!/bin/sh\nprintf "%s\\n" "$*" >> "$HOME/gh.calls"\ncat "$HOME/source.py"\n',
+            'sudo': '#!/bin/sh\ntest "$1" = -- || exit 9\nshift\nexec "$@"\n'}.items():
+            target = binary / name; target.write_text(text); target.chmod(0o700)
+        (directory / 'source.py').write_bytes(content)
+        return {**os.environ, 'HOME': str(directory), 'PATH': str(binary) + ':/usr/bin:/bin'}
+
+    def test_missing_retained_source_stops_before_engine_or_dns(self):
+        self.assertFalse(Path(d.PREVIOUS).exists())
+        with tempfile.TemporaryDirectory(dir=ROOT) as temporary:
+            home = Path(temporary); env = self.fixture(home, SCRIPT.read_bytes())
+            result = subprocess.run(['bash', str(ROOT / 'releases/semantic-registry-caller-resolver-20261023.sh')],
+                env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
+            self.assertEqual(result.returncode, 2)
+            rows = [json.loads(line) for line in result.stdout.decode().splitlines() if line.startswith('{')]
+            self.assertEqual(rows[0]['stage'], 'VERIFY_RETAINED_SOURCE')
+            self.assertEqual(rows[0]['exceptionClass'], 'FileNotFoundError'); self.assertEqual(rows[0]['errno'], 2)
+            self.assertEqual(rows[0]['runtimeEffectsDispatched'], 0); self.assertEqual(rows[0]['bearersSent'], 0)
+            calls = (home / 'gh.calls').read_text().splitlines(); self.assertEqual(len(calls), 1)
+            self.assertIn('ref=6791a0972b82a1a743c167571e886d48c4bc7543', calls[0])
+            self.assertIn('verify-registry-caller-resolver-20261023.py', calls[0])
+            private = next(home.glob('ouf-caller-resolver.*'))
+            self.assertEqual((private / 'read.stderr').read_bytes(), b'')
+
+    def test_tamper_rejected_before_code_execution(self):
+        with tempfile.TemporaryDirectory(dir=ROOT) as temporary:
+            home = Path(temporary); env = self.fixture(home, b'raise RuntimeError("NEVER_EXECUTE")\n')
+            result = subprocess.run(['bash', str(ROOT / 'releases/semantic-registry-caller-resolver-20261023.sh')],
+                env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn(b'EXACT_CALLER_RESOLVER_ROOT_LAUNCH_UNPROVEN', result.stdout)
+            self.assertNotIn(b'NEVER_EXECUTE', result.stdout + result.stderr)
+
+    def test_no_arguments_or_retry_before_download(self):
+        with tempfile.TemporaryDirectory(dir=ROOT) as temporary:
+            home = Path(temporary); env = self.fixture(home, SCRIPT.read_bytes())
+            result = subprocess.run(['bash', str(ROOT / 'releases/semantic-registry-caller-resolver-20261023.sh'), 'retry'],
+                env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
+            self.assertEqual(result.returncode, 2); self.assertFalse((home / 'gh.calls').exists())
+
+
 if __name__ == '__main__': unittest.main()

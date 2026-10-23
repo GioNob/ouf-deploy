@@ -47,3 +47,12 @@ New scripts/verify-registry-caller-resolver-20261023.py uses exact retained read
 Own stable incident/boot/purpose claim preserves old20Engine/2resolver/2TLSintent accounting. Adds max2Engine/1resolver/1TLSintent; explicit cumulative ceilings22/3/3. No Admin, appHTTP, tokens, OAuth, database, recovery effects, preparation replay or budget reset. Rechecks old claims/files, origin/CA, caller pin, process ticks, netns, mountns, public resolver views, boot. Source controller not qualified on target; CI qualification and pinned delivery pending. Do not issue a command until source/launcher CI passes. 502 remains OPEN, priority502→E2E→Supervisor. Supervisor network configuration requirement saved in docs/OUF_SUPERVISOR_REQUIREMENTS_NOTES.md per user: all endpoints parameterized; Kubernetes retains runtime network/control-plane responsibilities.
 
 ---
+
+
+# CURRENT — configured caller resolver view source qualified; pinned delivery
+
+Source6791a0972b82a1a743c167571e886d48c4bc7543, scriptSHAebb9365db6280fce35f335945083d4291f9c5d39db040ce3fcff335710f3746d. CI39966447362:10testsPASS/0skip eachPython3.12/3.13; directlogs read (120457445547/120457446220). Actual private read-only tmpfs/bind mounts, configured DNS, TLS chain/name, noHTTP, unchangedhostfiles/tmp tested. Initial memfd bind candidate failed EINVAL in CI and was replaced before operator delivery; no target invocation occurred. Whole target controller not fixture-qualified. Configured endpoint/resolver inputs only, no hardcoded deployment address. Existing production recovery/capsule remains unchanged.
+
+Pinned releases/semantic-registry-caller-resolver-20261023.sh SHA dd8bf91a1941aee0948a36a4d46d8e224085af74b331100cf6b928964e2fc8ee;3local launcher tests/BashsyntaxPASS. Final delivery matrix separately pending at commit creation. Deliver this configured-view observation only after final CI; no preparation replay. Maxadditional2Engine/1resolver/1TLSintent, explicitcumulative22/3/3;priorclaims untouched. 502OPEN; positiveprobe would establish verifier-context correction only, not actualSERVICEGET/readiness/repair. Supervisor endpoint governance requirement saved in docs/OUF_SUPERVISOR_REQUIREMENTS_NOTES.md; K8s responsibilities retained. All lower entries historical.
+
+---
