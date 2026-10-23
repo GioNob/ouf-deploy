@@ -174,13 +174,15 @@ def read_public_resolver(path):
     prevent following daemon-controlled links into private root files.
     """
     target = Path(path); fds = []; parents = []
+    require(target.is_absolute() and '..' not in target.parts, 'EXACT_PUBLIC_RESOLVER_PATH_REQUIRED')
+    identity = lambda info: [info.st_dev, info.st_ino, info.st_uid, info.st_gid, info.st_mode]
     try:
         parent = os.open('/', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW); fds.append(parent)
         for part in target.parts[1:-1]:
             held = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent); fds.append(held)
             info = os.fstat(held)
             require(not info.st_mode & 0o022, 'PUBLIC_RESOLVER_ANCESTRY_WRITABLE')
-            parents.append((parent, part, held, metadata(info))); parent = held
+            parents.append((parent, part, held, identity(info))); parent = held
         fd = os.open(target.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent); fds.append(fd)
         before = os.fstat(fd)
         require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1 and before.st_mode & 0o004
@@ -192,8 +194,8 @@ def read_public_resolver(path):
             raw += part
         require(len(raw) == before.st_size and metadata(before) == metadata(os.fstat(fd))
                 == metadata(os.stat(target.name, dir_fd=parent, follow_symlinks=False))
-                and all(metadata(os.fstat(held)) == expected
-                        == metadata(os.stat(name, dir_fd=directory, follow_symlinks=False))
+                and all(identity(os.fstat(held)) == expected
+                        == identity(os.stat(name, dir_fd=directory, follow_symlinks=False))
                         for directory, name, held, expected in parents), 'PUBLIC_RESOLVER_VIEW_CHANGED')
         return raw, {'path': str(target), 'metadata': metadata(before), 'sha256': hashlib.sha256(raw).hexdigest(),
                      'ancestors': [expected for _, _, _, expected in parents]}
