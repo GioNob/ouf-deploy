@@ -233,5 +233,11 @@ class ResolverReviewWrapper(ReviewWrapper):
     audit_path = 'evidence/semantic-registry-postboot-resolver-source-membership-20261023.json'
 
 
+class WireReviewWrapper(ReviewWrapper):
+    wrapper = ROOT / 'releases/semantic-registry-postboot-wire-prepare-review-20261023.sh'
+    capsule_name = 'semantic-registry-postboot-wire-20261023.py'
+    audit_path = 'evidence/semantic-registry-postboot-wire-source-membership-20261023.json'
+
+
 if __name__ == '__main__':
     unittest.main()
