@@ -43,7 +43,7 @@ class RenewalPolicy:
     renew_before_seconds: int
     expiry_safety_seconds: int
     maximum_attempts_per_hour: int
-    maximum_consecutive_failures: int
+    backoff_ceiling_after_failures: int
     attempt_timeout_seconds: int
     failure_delays: tuple
 
@@ -53,7 +53,7 @@ class RenewalPolicy:
                 and integer(self.expiry_safety_seconds, 1, 60)
                 and self.expiry_safety_seconds < self.renew_before_seconds
                 and integer(self.maximum_attempts_per_hour, 1, 360)
-                and integer(self.maximum_consecutive_failures, 1, 10)
+                and integer(self.backoff_ceiling_after_failures, 1, 10)
                 and integer(self.attempt_timeout_seconds, 1, 30)
                 and type(self.failure_delays) is tuple and 1 <= len(self.failure_delays) <= 10
                 and all(integer(x, 1, 3600) for x in self.failure_delays)
@@ -235,9 +235,12 @@ class Worker:
             require(current['state'] == 'DISPATCHING', 'NO_EFFECT_PROOF_CANNOT_COVER_PUBLICATION')
             failures = current['consecutiveFailures'] + 1
             delay = self.policy.failure_delays[min(failures-1, len(self.policy.failure_delays)-1)]
-            if failures >= self.policy.maximum_consecutive_failures:
-                return self.block(self.save(current, consecutiveFailures=failures),
-                                  'CONSECUTIVE_NO_SUBMISSION_FAILURE_LIMIT')
+            if failures >= self.policy.backoff_ceiling_after_failures:
+                # An authenticated transport proof of NO request is safe to
+                # retry with a NEW reserved attempt after capped cooldown.
+                # Keep the whole failure streak and cumulative/hourly counts.
+                # Ambiguous outcomes never enter this branch.
+                delay = self.policy.failure_delays[-1]
             _, retry_wall, retry_mono = self.now(current)
             return self.save(current, state='RETRY_WAIT', reason='NO_SUBMISSION_PROVEN_BOUNDED_BACKOFF',
                              consecutiveFailures=failures, nextWall=retry_wall+delay, nextMono=retry_mono+delay)

@@ -4,8 +4,31 @@ The authenticated installer must create these exact bytes and a real scoped
 installation attestation. A proposal alone cannot start the runtime worker.
 """
 import copy
+import ssl
+import time
 from .core import require, digest
 from .contract import SCHEMA, absolute
+
+
+def public_ca_bundle(profile, expected_trust_hash, context):
+    """Freeze the already approved IAM certificate set, without ambient extras.
+
+    Preparation supplies the current issuer context. Neither a caller API CA
+    nor a newly discovered root can silently replace the retained IAM trust.
+    Returns public PEM bytes only, without writing files or making requests.
+    """
+    from tools.semantic_policy_token_owner.iam_admission import PinnedIamOpener
+    clock=lambda:(time.time(),time.monotonic())
+    original=PinnedIamOpener(profile,clock,context=context)
+    require(original.trust_digest()==expected_trust_hash,'RETAINED_IAM_TRUST_SET_REQUIRED')
+    certificates=sorted(context.get_ca_certs(binary_form=True))
+    require(1<=len(certificates)<=1024,'BOUNDED_IAM_CA_SET_REQUIRED')
+    raw=''.join(ssl.DER_cert_to_PEM_cert(cert) for cert in certificates).encode('ascii')
+    require(len(raw)<=4194304,'BOUNDED_IAM_PUBLIC_CA_BUNDLE_REQUIRED')
+    replay=ssl.create_default_context(cadata=raw.decode('ascii'))
+    require(PinnedIamOpener(profile,clock,context=replay).trust_digest()==expected_trust_hash,
+            'EXACT_EXPLICIT_IAM_TRUST_REPRODUCTION_REQUIRED')
+    return raw
 
 
 def configuration(proposal, *, sources, fence_binding, common_lock_identity, verification):

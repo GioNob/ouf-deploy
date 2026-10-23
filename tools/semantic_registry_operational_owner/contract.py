@@ -22,7 +22,7 @@ def absolute(value):
     return value
 
 
-def compile_proposal(inputs, binding, source_manifest, policy, destinations):
+def compile_proposal(inputs, binding, source_manifest, policy, destinations, iam_ca_binding):
     require(type(inputs) is dict and inputs.get('schema')==INPUT_SCHEMA and type(policy) is RenewalPolicy,
             'EXACT_RUNNING_POLICY_REPAIR_INPUTS_REQUIRED')
     require(type(binding) is dict and set(binding)=={'path','sha256'}
@@ -72,11 +72,19 @@ def compile_proposal(inputs, binding, source_manifest, policy, destinations):
                     (destinations['installationRoot'],destinations['ledgerRoot'])), 'NEW_OWNER_MUST_NOT_OVERWRITE_NATIVE_RECOVERY')
     owner_inputs=prepared['ownerContext']['ownerInputs']
     require(digest(owner_inputs)==scope['ownerInputsHash'],'EXISTING_SIGNED_IAM_OWNER_INPUTS_REQUIRED')
+    # The caller's API CA and the credential owner's IAM trust are separate
+    # profiles. The native preparer must capture a public CA bundle reproducing
+    # ownerInputs.tlsTrustHash, then bind its exact path/bytes in this review.
+    require(type(iam_ca_binding) is dict and set(iam_ca_binding)=={'path','sha256'}
+            and type(iam_ca_binding['sha256']) is str and len(iam_ca_binding['sha256'])==64
+            and set(iam_ca_binding['sha256'])<=set('0123456789abcdef'),
+            'INDEPENDENT_EXISTING_IAM_CA_BUNDLE_BINDING_REQUIRED')
+    absolute(iam_ca_binding['path'])
     return {'schema':SCHEMA,'purpose':'INSTALL_NORMAL_REGISTRY_POLICY_TOKEN_RENEWAL',
             'inputsBinding':dict(binding),'predecessorNativeJournalHash':digest(native),
             'predecessorNativeReadHash':digest(reads),'predecessorOwnerRecordHashes':{k:digest(v) for k,v in records.items()},
             'predecessorFenceBinding':inputs['retainedFence'],'ownerInputs':owner_inputs,
-            'publicTlsCaBinding':{k:prepared['nativeContext']['originalRequest']['ca'][k] for k in('path','sha256')},
+            'publicTlsCaBinding':dict(iam_ca_binding),
             'sourceManifest':source_manifest,'sourceManifestHash':digest(source_manifest),
             'policy':asdict(policy),'policyHash':policy.sha256,'destinations':dict(destinations),
             'priorControlledGrantAttempts':321,

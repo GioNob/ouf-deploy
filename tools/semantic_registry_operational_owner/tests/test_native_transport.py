@@ -228,6 +228,16 @@ finally:ledger.close()
         with self.assertRaises(Exception):self.opened()
         self.assertEqual(self.calls,[])
 
+    def test_public_iam_bundle_preserves_exact_trust_and_rejects_unreviewed_ca(self):
+        from tools.semantic_registry_operational_owner.installation import public_ca_bundle
+        context=ssl.create_default_context(cadata=self.ca.read_text('ascii'))
+        expected=self.config['ownerInputs']['tlsTrustHash']
+        raw=public_ca_bundle(self.profile,expected,context)
+        self.assertTrue(raw.startswith(b'-----BEGIN CERTIFICATE-----'))
+        with self.assertRaisesRegex(core.Denied,'RETAINED_IAM_TRUST_SET_REQUIRED'):
+            public_ca_bundle(self.profile,'f'*64,context)
+        self.assertEqual(self.calls,[])
+
     def test_fence_change_or_actual_token_replacement_denies_without_new_grant(self):
         owner,ledger=self.opened()
         with owner.invocation(),ledger.invocation():
