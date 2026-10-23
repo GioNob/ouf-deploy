@@ -64,7 +64,7 @@ class InstalledGuard:
         self.configuration=private_json(self.path,configuration_hash)
         c=self.configuration
         require(set(c)=={'schema','proposalHash','sourceManifest','sources','ownerInputs','policy','destinations',
-                         'priorControlledAttempts','predecessorInputsHash','fenceBinding','commonLockIdentity','verification','tlsCa','serviceUnitPath'}
+                         'priorControlledAttempts','predecessorInputsHash','fenceBinding','commonLockIdentity','verification','tlsCa','serviceUnitPath','hostBootIdPath'}
                 and c['schema']=='ouf.registry-operational-token-configuration.v1'
                 and c['priorControlledAttempts']==321, 'EXACT_INSTALLED_OPERATIONAL_CONFIGURATION_REQUIRED')
         self.fd=None;self.pid=None

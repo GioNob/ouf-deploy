@@ -58,6 +58,18 @@ class Contract(unittest.TestCase):
         self.assertEqual(proposal['publicTlsCaBinding'],self.ca)
         self.assertNotEqual(self.ca,self.inputs['prepared']['nativeContext']['originalRequest']['ca'])
 
+    def test_private_signing_key_cannot_appear_under_any_runtime_directory_bind(self):
+        c={'ownerInputs':{'credentialPath':'/etc/fixture/credential/client-secret',
+                        'binding':{'output_directory':'/etc/fixture/output'}},
+           'verification':{'trustPolicy':{'path':'/etc/fixture/public-trust/policy.json'}},
+           'destinations':{'commonInvocationLock':'/etc/fixture/journal/invocation.lock',
+                           'ledgerRoot':'/etc/fixture/ledger'},'fenceBinding':{'path':'/etc/fixture/fence/fence.json'}}
+        installation.key_isolation(c,['/etc/fixture/private/issuer.pem'])
+        for path in('/etc/fixture/public-trust/issuer.pem','/usr/share/issuer.pem',
+                    '/etc/fixture/credential/issuer.pem','/etc/fixture/output/issuer.pem'):
+            with self.assertRaisesRegex(core.Denied,'SIGNING_KEYS_MUST_BE_OUTSIDE'):
+                installation.key_isolation(c,[path])
+
     def test_missing_executing_module_or_ambiguous_source_hash_denied(self):
         self.manifest['sourceHashes'].pop(next(iter(contract.SOURCE_NAMES)))
         with self.assertRaisesRegex(core.Denied,'SOURCE_DECLARATION'):self.proposal()

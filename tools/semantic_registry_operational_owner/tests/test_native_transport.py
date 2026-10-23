@@ -133,7 +133,7 @@ class NativeOwner(unittest.TestCase):
             'commonLockIdentity':list(store.file_identity(self.common.stat())),
             'verification':{'trustPolicy':self.binding(self.trust),'openssl':dict(self.binding(self.openssl),
                 version=self.native('version').decode().split()[1]),'context':self.ctx},'tlsCa':self.binding(self.ca),
-            'serviceUnitPath':str(self.unit)}
+            'serviceUnitPath':str(self.unit),'hostBootIdPath':'/proc/sys/kernel/random/boot_id'}
         self.config_path=self.write(self.install/'configuration.json',core.encoded(self.config))
         self.config_hash=hashlib.sha256(self.config_path.read_bytes()).hexdigest()
         self.receipt={'schema':'ouf.registry-operational-token-installation-receipt.v1','complete':True,

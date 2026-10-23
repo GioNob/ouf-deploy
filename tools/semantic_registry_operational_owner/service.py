@@ -15,8 +15,8 @@ from .store import Store
 from .adapter import NativeAdapter
 
 
-def clocks():
-    return Path('/proc/sys/kernel/random/boot_id').read_text().strip(),time.time(),time.monotonic()
+def clocks(boot_id_path):
+    return Path(boot_id_path).read_text().strip(),time.time(),time.monotonic()
 
 
 def notify(message):
@@ -41,14 +41,15 @@ def run(configuration_path,configuration_hash,emit=print):
     require(os.geteuid()==os.getegid()==0,'ROOT_OPERATIONAL_OWNER_REQUIRED')
     guard=InstalledGuard(configuration_path,configuration_hash)
     c=guard.configuration;policy=dict(c['policy']);policy['failure_delays']=tuple(policy['failure_delays'])
+    clock=lambda:clocks(c['hostBootIdPath'])
     policy=RenewalPolicy(**policy);store=Store(c['destinations']['ledgerRoot'])
     stop=threading.Event();handlers={}
     for sig in(signal.SIGTERM,signal.SIGINT):handlers[sig]=signal.signal(sig,lambda *_:stop.set())
     last=None
     try:
         with guard.invocation(),store.invocation():
-            adapter=NativeAdapter(guard,store,clocks)
-            worker=Worker(store,adapter,policy,configuration_hash,c['predecessorInputsHash'],c['priorControlledAttempts'],clocks)
+            adapter=NativeAdapter(guard,store,clock)
+            worker=Worker(store,adapter,policy,configuration_hash,c['predecessorInputsHash'],c['priorControlledAttempts'],clock)
             worker.start();notify('READY=1\nSTATUS=Credential worker running; application health unproven')
             while not stop.is_set():
                 try:

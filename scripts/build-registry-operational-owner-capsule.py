@@ -56,7 +56,7 @@ mode=None
 try:
  require(os.geteuid()==os.getegid()==0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,'ISOLATED_ROOT_OPERATIONAL_CAPSULE_REQUIRED')
  require(hashlib.sha256(BOOTSTRAP.encode()).hexdigest()==DELIVERY['sourceManifest']['bootstrapHash'] and hashlib.sha256(encoded(DELIVERY)).hexdigest()==DELIVERY_HASH,'OPERATIONAL_DELIVERY_DECLARATION_CHANGED')
- require(len(sys.argv)>1 and sys.argv[1] in ('worker','prepare','issue','install','start','status'),'ONE_OPERATIONAL_MODE_REQUIRED')
+ require(len(sys.argv)>1 and sys.argv[1] in ('worker','deploy','prepare','issue','install','start','status'),'ONE_OPERATIONAL_MODE_REQUIRED')
  mode=sys.argv[1]
  if mode!='worker':
   binding=DELIVERY['case']['inputs'];raw=bound_input(binding['path'],8388608,binding['sha256']);retained=json.loads(raw,object_pairs_hook=unique)
@@ -95,7 +95,7 @@ try:
 except (Exception,KeyboardInterrupt)as error:
  signal.alarm(0)
  reason=str(error);reason=reason if re.fullmatch('[A-Z][A-Z0-9_]{0,127}',reason)else'OPERATIONAL_INSTALLATION_UNPROVEN_PRIVATE_DETAILS_REDACTED'
- print(encoded({'schema':'ouf.registry-operational-installation-operator-result.v1','status':'STOP_RECONCILE','complete':False,'reasonCode':reason,'runtimeEffectsMayBePartial':mode in('issue','install','start'),'contextsAndClaimsRetained':True,'automaticReplayAllowed':False,'budgetReset':False,'releaseAcceptance':False}).decode(),flush=True)
+ print(encoded({'schema':'ouf.registry-operational-installation-operator-result.v1','status':'STOP_RECONCILE','complete':False,'reasonCode':reason,'runtimeEffectsMayBePartial':mode in('deploy','issue','install','start'),'contextsAndClaimsRetained':True,'automaticReplayAllowed':False,'budgetReset':False,'releaseAcceptance':False}).decode(),flush=True)
  raise SystemExit(2)
 '''
 

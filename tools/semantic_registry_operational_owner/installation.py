@@ -72,7 +72,8 @@ def configuration(proposal, *, sources, fence_binding, common_lock_identity, ver
         ownerInputs=proposal['ownerInputs'], policy=proposal['policy'], destinations=proposal['destinations'],
         priorControlledAttempts=321, predecessorInputsHash=proposal['inputsBinding']['sha256'],
         fenceBinding=fence_binding, commonLockIdentity=common_lock_identity,
-        verification=verification, tlsCa=proposal['publicTlsCaBinding'],serviceUnitPath=service_unit_path))
+        verification=verification, tlsCa=proposal['publicTlsCaBinding'],serviceUnitPath=service_unit_path,
+        hostBootIdPath='/run/ouf/host-boot-id'))
 
 
 def unit_word(value):
@@ -105,7 +106,7 @@ def service_unit(c, configuration_hash, python, capsule):
         str(Path(c['ownerInputs']['credentialPath']).parent),
         str(Path(c['verification']['trustPolicy']['path']).parent),
         str(Path(c['destinations']['commonInvocationLock']).parent),
-        str(Path(c['fenceBinding']['path']).parent),'/proc/sys/kernel/random/boot_id'}
+        str(Path(c['fenceBinding']['path']).parent)}
     require(all(len(Path(path).parts)>=4 for path in(
         str(Path(c['ownerInputs']['credentialPath']).parent),str(Path(c['verification']['trustPolicy']['path']).parent),
         str(Path(c['destinations']['commonInvocationLock']).parent),str(Path(c['fenceBinding']['path']).parent))),
@@ -127,14 +128,27 @@ def service_unit(c, configuration_hash, python, capsule):
         'RestrictNamespaces=yes','RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX',
         'SystemCallArchitectures=native','SystemCallFilter=@system-service',
         'SystemCallFilter=~ptrace process_vm_readv process_vm_writev pidfd_getfd',
-        'MountAPIVFS=no','TemporaryFileSystem=/proc:ro',
-        'BindReadOnlyPaths=/usr /lib -/lib64 '+' '.join(unit_word(x) for x in sorted(readonly)),
+        'MountAPIVFS=no','InaccessiblePaths=/proc',
+        'BindReadOnlyPaths=/usr /lib -/lib64 '+' '.join(unit_word(x) for x in sorted(readonly))+
+        ' /proc/sys/kernel/random/boot_id:'+unit_word(c['hostBootIdPath']),
         'BindPaths='+ledger+' '+output,'ReadWritePaths='+ledger+' '+output,
         'IPAddressDeny=any',*['IPAddressAllow='+ip for ip in profile.peer_addresses],
         'Environment=PATH=/usr/bin:/bin LC_ALL=C OPENSSL_CONF=/dev/null',
         'UnsetEnvironment=PYTHONPATH PYTHONHOME PYTHONSTARTUP SSLKEYLOGFILE SSL_CERT_FILE SSL_CERT_DIR HTTP_PROXY HTTPS_PROXY ALL_PROXY',
         'LimitNOFILE=256','TasksMax=32','', '[Install]','WantedBy=multi-user.target','']
     return '\n'.join(lines).encode('ascii')
+
+
+def key_isolation(c, key_paths):
+    """Reject a bind layout that would expose any existing signing key."""
+    directories=[Path(c['ownerInputs']['credentialPath']).parent,Path(c['verification']['trustPolicy']['path']).parent,
+        Path(c['destinations']['commonInvocationLock']).parent,Path(c['fenceBinding']['path']).parent,
+        Path(c['ownerInputs']['binding']['output_directory']),Path(c['destinations']['ledgerRoot']),
+        Path('/usr'),Path('/lib'),Path('/lib64')]
+    for value in key_paths:
+        path=Path(absolute(value))
+        require(not any(path==parent or parent in path.parents for parent in directories),
+                'SIGNING_KEYS_MUST_BE_OUTSIDE_EVERY_RUNTIME_BIND')
 
 
 REVIEW_SCHEMA='ouf.registry-operational-installation-review.v1'
@@ -332,6 +346,7 @@ def install_files(review, authority, attestor):
             and type(attestor) is ExistingEd25519Signer
             and attestor.verifier is authority.verifier,
             'ACTUAL_SIGNED_INSTALLATION_AND_EXISTING_ATTESTOR_REQUIRED')
+    key_isolation(review['configuration'],[attestor.key['path']])
     authority.check();scope=review_scope(review);c=review['configuration']
     inputs=read_object(review['proposal']['inputsBinding']['path'],expected=review['proposal']['inputsBinding']['sha256'])
     p=dict(c['policy']);p['failure_delays']=tuple(p['failure_delays']);policy=RenewalPolicy(**p)
@@ -465,7 +480,8 @@ def make_review(inputs, binding, manifest, capsule_source, ca_source, *, parent,
         'stdlibHash':authority_inputs['stdlibHash'],'stdlibFileCount':authority_inputs['stdlibFileCount'],
         'logicalOwnerScopeHash':logical,'bootId':inputs['retainedNativeJournal']['bootId'],
         'maximumInstallationSeconds':900,'processStartAuthorizedAfterInstallation':True,
-        'bootEnablementAuthorized':True,'maximumManagerCommands':2,
+        'bootEnablementAuthorized':True,'maximumManagerMutationCommands':2,
+        'maximumInitialPublicationWaitSeconds':45,
         'maximumInstallationEngineGets':2,'tokenGrantsDuringInstallation':0,
         'oldNativeJournalWritesAllowed':False,'callerTokenRebindingAllowed':False,
         'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'releaseAcceptance':False}
@@ -602,11 +618,25 @@ def operator(delivery, argv, capsule_path):
     from tools.semantic_policy_token_owner.iam_governance_intake import executable
     from tools.semantic_policy_token_owner.iam_owner_action import stdlib_binding
     from tools.semantic_policy_token_owner.iam_admission import IamProfile
-    require(len(argv) in(1,3) and argv[0] in('prepare','issue','install','start','status'),'ONE_EXACT_OPERATIONAL_INSTALLATION_ACTION_REQUIRED')
+    require(len(argv) in(1,3) and argv[0] in('deploy','prepare','issue','install','start','status'),'ONE_EXACT_OPERATIONAL_INSTALLATION_ACTION_REQUIRED')
+    if argv[0]=='deploy':
+        require(len(argv)==1,'NO_DEPLOYMENT_OVERRIDE_ALLOWED')
+        prepared=operator(delivery,['prepare'],capsule_path)
+        print(encoded(prepared).decode(),flush=True)
+        path,sha=prepared['privateReviewPath'],prepared['reviewHash']
+        # Exactly one pass, no automatic retry/resume of any failed phase.
+        # The issue action asks the controlling TTY for the concrete review.
+        for mode in('issue','install','start'):
+            result=operator(delivery,[mode,path,sha],capsule_path)
+            print(encoded(result).decode(),flush=True)
+        require(result['workerState']=='ACTIVE' and result['publications']>=1
+                and result['managerActive'] and result['managerProcessRunning'],
+                'INITIAL_ACTUAL_OPERATIONAL_PUBLICATION_AND_PROCESS_REQUIRED')
+        return dict(result,status='NORMAL_RENEWAL_RUNNING_ORIGINAL_APPLICATION_GET_UNPROVEN')
     if argv[0]=='prepare':
         require(len(argv)==1,'NO_PREPARATION_ENDPOINT_OVERRIDE_ALLOWED')
         binding=delivery['case']['inputs'];inputs=read_object(binding['path'],expected=binding['sha256'])
-        old=inputs['review'];public=old['authorityInputs'];authority_metadata(public)
+        old=inputs['review'];public=old['authorityInputs'];profile,_=authority_metadata(public)
         require(public['executables']['python']==executable(str(Path(sys.executable).resolve(strict=True))),
                 'SAME_EXECUTED_INSTALLATION_PYTHON_REQUIRED')
         require(digest(stdlib_binding())==public['stdlibHash'],'SAME_INSTALLATION_STDLIB_REQUIRED')
@@ -629,6 +659,7 @@ def operator(delivery, argv, capsule_path):
                     {'path':str(root/'iam-ca.pem'),'sha256':hashlib.sha256(ca).hexdigest()},parent=parent,
                     unit_parent='/etc/systemd/system',common_identity=common_id,authority_inputs=programs,
                     policy=RenewalPolicy(60,120,15,60,3,15,(5,15,60,300)))
+                key_isolation(review['configuration'],[value['path'] for value in profile['keyBindings'].values()])
                 source_custody(review);new_file(files,'review.json',encoded(review),0o600)
         return {'schema':REVIEW_SCHEMA,'status':'COMPLETE_NORMAL_RENEWAL_INSTALLATION_REVIEW_PREPARED',
             'complete':True,'privateReviewPath':str(root/'review.json'),'reviewHash':digest(review),
@@ -642,6 +673,7 @@ def operator(delivery, argv, capsule_path):
     if argv[0]=='install':
         from tools.semantic_provider_deployment_signing import ExistingEd25519Signer
         authority=load_installation_authority(review,argv[1]);profile,_=authority_metadata(inputs['review']['authorityInputs'])
+        key_isolation(review['configuration'],[value['path'] for value in profile['keyBindings'].values()])
         ctx=review['verification']['context']
         attestor=ExistingEd25519Signer(profile['keyBindings']['attestor'],profile['keyRefs']['attestor'],authority.verifier,
             {'role':'CREATION_ATTESTATION','issuerRef':ctx['attestorRef'],'installationRef':ctx['installationRef'],'entityRef':ctx['entityRef']})
@@ -666,13 +698,20 @@ def manage_installed(review, review_path, *, start):
         load_installation_authority(review,review_path).check()
         with directory(root) as files:
             new_file(files,'start-claim.json',encoded({'reviewHash':digest(review),'unitHash':review['serviceUnit']['sha256'],
-                'maximumManagerCommands':2,'automaticReplayAllowed':False}))
+                'maximumManagerMutationCommands':2,'automaticReplayAllowed':False}))
             for ordinal,args in enumerate((['daemon-reload'],['enable','--now',unit]),1):
                 load_installation_authority(review,review_path).check()
                 new_file(files,'manager-attempt-'+str(ordinal)+'.json',encoded({'ordinal':ordinal,'attemptNotCompletion':True}))
                 result=subprocess.run([program['path'],*args],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,timeout=45,env={'PATH':'/usr/bin:/bin','LC_ALL':'C'})
                 require(result.returncode==0,'MANAGER_START_OUTCOME_REQUIRES_RECONCILIATION')
+    ledger=Store(c['destinations']['ledgerRoot'])
+    try:
+        until=time.monotonic()+(review['maximumInitialPublicationWaitSeconds'] if start else 0)
+        row=ledger.read()
+        while start and row['state'] not in('ACTIVE','BLOCKED','REVOKED') and time.monotonic()<until:
+            time.sleep(0.5);row=ledger.read()
+    finally:ledger.close()
     result=subprocess.run([program['path'],'show',unit,'--property=ActiveState,SubState,MainPID','--no-pager'],
         stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=10,
         env={'PATH':'/usr/bin:/bin','LC_ALL':'C'})
@@ -680,9 +719,6 @@ def manage_installed(review, review_path, *, start):
     properties=dict(line.split('=',1) for line in result.stdout.decode('ascii').splitlines())
     require(set(properties)=={'ActiveState','SubState','MainPID'} and properties['MainPID'].isdigit(),
             'EXACT_NATIVE_MANAGER_PROCESS_PROPERTIES_REQUIRED')
-    ledger=Store(c['destinations']['ledgerRoot'])
-    try:row=ledger.read()
-    finally:ledger.close()
     p=dict(c['policy']);p['failure_delays']=tuple(p['failure_delays']);validate(row,RenewalPolicy(**p))
     require(row['installationHash']==digest(c) and row['predecessorInputsHash']==c['predecessorInputsHash'],
             'SAME_INSTALLED_OPERATIONAL_LEDGER_REQUIRED')
