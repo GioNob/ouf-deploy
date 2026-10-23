@@ -117,6 +117,7 @@ class Installation(unittest.TestCase):
         self.assertTrue(result['probeProcessExited'] and result['workerGenerationUnchanged'])
         self.assertEqual(result['probe']['httpStatus'],200);self.assertTrue(result['probe']['discoveryMatchesConfiguredEndpoints'])
         self.assertTrue(result['probe']['privateRootEntered'] and result['probe']['capabilitiesDropped'])
+        self.assertTrue(result['probe']['mountNamespaceJoined'])
         self.assertEqual(ledger.read_bytes(),before)
         self.assertEqual(sum(path.endswith('/token') for path,_ in self.fixture.calls),calls)
         self.assertEqual(int(self.manager('show',unit.name,'--property=MainPID','--value').strip()),pid)

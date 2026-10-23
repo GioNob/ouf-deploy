@@ -169,7 +169,8 @@ def frame(pid,group,root):
     require((net.st_dev,net.st_ino)==(host.st_dev,host.st_ino))
     observed=os.stat('/proc/'+str(pid)+'/root');expected=os.stat(root)
     require((observed.st_dev,observed.st_ino)==(expected.st_dev,expected.st_ino))
-    return (int(tail[19]),observed.st_dev,observed.st_ino,net.st_dev,net.st_ino)
+    mounts=os.stat('/proc/'+str(pid)+'/ns/mnt')
+    return (int(tail[19]),observed.st_dev,observed.st_ino,net.st_dev,net.st_ino,mounts.st_dev,mounts.st_ino)
 
 
 def cgroup_directory(group):
@@ -198,7 +199,13 @@ def drop_capabilities(libc):
 def in_worker_group(c,pid,group,ca):
     root=Path(c['destinations']['installationRoot'])/'sandbox';original=frame(pid,group,root)
     cfd=cgroup_directory(group);rootfd=os.open('/proc/'+str(pid)+'/root',os.O_RDONLY|os.O_DIRECTORY)
+    mountfd=os.open('/proc/'+str(pid)+'/ns/mnt',os.O_RDONLY)
     start_r,start_w=os.pipe();result_r,result_w=os.pipe();libc=ctypes.CDLL(None,use_errno=True)
+    descriptor_limit=3;descriptor_count=0
+    with os.scandir('/proc/self/fd') as descriptors:
+        for entry in descriptors:
+            descriptor_count+=1;require(descriptor_count<=256 and entry.name.isdigit())
+            number=int(entry.name);require(number<1048576);descriptor_limit=max(descriptor_limit,number+1)
     parent=os.getpid();child=None;reaped=False;membership_attempted=False
     try:
         child=os.fork()
@@ -208,14 +215,15 @@ def in_worker_group(c,pid,group,ca):
                 os.close(start_w);os.close(result_r)
                 os.dup2(start_r,0);os.dup2(result_w,1)
                 require(os.read(0,1)==b'G')
+                require(libc.setns(mountfd,0x00020000)==0)
                 os.fchdir(rootfd);os.chroot('.');os.chdir('/')
                 # No inherited host-directory/socket descriptors, no signing-key
                 # access outside this root, no capabilities or future privilege.
-                os.closerange(3,1048576);os.close(2);drop_capabilities(libc)
+                os.closerange(3,descriptor_limit);os.close(2);drop_capabilities(libc)
                 def timeout(*_):raise TimeoutError()
                 signal.signal(signal.SIGALRM,timeout);signal.alarm(12)
                 result=discovery_tls(c['ownerInputs']['iamProfile'],ca);signal.alarm(0)
-                result['capabilitiesDropped']=True;result['privateRootEntered']=True
+                result['capabilitiesDropped']=True;result['privateRootEntered']=True;result['mountNamespaceJoined']=True
                 payload=encoded(result);require(len(payload)<=4096);require(os.write(1,payload)==len(payload));os._exit(0)
             except BaseException:os._exit(2)
         os.close(start_r);start_r=None;os.close(result_w);result_w=None
@@ -235,13 +243,13 @@ def in_worker_group(c,pid,group,ca):
             payload.extend(part);require(len(payload)<=4096)
         _,code=os.waitpid(child,0);reaped=True;require(os.waitstatus_to_exitcode(code)==0)
         result=json.loads(payload);require(type(result)is dict and encoded(result)==payload and frame(pid,group,root)==original)
-        return {'probe':result,'probeProcessExited':True,'probeCgroupMembershipWrites':1,'workerGenerationUnchanged':True}
+        return {'probe':result,'probeProcessExited':True,'probeCgroupMembershipWrites':1,'probeMountNamespaceJoins':1,'workerGenerationUnchanged':True}
     finally:
         if child is not None and not reaped:
             try:os.kill(child,signal.SIGKILL)
             except ProcessLookupError:pass
             os.waitpid(child,0)
-        for fd in(cfd,rootfd,start_r,start_w,result_r,result_w):
+        for fd in(cfd,rootfd,mountfd,start_r,start_w,result_r,result_w):
             if fd is not None:
                 try:os.close(fd)
                 except OSError:pass
@@ -267,7 +275,8 @@ def reserve_probe(root):
         fd=os.open('worker-network-comparison-v1.claim.json',os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=directory)
         try:
             raw=encoded({'maximumTlsConnections':2,'maximumPublicDiscoveryGets':1,'oauthGrantRequests':0,
-                'maximumProbeCgroupMembershipWrites':1,'workerSignalsAllowed':False,'automaticReplayAllowed':False})
+                'maximumProbeCgroupMembershipWrites':1,'maximumProbeMountNamespaceJoins':1,
+                'workerSignalsAllowed':False,'automaticReplayAllowed':False})
             require(os.write(fd,raw)==len(raw));os.fsync(fd)
         finally:os.close(fd)
         os.fsync(directory)

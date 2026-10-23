@@ -201,8 +201,8 @@ IAM peer, chain and hostname. No credentials, HTTP or OAuth were used.
 The observer claim is consumed. Do not replay it or restart the worker.
 
 The network comparison candidate creates exactly one temporary probe process,
-moves only that child into the already identified worker cgroup and enters
-that worker's private root. It drops capabilities, sets NNP and closes inherited
+moves only that child into the already identified worker cgroup, joins the
+worker's pinned mount namespace and enters that worker's private root. It drops capabilities, sets NNP and closes inherited
 host descriptors before creating sockets. A fresh host TLS comparison and the
 child TLS/public discovery GET use the exact configured peer/SNI/CA. No bearer,
 credential, grant, redirect or alternate endpoint is used. The child is reaped;
