@@ -1,3 +1,11 @@
+# Latest qualification: installed owner and finite initialization
+
+Source8758070e38dd38981e9f5740cb5896d287453be6; [CI39902242028](https://github.com/GioNob/ouf-deploy/actions/runs/39902242028):100 tests PASS,zero skips. `installed_owner.py` reconstructs only an explicitly signed existing ACTIVE observer and checks current boot plus both expiry clocks. `installer.py` initializes the canonical finite ledgers once, after actual signed scope; existing/partial installations cannot be reset or adopted. `factory.build_from_reference` connects the exact selected observer. CurrentAdmission repeats the lease check before prerequisites. No token/credential read, IAM request or renewal occurs during observer construction.
+
+The target's CURRENT installed-owner reference is still required. These helpers do not select a historical worker, recover a parked owner, issue authority, authenticate source delivery or provide a complete launcher. Whole real JVM/OCI/IAM recovery remains unqualified and no target effects occurred. 502 OPEN. See [the latest handoff](../../docs/handoffs/OUF_SEMANTIC_REGISTRY_INSTALLED_OWNER_20261023.md) for limits and remaining work. The preceding qualification below is historical.
+
+---
+
 # Fresh Registry recovery — native path, target repair open
 
 The current semantic route targets the reviewed stopped Registry with no network endpoint. The required result is a fresh admitted Registry generation and HTTP 200 for the original service-authenticated semantic request. No target effects have occurred; the 502 remains OPEN.
