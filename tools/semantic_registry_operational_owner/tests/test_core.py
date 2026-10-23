@@ -79,6 +79,14 @@ class Core(unittest.TestCase):
         row=self.store.read();row['hourlyAttemptsWall']=[10000]*60;self.store.value=row
         self.worker.start();r=self.worker.step();self.assertEqual(r['state'],'RETRY_WAIT')
         self.assertEqual(r['cumulativeAttempts'],321);self.assertEqual(self.adapter.grants,0)
+    def test_consecutive_failure_ceiling_parks_without_new_retry_or_counter_reset(self):
+        self.worker.start();self.adapter.error=c.NotSubmitted()
+        for delay in (5,15):
+            r=self.worker.step();self.assertEqual(r['state'],'RETRY_WAIT');self.clock.advance(delay)
+        r=self.worker.step();self.assertEqual(r['state'],'BLOCKED')
+        self.assertEqual((r['cumulativeAttempts'],r['consecutiveFailures']),(324,3))
+        self.clock.advance(3600);self.build().start()
+        self.assertEqual(self.adapter.grants,3)
     def test_restart_active_requires_online_readmission_and_same_token(self):
         r=self.active();worker=self.build();result=worker.start()
         self.assertEqual(result['state'],'ACTIVE');self.assertEqual(result['tokenExpiresWall'],10100)

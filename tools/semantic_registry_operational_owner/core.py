@@ -236,7 +236,8 @@ class Worker:
             failures = current['consecutiveFailures'] + 1
             delay = self.policy.failure_delays[min(failures-1, len(self.policy.failure_delays)-1)]
             if failures >= self.policy.maximum_consecutive_failures:
-                delay = self.policy.failure_delays[-1]
+                return self.block(self.save(current, consecutiveFailures=failures),
+                                  'CONSECUTIVE_NO_SUBMISSION_FAILURE_LIMIT')
             _, retry_wall, retry_mono = self.now(current)
             return self.save(current, state='RETRY_WAIT', reason='NO_SUBMISSION_PROVEN_BOUNDED_BACKOFF',
                              consecutiveFailures=failures, nextWall=retry_wall+delay, nextMono=retry_mono+delay)

@@ -34,3 +34,8 @@ jobs:
           sudo /usr/bin/python3 -I -B -S -m unittest discover \
             -s /root/ouf-operational-owner-tests/repository/tools/semantic_registry_operational_owner/tests \
             -p 'test_*.py' -v
+      - name: Actual TLS IAM, scoped Ed25519 receipt and atomic UID publication
+        run: |
+          sudo env OUF_NATIVE_OPERATIONAL_OWNER=1 /usr/bin/python3 -I -B -S -m unittest discover \
+            -s /root/ouf-operational-owner-tests/repository/tools/semantic_registry_operational_owner/tests \
+            -p 'test_native_transport.py' -v
