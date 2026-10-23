@@ -1,3 +1,15 @@
+# CURRENT — all18 observed owners cancelled/blocked/previous-boot; coordinated bootstrap gap established
+
+Owner log /home/oufadmin/ouf-registry-owner-discovery.NKae4nGd/operator.log:18candidates,allCANCELLED/BLOCKED,sameCurrentBootfalse,noexclusiveworkerlock,no positive tokenwindow.72reads/64392bytes,1813dirs/13743entries;1450subdirsoutside depth3. No credentials/Engine/SQL/OAuth/effects. Evidence is owner-pasted,not independent readback. Other owners remain unexcluded;no current owner is selected. Preserve all paths/records. Do NOT ask the user for manager paths or rerun the completed discovery. Evidence: evidence/semantic-registry-owner-discovery-target-20261023.json.
+
+Source audit at b19fc2c5cf4530de5131b92ca0b1f7f22f2e3456:existing governed/legacy guards require rowboot==retainedfirstgrantboot==currentboot;continued/governed installers retain old receiptboot. Existing token continuation also requires exact already-running Registry generation. New recovery NativePorts requires already-admitted token owner before gated start. Therefore current helpers/old continuation are NOT a ready coordinated postboot repair for observed state. Fresh HUMAN signatures alone do not fix this mismatch. Full finding: docs/handoffs/OUF_SEMANTIC_REGISTRY_POSTBOOT_OWNER_BLOCKER_20261023.md. No runtime behavior changed by this evidence update.
+
+Next development must close the distinct coordinated-bootstrap gap:explicit fresh gate-only admission with Java fenced,current-boot owner session bound to exact retained lineage/cumulative accounting,thenfullpausedOCI/rootfs/mount/IAM/attestation,separateunpause/SIGUSR1,originalserviceGET200. No oldboot/expiry/admission edits,oldclaims/signature/signal replay or weakened shared observers. Sourceclosure/currentcontext/issuer/delivery/launcher/whole-native qualification still required before any target recovery command or new HUMAN/token/window approval. Observed319 is NOT selected lineage/approved budget and is distinct from HUMAN304/304. Never choose highest/newest or sum overlapping counters.
+
+502OPEN;no new target command or authority/effect selected. No additional broad inventory,Gateway rewrite,provider restoration,activation retry,login or budget/windowreset. Patch12/12,technical8/8,functional4/6,G3OPEN,releaseAcceptancefalse. Earlier next-command headers are historical.
+
+---
+
 # CURRENT — user does not know token owner; bounded current metadata discovery is the next operator step
 
 Do NOT ask the user again for a token-manager path. Standalone scripts/read-registry-token-owner-candidates-20261023.py at e607c78606b942b9515dad59ab8c09cf3af1db2b, SHA256a8b2aff8ea8e3c0be3fc928e925a756aafeb4e7ce4104530b244ec107071fb30. CI39904837125:9PASS/0skips including actual kernel flock observation with no lock acquisition;local8PASS/1native unavailable;all3source/test/workflow files exact readback. Qualified pinned operator command: releases/semantic-registry-owner-discovery-20261023.sh;full bounds/interpretation docs/handoffs/OUF_SEMANTIC_REGISTRY_OWNER_DISCOVERY_20261023.md.
