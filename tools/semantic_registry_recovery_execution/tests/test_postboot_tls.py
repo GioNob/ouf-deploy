@@ -43,6 +43,11 @@ class OriginalTls(unittest.TestCase):
             '-addext', 'subjectAltName=DNS:localhost', '-addext', 'basicConstraints=critical,CA:TRUE', '-days', '1'],
             check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=15)
         cls.cert.chmod(0o444); cls.key.chmod(0o600)
+        cls.other_cert = cls.root / 'independent-untrusted-root.pem'
+        subprocess.run(['openssl', 'req', '-x509', '-newkey', 'rsa:2048', '-nodes',
+            '-keyout', str(cls.root / 'other.key'), '-out', str(cls.other_cert), '-subj', '/CN=UnrelatedRoot',
+            '-addext', 'basicConstraints=critical,CA:TRUE', '-days', '1'],
+            check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=15)
 
     def setUp(self):
         server = HTTPServer(('127.0.0.1', 0), Handler); server.http_calls = 0
@@ -84,7 +89,7 @@ class OriginalTls(unittest.TestCase):
         self.assertEqual(result.returncode, 0); self.assertEqual(self.server.http_calls, 0)
 
     def test_untrusted_ca_wrong_hostname_and_non_https_are_denied_without_http(self):
-        cases = [dict(ca='NOT_A_CA'), dict(origin=self.origin.replace('localhost', '127.0.0.1')),
+        cases = [dict(ca=self.other_cert.read_text()), dict(ca='NOT_A_CA'), dict(origin=self.origin.replace('localhost', '127.0.0.1')),
                  dict(origin=self.origin.replace('https:', 'http:'))]
         for values in cases:
             with self.subTest(values=values):
