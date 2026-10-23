@@ -22,6 +22,7 @@ import tarfile
 import tempfile
 import threading
 import time
+import tomllib
 from types import SimpleNamespace
 import unittest
 import uuid
@@ -33,6 +34,7 @@ import jvm_fixture_servers as servers
 from cryptography.hazmat.primitives.asymmetric import rsa
 from engine_creation import Engine
 from file_only_frame_inputs import compile_inputs, ENGINE, BASELINE_SHA256
+from compile_file_only_frame_policy import compile_policy, private_bridge_namespace_name
 from file_only_preparation import file_source
 from image_custody import archive, loaded, native_identity, runtime_image_id, tagless_archive
 from tools.semantic_provider_node_observation import rootfs_seal
@@ -286,6 +288,80 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
         return {'source': str(path), 'target': target, 'readOnly': True, 'uid': uid, 'gid': gid,
                 'mode': mode, 'maxBytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
 
+    def diagnose_native(self):
+        """Owned CI paths and differing OCI keys only; never adopt observations."""
+        if os.environ.get('GITHUB_ACTIONS') != 'true':
+            return
+        report = {'schema': 'ouf.disposable-postboot-native-diagnostic.v1',
+                  'namespace': 'moby', 'nativeGuardUnchanged': True}
+
+        def safe_path(value):
+            if type(value) is not str or not Path(value).is_absolute():
+                return 'NOT_AN_ABSOLUTE_PATH'
+            for prefix, replacement in ((str(self.daemon_root), '<owned-fixture>'),
+                    ('/run/containerd', '<runner-containerd>'), ('/run/docker', '<runner-docker>')):
+                if value == prefix or value.startswith(prefix + '/'):
+                    return (replacement + value[len(prefix):]).replace(self.cid, '<registry>')
+            return 'OUTSIDE_DECLARED_FIXTURE_PATHS_SHA256_' + hashlib.sha256(value.encode()).hexdigest()
+
+        def changed_paths(expected, actual, path='$', result=None):
+            result = [] if result is None else result
+            if len(result) >= 100:
+                return result
+            if type(expected) is not type(actual):
+                result.append(path + ':type')
+            elif isinstance(expected, dict):
+                for key in sorted(set(expected) | set(actual)):
+                    if key not in expected or key not in actual:
+                        result.append(path + '.' + key + ':presence')
+                    else:
+                        changed_paths(expected[key], actual[key], path + '.' + key, result)
+                    if len(result) >= 100:
+                        break
+            elif isinstance(expected, list):
+                if len(expected) != len(actual):
+                    result.append(path + ':length')
+                for index, (left, right) in enumerate(zip(expected, actual)):
+                    changed_paths(left, right, path + '[' + str(index) + ']', result)
+                    if len(result) >= 100:
+                        break
+            elif expected != actual:
+                result.append(path)
+            return result
+
+        try:
+            report['declaredRuntimeRoot'] = safe_path(self.recipe['runtimeRoot'])
+            report['declaredBundle'] = safe_path(self.docker_context['bundleParent'] + '/' + self.cid)
+            state = json.loads(checked(shutil.which('runc'), '--root', self.recipe['runtimeRoot'],
+                                       'state', self.cid, timeout=10))
+            bundle = state.get('bundle')
+            report['actualBundle'] = safe_path(bundle)
+            config_path = self.daemon_root / 'exec/containerd/containerd.toml'
+            if config_path.is_file() and config_path.stat().st_size <= 131072:
+                config = tomllib.loads(config_path.read_text())
+                report['managedContainerd'] = {key: safe_path(config.get(key)) for key in ('root', 'state')}
+                report['managedContainerd']['grpcAddress'] = safe_path(config.get('grpc', {}).get('address'))
+            allowed = (type(bundle) is str and Path(bundle).name == self.cid and
+                (Path(bundle).is_relative_to(self.daemon_root) or bundle in (
+                    '/run/containerd/io.containerd.runtime.v2.task/moby/' + self.cid,
+                    '/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby/' + self.cid)))
+            if allowed:
+                actual_path = Path(bundle) / 'config.json'
+                if actual_path.is_file() and actual_path.stat().st_size <= 2097152:
+                    context = copy.deepcopy(self.docker_context)
+                    context.pop('rootfsLayout')
+                    context.update(containerId=self.cid,
+                        networkNamespaceName=private_bridge_namespace_name(self.profile.request),
+                        rootfsPath=str(self.daemon_root / 'data/rootfs/overlayfs' / self.cid))
+                    expected = compile_policy(self.recipe['template'], self.recipe['launch'], context,
+                        execution_profile=self.profile, renewable_token=self.recipe['renewableToken'],
+                        delegation_key_metadata_hash=self.recipe['delegationKeyMetadataHash'],
+                        proposal_receipt_key=self.recipe['proposalReceiptKey'])['expectedOci']
+                    report['ociDifferingPaths'] = changed_paths(expected, json.loads(actual_path.read_bytes()))
+        except Exception as error:
+            report['diagnosticErrorType'] = type(error).__name__
+        print(json.dumps(report, sort_keys=True), flush=True)
+
     def prior_gate_observed(self, actual):
         # Read only independently declared NIC/daemon identity slots, never OCI.
         sandbox = actual['NetworkSettings']['SandboxKey']
@@ -466,7 +542,11 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
                 before = runner.current()
                 if before['nextStage'] == 12:
                     break
-                row = runner.step()
+                try:
+                    row = runner.step()
+                except Exception:
+                    self.diagnose_native()
+                    raise
                 if row['nextStage'] == before['nextStage']:
                     delay = cold_start.defer(runner, before, row, self.ports.witness)
                 self.assertLess(time.monotonic(), deadline, 'Finite whole JVM recovery did not settle')
