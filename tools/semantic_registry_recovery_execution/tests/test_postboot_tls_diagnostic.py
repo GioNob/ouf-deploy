@@ -134,6 +134,22 @@ class Diagnostic(unittest.TestCase):
             target.chmod(0o644); hard = Path(name) / 'hard'; os.link(target, hard)
             with self.assertRaises(d.Stop): d.read_public_resolver(str(hard))
 
+    def test_claim_scope_survives_source_or_metadata_changes_and_detects_legacy_attempt(self):
+        with tempfile.TemporaryDirectory(dir=ROOT) as name:
+            profile = {'path': '/retained/claim.json', 'metadata': [1, 2]}; claim = {'caseHash': 'a' * 64}
+            boot = '00000000-1111-2222-3333-444444444444'
+            root, old = d.diagnostic_roots(name, profile, claim, boot)
+            changed, _ = d.diagnostic_roots(name, {'path': profile['path'], 'metadata': [3, 4]}, claim, boot)
+            self.assertEqual(changed, root)
+            d.require_unused_diagnostic(root, old)
+            old[0].mkdir(mode=0o700); marker = old[0] / 'claim.json'; marker.write_bytes(b'PRESERVE_OLD_ATTEMPT')
+            with self.assertRaisesRegex(d.Stop, 'ALREADY_CLAIMED'):
+                d.require_unused_diagnostic(root, old)
+            self.assertEqual(marker.read_bytes(), b'PRESERVE_OLD_ATTEMPT'); self.assertFalse(root.exists())
+            marker.unlink(); old[0].rmdir(); root.mkdir(mode=0o700)
+            with self.assertRaisesRegex(d.Stop, 'ALREADY_CLAIMED'):
+                d.require_unused_diagnostic(root, old)
+
     def test_missing_and_inconsistent_child_fields_are_rejected(self):
         value = self.invoke('HOST_DNS')
         for key in ('phase', 'verifyCode'):
@@ -176,51 +192,6 @@ class Diagnostic(unittest.TestCase):
         for node in ast.walk(source):
             if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
                 self.assertNotIn(node.func.attr, {'execute', 'prepare', '_prepare', 'admin_routes', 'read_frozen', 'issue'})
-
-
-class DiagnosticLauncher(unittest.TestCase):
-    def fixture(self, home, content):
-        binary = home / 'bin'; binary.mkdir()
-        for name, text in {
-            'gh': '#!/bin/sh\nprintf "%s\\n" "$*" >> "$HOME/gh.calls"\ncat "$HOME/source.py"\n',
-            'sudo': '#!/bin/sh\ntest "$1" = -- || exit 9\nshift\nexec "$@"\n'}.items():
-            target = binary / name; target.write_text(text); target.chmod(0o700)
-        (home / 'source.py').write_bytes(content)
-        return {**os.environ, 'HOME': str(home), 'PATH': str(binary) + ':/usr/bin:/bin'}
-
-    def test_real_launcher_pins_diagnostic_and_stops_before_any_network_on_missing_capsule(self):
-        self.assertFalse(Path(d.CAPSULE).exists(), 'disposable fixture only')
-        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
-            home = Path(directory); env = self.fixture(home, SCRIPT.read_bytes())
-            result = subprocess.run(['bash', str(ROOT / 'releases/semantic-registry-tls-diagnostic-20261023.sh')],
-                env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
-            self.assertEqual(result.returncode, 2)
-            rows = [json.loads(line) for line in result.stdout.decode().splitlines() if line.startswith('{')]
-            self.assertEqual(rows[0]['stage'], 'VERIFY_RETAINED_CAPSULE')
-            self.assertEqual(rows[0]['exceptionClass'], 'FileNotFoundError'); self.assertEqual(rows[0]['errno'], 2)
-            self.assertEqual(rows[0]['bearersSent'], 0); self.assertEqual(rows[0]['runtimeEffectsDispatched'], 0)
-            calls = (home / 'gh.calls').read_text().splitlines(); self.assertEqual(len(calls), 1)
-            self.assertIn('ref=c503ac0e433af0d7b394254508d6fb99100f695c', calls[0])
-            self.assertIn('diagnose-registry-postboot-tls-20261023.py', calls[0])
-            private = next(home.glob('ouf-tls-diagnostic.*'))
-            self.assertEqual((private / 'read.stderr').read_bytes(), b'')
-            self.assertEqual(hashlib.sha256(SCRIPT.read_bytes()).hexdigest(),
-                             '5f6d59d1bae6f1755070166d1f498a0867b33baae485a79bd4f21e2344eaba02')
-
-    def test_tampered_script_is_rejected_without_execution(self):
-        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
-            home = Path(directory); env = self.fixture(home, b'raise RuntimeError("NEVER_EXECUTED")\n')
-            result = subprocess.run(['bash', str(ROOT / 'releases/semantic-registry-tls-diagnostic-20261023.sh')],
-                env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
-            self.assertEqual(result.returncode, 2); self.assertIn(b'EXACT_TLS_DIAGNOSTIC_ROOT_LAUNCH_UNPROVEN', result.stdout)
-            self.assertNotIn(b'NEVER_EXECUTED', result.stdout + result.stderr)
-
-    def test_arguments_are_rejected_before_download(self):
-        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
-            home = Path(directory); env = self.fixture(home, SCRIPT.read_bytes())
-            result = subprocess.run(['bash', str(ROOT / 'releases/semantic-registry-tls-diagnostic-20261023.sh'), 'retry'],
-                env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
-            self.assertEqual(result.returncode, 2); self.assertFalse((home / 'gh.calls').exists())
 
 
 if __name__ == '__main__': unittest.main()

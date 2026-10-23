@@ -305,6 +305,29 @@ def finding(host, caller):
     return 'CALLER_TLS_STAGE_UNPROVEN'
 
 
+LEGACY_DIAGNOSTIC_DIGESTS = (
+    'f98b1f0a9f87a73dfdaae10e2564775a751fa9f38c36e572efd369a3d659e629',
+    '7ea06981258606c3c21cb107a50675c9b26f33b87b5691744d4c30ee272362ef',
+    '5f6d59d1bae6f1755070166d1f498a0867b33baae485a79bd4f21e2344eaba02')
+
+
+def diagnostic_roots(parent, claim_profile, claim, boot):
+    # One incident/boot claim across future source versions. Publishing a code
+    # correction must not silently allocate another observation allowance.
+    root = Path(parent) / ('semantic-registry-tls-diagnostic-' + digest({
+        'retainedClaimHash': digest(claim), 'boot': boot}))
+    legacy = [Path(parent) / ('semantic-registry-tls-diagnostic-' + digest({
+        'claim': claim_profile, 'script': source, 'boot': boot})) for source in LEGACY_DIAGNOSTIC_DIGESTS]
+    return root, legacy
+
+
+def require_unused_diagnostic(root, legacy):
+    for path in [root, *legacy]:
+        try: path.lstat()
+        except FileNotFoundError: continue
+        require(False, 'TLS_DIAGNOSTIC_ALREADY_CLAIMED_DO_NOT_REPLAY')
+
+
 def diagnose():
     global STAGE
     require(os.geteuid() == os.getegid() == 0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode
@@ -358,15 +381,16 @@ def diagnose():
     cid = effects['ingestion.CREATE_REPLACEMENT']['nativeResource']['containerId']
     first = effects['ingestion.START_REPLACEMENT']['nativeResource']
     require(re.fullmatch('[0-9a-f]{64}', cid) and first['containerId'] == cid, 'EXACT_ORIGINAL_CALLER_REQUIRED')
-    root = Path(p.PARENT) / ('semantic-registry-tls-diagnostic-' + digest({
-        'claim': claim_profile, 'script': globals()['__verified_diagnostic_sha256__'], 'boot': boot}))
+    root, legacy_roots = diagnostic_roots(p.PARENT, claim_profile, claim, boot)
     for parent in (root.parent, *root.parent.parents):
         info = parent.lstat()
         require(stat.S_ISDIR(info.st_mode) and info.st_uid == 0 and not info.st_mode & 0o022, 'PROTECTED_DIAGNOSTIC_PARENT_REQUIRED')
     STAGE = 'CLAIM_DIAGNOSTIC'
+    require_unused_diagnostic(root, legacy_roots)
     try: os.mkdir(root, 0o700)
     except FileExistsError: require(False, 'TLS_DIAGNOSTIC_ALREADY_CLAIMED_DO_NOT_REPLAY')
     p.publish(root, 'claim.json', {'schema': SCHEMA, 'retainedClaimHash': digest(claim), 'bootId': boot,
+        'diagnosticScriptSha256': globals()['__verified_diagnostic_sha256__'],
         'maximumEngineGets': 2, 'maximumResolverCalls': 2, 'maximumNewTlsHandshakes': 1,
         'retainedTlsAttemptMarkers': 1, 'cumulativeTlsAttemptCeiling': 2, 'automaticReplayAllowed': False, 'budgetReset': False})
     binding = proposal['engineBinding']; engine = Engine(binding['socketPath'], tuple(binding['socketBinding']))
