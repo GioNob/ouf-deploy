@@ -83,6 +83,9 @@ def status(root, prepared):
 
 def execute(case, manifest, sources, argv):
     require(os.geteuid() == os.getegid() == 0, 'ROOT_POSTBOOT_ENTRY_REQUIRED')
+    if type(case) is dict and 'resumption' in case:
+        from . import resumption_entry
+        return resumption_entry.execute(case, manifest, sources, argv)
     require(type(case) is dict and set(case) == {'schema', 'preparation'} and case['schema'] == SCHEMA,
             'EXACT_POSTBOOT_OPERATOR_CASE_REQUIRED')
     require(type(argv) is list and argv and all(type(arg) is str for arg in argv)

@@ -107,6 +107,9 @@ def terminal(receipt):
 
 
 def compile_scope(context):
+    if type(context) is dict and context.get('schema')=='ouf.semantic-registry-postboot-successor-owner-context.v1':
+        from .successor import compile_successor
+        return compile_successor(context)
     fields = {'schema', 'lineageReceipt', 'predecessorJournalPath', 'retainedRecords', 'ownerInputs',
               'recovery', 'sourceClosureHash', 'sourceFiles', 'budget'}
     require(type(context) is dict and set(context) == fields and context['schema'] == CONTEXT,

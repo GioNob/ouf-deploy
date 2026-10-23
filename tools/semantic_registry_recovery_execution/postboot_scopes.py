@@ -88,5 +88,10 @@ def compile_scopes(native_context, owner_context, registry_inputs, profile, boot
         'semanticRegistryRecoveryOriginalRequest': request_scope(gateway_view, native['originalRequest']),
         'semanticRegistryRecoveryAdmission': admission_scope(database_view, node_view),
     }
-    require(set(result) == KEYS, 'COMPLETE_CLOSED_POSTBOOT_REVIEW_SCOPES_REQUIRED')
+    if owner_context.get('schema') == 'ouf.semantic-registry-postboot-successor-owner-context.v1':
+        from .resumption import KEY, scope
+        result[KEY] = scope(plan, owner_context)
+    require(set(result) == (KEYS | {'semanticRegistryCheckpointResumption'}
+            if owner_context.get('schema') == 'ouf.semantic-registry-postboot-successor-owner-context.v1' else KEYS),
+            'COMPLETE_CLOSED_POSTBOOT_REVIEW_SCOPES_REQUIRED')
     return result

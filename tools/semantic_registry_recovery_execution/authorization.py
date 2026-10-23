@@ -33,6 +33,12 @@ class AuthorityScope:
         parsed=json.loads(self.raw)
         require(parsed.get('semanticRegistryRecovery')==self.expected,'EXACT_SIGNED_REGISTRY_RECOVERY_SCOPE_REQUIRED')
         if row is not None:
+            if row.get('schema')=='ouf.semantic-registry-recovery-journal.v2':
+                from .resumption import KEY
+                require(parsed.get(KEY)==row.get('resumption',{}).get('scope'), 'EXACT_SIGNED_SUCCESSOR_EPOCH_REQUIRED')
+            else:
+                require('semanticRegistryCheckpointResumption' not in parsed,
+                        'SUCCESSOR_AUTHORITY_CANNOT_DISPATCH_OLD_EPOCH')
             require(row['planHash']==self.plan_hash and row['authorityHash']==self.hash
                     and parsed['issuedAt']<=row['createdUnix']<row['expiresUnix']<=parsed['expiresAt']
                     and row['predecessorIncidentRef']==self.expected['predecessorIncidentRef'],

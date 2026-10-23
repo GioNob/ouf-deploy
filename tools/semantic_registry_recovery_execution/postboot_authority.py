@@ -101,7 +101,7 @@ def compile_review(current_context, owner_context, authority_inputs, source_clos
     profile = FileOnlyProfile(registry['creationRequest'], registry['configtree'])
     boot = owner_context['recovery']['bootId']
     expected_scopes = compile_scopes(current_context, owner_context, registry, profile, boot)
-    require(type(scopes) is dict and set(scopes) == KEYS and scopes == expected_scopes,
+    require(type(scopes) is dict and scopes == expected_scopes,
             'INDEPENDENT_COMPLETE_POSTBOOT_SCOPE_RECOMPILATION_REQUIRED')
     authority_metadata(authority_inputs)
     require(type(source_closure) is dict
@@ -279,11 +279,14 @@ def execution_custody(review):
 def terminal_decision(review, review_path):
     reviewed = digest(review); budget = review['ownerContext']['budget']
     prior = review['scopes']['semanticRegistryPostbootOwner']['predecessorGrantAttempts']
+    phases = ('Ripresa checkpoint 4, ammissioni native, attestazione, rilascio e GET originale. '
+        if 'semanticRegistryCheckpointResumption' in review['scopes'] else
+        'Avvio gated, pausa, ammissioni native, attestazione, rilascio e GET originale. ')
     prompt = ('\nRipristino finito Registry dopo riavvio. Revisione privata: ' + str(review_path)
         + '\nSHA256: ' + reviewed + '\nTentativi SERVICE nuovi: massimo ' + str(budget['maximumGrantAttempts'])
         + '; precedenti controllati conservati: ' + str(prior) + '.\nFinestra massima: '
-        + str(review['maximumElapsedSeconds']) + ' secondi. Avvio gated, pausa, ammissioni native, '
-        + 'attestazione, rilascio e GET originale. Nessun reset o rinnovo automatico.\n'
+        + str(review['maximumElapsedSeconds']) + ' secondi. ' + phases
+        + 'Nessun reset o rinnovo automatico.\n'
         + 'Per approvare questa revisione esatta scrivi: APPROVO ' + reviewed + '\n> ')
     fd = os.open('/dev/tty', os.O_RDWR | os.O_NOCTTY | os.O_NOFOLLOW)
     try:
@@ -353,6 +356,10 @@ def claim_name(review):
     identity = {'logicalOperationRef': review['currentContext']['plan']['logicalOperationRef'],
         'logicalOwnerScopeHash': review['ownerContext']['lineageReceipt']['logicalOwnerScopeHash'],
         'bootId': review['bootId']}
+    successor = review['scopes'].get('semanticRegistryCheckpointResumption')
+    if successor is not None:
+        identity.update(operation='EXPLICIT_CHECKPOINT_FOUR_SUCCESSOR',
+                        predecessorJournalHash=successor['predecessorJournalHash'])
     return 'semantic-registry-postboot-issuance-' + digest(identity) + '.claim.json'
 
 
