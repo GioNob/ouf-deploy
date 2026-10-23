@@ -674,7 +674,8 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
         self.assertEqual(self.iam_app.grant_count, 1)
         self.assertTrue(any(path == self.iam_app.active_path and code == 200
                             for _, path, code in self.iam_app.calls))
-        self.assertEqual(worker.r.journal.read()['controlledCumulativeGrantAttempts'], 320)
+        with coordination:
+            self.assertEqual(worker.r.journal.read()['controlledCumulativeGrantAttempts'], 320)
         attempts = [effect['stage'] for effect in row['effects'] if effect.get('nativeRequestAttempted')]
         self.assertEqual(attempts, ['START_NEW_WAIT_GATE', 'PAUSE_NEW_WAIT_GATE',
                                     'UNPAUSE_ATTESTED_GENERATION', 'RELEASE_SAME_GENERATION_SIGUSR1'])
