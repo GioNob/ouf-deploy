@@ -1,4 +1,12 @@
-# CURRENT — target successor reached checkpoint11, stopped PRIVATE_FILE_METADATA_CHANGED; never replay apply
+# CURRENT — target isolates original caller token inode/timestamps; final GET never dispatched, owner CANCELLED321
+
+Target Yj8aAbpR diagnostic COMPLETE:28boundfiles;27metadataMATCHincloriginalTLSCA;ONLY ORIGINAL_CALLER_TOKEN_SOURCE ordinal27 differsinode/mtimeNs/ctimeNs, stabletwopasses. NOcontentread, cannotclaimtokenbyteschanged orwriter/rotationprovenance. Nativejournal11APPLIED+finalCLAIMED/checkpoint11; DB18/Admin18/Semantic0, originalGETfalse. OwnerconfirmedCANCELLED, attempts1, predecessor320/cumulative321. No currentEngine/containerstateobservation. Applicationreadiness historicalstep10completed, notcurrentreadiness. Target502stillunproven. Neverrerunoldapply/resume/owner/cleanup orresetbudgets.
+
+Next exact diagnostic scripts/compare-registry-caller-token-20261023.py revalidatespinnedmetadata/review/journals thenreadsONEcurrentoriginalcallercredential max16384bytes, solelycompare SHA withretainedreview andencoding. No tokens/hashes/paths/claimsprinted; noHTTP/OAuth/Engine/DB/Admin/authority/mutations/applicationentry. Onlysameoriginaldevice/UID/GID/mode/links/size andprotectedancestry accepted; maydifferONLYinode/mtime/ctime. RecheckmetadataaroundboundedstableReaderFD; noacceptance/rebinding/newprofileproduced. SevenrealfilesystemtestsPASS: identicalbytes, atomicreplacementidenticalbytes, equal-sizechangedbearer, mode/symlinkrefusalbeforecontent, concurrentreadchange, encoding. Thisexplicitcredentialreadisnecessarydiagnosiswithbroaduserauthorization; noadditionalcredential/loginrequestneeded. Do NOTsilentlyrefreshsignedtokenmetadata oradoptdifferentbearerbasedonlylocation. Nextstepsdependonbytescomparison; production142modulesunchanged. Lowerheadershistorical.
+
+---
+
+# HISTORICAL — target successor reached checkpoint11, stopped PRIVATE_FILE_METADATA_CHANGED; never replay apply
 
 Target FXHHpFX1/operator.log: authority8ef16658d484ca613957460a8e0d5684c003cb0b09da43919ecf8f4277f6a76d issued exactreviewfff; formalcheckpoint4handoff complete2EngineGETs/0lifecycle/OAuth/predecessor320; distinctownerinstalled09585b2b6e40e0d5467c1e5030d7e6278547cd940e3316e41a8bd832d917bf76. Progress5,6,7,8,9,10,11READY; runtimeEffectAttempts4 (START/PAUSE historical, UNPAUSE/SIGUSR1 successor). Step10readiness completed beforecheckpoint11; then PRIVATE_FILE_METADATA_CHANGED/STOP_RECONCILE/runtimeEffectsMayBePartialtrue. OriginalGET200false, no complete/finiteend proof. Do NOT rerun launcher, issue, resume, owner, cleanup or expiredscope. Currentactualregistryhealth/endpoint and GET attemptcount notyetobserved. Tokenowner cancellation likelyfinally butnotyetproven; preserve all counters and claims.
 
