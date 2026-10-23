@@ -1,3 +1,12 @@
+# CURRENT — bounded TLS diagnosis qualified, pinned separate launcher
+
+Source5d98fc1d96755924b9f192e5c6cd1cffe16fb471, scripts/diagnose-registry-postboot-tls-20261023.py SHA f98b1f0a9f87a73dfdaae10e2564775a751fa9f38c36e572efd369a3d659e629. CI39953186951 11PASS/0skip each3.12(job120412462201)/3.13(job120412461952), directlogsread; actualDNS/TLSandheldownnetNS, noHTTP/bearer. Fulltargetmetadata/controller notqualified. Mainregression39953186833 all7PASS; companion39953187287/lineage39953186681/retained39953186935 PASS. Sixsourcefilesreadbackexact. Olde862runtime/capsuleunchanged. Evidence semantic-registry-tls-diagnostic-ci-20261023.json.
+
+New launcher releases/semantic-registry-tls-diagnostic-20261023.sh SHAbadc0ea759ad1427b66475ac94f52e2920b68d3546bf94b074623e0aeab42291; local3integrationtestsPASS (properstage/errnoformissingcapsule, tamperreject,argsreject), BashsyntaxPASS;4localcapsule/resolver/ASTtestsPASS. Pinsnewscript/source, memoryverifiedroot -I-B-S withverifieddiagnosticSHA. FinaldeliveryCIpendingseparately. Handoff docs/handoffs/OUF_REGISTRY_TLS_FAILURE_DIAGNOSTIC_20261023.md.
+
+Nextoperatorstep thisboundedDIAGNOSTIC only, notprepare. All3oldcurrentbootclaims+markerspreserved; newexclusiveclaim,max2exactcallerEngineGETs/2resolvercalls/1newTLSintent, prior18Engine/3Admin/1TLSintent retained cumulativeceilings20Engine/2TLSintent. NoHTTP/bearer/tokenfile/OAuth/DB/Admin/recovery. Origin+completeCAprofilemustmatchlatestTLSmarker; originalcallerPID/start/restart/properties/program/resolvers/NS/bootstable. Publicfixedphases/classes/numericcodes+shape/booleans only; privateobservationhash. OldoriginalTLSerrorerased, originalFailureReproducedfalse, currentdiagnosisonly. Don'trerunoldprepare ornewdiagnosticifSTOP/claimexists. No newtoken/approval/pathquestion. 502OPEN; rootcausenotyetproven; cloudnoVPSexecutor; operatorchannel;priority502→E2E→Supervisor;continuousrenewalunproven. Allbelowhistorical.
+
+---
 # CURRENT — TLS child failure erased; bounded separate diagnosis, no prepare replay
 
 Latest f4mzcZVO output AUTHENTICATED_ORIGINAL_SERVICE_TLS_HANDSHAKE_UNCONFIRMED; capsule138240/sourcee862. original_tls child catchesBaseException/exit1 +stderrDEVNULL, originalclass/phase irrecoverable. Reason doesnotestablishDNS/network/certificate/namespacefailure orTLSClientHello. Preserveall3prepclaims includinglatestTLSintent. Evidence semantic-registry-postboot-handshake-stop-target-20261023.json. 502OPEN; noauth/OAuth/effects; do notrerunTLSprepare.
