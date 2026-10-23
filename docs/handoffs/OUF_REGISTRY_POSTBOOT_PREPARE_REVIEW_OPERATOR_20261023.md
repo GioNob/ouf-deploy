@@ -1,5 +1,8 @@
 # Registry 502: preparazione e revisione del recupero nel boot corrente
 
+Aggiornamento dopo il secondo tentativo VPS: `POSTBOOT_OUTCOME_UNPROVEN_PRIVATE_DETAILS_REDACTED`, log `/home/oufadmin/ouf-registry-postboot-review.nMPgRpwq/operator.log`. La fase di arresto e l'esistenza di claim non sono ancora stabilite. Prossimo passo: la diagnosi in sola lettura descritta in `docs/handoffs/OUF_REGISTRY_POSTBOOT_REDACTED_STOP_READ_20261023.md`; non ripetere ora prepare/review. La consegna e le istruzioni precedenti sotto sono conservate come cronologia.
+
+
 Questo passaggio costruisce gli input privati correnti e la revisione completa del recupero. Il launcher esegue soltanto `prepare` e, se la relativa receipt è valida, `review`. Non richiede una decisione HUMAN, non emette firme, non acquisisce nuovi token e non avvia Registry o token-worker. Il 502 resta aperto.
 
 ## Correzione del loader dopo il primo tentativo VPS

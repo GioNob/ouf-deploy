@@ -16,6 +16,7 @@ SCRIPT = ROOT / 'scripts/read-registry-postboot-stop-20261023.py'
 spec = importlib.util.spec_from_file_location('retained_stop_probe_fixture', SCRIPT)
 p = importlib.util.module_from_spec(spec); spec.loader.exec_module(p)
 CAPSULE = ROOT / 'releases/semantic-registry-postboot-20261023.py'
+WRAPPER = ROOT / 'releases/semantic-registry-postboot-stop-read-20261023.sh'
 
 
 class RetainedStopRead(unittest.TestCase):
@@ -144,6 +145,57 @@ class RetainedStopRead(unittest.TestCase):
         del values[case['retainedInputs']['path']]['registryInputs']
         output = p.base(); p.metadata_shapes(case, Files(), output)
         self.assertIn({'id': 'INPUT_REGISTRY', 'present': False, 'missingAt': 0}, output['retainedShapeChecks'])
+
+    def wrapper_fixture(self, home, content):
+        binary = home / 'bin'; binary.mkdir()
+        gh = binary / 'gh'
+        gh.write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$HOME/gh.calls"\ncat "$HOME/source.py"\n')
+        sudo = binary / 'sudo'
+        sudo.write_text('#!/bin/sh\ntest "$1" = -- || exit 9\nshift\nexec "$@"\n')
+        gh.chmod(0o700); sudo.chmod(0o700)
+        (home / 'source.py').write_bytes(content)
+        return {**os.environ, 'HOME': str(home), 'PATH': str(binary) + ':/usr/bin:/bin'}
+
+    def test_real_wrapper_executes_only_verified_reader_and_retains_safe_stop(self):
+        self.assertFalse(Path(p.CAPSULE).exists(), 'disposable fixture must not run on the target')
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            home = Path(directory); environment = self.wrapper_fixture(home, SCRIPT.read_bytes())
+            result = subprocess.run(['bash', str(WRAPPER)], env=environment, stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, timeout=20)
+            self.assertEqual(result.returncode, 2)
+            rows = [json.loads(line) for line in result.stdout.decode().splitlines() if line.startswith('{')]
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]['diagnosticStage'], 'RETAINED_CAPSULE_VERIFICATION')
+            self.assertFalse(rows[0]['applicationEntryInvoked'])
+            self.assertEqual(rows[0]['runtimeEffectsDispatched'], 0)
+            self.assertIn('errno', rows[0]['safeExceptionChain'][0])
+            calls = (home / 'gh.calls').read_text().splitlines()
+            self.assertEqual(len(calls), 1)
+            self.assertIn('ref=1c94a004139e42b573337d1da71ad6461fe48909', calls[0])
+            self.assertIn('--hostname github.com', calls[0])
+            retained = list(home.glob('ouf-postboot-stop-read.*'))
+            self.assertEqual(len(retained), 1)
+            self.assertEqual((retained[0] / 'read.stderr').read_bytes(), b'')
+
+    def test_wrapper_hash_mismatch_prevents_unreviewed_code_execution(self):
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            home = Path(directory)
+            environment = self.wrapper_fixture(home, b'raise RuntimeError("PRIVATE_UNREVIEWED_EXECUTED")\n')
+            result = subprocess.run(['bash', str(WRAPPER)], env=environment, stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, timeout=20)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn(b'EXACT_STOP_READER_ROOT_LAUNCH_UNPROVEN', result.stdout)
+            self.assertNotIn(b'PRIVATE_UNREVIEWED_EXECUTED', result.stdout + result.stderr)
+            retained = next(home.glob('ouf-postboot-stop-read.*'))
+            self.assertEqual((retained / 'read.stderr').read_bytes(), b'')
+
+    def test_wrapper_rejects_arguments_before_any_download(self):
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            home = Path(directory); environment = self.wrapper_fixture(home, SCRIPT.read_bytes())
+            result = subprocess.run(['bash', str(WRAPPER), 'prepare'], env=environment,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
+            self.assertEqual(result.returncode, 2)
+            self.assertFalse((home / 'gh.calls').exists())
 
 
 if __name__ == '__main__':

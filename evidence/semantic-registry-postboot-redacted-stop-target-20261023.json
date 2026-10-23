@@ -3,9 +3,6 @@
   "provenance": "OPERATOR_PASTED_RECEIPTS_NOT_INDEPENDENT_VPS_READBACK",
   "operatorDirectory": "/home/oufadmin/ouf-registry-postboot-review.nMPgRpwq",
   "operatorLog": "/home/oufadmin/ouf-registry-postboot-review.nMPgRpwq/operator.log",
-  "deliveryCommit": "c4f002ce3ba60c1fe47ed9a38301d11e96024aba",
-  "capsuleCommit": "05caff5cf8b75617b2d407a8f2eefdcf116a664f",
-  "capsuleSha256": "75162f0e9f1e3848392b23c1754751b18a45c529ce139e0550c347de0c67b17a",
   "receipts": [
     {
       "automaticReplayAllowed": false,
@@ -34,5 +31,9 @@
   "automaticReplayAllowed": false,
   "budgetReset": false,
   "releaseAcceptance": false,
-  "nextScope": "READ_ONLY_EXACT_RETAINED_CAPSULE_PREFLIGHT_FIXED_MARKERS_SIX_HASH_BOUND_METADATA_FILES_NO_ENTRY_OR_NATIVE_REQUESTS"
+  "nextScope": "READ_ONLY_EXACT_RETAINED_CAPSULE_PREFLIGHT_FIXED_MARKERS_SIX_HASH_BOUND_METADATA_FILES_NO_ENTRY_OR_NATIVE_REQUESTS",
+  "expectedDeliveryCommit": "c4f002ce3ba60c1fe47ed9a38301d11e96024aba",
+  "expectedCapsuleCommit": "05caff5cf8b75617b2d407a8f2eefdcf116a664f",
+  "expectedCapsuleSha256": "75162f0e9f1e3848392b23c1754751b18a45c529ce139e0550c347de0c67b17a",
+  "expectedPinsProvenance": "LAST_DELIVERED_COMMAND_NOT_INDEPENDENT_TARGET_BYTE_READBACK"
 }

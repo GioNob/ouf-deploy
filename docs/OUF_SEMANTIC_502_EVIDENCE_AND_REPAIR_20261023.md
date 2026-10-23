@@ -1,5 +1,8 @@
 # 502 semantico OUF — evidenze e riparazione circoscritta
 
+Aggiornamento dopo il secondo tentativo VPS: `POSTBOOT_OUTCOME_UNPROVEN_PRIVATE_DETAILS_REDACTED`, log `/home/oufadmin/ouf-registry-postboot-review.nMPgRpwq/operator.log`. La fase di arresto e l'esistenza di claim non sono ancora stabilite. Prossimo passo: la diagnosi in sola lettura descritta in `docs/handoffs/OUF_REGISTRY_POSTBOOT_REDACTED_STOP_READ_20261023.md`; non ripetere ora prepare/review. La consegna e le istruzioni precedenti sotto sono conservate come cronologia.
+
+
 Aggiornamento loader del 23 ottobre: il primo tentativo VPS si è fermato prima dell'entry applicativa su `INTERPRETER_STDLIB_SYSCONFIG_ORIGIN_REQUIRED`. La correzione riconosce modulo/pacchetto sysconfig soltanto nella stdlib esatta dell'interprete. Sorgente `47899a153f1e2c84f778b67564a8c952d8323c35`, capsule `05caff5cf8b75617b2d407a8f2eefdcf116a664f`, SHA256 `75162f0e9f1e3848392b23c1754751b18a45c529ce139e0550c347de0c67b17a`; i 105 moduli applicativi restano identici. CI loader 20 PASS su Python 3.12 e 20 PASS su 3.13, incluso preload completo senza entry. Per i pin attuali usare `docs/handoffs/OUF_REGISTRY_POSTBOOT_PREPARE_REVIEW_OPERATOR_20261023.md`; le consegne precedenti riportate sotto sono storiche. Nessun ripristino VPS o rinnovo continuativo attestato; sessione proposta sempre ≤900 secondi. La CI del commit di consegna è da osservare separatamente, non inferita dalla prova sorgente.
 
 
