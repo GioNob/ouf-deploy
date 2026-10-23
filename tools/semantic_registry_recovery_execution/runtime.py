@@ -9,6 +9,8 @@ import hashlib
 import importlib.abc
 import importlib.util
 import json
+import os
+from pathlib import Path
 import re
 import sys
 
@@ -234,13 +236,49 @@ def declaration(commit, sources, loader, source_pins):
     }
 
 
+def generated_stdlib_binding():
+    """Select only this interpreter's generated sysconfig source, off sys.path."""
+    forbidden = {'_PYTHON_SYSCONFIGDATA_NAME', '_PYTHON_SYSCONFIGDATA_PATH', '_PYTHON_PROJECT_BASE',
+                 '_PYTHON_HOST_PLATFORM', '_PYTHON_BUILD', 'PYTHONUSERBASE', 'DEB_PYTHON_INSTALL_LAYOUT'}
+    require(not forbidden.intersection(os.environ), 'PYTHON_BUILD_CONFIGURATION_OVERRIDE_DENIED')
+    import sysconfig
+    multiarch = getattr(sys.implementation, '_multiarch', '')
+    require(type(multiarch) is str and re.fullmatch(r'[A-Za-z0-9_-]{1,64}', multiarch)
+            and sys.platform == 'linux', 'EXACT_LINUX_PYTHON_BUILD_REQUIRED')
+    # CPython and Debian/Ubuntu use these two exact build-name conventions.
+    # The stdlib chooses one; neither an environment override nor a name prefix
+    # can authorize a different module.
+    candidates = {'_sysconfigdata_' + sys.abiflags + '_' + multiarch,
+                  '_sysconfigdata_' + sys.abiflags + '_' + sys.platform + '_' + multiarch}
+    name = sysconfig._get_sysconfigdata_name()
+    require(name in candidates, 'EXACT_GENERATED_SYSCONFIG_NAME_REQUIRED')
+    root = Path(sys._stdlib_dir).resolve(strict=True)
+    require(Path(sysconfig.__spec__.origin).resolve(strict=True) == root / 'sysconfig.py',
+            'INTERPRETER_STDLIB_SYSCONFIG_ORIGIN_REQUIRED')
+    spec = importlib.machinery.PathFinder.find_spec(name, [str(root)])
+    expected = root / (name + '.py')
+    require(spec is not None and isinstance(spec.loader, importlib.machinery.SourceFileLoader)
+            and spec.origin == str(expected) and expected.resolve(strict=True).parent == root,
+            'EXACT_GENERATED_STDLIB_SOURCE_REQUIRED')
+    previous = sys.modules.get(name)
+    require(previous is None or getattr(getattr(previous, '__spec__', None), 'origin', None) == str(expected),
+            'PRELOADED_GENERATED_SYSCONFIG_SOURCE_DRIFT')
+    return name, spec
+
+
 class MemoryLoader(importlib.abc.MetaPathFinder, importlib.abc.Loader):
-    def __init__(self, compiled, packages, sources):
+    def __init__(self, compiled, packages, sources, generated_stdlib=None):
         self.compiled, self.packages, self.sources = compiled, packages, sources
+        self.generated_stdlib = generated_stdlib
 
     def find_spec(self, fullname, path=None, target=None):
         if fullname in self.compiled or fullname in self.packages:
             return importlib.util.spec_from_loader(fullname, self, is_package=fullname in self.packages)
+        if self.generated_stdlib is not None and fullname == self.generated_stdlib[0]:
+            current = generated_stdlib_binding()
+            require(current[0] == fullname and current[1].origin == self.generated_stdlib[1].origin,
+                    'GENERATED_STDLIB_BINDING_CHANGED')
+            return current[1]
         if sys.platform == 'linux' and fullname == '_wmi':
             # Ubuntu Python 3.12 platform probes this Windows-only extension
             # under an ImportError handler. Preserve that explicit absence;
@@ -272,7 +310,8 @@ def load_entry(commit, sources, loader, expected_declaration_hash, source_pins):
     compiled, packages = compile_sources(sources)
     require(not any(name in sources or name in packages or name in ALIASES or name.startswith('tools.')
                     for name in sys.modules), 'PRELOADED_APPLICATION_MODULE_DENIED')
-    finder = MemoryLoader(compiled, packages, sources)
+    generated_stdlib = generated_stdlib_binding()
+    finder = MemoryLoader(compiled, packages, sources, generated_stdlib)
     sys.meta_path.insert(0, finder)
     try:
         entry = importlib.import_module(ENTRY)

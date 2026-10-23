@@ -179,6 +179,33 @@ class Bootstrap(unittest.TestCase):
         with self.assertRaisesRegex(c.RecoveryDenied, 'DURABLE_POSTBOOT_PAUSE_PREFIX'):
             witness.observe()
 
+    def test_start_ack_and_first_capture_allow_running_gate_before_core_publishes_generation(self):
+        self.prepare(); self.runner.step()
+        stage = self.claim(); self.native.apply(stage)
+        pending = self.store.read()
+        self.assertEqual(pending['nextStage'], 1); self.assertIsNone(pending['newGeneration'])
+        self.assertTrue(pending['effects'][1]['nativeResponse204'])
+        self.gateway.calls.clear()
+        row = self.runner.step()
+        # Pending START is reconciled by Lifecycle using its durable capture;
+        # Gateway endpoint verification resumes at the following checkpoint.
+        self.assertEqual(self.gateway.calls, [])
+        self.assertEqual(row['nextStage'], 2); self.assertEqual(row['newGeneration'], self.new)
+        self.assertEqual(len(self.post_calls()), 1)
+
+    def test_running_pid_after_start_cannot_replace_the_first_durable_capture(self):
+        self.prepare(); self.runner.step()
+        stage = self.claim(); self.native.apply(stage)
+        pending = self.store.read(); self.new['startTicks'] += 1
+        self.gateway.calls.clear()
+        with self.assertRaisesRegex(c.RecoveryDenied, 'FIRST_DURABLY_CAPTURED_REGISTRY_GENERATION_CHANGED'):
+            self.runner.step()
+        self.assertEqual(self.gateway.calls, [])
+        self.assertIsNone(self.store.read()['newGeneration'])
+        self.assertEqual(self.store.read()['effects'][1]['nativeFirstProcess'],
+                         pending['effects'][1]['nativeFirstProcess'])
+        self.assertEqual(len(self.post_calls()), 1)
+
     def test_changed_pid_ticks_or_namespace_never_becomes_current_owner_generation(self):
         witness = self.prefix(); saved = copy.deepcopy(self.new)
         for field in ('pid', 'startTicks', 'namespaceDevice', 'namespaceInode'):

@@ -69,6 +69,12 @@ class NativePostbootQualified(unittest.TestCase):
     def setUpClass(cls):
         image_fixture.NativeRuntime.setUpClass()
         cls.image = image_fixture.NativeRuntime.image
+        subprocess.run(['docker', '--host', 'unix://' + cls.engine_socket,
+                        'pull', 'python:3.12-alpine'], stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE, check=True, timeout=120)
+        cls.gateway_image = subprocess.check_output(['docker', '--host',
+            'unix://' + cls.engine_socket, 'image', 'inspect', 'python:3.12-alpine',
+            '--format', '{{.Id}}'], timeout=15).decode().strip()
 
     def command(self, *args):
         if args and args[0] == 'docker':
@@ -183,15 +189,22 @@ class NativePostbootQualified(unittest.TestCase):
         self.route_file.chmod(0o444)
         config = self.root / 'gateway.yaml'
         self.write(config, b'deployment:\n  admin:\n    admin_key:\n      - name: fixture\n        key: DISPOSABLE_ADMIN_FIXTURE_KEY\n        role: admin\n')
-        gateway_request = {'Image': self.image, 'User': '10001:10001',
-            'Entrypoint': ['/usr/sbin/httpd'], 'Cmd': ['-f', '-p', '9180', '-h', '/www'],
+        # Use an executable guaranteed by this dedicated fixture image. Alpine's
+        # base filesystem does not promise an /usr/sbin/httpd entry point.
+        gateway_request = {'Image': self.gateway_image, 'User': '10001:10001',
+            'Entrypoint': ['python3'], 'Cmd': ['-m', 'http.server', '9180', '--directory', '/www'],
             'HostConfig': {'NetworkMode': network_name, 'CapDrop': ['ALL'], 'SecurityOpt': ['no-new-privileges'],
                 'RestartPolicy': {'Name': 'no', 'MaximumRetryCount': 0},
                 'Binds': [str(self.www) + ':/www:ro', str(config) + ':/usr/local/apisix/conf/config.yaml:ro']},
             'NetworkingConfig': endpoint(gateway_address)}
         gateway_request = self.gateway_request(gateway_request)
         self.gateway_id = self.create_container(gateway_request, 'ouf-postboot-gateway-')
-        self.assertEqual(self.engine.request('POST', '/v1.44/containers/' + self.gateway_id + '/start')[0], 204)
+        status, started = self.engine.request('POST', '/v1.44/containers/' + self.gateway_id + '/start')
+        message = started.get('message', '') if type(started) is dict else ''
+        classification = ('GATEWAY_FIXTURE_EXECUTABLE_MISSING' if 'no such file' in message.lower()
+            or 'executable file not found' in message.lower() else
+            'GATEWAY_FIXTURE_START_ERROR_' + hashlib.sha256(message.encode()).hexdigest()[:12])
+        self.assertEqual(status, 204, classification)
         actual_gateway = self.inspect(self.gateway_id)
         self.gateway_pin = {'binding': runtime_bindings.observed(actual_gateway, runtime_bindings.SORTED),
                             'restartCount': 0, 'bindingProfile': runtime_bindings.SORTED}
@@ -200,7 +213,7 @@ class NativePostbootQualified(unittest.TestCase):
             'endpoint': {'host': '127.0.0.1', 'port': 9180},
             'pythonExecutable': {'path': str(python), 'sha256': signed.sha(python.read_bytes())},
             'config': private_profile(config), 'adminKey': None}
-        # Busybox admin fixture is only a transport/route source. Wait before
+        # The admin fixture is only a transport/route source. Wait before
         # opening the signed finite recovery; no test-side retry consumes it.
         deadline = time.monotonic() + 10
         while True:
@@ -417,7 +430,7 @@ class NativePostbootOwnerQualified(NativePostbootQualified):
         self.install_owner()
         worker, coordination, _, _, statuses = self.run_worker()
         with coordination:
-            self.assertEqual(statuses[-1]['state'], 'ACTIVE')
+            self.assertEqual(statuses[-1]['state'], 'ACTIVE', statuses[-1])
             observer = self.observer()
             self.assertEqual(observer.lease(90)['controlledCumulativeGrantAttempts'], 320)
             row = worker.r.journal.read()
@@ -467,7 +480,7 @@ class NativePostbootOwnerQualified(NativePostbootQualified):
     def test_stopped_worker_cannot_be_replayed_or_installation_reinitialized(self):
         self.install_owner()
         worker, coordination, stop, thread, statuses = self.run_worker()
-        self.assertEqual(statuses[-1]['state'], 'ACTIVE')
+        self.assertEqual(statuses[-1]['state'], 'ACTIVE', statuses[-1])
         stop.set(); thread.join(35)
         self.assertFalse(thread.is_alive())
         before = self.grant_count()

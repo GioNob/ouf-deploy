@@ -63,11 +63,26 @@ for thread in threads:thread.join(5);assert not thread.is_alive()
 assert not errors,errors
 assert before=={name:id(sys.modules[name]) for name in sources}
 assert all(getattr(sys.modules[name],'__qualified_source_sha256__')==manifest['sourceHashes'][name] for name in sources)
-print(json.dumps({'modules':len(sources),'sourceBytes':sum(map(len,sources.values())),'guardedSources':len(contract.SOURCE_FILES),'loadedBeforeThreads':True,'nativeEffects':0}))
+library_count=0
+if len(sys.argv)>2 and sys.argv[2]=='actual-stdlib':
+ from tools.semantic_policy_token_owner.iam_owner_action import stdlib_binding
+ library=stdlib_binding()
+ library_count=len(library['fileHashes'])
+ assert library_count>100 and library['noSiteRequired'] is True
+print(json.dumps({'modules':len(sources),'sourceBytes':sum(map(len,sources.values())),'guardedSources':len(contract.SOURCE_FILES),'loadedBeforeThreads':True,'actualStdlibFiles':library_count,'nativeEffects':0}))
 '''
 
 
 class CompleteClosure(unittest.TestCase):
+    def test_ubuntu_python_actual_stdlib_custody_after_complete_sealed_import(self):
+        result = subprocess.run(['/usr/bin/python3', '-I', '-B', '-S', '-', str(ROOT), 'actual-stdlib'],
+            input=CHILD.encode(), stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=45, cwd='/')
+        self.assertEqual(result.returncode, 0, result.stderr.decode())
+        self.assertEqual(result.stderr, b'')
+        receipt = json.loads(result.stdout)
+        self.assertGreater(receipt['actualStdlibFiles'], 100)
+        self.assertEqual(receipt['nativeEffects'], 0)
+
     def test_actual_closed_graph_preload_typed_identity_and_concurrent_source_custody(self):
         result = subprocess.run([sys.executable, '-I', '-B', '-S', '-', str(ROOT)], input=CHILD.encode(),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30, cwd='/')

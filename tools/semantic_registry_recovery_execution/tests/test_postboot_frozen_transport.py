@@ -29,13 +29,15 @@ class Handler(BaseHTTPRequestHandler):
             'sameWorkloadBearer': self.headers.get('Authorization') == 'Bearer FIXTURE_ORIGINAL_SERVICE_TOKEN'})
         status = self.server.status if self.server.calls[-1]['sameWorkloadBearer'] else 403
         raw = self.server.raw if self.server.raw is not None else json.dumps(self.server.frozen).encode()
+        # Complete a fixture mutation before the client can receive any response.
+        # A callback after write(raw) races the client's final custody check.
+        if self.server.callback:
+            self.server.callback()
         self.send_response(status)
         if status == 302:
             self.send_header('Location', 'http://127.0.0.1:1/no-fallback')
         self.send_header('Content-Length', str(len(raw)))
         self.end_headers(); self.wfile.write(raw)
-        if self.server.callback:
-            self.server.callback()
 
 
 class FrozenTransport(unittest.TestCase):
@@ -93,14 +95,17 @@ class FrozenTransport(unittest.TestCase):
         self.assertEqual(len(self.server.calls), 1)
 
     def test_token_atomic_rotation_during_get_cannot_be_retained(self):
+        rotated = threading.Event()
         def rotate():
             import os
             changed = self.root / 'replaced-token.jwt'
             changed.write_text('FIXTURE_CHANGED_TOKEN'); changed.chmod(0o600)
             os.replace(changed, self.token)
+            rotated.set()
         self.server.callback = rotate
-        with self.assertRaises((ValueError, RuntimeError)):
+        with self.assertRaisesRegex(RecoveryDenied, 'ORIGINAL_MOUNTED_SERVICE_TOKEN_CHANGED'):
             self.get()
+        self.assertTrue(rotated.is_set())
         self.assertEqual(len(self.server.calls), 1)
 
     def test_https_certificate_name_ca_and_exact_leaf_pin_are_required(self):

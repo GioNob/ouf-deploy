@@ -261,11 +261,21 @@ def read_frozen(profile, caller, reference):
             current = os.open('/proc/' + str(pid) + '/root', os.O_PATH | os.O_DIRECTORY); fds.append(current)
             root_fd = current; root_identity = identity(os.fstat(root_fd))
             parts = PurePosixPath(profile['tokenTarget']).parts[1:]
+            mounted_parents = []
             for part in parts[:-1]:
-                current = os.open(part, os.O_PATH | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=current); fds.append(current)
+                parent = current
+                current = os.open(part, os.O_PATH | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent); fds.append(current)
+                mounted_parents.append((parent, part, current, identity(os.fstat(current))))
             mounted = os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=current); fds.append(mounted)
-            require(metadata(os.fstat(mounted)) == metadata(os.fstat(host)) == profile['tokenSource']['metadata'],
-                    'SAME_ORIGINAL_MOUNTED_SERVICE_TOKEN_REQUIRED')
+            def same_token():
+                require(metadata(os.fstat(mounted)) == metadata(os.fstat(host))
+                        == metadata(os.stat(parts[-1], dir_fd=current, follow_symlinks=False))
+                        == profile['tokenSource']['metadata'], 'ORIGINAL_MOUNTED_SERVICE_TOKEN_CHANGED')
+                for parent, name, held, expected in mounted_parents:
+                    require(identity(os.fstat(held)) == expected
+                            == identity(os.stat(name, dir_fd=parent, follow_symlinks=False)),
+                            'ORIGINAL_MOUNTED_SERVICE_TOKEN_ANCESTRY_CHANGED')
+            same_token()
             token = os.read(mounted, 16385).decode('ascii').strip()
             require(token and len(token) <= 16384 and not any(c.isspace() for c in token), 'BOUNDED_SERVICE_TOKEN_REQUIRED')
             ca = None if profile['ca'] is None else private_file.read(profile['ca']).decode('ascii')
@@ -276,6 +286,7 @@ def read_frozen(profile, caller, reference):
                                'ca': ca, 'peerCertificateSha256': profile['peerCertificateSha256']})
             require(len(payload) <= 262144, 'BOUNDED_PRIVATE_FROZEN_REQUEST_REQUIRED')
             transport.verify_program(profile['pythonExecutable'])
+            same_token()
             require(transport.process_ticks(pid) == ticks
                     and identity(os.stat(ns)) == namespace_identity
                     and identity(os.stat('/proc/' + str(pid) + '/root')) == root_identity,
@@ -285,12 +296,13 @@ def read_frozen(profile, caller, reference):
                 pass_fds=(fd,), close_fds=True, cwd='/', env={'LC_ALL': 'C'})
             raw, _ = child.communicate(payload, timeout=12)
             require(child.returncode == 0 and 0 < len(raw) <= 2097152, 'CURRENT_FROZEN_CONFIGURATION_GET_UNCONFIRMED')
+            same_token()
             require(transport.process_ticks(pid) == ticks
                     and identity(os.fstat(fd)) == namespace_identity == identity(os.stat(ns))
                     and identity(os.fstat(root_fd)) == root_identity
-                        == identity(os.stat('/proc/' + str(pid) + '/root'))
-                    and metadata(os.fstat(mounted)) == profile['tokenSource']['metadata'], 'FROZEN_REQUEST_CALLER_CHANGED')
+                        == identity(os.stat('/proc/' + str(pid) + '/root')), 'FROZEN_REQUEST_CALLER_CHANGED')
             transport.verify_program(profile['pythonExecutable'])
+            same_token()
             return decode(raw)
         finally:
             if child is not None:

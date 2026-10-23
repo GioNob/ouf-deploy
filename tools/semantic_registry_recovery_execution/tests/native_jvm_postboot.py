@@ -375,9 +375,19 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
             'Entrypoint': ['sleep'], 'Cmd': ['600'], 'Env': ['OUF_INGESTION_ACTIVATION_GATEWAY_URL=' + origin,
                 'OUF_INGESTION_ACTIVATION_TOKEN_FILE=/run/ingestion.jwt'],
             'HostConfig': {'NetworkMode': self.network_name, 'CapDrop': ['ALL'], 'SecurityOpt': ['no-new-privileges'],
-                'Binds': [str(caller_token) + ':/run/ingestion.jwt:ro']}}, 'ouf-postboot-caller-')
+                'Binds': [str(caller_token) + ':/run/ingestion.jwt:ro']},
+            'NetworkingConfig': {'EndpointsConfig': {self.network_name: {
+                'NetworkID': self.nid, 'IPAMConfig': {
+                    'IPv4Address': str(self.subnet.network_address + 6)}}}}}, 'ouf-postboot-caller-')
         self.assertEqual(self.engine.request('POST', '/v1.44/containers/' + caller + '/start')[0], 204)
         actual_caller = self.inspect(caller)
+        # Docker releases a stopped container's address. The independent caller
+        # must not acquire the reviewed .2 Registry endpoint before recovery.
+        network = json.loads(self.command('docker', 'network', 'inspect', self.nid))[0]
+        live_addresses = {member['IPv4Address'].split('/')[0]
+                          for member in network['Containers'].values()}
+        self.assertNotIn(self.registry_address, live_addresses)
+        self.assertIn(str(self.subnet.network_address + 6), live_addresses)
         configuration = {'semanticReferenceBindings': [inputs.reference()],
                          'semanticMapping': {'semanticRefs': [inputs.SEMANTIC_ID + '@' + inputs.SEMANTIC_VERSION]}}
         config_hash = 'sha256:' + c.digest(configuration)
@@ -435,7 +445,7 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
         self.assertEqual(failed['status'], 502)
         self.install_owner()
         worker, coordination, _, _, statuses = self.run_worker()
-        self.assertEqual(statuses[-1]['state'], 'ACTIVE')
+        self.assertEqual(statuses[-1]['state'], 'ACTIVE', statuses[-1])
         with coordination:
             runner = build_on_bootstrap(self.runner, self.native_context, self.owner_context,
                 self.current_authority, self.authority, self.verifier, self.node_signer)

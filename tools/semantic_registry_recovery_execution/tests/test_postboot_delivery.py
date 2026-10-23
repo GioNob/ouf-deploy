@@ -110,6 +110,23 @@ class SealedPostbootDelivery(unittest.TestCase):
                 finder.find_spec('_undeclared_optional_implementation')
         self.assertNotIn('_wmi', sys.modules)
 
+    def test_generated_stdlib_uses_exact_interpreter_path_and_blocks_build_selectors(self):
+        selected = r.generated_stdlib_binding()
+        self.write(selected[0] + '.py', b'raise AssertionError("UNDECLARED_SYSCONFIG_EXECUTED")\n')
+        with patch.object(sys, 'path', [str(self.root), *sys.path]):
+            same = r.generated_stdlib_binding()
+        self.assertEqual(same[0], selected[0])
+        self.assertEqual(same[1].origin, selected[1].origin)
+        self.assertEqual(Path(same[1].origin).parent.resolve(), Path(sys._stdlib_dir).resolve())
+        finder = r.MemoryLoader({}, frozenset(), {}, selected)
+        with self.assertRaisesRegex(r.RuntimeDenied, 'LOCAL_SOURCE_IMPORT_FALLBACK_DENIED'):
+            finder.find_spec('_sysconfigdata__unreviewed_build')
+        for variable in ('_PYTHON_SYSCONFIGDATA_NAME', '_PYTHON_SYSCONFIGDATA_PATH', '_PYTHON_PROJECT_BASE',
+                         '_PYTHON_HOST_PLATFORM', '_PYTHON_BUILD', 'PYTHONUSERBASE', 'DEB_PYTHON_INSTALL_LAYOUT'):
+            with self.subTest(variable=variable), patch.dict(os.environ, {variable: ''}):
+                with self.assertRaisesRegex(r.RuntimeDenied, 'PYTHON_BUILD_CONFIGURATION_OVERRIDE_DENIED'):
+                    r.generated_stdlib_binding()
+
     def test_missing_static_package_member_and_unreachable_extra_are_rejected(self):
         with self.assertRaisesRegex(r.RuntimeDenied, 'MISSING_STATIC_PACKAGE_MEMBER'):
             r.compile_sources({r.ENTRY: b'from . import absent\n'})
