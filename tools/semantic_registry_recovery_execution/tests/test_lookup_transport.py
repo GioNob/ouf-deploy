@@ -190,6 +190,17 @@ class Contract(unittest.TestCase):
             with self.assertRaisesRegex(Exception, 'PRIOR_TLS_PREPARATION_ADVANCED'):
                 reconcile.reconcile(case, p.Files(), boot)
 
+    def test_metadata_scope_is_bounded_and_does_not_change_legacy_limit(self):
+        self.assertEqual(p.Files().maximum_reads, 128)
+        self.assertEqual(p.Files(maximum_reads=192).maximum_reads, 192)
+        with self.assertRaises(Exception): p.Files(maximum_reads=193)
+        with tempfile.TemporaryDirectory(dir=ROOT) as temporary:
+            path = Path(temporary) / 'bounded'; path.write_bytes(b'public fixture'); path.chmod(0o400)
+            files = p.Files(maximum_reads=192)
+            for _ in range(192): files.seal(str(path), 64, retain=False)
+            with self.assertRaisesRegex(Exception, 'BOUNDED_PREPARATION_FILE_REQUIRED'):
+                files.seal(str(path), 64, retain=False)
+
     def test_all_three_children_share_private_lookup_setup_without_literal_endpoints(self):
         for source in (original_tls.TLS_CHILD_SOURCE, p.FROZEN_CHILD_SOURCE, semantic_request.CHILD_SOURCE):
             ast.parse(source)

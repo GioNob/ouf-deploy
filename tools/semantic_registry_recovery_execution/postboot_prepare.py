@@ -62,7 +62,9 @@ def directory_identity(info):
 
 
 class Files:
-    def __init__(self):
+    def __init__(self, maximum_reads=128):
+        require(type(maximum_reads) is int and maximum_reads in (128, 192), 'BOUNDED_PREPARATION_METADATA_READ_SCOPE_REQUIRED')
+        self.maximum_reads = maximum_reads
         self.bytes = 0
         self.reads = 0
         self.observed = {}
@@ -118,7 +120,7 @@ class Files:
 
     def seal(self, path, maximum, expected=None, retain=True):
         with self.held(path) as (fd, info, ancestry):
-            require(0 < info.st_size <= maximum and self.reads < 128, 'BOUNDED_PREPARATION_FILE_REQUIRED')
+            require(0 < info.st_size <= maximum and self.reads < self.maximum_reads, 'BOUNDED_PREPARATION_FILE_REQUIRED')
             self.reads += 1; raw = bytearray()
             while len(raw) <= info.st_size:
                 self.check(); chunk = os.read(fd, min(65536, info.st_size + 1 - len(raw)))
@@ -585,7 +587,7 @@ def _prepare(case, manifest, sources):
     validate_case(case)
     require(manifest.get('sourceHashes', {}).get(__name__) == globals().get('__qualified_source_sha256__')
             and hashed(globals().get('__qualified_source_sha256__')), 'EXACT_SEALED_PREPARATION_SOURCE_REQUIRED')
-    files = Files(); closure_hash = digest(manifest)
+    files = Files(maximum_reads=192 if 'resolverRecovery' in case else 128); closure_hash = digest(manifest)
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     require(owner_contract.boot(boot), 'CURRENT_PREPARATION_BOOT_REQUIRED')
     root = prepared_root(case, manifest, boot)
@@ -599,7 +601,8 @@ def _prepare(case, manifest, sources):
     publish(root, 'claim.json', {'schema': SCHEMA, 'caseHash': digest(case), 'sourceClosureHash': closure_hash,
         'bootId': boot, 'maximumEngineGets': 12, 'maximumAdminGets': 1, 'maximumFrozenGets': 1,
         'automaticReplayAllowed': False, 'runtimeAuthorityIssued': False,
-        **({'maximumTlsHandshakes': 1} if case['originalRequestTls'] == original_tls.POLICY else {})})
+        **({'maximumTlsHandshakes': 1} if case['originalRequestTls'] == original_tls.POLICY else {}),
+        **({'maximumMetadataReads': 192} if 'resolverRecovery' in case else {})})
     prior_preparation = reconcile_prior_preparation(case, files, boot)
     inputs, input_profile = files.json(case['retainedInputs']['path'], case['retainedInputs']['sha256'])
     historical, _ = files.json(case['historicalReview']['path'], case['historicalReview']['sha256'])
@@ -774,6 +777,7 @@ def _prepare(case, manifest, sources):
             'bootId': boot, 'engineGets': calls, 'adminGets': 1, 'frozenConfigurationGets': 1,
             'priorPreparationReconciliation': prior_preparation,
             'tlsHandshakes': tls_handshakes, 'originalTlsObservation': tls_observation,
+            'metadataReadOperations': files.reads, 'maximumMetadataReads': files.maximum_reads,
             'resolverCalls': 2 if lookup_profile is not None else 0, 'tlsAttemptMarkers': tls_handshakes,
             'originalServiceBearerUsed': True, 'ownerCredentialBytesRead': False, 'databaseCalls': 0, 'oauthRequests': 0,
             'runtimeEffectsDispatched': 0, 'runtimeAuthorityIssued': False, 'budgetReset': False,

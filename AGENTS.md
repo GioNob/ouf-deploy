@@ -1,3 +1,8 @@
+# CURRENT — metadata capture bound accounts for retained diagnosis
+
+Initial source ba256 transport matrix passed13+9tests eachPython3.12/3.13; sealedloader20each; TLS11each; nativeprefix8 and actualJVMcomposition1PASS. Component run failed only because the old immutable TLS artifact was still tested as current-source; it now stays historical and a new resolver artifact will be audited as current. Do not rewrite old capsules. Fullsourceupdate adds explicit metadata capture cap192 only for resolverRecovery (legacy128 unchanged), because retaining/rechecking all36prior proof files exceeds the old cap. Engine/Admin/resolver/TLS/OAuth counters unchanged and not reset. Local5contracttestsPASS including metadata-bound rejection and old-file preservation. Source/Capsule/launcher requalification pending.
+
+---
 # CURRENT — corrected caller resolver verifies TLS on target; integrate the recovery transports
 
 User receipt d0aaf645 confirms corrected lookup view resolves and verifies TLS chain/name from caller netns; no HTTP/bearer/token/OAuth/runtime effect. Confirms the earlier helper's host-resolver context defect, not Registry readiness or permanent 502 repair. Preserve all3failedpreparations +2completeddiagnostics:22Engine/3Admin/3resolver/3TLS-intent,0frozenGET. Evidence semantic-registry-caller-resolver-success-target-20261023.json.
