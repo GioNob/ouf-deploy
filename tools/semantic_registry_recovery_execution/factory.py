@@ -47,7 +47,7 @@ def require_historical_parent(prepared,execution_root):
         and Path(execution_root).parent==original.parent.parent,
         'RECOVERY_PARENT_MUST_BE_THE_RETAINED_INSTALLATION_EVIDENCE_PARENT')
 
-def build(context,authority,raw,token_owner,verifier,signer):
+def current_scope(context,authority,raw):
     scope=factory_scope(context)
     require(type(authority) is cutover_type() and type(raw) is bytes
         and authority.expected['intakeHash']==scope['contextHash'] and authority(raw) is True
@@ -80,6 +80,13 @@ def build(context,authority,raw,token_owner,verifier,signer):
     profile=authority.execution_profile;profile.verify(request)
     require(profile.configtree==prepared['configtree'],'SAME_REVIEWED_CONFIGTREE_PROFILE_REQUIRED')
     scoped=AuthorityScope(authority,raw,plan,request)
+    require(factory_scope(context)==scope and authority(raw) is True,'FACTORY_SCOPE_CHANGED_DURING_BUILD')
+    return scope,retained,scoped
+
+def build(context,authority,raw,token_owner,verifier,signer):
+    scope,retained,scoped=current_scope(context,authority,raw)
+    plan=context['plan'];prepared=retained['registryInputs'];request=prepared['creationRequest']
+    profile=authority.execution_profile;recipe=context['nodeRecipe']
     store=Store(context['executionRoot'],plan['logicalOperationRef'])
     budget=ReadBudget(store,scoped,plan)
     b=context['engineBinding'];require(set(b)=={'socketPath','socketBinding'},'EXACT_CURRENT_ENGINE_BINDING_REQUIRED')
@@ -97,3 +104,11 @@ def build(context,authority,raw,token_owner,verifier,signer):
     boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     require(factory_scope(context)==scope and authority(raw) is True,'FACTORY_SCOPE_CHANGED_DURING_BUILD')
     return Runner(plan,store,ports,boot_id=boot)
+
+def build_from_reference(context,reference,authority,raw,verifier,signer):
+    # Authenticate the complete factory context before opening selected owner
+    # artifacts. The separate signed owner scope binds exactly one reference.
+    current_scope(context,authority,raw)
+    from .installed_owner import build_observer
+    owner=build_observer(context['plan'],reference,authority,raw)
+    return build(context,authority,raw,owner,verifier,signer)
