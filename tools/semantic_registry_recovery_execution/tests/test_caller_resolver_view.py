@@ -83,18 +83,18 @@ class CallerResolver(unittest.TestCase):
         fd = os.open('/proc/self/ns/net', os.O_RDONLY)
         try:
             if source is None:
-                source = d.child_source(old['CHILD']).replace('except BaseException as error:\n', 'except BaseException as error:\n import traceback;traceback.print_exc()\n')
+                return d.run_child(old, origin or self.origin, ca or self.cert.read_bytes(),
+                                   self.views if views is None else views, {'path': sys.executable}, fd)
             payload = d.encoded({'mode': 'CALLER_DNS_TLS', 'origin': origin or self.origin,
                 'ca': (ca or self.cert.read_bytes()).decode(), 'views': self.views if views is None else views})
             result = subprocess.run([sys.executable, '-I', '-B', '-S', '-c', source, str(fd)],
                 input=payload, stdout=subprocess.PIPE, stderr=subprocess.PIPE, pass_fds=(fd,), timeout=12)
             self.assertEqual(result.returncode, 0, result.stderr)
-            if result.stderr: print(result.stderr.decode(), file=sys.stderr)
             return d.check_result(json.loads(result.stdout), old)
         finally: os.close(fd)
 
     def host_snapshot(self):
-        return (os.stat('/proc/self/ns/mnt').st_ino,
+        return (os.stat('/proc/self/ns/mnt').st_ino, (os.stat('/tmp').st_dev, os.stat('/tmp').st_ino),
             {n: (os.stat('/etc/' + n).st_ino, Path('/etc/' + n).read_bytes()) for n in d.VIEWS})
 
     def test_actual_copied_resolver_dns_tls_and_host_files_unchanged(self):

@@ -101,11 +101,11 @@ def caller_views(pid, ticks, process_ticks):
 
 
 # Injected only into the exact hash-verified prior child. All mounts are private
-# and use immutable memfds, not caller files or caller binaries. The host libc,
+# and use files on a private read-only tmpfs, not caller files or caller binaries. The host libc,
 # CA and Python remain in use. No dynamic code from the container is loaded.
 PRIVATE_VIEW = r'''
 result['phase']='PRIVATE_LOOKUP_VIEW'
-import ctypes,fcntl
+import ctypes
 if type(v['views'])is not dict or set(v['views'])!={'resolv.conf','hosts','nsswitch.conf'}:raise ValueError()
 if not all(type(x)is str and 0<len(x.encode('ascii'))<=16384 and '\0'not in x for x in v['views'].values()):raise ValueError()
 nss=[s.split('#',1)[0].split(':',1)[1].split()for s in v['views']['nsswitch.conf'].splitlines()if s.split('#',1)[0].strip().startswith('hosts:')]
@@ -114,22 +114,25 @@ mount_before=os.stat('/proc/self/ns/mnt').st_ino
 os.unshare(os.CLONE_NEWNS)
 if os.stat('/proc/self/ns/mnt').st_ino==mount_before:raise ValueError()
 libc=ctypes.CDLL(None,use_errno=True)
-libc.mount.argtypes=[ctypes.c_char_p,ctypes.c_char_p,ctypes.c_char_p,ctypes.c_ulong,ctypes.c_void_p]
+libc.mount.argtypes=[ctypes.c_char_p,ctypes.c_char_p,ctypes.c_char_p,ctypes.c_ulong,ctypes.c_char_p]
 libc.mount.restype=ctypes.c_int
-def mount(source,target,flags):
- if libc.mount(source,target,None,flags,None)!=0:raise OSError(ctypes.get_errno(),'')
+def mount(source,target,flags,kind=None,data=None):
+ if libc.mount(source,target,kind,flags,data)!=0:raise OSError(ctypes.get_errno(),'')
 mount(None,b'/',(1<<14)|(1<<18)) # MS_REC | MS_PRIVATE, before any bind
-held=[]
+mount(b'tmpfs',b'/tmp',2|4|8,b'tmpfs',b'size=64k,mode=0700')
 for name in ('resolv.conf','hosts','nsswitch.conf'):
  data=v['views'][name].encode('ascii')
- mem=os.memfd_create('ouf-public-lookup',os.MFD_CLOEXEC|os.MFD_ALLOW_SEALING);held.append(mem)
- if os.write(mem,data)!=len(data):raise ValueError()
- fcntl.fcntl(mem,fcntl.F_ADD_SEALS,fcntl.F_SEAL_SEAL|fcntl.F_SEAL_SHRINK|fcntl.F_SEAL_GROW|fcntl.F_SEAL_WRITE)
+ fd_copy=os.open('/tmp/ouf-view-'+name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o400)
+ try:
+  if os.write(fd_copy,data)!=len(data):raise ValueError()
+ finally:os.close(fd_copy)
+mount(None,b'/tmp',32|1|2|4|8) # private tmpfs now read-only
+for name in ('resolv.conf','hosts','nsswitch.conf'):
  target=('/etc/'+name).encode('ascii')
- mount(('/proc/self/fd/'+str(mem)).encode(),target,4096) # MS_BIND
+ mount(('/tmp/ouf-view-'+name).encode('ascii'),target,4096) # MS_BIND
  mount(None,target,4096|32|1|2|4|8) # bind remount, RO/nosuid/nodev/noexec
  with open(target,'rb')as check:
-  if check.read(16385)!=data:raise ValueError()
+  if check.read(16385)!=v['views'][name].encode('ascii'):raise ValueError()
 # Prevent libc nscd from providing answers outside the copied lookup view.
 # nscd is not expected on this strictly bounded host transport; fail closed.
 if os.path.exists('/var/run/nscd/socket')or os.path.exists('/run/nscd/socket'):raise ValueError()
