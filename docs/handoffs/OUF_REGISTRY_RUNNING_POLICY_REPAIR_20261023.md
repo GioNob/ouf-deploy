@@ -158,3 +158,35 @@ The final delivery fixtures and unchanged operational modules passed at
 inspected. All six launcher shell cases pass, including portable-client absence
 with a real fixture fallback, and complete client absence with an isolated PATH.
 The generated launcher also passes `bash -n`. Target execution is pending.
+
+## Target installation result: first publication absent at initial observation
+
+The operator reported complete installation for review
+`b67488693c49241d8b6bdf1691216847bd07d7057895a26aa35946442ee450fe`,
+configuration `0b72275fcc2c51be0929ca0ba454de932ae4863af1b2410dd67bef61bf81e91a`.
+The manager then reported active with a running process and boot enablement,
+but the initial 45-second observation saw DISPATCHING, three new attempts,
+cumulative 324, zero publications and no positive recorded token window.
+The deploy operator stopped with
+`INITIAL_ACTUAL_OPERATIONAL_PUBLICATION_AND_PROCESS_REQUIRED`.
+The independently running worker was not stopped by that operator failure.
+Preserve `/home/oufadmin/ouf-registry-normal-launch.CP13rdcp/operator.log`.
+Do not replay installation/start or reset its claims/counters.
+
+If no process restart occurred, the initial two attempts returned through the
+proven-no-submission branch to allow a third distinct reservation with zero
+publications. A restart can also abandon an undispatched RESERVED attempt
+without refunding it. Restart count, third outcome and current state need observation. Attempt counts do not establish
+issued tokens. The precise unavailable dependency remains unproven.
+
+The new observer checks this exact review/configuration, takes two bounded
+atomic FD ledger snapshots and performs one read-only manager show. It never
+reads credentials or runs the capsule. One separately claimed unauthenticated
+TLS connection from the host uses the configured IAM peer, issuer SNI and exact
+CA file, with an eight-second deadline and no HTTP or bearer. Its result is
+explicitly not proof of worker-cgroup connectivity. No operational ledger,
+manager, network configuration, container or IAM mutation is performed.
+Seven focused tests pass, including real loopback TLS identity verification,
+certificate rejection, refusal, protected-file and claim boundaries, redaction,
+and an explicitly synthetic manager/transport full-observation fixture.
+The eight operational modules and installed capsule are unchanged.

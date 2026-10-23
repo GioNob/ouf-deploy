@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.registry-operational-installation-target-observation.v1",
+  "source": "user-supplied operator receipts",
+  "reviewHash": "b67488693c49241d8b6bdf1691216847bd07d7057895a26aa35946442ee450fe",
+  "configurationHash": "0b72275fcc2c51be0929ca0ba454de932ae4863af1b2410dd67bef61bf81e91a",
+  "installationCompleteReported": true,
+  "managerActiveReported": true,
+  "managerProcessRunningReported": true,
+  "bootEnablementConfiguredReported": true,
+  "lastObservedWorkerState": "DISPATCHING",
+  "lastObservedNewAttempts": 3,
+  "lastObservedCumulativeAttempts": 324,
+  "lastObservedPublications": 0,
+  "workerMayContinueIndependently": true,
+  "initialOperatorStatus": "STOP_RECONCILE",
+  "reasonCode": "INITIAL_ACTUAL_OPERATIONAL_PUBLICATION_AND_PROCESS_REQUIRED",
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "originalSemanticGetSucceeded": false,
+  "releaseAcceptance": false,
+  "operatorLog": "/home/oufadmin/ouf-registry-normal-launch.CP13rdcp/operator.log"
+}
