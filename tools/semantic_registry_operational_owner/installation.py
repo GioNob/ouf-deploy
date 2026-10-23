@@ -109,7 +109,7 @@ def service_unit(c, configuration_hash, python, capsule):
     lines=['[Unit]','Description=OUF Registry existing IAM credential renewal',
         'After=network-online.target','Wants=network-online.target',
         'StartLimitIntervalSec=300','StartLimitBurst=3','', '[Service]',
-        'Type=simple','RootDirectory='+install+'/sandbox','User=root','Group=root','SupplementaryGroups='+str(gid),
+        'Type=simple','RootDirectory='+install+'/sandbox','User=root','Group=root',
         'ExecStart=:'+unit_word(python)+' -I -B -S '+unit_word(capsule)+' worker --configuration '+install+
         '/configuration.json --configuration-sha256 '+configuration_hash,
         'Restart=on-failure','RestartSec=15','TimeoutStopSec=35','KillMode=control-group',

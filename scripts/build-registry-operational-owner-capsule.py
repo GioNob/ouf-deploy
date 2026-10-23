@@ -28,6 +28,7 @@ def unique(pairs):
  for k,v in pairs:
   require(k not in value,'DUPLICATE_OPERATIONAL_CAPSULE_FIELD');value[k]=v
  return value
+mode=None
 try:
  require(os.geteuid()==os.getegid()==0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,'ISOLATED_ROOT_OPERATIONAL_CAPSULE_REQUIRED')
  require(hashlib.sha256(BOOTSTRAP.encode()).hexdigest()==DELIVERY['sourceManifest']['bootstrapHash'] and hashlib.sha256(encoded(DELIVERY)).hexdigest()==DELIVERY_HASH,'OPERATIONAL_DELIVERY_DECLARATION_CHANGED')
@@ -64,7 +65,7 @@ try:
 except (Exception,KeyboardInterrupt)as error:
  signal.alarm(0)
  reason=str(error);reason=reason if re.fullmatch('[A-Z][A-Z0-9_]{0,127}',reason)else'OPERATIONAL_INSTALLATION_UNPROVEN_PRIVATE_DETAILS_REDACTED'
- print(encoded({'schema':'ouf.registry-operational-installation-operator-result.v1','status':'STOP_RECONCILE','reasonCode':reason,'automaticReplayAllowed':False,'budgetReset':False,'releaseAcceptance':False}).decode(),flush=True)
+ print(encoded({'schema':'ouf.registry-operational-installation-operator-result.v1','status':'STOP_RECONCILE','complete':False,'reasonCode':reason,'runtimeEffectsMayBePartial':mode in('issue','install','start'),'contextsAndClaimsRetained':True,'automaticReplayAllowed':False,'budgetReset':False,'releaseAcceptance':False}).decode(),flush=True)
  raise SystemExit(2)
 '''
 
