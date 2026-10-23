@@ -1,0 +1,7 @@
+{
+  "schema": "ouf.semantic-registry-recovery-inputs-case.v1",
+  "contextPath": "/etc/ouf/deploy-snapshots/ingestion-readiness-stage8-execution-e1c13776c158064f9e1012a4993a409b459ae0711a77486dc59f7dd7a722ce92",
+  "historicalRegistryId": "790c62742c92eabc095d4ab22f2070e0c40a41e4a219685a7d8120e4661e4e5d",
+  "bootProfilePath": "/etc/ouf/deploy-snapshots/semantic-coordinated-boot-install-v2-e4repg0a/boot-profile.json",
+  "bootProfileSha256": "b247b94ac8d77d3604840e052878fcc12f4dc6f7e7e8df548f6971c227504845"
+}

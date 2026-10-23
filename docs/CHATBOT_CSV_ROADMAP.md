@@ -1,3 +1,483 @@
+# CURRENT — all18 observed owners cancelled/blocked/previous-boot; coordinated bootstrap gap established
+
+Owner log /home/oufadmin/ouf-registry-owner-discovery.NKae4nGd/operator.log:18candidates,allCANCELLED/BLOCKED,sameCurrentBootfalse,noexclusiveworkerlock,no positive tokenwindow.72reads/64392bytes,1813dirs/13743entries;1450subdirsoutside depth3. No credentials/Engine/SQL/OAuth/effects. Evidence is owner-pasted,not independent readback. Other owners remain unexcluded;no current owner is selected. Preserve all paths/records. Do NOT ask the user for manager paths or rerun the completed discovery. Evidence: evidence/semantic-registry-owner-discovery-target-20261023.json.
+
+Source audit at b19fc2c5cf4530de5131b92ca0b1f7f22f2e3456:existing governed/legacy guards require rowboot==retainedfirstgrantboot==currentboot;continued/governed installers retain old receiptboot. Existing token continuation also requires exact already-running Registry generation. New recovery NativePorts requires already-admitted token owner before gated start. Therefore current helpers/old continuation are NOT a ready coordinated postboot repair for observed state. Fresh HUMAN signatures alone do not fix this mismatch. Full finding: docs/handoffs/OUF_SEMANTIC_REGISTRY_POSTBOOT_OWNER_BLOCKER_20261023.md. No runtime behavior changed by this evidence update.
+
+Next development must close the distinct coordinated-bootstrap gap:explicit fresh gate-only admission with Java fenced,current-boot owner session bound to exact retained lineage/cumulative accounting,thenfullpausedOCI/rootfs/mount/IAM/attestation,separateunpause/SIGUSR1,originalserviceGET200. No oldboot/expiry/admission edits,oldclaims/signature/signal replay or weakened shared observers. Sourceclosure/currentcontext/issuer/delivery/launcher/whole-native qualification still required before any target recovery command or new HUMAN/token/window approval. Observed319 is NOT selected lineage/approved budget and is distinct from HUMAN304/304. Never choose highest/newest or sum overlapping counters.
+
+502OPEN;no new target command or authority/effect selected. No additional broad inventory,Gateway rewrite,provider restoration,activation retry,login or budget/windowreset. Patch12/12,technical8/8,functional4/6,G3OPEN,releaseAcceptancefalse. Earlier next-command headers are historical.
+
+---
+
+# CURRENT — user does not know token owner; bounded current metadata discovery is the next operator step
+
+Do NOT ask the user again for a token-manager path. Standalone scripts/read-registry-token-owner-candidates-20261023.py at e607c78606b942b9515dad59ab8c09cf3af1db2b, SHA256a8b2aff8ea8e3c0be3fc928e925a756aafeb4e7ce4104530b244ec107071fb30. CI39904837125:9PASS/0skips including actual kernel flock observation with no lock acquisition;local8PASS/1native unavailable;all3source/test/workflow files exact readback. Qualified pinned operator command: releases/semantic-registry-owner-discovery-20261023.sh;full bounds/interpretation docs/handoffs/OUF_SEMANTIC_REGISTRY_OWNER_DISCOVERY_20261023.md.
+
+This is a NEW current installed-owner metadata discovery scope,not replay of completed history/readers or target recovery. Root isolated/no-site/noarguments;only known owner-admission/recovery metadata under /etc/ouf/deploy-snapshots depth<=3,plus boot and /proc/locks.15second alarm/12second checks,2048dirs/32768entries/64candidates/256reads/16MiB. No token/credential/HUMAN/authority/status-file reads,no program/Engine/DB/OAuth/lock acquisition/worker start. Candidate paths/states/counters/currentboot/expiry/lockobservations only;no rawmetadata/secrets. No newest/by-name/historical selection,identity/signature/onlineadmission proof,or global absence inference. Unsearched directories/symlinks explicit. Drift/caps STOP,retainlog,no automatic rerun.
+
+User executes that one pinned command on established VPS terminal and pastes public JSON. Use returned paths/current states to construct exact current-owner binding/admission;live lock or local expiry is not authority. Do not request newlogin/token/window consent or execute runtime recovery prematurely. Source loader/capsule/currentcontext/issuer/delivery/launcher/wholeJVM qualification remain incomplete.502OPEN;no target execution or runtime effects observed. Preserve all dossiers/claims/budgets;patch12/12,technical8/8,functional4/6,G3OPEN,OAuth304/304exhausted,releaseAcceptancefalse. Earlier headers are history.
+
+---
+
+# CURRENT — exact installed observer and finite installer qualified; 502 OPEN
+
+Source8758070e38dd38981e9f5740cb5896d287453be6; CI39902242028 PASS:95component/regression+3actualDocker+2PostgreSQL17=100tests,0skips;local15corePASS;all7changed implementation/test files read back exactly. New signed exact installed-owner reference reconstructs actual observer without discovery, worker start/wait, credential/token read, IAM request or journal mutation. Current boot plus both retained expiry clocks are mandatory;ACTIVE alone is insufficient. CurrentAdmission checks before DB/native prerequisites. One-time canonical installer creates finite ledgers only under current actual signed factory/recovery/owner/reads/installation scopes;partial/existing directories remain consumed and cannot be adopted/reinitialized. Factory build_from_reference connects these actual owners.
+
+Qualified fixtures use actual scoped Ed25519/source custody/InstalledTokenOwner and actual scheduled worker publication against disposable TLS IAM;legacy-systemd fence and HUMAN are synthetic. Installer file tests substitute current-context/history layer. Whole real JVM/OCI/IAM recovery remains UNQUALIFIED. No VPS effects,authority issuance,grants,login,activation or502resolution occurred. Full details/limits: docs/handoffs/OUF_SEMANTIC_REGISTRY_INSTALLED_OWNER_20261023.md and evidence/semantic-registry-installed-owner-ci-20261023.json.
+
+NEXT REQUIRED INPUT: exact CURRENT installed token-owner journal/installation reference from current operator configuration; historical dossier is not current selection. Do not select newest/by-name/historical worker or request token/secret values. Expired/parked/exhausted/other-boot owner blocks before init;governed recovery requires separate qualified actual authority,not a bypass. Still required: immutable current-context collector,sealed full source/loader/capsule,executable issuer/delivery/launcher and whole native qualification. No target recovery command or premature HUMAN/token/window request is ready. Repository self-hosted read workflows exist,but no current usable target repair executor was established/invoked;operator terminal remains established execution channel.
+
+Correct exact stopped Registry availability behind unchanged route;bare start leaves gate shell. Preserve fresh generation,fullrootfs seal,all claims/dossiers/receipts. No diagnostic replay,Gateway rewrite,provider restoration,old signal/attestation adoption or source activation. Patch12/12,technical8/8,functional4/6,G3OPEN,releaseAcceptancefalse;OAuth304/304exhausted,sourcewindowhistorical;no budget/window reset or automatic authentication. Earlier headers are history.
+
+---
+
+# CURRENT — typed native Registry path and original service GET implemented; 502 OPEN
+
+Qualified source f5937486fcfe1e461caed65abf45ca49887ca33f; CI39871804763 PASS: 82 component/regression +3 real Docker +2 real PostgreSQL17 =87 tests,0skips. All17 changed implementation/test/workflow files read back exactly. Concrete NativePorts/factory now connect current DB/token admission, durable read counters, canonical original-parent fencing, current routes, fresh paused/active node custody and original service-authenticated semantic GET. Original caller source establishes Ingestion service token, NOT HUMAN admin token. Health200 never closes recovery; every exact ACTIVE reference must return200.
+
+This is SOURCE/component qualification,not VPS repair or whole-native JVM qualification. Still required: sealed source closure/loader/current-context collector/installer/issuer/delivery/launcher, exact CURRENT installed token-owner resolution/admission, and full representative native qualification. Factory accepts actual already-admissible owner;it neither selects nor recovers it. Possible running-Registry owner-profile dependence must be checked from selected current evidence,not assumed or bypassed. No target command or premature HUMAN/token/window request is ready. Cloud has no VPS executor;operator terminal remains necessary. Full rootfs seal and consumed claims remain enforced.
+
+Current route targets reviewed stopped Registry/no endpoint; shutdown corroborated. Correct exact Registry availability; no more completed diagnostic replay,Gateway rewrite,provider restoration or activation retry. Source tests are NOT a502fix. Full current path/limits: docs/handoffs/OUF_SEMANTIC_REGISTRY_NATIVE_PATH_20261023.md; evidence/semantic-registry-native-path-ci-20261023.json. Earlier headers are historical.
+
+No target runtime effects/authority;502OPEN;patch12/12,technical8/8,functional4/6,G3OPEN,releaseAcceptancefalse. OAuth304/304 remains exhausted; no automatic auth,old claim/signal/attestation adoption,budget/window reset or source activation. Matrix1.7 §1 and RegistryPET1.3 §§160.6–160.7 consulted.
+
+---
+
+# CURRENT — fresh Registry native node owner qualified at component boundary;502 OPEN
+
+Source 1769d3446fa69e40f3525c7c2a116a2093ab8365;CI39867055213 PASS:60component/regression+3realDocker tests,0skips;local15corePASS. New actual recovery journal binding, versioned complete paused OCI/frame observers, current actual InstalledTokenOwner witness and scoped Ed25519 node owner are connected at component level. Docker restart produces a new PID/kernel generation;unpause invalidates pause;readonly token mount uses the distinct exact binding. Fixtures are not full Semantic JVM/OCI/token/DB recovery qualification.
+
+All3original shared observer Git blobs are EXACTLY restored;frozen139-source delivery reproduction39867055210PASS. Native repeat test exposed Mounts order changes;distinct recovery report/profile hashes all entries by unique destination,without changing originalEngine/native/history hashes or dropping fields. Full source/limits/remaining path: docs/handoffs/OUF_SEMANTIC_REGISTRY_RECOVERY_NODE_20261023.md; evidence/semantic-registry-recovery-node-ci-20261023.json.
+
+Owner shutdown receipt corroborates Docker/containerd/host shutdown in Registry stopwindow;see evidence/semantic-stop-journal-target-20261023.json and /home/oufadmin/ouf-stop-cause.u6qJqIMi/operator.log. Current route still targets stopped Registry/noendpoint. No more completed diagnostic replay. Correct exact Registry availability,not Gateway routing.502notresolved;originalrequest/stopinitiator/readiness notproven.
+
+Still required: complete productionPorts/factory/canonical-parent fencing/source loader/installer/delivery/launcher;currentDB+tokenowner admission;currentroute+sameauthenticatedrequest;whole-native qualification. NO target recovery command or premature HUMAN/token/window request is ready. Preserve all contexts/claims/logs;oldPID/attestation/claims are never adopted. Full rootfs seal remains mandatory;no running-JVM exception/cleanup for newpausedPID. Cloud has no VPS executor;operator terminal required. Patch12/12,technical8/8,functional4/6,G3OPEN,OAuth304/304exhausted;no budget/window/login/activation/provider replay or release acceptance. Original Matrix1.7 §1 and RegistryPET1.3 §§160.6–160.7 consulted. Earlier next-command headers are historical.
+
+---
+
+# CURRENT — Registry shutdown corroborated; distinct fresh-node owner in qualification
+
+Owner /home/oufadmin/ouf-stop-cause.u6qJqIMi/operator.log: DOCKER_SHUTDOWN_CORROBORATED_IN_REGISTRY_STOP_WINDOW,84rows/98777bytes,oneboot,complete selectedevents. Docker stopping08:09:50.160621Z precedes Registry finish08:09:50.772426142Z; Docker termination/shutdown/containerd/host shutdown observed. See evidence/semantic-stop-journal-target-20261023.json. This is owner evidence,not independent readback; stop initiator and original-request end-to-end closure remain unproven. Completed journal reader MUST NOT be rerun. Current route still targets stopped Registry/noendpoint. Correct exact Registry availability,not Gateway configuration.
+
+Development: distinct RecoveryPausedBinding reads the actual recovery journal/first durable start and separately completed pause; it creates no old Transition. Complete existing paused OCI/frame/token-mount observers accept ONLY this additional exact typed binding. New RecoveryNodeOwner connects independent frame compiler, runc/namespace, full rootfs seal, four mounts/current actual InstalledTokenOwner, existing actual Ed25519 signer and acceptance verifier. Requires an additional current signed semanticRegistryRecoveryNode recipe/profile/source scope; durable signature attempt precedes signing,partial issuance only observes. No relaxed rootfs/running-JVM exception,oldPID/attestation adoption or fresh token acquisition. Regression/native-transport/actual-crypto fixture CI pending; fixtures do NOT establish full Docker recovery qualification.
+
+Still NO complete production Ports/factory/issuer/delivery/launcher. Current DB/token admission,live route/final authenticated same-request integration and complete native qualification remain required before target consent/command. Do not call these source components a502fix. Cloud has no VPS executor;operator terminal remains necessary. Preserve all contexts/claims/logs. Patch12/12,technical8/8,functional4/6,G3OPEN,OAuth304/304exhausted;no budget/window/login/activation replay or release acceptance. Consulted original Matrix1.7 §1 and RegistryPET1.3 §§160.6–160.7. Earlier next-command headers are historical.
+
+---
+# LATEST — user requires502cause and correction; targeted Oct18 stop-window journal next
+
+User explicitly corrected scope: understand the502cause and fix it; generic recovery-component progress is not the outcome. Current Gateway map targets the reviewed stopped Registry/noendpoint (owner log /home/oufadmin/ouf-live-route.ZP4fQDib/operator.log). Do not rewrite that route or treat tests as repair. Recovery components remain incomplete; no target apply/authority is ready.
+
+New causal lead from retained authoritative evidence: Registry stopped2026-10-18T08:09:50.772426142Z/143,noOOM;UDP stopped08:09:50.930047249Z/143 (158ms later). Registry restart policy=no. Host boot was later (estimated08:21:16Z;containerd active08:21:22Z); documented Docker/network/application recovery does not report Registry restoration. Hypothesis: missing Registry recovery after shutdown; temporal proximity is NOT stopping-actor proof. See docs/OUF_SEMANTIC_502_DIAGNOSIS_20261022.md for exact evidence sources.
+
+Next exact target command ONLY scripts/read-semantic-stop-journal-20261022.py, no arguments,root/isolatedPython: one journalctl invocation/selectedDocker-containerd-shutdownunits,Oct18 08:07:50–08:11:50UTC,12secondchild/25secondwhole,4MiB/<2000rows. Closed timestamp/classification output only;no rawmessages/addresses/credentials/Engine/OAuth/SQL/control/effects/authority.6localredaction/scope/absence/truncationtestsPASS. Stop preserveslog;no fallback/rerun. This is direct stop-cause evidence,not a repeated inventory. Use result to choose the actual corrective action and verify the original authenticated semanticGET. Bare start only launches a wait shell;do not replay old signal/attestation/claims.
+
+502OPEN;no originalrequestreproduction or resolution claimed. Preserveallcontexts/claims/logs. Patch12/12,technical8/8,functional4/6,WP3/CSV-H-13,G3OPEN,OAuth304/304exhausted;sourcewindowhistorical. No newbudget/window/login/provider/activation/rolloutreplay or releaseacceptance. Earlier next-command headers are historical.
+
+---
+
+# LATEST — current availability defect proven;23recovery component tests pass, native composition still incomplete
+
+Owner /home/oufadmin/ouf-live-route.ZP4fQDib/operator.log: current82route map unchanged;exactsemanticGETpoints to reviewed stoppedRegistry address/port;targetnetworkendpoint absent.6EngineGETs+1adminGET,4credentialreads,0OAuth/DB/writes/effects. Evidence semantic-live-route-target-20261022.json is owner-pasted,not independent cloud readback. Originalrequest/stopcause/readiness/502resolution remain unproven. Corrective target is that Registry,not a Gateway rewrite/provider restart.
+
+Recovery source186cb68a117cf9ceb3502ae8c90094146139fbaa implements12stage durable dispatch/fencing,claimed=>observationonly,no oldPID adoption,current actualCutoverAuthority signed-scope requirement,and4closed native lifecycle paths. CI39860573897:23componentPASS/0skips (15core+8actualAF_UNIX HTTP fixtures with simulated Engine/process/authority);local15core+99predecessor diagnosticsPASS. Evidence semantic-registry-recovery-components-ci-20261022.json. This does NOT qualify Docker/fullnative owners or a production executor. No target command,issuer/launcher or premature runtime consent/budget/window request is ready.
+
+Next development REQUIRED: real current pausedOCI/rootfs/mount/node-signature binding,currentDB+tokenowner admission,currentroute checks,originalauthenticatedrequest verification and complete typed NativePorts/factory/qualification. Preserve exact scopes/claims and fresh-generation custody;do not impersonate historical transitions or apply the released-JVM running_rootfs exception to a new paused PID. Native installer must bind one canonical execution directory/fence per logical recovery so alternate parent paths cannot bypass retained claims. No cleanup/relaxed seal/newprovider/tokenrenewal is implied. See docs/handoffs/OUF_SEMANTIC_REGISTRY_RECOVERY_IMPLEMENTATION_20261022.md.
+
+502remainsmandatoryandOPEN. WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. Preserve allcontexts/claims/logs. OAuth304/304exhausted,source24hourwindowhistorical. No runtime authority/effect,automaticlogin/budgetreset/activation/rolloutreplay/releaseacceptance. Earlier next-command and pending-CI headers are historical.
+
+---
+
+# LATEST — live route targets stopped Registry; corrective components in development
+
+Owner /home/oufadmin/ouf-live-route.ZP4fQDib/operator.log: LIVE_ROUTE_AND_REGISTRY_CORRELATED;all82current routes equal retained;exactsemanticGETtargetsreviewedRegistryaddress/port;Registryexited,no targetnetworkendpoint.6EngineGETs+1adminGET,4credentialreads,0OAuth/DB/writes/effects. New evidence semantic-live-route-target-20261022.json records owner provenance,not independent cloud readback.502notfixed;originalrequestnotreproduced,stopcausenotestablished. No more historical inventories or route rewrites: correct exact Registry availability.
+
+New tools/semantic_registry_recovery_execution contains durable12stage core/fixedscope CAS+invocation fencing,one-attempteffects,read-only reconciliation,fresh first-process custody,current signedscope verifier requiring actual CutoverAuthority,and4closedDocker lifecycle operations. Original stage/release modules unchanged. NOT productionPorts/factory/launcher/executor: full native pausedOCI/rootfs/mount/node signer/currentDB+tokenowner/route/finalauthenticatedrequest composition still MISSING. No target command or premature runtime authority/budget/window request.14core tests localPASS;8Unixsocket transport fixtures locallyBLOCKED by sandboxsocketdenial, dedicatedCIpending. Fixture process/authority are not nativequalification. See docs/handoffs/OUF_SEMANTIC_REGISTRY_RECOVERY_IMPLEMENTATION_20261022.md.
+
+Continue source/native integration and complete representative qualification before runtime review. Mandatory502goal closes only on corrected service and same authenticated request200. WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. Preserve allcontexts/claims/logs. OAuth304/304exhausted,source24hourwindowhistorical;no providerrecovery/activation/rolloutreplay/newlogin/automaticbudgetreset or releaseacceptance. Previous next-command headers superseded.
+
+---
+
+# LATEST — mandatory502fix; current route/target diagnostic next
+
+Owner explicitly requires resolving502. Latest /home/oufadmin/ouf-registry-composition.4BoWbkCh/operator.log: SOURCE_COMPOSITION_AND_IMAGE_DECLARATIONS_OBSERVED,6GETs,metadata/image+4readonly declarations match,7gatesopen,no runtime authority/effects/OAuth. Private composition /etc/ouf/deploy-snapshots/semantic-registry-recovery-composition-2pygojyp/composition.json hash65717005bcbcd03c342832193cabb5f23160583972635337159a0e5334de7e81. Record owner provenance;no independent cloud readback.
+
+Next ONLY distinct tools/semantic_live_route_diagnostic:6exactEngineGETs+1LIVE APISIX admin GET/55seconds. Read existing selected admin config/key via retained custody profiles; private stdin to sealed readonly child in pinned current Gateway netns. Parent namespace unchanged;no Dockerexec/OAuth/renewal/login/old authority/journal mutation. Compare current exact semanticGET route/address/port with reviewed Registry and current network endpoint occupancy. Complete bounded map,static single inlineIPv4only;drift/ambiguity/indirection/credential failure STOP,no fallback/retry. Print no addresses/rawroutes/secrets.12new+87unchanged=99localPASS,0skips;live target/netns qualification pending. This reader does NOT fix502 or prove data-plane cause. After current target observation, implement/qualify the concrete correction and verify the same authenticated request;no more generic historical inventories. See docs/handoffs/OUF_SEMANTIC_502_LIVE_ROUTE_TARGET_20261022.md.
+
+Cloud has no VPS runtime executor exposed;operator terminal is required for target steps. Preserve all previous contexts/claims/logs. WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. OAuth304/304exhausted,source24hourwindowhistorical. No provider recovery,activation,old rollout/claim/signal replay,budget/window reset,automaticlogin or release acceptance. Mandatory repair goal does not replace current native authority or attestation. Previous next-command headers superseded.
+
+---
+
+# LATEST — historical chain reconciled; source descriptor and read-only image preflight only
+
+Owner /home/oufadmin/ouf-registry-history.j7S0llGM/operator.log: HISTORICAL_REGISTRY_INPUTS_RECONCILED_NO_RUNTIME_AUTHORITY,20metadata reads,0Engine/DB/OAuth/credentials/effects. Private inputs /etc/ouf/deploy-snapshots/semantic-registry-history-capture-r5cc0fjv/inputs.json SHA2568facd750a673d25c14bfc1a58c8c0ae28d63d8a5ce487ab956b8f2b23dc902c9. Historical gate reconciled;7current gates stay open. Preserve every dossier/context/claim/log; no independent cloud readback claimed.
+
+Next ONLY distinct tools/semantic_registry_recovery_composition: blocked source compatibility map + exact retained candidate contract,6GET/45second image/declaration preflight. Two exact Gateway/Registry/image reads each,2MiB/get,closed identities; drift/404/limits STOP, no fallback/retry. Match historical image audit/rootfs diff IDs/config and4readonly bind declarations; no layer re-audit,live OCI/file custody/token/DB/current route/readiness proof. Write ONLY new root700/root400 private composition.json. No executor/apply/step/issuer/signer/refresh/authority control. Created-only stage adapter and combined unpause/SIGUSR1 release cannot be reused unchanged.18new+69unchanged local tests=87PASS,0skips; native/VPS/CI/recovery qualification pending. See docs/handoffs/OUF_SEMANTIC_REGISTRY_RECOVERY_SOURCE_PREFLIGHT_20261022.md and new history target evidence.
+
+WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. nativeExecutorQualifiedfalse,targetApplyAuthorizedfalse,runtimeAuthorityIssuedfalse. OAuth304/304exhausted,source24hourwindowhistorical;no provider recovery,activation,old rollout/claim/signal replay,budget/window reset,login or release acceptance. Candidate limits are proposals only. Previous next-command headers superseded.
+
+---
+
+# LATEST — gated proposal retained; offline history composition next
+
+Owner /home/oufadmin/ouf-registry-proposal.gEjCBGSF/operator.log:BLOCKED_RECOVERY_PROPOSAL_RETAINED,4/4GETs,gatedfileonlylaunchobserved,privateProposalPath=/etc/ouf/deploy-snapshots/semantic-registry-recovery-proposal-a14asgjz/proposal.json,hash8b1cce8a68003a5c54778f0b61bd92ecb16532d72d1d7eb5510719b857d89624.8gatesopen,nativeExecutorQualifiedfalse,targetApplyAuthorizedfalse,authority/effects/OAuth0. Preserve proposal and all previous contexts.
+
+NextONLYtools/semantic_registry_history_capture:OFFLINEexactproposal+historicalreview/authority/bundle/consumedprocessclaim/transition/nativeevidencehashchain;0Docker/DB/HTTP/OAuth/subprocess/credentials/dynamicsourcecalls;35seconds,16metadatafilesmax+repeatreads;writeONLYnewroot700/root400privateinputs. Expiredauthorityremainshistory;explicit10phaseprefixbridgeverifiedwithoutrewritingconsumedintents. Candidate12stagegatedcontract separatesstart/pause/attest/unpause/SIGUSR1,NOexecutor/issuer/authority. Ifsuccessful,historicalownergateonlyreconciled;7gatesstayopen,proposalconfigcomparisonisasofsavedproposal,notlivereadback. CurrentRegistryidentity/502causeunproven.13newlocaltests+56unchangedregressionsPASS,0skips;targetcapture/nativequalificationpending. See docs/handoffs/OUF_SEMANTIC_REGISTRY_HISTORY_COMPOSITION_20261022.md.
+
+WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. No providerrecovery,oldrollout/claim/signalreplay,newbudget/window/login/runtimeauthority/sourceactivation. OAuth304/304exhausted;source24hourwindowhistorical. Candidatecapsnotgranted;historicalincidentlineageisnotcauseequivalence. Previousnextcommandheaderssuperseded.
+
+---
+
+# LATEST — recovery inputs observed; gated file-only proposal preparation only
+
+Owner /home/oufadmin/ouf-registry-recovery-inputs.xmeDnp6X/operator.log complete6/6GETs+2guardshows:retainedsemanticnode matches historicalRegistryIPAM;historicalRegistry exited143/Pid0;onlysameimagecandidateitself;source labelabsent/otherimagesnotexcluded;132containers,noendpointcandidate. Guardactive/exited/success,bootRUNTIME_EMPTY/startfalse,ownerBLOCKED/leasefalse/startfalse/counts[0,0]. No currentRegistryidentity/liveGatewaymap/readiness/502cause/authority proven.
+
+Source audit establishes file_only_profile disables external discovery/provider use;do not restore provider merely because it is BLOCKED. Original gated stage/release/RunningWorkloadBinding require exact attested generation;newPID cannot reuse old attestation/start/signal claims. Candidate recovery is a NEW scoped gated-generation action,not old cohort/R12/boot replay or bare Dockerstart. Native feasibility/executor/authority remain unqualified.
+
+Next ONLY tools/semantic_registry_recovery_proposal prepare.py/case.json:4exactGETs/35seconds;validate currentGateway/stoppedRegistry/gatedfileonlyflags/security;writeONLYnewprivateblockedproposal(root700/root400). No runtimeeffect,signing/OAuth/budget/window/start/DB/route/providerchange. SuccessBLOCKED_RECOVERY_PROPOSAL_RETAINED has8UNRESOLVEDgates,nativeExecutorQualifiedfalse,targetApplyAuthorizedfalse,runtimeAuthorityIssuedfalse.8newlocaltests+48unchangedregressionsPASS,0skips;nativeDocker/VPS/CI/futurerecoveryqualificationpending. See docs/handoffs/OUF_SEMANTIC_REGISTRY_GATED_RECOVERY_PROPOSAL_20261022.md and new target evidence.
+
+WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. OAuth304/304exhausted;source24hourwindowhistorical;no newbudget/window/login/authority or activation/replay/reset. Eight proposal gates are not roadmap phases. Preserve ALL directories/claims/receipts. Previous nextcommand headers superseded.
+
+---
+
+# LATEST — v2 endpoint inventory completed; recovery-input reconciliation next
+
+Owner /home/oufadmin/ouf-semantic-endpoints-v2.vgdMguZz/operator.log: RETAINED_ENDPOINT_INVENTORY_ONLY,4/4GETs,132containers,one retained literal semantic upstream/no endpoint candidates. No current Registry identity/live route map/readiness/unreachability/502cause proven. v2 map correction target-complete;no current registry replacement selected.
+
+Oct18postboot/host-network evidence explicitly left provider reconciliation/readiness open. Do not silently connect that provider to Registry or repair only a route. Next distinct tools/semantic_registry_recovery_inputs:6EngineGETs+2systemctl show-only reads,50seconds;exact historical Registry/Gateway and completed patch packet;same-image/source-label observational candidates;loaded exact boot-profile/hash/source path and2sealed configurations/2separate journals. Whitelisted journal state/flags/counts only;no credential/lock/nft/guard/probe/log/DB/OAuth/write/start/activation/retry. Source-label equality is not ownership;otherimagesnotexcluded,providerRegistryAssociationEstablishedfalse. Drift/limits/404 STOP,nofallback.11newlocalfixturetests+37unchangedregressionsPASS,0skips;nativeDocker/systemd/VPS/CI qualificationpending. See docs/handoffs/OUF_SEMANTIC_REGISTRY_RECOVERY_INPUTS_20261022.md.
+
+WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. OAuth304/304 exhausted,no newauthority/window/budget/login. No activation/replay/reset;source24hourwindowhistorical. Preserve allcontexts/claims/directories. Previous next-command headers superseded.
+
+---
+
+# LATEST — endpoint inventory v1 schema STOP reconciled; distinct v2 only
+
+Owner receipt /home/oufadmin/ouf-semantic-endpoints.YZoGEtKg/operator.log: STOP_RECONCILE/BOUNDED_RETAINED_ROUTES_REQUIRED,readOnlytrue,0runtimeeffects,no activation/replay/budgetreset. v1 wrongly required a list; actual producer tools/chatbot_file_cohort/gateway.py route_map returns an ID-keyed dict retained unchanged by NativeGatewayTransport.routes and native_review.compile_review. This is a diagnostic contract defect,not Registry drift or502cause. v1 stops before Engine construction (0DockerGETs source-derived,not a reported target counter). Preserve every stopped reader/case/directory unchanged.
+
+Next ONLY distinct tools/semantic_retained_endpoint_inventory_v2: schema v2,strict bounded ID-keyed map/key==row.id validation,one exact active inline semanticGETroute. Same4GET/35second inventory-only scope,complete patch/packet/Gateway/drift/secrecy guards and no current-route/service/rootcause claim. No list/envelope fallback.11local tests PASS including verbatim producer route_map contract with82synthetic routes/full4GET flow;26unchanged predecessor regressions PASS,0skips. NativeDocker/VPS/CI execution pending. No new OAuth/credentials/probe/routeadmin/DB/writes/lifecycle/activation. See docs/handoffs/OUF_SEMANTIC_ENDPOINT_MAP_SCHEMA_STOP_20261022.md.
+
+WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6,OAuth304/304 exhausted. No new authority/window/budget/login/retry/replay. Source24hour window stays historical. All previous next-command headers are superseded.
+
+---
+
+# LATEST — stopped historical Registry observed; retained endpoint inventory next
+
+Owner receipt /home/oufadmin/ouf-semantic-history.Sg7fpZoS/operator.log is BOUNDED_HISTORICAL_OBSERVATION_ONLY:5/5GETs, historical Registry exited143,finished2026-10-18T08:09:50.772426142Z,0logbytes/0lines. No same-line match,current Registry identity,current route map or502rootcause proven. Exit143 does not establish stopping cause; empty logs do not establish health. Never rerun either historical reader or substitute by name.
+
+Next distinct tools/semantic_retained_endpoint_inventory only: exact completed stage8 review/recovery/packet; canonical packet hash; one exact active inline semanticGETroute;4EngineGETs/35seconds. Two exact pinned Gateway inspects and two bounded all-container endpoint summary inventories. This newly explicit discovery is observational and selects no Registry replacement. IDs/states/shared-network flags for retained literal upstream address candidates only; no names/addresses/raw inventory/credentials. Hostnames,indirect/ambiguousroutes,drift/404/limits STOP without fallback. No probes/logs/routeadmin/DB/OAuth/writes/lifecycle/activation. Current routing,service identity,port/readiness/rootcause remain unproven.8new local fixture tests +18unchanged regressions PASS,0skips;nativeDocker/VPS/CI qualification pending. See docs/handoffs/OUF_SEMANTIC_RETAINED_ENDPOINT_INVENTORY_20261022.md.
+
+WP3/CSV-H-13,G3OPEN;patch12/12,technical8/8,functional4/6. OAuth304/304 exhausted;no budget/window/login/runtimeauthority or activation retry/replay. Preserve every directory/context/claim/receipt. Historical24hour source window is not renewed. Previous next-command headers below are historical.
+
+---
+
+# LATEST — patch completed; semantic reference502 observed after configuration200
+
+Owner postpatch diagnostic /home/oufadmin/ouf-postpatch-diagnostic.9Hzuuniq/operator.log completed9GETs,0OAuth/writes. Duplicate receipt is ONE execution. Frozen-configuration GET200 and compatibility GET200 at13:13:21Z precede semantic-reference GET502 at13:13:24Z,then readiness503/review503. Gateway has1NO_ROUTE_TO_HOST in same bounded window;same-line causal association NOT yet proven. Full ingestion compatibility/attestation still unproven. Next ONLY distinct tools/semantic_transport_correlation reader:5GETs,35s,exact completed12-stage Gateway pin and historical RegistryID790c62742c92eabc095d4ab22f2070e0c40a41e4a219685a7d8120e4661e4e5d from pinned Oct16 reader;404/drift STOP without name fallback. Compares same-line semantic error upstream address to observed retained Registry networks;no raw lines/addresses/credentials,routeadmin/probes/changes/login.5localfixturetests PASS,not target proof. No activation retry,replay,budgetreset or new HUMAN session. Technical8/8,functional4/6,G3OPEN,patch12/12;releaseAcceptancefalse. See evidence/native-profile-postpatch-http-target-20261022.json. Older next-command headers historical.
+
+---
+
+# LATEST — postpatch HUMAN activation attempt3 still PAUSED503; no further activation retry
+
+Exact owned source read after user-reported502 confirms same version/hash APPROVED/CONFIRMED,lock3,attempts3,generation4,PAUSED,compatibilityfalse,last ONB_READINESS_DEPENDENCY_503,nextAt2026-10-22T13:14:18.221Z. No activation/publication success established. Agent performed readback only; operations.incidents rejected initial missing-link request locally,then explicit owner-account read authorization denied/retryablefalse; no retry/accountfallback. Patch12/12 proof remains distinct. Next ONLY new pinned tools/readiness_postpatch_diagnostic reader for historical2026-10-22T13:12–13:15Z;9exact EngineGETs,0OAuth/DB/writes/activation. Completed12-stage context supplies exact current ingestion replacement and unchanged Gateway/Onboarding process pins. Five local fixture tests PASS,including full9GET path/generationdrift/budget/secrecy;target not yet read. No absence-of-logs health claim or503rootcause claim. Preserve all contexts/claims/logs;no old commands/review/approval recreation or new authentication. Technical8/8,functional4/6,G3OPEN. See evidence/native-profile-postpatch-attempt3-20261022.json.
+
+---
+
+# LATEST — owned source read succeeded; HUMAN activation remains pending
+
+Bounded source.onboarding.read on the historically established owner account returned exact version c9fec43c-19b3-4ffb-9111-781bc347c5b0/source teatri-csv-6609b245,hash sha256:b13c5fe234168bdb8b315087917bccfe428ceaa8e136ed1c0f56f5bf43deed3d,APPROVED/CONFIRMED,lock3,PAUSED dependency503,attempts2/generation3. This is not a retry/account fallback for denied ingestion.status; that denial remains unretried and unexplained. No mutations,permissions,login or runtime replay. Existing exact THS review may be used for a distinct explicit HUMAN Verifica e attiva decision. Source-inspected128attempt/24hour guards preserve start2026-10-21T17:27:58.016Z,deadline2026-10-22T17:27:58.016Z(50second reserve enforced); do not reset or bypass exhaustion. Separate resume endpoint only handles BLOCKED403,not this PAUSED503. Backend must revalidate current state/authority. Infrastructure12/12,technical8/8,functional4/6,G3OPEN; publication and release acceptance remain unproven. See evidence/native-profile-postpatch-owner-read-20261022.json. Older command headers historical.
+
+---
+
+# LATEST — patch12/12 complete; current source MCP read authorization denied
+
+A single bounded generic ingestion status read returned authorization denied,retryable:false. No backend HTTP cause inferred,no retry/activation/publication/IAM action performed. Source lifecycle/publication and functional4/6 remain open despite completed infrastructure patch;OAuth304/304 exhausted. See docs/handoffs/OUF_PATCH_STAGE8_COMPLETE_20261022.md.
+
+---
+
+# CURRENT — target patch COMPLETE12/12; no runtime/HUMAN replay or new authentication
+
+Owner final receipt complete:true,runtimeEffectsAcceptedByPorts:true after ingestion.READINESS(v1158),VERIFY_FINAL(v1299),ingestion.RESTORE_RESTART(v1439),VERIFY_RESTORED_FINAL(v1580),then explicit finalization. Prefix8/import/readAttempts8 were retained. Preserve /home/oufadmin/ouf-stage8-continuation.V8VQpNl3/operator.log and ALL contexts/claims/caches/logs. Duplicate pasted receipts are not additional effects/stages/invocations. Full chain: evidence/ingestion-readiness-stage8-completed-target-20261022.json. Original runtime authority WAS separately issued after approval of review1d40fc4c83d197b0c664fc931a5198df963ea06f56b77a000ab01267bb8edbe4; final runtimeAuthorityIssued:false is per invocation and does not erase that history. Current token/authority validity NOT inferred. OAuth304/304 exhausted; no new budget/window/login/refresh requested.
+
+Patch12/12,technical8/8,functional4/6,G3OPEN. nativeProfilePublished:false,releaseAcceptance:false. This closes ONLY the infrastructure patch. Source/native profile approval/activation/publication and exact version readback remain distinct THS/Owner decisions. Next: bounded current owned source/profile read via existing generic governed capabilities,then concrete native review/activation and readback within appropriate independent human authority. No source activation,publication,replay,query/data export or new runtime command is authorized by the infrastructure completion alone. Never call completed cached runtime step/import/approve/review,old HUMAN controls or stopped readers again. See docs/handoffs/OUF_PATCH_STAGE8_COMPLETE_20261022.md. All previous command headers below historical.
+
+---
+
+# CURRENT — four-stage continuation and exact production delivery QUALIFIED; ONE new preflight only
+
+Source732a03fb19ada6e2168a585a2bbe78684800e05f CI39771531964 PASS129tests EACH Python3.12/3.13.5,zero skips; focused platform39771531971/job119799997359 PASS1whole-path actual Docker29/APISIX/JVM/PG17 test:148sealed native sources,all144 originals unchanged,prefix/native counters preserved,4residual stages,1additional Engine POST,0Gatewaywrites/newimages/keys. HUMAN/Owner/provider identities and predecessor stop/expiry are explicit fixture inputs; NOT target admission. Production release3e2e1768632876030f3d37de0fc800dabee0d4a3 reproductionCI39772566401/jobs119803468865,119803469193 PASS1test EACH Python3.13.5/3.12. All5published Gitblob/SHA/size pins MATCH.
+
+Next target action ONLY: ONE pinned cached setup + runtime preflight in docs/handoffs/OUF_PATCH_STAGE8_CONTINUATION_20261022.md. Setup SHA42a145fb5cd121242c67765964956f4ad8a0480f434b976ca4aebaca8d2f057e,blob59ad6503ebcfaebab662ee4a2f002c3570bc8a7a. Downloads/checks both full caches BEFORE any timer/consent; runtime preflight only,0Engine/OAuth/SQL/HUMANjournal/effects. Expected STAGE8_CONTINUATION_PREFLIGHT_NO_AUTHORITY. Return public JSON/operator.log/new HUMAN/runtime cached launcher paths. Target preflight NOT yet observed. OAuth300/300,patch8/12,technical8/8,functional4/6,G3OPEN. Proposed304ceiling NOT granted; no new login/window/runtime authority requested now. All old claims/logs/caches/capture stay immutable. No replay of old commands. Old full300HUMANwindow AND token must expire before future governance; do not weaken/reset them. Older headers below historical.
+
+---
+
+# CURRENT — target stage8 live capture MATCHED; four-stage successor development next
+
+Owner receipt STAGE8_LIVE_METADATA_MATCHED_NO_AUTHORITY: captureb9063de73e2d7699e3e7616a164f4b9a24346bc0a3fda1ed3762f4dc0dd95ef2;14GET,0OAuth,0runtimewrites. Replacement first generation,retained predecessor,unchanged apps and PostgreSQL generation matched AT CAPTURE. Preserve /home/oufadmin/ouf-stage8-live-inputs.SDSJXG92/operator.log and cached launcher /home/oufadmin/ouf-stage8-live-capture.YzwrzHYu/capture.sh. Do NOT rerun capture or old runtime/HUMAN controls. OAuth300/300 exhausted,patch8/12,technical8/8,functional4/6,G3OPEN. Readiness/DB admission/Gateway routes/Owner control remain unproven. Current runtime authority absent; old issued authority expired.
+
+Next repository work: implement and qualify distinct four-stage continuation bound to this privateCaptureHash,both predecessor journals,review and prefix. Preserve all eight APPLIED effects/resources/counters; import into separate new context and one-use continuation fence,never initialize at zero or rewrite old claims. Only residual stages: ingestion.READINESS,VERIFY_FINAL,ingestion.RESTORE_RESTART,VERIFY_RESTORED_FINAL. Qualify whole sealed delivery including real prefix import/remaining stages before requesting any fresh HUMAN budget/window/login or new infrastructure consent. Future continuation NOT yet implemented/qualified; this receipt is input evidence only. No next target command yet. See evidence/ingestion-readiness-stage8-live-target-20261022.json and docs/handoffs/OUF_PATCH_STAGE8_LIVE_INPUTS_20261022.md. Older instructions below historical.
+
+---
+
+# CURRENT — stage8 live-input capture qualified; ONE pinned capture only
+
+Delivery2ef75b77e9bf259f79e4dc34b14bab61f0fa4b9a: CI39766442749 PASS111 tests EACH Python3.12/3.13.5; focused platform39766442872/job119782957794 PASS1 actual Docker test,14GET/0writes,118 sealed sources,old prefix bytes unchanged. Exact production capsule/case/launcher reproduction PASS. This is fixture evidence,not target health. Next ONLY the pinned prepare capture command in docs/handoffs/OUF_PATCH_STAGE8_LIVE_INPUTS_20261022.md. Stores separate private inputs; no old journals modified,no OAuth/budget/window/authority/runtime effect. Expected STAGE8_LIVE_METADATA_MATCHED_NO_AUTHORITY. Target capture NOT yet performed. OAuth300/300,patch8/12,technical8/8,functional4/6,G3OPEN. Future four-stage runtime successor remains unqualified; wait for matched current capture. Preserve all old claims/logs and never replay completed commands. Older headers below are historical.
+
+---
+
+# CURRENT — target patch STOPPED after8/12; authority expired; read-only stopped snapshot CI PASS
+
+Target receipts: START_REPLACEMENT completed(journal1058,log /home/oufadmin/ouf-readiness-runtime.mJsqjvB7/operator.log), then STOP_RECONCILE/FINITE_CURRENT_DIRECT_ENGINE_WINDOW_REQUIRED(log ZYDl1WlE). Metadata status confirms RECONCILE_REQUIRED,nextStage8,effects8,readAttempts8,IDLE,expiresAt1792664043(2026-10-22T10:14:03Z); statuslog /home/oufadmin/ouf-readiness-runtime.DMt9eFPH/operator.log. Expiry is past at observation. Original authority WAS issued; status runtimeAuthorityIssued:false is per-invocation and does not erase that history. OAuth300/300 exhausted. Technical8/8,functional4/6,G3OPEN. No login,grant,window,approve,initialize,step or effect reconciliation may be replayed under expired authority. Preserve every context/claim/cache/log and completed prefix. Current live health and restart restoration are unproven.
+
+Four residual stages:ingestion.READINESS,VERIFY_FINAL,ingestion.RESTORE_RESTART,VERIFY_RESTORED_FINAL. New bounded stdlib-only stopped metadata reader binds exact targetcase21a26b94...,prefix8/readAttempts8/expiry,checks protected no-follow FD custody and both invocation locks,retained review/control/native/initialization-claim hashes and exact APPLIED stage intents. It writes nothing,reads no credential journals/keys and calls no services. Reports metadata only,no signature/provider/live-runtime revalidation. Local4tests and CI39762976840 Python3.12(job119771429271)/3.13.5(job119771429693) each PASS4tests,zero skips. Next: ONE pinned stopped-snapshot reader SHA27b28c604b7cf7de5422f067df375d0f226bf1dff0b336dda03124f7f762720c,blobdbd88b3e53e5146f94e78fc52ddb42275fd57c8f; do not reuse previous snapshot reader for the old unissued9fcontext. No new runtime successor/budget is prepared or authorized by this reader. Older instructions below are historical.
+
+
+---
+
+# CURRENT — full unissued successor and production delivery qualified; ONE new read-only preflight ready
+
+Coree776de2a261c7ce2318bcf6e6df5cf82d1028f6e CI39748102563 PASSED105tests EACH Python3.12/3.13.5 plus5Docker29/APISIX/JVM/PG17 tests. Exact sealed144 graph, realTTY budget/window/infrastructure consent and all13fixture stages(two networks;target12),8EnginePOSTs,0Gatewaywrites/newkeys; large review and unchanged oldISSUING/HUMAN bytes proven. Provider/Owner identities are fixtures; current target admission is NOT proven. Original139/114 sources remain unchanged.
+
+Production deliveryfd74119c4c1e094aa3c0e0a33af79aab45e2686a CI39750337881 Python jobs119729031385/119729030774 PASS106tests EACH,zero skips,including every exact capsule/case/launcher reproduction. New platform rerun is still in progress at this recording; the already-complete platform proof covers the exact unchanged published e776144 graph. All five published Git blob/SHA/size pins match.
+
+Next target action ONLY: ONE newly pinned cached setup/read-only runtime preflight from docs/handoffs/OUF_PATCH_UNISSUED_SUCCESSOR_20261022.md. Setup SHAd1dbaffebbe9723bba7a9a169b620651db2373e130853a63c4650834f35a21c4,blobe49cdecb4b812637429359fc8f0e909c13ec7a56. Downloads all caches before sudo; no HUMAN journal,OAuth,Engine,window,budget,authority or runtime effect. Expected PATCH_RUNTIME_PREFLIGHT_NO_AUTHORITY. Return public JSON/operator.log/new cached launcher paths. Target296/296,patch0/12,technical8/8,functional4/6,G3OPEN. Future300ceiling is a proposal ONLY; no fresh HUMAN request is made now. Never rerun old reader/approve/review/auth/prep/rollout; preserve oldISSUING/journalaf077349... and /home/oufadmin/ouf-unissued-reconcile.xCVck1X6/reader.log. Older entries below are historical.
+
+
+---
+
+# CURRENT — target patch STOPPED at ISSUING; exact review-size defect confirmed
+
+Target296READY was followed by runtime review/explicit consent, then STOP_RECONCILE/PRIVATE_SNAPSHOT_CUSTODY_UNPROVEN. Read-only owner diagnostic shows review545058bytes>historical524288limit; packet1320265bytes. Both root:root0600,regular,single link. StateISSUING; issuance.claim/decision/human/authority/native recovery absent. DO NOT rerun approve,initialize,step,grant/window/auth or any completed prep. Preserve /home/oufadmin/ouf-readiness-runtime.ONL1Avng/operator.log and NlixQjZy/operator.log. OAuth296/296,zero reserve; no new budget/window/login is requested. Technical8/8,functional4/6,G3OPEN,target patch0/12 and NOT INSTALLED.
+
+A distinct V2 adds only3modules to the unchanged139-source core(142total; original114also unchanged). Typed review2MiB/packet4MiB reads preserve root0600/single-link/no-follow/FD/path-change checks; small authority members keep lower limits. Size rejection now occurs during review compilation, before publication/consent/issuance. Local8tests PASS including exact reported sizes,real signatures/load of >512KiBreview,old reader unchanged,and exact isolated142-module loader. Local8additional tests PASS for read-only unissued reconciliation,partial artifacts/concurrency/drift and deterministic target reader. CI39742778066 Python3.12(job119703832334) and3.13.5(job119703832993) each PASS78tests,zero skips. V2 production controller/fresh-HUMAN successor path is NOT qualified; do not seek tokens or replay old authority.
+
+Next target action: ONE newly pinned read-only unissued snapshot. It validates retained review/packet/material hashes,original global review claim and ISSUING row,holds a shared invocation lock,and refuses every issuance/signature/native artifact. It writes/deletes nothing,never reads a credential journal or calls any service,and does NOT reset ISSUING. See docs/handoffs/OUF_PATCH_LARGE_REVIEW_RECONCILE_20261022.md. Older ready commands below are historical and MUST NOT be replayed.
+
+
+---
+
+# CURRENT — full patch HUMAN/runtime delivery CI PASS; new read-only preflight READY
+
+CI39729332417 ate806a9463110b4e88153e95cbdc81c9d1f8737b2 PASSED:62tests on EACH Python3.12/3.13.5,zero skips,plus4real Docker29/APISIX/JVM/Postgres17 tests. Actual cached SHA-checked launchers/real terminal consents, separate292->296 budget/window, four synthetic provider replies toREADY296,and the full native13fixture stages(two networks; target12) pass. Existing139native/114original sources and five reused HUMAN runtime modules remain unchanged. Provider/Owner identities are fixtures; this is not current target admission or source activation.
+
+Both exact production capsules and launchers are pinned at3e80ea4c1f49507c1dd17448291e75e07907ee9b and reproduce on both Python versions. Next target action is ONE NEW read-only cached setup/preflight from docs/handoffs/OUF_PATCH_PRODUCTION_DELIVERY_20261022.md: verify all downloads before sudo,then12exact-ID Engine GETs matching six retained generations. Expected PATCH_HUMAN_RUNTIME_PREFLIGHT_NO_WINDOW_OR_BUDGET. No OAuth,budget/window opening,runtime authority or effects. Return public JSON/operator.log and cached launcher paths. After STOP preserve all; do not rerun.
+
+Archivef56 and /home/oufadmin/ouf-native-archive.KoPhost8/operator.log remain COMPLETE; NEVER replay archive/native input prep or completed rollout/auth. OAuth292/292 still exhausted;296is ONLY a future separately consented grant. Target patch0/12,NOT INSTALLED,technical8/8,functional4/6,G3OPEN,releaseAcceptance:false. No fresh HUMAN token until this preflight and separately explicit budget/window consents; no timer or authentication may be started automatically. Evidence:evidence/ingestion-readiness-production-delivery-qualification-20261022.json. Older entries below are historical.
+
+---
+
+# CURRENT — patch controller and isolated delivery CI PASS; fresh-HUMAN governance pending
+
+CI39722859248 atf5709378c1cff5847d4824d76bbb57ebaa451178 PASSED:51tests on EACH Python3.12/3.13.5,zero skipped, plus4real Docker29/APISIX/JVM/Postgres17 tests. The complete new controller/capsule executed13fixture stages(two networks; target12),8Engine POSTs,0Gateway writes/0new keys, with real terminal consent. HUMAN/Owner identities remain synthetic. This qualifies the controller and isolated delivery composition, not a new technical budget/window, current target health, database admission or release acceptance.
+
+Target archive bundlef56d7989be393211665535a59cc4bf419c20665a912bf51aaf6f01671e2288dd remains COMPLETE; preserve /home/oufadmin/ouf-native-archive.KoPhost8/operator.log and all claims. NEVER rerun archive/native input preparation or completed rollout/auth commands. Patch remains NOT INSTALLED;12patch stages are unapplied. OAuth292/292;296is a future code prerequisite ONLY, not granted. No target invocation/login/consent is currently requested. Next development is the separate fresh-HUMAN/budget governance and pinned production delivery; qualify it before spending tokens. Technical8/8,functional4/6,G3OPEN. Evidence:evidence/ingestion-readiness-operator-qualification-20261022.json. Older entries below are historical.
+
+---
+
+# CURRENT — target native archive inputs COMPLETE; no replay, runtime control development next
+
+Operator receipt NATIVE_ARCHIVE_INPUTS_PREPARED_NO_AUTHORITY is COMPLETE: context/etc/ouf/deploy-snapshots/ingestion-readiness-native-archive-86a63c83ae644484400e2e3531db57e5aa4869ca8c5f17bcbec908de889bb6c6, bundleHashf56d7989be393211665535a59cc4bf419c20665a912bf51aaf6f01671e2288dd, native IDd173aa8b, archive SHAd8acfed2, same logical operation6c7d73cb. Log /home/oufadmin/ouf-native-archive.KoPhost8/operator.log. It reports0Engine/OAuth/imports/runtime effects, no credential file read and no runtime authority. This is owner-pasted preparation evidence, not current live runtime/admission. Preserve every file/claim and NEVER rerun the archive capsule, native input projection or any completed rollout/auth operation.
+
+Next work is the distinct exact12-stage operator/controller and delivery, using this immutable successor. Concrete native ports, real signed/isolated issuance/init and archive delivery are qualified(CI39718342452:37tests each Python,3Docker tests); complete production execution control and fresh-HUMAN governance remain pending. Do not request fresh OAuth/window/runtime consent until the entire concrete path is qualified. OAuth292/292,technical8/8,functional4/6,G3OPEN; source patch NOT INSTALLED. Parent ab6, original114source graph, approval/activation states and previous claims remain retained. Evidence: evidence/ingestion-native-archive-completed-target-20261022.json. Older command instructions below are historical.
+
+---
+
+# CURRENT — 22 October 2026: readiness patch ports tested; distinct offline archive preparation next
+
+Technical phases8/8,functional milestones4/6,G3OPEN. Completed original rollout remains28/28. Native source approval remains recorded; activation last PAUSED2/generation3/ONB_READINESS_DEPENDENCY_503. The candidate Ingestion fix4165b9e is NOT installed, and the later503 cause remains unproven. OAuth292/292; no new budget/window/login/runtime authority.
+
+Operator receipt confirms native input parent ab6 complete; never repeat its projection or any completed rollout/auth action. CI39718342452 atce15587 passes37tests per Python3.12/3.13.5 and3Docker29/APISIX/JVM/PG17 tests. This qualifies concrete ports, signed/isolated entry boundaries and the new OFFLINE archive capsule, not fresh target health or complete future production execution control.139sealed source modules match pinned core commit; all114 frozen hashes are unchanged.
+
+Next: one pinned offline native archive successor using retained bytes, preserving the parent and logical operation. It produces the exact prequalified native manifest/tar without rebuilding the image and without image import, runtime/API/SQL/provider calls or credentials. Expected NATIVE_ARCHIVE_INPUTS_PREPARED_NO_AUTHORITY; target execution unobserved. No fresh OAuth/consent is requested. Full future execution controller/HUMAN governance/delivery remains a gate before tokens.
+
+See [handoff and exact operator command](handoffs/OUF_NATIVE_ARCHIVE_SUCCESSOR_20261022.md), [qualification](../evidence/ingestion-native-archive-delivery-qualification-20261022.json) and [timeline](../evidence/csv-e2e-execution-timeline-current.json). Do not count CI or offline input completion as F5/F6 or release acceptance. Older headers are historical.
+
+---
+
+# CURRENT — target native rollout COMPLETED28/28; native profile/THS/F5–F6 remain open
+
+Owner receipts confirm a separately consented fresh HUMAN window, four provider requests288→292 and READY with1133s token margin AT RECEIPT; separate900s infrastructure authority; import of18APPLIED/readAttempts18; all10 residual native stages; and final complete:true,runtimeEffectsAcceptedByPorts:true. Both restart-restore stages and VERIFY_RESTORED_FINAL were reported complete. Final log /home/oufadmin/ouf-stage18-runtime.PLmQdXaZ/operator.log. This is owner-pasted target evidence,not independent current live readback. Current authority expiry/revocation is not inferred from runtimeAuthorityIssued:false in the final invocation.
+
+OAuth292/292,zero remaining at READY; no reset/refresh or completed Owner/publication replay. Completed rollout context /etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada. Do NOT execute any old/current rollout step,import,approve,initialize,window or grant again. Preserve all contexts/claims/caches/logs. Full receipt chain and the duplicated prior Gateway-restore transcript are retained in ../evidence/ingestion-rollout-stage18-completed-target-20261021.json; the duplicate is not another stage.
+
+Technical8/8,functional4/6,G0–G2PASS,G3OPEN. nativeProfilePublished:false and releaseAcceptance:false. Mini-PETv1.1 WP3 requires native profile review via existing generic capabilities, visible diff/acquisition effect, HUMAN approval/activation in THS and exact publication/version readback before WP4/F5–F6. The infrastructure consent cannot substitute for that decision. Next work is preparation/qualification of that distinct profile action; no further VPS command or new login is requested at this checkpoint. Do not count native completion as F5/F6,M1,M2 or release acceptance. See handoffs/OUF_STAGE18_SUCCESSOR_20261021.md. Earlier phase commands below are historical.
+
+---
+
+# CURRENT — BOTH target preflights PASS; next exact HUMAN open-window consent only
+
+Owner receipts confirm runtime STAGE18_RUNTIME_PREFLIGHT_NO_AUTHORITY and HUMAN STAGE18_HUMAN_AND_RUNTIME_PREFLIGHT_NO_WINDOW,288/292,four remaining,reviewHash c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a. No new window/login/OAuth reservation/runtime authority. Evidence: ../evidence/ingestion-rollout-stage18-target-preflight-20261021.json. Cached launchers retained at /home/oufadmin/ouf-stage18-launchers.tmgmExrv/human.sh and runtime.sh.
+
+Next manual action ONLY: verify retained HUMAN launcher SHA256 ad97d3152d46f19fb29fd0370864345694593a9bc1fb2a3e8af98f262f0b4aa2, then invoke it ONCE with `open-window`. Exact terminal phrase: `APRO FINESTRA HUMAN c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a`. This is a separately explicit7200second window consent,zeroOAuth,no runtime/THS approval. Do not rerun prepare/preflight,budget grant or old controls. Return NEW window JSON/controlPath/log, then each provider request needs its own explicit command/confirmation; no automatic login/poll/refresh. After STOP preserve all and do not rerun. Runtime review/consent/import/steps remain separate and must use already qualified source,not development during fresh token lifetime.
+
+Technical8/8,functional4/6,G3OPEN; rollout stays at18/28. Target preflight is not fresh application/DB/Gateway/provider authorization or release acceptance. Full prequalified sequence: handoffs/OUF_STAGE18_SUCCESSOR_20261021.md. Older pending-preflight headers below are historical.
+
+---
+
+# CURRENT — stage18 successor qualified; target preflight only
+
+The separate HUMAN/runtime controllers are implemented in [PR49](https://github.com/GioNob/ouf-deploy/pull/49), qualified source5e08760666e177a971a5c466955e4376d10c54ef. CI39634414797:27new+7frozen-native-composition tests PASS on EACH Python3.12/3.13.5,zero skips. Both artifacts/launchers are immutable and pinned. Frozen114 native modules/loader are unchanged. An initial artifact reproducibility mismatch (extra local EOF newline in five retained HUMAN sources) was corrected by regenerating from exact repository bytes; no legacy logic change. Failed run39633974318 is retained.
+
+Next target action: download/verify BOTH launchers and run runtime `preflight`, then HUMAN `prepare`. Both are read-only with zero OAuth/service/Engine calls and no new window/authority/effect. This additionally stages verified public artifact caches before the later login/runtime timer. HUMAN prepare reads the sealed expired READY288 journal for its public history; it does not reuse old tokens/open the old bearer file. Return the public JSON/log paths. After STOP preserve all and do not rerun.
+
+Granted budget remains288consumed/292ceiling,four remaining AS OF GRANT; subsequent consumption not observed. The rollout stays stopped after18/28,nextStage18. Technical8/8,functional4/6,G0–G2PASS,G3OPEN. Only AFTER target preflight, the separate exact terminal window consent may open7200seconds, followed by four explicit provider requests. New runtime review/consent/issuance(max900seconds), one-use prefix import and individual residual native steps are separate. No automatic replay/reset/refresh/window renewal, domain approval or acceptance. All commands and STOP rules are in handoffs/OUF_STAGE18_SUCCESSOR_20261021.md; artifact/CI pins in ../evidence/ingestion-rollout-stage18-delivery-pins-20261021.json. Older headers below are historical.
+
+---
+
+# CURRENT — target technical budget granted; no new login or runtime authority
+
+Owner receipt confirms `NEW_TECHNICAL_OAUTH_BUDGET_GRANTED_NO_LOGIN_OR_RUNTIME_AUTHORITY`: prior/current288, four additional requests granted, cumulative ceiling292 and four remaining AS OF GRANT. Proposal0bf8d9acc497dafbe49320a479ebce51d49496903114669718b6d993b56b1b28; decision3342cb2e41561b6a573fe38313d7b20be963cef6caf64469123c613cb4c93b15. The previous HUMAN session is unchanged. No OAuth, login/window, runtime authority or runtime effect occurred in this decision. Subsequent consumption was not observed. Do not rerun grant-budget or any old rollout/login launcher.
+
+The rollout remains stopped after18/28 stages, nextStage18 REBIND_GATEWAY_TRANSPORT. Technical8/8,functional4/6,G0–G2PASS,G3OPEN. Next is repository development/qualification of the separate successor controller; it is NOT currently implemented or qualified. Do not obtain a fresh token before the entire continuation, all commands and tests are ready. Fresh provider authentication and an explicit finite runtime consent remain required later. See ../evidence/technical-oauth-budget-extension-granted-target-20261021.json and handoffs/OUF_TECHNICAL_OAUTH_BUDGET_EXTENSION_20261021.md. This header supersedes the historical pending-budget instructions below.
+
+---
+
+# CURRENT — corrected stage18 inputs matched; finite budget prepared, not granted
+
+Corrected target reader PASS: exact replacement CID/PID/start and namespace matched, including recycled inode;18 Engine GETs,zero OAuth/effects. The old rollout remains stopped at nextStage18 with18 applied stages; no readiness/routes/DB/provider authority newly proven. Technical8/8,functional4/6,G0–G2PASS,G3OPEN. OAuth remains288/288; proposed292 ceiling is NOT yet granted.
+
+PR48 prepares a separate explicit terminal decision for four additional technical requests, preserving exhausted history. CI39596994308 at85a30fb4af7ce0bfe74bd20acae3a0124d80f73c:20PASS on each Python3.12/3.13.5,zero skips. No login/window/provider request/runtime authority is implemented. Future provider authentication and runtime consent are separate; do not obtain a fresh token until the successor runtime is qualified. See handoffs/OUF_TECHNICAL_OAUTH_BUDGET_EXTENSION_20261021.md. Previous instructions below are historical.
+
+---
+
+# CURRENT — namespace reader defect corrected; distinct read-only delivery next
+
+The first live input reader returned REPLACEMENT_GATEWAY_MUST_USE_NEW_NAMESPACE. The bridge incorrectly required historical netns inode inequality; the frozen native GatewayNamespacePin already allows reused inode numbers while binding the NEW CID/firstPID/start and stopped/detached predecessor. This is a reader defect,not a proven Gateway failure. Old launcher/log and all contexts/claims are retained; no new login/authority/effect.
+
+Corrected source84385614384d9e2edf474ec84b87cdec8d11747f in [PR47](https://github.com/GioNob/ouf-deploy/pull/47),CI39594157172:19PASS perPython3.12/3.13.5,zero skips. Same-inode acceptance is covered alongside changed PID/CID,restarts,MAC/IP,owner namespace and namespace drift between passes. No frozen native/loader change. [Current handoff](handoffs/OUF_CLOUD_STAGE18_CONTINUATION_INPUTS_20261021.md),[retained STOP](../evidence/ingestion-continuation-input-namespace-stop-target-20261021.json),[new delivery pins](../evidence/ingestion-rollout-continuation-input-delivery-pins-20261021.json).
+
+Next target action is ONLY the corrected separately pinned reader,max18EngineGETs,zeroOAuth/effects. Do not rerun old launcher or rollout controls. Corrected target result pending. Technical8/8,functional4/6,G3OPEN;OAuth288/288;proposed292budget NOT granted. This supersedes older next-action instructions below.
+
+---
+
+# CURRENT — 21 October 2026: expired stage18 prefix reconciled; live input read next
+
+Qualified stopped snapshot received:18APPLIED,no pending claim,readStateIDLE,same boot,authority and monotonic remaining0. Reviewb0276204…,journalc9907ea9… . No live runtime observation was made by that snapshot. Current [handoff](handoffs/OUF_CLOUD_STAGE18_CONTINUATION_INPUTS_20261021.md) and [target receipt](../evidence/ingestion-rollout-stopped-snapshot-target-20261021.json).
+
+Next action is only the separately pinned continuation-input METADATA reader in [PR47](https://github.com/GioNob/ouf-deploy/pull/47),commit1776f9461e83f83b3a79e4077df551cc9f7ffc4a,CI39577789672:15PASS perPython3.12/3.13.5,zero skips. It checks8exact container generations plus the Gateway image twice,maximum18EngineGETs,namespaces and key inode metadata;zeroOAuth,zero effects,no token/key-file reads. No application/owner/SQL/route/provider readiness is inferred. [Delivery pins](../evidence/ingestion-rollout-continuation-input-delivery-pins-20261021.json). Target execution pending.
+
+OAuth remains288/288. The four-request288→292 continuation budget is merely a proposal,NOT granted. New HUMAN/finite runtime continuation/import/fencing still require implementation,qualification and explicit decisions after live input reconciliation. Preserve all18effects/counters/claims,>930second token guard and900second runtime limit. Technical8/8,functional4/6,G3OPEN;baseline unchanged. This header supersedes older next-action instructions below.
+
+---
+
+# CURRENT — 21 October 2026: partial rollout stopped after 18/28 stages
+
+Operator receipts confirm supplementary HUMAN READY at288/288, then explicit runtime review/approval/initialize and18stages through both readiness gates. Next step STOPPED with INSUFFICIENT_CURRENT_STAGE_WINDOW. Metadata read: RECONCILE_REQUIRED,nextStage18,readStateIDLE,18effects. No pending claim in reported counts. Remaining starts REBIND_GATEWAY_TRANSPORT; route cutover, final checks and restart-policy restoration remain incomplete. Do not replay step/approve/initialize, renew authority, open a login/window or reset any counter.
+
+Current [stage18 handoff](handoffs/OUF_CLOUD_ROLLOUT_STAGE18_STOP_20261021.md), [target checkpoint](../evidence/ingestion-rollout-stage18-stop-target-20261021.json), [reader pins and CI](../evidence/ingestion-rollout-stopped-reader-delivery-20261021.json). Separately qualified offline reader in [PR46](https://github.com/GioNob/ouf-deploy/pull/46),commit78473183e164e41e590a5a137b9e379e73c0ad5c,run39559474164:17tests perPython3.12/3.13.5,zero skips. Next operator action is only the pinned offline snapshot reader; target execution pending. Technical8/8,functional4/6,G3OPEN. No current runtime health or authority inferred. Frozen baseline unchanged; latest measured effort excludes explicitly unsegmented followup intervals.
+
+This header supersedes all older CURRENT next-action instructions below. Their receipts remain history.
+
+---
+
+# CURRENT — chat transfer before HUMAN open-window,21October2026
+
+Owner confirms **the last open-window command was NOT executed**. Latest target preflight passed;284/288,four remaining,no new window/login/runtime authority. Current entry point: [restart handoff](handoffs/OUF_CLOUD_CHAT_RESTART_BEFORE_HUMAN_WINDOW_HANDOFF_20261021.md),[checkpoint](../evidence/csv-e2e-chat-restart-checkpoint-20261021.json). New chat reads AGENTS,Mini-PET1.1,original PETs supplied again by owner,resiliencev3,then asks the exact command/consent in handoff§3. Do not replay completed prepare/IAM/Owner7/projection7/install/readback. No subagents or operational automation.
+
+Technical8/8,functional4/6,G0–G2PASS,G3–G7open. Baseline unchanged. This current header supersedes older next-action instructions below; prior proof stays historical evidence, not authority. No new target operation performed for chat transfer.
+
+---
+
+# CURRENT — 21October2026: supplementary preflight passed on VPS
+
+Technical8/8,functional4/6,G3open. Current284/288,remaining4. Exact target preflight08:11:16.774650–08:11:16.797031Europe/Rome passed with zeroOAuth/no window/no runtime authority. Both administrative ledgers retained; production preparation matched. See current [handoff](handoffs/OUF_CLOUD_SUPPLEMENTARY_HUMAN_READY_HANDOFF_20261021.md) and evidence/human-supplementary-preflight-target-20261021.json.
+
+Next is separately explicit open-window consent on the exact current launcher, zeroOAuth. Do not repeat prepare or completed actions. Actual token acquisition is still pending and manually gated. This supersedes previous preflight-pending/prepare instructions below. Frozen MiniPET1.1 unchanged, G3H+19/M1H+24/M2H+55; measured chronology retains all excluded intervals explicitly.
+
+---
+
+# CURRENT — 21October2026: client lifetime applied, supplementary HUMAN preflight pending
+
+Technical **8/8**, functional **4/6**, G0–G2PASS, G3open. Owner-confirmed API readback: client-only1200seconds applied; flows/roles/unrelated fields and realm300 unchanged;284/288,four requests remain. No new HUMAN window/runtime authority. Do not replay lifetime or completed actions.
+
+Current handoff: [supplementary HUMAN ready](handoffs/OUF_CLOUD_SUPPLEMENTARY_HUMAN_READY_HANDOFF_20261021.md). This supersedes earlier lifetime-application/owner-decision instructions. Administration uses APIs; mobile difficulty concerns the admin console, not trusted HUMAN authentication.
+
+Next: pinned new **prepare**, zero network/writes/OAuth. Only after target preflight succeeds, separately explicit HUMAN window and provider steps carrying BOTH admin ledgers. CI57tests per Python,zero skips; target preflight not yet proven. Four nominal requests end288; no retry allowance. Preserve930second guard/native115blobs and all validated Ente-specific bindings.
+
+Frozen MiniPET1.1: G3H+19/M1H+24/M2H+55. Measured chronology: evidence/csv-e2e-execution-timeline-current.json. No residual forecast by subtraction. DB admission, rollout, governed client publication,F5/F6 and release acceptance remain open.
+
+---
+
+> **CURRENT — 21 October2026, target IAM read complete; scoped lifetime proposal qualified, owner decision pending.**
+>
+> Owner target receipt evidence/iam-explicit-api-target-20261021.json confirms current realm/client metadata and exact admin identity. Cumulative283/288,five remaining. Realm ouf access300seconds, no client timeout overrides; ouf-human-admin is public with device grant enabled, password/standard/service-account flows disabled. Master admin realm is different from HUMAN realm. No policy mutation/new HUMAN window/runtime authority; completed API read and all prior claims stay retained, no replay.
+>
+> Concrete unsigned proposal: access.token.lifespan=1200 on only the exact selected client, keeping realm/flows/roles/all unrelated fields unchanged. Persistent until explicit policy change; owner must accept up to20minutes normal token/role freshness. No new grant or human authentication is enabled. Source1852942f47af54ec015764841ebbcddb09ab3e05, CI39545126657:12PASS per Python3.12/3.13.5, zero skips, including actual Docker/tty and real Keycloak26.2.5 update/readback plus independently observed new fixture token1200. Real fixture master/admin-cli is not target OUF acceptance. Explicitly carry observed frontchannelLogout to prevent the provider's partial-update side effect; compare every other field, normalizing only set-valued array order. All regressions PASS;114native+loader115Git blobs and production >930second guard unchanged.
+>
+> The proposal remains UNAPPLIED. Required next owner clarification: does refusing Keycloak cover only its administrative console, or also the single trusted HUMAN authentication interaction required by the currently enabled Device Authorization flow? Do not infer consent to the latter or reopen a window. Do not spend more provider budget until route and lifetime/freshness decision are resolved. Review: releases/iam-client-lifetime-review-20261021.json; handoff: docs/handoffs/OUF_CLOUD_IAM_PROFILE_OWNER_DECISION_HANDOFF_20261021.md.
+>
+> If authorized later: one admin authentication ->284/four remaining; four nominal HUMAN provider requests ->288, zero extra retry allowance. Carry both supplementary administrative ledgers; never restart from282. Finite one client PUT/five AdminGETs/two EngineGETs; no automatic rollback/replay/window. Exclusive administrative writer required; no provider CAS/ETag is claimed.
+>
+> Checkpoint21October06:46:51Europe/Rome:7.791150 measured active technical hours, approximately7h47. G0–G2PASS,G3open; technical8/8,functional4/6; frozen central G3 H+19/M1 H+24/M2 H+55 unchanged. Unsegmented operator/turn intervals excluded, no human effort inferred or residual forecast by subtraction. DB admission/startup/runtime/native client publication/F5/F6 remain open; current policy metadata is not release acceptance.
+>
+> All previous CURRENT blocks and next-action commands are historical and superseded.
+
+> **CURRENT — 21 October 2026, target IAM metadata reconciled; explicit API path qualified.**
+>
+> Target reconciliation is complete in retained iam-policy-read-7120rnka: preferred_username is absent, other recorded context checks match, recorded admin lifetime60seconds and expired. Original policy read stays STOP/completefalse; original Engine7/7 and both claims retained. No replay, OAuth or policy mutation occurred.
+>
+> New explicit source3b205c44e983184e90baf31230b7f5ec1affb6b7 qualifies one controlling-terminal-consented admin password grant and four read-only Admin GETs, with a separately explicit two-GET Engine allowance. No automatic login/refresh/retry, console, policy write or HUMAN-window renewal. Prior282/max288 is carried into a supplementary journal: reserve at most one authentication ->283/five remaining. Original HUMAN journal stays immutable; a supplementary successor claim fences legacy window reuse, and every later HUMAN review must consume the new ledger. No counters reset.
+>
+> CI39541264244:11PASS on Python3.12 and3.13.5, zero skips, including Docker namespace, actual tty/hidden password and actual disposable Keycloak26.2.5. Real-provider fixture uses master/admin-cli, not target OUF. Lightweight subject is resolved from the same fresh response ID token and confirmed through the protected Admin user API; no independent local JWT signature verification or runtime authority is claimed. All regressions PASS;114native modules+loader115Git blobs unchanged; production >930second margin unchanged.
+>
+> Next required operator step: run only the pinned new explicit IAM API launcher once, type the displayed exact consent, then enter the IAM admin password hidden in that terminal (distinct from sudo). Return public JSON and api.log. Never put credentials in chat. On STOP retain context/claims; no execute replay. Handoff: docs/handoffs/OUF_CLOUD_EXPLICIT_IAM_API_READY_HANDOFF_20261021.md; pins: evidence/iam-explicit-api-delivery-pins-20261021.json.
+>
+> Effort checkpoint21October05:58:19Europe/Rome:7.320639 measured active technical hours, approximately7h19; excluded unsegmented overnight/operator/resumption intervals explicitly uncertain. Technical8/8,functional4/6,G0–G2PASS,G3open; frozen central G3 H+19/M1 H+24/M2 H+55 unchanged. Current provider policy, approved revocation SLA, DB admission, native client publication and F5/F6 remain unproven; candidate1200seconds remains unapproved/uninstalled. No residual forecast by subtraction.
+>
+> All earlier CURRENT blocks and next-action commands below are superseded historical records.
+
+> **CURRENT — 20 October 2026, retained IAM STOP; same-context metadata reconciliation qualified.**
+>
+> Target policy reader stopped at EXACT_RECORDED_ADMIN_SESSION_CONTEXT_REQUIRED in /etc/ouf/deploy-snapshots/iam-policy-read-7120rnka. The failing issuer/client/username/expiry predicate remains unknown. Preserve the original STOP and claim; do not rerun the original read launcher.
+>
+> New source af55edd84e05ee5e0191fc2f6cbcbe60bc191287 qualifies one metadata reconciliation in that exact context: validate stored Engine5/Admin0 first, use only two remaining Engine GETs to original ceiling7, retain original completefalse/STOP. No Admin API request, OAuth, login, refresh, IAM mutation or runtime authority. CI39496135244: ten tests per Python3.12/3.13.5, zero skips, including actual Docker UID1000/process-root/sealed-process coverage; all existing regressions PASS. CI is not VPS acceptance.
+>
+> Next action: execute only the pinned new reconciliation launcher once, then return public JSON and reconcile.log. See docs/handoffs/OUF_CLOUD_IAM_SESSION_CONTEXT_RECONCILE_READY_HANDOFF_20261020.md and evidence/iam-session-context-reconcile-delivery-pins-20261020.json. After consumed reconciliation claim, status only; no replay. No Keycloak console work.
+>
+> Recorded effort checkpoint 2026-10-20T20:57:57.995Z: 7.066203 technical active hours; excluded unsegmented operator/status/redelivery waits. Technical8/8,functional4/6,G0–G2PASS,G3open. Frozen MiniPET1.1 central G3 H+19/M1 H+24/M2 H+55 unchanged; mixed-WP effort is not a residual forecast. Last confirmed HUMAN282/288,sixremaining; recorded window has elapsed, no runtime authority. DB admission/current policy/native client publication/F5/F6 remain open.
+>
+> Earlier CURRENT blocks and next-action instructions below are historical and superseded by this block.
+
+> **CURRENT — 20 October 2026, IAM API path qualified; console instruction withdrawn.**
+>
+> Owner explicitly declines further Keycloak-console work. Use qualified APIs; do not ask the owner to inspect/edit the console. The previous console-metadata request is withdrawn. Source224757b25696eb154948e60eb0de3be716cc0b3f adds a sealed reader that never invokes kcadm/login/refresh. CI39490969842 Python3.12/3.13.5 each13PASS/zero skips, including physical Docker archives and namespace dispatch against a simulated Admin API; all prior regressions PASS. This is not target readback or real-provider qualification.
+>
+> One exact-profile VPS read via existing gh+sudo is now required: max7Engine GET/HEAD, max3AdminGET,90seconds, cached current admin bearer only, exact selected Keycloak namespace. No OAuth/token endpoint or mutation. Expired credentials return a diagnostic without login/refresh; new private safe journal/context/claim only. Existing HUMAN journals/bearers and all prior contexts/claims remain untouched. Operator returns one public JSON and read.log path, no console/code/browser.
+>
+> Technical8/8,functional4/6; G0–G2PASS,G3open. Issued300second token vs>930 guard remains the proven blocker; current actual IAM policy still unknown. Latest HUMAN282/288,sixremaining; no new authentication or policy change authorized. [Current handoff](handoffs/OUF_CLOUD_IAM_API_POLICY_READ_READY_HANDOFF_20261020.md), [qualification](../evidence/iam-current-policy-read-delivery-pins-20261020.json), [current timeline](../evidence/csv-e2e-execution-timeline-current.json).
+>
+> Measured technical active effort6.836065h at2026-10-20T20:21:11.312Z; frozen central G3 H+19/M1 H+24/M2 H+55 unchanged. Gate evidence, not elapsed hours, determines completion.
+
+---
+
+Previous checkpoints below are dated historical evidence; previous CURRENT/next-action/console instructions are superseded above. No completed action replay.
+
+> **CURRENT — 20 October 2026, issued300seconds proven on VPS.**
+>
+> Technical8/8,functional4/6; G0–G2PASS,G3open. Exact completed timing receipt proves recorded issuance20:56:35→expiry21:01:35Europe/Rome:300seconds, impossible to satisfy prepared>930second guard from issuance. This is not operator delay. Timing inspection complete/read-only, do not replay.282/288,sixremaining, no further OAuth, runtime or journal writes. Current IAM policy is still unproven; the two-hour HUMAN window is not bearer lifetime.
+>
+> Unsigned duration-preparation planner7e10bde6e460908eb8644c8da53aa227181bc314 qualified: CI39488060246 each Python3.12/3.13.5 passes12timing+6planner tests, zero skips; HUMAN/capture/profile/production regressions PASS. Generic candidate1200second lifetime requires actual client/realm/session metadata, full selection binding and separate governed policy review; not wired into a new authentication entrypoint, no mutation or fresh login authorized. Four new HUMAN requests would nominally282→286, leaving2; additional administrative OAuth is not silently treated as free.
+>
+> Next necessary input: administrative read of actual ouf-human-admin client/realm timeouts, without Save/refresh/login scripts. [Current handoff](handoffs/OUF_CLOUD_HUMAN_300S_DURATION_BLOCK_HANDOFF_20261020.md), [target receipt](../evidence/ingestion-human-timing-target-20261020.json), [planning qualification](../evidence/ingestion-human-duration-proposal-20261020.json), [current timeline](../evidence/csv-e2e-execution-timeline-current.json).
+>
+> Measured active technical effort6.567817h at2026-10-20T20:01:06.573Z. Frozen central G3 H+19/M1 H+24/M2 H+55 unchanged. G3 is open; waits excluded, no residual forecast by subtraction.
+
+---
+
+All previous CURRENT checkpoints and next-action instructions below are dated history superseded by the checkpoint above. Preserve completed contexts and consumed claims without replay.
+
+> **CURRENT — 20 October 2026, HUMAN timing diagnosis.**
+>
+> Technical8/8, functional4/6; G0–G2 PASS, G3 open. Production bootstrap completed on VPS; HUMAN provider verification completed at282/288, six remaining. The READY receipt reported258seconds of bearer validity; prepared production review/approve requires>930seconds. No runtime review, issuance or rollout was dispatched. Window duration is not token lifetime; original issued lifetime remains unknown until target timing inspection. No login/refresh/reset/replay requested.
+>
+> Offline retained timing reader c0fc4124f6e9c59475914e5e179cf0898f52bfb5 qualified: CI39484202890, Python3.12/3.13.5 each12PASS/zero skips; production/profile regressions PASS. Target read is pending, not runtime authority. One exact-profile root read is now the necessary operator step. [Current handoff](handoffs/OUF_CLOUD_HUMAN_TIMING_INSPECTION_READY_HANDOFF_20261020.md), [qualification](../evidence/ingestion-human-timing-delivery-pins-20261020.json), [current chronology](../evidence/csv-e2e-execution-timeline-current.json).
+>
+> Measured technical effort6.441926h at2026-10-20T19:33:31.073Z; frozen cumulative G3central19h/M1central24h/M2central55h unchanged. Waits uncounted; no gate completion from elapsed hours.
+
+---
+
+The checkpoints below are dated historical evidence. Their previous CURRENT labels and next-action instructions are superseded by the checkpoint above; completed actions and claims must not be replayed.
+
 > **CURRENT — Mini-PET execution started; G0 recorded (20 October 2026).**
 
 ## Checkpoint esecutivo corrente — 2026-10-20T12:54:32.221Z
@@ -2786,4 +3266,5 @@ Zero nuovi dump, backup letti, DB/IAM/MCP/grant o scritture di servizio/Gateway.
 Launcher `scripts/launch-chatbot-postgateway-container-20261016.sh`, SHA256
 `ad9ac7854ca025f0b097a6164d22e3fe3539951f2af7b6001a438d39c4326b24`.
 Il vecchio delivery non va rilanciato: contiene effetti ormai consumati.
+
 

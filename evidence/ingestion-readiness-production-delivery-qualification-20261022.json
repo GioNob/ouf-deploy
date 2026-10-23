@@ -1,0 +1,177 @@
+{
+  "schema": "ouf.ingestion-readiness-patch-production-qualification.v1",
+  "recordedAt": "2026-10-22T05:50:30Z",
+  "repository": "GioNob/ouf-deploy",
+  "qualifiedCommit": "e806a9463110b4e88153e95cbdc81c9d1f8737b2",
+  "artifactCommit": "3e80ea4c1f49507c1dd17448291e75e07907ee9b",
+  "ciRun": 39729332417,
+  "ciUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/39729332417",
+  "jobs": [
+    {
+      "id": 119660519862,
+      "python": "3.13.5",
+      "tests": 62,
+      "skipped": 0,
+      "conclusion": "success"
+    },
+    {
+      "id": 119660520192,
+      "python": "3.12",
+      "tests": 62,
+      "skipped": 0,
+      "conclusion": "success"
+    },
+    {
+      "id": 119660520052,
+      "name": "docker29-apisix-jvm-sequence",
+      "tests": 4,
+      "skipped": 0,
+      "conclusion": "success"
+    }
+  ],
+  "wholeControllerProof": {
+    "complete": true,
+    "stages": 13,
+    "enginePosts": 8,
+    "gatewayWrites": 0,
+    "newKeys": 0,
+    "realTtyConsent": true,
+    "newControllerAnd139CoreUnmodifiedInChild": true,
+    "syntheticHumanAndOwner": true,
+    "targetEvidence": false,
+    "notReleaseAcceptance": true,
+    "freshHumanGovernance": {
+      "realBudgetAndWindowTty": true,
+      "cachedHashCheckedForegroundLaunchers": true,
+      "preLoginExactEngineGets": 12,
+      "syntheticProviderRequests": 4,
+      "priorOAuthAttempts": 292,
+      "readyOAuthAttempts": 296,
+      "oldSessionBytesUnchanged": true
+    }
+  },
+  "preLoginMetadataProbe": {
+    "containerCount": 6,
+    "maximumExactEngineGetsPerInvocation": 12,
+    "invocationsInFixture": [
+      "prepare",
+      "grant-budget",
+      "open-window"
+    ],
+    "totalExactEngineGetsAcrossThoseInvocations": 36,
+    "sqlCalls": 0,
+    "ownerCalls": 0,
+    "providerCalls": 0,
+    "readOnly": true,
+    "currentTargetObservation": false
+  },
+  "sourceCustody": {
+    "originalNativeModules": 139,
+    "originalFrozenModules": 114,
+    "unchangedArchiveSourceCarrierSha256": "13335a0aa4ba672c80cc2f63ca1b3e2e9d97b111f876d61c62dbda514d8d4f31",
+    "reusedHumanRuntimeSourceCommit": "5e08760666e177a971a5c466955e4376d10c54ef",
+    "reusedHumanModules": [
+      "operator",
+      "contract",
+      "session",
+      "window",
+      "inspection"
+    ],
+    "reusedHumanRuntimeBytesUnchanged": true,
+    "humanCapsuleReachableModules": 124,
+    "nativeRuntimeCapsuleModules": 139,
+    "all139NativeBuildSourceBytesMatchedCarrier": true
+  },
+  "deliveryPins": {
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "currentCumulativeOAuthAttempts": 292,
+    "declarationHashes": {
+      "human": "6c344f97170ded263dfac10156e2aba9058d5063e193133e1c49501d26c08770",
+      "runtime": "2afb727970374dfd24d0f7853c720a962a4b4c69f833e1c51e8f2daa437c0f4f"
+    },
+    "files": {
+      "human.sh": {
+        "bytes": 1959,
+        "gitBlob": "e3794cf67c6c7f5246a70ca4b225be1c7f89b999",
+        "path": "scripts/launch-ingestion-readiness-human-20261022.sh",
+        "sha256": "99c5d569e007eaaa9ac9d3ccb6d91f849ae07203c0bd90ed6c7eb79ef833bd01"
+      },
+      "human.sh.operator.py": {
+        "bytes": 664868,
+        "gitBlob": "aa5a61876880f953db2ba0be4c326430f5c15198",
+        "path": "scripts/ingestion-readiness-human-20261022.py",
+        "sha256": "0fbe4f0c52b3cdf778e06d7aebef22f2e06251cfd8a443e954ae7ddc39fc3c31"
+      },
+      "runtime.sh": {
+        "bytes": 1945,
+        "gitBlob": "7dd10b460f119fba814c0fc91d931eff46fc9d22",
+        "path": "scripts/launch-ingestion-readiness-runtime-20261022.sh",
+        "sha256": "0934192a867d6432b5d9a81cc59be51eaf1364cf77cb5a2ac7533dae672d6a4b"
+      },
+      "runtime.sh.operator.py": {
+        "bytes": 609152,
+        "gitBlob": "d101a8e773080508e3e2e241dab45a472f4282ba",
+        "path": "scripts/ingestion-readiness-runtime-20261022.py",
+        "sha256": "42c018231ffc127edd7112309da223c8651d60992769330900c3441ed3b78d49"
+      },
+      "setup.sh": {
+        "bytes": 1852,
+        "gitBlob": "d8663d298535fde69fb15662ba858aaf1cbeacb1",
+        "path": "scripts/prepare-ingestion-readiness-launchers-20261022.sh",
+        "sha256": "cba3460f7ce0b53940cbcd3a92e146014529a28a564fc3c76b09bdd9dcb9174b"
+      }
+    },
+    "humanCaseHash": "4a1ce78c9a6368eb2aea613f1aba21cb990875d08ab398cd0bb70e57c283e640",
+    "maximumCumulativeOAuthAttempts": 292,
+    "nativeInputsHash": "f56d7989be393211665535a59cc4bf419c20665a912bf51aaf6f01671e2288dd",
+    "newBudgetGranted": false,
+    "releaseAcceptance": false,
+    "runtimeAuthorityIssued": false,
+    "runtimeCaseHash": "9f3d63c728295180a431a9d84aa701e3265172d49340f75787f70b9f8edae6ac",
+    "schema": "ouf.ingestion-readiness-patch-production-delivery-pins.v1",
+    "targetCommandExecuted": false,
+    "targetPatchInstalled": false
+  },
+  "qualifiedBoundaries": [
+    "separate actor/reason/decisionRef technical budget with cumulative292-to296 history",
+    "one explicit consented window fenced against partial/concurrent replay",
+    "one explicit provider request per command through unchanged operator",
+    "four synthetic provider replies to a case-bound READY296 reader",
+    "real cached SHA-checked root foreground launchers with controlling-terminal consent",
+    "fresh profile into runtime review, two-role approval, initialization and all native fixture stages",
+    "complete case/capsule/launcher reproduction on both qualified Python versions"
+  ],
+  "limitations": [
+    "provider and Owner fixture identities/replies are synthetic",
+    "four provider confirmation answers are unit fixtures; budget/window/infrastructure approval use real pseudo-terminals",
+    "CI does not establish live target runtime health, Owner control or database admission",
+    "fixture image import adopts an already loaded exact candidate; target image import remains unapplied",
+    "source activation, native profile publication and functional F5/F6 remain separate"
+  ],
+  "priorPlatformQualification": {
+    "commit": "1644487d1b5b52e849d465fa2dc7dc78ec22ec3d",
+    "run": 39728095704,
+    "job": 119656592617,
+    "conclusion": "success"
+  },
+  "productionDeliveryQualified": true,
+  "freshHumanGovernanceQualified": true,
+  "nextTargetAction": "ONE_NEW_CACHED_READ_ONLY_PREFLIGHT_ONLY",
+  "targetPreflightObserved": false,
+  "targetPatchStagesApplied": 0,
+  "targetPatchInstalled": false,
+  "currentCumulativeOAuthAttempts": 292,
+  "maximumCumulativeOAuthAttempts": 292,
+  "remainingOAuthAttempts": 0,
+  "newBudgetGranted": false,
+  "newHumanWindowOpened": false,
+  "newLoginPerformed": false,
+  "runtimeAuthorityIssued": false,
+  "targetRuntimeEffectsDispatched": 0,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "releaseAcceptance": false
+}

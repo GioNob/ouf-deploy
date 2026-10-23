@@ -1,0 +1,10 @@
+{
+  "schema": "ouf.readiness-log-diagnostic-case.v1",
+  "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+  "since": 1792603650,
+  "until": 1792603750,
+  "replacementIds": {
+    "ingestion": "ca24aa3dc8d740f648db03ef6ff37a5a5adfec6dbe9dd091b087944fac6c30ad",
+    "gateway": "d36bef2faf3d25c6aaaadd72bfb6ebe0a85b2838ae6bf477a5471f8b68d9d912"
+  }
+}

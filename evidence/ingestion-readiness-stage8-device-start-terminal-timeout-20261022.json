@@ -1,0 +1,26 @@
+{
+  "schema": "ouf.ingestion-readiness-stage8-human-stop-target-evidence.v1",
+  "observedAt": "2026-10-22T12:33:48Z",
+  "result": {
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "checkpoint": {
+      "controlPath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-21e05b55eec1ef1e97a83a006fd3f33d38cfc95185f83c670563bfe59c2be264",
+      "phase": "EXPLICIT_TERMINAL_PROVIDER_CONFIRMATION"
+    },
+    "complete": false,
+    "contextsAndClaimsRetained": true,
+    "credentialHashesPrinted": false,
+    "credentialValuesPrinted": false,
+    "reasonCode": "HUMAN_TERMINAL_CONFIRMATION_TIMEOUT_NO_EFFECT",
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.human-explicit-successor-operator-result.v1",
+    "status": "STOP_RECONCILE"
+  },
+  "operatorLog": "/home/oufadmin/ouf-readiness-human.OYmSSFdV/operator.log",
+  "lastObservedAttempts": 301,
+  "lastObservedState": "DEVICE_START",
+  "currentCountReverificationRequired": true,
+  "stoppedInvocationMustNotBeReplayed": true,
+  "nextAction": "LOCAL_METADATA_STATUS_ONLY"
+}

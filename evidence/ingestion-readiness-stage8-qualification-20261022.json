@@ -1,0 +1,98 @@
+{
+  "schema": "ouf.ingestion-readiness-stage8-whole-path-qualification.v1",
+  "qualification": {
+    "sourceCommit": "732a03fb19ada6e2168a585a2bbe78684800e05f",
+    "unitRun": 39771531964,
+    "pythonJobs": [
+      {
+        "id": 119800000978,
+        "python": "3.12",
+        "tests": 129,
+        "skipped": 0,
+        "conclusion": "success"
+      },
+      {
+        "id": 119800001075,
+        "python": "3.13.5",
+        "tests": 129,
+        "skipped": 0,
+        "conclusion": "success"
+      }
+    ],
+    "platformRun": 39771531971,
+    "platformJob": {
+      "id": 119799997359,
+      "tests": 1,
+      "skipped": 0,
+      "conclusion": "success"
+    }
+  },
+  "proof": {
+    "complete": true,
+    "sealedNativeModules": 148,
+    "prefixImportedWithoutReplay": true,
+    "oldPrefixBytesUnchanged": true,
+    "nativeCountersPreserved": true,
+    "remainingStagesExecuted": 4,
+    "additionalEnginePosts": 1,
+    "newImagesOrKeys": 0,
+    "gatewayWrites": 0,
+    "syntheticStopAndExpiry": true,
+    "syntheticHumanAndOwner": true,
+    "targetEvidence": false,
+    "humanGovernance": {
+      "realBudgetAndWindowTty": true,
+      "cachedHashCheckedForegroundLaunchers": true,
+      "preLoginExactEngineGets": 14,
+      "syntheticProviderRequests": 4,
+      "priorOAuthAttempts": 300,
+      "readyOAuthAttempts": 304,
+      "oldSessionBytesUnchanged": true
+    }
+  },
+  "productionReproduction": {
+    "status": "PASS",
+    "releaseCommit": "3e2e1768632876030f3d37de0fc800dabee0d4a3",
+    "run": 39772566401,
+    "jobs": [
+      {
+        "id": 119803468865,
+        "python": "3.13.5",
+        "tests": 1,
+        "skipped": 0,
+        "conclusion": "success"
+      },
+      {
+        "id": 119803469193,
+        "python": "3.12",
+        "tests": 1,
+        "skipped": 0,
+        "conclusion": "success"
+      }
+    ],
+    "publishedPinsMatched": true
+  },
+  "failedPlatformRuns": [
+    {
+      "run": 39770138270,
+      "reason": "TEST_TTY_PROMPT_WORDING"
+    },
+    {
+      "run": 39770821359,
+      "reason": "TEST_READER_IMPORTS"
+    }
+  ],
+  "target": {
+    "oauthAttempts": 300,
+    "oauthCeiling": 300,
+    "patchStagesApplied": 8,
+    "fourStagesExecuted": false,
+    "newLoginPerformed": false,
+    "newBudgetGranted": false,
+    "newWindowOpened": false,
+    "runtimeAuthorityIssued": false,
+    "targetCommandExecuted": false,
+    "releaseAcceptance": false
+  },
+  "recordedAt": "2026-10-22T11:43:13Z"
+}

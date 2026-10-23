@@ -1,0 +1,31 @@
+{
+  "schema": "ouf.semantic-registry-recovery-proposal-target-evidence.v1",
+  "provenance": "OWNER_PASTED_PUBLIC_RECEIPT_NOT_INDEPENDENT_LIVE_READBACK",
+  "sourceCommit": "1314b386383cfa6f97d0992eb0ff38e76d6cf95c",
+  "operatorLog": "/home/oufadmin/ouf-registry-proposal.gEjCBGSF/operator.log",
+  "receipt": {
+    "activationResubmitted": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "complete": true,
+    "completedTechnicalPhases": 8,
+    "credentialFilesOpened": 0,
+    "engineGets": 4,
+    "functionalMilestonesProven": 4,
+    "gatedFileOnlyLaunchObserved": true,
+    "maximumEngineGets": 4,
+    "nativeExecutorQualified": false,
+    "oauthRequests": 0,
+    "privateProposalPath": "/etc/ouf/deploy-snapshots/semantic-registry-recovery-proposal-a14asgjz/proposal.json",
+    "proposalHash": "8b1cce8a68003a5c54778f0b61bd92ecb16532d72d1d7eb5510719b857d89624",
+    "providerRecoveryProposed": false,
+    "releaseAcceptance": false,
+    "runtimeAuthorityIssued": false,
+    "runtimeEffectsDispatched": 0,
+    "schema": "ouf.semantic-registry-recovery-proposal-result.v1",
+    "status": "BLOCKED_RECOVERY_PROPOSAL_RETAINED",
+    "targetApplyAuthorized": false,
+    "unresolvedGateCount": 8
+  },
+  "interpretation": "Private blocked proposal saved;gated file-only launch observed on exact stopped Registry. Proposal preparation only,not a qualified executor,current authority or recovery acceptance. Eight prerequisites remain open as of this receipt."
+}

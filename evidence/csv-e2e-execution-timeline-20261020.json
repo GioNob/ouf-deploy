@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-20T12:54:32.221Z",
+  "lastUpdatedAt": "2026-10-20T13:50:44.000Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -793,6 +793,135 @@
       ],
       "gateG5Passed": false,
       "note": "Typed rules/datatype and linked-policy validation aligned. Composed typed materialization, vocab and relationship cases still open."
+    },
+    {
+      "id": "CSV-EV-0058",
+      "kind": "WP5_COMPOSED_OWNER_FIXTURE_PUBLISHED",
+      "commit": "e56f335f07a20f5574b1f31989f52735cab0acbc",
+      "observedAt": "2026-10-20T13:10:11.000Z",
+      "status": "PENDING_CI",
+      "modulePins": {
+        "onboarding": "17a68aea8dccb603405ec4761cb9f52666692a32",
+        "ingestion": "bcc13544afdea6f5d331292f93eef86726587e2b",
+        "udp": "df1f4c38d31da8a8ac63d5a5cb2532f633778979"
+      },
+      "gateG5Passed": false,
+      "targetOperations": 0,
+      "note": "Three real JVM phases and separate disposable PG databases; two deliberately new acquisitions, canonical identity/revision/provenance oracle. Synthetic semantic/lake ports; no ACK/watermark/provider acceptance claim."
+    },
+    {
+      "id": "CSV-EV-0059",
+      "kind": "WP5_COMPOSED_TYPED_OWNER_PASS",
+      "commit": "1d21d4f415481c069e586a4936bebc0ca6583938",
+      "runId": 39428578919,
+      "jobId": 118647330860,
+      "observedAt": "2026-10-20T13:19:16.651Z",
+      "gateG5Passed": false,
+      "canonicalObjects": 1,
+      "canonicalRevisions": 1,
+      "acquisitions": 2,
+      "materializationObservations": 2,
+      "syntheticSemanticAndLakeBindings": true,
+      "notReleaseAcceptance": true,
+      "note": "All3realJVMphases PASS; G5 vocabulary/relationship and live ACK/watermark/provider acceptance remain separate."
+    },
+    {
+      "id": "CSV-EV-0060",
+      "kind": "WP6_OWNER_RECOVERY_CI_PASS",
+      "observedAt": "2026-10-20T13:30:00.000Z",
+      "commit": "701ae74b41cc81e4301ee592e3bcb3d13ead5106",
+      "runId": 39430243461,
+      "jobId": 118653094869,
+      "pullRequest": 49,
+      "gateG6Passed": false,
+      "note": "Bounded tenant/subject ASSETS and LATEST owner recovery; MCP and composed client evidence remain pending."
+    },
+    {
+      "id": "CSV-EV-0061",
+      "kind": "WP6_MCP_CURSOR_VALIDATION_DEFECT_CORRECTED_CI_PENDING",
+      "observedAt": "2026-10-20T13:37:34.000Z",
+      "commit": "8c97996cdd35bb9d18717e5f142e7ee40d51840e",
+      "failedRunId": 39431716064,
+      "failedJobId": 118658153341,
+      "gateG6Passed": false,
+      "note": "UUID format annotation did not reject malformed ASSETS cursor in SDK. Added explicit canonical UUID pattern; retain negative-test failure and rerun."
+    },
+    {
+      "id": "CSV-EV-0062",
+      "observedAt": "2026-10-20T13:47:19.000Z",
+      "kind": "WP6_MCP_FULL_SUITE_PASS",
+      "commit": "8c97996cdd35bb9d18717e5f142e7ee40d51840e",
+      "runId": 39432035338,
+      "jobId": 118659244796,
+      "gateG6Passed": false,
+      "p95ReserveMs": 6.625537,
+      "note": "Full normal/race suite, build/security checks PASS; two independent SDK sessions use synthetic owner response. Not composed real-owner acceptance."
+    },
+    {
+      "id": "CSV-EV-0063",
+      "observedAt": "2026-10-20T13:47:19.000Z",
+      "kind": "WP6_GATEWAY_RECOVERY_FULL_SUITE_PASS",
+      "commit": "e0eda7e281b548ae27553ac06055825808dbbf19",
+      "runId": 39432373118,
+      "jobId": 118660420542,
+      "passedTests": 552,
+      "skippedTests": 3,
+      "gateG6Passed": false
+    },
+    {
+      "id": "CSV-EV-0064",
+      "observedAt": "2026-10-20T13:47:19.000Z",
+      "kind": "WP6_MCP_GATEWAY_EXACT_SCHEMA_PASS",
+      "commit": "d2ea30957957bf66d5f13bbaa976902d26322c2e",
+      "runId": 39432595584,
+      "gatewayCommit": "e0eda7e281b548ae27553ac06055825808dbbf19",
+      "gateG6Passed": false
+    },
+    {
+      "id": "CSV-EV-0065",
+      "observedAt": "2026-10-20T13:47:19.000Z",
+      "kind": "WP5_TYPED_CHAT_OWNER_CONTRACT_PASS",
+      "commit": "0a76376a7c6a0f07597c1c3aaf447b29deed597f",
+      "runId": 39433193162,
+      "gatewayCommit": "c22fbf7f5593f612aba7e318797c9459d0b871a7",
+      "ownerSchemaCommit": "7b04d36fd8462616514cca956fd973c9bd01c1e7",
+      "gateG5Passed": false,
+      "note": "Official SDK argument preservation and exact Gateway schemas for string/decimal/date; Onboarding typed compiler already qualified separately. No HUMAN approval or target effect."
+    },
+    {
+      "id": "CSV-EV-0066",
+      "observedAt": "2026-10-20T13:47:19.000Z",
+      "kind": "QUALIFICATION_FAILURES_RETAINED",
+      "runs": [
+        39431131633,
+        39431428085,
+        39431716064,
+        39432897409
+      ],
+      "automaticReplayAllowed": false,
+      "note": "Formatting output applied; malformed UUID cursor caught and explicit syntax added; old Gateway schema pin reconciled to matching cohort. No target claim or budget reset."
+    },
+    {
+      "id": "CSV-EV-0067",
+      "kind": "TYPED_CHAT_RECOVERY_COHORT_ALL_CI_PASS",
+      "observedAt": "2026-10-20T13:49:22.000Z",
+      "commits": {
+        "onboarding": "7b04d36fd8462616514cca956fd973c9bd01c1e7",
+        "mcp": "0a76376a7c6a0f07597c1c3aaf447b29deed597f",
+        "gateway": "c22fbf7f5593f612aba7e318797c9459d0b871a7"
+      },
+      "runs": {
+        "onboarding": 39432864255,
+        "mcpFull": 39433193179,
+        "mcpGatewayContract": 39433193162,
+        "mcpMandatoryDispatch": 39433193465,
+        "gateway": 39432768839
+      },
+      "gateG5Passed": false,
+      "gateG6Passed": false,
+      "functionalMilestonesProven": 4,
+      "runtimePublished": false,
+      "authorityIssued": false
     }
   ],
   "activeIntervals": [
@@ -1011,11 +1140,73 @@
     {
       "id": "CSV-TIME-0020",
       "startedAt": "2026-10-20T12:54:32.221Z",
-      "endedAt": null,
-      "seconds": null,
+      "endedAt": "2026-10-20T13:00:42.022Z",
+      "seconds": 369.801,
       "classification": "ACTIVE_TECHNICAL",
       "workPackage": "WP5",
       "activity": "COMPOSED_TYPED_CSV_QUALIFICATION_AND_VOCABULARY_MAPPING"
+    },
+    {
+      "id": "CSV-TIME-0021",
+      "startedAt": "2026-10-20T13:03:51.698Z",
+      "endedAt": "2026-10-20T13:10:11.000Z",
+      "seconds": 379.302,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP5",
+      "activity": "COMPOSED_TYPED_OWNER_FIXTURE_IMPLEMENTATION"
+    },
+    {
+      "id": "CSV-TIME-0022",
+      "startedAt": "2026-10-20T13:10:11.000Z",
+      "endedAt": "2026-10-20T13:19:16.651Z",
+      "seconds": 545.651,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackages": [
+        "WP5_QUALIFICATION",
+        "WP6_OWNER_RECOVERY_REAUDIT"
+      ],
+      "perPackageAllocationKnown": false,
+      "activity": "COMPOSED_CI_AND_DURABLE_CHAT_RECOVERY"
+    },
+    {
+      "id": "CSV-TIME-0023",
+      "startedAt": "2026-10-20T13:19:16.651Z",
+      "endedAt": "2026-10-20T13:25:20.000Z",
+      "seconds": 363.349,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP6",
+      "activity": "DURABLE_TENANT_OWNER_RECOVERY_API_AND_TESTS"
+    },
+    {
+      "id": "CSV-TIME-0024",
+      "startedAt": "2026-10-20T13:28:36.000Z",
+      "endedAt": "2026-10-20T13:30:00.000Z",
+      "seconds": 84,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP6",
+      "activity": "RECONCILE_CONNECTION_STATUS_AND_OWNER_CI"
+    },
+    {
+      "id": "CSV-TIME-0025",
+      "startedAt": "2026-10-20T13:30:00.000Z",
+      "endedAt": "2026-10-20T13:47:19.000Z",
+      "seconds": 1039,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP6",
+      "activity": "MCP_DURABLE_RECOVERY_WIRING_AND_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0026",
+      "startedAt": "2026-10-20T13:47:19.000Z",
+      "endedAt": "2026-10-20T13:50:44.000Z",
+      "seconds": 205,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackages": [
+        "WP5_QUALIFICATION",
+        "WP6_QUALIFICATION"
+      ],
+      "perPackageAllocationKnown": false,
+      "activity": "FINAL_CI_EVIDENCE_AND_COHORT_RECONCILIATION"
     }
   ],
   "waitingIntervals": [],
@@ -1249,6 +1440,22 @@
       "includedInMeasuredEffort": false,
       "classification": "UNVERIFIED_CHAT_CONTINUITY",
       "reason": "User reports another interruption. Conservative exclusion between last confirmed clock and resumed tool observation."
+    },
+    {
+      "id": "CSV-UNCERTAIN-0005",
+      "startedAt": "2026-10-20T13:00:42.022Z",
+      "endedAt": "2026-10-20T13:03:51.698Z",
+      "seconds": 189.676,
+      "includedInMeasuredEffort": false,
+      "classification": "UNVERIFIED_CHAT_CONTINUITY",
+      "reason": "User reported connection interrupted again; interval excluded conservatively."
+    },
+    {
+      "startedAt": "2026-10-20T13:25:20.000Z",
+      "endedAt": "2026-10-20T13:28:36.000Z",
+      "seconds": 196,
+      "reason": "CONNECTION_INTERRUPTION_NO_VERIFIED_ACTIVE_EXECUTION",
+      "countedAsActive": false
     }
   ],
   "qualificationState": {
@@ -1256,5 +1463,46 @@
     "qualifiedSourceCommit": "24c2d9b8c7b3f4f8a4a61125b86877ffbd635dba",
     "sourceClosureModules": 114,
     "loaderSha256": "3898173a6303317ea91e350dd867f6292b634341930daddaeef91b25f2756b1a"
+  },
+  "developmentCandidates": [
+    {
+      "repo": "ouf-source-onboarding",
+      "commit": "7b04d36fd8462616514cca956fd973c9bd01c1e7",
+      "pr": 49,
+      "scope": "OWNER_RECOVERY_AND_TYPED_SCHEMA",
+      "runtimePublished": false
+    },
+    {
+      "repo": "ouf-mcp-server",
+      "commit": "0a76376a7c6a0f07597c1c3aaf447b29deed597f",
+      "pr": 77,
+      "scope": "RECOVERY_SDK_AND_TYPED_PROPOSAL",
+      "runtimePublished": false
+    },
+    {
+      "repo": "ouf-api-gateway",
+      "commit": "c22fbf7f5593f612aba7e318797c9459d0b871a7",
+      "pr": 82,
+      "scope": "RECOVERY_AND_TYPED_DISPATCH_SCHEMAS",
+      "runtimePublished": false
+    }
+  ],
+  "runtimeBlockers": {
+    "gate": "G3",
+    "humanInterventionRequired": true,
+    "reasons": [
+      "CURRENT_HUMAN_THS_AUTHORITY_REQUIRED",
+      "QUALIFIED_OUF_ADMIN_VPS_EXECUTOR_CHANNEL_REQUIRED"
+    ],
+    "historicalAttempts": 278,
+    "maximumCumulativeAttempts": 288,
+    "resetAllowed": false,
+    "automaticLoginAllowed": false,
+    "retainedClaimsPreserved": true,
+    "independentRemainingWork": [
+      "G5_VOCABULARY_AND_RELATIONSHIPS",
+      "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
+      "G7_ACCEPTANCE"
+    ]
   }
 }

@@ -73,7 +73,7 @@ jobs:
           cp_ingestion="target/csv-owner-classes/ingestion:.pairwise/ingestion/target/classes:$(cat .pairwise/ingestion/target/csv-composition.classpath)"
           cp_udp="target/csv-owner-classes/udp:.pairwise/udp/target/classes:$(cat .pairwise/udp/target/csv-composition.classpath)"
           java -cp "$cp_onboarding" ouf.fixture.OnboardingPhase target/csv-owner-proposal.json
-          OUF_CSV_DB_URL=jdbc:postgresql://127.0.0.1:5432/csv_ing java -cp "$cp_ingestion" ouf.fixture.IngestionPhase target/csv-owner-proposal.json target/csv-owner-handoffs.json "$GITHUB_WORKSPACE/.pairwise/ingestion/src/main/resources/db/migration"
+          OUF_CSV_DB_URL=jdbc:postgresql://127.0.0.1:5432/csv_ing java -cp "$cp_ingestion" it.comune.trieste.ouf.ingestion.IngestionPhase target/csv-owner-proposal.json target/csv-owner-handoffs.json "$GITHUB_WORKSPACE/.pairwise/ingestion/src/main/resources/db/migration"
           OUF_CSV_DB_URL=jdbc:postgresql://127.0.0.1:5432/csv_udp java -cp "$cp_udp" ouf.fixture.UdpPhase target/csv-owner-handoffs.json target/csv-owner-proof.json "$GITHUB_WORKSPACE/.pairwise/udp/src/main/resources/db/migration"
       - uses: actions/upload-artifact@v4
         if: success()

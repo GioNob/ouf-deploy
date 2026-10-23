@@ -1,0 +1,48 @@
+{
+  "schema": "ouf.operator-pasted-diagnostic-evidence.v1",
+  "receipt": {
+    "schema": "ouf.readiness-log-diagnostic-result.v1",
+    "activationResubmitted": false,
+    "automaticReplayAllowed": false,
+    "bearerFilesOpened": 0,
+    "complete": true,
+    "containers": {
+      "gateway": {
+        "absenceOfCodeIsNotProofOfHealth": true,
+        "logBytes": 17166,
+        "rawLinesPrinted": false,
+        "safeCodes": {},
+        "transportCategories": {}
+      },
+      "ingestion": {
+        "absenceOfCodeIsNotProofOfHealth": true,
+        "logBytes": 0,
+        "rawLinesPrinted": false,
+        "safeCodes": {},
+        "transportCategories": {}
+      },
+      "onboarding": {
+        "absenceOfCodeIsNotProofOfHealth": true,
+        "logBytes": 7644,
+        "rawLinesPrinted": false,
+        "safeCodes": {},
+        "transportCategories": {}
+      }
+    },
+    "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+    "engineGets": 9,
+    "maximumEngineGets": 9,
+    "oauthRequests": 0,
+    "privateKeysRead": 0,
+    "readOnly": true,
+    "releaseAcceptance": false,
+    "rootCauseEstablished": false,
+    "runtimeEffectsDispatched": 0,
+    "since": 1792603650,
+    "status": "BOUNDED_LOG_CLASSIFICATION_ONLY",
+    "until": 1792603750
+  },
+  "logPath": "/home/oufadmin/ouf-readiness-diagnostic.IGfsfQfD/operator.log",
+  "independentlyObserved": false,
+  "rootCauseEstablished": false
+}

@@ -1,0 +1,4117 @@
+{
+  "schema": "ouf.csv-e2e-execution-timeline.v1",
+  "timezone": "Europe/Rome",
+  "baseline": {
+    "version": "1.1",
+    "commit": "d190193773116c9a59403aa42ccc9f89423eb959",
+    "document": "docs/OUF_CSV_E2E_COMPLETION_MINIPET_v1_1_20261020.md",
+    "register": "releases/csv-e2e-completion-plan-20261020.json",
+    "forecastRewritten": false
+  },
+  "sessionOrigin": {
+    "requestedAt": "2026-10-20T11:07:49+02:00",
+    "source": "user execution instruction timestamp supplied by conversation",
+    "isExactFirstToolStart": false
+  },
+  "trackingStartedAt": "2026-10-20T09:16:46.603Z",
+  "lastUpdatedAt": "2026-10-22T18:43:58Z",
+  "initialUnsegmentedWindow": {
+    "from": "2026-10-20T11:07:49+02:00",
+    "to": "2026-10-20T09:16:46.603Z",
+    "technicalEffortPreciselyMeasured": false,
+    "reason": "Dedicated event timing requested after work started; preceding task start times are retained as bounded/reconstructed, never invented"
+  },
+  "clockRules": {
+    "timestamps": "ISO8601 UTC; display Europe/Rome",
+    "technicalEffort": "Measured active session intervals; passive waits separated; initial unsegmented window remains explicitly uncertain",
+    "humanEffort": "Recorded only when measured or supplied, never inferred from calendar wait",
+    "runtimeBudgetsChanged": false
+  },
+  "sourceHeads": [
+    {
+      "repo": "ouf-semantic-registry",
+      "ref": "main",
+      "selected": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+      "head": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+      "selectedMatches": true
+    },
+    {
+      "repo": "ouf-source-onboarding",
+      "ref": "fix/installation-active-precondition-20261019",
+      "selected": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "head": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "selectedMatches": true
+    },
+    {
+      "repo": "ouf-ingestion-runtime",
+      "ref": "fix/validate-only-startup-readiness-20261020",
+      "selected": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+      "head": "0fe0de60c6d980fe97610acf195d4bfd46d3777f",
+      "selectedMatches": true
+    },
+    {
+      "repo": "ouf-udp-object-resolution",
+      "ref": "fix/publication-dependency-recovery-20261018",
+      "selected": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "head": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "selectedMatches": true
+    },
+    {
+      "repo": "ouf-mcp-server",
+      "ref": "fix/ingestion-read-gateway-binding-20261019",
+      "selected": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+      "head": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+      "selectedMatches": true
+    },
+    {
+      "repo": "ouf-api-gateway",
+      "ref": "fix/ingestion-read-auth-20261019",
+      "selected": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+      "head": "6bcb28906eee08e0ebe3507b8b58dd987012c8e6",
+      "selectedMatches": true
+    }
+  ],
+  "events": [
+    {
+      "id": "CSV-EV-0001",
+      "kind": "SESSION_REQUESTED",
+      "occurredAt": "2026-10-20T11:07:49+02:00",
+      "timestampConfidence": "EXACT_USER_MESSAGE_TIMESTAMP",
+      "note": "User authorizes persistent execution of mini-PET; runtime HUMAN/THS restrictions remain"
+    },
+    {
+      "id": "CSV-EV-0002",
+      "kind": "WP0_SELECTION_RECONCILED",
+      "workPackage": "WP0",
+      "observedAt": "2026-10-20T09:16:46.603Z",
+      "timestampConfidence": "OBSERVED_CHECKPOINT_TIME",
+      "note": "Six selected module branches match retained refs; deploy plan head d190193 verified. Original baseline and retained contexts read; no target calls"
+    },
+    {
+      "id": "CSV-EV-0003",
+      "kind": "GATE_PASSED",
+      "gate": "G0",
+      "observedAt": "2026-10-20T09:16:46.603Z",
+      "timestampConfidence": "OBSERVED_CHECKPOINT_TIME",
+      "baselineCentralHour": 0.5,
+      "evidenceRefs": [
+        "sourceHeads",
+        "docs/OUF_CSV_E2E_COMPLETION_MINIPET_v1_1_20261020.md"
+      ],
+      "note": "Repository selection/baseline gate only; no runtime admission"
+    },
+    {
+      "id": "CSV-EV-0004",
+      "kind": "WP1_IN_PROGRESS",
+      "workPackage": "WP1",
+      "observedAt": "2026-10-20T09:16:46.603Z",
+      "startedAt": null,
+      "startTimeBounds": {
+        "earliest": "2026-10-20T11:07:49+02:00",
+        "latest": "2026-10-20T09:16:46.603Z"
+      },
+      "timestampConfidence": "INITIAL_START_RECONSTRUCTED_WITHIN_BOUNDS",
+      "note": "Preliminary diagnosis overlapped WP0 selection. Local test fixes prepared; ingestion/MCP qualification branches pushed, fresh CI pending"
+    },
+    {
+      "id": "CSV-EV-0005",
+      "kind": "LOCAL_TEST_RESULT",
+      "testRef": "DeliveryLauncherTest except published full-closure comparison",
+      "observedAt": "2026-10-20T09:16:46.603Z",
+      "passCount": 14,
+      "failureCount": 0,
+      "notProven": "Full retained capsule closure CI remains required"
+    },
+    {
+      "id": "CSV-EV-0006",
+      "kind": "QUALIFICATION_COMMIT_CREATED",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "8a15d8c7e7c20fac09ea18b3a1013f659934f128",
+      "observedAt": "2026-10-20T09:16:46.603Z",
+      "qualificationStatus": "PENDING_CI",
+      "targetEffects": 0
+    },
+    {
+      "id": "CSV-EV-0007",
+      "kind": "QUALIFICATION_COMMIT_CREATED",
+      "repository": "GioNob/ouf-mcp-server",
+      "commit": "e7e9d961a7555b149a760299a0fe183c8bf4eccb",
+      "observedAt": "2026-10-20T09:16:46.603Z",
+      "qualificationStatus": "PENDING_CI",
+      "targetEffects": 0
+    },
+    {
+      "id": "CSV-EV-0008",
+      "kind": "MODULE_QUALIFICATION_PASS",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "runId": 39399340219,
+      "jobId": 118549841083,
+      "occurredAt": "2026-10-20T09:18:04Z",
+      "observedAt": "2026-10-20T09:19:17.468Z",
+      "timestampConfidence": "GITHUB_JOB_COMPLETION_TIMESTAMP",
+      "status": "PASS",
+      "note": "Fresh full module qualification on WP1 branch; deployment and G1 remain separate"
+    },
+    {
+      "id": "CSV-EV-0009",
+      "kind": "MODULE_QUALIFICATION_PASS",
+      "repository": "GioNob/ouf-mcp-server",
+      "runId": 39399343702,
+      "jobId": 118549851550,
+      "occurredAt": "2026-10-20T09:18:30Z",
+      "observedAt": "2026-10-20T09:19:17.468Z",
+      "timestampConfidence": "GITHUB_JOB_COMPLETION_TIMESTAMP",
+      "status": "PASS",
+      "note": "Fresh full module qualification on WP1 branch; deployment and G1 remain separate"
+    },
+    {
+      "id": "CSV-EV-0010",
+      "kind": "WP2_COMPONENT_PREPARATION",
+      "observedAt": "2026-10-20T09:34:48.388Z",
+      "workPackage": "WP2",
+      "commit": "af1172ba4127a78cb42a812a90bab3c3c60cb159",
+      "note": "Lifecycle/key sealing component written while final WP1 regression is pending; not full G2 qualification",
+      "qualificationStatus": "PENDING_NATIVE_CI"
+    },
+    {
+      "id": "CSV-EV-0011",
+      "kind": "WORKFLOW_CANCELLED",
+      "repository": "GioNob/ouf-deploy",
+      "runId": 39399655535,
+      "occurredAt": "2026-10-20T09:35:05Z",
+      "observedAt": "2026-10-20T09:38:46.444Z",
+      "timestampConfidence": "GITHUB_JOB_COMPLETION_TIMESTAMP",
+      "cause": "Existing cancel-in-progress workflow was superseded by WP2 commit; not PASS and not runtime replay",
+      "replacementRunId": 39401717480
+    },
+    {
+      "id": "CSV-EV-0012",
+      "kind": "COMPONENT_QUALIFICATION_PASS",
+      "workPackage": "WP2",
+      "runId": 39401710478,
+      "jobId": 118557741572,
+      "occurredAt": "2026-10-20T09:35:14Z",
+      "observedAt": "2026-10-20T09:38:46.444Z",
+      "timestampConfidence": "GITHUB_JOB_COMPLETION_TIMESTAMP",
+      "counts": {
+        "coreRegression": 16,
+        "newLifecycle": 7,
+        "skipped": 0
+      },
+      "notProven": "Full native Ports, actual Engine lifecycle roundtrip, current owner/DB/Gateway/issuer/entrypoint and G2"
+    },
+    {
+      "id": "CSV-EV-0013",
+      "kind": "ISOLATED_WORK_BRANCH_CREATED",
+      "observedAt": "2026-10-20T09:38:46.444Z",
+      "branch": "feat/csv-e2e-native-completion-20261020",
+      "base": "af1172ba4127a78cb42a812a90bab3c3c60cb159",
+      "note": "Further commits will not interrupt PR41 native cohort regression"
+    },
+    {
+      "id": "CSV-EV-0014",
+      "kind": "RETAINED_CAPSULE_QUALIFICATION_PASS",
+      "workPackage": "WP1",
+      "runId": 39399647915,
+      "jobId": 118550873242,
+      "occurredAt": "2026-10-20T09:18:04Z",
+      "observedAt": "2026-10-20T09:39:51.362Z",
+      "timestampConfidence": "GITHUB_JOB_COMPLETION_TIMESTAMP",
+      "tests": 15,
+      "skipped": 0,
+      "note": "Exact historical capsule comparison and current-byte rejection pass; full cohort regression remains separate"
+    },
+    {
+      "id": "CSV-EV-0015",
+      "workPackage": "WP1",
+      "gate": "G1",
+      "occurredAt": "2026-10-20T09:51:37Z",
+      "observedAt": "2026-10-20T09:53:01.026Z",
+      "source": "GitHub Actions job118557847434/run39401717480",
+      "commit": "af1172ba4127a78cb42a812a90bab3c3c60cb159",
+      "status": "PASS",
+      "note": "Complete native cohort regression passed on unchanged PR41. Relevant WP1 fixes/capsule/MCP/Ingestion independently qualified. G1 decision recorded separately from provider completion.",
+      "kind": "QUALIFICATION_PASSED",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP"
+    },
+    {
+      "id": "CSV-EV-0016",
+      "workPackage": "WP1",
+      "gate": "G1",
+      "occurredAt": "2026-10-20T09:53:01.026Z",
+      "observedAt": "2026-10-20T09:53:01.026Z",
+      "status": "PASS",
+      "evidence": [
+        "39399340219",
+        "39399343702",
+        "39399647915",
+        "39401717480"
+      ],
+      "runtimeAuthorityIssued": false,
+      "notReleaseAcceptance": true,
+      "kind": "GATE_DECISION",
+      "timestampConfidence": "EXACT_OBSERVED_DECISION_TIME"
+    },
+    {
+      "id": "CSV-EV-0017",
+      "workPackage": "WP2",
+      "occurredAt": "2026-10-20T09:50:01Z",
+      "observedAt": "2026-10-20T09:53:01.026Z",
+      "status": "FAILED_TEST_EXPECTATION",
+      "commit": "2e2d5add738589a9caef802efa615da6cff02f70",
+      "source": "39403466107/118563615992",
+      "note": "One combined negative test expected Denied after a retained claim; Runner correctly Paused. Scenarios separated, no production relaxation.",
+      "kind": "COMPONENT_QUALIFICATION_FAILED",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP"
+    },
+    {
+      "id": "CSV-EV-0018",
+      "workPackage": "WP2",
+      "occurredAt": "2026-10-20T09:51:46Z",
+      "observedAt": "2026-10-20T09:53:01.026Z",
+      "status": "PASS",
+      "commit": "c3042a0696875f538a6476df5866f507d414b667",
+      "source": "39403673060/118564293098",
+      "tests": 38,
+      "skipped": 0,
+      "proofLevel": "ACTUAL_SIGNATURES_CAS_FILE_CUSTODY_SYNTHETIC_ENGINE_AND_ROUTE_HTTP",
+      "gateG2Passed": false,
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP"
+    },
+    {
+      "id": "CSV-EV-0019",
+      "kind": "LOCAL_DATABASE_POLICY_COMPONENT_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T09:58:52.414Z",
+      "timestampConfidence": "OBSERVED_AFTER_LOCAL_TEST_COMPLETION",
+      "tests": 9,
+      "skipped": 0,
+      "proofLevel": "SYNTHETIC_FACTS_STRICT_POLICY",
+      "gateG2Passed": false,
+      "note": "Fixed release SQL/history reused without executing or selecting the retained diagnostic. Only added serverPort observation; native collector/admission remains open."
+    },
+    {
+      "id": "CSV-EV-0020",
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "occurredAt": "2026-10-20T10:00:19Z",
+      "observedAt": "2026-10-20T10:08:55.013Z",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "commit": "0e85369769904d76d135f1c0b394a713dc33dc6a",
+      "runId": 39404688204,
+      "jobId": 118567661976,
+      "tests": 47,
+      "skipped": 0,
+      "gateG2Passed": false,
+      "proofLevel": "SIGNED_CORE_LIFECYCLE_GATEWAY_AND_STRICT_SNAPSHOT_POLICY_COMPONENTS"
+    },
+    {
+      "id": "CSV-EV-0021",
+      "kind": "LOCAL_COMPONENT_TESTS_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T10:08:55.013Z",
+      "timestampConfidence": "OBSERVED_AFTER_LOCAL_TEST_COMPLETION",
+      "components": {
+        "ownerRead": 10,
+        "databaseRead": 8
+      },
+      "proofLevel": "ACTUAL_ED25519_CAS_AND_CLOSED_CHILD_REJECTION_SYNTHETIC_BACKENDS",
+      "gateG2Passed": false,
+      "ownerMutations": 0,
+      "targetSqlSessions": 0,
+      "note": "Owner/DB current reads compose finite persisted budgets but full NativePorts/issuer/qualification still missing."
+    },
+    {
+      "id": "CSV-EV-0022",
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "occurredAt": "2026-10-20T10:09:46Z",
+      "observedAt": "2026-10-20T10:15:14.724Z",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "commit": "d321d7a90606e7e797c9ad83bd16f6b532be6948",
+      "runId": 39405867174,
+      "jobId": 118571521988,
+      "tests": 65,
+      "skipped": 0,
+      "gateG2Passed": false,
+      "proofLevel": "ACTUAL_ROLES_CAS_FILE_CUSTODY_SYNTHETIC_BACKENDS"
+    },
+    {
+      "id": "CSV-EV-0023",
+      "kind": "LOCAL_IMAGE_IMPORT_COMPONENT_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T10:15:14.724Z",
+      "timestampConfidence": "OBSERVED_AFTER_LOCAL_TEST_COMPLETION",
+      "tests": 11,
+      "skipped": 0,
+      "proofLevel": "ACTUAL_ARCHIVE_FD_ROLES_CAS_SYNTHETIC_DOCKER_LOAD",
+      "gateG2Passed": false,
+      "note": "No target image import, archive audit, recreation, download or completed effect replay."
+    },
+    {
+      "id": "CSV-EV-0024",
+      "kind": "ACTIVITY_STARTED",
+      "workPackage": "WP2",
+      "activity": "NATIVE_PORTS_COMPOSITION_AND_REVIEW",
+      "occurredAt": "2026-10-20T10:15:14.724Z",
+      "observedAt": "2026-10-20T10:15:14.724Z",
+      "timestampConfidence": "EXACT_OBSERVED_ACTIVITY_START",
+      "gateG2Passed": false
+    },
+    {
+      "id": "CSV-EV-0025",
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "occurredAt": "2026-10-20T10:16:10Z",
+      "observedAt": "2026-10-20T10:30:51.147Z",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "commit": "92e7007fcc5ad5e916e05909d13c9e4aef042e31",
+      "runId": 39406640241,
+      "jobId": 118574055490,
+      "tests": 76,
+      "skipped": 0,
+      "gateG2Passed": false,
+      "proofLevel": "SIGNED_COMPONENTS_AND_ACTUAL_ARCHIVE_FD_SYNTHETIC_LOAD"
+    },
+    {
+      "id": "CSV-EV-0026",
+      "kind": "COMPOSITION_DEFECT_FIXED_LOCAL_TESTS_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T10:30:51.147Z",
+      "timestampConfidence": "OBSERVED_AFTER_TEST_COMPLETION",
+      "tests": {
+        "stageAwareRuntimeGuard": 7,
+        "runnerNativeJournalComposition": 8,
+        "readinessProfile": 3,
+        "readinessLinuxCasesPending": 5
+      },
+      "gateG2Passed": false,
+      "note": "Runner reloaded after native counters/resources; protected progress/deadlines/history; no probes during retained retry wait, no effect without remaining observation budget. Actual readiness setns/HTTP still awaiting CI."
+    },
+    {
+      "id": "CSV-EV-0027",
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "occurredAt": "2026-10-20T10:32:27Z",
+      "observedAt": "2026-10-20T10:45:39.678Z",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "commit": "45aa4071070e85c42a34afa6a1e9934e50a6e672",
+      "runId": 39408488591,
+      "jobId": 118580149924,
+      "tests": 99,
+      "skipped": 0,
+      "gateG2Passed": false,
+      "proofLevel": "SIGNED_CAS_COMPONENTS_ACTUAL_LINUX_SETNS_HTTP_SYNTHETIC_ENGINE"
+    },
+    {
+      "id": "CSV-EV-0028",
+      "kind": "CHAT_INTERRUPTION_REPORTED_AND_CONTEXT_RECONCILED",
+      "occurredAt": "2026-10-20T12:41:55+02:00",
+      "observedAt": "2026-10-20T10:45:39.678Z",
+      "timestampConfidence": "EXACT_USER_MESSAGE_TIMESTAMP",
+      "gitHeadRechecked": "45aa4071070e85c42a34afa6a1e9934e50a6e672",
+      "targetCalls": 0,
+      "newLoginPerformed": false,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "note": "Retained GitHub head and timeline reconciled; local pending code preserved. No target contexts, claims or completed actions replayed."
+    },
+    {
+      "id": "CSV-EV-0029",
+      "kind": "LOCAL_RETAINED_GATEWAY_BOUNDARY_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T10:45:39.678Z",
+      "timestampConfidence": "OBSERVED_AFTER_LOCAL_TEST_COMPLETION",
+      "tests": 4,
+      "skipped": 0,
+      "gateG2Passed": false,
+      "note": "GET-only old route inventory; stopped/changed predecessor rejected before namespace access; existing FD closed without rebinding."
+    },
+    {
+      "id": "CSV-EV-0030",
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T10:54:20.502Z",
+      "occurredAt": "2026-10-20T10:47:07Z",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "commit": "6d221e5ae87062c97d3ecff6bbc38e9d26c514b2",
+      "runId": 39410225377,
+      "jobId": 118585881354,
+      "tests": 104,
+      "skipped": 0,
+      "gateG2Passed": false
+    },
+    {
+      "id": "CSV-EV-0031",
+      "kind": "LOCAL_BINDING_AND_PROFILE_COMPOSITION_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T10:54:20.502Z",
+      "tests": {
+        "ownerRead": 10,
+        "databaseRead": 8,
+        "runtimeGuard": 9,
+        "retainedGateway": 4,
+        "nativeReview": 7
+      },
+      "gateG2Passed": false,
+      "proofLevel": "ACTUAL_ROLE_CAS_COMPONENTS_AND_PURE_CROSS_PROFILE_VALIDATION_SYNTHETIC_BACKENDS",
+      "note": "Explicit raw/sorted mount binding encodings preserve historical hashes. Pure native review joins retained owner result/payload/key and transport profiles; does not grant authority. First review fixture reused a PostgreSQL CID, correctly rejected; distinct fixture ID corrected, no production relaxation."
+    },
+    {
+      "id": "CSV-EV-0032",
+      "kind": "NORMATIVE_COHERENCE_REVIEW",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T10:54:20.502Z",
+      "sources": [
+        "Blueprint0.3 sections9-10 original",
+        "Ingestion1.3 sections146-146.1 original"
+      ],
+      "gateG2Passed": false
+    },
+    {
+      "id": "CSV-EV-0033",
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:03:17.182Z",
+      "occurredAt": "2026-10-20T10:56:36Z",
+      "commit": "c3438c5f0b906d137465923624f5e5f6e3604684",
+      "runId": 39411288606,
+      "jobId": 118589402720,
+      "tests": 113,
+      "skipped": 0,
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "gateG2Passed": false
+    },
+    {
+      "id": "CSV-EV-0034",
+      "kind": "NATIVE_PORTS_LOCAL_COMPOSITION_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:03:17.182Z",
+      "tests": {
+        "engineChannel": 6,
+        "nativePorts": 7,
+        "databasePolicy": 9
+      },
+      "gateG2Passed": false,
+      "notProven": [
+        "immutableClosure",
+        "newIssuerEntrypoint",
+        "representativeDockerAPISIXJVMPostgres"
+      ],
+      "note": "Direct Engine budget shared across components; once-only POST reservation. Native Ports composes Owner/DB/generations/readiness/new Gateway and retained CAS namespace. Epoch floors explicitly, no future timestamp tolerance; historical preflight untouched."
+    },
+    {
+      "id": "CSV-EV-0035",
+      "kind": "COMPONENT_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:13:10.604Z",
+      "commit": "990f30c6bb018003784f628f059e21c950d193de",
+      "runId": 39412298239,
+      "jobId": 118592772504,
+      "occurredAt": "2026-10-20T11:05:20Z",
+      "gateG2Passed": false,
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP"
+    },
+    {
+      "id": "CSV-EV-0036",
+      "kind": "REAL_POSTGRES_PLATFORM_QUALIFICATION_FAILED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:13:10.604Z",
+      "commit": "727d7d79d144ab31d1b2370f01bf88b4765cdcaf",
+      "runId": 39412833943,
+      "jobId": 118594558275,
+      "occurredAt": "2026-10-20T11:08:54Z",
+      "errors": 3,
+      "reasonCode": "RECOVERY_CAS_CONFLICT",
+      "gateG2Passed": false,
+      "note": "Actual Engine shared GET reservations updated the same journal after DB.check loaded its row. No SQL dispatch reached by new component; fixture-only migrations/tamper cleaned up. Failure retained, never marked PASS."
+    },
+    {
+      "id": "CSV-EV-0037",
+      "kind": "CROSS_COMPONENT_CAS_DEFECT_FIXED_LOCAL",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:13:10.604Z",
+      "tests": {
+        "engineChannel": 8,
+        "databaseRead": 9,
+        "ownerRead": 11
+      },
+      "gateG2Passed": false,
+      "note": "After generation probes, adopt only monotonic direct-GET reservations/version. Claim/progress/deadline/non-GET changes rejected. Real PostgreSQL rerun required."
+    },
+    {
+      "id": "CSV-EV-0038",
+      "kind": "REAL_POSTGRES_PLATFORM_QUALIFICATION_PASSED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:18:23.438Z",
+      "commit": "a6d3a36173fe0a5adb3d6d46d95c9dfe68b30494",
+      "runId": 39413446807,
+      "jobId": 118596615363,
+      "occurredAt": "2026-10-20T11:14:20Z",
+      "tests": 3,
+      "skipped": 0,
+      "catalogDigest": "0ae9e4f3fda6fd7f4432c1816139a53eba471077730badf2beb61712585ed209",
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "gateG2Passed": false,
+      "targetSqlSessions": 0
+    },
+    {
+      "id": "CSV-EV-0039",
+      "kind": "LOCAL_ISSUER_ENTRY_AND_SEALED_IMPORT_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:18:23.438Z",
+      "tests": {
+        "existingKeyDualRoleIssuer": 6,
+        "entryReadback": 4,
+        "isolated113ModuleClosure": 5
+      },
+      "gateG2Passed": false,
+      "note": "Existing scoped infrastructure consent functions extracted unchanged; all installation issuer/policy paths are explicit. Qualification receipt mandatory before issuing. Actual unit Ed25519 keys and CAS, synthetic HUMAN/qualification; no target issuance. Real isolated import -I -B -S rejects source drift/fallback."
+    },
+    {
+      "id": "CSV-EV-0040",
+      "kind": "ISSUER_ENTRY_CLOSURE_CI_PASSED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:32:01.642Z",
+      "occurredAt": "2026-10-20T11:20:44Z",
+      "commit": "5244bc525864ebf63f7c434ac011b0a65dcb62fa",
+      "runId": 39414076923,
+      "jobId": 118598699463,
+      "timestampConfidence": "EXACT_PROVIDER_TIMESTAMP",
+      "gateG2Passed": false,
+      "note": "Root component regression, exact issuer/readback and real isolated 113-module import passed. Native PG qualification39414076927 also PASS. Full APISIX/JVM sequence still pending."
+    },
+    {
+      "id": "CSV-EV-0041",
+      "kind": "FULL_NATIVE_PLATFORM_FIXTURE_PREPARED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:32:01.642Z",
+      "gateG2Passed": false,
+      "note": "Explicit disposable Docker29/APISIX/etcd/PG17/candidate JVM fixture; full sequence, lost actual CREATE reply, expired published bearer. Owner GET protocol and prepopulated HUMAN identity explicitly synthetic. No target operations, no completed target effects replayed."
+    },
+    {
+      "id": "CSV-EV-0042",
+      "kind": "ISOLATED_PLATFORM_WORKFLOW_SETUP_FAILED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:44:35.638Z",
+      "commit": "b2b1a79b1c6827f708c8ba5c5b4570b349b02d00",
+      "runId": 39415803840,
+      "jobId": 118604385287,
+      "occurredAt": "2026-10-20T11:33:49Z",
+      "reasonCode": "CI_PRINTF_LITERAL_NEWLINE_ESCAPE",
+      "gateG2Passed": false,
+      "note": "Artifact downloaded, filename checksum input had a literal backslash-n. Sequence never started; artifact checksum not relaxed."
+    },
+    {
+      "id": "CSV-EV-0043",
+      "kind": "ISOLATED_PLATFORM_WORKFLOW_SETUP_FAILED",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:44:35.638Z",
+      "commit": "c78399a2babe8f5d17e1988237f3e6a660a021bf",
+      "runId": 39416140228,
+      "jobId": 118605505203,
+      "occurredAt": "2026-10-20T11:37:02Z",
+      "reasonCode": "CI_DOUBLE_ESCAPED_LINE_CONTINUATION",
+      "gateG2Passed": false,
+      "note": "Docker29 daemon started in CI; env received a literal backslash instead of line continuation. Native sequence not started. All run blocks now parsed with bash -n and doubled escapes rejected."
+    },
+    {
+      "id": "CSV-EV-0044",
+      "kind": "LOCAL_CURRENT_GUARD_TRANSIENT_POLICY_PASS",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:44:35.638Z",
+      "tests": {
+        "newPersistentGuardTransient": 5,
+        "existingRunnerComposition": 8,
+        "nativeComposition": 7,
+        "isolatedSourceClosure": 5
+      },
+      "pendingActualNamespaceOwnerHttpCases": 3,
+      "gateG2Passed": false,
+      "note": "Explicit Owner429/502/503/504 map to bounded Retry-After pauses. Preclaim reads wait under retained budgets; claimed effects permit read reconciliation only. Revocation/permanent/unknown failures still block."
+    },
+    {
+      "id": "CSV-EV-0045",
+      "kind": "LOCAL_ROOT_CUSTODY_ENVIRONMENT_LIMIT",
+      "workPackage": "WP2",
+      "observedAt": "2026-10-20T11:44:35.638Z",
+      "tests": 16,
+      "passed": 15,
+      "environmentErrors": 1,
+      "reasonCode": "LOCAL_FCHOWN_10002_EINVAL",
+      "gateG2Passed": false,
+      "note": "Known CLOUD scratch UID mapping limitation; no test or custody guard weakened. Actual root CI remains authoritative for the exclusive key ownership test."
+    },
+    {
+      "id": "CSV-EV-0046",
+      "kind": "FULL_NATIVE_PLATFORM_QUALIFICATION_FAILED",
+      "workPackage": "WP2",
+      "runId": 39417209985,
+      "occurredAt": "2026-10-20T11:46:53Z",
+      "observedAt": "2026-10-20T12:22:36.152Z",
+      "reasonCode": "EXECUTABLE_ANCESTRY_UNPROVEN",
+      "gateG2Passed": false,
+      "targetOperations": 0
+    },
+    {
+      "id": "CSV-EV-0047",
+      "kind": "FULL_NATIVE_PLATFORM_QUALIFICATION_FAILED",
+      "workPackage": "WP2",
+      "runId": 39417611176,
+      "occurredAt": "2026-10-20T11:52:39Z",
+      "observedAt": "2026-10-20T12:22:36.152Z",
+      "reasonCode": "DATABASE_READ_PREREQUISITES_UNPROVEN",
+      "gateG2Passed": false,
+      "targetOperations": 0
+    },
+    {
+      "id": "CSV-EV-0048",
+      "kind": "FULL_NATIVE_PLATFORM_QUALIFICATION_FAILED",
+      "workPackage": "WP2",
+      "runId": 39418496750,
+      "occurredAt": "2026-10-20T12:00:50Z",
+      "observedAt": "2026-10-20T12:22:36.152Z",
+      "reasonCode": "READINESS_SHARED_JOURNAL_CAS_CONFLICT",
+      "gateG2Passed": false,
+      "targetOperations": 0
+    },
+    {
+      "id": "CSV-EV-0049",
+      "kind": "FULL_NATIVE_PLATFORM_QUALIFICATION_FAILED",
+      "workPackage": "WP2",
+      "runId": 39419681503,
+      "occurredAt": "2026-10-20T12:12:29Z",
+      "observedAt": "2026-10-20T12:22:36.152Z",
+      "reasonCode": "UNREVIEWED_IMAGE_CONFIG_INHERITANCE",
+      "gateG2Passed": false,
+      "targetOperations": 0
+    },
+    {
+      "id": "CSV-EV-0050",
+      "kind": "LOCAL_READ_ONLY_HUMAN_HISTORY_COMPONENT_PASS",
+      "observedAt": "2026-10-20T12:22:36.152Z",
+      "tests": 5,
+      "gateG2Passed": false,
+      "note": "Synthetic 278/288 retained journal: read-only binding, expired-window precheck, no authentication/write, counter-reset and profile-drift rejection. Fixture boot identity explicit because CLOUD lacks proc boot_id. Native review9/native7/issuer6/entry4 also PASS."
+    },
+    {
+      "id": "CSV-EV-0051",
+      "kind": "SIGNED_NATIVE_COMPONENTS_CI_PASS",
+      "observedAt": "2026-10-20T12:28:35.506Z",
+      "occurredAt": "2026-10-20T12:24:47Z",
+      "runId": 39421804088,
+      "jobId": 118624340606,
+      "tests": 161,
+      "gateG2Passed": false
+    },
+    {
+      "id": "CSV-EV-0052",
+      "kind": "WP5_PARSER_PATCH_PUBLISHED",
+      "observedAt": "2026-10-20T12:28:35.506Z",
+      "commit": "506e78207ad68bf4b2ac1234d65b5810fe98121d",
+      "pullRequest": "GioNob/ouf-ingestion-runtime#45",
+      "status": "PENDING_CI",
+      "note": "Strict UTF8 decoder, header and row-width checks. Typed conversion patch prepared separately, not yet qualified or activated."
+    },
+    {
+      "id": "CSV-EV-0053",
+      "kind": "FULL_NATIVE_SEQUENCE_QUALIFICATION_PASS",
+      "runId": 39422809118,
+      "jobId": 118627760841,
+      "commit": "8c7c9691e606ee368dbfb638a7b0a3f930db077b",
+      "occurredAt": "2026-10-20T12:37:28Z",
+      "observedAt": "2026-10-20T12:41:23.257Z",
+      "tests": 3,
+      "stages": 29,
+      "syntheticHumanAndOwner": true,
+      "notReleaseAcceptance": true,
+      "gateG2Passed": false,
+      "note": "Actual Docker29, two networks, APISIX, JVM and PG17 complete. Two route PUTs,82route full map, first generations/restart policies, lostCREATE and expiredbearer cases. Sealed entry composition qualification still pending."
+    },
+    {
+      "id": "CSV-EV-0054",
+      "kind": "WP5_MODULE_QUALIFICATION_PASS",
+      "runId": 39422161887,
+      "jobId": 118625553944,
+      "commit": "506e78207ad68bf4b2ac1234d65b5810fe98121d",
+      "occurredAt": "2026-10-20T12:28:37Z",
+      "observedAt": "2026-10-20T12:41:23.257Z",
+      "tests": 191,
+      "skipped": 2,
+      "note": "11CSVadaptercases executed.18push/PR workflows PASS. Two conditional intermodule cases remain distinct from per-workflow integration qualification. Typed conversion commitbcc13544afdea6f5d331292f93eef86726587e2b pending."
+    },
+    {
+      "id": "CSV-EV-0055",
+      "kind": "WP5_TYPED_CONVERSION_CI_PASS",
+      "commit": "bcc13544afdea6f5d331292f93eef86726587e2b",
+      "runId": 39423704214,
+      "jobId": 118630791081,
+      "occurredAt": "2026-10-20T12:40:07Z",
+      "observedAt": "2026-10-20T12:47:34.171Z",
+      "note": "Decimal/date pure tests and actual compatibility/RAW/lineage/outbox/quarantine tests PASS. Onboarding2262377 and UDPdf1f4c3 candidate deltas pending their module CI and composed qualification.",
+      "gateG5Passed": false
+    },
+    {
+      "id": "CSV-EV-0056",
+      "kind": "GATE_DECISION",
+      "gate": "G2",
+      "workPackage": "WP2",
+      "occurredAt": "2026-10-20T12:51:39.940Z",
+      "observedAt": "2026-10-20T12:51:39.940Z",
+      "status": "PASS",
+      "commit": "24c2d9b8c7b3f4f8a4a61125b86877ffbd635dba",
+      "evidence": [
+        39424156111,
+        39424156253
+      ],
+      "runtimeAuthorityIssued": false,
+      "notReleaseAcceptance": true,
+      "note": "162 signed component tests;3actualPG17 cases; full29stage sequence through114module memory loader, existing-key dual-role issuer, sealed entry and independent retained action readback. Synthetic HUMAN/Owner/qualification solely within disposable CI. Exact114source Git blobs and loader verified;92local materialization trailing-newline differences corrected only when matching pinned remote blob."
+    },
+    {
+      "id": "CSV-EV-0057",
+      "kind": "WP5_OWNER_MODULE_QUALIFICATION_PASS",
+      "observedAt": "2026-10-20T12:54:32.221Z",
+      "modules": [
+        {
+          "repository": "GioNob/ouf-source-onboarding",
+          "commit": "17a68aea8dccb603405ec4761cb9f52666692a32",
+          "runId": 39425216528,
+          "jobId": 118635950378,
+          "tests": 273,
+          "skipped": 0
+        },
+        {
+          "repository": "GioNob/ouf-udp-object-resolution",
+          "commit": "df1f4c38d31da8a8ac63d5a5cb2532f633778979",
+          "runId": 39424531492,
+          "jobId": 118633609661,
+          "tests": 267,
+          "skipped": 2
+        }
+      ],
+      "gateG5Passed": false,
+      "note": "Typed rules/datatype and linked-policy validation aligned. Composed typed materialization, vocab and relationship cases still open."
+    },
+    {
+      "id": "CSV-EV-0058",
+      "kind": "WP5_COMPOSED_OWNER_FIXTURE_PUBLISHED",
+      "commit": "e56f335f07a20f5574b1f31989f52735cab0acbc",
+      "observedAt": "2026-10-20T13:10:11.000Z",
+      "status": "PENDING_CI",
+      "modulePins": {
+        "onboarding": "17a68aea8dccb603405ec4761cb9f52666692a32",
+        "ingestion": "bcc13544afdea6f5d331292f93eef86726587e2b",
+        "udp": "df1f4c38d31da8a8ac63d5a5cb2532f633778979"
+      },
+      "gateG5Passed": false,
+      "targetOperations": 0,
+      "note": "Three real JVM phases and separate disposable PG databases; two deliberately new acquisitions, canonical identity/revision/provenance oracle. Synthetic semantic/lake ports; no ACK/watermark/provider acceptance claim."
+    },
+    {
+      "id": "CSV-EV-0059",
+      "kind": "WP5_COMPOSED_TYPED_OWNER_PASS",
+      "commit": "1d21d4f415481c069e586a4936bebc0ca6583938",
+      "runId": 39428578919,
+      "jobId": 118647330860,
+      "observedAt": "2026-10-20T13:19:16.651Z",
+      "gateG5Passed": false,
+      "canonicalObjects": 1,
+      "canonicalRevisions": 1,
+      "acquisitions": 2,
+      "materializationObservations": 2,
+      "syntheticSemanticAndLakeBindings": true,
+      "notReleaseAcceptance": true,
+      "note": "All3realJVMphases PASS; G5 vocabulary/relationship and live ACK/watermark/provider acceptance remain separate."
+    },
+    {
+      "id": "CSV-EV-0060",
+      "kind": "WP6_OWNER_RECOVERY_CI_PASS",
+      "observedAt": "2026-10-20T13:30:00.000Z",
+      "commit": "701ae74b41cc81e4301ee592e3bcb3d13ead5106",
+      "runId": 39430243461,
+      "jobId": 118653094869,
+      "pullRequest": 49,
+      "gateG6Passed": false,
+      "note": "Bounded tenant/subject ASSETS and LATEST owner recovery; MCP and composed client evidence remain pending."
+    },
+    {
+      "id": "CSV-EV-0061",
+      "kind": "WP6_MCP_CURSOR_VALIDATION_DEFECT_CORRECTED_CI_PENDING",
+      "observedAt": "2026-10-20T13:37:34.000Z",
+      "commit": "8c97996cdd35bb9d18717e5f142e7ee40d51840e",
+      "failedRunId": 39431716064,
+      "failedJobId": 118658153341,
+      "gateG6Passed": false,
+      "note": "UUID format annotation did not reject malformed ASSETS cursor in SDK. Added explicit canonical UUID pattern; retain negative-test failure and rerun."
+    },
+    {
+      "id": "CSV-EV-0062",
+      "observedAt": "2026-10-20T13:47:19.000Z",
+      "kind": "WP6_MCP_FULL_SUITE_PASS",
+      "commit": "8c97996cdd35bb9d18717e5f142e7ee40d51840e",
+      "runId": 39432035338,
+      "jobId": 118659244796,
+      "gateG6Passed": false,
+      "p95ReserveMs": 6.625537,
+      "note": "Full normal/race suite, build/security checks PASS; two independent SDK sessions use synthetic owner response. Not composed real-owner acceptance."
+    },
+    {
+      "id": "CSV-EV-0063",
+      "observedAt": "2026-10-20T13:47:19.000Z",
+      "kind": "WP6_GATEWAY_RECOVERY_FULL_SUITE_PASS",
+      "commit": "e0eda7e281b548ae27553ac06055825808dbbf19",
+      "runId": 39432373118,
+      "jobId": 118660420542,
+      "passedTests": 552,
+      "skippedTests": 3,
+      "gateG6Passed": false
+    },
+    {
+      "id": "CSV-EV-0064",
+      "observedAt": "2026-10-20T13:47:19.000Z",
+      "kind": "WP6_MCP_GATEWAY_EXACT_SCHEMA_PASS",
+      "commit": "d2ea30957957bf66d5f13bbaa976902d26322c2e",
+      "runId": 39432595584,
+      "gatewayCommit": "e0eda7e281b548ae27553ac06055825808dbbf19",
+      "gateG6Passed": false
+    },
+    {
+      "id": "CSV-EV-0065",
+      "observedAt": "2026-10-20T13:47:19.000Z",
+      "kind": "WP5_TYPED_CHAT_OWNER_CONTRACT_PASS",
+      "commit": "0a76376a7c6a0f07597c1c3aaf447b29deed597f",
+      "runId": 39433193162,
+      "gatewayCommit": "c22fbf7f5593f612aba7e318797c9459d0b871a7",
+      "ownerSchemaCommit": "7b04d36fd8462616514cca956fd973c9bd01c1e7",
+      "gateG5Passed": false,
+      "note": "Official SDK argument preservation and exact Gateway schemas for string/decimal/date; Onboarding typed compiler already qualified separately. No HUMAN approval or target effect."
+    },
+    {
+      "id": "CSV-EV-0066",
+      "observedAt": "2026-10-20T13:47:19.000Z",
+      "kind": "QUALIFICATION_FAILURES_RETAINED",
+      "runs": [
+        39431131633,
+        39431428085,
+        39431716064,
+        39432897409
+      ],
+      "automaticReplayAllowed": false,
+      "note": "Formatting output applied; malformed UUID cursor caught and explicit syntax added; old Gateway schema pin reconciled to matching cohort. No target claim or budget reset."
+    },
+    {
+      "id": "CSV-EV-0067",
+      "kind": "TYPED_CHAT_RECOVERY_COHORT_ALL_CI_PASS",
+      "observedAt": "2026-10-20T13:49:22.000Z",
+      "commits": {
+        "onboarding": "7b04d36fd8462616514cca956fd973c9bd01c1e7",
+        "mcp": "0a76376a7c6a0f07597c1c3aaf447b29deed597f",
+        "gateway": "c22fbf7f5593f612aba7e318797c9459d0b871a7"
+      },
+      "runs": {
+        "onboarding": 39432864255,
+        "mcpFull": 39433193179,
+        "mcpGatewayContract": 39433193162,
+        "mcpMandatoryDispatch": 39433193465,
+        "gateway": 39432768839
+      },
+      "gateG5Passed": false,
+      "gateG6Passed": false,
+      "functionalMilestonesProven": 4,
+      "runtimePublished": false,
+      "authorityIssued": false
+    },
+    {
+      "id": "CSV-VPS-READ-0001",
+      "userReceiptReceivedAt": "2026-10-20T14:38:43Z",
+      "targetCommandStartedAt": null,
+      "targetCommandEndedAt": null,
+      "status": "STOP_RECONCILE",
+      "reasonCode": "EXACT_RETAINED_HUMAN_SELECTION_REQUIRED",
+      "checkpoint": "EXPIRED_READY_PUBLIC_HISTORY",
+      "sourceCommit": "c711c119ce589a421f0c27195a16522b39e879bf",
+      "humanEffortKnown": false,
+      "runtimeAuthorityIssued": false,
+      "gatePassed": false
+    },
+    {
+      "id": "CSV-VPS-READ-0002",
+      "userReceiptReceivedAt": "2026-10-20T14:49:00Z",
+      "targetCommandStartedAt": null,
+      "targetCommandEndedAt": null,
+      "status": "STOP_RECONCILE",
+      "reasonCode": "EXACT_PRIVATE_RETAINED_FILE_CUSTODY_REQUIRED",
+      "checkpoint": "RETAINED_ORIGINAL_FULL_SELECTION",
+      "sourceCommit": "103889784a46a3814db2f5206f4829c6aed9b428",
+      "failedPredicateKnown": false,
+      "humanEffortKnown": false,
+      "runtimeAuthorityIssued": false,
+      "gatePassed": false
+    },
+    {
+      "id": "CSV-VPS-READ-0003",
+      "userReceiptReceivedAt": "2026-10-20T15:35:47Z",
+      "targetCommandStartedAt": null,
+      "targetCommandEndedAt": null,
+      "status": "SELECTION_RECONCILED_REVIEW_NO_AUTHORITY",
+      "sourceCommit": "174a49c870ffb57a4dfe57c82a7ae6b34bae3b92",
+      "readOnly": true,
+      "originalSizeBytes": 1444170,
+      "priorOAuthAttempts": 278,
+      "maximumCumulativeOAuthAttempts": 288,
+      "runtimeAuthorityIssued": false,
+      "gatePassed": false,
+      "humanEffortKnown": false
+    },
+    {
+      "id": "CSV-EVENT-NATIVE-INPUT-CAPTURE-QUALIFIED",
+      "at": "2026-10-20T16:29:44.449Z",
+      "classification": "CI_QUALIFICATION_ONLY",
+      "sourceCommit": "10a9552ec7c1608f1de4d102a9644d11fc7f17d6",
+      "runId": 39457653516,
+      "testsEachPython": 10,
+      "pythonVersions": [
+        "3.12",
+        "3.13.5"
+      ],
+      "zeroSkips": true,
+      "targetExecuted": false,
+      "gatePassed": false,
+      "cumulativeMeasuredActiveHours": 5.639993060555556,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-TARGET-NATIVE-INPUT-CAPTURE-COMPLETE",
+      "at": "2026-10-20T19:11:14.148877+02:00",
+      "classification": "TARGET_READ_ONLY_PREPARATION_EVIDENCE",
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-native-inputs-qs8zybi4",
+      "targetExecutionSeconds": 0.23161670597619377,
+      "technicalEffortSameAsTargetSeconds": false,
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-PRIVATE-NATIVE-PROFILE-PREPARATION-QUALIFIED",
+      "at": "2026-10-20T17:24:31.158Z",
+      "classification": "CI_QUALIFICATION_ONLY",
+      "sourceCommit": "af94b95b90226fe84d89e28ec966720e3fcbc3c0",
+      "runId": 39465549162,
+      "testsEachPython": 12,
+      "pythonVersions": [
+        "3.12",
+        "3.13.5"
+      ],
+      "zeroSkips": true,
+      "targetExecuted": false,
+      "gatePassed": false,
+      "cumulativeMeasuredActiveHours": 5.853349329166666,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-TARGET-NATIVE-PROFILES-COMPILED",
+      "at": "2026-10-20T19:50:51.724872+02:00",
+      "classification": "TARGET_PRIVATE_PREPARATION_EVIDENCE",
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-native-profiles-5xl2drfi",
+      "targetStartedAt": "2026-10-20T19:50:51.470562+02:00",
+      "targetExecutionSeconds": 0.2543109509861097,
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-PRODUCTION-CONTROL-QUALIFIED",
+      "at": "2026-10-20T18:23:51.715Z",
+      "classification": "CI_QUALIFICATION_ONLY",
+      "sourceCommit": "2c5eb6fbb354c11e351850459a33ae790d23a0a3",
+      "runId": 39473913739,
+      "testsEachPython": 17,
+      "zeroSkips": true,
+      "frozenNativeGitBlobsMatched": 115,
+      "cumulativeMeasuredActiveHours": 6.243567529166667,
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-TARGET-PRODUCTION-BOOTSTRAP-PREPARED",
+      "at": "2026-10-20T20:34:16.451319+02:00",
+      "targetStartedAt": "2026-10-20T20:34:16.181269+02:00",
+      "classification": "TARGET_PRIVATE_PREPARATION_EVIDENCE",
+      "targetExecutionSeconds": 0.2700500470236875,
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-native-7fs9r6md",
+      "evidenceRef": "evidence/ingestion-rollout-production-bootstrap-target-20261020.json",
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false,
+      "cumulativeMeasuredActiveHours": 6.292619609999999
+    },
+    {
+      "id": "CSV-EVENT-TARGET-HUMAN-READY-INCOMPATIBLE-TOKEN-MARGIN",
+      "observedAt": "2026-10-20T19:01:41.636Z",
+      "occurredAt": null,
+      "classification": "TARGET_HUMAN_RECEIPT_AND_LOCAL_SOURCE_DIAGNOSIS",
+      "evidenceRef": "evidence/human-successor-ready-target-20261020.json",
+      "attempts": 282,
+      "remainingAttempts": 6,
+      "providerVerificationCompleted": true,
+      "humanTokenRemainingAtReceipt": 258,
+      "requiredProductionTokenMargin": 930,
+      "runtimeAuthorityIssued": false,
+      "gatePassed": false,
+      "cumulativeMeasuredActiveHours": 6.31312638
+    },
+    {
+      "id": "CSV-EVENT-HUMAN-TIMING-INSPECTION-QUALIFIED",
+      "observedAt": "2026-10-20T19:33:31.073Z",
+      "occurredAt": "2026-10-20T19:31:54.3760506Z",
+      "timestampConfidence": "EXACT_PROVIDER_LOG_COMPLETION",
+      "classification": "CI_QUALIFICATION_NOT_TARGET_PROOF",
+      "sourceCommit": "c0fc4124f6e9c59475914e5e179cf0898f52bfb5",
+      "runId": 39484202890,
+      "jobs": [
+        118840266830,
+        118840267378
+      ],
+      "testsEachPython": 12,
+      "skips": 0,
+      "cumulativeMeasuredActiveHours": 6.441925766111111,
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-TARGET-TIMING300-PROVEN",
+      "observedAt": "2026-10-20T19:52:32.644250Z",
+      "classification": "TARGET_READ_ONLY_RECONCILIATION",
+      "targetStartTimeKnown": false,
+      "targetEndTimeKnown": false,
+      "recordedTokenIssuedAt": "2026-10-20T20:56:35+02:00",
+      "recordedTokenExpiresAt": "2026-10-20T21:01:35+02:00",
+      "recordedTokenLifetimeSeconds": 300,
+      "requiredProductionMarginSeconds": 930,
+      "evidenceRef": "evidence/ingestion-human-timing-target-20261020.json",
+      "attempts": 282,
+      "remainingAttempts": 6,
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-DURATION-PROPOSAL-PLANNER-QUALIFIED",
+      "observedAt": "2026-10-20T20:01:06.573Z",
+      "occurredAt": "2026-10-20T19:59:10.0579185Z",
+      "timestampConfidence": "EXACT_PROVIDER_LOG_COMPLETION",
+      "classification": "CI_PLANNER_ONLY_NOT_INSTALLATION_POLICY_OR_AUTHORIZATION",
+      "sourceCommit": "7e10bde6e460908eb8644c8da53aa227181bc314",
+      "runId": 39488060246,
+      "testsEachPython": {
+        "timingRegression": 12,
+        "durationPlanner": 6
+      },
+      "skips": 0,
+      "cumulativeMeasuredActiveHours": 6.567817004166667,
+      "gatePassed": false
+    },
+    {
+      "id": "CSV-EVENT-OWNER-NO-KEYCLOAK-CONSOLE",
+      "observedAt": "2026-10-20T20:05:05.621Z",
+      "classification": "OWNER_INSTRUCTION",
+      "instruction": "Do not ask owner to inspect/edit Keycloak through its console. Use qualified APIs; explicit terminal intervention only when credentials/consent are indispensable. No automatic authentication or refresh."
+    },
+    {
+      "id": "CSV-EVENT-IAM-API-READER-QUALIFIED",
+      "observedAt": "2026-10-20T20:21:11.312Z",
+      "occurredAt": "2026-10-20T20:19:44.5575520Z",
+      "timestampConfidence": "EXACT_PROVIDER_LOG_COMPLETION",
+      "classification": "ACTUAL_DOCKER_NAMESPACE_PROTOCOL_FIXTURE_NOT_TARGET_IAM_READBACK",
+      "sourceCommit": "224757b25696eb154948e60eb0de3be716cc0b3f",
+      "runId": 39490969842,
+      "jobs": [
+        118863738662,
+        118863739068
+      ],
+      "testsEachPython": 13,
+      "skips": 0,
+      "cumulativeMeasuredActiveHours": 6.836064718333334,
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-TARGET-IAM-ADMIN-CONTEXT-STOP",
+      "observedAt": "2026-10-20T20:44:09.496Z",
+      "targetOccurredAt": null,
+      "classification": "TARGET_STOP_RECONCILE_RECEIPT",
+      "reasonCode": "EXACT_RECORDED_ADMIN_SESSION_CONTEXT_REQUIRED",
+      "evidenceRef": "evidence/iam-current-policy-read-stop-target-20261020.json",
+      "contextPath": "/etc/ouf/deploy-snapshots/iam-policy-read-7120rnka",
+      "oauthRequests": 0,
+      "runtimeAuthorityIssued": false,
+      "gatePassed": false
+    },
+    {
+      "id": "CSV-EVENT-IAM-CONTEXT-RECONCILER-QUALIFIED",
+      "observedAt": "2026-10-20T20:57:57.995Z",
+      "occurredAt": "2026-10-20T20:55:57.3017706Z",
+      "timestampConfidence": "EXACT_PROVIDER_LOG_COMPLETION",
+      "classification": "ACTUAL_DOCKER_PROCESS_ROOT_AND_SEALED_FIXTURE_NOT_TARGET_RECONCILIATION",
+      "sourceCommit": "af55edd84e05ee5e0191fc2f6cbcbe60bc191287",
+      "runId": 39496135244,
+      "testsEachPython": 10,
+      "skips": 0,
+      "cumulativeMeasuredActiveHours": 7.066203415833334,
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-TARGET-IAM-CONTEXT-RECONCILED",
+      "observedAt": "2026-10-21T03:43:03.418Z",
+      "targetOccurredAt": null,
+      "classification": "OWNER_SUPPLIED_TARGET_RECEIPT_NO_EXECUTION_CLOCK_IN_RECEIPT",
+      "evidenceRef": "evidence/iam-session-context-reconcile-target-20261021.json",
+      "preferredUsernameClaimPresent": false,
+      "recordedAdminIssuedLifetimeSeconds": 60,
+      "recordedAdminAccessExpired": true,
+      "engineRequestsReserved": 7,
+      "oauthRequests": 0,
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-EXPLICIT-ADMIN-API-QUALIFIED",
+      "observedAt": "2026-10-21T03:58:19.385Z",
+      "occurredAt": "2026-10-21T03:56:51.2897650Z",
+      "timestampConfidence": "EXACT_PROVIDER_LOG_COMPLETION",
+      "classification": "ACTUAL_DOCKER_TTY_AND_REAL_DISPOSABLE_KEYCLOAK_NOT_TARGET_ACCEPTANCE",
+      "sourceCommit": "3b205c44e983184e90baf31230b7f5ec1affb6b7",
+      "runId": 39541264244,
+      "testsEachPython": 11,
+      "skips": 0,
+      "cumulativeMeasuredActiveHours": 7.320638693611111,
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-TARGET-EXPLICIT-ADMIN-API-COMPLETE",
+      "observedAt": "2026-10-21T04:18:37.160Z",
+      "targetObservationUnix": 1792556257.4232357,
+      "targetOccurredAt": "2026-10-21T04:17:37.423236Z",
+      "timestampConfidence": "TARGET_RECEIPT_OBSERVATION_CLOCK_NOT_START_OR_FINISH",
+      "classification": "OWNER_PASTED_TARGET_API_READ_RECEIPT",
+      "evidenceRef": "evidence/iam-explicit-api-target-20261021.json",
+      "attempts": 283,
+      "remainingAttempts": 5,
+      "policyMutations": 0,
+      "currentProviderTimeoutMetadataRead": true,
+      "currentProviderRevocationPolicyProven": false,
+      "runtimeAuthorityIssued": false,
+      "gatePassed": false
+    },
+    {
+      "id": "CSV-EVENT-CLIENT-LIFETIME-PROPOSAL-QUALIFIED",
+      "observedAt": "2026-10-21T04:40:50.799Z",
+      "occurredAt": "2026-10-21T04:39:00.9374150Z",
+      "classification": "ACTUAL_PROVIDER_CLIENT_UPDATE_AND_FUTURE_TOKEN_TEST_NOT_TARGET_POLICY_CHANGE",
+      "sourceCommit": "1852942f47af54ec015764841ebbcddb09ab3e05",
+      "runId": 39545126657,
+      "testsEachPython": 12,
+      "skips": 0,
+      "proposedLifetimeSeconds": 1200,
+      "targetExecuted": false,
+      "ownerDecisionRequired": true,
+      "cumulativeMeasuredActiveHours": 7.691093971388889,
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-TARGET-CLIENT-LIFETIME-APPLIED",
+      "observedAt": "2026-10-21T05:51:59.360Z",
+      "targetObservationUnix": 1792561801.132501,
+      "targetOccurredAt": "2026-10-21T05:50:01.132501Z",
+      "timestampConfidence": "TARGET_RECEIPT_OBSERVATION_NOT_START_OR_FINISH",
+      "classification": "OWNER_PASTED_TARGET_MUTATION_AND_FULL_READBACK_RECEIPT",
+      "evidenceRef": "evidence/iam-client-lifetime-target-20261021.json",
+      "attempts": 284,
+      "remainingAttempts": 4,
+      "policyMutations": 1,
+      "clientLifetimeSeconds": 1200,
+      "runtimeAuthorityIssued": false,
+      "newHumanWindowOpened": false,
+      "gatePassed": false
+    },
+    {
+      "id": "CSV-EVENT-SUPPLEMENTARY-HUMAN-QUALIFIED",
+      "observedAt": "2026-10-21T06:04:29.734Z",
+      "occurredAt": "2026-10-21T06:03:23.0034978Z",
+      "classification": "CI_QUALIFIED_RETAINED_LEDGER_CHAIN_AND_EXPLICIT_AUTHENTICATION_CONTROL_NOT_TARGET_AUTHENTICATION",
+      "sourceCommit": "5bb47f6654a71dffa2c98c6d105d9c830d542205",
+      "runId": 39553046609,
+      "testsEachPython": 57,
+      "skips": 0,
+      "targetExecuted": false,
+      "gatePassed": false,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-TARGET-SUPPLEMENTARY-PREFLIGHT-PASS",
+      "observedAt": "2026-10-21T06:11:45.228Z",
+      "startedAt": "2026-10-21T06:11:16.774650Z",
+      "finishedAt": "2026-10-21T06:11:16.797031Z",
+      "elapsedSeconds": 0.022378983994713053,
+      "classification": "OWNER_PASTED_TARGET_READ_ONLY_PREFLIGHT_RECEIPT",
+      "evidenceRef": "evidence/human-supplementary-preflight-target-20261021.json",
+      "reviewHash": "981d810332ad855e7b9305d15fc4bbb10796bc50d556241060d7044c43d715dc",
+      "attempts": 284,
+      "remainingAttempts": 4,
+      "oauthRequests": 0,
+      "runtimeAuthorityIssued": false,
+      "newHumanWindowOpened": false,
+      "gatePassed": false
+    },
+    {
+      "id": "CSV-EVENT-OWNER-CONFIRMED-WINDOW-NOT-EXECUTED-CHAT-TRANSFER",
+      "observedAt": "2026-10-21T06:23:42.108Z",
+      "timestampConfidence": "DOCUMENTATION_OBSERVATION_NOT_EXACT_USER_STATEMENT_TIMESTAMP",
+      "classification": "OWNER_EXPLICIT_CHAT_TRANSFER_INSTRUCTION",
+      "evidenceRef": "evidence/csv-e2e-chat-restart-checkpoint-20261021.json",
+      "openWindowExecuted": false,
+      "newHumanWindowOpened": false,
+      "newTargetOperations": 0,
+      "attempts": 284,
+      "remainingAttempts": 4,
+      "runtimeAuthorityIssued": false,
+      "gatePassed": false
+    },
+    {
+      "id": "CSV-EVENT-SUPPLEMENTARY-HUMAN-WINDOW-OPENED",
+      "classification": "OWNER_PASTED_TARGET_RECEIPT",
+      "startedAt": "2026-10-21T06:30:15.247Z",
+      "finishedAt": "2026-10-21T06:30:37.794Z",
+      "elapsedSeconds": 22.54679130500881,
+      "attempts": 284,
+      "newHumanWindowOpened": true,
+      "oauthRequests": 0,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-SUPPLEMENTARY-HUMAN-READY288",
+      "classification": "OWNER_PASTED_TARGET_RECEIPT",
+      "startedAt": "2026-10-21T06:37:28.780Z",
+      "finishedAt": "2026-10-21T06:37:53.478Z",
+      "elapsedSeconds": 24.697823399008485,
+      "state": "READY",
+      "attempts": 288,
+      "remainingAttempts": 0,
+      "tokenSecondsRemainingAtReceipt": 1133,
+      "currentAuthorityNotInferred": true
+    },
+    {
+      "id": "CSV-EVENT-ROLLOUT-STAGE18-STOP",
+      "classification": "OWNER_PASTED_TARGET_RECEIPTS",
+      "documentedAt": "2026-10-21T07:06:42.879Z",
+      "targetExecutionTimeKnown": false,
+      "nextStage": 18,
+      "appliedStages": 18,
+      "state": "RECONCILE_REQUIRED",
+      "readState": "IDLE",
+      "reasonCode": "INSUFFICIENT_CURRENT_STAGE_WINDOW",
+      "gatePassed": false,
+      "evidenceRef": "evidence/ingestion-rollout-stage18-stop-target-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-STOPPED-ROLLOUT-READER-QUALIFIED",
+      "observedAt": "2026-10-21T07:06:42.879Z",
+      "sourceCommit": "78473183e164e41e590a5a137b9e379e73c0ad5c",
+      "ciRun": 39559474164,
+      "testsPerPython": 17,
+      "skips": 0,
+      "targetExecuted": false,
+      "evidenceRef": "evidence/ingestion-rollout-stopped-reader-delivery-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-STAGE18-STOPPED-SNAPSHOT-TARGET",
+      "classification": "OWNER_PASTED_TARGET_READ_ONLY_RECEIPT",
+      "occurredAt": "2026-10-21T09:12:19.914845Z",
+      "observedAt": "2026-10-21T09:34:34.459Z",
+      "journalHash": "c9907ea94b0c5908109e45e5e10be4641f610bc0374bb053de2851781461f2c0",
+      "reviewHash": "b0276204afeb592487428863f7c3f6392d0bb66c6dc0ca99620867b1d23f8521",
+      "appliedStageCount": 18,
+      "pendingStageClaim": false,
+      "recordedAuthorityExpiredAt": "2026-10-21T06:54:36Z",
+      "sameBoot": true,
+      "oauthRequests": 0,
+      "engineRequests": 0,
+      "runtimeAuthorityIssued": false,
+      "gatePassed": false,
+      "evidenceRef": "evidence/ingestion-rollout-stopped-snapshot-target-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-CONTINUATION-LIVE-INPUT-READER-QUALIFIED",
+      "observedAt": "2026-10-21T09:34:34.459Z",
+      "sourceCommit": "1776f9461e83f83b3a79e4077df551cc9f7ffc4a",
+      "ciRun": 39577789672,
+      "testsEachPython": 15,
+      "skips": 0,
+      "frozenNativeAndLoaderUnchanged": true,
+      "targetExecuted": false,
+      "evidenceRef": "evidence/ingestion-rollout-continuation-input-delivery-pins-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-CONTINUATION-INPUT-NAMESPACE-STOP-TARGET",
+      "classification": "OWNER_PASTED_TARGET_STOP_RECEIPT",
+      "documentedAt": "2026-10-21T11:45:49.362Z",
+      "targetInvocationClockKnown": false,
+      "reasonCode": "REPLACEMENT_GATEWAY_MUST_USE_NEW_NAMESPACE",
+      "sourceCommit": "1776f9461e83f83b3a79e4077df551cc9f7ffc4a",
+      "targetRuntimeFailureProven": false,
+      "runtimeAuthorityIssued": false,
+      "newLoginPerformed": false,
+      "evidenceRef": "evidence/ingestion-continuation-input-namespace-stop-target-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-CONTINUATION-INPUT-NAMESPACE-PREDICATE-CORRECTED",
+      "observedAt": "2026-10-21T11:45:49.362Z",
+      "sourceCommit": "84385614384d9e2edf474ec84b87cdec8d11747f",
+      "qualificationRun": 39594157172,
+      "testsPerPython": 19,
+      "skips": 0,
+      "frozenNativeAndLoaderUnchanged": true,
+      "targetExecuted": false,
+      "nativeNamespacePredicateAlreadySupportedInodeReuse": true,
+      "priorNegativeTestFailedAtWrongOwnerCheck": true,
+      "evidenceRef": "evidence/ingestion-rollout-continuation-input-delivery-pins-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-CONTINUATION-INPUT-MATCHED-TARGET",
+      "classification": "OWNER_PASTED_TARGET_RECEIPT",
+      "documentedAt": "2026-10-21T12:07:06.658Z",
+      "targetStartedAtUnix": 1792583466.4564424,
+      "targetFinishedAtUnix": 1792583466.5553498,
+      "targetElapsedSeconds": 0.09890933200949803,
+      "engineRequests": 18,
+      "oauthRequests": 0,
+      "runtimeEffectsDispatched": 0,
+      "runtimeAuthorityIssued": false,
+      "sourceCommit": "84385614384d9e2edf474ec84b87cdec8d11747f",
+      "namespaceInodeReused": true,
+      "durableReplacementPidSelected": true,
+      "evidenceRef": "evidence/ingestion-continuation-input-matched-target-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-SEPARATE-TECHNICAL-OAUTH-BUDGET-QUALIFIED",
+      "observedAt": "2026-10-21T12:07:06.658Z",
+      "sourceCommit": "85a30fb4af7ce0bfe74bd20acae3a0124d80f73c",
+      "qualificationRun": 39596994308,
+      "testsPerPython": 20,
+      "skips": 0,
+      "targetExecuted": false,
+      "additionalBudgetGranted": false,
+      "newHumanWindowOpened": false,
+      "runtimeAuthorityIssued": false,
+      "evidenceRef": "evidence/technical-oauth-budget-extension-delivery-pins-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-FOUR-REQUEST-TECHNICAL-BUDGET-GRANTED-TARGET",
+      "classification": "OWNER_PASTED_PUBLIC_TARGET_RECEIPT",
+      "documentedAt": "2026-10-21T12:14:24.138Z",
+      "decisionRef": "operator-oauth-budget-0bf8d9acc497dafbe49320a4-1792584605",
+      "proposalHash": "0bf8d9acc497dafbe49320a479ebce51d49496903114669718b6d993b56b1b28",
+      "decisionHash": "3342cb2e41561b6a573fe38313d7b20be963cef6caf64469123c613cb4c93b15",
+      "contextPath": "/etc/ouf/deploy-snapshots/human-oauth-budget-extension-0bf8d9acc497dafbe49320a479ebce51d49496903114669718b6d993b56b1b28",
+      "priorOAuthAttempts": 288,
+      "currentCumulativeOAuthAttempts": 288,
+      "maximumCumulativeOAuthAttempts": 292,
+      "remainingAdditionalOAuthAttemptsAsOfGrant": 4,
+      "countsAsOfGrant": true,
+      "subsequentConsumptionNotObserved": true,
+      "newHumanWindowOpened": false,
+      "newLoginPerformed": false,
+      "runtimeAuthorityIssued": false,
+      "runtimeEffectsDispatched": 0,
+      "oauthRequests": 0,
+      "evidenceRef": "evidence/technical-oauth-budget-extension-granted-target-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-STAGE18-SUCCESSOR-QUALIFIED-TARGET-PREFLIGHT-PENDING",
+      "observedAt": "2026-10-21T16:24:54.893Z",
+      "sourceCommit": "5e08760666e177a971a5c466955e4376d10c54ef",
+      "qualificationRun": 39634414797,
+      "newTestsPerPython": 27,
+      "frozenNativeCompositionTestsPerPython": 7,
+      "skips": 0,
+      "old114ModuleGraphAndLoaderUnchanged": true,
+      "targetPreflightCompleted": false,
+      "targetWindowOpened": false,
+      "runtimeAuthorityIssued": false,
+      "evidenceRef": "evidence/ingestion-rollout-stage18-delivery-pins-20261021.json",
+      "retainedInitialFailedRun": 39633974318,
+      "initialCorrection": "EXACT_REPOSITORY_EOF_BYTES_NO_LEGACY_LOGIC_CHANGE"
+    },
+    {
+      "id": "CSV-EVENT-STAGE18-BOTH-PREFLIGHTS-TARGET-PASS",
+      "classification": "OWNER_PASTED_PUBLIC_TARGET_RECEIPTS",
+      "documentedAt": "2026-10-21T16:53:08.447Z",
+      "sourceCommit": "5e08760666e177a971a5c466955e4376d10c54ef",
+      "qualificationRun": 39634414797,
+      "targetRuntimeStatus": "STAGE18_RUNTIME_PREFLIGHT_NO_AUTHORITY",
+      "targetHumanStatus": "STAGE18_HUMAN_AND_RUNTIME_PREFLIGHT_NO_WINDOW",
+      "attempts": 288,
+      "maximumCumulativeOAuthAttempts": 292,
+      "remainingAttempts": 4,
+      "reviewHash": "c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a",
+      "newHumanWindowOpened": false,
+      "runtimeAuthorityIssued": false,
+      "oauthRequests": 0,
+      "evidenceRef": "evidence/ingestion-rollout-stage18-target-preflight-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-STAGE18-SUCCESSOR-NATIVE-ROLLOUT-TARGET-COMPLETE",
+      "classification": "OWNER_PASTED_PUBLIC_TARGET_RECEIPT_CHAIN",
+      "documentedAt": "2026-10-21T17:15:44.514Z",
+      "sourceCommit": "5e08760666e177a971a5c466955e4376d10c54ef",
+      "qualificationRun": 39634414797,
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-successor-3fe2beb4d7268c2eb708ca62a06bd78c5a89625d328c33b31bc8bfda906f2ada",
+      "preservedPrefixStages": 18,
+      "retainedReadAttemptsAtImport": 18,
+      "remainingNativeStagesCompleted": 10,
+      "appliedStageCount": 28,
+      "complete": true,
+      "runtimeEffectsAcceptedByPorts": true,
+      "lastVerificationJournalVersion": 3337,
+      "newFreshHumanAuthenticationReported": true,
+      "oauthAttemptsAtReady": 292,
+      "maximumCumulativeOAuthAttempts": 292,
+      "remainingOAuthAttemptsAtReady": 0,
+      "runtimeAuthorityWasSeparatelyIssued": true,
+      "latestInvocationIssuedAuthority": false,
+      "nativeProfilePublished": false,
+      "releaseAcceptance": false,
+      "duplicatePriorGatewayRestoreReceiptCountedAsStage": false,
+      "evidenceRef": "evidence/ingestion-rollout-stage18-completed-target-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-NATIVE-READINESS-WORKLOAD-CONTRACT-FIX",
+      "classification": "OPERATOR_PASTED_SAFE_TRACE_AND_PRIMARY_SOURCE_DEVELOPMENT_QUALIFICATION",
+      "documentedAt": "2026-10-21T18:06:00.563Z",
+      "evidenceRef": "evidence/native-profile-readiness-http-trace-20261021.json",
+      "operatorLog": "/home/oufadmin/ouf-readiness-http.HiHvZxEE/operator.log",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "focusedCiRun": 39648964212,
+      "focusedTests": 25,
+      "focusedFailures": 0,
+      "focusedErrors": 0,
+      "focusedSkipped": 0,
+      "fullCiRun": 39648964232,
+      "fullJob": 119391913050,
+      "fullTests": 186,
+      "fullFailures": 0,
+      "fullErrors": 0,
+      "fullSkipped": 2,
+      "initialFullFailedRun": 39648463285,
+      "fixtureIsolationOnly": true,
+      "targetInstalled": false,
+      "scope": "DEVELOPMENT_CI_NOT_TARGET_ACCEPTANCE",
+      "nativeProfileState": "APPROVED",
+      "activationProgress": "PAUSED",
+      "activationResubmitted": false,
+      "later503CauseProven": false,
+      "releaseAcceptance": false
+    },
+    {
+      "id": "CSV-EVENT-READINESS-PATCH-IMAGE-EXPORTED-INPUT-READER-QUALIFIED",
+      "classification": "DEVELOPMENT_CI_ARTIFACT_AND_READ_ONLY_PREPARATION_NO_TARGET_RECEIPT",
+      "documentedAt": "2026-10-21T18:25:09.188Z",
+      "sourceCommit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "buildRecipeCommit": "6f1870b49fcfba0dcf3ec2b6df26cfa9c4a5ccf5",
+      "imageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+      "imageRunId": 39650459729,
+      "imageArtifactId": 12370330790,
+      "inputReaderCommit": "89ef2102316d1827b9eb0833f49452d35ac679f5",
+      "inputReaderCiRun": 39652227636,
+      "inputReaderTestsPerVersion": 4,
+      "targetExecuted": false,
+      "runtimeAuthorityIssued": false,
+      "evidenceRef": "evidence/ingestion-readiness-patch-delivery-20261021.json"
+    },
+    {
+      "id": "CSV-EVENT-READINESS-PATCH-INPUTS-CAPTURED-AND-OFFLINE-REVIEW-QUALIFIED",
+      "classification": "OPERATOR_PASTED_TARGET_INPUT_RECEIPT_AND_DEVELOPMENT_CI",
+      "documentedAt": "2026-10-21T18:49:40.755Z",
+      "inputContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-patch-inputs-3fea910fc74b8ea6fcfd121fc0f8386a1ed78c5a89063a3e686053ca8180a317",
+      "inputEngineGets": 12,
+      "inputImagesImported": 0,
+      "inputRuntimeEffects": 0,
+      "inputLog": "/home/oufadmin/ouf-readiness-patch.DzgBMdIf/operator.log",
+      "reviewCompilerCommit": "0d31bc3942b508cddaebe70e45ca2f33efb6375c",
+      "reviewCompilerCiRun": 39655532624,
+      "reviewTestsPerPython": 6,
+      "nativeRuntimeExecutorQualified": false,
+      "reviewTemplateCompiledOnTarget": false,
+      "releaseAcceptance": false
+    },
+    {
+      "id": "CSV-EVENT-READINESS-PATCH-CORRECTED-REVIEW-COMPLETE",
+      "classification": "OPERATOR_PASTED_TARGET_OFFLINE_REVIEW_RECEIPT_NO_AUTHORITY",
+      "documentedAt": "2026-10-21T20:01:30.326Z",
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-readiness-patch-review-51a014429f1663e4760de93e7e6ae8200fd4ad813a5153c77d21ef5066562bac",
+      "reviewHash": "45ed8d24c23a82ea4336c56ea4f5c4048f3237299a25263955f80e10d9078bea",
+      "logicalOperationRef": "6c7d73cbc2d9c613d5fe0b4fafe5ac20853478a883bf15371dadbb3f201afbc5",
+      "operatorLog": "/home/oufadmin/ouf-readiness-review-corrected.IHzJMZrt/operator.log",
+      "plannedStages": 12,
+      "engineRequests": 0,
+      "oauthRequests": 0,
+      "runtimeEffectsDispatched": 0,
+      "runtimeAuthorityIssued": false,
+      "liveRuntimeReverified": false,
+      "nativeRuntimeExecutorQualified": false,
+      "releaseAcceptance": false
+    },
+    {
+      "id": "CSV-EVENT-READINESS-NATIVE-INPUTS-COMPLETE-AB6",
+      "classification": "OPERATOR_PASTED_TARGET_INPUT_RECEIPT_EXECUTION_TIME_UNSUPPLIED",
+      "documentedAt": "2026-10-22T03:49:16.931Z",
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-readiness-native-inputs-0b2fd250a4f16e05ad1dc2836878f6438d6c417394b8e5f542c0736f244897df",
+      "bundleHash": "ab6c1953b8eb0bed19fdd1ee82c4b34828642726e4582152852eb5b4711f14ec",
+      "operatorLog": "/home/oufadmin/ouf-readiness-native-inputs.MjhscDx5/operator.log",
+      "complete": true,
+      "plannedStages": 12,
+      "oauthRequests": 0,
+      "engineRequests": 0,
+      "runtimeAuthorityIssued": false,
+      "runtimeEffectsDispatched": 0
+    },
+    {
+      "id": "CSV-EVENT-NATIVE-PATCH-PORTS-AND-OFFLINE-ARCHIVE-DELIVERY-QUALIFIED",
+      "classification": "DEVELOPMENT_CI_NOT_TARGET_EXECUTION",
+      "documentedAt": "2026-10-22T03:49:16.931Z",
+      "sourceCommit": "ce15587ecfaffaa357ea18740d48dca660f0b18d",
+      "coreSourceCommit": "e3dd393a60069e57d3e2f7a1f0441549152c4d6f",
+      "ciRun": 39718342452,
+      "pythonTestsPerVersion": 37,
+      "platformTests": 3,
+      "platformStages": 13,
+      "targetPreparationObserved": false,
+      "fullProductionExecutionControllerQualified": false,
+      "evidence": "evidence/ingestion-native-archive-delivery-qualification-20261022.json",
+      "runtimeAuthorityIssued": false,
+      "newOAuthBudgetGranted": false,
+      "releaseAcceptance": false
+    },
+    {
+      "id": "CSV-EVENT-NATIVE-ARCHIVE-INPUTS-COMPLETED-TARGET",
+      "classification": "USER_PASTED_OFFLINE_PREPARATION_RECEIPT_NOT_LIVE_RUNTIME_READBACK",
+      "documentedAt": "2026-10-22T04:03:10.380Z",
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "bundleHash": "f56d7989be393211665535a59cc4bf419c20665a912bf51aaf6f01671e2288dd",
+      "complete": true,
+      "completedTechnicalPhases": 8,
+      "configurationImageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+      "contextPath": "/etc/ouf/deploy-snapshots/ingestion-readiness-native-archive-86a63c83ae644484400e2e3531db57e5aa4869ca8c5f17bcbec908de889bb6c6",
+      "credentialFilesOpened": 0,
+      "databaseAdmissionProven": false,
+      "engineRequests": 0,
+      "functionalMilestonesProven": 4,
+      "imageRebuilt": false,
+      "imagesImported": 0,
+      "liveRuntimeReverified": false,
+      "logicalOperationRef": "6c7d73cbc2d9c613d5fe0b4fafe5ac20853478a883bf15371dadbb3f201afbc5",
+      "nativeArchiveSha256": "d8acfed23e9388d6ba5434a5731789c8b272395208f07272aeae4c7eb4c6026e",
+      "nativeImageId": "sha256:d173aa8beeb9a1ac29c35a163e254a902e95fedad2871e328886a41831c10697",
+      "nativeRuntimeExecutorQualified": false,
+      "notReleaseAcceptance": true,
+      "oauthRequests": 0,
+      "parentInputsHash": "ab6c1953b8eb0bed19fdd1ee82c4b34828642726e4582152852eb5b4711f14ec",
+      "plannedStages": 12,
+      "releaseAcceptance": false,
+      "runtimeAuthorityIssued": false,
+      "runtimeEffectsDispatched": 0,
+      "schema": "ouf.ingestion-readiness-native-archive-result.v1",
+      "status": "NATIVE_ARCHIVE_INPUTS_PREPARED_NO_AUTHORITY",
+      "targetApplyAuthorized": false,
+      "operatorLog": "/home/oufadmin/ouf-native-archive.KoPhost8/operator.log",
+      "executionTimeSupplied": false
+    },
+    {
+      "id": "CSV-EVENT-PATCH-WHOLE-OPERATOR-CONTROL-CI-QUALIFIED",
+      "classification": "WHOLE_NATIVE_CONTROLLER_AND_ISOLATED_DELIVERY_CI_NOT_TARGET_EXECUTION",
+      "documentedAt": "2026-10-22T04:43:36Z",
+      "sourceCommit": "f5709378c1cff5847d4824d76bbb57ebaa451178",
+      "ciRun": 39722859248,
+      "pythonTestsPerVersion": 51,
+      "platformTests": 4,
+      "fixtureStages": 13,
+      "targetPatchStagesApplied": 0,
+      "freshHumanGovernanceQualified": false,
+      "newBudgetGranted": false,
+      "runtimeAuthorityIssued": false,
+      "releaseAcceptance": false,
+      "evidence": "evidence/ingestion-readiness-operator-qualification-20261022.json"
+    },
+    {
+      "id": "CSV-EVENT-EXACT-PATCH-HUMAN-AND-CACHED-PRODUCTION-DELIVERY-QUALIFIED",
+      "classification": "DEVELOPMENT_CI_NOT_TARGET_EXECUTION",
+      "documentedAt": "2026-10-22T05:50:30Z",
+      "sourceCommit": "e806a9463110b4e88153e95cbdc81c9d1f8737b2",
+      "artifactCommit": "3e80ea4c1f49507c1dd17448291e75e07907ee9b",
+      "ciRun": 39729332417,
+      "pythonTestsPerVersion": 62,
+      "platformTests": 4,
+      "freshHumanGovernanceQualified": true,
+      "productionDeliveryQualified": true,
+      "targetPatchStagesApplied": 0,
+      "targetPreflightObserved": false,
+      "newBudgetGranted": false,
+      "runtimeAuthorityIssued": false,
+      "releaseAcceptance": false,
+      "evidence": "evidence/ingestion-readiness-production-delivery-qualification-20261022.json"
+    },
+    {
+      "id": "CSV-EVENT-PATCH-296-READY-AND-ISSUING-SIZE-STOP",
+      "classification": "OWNER_PASTED_TARGET_RECEIPTS",
+      "timestampConfidence": "RECEIPT_TIME_NOT_INFERRED",
+      "attempts": 296,
+      "reviewBytes": 545058,
+      "packetBytes": 1320265,
+      "historicalReviewMaximum": 524288,
+      "controlState": "ISSUING",
+      "issuanceClaimReportedAbsent": true,
+      "runtimeAuthorityIssued": false,
+      "targetPatchStagesApplied": 0,
+      "evidence": "evidence/ingestion-readiness-size-stop-target-20261022.json"
+    },
+    {
+      "id": "CSV-EVENT-PATCH-LARGE-REVIEW-AND-UNISSUED-READER-CI",
+      "classification": "SCOPED_DEVELOPMENT_CI_NOT_V2_PRODUCTION_CONTROLLER",
+      "occurredAt": "2026-10-22T07:47:22Z",
+      "sourceCommit": "a607d4feeb0060468b17eb4e8983f4dd03bda974",
+      "runId": 39742778066,
+      "pythonTestsPerVersion": 78,
+      "readOnlyTargetReaderQualified": true,
+      "v2ProductionControllerQualified": false,
+      "targetSnapshotObserved": false,
+      "releaseAcceptance": false
+    },
+    {
+      "id": "CSV-EVENT-UNISSUED-TARGET-RECONCILED",
+      "classification": "OWNER_PASTED_READ_ONLY_TARGET_RECEIPT",
+      "timestampConfidence": "RECEIPT_TIMESTAMP_NOT_SUPPLIED",
+      "journalHash": "af07734945f3b4ea93282f43808634501d4633261617d767b1bfa2f68942c910",
+      "retainedState": "ISSUING",
+      "runtimeAuthorityIssued": false,
+      "runtimeEffectsDispatched": 0,
+      "oauthRequests": 0,
+      "evidence": "evidence/ingestion-readiness-unissued-target-20261022.json"
+    },
+    {
+      "id": "CSV-EVENT-UNISSUED-SUCCESSOR-WHOLE-PATH-AND-DELIVERY-PASS",
+      "classification": "DISPOSABLE_CI_NOT_TARGET_ADMISSION",
+      "sourceCommit": "e776de2a261c7ce2318bcf6e6df5cf82d1028f6e",
+      "coreRun": 39748102563,
+      "releaseCommit": "fd74119c4c1e094aa3c0e0a33af79aab45e2686a",
+      "deliveryRun": 39750337881,
+      "pythonDeliveryTestsPerVersion": 106,
+      "platformTests": 5,
+      "fixtureStages": 13,
+      "targetPlannedStages": 12,
+      "newBudgetGranted": false,
+      "targetCommandExecuted": false,
+      "targetPatchStagesApplied": 0,
+      "releaseAcceptance": false,
+      "evidence": "evidence/ingestion-readiness-successor-qualification-20261022.json",
+      "observedAt": "2026-10-22T08:51:35Z"
+    },
+    {
+      "id": "CSV-EVENT-PATCH-READY300-AND-PREFIX8-EXPIRED",
+      "classification": "OWNER_PASTED_TARGET_RECEIPTS",
+      "timestampConfidence": "RECEIPT_TIMESTAMPS_NOT_SUPPLIED",
+      "appliedStages": 8,
+      "lastCompletedStage": "ingestion.START_REPLACEMENT",
+      "lastCompletedJournalVersion": 1058,
+      "controlState": "RECONCILE_REQUIRED",
+      "recordedExpiresAt": 1792664043,
+      "oauthAttempts": 300,
+      "oauthCeiling": 300,
+      "runtimeAuthorityWasIssued": true,
+      "currentRuntimeAuthorityProven": false,
+      "patchComplete": false,
+      "evidence": "evidence/ingestion-readiness-stage8-stop-target-20261022.json"
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STOPPED-METADATA-READER-QUALIFIED",
+      "observedAt": "2026-10-22T10:28:24Z",
+      "classification": "METADATA_READER_CI_NOT_LIVE_RUNTIME_EVIDENCE",
+      "runId": 39762976840,
+      "testsPerPython": 4,
+      "sourceCommit": "e1db6dbd8b285483c9023872374576620dab03af",
+      "targetSnapshotObserved": false
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-STOPPED-SNAPSHOT-RECEIVED",
+      "observedAt": "2026-10-22T11:05:50Z",
+      "classification": "OWNER_RECEIPT_NO_EXECUTION_TIME_INFERRED",
+      "appliedStages": 8,
+      "nextStage": "ingestion.READINESS",
+      "liveRuntimeObserved": false,
+      "operatorLog": "/home/oufadmin/ouf-patch-stopped-read.ERBwqHkT/reader.log"
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-LIVE-CAPTURE-DELIVERY-QUALIFIED",
+      "observedAt": "2026-10-22T11:05:50Z",
+      "classification": "CI_QUALIFICATION_NOT_TARGET_HEALTH",
+      "deliveryCommit": "2ef75b77e9bf259f79e4dc34b14bab61f0fa4b9a",
+      "matrixRun": 39766442749,
+      "testsPerPython": 111,
+      "platformRun": 39766442872,
+      "engineGetsInFixture": 14,
+      "engineWritesInFixture": 0,
+      "targetCapturePerformed": false
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-LIVE-INPUTS-TARGET-MATCHED",
+      "observedAt": "2026-10-22T11:08:28Z",
+      "classification": "OWNER_PUBLIC_RECEIPT_NO_EXECUTION_TIME_INFERRED",
+      "privateCaptureHash": "b9063de73e2d7699e3e7616a164f4b9a24346bc0a3fda1ed3762f4dc0dd95ef2",
+      "engineGets": 14,
+      "runtimeWrites": 0,
+      "oauthRequests": 0,
+      "applicationReadinessReverified": false,
+      "futureRuntimeQualified": false
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-FOUR-STAGE-PATH-QUALIFIED",
+      "observedAt": "2026-10-22T11:43:13Z",
+      "classification": "DISPOSABLE_NATIVE_PLATFORM_AND_SYNTHETIC_HUMAN_NOT_TARGET_ADMISSION",
+      "sourceCommit": "732a03fb19ada6e2168a585a2bbe78684800e05f",
+      "unitRun": 39771531964,
+      "testsPerPython": 129,
+      "platformRun": 39771531971,
+      "platformJob": 119799997359,
+      "stagesResumed": 4,
+      "prefixPreserved": true,
+      "targetStagesApplied": 8,
+      "targetOAuthAttempts": 300,
+      "targetOAuthCeiling": 300
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-PRODUCTION-DELIVERY-REPRODUCED",
+      "observedAt": "2026-10-22T11:43:13Z",
+      "classification": "EXACT_PRODUCTION_BYTES_NOT_TARGET_PREFLIGHT",
+      "releaseCommit": "3e2e1768632876030f3d37de0fc800dabee0d4a3",
+      "run": 39772566401,
+      "testsPerPython": 1,
+      "publishedPinsMatched": true,
+      "nextAction": "ONE_PINNED_CACHED_STAGE8_RUNTIME_PREFLIGHT_ONLY",
+      "targetPreflightObserved": false
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-RUNTIME-PREFLIGHT-TARGET-PASS",
+      "observedAt": "2026-10-22T12:15:56Z",
+      "classification": "OWNER_PUBLIC_RECEIPT_NO_EXECUTION_TIME_INFERRED",
+      "appliedStages": 8,
+      "remainingStages": 4,
+      "engineRequests": 0,
+      "oauthRequests": 0,
+      "runtimeEffectsDispatched": 0,
+      "duplicateTranscriptIsNotAdditionalExecution": true,
+      "nextRequiredAction": "ONE_PINNED_STAGE8_HUMAN_PREPARE_ONLY"
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-HUMAN-PREFLIGHT-TARGET-PASS",
+      "observedAt": "2026-10-22T12:18:50Z",
+      "classification": "OWNER_PUBLIC_RECEIPT_NO_EXECUTION_TIME_INFERRED",
+      "engineGets": 14,
+      "oauthRequests": 0,
+      "newBudgetGranted": false,
+      "newWindowOpened": false,
+      "proposalHash": "f3cb92802a19ec9562507ccb103b8b18d883bd8da44b361a8f9d50615d1036e3",
+      "proposedCumulativeCeiling": 304,
+      "duplicateTranscriptIsNotAdditionalExecution": true
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-TECHNICAL-BUDGET-GRANTED",
+      "observedAt": "2026-10-22T12:22:05Z",
+      "approvedAtUnixFromDecisionRef": 1792671641,
+      "classification": "OWNER_PUBLIC_RECEIPT_NEW_FINITE_BUDGET_NOT_LOGIN_OR_RUNTIME_AUTHORITY",
+      "priorOAuthAttempts": 300,
+      "maximumCumulativeOAuthAttempts": 304,
+      "additionalGranted": 4,
+      "countsAsOfGrant": true,
+      "subsequentConsumptionNotObserved": true,
+      "decisionHash": "aee379b749260d973b20d838427aec1e91dda51e4c09b24ca30449bb2d6f6103",
+      "duplicateTranscriptIsNotAdditionalGrant": true
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-HUMAN-WINDOW-OPENED",
+      "observedAt": "2026-10-22T12:25:09Z",
+      "classification": "OWNER_PUBLIC_RECEIPT_WINDOW_ONLY_NO_PROVIDER_OR_RUNTIME_AUTHORITY",
+      "attempts": 300,
+      "ceiling": 304,
+      "remaining": 4,
+      "controlPath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-21e05b55eec1ef1e97a83a006fd3f33d38cfc95185f83c670563bfe59c2be264",
+      "windowExpiresAt": 1792679049,
+      "oauthRequestsReserved": 0,
+      "duplicateTranscriptIsNotAnotherWindow": true
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-HUMAN-DISCOVERY-COMPLETED",
+      "observedAt": "2026-10-22T12:28:53Z",
+      "classification": "OWNER_PUBLIC_RECEIPT_ONE_PROVIDER_REQUEST",
+      "attempts": 301,
+      "ceiling": 304,
+      "remaining": 3,
+      "state": "DEVICE_START",
+      "oauthRequestsReserved": 1,
+      "runtimeAuthorityIssued": false
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-DEVICE-START-CONSENT-TIMEOUT",
+      "observedAt": "2026-10-22T12:33:48Z",
+      "classification": "OWNER_STOP_BEFORE_REQUEST_RESERVATION_NO_EFFECT",
+      "reasonCode": "HUMAN_TERMINAL_CONFIRMATION_TIMEOUT_NO_EFFECT",
+      "phase": "EXPLICIT_TERMINAL_PROVIDER_CONFIRMATION",
+      "lastObservedAttempts": 301,
+      "ceiling": 304,
+      "currentCountNotIndependentlyRead": true,
+      "providerReplayAllowed": false
+    },
+    {
+      "id": "CSV-EVENT-PATCH-STAGE8-TARGET-HUMAN304-AND-NATIVE-COMPLETION",
+      "observedAt": "2026-10-22T12:59:58Z",
+      "classification": "OWNER_RECEIPT_CHAIN_NO_EXECUTION_TIME_INFERRED",
+      "evidenceRef": "evidence/ingestion-readiness-stage8-completed-target-20261022.json",
+      "oauthAttempts": 304,
+      "oauthCeiling": 304,
+      "importedStages": 8,
+      "residualStages": 4,
+      "totalPatchStages": 12,
+      "runtimeAuthorityWasSeparatelyIssued": true,
+      "latestInvocationIssuedAuthority": false,
+      "runtimeEffectsAcceptedByPorts": true,
+      "nativeProfilePublished": false,
+      "releaseAcceptance": false,
+      "duplicateReceiptsNotCountedAsEffects": true
+    },
+    {
+      "id": "CSV-EVENT-POSTPATCH-SOURCE-MCP-READ-DENIED",
+      "classification": "BOUNDED_EXISTING_CAPABILITY_READ_NO_MUTATION",
+      "evidenceRef": "evidence/native-profile-postpatch-source-read-20261022.json",
+      "retryable": false,
+      "retried": false,
+      "sourceLifecycleProven": false
+    },
+    {
+      "id": "CSV-EVENT-POSTPATCH-SEMANTIC-502-OBSERVED",
+      "observedAt": "2026-10-22T13:23:59Z",
+      "evidenceRef": "evidence/native-profile-postpatch-http-target-20261022.json",
+      "rootCauseEstablished": false,
+      "classification": "BOUNDED_READ_ONLY_TARGET_HTTP_OBSERVATION"
+    },
+    {
+      "id": "CSV-EVENT-SEMANTIC-HISTORICAL-REGISTRY-PREDICATE-STOP",
+      "recordedAt": "2026-10-22T18:43:58Z",
+      "classification": "USER_REPORTED_STOP_NO_TARGET_EXECUTION_TIME_INFERRED",
+      "evidenceRef": "evidence/semantic-historical-registry-stop-20261022.json",
+      "reasonCode": "HISTORICAL_REGISTRY_NOT_RUNNING",
+      "rootCauseEstablished": false,
+      "newDiagnosticTargetExecuted": false
+    }
+  ],
+  "activeIntervals": [
+    {
+      "id": "CSV-TIME-0001",
+      "startedAt": "2026-10-20T09:16:46.603Z",
+      "endedAt": "2026-10-20T09:38:46.444Z",
+      "workPackage": null,
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 1319.841,
+      "workPackages": [
+        "WP1",
+        "WP2_PREPARATION"
+      ],
+      "perPackageAllocationKnown": false,
+      "note": "Continuous measured technical interval; initial WP1/WP2 attribution was not segmented. Do not invent per-package hours."
+    },
+    {
+      "id": "CSV-TIME-0002",
+      "startedAt": "2026-10-20T09:38:46.444Z",
+      "endedAt": "2026-10-20T09:53:01.026Z",
+      "workPackage": null,
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 854.582,
+      "workPackages": [
+        "WP1_QUALIFICATION_OBSERVATION",
+        "WP2_PREPARATION"
+      ],
+      "perPackageAllocationKnown": false
+    },
+    {
+      "id": "CSV-TIME-0003",
+      "startedAt": "2026-10-20T09:53:01.026Z",
+      "endedAt": "2026-10-20T10:15:14.724Z",
+      "workPackage": "WP2",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 1333.698
+    },
+    {
+      "id": "CSV-TIME-0004",
+      "startedAt": "2026-10-20T10:15:14.724Z",
+      "endedAt": "2026-10-20T10:34:57.040Z",
+      "workPackage": "WP2",
+      "activity": "NATIVE_PORTS_COMPOSITION_AND_REVIEW",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 1182.316
+    },
+    {
+      "id": "CSV-TIME-0005",
+      "startedAt": "2026-10-20T10:42:11.142Z",
+      "endedAt": "2026-10-20T10:47:51.672Z",
+      "workPackage": "WP2",
+      "activity": "RETAINED_ROUTE_BOUNDARY_AND_NATIVE_COMPOSITION",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 340.53
+    },
+    {
+      "id": "CSV-TIME-0006",
+      "startedAt": "2026-10-20T10:52:01.597Z",
+      "endedAt": "2026-10-20T10:54:20.502Z",
+      "workPackage": "WP2",
+      "activity": "EXPLICIT_BINDING_AND_NATIVE_PROFILE_COMPOSITION",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 138.905
+    },
+    {
+      "id": "CSV-TIME-0007",
+      "startedAt": "2026-10-20T10:54:20.502Z",
+      "endedAt": "2026-10-20T11:03:17.182Z",
+      "workPackage": "WP2",
+      "activity": "NATIVE_PORTS_COMPOSITION_AND_QUALIFICATION",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 536.68
+    },
+    {
+      "id": "CSV-TIME-0008",
+      "startedAt": "2026-10-20T11:03:17.182Z",
+      "endedAt": "2026-10-20T11:13:10.604Z",
+      "workPackage": "WP2",
+      "activity": "ISSUER_IMMUTABLE_CLOSURE_AND_REPRESENTATIVE_QUALIFICATION",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 593.422
+    },
+    {
+      "id": "CSV-TIME-0009",
+      "startedAt": "2026-10-20T11:13:10.604Z",
+      "endedAt": "2026-10-20T11:18:23.438Z",
+      "workPackage": "WP2",
+      "activity": "IMMUTABLE_CLOSURE_AND_PLATFORM_DEFECT_REQUALIFICATION",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 312.834
+    },
+    {
+      "id": "CSV-TIME-0010",
+      "startedAt": "2026-10-20T11:18:23.438Z",
+      "endedAt": "2026-10-20T11:32:01.642Z",
+      "workPackage": "WP2",
+      "activity": "APISIX_JVM_AND_COMPLETE_NATIVE_PLATFORM_QUALIFICATION",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 818.204
+    },
+    {
+      "id": "CSV-TIME-0011",
+      "startedAt": "2026-10-20T11:32:01.642Z",
+      "endedAt": "2026-10-20T11:44:35.638Z",
+      "workPackage": "WP2",
+      "activity": "FULL_NATIVE_PLATFORM_CI_DIAGNOSIS_AND_QUALIFICATION",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 753.996
+    },
+    {
+      "id": "CSV-TIME-0012",
+      "startedAt": "2026-10-20T11:44:35.638Z",
+      "endedAt": "2026-10-20T12:12:28.000Z",
+      "workPackage": null,
+      "activity": "FULL_PLATFORM_REQUALIFICATION_AND_CURRENT_GUARD_RESILIENCE",
+      "classification": "ACTIVE_TECHNICAL",
+      "seconds": 1672.362,
+      "workPackages": [
+        "WP2",
+        "WP5_CONTRACT_PREAUDIT"
+      ],
+      "perPackageAllocationKnown": false
+    },
+    {
+      "id": "CSV-TIME-0013",
+      "startedAt": "2026-10-20T12:21:06.540Z",
+      "endedAt": "2026-10-20T12:22:36.152Z",
+      "seconds": 89.612,
+      "workPackage": "WP2",
+      "classification": "ACTIVE_TECHNICAL",
+      "activity": "READ_ONLY_HUMAN_HISTORY_AND_REAL_GATEWAY_INHERITANCE_DIAGNOSIS"
+    },
+    {
+      "id": "CSV-TIME-0014",
+      "startedAt": "2026-10-20T12:22:36.152Z",
+      "endedAt": "2026-10-20T12:28:35.506Z",
+      "seconds": 359.354,
+      "workPackage": null,
+      "workPackages": [
+        "WP2",
+        "WP5"
+      ],
+      "perPackageAllocationKnown": false,
+      "classification": "ACTIVE_TECHNICAL",
+      "activity": "NATIVE_PLATFORM_DIAGNOSIS_AND_CSV_GENERAL_PROFILE_DELTA"
+    },
+    {
+      "id": "CSV-TIME-0015",
+      "startedAt": "2026-10-20T12:28:35.506Z",
+      "endedAt": "2026-10-20T12:30:55.396Z",
+      "seconds": 139.89,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackages": [
+        "WP2",
+        "WP5"
+      ],
+      "perPackageAllocationKnown": false,
+      "activity": "LINUX_IMAGE_FLAG_RECONCILIATION_AND_TYPED_MAPPING_PREPARATION"
+    },
+    {
+      "id": "CSV-TIME-0016",
+      "startedAt": "2026-10-20T12:36:08.162Z",
+      "endedAt": "2026-10-20T12:41:23.257Z",
+      "seconds": 315.095,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": null,
+      "activity": "PLATFORM_RECONCILIATION_AFTER_CHAT_INTERRUPTION",
+      "workPackages": [
+        "WP2",
+        "WP5"
+      ],
+      "perPackageAllocationKnown": false
+    },
+    {
+      "id": "CSV-TIME-0017",
+      "startedAt": "2026-10-20T12:41:23.257Z",
+      "endedAt": "2026-10-20T12:47:34.171Z",
+      "seconds": 370.914,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": null,
+      "activity": "DECLARED_DATATYPES_OWNER_CONTRACT_ALIGNMENT",
+      "workPackages": [
+        "WP5",
+        "WP2_QUALIFICATION_OBSERVATION"
+      ],
+      "perPackageAllocationKnown": false
+    },
+    {
+      "id": "CSV-TIME-0018",
+      "startedAt": "2026-10-20T12:47:34.171Z",
+      "endedAt": "2026-10-20T12:51:39.940Z",
+      "seconds": 245.769,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": null,
+      "activity": "VOCABULARY_AND_REPEATABLE_CHAT_OWNER_CONTRACT_REVIEW",
+      "workPackages": [
+        "WP2_GATE_REVIEW",
+        "WP5"
+      ],
+      "perPackageAllocationKnown": false
+    },
+    {
+      "id": "CSV-TIME-0019",
+      "startedAt": "2026-10-20T12:51:39.940Z",
+      "endedAt": "2026-10-20T12:54:32.221Z",
+      "seconds": 172.281,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackages": [
+        "WP2_GATE_DOSSIER",
+        "WP5"
+      ],
+      "perPackageAllocationKnown": false,
+      "activity": "QUALIFICATION_DOSSIER_AND_INDEPENDENT_OWNER_DELTAS"
+    },
+    {
+      "id": "CSV-TIME-0020",
+      "startedAt": "2026-10-20T12:54:32.221Z",
+      "endedAt": "2026-10-20T13:00:42.022Z",
+      "seconds": 369.801,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP5",
+      "activity": "COMPOSED_TYPED_CSV_QUALIFICATION_AND_VOCABULARY_MAPPING"
+    },
+    {
+      "id": "CSV-TIME-0021",
+      "startedAt": "2026-10-20T13:03:51.698Z",
+      "endedAt": "2026-10-20T13:10:11.000Z",
+      "seconds": 379.302,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP5",
+      "activity": "COMPOSED_TYPED_OWNER_FIXTURE_IMPLEMENTATION"
+    },
+    {
+      "id": "CSV-TIME-0022",
+      "startedAt": "2026-10-20T13:10:11.000Z",
+      "endedAt": "2026-10-20T13:19:16.651Z",
+      "seconds": 545.651,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackages": [
+        "WP5_QUALIFICATION",
+        "WP6_OWNER_RECOVERY_REAUDIT"
+      ],
+      "perPackageAllocationKnown": false,
+      "activity": "COMPOSED_CI_AND_DURABLE_CHAT_RECOVERY"
+    },
+    {
+      "id": "CSV-TIME-0023",
+      "startedAt": "2026-10-20T13:19:16.651Z",
+      "endedAt": "2026-10-20T13:25:20.000Z",
+      "seconds": 363.349,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP6",
+      "activity": "DURABLE_TENANT_OWNER_RECOVERY_API_AND_TESTS"
+    },
+    {
+      "id": "CSV-TIME-0024",
+      "startedAt": "2026-10-20T13:28:36.000Z",
+      "endedAt": "2026-10-20T13:30:00.000Z",
+      "seconds": 84,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP6",
+      "activity": "RECONCILE_CONNECTION_STATUS_AND_OWNER_CI"
+    },
+    {
+      "id": "CSV-TIME-0025",
+      "startedAt": "2026-10-20T13:30:00.000Z",
+      "endedAt": "2026-10-20T13:47:19.000Z",
+      "seconds": 1039,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP6",
+      "activity": "MCP_DURABLE_RECOVERY_WIRING_AND_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0026",
+      "startedAt": "2026-10-20T13:47:19.000Z",
+      "endedAt": "2026-10-20T13:50:44.000Z",
+      "seconds": 205,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackages": [
+        "WP5_QUALIFICATION",
+        "WP6_QUALIFICATION"
+      ],
+      "perPackageAllocationKnown": false,
+      "activity": "FINAL_CI_EVIDENCE_AND_COHORT_RECONCILIATION"
+    },
+    {
+      "id": "CSV-TIME-0027",
+      "startedAt": "2026-10-20T14:05:09.000Z",
+      "endedAt": "2026-10-20T14:23:34.312Z",
+      "seconds": 1105.312,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "PYTHON313_QUALIFICATION_HOST_RECONCILIATION_AND_EXPLICIT_HUMAN_SUCCESSOR_PREPARATION"
+    },
+    {
+      "id": "CSV-TIME-0028",
+      "startedAt": "2026-10-20T14:28:09.000Z",
+      "endedAt": "2026-10-20T14:36:40.814Z",
+      "seconds": 511.814,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "SEALED_READ_ONLY_TARGET_INSPECTION_DELIVERY_AND_EXPLICIT_SUCCESSOR_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0029",
+      "startedAt": "2026-10-20T14:36:40.814Z",
+      "endedAt": "2026-10-20T14:37:24.284Z",
+      "seconds": 43.47,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "PERSIST_QUALIFICATION_AND_PREPARE_OPERATOR_READ_ONLY_HANDOFF"
+    },
+    {
+      "id": "CSV-TIME-0030",
+      "startedAt": "2026-10-20T14:38:51.000Z",
+      "endedAt": "2026-10-20T14:47:45.944Z",
+      "seconds": 534.944,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "FIRST_VPS_STOP_DIAGNOSIS_FULL_SELECTION_CORRECTION_AND_QUALIFICATION",
+      "isTargetRuntimeExecutionTime": false
+    },
+    {
+      "id": "CSV-TIME-0031",
+      "startedAt": "2026-10-20T14:49:07.000Z",
+      "endedAt": "2026-10-20T14:55:22.783Z",
+      "seconds": 375.783,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "SECOND_VPS_STOP_HISTORICAL_DOCUMENT_PROFILE_ALIGNMENT_AND_SAFE_METADATA_QUALIFICATION",
+      "isTargetRuntimeExecutionTime": false
+    },
+    {
+      "id": "CSV-TIME-0032",
+      "startedAt": "2026-10-20T15:36:01.000Z",
+      "endedAt": "2026-10-20T16:16:07.693Z",
+      "seconds": 2406.693,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "EXPLICIT_HUMAN_OPERATOR_QUALIFICATION_AND_INITIAL_RUNTIME_INPUT_READINESS_AUDIT"
+    },
+    {
+      "id": "CSV-TIME-0033",
+      "startedAt": "2026-10-20T16:16:34.878Z",
+      "endedAt": "2026-10-20T16:29:44.449Z",
+      "seconds": 789.571018,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "BOUNDED_NATIVE_RUNTIME_INPUT_CAPTURE_WITHOUT_HUMAN_WINDOW"
+    },
+    {
+      "id": "CSV-TIME-0034",
+      "startedAt": "2026-10-20T17:11:43.076Z",
+      "endedAt": "2026-10-20T17:24:31.158Z",
+      "seconds": 768.082567,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "SUCCESSFUL_VPS_NATIVE_INPUT_RECONCILIATION_AND_PROFILE_COMPILATION"
+    },
+    {
+      "id": "CSV-TIME-0035",
+      "startedAt": "2026-10-20T18:00:26.930Z",
+      "endedAt": "2026-10-20T18:23:51.715Z",
+      "seconds": 1404.78552,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "SUCCESSFUL_NATIVE_PROFILES_RECONCILIATION_AND_PRODUCTION_BOOTSTRAP"
+    },
+    {
+      "id": "CSV-TIME-0036",
+      "startedAt": "2026-10-20T18:34:46.773Z",
+      "endedAt": "2026-10-20T18:37:43.360Z",
+      "seconds": 176.587491,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "SUCCESSFUL_TARGET_BOOTSTRAP_RECONCILIATION_AND_EXPLICIT_HUMAN_HANDOFF"
+    },
+    {
+      "id": "CSV-TIME-0037",
+      "startedAt": "2026-10-20T19:00:27.812Z",
+      "endedAt": "2026-10-20T19:01:41.636Z",
+      "seconds": 73.824372,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "READY_RECEIPT_RECONCILIATION_AND_TOKEN_DURATION_COMPATIBILITY_DIAGNOSIS"
+    },
+    {
+      "id": "CSV-TIME-0038",
+      "startedAt": "2026-10-20T19:25:47.396Z",
+      "endedAt": "2026-10-20T19:33:31.073Z",
+      "seconds": 463.67779,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "OFFLINE_RETAINED_READY_TIMING_DIAGNOSIS_IMPLEMENTATION_AND_PYTHON_MATRIX_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0039",
+      "startedAt": "2026-10-20T19:53:33.365Z",
+      "endedAt": "2026-10-20T20:01:06.573Z",
+      "seconds": 453.208457,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "PROVEN_300SECOND_TOKEN_ROOT_CAUSE_AND_GOVERNED_DURATION_PROFILE_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0040",
+      "startedAt": "2026-10-20T20:05:05.621Z",
+      "endedAt": "2026-10-20T20:21:11.312Z",
+      "seconds": 965.691771,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "OWNER_API_ONLY_IAM_DIRECTIVE_AND_NO_REFRESH_NAMESPACE_POLICY_READER_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0041",
+      "startedAt": "2026-10-20T20:44:09.496Z",
+      "endedAt": "2026-10-20T20:57:57.995Z",
+      "seconds": 828.499311,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "FAILED_ADMIN_CONTEXT_PREDICATE_DIAGNOSIS_AND_SAME_BUDGET_RECONCILIATION_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0042",
+      "startedAt": "2026-10-21T03:43:03.418Z",
+      "endedAt": "2026-10-21T03:58:19.385Z",
+      "seconds": 915.967,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "RECONCILED_ADMIN_TOKEN_METADATA_AND_EXPLICIT_API_IDENTITY_PASSWORD_POLICY_READ_REAL_KEYCLOAK_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0043",
+      "startedAt": "2026-10-21T04:18:37.160Z",
+      "endedAt": "2026-10-21T04:40:50.799Z",
+      "seconds": 1333.639,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "TARGET_IAM_POLICY_RECONCILIATION_AND_GOVERNED_CLIENT_ONLY_LIFETIME_PROPOSAL_REAL_PROVIDER_ROUNDTRIP_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0044",
+      "startedAt": "2026-10-21T04:40:50.799Z",
+      "endedAt": "2026-10-21T04:46:51.002Z",
+      "seconds": 360.203,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "QUALIFICATION_EVIDENCE_PERSISTENCE_OWNER_DECISION_REVIEW_AND_CHRONOLOGY"
+    },
+    {
+      "id": "CSV-TIME-0045",
+      "startedAt": "2026-10-21T05:51:59.360Z",
+      "endedAt": "2026-10-21T06:00:04.274Z",
+      "seconds": 484.914,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "SUPPLEMENTARY_HUMAN_LEDGER_CONTROL_IMPLEMENTATION_AND_TWO_PYTHON_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0046",
+      "startedAt": "2026-10-21T06:00:04.274Z",
+      "endedAt": "2026-10-21T06:04:29.734Z",
+      "seconds": 265.46,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "EXACT_OPERATOR_CLOCKS_FINAL_QUALIFICATION_AND_RETAINED_EVIDENCE_PUBLICATION_PREPARATION"
+    },
+    {
+      "id": "CSV-TIME-0047",
+      "startedAt": "2026-10-21T06:11:45.228Z",
+      "endedAt": "2026-10-21T06:13:02.227Z",
+      "seconds": 76.999,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_PREPARATION",
+      "activity": "TARGET_SUPPLEMENTARY_PREFLIGHT_RECONCILIATION_AND_EXACT_WINDOW_CONSENT_DELIVERY"
+    },
+    {
+      "id": "CSV-TIME-0048",
+      "startedAt": "2026-10-21T06:17:09.025Z",
+      "endedAt": "2026-10-21T06:23:42.108Z",
+      "seconds": 393.083,
+      "classification": "ACTIVE_TECHNICAL_DOCUMENTATION",
+      "workPackage": "WP3_HANDOFF",
+      "activity": "OWNER_REQUESTED_CHAT_RESTART_HANDOFF_NORMATIVE_REFERENCES_AND_RETAINED_CHECKPOINT_NO_TARGET_OPERATIONS"
+    },
+    {
+      "id": "CSV-TIME-0049",
+      "startedAt": "2026-10-21T07:05:02.215Z",
+      "endedAt": "2026-10-21T07:06:42.879Z",
+      "seconds": 100.664,
+      "classification": "ACTIVE_TECHNICAL_DOCUMENTATION",
+      "workPackage": "WP3_STOP_RECONCILIATION",
+      "activity": "CI_LOG_VERIFICATION_DELIVERY_PINS_AND_RETAINED_TIMELINE_PUBLICATION"
+    },
+    {
+      "id": "CSV-TIME-0050",
+      "startedAt": "2026-10-21T09:19:36.480Z",
+      "endedAt": "2026-10-21T09:34:34.459Z",
+      "seconds": 897.979,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_STOP_RECONCILIATION",
+      "activity": "FROZEN_NATIVE_LIVE_METADATA_READER_IMPLEMENTATION_PHYSICAL_CI_AND_CURRENT_CHECKPOINT_PUBLICATION"
+    },
+    {
+      "id": "CSV-TIME-0051",
+      "startedAt": "2026-10-21T11:41:30.853Z",
+      "endedAt": "2026-10-21T11:45:49.362Z",
+      "seconds": 258.509,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_STOP_RECONCILIATION",
+      "activity": "READ_ONLY_NAMESPACE_PREDICATE_DEFECT_FIX_NATIVE_SEMANTICS_REGRESSION_CI_AND_RETAINED_DELIVERY_PUBLICATION"
+    },
+    {
+      "id": "CSV-TIME-0052",
+      "startedAt": "2026-10-21T11:52:35.198Z",
+      "endedAt": "2026-10-21T12:07:06.658Z",
+      "seconds": 871.46,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_STOP_RECONCILIATION",
+      "activity": "SUCCESSFUL_TARGET_METADATA_READ_RECORDING_SEPARATE_FINITE_BUDGET_CONTROLLER_AND_PHYSICAL_CI_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0053",
+      "startedAt": "2026-10-21T12:12:29.888Z",
+      "endedAt": "2026-10-21T12:14:24.138Z",
+      "seconds": 114.25,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_STOP_RECONCILIATION",
+      "activity": "TARGET_BUDGET_GRANT_EVIDENCE_AND_EXPLICIT_SUCCESSOR_DEVELOPMENT_REQUIREMENTS_CHECKPOINT"
+    },
+    {
+      "id": "CSV-TIME-0054",
+      "startedAt": "2026-10-21T15:58:39.545Z",
+      "endedAt": "2026-10-21T16:24:54.893Z",
+      "seconds": 1575.348,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP3_STOP_RECONCILIATION",
+      "activity": "STAGE18_GRANTED_BUDGET_HUMAN_CONTROLLER_SIGNED_PREFIX_IMPORT_CACHED_DELIVERY_TESTS_AND_TWO_PYTHON_CI_QUALIFICATION"
+    }
+  ],
+  "waitingIntervals": [],
+  "gateComparison": [
+    {
+      "gate": "G0",
+      "centralHour": 0.5,
+      "includedIn": "WP0+WP1",
+      "status": "PLANNED",
+      "baselineCentralHour": 0.5,
+      "actualObservedAt": "2026-10-20T09:16:46.603Z",
+      "actualEffortHours": null,
+      "effortVarianceHours": null,
+      "observedStatus": "PASS",
+      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+    },
+    {
+      "gate": "G1",
+      "leanHour": 2,
+      "centralHour": 3,
+      "prudentHour": 4,
+      "milestone": null,
+      "status": "PLANNED",
+      "baselineCentralHour": 3,
+      "actualObservedAt": "2026-10-20T09:53:01.026Z",
+      "actualEffortHours": null,
+      "effortVarianceHours": null,
+      "observedStatus": "PASS",
+      "measurementNote": "Cumulative effort bounded, per-WP allocation unknown; WP2 preparation interleaved during CI.",
+      "dependencyCompletedAt": "2026-10-20T09:51:37Z",
+      "actualEffortHoursBounds": [
+        0.6040063888888888,
+        0.7533405555555555
+      ],
+      "cumulativeVarianceFromBaselineBounds": [
+        -2.3959936111111113,
+        -2.2466594444444445
+      ],
+      "wp1OnlyEffortVarianceHours": null
+    },
+    {
+      "gate": "G2",
+      "leanHour": 10,
+      "centralHour": 14,
+      "prudentHour": 18,
+      "milestone": null,
+      "status": "PLANNED",
+      "baselineCentralHour": 14,
+      "actualObservedAt": "2026-10-20T12:51:39.940Z",
+      "actualEffortHours": 3.160556666666666,
+      "effortVarianceHours": null,
+      "observedStatus": "PASS",
+      "measurementNote": "Cumulative measured effort includes interleaved WP5; initial and unverified windows excluded. Not WP2-only allocation or residual forecast. Measured effort is the lower bound; upper bound conservatively counts every excluded/initial interval. No per-WP estimate inferred.",
+      "lastCheckpoint": {
+        "observedAt": "2026-10-20T12:51:39.940Z",
+        "cumulativeMeasuredEffortHours": 3.160556666666666,
+        "gatePassed": true
+      },
+      "dependencyCompletedAt": "2026-10-20T12:49:12Z",
+      "actualEffortHoursBounds": [
+        3.160556666666666,
+        3.7308166666666662
+      ],
+      "cumulativeVarianceFromBaselineBounds": [
+        -10.839443333333334,
+        -10.269183333333334
+      ]
+    },
+    {
+      "gate": "G3",
+      "leanHour": 14,
+      "centralHour": 19,
+      "prudentHour": 24,
+      "milestone": null,
+      "status": "PLANNED",
+      "baselineCentralHour": 19,
+      "actualObservedAt": null,
+      "actualEffortHours": null,
+      "effortVarianceHours": null,
+      "observedStatus": "NOT_PASSED",
+      "measurementNote": "Native rollout completed on owner-reported target receipts; native profile publication/THS approval remains pending. No gate PASS, current readiness or per-WP effort inferred.",
+      "lastCheckpoint": {
+        "observedAt": "2026-10-21T17:15:44.514Z",
+        "cumulativeMeasuredEffortHours": 8.130165915833333,
+        "gatePassed": false,
+        "targetProductionBootstrapPrepared": true,
+        "humanReadyAtReceipt": true,
+        "tokenDurationCompatible": true,
+        "retainedTimingReaderCiPassed": true,
+        "retainedTimingTargetReadPending": false,
+        "recordedIssuedTokenLifetimeSeconds": 300,
+        "currentProviderPolicyProven": true,
+        "iamApiReaderCiPassed": true,
+        "iamApiTargetReadPending": false,
+        "iamApiTargetStatus": "STOP_RECONCILE",
+        "iamContextReconciliationPending": false,
+        "iamContextReconciliationComplete": true,
+        "explicitAdminApiCiPassed": true,
+        "explicitAdminApiTargetReadPending": false,
+        "explicitAdminApiTargetComplete": true,
+        "currentProviderRevocationPolicyProven": false,
+        "clientLifetimeProposalCiPassed": true,
+        "clientLifetimeProposalTargetExecuted": true,
+        "ownerLifetimeFreshnessDecisionPending": false,
+        "humanAuthenticationBoundaryClarificationPending": false,
+        "supplementaryHumanTargetPreflightPending": false,
+        "supplementaryHumanTargetPreflightPassed": true,
+        "newHumanWindowOpened": true,
+        "ownerConfirmedOpenWindowNotExecuted": false,
+        "nativeRolloutComplete": true,
+        "nativeProfilePublished": false,
+        "currentProviderIdentityVerifiedAtReady": true,
+        "successorTargetHumanAuthenticationCompleted": true,
+        "targetCumulativeOAuthAttempts": 292,
+        "remainingOAuthAttempts": 0,
+        "profilePublicationAndThsApprovalPending": true,
+        "evidenceRef": "evidence/ingestion-rollout-stage18-completed-target-20261021.json"
+      }
+    },
+    {
+      "gate": "G4",
+      "leanHour": 18,
+      "centralHour": 24,
+      "prudentHour": 30,
+      "milestone": "M1",
+      "status": "PLANNED",
+      "baselineCentralHour": 24,
+      "actualObservedAt": null,
+      "actualEffortHours": null,
+      "effortVarianceHours": null,
+      "observedStatus": "NOT_PASSED",
+      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+    },
+    {
+      "gate": "G5",
+      "leanHour": 26,
+      "centralHour": 35,
+      "prudentHour": 44,
+      "milestone": null,
+      "status": "PLANNED",
+      "baselineCentralHour": 35,
+      "actualObservedAt": null,
+      "actualEffortHours": null,
+      "effortVarianceHours": null,
+      "observedStatus": "NOT_PASSED",
+      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+    },
+    {
+      "gate": "G6",
+      "leanHour": 34,
+      "centralHour": 46,
+      "prudentHour": 58,
+      "milestone": null,
+      "status": "PLANNED",
+      "baselineCentralHour": 46,
+      "actualObservedAt": null,
+      "actualEffortHours": null,
+      "effortVarianceHours": null,
+      "observedStatus": "NOT_PASSED",
+      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+    },
+    {
+      "gate": "G7",
+      "leanHour": 40,
+      "centralHour": 55,
+      "prudentHour": 70,
+      "milestone": "M2",
+      "status": "PLANNED",
+      "baselineCentralHour": 55,
+      "actualObservedAt": null,
+      "actualEffortHours": null,
+      "effortVarianceHours": null,
+      "observedStatus": "NOT_PASSED",
+      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+    }
+  ],
+  "milestoneComparison": [
+    {
+      "id": "F5",
+      "baselineCentralHour": 22,
+      "status": "OPEN",
+      "startedAt": null,
+      "completedAt": null
+    },
+    {
+      "id": "F6",
+      "baselineCentralHour": 24,
+      "status": "OPEN",
+      "startedAt": null,
+      "completedAt": null
+    },
+    {
+      "id": "M1",
+      "baselineHours": [
+        18,
+        24,
+        30
+      ],
+      "status": "OPEN",
+      "startedAt": null,
+      "completedAt": null
+    },
+    {
+      "id": "M2",
+      "baselineHours": [
+        40,
+        55,
+        70
+      ],
+      "status": "OPEN",
+      "startedAt": null,
+      "completedAt": null
+    }
+  ],
+  "runtimeState": {
+    "technicalCompleted": 8,
+    "functionalProven": 4,
+    "runtimeAuthorityIssued": false,
+    "completedActionsReplayed": false,
+    "loginPerformed": true,
+    "refreshPerformed": false,
+    "budgetReset": false,
+    "wp3Block": {
+      "status": "INFRASTRUCTURE_PATCH_COMPLETE_NATIVE_PROFILE_LIFECYCLE_PENDING",
+      "nextStage": 28,
+      "appliedStages": 28,
+      "currentAuthorityProven": false,
+      "automaticLoginAllowed": false,
+      "automaticRenewalAllowed": false,
+      "independentWorkContinues": [
+        "WP5",
+        "WP6"
+      ],
+      "nextRequiredTargetAction": "DISTINCT_HISTORICAL_REGISTRY_LIFECYCLE_AND_SAME_LINE_LOG_OBSERVATION",
+      "stoppedPrefixSnapshotProven": true,
+      "pendingStageClaim": false,
+      "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
+      "latestInputReaderSource": "84385614384d9e2edf474ec84b87cdec8d11747f",
+      "liveRuntimeMetadataMatched": true,
+      "namespaceSelectedFromDurableReplacementPid": true,
+      "technicalBudgetGrantComplete": true,
+      "runtimeSuccessorImplemented": true,
+      "runtimeSuccessorQualified": true,
+      "successorTargetPreflightCompleted": true,
+      "nextStageEvidenceScope": "INFERRED_FROM_COMPLETED_28_STAGE_NATIVE_SEQUENCE_NOT_INDEPENDENT_STATUS_READ",
+      "nativeRolloutComplete": true,
+      "offlineNativeArchiveDeliveryQualified": true,
+      "fullProductionExecutionControllerQualified": true,
+      "wholeOperatorControllerCiQualified": true,
+      "freshHumanGovernanceQualified": true,
+      "cachedProductionDeliveryQualified": true,
+      "v2ProductionControllerQualified": true,
+      "readinessPatchStagesCompleted": 12,
+      "readinessPatchComplete": true
+    },
+    "agentDispatchedTargetOperations": 0,
+    "latestOperatorConfirmedOperation": "SEMANTIC_TRANSPORT_CORRELATION_STOP_RECONCILE",
+    "latestOperatorConfirmedOperationPolicyMutations": 0,
+    "loginPerformedScope": "COMPLETED_FRESH_STAGE18_HUMAN_PROVIDER_VERIFICATION_AT292_NO_CURRENT_AUTHORITY_INFERRED",
+    "newHumanLoginPerformed": true,
+    "currentCumulativeOAuthAttempts": 304,
+    "currentRemainingAttempts": 0,
+    "chatTransferPaused": false,
+    "ownerConfirmedNextOpenWindowNotExecuted": false,
+    "currentHandoff": "docs/handoffs/OUF_SEMANTIC_HISTORICAL_REGISTRY_STOP_20261022.md",
+    "runtimeAuthorityWasIssuedInRetainedRollout": true,
+    "runtimeAuthorityCurrentlyProven": false,
+    "maximumCumulativeOAuthAttempts": 304,
+    "countsAsOfGrant": false,
+    "subsequentConsumptionNotObserved": false,
+    "countsAsOfReadyReceipt": true,
+    "runtimeAuthorityWasIssuedInSuccessor": true,
+    "nativeRolloutComplete": true,
+    "nativeProfilePublished": false,
+    "releaseAcceptance": false,
+    "nativeProfileStateAtLastOwnerRead": "APPROVED",
+    "activationProgressAtLastOwnerRead": {
+      "phase": "PAUSED",
+      "attempts": 2,
+      "generation": 3,
+      "lastCode": "ONB_READINESS_DEPENDENCY_503"
+    },
+    "runtimeContractFixInstalled": true,
+    "readinessPatchInputContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-patch-inputs-3fea910fc74b8ea6fcfd121fc0f8386a1ed78c5a89063a3e686053ca8180a317",
+    "readinessPatchRuntimeExecutorQualified": true,
+    "readinessPatchReviewContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-patch-review-51a014429f1663e4760de93e7e6ae8200fd4ad813a5153c77d21ef5066562bac",
+    "readinessPatchReviewHash": "45ed8d24c23a82ea4336c56ea4f5c4048f3237299a25263955f80e10d9078bea",
+    "readinessPatchNativeInputContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-native-inputs-0b2fd250a4f16e05ad1dc2836878f6438d6c417394b8e5f542c0736f244897df",
+    "readinessPatchNativeInputBundleHash": "ab6c1953b8eb0bed19fdd1ee82c4b34828642726e4582152852eb5b4711f14ec",
+    "readinessPatchNativeArchiveTargetPrepared": true,
+    "readinessPatchStagesApplied": 12,
+    "thisDevelopmentNewLoginPerformed": false,
+    "thisDevelopmentTargetOperations": 0,
+    "sourceHeadsReverifiedThisUpdate": false,
+    "readinessPatchNativeArchiveContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-native-archive-86a63c83ae644484400e2e3531db57e5aa4869ca8c5f17bcbec908de889bb6c6",
+    "readinessPatchNativeArchiveBundleHash": "f56d7989be393211665535a59cc4bf419c20665a912bf51aaf6f01671e2288dd",
+    "readinessPatchRuntimeExecutorQualificationScope": "DISPOSABLE_CI_NOT_CURRENT_TARGET_ADMISSION",
+    "readinessPatchTargetPreflightCompleted": true,
+    "readinessPatchOperatorState": "RECONCILE_REQUIRED",
+    "readinessPatchReviewBytes": 545058,
+    "readinessPatchPacketBytes": 1320265,
+    "readinessPatchRuntimeAuthorityIssued": false,
+    "readinessPatchUnissuedReconciled": true,
+    "readinessPatchRetainedJournalHash": "af07734945f3b4ea93282f43808634501d4633261617d767b1bfa2f68942c910",
+    "readinessPatchSuccessorQualified": true,
+    "readinessPatchSuccessorDeliveryQualified": true,
+    "readinessPatchSuccessorPreflightObserved": false,
+    "readinessPatchReplacementStartedAtLastReceipt": true,
+    "readinessPatchComplete": true,
+    "readinessPatchCurrentLiveRuntimeProven": false,
+    "readinessPatchRecordedExpiresAt": 1792664043,
+    "readinessPatchStoppedSnapshotComplete": true,
+    "readinessPatchLiveCapturePerformed": true,
+    "readinessPatchFourStageContinuationQualified": true,
+    "readinessPatchLiveCaptureHash": "b9063de73e2d7699e3e7616a164f4b9a24346bc0a3fda1ed3762f4dc0dd95ef2",
+    "readinessPatchMetadataMatchedAtCapture": true,
+    "readinessPatchFourStageDeliveryQualified": true,
+    "readinessPatchFourStagePreflightObserved": true,
+    "readinessPatchStage8CachedLaunchers": {
+      "operatorLog": "/home/oufadmin/ouf-stage8-continuation.V5n7KcjC/operator.log",
+      "humanLauncher": "/home/oufadmin/ouf-readiness-launchers.XMzIT1rQ/human.sh",
+      "runtimeLauncher": "/home/oufadmin/ouf-readiness-launchers.XMzIT1rQ/runtime.sh",
+      "setupLauncher": "/home/oufadmin/ouf-stage8-setup.uXBN2xPO"
+    },
+    "readinessPatchStage8HumanPreflightObserved": true,
+    "readinessPatchStage8BudgetProposalHash": "f3cb92802a19ec9562507ccb103b8b18d883bd8da44b361a8f9d50615d1036e3",
+    "readinessPatchStage8BudgetGranted": true,
+    "readinessPatchStage8BudgetDecisionHash": "aee379b749260d973b20d838427aec1e91dda51e4c09b24ca30449bb2d6f6103",
+    "readinessPatchStage8HumanWindowOpened": true,
+    "readinessPatchStage8HumanControlPath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-21e05b55eec1ef1e97a83a006fd3f33d38cfc95185f83c670563bfe59c2be264",
+    "readinessPatchStage8HumanState": "READY_AT_RECEIPT",
+    "readinessPatchStage8HumanStopReason": "HUMAN_TERMINAL_CONFIRMATION_TIMEOUT_NO_EFFECT",
+    "readinessPatchStage8HumanCountReverificationRequired": false,
+    "readinessPatchTargetRuntimeEffectsAcceptedByPorts": true,
+    "readinessPatchStage8AuthorityWasIssued": true,
+    "runtimeAuthorityWasIssuedInStage8Continuation": true,
+    "postPatchSourceStatusRead": "AUTHORIZATION_DENIED_NOT_RETRIED",
+    "postPatchSourceStatusRootCauseEstablished": false,
+    "semanticTransportCorrelationStopReason": "HISTORICAL_REGISTRY_NOT_RUNNING",
+    "semanticTransportCorrelationRootCauseEstablished": false
+  },
+  "unverifiedIntervals": [
+    {
+      "id": "CSV-UNCERTAIN-0001",
+      "startedAt": "2026-10-20T10:34:57.040Z",
+      "endedAt": "2026-10-20T10:42:11.142Z",
+      "seconds": 434.102,
+      "classification": "UNVERIFIED_EXECUTION_CONTINUITY",
+      "includedInMeasuredEffort": false,
+      "reason": "User reports chat connection interrupted; do not infer technical effort or passive/HUMAN wait from the unverified interval."
+    },
+    {
+      "id": "CSV-UNCERTAIN-0002",
+      "startedAt": "2026-10-20T10:47:51.672Z",
+      "endedAt": "2026-10-20T10:52:01.597Z",
+      "seconds": 249.925,
+      "classification": "UNSEGMENTED_STATUS_TURN_BOUNDARY",
+      "includedInMeasuredEffort": false,
+      "reason": "Local work and status replies occurred in this window, but the exact end of active work before the final reply was not clocked. Conservatively excluded, not passive or HUMAN wait."
+    },
+    {
+      "id": "CSV-UNCERTAIN-0003",
+      "startedAt": "2026-10-20T12:12:28.000Z",
+      "endedAt": "2026-10-20T12:21:06.540Z",
+      "seconds": 518.54,
+      "classification": "UNVERIFIED_TURN_CONTINUITY",
+      "includedInMeasuredEffort": false,
+      "reason": "Conservative exclusion across context checkpoint and resumed user turn; do not infer active effort."
+    },
+    {
+      "id": "CSV-UNCERTAIN-0004",
+      "startedAt": "2026-10-20T12:30:55.396Z",
+      "endedAt": "2026-10-20T12:36:08.162Z",
+      "seconds": 312.766,
+      "includedInMeasuredEffort": false,
+      "classification": "UNVERIFIED_CHAT_CONTINUITY",
+      "reason": "User reports another interruption. Conservative exclusion between last confirmed clock and resumed tool observation."
+    },
+    {
+      "id": "CSV-UNCERTAIN-0005",
+      "startedAt": "2026-10-20T13:00:42.022Z",
+      "endedAt": "2026-10-20T13:03:51.698Z",
+      "seconds": 189.676,
+      "includedInMeasuredEffort": false,
+      "classification": "UNVERIFIED_CHAT_CONTINUITY",
+      "reason": "User reported connection interrupted again; interval excluded conservatively."
+    },
+    {
+      "startedAt": "2026-10-20T13:25:20.000Z",
+      "endedAt": "2026-10-20T13:28:36.000Z",
+      "seconds": 196,
+      "reason": "CONNECTION_INTERRUPTION_NO_VERIFIED_ACTIVE_EXECUTION",
+      "countedAsActive": false
+    }
+  ],
+  "qualificationState": {
+    "nativeExecutorG2Passed": true,
+    "qualifiedSourceCommit": "24c2d9b8c7b3f4f8a4a61125b86877ffbd635dba",
+    "sourceClosureModules": 114,
+    "loaderSha256": "3898173a6303317ea91e350dd867f6292b634341930daddaeef91b25f2756b1a",
+    "python313CiQualifiedCommit": "502a9fb823d06e899031f226011d601266981695",
+    "explicitSuccessorCiQualifiedCommit": "c711c119ce589a421f0c27195a16522b39e879bf",
+    "targetSuccessorInspectionPending": false,
+    "targetSuccessorInspectionResult": "STOP_RECONCILE",
+    "selectionReconcileCiQualifiedCommit": "103889784a46a3814db2f5206f4829c6aed9b428",
+    "targetSelectionReconciliationPending": false,
+    "targetSelectionReconciliationResult": "STOP_RECONCILE",
+    "custodyReconcileCiQualifiedCommit": "174a49c870ffb57a4dfe57c82a7ae6b34bae3b92",
+    "targetOriginalCustodyReconciliationPending": false,
+    "targetOriginalCustodyReconciliationResult": "SELECTION_RECONCILED_REVIEW_NO_AUTHORITY",
+    "successfulTargetReviewHash": "86e3105a6f86af81b52f38cc51ae3fb41e743b3e6a8360aa94fc59cb12a53f4e",
+    "explicitHumanOperatorQualifiedCommit": "b760de48a41e2b073c135489399aefb4a14627ab",
+    "operatorQualificationRun": 39453670347,
+    "targetWindowOpened": true,
+    "targetOAuthAttemptsUnchanged": false,
+    "nativeInputCaptureQualifiedCommit": "10a9552ec7c1608f1de4d102a9644d11fc7f17d6",
+    "nativeInputCaptureRun": 39457653516,
+    "nativeInputCaptureTargetExecuted": true,
+    "nativeInputCaptureTargetComplete": true,
+    "nativeInputCaptureContext": "/etc/ouf/deploy-snapshots/ingestion-native-inputs-qs8zybi4",
+    "nativeProfilePreparationQualifiedCommit": "af94b95b90226fe84d89e28ec966720e3fcbc3c0",
+    "nativeProfilePreparationRun": 39465549162,
+    "nativeProfilePreparationTargetExecuted": true,
+    "nativeProfilePreparationTargetComplete": true,
+    "nativeProfilePreparationContext": "/etc/ouf/deploy-snapshots/ingestion-native-profiles-5xl2drfi",
+    "productionControlQualifiedCommit": "2c5eb6fbb354c11e351850459a33ae790d23a0a3",
+    "productionControlQualificationRun": 39473913739,
+    "targetProductionBootstrapPrepared": true,
+    "targetProductionBootstrapContext": "/etc/ouf/deploy-snapshots/ingestion-rollout-native-7fs9r6md",
+    "targetCumulativeOAuthAttempts": 292,
+    "targetHumanProviderVerificationCompleted": true,
+    "targetHumanStateAtReceipt": "READY",
+    "productionTokenDurationCompatible": false,
+    "retainedHumanTimingReaderQualifiedCommit": "c0fc4124f6e9c59475914e5e179cf0898f52bfb5",
+    "retainedHumanTimingReaderQualificationRun": 39484202890,
+    "retainedHumanTimingTargetReadPending": false,
+    "retainedHumanTimingTargetReadComplete": true,
+    "recordedIssuedHumanTokenLifetimeSeconds": 300,
+    "currentProviderPolicyProven": true,
+    "durationPlannerQualifiedCommit": "7e10bde6e460908eb8644c8da53aa227181bc314",
+    "durationPlannerQualificationRun": 39488060246,
+    "durationPlannerWiredIntoProductionLogin": false,
+    "existingIamApiReaderQualifiedCommit": "224757b25696eb154948e60eb0de3be716cc0b3f",
+    "existingIamApiReaderQualificationRun": 39490969842,
+    "existingIamApiReaderTargetReadPending": false,
+    "existingIamApiReaderTargetReadComplete": false,
+    "existingIamApiReaderTargetStatus": "STOP_RECONCILE",
+    "adminContextFailedPredicateKnown": true,
+    "sameBudgetIamContextReconcilerQualifiedCommit": "af55edd84e05ee5e0191fc2f6cbcbe60bc191287",
+    "sameBudgetIamContextReconcilerQualificationRun": 39496135244,
+    "sameBudgetIamContextTargetReadPending": false,
+    "adminPreferredUsernameClaimPresent": false,
+    "recordedAdminIssuedLifetimeSeconds": 60,
+    "recordedAdminAccessExpired": true,
+    "sameBudgetIamContextTargetReadComplete": true,
+    "sameBudgetIamContextTargetStatus": "RECORDED_ADMIN_CONTEXT_RECONCILED_NO_AUTHORITY",
+    "originalIamEngineRequestsRetained": 7,
+    "explicitAdminApiQualifiedCommit": "3b205c44e983184e90baf31230b7f5ec1affb6b7",
+    "explicitAdminApiQualificationRun": 39541264244,
+    "explicitAdminApiTargetExecuted": true,
+    "explicitAdminApiTerminalConsentRequired": true,
+    "explicitAdminApiProjectedAttempts": 283,
+    "explicitAdminApiTargetComplete": true,
+    "explicitAdminApiTargetStatus": "CURRENT_ADMIN_IDENTITY_AND_IAM_POLICY_READ_NO_AUTHORITY",
+    "explicitAdminApiTargetReadPending": false,
+    "currentProviderTimeoutMetadataRead": true,
+    "currentProviderRevocationPolicyProven": false,
+    "currentHumanClientRealmLifetimeSeconds": 300,
+    "currentHumanClientLifetimeOverride": 1200,
+    "currentHumanDirectAccessGrantsEnabled": false,
+    "currentHumanStandardFlowEnabled": false,
+    "currentHumanDeviceGrantEnabled": true,
+    "clientLifetimeProposalQualifiedCommit": "1852942f47af54ec015764841ebbcddb09ab3e05",
+    "clientLifetimeProposalQualificationRun": 39545126657,
+    "clientLifetimeProposalTargetExecuted": true,
+    "clientLifetimeProposalApproved": true,
+    "newHumanWindowOpened": true,
+    "newHumanAuthenticationPerformed": true,
+    "supplementaryHumanQualifiedCommit": "5bb47f6654a71dffa2c98c6d105d9c830d542205",
+    "supplementaryHumanQualificationRun": 39553046609,
+    "supplementaryHumanTargetPreflightPending": false,
+    "supplementaryHumanTargetAuthenticationPerformed": false,
+    "supplementaryHumanTargetPreflightPassed": true,
+    "supplementaryHumanTargetReviewHash": "981d810332ad855e7b9305d15fc4bbb10796bc50d556241060d7044c43d715dc",
+    "correctedContinuationInputTargetComplete": true,
+    "correctedContinuationInputTargetStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
+    "technicalBudgetQualifiedCommit": "85a30fb4af7ce0bfe74bd20acae3a0124d80f73c",
+    "technicalBudgetQualificationRun": 39596994308,
+    "technicalBudgetTargetGranted": true,
+    "successorRuntimeImplemented": true,
+    "technicalBudgetTargetProposalHash": "0bf8d9acc497dafbe49320a479ebce51d49496903114669718b6d993b56b1b28",
+    "technicalBudgetTargetDecisionHash": "3342cb2e41561b6a573fe38313d7b20be963cef6caf64469123c613cb4c93b15",
+    "successorRuntimeQualified": true,
+    "successorQualifiedSource": "5e08760666e177a971a5c466955e4376d10c54ef",
+    "successorQualificationRun": 39634414797,
+    "successorTargetPreflightCompleted": true,
+    "successorHumanReviewHash": "c22c5d72643880ebeffa21f9d003cc96f71b222b6cabe612afc7a8fa2394d33a",
+    "successorTargetNativeRolloutComplete": true,
+    "successorTargetAppliedStages": 28,
+    "successorTargetRuntimeEffectsAcceptedByPorts": true,
+    "successorTargetHumanWindowWasOpened": true,
+    "successorTargetHumanAuthenticationCompleted": true,
+    "nativeProfilePublished": false,
+    "releaseAcceptance": false,
+    "successorTargetCompletionEvidence": "evidence/ingestion-rollout-stage18-completed-target-20261021.json",
+    "workloadConfigurationContractFix": {
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "focusedCiRun": 39648964212,
+      "focusedTests": 25,
+      "focusedFailures": 0,
+      "focusedErrors": 0,
+      "focusedSkipped": 0,
+      "fullCiRun": 39648964232,
+      "fullJob": 119391913050,
+      "fullTests": 186,
+      "fullFailures": 0,
+      "fullErrors": 0,
+      "fullSkipped": 2,
+      "initialFullFailedRun": 39648463285,
+      "fixtureIsolationOnly": true,
+      "targetInstalled": false,
+      "scope": "DEVELOPMENT_CI_NOT_TARGET_ACCEPTANCE"
+    },
+    "readinessPatchInputPreparation": {
+      "schema": "ouf.readiness-patch-preparation-delivery.v1",
+      "recordedAt": "2026-10-21T18:25:09.188Z",
+      "sourceRepository": "GioNob/ouf-ingestion-runtime",
+      "sourceCommit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "sourcePullRequest": 46,
+      "buildRecipeCommit": "6f1870b49fcfba0dcf3ec2b6df26cfa9c4a5ccf5",
+      "imageRunId": 39650459729,
+      "imageArtifactId": 12370330790,
+      "imageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+      "imageArchiveSha256": "5f6893d1ac63d5c5ee96c961e5c91a3b1c058a6300af169663961f1d5fbf8be6",
+      "imageArchiveBytes": 136781501,
+      "artifactZipSha256": "f28562307f37e663e90944d45b9f0ca5d6f9011fca6f5154c199679a7b006c64",
+      "readerRepository": "GioNob/ouf-deploy",
+      "readerQualifiedCommit": "89ef2102316d1827b9eb0833f49452d35ac679f5",
+      "readerPath": "tools/readiness_patch_inputs/reader.py",
+      "readerSha256": "c97ae9fd8af1a554df372abd3342e7057c14fc0a7d40acffb82181625e3e9e4d",
+      "casePath": "releases/ingestion-readiness-patch-input-case-20261021.json",
+      "caseFileSha256": "8f92952b1e1a1813921e21536169eca9b93e2d33895f52931f90ab3e6e04a734",
+      "caseCanonicalDigest": "3fea910fc74b8ea6fcfd121fc0f8386a1ed78c5a89063a3e686053ca8180a317",
+      "expectedPrivateContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-patch-inputs-3fea910fc74b8ea6fcfd121fc0f8386a1ed78c5a89063a3e686053ca8180a317",
+      "inputReaderCiRun": 39652227636,
+      "inputReaderPrCiRun": 39652232978,
+      "qualificationJobs": [
+        {
+          "id": 119403239740,
+          "name": "finite-input-capture (3.12)",
+          "conclusion": "success",
+          "tests": 4,
+          "skipped": 0
+        },
+        {
+          "id": 119403239894,
+          "name": "finite-input-capture (3.13.5)",
+          "conclusion": "success",
+          "tests": 4,
+          "skipped": 0
+        }
+      ],
+      "targetInputCapturePerformed": false,
+      "targetInstalled": false,
+      "runtimeAuthorityIssued": false,
+      "oauthRequests": 0,
+      "priorCumulativeOAuthAttempts": 292,
+      "maximumCumulativeOAuthAttempts": 292,
+      "automaticReplayAllowed": false,
+      "releaseAcceptance": false
+    },
+    "readinessPatchOfflineReview": {
+      "previous": {
+        "qualifiedCommit": "0d31bc3942b508cddaebe70e45ca2f33efb6375c",
+        "run": 39655532624,
+        "prRun": 39655542979,
+        "pythonVersions": [
+          "3.12",
+          "3.13.5"
+        ],
+        "testsPerVersion": 6,
+        "skipped": 0,
+        "targetCompiled": false,
+        "nativeRuntimeExecutorQualified": false
+      },
+      "qualifiedCommit": "b115721ab091c14b4073a21d82688b9745a543a5",
+      "run": 39658470844,
+      "testsPerVersion": 13,
+      "skipped": 0,
+      "targetCompiled": true,
+      "targetReviewHash": "45ed8d24c23a82ea4336c56ea4f5c4048f3237299a25263955f80e10d9078bea",
+      "nativeRuntimeExecutorQualified": false
+    },
+    "readinessPatchNativeInputProjection": {
+      "schema": "ouf.readiness-native-input-preparation-qualification.v1",
+      "sourceCommit": "2001744d01cb7cbda542c67a4e49c24bbef0bd89",
+      "ciRun": 39666732234,
+      "prCiRun": 39666740097,
+      "jobs": [
+        {
+          "id": 119453642515,
+          "name": "offline-template (3.13.5)",
+          "status": "completed",
+          "conclusion": "success",
+          "tests": 18,
+          "skipped": 0
+        },
+        {
+          "id": 119453642595,
+          "name": "offline-template (3.12)",
+          "status": "completed",
+          "conclusion": "success",
+          "tests": 18,
+          "skipped": 0
+        }
+      ],
+      "programSha256": "2dd01b72ccd9c484fd2f174c02a2e986e09ceabafe2934f229649cd193150782",
+      "caseFileSha256": "f71b0b958c90d1a2ed9923ddfe45141c019d02b39d941670812dbc3e53682112",
+      "caseHash": "0b2fd250a4f16e05ad1dc2836878f6438d6c417394b8e5f542c0736f244897df",
+      "parentReviewHash": "45ed8d24c23a82ea4336c56ea4f5c4048f3237299a25263955f80e10d9078bea",
+      "scope": "OFFLINE_PRIVATE_INPUT_PROJECTION_ONLY",
+      "targetPreparationObserved": true,
+      "nativeRuntimeExecutorImplemented": true,
+      "nativeRuntimeExecutorQualified": false,
+      "engineRequests": 0,
+      "oauthRequests": 0,
+      "runtimeAuthorityIssued": false,
+      "runtimeEffectsDispatched": 0,
+      "releaseAcceptance": false,
+      "targetComplete": true,
+      "targetBundleHash": "ab6c1953b8eb0bed19fdd1ee82c4b34828642726e4582152852eb5b4711f14ec"
+    },
+    "readinessPatchNativePortsQualification": {
+      "sourceCommit": "a1ed61aba1954c3d62ab60b55723357ad6e38573",
+      "ciRun": 39716681130,
+      "platformTests": 3,
+      "platformStages": 13,
+      "fixtureNetworks": 2,
+      "enginePosts": 8,
+      "gatewayWrites": 0,
+      "secretCreations": 0,
+      "targetEvidence": false,
+      "syntheticHumanAndOwner": true,
+      "fullProductionExecutionControllerQualified": false
+    },
+    "readinessPatchArchiveDeliveryQualification": {
+      "schema": "ouf.ingestion-readiness-native-archive-delivery-qualification.v1",
+      "recordedAt": "2026-10-22T03:49:16.931Z",
+      "repository": "GioNob/ouf-deploy",
+      "releaseCommit": "ce15587ecfaffaa357ea18740d48dca660f0b18d",
+      "coreSourceCommit": "e3dd393a60069e57d3e2f7a1f0441549152c4d6f",
+      "ciRun": 39718342452,
+      "jobs": [
+        {
+          "id": 119625743927,
+          "name": "docker29-apisix-jvm-sequence",
+          "conclusion": "success",
+          "tests": 3,
+          "skipped": 0
+        },
+        {
+          "id": 119625744105,
+          "name": "scoped-signatures-cas (3.13.5)",
+          "conclusion": "success",
+          "tests": 37,
+          "skipped": 0
+        },
+        {
+          "id": 119625744130,
+          "name": "scoped-signatures-cas (3.12)",
+          "conclusion": "success",
+          "tests": 37,
+          "skipped": 0
+        }
+      ],
+      "nativeSourceClosureModules": 139,
+      "originalFrozenSourceModules": 114,
+      "originalFrozenSourceHashesMatched": true,
+      "sourceCommitGitMatch": {
+        "sourceCommit": "e3dd393a60069e57d3e2f7a1f0441549152c4d6f",
+        "moduleCount": 139,
+        "mismatches": 0
+      },
+      "artifactCommit": "7a22715eadf10d1b574e6ef4af36f2ae0c0bca48",
+      "artifactPath": "scripts/prepare-ingestion-native-archive-20261022.py",
+      "artifactSha256": "13335a0aa4ba672c80cc2f63ca1b3e2e9d97b111f876d61c62dbda514d8d4f31",
+      "launcherPath": "scripts/launch-prepare-ingestion-native-archive-20261022.sh",
+      "launcherSha256": "f3bcc189874e2264c8ab4cefca9ddc9cb11a281607e6d13ee9d1d77d063fefd7",
+      "caseHash": "86a63c83ae644484400e2e3531db57e5aa4869ca8c5f17bcbec908de889bb6c6",
+      "parentBundleHash": "ab6c1953b8eb0bed19fdd1ee82c4b34828642726e4582152852eb5b4711f14ec",
+      "configurationImageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+      "nativeImageId": "sha256:d173aa8beeb9a1ac29c35a163e254a902e95fedad2871e328886a41831c10697",
+      "nativeArchiveSha256": "d8acfed23e9388d6ba5434a5731789c8b272395208f07272aeae4c7eb4c6026e",
+      "scope": "DISTINCT_OFFLINE_NATIVE_ARCHIVE_PREPARATION_ONLY",
+      "targetPreparationObserved": false,
+      "imageInstalled": false,
+      "currentTargetRuntimeHealthProven": false,
+      "currentDatabaseAdmissionProven": false,
+      "fullProductionExecutionControllerQualified": false,
+      "oauthRequests": 0,
+      "oauthBudgetChanged": false,
+      "priorCumulativeOAuthAttempts": 292,
+      "maximumCumulativeOAuthAttempts": 292,
+      "runtimeAuthorityIssued": false,
+      "runtimeEffectsDispatched": 0,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "completedTechnicalPhases": 8,
+      "functionalMilestonesProven": 4,
+      "releaseAcceptance": false,
+      "normativeBaselineConsulted": [
+        {
+          "document": "Matrix",
+          "version": "1.7",
+          "sections": [
+            "1"
+          ]
+        },
+        {
+          "document": "Ingestion",
+          "version": "1.3",
+          "sections": [
+            "40",
+            "146"
+          ]
+        }
+      ],
+      "platformFixture": {
+        "syntheticHumanAndOwner": true,
+        "networks": 2,
+        "stages": 13,
+        "enginePosts": 8,
+        "gatewayWrites": 0,
+        "secretCreations": 0,
+        "currentTargetEvidence": false
+      }
+    },
+    "readinessPatchOperatorQualification": {
+      "schema": "ouf.ingestion-readiness-patch-operator-qualification.v1",
+      "recordedAt": "2026-10-22T04:43:36Z",
+      "repository": "GioNob/ouf-deploy",
+      "sourceCommit": "f5709378c1cff5847d4824d76bbb57ebaa451178",
+      "ciRun": 39722859248,
+      "ciUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/39722859248",
+      "scope": "WHOLE_NATIVE_CONTROLLER_AND_ISOLATED_DELIVERY_CI_NOT_TARGET_EXECUTION",
+      "jobs": [
+        {
+          "id": 119640067844,
+          "python": "3.13.5",
+          "tests": 51,
+          "skipped": 0,
+          "conclusion": "success"
+        },
+        {
+          "id": 119640067873,
+          "python": "3.12",
+          "tests": 51,
+          "skipped": 0,
+          "conclusion": "success"
+        },
+        {
+          "id": 119640067704,
+          "name": "docker29-apisix-jvm-sequence",
+          "tests": 4,
+          "skipped": 0,
+          "conclusion": "success"
+        }
+      ],
+      "wholeControllerProof": {
+        "complete": true,
+        "stages": 13,
+        "targetPlannedStages": 12,
+        "fixtureNetworks": 2,
+        "enginePosts": 8,
+        "gatewayWrites": 0,
+        "newKeys": 0,
+        "realTtyConsent": true,
+        "newControllerAnd139CoreUnmodifiedInChild": true,
+        "syntheticHumanAndOwner": true,
+        "targetEvidence": false,
+        "notReleaseAcceptance": true
+      },
+      "retainedTargetPreparation": {
+        "bundleHash": "f56d7989be393211665535a59cc4bf419c20665a912bf51aaf6f01671e2288dd",
+        "complete": true,
+        "replayAllowed": false,
+        "operatorLog": "/home/oufadmin/ouf-native-archive.KoPhost8/operator.log",
+        "evidence": "evidence/ingestion-native-archive-completed-target-20261022.json"
+      },
+      "qualifiedBoundaries": [
+        "case-bound verified-memory bridge",
+        "exact real-terminal approval and existing-key two-role issuance",
+        "one-use initialization and individual stage invocation",
+        "APPLIED effect and initialized journal response-loss reconciliation",
+        "bounded read attempts retained on interruption",
+        "metadata-only status without HUMAN or runtime requests"
+      ],
+      "limitations": [
+        "HUMAN and Owner fixture identities are synthetic",
+        "CI is not live target runtime or database admission evidence",
+        "fixture image import adopts an already loaded exact candidate; this is not proof of a fresh target import",
+        "fresh 292-to-296 budget and HUMAN governance delivery is not yet qualified",
+        "no production runtime case or launcher has been issued"
+      ],
+      "coreSourceCommit": "e3dd393a60069e57d3e2f7a1f0441549152c4d6f",
+      "coreSourceModules": 139,
+      "controllerAndTestsGitBlobs": [
+        {
+          "path": "tests/test_readiness_patch_operator_control.py",
+          "gitBlob": "b094b94a56e831a4b92fcf30e2bbc7ebfcf22afa"
+        },
+        {
+          "path": "tests/test_readiness_patch_operator_delivery.py",
+          "gitBlob": "daaf0f8c982458df7a53214ccea798d6a14794f7"
+        },
+        {
+          "path": "tests/test_readiness_patch_operator_platform.py",
+          "gitBlob": "9819b54e669e2ecf1ff74c02ccfd8befa5cd8468"
+        },
+        {
+          "path": "tools/ingestion_readiness_patch_execution/operator_control.py",
+          "gitBlob": "1f4b9aac429929ce507aaf3a8fac4bfd6f12f178"
+        },
+        {
+          "path": "tools/ingestion_readiness_patch_execution/operator_delivery.py",
+          "gitBlob": "201de08b80b0dd1fb58f47fbcf9301e3e0fb7136"
+        }
+      ],
+      "completedTechnicalPhases": 8,
+      "functionalMilestonesProven": 4,
+      "patchInstalled": false,
+      "targetPatchStagesApplied": 0,
+      "currentTargetHealthProven": false,
+      "currentDatabaseAdmissionProven": false,
+      "fullFreshHumanGovernanceQualified": false,
+      "currentCumulativeOAuthAttempts": 292,
+      "maximumCumulativeOAuthAttempts": 292,
+      "newBudgetGranted": false,
+      "newLoginPerformed": false,
+      "runtimeAuthorityIssued": false,
+      "targetRuntimeEffectsDispatched": 0,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "releaseAcceptance": false
+    },
+    "readinessPatchProductionDeliveryQualification": {
+      "schema": "ouf.ingestion-readiness-patch-production-qualification.v1",
+      "recordedAt": "2026-10-22T05:50:30Z",
+      "repository": "GioNob/ouf-deploy",
+      "qualifiedCommit": "e806a9463110b4e88153e95cbdc81c9d1f8737b2",
+      "artifactCommit": "3e80ea4c1f49507c1dd17448291e75e07907ee9b",
+      "ciRun": 39729332417,
+      "ciUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/39729332417",
+      "jobs": [
+        {
+          "id": 119660519862,
+          "python": "3.13.5",
+          "tests": 62,
+          "skipped": 0,
+          "conclusion": "success"
+        },
+        {
+          "id": 119660520192,
+          "python": "3.12",
+          "tests": 62,
+          "skipped": 0,
+          "conclusion": "success"
+        },
+        {
+          "id": 119660520052,
+          "name": "docker29-apisix-jvm-sequence",
+          "tests": 4,
+          "skipped": 0,
+          "conclusion": "success"
+        }
+      ],
+      "wholeControllerProof": {
+        "complete": true,
+        "stages": 13,
+        "enginePosts": 8,
+        "gatewayWrites": 0,
+        "newKeys": 0,
+        "realTtyConsent": true,
+        "newControllerAnd139CoreUnmodifiedInChild": true,
+        "syntheticHumanAndOwner": true,
+        "targetEvidence": false,
+        "notReleaseAcceptance": true,
+        "freshHumanGovernance": {
+          "realBudgetAndWindowTty": true,
+          "cachedHashCheckedForegroundLaunchers": true,
+          "preLoginExactEngineGets": 12,
+          "syntheticProviderRequests": 4,
+          "priorOAuthAttempts": 292,
+          "readyOAuthAttempts": 296,
+          "oldSessionBytesUnchanged": true
+        }
+      },
+      "preLoginMetadataProbe": {
+        "containerCount": 6,
+        "maximumExactEngineGetsPerInvocation": 12,
+        "invocationsInFixture": [
+          "prepare",
+          "grant-budget",
+          "open-window"
+        ],
+        "totalExactEngineGetsAcrossThoseInvocations": 36,
+        "sqlCalls": 0,
+        "ownerCalls": 0,
+        "providerCalls": 0,
+        "readOnly": true,
+        "currentTargetObservation": false
+      },
+      "sourceCustody": {
+        "originalNativeModules": 139,
+        "originalFrozenModules": 114,
+        "unchangedArchiveSourceCarrierSha256": "13335a0aa4ba672c80cc2f63ca1b3e2e9d97b111f876d61c62dbda514d8d4f31",
+        "reusedHumanRuntimeSourceCommit": "5e08760666e177a971a5c466955e4376d10c54ef",
+        "reusedHumanModules": [
+          "operator",
+          "contract",
+          "session",
+          "window",
+          "inspection"
+        ],
+        "reusedHumanRuntimeBytesUnchanged": true,
+        "humanCapsuleReachableModules": 124,
+        "nativeRuntimeCapsuleModules": 139,
+        "all139NativeBuildSourceBytesMatchedCarrier": true
+      },
+      "deliveryPins": {
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "currentCumulativeOAuthAttempts": 292,
+        "declarationHashes": {
+          "human": "6c344f97170ded263dfac10156e2aba9058d5063e193133e1c49501d26c08770",
+          "runtime": "2afb727970374dfd24d0f7853c720a962a4b4c69f833e1c51e8f2daa437c0f4f"
+        },
+        "files": {
+          "human.sh": {
+            "bytes": 1959,
+            "gitBlob": "e3794cf67c6c7f5246a70ca4b225be1c7f89b999",
+            "path": "scripts/launch-ingestion-readiness-human-20261022.sh",
+            "sha256": "99c5d569e007eaaa9ac9d3ccb6d91f849ae07203c0bd90ed6c7eb79ef833bd01"
+          },
+          "human.sh.operator.py": {
+            "bytes": 664868,
+            "gitBlob": "aa5a61876880f953db2ba0be4c326430f5c15198",
+            "path": "scripts/ingestion-readiness-human-20261022.py",
+            "sha256": "0fbe4f0c52b3cdf778e06d7aebef22f2e06251cfd8a443e954ae7ddc39fc3c31"
+          },
+          "runtime.sh": {
+            "bytes": 1945,
+            "gitBlob": "7dd10b460f119fba814c0fc91d931eff46fc9d22",
+            "path": "scripts/launch-ingestion-readiness-runtime-20261022.sh",
+            "sha256": "0934192a867d6432b5d9a81cc59be51eaf1364cf77cb5a2ac7533dae672d6a4b"
+          },
+          "runtime.sh.operator.py": {
+            "bytes": 609152,
+            "gitBlob": "d101a8e773080508e3e2e241dab45a472f4282ba",
+            "path": "scripts/ingestion-readiness-runtime-20261022.py",
+            "sha256": "42c018231ffc127edd7112309da223c8651d60992769330900c3441ed3b78d49"
+          },
+          "setup.sh": {
+            "bytes": 1852,
+            "gitBlob": "d8663d298535fde69fb15662ba858aaf1cbeacb1",
+            "path": "scripts/prepare-ingestion-readiness-launchers-20261022.sh",
+            "sha256": "cba3460f7ce0b53940cbcd3a92e146014529a28a564fc3c76b09bdd9dcb9174b"
+          }
+        },
+        "humanCaseHash": "4a1ce78c9a6368eb2aea613f1aba21cb990875d08ab398cd0bb70e57c283e640",
+        "maximumCumulativeOAuthAttempts": 292,
+        "nativeInputsHash": "f56d7989be393211665535a59cc4bf419c20665a912bf51aaf6f01671e2288dd",
+        "newBudgetGranted": false,
+        "releaseAcceptance": false,
+        "runtimeAuthorityIssued": false,
+        "runtimeCaseHash": "9f3d63c728295180a431a9d84aa701e3265172d49340f75787f70b9f8edae6ac",
+        "schema": "ouf.ingestion-readiness-patch-production-delivery-pins.v1",
+        "targetCommandExecuted": false,
+        "targetPatchInstalled": false
+      },
+      "qualifiedBoundaries": [
+        "separate actor/reason/decisionRef technical budget with cumulative292-to296 history",
+        "one explicit consented window fenced against partial/concurrent replay",
+        "one explicit provider request per command through unchanged operator",
+        "four synthetic provider replies to a case-bound READY296 reader",
+        "real cached SHA-checked root foreground launchers with controlling-terminal consent",
+        "fresh profile into runtime review, two-role approval, initialization and all native fixture stages",
+        "complete case/capsule/launcher reproduction on both qualified Python versions"
+      ],
+      "limitations": [
+        "provider and Owner fixture identities/replies are synthetic",
+        "four provider confirmation answers are unit fixtures; budget/window/infrastructure approval use real pseudo-terminals",
+        "CI does not establish live target runtime health, Owner control or database admission",
+        "fixture image import adopts an already loaded exact candidate; target image import remains unapplied",
+        "source activation, native profile publication and functional F5/F6 remain separate"
+      ],
+      "priorPlatformQualification": {
+        "commit": "1644487d1b5b52e849d465fa2dc7dc78ec22ec3d",
+        "run": 39728095704,
+        "job": 119656592617,
+        "conclusion": "success"
+      },
+      "productionDeliveryQualified": true,
+      "freshHumanGovernanceQualified": true,
+      "nextTargetAction": "ONE_NEW_CACHED_READ_ONLY_PREFLIGHT_ONLY",
+      "targetPreflightObserved": false,
+      "targetPatchStagesApplied": 0,
+      "targetPatchInstalled": false,
+      "currentCumulativeOAuthAttempts": 292,
+      "maximumCumulativeOAuthAttempts": 292,
+      "remainingOAuthAttempts": 0,
+      "newBudgetGranted": false,
+      "newHumanWindowOpened": false,
+      "newLoginPerformed": false,
+      "runtimeAuthorityIssued": false,
+      "targetRuntimeEffectsDispatched": 0,
+      "completedTechnicalPhases": 8,
+      "functionalMilestonesProven": 4,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "releaseAcceptance": false
+    },
+    "readinessPatchLargeReviewReader": {
+      "schema": "ouf.ingestion-readiness-size-reader-qualification.v1",
+      "sourceCommit": "a607d4feeb0060468b17eb4e8983f4dd03bda974",
+      "runId": 39742778066,
+      "jobs": [
+        {
+          "id": 119703832334,
+          "python": "3.12",
+          "tests": 78,
+          "status": "PASS"
+        },
+        {
+          "id": 119703832993,
+          "python": "3.13.5",
+          "tests": 78,
+          "status": "PASS"
+        }
+      ],
+      "skipped": 0,
+      "readerPins": {
+        "schema": "ouf.ingestion-readiness-unissued-reader-delivery.v1",
+        "caseHash": "48504e63aa2d8b051d46599c4341c3c6291fc97fbc8693e754ab2d1f3c1a2f46",
+        "readerSourceSha256": "52ea4dedb50678089a36b05be630c5beb92d7a40e87512a291e2386586ece0b5",
+        "artifactSha256": "b79b62abfc0fd4b48a1f1b7047b443fe7d672b887f40f9cf1967b933574ada07",
+        "bytes": 29354,
+        "readOnly": true,
+        "runtimeAuthorityIssued": false,
+        "oauthRequests": 0,
+        "automaticReplayAllowed": false,
+        "artifactPath": "scripts/reconcile-ingestion-readiness-unissued-20261022.py",
+        "gitBlob": "d91593205f8f521cad54a26486cb7199a773508e"
+      },
+      "scope": "Typed large-review V2 signing/load and sealed142 import; read-only stopped unissued reader including isolated CLI and reproducibility",
+      "fullV2ProductionControllerQualified": false,
+      "oldPlatformJobStatus": "IN_PROGRESS_AT_RECORDING",
+      "targetRuntimeEffects": 0,
+      "targetPatchStagesApplied": 0,
+      "oauthAttempts": 296,
+      "oauthCeiling": 296,
+      "releaseAcceptance": false
+    },
+    "readinessPatchUnissuedSuccessor": {
+      "schema": "ouf.ingestion-readiness-unissued-successor-qualification.v1",
+      "qualifiedSourceCommit": "e776de2a261c7ce2318bcf6e6df5cf82d1028f6e",
+      "ciRun": 39748102563,
+      "ciUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/39748102563",
+      "pythonJobs": [
+        {
+          "id": 119721536902,
+          "python": "3.12",
+          "tests": 105,
+          "skipped": 0,
+          "conclusion": "success"
+        },
+        {
+          "id": 119721536633,
+          "python": "3.13.5",
+          "tests": 105,
+          "skipped": 0,
+          "conclusion": "success"
+        }
+      ],
+      "platformJob": {
+        "id": 119721536900,
+        "tests": 5,
+        "skipped": 0,
+        "conclusion": "success"
+      },
+      "wholePathProof": {
+        "complete": true,
+        "sealedModules": 144,
+        "original139Unchanged": true,
+        "original114Unchanged": true,
+        "reviewOver512KiB": true,
+        "stoppedIssuingBytesUnchanged": true,
+        "realTtyBudgetWindowAndInfrastructure": true,
+        "fixtureStages": 13,
+        "targetPlannedStages": 12,
+        "fixtureNetworks": 2,
+        "enginePosts": 8,
+        "gatewayWrites": 0,
+        "newKeys": 0,
+        "syntheticProviderRequests": 4,
+        "priorFixtureAttempts": 296,
+        "readyFixtureAttempts": 300,
+        "oldHumanSessionBytesUnchanged": true,
+        "syntheticHumanAndOwner": true,
+        "targetEvidence": false
+      },
+      "target": {
+        "oauthAttempts": 296,
+        "oauthCeiling": 296,
+        "newBudgetGranted": false,
+        "patchStagesApplied": 0,
+        "patchInstalled": false,
+        "runtimeAuthorityIssued": false,
+        "targetOperationsDispatched": 0,
+        "releaseAcceptance": false
+      },
+      "scope": "WHOLE_SEALED144_SUCCESSOR_CONTROLLER_HUMAN_GOVERNANCE_CACHED_LAUNCHERS_CI_NOT_TARGET_ADMISSION",
+      "productionDeliveryReproducibility": {
+        "status": "PASS",
+        "releaseCommit": "fd74119c4c1e094aa3c0e0a33af79aab45e2686a",
+        "runId": 39750337881,
+        "jobs": [
+          {
+            "id": 119729031385,
+            "python": "3.12",
+            "tests": 106,
+            "skipped": 0,
+            "conclusion": "success"
+          },
+          {
+            "id": 119729030774,
+            "python": "3.13.5",
+            "tests": 106,
+            "skipped": 0,
+            "conclusion": "success"
+          }
+        ],
+        "newPlatformRerun": "IN_PROGRESS_AT_RECORDING_NOT_REQUIRED_TO_REPLACE_EXACT_UNCHANGED_E776_144_GRAPH_PROOF",
+        "allPublishedBlobPinsMatched": true,
+        "firstTargetAction": "PINNED_CACHED_SETUP_AND_RUNTIME_PREFLIGHT_ONLY",
+        "targetCommandExecuted": false
+      }
+    },
+    "readinessPatchStoppedSnapshotReader": {
+      "schema": "ouf.ingestion-readiness-stopped-reader-qualification.v1",
+      "sourceCommit": "e1db6dbd8b285483c9023872374576620dab03af",
+      "runId": 39762976840,
+      "jobs": [
+        {
+          "id": 119771429271,
+          "python": "3.12",
+          "tests": 4,
+          "skipped": 0,
+          "conclusion": "success"
+        },
+        {
+          "id": 119771429693,
+          "python": "3.13.5",
+          "tests": 4,
+          "skipped": 0,
+          "conclusion": "success"
+        }
+      ],
+      "pins": {
+        "sha256": "27b28c604b7cf7de5422f067df375d0f226bf1dff0b336dda03124f7f762720c",
+        "blob": "dbd88b3e53e5146f94e78fc52ddb42275fd57c8f",
+        "bytes": 10305
+      },
+      "scope": "ROOT_PRIVATE_METADATA_ONLY_ACTUAL_CAS_PREFIX_FIXTURES_AND_ISOLATED_READER_REPRODUCTION",
+      "targetSnapshotObserved": true,
+      "currentLiveRuntimeProven": false,
+      "runtimeAuthorityIssued": false,
+      "oauthRequests": 0,
+      "runtimeEffectsDispatched": 0
+    },
+    "readinessPatchStage8LiveCapture": {
+      "schema": "ouf.ingestion-readiness-stage8-live-qualification.v1",
+      "sourceCommit": "fe173314353ff9ca320098c5f5461268c6e4c84f",
+      "unitRun": 39765003954,
+      "pythonJobs": [
+        {
+          "id": 119778154240,
+          "python": "3.12",
+          "tests": 110,
+          "skipped": 0,
+          "conclusion": "success"
+        },
+        {
+          "id": 119778154404,
+          "python": "3.13.5",
+          "tests": 110,
+          "skipped": 0,
+          "conclusion": "success"
+        }
+      ],
+      "platformRun": 39765004003,
+      "platformJob": {
+        "id": 119778163251,
+        "tests": 1,
+        "skipped": 0,
+        "conclusion": "success"
+      },
+      "proof": {
+        "engineGets": 14,
+        "engineWrites": 0,
+        "sealedSourceModules": 118,
+        "oldPrefixBytesUnchanged": true,
+        "remainingStages": 4,
+        "fixtureAppliedStages": 9,
+        "targetAppliedStages": 8,
+        "syntheticStopAndExpiry": true,
+        "syntheticHumanAndOwner": true,
+        "targetEvidence": false
+      },
+      "productionDeliveryReproduction": "PASS_EXACT_CASE_CAPSULE_AND_LAUNCHER",
+      "target": {
+        "oauthAttempts": 300,
+        "oauthCeiling": 300,
+        "patchStagesApplied": 8,
+        "newBudgetGranted": false,
+        "newWindowOpened": false,
+        "runtimeAuthorityIssued": false,
+        "targetCapturePerformed": true,
+        "releaseAcceptance": false
+      },
+      "deliveryCommit": "2ef75b77e9bf259f79e4dc34b14bab61f0fa4b9a",
+      "deliveryUnitRun": 39766442749,
+      "deliveryPythonJobs": [
+        {
+          "id": 119782957857,
+          "python": "3.12",
+          "tests": 111,
+          "skipped": 0,
+          "conclusion": "success"
+        },
+        {
+          "id": 119782957457,
+          "python": "3.13.5",
+          "tests": 111,
+          "skipped": 0,
+          "conclusion": "success"
+        }
+      ],
+      "deliveryPlatformRun": 39766442872,
+      "deliveryPlatformJob": {
+        "id": 119782957794,
+        "tests": 1,
+        "skipped": 0,
+        "conclusion": "success"
+      },
+      "recordedAt": "2026-10-22T11:01:57Z",
+      "futureFourStageRuntimeQualified": false,
+      "targetReceiptEvidence": "evidence/ingestion-readiness-stage8-live-target-20261022.json"
+    },
+    "readinessPatchFourStageContinuation": {
+      "schema": "ouf.ingestion-readiness-stage8-whole-path-qualification.v1",
+      "qualification": {
+        "sourceCommit": "732a03fb19ada6e2168a585a2bbe78684800e05f",
+        "unitRun": 39771531964,
+        "pythonJobs": [
+          {
+            "id": 119800000978,
+            "python": "3.12",
+            "tests": 129,
+            "skipped": 0,
+            "conclusion": "success"
+          },
+          {
+            "id": 119800001075,
+            "python": "3.13.5",
+            "tests": 129,
+            "skipped": 0,
+            "conclusion": "success"
+          }
+        ],
+        "platformRun": 39771531971,
+        "platformJob": {
+          "id": 119799997359,
+          "tests": 1,
+          "skipped": 0,
+          "conclusion": "success"
+        }
+      },
+      "proof": {
+        "complete": true,
+        "sealedNativeModules": 148,
+        "prefixImportedWithoutReplay": true,
+        "oldPrefixBytesUnchanged": true,
+        "nativeCountersPreserved": true,
+        "remainingStagesExecuted": 4,
+        "additionalEnginePosts": 1,
+        "newImagesOrKeys": 0,
+        "gatewayWrites": 0,
+        "syntheticStopAndExpiry": true,
+        "syntheticHumanAndOwner": true,
+        "targetEvidence": false,
+        "humanGovernance": {
+          "realBudgetAndWindowTty": true,
+          "cachedHashCheckedForegroundLaunchers": true,
+          "preLoginExactEngineGets": 14,
+          "syntheticProviderRequests": 4,
+          "priorOAuthAttempts": 300,
+          "readyOAuthAttempts": 304,
+          "oldSessionBytesUnchanged": true
+        }
+      },
+      "productionReproduction": {
+        "status": "PASS",
+        "releaseCommit": "3e2e1768632876030f3d37de0fc800dabee0d4a3",
+        "run": 39772566401,
+        "jobs": [
+          {
+            "id": 119803468865,
+            "python": "3.13.5",
+            "tests": 1,
+            "skipped": 0,
+            "conclusion": "success"
+          },
+          {
+            "id": 119803469193,
+            "python": "3.12",
+            "tests": 1,
+            "skipped": 0,
+            "conclusion": "success"
+          }
+        ],
+        "publishedPinsMatched": true
+      },
+      "failedPlatformRuns": [
+        {
+          "run": 39770138270,
+          "reason": "TEST_TTY_PROMPT_WORDING"
+        },
+        {
+          "run": 39770821359,
+          "reason": "TEST_READER_IMPORTS"
+        }
+      ],
+      "target": {
+        "oauthAttempts": 300,
+        "oauthCeiling": 300,
+        "patchStagesApplied": 8,
+        "fourStagesExecuted": false,
+        "newLoginPerformed": false,
+        "newBudgetGranted": false,
+        "newWindowOpened": false,
+        "runtimeAuthorityIssued": false,
+        "targetCommandExecuted": false,
+        "releaseAcceptance": false
+      },
+      "recordedAt": "2026-10-22T11:43:13Z"
+    }
+  },
+  "developmentCandidates": [
+    {
+      "repo": "ouf-source-onboarding",
+      "commit": "7b04d36fd8462616514cca956fd973c9bd01c1e7",
+      "pr": 49,
+      "scope": "OWNER_RECOVERY_AND_TYPED_SCHEMA",
+      "runtimePublished": false
+    },
+    {
+      "repo": "ouf-mcp-server",
+      "commit": "0a76376a7c6a0f07597c1c3aaf447b29deed597f",
+      "pr": 77,
+      "scope": "RECOVERY_SDK_AND_TYPED_PROPOSAL",
+      "runtimePublished": false
+    },
+    {
+      "repo": "ouf-api-gateway",
+      "commit": "c22fbf7f5593f612aba7e318797c9459d0b871a7",
+      "pr": 82,
+      "scope": "RECOVERY_AND_TYPED_DISPATCH_SCHEMAS",
+      "runtimePublished": false
+    },
+    {
+      "repo": "ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "pr": 46,
+      "scope": "EXACT_FROZEN_CONFIGURATION_SERVICE_READ",
+      "runtimePublished": true,
+      "qualification": {
+        "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+        "focusedCiRun": 39648964212,
+        "focusedTests": 25,
+        "focusedFailures": 0,
+        "focusedErrors": 0,
+        "focusedSkipped": 0,
+        "fullCiRun": 39648964232,
+        "fullJob": 119391913050,
+        "fullTests": 186,
+        "fullFailures": 0,
+        "fullErrors": 0,
+        "fullSkipped": 2,
+        "initialFullFailedRun": 39648463285,
+        "fixtureIsolationOnly": true,
+        "targetInstalled": false,
+        "scope": "DEVELOPMENT_CI_NOT_TARGET_ACCEPTANCE"
+      },
+      "targetEvidenceRef": "evidence/ingestion-readiness-stage8-completed-target-20261022.json"
+    },
+    {
+      "repo": "ouf-deploy",
+      "commit": "89ef2102316d1827b9eb0833f49452d35ac679f5",
+      "scope": "GET_ONLY_PRIVATE_PATCH_INPUT_CAPTURE",
+      "runtimePublished": false,
+      "qualificationRun": 39652227636
+    }
+  ],
+  "runtimeBlockers": {
+    "gate": "G3",
+    "humanInterventionRequired": true,
+    "reasons": [
+      "NATIVE_PROFILE_APPROVED_ACTIVATION_PAUSED",
+      "HISTORICAL_REGISTRY_PREDICATE_FAILED_CORRELATION_UNPROVEN",
+      "F5_F6_PROOF_PENDING",
+      "OAUTH_BUDGET_EXHAUSTED_NO_NEW_LOGIN_AUTHORIZED"
+    ],
+    "historicalAttempts": 304,
+    "maximumCumulativeAttempts": 304,
+    "remainingAttempts": 0,
+    "resetAllowed": false,
+    "automaticLoginAllowed": false,
+    "retainedClaimsPreserved": true,
+    "currentRequiredHumanAction": "ONE_NEW_PINNED_READ_ONLY_HISTORICAL_REGISTRY_OBSERVATION",
+    "maximumNewOAuthRequests": 0,
+    "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
+    "profileApplied": true,
+    "normalTokenFreshnessBoundApprovedSeconds": 1200,
+    "independentRemainingWork": [
+      "G5_VOCABULARY_AND_RELATIONSHIPS",
+      "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
+      "G7_ACCEPTANCE"
+    ],
+    "proposedAdditionalOAuthAttempts": 0,
+    "proposedCumulativeCeiling": 300,
+    "additionalBudgetGranted": true,
+    "countsAsOfGrant": false,
+    "subsequentConsumptionNotObserved": false,
+    "newWindowAuthorized": false,
+    "countsAsOfReadyReceipt": true,
+    "futurePatchBudgetProposal": {
+      "priorOAuthAttempts": 292,
+      "additionalOAuthAttempts": 4,
+      "proposedCumulativeCeiling": 296,
+      "granted": true,
+      "consumed": true,
+      "newWindowOpened": true,
+      "separateTerminalConsentRequired": true
+    },
+    "runtimeAuthorityIssued": false
+  },
+  "unsegmentedFollowupWindows": [
+    {
+      "startedAt": "2026-10-20T13:50:44.000Z",
+      "endedAt": "2026-10-20T14:05:09.000Z",
+      "classification": "MIXED_UNSEGMENTED_TECHNICAL_WORK_AND_OPERATOR_WAIT",
+      "countedAsActive": false,
+      "note": "Includes operator terminal metadata, source diagnosis and Python3.13.5 CI preparation; no retrospective active/wait allocation inferred."
+    },
+    {
+      "startedAt": "2026-10-20T14:23:34.312Z",
+      "endedAt": "2026-10-20T14:28:09.000Z",
+      "classification": "TURN_TRANSITION_AND_EARLY_RESUMPTION_NOT_PRECISELY_SEGMENTED",
+      "countedAsActive": false,
+      "note": "Includes early successor TLS implementation; no retrospective allocation inferred before first explicit UTC clock observation."
+    },
+    {
+      "startedAt": "2026-10-20T14:37:24.284Z",
+      "endedAt": "2026-10-20T14:38:51.000Z",
+      "classification": "TURN_BOUNDARY_AND_OPERATOR_COMMAND_WINDOW_NOT_MEASURED",
+      "countedAsActive": false,
+      "humanEffortKnown": false
+    },
+    {
+      "startedAt": "2026-10-20T14:47:45.944Z",
+      "endedAt": "2026-10-20T14:49:07.000Z",
+      "classification": "TURN_AND_OPERATOR_COMMAND_WINDOW_NOT_MEASURED",
+      "countedAsActive": false,
+      "humanEffortKnown": false
+    },
+    {
+      "startedAt": "2026-10-20T14:55:22.783Z",
+      "endedAt": "2026-10-20T15:36:01.000Z",
+      "classification": "OPERATOR_WAIT_AND_TURN_TRANSITION_NOT_MEASURED",
+      "countedAsActive": false,
+      "humanEffortKnown": false
+    },
+    {
+      "startedAt": "2026-10-20T16:29:44.449Z",
+      "endedAt": "2026-10-20T17:11:43.076Z",
+      "classification": "OPERATOR_WAIT_AND_CHAT_REDELIVERY_NOT_MEASURED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Contains status/command re-delivery; neither the wall wait nor unknown human effort is counted as technical effort."
+    },
+    {
+      "startedAt": "2026-10-20T17:24:31.158Z",
+      "endedAt": "2026-10-20T18:00:26.930Z",
+      "classification": "OPERATOR_WAIT_AND_TURN_TRANSITION_NOT_MEASURED",
+      "countedAsActive": false,
+      "humanEffortKnown": false
+    },
+    {
+      "startedAt": "2026-10-20T18:23:51.715Z",
+      "endedAt": "2026-10-20T18:34:46.773Z",
+      "classification": "OPERATOR_WAIT_AND_TURN_TRANSITION_NOT_MEASURED",
+      "countedAsActive": false,
+      "humanEffortKnown": false
+    },
+    {
+      "startedAt": "2026-10-20T18:37:43.360Z",
+      "endedAt": "2026-10-20T19:00:27.812Z",
+      "classification": "HUMAN_TERMINAL_AND_TURN_INTERVAL_NOT_MEASURED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Includes manual HUMAN window/discovery/device/provider verification and assistant instruction turns; exact active effort not inferred."
+    },
+    {
+      "startedAt": "2026-10-20T19:01:41.636Z",
+      "endedAt": "2026-10-20T19:25:47.396Z",
+      "classification": "STATUS_AND_TURN_RESUMPTION_NOT_PRECISELY_MEASURED",
+      "countedAsActive": false,
+      "humanEffortKnown": false
+    },
+    {
+      "startedAt": "2026-10-20T19:33:31.073Z",
+      "endedAt": "2026-10-20T19:53:33.365Z",
+      "classification": "OPERATOR_READ_AND_TURN_TRANSITION_NOT_MEASURED",
+      "countedAsActive": false,
+      "humanEffortKnown": false
+    },
+    {
+      "startedAt": "2026-10-20T20:01:06.573Z",
+      "endedAt": "2026-10-20T20:05:05.621Z",
+      "classification": "STATUS_AND_OWNER_STEERING_INTERVAL_NOT_PRECISELY_MEASURED",
+      "countedAsActive": false,
+      "humanEffortKnown": false
+    },
+    {
+      "startedAt": "2026-10-20T20:21:11.312Z",
+      "endedAt": "2026-10-20T20:44:09.496Z",
+      "classification": "OPERATOR_EXECUTION_COMMAND_REDELIVERY_AND_TURN_INTERVAL_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false
+    },
+    {
+      "startedAt": "2026-10-20T20:57:57.995Z",
+      "endedAt": "2026-10-21T03:43:03.418Z",
+      "classification": "TURN_DELIVERY_OPERATOR_WAIT_AND_EARLY_UNSEGMENTED_RESUMPTION",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Includes overnight operator wait, previous final delivery and early source diagnosis before first explicit current-turn UTC observation; no retrospective allocation inferred."
+    },
+    {
+      "startedAt": "2026-10-21T03:58:19.385Z",
+      "endedAt": "2026-10-21T04:18:37.160Z",
+      "classification": "PRIOR_FINAL_DELIVERY_OPERATOR_EXECUTION_AND_TURN_TRANSITION_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Contains prior publication/final delivery, operator IAM authentication/read and turn transition; exact active/wait split unknown. No human effort inferred."
+    },
+    {
+      "startedAt": "2026-10-21T04:46:51.002Z",
+      "endedAt": "2026-10-21T05:51:59.360Z",
+      "classification": "DELIVERY_OWNER_CLARIFICATION_TARGET_OPERATION_AND_EARLY_UNSEGMENTED_RESUMPTION",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Includes prior status/commands, mobile-console clarification, operator policy mutation and early current work before first explicit UTC clock; no retrospective active/wait split inferred."
+    },
+    {
+      "startedAt": "2026-10-21T06:04:29.734Z",
+      "endedAt": "2026-10-21T06:11:45.228Z",
+      "classification": "FINAL_DELIVERY_OPERATOR_PREFLIGHT_AND_TURN_TRANSITION_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Target execution has exact independent start/finish clocks; excluded wall interval is not treated as human or technical effort."
+    },
+    {
+      "startedAt": "2026-10-21T06:13:02.227Z",
+      "endedAt": "2026-10-21T06:17:09.025Z",
+      "classification": "COMMAND_DELIVERY_AND_OWNER_CHAT_TRANSFER_REQUEST_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Owner explicitly did not execute the proposed command. No new target execution time inferred."
+    },
+    {
+      "startedAt": "2026-10-21T06:23:42.108Z",
+      "endedAt": "2026-10-21T07:05:02.215Z",
+      "classification": "CHAT_RESTART_OPERATOR_HUMAN_AND_ROLLOUT_RECEIPTS_STOP_DIAGNOSIS_READER_DEVELOPMENT_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Contains exact independently timed HUMAN provider operations, manual rollout stage round trips and reader development/CI. No retrospective effort allocation or per-stage target times inferred."
+    },
+    {
+      "startedAt": "2026-10-21T07:06:42.879Z",
+      "endedAt": "2026-10-21T09:19:36.480Z",
+      "classification": "PRIOR_DELIVERY_OPERATOR_WAIT_STOPPED_SNAPSHOT_AND_EARLY_TURN_DEVELOPMENT_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Exact stopped snapshot observation is independent; do not count the wall interval as effort or infer HUMAN duration."
+    },
+    {
+      "startedAt": "2026-10-21T09:34:34.459Z",
+      "endedAt": "2026-10-21T11:41:30.853Z",
+      "classification": "PRIOR_FINAL_DELIVERY_OPERATOR_WAIT_TARGET_READ_AND_EARLY_RESUMPTION_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Target STOP has no supplied invocation clock; no elapsed/human/technical duration inferred."
+    },
+    {
+      "startedAt": "2026-10-21T11:45:49.362Z",
+      "endedAt": "2026-10-21T11:52:35.198Z",
+      "classification": "PRIOR_DELIVERY_OPERATOR_READ_AND_EARLY_RESUMPTION_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Reader process duration independently supplied; do not infer human or development effort from this gap."
+    },
+    {
+      "startedAt": "2026-10-21T12:07:06.658Z",
+      "endedAt": "2026-10-21T12:12:29.888Z",
+      "classification": "PREVIOUS_DELIVERY_OPERATOR_BUDGET_GRANT_AND_EARLY_FOLLOWUP_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Approval timestamp is encoded in the supplied decisionRef; no operator effort or process duration inferred."
+    },
+    {
+      "startedAt": "2026-10-21T12:14:24.138Z",
+      "endedAt": "2026-10-21T15:58:39.545Z",
+      "classification": "PREVIOUS_CHECKPOINT_USER_RECAP_AND_EARLY_CONTINUATION_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "No active effort or HUMAN runtime/login duration inferred from the wall gap."
+    },
+    {
+      "startedAt": "2026-10-21T16:24:54.893Z",
+      "endedAt": "2026-10-21T16:53:08.447Z",
+      "classification": "PREVIOUS_DELIVERY_OPERATOR_PREFLIGHT_AND_FOLLOWUP_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "Receipts supply no process timestamps; no execution or human duration inferred."
+    },
+    {
+      "startedAt": "2026-10-21T16:53:08.447Z",
+      "endedAt": "2026-10-21T17:15:44.514Z",
+      "classification": "OPERATOR_HUMAN_WINDOW_PROVIDER_STEPS_AND_EXPLICIT_NATIVE_ROLLOUT_COMPLETION_NOT_SEGMENTED",
+      "countedAsActive": false,
+      "humanEffortKnown": false,
+      "note": "No supplied invocation durations; do not infer active effort,900s authority elapsed time or human consent duration from wall time."
+    }
+  ],
+  "deliveryAccounting": {
+    "ciPassIsVpsPass": false,
+    "vpsPassIsEndToEndAcceptance": false,
+    "userReportedFirstPassVpsSuccessFraction": 0.3,
+    "fractionIsMeasuredProjectStatistic": false,
+    "automaticEstimateMultiplierApplied": false,
+    "baselineForecastUnchanged": true
+  }
+}

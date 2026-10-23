@@ -1,0 +1,56 @@
+{
+  "schema": "ouf.ingestion-readiness-size-stop-target-evidence.v1",
+  "evidenceSource": "USER_PASTED_DIAGNOSTIC_AND_METADATA_NOT_INDEPENDENT_LIVE_READBACK",
+  "duplicateReceiptCountedOnce": true,
+  "contextPath": "/etc/ouf/deploy-snapshots/ingestion-readiness-execution-9f3d63c728295180a431a9d84aa701e3265172d49340f75787f70b9f8edae6ac",
+  "runtimeCaseHash": "9f3d63c728295180a431a9d84aa701e3265172d49340f75787f70b9f8edae6ac",
+  "approvedReviewHash": "0421b9cab0efa811c362aefd4af21c769a4b2b19bc35528e9ecf8081d5aa0343",
+  "reasonCode": "PRIVATE_SNAPSHOT_CUSTODY_UNPROVEN",
+  "retainedState": "ISSUING",
+  "rootCause": "EXACT_REVIEW_EXCEEDS_HISTORICAL_524288_BYTE_READER_LIMIT",
+  "review": {
+    "bytes": 545058,
+    "uid": 0,
+    "gid": 0,
+    "mode": "0600",
+    "links": 1,
+    "regular": true
+  },
+  "packet": {
+    "bytes": 1320265,
+    "uid": 0,
+    "gid": 0,
+    "mode": "0600",
+    "links": 1,
+    "regular": true
+  },
+  "absentObservedFiles": [
+    "ingestion-readiness-patch-issuance.claim.json",
+    "decision.json",
+    "human.json",
+    "authority.json",
+    "recovery.json"
+  ],
+  "failedApproveLog": "/home/oufadmin/ouf-readiness-runtime.ONL1Avng/operator.log",
+  "metadataStatusLog": "/home/oufadmin/ouf-readiness-runtime.NlixQjZy/operator.log",
+  "targetStagesApplied": 0,
+  "newAuthenticationChain": {
+    "priorAttempts": 292,
+    "attemptsAtReady": 296,
+    "maximumCumulativeAttempts": 296,
+    "remainingAttemptsAtReady": 0,
+    "providerVerifiedAtReceipt": true,
+    "tokenSecondsRemainingAtReceipt": 1108,
+    "currentTokenValidityNotInferred": true,
+    "controlPath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-5f69412aa57b7301cb1917b858fc9ef8aa958266e430249286ef15db8f3421d0",
+    "readyLog": "/home/oufadmin/ouf-readiness-human.CrlPBBRI/operator.log",
+    "budgetDecisionHash": "efa22f086532a2bd6c39169cd1aa53cccf1210a263ea89c5d44d215b1e1e2ea9"
+  },
+  "runtimeAuthorityIssued": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "releaseAcceptance": false,
+  "unissuedSnapshotReconciliationPending": true
+}

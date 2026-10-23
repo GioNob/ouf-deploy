@@ -1,0 +1,28 @@
+name: Readiness patch offline review compiler
+on:
+  push:
+    branches: [feat/csv-e2e-owner-composition-20261020]
+    paths:
+      - tools/readiness_patch_review/**
+      - releases/ingestion-readiness-patch-review-case-20261021.json
+      - .github/workflows/readiness-patch-review.yml
+  pull_request:
+    paths:
+      - tools/readiness_patch_review/**
+      - releases/ingestion-readiness-patch-review-case-20261021.json
+      - .github/workflows/readiness-patch-review.yml
+permissions: {contents: read}
+jobs:
+  offline-template:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        python-version: ['3.12', '3.13.5']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Verify captured frame, immutable proposal and no-network/no-authority boundary
+        run: python -m unittest discover -s tools/readiness_patch_review/tests -v

@@ -1,0 +1,87 @@
+name: Registry recovery components and Unix Engine transport
+on:
+  pull_request:
+    paths:
+      - tools/semantic_registry_recovery_execution/**
+      - tools/semantic_application_cutover/paused_node_observation.py
+      - tools/semantic_application_cutover/file_only_frame_observation.py
+      - tools/semantic_policy_token_owner/mount_observation.py
+      - .github/workflows/semantic-registry-recovery-components.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: registry-recovery-components-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  component-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Root-custodied isolated source tree
+        run: |
+          sudo install -d -m 0700 /root/ouf-registry-tests
+          sudo cp -a . /root/ouf-registry-tests/
+          sudo chown -R root:root /root/ouf-registry-tests
+      - name: Filesystem claims and actual AF_UNIX HTTP transport against simulated Engine
+        run: |
+          sudo bash -eu -c '
+          cd /root/ouf-registry-tests
+          python3 -m unittest discover -s tools/semantic_registry_recovery_execution/tests -v
+          python3 -m unittest discover -s tests -p test_paused_workload_binding.py -v
+          python3 -m unittest discover -s tests -p test_file_only_retained_checkpoint.py -v
+          python3 -m unittest discover -s tests -p test_file_only_frame_compiler.py -v
+          python3 -m unittest discover -s tests -p test_paused_node_acceptance_native.py -v
+          OUF_NATIVE_MOUNTS=1 python3 -m unittest discover -s tests -p test_renewable_token_mount.py -v
+          '
+  native-paused-generation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Root-custodied isolated source tree
+        run: |
+          sudo install -d -m 0700 /root/ouf-registry-tests
+          sudo cp -a . /root/ouf-registry-tests/
+          sudo chown -R root:root /root/ouf-registry-tests
+      - name: Real disposable Docker start, pause and kernel generation with actual Ed25519 scope
+        run: |
+          sudo bash -eu -c '
+          cd /root/ouf-registry-tests
+          python3 tools/semantic_registry_recovery_execution/tests/native_paused_recovery.py -v
+          '
+  native-current-database:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Root-custodied isolated source tree
+        run: |
+          sudo install -d -m 0700 /root/ouf-registry-tests
+          sudo cp -a . /root/ouf-registry-tests/
+          sudo chown -R root:root /root/ouf-registry-tests
+      - name: Actual readonly PostgreSQL17 and Engine generation; synthetic image and token fixtures
+        env:
+          OUF_FIXTURE_POSTGRES: ${{ job.services.postgres.id }}
+        run: |
+          sudo env OUF_FIXTURE_POSTGRES="$OUF_FIXTURE_POSTGRES" bash -eu -c '
+          cd /root/ouf-registry-tests
+          python3 tools/semantic_registry_recovery_execution/tests/native_database.py -v
+          '

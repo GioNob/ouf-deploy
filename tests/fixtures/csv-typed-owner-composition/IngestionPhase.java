@@ -1,4 +1,4 @@
-package ouf.fixture;
+package it.comune.trieste.ouf.ingestion;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;

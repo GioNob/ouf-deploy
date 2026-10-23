@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.readiness-patch-native-input-result.v1",
+  "status": "NATIVE_EXECUTION_INPUTS_PREPARED_NO_AUTHORITY",
+  "complete": true,
+  "contextPath": "/etc/ouf/deploy-snapshots/ingestion-readiness-native-inputs-0b2fd250a4f16e05ad1dc2836878f6438d6c417394b8e5f542c0736f244897df",
+  "bundleHash": "ab6c1953b8eb0bed19fdd1ee82c4b34828642726e4582152852eb5b4711f14ec",
+  "logicalOperationRef": "6c7d73cbc2d9c613d5fe0b4fafe5ac20853478a883bf15371dadbb3f201afbc5",
+  "plannedStages": 12,
+  "nativeRuntimeExecutorQualified": false,
+  "runtimeAuthorityIssued": false,
+  "runtimeEffectsDispatched": 0,
+  "oauthRequests": 0,
+  "engineRequests": 0,
+  "liveRuntimeReverified": false,
+  "ownerControlReverified": false,
+  "databaseAdmissionProven": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "releaseAcceptance": false,
+  "operatorLog": "/home/oufadmin/ouf-readiness-native-inputs.MjhscDx5/operator.log",
+  "evidenceClass": "OPERATOR_PASTED_TARGET_RECEIPT"
+}

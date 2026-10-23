@@ -1,0 +1,64 @@
+{
+  "receipt": {
+    "attempts": 282,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "complete": true,
+    "completedOwnerActionReplayed": false,
+    "completedPublicationReplayed": false,
+    "completedTechnicalPhases": 8,
+    "controlPath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-ba456a2fd7a540473de5fdb084d0195ac857997b1aa5ab7d4571f07a9bcadd07",
+    "expiresAt": 1792528841,
+    "functionalMilestonesProven": 4,
+    "maximumCumulativeOAuthAttempts": 288,
+    "nativeClientProfilePublished": false,
+    "notReleaseAcceptance": true,
+    "oauthRequestsReservedThisInvocation": 1,
+    "privateHumanReadProfilePath": "/etc/ouf/deploy-snapshots/semantic-token-execution-usx0tsem/human-successor-control-ba456a2fd7a540473de5fdb084d0195ac857997b1aa5ab7d4571f07a9bcadd07/human-read-profile.json",
+    "providerVerificationCompleted": true,
+    "remainingAttempts": 6,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.human-explicit-successor-operator-result.v1",
+    "state": "READY",
+    "tokenSecondsRemaining": 258
+  },
+  "observedAt": "2026-10-20T19:01:41.636Z",
+  "receiptOccurredAtUnknown": true,
+  "launcherPath": "/home/oufadmin/ouf-human-operator-launcher.tCOA70IN",
+  "logPath": "/home/oufadmin/ouf-human-operator.8lyo8Ccd/operator.log",
+  "diagnosis": {
+    "classification": "LOCAL_SOURCE_DIAGNOSIS_NO_TARGET_REVIEW_DISPATCH",
+    "reasonCode": "READY_TOKEN_MARGIN_BELOW_PREPARED_ROLLOUT_REQUIREMENT",
+    "requiredTokenSeconds": 930,
+    "observedTokenSecondsAtReceipt": 258,
+    "sourceCommit": "2c5eb6fbb354c11e351850459a33ae790d23a0a3",
+    "sourceFile": "tools/ingestion_rollout_preparation/production_control.py",
+    "checksAt": [
+      "review",
+      "approve"
+    ],
+    "tokenOriginalLifetimeKnown": false,
+    "currentTokenExpiryRequeried": false,
+    "newLoginAuthorized": false,
+    "refreshAuthorized": false,
+    "guardRelaxed": false,
+    "humanWindowIsTokenLifetime": false,
+    "remainingAttempts": 6,
+    "completedLoginMustNotReplay": true,
+    "productionReviewExecuted": false,
+    "productionContextRetained": "/etc/ouf/deploy-snapshots/ingestion-rollout-native-7fs9r6md"
+  },
+  "resolutionRequired": [
+    "Establish actual issuer/client token lifetime from qualified read-only policy evidence; receipt alone does not establish original lifetime.",
+    "Qualify installation-profile duration compatibility before any further authentication. Native authority allows210..900 seconds; shorter duration cannot be assumed sufficient for the actual manual multi-stage rollout.",
+    "Preserve token-expiry enforcement, finite cumulative attempts, terminal consent and source/THS separation. Any new authentication or policy change needs its own explicit applicable authority."
+  ],
+  "operatorExperience": {
+    "userReportedRepeatedCode": true,
+    "perScreenHistoryAvailable": false,
+    "finalCumulativeDelta": 4,
+    "fourIsNominalRequestCount": true,
+    "claimNoRepeatedPollProven": false,
+    "requiredCommunication": "Give exact command, expected prompt/state and next action each time; do not require user to infer transitions from logs."
+  }
+}
