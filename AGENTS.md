@@ -1,3 +1,12 @@
+# CURRENT — second preparation reaches missing TLS profile; system-PKI pinned source correction
+
+Latest operator EUP3v8oL reports INDEPENDENT_ORIGINAL_SERVICE_TLS_PROFILE_REQUIRED; sourcef630/capsuleadb118 propertiescase has originalRequestTls=null. Sourceguardafter6Engine+1Admin/configuration/token seal,beforefrozenmarker; exactURI/scheme notprinted, unsupportednonHTTPscheme notexcludedbyreasonalone. Evidence semantic-registry-postboot-tls-stop-target-20261023.json. Preservebotholdcurrentbootclaims; no rerun oldlauncher.
+
+New original_tls policy SYSTEM_PKI_PINNED uses root-controlled compiledOpenSSL CAfile (notSSL_CERT_FILE/SSL_CERT_DIR), no arbitraryCApath/insecure/TOFU/downgrade. OneTLSonlyhandshake in actualcallernetns verifieschain+hostname beforepin; noHTTP/bearer. CA+leafpin remain signedoriginalrequestprofile; subsequentGETs revalidateCA/name/pin. Token seal followsTLSidentityadmission. 2MiBstdin accommodates <=1MiBCA bundle; source-member256KiB/responsebounds unchanged. NewTLScaseexplicitlylinks botholdcases/closures,currentbootclaims+6Engine/1Admin each; oldfilesuntouched, cumulativeceilings24Engine/3Admin/1frozen/1TLS. OAuth319/proposed1grant<=900s unchanged. Recheckoldclaimsonreview. NewnativeJVMfixtureusesactualHTTPSgateway+realROproperties and>256KiBdisposableCA; tests12/13pending. Handoff docs/handoffs/OUF_REGISTRY_POSTBOOT_TLS_REPAIR_20261023.md.
+
+Source CI, newartifact/memberaudit andpinnedlauncher qualification pending. Do not issue targetcommand yet or reuseoldcasewithnewclosure. No targeteffect/OAuth/authority. 502OPEN;priority502→E2E→Supervisor; continuousrenewalnotqualified. All lowerheadershistorical; prior deliveryheadCI39946321323/39946321353/39946321365/39946321337 finishedPASS afteritsgenerationtime pendingrecord, but that doesnotqualifynewTLSsource.
+
+---
 # CURRENT — properties repair source qualified; immutable corrected delivery
 
 Source f630fae1f612f39478db4c70afb1fd02da88bcb7 CI39945658387 all5jobsPASS; directlogs read, componentgroups14/16/17/118/10/8/5/11, nativeprefix8, sealedloader20each3.12/3.13, actualJVM1in163.139s, zero skips. Native fixture now uses real RO propertiesbind; originalSERVICE502→samefrozen200ACTIVE, onegrant319→320, exactstart/pause/unpause/SIGUSR1. Not fullcapsuleCLI/realAPISIXplugins/permanentrenewal/targethealth. Evidence semantic-registry-postboot-properties-ci-20261023.json. Prior2e824nativePASS also retained.

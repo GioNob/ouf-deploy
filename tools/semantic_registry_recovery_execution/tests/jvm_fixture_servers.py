@@ -334,10 +334,14 @@ class _DataHandler(_Handler):
             connection.close()
 
 
-def make_gateway_servers(admin_address, data_address, application):
+def make_gateway_servers(admin_address, data_address, application, certificate=None, key=None):
     admin = _Server(admin_address, _AdminHandler)
     try:
         data = _Server(data_address, _DataHandler)
+        if certificate is not None:
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            context.load_cert_chain(certificate, key)
+            data.socket = context.wrap_socket(data.socket, server_side=True)
     except BaseException:
         admin.server_close()
         raise
@@ -385,7 +389,8 @@ def main(argv=None):
             Path(config['admin_key_file']).read_text().strip(), timeout=config.get('timeout', 4),
             upstream_ca=config.get('upstream_ca'))
         servers = make_gateway_servers((host, config.get('admin_port', 9180)),
-                                       (host, config.get('data_port', 9080)), app)
+                                       (host, config.get('data_port', 9080)), app,
+                                       config.get('data_certificate_file'), config.get('data_key_file'))
     stop = threading.Event()
     for sig in (signal.SIGTERM, signal.SIGINT):
         signal.signal(sig, lambda *_: stop.set())

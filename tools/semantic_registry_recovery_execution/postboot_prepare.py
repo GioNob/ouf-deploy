@@ -20,6 +20,7 @@ import uuid
 
 from .core import require, digest, encoded, hashed, validate_plan
 from .caller_configuration import configuration, verify as verify_configuration
+from . import original_tls
 from tools.semantic_registry_postboot_owner import contract as owner_contract
 from tools.semantic_live_route_diagnostic import reader as transport
 
@@ -215,8 +216,8 @@ FROZEN_CHILD_SOURCE = r'''import hashlib,http.client,ipaddress,json,os,re,signal
 from urllib.parse import urlsplit,urlencode
 signal.alarm(9)
 try:
-    raw=sys.stdin.buffer.read(262145)
-    if not 0<len(raw)<=262144:raise ValueError()
+    raw=sys.stdin.buffer.read(2097153)
+    if not 0<len(raw)<=2097152:raise ValueError()
     v=json.loads(raw)
     if set(v)!={'origin','token','reference','ca','peerCertificateSha256'}:raise ValueError()
     u=urlsplit(v['origin']);r=v['reference'];token=v['token']
@@ -285,7 +286,7 @@ def read_frozen(profile, caller, reference):
             namespace_identity = identity(os.fstat(fd))
             payload = encoded({'origin': profile['origin'], 'token': token, 'reference': reference,
                                'ca': ca, 'peerCertificateSha256': profile['peerCertificateSha256']})
-            require(len(payload) <= 262144, 'BOUNDED_PRIVATE_FROZEN_REQUEST_REQUIRED')
+            require(len(payload) <= 2097152, 'BOUNDED_PRIVATE_FROZEN_REQUEST_REQUIRED')
             transport.verify_program(profile['pythonExecutable'])
             same_token()
             require(transport.process_ticks(pid) == ticks
@@ -343,7 +344,7 @@ def frozen_configuration(value, reference):
 def validate_case(case):
     fields = {'schema', 'privateParent', 'retainedInputs', 'historicalReview', 'patchContext',
         'lineageReceipt', 'predecessorJournalPath', 'frozenReference', 'proposedOwnerBudget', 'originalRequestTls'}
-    require(type(case) is dict and set(case) in (fields, fields | {'priorPreparation'})
+    require(type(case) is dict and set(case) in (fields, fields | {'priorPreparation'}, fields | {'priorPreparations'})
         and case['schema'] == SCHEMA and case['privateParent'] == PARENT, 'EXACT_POSTBOOT_PREPARATION_CASE_REQUIRED')
     if 'priorPreparation' in case:
         prior = case['priorPreparation']
@@ -352,6 +353,28 @@ def validate_case(case):
                 and prior['caseHash'] == digest({k: v for k, v in case.items() if k != 'priorPreparation'})
                 and prior['engineAttempts'] == 6 and prior['adminAttempts'] == 1 and prior['frozenAttempts'] == 0,
                 'EXACT_RETAINED_FAILED_PREPARATION_RECONCILIATION_REQUIRED')
+    if 'priorPreparations' in case:
+        priors = case['priorPreparations']
+        require(type(priors) is list and len(priors) == 2 and case['originalRequestTls'] == original_tls.POLICY,
+                'EXACT_TWO_FAILED_PREPARATIONS_AND_SYSTEM_PKI_CASE_REQUIRED')
+        baseline = {k: v for k, v in case.items() if k not in ('priorPreparations', 'originalRequestTls')}
+        hashes = set()
+        for prior in priors:
+            require(type(prior) is dict and set(prior) == {'case', 'caseHash', 'sourceClosureHash',
+                    'engineAttempts', 'adminAttempts', 'frozenAttempts'} and type(prior['case']) is dict
+                    and 'priorPreparations' not in prior['case'] and prior['case'].get('originalRequestTls') is None,
+                    'CLOSED_PRIOR_PREPARATION_CASE_REQUIRED')
+            validate_case(prior['case'])
+            require({k: v for k, v in prior['case'].items() if k not in ('priorPreparation', 'originalRequestTls')} == baseline
+                    and prior['caseHash'] == digest(prior['case']) and hashed(prior['sourceClosureHash'])
+                    and all(type(prior[k]) is int for k in ('engineAttempts', 'adminAttempts', 'frozenAttempts'))
+                    and (prior['engineAttempts'], prior['adminAttempts'], prior['frozenAttempts']) == (6, 1, 0),
+                    'SAME_ORIGINAL_CASE_AND_RETAINED_ATTEMPT_COUNTS_REQUIRED')
+            require(prior['caseHash'] not in hashes, 'DISTINCT_PRIOR_PREPARATIONS_REQUIRED'); hashes.add(prior['caseHash'])
+        first, second = priors
+        require('priorPreparation' not in first['case'] and second['case'].get('priorPreparation') == {
+                k: first[k] for k in ('caseHash', 'sourceClosureHash', 'engineAttempts', 'adminAttempts', 'frozenAttempts')},
+                'EXACT_PRIOR_PREPARATION_CHAIN_REQUIRED')
     for key in ('retainedInputs', 'historicalReview'):
         value = case[key]
         require(type(value) is dict and set(value) == {'path', 'sha256'} and hashed(value['sha256'])
@@ -435,10 +458,21 @@ def reconcile_prior_preparation(case, files, boot):
     This never changes or resumes the old preparation. A fresh bounded capture
     has a distinct case and carries prior attempts into its proof and review.
     """
+    if 'priorPreparations' in case:
+        observed = [_reconcile_fixed_prior(prior['case'], prior, files, boot) for prior in case['priorPreparations']]
+        return {'priorPreparations': observed, 'priorAttemptCounts': {
+            'engineGets': 12, 'adminGets': 2, 'frozenConfigurationGets': 0},
+            'newAttemptCeilings': {'engineGets': 12, 'adminGets': 1, 'frozenConfigurationGets': 1, 'tlsHandshakes': 1},
+            'cumulativeAttemptCeilings': {'engineGets': 24, 'adminGets': 3, 'frozenConfigurationGets': 1, 'tlsHandshakes': 1},
+            'oldPreparationReplayed': False, 'oldPreparationChanged': False, 'budgetReset': False}
     if 'priorPreparation' not in case:
         return None
     prior = case['priorPreparation']
     original = {k: v for k, v in case.items() if k != 'priorPreparation'}
+    return _reconcile_fixed_prior(original, prior, files, boot)
+
+
+def _reconcile_fixed_prior(original, prior, files, boot):
     root = Path(PARENT) / ('semantic-registry-postboot-inputs-' + digest({
         'case': original, 'closure': prior['sourceClosureHash'], 'boot': boot}))
     expected = {'schema': SCHEMA, 'caseHash': prior['caseHash'],
@@ -458,7 +492,7 @@ def reconcile_prior_preparation(case, files, boot):
             'EXACT_PRIOR_ADMIN_ATTEMPT_MARKER_REQUIRED')
     markers.append(profile)
     for name in ['engine-get-' + str(n) + '.json' for n in range(7, 13)] + [
-            'frozen-get.json', 'source', 'prepared.json', 'review.json']:
+            'frozen-get.json', 'tls-handshake.json', 'source', 'prepared.json', 'review.json']:
         try:
             (root / name).lstat()
         except FileNotFoundError:
@@ -498,7 +532,7 @@ def read_prepared(case, manifest):
             and all(private['nativeContext']['retainedInputs'][key] == value
                     for key, value in case['retainedInputs'].items()),
             'SAME_CASE_SOURCE_BOOT_PRIVATE_PREPARATION_REQUIRED')
-    if 'priorPreparation' in case:
+    if 'priorPreparation' in case or 'priorPreparations' in case:
         require(proof.get('priorPreparationReconciliation') == reconcile_prior_preparation(case, files, boot_id),
                 'RETAINED_PREPARATION_RECONCILIATION_CHANGED')
     owner_contract.compile_scope(private['ownerContext'])
@@ -554,7 +588,8 @@ def _prepare(case, manifest, sources):
     os.mkdir(root, 0o700)
     publish(root, 'claim.json', {'schema': SCHEMA, 'caseHash': digest(case), 'sourceClosureHash': closure_hash,
         'bootId': boot, 'maximumEngineGets': 12, 'maximumAdminGets': 1, 'maximumFrozenGets': 1,
-        'automaticReplayAllowed': False, 'runtimeAuthorityIssued': False})
+        'automaticReplayAllowed': False, 'runtimeAuthorityIssued': False,
+        **({'maximumTlsHandshakes': 1} if case['originalRequestTls'] == original_tls.POLICY else {})})
     prior_preparation = reconcile_prior_preparation(case, files, boot)
     inputs, input_profile = files.json(case['retainedInputs']['path'], case['retainedInputs']['sha256'])
     historical, _ = files.json(case['historicalReview']['path'], case['historicalReview']['sha256'])
@@ -626,12 +661,22 @@ def _prepare(case, manifest, sources):
     docker, _ = files.seal(db_program['path'], 67108864, db_program['sha256'])
     origin, target, caller_configuration = configuration(rows[caller_id])
     token_path = mounted_source(rows[caller_id], target)
-    token_profile, _ = files.seal(token_path, 16384)
     u = urlsplit(origin); tls = case['originalRequestTls']
+    tls_observation = None; tls_handshakes = 0
     if u.scheme == 'http':
         require(tls is None and any(e.get('IPAddress') == u.hostname for e in rows[gid]['NetworkSettings']['Networks'].values()),
                 'HTTP_ORIGINAL_CALLER_MUST_TARGET_EXACT_GATEWAY')
         ca, cert = None, None
+    elif tls == original_tls.POLICY:
+        require(u.scheme == 'https', 'ORIGINAL_SYSTEM_PKI_REQUIRES_HTTPS')
+        ca, ca_source = original_tls.system_ca(files)
+        publish(root, 'tls-handshake.json', {'originHash': digest(origin), 'caProfileHash': digest(ca),
+            'maximumAttempts': 1, 'httpRequests': 0, 'bearersSent': 0})
+        tls_handshakes = 1
+        tls_observation = original_tls.observe(origin, ca, admin['pythonExecutable'], rows[caller_id])
+        require(original_tls.resolve_system_ca() == ca_source, 'COMPILED_CA_SELECTION_CHANGED')
+        tls_observation['trustSource'] = ca_source
+        cert = tls_observation['peerCertificateSha256']
     else:
         require(u.scheme == 'https' and type(tls) is dict and set(tls) == {'origin', 'ca', 'peerCertificateSha256'}
                 and tls['origin'] == origin and hashed(tls['peerCertificateSha256']), 'INDEPENDENT_ORIGINAL_SERVICE_TLS_PROFILE_REQUIRED')
@@ -639,6 +684,7 @@ def _prepare(case, manifest, sources):
         observed_ca, _ = files.seal(ca['path'], 1048576, ca['sha256'])
         require(observed_ca == ca, 'CURRENT_ORIGINAL_SERVICE_TLS_CUSTODY_CHANGED')
         cert = tls['peerCertificateSha256']
+    token_profile, _ = files.seal(token_path, 16384)
     original_request = {'caller': callerpin, 'callerConfiguration': caller_configuration,
         'origin': origin, 'tokenTarget': target, 'tokenSource': token_profile,
         'pythonExecutable': copy.deepcopy(admin['pythonExecutable']), 'ca': ca, 'peerCertificateSha256': cert}
@@ -701,6 +747,8 @@ def _prepare(case, manifest, sources):
     require(get('/v1.44/images/' + request['Image'] + '/json') == image
             and get('/v1.44/networks/' + nid) == network, 'PREPARATION_IMAGE_OR_NETWORK_CHANGED')
     verify_configuration(rows[caller_id], original_request)
+    if tls_observation is not None:
+        require(original_tls.resolve_system_ca() == tls_observation['trustSource'], 'COMPILED_CA_SELECTION_CHANGED')
     require(reconcile_prior_preparation(case, files, boot) == prior_preparation,
             'PRIOR_PREPARATION_CHANGED_DURING_CAPTURE')
     files.verify()
@@ -713,6 +761,7 @@ def _prepare(case, manifest, sources):
         'preparationProof': {'caseHash': digest(case), 'sourceClosureHash': closure_hash,
             'bootId': boot, 'engineGets': calls, 'adminGets': 1, 'frozenConfigurationGets': 1,
             'priorPreparationReconciliation': prior_preparation,
+            'tlsHandshakes': tls_handshakes, 'originalTlsObservation': tls_observation,
             'originalServiceBearerUsed': True, 'ownerCredentialBytesRead': False, 'databaseCalls': 0, 'oauthRequests': 0,
             'runtimeEffectsDispatched': 0, 'runtimeAuthorityIssued': False, 'budgetReset': False,
             'automaticReplayAllowed': False, 'nativeExecutorQualified': False, 'targetApplyAuthorized': False}}

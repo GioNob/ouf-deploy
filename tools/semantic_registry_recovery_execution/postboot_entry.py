@@ -34,6 +34,8 @@ def public_preparation(value):
         'sourceClosureHash': proof['sourceClosureHash'],
         'engineGets': proof['engineGets'], 'adminGets': proof['adminGets'],
         'frozenConfigurationGets': proof['frozenConfigurationGets'],
+        'tlsHandshakes': proof.get('tlsHandshakes', 0),
+        'originalTlsIdentityEstablished': proof.get('originalTlsObservation') is not None,
         'priorPreparationReconciled': prior is not None, 'priorPreparationAttemptCounts': counts,
         'cumulativePreparationAttemptCounts': {name: counts[name] + proof[name] for name in counts},
         'originalServiceBearerUsed': proof['originalServiceBearerUsed'],

@@ -21,8 +21,8 @@ CHILD_SOURCE=r'''import hashlib,http.client,ipaddress,json,os,re,signal,ssl,sys,
 from urllib.parse import urlsplit,urlencode
 signal.alarm(9)
 try:
-    raw=sys.stdin.buffer.read(262145)
-    if not 0<len(raw)<=262144:raise ValueError()
+    raw=sys.stdin.buffer.read(2097153)
+    if not 0<len(raw)<=2097152:raise ValueError()
     v=json.loads(raw)
     if set(v)!={'origin','token','reference','ca','peerCertificateSha256'}:raise ValueError()
     u=urlsplit(v['origin']);b=v['reference'];token=v['token']
@@ -161,7 +161,7 @@ class OriginalSemanticRequest:
                 self.budget.reserve('semanticGets');self.guard()
                 request=encoded({'origin':p['origin'],'token':token,'reference':ref,'ca':ca,
                     'peerCertificateSha256':p['peerCertificateSha256']})
-                require(len(request)<=262144,'BOUNDED_ORIGINAL_SERVICE_PRIVATE_REQUEST_REQUIRED')
+                require(len(request)<=2097152,'BOUNDED_ORIGINAL_SERVICE_PRIVATE_REQUEST_REQUIRED')
                 child=subprocess.Popen([p['pythonExecutable']['path'],'-I','-B','-S','-c',CHILD_SOURCE,str(fd)],
                     stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,pass_fds=(fd,),
                     close_fds=True,cwd='/',env={'LC_ALL':'C'})

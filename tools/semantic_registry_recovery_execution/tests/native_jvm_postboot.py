@@ -26,6 +26,7 @@ import tomllib
 from types import SimpleNamespace
 import unittest
 import uuid
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import native_postbootqualified as prefix_fixture
@@ -487,10 +488,21 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
         for name in ('jvm_fixture_servers.py', 'jvm_fixture_inputs.py'):
             shutil.copyfile(Path(__file__).with_name(name), fixture / name)
             (fixture / name).chmod(0o444)
+        certificate = fixture / 'gateway.pem'; key = fixture / 'gateway.key'
+        checked('openssl', 'req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', str(key),
+                '-out', str(certificate), '-subj', '/CN=disposable-gateway',
+                '-addext', 'subjectAltName=IP:' + self.gateway_address, '-days', '1')
+        for member in (certificate, key):
+            member.chmod(0o440); os.chown(member, 0, 10001)
+        self.gateway_ca = self.root / 'gateway-public-ca.pem'
+        self.gateway_ca.write_bytes(certificate.read_bytes() * 300); self.gateway_ca.chmod(0o444)
+        self.assertGreater(self.gateway_ca.stat().st_size, 262144)
+        self.assertLess(self.gateway_ca.stat().st_size, 1048576)
         (fixture / 'admin-key').write_text('DISPOSABLE_ADMIN_FIXTURE_KEY')
         (fixture / 'admin-key').chmod(0o440); os.chown(fixture / 'admin-key', 0, 10001)
         (fixture / 'config.json').write_bytes(c.encoded({'upstream_origin': 'http://' + self.registry_address + ':8080',
-            'routes': self.routes, 'admin_key_file': '/fixture/admin-key', 'timeout': 2}))
+            'routes': self.routes, 'admin_key_file': '/fixture/admin-key', 'timeout': 2,
+            'data_certificate_file': '/fixture/gateway.pem', 'data_key_file': '/fixture/gateway.key'}))
         (fixture / 'config.json').chmod(0o444)
         request.update(Image=self.gateway_image, Entrypoint=['python3'],
                        Cmd=['/fixture/jvm_fixture_servers.py', 'gateway', '--config', '/fixture/config.json'])
@@ -560,7 +572,7 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
         caller_token = self.root / 'ingestion.jwt'
         caller_token.write_text(inputs.rs256_jwt(self.iam_key, inputs.service_claims(self.iam_app.issuer, int(time.time()))))
         caller_token.chmod(0o440); os.chown(caller_token, 0, 10001)
-        origin = 'http://' + self.gateway_address + ':9080'
+        origin = 'https://' + self.gateway_address + ':9080'
         from tools.semantic_registry_recovery_execution.caller_configuration import configuration as caller_configuration
         properties = self.root / 'ingestion-summary.properties'
         properties.write_text('ouf.ingestion.activation.gateway-url=' + origin + '\n'
@@ -586,6 +598,16 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
                           for member in network['Containers'].values()}
         self.assertNotIn(self.registry_address, live_addresses)
         self.assertIn(str(self.subnet.network_address + 6), live_addresses)
+        from tools.semantic_registry_recovery_execution import original_tls, postboot_prepare
+        # Disposable independent CA selection only; the production resolver has
+        # no caller-supplied override or environment fallback. Observe uses the
+        # unmodified child and the actual held caller namespace.
+        with patch.object(original_tls.ssl, 'get_default_verify_paths',
+                          return_value=SimpleNamespace(openssl_cafile=str(self.gateway_ca))):
+            ca_profile, ca_source = original_tls.system_ca(postboot_prepare.Files())
+        tls_identity = original_tls.observe(origin, ca_profile, self.gateway_profile['pythonExecutable'], actual_caller)
+        self.assertTrue(tls_identity['certificateChainVerified']); self.assertTrue(tls_identity['hostnameVerified'])
+        self.assertEqual((tls_identity['httpRequests'], tls_identity['bearersSent'], tls_identity['tlsHandshakes']), (0, 0, 1))
         configuration = {'semanticReferenceBindings': [inputs.reference()],
                          'semanticMapping': {'semanticRefs': [inputs.SEMANTIC_ID + '@' + inputs.SEMANTIC_VERSION]}}
         config_hash = 'sha256:' + c.digest(configuration)
@@ -593,7 +615,8 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
         original = {'callerConfiguration': configuration_binding, 'caller': {'binding': prefix_fixture.runtime_bindings.observed(actual_caller, prefix_fixture.runtime_bindings.SORTED),
             'bindingProfile': prefix_fixture.runtime_bindings.SORTED, 'restartCount': 0},
             'origin': origin, 'tokenTarget': '/run/ingestion.jwt', 'tokenSource': prefix_fixture.private_profile(caller_token),
-            'pythonExecutable': self.gateway_profile['pythonExecutable'], 'ca': None, 'peerCertificateSha256': None,
+            'pythonExecutable': self.gateway_profile['pythonExecutable'], 'ca': ca_profile,
+            'peerCertificateSha256': tls_identity['peerCertificateSha256'],
             'references': [inputs.reference()], 'frozenConfigurationHash': config_hash, 'onboardingVersionId': version,
             'frozenConfiguration': {'onboardingVersionId': version, 'configurationHash': config_hash,
                                     'state': 'APPROVED', 'configuration': configuration}}
