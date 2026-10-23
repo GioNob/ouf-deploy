@@ -31,9 +31,9 @@ class Delivery(unittest.TestCase):
         self.sudo=self.root/'fixture-sudo';self.sudo.write_text('#!/usr/bin/python3\nimport os,sys\nif sys.argv[1:]==["-v"]:raise SystemExit(0)\nos.execv(sys.argv[1],sys.argv[1:])\n');self.sudo.chmod(0o700)
         commands=dict(builder.DEFAULT_COMMANDS,sudo=str(self.sudo))
         self.script=self.root/'run.sh';self.script.write_text(builder.render('a'*40,self.sha,parent=str(self.parent),commands=commands))
-    def run_script(self):
+    def run_script(self, path="/usr/bin:/bin"):
         return subprocess.run(['/bin/bash',str(self.script)],capture_output=True,text=True,timeout=10,
-            env={'PATH':'/usr/bin:/bin','HOME':str(self.home)})
+            env={'PATH':path,'HOME':str(self.home)})
     def test_shell_executes_only_verified_private_copy_once_with_preserved_log(self):
         result=self.run_script();self.assertEqual(result.returncode,0,result.stderr)
         self.assertTrue(self.marker.exists());root=self.parent/('semantic-registry-operational-launch-'+self.sha[:32])
@@ -51,9 +51,15 @@ class Delivery(unittest.TestCase):
         before=self.marker.stat().st_mtime_ns;self.assertNotEqual(self.run_script().returncode,0)
         self.assertEqual(self.marker.stat().st_mtime_ns,before)
     def test_missing_existing_github_client_stops_before_any_private_effect(self):
-        self.gh.unlink();result=self.run_script();self.assertEqual(result.returncode,2)
+        self.gh.unlink();empty=self.root/"empty-bin";empty.mkdir()
+        result=self.run_script(path=str(empty));self.assertEqual(result.returncode,2)
         self.assertIn('EXISTING_AUTHENTICATED_GITHUB_CLIENT_REQUIRED',result.stderr)
         self.assertFalse(self.marker.exists());self.assertEqual(list(self.parent.iterdir()),[])
+    def test_existing_path_client_is_used_when_portable_client_is_absent(self):
+        binary=self.root/'bin';binary.mkdir();fallback=binary/'gh'
+        self.gh.rename(fallback)
+        result=self.run_script(path=str(binary)+':/usr/bin:/bin')
+        self.assertEqual(result.returncode,0,result.stderr);self.assertTrue(self.marker.exists())
     def test_capsule_failure_is_not_hidden_by_tee_success(self):
         self.raw=b'raise SystemExit(2)\n';self.fixture.write_bytes(self.raw)
         sha=hashlib.sha256(self.raw).hexdigest();commands=dict(builder.DEFAULT_COMMANDS,sudo=str(self.sudo))
