@@ -6,6 +6,7 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -26,13 +27,25 @@ class PublishedArtifact(unittest.TestCase):
         self.assertEqual(delivery.sha(raw_declaration), audit['declaration']['sha256'])
         self.assertEqual(delivery.sha(delivery.encoded(manifest)), audit['sourceClosureHash'])
         self.assertEqual(delivery.sha(delivery.encoded(case)), audit['caseHash'])
-        self.assertEqual(delivery.generate(ROOT, case, audit['sourceCommit'], audit['sourcePins']), (capsule, declaration))
         assignments = {node.targets[0].id: ast.literal_eval(node.value) for node in ast.parse(capsule).body
             if isinstance(node, ast.Assign)}
         self.assertEqual(assignments['DELIVERY'], declaration)
         self.assertEqual(assignments['DELIVERY_HASH'], audit['declaration']['sha256'])
         payload = json.loads(gzip.decompress(base64.b64decode(assignments['PACKED'], validate=True)))
         self.assertEqual(delivery.sha(payload['loader'].encode()), manifest['loaderHash'])
+        # Regenerate an immutable release with its own sealed loader, including
+        # when the development loader has since received a compatibility fix.
+        # Current application sources must still match every published member.
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            release_root = Path(directory)
+            members = {'tools/semantic_registry_recovery_execution/runtime.py': payload['loader']}
+            members.update({manifest['sourcePaths'][name]: text for name, text in payload['sources'].items()})
+            for member, text in members.items():
+                target = release_root / member
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(text)
+            self.assertEqual(delivery.generate(release_root, case, audit['sourceCommit'], audit['sourcePins']),
+                             (capsule, declaration))
         self.assertEqual(manifest['sourceGitBlobs'], audit['sourceGitBlobs'])
         self.assertEqual(manifest['sourcePaths'], audit['sourcePaths'])
         self.assertEqual(set(payload['sources']), set(manifest['sourceHashes']))

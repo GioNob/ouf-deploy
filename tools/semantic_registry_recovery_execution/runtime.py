@@ -253,7 +253,27 @@ def generated_stdlib_binding():
     name = sysconfig._get_sysconfigdata_name()
     require(name in candidates, 'EXACT_GENERATED_SYSCONFIG_NAME_REQUIRED')
     root = Path(sys._stdlib_dir).resolve(strict=True)
-    require(Path(sysconfig.__spec__.origin).resolve(strict=True) == root / 'sysconfig.py',
+    # CPython 3.13 moved sysconfig from a module to a package. Resolve the
+    # interpreter's own choice off sys.path; neither layout permits a caller
+    # supplied module, package search path or symlink outside the stdlib.
+    trusted = importlib.machinery.PathFinder.find_spec('sysconfig', [str(root)])
+    require(trusted is not None
+            and isinstance(trusted.loader, importlib.machinery.SourceFileLoader),
+            'INTERPRETER_STDLIB_SYSCONFIG_ORIGIN_REQUIRED')
+    origin = Path(trusted.origin)
+    package = trusted.submodule_search_locations is not None
+    expected_origin = root / 'sysconfig' / '__init__.py' if package else root / 'sysconfig.py'
+    expected_search = [str(root / 'sysconfig')] if package else None
+    require(origin == expected_origin and origin.resolve(strict=True) == expected_origin
+            and (None if trusted.submodule_search_locations is None
+                 else list(trusted.submodule_search_locations)) == expected_search
+            and isinstance(sysconfig.__spec__.loader, importlib.machinery.SourceFileLoader)
+            and sysconfig.__spec__.origin == str(expected_origin)
+            and sysconfig.__file__ == str(expected_origin)
+            and (None if sysconfig.__spec__.submodule_search_locations is None
+                 else list(sysconfig.__spec__.submodule_search_locations)) == expected_search
+            and (list(getattr(sysconfig, '__path__', ())) if package
+                 else getattr(sysconfig, '__path__', None)) == expected_search,
             'INTERPRETER_STDLIB_SYSCONFIG_ORIGIN_REQUIRED')
     spec = importlib.machinery.PathFinder.find_spec(name, [str(root)])
     expected = root / (name + '.py')

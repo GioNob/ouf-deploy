@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import sysconfig
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -85,6 +86,20 @@ class SealedPostbootDelivery(unittest.TestCase):
         self.assertEqual(result['loadedSourceHash'], hashlib.sha256(ENTRY).hexdigest())
         self.assertFalse(declaration['runtimeAuthorityIssued'])
 
+    def test_complete_platform_source_closure_preloads_without_entering_controller(self):
+        loader = RUNTIME_PATH.read_bytes()
+        sources = d.collect_sources(ROOT, r)
+        manifest = r.declaration(COMMIT, sources, loader, {'ouf-deploy': COMMIT})
+        program = ('ns={}\nexec(' + repr(loader) + ',ns)\nentry,manifest=ns["load_entry"]('
+            + repr(COMMIT) + ',' + repr(sources) + ',' + repr(loader) + ','
+            + repr(r.digest(manifest)) + ',' + repr({'ouf-deploy': COMMIT}) + ')\n'
+            + 'assert callable(entry.execute)\nprint("COMPLETE_CLOSURE_PRELOADED_NO_CONTROLLER_ENTRY")\n')
+        result = subprocess.run([sys.executable, '-I', '-B', '-S', '-'], input=program.encode(),
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20, cwd='/')
+        self.assertEqual(result.returncode, 0, result.stderr.decode())
+        self.assertEqual(result.stderr, b'')
+        self.assertEqual(result.stdout.strip(), b'COMPLETE_CLOSURE_PRELOADED_NO_CONTROLLER_ENTRY')
+
     def test_packaging_is_deterministic_and_records_exact_paths_git_blobs(self):
         raw, declaration = self.generate()
         self.assertEqual(self.generate(), (raw, declaration))
@@ -126,6 +141,55 @@ class SealedPostbootDelivery(unittest.TestCase):
             with self.subTest(variable=variable), patch.dict(os.environ, {variable: ''}):
                 with self.assertRaisesRegex(r.RuntimeDenied, 'PYTHON_BUILD_CONFIGURATION_OVERRIDE_DENIED'):
                     r.generated_stdlib_binding()
+
+    def sysconfig_layout(self, package):
+        root = self.root / ('package-stdlib' if package else 'module-stdlib')
+        origin = root / 'sysconfig' / '__init__.py' if package else root / 'sysconfig.py'
+        origin.parent.mkdir(parents=True, exist_ok=True)
+        origin.write_text('raise AssertionError("STDLIB_FIXTURE_MUST_NOT_EXECUTE")\n')
+        name = sysconfig._get_sysconfigdata_name()
+        (root / (name + '.py')).write_text('build_time_vars = {}\n')
+        spec = importlib.util.spec_from_file_location('sysconfig', origin,
+            submodule_search_locations=[str(origin.parent)] if package else None)
+        return root, origin, name, spec
+
+    def test_both_interpreter_sysconfig_layouts_bind_only_exact_stdlib_sources(self):
+        for package in (False, True):
+            with self.subTest(package=package):
+                root, origin, name, spec = self.sysconfig_layout(package)
+                with patch.object(sys, '_stdlib_dir', str(root)), \
+                     patch.object(sysconfig, '__spec__', spec), \
+                     patch.object(sysconfig, '__file__', str(origin)), \
+                     patch.object(sysconfig, '__path__', [str(origin.parent)] if package else None, create=True), \
+                     patch.dict(sys.modules):
+                    sys.modules.pop(name, None)
+                    selected, generated = r.generated_stdlib_binding()
+                    self.assertEqual(selected, name)
+                    self.assertEqual(generated.origin, str(root / (name + '.py')))
+
+    def test_sysconfig_loaded_origin_or_package_search_path_cannot_substitute(self):
+        root, origin, name, spec = self.sysconfig_layout(True)
+        for attribute, replacement in (('__file__', str(self.root / 'sysconfig.py')),
+                                       ('__path__', [str(self.root)])):
+            with self.subTest(attribute=attribute), patch.object(sys, '_stdlib_dir', str(root)), \
+                 patch.object(sysconfig, '__spec__', spec), \
+                 patch.object(sysconfig, '__file__', str(origin)), \
+                 patch.object(sysconfig, '__path__', [str(origin.parent)], create=True), \
+                 patch.object(sysconfig, attribute, replacement):
+                with self.assertRaisesRegex(r.RuntimeDenied, 'INTERPRETER_STDLIB_SYSCONFIG_ORIGIN_REQUIRED'):
+                    r.generated_stdlib_binding()
+
+    def test_sysconfig_package_symlink_outside_stdlib_is_refused(self):
+        root, origin, name, spec = self.sysconfig_layout(True)
+        external = self.root / 'external-sysconfig.py'
+        external.write_text('raise AssertionError("EXTERNAL_SYSCONFIG_MUST_NOT_EXECUTE")\n')
+        origin.unlink(); origin.symlink_to(external)
+        with patch.object(sys, '_stdlib_dir', str(root)), \
+             patch.object(sysconfig, '__spec__', spec), \
+             patch.object(sysconfig, '__file__', str(origin)), \
+             patch.object(sysconfig, '__path__', [str(origin.parent)], create=True):
+            with self.assertRaisesRegex(r.RuntimeDenied, 'INTERPRETER_STDLIB_SYSCONFIG_ORIGIN_REQUIRED'):
+                r.generated_stdlib_binding()
 
     def test_missing_static_package_member_and_unreachable_extra_are_rejected(self):
         with self.assertRaisesRegex(r.RuntimeDenied, 'MISSING_STATIC_PACKAGE_MEMBER'):
