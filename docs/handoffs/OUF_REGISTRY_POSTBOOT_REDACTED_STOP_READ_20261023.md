@@ -1,5 +1,7 @@
 # Diagnosi in sola lettura del secondo arresto postboot
 
+Aggiornamento: preload e struttura dei metadati sono passati sul VPS. Il claim esiste e il tratto sospetto è fra marcatore Admin e GET congelata. Prossimo controllo mirato: `docs/handoffs/OUF_REGISTRY_POSTBOOT_CALLER_CONFIG_READ_20261023.md`; nessuna ripetizione di prepare. Le istruzioni precedenti sotto sono cronologia.
+
 Il tentativo `/home/oufadmin/ouf-registry-postboot-review.nMPgRpwq/operator.log` termina con `POSTBOOT_OUTCOME_UNPROVEN_PRIVATE_DETAILS_REDACTED`. Questo codice non distingue un problema del loader da un errore durante la preparazione. Un claim o marcatori di richieste possono già esistere. Il 502 è aperto e nessuna ripetizione della preparazione è selezionata.
 
 Il prossimo passo è il lettore `scripts/read-registry-postboot-stop-20261023.py`, commit `1c94a004139e42b573337d1da71ad6461fe48909`, SHA256 `f35e044d2e44eb286607f6c8a8c8dd6dc55a741f06766c61f0e079ac5563c916`. Il launcher è `releases/semantic-registry-postboot-stop-read-20261023.sh`, SHA256 `b810361816feae68bf07d04037a7c6c6bc28008eb006874aee723d1d59651950`. Verificare il launcher dopo averlo scaricato dal commit immutabile della consegna; il launcher scarica una sola volta quel lettore e ne verifica i byte in memoria prima di eseguirlo con root e Python `-I -B -S`.

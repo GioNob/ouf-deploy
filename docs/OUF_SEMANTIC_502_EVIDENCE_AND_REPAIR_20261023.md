@@ -1,5 +1,7 @@
 # 502 semantico OUF — evidenze e riparazione circoscritta
 
+Aggiornamento: preload e struttura dei metadati sono passati sul VPS. Il claim esiste e il tratto sospetto è fra marcatore Admin e GET congelata. Prossimo controllo mirato: `docs/handoffs/OUF_REGISTRY_POSTBOOT_CALLER_CONFIG_READ_20261023.md`; nessuna ripetizione di prepare. Le istruzioni precedenti sotto sono cronologia.
+
 Aggiornamento dopo il secondo tentativo VPS: `POSTBOOT_OUTCOME_UNPROVEN_PRIVATE_DETAILS_REDACTED`, log `/home/oufadmin/ouf-registry-postboot-review.nMPgRpwq/operator.log`. La fase di arresto e l'esistenza di claim non sono ancora stabilite. Prossimo passo: la diagnosi in sola lettura descritta in `docs/handoffs/OUF_REGISTRY_POSTBOOT_REDACTED_STOP_READ_20261023.md`; non ripetere ora prepare/review. La consegna e le istruzioni precedenti sotto sono conservate come cronologia.
 
 

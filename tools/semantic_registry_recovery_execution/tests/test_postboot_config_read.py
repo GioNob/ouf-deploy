@@ -3,12 +3,15 @@ import ast
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 import tempfile
+import subprocess
 import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
 SCRIPT = ROOT / 'scripts/read-registry-postboot-config-20261023.py'
+WRAPPER = ROOT / 'releases/semantic-registry-postboot-config-read-20261023.sh'
 spec = importlib.util.spec_from_file_location('caller_config_probe_fixture', SCRIPT)
 p = importlib.util.module_from_spec(spec); spec.loader.exec_module(p)
 
@@ -96,6 +99,50 @@ class RetainedCallerConfiguration(unittest.TestCase):
             missing = p.file_metadata({'path': str(path) + '-absent'})
             self.assertEqual(missing['exceptionClass'], 'FileNotFoundError')
             self.assertFalse(missing['present'])
+
+    def wrapper_fixture(self, home, content):
+        binary = home / 'bin'; binary.mkdir()
+        for name, text in {
+            'gh': '#!/bin/sh\nprintf "%s\\n" "$*" >> "$HOME/gh.calls"\ncat "$HOME/source.py"\n',
+            'sudo': '#!/bin/sh\ntest "$1" = -- || exit 9\nshift\nexec "$@"\n'}.items():
+            target = binary / name; target.write_text(text); target.chmod(0o700)
+        (home / 'source.py').write_bytes(content)
+        return {**os.environ, 'HOME': str(home), 'PATH': str(binary) + ':/usr/bin:/bin'}
+
+    def test_real_wrapper_pins_reader_and_returns_safe_missing_retained_reader(self):
+        self.assertFalse(Path(p.READER).exists(), 'disposable fixture must not run on target')
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            home = Path(directory); environment = self.wrapper_fixture(home, SCRIPT.read_bytes())
+            result = subprocess.run(['bash', str(WRAPPER)], env=environment,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
+            self.assertEqual(result.returncode, 2)
+            rows = [json.loads(line) for line in result.stdout.decode().splitlines() if line.startswith('{')]
+            self.assertEqual(rows[0]['stage'], 'VERIFY_RETAINED_READER')
+            self.assertEqual(rows[0]['engineGets'], 0)
+            self.assertFalse(rows[0]['applicationEntryInvoked'])
+            calls = (home / 'gh.calls').read_text().splitlines(); self.assertEqual(len(calls), 1)
+            self.assertIn('ref=defa2533d1d4f467fa0588b6e92287d7a330cf00', calls[0])
+            self.assertIn('read-registry-postboot-config-20261023.py', calls[0])
+            retained = next(home.glob('ouf-postboot-config-read.*'))
+            self.assertEqual((retained / 'read.stderr').read_bytes(), b'')
+
+    def test_wrapper_rejects_tampered_download_before_execution(self):
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            home = Path(directory)
+            environment = self.wrapper_fixture(home, b'raise RuntimeError("PRIVATE_EXECUTED")\n')
+            result = subprocess.run(['bash', str(WRAPPER)], env=environment,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn(b'EXACT_STOP_READER_ROOT_LAUNCH_UNPROVEN', result.stdout)
+            self.assertNotIn(b'PRIVATE_EXECUTED', result.stdout + result.stderr)
+
+    def test_wrapper_rejects_arguments_before_download(self):
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            home = Path(directory); environment = self.wrapper_fixture(home, SCRIPT.read_bytes())
+            result = subprocess.run(['bash', str(WRAPPER), 'prepare'], env=environment,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
+            self.assertEqual(result.returncode, 2)
+            self.assertFalse((home / 'gh.calls').exists())
 
 
 if __name__ == '__main__':
