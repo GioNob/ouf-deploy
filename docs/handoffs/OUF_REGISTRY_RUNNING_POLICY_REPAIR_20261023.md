@@ -218,3 +218,31 @@ GET, with bounded child/parent deadlines and redacted phase/errno/status/equalit
 output. Four real loopback TLS/HTTP tests pass. An actual native cgroup/root
 allow-versus-deny test is being qualified before target delivery; fixture-only
 units must not be confused with editing a production worker unit.
+
+## Network comparator qualification and delivery
+
+Source `e972b718bc9ee0b08df59a065be43547cc8405d6` passed CI
+[40041485859/job120713481609](https://github.com/GioNob/ouf-deploy/actions/runs/40041485859/job/120713481609):
+51 component tests and all 11 native cases (155.166 seconds), direct logs
+inspected. The real temporary child joins the actual cgroup and mount
+namespace, enters the pinned private root, closes inherited descriptors and
+drops capabilities before creating its socket. An allowed fixture worker yields
+TLS/public discovery200 with unchanged worker PID, ledger and token POST count.
+A separate disposable deny-all fixture actually blocks TCP with no HTTP GET.
+The first negative fixture needed an exact-frame readiness wait because
+Type=simple start can return before root setup; the guard was not relaxed.
+Issuer/history/Engine API inputs remain synthetic; target success is not proven.
+
+Immutable script: `scripts/probe-registry-operational-network-20261024.py` at
+`e972b718bc9ee0b08df59a065be43547cc8405d6`, SHA256
+`96f9f2da571e8b2f56dbfd27f66fa7db40d60bb2a4e904a7e18d64895f8b6cc1`.
+Published bytes were read back exactly. Deliver through existing authenticated
+gh, checksum before privilege and protected-copy execution, one new exclusive
+root launch. Its fixed probe claim prevents re-execution even from a new launch
+or changed source. At most two TLS connections, one public discovery GET,
+one temporary child cgroup-membership write and one child mount-namespace join.
+No credentials, grant POSTs, manager/worker/config/ledger writes or worker
+signals. The child is reaped. readOnlyRuntime is explicitly false for its
+transient child-membership effects. The original worker continues independently.
+This does not reproduce its existing seccomp/environment. Await actual target
+JSON before deciding a repair. Do not rerun prior observation or deployment.
