@@ -4,14 +4,20 @@ on:
     branches: [fix/registry-bound-owner-lineage-20261023]
     paths:
       - scripts/read-registry-postboot-stop-20261023.py
+      - scripts/read-registry-postboot-config-20261023.py
       - tools/semantic_registry_recovery_execution/tests/test_postboot_stop_read.py
+      - tools/semantic_registry_recovery_execution/tests/test_postboot_config_read.py
       - releases/semantic-registry-postboot-stop-read-20261023.sh
+      - releases/semantic-registry-postboot-config-read-20261023.sh
       - .github/workflows/registry-postboot-stop-read.yml
   pull_request:
     paths:
       - scripts/read-registry-postboot-stop-20261023.py
+      - scripts/read-registry-postboot-config-20261023.py
       - tools/semantic_registry_recovery_execution/tests/test_postboot_stop_read.py
+      - tools/semantic_registry_recovery_execution/tests/test_postboot_config_read.py
       - releases/semantic-registry-postboot-stop-read-20261023.sh
+      - releases/semantic-registry-postboot-config-read-20261023.sh
       - .github/workflows/registry-postboot-stop-read.yml
 permissions:
   contents: read
@@ -41,4 +47,4 @@ jobs:
           sudo chown -R root:root /root/ouf-stop-probe-tests
           sudo "$ouf_probe_python" -I -B -S -m unittest discover \
             -s /root/ouf-stop-probe-tests/repository/tools/semantic_registry_recovery_execution/tests \
-            -p test_postboot_stop_read.py -v
+            -p 'test_postboot_*read.py' -v
