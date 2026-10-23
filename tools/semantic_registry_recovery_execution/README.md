@@ -1,21 +1,38 @@
-# Latest qualification: installed owner and finite initialization
+# Registry recovery dopo riavvio — percorso finito, target aperto
 
-Source8758070e38dd38981e9f5740cb5896d287453be6; [CI39902242028](https://github.com/GioNob/ouf-deploy/actions/runs/39902242028):100 tests PASS,zero skips. `installed_owner.py` reconstructs only an explicitly signed existing ACTIVE observer and checks current boot plus both expiry clocks. `installer.py` initializes the canonical finite ledgers once, after actual signed scope; existing/partial installations cannot be reset or adopted. `factory.build_from_reference` connects the exact selected observer. CurrentAdmission repeats the lease check before prerequisites. No token/credential read, IAM request or renewal occurs during observer construction.
+Il percorso concreto è `prepare → review → issue → install → bootstrap → owner → continue`; `status` legge soltanto gli artefatti privati. L'obiettivo è una nuova generazione ammessa dello stesso Registry e HTTP 200 per ogni riferimento semantico congelato, con la stessa identità SERVICE di Ingestion e stato esatto `ACTIVE`. Questa implementazione non attesta un'esecuzione sulla VPS, la risoluzione del 502 o continuità oltre la sessione. **Qualificazione CI della nuova chiusura: pending.**
 
-The target's CURRENT installed-owner reference is still required. These helpers do not select a historical worker, recover a parked owner, issue authority, authenticate source delivery or provide a complete launcher. Whole real JVM/OCI/IAM recovery remains unqualified and no target effects occurred. 502 OPEN. See [the latest handoff](../../docs/handoffs/OUF_SEMANTIC_REGISTRY_INSTALLED_OWNER_20261023.md) for limits and remaining work. The preceding qualification below is historical.
+La [ricevuta target di lineage](../../evidence/semantic-registry-bound-owner-lineage-target-20261023.json), fornita dall'operatore, collega tutti i 18 record all'output credenziali montato dal Registry: anchor 4, terminale 6, cumulativo controllato **319**. Il terminale è storico, `CANCELLED/BLOCKED`, di boot precedente; non è un owner corrente. Non rilanciare discovery o reader conclusi. La contabilità legacy sconosciuta resta tale.
 
----
+## Entry concreta
 
-# Fresh Registry recovery — native path, target repair open
+`delivery.generate(root, case, source_commit, source_pins)` produce offline capsule e dichiarazione. `runtime.py` verifica l'intera chiusura prima di caricare `postboot_entry.execute(case, manifest, sources, argv)`, senza fallback a sorgenti installate. Il case esterno ha schema `ouf.semantic-registry-postboot-recovery-case.v1` e contiene soltanto `schema` e `preparation`. La capsule richiede root e Python isolato `-I -B -S`. Il pacchetto operatore deve legare commit qualificato, hash della capsule e case esatto; questo README non costituisce quel pacchetto.
 
-The current semantic route targets the reviewed stopped Registry with no network endpoint. The required result is a fresh admitted Registry generation and HTTP 200 for the original service-authenticated semantic request. No target effects have occurred; the 502 remains OPEN.
+| Modalità | Effetto e limite |
+| --- | --- |
+| `prepare` | Una preparazione privata per case/chiusura/boot: massimo 12 Engine GET, 1 Admin GET, 1 GET della configurazione congelata con il SERVICE originale. Usa bearer originale e credenziale Admin senza stamparli; per il client secret dell'owner verifica solo custodia. Nessun grant, autorità o runtime. |
+| `review` | Review privata completa e `reviewHash`; 11 scope ricompilati. Propone massimo **1 nuovo tentativo SERVICE**, owner **≤900 s**, precedente 319 conservato. Nessuna firma o chiave aperta. |
+| `issue REVIEW_SHA256` | Hash esatto e decisione fresca `/dev/tty`: `APPROVO REVIEW_SHA256`. Claim canonico consumato prima delle due firme dei ruoli esistenti. |
+| `install REVIEW_SHA256` | Nuovi ledger canonici; nessun runtime/OAuth. |
+| `bootstrap REVIEW_SHA256` | Verifica, start del gate in attesa, prova della nuova generazione, pause: stop al checkpoint 4. Nessun grant o rilascio Java. |
+| `owner REVIEW_SHA256` | Successore del boot corrente legato al terminale storico e al nuovo gate; conserva prima ricevuta di grant e conteggi. Nessun OAuth. |
+| `continue REVIEW_SHA256` | Worker finito e recovery nativo coordinati nello stesso processo: grant limitato, ammissioni complete, attestazione nuova, unpause, SIGUSR1 e GET originale. |
+| `status` | Inventario dei soli artefatti. Non osserva salute, ammissione corrente o raggiungibilità. |
 
-`core.py`, `authorization.py` and `lifecycle.py` provide finite durable claims, current signed scope and four exact-ID Docker operations. Versioned paused/active process, OCI/frame/mount and node owners preserve full independent rootfs admission, fresh generation custody and current actual InstalledTokenOwner checks. Original shared observers and historical hashes remain unchanged.
+L'hash della review è obbligatorio per tutte e cinque le modalità `issue`, `install`, `bootstrap`, `owner`, `continue`. Ogni modalità deve produrre la ricevuta attesa prima della successiva. Directory, claim o esecuzioni parziali esistenti rimangono consumati: nessun reset, cancellazione o replay automatico.
 
-`native.py` now connects all 12 stages through concrete typed owners. `factory.py` constructs them from an exact current context and fences the canonical operation under the original installation's evidence parent. `database.py` checks current PostgreSQL generation, executable custody and readonly database/Flyway admission. `read_budget.py` accounts native reads durably without reset. `admission.py` rejects parked/expired/revoked token owners. `gateway.py` verifies complete current routes and exact endpoint occupancy. `semantic_request.py` uses the existing Ingestion service token and exact frozen reference versions, through a private-stdin client with TLS verification/pinning. Health alone cannot complete recovery; 502, redirects, authorization failure or a different/non-ACTIVE reference do not pass.
+## Ammissione e risultato
 
-Qualified source f5937486fcfe1e461caed65abf45ca49887ca33f; [CI39871804763](https://github.com/GioNob/ouf-deploy/actions/runs/39871804763): 87 tests PASS, zero skips. This includes real HTTP/TLS, three Docker generation tests and two PostgreSQL17 tests. Explicit synthetic owners remain in component fixtures. The Docker gate is an Alpine shell, not the Semantic JVM. This is not whole production recovery qualification.
+`bootstrap.py` separa l'avvio della shell in attesa dall'ammissione applicativa. `postboot_factory.py` connette al checkpoint 4 gli owner nativi reali. Restano obbligatori rootfs OCI indipendente completo, frame/mount, processo/namespace correnti, PostgreSQL/Flyway readonly, route complete ed endpoint, token owner corrente e attestazione fresca prima del rilascio Java. Un vecchio attestato o segnale non ammette un PID nuovo.
 
-Still required: sealed source closure/loader, current-context collector, installer/issuer/delivery/launcher, exact current target token-owner resolution/admission and full representative native qualification. The factory creates no journals/authority/tokens and does not recover the token owner. There is no target recovery command yet; do not request premature runtime approval or replay completed diagnostics.
+`postboot_controller.py` mantiene il lock d'invocazione del worker e coordina worker e passi nativi. Dopo una risposta Docker 204 al rilascio già registrata, ammette solo osservazioni aggiuntive ai checkpoint 9–11: finestra condivisa di 90 s per iniziarle, massimo 12, normalmente ogni 5 s, entro autorità e contatori già concessi. Un'osservazione in corso conserva il timeout del trasporto. ACK mancante, eccezione, cambio generazione o movimento concorrente del journal richiedono riconciliazione; non ridispatchano effetti.
 
-See [the current handoff](../../docs/handoffs/OUF_SEMANTIC_REGISTRY_NATIVE_PATH_20261023.md) and [qualification evidence](../../evidence/semantic-registry-native-path-ci-20261023.json). Preserve all existing contexts, claims, budgets and logs. No rootfs relaxation, silent cleanup, automatic token acquisition, source activation or provider recovery is implied.
+HTTP 403 non distingue policy assente da diniego effettivo. Può essere osservato nuovamente entro il limite con lo stesso SERVICE; non è sano né classificato transitorio. Solo HTTP 200 con tutti i pin esatti e `ACTIVE` completa la verifica. Health/JVM avviata non bastano; nessun token HUMAN alternativo, policy stale o nuovo budget.
+
+La ricevuta intermedia `ORIGINAL_SERVICE_GET_200_WITH_FINITE_OWNER` prova un successo nella finestra indicata. Il processo mantiene poi l'owner per il residuo consentito. La ricevuta finale riporta `ownerSessionEnded: true`, `currentOwnerAdmissionProven: false`, `continuousServiceRenewalEstablished: false`: non prova disponibilità durevole o resilienza al prossimo riavvio.
+
+## Qualificazione e riferimenti
+
+La precedente [qualificazione native path](../../evidence/semantic-registry-native-path-ci-20261023.json), a `f5937486fcfe1e461caed65abf45ca49887ca33f`, riguarda componenti precedenti con gate Alpine e owner simulati dichiarati; non qualifica automaticamente questa nuova chiusura. I test del controller hanno un [perimetro separato](tests/CONTROLLER_QUALIFICATION.md).
+
+Il [nuovo handoff](../../docs/handoffs/OUF_REGISTRY_POSTBOOT_RECOVERY_20261023.md) descrive input, ricevute e arresto; il [dossier](../../docs/OUF_SEMANTIC_502_EVIDENCE_AND_REPAIR_20261023.md) distingue fatti storici e osservazioni correnti. Preservare contesti, log, budget, fence e claim. Nessuna activation, provider recovery, migrazione DB, modifica Gateway o deroga AUTHZ è implicita. Supervisor ed E2E di piattaforma sono lavori successivi e non sostituiscono la verifica mirata del 502.

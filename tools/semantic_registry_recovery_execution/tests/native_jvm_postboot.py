@@ -34,7 +34,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from engine_creation import Engine
 from file_only_frame_inputs import compile_inputs, ENGINE, BASELINE_SHA256
 from file_only_preparation import file_source
-from image_custody import archive, loaded, native_identity
+from image_custody import archive, loaded, native_identity, runtime_image_id, tagless_archive
 from tools.semantic_provider_node_observation import rootfs_seal
 from tools.semantic_provider_deployment_signing import ExistingEd25519Signer
 from tools.semantic_registry_recovery_execution import core as c
@@ -75,6 +75,17 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
 
     def historical_chain_hash(self):
         return c.digest({'disposableHistoricalFixture': True})
+
+    def network_created(self):
+        # The runner's ordinary Docker may leave FORWARD=DROP. Only this owned
+        # fixture bridge gets forwarding and host-IAM access; never change a
+        # global policy or install a rule on any target/user bridge.
+        bridge = 'br-' + self.nid[:12]
+        rules = [('FORWARD', '-i', bridge, '-o', bridge, '-j', 'ACCEPT'),
+                 ('INPUT', '-i', bridge, '-p', 'tcp', '--dport', '443', '-j', 'ACCEPT')]
+        for rule in rules:
+            checked('iptables', '-w', '5', '-I', rule[0], '1', *rule[1:])
+            self.addCleanup(checked, 'iptables', '-w', '5', '-D', *rule)
 
     @classmethod
     def setUpClass(cls):
@@ -175,7 +186,17 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
         with image_tar.open('rb') as saved:
             audit = archive(saved, hashlib.file_digest(saved, 'sha256').hexdigest(), config_id, SOURCE)
         if native_image['Id'] != audit['imageId']:
+            # Containerd must import exactly the independently encoded native
+            # manifest. Never replace its expected digest with an observed Id.
+            repacked = self.root / 'native-image.tar'
+            with image_tar.open('rb') as saved, repacked.open('w+b') as output:
+                repacking = tagless_archive(saved, output, audit, containerd=True)
+            with repacked.open('rb') as saved:
+                audit = archive(saved, repacking['derivedArchiveSha256'], config_id, SOURCE)
             audit['nativeIdentity'] = native_identity(audit)
+            self.docker('load', '--input', str(repacked), timeout=120)
+            native_image = json.loads(self.docker('image', 'inspect', runtime_image_id(audit)))[0]
+            self.image = native_image['Id']
         loaded(audit, native_image)
         self.image_audit = audit
         self.pg_address = str(self.subnet.network_address + 4)

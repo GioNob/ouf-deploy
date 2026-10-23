@@ -84,6 +84,9 @@ class NativePostbootQualified(unittest.TestCase):
     def prior_gate_observed(self, actual):
         pass
 
+    def network_created(self):
+        pass
+
     def historical_chain_hash(self):
         return '9' * 64
 
@@ -97,7 +100,10 @@ class NativePostbootQualified(unittest.TestCase):
 
     def create_container(self, request, prefix):
         status, result = self.engine.request('POST', '/v1.44/containers/create?name=' + prefix + uuid.uuid4().hex, request)
-        self.assertEqual(status, 201)
+        message = result.get('message', '') if type(result) is dict else ''
+        classification = ('STATIC_IP_REQUIRES_EXPLICIT_SUBNET' if 'subnet' in message.lower()
+                          else 'DOCKER_CREATE_FIXTURE_ERROR_' + hashlib.sha256(message.encode()).hexdigest()[:12])
+        self.assertEqual(status, 201, classification)
         cid = result['Id']
         self.addCleanup(self.cleanup_container, cid)
         return cid
@@ -108,13 +114,17 @@ class NativePostbootQualified(unittest.TestCase):
         s = os.stat(socket, follow_symlinks=False)
         self.engine = Engine(socket, (s.st_dev, s.st_ino, s.st_uid, s.st_gid, s.st_mode & 0o777))
         network_name = 'ouf-postboot-fixture-' + uuid.uuid4().hex
-        self.nid = self.command('docker', 'network', 'create', '--internal', network_name)
+        # Static endpoints require a user-declared Docker IPAM subnet. This
+        # benchmark range belongs only to the disposable hosted fixture.
+        subnet = '198.19.' + str(uuid.uuid4().int % 240) + '.0/24'
+        self.nid = self.command('docker', 'network', 'create', '--internal', '--subnet', subnet, network_name)
         self.addCleanup(lambda: self.command('docker', 'network', 'rm', self.nid))
         network = json.loads(self.command('docker', 'network', 'inspect', self.nid))[0]
         subnet = ipaddress.IPv4Network(network['IPAM']['Config'][0]['Subnet'])
         registry_address, gateway_address = str(subnet.network_address + 2), str(subnet.network_address + 3)
         self.network_name, self.subnet = network_name, subnet
         self.registry_address, self.gateway_address = registry_address, gateway_address
+        self.network_created()
         endpoint = lambda address: {'EndpointsConfig': {network_name: {'NetworkID': self.nid,
             'IPAMConfig': {'IPv4Address': address}}}}
 

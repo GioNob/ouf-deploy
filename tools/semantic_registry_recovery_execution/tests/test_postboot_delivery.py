@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[3]
 RUNTIME_PATH = ROOT / 'tools/semantic_registry_recovery_execution/runtime.py'
@@ -92,6 +93,22 @@ class SealedPostbootDelivery(unittest.TestCase):
         self.assertEqual(native['sourceGitBlobs'][HELPER],
             hashlib.sha1(b'blob 10\0' + SOURCES[HELPER]).hexdigest())
         self.assertEqual(set(native['sourceHashes']), set(SOURCES))
+
+    def test_repository_pin_insertion_order_cannot_change_capsule_bytes(self):
+        pins = {'ouf-semantic-registry': 'b'*40, 'ouf-deploy': COMMIT, 'ouf-ingestion-runtime': 'c'*40}
+        reverse = dict(reversed(list(pins.items())))
+        self.assertEqual(d.generate(self.root, {'schema': 'fixture-only'}, COMMIT, pins),
+                         d.generate(self.root, {'schema': 'fixture-only'}, COMMIT, reverse))
+
+    def test_linux_windows_probe_is_explicitly_absent_without_disk_fallback(self):
+        finder = r.MemoryLoader({}, frozenset(), {})
+        with patch.object(r.sys, 'platform', 'linux'):
+            with self.assertRaises(ModuleNotFoundError) as denied:
+                finder.find_spec('_wmi')
+            self.assertEqual(denied.exception.name, '_wmi')
+            with self.assertRaisesRegex(r.RuntimeDenied, 'LOCAL_SOURCE_IMPORT_FALLBACK_DENIED'):
+                finder.find_spec('_undeclared_optional_implementation')
+        self.assertNotIn('_wmi', sys.modules)
 
     def test_missing_static_package_member_and_unreachable_extra_are_rejected(self):
         with self.assertRaisesRegex(r.RuntimeDenied, 'MISSING_STATIC_PACKAGE_MEMBER'):

@@ -1,0 +1,43 @@
+{
+  "schema": "ouf.semantic-registry-postboot-ci-evidence.v1",
+  "sourceCommit": "61f5866c92a315fb05457ae9960ebff7b7f8341d",
+  "status": "FIRST_NATIVE_QUALIFICATION_FAILED_FIXES_IN_PROGRESS",
+  "sourceReadback": {"files": 44, "exactContentMatches": 44},
+  "runs": [
+    {
+      "runId": 39922905437,
+      "workflow": "Registry postboot prefix and credential composition fixtures",
+      "conclusion": "failure",
+      "jobs": [
+        {"jobId": 120312177798, "name": "bounded-owner-components", "conclusion": "failure", "ownerTestsPassed": 14, "bootstrapTestsPassed": 14, "controllerTestsPassed": 13, "postbootTestsRun": 64, "postbootTestsPassed": 61, "postbootTestsFailed": 3, "failure": "SEALED_POSTBOOT_IMPORT_FAILED"},
+        {"jobId": 120312178063, "name": "native-postboot-composition", "conclusion": "failure", "testsRun": 8, "testsFailedAtFixtureCreate": 8, "failure": "DOCKER_CREATE_400"},
+        {"jobId": 120312178184, "name": "native-jvm-postboot-composition", "conclusion": "failure", "testsRun": 1, "testsErrored": 1, "pinnedRegistryJvmBuilt": true, "failure": "NATIVE_IMAGE_IDENTITY_DRIFT"}
+      ]
+    },
+    {
+      "runId": 39922905302,
+      "workflow": "Registry recovery components and Unix Engine transport",
+      "conclusion": "failure",
+      "jobs": [
+        {"jobId": 120312177730, "name": "component-tests", "testsRun": 180, "testsPassed": 177, "testsFailed": 3, "failure": "SAME_SEALED_POSTBOOT_IMPORT_FAILURES"},
+        {"jobId": 120312177472, "name": "native-paused-generation", "conclusion": "success", "testsPassed": 3},
+        {"jobId": 120312177231, "name": "native-current-database", "conclusion": "success", "testsPassed": 2}
+      ]
+    }
+  ],
+  "limits": [
+    "Hosted disposable fixtures; no VPS execution or current target health inference",
+    "Registry image contains a disposable CA; not production target image acceptance",
+    "IAM, HUMAN mandate, APISIX-shaped forwarding proxy and published test data are fixtures",
+    "Full native JVM recovery has not passed",
+    "Finite owner does not establish continuous renewal or reboot resilience"
+  ],
+  "targetExecutionPerformed": false,
+  "runtimeAuthorityIssuedOnTarget": false,
+  "targetOauthRequests": 0,
+  "targetRuntimeEffectsDispatched": 0,
+  "serviceReadinessEstablished": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "releaseAcceptance": false
+}

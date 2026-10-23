@@ -222,7 +222,7 @@ def declaration(commit, sources, loader, source_pins):
     _, packages = compile_sources(sources)
     return {
         'schema': 'ouf.semantic-registry-postboot-source-closure.v1',
-        'sourceCommit': commit, 'sourcePins': dict(source_pins), 'entryModule': ENTRY,
+        'sourceCommit': commit, 'sourcePins': dict(sorted(source_pins.items())), 'entryModule': ENTRY,
         'loaderHash': hashlib.sha256(loader).hexdigest(),
         'sourcePaths': {name: source_path(name) for name in sorted(sources)},
         'sourceHashes': {name: hashlib.sha256(raw).hexdigest() for name, raw in sorted(sources.items())},
@@ -241,6 +241,11 @@ class MemoryLoader(importlib.abc.MetaPathFinder, importlib.abc.Loader):
     def find_spec(self, fullname, path=None, target=None):
         if fullname in self.compiled or fullname in self.packages:
             return importlib.util.spec_from_loader(fullname, self, is_package=fullname in self.packages)
+        if sys.platform == 'linux' and fullname == '_wmi':
+            # Ubuntu Python 3.12 platform probes this Windows-only extension
+            # under an ImportError handler. Preserve that explicit absence;
+            # returning None would permit an undeclared installed substitute.
+            raise ModuleNotFoundError('WINDOWS_WMI_UNAVAILABLE_IN_SEALED_LINUX_RUNTIME', name=fullname)
         root = fullname.split('.')[0]
         if fullname in ALIASES or root == 'tools' or root not in sys.stdlib_module_names:
             raise RuntimeDenied('LOCAL_SOURCE_IMPORT_FALLBACK_DENIED')
