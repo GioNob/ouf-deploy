@@ -498,6 +498,9 @@ def read_prepared(case, manifest):
             and all(private['nativeContext']['retainedInputs'][key] == value
                     for key, value in case['retainedInputs'].items()),
             'SAME_CASE_SOURCE_BOOT_PRIVATE_PREPARATION_REQUIRED')
+    if 'priorPreparation' in case:
+        require(proof.get('priorPreparationReconciliation') == reconcile_prior_preparation(case, files, boot_id),
+                'RETAINED_PREPARATION_RECONCILIATION_CHANGED')
     owner_contract.compile_scope(private['ownerContext'])
     for name, expected in private['ownerContext']['sourceFiles'].items():
         path = str(root / 'source' / (name.replace('.', '_') + '.py'))

@@ -25,6 +25,8 @@ def emit(value):
 
 def public_preparation(value):
     proof = value['preparationProof']
+    prior = proof.get('priorPreparationReconciliation')
+    counts = prior['priorAttemptCounts'] if prior is not None else {'engineGets': 0, 'adminGets': 0, 'frozenConfigurationGets': 0}
     return {'schema': 'ouf.semantic-registry-postboot-preparation-result.v1',
         'status': 'CURRENT_POSTBOOT_INPUTS_PREPARED', 'complete': True,
         'privatePreparationPath': value['privatePreparationPath'],
@@ -32,6 +34,8 @@ def public_preparation(value):
         'sourceClosureHash': proof['sourceClosureHash'],
         'engineGets': proof['engineGets'], 'adminGets': proof['adminGets'],
         'frozenConfigurationGets': proof['frozenConfigurationGets'],
+        'priorPreparationReconciled': prior is not None, 'priorPreparationAttemptCounts': counts,
+        'cumulativePreparationAttemptCounts': {name: counts[name] + proof[name] for name in counts},
         'originalServiceBearerUsed': proof['originalServiceBearerUsed'],
         'ownerCredentialBytesRead': False, 'credentialValuesPrinted': False,
         'addressesPrinted': False, 'databaseCalls': 0, 'oauthRequests': 0,

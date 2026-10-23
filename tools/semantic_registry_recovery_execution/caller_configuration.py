@@ -46,6 +46,9 @@ def configuration(actual, expected=None):
     protected = KEYS + ('springconfig', 'springapplicationjson', 'springprofiles')
     require(not any(any(key in canonical(arg) for key in protected) for arg in args),
             'CALLER_COMMAND_CONFIGURATION_OVERRIDE_REQUIRES_REVIEW')
+    require(not any(value and (canonical(name).startswith(('springprofiles', 'springapplicationjson'))
+            or (canonical(name).startswith('springconfig') and canonical(name) not in SELECTORS))
+            for name, value in env.items()), 'CALLER_SPRING_CONFIGURATION_OVERLAY_REQUIRES_REVIEW')
     selected = {name: value for name, value in env.items() if value and canonical(name) in SELECTORS}
     activation = {name: value for name, value in env.items() if canonical(name) in KEYS}
     if not selected:

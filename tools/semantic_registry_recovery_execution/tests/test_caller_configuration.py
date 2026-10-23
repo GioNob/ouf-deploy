@@ -43,7 +43,7 @@ class CallerConfiguration(unittest.TestCase):
             c.configuration(self.actual)
 
     def test_overlay_channels_fail_before_any_file_read(self):
-        for key in sorted(c.CHANNELS):
+        for key in sorted(c.CHANNELS | {'SPRING_PROFILES_ACTIVE', 'SPRING_CONFIG_NAME', 'spring.application.json'}):
             actual = copy.deepcopy(self.actual); actual['Config']['Env'].append(key + '=override')
             with self.subTest(key=key), patch.object(c, 'ingestion_properties') as reader:
                 with self.assertRaisesRegex(Exception, 'OVERLAY'): c.configuration(actual)
