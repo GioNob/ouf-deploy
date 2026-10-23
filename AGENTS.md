@@ -1,3 +1,9 @@
+# CURRENT — operational owner components qualified; target installer and application repair remain incomplete
+
+Final source a1388bf3c17f060e3f96d0b88e027d889b50f35b: CI40032178372/job120682855310, direct logs inspected:30componenttestsPASS +6actualnativecasesPASS(65.178sec), includingpublicerrorredaction. Sourceunchangedinthisdocumentation/evidencecommit. Alltargeteffects0thisturn, actualtargetstill403/ownerCANCELLED321/nativecheckpoint11; NOinstallation/targetGET200/durablerenewal/releaseclaim. See runningpolicyhandoff. Existing8moduleoperationalcomponentsareNOTcompleteinstaller; finishsignedreview/capsule/singleuseprivilegedfenceCAS/manager sandbox androtation-awareactualacceptancebeforeVPScommand. No rerunoldcapture/probe/grant/apply/cleanup. Allbelowhistorical.
+
+---
+
 # CURRENT — operational owner native IAM/receipt/publisher integration qualification in progress; no target executor yet
 
 Latest qualified component head8119f9f9e350621f35cedfd7166dcbf02cb141bb:CI40031891184/job120681881745 SUCCESS, directlogs inspected:28core/store/contractPASS +6actualnativeTLS/IAM/crypto/UIDpublication/processrestart/60secsecondrenewal/exactIAMCAroundtripPASS(65.918seconds). Safeoutagebackoffrename andindependentIAMCA profile thereforequalifiedinfixtures. Newentry.execute redactsarbitraryexceptions/tracebacksandemitsfixedSTOP_RECONCILEwithoutfalseeffect/readiness/noeffectclaims;2boundarytestsPASS(localtotal30+native6skipped), currentCIneededafterthisnewentrychange. Handoff docs/handoffs/OUF_REGISTRY_RUNNING_POLICY_REPAIR_20261023.md andevidence/semantic-registry-operational-owner-native-ci-20261023.json retainexactprooflimits. PR50descriptionupdatedtorealcurrent403/cancelled321/installerunfinished; no staleclaimtargetpreparedonlyorapprovedworker. No target runtimeactions performed thisturn. Next finishconcretesignedinstallreview+capsule+privilegedfenceCASinstaller+managersandboxandrotation-awareacceptance; noVPScommandyet. Allbelowhistorical.

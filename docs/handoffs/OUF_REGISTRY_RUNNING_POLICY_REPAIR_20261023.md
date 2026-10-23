@@ -83,8 +83,10 @@ Registry policy acceptance evidence. Subsequent changes add six pure contract
 tests, an independent CA roundtrip case and safe-outage backoff semantics. These
 passed at `8119f9f9e350621f35cedfd7166dcbf02cb141bb`, CI `40031891184`,
 job `120681881745`: 28 component tests and six native cases, 65.918 seconds;
-direct logs inspected. The final public error-boundary changes add two local
-tests and still require their own current CI. Local component tests deliberately skip
+direct logs inspected. The final public error-boundary changes passed at
+`a1388bf3c17f060e3f96d0b88e027d889b50f35b`, CI `40032178372`, job
+`120682855310`: 30 component tests and six native cases, 65.178 seconds; direct
+logs inspected. Local component tests deliberately skip
 native gid10001 publication because this sandbox cannot perform that CHOWN.
 
 Still required before a target installation command: complete source capsule,

@@ -1,13 +1,13 @@
 {
   "schema": "ouf.registry-operational-owner-component-qualification.v1",
-  "sourceCommit": "8119f9f9e350621f35cedfd7166dcbf02cb141bb",
-  "workflowRunId": 40031891184,
-  "workflowJobId": 120681881745,
+  "sourceCommit": "a1388bf3c17f060e3f96d0b88e027d889b50f35b",
+  "workflowRunId": 40032178372,
+  "workflowJobId": 120682855310,
   "conclusion": "success",
   "directLogsInspected": true,
-  "componentTestsPassed": 28,
+  "componentTestsPassed": 30,
   "nativeTestsPassed": 6,
-  "nativeElapsedSeconds": 65.918,
+  "nativeElapsedSeconds": 65.178,
   "scope": "DISPOSABLE_COMPONENT_FIXTURE_NOT_TARGET_REPAIR",
   "actualTls": true,
   "actualEd25519ReceiptVerification": true,
@@ -17,7 +17,11 @@
   "restartOnlineReadmissionWithoutNewGrant": true,
   "secondRenewalAfterReal60SecondWait": true,
   "distinctTokensAndAttemptIds": true,
-  "fixtureCumulativeAttempts": [321, 322, 323],
+  "fixtureCumulativeAttempts": [
+    321,
+    322,
+    323
+  ],
   "exactRetainedIamCaSetRoundtrip": true,
   "badSignatureAndTrustReplacementDenied": true,
   "revocationAfterGrantDoesNotPublishOrReplay": true,
@@ -29,5 +33,6 @@
   "targetOriginalRequest200Proven": false,
   "targetDurableRenewalProven": false,
   "targetRuntimeEffectsDispatchedByThisQualification": 0,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "publicErrorBoundaryRedactionVerified": true
 }
