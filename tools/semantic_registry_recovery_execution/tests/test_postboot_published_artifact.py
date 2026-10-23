@@ -14,14 +14,20 @@ ROOT = Path(__file__).resolve().parents[3]
 
 class PublishedArtifact(unittest.TestCase):
     def test_exact_case_capsule_declaration_and_source_membership_record(self):
+        self.check_artifact('evidence/semantic-registry-postboot-source-membership-20261023.json', False)
+
+    def test_properties_capsule_matches_current_sources_and_reconciled_case(self):
+        self.check_artifact('evidence/semantic-registry-postboot-properties-source-membership-20261023.json', True)
+
+    def check_artifact(self, audit_path, current):
         path = ROOT / 'tools/semantic_registry_recovery_execution/delivery.py'
         spec = importlib.util.spec_from_file_location('published_postboot_generator', path)
         delivery = importlib.util.module_from_spec(spec); spec.loader.exec_module(delivery)
-        audit = json.loads((ROOT / 'evidence/semantic-registry-postboot-source-membership-20261023.json').read_bytes())
+        audit = json.loads((ROOT / audit_path).read_bytes())
         capsule = (ROOT / audit['capsule']['path']).read_bytes()
         raw_declaration = (ROOT / audit['declaration']['path']).read_bytes()
         declaration = json.loads(raw_declaration); manifest = declaration['nativeDeclaration']
-        case = json.loads((ROOT / 'releases/semantic-registry-postboot-case-20261023.json').read_bytes())
+        case = json.loads((ROOT / audit.get('casePath', 'releases/semantic-registry-postboot-case-20261023.json')).read_bytes())
         self.assertEqual(delivery.sha(capsule), audit['capsule']['sha256'])
         self.assertEqual(len(capsule), audit['capsule']['bytes'])
         self.assertEqual(delivery.sha(raw_declaration), audit['declaration']['sha256'])
@@ -51,6 +57,8 @@ class PublishedArtifact(unittest.TestCase):
         self.assertEqual(set(payload['sources']), set(manifest['sourceHashes']))
         for name, text in payload['sources'].items():
             raw = text.encode()
+            if current:
+                self.assertEqual(raw, (ROOT / manifest['sourcePaths'][name]).read_bytes())
             self.assertEqual(delivery.sha(raw), manifest['sourceHashes'][name])
             self.assertEqual(hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest(),
                              manifest['sourceGitBlobs'][name])
