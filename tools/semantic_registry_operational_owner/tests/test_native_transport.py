@@ -45,7 +45,10 @@ class NativeOwner(unittest.TestCase):
 
     def setUp(self):
         self.assertEqual(os.geteuid(),0)
-        self.temp=tempfile.TemporaryDirectory(dir=ROOT,prefix='operational-native-fixture-')
+        native_parent=Path('/etc/ouf-operational-owner-native-tests')
+        native_parent.mkdir(mode=0o700,exist_ok=True)
+        self.assertEqual((native_parent.stat().st_uid,native_parent.stat().st_mode&0o777),(0,0o700))
+        self.temp=tempfile.TemporaryDirectory(dir=native_parent,prefix='fixture-')
         self.addCleanup(self.temp.cleanup);self.root=Path(self.temp.name);self.root.chmod(0o700)
         self.openssl=Path(shutil.which('openssl')).resolve(strict=True)
         self.ca=self.root/'ca.pem';tls_key=self.root/'tls.key'
@@ -89,8 +92,10 @@ class NativeOwner(unittest.TestCase):
         self.install=self.root/'installed';self.install.mkdir(mode=0o700)
         self.ledger=self.root/'ledger';self.ledger.mkdir(mode=0o700)
         self.output=self.root/'output';self.output.mkdir(mode=0o750);os.chown(self.output,0,10001)
-        self.secret=self.write(self.root/'credential',b'DISPOSABLE_FIXTURE_SECRET',0o400)
+        self.credential_directory=self.root/'credential-input';self.credential_directory.mkdir(mode=0o700)
+        self.secret=self.write(self.credential_directory/'credential',b'DISPOSABLE_FIXTURE_SECRET',0o400)
         self.common=self.write(self.root/'common.lock',b'')
+        self.unit=self.write(self.root/'fixture.service',b'SYNTHETIC_UNIT_NOT_MANAGER_QUALIFICATION\n',0o644)
         self.fence=self.write(self.root/'fence.json',core.encoded({'fixtureOwner':'operational'}))
         self.policy=core.RenewalPolicy(60,240,15,30,3,10,(5,15,60))
         context=ssl.create_default_context(cadata=self.ca.read_text('ascii'))
@@ -103,12 +108,17 @@ class NativeOwner(unittest.TestCase):
         self.signing_key=self.root/'fixture-signing.pem'
         self.native('genpkey','-algorithm','ED25519','-out',str(self.signing_key));self.signing_key.chmod(0o600)
         self.public=self.native('pkey','-in',str(self.signing_key),'-pubout','-outform','DER')[12:].hex()
-        self.ctx={'installationRef':'fixture-installation','entityRef':'fixture-entity','attestorRef':'fixture-attestor'}
-        self.trust=self.write(self.root/'trust.json',core.encoded(dict(
+        self.ctx={'installationRef':'fixture-installation','entityRef':'fixture-entity','attestorRef':'fixture-attestor',
+                  'intentIssuerRef':'fixture-installer','approvalIssuerRef':'fixture-installer'}
+        self.public_directory=self.root/'public-trust';self.public_directory.mkdir(mode=0o700)
+        self.trust=self.write(self.public_directory/'trust.json',core.encoded(dict(
             schema='ouf.semantic-deployment-trust-policy.v1',installationRef=self.ctx['installationRef'],
             entityRef=self.ctx['entityRef'],keys=[dict(keyRef='fixture-attestor-key',
                 issuerRef=self.ctx['attestorRef'],roles=['CREATION_ATTESTATION'],publicKey=self.public,
-                notBefore=int(time.time())-60,expiresAt=int(time.time())+3600,state='ACTIVE')])))
+                notBefore=int(time.time())-60,expiresAt=int(time.time())+3600,state='ACTIVE'),
+                dict(keyRef='fixture-installer-key',issuerRef=self.ctx['intentIssuerRef'],
+                    roles=['DEPLOYMENT_INTENT','FINAL_DEPLOYMENT_APPROVAL'],publicKey=self.public,
+                    notBefore=int(time.time())-60,expiresAt=int(time.time())+3600,state='ACTIVE')])))
         manifest={'schema':'ouf.registry-operational-owner-sources.v1','sourceCommit':'a'*40,
                   'sourceHashes':{},'dependencyClosureHash':'b'*64,'bootstrapHash':'c'*64}
         for name in contract.SOURCE_NAMES:
@@ -122,12 +132,14 @@ class NativeOwner(unittest.TestCase):
             'fenceBinding':{'path':str(self.fence),'value':{'fixtureOwner':'operational'}},
             'commonLockIdentity':list(store.file_identity(self.common.stat())),
             'verification':{'trustPolicy':self.binding(self.trust),'openssl':dict(self.binding(self.openssl),
-                version=self.native('version').decode().split()[1]),'context':self.ctx},'tlsCa':self.binding(self.ca)}
+                version=self.native('version').decode().split()[1]),'context':self.ctx},'tlsCa':self.binding(self.ca),
+            'serviceUnitPath':str(self.unit)}
         self.config_path=self.write(self.install/'configuration.json',core.encoded(self.config))
         self.config_hash=hashlib.sha256(self.config_path.read_bytes()).hexdigest()
         self.receipt={'schema':'ouf.registry-operational-token-installation-receipt.v1','complete':True,
             'configurationHash':self.config_hash,'proposalHash':self.config['proposalHash'],
-            'sourceManifestHash':core.digest(manifest),'operationalRenewalInstalled':True,'priorControlledAttempts':321}
+            'sourceManifestHash':core.digest(manifest),'operationalRenewalInstalled':True,'priorControlledAttempts':321,
+            'serviceUnitPath':str(self.unit),'serviceUnitHash':self.binding(self.unit)['sha256']}
         self.write(self.install/'installed.json',core.encoded(self.receipt))
         self.signatures=self.install/'receipt-signatures';self.signatures.mkdir(mode=0o700)
         self.sign_receipt()

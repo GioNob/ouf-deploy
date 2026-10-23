@@ -82,7 +82,8 @@ class Contract(unittest.TestCase):
         proposal=self.proposal();sources=[{'path':'/fixture/capsule.py','sha256':'f'*64,'maximumBytes':1048576}]
         result=installation.configuration(proposal,sources=sources,
             fence_binding={'path':'/fixture/fence','value':{'newOwner':'fixture'}},
-            common_lock_identity=[1]*9,verification={'trustPolicy':{},'openssl':{},'context':{}})
+            common_lock_identity=[1]*9,verification={'trustPolicy':{},'openssl':{},'context':{}},
+            service_unit_path='/fixture/owner.service')
         self.assertEqual(result['predecessorInputsHash'],core.digest(self.inputs))
         self.assertEqual(result['tlsCa'],self.ca)
         sources[0]['path']='/fixture/changed'

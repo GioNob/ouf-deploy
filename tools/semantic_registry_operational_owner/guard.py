@@ -64,7 +64,7 @@ class InstalledGuard:
         self.configuration=private_json(self.path,configuration_hash)
         c=self.configuration
         require(set(c)=={'schema','proposalHash','sourceManifest','sources','ownerInputs','policy','destinations',
-                         'priorControlledAttempts','predecessorInputsHash','fenceBinding','commonLockIdentity','verification','tlsCa'}
+                         'priorControlledAttempts','predecessorInputsHash','fenceBinding','commonLockIdentity','verification','tlsCa','serviceUnitPath'}
                 and c['schema']=='ouf.registry-operational-token-configuration.v1'
                 and c['priorControlledAttempts']==321, 'EXACT_INSTALLED_OPERATIONAL_CONFIGURATION_REQUIRED')
         self.fd=None;self.pid=None
@@ -87,6 +87,10 @@ class InstalledGuard:
         ctx=c['verification']['context']
         require(self.verifier(encoded(receipt),'CREATION_ATTESTATION',ctx['attestorRef'],ctx['installationRef'],ctx['entityRef']) is True,
                 'CURRENT_SCOPED_INSTALLATION_RECEIPT_SIGNATURE_REQUIRED')
+        require(receipt.get('serviceUnitPath')==c['serviceUnitPath']
+                and type(receipt.get('serviceUnitHash')) is str and len(receipt['serviceUnitHash'])==64,
+                'SIGNED_OPERATIONAL_MANAGER_UNIT_BINDING_REQUIRED')
+        protected_file(c['serviceUnitPath'],65536,expected=receipt['serviceUnitHash'],modes=(0o600,0o644))
         from .contract import SOURCE_NAMES
         manifest=c['sourceManifest']
         require(set(manifest['sourceHashes'])==SOURCE_NAMES,'COMPLETE_EXECUTING_OPERATIONAL_SOURCE_MANIFEST_REQUIRED')
