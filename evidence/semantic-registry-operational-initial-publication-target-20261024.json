@@ -18,5 +18,22 @@
   "budgetReset": false,
   "originalSemanticGetSucceeded": false,
   "releaseAcceptance": false,
-  "operatorLog": "/home/oufadmin/ouf-registry-normal-launch.CP13rdcp/operator.log"
+  "operatorLog": "/home/oufadmin/ouf-registry-normal-launch.CP13rdcp/operator.log",
+  "laterUserObservation": {
+    "status": "CURRENT_OWNER_AND_HOST_TLS_OBSERVED",
+    "workerState": "RETRY_WAIT",
+    "reasonCode": "NO_SUBMISSION_PROVEN_BOUNDED_BACKOFF",
+    "version": 12,
+    "newAttempts": 4,
+    "cumulativeAttempts": 325,
+    "consecutiveProvenNoSubmissionFailures": 4,
+    "publications": 0,
+    "managerRestarts": 0,
+    "managerActive": true,
+    "hostTlsVerified": true,
+    "hostTlsIsNotWorkerConnectivityProof": true,
+    "httpRequests": 0,
+    "oauthRequests": 0,
+    "operatorLog": "/home/oufadmin/ouf-renewal-observation.qvEOuMzE/operator.log"
+  }
 }

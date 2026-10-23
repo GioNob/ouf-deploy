@@ -1,6 +1,7 @@
 """Real installation/manager sandbox, with declared synthetic history and IAM."""
 import copy
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -100,6 +101,40 @@ class Installation(unittest.TestCase):
             time.sleep(0.5)
         self.assertEqual(state,'0')
         self.assertEqual(sum(p.endswith('/token') for p,_ in self.fixture.calls),2)
+
+    def test_temporary_network_probe_actual_cgroup_root_allow_and_deny_without_worker_restart(self):
+        spec=importlib.util.spec_from_file_location('actual_worker_network_probe',ROOT/'scripts/probe-registry-operational-network-20261024.py')
+        probe=importlib.util.module_from_spec(spec);spec.loader.exec_module(probe)
+        f=fixture_installation.prepare(self.fixture,ROOT,real_unit=True);review=f['review'];c=review['configuration']
+        unit=Path(c['serviceUnitPath']);self.addCleanup(self.cleanup_unit,unit.name,unit)
+        installation.install_files(review,f['authority'],f['attestor'])
+        self.manager('daemon-reload');self.manager('start',unit.name);self.wait_publications(c,1,45)
+        pid=int(self.manager('show',unit.name,'--property=MainPID','--value').strip())
+        group=self.manager('show',unit.name,'--property=ControlGroup','--value').strip()
+        ledger=Path(c['destinations']['ledgerRoot'])/'state.json';before=ledger.read_bytes()
+        ca=Path(c['tlsCa']['path']).read_bytes();calls=sum(path.endswith('/token') for path,_ in self.fixture.calls)
+        result=probe.in_worker_group(c,pid,group,ca)
+        self.assertTrue(result['probeProcessExited'] and result['workerGenerationUnchanged'])
+        self.assertEqual(result['probe']['httpStatus'],200);self.assertTrue(result['probe']['discoveryMatchesConfiguredEndpoints'])
+        self.assertTrue(result['probe']['privateRootEntered'] and result['probe']['capabilitiesDropped'])
+        self.assertEqual(ledger.read_bytes(),before)
+        self.assertEqual(sum(path.endswith('/token') for path,_ in self.fixture.calls),calls)
+        self.assertEqual(int(self.manager('show',unit.name,'--property=MainPID','--value').strip()),pid)
+        # A separate disposable sleep unit has the SAME private root and deny
+        # policy but no IP allow rule. No production unit is edited here.
+        deny=unit.with_name(unit.stem+'-probe-deny.service');self.addCleanup(self.cleanup_unit,deny.name,deny)
+        lines=[]
+        for line in review['serviceUnit']['body'].splitlines():
+            if line.startswith('IPAddressAllow='):continue
+            if line.startswith('ExecStart='):line='ExecStart=/usr/bin/sleep 60'
+            lines.append(line)
+        deny.write_text('\n'.join(lines)+'\n');deny.chmod(0o644)
+        self.manager('daemon-reload');self.manager('start',deny.name)
+        denied_pid=int(self.manager('show',deny.name,'--property=MainPID','--value').strip())
+        denied_group=self.manager('show',deny.name,'--property=ControlGroup','--value').strip()
+        denied=probe.in_worker_group(c,denied_pid,denied_group,ca)
+        self.assertFalse(denied['probe']['tcpConnected']);self.assertFalse(denied['probe']['httpGetAttempted'])
+        self.assertIn(denied['probe']['errorClass'],('TIMEOUT','CONNECTION_ERROR'))
 
 
 if __name__=='__main__':unittest.main()

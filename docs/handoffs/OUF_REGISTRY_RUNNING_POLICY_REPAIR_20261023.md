@@ -190,3 +190,31 @@ Seven focused tests pass, including real loopback TLS identity verification,
 certificate rejection, refusal, protected-file and claim boundaries, redaction,
 and an explicitly synthetic manager/transport full-observation fixture.
 The eight operational modules and installed capsule are unchanged.
+
+## Host TLS observation and next network comparison
+
+User result qvEOuMzE reports RETRY_WAIT/version12, four consecutive proven
+no-submission failures, cumulative325, zero publications and zero process
+restarts. The manager is active, private root/unit hash match, and NNP is set.
+A single TLS connection from outside the worker cgroup verified the configured
+IAM peer, chain and hostname. No credentials, HTTP or OAuth were used.
+The observer claim is consumed. Do not replay it or restart the worker.
+
+The network comparison candidate creates exactly one temporary probe process,
+moves only that child into the already identified worker cgroup and enters
+that worker's private root. It drops capabilities, sets NNP and closes inherited
+host descriptors before creating sockets. A fresh host TLS comparison and the
+child TLS/public discovery GET use the exact configured peer/SNI/CA. No bearer,
+credential, grant, redirect or alternate endpoint is used. The child is reaped;
+the unit, original PID, policy and ledger are not edited. This explicitly has
+one transient cgroup-membership effect and does not claim readOnlyRuntime.
+PID start ticks, root/network namespace and cgroup identity must match before
+and after, and the actual manager generation must remain unchanged. The probe
+does not reproduce the worker's pre-existing seccomp/environment restrictions.
+
+The comparison has its own fixed fsynced one-use claim and does not reset any
+prior scope. It allows at most two TLS connections and one public discovery
+GET, with bounded child/parent deadlines and redacted phase/errno/status/equality
+output. Four real loopback TLS/HTTP tests pass. An actual native cgroup/root
+allow-versus-deny test is being qualified before target delivery; fixture-only
+units must not be confused with editing a production worker unit.
