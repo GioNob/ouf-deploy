@@ -239,5 +239,11 @@ class WireReviewWrapper(ReviewWrapper):
     audit_path = 'evidence/semantic-registry-postboot-wire-source-membership-20261023.json'
 
 
+class ByteReviewWrapper(ReviewWrapper):
+    wrapper = ROOT / 'releases/semantic-registry-postboot-byte-prepare-review-20261023.sh'
+    capsule_name = 'semantic-registry-postboot-byte-20261023.py'
+    audit_path = 'evidence/semantic-registry-postboot-byte-source-membership-20261023.json'
+
+
 if __name__ == '__main__':
     unittest.main()
