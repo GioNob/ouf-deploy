@@ -28,7 +28,7 @@ def unique(pairs):
 mode=None
 try:
  require(os.geteuid()==os.getegid()==0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,'ISOLATED_ROOT_POSTBOOT_CAPSULE_REQUIRED')
- require(1<=len(sys.argv[1:])<=4 and sys.argv[1] in ('prepare','review','issue','install','bootstrap','resume','owner','continue','status'),'ONE_EXPLICIT_POSTBOOT_MODE_REQUIRED');mode=sys.argv[1]
+ require(1<=len(sys.argv[1:])<=4 and sys.argv[1] in ('prepare','review','issue','install','bootstrap','owner','continue','status'),'ONE_EXPLICIT_POSTBOOT_MODE_REQUIRED');mode=sys.argv[1]
  require(hashlib.sha256(BOOTSTRAP.encode()).hexdigest()==DELIVERY['bootstrapHash'] and hashlib.sha256(encoded(DELIVERY)).hexdigest()==DELIVERY_HASH,'POSTBOOT_DELIVERY_DECLARATION_CHANGED')
  require(type(CASE)is dict and hashlib.sha256(encoded(CASE)).hexdigest()==DELIVERY['caseHash'],'POSTBOOT_CASE_CHANGED')
  signal.signal(signal.SIGALRM,lambda *_:require(False,'FINITE_POSTBOOT_OPERATION_DEADLINE'));signal.alarm(900)
@@ -53,7 +53,7 @@ try:
 except (Exception,KeyboardInterrupt)as error:
  signal.alarm(0)
  code=str(error);reason=code if re.fullmatch('[A-Z][A-Z0-9_]{0,127}',code)else'POSTBOOT_OUTCOME_UNPROVEN_PRIVATE_DETAILS_REDACTED'
- print(encoded({'schema':'ouf.semantic-registry-postboot-operator-result.v1','status':'STOP_RECONCILE','complete':False,'reasonCode':reason,'contextsAndClaimsRetained':True,'runtimeEffectsMayBePartial':mode in('issue','install','bootstrap','resume','owner','continue'),'automaticReplayAllowed':False,'budgetReset':False,'releaseAcceptance':False}).decode(),flush=True)
+ print(encoded({'schema':'ouf.semantic-registry-postboot-operator-result.v1','status':'STOP_RECONCILE','complete':False,'reasonCode':reason,'contextsAndClaimsRetained':True,'runtimeEffectsMayBePartial':mode in('issue','install','bootstrap','owner','continue'),'automaticReplayAllowed':False,'budgetReset':False,'releaseAcceptance':False}).decode(),flush=True)
  raise SystemExit(2)
 '''
 
@@ -144,16 +144,18 @@ def generate(root, case, source_commit, source_pins):
     compressed = output.getvalue()
     if len(compressed) > 2097152:
         raise ValueError('POSTBOOT_COMPRESSED_CAPSULE_LIMIT')
+    bootstrap = (BOOTSTRAP.replace("'install','bootstrap','owner'", "'install','bootstrap','resume','owner'")
+                 if 'resumption' in case else BOOTSTRAP)
     declaration = {
         'schema': 'ouf.semantic-registry-postboot-delivery.v1',
         'nativeDeclaration': manifest, 'caseHash': sha(encoded(case)),
-        'bootstrapHash': sha(BOOTSTRAP.encode()), 'runtimeAuthorityIssued': False,
+        'bootstrapHash': sha(bootstrap.encode()), 'runtimeAuthorityIssued': False,
         'targetExecutionPerformed': False, 'releaseAcceptance': False,
     }
     artifact = ('CASE=' + repr(json.loads(encoded(case))) + '\nDELIVERY=' + repr(declaration)
                 + '\nDELIVERY_HASH=' + repr(sha(encoded(declaration)))
                 + '\nPACKED=' + repr(base64.b64encode(compressed).decode())
-                + '\nBOOTSTRAP=' + repr(BOOTSTRAP)
+                + '\nBOOTSTRAP=' + repr(bootstrap)
                 + '\nexec(compile(BOOTSTRAP,"<postboot-operator-capsule>","exec"))\n').encode()
     if len(artifact) > 3145728:
         raise ValueError('POSTBOOT_OPERATOR_ARTIFACT_LIMIT')

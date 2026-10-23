@@ -129,6 +129,8 @@ class Resumption(unittest.TestCase):
                 r.proposed_epoch(self.plan,self.old,self.reads,self.scope,'f'*64,issued,expires,wall,1950)
         row=copy.deepcopy(self.old);row['resumption']={}
         with self.assertRaises(c.RecoveryDenied):c.validate_current(self.plan,row,row['bootId'],(100,50))
+        with self.assertRaises(c.RecoveryDenied):
+            r.proposed_epoch(self.plan,self.old,self.reads,self.scope,'f'*64,2000,2900,2000,49)
 
 
 class Preparation(unittest.TestCase):

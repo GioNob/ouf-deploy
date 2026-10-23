@@ -87,6 +87,7 @@ def validate_epoch(plan, row):
             and value.get('predecessorJournalHash') == digest(old) and value.get('predecessorNativeReadsHash') == digest(reads)
             and value.get('sameGeneration') == old['newGeneration'] == row['newGeneration']
             and old['bootId'] == row['bootId'] and old['authorityHash'] != row['authorityHash']
+            and row['createdUnix'] >= old['lastUnix'] and row['createdMonotonic'] >= old['lastMonotonic']
             and row['version'] > old['version'] and row['readAttempts'] >= old['readAttempts']
             and row['maximumReadAttempts'] == old['maximumReadAttempts']
             and value.get('remainingNativeReadAttempts') == 128 - old['readAttempts']
@@ -110,7 +111,8 @@ def proposed_epoch(plan, old, reads, signed_scope, authority_hash, issued, expir
     require(signed_scope.get('predecessorJournalHash') == digest(old) and signed_scope.get('predecessorNativeReadsHash') == digest(reads)
             and signed_scope.get('schema') == SCHEMA and signed_scope.get('planHash') == digest(plan)
             and all(type(v) in (int, float) and math.isfinite(v) for v in (issued, expires, wall, mono))
-            and issued <= wall < expires and 0 < expires - wall <= 900 and hashed(authority_hash),
+            and issued <= wall < expires and 0 < expires - wall <= 900
+            and wall >= old['lastUnix'] and mono >= old['lastMonotonic'] and hashed(authority_hash),
             'FRESH_SIGNED_SUCCESSOR_SCOPE_REQUIRED')
     result = copy.deepcopy(old)
     result.update(schema=EPOCH, authorityHash=authority_hash, createdUnix=wall, createdMonotonic=mono,

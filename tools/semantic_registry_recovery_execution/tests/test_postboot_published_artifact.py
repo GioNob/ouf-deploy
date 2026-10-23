@@ -28,8 +28,8 @@ class PublishedArtifact(unittest.TestCase):
     def test_wire_capsule_matches_current_sources_and_retained_response_case(self):
         self.check_artifact('evidence/semantic-registry-postboot-wire-source-membership-20261023.json', False)
 
-    def test_byte_budget_capsule_matches_current_sources_and_retained_stop_case(self):
-        self.check_artifact('evidence/semantic-registry-postboot-byte-source-membership-20261023.json', True)
+    def test_immutable_byte_budget_capsule_and_retained_stop_case(self):
+        self.check_artifact('evidence/semantic-registry-postboot-byte-source-membership-20261023.json', False)
 
     def check_artifact(self, audit_path, current):
         path = ROOT / 'tools/semantic_registry_recovery_execution/delivery.py'
