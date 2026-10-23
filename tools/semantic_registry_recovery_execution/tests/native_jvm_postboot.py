@@ -325,6 +325,43 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
         return {'source': str(path), 'target': target, 'readOnly': True, 'uid': uid, 'gid': gid,
                 'mode': mode, 'maxBytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
 
+    def token_mount_read_probe(self):
+        """Compare one proc read with bounded EOF; expose predicates, never data."""
+        before = self.inspect()
+        pid = before['State']['Pid']
+        self.assertGreater(pid, 0)
+        fd = os.open('/proc/' + str(pid) + '/mountinfo', os.O_RDONLY | os.O_NOFOLLOW)
+        try:
+            first = os.read(fd, 131073)
+            complete = first
+            while True:
+                self.assertLessEqual(len(complete), 131072, 'Disposable mountinfo exceeds unchanged bound')
+                chunk = os.read(fd, 131073 - len(complete))
+                if not chunk:
+                    break
+                complete += chunk
+        finally:
+            os.close(fd)
+        self.assertEqual(self.inspect()['State']['Pid'], pid)
+        target = self.recipe['renewableToken']['target']
+
+        def predicates(raw):
+            rows = [line.split() for line in raw.decode('ascii').splitlines()]
+            matches = [row for row in rows if len(row) >= 10 and row[4] == target]
+            return {'singleton': len(matches) == 1,
+                'readonly': len(matches) == 1 and 'ro' in matches[0][5].split(',')
+                    and 'rw' not in matches[0][5].split(','),
+                'noOptionalFields': len(matches) == 1 and '-' in matches[0] and matches[0].index('-') == 6,
+                'noSubmounts': not any(len(row) > 4 and row[4].startswith(target + '/') for row in rows)}
+
+        single, full = predicates(first), predicates(complete)
+        return {'schema': 'ouf.disposable-token-mount-read-probe.v1',
+            'singleReadBytes': len(first), 'completeBytes': len(complete),
+            'singleReadPredicates': single, 'completeReadPredicates': full,
+            'originalShortReadExposureObserved': len(first) < len(complete)
+                and not all(single.values()) and all(full.values()),
+            'sameNativePredicatesRequired': True}
+
     def diagnose_native(self):
         """Owned CI paths and differing OCI keys only; never adopt observations."""
         if os.environ.get('GITHUB_ACTIONS') != 'true':
@@ -379,6 +416,7 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
             report['tokenEngineMounts'] = [{key: mount.get(key) for key in ('Type', 'RW', 'Propagation')}
                 for mount in registry['Mounts'] if mount['Destination'] == target]
             if type(pid) is int and pid > 0 and registry['State']['Pid'] == pid:
+                report['mountReadProbe'] = self.token_mount_read_probe()
                 with open('/proc/' + str(pid) + '/mountinfo', 'rb') as stream:
                     mountinfo = stream.read(2097153)
                 if len(mountinfo) <= 2097152:
@@ -605,6 +643,9 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
         self.install_owner()
         worker, coordination, _, _, statuses = self.run_worker()
         self.assertEqual(statuses[-1]['state'], 'ACTIVE', statuses[-1])
+        probe = self.token_mount_read_probe()
+        print(json.dumps(probe, sort_keys=True), flush=True)
+        self.assertTrue(all(probe['completeReadPredicates'].values()), probe)
         with coordination:
             runner = build_on_bootstrap(self.runner, self.native_context, self.owner_context,
                 self.current_authority, self.authority, self.verifier, self.node_signer)
