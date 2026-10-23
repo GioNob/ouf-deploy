@@ -5,6 +5,8 @@ on:
     paths:
       - tools/semantic_registry_recovery_execution/**
       - releases/semantic-registry-postboot-resolver*
+      - scripts/observe-registry-frozen-response-20261023.py
+      - releases/semantic-registry-frozen-response-20261023.sh
       - scripts/verify-registry-caller-resolver-20261023.py
       - tools/semantic_registry_recovery_execution/tests/test_caller_resolver_view.py
       - releases/semantic-registry-caller-resolver-20261023.sh
@@ -13,6 +15,8 @@ on:
     paths:
       - tools/semantic_registry_recovery_execution/**
       - releases/semantic-registry-postboot-resolver*
+      - scripts/observe-registry-frozen-response-20261023.py
+      - releases/semantic-registry-frozen-response-20261023.sh
       - scripts/verify-registry-caller-resolver-20261023.py
       - tools/semantic_registry_recovery_execution/tests/test_caller_resolver_view.py
       - releases/semantic-registry-caller-resolver-20261023.sh
@@ -49,3 +53,6 @@ jobs:
           sudo "$ouf_resolver_python" -I -B -S -m unittest discover \
             -s /root/ouf-caller-resolver-tests/repository/tools/semantic_registry_recovery_execution/tests \
             -p test_lookup_transport.py -v
+          sudo "$ouf_resolver_python" -I -B -S -m unittest discover \
+            -s /root/ouf-caller-resolver-tests/repository/tools/semantic_registry_recovery_execution/tests \
+            -p test_frozen_response_observer.py -v
