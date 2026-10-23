@@ -31,8 +31,11 @@ def predecessor(plan, row, reads):
                     ('nativeRequestAttempted', 'nativeAttestationAttempted')),
             'DURABLE_START_AND_PAUSE_WITH_NO_LATER_EFFECT_REQUIRED')
     require(type(reads) is dict and reads.get('schema') == 'ouf.semantic-registry-recovery-native-read-journal.v1'
+            and set(reads)=={'schema','scopeHash','authorityHash','counts','version','budgetReset'}
+            and hashed(reads.get('scopeHash'))
             and reads.get('authorityHash') == row['authorityHash'] and reads.get('budgetReset') is False
             and reads.get('counts') == {'databaseSessions': 1, 'gatewayAdminGets': 6, 'semanticGets': 0}
+            and all(type(value) is int for value in reads['counts'].values())
             and type(reads.get('version')) is int and reads['version'] >= 0,
             'EXACT_CONSUMED_PREDECESSOR_NATIVE_READS_REQUIRED')
 

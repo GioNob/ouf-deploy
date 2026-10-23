@@ -112,7 +112,7 @@ class Resumption(unittest.TestCase):
         self.assertEqual(scope['firstGrantReceiptHash'],oc.compile_scope(self.owner['predecessorContext'])['firstGrantReceiptHash'])
         self.assertFalse(scope['firstGrantReplayAllowed']);self.assertEqual(before,self.owner)
     def test_owner_cannot_hide_previous_attempt_change_boot_or_revive_active_session(self):
-        for key,value in (('controlledCumulativeGrantAttempts',319),('attempts',0),('state','ACTIVE'),('bootId','wrong')):
+        for key,value in (('controlledCumulativeGrantAttempts',319),('attempts',0),('attempts',True),('state','ACTIVE'),('bootId','wrong')):
             context=copy.deepcopy(self.owner);context['retainedRecords']['recovery.json'][key]=value
             context['resumptionInputs']['retainedOwnerJournal'][key]=value
             context['resumptionBinding']['sha256']=c.digest(context['resumptionInputs'])

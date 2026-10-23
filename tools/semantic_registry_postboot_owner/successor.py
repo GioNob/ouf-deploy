@@ -42,13 +42,13 @@ def compile_successor(context):
             and row.get('firstGrantReceiptHash') == digest(first) == prior['firstGrantReceiptHash']
             and first == previous['retainedRecords']['owner-first-grant.json']
             and row.get('controlledPredecessorGrantAttempts') == prior['predecessorGrantAttempts'] == 319
-            and row.get('attempts') == 1 and row.get('controlledCumulativeGrantAttempts') == 320
+            and integer(row.get('attempts'),1,1) and row.get('controlledCumulativeGrantAttempts') == 320
             and row.get('gateGeneration') == inputs['retainedNativeJournal']['newGeneration']
             and inputs['retainedFence'] == prior['fenceBinding'],
             'CANCELLED_POSTBOOT_ACCOUNTING_FIRST_GRANT_AND_GENERATION_REQUIRED')
     budget = context['budget']
     require(type(budget) is dict and set(budget) == {'maximumGrantAttempts','maximumSeconds','attemptTimeoutSeconds','intervalSeconds'}
-            and budget['maximumGrantAttempts'] == 1 and integer(budget['maximumSeconds'],1,900)
+            and integer(budget['maximumGrantAttempts'],1,1) and integer(budget['maximumSeconds'],1,900)
             and integer(budget['attemptTimeoutSeconds'],1,min(30,budget['maximumSeconds']))
             and integer(budget['intervalSeconds'],1,3600), 'ONE_EXPLICIT_PROPOSED_SUCCESSOR_GRANT_ONLY')
     source = context['sourceFiles']
