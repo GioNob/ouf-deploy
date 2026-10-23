@@ -181,18 +181,22 @@ class Controller(unittest.TestCase):
             self.wait.before_poll(self.runner, self.witness)
         self.assertEqual(self.store.read()['readAttempts'], after['readAttempts'])
 
-    def coordinated(self, *, missing_ack=False, crash=False, end_on_wait=False):
+    def coordinated(self, *, missing_ack=False, crash=False, end_on_wait=False, termination='token_expiry'):
         self.advance(4)
         self.ports.unknown = {9: 1, 10: 1, 11: 1}
         self.ports.missing_ack, self.ports.crash = missing_ack, crash
         finish, waiting, heartbeat = threading.Event(), threading.Event(), threading.Event()
-        case = self; records = []
+        case = self; records = []; self.last_records = records
         class SimulatedWorker:
             def __init__(self):
                 self.ended, self.shared_lock, self.overlap = False, None, False
-                self.r = SimpleNamespace(journal=SimpleNamespace(read=lambda: {
-                    'tokenExpiresWall': 800, 'tokenExpiresMonotonic': 750}),
-                    now=lambda: tuple(case.clocks), remaining=lambda row: 600)
+                self.row = {'state': 'ACTIVE', 'reason': 'PUBLICATION_VERIFIED',
+                    'contextRef': 'fixture-context', 'generationRef': 'fixture-generation', 'policyHash': 'fixture-policy',
+                    'startedWall': 100, 'startedMonotonic': 50, 'lastWall': 100, 'lastMonotonic': 50,
+                    'tokenExpiresWall': 800, 'tokenExpiresMonotonic': 750}
+                self.r = SimpleNamespace(journal=SimpleNamespace(read=lambda: copy.deepcopy(self.row)),
+                    now=lambda: tuple(case.clocks), remaining=lambda row: 800-(case.clocks[0]-100),
+                    policy=SimpleNamespace(max_elapsed=800), validate=lambda row: None)
             def run(self, stop, observe, coordination_lock):
                 self.shared_lock = coordination_lock
                 try:
@@ -205,7 +209,17 @@ class Controller(unittest.TestCase):
                                 heartbeat.set()
                                 if end_on_wait:
                                     return {'state': 'BLOCKED'}
-                    return {'state': 'CANCELLED'}
+                    if termination == 'raise':
+                        raise RuntimeError('PRIVATE_SIMULATED_OWNER_FAILURE')
+                    if termination == 'token_expiry':
+                        case.clocks[:] = [800, 750]
+                        self.row.update(state='RECONCILE_REQUIRED', reason='TOKEN_VALIDITY_WINDOW_EXPIRED',
+                                        lastWall=800, lastMonotonic=750)
+                    elif termination == 'blocked':
+                        self.row.update(state='BLOCKED', reason='AUTHORITY_REVOKED')
+                    else:
+                        self.row.update(state='CANCELLED', reason='CANCELLED_BY_OWNER')
+                    return copy.deepcopy(self.row)
                 finally:
                     self.ended = True
         worker = SimulatedWorker()
@@ -247,6 +261,7 @@ class Controller(unittest.TestCase):
         result, records = self.coordinated()
         self.assertTrue(result['originalSemanticGetSucceededDuringWindow'])
         self.assertTrue(result['ownerSessionEnded'])
+        self.assertEqual(result['status'], 'FINITE_PUBLISHED_TOKEN_WINDOW_ENDED')
         self.assertFalse(result['continuousServiceRenewalEstablished'])
         self.assertEqual(sum(v.get('status') == 'READ_ONLY_COLD_START_WAIT' for v in records), 3)
         self.assertEqual(self.ports.calls.count('RELEASE_SAME_GENERATION_SIGUSR1'), 1)
@@ -266,6 +281,51 @@ class Controller(unittest.TestCase):
             self.coordinated(end_on_wait=True)
         self.assertEqual(self.store.read()['nextStage'], 9)
         self.assertEqual(self.ports.observations.count(9), 1)
+
+    def test_owner_exception_after_success_preserves_get_truth_and_stops(self):
+        with self.assertRaisesRegex(c.RecoveryDenied, 'OWNER_TERMINATION_REQUIRES_RECONCILIATION'):
+            self.coordinated(termination='raise')
+        result = self.last_records[-1]
+        self.assertEqual(result['status'], 'UNEXPECTED_OWNER_TERMINATION')
+        self.assertTrue(result['originalSemanticGetSucceededDuringWindow'])
+        self.assertFalse(result['currentOwnerAdmissionProven'])
+        self.assertNotIn('PRIVATE_SIMULATED_OWNER_FAILURE', str(self.last_records))
+
+    def test_owner_revocation_after_success_cannot_be_reported_as_normal_end(self):
+        with self.assertRaisesRegex(c.RecoveryDenied, 'OWNER_TERMINATION_REQUIRES_RECONCILIATION'):
+            self.coordinated(termination='blocked')
+        self.assertEqual(self.last_records[-1]['status'], 'UNEXPECTED_OWNER_TERMINATION')
+        self.assertTrue(self.last_records[-1]['originalSemanticGetSucceededDuringWindow'])
+
+    def test_unrequested_owner_cancellation_after_success_is_unexpected(self):
+        with self.assertRaisesRegex(c.RecoveryDenied, 'OWNER_TERMINATION_REQUIRES_RECONCILIATION'):
+            self.coordinated(termination='cancelled')
+        self.assertEqual(self.last_records[-1]['status'], 'UNEXPECTED_OWNER_TERMINATION')
+
+    def test_expected_expiry_requires_closed_reason_and_actual_consistent_clocks(self):
+        active = {'state': 'ACTIVE', 'reason': 'NONE', 'contextRef': 'fixture', 'generationRef': 'generation',
+            'policyHash': 'policy', 'startedWall': 100, 'startedMonotonic': 50, 'lastWall': 110, 'lastMonotonic': 60,
+            'tokenExpiresWall': 300, 'tokenExpiresMonotonic': 250}
+        native = {'expiresUnix': 250, 'expiresMonotonic': 200}
+        final = dict(active); now = [300, 250]
+        worker = SimpleNamespace(r=SimpleNamespace(journal=SimpleNamespace(read=lambda: copy.deepcopy(final)),
+            validate=lambda row: None, now=lambda: tuple(now), policy=SimpleNamespace(max_elapsed=500)))
+        def status():
+            return controller.owner_end_status(worker, {'row': copy.deepcopy(final)}, active, native)
+        final.update(state='RECONCILE_REQUIRED', reason='TOKEN_VALIDITY_WINDOW_EXPIRED')
+        self.assertEqual(status(), 'UNEXPECTED_OWNER_TERMINATION')  # Row stopped before expiry.
+        final.update(lastWall=300, lastMonotonic=250)
+        self.assertEqual(status(), 'FINITE_PUBLISHED_TOKEN_WINDOW_ENDED')
+        final.update(state='BLOCKED', reason='LOCAL_AUTHORITY_UNPROVEN')
+        self.assertEqual(status(), 'UNEXPECTED_OWNER_TERMINATION')  # Expiry cannot explain this generic failure.
+        final['reason'] = 'AUTHORITY_EXPIRED'
+        self.assertEqual(status(), 'FINITE_OWNER_AUTHORITY_WINDOW_ENDED')  # Signed window can precede max_elapsed.
+        final.update(state='PAUSED_EXHAUSTED', reason='FINITE_OWNER_OPERATION_EXHAUSTED')
+        self.assertEqual(status(), 'UNEXPECTED_OWNER_TERMINATION')
+        now[:] = [600, 550]; final.update(lastWall=600, lastMonotonic=550)
+        self.assertEqual(status(), 'FINITE_OWNER_OPERATION_WINDOW_ENDED')
+        now[:] = [599, 549]
+        self.assertEqual(status(), 'UNEXPECTED_OWNER_TERMINATION')  # Future/fabricated stop clocks.
 
 
 if __name__ == '__main__':

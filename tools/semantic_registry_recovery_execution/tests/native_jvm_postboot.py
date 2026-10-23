@@ -98,6 +98,41 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
         cls.daemon_root.chmod(0o700)
         cls.addClassCleanup(shutil.rmtree, cls.daemon_root)
         cls.engine_socket = str(cls.daemon_root / 'docker.sock')
+        # Without --containerd, dockerd can reuse the runner's system service.
+        # Own both daemons, declaring root/state/socket before either starts.
+        containerd_parent = cls.daemon_root / 'exec/containerd'
+        containerd_parent.mkdir(mode=0o700, parents=True)
+        cls.containerd_socket = str(containerd_parent / 'containerd.sock')
+        containerd_config = containerd_parent / 'containerd.toml'
+        containerd_config.write_text('version = 3\n'
+            'root = ' + json.dumps(str(cls.daemon_root / 'data/containerd/daemon')) + '\n'
+            'state = ' + json.dumps(str(containerd_parent / 'daemon')) + '\n'
+            'disabled_plugins = ["io.containerd.cri.v1.images", "io.containerd.cri.v1.runtime", '
+            '"io.containerd.grpc.v1.cri"]\n'
+            '[grpc]\naddress = ' + json.dumps(cls.containerd_socket) + '\n')
+        containerd_config.chmod(0o600)
+        cls.containerd_log = (cls.daemon_root / 'containerd.log').open('wb')
+        cls.addClassCleanup(cls.containerd_log.close)
+        cls.containerd = subprocess.Popen([shutil.which('containerd'), '--config', str(containerd_config)],
+            stdout=cls.containerd_log, stderr=cls.containerd_log)
+
+        def stop_containerd():
+            if cls.containerd.poll() is None:
+                cls.containerd.terminate()
+                try:
+                    cls.containerd.wait(timeout=25)
+                except subprocess.TimeoutExpired:
+                    cls.containerd.kill(); cls.containerd.wait(timeout=5)
+        cls.addClassCleanup(stop_containerd)
+        deadline = time.monotonic() + 30
+        while True:
+            try:
+                checked(shutil.which('ctr'), '--address', cls.containerd_socket, 'version', timeout=10)
+                break
+            except subprocess.CalledProcessError:
+                if cls.containerd.poll() is not None or time.monotonic() >= deadline:
+                    raise AssertionError('Owned containerd did not become ready') from None
+                time.sleep(.2)
         config = cls.daemon_root / 'daemon.json'
         config.write_text(json.dumps({'features': {'containerd-snapshotter': True},
                                      'exec-opts': ['native.cgroupdriver=systemd']}))
@@ -105,6 +140,8 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
         cls.addClassCleanup(cls.engine_log.close)
         cls.daemon = subprocess.Popen([shutil.which('dockerd'), '--config-file', str(config),
             '--data-root', str(cls.daemon_root / 'data'), '--exec-root', str(cls.daemon_root / 'exec'),
+            '--containerd', cls.containerd_socket, '--containerd-namespace', 'moby',
+            '--containerd-plugins-namespace', 'plugins.moby',
             '--pidfile', str(cls.daemon_root / 'pid'), '-H', 'unix://' + cls.engine_socket,
             '--bridge', 'none', '--iptables=false', '--ip6tables=false', '--storage-driver', 'overlayfs'],
             stdout=cls.engine_log, stderr=cls.engine_log)
@@ -339,8 +376,9 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
             config_path = self.daemon_root / 'exec/containerd/containerd.toml'
             if config_path.is_file() and config_path.stat().st_size <= 131072:
                 config = tomllib.loads(config_path.read_text())
-                report['managedContainerd'] = {key: safe_path(config.get(key)) for key in ('root', 'state')}
-                report['managedContainerd']['grpcAddress'] = safe_path(config.get('grpc', {}).get('address'))
+                report['ownedContainerd'] = {key: safe_path(config.get(key)) for key in ('root', 'state')}
+                report['ownedContainerd']['grpcAddress'] = safe_path(config.get('grpc', {}).get('address'))
+                report['ownedContainerd']['processStillRunning'] = self.containerd.poll() is None
             allowed = (type(bundle) is str and Path(bundle).name == self.cid and
                 (Path(bundle).is_relative_to(self.daemon_root) or bundle in (
                     '/run/containerd/io.containerd.runtime.v2.task/moby/' + self.cid,

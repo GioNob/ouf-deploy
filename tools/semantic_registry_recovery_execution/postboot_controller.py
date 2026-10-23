@@ -93,6 +93,43 @@ def public_row(row):
             'permanentRenewalProven': False, 'releaseAcceptance': False}
 
 
+def owner_end_status(worker, outcome, active_row, native_row):
+    """Classify only observed finite expiry; never relabel a crash/revocation."""
+    if outcome.get('failed') or type(outcome.get('row')) is not dict:
+        return 'UNEXPECTED_OWNER_TERMINATION'
+    try:
+        row = outcome['row']
+        require(worker.r.journal.read() == row, 'FINAL_POSTBOOT_OWNER_JOURNAL_CHANGED')
+        worker.r.validate(row)
+        wall, mono = worker.r.now()
+        clocks = (wall, mono, row['startedWall'], row['startedMonotonic'], row['lastWall'],
+                  row['lastMonotonic'], row['tokenExpiresWall'], row['tokenExpiresMonotonic'])
+        require(all(type(value) in (int, float) and math.isfinite(value) for value in clocks)
+                and row['startedWall'] <= active_row['lastWall'] <= row['lastWall'] <= wall
+                and row['startedMonotonic'] <= active_row['lastMonotonic'] <= row['lastMonotonic'] <= mono
+                and all(row[key] == active_row[key] for key in
+                    ('contextRef', 'generationRef', 'policyHash', 'startedWall', 'startedMonotonic')),
+                'FINAL_POSTBOOT_OWNER_CLOCK_OR_IDENTITY_CHANGED')
+        terminal = (row['state'], row['reason'])
+        token_expired = (row['lastWall'] >= row['tokenExpiresWall']
+                         or row['lastMonotonic'] >= row['tokenExpiresMonotonic'])
+        elapsed = (row['lastWall'] - row['startedWall'] >= worker.r.policy.max_elapsed
+                   or row['lastMonotonic'] - row['startedMonotonic'] >= worker.r.policy.max_elapsed)
+        signed_expired = (row['lastWall'] >= native_row['expiresUnix']
+                          or row['lastMonotonic'] >= native_row['expiresMonotonic'])
+        if terminal == ('RECONCILE_REQUIRED', 'TOKEN_VALIDITY_WINDOW_EXPIRED') and token_expired:
+            return 'FINITE_PUBLISHED_TOKEN_WINDOW_ENDED'
+        if terminal == ('PAUSED_EXHAUSTED', 'FINITE_OWNER_OPERATION_EXHAUSTED') and elapsed:
+            return 'FINITE_OWNER_OPERATION_WINDOW_ENDED'
+        if terminal == ('BLOCKED', 'AUTHORITY_EXPIRED') and (elapsed or signed_expired):
+            return 'FINITE_OWNER_AUTHORITY_WINDOW_ENDED'
+    except Exception:
+        # Public output must preserve the historical GET without disclosing a
+        # private exception or pretending that unproven teardown was normal.
+        pass
+    return 'UNEXPECTED_OWNER_TERMINATION'
+
+
 def advance(runner, target, emit):
     require(type(target) is int and 0 <= target <= 12, 'CLOSED_POSTBOOT_CHECKPOINT_REQUIRED')
     while True:
@@ -207,12 +244,18 @@ def continue_recovery(native_context, owner_context, authority, raw, verifier, s
         # immediately would revoke its marker as soon as the GET succeeded.
         while thread.is_alive():
             thread.join(timeout=1)
-        return {'schema': 'ouf.semantic-registry-postboot-finite-session-result.v1',
+        ending = owner_end_status(worker, outcome, token_row, row)
+        result = {'schema': 'ouf.semantic-registry-postboot-finite-session-result.v1',
+                'status': ending,
                 'originalSemanticGetSucceededDuringWindow': success,
                 'ownerSessionEnded': True, 'currentOwnerAdmissionProven': False,
                 'continuousServiceRenewalEstablished': False,
                 'automaticReplayAllowed': False, 'budgetReset': False,
                 'releaseAcceptance': False}
+        if ending == 'UNEXPECTED_OWNER_TERMINATION':
+            emit(result)
+            require(False, 'POSTBOOT_OWNER_TERMINATION_REQUIRES_RECONCILIATION')
+        return result
     finally:
         stop.set()
         # The grant/native transports have independent bounded timeouts. Do not
