@@ -3,6 +3,8 @@ import copy
 import hashlib
 import importlib.util
 import json
+import os
+import subprocess
 from pathlib import Path
 import tempfile
 import unittest
@@ -70,6 +72,50 @@ class Observer(unittest.TestCase):
         first = d.observation_root('/fixture', claim, 'same')
         self.assertEqual(first, d.observation_root('/fixture', copy.deepcopy(claim), 'same'))
         self.assertNotEqual(first, d.observation_root('/fixture', claim, 'different'))
+
+
+class Delivery(unittest.TestCase):
+    def fixture(self, directory, content):
+        binary = directory / 'bin'; binary.mkdir()
+        for name, text in {
+            'gh': '#!/bin/sh\nprintf "%s\\n" "$*" >> "$HOME/gh.calls"\ncat "$HOME/source.py"\n',
+            'sudo': '#!/bin/sh\ntest "$1" = -- || exit 9\nshift\nexec "$@"\n'}.items():
+            target = binary / name; target.write_text(text); target.chmod(0o700)
+        (directory / 'source.py').write_bytes(content)
+        return {**os.environ, 'HOME': str(directory), 'PATH': str(binary) + ':/usr/bin:/bin'}
+
+    def test_missing_retained_source_stops_before_engine_or_dns(self):
+        self.assertFalse(Path(d.CAPSULE).exists())
+        with tempfile.TemporaryDirectory(dir=ROOT) as temporary:
+            home = Path(temporary); env = self.fixture(home, SCRIPT.read_bytes())
+            result = subprocess.run(['bash', str(ROOT / 'releases/semantic-registry-frozen-response-20261023.sh')],
+                env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
+            self.assertEqual(result.returncode, 2)
+            rows = [json.loads(line) for line in result.stdout.decode().splitlines() if line.startswith('{')]
+            self.assertEqual(rows[0]['stage'], 'VERIFY_RETAINED_CAPSULE')
+            self.assertEqual(rows[0]['exceptionClass'], 'FileNotFoundError')
+            self.assertEqual(rows[0]['runtimeEffectsDispatched'], 0)
+            calls = (home / 'gh.calls').read_text().splitlines(); self.assertEqual(len(calls), 1)
+            self.assertIn('ref=6e1e0496d023b7a38818b211724f1cec036508b5', calls[0])
+            self.assertIn('observe-registry-frozen-response-20261023.py', calls[0])
+            private = next(home.glob('ouf-frozen-response.*'))
+            self.assertEqual((private / 'read.stderr').read_bytes(), b'')
+
+    def test_tamper_rejected_before_code_execution(self):
+        with tempfile.TemporaryDirectory(dir=ROOT) as temporary:
+            home = Path(temporary); env = self.fixture(home, b'raise RuntimeError("NEVER_EXECUTE")\n')
+            result = subprocess.run(['bash', str(ROOT / 'releases/semantic-registry-frozen-response-20261023.sh')],
+                env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn(b'EXACT_FROZEN_RESPONSE_ROOT_LAUNCH_UNPROVEN', result.stdout)
+            self.assertNotIn(b'NEVER_EXECUTE', result.stdout + result.stderr)
+
+    def test_no_arguments_or_retry_before_download(self):
+        with tempfile.TemporaryDirectory(dir=ROOT) as temporary:
+            home = Path(temporary); env = self.fixture(home, SCRIPT.read_bytes())
+            result = subprocess.run(['bash', str(ROOT / 'releases/semantic-registry-frozen-response-20261023.sh'), 'retry'],
+                env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
+            self.assertEqual(result.returncode, 2); self.assertFalse((home / 'gh.calls').exists())
 
 
 if __name__ == '__main__': unittest.main()

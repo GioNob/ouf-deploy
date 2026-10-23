@@ -1,3 +1,12 @@
+# CURRENT — bounded frozen-response observer source qualified; exact pinned delivery
+
+Source6e1e0496d023b7a38818b211724f1cec036508b5 scriptSHAebc7a2eaad6b8eefe166779cb3278d85cd9d8ce6a8f9f3bd20ca096a5d1f0cea,15975bytes. CI39973805740:8observer tests/0skip perPython3.12/3.13, plus existing13diagnostic/10transporttests; directlogs read (120483061640/120483062040). Tests distinguish casing/envelope/state/checksum without weakening acceptance or printing actual values, exactretainedcapsule134members, tamper/symlink and stableclaim. Whole target controller not qualified; productioncapsule/transport unchanged.
+
+Newwrapper releases/semantic-registry-frozen-response-20261023.sh SHAd195f04daff2f59240dc7661ca1d08e42573ebdab75774ca160ad9f6106e3500;11localtestsPASS includingrootlaunch/missingcapsule/tamper/argumentrefusal; BashsyntaxPASS. FinaldeliveryCIpendingatgeneration; reportactualfinalstatus inPR50. This isonefresh separatelyclaimedSERVICEGET preservingexactfrozenref/caller/configuredorigin/provenCA+peerpin+lookupfiles, notprepare/reviewreplay. Retainsall4consumedpreps/2diagnostics;prior28Engine/4Admin/1frozen/5resolver/4TLSidentityintents;newmax2Engine/1frozen/1resolver/1TLSconnection;cumulative30Engine/2frozen/6resolver,0newAdmin/OAuth/DB/recovery. Completecanonicalresponse retainedroot0400 beforeclassification; publicfixedbooleans/closedstates only. PreserveSTOPandclaim,noretry.
+
+SAME_FROZEN_CONFIGURATION_REQUIRED establishedonlythefive-fieldpredicatefailure. HTTP200/JSON/TLS/SERVICEsuccessis pinnedsource-orderinference; originalresponseerased. Do not callstate/configurationchanged, don'tadoptaliases/currentAPIasdeployedcontractwithouttargetevidence. 502OPEN;priority502→E2E→Supervisor; no newtoken/path/login/approvalquestion. Alllowerheadershistorical.
+
+---
 # CURRENT — frozen configuration guard stopped after successful HTTP path; observe response shape once
 
 Latest operator lxyqYEvL reports SAME_FROZEN_CONFIGURATION_REQUIRED from capsule d841407/source9f3b33. Unique pinned-source guard checks sourceId/versionId/configurationHash/state IN_REVIEW|APPROVED/configuration object. Source order indicates read_frozen returned HTTP200 and parsed JSON after TLS+leafpin+SERVICE; this is an inference, not a separately recorded wire receipt. Which field failed is unknown. The preparation did not retain the returned object before validating, and the exception erased it. Never assume changed configuration/state or adopt aliases without actual response/owner contract evidence. No post-guard effects/owner grants occurred by source order.
