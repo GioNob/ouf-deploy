@@ -44,6 +44,7 @@ from tools.semantic_registry_recovery_execution.factory import factory_scope
 from tools.semantic_registry_recovery_execution.semantic_request import request_scope
 from tools.semantic_registry_recovery_execution.postboot_factory import build_on_bootstrap
 from tools.semantic_registry_recovery_execution.postboot_controller import ColdStartWait
+from tools.semantic_registry_recovery_execution.postboot_scopes import compile_scopes
 from tools.semantic_policy_token_owner.iam_admission import IamProfile
 
 ROOT = prefix_fixture.ROOT
@@ -431,6 +432,13 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
             readiness, database['postgres'], database['program'], self.image_audit)
         raw['semanticRegistryRecoveryOriginalRequest'] = request_scope(SimpleNamespace(
             lifecycle=SimpleNamespace(plan=self.plan), scope=raw['semanticRegistryRecoveryGateway']), original)
+        # Compile the complete signed review with the production pure compiler.
+        # Hand-built partial scopes must never stand in for full admission.
+        scopes = compile_scopes(self.native_context, self.owner_context,
+            history['registryInputs'], self.profile, self.boot)
+        for key in set(raw).intersection(scopes):
+            self.assertEqual(raw[key], scopes[key], key)
+        raw.update(scopes)
         policy = json.loads(self.policy.read_bytes()); policy['keys'][1]['publicKey'] = self.grant['publicKey']
         self.write(self.policy, c.encoded(policy)); self.verifier.policy_binding = self.binding(self.policy)
         self.node_signer = ExistingEd25519Signer(self.binding(self.key), policy['keys'][1]['keyRef'], self.verifier,

@@ -237,6 +237,10 @@ class NativePostbootQualified(unittest.TestCase):
         self.expected['creationRequestHash'] = c.digest(request)
         # Expensive disposable setup precedes the finite signed recovery.
         self.now = int(time.time())
+        # The borrowed signature fixture starts with a controllable unit clock;
+        # actual native execution must continue to enforce the current window.
+        self.clock = lambda: int(time.time())
+        self.verifier.clock = self.clock
         raw = {'schema': 'ouf.semantic-cutover-execution-authority.v2',
             **{k: v for k, v in self.expected.items() if k != 'intakeHash'},
             'issuedAt': self.now, 'expiresAt': self.now + 300, 'deploymentProfile': PROFILE,
