@@ -1,0 +1,10 @@
+# CURRENT — byte-budget stop observed; remove duplicate executable read, preserve all guards
+
+Target byte observer reports 12 Engine attempt markers, Admin/TLS/frozen markers, frozen-response25320bytes, source directory; no prepared/review. Confirms frozen validation/source-copy phase passed by pinned source order, not full final resource-read completion. Docker47253935/Python6832784/OpenSSL1103304bytes (size-only, not current hash attestation). Existing schedule seals Docker at DB, again at authority, again finalverify; other two twice:157633981bytes before metadata. Failed exact read remains unknown; 160MiB aggregate budget exhausted. Preserve fifth consumed preparation VhaPF4P9 and observation ypkfWBdC.
+
+Fix Files.executable_profile reuses only an identical previously sealed held FD profile/metadata/ancestry and matching expectedhash/bound. Authority immediately still independently rehashes via governance.executable; final Files.verify still hashes every observed input. No caching bytes or dropping final verification. Uncached programs still sealed. MAX_BYTES160MiB unchanged. Local actual target-sized executable IO reproduces old-budget failure with bounded metadata and passes with duplicate removed, plus mutation/hash/bound/final-recheck refusals. Five new tests PASS.
+
+New fileBudgetRecovery case reconciles all previous wire chain plus fifth claim/12Engine/Admin/TLS/frozen/response/source-dir/no prepared/review. New stable incident/boot/purpose root independent source changes; old roots untouched. Prior42Engine/5Admin/3frozen/8resolver/5TLSintent, new12/1/1/2/1, cumulative54/6/4/10/6; no token attempt budget reset, SERVICE319/max1newgrant<=900s unchanged. Metadata-read cap320 only newcase: old256+3passes of17additionalproof reads<=307, rounded320; bytes/time bounds unchanged. No endpoint literals; all networkvalues configured. New source CI, complete capsule Git membership and pinned wrapper pending; no target command until qualified. Old wire capsule immutable/historical. Target502OPEN; fulltargetCLI/continuousrenewalunqualified. All lowerheaders historical.
+
+---
+

@@ -63,7 +63,7 @@ def directory_identity(info):
 
 class Files:
     def __init__(self, maximum_reads=128):
-        require(type(maximum_reads) is int and maximum_reads in (128, 192, 256), 'BOUNDED_PREPARATION_METADATA_READ_SCOPE_REQUIRED')
+        require(type(maximum_reads) is int and maximum_reads in (128, 192, 256, 320), 'BOUNDED_PREPARATION_METADATA_READ_SCOPE_REQUIRED')
         self.maximum_reads = maximum_reads
         self.bytes = 0
         self.reads = 0
@@ -136,6 +136,21 @@ class Files:
             require(previous is None or previous == (profile, maximum), 'PREPARATION_PIN_CHANGED')
             self.observed[path] = (profile, maximum)
         return profile, bytes(raw)
+
+    def executable_profile(self, path, maximum, expected):
+        # Authority admission immediately rehashes this executable using its
+        # independent primitive. Reuse only an identical held file/profile,
+        # avoiding a redundant full read of the already sealed Docker binary.
+        # The final verify() still reopens and hashes every observed file.
+        previous = self.observed.get(path)
+        if previous is None:
+            return self.seal(path, maximum, expected)[0]
+        profile, bound = previous
+        require(bound == maximum and profile['sha256'] == expected, 'SAME_SEALED_EXECUTABLE_REQUIRED')
+        with self.held(path) as (_, info, ancestry):
+            require(metadata(info) == profile['metadata'] and ancestry == profile['ancestors'],
+                    'SEALED_EXECUTABLE_CUSTODY_CHANGED')
+        return copy.deepcopy(profile)
 
     def json(self, path, expected=None, maximum=8388608):
         profile, raw = self.seal(path, maximum, expected)
@@ -350,6 +365,11 @@ def frozen_configuration(value, reference):
 def validate_case(case):
     fields = {'schema', 'privateParent', 'retainedInputs', 'historicalReview', 'patchContext',
         'lineageReceipt', 'predecessorJournalPath', 'frozenReference', 'proposedOwnerBudget', 'originalRequestTls'}
+    if type(case) is dict and 'fileBudgetRecovery' in case:
+        from . import file_budget_reconciliation
+        validate_case({k: v for k, v in case.items() if k != 'fileBudgetRecovery'})
+        file_budget_reconciliation.validate(case)
+        return
     if type(case) is dict and 'frozenWireRecovery' in case:
         require(set(case) == fields | {'priorPreparations', 'resolverRecovery', 'frozenWireRecovery'}, 'EXACT_FROZEN_WIRE_RECOVERY_CASE_REQUIRED')
         validate_case({k: v for k, v in case.items() if k != 'frozenWireRecovery'})
@@ -442,7 +462,7 @@ def authority_inputs(historical, files):
     programs = {}
     for name in ('python', 'docker', 'openssl'):
         retained = retained_programs[name]
-        profile, _ = files.seal(retained['path'], 67108864, retained['sha256'])
+        profile = files.executable_profile(retained['path'], 67108864, retained['sha256'])
         require(profile['metadata'][3] == 0 and profile['metadata'][4] & 0o111,
                 'ROOT_EXECUTABLE_PREPARATION_CUSTODY_REQUIRED')
         programs[name] = {'path': profile['path'], 'sha256': profile['sha256']}
@@ -466,7 +486,8 @@ def prepared_root(case, manifest, boot_id=None):
     validate_case(case)
     boot_id = Path('/proc/sys/kernel/random/boot_id').read_text().strip() if boot_id is None else boot_id
     require(owner_contract.boot(boot_id), 'CURRENT_PREPARATION_BOOT_REQUIRED')
-    identity = ({'retainedFrozenResponseHash': case['frozenWireRecovery']['response']['sha256'], 'boot': boot_id, 'purpose': 'FROZEN_WIRE_V1'}
+    identity = ({'retainedFrozenResponseHash': case['frozenWireRecovery']['response']['sha256'], 'boot': boot_id, 'purpose': 'FILE_BUDGET_V1'}
+                if 'fileBudgetRecovery' in case else {'retainedFrozenResponseHash': case['frozenWireRecovery']['response']['sha256'], 'boot': boot_id, 'purpose': 'FROZEN_WIRE_V1'}
                 if 'frozenWireRecovery' in case else {'retainedResolverObservationHash': case['resolverRecovery']['correctedObservation']['sha256'], 'boot': boot_id}
                 if 'resolverRecovery' in case else {'case': case, 'closure': digest(manifest), 'boot': boot_id})
     return Path(PARENT) / ('semantic-registry-postboot-inputs-' + digest(identity))
@@ -478,6 +499,9 @@ def reconcile_prior_preparation(case, files, boot):
     This never changes or resumes the old preparation. A fresh bounded capture
     has a distinct case and carries prior attempts into its proof and review.
     """
+    if 'fileBudgetRecovery' in case:
+        from . import file_budget_reconciliation
+        return file_budget_reconciliation.reconcile(case, files, boot)
     if 'frozenWireRecovery' in case:
         from . import frozen_wire_reconciliation
         return frozen_wire_reconciliation.reconcile(case, files, boot)
@@ -542,7 +566,7 @@ def read_prepared(case, manifest):
     require(os.geteuid() == os.getegid() == 0, 'ROOT_POSTBOOT_PREPARATION_REQUIRED')
     boot_id = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     root = prepared_root(case, manifest, boot_id)
-    files = Files(maximum_reads=256 if 'frozenWireRecovery' in case else 128)
+    files = Files(maximum_reads=320 if 'fileBudgetRecovery' in case else 256 if 'frozenWireRecovery' in case else 128)
     private, profile = files.json(str(root / 'prepared.json'), maximum=16777216)
     require(set(private) == {'schema', 'nativeContext', 'ownerContext', 'registryInputs',
                 'authorityInputs', 'sourceClosure', 'preparationProof'}
@@ -606,7 +630,7 @@ def _prepare(case, manifest, sources):
     validate_case(case)
     require(manifest.get('sourceHashes', {}).get(__name__) == globals().get('__qualified_source_sha256__')
             and hashed(globals().get('__qualified_source_sha256__')), 'EXACT_SEALED_PREPARATION_SOURCE_REQUIRED')
-    files = Files(maximum_reads=256 if 'frozenWireRecovery' in case else 192 if 'resolverRecovery' in case else 128); closure_hash = digest(manifest)
+    files = Files(maximum_reads=320 if 'fileBudgetRecovery' in case else 256 if 'frozenWireRecovery' in case else 192 if 'resolverRecovery' in case else 128); closure_hash = digest(manifest)
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     require(owner_contract.boot(boot), 'CURRENT_PREPARATION_BOOT_REQUIRED')
     root = prepared_root(case, manifest, boot)
