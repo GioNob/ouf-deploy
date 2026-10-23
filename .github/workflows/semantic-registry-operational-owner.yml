@@ -1,0 +1,36 @@
+name: Registry operational token owner components
+on:
+  push:
+    branches:
+      - fix/registry-bound-owner-lineage-20261023
+    paths:
+      - tools/semantic_registry_operational_owner/**
+      - .github/workflows/semantic-registry-operational-owner.yml
+  pull_request:
+    paths:
+      - tools/semantic_registry_operational_owner/**
+      - .github/workflows/semantic-registry-operational-owner.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: registry-operational-owner-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  ledger-and-recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Root-custodied disposable component source
+        run: |
+          sudo install -d -m 0700 /root/ouf-operational-owner-tests
+          sudo cp -a . /root/ouf-operational-owner-tests/repository
+          sudo chown -R root:root /root/ouf-operational-owner-tests
+      - name: Actual filesystem CAS, process exclusion and recovery components
+        run: |
+          sudo /usr/bin/python3 -I -B -S -m unittest discover \
+            -s /root/ouf-operational-owner-tests/repository/tools/semantic_registry_operational_owner/tests \
+            -p 'test_*.py' -v
