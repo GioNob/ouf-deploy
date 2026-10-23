@@ -127,6 +127,7 @@ jobs:
             bash -eu -c '
           cd /root/ouf-postboot-tests/repository
           /usr/bin/python3 -B tools/semantic_registry_recovery_execution/tests/native_jvm_postboot.py -v
+          /usr/bin/python3 -B tools/semantic_registry_recovery_execution/tests/native_jvm_successor.py -v
           '
 
   original-service-tls:

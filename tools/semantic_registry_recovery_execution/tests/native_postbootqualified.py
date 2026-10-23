@@ -60,6 +60,9 @@ def private_profile(path):
 
 class NativePostbootQualified(unittest.TestCase):
     engine_socket = '/var/run/docker.sock'
+    authority_window_seconds = 300
+    journal_window_seconds = 240
+    human_window_seconds = 360
     native = signed.SignedCutover.native
     write = signed.SignedCutover.write
     binding = signed.SignedCutover.binding
@@ -243,7 +246,7 @@ class NativePostbootQualified(unittest.TestCase):
         self.verifier.clock = self.clock
         raw = {'schema': 'ouf.semantic-cutover-execution-authority.v2',
             **{k: v for k, v in self.expected.items() if k != 'intakeHash'},
-            'issuedAt': self.now, 'expiresAt': self.now + 300, 'deploymentProfile': PROFILE,
+            'issuedAt': self.now, 'expiresAt': self.now + self.authority_window_seconds, 'deploymentProfile': PROFILE,
             'executionProfileHash': self.profile.sha256, 'newDistinctLeaseWorkerRequired': False,
             'phaseIntentHashes': {phase: 'a' * 64 for phase in PHASES},
             'semanticRegistryRecovery': a.scope(self.plan),
@@ -255,7 +258,7 @@ class NativePostbootQualified(unittest.TestCase):
         self.authority = c.encoded(raw)
         self.approval.update(schema='ouf.semantic-cutover-human-mandate.v2', **self.expected,
             executionAuthorityHash=signed.sha(self.authority), deploymentProfile=PROFILE,
-            executionProfileHash=self.profile.sha256, expiresAt=self.now + 360)
+            executionProfileHash=self.profile.sha256, expiresAt=self.now + self.human_window_seconds)
         self.write(self.mandate, c.encoded(self.approval))
         self.approved = signed.sha(self.mandate.read_bytes())
         for role in self.grant['roles']:
@@ -265,8 +268,8 @@ class NativePostbootQualified(unittest.TestCase):
         self.scope = a.AuthorityScope(self.current_authority, self.authority, self.plan, request)
         self.store = c.Store(self.execution_root, self.plan['logicalOperationRef'])
         wall, mono = time.time(), time.monotonic()
-        self.store.initialize(c.initial(self.plan, authority_hash=self.scope.hash, expires_unix=wall + 240,
-            expires_monotonic=mono + 240, boot_id=self.boot,
+        self.store.initialize(c.initial(self.plan, authority_hash=self.scope.hash, expires_unix=wall + self.journal_window_seconds,
+            expires_monotonic=mono + self.journal_window_seconds, boot_id=self.boot,
             predecessor_history_hash=self.expected['predecessorHistoryHash'], created_unix=wall, created_monotonic=mono))
         self.budget = ReadBudget.initialize(self.store, self.scope, self.plan)
         self.lifecycle = l.Lifecycle(self.engine, self.scope, self.store, self.plan, request, self.baseline, proposal)
