@@ -19,7 +19,7 @@ def encoded(value):return json.dumps(value,sort_keys=True,separators=(',',':'),a
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 
 
-BOOTSTRAP='''import base64,gzip,hashlib,io,json,os,re,signal,sys,types
+BOOTSTRAP='''import base64,gzip,hashlib,io,json,os,re,signal,stat,sys,types
 def require(ok,code):
  if not ok:raise ValueError(code)
 def encoded(v):return json.dumps(v,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
@@ -28,12 +28,42 @@ def unique(pairs):
  for k,v in pairs:
   require(k not in value,'DUPLICATE_OPERATIONAL_CAPSULE_FIELD');value[k]=v
  return value
+def bound_input(path,maximum,expected,executable=False):
+ require(type(path)is str and path.startswith('/') and os.path.normpath(path)==path and '..'not in path.split('/'),'EXACT_BOOTSTRAP_INPUT_PATH_REQUIRED')
+ fds=[];pins=[]
+ def identity(s):return tuple(getattr(s,k)for k in('st_dev','st_ino','st_uid','st_gid','st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns'))
+ try:
+  fd=os.open('/',os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW);fds.append(fd)
+  parts=path.split('/')[1:]
+  for part in parts[:-1]:
+   row=os.fstat(fd);require(row.st_uid==row.st_gid==0 and not row.st_mode&0o022,'ROOT_BOOTSTRAP_INPUT_ANCESTRY_REQUIRED')
+   parent=fd;fd=os.open(part,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,dir_fd=parent);fds.append(fd)
+   pins.append((parent,part,fd,identity(os.fstat(fd))[:5]))
+  row=os.fstat(fd);require(row.st_uid==row.st_gid==0 and not row.st_mode&0o022,'ROOT_BOOTSTRAP_INPUT_ANCESTRY_REQUIRED')
+  leaf=os.open(parts[-1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=fd);fds.append(leaf);before=os.fstat(leaf)
+  require(stat.S_ISREG(before.st_mode) and before.st_uid==before.st_gid==0 and before.st_nlink==1 and not before.st_mode&0o022 and 0<before.st_size<=maximum,'CUSTODIED_BOOTSTRAP_INPUT_REQUIRED')
+  require(bool(before.st_mode&0o111)if executable else stat.S_IMODE(before.st_mode)in(0o400,0o600),'EXACT_BOOTSTRAP_INPUT_MODE_REQUIRED')
+  pieces=[];count=0
+  while count<before.st_size:
+   piece=os.read(leaf,min(65536,before.st_size-count));require(bool(piece),'COMPLETE_BOOTSTRAP_INPUT_REQUIRED');pieces.append(piece);count+=len(piece)
+  raw=b''.join(pieces)
+  require(identity(before)==identity(os.fstat(leaf))==identity(os.stat(parts[-1],dir_fd=fd,follow_symlinks=False))and hashlib.sha256(raw).hexdigest()==expected,'BOOTSTRAP_INPUT_OR_HASH_CHANGED')
+  for parent,name,child,pin in pins:require(pin==identity(os.fstat(child))[:5]==identity(os.stat(name,dir_fd=parent,follow_symlinks=False))[:5],'BOOTSTRAP_INPUT_ANCESTRY_CHANGED')
+  return raw
+ finally:
+  for fd in reversed(fds):os.close(fd)
 mode=None
 try:
  require(os.geteuid()==os.getegid()==0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,'ISOLATED_ROOT_OPERATIONAL_CAPSULE_REQUIRED')
  require(hashlib.sha256(BOOTSTRAP.encode()).hexdigest()==DELIVERY['sourceManifest']['bootstrapHash'] and hashlib.sha256(encoded(DELIVERY)).hexdigest()==DELIVERY_HASH,'OPERATIONAL_DELIVERY_DECLARATION_CHANGED')
  require(len(sys.argv)>1 and sys.argv[1] in ('worker','prepare','issue','install','start','status'),'ONE_OPERATIONAL_MODE_REQUIRED')
  mode=sys.argv[1]
+ if mode!='worker':
+  binding=DELIVERY['case']['inputs'];raw=bound_input(binding['path'],8388608,binding['sha256']);retained=json.loads(raw,object_pairs_hook=unique)
+  require(encoded(retained)==raw,'CANONICAL_RETAINED_BOOTSTRAP_INPUT_REQUIRED')
+  python=retained['review']['authorityInputs']['executables']['python'];bound_input(python['path'],67108864,python['sha256'],executable=True)
+  if os.path.realpath(sys.executable)!=python['path']:
+   os.execve(python['path'],[python['path'],'-I','-B','-S',os.path.abspath(__file__),*sys.argv[1:]],{'PATH':'/usr/bin:/bin','LC_ALL':'C','OPENSSL_CONF':'/dev/null'})
  if mode!='worker':
   signal.signal(signal.SIGALRM,lambda *_:require(False,'FINITE_OPERATIONAL_INSTALLATION_DEADLINE'));signal.alarm(900)
  packed=base64.b64decode(PACKED,validate=True);require(0<len(packed)<=2097152,'BOUNDED_OPERATIONAL_CAPSULE_REQUIRED')

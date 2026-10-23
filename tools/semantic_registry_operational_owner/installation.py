@@ -94,6 +94,8 @@ def service_unit(c, configuration_hash, python, capsule):
     p=copy.deepcopy(c['ownerInputs']['iamProfile'])
     for key in ('required_scopes','allowed_scopes','peer_addresses'):p[key]=tuple(p[key])
     profile=IamProfile(**p)
+    require(python.startswith('/usr/') and c['verification']['openssl']['path'].startswith('/usr/'),
+            'QUALIFIED_SYSTEM_RUNTIME_PREFIX_REQUIRED')
     require(re.fullmatch('[a-f0-9]{64}',configuration_hash) is not None,'PINNED_SYSTEMD_CONFIGURATION_REQUIRED')
     install=unit_word(c['destinations']['installationRoot']);ledger=unit_word(c['destinations']['ledgerRoot'])
     output=unit_word(c['ownerInputs']['binding']['output_directory']);gid=c['ownerInputs']['binding']['output_gid']
@@ -104,6 +106,10 @@ def service_unit(c, configuration_hash, python, capsule):
         str(Path(c['verification']['trustPolicy']['path']).parent),
         str(Path(c['destinations']['commonInvocationLock']).parent),
         str(Path(c['fenceBinding']['path']).parent),'/proc/sys/kernel/random/boot_id'}
+    require(all(len(Path(path).parts)>=4 for path in(
+        str(Path(c['ownerInputs']['credentialPath']).parent),str(Path(c['verification']['trustPolicy']['path']).parent),
+        str(Path(c['destinations']['commonInvocationLock']).parent),str(Path(c['fenceBinding']['path']).parent))),
+        'DEDICATED_CREDENTIAL_TRUST_AND_FENCE_DIRECTORIES_REQUIRED')
     # These are operating-system public inputs, never service discovery.
     readonly.update(('/etc/passwd','/etc/group','/etc/nsswitch.conf','/etc/ld.so.cache'))
     lines=['[Unit]','Description=OUF Registry existing IAM credential renewal',
@@ -121,6 +127,7 @@ def service_unit(c, configuration_hash, python, capsule):
         'RestrictNamespaces=yes','RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX',
         'SystemCallArchitectures=native','SystemCallFilter=@system-service',
         'SystemCallFilter=~ptrace process_vm_readv process_vm_writev pidfd_getfd',
+        'MountAPIVFS=no','TemporaryFileSystem=/proc:ro',
         'BindReadOnlyPaths=/usr /lib -/lib64 '+' '.join(unit_word(x) for x in sorted(readonly)),
         'BindPaths='+ledger+' '+output,'ReadWritePaths='+ledger+' '+output,
         'IPAddressDeny=any',*['IPAddressAllow='+ip for ip in profile.peer_addresses],
