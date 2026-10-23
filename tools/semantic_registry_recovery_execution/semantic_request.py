@@ -14,6 +14,7 @@ from tools.ingestion_readiness_patch_execution import private_file,runtime_guard
 from tools.semantic_live_route_diagnostic.reader import verify_program,process_ticks
 
 CLIENT_SOURCE='GioNob/ouf-ingestion-runtime@4165b9e149be467d5d7c6bed35e4e1af4e249db1:src/main/java/it/comune/trieste/ouf/ingestion/PublicationGatewayClient.java'
+OBSERVABLE_NON_SUCCESS = (403,429,502,503,504)
 
 CHILD_SOURCE=r'''import hashlib,http.client,ipaddress,json,os,re,signal,ssl,sys,uuid
 from urllib.parse import urlsplit,urlencode
@@ -66,6 +67,7 @@ def request_scope(gateway,profile):
         'planHash':digest(gateway.lifecycle.plan),'gatewayScopeHash':digest(gateway.scope),
         'requestProfileHash':digest(profile),'clientSource':CLIENT_SOURCE,'method':'GET',
         'path':'/api/semantic/v1/references:resolve','callerIdentity':'EXISTING_INGESTION_SERVICE',
+        'boundedObservationStatuses':list(OBSERVABLE_NON_SUCCESS),'nonSuccessIsReadinessProof':False,
         'sourceActivationAllowed':False,'credentialAcquisitionAllowed':False,'latestFallbackAllowed':False}
 
 class OriginalSemanticRequest:
@@ -192,7 +194,13 @@ class OriginalSemanticRequest:
         self.gateway.verify(endpoint_required=True);results=[]
         for ref in self.profile['references']:
             result=self._get(ref)
-            if result['status'] in (429,502,503,504):return 'UNKNOWN',{'httpStatus':result['status'],'originalSemanticGetSucceeded':False}
+            # Registry intentionally exposes the same 403 for a missing policy
+            # bundle and an actual capability denial. Neither is called healthy
+            # or classified transient. A finite controller may observe again
+            # with this exact SERVICE identity and the same durable read budget.
+            if result['status'] in OBSERVABLE_NON_SUCCESS:
+                return 'UNKNOWN',{'httpStatus':result['status'],'originalSemanticGetSucceeded':False,
+                    'policyAdmissionUnproven':result['status']==403}
             require(result['status']==200 and result['exactActiveReferenceMatched'] is True,
                 'ORIGINAL_EXACT_ACTIVE_SEMANTIC_REFERENCE_UNPROVEN')
             results.append(result)

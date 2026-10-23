@@ -2,6 +2,10 @@
 
 Aggiornamento del 23 ottobre 2026. Il 502 resta aperto. Il difetto di disponibilità documentato è la route semantica diretta al Registry esaminato, fermo e privo di endpoint di rete. Il recupero deve ripristinare quel servizio e verificare la stessa richiesta del consumer. La progettazione del Supervisor e i risultati dei test dei componenti non costituiscono una riparazione del target.
 
+È stato implementato un percorso distinto per il boot corrente: avvio della sola shell in attesa, cattura e pausa della nuova generazione, nuovo owner della medesima credenziale con contabilità storica conservata, ammissione nativa completa e verifica SERVICE originale. Preparazione, revisione degli11 scope, emissione dell'autorità e operazioni sono modalità esplicite del medesimo pacchetto sigillato. Le prove locali sui componenti e sul caricamento della chiusura sorgente non sostituiscono la qualifica con Docker, IAM e JVM reali, ancora in corso. Nessuna esecuzione sul VPS è avvenuta. Vedere `docs/handoffs/OUF_REGISTRY_POSTBOOT_RECOVERY_20261023.md`.
+
+Il recupero proposto mantiene l'owner entro una finestra autorizzata finita di massimo900 secondi e un solo nuovo tentativo SERVICE, conservando319 tentativi controllati precedenti. Alla fine della sessione l'ammissione termina: anche un eventuale200 in quella finestra non proverebbe il rinnovo continuativo o una riparazione duratura. Il passaggio a un owner persistente qualificato rimane da risolvere prima di dichiarare resilienza operativa.
+
 ## Esito operativo e limiti delle evidenze
 
 Le ricevute dell'operatore documentano una configurazione Gateway invariata e un upstream indisponibile. Lo shutdown Docker/containerd/host è corroborato nell'intervallo dell'arresto del Registry. La restart policy osservata è `no`; inoltre l'entrypoint attende un segnale USR1 prima di avviare Java. Sono quindi documentati un servizio rimasto fermo e un percorso di avvio che richiede un'ammissione distinta dal semplice avvio del container.
@@ -27,6 +31,7 @@ Tutti gli orari seguenti sono UTC. Le ricevute Registry, route e owner sono outp
 | Shutdown corroborato | `evidence/semantic-stop-journal-target-20261023.json` | Docker stopping alle 08:09:50.160621Z e termination request alle 08:09:50.160746Z precedono il termine del Registry. Seguono menzioni dell'ID esatto, shutdown Docker, stop containerd e servizio di shutdown host. L'attore iniziale rimane sconosciuto. |
 | Gate applicativo osservato | `evidence/semantic-registry-recovery-proposal-target-20261022.json` e `tools/semantic_registry_recovery_proposal/prepare.py` | `gatedFileOnlyLaunchObserved=true`. Il compilatore verifica entrypoint esatto, comando Java, file-only flags e restart policy `no` prima di produrre la ricevuta. Non emette autorità di recupero. |
 | Owner di credenziali osservati non ammissibili | `evidence/semantic-registry-owner-discovery-target-20261023.json` | Tutti i 18 candidati osservati sono CANCELLED/BLOCKED, di un boot precedente, senza finestra token positiva. Nessun owner corrente è selezionato; altri owner fuori dalla ricerca limitata non sono esclusi. |
+| Lineage storica collegata al mount Registry | `evidence/semantic-registry-bound-owner-lineage-target-20261023.json` | Il nuovo output caricato dall'operatore collega tutti i 18 record alla medesima catena storica della credenziale: anchor ordinale 4, terminale circoscritto ordinale 6, cumulativo controllato 319. Il terminale non è autorità corrente; la contabilità storica legacy resta non riconciliata. |
 
 Il container Registry esatto è:
 
@@ -39,6 +44,7 @@ I log principali delle ricevute sono:
 - `/home/oufadmin/ouf-stop-cause.u6qJqIMi/operator.log`
 - `/home/oufadmin/ouf-registry-proposal.gEjCBGSF/operator.log`
 - `/home/oufadmin/ouf-registry-owner-discovery.NKae4nGd/operator.log`
+- `/home/oufadmin/ouf-registry-bound-lineage.nRKey7gD/operator.log`
 
 Ulteriori file storici sono stati materializzati dal medesimo commit e letti in questo audit:
 
@@ -119,26 +125,46 @@ Il roadmap conserva i seguenti pin, utili per il confronto ma non sostitutivi di
 
 La verifica è una GET dedicata: non richiama activation, readiness orchestration o altri flussi che possano avviare acquisizioni e operazioni di dominio. Health 200 del Registry o HEALTHY di MCP non sostituiscono questa prova.
 
-## Riparazione circoscritta e prossimo input
+## Lineage acquisita e implementazione della riparazione
 
 Non occorre attendere l'implementazione di OUF Supervisor, una migrazione Kubernetes o il completamento dell'intera suite end-to-end della piattaforma. Occorre completare e qualificare il percorso minimo di recupero del Registry e la verifica funzionale sopra descritta.
 
-Il prossimo input mancante è il **binding esatto fra Registry, montaggio della credenziale, installazione del relativo token-owner e lineage dei suoi journal**. Nessuno dei candidati osservati può essere scelto per nome, data più recente o valore massimo del contatore. Non viene chiesto nuovamente all'utente di conoscere il gestore token.
+Il collector mirato è stato eseguito dall'operatore e ha restituito `HISTORICAL_CREDENTIAL_LINEAGE_RECONCILED`. L'allegato `Testo incollato(20261023-072425).txt`, SHA256 dei byte originali `46fe0f2abf1c98b8b70a325f20044f05368f357c9b84d9258f8d2eb0073dcb35`, è conservato integralmente come receipt normalizzata in `evidence/semantic-registry-bound-owner-lineage-target-20261023.json`, con provenienza `OWNER_UPLOADED_PUBLIC_RESULT_NOT_INDEPENDENT_TARGET_READBACK`. Non è una lettura indipendente dei metadati privati del VPS.
 
-Il nuovo reader `scripts/read-registry-bound-owner-lineage-20261023.py` ricostruisce tale binding dai riferimenti privati esatti già conservati e dai quattro file di metadati di ciascuno dei 18 candidati noti. Verifica gli hash del bundle e della review, la relazione fra mount Registry e output dell'owner e i collegamenti fra predecessori fino al primo grant controllato. Non stampa credenziali, non rilancia vecchi reader, non esegue scansioni o modifica journal. Ambiguità, ramificazioni, antenati mancanti o deriva producono STOP; nessun contatore massimo viene usato come criterio di selezione. Restituisce una lineage storica circoscritta, non un owner attuale o un budget approvato. Sono passati 15 test locali e 15 test nella CI dedicata 39916642392, senza skip, oltre alla revisione statica indipendente. Tutti i sette file del commit `f8afcf2a78f76f3a201162547ad575c8a02896c7` sono stati riletti e confrontati esattamente. Non è stato eseguito sul target. Specifica: `docs/handoffs/OUF_REGISTRY_BOUND_OWNER_LINEAGE_READMESPEC_20261023.md`; comando e interpretazione: `docs/handoffs/OUF_REGISTRY_BOUND_OWNER_LINEAGE_OPERATOR_20261023.md`.
+La verifica locale indipendente del grafo pubblico e della tupla statica `CANDIDATES` del reader conferma una sola catena connessa, aciclica e senza ramificazioni. Gli ordinali sono a base zero; non sono ordinati per timestamp o contatore:
+
+`15 → 16 → 0 → 1 → 14 → 17 → 3 → 2 → 4 → 10 → 13 → 12 → 9 → 8 → 5 → 7 → 11 → 6`
+
+Per ciascun collegamento, il cumulativo del predecessore coincide con il valore conservato dal successore e il cumulativo del record equivale a predecessore più tentativi del record. Il primo predecessore controllato vale 1; i tentativi dei 18 record sommano a 318, con terminale 319. Non sono stati sommati cumulativi sovrapposti. Questa verifica riguarda i campi pubblici: la prova privata del binding Registry/mount resta quella dichiarata dal reader nella receipt dell'operatore.
+
+| Binding acquisito | Valore |
+| --- | --- |
+| Owner anchor storico | Ordinale `4`, `postgrant-worker` della famiglia `chatbot-file-intake-9f754dbcf7caf450d1d1eef50c0288f2102cfac191a65cfc60a5c1fcbf60ba5e`, attempt `f8d38137fc4cca9d36910c19` |
+| Record terminale circoscritto | Ordinale `6`, `semantic-functional-worker-4d73f23481b322c6fc046734f9a50a7251ddafe5d6d3d794129d9728305e8ad6`, stessa famiglia e attempt |
+| Hash recovery terminale | `aed77a73d69ea8d865df1097a9d9e5c3e230445ae8a7fd95857575318fb473ab` |
+| Hash sessione terminale | `386d52ccc5847aa17c08d879df4f58e52902bf3c8423712e85a14c377d3aa468` |
+| Hash output binding della credenziale | `b98834371be7688cf0085a6a52dc695b96820e9871d702526255f00a8aad5032` |
+| Hash logical owner scope | `7cb59501000058b5dc5030adf8624c5b38567de0c8bfeb21dd49435644ea3da2` |
+| Hash first grant receipt | `4bb904ea93df0766647641fd397cac7d8504f1ca81252ce597d1db363a86105a` |
+
+La mappa completa ordinale/percorso è conservata nella nuova evidence. Il reader qualificato è `scripts/read-registry-bound-owner-lineage-20261023.py`, commit `f8afcf2a78f76f3a201162547ad575c8a02896c7`, SHA256 `24739440479a105a211986ed8c2a5c936b76779b6d176aa22662c9fe77168fff`. Il riferimento sorgente deriva dal contesto del comando qualificato; non è un'attestazione incorporata nella receipt pubblica. L'output dichiara 150 letture di metadati e 7.990.684 byte, zero scansioni, credenziali aperte, Engine/DB/OAuth, lock o effetti runtime.
+
+La discovery è conclusa per questo passo. Tutti i record restano CANCELLED/BLOCKED e del boot precedente. `currentOwnerSelected`, `currentOwnerAdmissionProven` e `boundedTerminalIsCurrentAuthority` rimangono false; `historicalAccountingReconciled=false` e `legacyHistoricalGrantAttempts=null` impediscono di trasformare 319 in una contabilità globale o in un budget autorizzato. Nessun altro owner fuori dal perimetro è escluso.
+
+**Il prossimo lavoro è l'implementazione del successore postboot**, ancorato a questa lineage: ammissione del solo gate senza pretendere un owner ACTIVE già prima dello start, poi sessione corrente con fence e contatori conservati, ammissione applicativa e richiesta originale. Non occorre un'altra discovery, non si rilancia il reader completato e non si richiede nuovamente all'utente il nome del gestore token.
 
 La sequenza di riparazione da completare è:
 
-1. **Vincolare gli input.** Verificare la catena Registry/mount/owner/lineage e raccogliere il contesto corrente indispensabile, compreso il caller Ingestion e la configurazione congelata. Conservare ogni claim e contatore precedente.
+1. **Comporre il successore sugli input acquisiti.** Usare il binding Registry/mount/owner e la lineage ora riconciliata come predecessore storico esatto. Integrare nell'esecuzione la verifica del contesto corrente indispensabile, compreso il caller Ingestion e la configurazione congelata, conservando claim e contatori. Non rieseguire la raccolta storica né adottare il terminale come autorità corrente.
 2. **Avviare soltanto il gate nuovo.** Ammettere un processo in attesa, mantenendo Java e gli effetti applicativi bloccati. Registrare durevolmente il tentativo e osservare la nuova generazione reale; un esito incerto richiede riconciliazione prima di altri effetti.
 3. **Stabilire il token-owner del boot corrente.** Usare un profilo esplicito che conservi la lineage verificata e la contabilità cumulativa, senza dipendere dall'endpoint applicativo Registry già pronto. Un journal CANCELLED o scaduto resta storico; non viene riscritto per apparire attivo.
 4. **Verificare l'ammissione nativa completa.** Con il gate nella fase prevista, verificare OCI, immagine, rootfs completo, mount, configurazione, rete, database e credenziale corrente secondo i profili esatti. Il precedente processo JVM non fornisce un'eccezione al seal del nuovo processo. Eventuale drift richiede una correzione specifica e rivedibile, non cleanup implicito.
 5. **Rilasciare la stessa generazione.** Attestare il processo ammesso, completare separatamente unpause e rilascio USR1 del gate con il relativo journal. Verificare che la JVM attesa sia avviata e che la policy applicativa necessaria sia caricata e fresca. Nessun riuso di segnale, PID o attestazione precedente; health UP da solo non prova AUTHZ readiness.
 6. **Verificare la richiesta originale.** Confermare che la route raggiunga l'endpoint della generazione ammessa e ottenere la risposta esatta alla GET autenticata dell'Ingestion. Soltanto questa prova permette di dichiarare risolto il 502 nel percorso interessato.
 
-Il lavoro immediato è il collector e la composizione di questa sequenza concreta, non una nuova serie di inventari generici. I test necessari devono qualificare i cambiamenti e i punti di crash di tale percorso; i conteggi di test superati non saranno riportati come recupero del servizio.
+Il lavoro immediato è l'implementazione e la qualificazione di questa sequenza concreta. I test necessari devono coprire le condizioni prima/dopo lo start, il nuovo owner di boot e i punti di crash; i conteggi di test superati non saranno riportati come recupero del servizio.
 
-Le receipt disponibili non autorizzano a riutilizzare vecchie autorità scadute, a resettare budget o ad acquisire token implicitamente. La storia HUMAN 304/304 e i contatori dei service grant sono distinti; il massimo 319 osservato fra i candidati non è una lineage selezionata né un nuovo plafond. L'eventuale acquisizione necessaria deve essere parte del percorso concreto, con la propria autorità corrente, prima di qualunque richiesta all'issuer.
+Le receipt disponibili non autorizzano a riutilizzare vecchie autorità scadute, a resettare budget o ad acquisire token implicitamente. La storia HUMAN 304/304 e i contatori dei service grant sono distinti. Il 319 è ora il cumulativo del terminale della catena controllata ricostruita, individuato per i collegamenti e non perché massimo; non è un nuovo plafond né prova della contabilità legacy completa. L'eventuale acquisizione necessaria deve essere parte del percorso concreto, con la propria autorità corrente, prima di qualunque richiesta all'issuer.
 
 ## Input e canale target già individuati
 
@@ -155,7 +181,7 @@ Il terminale dell'operatore `oufadmin@v2202609421511523101` è il canale target 
 
 ## Regole di continuità
 
-Il primo checkpoint corrente di `AGENTS.md` prevale sulle sezioni storiche dei documenti. Il reader dello stop-journal e la discovery degli owner sono già completati: i vecchi «next command» che li propongono non sono più operativi.
+Il primo checkpoint corrente di `AGENTS.md` prevale sulle sezioni storiche dei documenti; questo dossier registra inoltre la nuova receipt caricata per la lineage. Il reader dello stop-journal, la discovery degli owner e il collector della lineage vincolata sono completati: i vecchi «next command» che li propongono non sono più operativi.
 
 Si conservano tutti i dossier, log, claim e stati incerti. Non sono parte della riparazione una riscrittura delle route Gateway, il ripristino di provider non coinvolti, una nuova activation della source o il replay di operazioni già completate. L'attuale evidence non indica una necessità di cambiare il riferimento semantico o la pubblicazione.
 
