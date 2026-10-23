@@ -457,7 +457,12 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
         native_binary = lambda name: {'path': str(Path(shutil.which(name)).resolve()),
             'sha256': hashlib.sha256(Path(shutil.which(name)).resolve().read_bytes()).hexdigest()}
         runtime_root = self.daemon_root / 'exec/runtime-runc/moby'
-        frame_source = ROOT / 'tools/semantic_frame_compiler/frame-observer.py'
+        retained_frame_source = ROOT / 'tools/semantic_frame_compiler/frame-observer.py'
+        frame_bytes = retained_frame_source.read_bytes()
+        frame_source = self.root / 'private-frame-observer.py'
+        self.write(frame_source, frame_bytes)
+        self.assertEqual(frame_source.read_bytes(), frame_bytes)
+        self.assertEqual(frame_source.stat().st_mode & 0o777, 0o600)
         self.recipe = {'schema': 'ouf.semantic-file-only-node-recipe.v1',
             'sourceClosureHash': self.expected['sourceClosureHash'], 'qualifiedPackageHash': c.digest(self.image_audit),
             'imageConfigurationHash': self.image_audit['configSha256'], 'expectedRootfsSeal': self.expected_seal,
