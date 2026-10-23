@@ -165,21 +165,57 @@ def resolver_shape(raw):
         'nonLoopbackPresent': any(not ipaddress.ip_address(v).is_loopback for v in servers)}
 
 
+def read_public_resolver(path):
+    """Observe public OS DNS data, never adopt it as a trust/credential source.
+
+    systemd-resolved may own this regular public file and its runtime directory.
+    Do not apply the private root-only CA/token custody rule to such data.
+    Held no-follow descriptors, public readonly mode, bounds and identity still
+    prevent following daemon-controlled links into private root files.
+    """
+    target = Path(path); fds = []; parents = []
+    try:
+        parent = os.open('/', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW); fds.append(parent)
+        for part in target.parts[1:-1]:
+            held = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent); fds.append(held)
+            info = os.fstat(held)
+            require(not info.st_mode & 0o022, 'PUBLIC_RESOLVER_ANCESTRY_WRITABLE')
+            parents.append((parent, part, held, metadata(info))); parent = held
+        fd = os.open(target.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent); fds.append(fd)
+        before = os.fstat(fd)
+        require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1 and before.st_mode & 0o004
+                and not before.st_mode & 0o022 and 0 < before.st_size <= 16384, 'BOUNDED_PUBLIC_RESOLVER_FILE_REQUIRED')
+        raw = b''
+        while len(raw) <= 16384:
+            part = os.read(fd, min(4096, 16385 - len(raw)))
+            if not part: break
+            raw += part
+        require(len(raw) == before.st_size and metadata(before) == metadata(os.fstat(fd))
+                == metadata(os.stat(target.name, dir_fd=parent, follow_symlinks=False))
+                and all(metadata(os.fstat(held)) == expected
+                        == metadata(os.stat(name, dir_fd=directory, follow_symlinks=False))
+                        for directory, name, held, expected in parents), 'PUBLIC_RESOLVER_VIEW_CHANGED')
+        return raw, {'path': str(target), 'metadata': metadata(before), 'sha256': hashlib.sha256(raw).hexdigest(),
+                     'ancestors': [expected for _, _, _, expected in parents]}
+    finally:
+        for fd in reversed(fds): os.close(fd)
+
+
 def host_resolver(files):
     pending = Path('/etc/resolv.conf'); links = []
     for _ in range(16):
         prefix = Path('/')
         for index, part in enumerate(pending.parts[1:], 1):
             prefix /= part; info = prefix.lstat()
-            require(info.st_uid == 0, 'ROOT_CONTROLLED_HOST_RESOLVER_REQUIRED')
             if stat.S_ISLNK(info.st_mode):
+                require(info.st_uid == 0, 'ROOT_CONTROLLED_HOST_RESOLVER_SELECTOR_REQUIRED')
                 target = os.readlink(prefix); require(metadata(prefix.lstat()) == metadata(info), 'HOST_RESOLVER_LINK_CHANGED')
                 links.append((str(prefix), target, metadata(info)))
                 base = Path(target) if target.startswith('/') else prefix.parent / target
                 pending = Path(os.path.normpath(str(base.joinpath(*pending.parts[index + 1:])))); break
             require(not info.st_mode & 0o022, 'ROOT_CONTROLLED_HOST_RESOLVER_REQUIRED')
         else:
-            profile, raw = files.seal(str(pending), 16384)
+            raw, profile = read_public_resolver(str(pending))
             return resolver_shape(raw), (profile, links)
     require(False, 'HOST_RESOLVER_LINK_DEPTH_EXCEEDED')
 
