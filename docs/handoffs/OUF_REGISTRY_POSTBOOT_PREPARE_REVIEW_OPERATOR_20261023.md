@@ -2,20 +2,28 @@
 
 Questo passaggio costruisce gli input privati correnti e la revisione completa del recupero. Il launcher esegue soltanto `prepare` e, se la relativa receipt è valida, `review`. Non richiede una decisione HUMAN, non emette firme, non acquisisce nuovi token e non avvia Registry o token-worker. Il 502 resta aperto.
 
+## Correzione del loader dopo il primo tentativo VPS
+
+Il tentativo conservato in `/home/oufadmin/ouf-registry-postboot-review.ZHJtALt7/operator.log` è terminato con `INTERPRETER_STDLIB_SYSCONFIG_ORIGIN_REQUIRED`. Nel sorgente fissato il controllo avviene prima del caricamento dell'entry applicativa e di `entry.execute`: non è iniziata la preparazione privata. La receipt non stabilisce la versione Python o il layout effettivo della VPS. Il vecchio controllo accettava solo `sysconfig.py`; CPython 3.13 fornisce anche il layout pacchetto `sysconfig/__init__.py`.
+
+Il nuovo loader verifica entrambi i layout tramite `PathFinder` limitato a `sys._stdlib_dir`, origine canonica esatta, loader sorgente e percorso del pacchetto. Restano negati gli override di build, la sostituzione da `sys.path` e symlink esterni. CI sorgente `39933894931`: 20 test su Python 3.12 e 20 su 3.13, inclusi preload completo dei 105 moduli senza esecuzione del controller. I tre artefatti aggiornati sono stati riletti esattamente dal commit indicato sotto. La prova dell'intera CLI e l'esito VPS restano non attestati.
+
+Il prossimo tentativo usa questa consegna corretta, non il vecchio comando: conserva tutte le directory e non cancella o riutilizza claim. Se il nuovo comando trova un claim esistente, si arresta. Evidenza dell'errore: `evidence/semantic-registry-postboot-loader-target-20261023.json`.
+
 ## Riferimenti immutabili
 
 | Elemento | Pin |
 | --- | --- |
-| Commit dei sorgenti applicativi | `2d860631ffaf837e15de0f8d5e285fe415fe0486` |
-| Commit di pubblicazione della capsule | `03b995cf0da3ab93a30f82f5c1ee6080ab739ab7` |
+| Commit dei sorgenti applicativi | `47899a153f1e2c84f778b67564a8c952d8323c35` |
+| Commit di pubblicazione della capsule | `05caff5cf8b75617b2d407a8f2eefdcf116a664f` |
 | Capsule | `releases/semantic-registry-postboot-20261023.py` |
-| SHA256 capsule | `6c76312c07e6eaffdafe22d885a10dce5f34cf93d7866153f0097619293decf5` |
-| SHA256 dichiarazione | `64ec0b2040f2bd91793b4c43bebbf90369f0b1c39e9cfa31ba341593d199deeb` |
-| Hash della chiusura dei sorgenti | `5f7c46a000f0500c5910fe8d505a6d4f5598091d5d7400660cc1c4c3b13716e6` |
+| SHA256 capsule | `75162f0e9f1e3848392b23c1754751b18a45c529ce139e0550c347de0c67b17a` |
+| SHA256 dichiarazione | `552c027f549c9bbcd9912e7dce5aab69b1ffaa040092df0e9736cdeac45921ac` |
+| Hash della chiusura dei sorgenti | `7d352295d288dce2e01dec1c3c558d7159513751765a448d93b7430a19b04993` |
 | Launcher | [semantic-registry-postboot-prepare-review-20261023.sh](../../releases/semantic-registry-postboot-prepare-review-20261023.sh) |
-| SHA256 launcher | `c36a48dba432e6befa4e3d7ff986f93532fedb99637cc8f68ca195e539620022` |
+| SHA256 launcher | `9813f601731c18d14eab34cc01435fcb991b43d4877924edbc6fcc11ac338327` |
 
-La capsule contiene 105 moduli: i loro blob Git corrispondono al commit dei sorgenti. Rigenerazione deterministica, decodifica indipendente e rilettura degli artefatti pubblicati sono state verificate. Il launcher ha nove test PASS, senza skip, e revisione indipendente: trasporto GitHub, sudo e applicazione sono sostituti espliciti nelle prove del launcher. Le fixture native compongono direttamente bootstrap, owner e factory; non costituiscono una prova dell'intera CLI sul VPS. Evidenze: `evidence/semantic-registry-postboot-source-membership-20261023.json` e `evidence/semantic-registry-postboot-ci-20261023.json`.
+La capsule contiene 105 moduli: i loro blob Git corrispondono al commit dei sorgenti. Rigenerazione deterministica, decodifica indipendente e rilettura degli artefatti pubblicati sono state verificate. Il launcher aggiornato ha nove test PASS, senza skip; cambia soltanto i tre pin della versione precedente sottoposta a revisione indipendente: trasporto GitHub, sudo e applicazione sono sostituti espliciti nelle prove del launcher. Le fixture native compongono direttamente bootstrap, owner e factory; non costituiscono una prova dell'intera CLI sul VPS. Evidenze: `evidence/semantic-registry-postboot-source-membership-20261023.json` e `evidence/semantic-registry-postboot-ci-20261023.json`.
 
 ## Comando operativo
 
@@ -24,7 +32,7 @@ Consegnare il file del launcher indicato sopra tramite il commit immutabile che 
 ```bash
 (
   set -euo pipefail
-  printf '%s\n' 'c36a48dba432e6befa4e3d7ff986f93532fedb99637cc8f68ca195e539620022  semantic-registry-postboot-prepare-review-20261023.sh' | sha256sum --check -
+  printf '%s\n' '9813f601731c18d14eab34cc01435fcb991b43d4877924edbc6fcc11ac338327  semantic-registry-postboot-prepare-review-20261023.sh' | sha256sum --check -
   bash ./semantic-registry-postboot-prepare-review-20261023.sh prepare-review
 )
 ```

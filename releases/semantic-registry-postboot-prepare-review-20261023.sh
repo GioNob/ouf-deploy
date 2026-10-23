@@ -6,9 +6,9 @@
 (
   set -euo pipefail
   umask 077
-  OUF_POSTBOOT_SOURCE_COMMIT='2d860631ffaf837e15de0f8d5e285fe415fe0486'
-  OUF_POSTBOOT_CAPSULE_COMMIT='03b995cf0da3ab93a30f82f5c1ee6080ab739ab7'
-  OUF_POSTBOOT_CAPSULE_SHA256='6c76312c07e6eaffdafe22d885a10dce5f34cf93d7866153f0097619293decf5'
+  OUF_POSTBOOT_SOURCE_COMMIT='47899a153f1e2c84f778b67564a8c952d8323c35'
+  OUF_POSTBOOT_CAPSULE_COMMIT='05caff5cf8b75617b2d407a8f2eefdcf116a664f'
+  OUF_POSTBOOT_CAPSULE_SHA256='75162f0e9f1e3848392b23c1754751b18a45c529ce139e0550c347de0c67b17a'
   OUF_POSTBOOT_ACTION="${1:-prepare-review}"
   if (( $# > 1 )) || [[ "$OUF_POSTBOOT_ACTION" != 'prepare-review' && "$OUF_POSTBOOT_ACTION" != 'review' ]]; then
     printf '%s\n' 'STOP: modalità ammessa prepare-review oppure review; nessuna altra azione.'

@@ -1,5 +1,8 @@
 # Handoff — recovery finito Registry dopo riavvio, 23 ottobre 2026
 
+Aggiornamento loader del 23 ottobre: il primo tentativo VPS si è fermato prima dell'entry applicativa su `INTERPRETER_STDLIB_SYSCONFIG_ORIGIN_REQUIRED`. La correzione riconosce modulo/pacchetto sysconfig soltanto nella stdlib esatta dell'interprete. Sorgente `47899a153f1e2c84f778b67564a8c952d8323c35`, capsule `05caff5cf8b75617b2d407a8f2eefdcf116a664f`, SHA256 `75162f0e9f1e3848392b23c1754751b18a45c529ce139e0550c347de0c67b17a`; i 105 moduli applicativi restano identici. CI loader 20 PASS su Python 3.12 e 20 PASS su 3.13, incluso preload completo senza entry. Per i pin attuali usare `docs/handoffs/OUF_REGISTRY_POSTBOOT_PREPARE_REVIEW_OPERATOR_20261023.md`; le consegne precedenti riportate sotto sono storiche. Nessun ripristino VPS o rinnovo continuativo attestato; sessione proposta sempre ≤900 secondi. La CI del commit di consegna è da osservare separatamente, non inferita dalla prova sorgente.
+
+
 ## Stato e obiettivo
 
 Il percorso sorgente copre preparazione privata, review completa, emissione dell'autorità corrente, ledger, bootstrap del gate, successore token owner e prosecuzione fino al GET originale. **Composizione nativa JVM qualificata; nessuna esecuzione di riparazione VPS o risoluzione del 502 attestata. Consegna qualificata prepare/review pubblicata e riletta esattamente.** Commit/hash della consegna e risultati devono essere registrati prima di presentare il pacchetto operatore come qualificato. Il numero di test superati non equivale a riparazione.

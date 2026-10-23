@@ -610,5 +610,49 @@
     "priorQualifiedSourcePassRemainsRecorded": true,
     "productionControllerReview": "Final token journal read is already under the shared RLock; post-expiry reads occur after joining the worker. No corresponding production race was established.",
     "qualificationTiming": "PENDING_AT_DOCUMENT_GENERATION_NOT_A_NEW_RUNTIME_ADMISSION_GATE"
+  },
+  "subsequentLoaderCompatibility": {
+    "sourceCommit": "47899a153f1e2c84f778b67564a8c952d8323c35",
+    "runId": 39933894931,
+    "jobs": [
+      {
+        "jobId": 120348593679,
+        "python": "3.12",
+        "testsPassed": 20,
+        "skips": 0,
+        "conclusion": "success"
+      },
+      {
+        "jobId": 120348594082,
+        "python": "3.13",
+        "testsPassed": 20,
+        "skips": 0,
+        "conclusion": "success"
+      }
+    ],
+    "scope": "Actual isolated loader and full105module preload; no application entry or whole CLI",
+    "nativeJvmJob": {
+      "jobId": 120348594140,
+      "conclusion": "cancelled"
+    },
+    "priorFinalHead": {
+      "sourceCommit": "ba1d4ed0b786aa920a24deb921b68dc9a062b77a",
+      "runId": 39932064791,
+      "conclusion": "success",
+      "componentsPassed": 158,
+      "nativePrefixOwnerPassed": 8,
+      "nativeJvmPassed": 1,
+      "skips": 0
+    },
+    "targetFailureEvidence": "evidence/semantic-registry-postboot-loader-target-20261023.json",
+    "newArtifactCommit": "05caff5cf8b75617b2d407a8f2eefdcf116a664f",
+    "capsuleSha256": "75162f0e9f1e3848392b23c1754751b18a45c529ce139e0550c347de0c67b17a",
+    "wrapperSha256": "9813f601731c18d14eab34cc01435fcb991b43d4877924edbc6fcc11ac338327",
+    "wrapperLocalTestsPassed": 9,
+    "artifactExactReadbacks": 3,
+    "finalDeliveryHeadCiPendingAtDocumentGeneration": true,
+    "targetRecoveryEstablished": false,
+    "runtimeAuthorityIssuedOnTarget": false,
+    "continuousServiceRenewalEstablished": false
   }
 }
