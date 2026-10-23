@@ -373,6 +373,34 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
                                        'state', self.cid, timeout=10))
             bundle = state.get('bundle')
             report['actualBundle'] = safe_path(bundle)
+            registry = self.inspect()
+            target = self.recipe['renewableToken']['target']
+            pid = state.get('pid')
+            report['tokenEngineMounts'] = [{key: mount.get(key) for key in ('Type', 'RW', 'Propagation')}
+                for mount in registry['Mounts'] if mount['Destination'] == target]
+            if type(pid) is int and pid > 0 and registry['State']['Pid'] == pid:
+                with open('/proc/' + str(pid) + '/mountinfo', 'rb') as stream:
+                    mountinfo = stream.read(2097153)
+                if len(mountinfo) <= 2097152:
+                    rows = [line.split() for line in mountinfo.decode('ascii').splitlines()]
+                    matches = [row for row in rows if len(row) >= 10 and row[4] == target]
+                    report['tokenMountInfoCount'] = len(matches)
+                    report['tokenSubmountCount'] = sum(len(row) > 4 and row[4].startswith(target + '/') for row in rows)
+                    report['tokenMountInfo'] = []
+                    for row in matches[:16]:
+                        separator = row.index('-')
+                        report['tokenMountInfo'].append({'mountId': row[0], 'parentId': row[1],
+                            'device': row[2], 'rootMatchesTokenDirectory': row[3] == str(self.token_root),
+                            'mountOptions': row[5].split(','), 'optionalFields': row[6:separator],
+                            'filesystem': row[separator + 1],
+                            'superOptionNames': [value.split('=', 1)[0] for value in row[separator + 3].split(',')]})
+                fd = os.open('/proc/' + str(pid) + '/root' + target, os.O_PATH | os.O_DIRECTORY)
+                try:
+                    report['visibleTokenMountId'] = next(int(line.split(':', 1)[1])
+                        for line in Path('/proc/self/fdinfo/' + str(fd)).read_text().splitlines()
+                        if line.startswith('mnt_id:'))
+                finally:
+                    os.close(fd)
             config_path = self.daemon_root / 'exec/containerd/containerd.toml'
             if config_path.is_file() and config_path.stat().st_size <= 131072:
                 config = tomllib.loads(config_path.read_text())
@@ -395,7 +423,11 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
                         execution_profile=self.profile, renewable_token=self.recipe['renewableToken'],
                         delegation_key_metadata_hash=self.recipe['delegationKeyMetadataHash'],
                         proposal_receipt_key=self.recipe['proposalReceiptKey'])['expectedOci']
-                    report['ociDifferingPaths'] = changed_paths(expected, json.loads(actual_path.read_bytes()))
+                    actual = json.loads(actual_path.read_bytes())
+                    report['ociDifferingPaths'] = changed_paths(expected, actual)
+                    report['tokenOciMountOptions'] = {
+                        label: [mount.get('options') for mount in oci['mounts'] if mount['destination'] == target]
+                        for label, oci in (('independentExpected', expected), ('actual', actual))}
         except Exception as error:
             report['diagnosticErrorType'] = type(error).__name__
         print(json.dumps(report, sort_keys=True), flush=True)
