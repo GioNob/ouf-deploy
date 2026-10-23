@@ -92,7 +92,7 @@ class NativeOwner(unittest.TestCase):
         self.secret=self.write(self.root/'credential',b'DISPOSABLE_FIXTURE_SECRET',0o400)
         self.common=self.write(self.root/'common.lock',b'')
         self.fence=self.write(self.root/'fence.json',core.encoded({'fixtureOwner':'operational'}))
-        self.policy=core.RenewalPolicy(60,90,15,30,3,10,(5,15,60))
+        self.policy=core.RenewalPolicy(60,240,15,30,3,10,(5,15,60))
         context=ssl.create_default_context(cadata=self.ca.read_text('ascii'))
         transport=PinnedIamOpener(self.profile,lambda:(time.time(),time.monotonic()),context=context)
         binding=Binding(self.profile.token_endpoint,self.profile.client_id,'authorization.bundle.read',str(self.output),'token.jwt',10001)
@@ -166,14 +166,45 @@ class NativeOwner(unittest.TestCase):
             path=self.output/'token.jwt';s=path.stat()
             self.assertEqual((s.st_uid,s.st_gid,s.st_mode&0o777,s.st_nlink),(0,10001,0o440,1))
             self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),row['tokenHash'])
-        # A new guard, store and adapter really reread current disk and IAM.
-        owner2,ledger2=self.opened()
-        with owner2.invocation(),ledger2.invocation():
-            resumed=self.worker(owner2,ledger2).start()
-            self.assertEqual(resumed['reason'],'CURRENT_PUBLICATION_READMITTED')
-            self.assertEqual(resumed['cumulativeAttempts'],322)
+        # A separate interpreter really reacquires both locks and reobserves
+        # current disk, installation signature, trust and online IAM admission.
+        child='''import importlib,json,sys,time
+from pathlib import Path
+root=Path(sys.argv[1]);sys.path[:0]=[str(root),str(root/'tools/semantic_cohort_admission/cohort-draft')]
+from tools.semantic_registry_operational_owner import contract,core,guard,store,adapter
+for name in contract.SOURCE_NAMES:importlib.import_module(name)
+owner=guard.InstalledGuard(sys.argv[2],sys.argv[3]);c=owner.configuration
+p=dict(c['policy']);p['failure_delays']=tuple(p['failure_delays']);policy=core.RenewalPolicy(**p)
+clock=lambda:('fixture-current-boot',time.time(),time.monotonic())
+ledger=store.Store(c['destinations']['ledgerRoot'])
+try:
+ with owner.invocation(),ledger.invocation():
+  native=adapter.NativeAdapter(owner,ledger,clock)
+  row=core.Worker(ledger,native,policy,sys.argv[3],c['predecessorInputsHash'],321,clock).start()
+  print(json.dumps({'reason':row['reason'],'cumulativeAttempts':row['cumulativeAttempts']}))
+finally:ledger.close()
+'''
+        result=subprocess.run([sys.executable,'-I','-B','-S','-c',child,str(ROOT),str(self.config_path),self.config_hash],
+                              capture_output=True,text=True,timeout=30)
+        self.assertEqual(result.returncode,0,result.stderr)
+        resumed=json.loads(result.stdout)
+        self.assertEqual(resumed['reason'],'CURRENT_PUBLICATION_READMITTED')
+        self.assertEqual(resumed['cumulativeAttempts'],322)
         self.assertEqual(sum(p.endswith('/token') for p,_ in self.calls),1)
         self.assertEqual(sum(p.endswith('/introspect') for p,_ in self.calls),2)
+
+    def test_second_actual_renewal_after_real_wait_keeps_cumulative_accounting(self):
+        owner,ledger=self.opened()
+        with owner.invocation(),ledger.invocation():
+            worker=self.worker(owner,ledger);worker.start();first=worker.step()
+            until=first['nextMono']
+            while time.monotonic()<until:threading.Event().wait(min(1,until-time.monotonic()))
+            second=worker.step()
+        self.assertEqual((first['cumulativeAttempts'],second['cumulativeAttempts']),(322,323))
+        self.assertEqual(second['publications'],2);self.assertEqual(second['state'],'ACTIVE')
+        self.assertNotEqual(first['tokenHash'],second['tokenHash'])
+        self.assertNotEqual(first['attemptId'],second['attemptId'])
+        self.assertEqual(sum(p.endswith('/token') for p,_ in self.calls),2)
 
     def test_failed_online_admission_after_actual_grant_never_publishes_or_replays(self):
         self.reject=True;owner,ledger=self.opened()

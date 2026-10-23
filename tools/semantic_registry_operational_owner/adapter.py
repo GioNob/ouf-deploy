@@ -50,10 +50,13 @@ class NativeAdapter:
         self.admission=ExpiryAdmission(self.profile,self.credential,self.transport,self.pair_clock)
         self.writer=AtomicTokenFile(self.binding);self.pending=None
 
-    def guard(self):
+    def authority_guard(self):
         self.owner.guard();self.store.assert_invocation()
         require(self.transport.trust_digest()==self.owner.configuration['ownerInputs']['tlsTrustHash'],
                 'OPERATIONAL_IAM_TRUST_CHANGED')
+
+    def guard(self):
+        self.authority_guard()
         self.writer.check_custody()
 
     def grant_and_admit(self,deadline):
@@ -82,7 +85,11 @@ class NativeAdapter:
         require(type(value) is dict and value['hash']==token_hash==hashlib.sha256(token.encode()).hexdigest()
                 and type(attempt_id) is str and len(attempt_id)==64,'ONE_ADMITTED_PUBLICATION_ONLY')
         def before_replace():
-            self.guard();_,wall,mono=self.clock()
+            # AtomicTokenFile owns and checks its exact temporary FD/name and
+            # old destination around this callback. Its normal idle-directory
+            # check must not reject the publisher's own in-flight temporary.
+            # Authority, source, credentials, fence and ledger stay checked.
+            self.authority_guard();_,wall,mono=self.clock()
             require(value['startedWall']<=wall and value['startedMono']<=mono<value['deadline']
                     and min(value['expiresWall']-wall,value['expiresMono']-mono)>=self.binding.minimum_remaining,
                     'CURRENT_TOKEN_PUBLICATION_WINDOW_REQUIRED')
