@@ -128,10 +128,10 @@ def service_unit(c, configuration_hash, python, capsule):
         'RestrictNamespaces=yes','RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX',
         'SystemCallArchitectures=native','SystemCallFilter=@system-service',
         'SystemCallFilter=~ptrace process_vm_readv process_vm_writev pidfd_getfd',
-        'MountAPIVFS=no','InaccessiblePaths=/proc',
+        'MountAPIVFS=no','InaccessiblePaths=+/proc',
         'BindReadOnlyPaths=/usr /lib -/lib64 '+' '.join(unit_word(x) for x in sorted(readonly))+
         ' /proc/sys/kernel/random/boot_id:'+unit_word(c['hostBootIdPath']),
-        'BindPaths='+ledger+' '+output,'ReadWritePaths='+ledger+' '+output,
+        'BindPaths='+ledger+' '+output,'ReadWritePaths=+'+ledger+' +'+output,
         'IPAddressDeny=any',*['IPAddressAllow='+ip for ip in profile.peer_addresses],
         'Environment=PATH=/usr/bin:/bin LC_ALL=C OPENSSL_CONF=/dev/null',
         'UnsetEnvironment=PYTHONPATH PYTHONHOME PYTHONSTARTUP SSLKEYLOGFILE SSL_CERT_FILE SSL_CERT_DIR HTTP_PROXY HTTPS_PROXY ALL_PROXY',
