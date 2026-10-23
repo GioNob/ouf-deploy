@@ -8,6 +8,7 @@ import copy,hashlib,json,os,re,subprocess,uuid
 from pathlib import PurePosixPath
 from urllib.parse import urlsplit
 from .core import require,digest,encoded,hashed
+from . import caller_lookup
 from .gateway import CurrentGateway
 from .caller_configuration import verify as verify_configuration
 from .read_budget import ReadBudget
@@ -63,6 +64,8 @@ except BaseException:os._exit(1)
 os._exit(0)
 '''
 
+CHILD_SOURCE = caller_lookup.child(CHILD_SOURCE, "{'origin','token','reference','ca','peerCertificateSha256'}")
+
 def request_scope(gateway,profile):
     return {'schema':'ouf.semantic-registry-recovery-original-request-scope.v1',
         'planHash':digest(gateway.lifecycle.plan),'gatewayScopeHash':digest(gateway.scope),
@@ -78,7 +81,7 @@ class OriginalSemanticRequest:
         self.profile=copy.deepcopy(profile)
         fields={'caller','origin','tokenTarget','tokenSource','pythonExecutable','ca','peerCertificateSha256',
             'references','frozenConfigurationHash','onboardingVersionId','frozenConfiguration'}
-        require(type(profile) is dict and set(profile) in (fields, fields | {'callerConfiguration'}),'EXACT_ORIGINAL_SERVICE_REQUEST_PROFILE_REQUIRED')
+        require(type(profile) is dict and set(profile) in (fields, fields | {'callerConfiguration'}, fields | {'callerConfiguration', 'callerLookup'}),'EXACT_ORIGINAL_SERVICE_REQUEST_PROFILE_REQUIRED')
         refs=profile['references']
         require(type(refs) is list and 1<=len(refs)<=32,'EXACT_BOUNDED_ORIGINAL_REFERENCES_REQUIRED')
         seen=set()
@@ -132,6 +135,7 @@ class OriginalSemanticRequest:
         status,actual=self.lifecycle.engine.request('GET','/v1.44/containers/'+p['caller']['binding']['containerId']+'/json')
         require(status==200,'CURRENT_ORIGINAL_SERVICE_CALLER_REQUIRED');runtime_guard.unchanged(actual,p['caller'])
         verify_configuration(actual,p)
+        caller_lookup.payload(actual, p.get('callerLookup'))
         gateway=self.gateway.guard();u=urlsplit(p['origin'])
         if u.scheme=='http':
             require(any(e.get('IPAddress')==u.hostname for e in gateway['NetworkSettings']['Networks'].values()),
@@ -160,7 +164,8 @@ class OriginalSemanticRequest:
                 pin=lambda s:(s.st_dev,s.st_ino);identity=pin(os.fstat(fd))
                 self.budget.reserve('semanticGets');self.guard()
                 request=encoded({'origin':p['origin'],'token':token,'reference':ref,'ca':ca,
-                    'peerCertificateSha256':p['peerCertificateSha256']})
+                    'peerCertificateSha256':p['peerCertificateSha256'],
+                    **caller_lookup.payload(actual, p.get('callerLookup'))})
                 require(len(request)<=2097152,'BOUNDED_ORIGINAL_SERVICE_PRIVATE_REQUEST_REQUIRED')
                 child=subprocess.Popen([p['pythonExecutable']['path'],'-I','-B','-S','-c',CHILD_SOURCE,str(fd)],
                     stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,pass_fds=(fd,),

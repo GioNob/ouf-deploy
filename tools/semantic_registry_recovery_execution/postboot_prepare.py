@@ -20,7 +20,7 @@ import uuid
 
 from .core import require, digest, encoded, hashed, validate_plan
 from .caller_configuration import configuration, verify as verify_configuration
-from . import original_tls
+from . import original_tls, caller_lookup
 from tools.semantic_registry_postboot_owner import contract as owner_contract
 from tools.semantic_live_route_diagnostic import reader as transport
 
@@ -253,6 +253,8 @@ os._exit(0)
 '''
 
 
+FROZEN_CHILD_SOURCE = caller_lookup.child(FROZEN_CHILD_SOURCE, "{'origin','token','reference','ca','peerCertificateSha256'}")
+
 def read_frozen(profile, caller, reference):
     from tools.ingestion_readiness_patch_execution import private_file
     pid = caller['State']['Pid']; fds = []; child = None
@@ -285,7 +287,8 @@ def read_frozen(profile, caller, reference):
             fd = os.open(ns, os.O_RDONLY | os.O_CLOEXEC); fds.append(fd)
             namespace_identity = identity(os.fstat(fd))
             payload = encoded({'origin': profile['origin'], 'token': token, 'reference': reference,
-                               'ca': ca, 'peerCertificateSha256': profile['peerCertificateSha256']})
+                               'ca': ca, 'peerCertificateSha256': profile['peerCertificateSha256'],
+                               **caller_lookup.payload(caller, profile.get('callerLookup'))})
             require(len(payload) <= 2097152, 'BOUNDED_PRIVATE_FROZEN_REQUEST_REQUIRED')
             transport.verify_program(profile['pythonExecutable'])
             same_token()
@@ -304,7 +307,7 @@ def read_frozen(profile, caller, reference):
                     and identity(os.fstat(root_fd)) == root_identity
                         == identity(os.stat('/proc/' + str(pid) + '/root')), 'FROZEN_REQUEST_CALLER_CHANGED')
             transport.verify_program(profile['pythonExecutable'])
-            same_token()
+            same_token(); caller_lookup.payload(caller, profile.get('callerLookup'))
             return decode(raw)
         finally:
             if child is not None:
@@ -344,7 +347,7 @@ def frozen_configuration(value, reference):
 def validate_case(case):
     fields = {'schema', 'privateParent', 'retainedInputs', 'historicalReview', 'patchContext',
         'lineageReceipt', 'predecessorJournalPath', 'frozenReference', 'proposedOwnerBudget', 'originalRequestTls'}
-    require(type(case) is dict and set(case) in (fields, fields | {'priorPreparation'}, fields | {'priorPreparations'})
+    require(type(case) is dict and set(case) in (fields, fields | {'priorPreparation'}, fields | {'priorPreparations'}, fields | {'priorPreparations', 'resolverRecovery'})
         and case['schema'] == SCHEMA and case['privateParent'] == PARENT, 'EXACT_POSTBOOT_PREPARATION_CASE_REQUIRED')
     if 'priorPreparation' in case:
         prior = case['priorPreparation']
@@ -357,7 +360,7 @@ def validate_case(case):
         priors = case['priorPreparations']
         require(type(priors) is list and len(priors) == 2 and case['originalRequestTls'] == original_tls.POLICY,
                 'EXACT_TWO_FAILED_PREPARATIONS_AND_SYSTEM_PKI_CASE_REQUIRED')
-        baseline = {k: v for k, v in case.items() if k not in ('priorPreparations', 'originalRequestTls')}
+        baseline = {k: v for k, v in case.items() if k not in ('priorPreparations', 'originalRequestTls', 'resolverRecovery')}
         hashes = set()
         for prior in priors:
             require(type(prior) is dict and set(prior) == {'case', 'caseHash', 'sourceClosureHash',
@@ -375,6 +378,9 @@ def validate_case(case):
         require('priorPreparation' not in first['case'] and second['case'].get('priorPreparation') == {
                 k: first[k] for k in ('caseHash', 'sourceClosureHash', 'engineAttempts', 'adminAttempts', 'frozenAttempts')},
                 'EXACT_PRIOR_PREPARATION_CHAIN_REQUIRED')
+    if 'resolverRecovery' in case:
+        from . import resolver_reconciliation
+        resolver_reconciliation.validate(case)
     for key in ('retainedInputs', 'historicalReview'):
         value = case[key]
         require(type(value) is dict and set(value) == {'path', 'sha256'} and hashed(value['sha256'])
@@ -448,8 +454,9 @@ def prepared_root(case, manifest, boot_id=None):
     validate_case(case)
     boot_id = Path('/proc/sys/kernel/random/boot_id').read_text().strip() if boot_id is None else boot_id
     require(owner_contract.boot(boot_id), 'CURRENT_PREPARATION_BOOT_REQUIRED')
-    return Path(PARENT) / ('semantic-registry-postboot-inputs-' + digest({
-        'case': case, 'closure': digest(manifest), 'boot': boot_id}))
+    identity = ({'retainedResolverObservationHash': case['resolverRecovery']['correctedObservation']['sha256'], 'boot': boot_id}
+                if 'resolverRecovery' in case else {'case': case, 'closure': digest(manifest), 'boot': boot_id})
+    return Path(PARENT) / ('semantic-registry-postboot-inputs-' + digest(identity))
 
 
 def reconcile_prior_preparation(case, files, boot):
@@ -458,6 +465,9 @@ def reconcile_prior_preparation(case, files, boot):
     This never changes or resumes the old preparation. A fresh bounded capture
     has a distinct case and carries prior attempts into its proof and review.
     """
+    if 'resolverRecovery' in case:
+        from . import resolver_reconciliation
+        return resolver_reconciliation.reconcile(case, files, boot)
     if 'priorPreparations' in case:
         observed = [_reconcile_fixed_prior(prior['case'], prior, files, boot) for prior in case['priorPreparations']]
         return {'priorPreparations': observed, 'priorAttemptCounts': {
@@ -663,6 +673,7 @@ def _prepare(case, manifest, sources):
     token_path = mounted_source(rows[caller_id], target)
     u = urlsplit(origin); tls = case['originalRequestTls']
     tls_observation = None; tls_handshakes = 0
+    lookup_profile = caller_lookup.capture(rows[caller_id])[0] if 'resolverRecovery' in case else None
     if u.scheme == 'http':
         require(tls is None and any(e.get('IPAddress') == u.hostname for e in rows[gid]['NetworkSettings']['Networks'].values()),
                 'HTTP_ORIGINAL_CALLER_MUST_TARGET_EXACT_GATEWAY')
@@ -673,7 +684,7 @@ def _prepare(case, manifest, sources):
         publish(root, 'tls-handshake.json', {'originHash': digest(origin), 'caProfileHash': digest(ca),
             'maximumAttempts': 1, 'httpRequests': 0, 'bearersSent': 0})
         tls_handshakes = 1
-        tls_observation = original_tls.observe(origin, ca, admin['pythonExecutable'], rows[caller_id])
+        tls_observation = original_tls.observe(origin, ca, admin['pythonExecutable'], rows[caller_id], lookup_profile)
         require(original_tls.resolve_system_ca() == ca_source, 'COMPILED_CA_SELECTION_CHANGED')
         tls_observation['trustSource'] = ca_source
         cert = tls_observation['peerCertificateSha256']
@@ -688,6 +699,7 @@ def _prepare(case, manifest, sources):
     original_request = {'caller': callerpin, 'callerConfiguration': caller_configuration,
         'origin': origin, 'tokenTarget': target, 'tokenSource': token_profile,
         'pythonExecutable': copy.deepcopy(admin['pythonExecutable']), 'ca': ca, 'peerCertificateSha256': cert}
+    if lookup_profile is not None: original_request['callerLookup'] = lookup_profile
     publish(root, 'frozen-get.json', {'method': 'GET', 'path': FROZEN_PATH, 'referenceHash': digest(case['frozenReference']), 'maximumAttempts': 1})
     verify_configuration(rows[caller_id], original_request)
     frozen = read_frozen(original_request, rows[caller_id], case['frozenReference'])
@@ -762,6 +774,7 @@ def _prepare(case, manifest, sources):
             'bootId': boot, 'engineGets': calls, 'adminGets': 1, 'frozenConfigurationGets': 1,
             'priorPreparationReconciliation': prior_preparation,
             'tlsHandshakes': tls_handshakes, 'originalTlsObservation': tls_observation,
+            'resolverCalls': 2 if lookup_profile is not None else 0, 'tlsAttemptMarkers': tls_handshakes,
             'originalServiceBearerUsed': True, 'ownerCredentialBytesRead': False, 'databaseCalls': 0, 'oauthRequests': 0,
             'runtimeEffectsDispatched': 0, 'runtimeAuthorityIssued': False, 'budgetReset': False,
             'automaticReplayAllowed': False, 'nativeExecutorQualified': False, 'targetApplyAuthorized': False}}

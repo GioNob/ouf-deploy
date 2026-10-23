@@ -12,6 +12,7 @@ import subprocess
 from urllib.parse import urlsplit
 
 from .core import require, encoded, hashed, digest
+from . import caller_lookup
 from tools.semantic_live_route_diagnostic.reader import process_ticks, verify_program
 
 POLICY = {'mode': 'SYSTEM_PKI_PINNED', 'trustSource': 'COMPILED_OPENSSL_CA_FILE', 'maximumTlsHandshakes': 1}
@@ -44,6 +45,8 @@ try:
 except BaseException:os._exit(1)
 os._exit(0)
 '''
+
+TLS_CHILD_SOURCE = caller_lookup.child(TLS_CHILD_SOURCE, "{'origin','ca'}")
 
 
 def metadata(info):
@@ -91,7 +94,7 @@ def system_ca(files):
     return profile, source
 
 
-def observe(origin, ca, program, caller):
+def observe(origin, ca, program, caller, lookup_profile=None):
     from tools.ingestion_readiness_patch_execution import private_file
     u = urlsplit(origin)
     require(u.scheme == 'https' and u.hostname and not u.username and not u.password
@@ -104,7 +107,8 @@ def observe(origin, ca, program, caller):
     try:
         fd = os.open(ns, os.O_RDONLY | os.O_CLOEXEC); fds.append(fd)
         pin = identity(os.fstat(fd))
-        payload = encoded({'origin': origin, 'ca': private_file.read(ca).decode('ascii')})
+        payload = encoded({'origin': origin, 'ca': private_file.read(ca).decode('ascii'),
+                           **caller_lookup.payload(caller, lookup_profile)})
         require(len(payload) <= MAX_PAYLOAD and process_ticks(pid) == ticks
                 and pin == identity(os.stat(ns)), 'BOUNDED_CURRENT_CALLER_TLS_INPUT_REQUIRED')
         child = subprocess.Popen([program['path'], '-I', '-B', '-S', '-c', TLS_CHILD_SOURCE, str(fd)],
@@ -120,7 +124,7 @@ def observe(origin, ca, program, caller):
                 and result['hostnameVerified'] is True, 'VERIFIED_ORIGINAL_SERVICE_TLS_IDENTITY_REQUIRED')
         require(process_ticks(pid) == ticks and pin == identity(os.fstat(fd)) == identity(os.stat(ns)),
                 'CALLER_CHANGED_DURING_TLS_IDENTITY_OBSERVATION')
-        private_file.read(ca); verify_program(program)
+        private_file.read(ca); verify_program(program); caller_lookup.payload(caller, lookup_profile)
         return {**result, 'originHash': digest(origin), 'caProfileHash': digest(ca),
                 'httpRequests': 0, 'bearersSent': 0, 'tlsHandshakes': 1}
     finally:

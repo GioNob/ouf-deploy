@@ -3,12 +3,16 @@ on:
   push:
     branches: [fix/registry-bound-owner-lineage-20261023]
     paths:
+      - tools/semantic_registry_recovery_execution/**
+      - releases/semantic-registry-postboot-resolver*
       - scripts/verify-registry-caller-resolver-20261023.py
       - tools/semantic_registry_recovery_execution/tests/test_caller_resolver_view.py
       - releases/semantic-registry-caller-resolver-20261023.sh
       - .github/workflows/registry-caller-resolver.yml
   pull_request:
     paths:
+      - tools/semantic_registry_recovery_execution/**
+      - releases/semantic-registry-postboot-resolver*
       - scripts/verify-registry-caller-resolver-20261023.py
       - tools/semantic_registry_recovery_execution/tests/test_caller_resolver_view.py
       - releases/semantic-registry-caller-resolver-20261023.sh
@@ -42,3 +46,6 @@ jobs:
           sudo "$ouf_resolver_python" -I -B -S -m unittest discover \
             -s /root/ouf-caller-resolver-tests/repository/tools/semantic_registry_recovery_execution/tests \
             -p test_caller_resolver_view.py -v
+          sudo "$ouf_resolver_python" -I -B -S -m unittest discover \
+            -s /root/ouf-caller-resolver-tests/repository/tools/semantic_registry_recovery_execution/tests \
+            -p test_lookup_transport.py -v

@@ -578,12 +578,15 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
         properties.write_text('ouf.ingestion.activation.gateway-url=' + origin + '\n'
                               'ouf.ingestion.activation.token-file=/run/ingestion.jwt\n')
         properties.chmod(0o440); os.chown(properties, 0, 10001)
+        caller_nss = self.root / 'caller-nsswitch.conf'
+        caller_nss.write_text('hosts: files dns\n'); caller_nss.chmod(0o444)
         caller = self.create_container({'Image': self.alpine_image, 'User': '10001:10001',
             'Entrypoint': ['sleep'], 'Cmd': ['600'], 'Env': [
                 'SPRING_CONFIG_ADDITIONAL_LOCATION=optional:file:/run/secrets/ingestion-summary.properties'],
             'HostConfig': {'NetworkMode': self.network_name, 'CapDrop': ['ALL'], 'SecurityOpt': ['no-new-privileges'],
                 'Binds': [str(caller_token) + ':/run/ingestion.jwt:ro',
-                          str(properties) + ':/run/secrets/ingestion-summary.properties:ro']},
+                          str(properties) + ':/run/secrets/ingestion-summary.properties:ro',
+                          str(caller_nss) + ':/etc/nsswitch.conf:ro']},
             'NetworkingConfig': {'EndpointsConfig': {self.network_name: {
                 'NetworkID': self.nid, 'IPAMConfig': {
                     'IPv4Address': str(self.subnet.network_address + 6)}}}}}, 'ouf-postboot-caller-')
@@ -598,21 +601,22 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
                           for member in network['Containers'].values()}
         self.assertNotIn(self.registry_address, live_addresses)
         self.assertIn(str(self.subnet.network_address + 6), live_addresses)
-        from tools.semantic_registry_recovery_execution import original_tls, postboot_prepare
+        from tools.semantic_registry_recovery_execution import original_tls, postboot_prepare, caller_lookup
         # Disposable independent CA selection only; the production resolver has
         # no caller-supplied override or environment fallback. Observe uses the
         # unmodified child and the actual held caller namespace.
         with patch.object(original_tls.ssl, 'get_default_verify_paths',
                           return_value=SimpleNamespace(openssl_cafile=str(self.gateway_ca))):
             ca_profile, ca_source = original_tls.system_ca(postboot_prepare.Files())
-        tls_identity = original_tls.observe(origin, ca_profile, self.gateway_profile['pythonExecutable'], actual_caller)
+        lookup_profile, _ = caller_lookup.capture(actual_caller)
+        tls_identity = original_tls.observe(origin, ca_profile, self.gateway_profile['pythonExecutable'], actual_caller, lookup_profile)
         self.assertTrue(tls_identity['certificateChainVerified']); self.assertTrue(tls_identity['hostnameVerified'])
         self.assertEqual((tls_identity['httpRequests'], tls_identity['bearersSent'], tls_identity['tlsHandshakes']), (0, 0, 1))
         configuration = {'semanticReferenceBindings': [inputs.reference()],
                          'semanticMapping': {'semanticRefs': [inputs.SEMANTIC_ID + '@' + inputs.SEMANTIC_VERSION]}}
         config_hash = 'sha256:' + c.digest(configuration)
         version = str(uuid.uuid4())
-        original = {'callerConfiguration': configuration_binding, 'caller': {'binding': prefix_fixture.runtime_bindings.observed(actual_caller, prefix_fixture.runtime_bindings.SORTED),
+        original = {'callerLookup': lookup_profile, 'callerConfiguration': configuration_binding, 'caller': {'binding': prefix_fixture.runtime_bindings.observed(actual_caller, prefix_fixture.runtime_bindings.SORTED),
             'bindingProfile': prefix_fixture.runtime_bindings.SORTED, 'restartCount': 0},
             'origin': origin, 'tokenTarget': '/run/ingestion.jwt', 'tokenSource': prefix_fixture.private_profile(caller_token),
             'pythonExecutable': self.gateway_profile['pythonExecutable'], 'ca': ca_profile,
