@@ -21,6 +21,9 @@ ARTIFACT = 'b' * 40
 
 
 class ReviewWrapper(unittest.TestCase):
+    wrapper = WRAPPER
+    capsule_name = "semantic-registry-postboot-20261023.py"
+    audit_path = "evidence/semantic-registry-postboot-source-membership-20261023.json"
     def setUp(self):
         self.assertEqual(os.geteuid(), 0, 'isolated root-owned component fixture required')
         self.temporary = tempfile.TemporaryDirectory(prefix='postboot-review-wrapper-fixture-', dir=ROOT)
@@ -92,7 +95,7 @@ print(json.dumps(receipt), flush=True)
         return hashlib.sha256(raw).hexdigest()
 
     def render(self, *, digest=None, source=SOURCE, artifact=ARTIFACT):
-        text = WRAPPER.read_text()
+        text = self.wrapper.read_text()
         pins = {'SOURCE_COMMIT': source, 'CAPSULE_COMMIT': artifact,
                 'CAPSULE_SHA256': digest if digest is not None else self.capsule()}
         for name, value in pins.items():
@@ -115,14 +118,14 @@ print(json.dumps(receipt), flush=True)
 
     def test_wrapper_is_either_wholly_draft_or_matches_the_audited_capsule(self):
         pins = dict(re.findall(r"(?m)^  OUF_POSTBOOT_(SOURCE_COMMIT|CAPSULE_COMMIT|CAPSULE_SHA256)='([^']*)'$",
-                               WRAPPER.read_text()))
+                               self.wrapper.read_text()))
         self.assertEqual(set(pins), {'SOURCE_COMMIT', 'CAPSULE_COMMIT', 'CAPSULE_SHA256'})
         if any(value.startswith('PENDING_') for value in pins.values()):
             self.assertEqual(pins, {'SOURCE_COMMIT': 'PENDING_QUALIFIED_SOURCE_COMMIT',
                 'CAPSULE_COMMIT': 'PENDING_PUBLISHED_CAPSULE_COMMIT',
                 'CAPSULE_SHA256': 'PENDING_VERIFIED_CAPSULE_SHA256'})
             return
-        audit = json.loads((ROOT / 'evidence/semantic-registry-postboot-source-membership-20261023.json').read_bytes())
+        audit = json.loads((ROOT / self.audit_path).read_bytes())
         self.assertEqual(pins['SOURCE_COMMIT'], audit['sourceCommit'])
         self.assertRegex(pins['CAPSULE_COMMIT'], r'^[0-9a-f]{40}$')
         self.assertNotEqual(pins['CAPSULE_COMMIT'], pins['SOURCE_COMMIT'])
@@ -152,7 +155,7 @@ print(json.dumps(receipt), flush=True)
         gh_calls = self.calls('gh.calls'); self.assertEqual(len(gh_calls), 1)
         self.assertIn('Accept: application/vnd.github.raw+json', gh_calls[0])
         self.assertEqual(gh_calls[0][-1],
-            'repos/GioNob/ouf-deploy/contents/releases/semantic-registry-postboot-20261023.py?ref=' + ARTIFACT)
+            'repos/GioNob/ouf-deploy/contents/releases/' + self.capsule_name + '?ref=' + ARTIFACT)
         directories = self.retained(); self.assertEqual(len(directories), 1)
         directory = directories[0]
         self.assertEqual(directory.stat().st_mode & 0o777, 0o700)
@@ -210,6 +213,12 @@ print(json.dumps(receipt), flush=True)
                          ['prepare', 'review', 'prepare', 'review'])
         self.assertEqual((self.home / 'claim.prepare').read_text(), 'consumed')
         self.assertEqual((self.home / 'claim.review').read_text(), 'consumed')
+
+
+class PropertiesReviewWrapper(ReviewWrapper):
+    wrapper = ROOT / 'releases/semantic-registry-postboot-properties-prepare-review-20261023.sh'
+    capsule_name = 'semantic-registry-postboot-properties-20261023.py'
+    audit_path = 'evidence/semantic-registry-postboot-properties-source-membership-20261023.json'
 
 
 if __name__ == '__main__':
