@@ -135,3 +135,26 @@ remain unproven. Do not change RestartPolicy=no blindly: the historical gated
 bootstrap requires coordinated release. No full platform resilience or release
 acceptance is claimed. Technical phases remain 8/8, functional milestones 4/6,
 G3 OPEN.
+
+## Immutable delivery artifacts
+
+- Capsule artifact commit: `ca9815fc3505085360c5601fc1f3c6672c21b660`.
+- Capsule path: `releases/semantic-registry-operational-owner-20261024.py`.
+- Capsule SHA256: `c33b6467d424489aeec7406c65fafc37534badc08e909bf7c2d78bb1f122d378`.
+- Launcher path: `releases/semantic-registry-operational-owner-20261024.sh`.
+- Launcher SHA256: `198a129219f11cabc8333197f88ed1a17e3ce9615a1fbd3ed6bde55dcff1ab91`.
+
+Download the launcher through the existing authenticated `gh api` raw Contents
+endpoint at its published immutable commit, verify its checksum, then run it
+once as oufadmin. It downloads and independently verifies the capsule, copies
+it into an exclusive root-owned directory, checks that protected copy again,
+and invokes the one-pass `deploy` mode. Never inject the TTY approval. Never
+relaunch after a STOP; preserve the public receipts and operator log.
+
+The final delivery fixtures and unchanged operational modules passed at
+`5cbeb5804b2beb45ad9c8c63b12dc1811bc463ba`, CI
+[40038873138/job120704938504](https://github.com/GioNob/ouf-deploy/actions/runs/40038873138/job/120704938504):
+40 component tests and all 10 native cases (141.021 seconds), direct logs
+inspected. All six launcher shell cases pass, including portable-client absence
+with a real fixture fallback, and complete client absence with an isolated PATH.
+The generated launcher also passes `bash -n`. Target execution is pending.

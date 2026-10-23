@@ -21,5 +21,23 @@
   "releaseAcceptance": false,
   "capsuleSha256": "c33b6467d424489aeec7406c65fafc37534badc08e909bf7c2d78bb1f122d378",
   "technicalPhasesCompleted": 8,
-  "functionalMilestonesProven": 4
+  "functionalMilestonesProven": 4,
+  "deliveryQualification": {
+    "sourceCommit": "5cbeb5804b2beb45ad9c8c63b12dc1811bc463ba",
+    "runId": 40038873138,
+    "jobId": 120704938504,
+    "componentTestsPassed": 40,
+    "nativeTestsPassed": 10,
+    "nativeSeconds": 141.021,
+    "directLogsInspected": true,
+    "operationalSourcesUnchanged": true,
+    "launcherShellTestsPassed": 6
+  },
+  "deliveryArtifacts": {
+    "capsuleCommit": "ca9815fc3505085360c5601fc1f3c6672c21b660",
+    "capsuleBytes": 673672,
+    "capsuleReadbackMatches": true,
+    "launcherSha256": "198a129219f11cabc8333197f88ed1a17e3ce9615a1fbd3ed6bde55dcff1ab91",
+    "launcherBytes": 2194
+  }
 }
