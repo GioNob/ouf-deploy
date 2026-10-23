@@ -20,7 +20,7 @@ import uuid
 
 from .core import require, digest, encoded, hashed, validate_plan
 from .caller_configuration import configuration, verify as verify_configuration
-from . import original_tls, caller_lookup
+from . import original_tls, caller_lookup, frozen_response
 from tools.semantic_registry_postboot_owner import contract as owner_contract
 from tools.semantic_live_route_diagnostic import reader as transport
 
@@ -63,7 +63,7 @@ def directory_identity(info):
 
 class Files:
     def __init__(self, maximum_reads=128):
-        require(type(maximum_reads) is int and maximum_reads in (128, 192), 'BOUNDED_PREPARATION_METADATA_READ_SCOPE_REQUIRED')
+        require(type(maximum_reads) is int and maximum_reads in (128, 192, 256), 'BOUNDED_PREPARATION_METADATA_READ_SCOPE_REQUIRED')
         self.maximum_reads = maximum_reads
         self.bytes = 0
         self.reads = 0
@@ -321,6 +321,7 @@ def read_frozen(profile, caller, reference):
 
 
 def frozen_configuration(value, reference):
+    value = frozen_response.normalize(value)
     require(type(value) is dict and value.get('sourceId') == reference['sourceId']
             and value.get('onboardingVersionId') == reference['onboardingVersionId']
             and value.get('configurationHash') == reference['configurationHash']
@@ -349,6 +350,12 @@ def frozen_configuration(value, reference):
 def validate_case(case):
     fields = {'schema', 'privateParent', 'retainedInputs', 'historicalReview', 'patchContext',
         'lineageReceipt', 'predecessorJournalPath', 'frozenReference', 'proposedOwnerBudget', 'originalRequestTls'}
+    if type(case) is dict and 'frozenWireRecovery' in case:
+        require(set(case) == fields | {'priorPreparations', 'resolverRecovery', 'frozenWireRecovery'}, 'EXACT_FROZEN_WIRE_RECOVERY_CASE_REQUIRED')
+        validate_case({k: v for k, v in case.items() if k != 'frozenWireRecovery'})
+        from . import frozen_wire_reconciliation
+        frozen_wire_reconciliation.validate(case)
+        return
     require(type(case) is dict and set(case) in (fields, fields | {'priorPreparation'}, fields | {'priorPreparations'}, fields | {'priorPreparations', 'resolverRecovery'})
         and case['schema'] == SCHEMA and case['privateParent'] == PARENT, 'EXACT_POSTBOOT_PREPARATION_CASE_REQUIRED')
     if 'priorPreparation' in case:
@@ -380,6 +387,9 @@ def validate_case(case):
         require('priorPreparation' not in first['case'] and second['case'].get('priorPreparation') == {
                 k: first[k] for k in ('caseHash', 'sourceClosureHash', 'engineAttempts', 'adminAttempts', 'frozenAttempts')},
                 'EXACT_PRIOR_PREPARATION_CHAIN_REQUIRED')
+    if 'frozenWireRecovery' in case:
+        from . import frozen_wire_reconciliation
+        return frozen_wire_reconciliation.reconcile(case, files, boot)
     if 'resolverRecovery' in case:
         from . import resolver_reconciliation
         resolver_reconciliation.validate(case)
@@ -456,7 +466,8 @@ def prepared_root(case, manifest, boot_id=None):
     validate_case(case)
     boot_id = Path('/proc/sys/kernel/random/boot_id').read_text().strip() if boot_id is None else boot_id
     require(owner_contract.boot(boot_id), 'CURRENT_PREPARATION_BOOT_REQUIRED')
-    identity = ({'retainedResolverObservationHash': case['resolverRecovery']['correctedObservation']['sha256'], 'boot': boot_id}
+    identity = ({'retainedFrozenResponseHash': case['frozenWireRecovery']['response']['sha256'], 'boot': boot_id, 'purpose': 'FROZEN_WIRE_V1'}
+                if 'frozenWireRecovery' in case else {'retainedResolverObservationHash': case['resolverRecovery']['correctedObservation']['sha256'], 'boot': boot_id}
                 if 'resolverRecovery' in case else {'case': case, 'closure': digest(manifest), 'boot': boot_id})
     return Path(PARENT) / ('semantic-registry-postboot-inputs-' + digest(identity))
 
@@ -467,6 +478,9 @@ def reconcile_prior_preparation(case, files, boot):
     This never changes or resumes the old preparation. A fresh bounded capture
     has a distinct case and carries prior attempts into its proof and review.
     """
+    if 'frozenWireRecovery' in case:
+        from . import frozen_wire_reconciliation
+        return frozen_wire_reconciliation.reconcile(case, files, boot)
     if 'resolverRecovery' in case:
         from . import resolver_reconciliation
         return resolver_reconciliation.reconcile(case, files, boot)
@@ -528,7 +542,7 @@ def read_prepared(case, manifest):
     require(os.geteuid() == os.getegid() == 0, 'ROOT_POSTBOOT_PREPARATION_REQUIRED')
     boot_id = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     root = prepared_root(case, manifest, boot_id)
-    files = Files()
+    files = Files(maximum_reads=256 if 'frozenWireRecovery' in case else 128)
     private, profile = files.json(str(root / 'prepared.json'), maximum=16777216)
     require(set(private) == {'schema', 'nativeContext', 'ownerContext', 'registryInputs',
                 'authorityInputs', 'sourceClosure', 'preparationProof'}
@@ -547,6 +561,11 @@ def read_prepared(case, manifest):
     if 'priorPreparation' in case or 'priorPreparations' in case:
         require(proof.get('priorPreparationReconciliation') == reconcile_prior_preparation(case, files, boot_id),
                 'RETAINED_PREPARATION_RECONCILIATION_CHANGED')
+    if 'frozenWireRecovery' in case:
+        wire = proof.get('frozenWireResponse')
+        require(type(wire) is dict and wire['path'] == str(root / 'frozen-response.json'), 'RETAINED_FROZEN_WIRE_RESPONSE_REQUIRED')
+        value, again = files.json(wire['path'], wire['sha256'], maximum=2097152)
+        require(again == wire and frozen_response.normalize(value) == private['nativeContext']['originalRequest']['frozenConfiguration'], 'FROZEN_WIRE_RESPONSE_BINDING_CHANGED')
     owner_contract.compile_scope(private['ownerContext'])
     for name, expected in private['ownerContext']['sourceFiles'].items():
         path = str(root / 'source' / (name.replace('.', '_') + '.py'))
@@ -587,7 +606,7 @@ def _prepare(case, manifest, sources):
     validate_case(case)
     require(manifest.get('sourceHashes', {}).get(__name__) == globals().get('__qualified_source_sha256__')
             and hashed(globals().get('__qualified_source_sha256__')), 'EXACT_SEALED_PREPARATION_SOURCE_REQUIRED')
-    files = Files(maximum_reads=192 if 'resolverRecovery' in case else 128); closure_hash = digest(manifest)
+    files = Files(maximum_reads=256 if 'frozenWireRecovery' in case else 192 if 'resolverRecovery' in case else 128); closure_hash = digest(manifest)
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     require(owner_contract.boot(boot), 'CURRENT_PREPARATION_BOOT_REQUIRED')
     root = prepared_root(case, manifest, boot)
@@ -602,7 +621,7 @@ def _prepare(case, manifest, sources):
         'bootId': boot, 'maximumEngineGets': 12, 'maximumAdminGets': 1, 'maximumFrozenGets': 1,
         'automaticReplayAllowed': False, 'runtimeAuthorityIssued': False,
         **({'maximumTlsHandshakes': 1} if case['originalRequestTls'] == original_tls.POLICY else {}),
-        **({'maximumMetadataReads': 192} if 'resolverRecovery' in case else {})})
+        **({'maximumMetadataReads': files.maximum_reads} if 'resolverRecovery' in case else {})})
     prior_preparation = reconcile_prior_preparation(case, files, boot)
     inputs, input_profile = files.json(case['retainedInputs']['path'], case['retainedInputs']['sha256'])
     historical, _ = files.json(case['historicalReview']['path'], case['historicalReview']['sha256'])
@@ -705,7 +724,12 @@ def _prepare(case, manifest, sources):
     if lookup_profile is not None: original_request['callerLookup'] = lookup_profile
     publish(root, 'frozen-get.json', {'method': 'GET', 'path': FROZEN_PATH, 'referenceHash': digest(case['frozenReference']), 'maximumAttempts': 1})
     verify_configuration(rows[caller_id], original_request)
-    frozen = read_frozen(original_request, rows[caller_id], case['frozenReference'])
+    frozen_wire = read_frozen(original_request, rows[caller_id], case['frozenReference'])
+    wire_profile = None
+    if 'frozenWireRecovery' in case:
+        publish(root, 'frozen-response.json', frozen_wire)
+        wire_profile, _ = files.seal(str(root / 'frozen-response.json'), 2097152, digest(frozen_wire))
+    frozen = frozen_response.normalize(frozen_wire)
     verify_configuration(rows[caller_id], original_request)
     refs = frozen_configuration(frozen, case['frozenReference'])
     original_request.update(references=refs, frozenConfigurationHash=case['frozenReference']['configurationHash'],
@@ -776,6 +800,7 @@ def _prepare(case, manifest, sources):
         'preparationProof': {'caseHash': digest(case), 'sourceClosureHash': closure_hash,
             'bootId': boot, 'engineGets': calls, 'adminGets': 1, 'frozenConfigurationGets': 1,
             'priorPreparationReconciliation': prior_preparation,
+            'frozenWireResponse': wire_profile, 'frozenWireSchema': frozen_response.schema(frozen_wire),
             'tlsHandshakes': tls_handshakes, 'originalTlsObservation': tls_observation,
             'metadataReadOperations': files.reads, 'maximumMetadataReads': files.maximum_reads,
             'resolverCalls': 2 if lookup_profile is not None else 0, 'tlsAttemptMarkers': tls_handshakes,

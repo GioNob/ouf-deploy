@@ -502,6 +502,7 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
         (fixture / 'admin-key').chmod(0o440); os.chown(fixture / 'admin-key', 0, 10001)
         (fixture / 'config.json').write_bytes(c.encoded({'upstream_origin': 'http://' + self.registry_address + ':8080',
             'routes': self.routes, 'admin_key_file': '/fixture/admin-key', 'timeout': 2,
+            'frozen_configuration_file': '/fixture/frozen-configuration.json',
             'data_certificate_file': '/fixture/gateway.pem', 'data_key_file': '/fixture/gateway.key'}))
         (fixture / 'config.json').chmod(0o444)
         request.update(Image=self.gateway_image, Entrypoint=['python3'],
@@ -624,6 +625,18 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
             'references': [inputs.reference()], 'frozenConfigurationHash': config_hash, 'onboardingVersionId': version,
             'frozenConfiguration': {'onboardingVersionId': version, 'configurationHash': config_hash,
                                     'state': 'APPROVED', 'configuration': configuration}}
+        # Exercise the exact observed snake-case wire contract through the
+        # same SERVICE/TLS/netns/lookup transport before compiling recovery.
+        frozen_reference = {'sourceId': 'disposable-source', 'onboardingVersionId': version, 'configurationHash': config_hash}
+        wire = {'source_id': frozen_reference['sourceId'], 'onboarding_version_id': version,
+                'configuration_hash': config_hash, 'state': 'APPROVED', 'configuration': configuration}
+        frozen_file = self.root / 'proxy/frozen-configuration.json'
+        frozen_file.write_bytes(c.encoded({'reference': frozen_reference, 'token': caller_token.read_text().strip(), 'response': wire}))
+        frozen_file.chmod(0o440); os.chown(frozen_file, 0, 10001)
+        observed_wire = postboot_prepare.read_frozen(original, actual_caller, frozen_reference)
+        self.assertEqual(observed_wire, wire)
+        self.assertEqual(postboot_prepare.frozen_configuration(observed_wire, frozen_reference), [inputs.reference()])
+        original['frozenConfiguration'] = postboot_prepare.frozen_response.normalize(observed_wire)
         proposal = {'registry': {'containerId': self.cid, 'imageId': self.image,
             'configHash': c.digest(self.baseline['Config']), 'hostConfigHash': c.digest(self.baseline['HostConfig']),
             'mountsHash': c.digest(sorted(self.baseline['Mounts'], key=lambda m: m['Destination']))},

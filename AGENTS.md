@@ -1,3 +1,14 @@
+# CURRENT — snake-case frozen identity proven on target; boundary normalization and retained evidence
+
+User response3378f7d2 confirms HTTP200 with sameSERVICE, stateAPPROVED, configurationchecksumtrue, snake source_id/onboarding_version_id/configuration_hash allmatch, camel identifiers absent; no envelopes/errors. Establishes the preparation verifier's wire-format mismatch, not 502rootcause/readiness. Complete canonical response root0400 retained. Evidence semantic-registry-frozen-wire-observed-target-20261023.json.
+
+New frozen_response module renames only the3 top-level identity keys at the wire boundary, deepcopies input; accepts complete legacycamel or completesnake, rejects both/mixed/partial forms. Originalsource/version/hash/state/checksum/semanticbindingchecks remain. _prepare saves complete wire response beforevalidation and binds/rechecks its profile in read_prepared, so future failed guards retain evidence. Normalized internal originalRequest stayscanonical andsigned.
+
+New frozenWireRecovery case/module reconciles all4consumedpreparations+3diagnosticobservations, including canonical3378response/observerclaim. Old files untouched. Own root stable for retainedresponse/boot/purpose, independent source/case tweaks; no oldprepare replay/reset. Prior30Engine/4Admin/2frozen/6resolver/4TLSidentityintents retained; newmax12Engine/1Admin/1frozen/2resolver/1TLSidentity,cumulative42/5/3/8/5. Newcase metadata cap256 for additional retained-proof reads; legacy128/resolver192 and byte/timebounds unchanged. SERVICE319/max1newgrant<=900s unchanged. Networkaddresses/URL/ports/resolver stillverifiedconfiguredinputs.
+
+NativeJVMfixture now performs an actual frozenSERVICEGET in realcaller netns with copiedlookupfiles/TLS/peerpin, returning explicit syntheticOnboardingsnakecontract, normalizes/validates it, thenrealRegistryJVMsemantic502→same-reference200. Syntheticconfiguration endpoint is not actualOnboarding/APISIXqualification. Local6wire/12prep/11fixture-server testsPASS plus5lookupcontracttests. FullsourceCI,136modulecapsuleaudit andpinnedlauncherpending. No targetcommanduntilqualified. 502OPEN; priority502→E2E→Supervisor; continuousrenewal/fulltargetCLIunqualified. Alllowerheadershistorical.
+
+---
 # CURRENT — bounded frozen-response observer source qualified; exact pinned delivery
 
 Source6e1e0496d023b7a38818b211724f1cec036508b5 scriptSHAebc7a2eaad6b8eefe166779cb3278d85cd9d8ce6a8f9f3bd20ca096a5d1f0cea,15975bytes. CI39973805740:8observer tests/0skip perPython3.12/3.13, plus existing13diagnostic/10transporttests; directlogs read (120483061640/120483062040). Tests distinguish casing/envelope/state/checksum without weakening acceptance or printing actual values, exactretainedcapsule134members, tamper/symlink and stableclaim. Whole target controller not qualified; productioncapsule/transport unchanged.

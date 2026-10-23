@@ -252,7 +252,7 @@ def make_tls_server(address, certfile, keyfile, application, *,
 
 class GatewayApplication:
     """Two listeners, fixed route source and a real, bounded HTTP GET forwarder."""
-    def __init__(self, upstream_origin, routes, admin_key, *, timeout=4, upstream_ca=None):
+    def __init__(self, upstream_origin, routes, admin_key, *, timeout=4, upstream_ca=None, frozen_configuration_file=None):
         parsed = _origin(upstream_origin, {'http', 'https'})
         if parsed.path not in ('', '/') or type(routes) is not dict or not routes or not admin_key:
             raise ValueError('invalid disposable gateway configuration')
@@ -260,6 +260,7 @@ class GatewayApplication:
             raise ValueError('invalid disposable gateway timeout')
         self.upstream, self.routes = parsed, copy.deepcopy(routes)
         self.admin_key, self.timeout = admin_key, timeout
+        self.frozen_configuration_file = frozen_configuration_file
         self.context = ssl.create_default_context(cafile=upstream_ca) if parsed.scheme == 'https' else None
         self.calls, self.upstream_requests = [], []
         self._lock = threading.RLock()
@@ -294,6 +295,17 @@ class _AdminHandler(_Handler):
 class _DataHandler(_Handler):
     def do_GET(self):
         app = self.server.application
+        if urlsplit(self.path).path == '/api/internal/v1/onboarding/ingestion-configuration' and app.frozen_configuration_file:
+            # Explicit synthetic Onboarding fixture; semantic responses below
+            # still require forwarding to the actual Registry JVM.
+            raw = Path(app.frozen_configuration_file).read_bytes()
+            if len(raw) > MAX_BODY: raise ValueError('bounded frozen fixture required')
+            frozen = json.loads(raw)
+            query = parse_qs(urlsplit(self.path).query)
+            expected = {k: [v] for k, v in frozen['reference'].items()}
+            if query != expected or not _same(self.headers.get('Authorization'), 'Bearer ' + frozen['token']):
+                app.record('GET', self.path, 403); self.json(403, {'error': 'fixture_configuration_denied'}); return
+            app.record('GET', self.path, 200); self.json(200, frozen['response']); return
         if urlsplit(self.path).path != '/api/semantic/v1/references:resolve' or not self.path.startswith('/'):
             app.record('GET', self.path, 404)
             self.json(404, {'error': 'fixture_endpoint_not_found'})
@@ -387,7 +399,7 @@ def main(argv=None):
     else:
         app = GatewayApplication(config['upstream_origin'], config['routes'],
             Path(config['admin_key_file']).read_text().strip(), timeout=config.get('timeout', 4),
-            upstream_ca=config.get('upstream_ca'))
+            upstream_ca=config.get('upstream_ca'), frozen_configuration_file=config.get('frozen_configuration_file'))
         servers = make_gateway_servers((host, config.get('admin_port', 9180)),
                                        (host, config.get('data_port', 9080)), app,
                                        config.get('data_certificate_file'), config.get('data_key_file'))
