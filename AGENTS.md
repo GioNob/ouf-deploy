@@ -1,3 +1,14 @@
+
+
+## Current bounded TLS diagnostic delivery — stable incident claim
+
+Source `af92e92c734b30967b7c370a5c8694265813e4f1`, script SHA-256 `b27a7c6474054700312bf39aa5f4fb28d02da40c29102fa6d67e3907fe7e31c2` (30341 bytes), supersedes the historical candidates below. Dedicated run 39956467412 passed 14 tests without skips on Python 3.12 and 3.13; both direct job logs were read (120423429383, 120423429598). Main component regression run 39956467333 passed. Final delivery matrix is pending at commit creation.
+
+The exclusive diagnostic claim now derives from the retained incident claim content and boot only, not diagnostic source or mutable metadata. Three exact legacy diagnostic roots are checked before any new Engine or DNS operation; an existing root stops without replay. This correction does not allocate a fresh allowance. Public resolver observation may accept daemon-owned OS data, while private CA and credential custody rules are unchanged. Directory identity excludes unrelated mtime changes.
+
+Deliver only the zero-argument `releases/semantic-registry-tls-diagnostic-20261023.sh`, pinned to a reviewed delivery commit and SHA. It observes at most two exact caller Engine GETs, two DNS lookups, and one additional verified TLS handshake, preserving the prior 18 Engine/3 Admin/1 TLS-intent cohort. It never calls prepare-review, application HTTP, OAuth, database, or runtime effects. The original opaque TLS exception was discarded; the new observation cannot recover it. Root cause, target readiness, sustained renewal and 502 repair remain unproven. Do not repeat on STOP_RECONCILE.
+
+Historical handoff entries follow.
 # CURRENT — diagnostic supports service-owned public DNS data, strict CA/token custody unchanged
 
 Finaldiagnosticsourcec503ac0e433af0d7b394254508d6fb99100f695c, scriptSHA5f6d59d1bae6f1755070166d1f498a0867b33baae485a79bd4f21e2344eaba02,29287bytes. CI39955551343:13PASS/0skip eachPython3.12/3.13 includingactualheldNS/DNS/TLSanddaemon-ownedpublicresolver. Directlogsread. PublicDNSdata readthroughheldnofollowFDs, regular/nlink1/others-readable/no022/16KiB/stableleaf; root-controlledselectorsymlinks. Directorypinsretaininode/UID/GID/mode,notunrelatedmtime. Itisobserveddata,notatrustanchor. SharedprivateFiles andCA/tokenrolesnotrelaxed. Productionrecovery/capsulesunchanged. Prior5d98/d424 candidatesnotoperator-dispatched; theirhistoricalCI retained. Latestmainglobalregressionseparatelypending; source5d98 globalregressionallPASS.

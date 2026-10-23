@@ -7,8 +7,8 @@
     printf '%s\n' 'STOP: questa verifica non accetta argomenti.'
     exit 2
   fi
-  OUF_TLS_DIAG_SOURCE='c503ac0e433af0d7b394254508d6fb99100f695c'
-  OUF_TLS_DIAG_SHA256='5f6d59d1bae6f1755070166d1f498a0867b33baae485a79bd4f21e2344eaba02'
+  OUF_TLS_DIAG_SOURCE='af92e92c734b30967b7c370a5c8694265813e4f1'
+  OUF_TLS_DIAG_SHA256='b27a7c6474054700312bf39aa5f4fb28d02da40c29102fa6d67e3907fe7e31c2'
   OUF_TLS_DIAG_GH="$HOME/ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh"
   [[ -x "$OUF_TLS_DIAG_GH" ]] || OUF_TLS_DIAG_GH="$(command -v gh)"
   OUF_TLS_DIAG_DIR="$(mktemp -d "$HOME/ouf-tls-diagnostic.XXXXXXXX")"
