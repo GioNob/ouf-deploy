@@ -5,7 +5,7 @@ Existing source, directory identity, counters, boot/session, legacy fence and
 ACTIVE admission are checked by the unchanged InstalledTokenOwner. No token or
 credential is read by construction and no grant/renewal method is exposed here.
 """
-import copy,json,os
+import copy,json,math,os
 from pathlib import Path
 from .core import require,digest,validate_plan
 from .authorization import cutover_type,scope as recovery_scope
@@ -49,6 +49,25 @@ def _manifest(profile):
         return value
     return json.loads(raw,object_pairs_hook=unique)
 
+def guard_lease(owner,minimum_remaining=None):
+    require(type(owner) is InstalledTokenOwner and owner.observer is True,
+        'ACTUAL_RETAINED_INSTALLED_OWNER_LEASE_REQUIRED')
+    owner.guard(owner.binding.digest());row=owner.journal.read();marker=owner.store.read()
+    wall,mono=owner.admission.clock()
+    remaining=owner.binding.minimum_remaining if minimum_remaining is None else max(
+        owner.binding.minimum_remaining,minimum_remaining)
+    require(type(remaining) is int and 1<=remaining<=3600 and row['state']==marker['state']=='ACTIVE'
+        and row.get('bootId')==Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        and all(type(row.get(k)) in (int,float) and math.isfinite(row[k]) for k in
+            ('tokenExpiresWall','tokenExpiresMonotonic','lastWall','lastMonotonic'))
+        and row['lastWall']<=wall and row['lastMonotonic']<=mono
+        and min(row['tokenExpiresWall']-wall,row['tokenExpiresMonotonic']-mono)>=remaining,
+        'CURRENT_BOOT_AND_UNEXPIRED_RETAINED_TOKEN_WINDOW_REQUIRED')
+    owner.guard(owner.binding.digest())
+    require(owner.journal.read()==row and owner.store.read()==marker,'RETAINED_TOKEN_LEASE_CHANGED')
+    return {'currentBootAndTokenWindowObserved':True,'minimumRemainingSeconds':remaining,
+        'onlineIssuerAdmissionPerformed':False,'tokenAcquisitionAllowed':False}
+
 def build_observer(plan,reference,authority,raw):
     expected=owner_scope(plan,reference)
     require(type(authority) is cutover_type() and type(raw) is bytes and authority(raw) is True,
@@ -76,7 +95,7 @@ def build_observer(plan,reference,authority,raw):
         c['generationRef'],manifest,authority,raw,observer=True)
     require(digest(owner.configuration)==expected['ownerBindingHash']
         and owner_scope(plan,reference)==expected,'RECONSTRUCTED_INSTALLED_OWNER_BINDING_CHANGED')
-    owner.guard(binding.digest())
+    guard_lease(owner)
     require(authority(raw) is True and _manifest(reference['manifest'])==manifest,
         'INSTALLED_OWNER_AUTHORITY_OR_MANIFEST_CHANGED_DURING_CONSTRUCTION')
     return owner

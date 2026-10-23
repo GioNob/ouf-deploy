@@ -5,6 +5,7 @@ from .database import CurrentDatabase
 from .node_owner import RecoveryNodeOwner
 from .process_binding import RecoveryProcessBinding
 from tools.semantic_policy_token_owner.installed_owner import InstalledTokenOwner
+from .installed_owner import guard_lease
 
 def admission_scope(database,node):
     return {'schema':'ouf.semantic-registry-recovery-admission-scope.v1',
@@ -31,9 +32,12 @@ class CurrentAdmission:
         return row
 
     def prerequisites(self):
-        row=self.guard();database=self.database.snapshot()
+        row=self.guard()
+        token=guard_lease(self.node.token_owner,self.node.recipe['renewableToken']['minimumRemainingSeconds'])
+        database=self.database.snapshot()
         require(self.guard()==row,'RECOVERY_PREREQUISITES_CHANGED')
-        return {'currentDatabase':database,'currentTokenOwnerBindingHash':self.node.token_owner.binding.digest(),
+        return {'currentDatabase':database,'currentRetainedTokenWindow':token,
+            'currentTokenOwnerBindingHash':self.node.token_owner.binding.digest(),
             'newGeneration':copy.deepcopy(row['newGeneration'])}
 
     def paused(self):

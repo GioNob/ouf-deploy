@@ -54,6 +54,8 @@ class CurrentAdmission(unittest.TestCase):
         self.lifecycle.engine.request=lambda method,path:(200,copy.deepcopy(self.pg) if '/containers/' in path else {'fixtureImage':True})
         if hasattr(self,'configure_database'):self.configure_database()
         loaded=patch.object(d,'loaded',return_value={'syntheticImageAdmission':True});loaded.start();self.addCleanup(loaded.stop)
+        lease=patch.object(adm,'guard_lease',return_value={'explicitSyntheticTokenLease':True})
+        lease.start();self.addCleanup(lease.stop)
         # Compile all extra scopes before signing a new disposable mandate.
         scope=d.database_scope(self.lifecycle,self.readiness,self.pin,self.program,self.audit)
         dummy=d.CurrentDatabase.__new__(d.CurrentDatabase);dummy.lifecycle=self.lifecycle;dummy.scope=scope
@@ -84,6 +86,12 @@ class CurrentAdmission(unittest.TestCase):
         self.assertEqual(self.budget.read()['counts']['databaseSessions'],1)
         args=json.loads(self.argv_path.read_text());self.assertIn('"ouf_sem".flyway_schema_history',args[-1])
         self.assertNotIn('FIXTURE',json.dumps(proof))
+
+    def test_expired_retained_token_blocks_before_a_database_session(self):
+        before=self.budget.read()
+        with patch.object(adm,'guard_lease',side_effect=c.RecoveryDenied('FIXTURE_EXPIRED_RETAINED_TOKEN')):
+            with self.assertRaisesRegex(c.RecoveryDenied,'EXPIRED_RETAINED_TOKEN'):self.admission.prerequisites()
+        self.assertEqual(self.budget.read(),before)
 
     def test_wrong_oid_role_readonly_state_or_history_cannot_admit(self):
         for name,value in [('databaseOid',124),('role','wrong'),('transactionReadOnly',False),('allowConnections',False),('history',[])]:

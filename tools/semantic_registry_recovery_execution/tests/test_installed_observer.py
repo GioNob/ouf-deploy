@@ -8,7 +8,7 @@ from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from test_current_admission import file_profile
-from test_installed_token_owner import InstalledOwnerTest
+import test_installed_token_owner as owner_fixture
 from tools.semantic_policy_token_owner.installed_owner import LegacyWriterFence
 from tools.semantic_policy_token_owner.producer import RenewalOperation,CredentialFile
 from tools.semantic_lease_recovery.bounded_recovery import Permanent
@@ -17,9 +17,11 @@ from tools.semantic_registry_recovery_execution import core as c,authorization a
 
 class InstalledObserver(unittest.TestCase):
     def setUp(self):
-        self.f,self.server,self.owner,self.recovery,_,_=InstalledOwnerTest.fixture(self,scheduled=True)
+        self.f,self.server,self.owner,self.recovery,_,_=owner_fixture.InstalledOwnerTest.fixture(self,scheduled=True)
         fence=patch.object(LegacyWriterFence,'guard',return_value=True);fence.start();self.addCleanup(fence.stop)
         RenewalOperation(self.recovery).step()
+        before=self.owner.journal.read()
+        self.owner.journal.compare_and_save(before,{**before,'bootId':Path('/proc/sys/kernel/random/boot_id').read_text().strip()})
         self.plan=candidate_contract({'registry':{'containerId':'a'*64},'requiredGates':list(GATES),
             'unresolvedGateCount':8},'b'*64,self.f.expected['predecessorIncidentRef'])
         self.manifest_path=self.f.root/'selected-manifest.json'
@@ -67,10 +69,23 @@ class InstalledObserver(unittest.TestCase):
         self.reference['configuration']['journalDirectoryIdentity']['inode']+=1;self.resign()
         with self.assertRaisesRegex(c.RecoveryDenied,'MANIFEST_MUST_BIND_SAME'):self.build()
 
-    def test_source_and_trust_drift_are_refused_without_fallback(self):
+    def test_source_manifest_drift_is_refused_without_fallback(self):
         self.manifest_path.write_bytes(b'{}')
         with self.assertRaises(Exception):self.build()
         self.assertEqual(self.owner.journal.read()['attempts'],1)
+
+    def test_expired_token_or_previous_boot_is_not_an_active_recovery_lease(self):
+        before=self.owner.journal.read();calls=list(self.server.calls)
+        for changed in ({'tokenExpiresWall':0},{'tokenExpiresMonotonic':0},{'bootId':'old-boot'}):
+            row=self.owner.journal.read();self.owner.journal.compare_and_save(row,{**before,**changed})
+            with self.subTest(changed=changed),self.assertRaisesRegex(c.RecoveryDenied,'UNEXPIRED_RETAINED_TOKEN'):self.build()
+        self.assertEqual(self.server.calls,calls);self.assertEqual(self.owner.journal.read()['attempts'],1)
+
+    def test_tls_trust_drift_is_refused_before_any_request(self):
+        calls=list(self.server.calls)
+        with patch.object(r.PinnedIamOpener,'trust_digest',return_value='f'*64):
+            with self.assertRaisesRegex(c.RecoveryDenied,'TLS_TRUST_CHANGED'):self.build()
+        self.assertEqual(self.server.calls,calls)
 
     def test_unfenced_legacy_writer_is_not_an_active_owner(self):
         calls=list(self.server.calls)

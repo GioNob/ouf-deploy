@@ -16,7 +16,8 @@ class Installer(base.InstalledObserver):
     def setUp(self):
         base.InstalledObserver.setUp(self)
         self.root=self.f.root/('semantic-registry-recovery-'+self.plan['logicalOperationRef'])
-        self.context={'plan':self.plan,'executionRoot':str(self.root)}
+        self.context={'plan':self.plan,'executionRoot':str(self.root),
+            'nodeRecipe':{'renewableToken':{'minimumRemainingSeconds':90}}}
         self.factory={'executionRoot':str(self.root),'fixtureOnly':True}
         scope=patch.object(i,'factory_scope',return_value=self.factory);scope.start();self.addCleanup(scope.stop)
         self.expected=i.installation_scope(self.context,self.reference)

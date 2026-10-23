@@ -9,7 +9,7 @@ from pathlib import Path
 from .core import require,digest,encoded,Store,initial,validate_current
 from .factory import factory_scope,current_scope
 from .read_budget import ReadBudget,read_scope
-from .installed_owner import owner_scope,build_observer
+from .installed_owner import owner_scope,build_observer,guard_lease
 from tools.semantic_policy_token_owner.producer import protected_directory
 
 def installation_scope(context,reference):
@@ -51,7 +51,7 @@ def install(context,reference,authority,raw):
         parent_info=os.fstat(parent)
         require(installation_scope(context,reference)==expected and authority(raw) is True,
             'INSTALLATION_SCOPE_CHANGED_BEFORE_DIRECTORY_CREATION')
-        owner.guard(owner.binding.digest())
+        guard_lease(owner,context['nodeRecipe']['renewableToken']['minimumRemainingSeconds'])
         # mkdir is the durable one-attempt fence. Every subsequent failure
         # leaves the directory in place; no cleanup/retry/alternate parent.
         os.mkdir(root.name,0o700,dir_fd=parent);os.fsync(parent)
@@ -60,7 +60,7 @@ def install(context,reference,authority,raw):
             os.mkdir('node',0o700,dir_fd=fd);os.fsync(fd)
             store=Store(root,context['plan']['logicalOperationRef']);store.initialize(value)
             ReadBudget.initialize(store,scoped,context['plan'])
-            owner.guard(owner.binding.digest());scoped.guard(store.read())
+            guard_lease(owner,context['nodeRecipe']['renewableToken']['minimumRemainingSeconds']);scoped.guard(store.read())
             validate_current(context['plan'],store.read(),boot,(time.time(),time.monotonic()))
             info=os.fstat(fd);now=os.fstat(parent)
             pin=lambda s:(s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode)
