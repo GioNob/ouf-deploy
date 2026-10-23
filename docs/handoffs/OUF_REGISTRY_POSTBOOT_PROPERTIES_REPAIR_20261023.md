@@ -1,0 +1,11 @@
+# Properties configuration correction — source qualification
+
+The operator's retained frame selects the single read-only Spring properties file. Both environment variables indexed by the old preparer are absent: that code would raise KeyError. This proves a supported configuration gap, not recovery of the erased exception or a new live runtime observation. Target HTTP 502 remains open.
+
+Preparation and final original SERVICE request now share the governed literal properties reader. The selected file's protected host custody, content hash, metadata, selector and actual process-mounted inode are bound into the signed original-request digest. Rechecks reject atomic replacement, changed process root/generation, ambiguous environment sources, protected command arguments and JVM/JSON overlays. No token value is emitted, no different SERVICE is adopted, and the exact frozen semantic references remain required.
+
+The native JVM fixture now uses a real read-only properties bind instead of injecting the two legacy variables. Dedicated tests cover precedence, custody, process view and replacement. These are qualification fixtures, not proof of target readiness; the proxy/IAM/HUMAN inputs remain disposable and the complete operator CLI is not claimed qualified.
+
+A distinct properties case explicitly reconciles the prior current-boot preparation. The exact old claim and six Engine attempt markers plus one Admin attempt marker must remain unchanged, with no later Engine/frozen/source/prepared/review markers. Old files are never resumed, deleted or edited. Prior attempts remain accounted conservatively; the new capture ceiling is 12 Engine + 1 Admin + 1 frozen GET, cumulative ceilings 18 + 2 + 1. Markers prove attempts, not responses. OAuth cumulative 319 and proposed maximum one new SERVICE attempt / 900 seconds are unchanged.
+
+The old published capsule and launchers stay immutable. A new capsule and separately pinned launcher must be published after source/CI qualification and exact source-membership readback. Do not rerun the old preparation or use the new case with an unqualified capsule. Current source changes issue no authority and dispatch no target effects. Continuous owner renewal remains unqualified; a finite 200 response alone would not establish permanent repair.

@@ -45,6 +45,39 @@ class Preparation(unittest.TestCase):
         target.chmod(0o400)
         return target
 
+    def test_failed_preparation_is_linked_with_attempts_retained_and_never_changed(self):
+        case = {'fixture': 'original'}
+        boot = '00000000-1111-2222-3333-444444444444'
+        prior = {'sourceClosureHash': 'a' * 64, 'caseHash': c.digest(case),
+                 'engineAttempts': 6, 'adminAttempts': 1, 'frozenAttempts': 0}
+        root = self.root / ('semantic-registry-postboot-inputs-' + c.digest({
+            'case': case, 'closure': prior['sourceClosureHash'], 'boot': boot}))
+        root.mkdir(mode=0o700)
+        claim = {'schema': p.SCHEMA, 'caseHash': prior['caseHash'], 'sourceClosureHash': prior['sourceClosureHash'],
+                 'bootId': boot, 'maximumEngineGets': 12, 'maximumAdminGets': 1, 'maximumFrozenGets': 1,
+                 'automaticReplayAllowed': False, 'runtimeAuthorityIssued': False}
+        p.publish(root, 'claim.json', claim)
+        for number in range(1, 7):
+            p.publish(root, 'engine-get-' + str(number) + '.json', {'requestPathHash': 'b' * 64, 'attempt': number})
+        p.publish(root, 'admin-get.json', {'method': 'GET', 'operation': '/apisix/admin/routes', 'maximumAttempts': 1})
+        before = {f.name: (f.read_bytes(), f.stat()) for f in root.iterdir()}
+        current = dict(case, priorPreparation=prior)
+        with patch.object(p, 'PARENT', str(self.root)):
+            proof = p.reconcile_prior_preparation(current, p.Files(), boot)
+            self.assertEqual(proof['priorAttemptCounts']['engineGets'], 6)
+            self.assertEqual(proof['cumulativeAttemptCeilings']['engineGets'], 18)
+            self.assertFalse(proof['oldPreparationReplayed'])
+            for f in root.iterdir():
+                self.assertEqual((f.read_bytes(), f.stat()), before[f.name])
+            p.publish(root, 'frozen-get.json', {'attempt': 1})
+            with self.assertRaisesRegex(c.RecoveryDenied, 'ADVANCED_RECONCILE'):
+                p.reconcile_prior_preparation(current, p.Files(), boot)
+            (root / 'frozen-get.json').unlink()
+            claim['bootId'] = '00000000-1111-2222-3333-555555555555'
+            (root / 'claim.json').chmod(0o600); (root / 'claim.json').write_bytes(c.encoded(claim))
+            with self.assertRaisesRegex(c.RecoveryDenied, 'PRIOR_PREPARATION_CLAIM'):
+                p.reconcile_prior_preparation(current, p.Files(), boot)
+
     def test_private_pin_detects_atomic_replacement_even_with_same_bytes(self):
         target = self.write('input.json', c.encoded({'fixture': True}))
         files = p.Files()

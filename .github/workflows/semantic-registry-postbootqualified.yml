@@ -61,6 +61,7 @@ jobs:
           python3 -B -m unittest discover -s tools/semantic_registry_recovery_execution/tests -p test_bootstrap.py -v
           python3 -B -m unittest discover -s tools/semantic_registry_recovery_execution/tests -p test_controller.py -v
           python3 -B -m unittest discover -s tools/semantic_registry_recovery_execution/tests -p "test_postboot_*.py" -v
+          python3 -B -m unittest discover -s tools/semantic_registry_recovery_execution/tests -p test_caller_configuration.py -v
           python3 -B -m unittest discover -s tools/semantic_registry_recovery_execution/tests -p test_semantic_request.py -v
           python3 -B -m unittest discover -s tools/semantic_registry_recovery_execution/tests -p test_jvm_fixture_inputs.py -v
           python3 -B -m unittest discover -s tools/semantic_registry_recovery_execution/tests -p test_jvm_fixture_servers.py -v

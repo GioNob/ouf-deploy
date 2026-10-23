@@ -19,6 +19,7 @@ from urllib.parse import urlsplit
 import uuid
 
 from .core import require, digest, encoded, hashed, validate_plan
+from .caller_configuration import configuration, verify as verify_configuration
 from tools.semantic_registry_postboot_owner import contract as owner_contract
 from tools.semantic_live_route_diagnostic import reader as transport
 
@@ -340,9 +341,17 @@ def frozen_configuration(value, reference):
 
 
 def validate_case(case):
-    require(type(case) is dict and set(case) == {'schema', 'privateParent', 'retainedInputs', 'historicalReview',
-        'patchContext', 'lineageReceipt', 'predecessorJournalPath', 'frozenReference', 'proposedOwnerBudget', 'originalRequestTls'}
+    fields = {'schema', 'privateParent', 'retainedInputs', 'historicalReview', 'patchContext',
+        'lineageReceipt', 'predecessorJournalPath', 'frozenReference', 'proposedOwnerBudget', 'originalRequestTls'}
+    require(type(case) is dict and set(case) in (fields, fields | {'priorPreparation'})
         and case['schema'] == SCHEMA and case['privateParent'] == PARENT, 'EXACT_POSTBOOT_PREPARATION_CASE_REQUIRED')
+    if 'priorPreparation' in case:
+        prior = case['priorPreparation']
+        require(type(prior) is dict and set(prior) == {'sourceClosureHash', 'caseHash', 'engineAttempts', 'adminAttempts', 'frozenAttempts'}
+                and hashed(prior['sourceClosureHash']) and hashed(prior['caseHash'])
+                and prior['caseHash'] == digest({k: v for k, v in case.items() if k != 'priorPreparation'})
+                and prior['engineAttempts'] == 6 and prior['adminAttempts'] == 1 and prior['frozenAttempts'] == 0,
+                'EXACT_RETAINED_FAILED_PREPARATION_RECONCILIATION_REQUIRED')
     for key in ('retainedInputs', 'historicalReview'):
         value = case[key]
         require(type(value) is dict and set(value) == {'path', 'sha256'} and hashed(value['sha256'])
@@ -418,6 +427,48 @@ def prepared_root(case, manifest, boot_id=None):
     require(owner_contract.boot(boot_id), 'CURRENT_PREPARATION_BOOT_REQUIRED')
     return Path(PARENT) / ('semantic-registry-postboot-inputs-' + digest({
         'case': case, 'closure': digest(manifest), 'boot': boot_id}))
+
+
+def reconcile_prior_preparation(case, files, boot):
+    """Read exact old claim/markers, retaining conservative attempted counts.
+
+    This never changes or resumes the old preparation. A fresh bounded capture
+    has a distinct case and carries prior attempts into its proof and review.
+    """
+    if 'priorPreparation' not in case:
+        return None
+    prior = case['priorPreparation']
+    original = {k: v for k, v in case.items() if k != 'priorPreparation'}
+    root = Path(PARENT) / ('semantic-registry-postboot-inputs-' + digest({
+        'case': original, 'closure': prior['sourceClosureHash'], 'boot': boot}))
+    expected = {'schema': SCHEMA, 'caseHash': prior['caseHash'],
+        'sourceClosureHash': prior['sourceClosureHash'], 'bootId': boot,
+        'maximumEngineGets': 12, 'maximumAdminGets': 1, 'maximumFrozenGets': 1,
+        'automaticReplayAllowed': False, 'runtimeAuthorityIssued': False}
+    claim, binding = files.json(str(root / 'claim.json'))
+    require(claim == expected, 'EXACT_PRIOR_PREPARATION_CLAIM_REQUIRED')
+    markers = []
+    for number in range(1, 7):
+        marker, profile = files.json(str(root / ('engine-get-' + str(number) + '.json')))
+        require(set(marker) == {'requestPathHash', 'attempt'} and marker['attempt'] == number
+                and hashed(marker['requestPathHash']), 'EXACT_PRIOR_ENGINE_ATTEMPT_MARKER_REQUIRED')
+        markers.append(profile)
+    marker, profile = files.json(str(root / 'admin-get.json'))
+    require(marker == {'method': 'GET', 'operation': '/apisix/admin/routes', 'maximumAttempts': 1},
+            'EXACT_PRIOR_ADMIN_ATTEMPT_MARKER_REQUIRED')
+    markers.append(profile)
+    for name in ['engine-get-' + str(n) + '.json' for n in range(7, 13)] + [
+            'frozen-get.json', 'source', 'prepared.json', 'review.json']:
+        try:
+            (root / name).lstat()
+        except FileNotFoundError:
+            continue
+        require(False, 'PRIOR_PREPARATION_ADVANCED_RECONCILE_REQUIRED')
+    return {'priorClaim': binding, 'priorMarkers': markers, 'priorAttemptCounts': {
+        'engineGets': 6, 'adminGets': 1, 'frozenConfigurationGets': 0},
+        'newAttemptCeilings': {'engineGets': 12, 'adminGets': 1, 'frozenConfigurationGets': 1},
+        'cumulativeAttemptCeilings': {'engineGets': 18, 'adminGets': 2, 'frozenConfigurationGets': 1},
+        'oldPreparationReplayed': False, 'oldPreparationChanged': False, 'budgetReset': False}
 
 
 def returned(private, profile):
@@ -501,6 +552,7 @@ def _prepare(case, manifest, sources):
     publish(root, 'claim.json', {'schema': SCHEMA, 'caseHash': digest(case), 'sourceClosureHash': closure_hash,
         'bootId': boot, 'maximumEngineGets': 12, 'maximumAdminGets': 1, 'maximumFrozenGets': 1,
         'automaticReplayAllowed': False, 'runtimeAuthorityIssued': False})
+    prior_preparation = reconcile_prior_preparation(case, files, boot)
     inputs, input_profile = files.json(case['retainedInputs']['path'], case['retainedInputs']['sha256'])
     historical, _ = files.json(case['historicalReview']['path'], case['historicalReview']['sha256'])
     bundle_ref = historical['scopes']['finiteActionProcess']['bundle']
@@ -569,8 +621,8 @@ def _prepare(case, manifest, sources):
             and correlation['currentTargetEndpointCount'] == 0, 'CURRENT_UNCHANGED_ROUTE_AND_FREE_REGISTRY_ENDPOINT_REQUIRED')
     db_program = native['databaseControlProfile']['dockerExecutable']
     docker, _ = files.seal(db_program['path'], 67108864, db_program['sha256'])
-    env = environment(rows[caller_id]); origin = env['OUF_INGESTION_ACTIVATION_GATEWAY_URL']
-    target = env['OUF_INGESTION_ACTIVATION_TOKEN_FILE']; token_path = mounted_source(rows[caller_id], target)
+    origin, target, caller_configuration = configuration(rows[caller_id])
+    token_path = mounted_source(rows[caller_id], target)
     token_profile, _ = files.seal(token_path, 16384)
     u = urlsplit(origin); tls = case['originalRequestTls']
     if u.scheme == 'http':
@@ -584,10 +636,13 @@ def _prepare(case, manifest, sources):
         observed_ca, _ = files.seal(ca['path'], 1048576, ca['sha256'])
         require(observed_ca == ca, 'CURRENT_ORIGINAL_SERVICE_TLS_CUSTODY_CHANGED')
         cert = tls['peerCertificateSha256']
-    original_request = {'caller': callerpin, 'origin': origin, 'tokenTarget': target, 'tokenSource': token_profile,
+    original_request = {'caller': callerpin, 'callerConfiguration': caller_configuration,
+        'origin': origin, 'tokenTarget': target, 'tokenSource': token_profile,
         'pythonExecutable': copy.deepcopy(admin['pythonExecutable']), 'ca': ca, 'peerCertificateSha256': cert}
     publish(root, 'frozen-get.json', {'method': 'GET', 'path': FROZEN_PATH, 'referenceHash': digest(case['frozenReference']), 'maximumAttempts': 1})
+    verify_configuration(rows[caller_id], original_request)
     frozen = read_frozen(original_request, rows[caller_id], case['frozenReference'])
+    verify_configuration(rows[caller_id], original_request)
     refs = frozen_configuration(frozen, case['frozenReference'])
     original_request.update(references=refs, frozenConfigurationHash=case['frozenReference']['configurationHash'],
         onboardingVersionId=case['frozenReference']['onboardingVersionId'], frozenConfiguration=frozen)
@@ -642,6 +697,9 @@ def _prepare(case, manifest, sources):
             runtime_guard.unchanged(current, {pgid: pgpin, gid: gwpin, caller_id: callerpin}[cid])
     require(get('/v1.44/images/' + request['Image'] + '/json') == image
             and get('/v1.44/networks/' + nid) == network, 'PREPARATION_IMAGE_OR_NETWORK_CHANGED')
+    verify_configuration(rows[caller_id], original_request)
+    require(reconcile_prior_preparation(case, files, boot) == prior_preparation,
+            'PRIOR_PREPARATION_CHANGED_DURING_CAPTURE')
     files.verify()
     require(files.stat_private(credential_path) == credential_metadata
             and Path('/proc/sys/kernel/random/boot_id').read_text().strip() == boot,
@@ -651,6 +709,7 @@ def _prepare(case, manifest, sources):
         'authorityInputs': authority, 'sourceClosure': copy.deepcopy(manifest),
         'preparationProof': {'caseHash': digest(case), 'sourceClosureHash': closure_hash,
             'bootId': boot, 'engineGets': calls, 'adminGets': 1, 'frozenConfigurationGets': 1,
+            'priorPreparationReconciliation': prior_preparation,
             'originalServiceBearerUsed': True, 'ownerCredentialBytesRead': False, 'databaseCalls': 0, 'oauthRequests': 0,
             'runtimeEffectsDispatched': 0, 'runtimeAuthorityIssued': False, 'budgetReset': False,
             'automaticReplayAllowed': False, 'nativeExecutorQualified': False, 'targetApplyAuthorized': False}}

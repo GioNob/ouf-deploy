@@ -561,16 +561,24 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
         caller_token.write_text(inputs.rs256_jwt(self.iam_key, inputs.service_claims(self.iam_app.issuer, int(time.time()))))
         caller_token.chmod(0o440); os.chown(caller_token, 0, 10001)
         origin = 'http://' + self.gateway_address + ':9080'
+        from tools.semantic_registry_recovery_execution.caller_configuration import configuration as caller_configuration
+        properties = self.root / 'ingestion-summary.properties'
+        properties.write_text('ouf.ingestion.activation.gateway-url=' + origin + '\n'
+                              'ouf.ingestion.activation.token-file=/run/ingestion.jwt\n')
+        properties.chmod(0o440); os.chown(properties, 0, 10001)
         caller = self.create_container({'Image': self.alpine_image, 'User': '10001:10001',
-            'Entrypoint': ['sleep'], 'Cmd': ['600'], 'Env': ['OUF_INGESTION_ACTIVATION_GATEWAY_URL=' + origin,
-                'OUF_INGESTION_ACTIVATION_TOKEN_FILE=/run/ingestion.jwt'],
+            'Entrypoint': ['sleep'], 'Cmd': ['600'], 'Env': [
+                'SPRING_CONFIG_ADDITIONAL_LOCATION=optional:file:/run/secrets/ingestion-summary.properties'],
             'HostConfig': {'NetworkMode': self.network_name, 'CapDrop': ['ALL'], 'SecurityOpt': ['no-new-privileges'],
-                'Binds': [str(caller_token) + ':/run/ingestion.jwt:ro']},
+                'Binds': [str(caller_token) + ':/run/ingestion.jwt:ro',
+                          str(properties) + ':/run/secrets/ingestion-summary.properties:ro']},
             'NetworkingConfig': {'EndpointsConfig': {self.network_name: {
                 'NetworkID': self.nid, 'IPAMConfig': {
                     'IPv4Address': str(self.subnet.network_address + 6)}}}}}, 'ouf-postboot-caller-')
         self.assertEqual(self.engine.request('POST', '/v1.44/containers/' + caller + '/start')[0], 204)
         actual_caller = self.inspect(caller)
+        configured_origin, configured_target, configuration_binding = caller_configuration(actual_caller)
+        self.assertEqual((configured_origin, configured_target), (origin, '/run/ingestion.jwt'))
         # Docker releases a stopped container's address. The independent caller
         # must not acquire the reviewed .2 Registry endpoint before recovery.
         network = json.loads(self.command('docker', 'network', 'inspect', self.nid))[0]
@@ -582,7 +590,7 @@ class NativeJvmPostboot(prefix_fixture.NativePostbootOwnerQualified):
                          'semanticMapping': {'semanticRefs': [inputs.SEMANTIC_ID + '@' + inputs.SEMANTIC_VERSION]}}
         config_hash = 'sha256:' + c.digest(configuration)
         version = str(uuid.uuid4())
-        original = {'caller': {'binding': prefix_fixture.runtime_bindings.observed(actual_caller, prefix_fixture.runtime_bindings.SORTED),
+        original = {'callerConfiguration': configuration_binding, 'caller': {'binding': prefix_fixture.runtime_bindings.observed(actual_caller, prefix_fixture.runtime_bindings.SORTED),
             'bindingProfile': prefix_fixture.runtime_bindings.SORTED, 'restartCount': 0},
             'origin': origin, 'tokenTarget': '/run/ingestion.jwt', 'tokenSource': prefix_fixture.private_profile(caller_token),
             'pythonExecutable': self.gateway_profile['pythonExecutable'], 'ca': None, 'peerCertificateSha256': None,

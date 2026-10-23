@@ -9,6 +9,7 @@ from pathlib import PurePosixPath
 from urllib.parse import urlsplit
 from .core import require,digest,encoded,hashed
 from .gateway import CurrentGateway
+from .caller_configuration import verify as verify_configuration
 from .read_budget import ReadBudget
 from tools.ingestion_readiness_patch_execution import private_file,runtime_guard
 from tools.semantic_live_route_diagnostic.reader import verify_program,process_ticks
@@ -77,7 +78,7 @@ class OriginalSemanticRequest:
         self.profile=copy.deepcopy(profile)
         fields={'caller','origin','tokenTarget','tokenSource','pythonExecutable','ca','peerCertificateSha256',
             'references','frozenConfigurationHash','onboardingVersionId','frozenConfiguration'}
-        require(type(profile) is dict and set(profile)==fields,'EXACT_ORIGINAL_SERVICE_REQUEST_PROFILE_REQUIRED')
+        require(type(profile) is dict and set(profile) in (fields, fields | {'callerConfiguration'}),'EXACT_ORIGINAL_SERVICE_REQUEST_PROFILE_REQUIRED')
         refs=profile['references']
         require(type(refs) is list and 1<=len(refs)<=32,'EXACT_BOUNDED_ORIGINAL_REFERENCES_REQUIRED')
         seen=set()
@@ -130,12 +131,7 @@ class OriginalSemanticRequest:
             'CURRENT_SIGNED_ORIGINAL_SERVICE_REQUEST_SCOPE_REQUIRED')
         status,actual=self.lifecycle.engine.request('GET','/v1.44/containers/'+p['caller']['binding']['containerId']+'/json')
         require(status==200,'CURRENT_ORIGINAL_SERVICE_CALLER_REQUIRED');runtime_guard.unchanged(actual,p['caller'])
-        env={}
-        for item in actual['Config']['Env']:
-            name,sep,value=item.partition('=');require(sep and name not in env,'UNIQUE_ORIGINAL_CALLER_ENV_REQUIRED');env[name]=value
-        require(env.get('OUF_INGESTION_ACTIVATION_GATEWAY_URL')==p['origin']
-            and env.get('OUF_INGESTION_ACTIVATION_TOKEN_FILE')==p['tokenTarget'],
-            'SAME_CONFIGURED_INGESTION_GATEWAY_AND_TOKEN_REQUIRED')
+        verify_configuration(actual,p)
         gateway=self.gateway.guard();u=urlsplit(p['origin'])
         if u.scheme=='http':
             require(any(e.get('IPAddress')==u.hostname for e in gateway['NetworkSettings']['Networks'].values()),
