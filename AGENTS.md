@@ -1,4 +1,12 @@
-# CURRENT — native successor qualification first refused extra diagnostic read; fixture corrected without counter reset
+# CURRENT — native successor qualified; deliver exact reviewed issue/resume/owner/continue once
+
+CI80383 run40020706499/job120644220301 SUCCESS, directlogs inspected: ordinary realJVMGET502->200 test148.701sec; newactualexpiry/checkpoint4/currentbootowner successor284.642sec, final ORIGINAL_SERVICE_GET_200_AFTER_REAL_AUTHORITY_SUCCESSION, controlled320->321/new1, samepausedgeneration/prefix/readcounterspreserved, realoldauthorityexpired. FullnativeDocker29.8.1/OCI/rootfs/PostgreSQL/TLS/Ed25519/admission/unpause/SIGUSR1/JVM/OriginalSemanticRequest checks; fixtures IAM/HUMAN/proxy/seededdata/absentlegacy-systemdguard explicitlyretained. Targethealth/permanentrenewal/releasefalse. All142sourceGitblobsexactsealed6a5at80383,0changes; targetprep9298/reviewfff remainvalid. Postboot327testsPASSincl9applywrappertests, directlogsread. Evidence semantic-registry-checkpoint-successor-native-ci-20261023.json.
+
+Deliver pinnedwrapper at80383 SHA6694f1c2fc84c61b5481e15a04487dac865e5fb669bb482ccc86f5855a8de7a4, publishedreadbackequalslocal. Exact rootretainedcapsulecgFB2WhS/F7, preparation9298/reviewfff/roota29. ONLYissue,resume,owner,continue; no prepare/review/cleanup/START/PAUSEreplay. Issuer terminal_decision requires human exact APPROVO fff2e8499488147c3ca602f352e3ecf3dbd21d606809d123a3060c3c4f7fb800 via/dev/tty; wrapperneverinjectsapproval. Finite900sec/max1newSERVICEgrant321, currentgenerationchecksmandatory. Continue maywaituntilfinitewindowends anddoesnotestablishpermanentrenewal. Await actualtargetoutput;502stillOPEN untilsameoriginalGET200, thendurablerenewal/E2E,Supervisorlater. NeverautomaticallyrerunSTOPorpartiallyapplieddelivery. Alllowerheadershistorical.
+
+---
+
+# HISTORICAL — native successor qualification first refused extra diagnostic read; fixture corrected without counter reset
 
 CI91a3381 job120639879888: existing wholeJVM control passed(GET502->200). Newsuccessorcase correctly reachedrealrootfsfailure/ownerCANCELLED/6directorycleanup/nativeoriginalsealrestored, then stopped because its preliminaryGET had consumed semanticGets1 whiletargetsnapshot has0. No productfailure/nativehandoff yet; neverrelax targetpredicate or decrementcounter. Removed preliminarySERVICEGET only fromnewexact-scopefixture; assertactualinitialStateexited/notrunning instead, publish initialHttpStatusObservedInThisScopeFalse. Independent precedingcontrol retains actualGET502 evidence; newcase finalGET200 muststilluseactualOriginalSemanticRequest. Alltarget142productionmembers unchanged, exactfff reviewstillvalid,320/OAuth0effects0target. Nativequalificationrerunrequired beforedelivery.
 

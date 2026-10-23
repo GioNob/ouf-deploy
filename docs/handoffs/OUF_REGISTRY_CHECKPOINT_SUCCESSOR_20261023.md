@@ -1,5 +1,15 @@
 # Explicit Registry checkpoint-four successor
 
+## Current delivery status — native successor qualified
+
+Head80383c79783ef4ffe23e8b6998b87a8903e63e51 passes native run40020706499/job120644220301. Direct logs show the existing ordinary JVM case passing in148.701seconds and the new successor case passing in284.642seconds. The successor waits for actual predecessor-authority expiry, restores the unchanged independent seal after its explicit six-directory failure injection, imports the same paused generation and counters, installs a distinct current-boot owner, advances grants320->321 once, and obtains the original SERVICE HTTP200 through the real Registry JVM. No START/PAUSE prefix replay. IAM/HUMAN identities, forwarding proxy, seeded data and absent legacy-systemd guard are disposable fixtures; this is not target readiness or permanent renewal.
+
+All142 production source Git blobs at80383 match sealed source6a5 and closuree78. The completed target preparation9298 and reviewfff2 remain applicable. Target root: /etc/ouf/deploy-snapshots/semantic-registry-postboot-inputs-a29d05c2b1d11fbd8d2bad38a17a23416230c693879ad3c835bd40b76533ca68. Do not rerun prepare/review or completed cleanup.
+
+Runtime delivery is now the exact reviewed wrapper releases/semantic-registry-checkpoint-successor-apply-reviewed-20261023.sh at80383, SHA2566694f1c2fc84c61b5481e15a04487dac865e5fb669bb482ccc86f5855a8de7a4. Published readback equals local bytes. It runs only issue,resume,owner,continue with strict receipt barriers. Existing terminal_decision requires the operator's exact APPROVO review-hash response before signatures; the launcher supplies no approval input. Max1 new SERVICE attempt, total321, finite900second scope. The continuation may remain active until the finite window ends; HTTP200 is reported when observed. STOP must never trigger automatic replay.
+
+Component job120644220256 passes327 postboot tests including9 wrapper tests. Evidence: semantic-registry-checkpoint-successor-native-ci-20261023.json. Target GET200 and durable renewal remain unproven. All following delivery-boundary descriptions are historical stages, superseded by this current section.
+
 The target retained snapshot e4dbcf19b28b0382f16099461a4409f28eeff4afa7ca232175d51955e1539e86 after successful six-directory cleanup. It confirms native checkpoint4, cancelled owner and cumulative SERVICE count320. It is metadata evidence, not current readiness. The 502 remains open.
 
 ## New protocol
