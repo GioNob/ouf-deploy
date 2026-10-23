@@ -1,4 +1,4 @@
-"""Real expired-epoch/current-boot owner handoff and Registry JVM 502 -> 200.
+"""Real expired-epoch/current-boot owner handoff from stopped Registry to GET200.
 
 All native owners, Engine/process/OCI/rootfs/database/TLS/crypto/fence checks run
 unchanged. Only disposable IAM/HUMAN, forwarding proxy, seeded read data and
@@ -55,8 +55,12 @@ class NativeJvmSuccessor(j.NativeJvmPostboot):
         return root
 
     def test_real_expiry_failed_seal_cancelled_owner_handoff_and_original_get_200(self):
-        initial=OriginalSemanticRequest(self.gateway,self.native_context['originalRequest'])
-        self.assertEqual(initial._get(j.inputs.reference())['status'],502)
+        # The preceding independent JVM case proves the original GET502. This
+        # exact target-scope replay must start with semanticGets==0; performing
+        # another preliminary SERVICE GET here would consume a real request
+        # and change the inherited ledger. Never decrement or bypass it.
+        self.assertEqual(self.inspect()['State']['Status'],'exited')
+        self.assertFalse(self.inspect()['State']['Running'])
         self.install_owner()
         worker,coordination,stop,thread,statuses=self.run_worker()
         self.assertEqual(statuses[-1]['state'],'ACTIVE',statuses[-1])
@@ -167,7 +171,8 @@ class NativeJvmSuccessor(j.NativeJvmPostboot):
         with self.assertRaises(c.RecoveryDenied):
             resumption_install.install(self.native_context,following,self.current_authority,self.authority)
         print(json.dumps({'schema':'ouf.native-successor-qualification-result.v1','status':'ORIGINAL_SERVICE_GET_200_AFTER_REAL_AUTHORITY_SUCCESSION',
-            'originalHttpStatus':502,'finalHttpStatus':200,'samePausedGenerationImported':True,
+            'initialRuntimeState':'EXITED','initialHttpStatusObservedInThisScope':False,
+            'finalHttpStatus':200,'samePausedGenerationImported':True,
             'originalPrefixEffectsPreserved':True,'predecessorGrantAttempts':320,'controlledGrantAttempts':321,
             'newServiceGrantAttempts':1,'predecessorAuthorityReallyExpired':True,'readCountersPreserved':True,
             'targetExecutionPerformed':False,'permanentRenewalProven':False,'releaseAcceptance':False}),flush=True)

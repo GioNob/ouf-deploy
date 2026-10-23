@@ -1,3 +1,11 @@
+# CURRENT — native successor qualification first refused extra diagnostic read; fixture corrected without counter reset
+
+CI91a3381 job120639879888: existing wholeJVM control passed(GET502->200). Newsuccessorcase correctly reachedrealrootfsfailure/ownerCANCELLED/6directorycleanup/nativeoriginalsealrestored, then stopped because its preliminaryGET had consumed semanticGets1 whiletargetsnapshot has0. No productfailure/nativehandoff yet; neverrelax targetpredicate or decrementcounter. Removed preliminarySERVICEGET only fromnewexact-scopefixture; assertactualinitialStateexited/notrunning instead, publish initialHttpStatusObservedInThisScopeFalse. Independent precedingcontrol retains actualGET502 evidence; newcase finalGET200 muststilluseactualOriginalSemanticRequest. Alltarget142productionmembers unchanged, exactfff reviewstillvalid,320/OAuth0effects0target. Nativequalificationrerunrequired beforedelivery.
+
+Prepared exactreview applywrapper releases/semantic-registry-checkpoint-successor-apply-reviewed-20261023.sh: pinnedroot-retainedcapsulecgFB2WhS/F7/source6a5, preparation9298 andreviewfff; modes ONLYissue,resume,owner,continue, per-mode typedJSONreceiptbarriers, no automaticapprovalstdin orprepare/reviewreplay/install/bootstrap. Ownerreceiptmustprior320; formalnativehandoffreceiptcheckpoint4/0lifecycleeffects; finitecontinuation requires actualGET200status+finiteendclassification andneverpermanentrenewal. Nine actualshell/rootfile testsPASS with explicitnative-actioncapsule substitutes, nottargetapplicationqualification. Wrappernotdeliverableuntilnativecasepasses. All lowerheadershistorical.
+
+---
+
 # CURRENT — target successor review complete; native expiry/owner/JVM integration fixture qualification next
 
 Target MjWhD3DL complete preparation9298a73a41fe51f4035745fc9bcb822f6956bb9752df26a54f715d35bbeb17a9 and12scope reviewfff2e8499488147c3ca602f352e3ecf3dbd21d606809d123a3060c3c4f7fb800 under /etc/ouf/deploy-snapshots/semantic-registry-postboot-inputs-a29d05c2b1d11fbd8d2bad38a17a23416230c693879ad3c835bd40b76533ca68/. Sourceclosuree78 unchanged142 modules pinned6a5; targetcounter320/checkpoint4,0effects/Engine/OAuth/authority; proposed1newgrant(max321)/900seconds. DO NOT rerunprepare/review orcleanup. No newauthorityissuedyet. Actual502stillOPEN.
