@@ -10,7 +10,8 @@ sys.path.insert(0,str(Path(__file__).resolve().parent))
 from test_current_admission import file_profile
 import test_installed_token_owner as owner_fixture
 from tools.semantic_policy_token_owner.installed_owner import LegacyWriterFence
-from tools.semantic_policy_token_owner.producer import RenewalOperation,CredentialFile
+from tools.semantic_policy_token_owner.producer import CredentialFile
+from tools.semantic_policy_token_owner.supervisor import ScheduledRecovery,RenewalWorker
 from tools.semantic_lease_recovery.bounded_recovery import Permanent
 from tools.semantic_registry_recovery_composition.compose import candidate_contract,GATES
 from tools.semantic_registry_recovery_execution import core as c,authorization as a,installed_owner as r
@@ -19,7 +20,10 @@ class InstalledObserver(unittest.TestCase):
     def setUp(self):
         self.f,self.server,self.owner,self.recovery,_,_=owner_fixture.InstalledOwnerTest.fixture(self,scheduled=True)
         fence=patch.object(LegacyWriterFence,'guard',return_value=True);fence.start();self.addCleanup(fence.stop)
-        RenewalOperation(self.recovery).step()
+        old=self.recovery
+        self.recovery=ScheduledRecovery(old.journal,old.adapter,old.policy,old.context,old.generation,
+            old.clock,old.random,interval_seconds=60)
+        self.assertEqual(RenewalWorker(self.recovery).tick()['state'],'ACTIVE')
         before=self.owner.journal.read()
         self.owner.journal.compare_and_save(before,{**before,'bootId':Path('/proc/sys/kernel/random/boot_id').read_text().strip()})
         self.plan=candidate_contract({'registry':{'containerId':'a'*64},'requiredGates':list(GATES),
