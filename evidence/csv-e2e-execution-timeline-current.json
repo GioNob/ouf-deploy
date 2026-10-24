@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-24T08:20:48Z",
+  "lastUpdatedAt": "2026-10-24T08:49:20Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1936,6 +1936,20 @@
       "targetNewBudgetGranted": false,
       "targetMigrationExecuted": false,
       "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-ONBOARDING-PACKAGE-STAGED-INPUTS-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T08:49:20Z",
+      "classification": "USER_REPORTED_VPS_STAGING_AND_DISTINCT_METADATA_CI_QUALIFICATION",
+      "targetEvidenceRef": "evidence/onboarding-finite-session-staged-target-20261024.json",
+      "qualificationEvidenceRef": "evidence/onboarding-finite-session-inputs-qualified-20261024.json",
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true,
+      "sourceActivations": 0,
+      "databaseMigrations": 0,
+      "humanBudgetsGranted": 0,
+      "targetMetadataCaptureExecuted": false,
+      "functionalMilestonesUnchanged": true
     }
   ],
   "activeIntervals": [
@@ -2739,7 +2753,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_ONBOARDING_FINITE_SESSION_IMPLEMENTATION_20261024.md",
+    "currentHandoff": "docs/handoffs/OUF_ONBOARDING_FINITE_INPUTS_DELIVERY_20261024.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 304,
@@ -2831,6 +2845,25 @@
       "artifactId": 12553563263,
       "protectedStagingObserved": false,
       "humanBudgetGranted": false
+    },
+    "onboardingFiniteSessionTargetStaging": {
+      "status": "ONBOARDING_FINITE_SESSION_PACKAGE_STAGED",
+      "evidenceRef": "evidence/onboarding-finite-session-staged-target-20261024.json",
+      "imageLoaded": false,
+      "databaseMigrations": 0,
+      "humanBudgetsGranted": 0,
+      "sourceActivations": 0
+    },
+    "onboardingFiniteMetadataCapture": {
+      "qualifiedSource": "6061aea966cad60eadcac926ad74eda8f6e210e9",
+      "qualificationRuns": [
+        40079399435,
+        40079402575
+      ],
+      "targetExecuted": false,
+      "next": "ONE_PINNED_METADATA_OPERATOR_INVOCATION",
+      "databaseAdmissionProven": false,
+      "lifecycleOwnershipProven": false
     }
   },
   "unverifiedIntervals": [
@@ -3910,10 +3943,9 @@
     "gate": "G3",
     "humanInterventionRequired": true,
     "reasons": [
-      "NATIVE_PROFILE_APPROVED_ACTIVATION_PAUSED",
-      "HISTORICAL_REGISTRY_PREDICATE_FAILED_CORRELATION_UNPROVEN",
-      "F5_F6_PROOF_PENDING",
-      "OAUTH_BUDGET_EXHAUSTED_NO_NEW_LOGIN_AUTHORIZED"
+      "ONBOARDING_LEGACY_SESSION_ELAPSED_FINITE_SUCCESSOR_CODE_QUALIFIED_PACKAGE_STAGED_NOT_DEPLOYED",
+      "FRESH_ONBOARDING_BINDINGS_DB_AND_LIFECYCLE_ADMISSION_PENDING",
+      "G3_F5_F6_E2E_PENDING"
     ],
     "historicalAttempts": 304,
     "maximumCumulativeAttempts": 304,
@@ -3921,7 +3953,7 @@
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "ONE_NEW_PINNED_READ_ONLY_HISTORICAL_REGISTRY_OBSERVATION",
+    "currentRequiredHumanAction": "ONE_PINNED_READ_ONLY_ONBOARDING_COHORT_METADATA_CAPTURE_NO_LOGIN_OR_RUNTIME_APPLY",
     "maximumNewOAuthRequests": 0,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
     "profileApplied": true,
@@ -3947,7 +3979,13 @@
       "newWindowOpened": true,
       "separateTerminalConsentRequired": true
     },
-    "runtimeAuthorityIssued": false
+    "runtimeAuthorityIssued": false,
+    "previousReasonsAtPreOnboardingFiniteUpdate": [
+      "NATIVE_PROFILE_APPROVED_ACTIVATION_PAUSED",
+      "HISTORICAL_REGISTRY_PREDICATE_FAILED_CORRELATION_UNPROVEN",
+      "F5_F6_PROOF_PENDING",
+      "OAUTH_BUDGET_EXHAUSTED_NO_NEW_LOGIN_AUTHORIZED"
+    ]
   },
   "unsegmentedFollowupWindows": [
     {
