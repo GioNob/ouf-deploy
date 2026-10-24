@@ -33,6 +33,16 @@ def protected(path,expected=None):
 def module(name,path,expected=None):
     raw=protected(path,expected);m=types.ModuleType(name);m.__file__=str(path);m.__qualified_source_sha256__=hashlib.sha256(raw).hexdigest()
     sys.modules[name]=m;exec(compile(raw,str(path),'exec'),m.__dict__);return m
+def label_projection(request,image):
+    # Docker merges image label defaults only for keys absent in the request.
+    # Bind the exact effective map; never accept a label subset or manager keys.
+    wanted=request['Labels'];defaults=image.get('Labels')or{}
+    require(type(wanted)is dict and type(defaults)is dict,'EXACT_V35_LABEL_MAPS_REQUIRED')
+    additions={key:value for key,value in defaults.items()if key not in wanted}
+    require(set(additions)<={'org.opencontainers.image.source'},'UNREVIEWED_V35_IMAGE_METADATA_LABEL_ADDITION')
+    merged={**defaults,**wanted}
+    require(all(merged[k]==v for k,v in wanted.items()),'ALL_EXPLICIT_V35_LABELS_MUST_BE_PRESERVED')
+    return {'profile':'DOCKER_IMAGE_LABEL_DEFAULTS_V1','expectedLabels':merged,'imageDefaultAdditions':additions,'explicitRequestLabelsUnchanged':True}
 def image_import_definitions(n,raw):
     require(hashlib.sha256(raw).hexdigest()==IMAGE_IMPORT_HASH,'ORIGINAL_QUALIFIED_V35_IMAGE_IMPORT_SOURCE_REQUIRED')
     values=[ast.literal_eval(node.value)for node in ast.parse(raw).body if isinstance(node,ast.Assign)
@@ -156,7 +166,11 @@ class Context:
             'rootfs':{'type':'layers','diff_ids':[v['diffId']for v in audit['layers']]},'imageConfig':audit['imageConfig']}
         replacement=copy.deepcopy(self.frozen['replacements']['onboarding']);replacement['request']['Image']=native_id
         replacement['imageAudit']=audit;replacement['imageArchive']=copy.deepcopy(self.native_archive_pin)
-        self.native_plan={'schema':'ouf.onboarding-v35-executable-native-plan.v1','frozenPlanHash':FROZEN_HASH,
+        projection=label_projection(replacement['request'],audit['imageConfig'])
+        image_env=audit['imageConfig'].get('Env')or[];request_env=replacement['request']['Env']
+        require(all(type(v)is str and '='in v for v in image_env+request_env)
+            and {v.split('=',1)[0]for v in image_env}<={v.split('=',1)[0]for v in request_env},'NO_UNREVIEWED_V35_IMAGE_ENVIRONMENT_DEFAULTS')
+        self.native_plan={'runtimeLabelProjection':projection,'schema':'ouf.onboarding-v35-executable-native-plan.v1','frozenPlanHash':FROZEN_HASH,
             'replacement':replacement,'unchangedApplications':copy.deepcopy(self.frozen['unchangedApplications']),
             'engine':self.frozen['engine'],'databaseProfile':self.profile,'nativeFlywayConfiguration':self.frozen['nativeFlywayConfiguration'],
             'candidate':self.candidate,'nativeArchive':self.native_archive_pin,'nativeImageIdentityProfileProven':True,

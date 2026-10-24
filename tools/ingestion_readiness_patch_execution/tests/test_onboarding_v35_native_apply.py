@@ -145,6 +145,15 @@ class Guards(unittest.TestCase):
                     self.assertEqual(row['nextStage'],13)
                 gate.clock=lambda:time.time()+931
                 with self.assertRaises(core.Stop):gate.check()
+    def test_effective_label_projection_is_exact_and_does_not_admit_manager_defaults(self):
+        requested={'Labels':{'keep':'retained','org.opencontainers.image.revision':'reviewed'}}
+        image={'Labels':{'org.opencontainers.image.source':'fixture-origin','keep':'different-image-default'}}
+        out=entry.label_projection(requested,image)
+        self.assertEqual(out['expectedLabels'],{'keep':'retained','org.opencontainers.image.revision':'reviewed','org.opencontainers.image.source':'fixture-origin'})
+        self.assertEqual(out['imageDefaultAdditions'],{'org.opencontainers.image.source':'fixture-origin'})
+        self.assertEqual(requested['Labels']['keep'],'retained')
+        for unknown in('io.kubernetes.fixture','com.docker.compose.project','ouf.authority','unreviewed'):
+            with self.assertRaises(entry.Stop):entry.label_projection(requested,{'Labels':{unknown:'fixture'}})
     def test_exact_limits_native_defaults_and_no_unqualified_restore_or_source_activation(self):
         with tempfile.TemporaryDirectory(dir=ROOT)as directory:
             root=Path(directory);root.chmod(0o700);inputs,_,_=fixture_trust(root);review=minimal_review(root,inputs)
@@ -294,6 +303,10 @@ class Native(unittest.TestCase):
                     path=ctx.root/'recovery.json'
                     if path.exists():
                         row=json.loads(path.read_bytes());print('FIXTURE_STAGE '+str(row['nextStage'])+' '+str(row['counts']),flush=True)
+                        if row.get('createdId'):
+                            actual=self.inspect(row['createdId']);request=ctx.native_plan['replacement']['request']
+                            changed=[key for key,value in request.items()if key not in('HostConfig','NetworkingConfig')and actual['Config'].get(key)!=(ctx.native_plan['runtimeLabelProjection']['expectedLabels']if key=='Labels'else value)]
+                            print('FIXTURE_CONFIG_DELTA_KEYS '+str(changed),flush=True)
                         responses=sorted(ctx.root.glob('engine-response-*.json'))
                         if responses:
                             last=json.loads(responses[-1].read_bytes())

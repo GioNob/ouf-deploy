@@ -82,7 +82,9 @@ class NativePorts:
         if restored is None:restored=i>self.core.STAGES.index('RESTORE_RESTART_POLICY')
         self.require(actual['Name']=='/'+self.row['name']and actual['Image']==request['Image'],'EXACT_V35_REPLACEMENT_IDENTITY_REQUIRED')
         for key,value in request.items():
-            if key not in('HostConfig','NetworkingConfig'):self.require(actual['Config'].get(key)==value,'EXACT_V35_REPLACEMENT_CONFIG_REQUIRED')
+            if key not in('HostConfig','NetworkingConfig'):
+                expected=self.plan['runtimeLabelProjection']['expectedLabels']if key=='Labels'else value
+                self.require(actual['Config'].get(key)==expected,'EXACT_V35_REPLACEMENT_CONFIG_REQUIRED')
         host=copy.deepcopy(request['HostConfig'])
         if restored:host['RestartPolicy']=copy.deepcopy(self.row['restoreRestartPolicy'])
         self.require(requested_host_config_matches(host,actual['HostConfig'],started=started),'EXACT_V35_REPLACEMENT_HOST_REQUIRED')
@@ -250,7 +252,7 @@ class NativePorts:
             'frozenPlanHash':self.review['frozenPlanHash'],'nativePlanHash':self.review['nativePlanHash'],'journalVersion':row['version'],
             'counts':row['counts'],'databaseMigrationVersion':35,'databaseMigrationChecksum':1095739786,'databaseMigrations':1,
             'applicationReadinessProven':True,'nativeFlywayHistoryVerified':True,'backupVerified':True,'databaseRestorePerformed':False,
-            'oldOnboardingRetainedStopped':True,'sourceReadinessAttempts':3,'sourceReadinessGeneration':4,'sourceReadinessPhase':'PAUSED',
+            'oldOnboardingRetainedStopped':True,'existingLabelsPreserved':True,'exactInheritedImageLabelsProven':True,'sourceReadinessAttempts':3,'sourceReadinessGeneration':4,'sourceReadinessPhase':'PAUSED',
             'budgetSessionCount':0,'humanBudgetsGranted':0,'sourceActivations':0,'registryWorkerTouched':False,'oauthRequests':0,
             'credentialValuesPrinted':False,'addressesPrinted':False,'originalRequestRepeated':False,'applicationE2EProven':False,
             'runtimeAuthorityIssued':True,'installationSigningKeysRead':True,'installationSigningOperations':3,

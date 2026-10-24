@@ -62,7 +62,9 @@ def _stop_unproven(ctx,review,raw,journal,reason):
         core.require(status==200 and actual['Id']==cid and actual['Name']=='/'+replacement['name']
             and actual['Image']==request['Image']and actual['RestartCount']==0,'OWNED_V35_QUARANTINE_CANDIDATE_REQUIRED')
         for key,value in request.items():
-            if key not in('HostConfig','NetworkingConfig'):core.require(actual['Config'].get(key)==value,'V35_QUARANTINE_CONFIGURATION_CHANGED')
+            if key not in('HostConfig','NetworkingConfig'):
+                expected=plan['runtimeLabelProjection']['expectedLabels']if key=='Labels'else value
+                core.require(actual['Config'].get(key)==expected,'V35_QUARANTINE_CONFIGURATION_CHANGED')
         started=actual['State']['Running']is True
         core.require(requested_host_config_matches(request['HostConfig'],actual['HostConfig'],started=started)
             and core.digest(sorted(actual['Mounts'],key=lambda v:v['Destination']))==replacement['oldRuntimeBinding']['mountsHash'],
