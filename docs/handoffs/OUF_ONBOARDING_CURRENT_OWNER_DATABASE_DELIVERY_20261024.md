@@ -1,3 +1,5 @@
+> **CONSUMATO — risultato VPS ricevuto, non rilanciare il comando SQL sotto.** CURRENT_ONBOARDING_DATABASE_SNAPSHOT_OBSERVED/Exit0, snapshot000bf9de27a5a89d6132c2e594650282818957d322baa7b9166762fd0ac0eb0c, V34 osservata/V35 assente, PAUSED3/generazione4. Log /home/oufadmin/ouf-current-database.uNUC4fIZ/operator.log. Prossimo: [pacchetto corretto e proposta privata](OUF_ONBOARDING_V35_PACKAGE_REVIEW_DELIVERY_20261024.md), zero nuoviSQL/Engine. Le istruzioni successive sono storia.
+
 # OUF — DB corrente dell'owner Onboarding, 24 ottobre 2026
 
 ## Risultato ricevuto e identificazione

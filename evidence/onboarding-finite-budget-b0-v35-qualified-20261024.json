@@ -112,9 +112,9 @@
     }
   ],
   "limits": [
-    "Current image label is a declaration; completed owner/runtime exact binding to be verified before SQL",
+    "Current b0 completed owner runtime lineage and V34 descriptor observed on VPS; image label alone is not source/image content proof",
     "Application configuration precedence unresolved",
-    "No target schema/admission/lifecycle proof, no target import/migration/grant/activation",
+    "No database admission/lifecycle authority, target import/migration/grant/activation or new image delivery",
     "Native GOVERNED_IDENTITY publication and application E2E remain unproven"
   ],
   "warnings": [
@@ -126,5 +126,15 @@
   "targetMigrationExecuted": false,
   "targetNewBudgetGranted": false,
   "runtimeAuthorityIssued": false,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "currentTargetObservation": {
+    "evidence": "evidence/current-onboarding-database-target-20261024.json",
+    "completedOwnerRuntimeLineageMatched": true,
+    "sqlVersion": 34,
+    "v34SourcePropertyDescriptorAndTriggerObserved": true,
+    "v35Absent": true,
+    "selectedReadinessAttempts": 3,
+    "selectedReadinessGeneration": 4,
+    "targetApplyAuthorized": false
+  }
 }
