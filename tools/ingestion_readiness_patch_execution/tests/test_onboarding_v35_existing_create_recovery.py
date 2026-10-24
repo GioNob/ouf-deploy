@@ -21,6 +21,21 @@ class NativeRecovery(unittest.TestCase):
     # Reuse setup helpers without inheriting the unrelated successful-rollout tests.
     for _name,_value in old.Native.__dict__.items():
         if callable(_value)and not _name.startswith(('test_','__')):locals()[_name]=_value
+    def setUp(self):
+        # Each disposable fixture has its own metadata-only compiler namespace.
+        # No target/execution journal or cumulative attempt counter is reset.
+        compiler=old.module('independent_recovery_fixture_plan_'+str(time.monotonic_ns()),Path(old.n.__file__))
+        selected=patch.object(old,'n',compiler);selected.start();self.addCleanup(selected.stop)
+        old.Native.setUp(self)
+    def cleanup(self):
+        # Remove ONLY the exact untagged CI candidate image after its disposable
+        # containers, so each independent fixture exercises the original import.
+        image=None
+        if hasattr(self,'ctx')and (self.ctx.root/'review.json').exists():image=json.loads((self.ctx.root/'review.json').read_bytes())['nativePlan']['candidate']['nativeImageId']
+        old.Native.cleanup(self)
+        if image:
+            try:self.docker('image','rm',image)
+            except Exception:pass
     def initial_stop(self):
         code,output,_=self.perform();self.assertEqual(code,2,output.decode(errors='replace'))
         self.parent_ctx=self.ctx;self.parent_row=json.loads((self.ctx.root/'recovery.json').read_bytes())
@@ -28,7 +43,8 @@ class NativeRecovery(unittest.TestCase):
         self.assertEqual([e['state']for e in self.parent_row['effects']],['APPLIED']*7+['CLAIMED'])
         self.created=self.parent_row['createdId'];actual=self.inspect(self.created)
         self.assertEqual(actual['Config']['Hostname'],self.created[:12]);self.assertFalse(actual['State']['Running'])
-        self.assertEqual(self.ctx.native_plan['replacement']['request']['Hostname'],'')
+        retained_review=json.loads((self.ctx.root/'review.json').read_bytes())
+        self.assertEqual(retained_review['nativePlan']['replacement']['request']['Hostname'],'')
         # The old ephemeral watchdog observes its ended parent and exits; no stop
         # is authorized because createdConfigurationVerified stayed false.
         time.sleep(1.1)
