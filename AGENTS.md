@@ -1,3 +1,11 @@
+# CURRENT — VPS current Onboarding cohort inputs captured; distinct DB snapshot under qualification
+
+Actual CURRENT_ONBOARDING_COHORT_INPUTS_CAPTURED/Exit0,14GET/currentCohortStable, candidate archive/config/CI manifest verified. Root input-preparation-v1/inputs.json SHA b8040ef1c49af2455d9a28d26bac4ef4bbf297315c69c0b48256aa83f18b614b. Log /home/oufadmin/ouf-onboarding-inputs.Yqa2iXyE/operator.log. Evidence evidence/onboarding-finite-session-inputs-target-20261024.json. This scope is CONSUMED; no replay/reset. NO_RECOGNIZED_MANAGER_LABEL does NOT prove lifecycle ownership. DBadmission/profilefalse,SQL0/imports0/migrations0/activations0/HUMANgrants0/runtimeauthorityfalse/acceptancefalse.
+
+Distinct scripts/read-onboarding-finite-database-20261024.py UNDER QUALIFICATION, no delivery before native CI PASS. Database identity from completed Onboarding owner (same current generation required), ONLY native PostgreSQL transport from retained Ingestion profile. New fixed DBscope, max4exactEngineGETs/one counted Dockerexec SQLattempt/read-only transaction, no credential fallback or servicecredentialfiles. Fixed bounded SQL: DBidentity/catalog/privileges/Flywayhistory/exactselectedreview/leases/pressure. Historical approval hashes are lineage metadata, not reissued authority or current signed mutation consent. Existing config selectors/JVM options remain unresolved precedence if present, no hidden file reads. No migrations/apply/activation/newbudget. Fresh signed concrete migration/deploy review still required.8/8technical4/6functional/G3OPEN/E2E pending; Supervisor follows.
+
+---
+
 # CURRENT — VPS package STAGED; fresh bounded metadata reader CI-qualified and pinned delivery ready
 
 Actual VPS ONBOARDING_FINITE_SESSION_PACKAGE_STAGED/Exit0, package /etc/ouf/deploy-snapshots/onboarding-finite-session-ee8b7756f72f82a6 protected, imageLoadedfalse/migrations0/activations0/humanBudgets0/applyAuthorizedfalse. Logs /home/oufadmin/ouf-onboarding-finite-package.2wfZtMWY/operator.log and /home/oufadmin/ouf-onboarding-delivery.7HD1CmAA/bootstrap.log; one staging execution, no replay. Evidence evidence/onboarding-finite-session-staged-target-20261024.json.
