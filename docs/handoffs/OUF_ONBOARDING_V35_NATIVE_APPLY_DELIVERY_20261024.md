@@ -1,3 +1,13 @@
+# CURRENT — applicazione V35 eseguita sul VPS e interrotta dopo CREATE; NON RILANCIARE
+
+Output operatore: review828d9d6c5f04f8535801e45c2d284a71256232b778b3d6dc14afe6d468e5a94b / authorityaf9a8fbd77a7d5d7caabb436360650eb9ab4ea126684ea15cc70c1fd42f37d63. Exit1, log /home/oufadmin/ouf-v35-native-apply.1XON8spN/operator.log. CREATE ha restituito un Id, salvato nel journal; candidate_guard ha poi negato EXACT_V35_REPLACEMENT_CONFIG_REQUIRED. START non raggiunto da questo ingresso. I sette stage precedenti risultano necessariamente attraversati secondo il codice ordinato, ma stato corrente e journal privato vanno ancora riconciliati: NON dichiarare vecchio container attualmente running, V35 applicata o readiness. Il gestore main aveva inoltre il refuso __name__in, che ha mascherato STOP_RECONCILE con AttributeError. CI precedente non copriva main eccezionale né provava la configurazione target.
+
+Scope APPLY CONSUMATO. Conservare root codice a0ce, root autorità logica, journal/claim, Engine responses, backup e log. Niente rilancio, nuovo import/create, vecchio restart, rollback, reset o modifica in-place del codice installato. Correzione main nel repository con test del percorso eccezionale reale (bootstrap/operator sostituiti solo per iniettare errore); PASS locale, non qualifica VPS. Reader scripts/read-onboarding-v35-created-config-20261024.py in SVILUPPO, NON CONSEGNABILE: confronto di review/authority/journal e create+inspect già trattenuti, nessuna connessione Engine/SQL/credenziali/chiavi o modifica del vecchio journal. Deve ancora essere qualificato prima di comando pinned. Non sostituire il confronto esatto con tolleranze ipotetiche e non consumare altra authority prima della causa osservata. Nessuna stima attendibile del tempo restante.
+
+502/403: conservate prove VPS della proiezione rete e GET originale200; processo applicativo/E2E/F5/F6 restano aperti. 8/8tecnico,4/6funzionale,G3OPEN. Worker Registry indipendente e intatto; Supervisor dopo E2E. Header sottostanti STORICI, in particolare comandi dichiarati pronti o target non eseguito.
+
+---
+
 # OUF — applicazione nativa V35, comando singolo del24 ottobre2026
 
 Il piano VPS è congelato e consumato: b17c2c99cc791cced8ee00ed190e30b75c518ae84e2dd4a9ae7eef521390c8bd. Questo è il NUOVO ingresso applicativo qualificato, non una ripetizione del freeze. Ultimo target: immagine staged, V35 non applicata,3tentativi/generazione4/PAUSED,0sessioni/grant/attivazioni. Conservare /home/oufadmin/ouf-v35-native-plan.q7UJXZS8/operator.log e tutte le root precedenti.

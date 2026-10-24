@@ -289,10 +289,11 @@ def main():
         for sig in(signal.SIGINT,signal.SIGTERM,signal.SIGHUP):signal.signal(sig,cancelled)
         ctx=bootstrap();result=operator(ctx)
     except Exception as error:
-        reason=str(error)if type(error).__name__in('Stop','Denied','CreationDenied','ImageCustodyDenied')and re.fullmatch('[A-Z0-9_]{1,120}',str(error))else'V35_NATIVE_EXECUTION_UNPROVEN'
+        reason=str(error)if type(error).__name__ in ('Stop','Denied','CreationDenied','ImageCustodyDenied')and re.fullmatch('[A-Z0-9_]{1,120}',str(error))else'V35_NATIVE_EXECUTION_UNPROVEN'
         result={'schema':'ouf.onboarding-v35-native-update-result.v1','status':'STOP_RECONCILE','complete':False,'reasonCode':reason,
             'contextPath':str(ctx.root)if ctx else None,'runtimeEffectsMayBePartial':True,'humanBudgetsGranted':0,'sourceActivations':0,
             'originalRequestRepeated':False,'credentialValuesPrinted':False,'addressesPrinted':False,'automaticReplayAllowed':False,
             'automaticRollbackPerformed':False,'budgetReset':False,'releaseAcceptance':False}
     print(encoded(result).decode(),flush=True);return 0 if result.get('complete')is True else 2
 if __name__=='__main__':raise SystemExit(main())
+
