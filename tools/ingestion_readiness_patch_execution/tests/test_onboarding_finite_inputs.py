@@ -6,6 +6,7 @@ It does not qualify target history, DB admission, full bootstrap or deployment.
 import copy
 import gzip
 import hashlib
+import http.client
 import importlib.util
 import io
 import json
@@ -133,6 +134,21 @@ class NativeTests(unittest.TestCase):
     def docker(self,*args):
         return subprocess.check_output(['docker',*args],stderr=subprocess.DEVNULL)
 
+    def inspect(self,cid):
+        # Retained fixture bindings must use the production API1.44 shape,
+        # rather than the runner CLI's newer default API version.
+        selected=str(Path('/var/run/docker.sock').resolve())
+        class Local(http.client.HTTPConnection):
+            def connect(connection):
+                connection.sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+                connection.sock.settimeout(4);connection.sock.connect(selected)
+        connection=Local('fixture-engine',timeout=4)
+        try:
+            connection.request('GET','/v1.44/containers/'+cid+'/json')
+            response=connection.getresponse();self.assertEqual(response.status,200)
+            return json.loads(response.read())
+        finally:connection.close()
+
     def cleanup_fixture(self):
         for cid in self.ids:subprocess.run(['docker','rm','-f',cid],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,check=False)
         if self.net:subprocess.run(['docker','network','rm',self.net],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,check=False)
@@ -152,7 +168,7 @@ class NativeTests(unittest.TestCase):
         rows={}
         for ordinal,name in enumerate(('gateway','onboarding','mcp','udp','ingestion','postgres','registry'),10):
             cid=self.docker('run','-d','--name',self.net+'-'+name,'--network',self.net,'--ip','172.29.246.'+str(ordinal),iid).decode().strip()
-            self.ids.append(cid);rows[name]=json.loads(self.docker('inspect',cid))[0]
+            self.ids.append(cid);rows[name]=self.inspect(cid)
         archive=gzip.compress(self.docker('save',iid),mtime=0)
         package=self.root/'package';package.mkdir(mode=0o700)
         private(package/'image.tar.gz',archive)
@@ -251,7 +267,7 @@ class NativeTests(unittest.TestCase):
                 self.assertEqual(m.PROGRESS['engineGetAttempts'],attempted)
         self.assertEqual(unchanged_bytes,{p:p.read_bytes()for p in unchanged_bytes})
         for name,row in rows.items():
-            after=json.loads(self.docker('inspect',row['Id']))[0]
+            after=self.inspect(row['Id'])
             self.assertEqual(runtime_bindings.observed(after,runtime_bindings.NATIVE),runtime_bindings.observed(row,runtime_bindings.NATIVE))
             self.assertEqual(after['RestartCount'],row['RestartCount'])
 
