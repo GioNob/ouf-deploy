@@ -271,3 +271,28 @@ Nine focused parser/Unix API tests and an actual targeted OUTPUT DNAT fixture
 are being qualified in CI. The fixture tests public-only versus physical-path
 IP allow rules with real cgroup/root TLS discovery and zero token POSTs; it is
 not evidence of the target's NAT rule. The eight installed modules are intact.
+
+## Native NAT reproduction passed; target policy capture ready
+
+At `1db30cd0a04b3d249612016eca6485bbe1e5751e`, CI
+[40043973004/job120721356082](https://github.com/GioNob/ouf-deploy/actions/runs/40043973004/job/120721356082)
+passed60 component and12 native tests (170.139 seconds), direct logs inspected.
+A targeted disposable OUTPUT DNAT rule maps a synthetic public loopback peer
+to the TLS fixture's physical endpoint. Host TLS succeeds, public-only cgroup
+policy blocks TCP, and public+physical policy reaches the public discovery200
+with zero token POSTs. The exact fixture rule is removed; production is untouched.
+This reproduces a plausible interaction of the newly installed IP protection
+with NAT; it does not prove the target's exact rule or authorize an exception.
+Actual root-slice query, ip route/address and iptables-save readers were exercised,
+as were the bounded Unix GET primitive and gateway-generation refusal fixtures.
+
+One target read-only capture is ready at that immutable commit:
+`scripts/capture-registry-network-policy-20261024.py`, SHA256
+`339637e5941e475b24567ce6dc5c8ad72eef178e2da1c6f33231eef5c6db0020`.
+Published bytes match. It uses max2 exact gateway Engine GETs,12 native read-only
+commands/45seconds, no public HTTP/TLS/credential/grant/worker/config/ledger
+changes, and only private evidence writes. A fixed new capture directory prevents
+replay. It captures current unit/ancestor policy and gateway network/publication
+bindings for a narrow reviewed correction, including whether the physical
+address is explicitly configured. Static rules remain projection only. Await
+target privateInputsPath/hash and public booleans before applying any change.
