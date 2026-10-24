@@ -465,6 +465,10 @@ def apply_projection(review,gate,root,helper_module,current_guard,attestor):
     new_file(root,'manager-effect-claim.json',{'reviewHash':digest(review),'maximumCommands':1,'attemptNotCompletion':True})
     gate.check();source_check(review);current_guard('BEFORE_EFFECT')
     require(COUNTS['managerMutationAttempts']==0,'SINGLE_NETWORK_PROJECTION_EFFECT_REQUIRED')
+    gate.check()
+    require(helper_module.unit_properties(binding,review['unitName'])==before,
+        'CONCURRENT_EFFECTIVE_NETWORK_POLICY_CHANGE')
+    require(time.time()-fresh['observedAt']<=60,'FRESH_PROVIDER_PROOF_EXPIRED_BEFORE_EFFECT')
     COUNTS['managerMutationAttempts']+=1
     result=subprocess.run([program['path'],'set-property',review['unitName'],'IPAddressAllow='+' '.join(review['projectedAllowlist'])],
         stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=15,

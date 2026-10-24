@@ -113,6 +113,13 @@ class Projection(unittest.TestCase):
         review=self.repair.compile_review(c,old,inputs,candidate,owner,proof,before,self.capture,source,baseline)
         repair_root=self.repair.exclusive_root(Path(c['destinations']['installationRoot']),'fixture-network-projection')
         self.repair.new_file(repair_root,'review.json',review);gate,attestor=self.authority(review,repair_root)
+        approval=gate.verifier.signature_directory/(self.repair.sha(gate.raw)+'.FINAL_DEPLOYMENT_APPROVAL.json')
+        hidden=approval.with_suffix('.held');approval.rename(hidden)
+        try:
+            with self.assertRaises(Exception):
+                self.repair.SignedProjection(review,gate.raw,gate.human_path,gate.human_hash,gate.verifier)
+            self.assertEqual(self.repair.COUNTS['managerMutationAttempts'],0)
+        finally:hidden.rename(approval)
         # Legacy installation authority cannot authorize this host projection.
         with self.assertRaises(self.repair.Denied):self.repair.apply_projection(review,f['authority'],repair_root,self.capture,lambda *_:None,attestor)
         bad=copy.deepcopy(review);bad['projectedAllowlist'].append('192.0.2.50/32')
