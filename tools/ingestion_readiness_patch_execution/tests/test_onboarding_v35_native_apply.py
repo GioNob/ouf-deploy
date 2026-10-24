@@ -30,6 +30,7 @@ from tools.semantic_provider_deployment_authentication import DetachedAuthentica
 import image_custody
 CONFIG=file('tools/source_revision_update/configuration.py','v35-retained-configuration.py').read_bytes()
 REPLACEMENT=file('tools/source_revision_update/plan.py','v35-retained-replacement.py').read_bytes()
+IMPORT_RAW=file('tools/ingestion_readiness_patch_execution/image_import.py','v35-retained-image-import.py').read_bytes()
 def private(path,value,mode=0o400):
     raw=value if type(value)is bytes else core.encoded(value);path.write_bytes(raw);path.chmod(mode);return core.sha(raw)
 def fixture_trust(root):
@@ -218,7 +219,7 @@ class Native(unittest.TestCase):
         self.retained=self.sql("SELECT jsonb_build_object('review',to_jsonb(m),'revision',to_jsonb(r)) FROM ouf_onboarding.managed_onboarding_review m CROSS JOIN ouf_onboarding.source_property_revision r")
     def context(self):
         ctx=entry.Context.__new__(entry.Context);ctx.n=types.SimpleNamespace(definitions=n.definitions,OWNER_OVERLAY=str(self.overlay));ctx.p,ctx.q,ctx.d,ctx.m,ctx.r=p,q,d,m,r
-        ctx.core,ctx.ports_module=core,ports;ctx.configuration_raw=CONFIG;ctx.replacement_raw=REPLACEMENT;ctx.preflight_counts={k:0 for k in core.LIMITS};ctx.before=None;ctx.files=m.Facts()
+        ctx.core,ctx.ports_module=core,ports;ctx.importer=entry.image_import_definitions(n,IMPORT_RAW);ctx.configuration_raw=CONFIG;ctx.replacement_raw=REPLACEMENT;ctx.preflight_counts={k:0 for k in core.LIMITS};ctx.before=None;ctx.files=m.Facts()
         package=Path(os.environ['OUF_V35_TEST_PACKAGE'])
         with patch.object(p,'PACKAGE',str(package)):ctx.contract,ctx.manifest,ctx.image,ctx.jar=p.packaged(m,ctx.files)
         contract,manifest=ctx.contract,ctx.manifest
@@ -257,6 +258,7 @@ class Native(unittest.TestCase):
         ctx.source_bindings={}
         for source in(core,ports,quarantine,entry):
             target=self.root/(Path(source.__file__).name);raw=Path(source.__file__).read_bytes();ctx.source_bindings[str(target)]=private(target,raw)
+        ctx.source_bindings[str(ctx.root/'image_import.py')]=private(ctx.root/'image_import.py',IMPORT_RAW)
         ctx.authority_inputs,self.signing_profile,self.public_policy=fixture_trust(self.root)
         ctx.native_archive=None;ctx.native_archive_pin=None
         return ctx

@@ -4,13 +4,14 @@
 The frozen proposal is immutable. Any necessary config/native-manifest mapping
 is independently bound in a NEW final review before controlling-terminal consent.
 """
-import copy,gzip,hashlib,importlib.util,json,os,re,shutil,signal,stat,sys,time,types
+import ast,copy,gzip,hashlib,importlib.util,json,os,re,shutil,signal,stat,sys,time,types
 from pathlib import Path
 HELPER='/etc/ouf/deploy-snapshots/onboarding-v35-plan-c12c1435b8717924/plan.py'
 HELPER_HASH='c12c1435b8717924a2051a0d51b32775fed35688ba15cf744c2a1da68b1bee23'
 FROZEN='/etc/ouf/deploy-snapshots/onboarding-budget-v35-54d86bbcd2ea47fd/native-plan-v1/execution-plan.json'
 FROZEN_HASH='b17c2c99cc791cced8ee00ed190e30b75c518ae84e2dd4a9ae7eef521390c8bd'
 PARENT='/etc/ouf/deploy-snapshots'
+IMAGE_IMPORT_HASH='2e7255c7222cfe69a2fd115fcb9b05cf4f31bd6cc24af6532718621bce9f112d'
 class Stop(RuntimeError):pass
 def require(ok,code):
     if not ok:raise Stop(code)
@@ -32,6 +33,14 @@ def protected(path,expected=None):
 def module(name,path,expected=None):
     raw=protected(path,expected);m=types.ModuleType(name);m.__file__=str(path);m.__qualified_source_sha256__=hashlib.sha256(raw).hexdigest()
     sys.modules[name]=m;exec(compile(raw,str(path),'exec'),m.__dict__);return m
+def image_import_definitions(n,raw):
+    require(hashlib.sha256(raw).hexdigest()==IMAGE_IMPORT_HASH,'ORIGINAL_QUALIFIED_V35_IMAGE_IMPORT_SOURCE_REQUIRED')
+    values=[ast.literal_eval(node.value)for node in ast.parse(raw).body if isinstance(node,ast.Assign)
+        and len(node.targets)==1 and isinstance(node.targets[0],ast.Name)and node.targets[0].id=='FIELDS']
+    require(len(values)==1,'ORIGINAL_IMAGE_IMPORT_FIELDS_REQUIRED')
+    namespace={'require':require,'FIELDS':values[0],'os':os,'time':time,'signal':signal,
+        'subprocess':__import__('subprocess'),'selectors':__import__('selectors')}
+    return n.definitions(raw,('matched','load'),namespace)
 def create_context(parent,name):
     p=Path(parent);require(p.is_absolute()and p.resolve()==p and re.fullmatch('onboarding-v35-apply-[a-f0-9]{64}',name),'CANONICAL_V35_EXECUTION_CONTEXT_REQUIRED')
     for d in(p,*p.parents):
@@ -53,6 +62,7 @@ class Context:
     def __init__(self,n,p,q,l,c,d,m,r,configuration,replacement,core,ports,code_root):
         self.n,self.p,self.q,self.l,self.c,self.d,self.m,self.r=n,p,q,l,c,d,m,r
         self.configuration_raw,self.replacement_raw=configuration,replacement;self.core,self.ports_module=core,ports
+        self.importer=image_import_definitions(n,protected(code_root/'image_import.py',IMAGE_IMPORT_HASH))
         self.files=m.Facts();self.frozen=self.files.json(FROZEN,FROZEN_HASH)
         completion=self.files.json(Path(FROZEN).parent/'complete.json')
         require(completion['privatePlanHash']==FROZEN_HASH and completion['complete']is True
@@ -70,6 +80,7 @@ class Context:
         require(oldpath in mapping,'FROZEN_V35_OLD_OWNER_LINEAGE_BINDING_REQUIRED');self.oldplan=self.files.json(oldpath,mapping[oldpath])
         self.source_bindings={str(code_root/'protocol.py'):core.__qualified_source_sha256__,str(code_root/'ports.py'):ports.__qualified_source_sha256__,str(code_root/'quarantine.py'):ports.quarantine.__qualified_source_sha256__,
             str(Path(__file__).resolve()):hashlib.sha256(protected(Path(__file__).resolve())).hexdigest(),HELPER:HELPER_HASH}
+        self.source_bindings[str(code_root/'image_import.py')]=IMAGE_IMPORT_HASH
         self.source_bindings[str(Path(HELPER).parent/'configuration.py')]=n.CONFIG_HASH
         self.source_bindings[str(Path(HELPER).parent/'replacement.py')]=n.REPLACEMENT_HASH
         self.preflight_counts={k:0 for k in core.LIMITS};self.before=None;self.native_archive=None;self.native_archive_pin=None

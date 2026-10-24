@@ -28,10 +28,9 @@ class NativePorts:
         status,value=self.request('GET','/v1.44/containers/'+cid+'/json')
         self.require(status==200 and value['Id']==cid,'BOUND_V35_CONTAINER_READ_REQUIRED');return value
     def image(self):
-        from tools.ingestion_readiness_patch_execution.image_import import matched
         status,value=self.request('GET','/v1.44/images/'+quote(self.plan['candidate']['nativeImageId'],safe='')+'/json')
         if status==404:return None
-        self.require(status==200,'EXACT_V35_IMAGE_READ_REQUIRED');matched(self.plan['candidate'],value);return value
+        self.require(status==200,'EXACT_V35_IMAGE_READ_REQUIRED');self.ctx.importer.matched(self.plan['candidate'],value);return value
     def network(self):
         selected=self.row['network']['id']
         self.require(re.fullmatch('[a-f0-9]{64}',selected),'ONE_EXACT_V35_NETWORK_ID_REQUIRED')
@@ -197,11 +196,10 @@ class NativePorts:
         if stage=='VERIFY_CURRENT_ADMISSION_AND_SIGNED_REVIEW':
             self.snapshot();return {'freshDatabaseAdmissionProven':True,'signedReviewHash':self.core.digest(self.review)}
         if stage=='IMPORT_EXACT_IMAGE':
-            from tools.ingestion_readiness_patch_execution.image_import import load
             if self.image()is not None:return {'existingExactImageAdopted':True,'loadAttempts':0}
             self.reserve('imageLoadAttempts')
             self.ctx.check_native_archive()
-            with self.ctx.native_archive.open('rb')as source:load(self.docker_prefix()+['load'],source)
+            with self.ctx.native_archive.open('rb')as source:self.ctx.importer.load(self.docker_prefix()+['load'],source)
             self.require(self.image()is not None,'EXACT_V35_IMAGE_LOAD_UNPROVEN');return {'nativeImageLoaded':True,'loadAttempts':1}
         if stage=='DISABLE_OLD_RESTART':
             self.snapshot()
