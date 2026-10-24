@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-24T10:05:23Z",
+  "lastUpdatedAt": "2026-10-24T11:49:20Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1978,6 +1978,23 @@
       "targetReconciliationExecuted": false,
       "noEffortAllocationInferred": true,
       "targetInvocationTimestampProvided": false
+    },
+    {
+      "id": "CSV-EVENT-CURRENT-LINEAGE-DRIFT-V34-COLLISION-CORRECTED-V35-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T11:49:20Z",
+      "classification": "USER_REPORTED_METADATA_LINEAGE_DRIFT_AND_CORRECTED_SOURCE_BASELINE_CI",
+      "targetEvidenceRef": "evidence/onboarding-engine-metadata-target-20261024.json",
+      "baselineBlockEvidenceRef": "evidence/onboarding-finite-session-baseline-incompatible-20261024.json",
+      "v35EvidenceRef": "evidence/onboarding-finite-budget-v35-qualified-20261024.json",
+      "lineageReaderQualificationRef": "evidence/current-onboarding-source-revision-lineage-qualified-20261024.json",
+      "oldCandidateImportBlocked": true,
+      "oldArtifactPreserved": true,
+      "correctedCandidateTargetStaged": false,
+      "currentLaterLineageTargetMatched": false,
+      "databaseMigrations": 0,
+      "humanBudgetsGranted": 0,
+      "sourceActivations": 0,
+      "noEffortAllocationInferred": true
     }
   ],
   "activeIntervals": [
@@ -2781,7 +2798,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_ONBOARDING_ENGINE_METADATA_DELIVERY_20261024.md",
+    "currentHandoff": "docs/handoffs/OUF_ONBOARDING_V35_CURRENT_LINEAGE_DELIVERY_20261024.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 304,
@@ -2926,17 +2943,45 @@
         40084404503,
         40084408317
       ],
-      "targetExecuted": false,
+      "targetExecuted": true,
       "maximumEngineGets": 0,
       "maximumSqlAttempts": 0,
       "newBindingAcceptedForRuntime": false,
-      "newSqlAttemptAuthorized": false
+      "newSqlAttemptAuthorized": false,
+      "complete": true,
+      "privateReconciliationHash": "c831dc09f4f54c99f41d4ea563c7b0629c13648f0e8c82a5f00dba5c74f299d7",
+      "classification": "HISTORICAL_SOCKET_BINDING_DIFFERS_FROM_CURRENT",
+      "oldOnboardingLineageMatches": false,
+      "scopeConsumed": true
     },
     "registryOriginal200ResolverPrecision": {
       "actualCallerFilesCopiedUnchanged": true,
       "differentDnsAnswersInjected": false,
       "ordinaryApplicationProcessCallProven": false,
       "newGetExecuted": false
+    },
+    "onboardingFiniteBudgetCandidate": {
+      "oldSource": "431c601de9b7faa9769b0a210300cd466bf82cfc",
+      "oldArtifactBlocked": true,
+      "reason": "V34_NUMBERING_AND_DEPLOYED_CONTRACTS_CONFLICT",
+      "correctedSource": "029c9670550a0a854a6b007011b2895acd72c5e0",
+      "base": "be388e1462778438a208c2e00e166370fee32189",
+      "migration": "V35__managed_readiness_budget_sessions.sql",
+      "ciQualified": true,
+      "targetStaged": false,
+      "targetApplied": false,
+      "targetBudgetGranted": false,
+      "qualificationEvidenceRef": "evidence/onboarding-finite-budget-v35-qualified-20261024.json"
+    },
+    "currentLaterOnboardingLineageRead": {
+      "qualifiedSource": "5a389f3bcc8d5b368c3ecd7f4683bad2a5164114",
+      "qualificationRuns": [
+        40091123700,
+        40091127068
+      ],
+      "targetExecuted": false,
+      "engineRequests": 0,
+      "sqlRequests": 0
     }
   },
   "unverifiedIntervals": [
@@ -4016,9 +4061,9 @@
     "gate": "G3",
     "humanInterventionRequired": true,
     "reasons": [
-      "ONBOARDING_DB_READER_HISTORICAL_CURRENT_ENGINE_METADATA_EQUALITY_STOP_ZERO_DISPATCH",
-      "FIRST_ONBOARDING_SQL_SNAPSHOT_AND_LIFECYCLE_ADMISSION_PENDING",
-      "G3_F5_F6_AND_ORDINARY_APPLICATION_E2E_PENDING"
+      "CURRENT_LATER_SOURCE_REVISION_DEPLOYMENT_LINEAGE_NOT_YET_MATCHED",
+      "CORRECTED_V35_IMAGE_NOT_STAGED_AND_CURRENT_DB_LIFECYCLE_ADMISSION_PENDING",
+      "G3_F5_F6_ORDINARY_APPLICATION_E2E_PENDING"
     ],
     "historicalAttempts": 304,
     "maximumCumulativeAttempts": 304,
@@ -4026,7 +4071,7 @@
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "ONE_PINNED_METADATA_RECONCILIATION_ZERO_ENGINE_CONNECTIONS_ZERO_SQL_NO_LOGIN_OR_RUNTIME_APPLY",
+    "currentRequiredHumanAction": "ONE_PINNED_LATER_OWNER_LINEAGE_METADATA_READ_ZERO_ENGINE_SQL_NO_LOGIN_OR_APPLY",
     "maximumNewOAuthRequests": 0,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
     "profileApplied": true,
