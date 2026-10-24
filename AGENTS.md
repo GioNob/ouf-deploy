@@ -1,3 +1,15 @@
+# CURRENT — lettore V35 qualificato e consegna pronta; APPLY precedente consumato
+
+Blocco VPS invariato: CREATE ha restituito/salvato createdId, poi EXACT_V35_REPLACEMENT_CONFIG_REQUIRED; START non raggiunto da quell'ingresso. Review828d9d6c5f04f8535801e45c2d284a71256232b778b3d6dc14afe6d468e5a94b / authorityaf9a8fbd77a7d5d7caabb436360650eb9ab4ea126684ea15cc70c1fd42f37d63. Log /home/oufadmin/ouf-v35-native-apply.1XON8spN/operator.log. Stato corrente/V35/readiness NON provati; precedente main__name__in corretto nel repository, non in-place sul VPS.
+
+NEXT docs/handoffs/OUF_ONBOARDING_V35_RETAINED_RECONCILIATION_20261024.md e releases/read-onboarding-v35-created-config-20261024.sh. UN lettore pinned832b3fc230f5a7e4b43d2dd948b090155cead1d4, SHA bf4b2bc711802b25c386f24da4e9733af79c895a9bf2b4e102749f0b69b90a32, nuova root0700/file0400, doppio checksum/log,60secondi max. Confronta SOLO piano/review/authority/journal/create+inspect trattenuti, due passaggi stabili; nomi campi/tipi/classificazioni/contatori pubblici, valori sensibili privati. ZERO nuovi Engine/SQL/exec/credenziali/chiavi/GET originale, nessuna modifica vecchio journal o runtime authority. Nuova claim propria impedisce rilancio. Atteso RETAINED_CREATED_CONFIG_DIFFERENCE_OBSERVED/Exit0; currentRuntimeStateObserved=false. Non anticipare il campo realmente divergente o attribuire il caso MAC della fixture al VPS.
+
+CI push40132224481/job120986186658 e PR40132228292/job120986199872:8PASS ciascuno/0skip/logdiretti letti. Main eccezionale reale con error injection; lettore subprocessisolato/filesystemroot reali, dati privati storici sintetici e soli bindingpath/hash sostituiti. Nessuna prova target/recupero mutante/DB/E2E. Dopo vero confronto: correggere solo causa osservata e qualificare recupero della STESSAclaim, senza ripetere import/stop/create e senza reset, con nuova revisione firmata eAPPROVO prima di effetti. Conservare codice a0ce/backup/evidenze/contatori.
+
+502/403: proiezione rete applicata e GET originale200 provate sul VPS, applicazione/E2E/F5/F6 ancora aperti.8/8tecnico,4/6funzionale,G3OPEN. Worker Registry indipendente/intatto; Supervisor dopo E2E. Header sottostanti storici, nessuna vecchia consegna mutante da rilanciare.
+
+---
+
 # CURRENT — applicazione V35 eseguita sul VPS e interrotta dopo CREATE; NON RILANCIARE
 
 Output operatore: review828d9d6c5f04f8535801e45c2d284a71256232b778b3d6dc14afe6d468e5a94b / authorityaf9a8fbd77a7d5d7caabb436360650eb9ab4ea126684ea15cc70c1fd42f37d63. Exit1, log /home/oufadmin/ouf-v35-native-apply.1XON8spN/operator.log. CREATE ha restituito un Id, salvato nel journal; candidate_guard ha poi negato EXACT_V35_REPLACEMENT_CONFIG_REQUIRED. START non raggiunto da questo ingresso. I sette stage precedenti risultano necessariamente attraversati secondo il codice ordinato, ma stato corrente e journal privato vanno ancora riconciliati: NON dichiarare vecchio container attualmente running, V35 applicata o readiness. Il gestore main aveva inoltre il refuso __name__in, che ha mascherato STOP_RECONCILE con AttributeError. CI precedente non copriva main eccezionale né provava la configurazione target.
