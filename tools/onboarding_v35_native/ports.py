@@ -191,7 +191,7 @@ class NativePorts:
         self.require(row['nextStage']<len(self.core.STAGES)and self.core.STAGES[row['nextStage']]==stage
             and len(row['effects'])==row['nextStage']+1 and row['effects'][-1]['state']=='CLAIMED'
             and row['effects'][-1]['stage']==stage,'EXACT_CLAIMED_ORDERED_V35_STAGE_REQUIRED')
-        self.guard(stage)
+        self.guard(stage);row=self.record()
         if stage=='VERIFY_CURRENT_ADMISSION_AND_SIGNED_REVIEW':
             self.snapshot();return {'freshDatabaseAdmissionProven':True,'signedReviewHash':self.core.digest(self.review)}
         if stage=='IMPORT_EXACT_IMAGE':

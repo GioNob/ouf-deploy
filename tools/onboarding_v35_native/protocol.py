@@ -134,8 +134,14 @@ class Execution:
             'expiresAt':human['expiresAt'],'expiresMonotonic':time.monotonic()+max(0,human['expiresAt']-time.time()),
             'readinessAttempts':0,'readinessNextWall':0,'readinessNextMonotonic':0,'readinessInFlight':False,
             'state':'OPEN','automaticReplayAllowed':False,'budgetReset':False})
+    def read_journal(self):
+        for attempt in range(8):
+            try:return self.journal.read()
+            except BlockingIOError:
+                if attempt==7:raise
+                time.sleep(.02)
     def record(self):
-        self.gate.check();row=self.journal.read();n=row['nextStage']
+        self.gate.check();row=self.read_journal();n=row['nextStage']
         require(row['schema']=='ouf.onboarding-v35-native-journal.v1'and row['reviewHash']==digest(self.review)
             and row.get('quarantine')is None and row['authorityHash']==sha(self.gate.raw)and row['budgetReset']is False and row['automaticReplayAllowed']is False
             and type(n)is int and 0<=n<=len(STAGES)and len(row['effects'])in(n,n+1)
@@ -146,7 +152,12 @@ class Execution:
         require(set(row['counts'])==set(LIMITS)and all(type(v)is int and 0<=v<=LIMITS[k]for k,v in row['counts'].items()),'V35_DURABLE_BUDGET_LIMIT_REQUIRED')
         return row
     def save(self,row,**changes):
-        following={**row,**changes,'version':row['version']+1};self.journal.compare_and_save(row,following);return following
+        following={**row,**changes,'version':row['version']+1}
+        for attempt in range(8):
+            try:self.journal.compare_and_save(row,following);return following
+            except BlockingIOError:
+                if attempt==7:raise
+                time.sleep(.02)
     def reserve(self,kind):
         row=self.record();require(row['counts'][kind]<LIMITS[kind],'V35_OPERATION_BUDGET_EXHAUSTED')
         counts=copy.deepcopy(row['counts']);counts[kind]+=1;self.save(row,counts=counts)
@@ -159,6 +170,7 @@ class Execution:
                 stage=STAGES[i];self.ports.guard(stage)
                 minimum={'IMPORT_EXACT_IMAGE':210,'DISABLE_OLD_RESTART':600,'STOP_OLD_ONBOARDING':500,'VERIFY_QUIESCED_BACKUP':220,'START_REVIEWED_V35_REPLACEMENT':240}.get(stage,30)
                 require(self.gate.remaining()>minimum,'INSUFFICIENT_V35_AUTHORITY_WINDOW_FOR_STAGE')
+                row=self.record();require(row['nextStage']==i and len(row['effects'])==i,'V35_HISTORY_CHANGED_BEFORE_CLAIM')
                 effects=copy.deepcopy(row['effects']);effects.append({'stage':stage,'state':'CLAIMED','intentHash':digest({'reviewHash':digest(self.review),'stage':stage})})
                 self.save(row,effects=effects);proof=self.ports.execute(stage);self.gate.check()
                 require(type(proof)is dict and proof,'EXPLICIT_V35_EFFECT_PROOF_REQUIRED')

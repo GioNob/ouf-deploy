@@ -115,6 +115,30 @@ class Guards(unittest.TestCase):
             from tools.semantic_provider_deployment_signing import ExistingEd25519Signer
             with patch.object(ExistingEd25519Signer,'sign',side_effect=AssertionError('NO_SIGN_BEFORE_WINDOW')):
                 with self.assertRaisesRegex(core.Stop,'FULL_V35_KEY_WINDOW'):core.issue(review,made,profile,{'reviewHash':core.digest(review),'decision':core.DECISION,'approvedAt':int(time.time())},m.new_file,r.json_at)
+    def test_actual_signed_journal_guard_reservations_and_claimed_effect_never_replayed(self):
+        for fail in(False,True):
+            with tempfile.TemporaryDirectory(dir=ROOT)as directory:
+                root=Path(directory);root.chmod(0o700);inputs,profile,_=fixture_trust(root);review=minimal_review(root,inputs)
+                gate=core.issue(review,root,profile,{'reviewHash':core.digest(review),'decision':core.DECISION,'approvedAt':int(time.time())},m.new_file,r.json_at)
+                class ComponentPorts:
+                    def __init__(self):self.root=root;self.ctx=types.SimpleNamespace(preflight_counts={k:0 for k in core.LIMITS});self.execution=None;self.dispatched=0
+                    def guard(self,stage):self.execution.reserve('engineGets')
+                    def execute(self,stage):
+                        self.execution.reserve('engineGets');self.dispatched+=1
+                        if fail:raise core.Stop('FIXTURE_AMBIGUOUS_EFFECT_NO_REPLAY')
+                        return {'componentProof':True}
+                    def final_result(self):return self.execution.record()
+                adapter=ComponentPorts();execution=core.Execution(gate,Journal(root),adapter);execution.initialize()
+                if fail:
+                    with self.assertRaisesRegex(core.Stop,'AMBIGUOUS'):execution.run()
+                    before=execution.journal.read();self.assertEqual(before['effects'][0]['state'],'CLAIMED')
+                    with self.assertRaisesRegex(core.Stop,'CLAIMED_EFFECT'):execution.run()
+                    self.assertEqual(execution.journal.read(),before);self.assertEqual(adapter.dispatched,1)
+                else:
+                    row=execution.run();self.assertEqual(row['state'],'COMPLETE');self.assertEqual(row['counts']['engineGets'],26)
+                    self.assertEqual(row['nextStage'],13)
+                gate.clock=lambda:time.time()+931
+                with self.assertRaises(core.Stop):gate.check()
     def test_exact_limits_native_defaults_and_no_unqualified_restore_or_source_activation(self):
         with tempfile.TemporaryDirectory(dir=ROOT)as directory:
             root=Path(directory);root.chmod(0o700);inputs,_,_=fixture_trust(root);review=minimal_review(root,inputs)
@@ -181,9 +205,9 @@ class Native(unittest.TestCase):
     def context(self):
         ctx=entry.Context.__new__(entry.Context);ctx.n=types.SimpleNamespace(definitions=n.definitions,OWNER_OVERLAY=str(self.overlay));ctx.p,ctx.q,ctx.d,ctx.m,ctx.r=p,q,d,m,r
         ctx.core,ctx.ports_module=core,ports;ctx.configuration_raw=CONFIG;ctx.replacement_raw=REPLACEMENT;ctx.preflight_counts={k:0 for k in core.LIMITS};ctx.before=None;ctx.files=m.Facts()
-        package=Path(os.environ['OUF_V35_TEST_PACKAGE']);contract=json.loads((package/'source-contract.json').read_bytes());manifest=json.loads((package/'manifest.json').read_bytes());ctx.contract,ctx.manifest=contract,manifest
-        ctx.image={'path':str(package/'image.tar.gz'),'sha256':contract['archiveSha256'],'bytes':contract['archiveBytes'],'metadata':list(m.identity((package/'image.tar.gz').stat()))}
-        ctx.jar={'path':str(package/'application.jar'),'sha256':contract['jarSha256'],'metadata':list(m.identity((package/'application.jar').stat()))}
+        package=Path(os.environ['OUF_V35_TEST_PACKAGE'])
+        with patch.object(p,'PACKAGE',str(package)):ctx.contract,ctx.manifest,ctx.image,ctx.jar=p.packaged(m,ctx.files)
+        contract,manifest=ctx.contract,ctx.manifest
         actual=self.rows['onboarding'];oldsave=self.root/'old-image.tar';subprocess.run(['docker','save','-o',str(oldsave),os.environ['OUF_V35_OLD_IMAGE']],check=True)
         with oldsave.open('rb')as stream:tarsha,_=image_custody.hashed(stream,image_custody.LIMIT);stream.seek(0);oldaudit=image_custody.archive(stream,tarsha,json.loads(self.docker('image','inspect',os.environ['OUF_V35_OLD_IMAGE']))[0]['Id'],q.SOURCE)
         native=image_custody.native_identity(oldaudit)
