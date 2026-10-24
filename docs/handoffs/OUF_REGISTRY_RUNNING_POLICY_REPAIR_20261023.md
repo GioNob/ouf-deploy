@@ -296,3 +296,35 @@ replay. It captures current unit/ancestor policy and gateway network/publication
 bindings for a narrow reviewed correction, including whether the physical
 address is explicitly configured. Static rules remain projection only. Await
 target privateInputsPath/hash and public booleans before applying any change.
+
+## Target capture identifies a distinct NAT provider; signed live projection candidate
+
+The target capture3bf787073c876f743ce7ec56963c8aea521545de2a8ed161df8e508f6d359550
+has one untranslated-rule candidate which is not the reviewed APISIX endpoint
+or its published port. It is not allowed by the current unit IP policy. The
+logical peer is host-local and permitted at the unit and two ancestors; no
+drop-ins were present. This could be the IdP's own frontend; do not label it
+APISIX, substitute registry identity or permit it without a live path proof.
+The normal owner has reached cumulative398/new77/no-submission77/publications0.
+The capture claim is consumed; no existing deployment/probe may be replayed.
+
+The new candidate repair binds the exact original TLS origin and discovery to
+a targeted read-only kernel conntrack orig/reply tuple while that socket is
+open. It identifies one running owner of the translated IP from a bounded
+container inventory, then proves its current endpoint/publication and runtime
+pin. It never replaces issuer, URL, peer, CA, client or IAM permission. A fresh
+private review, controlling-terminal approval and real existing Ed25519 roles
+authorize one persistent host IPAddressAllow projection: all existing peers plus
+one proved physical host address, same deny policy. A separate fresh scope
+covers host networking only, not legacy recovery or a new grant budget.
+
+The worker and base unit remain running and unchanged. Exact PID/configuration,
+provider generation and nondecreasing counter lineage guard the one effect.
+An attestor signs the drop-in receipt. A new child probe verifies public
+discovery inside the existing cgroup/root, then the operator observes the normal
+worker's first publication (up to330seconds) without requesting a token itself.
+Dynamic physical addressing is disclosed as requiring reconciliation if the
+provider endpoint changes; this does not claim all-platform reboot resilience.
+Pure wire/input tests pass; real conntrack, signatures and live-property/native
+publication tests must pass before delivery. Production source closure remains
+unchanged for the eight operational owner modules.
