@@ -111,5 +111,14 @@
     "functionalProven": 4,
     "g3Open": true,
     "f5f6Open": true
+  },
+  "targetDeploymentCompatibility": {
+    "status": "REJECTED_BASELINE_SCHEMA_CONFLICT",
+    "targetImportAllowed": false,
+    "targetApplyAllowed": false,
+    "blockingEvidence": "evidence/onboarding-finite-session-baseline-incompatible-20261024.json",
+    "oldArtifactMustBePreserved": true,
+    "oldCiProofIsHistoricalNotTargetCompatibility": true,
+    "replacementMigration": "V35__managed_readiness_budget_sessions.sql"
   }
 }
