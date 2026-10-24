@@ -1,3 +1,5 @@
+> AGGIORNAMENTO DI CONSEGNA — 24 ottobre 2026: il [comando pinned unico](OUF_NETWORK_PROJECTION_DELIVERY_20261024.md) è stato consegnato, con gh esistente, checksum prima/dopo copia root0400 in root esclusiva0700, log ed exit status conservati. Sorgente invariato a7de09a; checksum e log CI riletti. **Nessun output o effetto VPS osservato: applicazione ancora da provare.** Prossimo passo: l'operatore esegue una sola volta e approva la nuova revisione esatta sul controlling TTY; poi riconciliare il JSON reale senza rilanciare in STOP. Le frasi “non consegnato” sotto descrivono lo stato precedente a questa consegna. Restano8/8 tecnico,4/6 funzionale,G3OPEN;200 applicativo/rinnovo continuativo/E2E non provati.
+
 # OUF — handoff completo per nuova chat, 24 ottobre 2026
 
 ## Punto di ripartenza e ordine del lavoro
