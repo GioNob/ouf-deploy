@@ -62,14 +62,18 @@ def observe():
     names=sorted(p.name for p in root.iterdir());require(len(names)<=1024,'BOUNDED_PRIVATE_DIRECTORY_REQUIRED')
     responses=[n for n in names if re.fullmatch('engine-response-[0-9]{3}\\.json',n)]
     require(0<len(responses)<=308,'BOUNDED_RETAINED_ENGINE_RESPONSES_REQUIRED')
-    candidates=[];creation=[]
+    candidates=[];creation=[];old_config=None;image_config=None
+    plan=review['nativePlan'];replacement=plan['replacement'];request=replacement['request']
     for name in responses:
         response=evidence.read(root/name);body=response.get('body')
+        if type(body)is dict and response['status']==200 and type(body.get('Config'))is dict:
+            if body.get('Id')==replacement['oldRuntimeBinding']['containerId']:old_config=body['Config']
+            if body.get('Id')==request['Image']:image_config=body['Config']
         if type(body)is dict and body.get('Id')==cid:
             if response['status']==201:creation.append(name)
             if response['status']==200 and type(body.get('Config'))is dict:candidates.append((name,body))
     require(len(creation)==1 and len(candidates)==1 and creation[0]<candidates[0][0],'EXACT_RETAINED_CREATE_AND_INSPECT_REQUIRED')
-    _,actual=candidates[0];plan=review['nativePlan'];replacement=plan['replacement'];request=replacement['request']
+    _,actual=candidates[0]
     require(actual['Name']=='/'+replacement['name']and actual['Image']==request['Image']and actual['State']['Running']is False and actual['State']['Pid']==0,'RETAINED_PRESTART_CANDIDATE_IDENTITY_REQUIRED')
     differences=[]
     for key,value in request.items():
@@ -77,7 +81,17 @@ def observe():
         expected=plan['runtimeLabelProjection']['expectedLabels']if key=='Labels'else value
         observed=actual['Config'].get(key)
         if observed!=expected:
-            differences.append({'field':key if key in SAFE_KEYS else 'UNRECOGNIZED_CONFIG_FIELD','expectedType':type(expected).__name__,'observedType':type(observed).__name__,'presentInObservedConfig':key in actual['Config']})
+            difference={'field':key if key in SAFE_KEYS else 'UNRECOGNIZED_CONFIG_FIELD','expectedType':type(expected).__name__,'observedType':type(observed).__name__,'presentInObservedConfig':key in actual['Config'],
+                'expectedNull':expected is None,'observedNull':observed is None,'expectedEmpty':expected in ('',[],{}),'observedEmpty':observed in ('',[],{}),
+                'oldConfigObserved':old_config is not None,'imageConfigObserved':image_config is not None}
+            if old_config is not None:
+                difference.update(expectedMatchesOldConfig=key in old_config and expected==old_config[key],observedMatchesOldConfig=key in old_config and observed==old_config[key])
+            if image_config is not None:difference['observedMatchesImageDefault']=key in image_config and observed==image_config[key]
+            if type(expected)is list and type(observed)is list and all(type(x)is str for x in expected+observed):difference['equalIgnoringSequenceOrder']=sorted(expected)==sorted(observed)
+            if key=='MacAddress':
+                mac=replacement['network']['mac']
+                difference.update(expectedMatchesReviewedEndpointMac=type(expected)is str and expected.lower()==mac.lower(),observedMatchesReviewedEndpointMac=type(observed)is str and observed.lower()==mac.lower())
+            differences.append(difference)
     require(differences,'RETAINED_CONFIG_STOP_NOT_REPRODUCED')
     # Re-read every evidence file. No Engine connection, SQL, credentials, keys,
     # owner overlay contents, authority verification at current time, or journal writes.
