@@ -262,7 +262,11 @@ def engine_get(binding,path):
         require(response.status==200 and len(raw)<=4194304,'BOUNDED_PROVIDER_INVENTORY_REQUIRED')
         current=os.stat(engine_path,follow_symlinks=False)
         require((info.st_dev,info.st_ino,info.st_uid,info.st_gid,info.st_mode)==(current.st_dev,current.st_ino,current.st_uid,current.st_gid,current.st_mode))
-        return json.loads(raw)
+        value=json.loads(raw)
+        if path!='/v1.44/containers/json?all=1':
+            require(type(value)is dict and value.get('Id')==path.split('/')[3],
+                'EXACT_SELECTED_NAT_PROVIDER_ID_REQUIRED')
+        return value
     finally:connection.close()
 
 

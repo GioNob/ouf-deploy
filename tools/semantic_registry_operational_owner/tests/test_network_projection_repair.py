@@ -1,8 +1,13 @@
 """Exact kernel framing and authority-neutral input checks for the host repair."""
 import copy
 import importlib.util
+import json
+import os
 import socket
 import struct
+import stat
+import tempfile
+import threading
 from pathlib import Path
 import unittest
 
@@ -56,6 +61,27 @@ class Inputs(unittest.TestCase):
     def test_unknown_authority_type_cannot_reach_a_manager_effect(self):
         with self.assertRaises(repair.Denied):repair.apply_projection({},object(),None,None,None,None)
         self.assertEqual(repair.COUNTS['managerMutationAttempts'],0)
+
+    def test_actual_unix_inspection_cannot_substitute_selected_container(self):
+        with tempfile.TemporaryDirectory(dir=ROOT)as directory:
+            path=Path(directory)/'engine.sock';listener=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+            listener.bind(str(path));path.chmod(0o600);listener.listen(1);listener.settimeout(5)
+            info=path.stat();binding={'socketPath':str(path),'socketBinding':[info.st_dev,info.st_ino,info.st_uid,info.st_gid,stat.S_IMODE(info.st_mode)]}
+            calls=[]
+            def serve():
+                try:
+                    conn,_=listener.accept()
+                    with conn:
+                        calls.append(conn.recv(4096).split(b'\r\n')[0]);body=json.dumps({'Id':'b'*64}).encode()
+                        conn.sendall(b'HTTP/1.1 200 OK\r\nContent-Length: '+str(len(body)).encode()+b'\r\nConnection: close\r\n\r\n'+body)
+                finally:listener.close()
+            thread=threading.Thread(target=serve);thread.start();repair.COUNTS['engineGetAttempts']=0
+            try:
+                with self.assertRaisesRegex(repair.Denied,'EXACT_SELECTED_NAT_PROVIDER_ID_REQUIRED'):
+                    repair.engine_get(binding,'/v1.44/containers/'+'a'*64+'/json')
+            finally:thread.join(6)
+            self.assertFalse(thread.is_alive());self.assertEqual(len(calls),1)
+            self.assertEqual(repair.COUNTS['engineGetAttempts'],1);self.assertEqual(repair.COUNTS['managerMutationAttempts'],0)
 
 
 if __name__=='__main__':unittest.main()
