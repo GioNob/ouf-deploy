@@ -45,7 +45,10 @@
       "correctiveCommit": "029c9670550a0a854a6b007011b2895acd72c5e0",
       "productionOwnerScopeNotBroadened": true
     },
-    "fullCiPending": true
+    "fullCiPending": false,
+    "qualificationEvidence": "evidence/onboarding-finite-budget-v35-qualified-20261024.json",
+    "moduleTestsPassed": 272,
+    "browserCasesPassed": 4
   },
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
