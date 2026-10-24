@@ -1,3 +1,13 @@
+# CURRENT — VPS finite-session package STAGED; current metadata capture under qualification
+
+User-reported VPS ONBOARDING_FINITE_SESSION_PACKAGE_STAGED/Exit0: root /etc/ouf/deploy-snapshots/onboarding-finite-session-ee8b7756f72f82a6 protected; imageLoadedfalse, migrations0, activations0, humanBudgets0, targetApplyAuthorizedfalse/releaseAcceptancefalse. Operatorlog /home/oufadmin/ouf-onboarding-finite-package.2wfZtMWY/operator.log; bootstraplog /home/oufadmin/ouf-onboarding-delivery.7HD1CmAA/bootstrap.log. One staging execution, bootstrap Exit0 is not another application. Preserve root/logs, NO replay/reset. Evidence evidence/onboarding-finite-session-staged-target-20261024.json.
+
+New scripts/prepare-onboarding-finite-session-inputs-20261024.py is UNDER QUALIFICATION, DO NOT deliver until native CI PASS. Distinct exclusive input-preparation-v1 scope; up to14 exact EngineGETs/two passes/seven retained containers; root-private observations may contain DockerEnv, never printed. No SQL, service-credential-file/key reads, Dockerwrites, grants, activation, originalGET replay or worker mutation. Validates prior unchanged applications, completed Ingestion replacement/restored restart, Postgres generation and Registry generation; native pure validators reused from unchanged142-module sealed closure. Candidate source provenance is verified CI manifest; tested image contains BASE Ubuntu labels and NO application revision label. Never modify/relabel/rebuild it. Legacy database profile belongs to Ingestion and MUST NOT be rebound to Onboarding. Labels do not establish lifecycle ownership; DB admission/readiness remain unproven. After metadata capture, prepare distinct Onboarding DB/migrationV34/lifecycle plan and qualified signed apply review; no premature APPROVO/newHUMANgrant.
+
+Registry last originalGET200 proof retained; normal420/pub5 is historical, not frozen. Repair/GET/native11 scopes consumed.8/8technical4/6functionalG3OPEN; F5/F6/E2E/acceptance/Supervisor pending. Lower staging-pending statements are historical.
+
+---
+
 # OUF — sessione finita Onboarding: codice qualificato e pacchetto da consegnare
 
 24ottobre2026 · Europe/Rome. Proseguimento di [prova200 e gateE2E](OUF_REGISTRY_200_E2E_GATE_20261024.md). Il percorso originale è stato recuperato nella prova VPS;8/8tecnico,4/6funzionale,G3OPEN. La fonte approvata rimane nel gate di attivazione con finestra trascorsa.
