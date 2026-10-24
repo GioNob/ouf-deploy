@@ -1,3 +1,11 @@
+# CURRENT — ESEGUITO CON SUCCESSO SUL VPS; comando CONSUMATO, NON RILANCIARE
+
+Risultato operatore ONBOARDING_V35_EXISTING_CANDIDATE_RECOVERED_SOURCE_PRESERVED/complete=true/Exit0, nuova review82417e471e908c44884a7902796a34e6cddb1505257bb67c94c910cfbce3ab91/authority5213fc7a2664eb1add76558f67fdc72810dd6b86bd53107485344dd924a2702b, journalVersion304. V35 e readiness/Flyway/backup provati; stesso candidato e contatori conservati: GET254,POST6,SQL6,backup2,imageLoad1,ownerConfig30,readiness2,quarantine0.0grantHUMANfonte/attivazioni. Log /home/oufadmin/ouf-v35-existing-create-recovery.vvwwY9Jq/operator.log, delivery /home/oufadmin/ouf-v35-recovery-delivery.vNJk4Ljy/bootstrap.log. Evidence evidence/onboarding-v35-existing-create-target-20261024.json.
+
+La nuova owner read con ouf-admin confermaAPPROVED/CONFIRMED/lock3/PAUSED3g4 e budgetHUMAN3tentativi/900s disponibile, non concesso. NEXTpaginaHUMANesistente: grant esplicito, poi separata “Verifica e attiva”. E2E4/6funzionale/G3OPEN, Supervisor dopo. Nessun replay di questo comando o degli scope passati; i paragrafi di consegna sotto sono STORIA.
+
+---
+
 # OUF — recupero della CREATE V35 esistente, 24 ottobre 2026
 
 ## Stato VPS e confine

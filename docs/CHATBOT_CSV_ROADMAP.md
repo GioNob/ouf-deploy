@@ -1,3 +1,13 @@
+# CURRENT — V35 recuperata e readiness provata sul VPS; prossimo atto HUMAN per E2E
+
+Il recupero della CREATE esistente è COMPLETO/Exit0: V35checksum1095739786, readiness/Flyway/backup verificati, stesso candidato, nessun replay/reset, massimi conservati e SQL6/6. Fonte APPROVED/CONFIRMED/PAUSED,3tentativi/generazione4,0sessioni budget/attivazioni. Evidence: evidence/onboarding-v35-existing-create-target-20261024.json. Recovery, lettore e vecchio APPLY consumati: nessun rilancio o ulterioreSQL per ristampare prove.
+
+Nuova lettura owner con ouf-admin riuscita: stesso source/version/hash/lock3, counterLineageVerified=true e humanBudgetGrantAvailable=true per3tentativi/900secondi. NEXT: pagina HUMAN ESISTENTE, motivazione e “Concedi 3 tentativi per 15 minuti”; poi SEPARATAMENTE selezione e “Verifica e attiva la fonte approvata”. Nessuna riapprovazione/recreazione o MCPgrant/activation. La vecchia scadenza non revoca la conferma. Evidence: evidence/onboarding-v35-post-deploy-owner-20261024.json.
+
+502/403: proiezione rete+GET originale200 sono prove VPS; ora anche appV35/readiness. Il percorso completo compatibilità/Ingestion/UDP eF5/F6 non è ancora provato.8/8tecnico4/6funzionale,G3OPEN;13Teatri/13identità/20proprietà/ACKprovenienza entrambe/8Cinema da dimostrare. Supervisor dopoE2E. Nessun tempo/effort retrospettivo ricavato dal tempo trascorso; timestamp dell'invocazione target non fornito. Header sottostanti STORICI.
+
+---
+
 # CURRENT — all18 observed owners cancelled/blocked/previous-boot; coordinated bootstrap gap established
 
 Owner log /home/oufadmin/ouf-registry-owner-discovery.NKae4nGd/operator.log:18candidates,allCANCELLED/BLOCKED,sameCurrentBootfalse,noexclusiveworkerlock,no positive tokenwindow.72reads/64392bytes,1813dirs/13743entries;1450subdirsoutside depth3. No credentials/Engine/SQL/OAuth/effects. Evidence is owner-pasted,not independent readback. Other owners remain unexcluded;no current owner is selected. Preserve all paths/records. Do NOT ask the user for manager paths or rerun the completed discovery. Evidence: evidence/semantic-registry-owner-discovery-target-20261023.json.
