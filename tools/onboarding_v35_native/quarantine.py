@@ -5,7 +5,7 @@ Runs in a single fork of the already source-verified, single-threaded controller
 The original public policy snapshot can verify ONLY this signed negative scope;
 positive execution always requires the live original policy.
 """
-import copy,json,os,re,signal,time
+import copy,json,os,re,select,signal,time
 from pathlib import Path
 
 def parent_pin(pid):
@@ -38,7 +38,7 @@ def check(ctx,review,raw):
         core.require(verifier(raw,role,context[key],context['installationRef'],context['entityRef'])is True,'SIGNED_V35_NEGATIVE_LEASE_REQUIRED')
     return authority
 
-def stop_unproven(ctx,review,raw,journal,reason):
+def _stop_unproven(ctx,review,raw,journal,reason):
     from engine_creation import Engine,requested_host_config_matches
     core=ctx.core;authority=check(ctx,review,raw);plan=review['nativePlan'];replacement=plan['replacement'];request=replacement['request']
     def claim(row):
@@ -82,6 +82,18 @@ def stop_unproven(ctx,review,raw,journal,reason):
     ctx.m.new_file(ctx.root,'quarantine-result.json',{'schema':'ouf.onboarding-v35-negative-lease-result.v1','status':'OWNED_UNPROVEN_CANDIDATE_STOPPED',
         'candidateStopDispatched':dispatched,'oldContainerRestarted':False,'databaseRestorePerformed':False,'automaticReplayAllowed':False,'budgetReset':False})
 
+def stop_unproven(ctx,review,raw,journal,reason):
+    # A syscall may time out ambiguously. Bound the entire negative operation,
+    # including authentication and verification, rather than extending its TTL.
+    remaining=min(30,json.loads(raw)['cleanupExpiresAt']-time.time())
+    ctx.core.require(remaining>0,'V35_NEGATIVE_LEASE_EXPIRED')
+    previous=signal.getsignal(signal.SIGALRM);prior_timer=signal.getitimer(signal.ITIMER_REAL)
+    ctx.core.require(prior_timer==(0.0,0.0),'ONE_FINITE_V35_NEGATIVE_DEADLINE_REQUIRED')
+    def expired(*_):raise ctx.core.Stop('V35_NEGATIVE_DEADLINE_RECONCILE_ONLY')
+    signal.signal(signal.SIGALRM,expired);signal.setitimer(signal.ITIMER_REAL,remaining)
+    try:return _stop_unproven(ctx,review,raw,journal,reason)
+    finally:signal.setitimer(signal.ITIMER_REAL,0);signal.signal(signal.SIGALRM,previous)
+
 def monitor(ctx,review,raw,journal,parent_pid,pin):
     authority=json.loads(raw);deadline=time.monotonic()+max(0,authority['cleanupExpiresAt']-time.time())
     while time.monotonic()<deadline and time.time()<authority['cleanupExpiresAt']:
@@ -95,19 +107,37 @@ def monitor(ctx,review,raw,journal,parent_pid,pin):
             stop_unproven(ctx,review,raw,journal,'PARENT_LOST'if lost else'STARTUP_WINDOW_EXHAUSTED'if startup else'POSITIVE_LEASE_EXPIRING');return
         time.sleep(1)
 
+def ensure_alive(ctx,row):
+    # The negative lease ends only after readiness AND retained-data proofs.
+    if row['nextStage']>=11 or row['state']=='COMPLETE':return
+    pid=getattr(ctx,'watchdog_pid',None);pin=getattr(ctx,'watchdog_pin',None)
+    ctx.core.require(type(pid)is int and pin is not None and parent_pin(pid)==pin,'LIVE_BOUND_V35_NEGATIVE_LEASE_REQUIRED')
+    raw=Path('/proc/'+str(pid)+'/stat').read_text();state=raw[raw.rfind(')')+2:].split()[0]
+    ctx.core.require(state not in('Z','X','x'),'LIVE_V35_WATCHDOG_REQUIRED')
+
 def launch(ctx,review,gate,journal):
     ctx.check_sources();parent=os.getpid();pin=parent_pin(parent);ctx.core.require(pin is not None,'BOUND_V35_CONTROLLER_PROCESS_REQUIRED')
     ctx.m.new_file(ctx.root,'watchdog-parent.json',{'pid':parent,'startTicks':pin,'maximumAdditionalSeconds':30,'persistentServiceInstalled':False})
     log=os.open(ctx.root/'watchdog.log',os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o400)
+    ready_read,ready_write=os.pipe2(os.O_CLOEXEC)
     try:child=os.fork()
-    except BaseException:os.close(log);raise
+    except BaseException:
+        os.close(log);os.close(ready_read);os.close(ready_write);raise
     if child:
-        os.close(log);return child
+        os.close(log);os.close(ready_write)
+        try:
+            readable,_,_=select.select([ready_read],[],[],10)
+            ctx.core.require(bool(readable)and os.read(ready_read,256)==b'READY','V35_NEGATIVE_LEASE_READINESS_REQUIRED_BEFORE_EFFECTS')
+        finally:os.close(ready_read)
+        ctx.watchdog_pid=child;ctx.watchdog_pin=parent_pin(child);ensure_alive(ctx,{'nextStage':0,'state':'OPEN'})
+        ctx.m.new_file(ctx.root,'watchdog-ready.json',{'pid':child,'startTicks':ctx.watchdog_pin,'reviewHash':ctx.core.digest(review),'negativeScopeOnly':True})
+        return child
     try:
-        os.setsid()
+        os.close(ready_read);os.setsid()
         null=os.open('/dev/null',os.O_RDONLY);os.dup2(null,0);os.close(null);os.dup2(log,1);os.dup2(log,2);os.close(log)
         # A hangup of the operator terminal must not cancel the negative lease.
         signal.signal(signal.SIGHUP,signal.SIG_IGN);signal.signal(signal.SIGINT,signal.SIG_IGN)
+        check(ctx,review,gate.raw);os.write(ready_write,b'READY');os.close(ready_write)
         monitor(ctx,review,gate.raw,journal,parent,pin);os._exit(0)
     except BaseException:
         # Keep the durable claim; unknown effects are never retried by another child.

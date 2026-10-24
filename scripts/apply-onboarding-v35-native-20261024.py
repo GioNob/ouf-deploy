@@ -241,8 +241,14 @@ def operator(ctx):
     print(encoded({'schema':'ouf.onboarding-v35-issued.v1','reviewHash':core.digest(review),'authorityHash':core.sha(gate.raw),
         'runtimeAuthorityIssued':True,'runtimeEffectsDispatched':0,'automaticReplayAllowed':False,'budgetReset':False}).decode(),flush=True)
     ports=ctx.ports_module.NativePorts(core,ctx,ctx.root,review,gate);execution=core.Execution(gate,Journal(ctx.root),ports);execution.initialize()
-    ctx.watchdog_pid=ctx.ports_module.quarantine.launch(ctx,review,gate,execution.journal)
-    result=execution.run()
+    try:
+        ctx.watchdog_pid=ctx.ports_module.quarantine.launch(ctx,review,gate,execution.journal)
+        result=execution.run()
+    except BaseException:
+        try:ctx.ports_module.quarantine.stop_unproven(ctx,review,gate.raw,execution.journal,'CONTROLLER_STOPPED')
+        except BaseException:
+            ctx.m.new_file(ctx.root,'controller-quarantine-unproven.json',{'status':'STOP_RECONCILE','negativeEffectMayBePartial':True,'automaticReplayAllowed':False})
+        raise
     from tools.semantic_provider_deployment_signing import ExistingEd25519Signer
     context=review['verification']['context'];signer=ExistingEd25519Signer(profile['keyBindings']['attestor'],profile['keyRefs']['attestor'],gate.verifier,
         {'role':'CREATION_ATTESTATION','issuerRef':context['attestorRef'],'installationRef':context['installationRef'],'entityRef':context['entityRef']})

@@ -105,6 +105,11 @@ class Guards(unittest.TestCase):
             with self.assertRaises(Exception):core.SignedAuthority(altered,gate.raw,str(root/'authority/human.json'),core.digest(json.loads((root/'authority/human.json').read_bytes())),gate.verifier,r.json_at)
             policy['keys'][0]['state']='REVOKED';private(root/'policy.json',policy,0o600)
             with self.assertRaises(Exception):gate.check()
+            ctx=types.SimpleNamespace(core=core,root=root,check_sources=lambda:None)
+            negative=quarantine.check(ctx,review,gate.raw);self.assertEqual(negative['cleanupExpiresAt'],negative['expiresAt']+30)
+            copied=DetachedAuthenticator({'path':str(root/'authority/issued-trust-policy.json'),'sha256':inputs['trustPolicy']['sha256']},str(root/'authority'),inputs['executables']['openssl'])
+            with self.assertRaisesRegex(core.Stop,'SAME_V35_ROLE_POLICY'):
+                core.SignedAuthority(review,gate.raw,str(root/'authority/human.json'),core.digest(json.loads((root/'authority/human.json').read_bytes())),copied,r.json_at)
     def test_no_replay_and_whole_cleanup_key_window_before_signing(self):
         with tempfile.TemporaryDirectory(dir=ROOT)as directory:
             root=Path(directory);root.chmod(0o700);name='onboarding-v35-apply-'+'e'*64
@@ -164,7 +169,7 @@ class Native(unittest.TestCase):
         until=time.monotonic()+60
         while subprocess.run(['docker','exec',self.pg,'pg_isready','-h','127.0.0.1','-U','pgadmin','-d','onboarding_fixture'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode:
             self.assertLess(time.monotonic(),until);time.sleep(.5)
-        self.sql("CREATE ROLE app_role LOGIN PASSWORD 'fixture-password'; CREATE SCHEMA ouf_onboarding AUTHORIZATION app_role;")
+        self.sql("CREATE ROLE app_role LOGIN PASSWORD 'fixture-password'; CREATE SCHEMA ouf_onboarding AUTHORIZATION app_role; GRANT CREATE ON DATABASE onboarding_fixture TO app_role;")
         owned=self.root/'owned';owned.mkdir(mode=0o750);os.chown(owned,1000,1000)
         self.overlay=owned/'owner.yml';self.overlay.write_text('{"ouf":{"authorization":{"ths":{"enabled":false}}}}');os.chown(self.overlay,10003,10003);self.overlay.chmod(0o400)
         self.custody={str(self.overlay):{'parents':{str(owned):(1000,1000,0o750)},'file':(10003,10003,0o400)}}
@@ -180,8 +185,12 @@ class Native(unittest.TestCase):
         for source,target in((self.overlay,'/fixture/owner.yml'),(self.root/'access','/run/secrets/onboarding-minio-access-key'),(self.root/'secret','/run/secrets/onboarding-minio-secret-key'),(self.root/'token','/run/ouf-onboarding-auth/token')):args+=['-v',str(source)+':'+target+':ro']
         self.app=self.docker(*args,os.environ['OUF_V35_OLD_IMAGE']);self.ids.append(self.app);actual=self.inspect(self.app);ip=actual['NetworkSettings']['Networks'][self.network]['IPAddress'];until=time.monotonic()+150
         while not self.health(ip):
+            current=self.inspect(self.app)
+            if current['RestartCount']>0 or current['State']['Running']is not True:raise AssertionError('B0 fixture process failed: '+self.docker('logs','--tail','80',self.app))
             if time.monotonic()>=until:raise AssertionError('B0 fixture startup failed: '+self.docker('logs','--tail','80',self.app))
             time.sleep(1)
+        self.sql('REVOKE CREATE ON DATABASE onboarding_fixture FROM app_role;')
+        self.assertEqual(self.sql("SELECT has_database_privilege('app_role','onboarding_fixture','CREATE')"),'f')
         self.seed()
         self.rows={'onboarding':self.inspect(self.app),'postgres':self.inspect(self.pg)}
         for name in('gateway','ingestion','mcp','udp','registry'):

@@ -11,7 +11,9 @@ class NativePorts:
         self.engine=Engine(self.plan['engine']['socketPath'],tuple(self.plan['engine']['socketBinding']))
         self.request_count=0;self.process_count=0;self.last_readiness=None;self.last_sql=None
     def require(self,ok,code):self.core.require(ok,code)
-    def reserve(self,kind):self.execution.reserve(kind)
+    def reserve(self,kind):
+        self.ctx.ports_module.quarantine.ensure_alive(self.ctx,self.execution.read_journal())
+        self.execution.reserve(kind)
     def record(self):return self.execution.record()
     def request(self,method,path,body=None):
         self.require(method in('GET','POST'),'V35_ONLY_EXACT_GET_AND_POST_ALLOWED')
