@@ -138,7 +138,7 @@ def permitted(address,properties):
 def unit_properties(binding,name):
     require(re.fullmatch(r'[A-Za-z0-9_.@\\:-]+',name) is not None)
     fields='ActiveState,MainPID,NRestarts,ControlGroup,RootDirectory,Slice,IPAddressAllow,IPAddressDeny,IPIngressFilterPath,IPEgressFilterPath,BPFProgram,FragmentPath,DropInPaths'
-    code,raw=invoke(binding,['show',name,'--no-pager','--property='+fields],16384)
+    code,raw=invoke(binding,['show','--no-pager','--property='+fields,'--',name],16384)
     require(code==0)
     result=dict(line.split('=',1) for line in raw.decode('ascii').splitlines())
     require('IPAddressAllow' in result and 'IPAddressDeny' in result)

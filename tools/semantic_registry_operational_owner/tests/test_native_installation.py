@@ -188,6 +188,7 @@ class Installation(unittest.TestCase):
         public,pid,group=dummy('-nat-public',['127.0.0.2'])
         capture.DEADLINE=time.monotonic()+30;capture.COUNTS.update(nativeCommandAttempts=0,engineGetAttempts=0)
         manager=capture.program(('/usr/bin/systemctl',));properties=capture.unit_properties(manager,public.name)
+        self.assertIn('IPAddressAllow',capture.unit_properties(manager,'-.slice'))
         self.assertTrue(capture.permitted('127.0.0.2',properties));self.assertFalse(capture.permitted('127.0.0.1',properties))
         ip_program=capture.program(('/usr/sbin/ip','/usr/bin/ip'));self.assertTrue(capture.route_data(ip_program,'127.0.0.2')['routeTypeLocal'])
         save=capture.program(('/usr/sbin/iptables-save','/sbin/iptables-save'));code,raw=capture.invoke(save,['-t','nat'])
