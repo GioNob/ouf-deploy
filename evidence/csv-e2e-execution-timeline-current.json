@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-22T18:43:58Z",
+  "lastUpdatedAt": "2026-10-24T07:42:25Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1911,6 +1911,19 @@
       "reasonCode": "HISTORICAL_REGISTRY_NOT_RUNNING",
       "rootCauseEstablished": false,
       "newDiagnosticTargetExecuted": false
+    },
+    {
+      "id": "CSV-EVENT-REGISTRY-ORIGINAL-REQUEST-200-20261024",
+      "recordedAt": "2026-10-24T07:42:25Z",
+      "classification": "USER_REPORTED_TARGET_RESOURCE_RECOVERY_AND_CURRENT_OWNER_READ",
+      "evidenceRef": "evidence/registry-original-request-200-target-20261024.json",
+      "httpStatus": 200,
+      "exactActiveReferenceMatched": true,
+      "allConfiguredReferencesProven": true,
+      "normalOwnerPublications": 5,
+      "functionalMilestonesUnchanged": true,
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true
     }
   ],
   "activeIntervals": [
@@ -2673,7 +2686,7 @@
     "refreshPerformed": false,
     "budgetReset": false,
     "wp3Block": {
-      "status": "INFRASTRUCTURE_PATCH_COMPLETE_NATIVE_PROFILE_LIFECYCLE_PENDING",
+      "status": "ORIGINAL_REQUEST_200_PROVEN_ONBOARDING_READINESS_WINDOW_ELAPSED",
       "nextStage": 28,
       "appliedStages": 28,
       "currentAuthorityProven": false,
@@ -2683,7 +2696,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "DISTINCT_HISTORICAL_REGISTRY_LIFECYCLE_AND_SAME_LINE_LOG_OBSERVATION",
+      "nextRequiredTargetAction": "IMPLEMENT_GOVERNED_ONBOARDING_HUMAN_FINITE_BUDGET_SESSION_THEN_REVIEW",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2706,7 +2719,7 @@
       "readinessPatchComplete": true
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "SEMANTIC_TRANSPORT_CORRELATION_STOP_RECONCILE",
+    "latestOperatorConfirmedOperation": "POST_NETWORK_ORIGINAL_CALLER_GET_OBSERVED",
     "latestOperatorConfirmedOperationPolicyMutations": 0,
     "loginPerformedScope": "COMPLETED_FRESH_STAGE18_HUMAN_PROVIDER_VERIFICATION_AT292_NO_CURRENT_AUTHORITY_INFERRED",
     "newHumanLoginPerformed": true,
@@ -2714,7 +2727,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_SEMANTIC_HISTORICAL_REGISTRY_STOP_20261022.md",
+    "currentHandoff": "docs/handoffs/OUF_REGISTRY_200_E2E_GATE_20261024.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 304,
@@ -2728,8 +2741,8 @@
     "nativeProfileStateAtLastOwnerRead": "APPROVED",
     "activationProgressAtLastOwnerRead": {
       "phase": "PAUSED",
-      "attempts": 2,
-      "generation": 3,
+      "attempts": 3,
+      "generation": 4,
       "lastCode": "ONB_READINESS_DEPENDENCY_503"
     },
     "runtimeContractFixInstalled": true,
@@ -2789,7 +2802,14 @@
     "postPatchSourceStatusRead": "AUTHORIZATION_DENIED_NOT_RETRIED",
     "postPatchSourceStatusRootCauseEstablished": false,
     "semanticTransportCorrelationStopReason": "HISTORICAL_REGISTRY_NOT_RUNNING",
-    "semanticTransportCorrelationRootCauseEstablished": false
+    "semanticTransportCorrelationRootCauseEstablished": false,
+    "originalRequestResource200Proven": true,
+    "normalRegistryOwnerCumulativeAttempts": 420,
+    "normalRegistryOwnerPublications": 5,
+    "repeatedRegistryRenewalObserved": true,
+    "permanentRegistryRenewalProven": false,
+    "newHumanBudgetGranted": false,
+    "sourceProfilePublished": false
   },
   "unverifiedIntervals": [
     {

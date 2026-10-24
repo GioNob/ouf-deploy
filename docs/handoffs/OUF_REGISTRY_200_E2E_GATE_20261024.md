@@ -1,0 +1,32 @@
+# OUF — richiesta originale200 e successivo gate E2E,24ottobre2026
+
+## Risultato sul VPS
+
+L'operatore ha riportato `POST_NETWORK_ORIGINAL_CALLER_GET_OBSERVED`, complete=true, Exit0, **HTTP200 con la reference esatta ACTIVE**. Un solo riferimento configurato, allConfiguredReferencesProven=true/originalRequestResource200Proven=true. Token caller corrente letto dal mount RO della directory, TLS chain/hostname/peer pin e vista resolver caller verificati; stessa generazione Registry e caller, immagine Registry attesa e un endpoint vivo. Nessun OAuth/grant, mutazione manager o scrittura ledger.
+
+Il percorso originale502/403 è recuperato nella prova corrente. Il200 dimostra la risposta autorizzata della risorsa esatta, non quale snapshot di policy/cache Java fosse in memoria o l'identità SERVICE verificata indipendentemente. Non prova il percorso DNS ordinario senza vista resolver privata, la resilienza completa al reboot/cambio IP né release acceptance.
+
+Owner normale:420 tentativi cumulativi/5pubblicazioni/finestra corrente positiva, invariati prima/dopo la GET. Rispetto al precedente416/pub1 sono osservate quattro ulteriori pubblicazioni: rinnovo ripetuto reale, non tutte le future condizioni operative. Il campo ownerState=CANCELLED appartiene invece al vecchio owner321 conservato nella diagnostica. Non descrive il normale rinnovatore.
+
+Log da conservare: `/home/oufadmin/ouf-post-network-get.tWLPFZo0/operator.log`. Entrambi gli scope nuovi (repair e GET) sono consumati. Le2GET403 precedenti, native checkpoint11/finalCLAIMED e contatori18/18/0 restano invariati; non completarli retroattivamente tramite replay. Il diagnostic200 non concede native recovery acceptance.
+
+Evidenza normalizzata: [registry-original-request-200-target-20261024.json](../../evidence/registry-original-request-200-target-20261024.json). Timestamp di registrazione distinto da timestamp di invocazione VPS, non fornito. CI conservata nel documento di consegna precedente; questo risultato deriva dal JSON dell'operatore.
+
+## Stato owner e prossimo gate E2E
+
+Effettuate due letture distinte con l'account scelto ouf-admin:
+
+- `ouf.ingestion.status`, fonte esatta,limit1: authorization denied/retryable:false/connector INVALID_ARGUMENT; nessun HTTP backend o root cause comunicato. Non ritentata e nessun cambio account/grant.
+- `source.onboarding.read`, stessa fonte/versione conservata: APPROVED/CONFIRMED,lock3, hash esatto invariato, compatibilityfalse, PAUSED/attempts3/generation4, ultimo ONB_READINESS_DEPENDENCY_503.
+
+La conferma della configurazione resta valida: challengeExpired=true non la revoca. È invece trascorsa la finestra readiness originaria: start21ottobre17:27:58.016Z +24h =22ottobre17:27:58.016Z. Il codice usa anche50sec di riserva. L'owner ha riportato PAUSED; non abbiamo eseguito la transizione EXHAUSTED.
+
+Sorgente ispezionato e riletto immutabile: Onboarding `84828f74ac586bae09a78f0fb197b75b1a3d98d1`, ManagedOnboardingReviewService/ManagedActivationCoordinator/AGENTS. claimActivation rifiuta l'elapsed budget prima di un nuovo tentativo. review.prepare richiede DRAFT; ricreare review/fonte o richiamare la vecchia attivazione non è una correzione. Le capability MCP esposte non includono la concessione di un nuovo budget per questo workflow.
+
+Il successivo intervento è [Onboarding #50](https://github.com/GioNob/ouf-source-onboarding/issues/50): completare una sessione finita HUMAN sullo stesso scope/incident, preservando i3tentativi e tutto lo storico, expected-version/fencing/dedup e approvazione di configurazione. Proposta stretta da rendere governata/reviewable:3tentativi aggiuntivi/900sec, non concessi. Nessuna nuova finestra, approval, attivazione, login o reset effettuati. Una decisione in chat non sostituisce THS.
+
+## Criteri rimasti aperti
+
+Mini-PET CSV1.1 §§8–9: G3 richiede pubblicazione nativa del profilo e consumer coerenti; F5/F6 richiedono la seconda acquisizione deliberata con esito di tutte13righe,13identità/20proprietà, ACK/commit/provenienza di entrambe e8Cinema preservati. Una GET200 Registry non li chiude. Gli originali OnboardingPET1.6 dell'allegato sono stati consultati per ownership/THS; resilienza policyv3 §§14–16 autorizza il nuovo budget soltanto con una nuova decisione HUMAN finita e storia conservata.
+
+Stato:8/8tecnico,4/6funzionale,G3OPEN; richiesta originale recuperata, rinnovo ripetuto osservato, E2E non accettato. Supervisor ancora successivo.
