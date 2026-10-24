@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-24T16:48:29Z",
+  "lastUpdatedAt": "2026-10-24T18:16:57Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -2061,6 +2061,27 @@
       "targetInvocationTimestampProvided": false,
       "noEffortAllocationInferred": true,
       "newOriginalRegistryGetExecuted": false
+    },
+    {
+      "id": "CSV-EVENT-V35-NATIVE-ENTRY-QUALIFIED-DELIVERY-20261024",
+      "recordedAt": "2026-10-24T18:16:57Z",
+      "classification": "EXACT_RETAINED_PROFILE_NATIVE_ENTRY_CI_QUALIFIED_NOT_TARGET_APPLIED",
+      "sourceCommit": "4cc62e49539a8e52a823ac5cba95bf92d64613fd",
+      "qualificationRef": "evidence/onboarding-v35-native-entry-qualified-20261024.json",
+      "deliveryRef": "docs/handoffs/OUF_ONBOARDING_V35_NATIVE_APPLY_DELIVERY_20261024.md",
+      "ciRuns": [
+        40119375591,
+        40119378683
+      ],
+      "passedPerRun": 7,
+      "skippedPerRun": 0,
+      "targetImageLoaded": false,
+      "targetMigrations": 0,
+      "targetHumanBudgetsGranted": 0,
+      "targetSourceActivations": 0,
+      "newOriginalRegistryGetExecuted": false,
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true
     }
   ],
   "activeIntervals": [
