@@ -190,7 +190,7 @@ class Native(unittest.TestCase):
         self.custody={str(self.overlay):{'parents':{str(owned):(1000,1000,0o750)},'file':(10003,10003,0o400)}}
         self.custody_patch=patch.object(gateway,'_EXISTING_CONFIG_CUSTODY',self.custody);self.custody_patch.start();self.addCleanup(self.custody_patch.stop)
         for name in('access','secret','token'):private(self.root/name,b'fixture-only',0o444)
-        args=['run','-d','--name','v35-onboarding-'+self.root.name,'--network',self.network,'--restart','unless-stopped','--label','org.opencontainers.image.revision='+q.SOURCE]
+        args=['create','--name','v35-onboarding-'+self.root.name,'--network',self.network,'--restart','unless-stopped','--label','org.opencontainers.image.revision='+q.SOURCE]
         env={'OUF_ONB_DB_URL':'jdbc:postgresql://fixture-postgres:5432/onboarding_fixture','OUF_ONB_DB_USER':'app_role','OUF_ONB_DB_PASSWORD':'fixture-password',
             'SPRING_APPLICATION_JSON':'{"ouf.authorization.ths.enabled":false}','SPRING_CONFIG_ADDITIONAL_LOCATION':'file:/fixture/owner.yml',
             'OUF_ONBOARDING_STAGING_ENDPOINT':'http://127.0.0.1:9000','OUF_ONBOARDING_STAGING_BUCKET':'ouf-managed-files',
@@ -198,7 +198,8 @@ class Native(unittest.TestCase):
             'OUF_ONBOARDING_OBJECT_STORE_GATEWAY_BASE_URL':'http://127.0.0.1:9080','OUF_ONBOARDING_OBJECT_STORE_TOKEN_FILE':'/run/ouf-onboarding-auth/token'}
         for k,v in env.items():args+=['-e',k+'='+v]
         for source,target in((self.overlay,'/fixture/owner.yml'),(self.root/'access','/run/secrets/onboarding-minio-access-key'),(self.root/'secret','/run/secrets/onboarding-minio-secret-key'),(self.root/'token','/run/ouf-onboarding-auth/token')):args+=['-v',str(source)+':'+target+':ro']
-        self.app=self.docker(*args,os.environ['OUF_V35_OLD_IMAGE']);self.ids.append(self.app);actual=self.inspect(self.app);ip=actual['NetworkSettings']['Networks'][self.network]['IPAddress'];until=time.monotonic()+150
+        self.app=self.docker(*args,os.environ['OUF_V35_OLD_IMAGE']);self.ids.append(self.app)
+        self.old_creation_host=copy.deepcopy(self.inspect(self.app)['HostConfig']);self.docker('start',self.app);actual=self.inspect(self.app);ip=actual['NetworkSettings']['Networks'][self.network]['IPAddress'];until=time.monotonic()+150
         while not self.health(ip):
             current=self.inspect(self.app)
             if current['RestartCount']>0 or current['State']['Running']is not True:raise AssertionError('B0 fixture process failed: '+self.docker('logs','--tail','80',self.app))
@@ -254,7 +255,7 @@ class Native(unittest.TestCase):
         with tarfile.open(package/'image.tar.gz','r:gz')as tar:
             config=json.load(tar.extractfile('blobs/sha256/'+contract['imageId'].split(':')[1]))['config']
         endpoint=actual['NetworkSettings']['Networks'][self.network];saved={'module':'onboarding','name':actual['Name'][1:],'restoreRestartPolicy':actual['HostConfig']['RestartPolicy'],
-            'creationRequest':{'HostConfig':copy.deepcopy(actual['HostConfig']),'NetworkingConfig':{'EndpointsConfig':{self.network:{'Aliases':[actual['Name'][1:]]}}}}}
+            'creationRequest':{'HostConfig':copy.deepcopy(self.old_creation_host),'NetworkingConfig':{'EndpointsConfig':{self.network:{'Aliases':[actual['Name'][1:]]}}}}}
         namespace={'copy':copy,'ipaddress':__import__('ipaddress'),'re':re,'require':entry.require,'digest':core.digest,
             'runtime':lambda a:runtime_bindings.observed(a,runtime_bindings.SORTED),'runtime_image_id':lambda a:a['imageId'],
             'requested_host_config_matches':__import__('engine_creation').requested_host_config_matches}
@@ -307,6 +308,9 @@ class Native(unittest.TestCase):
                             actual=self.inspect(row['createdId']);request=ctx.native_plan['replacement']['request']
                             changed=[key for key,value in request.items()if key not in('HostConfig','NetworkingConfig')and actual['Config'].get(key)!=(ctx.native_plan['runtimeLabelProjection']['expectedLabels']if key=='Labels'else value)]
                             print('FIXTURE_CONFIG_DELTA_KEYS '+str(changed),flush=True)
+                            host_changed=[key for key,value in request['HostConfig'].items()if actual['HostConfig'].get(key)!=value]
+                            print('FIXTURE_HOST_DELTA_KEYS '+str(host_changed),flush=True)
+                            if 'OomKillDisable'in host_changed:print('FIXTURE_OOM_DEFAULT '+str((request['HostConfig']['OomKillDisable'],actual['HostConfig'].get('OomKillDisable'))),flush=True)
                         responses=sorted(ctx.root.glob('engine-response-*.json'))
                         if responses:
                             last=json.loads(responses[-1].read_bytes())
