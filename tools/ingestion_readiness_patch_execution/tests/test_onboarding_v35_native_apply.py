@@ -256,6 +256,7 @@ class Native(unittest.TestCase):
             config=json.load(tar.extractfile('blobs/sha256/'+contract['imageId'].split(':')[1]))['config']
         endpoint=actual['NetworkSettings']['Networks'][self.network];saved={'module':'onboarding','name':actual['Name'][1:],'restoreRestartPolicy':actual['HostConfig']['RestartPolicy'],
             'creationRequest':{'HostConfig':copy.deepcopy(self.old_creation_host),'NetworkingConfig':{'EndpointsConfig':{self.network:{'Aliases':[actual['Name'][1:]]}}}}}
+        if getattr(self,'explicit_empty_hostname',False):saved['creationRequest']['Hostname']=''
         namespace={'copy':copy,'ipaddress':__import__('ipaddress'),'re':re,'require':entry.require,'digest':core.digest,
             'runtime':lambda a:runtime_bindings.observed(a,runtime_bindings.SORTED),'runtime_image_id':lambda a:a['imageId'],
             'requested_host_config_matches':__import__('engine_creation').requested_host_config_matches}
@@ -351,3 +352,4 @@ class Native(unittest.TestCase):
         with self.assertRaises(FileExistsError):entry.create_context(self.ctx.root.parent,self.ctx.root.name)
 
 if __name__=='__main__':unittest.main()
+
