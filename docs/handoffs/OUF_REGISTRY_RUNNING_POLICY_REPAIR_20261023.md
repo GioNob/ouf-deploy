@@ -1,3 +1,5 @@
+> CURRENT UPDATE (24 October): read [the complete network projection handoff](OUF_REGISTRY_NETWORK_PROJECTION_HANDOFF_20261024.md) first. Final code a7de09a qualifies 67 component +14 native and2 focused native tests. Target repair remains undelivered/unapplied; latest target398/pub0. Lower chronology is retained, including superseded pending-test statements. Resume prompt: [OUF_RESUME_PROMPT_20261024.md](OUF_RESUME_PROMPT_20261024.md).
+
 # Registry running policy repair — implementation handoff
 
 The target incident remains open. No command in this document authorizes an
