@@ -155,7 +155,12 @@ class Guards(unittest.TestCase):
 @unittest.skipUnless(os.environ.get('OUF_NATIVE_V35_APPLY')=='1','root disposable Docker/PG17/real exact CI image required')
 class Native(unittest.TestCase):
     def docker(self,*args):return subprocess.check_output(['docker',*args],stderr=subprocess.PIPE).decode().strip()
-    def inspect(self,cid):return json.loads(self.docker('inspect',cid))[0]
+    def inspect(self,cid):
+        from engine_creation import Engine
+        selected=Path('/var/run/docker.sock').resolve();info=selected.stat()
+        engine=Engine(str(selected),(info.st_dev,info.st_ino,info.st_uid,info.st_gid,stat.S_IMODE(info.st_mode)))
+        status,value=engine.request('GET','/v1.44/containers/'+cid+'/json')
+        self.assertEqual(status,200);self.assertEqual(value['Id'],cid);return value
     def sql(self,sql):return self.docker('exec',self.pg,'psql','-X','-w','-q','-A','-t','-v','ON_ERROR_STOP=1','-U','pgadmin','-d','onboarding_fixture','-c',sql)
     def health(self,ip):
         try:
