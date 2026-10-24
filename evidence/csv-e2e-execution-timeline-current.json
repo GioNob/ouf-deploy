@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-22T18:43:58Z",
+  "lastUpdatedAt": "2026-10-24T14:33:29Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1911,6 +1911,144 @@
       "reasonCode": "HISTORICAL_REGISTRY_NOT_RUNNING",
       "rootCauseEstablished": false,
       "newDiagnosticTargetExecuted": false
+    },
+    {
+      "id": "CSV-EVENT-REGISTRY-ORIGINAL-REQUEST-200-20261024",
+      "recordedAt": "2026-10-24T07:42:25Z",
+      "classification": "USER_REPORTED_TARGET_RESOURCE_RECOVERY_AND_CURRENT_OWNER_READ",
+      "evidenceRef": "evidence/registry-original-request-200-target-20261024.json",
+      "httpStatus": 200,
+      "exactActiveReferenceMatched": true,
+      "allConfiguredReferencesProven": true,
+      "normalOwnerPublications": 5,
+      "functionalMilestonesUnchanged": true,
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-ONBOARDING-FINITE-SESSION-CI-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T08:20:48Z",
+      "classification": "DEVELOPMENT_CI_AND_ARTIFACT_VERIFICATION_NOT_TARGET_APPLY",
+      "evidenceRef": "evidence/onboarding-finite-session-qualified-20261024.json",
+      "sourceCommit": "431c601de9b7faa9769b0a210300cd466bf82cfc",
+      "moduleTestsPassed": 252,
+      "browserCasesPassed": 3,
+      "targetNewBudgetGranted": false,
+      "targetMigrationExecuted": false,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-ONBOARDING-PACKAGE-STAGED-INPUTS-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T08:49:20Z",
+      "classification": "USER_REPORTED_VPS_STAGING_AND_DISTINCT_METADATA_CI_QUALIFICATION",
+      "targetEvidenceRef": "evidence/onboarding-finite-session-staged-target-20261024.json",
+      "qualificationEvidenceRef": "evidence/onboarding-finite-session-inputs-qualified-20261024.json",
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true,
+      "sourceActivations": 0,
+      "databaseMigrations": 0,
+      "humanBudgetsGranted": 0,
+      "targetMetadataCaptureExecuted": false,
+      "functionalMilestonesUnchanged": true
+    },
+    {
+      "id": "CSV-EVENT-ONBOARDING-CURRENT-INPUTS-CAPTURED-DB-SNAPSHOT-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T09:39:14Z",
+      "classification": "USER_REPORTED_TARGET_METADATA_CAPTURE_AND_DISTINCT_NATIVE_DATABASE_READER_CI",
+      "targetEvidenceRef": "evidence/onboarding-finite-session-inputs-target-20261024.json",
+      "qualificationEvidenceRef": "evidence/onboarding-finite-database-snapshot-qualified-20261024.json",
+      "targetCaptureEngineGets": 14,
+      "targetCaptureComplete": true,
+      "targetDatabaseSnapshotExecuted": false,
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true,
+      "functionalMilestonesUnchanged": true
+    },
+    {
+      "id": "CSV-EVENT-ONBOARDING-DB-METADATA-STOP-RECONCILIATION-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T10:05:23Z",
+      "classification": "OPERATOR_REPORTED_ZERO_DISPATCH_METADATA_STOP_AND_DISTINCT_METADATA_CI",
+      "targetStopEvidenceRef": "evidence/onboarding-finite-database-stop-target-20261024.json",
+      "qualificationEvidenceRef": "evidence/onboarding-engine-metadata-qualified-20261024.json",
+      "reasonCode": "SAME_RETAINED_ONBOARDING_ENGINE_REQUIRED",
+      "engineGetAttempts": 0,
+      "sqlSessionAttempts": 0,
+      "containerExecAttempts": 0,
+      "newOriginalRegistryGetExecuted": false,
+      "targetReconciliationExecuted": false,
+      "noEffortAllocationInferred": true,
+      "targetInvocationTimestampProvided": false
+    },
+    {
+      "id": "CSV-EVENT-CURRENT-LINEAGE-DRIFT-V34-COLLISION-CORRECTED-V35-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T11:49:20Z",
+      "classification": "USER_REPORTED_METADATA_LINEAGE_DRIFT_AND_CORRECTED_SOURCE_BASELINE_CI",
+      "targetEvidenceRef": "evidence/onboarding-engine-metadata-target-20261024.json",
+      "baselineBlockEvidenceRef": "evidence/onboarding-finite-session-baseline-incompatible-20261024.json",
+      "v35EvidenceRef": "evidence/onboarding-finite-budget-v35-qualified-20261024.json",
+      "lineageReaderQualificationRef": "evidence/current-onboarding-source-revision-lineage-qualified-20261024.json",
+      "oldCandidateImportBlocked": true,
+      "oldArtifactPreserved": true,
+      "correctedCandidateTargetStaged": false,
+      "currentLaterLineageTargetMatched": false,
+      "databaseMigrations": 0,
+      "humanBudgetsGranted": 0,
+      "sourceActivations": 0,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-B0-CURRENT-OWNER-LINEAGE-V35-PRESERVED-DATABASE-READER-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T12:14:46Z",
+      "classification": "USER_REPORTED_CURRENT_SOURCE_DECLARATION_AND_MATCHED_PG_ENGINE_WITH_DISTINCT_SQL_CI",
+      "targetEvidenceRef": "evidence/current-onboarding-source-revision-lineage-target-20261024.json",
+      "sourceQualificationRef": "evidence/onboarding-finite-budget-b0-v35-qualified-20261024.json",
+      "databaseReaderQualificationRef": "evidence/current-onboarding-database-reader-qualified-20261024.json",
+      "targetInvocationTimestampProvided": false,
+      "currentOnboardingSourceDeclaration": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "targetPostgresAndSourceRevisionEngineMetadataMatch": true,
+      "newTargetSqlExecuted": false,
+      "newOriginalRegistryGetExecuted": false,
+      "newImageTargetStaged": false,
+      "databaseMigrations": 0,
+      "humanBudgetsGranted": 0,
+      "sourceActivations": 0,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-ACTUAL-CURRENT-ONBOARDING-V34-DB-SNAPSHOT-AND-CORRECTED-V35-PACKAGE-PROPOSAL-20261024",
+      "recordedAt": "2026-10-24T13:27:35Z",
+      "classification": "OPERATOR_REPORTED_ONE_READ_ONLY_SQL_AND_DISTINCT_OFFLINE_PREPARATION_CI",
+      "targetEvidenceRef": "evidence/current-onboarding-database-target-20261024.json",
+      "qualificationRef": "evidence/onboarding-v35-review-inputs-qualified-20261024.json",
+      "sqlSessionAttempts": 1,
+      "engineGetAttempts": 4,
+      "observedSqlVersion": 34,
+      "v35AlreadyRecorded": false,
+      "readinessAttempts": 3,
+      "readinessGeneration": 4,
+      "readinessPhase": "PAUSED",
+      "newTargetDeliveryExecuted": false,
+      "databaseMigrations": 0,
+      "sourceActivations": 0,
+      "humanBudgetsGranted": 0,
+      "newOriginalRegistryGetExecuted": false,
+      "noEffortAllocationInferred": true,
+      "targetInvocationTimestampProvided": false
+    },
+    {
+      "id": "CSV-EVENT-V35-ACTUAL-PACKAGE-PROPOSAL-AND-CURRENT-CONFIG-PLAN-CI-20261024",
+      "recordedAt": "2026-10-24T14:33:29Z",
+      "classification": "USER_REPORTED_STAGED_CORRECTED_PACKAGE_AND_ALL34_SERVER_CHECKSUM_MATCH",
+      "targetEvidenceRef": "evidence/onboarding-v35-package-review-target-20261024.json",
+      "qualificationRef": "evidence/onboarding-v35-native-plan-qualified-20261024.json",
+      "imageLoaded": false,
+      "databaseMigrations": 0,
+      "humanBudgetsGranted": 0,
+      "sourceActivations": 0,
+      "targetNativePlanExecuted": false,
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true,
+      "newOriginalRegistryGetExecuted": false
     }
   ],
   "activeIntervals": [
@@ -2673,7 +2811,7 @@
     "refreshPerformed": false,
     "budgetReset": false,
     "wp3Block": {
-      "status": "INFRASTRUCTURE_PATCH_COMPLETE_NATIVE_PROFILE_LIFECYCLE_PENDING",
+      "status": "ORIGINAL_REQUEST_200_PROVEN_ONBOARDING_READINESS_WINDOW_ELAPSED",
       "nextStage": 28,
       "appliedStages": 28,
       "currentAuthorityProven": false,
@@ -2683,7 +2821,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "DISTINCT_HISTORICAL_REGISTRY_LIFECYCLE_AND_SAME_LINE_LOG_OBSERVATION",
+      "nextRequiredTargetAction": "STAGE_PINNED_TESTED_ONBOARDING_IMAGE_WITHOUT_LOAD_OR_MIGRATION",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2706,7 +2844,7 @@
       "readinessPatchComplete": true
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "SEMANTIC_TRANSPORT_CORRELATION_STOP_RECONCILE",
+    "latestOperatorConfirmedOperation": "POST_NETWORK_ORIGINAL_CALLER_GET_OBSERVED",
     "latestOperatorConfirmedOperationPolicyMutations": 0,
     "loginPerformedScope": "COMPLETED_FRESH_STAGE18_HUMAN_PROVIDER_VERIFICATION_AT292_NO_CURRENT_AUTHORITY_INFERRED",
     "newHumanLoginPerformed": true,
@@ -2714,7 +2852,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_SEMANTIC_HISTORICAL_REGISTRY_STOP_20261022.md",
+    "currentHandoff": "docs/handoffs/OUF_ONBOARDING_V35_CURRENT_LINEAGE_DELIVERY_20261024.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 304,
@@ -2728,8 +2866,8 @@
     "nativeProfileStateAtLastOwnerRead": "APPROVED",
     "activationProgressAtLastOwnerRead": {
       "phase": "PAUSED",
-      "attempts": 2,
-      "generation": 3,
+      "attempts": 3,
+      "generation": 4,
       "lastCode": "ONB_READINESS_DEPENDENCY_503"
     },
     "runtimeContractFixInstalled": true,
@@ -2789,7 +2927,132 @@
     "postPatchSourceStatusRead": "AUTHORIZATION_DENIED_NOT_RETRIED",
     "postPatchSourceStatusRootCauseEstablished": false,
     "semanticTransportCorrelationStopReason": "HISTORICAL_REGISTRY_NOT_RUNNING",
-    "semanticTransportCorrelationRootCauseEstablished": false
+    "semanticTransportCorrelationRootCauseEstablished": false,
+    "originalRequestResource200Proven": true,
+    "normalRegistryOwnerCumulativeAttempts": 420,
+    "normalRegistryOwnerPublications": 5,
+    "repeatedRegistryRenewalObserved": true,
+    "permanentRegistryRenewalProven": false,
+    "newHumanBudgetGranted": false,
+    "sourceProfilePublished": false,
+    "onboardingFiniteSessionImplementation": {
+      "state": "CI_QUALIFIED_NOT_DEPLOYED",
+      "sourcePr": 51,
+      "sourceCommit": "431c601de9b7faa9769b0a210300cd466bf82cfc",
+      "moduleCi": 40076974373,
+      "browserCi": 40076974316,
+      "artifactId": 12553563263,
+      "protectedStagingObserved": false,
+      "humanBudgetGranted": false
+    },
+    "onboardingFiniteSessionTargetStaging": {
+      "status": "ONBOARDING_FINITE_SESSION_PACKAGE_STAGED",
+      "evidenceRef": "evidence/onboarding-finite-session-staged-target-20261024.json",
+      "imageLoaded": false,
+      "databaseMigrations": 0,
+      "humanBudgetsGranted": 0,
+      "sourceActivations": 0
+    },
+    "onboardingFiniteMetadataCapture": {
+      "qualifiedSource": "6061aea966cad60eadcac926ad74eda8f6e210e9",
+      "qualificationRuns": [
+        40079399435,
+        40079402575
+      ],
+      "targetExecuted": true,
+      "next": "ONE_PINNED_METADATA_OPERATOR_INVOCATION",
+      "databaseAdmissionProven": false,
+      "lifecycleOwnershipProven": false,
+      "complete": true,
+      "privateInputsHash": "b8040ef1c49af2455d9a28d26bac4ef4bbf297315c69c0b48256aa83f18b614b",
+      "evidenceRef": "evidence/onboarding-finite-session-inputs-target-20261024.json",
+      "scopeConsumed": true
+    },
+    "onboardingFiniteDatabaseSnapshot": {
+      "qualifiedSource": "65b12ea71a01c9745976588352473cafd8463ba1",
+      "qualificationRuns": [
+        40082658534,
+        40082662064
+      ],
+      "targetExecuted": true,
+      "maximumSqlAttempts": 1,
+      "maximumEngineGets": 4,
+      "scope": "onboarding-database-snapshot-v1",
+      "databaseIdentityFromOnboarding": true,
+      "legacyIngestionIdentityMustNotBeUsed": true,
+      "targetEntryInvoked": true,
+      "targetSqlDispatched": false,
+      "targetSnapshotObserved": false,
+      "status": "STOP_RECONCILE",
+      "reasonCode": "SAME_RETAINED_ONBOARDING_ENGINE_REQUIRED",
+      "engineGetAttempts": 0,
+      "sqlSessionAttempts": 0,
+      "containerExecAttempts": 0,
+      "evidenceRef": "evidence/onboarding-finite-database-stop-target-20261024.json",
+      "oldCommandMustNotBeReplayed": true
+    },
+    "onboardingEngineMetadataReconciliation": {
+      "qualifiedSource": "1a8b5c1bf6c34e856ee28666f76d7ffeac11c216",
+      "qualificationRuns": [
+        40084404503,
+        40084408317
+      ],
+      "targetExecuted": true,
+      "maximumEngineGets": 0,
+      "maximumSqlAttempts": 0,
+      "newBindingAcceptedForRuntime": false,
+      "newSqlAttemptAuthorized": false,
+      "complete": true,
+      "privateReconciliationHash": "c831dc09f4f54c99f41d4ea563c7b0629c13648f0e8c82a5f00dba5c74f299d7",
+      "classification": "HISTORICAL_SOCKET_BINDING_DIFFERS_FROM_CURRENT",
+      "oldOnboardingLineageMatches": false,
+      "scopeConsumed": true
+    },
+    "registryOriginal200ResolverPrecision": {
+      "actualCallerFilesCopiedUnchanged": true,
+      "differentDnsAnswersInjected": false,
+      "ordinaryApplicationProcessCallProven": false,
+      "newGetExecuted": false
+    },
+    "onboardingFiniteBudgetCandidate": {
+      "oldSource": "431c601de9b7faa9769b0a210300cd466bf82cfc",
+      "oldArtifactBlocked": true,
+      "reason": "V34_NUMBERING_AND_DEPLOYED_CONTRACTS_CONFLICT",
+      "correctedSource": "029c9670550a0a854a6b007011b2895acd72c5e0",
+      "base": "be388e1462778438a208c2e00e166370fee32189",
+      "migration": "V35__managed_readiness_budget_sessions.sql",
+      "ciQualified": true,
+      "targetStaged": false,
+      "targetApplied": false,
+      "targetBudgetGranted": false,
+      "qualificationEvidenceRef": "evidence/onboarding-finite-budget-v35-qualified-20261024.json"
+    },
+    "currentLaterOnboardingLineageRead": {
+      "qualifiedSource": "5a389f3bcc8d5b368c3ecd7f4683bad2a5164114",
+      "qualificationRuns": [
+        40091123700,
+        40091127068
+      ],
+      "targetExecuted": false,
+      "engineRequests": 0,
+      "sqlRequests": 0
+    },
+    "currentOnboardingContinuation": {
+      "actualPackageEvidence": "evidence/onboarding-v35-package-review-target-20261024.json",
+      "candidateSourceCommit": "1b1222ceaa5af85a25c20857e7c8c1b548b12dc1",
+      "targetPackageStaged": true,
+      "all34ServerChecksumsMatch": true,
+      "targetImageLoaded": false,
+      "observedSqlVersion": 34,
+      "v35Absent": true,
+      "readinessAttempts": 3,
+      "readinessGeneration": 4,
+      "currentConfigurationPrecedenceResolved": false,
+      "nativePlanFreezePending": true,
+      "applyEntryQualified": false,
+      "targetApplyAuthorized": false,
+      "doNotReplayConsumedScopes": true
+    }
   },
   "unverifiedIntervals": [
     {
@@ -3868,10 +4131,9 @@
     "gate": "G3",
     "humanInterventionRequired": true,
     "reasons": [
-      "NATIVE_PROFILE_APPROVED_ACTIVATION_PAUSED",
-      "HISTORICAL_REGISTRY_PREDICATE_FAILED_CORRELATION_UNPROVEN",
-      "F5_F6_PROOF_PENDING",
-      "OAUTH_BUDGET_EXHAUSTED_NO_NEW_LOGIN_AUTHORIZED"
+      "CURRENT_LATER_SOURCE_REVISION_DEPLOYMENT_LINEAGE_NOT_YET_MATCHED",
+      "CORRECTED_V35_IMAGE_NOT_STAGED_AND_CURRENT_DB_LIFECYCLE_ADMISSION_PENDING",
+      "G3_F5_F6_ORDINARY_APPLICATION_E2E_PENDING"
     ],
     "historicalAttempts": 304,
     "maximumCumulativeAttempts": 304,
@@ -3879,7 +4141,7 @@
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "ONE_NEW_PINNED_READ_ONLY_HISTORICAL_REGISTRY_OBSERVATION",
+    "currentRequiredHumanAction": "ONE_PINNED_LATER_OWNER_LINEAGE_METADATA_READ_ZERO_ENGINE_SQL_NO_LOGIN_OR_APPLY",
     "maximumNewOAuthRequests": 0,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
     "profileApplied": true,
@@ -3905,7 +4167,13 @@
       "newWindowOpened": true,
       "separateTerminalConsentRequired": true
     },
-    "runtimeAuthorityIssued": false
+    "runtimeAuthorityIssued": false,
+    "previousReasonsAtPreOnboardingFiniteUpdate": [
+      "NATIVE_PROFILE_APPROVED_ACTIVATION_PAUSED",
+      "HISTORICAL_REGISTRY_PREDICATE_FAILED_CORRELATION_UNPROVEN",
+      "F5_F6_PROOF_PENDING",
+      "OAUTH_BUDGET_EXHAUSTED_NO_NEW_LOGIN_AUTHORIZED"
+    ]
   },
   "unsegmentedFollowupWindows": [
     {

@@ -16,7 +16,7 @@ from .node_observation import RecoveryNodeObservation as PausedNodeObservation
 from paused_node_acceptance import PausedNodeAcceptance
 from file_only_node_owner import ObservationBudget
 from compile_file_only_frame_policy import compile_policy,private_bridge_namespace_name
-from tools.semantic_policy_token_owner.installed_owner import InstalledTokenOwner
+from .token_observer import require_observer
 from tools.semantic_provider_deployment_authentication import DetachedAuthenticator,private_bytes,decode,ancestors
 from tools.semantic_provider_deployment_signing import ExistingEd25519Signer
 from tools.semantic_provider_installer_approval import publish_once
@@ -34,9 +34,9 @@ def node_scope(plan,recipe,profile):
 class RecoveryNodeOwner:
     def __init__(self,lifecycle,profile,token_owner,verifier,signer,recipe):
         require(type(lifecycle) is Lifecycle and type(profile) is FileOnlyProfile
-            and type(token_owner) is InstalledTokenOwner and token_owner.observer is True
             and type(verifier) is DetachedAuthenticator and type(signer) is ExistingEd25519Signer,
             'ACTUAL_RECOVERY_NODE_OWNERS_REQUIRED')
+        require_observer(token_owner,lifecycle)
         self.lifecycle,self.profile,self.token_owner=lifecycle,profile,token_owner
         self.verifier,self.signer=verifier,signer
         self.plan=copy.deepcopy(lifecycle.plan);validate_plan(self.plan)
