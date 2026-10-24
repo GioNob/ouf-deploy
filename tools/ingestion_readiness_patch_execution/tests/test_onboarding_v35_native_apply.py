@@ -166,18 +166,18 @@ class Native(unittest.TestCase):
             self.assertLess(time.monotonic(),until);time.sleep(.5)
         self.sql("CREATE ROLE app_role LOGIN PASSWORD 'fixture-password'; CREATE SCHEMA ouf_onboarding AUTHORIZATION app_role;")
         owned=self.root/'owned';owned.mkdir(mode=0o750);os.chown(owned,1000,1000)
-        self.overlay=owned/'owner.json';self.overlay.write_text('{"ouf":{"authorization":{"ths":{"enabled":false}}}}');os.chown(self.overlay,10003,10003);self.overlay.chmod(0o400)
+        self.overlay=owned/'owner.yml';self.overlay.write_text('{"ouf":{"authorization":{"ths":{"enabled":false}}}}');os.chown(self.overlay,10003,10003);self.overlay.chmod(0o400)
         self.custody={str(self.overlay):{'parents':{str(owned):(1000,1000,0o750)},'file':(10003,10003,0o400)}}
         self.custody_patch=patch.object(gateway,'_EXISTING_CONFIG_CUSTODY',self.custody);self.custody_patch.start();self.addCleanup(self.custody_patch.stop)
         for name in('access','secret','token'):private(self.root/name,b'fixture-only',0o444)
         args=['run','-d','--name','v35-onboarding-'+self.root.name,'--network',self.network,'--restart','unless-stopped','--label','org.opencontainers.image.revision='+q.SOURCE]
         env={'OUF_ONB_DB_URL':'jdbc:postgresql://fixture-postgres:5432/onboarding_fixture','OUF_ONB_DB_USER':'app_role','OUF_ONB_DB_PASSWORD':'fixture-password',
-            'SPRING_APPLICATION_JSON':'{"ouf.authorization.ths.enabled":false}','SPRING_CONFIG_ADDITIONAL_LOCATION':'file:/fixture/owner.json',
+            'SPRING_APPLICATION_JSON':'{"ouf.authorization.ths.enabled":false}','SPRING_CONFIG_ADDITIONAL_LOCATION':'file:/fixture/owner.yml',
             'OUF_ONBOARDING_STAGING_ENDPOINT':'http://127.0.0.1:9000','OUF_ONBOARDING_STAGING_BUCKET':'ouf-managed-files',
             'OUF_ONBOARDING_STAGING_ACCESS_KEY_FILE':'/run/secrets/onboarding-minio-access-key','OUF_ONBOARDING_STAGING_SECRET_KEY_FILE':'/run/secrets/onboarding-minio-secret-key',
             'OUF_ONBOARDING_OBJECT_STORE_GATEWAY_BASE_URL':'http://127.0.0.1:9080','OUF_ONBOARDING_OBJECT_STORE_TOKEN_FILE':'/run/ouf-onboarding-auth/token'}
         for k,v in env.items():args+=['-e',k+'='+v]
-        for source,target in((self.overlay,'/fixture/owner.json'),(self.root/'access','/run/secrets/onboarding-minio-access-key'),(self.root/'secret','/run/secrets/onboarding-minio-secret-key'),(self.root/'token','/run/ouf-onboarding-auth/token')):args+=['-v',str(source)+':'+target+':ro']
+        for source,target in((self.overlay,'/fixture/owner.yml'),(self.root/'access','/run/secrets/onboarding-minio-access-key'),(self.root/'secret','/run/secrets/onboarding-minio-secret-key'),(self.root/'token','/run/ouf-onboarding-auth/token')):args+=['-v',str(source)+':'+target+':ro']
         self.app=self.docker(*args,os.environ['OUF_V35_OLD_IMAGE']);self.ids.append(self.app);actual=self.inspect(self.app);ip=actual['NetworkSettings']['Networks'][self.network]['IPAddress'];until=time.monotonic()+150
         while not self.health(ip):
             if time.monotonic()>=until:raise AssertionError('B0 fixture startup failed: '+self.docker('logs','--tail','80',self.app))
@@ -222,8 +222,9 @@ class Native(unittest.TestCase):
             'sqlSha256':core.sha(q.query(d,'app_role').encode()),'engineBinding':engine,'postgresRuntimeBinding':runtime_bindings.observed(self.rows['postgres'],runtime_bindings.NATIVE),
             'dockerExecutable':{'path':str(docker),'sha256':core.sha(docker.read_bytes())},'containerPrograms':{'env':'/usr/bin/env','timeout':'/usr/bin/timeout','psql':'/usr/bin/psql'},'unixSocketDirectory':'/var/run/postgresql'}
         expected={'path':str(self.overlay),'sha256':core.sha(self.overlay.read_bytes()),'metadata':list(m.identity(self.overlay.stat()))}
-        verifier=n.configuration_verifier(CONFIG,d,p,m,expected,ctx.jar)
-        classification=verifier.verify(actual,{'jar':ctx.jar},self.rows['postgres'],{'database':'onboarding_fixture','user':'app_role','schema':'ouf_onboarding'},5432,contract['applicationYamlSha256'])
+        with patch.object(n,'OWNER_OVERLAY',str(self.overlay)):
+            verifier=n.configuration_verifier(CONFIG,d,p,m,expected,ctx.jar)
+            classification=verifier.verify(actual,{'jar':ctx.jar},self.rows['postgres'],{'database':'onboarding_fixture','user':'app_role','schema':'ouf_onboarding'},5432,contract['applicationYamlSha256'])
         # Compiler gets an actual CI candidate config from its exact image archive.
         import tarfile
         with tarfile.open(package/'image.tar.gz','r:gz')as tar:
