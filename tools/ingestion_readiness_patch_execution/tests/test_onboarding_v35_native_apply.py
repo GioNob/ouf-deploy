@@ -169,7 +169,7 @@ class Native(unittest.TestCase):
         except (OSError,ValueError):return False
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory(dir=ROOT);self.root=Path(self.tmp.name);self.root.chmod(0o700);self.ids=[];self.network='v35-'+self.root.name;self.created=[]
-        self.docker('network','create',self.network)
+        self.docker('network','create','--subnet','10.203.0.0/24',self.network)
         self.addCleanup(self.cleanup)
         self.pg=self.docker('run','-d','--network',self.network,'--network-alias','fixture-postgres','-e','POSTGRES_USER=pgadmin','-e','POSTGRES_DB=onboarding_fixture','-e','POSTGRES_HOST_AUTH_METHOD=trust','postgres:17');self.ids.append(self.pg)
         until=time.monotonic()+60
@@ -252,20 +252,54 @@ class Native(unittest.TestCase):
         compiler=n.definitions(REPLACEMENT,('replacement',),namespace)
         case={'deployedSourceCommits':{'onboarding':q.SOURCE},'candidateSourceCommits':{'onboarding':manifest['testedCommit']},'readiness':{'onboarding':{'readinessPort':8080,'readinessPath':'/actuator/health/readiness'}}}
         replacement=compiler.replacement(saved,actual,{'imageAudit':{'imageId':contract['imageId'],'imageConfig':config},'imageArchive':ctx.image},case,'onboarding')
-        logical=core.digest({'fixtureOld':actual['Id'],'candidate':contract['archiveSha256']});parent=self.root/'contexts';parent.mkdir(mode=0o700);ctx.root=entry.create_context(parent,'onboarding-v35-apply-'+logical);(ctx.root/'empty-docker-config').mkdir(mode=0o700)
-        ctx.frozen={'engine':engine,'bootId':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),'logicalOperationRef':logical,'replacements':{'onboarding':replacement},
-            'unchangedApplications':{name:runtime_bindings.observed(row,runtime_bindings.NATIVE)for name,row in self.rows.items()if name!='onboarding'},'nativeFlywayConfiguration':classification}
-        ctx.source_bindings={}
-        for source in(core,ports,quarantine,entry):
-            target=self.root/(Path(source.__file__).name);raw=Path(source.__file__).read_bytes();ctx.source_bindings[str(target)]=private(target,raw)
-        ctx.source_bindings[str(ctx.root/'image_import.py')]=private(ctx.root/'image_import.py',IMPORT_RAW)
+        logical=core.digest({'fixtureOld':actual['Id'],'candidate':contract['archiveSha256']});parent=self.root/'contexts';parent.mkdir(mode=0o700)
+        code_root=self.root/'code';code_root.mkdir(mode=0o700)
+        for source,name in((core,'protocol.py'),(ports,'ports.py'),(quarantine,'quarantine.py'),(entry,'apply.py')):
+            raw=Path(source.__file__).read_bytes();source.__qualified_source_sha256__=private(code_root/name,raw)
+        private(code_root/'image_import.py',IMPORT_RAW)
+        helper=code_root/'retained-helper';helper.mkdir(mode=0o700)
+        private(helper/'plan.py',Path(n.__file__).read_bytes());private(helper/'configuration.py',CONFIG);private(helper/'replacement.py',REPLACEMENT)
         ctx.authority_inputs,self.signing_profile,self.public_policy=fixture_trust(self.root)
-        ctx.native_archive=None;ctx.native_archive_pin=None
-        return ctx
+        owner=self.root/'fixture-old-owner';owner.mkdir(mode=0o700);old_plan=owner/'execution-plan.json';old_hash=private(old_plan,ctx.oldplan)
+        inputs_path=self.root/'inputs.json';input_hash=private(inputs_path,{'bootId':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),**ctx.inputs})
+        frozen_root=self.root/'frozen-proposal';frozen_root.mkdir(mode=0o700);frozen_path=frozen_root/'execution-plan.json'
+        frozen={'schema':'ouf.onboarding-v35-frozen-native-plan.v1','kind':'FROZEN_PROPOSAL_NOT_EXECUTABLE_AUTHORITY',
+            'proposalHash':n.PROPOSAL_HASH,'inputHash':input_hash,'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,
+            'databaseMigration':{'flywayChecksum':1095739786},'stages':[{'name':stage}for stage in core.STAGES],
+            'retainedFiles':[{'path':str(old_plan),'sha256':old_hash}],'boundDatabaseProfile':ctx.profile,
+            'engine':engine,'bootId':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),'logicalOperationRef':logical,
+            'proposedAuthorityDirectory':str(parent/('onboarding-v35-apply-'+logical)),'replacements':{'onboarding':replacement},
+            'unchangedApplications':{name:runtime_bindings.observed(row,runtime_bindings.NATIVE)for name,row in self.rows.items()if name!='onboarding'},
+            'nativeFlywayConfiguration':classification}
+        frozen_hash=private(frozen_path,frozen);private(frozen_root/'complete.json',{'privatePlanHash':frozen_hash,'complete':True,'status':'ONBOARDING_V35_CURRENT_CONFIGURATION_AND_PLAN_FROZEN'})
+        retained_path=self.root/'fixture-retained-authority-inputs.json';retained_hash=private(retained_path,{'review':{'authorityInputs':ctx.authority_inputs}})
+        prior_path=self.root/'fixture-prior-review.json';prior_hash=private(prior_path,{'proposal':{'inputsBinding':{'path':str(retained_path),'sha256':retained_hash}}})
+        fake_r=types.SimpleNamespace(REVIEW=str(prior_path),REVIEW_HASH=prior_hash,json_at=r.json_at)
+        fake_n=types.SimpleNamespace(PROPOSAL_HASH=n.PROPOSAL_HASH,CONFIG_HASH=n.CONFIG_HASH,REPLACEMENT_HASH=n.REPLACEMENT_HASH,OWNER_OVERLAY=str(self.overlay),definitions=n.definitions)
+        # Only the already-proven historical bootstrap and private plan identity
+        # are fixture inputs. Execute the entire NEW Context constructor itself.
+        with patch.multiple(entry,FROZEN=str(frozen_path),FROZEN_HASH=frozen_hash,PARENT=str(parent),HELPER=str(helper/'plan.py'),__file__=str(code_root/'apply.py')),\
+             patch.multiple(d,INPUT=str(inputs_path),INPUT_HASH=input_hash),patch.object(q,'OWNER',str(owner)),patch.object(p,'PACKAGE',str(package)):
+            verified=entry.Context(fake_n,p,q,None,None,d,m,fake_r,CONFIG,REPLACEMENT,core,ports,code_root)
+        verified.fixture_frozen_hash=frozen_hash;self.assertTrue((verified.root/'preparation.claim.json').exists())
+        self.assertEqual(verified.frozen,frozen);self.assertEqual(verified.inputs['currentProcessIdentities'],ctx.inputs['currentProcessIdentities'])
+        self.assertEqual(verified.preflight_counts,{k:0 for k in core.LIMITS});verified.check_sources()
+        return verified
     def perform(self,kill=False):
         ctx=self.ctx
-        with patch.object(p,'PACKAGE',os.environ['OUF_V35_TEST_PACKAGE']),patch.object(postboot_authority,'authority_metadata',return_value=(self.signing_profile,self.public_policy)):
-            code,output,approved,killed=tty_call(lambda:entry.operator(ctx),kill_after_start_root=str(ctx.root)if kill else None)
+        with patch.object(entry,'FROZEN_HASH',ctx.fixture_frozen_hash),patch.object(p,'PACKAGE',os.environ['OUF_V35_TEST_PACKAGE']),patch.object(postboot_authority,'authority_metadata',return_value=(self.signing_profile,self.public_policy)):
+            def invoke():
+                try:return entry.operator(ctx)
+                except BaseException:
+                    path=ctx.root/'recovery.json'
+                    if path.exists():
+                        row=json.loads(path.read_bytes());print('FIXTURE_STAGE '+str(row['nextStage'])+' '+str(row['counts']),flush=True)
+                        responses=sorted(ctx.root.glob('engine-response-*.json'))
+                        if responses:
+                            last=json.loads(responses[-1].read_bytes())
+                            if last['status']>=400:print('FIXTURE_ENGINE_ERROR '+json.dumps(last)[:3000],flush=True)
+                    raise
+            code,output,approved,killed=tty_call(invoke,kill_after_start_root=str(ctx.root)if kill else None)
         self.assertTrue(approved,output.decode(errors='replace'));return code,output,killed
     def test_actual_exact_image_signed_pty_v34_to_v35_backup_and_source_preservation(self):
         code,output,_=self.perform();self.assertEqual(code,0,output.decode(errors='replace'))
