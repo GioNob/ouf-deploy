@@ -131,7 +131,9 @@ class Native(unittest.TestCase):
                     '-e','POSTGRES_HOST_AUTH_METHOD=trust','postgres:17').decode().strip();ids.append(pg)
                 deadline=time.monotonic()+45
                 while True:
-                    if subprocess.run(['docker','exec',pg,'pg_isready','-U','pgadmin','-d','onboarding_fixture'],
+                    # The official image's temporary init server listens only
+                    # on Unix sockets; wait for the final TCP server instead.
+                    if subprocess.run(['docker','exec',pg,'pg_isready','-h','127.0.0.1','-U','pgadmin','-d','onboarding_fixture'],
                         stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode==0:break
                     self.assertLess(time.monotonic(),deadline);time.sleep(.5)
                 self.sql(pg,"CREATE ROLE onboarding_role LOGIN; CREATE SCHEMA ouf_onboarding AUTHORIZATION onboarding_role;"
