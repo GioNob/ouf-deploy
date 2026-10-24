@@ -66,7 +66,11 @@ def _stop_unproven(ctx,review,raw,journal,reason):
                 expected=plan['runtimeLabelProjection']['expectedLabels']if key=='Labels'else value
                 core.require(actual['Config'].get(key)==expected,'V35_QUARANTINE_CONFIGURATION_CHANGED')
         started=actual['State']['Running']is True
-        core.require(requested_host_config_matches(request['HostConfig'],actual['HostConfig'],started=started)
+        stamp=actual['State'].get('StartedAt')
+        ever_started=started or generation is not None or(type(stamp)is str and stamp not in('','0001-01-01T00:00:00Z'))
+        # Stopping a previously started container does not undo Docker's
+        # already-qualified OOM default materialization (null -> false).
+        core.require(requested_host_config_matches(request['HostConfig'],actual['HostConfig'],started=ever_started)
             and core.digest(sorted(actual['Mounts'],key=lambda v:v['Destination']))==replacement['oldRuntimeBinding']['mountsHash'],
             'V35_QUARANTINE_HOST_OR_MOUNTS_CHANGED')
         if started and generation:core.require(ctx.m.process(actual)==generation,'V35_QUARANTINE_GENERATION_CHANGED')
@@ -141,7 +145,8 @@ def launch(ctx,review,gate,journal):
         signal.signal(signal.SIGHUP,signal.SIG_IGN);signal.signal(signal.SIGINT,signal.SIG_IGN)
         check(ctx,review,gate.raw);os.write(ready_write,b'READY');os.close(ready_write)
         monitor(ctx,review,gate.raw,journal,parent,pin);os._exit(0)
-    except BaseException:
+    except BaseException as error:
         # Keep the durable claim; unknown effects are never retried by another child.
-        try:ctx.m.new_file(ctx.root,'watchdog-stop.json',{'status':'STOP_RECONCILE','negativeEffectMayBePartial':True,'automaticReplayAllowed':False})
+        reason=str(error)if re.fullmatch('[A-Z0-9_]{1,120}',str(error))else'NEGATIVE_LEASE_OUTCOME_UNPROVEN'
+        try:ctx.m.new_file(ctx.root,'watchdog-stop.json',{'status':'STOP_RECONCILE','reasonCode':reason,'negativeEffectMayBePartial':True,'automaticReplayAllowed':False})
         finally:os._exit(2)

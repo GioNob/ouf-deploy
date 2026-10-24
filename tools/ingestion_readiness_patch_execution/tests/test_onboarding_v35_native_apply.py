@@ -341,7 +341,7 @@ class Native(unittest.TestCase):
         while True:
             row=json.loads((self.ctx.root/'recovery.json').read_bytes())
             if row.get('quarantine',{} )and row['quarantine'].get('state')=='APPLIED':break
-            if (self.ctx.root/'watchdog-stop.json').exists():self.fail('quarantine unproven: '+str(row))
+            if (self.ctx.root/'watchdog-stop.json').exists():self.fail('quarantine unproven: '+(self.ctx.root/'watchdog-stop.json').read_text()+' '+str(row))
             self.assertLess(time.monotonic(),until);time.sleep(.2)
         self.assertEqual(row['counts']['quarantineStops'],1);self.assertFalse(self.inspect(row['createdId'])['State']['Running']);self.assertFalse(self.inspect(self.app)['State']['Running'])
         self.assertEqual(self.sql('SELECT readiness_attempts||\'|\'||readiness_generation||\'|\'||readiness_phase FROM ouf_onboarding.managed_onboarding_review'),'3|4|PAUSED')
