@@ -1,0 +1,130 @@
+{
+  "schema": "ouf.onboarding-finite-budget-b0-v35-qualification.v1",
+  "sourceCommit": "1b1222ceaa5af85a25c20857e7c8c1b548b12dc1",
+  "pr": "https://github.com/GioNob/ouf-source-onboarding/pull/51",
+  "capturedSourceDeclaration": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+  "documentedCompletedOwner": "/etc/ouf/deploy-snapshots/installation-owner-update-execution-hnfn0zwg",
+  "testedMerge": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",
+  "testedTree": "69914e9d188e59716a7e3b32e4c074fae1806248",
+  "headTreeEqualsTestedTree": true,
+  "preservedB0Blobs": [
+    {
+      "path": "docs/INSTALLATION_ACTIVE_PRECONDITION_20261019.md",
+      "targetBlob": "b12f9c1021f4fead1cc6d00a8bf08b8024853d38",
+      "candidateBlob": "b12f9c1021f4fead1cc6d00a8bf08b8024853d38"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/InstallationBootstrapApi.java",
+      "targetBlob": "211e1c41ba2c0837f066ef3e96ae3a5e61054bbc",
+      "candidateBlob": "211e1c41ba2c0837f066ef3e96ae3a5e61054bbc"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/installation/InstallationConfigurationService.java",
+      "targetBlob": "3393138768f02d6e3845d8ccb36875c60f9403a9",
+      "candidateBlob": "3393138768f02d6e3845d8ccb36875c60f9403a9"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/InstallationConfigurationLifecycleRuntimeTest.java",
+      "targetBlob": "b69510d9489301dd21c57e77d1d754ce087f0cb2",
+      "candidateBlob": "b69510d9489301dd21c57e77d1d754ce087f0cb2"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/InstallationProjectionExportRuntimeTest.java",
+      "targetBlob": "6b25a75565b219ea72f9b649d8ecf5f867ce6f14",
+      "candidateBlob": "6b25a75565b219ea72f9b649d8ecf5f867ce6f14"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/InstallationBootstrapApiTest.java",
+      "targetBlob": "311e1a942878733e3b39442bd0578dc26dd4b2d4",
+      "candidateBlob": "311e1a942878733e3b39442bd0578dc26dd4b2d4"
+    }
+  ],
+  "migrationsV1ThroughV34BlobsUnchanged": true,
+  "migrationCount": 34,
+  "newMigration": "V35__managed_readiness_budget_sessions.sql",
+  "ci": {
+    "moduleRun": 40092379187,
+    "moduleJob": 120867533456,
+    "moduleTests": 281,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "managedReviewCases": 16,
+    "sourceRevisionCases": 7,
+    "installationLifecycleCases": 10,
+    "realV34ToV35UpgradeCases": 1,
+    "sdkBuildNonRootScanBootExport": "SUCCESS",
+    "browserRun": 40092379245,
+    "browserJob": 120867533517,
+    "playwrightTests": 4,
+    "latencyTests": 2,
+    "directLogsRead": true
+  },
+  "artifact": {
+    "artifactId": 12559990549,
+    "run": 40092379187,
+    "configImageIdVerified": true,
+    "imageExecuted": false,
+    "imageLoaded": false,
+    "imageUser": "10003:10003",
+    "manifest": {
+      "archiveBytes": 210893865,
+      "archiveName": "image.tar.gz",
+      "archiveSha256": "54d86bbcd2ea47fdbda133699b914674c766bdef8554132a308eae36d38f3358",
+      "humanBudgetGranted": false,
+      "imageId": "sha256:b121ebbcd4eae569de243748b01a7d51e7faabd7693ec1003c424a0442575e57",
+      "imageRevisionLabel": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",
+      "imageTag": "ouf-source-onboarding:194b586508c6661b40a74d9c7f99ed3b876f5fbc",
+      "preservedAtomicInstallationOwner": true,
+      "preservedDeploymentSourceCommit": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "preservedMigration": "V34__source_property_revision.sql",
+      "preservedMigrationGitBlob": "a6ee2ca93ae6b271e770e133e08da557bb379a09",
+      "preservedSourceRevisionParent": "be388e1462778438a208c2e00e166370fee32189",
+      "qualifiedInCiOnly": true,
+      "releaseAcceptance": false,
+      "repository": "GioNob/ouf-source-onboarding",
+      "reviewedSourceCommit": "1b1222ceaa5af85a25c20857e7c8c1b548b12dc1",
+      "schema": "ouf.onboarding-tested-image.v1",
+      "sourceSchemaMigration": "V35__managed_readiness_budget_sessions.sql",
+      "targetApplyAuthorized": false,
+      "testedCommit": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",
+      "testedTree": "69914e9d188e59716a7e3b32e4c074fae1806248",
+      "workflowRunAttempt": "1",
+      "workflowRunId": "40092379187"
+    },
+    "manifestRawSha256": "63d96c781cf88f55f672ac65d86de9e7c4b87056801dfd1c32129e638ba32553",
+    "targetApplyAuthorized": false,
+    "zipBytes": 210895493,
+    "zipSha256": "074bde3ecc348c9c9481683412f2c1ac376b2b2fdae409d688d71397a8c322e8"
+  },
+  "supersededArtifacts": [
+    {
+      "id": 12553563263,
+      "state": "BLOCKED",
+      "reason": "Wrong base; conflicting V34 and missing deployed source-revision and installation-owner contracts",
+      "targetImported": false
+    },
+    {
+      "id": 12557584376,
+      "state": "NOT_TARGET_ADMISSIBLE",
+      "reason": "Preserves be388 source revision but omits later b0 atomic installation owner",
+      "targetImported": false
+    }
+  ],
+  "limits": [
+    "Current image label is a declaration; completed owner/runtime exact binding to be verified before SQL",
+    "Application configuration precedence unresolved",
+    "No target schema/admission/lifecycle proof, no target import/migration/grant/activation",
+    "Native GOVERNED_IDENTITY publication and application E2E remain unproven"
+  ],
+  "warnings": [
+    "Trivy Ubuntu26.04 EOL catalogue warning",
+    "Actions Node20 actions forced to Node24"
+  ],
+  "targetStaged": false,
+  "targetImported": false,
+  "targetMigrationExecuted": false,
+  "targetNewBudgetGranted": false,
+  "runtimeAuthorityIssued": false,
+  "releaseAcceptance": false
+}

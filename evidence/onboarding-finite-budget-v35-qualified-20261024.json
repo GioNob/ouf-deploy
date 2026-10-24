@@ -93,5 +93,13 @@
   "targetMigrationExecuted": false,
   "targetNewBudgetGranted": false,
   "runtimeAuthorityIssued": false,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "currentTargetCompatibility": {
+    "status": "NOT_TARGET_ADMISSIBLE",
+    "observedCurrentSourceDeclaration": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+    "reason": "Intermediate candidate omits later atomic installation owner; qualification preserved as historical CI evidence only",
+    "supersededBy": "evidence/onboarding-finite-budget-b0-v35-qualified-20261024.json",
+    "targetImported": false,
+    "targetApplied": false
+  }
 }

@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-24T11:49:20Z",
+  "lastUpdatedAt": "2026-10-24T12:14:46Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1995,6 +1995,24 @@
       "humanBudgetsGranted": 0,
       "sourceActivations": 0,
       "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-B0-CURRENT-OWNER-LINEAGE-V35-PRESERVED-DATABASE-READER-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T12:14:46Z",
+      "classification": "USER_REPORTED_CURRENT_SOURCE_DECLARATION_AND_MATCHED_PG_ENGINE_WITH_DISTINCT_SQL_CI",
+      "targetEvidenceRef": "evidence/current-onboarding-source-revision-lineage-target-20261024.json",
+      "sourceQualificationRef": "evidence/onboarding-finite-budget-b0-v35-qualified-20261024.json",
+      "databaseReaderQualificationRef": "evidence/current-onboarding-database-reader-qualified-20261024.json",
+      "targetInvocationTimestampProvided": false,
+      "currentOnboardingSourceDeclaration": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "targetPostgresAndSourceRevisionEngineMetadataMatch": true,
+      "newTargetSqlExecuted": false,
+      "newOriginalRegistryGetExecuted": false,
+      "newImageTargetStaged": false,
+      "databaseMigrations": 0,
+      "humanBudgetsGranted": 0,
+      "sourceActivations": 0,
+      "noEffortAllocationInferred": true
     }
   ],
   "activeIntervals": [
@@ -2982,6 +3000,14 @@
       "targetExecuted": false,
       "engineRequests": 0,
       "sqlRequests": 0
+    },
+    "currentOnboardingContinuation": {
+      "targetEvidence": "evidence/current-onboarding-source-revision-lineage-target-20261024.json",
+      "sourceCommit": "1b1222ceaa5af85a25c20857e7c8c1b548b12dc1",
+      "sourceCiOnly": true,
+      "targetApplyAuthorized": false,
+      "currentDatabaseSnapshotPending": true,
+      "doNotReplayConsumedScopes": true
     }
   },
   "unverifiedIntervals": [
