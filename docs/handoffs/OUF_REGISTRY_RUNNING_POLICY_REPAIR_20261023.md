@@ -246,3 +246,28 @@ signals. The child is reaped. readOnlyRuntime is explicitly false for its
 transient child-membership effects. The original worker continues independently.
 This does not reproduce its existing seccomp/environment. Await actual target
 JSON before deciding a repair. Do not rerun prior observation or deployment.
+
+## Target worker-context TCP timeout and read-only physical-path inputs
+
+User1n5kK6eC reports the worker at RETRY_WAIT/version24, cumulative329, eight
+proven no-submission failures and zero publications/restarts. Host TLS verifies;
+the temporary probe in the exact cgroup/mount/root/network context times out at
+TCP_CONNECT, before any HTTP. It exited and left the worker unchanged. Its
+claim is consumed. This isolates a contextual connection failure; it does not
+yet identify the exact IP rule, NAT path or inherited filter. Never replay it.
+
+The new bounded read-only capture collects effective unit/ancestor IP policy,
+extra-filter/drop-in presence, local routing and relevant NAT declarations.
+Two exact gateway Engine GETs prove the retained gateway runtime binding still
+matches before/after; candidate translated addresses/ports are compared with
+its current published port and explicit IPAM assignment. No address, raw rule
+or credential is printed. Private inputs retain the candidate bindings for a
+narrow reviewed repair. Static declarations do not prove packet traversal;
+unknown rules/formats and unavailable readers are explicitly unproven.
+The capture has a new exclusive stable scope before any native command and
+uses at most12 read-only native commands,2 Engine GETs and45seconds. No new
+public HTTP/TLS, grant, cgroup, manager/configuration or ledger mutation.
+Nine focused parser/Unix API tests and an actual targeted OUTPUT DNAT fixture
+are being qualified in CI. The fixture tests public-only versus physical-path
+IP allow rules with real cgroup/root TLS discovery and zero token POSTs; it is
+not evidence of the target's NAT rule. The eight installed modules are intact.

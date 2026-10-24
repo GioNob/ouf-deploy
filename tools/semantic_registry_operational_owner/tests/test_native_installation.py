@@ -147,4 +147,58 @@ class Installation(unittest.TestCase):
         self.assertIn(denied['probe']['errorClass'],('TIMEOUT','CONNECTION_ERROR'))
 
 
+
+    def test_actual_dnat_requires_physical_endpoint_in_ip_projection(self):
+        import shutil
+        probe_spec=importlib.util.spec_from_file_location('nat_probe',ROOT/'scripts/probe-registry-operational-network-20261024.py')
+        probe=importlib.util.module_from_spec(probe_spec);probe_spec.loader.exec_module(probe)
+        cap_spec=importlib.util.spec_from_file_location('nat_capture',ROOT/'scripts/capture-registry-network-policy-20261024.py')
+        capture=importlib.util.module_from_spec(cap_spec);cap_spec.loader.exec_module(capture)
+        f=fixture_installation.prepare(self.fixture,ROOT,real_unit=True);review=f['review'];c=review['configuration']
+        original=Path(c['serviceUnitPath']);self.addCleanup(self.cleanup_unit,original.name,original)
+        installation.install_files(review,f['authority'],f['attestor'])
+        port=self.fixture.server.server_port;iptables=shutil.which('iptables');self.assertIsNotNone(iptables)
+        match=['-p','tcp','-d','127.0.0.2','--dport',str(port),'-m','comment','--comment',
+            'ouf-native-nat-'+self.fixture.root.name,'-j','DNAT','--to-destination','127.0.0.1:'+str(port)]
+        self.addCleanup(lambda:subprocess.run([iptables,'-t','nat','-D','OUTPUT',*match],capture_output=True,timeout=10))
+        subprocess.run([iptables,'-t','nat','-I','OUTPUT','1',*match],check=True,capture_output=True,timeout=10)
+        altered=copy.deepcopy(c);altered['ownerInputs']['iamProfile']['peer_addresses']=['127.0.0.2']
+        ca=Path(c['tlsCa']['path']).read_bytes()
+        baseline=probe.host_tls(altered['ownerInputs']['iamProfile'],ca)
+        self.assertTrue(baseline['certificateChainAndHostnameVerified'])
+        def dummy(suffix,allowed):
+            path=original.with_name(original.stem+suffix+'.service');self.addCleanup(self.cleanup_unit,path.name,path)
+            lines=[]
+            for line in review['serviceUnit']['body'].splitlines():
+                if line.startswith('IPAddressAllow='):continue
+                if line.startswith('ExecStart='):line='ExecStart=/usr/bin/sleep 90'
+                lines.append(line)
+                if line.startswith('IPAddressDeny='):lines.extend('IPAddressAllow='+address for address in allowed)
+            path.write_text('\n'.join(lines)+'\n');path.chmod(0o644)
+            self.manager('daemon-reload');self.manager('start',path.name)
+            pid=int(self.manager('show',path.name,'--property=MainPID','--value').strip())
+            group=self.manager('show',path.name,'--property=ControlGroup','--value').strip()
+            until=time.monotonic()+10
+            while True:
+                try:probe.frame(pid,group,Path(c['destinations']['installationRoot'])/'sandbox');break
+                except (ValueError,OSError):
+                    if time.monotonic()>=until:raise
+                    time.sleep(0.05)
+            return path,pid,group
+        public,pid,group=dummy('-nat-public',['127.0.0.2'])
+        capture.DEADLINE=time.monotonic()+30;capture.COUNTS.update(nativeCommandAttempts=0,engineGetAttempts=0)
+        manager=capture.program(('/usr/bin/systemctl',));properties=capture.unit_properties(manager,public.name)
+        self.assertTrue(capture.permitted('127.0.0.2',properties));self.assertFalse(capture.permitted('127.0.0.1',properties))
+        ip_program=capture.program(('/usr/sbin/ip','/usr/bin/ip'));self.assertTrue(capture.route_data(ip_program,'127.0.0.2')['routeTypeLocal'])
+        save=capture.program(('/usr/sbin/iptables-save','/sbin/iptables-save'));code,raw=capture.invoke(save,['-t','nat'])
+        self.assertEqual(code,0);candidates,_=capture.parse_save(raw,'127.0.0.2',port)
+        self.assertTrue(any(row['address']=='127.0.0.1' and row['port']==port for row in candidates))
+        blocked=probe.in_worker_group(altered,pid,group,ca)
+        self.assertFalse(blocked['probe']['tcpConnected']);self.assertFalse(blocked['probe']['httpGetAttempted'])
+        projected,fixed_pid,fixed_group=dummy('-nat-projected',['127.0.0.2','127.0.0.1'])
+        fixed=probe.in_worker_group(altered,fixed_pid,fixed_group,ca)
+        self.assertEqual(fixed['probe']['httpStatus'],200);self.assertTrue(fixed['probe']['discoveryMatchesConfiguredEndpoints'])
+        self.assertEqual(sum(path.endswith('/token') for path,_ in self.fixture.calls),0)
+
+
 if __name__=='__main__':unittest.main()

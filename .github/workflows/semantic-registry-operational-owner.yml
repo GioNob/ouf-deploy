@@ -9,6 +9,7 @@ on:
       - scripts/build-registry-operational-owner-launcher.py
       - scripts/observe-registry-operational-owner-20261024.py
       - scripts/probe-registry-operational-network-20261024.py
+      - scripts/capture-registry-network-policy-20261024.py
       - .github/workflows/semantic-registry-operational-owner.yml
   pull_request:
     paths:
@@ -17,6 +18,7 @@ on:
       - scripts/build-registry-operational-owner-launcher.py
       - scripts/observe-registry-operational-owner-20261024.py
       - scripts/probe-registry-operational-network-20261024.py
+      - scripts/capture-registry-network-policy-20261024.py
       - .github/workflows/semantic-registry-operational-owner.yml
   workflow_dispatch:
 permissions:
