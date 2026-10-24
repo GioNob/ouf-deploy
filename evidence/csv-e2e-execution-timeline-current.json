@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-24T14:33:29Z",
+  "lastUpdatedAt": "2026-10-24T16:48:29Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -2046,6 +2046,18 @@
       "humanBudgetsGranted": 0,
       "sourceActivations": 0,
       "targetNativePlanExecuted": false,
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true,
+      "newOriginalRegistryGetExecuted": false
+    },
+    {
+      "id": "CSV-EVENT-V35-NATIVE-PLAN-TARGET-B17-20261024",
+      "recordedAt": "2026-10-24T16:48:29Z",
+      "classification": "OPERATOR_REPORTED_CURRENT_CONFIGURATION_AND_NATIVE_PLAN_FROZEN",
+      "targetEvidenceRef": "evidence/onboarding-v35-native-plan-target-20261024.json",
+      "privatePlanHash": "b17c2c99cc791cced8ee00ed190e30b75c518ae84e2dd4a9ae7eef521390c8bd",
+      "targetNativePlanExecuted": true,
+      "targetApplyExecuted": false,
       "targetInvocationTimestampProvided": false,
       "noEffortAllocationInferred": true,
       "newOriginalRegistryGetExecuted": false
