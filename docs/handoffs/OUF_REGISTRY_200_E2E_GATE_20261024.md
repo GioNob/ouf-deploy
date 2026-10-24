@@ -1,3 +1,11 @@
+# CURRENT — 502/403 proof interpretation and Onboarding metadata stop
+
+Actual VPS original request HTTP200/exact ACTIVE/current caller+TLS proof remains retained (evidence/registry-original-request-200-target-20261024.json). Important precision: sealed caller_lookup copies the actual caller's resolv.conf/hosts/nsswitch.conf WITHOUT MODIFICATION, verifies hashes/generation and uses those files only in a private transport child. It does NOT substitute DNS answers or fall back to host resolver. The remaining gap is the actual ordinary application/Java process request and caches, full E2E and long-term/reboot/IP-change resilience; a private mount namespace alone is not evidence that different DNS inputs were used. No new original GET was executed.
+
+Latest unrelated Onboarding DBreader STOP SAME_RETAINED_ONBOARDING_ENGINE_REQUIRED/Exit2, Engine0/SQL0/exec0/migrations0/activations0/budget0; before newDBclaim. Log /home/oufadmin/ouf-onboarding-database.EOGUXcGV/operator.log. This is a historical/current metadata equality guard, not a newly observed502 or DB failure. Preserve helper root/log; no old command replay/reset. New zero-Engine/zeroSQL metadata reconciliation is UNDER QUALIFICATION, no delivery before nativeCI.8/8technical4/6functional/G3OPEN/E2E/acceptance/Supervisor pending.
+
+---
+
 > IMPLEMENTAZIONE SUCCESSIVA —24ottobre2026: [sessione finita Onboarding e comando di sola consegna](OUF_ONBOARDING_FINITE_SESSION_IMPLEMENTATION_20261024.md). SourcePR51/head431c601,CI40076974373 tutti252moduloPASS+build/scan/boot e browser40076974316(3+2)PASS, logdiretti letti. Nuovocontratto3tentativi/900sec conserva storia/cumulativi; V34/THS implementati, NONdeployed/budgetgranted. ImmagineCI conservata e verificata indipendentemente. Prossimo singolo comando consegna solo pacchetto rootprotetto/checksum/log/esclusiva; attendere JSON stagingVPS, poi revisione target concreta per migrazione/deploy. NessunDockerload/migration/activation/grant/APPROVO ora. Statoapplicativo originale200provato e normaleRegistry420/pub5 storico;4/6funzionaleG3OPEN,F5/F6/E2E/Supervisor aperti.
 
 # OUF — richiesta originale200 e successivo gate E2E,24ottobre2026

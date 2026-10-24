@@ -160,5 +160,26 @@
   "g3Open": true,
   "sourceProfilePublished": false,
   "e2eAccepted": false,
-  "supervisorStarted": false
+  "supervisorStarted": false,
+  "resolverProofClarification": {
+    "source": "SEALED142_MODULE_CALLER_LOOKUP_IMPLEMENTATION_AND_EXISTING_OPERATOR_RESULT",
+    "module": "tools.semantic_registry_recovery_execution.caller_lookup",
+    "mode": "COPIED_CALLER_FILES_PRIVATE_MOUNTS_V1",
+    "files": [
+      "resolv.conf",
+      "hosts",
+      "nsswitch.conf"
+    ],
+    "filesCopiedFromActualCallerWithoutModification": true,
+    "callerFileMetadataHashesAndProcessGenerationRechecked": true,
+    "hostResolverFallbackAllowed": false,
+    "differentResolverAnswersInjectedByProbe": false,
+    "privateMountsAffectOnlyTransportChild": true,
+    "sameLookupInputFilesDoesNotProveOrdinaryJavaProcessCall": true,
+    "javaDnsCacheStateProven": false,
+    "actualApplicationProcessRequestProven": false,
+    "fullE2eProven": false,
+    "permanentRenewalOrRebootIpChangeResilienceProven": false,
+    "clarificationIsNewCodeInterpretationNotNewVpsRequest": true
+  }
 }

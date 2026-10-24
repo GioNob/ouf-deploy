@@ -1,3 +1,13 @@
+# CURRENT — 502 recovery proof retained; DB reader stopped before Engine/SQL; metadata reconciliation under qualification
+
+502/403: actual original-resource HTTP200/exact ACTIVE/current credential+TLS proof retained. Sealed private resolver view copies actual caller files unchanged; no different DNS answers/host resolver fallback. Ordinary Java/application process/E2E/permanent renewal/reboot/IP-change resilience remain unproven. No new originalGET; see docs/handoffs/OUF_REGISTRY_200_E2E_GATE_20261024.md and original target evidence.
+
+Latest Onboarding DBreader STOP SAME_RETAINED_ONBOARDING_ENGINE_REQUIRED/Exit2, EngineGET0/SQL0/exec0/migration0/activation0/HUMANgrant0, before newDBscopeclaim. Log /home/oufadmin/ouf-onboarding-database.EOGUXcGV/operator.log. Evidence evidence/onboarding-finite-database-stop-target-20261024.json. Failed equality prepared.engine==plan.engine==captured.engine; changed field/cause NOT observed yet. Preserve helper root/log; do NOT relaunch/reset or weaken guard.
+
+New scripts/reconcile-onboarding-engine-metadata-20261024.py UNDER QUALIFICATION: distinct engine-binding-reconciliation-v1, protected files/socket filesystem alias/inode metadata+/proc identities only, two stable passes, zero Engine connections/GET/SQL/subprocess/service calls/credentialfiles/keys. Old DBreader definitions/bootstrap only, NEVER old prepare/main. Reports historical/current field differences and lineage without rewriting hashes, authorizing SQL or accepting a new runtime binding. Claims/root/log preserved onSTOP. Native CI required before delivery. Registry worker independent, no restart/reinstall/reset; repair/GET/old403/native11/input14GET scopes consumed.8/8technical4/6functional/G3OPEN/F5F6E2Eacceptance pending; Supervisor after.
+
+---
+
 # CURRENT — VPS Onboarding inputs captured; distinct one-session DB reader qualified, pinned delivery NEXT
 
 Actual VPS CURRENT_ONBOARDING_COHORT_INPUTS_CAPTURED/Exit0,14GET/currentCohortStable/archive+imageconfig+CIprovenanceverified. Input /etc/ouf/deploy-snapshots/onboarding-finite-session-ee8b7756f72f82a6/input-preparation-v1/inputs.json SHA b8040ef1c49af2455d9a28d26bac4ef4bbf297315c69c0b48256aa83f18b614b; log /home/oufadmin/ouf-onboarding-inputs.Yqa2iXyE/operator.log. Evidence evidence/onboarding-finite-session-inputs-target-20261024.json. Scope CONSUMED, NO replay/reset. SQL0/migrations0/imports0/activations0/HUMANgrants0; lifecycle/DBadmission NOT proven by NO_RECOGNIZED_MANAGER_LABEL.
