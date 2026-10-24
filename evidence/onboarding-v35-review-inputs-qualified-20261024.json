@@ -68,12 +68,14 @@
     "subprocessesByPreparer": 0,
     "ownerOverlayContentsOpened": false
   },
-  "targetDeliveryExecuted": false,
+  "targetDeliveryExecuted": true,
   "applyEntryQualified": false,
   "targetApplyAuthorized": false,
   "runtimeAuthorityIssued": false,
   "databaseAdmissionProven": false,
   "automaticReplayAllowed": false,
   "budgetReset": false,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "targetResultEvidence": "evidence/onboarding-v35-package-review-target-20261024.json",
+  "targetReviewInputsHash": "d52bb83265daff3d07ce04131249c0ab7465315ef35e83af13115ad79c5a1a0e"
 }

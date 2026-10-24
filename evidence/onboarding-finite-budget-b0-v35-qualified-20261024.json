@@ -121,7 +121,7 @@
     "Trivy Ubuntu26.04 EOL catalogue warning",
     "Actions Node20 actions forced to Node24"
   ],
-  "targetStaged": false,
+  "targetStaged": true,
   "targetImported": false,
   "targetMigrationExecuted": false,
   "targetNewBudgetGranted": false,
@@ -135,6 +135,13 @@
     "v35Absent": true,
     "selectedReadinessAttempts": 3,
     "selectedReadinessGeneration": 4,
-    "targetApplyAuthorized": false
-  }
+    "targetApplyAuthorized": false,
+    "all34SqlMigrationChecksumsMatchCandidate": true,
+    "runtimeOwnsV35AffectedRelations": true,
+    "runtimeHasSchemaCreate": true,
+    "capacitySnapshotHasHeadroom": true,
+    "currentConfigurationPrecedenceResolved": false
+  },
+  "targetStageEvidence": "evidence/onboarding-v35-package-review-target-20261024.json",
+  "targetReviewInputsHash": "d52bb83265daff3d07ce04131249c0ab7465315ef35e83af13115ad79c5a1a0e"
 }

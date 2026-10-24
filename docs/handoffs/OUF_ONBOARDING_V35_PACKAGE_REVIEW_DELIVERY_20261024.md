@@ -1,3 +1,5 @@
+> **CONSUMATO — pacchetto e proposta preparati sul VPS, non rilanciare il comando sotto.** EntrambiExit0, review-inputs d52bb83265daff3d07ce04131249c0ab7465315ef35e83af13115ad79c5a1a0e,34checksum target corrispondenti, nessun load/migrazione/grant/attivazione. Conservare /home/oufadmin/ouf-budget-v35-package.hFhNJLt3/operator.log e /home/oufadmin/ouf-v35-delivery.BuuvH1TT/bootstrap.log. Prossimo: [configurazione e piano esatto](OUF_ONBOARDING_V35_NATIVE_PLAN_DELIVERY_20261024.md). Le istruzioni sotto sono storia.
+
 # OUF — pacchetto V35 corretto e input della revisione, 24 ottobre 2026
 
 ## Prova VPS ricevuta
