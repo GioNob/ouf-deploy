@@ -86,7 +86,7 @@ class Policy(unittest.TestCase):
                 for _ in range(2):self.assertEqual(capture.engine_get(binding,cid),{'Id':cid})
                 with self.assertRaises(ValueError):capture.engine_get(binding,cid)
             finally:thread.join(6)
-            self.assertFalse(thread.is_alive());self.assertEqual(calls,[b'GET /v1.44/containers/'+cid.encode()+b'/json']*2)
+            self.assertFalse(thread.is_alive());self.assertEqual(calls,[b'GET /v1.44/containers/'+cid.encode()+b'/json HTTP/1.1']*2)
 
     def test_current_gateway_binding_detects_replacement_and_network_drift(self):
         row={'Id':'a'*64,'Image':'sha256:'+'b'*64,'State':{'Pid':123,'StartedAt':'fixture-start',
