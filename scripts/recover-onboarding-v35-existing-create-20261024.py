@@ -46,6 +46,9 @@ def main():
         result={'schema':'ouf.onboarding-v35-existing-create-result.v1','status':'STOP_RECONCILE','complete':False,'reasonCode':reason,
             'contextPath':str(ctx.root)if ctx else None,'runtimeEffectsMayBePartial':True,'automaticReplayAllowed':False,'budgetReset':False,'releaseAcceptance':False,
             'automaticRollbackPerformed':False,'humanBudgetsGranted':0,'sourceActivations':0,'originalRequestRepeated':False,'credentialValuesPrinted':False,'addressesPrinted':False}
-        if ctx is not None:result['retainedAndPreflightCounts']=ctx.preflight_counts
+        if ctx is not None:
+            result['retainedAndPreflightCounts']=ctx.preflight_counts
+            try:result['currentJournalCounts']=ctx.journal.read()['counts']
+            except Exception:result['currentJournalCountsObserved']=False
     print(json.dumps(result,sort_keys=True,separators=(',',':'),allow_nan=False),flush=True);return 0 if result.get('complete')is True else 2
 if __name__=='__main__':raise SystemExit(main())

@@ -48,10 +48,11 @@ class NativeRecovery(unittest.TestCase):
             patch.multiple(old.d,INPUT=str(self.root/'inputs.json'),INPUT_HASH=parent.frozen['inputHash']),patch.object(old.p,'PACKAGE',os.environ['OUF_V35_TEST_PACKAGE']),
             patch.object(old.postboot_authority,'authority_metadata',return_value=(self.signing_profile,self.public_policy))]
         for p in self.scope_patches:p.start();self.addCleanup(p.stop)
-        # Simulate elapsed old authority. The existing test policy covers the
-        # whole new window; production uses the real wall clock, with no offset.
-        real_time=time.time;offset=patch.object(time,'time',side_effect=lambda:real_time()+1000);offset.start();self.addCleanup(offset.stop)
-        return recovery.Context(parent.n,old.p,old.q,None,None,old.d,old.m,parent.r,old.CONFIG,old.REPLACEMENT,code,code/'recover.py')
+        # Only the historical-expiry observation is a fixture. Restore the real
+        # clock BEFORE any new review, signer, authority, watchdog or SQL work.
+        real_time=time.time
+        with patch.object(time,'time',side_effect=lambda:real_time()+1000):
+            return recovery.Context(parent.n,old.p,old.q,None,None,old.d,old.m,parent.r,old.CONFIG,old.REPLACEMENT,code,code/'recover.py')
     def invoke(self,ctx,wrong=False,kill=False):
         def run():
             try:return recovery.operator(ctx)

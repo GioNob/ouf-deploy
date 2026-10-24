@@ -68,7 +68,10 @@ class Context(base.Context):
         self.profile=copy.deepcopy(self.parent_review['nativePlan']['databaseProfile'])
         require(self.profile==self.frozen['boundDatabaseProfile'],'SAME_EXISTING_DATABASE_PROFILE_REQUIRED')
         self.contract,self.manifest,self.image,self.jar=p.packaged(m,self.files)
-        self.before=self.files.json(self.parent/'before-database.json',self.parent_review['beforeDatabaseHash'])
+        # The original entry retained psql's raw JSON bytes, while its signed
+        # review binds the canonical decoded object. Bind both representations.
+        self.before=self.files.json(self.parent/'before-database.json')
+        require(core.digest(self.before)==self.parent_review['beforeDatabaseHash'],'EXACT_RETAINED_DATABASE_OBJECT_REQUIRED')
         self.native_plan=copy.deepcopy(self.parent_review['nativePlan']);request=self.native_plan['replacement']['request']
         require(request.get('Hostname')==''and request['HostConfig']['NetworkMode']in(self.native_plan['replacement']['network']['id'],self.native_plan['replacement']['network']['name']),'ONLY_DEFAULT_HOSTNAME_ON_RETAINED_NETWORK_REQUIRED')
         request['Hostname']=self.created[:12]
@@ -138,6 +141,7 @@ class Execution(core.Execution):
         human=self.gate.check();row=self.journal.read();require(core.digest(row)==PARENT_JOURNAL,'EXACT_PARENT_CREATE_CLAIM_CAS_REQUIRED')
         require(self.ctx.preflight_counts['sqlSessions']==5 and self.ctx.preflight_counts['engineWrites']==4
             and all(BASE_COUNTS[k]<=v<=core.LIMITS[k]for k,v in self.ctx.preflight_counts.items()),'RETAINED_AND_PREFLIGHT_COUNTERS_MUST_BE_PRESERVED')
+        require(self.ctx.current_candidate_proof==self.review['recovery']['currentCandidate'],'SAME_REVIEWED_CURRENT_CANDIDATE_PROOF_REQUIRED')
         effects=copy.deepcopy(row['effects']);effects[7].update(state='APPLIED',proof={'creationReconciledWithoutReplay':True,
             'retainedJournalHash':PARENT_JOURNAL,'reconciliationReviewHash':core.digest(self.review),'currentCandidate':self.ctx.current_candidate_proof})
         self.save(row,effects=effects,nextStage=8,reviewHash=core.digest(self.review),authorityHash=core.sha(self.gate.raw),
