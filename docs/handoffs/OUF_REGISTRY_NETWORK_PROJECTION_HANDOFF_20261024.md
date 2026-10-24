@@ -1,3 +1,13 @@
+# CURRENT — piano VPS b17 consumato; ingresso V35 ancora in qualifica nativa
+
+Ultima prova VPS: configurazione/piano congelati con hash b17c2c99cc791cced8ee00ed190e30b75c518ae84e2dd4a9ae7eef521390c8bd,4GET/2letture ownerconfig private/0SQL/0effetti. Log /home/oufadmin/ouf-v35-native-plan.q7UJXZS8/operator.log. Non rilanciare freeze/staging/SQL o vecchie procedure. Immagine ancora soltanto staged; nessuna migrazione/grant/attivazione/authority/apply sul target.
+
+Stato di sviluppo e prossimo passo in [OUF_ONBOARDING_V35_NATIVE_APPLY_QUALIFICATION_20261024.md](OUF_ONBOARDING_V35_NATIVE_APPLY_QUALIFICATION_20261024.md). Nuovo codice e constructor in CI, NON qualificati/consegnabili. Ultimo codice0246a4ee23dd30673a674dce35f039f6e295f286; workflow sorgentea8eff276cc1516f96cb118237274ccbc341dbc56, soli fileCI modificati rispetto a1b. Attuali native40116935619/40116932143 in corso.5file di runtime previsti: ingresso/protocol/ports/quarantine e helperoriginale image_import.py SHA2e7255c7222cfe69a2fd115fcb9b05cf4f31bd6cc24af6532718621bce9f112d; solo2funzioni AST, nessuna modifica alle142dipendenze/fallback. Nessun comando VPS aggiuntivo prima di qualifica completa e revisione fresca firmataAPPROVO dal controllingTTY.
+
+502: GET originale200/exactACTIVE/currentcredential+TLS già provata sul VPS, distinta dalla CI. Nessuna nuovaGET; E2E/F5/F6 e tenuta futura aperti.8/8tecnico4/6funzionale,G3OPEN; Supervisor dopo E2E. Registryworker indipendente e intatto, nessun reset/restart/reinstall. Dopo deployV35 provato, budgetHUMAN finito distinto dall'attivazione stessafonte/version/hash. I successivi header sono storia.
+
+---
+
 # CURRENT — pacchetto V35 staged e34checksum target corrispondenti; verifica configurazione/piano esatto qualificata, delivery NEXT
 
 VPS CORRECTED_V35_PACKAGE_BYTES_VERIFIED + ONBOARDING_V35_PACKAGE_AND_REVIEW_INPUTS_PREPARED, entrambi Exit0. Nuovo package protetto /etc/ouf/deploy-snapshots/onboarding-budget-v35-54d86bbcd2ea47fd; review-inputs d52bb83265daff3d07ce04131249c0ab7465315ef35e83af13115ad79c5a1a0e. Tutti34checksum SQL target corrispondono al candidato,35risorse packaged/Git corrispondenti, history riuscita/1riga nonSQL riconosciuta. V35 assente, colonne/constraint legacy e privilegiDDL/CREATE schema/capacità snapshot compatibili. Fonte PAUSED3/generazione4; pinproc Onboarding/PG conservati.0nuoviEngine/SQL/exec/subprocess/effetti, immagine NON caricata/migrata/attivata, nessunbudget/authority. Log /home/oufadmin/ouf-budget-v35-package.hFhNJLt3/operator.log e /home/oufadmin/ouf-v35-delivery.BuuvH1TT/bootstrap.log. Evidence onboarding-v35-package-review-target-20261024.json. Stage/review scopes CONSUMATI: non rilanciare/reset né scaricare ancora il pacchetto.
