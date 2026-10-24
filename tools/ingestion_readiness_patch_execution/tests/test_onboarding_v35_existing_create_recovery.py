@@ -26,6 +26,8 @@ class NativeRecovery(unittest.TestCase):
         # No target/execution journal or cumulative attempt counter is reset.
         compiler=old.module('independent_recovery_fixture_plan_'+str(time.monotonic_ns()),Path(old.n.__file__))
         selected=patch.object(old,'n',compiler);selected.start();self.addCleanup(selected.stop)
+        metadata=old.module('independent_recovery_fixture_metadata_'+str(time.monotonic_ns()),Path(old.m.__file__))
+        selected_metadata=patch.object(old,'m',metadata);selected_metadata.start();self.addCleanup(selected_metadata.stop)
         old.Native.setUp(self)
     def cleanup(self):
         # Remove ONLY the exact untagged CI candidate image after its disposable

@@ -212,7 +212,8 @@ def operator(ctx):
                 'currentCandidate':ctx.current_candidate_proof,'remainingStages':list(core.STAGES[8:]),'onePhysicalSqlSession':True,'readOnlyTransactions':2,
                 'noOpenTransactionDuringWaits':True,'createImportBackupStopOldReplayAuthorized':False},
             'verification':{'trustPolicy':ctx.authority_inputs['trustPolicy'],'openssl':ctx.authority_inputs['executables']['openssl'],'context':ctx.authority_inputs['context']}}
-        core.validate_review(review);ctx.m.new_file(ctx.root,'review.json',review);decision=terminal_decision(review,ctx.root/'review.json')
+        core.validate_review(review);adapter.review=review
+        ctx.m.new_file(ctx.root,'review.json',review);decision=terminal_decision(review,ctx.root/'review.json')
         require(ctx.r.json_at(ctx.root/'review.json',core.digest(review))==review and authority_metadata(ctx.authority_inputs)==(profile,policy),'RECOVERY_REVIEW_OR_POLICY_CHANGED_DURING_DECISION')
         observation.check();adapter.guard(core.STAGES[7]);require(adapter.image()is not None,'CURRENT_EXACT_V35_IMAGE_REQUIRED')
         gate=core.issue(review,ctx.root,profile,decision,ctx.m.new_file,ctx.r.json_at);adapter.gate=gate
