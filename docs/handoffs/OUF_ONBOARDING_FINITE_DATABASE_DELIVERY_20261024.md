@@ -1,3 +1,15 @@
+# CURRENT — 502 original200 proof retained/clarified; DB stopped at metadata guard; zero-Engine/SQL reconciliation QUALIFIED and pinned delivery NEXT
+
+502/403 actual VPS HTTP200/exactACTIVE/currentcredential+TLS remains proven. Private child resolver files are IDENTICAL copies of current caller files, not forced DNS answers/host fallback; ordinary actual Java/application-process call/caches, E2E and future/reboot/IPchange resilience remain unproven. No originalGET replay or new502 observation. Evidence and precision in docs/handoffs/OUF_REGISTRY_200_E2E_GATE_20261024.md.
+
+Actual DBreader STOP SAME_RETAINED_ONBOARDING_ENGINE_REQUIRED/Exit2, Engine0/SQL0/exec0/migration0/activation0/HUMANgrant0, before newDBclaim. Preserve /home/oufadmin/ouf-onboarding-database.EOGUXcGV/operator.log and helperroot; DO NOT relaunch old DBcommand/reset. Failed prepared.engine==plan.engine==captured.engine; which field differs still UNOBSERVED. Evidence evidence/onboarding-finite-database-stop-target-20261024.json. No SQL scope absence assumed until metadata read.
+
+NEXT one command docs/handoffs/OUF_ONBOARDING_ENGINE_METADATA_DELIVERY_20261024.md. Source1a8b5c1bf6c34e856ee28666f76d7ffeac11c216/scripts/reconcile-onboarding-engine-metadata-20261024.py SHA16cbb89e42b8dfed0e3a32b9248224d86fa21ed000b5d1e10c95c5ca04461ded/readbackequal. CI40084404503/job120844257867 and PR40084408317/job120844268630:8PASS/zeroSkipped, directlogsread. Actualsocketfilesystem/inode/rootownedalias/proc tests, explicit Engine/SQL/Popen/oldentry/socketconstructor forbidden. Historical runtime/reviews/receipt fixtures synthetic; nottarget/fullbootstrap/daemonAPIproof.
+
+Distinct engine-binding-reconciliation-v1/filesystem+proc only, max45sec/zeroEngineconnections/GET/SQL/exec/servicecalls/credentials/keys/workeractions. Two stable passes classify fields/aliases/currentphysicalsocket and historical runtime vs captured metadata without rewriting hashes, accepting a new runtime binding or authorizing SQL. Old DBsource/bootstrapdefinitions only, NEVER prepare/main/query. Await ONBOARDING_ENGINE_METADATA_RECONCILED JSON/privatepath/hash; no private contents. OnSTOP preserve root/claim/log, no relaunch/reset. Then resolve only proven delta with currentcustody/lineage/newqualification, no blanket guard weakening or old replay.8/8technical4/6functional/G3OPEN/F5F6E2Eacceptance pending; Supervisor after. NormalRegistryindependent/no restart/reinstall/reset;420/pub5 historical. Lower DBdelivery/pendingqualification statements historical.
+
+---
+
 # Onboarding — una lettura database distinta, 24 ottobre 2026
 
 ## Ultimo risultato VPS vero

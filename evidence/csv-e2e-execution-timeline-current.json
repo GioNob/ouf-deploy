@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-24T09:39:14Z",
+  "lastUpdatedAt": "2026-10-24T10:05:23Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -1963,6 +1963,21 @@
       "targetInvocationTimestampProvided": false,
       "noEffortAllocationInferred": true,
       "functionalMilestonesUnchanged": true
+    },
+    {
+      "id": "CSV-EVENT-ONBOARDING-DB-METADATA-STOP-RECONCILIATION-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T10:05:23Z",
+      "classification": "OPERATOR_REPORTED_ZERO_DISPATCH_METADATA_STOP_AND_DISTINCT_METADATA_CI",
+      "targetStopEvidenceRef": "evidence/onboarding-finite-database-stop-target-20261024.json",
+      "qualificationEvidenceRef": "evidence/onboarding-engine-metadata-qualified-20261024.json",
+      "reasonCode": "SAME_RETAINED_ONBOARDING_ENGINE_REQUIRED",
+      "engineGetAttempts": 0,
+      "sqlSessionAttempts": 0,
+      "containerExecAttempts": 0,
+      "newOriginalRegistryGetExecuted": false,
+      "targetReconciliationExecuted": false,
+      "noEffortAllocationInferred": true,
+      "targetInvocationTimestampProvided": false
     }
   ],
   "activeIntervals": [
@@ -2766,7 +2781,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_ONBOARDING_FINITE_DATABASE_DELIVERY_20261024.md",
+    "currentHandoff": "docs/handoffs/OUF_ONBOARDING_ENGINE_METADATA_DELIVERY_20261024.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 304,
@@ -2888,12 +2903,40 @@
         40082658534,
         40082662064
       ],
-      "targetExecuted": false,
+      "targetExecuted": true,
       "maximumSqlAttempts": 1,
       "maximumEngineGets": 4,
       "scope": "onboarding-database-snapshot-v1",
       "databaseIdentityFromOnboarding": true,
-      "legacyIngestionIdentityMustNotBeUsed": true
+      "legacyIngestionIdentityMustNotBeUsed": true,
+      "targetEntryInvoked": true,
+      "targetSqlDispatched": false,
+      "targetSnapshotObserved": false,
+      "status": "STOP_RECONCILE",
+      "reasonCode": "SAME_RETAINED_ONBOARDING_ENGINE_REQUIRED",
+      "engineGetAttempts": 0,
+      "sqlSessionAttempts": 0,
+      "containerExecAttempts": 0,
+      "evidenceRef": "evidence/onboarding-finite-database-stop-target-20261024.json",
+      "oldCommandMustNotBeReplayed": true
+    },
+    "onboardingEngineMetadataReconciliation": {
+      "qualifiedSource": "1a8b5c1bf6c34e856ee28666f76d7ffeac11c216",
+      "qualificationRuns": [
+        40084404503,
+        40084408317
+      ],
+      "targetExecuted": false,
+      "maximumEngineGets": 0,
+      "maximumSqlAttempts": 0,
+      "newBindingAcceptedForRuntime": false,
+      "newSqlAttemptAuthorized": false
+    },
+    "registryOriginal200ResolverPrecision": {
+      "actualCallerFilesCopiedUnchanged": true,
+      "differentDnsAnswersInjected": false,
+      "ordinaryApplicationProcessCallProven": false,
+      "newGetExecuted": false
     }
   },
   "unverifiedIntervals": [
@@ -3973,9 +4016,9 @@
     "gate": "G3",
     "humanInterventionRequired": true,
     "reasons": [
-      "FINITE_SESSION_IMAGE_STAGED_NOT_DEPLOYED",
-      "ONBOARDING_CURRENT_BINDINGS_CAPTURED_DATABASE_SNAPSHOT_AND_LIFECYCLE_ADMISSION_PENDING",
-      "G3_F5_F6_E2E_PENDING"
+      "ONBOARDING_DB_READER_HISTORICAL_CURRENT_ENGINE_METADATA_EQUALITY_STOP_ZERO_DISPATCH",
+      "FIRST_ONBOARDING_SQL_SNAPSHOT_AND_LIFECYCLE_ADMISSION_PENDING",
+      "G3_F5_F6_AND_ORDINARY_APPLICATION_E2E_PENDING"
     ],
     "historicalAttempts": 304,
     "maximumCumulativeAttempts": 304,
@@ -3983,7 +4026,7 @@
     "resetAllowed": false,
     "automaticLoginAllowed": false,
     "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "ONE_PINNED_ONBOARDING_DATABASE_READ_ONLY_SQL_SESSION_NO_LOGIN_OR_RUNTIME_APPLY",
+    "currentRequiredHumanAction": "ONE_PINNED_METADATA_RECONCILIATION_ZERO_ENGINE_CONNECTIONS_ZERO_SQL_NO_LOGIN_OR_RUNTIME_APPLY",
     "maximumNewOAuthRequests": 0,
     "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
     "profileApplied": true,
