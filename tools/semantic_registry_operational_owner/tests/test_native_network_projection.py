@@ -145,7 +145,13 @@ class Projection(unittest.TestCase):
         # worker and prove online readmission without another grant or refund.
         published_attempts=final['cumulativeAttempts'];posts=sum(path.endswith('/token')for path,_ in self.fixture.calls)
         self.manager('daemon-reload');self.manager('restart',unit.name)
-        current=self.wait_state(c,'ACTIVE')
+        until=time.monotonic()+20
+        while True:
+            current=installation.read_object(Path(c['destinations']['ledgerRoot'])/'state.json')
+            if current['state']=='ACTIVE' and current['reason']=='CURRENT_PUBLICATION_READMITTED' and current['version']>final['version']:break
+            self.assertNotIn(current['state'],('BLOCKED','REVOKED'))
+            if time.monotonic()>=until:self.fail('Fresh post-reload online readmission was not observed')
+            time.sleep(0.2)
         self.assertEqual(current['cumulativeAttempts'],published_attempts)
         self.assertEqual(sum(path.endswith('/token')for path,_ in self.fixture.calls),posts)
         self.capture.DEADLINE=time.monotonic()+15
