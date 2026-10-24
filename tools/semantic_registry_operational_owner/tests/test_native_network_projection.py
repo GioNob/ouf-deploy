@@ -141,6 +141,16 @@ class Projection(unittest.TestCase):
         self.assertEqual(int(self.manager('show',unit.name,'--property=MainPID','--value').strip()),pid)
         self.assertEqual(unit.read_bytes(),old['serviceUnit']['body'].encode('ascii'))
         self.assertTrue((Path('/etc/systemd/system.control')/(unit.name+'.d')/'50-IPAddressAllow.conf').exists())
+        # Disposable fixture only: reparse the persistent drop-in, restart the
+        # worker and prove online readmission without another grant or refund.
+        published_attempts=final['cumulativeAttempts'];posts=sum(path.endswith('/token')for path,_ in self.fixture.calls)
+        self.manager('daemon-reload');self.manager('restart',unit.name)
+        current=self.wait_state(c,'ACTIVE')
+        self.assertEqual(current['cumulativeAttempts'],published_attempts)
+        self.assertEqual(sum(path.endswith('/token')for path,_ in self.fixture.calls),posts)
+        self.capture.DEADLINE=time.monotonic()+15
+        restarted=self.capture.unit_properties(manager,unit.name)
+        self.assertEqual(sorted(str(net)for net in self.capture.network_list(restarted['IPAddressAllow'])),review['projectedAllowlist'])
         with self.assertRaises((FileExistsError,self.repair.Denied)):
             self.repair.apply_projection(review,gate,repair_root,self.capture,current_guard,attestor)
         self.assertEqual(self.repair.COUNTS['managerMutationAttempts'],1)
