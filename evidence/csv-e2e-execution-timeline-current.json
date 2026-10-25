@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-25T06:40:00Z",
+  "lastUpdatedAt": "2026-10-25T06:47:53.539Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -2274,6 +2274,18 @@
       "applicationE2EProven": false,
       "newAcquisitionsRequested": 0,
       "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-ACQUISITION-READ-INPUTS-TARGET-COMPLETE-20261025",
+      "recordedAt": "2026-10-25T06:47:53.539Z",
+      "classification": "USER_REPORTED_VPS_READ_ONLY_INPUT_CAPTURE_COMPLETE_NO_AUTHORITY",
+      "evidenceRef": "evidence/acquisition-read-current-inputs-target-20261025.json",
+      "scopeConsumed": true,
+      "engineGetAttempts": 10,
+      "sqlSessions": 0,
+      "oauthRequests": 0,
+      "targetApplyAuthorized": false,
+      "noEffortAllocationInferred": true
     }
   ],
   "activeIntervals": [
@@ -4478,7 +4490,89 @@
         "launcherSha256": "b7f876991917ab3e805eca439865f0cc714eee01440a3609713817f560da8ec2",
         "launcherValidation": "bash -n; custody helper inspected; full production bootstrap not executed"
       },
-      "next": "One-shot readonly VPS input capture, reconcile current MCP authentication declarations and lifecycle; then finish qualification and concrete signed target review before any runtime mutation."
+      "next": "One-shot readonly VPS input capture, reconcile current MCP authentication declarations and lifecycle; then finish qualification and concrete signed target review before any runtime mutation.",
+      "targetInputCapture": {
+        "schema": "ouf.acquisition-read-current-inputs-target-evidence.v1",
+        "source": "User-supplied VPS operator JSON and exit/log lines",
+        "status": "CURRENT_ACQUISITION_READ_OWNER_INPUTS_CAPTURED",
+        "complete": true,
+        "exit": 0,
+        "deliveryExit": 0,
+        "privateInputsPath": "/etc/ouf/deploy-snapshots/acquisition-evidence-current-inputs-v1/inputs.json",
+        "privateInputsHash": "c40ba6dc86e8be72ddcda2eaef65fe3eb8aa9f24b8ec4b0d5758b0bfeacf1da6",
+        "readerSha256": "6034ac85c6401b7770bf40815780e168c3421d96de2166dd0d39c0059373bf3e",
+        "operatorLog": "/home/oufadmin/ouf-acquisition-inputs.e9Ibyqur/operator.log",
+        "deliveryLog": "/home/oufadmin/ouf-acquisition-delivery.kpnxkfd3/bootstrap.log",
+        "currentSelectedRoles": [
+          "ingestion",
+          "udp",
+          "mcp",
+          "gateway",
+          "postgres"
+        ],
+        "currentCohortStable": true,
+        "currentProcessPinsObserved": true,
+        "currentSocketMatchesRetainedSeed": true,
+        "rootEnginePeerObserved": true,
+        "engineGetAttempts": 10,
+        "privateMetadataReadPasses": 2,
+        "historicalComparedFields": [
+          "containerId",
+          "imageId",
+          "pid",
+          "startedAt"
+        ],
+        "historicalChangedFieldsByRole": {
+          "ingestion": [],
+          "udp": [],
+          "mcp": [],
+          "gateway": [],
+          "postgres": []
+        },
+        "mcpAuthenticationDeclaration": {
+          "clientCredentialsDeclared": true,
+          "staticWorkloadBearerDeclared": false,
+          "workloadTokenFileDeclared": false,
+          "multipleAuthenticationDeclarations": false,
+          "duplicateEnvironmentNames": false,
+          "effectiveConfigurationNotResolvedByThisReader": true
+        },
+        "lifecycleDeclarations": {
+          "ingestion": "NO_RECOGNIZED_MANAGER_LABEL",
+          "udp": "NO_RECOGNIZED_MANAGER_LABEL",
+          "mcp": "NO_RECOGNIZED_MANAGER_LABEL",
+          "gateway": "NO_RECOGNIZED_MANAGER_LABEL",
+          "postgres": "NO_RECOGNIZED_MANAGER_LABEL"
+        },
+        "lifecycleOwnershipProven": false,
+        "engineApiIdentityProvenByThisReader": false,
+        "effectiveConfigurationPrecedenceResolved": false,
+        "sourceImageProvenanceVerified": false,
+        "serviceCredentialFilesOpened": 0,
+        "bearerFilesOpened": 0,
+        "privateSigningKeysRead": 0,
+        "sqlSessions": 0,
+        "oauthRequests": 0,
+        "httpApplicationRequests": 0,
+        "containerWrites": 0,
+        "imageImports": 0,
+        "sourceActivations": 0,
+        "humanBudgetsGranted": 0,
+        "databaseMigrations": 0,
+        "retainedContextWrites": 0,
+        "engineConfigurationRetainedPrivately": true,
+        "credentialValuesPrinted": false,
+        "addressesPrinted": false,
+        "runtimeAuthorityIssued": false,
+        "targetApplyAuthorized": false,
+        "releaseAcceptance": false,
+        "applicationReadinessProven": false,
+        "applicationE2EProven": false,
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "scopeConsumed": true,
+        "originalRequestRepeated": false
+      }
     }
   },
   "developmentCandidates": [
@@ -4539,7 +4633,7 @@
   ],
   "runtimeBlockers": {
     "gate": "G4",
-    "humanInterventionRequired": true,
+    "humanInterventionRequired": false,
     "reasons": [
       "ACK_WATERMARK_AND_PER_ROW_MATERIALIZATION_PROVENANCE_NOT_EXPOSED_BY_AVAILABLE_MCP_TOOLS",
       "NEW_RUN_BINDING_TO_REVIEWED_PUBLICATION_AND_SAME_CSV_NOT_PROVEN",
@@ -4636,12 +4730,13 @@
         }
       }
     },
-    "currentRequiredHumanAction": "ONE_PINNED_READ_ONLY_ACQUISITION_OWNER_INPUT_CAPTURE_MAX10_ENGINE_GETS_ZERO_SQL_OAUTH",
+    "currentRequiredHumanAction": null,
     "additionalCandidateBlockers": [
       "MCP_GO_2026_6809_GO1_26_9",
       "GATEWAY_SIGNATURE_NEGATIVE_TEST_FAILURE_UNRESOLVED",
       "PACKAGED_READ_OWNER_BOOTSTRAP_AND_MINIMAL_MCP_DELIVERY_NOT_QUALIFIED"
-    ]
+    ],
+    "currentAgentWork": "QUALIFY_PACKAGED_OWNER_READ_IMAGES_AND_MINIMAL_SINGLE_MANAGER_MCP_DELIVERY"
   },
   "unsegmentedFollowupWindows": [
     {

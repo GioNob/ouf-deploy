@@ -1,3 +1,15 @@
+# CURRENT — input VPS acquisiti; scope consumato; qualificazione immagini in corso
+
+Il lettore input è completato sul VPS:10 GET, due passate stabili, nessuna differenza storica nei cinque ruoli selezionati. inputs.json SHA256 c40ba6dc86e8be72ddcda2eaef65fe3eb8aa9f24b8ec4b0d5758b0bfeacf1da6, evidenza evidence/acquisition-read-current-inputs-target-20261025.json. ZERO SQL/OAuth/lifecycle/credenziali aperte. Scope acquisition-evidence-current-inputs-v1 CONSUMATO: non rilanciare il comando né sovrascriverlo.
+
+MCP dichiara soltanto client credentials, nessun bearer statico/file-token o duplicato env; questo non prova ancora tutta la precedenza/configurazione effettiva. Non avviare un secondo MCP/gestore OAuth. Pianificare l'integrazione mantenendo un solo gestore e preservando identità/configurazione del processo esistente; qualsiasi sostituzione richiede piano concreto qualificato e revisione firmata APPROVO nel terminale. Nessuna nuova autorità runtime concessa dal lettore. Nessun lifecycle owner provato dalla semplice assenza di label manager.
+
+Correzioni candidate: MCP754c4f5a31f1faab6a4b078ab78d38322f05a8b7 aggiorna Go a1.26.10 in modulo/build/CI/verify per GO-2026-6809; Gateway0c6939eb8b8d793a933128938f2e0b0cda20baa1 corregge il test negativo: cambia un byte decodificato della firma anziché caratteri Base64 che potevano lasciare invariata la firma. Guardie produzione non allentate;67test locali PASS. CI generale push MCP40170081377 e Gateway40170084604 SUCCESS; log diretti da completare nel prossimo checkpoint.
+
+Nuova qualificazione Docker/pacchetto degli owner READ avviata: Ingestion3ab998feb55ba0681d30635cdac35fac0f78e5db, UDPb6a9f36a4f98ae8a2aab3bd055e5703bd84a8fb7. Applicazioni isolate tramite PropertiesLauncher, immagini nonroot, rootfs readonly, capdrop/no-new-privileges; test HTTP firmato contro PostgreSQL17 e mutazione negata, nessun effetto VPS. Esito CI ancora non dichiarato in questo checkpoint.
+
+Stato funzionale invariato: ACTIVE/G3 PASSED/8di8tecnico/4di6funzionale, due run SUCCEEDED conservate. E2E/G4/F5/F6 aperti; Supervisor dopo E2E. I percorsi502/403 verificati funzionano, non confondere questa prova con accettazione completa. Nessuna nuova acquisizione, reset o replay delle procedure consumate. Header precedenti sono cronologia, questo stato prevale.
+
 # CURRENT — lettore input VPS qualificato; proiezioni E2E candidate, non installate
 
 Stato conservato: source teatri-csv-6609b245 ACTIVE, G3 PASSED, tecnico8/8 e funzionale4/6; G4/F5/F6 OPEN. Due run Ingestion SUCCEEDED già osservate sotto policy48: a3208f2f-ebfd-415d-bddc-79ab05dea78f e bb2e2af4-9c0a-49ea-8ad9-a947987c1472. Non avviare una terza acquisizione né concedere nuovi budget per ricostruire le prove. Le prove VPS rete/original GET200/V35/readiness e lettura operativa riuscita risolvono i percorsi 502/403 osservati; non costituiscono accettazione E2E o prova di rinnovo permanente.
