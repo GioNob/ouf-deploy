@@ -48,8 +48,10 @@ def review_profile(review):
     return CONTINUATION_LIMITS,('LOAD_EXISTING_ADMIN_KEY',*STAGES)
 def validate_review(review):
     limits,stages=review_profile(review)
+    negative={'maximumAdditionalSeconds':30,'startupSeconds':180,'candidateStopOnly':True,'maximumStops':3,'disableCandidateRestartFirst':True}
+    if'recovery'in review:negative.update(monitorSnapshotMaximumSeconds=2,monitorSnapshotMaximumReadAttempts=64)
     require(review['maximumSeconds']==900
-        and review['negativeCleanup']=={'maximumAdditionalSeconds':30,'startupSeconds':180,'candidateStopOnly':True,'maximumStops':3,'disableCandidateRestartFirst':True}
+        and review['negativeCleanup']==negative
         and review['maximums']==limits and review['stages']==list(stages)
         and review['nativePlanHash']==digest(review['nativePlan'])
         and review['frozenPlanHash']==review['nativePlan']['frozenPlanHash']
@@ -88,7 +90,8 @@ def terminal_decision(review,path):
         'Nessun grant IAM, budget fonte, attivazione o acquisizione; nessun reset o replay.\n'
         +credential+
         'Massimo900secondi+30 di sola quarantena dei3candidati propri non committed.\n'
-        'Watchdog effimero; stop solo candidati propri se controller perso/scaduto. Nessun rollback.\n'
+        'Watchdog effimero; snapshot journal massimo2secondi/64tentativi di sola lettura con jitter.\n'
+        'Stop solo candidati propri se controller perso/scaduto. Nessun rollback.\n'
         'Effetto ambiguo resta CLAIMED e richiede riconciliazione, mai rilancio automatico.\n'
         'Questa operazione NON concede accettazione E2E o release.\n'
         'Per approvare questa sola revisione, digita ESCLUSIVAMENTE la riga seguente.\n'

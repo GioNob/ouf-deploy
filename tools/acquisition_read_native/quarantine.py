@@ -11,6 +11,18 @@ def read(journal):
         except BlockingIOError:
             if attempt==7:raise
             time.sleep(.02)
+def snapshot(journal):
+    # Bounded read-only pause for a busy publisher, never a custody exception.
+    # At most8cycles x8nonblocking attempts and2seconds, with phase jitter.
+    started=time.monotonic()
+    for cycle in range(8):
+        try:
+            row=read(journal)
+            if time.monotonic()-started>=2:raise TimeoutError('WATCHDOG_SNAPSHOT_READ_DEADLINE')
+            return row
+        except BlockingIOError:
+            if cycle==7 or time.monotonic()-started>=2:raise TimeoutError('WATCHDOG_SNAPSHOT_READ_BUDGET_EXHAUSTED')
+            time.sleep(.005+os.urandom(1)[0]/255*.015)
 def cas(journal,fn):
     for i in range(8):
         try:
@@ -68,12 +80,12 @@ def launch(ctx,review,gate,journal):
         finally:os.close(r)
         ctx.watchdog_pid,ctx.watchdog_pin=child,pin(child);ensure_alive(ctx);return child
     try:
-        os.close(r);os.setsid();signal.signal(signal.SIGHUP,signal.SIG_IGN);signal.signal(signal.SIGINT,signal.SIG_IGN);null=os.open('/dev/null',os.O_RDONLY);os.dup2(null,0);os.close(null);os.dup2(log,1);os.dup2(log,2);os.close(log);os.write(w,b'READY');os.close(w);last=time.time()
+        os.close(r);os.setsid();signal.signal(signal.SIGHUP,signal.SIG_IGN);signal.signal(signal.SIGINT,signal.SIG_IGN);null=os.open('/dev/null',os.O_RDONLY);os.dup2(null,0);os.close(null);os.dup2(log,1);os.dup2(log,2);os.close(log);snapshot(journal);os.write(w,b'READY');os.close(w);last=time.time()
         while True:
             # Read under the same short nonblocking transaction as the publisher.
             # No lock crosses sleep, signature checks, Engine I/O or cleanup.
             # A lock-free path stat can itself observe an inode just unlinked.
-            journal.check_directory();row=read(journal);journal.check_directory()
+            journal.check_directory();row=snapshot(journal);journal.check_directory()
             if row['state']=='COMPLETE'or row['quarantine']is not None:os._exit(0)
             now=time.time();startup_expired=any(not v.get('readinessProven')and v.get('startupDeadlineMonotonic')is not None and(time.monotonic()>=v['startupDeadlineMonotonic']or now>=v['startupDeadlineWall'])for v in row['candidates'].values());reason='STARTUP_LEASE_EXPIRED'if startup_expired else'CONTROLLER_LOST'if pin(parent)!=parent_pin else'FINITE_LEASE_EXPIRED'if now>=row['expiresAt']or time.monotonic()>=row['expiresMonotonic']else'WALL_CLOCK_REGRESSION'if now<last else None;last=now
             if reason:negative(ctx,review,gate.raw,journal,reason);os._exit(0)

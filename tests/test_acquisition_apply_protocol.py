@@ -142,7 +142,7 @@ class Protocol(unittest.TestCase):
                 # Under a sustained burst, the bounded reader may exhaust its
                 # lock attempts. This is a typed no-progress result, never a
                 # reason to accept an unlinked/partial record or reset counts.
-                try:row=self.parts['quarantine'].read(journal)
+                try:row=self.parts['quarantine'].snapshot(journal)
                 except BlockingIOError:
                     self.assertLess(time.monotonic(),deadline);continue
                 seen.append(row['version']);self.assertEqual(row['counts']['retained'],128+row['version'])
@@ -153,6 +153,16 @@ class Protocol(unittest.TestCase):
         finally:
             try:os.kill(child,9);os.waitpid(child,0)
             except (ProcessLookupError,ChildProcessError):pass
+    def test_snapshot_busy_pause_is_bounded_and_never_retries_custody(self):
+        from unittest.mock import patch
+        import types
+        calls=[]
+        def busy():calls.append(True);raise BlockingIOError()
+        watch=self.parts['quarantine'];started=time.monotonic()
+        with self.assertRaisesRegex(TimeoutError,'SNAPSHOT_READ_BUDGET'):watch.snapshot(types.SimpleNamespace(read=busy))
+        self.assertGreater(len(calls),0);self.assertLessEqual(len(calls),64);self.assertLess(time.monotonic()-started,3)
+        def invalid():raise ValueError('RECOVERY_FILE_CUSTODY_REQUIRED')
+        with self.assertRaisesRegex(ValueError,'CUSTODY'):watch.snapshot(types.SimpleNamespace(read=invalid))
     def test_oom_enabled_default_never_allows_disabling_oom(self):
         match=self.parts['engine_creation'].requested_host_config_matches
         self.assertTrue(match({'Memory':536870912,'OomKillDisable':None},{'Memory':536870912,'OomKillDisable':False},started=True))
