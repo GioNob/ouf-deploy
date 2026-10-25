@@ -1,0 +1,61 @@
+name: Descriptor TTY continuation exact residual publication
+on:
+  push:
+    paths:
+      - scripts/continue-existing-descriptor-publication-tty-20261026.py
+      - releases/continue-existing-descriptor-publication-tty-20261026.sh
+      - tests/test_descriptor_tty_continuation.py
+      - tests/qualify_descriptor_tty_continuation_owner_driver.py
+      - tests/qualify_descriptor_tty_continuation_custody.py
+      - tests/fixtures/DescriptorTtyContinuationOwnerTest.java
+      - .github/workflows/descriptor-tty-continuation.yml
+  pull_request:
+    paths:
+      - scripts/continue-existing-descriptor-publication-tty-20261026.py
+      - releases/continue-existing-descriptor-publication-tty-20261026.sh
+      - tests/test_descriptor_tty_continuation.py
+      - tests/qualify_descriptor_tty_continuation_owner_driver.py
+      - tests/qualify_descriptor_tty_continuation_custody.py
+      - tests/fixtures/DescriptorTtyContinuationOwnerTest.java
+      - .github/workflows/descriptor-tty-continuation.yml
+permissions: {contents: read}
+jobs:
+  real-tty-protocol:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: python3 -I -S -B -m unittest discover -s tests -p test_descriptor_tty_continuation.py -v
+  deployed-owner-java21-pg17:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17
+        env: {POSTGRES_DB: ouf_onboarding, POSTGRES_USER: ouf_onboarding, POSTGRES_PASSWORD: ci-only-password}
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U ouf_onboarding -d ouf_onboarding" --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      OUF_ONB_DB_URL: jdbc:postgresql://127.0.0.1:5432/ouf_onboarding
+      OUF_ONB_DB_USER: ouf_onboarding
+      OUF_ONB_DB_PASSWORD: ci-only-password
+      MAVEN_OPTS: -Dmaven.wagon.http.connectionTimeout=10000 -Dmaven.wagon.http.readTimeout=30000 -Djava.net.preferIPv4Stack=true
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: 1b1222ceaa5af85a25c20857e7c8c1b548b12dc1
+          path: qualified-owner
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with: {distribution: temurin, java-version: '21', cache: maven}
+      - name: Install native owner SDK
+        working-directory: qualified-owner
+        run: bash scripts/install-authorization-sdk.sh
+      - name: Run unchanged deployed owner with Python residual client
+        run: |
+          cp tests/fixtures/DescriptorTtyContinuationOwnerTest.java qualified-owner/src/test/java/it/comune/trieste/ouf/onboarding/
+          export OUF_DEPLOY_ROOT="$PWD"
+          cd qualified-owner
+          timeout --signal=TERM --kill-after=20s 15m mvn -B -ntp -Dtest=DescriptorTtyContinuationOwnerTest test

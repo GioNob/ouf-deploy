@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - tools/human_terminal_review.py
+      - scripts/continue-existing-descriptor-publication-tty-20261026.py
       - tests/test_human_terminal_review.py
       - tests/qualify_human_terminal_pipeline.py
       - tests/fixtures/human_terminal_pipeline_probe.py
@@ -10,6 +11,7 @@ on:
   pull_request:
     paths:
       - tools/human_terminal_review.py
+      - scripts/continue-existing-descriptor-publication-tty-20261026.py
       - tests/test_human_terminal_review.py
       - tests/qualify_human_terminal_pipeline.py
       - tests/fixtures/human_terminal_pipeline_probe.py

@@ -37,7 +37,7 @@ class TerminalTests(unittest.TestCase):
         result,_,states=self.run_reader([(0,('APPROVO '+HASH+'\n').encode())])
         self.assertIs(result,True);self.assertTrue(states[-1]['enterReceived'])
     def test_mobile_cr_enter_and_crlf(self):
-        for ending in ('\r','\r\n'):
+        for ending in ('\r','\r\n','\n\n'):
             with self.subTest(ending=repr(ending)):
                 result,_,_=self.run_reader([(0,('APPROVO '+HASH+ending).encode())])
                 self.assertIs(result,True)

@@ -51,7 +51,10 @@ def read_exact(review_hash, guard, *, emit, progress, fd=None, clock=time.monoto
                 for i,value in enumerate(raw):
                     if value in (10,13):
                         tail=raw[i+1:]
-                        require(not tail or value==13 and tail==b'\n','ONE_EXACT_REVIEW_LINE_ONLY')
+                        # A CRLF pasted just before TCSANOW can already have been
+                        # translated by the old canonical discipline into LF+LF.
+                        # Accept that empty line-ending pair, never trailing text.
+                        require(tail in (b'',b'\n'),'ONE_EXACT_REVIEW_LINE_ONLY')
                         progress({'state':'LINE_RECEIVED','receivedBytes':len(buf),'enterReceived':True})
                         require(bytes(buf)==expected,'EXACT_TERMINAL_REVIEW_NOT_APPROVED')
                         emit('Riga esatta ricevuta con Invio. Verifico la revisione privata.')
