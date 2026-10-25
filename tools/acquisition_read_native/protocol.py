@@ -41,6 +41,7 @@ def terminal_decision(review,path):
         'Tre immagini CI esatte, identita native config/manifest dimostrate senza rebuild/relabel.\n'
         'READ senza Flyway/esecuzione, mount RO, rootfs RO; readiness DB/policy richiesta.\n'
         'Normale bootstrap OAuth del SOLO MCP sostitutivo puo avvenire sotto il mandato esistente.\n'
+        'Il normale avvio MCP puo aggiornare il proprio catalogo manifest; nessuna migrazioneDB.\n'
         'Nessun nuovo grant/budget/attivazione/acquisizione, nessun reset o replay dei vecchi scope.\n'
         'Un file admin esistente letto in memoria per verificare e aggiungere le2rotte.\n'
         'Massimo900secondi+30 di sola quarantena dei3nuovi candidati non ancora provati.\n'
