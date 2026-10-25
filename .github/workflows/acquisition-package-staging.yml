@@ -11,6 +11,9 @@ jobs:
   private-staging-and-real-artifacts:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - name: Qualify bounded custody, image config, archive rejection and no replay

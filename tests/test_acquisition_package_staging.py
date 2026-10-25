@@ -74,6 +74,11 @@ class PackageStagingTest(unittest.TestCase):
         files=self.read_zip('ingestion');value=stage.decode(files['image-config.json']);value[0]['Config']['Hostname']='unreviewed'
         files['image-config.json']=stage.encode(value);files['SHA256SUMS']=''.join(stage.sha(data)+'  '+name+'\n'for name,data in files.items()if name!='SHA256SUMS').encode();self.write_zip('ingestion',files)
         with self.assertRaisesRegex(stage.Stop,'ONLY_EXPLICIT_DOCKER_INSPECT_DEFAULTS_ALLOWED'):self.run_stage()
+    def test_absent_oci_cmd_and_explicit_null_inspect_cmd_are_equivalent(self):
+        config={'User':'10005:10005','Entrypoint':['/usr/local/bin/ouf-mcp']};ident,raw=image(config)
+        files=self.read_zip('ingestion');files['image.tar.gz']=raw;files['image-id.txt']=(ident+'\n').encode();files['image-config.json']=stage.encode([{'Id':ident,'Config':dict(config,Cmd=None)}]);files['SHA256SUMS']=''.join(stage.sha(data)+'  '+name+'\n'for name,data in files.items()if name!='SHA256SUMS').encode()
+        self.case['artifacts']['ingestion'].update(imageId=ident,cmd=None);self.write_zip('ingestion',files)
+        self.assertTrue(self.run_stage()['complete'])
     def test_wrong_image_launch_is_rejected_without_loading(self):
         self.case['artifacts']['ingestion']['entrypoint']=['wrong']
         with self.assertRaisesRegex(stage.Stop,'REVIEWED_IMAGE_LAUNCH_REQUIRED'):self.run_stage()

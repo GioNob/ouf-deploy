@@ -118,7 +118,7 @@ def stage(downloads,case,root):
             require((folder/'image-id.txt').read_text().strip()==descriptor['imageId'],'PINNED_IMAGE_ID_REQUIRED')
             config=verify_image(folder/'image.tar.gz',descriptor);observed=decode((folder/descriptor['imageConfigFile']).read_bytes())
             require(isinstance(observed,list)and len(observed)==1 and observed[0]['Id']==descriptor['imageId']and all(observed[0]['Config'].get(k)==v for k,v in config.items()),'CI_INSPECT_AND_ARCHIVED_IMAGE_CONFIG_MATCH_REQUIRED')
-            defaults={'Labels':None,'AttachStderr':False,'Hostname':'','Volumes':None,'Image':'','AttachStdin':False,'OnBuild':None,'Tty':False,'StdinOnce':False,'AttachStdout':False,'OpenStdin':False,'Domainname':''}
+            defaults={'Cmd':None,'Labels':None,'AttachStderr':False,'Hostname':'','Volumes':None,'Image':'','AttachStdin':False,'OnBuild':None,'Tty':False,'StdinOnce':False,'AttachStdout':False,'OpenStdin':False,'Domainname':''}
             extras=set(observed[0]['Config'])-set(config)
             require(extras<=set(defaults)and all(observed[0]['Config'][k]==defaults[k]for k in extras),'ONLY_EXPLICIT_DOCKER_INSPECT_DEFAULTS_ALLOWED')
         receipts[role]={'sourceCommit':descriptor['commit'],'artifactId':descriptor['artifactId'],'zipSha256':descriptor['zipSha256'],'fileHashes':hashes,'imageId':descriptor.get('imageId')}
