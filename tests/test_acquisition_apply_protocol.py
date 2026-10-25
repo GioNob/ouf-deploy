@@ -53,6 +53,18 @@ class Protocol(unittest.TestCase):
     def test_negative_scope_signature_survives_live_policy_removal(self):
         gate=self.issue();snapshot=self.execution_root/'authority/issued-trust-policy.json';v=self.auth.DetachedAuthenticator({'path':str(snapshot),'sha256':self.verification['trustPolicy']['sha256']},str(snapshot.parent),self.verification['openssl']);self.policy_path.unlink();c=self.context
         for role,key in(('DEPLOYMENT_INTENT','intentIssuerRef'),('FINAL_DEPLOYMENT_APPROVAL','approvalIssuerRef')):self.assertTrue(v(gate.raw,role,c[key],c['installationRef'],c['entityRef']))
+    def test_bounded_journal_contention_retries_no_effect(self):
+        gate=self.issue();ports=self.ports();e=self.core.Execution(gate,self.journal.Journal(self.execution_root),ports);e.initialize();original=e.journal.read;attempts=[]
+        def busy():
+            attempts.append(1)
+            if len(attempts)==1:raise BlockingIOError()
+            return original()
+        e.journal.read=busy;row=e.record();self.assertEqual(row['effects'],[]);self.assertEqual(row['counts']['engineWrites'],0);self.assertEqual(len(attempts),2)
+    def test_oom_enabled_default_never_allows_disabling_oom(self):
+        match=self.parts['engine_creation'].requested_host_config_matches
+        self.assertTrue(match({'Memory':536870912,'OomKillDisable':None},{'Memory':536870912,'OomKillDisable':False},started=True))
+        self.assertFalse(match({'Memory':536870912,'OomKillDisable':None},{'Memory':536870912,'OomKillDisable':True},started=True))
+        self.assertFalse(match({'Memory':536870912,'OomKillDisable':None},{'Memory':1073741824,'OomKillDisable':False},started=True))
     def test_entrypoint_and_namespace_child_fail_closed(self):
         result=subprocess.run([os.sys.executable,str(self.code/'apply.py')],capture_output=True,text=True);self.assertEqual(result.returncode,2);self.assertEqual(json.loads(result.stdout)['reasonCode'],'ONE_ISOLATED_ROOT_ACQUISITION_APPLY_REQUIRED');compile(self.parts['transport'].CHILD,'namespace-child','exec')
 if __name__=='__main__':unittest.main()
