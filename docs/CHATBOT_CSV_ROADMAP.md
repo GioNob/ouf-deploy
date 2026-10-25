@@ -1,3 +1,9 @@
+# CURRENT — draft ESISTENTE confermato dall'owner sul VPS; NEXT sola pubblicazione residua
+
+Owner EXISTING_DESCRIPTOR_DRAFT_OWNER_CONFIRMED_NO_PUBLICATION/complete=true/Exit0/DeliveryExit0. UUID cb75ddb0-bd19-48fb-847f-1c47aff3207a, revision0/ETag0/DRAFT/base48/candidatohash027f626dce41cac0dc2d1dd9338bd2aeb20bc474a438e6e26a68d4214271b46b/106grant esatti. Cumulativi6administrativeWrites/9ownerGets/0previewPosts/537123bytes; lookup2EngineGET/1SQL/1exec, IAM1GET/10POST/13166bytes. Nessuna registrazione/CREATE/preview/pubblicazione/authority/grantnuovo. Scope lookup root5a31...v1 CONSUMATO; nessun rilancio o SQL/CREATE ripetuto. Receipt evidence/acquisition-existing-descriptor-draft-lookup-target-20261025.json; logdelivery49373j4a/operator.log ebootstrap.log. Il risultato NON autorizza pubblicazione e NON chiude E2E.
+
+NEXT: implementare/qualificare esecutore RESIDUO con SOLE GET owner, due preview e UNA pubblicazione dello stesso UUID/revision0, nessuna rotta REGISTER/CREATE. Nuovo login normaleouf-admin, contatori cumulativi incorporati, ACTIVE48 e registrazioni/draft/candidato esatti; review NUOVA concreta privata e APPROVO hash FRESCO su riga TTY isolata. Conservare receipt mutante PRIMA parsing/guard. Nuovo comando VPS non ancora consegnato. Tecnico8/8, funzionale4/6, E2E/G4/F5/F6OPEN, Supervisor dopoE2E; niente terzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. Header sottoSTORICI.
+
 # CURRENT — lookup esatto del draft ESISTENTE qualificato; prima esecuzione VPS attesa
 
 Ultimo target RETAINED_DESCRIPTOR_PUBLICATION_STOP_OBSERVED/complete=true/Exit0: cinque registrazioni APPLIED; CREATE_DRAFT CLAIMED/hash027f626d...; UUID/revisione/receipt assenti; nessun PUBLISH dispatch. Publisher e retained reader CONSUMATI, nessun replay/nuovoCREATE/register. Originali6writes/6GET/0preview/346780bytes e106grant preservati; lettore3file/94564bytes/zero reteSQLAuthority.
