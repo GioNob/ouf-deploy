@@ -44,8 +44,12 @@ class ExistingDescriptorResidualOwnerTest {
   var baseCaps=List.of(management,read("ingestion.run.read"),read("unrelated.read"));
   for(var c:baseCaps)admin.register(c.capabilityId().startsWith("ingestion.")?"ingestion":"other",c,actor);
   grants=new ArrayList<>();for(int i=0;i<106;i++)grants.add(new Grant("retained-"+i,"unrelated.read",i==105?"other-tenant":"ouf-lab","retained-subject",null,null,Instant.parse("2020-01-01T00:00:00Z"),Instant.parse("2036-01-01T00:00:00Z")));
-  var base=admin.create(new PolicyBundle("ouf-lab-authorization",48,Instant.parse("2026-10-25T05:00:00Z"),baseCaps,grants),actor);
+  // Establish bootstrap with only this tenant's grants. The multi-tenant48
+  // baseline is an explicit CI seed, representing retained existing history;
+  // create() correctly forbids inventing another tenant's grant at bootstrap.
+  var base=admin.create(new PolicyBundle("ouf-lab-authorization",47,Instant.parse("2026-10-25T05:00:00Z"),baseCaps,grants.stream().filter(g->g.tenantId().equals("ouf-lab")).toList()),actor);
   admin.publish(base.id(),0,actor);
+  registry.publishAndActivate(new PolicyBundle("ouf-lab-authorization",48,Instant.parse("2026-10-25T06:00:00Z"),baseCaps,grants),"ci-existing-multitenant-history");
   for(var id:added)admin.register(id.startsWith("ingestion.")?"ingestion":"udp",read(id),actor);
   var caps=new ArrayList<>(baseCaps);for(var id:added)caps.add(read(id));
   draft=admin.create(new PolicyBundle("ouf-lab-authorization",49,Instant.parse("2026-10-25T12:00:00Z"),caps,grants),actor);
