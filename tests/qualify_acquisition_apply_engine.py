@@ -6,7 +6,10 @@ def module(name,path):
     s=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
 fixture=module('protocol_fixture',BASE/'tests/test_acquisition_apply_protocol.py')
 class EngineLifecycle(fixture.Protocol):
-    def cli(self,*args):return subprocess.check_output(['docker',*args],stderr=subprocess.PIPE,text=True).strip()
+    def cli(self,*args):
+        env=dict(os.environ)
+        if args[0]=='inspect'or args[:2]==('image','inspect'):env['DOCKER_API_VERSION']='1.44'
+        return subprocess.check_output(['docker',*args],stderr=subprocess.PIPE,text=True,env=env).strip()
     def setup_runtime(self,launch_watchdog=True):
         self.resources=[];self.net='ouf-acq-ci-'+str(time.time_ns());self.nid=self.cli('network','create',self.net);self.resources.append(('network',self.net));self.source_commit='e'*40
         folder=self.root/'build';folder.mkdir(mode=0o700);(folder/'server.py').write_text('''import http.server,os
