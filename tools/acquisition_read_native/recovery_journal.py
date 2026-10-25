@@ -121,6 +121,8 @@ class Journal:
     def published_snapshot(self):
         """Bounded monitor read of an atomic replacement, without taking the CAS lock.
 
+        Historical fixture helper; the runtime watchdog uses read() under its
+        short transaction, since pathname stats also race atomic replacement.
         An opened record can be unlinked by the publisher before fstat. Such an
         FD is never returned or treated as a valid custody profile. Retry only
         when a different, fully custodied record now occupies the bound path.

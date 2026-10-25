@@ -93,6 +93,60 @@ class Protocol(unittest.TestCase):
         with patch.object(self.journal.os,'fstat',replace_during_fstat):
             with self.assertRaisesRegex(ValueError,'CONTENTION_EXHAUSTED'):journal.published_snapshot()
         self.assertEqual(len(replaced),8)
+    def test_runtime_monitor_short_transaction_blocks_publisher_unlink(self):
+        from unittest.mock import patch
+        import select
+        journal=self.journal.Journal(self.execution_root);journal.initialize({'version':0,'counts':{'retained':128}})
+        go_r,go_w=os.pipe();ack_r,ack_w=os.pipe();child=os.fork()
+        if child==0:
+            try:
+                os.close(go_w);os.close(ack_r);os.read(go_r,1)
+                old={'version':0,'counts':{'retained':128}};following={'version':1,'counts':{'retained':129}}
+                try:journal.compare_and_save(old,following);os._exit(3)
+                except BlockingIOError:os.write(ack_w,b'LOCKED')
+                for _ in range(100):
+                    try:journal.compare_and_save(old,following);os._exit(0)
+                    except BlockingIOError:time.sleep(.01)
+                os._exit(4)
+            except BaseException:os._exit(5)
+        os.close(go_r);os.close(ack_w);real_fstat=os.fstat;record_inode=journal.record.stat().st_ino;checked=[]
+        def observe_lock(fd):
+            s=real_fstat(fd)
+            if s.st_ino==record_inode and not checked:
+                checked.append(True);os.write(go_w,b'G');self.assertTrue(select.select([ack_r],[],[],2)[0]);self.assertEqual(os.read(ack_r,16),b'LOCKED')
+            return s
+        try:
+            with patch.object(self.journal.os,'fstat',observe_lock):row=self.parts['quarantine'].read(journal)
+            self.assertEqual(row,{'version':0,'counts':{'retained':128}});_,status=os.waitpid(child,0);self.assertEqual(os.waitstatus_to_exitcode(status),0);self.assertEqual(self.parts['quarantine'].read(journal)['version'],1)
+            os.link(journal.record,self.execution_root/'forbidden-hardlink')
+            with self.assertRaisesRegex(ValueError,'CUSTODY'):self.parts['quarantine'].read(journal)
+        finally:
+            os.close(go_w);os.close(ack_r)
+            try:os.kill(child,9);os.waitpid(child,0)
+            except (ProcessLookupError,ChildProcessError):pass
+    def test_runtime_monitor_and_publisher_stress_retains_exact_counts(self):
+        journal=self.journal.Journal(self.execution_root);journal.initialize({'version':0,'counts':{'retained':128}});child=os.fork()
+        if child==0:
+            try:
+                for n in range(200):
+                    old={'version':n,'counts':{'retained':128+n}};following={'version':n+1,'counts':{'retained':129+n}}
+                    for attempt in range(128):
+                        try:journal.compare_and_save(old,following);time.sleep(.005);break
+                        except BlockingIOError:time.sleep(.001)
+                    else:os._exit(3)
+                os._exit(0)
+            except BaseException:os._exit(4)
+        try:
+            seen=[];deadline=time.monotonic()+10
+            while True:
+                row=self.parts['quarantine'].read(journal);seen.append(row['version']);self.assertEqual(row['counts']['retained'],128+row['version'])
+                if row['version']==200:break
+                self.assertLess(time.monotonic(),deadline)
+                time.sleep(.002)
+            _,status=os.waitpid(child,0);self.assertEqual(os.waitstatus_to_exitcode(status),0);self.assertEqual(seen,sorted(seen))
+        finally:
+            try:os.kill(child,9);os.waitpid(child,0)
+            except (ProcessLookupError,ChildProcessError):pass
     def test_oom_enabled_default_never_allows_disabling_oom(self):
         match=self.parts['engine_creation'].requested_host_config_matches
         self.assertTrue(match({'Memory':536870912,'OomKillDisable':None},{'Memory':536870912,'OomKillDisable':False},started=True))
