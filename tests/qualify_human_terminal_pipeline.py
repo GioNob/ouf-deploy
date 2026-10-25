@@ -60,7 +60,12 @@ def run(mode,case):
             result=json.loads(report.read_text())
             assert result['stdinIsTTY'] and result['terminalRestored'],result
             if not no_sudo:assert result['root'],result
-            assert result['accepted']==(case in ('lf','cr','crlf','fragmented')),result
+            reproduced_legacy=mode=='legacy' and os.environ.get('CI_SUDO_PTY')=='use_pty' and case in ('lf','crlf')
+            if reproduced_legacy:
+                assert result['accepted'] is False and result['reason']=='FINITE_HUMAN_WINDOW_EXPIRED',result
+                print('REPRODUCED_LEGACY_SUDO_PTY_TIMEOUT_WITH_ENTER '+json.dumps(result),flush=True)
+            else:
+                assert result['accepted']==(case in ('lf','cr','crlf','fragmented')),result
             if mode=='new' and case=='paste-no-enter':
                 assert any(s['state']=='WAITING_ENTER' and s['receivedBytes']==72 and not s['enterReceived'] for s in result['states']),result
                 assert 'Input ricevuto' in log.read_text() and 'Attendo Invio' in log.read_text()

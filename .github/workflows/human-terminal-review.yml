@@ -23,6 +23,8 @@ jobs:
         sudo_pty: [use_pty, '!use_pty']
     runs-on: ubuntu-24.04
     timeout-minutes: 4
+    env:
+      CI_SUDO_PTY: ${{ matrix.sudo_pty }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Configure isolated CI sudo transport variant

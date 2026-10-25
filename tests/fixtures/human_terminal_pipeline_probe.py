@@ -20,7 +20,11 @@ review_hash=legacy.digest(plan)
 deadline=time.monotonic()+2
 before=termios.tcgetattr(0)
 result={'schema':'CI_SYNTHETIC_REVIEW_ONLY','mode':mode,'case':case,'accepted':False,'terminalRestored':False,
-        'root':os.geteuid()==0,'stdinIsTTY':os.isatty(0),'states':[]}
+        'root':os.geteuid()==0,'stdinIsTTY':os.isatty(0),'states':[],
+        'stdinForeground':os.tcgetpgrp(0)==os.getpgrp()}
+control=os.open('/dev/tty',os.O_RDONLY|os.O_NOCTTY)
+try:result['controlForeground']=os.tcgetpgrp(control)==os.getpgrp()
+finally:os.close(control)
 def guard():
     if time.monotonic()>=deadline:raise TimeoutError('CI_TIMEOUT')
 def emit(value):
@@ -39,6 +43,7 @@ try:
         result['accepted']=True
 except BaseException as error:
     result['errorType']=type(error).__name__
+    result['reason']=str(error)
 finally:
     result['terminalRestored']=termios.tcgetattr(0)==before
     Path(report).write_text(json.dumps(result));os.chmod(report,0o644)
