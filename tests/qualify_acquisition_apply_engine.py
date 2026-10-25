@@ -31,8 +31,9 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
         self.old={}
         for role in('ingestion','udp','mcp','postgres'):
             name='ouf-fixture-old-'+role+'-'+str(time.time_ns());args=['run','--detach','--name',name,'--network',self.net,'--restart','unless-stopped']
-            if role=='mcp':args+=['--env','MCP_OIDC_TOKEN_ENDPOINT=https://issuer.fixture/token','--env','MCP_OIDC_CLIENT_ID=fixture-mcp','--env','MCP_OIDC_CLIENT_SECRET_FILE=/fixture/not-read']
+            if role=='mcp':args+=['--mac-address','02:42:ac:44:01:07','--env','MCP_OIDC_TOKEN_ENDPOINT=https://issuer.fixture/token','--env','MCP_OIDC_CLIENT_ID=fixture-mcp','--env','MCP_OIDC_CLIENT_SECRET_FILE=/fixture/not-read']
             cid=self.cli(*args,old_images[role][0]);self.resources.append(('container',cid));self.old[role]=json.loads(self.cli('inspect',cid))[0]
+        self.assertEqual(self.old['mcp']['Config'].get('MacAddress'),'02:42:ac:44:01:07','Actual legacy Config MAC required in lifecycle fixture')
         key='fixture-admin-key-00000000';self.config=self.root/'apisix-config.yaml';self.config.write_text('''apisix:
   node_listen: 9080
 deployment:
@@ -120,7 +121,7 @@ deployment:
             def refresh_authority(ctx):
                 ctx.reserve('ownerConfigurationReads');ctx.reserve('ownerConfigurationReads');current=ctx.preparer.public_authority(ctx.p,profile_binding,outer.verification['trustPolicy'],outer.context);outer.assertEqual(current,ctx.native['publicAuthority']);ctx.profile=current['profile'];return current
         ctx=FixtureContext(self.parts,self.auth,self.sign,self.journal,self.closure,native_path=native_path,native_hash=p.digest(native),root=self.root/'runtime');self.ctx=ctx;ctx.current();ctx.reserve('adminGets');response=ctx.admin('GET','/apisix/admin/routes');self.assertEqual(ctx.route_map(ctx.route_rows(p.decode(response['body'].encode()))),ctx.route_map(routes))
-        review=copy.deepcopy(self.review);review.update(logicalOperationRef=ctx.NATIVE_HASH,executionRoot=str(ctx.root),frozenPlanHash=native['frozenPlanHash'],nativePlan={'frozenPlanHash':native['frozenPlanHash'],'nativeInputsHash':ctx.NATIVE_HASH,'runtimeBinding':ctx.runtime_binding,'runtimeBindingHash':self.core.digest(ctx.runtime_binding),'proposal':ctx.proposal},preflightCounts=copy.deepcopy(ctx.counts));review['nativePlanHash']=self.core.digest(review['nativePlan']);self.review=review;self.execution_root=ctx.root;self.profile=profile;self.core.validate_review(review)
+        review=copy.deepcopy(self.review);review.update(logicalOperationRef=ctx.NATIVE_HASH,executionRoot=str(ctx.root),frozenPlanHash=native['frozenPlanHash'],nativePlan={'frozenPlanHash':native['frozenPlanHash'],'nativeInputsHash':ctx.NATIVE_HASH,'runtimeBinding':ctx.runtime_binding,'runtimeBindingHash':self.core.digest(ctx.runtime_binding),'proposal':ctx.proposal,'legacyConfigMacDetachPolicy':ctx.legacy_mac_policy()},preflightCounts=copy.deepcopy(ctx.counts));review['nativePlanHash']=self.core.digest(review['nativePlan']);self.review=review;self.execution_root=ctx.root;self.profile=profile;self.core.validate_review(review)
         if prepare_only:
             ctx.evidence('preflight-admin',response);p.put(ctx.root/'review.json',review);return
         gate=self.issue();ports=ctx.ports_module.NativePorts(ctx,review,gate);execution=self.core.Execution(gate,self.journal.Journal(ctx.root),ports);execution.initialize();

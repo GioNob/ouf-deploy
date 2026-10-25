@@ -27,7 +27,7 @@ def context_class(base):
     class Context(base.Context):
         def __init__(self,parts,auth,sign,journal,closure,*,original=ORIGINAL,review_hash=REVIEW_HASH,receipt_hash=RECEIPT_HASH,native_path=base.NATIVE,native_hash=NATIVE_HASH):
             self.core,self.http,self.ports_module,self.watch,self.engine_helpers,self.p,self.images,self.preparer=[parts[k]for k in('protocol','transport','ports','quarantine','engine_creation','plan_helper','image_custody','native_prepare')]
-            self.auth,self.sign,self.journal_module=auth,sign,journal;self.closure=copy.deepcopy(closure);self.runtime=parts['runtime'];self.original=Path(original);self.root=self.original/CHILD;self.NATIVE_HASH=native_hash;self.native_path=Path(native_path);self.serial=0;self.key=None;self.execution=None;self.limits=self.core.CONTINUATION_LIMITS
+            self.auth,self.sign,self.journal_module=auth,sign,journal;self.closure=copy.deepcopy(closure);self.runtime=parts['runtime'];self.mac=parts.get('retained_mac');self.original=Path(original);self.root=self.original/CHILD;self.NATIVE_HASH=native_hash;self.native_path=Path(native_path);self.serial=0;self.key=None;self.execution=None;self.limits=self.core.CONTINUATION_LIMITS
             self.p.ancestry(self.original);require(not os.path.lexists(self.root),'CONTINUATION_SCOPE_CONSUMED_NO_REPLAY')
             self.old_names=self.old_inventory(False);self.old_review=self.read(self.original/'review.json',review_hash)
             receipt_path=self.original/'unapproved-review-reconciliation-v1/complete.json';receipt=self.read(receipt_path,receipt_hash)
@@ -74,7 +74,7 @@ def prepare_review(ctx):
         with Path(fact['nativeArchive']['path']).open('rb')as stream:
             for block in iter(lambda:stream.read(1048576),b''):h.update(block)
         require(h.hexdigest()==fact['nativeArchive']['sha256'],'EXACT_PRE_REVIEW_NATIVE_ARCHIVE_BYTES_REQUIRED')
-    plan={'frozenPlanHash':ctx.native['frozenPlanHash'],'nativeInputsHash':ctx.NATIVE_HASH,'runtimeBinding':ctx.runtime_binding,'runtimeBindingHash':c.digest(ctx.runtime_binding),'proposal':ctx.proposal,'continuation':ctx.continuation}
+    plan={'frozenPlanHash':ctx.native['frozenPlanHash'],'nativeInputsHash':ctx.NATIVE_HASH,'runtimeBinding':ctx.runtime_binding,'runtimeBindingHash':c.digest(ctx.runtime_binding),'proposal':ctx.proposal,'continuation':ctx.continuation,'legacyConfigMacDetachPolicy':ctx.legacy_mac_policy()}
     review={**copy.deepcopy(ctx.old_review),'schema':'ouf.acquisition-read-continuation-review.v1','executionRoot':str(ctx.root),'nativePlan':plan,'nativePlanHash':c.digest(plan),'sourceClosure':ctx.closure,'sourceClosureHash':c.digest(ctx.closure),'continuation':ctx.continuation,'maximums':copy.deepcopy(ctx.limits),'stages':['LOAD_EXISTING_ADMIN_KEY',*c.STAGES],'preflightCounts':copy.deepcopy(ctx.counts),'verification':{'trustPolicy':ctx.native['publicAuthority']['trustPolicy'],'openssl':ctx.openssl,'context':ctx.native['publicAuthority']['context']}}
     c.validate_review(review);ctx.write(ctx.root,'review.json',review);return review
 def operator(base,ctx):

@@ -98,6 +98,29 @@ class Protocol(unittest.TestCase):
         self.assertTrue(match({'Memory':536870912,'OomKillDisable':None},{'Memory':536870912,'OomKillDisable':False},started=True))
         self.assertFalse(match({'Memory':536870912,'OomKillDisable':None},{'Memory':536870912,'OomKillDisable':True},started=True))
         self.assertFalse(match({'Memory':536870912,'OomKillDisable':None},{'Memory':1073741824,'OomKillDisable':False},started=True))
+    def mac_guard_fixture(self):
+        import copy,types
+        before={'Id':'a'*64,'Image':'sha256:'+'b'*64,'Name':'/fixture-mcp','Config':{'MacAddress':'02:42:ac:44:01:07','Hostname':'fixture','Env':['PRIVATE=not-output']},'Mounts':[],'HostConfig':{'RestartPolicy':{'Name':'unless-stopped','MaximumRetryCount':0}},'State':{'Running':True,'Pid':123,'StartedAt':'generation'},'NetworkSettings':{'Networks':{'fixture':{'MacAddress':'02:42:ac:44:01:07'}}}}
+        after=copy.deepcopy(before);del after['Config']['MacAddress'];after['HostConfig']['RestartPolicy']={'Name':'no','MaximumRetryCount':0};after['State'].update(Running=False,Pid=0);after['NetworkSettings']['Networks']={}
+        binding={'containerId':before['Id'],'imageId':before['Image'],'configHash':self.core.digest(before['Config']),'mountsHash':self.core.digest([]),'startedAt':'generation'}
+        old={'oldBinding':binding,'oldNativeHostConfig':before['HostConfig'],'name':'fixture-mcp','retiredName':'fixture-retained','network':{'id':'c'*64,'name':'fixture'}};plan={'mcpReplacement':old,'existingApplications':{'mcp':binding}}
+        self.review['nativePlan']['proposal']=plan;self.review['nativePlan']['legacyConfigMacDetachPolicy']=self.parts['retained_mac'].policy(before);self.review['nativePlanHash']=self.core.digest(self.review['nativePlan'])
+        ctx=types.SimpleNamespace(root=self.execution_root,core=self.core,mac=self.parts['retained_mac'],inputs={'currentObservations':{'mcp':{'path':'bound-original','sha256':self.core.digest(before)}}},read=lambda path,h:copy.deepcopy(before),evidence=lambda *a:None)
+        ports=self.parts['ports'].NativePorts(ctx,self.review,None);ports.container=lambda cid:copy.deepcopy(after);ports.network=lambda role:{'Containers':{}}
+        effects=[{'stage':s,'state':'APPLIED','proof':{'oldStopped':True,'oldDetached':True}}for s in self.core.STAGES];ports.execution=types.SimpleNamespace(record=lambda:{'effects':effects})
+        return ports,after,effects
+    def test_old_guard_mac_transition_requires_signed_policy_and_applied_detach(self):
+        ports,after,effects=self.mac_guard_fixture();ports.old_guard('RENAME_OLD_MCP')
+        self.review['nativePlan']['legacyConfigMacDetachPolicy']=None
+        with self.assertRaisesRegex(self.core.Stop,'SIGNED_LEGACY_MAC'):ports.old_guard('RENAME_OLD_MCP')
+        self.review['nativePlan']['legacyConfigMacDetachPolicy']=ports.ctx.mac.policy(ports.ctx.read('bound-original','unused'))
+        effects[self.core.STAGES.index('DETACH_OLD_MCP')]['state']='CLAIMED'
+        with self.assertRaisesRegex(self.core.Stop,'PROVEN_STOP_DETACH'):ports.old_guard('RENAME_OLD_MCP')
+    def test_old_guard_rejects_mac_absence_before_detach_and_any_extra_config_change(self):
+        ports,after,_=self.mac_guard_fixture()
+        with self.assertRaisesRegex(self.core.Stop,'OLD_MCP_CONFIG_GENERATION'):ports.old_guard('DETACH_OLD_MCP')
+        after['Config']['Hostname']='other'
+        with self.assertRaisesRegex(self.core.Stop,'ONLY_PROVEN_LEGACY_MAC'):ports.old_guard('RENAME_OLD_MCP')
     def continuation_review(self):
         root=self.execution_root;child=root/'terminal-continuation-v1';child.mkdir(mode=0o700)
         c={'originalExecutionRoot':str(root),'originalReviewHash':'c'*64,'reconciliationReceiptHash':'d'*64,'retainedPreflightCounts':self.core.RETAINED_COUNTS,'retainedMaximums':self.core.LIMITS,'maximumAdditionalCredentialFileReads':1,'cumulativeCredentialReadMaximum':2,'noOriginalScopeReplay':True,'preConsentUsesRetainedRouteSnapshot':True,'freshRoutesRequiredBeforeFirstMutation':True}

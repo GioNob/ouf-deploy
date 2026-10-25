@@ -37,7 +37,16 @@ class NativePorts:
         for role in self.execution.record()['candidates']:self.candidate_guard(role,stage)
     def old_guard(self,stage):
         row=self.plan['mcpReplacement'];b=row['oldBinding'];v=self.container(b['containerId']);i=self.stages.index(stage);at=lambda s:self.stages.index(s)
-        self.require(v['Image']==b['imageId']and self.core.digest(v['Config'])==b['configHash']and self.core.digest(sorted(v['Mounts'],key=lambda x:x['Destination']))==b['mountsHash']and v['State']['StartedAt']==b['startedAt'],'OLD_MCP_CONFIG_GENERATION_REQUIRED')
+        config_matches=self.core.digest(v['Config'])==b['configHash']
+        if not config_matches and i>at('DETACH_OLD_MCP'):
+            history=self.execution.record()['effects'];detached=history[at('DETACH_OLD_MCP')];stopped=history[at('STOP_OLD_MCP')]
+            self.require(detached['state']==stopped['state']=='APPLIED'and detached['proof'].get('oldDetached')is True and stopped['proof'].get('oldStopped')is True,'PROVEN_STOP_DETACH_PREFIX_REQUIRED_FOR_MAC_TRANSITION')
+            ref=self.ctx.inputs['currentObservations']['mcp'];original=self.ctx.read(ref['path'],ref['sha256']);self.require(self.core.digest(original['Config'])==b['configHash']and self.ctx.mac is not None,'EXACT_ORIGINAL_CONFIG_AND_SHARED_MAC_PROFILE_REQUIRED')
+            wanted=self.ctx.mac.policy(original);self.require(self.plan.get('legacyConfigMacDetachPolicy',self.review['nativePlan'].get('legacyConfigMacDetachPolicy'))==wanted,'SIGNED_LEGACY_MAC_TRANSITION_POLICY_REQUIRED')
+            try:proof=self.ctx.mac.verify_detached(original,v,expected_name='/'+(row['name']if i<=at('RENAME_OLD_MCP')else row['retiredName']))
+            except self.ctx.mac.MacTransitionDenied as error:self.require(False,str(error))
+            self.ctx.evidence('old-mcp-mac-transition',proof);config_matches=True
+        self.require(v['Image']==b['imageId']and config_matches and self.core.digest(sorted(v['Mounts'],key=lambda x:x['Destination']))==b['mountsHash']and v['State']['StartedAt']==b['startedAt'],'OLD_MCP_CONFIG_GENERATION_REQUIRED')
         expected=copy.deepcopy(row['oldNativeHostConfig'])
         if i>at('DISABLE_OLD_MCP_RESTART'):expected['RestartPolicy']={'Name':'no','MaximumRetryCount':0}
         self.require(v['HostConfig']==expected,'OLD_MCP_HOST_CONFIG_CHANGED')

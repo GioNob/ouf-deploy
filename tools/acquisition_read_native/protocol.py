@@ -64,6 +64,8 @@ def terminal_decision(review,path):
         'READ senza Flyway/esecuzione, mount RO, rootfs RO; readiness DB/policy richiesta.\n'
         'Normale bootstrap OAuth del SOLO MCP sostitutivo puo avvenire sotto il mandato esistente.\n'
         'Il normale avvio MCP puo aggiornare il proprio catalogo manifest; nessuna migrazioneDB.\n'
+        'Solo dopo STOP/DETACH provati, la proiezione legacy Config.MacAddress puo risultare assente.\n'
+        'La MAC endpoint resta conservata; nessun altro campo Config viene escluso dal confronto.\n'
         'Nessun grant IAM, budget fonte, attivazione o acquisizione; nessun reset o replay.\n'
         +credential+
         'Massimo900secondi+30 di sola quarantena dei3nuovi candidati non ancora provati.\n'
