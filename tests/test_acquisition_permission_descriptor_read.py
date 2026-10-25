@@ -153,6 +153,13 @@ class DescriptorReadTests(unittest.TestCase):
         self.assertNotIn("synthetic-private-device", " ".join(output))
         self.assertNotIn("PRIVATE_REFRESH_CANARY", " ".join(output))
 
+    def test_device_instructions_flush_even_when_stdout_is_a_log_pipe(self):
+        fake, _ = self.login_fixture()
+        with patch("builtins.print") as output:
+            m.login(fake, sleep=fake.sleep, wall=lambda: 1000)
+        self.assertEqual(output.call_count, 3)
+        self.assertTrue(all(call.kwargs.get("flush") is True for call in output.call_args_list))
+
     def test_wrong_account_stops_before_owner_reads(self):
         fake, _ = self.login_fixture(subject="another-account")
         with self.assertRaisesRegex(m.Stop, "EXACT_OUF_ADMIN_CONTEXT_REQUIRED"):
