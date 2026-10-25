@@ -1,0 +1,33 @@
+# CURRENT — lettore input VPS qualificato; proiezioni E2E candidate, non installate
+
+Stato conservato: source teatri-csv-6609b245 ACTIVE, G3 PASSED, tecnico8/8 e funzionale4/6; G4/F5/F6 OPEN. Due run Ingestion SUCCEEDED già osservate sotto policy48: a3208f2f-ebfd-415d-bddc-79ab05dea78f e bb2e2af4-9c0a-49ea-8ad9-a947987c1472. Non avviare una terza acquisizione né concedere nuovi budget per ricostruire le prove. Le prove VPS rete/original GET200/V35/readiness e lettura operativa riuscita risolvono i percorsi 502/403 osservati; non costituiscono accettazione E2E o prova di rinnovo permanente.
+
+Sviluppate quattro PR draft per letture governate e minimizzate: Ingestion47, UDP48, MCP78, Gateway83. Test dedicati qualificati in CI, nessun componente installato sul VPS. Restano aperti test generale Gateway signature (push40169280919, PR40169283644 verde) e govulncheck MCP GO-2026-6809 su Go1.26.9, fixed1.26.10. Non dichiarare verde l'intera qualificazione, non distribuire i candidati come già approvati. Le applicazioni owner isolate sono provate via HTTP/classpath con PostgreSQL reale; packaging/container/rollout non ancora qualificati.
+
+Prossimo passo concreto: eseguire UNA VOLTA releases/read-acquisition-owner-inputs-20261025.sh pinned con checksum. Lettore pinned b1bc92695986e39e0800e7cf988b151f6adb4273, SHA2566034ac85c6401b7770bf40815780e168c3421d96de2166dd0d39c0059373bf3e. Nuovo scope /etc/ouf/deploy-snapshots/acquisition-evidence-current-inputs-v1, massimo10 GET Docker1.44, zero SQL/OAuth/lifecycle/import/grant/attivazioni, nessun file credenziale aperto. Usa dal vecchio seed b8040ef1 SOLO cinque riferimenti container (ingestion/udp/mcp/gateway/postgres), non la vecchia immagine V34 o autorità. Il socket corrente è catturato senza pretendere il vecchio inode; questo NON autorizza nuove mutazioni o binding runtime. Configurazioni complete solo in evidenza root protetta, output pubblico privo di valori. Scope una tantum: STOP_RECONCILE non autorizza rilancio, reset o sovrascrittura.
+
+Motivo della lettura: scegliere integrazione MCP senza creare un secondo gestore OAuth o mutare il worker Registry. La sorgente MCP attuale può scegliere client credentials oppure bearer statico; non inventare supporto file-token. Occorre classificare la dichiarazione corrente e poi qualificare il rollout concreto con revisione firmata e APPROVO nel terminale. Il lettore read-only non emette autorità runtime e non richiede firma operativa. Policy48 era valida fino2026-10-25T07:10:14.933Z (08:10 CET); non trattarla come valida oltre la scadenza né come grant delle nuove permission.
+
+Dettagli e limiti: docs/handoffs/OUF_ACQUISITION_EVIDENCE_READ_HANDOFF_20261025.md; evidence/acquisition-evidence-read-qualification-20261025.json. Tutte le procedure precedenti consumate restano consumate; niente replay/reinstall/restart Registry/reset contatori. Supervisor soltanto dopo E2E.
+
+## Candidate behavior and qualification limits
+
+The new ingestion.acquisition and urban.acquisition projections are READ operations with closed source/run/cursor arguments and bounded results. Each owner checks all three relevant permissions, current tenant/source/run/detail and every actual label. Ingestion projects bundle/file binding, handoff/lineage hashes, durable ACK metadata and watermark predicates; UDP projects intake/resolution/observation/object revision and property contribution metadata. Values, raw payloads, source keys, paths and credential contents are excluded. ACK does not prove materialization; UDP does not assert ingestion ACK. Partial/redacted/truncated responses cannot close the corresponding E2E criterion.
+
+Gateway receipt purposes and paths are distinct and authenticated; real generated Lua receipts are checked by both native Java verifiers in composed CI. MCP uses fixed capability dispatch paths and delegated policy/transport gates. Wrong identity/source/run/scope and caller authority overrides are rejected in dedicated tests. No raw API/SQL diagnostic substitutes for governed E2E reads.
+
+The isolated owner applications disable Flyway/SQL init/execution, enforce read-only pools, expose only health and the dedicated signed read, and resist injected original application sources. Tests use PostgreSQL17 and real HTTP, verify no worker/dispatcher/Flyway bean and failed DDL in read-only transaction. These are classpath tests, not proof of packaged image/bootstrap or current production privileges.
+
+Current MCP source at retained deployed revision1f2c28d7abadae78680b040ba7b58dd987012c8e6 does not support a token-file workload source. Do not start a parallel MCP with client credentials or assume replacing current MCP preserves owner lineage. The bounded input reader is the next necessary evidence, not an APPLY.
+
+## One-shot operator delivery
+
+Launcher releases/read-acquisition-owner-inputs-20261025.sh SHA256 b7f876991917ab3e805eca439865f0cc714eee01440a3609713817f560da8ec2 downloads the separately pinned reader, verifies it, copies it to a new root-owned0700 directory as0400, rechecks its checksum, then executes Python -I -S -B. No overwrite or replay option. User log and private root evidence remain on failure.
+
+The retained seed hash b8040ef1c49af2455d9a28d26bac4ef4bbf297315c69c0b48256aa83f18b614b only selects five Engine IDs. Socket inode drift is recorded, not accepted as authority. Two stable passes, root peer credentials and proc pins are required. Engine responses (including bounded failed responses) remain private. Output classifies MCP auth declaration presence; it does not claim resolved effective precedence, lifecycle ownership, image source provenance or Engine API identity.
+
+Expected success status CURRENT_ACQUISITION_READ_OWNER_INPUTS_CAPTURED; paste only public JSON and Exit/Directory/Log. STOP_RECONCILE requires diagnosis of retained evidence, never rerun. No target runtime effects authorized by this input capture. Future mutations require qualified concrete plan and signed terminal review.
+
+## Resume without lost state
+
+Read evidence/acquisition-evidence-read-qualification-20261025.json and prior policy48/source activation evidence. Keep draft PR50 and the four product draft PRs current. First resolve retained VPS input output; then fix remaining CI blocks, qualify packaging and choose minimal installation-owned delivery. Obtain scoped human permissions only once the new read path is ready; policy48 alone is insufficient. Read the two existing runs and reconcile durable ACK/watermark plus13 row/object/provenance outcomes and the20-property criterion. Preserve eight Cinema objects. Close F5/F6 only from sufficient governed owner evidence, then proceed to Supervisor. No new acquisition, reset, worker reinstall or consumed scope replay.

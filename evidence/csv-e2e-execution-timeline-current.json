@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-25T05:17:51.698Z",
+  "lastUpdatedAt": "2026-10-25T06:40:00Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -2264,6 +2264,16 @@
       "latestRunId": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
       "newAcquisitionsRequested": 0,
       "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-ACQUISITION-READ-CANDIDATES-AND-INPUT-DELIVERY-20261025",
+      "recordedAt": "2026-10-25T06:40:00Z",
+      "classification": "DEDICATED_CI_QUALIFIED_READ_CANDIDATES_AND_ONE_SHOT_INPUT_READER_NOT_TARGET_APPLY",
+      "evidenceRef": "evidence/acquisition-evidence-read-qualification-20261025.json",
+      "targetDeployed": false,
+      "applicationE2EProven": false,
+      "newAcquisitionsRequested": 0,
+      "noEffortAllocationInferred": true
     }
   ],
   "activeIntervals": [
@@ -4377,6 +4387,98 @@
       "targetEvidenceRef": "evidence/onboarding-v35-existing-create-target-20261024.json",
       "scopeConsumed": true,
       "e2eAcceptance": false
+    },
+    "acquisitionEvidenceRead": {
+      "schema": "ouf.acquisition-evidence-read-qualification.v1",
+      "recordedAt": "2026-10-25T06:40:00Z",
+      "targetDeployed": false,
+      "targetApplyAuthorized": false,
+      "runtimeAuthorityIssued": false,
+      "releaseAcceptance": false,
+      "applicationE2EProven": false,
+      "preserved": {
+        "sourceId": "teatri-csv-6609b245",
+        "sourceState": "ACTIVE",
+        "G3": "PASSED",
+        "G4": "OPEN",
+        "functional": "4/6",
+        "technical": "8/8",
+        "newAcquisitions": 0,
+        "budgetReset": false,
+        "registryWorkerTouched": false
+      },
+      "candidates": [
+        {
+          "repository": "GioNob/ouf-ingestion-runtime",
+          "pr": 47,
+          "commit": "43bb56a3b460c39af1e5d479dc6cd15ae7937442",
+          "run": 40168252527,
+          "job": 121093617119,
+          "tests": 18,
+          "passed": 17,
+          "skipped": 1,
+          "skip": "External receipt vector supplied separately by composed Gateway qualification"
+        },
+        {
+          "repository": "GioNob/ouf-udp-object-resolution",
+          "pr": 48,
+          "commit": "241fd5f6cbb33eeea34f3271fde70a866ed15e87",
+          "run": 40168256907,
+          "job": 121093630037,
+          "tests": 8,
+          "passed": 8,
+          "skipped": 0
+        },
+        {
+          "repository": "GioNob/ouf-mcp-server",
+          "pr": 78,
+          "commit": "5452e1949aaca836fe6070bb2f94336d2a80bb64",
+          "run": 40167847007,
+          "job": 121092436909,
+          "dedicatedTests": "manifest/kernel/httpclient race PASS",
+          "generalSuiteBlocker": "40167847111: govulncheck GO-2026-6809 crypto/x509 go1.26.9; fixed go1.26.10"
+        },
+        {
+          "repository": "GioNob/ouf-api-gateway",
+          "pr": 83,
+          "commit": "0cd69c7a1317eac281c6529caff10de61f023d27",
+          "run": 40169283650,
+          "job": 121096672724,
+          "pythonTestsPassed": 99,
+          "nativeOwnerReceiptTestsPassed": 2,
+          "generalSuiteBlocker": "40169280919 signature negative case DID NOT RAISE; same-head PR40169283644 passed; cause unresolved, no rerun or waiver"
+        }
+      ],
+      "reader": {
+        "commit": "b1bc92695986e39e0800e7cf988b151f6adb4273",
+        "path": "scripts/read-acquisition-owner-inputs-20261025.py",
+        "sha256": "6034ac85c6401b7770bf40815780e168c3421d96de2166dd0d39c0059373bf3e",
+        "scope": "/etc/ouf/deploy-snapshots/acquisition-evidence-current-inputs-v1",
+        "runs": [
+          {
+            "run": 40169356354,
+            "job": 121096873080,
+            "passed": 12,
+            "skipped": 0
+          },
+          {
+            "run": 40169360123,
+            "job": 121096883465,
+            "passed": 12,
+            "skipped": 0
+          }
+        ],
+        "qualification": "11 custody/Unix/socket/guard cases plus actual Docker1.44 GET/proc test in CI; synthetic retained bootstrap seed. NOT production/VPS proof",
+        "maximumEngineGets": 10,
+        "sqlSessions": 0,
+        "oauthRequests": 0,
+        "containerWrites": 0,
+        "credentialFilesOpened": 0,
+        "privateConfigurationEvidence": true,
+        "launcherSha256": "b7f876991917ab3e805eca439865f0cc714eee01440a3609713817f560da8ec2",
+        "launcherValidation": "bash -n; custody helper inspected; full production bootstrap not executed"
+      },
+      "next": "One-shot readonly VPS input capture, reconcile current MCP authentication declarations and lifecycle; then finish qualification and concrete signed target review before any runtime mutation."
     }
   },
   "developmentCandidates": [
@@ -4437,7 +4539,7 @@
   ],
   "runtimeBlockers": {
     "gate": "G4",
-    "humanInterventionRequired": false,
+    "humanInterventionRequired": true,
     "reasons": [
       "ACK_WATERMARK_AND_PER_ROW_MATERIALIZATION_PROVENANCE_NOT_EXPOSED_BY_AVAILABLE_MCP_TOOLS",
       "NEW_RUN_BINDING_TO_REVIEWED_PUBLICATION_AND_SAME_CSV_NOT_PROVEN",
@@ -4533,7 +4635,13 @@
           ]
         }
       }
-    }
+    },
+    "currentRequiredHumanAction": "ONE_PINNED_READ_ONLY_ACQUISITION_OWNER_INPUT_CAPTURE_MAX10_ENGINE_GETS_ZERO_SQL_OAUTH",
+    "additionalCandidateBlockers": [
+      "MCP_GO_2026_6809_GO1_26_9",
+      "GATEWAY_SIGNATURE_NEGATIVE_TEST_FAILURE_UNRESOLVED",
+      "PACKAGED_READ_OWNER_BOOTSTRAP_AND_MINIMAL_MCP_DELIVERY_NOT_QUALIFIED"
+    ]
   },
   "unsegmentedFollowupWindows": [
     {
