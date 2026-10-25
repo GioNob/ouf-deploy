@@ -41,3 +41,32 @@ Atteso dopo consenso ed esecuzione completa: `ACQUISITION_READ_PATH_INSTALLED_E2
 Raccogliere SOLO JSON pubblici e Exit/Directory/Log più DeliveryExit/DeliveryDirectory/DeliveryLog. Mai review privata, Env, file configurazione, chiavi o token. STOP/CLAIMED/errore conserva prove/journal/contatori/candidati e consuma il child: NON rilanciare, rimuovere o cambiare scope.
 
 Dopo installazione provata: ROLES ouf-admin (solo link_id/viewROLES), preservare2ruoli/34permission e2assegnazioni; nuova decisione HUMAN per6READ ristrette a tenant/source/2run/detail/label. Policy48 scaduta non autorizza letture. Ispezionare le DUE acquisizioni esistenti per bundle/CSV, ACK/watermark,13ID/20proprietà/materializzazione/provenance e8Cinema preservati ai limiti delle baseline valori disponibili. E2E/G4/F5/F6 OPEN, tecnico8/8/funzionale4/6, Supervisor dopo; nessun merge/release acceptance o Registry restart/reinstall/reset.
+
+## Comando completo di prima invocazione della continuazione
+
+Consegna immutabile 738f6252e977fbd7c99d83489c3d2f83e11c581f, sorgenti a21f5bda invariati. Eseguire UNA volta. Quando compare la riga isolata APPROVO con il nuovo hash, digitare esclusivamente quella riga dopo aver letto la review; non usare il vecchio hash e non aggiungere testo. La nuova lettura credenziale e i relativi limiti sono espliciti nella review. In STOP conservare e non rilanciare.
+
+```bash
+bash <<'SH'
+set -euo pipefail
+umask 077
+d=$(mktemp -d "$HOME/ouf-continuation-delivery.XXXXXXXX")
+set +e
+(
+  set -euo pipefail
+  curl --fail --location --proto '=https' --tlsv1.2 \
+    --connect-timeout 10 --max-time 60 --retry 0 \
+    'https://raw.githubusercontent.com/GioNob/ouf-deploy/738f6252e977fbd7c99d83489c3d2f83e11c581f/releases/continue-acquisition-read-native-20261025.sh' \
+    --output "$d/run.sh"
+  printf '%s  %s\n' \
+    'ef035a77a93e26e4f24f2e53123eac412457772329b7f8f0cb8a81a2e16fedde' \
+    "$d/run.sh" | sha256sum --check -
+  bash "$d/run.sh"
+) 2>&1 | tee "$d/bootstrap.log"
+rc=${PIPESTATUS[0]}
+set -e
+printf 'DeliveryExit=%s\nDeliveryDirectory=%s\nDeliveryLog=%s\n' \
+  "$rc" "$d" "$d/bootstrap.log"
+exit "$rc"
+SH
+```
