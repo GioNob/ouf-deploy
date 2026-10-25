@@ -33,7 +33,10 @@ class NativeTests(unittest.TestCase):
             '-e', 'POSTGRES_HOST_AUTH_METHOD=trust', '-e', 'POSTGRES_DB=lookup_test', 'postgres:17'], text=True).strip()
         cls.temp = tempfile.TemporaryDirectory(dir=os.environ['LOOKUP_TEST_ROOT'])
         for _ in range(120):
-            if subprocess.run([cls.docker, 'exec', cls.cid, 'pg_isready', '-U', 'postgres', '-d', 'lookup_test'],
+            # initdb's temporary Unix-only server can report pg_isready before
+            # POSTGRES_DB exists. TCP SELECT proves the final initialized server.
+            if subprocess.run([cls.docker, 'exec', cls.cid, 'psql', '-h', '127.0.0.1', '-U', 'postgres',
+                               '-d', 'lookup_test', '-X', '-w', '-q', '-c', 'SELECT 1'],
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0: break
             time.sleep(.5)
         else: raise AssertionError('real postgres not ready')

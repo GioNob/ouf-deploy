@@ -6,6 +6,7 @@ The retained physical profile supplies transport, never historical authority.
 There is no registration, CREATE, preview, publish, arbitrary SQL or retry port.
 """
 import hashlib
+from email.utils import parsedate_to_datetime
 import http.client
 import json
 import os
@@ -306,23 +307,53 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 class Owner:
-    def __init__(self, token, journal):
+    def __init__(self, token, journal, *, clock=time.monotonic, sleep=time.sleep, wall=time.time):
         self.token, self.journal = token, journal
         self.draft_id = None
-        self.deadline = time.monotonic()+90
+        self.clock, self.sleep, self.wall = clock, sleep, wall
+        self.deadline = clock()+90
+        self.stages = 0
         self.opener = urllib.request.build_opener(NoRedirect())
 
     def get(self, path):
         require(path == '/policies/active' or self.draft_id is not None and path == '/policies/'+self.draft_id,
                 'ONLY_ACTIVE_AND_EXACT_EXISTING_DRAFT_GET_ALLOWED')
-        require(time.monotonic() < self.deadline, 'FINITE_OWNER_LOOKUP_EXPIRED')
+        require(self.stages < 3, 'ONLY_THREE_OWNER_LOOKUP_STAGES')
+        self.stages += 1
+        for attempt in range(1, 9):
+            require(self.clock() < self.deadline, 'FINITE_OWNER_LOOKUP_EXPIRED')
+            self.journal.row['readProgress'] = {'stage': self.stages, 'attempt': attempt, 'state': 'ATTEMPTING'}
+            self.journal.save()
+            try:
+                return self.once(path)
+            except urllib.error.HTTPError as error:
+                require(error.code in (408, 429, 502, 503, 504), 'OWNER_GET_PERMANENT_DENIAL_NO_RETRY')
+                value = error.headers.get('Retry-After')
+                try:
+                    retry_after = 0 if value is None else float(value) if value.isdigit() else parsedate_to_datetime(value).timestamp()-self.wall()
+                    require(0 <= retry_after < 86400, 'INVALID_OWNER_RETRY_AFTER')
+                except (ValueError, TypeError, OverflowError): raise Stop('INVALID_OWNER_RETRY_AFTER') from None
+            except (TimeoutError, ConnectionError):
+                retry_after = 0
+            except urllib.error.URLError as error:
+                require(isinstance(error.reason, (TimeoutError, ConnectionError)), 'OWNER_GET_UNKNOWN_TRANSPORT_NO_RETRY')
+                retry_after = 0
+            jitter = int(digest({'stage': self.stages, 'attempt': attempt})[:8], 16)/0xffffffff
+            delay = max(retry_after, (5, 15, 60, 300, 900)[min(attempt-1, 4)]*(1+.2*jitter))
+            require(attempt < 8 and self.clock()+delay < self.deadline, 'FINITE_OWNER_READ_RETRY_EXHAUSTED')
+            due = self.clock()+delay
+            self.journal.row['readProgress'].update(state='RETRY_WAIT', nextRetryAt=self.wall()+delay)
+            self.journal.save()
+            while self.clock() < due: self.sleep(min(1, due-self.clock()))
+        raise Stop('FINITE_OWNER_READ_RETRY_EXHAUSTED')
+
+    def once(self, path):
         counts = self.journal.row['counts']
-        require(counts['ownerGets'] < 9, 'THREE_NEW_OWNER_GETS_ONLY')
+        require(counts['ownerGets'] < 30, 'FINITE_CUMULATIVE_OWNER_GET_LIMIT')
         counts['ownerGets'] += 1; self.journal.save()
         request = urllib.request.Request(ADMIN+path, method='GET',
                                         headers={'Authorization': 'Bearer '+self.token, 'Accept': 'application/json'})
-        try: reply = self.opener.open(request, timeout=15)
-        except (urllib.error.URLError, TimeoutError, OSError): raise Stop('OWNER_GET_FAILED_NO_REPLAY') from None
+        reply = self.opener.open(request, timeout=min(15, max(.1,self.deadline-self.clock())))
         with reply:
             raw = reply.read(5*1024*1024+1)
             # Persist the returned UUID-bearing response before all shape/JSON guards.

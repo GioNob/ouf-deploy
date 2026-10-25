@@ -132,6 +132,32 @@ class LookupTests(unittest.TestCase):
         with self.assertRaises(m.Stop): self.run_lookup()
         self.assertFalse(self.native_calls)
         self.assertEqual(self.j.row['counts']['ownerGets'], 7)
+    def test_transient_owner_get_pauses_with_jitter_and_preserves_counts(self):
+        current = [0.0]; pauses = []
+        def sleep(seconds): current[0] += seconds; pauses.append(seconds)
+        self.owner = m.Owner('SYNTHETIC_TOKEN', self.j, clock=lambda: current[0], sleep=sleep, wall=lambda:1000+current[0])
+        calls = [0]
+        fixture = self.fixture
+        class Flaky:
+            def open(self, request, **kwargs):
+                calls[0] += 1
+                if calls[0] == 1: raise m.urllib.error.HTTPError(request.full_url,503,'synthetic',{'Retry-After':'7'},None)
+                return fixture.open(request, **kwargs)
+        self.owner.opener = Flaky()
+        result = self.run_lookup()
+        self.assertEqual(result['counts']['ownerGets'],10)
+        self.assertEqual(sum(pauses),7)
+        self.assertTrue(all(p <= 1 for p in pauses))
+        self.assertEqual(len(self.native_calls),1)
+    def test_read_retry_budget_never_retries_sql_or_unknown_errors(self):
+        current=[0.0]
+        self.owner = m.Owner('SYNTHETIC_TOKEN',self.j,clock=lambda:current[0],sleep=lambda s:current.__setitem__(0,current[0]+s))
+        class Failed:
+            def open(self,request,**kwargs):raise m.urllib.error.HTTPError(request.full_url,503,'synthetic',{'Retry-After':'90'},None)
+        self.owner.opener=Failed()
+        with self.assertRaisesRegex(m.Stop,'RETRY_EXHAUSTED'):self.run_lookup()
+        self.assertEqual(self.j.row['counts']['ownerGets'],7)
+        self.assertEqual(self.j.row['nativeSqlSessionAttempts'],0)
     def test_owner_revocation_after_query_keeps_uuid_response(self):
         def native(*args):
             self.fixture.denied = True
