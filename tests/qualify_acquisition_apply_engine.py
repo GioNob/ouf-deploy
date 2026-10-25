@@ -51,7 +51,7 @@ deployment:
       - http://127.0.0.1:23799
 ''');self.config.chmod(0o400)
         name='ouf-fixture-etcd-'+str(time.time_ns());cid=self.cli('run','--detach','--name',name,'--network','host','quay.io/coreos/etcd:v3.5.15','/usr/local/bin/etcd','--listen-client-urls','http://127.0.0.1:23799','--advertise-client-urls','http://127.0.0.1:23799');self.resources.append(('container',cid));time.sleep(2)
-        name='ouf-fixture-apisix-'+str(time.time_ns());cid=self.cli('run','--detach','--name',name,'--network','host','--volume',str(self.config)+':/usr/local/apisix/conf/config.yaml:ro','apache/apisix:3.18.0-debian');self.resources.append(('container',cid));self.old['gateway']=json.loads(self.cli('inspect',cid))[0]
+        name='ouf-fixture-apisix-'+str(time.time_ns());cid=self.cli('run','--detach','--name',name,'--user','0:0','--network','host','--volume',str(self.config)+':/usr/local/apisix/conf/config.yaml:ro','apache/apisix:3.18.0-debian');self.resources.append(('container',cid));self.old['gateway']=json.loads(self.cli('inspect',cid))[0]
         def api(method,path,body=None):
             c=http.client.HTTPConnection('127.0.0.1',9180,timeout=3)
             try:
@@ -63,7 +63,11 @@ deployment:
                 if api('GET','/apisix/admin/routes')[0]==200:break
             except (OSError,ValueError):pass
             time.sleep(1)
-        else:raise AssertionError('Synthetic APISIX admin did not start')
+        else:
+            for kind,value in self.resources:
+                if kind=='container':
+                    diagnostic=subprocess.run(['docker','logs',value],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,check=False);print(diagnostic.stdout[-3000:],flush=True)
+            raise AssertionError('Synthetic APISIX admin did not start')
         for i in range(82):
             s,v=api('PUT','/apisix/admin/routes/fixture-'+str(i),{'id':'fixture-'+str(i),'uri':'/fixture/'+str(i),'methods':['GET'],'upstream':{'type':'roundrobin','nodes':{'127.0.0.1:9':1}}});self.assertIn(s,(200,201))
         p=self.p;old_gateway={'transportBinding':{},'projectionBinding':{}}
@@ -109,7 +113,7 @@ deployment:
             def refresh_authority(ctx):
                 ctx.reserve('ownerConfigurationReads');ctx.reserve('ownerConfigurationReads');current=ctx.preparer.public_authority(ctx.p,profile_binding,outer.verification['trustPolicy'],outer.context);outer.assertEqual(current,ctx.native['publicAuthority']);ctx.profile=current['profile'];return current
         ctx=FixtureContext(self.parts,self.auth,self.sign,self.journal,self.closure,native_path=native_path,native_hash=p.digest(native),root=self.root/'runtime');self.ctx=ctx;ctx.current();ctx.reserve('adminGets');response=ctx.admin('GET','/apisix/admin/routes');self.assertEqual(ctx.route_map(ctx.route_rows(p.decode(response['body'].encode()))),ctx.route_map(routes))
-        review=copy.deepcopy(self.review);review.update(executionRoot=str(ctx.root),frozenPlanHash=native['frozenPlanHash'],nativePlan={'frozenPlanHash':native['frozenPlanHash'],'nativeInputsHash':ctx.NATIVE_HASH,'proposal':ctx.proposal},preflightCounts=copy.deepcopy(ctx.counts));review['nativePlanHash']=self.core.digest(review['nativePlan']);self.review=review;self.execution_root=ctx.root;self.profile=profile;self.core.validate_review(review);gate=self.issue();ports=ctx.ports_module.NativePorts(ctx,review,gate);execution=self.core.Execution(gate,self.journal.Journal(ctx.root),ports);execution.initialize();
+        review=copy.deepcopy(self.review);review.update(executionRoot=str(ctx.root),frozenPlanHash=native['frozenPlanHash'],nativePlan={'frozenPlanHash':native['frozenPlanHash'],'nativeInputsHash':ctx.NATIVE_HASH,'runtimeBinding':ctx.runtime_binding,'runtimeBindingHash':self.core.digest(ctx.runtime_binding),'proposal':ctx.proposal},preflightCounts=copy.deepcopy(ctx.counts));review['nativePlanHash']=self.core.digest(review['nativePlan']);self.review=review;self.execution_root=ctx.root;self.profile=profile;self.core.validate_review(review);gate=self.issue();ports=ctx.ports_module.NativePorts(ctx,review,gate);execution=self.core.Execution(gate,self.journal.Journal(ctx.root),ports);execution.initialize();
         if launch_watchdog:ctx.watch.launch(ctx,review,gate,execution.journal)
         self.gate,self.native_ports,self.execution=gate,ports,execution
     def teardown_runtime(self):
@@ -118,8 +122,8 @@ deployment:
         if hasattr(self,'ctx'):
             for proposal in [*self.ctx.proposal['readComponents'].values(),self.ctx.proposal['mcpReplacement']]:subprocess.run(['docker','rm','-f',proposal['name']],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,check=False)
     def test_real_native_lifecycle_and_additive_routes(self):
-        self.setup_runtime()
         try:
+            self.setup_runtime()
             result=self.execution.run();self.assertTrue(result['complete']);self.assertFalse(result['applicationE2EProven']);self.assertEqual(result['counts']['imageLoadAttempts'],3);self.assertEqual(result['counts']['adminPuts'],2);self.assertEqual(len(self.api('GET','/apisix/admin/routes')[1]['list']),84);old_mcp=self.ctx.proposal['mcpReplacement']['oldBinding']['containerId'];self.assertFalse(json.loads(self.cli('inspect',old_mcp))[0]['State']['Running'])
             for role in('ingestion','udp','postgres','gateway'):self.assertEqual(self.p.stable_binding(json.loads(self.cli('inspect',self.old[role]['Id']))[0]),self.ctx.proposal['existingApplications'][role])
             self.ctx.watch.negative(self.ctx,self.review,self.gate.raw,self.execution.journal,'CI_ALREADY_COMMITTED');self.assertEqual(self.execution.journal.read()['state'],'COMPLETE')
@@ -127,7 +131,9 @@ deployment:
         finally:self.teardown_runtime()
     def test_killed_controller_quarantines_only_uncommitted_candidates(self):
         import select,signal
-        self.setup_runtime(launch_watchdog=False);r,w=os.pipe();child=os.fork()
+        try:self.setup_runtime(launch_watchdog=False)
+        except BaseException:self.teardown_runtime();raise
+        r,w=os.pipe();child=os.fork()
         if child==0:
             try:
                 os.close(r);self.ctx.watch.launch(self.ctx,self.review,self.gate,self.execution.journal);original=self.native_ports.execute
