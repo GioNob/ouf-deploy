@@ -93,16 +93,23 @@ def read_component(role,actual,image,case_hash):
     require(role in('ingestion','udp'),'TWO_CLOSED_READ_ROLES_REQUIRED')
     name='ouf-'+role+'-evidence-read';old=config_copy(actual);ic=image['Config']
     require(old.get('User')in(ic['User'],ic['User'].split(':')[0]),'READ_COMPONENT_RETAINS_OWNER_UID_REQUIRED')
-    old.update(Image=image['Id'],Entrypoint=ic['Entrypoint'],Cmd=ic.get('Cmd'),Hostname=name,User=ic['User'],Labels={**(old.get('Labels')or{}),**(ic.get('Labels')or{}),'ouf.acquisition-read.case':case_hash,'ouf.component':'acquisition-evidence-read'})
+    entry=actual['Config'].get('Entrypoint')or[];args=actual['Config'].get('Cmd')or[]
+    require(len(entry)>=3 and Path(entry[0]).name=='java'and entry.count('-jar')==1 and entry[-2]=='-jar','RETAINED_JAVA_JAR_LAUNCHER_REQUIRED')
+    flags=entry[1:-2]
+    require(all(type(v)is str and v.startswith(('-D','-X','-javaagent:','-agentlib:','-agentpath:','--add-opens=','--add-exports=','--enable-native-access='))for v in flags),'REVIEWED_RETAINED_JVM_FLAGS_REQUIRED')
+    require(all(type(v)is str and v.startswith('--')and '\x00'not in v for v in args),'RETAINED_SPRING_APPLICATION_ARGUMENTS_REQUIRED')
+    new_entry=[ic['Entrypoint'][0],*flags,*ic['Entrypoint'][1:]]
+    old.update(Image=image['Id'],Entrypoint=new_entry,Cmd=copy.deepcopy(args)or None,Hostname=name,User=ic['User'],Labels={**(old.get('Labels')or{}),**(ic.get('Labels')or{}),'ouf.acquisition-read.case':case_hash,'ouf.component':'acquisition-evidence-read'})
     original=actual['HostConfig'];host=copy.deepcopy(original)
     require(not host.get('Privileged')and not host.get('Devices')and not host.get('DeviceRequests')and not host.get('CapAdd'),'NO_INHERITED_PRIVILEGED_READ_COMPONENT')
     for field in('Binds','VolumesFrom'):host[field]=None
     host.update(Mounts=read_mounts(actual),ReadonlyRootfs=True,CapAdd=None,CapDrop=['ALL'],SecurityOpt=['no-new-privileges:true'],PidsLimit=128,Memory=536870912,MemorySwap=536870912,Tmpfs={'/tmp':'rw,nosuid,noexec,size=64m'},PortBindings={},PublishAllPorts=False,AutoRemove=False,RestartPolicy={'Name':'no','MaximumRetryCount':0})
     net=network(actual,[name]);old.update(HostConfig=host,NetworkingConfig=net['request'])
     require(old['Env']==actual['Config']['Env'],'READ_COMPONENT_ENVIRONMENT_PRESERVED_REQUIRED')
-    return {'name':name,'role':role,'request':old,'network':{'name':net['name'],'id':net['id']},'oldOwnerUnchanged':stable_binding(actual),'normalWorkloadIdentityAndPolicyTokenMountsInherited':True,'allExistingMountsReadOnly':True,'restartPolicyAfterVerifiedReadiness':{'Name':'unless-stopped','MaximumRetryCount':0}}
+    return {'name':name,'role':role,'request':old,'network':{'name':net['name'],'id':net['id']},'oldOwnerUnchanged':stable_binding(actual),'normalWorkloadIdentityAndPolicyTokenMountsInherited':True,'allExistingMountsReadOnly':True,'retainedJvmFlagsPreserved':True,'retainedApplicationArgumentsPreserved':True,'restartPolicyAfterVerifiedReadiness':{'Name':'unless-stopped','MaximumRetryCount':0}}
 def mcp_replacement(actual,image,case_hash):
     e=env(actual['Config']);require(all(e.get(k)for k in('MCP_OIDC_TOKEN_ENDPOINT','MCP_OIDC_CLIENT_ID','MCP_OIDC_CLIENT_SECRET_FILE'))and not e.get('MCP_WORKLOAD_TOKEN')and not e.get('MCP_WORKLOAD_TOKEN_FILE'),'ONE_EXISTING_MCP_CLIENT_CREDENTIALS_SOURCE_REQUIRED')
+    require(actual['Config'].get('Cmd')==['server'],'EXISTING_MCP_SERVER_MODE_REQUIRED')
     request=config_copy(actual);require(request.get('User')in(image['Config']['User'],image['Config']['User'].split(':')[0]),'MCP_OWNER_UID_PRESERVED_REQUIRED')
     request.update(Image=image['Id'],Entrypoint=image['Config']['Entrypoint'],Cmd=image['Config']['Cmd']);name=actual['Name'].removeprefix('/')
     require(type(request.get('Hostname'))is str and request['Hostname'],'EXPLICIT_RETAINED_MCP_HOSTNAME_REQUIRED')
@@ -219,7 +226,7 @@ def prepare(inputs_path=INPUTS,inputs_hash=INPUTS_HASH,packages=PACKAGES,receipt
     routes,gateway_binding=probe(actual,inputs,root);process_check(inputs)
     gateway=proposed_routes(routes,modules,projection,actual)
     gateway.update(transportBinding=gateway_binding,projectionBinding=projection_binding,oldGatewayBinding=stable_binding(actual['gateway']))
-    plan={'schema':'ouf.acquisition-read-native-plan.v1','caseHash':case_hash,'capturedInputsHash':inputs_hash,'stagedReceiptHash':receipt_hash,'existingApplications':{role:stable_binding(value)for role,value in actual.items()},'readComponents':reads,'mcpReplacement':replacement,'gateway':gateway,
+    plan={'schema':'ouf.acquisition-read-native-plan.v1','caseHash':case_hash,'capturedInputsHash':inputs_hash,'stagedReceiptHash':receipt_hash,'engineBinding':inputs['engineBinding'],'existingApplications':{role:stable_binding(value)for role,value in actual.items()},'readComponents':reads,'mcpReplacement':replacement,'gateway':gateway,
         'candidateArchives':{role:{'path':str(packages/role/'image.tar.gz'),'sha256':receipt['artifacts'][role]['fileHashes']['image.tar.gz'],'imageId':images[role]['Id'],'sourceCommit':receipt['artifacts'][role]['sourceCommit']}for role in images},
         'capacityAtPreparation':{'availableBytes':available,'requiredAdditionalReadBudgetBytes':1073741824,'reserveBytes':268435456,'freshAdmissionAtApplyRequired':True},'executionEntryQualified':False,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'releaseAcceptance':False,'automaticReplayAllowed':False,'budgetReset':False,'originalRegistryWorkerNotSelectedForAnyOperation':True,'newReadServicesCreateOAuthManager':False,'existingIngestionUdpAndPostgresRemainUnchanged':True,'currentEngineApiIdentityNotProvenByThisPlanner':True,'freshEngineAndConfigurationRevalidationRequiredBeforeApply':True,'normalMcpOAuthBootstrapMayOccurOnlyInFutureReviewedReplacement':True}
     protected(inputs_path,inputs_hash);protected(packages/'complete.json',receipt_hash);put(root/'execution-plan.json',plan)

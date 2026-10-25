@@ -46,10 +46,10 @@ class NativePlanTest(unittest.TestCase):
             values=['PRIVATE_FIXTURE='+PRIVATE]
             if role=='mcp':values+=['MCP_OIDC_TOKEN_ENDPOINT=https://auth.test/realms/ouf/protocol/openid-connect/token','MCP_OIDC_CLIENT_ID=mcp-workload','MCP_OIDC_CLIENT_SECRET_FILE=/run/secrets/mcp-secret']
             if role=='gateway':values+=['DELEGATION_KEY=fixture-a','INGESTION_KEY=fixture-b','UDP_KEY=fixture-c']
-            value={'Id':('%064x'%ordinal),'Name':'/ouf-'+role,'Image':'sha256:'+'e'*64,'State':{'Pid':os.getpid(),'StartedAt':'2026-10-25T01:00:00Z','Running':True},'Config':{'User':uid,'Hostname':'retained-'+role,'Env':values,'Entrypoint':['original'],'Cmd':None,'Labels':{},'Image':'retained'},'HostConfig':{'NetworkMode':'ouf-backend','RestartPolicy':{'Name':'unless-stopped','MaximumRetryCount':0},'Binds':None,'Mounts':None,'Memory':0,'Privileged':False},'Mounts':[],'NetworkSettings':{'Networks':{'ouf-backend':{'NetworkID':'1'*64,'Aliases':['ouf-'+role]}}}}
+            value={'Id':('%064x'%ordinal),'Name':'/ouf-'+role,'Image':'sha256:'+'e'*64,'State':{'Pid':os.getpid(),'StartedAt':'2026-10-25T01:00:00Z','Running':True},'Config':{'User':uid,'Hostname':'retained-'+role,'Env':values,'Entrypoint':['java','-jar','/app/app.jar']if role in('ingestion','udp')else['original'],'Cmd':['server']if role=='mcp'else None,'Labels':{},'Image':'retained'},'HostConfig':{'NetworkMode':'ouf-backend','RestartPolicy':{'Name':'unless-stopped','MaximumRetryCount':0},'Binds':None,'Mounts':None,'Memory':0,'Privileged':False},'Mounts':[],'NetworkSettings':{'Networks':{'ouf-backend':{'NetworkID':'1'*64,'Aliases':['ouf-'+role]}}}}
             if role=='gateway':value['Mounts']=[{'Type':'bind','Source':str(self.config),'Destination':'/usr/local/apisix/conf/config.yaml','RW':False}]
             self.actual[role]=value;path=self.base/(role+'.json');self.write(path,value);observations[role]={'path':str(path),'sha256':p.sha(p.encoded(value))}
-        self.inputs={'schema':'ouf.acquisition-read-current-private-inputs.v1','bootId':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),'currentProcessPins':{role:pin for role in self.actual},'currentObservations':observations}
+        self.inputs={'schema':'ouf.acquisition-read-current-private-inputs.v1','engineBinding':{'socketPath':'/run/synthetic-only/docker.sock','socketBinding':[1,2,0,0,384],'peerCredentials':[1,0,0]},'bootId':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),'currentProcessPins':{role:pin for role in self.actual},'currentObservations':observations}
         self.receipt={'schema':'ouf.acquisition-read-packages-staged.v1','complete':True,'rootProtected':True,'caseHash':self.case,'artifacts':{}}
         for role in('ingestion','udp','mcp','gateway'):
             folder=self.packages/role;folder.mkdir(mode=0o700)
@@ -94,6 +94,14 @@ class NativePlanTest(unittest.TestCase):
     def test_second_mcp_authentication_source_is_rejected_before_any_admin_get(self):
         self.actual['mcp']['Config']['Env'].append('MCP_WORKLOAD_TOKEN=forbidden-second-source');self.refresh()
         with self.assertRaisesRegex(p.Stop,'ONE_EXISTING_MCP_CLIENT_CREDENTIALS_SOURCE_REQUIRED'):self.prepare()
+        self.assertEqual(p.COUNTS['gatewayAdminGetAttempts'],0)
+    def test_jvm_trust_settings_and_original_spring_arguments_are_preserved(self):
+        value=self.actual['ingestion']['Config'];value['Entrypoint']=['java','-Djavax.net.ssl.trustStore=/run/trusted/ca','-Xmx256m','-jar','/app/app.jar'];value['Cmd']=['--spring.config.additional-location=file:/run/existing/owner.yml'];self.refresh();self.prepare()
+        plan=json.loads((self.root/'execution-plan.json').read_text());request=plan['readComponents']['ingestion']['request']
+        self.assertEqual(request['Entrypoint'][1:3],value['Entrypoint'][1:3]);self.assertEqual(request['Cmd'],value['Cmd']);self.assertEqual(request['Entrypoint'][3:],["read-only-entrypoint"])
+    def test_unknown_owner_launcher_is_not_silently_reinterpreted(self):
+        self.actual['udp']['Config']['Entrypoint']=['unknown-wrapper'];self.refresh()
+        with self.assertRaisesRegex(p.Stop,'RETAINED_JAVA_JAR_LAUNCHER_REQUIRED'):self.prepare()
         self.assertEqual(p.COUNTS['gatewayAdminGetAttempts'],0)
     def test_nonempty_unknown_docker_config_is_not_silently_dropped(self):
         self.actual['ingestion']['Config']['UnknownFutureField']='important';self.refresh()
