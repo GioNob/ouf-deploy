@@ -124,7 +124,7 @@ class Protocol(unittest.TestCase):
             os.close(go_w);os.close(ack_r)
             try:os.kill(child,9);os.waitpid(child,0)
             except (ProcessLookupError,ChildProcessError):pass
-    def test_runtime_monitor_and_publisher_stress_retains_exact_counts(self):
+    def test_runtime_monitor_stress_returns_exact_counts_or_bounded_lock_contention(self):
         journal=self.journal.Journal(self.execution_root);journal.initialize({'version':0,'counts':{'retained':128}});child=os.fork()
         if child==0:
             try:
@@ -139,7 +139,13 @@ class Protocol(unittest.TestCase):
         try:
             seen=[];deadline=time.monotonic()+10
             while True:
-                row=self.parts['quarantine'].read(journal);seen.append(row['version']);self.assertEqual(row['counts']['retained'],128+row['version'])
+                # Under a sustained burst, the bounded reader may exhaust its
+                # lock attempts. This is a typed no-progress result, never a
+                # reason to accept an unlinked/partial record or reset counts.
+                try:row=self.parts['quarantine'].read(journal)
+                except BlockingIOError:
+                    self.assertLess(time.monotonic(),deadline);continue
+                seen.append(row['version']);self.assertEqual(row['counts']['retained'],128+row['version'])
                 if row['version']==200:break
                 self.assertLess(time.monotonic(),deadline)
                 time.sleep(.002)
