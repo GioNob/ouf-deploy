@@ -1,3 +1,25 @@
+# CURRENT — difetto sudo+pipe riprodotto; continuazioneTTY qualificata/consegnata, prima esecuzione VPS attesa
+
+UltimoVPS: STOP_RECONCILE/FINITE_HUMAN_WINDOW_EXPIRED, humanReviewApprovedfalse, nessunPUBLISHclaim,6writes/13GET/1preview/744072bytes. Scopeoriginale e review6ff5...CONSUMATI. Nessuna colpaoperatore dedotta; no vecchi wrapper/approval/login/token/register/create/lookupSQL replay/reset.
+
+**Handoff corrente e NUOVO comando unico:** docs/handoffs/OUF_ACQUISITION_DESCRIPTOR_TTY_CONTINUATION_20261026.md INTEGRALE.
+Runtime d816b283a706e753d629e35e41c14cabdbbd247c/SHA174bdaefedf693e133a918c6f246e2c9e427b768c651764289379f87f5fbe0a0; deliveryed628178ee6e450b3c62a47b8e193130fa882879/wrapperSHAc44408931660941fdbd7d303b1152ebf61f223903a3896e54012b63e94be94dd.
+Nuovo childFISSO tty-publication-continuation-v1 sotto oldrootpubcb75; codiceROOT0400/dir0700/checksumROOT. Nuova intentoresidua e review concreta, non riapertura della precedente.
+
+DIFETTO RIPRODOTTO con rigaAPPROVO esatta+Invio: sudo use_pty+stdout|tee provoca timeout constdinIsTTYtrue ma stdinForegroundfalse/controlForegroundfalse. Il mio vecchio gate non copriva questa composizione. /dev/tty da solo non bastava. Fix: sudo INTERATTIVO diretto senza pipe; logging INTERNOruntime root600/contesto700; controllingTTYforeground guard primaIAM/scope e lettore exactbytes+Invio conflagsrestored. ACKimmediato Inputricevuto/APPROVAZIONEACQUISITA eheartbeat10s, fasiGET/retrypubvisibili. Niente sudoerschangeVPS. FlagliveVPSnonlettiretroattivamente: il reproducer è provaCI deldifetto, non osservazione deltermiosVPSstorico.
+
+Contatori6/13/1/744072 eprimepreviewownerPRIVATE incorporate. La prima preview NON si ripete: prepareSOLEGET, una sola previewRESIDUA2/2 dopo nuovaAPPROVO+UNPUBLISH6→7. Stessi massimi7writes/160GET/2preview/32MiB,900sreview/1800stotale/tokenexp−15. ProveSTOP/reviewhash6ff/candidato027f/UUIDcb75/rev0/previewretained esatte eoriginaliimmutabili, storieIAM conservate. Runtime ha soloGET e exactUUIDpreview/publish, nessunREGISTER/CREATE/SQL/Engine. Claim+fsync e rispostaPRIVATE prima guard, ambiguo restaCLAIMED/no retry. Sola reviewNUOVA IAMouf-admin+veroTTY, hashFRESCOsu riga isolata+Invio. Codice device SOLO browser.
+
+Qualifica puntuale: push40245135499 jobs121324991821/121324991979 ePR40245139357 jobs121325002894/121325002718:7protocol+5rootcustody+3ownerJava21/PG17 PASS/0skip/logletti. TTYcompletaPR40244833347 use_pty121324091729/!use_pty121324091591:8unitPTY+17trasporti PERbackend PASS/0skip/logletti, incluso vero sudo/usernonroot/root/logger econtinuazione0grant. ReproducerlegacyconInvio conservato anchepush40244418730/PR40244422632. IAM/principal/storia/decisioniCI sintetici; externalRuntimeSynchronizer mocked. No approvazioneproduction simulata o E2E/THSacceptance.
+
+Atteso soloVPS EXISTING_ACQUISITION_DESCRIPTORS_PUBLISHED_GRANTS_UNCHANGED/complete/Exit0/DeliveryExit0,7writes/2preview/retained1new1/106grant/ACTIVE49. Nessun risultato continuazioneVPS ricevutoora. Rootlog: oldscope/tty-publication-continuation-v1/operator.log; logbootstrapoperatoreconservato. NON pipeesternaalcomando. STOPconsumachild/no rerun/cambiopath/rollback.
+
+DopoPUBprovata: scopesMCP/ROLES/GRANTS fresche, nuova propostaHUMAN/THS ristretta alle DUErun esistenti, poi4READ/correlazioneE2E. DueinvocazioniMCPGRANTSdiagnostiche precedenti separate/contiwireignoti preservate. Tecnico8/8funzionale4/6, E2E/G4/F5/F6OPEN, Supervisor dopoE2E. Nessuna terzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. Header sotto STORICI.
+
+## Regola permanente — HUMAN terminale e sudo interattivo
+
+isatty() NON prova che un processo siaforeground o riceva l'input; echoAPPROVO non è consenso acquisito. Non collegare stdout di sudo interattivo atee/pipeline: use_pty può produrre il blocco pur conInvio corretto. Tenere stdout sulterminale, loggare dentro ilcontroller in fileprotetto, guardcontrollingTTYforeground prima di autenticazione/claim, readerexactbyte+Enter conriscontroimmediato, heartbeat eflagsrestored. Qualificare l'INTERAcomposizione su sudo realewith/withoutuse_pty, LF/CR/CRLF/pasteframmentato/noEnter/wrong/timeout, non soloPTYiniettata nella funzione. Conservare riproduttorenegativo delvecchiocodice. Non disattivaresudoPTYproduction o attribuire erroreutente senza prova.
+
 # CURRENT — STOP per reviewTTY NON acquisita confermato dal journal; nessun claimPUBLISH
 
 Owner ha restituito proiezionejournal: STOP_RECONCILE/FINITE_HUMAN_WINDOW_EXPIRED, humanReviewApprovedfalse, pendingReads[], publishStatenull, contatori6writes/13GET/1preview/744072bytes (identici alla review). Quindi questo controller non ha superato APPROVO né riservato/inviatoPUBLISH: nessuna settima scrittura o seconda preview neljournal osservato. Non attribuire causa aIAM, Registry, MacAddress o timeoutowner. RigaAPPROVO visibile era soltantoeco; non prova acquisizione. Causa precisa del mancato input/EOL non dimostrata.

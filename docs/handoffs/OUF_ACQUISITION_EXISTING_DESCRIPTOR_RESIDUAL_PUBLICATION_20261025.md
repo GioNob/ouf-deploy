@@ -1,3 +1,5 @@
+**STORICO: eseguito e STOP prima dell'approvazione; scope CONSUMATO. NON rilanciare il comando sotto.** NEXT qualificato: [continuazioneTTY governata](OUF_ACQUISITION_DESCRIPTOR_TTY_CONTINUATION_20261026.md), una sola previewresidua e nuova review. Riprodotto difetto sudo+pipe; non attribuire mancatoInvio all'operatore.
+
 # Sola pubblicazione residua del draft confermato — 25 ottobre 2026
 
 ## Target provato e scope consumati
