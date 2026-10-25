@@ -48,7 +48,9 @@ def terminal_decision(review,path):
         'Watchdog effimero; stop solo candidati propri se controller perso/scaduto. Nessun rollback.\n'
         'Effetto ambiguo resta CLAIMED e richiede riconciliazione, mai rilancio automatico.\n'
         'Questa operazione NON concede accettazione E2E o release.\n'
-        'Scrivi APPROVO '+reviewed+' per la sola revisione esatta.\n> ')
+        'Per approvare questa sola revisione, digita ESCLUSIVAMENTE la riga seguente.\n'
+        'Non aggiungere parole o punteggiatura dopo l\'hash.\n'
+        'APPROVO '+reviewed+'\n> ')
     fd=os.open('/dev/tty',os.O_RDWR|os.O_NOCTTY|os.O_NOFOLLOW)
     try:
         require(stat.S_ISCHR(os.fstat(fd).st_mode)and os.isatty(fd),'CONTROLLING_ACQUISITION_TERMINAL_REQUIRED')

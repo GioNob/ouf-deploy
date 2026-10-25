@@ -67,7 +67,8 @@ class Protocol(unittest.TestCase):
         self.assertFalse(match({'Memory':536870912,'OomKillDisable':None},{'Memory':1073741824,'OomKillDisable':False},started=True))
     def test_tty_requires_the_exact_current_review_hash(self):
         import pty,select
-        for answer,expected_status in(('APPROVO '+'0'*64,2),('APPROVO '+self.core.digest(self.review),0)):
+        exact='APPROVO '+self.core.digest(self.review)
+        for answer,expected_status in(('APPROVO '+'0'*64,2),(exact+' per la sola revisione esatta.',2),(exact,0)):
             pid,fd=pty.fork()
             if pid==0:
                 try:
@@ -78,6 +79,10 @@ class Protocol(unittest.TestCase):
                 while b'> 'not in buffer:
                     self.assertLess(time.monotonic(),deadline);ready,_,_=select.select([fd],[],[],1)
                     if ready:buffer+=os.read(fd,65536)
+                lines=buffer.decode().replace('\r\n','\n').splitlines()
+                commands=[line for line in lines if line.startswith('APPROVO ')]
+                self.assertEqual(commands,[exact])
+                self.assertIn('Non aggiungere parole o punteggiatura',buffer.decode())
                 os.write(fd,(answer+'\n').encode())
                 while True:
                     ready,_,_=select.select([fd],[],[],1)
