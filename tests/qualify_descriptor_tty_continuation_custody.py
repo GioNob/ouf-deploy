@@ -83,7 +83,8 @@ class CustodyTests(unittest.TestCase):
         path.unlink();path.write_bytes(raw);path.chmod(0o644)
         with self.assertRaises(m.Stop):m.retained(65534)
     def test_original_files_not_changed_and_no_scope_replay(self):
-        paths=[self.original/'review.json',self.original/'state.json',self.lookup/'result.json',self.lookup/'state.json',self.lookup/'owner-draft-response.json']
+        paths=[self.original/'review.json',self.original/'state.json',self.lookup/'result.json',self.lookup/'state.json',self.lookup/'owner-draft-response.json',
+               self.failed/'state.json',self.failed/'review.json',self.failed/'initial-preview-response.json']
         before={str(p):(p.read_bytes(),p.stat().st_mtime_ns,p.stat().st_ctime_ns) for p in paths}
         m.retained(65534)
         self.assertEqual(before,{str(p):(p.read_bytes(),p.stat().st_mtime_ns,p.stat().st_ctime_ns) for p in paths})
@@ -98,6 +99,8 @@ class CustodyTests(unittest.TestCase):
 
     def test_actual_root077_protected_delivery_and_execution(self):
         wrapper=(ROOT/'releases/continue-existing-descriptor-publication-tty-20261026.sh').read_text()
+        self.assertIn('sudo /usr/bin/python3 -I -S -B "$code"\n',wrapper)
+        self.assertNotIn('sudo /usr/bin/python3 -I -S -B "$code" 2>&1 |',wrapper)
         marker="<<'PY' 2>&1 | tee -a \"$delivery_log\"\n"
         copier=wrapper.split(marker,1)[1].split('\nPY\n',1)[0]
         raw=(ROOT/'scripts/continue-existing-descriptor-publication-tty-20261026.py').read_bytes()
