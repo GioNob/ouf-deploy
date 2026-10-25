@@ -129,13 +129,13 @@ deployment:
             self.setup_runtime()
             try:result=self.execution.run()
             except BaseException:
-                row=self.execution.journal.read();print('FixtureFailureStage='+str(row['nextStage']),flush=True)
+                row=self.execution.read_journal();print('FixtureFailureStage='+str(row['nextStage']),flush=True)
                 for role,candidate in row['candidates'].items():
                     actual=json.loads(self.cli('inspect',candidate['id']))[0];wanted=self.native_ports.proposal(role)['request']['HostConfig'];diff=[{'field':k,'expectedType':type(v).__name__,'observedType':type(actual['HostConfig'].get(k)).__name__,'expected':v,'observed':actual['HostConfig'].get(k)}for k,v in wanted.items()if actual['HostConfig'].get(k)!=v];print(json.dumps({'fixtureRole':role,'hostDifferences':diff}),flush=True)
                 raise
             self.assertTrue(result['complete']);self.assertFalse(result['applicationE2EProven']);self.assertEqual(result['counts']['imageLoadAttempts'],3);context=self.review['verification']['context'];signer=self.sign.ExistingEd25519Signer(self.profile['keyBindings']['attestor'],self.profile['keyRefs']['attestor'],self.gate.verifier,{'role':'CREATION_ATTESTATION','issuerRef':context['attestorRef'],'installationRef':context['installationRef'],'entityRef':context['entityRef']});raw=self.core.encoded(result);self.core.authentication_file(self.ctx.root/'authority',self.core.sha(raw)+'.CREATION_ATTESTATION.json',signer.sign(raw));self.assertTrue(self.gate.verifier(raw,'CREATION_ATTESTATION',context['attestorRef'],context['installationRef'],context['entityRef']));self.assertEqual(result['counts']['adminPuts'],2);self.assertEqual(len(self.api('GET','/apisix/admin/routes')[1]['list']),84);old_mcp=self.ctx.proposal['mcpReplacement']['oldBinding']['containerId'];self.assertFalse(json.loads(self.cli('inspect',old_mcp))[0]['State']['Running'])
             for role in('ingestion','udp','postgres','gateway'):self.assertEqual(self.p.stable_binding(json.loads(self.cli('inspect',self.old[role]['Id']))[0]),self.ctx.proposal['existingApplications'][role])
-            self.ctx.watch.negative(self.ctx,self.review,self.gate.raw,self.execution.journal,'CI_ALREADY_COMMITTED');self.assertEqual(self.execution.journal.read()['state'],'COMPLETE')
+            self.ctx.watch.negative(self.ctx,self.review,self.gate.raw,self.execution.journal,'CI_ALREADY_COMMITTED');self.assertEqual(self.execution.read_journal()['state'],'COMPLETE')
             print(json.dumps({'schema':'ouf.synthetic-native-acquisition-apply-ci.v1','complete':True,'profile':self.ctx.native['imageIdentityProfile'],'realEd25519DualSignatures':True,'realEngineImagesLoaded':3,'realCandidatesCreatedAndStarted':3,'realApisixOldRouteCount':82,'realApisixAddedRouteCount':2,'originalWorkersUnchanged':True,'singleMcpManager':True,'completedNegativeLeaseDoesNothing':True,'productionRuntimeAccess':False}),flush=True)
         finally:self.teardown_runtime()
     def test_killed_controller_quarantines_only_uncommitted_candidates(self):
@@ -155,7 +155,7 @@ deployment:
         try:
             ready,_,_=select.select([r],[],[],120);self.assertTrue(ready,'Controller did not reach owned candidate checkpoint');self.assertEqual(os.read(r,16),b'READY');os.kill(child,signal.SIGKILL);os.waitpid(child,0)
             for _ in range(160):
-                row=self.execution.journal.read()
+                row=self.execution.read_journal()
                 if row['quarantine']and row['quarantine']['state']=='APPLIED':break
                 time.sleep(.25)
             else:raise AssertionError('Negative watchdog did not prove quarantine')
@@ -165,7 +165,7 @@ deployment:
                 actual=json.loads(self.cli('inspect',candidate['id']))[0];self.assertFalse(actual['State']['Running']);self.assertEqual(actual['HostConfig']['RestartPolicy'],{'Name':'no','MaximumRetryCount':0})
             self.assertEqual(len(self.api('GET','/apisix/admin/routes')[1]['list']),82);before=copy.deepcopy(row['counts'])
             with self.assertRaises(self.core.Stop):self.execution.run()
-            self.assertEqual(before,self.execution.journal.read()['counts']);print(json.dumps({'schema':'ouf.synthetic-acquisition-negative-lease-ci.v1','complete':True,'controllerKilled':True,'ownedCandidatesStopped':2,'allOriginalOwnersStillRunning':True,'oldRoutesUnchanged':82,'claimedEffectNotReplayed':True,'productionRuntimeAccess':False}),flush=True)
+            self.assertEqual(before,self.execution.read_journal()['counts']);print(json.dumps({'schema':'ouf.synthetic-acquisition-negative-lease-ci.v1','complete':True,'controllerKilled':True,'ownedCandidatesStopped':2,'allOriginalOwnersStillRunning':True,'oldRoutesUnchanged':82,'claimedEffectNotReplayed':True,'productionRuntimeAccess':False}),flush=True)
         finally:
             os.close(r)
             try:os.kill(child,signal.SIGKILL)

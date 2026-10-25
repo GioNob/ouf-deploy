@@ -74,6 +74,7 @@ class NativePorts:
             else:
                 try:good=response['status']==200 and self.ctx.p.decode(response['body'].encode()).get('status')=='UP'
                 except (ValueError,AttributeError):good=False
+            self.require(time.time()<row['startupDeadlineWall']and time.monotonic()<row['startupDeadlineMonotonic'],'READINESS_PROOF_WITHIN_STARTUP_LEASE_REQUIRED')
             if good:self.execution.candidate(role,readinessProven=True);return {'readinessProven':True,'role':role}
             self.require(self.gate.remaining()>35,'INSUFFICIENT_TIME_FOR_READINESS');time.sleep(2)
     def admin(self,method,path,body=None):

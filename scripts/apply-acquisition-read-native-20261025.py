@@ -45,7 +45,7 @@ class Context:
         self.write(self.root,'preparation-claim.json',{'schema':'ouf.acquisition-signed-execution-preparation-claim.v1','nativeInputsHash':self.NATIVE_HASH,'maximums':self.core.LIMITS,'runtimeEffectsDispatched':0,'automaticReplayAllowed':False,'budgetReset':False});self.engine=self.http.Engine(self.p,self.proposal['engineBinding'])
         for proposal in [*self.proposal['readComponents'].values(),self.proposal['mcpReplacement']]:
             host=proposal['request']['HostConfig']
-            if host.get('Memory',0)>0 and host.get('OomKillDisable')is None:proposal['runtimeHostProjection']={'profile':'DOCKER_MEMORY_ENABLED_NULL_OOM_FALSE_V1','requestedOomKillDisable':None,'materializedOomKillDisable':False,'positiveMemoryBytes':host['Memory']}
+            if host.get('OomKillDisable')is None:proposal['runtimeHostProjection']={'profile':'DOCKER_ENABLED_OOM_DEFAULT_NULL_FALSE_V1','requestedOomKillDisable':None,'materializedOomKillDisable':False,'positiveMemoryBytes':host['Memory']}
         self.refresh_authority();self.openssl=self.executable();self.runtime_binding=self.runtime_snapshot();self.key=None;self.load_admin_key();self.check_sources()
     def write(self,root,name,value):self.p.put(Path(root)/name,value)
     def read(self,path,expected):return self.p.decode(self.p.protected(Path(path),expected))
@@ -117,7 +117,7 @@ class Context:
         if restored:host['RestartPolicy']=self.restore_policy(role)
         # Stopped candidates may have Docker's already-materialized OOM default.
         ever_started=started or v['State'].get('StartedAt')not in(None,'','0001-01-01T00:00:00Z')
-        projection=proposal.get('runtimeHostProjection');materialized=projection=={'profile':'DOCKER_MEMORY_ENABLED_NULL_OOM_FALSE_V1','requestedOomKillDisable':None,'materializedOomKillDisable':False,'positiveMemoryBytes':host.get('Memory')}and host.get('Memory',0)>0 and host.get('OomKillDisable')is None
+        projection=proposal.get('runtimeHostProjection');materialized=projection=={'profile':'DOCKER_ENABLED_OOM_DEFAULT_NULL_FALSE_V1','requestedOomKillDisable':None,'materializedOomKillDisable':False,'positiveMemoryBytes':host.get('Memory')}and host.get('OomKillDisable')is None
         require(self.engine_helpers.requested_host_config_matches(host,v['HostConfig'],started=ever_started or materialized),'EXACT_CANDIDATE_HOST_CONFIGURATION_REQUIRED')
         if role=='mcp':require(self.core.digest(sorted(v['Mounts'],key=lambda m:m['Destination']))==proposal['oldBinding']['mountsHash'],'EXACT_MCP_RETAINED_MOUNTS_REQUIRED')
         else:
