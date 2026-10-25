@@ -1,0 +1,136 @@
+{
+  "schema": "ouf.csv-post-activation-ingestion-owner-evidence.v1",
+  "observedAt": "2026-10-25T05:17:51.698Z",
+  "evidenceSource": "DIRECT_GOVERNED_OUF_MCP_OWNER_READS_ACCOUNT_OUF_ADMIN",
+  "sourceId": "teatri-csv-6609b245",
+  "permissionProposal": {
+    "proposalId": "f87e7260-a5ed-4c7a-80b6-9990e5ae0875",
+    "revision": 1,
+    "state": "PUBLISHED",
+    "finalPolicyRef": "ouf-lab-authorization:48"
+  },
+  "permissionWindow": {
+    "validFrom": "2026-10-25T05:10:14.933Z",
+    "validUntil": "2026-10-25T07:10:14.933Z"
+  },
+  "expiredUnpublishedProposalIds": [
+    "5e197733-4d4b-428b-bca0-c7267ad53df0",
+    "fcbd1a23-5faa-454d-85b7-cc89943c34d6"
+  ],
+  "statusQuery": {
+    "sourceId": "teatri-csv-6609b245",
+    "limit": 1
+  },
+  "status": {
+    "items": [
+      {
+        "source_ref": "teatri-csv-6609b245",
+        "health_state": "HEALTHY",
+        "consecutive_failures": 0,
+        "error_code": null,
+        "next_retry_at": null,
+        "circuit_open_until": null,
+        "job_ref": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+        "run_state": "SUCCEEDED",
+        "last_seen_at": "2026-10-24T22:11:11.024+00:00",
+        "correlation_id": "635782b4-4cc5-44d4-a080-a62bc3c17657",
+        "visibility_class": "TENANT_OPERATIONAL",
+        "authorization_decision_ref": "ouf-lab-authorization:48:ingestion.operations.read"
+      }
+    ],
+    "authorization": "AUTHORIZED",
+    "partial": false
+  },
+  "historyQueries": [
+    {
+      "sourceId": "teatri-csv-6609b245",
+      "since": "2026-10-18T00:00:00Z",
+      "limit": 10,
+      "returnedRuns": 1
+    },
+    {
+      "sourceId": "teatri-csv-6609b245",
+      "limit": 20,
+      "returnedRuns": 2
+    }
+  ],
+  "history": {
+    "items": [
+      {
+        "job_ref": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+        "source_ref": "teatri-csv-6609b245",
+        "run_state": "SUCCEEDED",
+        "error_code": null,
+        "correlation_id": "635782b4-4cc5-44d4-a080-a62bc3c17657",
+        "first_seen_at": "2026-10-24T22:10:56.026+00:00",
+        "last_seen_at": "2026-10-24T22:11:11.024+00:00",
+        "visibility_class": "TENANT_OPERATIONAL",
+        "authorization_decision_ref": "ouf-lab-authorization:48:ingestion.operations.read"
+      },
+      {
+        "job_ref": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+        "source_ref": "teatri-csv-6609b245",
+        "run_state": "SUCCEEDED",
+        "error_code": null,
+        "correlation_id": "311f8b91-5774-4042-a431-de952e427e57",
+        "first_seen_at": "2026-10-17T10:07:19.887+00:00",
+        "last_seen_at": "2026-10-17T10:07:36.053+00:00",
+        "visibility_class": "TENANT_OPERATIONAL",
+        "authorization_decision_ref": "ouf-lab-authorization:48:ingestion.operations.read"
+      }
+    ],
+    "authorization": "AUTHORIZED",
+    "partial": false
+  },
+  "findings": {
+    "currentIngestionReadAuthorized": true,
+    "currentSourceHealthy": true,
+    "latestRunSucceeded": true,
+    "twoDistinctPersistedSucceededRunsObserved": true,
+    "priorRunMatchesRetainedFirstAcquisition": true,
+    "newRunPublicationBindingProven": false,
+    "sameCsvBytesAcrossRunsProven": false,
+    "durableAckForNewRunProven": false,
+    "watermarkAckOrderingForNewRunProven": false,
+    "rowLevelIdentityAndMaterializationProven": false,
+    "bothAcquisitionsProvenanceProven": false,
+    "propertyCountDifferenceExplained": false
+  },
+  "capabilityBoundary": {
+    "exposedMcpReads": [
+      "ouf.ingestion.status",
+      "ouf.ingestion.history",
+      "urban.object.search"
+    ],
+    "operationalProjectionOmits": [
+      "bundle/publication/file checksum binding",
+      "row outcomes",
+      "handoff/ACK receipts",
+      "partition watermark",
+      "UDP observations/contributions/provenance"
+    ],
+    "existingOwnerReadApisNotExposedAsMcpTools": [
+      "Ingestion HistoricalContractApi runContracts/lineage",
+      "UDP ServingApi object/property lineage"
+    ],
+    "inspectedIngestionSourceCommit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+    "inspectedMcpSourceCommit": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+    "inspectedUdpSourceCommit": "b49c0d6f50c574c11684361ce4e8040e9cbddee2",
+    "sourceInspectionIsNotNewTargetDeploymentProof": true
+  },
+  "effects": {
+    "sourceActivations": 0,
+    "acquisitionsRequestedByAgent": 0,
+    "jobsRetried": 0,
+    "sqlSessions": 0,
+    "serverCommands": 0,
+    "workerMutations": 0,
+    "budgetReset": false
+  },
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "g3": "PASSED",
+  "g4": "OPEN",
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}
