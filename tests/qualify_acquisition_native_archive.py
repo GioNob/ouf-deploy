@@ -10,7 +10,7 @@ with tempfile.TemporaryDirectory(prefix='ouf-native-archive-ci-',dir='/var/lib')
     with zipfile.ZipFile(root/'mcp.zip')as z:raw=z.read('image.tar.gz')
     expected='dd63ba8508949451f7c50f5d8913b1b35cf59650f199b78576fc2bcd1173c9cb';assert hashlib.sha256(raw).hexdigest()==expected
     archive=root/'image.tar.gz';archive.write_bytes(raw);archive.chmod(0o400);output=root/'native';output.mkdir(mode=0o700)
-    info=json.loads(subprocess.check_output(['docker','info','--format','{{json .}}'],text=True));profile=n.identity_profile(info)
+    info=json.loads(subprocess.check_output(['docker','info','--format','{{json .}}'],text=True));profile=n.identity_profile(info);assert profile==('CONFIG_AND_NATIVE_MANIFEST'if os.environ['EXPECTED_STORE']=='containerd'else'CONFIGURATION_ID')
     fact=n.archive_at(p,images,{'path':str(archive),'sha256':expected,'imageId':descriptor['imageId'],'sourceCommit':descriptor['commit']},output,profile=='CONFIG_AND_NATIVE_MANIFEST')
     subprocess.run(['docker','load','--input',fact['nativeArchive']['path']],stdout=subprocess.DEVNULL,check=True)
     actual=json.loads(subprocess.check_output(['docker','image','inspect',fact['nativeImageId']],text=True))[0];proof=images.loaded(fact['audit'],actual)
