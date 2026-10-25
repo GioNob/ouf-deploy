@@ -63,7 +63,12 @@ printf '%s  %s\n' "$code_sha" "$code" | sha256sum -c - | tee -a "$delivery_log"
 printf '%s\n' 'Sola lettura amministrativa. Login IAM personale nel browser; nessun grant, pubblicazione o acquisizione.' | tee -a "$delivery_log"
 set +e
 /usr/bin/python3 -I -S -B "$code" 2>&1 | tee "$delivery/operator.log"
-read_exit=${PIPESTATUS[0]}
+pipeline_status=("${PIPESTATUS[@]}")
+read_exit=${pipeline_status[0]}
 set -e
+if [[ ${pipeline_status[1]} != 0 ]]; then
+  printf '%s\n' 'STOP: conservazione log fallita; non rilanciare.' >&2
+  read_exit=2
+fi
 printf 'Exit=%s\nLog=%s\n' "$read_exit" "$delivery/operator.log" | tee -a "$delivery_log"
 exit "$read_exit"
