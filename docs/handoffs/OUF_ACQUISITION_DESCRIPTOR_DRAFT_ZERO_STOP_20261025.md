@@ -1,3 +1,5 @@
+**Checkpoint superato dalla ricevuta retained target: lettore CONSUMATO. NEXT esclusivamente [lookup esatto del draft esistente](OUF_ACQUISITION_EXISTING_DESCRIPTOR_DRAFT_LOOKUP_20261025.md), prima esecuzione VPS ancora attesa. Non eseguire i comandi storici sotto.**
+
 # STOP pubblicazione: draftrevision0 e receipt da riconciliare — 25 ottobre2026
 
 ## Risultato VPS acquisito
