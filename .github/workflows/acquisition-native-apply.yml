@@ -1,0 +1,20 @@
+name: Acquisition native signed execution
+on:
+  push:
+    branches: [fix/registry-bound-owner-lineage-20261023]
+    paths: ['scripts/apply-acquisition-read-native-20261025.py','tools/acquisition_read_native/**','tests/test_acquisition_apply_protocol.py','tests/qualify_acquisition_apply_engine.py','.github/workflows/acquisition-native-apply.yml']
+  pull_request:
+    paths: ['scripts/apply-acquisition-read-native-20261025.py','tools/acquisition_read_native/**','tests/test_acquisition_apply_protocol.py','tests/qualify_acquisition_apply_engine.py','.github/workflows/acquisition-native-apply.yml']
+permissions: {contents: read}
+jobs:
+  dual-signature-finite-protocol:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Real scoped Ed25519 signatures, durable claims and live-policy revocation
+        run: sudo env OUF_APPLY_ROOT_FIXTURE=1 python3 -I -S -B -m unittest discover -s "$PWD/tests" -p test_acquisition_apply_protocol.py -v

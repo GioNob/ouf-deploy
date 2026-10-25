@@ -1,0 +1,157 @@
+"""One finite signed authority and fenced claims for the exact ACQUISITION update.
+
+This module has no Docker/SQL ports and cannot dispatch an effect by itself.
+"""
+import copy,hashlib,json,os,stat,termios,time
+from pathlib import Path
+STAGES=('VERIFY_CURRENT_ADMISSION','IMPORT_INGESTION','IMPORT_UDP','IMPORT_MCP',
+ 'CREATE_INGESTION_READ','CREATE_UDP_READ','START_INGESTION_READ','START_UDP_READ','VERIFY_READ_REPLICAS',
+ 'DISABLE_OLD_MCP_RESTART','STOP_OLD_MCP','DETACH_OLD_MCP','RENAME_OLD_MCP','CREATE_MCP','START_MCP','VERIFY_MCP_READINESS',
+ 'ADD_INGESTION_ROUTE','ADD_UDP_ROUTE','VERIFY_GATEWAY','RESTORE_INGESTION_RESTART','RESTORE_UDP_RESTART','RESTORE_MCP_RESTART','VERIFY_FINAL')
+LIMITS={'engineGets':500,'engineWrites':22,'imageLoadAttempts':3,'readinessGets':128,'adminGets':32,'adminPuts':2,'ownerConfigurationReads':64,'serviceCredentialFileReads':1,'quarantineStops':3}
+AUTHORITY_SCHEMA='ouf.acquisition-read-native-authority.v1'
+HUMAN_SCHEMA='ouf.acquisition-read-native-mandate.v1'
+DECISION='APPROVE_ONE_FINITE_ACQUISITION_READ_DEPLOYMENT_ONLY'
+class Stop(RuntimeError):pass
+def require(ok,code):
+    if not ok:raise Stop(code)
+def encoded(v):return json.dumps(v,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def digest(v):return sha(encoded(v))
+def validate_review(review):
+    require(review['schema']=='ouf.acquisition-read-native-review.v1'and review['maximumSeconds']==900
+        and review['negativeCleanup']=={'maximumAdditionalSeconds':30,'startupSeconds':180,'candidateStopOnly':True,'maximumStops':3,'disableCandidateRestartFirst':True}
+        and review['maximums']==LIMITS and review['stages']==list(STAGES)
+        and review['nativePlanHash']==digest(review['nativePlan'])
+        and review['frozenPlanHash']==review['nativePlan']['frozenPlanHash']
+        and review['sourceClosureHash']==digest(review['sourceClosure'])
+        and review['databaseRestoreAuthorized']is False and review['humanBudgetOrSourceActivationAuthorized']is False
+        and review['automaticReplayAllowed']is False and review['budgetReset']is False and review['releaseAcceptance']is False,
+        'EXACT_FINITE_ACQUISITION_REVIEW_REQUIRED')
+    return review
+def scope(review):
+    validate_review(review)
+    return {'reviewHash':digest(review),**{k:copy.deepcopy(review[k])for k in('frozenPlanHash','nativePlanHash','sourceClosureHash','logicalOperationRef','bootId','maximumSeconds','maximums','stages','negativeCleanup')}}
+def terminal_decision(review,path):
+    validate_review(review);reviewed=digest(review)
+    prompt=('\nInstallazione finita delle letture E2E:2READ separati,1sostituzione MCP,2rotte aggiuntive.\n'
+        'Piano e configurazioni privati: '+str(path)+'\nSHA256 revisione: '+reviewed+'\n'
+        'Breve indisponibilita MCP: vecchio fermato e scollegato prima del nuovo, trattenuto fermo.\n'
+        'Ingestion/UDP/Postgres/Gateway originali e worker Registry restano intatti.\n'
+        'Tre immagini CI esatte, identita native config/manifest dimostrate senza rebuild/relabel.\n'
+        'READ senza Flyway/esecuzione, mount RO, rootfs RO; readiness DB/policy richiesta.\n'
+        'Normale bootstrap OAuth del SOLO MCP sostitutivo puo avvenire sotto il mandato esistente.\n'
+        'Nessun nuovo grant/budget/attivazione/acquisizione, nessun reset o replay dei vecchi scope.\n'
+        'Un file admin esistente letto in memoria per verificare e aggiungere le2rotte.\n'
+        'Massimo900secondi+30 di sola quarantena dei3nuovi candidati non ancora provati.\n'
+        'Watchdog effimero; stop solo candidati propri se controller perso/scaduto. Nessun rollback.\n'
+        'Effetto ambiguo resta CLAIMED e richiede riconciliazione, mai rilancio automatico.\n'
+        'Questa operazione NON concede accettazione E2E o release.\n'
+        'Scrivi APPROVO '+reviewed+' per la sola revisione esatta.\n> ')
+    fd=os.open('/dev/tty',os.O_RDWR|os.O_NOCTTY|os.O_NOFOLLOW)
+    try:
+        require(stat.S_ISCHR(os.fstat(fd).st_mode)and os.isatty(fd),'CONTROLLING_ACQUISITION_TERMINAL_REQUIRED')
+        termios.tcflush(fd,termios.TCIFLUSH);os.write(fd,prompt.encode());answer=bytearray()
+        while len(answer)<=128:
+            part=os.read(fd,1)
+            if part in(b'',b'\n'):break
+            answer.extend(part)
+        require(bytes(answer)==('APPROVO '+reviewed).encode(),'EXACT_ACQUISITION_REVIEW_NOT_APPROVED')
+    finally:os.close(fd)
+    return {'schema':'ouf.acquisition-read-native-terminal-decision.v1','reviewHash':reviewed,'decision':DECISION,'approvedAt':int(time.time())}
+class SignedAuthority:
+    def __init__(self,review,raw,human_path,human_hash,verifier,read,clock=time.time):
+        from tools.semantic_provider_deployment_authentication import DetachedAuthenticator
+        require(type(verifier)is DetachedAuthenticator,'REAL_EXISTING_INSTALLATION_ROLE_VERIFIER_REQUIRED')
+        self.review=copy.deepcopy(validate_review(review));self.raw=raw;self.human_path=human_path;self.human_hash=human_hash
+        self.verifier,self.read,self.clock=verifier,read,clock;self.started=time.monotonic();self.last_wall=clock();self.check()
+    def check(self):
+        from tools.semantic_provider_deployment_authentication import policy as current_policy
+        now=self.clock();require(now>=self.last_wall,'ACQUISITION_WALL_CLOCK_REGRESSION');self.last_wall=now
+        human=self.read(self.human_path,self.human_hash);authority=json.loads(self.raw);v=self.review['verification'];ctx=v['context']
+        require(encoded(authority)==self.raw and authority=={'schema':AUTHORITY_SCHEMA,'scope':scope(self.review),
+            'issuedAt':human['issuedAt'],'expiresAt':human['expiresAt'],'cleanupExpiresAt':human['expiresAt']+30,'installationRef':ctx['installationRef'],
+            'entityRef':ctx['entityRef'],'automaticReplayAllowed':False,'budgetReset':False,'releaseAcceptance':False},'EXACT_ACQUISITION_AUTHORITY_SCOPE_REQUIRED')
+        require(human['schema']==HUMAN_SCHEMA and human['reviewHash']==digest(self.review)and human['authorityHash']==sha(self.raw)
+            and human['decision']==DECISION and human['state']=='ACTIVE'and type(human['issuedAt'])is int and type(human['expiresAt'])is int
+            and human['expiresAt']-human['issuedAt']==900 and human['issuedAt']<=now<human['expiresAt']
+            and time.monotonic()-self.started<900,'CURRENT_FINITE_ACQUISITION_MANDATE_REQUIRED')
+        require(Path('/proc/sys/kernel/random/boot_id').read_text().strip()==self.review['bootId'],'SAME_ACQUISITION_AUTHORITY_BOOT_REQUIRED')
+        require(self.verifier.policy_binding==v['trustPolicy']and self.verifier.openssl_binding==v['openssl'],'SAME_ACQUISITION_ROLE_POLICY_REQUIRED')
+        for role,key in(('DEPLOYMENT_INTENT','intentIssuerRef'),('FINAL_DEPLOYMENT_APPROVAL','approvalIssuerRef')):
+            require(self.verifier(self.raw,role,ctx[key],ctx['installationRef'],ctx['entityRef'])is True,'DUAL_CURRENT_ACQUISITION_SIGNATURES_REQUIRED')
+        policy=current_policy(self.verifier.read_policy(),ctx['installationRef'],ctx['entityRef'],now)
+        for role,key in(('DEPLOYMENT_INTENT','intentIssuerRef'),('FINAL_DEPLOYMENT_APPROVAL','approvalIssuerRef'),('CREATION_ATTESTATION','attestorRef')):
+            keys=[v for v in policy['keys']if role in v['roles']and v['issuerRef']==ctx[key]and v['state']=='ACTIVE'and v['notBefore']<=human['issuedAt']]
+            require(len(keys)==1 and keys[0]['expiresAt']>=human['expiresAt']+30,'WHOLE_ACQUISITION_WINDOW_WITHIN_EXISTING_KEY_AUTHORITY_REQUIRED')
+        return human
+    def remaining(self):return self.check()['expiresAt']-self.clock()
+def authentication_file(root,name,raw):
+    # Existing authentication contracts require mode0600, unlike immutable evidence0400.
+    root=Path(root);require(root.is_absolute()and root.resolve()==root,'EXACT_ACQUISITION_AUTH_FILE_ROOT')
+    fd=os.open(root/name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+    try:
+        os.fchmod(fd,0o600)
+        with os.fdopen(os.dup(fd),'wb')as stream:stream.write(raw);stream.flush();os.fsync(stream.fileno())
+    finally:os.close(fd)
+    fd=os.open(root,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+    try:os.fsync(fd)
+    finally:os.close(fd)
+def issue(review,root,profile,decision,write,read):
+    from tools.semantic_provider_deployment_authentication import DetachedAuthenticator
+    from tools.semantic_provider_deployment_signing import ExistingEd25519Signer
+    validate_review(review);require(decision['reviewHash']==digest(review)and decision['decision']==DECISION
+        and 0<=time.time()-decision['approvedAt']<=120,'FRESH_EXACT_ACQUISITION_TERMINAL_DECISION_REQUIRED')
+    root=Path(root);(root/'authority').mkdir(mode=0o700);target=root/'authority';now=int(time.time());ctx=review['verification']['context']
+    raw=encoded({'schema':AUTHORITY_SCHEMA,'scope':scope(review),'issuedAt':now,'expiresAt':now+900,'cleanupExpiresAt':now+930,
+        'installationRef':ctx['installationRef'],'entityRef':ctx['entityRef'],'automaticReplayAllowed':False,'budgetReset':False,'releaseAcceptance':False})
+    human={'schema':HUMAN_SCHEMA,'reviewHash':digest(review),'authorityHash':sha(raw),'decision':DECISION,'state':'ACTIVE','issuedAt':now,'expiresAt':now+900}
+    write(target,'authority.json',raw);write(target,'human.json',human);write(target,'decision.json',decision)
+    verifier=DetachedAuthenticator(review['verification']['trustPolicy'],str(target),review['verification']['openssl'])
+    from tools.semantic_provider_deployment_authentication import policy as current_policy
+    policy_raw=verifier.read_policy();policy=current_policy(policy_raw,ctx['installationRef'],ctx['entityRef'],now)
+    authentication_file(target,'issued-trust-policy.json',policy_raw)
+    for role,key in(('DEPLOYMENT_INTENT','intentIssuerRef'),('FINAL_DEPLOYMENT_APPROVAL','approvalIssuerRef'),('CREATION_ATTESTATION','attestorRef')):
+        selected=[v for v in policy['keys']if role in v['roles']and v['issuerRef']==ctx[key]and v['state']=='ACTIVE'and v['notBefore']<=now]
+        require(len(selected)==1 and selected[0]['expiresAt']>=now+930,'FULL_ACQUISITION_KEY_WINDOW_REQUIRED_BEFORE_SIGNING')
+    for role,key in(('DEPLOYMENT_INTENT','intentIssuerRef'),('FINAL_DEPLOYMENT_APPROVAL','approvalIssuerRef')):
+        signer=ExistingEd25519Signer(profile['keyBindings']['installer'],profile['keyRefs']['installer'],verifier,
+            {'role':role,'issuerRef':ctx[key],'installationRef':ctx['installationRef'],'entityRef':ctx['entityRef']})
+        authentication_file(target,sha(raw)+'.'+role+'.json',signer.sign(raw))
+    gate=SignedAuthority(review,raw,str(target/'human.json'),digest(human),verifier,read)
+    return gate
+class Execution:
+    def __init__(self,gate,journal,ports):
+        from tools.semantic_lease_recovery.recovery_journal import Journal
+        require(type(gate)is SignedAuthority and type(journal)is Journal,'REAL_SIGNED_ACQUISITION_GATE_AND_JOURNAL_REQUIRED')
+        self.gate,self.journal,self.ports=gate,journal,ports;self.review=gate.review;ports.execution=self
+        require(str(journal.root)==self.review['executionRoot']and ports.root==journal.root,'ONE_EXACT_ACQUISITION_SCOPE_REQUIRED')
+    def initialize(self):
+        human=self.gate.check();counts=copy.deepcopy(self.ports.ctx.counts)
+        require(set(counts)==set(LIMITS)and all(type(v)is int and self.review['preflightCounts'][k]<=v<=LIMITS[k]for k,v in counts.items())and all(counts[k]==0 for k in('engineWrites','imageLoadAttempts','adminPuts','readinessGets','quarantineStops')),'PRESERVED_PREFLIGHT_ATTEMPTS_REQUIRED')
+        self.journal.initialize({'schema':'ouf.acquisition-read-native-journal.v1','version':0,'reviewHash':digest(self.review),'authorityHash':sha(self.gate.raw),'nextStage':0,'effects':[],'counts':counts,'candidates':{},'quarantine':None,'expiresAt':human['expiresAt'],'expiresMonotonic':time.monotonic()+max(0,human['expiresAt']-time.time()),'state':'OPEN','automaticReplayAllowed':False,'budgetReset':False})
+    def record(self):
+        self.gate.check();row=self.journal.read();n=row['nextStage']
+        require(row['schema']=='ouf.acquisition-read-native-journal.v1'and row['reviewHash']==digest(self.review)and row['authorityHash']==sha(self.gate.raw)and row['quarantine']is None and row['automaticReplayAllowed']is False and row['budgetReset']is False and row['state']=='OPEN'and type(n)is int and 0<=n<=len(STAGES)and len(row['effects'])in(n,n+1)and time.time()<row['expiresAt']and time.monotonic()<row['expiresMonotonic'],'CURRENT_FINITE_ACQUISITION_HISTORY_REQUIRED')
+        require(set(row['counts'])==set(LIMITS)and all(type(v)is int and 0<=v<=LIMITS[k]for k,v in row['counts'].items()),'DURABLE_ACQUISITION_BUDGET_REQUIRED')
+        for i,e in enumerate(row['effects']):require(e['stage']==STAGES[i]and e['intentHash']==digest({'reviewHash':digest(self.review),'stage':STAGES[i]})and e['state']==('APPLIED'if i<n else'CLAIMED'),'ORDERED_ACQUISITION_EFFECT_HISTORY_REQUIRED')
+        return row
+    def save(self,row,**changes):
+        following={**row,**changes,'version':row['version']+1};self.journal.compare_and_save(row,following);return following
+    def reserve(self,kind):
+        row=self.record();require(row['counts'][kind]<LIMITS[kind],'ACQUISITION_OPERATION_BUDGET_EXHAUSTED');counts=copy.deepcopy(row['counts']);counts[kind]+=1;self.save(row,counts=counts)
+    def candidate(self,role,**changes):
+        row=self.record();values=copy.deepcopy(row['candidates']);values[role]={**values.get(role,{}),**changes};self.save(row,candidates=values)
+    def run(self):
+        with self.journal.invocation():
+            while True:
+                row=self.record();i=row['nextStage']
+                if i==len(STAGES):
+                    result=self.ports.final_result();self.gate.check();self.save(self.record(),state='COMPLETE');return result
+                require(len(row['effects'])==i,'CLAIMED_ACQUISITION_EFFECT_NO_REPLAY')
+                stage=STAGES[i];self.ports.guard(stage)
+                minimum=330 if stage=='DISABLE_OLD_MCP_RESTART'else 220 if stage.startswith('START_')else 120 if stage.startswith('IMPORT_')else 35
+                require(self.gate.remaining()>minimum,'INSUFFICIENT_ACQUISITION_AUTHORITY_WINDOW')
+                row=self.record();effects=copy.deepcopy(row['effects']);effects.append({'stage':stage,'state':'CLAIMED','intentHash':digest({'reviewHash':digest(self.review),'stage':stage})});self.save(row,effects=effects)
+                proof=self.ports.execute(stage);self.gate.check();require(type(proof)is dict and proof,'EXPLICIT_ACQUISITION_EFFECT_PROOF_REQUIRED')
+                row=self.record();effects=copy.deepcopy(row['effects']);effects[-1].update(state='APPLIED',proof=proof);self.save(row,effects=effects,nextStage=i+1)
