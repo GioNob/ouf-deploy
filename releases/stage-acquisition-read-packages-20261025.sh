@@ -13,8 +13,12 @@ set +e
     "https://raw.githubusercontent.com/GioNob/ouf-deploy/$source_commit/scripts/stage-acquisition-read-packages-20261025.py" \
     --output "$directory/stage.py"
   printf '%s  %s\n' "$source_hash" "$directory/stage.py" | sha256sum --check -
-  command -v gh >/dev/null
-  command -v timeout >/dev/null
+  for dependency in gh timeout; do
+    if ! command -v "$dependency" >/dev/null 2>&1; then
+      printf 'Status=DELIVERY_PREREQUISITE_MISSING\nMissingCommand=%s\nRuntimeStageInvoked=false\n' "$dependency"
+      exit 127
+    fi
+  done
   timeout --signal=TERM --kill-after=5s 120s gh api 'repos/GioNob/ouf-ingestion-runtime/actions/artifacts/12590122027/zip' > "$directory/ingestion.zip"
   printf '%s  %s\n' 'db1db79a1d4f5efd37004bc9ddb84789269b361a8278f991a21ddabdbc331ac9' "$directory/ingestion.zip" | sha256sum --check -
   timeout --signal=TERM --kill-after=5s 120s gh api 'repos/GioNob/ouf-udp-object-resolution/actions/artifacts/12589789326/zip' > "$directory/udp.zip"

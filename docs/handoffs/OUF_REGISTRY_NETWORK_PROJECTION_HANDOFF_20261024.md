@@ -1,3 +1,13 @@
+# CURRENT — consegna pacchetti interrotta prima dello staging osservabile; NON rilanciare
+
+L'operatore ha eseguito il launcher pinned8fa9ab2e6e94ba2e07b506472b66413e81714492: checksum run.sh OK e stage.py f2301a02... OK, poi Exit1/DeliveryExit1 senza JSON né checksum ZIP. Log /home/oufadmin/ouf-acquisition-packages.RecOgcbn/operator.log e /home/oufadmin/ouf-acquisition-package-delivery.x8EV2li0/bootstrap.log. Nessuna conferma di download archivio, copia root o invocazione dello stager. Runtime non modificato da questo launcher (non contiene operazioni Engine/SQL/OAuth OUF/import/attivazioni).
+
+Il launcher aveva controlli silenziosi command -v gh e timeout; una dipendenza assente produce esattamente questa uscita. È ipotesi forte, NON diagnosi già provata. Prossimo passo SOLO controllo locale disponibilità gh/timeout e metadati dei4ZIP nella directory ESISTENTE, senza eseguire gh, login, download, sudo o lo stager. Non reinstallare componenti, non svuotare directory, non cambiare scope/case/contatori e non rilanciare il comando precedente.
+
+Corretto il launcher sorgente perché segnali DELIVERY_PREREQUISITE_MISSING/MissingCommand e Exit127. Tre test locali di shell PASS (gh assente, timeout assente, entrambi presenti), bash -n PASS. Questa modifica non è ancora una continuazione target autorizzata: il vecchio URL pinned resta immutabile, non consegnare alla cieca un nuovo launcher. Prima riconciliare disponibilità tool e file eventualmente scaricati, poi preparare continuazione limitata mantenendo checksum e scope originale. La dipendenza gh/autenticazione sul VPS era stata assunta senza prova; CI su runner con gh non la prova.
+
+Qualificazione di pacchetti/programmi resta CI, non risultato di staging VPS. E2E/G4/F5/F6 aperti; prove502/403 precedenti conservate. Nessuna nuova autorità APPLY, nessun reset/replay del lettore input già consumato, Supervisor dopo E2E.
+
 # CURRENT — pacchetti READ qualificati; consegna pinned di SOLO STAGING; VPS non aggiornato
 
 Lettura input VPS COMPLETATA, scope CONSUMATO: c40ba6dc86e8be72ddcda2eaef65fe3eb8aa9f24b8ec4b0d5758b0bfeacf1da6,10GET/tutti5ruoli stabili/zeroSQL-OAuth-lifecycle. NON rilanciare il lettore. MCP attuale dichiara client credentials; niente seconda istanza/gestore OAuth. Nessun nuovo runtime applicato in questo seguito.
