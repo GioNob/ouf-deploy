@@ -23,8 +23,8 @@ def selected(name,path,names,environment,closure):
     raw=source(path);closure[str(path)]=sha(raw);nodes=[n for n in ast.parse(raw).body if isinstance(n,(ast.FunctionDef,ast.ClassDef))and n.name in names];require({n.name for n in nodes}==set(names),'EXACT_AUTHENTICATION_DEFINITION_SELECTION_REQUIRED');m=types.ModuleType(name);m.__dict__.update(environment);sys.modules[name]=m;exec(compile(ast.Module(body=nodes,type_ignores=[]),str(path),'exec'),m.__dict__);return m
 def package(name):m=types.ModuleType(name);m.__path__=[];sys.modules[name]=m
 
-def bootstrap():
-    code=Path(__file__).resolve().parent;manifest=source(code/'sources.json');mapping=json.loads(manifest);require(type(mapping)is dict and set(mapping)=={'apply.py','protocol.py','transport.py','ports.py','quarantine.py','recovery_journal.py','engine_creation.py','plan_helper.py','image_custody.py','native_prepare.py','authentication.py','signing.py','auth_protocol.py','auth_preexec.py','auth_producer.py','runtime_binding.py'},'COMPLETE_CLOSED_APPLY_SOURCE_MANIFEST_REQUIRED');closure={str(code/'sources.json'):sha(manifest)}
+def components():
+    code=Path(__file__).resolve().parent;manifest=source(code/'sources.json');mapping=json.loads(manifest);require(type(mapping)is dict and set(mapping)in({'apply.py','protocol.py','transport.py','ports.py','quarantine.py','recovery_journal.py','engine_creation.py','plan_helper.py','image_custody.py','native_prepare.py','authentication.py','signing.py','auth_protocol.py','auth_preexec.py','auth_producer.py','runtime_binding.py'},{'apply.py','protocol.py','transport.py','ports.py','quarantine.py','recovery_journal.py','engine_creation.py','plan_helper.py','image_custody.py','native_prepare.py','authentication.py','signing.py','auth_protocol.py','auth_preexec.py','auth_producer.py','runtime_binding.py','continuation.py'}),'COMPLETE_CLOSED_APPLY_SOURCE_MANIFEST_REQUIRED');closure={str(code/'sources.json'):sha(manifest)}
     for name,expected in mapping.items():require(re.fullmatch('[a-f0-9]{64}',expected)is not None and sha(source(code/name))==expected,'PINNED_APPLY_SOURCE_CLOSURE_REQUIRED')
     require('tools'not in sys.modules,'ISOLATED_AUTHENTICATION_NAMESPACE_REQUIRED');package('tools');package('tools.semantic_lease_recovery')
     selected('tools.semantic_provider_preexec',code/'auth_preexec.py',('PreexecDenied',),{},closure)
@@ -34,7 +34,10 @@ def bootstrap():
     journal=load('tools.semantic_lease_recovery.recovery_journal',code/'recovery_journal.py',closure)
     parts={name:load('sealed_acquisition_'+name,code/(name+'.py'),closure)for name in('protocol','transport','ports','quarantine','engine_creation','plan_helper','image_custody','native_prepare')}
     parts['runtime']=selected('sealed_acquisition_runtime',code/'runtime_binding.py',('stdlib_binding',),{'Path':Path,'sysconfig':sysconfig,'sys':sys,'os':os,'stat':stat,'hashlib':hashlib,'re':re,'binding':types.SimpleNamespace(require=require,identity=parts['plan_helper'].frame,CandidateDenied=Stop)},closure)
-    closure[str(Path(__file__).resolve())]=mapping['apply.py'];return Context(parts,auth,sign,journal,closure)
+    closure[str(Path(__file__).resolve())]=mapping['apply.py']
+    if'continuation.py'in mapping:closure[str(code/'continuation.py')]=mapping['continuation.py']
+    return parts,auth,sign,journal,closure
+def bootstrap():return Context(*components())
 class Context:
     NATIVE_HASH=NATIVE_HASH
     def __init__(self,parts,auth,sign,journal,closure,*,native_path=NATIVE,native_hash=NATIVE_HASH,root=ROOT):
@@ -149,7 +152,9 @@ def operator(ctx):
         try:ctx.watch.negative(ctx,review,gate.raw,execution.journal,'CONTROLLER_STOPPED')
         except BaseException:ctx.write(ctx.root,'quarantine-unproven.json',{'status':'STOP_RECONCILE','negativeEffectMayBePartial':True,'automaticReplayAllowed':False})
         raise
-    context=review['verification']['context'];signer=ctx.sign.ExistingEd25519Signer(ctx.profile['keyBindings']['attestor'],ctx.profile['keyRefs']['attestor'],gate.verifier,{'role':'CREATION_ATTESTATION','issuerRef':context['attestorRef'],'installationRef':context['installationRef'],'entityRef':context['entityRef']});gate.check();ctx.write(ctx.root,'result.json',result);c.authentication_file(ctx.root/'authority',c.sha(c.encoded(result))+'.CREATION_ATTESTATION.json',signer.sign(c.encoded(result)));require(gate.verifier(c.encoded(result),'CREATION_ATTESTATION',context['attestorRef'],context['installationRef'],context['entityRef'])is True,'SIGNED_FINAL_ACQUISITION_RESULT_REQUIRED');return result
+    return finalize(ctx,review,gate,result)
+def finalize(ctx,review,gate,result):
+    c=ctx.core;context=review['verification']['context'];signer=ctx.sign.ExistingEd25519Signer(ctx.profile['keyBindings']['attestor'],ctx.profile['keyRefs']['attestor'],gate.verifier,{'role':'CREATION_ATTESTATION','issuerRef':context['attestorRef'],'installationRef':context['installationRef'],'entityRef':context['entityRef']});gate.check();ctx.write(ctx.root,'result.json',result);c.authentication_file(ctx.root/'authority',c.sha(c.encoded(result))+'.CREATION_ATTESTATION.json',signer.sign(c.encoded(result)));require(gate.verifier(c.encoded(result),'CREATION_ATTESTATION',context['attestorRef'],context['installationRef'],context['entityRef'])is True,'SIGNED_FINAL_ACQUISITION_RESULT_REQUIRED');return result
 def main():
     ctx=None
     try:

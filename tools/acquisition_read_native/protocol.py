@@ -9,6 +9,8 @@ STAGES=('VERIFY_CURRENT_ADMISSION','IMPORT_INGESTION','IMPORT_UDP','IMPORT_MCP',
  'DISABLE_OLD_MCP_RESTART','STOP_OLD_MCP','DETACH_OLD_MCP','RENAME_OLD_MCP','CREATE_MCP','START_MCP','VERIFY_MCP_READINESS',
  'ADD_INGESTION_ROUTE','ADD_UDP_ROUTE','VERIFY_GATEWAY','RESTORE_INGESTION_RESTART','RESTORE_UDP_RESTART','RESTORE_MCP_RESTART','VERIFY_FINAL')
 LIMITS={'engineGets':500,'engineWrites':22,'imageLoadAttempts':3,'readinessGets':128,'adminGets':32,'adminPuts':2,'ownerConfigurationReads':64,'serviceCredentialFileReads':1,'quarantineStops':3}
+RETAINED_COUNTS={'adminGets':1,'adminPuts':0,'engineGets':9,'engineWrites':0,'imageLoadAttempts':0,'ownerConfigurationReads':5,'quarantineStops':0,'readinessGets':0,'serviceCredentialFileReads':1}
+CONTINUATION_LIMITS={**LIMITS,'serviceCredentialFileReads':2}
 AUTHORITY_SCHEMA='ouf.acquisition-read-native-authority.v1'
 HUMAN_SCHEMA='ouf.acquisition-read-native-mandate.v1'
 DECISION='APPROVE_ONE_FINITE_ACQUISITION_READ_DEPLOYMENT_ONLY'
@@ -18,10 +20,26 @@ def require(ok,code):
 def encoded(v):return json.dumps(v,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def digest(v):return sha(encoded(v))
+def review_profile(review):
+    if review['schema']=='ouf.acquisition-read-native-review.v1':
+        require('continuation'not in review,'NO_IMPLICIT_CONTINUATION_PROFILE')
+        return LIMITS,STAGES
+    require(review['schema']=='ouf.acquisition-read-continuation-review.v1','EXACT_ACQUISITION_REVIEW_SCHEMA_REQUIRED')
+    c=review['continuation']
+    require(type(c)is dict and set(c)=={'originalExecutionRoot','originalReviewHash','reconciliationReceiptHash','retainedPreflightCounts','retainedMaximums','maximumAdditionalCredentialFileReads','cumulativeCredentialReadMaximum','noOriginalScopeReplay','preConsentUsesRetainedRouteSnapshot','freshRoutesRequiredBeforeFirstMutation'}
+        and c['retainedPreflightCounts']==RETAINED_COUNTS and c['retainedMaximums']==LIMITS
+        and c['maximumAdditionalCredentialFileReads']==1 and c['cumulativeCredentialReadMaximum']==2
+        and all(c[k]is True for k in('noOriginalScopeReplay','preConsentUsesRetainedRouteSnapshot','freshRoutesRequiredBeforeFirstMutation'))
+        and review['nativePlan']['continuation']==c
+        and all(type(c[k])is str and len(c[k])==64 and all(v in'0123456789abcdef'for v in c[k])for k in('originalReviewHash','reconciliationReceiptHash'))
+        and Path(review['executionRoot'])==Path(c['originalExecutionRoot'])/'terminal-continuation-v1'
+        and all(type(v)is int and v>=RETAINED_COUNTS[k]for k,v in review['preflightCounts'].items()),'EXACT_RECONCILED_CUMULATIVE_CONTINUATION_REQUIRED')
+    return CONTINUATION_LIMITS,('LOAD_EXISTING_ADMIN_KEY',*STAGES)
 def validate_review(review):
-    require(review['schema']=='ouf.acquisition-read-native-review.v1'and review['maximumSeconds']==900
+    limits,stages=review_profile(review)
+    require(review['maximumSeconds']==900
         and review['negativeCleanup']=={'maximumAdditionalSeconds':30,'startupSeconds':180,'candidateStopOnly':True,'maximumStops':3,'disableCandidateRestartFirst':True}
-        and review['maximums']==LIMITS and review['stages']==list(STAGES)
+        and review['maximums']==limits and review['stages']==list(stages)
         and review['nativePlanHash']==digest(review['nativePlan'])
         and review['frozenPlanHash']==review['nativePlan']['frozenPlanHash']
         and review['sourceClosureHash']==digest(review['sourceClosure'])
@@ -34,6 +52,10 @@ def scope(review):
     return {'reviewHash':digest(review),**{k:copy.deepcopy(review[k])for k in('frozenPlanHash','nativePlanHash','sourceClosureHash','logicalOperationRef','bootId','maximumSeconds','maximums','stages','negativeCleanup')}}
 def terminal_decision(review,path):
     validate_review(review);reviewed=digest(review)
+    credential=('Una ulteriore lettura del file admin ESISTENTE, SOLO dopo questa approvazione.\n'
+        'Limite cumulativo letture credenziale:2, inclusa la1 gia consumata. Altri massimi invariati.\n'
+        'Contatori iniziali conservati:9EngineGET,1adminGET,5ownerConfig,1fileadmin,zero mutazioni.\n'
+        'Le82rotte prima della conferma sono lo snapshot retained; verifica fresca prima della prima mutazione.\n')if'continuation'in review else'Un file admin esistente letto in memoria per verificare e aggiungere le2rotte.\n'
     prompt=('\nInstallazione finita delle letture E2E:2READ separati,1sostituzione MCP,2rotte aggiuntive.\n'
         'Piano e configurazioni privati: '+str(path)+'\nSHA256 revisione: '+reviewed+'\n'
         'Breve indisponibilita MCP: vecchio fermato e scollegato prima del nuovo, trattenuto fermo.\n'
@@ -42,8 +64,8 @@ def terminal_decision(review,path):
         'READ senza Flyway/esecuzione, mount RO, rootfs RO; readiness DB/policy richiesta.\n'
         'Normale bootstrap OAuth del SOLO MCP sostitutivo puo avvenire sotto il mandato esistente.\n'
         'Il normale avvio MCP puo aggiornare il proprio catalogo manifest; nessuna migrazioneDB.\n'
-        'Nessun nuovo grant/budget/attivazione/acquisizione, nessun reset o replay dei vecchi scope.\n'
-        'Un file admin esistente letto in memoria per verificare e aggiungere le2rotte.\n'
+        'Nessun grant IAM, budget fonte, attivazione o acquisizione; nessun reset o replay.\n'
+        +credential+
         'Massimo900secondi+30 di sola quarantena dei3nuovi candidati non ancora provati.\n'
         'Watchdog effimero; stop solo candidati propri se controller perso/scaduto. Nessun rollback.\n'
         'Effetto ambiguo resta CLAIMED e richiede riconciliazione, mai rilancio automatico.\n'
@@ -127,11 +149,11 @@ class Execution:
     def __init__(self,gate,journal,ports):
         from tools.semantic_lease_recovery.recovery_journal import Journal
         require(type(gate)is SignedAuthority and type(journal)is Journal,'REAL_SIGNED_ACQUISITION_GATE_AND_JOURNAL_REQUIRED')
-        self.gate,self.journal,self.ports=gate,journal,ports;self.review=gate.review;ports.execution=self
+        self.gate,self.journal,self.ports=gate,journal,ports;self.review=gate.review;self.limits,self.stages=review_profile(self.review);ports.execution=self
         require(str(journal.root)==self.review['executionRoot']and ports.root==journal.root,'ONE_EXACT_ACQUISITION_SCOPE_REQUIRED')
     def initialize(self):
         human=self.gate.check();counts=copy.deepcopy(self.ports.ctx.counts)
-        require(set(counts)==set(LIMITS)and all(type(v)is int and self.review['preflightCounts'][k]<=v<=LIMITS[k]for k,v in counts.items())and all(counts[k]==0 for k in('engineWrites','imageLoadAttempts','adminPuts','readinessGets','quarantineStops')),'PRESERVED_PREFLIGHT_ATTEMPTS_REQUIRED')
+        require(set(counts)==set(self.limits)and all(type(v)is int and self.review['preflightCounts'][k]<=v<=self.limits[k]for k,v in counts.items())and all(counts[k]==0 for k in('engineWrites','imageLoadAttempts','adminPuts','readinessGets','quarantineStops')),'PRESERVED_PREFLIGHT_ATTEMPTS_REQUIRED')
         self.journal.initialize({'schema':'ouf.acquisition-read-native-journal.v1','version':0,'reviewHash':digest(self.review),'authorityHash':sha(self.gate.raw),'nextStage':0,'effects':[],'counts':counts,'candidates':{},'quarantine':None,'expiresAt':human['expiresAt'],'expiresMonotonic':time.monotonic()+max(0,human['expiresAt']-time.time()),'state':'OPEN','automaticReplayAllowed':False,'budgetReset':False})
     def read_journal(self):
         for attempt in range(8):
@@ -141,9 +163,9 @@ class Execution:
                 time.sleep(.02)
     def record(self):
         self.gate.check();row=self.read_journal();n=row['nextStage']
-        require(row['schema']=='ouf.acquisition-read-native-journal.v1'and row['reviewHash']==digest(self.review)and row['authorityHash']==sha(self.gate.raw)and row['quarantine']is None and row['automaticReplayAllowed']is False and row['budgetReset']is False and row['state']=='OPEN'and type(n)is int and 0<=n<=len(STAGES)and len(row['effects'])in(n,n+1)and time.time()<row['expiresAt']and time.monotonic()<row['expiresMonotonic'],'CURRENT_FINITE_ACQUISITION_HISTORY_REQUIRED')
-        require(set(row['counts'])==set(LIMITS)and all(type(v)is int and 0<=v<=LIMITS[k]for k,v in row['counts'].items()),'DURABLE_ACQUISITION_BUDGET_REQUIRED')
-        for i,e in enumerate(row['effects']):require(e['stage']==STAGES[i]and e['intentHash']==digest({'reviewHash':digest(self.review),'stage':STAGES[i]})and e['state']==('APPLIED'if i<n else'CLAIMED'),'ORDERED_ACQUISITION_EFFECT_HISTORY_REQUIRED')
+        require(row['schema']=='ouf.acquisition-read-native-journal.v1'and row['reviewHash']==digest(self.review)and row['authorityHash']==sha(self.gate.raw)and row['quarantine']is None and row['automaticReplayAllowed']is False and row['budgetReset']is False and row['state']=='OPEN'and type(n)is int and 0<=n<=len(self.stages)and len(row['effects'])in(n,n+1)and time.time()<row['expiresAt']and time.monotonic()<row['expiresMonotonic'],'CURRENT_FINITE_ACQUISITION_HISTORY_REQUIRED')
+        require(set(row['counts'])==set(self.limits)and all(type(v)is int and self.review['preflightCounts'][k]<=v<=self.limits[k]for k,v in row['counts'].items()),'DURABLE_ACQUISITION_BUDGET_REQUIRED')
+        for i,e in enumerate(row['effects']):require(e['stage']==self.stages[i]and e['intentHash']==digest({'reviewHash':digest(self.review),'stage':self.stages[i]})and e['state']==('APPLIED'if i<n else'CLAIMED'),'ORDERED_ACQUISITION_EFFECT_HISTORY_REQUIRED')
         return row
     def save(self,row,**changes):
         following={**row,**changes,'version':row['version']+1}
@@ -153,17 +175,17 @@ class Execution:
                 if attempt==7:raise
                 time.sleep(.02)
     def reserve(self,kind):
-        row=self.record();require(row['counts'][kind]<LIMITS[kind],'ACQUISITION_OPERATION_BUDGET_EXHAUSTED');counts=copy.deepcopy(row['counts']);counts[kind]+=1;self.save(row,counts=counts)
+        row=self.record();require(row['counts'][kind]<self.limits[kind],'ACQUISITION_OPERATION_BUDGET_EXHAUSTED');counts=copy.deepcopy(row['counts']);counts[kind]+=1;self.save(row,counts=counts)
     def candidate(self,role,**changes):
         row=self.record();values=copy.deepcopy(row['candidates']);values[role]={**values.get(role,{}),**changes};self.save(row,candidates=values)
     def run(self):
         with self.journal.invocation():
             while True:
                 row=self.record();i=row['nextStage']
-                if i==len(STAGES):
+                if i==len(self.stages):
                     result=self.ports.final_result();self.gate.check();self.save(self.record(),state='COMPLETE');return result
                 require(len(row['effects'])==i,'CLAIMED_ACQUISITION_EFFECT_NO_REPLAY')
-                stage=STAGES[i];print(encoded({'schema':'ouf.acquisition-read-native-progress.v1','stage':stage,'counts':row['counts'],'runtimeAuthorityIssued':True,'automaticReplayAllowed':False,'budgetReset':False}).decode(),flush=True);self.ports.guard(stage)
+                stage=self.stages[i];print(encoded({'schema':'ouf.acquisition-read-native-progress.v1','stage':stage,'counts':row['counts'],'runtimeAuthorityIssued':True,'automaticReplayAllowed':False,'budgetReset':False}).decode(),flush=True);self.ports.guard(stage)
                 minimum=330 if stage=='DISABLE_OLD_MCP_RESTART'else 220 if stage.startswith('START_')else 120 if stage.startswith('IMPORT_')else 35
                 require(self.gate.remaining()>minimum,'INSUFFICIENT_ACQUISITION_AUTHORITY_WINDOW')
                 row=self.record();effects=copy.deepcopy(row['effects']);effects.append({'stage':stage,'state':'CLAIMED','intentHash':digest({'reviewHash':digest(self.review),'stage':stage})});self.save(row,effects=effects)

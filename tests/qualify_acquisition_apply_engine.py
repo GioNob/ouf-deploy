@@ -10,7 +10,7 @@ class EngineLifecycle(fixture.Protocol):
         env=dict(os.environ)
         if args[0]=='inspect'or args[:2]==('image','inspect'):env['DOCKER_API_VERSION']='1.44'
         return subprocess.check_output(['docker',*args],stderr=subprocess.PIPE,text=True,env=env).strip()
-    def setup_runtime(self,launch_watchdog=True):
+    def setup_runtime(self,launch_watchdog=True,prepare_only=False):
         self.resources=[];self.net='ouf-acq-ci-'+str(time.time_ns());self.nid=self.cli('network','create',self.net);self.resources.append(('network',self.net));self.source_commit='e'*40
         folder=self.root/'build';folder.mkdir(mode=0o700);(folder/'server.py').write_text('''import http.server,os
 class H(http.server.BaseHTTPRequestHandler):
@@ -75,6 +75,10 @@ deployment:
             s,v=api('PUT','/apisix/admin/routes/fixture-'+str(i),{'id':'fixture-'+str(i),'uri':'/fixture/'+str(i),'methods':['GET'],'upstream':{'type':'roundrobin','nodes':{'127.0.0.1:9':1}}});self.assertIn(s,(200,201))
         p=self.p;old_gateway={'transportBinding':{},'projectionBinding':{}}
         raw,binding=p.private_config(str(self.config));projection=self.root/'projection.json';p.put(projection,{'synthetic':True});_,projection_binding=p.private_config(str(projection));old_gateway['transportBinding']={'configBinding':binding,'adminKeyBinding':None};old_gateway['projectionBinding']=projection_binding
+        if prepare_only:
+            # Synthetic external-key selection profile. The real APISIX fixture
+            # retains the same key in its server config; both authorize actual HTTP.
+            selected=self.root/'selected-admin-config.yaml';selected.write_text('deployment:\n  admin:\n    admin_key:\n');selected.chmod(0o400);secret=self.root/'existing-admin-key';secret.write_text(key);secret.chmod(0o400);_,selected_binding=p.private_config(str(selected));_,secret_binding=p.private_config(str(secret));old_gateway['transportBinding']={'configBinding':selected_binding,'adminKeyBinding':secret_binding}
         proposal={'existingApplications':{r:p.stable_binding(v)for r,v in self.old.items()},'readComponents':{},'mcpReplacement':{},'gateway':old_gateway};native_facts={};identity=self.parts['native_prepare'].identity_profile(json.loads(self.cli('info','--format','{{json .}}')))
         for role in('ingestion','udp','mcp'):
             tag,value=images[role];archive=self.root/(role+'-docker-save.tar');self.cli('save','--output',str(archive),tag)
@@ -116,7 +120,10 @@ deployment:
             def refresh_authority(ctx):
                 ctx.reserve('ownerConfigurationReads');ctx.reserve('ownerConfigurationReads');current=ctx.preparer.public_authority(ctx.p,profile_binding,outer.verification['trustPolicy'],outer.context);outer.assertEqual(current,ctx.native['publicAuthority']);ctx.profile=current['profile'];return current
         ctx=FixtureContext(self.parts,self.auth,self.sign,self.journal,self.closure,native_path=native_path,native_hash=p.digest(native),root=self.root/'runtime');self.ctx=ctx;ctx.current();ctx.reserve('adminGets');response=ctx.admin('GET','/apisix/admin/routes');self.assertEqual(ctx.route_map(ctx.route_rows(p.decode(response['body'].encode()))),ctx.route_map(routes))
-        review=copy.deepcopy(self.review);review.update(executionRoot=str(ctx.root),frozenPlanHash=native['frozenPlanHash'],nativePlan={'frozenPlanHash':native['frozenPlanHash'],'nativeInputsHash':ctx.NATIVE_HASH,'runtimeBinding':ctx.runtime_binding,'runtimeBindingHash':self.core.digest(ctx.runtime_binding),'proposal':ctx.proposal},preflightCounts=copy.deepcopy(ctx.counts));review['nativePlanHash']=self.core.digest(review['nativePlan']);self.review=review;self.execution_root=ctx.root;self.profile=profile;self.core.validate_review(review);gate=self.issue();ports=ctx.ports_module.NativePorts(ctx,review,gate);execution=self.core.Execution(gate,self.journal.Journal(ctx.root),ports);execution.initialize();
+        review=copy.deepcopy(self.review);review.update(logicalOperationRef=ctx.NATIVE_HASH,executionRoot=str(ctx.root),frozenPlanHash=native['frozenPlanHash'],nativePlan={'frozenPlanHash':native['frozenPlanHash'],'nativeInputsHash':ctx.NATIVE_HASH,'runtimeBinding':ctx.runtime_binding,'runtimeBindingHash':self.core.digest(ctx.runtime_binding),'proposal':ctx.proposal},preflightCounts=copy.deepcopy(ctx.counts));review['nativePlanHash']=self.core.digest(review['nativePlan']);self.review=review;self.execution_root=ctx.root;self.profile=profile;self.core.validate_review(review)
+        if prepare_only:
+            ctx.evidence('preflight-admin',response);p.put(ctx.root/'review.json',review);return
+        gate=self.issue();ports=ctx.ports_module.NativePorts(ctx,review,gate);execution=self.core.Execution(gate,self.journal.Journal(ctx.root),ports);execution.initialize();
         if launch_watchdog:ctx.watch.launch(ctx,review,gate,execution.journal)
         self.gate,self.native_ports,self.execution=gate,ports,execution
     def teardown_runtime(self):

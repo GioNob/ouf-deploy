@@ -2,9 +2,9 @@ name: Acquisition native signed execution
 on:
   push:
     branches: [fix/registry-bound-owner-lineage-20261023]
-    paths: ['scripts/apply-acquisition-read-native-20261025.py','tools/acquisition_read_native/**','tests/test_acquisition_apply_protocol.py','tests/qualify_acquisition_apply_engine.py','.github/workflows/acquisition-native-apply.yml']
+    paths: ['scripts/apply-acquisition-read-native-20261025.py','scripts/continue-acquisition-unapproved-review-20261025.py','tools/acquisition_read_native/**','tests/test_acquisition_apply_protocol.py','tests/qualify_acquisition_apply_engine.py','tests/qualify_acquisition_continuation_engine.py','.github/workflows/acquisition-native-apply.yml']
   pull_request:
-    paths: ['scripts/apply-acquisition-read-native-20261025.py','tools/acquisition_read_native/**','tests/test_acquisition_apply_protocol.py','tests/qualify_acquisition_apply_engine.py','.github/workflows/acquisition-native-apply.yml']
+    paths: ['scripts/apply-acquisition-read-native-20261025.py','scripts/continue-acquisition-unapproved-review-20261025.py','tools/acquisition_read_native/**','tests/test_acquisition_apply_protocol.py','tests/qualify_acquisition_apply_engine.py','tests/qualify_acquisition_continuation_engine.py','.github/workflows/acquisition-native-apply.yml']
 permissions: {contents: read}
 jobs:
   dual-signature-finite-protocol:
@@ -44,3 +44,5 @@ jobs:
           sudo systemctl restart docker
       - name: Real3image imports,3container transitions,82retained APISIX routes and2additions
         run: sudo env OUF_APPLY_ROOT_FIXTURE=1 python3 -I -S -B tests/qualify_acquisition_apply_engine.py
+      - name: Reconciled continuation real Context deferred credential read cumulative counts and negative watchdog
+        run: sudo env OUF_APPLY_ROOT_FIXTURE=1 python3 -I -S -B tests/qualify_acquisition_continuation_engine.py

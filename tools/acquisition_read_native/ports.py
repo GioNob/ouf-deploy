@@ -3,11 +3,11 @@ import copy,hashlib,os,re,time
 from pathlib import Path
 from urllib.parse import quote
 class NativePorts:
-    def __init__(self,ctx,review,gate):self.ctx,self.root,self.review,self.gate=ctx,ctx.root,review,gate;self.core=ctx.core;self.plan=review['nativePlan']['proposal'];self.execution=None
+    def __init__(self,ctx,review,gate):self.ctx,self.root,self.review,self.gate=ctx,ctx.root,review,gate;self.core=ctx.core;self.plan=review['nativePlan']['proposal'];self.execution=None;self.stages=tuple(review['stages'])
     def require(self,ok,code):self.core.require(ok,code)
     def reserve(self,kind):self.ctx.watch.ensure_alive(self.ctx);self.execution.reserve(kind)
     def assert_write(self,path,body):
-        row=self.execution.record();i=row['nextStage'];self.require(i<len(self.core.STAGES)and len(row['effects'])==i+1 and row['effects'][-1]['state']=='CLAIMED','CLAIMED_SIGNED_STAGE_BEFORE_WRITE_REQUIRED');stage=self.core.STAGES[i];old=self.plan['mcpReplacement'];cid=old['oldBinding']['containerId'];expected=None
+        row=self.execution.record();i=row['nextStage'];self.require(i<len(self.stages)and len(row['effects'])==i+1 and row['effects'][-1]['state']=='CLAIMED','CLAIMED_SIGNED_STAGE_BEFORE_WRITE_REQUIRED');stage=self.stages[i];old=self.plan['mcpReplacement'];cid=old['oldBinding']['containerId'];expected=None
         if stage.startswith('CREATE_'):
             role='mcp'if stage=='CREATE_MCP'else stage.split('_')[1].lower();proposal=self.proposal(role);expected=('/v1.44/containers/create?name='+quote(proposal['name'],safe=''),proposal['request'])
         elif stage.startswith('START_'):
@@ -36,7 +36,7 @@ class NativePorts:
         self.old_guard(stage)
         for role in self.execution.record()['candidates']:self.candidate_guard(role,stage)
     def old_guard(self,stage):
-        row=self.plan['mcpReplacement'];b=row['oldBinding'];v=self.container(b['containerId']);i=self.core.STAGES.index(stage);at=lambda s:self.core.STAGES.index(s)
+        row=self.plan['mcpReplacement'];b=row['oldBinding'];v=self.container(b['containerId']);i=self.stages.index(stage);at=lambda s:self.stages.index(s)
         self.require(v['Image']==b['imageId']and self.core.digest(v['Config'])==b['configHash']and self.core.digest(sorted(v['Mounts'],key=lambda x:x['Destination']))==b['mountsHash']and v['State']['StartedAt']==b['startedAt'],'OLD_MCP_CONFIG_GENERATION_REQUIRED')
         expected=copy.deepcopy(row['oldNativeHostConfig'])
         if i>at('DISABLE_OLD_MCP_RESTART'):expected['RestartPolicy']={'Name':'no','MaximumRetryCount':0}
@@ -48,9 +48,9 @@ class NativePorts:
         if i>at('DETACH_OLD_MCP'):self.require(v['Id']not in(self.network('mcp').get('Containers')or{}),'OLD_MCP_ENDPOINT_NOT_RELEASED')
         return v
     def candidate_guard(self,role,stage=None,started=None,restored=None,actual=None):
-        row=self.execution.record()['candidates'][role];proposal=self.proposal(role);v=actual or self.container(row['id']);i=self.core.STAGES.index(stage)if stage else -1
-        if started is None:started=i>self.core.STAGES.index('START_MCP'if role=='mcp'else'START_'+role.upper()+'_READ')
-        if restored is None:restored=i>self.core.STAGES.index('RESTORE_'+role.upper()+'_RESTART')
+        row=self.execution.record()['candidates'][role];proposal=self.proposal(role);v=actual or self.container(row['id']);i=self.stages.index(stage)if stage else -1
+        if started is None:started=i>self.stages.index('START_MCP'if role=='mcp'else'START_'+role.upper()+'_READ')
+        if restored is None:restored=i>self.stages.index('RESTORE_'+role.upper()+'_RESTART')
         self.ctx.candidate_configuration(role,v,started,restored)
         if started:
             pin=self.ctx.p.process_pin(v['State']['Pid']);self.require(row.get('generation')is None or pin==row['generation'],'CREATED_PROCESS_GENERATION_CHANGED')
@@ -79,12 +79,14 @@ class NativePorts:
             self.require(self.gate.remaining()>35,'INSUFFICIENT_TIME_FOR_READINESS');time.sleep(2)
     def admin(self,method,path,body=None):
         if method=='PUT':
-            row=self.execution.record();i=row['nextStage'];self.require(len(row['effects'])==i+1 and row['effects'][-1]['state']=='CLAIMED'and self.core.STAGES[i]in('ADD_INGESTION_ROUTE','ADD_UDP_ROUTE'),'CLAIMED_SIGNED_ROUTE_STAGE_REQUIRED');index=0 if self.core.STAGES[i]=='ADD_INGESTION_ROUTE'else 1;route=self.plan['gateway']['newRoutes'][index];self.require(path=='/apisix/admin/routes/'+route['id']and body==route,'EXACT_SIGNED_ROUTE_BODY_REQUIRED')
+            row=self.execution.record();i=row['nextStage'];self.require(len(row['effects'])==i+1 and row['effects'][-1]['state']=='CLAIMED'and self.stages[i]in('ADD_INGESTION_ROUTE','ADD_UDP_ROUTE'),'CLAIMED_SIGNED_ROUTE_STAGE_REQUIRED');index=0 if self.stages[i]=='ADD_INGESTION_ROUTE'else 1;route=self.plan['gateway']['newRoutes'][index];self.require(path=='/apisix/admin/routes/'+route['id']and body==route,'EXACT_SIGNED_ROUTE_BODY_REQUIRED')
         self.reserve('adminGets'if method=='GET'else'adminPuts');response=self.ctx.admin(method,path,body);self.ctx.evidence('admin',response);self.require(response['status']in((200,)if method=='GET'else(200,201)),'EXACT_ADMIN_RESPONSE_REQUIRED');return response
     def routes(self,added):
         response=self.admin('GET','/apisix/admin/routes');doc=self.ctx.p.decode(response['body'].encode());observed=self.ctx.route_rows(doc);wanted=self.plan['gateway']['previousRoutes']+self.plan['gateway']['newRoutes'][:added];self.require(self.ctx.route_map(observed)==self.ctx.route_map(wanted),'EXACT_ALL_RETAINED_AND_ADDED_ROUTES_REQUIRED');return {'routeCount':len(observed),'routeMapHash':self.core.digest(self.ctx.route_map(observed))}
     def execute(self,stage):
-        row=self.execution.record();i=row['nextStage'];self.require(i<len(self.core.STAGES)and self.core.STAGES[i]==stage and len(row['effects'])==i+1 and row['effects'][-1]['state']=='CLAIMED','ONE_EXACT_CLAIMED_STAGE_REQUIRED')
+        row=self.execution.record();i=row['nextStage'];self.require(i<len(self.stages)and self.stages[i]==stage and len(row['effects'])==i+1 and row['effects'][-1]['state']=='CLAIMED','ONE_EXACT_CLAIMED_STAGE_REQUIRED')
+        if stage=='LOAD_EXISTING_ADMIN_KEY':
+            self.require('continuation'in self.review and self.ctx.key is None,'ONE_APPROVED_CONTINUATION_CREDENTIAL_READ_REQUIRED');self.ctx.load_admin_key();return {'additionalCredentialReadClaimed':True,'previousCredentialReadsRetained':1,'cumulativeCredentialReads':self.execution.record()['counts']['serviceCredentialFileReads']}
         if stage=='VERIFY_CURRENT_ADMISSION':self.ctx.admission();return self.routes(0)
         if stage.startswith('IMPORT_'):
             role=stage.removeprefix('IMPORT_').lower();proof=self.image(role)
@@ -112,4 +114,4 @@ class NativePorts:
             return self.routes(2)
         raise self.core.Stop('UNKNOWN_ACQUISITION_STAGE')
     def final_result(self):
-        row=self.execution.record();return {'schema':'ouf.acquisition-read-native-result.v1','status':'ACQUISITION_READ_PATH_INSTALLED_E2E_NOT_ACCEPTED','complete':True,'reviewHash':self.core.digest(self.review),'authorityHash':self.core.sha(self.gate.raw),'nativeInputsHash':self.ctx.NATIVE_HASH,'frozenPlanHash':self.ctx.native['frozenPlanHash'],'counts':row['counts'],'readComponents':2,'mcpManagers':1,'newGatewayRoutes':2,'oldGatewayRoutesPreserved':82,'originalWorkersUnchanged':True,'oldMcpRetainedStopped':True,'componentReadinessProven':True,'applicationE2EProven':False,'humanBudgetsGranted':0,'sourceActivations':0,'databaseMigrationsByRepair':0,'sqlSessionsByRepair':0,'oauthRequestsByRepair':0,'normalMcpOAuthBootstrapMayHaveOccurred':True,'normalMcpOAuthRequestsCountNotObserved':True,'registryWorkerTouched':False,'runtimeAuthorityIssued':True,'installationSigningKeysRead':True,'installationSigningOperations':3,'automaticReplayAllowed':False,'automaticRollbackPerformed':False,'budgetReset':False,'releaseAcceptance':False}
+        row=self.execution.record();return {'schema':'ouf.acquisition-read-native-result.v1','status':'ACQUISITION_READ_PATH_INSTALLED_E2E_NOT_ACCEPTED','complete':True,'reviewHash':self.core.digest(self.review),'authorityHash':self.core.sha(self.gate.raw),'nativeInputsHash':self.ctx.NATIVE_HASH,'frozenPlanHash':self.ctx.native['frozenPlanHash'],'counts':row['counts'],'readComponents':2,'mcpManagers':1,'newGatewayRoutes':2,'oldGatewayRoutesPreserved':82,'originalWorkersUnchanged':True,'oldMcpRetainedStopped':True,'componentReadinessProven':True,'applicationE2EProven':False,'humanBudgetsGranted':0,'sourceActivations':0,'databaseMigrationsByRepair':0,'sqlSessionsByRepair':0,'oauthRequestsByRepair':0,'normalMcpOAuthBootstrapMayHaveOccurred':True,'normalMcpOAuthRequestsCountNotObserved':True,'registryWorkerTouched':False,'runtimeAuthorityIssued':True,'installationSigningKeysRead':True,'installationSigningOperations':3,'automaticReplayAllowed':False,'automaticRollbackPerformed':False,'budgetReset':False,'releaseAcceptance':False,**({'continuation':self.review['continuation']}if'continuation'in self.review else{})}

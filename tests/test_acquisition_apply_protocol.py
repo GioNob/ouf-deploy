@@ -98,6 +98,22 @@ class Protocol(unittest.TestCase):
         self.assertTrue(match({'Memory':536870912,'OomKillDisable':None},{'Memory':536870912,'OomKillDisable':False},started=True))
         self.assertFalse(match({'Memory':536870912,'OomKillDisable':None},{'Memory':536870912,'OomKillDisable':True},started=True))
         self.assertFalse(match({'Memory':536870912,'OomKillDisable':None},{'Memory':1073741824,'OomKillDisable':False},started=True))
+    def continuation_review(self):
+        root=self.execution_root;child=root/'terminal-continuation-v1';child.mkdir(mode=0o700)
+        c={'originalExecutionRoot':str(root),'originalReviewHash':'c'*64,'reconciliationReceiptHash':'d'*64,'retainedPreflightCounts':self.core.RETAINED_COUNTS,'retainedMaximums':self.core.LIMITS,'maximumAdditionalCredentialFileReads':1,'cumulativeCredentialReadMaximum':2,'noOriginalScopeReplay':True,'preConsentUsesRetainedRouteSnapshot':True,'freshRoutesRequiredBeforeFirstMutation':True}
+        self.review.update(schema='ouf.acquisition-read-continuation-review.v1',executionRoot=str(child),continuation=c,maximums=self.core.CONTINUATION_LIMITS,stages=['LOAD_EXISTING_ADMIN_KEY',*self.core.STAGES],preflightCounts=self.core.RETAINED_COUNTS)
+        self.review['nativePlan']['continuation']=c;self.review['nativePlanHash']=self.core.digest(self.review['nativePlan']);self.execution_root=child
+    def test_continuation_preserves_cumulative_counts_and_only_one_extra_read(self):
+        self.continuation_review();gate=self.issue();ports=self.ports();ports.root=self.execution_root;ports.ctx.counts=copy_counts=dict(self.core.RETAINED_COUNTS);execution=self.core.Execution(gate,self.journal.Journal(self.execution_root),ports);execution.initialize()
+        self.assertEqual(execution.record()['counts'],copy_counts);execution.reserve('serviceCredentialFileReads');self.assertEqual(execution.record()['counts']['serviceCredentialFileReads'],2)
+        with self.assertRaisesRegex(self.core.Stop,'BUDGET_EXHAUSTED'):execution.reserve('serviceCredentialFileReads')
+        row=execution.record();execution.save(row,counts={**row['counts'],'engineGets':0})
+        with self.assertRaisesRegex(self.core.Stop,'DURABLE_ACQUISITION_BUDGET'):execution.record()
+    def test_unreviewed_credential_ceiling_increase_is_denied(self):
+        self.continuation_review();self.review['maximums']={**self.core.CONTINUATION_LIMITS,'serviceCredentialFileReads':3}
+        with self.assertRaisesRegex(self.core.Stop,'EXACT_FINITE'):self.core.validate_review(self.review)
+    def test_continuation_tty_discloses_extra_read_and_separate_exact_command(self):
+        self.continuation_review();self.test_tty_requires_the_exact_current_review_hash()
     def test_tty_requires_the_exact_current_review_hash(self):
         import pty,select
         exact='APPROVO '+self.core.digest(self.review)
@@ -116,6 +132,9 @@ class Protocol(unittest.TestCase):
                 commands=[line for line in lines if line.startswith('APPROVO ')]
                 self.assertEqual(commands,[exact])
                 self.assertIn('Non aggiungere parole o punteggiatura',buffer.decode())
+                if'continuation'in self.review:
+                    self.assertIn('Limite cumulativo letture credenziale:2',buffer.decode())
+                    self.assertIn('SOLO dopo questa approvazione',buffer.decode())
                 os.write(fd,(answer+'\n').encode())
                 while True:
                     ready,_,_=select.select([fd],[],[],1)
