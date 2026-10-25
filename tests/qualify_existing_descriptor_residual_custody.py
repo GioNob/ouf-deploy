@@ -80,6 +80,35 @@ class CustodyTests(unittest.TestCase):
         with self.assertRaises(m.Stop):m.Journal(j.path)
         denied=subprocess.run(['setpriv','--reuid=65534','--regid=65534','--clear-groups','cat',str(j.path/'result.json')],capture_output=True)
         self.assertNotEqual(denied.returncode,0)
+    def test_actual_root077_protected_delivery_and_execution(self):
+        wrapper=(ROOT/'releases/publish-existing-descriptor-draft-20261025.sh').read_text()
+        marker="<<'PY' 2>&1 | tee -a \"$delivery_log\"\n"
+        copier=wrapper.split(marker,1)[1].split('\nPY\n',1)[0]
+        raw=(ROOT/'scripts/publish-existing-descriptor-draft-20261025.py').read_bytes()
+        expected=hashlib.sha256(raw).hexdigest()
+        self.assertIn('code_sha='+expected,wrapper)
+        source=self.base/'download.py';source.write_bytes(raw);source.chmod(0o600);os.chown(source,65534,65534)
+        target=Path('/usr/local/lib/ouf-existing-descriptor-draft-publish-'+expected[:16])
+        self.assertFalse(target.exists())
+        previous=os.umask(0o077)
+        try:
+            copied=subprocess.run(['/usr/bin/python3','-I','-S','-B','-',str(source),expected,'65534'],input=copier,text=True,capture_output=True)
+            self.assertEqual(copied.returncode,0,copied.stdout+copied.stderr)
+            code=target/'publish.py'
+            self.assertEqual(target.stat().st_mode&0o777,0o700)
+            self.assertEqual(code.stat().st_mode&0o777,0o400)
+            self.assertEqual(hashlib.sha256(code.read_bytes()).hexdigest(),expected)
+            denied=subprocess.run(['setpriv','--reuid=65534','--regid=65534','--clear-groups','cat',str(code)],capture_output=True)
+            self.assertNotEqual(denied.returncode,0)
+            execute=subprocess.run(['/usr/bin/python3','-I','-S','-B',str(code)],stdin=subprocess.DEVNULL,text=True,capture_output=True)
+            self.assertEqual(execute.returncode,2)
+            self.assertEqual(json.loads(execute.stdout)['reasonCode'],'ISOLATED_ROOT_OPERATOR_TTY_REQUIRED')
+            replay=subprocess.run(['/usr/bin/python3','-I','-S','-B','-',str(source),expected,'65534'],input=copier,text=True,capture_output=True)
+            self.assertNotEqual(replay.returncode,0)
+            self.assertEqual(hashlib.sha256(code.read_bytes()).hexdigest(),expected)
+        finally:
+            os.umask(previous)
+            if target.exists():shutil.rmtree(target)
 
 
 if __name__=='__main__':unittest.main(verbosity=2)

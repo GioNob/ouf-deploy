@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - scripts/publish-existing-descriptor-draft-20261025.py
+      - releases/publish-existing-descriptor-draft-20261025.sh
       - tests/test_existing_descriptor_residual_publication.py
       - tests/qualify_existing_descriptor_owner_driver.py
       - tests/qualify_existing_descriptor_residual_custody.py
@@ -11,6 +12,7 @@ on:
   pull_request:
     paths:
       - scripts/publish-existing-descriptor-draft-20261025.py
+      - releases/publish-existing-descriptor-draft-20261025.sh
       - tests/test_existing_descriptor_residual_publication.py
       - tests/qualify_existing_descriptor_owner_driver.py
       - tests/qualify_existing_descriptor_residual_custody.py
@@ -23,6 +25,7 @@ jobs:
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: bash -n releases/publish-existing-descriptor-draft-20261025.sh
       - run: python3 -I -S -B -m unittest discover -s tests -p test_existing_descriptor_residual_publication.py -v
       - run: sudo mkdir -m 0700 /var/lib/ouf-residual-custody-ci
       - run: sudo env RESIDUAL_TEST_ROOT=/var/lib/ouf-residual-custody-ci /usr/bin/python3 -I -S -B tests/qualify_existing_descriptor_residual_custody.py
