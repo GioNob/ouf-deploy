@@ -1,24 +1,55 @@
-# STOP prima del diagnostico: codice pubblico non leggibile — 25 ottobre2026
+# STOP codice pubblico e continuazione esatta qualificata — 25 ottobre2026
 
-Il risultato owner aggiornato è [l'evidenza target](../../evidence/acquisition-descriptor-public-code-read-stop-20261025.json). La consegna077065def9e06e743556c5e86f051238284b5a0d è FERMA: NON rilanciare il comando del [precedente handoff](OUF_ACQUISITION_PERMISSION_DESCRIPTOR_PREFLIGHT_20261025.md). Quel documento rimane valido per scopo/limiti/account/2run, ma la sua istruzione di prima esecuzione è superata.
+## Risultato VPS acquisito
 
-# CURRENT — diagnostico NON avviato: STOP permesso lettura codice pubblico; NON rilanciare wrapper
+La consegna originale077065def9e06e743556c5e86f051238284b5a0d/SHA5af3e992... ha verificato i download e creato la copia protetta; il checksum come operatore ha ricevuto Permission denied e DeliveryExit1. Log originale: /home/oufadmin/ouf-acquisition-descriptor-read-delivery.XdyYVHv1/bootstrap.log; bootstrap originale: /home/oufadmin/ouf-descriptor-bootstrap.mIZy6zES. [Evidenza owner](../../evidence/acquisition-descriptor-public-code-read-stop-20261025.json).
 
-Owner ha restituito checksumwrapper/read.py OK e ProtectedCode, poi sha256sum Permission denied sul codice root e DeliveryExit1. Delivery /home/oufadmin/ouf-acquisition-descriptor-read-delivery.XdyYVHv1/bootstrap.log; bootstrap /home/oufadmin/ouf-descriptor-bootstrap.mIZy6zES. Codice pubblico /usr/local/lib/ouf-acquisition-permission-descriptor-read-062b1e201904b9fd/read.py. Il flusso del wrapper pinned077065/5af3e992 prova che il diagnostico NON è stato invocato: nessun login/ownerGET/claimdiagnostica da quell'esecuzione. Non confondere il comando consegnato con un risultato diagnostico. Wrapper/delivery trattenuti: NON rilanciare né cancellare/cambiare directory. E2E resta OPEN.
+Il flusso del wrapper dimostra che il diagnostico non è stato invocato: nessun login o ownerGET da quella esecuzione. Modo/ACL/ancestor attuali sul target NON sono stati ancora letti. Non chiamare successo la sola copiaRoot. NON rilanciare il comando del [precedente handoff](OUF_ACQUISITION_PERMISSION_DESCRIPTOR_PREFLIGHT_20261025.md), né cancellare/modificare directory per ripeterlo.
 
-Difetto sorgente: os.open(...0444) era filtrato dall'umask di sudo, senza fchmod esplicito. VecchiaCI usava umaskrootdefault e non qualificava il caso077 reale. Ipotesi target0400 coerente, ma modo/ACL/ancestor esatti ancora NON osservati. Non usare chmod globale o sudo per eseguire il diagnostico: identità/login devono restare operatore.
+Difetto dell'assistente: os.open(...0444) senza fchmod esplicito lasciava che l'umaskroot restringesse i permessi a0400. La precedente CI verificava l'umaskdefault e ha mancato questa condizione. Il copier futuro ora forza il modo sullo stessoFD; questa correzione NON autorizza il replay della consegna originale. La lezione è permanente in AGENTS.
 
-NEXT: qualificare la continuazione ESATTA releases/resume-acquisition-descriptor-read-mode-20261025.sh. Riusa codice/file/log trattenuti, verifica checksumcustodia/assenzaoperator.log e claimdiagnostica, parenttraversal e assenzaACL; SOLO se fileesatto root0400/nlink1/hash062b... procede a UNA fchmodFD0444 preservando inode/byte/owner. JournalCLAIMEDroot0400 prima effetto; CLAIMED/errore consuma, mai replay. Non cambia parent/owner/ACL né riscrive codice; non registra grant o policy. Childfisso permission-mode-v1 sotto deliveryoriginale, nessun reset vecchio scope. Dopo APPLIED e checksum nonroot: PRIMO avvio del diagnostico già pinned d2e8098, stessi600s/conteggi/claimfissa, loginIAMHUMAN nel browser. Se metadati diversi STOP senza riparazioni alternative.
+## Continuazione ammessa e qualifica reale
 
-NuovaCI obbligatoria: umaskroot077 effettivo, rootfile0400 e lettura nonroot DAVVERO negata, poi0400→0444 e checksum nonroot, preservazione originali/no replay/casi negativi. Anche copier futuro usa fchmodFD; NON è permesso rilanciare wrapperoriginale. Codice in preparazione, qualificaCI e comando continuazione NON ancora consegnati a questo checkpoint. Workspace locale rootnamespace non consentechown1001: testnon simulati/nonskippati, qualifica reale spostata suUbuntuCI. Evidenza evidence/acquisition-descriptor-public-code-read-stop-20261025.json.
+Wrapper pinned **c11d9ce029da431f9f9b225e9f06ea10264c7ecb**, SHA256 **24cdc955bf0fbe26818968ebdf2ac6f89c9a7572d69dd0d8baa2f60a53bc1528**.
+File: releases/resume-acquisition-descriptor-read-mode-20261025.sh.
+[Evidenza qualificazione](../../evidence/acquisition-descriptor-mode-continuation-qualified-20261025.json).
 
-Stato applicativo precedente conservato: installazione VPS riuscita/readiness/2READ+2rotte, tutti vecchi scopeCONSUMATI/Registry intatto. Toolacquisizione disponibili, proposta REPLACE_ROLES rifiutata AUTH_ROLE_CAPABILITY_INVALID e prima IngestionREAD negata retryablefalse, mai ripetute. Dopo risultato diagnostico: eventuale registrazione+ACTIVEpublicationHUMAN governate e poi grant2run/4READ; nessuna terza acquisizione/budgetfonte/reset/riavvio/reinstallazione/merge/releaseacceptance. E2E/G4/F5/F6 OPEN, Supervisor dopo.
+Il comando riusa i file ESATTI originali. Verifica hash/custodia/nlink1 dei due pubblici, bootstrap.log del preciso fallimento, assenza di operator.log originale e claimdiagnostica. Prova il traversal come identità Linux effettiva dell'operatore, con relativi gruppi e setuid reali: ACL dei parent sono rivalutate e preservate, non ignorate né rimosse. Richiede assenza di accessACL sul SOLO filecodice oggetto di chmod, rootdir0555, codiceRoot0400 e hash062b... esatto. Se codice già0444, altra causa/parent non attraversabile, ACLcodice, drift o scope già avviato: STOP senza riparazioni alternative.
 
+Sotto childfisso XdyYVHv1/permission-mode-v1, conserva nuovi bootstrap/operator.log; non sovrascrive gli originali. FaseRoot massima60s, journalCLAIMEDroot0400/fsync PRIMA della singola fchmodFD0400→0444. Inode/byte/owner/nlink/mtime preservati. Non riscrive codice, non cambia parent/ACL/owner e non usa chiavi/Engine/IAMadmin/SQL. Esito ambiguo rimane CLAIMED e non si rilancia. Journal: /usr/local/lib/ouf-acquisition-permission-descriptor-read-062b1e201904b9fd/permission-mode-v1.json.
 
-## Risultato previsto e limiti della futura continuazione
+Dopo APPLIED e checksumcomeoperatore, avvia per la PRIMA volta il lettore già pinned d2e80980f7575ce1e71627632eeba515441d84be/SHA256062b1e201904b9fd7a10efcad371de17d4c0fbc3411710c310186aa7381c5cad. NON riscarica/ricopia il lettore e NON riapre una sua claim esistente. Restano600s/max52ownerGET/1metadataIAMGET/121IAMPOST/16MB e fixedclaim /home/oufadmin/ouf-acquisition-permission-descriptor-read-20261025. Loginbrowser ordinario HUMANouf-admin per leggere6descrittori, tokenmemoria; nessuna pubblicazione/grant/attivazione/acquisizione. La copiaRoot e il diagnostico sono fasi distinte, non accettazione E2E.
 
-Il wrapper nuovo verifica lo scope operator originale XdyYVHv1 e bootstrapmIZy6zES, contenuti pubblici pinned e log del preciso fallimento; assenza di operator.log e claimdiagnostica. La lettura root verifica tutti i parent del codice pubblicoroot/nonwritable/traversabili e rifiuta ACLesplicite. Se trova un file root0400/nlink1/byte062b... immutato e rootdir0555, crea la singola journalpermission-mode-v1.json root0400, fsyncCLAIMED, UNA fchmod0444 sul FD e verifica inode/byte/ownermtime preservati. Unknown/modegià444/ACL/parentprivato/hashdrift/CLAIMED o prova diversa: STOP. Nessun chmodparent, chown, cambioACL o ricopia/reinstallazione.
+CI su sorgentec11d9ce029da431f9f9b225e9f06ea10264c7ecb: push40222432040 e PR40222436406, tutti i3job puntuali PASS/logdiretti letti:
+- 15testprotocollo/0skip: rootumask077 e file0400 REALI, operatore nonroot DAVVERO negato prima e autorizzato dopo, setuid reale, inode/byte/owner/log preservati, negativehash/owner/hardlink/symlink/parent/ACLfile/claim/replay/ambiguità; ACLparent REALI sia positive sia negative e preservate. Jobpush121256690689/PR121256704384.
+- Wrappercompleto sui file trattenuti della fixture: root400→444, checksumoperatore e primo invocazionelettore; STOP atteso senzaTTY PRIMA del login/claim, secondoavvio negato. Jobpush121256690725/PR121256704161.
+- Copier futuro VERBATIM sotto rootumask077 e checksumoperatore reale, jobpush121256690522/PR121256704335.
 
-Il journal consuma la riparazione anche se esito successivo ambiguo; niente replay. Gli originali bootstrap.log/run.sh/read.py non sono alterati. Childfisso permission-mode-v1 nella delivery originale conserva nuovi bootstrap/operator.log. Dopo riparazioneAPPLIED e checksumcomeoperatore, avvia per la PRIMA volta il diagnostico d2e8098/SHA062b... già qualificato, senza ricreare scope o contatori. LoginbrowserHUMAN/accountouf-admin e sole letture amministrative dei6descrittori, non APPROVOmutazione. Se nativeSTOP o loginfallisce: conserva tutto e non rilanciare. Ancora nessun risultato diagnostico acquisito e nessuna autorità/grant/appE2E.
+Storia/datiowner sono SINTETICI, filesystemroot/umask/ACL/setuid reali. Nessuna approvazione production simulata. CI NON legge il target né prova il suo modo attuale o IAM. Il primo candidato9a8e0b6/runs40222206020/40222209880 si fermava nel guardACL troppo generale: corretto con verifica dell'attore effettivo e casiACLrealipositivi/negativi, nessuna modificaACL. Fallimenti conservati, mai consegnati. Il workspace locale non mappaUID1001 e chown davaEINVAL: nessun falsoPASS/skip locale, qualifica affidata alla CI reale.
 
-Qualifica nuova ancora pending; nessun nuovo comando target consegnato ora. Fonte/READserver/Registry e tutti i risultati applicativi precedenti restano invariati. I test nuovi usano storia/datiownerSINTETICI e filesystemroot/umask/setuid reali in CI; nessuna approvazione production simulata.
+## Comando unico: continuazione, NON replay del vecchio wrapper
+
+Come oufadmin, nel terminale VPS interattivo, UNA volta:
+
+```bash
+(
+  set -Eeuo pipefail
+  umask 077
+  ouf_mode_bootstrap=$(mktemp -d "$HOME/ouf-descriptor-mode-bootstrap.XXXXXXXX")
+  curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-redirs 3 --connect-timeout 15 --max-time 60 \
+    "https://raw.githubusercontent.com/GioNob/ouf-deploy/c11d9ce029da431f9f9b225e9f06ea10264c7ecb/releases/resume-acquisition-descriptor-read-mode-20261025.sh" \
+    -o "$ouf_mode_bootstrap/run.sh"
+  printf '%s  %s\n' '24cdc955bf0fbe26818968ebdf2ac6f89c9a7572d69dd0d8baa2f60a53bc1528' "$ouf_mode_bootstrap/run.sh" | sha256sum -c -
+  bash "$ouf_mode_bootstrap/run.sh"
+)
+```
+
+Sudo serve solo alla verifica root e al permesso del filecodice pubblico esatto; il lettore viene eseguito comeoperatore. Quando compaiono indirizzo/codice IAM, aprire quell'indirizzo nel browser e inserire il codice SOLO lì, con accountouf-admin. Non incollare token/codice in chat e non eseguire l'intero comando come root.
+
+Attesi prima JSONpermission-mode/APPLIED con chmodOperations1 e zeroIAM/owner; poi DESCRIPTORS_OBSERVED_NO_AUTHORITY/complete=true, Exit0 e ContinuationExit0. Riportare entrambi i JSON, Exit/ContinuationExit e percorsi dei log; non il codice di login. Se STOP/interruzione, conserva file/journal/claim/log e NON rilanciare o creare altri child. Risultato di questa continuazione target ANCORA NON RICEVUTO.
+
+## Dopo il risultato descrittori
+
+Il [precedente handoff](OUF_ACQUISITION_PERMISSION_DESCRIPTOR_PREFLIGHT_20261025.md) resta riferimento per account, sei permission, due run, limiti e registrazione/ACTIVEpublicationHUMAN ADDITIVA se necessaria. Toolacquisizione disponibili, singola propostaREPLACE_ROLES rifiutata AUTH_ROLE_CAPABILITY_INVALID e prima IngestionREAD negata retryablefalse conservate e non ritentate. Solo dopo autorità nuova effettivamente pubblicata/verificata: temporanei2ruoli/2run e4READ con correlazioneCSV/contratto/ACK/watermark/13ID/20proprietà/provenance. Nessuna terza acquisizione/budgetfonte/reset/riavvio/reinstallRegistry.
+
+Installazione VPS ACQUISITION_READ_PATH_INSTALLED_E2E_NOT_ACCEPTED resta positiva e tutti gli scope storiciCONSUMATI; nessun APPLY/recoveryworker va ripetuto. E2E/G4/F5/F6 OPEN, tecnico8/8 funzionale4/6, Supervisor dopo E2E. Nessun merge/release acceptance.

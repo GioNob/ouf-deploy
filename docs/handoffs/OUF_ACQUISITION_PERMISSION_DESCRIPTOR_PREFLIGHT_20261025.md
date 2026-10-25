@@ -1,3 +1,5 @@
+> **STOP VPS ricevuto: NON eseguire/rilanciare il comando di questo documento.** La copiaRoot non è leggibile comeoperatore; diagnostico mai avviato. Seguire esclusivamente [la continuazione qualificata](OUF_ACQUISITION_DESCRIPTOR_PUBLIC_MODE_STOP_20261025.md), che preserva file/log originali.
+
 # Acquisition READ: descriptor preflight required — 25 ottobre 2026
 
 ## Stato corrente e risultati effettivi
