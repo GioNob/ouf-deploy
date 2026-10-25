@@ -17,18 +17,19 @@ def cas(journal,fn):
             time.sleep(.02)
 def negative(ctx,review,raw,journal,reason):
     from tools.semantic_provider_deployment_authentication import DetachedAuthenticator
+    negative_started=time.monotonic();negative_wall=time.time()
     core=ctx.core;core.validate_review(review);authority=ctx.p.decode(raw);v=review['verification'];context=v['context'];policy={'path':str(ctx.root/'authority/issued-trust-policy.json'),'sha256':v['trustPolicy']['sha256']};verifier=DetachedAuthenticator(policy,str(ctx.root/'authority'),v['openssl']);ctx.check_sources()
     core.require(authority['schema']==core.AUTHORITY_SCHEMA and authority['scope']==core.scope(review)and authority['expiresAt']-authority['issuedAt']==900 and authority['cleanupExpiresAt']==authority['expiresAt']+30,'EXACT_SIGNED_NEGATIVE_SCOPE_REQUIRED')
     for role,key in(('DEPLOYMENT_INTENT','intentIssuerRef'),('FINAL_DEPLOYMENT_APPROVAL','approvalIssuerRef')):core.require(verifier(raw,role,context[key],context['installationRef'],context['entityRef'])is True,'CURRENT_SIGNED_NEGATIVE_LEASE_REQUIRED')
     def claim(row):
         core.require(row['reviewHash']==core.digest(review)and row['authorityHash']==core.sha(raw),'SAME_NEGATIVE_AUTHORITY_JOURNAL_REQUIRED')
         if row['state']=='COMPLETE'or row['quarantine']is not None:return None
-        row['quarantine']={'state':'CLAIMED','reason':reason,'candidates':{},'claimedAt':time.time()};return row
+        row['quarantine']={'state':'CLAIMED','reason':reason,'candidates':{},'claimedAt':negative_wall,'deadlineMonotonic':min(row['expiresMonotonic']+30,negative_started+30),'deadlineWall':min(authority['cleanupExpiresAt'],negative_wall+30)};return row
     row=cas(journal,claim)
     if row is None:return
     ctx.engine.timeout=2
     def check():
-        current=journal.read();core.require(time.time()>=authority['issuedAt']and time.time()<authority['cleanupExpiresAt']and time.monotonic()<current['expiresMonotonic']+30 and Path('/proc/sys/kernel/random/boot_id').read_text().strip()==review['bootId'],'FINITE_NEGATIVE_LEASE_REQUIRED');ctx.check_sources()
+        current=journal.read();core.require(time.time()>=authority['issuedAt']and time.time()<authority['cleanupExpiresAt']and time.monotonic()<current['quarantine']['deadlineMonotonic']and time.time()<current['quarantine']['deadlineWall']and Path('/proc/sys/kernel/random/boot_id').read_text().strip()==review['bootId'],'FINITE_NEGATIVE_LEASE_REQUIRED');ctx.check_sources()
     def reserve(kind):
         check()
         def change(row):

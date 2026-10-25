@@ -6,8 +6,8 @@ def module(name,path):
     s=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
 fixture=module('protocol_fixture',BASE/'tests/test_acquisition_apply_protocol.py')
 class EngineLifecycle(fixture.Protocol):
-    def cli(self,*args):return subprocess.check_output(['docker',*args],stderr=subprocess.STDOUT,text=True).strip()
-    def setup_runtime(self):
+    def cli(self,*args):return subprocess.check_output(['docker',*args],stderr=subprocess.PIPE,text=True).strip()
+    def setup_runtime(self,launch_watchdog=True):
         self.resources=[];self.net='ouf-acq-ci-'+str(time.time_ns());self.nid=self.cli('network','create',self.net);self.resources.append(('network',self.net));self.source_commit='e'*40
         folder=self.root/'build';folder.mkdir(mode=0o700);(folder/'server.py').write_text('''import http.server,os
 class H(http.server.BaseHTTPRequestHandler):
@@ -109,7 +109,9 @@ deployment:
             def refresh_authority(ctx):
                 ctx.reserve('ownerConfigurationReads');ctx.reserve('ownerConfigurationReads');current=ctx.preparer.public_authority(ctx.p,profile_binding,outer.verification['trustPolicy'],outer.context);outer.assertEqual(current,ctx.native['publicAuthority']);ctx.profile=current['profile'];return current
         ctx=FixtureContext(self.parts,self.auth,self.sign,self.journal,self.closure,native_path=native_path,native_hash=p.digest(native),root=self.root/'runtime');self.ctx=ctx;ctx.current();ctx.reserve('adminGets');response=ctx.admin('GET','/apisix/admin/routes');self.assertEqual(ctx.route_map(ctx.route_rows(p.decode(response['body'].encode()))),ctx.route_map(routes))
-        review=copy.deepcopy(self.review);review.update(executionRoot=str(ctx.root),frozenPlanHash=native['frozenPlanHash'],nativePlan={'frozenPlanHash':native['frozenPlanHash'],'nativeInputsHash':ctx.NATIVE_HASH,'proposal':ctx.proposal},preflightCounts=copy.deepcopy(ctx.counts));review['nativePlanHash']=self.core.digest(review['nativePlan']);self.review=review;self.execution_root=ctx.root;self.profile=profile;self.core.validate_review(review);gate=self.issue();ports=ctx.ports_module.NativePorts(ctx,review,gate);execution=self.core.Execution(gate,self.journal.Journal(ctx.root),ports);execution.initialize();ctx.watch.launch(ctx,review,gate,execution.journal);self.gate,self.native_ports,self.execution=gate,ports,execution
+        review=copy.deepcopy(self.review);review.update(executionRoot=str(ctx.root),frozenPlanHash=native['frozenPlanHash'],nativePlan={'frozenPlanHash':native['frozenPlanHash'],'nativeInputsHash':ctx.NATIVE_HASH,'proposal':ctx.proposal},preflightCounts=copy.deepcopy(ctx.counts));review['nativePlanHash']=self.core.digest(review['nativePlan']);self.review=review;self.execution_root=ctx.root;self.profile=profile;self.core.validate_review(review);gate=self.issue();ports=ctx.ports_module.NativePorts(ctx,review,gate);execution=self.core.Execution(gate,self.journal.Journal(ctx.root),ports);execution.initialize();
+        if launch_watchdog:ctx.watch.launch(ctx,review,gate,execution.journal)
+        self.gate,self.native_ports,self.execution=gate,ports,execution
     def teardown_runtime(self):
         for kind,resource in reversed(getattr(self,'resources',[])):
             subprocess.run(['docker','rm','-f',resource]if kind=='container'else['docker','network','rm',resource],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,check=False)
@@ -123,5 +125,36 @@ deployment:
             self.ctx.watch.negative(self.ctx,self.review,self.gate.raw,self.execution.journal,'CI_ALREADY_COMMITTED');self.assertEqual(self.execution.journal.read()['state'],'COMPLETE')
             print(json.dumps({'schema':'ouf.synthetic-native-acquisition-apply-ci.v1','complete':True,'profile':self.ctx.native['imageIdentityProfile'],'realEd25519DualSignatures':True,'realEngineImagesLoaded':3,'realCandidatesCreatedAndStarted':3,'realApisixOldRouteCount':82,'realApisixAddedRouteCount':2,'originalWorkersUnchanged':True,'singleMcpManager':True,'completedNegativeLeaseDoesNothing':True,'productionRuntimeAccess':False}),flush=True)
         finally:self.teardown_runtime()
+    def test_killed_controller_quarantines_only_uncommitted_candidates(self):
+        import select,signal
+        self.setup_runtime(launch_watchdog=False);r,w=os.pipe();child=os.fork()
+        if child==0:
+            try:
+                os.close(r);self.ctx.watch.launch(self.ctx,self.review,self.gate,self.execution.journal);original=self.native_ports.execute
+                def paused(stage):
+                    if stage=='START_UDP_READ':os.write(w,b'READY');signal.pause();raise AssertionError('Killed controller resumed')
+                    return original(stage)
+                self.native_ports.execute=paused;self.execution.run();os._exit(3)
+            except BaseException:os._exit(4)
+        os.close(w)
+        try:
+            ready,_,_=select.select([r],[],[],120);self.assertTrue(ready,'Controller did not reach owned candidate checkpoint');self.assertEqual(os.read(r,16),b'READY');os.kill(child,signal.SIGKILL);os.waitpid(child,0)
+            for _ in range(160):
+                row=self.execution.journal.read()
+                if row['quarantine']and row['quarantine']['state']=='APPLIED':break
+                time.sleep(.25)
+            else:raise AssertionError('Negative watchdog did not prove quarantine')
+            self.assertEqual(row['state'],'STOP_RECONCILE');self.assertEqual(row['counts']['quarantineStops'],2);self.assertEqual(row['effects'][-1]['state'],'CLAIMED')
+            for role,value in self.old.items():self.assertEqual(self.p.stable_binding(json.loads(self.cli('inspect',value['Id']))[0]),self.ctx.proposal['existingApplications'][role]);self.assertTrue(json.loads(self.cli('inspect',value['Id']))[0]['State']['Running'])
+            for candidate in row['candidates'].values():
+                actual=json.loads(self.cli('inspect',candidate['id']))[0];self.assertFalse(actual['State']['Running']);self.assertEqual(actual['HostConfig']['RestartPolicy'],{'Name':'no','MaximumRetryCount':0})
+            self.assertEqual(len(self.api('GET','/apisix/admin/routes')[1]['list']),82);before=copy.deepcopy(row['counts'])
+            with self.assertRaises(self.core.Stop):self.execution.run()
+            self.assertEqual(before,self.execution.journal.read()['counts']);print(json.dumps({'schema':'ouf.synthetic-acquisition-negative-lease-ci.v1','complete':True,'controllerKilled':True,'ownedCandidatesStopped':2,'allOriginalOwnersStillRunning':True,'oldRoutesUnchanged':82,'claimedEffectNotReplayed':True,'productionRuntimeAccess':False}),flush=True)
+        finally:
+            os.close(r)
+            try:os.kill(child,signal.SIGKILL)
+            except ProcessLookupError:pass
+            self.teardown_runtime()
 if __name__=='__main__':
-    suite=unittest.TestSuite([EngineLifecycle('test_real_native_lifecycle_and_additive_routes')]);result=unittest.TextTestRunner(verbosity=2).run(suite);raise SystemExit(0 if result.wasSuccessful()else 1)
+    suite=unittest.TestSuite([EngineLifecycle('test_real_native_lifecycle_and_additive_routes'),EngineLifecycle('test_killed_controller_quarantines_only_uncommitted_candidates')]);result=unittest.TextTestRunner(verbosity=2).run(suite);raise SystemExit(0 if result.wasSuccessful()else 1)

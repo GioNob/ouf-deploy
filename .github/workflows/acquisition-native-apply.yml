@@ -19,6 +19,10 @@ jobs:
       - name: Real scoped Ed25519 signatures, durable claims and live-policy revocation
         run: sudo env OUF_APPLY_ROOT_FIXTURE=1 python3 -I -S -B -m unittest discover -s "$PWD/tests" -p test_acquisition_apply_protocol.py -v
   real-engine-and-apisix:
+    strategy:
+      fail-fast: false
+      matrix:
+        store: [classic, containerd]
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     defaults:
@@ -27,5 +31,16 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
+      - name: Select isolated hosted Engine store
+        env: {SELECTED_STORE: '${{ matrix.store }}'}
+        run: |
+          sudo --preserve-env=SELECTED_STORE python3 - <<'PY_CONFIG'
+          import json,os
+          from pathlib import Path
+          path=Path('/etc/docker/daemon.json');value=json.loads(path.read_text())if path.exists()else{}
+          value.setdefault('features',{})['containerd-snapshotter']=os.environ['SELECTED_STORE']=='containerd'
+          path.write_text(json.dumps(value))
+          PY_CONFIG
+          sudo systemctl restart docker
       - name: Real3image imports,3container transitions,82retained APISIX routes and2additions
         run: sudo env OUF_APPLY_ROOT_FIXTURE=1 python3 -I -S -B tests/qualify_acquisition_apply_engine.py
