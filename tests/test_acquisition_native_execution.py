@@ -81,4 +81,7 @@ def load_tests(loader,tests,pattern):
     # The24 inherited MAC protocol tests have their dedicated gate. Reuse its
     # fixture, run only the new preparation tests here, without replaying setup.
     names=[name for name in NativePreparationTest.__dict__ if name.startswith('test_')]
-    return unittest.TestSuite([*(NativePreparationTest(name)for name in names),loader.loadTestsFromTestCase(PureChecks)])
+    import fnmatch
+    cases=[*(NativePreparationTest(name)for name in names),*loader.loadTestsFromTestCase(PureChecks)]
+    patterns=loader.testNamePatterns
+    return unittest.TestSuite(case for case in cases if not patterns or any(fnmatch.fnmatchcase(case.id(),pattern)for pattern in patterns))

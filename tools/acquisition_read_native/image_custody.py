@@ -32,7 +32,7 @@ def parsed(raw):
         return result
     return json.loads(raw,object_pairs_hook=unique,parse_constant=lambda _:require(False,'FINITE_IMAGE_METADATA_REQUIRED'))
 
-def archive(stream,expected_tar_sha256,expected_image,expected_source):
+def archive(stream,expected_tar_sha256,expected_image,expected_source,*,ci_source_binding=None):
     require(re.fullmatch('[0-9a-f]{64}',expected_tar_sha256) is not None
             and re.fullmatch('sha256:[0-9a-f]{64}',expected_image) is not None
             and re.fullmatch('[0-9a-f]{40}',expected_source) is not None,'EXACT_IMAGE_BINDINGS_REQUIRED')
@@ -57,7 +57,17 @@ def archive(stream,expected_tar_sha256,expected_image,expected_source):
         require('sha256:'+hashlib.sha256(raw).hexdigest()==expected_image,'IMAGE_CONFIG_DIGEST_DRIFT')
         config=parsed(raw)
         require(config.get('os')=='linux' and config.get('architecture')=='amd64','EXACT_IMAGE_PLATFORM_REQUIRED')
-        require(type(config.get('config')) is dict and config['config'].get('Labels',{}).get('org.opencontainers.image.revision')==expected_source,'IMAGE_SOURCE_LABEL_DRIFT')
+        require(type(config.get('config')) is dict,'TYPED_IMAGE_CONFIG_REQUIRED')
+        labels=config['config'].get('Labels')or{};require(type(labels)is dict,'TYPED_IMAGE_LABELS_REQUIRED')
+        revision=labels.get('org.opencontainers.image.revision')
+        if revision is not None:
+            require(revision==expected_source,'IMAGE_SOURCE_LABEL_DRIFT')
+        else:
+            require(type(ci_source_binding)is dict and set(ci_source_binding)=={'schema','sourceCommit','imageId','compressedArchiveSha256','stagedReceiptHash','frozenPlanHash'}
+                and ci_source_binding['schema']=='ouf.acquisition-image-source-by-qualified-ci-manifest.v1'
+                and ci_source_binding['sourceCommit']==expected_source and ci_source_binding['imageId']==expected_image
+                and all(type(ci_source_binding[k])is str and re.fullmatch('[a-f0-9]{64}',ci_source_binding[k])for k in('compressedArchiveSha256','stagedReceiptHash','frozenPlanHash')),
+                'EXPLICIT_QUALIFIED_CI_SOURCE_BINDING_REQUIRED')
         layers=image.get('Layers');root=config.get('rootfs',{})
         require(root.get('type')=='layers' and type(layers) is list and 1<=len(layers)<=64
                 and len(layers)==len(set(layers)) and type(root.get('diff_ids')) is list
@@ -84,7 +94,7 @@ def archive(stream,expected_tar_sha256,expected_image,expected_source):
                 'configSha256':expected_image[7:],'configBytes':len(raw),'layers':observations,'platform':'linux/amd64',
                 'repositoryTags':tags or [],'imageConfig':config['config'],
                 'configMember':image['Config'],'layerMembers':layers,
-                'archiveByteCustodyProven':True,'targetApplyAuthorized':False}
+                'archiveByteCustodyProven':True,'sourceBindingProfile':'OCI_REVISION_LABEL'if revision is not None else'QUALIFIED_CI_MANIFEST','qualifiedCiSourceBinding':ci_source_binding if revision is None else None,'targetApplyAuthorized':False}
 
 def manifest_bytes(audit):
     """Exact Docker schema2 descriptors, with unchanged config/layer bytes."""

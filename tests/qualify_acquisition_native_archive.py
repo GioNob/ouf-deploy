@@ -15,6 +15,14 @@ with tempfile.TemporaryDirectory(prefix='ouf-native-archive-ci-',dir='/var/lib')
     subprocess.run(['docker','load','--input',fact['nativeArchive']['path']],stdout=subprocess.DEVNULL,check=True)
     actual=json.loads(subprocess.check_output(['docker','image','inspect',fact['nativeImageId']],text=True))[0];proof=images.loaded(fact['audit'],actual)
     assert proof['imageByteCustodyProven']and n.COUNTS['nativeArchivesPrepared']==1
+    assert fact['audit']['sourceBindingProfile']=='QUALIFIED_CI_MANIFEST'
+    import gzip,io
+    expanded=io.BytesIO(gzip.decompress(raw));tar_hash=hashlib.sha256(expanded.getvalue()).hexdigest()
+    for field,value in(('sourceCommit','0'*40),('imageId','sha256:'+'0'*64)):
+        invalid={**fact['audit']['qualifiedCiSourceBinding'],field:value}
+        try:images.archive(expanded,tar_hash,descriptor['imageId'],descriptor['commit'],ci_source_binding=invalid);raise AssertionError('Invalid CI source accepted')
+        except images.ImageCustodyDenied as error:assert str(error)=='EXPLICIT_QUALIFIED_CI_SOURCE_BINDING_REQUIRED'
+
     try:n.archive_at(p,images,{'path':str(archive),'sha256':'0'*64,'imageId':descriptor['imageId'],'sourceCommit':descriptor['commit']},output,profile=='CONFIG_AND_NATIVE_MANIFEST');raise AssertionError('Changed archive accepted')
     except n.Stop as e:assert str(e)=='EXACT_CI_COMPRESSED_ARCHIVE_HASH_REQUIRED'
     print(json.dumps({'schema':'ouf.acquisition-native-image-custody-ci.v1','complete':True,'sourceArtifactId':descriptor['artifactId'],'sourceArchiveSha256':expected,'imageIdentityProfile':profile,'configurationImageId':descriptor['imageId'],'nativeImageId':fact['nativeImageId'],'exactLoadedImageConfigAndRootfsProven':True,'imageRebuilt':False,'imageRelabelled':False,'applicationStarted':False,'productionRuntimeAccess':False}))

@@ -9,7 +9,7 @@ PLAN=Path('/etc/ouf/deploy-snapshots/acquisition-read-native-plan-mac-v1/executi
 PLAN_HASH='47b206e2eb602c115ef9c7c67937f2b2aeeff645fb8b56347c81f546a4ba60ca'
 RECEIPT_HASH='8e7117f962da2fe9cc0b1e8d5af0a4b5d189947005239e26f6dad6736b740a08'
 ROOT=Path('/etc/ouf/deploy-snapshots/acquisition-native-execution-inputs-47b206e2eb602c11')
-HELPERS={'plan_helper.py':'09b892a89f7cd7fa31fbc891822445ed09554e9362e397bb9b12b98316e1d8dd','image_custody.py':'e8157a8b5909c893ce95e431f1094c983fd692c695f99bb6067aff6dc59ca8c2'}
+HELPERS={'plan_helper.py':'09b892a89f7cd7fa31fbc891822445ed09554e9362e397bb9b12b98316e1d8dd','image_custody.py':'5d0fc0edb1ebd9386326eadbbee08f2cf0a9fd1e122940c0661b5ac5e3655ed8'}
 PROFILE={'path':'/etc/ouf/deploy-snapshots/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json','sha256':'7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18'}
 POLICY={'path':'/etc/ouf/deploy-snapshots/semantic-trust-policy-preparation-20261004-172336/trust-policy.json','sha256':'21122630e52cb63c3744fee89f5c81ed926dad55231190243ca11be6d481bd42'}
 CONTEXT={'installationRef':'ouf-lab-netcup-01','entityRef':'ouf-lab','intentIssuerRef':'ouf-lab-infrastructure-installer','approvalIssuerRef':'ouf-lab-infrastructure-installer','attestorRef':'ouf-lab-node-attestor'}
@@ -68,7 +68,7 @@ def archive_at(p,images,d,root,native):
                     block=zipped.read(min(1048576,images.LIMIT-total+1))
                     if not block:break
                     total+=len(block);require(total<=images.LIMIT,'BOUNDED_IMAGE_EXPANSION_REQUIRED');expanded.write(block)
-                require(total==size,'EXACT_GZIP_DECLARED_SIZE_REQUIRED');expanded.flush();expanded.seek(0);checksum,_=images.hashed(expanded,images.LIMIT);expanded.seek(0);audit=images.archive(expanded,checksum,d['imageId'],d['sourceCommit']);name='native-'+d['imageId'][7:]+'.tar';target=root/name
+                require(total==size,'EXACT_GZIP_DECLARED_SIZE_REQUIRED');expanded.flush();expanded.seek(0);checksum,_=images.hashed(expanded,images.LIMIT);expanded.seek(0);audit=images.archive(expanded,checksum,d['imageId'],d['sourceCommit'],ci_source_binding={'schema':'ouf.acquisition-image-source-by-qualified-ci-manifest.v1','sourceCommit':d['sourceCommit'],'imageId':d['imageId'],'compressedArchiveSha256':d['sha256'],'stagedReceiptHash':p.RECEIPT_HASH,'frozenPlanHash':PLAN_HASH});name='native-'+d['imageId'][7:]+'.tar';target=root/name
                 # Separate role directories prevent accidental archive aliases across equal candidate IDs.
                 out=os.open(target,os.O_RDWR|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o400)
                 try:
