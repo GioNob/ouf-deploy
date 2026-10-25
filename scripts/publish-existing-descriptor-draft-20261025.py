@@ -11,11 +11,13 @@ from zoneinfo import ZoneInfo
 from email.utils import parsedate_to_datetime
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import pwd
 import re
 import select
+import signal
 import stat
 import sys
 import time
@@ -176,10 +178,13 @@ class Transport:
         self.review_hash = None
         self.draft = {'id': DRAFT_ID, 'revision': 0}
         self.last_headers = {}
+        self.use_alarm = False
         self.opener = urllib.request.build_opener(NoRedirect())
 
     def guard(self):
         require(self.clock() < self.deadline, 'FINITE_HUMAN_WINDOW_EXPIRED')
+        if self.use_alarm:
+            signal.alarm(max(1,math.ceil(self.deadline-self.clock())))
         if self.plan is not None:
             require(digest(self.plan) == self.review_hash, 'REVIEW_PLAN_CHANGED')
 
@@ -524,6 +529,8 @@ def main():
         require(source.resolve()==source and info.st_uid==0 and stat.S_ISREG(info.st_mode)
                 and stat.S_IMODE(info.st_mode)==0o400 and info.st_nlink==1,'PROTECTED_RESIDUAL_CODE_REQUIRED')
         journal=Journal()
+        signal.signal(signal.SIGALRM,lambda *_:(_ for _ in ()).throw(Stop('FINITE_RESIDUAL_WINDOW_EXPIRED')))
+        signal.alarm(LIMITS['totalSeconds'])
         print('PrivateContext='+str(journal.path),flush=True)
         old_review,candidate,lookup,historical=retained(operator)
         journal.row['historicalIamCounts']=historical
@@ -532,9 +539,15 @@ def main():
         dependency=load_login();started=time.monotonic()
         def reserve_iam(counts):journal.row.update(iamCounts=counts);journal.save()
         iam=dependency['Transport'](reserve=reserve_iam)
-        token=dependency['login'](iam)
+        signal.alarm(600)
+        def login_emit(message):
+            if message=='Accedi con ouf-admin. Non incollare codice o token in chat. Sola lettura dei descrittori.':
+                message='Accedi con ouf-admin. Codice e token restano privati. Dopo preflight/preview servirà una NUOVA review APPROVO per la sola pubblicazione.'
+            print(message,flush=True)
+        token=dependency['login'](iam,emit=login_emit)
         claims=json.loads(base64.urlsafe_b64decode(token.split('.')[1]+'='*(-len(token.split('.')[1])%4)))
         t=Transport(token,journal)
+        t.use_alarm=True
         token_deadline=time.monotonic()+max(0,claims['exp']-time.time()-15)
         t.deadline=min(t.deadline,started+LIMITS['totalSeconds'],token_deadline)
         require(t.deadline-t.clock()>60,'FRESH_PREFLIGHT_WINDOW_REQUIRED')
@@ -556,6 +569,8 @@ def main():
             result.update(counts=journal.row['counts'],contextPath=str(journal.path),
                           publicationClaimed='PUBLISH_DRAFT' in journal.row['effects'])
             if not (journal.path/'result.json').exists():journal.write('result.json',result,exclusive=True)
+    finally:
+        signal.alarm(0)
     print(json.dumps(result,sort_keys=True,separators=(',',':')),flush=True)
     return 0 if result.get('complete') else 2
 

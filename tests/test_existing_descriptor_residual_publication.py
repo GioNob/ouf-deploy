@@ -152,6 +152,22 @@ class ResidualTests(unittest.TestCase):
         plan=self.prepare();self.approve(plan);self.owner.grants_at_publish=[]
         with self.assertRaises(m.Stop):m.execute(plan,self.j,self.t)
         self.assertEqual(self.j.row['effects']['PUBLISH_DRAFT']['state'],'CLAIMED')
+    def test_actual_alarm_interrupts_blocked_io_window(self):
+        import subprocess
+        code='''import importlib.util,signal,time,tempfile
+from pathlib import Path
+spec=importlib.util.spec_from_file_location('m',%r);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+signal.signal(signal.SIGALRM,lambda *_:(_ for _ in ()).throw(m.Stop('FINITE_RESIDUAL_WINDOW_EXPIRED')))
+with tempfile.TemporaryDirectory() as tmp:
+ j=m.Journal(Path(tmp)/'one');t=m.Transport('CI_SYNTHETIC',j);t.use_alarm=True;t.deadline=time.monotonic()+.1;t.guard()
+ try:time.sleep(5)
+ except m.Stop:print('ACTUAL_FINITE_ALARM_PASS')
+ else:raise AssertionError('deadline failed')
+finally_marker=True
+''' % str(ROOT/'scripts/publish-existing-descriptor-draft-20261025.py')
+        result=subprocess.run(['/usr/bin/python3','-I','-S','-B','-c',code],capture_output=True,text=True,timeout=4)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertIn('ACTUAL_FINITE_ALARM_PASS',result.stdout)
 
 
 if __name__=='__main__':unittest.main()
