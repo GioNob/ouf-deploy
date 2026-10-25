@@ -37,3 +37,32 @@ Atteso dal VPS `RETAINED_OLD_MCP_GUARD_DIFFERENCE_OBSERVED`, complete=true/Exit0
 Dopo i campi effettivamente osservati: correggere solo quel delta, qualificare una continuazione del prefisso già APPLIED e della negativa reale, preservando3import/2create/STOP/DETACH/storico/contatori. Non ripetere effetti completati, non attribuire nuova autorità a firme scadute o a questa lettura offline. Eventuali riavvii dei SOLI candidati propri, nuovi limiti cumulativi indispensabili e lettura chiave devono essere concreti, dichiarati e approvati nel terminale prima degli effetti. Nessun nuovo comando mutante è attualmente consegnato.
 
 502/403: precedenti prove VPS positive conservate, nessuna nuova richiesta originale eseguita. E2E/G4/F5/F6 OPEN, tecnico8/8/funzionale4/6; Supervisor dopo E2E. Niente terza acquisizione, fonte attivata, reset budget, Registry reinstall/restart, merge o releaseAcceptance. Non usare OUF MCP per letture protette/grant prima che la sostituzione/path sia provata; policy48 scaduta, ouf-admin resta l’account selezionato.
+
+## Comando completo del lettore offline
+
+Consegna immutabile ea93c93156e29577538b02b68f6fdbeb8d85f757; eseguire UNA volta. Nessun APPROVO richiesto. Attendere SOLO JSON pubblico e righe finali Exit/Directory/Log e DeliveryExit/DeliveryDirectory/DeliveryLog. STOP vieta rilancio. Questo comando non ripara o riavvia i servizi.
+
+```bash
+bash <<'SH'
+set -euo pipefail
+umask 077
+d=$(mktemp -d "$HOME/ouf-old-mcp-guard-delivery.XXXXXXXX")
+set +e
+(
+  set -euo pipefail
+  curl --fail --location --proto '=https' --tlsv1.2 \
+    --connect-timeout 10 --max-time 60 --retry 0 \
+    'https://raw.githubusercontent.com/GioNob/ouf-deploy/ea93c93156e29577538b02b68f6fdbeb8d85f757/releases/read-acquisition-old-mcp-guard-20261025.sh' \
+    --output "$d/run.sh"
+  printf '%s  %s\n' \
+    'c74dc9a4035838ea340068ec5f70d53bf1712d2d4416a866684628f5b1579999' \
+    "$d/run.sh" | sha256sum --check -
+  bash "$d/run.sh"
+) 2>&1 | tee "$d/bootstrap.log"
+rc=${PIPESTATUS[0]}
+set -e
+printf 'DeliveryExit=%s\nDeliveryDirectory=%s\nDeliveryLog=%s\n' \
+  "$rc" "$d" "$d/bootstrap.log"
+exit "$rc"
+SH
+```
