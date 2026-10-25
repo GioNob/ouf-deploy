@@ -384,7 +384,11 @@ def retained(owner):
     require(response['status']==200 and response['etag']=='"0"','EXACT_RETAINED_OWNER_RESPONSE_REQUIRED')
     draft=json.loads(response['bodyUtf8'])
     validate_draft(draft,candidate,'DRAFT',0)
-    return review,candidate,receipt
+    historical={'lookup':receipt['iamCounts'],'originalPublication':old.get('iamCounts')}
+    for value in historical.values():
+        require(value is None or isinstance(value,dict) and set(value)=={'iamGets','iamPosts','ownerGets','bytes'}
+                and all(type(n) is int and n>=0 for n in value.values()),'BOUNDED_HISTORICAL_IAM_COUNTS_REQUIRED')
+    return review,candidate,receipt,historical
 
 
 def validate_draft(value,candidate,state,revision):
@@ -521,8 +525,8 @@ def main():
                 and stat.S_IMODE(info.st_mode)==0o400 and info.st_nlink==1,'PROTECTED_RESIDUAL_CODE_REQUIRED')
         journal=Journal()
         print('PrivateContext='+str(journal.path),flush=True)
-        old_review,candidate,lookup=retained(operator)
-        journal.row['historicalIamCounts']={'lookup':lookup['iamCounts'],'originalPublicationNotReconstructed':True}
+        old_review,candidate,lookup,historical=retained(operator)
+        journal.row['historicalIamCounts']=historical
         journal.write('lookup-evidence.json',{'lookup':lookup,'originalReviewHash':ORIGINAL_REVIEW_HASH},exclusive=True)
         journal.save()
         dependency=load_login();started=time.monotonic()

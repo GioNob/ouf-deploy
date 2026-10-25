@@ -64,7 +64,9 @@ class ExistingDescriptorResidualOwnerTest {
     if(!"Bearer CI_SYNTHETIC_PRINCIPAL_NOT_IAM".equals(exchange.getRequestHeaders().getFirst("Authorization")))throw new IllegalStateException("CI bearer missing");
     var builder=request(HttpMethod.valueOf(exchange.getRequestMethod()),exchange.getRequestURI())
      .with(r->{TestAuthorization.bind(r,caller.subjectId(),"HUMAN",Set.of("authorization.policy.admin"));r.setAttribute(ServletAuthorization.TRUSTED_PRINCIPAL,new TrustedPrincipal(caller));r.setAttribute("ouf.statelessBearerWriteValidated",true);return r;});
-    exchange.getRequestHeaders().forEach((k,v)->builder.header(k,v.toArray()));
+    // The bridge's bearer is a CI marker, not an IAM credential. MockMvc receives
+    // the explicit synthetic TrustedPrincipal used by the owner's own tests.
+    exchange.getRequestHeaders().forEach((k,v)->{if(!k.equalsIgnoreCase("Authorization"))builder.header(k,v.toArray());});
     var response=http.perform(builder).andReturn().getResponse();
     if(exchange.getRequestURI().getPath().endsWith(":preview"))previews.incrementAndGet();
     if(exchange.getRequestURI().getPath().endsWith(":publish")){
