@@ -5,10 +5,16 @@ def pin(pid):
     try:
         raw=Path('/proc/'+str(pid)+'/stat').read_text();fields=raw[raw.rfind(')')+2:].split();return None if fields[0]in('Z','X','x')else fields[19]
     except (OSError,IndexError):return None
+def read(journal):
+    for attempt in range(8):
+        try:return journal.read()
+        except BlockingIOError:
+            if attempt==7:raise
+            time.sleep(.02)
 def cas(journal,fn):
     for i in range(8):
         try:
-            row=journal.read();next_row=fn(copy.deepcopy(row))
+            row=read(journal);next_row=fn(copy.deepcopy(row))
             if next_row is None:return None
             next_row['version']=row['version']+1;journal.compare_and_save(row,next_row);return next_row
         except (ValueError,BlockingIOError)as e:
@@ -29,7 +35,7 @@ def negative(ctx,review,raw,journal,reason):
     if row is None:return
     ctx.engine.timeout=2
     def check():
-        current=journal.read();core.require(time.time()>=authority['issuedAt']and time.time()<authority['cleanupExpiresAt']and time.monotonic()<current['quarantine']['deadlineMonotonic']and time.time()<current['quarantine']['deadlineWall']and Path('/proc/sys/kernel/random/boot_id').read_text().strip()==review['bootId'],'FINITE_NEGATIVE_LEASE_REQUIRED');ctx.check_sources()
+        current=read(journal);core.require(time.time()>=authority['issuedAt']and time.time()<authority['cleanupExpiresAt']and time.monotonic()<current['quarantine']['deadlineMonotonic']and time.time()<current['quarantine']['deadlineWall']and Path('/proc/sys/kernel/random/boot_id').read_text().strip()==review['bootId'],'FINITE_NEGATIVE_LEASE_REQUIRED');ctx.check_sources()
     def reserve(kind):
         check()
         def change(row):
@@ -64,7 +70,7 @@ def launch(ctx,review,gate,journal):
     try:
         os.close(r);os.setsid();signal.signal(signal.SIGHUP,signal.SIG_IGN);signal.signal(signal.SIGINT,signal.SIG_IGN);null=os.open('/dev/null',os.O_RDONLY);os.dup2(null,0);os.close(null);os.dup2(log,1);os.dup2(log,2);os.close(log);os.write(w,b'READY');os.close(w);last=time.time()
         while True:
-            row=journal.read()
+            row=read(journal)
             if row['state']=='COMPLETE'or row['quarantine']is not None:os._exit(0)
             now=time.time();startup_expired=any(not v.get('readinessProven')and v.get('startupDeadlineMonotonic')is not None and(time.monotonic()>=v['startupDeadlineMonotonic']or now>=v['startupDeadlineWall'])for v in row['candidates'].values());reason='STARTUP_LEASE_EXPIRED'if startup_expired else'CONTROLLER_LOST'if pin(parent)!=parent_pin else'FINITE_LEASE_EXPIRED'if now>=row['expiresAt']or time.monotonic()>=row['expiresMonotonic']else'WALL_CLOCK_REGRESSION'if now<last else None;last=now
             if reason:negative(ctx,review,gate.raw,journal,reason);os._exit(0)

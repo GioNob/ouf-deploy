@@ -130,14 +130,25 @@ class Execution:
         human=self.gate.check();counts=copy.deepcopy(self.ports.ctx.counts)
         require(set(counts)==set(LIMITS)and all(type(v)is int and self.review['preflightCounts'][k]<=v<=LIMITS[k]for k,v in counts.items())and all(counts[k]==0 for k in('engineWrites','imageLoadAttempts','adminPuts','readinessGets','quarantineStops')),'PRESERVED_PREFLIGHT_ATTEMPTS_REQUIRED')
         self.journal.initialize({'schema':'ouf.acquisition-read-native-journal.v1','version':0,'reviewHash':digest(self.review),'authorityHash':sha(self.gate.raw),'nextStage':0,'effects':[],'counts':counts,'candidates':{},'quarantine':None,'expiresAt':human['expiresAt'],'expiresMonotonic':time.monotonic()+max(0,human['expiresAt']-time.time()),'state':'OPEN','automaticReplayAllowed':False,'budgetReset':False})
+    def read_journal(self):
+        for attempt in range(8):
+            try:return self.journal.read()
+            except BlockingIOError:
+                if attempt==7:raise
+                time.sleep(.02)
     def record(self):
-        self.gate.check();row=self.journal.read();n=row['nextStage']
+        self.gate.check();row=self.read_journal();n=row['nextStage']
         require(row['schema']=='ouf.acquisition-read-native-journal.v1'and row['reviewHash']==digest(self.review)and row['authorityHash']==sha(self.gate.raw)and row['quarantine']is None and row['automaticReplayAllowed']is False and row['budgetReset']is False and row['state']=='OPEN'and type(n)is int and 0<=n<=len(STAGES)and len(row['effects'])in(n,n+1)and time.time()<row['expiresAt']and time.monotonic()<row['expiresMonotonic'],'CURRENT_FINITE_ACQUISITION_HISTORY_REQUIRED')
         require(set(row['counts'])==set(LIMITS)and all(type(v)is int and 0<=v<=LIMITS[k]for k,v in row['counts'].items()),'DURABLE_ACQUISITION_BUDGET_REQUIRED')
         for i,e in enumerate(row['effects']):require(e['stage']==STAGES[i]and e['intentHash']==digest({'reviewHash':digest(self.review),'stage':STAGES[i]})and e['state']==('APPLIED'if i<n else'CLAIMED'),'ORDERED_ACQUISITION_EFFECT_HISTORY_REQUIRED')
         return row
     def save(self,row,**changes):
-        following={**row,**changes,'version':row['version']+1};self.journal.compare_and_save(row,following);return following
+        following={**row,**changes,'version':row['version']+1}
+        for attempt in range(8):
+            try:self.journal.compare_and_save(row,following);return following
+            except BlockingIOError:
+                if attempt==7:raise
+                time.sleep(.02)
     def reserve(self,kind):
         row=self.record();require(row['counts'][kind]<LIMITS[kind],'ACQUISITION_OPERATION_BUDGET_EXHAUSTED');counts=copy.deepcopy(row['counts']);counts[kind]+=1;self.save(row,counts=counts)
     def candidate(self,role,**changes):

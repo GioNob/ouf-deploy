@@ -127,7 +127,13 @@ deployment:
     def test_real_native_lifecycle_and_additive_routes(self):
         try:
             self.setup_runtime()
-            result=self.execution.run();self.assertTrue(result['complete']);self.assertFalse(result['applicationE2EProven']);self.assertEqual(result['counts']['imageLoadAttempts'],3);self.assertEqual(result['counts']['adminPuts'],2);self.assertEqual(len(self.api('GET','/apisix/admin/routes')[1]['list']),84);old_mcp=self.ctx.proposal['mcpReplacement']['oldBinding']['containerId'];self.assertFalse(json.loads(self.cli('inspect',old_mcp))[0]['State']['Running'])
+            try:result=self.execution.run()
+            except BaseException:
+                row=self.execution.journal.read();print('FixtureFailureStage='+str(row['nextStage']),flush=True)
+                for role,candidate in row['candidates'].items():
+                    actual=json.loads(self.cli('inspect',candidate['id']))[0];wanted=self.native_ports.proposal(role)['request']['HostConfig'];diff=[{'field':k,'expectedType':type(v).__name__,'observedType':type(actual['HostConfig'].get(k)).__name__,'expected':v,'observed':actual['HostConfig'].get(k)}for k,v in wanted.items()if actual['HostConfig'].get(k)!=v];print(json.dumps({'fixtureRole':role,'hostDifferences':diff}),flush=True)
+                raise
+            self.assertTrue(result['complete']);self.assertFalse(result['applicationE2EProven']);self.assertEqual(result['counts']['imageLoadAttempts'],3);self.assertEqual(result['counts']['adminPuts'],2);self.assertEqual(len(self.api('GET','/apisix/admin/routes')[1]['list']),84);old_mcp=self.ctx.proposal['mcpReplacement']['oldBinding']['containerId'];self.assertFalse(json.loads(self.cli('inspect',old_mcp))[0]['State']['Running'])
             for role in('ingestion','udp','postgres','gateway'):self.assertEqual(self.p.stable_binding(json.loads(self.cli('inspect',self.old[role]['Id']))[0]),self.ctx.proposal['existingApplications'][role])
             self.ctx.watch.negative(self.ctx,self.review,self.gate.raw,self.execution.journal,'CI_ALREADY_COMMITTED');self.assertEqual(self.execution.journal.read()['state'],'COMPLETE')
             print(json.dumps({'schema':'ouf.synthetic-native-acquisition-apply-ci.v1','complete':True,'profile':self.ctx.native['imageIdentityProfile'],'realEd25519DualSignatures':True,'realEngineImagesLoaded':3,'realCandidatesCreatedAndStarted':3,'realApisixOldRouteCount':82,'realApisixAddedRouteCount':2,'originalWorkersUnchanged':True,'singleMcpManager':True,'completedNegativeLeaseDoesNothing':True,'productionRuntimeAccess':False}),flush=True)
