@@ -1,0 +1,34 @@
+name: Retained legacy MAC mandatory lifecycle
+on:
+  push:
+    branches: [fix/registry-bound-owner-lineage-20261023]
+    paths: ['tools/acquisition_read_native/retained_mac.py','tests/test_retained_mac_transition.py','tests/qualify_retained_legacy_mac_lifecycle.py','.github/workflows/retained-legacy-mac.yml']
+  pull_request:
+    paths: ['tools/acquisition_read_native/retained_mac.py','tests/test_retained_mac_transition.py','tests/qualify_retained_legacy_mac_lifecycle.py','.github/workflows/retained-legacy-mac.yml']
+permissions: {contents: read}
+jobs:
+  lifecycle:
+    strategy:
+      fail-fast: false
+      matrix:
+        store: [classic, containerd]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Exact transition rejection matrix
+        run: python3 -m unittest discover -s tests -p test_retained_mac_transition.py -v
+      - name: Select disposable hosted Engine store
+        env: {SELECTED_STORE: '${{ matrix.store }}'}
+        run: |
+          sudo --preserve-env=SELECTED_STORE python3 - <<'PY_CONFIG'
+          import json,os
+          from pathlib import Path
+          path=Path('/etc/docker/daemon.json');value=json.loads(path.read_text())if path.exists()else{}
+          value.setdefault('features',{})['containerd-snapshotter']=os.environ['SELECTED_STORE']=='containerd'
+          path.write_text(json.dumps(value))
+          PY_CONFIG
+          sudo systemctl restart docker
+      - name: Legacy Config MAC present then missing plus endpoint transfer real API1.44
+        run: sudo python3 -I -S -B tests/qualify_retained_legacy_mac_lifecycle.py
