@@ -1,6 +1,6 @@
 {
   "schema": "ouf.acquisition-governed-read-role-plan.v1",
-  "state": "BLOCKED_DESCRIPTOR_PREFLIGHT_AFTER_REJECTED_PROPOSAL",
+  "state": "BLOCKED_FIVE_MISSING_DESCRIPTORS_REGISTERED_AND_ACTIVE_PROVEN",
   "tenantId": "ouf-lab",
   "issuer": "https://auth.ouf-lab.it/realms/ouf",
   "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
@@ -365,7 +365,7 @@
   "newGrantPublished": false,
   "newBudgetOrAcquisition": false,
   "requiredToolsCurrentlyMissingInThisConnection": [],
-  "next": "Execute only the qualified read-only HUMAN descriptor preflight once; diagnose registered vs ACTIVE/HUMAN descriptors before any new role proposal. Source acquisition and installation scopes remain consumed.",
+  "next": "First execute qualified additive HUMAN descriptor publication through the existing admin API; verify result and unchanged roles. Separately verify/govern required OAuth scopes before new finite two-run THS role proposal; do not retry denied acquisition read blind.",
   "existingConfiguredGrantAmongSix": {
     "grantId": "grant-recovery-ingestion-run-read-ouf-lab-b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
     "capabilityId": "ingestion.run.read",
@@ -378,5 +378,15 @@
   "proposalReceiptReceived": false,
   "proposalError": "AUTH_ROLE_CAPABILITY_INVALID",
   "firstIngestionReadDeniedRetryableFalse": true,
-  "freshDescriptorPreflightRequired": true
+  "freshDescriptorPreflightRequired": true,
+  "descriptorReadComplete": true,
+  "missingRegisteredAndActiveDescriptors": [
+    "ingestion.contract.read",
+    "ingestion.lineage.read",
+    "urban.object.read",
+    "lineage.object.read",
+    "lineage.property.read"
+  ],
+  "descriptorPublicationTargetExecuted": false,
+  "mcpOAuthScopesVerified": false
 }
