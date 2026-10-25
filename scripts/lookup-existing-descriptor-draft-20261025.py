@@ -257,8 +257,14 @@ def bounded_read(argv, sql):
                     require(len(selected)+len(block) <= maximum, 'BOUNDED_NATIVE_SQL_RESPONSE_REQUIRED')
                     selected.extend(block)
         status = proc.wait(timeout=max(.01, deadline-time.monotonic()))
-        require(status == 0 and not err and out, 'NATIVE_SQL_UNPROVEN_NO_REPLAY')
-        return json.loads(out)
+        try:
+            require(status == 0 and not err and out, 'NATIVE_SQL_UNPROVEN_NO_REPLAY')
+            return json.loads(out)
+        except Exception:
+            failure = Stop('NATIVE_SQL_UNPROVEN_NO_REPLAY')
+            failure.native_evidence = {'exitStatus':status, 'stdoutUtf8':out.decode('utf-8',errors='replace'),
+                                       'stderrUtf8':err.decode('utf-8',errors='replace')}
+            raise failure from None
     finally:
         if proc.poll() is None: os.killpg(proc.pid, signal.SIGKILL)
         proc.wait(timeout=5)
@@ -408,7 +414,11 @@ def observe(journal, candidate, p, owner, native=bounded_read, inspect=current_p
         'historicalAuthorityReused': False, 'automaticReplayAllowed': False})
     journal.reserve('nativeSqlSessionAttempts', 1)
     journal.reserve('containerExecAttempts', 1)
-    report = native(arguments(p, config), sql)
+    try:
+        report = native(arguments(p, config), sql)
+    except Stop as error:
+        if hasattr(error, 'native_evidence'): journal.write('database-response.json', error.native_evidence)
+        raise
     journal.write('database-response.json', report)  # UUID retained BEFORE selection/guards.
     inspect(p, journal)
     require(not os.listdir(config), 'EMPTY_DOCKER_CONFIG_CHANGED')

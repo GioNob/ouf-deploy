@@ -92,7 +92,12 @@ GRANT SELECT ON ouf_authorization.policy_draft,ouf_authorization.admin_audit,
             "INSERT INTO ouf_authorization.admin_audit VALUES('00000000-0000-4000-8000-000000000099','CREATE_DRAFT','"+self.selected['id']+"','"+m.SUBJECT+"','"+m.TENANT+"','HUMAN','decision:synthetic-not-policy-ref','synthetic',now());")
 
     def tearDown(self): self.patch.stop()
-    def run_lookup(self, **kwargs): return m.observe(self.j,self.candidate,self.p,self.owner,**kwargs)
+    def run_lookup(self, **kwargs):
+        try:return m.observe(self.j,self.candidate,self.p,self.owner,**kwargs)
+        except m.Stop as error:
+            if hasattr(error,'native_evidence'):
+                print('SYNTHETIC_CI_NATIVE_DIAGNOSTIC='+str(error.native_evidence['exitStatus'])+':'+error.native_evidence['stderrUtf8'],flush=True)
+            raise
 
     def test_actual_lookup_and_owner_zero_revision(self):
         result = self.run_lookup()
