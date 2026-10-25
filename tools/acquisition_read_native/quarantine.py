@@ -72,11 +72,12 @@ def launch(ctx,review,gate,journal):
         while True:
             # Atomic publication guarantees either complete immutable version.
             # Monitoring has no mutation authority and never needs the CAS lock.
-            journal.check_directory();row=journal.private_read();journal.check_directory()
+            journal.check_directory();row=journal.published_snapshot();journal.check_directory()
             if row['state']=='COMPLETE'or row['quarantine']is not None:os._exit(0)
             now=time.time();startup_expired=any(not v.get('readinessProven')and v.get('startupDeadlineMonotonic')is not None and(time.monotonic()>=v['startupDeadlineMonotonic']or now>=v['startupDeadlineWall'])for v in row['candidates'].values());reason='STARTUP_LEASE_EXPIRED'if startup_expired else'CONTROLLER_LOST'if pin(parent)!=parent_pin else'FINITE_LEASE_EXPIRED'if now>=row['expiresAt']or time.monotonic()>=row['expiresMonotonic']else'WALL_CLOCK_REGRESSION'if now<last else None;last=now
             if reason:negative(ctx,review,gate.raw,journal,reason);os._exit(0)
             time.sleep(.25)
-    except BaseException:
-        try:ctx.write(ctx.root,'watchdog-unproven.json',{'status':'STOP_RECONCILE','negativeEffectMayBePartial':True,'automaticReplayAllowed':False})
+    except BaseException as error:
+        reason=str(error)if re.fullmatch('[A-Z0-9_]{1,120}',str(error))else'WATCHDOG_INTERNAL_STATE_UNPROVEN'
+        try:ctx.write(ctx.root,'watchdog-unproven.json',{'status':'STOP_RECONCILE','reasonCode':reason,'negativeEffectMayBePartial':True,'automaticReplayAllowed':False})
         finally:os._exit(2)

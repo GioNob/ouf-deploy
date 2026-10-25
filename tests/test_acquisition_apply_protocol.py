@@ -60,6 +60,39 @@ class Protocol(unittest.TestCase):
             if len(attempts)==1:raise BlockingIOError()
             return original()
         e.journal.read=busy;row=e.record();self.assertEqual(row['effects'],[]);self.assertEqual(row['counts']['engineWrites'],0);self.assertEqual(len(attempts),2)
+    def test_monitor_retries_only_proven_atomic_unlink_race(self):
+        from unittest.mock import patch
+        journal=self.journal.Journal(self.execution_root);journal.initialize({'version':0,'counts':{'unchanged':9}})
+        real_fstat=os.fstat;old_inode=journal.record.stat().st_ino;replaced=[]
+        def replace_during_fstat(fd):
+            s=real_fstat(fd)
+            if s.st_ino==old_inode and not replaced:
+                replaced.append(True);path=self.execution_root/'next-record';journal.create(path,self.core.encoded({'version':1,'counts':{'unchanged':9}}));os.replace(path,journal.record);journal.sync();return real_fstat(fd)
+            return s
+        with patch.object(self.journal.os,'fstat',replace_during_fstat):self.assertEqual(journal.published_snapshot(),{'version':1,'counts':{'unchanged':9}})
+        self.assertEqual(replaced,[True]);os.link(journal.record,self.execution_root/'hardlink')
+        with self.assertRaisesRegex(ValueError,'CUSTODY'):journal.published_snapshot()
+    def test_legacy_monitor_race_reproduced_with_real_filesystem(self):
+        from unittest.mock import patch
+        journal=self.journal.Journal(self.execution_root);journal.initialize({'version':0});real_fstat=os.fstat;old_inode=journal.record.stat().st_ino;replaced=[]
+        def replace_during_fstat(fd):
+            s=real_fstat(fd)
+            if s.st_ino==old_inode and not replaced:
+                replaced.append(True);path=self.execution_root/'next-record';journal.create(path,self.core.encoded({'version':1}));os.replace(path,journal.record);return real_fstat(fd)
+            return s
+        with patch.object(self.journal.os,'fstat',replace_during_fstat):
+            with self.assertRaisesRegex(ValueError,'RECOVERY_FILE_CUSTODY_REQUIRED'):journal.private_read()
+    def test_monitor_read_replacement_race_is_bounded(self):
+        from unittest.mock import patch
+        journal=self.journal.Journal(self.execution_root);journal.initialize({'version':0});real_fstat=os.fstat;replaced=[]
+        def replace_during_fstat(fd):
+            s=real_fstat(fd)
+            if s.st_ino==journal.record.stat().st_ino:
+                replaced.append(True);path=self.execution_root/('next-record-'+str(len(replaced)));journal.create(path,self.core.encoded({'version':len(replaced)}));os.replace(path,journal.record);return real_fstat(fd)
+            return s
+        with patch.object(self.journal.os,'fstat',replace_during_fstat):
+            with self.assertRaisesRegex(ValueError,'CONTENTION_EXHAUSTED'):journal.published_snapshot()
+        self.assertEqual(len(replaced),8)
     def test_oom_enabled_default_never_allows_disabling_oom(self):
         match=self.parts['engine_creation'].requested_host_config_matches
         self.assertTrue(match({'Memory':536870912,'OomKillDisable':None},{'Memory':536870912,'OomKillDisable':False},started=True))

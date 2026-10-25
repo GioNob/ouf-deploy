@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import stat
+import time
 import uuid
 
 def require(ok, code):
@@ -116,6 +117,41 @@ class Journal:
 
     def read(self):
         with self.transaction(): return self.private_read()
+
+    def published_snapshot(self):
+        """Bounded monitor read of an atomic replacement, without taking the CAS lock.
+
+        An opened record can be unlinked by the publisher before fstat. Such an
+        FD is never returned or treated as a valid custody profile. Retry only
+        when a different, fully custodied record now occupies the bound path.
+        """
+        for attempt in range(8):
+            self.check_directory()
+            fd = os.open(self.record, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+            replaced = False
+            try:
+                s = os.fstat(fd)
+                require(stat.S_ISREG(s.st_mode) and s.st_uid == self.uid and s.st_gid == self.gid
+                        and stat.S_IMODE(s.st_mode) == 0o600 and 0 <= s.st_size <= 65536,
+                        'RECOVERY_FILE_CUSTODY_REQUIRED')
+                require(s.st_nlink in (0, 1), 'RECOVERY_FILE_CUSTODY_REQUIRED')
+                current = self.record.lstat(); self.check_file(current)
+                replaced = (s.st_dev, s.st_ino) != (current.st_dev, current.st_ino)
+                require(s.st_nlink == 1 or replaced, 'RECOVERY_FILE_CUSTODY_REQUIRED')
+                if not replaced:
+                    raw = os.read(fd, 65537); end = os.fstat(fd)
+                    require(len(raw) == s.st_size and (s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns)
+                            == (end.st_dev,end.st_ino,end.st_size,end.st_mtime_ns), 'RECOVERY_RECORD_CHANGED')
+                    current = self.record.lstat(); self.check_file(current)
+                    replaced = (end.st_dev,end.st_ino) != (current.st_dev,current.st_ino)
+                    if not replaced:
+                        self.check_file(end); self.check_directory()
+                        return json.loads(raw, object_pairs_hook=unique)
+            finally:
+                os.close(fd)
+            require(replaced, 'RECOVERY_SNAPSHOT_UNPROVEN')
+            if attempt < 7: time.sleep(.002)
+        raise ValueError('RECOVERY_SNAPSHOT_PUBLICATION_CONTENTION_EXHAUSTED')
 
     def compare_and_save(self, previous, value):
         raw = encoded(value)
