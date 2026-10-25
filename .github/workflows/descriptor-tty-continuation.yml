@@ -26,6 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - run: python3 -I -S -B -m unittest discover -s tests -p test_descriptor_tty_continuation.py -v
+      - run: sudo mkdir -m 0700 /var/lib/ouf-tty-continuation-custody-ci
+      - run: sudo env RESIDUAL_TEST_ROOT=/var/lib/ouf-tty-continuation-custody-ci /usr/bin/python3 -I -S -B tests/qualify_descriptor_tty_continuation_custody.py
   deployed-owner-java21-pg17:
     runs-on: ubuntu-24.04
     timeout-minutes: 20

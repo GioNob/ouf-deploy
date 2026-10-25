@@ -1,0 +1,100 @@
+"""Actual root/nonroot filesystem and delivery custody; all histories synthetic."""
+import copy
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import tempfile
+import unittest
+from unittest.mock import patch
+import importlib.util
+
+ROOT=Path(__file__).resolve().parents[1]
+spec=importlib.util.spec_from_file_location('residual_protocol_fixtures',ROOT/'tests/test_existing_descriptor_residual_publication.py')
+f=importlib.util.module_from_spec(spec);spec.loader.exec_module(f)
+spec_new=importlib.util.spec_from_file_location('tty_continuation_custody',ROOT/'scripts/continue-existing-descriptor-publication-tty-20261026.py')
+m=importlib.util.module_from_spec(spec_new);spec_new.loader.exec_module(m)
+
+
+class CustodyTests(unittest.TestCase):
+    def setUp(self):
+        assert os.geteuid()==0,'actual root mandatory; no skips'
+        self.temp=tempfile.TemporaryDirectory(dir=os.environ.get('RESIDUAL_TEST_ROOT',str(ROOT)))
+        self.base=Path(self.temp.name)
+        self.owner=f.SyntheticOwner();self.candidate=copy.deepcopy(self.owner.draft['policy'])
+        self.review={'candidatePolicy':self.candidate,'baselineGrantCount':106,
+            'baselineGrantsHash':m.digest(self.candidate['grants']),
+            'baselineCapabilitiesHash':m.digest(self.owner.current['policy']['capabilities'])}
+        self.original=self.base/'original';self.original.mkdir(mode=0o700)
+        self.lookup=self.base/'lookup';self.lookup.mkdir(mode=0o700)
+        self.lookup_result={'complete':True,'draftId':self.owner.draft['id'],'draftRevision':0,
+            'candidatePolicyHash':m.digest(self.candidate),'counts':m.LOOKUP_COUNTS,'continuationAuthorized':False,
+            'publishRequests':0,'draftsCreated':0,'iamCounts':{'iamGets':1,'iamPosts':10,'ownerGets':0,'bytes':13166}}
+        self.old={'reviewHash':m.digest(self.review),'humanReviewApproved':True,'state':'STOP_RECONCILE',
+            'automaticReplayAllowed':False,'budgetReset':False,
+            'counts':{'ownerGets':6,'administrativeWrites':6,'previewPosts':0,'bytes':346780},
+            'iamCounts':{'iamGets':1,'iamPosts':7,'ownerGets':0,'bytes':13000},
+            'effects':{'CREATE_DRAFT':{'state':'CLAIMED','bodyHash':m.digest(self.candidate)},
+                       **{'REGISTER:'+cap:{'state':'APPLIED','bodyHash':'f'*64} for cap in m.MISSING}}}
+        def write(path,value,owner):
+            path.write_text(json.dumps(value));path.chmod(0o600);os.chown(path,owner,owner)
+        write(self.original/'review.json',self.review,65534)
+        write(self.original/'state.json',self.old,65534)
+        os.chown(self.original,65534,65534)
+        write(self.lookup/'result.json',self.lookup_result,0)
+        write(self.lookup/'state.json',{'state':'COMPLETE','counts':m.LOOKUP_COUNTS,'draftId':self.owner.draft['id'],
+              'nativeSqlSessionAttempts':1,'containerExecAttempts':1,'engineGets':2},0)
+        write(self.lookup/'owner-draft-response.json',{'status':200,'etag':'"0"','bodyUtf8':json.dumps(self.owner.draft)},0)
+        self.failed=self.base/'expired';self.failed.mkdir(mode=0o700)
+        self.preview={'draftId':self.owner.draft['id'],'revision':0,'baseActiveRef':m.BASE_REF,
+            'activeHash':'sha256:'+m.BASE_HASH,'draftHash':'sha256:'+m.digest(self.candidate),
+            'addedCapabilities':[m.registration(cap)['descriptor'] for cap in m.MISSING],
+            'removedCapabilities':[],'grantChanges':[],'authoritative':False}
+        previous={'draftId':self.owner.draft['id'],'draftRevision':0,'candidatePolicy':self.candidate,
+                  'countsAtReview':m.INHERITED,'initialOwnerPreview':self.preview}
+        write(self.failed/'review.json',previous,0)
+        write(self.failed/'state.json',{'state':'STOP_RECONCILE','reasonCode':'FINITE_HUMAN_WINDOW_EXPIRED',
+              'humanReviewApproved':False,'effects':{},'counts':m.INHERITED,'reviewHash':m.digest(previous),
+              'iamCounts':{'iamGets':1,'iamPosts':11,'ownerGets':0,'bytes':14000}},0)
+        write(self.failed/'initial-preview-response.json',{'status':200,'truncated':False,'bodyUtf8':json.dumps(self.preview)},0)
+        self.patches=patch.multiple(m,FAILED_SCOPE=str(self.failed),FAILED_REVIEW_HASH=m.digest(previous),ORIGINAL=str(self.original),LOOKUP=str(self.lookup),
+            ORIGINAL_REVIEW_HASH=m.digest(self.review),LOOKUP_RESULT_HASH=m.digest(self.lookup_result),
+            DRAFT_ID=self.owner.draft['id'],CANDIDATE_HASH=m.digest(self.candidate))
+        self.patches.start()
+    def tearDown(self):self.patches.stop();self.temp.cleanup()
+    def test_exact_retained_inputs_and_iam_histories(self):
+        review,candidate,result,historical,preview=m.retained(65534)
+        self.assertEqual(candidate,self.candidate)
+        self.assertEqual(result['counts'],m.LOOKUP_COUNTS)
+        self.assertEqual(preview,self.preview)
+        self.assertEqual(historical['expiredResidualPublication']['iamPosts'],11)
+        self.assertEqual(historical['lookup']['iamPosts'],10)
+        self.assertEqual(historical['originalPublication']['iamPosts'],7)
+    def test_wrong_result_or_original_counters_denied(self):
+        path=self.lookup/'result.json';value=json.loads(path.read_text());value['counts']['ownerGets']=0
+        path.write_text(json.dumps(value))
+        with self.assertRaises(m.Stop):m.retained(65534)
+    def test_private_symlinks_and_modes_denied(self):
+        path=self.lookup/'state.json';raw=path.read_bytes();path.unlink()
+        target=self.lookup/'unrelated.json';target.write_bytes(raw);target.chmod(0o600);path.symlink_to(target)
+        with self.assertRaises(OSError):m.retained(65534)
+        path.unlink();path.write_bytes(raw);path.chmod(0o644)
+        with self.assertRaises(m.Stop):m.retained(65534)
+    def test_original_files_not_changed_and_no_scope_replay(self):
+        paths=[self.original/'review.json',self.original/'state.json',self.lookup/'result.json',self.lookup/'state.json',self.lookup/'owner-draft-response.json']
+        before={str(p):(p.read_bytes(),p.stat().st_mtime_ns,p.stat().st_ctime_ns) for p in paths}
+        m.retained(65534)
+        self.assertEqual(before,{str(p):(p.read_bytes(),p.stat().st_mtime_ns,p.stat().st_ctime_ns) for p in paths})
+        prior=os.umask(0o077)
+        try:j=m.Journal(self.base/'one');j.write('result.json',{'private':True},exclusive=True)
+        finally:os.umask(prior)
+        self.assertEqual(j.path.stat().st_mode&0o777,0o700)
+        self.assertEqual((j.path/'result.json').stat().st_mode&0o777,0o600)
+        with self.assertRaises(m.Stop):m.Journal(j.path)
+        denied=subprocess.run(['setpriv','--reuid=65534','--regid=65534','--clear-groups','cat',str(j.path/'result.json')],capture_output=True)
+        self.assertNotEqual(denied.returncode,0)
+
+
+if __name__=='__main__':unittest.main(verbosity=2)
