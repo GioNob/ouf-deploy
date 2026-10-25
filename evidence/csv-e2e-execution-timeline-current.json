@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-25T14:46:09.420Z",
+  "lastUpdatedAt": "2026-10-25T15:09:46.845Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -2352,6 +2352,17 @@
       "targetAuthorityIssued": false,
       "retainedOfflineReconciliationObserved": false,
       "noEffortAllocationInferred": true
+    },
+    {
+      "type": "UNAPPROVED_REVIEW_RECONCILIATION_TARGET_AND_CUMULATIVE_CONTINUATION_CI_QUALIFIED",
+      "recordedAt": "2026-10-25T15:09:46.845Z",
+      "occurredAt": null,
+      "targetEvidence": "evidence/acquisition-unapproved-review-reconciled-target-20261025.json",
+      "qualificationEvidence": "evidence/acquisition-reconciled-continuation-qualified-20261025.json",
+      "continuationExecuted": false,
+      "originalScopeConsumed": true,
+      "readerScopeConsumed": true,
+      "noEffortAllocationInferred": true
     }
   ],
   "activeIntervals": [
@@ -3151,7 +3162,7 @@
       "nativeProfilePublished": true
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "STOP_RECONCILE_EXACT_ACQUISITION_REVIEW_NOT_APPROVED",
+    "latestOperatorConfirmedOperation": "UNAPPROVED_ACQUISITION_REVIEW_RECONCILED_NO_AUTHORITY",
     "latestOperatorConfirmedOperationPolicyMutations": 0,
     "loginPerformedScope": "COMPLETED_FRESH_STAGE18_HUMAN_PROVIDER_VERIFICATION_AT292_NO_CURRENT_AUTHORITY_INFERRED",
     "newHumanLoginPerformed": true,
@@ -3159,7 +3170,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_ACQUISITION_UNAPPROVED_REVIEW_STOP_20261025.md",
+    "currentHandoff": "docs/handoffs/OUF_ACQUISITION_RECONCILED_CONTINUATION_20261025.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 304,
@@ -3367,7 +3378,7 @@
       "sourceActivations": 0,
       "evidenceRef": "evidence/onboarding-v35-existing-create-target-20261024.json"
     },
-    "currentRequiredHumanAction": "RUN_QUALIFIED_RETAINED_OFFLINE_READER_ONCE_NO_APPROVAL_NO_APPLY",
+    "currentRequiredHumanAction": "ONE_PINNED_CUMULATIVE_CONTINUATION_WITH_FRESH_EXACT_TERMINAL_APPROVAL_BEFORE_ADDITIONAL_CREDENTIAL_READ",
     "oauthCounterScope": "LEGACY_HUMAN_SESSION_304_DISTINCT_FROM_NORMAL_REGISTRY_OWNER_420_AND_ONBOARDING_DEPLOYMENT_COUNTS",
     "onboardingV35Target": {
       "status": "ONBOARDING_V35_EXISTING_CANDIDATE_RECOVERED_SOURCE_PRESERVED",
@@ -3435,7 +3446,7 @@
       "isFullApplicationAcceptance": false
     },
     "acquisitionNativeReadDeployment": {
-      "status": "STOP_RECONCILE_UNAPPROVED_REVIEW",
+      "status": "RECONCILED_NO_AUTHORITY_CUMULATIVE_CONTINUATION_QUALIFIED_AWAITING_TTY",
       "nativePreparationCompleted": true,
       "nativePreparationEvidence": "evidence/acquisition-native-execution-inputs-target-20261025.json",
       "nativeInputsHash": "5fa62e4f6869a6f40fb512878dcf65dcb6ffaf941be487e4189826f418046591",
@@ -3456,14 +3467,31 @@
       "operatorResultTimestamp": null,
       "operatorResultTimestampReason": "Operator receipt has no wall timestamp; no target time invented.",
       "latestLogs": {
-        "operator": "/home/oufadmin/ouf-acquisition-native-apply.bg9Pmstk/operator.log",
-        "delivery": "/home/oufadmin/ouf-acquisition-apply-delivery.Tqy5Vf6a/bootstrap.log"
+        "operator": "/home/oufadmin/ouf-acquisition-unapproved-read.Kcq0jQFj/operator.log",
+        "delivery": "/home/oufadmin/ouf-unapproved-read-delivery.v9qiMRfa/bootstrap.log"
       },
-      "next": "Offline retained reconciliation only; no old launcher replay, no new credential read, no counter reset.",
+      "next": "First invocation of fixed continuation child; fresh terminal review before new credential read. No old entry replay.",
       "targetApplyCompleted": false,
       "reviewHash": "4cdc8631745c00589e89c4763b34f57451032be714d168447df998dbbd1da328",
       "scopeConsumed": true,
-      "retainedOfflineReconciliationObserved": false
+      "retainedOfflineReconciliationObserved": true,
+      "continuationSource": "a21f5bda87ee7ed2e499338d842cd207ba956b3c",
+      "continuationExecuted": false,
+      "retainedPreflightCounts": {
+        "adminGets": 1,
+        "adminPuts": 0,
+        "engineGets": 9,
+        "engineWrites": 0,
+        "imageLoadAttempts": 0,
+        "ownerConfigurationReads": 5,
+        "quarantineStops": 0,
+        "readinessGets": 0,
+        "serviceCredentialFileReads": 1
+      },
+      "additionalCredentialReadProposed": 1,
+      "cumulativeCredentialReadMaximumProposed": 2,
+      "additionalReadAuthorizedByAgent": false,
+      "allOtherMaximumsUnchanged": true
     }
   },
   "unverifiedIntervals": [
@@ -5323,14 +5351,13 @@
         }
       }
     },
-    "currentRequiredHumanAction": "QUALIFIED_OFFLINE_RETAINED_RECONCILIATION_ONLY_NO_APPLY",
+    "currentRequiredHumanAction": "ONE_PINNED_CUMULATIVE_CONTINUATION_WITH_FRESH_EXACT_TERMINAL_APPROVAL_BEFORE_ADDITIONAL_CREDENTIAL_READ",
     "additionalCandidateBlockers": [
-      "REJECTED_REVIEW_ORIGINAL_APPLY_SCOPE_CONSUMED",
-      "RETAINED_PREFLIGHT_COUNTS_AND_NO_AUTHORITY_MARKERS_PENDING_OFFLINE_RECONCILIATION",
-      "ADMIN_CREDENTIAL_READ_BUDGET_ALREADY_CONSUMED_NO_RESET_OR_IMPLICIT_REREAD",
-      "SIX_OWNER_READ_PERMISSIONS_AFTER_PROVEN_INSTALLATION_ONLY"
+      "CURRENT_CUMULATIVE_RUNTIME_MANDATE_REQUIRES_EXACT_TERMINAL_REVIEW",
+      "TARGET_CONTINUATION_INSTALLATION_AND_OWNER_READ_GRANTS_PENDING",
+      "LIVE_ACK_WATERMARK_PROPERTY_PROOF_PENDING"
     ],
-    "currentAgentWork": "RECONCILE_REJECTED_REVIEW_BEFORE_ANY_NEW_CUMULATIVE_MANDATE",
+    "currentAgentWork": "AWAIT_REAL_TERMINAL_CUMULATIVE_CONTINUATION_RESULT_NO_REPLAY",
     "readGrantCurrentValidity": "EXPIRED_AFTER_2026_10_25T07_10_14_933Z_DO_NOT_USE"
   },
   "unsegmentedFollowupWindows": [
