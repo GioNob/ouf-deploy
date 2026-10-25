@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-25T08:31:52.019Z",
+  "lastUpdatedAt": "2026-10-25T13:25:22Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -2327,6 +2327,20 @@
       "evidenceRef": "evidence/acquisition-read-native-plan-qualified-20261025.json",
       "targetEvidence": false,
       "noEffortAllocationInferred": true
+    },
+    {
+      "recordedAt": "2026-10-25T13:25:22Z",
+      "occurredAt": null,
+      "type": "NATIVE_EXECUTION_PREPARATION_RECEIPT_AND_SIGNED_CONTROLLER_CI_QUALIFIED",
+      "scope": "ACQUISITION_READ_EVIDENCE",
+      "evidence": "evidence/acquisition-native-execution-inputs-target-20261025.json",
+      "qualificationEvidence": "evidence/acquisition-read-native-apply-qualified-20261025.json",
+      "nativeInputsHash": "5fa62e4f6869a6f40fb512878dcf65dcb6ffaf941be487e4189826f418046591",
+      "sourceCommit": "57424c1b8eea486cd7d1f2d88e7184791220b61e",
+      "targetApplyExecuted": false,
+      "targetAuthorityIssued": false,
+      "applicationE2EProven": false,
+      "releaseAcceptance": false
     }
   ],
   "activeIntervals": [
@@ -3134,7 +3148,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_RESUME_PROMPT_20261024.md",
+    "currentHandoff": "docs/handoffs/OUF_ACQUISITION_EVIDENCE_READ_HANDOFF_20261025.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 304,
@@ -3342,7 +3356,7 @@
       "sourceActivations": 0,
       "evidenceRef": "evidence/onboarding-v35-existing-create-target-20261024.json"
     },
-    "currentRequiredHumanAction": "NONE_FOR_COMPLETED_POLICY48_PUBLICATION_OR_SOURCE_ACTIVATION",
+    "currentRequiredHumanAction": "Inspect and approve the exact new native deployment review in controlling terminal; no source budget or activation",
     "oauthCounterScope": "LEGACY_HUMAN_SESSION_304_DISTINCT_FROM_NORMAL_REGISTRY_OWNER_420_AND_ONBOARDING_DEPLOYMENT_COUNTS",
     "onboardingV35Target": {
       "status": "ONBOARDING_V35_EXISTING_CANDIDATE_RECOVERED_SOURCE_PRESERVED",
@@ -3408,6 +3422,33 @@
       "distinctSucceededRunsObserved": 2,
       "evidenceRef": "evidence/csv-post-activation-ingestion-owner-20261025.json",
       "isFullApplicationAcceptance": false
+    },
+    "acquisitionNativeReadDeployment": {
+      "status": "QUALIFIED_NATIVE_APPLY_DELIVERY_AWAITING_OPERATOR_TERMINAL_REVIEW",
+      "nativePreparationCompleted": true,
+      "nativePreparationEvidence": "evidence/acquisition-native-execution-inputs-target-20261025.json",
+      "nativeInputsHash": "5fa62e4f6869a6f40fb512878dcf65dcb6ffaf941be487e4189826f418046591",
+      "nativeProposalHash": "572da163cd8cb645762edc06b88aa0c54e34929824f888404563ac018795d595",
+      "frozenPlanHash": "47b206e2eb602c115ef9c7c67937f2b2aeeff645fb8b56347c81f546a4ba60ca",
+      "sourceCommit": "57424c1b8eea486cd7d1f2d88e7184791220b61e",
+      "sourceManifestSha256": "49ef56c773b4bbb46e7be329931e41a3780fe58d022ff5d284b886c6cf0c0fe5",
+      "qualificationEvidence": "evidence/acquisition-read-native-apply-qualified-20261025.json",
+      "targetAuthorityIssued": false,
+      "targetApplyExecuted": false,
+      "applicationE2EProven": false,
+      "registryWorkerTouched": false,
+      "newSourceActivationOrBudgetGranted": false,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "releaseAcceptance": false,
+      "existingScopesConsumed": true,
+      "operatorResultTimestamp": null,
+      "operatorResultTimestampReason": "Operator receipt has no wall timestamp; no target time invented.",
+      "latestLogs": {
+        "operator": "/home/oufadmin/ouf-acquisition-native-inputs.njFeXbyH/operator.log",
+        "delivery": "/home/oufadmin/ouf-native-inputs-delivery.1RUOKIFi/bootstrap.log"
+      },
+      "next": "Run pinned reviewed delivery once; fresh concrete private review/TTY exact APPROVO before effects; then governed E2E6scope HUMAN grant only when path ready; Supervisor after E2E."
     }
   },
   "unverifiedIntervals": [
@@ -4938,6 +4979,178 @@
       "automaticReplayAllowed": false,
       "budgetReset": false,
       "normalMcpBootstrapOAuthExpectedOnlyInFutureReviewedReplacement": true
+    },
+    "acquisitionNativeReadApply": {
+      "schema": "ouf.acquisition-read-native-apply-qualified.v1",
+      "sourceCommit": "57424c1b8eea486cd7d1f2d88e7184791220b61e",
+      "sourceManifestSha256": "49ef56c773b4bbb46e7be329931e41a3780fe58d022ff5d284b886c6cf0c0fe5",
+      "sourceHashes": {
+        "apply.py": "4be58b96861d4123202036157ef353c90377f9b840f5f0c395f0ef2f7c480489",
+        "native_prepare.py": "f60ab449bb694465d520bfe40d1b992279df7391c8191c341fc43a6e10b11de1",
+        "runtime_binding.py": "291daecc2b541a7c7410cd9f7c22ec7fccc82568ae67b21b78148f939035c7de",
+        "protocol.py": "6e06d008aa2acc95c93be57dc7c27ac0c35f571fdefc5a6cefdcd2e338b83bbd",
+        "transport.py": "775b8d57f46c6f6a1dfb84bae5681a4751fb2a6d4cdac74324e6bac7773ec539",
+        "ports.py": "957d4db1429add9cf100a95692e3f1915abe2c4df0a489735a466601ca373acb",
+        "quarantine.py": "327508f265874f775b09c18bd3f330788bc73de08e816f80484b0ec962774be4",
+        "recovery_journal.py": "042c145f420dff0472036457f16dc4c41d56538e134aa89076dcb6e92953d4b7",
+        "engine_creation.py": "9d6149a0b3331666496583ebbaa9f43ed05d3039e7097861f3bd147f917ab3fb",
+        "plan_helper.py": "09b892a89f7cd7fa31fbc891822445ed09554e9362e397bb9b12b98316e1d8dd",
+        "image_custody.py": "5d0fc0edb1ebd9386326eadbbee08f2cf0a9fd1e122940c0661b5ac5e3655ed8",
+        "authentication.py": "7cb06f7976791abfc1ffac0e9660f3cdf603347f4514cd2bab7f55c6574e251d",
+        "signing.py": "81ad864e90b3efe17d65534ad4b1ccc187e60954f4f5d6244968d7809303a38f",
+        "auth_protocol.py": "cd5aa30c8c806942c53a306e76a641b876e07a12fbbc3c0d106ecf6b94e87a0d",
+        "auth_preexec.py": "95da7f53be88ac0e602e03acbdf6940a719e96a6fedb207693d23f59f0b31015",
+        "auth_producer.py": "dbfb365087fb532a0df66f66b6d72be7e04e2df4f31116631beb0b20a9f6f50f"
+      },
+      "nativeInputsHash": "5fa62e4f6869a6f40fb512878dcf65dcb6ffaf941be487e4189826f418046591",
+      "nativeProposalHash": "572da163cd8cb645762edc06b88aa0c54e34929824f888404563ac018795d595",
+      "frozenPlanHash": "47b206e2eb602c115ef9c7c67937f2b2aeeff645fb8b56347c81f546a4ba60ca",
+      "CI": [
+        {
+          "runId": 40196961938,
+          "jobId": 121179775943,
+          "event": "pull_request",
+          "name": "real-engine-and-apisix (classic)",
+          "conclusion": "success",
+          "details": [
+            "2026-10-25T13:19:49.1412535Z {\"schema\": \"ouf.synthetic-native-acquisition-apply-ci.v1\", \"complete\": true, \"profile\": \"CONFIGURATION_ID\", \"realEd25519DualSignatures\": true, \"realEngineImagesLoaded\": 3, \"realCandidatesCreatedAndStarted\": 3, \"realApisixOldRouteCount\": 82, \"realApisixAddedRouteCount\": 2, \"originalWorkersUnchanged\": true, \"singleMcpManager\": true, \"completedNegativeLeaseDoesNothing\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:20:14.4554765Z {\"schema\": \"ouf.synthetic-acquisition-negative-lease-ci.v1\", \"complete\": true, \"controllerKilled\": true, \"ownedCandidatesStopped\": 2, \"allOriginalOwnersStillRunning\": true, \"oldRoutesUnchanged\": 82, \"claimedEffectNotReplayed\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:20:15.1498546Z Ran 2 tests in 128.530s",
+            "2026-10-25T13:20:15.1498963Z OK"
+          ]
+        },
+        {
+          "runId": 40196961938,
+          "jobId": 121179776050,
+          "event": "pull_request",
+          "name": "real-engine-and-apisix (containerd)",
+          "conclusion": "success",
+          "details": [
+            "2026-10-25T13:19:34.0334956Z {\"schema\": \"ouf.synthetic-native-acquisition-apply-ci.v1\", \"complete\": true, \"profile\": \"CONFIG_AND_NATIVE_MANIFEST\", \"realEd25519DualSignatures\": true, \"realEngineImagesLoaded\": 3, \"realCandidatesCreatedAndStarted\": 3, \"realApisixOldRouteCount\": 82, \"realApisixAddedRouteCount\": 2, \"originalWorkersUnchanged\": true, \"singleMcpManager\": true, \"completedNegativeLeaseDoesNothing\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:19:59.7971470Z {\"schema\": \"ouf.synthetic-acquisition-negative-lease-ci.v1\", \"complete\": true, \"controllerKilled\": true, \"ownedCandidatesStopped\": 2, \"allOriginalOwnersStillRunning\": true, \"oldRoutesUnchanged\": 82, \"claimedEffectNotReplayed\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:20:00.4816502Z Ran 2 tests in 120.140s",
+            "2026-10-25T13:20:00.4817613Z OK"
+          ]
+        },
+        {
+          "runId": 40196961938,
+          "jobId": 121179776093,
+          "event": "pull_request",
+          "name": "dual-signature-finite-protocol",
+          "conclusion": "success",
+          "details": [
+            "2026-10-25T13:18:02.6297325Z Ran 10 tests in 3.981s",
+            "2026-10-25T13:18:02.6297456Z OK"
+          ]
+        },
+        {
+          "runId": 40196957444,
+          "jobId": 121179761818,
+          "event": "push",
+          "name": "real-engine-and-apisix (containerd)",
+          "conclusion": "success",
+          "details": [
+            "2026-10-25T13:19:32.4931293Z {\"schema\": \"ouf.synthetic-native-acquisition-apply-ci.v1\", \"complete\": true, \"profile\": \"CONFIG_AND_NATIVE_MANIFEST\", \"realEd25519DualSignatures\": true, \"realEngineImagesLoaded\": 3, \"realCandidatesCreatedAndStarted\": 3, \"realApisixOldRouteCount\": 82, \"realApisixAddedRouteCount\": 2, \"originalWorkersUnchanged\": true, \"singleMcpManager\": true, \"completedNegativeLeaseDoesNothing\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:19:57.8260545Z {\"schema\": \"ouf.synthetic-acquisition-negative-lease-ci.v1\", \"complete\": true, \"controllerKilled\": true, \"ownedCandidatesStopped\": 2, \"allOriginalOwnersStillRunning\": true, \"oldRoutesUnchanged\": 82, \"claimedEffectNotReplayed\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:19:58.4702329Z Ran 2 tests in 121.693s",
+            "2026-10-25T13:19:58.4702780Z OK"
+          ]
+        },
+        {
+          "runId": 40196957444,
+          "jobId": 121179762030,
+          "event": "push",
+          "name": "real-engine-and-apisix (classic)",
+          "conclusion": "success",
+          "details": [
+            "2026-10-25T13:19:27.2159967Z {\"schema\": \"ouf.synthetic-native-acquisition-apply-ci.v1\", \"complete\": true, \"profile\": \"CONFIGURATION_ID\", \"realEd25519DualSignatures\": true, \"realEngineImagesLoaded\": 3, \"realCandidatesCreatedAndStarted\": 3, \"realApisixOldRouteCount\": 82, \"realApisixAddedRouteCount\": 2, \"originalWorkersUnchanged\": true, \"singleMcpManager\": true, \"completedNegativeLeaseDoesNothing\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:19:51.1433951Z {\"schema\": \"ouf.synthetic-acquisition-negative-lease-ci.v1\", \"complete\": true, \"controllerKilled\": true, \"ownedCandidatesStopped\": 2, \"allOriginalOwnersStillRunning\": true, \"oldRoutesUnchanged\": 82, \"claimedEffectNotReplayed\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:19:51.7644934Z Ran 2 tests in 116.248s",
+            "2026-10-25T13:19:51.7645400Z OK"
+          ]
+        },
+        {
+          "runId": 40196957444,
+          "jobId": 121179762061,
+          "event": "push",
+          "name": "dual-signature-finite-protocol",
+          "conclusion": "success",
+          "details": [
+            "2026-10-25T13:17:59.3852273Z Ran 10 tests in 4.173s",
+            "2026-10-25T13:17:59.3852473Z OK"
+          ]
+        }
+      ],
+      "directJobLogsRead": true,
+      "protocolTestsPerRun": 10,
+      "protocolSkipped": 0,
+      "nativeTestsPerStorePerRun": 2,
+      "nativeStores": [
+        "classic",
+        "containerd"
+      ],
+      "qualificationScope": "Real scoped Ed25519 installer signatures and final attestation, controlling-terminal exact hash parser, no unclaimed write, durable claimed-effect no replay, live-policy revocation, finite negative snapshot authorization,3actual image imports/3container transitions/real APISIX82retained+2routes, SIGKILL controller ->2owned candidates stopped with all old owners and routes unchanged.",
+      "qualificationLimits": "Native owners/data/keys are synthetic CI fixtures; APISIX3.18 and real Engine used. Full product images/SDKs have their separately retained qualifications. Production private configuration, issuer connectivity and application E2E are not proven by CI. The wrapper is syntax-checked/static-reviewed, not executed end-to-end in CI.",
+      "executionEntryQualified": true,
+      "targetExecuted": false,
+      "targetAuthorityIssued": false,
+      "targetApplyAuthorized": false,
+      "targetComponentReadinessProven": false,
+      "applicationE2EProven": false,
+      "requiredTerminalDecision": "APPROVO <exact freshly compiled review hash>",
+      "maximumSeconds": 900,
+      "negativeCleanupSeconds": 30,
+      "candidateStartupSeconds": 180,
+      "maximums": {
+        "engineGets": 500,
+        "engineWrites": 22,
+        "imageLoadAttempts": 3,
+        "readinessGets": 128,
+        "adminGets": 32,
+        "adminPuts": 2,
+        "ownerConfigurationReads": 64,
+        "serviceCredentialFileReads": 1,
+        "quarantineStops": 3
+      },
+      "existingScopesReplayed": false,
+      "budgetReset": false,
+      "releaseAcceptance": false,
+      "normalMcpOAuthMandateChanged": false,
+      "normalMcpBootstrapMayOccur": true,
+      "sourceCopyCustody": "16hash-pinned files+canonical manifest; root0400/0700; no-follow/fstat/hash source copy; source/parent fsync; prior logs and scopes retained",
+      "runtimeCustody": "Existing Python stdlib binder reused and source-sealed, executable/stdlib hashes+metadata included in signed native plan, Python-I-S-B, live policy positive gate and copied public policy for negative only",
+      "normalizations": [
+        {
+          "field": "OomKillDisable",
+          "profile": "DOCKER_ENABLED_OOM_DEFAULT_NULL_FALSE_V1",
+          "scope": "new candidates only",
+          "allowed": [
+            null,
+            false
+          ],
+          "disablingOomNeverAcceptedAsDefault": true,
+          "existingNativeHashesChanged": false
+        },
+        {
+          "field": "Mounts",
+          "profile": "qualified empty requested list may be absent/null",
+          "existingNativeHashesChanged": false
+        }
+      ],
+      "stops": "Exact graceful stop t10 uses15s response timeout; candidate quarantine t2 uses7s response timeout; every command dispatched within its finite lease and claimed stage; no effect retry",
+      "journal": "Only bounded lock acquisition retried; monitor reads atomically published immutable snapshots without mutating or contending for CAS; effect claims never replayed",
+      "launcherSha256": "5067506433800cd43b827a299ac2ed74943f255eee65e860d45d86113de40d5f",
+      "launcherWholeExecutedInCI": false,
+      "launcherBashSyntaxPassed": true,
+      "rejectedIntermediateRuns": [
+        "fd89 fixture stderr polluted resource ID",
+        "9b799 fixture APISIX file UID/startup",
+        "cc6bf fixture highest-API vs1.44 mismatch",
+        "e710 journal contention/new host defaults",
+        "70309 stop timeout",
+        "b99a transport edit syntax failure; not delivered",
+        "e63e OOM default in zero-memory MCP before-start; not delivered"
+      ]
     }
   },
   "developmentCandidates": [
