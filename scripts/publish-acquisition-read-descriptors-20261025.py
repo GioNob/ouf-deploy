@@ -103,7 +103,8 @@ class Journal:
         self.save()
 
     def write(self, name, value, exclusive=False):
-        require(name in ('state.json', 'review.json', 'result.json'), 'EXACT_PRIVATE_FILE_REQUIRED')
+        require(name in ('state.json', 'review.json', 'result.json', 'owner-create-response.json',
+                         'owner-publish-response.json'), 'EXACT_PRIVATE_FILE_REQUIRED')
         target = self.path / name
         if exclusive:
             require(not target.exists() and not target.is_symlink(), 'PRIVATE_FILE_EXISTS')
@@ -233,6 +234,14 @@ class Transport:
         with reply:
             require(reply.geturl() == ADMIN+path, 'ADMIN_REDIRECT_DENIED')
             data = reply.read(LIMITS['responseBytes']+1)
+            if method == 'POST' and (path == '/policies' or publish):
+                # Retain the acknowledgement BEFORE any shape/status/JSON guard.
+                name = 'owner-create-response.json' if path == '/policies' else 'owner-publish-response.json'
+                self.journal.write(name, {'schema': 'ouf.owner-policy-response-retained.v1',
+                    'status': reply.code,
+                    'etag': next((v for k, v in reply.headers.items() if k.lower() == 'etag'), None),
+                    'bodyUtf8': data.decode('utf-8', errors='replace'),
+                    'truncated': len(data) > LIMITS['responseBytes']}, exclusive=True)
             self.counts['bytes'] += len(data)
             self.journal.row['counts'] = dict(self.counts)
             self.journal.save()
@@ -360,7 +369,7 @@ def approve(plan, journal, transport, *, fd=None, emit=None):
 def validate_draft(value, plan, state='DRAFT'):
     require(isinstance(value, dict) and isinstance(value.get('id'), str)
             and str(uuid.UUID(value['id'])) == value['id'] and type(value.get('revision')) is int
-            and value['revision'] >= 1 and value.get('state') == state and value.get('baseActiveRef') == BASE_REF
+            and value['revision'] >= 0 and value.get('state') == state and value.get('baseActiveRef') == BASE_REF
             and value.get('policy') == plan['candidatePolicy'], 'EXACT_OWNER_DRAFT_REQUIRED')
 
 

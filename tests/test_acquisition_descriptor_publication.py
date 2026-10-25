@@ -61,19 +61,19 @@ class SyntheticOwner:
             self.catalogue[body['descriptor']['capabilityId']] = copy.deepcopy(body)
             status = 201
         elif method == 'POST' and path == '/policies':
-            self.draft = {'id':str(uuid.uuid4()), 'revision':1, 'state':'DRAFT', 'baseActiveRef':m.BASE_REF, 'policy':copy.deepcopy(body)}
-            value, headers = self.draft, {'ETag':'"1"'}
+            self.draft = {'id':str(uuid.uuid4()), 'revision':0, 'state':'DRAFT', 'baseActiveRef':m.BASE_REF, 'policy':copy.deepcopy(body)}
+            value, headers = self.draft, {'ETag':'"0"'}
         elif method == 'GET' and self.draft and path == '/policies/'+self.draft['id']:
             value = self.draft
         elif method == 'POST' and path.endswith(':preview'):
-            assert request.get_header('If-match') == '"1"'
-            value = {'draftId':self.draft['id'], 'revision':1, 'baseActiveRef':m.BASE_REF, 'activeHash':'sha256:'+m.BASE_HASH,
+            assert request.get_header('If-match') == '"0"'
+            value = {'draftId':self.draft['id'], 'revision':0, 'baseActiveRef':m.BASE_REF, 'activeHash':'sha256:'+m.BASE_HASH,
                      'draftHash':'sha256:'+m.digest(self.draft['policy']), 'addedCapabilities':[m.registration(cap)['descriptor'] for cap in m.MISSING],
                      'removedCapabilities':[], 'grantChanges':[], 'authoritative':False}
             value = self.preview_change(value)
         elif method == 'POST' and path.endswith(':publish'):
-            assert request.get_header('If-match') == '"1"'
-            self.draft.update(state='PUBLISHED', revision=2)
+            assert request.get_header('If-match') == '"0"'
+            self.draft.update(state='PUBLISHED', revision=1)
             policy = copy.deepcopy(self.draft['policy'])
             policy['publishedAt'] = '2026-10-25T19:00:00Z'  # server publication time differs from the preview
             if self.grants_at_publish is not None: policy['grants'] = self.grants_at_publish
@@ -270,6 +270,34 @@ class PublicationTests(unittest.TestCase):
         with self.assertRaisesRegex(m.Stop, 'HUMAN_APPROVAL_REQUIRED'):
             self.execute()
         self.assertEqual(self.owner.calls, [])
+
+    def test_zero_revision_matches_owner_migration_and_negative_revision_is_rejected(self):
+        schema = (ROOT/'tests/fixtures/onboarding-V16-authorization-admin-lifecycle.sql').read_text()
+        self.assertRegex(schema, r'revision bigint not null default 0')
+        value = {'id':str(uuid.uuid4()), 'revision':0, 'state':'DRAFT', 'baseActiveRef':m.BASE_REF, 'policy':self.plan['candidatePolicy']}
+        m.validate_draft(value, self.plan)
+        value['revision'] = -1
+        with self.assertRaisesRegex(m.Stop, 'EXACT_OWNER_DRAFT_REQUIRED'):
+            m.validate_draft(value, self.plan)
+
+    def test_response_receipt_persisted_before_a_later_validation_failure(self):
+        self.synthetic_tty_approval()
+        original = self.owner.open
+        def malformed(request, **kwargs):
+            reply = original(request, **kwargs)
+            if request.get_method() == 'POST' and request.full_url == m.ADMIN+'/policies':
+                body = json.loads(reply.raw)
+                body['state'] = 'UNEXPECTED'
+                reply.raw = json.dumps(body).encode()
+            return reply
+        self.t.opener = type('Opener', (), {'open':staticmethod(malformed)})()
+        with self.assertRaisesRegex(m.Stop, 'EXACT_OWNER_DRAFT_REQUIRED'):
+            self.execute()
+        retained = json.loads((self.context.path/'owner-create-response.json').read_text())
+        self.assertEqual(retained['status'], 200)
+        self.assertEqual(retained['etag'], '"0"')
+        self.assertEqual(json.loads(retained['bodyUtf8'])['id'], self.owner.draft['id'])
+        self.assertEqual(self.context.row['effects']['CREATE_DRAFT']['state'], 'CLAIMED')
 
     def test_real_tty_gate_precedes_login_and_private_scope(self):
         with patch.object(m.sys, 'argv', ['controller']), patch.object(m.sys.stdin, 'isatty', return_value=False), patch.object(m, 'load_login') as loader, patch.object(m, 'Journal') as journal:
