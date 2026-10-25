@@ -28,9 +28,9 @@ jobs:
           sudo python3 -I -S -B - <<'PY'
           import hashlib,json,stat
           from pathlib import Path
-          root=Path('/etc/ouf/deploy-snapshots/acquisition-detached-recovery-code-13488a33e42d4e39')
+          root=Path('/etc/ouf/deploy-snapshots/acquisition-detached-recovery-code-9c3bebec5d81ab8e')
           raw=(root/'sources.json').read_bytes()
-          assert hashlib.sha256(raw).hexdigest()=='13488a33e42d4e39e72616e2551c192c0896a5432d2b4683a9f7f13df7bb2764'
+          assert hashlib.sha256(raw).hexdigest()=='9c3bebec5d81ab8eddd78288b53163579b90ae896092a8fb232482dca5b32fd9'
           manifest=json.loads(raw);assert len(manifest)==19
           assert set(p.name for p in root.iterdir())==set(manifest)|{'sources.json'}
           for name,digest in manifest.items():
