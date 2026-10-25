@@ -1,6 +1,6 @@
 {
   "schema": "ouf.acquisition-governed-read-role-plan.v1",
-  "state": "OFFLINE_PREPARED_NOT_SUBMITTED",
+  "state": "BLOCKED_DESCRIPTOR_PREFLIGHT_AFTER_REJECTED_PROPOSAL",
   "tenantId": "ouf-lab",
   "issuer": "https://auth.ouf-lab.it/realms/ouf",
   "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
@@ -364,11 +364,8 @@
   "proposalCreated": false,
   "newGrantPublished": false,
   "newBudgetOrAcquisition": false,
-  "requiredToolsCurrentlyMissingInThisConnection": [
-    "ouf.ingestion.acquisition.read",
-    "urban.acquisition.read"
-  ],
-  "next": "Refresh existing OUF connector tool catalogue; then fresh ROLES/GRANTS read, preserve unrelated entries, resolve finite validity at proposal time, submit one HUMAN review, confirm only on THS.",
+  "requiredToolsCurrentlyMissingInThisConnection": [],
+  "next": "Execute only the qualified read-only HUMAN descriptor preflight once; diagnose registered vs ACTIVE/HUMAN descriptors before any new role proposal. Source acquisition and installation scopes remain consumed.",
   "existingConfiguredGrantAmongSix": {
     "grantId": "grant-recovery-ingestion-run-read-ouf-lab-b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
     "capabilityId": "ingestion.run.read",
@@ -376,5 +373,10 @@
     "sufficientForAllSixOwnerPermissionsAndTenantDetail": false,
     "preserve": true
   },
-  "configuredGrantsAreNotEffectivePermissions": true
+  "configuredGrantsAreNotEffectivePermissions": true,
+  "proposalSubmissionObserved": true,
+  "proposalReceiptReceived": false,
+  "proposalError": "AUTH_ROLE_CAPABILITY_INVALID",
+  "firstIngestionReadDeniedRetryableFalse": true,
+  "freshDescriptorPreflightRequired": true
 }

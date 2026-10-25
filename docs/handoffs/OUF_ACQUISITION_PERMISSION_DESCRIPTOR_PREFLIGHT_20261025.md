@@ -26,9 +26,33 @@ Nuovo script scripts/read-acquisition-permission-descriptors-20261025.py usa SOL
 - una sola finestra600s, metadataIAM1GET, device+pollmax121POST(protocolli pending/slow_down), ownermax52GET,2MB/risposta e16MB cumulativi. Nessun retry GET automatico: profilo diagnostico one-pass finito per evitare loop di discovery/admission; errori permanenti/ignoti STOP;
 - nuova claim diagnostica FISSA /home/oufadmin/ouf-acquisition-permission-descriptor-read-20261025, distinta da TUTTI i vecchi scope. mkdir esclusivo0700, progressoconteggi riservato/fsync PRIMA di ogni dispatch, state.json0600 atomico, token mai su disco. STOP/crash consuma claim; non rimuoverla/azzerarla/nuovodir per rilanciare.
 
-14 test locali fixtureSINTETICHE PASS: policy drift, separazione registered/ACTIVE, descrittore mancante vsSERVICE, preservazione/occultamento grant e token, dinieghi senza retry, allowlist GET/endpoint, scadenza/conteggi riservati, OAuthpending/slowdown/denied, identitàerrata, TTY, claimconsumata e no replay. CI prima della consegna target ancora da acquisire. Questo NON è riapertura della sessione/budget storico, nuovo grant fonte o authorityruntime; solo login ordinario HUMAN per leggere metadati amministrativi. La conferma device è nel browser dell'owner, mai simulata dall'agente.
+15 test fixtureSINTETICHE PASS: policy drift, separazione registered/ACTIVE, descrittore mancante vsSERVICE, preservazione/occultamento grant e token, dinieghi senza retry, allowlist GET/endpoint, scadenza/conteggi riservati, OAuthpending/slowdown/denied, identitàerrata, TTY, claimconsumata e no replay. CI qualificata:15test/0skip push40221093919/job121252624265 e PR40221182197/job121252893726, log diretti letti. Codice pubblico pinned d2e80980f7575ce1e71627632eeba515441d84be/SHA256062b1e201904b9fd7a10efcad371de17d4c0fbc3411710c310186aa7381c5cad. Questo NON è riapertura della sessione/budget storico, nuovo grant fonte o authorityruntime; solo login ordinario HUMAN per leggere metadati amministrativi. La conferma device è nel browser dell'owner, mai simulata dall'agente.
 
-**Nessun comando target consegnato a questo checkpoint.** Dopo CI qualificata si prepara consegna pinned/checksum/copia codice root protetta/log trattenuti; non usare il file appena sviluppato sul VPS prima di quella consegna. Non avviare device login dal cloud o usare token dal connettore come bearer amministrativo.
+## Consegna qualificata: PRIMA esecuzione del SOLO diagnostico
+
+Wrapper pinned 077065def9e06e743556c5e86f051238284b5a0d, SHA256 5af3e992228a0fe57adf6db4a568d61624543ea00429e7f2463b5b2836276314. Scarica il codice pubblico pinned d2e80980f7575ce1e71627632eeba515441d84be, verifica SHA256 062b1e201904b9fd7a10efcad371de17d4c0fbc3411710c310186aa7381c5cad, crea una copia ESCLUSIVA root:0444 in directoryroot:0555 sotto /usr/local/lib. Python eseguito come operatore (nonroot), con-I-S-B. Nessuna lettura privata root o chiave. Preserva bootstrap.log/operator.log e diagnostico state.json. Un errore tee del log rende la consegna STOP.
+
+DeliveryCI push40221177505/job121252878796 e PR40221182156/job121252893341 PASS, log diretti letti: download REALE dal commit, duechecksum/copia protetta, STOP atteso prima del login perché CI non haTTY, claimtarget assente. IAM/owner restano fixture nei15test; nessuna prova di login o risposta owner target. La prima qualifica40221093920/40221098244 si fermava DOPO rootcopy/STOP corretti per rg assente sulrunner; matcher corretto agrep-F, fallimenti conservati/non consegnati. Non chiamare intera CI verde: sono queste suite puntuali. [Evidenza qualificazione](../../evidence/acquisition-permission-descriptor-preflight-qualified-20261025.json).
+
+Eseguire UNA volta come oufadmin nel terminale VPS interattivo:
+
+```bash
+(
+  set -Eeuo pipefail
+  umask 077
+  ouf_descriptor_bootstrap=$(mktemp -d "$HOME/ouf-descriptor-bootstrap.XXXXXXXX")
+  curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-redirs 3 --connect-timeout 15 --max-time 60 \
+    "https://raw.githubusercontent.com/GioNob/ouf-deploy/077065def9e06e743556c5e86f051238284b5a0d/releases/read-acquisition-permission-descriptors-20261025.sh" \
+    -o "$ouf_descriptor_bootstrap/run.sh"
+  printf '%s  %s\n' '5af3e992228a0fe57adf6db4a568d61624543ea00429e7f2463b5b2836276314' "$ouf_descriptor_bootstrap/run.sh" | sha256sum -c -
+  bash "$ouf_descriptor_bootstrap/run.sh"
+)
+```
+
+Il codice richiede sudo soltanto per custodire codice PUBBLICO; la lettura e il login rimangono sotto l'operatore. Quando stampa indirizzo e codice, aprire QUELL'indirizzo nel browser, inserire il codice SOLO lì e accedere con ouf-admin. Istruzioni vengono flushate immediatamente anche con tee. Nessun token/device-secret da incollare in chat. Non è una review di mutazione e non chiede APPROVO: non viene pubblicato alcun permesso.
+
+Atteso DESCRIPTORS_OBSERVED_NO_AUTHORITY/complete=true/Exit0/DeliveryExit0, con6descrittori e policyRef/hash. Riportare SOLO JSON finale, Exit/DeliveryExit e percorsi dei log; non il codice di login. Se STOP/scadenza/interruzione, conservare delivery/rootcopy/claim/state/log e NON rilanciare o rimuovere directory. Non riusare scope storici né avviare login dal cloud. Risultato diagnostico target ANCORA NON RICEVUTO.
+
 
 ## Dopo il risultato diagnostico
 
