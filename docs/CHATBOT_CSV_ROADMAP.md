@@ -1,3 +1,16 @@
+# CURRENT — pubblicazione RESIDUA avviata; scadenza superata senza risultato, NON rilanciare
+
+L'operatore da telefono ha eseguito la consegna24f2abbd/runtime144778..., contesto /etc/ouf/deploy-snapshots/acquisition-existing-draft-publish-cb75ddb0-v1. Preflight e prima preview owner riusciti: UUIDcb75ddb0-bd19-48fb-847f-1c47aff3207a/rev0/base48/candidato027f.../106grant, review6ff5fa76c217888e174d760b84a0ce8ad6e6242955546bd9ddcca050e7851ff7. Ultimi contatori OSSERVATI ALLA REVIEW:6writes/13ownerGET/1preview/744072bytes, NON finali. Scadenza mostrata2026-10-25T23:58:29.881352+01:00 Europe/Rome. RigaAPPROVO visibile in terminale ma la sola eco NON prova acquisizioneTTY o emissionePUBLISH.
+
+Owner riferisce alcuni minuti senza output, poi SCADENZA SUPERATA senza JSON/Exit. Nessuna ricevuta STOP/COMPLETE/claimfinale/ACK o lettura journal corrente ricevuta. NON affermare successo, assenza di effetti, fase esatta o causa dello stallo. Scope runtime e review CONSUMATI/IN_FLIGHT da riconciliare: nessun wrapper/review/token/login/REGISTER/CREATE/PUBLISH/SQL replay, nuovo child o reset.
+
+Due nuove letture governate MCPouf-admin GRANTS(limit1,subjectb93d8cf6-cd14-4ee6-91d7-84cd76c4f500), prima e dopo la scadenza riferita, restituiscono ancora ACTIVEouf-lab-authorization:48/hashsha256:6209fe7a832a4b92fcd543304a5480edb85f6f66dfe8476245075509e2c7f46b. Due ownerread diagnostiche SEPARATE e ADDIZIONALI ai contatori controller: non azzerarle/occultarle; non autorizzano nuove scritture. Snapshot non dimostra che un eventuale comando già inviato non possa completarsi dopo. Prima chiamata tool locale rifiutata per link_id mancante, corretta usando SOLO linkouf-admin già autorizzato; nessun accountalternativo o refresh.
+
+Operatore soloCELLULARE: non imporre secondo terminale o script lungo mentre il primo resta occupato. Passo pratico successivo: cancellare UNA volta il solo comando foreground scaduto con Ctrl+C nello stesso terminale e conservare tutte le nuove righe/JSON/Exit; esito di cancellazione ancora NON ricevuto. Nessun kill/restart servizi/Registryworker o rollback. Se non torna prompt, riferire il fatto; non inventare PID o fare kill ampi. Dopo prompt: eventuale lettura locale delimitata del journal, non replay. Lettore lungo proposto nella chat NON eseguito.
+
+CI16protocol+5custody+3ownerJava/PG17 resta qualifica, NON provaVPS. Occorre diagnosticare la divergenza di osservabilità/deadline prima di consegnare altro comando mutante. L'input/devicecode comparso in chat NON va ripubblicato in GitHub/log pubblici.
+Tecnico8/8funzionale4/6, E2E/G4/F5/F6OPEN; Supervisor dopoE2E. Nessuna terzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. Handoff precedente OUF_ACQUISITION_EXISTING_DESCRIPTOR_RESIDUAL_PUBLICATION_20261025.md ora STORICO: il comando NON va eseguito di nuovo.
+
 # CURRENT — sola pubblicazione RESIDUA qualificata/consegnata; prima esecuzione VPS attesa
 
 Ultimo VPS EXISTING_DESCRIPTOR_DRAFT_OWNER_CONFIRMED_NO_PUBLICATION/complete=true/Exit0/DeliveryExit0: UUIDcb75ddb0-bd19-48fb-847f-1c47aff3207a, revision0/DRAFT/base48/ETag0/candidato027f.../106grant esatti.6writes/9GET/0preview/537123bytes;2EngineGET/1SQL/1exec. Scope lookup root5a31...v1, publisher e reader precedenti CONSUMATI: non rilanciare, ripetere REGISTER/CREATE/SQL, riusare review5a31/token/login o reset.
