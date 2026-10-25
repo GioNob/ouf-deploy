@@ -1,3 +1,5 @@
+**NEXT ora qualificato e consegnato:** [sola pubblicazione residua](OUF_ACQUISITION_EXISTING_DESCRIPTOR_RESIDUAL_PUBLICATION_20261025.md), prima esecuzione VPS attesa. Il lookup sotto è CONSUMATO e non si ripete.
+
 **RISULTATO VPS RICEVUTO: lookup CONSUMATO.** UUID cb75ddb0-bd19-48fb-847f-1c47aff3207a/revision0 confermato dall'owner, complete=true/Exit0/DeliveryExit0; 6writes/9GET/0preview/537123bytes. [Ricevuta](../../evidence/acquisition-existing-descriptor-draft-lookup-target-20261025.json). NON rieseguire il comando storico sotto. NEXT sola pubblicazione residua con nuova reviewTTY; nessun nuovo comando consegnato a questo checkpoint.
 
 # Recupero governato dell'unico draft esistente — 25 ottobre 2026
