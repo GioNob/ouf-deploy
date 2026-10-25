@@ -1,3 +1,9 @@
+# CURRENT — 25 ottobre: diagnostica MAC retained conclusa; recupero residuo ancora da qualificare
+
+Tecnico8/8 e funzionale4/6 invariati; E2E/G4/F5/F6 OPEN. L'installazione delle letture non è completata sul VPS: continuazione fermata dopo13stageAPPLIED e prima della claim RENAME. La diagnostica successiva è completa e consumata: unico delta Config.MacAddress presente/coerente → ASSENTE dopo STOP/DETACH; due READ propri quarantinati. Stato corrente non osservato. La correzione guard/lifecycle è qualificata in CI sul Docker29.8.1 classic/containerd, ma non autorizza il replay dello scope. Nessun nuovo comando runtime consegnato. [Handoff corrente](handoffs/OUF_ACQUISITION_MAC_LESSON_AND_RETAINED_STATE_20261025.md), AGENTS.md ed evidenze collegate conservano contatori/log/limiti. Prossimo lavoro: implementare/qualificare recovery del solo residuo con nuova review cumulativa e APPROVO esatto nel terminale prima di effetti. Nessun reset/import/READ CREATE/vecchio STOP-DETACH ripetuto, nessun vecchioMCP restart/reconnect. Dopo installazione provata: letture governate delle due acquisizioni esistenti; policy48 scaduta, nessuna terza acquisizione. Supervisor dopo E2E. Nessun merge o release acceptance. Le sezioni precedenti sotto sono storiche.
+
+---
+
 # CURRENT — policy 48 pubblicata; Ingestion HEALTHY, due run SUCCEEDED; prove dettagliate G4 ancora mancanti
 
 Conferma HUMAN riconciliata dall'owner: proposal f87e7260-a5ed-4c7a-80b6-9990e5ae0875 revision1 PUBLISHED/finalPolicyRef ouf-lab-authorization:48. Nuovo grant di sola lettura limitato ai Teatri, valido 2026-10-25T05:10:14.933Z–07:10:14.933Z (06:10–08:10 CET). Le proposal precedenti 5e197733 e fcbd1a23 sono EXPIRED senza pubblicazione; NON confermarle o rilanciarle. Non dedurre validità corrente del grant dopo la finestra.
