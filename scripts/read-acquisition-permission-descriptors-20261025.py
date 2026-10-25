@@ -94,7 +94,8 @@ class Transport:
             return response.code, data
 
 
-def login(transport, *, sleep=time.sleep, emit=print, wall=time.time):
+def login(transport, *, sleep=time.sleep, emit=None, wall=time.time):
+    emit = emit or (lambda message: print(message, flush=True))
     status, metadata = transport.request(ISSUER + "/.well-known/openid-configuration")
     require(status == 200 and isinstance(metadata, dict) and metadata.get("issuer") == ISSUER,
             "EXACT_ISSUER_REQUIRED")
@@ -230,6 +231,11 @@ def main():
         os.mkdir(directory, 0o700)
     except FileExistsError:
         raise Stop("DIAGNOSTIC_SCOPE_EXISTS_RECONCILE_NO_REPLAY") from None
+    parent = os.open(directory.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        os.fsync(parent)
+    finally:
+        os.close(parent)
     print("Directory=" + str(directory), flush=True)
 
     def save(value):
