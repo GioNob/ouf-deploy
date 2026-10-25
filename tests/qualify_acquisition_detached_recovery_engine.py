@@ -85,7 +85,10 @@ class DetachedRecovery(Continuation):
                         if stage=='ADD_INGESTION_ROUTE':os.write(w,b'READY');signal.pause();raise AssertionError('Lost controller resumed')
                         return execute(stage)
                     ports.execute=paused;e.run();os._exit(3)
-                except BaseException:os._exit(4)
+                except BaseException as error:
+                    import re,traceback
+                    reason=str(error)if re.fullmatch('[A-Z0-9_]{1,120}',str(error))else type(error).__name__
+                    print('SyntheticResidualChildFailure='+reason,flush=True);traceback.print_exc();os._exit(4)
             os.close(w)
             try:
                 ready,_,_=select.select([r],[],[],180);self.assertTrue(ready,'Residual controller did not reach MCP readiness');self.assertEqual(os.read(r,16),b'READY');os.kill(child,signal.SIGKILL);os.waitpid(child,0);child=None
