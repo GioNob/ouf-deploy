@@ -45,6 +45,7 @@ directory = '/usr/local/lib/ouf-acquisition-permission-descriptor-read-' + expec
 os.mkdir(directory, 0o755)  # exclusive; no overwrite/replay of a previous delivery
 target = directory + '/read.py'
 fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o444)
+os.fchmod(fd, 0o444)  # creation modes are filtered by the actual sudo umask
 with os.fdopen(fd, 'wb') as output:
     output.write(raw)
     output.flush()
