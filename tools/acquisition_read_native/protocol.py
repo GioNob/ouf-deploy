@@ -11,6 +11,7 @@ STAGES=('VERIFY_CURRENT_ADMISSION','IMPORT_INGESTION','IMPORT_UDP','IMPORT_MCP',
 LIMITS={'engineGets':500,'engineWrites':22,'imageLoadAttempts':3,'readinessGets':128,'adminGets':32,'adminPuts':2,'ownerConfigurationReads':64,'serviceCredentialFileReads':1,'quarantineStops':3}
 RETAINED_COUNTS={'adminGets':1,'adminPuts':0,'engineGets':9,'engineWrites':0,'imageLoadAttempts':0,'ownerConfigurationReads':5,'quarantineStops':0,'readinessGets':0,'serviceCredentialFileReads':1}
 CONTINUATION_LIMITS={**LIMITS,'serviceCredentialFileReads':2}
+RECOVERY_RETAINED_COUNTS={'adminGets':2,'adminPuts':0,'engineGets':128,'engineWrites':14,'imageLoadAttempts':3,'ownerConfigurationReads':42,'quarantineStops':2,'readinessGets':2,'serviceCredentialFileReads':2}
 RECOVERY_LIMITS={**CONTINUATION_LIMITS,'engineWrites':28,'ownerConfigurationReads':96,'serviceCredentialFileReads':3,'quarantineStops':5}
 RECOVERY_STAGES=('LOAD_EXISTING_ADMIN_KEY','VERIFY_RESIDUAL_ADMISSION','RESTART_INGESTION_READ','RESTART_UDP_READ','VERIFY_RESTARTED_READ_REPLICAS','RENAME_OLD_MCP','CREATE_MCP','START_MCP','VERIFY_MCP_READINESS','ADD_INGESTION_ROUTE','ADD_UDP_ROUTE','VERIFY_GATEWAY','RESTORE_INGESTION_RESTART','RESTORE_UDP_RESTART','RESTORE_MCP_RESTART','VERIFY_FINAL')
 AUTHORITY_SCHEMA='ouf.acquisition-read-native-authority.v1'
@@ -24,12 +25,12 @@ def sha(raw):return hashlib.sha256(raw).hexdigest()
 def digest(v):return sha(encoded(v))
 def review_profile(review):
     if review['schema']=='ouf.acquisition-detached-mcp-recovery-review.v1':
-        r=review['recovery'];counts=r['retainedCounts']
+        r=review['recovery'];counts=r['retainedCounts'];require(counts==RECOVERY_RETAINED_COUNTS,'EXACT_RECORDED_RECOVERY_COUNTS_REQUIRED')
         require(set(r)=={'originalExecutionRoot','originalReviewHash','journalHash','diagnosticReceiptHash','privateEvidenceHash','retainedCounts','retainedMaximums','retainedAppliedStages','retainedQuarantineApplied','adoptedIds','legacyMacPolicy','newPositiveWritesMaximum','newNegativeWritesMaximum','additionalCredentialFileReadsMaximum','noOriginalStageReplay'}and r['noOriginalStageReplay']is True and r['retainedAppliedStages']==13 and r['retainedQuarantineApplied']is True and 'continuation'not in review and r['retainedMaximums']==CONTINUATION_LIMITS and set(counts)==set(LIMITS)and all(type(v)is int and 0<=v<=CONTINUATION_LIMITS[k]for k,v in counts.items())and counts['imageLoadAttempts']==3 and counts['engineWrites']>=14 and counts['serviceCredentialFileReads']==2 and counts['quarantineStops']==2
             and review['nativePlan']['recovery']==r and review['nativePlan']['legacyConfigMacDetachPolicy']==r['legacyMacPolicy']and set(r['adoptedIds'])=={'ingestion','udp'}and len(set(r['adoptedIds'].values()))==2 and all(type(v)is str and len(v)==64 and all(c in'0123456789abcdef'for c in v)for v in[*r['adoptedIds'].values(),*[r[k]for k in('originalReviewHash','journalHash','diagnosticReceiptHash','privateEvidenceHash')]])
             and Path(review['executionRoot'])==Path(r['originalExecutionRoot'])/'detached-mcp-recovery-v1'
             and r['newPositiveWritesMaximum']==8 and r['newNegativeWritesMaximum']==6 and r['additionalCredentialFileReadsMaximum']==1
-            and set(review['preflightCounts'])==set(LIMITS)and all(type(v)is int and counts[k]<=v<=RECOVERY_LIMITS[k]for k,v in review['preflightCounts'].items()),'EXACT_DETACHED_RESIDUAL_RECOVERY_PROFILE_REQUIRED')
+            and set(review['preflightCounts'])==set(LIMITS)and all(type(v)is int and counts[k]<=v<=CONTINUATION_LIMITS[k]for k,v in review['preflightCounts'].items()),'EXACT_DETACHED_RESIDUAL_RECOVERY_PROFILE_REQUIRED')
         return RECOVERY_LIMITS,RECOVERY_STAGES
     if review['schema']=='ouf.acquisition-read-native-review.v1':
         require('continuation'not in review,'NO_IMPLICIT_CONTINUATION_PROFILE')
@@ -74,7 +75,7 @@ def terminal_decision(review,path):
             'Tutti i contatori precedenti restano incorporati; altri massimi invariati. Nessun reset.\n'
             'La negativa puo fermare solo i2READ propri adottati e il nuovoMCP, mai i5owner originali.\n')
     old_mcp=('Vecchio MCP gia fermo/scollegato: resta fermo; nessun avvio o rollback del vecchio.\n'if'recovery'in review else'Breve indisponibilita MCP: vecchio fermato e scollegato prima del nuovo, trattenuto fermo.\n')
-    prompt=('\nInstallazione finita delle letture E2E:2READ separati,1sostituzione MCP,2rotte aggiuntive.\n'
+    prompt=('\nInstallazione delle letture E2E con limiti finiti:2READ separati,1sostituzione MCP,2rotte aggiuntive.\n'
         'Piano e configurazioni privati: '+str(path)+'\nSHA256 revisione: '+reviewed+'\n'
         +old_mcp+
         'Ingestion/UDP/Postgres/Gateway originali e worker Registry restano intatti.\n'

@@ -55,11 +55,11 @@ class ResidualProtocol(unittest.TestCase):
         row['effects'][-1]['state']='APPLIED'
         with self.assertRaises(self.core.Stop):p.assert_write(exact,None)
     def test_unverified_bootstrap_never_executes_base(self):
-        path=self.code/'apply.py';path.chmod(0o400);original=path.read_bytes();path.write_bytes(b"raise AssertionError('unverified source executed')\n");path.chmod(0o400)
+        path=self.code/'apply.py';original=path.read_bytes();path.chmod(0o600);path.write_bytes(b"raise AssertionError('unverified source executed')\n");path.chmod(0o400)
         # recovery.__file__ must be the staged exact entry so the manifest check is real.
         with patch.object(recovery,'__file__',str(self.code/'recovery.py')):
             with self.assertRaisesRegex(recovery.Stop,'EXACT_RECOVERY_BASE_SOURCE_REQUIRED'):recovery.base_module(self.code)
-        path.write_bytes(original);path.chmod(0o400)
+        path.chmod(0o600);path.write_bytes(original);path.chmod(0o400)
     def test_preapproval_reserves_no_credential_or_mutation_budget(self):
         Parent=recovery.context_class(self.entry);ctx=object.__new__(Parent);ctx.execution=None;ctx.core=self.core;ctx.counts=copy.deepcopy(recovery.COUNTS);ctx.evidence=lambda *_:None
         for kind in('serviceCredentialFileReads','engineWrites','adminGets','imageLoadAttempts','quarantineStops'):

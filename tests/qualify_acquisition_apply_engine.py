@@ -128,6 +128,10 @@ deployment:
         if launch_watchdog:ctx.watch.launch(ctx,review,gate,execution.journal)
         self.gate,self.native_ports,self.execution=gate,ports,execution
     def teardown_runtime(self):
+        # Synthetic CI diagnostics only; never print private owner/config material.
+        if hasattr(self,'ctx'):
+            for p in self.ctx.root.parent.rglob('watchdog-unproven.json'):
+                print('SyntheticWatchdogDiagnostic='+p.read_text(),flush=True)
         for kind,resource in reversed(getattr(self,'resources',[])):
             subprocess.run(['docker','rm','-f',resource]if kind=='container'else['docker','network','rm',resource],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,check=False)
         if hasattr(self,'ctx'):

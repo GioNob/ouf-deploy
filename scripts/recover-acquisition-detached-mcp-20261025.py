@@ -78,6 +78,7 @@ def context_class(base):
             for role,c in self.adopted.items():
                 s,v=self.preflight_get('/v1.44/containers/'+c['id']+'/json');require(s==200 and v['State']['StartedAt']==self.read_started[role]and v['RestartCount']==0,'SAME_STOPPED_OWNED_READ_REQUIRED');self.candidate_configuration(role,v,False,False)
             s,_=self.preflight_get('/v1.44/containers/'+self.proposal['mcpReplacement']['retiredName']+'/json');require(s==404,'RETAINED_NAME_ALREADY_TAKEN')
+            s,info=self.preflight_get('/v1.44/info');require(s==200 and self.preparer.identity_profile(info)==self.native['imageIdentityProfile'],'SAME_CURRENT_RECOVERY_ENGINE_IMAGE_PROFILE_REQUIRED')
             for fact in self.native['candidateFacts'].values():
                 s,v=self.preflight_get('/v1.44/images/'+quote(fact['nativeImageId'],safe='')+'/json');require(s==200,'ALREADY_IMPORTED_NATIVE_IMAGE_REQUIRED_NO_REIMPORT');self.images.loaded(fact['audit'],v)
             self.check_sources();self.check_owner_configuration(self.reserve);self.admission()
