@@ -1,5 +1,5 @@
 """Real API1.44 legacy Config MAC lifecycle; disposable CI containers only."""
-import copy,http.client,importlib.util,json,socket,subprocess,uuid
+import copy,http.client,importlib.util,json,os,socket,subprocess,uuid
 from pathlib import Path
 s=importlib.util.spec_from_file_location('mac',Path(__file__).resolve().parents[1]/'tools/acquisition_read_native/retained_mac.py');m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
 class Unix(http.client.HTTPConnection):
@@ -20,7 +20,9 @@ def qualify(mode):
         assert before['Config'].get('MacAddress')==mac,'NATIVE_LEGACY_CONFIG_MAC_NOT_REPRESENTED';assert before['NetworkSettings']['Networks'][net]['MacAddress']==mac
         api('POST','/containers/'+old+'/stop?t=2');api('POST','/networks/'+nid+'/disconnect',{'Container':old,'Force':False});after=api('GET','/containers/'+old+'/json')
         assert before['Id']==after['Id']and before['Image']==after['Image']and before['Mounts']==after['Mounts']and before['State']['StartedAt']==after['State']['StartedAt'],'NATIVE_OLD_IDENTITY_FRAME_DRIFT'
-        if mode=='ENDPOINT_ONLY_COMPAT_CONFIG':
+        if'MacAddress'not in after['Config']:
+            proof=m.verify_detached(before,after,expected_name='/'+name)['profile']
+        elif mode=='ENDPOINT_ONLY_COMPAT_CONFIG':
             assert'MacAddress'not in after['Config'],'NATIVE_ENDPOINT_COMPAT_MAC_ABSENCE_NOT_REPRODUCED';proof=m.verify_detached(before,after,expected_name='/'+name)['profile']
         else:
             assert after['Config']==before['Config'],'NATIVE_EXPLICIT_LEGACY_CONFIG_CHANGED';assert after['NetworkSettings']['Networks']=={};assert after['State']['Running']is False and after['State']['StartedAt']==before['State']['StartedAt'];proof='UNCHANGED_EXPLICIT_LEGACY_CONFIG'
@@ -29,5 +31,7 @@ def qualify(mode):
     finally:
         for cid in ids:subprocess.run(['docker','rm','-f',cid],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,check=False)
         subprocess.run(['docker','network','rm',net],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,check=False)
+info=api('GET','/info');assert info['ServerVersion']==os.environ['EXPECTED_ENGINE_VERSION']=='29.8.1','EXACT_PREVIOUSLY_QUALIFIED_ENGINE_VERSION_REQUIRED'
+print(json.dumps({'schema':'ouf.native-mac-engine-profile.v1','serverVersion':info['ServerVersion'],'driver':info['Driver'],'expectedVersionMatched':True,'productionRuntimeAccess':False}),flush=True)
 cli('pull','busybox:1.37.0')
 for mode in('EXPLICIT_LEGACY_CONFIG','ENDPOINT_ONLY_COMPAT_CONFIG'):qualify(mode)
