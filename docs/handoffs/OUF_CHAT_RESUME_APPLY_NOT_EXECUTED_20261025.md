@@ -1,3 +1,9 @@
+# CURRENT — primo APPLY eseguito e STOP per prompt APPROVO ambiguo; scope CONSUMATO
+
+VPS STOP_RECONCILE / EXACT_ACQUISITION_REVIEW_NOT_APPROVED, complete=false, Exit2/DeliveryExit2. Review4cdc8631745c00589e89c4763b34f57451032be714d168447df998dbbd1da328. Il prompt dell’assistente univa la riga APPROVO/hash alla spiegazione; l’operatore ha copiato tutta la frase. Difetto UX/consegna, non errore da attribuire all’operatore. Nessuna authority issued ricevuta; il codice colloca lo STOP prima di issue/effetti. Riconciliare marker e contatori retained senza inferire stato corrente dal flag generico runtimeEffectsMayBePartial.
+
+**Nuovo handoff:** docs/handoffs/OUF_ACQUISITION_UNAPPROVED_REVIEW_STOP_20261025.md. Vecchio wrapper84346ce NON rilanciabile. Root codice16file, review, preflight e log restano intatti. NEXT soltanto lettore offline pinned02eb3f4/SHA7f5aca8e3fd2827b21c1d871e5a29749f52825f18cac4918ae921e0178408619,13PASS/0skip push+PR/log diretti. Nessun Engine/admin/SQL/OAuth/credenziali/proc o vecchio entrypoint. Nuovo child esclusivo unapproved-review-reconciliation-v1; STOP vieta rilancio. Vecchio1fileadmin consumato: non azzerare counts o rileggere chiave per ricreare Context. Nuovo APPLY/mandato cumulativo non ancora consegnati. Prompt corretto nel sorgente con comando su riga separata/parser esatto invariato,10test protocollo CI PASS/0skip. E2E/G4/F5/F6 OPEN, tecnico8/8/funzionale4/6, Supervisor dopo. Header sotto STORICI: APPLY_NON_ESEGUITO è superato da questa ricevuta.
+
 # OUF — passaggio di chat: APPLY consegnato, NON eseguito sul VPS
 
 ## Punto di arresto confermato dall'utente — 25 ottobre 2026
