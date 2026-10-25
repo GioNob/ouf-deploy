@@ -65,6 +65,37 @@ class Protocol(unittest.TestCase):
         self.assertTrue(match({'Memory':536870912,'OomKillDisable':None},{'Memory':536870912,'OomKillDisable':False},started=True))
         self.assertFalse(match({'Memory':536870912,'OomKillDisable':None},{'Memory':536870912,'OomKillDisable':True},started=True))
         self.assertFalse(match({'Memory':536870912,'OomKillDisable':None},{'Memory':1073741824,'OomKillDisable':False},started=True))
+    def test_tty_requires_the_exact_current_review_hash(self):
+        import pty,select
+        for answer,expected_status in(('APPROVO '+'0'*64,2),('APPROVO '+self.core.digest(self.review),0)):
+            pid,fd=pty.fork()
+            if pid==0:
+                try:
+                    decision=self.core.terminal_decision(self.review,self.execution_root/'review.json');print(json.dumps(decision),flush=True);os._exit(0)
+                except self.core.Stop as error:print('DENIED='+str(error),flush=True);os._exit(2)
+            try:
+                buffer=b'';deadline=time.monotonic()+10
+                while b'> 'not in buffer:
+                    self.assertLess(time.monotonic(),deadline);ready,_,_=select.select([fd],[],[],1)
+                    if ready:buffer+=os.read(fd,65536)
+                os.write(fd,(answer+'\n').encode())
+                while True:
+                    ready,_,_=select.select([fd],[],[],1)
+                    if not ready:
+                        done,status=os.waitpid(pid,os.WNOHANG)
+                        if done:break
+                    else:
+                        try:buffer+=os.read(fd,65536)
+                        except OSError:done,status=os.waitpid(pid,0);break
+                self.assertEqual(os.waitstatus_to_exitcode(status),expected_status)
+            finally:os.close(fd)
+    def test_unclaimed_and_wrong_stage_writes_never_dispatch(self):
+        import types
+        cid='c'*64;self.review['nativePlan']['proposal']={'mcpReplacement':{'oldBinding':{'containerId':cid}}};self.review['nativePlanHash']=self.core.digest(self.review['nativePlan']);gate=self.issue();ctx=types.SimpleNamespace(root=self.execution_root,core=self.core,counts={k:0 for k in self.core.LIMITS});ports=self.parts['ports'].NativePorts(ctx,self.review,gate);e=self.core.Execution(gate,self.journal.Journal(self.execution_root),ports);e.initialize()
+        with self.assertRaisesRegex(self.core.Stop,'CLAIMED_SIGNED_STAGE'):ports.request('POST','/v1.44/containers/'+cid+'/stop?t=10')
+        row=e.record();stage=self.core.STAGES[0];e.save(row,effects=[{'stage':stage,'state':'CLAIMED','intentHash':self.core.digest({'reviewHash':self.core.digest(self.review),'stage':stage})}])
+        with self.assertRaisesRegex(self.core.Stop,'EXACT_SIGNED_STAGE_COMMAND'):ports.request('POST','/v1.44/containers/'+cid+'/stop?t=10')
+        self.assertEqual(e.record()['counts']['engineWrites'],0)
     def test_entrypoint_and_namespace_child_fail_closed(self):
         result=subprocess.run([os.sys.executable,str(self.code/'apply.py')],capture_output=True,text=True);self.assertEqual(result.returncode,2);self.assertEqual(json.loads(result.stdout)['reasonCode'],'ONE_ISOLATED_ROOT_ACQUISITION_APPLY_REQUIRED');compile(self.parts['transport'].CHILD,'namespace-child','exec')
 if __name__=='__main__':unittest.main()

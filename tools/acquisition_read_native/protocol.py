@@ -161,7 +161,7 @@ class Execution:
                 if i==len(STAGES):
                     result=self.ports.final_result();self.gate.check();self.save(self.record(),state='COMPLETE');return result
                 require(len(row['effects'])==i,'CLAIMED_ACQUISITION_EFFECT_NO_REPLAY')
-                stage=STAGES[i];self.ports.guard(stage)
+                stage=STAGES[i];print(encoded({'schema':'ouf.acquisition-read-native-progress.v1','stage':stage,'counts':row['counts'],'runtimeAuthorityIssued':True,'automaticReplayAllowed':False,'budgetReset':False}).decode(),flush=True);self.ports.guard(stage)
                 minimum=330 if stage=='DISABLE_OLD_MCP_RESTART'else 220 if stage.startswith('START_')else 120 if stage.startswith('IMPORT_')else 35
                 require(self.gate.remaining()>minimum,'INSUFFICIENT_ACQUISITION_AUTHORITY_WINDOW')
                 row=self.record();effects=copy.deepcopy(row['effects']);effects.append({'stage':stage,'state':'CLAIMED','intentHash':digest({'reviewHash':digest(self.review),'stage':stage})});self.save(row,effects=effects)
