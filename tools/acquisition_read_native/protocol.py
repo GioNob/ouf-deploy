@@ -11,6 +11,8 @@ STAGES=('VERIFY_CURRENT_ADMISSION','IMPORT_INGESTION','IMPORT_UDP','IMPORT_MCP',
 LIMITS={'engineGets':500,'engineWrites':22,'imageLoadAttempts':3,'readinessGets':128,'adminGets':32,'adminPuts':2,'ownerConfigurationReads':64,'serviceCredentialFileReads':1,'quarantineStops':3}
 RETAINED_COUNTS={'adminGets':1,'adminPuts':0,'engineGets':9,'engineWrites':0,'imageLoadAttempts':0,'ownerConfigurationReads':5,'quarantineStops':0,'readinessGets':0,'serviceCredentialFileReads':1}
 CONTINUATION_LIMITS={**LIMITS,'serviceCredentialFileReads':2}
+RECOVERY_LIMITS={**CONTINUATION_LIMITS,'engineWrites':28,'ownerConfigurationReads':96,'serviceCredentialFileReads':3,'quarantineStops':5}
+RECOVERY_STAGES=('LOAD_EXISTING_ADMIN_KEY','VERIFY_RESIDUAL_ADMISSION','RESTART_INGESTION_READ','RESTART_UDP_READ','VERIFY_RESTARTED_READ_REPLICAS','RENAME_OLD_MCP','CREATE_MCP','START_MCP','VERIFY_MCP_READINESS','ADD_INGESTION_ROUTE','ADD_UDP_ROUTE','VERIFY_GATEWAY','RESTORE_INGESTION_RESTART','RESTORE_UDP_RESTART','RESTORE_MCP_RESTART','VERIFY_FINAL')
 AUTHORITY_SCHEMA='ouf.acquisition-read-native-authority.v1'
 HUMAN_SCHEMA='ouf.acquisition-read-native-mandate.v1'
 DECISION='APPROVE_ONE_FINITE_ACQUISITION_READ_DEPLOYMENT_ONLY'
@@ -21,6 +23,14 @@ def encoded(v):return json.dumps(v,sort_keys=True,separators=(',',':'),allow_nan
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def digest(v):return sha(encoded(v))
 def review_profile(review):
+    if review['schema']=='ouf.acquisition-detached-mcp-recovery-review.v1':
+        r=review['recovery'];counts=r['retainedCounts']
+        require(set(r)=={'originalExecutionRoot','originalReviewHash','journalHash','diagnosticReceiptHash','privateEvidenceHash','retainedCounts','retainedMaximums','retainedAppliedStages','retainedQuarantineApplied','adoptedIds','legacyMacPolicy','newPositiveWritesMaximum','newNegativeWritesMaximum','additionalCredentialFileReadsMaximum','noOriginalStageReplay'}and r['noOriginalStageReplay']is True and r['retainedAppliedStages']==13 and r['retainedQuarantineApplied']is True and 'continuation'not in review and r['retainedMaximums']==CONTINUATION_LIMITS and set(counts)==set(LIMITS)and all(type(v)is int and 0<=v<=CONTINUATION_LIMITS[k]for k,v in counts.items())and counts['imageLoadAttempts']==3 and counts['engineWrites']>=14 and counts['serviceCredentialFileReads']==2 and counts['quarantineStops']==2
+            and review['nativePlan']['recovery']==r and review['nativePlan']['legacyConfigMacDetachPolicy']==r['legacyMacPolicy']and set(r['adoptedIds'])=={'ingestion','udp'}and len(set(r['adoptedIds'].values()))==2 and all(type(v)is str and len(v)==64 and all(c in'0123456789abcdef'for c in v)for v in[*r['adoptedIds'].values(),*[r[k]for k in('originalReviewHash','journalHash','diagnosticReceiptHash','privateEvidenceHash')]])
+            and Path(review['executionRoot'])==Path(r['originalExecutionRoot'])/'detached-mcp-recovery-v1'
+            and r['newPositiveWritesMaximum']==8 and r['newNegativeWritesMaximum']==6 and r['additionalCredentialFileReadsMaximum']==1
+            and set(review['preflightCounts'])==set(LIMITS)and all(type(v)is int and counts[k]<=v<=RECOVERY_LIMITS[k]for k,v in review['preflightCounts'].items()),'EXACT_DETACHED_RESIDUAL_RECOVERY_PROFILE_REQUIRED')
+        return RECOVERY_LIMITS,RECOVERY_STAGES
     if review['schema']=='ouf.acquisition-read-native-review.v1':
         require('continuation'not in review,'NO_IMPLICIT_CONTINUATION_PROFILE')
         return LIMITS,STAGES
@@ -56,9 +66,17 @@ def terminal_decision(review,path):
         'Limite cumulativo letture credenziale:2, inclusa la1 gia consumata. Altri massimi invariati.\n'
         'Contatori iniziali conservati:9EngineGET,1adminGET,5ownerConfig,1fileadmin,zero mutazioni.\n'
         'Le82rotte prima della conferma sono lo snapshot retained; verifica fresca prima della prima mutazione.\n')if'continuation'in review else'Un file admin esistente letto in memoria per verificare e aggiungere le2rotte.\n'
+    if'recovery'in review:
+        credential=('Recupero dei SOLI2READ propri gia quarantinati: riavvio, nuova generazione e readiness fresche.\n'
+            'Nessun import, CREATE dei READ, STOP/DETACH del vecchio MCP o vecchi stage ripetuti.\n'
+            'Una ulteriore lettura del file admin ESISTENTE solo dopo APPROVO/firme/claim.\n'
+            'Limiti cumulativi proposti: writes22->28 (8residue positive+6negative da14), ownerConfig64->96, fileadmin2->3, quarantena3->5.\n'
+            'Tutti i contatori precedenti restano incorporati; altri massimi invariati. Nessun reset.\n'
+            'La negativa puo fermare solo i2READ propri adottati e il nuovoMCP, mai i5owner originali.\n')
+    old_mcp=('Vecchio MCP gia fermo/scollegato: resta fermo; nessun avvio o rollback del vecchio.\n'if'recovery'in review else'Breve indisponibilita MCP: vecchio fermato e scollegato prima del nuovo, trattenuto fermo.\n')
     prompt=('\nInstallazione finita delle letture E2E:2READ separati,1sostituzione MCP,2rotte aggiuntive.\n'
         'Piano e configurazioni privati: '+str(path)+'\nSHA256 revisione: '+reviewed+'\n'
-        'Breve indisponibilita MCP: vecchio fermato e scollegato prima del nuovo, trattenuto fermo.\n'
+        +old_mcp+
         'Ingestion/UDP/Postgres/Gateway originali e worker Registry restano intatti.\n'
         'Tre immagini CI esatte, identita native config/manifest dimostrate senza rebuild/relabel.\n'
         'READ senza Flyway/esecuzione, mount RO, rootfs RO; readiness DB/policy richiesta.\n'
@@ -68,7 +86,7 @@ def terminal_decision(review,path):
         'La MAC endpoint resta conservata; nessun altro campo Config viene escluso dal confronto.\n'
         'Nessun grant IAM, budget fonte, attivazione o acquisizione; nessun reset o replay.\n'
         +credential+
-        'Massimo900secondi+30 di sola quarantena dei3nuovi candidati non ancora provati.\n'
+        'Massimo900secondi+30 di sola quarantena dei3candidati propri non committed.\n'
         'Watchdog effimero; stop solo candidati propri se controller perso/scaduto. Nessun rollback.\n'
         'Effetto ambiguo resta CLAIMED e richiede riconciliazione, mai rilancio automatico.\n'
         'Questa operazione NON concede accettazione E2E o release.\n'
@@ -155,8 +173,9 @@ class Execution:
         require(str(journal.root)==self.review['executionRoot']and ports.root==journal.root,'ONE_EXACT_ACQUISITION_SCOPE_REQUIRED')
     def initialize(self):
         human=self.gate.check();counts=copy.deepcopy(self.ports.ctx.counts)
-        require(set(counts)==set(self.limits)and all(type(v)is int and self.review['preflightCounts'][k]<=v<=self.limits[k]for k,v in counts.items())and all(counts[k]==0 for k in('engineWrites','imageLoadAttempts','adminPuts','readinessGets','quarantineStops')),'PRESERVED_PREFLIGHT_ATTEMPTS_REQUIRED')
-        self.journal.initialize({'schema':'ouf.acquisition-read-native-journal.v1','version':0,'reviewHash':digest(self.review),'authorityHash':sha(self.gate.raw),'nextStage':0,'effects':[],'counts':counts,'candidates':{},'quarantine':None,'expiresAt':human['expiresAt'],'expiresMonotonic':time.monotonic()+max(0,human['expiresAt']-time.time()),'state':'OPEN','automaticReplayAllowed':False,'budgetReset':False})
+        require(set(counts)==set(self.limits)and all(type(v)is int and self.review['preflightCounts'][k]<=v<=self.limits[k]for k,v in counts.items())and all(counts[k]==(self.review['recovery']['retainedCounts'][k]if'recovery'in self.review else 0)for k in('engineWrites','imageLoadAttempts','adminPuts','readinessGets','quarantineStops')),'PRESERVED_PREFLIGHT_ATTEMPTS_REQUIRED')
+        candidates=self.ports.initial_candidates()if'recovery'in self.review else{}
+        self.journal.initialize({'schema':'ouf.acquisition-read-native-journal.v1','version':0,'reviewHash':digest(self.review),'authorityHash':sha(self.gate.raw),'nextStage':0,'effects':[],'counts':counts,'candidates':candidates,'quarantine':None,'expiresAt':human['expiresAt'],'expiresMonotonic':time.monotonic()+max(0,human['expiresAt']-time.time()),'state':'OPEN','automaticReplayAllowed':False,'budgetReset':False})
     def read_journal(self):
         for attempt in range(8):
             try:return self.journal.read()
@@ -188,7 +207,7 @@ class Execution:
                     result=self.ports.final_result();self.gate.check();self.save(self.record(),state='COMPLETE');return result
                 require(len(row['effects'])==i,'CLAIMED_ACQUISITION_EFFECT_NO_REPLAY')
                 stage=self.stages[i];print(encoded({'schema':'ouf.acquisition-read-native-progress.v1','stage':stage,'counts':row['counts'],'runtimeAuthorityIssued':True,'automaticReplayAllowed':False,'budgetReset':False}).decode(),flush=True);self.ports.guard(stage)
-                minimum=330 if stage=='DISABLE_OLD_MCP_RESTART'else 220 if stage.startswith('START_')else 120 if stage.startswith('IMPORT_')else 35
+                minimum=330 if stage=='DISABLE_OLD_MCP_RESTART'else 220 if stage.startswith(('START_','RESTART_'))else 120 if stage.startswith('IMPORT_')else 35
                 require(self.gate.remaining()>minimum,'INSUFFICIENT_ACQUISITION_AUTHORITY_WINDOW')
                 row=self.record();effects=copy.deepcopy(row['effects']);effects.append({'stage':stage,'state':'CLAIMED','intentHash':digest({'reviewHash':digest(self.review),'stage':stage})});self.save(row,effects=effects)
                 proof=self.ports.execute(stage);self.gate.check();require(type(proof)is dict and proof,'EXPLICIT_ACQUISITION_EFFECT_PROOF_REQUIRED')

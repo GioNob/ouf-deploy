@@ -24,7 +24,7 @@ def selected(name,path,names,environment,closure):
 def package(name):m=types.ModuleType(name);m.__path__=[];sys.modules[name]=m
 
 def components():
-    code=Path(__file__).resolve().parent;manifest=source(code/'sources.json');mapping=json.loads(manifest);required={'apply.py','protocol.py','transport.py','ports.py','quarantine.py','recovery_journal.py','engine_creation.py','plan_helper.py','image_custody.py','native_prepare.py','authentication.py','signing.py','auth_protocol.py','auth_preexec.py','auth_producer.py','runtime_binding.py'};allowed=(required,required|{'continuation.py'},required|{'continuation.py','retained_mac.py'});require(type(mapping)is dict and set(mapping)in allowed,'COMPLETE_CLOSED_APPLY_SOURCE_MANIFEST_REQUIRED');closure={str(code/'sources.json'):sha(manifest)}
+    code=Path(__file__).resolve().parent;manifest=source(code/'sources.json');mapping=json.loads(manifest);required={'apply.py','protocol.py','transport.py','ports.py','quarantine.py','recovery_journal.py','engine_creation.py','plan_helper.py','image_custody.py','native_prepare.py','authentication.py','signing.py','auth_protocol.py','auth_preexec.py','auth_producer.py','runtime_binding.py'};allowed=(required,required|{'continuation.py'},required|{'continuation.py','retained_mac.py'},required|{'continuation.py','retained_mac.py','recovery.py'});require(type(mapping)is dict and set(mapping)in allowed,'COMPLETE_CLOSED_APPLY_SOURCE_MANIFEST_REQUIRED');closure={str(code/'sources.json'):sha(manifest)}
     for name,expected in mapping.items():require(re.fullmatch('[a-f0-9]{64}',expected)is not None and sha(source(code/name))==expected,'PINNED_APPLY_SOURCE_CLOSURE_REQUIRED')
     require('tools'not in sys.modules,'ISOLATED_AUTHENTICATION_NAMESPACE_REQUIRED');package('tools');package('tools.semantic_lease_recovery')
     selected('tools.semantic_provider_preexec',code/'auth_preexec.py',('PreexecDenied',),{},closure)
@@ -37,6 +37,7 @@ def components():
     if'retained_mac.py'in mapping:parts['retained_mac']=load('sealed_acquisition_retained_mac',code/'retained_mac.py',closure)
     closure[str(Path(__file__).resolve())]=mapping['apply.py']
     if'continuation.py'in mapping:closure[str(code/'continuation.py')]=mapping['continuation.py']
+    if'recovery.py'in mapping:closure[str(code/'recovery.py')]=mapping['recovery.py']
     return parts,auth,sign,journal,closure
 def bootstrap():return Context(*components())
 class Context:
