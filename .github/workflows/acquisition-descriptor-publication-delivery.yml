@@ -39,7 +39,8 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Exact copier under real restrictive root umask and unprivileged read
         run: |
-          install -m 0600 scripts/publish-acquisition-read-descriptors-20261025.py "$RUNNER_TEMP/publish.py"
+          umask 077
+          curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-time 60 "https://raw.githubusercontent.com/GioNob/ouf-deploy/3f0b407d01a34967e03e02ecc5bf441963704e7c/scripts/publish-acquisition-read-descriptors-20261025.py" -o "$RUNNER_TEMP/publish.py"
           sudo /usr/bin/python3 -I -S -B - "$PWD" "$RUNNER_TEMP/publish.py" "$(id -u)" <<'PY'
           import os, pathlib, sys
           repo, public_source, owner = pathlib.Path(sys.argv[1]), sys.argv[2], sys.argv[3]
