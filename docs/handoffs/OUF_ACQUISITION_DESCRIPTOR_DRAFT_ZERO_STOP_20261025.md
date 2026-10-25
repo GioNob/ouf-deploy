@@ -68,7 +68,9 @@ Come oufadmin, UNA volta:
 
 Non richiede login IAM o APPROVO. Pubblica solo il JSONfinale, Exit e ReadLog, non review.json/state.json o vecchiooperator.log. Atteso RETAINED_DESCRIPTOR_PUBLICATION_STOP_OBSERVED/complete=true/continuationAuthorized=false/Exit0. Se STOP conserva tutto e NON rilanciare.
 
-Risultato di questa lettura target ANCORA NON RICEVUTO a questo checkpoint.
+**SUPERATO: risultato target ricevuto.** RETAINED_DESCRIPTOR_PUBLICATION_STOP_OBSERVED/complete=true/Exit0; il comando sopra è CONSUMATO e NON va rilanciato. [Ricevuta esatta](../../evidence/acquisition-descriptor-publication-retained-stop-target-20261025.json). Cinque registrazioni APPLIED; CREATE_DRAFT CLAIMED; UUID/revisione/raw response assenti; nessun PUBLISH dispatch. Candidato hash027f626dce41cac0dc2d1dd9338bd2aeb20bc474a438e6e26a68d4214271b46b/106grant; originali 6writes/6GET/0preview/346780bytes; read3file/94564bytes, zero rete/SQL/OAuth/Engine/authority. Log /home/oufadmin/ouf-publication-stop-read.hSZRanX4/operator.log. Il draft può esistere sul server: non confondere UUID assente dal client con CREATE non applicato.
+
+NEXT: lookup governato e strettamente delimitato dello stesso candidato; nessun comando runtime nuovo consegnato. La sola pubblicazione residua richiederà UUID confermato dall'owner e review nuova concreta, mai replay del publisher.
 
 ## Dopo la lettura
 
