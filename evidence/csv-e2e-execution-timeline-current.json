@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-25T07:26:19.629Z",
+  "lastUpdatedAt": "2026-10-25T08:31:52.019Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -2305,6 +2305,27 @@
       "job": 121105860334,
       "oufOAuthRequests": 0,
       "newAcquisitionsRequested": 0,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-ROOT-READ-PACKAGES-STAGED-TARGET-20261025",
+      "recordedAt": "2026-10-25T08:31:52.019Z",
+      "classification": "USER_REPORTED_ROOT_PRIVATE_STAGING_COMPLETE_NO_RUNTIME_APPLY",
+      "evidenceRef": "evidence/acquisition-read-packages-staged-target-20261025.json",
+      "sourceIsUserVpsReceipt": true,
+      "scopeConsumed": true,
+      "imageImports": 0,
+      "engineGetAttempts": 0,
+      "sqlSessions": 0,
+      "oauthRequests": 0,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-NATIVE-READ-PLAN-PREPARATION-QUALIFIED-20261025",
+      "recordedAt": "2026-10-25T08:31:52.019Z",
+      "classification": "CI_FROZEN_CONTAINER_AND_ADDITIVE_ROUTE_PROPOSAL_WITH_ONE_FIXTURE_INFRASTRUCTURE_GET_NOT_APPLY",
+      "evidenceRef": "evidence/acquisition-read-native-plan-qualified-20261025.json",
+      "targetEvidence": false,
       "noEffortAllocationInferred": true
     }
   ],
@@ -4707,7 +4728,7 @@
       "syntheticCapturedInputs": true,
       "wholeRootLauncherExecutedInCi": false,
       "launcherStaticCheck": "bash -n PASS",
-      "targetPackageStagingObserved": false,
+      "targetPackageStagingObserved": true,
       "targetDeployed": false,
       "targetApplyAuthorized": false,
       "runtimeAuthorityIssued": false,
@@ -4862,6 +4883,61 @@
       "applicationE2EProven": false,
       "automaticReplayAllowed": false,
       "budgetReset": false
+    },
+    "acquisitionReadNativePlanPreparation": {
+      "schema": "ouf.acquisition-read-native-plan-qualification.v1",
+      "recordedAt": "2026-10-25T08:31:52.019Z",
+      "codeCommit": "294552df5db303e4da299682ef8b3c4094f97d6f",
+      "programSha256": "6ca60a5e25deaf9c7a718e6ee7fe01dad75b3fb45455129f131309bc988c5acd",
+      "launcherPath": "releases/prepare-acquisition-read-native-plan-20261025.sh",
+      "launcherSha256": "5634eeb1caa3ccf85eac28c5e498241a1857d41a4260250ab3407e5f31fc9bcd",
+      "runs": [
+        {
+          "run": 40176159073,
+          "job": 121117176140,
+          "passed": 16,
+          "skipped": 0
+        },
+        {
+          "run": 40176162042,
+          "job": 121117184910,
+          "passed": 16,
+          "skipped": 0
+        }
+      ],
+      "sources": {
+        "gatewayCommit": "efe71dd9bef9d5ee70c0ef2acb11ea4169649baa",
+        "boundSourceFiles": 12,
+        "nativeCustodyHelper": "Previously qualified named existing Gateway configuration custody selections, copied unchanged"
+      },
+      "scope": "PRIVATE_PLAN_AND_ONE_INFRASTRUCTURE_GET_ONLY",
+      "realKernelNamespaceJoinAndFixtureHttpGet": true,
+      "syntheticConfigurationAndProcessContext": true,
+      "actualDockerCreateControllerQualified": false,
+      "actualProductionBootstrapQualified": false,
+      "wholeRootLauncherExecuted": false,
+      "rootLauncherStaticCheck": "bash -n PASS",
+      "rootStagingTargetObserved": true,
+      "rootStagingScopeConsumed": true,
+      "stagedReceiptExpectedCanonicalHash": "11cdf347aa966b6b32bfa84f8c35a28b598e7563611bf5580282bbb36b3f6a70",
+      "targetPlanPreparationObserved": false,
+      "maximumAdminGets": 1,
+      "maximumServiceCredentialFilesOpened": 1,
+      "maximumSeconds": 90,
+      "engineGetAttempts": 0,
+      "sqlSessions": 0,
+      "oauthRequests": 0,
+      "containerWrites": 0,
+      "imageImports": 0,
+      "installationSigningKeysRead": false,
+      "executionEntryQualified": false,
+      "runtimeAuthorityIssued": false,
+      "targetApplyAuthorized": false,
+      "applicationE2EProven": false,
+      "releaseAcceptance": false,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "normalMcpBootstrapOAuthExpectedOnlyInFutureReviewedReplacement": true
     }
   },
   "developmentCandidates": [
@@ -5019,7 +5095,7 @@
         }
       }
     },
-    "currentRequiredHumanAction": "ONE_PINNED_ROOT_STAGING_CONTINUATION_USING_EXISTING_PROGRAM_AND_RUNNER_ARCHIVES_ZERO_DOWNLOAD_ENGINE_SQL_OUF_OAUTH",
+    "currentRequiredHumanAction": "ONE_PINNED_PLAN_PREPARATION_MAX1_GATEWAY_ADMIN_GET_MAX1_EXISTING_ADMIN_KEY_FILE_ZERO_ENGINE_SQL_OAUTH_NO_APPLY",
     "additionalCandidateBlockers": [
       "CONCRETE_SINGLE_MANAGER_MCP_AND_ADDITIVE_OWNER_LIFECYCLE_REVIEW_NOT_YET_QUALIFIED",
       "NEW_OWNER_READ_PERMISSIONS_AND_LIVE_ACK_WATERMARK_PROPERTY_PROOF_PENDING"
