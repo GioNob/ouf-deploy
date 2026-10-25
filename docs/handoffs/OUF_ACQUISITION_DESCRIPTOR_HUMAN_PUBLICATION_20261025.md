@@ -1,3 +1,5 @@
+> **STOP VPS dopo APPROVO esatto: comando CONSUMATO, NON rilanciare.** Il client rifiuta draftrevision0 e può non avere conservato la receipt. Seguire soltanto [lettura retained e riconciliazione](OUF_ACQUISITION_DESCRIPTOR_DRAFT_ZERO_STOP_20261025.md); nessun nuovo CREATE/REGISTER.
+
 # Cinque descrittori mancanti: pubblicazione amministrativa HUMAN — 25 ottobre2026
 
 ## Risultato VPS acquisito, scope consumati
