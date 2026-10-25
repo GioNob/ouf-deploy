@@ -208,6 +208,14 @@ class LookupTests(unittest.TestCase):
         result = m.bounded_read([sys_executable(), '-I', '-S', '-c', code], 'x'*100000)
         self.assertEqual(result, {'length':100000, 'noHome':True})
         with self.assertRaises(m.Stop): m.bounded_read([sys_executable(), '-c', 'import sys;sys.exit(1)'], 'sql')
+    def test_exact_libpq_devnull_warning_only(self):
+        warning = 'WARNING: password file "/dev/null" is not a plain file\n'
+        for selected in (warning, 'UNKNOWN_WARNING\n'):
+            code = 'import sys;sys.stdin.read();sys.stderr.write('+repr(selected)+');print("{}")'
+            if selected == warning:
+                self.assertEqual(m.bounded_read([sys_executable(),'-I','-S','-c',code],'sql'),{})
+            else:
+                with self.assertRaises(m.Stop):m.bounded_read([sys_executable(),'-I','-S','-c',code],'sql')
 
 
 def sys_executable():

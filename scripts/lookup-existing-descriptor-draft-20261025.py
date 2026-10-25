@@ -258,7 +258,11 @@ def bounded_read(argv, sql):
                     selected.extend(block)
         status = proc.wait(timeout=max(.01, deadline-time.monotonic()))
         try:
-            require(status == 0 and not err and out, 'NATIVE_SQL_UNPROVEN_NO_REPLAY')
+            # Qualified credential-free transport intentionally points at /dev/null.
+            # libpq can stat it and emit this exact warning without reading a password.
+            # Unknown stderr is still fatal; do not discard arbitrary diagnostics.
+            require(status == 0 and bytes(err) in (b'', b'WARNING: password file "/dev/null" is not a plain file\n')
+                    and out, 'NATIVE_SQL_UNPROVEN_NO_REPLAY')
             return json.loads(out)
         except Exception:
             failure = Stop('NATIVE_SQL_UNPROVEN_NO_REPLAY')
@@ -456,6 +460,8 @@ def main():
                 'EXACT_ISOLATED_ROOT_INTERACTIVE_LOOKUP_REQUIRED')
         operator = pwd.getpwnam('oufadmin').pw_uid
         require(operator > 0 and os.environ.get('SUDO_UID') == str(operator), 'EXACT_OUFADMIN_SUDO_CONTEXT_REQUIRED')
+        require(str(Path(__file__).resolve()) == __file__, 'EXACT_PROTECTED_LOOKUP_CODE_PATH_REQUIRED')
+        read_file(__file__, 0, 0o400, 65536)
         signal.signal(signal.SIGALRM, lambda *_: (_ for _ in ()).throw(Stop('FINITE_LOOKUP_WINDOW_EXPIRED')))
         signal.alarm(720)
         journal = Journal()
