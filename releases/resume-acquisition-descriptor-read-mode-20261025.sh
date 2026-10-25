@@ -13,7 +13,7 @@ if [[ $operator_uid == 0 ]]; then
   exit 2
 fi
 sudo /usr/bin/python3 -I -S -B - "$operator_uid" <<'PY' 2>&1 | tee -a "$continuation_log"
-import errno, hashlib, json, os, signal, stat, sys
+import errno, hashlib, json, os, pwd, signal, stat, sys
 
 HOME = '/home/oufadmin'
 DELIVERY = HOME + '/ouf-acquisition-descriptor-read-delivery.XdyYVHv1'
@@ -52,7 +52,22 @@ def directory(path, owner, mode=None, public=False):
         require(stat.S_IMODE(info.st_mode) == mode, 'EXACT_DIRECTORY_MODE_REQUIRED')
     if public:
         require(info.st_mode & 0o001, 'ANCESTOR_TRAVERSAL_REQUIRES_RECONCILIATION')
-    no_acl(path)
+
+
+def operator_traversal(owner, paths):
+    account = pwd.getpwuid(owner)
+    groups = os.getgrouplist(account.pw_name, account.pw_gid)
+    pid = os.fork()
+    if pid == 0:
+        try:
+            os.setgroups(groups)
+            os.setgid(account.pw_gid)
+            os.setuid(owner)
+            os._exit(0 if all(os.access(path, os.X_OK) for path in paths) else 3)
+        except BaseException:
+            os._exit(4)
+    _, status = os.waitpid(pid, 0)
+    require(os.waitstatus_to_exitcode(status) == 0, 'OPERATOR_TRAVERSAL_REQUIRES_RECONCILIATION')
 
 
 def absent(path):
@@ -68,14 +83,15 @@ def identity(info):
             info.st_nlink, info.st_size, info.st_mtime_ns)
 
 
-def read_file(path, owner, modes, expected=None):
+def read_file(path, owner, modes, expected=None, require_no_acl=False):
     fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
     try:
         before = os.fstat(fd)
         require(stat.S_ISREG(before.st_mode) and before.st_uid == owner
                 and before.st_nlink == 1 and stat.S_IMODE(before.st_mode) in modes
                 and 0 < before.st_size <= 32768, 'EXACT_RETAINED_FILE_REQUIRED')
-        no_acl(path)
+        if require_no_acl:
+            no_acl(path)
         raw = os.read(fd, 32769)
         after = os.fstat(fd)
         require(identity(before) == identity(after) and before.st_mode == after.st_mode
@@ -107,6 +123,8 @@ def reconcile(owner):
     directory(BOOTSTRAP, owner, 0o700)
     directory(DELIVERY, owner, 0o700)
     directory(DELIVERY + '/permission-mode-v1', owner, 0o700)
+    operator_traversal(owner, ('/', '/usr', '/usr/local', '/usr/local/lib', CODEDIR,
+                              '/home', HOME, BOOTSTRAP, DELIVERY, DELIVERY + '/permission-mode-v1'))
     absent(CLAIM)
     absent(DELIVERY + '/operator.log')
     absent(JOURNAL)
@@ -119,7 +137,7 @@ def reconcile(owner):
             and b'FAILED open or read' in raw and b'DeliveryExit=1' in raw
             and b'DeliveryDirectory=' + DELIVERY.encode() in raw,
             'EXACT_PRELOGIN_DELIVERY_FAILURE_REQUIRED')
-    code_fd, before, raw = read_file(CODE, 0, {0o400}, CODEHASH)
+    code_fd, before, raw = read_file(CODE, 0, {0o400}, CODEHASH, require_no_acl=True)
     try:
         proof = {'schema': 'ouf.acquisition-descriptor-public-mode-reconcile.v1',
                  'state': 'CLAIMED', 'beforeMode': '0400', 'plannedAfterMode': '0444',
@@ -127,6 +145,7 @@ def reconcile(owner):
                  'retainedDelivery': DELIVERY, 'chmodOperations': 0, 'budgetReset': False,
                  'automaticReplayAllowed': False, 'runtimeAuthorityIssued': False,
                  'iamRequests': 0, 'ownerRequests': 0, 'engineRequests': 0}
+        proof.update(operatorTraversalProven=True, ancestorAclsUnchanged=True, codeAccessAclAbsent=True)
         journal_fd = os.open(JOURNAL, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o400)
         try:
             os.fchmod(journal_fd, 0o400)

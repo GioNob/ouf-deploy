@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import stat
+import struct
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -164,6 +165,26 @@ class ModeContinuationTests(unittest.TestCase):
             return real(path, name, **kwargs)
         with patch('os.getxattr', side_effect=acl):
             self.assert_blocked('EXPLICIT_ACL_REQUIRES_RECONCILIATION')
+
+    def parent_acl(self, permissions):
+        raw = struct.pack('<I', 2)
+        for tag, perms, ident in ((1, 5, 0xffffffff), (2, permissions, self.owner),
+                                  (4, 5, 0xffffffff), (16, 5, 0xffffffff), (32, 5, 0xffffffff)):
+            raw += struct.pack('<HHI', tag, perms, ident)
+        os.setxattr(self.scope['CODEDIR'], 'system.posix_acl_access', raw)
+        return os.getxattr(self.scope['CODEDIR'], 'system.posix_acl_access')
+
+    def test_real_parent_acl_denies_operator_and_is_not_changed(self):
+        retained = self.parent_acl(0)
+        self.assert_blocked('OPERATOR_TRAVERSAL_REQUIRES_RECONCILIATION')
+        self.assertEqual(os.getxattr(self.scope['CODEDIR'], 'system.posix_acl_access'), retained)
+        self.assertEqual(stat.S_IMODE(self.code.stat().st_mode), 0o400)
+
+    def test_real_parent_acl_allows_operator_and_is_preserved(self):
+        retained = self.parent_acl(5)
+        self.run_helper()
+        self.assertEqual(os.getxattr(self.scope['CODEDIR'], 'system.posix_acl_access'), retained)
+        self.unprivileged_read(True)
 
     def test_ambiguous_chmod_keeps_claimed_and_never_replays(self):
         original_fsync = os.fsync
