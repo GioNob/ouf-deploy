@@ -161,5 +161,56 @@ GRANT SELECT ON ouf_authorization.policy_draft,ouf_authorization.admin_audit,
         self.assertNotEqual(result.returncode,0)
         self.assertNotIn(b'CANARY',result.stdout)
 
+    def test_root_reads_exact_operator_review_without_reopening_old_controller(self):
+        context=Path(self.temp.name)/('retained-'+uuid.uuid4().hex);context.mkdir(mode=0o700)
+        review={'candidatePolicy':self.candidate,'baselineGrantCount':106,
+                'baselineGrantsHash':m.digest(self.candidate['grants']),'activatedDescriptorIds':list(m.CAPS)}
+        review_hash=m.digest(review)
+        state={'reviewHash':review_hash,'humanReviewApproved':True,'state':'STOP_RECONCILE','budgetReset':False,
+               'automaticReplayAllowed':False,'counts':m.RETAINED_COUNTS,'effects':{
+                   **{'REGISTER:'+cap:{'state':'APPLIED','bodyHash':'f'*64} for cap in m.CAPS},
+                   'CREATE_DRAFT':{'state':'CLAIMED','bodyHash':m.digest(self.candidate)}}}
+        for name,value in [('review.json',review),('state.json',state)]:
+            path=context/name;path.write_bytes(m.encoded(value));path.chmod(0o600);os.chown(path,65534,65534)
+        os.chown(context,65534,65534)
+        with patch.multiple(m,CONTEXT=str(context),REVIEW_HASH=review_hash):
+            retained,candidate=m.retained(65534)
+            self.assertEqual(candidate,self.candidate)
+            with self.assertRaises(m.Stop):m.retained(0)
+
+    def test_actual_root077_delivery_copy_and_root_execution(self):
+        wrapper=(ROOT/'releases/lookup-existing-descriptor-draft-20261025.sh').read_text()
+        marker="<<'PY' 2>&1 | tee -a \"$delivery_log\"\n"
+        copier=wrapper.split(marker,1)[1].split('\nPY\n',1)[0]
+        source=Path(self.temp.name)/('download-'+uuid.uuid4().hex+'.py')
+        raw=(ROOT/'scripts/lookup-existing-descriptor-draft-20261025.py').read_bytes()
+        expected=hashlib.sha256(raw).hexdigest()
+        # The actual delivery source is pinned; a HEAD change must update the pin explicitly.
+        self.assertIn('code_sha='+expected,wrapper)
+        source.write_bytes(raw);source.chmod(0o600);os.chown(source,65534,65534)
+        target=Path('/usr/local/lib/ouf-existing-descriptor-draft-lookup-'+expected[:16])
+        self.assertFalse(target.exists())
+        previous=os.umask(0o077)
+        try:
+            copied=subprocess.run(['/usr/bin/python3','-I','-S','-B','-',str(source),expected,'65534'],
+                                  input=copier,text=True,capture_output=True)
+            self.assertEqual(copied.returncode,0,copied.stdout+copied.stderr)
+            code=target/'read.py'
+            self.assertEqual(code.stat().st_mode&0o777,0o400)
+            self.assertEqual(target.stat().st_mode&0o777,0o700)
+            self.assertEqual(hashlib.sha256(code.read_bytes()).hexdigest(),expected)
+            denied=subprocess.run(['setpriv','--reuid=65534','--regid=65534','--clear-groups','cat',str(code)],capture_output=True)
+            self.assertNotEqual(denied.returncode,0)
+            execution=subprocess.run(['/usr/bin/python3','-I','-S','-B',str(code)],stdin=subprocess.DEVNULL,capture_output=True,text=True)
+            self.assertEqual(execution.returncode,2)
+            self.assertEqual(json.loads(execution.stdout)['reasonCode'],'EXACT_ISOLATED_ROOT_INTERACTIVE_LOOKUP_REQUIRED')
+            replay=subprocess.run(['/usr/bin/python3','-I','-S','-B','-',str(source),expected,'65534'],
+                                  input=copier,text=True,capture_output=True)
+            self.assertNotEqual(replay.returncode,0)
+            self.assertEqual(hashlib.sha256(code.read_bytes()).hexdigest(),expected)
+        finally:
+            os.umask(previous)
+            if target.exists():shutil.rmtree(target)
+
 
 if __name__=='__main__':unittest.main(verbosity=2)
