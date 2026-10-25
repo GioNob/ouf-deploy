@@ -19,6 +19,7 @@ def qualify(mode):
         old=api('POST','/containers/create?name='+name,request)['Id'];ids.append(old);api('POST','/containers/'+old+'/start');before=api('GET','/containers/'+old+'/json')
         assert before['Config'].get('MacAddress')==mac,'NATIVE_LEGACY_CONFIG_MAC_NOT_REPRESENTED';assert before['NetworkSettings']['Networks'][net]['MacAddress']==mac
         api('POST','/containers/'+old+'/stop?t=2');api('POST','/networks/'+nid+'/disconnect',{'Container':old,'Force':False});after=api('GET','/containers/'+old+'/json')
+        assert before['Id']==after['Id']and before['Image']==after['Image']and before['Mounts']==after['Mounts']and before['State']['StartedAt']==after['State']['StartedAt'],'NATIVE_OLD_IDENTITY_FRAME_DRIFT'
         if mode=='ENDPOINT_ONLY_COMPAT_CONFIG':
             assert'MacAddress'not in after['Config'],'NATIVE_ENDPOINT_COMPAT_MAC_ABSENCE_NOT_REPRODUCED';proof=m.verify_detached(before,after,expected_name='/'+name)['profile']
         else:
