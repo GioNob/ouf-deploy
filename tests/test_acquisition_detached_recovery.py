@@ -22,6 +22,8 @@ class ResidualProtocol(unittest.TestCase):
         r=self.review_residual();self.core.validate_review(r)
         for stage in r['stages']:self.assertFalse(stage.startswith('IMPORT_')or stage.startswith('CREATE_')and stage!='CREATE_MCP'or stage in('STOP_OLD_MCP','DETACH_OLD_MCP'))
         self.assertEqual(r['maximums']['imageLoadAttempts'],3);self.assertEqual(r['recovery']['retainedCounts']['engineWrites'],14)
+    def test_residual_real_tty_discloses_cumulative_mandate_and_exact_command(self):
+        self.review_residual();fixture.Protocol.test_tty_requires_the_exact_current_review_hash(self)
     def test_wrong_adoption_or_budget_or_reset_denied(self):
         good=copy.deepcopy(self.review_residual())
         for key,value in(('noOriginalStageReplay',False),('adoptedIds',{'ingestion':'a'*64,'udp':'a'*64}),('retainedAppliedStages',12),('retainedQuarantineApplied',False),('newNegativeWritesMaximum',0),('retainedCounts',{**recovery.COUNTS,'imageLoadAttempts':0})):
@@ -44,7 +46,8 @@ class ResidualProtocol(unittest.TestCase):
         self.review_residual();outer=self
         class Base:
             def assert_write(self,*_):raise outer.core.Stop('NOT_A_RESIDUAL_RESTART')
-        p=recovery.ports_class(Base)();p.review=self.review;p.stages=self.core.RECOVERY_STAGES;p.require=self.core.require
+        from types import SimpleNamespace
+        p=recovery.ports_class(SimpleNamespace(NativePorts=Base))();p.review=self.review;p.stages=self.core.RECOVERY_STAGES;p.require=self.core.require
         row={'nextStage':2,'effects':[{'state':'APPLIED'},{'state':'APPLIED'},{'state':'CLAIMED'}]};p.execution=type('E',(),{'record':lambda _:row})()
         exact='/v1.44/containers/'+self.review['recovery']['adoptedIds']['ingestion']+'/start';p.assert_write(exact,None)
         for path in('/v1.44/containers/'+('f'*64)+'/start',exact.replace('/start','/stop?t=2')):

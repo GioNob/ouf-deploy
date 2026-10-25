@@ -158,6 +158,10 @@ class Protocol(unittest.TestCase):
                 if'continuation'in self.review:
                     self.assertIn('Limite cumulativo letture credenziale:2',buffer.decode())
                     self.assertIn('SOLO dopo questa approvazione',buffer.decode())
+                if'recovery'in self.review:
+                    self.assertIn('writes22->28',buffer.decode());self.assertIn('fileadmin2->3',buffer.decode())
+                    self.assertIn('Nessun import, CREATE dei READ, STOP/DETACH',buffer.decode())
+                    self.assertIn('solo dopo APPROVO/firme/claim',buffer.decode())
                 os.write(fd,(answer+'\n').encode())
                 while True:
                     ready,_,_=select.select([fd],[],[],1)
