@@ -25,7 +25,7 @@ jobs:
           set -e
           cat delivery-fixture.log
           test "$observed" = 2
-          rg 'INTERACTIVE_OPERATOR_TERMINAL_REQUIRED' delivery-fixture.log
+          grep -F 'INTERACTIVE_OPERATOR_TERMINAL_REQUIRED' delivery-fixture.log
           test ! -e /home/oufadmin/ouf-acquisition-permission-descriptor-read-20261025
           code=/usr/local/lib/ouf-acquisition-permission-descriptor-read-062b1e201904b9fd/read.py
           test "$(stat -c '%u:%a' "$code")" = '0:444'
