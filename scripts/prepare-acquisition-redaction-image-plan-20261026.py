@@ -35,7 +35,7 @@ def sync(path):
     finally:os.close(fd)
 def put(path,value):
     raw=value if isinstance(value,bytes)else encoded(value)
-    require(len(raw)<=64*1024*1024,'BOUNDED_PLAN_OUTPUT_REQUIRED')
+    require(len(raw)<=(220*1024*1024 if path.name=='image.tar.gz'else 16*1024*1024),'BOUNDED_PLAN_OUTPUT_REQUIRED')
     fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o400)
     with os.fdopen(fd,'wb')as out:
         os.fchmod(out.fileno(),0o400);out.write(raw);out.flush();os.fsync(out.fileno())
