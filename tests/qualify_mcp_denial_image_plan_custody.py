@@ -8,9 +8,16 @@ fixture=module('plan_fixture',BASE/'tests/test_mcp_denial_image_plan.py')
 assert os.geteuid()==0 and len(sys.argv)==3
 backend=sys.argv[2];assert backend in('classic','containerd')
 root=Path('/var/lib/ouf-mcp-plan-custody-ci');assert not root.exists();root.mkdir(mode=0o700)
-sealed=root/'code';sealed.mkdir(mode=0o700)
+downloads=root/'downloaded-code';downloads.mkdir(mode=0o700)
 for name,path in [('prepare.py',BASE/'scripts/prepare-mcp-denial-image-plan-20261026.py'),*[(n+'.py',BASE/'tools/acquisition_read_native'/(n+'.py'))for n in('plan_helper','retained_mac','image_custody')]]:
-    target=sealed/name;target.write_bytes(path.read_bytes());target.chmod(0o400)
+    target=downloads/name;target.write_bytes(path.read_bytes());target.chmod(0o600);os.chown(target,1001,1001)
+wrapper=(BASE/'releases/prepare-mcp-denial-image-plan-20261026.sh').read_text()
+copier=wrapper.split("<<'PY' 2>&1 | tee -a \"$delivery_log\"\n",1)[1].split('\nPY\n',1)[0]
+copied=subprocess.run([sys.executable,'-I','-S','-B','-',str(downloads),'1001'],input=copier,text=True,capture_output=True,timeout=20)
+assert copied.returncode==0,(copied.stdout,copied.stderr)
+sealed=Path('/usr/local/lib/ouf-mcp-denial-image-plan-96cb2f55d3000d54')
+assert sealed.stat().st_mode&0o777==0o700
+for target in sealed.iterdir():
     assert target.stat().st_uid==target.stat().st_gid==0 and target.stat().st_mode&0o777==0o400
     result=subprocess.run(['setpriv','--reuid=65534','--regid=65534','--clear-groups','cat',str(target)],capture_output=True)
     assert result.returncode!=0 and not result.stdout
@@ -43,4 +50,4 @@ else:raise AssertionError('WRONG_CAPTURE_ACCEPTED')
 assert (root/'negative/claim.json').is_file()and(root/'negative/private-read-1-claim.json').is_file()
 assert not(root/'negative/staged-receipt.json').exists()
 assert {p.name:p.read_bytes()for p in incoming.iterdir()}==original
-print(json.dumps({'schema':'ouf.mcp-denial-plan-root-custody-ci.v1','complete':True,'backend':backend,'realRetainedCiArtifact':True,'privateCaptureMetadataSynthetic':True,'rootCode0400':True,'nonrootReadDenied':True,'inputBytesUnchanged':True,'positiveStageAndNativePlan':True,'scopeReplayDenied':True,'wrongCaptureRejectedBeforeZipRead':True,'containerWrites':0,'engineGets':0,'imageImports':0,'productionRuntimeAccess':False,'targetUpdateAuthorized':False}),flush=True)
+print(json.dumps({'schema':'ouf.mcp-denial-plan-root-custody-ci.v1','complete':True,'backend':backend,'realRetainedCiArtifact':True,'privateCaptureMetadataSynthetic':True,'exactWrapperRootCopierExecuted':True,'rootCode0400':True,'nonrootReadDenied':True,'inputBytesUnchanged':True,'positiveStageAndNativePlan':True,'scopeReplayDenied':True,'wrongCaptureRejectedBeforeZipRead':True,'containerWrites':0,'engineGets':0,'imageImports':0,'productionRuntimeAccess':False,'targetUpdateAuthorized':False}),flush=True)
