@@ -71,7 +71,9 @@
     "serverBytesMatchProven": false,
     "exactInstalledJavaParserReproduced": false,
     "newUploadAllowedAsRecoveryShortcut": false,
-    "newProfilingJobAllowedAsBudgetBypass": false
+    "newProfilingJobAllowedAsBudgetBypass": false,
+    "currentDiagnosticInputCaptureHash": "5909d1003e88231c1d41a799a12539127d27386f79a04ed345ad9d29eaaddb6d",
+    "currentDiagnosticInputCaptureConsumed": true
   },
   "workPackages": [
     {
@@ -1905,7 +1907,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Run the new read-only pinned capture once on VPS; no remote VPS execution capability available in this chat.",
+  "firstNextAction": "Run the newly qualified image/private-input preparation once on VPS, consuming no additional Engine/SQL/OAuth or application scope. Then qualify the minimal Onboarding execution controller and concrete review; no APPLY is ready or authorized yet.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2261,6 +2263,6 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "evidence/csv-m2-job-discovery-input-capture-20261026.json",
+  "currentCheckpoint": "evidence/onboarding-diagnostic-image-inputs-qualified-20261026.json",
   "runtimeEffectsByThisCheckpoint": 0
 }
