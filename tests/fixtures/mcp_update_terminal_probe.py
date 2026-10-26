@@ -20,6 +20,7 @@ with tempfile.TemporaryDirectory(prefix='ouf-ci-mcp-tty-')as directory:
     root=Path(directory);plan={'schema':'CI_SYNTHETIC_REVIEW_ONLY','case':case,'counts':{'retained':306},'deadlineNeverExtended':True};reviewed=core.digest(plan)
     (root/'review.json').write_bytes(core.encoded(plan));(root/'review.json').chmod(0o400)
     ctx=types.SimpleNamespace(core=core,root=root,terminal=terminal,check_sources=lambda:None,evidence=lambda name,row:states.append(row),read=lambda path,expected:json.loads(Path(path).read_bytes())if hashlib.sha256(Path(path).read_bytes()).hexdigest()==expected else(_ for _ in()).throw(ValueError('CI_REVIEW_CHANGED')))
+    ctx.case={'priorPreflight':{'synthetic':True}};ctx.proposal={'mcpReplacement':{'request':{'HostConfig':{'Memory':0}}}}
     original_plan=(root/'review.json').read_bytes();log=root/'operator.log';logger=entry.Logger(log);sys.stdout=logger;accepted=False;reason=None
     try:decision=entry.terminal(ctx,plan);accepted=True;assert decision['reviewHash']==reviewed
     except BaseException as error:reason=str(error)
