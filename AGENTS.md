@@ -1,3 +1,11 @@
+# CURRENT — STOP TTY LENGTH sul VPS; scope consumato, correzione in sviluppo, NESSUN comando nuovo
+
+VPS STOP_RECONCILE/EXACT_TERMINAL_REVIEW_LENGTH_EXCEEDED, complete=false/Exit2/DeliveryExit2, publicationClaimed=false. Review9dce80014009683896a26ffa7520a0d93d1cbd2212cd1eca37558c86f27eb020 NON acquisita; contatori cumulativi6writes/17GET/1preview/950031bytes. Receipt evidence/acquisition-descriptor-tty-input-stop-target-20261026.json. Scope tty-publication-continuation-v1 CONSUMATO; NON rilanciare deliveryed628/runtime174b, vecchi review/token/login/register/create/SQL o cambiarepath per aggirare STOP. Il comando dell'handoff OUF_ACQUISITION_DESCRIPTOR_TTY_CONTINUATION_20261026.md è STORICO, non eseguibile.
+
+Il reader carattere/echoOFF chiudeva al superamento72byte PRIMA diInvio. Ricezione input e superamento osservati, causa dei byte extra NON dimostrata: non attribuirla all'operatore. Nuovo reader candidato tools/human_terminal_line_review.py usa riga CANONICA VISIBILE, native Backspace/CtrlU e permette correzione righe errate entro la MEDESIMA review/scadenza; solo riga esatta+Invio può approvare. Nessun reset di budget/counters/deadline o consenso inferito. Vecchi reader/controller e reproducer conservati.
+
+Continuazione editable candidata incorpora tutti6/17/1/950031 e storiaIAM, legge e vincola STOP/result/review9dce+prefissi prima di nuovo login; una sola preview RESIDUA e unaPUBLISH dopo NUOVA reviewHUMAN concreta. Stessi massimi7writes/160GET/2preview/32MiB, nessun REGISTER/CREATE/Engine/SQL/Registry lifecycle. Nuovo fixedchild costituisce operazione RESIDUA esplicita dopo qualifica, non replay vecchio. NESSUNA consegna VPS prima di log CI diretti sudo/use_pty e!use_pty, editing/paste duplicato/riga errata corretta/noEnter/scadenza/restauro, rootcustody e owner deployedJava21/PG17. E2E/G4/F5/F6 OPEN; Supervisor dopoE2E; no terza acquisizione/attivazione/reset/merge/releaseacceptance. Gli header sotto sono STORICI.
+
 # CURRENT — difetto sudo+pipe riprodotto; continuazioneTTY qualificata/consegnata, prima esecuzione VPS attesa
 
 UltimoVPS: STOP_RECONCILE/FINITE_HUMAN_WINDOW_EXPIRED, humanReviewApprovedfalse, nessunPUBLISHclaim,6writes/13GET/1preview/744072bytes. Scopeoriginale e review6ff5...CONSUMATI. Nessuna colpaoperatore dedotta; no vecchi wrapper/approval/login/token/register/create/lookupSQL replay/reset.

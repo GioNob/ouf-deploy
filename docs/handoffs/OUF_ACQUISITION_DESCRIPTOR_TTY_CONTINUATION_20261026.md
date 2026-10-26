@@ -1,3 +1,7 @@
+# SUPERATO — comando CONSUMATO, NON eseguire
+
+VPS 26ottobre2026: STOP_RECONCILE/EXACT_TERMINAL_REVIEW_LENGTH_EXCEEDED, Exit2/DeliveryExit2, publicationClaimed=false,6writes/17GET/1preview/950031bytes. Review9dce... non acquisita. Scope tty-publication-continuation-v1 CONSUMATO. Receipt: ../../evidence/acquisition-descriptor-tty-input-stop-target-20261026.json. Correzione in sviluppo/qualifica; nessun nuovo comando consegnato. Il testo seguente è STORICO e il suo comando non va rilanciato.
+
 # Pubblicazione residua con TTY in foreground — 26 ottobre2026
 
 ## Prova target e responsabilità
