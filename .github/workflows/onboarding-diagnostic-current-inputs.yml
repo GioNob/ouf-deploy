@@ -1,0 +1,35 @@
+name: Onboarding diagnostic current input capture
+on:
+  push:
+    paths: ['scripts/capture-onboarding-diagnostic-inputs-20261026.py', 'tests/test_onboarding_diagnostic_current_inputs.py', '.github/workflows/onboarding-diagnostic-current-inputs.yml']
+  pull_request:
+    paths: ['scripts/capture-onboarding-diagnostic-inputs-20261026.py', 'tests/test_onboarding_diagnostic_current_inputs.py', '.github/workflows/onboarding-diagnostic-current-inputs.yml']
+permissions: {contents: read}
+jobs:
+  bounded-inputs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: python3 -m unittest discover -s tests -p test_onboarding_diagnostic_current_inputs.py -v
+      - name: Native Engine closed GET transport
+        run: |
+          docker run -d --name ouf-ci-onboarding-capture alpine:3.22 sleep 120
+          python3 - <<'PY'
+          import importlib.util,json,os,pathlib,socket,stat,struct,subprocess
+          spec=importlib.util.spec_from_file_location('capture','scripts/capture-onboarding-diagnostic-inputs-20261026.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+          cid=subprocess.check_output(['docker','inspect','--format','{{.Id}}','ouf-ci-onboarding-capture'],text=True).strip()
+          path=pathlib.Path('/var/run/docker.sock').resolve();info=path.lstat()
+          sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);sock.connect(str(path));peer=list(struct.unpack('3i',sock.getsockopt(socket.SOL_SOCKET,socket.SO_PEERCRED,12)));sock.close()
+          class C:
+              counts={'engineGets':0,'bytes':0}
+              def put(self,name,value): pass
+          c=C();binding={'socketPath':str(path),'socketBinding':[info.st_dev,info.st_ino,info.st_uid,info.st_gid,stat.S_IMODE(info.st_mode)],'peerCredentials':peer}
+          engine=m.Engine(c,binding,[cid]);engine.get('/v1.44/info');first=engine.get('/v1.44/containers/'+cid+'/json');second=engine.get('/v1.44/containers/'+cid+'/json')
+          assert m.stable_binding(first)==m.stable_binding(second) and c.counts['engineGets']==3
+          try:engine.get('/v1.44/info');raise AssertionError('fourth GET allowed')
+          except m.Stop:pass
+          print('NATIVE_ENGINE_THREE_GETS_BOUNDARY_PASS')
+          PY
+      - if: always()
+        run: docker rm -f ouf-ci-onboarding-capture || true
