@@ -4,6 +4,10 @@
 
 **M1 resta acquisito. Anche tipi decimal/date, ASSETS/LATEST, riconciliazione UDP, recovery downstream e no-revision isolato hanno già codice/prove da riusare.** L'audit è completato: 63 file fissati, cinque storie Git confrontate, otto log CI riletti e 32 criteri mappati. Il residuo non è una riscrittura dei motori.
 
+## Avanzamento D2
+
+Composizioni in draft [MCP #80](https://github.com/GioNob/ouf-mcp-server/pull/80) e [Onboarding #53](https://github.com/GioNob/ouf-source-onboarding/pull/53). MCP full CI PASS; Onboarding modulo 293 test senza failure/error/skip e diagnostica PASS. Browser ancora in corso, non accettato. [Checkpoint dei pin e log](../evidence/csv-m2-typed-recovery-composition-20261026.json). D2 resta parziale: coorte restante e prova owner reale aperte; D3/D4/D5 e causa Farmacie non risolti. Nessun deploy eseguito.
+
 ## Percorso concreto
 
 | Delta | Lavoro | Riuso | Uscita / dipendenze |

@@ -1,3 +1,13 @@
+# CURRENT — M2 D2: prime composizioni MCP/Onboarding con CI core positiva
+
+26 ottobre 2026. Dall'audit si passa al codice riusato: MCP draft PR80/source1a5acb8ab531472eb8dc25470211e36db5c022cf e Onboarding draft PR53/source6f318865330602f3cde6bc5b52092e7585c70bde. [Checkpoint](evidence/csv-m2-typed-recovery-composition-20261026.json). ASSETS/LATEST e decimal/date composti con diagnostica/READ MCP e finite readiness/diagnostica Onboarding; non sostituite intere linee e non fusa alcuna PR.
+
+MCP full CI push40377495833/job121764446768 PASS con log diretto: test/race/pairwise/build/staticcheck/govulncheck; recovery40377495828 e schema40377496197 PASS; diagnostica40377504930 e binding40377505208 PASS. Fixture items corretta e contenuto verificato. Le due entry acquisition READ sono identiche; tutto il resto del catalogo, salvo3entry managed, preservato. Test owner resta sintetico. L'optional pairwise skip della suite selezionata è coperto dalla distinta esecuzione nel full CI, non cancellato.
+
+Onboarding full push40377764772/job121765384154 PASS, log diretto:293 test modulo/0failure/error/skip; review18 (inclusi budget finiti+LATEST), recovery2, compiler9. Diagnostica mirata40377764748/job121765386547 PASS/9test senza skip. Build/scan PASS. Browser40377764880/job121765384593 ANCORA IN CORSO all'ultimo controllo durante installazione Chromium: non dichiararlo PASS. Artefatto push Onboarding è evidence, non image; immagine esatta/archivio non ancora scaricati/verificati per target.
+
+D2 PARZIALE: resta coorte Gateway/Ingestion/UDP e composizione owner reale. D3job/etichetta, D4profiling e D5vocab/relazioni NON chiusi. Nessuna migrazione/profile-worker cambiata. Farmacie stessoFAILED, causa NON osservata; M1/G4 invariato, M2/G5/G6/G7 aperti. Nessuna installazione, authority nuova, grant, profiling/acquisizione, reset, replay, merge o release acceptance. NEXT qualifica browser/coorte, quindi delta owner; D1 deve ottenere causa minimizzata dello stesso job. Non consegnare APPLY sulla base di CI/source readiness. Gli header seguenti sono storici rispetto a questo checkpoint.
+
 # CURRENT — Audit M2 completato: codice e CI riusabili, soli delta D1–D7
 
 26 ottobre 2026. Confronto puntuale richiesto dall'owner completato: [audit](docs/OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md), [inventario](evidence/csv-m2-code-evidence-gap-audit-20261026.json), [mini-PET 1.2](docs/OUF_M2_MINIPET_v1_0_20261026.md), [roadmap](docs/OUF_M2_ROADMAP_20261026.md). 63 file pinned di sei owner, cinque compare Git, otto log CI esistenti riletti; tutti i 24 AT e 8 UX mappati. Non ripetere l'inventario generico.

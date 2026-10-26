@@ -1905,7 +1905,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "D1: obtain minimized owner cause for the same FAILED Farmacie job; D2 can proceed independently by composing existing typed/ASSETS/LATEST/review deltas with current hardening. Audit is complete, not a new todo. No upload/profile replay or runtime deployment authorized by this plan.",
+  "firstNextAction": "D2 MCP/Onboarding source composition has core CI evidence; finish browser and remaining owner cohort checks. D3 job/work projection and D4/D5 remain open. D1 retained Farmacie diagnosis is still required; do not replay upload/profile or apply unqualified sources.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2162,7 +2162,24 @@
       ],
       "dependsOn": [],
       "exit": "Coorte esatta che preserva readiness/diagnosi/READ e passa contratti owner/MCP/Gateway reali",
-      "remainingHours": null
+      "remainingHours": null,
+      "progress": {
+        "status": "PARTIAL_CORE_QUALIFIED_BROWSER_PENDING",
+        "components": [
+          {
+            "repository": "GioNob/ouf-mcp-server",
+            "commit": "1a5acb8ab531472eb8dc25470211e36db5c022cf",
+            "pullRequest": 80
+          },
+          {
+            "repository": "GioNob/ouf-source-onboarding",
+            "commit": "6f318865330602f3cde6bc5b52092e7585c70bde",
+            "pullRequest": 53
+          }
+        ],
+        "evidenceRef": "evidence/csv-m2-typed-recovery-composition-20261026.json",
+        "complete": false
+      }
     },
     {
       "id": "D3",
@@ -2236,5 +2253,6 @@
       "exit": "AT/UX al livello richiesto, DS1R/fault/due client/secondo profilo/dossier, M1 preservato e HUMAN M2",
       "remainingHours": null
     }
-  ]
+  ],
+  "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json"
 }
