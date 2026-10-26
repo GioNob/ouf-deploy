@@ -1,3 +1,5 @@
+> AGGIORNAMENTO: dopo nuovo mandato esplicito, creata UNA proposta c1908145/rev0/PENDING; nessun grant pubblicato. Leggere integralmente [il nuovo handoff HUMAN READ PENDING](OUF_POST_MCP_HUMAN_READ_PENDING_20261026.md). Installazione VPS positiva sotto resta prova valida e consumata.
+
 # OUF — MCP diagnostico installato sul VPS; E2E attende nuovo mandato READ — 26 ottobre 2026
 
 ## Risultato VPS realmente ricevuto
