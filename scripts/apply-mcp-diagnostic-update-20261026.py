@@ -51,7 +51,7 @@ def review(ctx):
 def terminal(ctx,value):
     c=ctx.core;reviewed=c.digest(value);deadline=time.monotonic()+900;wall=time.time()+900
     print('Revisione privata: '+str(ctx.root/'review.json'),flush=True)
-    print('SOLA sostituzione del MCP con immagine diagnostica qualificata. Breve indisponibilita MCP; vecchio fermo/scollegato/trattenuto, nessun rollback.',flush=True)
+    print('SOLA sostituzione del MCP con immagine diagnostica qualificata. Breve indisponibilita MCP; vecchio fermo/scollegato/trattenuto, MAC/IP e porte pubblicate correnti conservati, nessun rollback.',flush=True)
     print('Sei componenti esistenti, Registry e Gateway intatti. Nessuna rotta, migrazione, grant, fonte o acquisizione.',flush=True)
     print('Include schema HUMAN CAPABILITIES e motivo/versione dei dinieghi sulle sole due READ. Normale bootstrap OAuth e aggiornamento catalogo manifest del nuovo MCP possono avvenire.',flush=True)
     print('Due chiavi installazione esistenti: tre firme dopo consenso (verifiche ripetute, massimo15 aperture chiave). Nessuna credenziale applicativa letta dal repair.',flush=True)

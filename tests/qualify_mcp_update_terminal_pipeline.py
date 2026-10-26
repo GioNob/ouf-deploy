@@ -1,5 +1,5 @@
 """Unprivileged real sudo/TTY through the exact new MCP prompt and logger."""
-import fcntl,json,os,re,select,shlex,signal,subprocess,tempfile,time
+import fcntl,json,os,re,select,shlex,signal,subprocess,tempfile,termios,time
 from pathlib import Path
 BASE=Path(__file__).resolve().parents[1]
 assert os.geteuid()!=0

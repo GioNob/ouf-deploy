@@ -3,7 +3,7 @@
 This module is not a production entrypoint. The sealed entrypoint supplies its
 fixed target bindings; explicit alternate bindings are only used by CI fixtures.
 """
-import copy,hashlib,os,re,shutil,stat,subprocess,sys,time
+import copy,hashlib,ipaddress,os,re,shutil,stat,subprocess,sys,time
 from pathlib import Path
 from urllib.parse import quote
 class Stop(RuntimeError):pass
@@ -44,6 +44,23 @@ class Context:
                 and self.native['runtimeAuthorityIssued']is False and self.native['proposal']['capturedInputsHash']==case['inputsHash'],'EXACT_PREPARED_MCP_NATIVE_PLAN_REQUIRED')
         self.native['candidateFacts']={'mcp':{'audit':self.native['imageAudit']}} # local adapter, never rewrites retained native-plan bytes
         self.proposal=copy.deepcopy(self.native['proposal']);request=self.proposal['mcpReplacement']['request'];request['Image']=case['nativeImageId']
+        old=self.inputs['currentObservations']['mcp'];net=self.proposal['mcpReplacement']['network'];endpoint=old['NetworkSettings']['Networks'][net['name']]
+        retained_ipam=copy.deepcopy(endpoint.get('IPAMConfig')or{})
+        require(type(retained_ipam)is dict and set(retained_ipam)<={'IPv4Address','IPv6Address','LinkLocalIPs'},'CLOSED_RETAINED_MCP_ENDPOINT_ALLOCATION')
+        for source,target,version in(('IPAddress','IPv4Address',4),('GlobalIPv6Address','IPv6Address',6)):
+            address=endpoint.get(source)
+            if address:
+                parsed=ipaddress.ip_address(address);require(parsed.version==version and not parsed.is_unspecified and not parsed.is_multicast,'EXACT_OBSERVED_MCP_ENDPOINT_ADDRESS_REQUIRED')
+                require(retained_ipam.get(target)in(None,'',address),'RETAINED_STATIC_AND_OBSERVED_IP_MISMATCH');retained_ipam[target]=address
+        request['NetworkingConfig']['EndpointsConfig'][net['name']]['IPAMConfig']=retained_ipam
+        self.proposal['mcpReplacement']['endpointAddressPolicy']='RETAIN_EXACT_AUTHENTICATED_CURRENT_ENDPOINT_ADDRESSES_AFTER_OLD_STOP_AND_DETACH'
+        # Materialize any already allocated published port instead of requesting
+        # a new random host port. Values come only from the pinned current CID.
+        observed_ports=old['NetworkSettings'].get('Ports')or{}
+        for port,bindings in(request['HostConfig'].get('PortBindings')or{}).items():
+            if any(row.get('HostPort')in(None,'','0')for row in bindings):
+                actual=observed_ports.get(port);require(type(actual)is list and len(actual)==len(bindings)and all(type(r)is dict and str(r.get('HostPort','')).isdigit()and 1<=int(r['HostPort'])<=65535 for r in actual),'EXACT_ALREADY_ALLOCATED_PUBLISHED_PORT_REQUIRED')
+                request['HostConfig']['PortBindings'][port]=copy.deepcopy(actual)
         candidate=self.native['imageAudit']['imageConfig'];old_labels=request.get('Labels')or{};defaults=candidate.get('Labels')or{}
         require(all(k.startswith('org.opencontainers.image.')for k in set(defaults)-set(old_labels)),'ONLY_QUALIFIED_IMAGE_LABEL_DEFAULTS')
         self.proposal['mcpReplacement']['runtimeLabelProjection']={'expectedLabels':{**defaults,**old_labels}}
@@ -131,6 +148,8 @@ class Context:
         native=['driver-type','io.containerd.snapshotter.v1']in(info.get('DriverStatus')or[]);require(native==(self.proposal['nativeIdentityProfile']=='CONFIG_AND_NATIVE_MANIFEST'),'CURRENT_ENGINE_NATIVE_IDENTITY_PROFILE_CHANGED')
         s,net=self.preflight_get('/v1.44/networks/'+old['network']['id']);require(s==200 and net['Name']==old['network']['name']and net['Driver']=='bridge'and net['Scope']=='local','EXACT_CURRENT_NETWORK_REQUIRED')
         require(old['oldBinding']['containerId']in(net.get('Containers')or{}),'OLD_MCP_ENDPOINT_REQUIRED')
+        wanted=self.proposal['mcpReplacement']['request']['NetworkingConfig']['EndpointsConfig'][old['network']['name']]['MacAddress'].lower()
+        require([cid for cid,row in(net.get('Containers')or{}).items()if str(row.get('MacAddress','')).lower()==wanted]==[old['oldBinding']['containerId']],'SOLE_CURRENT_MCP_ENDPOINT_MAC_OWNER_REQUIRED')
         baseline=copy.deepcopy(net.get('Containers')or{})
         if hasattr(self,'network_baseline'):require(baseline==self.network_baseline,'NETWORK_CHANGED_DURING_HUMAN_REVIEW')
         self.network_baseline=baseline;self.admission()
@@ -174,7 +193,11 @@ class Context:
         if started:
             require(v['State']['Running']is True and v['State']['Paused']is False and v['State']['Restarting']is False and v['RestartCount']==0 and self.p.valid_mac(endpoint['MacAddress']),'EXACT_RUNNING_CANDIDATE_GENERATION_REQUIRED')
             requested=request['NetworkingConfig']['EndpointsConfig'][name];require(all(a in(endpoint.get('Aliases')or[])for a in requested.get('Aliases',[])),'EXACT_CANDIDATE_ALIASES_REQUIRED')
-            if role=='mcp':require(endpoint['MacAddress'].lower()==requested['MacAddress'].lower(),'EXACT_RETAINED_MCP_ENDPOINT_MAC_REQUIRED')
+            if role=='mcp':
+                require(endpoint['MacAddress'].lower()==requested['MacAddress'].lower(),'EXACT_RETAINED_MCP_ENDPOINT_MAC_REQUIRED')
+                ipam=requested.get('IPAMConfig')or{}
+                for field,current in(('IPv4Address','IPAddress'),('IPv6Address','GlobalIPv6Address')):
+                    if ipam.get(field):require(endpoint.get(current)==ipam[field],'EXACT_RETAINED_MCP_ENDPOINT_IP_REQUIRED')
             else:
                 original=self.read(self.inputs['currentObservations'][role]['path'],self.inputs['currentObservations'][role]['sha256']);require(endpoint['MacAddress'].lower()!=next(iter(original['NetworkSettings']['Networks'].values()))['MacAddress'].lower(),'READ_REPLICA_MAC_MUST_DIFFER_FROM_LIVE_OWNER')
             require(v['Config'].get('MacAddress')in(None,'')or v['Config']['MacAddress'].lower()==endpoint['MacAddress'].lower(),'CONFIG_ENDPOINT_MAC_DRIFT')
