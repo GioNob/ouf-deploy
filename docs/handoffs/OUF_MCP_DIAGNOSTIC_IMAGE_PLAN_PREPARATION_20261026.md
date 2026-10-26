@@ -1,6 +1,20 @@
 # OUF — deposito immagine diagnostica MCP e piano privato, 26 ottobre 2026
 
-## STOP consegna precedente — gh assente, preparatore NON invocato
+## VPS ricevuto — immagine e piano preparati, scope CONSUMATO
+
+Ricevuto MCP_DIAGNOSTIC_IMAGE_AND_PLAN_PREPARED_NOT_AUTHORIZED/complete=true/Exit0/DeliveryExit0.
+InputsHash **fb4b7c9ae832e779192f1ff6e032e49c696752e182a57b8e9464f5a76000b3e4**; frozenPlanHash **d1baf924e456bd5d2ce5a9bd3b8cb6f12ea80016feb76cde3c1556eec497a142**;
+nativePlanHash **ff06ec1afc5da65dc6b6c64edb9ab9ec87926f4a9de7aec355b69b96c4cd8653**; nativeImageId **sha256:9a1af5be94ff3dda4084b829e824482c5cf863525375c6f104a3fe89517e781e**.
+Fonte9a374dd0 invariata, profilo target selezionato containerd.2metadataread/1ZIP/1nativearchive,
+zeroEngineGET/import/containerwrite/credenzialefile/chiavifirma/OAuth/SQL/Gateway/Registry/acquisizioni/attivazioni.
+currentRuntimeRevalidated=false/executionEntryQualified=false/continuationAuthorized=false/runtimeAuthorityIssued=false.
+[Receipt esatta](../../evidence/mcp-denial-image-plan-prepared-target-20261026.json), log operatore
+/home/oufadmin/ouf-mcp-image-plan-delivery.0xfRH3H5/bootstrap.log, contenuto NON letto dall’assistente.
+Scope FISSO mcp-denial-image-plan-fb4b7c9ae832e779-v1 CONSUMATO: runtimea827/deliveryCURL5c26 e comando sotto STORICI NONrilanciabili.
+Nessun nuovo risultatoAPPLY/approvazione/runtimeAuthority. NEXT esecutoreSOLOMCP da implementare/qualificare,
+vincolato nativePlanff06/frozend1ba e nuova reviewHUMAN concreta primachiavi/effetti; mai vecchio controller/authority/scope.
+
+## STOP consegna precedente (storia) — gh assente, preparatore NON invocato
 
 L’operatore restituisce wrapper checksumOK poi STOP comando richiesto assente:gh, DeliveryExit127,
 DeliveryDirectory/home/oufadmin/ouf-mcp-image-plan-delivery.JhylPt4L e bootstrap.log; nessun Exit del preparatore.
@@ -141,9 +155,9 @@ VecchioSTOPgh riprodotto prima di root/scope; NUOVOwrapper scarica DAVVERO sorge
 SHA esatto e log conservati. Cattura CI volutamente sintetica/hasherrato produceSTOP_EXACT_CAPTURE_BYTES_REQUIRED
 primaZIPstaging: il job PASS prova trasporto e guard, NON una preparazioneVPS positiva.
 Preparazione positiva separata provata con artifactreale+metadata sintetici su entrambi backend.
-Nessun risultato VPS della nuova consegna CURL ancora ricevuto, nessuna APPLY pronta/autorità/runtimeeffetti/E2E.
+Risultato VPS positivo ricevuto sopra: nuova consegna CURL e preparazione ora CONSUMATE. Nessuna APPLY pronta/autorità/runtimeeffetti/E2E.
 
-## Comando NUOVO CURL — prima invocazione del preparatore
+## Comando STORICO CONSUMATO — NON eseguire
 
 ```bash
 (
