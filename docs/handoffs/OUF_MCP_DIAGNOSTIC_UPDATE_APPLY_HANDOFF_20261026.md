@@ -1,3 +1,5 @@
+> SUPERATO: prima APPLY eseguita e fermata PRIMA review con FINITE_RETAINED_MCP_HOST_POLICY_REQUIRED/Exit2/DeliveryExit2. Scope/codeROOT CONSUMATI; comando sotto STORICO, NON rilanciare. Leggere integralmente [il nuovo handoff di riconciliazione](OUF_MCP_HOST_POLICY_STOP_RECONCILIATION_20261026.md).
+
 # OUF — prima APPLY qualificata del solo MCP diagnostico — 26 ottobre 2026
 
 ## Punto esatto, nessuna APPLY nuova eseguita
