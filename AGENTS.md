@@ -1,3 +1,16 @@
+# CURRENT — descrittori PUBBLICATI sul VPS; proposta READ temporanee PENDING, solo conferma THS
+
+VPS EXISTING_ACQUISITION_DESCRIPTORS_PUBLISHED_GRANTS_UNCHANGED/complete=true/Exit0/DeliveryExit0. DoppioincollaIDENTICO=UNA esecuzione. Reviewe16e816b6ab0c78c7645b22cb72aec357e2730ca133c68f32c0db538be6cbf07,TTY72byte+Enter/rejected0; draftcb75...revision1/policy49/hashb4bed35f9fe591aa828a50f8d2fc7c7d8aeb054b88c320f0a66b9c51f2d50a8e,106grantpreservati.7writes/27GET/2preview/1554476bytes/UNpublish/0register-create/grantnuovo/Engine/SQL/Registrytouch. StorieIAMeSQLstorica preservate. Scope editable-review-continuation-v1 CONSUMATO; NON rilanciaredelivery059ea7fc/runtime3d8408ac o precedenti. Nessun nuovo comandoVPS.
+
+**Handoff corrente INTEGRALE:** docs/handoffs/OUF_ACQUISITION_DESCRIPTORS_PUBLISHED_PENDING_READ_GRANTS_20261026.md.
+Receipt evidence/acquisition-existing-descriptors-published-target-20261026.json; proposta evidence/acquisition-governed-read-grants-proposal-20261026.json.
+MCPouf-admin ROLESduelettureidentiche2ruoli/34adminpermission/2assegnazioni(digest7081...invariato),GRANTS82/nextAfternull/policy49. Mancanti5READgrant, storicoingestion.run.readconservato. Esposizionetool eGRANTSconfigurati NON provanoALLOW/scopesOAuth. Scopeintrospection nonesposta; PluginManagementescludeOAuth, niente tokenread/reauth/bypass. NessunaREADacquisizione invocataora.
+
+UNA proposalREPLACE_ROLES64655de1-bf1e-4acd-aada-d2f27154539a/rev0/PENDING/finalPolicyRefnull, una proposal.read confermaPENDING. Catalogointero preservaoriginali;aggiunge2ruoli6READciascuno/2assegnazioninominaliouf-admin,runesattebb2...ea320.../sourceteatri-csv-6609b245/module/detailelabelsOPEN-ANONYMOUS. Validità07:24:50→09:24:50EuropeRome26ottobre2026(+01,CET),UT C06:24:50→08:24:50. Reviewscade07:39:58EuropeRome(06:39:58Z). approvalPathhttps://api.ouf-lab.it/trusted-human/authorization/?proposal=64655de1-bf1e-4acd-aada-d2f27154539a.
+DecisioneSOLOHUMANdirettaTHS conouf-admin, MAIagente/MCP/browserapprova. Nessungrantpubblicato oapprovazione ricevutaora. Noncrearealtreproposte/riusareexpired/rifiutate; seambiguoSTOPeproveconservate.
+
+NEXT: dopoHUMAN,proposal.readSTESSOID→PUBLISHED/finalPolicyRef,ROLES/GRANTSfreschi+preservazione/vincoli,POI4READbounded delleDUEacquisizioniesistenti ecorrelazionedurableACK/watermark/intake/materialization/provenance/13identità/20IRI/8Cinema. OAuthscopeeffettivo resta NONprovato; governatoREAD dopo grantvero potrà provarloo negarlo,403mai replayautomatico. Niente terzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. E2E/G4/F5/F6OPEN,Supervisor dopoE2E. Header sotto STORICI.
+
 # CURRENT — STOP input consumato; continuazione con riga VISIBILE qualificata, prima esecuzione VPS attesa
 
 UltimoVPS STOP_RECONCILE/EXACT_TERMINAL_REVIEW_LENGTH_EXCEEDED, complete=false/Exit2/DeliveryExit2/publicationClaimed=false. Review9dce...NON acquisita;6writes/17GET/1preview/950031bytes. Receipt evidence/acquisition-descriptor-tty-input-stop-target-20261026.json. Scope tty-publication-continuation-v1 CONSUMATO. Nessun vecchio wrapper/review/login/token/register/create/SQL replay o reset. Causa dei byteextra non dimostrata; non attribuirla all'operatore.

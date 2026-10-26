@@ -1,3 +1,7 @@
+# SUPERATO — pubblicazione VPS riuscita; comando CONSUMATO, NON rilanciare
+
+EXISTING_ACQUISITION_DESCRIPTORS_PUBLISHED_GRANTS_UNCHANGED/complete/Exit0/DeliveryExit0, policy49/rev1/106grantpreservati. NEXT: [proposta READ HUMAN e due acquisizioni](OUF_ACQUISITION_DESCRIPTORS_PUBLISHED_PENDING_READ_GRANTS_20261026.md). Tutti i comandi sotto sono STORICI.
+
 # Continuazione residua con riga terminale visibile e modificabile — 26 ottobre 2026
 
 ## Ultimo risultato VPS, non CI
