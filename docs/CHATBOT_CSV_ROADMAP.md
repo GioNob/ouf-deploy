@@ -1,3 +1,12 @@
+# CURRENT — OAuth riconnesso: owner READ raggiunti; dettagli REDACTED, E2E aperto
+
+Handoff corrente INTEGRALE: docs/handoffs/OUF_POST_OAUTH_OWNER_REDACTION_20261026.md. Evidence evidence/acquisition-post-oauth-owner-redaction-20261026.json.
+Owner conferma riconnessioneouf-admin dopoIAM39scope. DueREADdistinte Ingestion+UDP sullaSOLArunbb2.../teatri-csv-6609b245/limit100 a13:05Z conpolicy51valida: isErrorfalse/schemaowner/decisionRef51. VecchioSCOPE_MISSING MCP superato perquestechiamate; requireOPENowner di tutte6capability passa, nonJWTintrospection.
+IngestionSUCCEEDED/bundle2checksum7cebf/pubdffa2/managedhash08b206/snapshotmatches=true,13attempt/13lineage/13handoff/0failed/0quarantine,watermarkseq13/ACKprefix/matchesCandidate/notBeforeAcktrue. MA items0/partialtrue/REDACTED. UDPitems0/partialtrue/REDACTED: NONprovaassenzaintake/materializzazione. EntrambinextCursornull.
+Fontepinned: Ingestionredactsolo labelsVisible (labelmetadata assente/malformed/unknown odecisionperlabel); UDPanchetenantRAW/object eguardobject/property. Actualstoredlabel eguardesattoNONesposti; RESTRICTEDsolaipotesi, nonallargaregrantalla cieca. GRANTS51hash449d/READlabelsOPEN+ANONYMOUS,nessunamutazione.
+STOPnessunretry/cursor/secondarun. NEXTdiagnosiownerminimizzata della redazione senza rawSQL/token/log/APIbypass; nonaltrariconnessione oAPPLYconsumata. Eventualecodicediagnostico richiedequalifica epianoreviewHUMAN prima runtime. Policy51fino15:14:26CET26ottobre/14:14:26Z,nessunrinnovoautomatico.
+E2E/G4/F5/F6OPEN,SupervisorDOPOE2E. SoloDUErunesistenti,noattivazione/terzaacquisizione/reset/Registryrestart/reinstall/merge/releaseacceptance. Header sotto STORICI.
+
 # CURRENT — IAM READ completato: 39 assegnazioni verificate, nuova autenticazione HUMAN richiesta
 
 Handoff corrente INTEGRALE: docs/handoffs/OUF_IAM_READ_SCOPES_COMPLETED_20261026.md.
