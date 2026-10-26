@@ -1,3 +1,22 @@
+# CURRENT — STOP input consumato; continuazione con riga VISIBILE qualificata, prima esecuzione VPS attesa
+
+UltimoVPS STOP_RECONCILE/EXACT_TERMINAL_REVIEW_LENGTH_EXCEEDED, complete=false/Exit2/DeliveryExit2/publicationClaimed=false. Review9dce...NON acquisita;6writes/17GET/1preview/950031bytes. Receipt evidence/acquisition-descriptor-tty-input-stop-target-20261026.json. Scope tty-publication-continuation-v1 CONSUMATO. Nessun vecchio wrapper/review/login/token/register/create/SQL replay o reset. Causa dei byteextra non dimostrata; non attribuirla all'operatore.
+
+**Handoff corrente INTEGRALE e comando unico:** docs/handoffs/OUF_ACQUISITION_DESCRIPTOR_EDITABLE_CONTINUATION_20261026.md.
+Runtime3d8408ac6154d667ab64042561f5d3d14b9f7a84/SHA5ad8bd38a51ba13aee3501c6dffe3629583c0eeb3fe20fdedac04f62f8d4884d;
+delivery059ea7fc60b19916bf484bd7bfc483407840540b/wrapperSHA8578584cb6b8ca33bafde94229406f8c1ab8da203c768053bcd688d72dcfce6a.
+Nuovo childFISSO editable-review-continuation-v1 sottoTTYconsumato; codiceROOT400/dir700/checksumROOT/logruntimeinterno600, sudo diretto SENZA pipe. Lettore canonicoVISIBILE: Backspace/CtrlU/Invio e righeerrate correggibili nella STESSA review/scadenza, nessun reset o approvazione implicita. EOF/scadenza/cancellazione restanoSTOP; mai riaprireSTOP. Solo NUOVO APPROVO hashfresco+Invio reale, nessuna approvazione agenteproduction.
+
+Cumulativi6/17/1/950031 e storiaIAM incorporati. Guard exactSTOP/result/review9dce/priorlookup/expired6ff/previewretained prima login, originaliimmutabili. PrepareSOLEGET, prima preview NON ripetuta. Unapreviewresidua2/2 eUNpublish6→7 dopoconsenso; stessi massimi7writes/160GET/2preview/32MiB,900sreview/1800total/tokenexp−15 senza estensione. NessunaREGISTER/CREATE/SQL/Engine/lifecycle/chiaviprivate/credfile/grantnuovo. Rawreceiptmutante privata prima guard, ambiguoCLAIMED/no replay.
+
+CI finalepush40278392372/PR40278398191:12unitPTY+25trasporti sudo reali PERbackenduse_pty/!use_pty PASS/0skip; push40278392359/PR40278398186:8protocol+6rootcustody+3ownerJava21/PG17 PASS/0skip, logdirettiletti. Vecchioerrorelunghezza evecchioTIMEOUTpipe riproduttori conservati; correction noncambiahash/deadline/counters. Ownerdeployed1b1222ce reale/SDK/serialization/transazioni/ETag0→1; principalIAM/storia/decisioniCI sintetici, externalRuntimeSynchronizer mocked. Non provaVPS/E2E/THSacceptance.
+Nessun risultatoVPS della nuova continuazione ricevuto. STOPconsuma nuovoscope, niente rerun/cambiopath/rollback.
+DopoPUBprovata: scopesMCP/ROLES/GRANTS fresche e nuova propostaHUMAN/THS su DUErun esistenti, poi4READ/correlazioneE2E. Tecnico8/8funzionale4/6, E2E/G4/F5/F6OPEN; SupervisordopoE2E. Nessunaterzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. Header sotto STORICI.
+
+## Regola permanente — approvazione terminale recuperabile
+
+Non usare raw input nascosto con STOP a72byte per review che l'owner deve incollare da cellulare. Usare canonical line editing visibile e feedback recuperabile sulle righe complete errate entro la STESSA scadenza/hash/contatori; solo riga esatta+Invio acquisisce consenso. Non dedurre inputlive dal transcript o incolpare l'operatore. Qualificare duplicatoCtrlU, rigaerrata+correzione,Backspace,LF/CR/CRLF/frammentato/noEnter/scadenza/restauro su intera catena sudo reale con/senza use_pty; includere prova hash/deadline/counters immutati e conservarereproducervecchio. Questo NON riapre scopeSTOP, ampliaautorità o autorizza replay.
+
 # CURRENT — difetto sudo+pipe riprodotto; continuazioneTTY qualificata/consegnata, prima esecuzione VPS attesa
 
 UltimoVPS: STOP_RECONCILE/FINITE_HUMAN_WINDOW_EXPIRED, humanReviewApprovedfalse, nessunPUBLISHclaim,6writes/13GET/1preview/744072bytes. Scopeoriginale e review6ff5...CONSUMATI. Nessuna colpaoperatore dedotta; no vecchi wrapper/approval/login/token/register/create/lookupSQL replay/reset.

@@ -1,6 +1,6 @@
-# SUPERATO — comando CONSUMATO, NON eseguire
+# SUPERATO — scope CONSUMATO, comando NON eseguibile
 
-VPS 26ottobre2026: STOP_RECONCILE/EXACT_TERMINAL_REVIEW_LENGTH_EXCEEDED, Exit2/DeliveryExit2, publicationClaimed=false,6writes/17GET/1preview/950031bytes. Review9dce... non acquisita. Scope tty-publication-continuation-v1 CONSUMATO. Receipt: ../../evidence/acquisition-descriptor-tty-input-stop-target-20261026.json. Correzione in sviluppo/qualifica; nessun nuovo comando consegnato. Il testo seguente è STORICO e il suo comando non va rilanciato.
+VPS STOP_RECONCILE/EXACT_TERMINAL_REVIEW_LENGTH_EXCEEDED/Exit2/DeliveryExit2,6writes/17GET/1preview/950031bytes, publicationClaimed=false. Prove in ../../evidence/acquisition-descriptor-tty-input-stop-target-20261026.json. NUOVO handoff e sola consegna residua qualificata: [OUF_ACQUISITION_DESCRIPTOR_EDITABLE_CONTINUATION_20261026.md](OUF_ACQUISITION_DESCRIPTOR_EDITABLE_CONTINUATION_20261026.md). Il comando sotto è STORICO e NON va rilanciato.
 
 # Pubblicazione residua con TTY in foreground — 26 ottobre2026
 
