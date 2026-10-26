@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """New signed MCP-only intent; deployment requires its qualified sealed delivery."""
 import ast,copy,hashlib,json,os,re,signal,stat,sys,sysconfig,time,types
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 def require(ok,code):
     if not ok:raise RuntimeError(code)
 def sha(raw):return hashlib.sha256(raw).hexdigest()
@@ -56,6 +58,7 @@ def terminal(ctx,value):
     print('Esecuzione900secondi+30 di sola quarantena del proprio nuovo MCP non committed. Stop ambiguo conserva CLAIMED; nessun rilancio o reset.',flush=True)
     print('Massimi: '+json.dumps(c.LIMITS,sort_keys=True),flush=True)
     print('I grant READ50 sono scaduti; questa revisione non li rinnova e non autorizza chiamate acquisition o accettazione E2E/release.',flush=True)
+    print('Scadenza concreta della review: '+datetime.fromtimestamp(wall,ZoneInfo('Europe/Rome')).isoformat()+' (Europe/Rome)',flush=True)
     print('Tempo per inserire la review:900secondi. La riga errata resta correggibile entro la stessa scadenza. Inserisci ESCLUSIVAMENTE la riga seguente e premi Invio:',flush=True)
     print('APPROVO '+reviewed,flush=True)
     def guard():

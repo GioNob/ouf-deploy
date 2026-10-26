@@ -122,6 +122,7 @@ class Context:
     def preflight_get(self,path):
         self.reserve('engineGets');return self.engine.request('GET',path)
     def current(self):
+        print('Verifico sette generazioni correnti, nome retained e rete; sole letture Engine.',flush=True)
         self.check_sources()
         for role,b in self.proposal['existingApplications'].items():
             s,v=self.preflight_get('/v1.44/containers/'+b['containerId']+'/json');require(s==200 and v['State']['Running']is True and self.p.stable_binding(v)==b and self.p.process_pin(v['State']['Pid'])==self.inputs['currentProcessPins'][role],'EXACT_SEVEN_CURRENT_GENERATIONS_REQUIRED')
