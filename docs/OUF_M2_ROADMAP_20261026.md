@@ -4,7 +4,11 @@
 
 **M1 resta acquisito. Anche tipi decimal/date, ASSETS/LATEST, riconciliazione UDP, recovery downstream e no-revision isolato hanno già codice/prove da riusare.** L'audit è completato: 63 file fissati, cinque storie Git confrontate, otto log CI riletti e 32 criteri mappati. Il residuo non è una riscrittura dei motori.
 
-## Avanzamento D2
+## Avanzamento D3 e diagnosi
+
+Onboarding PR53 source976c478d: discovery del job conservato, CI modulo296/0skip, browser4/0skip e diagnostica9/0skip PASS. Non installato. Nome originale non persistito: etichetta derivata da metadata, nessun nome di dominio inventato. [Checkpoint corrente](../evidence/csv-m2-job-discovery-input-capture-20261026.json). Prossimo passo fondamentale: una nuova lettura VPS qualificata, treGET/tre file, per preparare la diagnosi dello stesso FAILED. Nessuna APPLY, SQL o esecuzione profiling.
+
+## Avanzamento D2 (checkpoint precedente)
 
 Composizioni in draft [MCP #80](https://github.com/GioNob/ouf-mcp-server/pull/80) e [Onboarding #53](https://github.com/GioNob/ouf-source-onboarding/pull/53). MCP full CI PASS; Onboarding modulo 293 test senza failure/error/skip e diagnostica PASS. Browser ancora in corso, non accettato. [Checkpoint dei pin e log](../evidence/csv-m2-typed-recovery-composition-20261026.json). D2 resta parziale: coorte restante e prova owner reale aperte; D3/D4/D5 e causa Farmacie non risolti. Nessun deploy eseguito.
 
