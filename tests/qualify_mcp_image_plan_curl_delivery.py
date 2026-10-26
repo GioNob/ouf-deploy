@@ -12,7 +12,7 @@ owner=int(os.environ['SUDO_UID']);assert owner>0
 account=pwd.getpwuid(owner);group=account.pw_gid
 root=Path('/var/lib/ouf-mcp-curl-delivery-ci');assert not root.exists();root.mkdir(mode=0o755)
 minimal=root/'bin';minimal.mkdir(mode=0o755)
-for name in('bash','curl','id','mktemp','chmod','tee','sudo'):
+for name in('bash','curl','id','mktemp','chmod','tee','sudo','sha256sum'):
     source=shutil.which(name);assert source;os.symlink(source,minimal/name)
 assert shutil.which('gh',path=str(minimal))is None
 assert shutil.which('timeout',path=str(minimal))is None
