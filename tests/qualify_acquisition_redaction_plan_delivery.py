@@ -34,6 +34,9 @@ inputs['engineInfo'].update(Driver='overlayfs',DriverStatus=[['driver-type','io.
 m=module('sealed_actual_entry',sealed/'prepare.py')
 captured=root/'captured';captured.mkdir(mode=0o700)
 m.INPUT_HASH=m.digest(inputs);m.INPUT_ROOT=captured;m.ROOT=root/'prepared'
+# Function keyword defaults bind at definition time; redirect both globals and
+# defaults to the same isolated synthetic custody roots. Production bytes stay sealed.
+m.prepare.__kwdefaults__.update(root=m.ROOT,input_root=m.INPUT_ROOT)
 result={'status':'ACQUISITION_REDACTION_UPDATE_INPUTS_CAPTURED_NOT_AUTHORIZED','complete':True,'inputsHash':m.INPUT_HASH,
         'counts':inputs['counts'],'containerWrites':0,'runtimeAuthorityIssued':False}
 for name,value in [('inputs.json',inputs),('result.json',result)]:
@@ -50,7 +53,7 @@ printed=io.StringIO()
 with contextlib.redirect_stdout(printed):code=m.main()
 assert code==2 and json.loads(printed.getvalue())['reasonCode']=='IMAGE_PLAN_SCOPE_CONSUMED_NO_REPLAY'
 assert state=={str(p.relative_to(m.ROOT)):list(m.frame(p.lstat()))for p in m.ROOT.rglob('*')}
-partial=root/'prior-claimed';partial.mkdir(mode=0o700);(partial/'claim.json').write_text('{}');m.ROOT=partial
+partial=root/'prior-claimed';partial.mkdir(mode=0o700);(partial/'claim.json').write_text('{}');m.ROOT=partial;m.prepare.__kwdefaults__['root']=partial
 printed=io.StringIO()
 with contextlib.redirect_stdout(printed):code=m.main()
 assert code==2 and {p.name for p in partial.iterdir()}=={'claim.json'}
