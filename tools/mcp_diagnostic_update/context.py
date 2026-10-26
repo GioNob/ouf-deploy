@@ -72,7 +72,8 @@ class Context:
         self.sync(path.parent)
     def read(self,path,expected):return self.p.decode(self.p.protected(Path(path),expected))
     def evidence(self,name,value):
-        self.serial+=1;self.write(self.root,name+'-%05d.json'%self.serial,value)
+        # Controller and its single forked watchdog never overwrite or collide.
+        self.serial+=1;self.write(self.root,name+'-'+str(os.getpid())+'-%05d.json'%self.serial,value)
     def retained(self,method,path,status,raw):
         self.receiptBytes+=len(raw);require(self.receiptBytes<=64*1024*1024,'FINITE_PRIVATE_RECEIPT_BYTE_BUDGET')
         self.evidence('raw-engine-response',{'method':method,'path':path,'status':status,'rawBodyHex':raw.hex()});self.responses+=1
@@ -134,7 +135,7 @@ class Context:
         self.network_baseline=baseline;self.admission()
     def admission(self):
         mem=Path('/proc/meminfo').read_text();rows=re.findall(r'^MemAvailable:\s+([0-9]+) kB$',mem,re.MULTILINE);required=max(self.proposal['mcpReplacement']['request']['HostConfig']['Memory'],268435456)+134217728
-        require(len(rows)==1 and int(rows[0])*1024>=required and shutil.disk_usage(self.root).free>=268435456+self.archive['bytes'],'FRESH_FINITE_MCP_CAPACITY_REQUIRED')
+        require(len(rows)==1 and int(rows[0])*1024>=required and shutil.disk_usage(self.root).free>=536870912+self.archive['bytes'],'FRESH_FINITE_MCP_CAPACITY_REQUIRED')
     def restore_policy(self,role):require(role=='mcp','MCP_ONLY_RESTART_POLICY');return self.proposal['mcpReplacement']['restoreRestartPolicy']
     def import_claim(self):
         row=self.execution.record();i=row['nextStage'];require(self.core.STAGES[i]=='IMPORT_MCP'and len(row['effects'])==i+1 and row['effects'][-1]['state']=='CLAIMED','CLAIMED_EXACT_NATIVE_IMPORT_REQUIRED')

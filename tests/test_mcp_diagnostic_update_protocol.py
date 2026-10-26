@@ -79,4 +79,24 @@ class Protocol(unittest.TestCase):
         engine.retained=lambda method,path,status,raw:events.append(('RAW_RECEIPT',status,raw))
         with self.assertRaises(ValueError):engine.request('POST','/v1.44/containers/create',{})
         self.assertEqual(events,['CLAIM',('RAW_RECEIPT',201,b'not-json-ambiguous')])
+    def test_real_fork_reproduces_legacy_receipt_collision_and_new_publishers_are_distinct(self):
+        import types
+        for legacy in(True,False):
+            folder=self.root/('legacy-receipt'if legacy else'new-receipt');folder.mkdir(mode=0o700)
+            ctx=types.SimpleNamespace(serial=0,root=folder,write=self.write)
+            def publish():
+                if legacy:
+                    ctx.serial+=1;ctx.write(folder,'raw-engine-response-%05d.json'%ctx.serial,{'syntheticPublisher':os.getpid()})
+                else:self.parts['context'].Context.evidence(ctx,'raw-engine-response',{'syntheticPublisher':os.getpid()})
+            r,w=os.pipe();child=os.fork()
+            if child==0:
+                try:
+                    os.close(w);os.read(r,1);publish();os._exit(0)
+                except FileExistsError:os._exit(53)
+                except BaseException:os._exit(54)
+            os.close(r)
+            try:publish();os.write(w,b'G');_,status=os.waitpid(child,0)
+            finally:os.close(w)
+            self.assertEqual(os.waitstatus_to_exitcode(status),53 if legacy else 0)
+            self.assertEqual(len(list(folder.glob('raw-engine-response-*.json'))),1 if legacy else 2)
 if __name__=='__main__':unittest.main()

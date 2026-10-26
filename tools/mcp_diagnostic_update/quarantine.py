@@ -72,7 +72,7 @@ def ensure_alive(ctx):
     pid=getattr(ctx,'watchdog_pid',None);expected=getattr(ctx,'watchdog_pin',None);ctx.core.require(pid is not None and pin(pid)==expected,'LIVE_BOUND_NEGATIVE_WATCHDOG_REQUIRED')
     raw=Path('/proc/'+str(pid)+'/stat').read_text();ctx.core.require(raw[raw.rfind(')')+2:].split()[0]not in('Z','X','x'),'NEGATIVE_WATCHDOG_EXITED')
 def launch(ctx,review,gate,journal):
-    parent=os.getpid();parent_pin=pin(parent);ctx.core.require(parent_pin is not None,'BOUND_CONTROLLER_PROCESS_REQUIRED');log=os.open(ctx.root/'watchdog.log',os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o400);r,w=os.pipe2(os.O_CLOEXEC);child=os.fork()
+    parent=os.getpid();parent_pin=pin(parent);ctx.core.require(parent_pin is not None,'BOUND_CONTROLLER_PROCESS_REQUIRED');log=os.open(ctx.root/'watchdog.log',os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o400);os.fchmod(log,0o400);r,w=os.pipe2(os.O_CLOEXEC);child=os.fork()
     if child:
         os.close(log);os.close(w)
         try:

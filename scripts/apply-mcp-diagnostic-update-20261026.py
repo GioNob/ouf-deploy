@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""New signed MCP-only intent; this file is NOT qualified for target delivery yet."""
+"""New signed MCP-only intent; deployment requires its qualified sealed delivery."""
 import ast,copy,hashlib,json,os,re,signal,stat,sys,sysconfig,time,types
 from pathlib import Path
 def require(ok,code):
@@ -43,7 +43,7 @@ def review(ctx):
            'preflightCounts':copy.deepcopy(ctx.counts),'verification':{'trustPolicy':ctx.authority_metadata['trustPolicy'],'openssl':ctx.openssl,'context':ctx.authority_metadata['context']},
            'retainedInstallationCounts':ctx.proposal['retainedInstallationCounts'],'retainedCaptureCounts':ctx.proposal['retainedCaptureCounts'],
            'retainedImagePreparationCounts':{'privateMetadataReads':2,'ciZipReads':1,'nativeArchivesPrepared':1,'engineGets':0,'containerWrites':0,'imageImports':0},
-           'maximumSigningOperations':3,'maximumPrivateSigningKeyOpens':15,'databaseRestoreAuthorized':False,'humanBudgetOrSourceActivationAuthorized':False,
+           'maximumSigningOperations':3,'maximumPrivateSigningKeyOpens':15,'maximumRawEngineReceiptBytesTwoPublishers':134217728,'databaseRestoreAuthorized':False,'humanBudgetOrSourceActivationAuthorized':False,
            'acquisitionCallsAuthorized':False,'gatewayMutationAuthorized':False,'automaticReplayAllowed':False,'budgetReset':False,'releaseAcceptance':False}
     c.validate_review(value);ctx.write(ctx.root,'review.json',value);return value
 def terminal(ctx,value):

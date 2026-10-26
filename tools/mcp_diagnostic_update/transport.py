@@ -33,7 +33,7 @@ class Engine:
         finally:c.close()
     def request(self,method,path,body=None):
         self.before(method,path,body)
-        status,raw=self.raw(method,path,body,timeout=15 if '/stop?'in path else None)
+        status,raw=self.raw(method,path,body,timeout=7 if path.endswith('/stop?t=2')else 15 if '/stop?'in path else None)
         self.retained(method,path,status,raw)
         return status,self.p.decode(raw)if raw else None
     def load_raw(self,archive,remaining):
