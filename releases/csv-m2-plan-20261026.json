@@ -1,7 +1,7 @@
 {
   "schema": "ouf.csv-m2-completion-plan.v1",
   "documentId": "OUF-MP-CSV-M2",
-  "version": "1.0",
+  "version": "1.1",
   "createdDate": "2026-10-26",
   "timezone": "Europe/Rome",
   "document": "docs/OUF_M2_MINIPET_v1_0_20261026.md",
@@ -83,13 +83,9 @@
         "Deploy"
       ],
       "dependencies": [],
-      "hours": {
-        "min": 4,
-        "central": 6,
-        "max": 8
-      },
+      "hours": null,
       "checkpoint": "M2.0",
-      "status": "OPEN",
+      "status": "OPEN_ACCEPTANCE_NOT_ASSERTED_MISSING_IMPLEMENTATION",
       "currentBlocker": "FAILED_PROFILE_ROOT_CAUSE_NOT_OBSERVED",
       "deliverables": [
         "Retained owner diagnostic evidence",
@@ -100,13 +96,16 @@
       "actualHours": null,
       "humanActualHours": null,
       "waitHours": null,
-      "remainingHours": {
+      "remainingHours": null,
+      "evidenceRefs": [],
+      "runtimeAuthorizationGranted": false,
+      "historicalV1Hours": {
         "min": 4,
         "central": 6,
         "max": 8
       },
-      "evidenceRefs": [],
-      "runtimeAuthorizationGranted": false
+      "remainingWorkKind": "DIAGNOSIS_AND_TARGETED_FIX_TO_DETERMINE",
+      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": true
     },
     {
       "id": "M2-WP2",
@@ -121,13 +120,9 @@
         "M2-WP1"
       ],
       "independentPreparationAllowed": true,
-      "hours": {
-        "min": 8,
-        "central": 10,
-        "max": 12
-      },
+      "hours": null,
       "checkpoint": "M2.1",
-      "status": "OPEN",
+      "status": "OPEN_ACCEPTANCE_NOT_ASSERTED_MISSING_IMPLEMENTATION",
       "deliverables": [
         "Capability and owner-read inventory",
         "Owner-derived progress and permitted next action",
@@ -137,13 +132,16 @@
       "actualHours": null,
       "humanActualHours": null,
       "waitHours": null,
-      "remainingHours": {
+      "remainingHours": null,
+      "evidenceRefs": [],
+      "runtimeAuthorizationGranted": false,
+      "historicalV1Hours": {
         "min": 8,
         "central": 10,
         "max": 12
       },
-      "evidenceRefs": [],
-      "runtimeAuthorizationGranted": false
+      "remainingWorkKind": "INTEGRATION_AND_UX",
+      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": true
     },
     {
       "id": "M2-WP3",
@@ -157,14 +155,10 @@
         "M2-WP2"
       ],
       "independentPreparationAllowed": true,
-      "hours": {
-        "min": 6,
-        "central": 8,
-        "max": 10
-      },
+      "hours": null,
       "checkpoint": "M2.2",
       "exitGate": "G5",
-      "status": "OPEN",
+      "status": "OPEN_ACCEPTANCE_NOT_ASSERTED_MISSING_IMPLEMENTATION",
       "deliverables": [
         "Declared CSV profile",
         "Farmacie mapping proposal",
@@ -175,13 +169,16 @@
       "actualHours": null,
       "humanActualHours": null,
       "waitHours": null,
-      "remainingHours": {
+      "remainingHours": null,
+      "evidenceRefs": [],
+      "runtimeAuthorizationGranted": false,
+      "historicalV1Hours": {
         "min": 6,
         "central": 8,
         "max": 10
       },
-      "evidenceRefs": [],
-      "runtimeAuthorizationGranted": false
+      "remainingWorkKind": "DELTA_INVENTORY_AND_TESTS",
+      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": true
     },
     {
       "id": "M2-WP4",
@@ -199,13 +196,9 @@
       "externalGates": [
         "Current domain authority and exact HUMAN review"
       ],
-      "hours": {
-        "min": 4,
-        "central": 6,
-        "max": 8
-      },
+      "hours": null,
       "checkpoint": "M2.3",
-      "status": "OPEN",
+      "status": "OPEN_ACCEPTANCE_NOT_ASSERTED_MISSING_IMPLEMENTATION",
       "deliverables": [
         "Row-to-object evidence",
         "MATCH NEW REVIEW and multi-source reconciliation",
@@ -215,13 +208,16 @@
       "actualHours": null,
       "humanActualHours": null,
       "waitHours": null,
-      "remainingHours": {
+      "remainingHours": null,
+      "evidenceRefs": [],
+      "runtimeAuthorizationGranted": false,
+      "historicalV1Hours": {
         "min": 4,
         "central": 6,
         "max": 8
       },
-      "evidenceRefs": [],
-      "runtimeAuthorizationGranted": false
+      "remainingWorkKind": "VERTICAL_TEST_AND_OBSERVED_FIXES",
+      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": true
     },
     {
       "id": "M2-WP5",
@@ -236,13 +232,9 @@
         "M2-WP4"
       ],
       "independentPreparationAllowed": true,
-      "hours": {
-        "min": 6,
-        "central": 8,
-        "max": 10
-      },
+      "hours": null,
       "checkpoint": "M2.4",
-      "status": "OPEN",
+      "status": "OPEN_ACCEPTANCE_NOT_ASSERTED_MISSING_IMPLEMENTATION",
       "deliverables": [
         "Same-configuration no-op evidence",
         "Fault and retry matrix",
@@ -253,13 +245,16 @@
       "actualHours": null,
       "humanActualHours": null,
       "waitHours": null,
-      "remainingHours": {
+      "remainingHours": null,
+      "evidenceRefs": [],
+      "runtimeAuthorizationGranted": false,
+      "historicalV1Hours": {
         "min": 6,
         "central": 8,
         "max": 10
       },
-      "evidenceRefs": [],
-      "runtimeAuthorizationGranted": false
+      "remainingWorkKind": "REUSE_AND_MISSING_TESTS",
+      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": true
     },
     {
       "id": "M2-WP6",
@@ -281,17 +276,13 @@
         "Current authority for exact final delta",
         "Explicit HUMAN M2 acceptance"
       ],
-      "hours": {
-        "min": 6,
-        "central": 8,
-        "max": 10
-      },
+      "hours": null,
       "checkpoint": "M2.5",
       "exitGates": [
         "G6",
         "G7"
       ],
-      "status": "OPEN",
+      "status": "OPEN_ACCEPTANCE_NOT_ASSERTED_MISSING_IMPLEMENTATION",
       "deliverables": [
         "Final cohort and justified regression evidence",
         "Two real-client end-to-end reports",
@@ -303,98 +294,72 @@
       "actualHours": null,
       "humanActualHours": null,
       "waitHours": null,
-      "remainingHours": {
+      "remainingHours": null,
+      "evidenceRefs": [],
+      "runtimeAuthorizationGranted": false,
+      "historicalV1Hours": {
         "min": 6,
         "central": 8,
         "max": 10
       },
-      "evidenceRefs": [],
-      "runtimeAuthorizationGranted": false
+      "remainingWorkKind": "FINAL_QUALIFICATION_AND_DOSSIER",
+      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": true
     }
   ],
   "schedule": {
-    "unit": "active_technical_hours",
-    "mode": "sequential_reference_order",
-    "excludes": [
-      "External waits",
-      "Separate contingency",
-      "Distinct HUMAN participation"
-    ],
+    "mode": "dependency_order_only",
+    "unit": null,
     "entries": [
       {
+        "order": 1,
         "workPackage": "M2-WP1",
-        "startActiveHour": 0,
-        "endActiveHour": 6,
         "checkpoint": "M2.0"
       },
       {
+        "order": 2,
         "workPackage": "M2-WP2",
-        "startActiveHour": 6,
-        "endActiveHour": 16,
         "checkpoint": "M2.1"
       },
       {
+        "order": 3,
         "workPackage": "M2-WP3",
-        "startActiveHour": 16,
-        "endActiveHour": 24,
         "checkpoint": "M2.2"
       },
       {
+        "order": 4,
         "workPackage": "M2-WP4",
-        "startActiveHour": 24,
-        "endActiveHour": 30,
         "checkpoint": "M2.3"
       },
       {
+        "order": 5,
         "workPackage": "M2-WP5",
-        "startActiveHour": 30,
-        "endActiveHour": 38,
         "checkpoint": "M2.4"
       },
       {
+        "order": 6,
         "workPackage": "M2-WP6",
-        "startActiveHour": 38,
-        "endActiveHour": 46,
         "checkpoint": "M2.5"
       }
-    ]
+    ],
+    "calendarCommitment": null
   },
   "effort": {
-    "baseRemainingHours": {
-      "min": 34,
-      "central": 46,
-      "max": 58
-    },
-    "separateContingencyHours": {
-      "min": 8,
-      "central": 12,
-      "max": 16
-    },
-    "prudentPlanningEnvelopeHours": {
-      "min": 42,
-      "central": 58,
-      "max": 74
-    },
-    "distinctHumanHours": {
-      "min": 2,
-      "max": 4
-    },
+    "status": "NOT_ESTIMATED_PENDING_DELTA_INVENTORY",
+    "baseRemainingHours": null,
+    "separateContingencyHours": null,
+    "prudentPlanningEnvelopeHours": null,
+    "distinctHumanHours": null,
     "actualHistoricalHours": null,
     "calendarCommitment": null,
-    "confidence": "LIMITED_UNTIL_FARMACIE_OWNER_DIAGNOSIS_AND_RESUME_INVENTORY",
-    "reestimateAt": [
-      "M2-WP1 cause observed",
-      "M2-WP2 inventory",
-      "M2-WP4 UDP evidence",
-      "Any work package upper estimate exceeded or structural gap found"
+    "reestimateFrom": [
+      "Farmacie owner diagnosis",
+      "Existing code/commit inventory",
+      "Reusable evidence and limits",
+      "Missing integration",
+      "Missing acceptance tests",
+      "Proven implementation defects"
     ],
-    "assumptions": [
-      "Existing engines and datastores reused",
-      "No structural identity redesign",
-      "Two real clients and isolated environment available",
-      "Limited governed deployment deltas"
-    ],
-    "noDoubleCounting": "Each active-hour entry belongs to one WP; completed M1 and completed intermediate rollouts are not recounted."
+    "noDoubleCounting": "Completed M1 and compatible evidence are reused. A test gap is not counted as implementation. No numeric successor estimate is asserted."
   },
   "requirements": [
     {
@@ -1198,84 +1163,206 @@
     "docs/OUF_RESILIENCE_POLICY.md"
   ],
   "canonicalScenarioAllocations": [
-  {
-    "scenarioId": "OUF-E2E-002",
-    "workPackages": [
-      "M2-WP5"
-    ],
-    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
-    "status": "OPEN_FOR_M2_FINAL_COHORT"
+    {
+      "scenarioId": "OUF-E2E-002",
+      "workPackages": [
+        "M2-WP5"
+      ],
+      "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+      "status": "OPEN_FOR_M2_FINAL_COHORT"
+    },
+    {
+      "scenarioId": "OUF-E2E-003",
+      "workPackages": [
+        "M2-WP5"
+      ],
+      "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+      "status": "OPEN_FOR_M2_FINAL_COHORT"
+    },
+    {
+      "scenarioId": "OUF-E2E-006",
+      "workPackages": [
+        "M2-WP4"
+      ],
+      "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+      "status": "OPEN_FOR_M2_FINAL_COHORT"
+    },
+    {
+      "scenarioId": "OUF-E2E-017",
+      "workPackages": [
+        "M2-WP4",
+        "M2-WP6"
+      ],
+      "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+      "status": "OPEN_FOR_M2_FINAL_COHORT"
+    },
+    {
+      "scenarioId": "OUF-E2E-018",
+      "workPackages": [
+        "M2-WP5",
+        "M2-WP6"
+      ],
+      "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+      "status": "OPEN_FOR_M2_FINAL_COHORT"
+    },
+    {
+      "scenarioId": "OUF-E2E-019",
+      "workPackages": [
+        "M2-WP3",
+        "M2-WP5"
+      ],
+      "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+      "status": "OPEN_FOR_M2_FINAL_COHORT"
+    },
+    {
+      "scenarioId": "OUF-E2E-020",
+      "workPackages": [
+        "M2-WP3",
+        "M2-WP4"
+      ],
+      "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+      "status": "OPEN_FOR_M2_FINAL_COHORT"
+    },
+    {
+      "scenarioId": "OUF-E2E-022",
+      "workPackages": [
+        "M2-WP2",
+        "M2-WP6"
+      ],
+      "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+      "status": "OPEN_FOR_M2_FINAL_COHORT"
+    },
+    {
+      "scenarioId": "OUF-E2E-025",
+      "workPackages": [
+        "M2-WP1",
+        "M2-WP5",
+        "M2-WP6"
+      ],
+      "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+      "status": "OPEN_FOR_M2_FINAL_COHORT"
+    }
+  ],
+  "revisionReason": "Separate retained M1 implementation/evidence from missing integration, tests and actual fixes; withdraw unsupported residual estimate.",
+  "historicalEstimate": {
+    "version": "1.0",
+    "commit": "26fa7b78593983fc54aa0b9a8d5c0142c26ff04f",
+    "status": "WITHDRAWN_AS_CURRENT_FORECAST",
+    "effort": {
+      "baseRemainingHours": {
+        "min": 34,
+        "central": 46,
+        "max": 58
+      },
+      "separateContingencyHours": {
+        "min": 8,
+        "central": 12,
+        "max": 16
+      },
+      "prudentPlanningEnvelopeHours": {
+        "min": 42,
+        "central": 58,
+        "max": 74
+      },
+      "distinctHumanHours": {
+        "min": 2,
+        "max": 4
+      },
+      "actualHistoricalHours": null,
+      "calendarCommitment": null,
+      "confidence": "LIMITED_UNTIL_FARMACIE_OWNER_DIAGNOSIS_AND_RESUME_INVENTORY",
+      "reestimateAt": [
+        "M2-WP1 cause observed",
+        "M2-WP2 inventory",
+        "M2-WP4 UDP evidence",
+        "Any work package upper estimate exceeded or structural gap found"
+      ],
+      "assumptions": [
+        "Existing engines and datastores reused",
+        "No structural identity redesign",
+        "Two real clients and isolated environment available",
+        "Limited governed deployment deltas"
+      ],
+      "noDoubleCounting": "Each active-hour entry belongs to one WP; completed M1 and completed intermediate rollouts are not recounted."
+    },
+    "schedule": {
+      "unit": "active_technical_hours",
+      "mode": "sequential_reference_order",
+      "excludes": [
+        "External waits",
+        "Separate contingency",
+        "Distinct HUMAN participation"
+      ],
+      "entries": [
+        {
+          "workPackage": "M2-WP1",
+          "startActiveHour": 0,
+          "endActiveHour": 6,
+          "checkpoint": "M2.0"
+        },
+        {
+          "workPackage": "M2-WP2",
+          "startActiveHour": 6,
+          "endActiveHour": 16,
+          "checkpoint": "M2.1"
+        },
+        {
+          "workPackage": "M2-WP3",
+          "startActiveHour": 16,
+          "endActiveHour": 24,
+          "checkpoint": "M2.2"
+        },
+        {
+          "workPackage": "M2-WP4",
+          "startActiveHour": 24,
+          "endActiveHour": 30,
+          "checkpoint": "M2.3"
+        },
+        {
+          "workPackage": "M2-WP5",
+          "startActiveHour": 30,
+          "endActiveHour": 38,
+          "checkpoint": "M2.4"
+        },
+        {
+          "workPackage": "M2-WP6",
+          "startActiveHour": 38,
+          "endActiveHour": 46,
+          "checkpoint": "M2.5"
+        }
+      ]
+    },
+    "reason": "Six WP allocations were not sufficiently derived from an item-level inventory of reusable code and evidence. Not every unaccepted M2 criterion is missing implementation."
   },
-  {
-    "scenarioId": "OUF-E2E-003",
-    "workPackages": [
-      "M2-WP5"
+  "reuseAssessment": {
+    "evidenceRef": "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
+    "implementationMustNotBeAssumedMissingFromOpenAcceptance": true,
+    "requiredPerItemFields": [
+      "requirement",
+      "existingComponentAndCommit",
+      "reusableEvidence",
+      "evidenceLimit",
+      "concreteDelta",
+      "newTestNeeded",
+      "remainingEstimate"
     ],
-    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
-    "status": "OPEN_FOR_M2_FINAL_COHORT"
-  },
-  {
-    "scenarioId": "OUF-E2E-006",
-    "workPackages": [
-      "M2-WP4"
+    "retainedM1": [
+      "Two existing Teatri acquisitions",
+      "13 stable canonical identities also joined per row/content",
+      "20 current selected property IRIs per object",
+      "26 receipt/lineage/content joins",
+      "Durable ACK/intake/materialization",
+      "Both-run provenance",
+      "Empty-string omission explanation",
+      "Eight Cinema IDs/revisions/property sets preserved"
     ],
-    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
-    "status": "OPEN_FOR_M2_FINAL_COHORT"
-  },
-  {
-    "scenarioId": "OUF-E2E-017",
-    "workPackages": [
-      "M2-WP4",
-      "M2-WP6"
+    "notProvenByM1Case": [
+      "Same-configuration full snapshot with no gratuitous canonical revision",
+      "Independent-source conflict/authority matrix",
+      "Autoguided new-CSV journey",
+      "Cross-chat durable resume",
+      "Two real independent clients"
     ],
-    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
-    "status": "OPEN_FOR_M2_FINAL_COHORT"
-  },
-  {
-    "scenarioId": "OUF-E2E-018",
-    "workPackages": [
-      "M2-WP5",
-      "M2-WP6"
-    ],
-    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
-    "status": "OPEN_FOR_M2_FINAL_COHORT"
-  },
-  {
-    "scenarioId": "OUF-E2E-019",
-    "workPackages": [
-      "M2-WP3",
-      "M2-WP5"
-    ],
-    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
-    "status": "OPEN_FOR_M2_FINAL_COHORT"
-  },
-  {
-    "scenarioId": "OUF-E2E-020",
-    "workPackages": [
-      "M2-WP3",
-      "M2-WP4"
-    ],
-    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
-    "status": "OPEN_FOR_M2_FINAL_COHORT"
-  },
-  {
-    "scenarioId": "OUF-E2E-022",
-    "workPackages": [
-      "M2-WP2",
-      "M2-WP6"
-    ],
-    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
-    "status": "OPEN_FOR_M2_FINAL_COHORT"
-  },
-  {
-    "scenarioId": "OUF-E2E-025",
-    "workPackages": [
-      "M2-WP1",
-      "M2-WP5",
-      "M2-WP6"
-    ],
-    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
-    "status": "OPEN_FOR_M2_FINAL_COHORT"
+    "rule": "Reuse compatible code/tests first; only an observed gap creates implementation work. Impact-based regression does not replay consumed runtime effects."
   }
-]
 }

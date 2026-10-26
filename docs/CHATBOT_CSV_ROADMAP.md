@@ -1,3 +1,9 @@
+# CURRENT — Rettifica M2 v1.1: sviluppare soltanto i delta rispetto a M1
+
+[Mini-PET e matrice di riuso](OUF_M2_MINIPET_v1_0_20261026.md), [roadmap](OUF_M2_ROADMAP_20261026.md), [registro](../releases/csv-m2-plan-20261026.json). M1 acquisito e da riusare. Il requisito M2 non ancora accettato non dimostra implementazione assente. Prima inventario di componenti/prove, poi integrazione, collaudo e soli fix dimostrati.
+
+Stima v1.0 di 34–58 ore, centrale 46, e riserva 8–16 RITIRATE come forecast corrente, insieme alle finestre H+ derivate; nessun totale sostitutivo prima della diagnosi Farmacie e del confronto puntuale con quanto già fatto. G5/G6/G7 restano aperti, nessun criterio eliminato o M1 riaperto. Nessun effetto runtime eseguito. Header sotto storici.
+
 # CURRENT — Roadmap M2 autoguidato del 26 ottobre 2026
 
 M1/G4 acquisito sul caso Teatri; M2/G5/G6/G7 aperti. Il riferimento corrente per il residuo è il [mini-PET M2](OUF_M2_MINIPET_v1_0_20261026.md), con [roadmap sintetica](OUF_M2_ROADMAP_20261026.md) e [registro](../releases/csv-m2-plan-20261026.json). Sequenza: diagnosi/recupero Farmacie → percorso autoguidato → semantica generale → UDP e consultazione → ripetibilità/resilienza → due client e dossier M2. Stima residua preliminare 34–58 ore attive, centrale 46; riserva distinta 8–16. Ristima dopo causa owner; nessuna data garantita o consuntivo inventato.

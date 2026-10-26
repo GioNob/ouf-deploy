@@ -1,10 +1,31 @@
 # OUF — Mini-PET M2: CSV autoguidato fino a UDP
 
-**ID:** OUF-MP-CSV-M2 · **Versione:** 1.0 · **Data:** 26 ottobre 2026, Europe/Rome  
+**ID:** OUF-MP-CSV-M2 · **Versione:** 1.1 (percorso file conservato per i link esistenti) · **Data:** 26 ottobre 2026, Europe/Rome  
 **Stato:** piano del residuo M2; M1 acquisito, M2 aperto.  
 **Accettazione di prodotto:** Giovanni / HUMAN autorizzato. **Esecuzione:** agent principale, sequenziale, senza subagenti o automazioni operative.  
-**Stima tecnica preliminare residua:** 34–58 ore attive, riferimento centrale 46; riserva distinta 8–16 ore. Nessuna data di completamento garantita.  
+**Stima residua:** da ricostruire sui delta verificati. Le 34–58 ore, centrale 46, e la relativa riserva della versione 1.0 sono ritirate come forecast corrente.  
 **Roadmap:** [sequenza e checkpoint](OUF_M2_ROADMAP_20261026.md). **Registro:** [piano strutturato](../releases/csv-m2-plan-20261026.json).
+
+## 0. Rettifica: M2 riusa M1, non lo ricostruisce
+
+La versione 1.0 mescolava componenti già realizzati, prove già acquisite, nuove prove e possibili lacune implementative dentro sei blocchi con ore assegnate. La separazione non era sufficiente a sostenere la stima residua. La versione 1.1 conserva i criteri di accettazione, distingue il riuso e ritira il forecast numerico fino a un inventario puntuale dei delta. **Un requisito M2 non ancora accettato non significa che il relativo componente sia da costruire.**
+
+| Area | Già acquisito / riusabile | Solo residuo M2 |
+| --- | --- | --- |
+| Pipeline Ingestion → UDP | Esecuzione e materializzazione provate sulle due run Teatri; ACK, intake e lineage letti dagli owner | Esercitare il percorso sul nuovo CSV/configurazione; correggere solo differenze osservate |
+| Identità | Stessi 13 oggetti anche per riga/contenuto sulle due run | Provare configurazione invariata/no revisione gratuita; configurazioni M1 differenti non coprono questo test |
+| Proprietà e provenienza | 20 proprietà correnti selezionate per oggetto, contributi di entrambe le run; omissioni della nuova run tutte EMPTY_STRING | Verificare i casi specifici non coperti: fonti distinte, autorità/conflitto, altri null/vuoti e relazioni. Prima censire i test esistenti |
+| Letture governate | Owner READ installate e riuscite, controlli di label e provenienza utilizzati per M1 | Comporle in un resoconto utente automatico e completo; nessuna nuova installazione READ presunta |
+| Governance / deployment | Pubblicazione/review native e controller finiti già sviluppati e qualificati nei rispettivi perimetri | Riutilizzarli; una nuova qualifica o azione target solo se un delta effettivo la richiede |
+| Ricerca | Serving Teatri/Cinema già utilizzato; tool tipizzati presenti | Collegare risultati del nuovo percorso alla consultazione; test specifici di autorizzazione/paginazione impattati |
+| Farmacie | Upload completato e asset conservato; job di profiling FAILED | Causa reale e fix/recovery circoscritto, senza ricominciare upload o pipeline |
+| Flusso autoguidato | Capability, stati e review esistenti da comporre | Eliminare passaggi manuali, rendere leggibile la diagnosi e verificare recupero senza ID copiati |
+| Semantica generale | Mapping e parte dei delta tipizzati già presenti/qualificati storicamente | Audit per vocabolari, gap e relazione semplice: riuso, test mancante o fix effettivo distinti |
+| Resilienza e due client | Primitive e prove pregresse da riusare con i relativi limiti | Collaudo specifico CSV invariato/fault/nuova chat e due client; non riscrivere un recovery engine |
+
+Fonte per le prove M1: [dossier owner](../evidence/csv-m1-f5-f6-owner-verification-20261026.json). La tabella non attribuisce alle prove Teatri coperture più ampie di quelle osservate.
+
+Prima di imputare ore a una voce residua, compilare: requisito → componente/commit esistente → prova riusabile → limite → delta concreto → nuovo test necessario → stima. Se manca solo una prova, la voce è **collaudo**, non sviluppo. Se il codice esiste ma non è collegato al percorso, è **integrazione**. Solo una lacuna dimostrata è **implementazione**. Una regressione su prova valida si riesegue soltanto per impatto motivato.
 
 ## 1. Risultato da ottenere
 
@@ -118,17 +139,17 @@ Ogni patch deve collegare requisito → owner → riuso → delta → test → p
 
 ## 7. Work package del residuo
 
-Ore tecniche attive: sviluppo, analisi, test, preparazione/verifica dei delta e dossier; attese CI/HUMAN esterne escluse. Le attività già svolte non vengono ricontate.
+I sei WP sono contenitori di verifica e dei soli delta residui, non sei componenti da sviluppare da zero. Le ore della versione 1.0 sono ritirate. Prima si riusano implementazioni/prove esistenti; si stima separatamente integrazione, collaudo e fix effettivo. Le attività già svolte non vengono ricontate.
 
-| WP | Risultato | Owner principale | Dipendenze di uscita | Min / centrale / max | Baseline |
-| --- | --- | --- | --- | ---: | --- |
-| M2-WP1 | Causa Farmacie osservabile e rimossa; profiling recuperabile | Onboarding, Gateway, Deploy | Contesto retained e nuova autorità se servono effetti | 4 / 6 / 8 h | WP6 + integrazione WP7 |
-| M2-WP2 | Percorso autoguidato e contesto durevole | MCP, Onboarding, THS | WP1 per prova positiva | 8 / 10 / 12 h | WP6 |
-| M2-WP3 | Semantica CSV generale e configurazione validata | Onboarding, Registry, Ingestion | Contratti correnti; WP2 per UX finale | 6 / 8 / 10 h | WP5 |
-| M2-WP4 | Farmacie fino a UDP e risultato consultabile | UDP, Ingestion, MCP | WP1–3 e ammissione HUMAN specifica | 4 / 6 / 8 h | WP5/WP6 + prova verticale WP7 |
-| M2-WP5 | Ripetibilità e recupero senza duplicazioni | Owner del singolo effetto, MCP | WP2–4 per integrazione finale | 6 / 8 / 10 h | WP6 + fault WP7 |
-| M2-WP6 | Coorte finale, due client, dossier e accettazione | Cross-module, HUMAN | Tutti i WP precedenti | 6 / 8 / 10 h | WP7 |
-| **Totale** | **M2 nel perimetro dichiarato** | | | **34 / 46 / 58 h** | |
+| WP | Risultato | Owner principale | Dipendenze di uscita | Natura del residuo | Baseline |
+| --- | --- | --- | --- | --- | --- |
+| M2-WP1 | Causa Farmacie osservabile e rimossa; profiling recuperabile | Onboarding, Gateway, Deploy | Contesto retained e nuova autorità se servono effetti | Diagnosi/fix da determinare | WP6 + integrazione WP7 |
+| M2-WP2 | Percorso autoguidato e contesto durevole | MCP, Onboarding, THS | WP1 per prova positiva | Integrazione + UX | WP6 |
+| M2-WP3 | Semantica CSV generale e configurazione validata | Onboarding, Registry, Ingestion | Contratti correnti; WP2 per UX finale | Audit del delta + collaudo | WP5 |
+| M2-WP4 | Farmacie fino a UDP e risultato consultabile | UDP, Ingestion, MCP | WP1–3 e ammissione HUMAN specifica | Prova verticale + eventuali fix | WP5/WP6 + prova verticale WP7 |
+| M2-WP5 | Ripetibilità e recupero senza duplicazioni | Owner del singolo effetto, MCP | WP2–4 per integrazione finale | Riuso prove + collaudo mancante | WP6 + fault WP7 |
+| M2-WP6 | Coorte finale, due client, dossier e accettazione | Cross-module, HUMAN | Tutti i WP precedenti | Qualifica finale + dossier | WP7 |
+
 
 ### M2-WP1 — Rimuovere il blocco reale, conservando il lavoro
 
@@ -138,7 +159,7 @@ Ore tecniche attive: sviluppo, analisi, test, preparazione/verifica dei delta e 
 4. Riprodurre la causa, correggerla presso l'owner e verificare il recupero su fixture prima del target. Implementare la prosecuzione governata richiesta dopo esaurimento: storia conservata, nuova autorità finita quando necessaria, stessa identità logica per la stessa operazione.
 5. Ottenere il profilo del file conservato; un nuovo file corretto è ammesso solo se la diagnosi dimostra un difetto nei byte e l'utente sceglie la correzione, con nuova versione e lineage.
 
-**Output:** causa con evidenza, fix e regressione pertinente, categoria/azione leggibile, recupero qualificato, profilo Farmacie oppure blocco specifico. **Checkpoint M2.0:** diagnosi provata e percorso di recupero disponibile. Ristima obbligatoria appena nota la causa, prima del lavoro dipendente. La CI diagnostica attuale non chiude WP1.
+**Output:** causa con evidenza, fix e regressione pertinente, categoria/azione leggibile, recupero qualificato, profilo Farmacie oppure blocco specifico. **Checkpoint M2.0:** diagnosi provata e percorso di recupero disponibile. Ristima della sola diagnosi/correzione appena nota la causa, combinata con l'inventario del riuso prima di un nuovo totale M2. La CI diagnostica attuale non chiude WP1.
 
 ### M2-WP2 — Comporre il percorso autoguidato
 
@@ -270,25 +291,22 @@ Ogni evidenza riporta requisito/test, scenario canonico quando applicabile, time
 
 **Done M2:** CSV nuovo attraversa davvero chat → upload → semantica/review → Ingestion → UDP → consultazione; stessa configurazione invariata non duplica; errori/attese e ripresa sono gestiti; due client qualificati; tutte le righe e gli effetti spiegabili; nessun passo ordinario richiede terminale o intervento tecnico; G5/G6/G7 PASS e decisione finale HUMAN registrata. Una deroga a un obbligo richiede cambio esplicito del perimetro, non una nota che lo trasformi in PASS.
 
-## 11. Stima, baseline e calendario
+## 11. Stima ritirata e metodo di ristima
 
-La baseline del 20 ottobre stimava **40–70 ore complessive** fino a M2, centrale 55, di cui M1 18–30 (centrale 24) e WP5–7 22–40 (centrale 31). Era un preventivo, non un consuntivo. M1 ora è acquisito; il consuntivo dei giorni successivi è incompleto. Non è corretto sottrarre ore presunte, dire «restano 70 ore» o calcolare una percentuale oraria del progetto.
+La baseline del 20 ottobre stimava 40–70 ore complessive fino a M2, centrale 55, di cui M1 18–30 (centrale 24) e WP5–7 22–40 (centrale 31). Questi valori restano il preventivo storico, non il residuo corrente. M1 è acquisito e il consuntivo storico è incompleto.
 
-La nuova stima è **bottom-up del lavoro residuo**, dopo il fallimento Farmacie: 34–58 ore, centrale 46. A confronto con il residuo teorico originario: +12 ore al limite basso, +15 al centro, +18 al limite alto. Lo scostamento riflette diagnosi/recupero Farmacie, integrazione del percorso effettivamente autoguidato e qualifica della ripresa/two-client; non è una nuova stima dell'intero progetto né effort già speso. Nessuna attività M1 viene ricontata.
+**Le 34–58 ore residue, centrale 46, la riserva 8–16 e il calendario derivato della versione 1.0 non sono più il forecast corrente.** Erano una ripartizione preliminare dei sei WP senza inventario sufficientemente puntuale del codice e delle prove già riusabili. Non è dimostrato che tutti quei blocchi richiedano nuovo sviluppo; non si giustifica quindi lo scostamento numerico dalla baseline come lavoro nuovo certo.
 
-| Voce | Ore | Trattamento |
-| --- | ---: | --- |
-| Sei WP residui | 34–58; centrale 46 | Stima operativa provvisoria; sviluppo e verifica inclusi |
-| Riserva per causa runtime e lacune owner non ancora osservate | 8–16; riferimento 12 | Separata, usata solo con causa/attività registrata; non gonfia le ore completate |
-| Fabbisogno prudenziale di pianificazione | 42–74; riferimento 58 | Somma scenario base + riserva; non tetto garantito o intervallo statistico |
-| Partecipazione HUMAN distinta | 2–4 | Scelte di dominio, review necessarie, prove client e accettazione; non include una presenza continua al terminale |
-| Attese CI, disponibilità ambiente/client e decisioni HUMAN | Da misurare | Calendario, escluse dall'effort; sovrapposizioni contate una volta |
+La prossima stima deve coprire esclusivamente:
+1. causa e correzione Farmacie, dopo diagnosi;
+2. collegamenti mancanti del percorso autoguidato, dopo inventario delle capability/stati/review;
+3. specifici delta semantici/UDP dimostrati mancanti;
+4. prove non già coperte: configurazione invariata, fault/ripresa, due client e dossier finale;
+5. eventuale distribuzione del solo codice realmente modificato, senza ripetere installazioni acquisite.
 
-Assunzioni: riuso dei motori esistenti; nessuna nuova infrastruttura; nessuna riprogettazione profonda del modello di identità; disponibilità di ambiente isolato e secondo client; delta deploy limitati e qualificabili. La causa Farmacie è ancora ignota: la confidenza della stima è limitata. Dopo WP1, inventario WP2 e prove WP4 si ricalcola il residuo. Se un WP supera il limite alto o emerge una lacuna strutturale, si registra lo scostamento prima di promettere la tappa successiva.
+Per ogni voce: evidenza del riuso, delta, test necessario e ore residue separati. Tempo già svolto o sola presenza di un requisito non genera nuove ore. Nessuna stima sostitutiva viene inventata prima dell'inventario. La correzione del preventivo non riduce i criteri M2 né riapre M1.
 
-Con 6 ore tecniche effettive al giorno: circa **6–10 giornate di lavoro attivo**, centrale 8, prima delle attese; con riserva circa 7–13. È una conversione di capacità, non una prenotazione di giorni o una promessa di lavoro in background.
-
-Ogni checkpoint registra ore effettive note, attese, risultato e nuovo residuo. Le ore non note restano null, non zero. Forecast totale = consuntivo verificato + residuo aggiornato; finché il consuntivo storico è incompleto non si pubblica un totale storico affidabile. I contatori di progetto non modificano i budget runtime.
+Ogni checkpoint registra ore effettive note, attese e residuo aggiornato; quantità non note restano null. Le attese esterne e la partecipazione HUMAN si contabilizzano separatamente, senza doppio conteggio. I contatori di progetto non modificano budget runtime. Nessuna data target viene dedotta dalle ore ritirate.
 
 ## 12. Rischi, decisioni e controlli
 
@@ -302,7 +320,7 @@ Ogni checkpoint registra ore effettive note, attese, risultato e nuovo residuo. 
 | No-op produce revisioni o conflitto silenzioso | Expected invariati e prove UDP; correggere owner | Blocca AT12/15 e M2 |
 | Recovery non esposto o non qualificato | Stato durevole, fencing e nuova sessione consentita dai contratti | Niente nuovo job per aggirare esaurimento |
 | Secondo client o ambiente fault non disponibili | Identificarli presto in WP2; proseguire attività indipendenti | G6/G7 restano BLOCKED, mai simulati come reali |
-| Delta oltre il riuso previsto | Analisi d'impatto e consumo motivato della riserva | Nuova stima; nessuna riduzione nascosta dei test |
+| Delta oltre il riuso previsto | Analisi d'impatto e ristima del solo delta | Nuova stima; nessuna riduzione nascosta dei test |
 | Confusione M1/M2/release | Stato distinto nel registro e nelle PR | M1 conservato; M2 e release non accettati da CI o da questo piano |
 
 ## 13. Governance e consegna
