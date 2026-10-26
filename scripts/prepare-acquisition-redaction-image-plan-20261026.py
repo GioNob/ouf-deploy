@@ -94,7 +94,13 @@ def stage_zip(root,path,role,case):
 
 def replacement(role,actual,image,p,mac):
     request=p.config_copy(actual);config=image['Config'];old=actual['Config'];host=copy.deepcopy(actual['HostConfig'])
-    require(old['User']==config['User']and old['Entrypoint']==config['Entrypoint'],'EXACT_EXISTING_ISOLATED_READ_LAUNCH_REQUIRED')
+    old_entry=old['Entrypoint'];base_entry=config['Entrypoint'];extra=len(old_entry)-len(base_entry)
+    require(old['User']==config['User']and len(base_entry)>=2 and extra>=0
+            and old_entry[0]==base_entry[0]and old_entry[1+extra:]==base_entry[1:],
+            'EXACT_EXISTING_ISOLATED_READ_LAUNCH_REQUIRED')
+    flags=old_entry[1:1+extra]
+    require(all(type(v)is str and v.startswith(('-D','-X','-javaagent:','-agentlib:','-agentpath:',
+                '--add-opens=','--add-exports=','--enable-native-access='))for v in flags),'EXACT_RETAINED_JVM_FLAGS_REQUIRED')
     require(host.get('ReadonlyRootfs')is True and host.get('AutoRemove')is False and type(host.get('Memory'))is int and host['Memory']>=0
             and not host.get('Privileged')and not host.get('Devices')and not host.get('DeviceRequests')and not host.get('CapAdd')
             and 'ALL'in(host.get('CapDrop')or[])and 'no-new-privileges:true'in(host.get('SecurityOpt')or[]),'EXACT_HARDENED_RETAINED_READ_HOST_POLICY_REQUIRED')
@@ -236,7 +242,8 @@ def main():
         result={'schema':'ouf.acquisition-redaction-image-plan-prepared.v1','status':'STOP_RECONCILE','complete':False,
                 'reasonCode':reason,'contextPath':str(ROOT),'counts':dict(COUNTS),'runtimeAuthorityIssued':False,
                 'automaticReplayAllowed':False,'budgetReset':False,'applicationE2EProven':False,'releaseAcceptance':False}
-        if ROOT.exists()and not(ROOT/'result.json').exists():put(ROOT/'result.json',result)
+        # The caller's log retains this failure. Never append into a scope
+        # that may have been created by an earlier or concurrent invocation.
     finally:signal.alarm(0)
     print(json.dumps(result,sort_keys=True,separators=(',',':')),flush=True);return 0 if result['complete']else 2
 

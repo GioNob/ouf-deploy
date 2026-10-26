@@ -55,6 +55,11 @@ class PlanTests(unittest.TestCase):
         plan=m.compile_plan(inputs,receipts,images,p,mac);r=plan['readReplacements']['ingestion']
         self.assertNotIn('MacAddress',r['request'])
         self.assertEqual(r['legacyConfigMacDetachPolicy'],mac.policy(old));self.assertIn('MacAddress',old['Config'])
+    def test_retained_jvm_flags_are_preserved_ahead_of_exact_isolated_image_entry(self):
+        inputs,receipts,images=fixture();old=inputs['currentObservations']['ingestion-read']['Config']
+        old['Entrypoint'].insert(1,'-Xmx256m');old['Entrypoint'].insert(2,'-Dfixture.retained=true')
+        plan=m.compile_plan(inputs,receipts,images,p,mac)
+        self.assertEqual(plan['readReplacements']['ingestion']['request']['Entrypoint'],old['Entrypoint'])
     def test_endpoint_only_null_and_empty_are_explicit_exact_config_profiles(self):
         for value,state in((None,'NULL'),('','EMPTY_STRING')):
             inputs,receipts,images=fixture();inputs['currentObservations']['ingestion-read']['Config']['MacAddress']=value
