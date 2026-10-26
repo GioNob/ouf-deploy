@@ -1,3 +1,5 @@
+> AGGIORNAMENTO: preparazione VPS riuscita e CONSUMATA. Per la PRIMA nuova APPLY del solo MCP, ora qualificata in CI, leggere integralmente [il nuovo handoff](OUF_MCP_DIAGNOSTIC_UPDATE_APPLY_HANDOFF_20261026.md). I comandi di preparazione sotto sono STORICI e NON rilanciabili.
+
 # OUF — deposito immagine diagnostica MCP e piano privato, 26 ottobre 2026
 
 ## VPS ricevuto — immagine e piano preparati, scope CONSUMATO
