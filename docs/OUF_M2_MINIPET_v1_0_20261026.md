@@ -1,31 +1,33 @@
 # OUF — Mini-PET M2: CSV autoguidato fino a UDP
 
-**ID:** OUF-MP-CSV-M2 · **Versione:** 1.1 (percorso file conservato per i link esistenti) · **Data:** 26 ottobre 2026, Europe/Rome  
+**ID:** OUF-MP-CSV-M2 · **Versione:** 1.2 (percorso file conservato per i link esistenti) · **Data:** 26 ottobre 2026, Europe/Rome  
 **Stato:** piano del residuo M2; M1 acquisito, M2 aperto.  
 **Accettazione di prodotto:** Giovanni / HUMAN autorizzato. **Esecuzione:** agent principale, sequenziale, senza subagenti o automazioni operative.  
-**Stima residua:** da ricostruire sui delta verificati. Le 34–58 ore, centrale 46, e la relativa riserva della versione 1.0 sono ritirate come forecast corrente.  
+**Stima residua:** inventario completato; restano da determinare causa Farmacie e impegno della composizione esatta. Le 34–58 ore, centrale 46, e la relativa riserva della versione 1.0 sono ritirate come forecast corrente.  
 **Roadmap:** [sequenza e checkpoint](OUF_M2_ROADMAP_20261026.md). **Registro:** [piano strutturato](../releases/csv-m2-plan-20261026.json).
 
-## 0. Rettifica: M2 riusa M1, non lo ricostruisce
+## 0. Audit completato: cosa si riusa e cosa manca
 
-La versione 1.0 mescolava componenti già realizzati, prove già acquisite, nuove prove e possibili lacune implementative dentro sei blocchi con ore assegnate. La separazione non era sufficiente a sostenere la stima residua. La versione 1.1 conserva i criteri di accettazione, distingue il riuso e ritira il forecast numerico fino a un inventario puntuale dei delta. **Un requisito M2 non ancora accettato non significa che il relativo componente sia da costruire.**
+Il [confronto puntuale codice/prove/lacune](OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md) è completato: 63 file fissati a commit, cinque confronti Git e otto log CI esistenti riletti, con mapping di tutti i 24 AT e gli 8 criteri UX nel [registro dell'audit](../evidence/csv-m2-code-evidence-gap-audit-20261026.json). Non è un audit esaustivo di tutti i repository né una nuova prova sul VPS.
 
-| Area | Già acquisito / riusabile | Solo residuo M2 |
+| Area | Già acquisito / riusabile | Solo residuo verificato |
 | --- | --- | --- |
-| Pipeline Ingestion → UDP | Esecuzione e materializzazione provate sulle due run Teatri; ACK, intake e lineage letti dagli owner | Esercitare il percorso sul nuovo CSV/configurazione; correggere solo differenze osservate |
-| Identità | Stessi 13 oggetti anche per riga/contenuto sulle due run | Provare configurazione invariata/no revisione gratuita; configurazioni M1 differenti non coprono questo test |
-| Proprietà e provenienza | 20 proprietà correnti selezionate per oggetto, contributi di entrambe le run; omissioni della nuova run tutte EMPTY_STRING | Verificare i casi specifici non coperti: fonti distinte, autorità/conflitto, altri null/vuoti e relazioni. Prima censire i test esistenti |
-| Letture governate | Owner READ installate e riuscite, controlli di label e provenienza utilizzati per M1 | Comporle in un resoconto utente automatico e completo; nessuna nuova installazione READ presunta |
-| Governance / deployment | Pubblicazione/review native e controller finiti già sviluppati e qualificati nei rispettivi perimetri | Riutilizzarli; una nuova qualifica o azione target solo se un delta effettivo la richiede |
-| Ricerca | Serving Teatri/Cinema già utilizzato; tool tipizzati presenti | Collegare risultati del nuovo percorso alla consultazione; test specifici di autorizzazione/paginazione impattati |
-| Farmacie | Upload completato e asset conservato; job di profiling FAILED | Causa reale e fix/recovery circoscritto, senza ricominciare upload o pipeline |
-| Flusso autoguidato | Capability, stati e review esistenti da comporre | Eliminare passaggi manuali, rendere leggibile la diagnosi e verificare recupero senza ID copiati |
-| Semantica generale | Mapping e parte dei delta tipizzati già presenti/qualificati storicamente | Audit per vocabolari, gap e relazione semplice: riuso, test mancante o fix effettivo distinti |
-| Resilienza e due client | Primitive e prove pregresse da riusare con i relativi limiti | Collaudo specifico CSV invariato/fault/nuova chat e due client; non riscrivere un recovery engine |
+| M1 e pipeline | Due run Teatri, ACK/intake/materializzazione, 26 join, 13 identità, 20 proprietà correnti e 8 Cinema | Nuovo percorso e analisi d'impatto; nessuna terza acquisizione Teatri |
+| Tipi decimal/date | Codice Onboarding/Ingestion/UDP e composizione CI già qualificati il 20 ottobre | Comporre branch esistenti con hardening successivo, non riscrivere tipi/trasformazioni |
+| Reimport invariato | Prova isolata: due acquisizioni, un oggetto/revisione e due osservazioni con lineage | DS1R completo/retry distinto e coorte finale; M1 da solo usa configurazioni diverse |
+| Ripresa | ASSETS/LATEST già implementati e CI su tre componenti | Integrare e aggiungere job fallito/in corso + etichetta lavoro alla discovery owner; test reale al posto del solo mock |
+| Identità/proprietà UDP | MATCH/NEW/REVIEW, complementi/conflitti/null/union/delete e provenance; suite mirata 97 test senza skip | Nuove composizioni/fonte/review al livello finale richiesto; non nuovo identity/merge engine |
+| Recovery Ingestion/UDP | Budget cumulativi, sessioni HUMAN, fencing e storia già testati | Colmare policy profiling Onboarding e fault di composizione mancanti |
+| Vocabolari/relazioni | Registry e motori relazioni UDP esistono | Compiler managed rifiuta entrambi i mapping non vuoti: collegamento da implementare |
+| Search/review/READ | Tool tipizzati, review persistenti e letture M1 disponibili | Comporre risultato, decisioni e ritorno mobile/desktop senza passaggi tecnici manuali |
+| Farmacie | Asset/job FAILED e originale locale regolare; diagnostica PR52 CI | Causa server ancora ignota; fix causale e recupero dello stesso lavoro |
+| Due client | Sessioni SDK con owner sintetico già testate | Due client esterni sul percorso completo, dossier finale e HUMAN M2 |
 
-Fonte per le prove M1: [dossier owner](../evidence/csv-m1-f5-f6-owner-verification-20261026.json). La tabella non attribuisce alle prove Teatri coperture più ampie di quelle osservate.
+**Delta reali D1–D7:** diagnosi/fix Farmacie; composizione di codice esistente; discovery job/lavoro; recovery finito profiling; vocabolario/relazione managed CSV; UX/resoconto; qualifica residua. D2 è preparabile indipendentemente dalla diagnosi. Non si reimplementano pipeline, Registry, search o motori di riconciliazione/recovery.
 
-Prima di imputare ore a una voce residua, compilare: requisito → componente/commit esistente → prova riusabile → limite → delta concreto → nuovo test necessario → stima. Se manca solo una prova, la voce è **collaudo**, non sviluppo. Se il codice esiste ma non è collegato al percorso, è **integrazione**. Solo una lacuna dimostrata è **implementazione**. Una regressione su prova valida si riesegue soltanto per impatto motivato.
+La fixture MCP ASSETS usa `assets`, mentre l'owner reale restituisce `items`: correggere fixture e prova di composizione. Questo non dimostra un errore di parsing del MCP. Nel profiling è invece confermato catch-all con retry a delay fisso fino a cinque tentativi/job; la release quarantena non crea una sessione cumulativa di recovery. I dettagli e i limiti sono nell'audit.
+
+Le 34–58 ore, centrale 46, della versione 1.0 restano ritirate. L'inventario richiesto è stato eseguito; non si inventa un nuovo totale prima di causa Farmacie e definizione della coorte composta. M1 non viene ricontato, la CI non diventa prova target e gli SHA delle repliche READ non identificano i worker.
 
 ## 1. Risultato da ottenere
 
@@ -145,7 +147,7 @@ I sei WP sono contenitori di verifica e dei soli delta residui, non sei componen
 | --- | --- | --- | --- | --- | --- |
 | M2-WP1 | Causa Farmacie osservabile e rimossa; profiling recuperabile | Onboarding, Gateway, Deploy | Contesto retained e nuova autorità se servono effetti | Diagnosi/fix da determinare | WP6 + integrazione WP7 |
 | M2-WP2 | Percorso autoguidato e contesto durevole | MCP, Onboarding, THS | WP1 per prova positiva | Integrazione + UX | WP6 |
-| M2-WP3 | Semantica CSV generale e configurazione validata | Onboarding, Registry, Ingestion | Contratti correnti; WP2 per UX finale | Audit del delta + collaudo | WP5 |
+| M2-WP3 | Semantica CSV generale e configurazione validata | Onboarding, Registry, Ingestion | Contratti correnti; WP2 per UX finale | Riuso typed + collegamento vocab/relazioni + collaudo | WP5 |
 | M2-WP4 | Farmacie fino a UDP e risultato consultabile | UDP, Ingestion, MCP | WP1–3 e ammissione HUMAN specifica | Prova verticale + eventuali fix | WP5/WP6 + prova verticale WP7 |
 | M2-WP5 | Ripetibilità e recupero senza duplicazioni | Owner del singolo effetto, MCP | WP2–4 per integrazione finale | Riuso prove + collaudo mancante | WP6 + fault WP7 |
 | M2-WP6 | Coorte finale, due client, dossier e accettazione | Cross-module, HUMAN | Tutti i WP precedenti | Qualifica finale + dossier | WP7 |
@@ -159,11 +161,11 @@ I sei WP sono contenitori di verifica e dei soli delta residui, non sei componen
 4. Riprodurre la causa, correggerla presso l'owner e verificare il recupero su fixture prima del target. Implementare la prosecuzione governata richiesta dopo esaurimento: storia conservata, nuova autorità finita quando necessaria, stessa identità logica per la stessa operazione.
 5. Ottenere il profilo del file conservato; un nuovo file corretto è ammesso solo se la diagnosi dimostra un difetto nei byte e l'utente sceglie la correzione, con nuova versione e lineage.
 
-**Output:** causa con evidenza, fix e regressione pertinente, categoria/azione leggibile, recupero qualificato, profilo Farmacie oppure blocco specifico. **Checkpoint M2.0:** diagnosi provata e percorso di recupero disponibile. Ristima della sola diagnosi/correzione appena nota la causa, combinata con l'inventario del riuso prima di un nuovo totale M2. La CI diagnostica attuale non chiude WP1.
+**Output:** causa con evidenza, fix e regressione pertinente, categoria/azione leggibile, recupero qualificato, profilo Farmacie oppure blocco specifico. **Checkpoint M2.0:** diagnosi provata e percorso di recupero disponibile. Ristima della sola diagnosi/correzione appena nota la causa, combinata con i delta D1–D7 dell'audit completato prima di un nuovo totale M2. La CI diagnostica attuale non chiude WP1.
 
 ### M2-WP2 — Comporre il percorso autoguidato
 
-1. Inventariare capability e letture owner già presenti per ritrovare asset/review/run; colmare solo le lacune. Definire una proiezione di avanzamento con stato osservato, copertura, azione umana necessaria e prossimo passo consentito.
+1. Applicare D2/D3 dell'audit: integrare ASSETS/LATEST esistenti, completare discovery di job/etichetta e colmare la discrepanza della fixture. Definire una proiezione di avanzamento con stato osservato, copertura, azione umana necessaria e prossimo passo consentito.
 2. Rendere durevoli i riferimenti e risolvibile «riprendi Farmacie» con ownership e visibilità correnti. Gestire più lavori senza selezione arbitraria e senza esporre quelli altrui.
 3. Collegare upload → profilo → proposta → THS → run → risultato con tool/schema/link verificati. Poll finiti e risposta asincrona; nessuna richiesta HTTP tenuta aperta fino all'import completo.
 4. Review leggibile e recuperabile: diff, effetti, versione, scadenza, esito rifiuto/cancel, rientro da mobile. Nessun nuovo login o consenso ripetuto quando l'autorità corrente è sufficiente; nessun rinnovo automatico quando non lo è.
@@ -175,8 +177,8 @@ I sei WP sono contenitori di verifica e dei soli delta residui, non sei componen
 
 1. Coprire il profilo CSV della baseline: encoding, delimitatori, quoting, header, righe irregolari e limiti. Allineare i limiti di profiler e compilatore; 10 colonne Farmacie non giustificano l'aumento dei limiti generali.
 2. Proporre classe/campi/label/chiave e validare tutte le righe rispetto alla configurazione. Conservare stringhe con zeri iniziali, tipi/decimali/date, valori originali e regole versionate.
-3. Completare mapping codice→concetto, gestione unknown e semantic gap con pubblicazioni esatte; riusare i delta già qualificati dopo verifica d'impatto.
-4. Comporre la relazione semplice su fixture: target presente, assente e ambiguo. Non inventare una relazione nel CSV Farmacie per far passare il test.
+3. Applicare D5: rimuovere con contratto e test il blocco esplicito dei mapping vocabolario nel compiler managed; conservare codice/concept/versione e unknown. Decimal/date e RAW lineage sono già implementati e provati in CI composta: riusarli.
+4. Collegare il mapping relazione oggi rifiutato dal compiler ai motori UDP esistenti e comporre la relazione semplice su fixture: target presente, assente e ambiguo. Non inventare una relazione nel CSV Farmacie per far passare il test.
 5. Provare la compatibilità fra proposta, validazione, bundle pubblicato e consumer Ingestion/UDP, inclusa la retrocompatibilità dei profili IDENTITY conservati.
 
 **Output:** profilo Farmacie proposto, fixture generale, mapping/contratti e test. **Gate G5:** semantica generale qualificata; nessun riferimento mancante sostituito con latest o con una scelta del modello.
@@ -185,7 +187,7 @@ I sei WP sono contenitori di verifica e dei soli delta residui, non sei componen
 
 1. Attraverso le decisioni HUMAN pertinenti, pubblicare la configurazione esatta e ammettere una sola acquisizione Farmacie prevista. Nessuna acquisizione di prova nascosta dentro il profiling o una pubblicazione.
 2. Verificare run/bundle/pubblicazione e la catena riga → handoff → ACK durevole → intake → materializzazione → oggetto/revisione/provenienza. ACK e commit restano distinti.
-3. Provare su fixture deterministiche MATCH/NEW/REVIEW e due fonti distinte sullo stesso oggetto; contributi complementari, autorità, equivalenza, null/vuoto, conflitto, multivalore e cancellazione esplicita. La priorità è decisa dalla policy, non dal chatbot.
+3. Riusare le suite identity/properties già verificate nell'audit e provare soltanto i casi mancanti o impattati della composizione finale: MATCH/NEW/REVIEW e due fonti distinte sullo stesso oggetto; contributi complementari, autorità, equivalenza, null/vuoto, conflitto, multivalore e cancellazione esplicita. La priorità è decisa dalla policy, non dal chatbot.
 4. Presentare resoconto completo, righe da decidere e collegamenti autorizzati. Verificare la ricerca tipizzata per ritrovare gli oggetti e la relazione semplice senza query arbitrarie o risultati troncati spacciati per completi.
 
 **Output:** primo dossier Farmacie e test UDP; confronto con expected fissati prima dell'esecuzione. **Checkpoint M2.3:** Farmacie arrivato a UDP con tutte le righe rendicontate. Non è ancora M2: mancano ripetibilità, fault e prova completa sui due client.
@@ -193,9 +195,9 @@ I sei WP sono contenitori di verifica e dei soli delta residui, non sei componen
 ### M2-WP5 — Ripetibilità, resilienza e ripresa
 
 1. Distinguere duplicato della stessa richiesta, risposta persa, retry tecnico, nuova acquisizione deliberata, nuova configurazione e recovery dopo STOP. Conservare identità, fencing, contatori e incidenti fra sessioni.
-2. Provare reimport invariato su fixture: stessa fonte, byte/configurazione/schema/semantica fissati, nuova run ammessa; stessi ID e revisioni canoniche quando il contenuto canonico non cambia, nuova evidenza run presente.
+2. Riusare la prova composta isolata già positiva (due acquisizioni, un oggetto/revisione, due osservazioni); completare DS1R/retry e il livello finale previsto: stessa fonte, byte/configurazione/schema/semantica fissati, nuova run ammessa; stessi ID e revisioni canoniche quando il contenuto canonico non cambia, nuova evidenza run presente.
 3. In ambiente isolato: crash prima/dopo effetto e prima/dopo ACK, dipendenza temporaneamente indisponibile, risposta tardiva, restart, doppio comando concorrente, vecchio worker fenced, revoca/scadenza e budget esaurito. Nessun fault sui worker di produzione conservati.
-4. Applicare resilienza v3 al percorso: classi transitorie esplicite, backoff/jitter/Retry-After, budget persistente, nessun lock nelle attese. Errori permanenti/sconosciuti e mutazioni ambigue richiedono STOP/riconciliazione. I default della policy non concedono un budget al job esistente.
+4. Applicare D4 alla lacuna di profiling, riusando budget/fencing/storia già qualificati negli owner downstream e verificando la composizione: classi transitorie esplicite, backoff/jitter/Retry-After, budget persistente, nessun lock nelle attese. Errori permanenti/sconosciuti e mutazioni ambigue richiedono STOP/riconciliazione. I default della policy non concedono un budget al job esistente.
 5. Collegare diagnosi e incidenti alle proiezioni operative esistenti. Un outage condiviso ha incidente aggregato e conteggio dei lavori; isolare il minimo scope indipendente, proteggere controllo/diagnosi e recuperare gradualmente. Alert e Supervisor globali restano fuori da questa accettazione.
 6. Dopo chat interrotta, l'owner prosegue solo il lavoro già ammesso; al ritorno il client rilegge stato e decisioni correnti. Se serve un nuovo budget HUMAN, la UI propone una nuova sessione finita collegata senza cancellare il passato.
 
@@ -299,12 +301,12 @@ La baseline del 20 ottobre stimava 40–70 ore complessive fino a M2, centrale 5
 
 La prossima stima deve coprire esclusivamente:
 1. causa e correzione Farmacie, dopo diagnosi;
-2. collegamenti mancanti del percorso autoguidato, dopo inventario delle capability/stati/review;
+2. collegamenti mancanti D2/D3/D6 individuati nell'audit, conservando gli hardening successivi;
 3. specifici delta semantici/UDP dimostrati mancanti;
-4. prove non già coperte: configurazione invariata, fault/ripresa, due client e dossier finale;
+4. sole asserzioni non coperte o impattate: DS1R oltre la prova no-revision isolata, fault/ripresa di composizione, due client e dossier finale;
 5. eventuale distribuzione del solo codice realmente modificato, senza ripetere installazioni acquisite.
 
-Per ogni voce: evidenza del riuso, delta, test necessario e ore residue separati. Tempo già svolto o sola presenza di un requisito non genera nuove ore. Nessuna stima sostitutiva viene inventata prima dell'inventario. La correzione del preventivo non riduce i criteri M2 né riapre M1.
+Per ogni voce: evidenza del riuso, delta, test necessario e ore residue separati. Tempo già svolto o sola presenza di un requisito non genera nuove ore. L'inventario è completato; nessuna stima sostitutiva viene inventata prima della causa Farmacie e della definizione del delta composto. La correzione del preventivo non riduce i criteri M2 né riapre M1.
 
 Ogni checkpoint registra ore effettive note, attese e residuo aggiornato; quantità non note restano null. Le attese esterne e la partecipazione HUMAN si contabilizzano separatamente, senza doppio conteggio. I contatori di progetto non modificano budget runtime. Nessuna data target viene dedotta dalle ore ritirate.
 
@@ -313,7 +315,7 @@ Ogni checkpoint registra ore effettive note, attese e residuo aggiornato; quanti
 | Rischio / dipendenza | Azione | Effetto sul piano |
 | --- | --- | --- |
 | Causa Farmacie ignota; categoria eventualmente UNCLASSIFIED | Diagnosi minimizzata owner prima del fix e ristima WP1 | Blocca recupero/prova positiva, non progettazione indipendente |
-| Stato non ritrovabile senza ID | Inventario API owner, delta minimo di discovery/read e ACL | Blocca UX05/G6 |
+| Stato non ritrovabile senza ID | D3: job/etichetta nella discovery già esistente, ACL e test owner reale | Blocca UX05/G6 |
 | Review/link/login non coerenti | Test della decisione esatta, scadenza, mobile e ritorno | Blocca UX04; nessun link diagnostico inventato |
 | Grant temporaneo o workload non valido | Distinguere eleggibilità, scope OAuth, policy/label e stato runtime; diagnosi prima di proposta mirata | Nessun grant largo o rinnovo automatico |
 | Semantica/chiave non definite | Proposta motivata e scelta di dominio; gap esplicito | Blocca G5 o ammissione, non si forza il mapping |
@@ -335,7 +337,7 @@ Deliverable finali: coorte/delta con pin; profilo CSV e fixture; percorso chat/T
 
 1. Ripartire da **M2-WP1**, stesso FAILED Farmacie: acquisire la causa owner minimizzata senza nuovo upload/profiling.
 2. Se la diagnostica richiede distribuzione, qualificare un delta Onboarding nuovo e circoscritto, poi presentare la review concreta. PR52 e la sua CI sono il punto di partenza, non un'APPLY già pronta.
-3. Ristimare dopo la causa e completare il percorso di recupero; in parallelo logico, durante attese, definire proiezione dello stato e inventario per WP2 senza azioni runtime.
+3. Preparare indipendentemente D2: comporre i branch typed/ASSETS/LATEST già qualificati con readiness/diagnostica/READ successivi. Proseguire D3/D4/D5 secondo dipendenze; la causa Farmacie resta necessaria per il fix, non per rifare l'inventario.
 4. Procedere secondo la [roadmap](OUF_M2_ROADMAP_20261026.md); aggiornare un solo stato corrente nel registro, conservando gli snapshot precedenti.
 
 Nessun effetto runtime è stato eseguito per redigere questo piano. M1 resta acquisito; M2/G5/G6/G7 e accettazione release restano aperti.

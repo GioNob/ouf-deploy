@@ -1,42 +1,40 @@
-# OUF — Roadmap M2 basata sui delta, revisione 1.1
+# OUF — Roadmap M2 dei soli delta verificati, revisione 1.2
 
-26 ottobre 2026 · Europe/Rome. [Mini-PET completo e matrice di riuso](OUF_M2_MINIPET_v1_0_20261026.md) · [Registro](../releases/csv-m2-plan-20261026.json).
+26 ottobre 2026 · Europe/Rome. [Mini-PET](OUF_M2_MINIPET_v1_0_20261026.md) · [Audit puntuale](OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md) · [Registro](../releases/csv-m2-plan-20261026.json).
 
-**M1 è acquisito. La pipeline, le letture owner, l'identità e la provenienza provate sul caso Teatri sono la base di M2 e non vanno ricostruite.** I sei WP organizzano il residuo di integrazione e collaudo; non indicano sei sviluppi nuovi.
+**M1 resta acquisito. Anche tipi decimal/date, ASSETS/LATEST, riconciliazione UDP, recovery downstream e no-revision isolato hanno già codice/prove da riusare.** L'audit è completato: 63 file fissati, cinque storie Git confrontate, otto log CI riletti e 32 criteri mappati. Il residuo non è una riscrittura dei motori.
 
-## Percorso residuo
+## Percorso concreto
 
-| Ordine | Azione | Cosa riusiamo | Uscita richiesta |
+| Delta | Lavoro | Riuso | Uscita / dipendenze |
 | --- | --- | --- | --- |
-| 1 | Diagnosticare e correggere il FAILED Farmacie | Stesso asset/job, profiling e storage esistenti; candidato diagnostico PR52 | Causa owner provata, fix mirato e recupero governato; nessun reupload o reset |
-| 2 | Comporre il percorso autoguidato | Upload, stati, proposta, review, capability e letture esistenti | Niente passaggi tecnici manuali, link corretti, contesto ritrovabile e diagnosi comprensibile |
-| 3 | Completare solo i delta semantici necessari | Mapping e trasformazioni già implementati, Registry e bundle | Profilo Farmacie valido; vocabolari/gap/relazione semplice qualificati dove non già coperti |
-| 4 | Eseguire il nuovo percorso fino a UDP | Pipeline e riconciliazione owner provate in M1 | Tutte le 61 righe rendicontate e oggetti consultabili; correggere solo difetti osservati |
-| 5 | Colmare le prove di ripetibilità/ripresa | Identità, journal, dedup, controller e test esistenti | Configurazione invariata senza revisioni gratuite; fault/nuova chat/budget provati senza riscrivere i motori |
-| 6 | Collaudare due client e chiudere il dossier | Prove M1 e qualifica compatibile dei moduli | G5/G6/G7 e decisione HUMAN su M2; nessun merge o release acceptance |
+| D1 | Osservare causa e correggere il FAILED Farmacie | Stesso asset/job, diagnostica PR52 CI | Causa owner provata, regressione mirata; nessun nuovo upload/job/reset |
+| D2 | Comporre typed, ASSETS/LATEST e review con i fix successivi | Onboarding PR49/48, Ingestion PR45, UDP PR47, MCP PR77, Gateway PR82 | Coorte qualificata che preserva readiness/diagnostica/READ; preparazione indipendente da D1 |
+| D3 | Completare discovery di job e lavoro | Lista asset e stato job già persistenti | FAILED/in corso e lavoro identificabili da nuova chat; tenant/paging; correggere mock assets/items e testare owner reale |
+| D4 | Completare policy profiling e recovery HUMAN | Modelli di budget/fencing/storia già presenti downstream | Transitori/permanenti distinti, budget cumulativo e nessun effetto doppio; fix causale dipende da D1 |
+| D5 | Collegare vocabolario e relazione al managed CSV | Registry e motori UDP; decimal/date già provati | Compiler/runtime accettano solo mapping governati, unknown/target ambiguo espliciti; dopo D2 |
+| D6 | Comporre UX, review e resoconto Farmacie | Capability, review/READ/search e pipeline esistenti | 61 righe contabilizzate fino a UDP, decisioni reali e nessun terminale ordinario; dopo D1–D5 |
+| D7 | Qualificare solo il residuo | M1, CI di modulo e composizione già positive | DS1R completo, fault composti, due client esterni, secondo profilo isolato e dossier; G5/G6/G7 + HUMAN M2 |
 
-Durante un'attesa si può preparare lavoro indipendente. Non si superano gate, non si eseguono azioni runtime implicite e non si contano due volte attività già concluse.
+Non serve attendere la diagnosi per preparare D2. Durante attese si prosegue lavoro indipendente senza superare gate. I branch candidati divergono dalle linee successive: integrare delta pertinenti, preservare gli hardening, non sostituire intere linee o fonderle senza autorizzazione.
 
-## Metodo di avanzamento
+## Prove già acquisite
 
-Per ciascuna voce: **codice esistente → prova riusabile → limite → delta concreto → nuovo test → ore residue**.
+- **VPS M1:** due acquisizioni Teatri, ACK/intake/materializzazione, 26 join, 13 identità, 20 proprietà correnti per oggetto e 8 Cinema. Configurazioni diverse; nessuna terza acquisizione.
+- **CI composta typed:** due acquisizioni con stessi file/configurazione, un oggetto e una revisione, due osservazioni e lineage/RAW distinti. Decimal/date provati; semantica/Lake sintetici, nessun ACK outbox o THS reale implicito.
+- **CI UDP:** suite mirata proprietà/identità/temporalità 97 test e recovery 23, zero failure/error/skip. Il totale modulo UDP ha due skip e non equivale a tutto M2 PASS.
+- **Ripresa:** ASSETS/LATEST e sessioni SDK già implementate/testate. Non prova due client esterni né ritrovamento di job fallito: la lista owner non restituisce jobId/etichetta.
 
-- Una prova M1 valida si conserva; una regressione si ripete soltanto per un impatto motivato.
-- Un requisito non ancora accettato per M2 non dimostra assenza di implementazione.
-- Una prova mancante è collaudo; collegare capability esistenti è integrazione; nuovo codice è stimato solo per lacune dimostrate.
-- M1 ha usato due configurazioni differenti: identità conservate è già PASS, mentre no revisione gratuita a configurazione invariata resta una prova specifica.
-- La matrice di riuso del mini-PET distingue proprietà già osservate da casi di conflitto/autorità/multi-fonte non coperti dal solo dossier Teatri.
+Il dettaglio requisito→source/commit→prova→limite→delta è nell'audit. I 24 AT e gli 8 criteri UX restano obbligatori; prove compatibili non si rifanno, prove impattate si riqualificano motivando l'impatto. Non si conta un test mancante come nuovo sviluppo.
 
-## Stima corrente
+## Stima
 
-**La stima 34–58 ore, centrale 46, e la riserva 8–16 della revisione precedente sono ritirate.** Mancava un inventario sufficientemente puntuale dei delta rispetto al già realizzato. Anche le finestre H+ e le giornate derivate non sono più il piano corrente.
+Le 34–58 ore, centrale 46, e la riserva 8–16 della v1.0 restano ritirate. Le 40–70 ore della baseline comprendevano M1. L'inventario è completato e circoscrive lo sviluppo nuovo a D3/D4/D5 e all'eventuale fix causale D1; D2/D6 sono soprattutto integrazione, D7 qualifica.
 
-Le 40–70 ore della baseline includevano M1 e restano storiche. Non diventano il residuo di oggi. Il nuovo residuo sarà stimato dalla causa Farmacie e dalla matrice di riuso; al momento è non determinato, senza un numero sostitutivo inventato.
+Le ore residue restano non determinate finché causa Farmacie e composizione esatta non consentono una stima sostenibile. Nessuna percentuale oraria inventata e nessun calendario derivato dalle vecchie cifre.
 
-## Criterio di arrivo
+## Arrivo e confini
 
-Un utente carica il file, verifica la proposta, decide solo le ambiguità e approva gli effetti necessari; il sistema gestisce le fasi tecniche e conserva il lavoro. Esito UDP verificato, ricerca minima, reimport senza duplicazioni, recupero e due client reali sono obbligatori. Nessun terminale, SQL o copia manuale di ID/log nel percorso ordinario.
+File caricato una volta, proposta comprensibile, sole scelte di dominio/HUMAN necessarie, stato owner recuperabile, esito UDP e search verificati su due client reali. Zero terminale/SQL/copia di ID nel percorso ordinario. Riconciliazione multi-fonte e ricerca tipizzata minima incluse; fusione di due oggetti canonici già esistenti, search avanzata e Supervisor separati.
 
-La fusione di due oggetti canonici già esistenti, la ricerca avanzata e Supervisor restano estensioni separate. Riconciliazione multi-fonte e consultazione minima sono dentro M2.
-
-**Prossimo passo:** diagnosi owner minimizzata dello stesso FAILED Farmacie; censire contestualmente le prove riusabili per attribuire soltanto il lavoro mancante. Nessuna nuova profilazione, terza acquisizione Teatri, reset o vecchio APPLY da rilanciare.
+Prossima attività: D1 diagnosi minimizzata dello stesso FAILED e preparazione D2 della composizione già identificata. Nessun vecchio APPLY o profiling da ripetere, nessun nuovo runtime/grant/merge/release acceptance da questo documento.

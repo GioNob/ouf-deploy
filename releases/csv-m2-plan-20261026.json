@@ -1,7 +1,7 @@
 {
   "schema": "ouf.csv-m2-completion-plan.v1",
   "documentId": "OUF-MP-CSV-M2",
-  "version": "1.1",
+  "version": "1.2",
   "createdDate": "2026-10-26",
   "timezone": "Europe/Rome",
   "document": "docs/OUF_M2_MINIPET_v1_0_20261026.md",
@@ -85,7 +85,7 @@
       "dependencies": [],
       "hours": null,
       "checkpoint": "M2.0",
-      "status": "OPEN_ACCEPTANCE_NOT_ASSERTED_MISSING_IMPLEMENTATION",
+      "status": "AUDITED_REUSE_AND_CONCRETE_DELTAS_OPEN",
       "currentBlocker": "FAILED_PROFILE_ROOT_CAUSE_NOT_OBSERVED",
       "deliverables": [
         "Retained owner diagnostic evidence",
@@ -97,15 +97,26 @@
       "humanActualHours": null,
       "waitHours": null,
       "remainingHours": null,
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "runtimeAuthorizationGranted": false,
       "historicalV1Hours": {
         "min": 4,
         "central": 6,
         "max": 8
       },
-      "remainingWorkKind": "DIAGNOSIS_AND_TARGETED_FIX_TO_DETERMINE",
-      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": true
+      "remainingWorkKind": "DIAGNOSIS_THEN_CONDITIONAL_FIX + BOUNDED_IMPLEMENTATION",
+      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": false,
+      "deltaRefs": [
+        "D1",
+        "D4"
+      ],
+      "deltaInventoryComplete": true,
+      "estimateBlockedBy": [
+        "Farmacie root cause unknown",
+        "Exact integration/cohort qualification effort unresolved"
+      ]
     },
     {
       "id": "M2-WP2",
@@ -122,7 +133,7 @@
       "independentPreparationAllowed": true,
       "hours": null,
       "checkpoint": "M2.1",
-      "status": "OPEN_ACCEPTANCE_NOT_ASSERTED_MISSING_IMPLEMENTATION",
+      "status": "AUDITED_REUSE_AND_CONCRETE_DELTAS_OPEN",
       "deliverables": [
         "Capability and owner-read inventory",
         "Owner-derived progress and permitted next action",
@@ -133,15 +144,27 @@
       "humanActualHours": null,
       "waitHours": null,
       "remainingHours": null,
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "runtimeAuthorizationGranted": false,
       "historicalV1Hours": {
         "min": 8,
         "central": 10,
         "max": 12
       },
-      "remainingWorkKind": "INTEGRATION_AND_UX",
-      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": true
+      "remainingWorkKind": "INTEGRATION_OF_EXISTING_CODE + BOUNDED_IMPLEMENTATION_AND_COMPOSITION_TEST + INTEGRATION_AND_TARGETED_ACCEPTANCE",
+      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": false,
+      "deltaRefs": [
+        "D2",
+        "D3",
+        "D6"
+      ],
+      "deltaInventoryComplete": true,
+      "estimateBlockedBy": [
+        "Farmacie root cause unknown",
+        "Exact integration/cohort qualification effort unresolved"
+      ]
     },
     {
       "id": "M2-WP3",
@@ -158,7 +181,7 @@
       "hours": null,
       "checkpoint": "M2.2",
       "exitGate": "G5",
-      "status": "OPEN_ACCEPTANCE_NOT_ASSERTED_MISSING_IMPLEMENTATION",
+      "status": "AUDITED_REUSE_AND_CONCRETE_DELTAS_OPEN",
       "deliverables": [
         "Declared CSV profile",
         "Farmacie mapping proposal",
@@ -170,15 +193,26 @@
       "humanActualHours": null,
       "waitHours": null,
       "remainingHours": null,
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "runtimeAuthorizationGranted": false,
       "historicalV1Hours": {
         "min": 6,
         "central": 8,
         "max": 10
       },
-      "remainingWorkKind": "DELTA_INVENTORY_AND_TESTS",
-      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": true
+      "remainingWorkKind": "INTEGRATION_OF_EXISTING_CODE + IMPLEMENTATION_AT_EXISTING_COMPONENT_BOUNDARIES",
+      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": false,
+      "deltaRefs": [
+        "D2",
+        "D5"
+      ],
+      "deltaInventoryComplete": true,
+      "estimateBlockedBy": [
+        "Farmacie root cause unknown",
+        "Exact integration/cohort qualification effort unresolved"
+      ]
     },
     {
       "id": "M2-WP4",
@@ -198,7 +232,7 @@
       ],
       "hours": null,
       "checkpoint": "M2.3",
-      "status": "OPEN_ACCEPTANCE_NOT_ASSERTED_MISSING_IMPLEMENTATION",
+      "status": "AUDITED_REUSE_AND_CONCRETE_DELTAS_OPEN",
       "deliverables": [
         "Row-to-object evidence",
         "MATCH NEW REVIEW and multi-source reconciliation",
@@ -209,15 +243,25 @@
       "humanActualHours": null,
       "waitHours": null,
       "remainingHours": null,
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "runtimeAuthorizationGranted": false,
       "historicalV1Hours": {
         "min": 4,
         "central": 6,
         "max": 8
       },
-      "remainingWorkKind": "VERTICAL_TEST_AND_OBSERVED_FIXES",
-      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": true
+      "remainingWorkKind": "INTEGRATION_AND_TARGETED_ACCEPTANCE",
+      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": false,
+      "deltaRefs": [
+        "D6"
+      ],
+      "deltaInventoryComplete": true,
+      "estimateBlockedBy": [
+        "Farmacie root cause unknown",
+        "Exact integration/cohort qualification effort unresolved"
+      ]
     },
     {
       "id": "M2-WP5",
@@ -234,7 +278,7 @@
       "independentPreparationAllowed": true,
       "hours": null,
       "checkpoint": "M2.4",
-      "status": "OPEN_ACCEPTANCE_NOT_ASSERTED_MISSING_IMPLEMENTATION",
+      "status": "AUDITED_REUSE_AND_CONCRETE_DELTAS_OPEN",
       "deliverables": [
         "Same-configuration no-op evidence",
         "Fault and retry matrix",
@@ -246,15 +290,26 @@
       "humanActualHours": null,
       "waitHours": null,
       "remainingHours": null,
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "runtimeAuthorizationGranted": false,
       "historicalV1Hours": {
         "min": 6,
         "central": 8,
         "max": 10
       },
-      "remainingWorkKind": "REUSE_AND_MISSING_TESTS",
-      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": true
+      "remainingWorkKind": "BOUNDED_IMPLEMENTATION + QUALIFICATION_NOT_ENGINE_REWRITE",
+      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": false,
+      "deltaRefs": [
+        "D4",
+        "D7"
+      ],
+      "deltaInventoryComplete": true,
+      "estimateBlockedBy": [
+        "Farmacie root cause unknown",
+        "Exact integration/cohort qualification effort unresolved"
+      ]
     },
     {
       "id": "M2-WP6",
@@ -282,7 +337,7 @@
         "G6",
         "G7"
       ],
-      "status": "OPEN_ACCEPTANCE_NOT_ASSERTED_MISSING_IMPLEMENTATION",
+      "status": "AUDITED_REUSE_AND_CONCRETE_DELTAS_OPEN",
       "deliverables": [
         "Final cohort and justified regression evidence",
         "Two real-client end-to-end reports",
@@ -295,15 +350,25 @@
       "humanActualHours": null,
       "waitHours": null,
       "remainingHours": null,
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "runtimeAuthorizationGranted": false,
       "historicalV1Hours": {
         "min": 6,
         "central": 8,
         "max": 10
       },
-      "remainingWorkKind": "FINAL_QUALIFICATION_AND_DOSSIER",
-      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": true
+      "remainingWorkKind": "QUALIFICATION_NOT_ENGINE_REWRITE",
+      "newDevelopmentEstimateAllowedOnlyAfterDeltaInventory": false,
+      "deltaRefs": [
+        "D7"
+      ],
+      "deltaInventoryComplete": true,
+      "estimateBlockedBy": [
+        "Farmacie root cause unknown",
+        "Exact integration/cohort qualification effort unresolved"
+      ]
     }
   ],
   "schedule": {
@@ -341,10 +406,13 @@
         "checkpoint": "M2.5"
       }
     ],
-    "calendarCommitment": null
+    "calendarCommitment": null,
+    "independentPreparation": [
+      "D2 existing branch composition may proceed while D1 owner diagnosis is blocked; no implicit runtime effect"
+    ]
   },
   "effort": {
-    "status": "NOT_ESTIMATED_PENDING_DELTA_INVENTORY",
+    "status": "AUDIT_COMPLETE_PENDING_FARMACIE_CAUSE_AND_COMPOSED_DELTA",
     "baseRemainingHours": null,
     "separateContingencyHours": null,
     "prudentPlanningEnvelopeHours": null,
@@ -352,12 +420,10 @@
     "actualHistoricalHours": null,
     "calendarCommitment": null,
     "reestimateFrom": [
-      "Farmacie owner diagnosis",
-      "Existing code/commit inventory",
-      "Reusable evidence and limits",
-      "Missing integration",
-      "Missing acceptance tests",
-      "Proven implementation defects"
+      "Observed Farmacie cause and causal fix",
+      "Concrete composition of existing diverged candidate branches with later hardening",
+      "D3/D4/D5 bounded implementation deltas",
+      "Only missing or impacted assertions in 24 AT and 8 UX criteria"
     ],
     "noDoubleCounting": "Completed M1 and compatible evidence are reused. A test gap is not counted as implementation. No numeric successor estimate is asserted."
   },
@@ -601,13 +667,35 @@
       "requirementIds": [
         "CSV-R01"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP2",
         "M2-WP6"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-01",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F10",
+          "F12"
+        ],
+        "evidenceRefs": [
+          "CI-mcp_resume",
+          "CI-gateway",
+          "TARGET-M1"
+        ],
+        "existing": "Manifest/scopes/route e deny già presenti; il catalogo non è un grant.",
+        "concreteDelta": "Coerenza della coorte composta e deny reali sul percorso finale.",
+        "deltaRefs": [
+          "D2",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-02",
@@ -618,14 +706,36 @@
       "requirementIds": [
         "CSV-R02"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP1",
         "M2-WP2",
         "M2-WP5"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-02",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F04",
+          "F05"
+        ],
+        "evidenceRefs": [
+          "CI-onboarding",
+          "TARGET-FAILED"
+        ],
+        "existing": "Upload con ricevuta firmata, hash/size e dedup tenant+subject+key; profiling job persistente.",
+        "concreteDelta": "Coprire risposta persa del picker/restart e impedire nuovo job per aggirare FAILED; conservare asset Farmacie.",
+        "deltaRefs": [
+          "D3",
+          "D4",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-03",
@@ -637,13 +747,36 @@
         "CSV-R02",
         "CSV-R03"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP1",
         "M2-WP3"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-03",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F02",
+          "F11"
+        ],
+        "evidenceRefs": [
+          "CI-ingestion",
+          "CI-DIAGNOSTIC",
+          "LOCAL-FARMACIE"
+        ],
+        "existing": "Parser/adapter supportano BOM, semicolon e quoting; 11 test adapter senza skip.",
+        "concreteDelta": "Causa Farmacie e limiti profiler→compiler; regressione dell'errore osservato, non un nuovo parser.",
+        "deltaRefs": [
+          "D1",
+          "D2",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-04",
@@ -654,13 +787,32 @@
       "requirementIds": [
         "CSV-R04"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP3",
         "M2-WP4"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-04",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F02"
+        ],
+        "evidenceRefs": [
+          "CI-ingestion"
+        ],
+        "existing": "Adapter con chiavi stabili, duplicati espliciti e resume; test già disponibili.",
+        "concreteDelta": "Riutilizzare test identità riga; provare configurazione finale e casi non coperti dalla fixture.",
+        "deltaRefs": [
+          "D2",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-05",
@@ -673,12 +825,35 @@
         "CSV-R06",
         "CSV-R07"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP3"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-05",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F02",
+          "F06"
+        ],
+        "evidenceRefs": [
+          "CI-typed",
+          "CI-ingestion",
+          "CI-onboarding"
+        ],
+        "existing": "Decimal/date fino a UDP e RAW originali già provati in composizione; vocab managed non collegato.",
+        "concreteDelta": "Implementare solo mapping a concetto/versione e unknown; qualificare DS3 e delta consumer.",
+        "deltaRefs": [
+          "D2",
+          "D5",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-06",
@@ -689,13 +864,34 @@
       "requirementIds": [
         "CSV-R05"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP3",
         "M2-WP6"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-06",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F06",
+          "F10"
+        ],
+        "evidenceRefs": [
+          "CI-onboarding"
+        ],
+        "existing": "Registry ProposalCommandService e SemanticReadService, review preparation già presenti; nessuna nuova CI Registry riletta qui.",
+        "concreteDelta": "Comporre gap semantico con ritorno sulla stessa fonte; test DRAFT→HUMAN→pubblicazione corrente.",
+        "deltaRefs": [
+          "D5",
+          "D6",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-07",
@@ -706,13 +902,34 @@
       "requirementIds": [
         "CSV-R08"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP2",
         "M2-WP6"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-07",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F10"
+        ],
+        "evidenceRefs": [
+          "CI-onboarding",
+          "CI-mcp_resume"
+        ],
+        "existing": "Review persistente/versionata, stale e comando stabile già testati.",
+        "concreteDelta": "Verificare link esatto e ritorno UI reale mobile/desktop sulla coorte finale.",
+        "deltaRefs": [
+          "D2",
+          "D6",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-08",
@@ -723,14 +940,35 @@
       "requirementIds": [
         "CSV-R09"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP2",
         "M2-WP4",
         "M2-WP5"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-08",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F10",
+          "F08"
+        ],
+        "evidenceRefs": [
+          "CI-onboarding",
+          "CI-ingestion"
+        ],
+        "existing": "Preparazione separata da publish/activation, source revision e budget owner esistenti.",
+        "concreteDelta": "Prova composizione una intenzione→una acquisizione e riconciliazione risposta persa.",
+        "deltaRefs": [
+          "D6",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-09",
@@ -741,13 +979,34 @@
       "requirementIds": [
         "CSV-R10"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP3",
         "M2-WP5"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-09",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F02",
+          "F08"
+        ],
+        "evidenceRefs": [
+          "CI-ingestion",
+          "CI-typed"
+        ],
+        "existing": "Pipeline e bundle/run fissati; fixture typed usa configurazione unica.",
+        "concreteDelta": "Il solo typed non prova cambio ACTIVE durante run: riusare suite compatibile e coprire lo scenario completo mancante.",
+        "deltaRefs": [
+          "D2",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-10",
@@ -759,13 +1018,34 @@
         "CSV-R11",
         "CSV-R12"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP4",
         "M2-WP5"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-10",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F01",
+          "F08"
+        ],
+        "evidenceRefs": [
+          "TARGET-M1",
+          "CI-ingestion",
+          "CI-udp_recovery"
+        ],
+        "existing": "ACK/intake/materializzazione target M1 e OutboxDispatcher/recovery presenti.",
+        "concreteDelta": "Fault prima/dopo ACK su composizione qualificata; non attribuire ACK outbox alla fixture typed.",
+        "deltaRefs": [
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-11",
@@ -776,12 +1056,33 @@
       "requirementIds": [
         "CSV-R13"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP4"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-11",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F07",
+          "F10"
+        ],
+        "evidenceRefs": [
+          "CI-udp",
+          "CI-udp_properties"
+        ],
+        "existing": "Identity engine 11 test, scoped candidates/governance in suite mirata; pacchetto review owner.",
+        "concreteDelta": "DS1 e ambiguità attraverso review reale, senza rifare l'identity engine.",
+        "deltaRefs": [
+          "D6",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-12",
@@ -794,12 +1095,32 @@
         "CSV-R14",
         "CSV-R15"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP4"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-12",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F07"
+        ],
+        "evidenceRefs": [
+          "CI-udp_properties",
+          "TARGET-M1"
+        ],
+        "existing": "12 test LinkedPropertyRuntime e suite 97 senza skip: complementi, conflitti, null, union, delete e provenance.",
+        "concreteDelta": "Riutilizzare matrice; provare combinazioni/autorità e nuova fonte finale non già coperte.",
+        "deltaRefs": [
+          "D6",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-13",
@@ -810,13 +1131,32 @@
       "requirementIds": [
         "CSV-R16"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP3",
         "M2-WP4"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-13",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F06"
+        ],
+        "evidenceRefs": [
+          "CI-udp"
+        ],
+        "existing": "RelationshipReconciliation/Materializer presenti; compiler managed rifiuta relazioni non vuote.",
+        "concreteDelta": "Collegare dichiarazione CSV alla relazione governata; target presente/assente/ambiguo e retry.",
+        "deltaRefs": [
+          "D5",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-14",
@@ -828,13 +1168,34 @@
         "CSV-R12",
         "CSV-R15"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP4",
         "M2-WP6"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-14",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F01",
+          "F10"
+        ],
+        "evidenceRefs": [
+          "TARGET-M1",
+          "TARGET-READ"
+        ],
+        "existing": "26 join e letture owner disponibili; ACK distinto da materializzazione.",
+        "concreteDelta": "Comporre resoconto tutte le 61 righe, pending/review/error/redaction; no nuovi reader generici.",
+        "deltaRefs": [
+          "D6",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-15",
@@ -845,13 +1206,31 @@
       "requirementIds": [
         "CSV-R17"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP5",
         "M2-WP6"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-15",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F03"
+        ],
+        "evidenceRefs": [
+          "CI-typed"
+        ],
+        "existing": "Già provato isolatamente: 2 acquisizioni stesse config/file, 1 oggetto e revisione, 2 osservazioni.",
+        "concreteDelta": "Estendere a DS1R 4 oggetti, retry della stessa richiesta e livello finale richiesto; non riscrivere dedup.",
+        "deltaRefs": [
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-16",
@@ -864,13 +1243,30 @@
         "CSV-R24"
       ],
       "evidenceRefs": [
-        "evidence/csv-m1-f5-f6-owner-verification-20261026.json"
+        "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
       ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP6"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-16",
+        "status": "RETAINED_M1_PASS_PENDING_IMPACT_REVIEW",
+        "findingRefs": [
+          "F01"
+        ],
+        "evidenceRefs": [
+          "TARGET-M1"
+        ],
+        "existing": "PASS retained M1 sulle due run Teatri, inclusi 8 Cinema.",
+        "concreteDelta": "Sola analisi d'impatto e riuso. Nessuna terza acquisizione Teatri.",
+        "deltaRefs": [
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-17",
@@ -882,12 +1278,34 @@
         "CSV-R11",
         "CSV-R18"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP5"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-17",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F05",
+          "F08"
+        ],
+        "evidenceRefs": [
+          "CI-ingestion",
+          "CI-udp_recovery",
+          "RETAINED-ROLLOUT"
+        ],
+        "existing": "Recovery budget 16 e UDP recovery 23 test mirati senza skip; fencing e storia già presenti.",
+        "concreteDelta": "Lacuna specifica profiling e fault composizione; non ricreare tutti i recovery engine.",
+        "deltaRefs": [
+          "D4",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-18",
@@ -901,14 +1319,39 @@
         "CSV-R18",
         "CSV-R20"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP2",
         "M2-WP5",
         "M2-WP6"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-18",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F04",
+          "F10",
+          "F12"
+        ],
+        "evidenceRefs": [
+          "CI-mcp_resume",
+          "CI-udp_properties",
+          "TARGET-READ",
+          "TARGET-M1"
+        ],
+        "existing": "Tenant/subject scope, label filtering, deny e redaction già qualificati nei rispettivi perimetri.",
+        "concreteDelta": "Test revoca e attraversamento Gateway→owner della coorte finale; dati/counts non autorizzati assenti.",
+        "deltaRefs": [
+          "D2",
+          "D3",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-19",
@@ -919,14 +1362,37 @@
       "requirementIds": [
         "CSV-R19"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP2",
         "M2-WP5",
         "M2-WP6"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-19",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F04",
+          "F09"
+        ],
+        "evidenceRefs": [
+          "CI-onboarding",
+          "CI-mcp_resume",
+          "CI-gateway"
+        ],
+        "existing": "ASSETS/LATEST implementati e CI; risposta ASSETS senza jobId e mock assets/items discordante.",
+        "concreteDelta": "Discovery di failed/in-progress job e test owner reale con nuova chat, senza upload implicito.",
+        "deltaRefs": [
+          "D2",
+          "D3",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-20",
@@ -937,12 +1403,30 @@
       "requirementIds": [
         "CSV-R21"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP6"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-20",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F12"
+        ],
+        "evidenceRefs": [
+          "CI-mcp_resume"
+        ],
+        "existing": "Due sessioni SDK con owner sintetico sono una prova parziale.",
+        "concreteDelta": "Due client esterni indipendenti, almeno uno solo tool/link web; traccia fino a UDP e ritorno THS.",
+        "deltaRefs": [
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-21",
@@ -953,12 +1437,30 @@
       "requirementIds": [
         "CSV-R22"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP6"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-21",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F12"
+        ],
+        "evidenceRefs": [
+          "RETAINED-ROLLOUT"
+        ],
+        "existing": "Controller e casi retained riusabili; audit non prova ENV-A/B completo.",
+        "concreteDelta": "Secondo profilo isolato sul solo delta finale; non nuovo installer universale né reset ambiente.",
+        "deltaRefs": [
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-22",
@@ -969,13 +1471,34 @@
       "requirementIds": [
         "CSV-R23"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP1",
         "M2-WP6"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-22",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F08",
+          "F12"
+        ],
+        "evidenceRefs": [
+          "RETAINED-ROLLOUT",
+          "TARGET-READ"
+        ],
+        "existing": "Recovery di deployment conservate; operazioni originali non ripetute.",
+        "concreteDelta": "Scegliere executor già qualificato e coprire soltanto fault del nuovo delta non già provati.",
+        "deltaRefs": [
+          "D2",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-23",
@@ -986,14 +1509,35 @@
       "requirementIds": [
         "CSV-R23"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP1",
         "M2-WP6"
       ],
       "historicalProcedureRetained": true,
-      "currentDeltaInterpretation": "Historical route counts describe the retained rollout only. Freeze the current inventory for every new delta and prove all unrelated routes preserved; do not restore historical route counts."
+      "currentDeltaInterpretation": "Historical route counts describe the retained rollout only. Freeze the current inventory for every new delta and prove all unrelated routes preserved; do not restore historical route counts.",
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-23",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F10",
+          "F12"
+        ],
+        "evidenceRefs": [
+          "RETAINED-ROLLOUT",
+          "TARGET-READ"
+        ],
+        "existing": "Readiness e generazioni retained; inventario storico non è quello da ripristinare.",
+        "concreteDelta": "Freeze della coorte corrente e preservazione route estranee; drift/deny/readiness per nuovo delta.",
+        "deltaRefs": [
+          "D2",
+          "D7"
+        ]
+      }
     },
     {
       "id": "CSV-AT-24",
@@ -1004,12 +1548,31 @@
       "requirementIds": [
         "CSV-R24"
       ],
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
       "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
       "workPackages": [
         "M2-WP6"
       ],
-      "historicalProcedureRetained": true
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-24",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F01",
+          "F12"
+        ],
+        "evidenceRefs": [
+          "TARGET-M1"
+        ],
+        "existing": "M1 completo e dossier mantenuto; M2 aperto.",
+        "concreteDelta": "Comporre matrice finale, scenari canonici completi e HUMAN M2; nessun merge/release acceptance.",
+        "deltaRefs": [
+          "D7"
+        ]
+      }
     }
   ],
   "additionalUxAcceptance": [
@@ -1022,7 +1585,34 @@
       ],
       "requiredLevel": "T+C",
       "status": "OPEN",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-01",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F04",
+          "F10",
+          "F12"
+        ],
+        "evidenceRefs": [
+          "CI-onboarding",
+          "CI-mcp_resume",
+          "CI-gateway",
+          "CI-udp",
+          "TARGET-M1"
+        ],
+        "existing": "Prove dei singoli passaggi non provano percorso autoguidato.",
+        "concreteDelta": "Comporre proposta/review/attesa/esito senza terminale, ID copiati o prosegui tecnico.",
+        "deltaRefs": [
+          "D2",
+          "D3",
+          "D6",
+          "D7"
+        ]
+      }
     },
     {
       "id": "M2-UX-02",
@@ -1034,7 +1624,30 @@
       ],
       "requiredLevel": "T+C",
       "status": "OPEN",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-02",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F05",
+          "F11"
+        ],
+        "evidenceRefs": [
+          "TARGET-FAILED",
+          "LOCAL-FARMACIE",
+          "CI-DIAGNOSTIC"
+        ],
+        "existing": "Asset/job persistenti; Farmacie FAILED conservato, causa sconosciuta.",
+        "concreteDelta": "Fix causale, idempotenza e recupero finito del profiling; errore safe e azione valida.",
+        "deltaRefs": [
+          "D1",
+          "D4",
+          "D7"
+        ]
+      }
     },
     {
       "id": "M2-UX-03",
@@ -1044,7 +1657,32 @@
       ],
       "requiredLevel": "T+C",
       "status": "OPEN",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-03",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F02",
+          "F06"
+        ],
+        "evidenceRefs": [
+          "CI-typed",
+          "CI-onboarding",
+          "CI-ingestion",
+          "CI-udp"
+        ],
+        "existing": "Decisioni INCLUDE/EXCLUDE e transform typed già presenti.",
+        "concreteDelta": "Composizione di tutte le colonne, label e vocabolario/relazione dichiarati.",
+        "deltaRefs": [
+          "D2",
+          "D5",
+          "D6",
+          "D7"
+        ]
+      }
     },
     {
       "id": "M2-UX-04",
@@ -1055,7 +1693,31 @@
       ],
       "requiredLevel": "T+C",
       "status": "OPEN",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-04",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F10",
+          "F12"
+        ],
+        "evidenceRefs": [
+          "CI-onboarding",
+          "CI-udp",
+          "TARGET-M1",
+          "CI-mcp_resume",
+          "CI-gateway"
+        ],
+        "existing": "Owner review con hash/versioni già presente; picker non è diagnostica.",
+        "concreteDelta": "Link verificato per decisione esatta, ritorno da mobile/desktop e versioni scadute.",
+        "deltaRefs": [
+          "D6",
+          "D7"
+        ]
+      }
     },
     {
       "id": "M2-UX-05",
@@ -1067,7 +1729,30 @@
       ],
       "requiredLevel": "T+C",
       "status": "OPEN",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-05",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F04",
+          "F09"
+        ],
+        "evidenceRefs": [
+          "CI-onboarding",
+          "CI-mcp_resume",
+          "CI-gateway"
+        ],
+        "existing": "ASSETS/LATEST candidati, ma job/etichetta lavoro assenti dalla lista.",
+        "concreteDelta": "Ritrovare lavoro descrittivo e relativo job entro tenant/soggetto e paginazione.",
+        "deltaRefs": [
+          "D2",
+          "D3",
+          "D7"
+        ]
+      }
     },
     {
       "id": "M2-UX-06",
@@ -1078,7 +1763,29 @@
       ],
       "requiredLevel": "T+C",
       "status": "OPEN",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-06",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F01",
+          "F10"
+        ],
+        "evidenceRefs": [
+          "TARGET-M1",
+          "CI-onboarding",
+          "CI-udp"
+        ],
+        "existing": "READ complete M1 e lineage per riga riusabili.",
+        "concreteDelta": "Rendiconto 61 righe e parzialità; oggetti distinti dal numero righe; nessun successo dal solo ACK.",
+        "deltaRefs": [
+          "D6",
+          "D7"
+        ]
+      }
     },
     {
       "id": "M2-UX-07",
@@ -1089,7 +1796,28 @@
       ],
       "requiredLevel": "T+C",
       "status": "OPEN",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-07",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F10"
+        ],
+        "evidenceRefs": [
+          "CI-onboarding",
+          "CI-udp",
+          "TARGET-M1"
+        ],
+        "existing": "Search canonica tipizzata e related search già nel manifest.",
+        "concreteDelta": "Collegare type/object ID prodotti e paginazione governata; niente motore search nuovo.",
+        "deltaRefs": [
+          "D6",
+          "D7"
+        ]
+      }
     },
     {
       "id": "M2-UX-08",
@@ -1101,7 +1829,31 @@
       ],
       "requiredLevel": "T+C",
       "status": "OPEN",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-08",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F05",
+          "F08"
+        ],
+        "evidenceRefs": [
+          "TARGET-FAILED",
+          "CI-ingestion",
+          "CI-udp_recovery"
+        ],
+        "existing": "Stati e recovery downstream presenti; profiling catch-all a delay fisso.",
+        "concreteDelta": "Classificazione errori profiling, attesa bounded e dedup dipendenza nella composizione.",
+        "deltaRefs": [
+          "D3",
+          "D4",
+          "D6",
+          "D7"
+        ]
+      }
     }
   ],
   "minimumCompleteCanonicalScenarios": [
@@ -1153,14 +1905,16 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Observe a minimized owner diagnostic for the same FAILED Farmacie job. If deployment is needed, qualify a new scoped Onboarding delta and concrete review first; do not replay upload/profile/V35 or infer a runtime cause from CI.",
+  "firstNextAction": "D1: obtain minimized owner cause for the same FAILED Farmacie job; D2 can proceed independently by composing existing typed/ASSETS/LATEST/review deltas with current hardening. Audit is complete, not a new todo. No upload/profile replay or runtime deployment authorized by this plan.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
     "evidence/new-csv-profile-terminal-failure-20261026.json",
     "evidence/farmacie-local-csv-analysis-20261026.json",
     "evidence/managed-profile-diagnostic-ci-checkpoint-20261026.json",
-    "docs/OUF_RESILIENCE_POLICY.md"
+    "docs/OUF_RESILIENCE_POLICY.md",
+    "docs/OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md",
+    "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
   ],
   "canonicalScenarioAllocations": [
     {
@@ -1243,7 +1997,7 @@
       "status": "OPEN_FOR_M2_FINAL_COHORT"
     }
   ],
-  "revisionReason": "Separate retained M1 implementation/evidence from missing integration, tests and actual fixes; withdraw unsupported residual estimate.",
+  "revisionReason": "Source/CI/retained-target audit completed: reuse typed composition, durable recovery candidates and UDP engines; only concrete integration/implementation/proof deltas retained.",
   "historicalEstimate": {
     "version": "1.0",
     "commit": "26fa7b78593983fc54aa0b9a8d5c0142c26ff04f",
@@ -1363,6 +2117,124 @@
       "Cross-chat durable resume",
       "Two real independent clients"
     ],
-    "rule": "Reuse compatible code/tests first; only an observed gap creates implementation work. Impact-based regression does not replay consumed runtime effects."
-  }
+    "rule": "Reuse compatible code/tests first; only an observed gap creates implementation work. Impact-based regression does not replay consumed runtime effects.",
+    "auditRecord": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+    "auditDocument": "docs/OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md",
+    "auditCompleted": true,
+    "isolatedSameConfigurationNoFreeRevisionProven": {
+      "evidenceRef": "CI-typed",
+      "runId": 39428578919,
+      "canonicalObjects": 1,
+      "canonicalRevisions": 1,
+      "acquisitions": 2,
+      "observations": 2,
+      "finalTargetScenarioProven": false
+    }
+  },
+  "audit": {
+    "status": "COMPLETE_WITH_EXPLICIT_LIMITS",
+    "document": "docs/OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md",
+    "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+    "sourceFiles": 63,
+    "existingCiJobLogs": 8,
+    "finalAcceptanceCriteriaMapped": 32,
+    "newRuntimeCalls": 0
+  },
+  "verifiedResidualDeltas": [
+    {
+      "id": "D1",
+      "title": "Causa e fix mirato Farmacie",
+      "kind": "DIAGNOSIS_THEN_CONDITIONAL_FIX",
+      "workPackages": [
+        "M2-WP1"
+      ],
+      "dependsOn": [],
+      "exit": "Categoria/causa owner dello stesso FAILED, regressione causale e percorso di recovery qualificato",
+      "remainingHours": null
+    },
+    {
+      "id": "D2",
+      "title": "Composizione di typed, ASSETS/LATEST e review con hardening corrente",
+      "kind": "INTEGRATION_OF_EXISTING_CODE",
+      "workPackages": [
+        "M2-WP2",
+        "M2-WP3"
+      ],
+      "dependsOn": [],
+      "exit": "Coorte esatta che preserva readiness/diagnosi/READ e passa contratti owner/MCP/Gateway reali",
+      "remainingHours": null
+    },
+    {
+      "id": "D3",
+      "title": "Discovery durevole di lavoro e job, e contratto ASSETS coerente",
+      "kind": "BOUNDED_IMPLEMENTATION_AND_COMPOSITION_TEST",
+      "workPackages": [
+        "M2-WP2"
+      ],
+      "dependsOn": [
+        "D2"
+      ],
+      "exit": "Nuova chat identifica lavoro/asset/job autorizzato senza copiare ID; paging/tenant/revoca provati",
+      "remainingHours": null
+    },
+    {
+      "id": "D4",
+      "title": "Policy finita di errore e recovery del profiling",
+      "kind": "BOUNDED_IMPLEMENTATION",
+      "workPackages": [
+        "M2-WP1",
+        "M2-WP5"
+      ],
+      "dependsOn": [
+        "D1"
+      ],
+      "exit": "Permanenti non ritentati; transitori finiti; recovery HUMAN conserva tentativi/storia e non duplica effetti",
+      "remainingHours": null
+    },
+    {
+      "id": "D5",
+      "title": "Vocabolario e relazione nel managed CSV",
+      "kind": "IMPLEMENTATION_AT_EXISTING_COMPONENT_BOUNDARIES",
+      "workPackages": [
+        "M2-WP3"
+      ],
+      "dependsOn": [
+        "D2"
+      ],
+      "exit": "Valore→concetto/versione/RAW e relazione governata attraversano compiler/Ingestion/UDP; negativi espliciti",
+      "remainingHours": null
+    },
+    {
+      "id": "D6",
+      "title": "Composizione del percorso e resoconto verificato",
+      "kind": "INTEGRATION_AND_TARGETED_ACCEPTANCE",
+      "workPackages": [
+        "M2-WP2",
+        "M2-WP4"
+      ],
+      "dependsOn": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5"
+      ],
+      "exit": "Farmacie con 61 righe contabilizzate, review corretta e risultati UDP/search leggibili, niente terminale ordinario",
+      "remainingHours": null
+    },
+    {
+      "id": "D7",
+      "title": "Collaudi residui e accettazione M2",
+      "kind": "QUALIFICATION_NOT_ENGINE_REWRITE",
+      "workPackages": [
+        "M2-WP5",
+        "M2-WP6"
+      ],
+      "dependsOn": [
+        "D6"
+      ],
+      "exit": "AT/UX al livello richiesto, DS1R/fault/due client/secondo profilo/dossier, M1 preservato e HUMAN M2",
+      "remainingHours": null
+    }
+  ]
 }
