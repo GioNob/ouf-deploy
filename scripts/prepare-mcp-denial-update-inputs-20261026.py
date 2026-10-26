@@ -104,7 +104,9 @@ class Capture:
     def private(self, path, expected=None):
         require(self.counts['privateMetadataReads'] < MAXIMUMS['privateMetadataReads'], 'PRIVATE_CAPTURE_READ_LIMIT')
         self.counts['privateMetadataReads'] += 1
-        path = Path(path); ancestry(path.parent)
+        path = Path(path)
+        self.put('private-read-'+str(self.counts['privateMetadataReads'])+'-claim.json', {'path': str(path), 'attemptNotCompletion': True})
+        ancestry(path.parent)
         fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
         try:
             before = os.fstat(fd)
