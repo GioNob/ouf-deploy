@@ -1,3 +1,5 @@
+> AGGIORNAMENTO: browser IAM autorizzato/login riuscito, clientouf-chatgpt e33assegnazioniverificati;3nuovedefinizioniREADcreateTypeNone, altre2bloccate daauto-review, ZEROassegnazioniclient. Leggere integralmente [il nuovo handoff IAM parziale](OUF_IAM_READ_SCOPES_PARTIAL_REVIEW_20261026.md). Nessun retry della READ51 negata.
+
 # OUF — policy51 HUMAN pubblicata; primo READ nega SCOPE_MISSING con versione51 — 26 ottobre 2026
 
 ## Stato preciso
