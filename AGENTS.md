@@ -1,3 +1,12 @@
+# CURRENT — M1: piano immagini PREPARATO sul VPS; nessuna APPLY qualificata o autorizzata
+
+Ricevuta owner ACQUISITION_REDACTION_IMAGES_AND_PLAN_PREPARED_NOT_AUTHORIZED, complete=true, Exit0/DeliveryExit0; due metadata read/due ZIP/due archivi nativi, zero Engine/import/SQL/OAuth/credenziali/chiavi/runtime. Immagini native coincidono con qualifica containerd.
+Prova: evidence/acquisition-redaction-image-plan-target-20261026.json. frozenPlanHash d5ce0235cd9014656ceaacd0dcc984a5ff0db93e2be3cac9e67c18fc42f156e2; nativePlanHash f11dbe659ba4367a1d873a8938f43546a6851bbdcbb907eb588cb1323122f5fd.
+Scope /etc/ouf/deploy-snapshots/acquisition-redaction-image-plan-9bbe7298c2eff0be-v1 CONSUMATO. Log /home/oufadmin/ouf-redaction-plan-delivery.be68IBiz/bootstrap.log. NON ripetere preparazione, cattura o trasporti precedenti. Il comando del precedente handoff è ora storico.
+NEXT sviluppo/qualifica controller per SOLA sostituzione delle due READ esistenti. NESSUN nuovo comando VPS disponibile adesso; nessun APPROVO già ricevuto per questa operazione. Preflight corrente, review privata concreta e consenso terminale reale restano necessari prima di runtime. Piano privato non letto dalla chat.
+Policy51 scaduta14:14:26Z del26ottobre: nessun nuovo acquisitionREAD, rinnovo o proposta automatica. MCP9a/originali/READ attuali/Gateway/Postgres/Registry invariati. Causa live della redazione ancora ignota.
+G0–G3PASS,G4/M1/F5/F6OPEN; tecnico8/8funzionale4/6, Supervisor dopoE2E. Nessuna terzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. Pins e prove precedenti: docs/handoffs/OUF_M1_REDACTION_OFFLINE_PLAN_READY_20261026.md. Header sotto STORICI.
+
 # CURRENT — M1: cattura consumata; due ZIP esatti presenti, prima preparazione offline pronta
 
 Handoff corrente INTEGRALE: docs/handoffs/OUF_M1_REDACTION_OFFLINE_PLAN_READY_20261026.md. Prove: evidence/acquisition-redaction-inputs-target-20261026.json e evidence/acquisition-redaction-offline-plan-qualified-20261026.json.

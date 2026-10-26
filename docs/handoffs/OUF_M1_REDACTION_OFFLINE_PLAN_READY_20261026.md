@@ -1,3 +1,5 @@
+> SUPERSEDED AFTER TARGET EXECUTION: la preparazione descritta sotto è stata eseguita con successo e il suo scope è CONSUMATO. Non eseguire il comando storico. Ricevuta: [target](../../evidence/acquisition-redaction-image-plan-target-20261026.json). frozenPlanHash d5ce0235cd9014656ceaacd0dcc984a5ff0db93e2be3cac9e67c18fc42f156e2; nativePlanHash f11dbe659ba4367a1d873a8938f43546a6851bbdcbb907eb588cb1323122f5fd. Nessuna APPLY qualificata/autorizzata; prossimo lavoro solo sviluppo e qualifica del controller2READ. Nessuna nuova istruzione terminale adesso.
+
 # M1 — cattura consumata, immagini esatte già scaricate; prima preparazione privata del piano
 
 ## Punto corrente
