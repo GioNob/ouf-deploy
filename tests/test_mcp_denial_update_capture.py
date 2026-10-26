@@ -71,6 +71,7 @@ class CaptureTests(unittest.TestCase):
         result=self.prepare()
         self.assertTrue(result['complete']); self.assertEqual(len(self.calls),9)
         self.assertEqual(result['counts']['privateMetadataReads'],5)
+        self.assertEqual(len(list(self.capture.root.glob('private-read-*-claim.json'))),5)
         self.assertFalse(result['runtimeAuthorityIssued']);self.assertEqual(result['containerWrites'],0)
         self.assertFalse(result['mcpOAuthScopesVerified']);self.assertFalse(result['mcpLoadedPolicyVersionObserved'])
         self.assertNotIn('PRIVATE_CANARY',json.dumps(result));self.assertNotIn('do-not-print',json.dumps(result))
