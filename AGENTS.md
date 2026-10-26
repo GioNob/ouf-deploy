@@ -1,3 +1,7 @@
+# CURRENT — nuovo mandato READ proposto, attende decisione THS
+
+Proposta866fea4e-e1f3-4321-8c6c-54f74c953793/rev0/PENDING. Quattro ruoli e sei assegnazioni precedenti conservati; due assegnazioni nuove per ouf-admin alle due run Teatri, stesse sei READ e label OPEN/ANONYMOUS. Finestra26ottobre16:33:12→18:33:12 Europe/Rome; review scade16:48:20. Nessuna pubblicazione o acquisitionREAD eseguita. Prova evidence/acquisition-diagnostic-read-mandate-proposal-20261026.json. NEXT decisione umana diretta THS sul link owner, poi proposal.read STESSOID; non riproporre/rinnovare automaticamente. Il problema precedente era limit non ammesso nella vista ROLES, non link_id: nessuna modifica MCP necessaria. APPLY2READ già riuscita/consumata; G4/M1/E2E aperti, no replay/reset/terzaacquisizione.
+
 # CURRENT — due READ diagnostiche INSTALLATE sul VPS; APPLY consumata, E2E aperto
 
 Ricevuta owner ACQUISITION_REDACTION_READS_INSTALLED_E2E_NOT_ACCEPTED, complete=true, componentReadinessProven=true, Exit0/DeliveryExit0. Prova evidence/acquisition-redaction-apply-target-20261026.json. Review22f8c0834cb1bc4584ec6998312feb9100f3d0b3cc064cf82820809b1529d1f2; authoritydee3a62c5c242810ccd2b2e2e100da9a4f1316e8da9730dee87a1107b06ddc8f. 219GET/16write/2import/7metadata/5health/0quarantena. Tre firme. Nessuna credenziale/OAuth/SQL/migrazione/acquisizione/attivazione/grant/route. Vecchie due READ trattenute ferme; cinque altri componenti invariati, MCP invariato, Registry non toccato.
