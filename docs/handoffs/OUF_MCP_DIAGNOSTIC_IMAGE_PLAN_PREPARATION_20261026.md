@@ -1,5 +1,37 @@
 # OUF — deposito immagine diagnostica MCP e piano privato, 26 ottobre 2026
 
+## STOP consegna precedente — gh assente, preparatore NON invocato
+
+L’operatore restituisce wrapper checksumOK poi STOP comando richiesto assente:gh, DeliveryExit127,
+DeliveryDirectory/home/oufadmin/ouf-mcp-image-plan-delivery.JhylPt4L e bootstrap.log; nessun Exit del preparatore.
+Receipt [mcp-image-plan-gh-missing-delivery-stop-target-20261026.json](../../evidence/mcp-image-plan-gh-missing-delivery-stop-target-20261026.json).
+Nel wrapper39394ece il controllo gh è PRIMA dei downloadcode/immagine,sudo,copiaROOT ed entrypoint.
+Da quell’ordine esatto si deduce che QUESTA consegna non ha invocato il preparatore né creato/consumato il suo scopeROOT.
+Non è un’ispezione live del filesystem o runtime: i guard di scope/code esistenti restano invariati e bloccano qualsiasi stato inatteso.
+La consegna39394ece è consumata e NON rilanciabile; suo comando precedente sostituito sotto.
+Non installare gh, non cercare sessioni/credenzialiGitHub sulVPS o estenderepermessi per compensare.
+
+Correzione del SOLO trasporto: curlHTTPS senza gh/timeout/loginGitHub/token,
+stesso preparatorea827/SHA96cb, stesso scope mcp-denial-image-plan-fb4b7c9ae832e779-v1,
+stessi limiti/contatori/pin/fonti/ROOT400/noauthority. Non un childnuovo per aggirareSTOP,
+non un replay del preparatore (NON ancora invocato); questa è la prima invocazione via nuova consegna corretta.
+Qualsiasi scope/codeROOT già presente:STOP/prove/nessun rilancio o cambio directory.
+
+L’artifact CI PUBBLICO è copiato byteperbyte (ZIP intero9617218byte, non rebuild/relabel) in
+releases/artifacts/mcp-denial-9a374dd0/candidate.zip al commit5938c4b18124ab2be962b3d2979bddcac60c659d,
+provenance.json accanto. SHA256ZIP6c31a1b5698942ddbb47b96ec1b49860c690c44aac8106beb1ca4b1ed7bba56a,
+Gitblob6c5127379ea8590e504c79c08bd1fcd24d3d44ab. Fonte originale artifact12633545900/run40284011851/source9a374dd0.
+La copia pubblica contiene SOLO i6memberCI già qualificati, nessun inputVPS o credenziale. Nessun tag/releaseacceptance.
+Curl verifica TLS, nessun authheader, singolo download max9617218byte/120s e SHA prima di sudo/staging.
+
+Consegna corretta **5c26cb8c6162650963a6a6a378b05f262ce980e5**,
+releases/prepare-mcp-denial-image-plan-curl-20261026.sh,
+SHA256 **83509447c0b4b926dc6692a774ae28119d7601711d85e7cdcec4473c76419874**.
+Il wrapper è byteidentico alla versione9c96ffa3054211a85ea5832c17760651320bb574 qualificata dalla CI finale;
+5c26 cambia SOLO il PATH del test per includere sha256sum, utility già presente nel comandoVPS iniziale.
+CI precedente9c96 aveva entrambi backendPASS ma il testPATHminimal ometteva erroneamente sha256sum:
+failure121479254051/121479277581 conservate come storiaCI, non proveVPS/pass. Non consegnata all’operatore.
+
 ## Stato esatto
 
 VPS cattura riuscita: MCP_DIAGNOSTIC_UPDATE_INPUTS_CAPTURED_NOT_AUTHORIZED/complete=true/Exit0/DeliveryExit0.
@@ -30,15 +62,14 @@ e compilare proposta privata dalla cattura già ricevuta, senza importarla/esegu
 Il controller NON apre il socketEngine e NON fa GETEngine; nessuna revalidazione live affermata.
 Zero containerwrite/import/stop/start/detach/rename/restart,namespacejoin,credenzialeOUF/chiavifirma,
 OAuth/IAM/SQL/Gateway/Registry/acquisizione/attivazione/grant. Niente APPROVO o loginOUF.
-Il normale gh già usato sul VPS scarica un solo artifactGitHub esatto; credenzialiGitHub non stampate né estratte dallo script.
-Non cambiare account o autenticazione se fallisce; STOP e prove conservate.
+La nuova consegna scarica con SOLOcurl il ZIP pubblico esatto, senza account/sessioniGitHub o nuovi strumenti. STOP e prove conservate se fallisce.
 
 Runtime **a82727760244183c1733b8d7619909a2821839ac**:
 scripts/prepare-mcp-denial-image-plan-20261026.py
 SHA256 **96cb2f55d3000d5408265f09a2bd615d902964398e97ba631a72b84a14379059**.
-Delivery **39394ecef13f10e6431c53d689e3d8a9a7954084**:
-releases/prepare-mcp-denial-image-plan-20261026.sh
-SHA256 **20473f93d856b9a883661d86712d268866c3be3cef3901263b7a25a3f0722f60**.
+Delivery **5c26cb8c6162650963a6a6a378b05f262ce980e5**:
+releases/prepare-mcp-denial-image-plan-curl-20261026.sh
+SHA256 **83509447c0b4b926dc6692a774ae28119d7601711d85e7cdcec4473c76419874**.
 Codice e3helper puri copiati ROOT400/dir700 in /usr/local/lib/ouf-mcp-denial-image-plan-96cb2f55d3000d54;
 fchmodFD prima fsync, verifica hash ROOT, nessun tentativo di lettura400 da utente normale.
 Helper della stessa revisione runtime:
@@ -64,7 +95,7 @@ Sei member esatti, tutti SHA256SUMS verificati; image.tar.gz SHA19fd036f973e5273
 capabilities.json SHAf2a6f20ff15969c068b87cbd15cf8485e5680f63123d60e90b58c7a09b7b37ae.
 Platformlinux/amd64/4layer/configCIffc78..., User10005:10005, entrypoint/usr/local/bin/ouf-mcp/Cmdserver.
 Non vengono rebuild/relabel o emesse nuove firme. ZIP<=9617218/metadata2MiB/expandedtar64MiB,
-headroom256MiB e120scontroller; downloadGh120s e singoli codiciCurl60s. Tutti file nuovi ROOT400, scope700;
+headroom256MiB e120scontroller; downloadCurlpubblico120s e singoli codiciCurl60s. Tutti file nuovi ROOT400, scope700;
 bootstraplog privato utente600, conservato, nessun outputConfig/Env.
 
 Piano primario autenticamente compilato e scritto PRIMA di imagecustody binding: hash della receipt di staging reale
@@ -96,19 +127,33 @@ CicloMAC completo usa workloadBusyboxCI, asserisce legacyConfigpresente in ENTRA
 Rootcustody esegue l’ESATTO copierPython embedded nel wrapper, prova file400/dir700/nonrootdenial,
 stage positivo con artifactreale, scopeconsumato rifiutato e wronginputhash rifiutato primaZIP.
 Metadata della cattura per i test sono SINTETICI; nessun hashCI passato per il pianoVPS, nessuna approvazioneproduction simulata.
-Il wrappercurl/gh completo NON è stato eseguito sulVPS dall’assistente; attesa primaesecuzione sotto.
+Il vecchio wrappergh è fallito sulVPS prima del preparatore. La nuova consegna CURL è qualificata sotto e attende la prima esecuzioneVPS.
 
-## Comando NUOVO — prima esecuzione di SOLO deposito immagine e piano
+### Qualifica trasporto corretta senza gh
+
+Prova aggiuntiva: [mcp-image-plan-curl-delivery-qualified-20261026.json](../../evidence/mcp-image-plan-curl-delivery-qualified-20261026.json).
+Finalepush40295327115 (classic121479881085/containerd121479881300/curl121479881188),
+PR40295333624 (classic121479900939/containerd121479901059/curl121479901091):6jobPASS/logdirettiletti/0skip.
+Due backend:8planner+6MACnegative+2ciclilegacy+nativeimage/unstartedconfig+rootcustody positive,
+ora con copier letto dall’ESATTO wrappercurl. Runtime/backendsourceesercitati immutati.
+Jobcurl: PATHsenzaGH e senza timeout, utente NONroot→sudoreale→4fileROOT400/checksumROOT→entrypointprotetto.
+VecchioSTOPgh riprodotto prima di root/scope; NUOVOwrapper scarica DAVVERO sorgenti e ZIPviaHTTPSpublic,
+SHA esatto e log conservati. Cattura CI volutamente sintetica/hasherrato produceSTOP_EXACT_CAPTURE_BYTES_REQUIRED
+primaZIPstaging: il job PASS prova trasporto e guard, NON una preparazioneVPS positiva.
+Preparazione positiva separata provata con artifactreale+metadata sintetici su entrambi backend.
+Nessun risultato VPS della nuova consegna CURL ancora ricevuto, nessuna APPLY pronta/autorità/runtimeeffetti/E2E.
+
+## Comando NUOVO CURL — prima invocazione del preparatore
 
 ```bash
 (
   set -Eeuo pipefail
   umask 077
-  ouf_plan_bootstrap=$(mktemp -d "$HOME/ouf-mcp-image-plan-bootstrap.XXXXXXXX")
+  ouf_plan_bootstrap=$(mktemp -d "$HOME/ouf-mcp-image-plan-curl-bootstrap.XXXXXXXX")
   curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-redirs 3 --connect-timeout 15 --max-time 60 \
-    "https://raw.githubusercontent.com/GioNob/ouf-deploy/39394ecef13f10e6431c53d689e3d8a9a7954084/releases/prepare-mcp-denial-image-plan-20261026.sh" \
+    "https://raw.githubusercontent.com/GioNob/ouf-deploy/5c26cb8c6162650963a6a6a378b05f262ce980e5/releases/prepare-mcp-denial-image-plan-curl-20261026.sh" \
     -o "$ouf_plan_bootstrap/run.sh"
-  printf '%s  %s\n' '20473f93d856b9a883661d86712d268866c3be3cef3901263b7a25a3f0722f60' "$ouf_plan_bootstrap/run.sh" | sha256sum -c -
+  printf '%s  %s\n' '83509447c0b4b926dc6692a774ae28119d7601711d85e7cdcec4473c76419874' "$ouf_plan_bootstrap/run.sh" | sha256sum -c -
   chmod 0400 "$ouf_plan_bootstrap/run.sh"
   /usr/bin/bash "$ouf_plan_bootstrap/run.sh"
 )
