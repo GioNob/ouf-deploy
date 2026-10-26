@@ -1,3 +1,5 @@
+> Aggiornamento successivo: consenso esplicito ricevuto e IAM completato. Leggere OUF_IAM_READ_SCOPES_COMPLETED_20261026.md. Quanto segue è la prova storica del punto parziale.
+
 # OUF — IAM browser: tre definizioni READ create, completamento bloccato da revisione automatica — 26 ottobre 2026
 
 ## Punto esatto

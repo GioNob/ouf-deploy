@@ -1,3 +1,11 @@
+# CURRENT — IAM READ completato: 39 assegnazioni verificate, nuova autenticazione HUMAN richiesta
+
+Handoff corrente INTEGRALE: docs/handoffs/OUF_IAM_READ_SCOPES_COMPLETED_20261026.md.
+Evidence evidence/iam-read-client-scopes-completed-20261026.json. Consenso owner esplicito ricevuto per le due definizioni persistenti e sei assegnazioni Default. Create lineage.object.read=6c7af46b-e96b-40a1-954c-527993ea2fe9 e lineage.property.read=7523a2c6-088f-4478-9965-ed95412234eb, realm ouf/Type None/includeToken On. Tre definizioni precedenti e ingestion.run.read riusate, NON ricreare.
+Solo client ouf-chatgpt UUID3e64ac3a-eeaa-47bd-94ec-b78040b39e71: 39 assegnazioni=33 righe precedenti ESATTE+6 READ Default. Nessuna modifica ad altri client, mappers, ruoli, PKCE/audience/security. Nessun token/secret letto.
+NEXT normale NUOVA autenticazione della connessione OUF - MCP Server come ouf-admin; IAM console oufadmin distinta. Token corrente non attestato/rinnovato: ZERO acquisitionREAD in questa continuazione. Non dedurre scope effettivi dalla sola configurazione IAM. Solo dopo contesto HUMAN cambiato e grant51 ancora validi UNA nuova READ bounded runbb2..., primo DENY STOP senza retry.
+Policy51 finestra13:14:26→15:14:26CET26ottobre/12:14:26→14:14:26Z; nessuna estensione/proposta automatica. Precedente SCOPE_MISSING/MCP_PRE_ADMISSION/evaluated51 conservato. Due run esistenti soltanto; no nuova acquisizione/attivazione/reset/Registry restart/reinstall/merge/release acceptance. Tutti vecchi scope VPS consumati; E2E/G4/F5/F6 OPEN, Supervisor dopo E2E. Header sotto STORICI.
+
 # CURRENT — IAM browser autorizzato: 3 definizioni READ create, completamento bloccato da auto-review
 
 Handoff corrente INTEGRALE: docs/handoffs/OUF_IAM_READ_SCOPES_PARTIAL_REVIEW_20261026.md.
