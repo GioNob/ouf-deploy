@@ -1,0 +1,19 @@
+name: MCP diagnostic update new authority protocol
+on:
+  push:
+    branches: [fix/registry-bound-owner-lineage-20261023]
+    paths: ['tools/mcp_diagnostic_update/**','scripts/apply-mcp-diagnostic-update-20261026.py','tests/test_mcp_diagnostic_update_protocol.py','.github/workflows/mcp-diagnostic-update.yml']
+  pull_request:
+    paths: ['tools/mcp_diagnostic_update/**','scripts/apply-mcp-diagnostic-update-20261026.py','tests/test_mcp_diagnostic_update_protocol.py','.github/workflows/mcp-diagnostic-update.yml']
+permissions: {contents: read}
+jobs:
+  root-crypto-and-journal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: New MCP-only real CI Ed25519 roles and fenced journal (no production approval)
+        run: |
+          sudo install -d -m 700 /var/lib/ouf-mcp-update-protocol-ci
+          sudo env OUF_MCP_UPDATE_TEST_ROOT=/var/lib/ouf-mcp-update-protocol-ci python3 -B -m unittest discover -s tests -p test_mcp_diagnostic_update_protocol.py -v
