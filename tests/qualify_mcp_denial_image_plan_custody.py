@@ -11,7 +11,7 @@ root=Path('/var/lib/ouf-mcp-plan-custody-ci');assert not root.exists();root.mkdi
 downloads=root/'downloaded-code';downloads.mkdir(mode=0o700)
 for name,path in [('prepare.py',BASE/'scripts/prepare-mcp-denial-image-plan-20261026.py'),*[(n+'.py',BASE/'tools/acquisition_read_native'/(n+'.py'))for n in('plan_helper','retained_mac','image_custody')]]:
     target=downloads/name;target.write_bytes(path.read_bytes());target.chmod(0o600);os.chown(target,1001,1001)
-wrapper=(BASE/'releases/prepare-mcp-denial-image-plan-20261026.sh').read_text()
+wrapper=(BASE/'releases/prepare-mcp-denial-image-plan-curl-20261026.sh').read_text()
 copier=wrapper.split("<<'PY' 2>&1 | tee -a \"$delivery_log\"\n",1)[1].split('\nPY\n',1)[0]
 copied=subprocess.run([sys.executable,'-I','-S','-B','-',str(downloads),'1001'],input=copier,text=True,capture_output=True,timeout=20)
 assert copied.returncode==0,(copied.stdout,copied.stderr)
