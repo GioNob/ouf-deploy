@@ -93,6 +93,10 @@ class CaptureTests(unittest.TestCase):
     def test_installed_mcp_wrong_image_is_not_adopted(self):
         self.observations[self.ids['mcp']]['Image']='sha256:'+'b'*64
         with self.assertRaises(m.Stop):self.prepare()
+    def test_reformatted_sealed_input_is_not_silently_normalized(self):
+        self.paths['native'].write_text(json.dumps(self.native,indent=2))
+        with self.assertRaises(m.Stop):self.prepare()
+        self.assertEqual(self.calls,[])
     def test_history_public_mode_is_rejected(self):
         self.paths['native'].chmod(0o644)
         with self.assertRaises(m.Stop):self.prepare()

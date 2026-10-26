@@ -10,8 +10,8 @@ delivery=$(mktemp -d "${HOME}/ouf-mcp-inputs-delivery.XXXXXXXX")
 chmod 0700 "$delivery"
 delivery_log="$delivery/bootstrap.log"
 trap 'delivery_exit=$?; trap - EXIT; printf "DeliveryExit=%s\nDeliveryDirectory=%s\nDeliveryLog=%s\n" "$delivery_exit" "$delivery" "$delivery_log" | tee -a "$delivery_log"; exit "$delivery_exit"' EXIT
-code_sha=a3f1ac74d25556946f2c6b7403d553d7614d609a811ef5eaa304b5b325ae430e
-code_commit=22476c2737ceb7d71e8c4fadca63b9173785c073
+code_sha=909611450683cae6ac15cc41f2e4f86c7eaad6585830dd15961f51916446a9e4
+code_commit=0000000000000000000000000000000000000000
 download="$delivery/prepare.py"
 curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-redirs 3 --connect-timeout 15 --max-time 60 \
   "https://raw.githubusercontent.com/GioNob/ouf-deploy/${code_commit}/scripts/prepare-mcp-denial-update-inputs-20261026.py" -o "$download"

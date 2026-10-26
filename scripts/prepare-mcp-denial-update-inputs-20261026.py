@@ -119,8 +119,8 @@ class Capture:
                     break
                 raw += part
             require(len(raw) == before.st_size and frame(before) == frame(os.fstat(fd)) == frame(path.lstat()), 'CAPTURE_HISTORY_CHANGED')
+            require(expected is None or hashlib.sha256(raw).hexdigest() == expected, 'EXACT_INSTALLED_CAPTURE_HASH_REQUIRED')
             value = decode(raw)
-            require(expected is None or digest(value) == expected, 'EXACT_INSTALLED_CAPTURE_HASH_REQUIRED')
             self.seals[str(path)] = {'metadata': list(frame(before)), 'sha256': hashlib.sha256(raw).hexdigest()}
             return value
         finally:
