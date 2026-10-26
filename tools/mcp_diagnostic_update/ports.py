@@ -123,7 +123,7 @@ class NativePorts:
         row=self.execution.record();proof=row['effects'][-1]['proof']
         result={'schema':'ouf.mcp-diagnostic-update-result.v1','status':'MCP_DIAGNOSTIC_UPDATE_INSTALLED_E2E_NOT_ACCEPTED','complete':True,
                 'contextPath':str(self.root),'preparedNativePlanHash':self.ctx.case['nativePlanHash'],'frozenPlanHash':self.ctx.case['frozenPlanHash'],
-                'reviewHash':self.core.digest(self.review),'authorityHash':self.core.sha(self.gate.raw),'candidateSourceCommit':self.ctx.case['sourceCommit'],
+                'reviewHash':self.core.digest(self.review),'authorityHash':self.core.sha(self.gate.raw),'runtimeBindingHash':self.review['nativePlan']['runtimeBindingHash'],'candidateSourceCommit':self.ctx.case['sourceCommit'],
                 'nativeImageId':self.ctx.native['nativeImageId'],'counts':row['counts'],'originalsAndReadReplicasUnchanged':6,
                 'newMcpManagers':1,'oldMcpRetainedStopped':True,'nativeBindingHash':proof['nativeBindingHash'],'componentReadinessProven':True,
                 'registryWorkerTouched':False,'gatewayRequests':0,'credentialFileReads':0,'oauthRequestsByRepair':0,'normalMcpOAuthBootstrapMayHaveOccurred':True,

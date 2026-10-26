@@ -38,7 +38,7 @@ def components():
     runtime=selected('sealed_mcp_update_runtime',folder/'runtime_binding.py',('stdlib_binding',),{'Path':Path,'sysconfig':sysconfig,'sys':sys,'os':os,'stat':stat,'hashlib':hashlib,'re':re,'binding':types.SimpleNamespace(require=require,identity=parts['plan_helper'].frame,CandidateDenied=RuntimeError)},closure)
     closure[str(Path(__file__).resolve())]=mapping['entry.py'];return parts,auth,sign,journal,closure,runtime
 def review(ctx):
-    c=ctx.core;ctx.current();ctx.verify_archive();native={'frozenPlanHash':ctx.case['frozenPlanHash'],'preparedNativePlanHash':ctx.case['nativePlanHash'],'proposal':ctx.proposal,'networkBaseline':ctx.network_baseline,'imageAuditHash':c.digest(ctx.native['imageAudit'])}
+    c=ctx.core;ctx.current();ctx.verify_archive();native={'frozenPlanHash':ctx.case['frozenPlanHash'],'preparedNativePlanHash':ctx.case['nativePlanHash'],'proposal':ctx.proposal,'networkBaseline':ctx.network_baseline,'imageAuditHash':c.digest(ctx.native['imageAudit']),'runtimeBinding':ctx.runtime_binding,'runtimeBindingHash':c.digest(ctx.runtime_binding)}
     value={'schema':'ouf.mcp-diagnostic-update-review.v1','executionRoot':str(ctx.root),'frozenPlanHash':ctx.case['frozenPlanHash'],'nativePlan':native,'nativePlanHash':c.digest(native),
            'sourceClosure':ctx.closure,'sourceClosureHash':c.digest(ctx.closure),'logicalOperationRef':ctx.case['nativePlanHash'],'bootId':ctx.inputs['bootId'],
            'maximumSeconds':900,'maximums':copy.deepcopy(c.LIMITS),'stages':list(c.STAGES),'negativeCleanup':{'maximumAdditionalSeconds':30,'startupSeconds':180,'candidateStopOnly':True,'maximumStops':1,'disableCandidateRestartFirst':True},
