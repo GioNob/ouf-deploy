@@ -4,7 +4,7 @@ from pathlib import Path
 spec=importlib.util.spec_from_file_location('host_read',Path(__file__).resolve().parents[1]/'scripts/read-mcp-host-policy-stop-20261026.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 class RetainedRead(unittest.TestCase):
     def setUp(self):
-        self.assertEqual(os.geteuid(),0,'ROOT_TEST_REQUIRED_NO_SKIP');self.tmp=tempfile.TemporaryDirectory(dir=Path.cwd());self.base=Path(self.tmp.name);self.base.chmod(0o700)
+        self.assertEqual(os.geteuid(),0,'ROOT_TEST_REQUIRED_NO_SKIP');fixture=Path(os.environ.get('OUF_MCP_HOST_READ_TEST_ROOT',str(Path.cwd())));m.ancestry(fixture);self.tmp=tempfile.TemporaryDirectory(dir=fixture);self.base=Path(self.tmp.name);self.base.chmod(0o700)
         for n in('stopped','code','native','inputs'):(self.base/n).mkdir(mode=0o700)
         self.host={'AutoRemove':False,'Memory':0,'MemorySwap':0,'OomKillDisable':None,'RestartPolicy':{'Name':'unless-stopped','MaximumRetryCount':0},'Binds':['/synthetic/private:/config:ro']}
         self.source={}
