@@ -1,3 +1,9 @@
+# CURRENT — nuovo CSV: upload403, proposta temporanea di preparazione PENDING
+
+Handoff4da5410e-98de-472c-89b6-bc1cdae8ecf1 conservato, nessun nuovo picker. ScreenshotONB_CAPABILITY_DENIED/403 perouf.managed-source.file.upload; statusREADauthorizationdenied/retryablefalse, nessunretry. Nessunasset/profiling osservato.
+Analisi sourceOnboarding194b586: page→TrustedActorResolver→ServletAuthorization usa ResourceContext capability senza attributi; grantadmin53upload/profile richiedono label/detail presenti, vecchi grant generici scaduti25ottobre. Non introspezionati account browser/token/policy caricata, quindi nessuna certezza su eventuali ulteriori cause sessione.
+Propostad1f8ba77-7637-4f77-886c-7f50565f3464/rev0/PENDING: preserva tuttiiruoli/assegnazioni e aggiunge1ruolotemporaneo upload/profile/preview, resourceTypecapability, soloouf-admin,26ottobre17:34:29→19:34:29 Europe/Rome. Controlliownership/receipt immutati; nessuna fonte/attivazione/acquisizione autorizzata. ReviewTHS entro17:49:37. Prova evidence/new-csv-upload-control-proposal-20261026.json. NEXT decisioneTHS→proposal.read stessoID→solo dopo contestoautorizzativo cambiato riprendere stesso handoff senza automatismirinnovo/replay. M1COMPLETO, M2aperto.
+
 # CURRENT — G4 / M1 COMPLETATO, F5–F6 provate sul caso conservato
 
 Checkpoint26ottobre2026 17:01:17 Europe/Rome. Dossier evidence/csv-m1-f5-f6-owner-verification-20261026.json; handoff docs/handoffs/OUF_M1_COMPLETED_20261026.md. Policy53 verificata PUBLISHED su propostab7df94f4-10d8-4897-8655-42e3f6e27ba4 r1. Quattro READ distinte (due owner per ciascuna run) COMPLETE/AUTHORIZED/partialfalse/cursornull, nessun retry o nuova acquisizione.
