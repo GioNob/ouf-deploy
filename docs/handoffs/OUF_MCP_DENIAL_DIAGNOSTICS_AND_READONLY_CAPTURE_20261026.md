@@ -1,5 +1,7 @@
 # Diagnosi MCP qualificata e nuova cattura di soli metadata — 26 ottobre 2026
 
+> NEXT aggiornato: [nuova preparazione immagine+piano](OUF_MCP_DIAGNOSTIC_IMAGE_PLAN_PREPARATION_20261026.md), già qualificataCI. La cattura sotto resta CONSUMATA; nessun replay. Grant50READ scaduti alle09:24:50CET26ottobre.
+
 ## VPS ricevuto — cattura riuscita e scope CONSUMATO
 
 L’operatore ha restituito MCP_DIAGNOSTIC_UPDATE_INPUTS_CAPTURED_NOT_AUTHORIZED, complete=true, Exit0/DeliveryExit0. InputsHash **fb4b7c9ae832e779192f1ff6e032e49c696752e182a57b8e9464f5a76000b3e4**; 9EngineGET/5privateMetadataReads/65041byte,4originali invariati e3componenti installati stessa generazione. Zero containerWrites/import/Gateway/OAuth/SQL/credenzialefile/chiavifirma/acquisizioni/attivazioni. Authority/continuation=false, scopesOAuth e bundleMCP NON osservati.
