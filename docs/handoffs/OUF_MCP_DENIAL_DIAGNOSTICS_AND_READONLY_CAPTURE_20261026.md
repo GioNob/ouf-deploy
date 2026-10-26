@@ -1,6 +1,14 @@
 # Diagnosi MCP qualificata e nuova cattura di soli metadata — 26 ottobre 2026
 
-## Punto di ripresa
+## VPS ricevuto — cattura riuscita e scope CONSUMATO
+
+L’operatore ha restituito MCP_DIAGNOSTIC_UPDATE_INPUTS_CAPTURED_NOT_AUTHORIZED, complete=true, Exit0/DeliveryExit0. InputsHash **fb4b7c9ae832e779192f1ff6e032e49c696752e182a57b8e9464f5a76000b3e4**; 9EngineGET/5privateMetadataReads/65041byte,4originali invariati e3componenti installati stessa generazione. Zero containerWrites/import/Gateway/OAuth/SQL/credenzialefile/chiavifirma/acquisizioni/attivazioni. Authority/continuation=false, scopesOAuth e bundleMCP NON osservati.
+Prova esatta: [evidence/acquisition-mcp-denial-inputs-captured-target-20261026.json](../../evidence/acquisition-mcp-denial-inputs-captured-target-20261026.json).
+Log dichiarato dall’operatore: /home/oufadmin/ouf-mcp-inputs-delivery.Rsmep8r0/bootstrap.log; il contenuto privato e inputs.json NON sono stati richiesti o letti dall’assistente.
+Lo scope /etc/ouf/deploy-snapshots/mcp-denial-update-inputs-9a374dd07745f059-v1 è **CONSUMATO**. Il comando sotto è solo storia: NON rilanciare. Nessun risultato APPLY del nuovo aggiornamentoMCP esiste.
+NEXT: staging dell’esatta immagine CI e identitànative classic/containerd, poi esecutore MCP-only qualificato e nuova reviewHUMAN concreta; nessun effetto autorizzato da questa receipt. Non usare vecchi controller o vecchie authority. GrantREAD50 conservano la scadenza09:24:50CET/08:24:50Z del26ottobre, senza rinnovo automatico.
+
+## Punto di ripresa (storia prima della receipt)
 
 La pubblicazione VPS dei descrittori è riuscita: policy49, 106 grant preservati, Exit0/DeliveryExit0. La proposta HUMAN64655de1-bf1e-4acd-aada-d2f27154539a è stata pubblicata dalla THS: policy50/hash067cb58da4e6f0278b5a81f4858646bb50222bb48e9cf63d3141621e9cfaf05f, 94grant subject (82precedenti identici +12READ vincolati),4ruoli/4assegnazioni con originali2ruoli/34permissionadmin/2assegnazioni invariati.
 Le prime due READ distinte Ingestion/UDP sulla runbb2e2af4-9c0a-49ea-8ad9-a947987c1472 sono negate authorization denied/retryable=false. NON ritentate. Runa3208f2f-ebfd-415d-bddc-79ab05dea78f non invocata.
@@ -74,10 +82,10 @@ push40287470611/job121454430366 ePR40287477086/job121454450598:9testprefix/custo
 Docker7fixture reali/processpin reali/GET al veroEngine root, storia applicativa e workload Busybox esclusivamente sintetici. Non prova MCP/Gateway/IAM/datiVPS.
 Il wrappercurl non è stato eseguito contro produzione; copier reale testato direttamente. Source/deliveryremote readback verificati.
 
-## Comando per la PRIMA esecuzione della sola cattura
+## Comando STORICO CONSUMATO — NON eseguire
 
 Non richiede APPROVO né loginIAM, soltanto normale sudo dell'operatore oufadmin.
-Non aggiorna ilMCP o altri container. Nessun risultato VPS di questa nuova cattura è stato ricevuto.
+Non aggiorna ilMCP o altri container. Risultato VPS positivo ricevuto sopra: scope consumato, NON eseguire di nuovo.
 
 ```bash
 (

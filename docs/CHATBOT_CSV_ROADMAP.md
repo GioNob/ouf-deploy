@@ -1,3 +1,11 @@
+# CURRENT — cattura metadata VPS riuscita; scope CONSUMATO, aggiornamento MCP non autorizzato
+
+Handoff corrente INTEGRALE: docs/handoffs/OUF_MCP_DENIAL_DIAGNOSTICS_AND_READONLY_CAPTURE_20261026.md, sezione VPS ricevuto.
+Receipt evidence/acquisition-mcp-denial-inputs-captured-target-20261026.json: MCP_DIAGNOSTIC_UPDATE_INPUTS_CAPTURED_NOT_AUTHORIZED/complete/Exit0/DeliveryExit0, inputsHashfb4b7c9ae832e779192f1ff6e032e49c696752e182a57b8e9464f5a76000b3e4;9EngineGET/5file/65041byte,4originali invariati/3installati stessa generazione. Zero scritture/import/credenzialefile/chiavifirma/OAuth/SQL/Gateway/acquisizioni/attivazioni; authority/continuationfalse. LogoperatoreRsmep8r0/bootstrap.log conservato, contenuto privato non letto.
+La cattura runtime6fc2/delivery28db e il suo scopeFISSO sono CONSUMATI; comando nell’handoff STORICO NONrilanciabile. Nessuna vecchia preparazione native5fa62 o vecchioAPPLY/recovery ripetibile. Contatori installazione306GET/22writes ecc restano preservati, distinti dai9GET della cattura.
+MCP9a374dd0/PR79 qualificatoCI ma NON distribuito. NEXT stagingCI/nativeidentityclassic-containerd e piano/esecutoreSOLOMCP qualificati, nuova reviewHUMAN concreta e APPROVOhashfresco visibile+Invio prima effetti/firme. Nessun nuovo comandoAPPLY pronto. MAClegacy: leggere regola e precedenti, ciclo completo entrambebackend e matrixnegativa; niente ignoregenerico/rollbackautomatico/Registry-owner-2READ-Gatewaytouch.
+OAuthscope/bundlelocale e causa dei2dinieghi restano NONosservati; nessun retryREAD. Policy50 grantfino26ottobre09:24:50CET/08:24:50Z, mai rinnovoautomatico. E2E/G4/F5/F6OPEN; Supervisor dopoE2E; niente terzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. Header sotto STORICI.
+
 # CURRENT — diagnosi MCP qualificata; NEXT prima cattura READ dei suoi input correnti
 
 Policy49/VPS pubblicazione descrittori riuscita e policy50/HUMAN grant12READ verificati restano validi come prove storiche. Due READ distinte Ingestion/UDP runbb2e2af4... negano authorization denied/retryable=false; nessun retry e nessuna lettura runa320... successiva. Una nuova ouf.system.status con ouf-admin è HEALTHY/actionRequiredfalse/partialfalse/PUBLIC_OPERATIONAL/redactedtrue: prova solo quel percorso, non scopesREAD o bundle50 locale. La causa live dei dinieghi resta NON provata.
