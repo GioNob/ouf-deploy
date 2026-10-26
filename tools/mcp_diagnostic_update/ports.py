@@ -35,7 +35,7 @@ class NativePorts:
         self.gate.check();self.ctx.check_sources()
         for role,b in self.plan['existingApplications'].items():
             if role=='mcp':continue
-            v=self.container(b['containerId']);self.require(v['State']['Running']is True and self.ctx.p.stable_binding(v)==b and self.ctx.p.process_pin(v['State']['Pid'])==self.ctx.inputs['currentProcessPins'][role],'EXACT_UNCHANGED_ORIGINAL_WORKER_REQUIRED')
+            v=self.container(b['containerId']);self.require(v['State']['Running']is True and v['State']['Paused']is False and v['State']['Restarting']is False and self.ctx.p.stable_binding(v)==b and self.ctx.p.process_pin(v['State']['Pid'])==self.ctx.inputs['currentProcessPins'][role],'EXACT_UNCHANGED_ORIGINAL_WORKER_REQUIRED')
         self.old_guard(stage)
         for role in self.execution.record()['candidates']:self.candidate_guard(role,stage)
     def old_guard(self,stage):
@@ -54,7 +54,7 @@ class NativePorts:
         if i>at('DISABLE_OLD_MCP_RESTART'):expected['RestartPolicy']={'Name':'no','MaximumRetryCount':0}
         self.require(v['HostConfig']==expected,'OLD_MCP_HOST_CONFIG_CHANGED')
         if i<=at('STOP_OLD_MCP'):
-            self.require(v['State']['Running']is True and self.ctx.p.process_pin(v['State']['Pid'])==self.ctx.inputs['currentProcessPins']['mcp']and self.core.digest(v['NetworkSettings'])==b['networkSettingsHash'],'SAME_OLD_MCP_BEFORE_STOP_REQUIRED')
+            self.require(v['State']['Running']is True and v['State']['Paused']is False and v['State']['Restarting']is False and self.ctx.p.process_pin(v['State']['Pid'])==self.ctx.inputs['currentProcessPins']['mcp']and self.core.digest(v['NetworkSettings'])==b['networkSettingsHash'],'SAME_OLD_MCP_BEFORE_STOP_REQUIRED')
         else:self.require(v['State']['Running']is False and v['State']['Pid']==0,'OLD_MCP_MUST_REMAIN_STOPPED')
         self.require(v['Name']=='/'+(row['name']if i<=at('RENAME_OLD_MCP')else row['retiredName']),'OLD_MCP_EXACT_RETAINED_NAME_REQUIRED')
         if i>at('DETACH_OLD_MCP'):self.require(v['Id']not in(self.network('mcp').get('Containers')or{}),'OLD_MCP_ENDPOINT_NOT_RELEASED')
@@ -79,7 +79,7 @@ class NativePorts:
     def start(self,role):
         row=self.execution.record()['candidates'][role];self.candidate_guard(role,started=False,restored=False);self.execution.candidate(role,startupDeadlineWall=time.time()+180,startupDeadlineMonotonic=time.monotonic()+180);s,_=self.request('POST','/v1.44/containers/'+row['id']+'/start');self.require(s==204,'CANDIDATE_START_OUTCOME_UNPROVEN');self.candidate_guard(role,started=True,restored=False);return {'started':True,'role':role}
     def healthy(self,role):
-        row=self.execution.record()['candidates'][role]
+        row=self.execution.record()['candidates'][role];last=time.monotonic()
         while True:
             self.gate.check();self.require(time.time()<row['startupDeadlineWall']and time.monotonic()<row['startupDeadlineMonotonic'],'FINITE_CANDIDATE_STARTUP_DEADLINE');self.candidate_guard(role,started=True,restored=False);self.reserve('readinessGets');pin=self.execution.record()['candidates'][role]['generation'];response=self.ctx.http.health(self.ctx.p,pin);self.ctx.evidence('health',response);self.require(response['status']in(0,204,502,503,504),'PERMANENT_OR_UNKNOWN_READINESS_DENIAL')
             if role=='mcp':good=response['status']==204
@@ -88,6 +88,8 @@ class NativePorts:
                 except (ValueError,AttributeError):good=False
             self.require(time.time()<row['startupDeadlineWall']and time.monotonic()<row['startupDeadlineMonotonic'],'READINESS_PROOF_WITHIN_STARTUP_LEASE_REQUIRED')
             if good:self.execution.candidate(role,readinessProven=True);return {'readinessProven':True,'role':role}
+            if time.monotonic()-last>=10:
+                print('Attendo readiness del solo nuovo MCP; limite startup180secondi, scadenza invariata.',flush=True);last=time.monotonic()
             self.require(self.gate.remaining()>35,'INSUFFICIENT_TIME_FOR_READINESS');time.sleep(2)
     def execute(self,stage):
         row=self.execution.record();i=row['nextStage'];self.require(self.stages[i]==stage and len(row['effects'])==i+1 and row['effects'][-1]['state']=='CLAIMED','EXACT_CLAIMED_MCP_STAGE_REQUIRED')

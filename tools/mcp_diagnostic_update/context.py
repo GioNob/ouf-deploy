@@ -103,7 +103,7 @@ class Context:
         if hasattr(self,'authority_metadata'):require(value==self.authority_metadata,'INSTALLATION_PUBLIC_AUTHORITY_CHANGED')
         return value
     def executable(self):
-        path=Path('/usr/bin/openssl').resolve(strict=True);self.p.ancestry(path.parent);s=path.lstat();require(stat.S_ISREG(s.st_mode)and s.st_uid==s.st_gid==0 and s.st_mode&0o111 and not s.st_mode&0o022,'TRUSTED_OPENSSL_REQUIRED')
+        path=Path('/usr/bin/openssl').resolve(strict=True);self.p.ancestry(path.parent);s=path.lstat();require(stat.S_ISREG(s.st_mode)and s.st_uid==s.st_gid==0 and s.st_mode&0o111 and not s.st_mode&0o022 and s.st_size<=64000000,'TRUSTED_OPENSSL_REQUIRED')
         r=subprocess.run([str(path),'version'],capture_output=True,timeout=2,env={'PATH':'/usr/bin:/bin','LC_ALL':'C','OPENSSL_CONF':'/dev/null'});v=re.match(rb'OpenSSL ([0-9]+\.[0-9]+\.[0-9]+[a-z]?)\b',r.stdout)
         require(r.returncode==0 and v is not None and len(r.stdout)<=256,'EXACT_OPENSSL_VERSION_REQUIRED');return {'path':str(path),'sha256':sha(path.read_bytes()),'version':v[1].decode()}
     def verify_archive(self):
@@ -142,7 +142,7 @@ class Context:
         print('Verifico sette generazioni correnti, nome retained e rete; sole letture Engine.',flush=True)
         self.check_sources()
         for role,b in self.proposal['existingApplications'].items():
-            s,v=self.preflight_get('/v1.44/containers/'+b['containerId']+'/json');require(s==200 and v['State']['Running']is True and self.p.stable_binding(v)==b and self.p.process_pin(v['State']['Pid'])==self.inputs['currentProcessPins'][role],'EXACT_SEVEN_CURRENT_GENERATIONS_REQUIRED')
+            s,v=self.preflight_get('/v1.44/containers/'+b['containerId']+'/json');require(s==200 and v['State']['Running']is True and v['State']['Paused']is False and v['State']['Restarting']is False and self.p.stable_binding(v)==b and self.p.process_pin(v['State']['Pid'])==self.inputs['currentProcessPins'][role],'EXACT_SEVEN_CURRENT_GENERATIONS_REQUIRED')
         old=self.proposal['mcpReplacement'];s,_=self.preflight_get('/v1.44/containers/'+old['retiredName']+'/json');require(s==404,'RETAINED_MCP_NAME_ALREADY_EXISTS')
         s,info=self.preflight_get('/v1.44/info');require(s==200 and info['ServerVersion']=='29.8.1','QUALIFIED_ENGINE_VERSION_CHANGED')
         native=['driver-type','io.containerd.snapshotter.v1']in(info.get('DriverStatus')or[]);require(native==(self.proposal['nativeIdentityProfile']=='CONFIG_AND_NATIVE_MANIFEST'),'CURRENT_ENGINE_NATIVE_IDENTITY_PROFILE_CHANGED')

@@ -117,7 +117,9 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
             self.assertTrue(select.select([r],[],[],180)[0]);self.assertEqual(os.read(r,32),b'STARTED');os.close(r);_,status=os.waitpid(child,0);self.assertEqual(os.waitstatus_to_exitcode(status),73)
             journal_path=Path(self.case['executionRoot'])/'recovery.json';deadline=time.monotonic()+30
             while True:
-                row=self.journal.Journal(journal_path.parent).read()
+                try:row=self.parts['quarantine'].snapshot(self.journal.Journal(journal_path.parent))
+                except BlockingIOError:
+                    self.assertLess(time.monotonic(),deadline);time.sleep(.02);continue
                 if (row.get('quarantine')or{}).get('state')=='APPLIED':break
                 self.assertLess(time.monotonic(),deadline);time.sleep(.2)
             candidate=self.api('GET','/containers/'+row['candidates']['mcp']['id']+'/json');self.assertFalse(candidate['State']['Running']);self.assertEqual(candidate['HostConfig']['RestartPolicy']['Name'],'no')

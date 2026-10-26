@@ -45,13 +45,14 @@ def review(ctx):
            'preflightCounts':copy.deepcopy(ctx.counts),'verification':{'trustPolicy':ctx.authority_metadata['trustPolicy'],'openssl':ctx.openssl,'context':ctx.authority_metadata['context']},
            'retainedInstallationCounts':ctx.proposal['retainedInstallationCounts'],'retainedCaptureCounts':ctx.proposal['retainedCaptureCounts'],
            'retainedImagePreparationCounts':{'privateMetadataReads':2,'ciZipReads':1,'nativeArchivesPrepared':1,'engineGets':0,'containerWrites':0,'imageImports':0},
-           'maximumSigningOperations':3,'maximumPrivateSigningKeyOpens':15,'maximumRawEngineReceiptBytesTwoPublishers':134217728,'databaseRestoreAuthorized':False,'humanBudgetOrSourceActivationAuthorized':False,
+           'maximumSigningOperations':3,'maximumSigningKeyReadDispatches':15,'maximumRawEngineReceiptBytesTwoPublishers':134217728,'databaseRestoreAuthorized':False,'humanBudgetOrSourceActivationAuthorized':False,
            'acquisitionCallsAuthorized':False,'gatewayMutationAuthorized':False,'automaticReplayAllowed':False,'budgetReset':False,'releaseAcceptance':False}
     c.validate_review(value);ctx.write(ctx.root,'review.json',value);return value
 def terminal(ctx,value):
     c=ctx.core;reviewed=c.digest(value);deadline=time.monotonic()+900;wall=time.time()+900
     print('Revisione privata: '+str(ctx.root/'review.json'),flush=True)
     print('SOLA sostituzione del MCP con immagine diagnostica qualificata. Breve indisponibilita MCP; vecchio fermo/scollegato/trattenuto, MAC/IP e porte pubblicate correnti conservati, nessun rollback.',flush=True)
+    print('Se STOP dopo il suo arresto, il MCP puo restare indisponibile fino a riconciliazione autorizzata. Il vecchio NON viene riavviato automaticamente.',flush=True)
     print('Sei componenti esistenti, Registry e Gateway intatti. Nessuna rotta, migrazione, grant, fonte o acquisizione.',flush=True)
     print('Include schema HUMAN CAPABILITIES e motivo/versione dei dinieghi sulle sole due READ. Normale bootstrap OAuth e aggiornamento catalogo manifest del nuovo MCP possono avvenire.',flush=True)
     print('Due chiavi installazione esistenti: tre firme dopo consenso (verifiche ripetute, massimo15 aperture chiave). Nessuna credenziale applicativa letta dal repair.',flush=True)
