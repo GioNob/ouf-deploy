@@ -1,3 +1,5 @@
+> AGGIORNAMENTO VPS: reader riuscito/Exit0/DeliveryExit0, Memory=int0/OOMnull/AutoRemovefalse e nessun effetto precedente provati. Reader CONSUMATO; comando sotto STORICO/NONrilanciabile. Leggere integralmente [la continuazione cumulativa con nuova review](OUF_MCP_ZERO_MEMORY_CONTINUATION_20261026.md).
+
 # OUF — STOP prima della review del MCP: riconciliazione dei soli file conservati — 26 ottobre 2026
 
 ## Ultimo VPS e punto esatto
