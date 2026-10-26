@@ -1,3 +1,9 @@
+# CURRENT — due READ diagnostiche INSTALLATE sul VPS; APPLY consumata, E2E aperto
+
+Ricevuta owner ACQUISITION_REDACTION_READS_INSTALLED_E2E_NOT_ACCEPTED, complete=true, componentReadinessProven=true, Exit0/DeliveryExit0. Prova evidence/acquisition-redaction-apply-target-20261026.json. Review22f8c0834cb1bc4584ec6998312feb9100f3d0b3cc064cf82820809b1529d1f2; authoritydee3a62c5c242810ccd2b2e2e100da9a4f1316e8da9730dee87a1107b06ddc8f. 219GET/16write/2import/7metadata/5health/0quarantena. Tre firme. Nessuna credenziale/OAuth/SQL/migrazione/acquisizione/attivazione/grant/route. Vecchie due READ trattenute ferme; cinque altri componenti invariati, MCP invariato, Registry non toccato.
+Scope acquisition-redaction-update-f11dbe659ba4367a-v1 CONSUMATO: NON ripetere APPLY/preparazioni/trasporti. Candidati7d85bfe/125510c ora INSTALLATI. Log /usr/local/lib/ouf-acquisition-redaction-update-a1a582d308f5ad04/operator.log; delivery /home/oufadmin/ouf-redaction-apply-delivery.0MTGPZxQ/bootstrap.log.
+NEXT diagnosi owner governata delle sole DUE acquisizioni esistenti, dopo nuovo mandato READ finito specificamente autorizzato: policy51 scaduta15:14:26 Europe/Rome26ottobre. Nessun rinnovo/proposta automatica, nessuna nuova acquisitionREAD in questa registrazione. Causa live della redazione ancora ignota. Nessun reset o terza acquisizione. G0–G3PASS,G4/M1/F5/F6OPEN,tecnico8/8funzionale4/6; Supervisor dopoE2E. Nessun merge/releaseacceptance/Registryrestart/reinstall. Il precedente comando APPLY è ora storico.
+
 # CURRENT — prima APPLY delle sole due READ qualificata, NON eseguita
 
 Piano VPS preparato e CONSUMATO: nativePlanHash f11dbe659ba4367a1d873a8938f43546a6851bbdcbb907eb588cb1323122f5fd; frozenPlanHash d5ce0235cd9014656ceaacd0dcc984a5ff0db93e2be3cac9e67c18fc42f156e2. Il doppio transcript owner è UNA sola esecuzione. Ricevuta evidence/acquisition-redaction-image-plan-target-20261026.json.
