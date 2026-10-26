@@ -24,7 +24,7 @@ class Native(fixture.Protocol):
         build=self.root/'build';build.mkdir();(build/'server.py').write_text('''import http.server
 class H(http.server.BaseHTTPRequestHandler):
  def do_GET(self):
-  self.send_response(200 if self.path=='/health/ready'else 404);self.end_headers();self.wfile.write(b'{"status":"UP"}')
+  self.send_response(200 if self.path=='/actuator/health/readiness'else 404);self.end_headers();self.wfile.write(b'{"status":"UP"}')
  def log_message(self,*args):pass
 http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
 ''')

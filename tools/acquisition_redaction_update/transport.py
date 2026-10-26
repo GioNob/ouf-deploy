@@ -60,7 +60,7 @@ try:
  if len(sys.argv)!=2 or not sys.argv[1].isdigit():raise ValueError()
  fd=int(sys.argv[1]);os.setns(fd,0);os.close(fd)
  c=http.client.HTTPConnection('127.0.0.1',8080,timeout=4)
- c.request('GET','/health/ready',headers={'Connection':'close','Accept':'application/json'})
+ c.request('GET','/actuator/health/readiness',headers={'Connection':'close','Accept':'application/json'})
  r=c.getresponse();raw=r.read(65537)
  if len(raw)>65536:raise ValueError()
  sys.stdout.buffer.write(json.dumps({'status':r.status,'rawBodyHex':raw.hex()},sort_keys=True,separators=(',',':')).encode());sys.stdout.buffer.flush();c.close()
