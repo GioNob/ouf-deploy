@@ -1,3 +1,7 @@
+# CURRENT — READ con label estese autorizzate dall’owner; proposta THS PENDING
+
+Propostab7df94f4-10d8-4897-8655-42e3f6e27ba4/rev0/PENDING. Mantiene esatti4ruoli/8assegnazioni, aggiunge2ruoli separati con sole6READ per ciascuna delle2run Teatri e2assegnazioni al soloouf-admin. Label ANONYMOUS/OPEN/PERSONAL/RESTRICTED/SENSITIVE autorizzate esplicitamente dall’owner; classificazione dati invariata. Scadenza grant18:33:12 Europe/Rome26ottobre come52, NON estesa. Review entro17:09:18. NEXT decisione direttaTHS e proposal.read STESSOID prima di una READrunbb2; nessun rinnovo/replay/proposta duplicata. Prova evidence/acquisition-expanded-label-read-proposal-20261026.json. Nessun nuovo acquisitionREAD dopo52REDACTED, nessun grant pubblicato dall’agente. APPLY2READ consumata; M1/G4/F5/F6 aperti,Supervisor dopoE2E.
+
 # CURRENT — policy52 pubblicata; diagnosi LIVE: DATA_LABEL_NOT_AUTHORIZED nei due owner
 
 Proposta866fea4e-e1f3-4321-8c6c-54f74c953793 r1 PUBLISHED/finalPolicy52 verificata con proposal.read stessoID. Due chiamate distinte, Ingestion e UDP, sola runbb2e2af4-9c0a-49ea-8ad9-a947987c1472/sourceTeatri/limit100, isErrorfalse: entrambe REDACTED, partial=true, items[], redactionReasons=[DATA_LABEL_NOT_AUTHORIZED], decisionRef52. Prova evidence/acquisition-policy52-diagnostic-read-20261026.json. Ingestion conferma13handoff/0fallimenti/ACKprefix/watermarkseq13/bindingpubCSV positivi. Nessun retry, cursor o seconda run letta. Nessun nuovo502/403 osservato.
