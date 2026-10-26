@@ -11,7 +11,7 @@ chmod 0700 "$delivery"
 delivery_log="$delivery/bootstrap.log"
 trap 'delivery_exit=$?; trap - EXIT; printf "DeliveryExit=%s\nDeliveryDirectory=%s\nDeliveryLog=%s\n" "$delivery_exit" "$delivery" "$delivery_log" | tee -a "$delivery_log"; exit "$delivery_exit"' EXIT
 code_sha=909611450683cae6ac15cc41f2e4f86c7eaad6585830dd15961f51916446a9e4
-code_commit=0000000000000000000000000000000000000000
+code_commit=6fc2aba137191411e4d22606957e0c4b24d687aa
 download="$delivery/prepare.py"
 curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-redirs 3 --connect-timeout 15 --max-time 60 \
   "https://raw.githubusercontent.com/GioNob/ouf-deploy/${code_commit}/scripts/prepare-mcp-denial-update-inputs-20261026.py" -o "$download"
