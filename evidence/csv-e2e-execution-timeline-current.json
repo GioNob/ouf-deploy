@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-26T14:21:52Z",
+  "lastUpdatedAt": "2026-10-26T16:01:17Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -2399,6 +2399,17 @@
       "policy51Expired": true,
       "technicalIntervalMeasuredSeconds": 2331,
       "noUnmeasuredHistoricalEffortInferred": true
+    },
+    {
+      "id": "CSV-M1-G4-OWNER-PROVEN-20261026",
+      "recordedAt": "2026-10-26T16:01:17Z",
+      "kind": "GATE_DECISION",
+      "gate": "G4",
+      "status": "PASS",
+      "functionalMilestonesProven": 6,
+      "evidenceRef": "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
+      "releaseAcceptance": false,
+      "noEffortAllocationInferred": true
     }
   ],
   "activeIntervals": [
@@ -3088,13 +3099,14 @@
       "centralHour": 24,
       "prudentHour": 30,
       "milestone": "M1",
-      "status": "PLANNED",
+      "status": "PASSED",
       "baselineCentralHour": 24,
-      "actualObservedAt": null,
+      "actualObservedAt": "2026-10-26T16:01:17Z",
       "actualEffortHours": null,
       "effortVarianceHours": null,
-      "observedStatus": "NOT_PASSED",
-      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+      "observedStatus": "PASS",
+      "measurementNote": "Owner evidence complete; historical effort gaps prevent total-effort variance.",
+      "observationEvidenceRef": "evidence/csv-m1-f5-f6-owner-verification-20261026.json"
     },
     {
       "gate": "G5",
@@ -3143,16 +3155,16 @@
     {
       "id": "F5",
       "baselineCentralHour": 22,
-      "status": "OPEN",
+      "status": "COMPLETE",
       "startedAt": null,
-      "completedAt": null
+      "completedAt": "2026-10-26T16:01:17Z"
     },
     {
       "id": "F6",
       "baselineCentralHour": 24,
-      "status": "OPEN",
+      "status": "COMPLETE",
       "startedAt": null,
-      "completedAt": null
+      "completedAt": "2026-10-26T16:01:17Z"
     },
     {
       "id": "M1",
@@ -3161,9 +3173,9 @@
         24,
         30
       ],
-      "status": "OPEN",
+      "status": "COMPLETE",
       "startedAt": null,
-      "completedAt": null
+      "completedAt": "2026-10-26T16:01:17Z"
     },
     {
       "id": "M2",
@@ -5362,137 +5374,144 @@
     }
   ],
   "runtimeBlockers": {
-    "gate": "G4",
-    "reasons": [
-      "OWNER_DETAIL_REDACTION_GUARD_REASON_NOT_EXPOSED_BY_INSTALLED_READ_IMAGES",
-      "ROW_IDENTITY_MATERIALIZATION_AND_TWO_RUN_PROVENANCE_NOT_PROVEN"
-    ],
-    "currentRequiredHumanAction": "ONE_FIRST_QUALIFIED_OFFLINE_IMAGE_AND_PLAN_PREPARATION_NO_RUNTIME_EFFECTS",
-    "newDiagnosticCiQualified": true,
-    "newDiagnosticTargetInstalled": false,
-    "sourceGrantOrActivationNeeded": false,
-    "policyRef": "ouf-lab-authorization:51",
-    "readGrantValidUntil": "2026-10-26T14:14:26Z",
-    "automaticRenewalAllowed": false,
-    "automaticReplayAllowed": false,
-    "budgetResetAllowed": false,
-    "supervisorAfterE2E": true,
-    "previousBlockersHistorical": {
+    "gate": "G5_G6_G7",
+    "M1Complete": true,
+    "previousM1Blockers": {
       "gate": "G4",
-      "humanInterventionRequired": true,
       "reasons": [
-        "ACK_WATERMARK_AND_PER_ROW_MATERIALIZATION_PROVENANCE_NOT_EXPOSED_BY_AVAILABLE_MCP_TOOLS",
-        "NEW_RUN_BINDING_TO_REVIEWED_PUBLICATION_AND_SAME_CSV_NOT_PROVEN",
-        "CURRENT_THEATER_PROJECTION_11_TO_19_PROPERTIES_PER_OBJECT_CAUSE_UNPROVEN"
+        "OWNER_DETAIL_REDACTION_GUARD_REASON_NOT_EXPOSED_BY_INSTALLED_READ_IMAGES",
+        "ROW_IDENTITY_MATERIALIZATION_AND_TWO_RUN_PROVENANCE_NOT_PROVEN"
       ],
-      "permissionProposalId": "f87e7260-a5ed-4c7a-80b6-9990e5ae0875",
-      "permissionProposalState": "PUBLISHED",
-      "policyRef": "ouf-lab-authorization:48",
-      "readGrantValidUntil": "2026-10-25T07:10:14.933Z",
+      "currentRequiredHumanAction": "ONE_FIRST_QUALIFIED_OFFLINE_IMAGE_AND_PLAN_PREPARATION_NO_RUNTIME_EFFECTS",
+      "newDiagnosticCiQualified": true,
+      "newDiagnosticTargetInstalled": false,
       "sourceGrantOrActivationNeeded": false,
-      "sourceActive": true,
+      "policyRef": "ouf-lab-authorization:51",
+      "readGrantValidUntil": "2026-10-26T14:14:26Z",
+      "automaticRenewalAllowed": false,
       "automaticReplayAllowed": false,
       "budgetResetAllowed": false,
       "supervisorAfterE2E": true,
-      "previousBlockersBeforePolicy48": {
+      "previousBlockersHistorical": {
         "gate": "G4",
         "humanInterventionRequired": true,
         "reasons": [
-          "SOURCE_SCOPED_INGESTION_OPERATIONS_READ_GRANT_EXPIRED",
-          "ROW_RUN_ACK_COMMIT_AND_BOTH_ACQUISITION_PROVENANCE_NOT_YET_PROVEN",
-          "CURRENT_THEATER_PROJECTION_HAS_11_TO_19_FIELDS_PER_OBJECT_REQUIRES_RECONCILIATION"
+          "ACK_WATERMARK_AND_PER_ROW_MATERIALIZATION_PROVENANCE_NOT_EXPOSED_BY_AVAILABLE_MCP_TOOLS",
+          "NEW_RUN_BINDING_TO_REVIEWED_PUBLICATION_AND_SAME_CSV_NOT_PROVEN",
+          "CURRENT_THEATER_PROJECTION_11_TO_19_PROPERTIES_PER_OBJECT_CAUSE_UNPROVEN"
         ],
-        "proposalId": "5e197733-4d4b-428b-bca0-c7267ad53df0",
-        "proposalState": "PENDING",
+        "permissionProposalId": "f87e7260-a5ed-4c7a-80b6-9990e5ae0875",
+        "permissionProposalState": "PUBLISHED",
+        "policyRef": "ouf-lab-authorization:48",
+        "readGrantValidUntil": "2026-10-25T07:10:14.933Z",
         "sourceGrantOrActivationNeeded": false,
         "sourceActive": true,
         "automaticReplayAllowed": false,
         "budgetResetAllowed": false,
         "supervisorAfterE2E": true,
-        "previousBlockersBeforeNativeActivation": {
-          "gate": "G3",
+        "previousBlockersBeforePolicy48": {
+          "gate": "G4",
           "humanInterventionRequired": true,
           "reasons": [
-            "DIRECT_HUMAN_FINITE_SOURCE_READINESS_SESSION_REQUIRED",
-            "SEPARATE_HUMAN_VERIFY_AND_ACTIVATE_REQUIRED",
-            "G3_F5_F6_APPLICATION_E2E_PROOF_PENDING"
+            "SOURCE_SCOPED_INGESTION_OPERATIONS_READ_GRANT_EXPIRED",
+            "ROW_RUN_ACK_COMMIT_AND_BOTH_ACQUISITION_PROVENANCE_NOT_YET_PROVEN",
+            "CURRENT_THEATER_PROJECTION_HAS_11_TO_19_FIELDS_PER_OBJECT_REQUIRES_RECONCILIATION"
           ],
-          "currentRequiredHumanAction": "EXISTING_CONFIRMED_REVIEW_THS_BUDGET_3_ATTEMPTS_900_SECONDS_THEN_SEPARATE_ACTIVATION",
-          "sourceHumanBudgetGranted": false,
-          "sourceActivated": false,
-          "budgetResetAllowed": false,
-          "automaticLoginAllowed": false,
+          "proposalId": "5e197733-4d4b-428b-bca0-c7267ad53df0",
+          "proposalState": "PENDING",
+          "sourceGrantOrActivationNeeded": false,
+          "sourceActive": true,
           "automaticReplayAllowed": false,
-          "retainedClaimsPreserved": true,
-          "newIamOAuthRequestsRequired": 0,
+          "budgetResetAllowed": false,
           "supervisorAfterE2E": true,
-          "previousBlockersBeforeV35TargetRecovery": {
+          "previousBlockersBeforeNativeActivation": {
             "gate": "G3",
             "humanInterventionRequired": true,
             "reasons": [
-              "CURRENT_LATER_SOURCE_REVISION_DEPLOYMENT_LINEAGE_NOT_YET_MATCHED",
-              "CORRECTED_V35_IMAGE_NOT_STAGED_AND_CURRENT_DB_LIFECYCLE_ADMISSION_PENDING",
-              "G3_F5_F6_ORDINARY_APPLICATION_E2E_PENDING"
+              "DIRECT_HUMAN_FINITE_SOURCE_READINESS_SESSION_REQUIRED",
+              "SEPARATE_HUMAN_VERIFY_AND_ACTIVATE_REQUIRED",
+              "G3_F5_F6_APPLICATION_E2E_PROOF_PENDING"
             ],
-            "historicalAttempts": 304,
-            "maximumCumulativeAttempts": 304,
-            "remainingAttempts": 0,
-            "resetAllowed": false,
+            "currentRequiredHumanAction": "EXISTING_CONFIRMED_REVIEW_THS_BUDGET_3_ATTEMPTS_900_SECONDS_THEN_SEPARATE_ACTIVATION",
+            "sourceHumanBudgetGranted": false,
+            "sourceActivated": false,
+            "budgetResetAllowed": false,
             "automaticLoginAllowed": false,
+            "automaticReplayAllowed": false,
             "retainedClaimsPreserved": true,
-            "currentRequiredHumanAction": "ONE_PINNED_LATER_OWNER_LINEAGE_METADATA_READ_ZERO_ENGINE_SQL_NO_LOGIN_OR_APPLY",
-            "maximumNewOAuthRequests": 0,
-            "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
-            "profileApplied": true,
-            "normalTokenFreshnessBoundApprovedSeconds": 1200,
-            "independentRemainingWork": [
-              "G5_VOCABULARY_AND_RELATIONSHIPS",
-              "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
-              "G7_ACCEPTANCE"
-            ],
-            "proposedAdditionalOAuthAttempts": 0,
-            "proposedCumulativeCeiling": 300,
-            "additionalBudgetGranted": true,
-            "countsAsOfGrant": false,
-            "subsequentConsumptionNotObserved": false,
-            "newWindowAuthorized": false,
-            "countsAsOfReadyReceipt": true,
-            "futurePatchBudgetProposal": {
-              "priorOAuthAttempts": 292,
-              "additionalOAuthAttempts": 4,
-              "proposedCumulativeCeiling": 296,
-              "granted": true,
-              "consumed": true,
-              "newWindowOpened": true,
-              "separateTerminalConsentRequired": true
-            },
-            "runtimeAuthorityIssued": false,
-            "previousReasonsAtPreOnboardingFiniteUpdate": [
-              "NATIVE_PROFILE_APPROVED_ACTIVATION_PAUSED",
-              "HISTORICAL_REGISTRY_PREDICATE_FAILED_CORRELATION_UNPROVEN",
-              "F5_F6_PROOF_PENDING",
-              "OAUTH_BUDGET_EXHAUSTED_NO_NEW_LOGIN_AUTHORIZED"
-            ]
+            "newIamOAuthRequestsRequired": 0,
+            "supervisorAfterE2E": true,
+            "previousBlockersBeforeV35TargetRecovery": {
+              "gate": "G3",
+              "humanInterventionRequired": true,
+              "reasons": [
+                "CURRENT_LATER_SOURCE_REVISION_DEPLOYMENT_LINEAGE_NOT_YET_MATCHED",
+                "CORRECTED_V35_IMAGE_NOT_STAGED_AND_CURRENT_DB_LIFECYCLE_ADMISSION_PENDING",
+                "G3_F5_F6_ORDINARY_APPLICATION_E2E_PENDING"
+              ],
+              "historicalAttempts": 304,
+              "maximumCumulativeAttempts": 304,
+              "remainingAttempts": 0,
+              "resetAllowed": false,
+              "automaticLoginAllowed": false,
+              "retainedClaimsPreserved": true,
+              "currentRequiredHumanAction": "ONE_PINNED_LATER_OWNER_LINEAGE_METADATA_READ_ZERO_ENGINE_SQL_NO_LOGIN_OR_APPLY",
+              "maximumNewOAuthRequests": 0,
+              "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
+              "profileApplied": true,
+              "normalTokenFreshnessBoundApprovedSeconds": 1200,
+              "independentRemainingWork": [
+                "G5_VOCABULARY_AND_RELATIONSHIPS",
+                "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
+                "G7_ACCEPTANCE"
+              ],
+              "proposedAdditionalOAuthAttempts": 0,
+              "proposedCumulativeCeiling": 300,
+              "additionalBudgetGranted": true,
+              "countsAsOfGrant": false,
+              "subsequentConsumptionNotObserved": false,
+              "newWindowAuthorized": false,
+              "countsAsOfReadyReceipt": true,
+              "futurePatchBudgetProposal": {
+                "priorOAuthAttempts": 292,
+                "additionalOAuthAttempts": 4,
+                "proposedCumulativeCeiling": 296,
+                "granted": true,
+                "consumed": true,
+                "newWindowOpened": true,
+                "separateTerminalConsentRequired": true
+              },
+              "runtimeAuthorityIssued": false,
+              "previousReasonsAtPreOnboardingFiniteUpdate": [
+                "NATIVE_PROFILE_APPROVED_ACTIVATION_PAUSED",
+                "HISTORICAL_REGISTRY_PREDICATE_FAILED_CORRELATION_UNPROVEN",
+                "F5_F6_PROOF_PENDING",
+                "OAUTH_BUDGET_EXHAUSTED_NO_NEW_LOGIN_AUTHORIZED"
+              ]
+            }
           }
-        }
+        },
+        "currentRequiredHumanAction": "ONE_QUALIFIED_OFFLINE_RETAINED_OLD_MCP_GUARD_READER_NO_APPLY",
+        "additionalCandidateBlockers": [
+          "OLD_MCP_GUARD_IMAGE_CONFIG_MOUNTS_STARTEDAT_EXACT_DIFFERENCE_UNOBSERVED",
+          "QUARANTINE_AND_FINAL_CUMULATIVE_COUNTS_UNOBSERVED",
+          "NEW_MCP_AND_READ_PATH_INSTALLATION_NOT_PROVEN",
+          "SIX_OWNER_READ_PERMISSIONS_ONLY_AFTER_INSTALLATION"
+        ],
+        "currentAgentWork": "QUALIFIED_OFFLINE_OLD_MCP_GUARD_READER_AWAITING_TARGET_OUTPUT",
+        "readGrantCurrentValidity": "EXPIRED_AFTER_2026_10_25T07_10_14_933Z_DO_NOT_USE"
       },
-      "currentRequiredHumanAction": "ONE_QUALIFIED_OFFLINE_RETAINED_OLD_MCP_GUARD_READER_NO_APPLY",
+      "currentAgentWork": "OFFLINE_TWO_READ_REPLACEMENT_PLAN_DELIVERY_READY_NOT_TARGET_EXECUTED",
+      "readGrantCurrentValidity": "EXPIRED_2026_10_26T14_14_26Z_NO_AUTOMATIC_RENEWAL",
       "additionalCandidateBlockers": [
-        "OLD_MCP_GUARD_IMAGE_CONFIG_MOUNTS_STARTEDAT_EXACT_DIFFERENCE_UNOBSERVED",
-        "QUARANTINE_AND_FINAL_CUMULATIVE_COUNTS_UNOBSERVED",
-        "NEW_MCP_AND_READ_PATH_INSTALLATION_NOT_PROVEN",
-        "SIX_OWNER_READ_PERMISSIONS_ONLY_AFTER_INSTALLATION"
-      ],
-      "currentAgentWork": "QUALIFIED_OFFLINE_OLD_MCP_GUARD_READER_AWAITING_TARGET_OUTPUT",
-      "readGrantCurrentValidity": "EXPIRED_AFTER_2026_10_25T07_10_14_933Z_DO_NOT_USE"
+        "TWO_DIAGNOSTIC_READ_IMAGES_NOT_INSTALLED",
+        "FULL_REPLACEMENT_CONTROLLER_NOT_QUALIFIED",
+        "FRESH_APPLICATION_READ_AUTHORITY_REQUIRED_AFTER_POLICY51_EXPIRY"
+      ]
     },
-    "currentAgentWork": "OFFLINE_TWO_READ_REPLACEMENT_PLAN_DELIVERY_READY_NOT_TARGET_EXECUTED",
-    "readGrantCurrentValidity": "EXPIRED_2026_10_26T14_14_26Z_NO_AUTOMATIC_RENEWAL",
-    "additionalCandidateBlockers": [
-      "TWO_DIAGNOSTIC_READ_IMAGES_NOT_INSTALLED",
-      "FULL_REPLACEMENT_CONTROLLER_NOT_QUALIFIED",
-      "FRESH_APPLICATION_READ_AUTHORITY_REQUIRED_AFTER_POLICY51_EXPIRY"
-    ]
+    "automaticReplayAllowed": false,
+    "budgetResetAllowed": false,
+    "supervisorAfterE2E": true
   },
   "unsegmentedFollowupWindows": [
     {
