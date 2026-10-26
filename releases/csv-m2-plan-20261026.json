@@ -1,0 +1,1281 @@
+{
+  "schema": "ouf.csv-m2-completion-plan.v1",
+  "documentId": "OUF-MP-CSV-M2",
+  "version": "1.0",
+  "createdDate": "2026-10-26",
+  "timezone": "Europe/Rome",
+  "document": "docs/OUF_M2_MINIPET_v1_0_20261026.md",
+  "roadmap": "docs/OUF_M2_ROADMAP_20261026.md",
+  "predecessor": {
+    "document": "docs/OUF_CSV_E2E_COMPLETION_MINIPET_v1_1_20261020.md",
+    "record": "releases/csv-e2e-completion-plan-20261020.json",
+    "version": "1.1",
+    "snapshotCommit": "ff63fb7cfed65bc5b3a14975fb37ae123b1aa18d",
+    "originalTotalHours": {
+      "min": 40,
+      "central": 55,
+      "max": 70
+    },
+    "originalM1Hours": {
+      "min": 18,
+      "central": 24,
+      "max": 30
+    },
+    "originalWp5To7Hours": {
+      "min": 22,
+      "central": 31,
+      "max": 40
+    },
+    "historicalActualEffortComplete": false
+  },
+  "planIsRuntimeAuthority": false,
+  "planIsExecutableLauncher": false,
+  "releaseAcceptance": false,
+  "mergeAuthorized": false,
+  "executionMode": {
+    "subagentsAllowed": false,
+    "scheduledAutomationsAllowed": false,
+    "automaticLoginAllowed": false,
+    "automaticBudgetResetAllowed": false,
+    "automaticReplayAllowed": false
+  },
+  "currentState": {
+    "M1": "COMPLETE_RETAINED_CASE",
+    "M2": "OPEN",
+    "G5": "OPEN",
+    "G6": "OPEN",
+    "G7": "OPEN",
+    "technicalRetained": {
+      "completed": 8,
+      "total": 8
+    },
+    "functionalRetained": {
+      "proven": 6,
+      "total": 6
+    },
+    "farmacieStatus": "FAILED_PROFILE_CAUSE_NOT_OBSERVED",
+    "diagnosticCandidateInstalled": false
+  },
+  "retainedFarmacie": {
+    "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
+    "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+    "jobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+    "jobStatus": "FAILED",
+    "errorCode": "ONB_FILE_PROFILE_FAILED",
+    "localAttachment": {
+      "bytes": 13903,
+      "dataRows": 61,
+      "columns": 10,
+      "sha256": "f670059bb524832aa9cd78fbe5e907be053244248ff1ef4d7962b14fcd72c311"
+    },
+    "serverBytesMatchProven": false,
+    "exactInstalledJavaParserReproduced": false,
+    "newUploadAllowedAsRecoveryShortcut": false,
+    "newProfilingJobAllowedAsBudgetBypass": false
+  },
+  "workPackages": [
+    {
+      "id": "M2-WP1",
+      "title": "Diagnosi Farmacie e recupero governato",
+      "owner": [
+        "Onboarding",
+        "Gateway",
+        "Deploy"
+      ],
+      "dependencies": [],
+      "hours": {
+        "min": 4,
+        "central": 6,
+        "max": 8
+      },
+      "checkpoint": "M2.0",
+      "status": "OPEN",
+      "currentBlocker": "FAILED_PROFILE_ROOT_CAUSE_NOT_OBSERVED",
+      "deliverables": [
+        "Retained owner diagnostic evidence",
+        "Targeted fix and regression",
+        "Qualified recovery preserving failed job history",
+        "Farmacie profile"
+      ],
+      "actualHours": null,
+      "humanActualHours": null,
+      "waitHours": null,
+      "remainingHours": {
+        "min": 4,
+        "central": 6,
+        "max": 8
+      },
+      "evidenceRefs": [],
+      "runtimeAuthorizationGranted": false
+    },
+    {
+      "id": "M2-WP2",
+      "title": "Percorso autoguidato e contesto durevole",
+      "owner": [
+        "MCP",
+        "Onboarding",
+        "THS",
+        "Gateway"
+      ],
+      "dependencies": [
+        "M2-WP1"
+      ],
+      "independentPreparationAllowed": true,
+      "hours": {
+        "min": 8,
+        "central": 10,
+        "max": 12
+      },
+      "checkpoint": "M2.1",
+      "status": "OPEN",
+      "deliverables": [
+        "Capability and owner-read inventory",
+        "Owner-derived progress and permitted next action",
+        "Durable authorized work discovery/resume",
+        "Verified mobile and desktop review return"
+      ],
+      "actualHours": null,
+      "humanActualHours": null,
+      "waitHours": null,
+      "remainingHours": {
+        "min": 8,
+        "central": 10,
+        "max": 12
+      },
+      "evidenceRefs": [],
+      "runtimeAuthorizationGranted": false
+    },
+    {
+      "id": "M2-WP3",
+      "title": "Semantica CSV generale",
+      "owner": [
+        "Onboarding",
+        "Semantic Registry",
+        "Ingestion"
+      ],
+      "dependencies": [
+        "M2-WP2"
+      ],
+      "independentPreparationAllowed": true,
+      "hours": {
+        "min": 6,
+        "central": 8,
+        "max": 10
+      },
+      "checkpoint": "M2.2",
+      "exitGate": "G5",
+      "status": "OPEN",
+      "deliverables": [
+        "Declared CSV profile",
+        "Farmacie mapping proposal",
+        "Vocabulary and typed transforms",
+        "Governed semantic gap and simple relation",
+        "Consumer compatibility"
+      ],
+      "actualHours": null,
+      "humanActualHours": null,
+      "waitHours": null,
+      "remainingHours": {
+        "min": 6,
+        "central": 8,
+        "max": 10
+      },
+      "evidenceRefs": [],
+      "runtimeAuthorizationGranted": false
+    },
+    {
+      "id": "M2-WP4",
+      "title": "Farmacie in UDP e consultazione minima",
+      "owner": [
+        "UDP",
+        "Ingestion",
+        "MCP"
+      ],
+      "dependencies": [
+        "M2-WP1",
+        "M2-WP2",
+        "M2-WP3"
+      ],
+      "externalGates": [
+        "Current domain authority and exact HUMAN review"
+      ],
+      "hours": {
+        "min": 4,
+        "central": 6,
+        "max": 8
+      },
+      "checkpoint": "M2.3",
+      "status": "OPEN",
+      "deliverables": [
+        "Row-to-object evidence",
+        "MATCH NEW REVIEW and multi-source reconciliation",
+        "Property conflict and provenance tests",
+        "Authorized searchable outcomes"
+      ],
+      "actualHours": null,
+      "humanActualHours": null,
+      "waitHours": null,
+      "remainingHours": {
+        "min": 4,
+        "central": 6,
+        "max": 8
+      },
+      "evidenceRefs": [],
+      "runtimeAuthorizationGranted": false
+    },
+    {
+      "id": "M2-WP5",
+      "title": "Ripetibilità e resilienza del percorso",
+      "owner": [
+        "Effect owners",
+        "MCP"
+      ],
+      "dependencies": [
+        "M2-WP2",
+        "M2-WP3",
+        "M2-WP4"
+      ],
+      "independentPreparationAllowed": true,
+      "hours": {
+        "min": 6,
+        "central": 8,
+        "max": 10
+      },
+      "checkpoint": "M2.4",
+      "status": "OPEN",
+      "deliverables": [
+        "Same-configuration no-op evidence",
+        "Fault and retry matrix",
+        "Durable counters, fencing and reconciliation",
+        "Governed exhausted-job recovery",
+        "Cross-chat resume"
+      ],
+      "actualHours": null,
+      "humanActualHours": null,
+      "waitHours": null,
+      "remainingHours": {
+        "min": 6,
+        "central": 8,
+        "max": 10
+      },
+      "evidenceRefs": [],
+      "runtimeAuthorizationGranted": false
+    },
+    {
+      "id": "M2-WP6",
+      "title": "Qualifica finale e due client reali",
+      "owner": [
+        "Cross-module",
+        "HUMAN acceptance"
+      ],
+      "dependencies": [
+        "M2-WP1",
+        "M2-WP2",
+        "M2-WP3",
+        "M2-WP4",
+        "M2-WP5"
+      ],
+      "externalGates": [
+        "Two real independent MCP clients",
+        "Isolated fault environment",
+        "Current authority for exact final delta",
+        "Explicit HUMAN M2 acceptance"
+      ],
+      "hours": {
+        "min": 6,
+        "central": 8,
+        "max": 10
+      },
+      "checkpoint": "M2.5",
+      "exitGates": [
+        "G6",
+        "G7"
+      ],
+      "status": "OPEN",
+      "deliverables": [
+        "Final cohort and justified regression evidence",
+        "Two real-client end-to-end reports",
+        "Second isolated installation profile",
+        "Complete local and canonical dossier",
+        "User guide and separate operator runbook",
+        "M2 acceptance record"
+      ],
+      "actualHours": null,
+      "humanActualHours": null,
+      "waitHours": null,
+      "remainingHours": {
+        "min": 6,
+        "central": 8,
+        "max": 10
+      },
+      "evidenceRefs": [],
+      "runtimeAuthorizationGranted": false
+    }
+  ],
+  "schedule": {
+    "unit": "active_technical_hours",
+    "mode": "sequential_reference_order",
+    "excludes": [
+      "External waits",
+      "Separate contingency",
+      "Distinct HUMAN participation"
+    ],
+    "entries": [
+      {
+        "workPackage": "M2-WP1",
+        "startActiveHour": 0,
+        "endActiveHour": 6,
+        "checkpoint": "M2.0"
+      },
+      {
+        "workPackage": "M2-WP2",
+        "startActiveHour": 6,
+        "endActiveHour": 16,
+        "checkpoint": "M2.1"
+      },
+      {
+        "workPackage": "M2-WP3",
+        "startActiveHour": 16,
+        "endActiveHour": 24,
+        "checkpoint": "M2.2"
+      },
+      {
+        "workPackage": "M2-WP4",
+        "startActiveHour": 24,
+        "endActiveHour": 30,
+        "checkpoint": "M2.3"
+      },
+      {
+        "workPackage": "M2-WP5",
+        "startActiveHour": 30,
+        "endActiveHour": 38,
+        "checkpoint": "M2.4"
+      },
+      {
+        "workPackage": "M2-WP6",
+        "startActiveHour": 38,
+        "endActiveHour": 46,
+        "checkpoint": "M2.5"
+      }
+    ]
+  },
+  "effort": {
+    "baseRemainingHours": {
+      "min": 34,
+      "central": 46,
+      "max": 58
+    },
+    "separateContingencyHours": {
+      "min": 8,
+      "central": 12,
+      "max": 16
+    },
+    "prudentPlanningEnvelopeHours": {
+      "min": 42,
+      "central": 58,
+      "max": 74
+    },
+    "distinctHumanHours": {
+      "min": 2,
+      "max": 4
+    },
+    "actualHistoricalHours": null,
+    "calendarCommitment": null,
+    "confidence": "LIMITED_UNTIL_FARMACIE_OWNER_DIAGNOSIS_AND_RESUME_INVENTORY",
+    "reestimateAt": [
+      "M2-WP1 cause observed",
+      "M2-WP2 inventory",
+      "M2-WP4 UDP evidence",
+      "Any work package upper estimate exceeded or structural gap found"
+    ],
+    "assumptions": [
+      "Existing engines and datastores reused",
+      "No structural identity redesign",
+      "Two real clients and isolated environment available",
+      "Limited governed deployment deltas"
+    ],
+    "noDoubleCounting": "Each active-hour entry belongs to one WP; completed M1 and completed intermediate rollouts are not recounted."
+  },
+  "requirements": [
+    {
+      "id": "CSV-R01",
+      "requirement": "Discovery/tool e chiamate devono riflettere le autorizzazioni correnti del principal; una capability visibile non conferisce grant",
+      "owner": "MCP/Gateway/Authorization",
+      "testRefs": [
+        "CSV-AT-01",
+        "CSV-AT-18"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R02",
+      "requirement": "Upload deve usare picker/trasporto OUF governato, asset owner, hash e limiti; nessun URL arbitrario assunto come allegato affidabile",
+      "owner": "Onboarding",
+      "testRefs": [
+        "CSV-AT-02",
+        "CSV-AT-03"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R03",
+      "requirement": "Il parser deve gestire il profilo CSV dichiarato; input incompatibili devono produrre diagnosi senza alterare l'originale",
+      "owner": "Onboarding/Ingestion",
+      "testRefs": [
+        "CSV-AT-03"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R04",
+      "requirement": "Ogni riga deve avere sourceObjectId deterministico secondo policy approvata; riordino e duplicati di chiave devono avere esito esplicito",
+      "owner": "Onboarding/Ingestion",
+      "testRefs": [
+        "CSV-AT-04"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R05",
+      "requirement": "Classi/proprietà/vocabolari devono essere riferimenti pubblicati e versionati; nessuna equivalenza inventata da etichette",
+      "owner": "Registry/Onboarding",
+      "testRefs": [
+        "CSV-AT-05",
+        "CSV-AT-06"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R06",
+      "requirement": "Mapping codice→concetto deve conservare codice originale, concetto/versione e regola; valore sconosciuto gestito esplicitamente",
+      "owner": "Onboarding/Ingestion",
+      "testRefs": [
+        "CSV-AT-05"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R07",
+      "requirement": "Tipi, normalizzazioni e temporalità devono essere dichiarati; nessuna data/validità o cancellazione inferita implicitamente",
+      "owner": "Onboarding/Ingestion/UDP",
+      "testRefs": [
+        "CSV-AT-05",
+        "CSV-AT-12"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R08",
+      "requirement": "Approvazione/attivazione devono avvenire in THS con identità HUMAN e stato/hash/versione attuali",
+      "owner": "THS/owner",
+      "testRefs": [
+        "CSV-AT-07",
+        "CSV-AT-18"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R09",
+      "requirement": "Pubblicare una nuova versione e ammettere una nuova acquisizione devono avere effetti dichiarati; una proposta non esegue acquisizione",
+      "owner": "Onboarding/Ingestion",
+      "testRefs": [
+        "CSV-AT-08"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R10",
+      "requirement": "Run, bundle, schema e pubblicazione semantica devono restare fissati anche durante cambi ACTIVE o ripresa",
+      "owner": "Ingestion/Registry",
+      "testRefs": [
+        "CSV-AT-09"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R11",
+      "requirement": "Nessun committed watermark deve avanzare senza ACK durevole; esiti ambigui si riconciliano con la stessa identità",
+      "owner": "Ingestion/UDP",
+      "testRefs": [
+        "CSV-AT-10",
+        "CSV-AT-17"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R12",
+      "requirement": "Il resoconto deve distinguere consegna/ACK da materializzazione e mostrare l'esito terminale per riga ammessa",
+      "owner": "UDP/MCP",
+      "testRefs": [
+        "CSV-AT-10",
+        "CSV-AT-14"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R13",
+      "requirement": "UDP deve decidere MATCH/NEW/REVIEW; Onboarding/Ingestion non assegnano urbanObjectId",
+      "owner": "UDP",
+      "testRefs": [
+        "CSV-AT-11"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R14",
+      "requirement": "Proprietà complementari, autorità, conflitti, null/vuoti, multivalore e cancellazioni devono rispettare il profilo approvato",
+      "owner": "UDP",
+      "testRefs": [
+        "CSV-AT-12"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R15",
+      "requirement": "Provenienza e storia devono consentire risalita fino a fonte/riga/run/bundle/pubblicazione semantica",
+      "owner": "Ingestion/UDP",
+      "testRefs": [
+        "CSV-AT-12",
+        "CSV-AT-14"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R16",
+      "requirement": "Una relazione dichiarata nel profilo deve usare semantica e risoluzione governate; target assente/ambiguo non genera edge arbitrari",
+      "owner": "Registry/Onboarding/UDP",
+      "testRefs": [
+        "CSV-AT-13"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R17",
+      "requirement": "Retry tecnico e seconda acquisizione deliberata devono avere identità ed effetti distinti; nessun duplicato canonico o revisione gratuita",
+      "owner": "Ingestion/UDP",
+      "testRefs": [
+        "CSV-AT-15",
+        "CSV-AT-16"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R18",
+      "requirement": "Interruzione, revoca e restart devono conservare contesto, claim, budget e storia; nessun replay automatico dopo STOP",
+      "owner": "Tutti",
+      "testRefs": [
+        "CSV-AT-17",
+        "CSV-AT-18"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R19",
+      "requirement": "Una nuova chat/client deve recuperare il lavoro dagli owner, senza dipendere dalla memoria del modello",
+      "owner": "MCP/Onboarding",
+      "testRefs": [
+        "CSV-AT-19"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R20",
+      "requirement": "Dati/contatori/edge riservati devono essere filtrati dall'owner prima della serializzazione, anche per tenant diverso",
+      "owner": "Authorization/UDP/MCP",
+      "testRefs": [
+        "CSV-AT-18"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R21",
+      "requirement": "Il percorso deve riuscire su due client MCP indipendenti, almeno uno con soli tool e collegamenti web OUF",
+      "owner": "MCP/THS",
+      "testRefs": [
+        "CSV-AT-20"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R22",
+      "requirement": "Ogni valore specifico dell'Ente deve provenire dal profilo validato; MAC endpoint distinti dai MAC fisici host",
+      "owner": "Deploy/tutti",
+      "testRefs": [
+        "CSV-AT-21"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R23",
+      "requirement": "Rollout deve essere finito, con effetti claimed-once, prove di generazione e riconciliazione degli esiti incerti",
+      "owner": "Deploy",
+      "testRefs": [
+        "CSV-AT-22",
+        "CSV-AT-23"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    },
+    {
+      "id": "CSV-R24",
+      "requirement": "Fonti/oggetti/claim storici e baseline8Cinema devono essere conservati; il dossier deve separare CI, target e accettazione",
+      "owner": "Deploy/UDP",
+      "testRefs": [
+        "CSV-AT-16",
+        "CSV-AT-24"
+      ],
+      "status": "REQUIRED_M2_ACCEPTANCE"
+    }
+  ],
+  "acceptanceTests": [
+    {
+      "id": "CSV-AT-01",
+      "procedureAndExpected": "Discovery e chiamata con principal autorizzato/negato; capability,owner,scope,versione e route coerenti; negato senza dispatch improprio",
+      "requiredLevel": "I+T+C",
+      "canonicalTraceability": "OUF-E2E-022",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R01"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP2",
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-02",
+      "procedureAndExpected": "Upload OUF, profiling e risposta persa; asset/hash/owner unici, stesso comando riconciliato senza nuovo asset/fonte involontario",
+      "requiredLevel": "I+T+C",
+      "canonicalTraceability": "Locale; supporta017",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R02"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP1",
+        "M2-WP2",
+        "M2-WP5"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-03",
+      "procedureAndExpected": "BOM/delimitatore/quoting/newline; file/cella/righe al limite e oltre; header/forma errati; diagnosi e originale preservati",
+      "requiredLevel": "I",
+      "canonicalTraceability": "Locale; variante schema001 solo se scenario completo",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R02",
+        "CSV-R03"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP1",
+        "M2-WP3"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-04",
+      "procedureAndExpected": "Riordinare righe con chiavi approvate e provare chiave duplicata; sourceObjectId stabili o errore esplicito",
+      "requiredLevel": "I+T",
+      "canonicalTraceability": "OUF-E2E-020",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R04"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP3",
+        "M2-WP4"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-05",
+      "procedureAndExpected": "DS3: codici→concetti e tipi dichiarati; originali/versioni preservati; unknown e valore invalido non materializzati come validi",
+      "requiredLevel": "I+T+C",
+      "canonicalTraceability": "Locale; supporta017,019",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R05",
+        "CSV-R06",
+        "CSV-R07"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP3"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-06",
+      "procedureAndExpected": "Gap semantico: proposta DRAFT, validazione/review/pubblicazione HUMAN, ripresa sulla stessa fonte; nessuna attivazione con riferimento non ammesso",
+      "requiredLevel": "I+T+C",
+      "canonicalTraceability": "Locale; supporta017",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R05"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP3",
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-07",
+      "procedureAndExpected": "Confermare versione corrente e tentare hash/ETag obsoleto; corrente accettato, obsoleto rifiutato; MCP non approva/attiva",
+      "requiredLevel": "I+T",
+      "canonicalTraceability": "THS-A pertinente; supporta017,022",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R08"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP2",
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-08",
+      "procedureAndExpected": "Preparazione non pubblica/acquisisce; nuova pubblicazione mostra effetto; una intenzione governata ammette la sola acquisizione prevista, anche dopo poll/restart",
+      "requiredLevel": "I+T",
+      "canonicalTraceability": "OUF-E2E-017",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R09"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP2",
+        "M2-WP4",
+        "M2-WP5"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-09",
+      "procedureAndExpected": "Cambiare ACTIVE semantico durante run isolata e riprendere; run resta sulla pubblicazione fissata, nessun fallback latest",
+      "requiredLevel": "I",
+      "canonicalTraceability": "OUF-E2E-019",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R10"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP3",
+        "M2-WP5"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-10",
+      "procedureAndExpected": "Fault prima della persistenza/ACK e risposta ACK persa; watermark non anticipato, idempotenza; commit UDP verificato separatamente",
+      "requiredLevel": "I+T readback",
+      "canonicalTraceability": "OUF-E2E-002",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R11",
+        "CSV-R12"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP4",
+        "M2-WP5"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-11",
+      "procedureAndExpected": "DS1 e variante ambigua; due match,un nuovo ID; ambiguità inreview; decisione HUMAN consumata una volta",
+      "requiredLevel": "I+T+C",
+      "canonicalTraceability": "OUF-E2E-006,020",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R13"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP4"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-12",
+      "procedureAndExpected": "Complementi/null/vuoto/equivalenza/priorità/conflitto/multivalore/delete esplicito; proprietà corrette, contributi e storia conservati, no perdita collaterale",
+      "requiredLevel": "I+T",
+      "canonicalTraceability": "Locale; supporta006",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R07",
+        "CSV-R14",
+        "CSV-R15"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP4"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-13",
+      "procedureAndExpected": "Relazione dichiarata: target presente/assente/ambiguo, retry; solo edge ammesso, deduplicato e con provenance",
+      "requiredLevel": "I+T",
+      "canonicalTraceability": "Locale, suite UDP relazioni",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R16"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP3",
+        "M2-WP4"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-14",
+      "procedureAndExpected": "Riepilogo di tutte le righe; collegamenti riga→run→handoff→ACK→job→oggetto/revisione; parzialità/attese/errore distinti",
+      "requiredLevel": "T+C",
+      "canonicalTraceability": "OUF-E2E-017,025",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R12",
+        "CSV-R15"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP4",
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-15",
+      "procedureAndExpected": "DS1R invariato con nuova run e retry separato della stessa richiesta;4 oggetti e nessuna revisione canonica gratuita; lineage nuova run presente",
+      "requiredLevel": "I+T+C",
+      "canonicalTraceability": "OUF-E2E-003",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R17"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP5",
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-16",
+      "procedureAndExpected": "DS0: seconda acquisizione effettiva distinta dalla prima;13 identità/20 proprietà, ACK/provenienza di entrambe,8 Cinema invariati, zero replay decisioni",
+      "requiredLevel": "T+C",
+      "canonicalTraceability": "F5/F6;003 solo nel caso contratti/contenuto invariati",
+      "status": "RETAINED_M1_PASS_PENDING_FINAL_IMPACT_REVIEW",
+      "requirementIds": [
+        "CSV-R17",
+        "CSV-R24"
+      ],
+      "evidenceRefs": [
+        "evidence/csv-m1-f5-f6-owner-verification-20261026.json"
+      ],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-17",
+      "procedureAndExpected": "Pause/restart/risposta persa, budget esaurito e claim incerto; contatori/storia preservati, solo riconciliazione, nessun effetto doppio",
+      "requiredLevel": "I",
+      "canonicalTraceability": "OUF-E2E-002;009/010 solo con tutte le loro condizioni",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R11",
+        "CSV-R18"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP5"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-18",
+      "procedureAndExpected": "Revoca/scadenza, tenant errato e dato protetto; stop prima di nuovi effetti e owner deny prima della serializzazione; log/capability protetti non raggiungibili daMCP",
+      "requiredLevel": "I+T",
+      "canonicalTraceability": "OUF-E2E-018,022;016 boundary, non intera suiteTHS",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R01",
+        "CSV-R08",
+        "CSV-R18",
+        "CSV-R20"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP2",
+        "M2-WP5",
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-19",
+      "procedureAndExpected": "Interrompere chat dopo upload/review/run; riaprire con stesso utente autorizzato e riferimenti durevoli; riprendere senza nuovo job implicito",
+      "requiredLevel": "T+C",
+      "canonicalTraceability": "Locale, MCP acceptance",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R19"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP2",
+        "M2-WP5",
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-20",
+      "procedureAndExpected": "ClientA eB indipendenti eseguono il percorso nuovo CSV; almenoB senza UI incorporata; rientro daTHS e lettura esiti senza terminale",
+      "requiredLevel": "T+C",
+      "canonicalTraceability": "017,022 e suiteMCP/THS applicabili",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R21"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-21",
+      "procedureAndExpected": "ProfiliENV-A/B: endpoint/indirizzi/MAC/path differenti, due reti; stesso codice, nessun default storico; input non validi rifiutati",
+      "requiredLevel": "I",
+      "canonicalTraceability": "021 per identità se precondizioni complete; ambiente locale",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R22"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-22",
+      "procedureAndExpected": "Executor: key/image/lifecycle/route con fault prima/dopo effetto; CID/PID/StartedAt/namespace nuovi verificati, predecessore conservato, no replay",
+      "requiredLevel": "I",
+      "canonicalTraceability": "Locale, gate operativo",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R23"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP1",
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true
+    },
+    {
+      "id": "CSV-AT-23",
+      "procedureAndExpected": "Gate correnti DB/HUMAN/Owner e readiness; assenza/drift/revoca blocca; due route attese e altre80preservate, policy startup effettiva provata",
+      "requiredLevel": "I+T",
+      "canonicalTraceability": "024 solo se intero scenario LKG eseguito",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R23"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP1",
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true,
+      "currentDeltaInterpretation": "Historical route counts describe the retained rollout only. Freeze the current inventory for every new delta and prove all unrelated routes preserved; do not restore historical route counts."
+    },
+    {
+      "id": "CSV-AT-24",
+      "procedureAndExpected": "Verifica finale coorte/contratti/evidenze/baseline e guida; tutti i requisiti coperti, nessun obbligatorio SKIPPED/BLOCKED, accettazione HUMAN",
+      "requiredLevel": "T+C",
+      "canonicalTraceability": "Blueprint0.3§9",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R24"
+      ],
+      "evidenceRefs": [],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true
+    }
+  ],
+  "additionalUxAcceptance": [
+    {
+      "id": "M2-UX-01",
+      "criterion": "Zero terminal/SQL and manual ID/hash/log copying; no prosegui needed merely to advance a technical stage",
+      "workPackages": [
+        "M2-WP2",
+        "M2-WP6"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": []
+    },
+    {
+      "id": "M2-UX-02",
+      "criterion": "One intended upload/profile; duplicate-click/lost-response safety and actionable safe failure",
+      "workPackages": [
+        "M2-WP1",
+        "M2-WP2",
+        "M2-WP5"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": []
+    },
+    {
+      "id": "M2-UX-03",
+      "criterion": "All columns mapped or explicitly excluded; exact semantics, identity and classification",
+      "workPackages": [
+        "M2-WP3"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": []
+    },
+    {
+      "id": "M2-UX-04",
+      "criterion": "Verified exact THS decision link; mobile/desktop return, expiry and stale-version recovery",
+      "workPackages": [
+        "M2-WP2",
+        "M2-WP6"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": []
+    },
+    {
+      "id": "M2-UX-05",
+      "criterion": "Authorized owner-backed resume by work description after new chat; no expired picker dependency",
+      "workPackages": [
+        "M2-WP2",
+        "M2-WP5",
+        "M2-WP6"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": []
+    },
+    {
+      "id": "M2-UX-06",
+      "criterion": "Every row accounted for; no complete claim from ACK or hidden/pending/redacted rows",
+      "workPackages": [
+        "M2-WP4",
+        "M2-WP6"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": []
+    },
+    {
+      "id": "M2-UX-07",
+      "criterion": "Produced objects discoverable via available typed bounded search with authorization and pagination",
+      "workPackages": [
+        "M2-WP4",
+        "M2-WP6"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": []
+    },
+    {
+      "id": "M2-UX-08",
+      "criterion": "Observed progress and bounded next check; no permanent-error loop or per-row dependency incident storm",
+      "workPackages": [
+        "M2-WP1",
+        "M2-WP2",
+        "M2-WP5"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": []
+    }
+  ],
+  "minimumCompleteCanonicalScenarios": [
+    "OUF-E2E-002",
+    "OUF-E2E-003",
+    "OUF-E2E-006",
+    "OUF-E2E-017",
+    "OUF-E2E-018",
+    "OUF-E2E-019",
+    "OUF-E2E-020",
+    "OUF-E2E-022",
+    "OUF-E2E-025"
+  ],
+  "canonicalEvidenceRule": "A local PASS is not a canonical scenario PASS unless all original scenario preconditions/steps/assertions are exercised. Use original evidence-record-v1 for canonical records.",
+  "requiredFinalEvidenceFields": [
+    "requirement/test",
+    "source commit",
+    "environment",
+    "installation profile/version/hash",
+    "actual module image digests",
+    "contract freeze",
+    "input fixture/hash",
+    "assertion outcomes",
+    "artifact refs",
+    "correlation ids",
+    "authority decision ref without credentials",
+    "limitations"
+  ],
+  "completeAcceptanceRule": "G5/G6/G7 PASS, all mandatory baseline and UX criteria met at required level, complete canonical applicable scenarios and impacted PET suites, two real clients, explicit HUMAN acceptance of M2. This is not merge or release acceptance.",
+  "outputAccounting": {
+    "dataRows": 61,
+    "rowCategoriesMutuallyExclusive": [
+      "MATERIALIZED",
+      "REJECTED",
+      "IN_REVIEW",
+      "PENDING",
+      "ERROR"
+    ],
+    "categorySumMustEqualDataRows": true,
+    "objectCountsSeparateFromRowCounts": true,
+    "expectedNewObjects": null
+  },
+  "outOfScope": [
+    "Canonical merge of two already-existing UrbanObjects (OUF-E2E-014)",
+    "Advanced name/address/spatial/graph search beyond available capability contracts",
+    "Other formats and streaming",
+    "Universal installer",
+    "Full system-wide resilience adoption and alerting",
+    "Supervisor",
+    "Merge and release acceptance"
+  ],
+  "firstNextAction": "Observe a minimized owner diagnostic for the same FAILED Farmacie job. If deployment is needed, qualify a new scoped Onboarding delta and concrete review first; do not replay upload/profile/V35 or infer a runtime cause from CI.",
+  "sourceRefs": [
+    "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
+    "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
+    "evidence/new-csv-profile-terminal-failure-20261026.json",
+    "evidence/farmacie-local-csv-analysis-20261026.json",
+    "evidence/managed-profile-diagnostic-ci-checkpoint-20261026.json",
+    "docs/OUF_RESILIENCE_POLICY.md"
+  ],
+  "canonicalScenarioAllocations": [
+  {
+    "scenarioId": "OUF-E2E-002",
+    "workPackages": [
+      "M2-WP5"
+    ],
+    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+    "status": "OPEN_FOR_M2_FINAL_COHORT"
+  },
+  {
+    "scenarioId": "OUF-E2E-003",
+    "workPackages": [
+      "M2-WP5"
+    ],
+    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+    "status": "OPEN_FOR_M2_FINAL_COHORT"
+  },
+  {
+    "scenarioId": "OUF-E2E-006",
+    "workPackages": [
+      "M2-WP4"
+    ],
+    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+    "status": "OPEN_FOR_M2_FINAL_COHORT"
+  },
+  {
+    "scenarioId": "OUF-E2E-017",
+    "workPackages": [
+      "M2-WP4",
+      "M2-WP6"
+    ],
+    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+    "status": "OPEN_FOR_M2_FINAL_COHORT"
+  },
+  {
+    "scenarioId": "OUF-E2E-018",
+    "workPackages": [
+      "M2-WP5",
+      "M2-WP6"
+    ],
+    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+    "status": "OPEN_FOR_M2_FINAL_COHORT"
+  },
+  {
+    "scenarioId": "OUF-E2E-019",
+    "workPackages": [
+      "M2-WP3",
+      "M2-WP5"
+    ],
+    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+    "status": "OPEN_FOR_M2_FINAL_COHORT"
+  },
+  {
+    "scenarioId": "OUF-E2E-020",
+    "workPackages": [
+      "M2-WP3",
+      "M2-WP4"
+    ],
+    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+    "status": "OPEN_FOR_M2_FINAL_COHORT"
+  },
+  {
+    "scenarioId": "OUF-E2E-022",
+    "workPackages": [
+      "M2-WP2",
+      "M2-WP6"
+    ],
+    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+    "status": "OPEN_FOR_M2_FINAL_COHORT"
+  },
+  {
+    "scenarioId": "OUF-E2E-025",
+    "workPackages": [
+      "M2-WP1",
+      "M2-WP5",
+      "M2-WP6"
+    ],
+    "allCanonicalPreconditionsStepsAndAssertionsRequired": true,
+    "status": "OPEN_FOR_M2_FINAL_COHORT"
+  }
+]
+}

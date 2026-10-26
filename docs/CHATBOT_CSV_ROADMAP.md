@@ -1,3 +1,9 @@
+# CURRENT — Roadmap M2 autoguidato del 26 ottobre 2026
+
+M1/G4 acquisito sul caso Teatri; M2/G5/G6/G7 aperti. Il riferimento corrente per il residuo è il [mini-PET M2](OUF_M2_MINIPET_v1_0_20261026.md), con [roadmap sintetica](OUF_M2_ROADMAP_20261026.md) e [registro](../releases/csv-m2-plan-20261026.json). Sequenza: diagnosi/recupero Farmacie → percorso autoguidato → semantica generale → UDP e consultazione → ripetibilità/resilienza → due client e dossier M2. Stima residua preliminare 34–58 ore attive, centrale 46; riserva distinta 8–16. Ristima dopo causa owner; nessuna data garantita o consuntivo inventato.
+
+Farmacie conserva un solo asset/job FAILED. Causa runtime non ancora provata; diagnostica Onboarding PR52 qualificata in CI, non installata. Nessun upload/profiling/reset o vecchio APPLY da rilanciare. M2 richiede percorso ordinario senza terminale/SQL/log/ID manuali e senza “prosegui” tecnico, decisioni HUMAN reali, tutte le righe contabilizzate, reimport invariato e due client indipendenti. Nuovi effetti soltanto attraverso governance corrente; questo aggiornamento è documentale, senza authority o accettazione release. Le intestazioni successive sono cronologia, non il prossimo passo corrente.
+
 # CURRENT — G4 / M1 COMPLETATO, F5–F6 provate sul caso conservato
 
 Checkpoint26ottobre2026 17:01:17 Europe/Rome. Dossier evidence/csv-m1-f5-f6-owner-verification-20261026.json; handoff docs/handoffs/OUF_M1_COMPLETED_20261026.md. Policy53 verificata PUBLISHED su propostab7df94f4-10d8-4897-8655-42e3f6e27ba4 r1. Quattro READ distinte (due owner per ciascuna run) COMPLETE/AUTHORIZED/partialfalse/cursornull, nessun retry o nuova acquisizione.
