@@ -1,3 +1,5 @@
+> AGGIORNAMENTO VPS: installazione source9a riuscita, complete/readiness/Exit0/DeliveryExit0. Scope e comando sotto CONSUMATI/STORICI, NON rilanciare. Leggere integralmente [il nuovo handoff post-installazione](OUF_MCP_INSTALLED_NEXT_HUMAN_READ_20261026.md): READ50 scadute, nessun rinnovo automatico.
+
 # OUF — continuazione cumulativa MCP con Memory=0 conservata — 26 ottobre 2026
 
 ## Punto esatto
