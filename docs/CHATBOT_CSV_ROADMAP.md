@@ -1,3 +1,23 @@
+# CURRENT — diagnosi MCP qualificata; NEXT prima cattura READ dei suoi input correnti
+
+Policy49/VPS pubblicazione descrittori riuscita e policy50/HUMAN grant12READ verificati restano validi come prove storiche. Due READ distinte Ingestion/UDP runbb2e2af4... negano authorization denied/retryable=false; nessun retry e nessuna lettura runa320... successiva. Una nuova ouf.system.status con ouf-admin è HEALTHY/actionRequiredfalse/partialfalse/PUBLIC_OPERATIONAL/redactedtrue: prova solo quel percorso, non scopesREAD o bundle50 locale. La causa live dei dinieghi resta NON provata.
+
+**Handoff corrente INTEGRALE e nuovo comando di SOLA cattura:** docs/handoffs/OUF_MCP_DENIAL_DIAGNOSTICS_AND_READONLY_CAPTURE_20261026.md.
+Qualifica: evidence/mcp-denial-diagnostics-capture-qualified-20261026.json.
+Non chiedere all'owner una listaOAuth non esposta senza percorso verificato; questa richiesta del precedente handoff è superata. Nessun token/secret o auditprivato/SQL/rawlog va richiesto/letto per aggirare il diniego.
+
+PR draft GioNob/ouf-mcp-server#79, source9a374dd07745f059de3ad39757c68f02db6d29c3: solo due READ espongono reasonCode bounded/evaluatedPolicyVersion della decisione locale, con errore permanente e zero dispatch suDENY. Generictools/audit/errorcompatibilità/ownerdenials preservati. Non crea challengeOAuth, grant, retry o acceptance. CI SDK/cache/TLS e regressioni passate push40284011794/PR40284018756; fullCI Docker/Postgres/staticcheck/vuln push40284011851/PR40284018791 PASS/logdirettiletti. RuntimeMCP distribuito resta bd60ccd, non aggiornato.
+Artifact CI12633545900/source9a374dd0/configIDffc78.../zipSHA6c31.../tarGzSHA19fd... verificati, nessun rebuild/relabel. Nativeidentity per profiloEngine ancora da derivare/qualificare; CI non è provaVPS.
+
+Nuova cattura runtime6fc2aba137191411e4d22606957e0c4b24d687aa/SHA909611450683cae6ac15cc41f2e4f86c7eaad6585830dd15961f51916446a9e4;
+delivery28db992823d90069192e0eb2bb1c4c90de961c8a/wrapperSHA6e50d53c3772448e50b578817d29a46cf203250d42113975d30e37119e7e3461.
+Scope FISSO /etc/ouf/deploy-snapshots/mcp-denial-update-inputs-9a374dd07745f059-v1, codice root400/dir700/checksumROOT, fileprivati600. Legge5file della storia esatta installata e fa9GET attesi al socketEngine giàpinned (max10), verifica4originali invariati e3candidati installati stessa generazione. Max8file<=6MiB, Engine2MiB/risposta20MiBcumulativi,90scontroller. Claim durevoli PRIMA di ogni lettura, bytehash esatti/non JSONnormalizzato, originaliimmutabili.
+SOLO metadata: zero POST/import/containerlifecycle/namespacejoin/credenzialefile/OAuth/SQL/chiavifirma/routePUT/acquisizioni/attivazioni/grant/reset. Non importa/esegue vecchie entrypoint e preserva contatori installazione306GET/22writes ecc. Non rivela scopes/bundlelocali o causa del diniego; prepara futura reviewMCPconcreta.
+CI finale push40287470611/job121454430366 ePR40287477086/job121454450598:9unit+2native ROOT/DockerGET/peer/copia400/nonrootdenial PASS/0skip/logletti; storia/app fixture sintetiche, non provaVPS. Primo risultato della NUOVA cattura NON ricevuto. Positivo atteso MCP_DIAGNOSTIC_UPDATE_INPUTS_CAPTURED_NOT_AUTHORIZED/complete/Exit0/DeliveryExit0/inputsHash, runtimeAuthorityIssuedfalse/continuationAuthorizedfalse. Nessun APPROVO o login richiesti. STOPconsuma anche questo scope: conserva prove, nessun rilancio/cambiochild.
+
+NON esiste ancora consegna APPLY per il futuro aggiornamentoMCP. Dopo inputfreschi: stagingCI/nativeimageidentity, piano chiuso e nuova reviewHUMAN concreta, firme/authoritylive, watchdog, MAClegacy gate completo e1manager, zero originalworker/2READ/Gateway/Registrytouch. Vecchi rollout con rollback automatico non adatti. Tutti vecchi scope e controller consumati restano NONrilanciabili.
+GrantREAD50 scadono26ottobre2026 09:24:50CET/08:24:50Z: mai rinnovo o proposta automatica. Niente terzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. E2E/G4/F5/F6 OPEN, Supervisor solo dopoE2E. Header sotto STORICI.
+
 # CURRENT — policy50 HUMAN pubblicata; due READ negate, NESSUN retry
 
 Proposta64655de1-bf1e-4acd-aada-d2f27154539a/rev1/PUBLISHED/finalPolicyRefouf-lab-authorization:50 confermata da proposal.read STESSOID dopo decisioneTHSowner. Policyhash067cb58da4e6f0278b5a81f4858646bb50222bb48e9cf63d3141621e9cfaf05f.4ruoli/4assegnazioni, originali2ruoli/34permissionadmin/2assegnazioni preservati;94subjectgrant=82originaliESATTI+12READvincolati. Finestra fino26ottobre2026 09:24:50EuropeRome(+01)/08:24:50Z, nessun rinnovo/reset automatico.

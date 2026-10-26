@@ -1,3 +1,7 @@
+# SUPERATO nel NEXT — diagnosi codice qualificata, nuova cattura READ pronta
+
+Le due negazioni e policy50 sotto restano prove storiche valide, senza retry. La richiesta all'owner di cercare una listaOAuth non esposta è superata. NEXT: [diagnostica MCP e sola cattura corrente](OUF_MCP_DENIAL_DIAGNOSTICS_AND_READONLY_CAPTURE_20261026.md), nessun APPLY o rilancio precedente.
+
 # Policy50 pubblicata HUMAN; prime letture governate negate — 26 ottobre 2026
 
 ## Risultati, nell'ordine delle autorità
