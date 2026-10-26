@@ -1,3 +1,7 @@
+# CURRENT — policy54 PUBBLICATA; stesso upload handoff PENDING, file non ancora ricevuto
+
+Propostad1f8ba77-7637-4f77-886c-7f50565f3464 r1/PUBLISHED/finalPolicyouf-lab-authorization:54 verificata tramiteproposal.read stessoID dopo confermaowner. Status del medesimo handoff4da5410e-98de-472c-89b6-bc1cdae8ecf1 ora risponde PENDING senza diniego. Nessun file/assetID ottenuto, nessunprofiling/fonte/acquisizione avviato. Precedente diniego status non ritentato fino a cambiamento autorizzativo provato54. NEXT owner sceglie CSV dal link https://api.ouf-lab.it/trusted-human/managed-files/?handoff=4da5410e-98de-472c-89b6-bc1cdae8ecf1 poi status sullo stessoID; niente pickerduplicato. Grantcontrolplaneupload/profile/preview soloouf-admin fino19:34:29 Europe/Rome26ottobre; ownership/receipt immutati, nessuna attivazione autorizzata. LoginmanualeTHS owner effettuato, reviewpubblicata; root404 non è prova loginfallito. Prova evidence/new-csv-policy54-upload-pending-20261026.json. M1COMPLETE, M2aperto; tutti vecchi scopeAPPLY consumati.
+
 # CURRENT — nuovo CSV: upload403, proposta temporanea di preparazione PENDING
 
 Handoff4da5410e-98de-472c-89b6-bc1cdae8ecf1 conservato, nessun nuovo picker. ScreenshotONB_CAPABILITY_DENIED/403 perouf.managed-source.file.upload; statusREADauthorizationdenied/retryablefalse, nessunretry. Nessunasset/profiling osservato.
