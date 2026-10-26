@@ -70,6 +70,26 @@ class Protocol(unittest.TestCase):
             with self.assertRaises(self.core.Stop):self.core.validate_review(review)
         review=copy.deepcopy(self.review);review['acquisitionCallsAuthorized']=True
         with self.assertRaises(self.core.Stop):self.core.validate_review(review)
+    def test_retained_memory_profile_has_no_implicit_policy_change(self):
+        c=self.parts['context']
+        for memory in(0,134217728):
+            host={'AutoRemove':False,'Memory':memory,'OomKillDisable':None};before=copy.deepcopy(host);policy=c.retained_host_policy(host)
+            self.assertEqual(host,before);self.assertEqual(policy['memoryBytes'],memory);self.assertFalse(policy['resourcePolicyChanged'])
+        for memory in(None,False,True,-1,0.0,'0'):
+            with self.assertRaises(c.Stop):c.retained_host_policy({'AutoRemove':False,'Memory':memory,'OomKillDisable':None})
+        for auto in(None,True,0,'false'):
+            with self.assertRaises(c.Stop):c.retained_host_policy({'AutoRemove':auto,'Memory':0,'OomKillDisable':None})
+    def test_residual_preflight_is_cumulative_and_rejects_existing_authority(self):
+        c=self.parts['context'];old=self.root/'prior-preflight';old.mkdir(mode=0o700);child=old/'retained-host-policy-continuation-v1';child.mkdir(mode=0o700)
+        case={'nativePlanHash':'a'*64};self.write(old,'preparation-claim.json',{'schema':'ouf.mcp-diagnostic-update-preflight-claim.v1','nativePlanHash':case['nativePlanHash'],'maximums':self.core.LIMITS,'runtimeEffectsDispatched':0,'automaticReplayAllowed':False,'budgetReset':False})
+        for i in(1,2):self.write(old,'preflight-attempt-1234-%05d.json'%i,{'kind':'ownerConfigurationReads','attempt':i,'attemptNotCompletion':True})
+        retained=json.loads((BASE/'tests/fixtures/mcp-zero-memory-reconciliation.json').read_bytes());self.write(self.root,'retained.json',retained)
+        ctx=c.Context.__new__(c.Context);ctx.root=child;ctx.case=case;ctx.core=self.core;ctx.p=self.p;ctx.execution=None;ctx.counts={k:0 for k in self.core.LIMITS};ctx.counts['ownerConfigurationReads']=2;ctx.serial=0;ctx.prior_seals={}
+        binding={'root':str(old),'reconciliationPath':str(self.root/'retained.json'),'reconciliationSha256':self.core.digest(retained)}
+        ctx.reconcile_preflight(binding);self.assertEqual(ctx.counts['ownerConfigurationReads'],6);self.assertEqual(len(ctx.prior_seals),4)
+        self.assertEqual(ctx.retained_preflight['separateConsumedReadCounts'],{'fileReads':9,'bytes':120945});self.assertFalse(ctx.retained_preflight['oldAuthorityReused'])
+        self.write(old,'authority.json',{'forbidden':True})
+        with self.assertRaisesRegex(c.Stop,'EXACT_UNISSUED_PREFLIGHT_ONLY'):ctx.reconcile_preflight(binding)
     def test_closed_source_loader_rejects_source_tamper(self):
         path=self.code/'ports.py';path.chmod(0o600);path.write_bytes(path.read_bytes()+b'\n# synthetic tamper\n');path.chmod(0o400)
         with self.assertRaisesRegex(RuntimeError,'SOURCE_DIGEST'):self.entry.components()

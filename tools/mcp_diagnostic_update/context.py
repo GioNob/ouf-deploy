@@ -18,7 +18,10 @@ TARGET={'nativePlanHash':'ff06ec1afc5da65dc6b6c64edb9ab9ec87926f4a9de7aec355b69b
         'nativeArchiveHash':'dafe0b0be9bf78717061923b1d1fe9feab2f01b81fd1e432a8b7a35a7677bcc3',
         'nativePlanPath':'/etc/ouf/deploy-snapshots/mcp-denial-image-plan-fb4b7c9ae832e779-v1/native-plan.json',
         'inputsPath':'/etc/ouf/deploy-snapshots/mcp-denial-update-inputs-9a374dd07745f059-v1/inputs.json',
-        'executionRoot':'/etc/ouf/deploy-snapshots/mcp-diagnostic-update-ff06ec1afc5da65d-v1'}
+        'executionRoot':'/etc/ouf/deploy-snapshots/mcp-diagnostic-update-ff06ec1afc5da65d-v1/retained-host-policy-continuation-v1',
+        'priorPreflight':{'root':'/etc/ouf/deploy-snapshots/mcp-diagnostic-update-ff06ec1afc5da65d-v1',
+                          'reconciliationPath':'/etc/ouf/deploy-snapshots/mcp-host-policy-stop-read-ff06ec1a-v1/result.json',
+                          'reconciliationSha256':'4975203b31db1db318aa8d81d09163153600ff2a738248ea2424fb45be6d4547'}}
 PROFILE={'path':'/etc/ouf/deploy-snapshots/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json','sha256':'7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18'}
 POLICY={'path':'/etc/ouf/deploy-snapshots/semantic-trust-policy-preparation-20261004-172336/trust-policy.json','sha256':'21122630e52cb63c3744fee89f5c81ed926dad55231190243ca11be6d481bd42'}
 CONTEXT={'installationRef':'ouf-lab-netcup-01','entityRef':'ouf-lab','intentIssuerRef':'ouf-lab-infrastructure-installer','approvalIssuerRef':'ouf-lab-infrastructure-installer','attestorRef':'ouf-lab-node-attestor'}
@@ -32,13 +35,21 @@ def public_authority(p,profile_binding=PROFILE,policy_binding=POLICY,context=CON
         require(set(k)=={'keyRef','issuerRef','roles','publicKey','notBefore','expiresAt','state'}and type(k['roles'])is list and len(k['roles'])==len(roles)and set(k['roles'])==roles and type(k['publicKey'])is str and re.fullmatch('[a-f0-9]{64}',k['publicKey'])and k['state']=='ACTIVE'and type(k['notBefore'])is int and type(k['expiresAt'])is int and 0<=k['notBefore']<=now and k['expiresAt']>=now+930,'FULL_FUTURE_REVIEW_WINDOW_PUBLIC_KEY_AUTHORITY_REQUIRED')
         require(type(binding)is dict and set(binding)=={'path','sha256'}and type(binding['path'])is str and Path(binding['path']).is_absolute()and'..'not in Path(binding['path']).parts and re.fullmatch('[a-f0-9]{64}',binding['sha256']),'EXACT_EXISTING_SIGNING_KEY_BINDING_REQUIRED')
     return {'profileBinding':profile_binding,'trustPolicy':policy_binding,'context':context,'profile':profile,'policy':policy,'privateKeysOpened':False,'livePolicyRevalidationAtIssuanceRequired':True}
+def retained_host_policy(host):
+    # Memory=0 is the Engine's retained no-hard-limit value, not a controller
+    # budget. Preserve it exactly; missing/bool/negative remain invalid.
+    require(host.get('AutoRemove')is False and type(host.get('Memory'))is int and host['Memory']>=0,'EXACT_RETAINED_MCP_HOST_POLICY_REQUIRED')
+    require(host.get('OomKillDisable')is None or type(host.get('OomKillDisable'))is bool,'TYPED_RETAINED_MCP_OOM_POLICY_REQUIRED')
+    return {'memoryBytes':host['Memory'],'memoryPolicy':'RETAIN_EXACT_ZERO_NO_HARD_LIMIT'if host['Memory']==0 else'RETAIN_EXACT_POSITIVE_LIMIT','autoRemove':False,'oomKillDisable':host.get('OomKillDisable'),'resourcePolicyChanged':False}
 class Context:
     def __init__(self,parts,auth,sign,journal,closure,*,case=TARGET,public_authority=None,runtime=None):
         self.core,self.p,self.images,self.mac,self.http,self.ports_module,self.watch,self.engine_helpers,self.terminal=[parts[k]for k in('authority','plan_helper','image_custody','retained_mac','transport','ports','quarantine','engine_creation','terminal')]
         self.auth,self.sign,self.journal_module=auth,sign,journal;self.closure=copy.deepcopy(closure);self.case=copy.deepcopy(case);self.root=Path(case['executionRoot']);self.serial=0
-        self.execution=None;self.counts={k:0 for k in self.core.LIMITS};self.responses=0;self.receiptBytes=0;self.runtime=runtime
+        self.execution=None;self.counts={k:0 for k in self.core.LIMITS};self.responses=0;self.receiptBytes=0;self.runtime=runtime;self.prior_seals={}
+        if case.get('priorPreflight'):self.counts['ownerConfigurationReads']=2
         self.p.ancestry(self.root.parent);require(not os.path.lexists(self.root),'MCP_UPDATE_SCOPE_CONSUMED_NO_REPLAY');self.root.mkdir(mode=0o700);self.root.chmod(0o700)
         self.sync(self.root.parent);self.write(self.root,'preparation-claim.json',{'schema':'ouf.mcp-diagnostic-update-preflight-claim.v1','nativePlanHash':case['nativePlanHash'],'maximums':self.core.LIMITS,'runtimeEffectsDispatched':0,'automaticReplayAllowed':False,'budgetReset':False})
+        if case.get('priorPreflight'):self.reconcile_preflight(case['priorPreflight'])
         self.reserve('ownerConfigurationReads');self.native=self.read(case['nativePlanPath'],case['nativePlanHash'])
         self.reserve('ownerConfigurationReads');self.inputs=self.read(case['inputsPath'],case['inputsHash'])
         require(self.native['schema']=='ouf.mcp-denial-native-image-plan.v1'and self.native['frozenPlanHash']==case['frozenPlanHash']==self.p.digest(self.native['proposal'])
@@ -67,8 +78,11 @@ class Context:
         candidate=self.native['imageAudit']['imageConfig'];old_labels=request.get('Labels')or{};defaults=candidate.get('Labels')or{}
         require(all(k.startswith('org.opencontainers.image.')for k in set(defaults)-set(old_labels)),'ONLY_QUALIFIED_IMAGE_LABEL_DEFAULTS')
         self.proposal['mcpReplacement']['runtimeLabelProjection']={'expectedLabels':{**defaults,**old_labels}}
-        host=request['HostConfig'];require(host.get('AutoRemove')is False and type(host.get('Memory'))is int and host['Memory']>0,'FINITE_RETAINED_MCP_HOST_POLICY_REQUIRED')
-        if host.get('OomKillDisable')is None:self.proposal['mcpReplacement']['runtimeHostProjection']={'profile':'DOCKER_ENABLED_OOM_DEFAULT_NULL_FALSE_V1','requestedOomKillDisable':None,'materializedOomKillDisable':False,'positiveMemoryBytes':host['Memory']}
+        host=request['HostConfig'];self.proposal['mcpReplacement']['retainedResourcePolicy']=retained_host_policy(host)
+        if case.get('priorPreflight'):
+            require(host['Memory']==0 and host.get('OomKillDisable')is None,'EXACT_RECONCILED_ZERO_MEMORY_PROFILE_REQUIRED')
+            self.proposal['retainedPreflightReconciliation']=copy.deepcopy(self.retained_preflight)
+        if host.get('OomKillDisable')is None:self.proposal['mcpReplacement']['runtimeHostProjection']={'profile':'DOCKER_ENABLED_OOM_DEFAULT_NULL_FALSE_V1','requestedOomKillDisable':None,'materializedOomKillDisable':False,'retainedMemoryBytes':host['Memory']}
         self.engine=self.http.Engine(self.p,self.proposal['engineBinding']);self.engine.before=self.before_dispatch;self.engine.retained=self.retained
         self.public_authority=public_authority or globals()['public_authority'];self.authority_metadata=self.refresh_authority();self.profile=self.authority_metadata['profile'];self.openssl=self.executable()
         self.input_seals={path:list(self.p.frame(Path(path).lstat()))for path in(case['nativePlanPath'],case['inputsPath'])}
@@ -89,6 +103,25 @@ class Context:
             os.fchmod(stream.fileno(),0o400);stream.write(raw);stream.flush();os.fsync(stream.fileno())
         self.sync(path.parent)
     def read(self,path,expected):return self.p.decode(self.p.protected(Path(path),expected))
+    def reconcile_preflight(self,binding):
+        old=Path(binding['root']);require(self.root.parent==old and self.root.name=='retained-host-policy-continuation-v1','EXACT_RESIDUAL_CHILD_REQUIRED')
+        names=[]
+        with os.scandir(old)as entries:
+            for item in entries:names.append(item.name);require(len(names)<=4,'EXACT_UNISSUED_PREFLIGHT_ONLY_REQUIRED')
+        attempts=sorted(n for n in names if re.fullmatch(r'preflight-attempt-[0-9]+-[0-9]{5}\.json',n))
+        require(len(attempts)==2 and set(names)=={'preparation-claim.json',self.root.name,*attempts},'EXACT_UNISSUED_PREFLIGHT_ONLY_REQUIRED')
+        def read(path,expected=None):
+            self.reserve('ownerConfigurationReads');raw=self.p.protected(path,expected,limit=8192);self.prior_seals[str(path)]=list(self.p.frame(path.lstat()));return self.p.decode(raw)
+        result=read(Path(binding['reconciliationPath']),binding['reconciliationSha256'])
+        require(result['schema']=='ouf.mcp-host-policy-retained-stop-read.v1'and result['status']=='RETAINED_MCP_HOST_POLICY_STOP_OBSERVED_NO_AUTHORITY'and result['complete']is True
+                and result['retainedClaimsAndPinnedCodeProveNoRuntimeDispatch']is True and result['retainedPreflightFileSetExact']is True and result['retainedHostPolicyCopyExact']is True
+                and result['runtimeAuthorityIssued']is False and result['continuationAuthorized']is False and result['currentRuntimeStateObserved']is False
+                and result['counts']=={'fileReads':9,'bytes':120945}and result['retainedOriginalCounts']=={'engineGets':0,'engineWrites':0,'ownerConfigurationReads':2}
+                and result['failedGuardChecks']==['memoryStrictlyPositive']and result['hostPolicy']=={'AutoRemove':{'present':True,'type':'bool','value':False},'Memory':{'present':True,'type':'int','value':0},'OomKillDisable':{'present':True,'type':'NoneType','value':None}},'EXACT_RETAINED_ZERO_MEMORY_RECONCILIATION_REQUIRED')
+        claim=read(old/'preparation-claim.json')
+        require(claim=={'schema':'ouf.mcp-diagnostic-update-preflight-claim.v1','nativePlanHash':self.case['nativePlanHash'],'maximums':self.core.LIMITS,'runtimeEffectsDispatched':0,'automaticReplayAllowed':False,'budgetReset':False},'EXACT_PRIOR_UNISSUED_PREFLIGHT_CLAIM_REQUIRED')
+        for i,name in enumerate(attempts,1):require(read(old/name)=={'kind':'ownerConfigurationReads','attempt':i,'attemptNotCompletion':True},'EXACT_PRIOR_METADATA_COUNTS_REQUIRED')
+        self.retained_preflight={'reconciliationBinding':binding,'retainedOriginalCounts':result['retainedOriginalCounts'],'separateConsumedReadCounts':result['counts'],'runtimeEffectsDispatched':0,'oldScopeConsumed':True,'newHumanReviewRequired':True,'oldAuthorityReused':False,'budgetReset':False}
     def evidence(self,name,value):
         # Controller and its single forked watchdog never overwrite or collide.
         self.serial+=1;self.write(self.root,name+'-'+str(os.getpid())+'-%05d.json'%self.serial,value)
@@ -118,6 +151,7 @@ class Context:
         if hasattr(self,'runtime_binding'):self.runtime_check()
         require(Path('/proc/sys/kernel/random/boot_id').read_text().strip()==self.inputs['bootId']==self.proposal['bootId'],'SAME_MCP_UPDATE_HOST_BOOT_REQUIRED')
         for path,metadata in self.input_seals.items():require(list(self.p.frame(Path(path).lstat()))==metadata,'PREPARED_INPUT_SEAL_CHANGED')
+        for path,metadata in self.prior_seals.items():require(list(self.p.frame(Path(path).lstat()))==metadata,'RECONCILED_PREFLIGHT_SEAL_CHANGED')
         for path,metadata in self.source_seals.items():require(list(self.p.frame(Path(path).lstat()))==metadata,'SEALED_MCP_EXECUTOR_SOURCE_CHANGED')
         require(list(self.p.frame(Path(self.archive['path']).lstat()))==self.archive['metadata'],'PREPARED_ARCHIVE_SEAL_CHANGED')
     def closed_path(self,method,path,body):
@@ -183,7 +217,7 @@ class Context:
         if restored:host['RestartPolicy']=self.restore_policy(role)
         # Stopped candidates may have Docker's already-materialized OOM default.
         ever_started=started or v['State'].get('StartedAt')not in(None,'','0001-01-01T00:00:00Z')
-        projection=proposal.get('runtimeHostProjection');materialized=projection=={'profile':'DOCKER_ENABLED_OOM_DEFAULT_NULL_FALSE_V1','requestedOomKillDisable':None,'materializedOomKillDisable':False,'positiveMemoryBytes':host.get('Memory')}and host.get('OomKillDisable')is None
+        projection=proposal.get('runtimeHostProjection');materialized=projection=={'profile':'DOCKER_ENABLED_OOM_DEFAULT_NULL_FALSE_V1','requestedOomKillDisable':None,'materializedOomKillDisable':False,'retainedMemoryBytes':host.get('Memory')}and host.get('OomKillDisable')is None
         require(self.engine_helpers.requested_host_config_matches(host,v['HostConfig'],started=ever_started or materialized),'EXACT_CANDIDATE_HOST_CONFIGURATION_REQUIRED')
         if role=='mcp':require(self.core.digest(sorted(v['Mounts'],key=lambda m:m['Destination']))==proposal['oldBinding']['mountsHash'],'EXACT_MCP_RETAINED_MOUNTS_REQUIRED')
         else:

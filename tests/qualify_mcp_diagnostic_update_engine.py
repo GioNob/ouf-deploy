@@ -37,6 +37,8 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
                  'HostConfig':{'NetworkMode':self.net,'RestartPolicy':{'Name':'unless-stopped','MaximumRetryCount':0},'Memory':134217728,'MemorySwap':134217728,'Binds':[str(mount)+':/fixture/config:ro']},
                  'NetworkingConfig':{'EndpointsConfig':{self.net:{'NetworkID':self.nid,'Aliases':[name]}}}}
             if role=='mcp':
+                req['HostConfig']['Memory']=getattr(self,'memory_bytes',134217728)
+                req['HostConfig']['MemorySwap']=getattr(self,'memory_bytes',134217728)
                 req['NetworkingConfig']['EndpointsConfig'][self.net]['MacAddress']='02:42:ac:44:01:07'
                 if getattr(self,'legacy_explicit',True):req['MacAddress']='02:42:ac:44:01:07'
             cid=self.api('POST','/containers/create?name='+name,req)['Id'];self.ids.append(cid);self.api('POST','/containers/'+cid+'/start');self.original[role]=self.api('GET','/containers/'+cid+'/json')
@@ -71,6 +73,13 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
               'nativeArchive':{'path':str(path),'sha256':derived['derivedArchiveSha256'],'bytes':derived['archiveBytes'],'metadata':metadata},'executionEntryQualified':False,'runtimeAuthorityIssued':False}
         native_path=folder/'native-plan.json';self.write(folder,native_path.name,plan)
         self.case={'nativePlanHash':self.core.digest(plan),'frozenPlanHash':plan['frozenPlanHash'],'inputsHash':input_hash,'nativeImageId':self.native_id,'sourceCommit':self.source,'nativeArchiveHash':derived['derivedArchiveSha256'],'nativePlanPath':str(native_path),'inputsPath':str(input_path),'executionRoot':str(self.root/'new-execution')}
+        if getattr(self,'memory_bytes',134217728)==0:
+            self.assertEqual({k:self.original['mcp']['HostConfig'][k]for k in('Memory','AutoRemove','OomKillDisable')},{'Memory':0,'AutoRemove':False,'OomKillDisable':None})
+            old=self.root/'prior-stopped';old.mkdir(mode=0o700)
+            self.write(old,'preparation-claim.json',{'schema':'ouf.mcp-diagnostic-update-preflight-claim.v1','nativePlanHash':self.case['nativePlanHash'],'maximums':self.core.LIMITS,'runtimeEffectsDispatched':0,'automaticReplayAllowed':False,'budgetReset':False})
+            for i in(1,2):self.write(old,'preflight-attempt-1234-%05d.json'%i,{'kind':'ownerConfigurationReads','attempt':i,'attemptNotCompletion':True})
+            retained=json.loads((BASE/'tests/fixtures/mcp-zero-memory-reconciliation.json').read_bytes());self.write(self.root,'synthetic-reconciliation.json',retained)
+            self.case.update(executionRoot=str(old/'retained-host-policy-continuation-v1'),priorPreflight={'root':str(old),'reconciliationPath':str(self.root/'synthetic-reconciliation.json'),'reconciliationSha256':self.core.digest(retained)})
         self.public={'trustPolicy':self.verification['trustPolicy'],'context':self.context,'profile':self.profile}
     def context_instance(self):return self.parts['context'].Context(self.parts,self.auth,self.sign,self.journal,self.closure,case=self.case,public_authority=lambda p:copy.deepcopy(self.public),runtime=self.runtime)
     def decision(self,review):return {'schema':'ouf.synthetic-ci-decision.v1','reviewHash':self.core.digest(review),'decision':self.core.DECISION,'approvedAt':int(time.time())}
@@ -91,14 +100,23 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
                 if role=='mcp':self.assertFalse(after['State']['Running']);self.assertEqual(after['NetworkSettings']['Networks'],{});self.assertEqual(before['State']['StartedAt'],after['State']['StartedAt'])
                 else:self.assertEqual(self.p.stable_binding(before),self.p.stable_binding(after))
             candidate=self.api('GET','/containers/'+row['candidates']['mcp']['id']+'/json');self.assertEqual(candidate['NetworkSettings']['Networks'][self.net]['MacAddress'],'02:42:ac:44:01:07');self.assertEqual(candidate['NetworkSettings']['Networks'][self.net]['IPAddress'],self.original['mcp']['NetworkSettings']['Networks'][self.net]['IPAddress'])
+            self.assertEqual(candidate['HostConfig']['Memory'],self.original['mcp']['HostConfig']['Memory']);self.assertIs(candidate['HostConfig']['AutoRemove'],False)
+            if self.case.get('priorPreflight'):
+                self.assertEqual(review['nativePlan']['proposal']['retainedPreflightReconciliation']['retainedOriginalCounts']['ownerConfigurationReads'],2)
+                self.assertGreaterEqual(review['preflightCounts']['ownerConfigurationReads'],10)
+                self.assertEqual(len(list(Path(self.case['priorPreflight']['root']).iterdir())),4)
             self.assertEqual(self.p.stable_binding(self.registry),self.p.stable_binding(self.api('GET','/containers/'+self.registry['Id']+'/json')))
             self.assertTrue((ctx.root/'candidate-result.json').is_file());self.assertTrue((ctx.root/'result.json').is_file())
-            print(json.dumps({'schema':'ouf.mcp-update-synthetic-native-executor-ci.v1','complete':True,'backend':os.environ['EXPECTED_STORE'],'creationProfile':'EXPLICIT_LEGACY_CONFIG'if getattr(self,'legacy_explicit',True)else'ENDPOINT_ONLY_COMPAT_CONFIG','realDualRoleAuthorityAndAttestation':True,'oldLegacyMacInitiallyPresent':True,'fullSignedLifecycle':True,'sixOtherContainersUnchanged':True,'outsideScopeRegistryUnchanged':True,'endpointMacPreserved':True,'endpointIpPreserved':True,'oldRetainedStopped':True,'commitAfterThirdSignature':True,'applicationWorkloadSynthetic':True,'productionRuntimeAccess':False,'applicationE2EProven':False}),flush=True)
+            print(json.dumps({'schema':'ouf.mcp-update-synthetic-native-executor-ci.v1','complete':True,'backend':os.environ['EXPECTED_STORE'],'retainedMemoryBytes':candidate['HostConfig']['Memory'],'priorPreflightCountsPreserved':bool(self.case.get('priorPreflight')),'creationProfile':'EXPLICIT_LEGACY_CONFIG'if getattr(self,'legacy_explicit',True)else'ENDPOINT_ONLY_COMPAT_CONFIG','realDualRoleAuthorityAndAttestation':True,'oldLegacyMacInitiallyPresent':True,'fullSignedLifecycle':True,'sixOtherContainersUnchanged':True,'outsideScopeRegistryUnchanged':True,'endpointMacPreserved':True,'endpointIpPreserved':True,'oldRetainedStopped':True,'commitAfterThirdSignature':True,'applicationWorkloadSynthetic':True,'productionRuntimeAccess':False,'applicationE2EProven':False}),flush=True)
         finally:self.cleanup_native()
     def test_full_endpoint_legacy_compatibility_profile(self):
         self.legacy_explicit=False;self.test_full_new_signed_executor_legacy_frame_and_attested_commit()
+    def test_zero_memory_full_explicit_legacy(self):
+        self.memory_bytes=0;self.test_full_new_signed_executor_legacy_frame_and_attested_commit()
+    def test_zero_memory_full_endpoint_legacy(self):
+        self.memory_bytes=0;self.legacy_explicit=False;self.test_full_new_signed_executor_legacy_frame_and_attested_commit()
     def test_actual_lost_controller_watchdog_stops_only_its_new_mcp(self):
-        self.legacy_explicit=False
+        self.legacy_explicit=False;self.memory_bytes=0
         try:
             self.setup_native();r,w=os.pipe();child=os.fork()
             if child==0:
@@ -132,4 +150,4 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
             print(json.dumps({'schema':'ouf.mcp-update-lost-controller-ci.v1','complete':True,'backend':os.environ['EXPECTED_STORE'],'actualControllerExitAfterStartClaim':True,'watchdogStoppedOnlyOwnMcp':True,'oldNotRestarted':True,'sixOtherContainersUnchanged':True,'outsideScopeRegistryUnchanged':True,'claimedStageRetained':True,'syntheticAuthoritiesAndWorkload':True,'productionRuntimeAccess':False}),flush=True)
         finally:self.cleanup_native()
 if __name__=='__main__':
-    suite=unittest.TestSuite([Native('test_full_new_signed_executor_legacy_frame_and_attested_commit'),Native('test_full_endpoint_legacy_compatibility_profile'),Native('test_actual_lost_controller_watchdog_stops_only_its_new_mcp')]);result=unittest.TextTestRunner(verbosity=2).run(suite);raise SystemExit(0 if result.wasSuccessful()else 1)
+    suite=unittest.TestSuite([Native(name)for name in('test_full_new_signed_executor_legacy_frame_and_attested_commit','test_full_endpoint_legacy_compatibility_profile','test_zero_memory_full_explicit_legacy','test_zero_memory_full_endpoint_legacy','test_actual_lost_controller_watchdog_stops_only_its_new_mcp')]);result=unittest.TextTestRunner(verbosity=2).run(suite);raise SystemExit(0 if result.wasSuccessful()else 1)

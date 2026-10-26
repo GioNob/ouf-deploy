@@ -51,6 +51,9 @@ def review(ctx):
 def terminal(ctx,value):
     c=ctx.core;reviewed=c.digest(value);deadline=time.monotonic()+900;wall=time.time()+900
     print('Revisione privata: '+str(ctx.root/'review.json'),flush=True)
+    if ctx.case.get('priorPreflight'):
+        print('NUOVO mandato residuo dopo STOP pre-review riconciliato senza effetti. Vecchio scope e reader consumati; 2 letture originali incluse nel budget64, ulteriori9 letture di riconciliazione conservate separatamente. Nessun reset o vecchia autorita riusata.',flush=True)
+    print('Policy risorse MCP conservata: Memory='+str(ctx.proposal['mcpReplacement']['request']['HostConfig']['Memory'])+' byte (0=nessun limite hard gia esistente), AutoRemove=false, nessun nuovo limite o modifica di policy. Budget controller restano finiti.',flush=True)
     print('SOLA sostituzione del MCP con immagine diagnostica qualificata. Breve indisponibilita MCP; vecchio fermo/scollegato/trattenuto, MAC/IP e porte pubblicate correnti conservati, nessun rollback.',flush=True)
     print('Se STOP dopo il suo arresto, il MCP puo restare indisponibile fino a riconciliazione autorizzata. Il vecchio NON viene riavviato automaticamente.',flush=True)
     print('Sei componenti esistenti, Registry e Gateway intatti. Nessuna rotta, migrazione, grant, fonte o acquisizione.',flush=True)
