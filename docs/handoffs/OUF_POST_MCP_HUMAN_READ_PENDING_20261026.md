@@ -1,3 +1,5 @@
+> AGGIORNAMENTO: proposta c1908145 ora PUBLISHED/rev1/policy51. Primo READIngestion ha restituito SCOPE_MISSING/MCP_PRE_ADMISSION/versione51, nessun retry. Leggere integralmente [il nuovo handoff](OUF_POLICY51_SCOPE_MISSING_HANDOFF_20261026.md). Linkreview sotto consumato, NON riproporre.
+
 # OUF — nuova proposta HUMAN READ PENDING dopo installazione MCP — 26 ottobre 2026
 
 ## Punto esatto e approvazione ancora da ricevere
