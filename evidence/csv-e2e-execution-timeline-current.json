@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-25T15:27:34.172Z",
+  "lastUpdatedAt": "2026-10-26T13:36:14Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -2375,6 +2375,16 @@
       "guardDifferenceNotYetObserved": true,
       "quarantineResultNotYetObserved": true,
       "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-M1-OWNER-REDACTION-DIAGNOSTICS-QUALIFIED-20261026",
+      "recordedAt": "2026-10-26T13:36:14Z",
+      "classification": "OWNER_CI_QUALIFIED_TWO_READ_DIAGNOSTICS_NEW_METADATA_CAPTURE_READY_NOT_EXECUTED",
+      "evidenceRef": "evidence/acquisition-redaction-diagnostics-qualified-20261026.json",
+      "targetUpdated": false,
+      "targetAcquisitionReads": 0,
+      "technicalIntervalMeasuredSeconds": 935,
+      "noUnmeasuredHistoricalEffortInferred": true
     }
   ],
   "activeIntervals": [
@@ -2914,6 +2924,17 @@
       "classification": "ACTIVE_TECHNICAL",
       "workPackage": "WP3_STOP_RECONCILIATION",
       "activity": "STAGE18_GRANTED_BUDGET_HUMAN_CONTROLLER_SIGNED_PREFIX_IMPORT_CACHED_DELIVERY_TESTS_AND_TWO_PYTHON_CI_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0055",
+      "startedAt": "2026-10-26T13:20:39Z",
+      "endedAt": "2026-10-26T13:36:14Z",
+      "seconds": 935,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP4",
+      "activity": "OWNER_REDACTION_DIAGNOSTICS_TESTS_AND_NEW_READ_ONLY_UPDATE_INPUT_CUSTODY",
+      "initialStartConfidence": "FIRST_EXPLICIT_UTC_OBSERVATION_AFTER_TASK_START",
+      "humanEffortMeasured": false
     }
   ],
   "waitingIntervals": [],
@@ -3182,7 +3203,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_ACQUISITION_OLD_MCP_GUARD_STOP_20261025.md",
+    "currentHandoff": "docs/handoffs/OUF_M1_REDACTION_DIAGNOSTICS_READY_20261026.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 304,
@@ -3390,7 +3411,7 @@
       "sourceActivations": 0,
       "evidenceRef": "evidence/onboarding-v35-existing-create-target-20261024.json"
     },
-    "currentRequiredHumanAction": "ONE_QUALIFIED_OFFLINE_RETAINED_OLD_MCP_GUARD_READER_NO_APPLY",
+    "currentRequiredHumanAction": "ONE_NEW_FINITE_METADATA_CAPTURE_NO_APPLICATION_DATA_OR_RUNTIME_WRITES",
     "oauthCounterScope": "LEGACY_HUMAN_SESSION_304_DISTINCT_FROM_NORMAL_REGISTRY_OWNER_420_AND_ONBOARDING_DEPLOYMENT_COUNTS",
     "onboardingV35Target": {
       "status": "ONBOARDING_V35_EXISTING_CANDIDATE_RECOVERED_SOURCE_PRESERVED",
@@ -3524,6 +3545,18 @@
       "newMcpCreationProven": false,
       "targetGuardDifferenceObserved": false,
       "targetQuarantineResultObserved": false
+    },
+    "latestOwnerAcquisitionRead": {
+      "evidenceRef": "evidence/acquisition-post-oauth-owner-redaction-20261026.json",
+      "policyRef": "ouf-lab-authorization:51",
+      "status": "OWNER_REDACTED_DETAILS_AFTER_OAUTH_RECONNECT",
+      "newCallsDuringThisContinuation": 0
+    },
+    "acquisitionRedactionUpdateCapture": {
+      "scope": "acquisition-redaction-update-inputs-v1",
+      "sourceCommit": "102f5a212b1d9b818ea8842ab782367be2504b47",
+      "deliveryCommit": "d4118d861d14da33aecabd223f89c77f861d6544",
+      "targetExecuted": false
     }
   },
   "unverifiedIntervals": [
@@ -5226,6 +5259,15 @@
         "b99a transport edit syntax failure; not delivered",
         "e63e OOM default in zero-memory MCP before-start; not delivered"
       ]
+    },
+    "acquisitionOwnerRedactionDiagnostics": {
+      "evidenceRef": "evidence/acquisition-redaction-diagnostics-qualified-20261026.json",
+      "candidateCommits": {
+        "ingestion": "7d85bfe0d1423bcb13e115f06c92d8a0baa1ebf7",
+        "udp": "125510cf9d970aff7db66a0a8f27eb98b50bb6de"
+      },
+      "imagesCiQualified": true,
+      "targetInstalled": false
     }
   },
   "developmentCandidates": [
@@ -5286,112 +5328,129 @@
   ],
   "runtimeBlockers": {
     "gate": "G4",
-    "humanInterventionRequired": true,
     "reasons": [
-      "ACK_WATERMARK_AND_PER_ROW_MATERIALIZATION_PROVENANCE_NOT_EXPOSED_BY_AVAILABLE_MCP_TOOLS",
-      "NEW_RUN_BINDING_TO_REVIEWED_PUBLICATION_AND_SAME_CSV_NOT_PROVEN",
-      "CURRENT_THEATER_PROJECTION_11_TO_19_PROPERTIES_PER_OBJECT_CAUSE_UNPROVEN"
+      "OWNER_DETAIL_REDACTION_GUARD_REASON_NOT_EXPOSED_BY_INSTALLED_READ_IMAGES",
+      "ROW_IDENTITY_MATERIALIZATION_AND_TWO_RUN_PROVENANCE_NOT_PROVEN"
     ],
-    "permissionProposalId": "f87e7260-a5ed-4c7a-80b6-9990e5ae0875",
-    "permissionProposalState": "PUBLISHED",
-    "policyRef": "ouf-lab-authorization:48",
-    "readGrantValidUntil": "2026-10-25T07:10:14.933Z",
+    "currentRequiredHumanAction": "ONE_NEW_FINITE_METADATA_CAPTURE_NO_APPLICATION_DATA_OR_RUNTIME_WRITES",
+    "newDiagnosticCiQualified": true,
+    "newDiagnosticTargetInstalled": false,
     "sourceGrantOrActivationNeeded": false,
-    "sourceActive": true,
+    "policyRef": "ouf-lab-authorization:51",
+    "readGrantValidUntil": "2026-10-26T14:14:26Z",
+    "automaticRenewalAllowed": false,
     "automaticReplayAllowed": false,
     "budgetResetAllowed": false,
     "supervisorAfterE2E": true,
-    "previousBlockersBeforePolicy48": {
+    "previousBlockersHistorical": {
       "gate": "G4",
       "humanInterventionRequired": true,
       "reasons": [
-        "SOURCE_SCOPED_INGESTION_OPERATIONS_READ_GRANT_EXPIRED",
-        "ROW_RUN_ACK_COMMIT_AND_BOTH_ACQUISITION_PROVENANCE_NOT_YET_PROVEN",
-        "CURRENT_THEATER_PROJECTION_HAS_11_TO_19_FIELDS_PER_OBJECT_REQUIRES_RECONCILIATION"
+        "ACK_WATERMARK_AND_PER_ROW_MATERIALIZATION_PROVENANCE_NOT_EXPOSED_BY_AVAILABLE_MCP_TOOLS",
+        "NEW_RUN_BINDING_TO_REVIEWED_PUBLICATION_AND_SAME_CSV_NOT_PROVEN",
+        "CURRENT_THEATER_PROJECTION_11_TO_19_PROPERTIES_PER_OBJECT_CAUSE_UNPROVEN"
       ],
-      "proposalId": "5e197733-4d4b-428b-bca0-c7267ad53df0",
-      "proposalState": "PENDING",
+      "permissionProposalId": "f87e7260-a5ed-4c7a-80b6-9990e5ae0875",
+      "permissionProposalState": "PUBLISHED",
+      "policyRef": "ouf-lab-authorization:48",
+      "readGrantValidUntil": "2026-10-25T07:10:14.933Z",
       "sourceGrantOrActivationNeeded": false,
       "sourceActive": true,
       "automaticReplayAllowed": false,
       "budgetResetAllowed": false,
       "supervisorAfterE2E": true,
-      "previousBlockersBeforeNativeActivation": {
-        "gate": "G3",
+      "previousBlockersBeforePolicy48": {
+        "gate": "G4",
         "humanInterventionRequired": true,
         "reasons": [
-          "DIRECT_HUMAN_FINITE_SOURCE_READINESS_SESSION_REQUIRED",
-          "SEPARATE_HUMAN_VERIFY_AND_ACTIVATE_REQUIRED",
-          "G3_F5_F6_APPLICATION_E2E_PROOF_PENDING"
+          "SOURCE_SCOPED_INGESTION_OPERATIONS_READ_GRANT_EXPIRED",
+          "ROW_RUN_ACK_COMMIT_AND_BOTH_ACQUISITION_PROVENANCE_NOT_YET_PROVEN",
+          "CURRENT_THEATER_PROJECTION_HAS_11_TO_19_FIELDS_PER_OBJECT_REQUIRES_RECONCILIATION"
         ],
-        "currentRequiredHumanAction": "EXISTING_CONFIRMED_REVIEW_THS_BUDGET_3_ATTEMPTS_900_SECONDS_THEN_SEPARATE_ACTIVATION",
-        "sourceHumanBudgetGranted": false,
-        "sourceActivated": false,
-        "budgetResetAllowed": false,
-        "automaticLoginAllowed": false,
+        "proposalId": "5e197733-4d4b-428b-bca0-c7267ad53df0",
+        "proposalState": "PENDING",
+        "sourceGrantOrActivationNeeded": false,
+        "sourceActive": true,
         "automaticReplayAllowed": false,
-        "retainedClaimsPreserved": true,
-        "newIamOAuthRequestsRequired": 0,
+        "budgetResetAllowed": false,
         "supervisorAfterE2E": true,
-        "previousBlockersBeforeV35TargetRecovery": {
+        "previousBlockersBeforeNativeActivation": {
           "gate": "G3",
           "humanInterventionRequired": true,
           "reasons": [
-            "CURRENT_LATER_SOURCE_REVISION_DEPLOYMENT_LINEAGE_NOT_YET_MATCHED",
-            "CORRECTED_V35_IMAGE_NOT_STAGED_AND_CURRENT_DB_LIFECYCLE_ADMISSION_PENDING",
-            "G3_F5_F6_ORDINARY_APPLICATION_E2E_PENDING"
+            "DIRECT_HUMAN_FINITE_SOURCE_READINESS_SESSION_REQUIRED",
+            "SEPARATE_HUMAN_VERIFY_AND_ACTIVATE_REQUIRED",
+            "G3_F5_F6_APPLICATION_E2E_PROOF_PENDING"
           ],
-          "historicalAttempts": 304,
-          "maximumCumulativeAttempts": 304,
-          "remainingAttempts": 0,
-          "resetAllowed": false,
+          "currentRequiredHumanAction": "EXISTING_CONFIRMED_REVIEW_THS_BUDGET_3_ATTEMPTS_900_SECONDS_THEN_SEPARATE_ACTIVATION",
+          "sourceHumanBudgetGranted": false,
+          "sourceActivated": false,
+          "budgetResetAllowed": false,
           "automaticLoginAllowed": false,
+          "automaticReplayAllowed": false,
           "retainedClaimsPreserved": true,
-          "currentRequiredHumanAction": "ONE_PINNED_LATER_OWNER_LINEAGE_METADATA_READ_ZERO_ENGINE_SQL_NO_LOGIN_OR_APPLY",
-          "maximumNewOAuthRequests": 0,
-          "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
-          "profileApplied": true,
-          "normalTokenFreshnessBoundApprovedSeconds": 1200,
-          "independentRemainingWork": [
-            "G5_VOCABULARY_AND_RELATIONSHIPS",
-            "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
-            "G7_ACCEPTANCE"
-          ],
-          "proposedAdditionalOAuthAttempts": 0,
-          "proposedCumulativeCeiling": 300,
-          "additionalBudgetGranted": true,
-          "countsAsOfGrant": false,
-          "subsequentConsumptionNotObserved": false,
-          "newWindowAuthorized": false,
-          "countsAsOfReadyReceipt": true,
-          "futurePatchBudgetProposal": {
-            "priorOAuthAttempts": 292,
-            "additionalOAuthAttempts": 4,
-            "proposedCumulativeCeiling": 296,
-            "granted": true,
-            "consumed": true,
-            "newWindowOpened": true,
-            "separateTerminalConsentRequired": true
-          },
-          "runtimeAuthorityIssued": false,
-          "previousReasonsAtPreOnboardingFiniteUpdate": [
-            "NATIVE_PROFILE_APPROVED_ACTIVATION_PAUSED",
-            "HISTORICAL_REGISTRY_PREDICATE_FAILED_CORRELATION_UNPROVEN",
-            "F5_F6_PROOF_PENDING",
-            "OAUTH_BUDGET_EXHAUSTED_NO_NEW_LOGIN_AUTHORIZED"
-          ]
+          "newIamOAuthRequestsRequired": 0,
+          "supervisorAfterE2E": true,
+          "previousBlockersBeforeV35TargetRecovery": {
+            "gate": "G3",
+            "humanInterventionRequired": true,
+            "reasons": [
+              "CURRENT_LATER_SOURCE_REVISION_DEPLOYMENT_LINEAGE_NOT_YET_MATCHED",
+              "CORRECTED_V35_IMAGE_NOT_STAGED_AND_CURRENT_DB_LIFECYCLE_ADMISSION_PENDING",
+              "G3_F5_F6_ORDINARY_APPLICATION_E2E_PENDING"
+            ],
+            "historicalAttempts": 304,
+            "maximumCumulativeAttempts": 304,
+            "remainingAttempts": 0,
+            "resetAllowed": false,
+            "automaticLoginAllowed": false,
+            "retainedClaimsPreserved": true,
+            "currentRequiredHumanAction": "ONE_PINNED_LATER_OWNER_LINEAGE_METADATA_READ_ZERO_ENGINE_SQL_NO_LOGIN_OR_APPLY",
+            "maximumNewOAuthRequests": 0,
+            "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
+            "profileApplied": true,
+            "normalTokenFreshnessBoundApprovedSeconds": 1200,
+            "independentRemainingWork": [
+              "G5_VOCABULARY_AND_RELATIONSHIPS",
+              "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
+              "G7_ACCEPTANCE"
+            ],
+            "proposedAdditionalOAuthAttempts": 0,
+            "proposedCumulativeCeiling": 300,
+            "additionalBudgetGranted": true,
+            "countsAsOfGrant": false,
+            "subsequentConsumptionNotObserved": false,
+            "newWindowAuthorized": false,
+            "countsAsOfReadyReceipt": true,
+            "futurePatchBudgetProposal": {
+              "priorOAuthAttempts": 292,
+              "additionalOAuthAttempts": 4,
+              "proposedCumulativeCeiling": 296,
+              "granted": true,
+              "consumed": true,
+              "newWindowOpened": true,
+              "separateTerminalConsentRequired": true
+            },
+            "runtimeAuthorityIssued": false,
+            "previousReasonsAtPreOnboardingFiniteUpdate": [
+              "NATIVE_PROFILE_APPROVED_ACTIVATION_PAUSED",
+              "HISTORICAL_REGISTRY_PREDICATE_FAILED_CORRELATION_UNPROVEN",
+              "F5_F6_PROOF_PENDING",
+              "OAUTH_BUDGET_EXHAUSTED_NO_NEW_LOGIN_AUTHORIZED"
+            ]
+          }
         }
-      }
-    },
-    "currentRequiredHumanAction": "ONE_QUALIFIED_OFFLINE_RETAINED_OLD_MCP_GUARD_READER_NO_APPLY",
-    "additionalCandidateBlockers": [
-      "OLD_MCP_GUARD_IMAGE_CONFIG_MOUNTS_STARTEDAT_EXACT_DIFFERENCE_UNOBSERVED",
-      "QUARANTINE_AND_FINAL_CUMULATIVE_COUNTS_UNOBSERVED",
-      "NEW_MCP_AND_READ_PATH_INSTALLATION_NOT_PROVEN",
-      "SIX_OWNER_READ_PERMISSIONS_ONLY_AFTER_INSTALLATION"
-    ],
-    "currentAgentWork": "QUALIFIED_OFFLINE_OLD_MCP_GUARD_READER_AWAITING_TARGET_OUTPUT",
-    "readGrantCurrentValidity": "EXPIRED_AFTER_2026_10_25T07_10_14_933Z_DO_NOT_USE"
+      },
+      "currentRequiredHumanAction": "ONE_QUALIFIED_OFFLINE_RETAINED_OLD_MCP_GUARD_READER_NO_APPLY",
+      "additionalCandidateBlockers": [
+        "OLD_MCP_GUARD_IMAGE_CONFIG_MOUNTS_STARTEDAT_EXACT_DIFFERENCE_UNOBSERVED",
+        "QUARANTINE_AND_FINAL_CUMULATIVE_COUNTS_UNOBSERVED",
+        "NEW_MCP_AND_READ_PATH_INSTALLATION_NOT_PROVEN",
+        "SIX_OWNER_READ_PERMISSIONS_ONLY_AFTER_INSTALLATION"
+      ],
+      "currentAgentWork": "QUALIFIED_OFFLINE_OLD_MCP_GUARD_READER_AWAITING_TARGET_OUTPUT",
+      "readGrantCurrentValidity": "EXPIRED_AFTER_2026_10_25T07_10_14_933Z_DO_NOT_USE"
+    }
   },
   "unsegmentedFollowupWindows": [
     {
@@ -5599,5 +5658,14 @@
     "fractionIsMeasuredProjectStatistic": false,
     "automaticEstimateMultiplierApplied": false,
     "baselineForecastUnchanged": true
+  },
+  "effortCoverage": {
+    "measuredActiveHours": 9.450502026944442,
+    "measuredThroughLastClosedInterval": "2026-10-26T13:36:14Z",
+    "completeProjectActual": false,
+    "historicalGapsNotReconstructed": true,
+    "additionalHumanActualHours": null,
+    "baselineForecastRewritten": false,
+    "postCheckpointDocumentationEffortNotYetSegmented": true
   }
 }

@@ -1,3 +1,12 @@
+# CURRENT — M1: diagnostica owner qualificata, pronta SOLA cattura metadata; NON eseguita
+
+Handoff corrente INTEGRALE: docs/handoffs/OUF_M1_REDACTION_DIAGNOSTICS_READY_20261026.md. Prova evidence/acquisition-redaction-diagnostics-qualified-20261026.json.
+IngestionPR47candidato7d85bfe eUDPPR48candidato125510c: redactionReasons categorie fisse senza label negate/ID/count/valori nascosti. GuardALLOW/cursor/minimizzazione invariati. CI PG17+immaginiHTTP reali positiva, logletti; alcuni altri vettoricondizionali dichiarati, nonPASSimpliciti. CandidatiNONinstallati; originaliREAD3ab998/b6a9f eMCP9a restano targetattuali.
+NEXT UNA cattura metadata reader102f5a/deliveryd4118d/SHAwrappera4af73fa6276a4351fe086254e0088ee2223adbea210f2b321bd314f16c04050. Comandoesattonellhandoff. Quattro fileconservati+10GETEngine/90s, verifica ultima installazioneMCP53baa/e2d940/f5a014 e6altriimmutati; zerodataapp/SQL/OAuth/credenzialifile/chiavi/lifecycle/import. Nuovoscopefissoacquisition-redaction-update-inputs-v1; NESSUNrisultatoVPSricevuto. STOPconsuma/no rerun. Qualifica8unit+2nativePASS/0skip perpush40331490696/PR40331500414; copiervalidatroot400/checksumROOT, noGH. WholewrappernonprovatoendtoendCI.
+Dopo ricevuta preparare pianoqualificatoSOLO2READnuoveimmagini; nessunMCP/Gateway/workerRegistryintervento. NuovaAPPLY solo dopoqualifica ereviewconcretaAPPROVO reale. TuttevecchieAPPLY/capture/prep/recoveryconsumateNONrilanciabili.
+Ultimalive51: Ingestionbindingpub/filehash+13handoff/ACKprefix/watermarkpositivi, itemsREDACTED; UDPREDACTED. NessunacquisitionREADnuovoora. Causeeffettiveancoranonnote; nessunallargamentogrant/nureauthcieco.51scade15:14:26CET26ottobre/no rinnovoautomatico.
+G0–G3PASS,G4/M1/F5/F6OPEN,G5/G6nonchiusi,G7/M2nonaccettato; tecnico8/8funzionale4/6,SupervisorDOPOE2E. Baselineore24/55centrali invariata; consuntivogiorni21–26incompleto, nuovointervalloWP4misurato935s senza backfill. Nessunaterzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. Header sotto STORICI.
+
 # CURRENT — OAuth riconnesso: owner READ raggiunti; dettagli REDACTED, E2E aperto
 
 Handoff corrente INTEGRALE: docs/handoffs/OUF_POST_OAUTH_OWNER_REDACTION_20261026.md. Evidence evidence/acquisition-post-oauth-owner-redaction-20261026.json.

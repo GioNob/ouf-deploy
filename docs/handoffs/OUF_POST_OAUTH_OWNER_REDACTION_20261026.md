@@ -1,3 +1,5 @@
+> Aggiornamento successivo: diagnostica owner qualificata in CI, non installata; nuovo passo di sola cattura metadati. Leggere OUF_M1_REDACTION_DIAGNOSTICS_READY_20261026.md. Questa evidenza live rimane valida e non va ripetuta.
+
 # OUF — dopo riconnessione: owner raggiunti, dettagli REDACTED — 26 ottobre 2026
 
 ## Punto esatto
