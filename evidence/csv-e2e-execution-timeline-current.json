@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-26T13:36:14Z",
+  "lastUpdatedAt": "2026-10-26T14:21:52Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -2385,6 +2385,20 @@
       "targetAcquisitionReads": 0,
       "technicalIntervalMeasuredSeconds": 935,
       "noUnmeasuredHistoricalEffortInferred": true
+    },
+    {
+      "id": "CSV-EVENT-M1-REDACTION-CAPTURE-CONSUMED-OFFLINE-PLAN-READY-20261026",
+      "recordedAt": "2026-10-26T14:21:52Z",
+      "classification": "TARGET_CAPTURE_AND_DISTINCT_FILE_TRANSPORT_COMPLETE_OFFLINE_PLAN_DELIVERY_CI_QUALIFIED_NOT_EXECUTED",
+      "evidenceRef": "evidence/acquisition-redaction-offline-plan-qualified-20261026.json",
+      "captureScopeConsumed": true,
+      "transportScopesConsumed": 2,
+      "newApplicationReads": 0,
+      "targetRuntimeChanged": false,
+      "offlinePlanTargetExecuted": false,
+      "policy51Expired": true,
+      "technicalIntervalMeasuredSeconds": 2331,
+      "noUnmeasuredHistoricalEffortInferred": true
     }
   ],
   "activeIntervals": [
@@ -2935,6 +2949,18 @@
       "activity": "OWNER_REDACTION_DIAGNOSTICS_TESTS_AND_NEW_READ_ONLY_UPDATE_INPUT_CUSTODY",
       "initialStartConfidence": "FIRST_EXPLICIT_UTC_OBSERVATION_AFTER_TASK_START",
       "humanEffortMeasured": false
+    },
+    {
+      "id": "CSV-TIME-0056",
+      "startedAt": "2026-10-26T13:43:01Z",
+      "endedAt": "2026-10-26T14:21:52Z",
+      "seconds": 2331,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP4",
+      "activity": "EXACT_PUSH_ARTIFACT_PROVENANCE_NATIVE_IMAGE_PLAN_AND_ROOT_DELIVERY_QUALIFICATION",
+      "initialStartConfidence": "FIRST_EXPLICIT_UTC_OBSERVATION_AFTER_TASK_START",
+      "humanEffortMeasured": false,
+      "ciWhileIndependentTechnicalWorkContinued": true
     }
   ],
   "waitingIntervals": [],
@@ -5268,6 +5294,15 @@
       },
       "imagesCiQualified": true,
       "targetInstalled": false
+    },
+    "acquisitionRedactionOfflinePlan": {
+      "evidenceRef": "evidence/acquisition-redaction-offline-plan-qualified-20261026.json",
+      "captureConsumed": true,
+      "correctedTransportConsumed": true,
+      "offlinePlanCiQualified": true,
+      "targetPlanPrepared": false,
+      "executionEntryQualified": false,
+      "targetImagesInstalled": false
     }
   },
   "developmentCandidates": [
@@ -5332,7 +5367,7 @@
       "OWNER_DETAIL_REDACTION_GUARD_REASON_NOT_EXPOSED_BY_INSTALLED_READ_IMAGES",
       "ROW_IDENTITY_MATERIALIZATION_AND_TWO_RUN_PROVENANCE_NOT_PROVEN"
     ],
-    "currentRequiredHumanAction": "ONE_NEW_FINITE_METADATA_CAPTURE_NO_APPLICATION_DATA_OR_RUNTIME_WRITES",
+    "currentRequiredHumanAction": "ONE_FIRST_QUALIFIED_OFFLINE_IMAGE_AND_PLAN_PREPARATION_NO_RUNTIME_EFFECTS",
     "newDiagnosticCiQualified": true,
     "newDiagnosticTargetInstalled": false,
     "sourceGrantOrActivationNeeded": false,
@@ -5450,7 +5485,14 @@
       ],
       "currentAgentWork": "QUALIFIED_OFFLINE_OLD_MCP_GUARD_READER_AWAITING_TARGET_OUTPUT",
       "readGrantCurrentValidity": "EXPIRED_AFTER_2026_10_25T07_10_14_933Z_DO_NOT_USE"
-    }
+    },
+    "currentAgentWork": "OFFLINE_TWO_READ_REPLACEMENT_PLAN_DELIVERY_READY_NOT_TARGET_EXECUTED",
+    "readGrantCurrentValidity": "EXPIRED_2026_10_26T14_14_26Z_NO_AUTOMATIC_RENEWAL",
+    "additionalCandidateBlockers": [
+      "TWO_DIAGNOSTIC_READ_IMAGES_NOT_INSTALLED",
+      "FULL_REPLACEMENT_CONTROLLER_NOT_QUALIFIED",
+      "FRESH_APPLICATION_READ_AUTHORITY_REQUIRED_AFTER_POLICY51_EXPIRY"
+    ]
   },
   "unsegmentedFollowupWindows": [
     {
@@ -5660,8 +5702,8 @@
     "baselineForecastUnchanged": true
   },
   "effortCoverage": {
-    "measuredActiveHours": 9.450502026944442,
-    "measuredThroughLastClosedInterval": "2026-10-26T13:36:14Z",
+    "measuredActiveHours": 10.098002026944442,
+    "measuredThroughLastClosedInterval": "2026-10-26T14:21:52Z",
     "completeProjectActual": false,
     "historicalGapsNotReconstructed": true,
     "additionalHumanActualHours": null,
