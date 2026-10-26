@@ -1,3 +1,15 @@
+# CURRENT — policy50 HUMAN pubblicata; due READ negate, NESSUN retry
+
+Proposta64655de1-bf1e-4acd-aada-d2f27154539a/rev1/PUBLISHED/finalPolicyRefouf-lab-authorization:50 confermata da proposal.read STESSOID dopo decisioneTHSowner. Policyhash067cb58da4e6f0278b5a81f4858646bb50222bb48e9cf63d3141621e9cfaf05f.4ruoli/4assegnazioni, originali2ruoli/34permissionadmin/2assegnazioni preservati;94subjectgrant=82originaliESATTI+12READvincolati. Finestra fino26ottobre2026 09:24:50EuropeRome(+01)/08:24:50Z, nessun rinnovo/reset automatico.
+
+**Handoff corrente INTEGRALE:** docs/handoffs/OUF_ACQUISITION_POLICY50_READ_DENIED_20261026.md.
+Prova evidence/acquisition-read-policy50-denied-target-20261026.json.
+Due invocazioniDISTINTE una pertool Ingestion eUDP sulla SOLArunbb2e2af4-9c0a-49ea-8ad9-a947987c1472/sourceIdteatri-csv-6609b245/limit100/accountouf-admin: entrambe {"code":"authorization denied","retryable":false}/isError/connectorINVALID_ARGUMENT. Nessunretry o lettura della secondaruna320...; nessunrecord acquisizione ottenuto. Non inventare HTTP403owner, nuovo502, scopeeffettivo o guardesatto.
+SourceMCPbd60... mostra erroregenerico di guarddelegazione/Authlocale primaAdmission, ma non espone decisioncode o bundlecaricato. SCOPE_MISSING ipotesi, non causa live provata; cachelocale eclaimscope/delegazione restano da distinguere. Nessun SQL/auditprivato/rawlog/tokenbypass orestart/reset.
+
+NEXT dato: soli NOMI degli ambitiOAuth configurati/richiesti nella connessione OUF-MCPServerouf-admin (seiREADprecisi nell'handoff), nessunbearer/secret. Nessun toolespostointrospectscopes; PluginManagementexcludesOAuth. Non allargare grant/amministrazione, cambiareaccount, provare tuttealtreREAD o ritentare dopoattesa senza prova di contestoautorizzativo cambiato.
+VPSpublication49 positiva resta valida(106grant/Exit0/DeliveryExit0); scopeeditableeTUTTIprecedenticonsumati, vecchi comandiNONrilanciabili. NessunnuovocomandoVPS. E2E/G4/F5/F6OPEN, Supervisor dopoE2E; niente terzaacquisizione/attivazione/sourcebudget/reset/Registryrestart/reinstall/merge/releaseacceptance. Header sotto STORICI.
+
 # CURRENT — descrittori PUBBLICATI sul VPS; proposta READ temporanee PENDING, solo conferma THS
 
 VPS EXISTING_ACQUISITION_DESCRIPTORS_PUBLISHED_GRANTS_UNCHANGED/complete=true/Exit0/DeliveryExit0. DoppioincollaIDENTICO=UNA esecuzione. Reviewe16e816b6ab0c78c7645b22cb72aec357e2730ca133c68f32c0db538be6cbf07,TTY72byte+Enter/rejected0; draftcb75...revision1/policy49/hashb4bed35f9fe591aa828a50f8d2fc7c7d8aeb054b88c320f0a66b9c51f2d50a8e,106grantpreservati.7writes/27GET/2preview/1554476bytes/UNpublish/0register-create/grantnuovo/Engine/SQL/Registrytouch. StorieIAMeSQLstorica preservate. Scope editable-review-continuation-v1 CONSUMATO; NON rilanciaredelivery059ea7fc/runtime3d8408ac o precedenti. Nessun nuovo comandoVPS.

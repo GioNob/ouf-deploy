@@ -1,3 +1,7 @@
+# SUPERATO — proposta pubblicata HUMAN, policy50; letture negate
+
+Proposta64655de1-bf1e-4acd-aada-d2f27154539a è PUBLISHED/rev1/finalPolicyRef50, nonPENDING. Nonriproporre/riapprovare. NEXT: [OUF_ACQUISITION_POLICY50_READ_DENIED_20261026.md](OUF_ACQUISITION_POLICY50_READ_DENIED_20261026.md). Nessun nuovo comandoVPS.
+
 # Descrittori pubblicati sul VPS; proposta HUMAN per leggere due acquisizioni — 26 ottobre 2026
 
 ## Stato autorevole acquisito
