@@ -42,6 +42,8 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
                  'NetworkingConfig':{'EndpointsConfig':{self.net:{'NetworkID':self.nid,'Aliases':[name]}}}}
             if role in('ingestion-read','udp-read')and getattr(self,'legacy_explicit',True):
                 req['MacAddress']='02:42:ac:45:01:%02x'%(i+1);req['NetworkingConfig']['EndpointsConfig'][self.net]['MacAddress']=req['MacAddress']
+            if role in('ingestion-read','udp-read')and getattr(self,'mount_specs',False):
+                req['HostConfig'].update(Binds=None,Mounts=[{'Type':'bind','Source':str(mount),'Target':'/fixture/config','ReadOnly':True,'BindOptions':{'Propagation':'rprivate'}}],Tmpfs={'/tmp':'rw,nosuid,nodev,noexec,size=64m'},PidsLimit=128)
             cid=self.api('POST','/containers/create?name='+name,req)['Id'];self.ids.append(cid);self.api('POST','/containers/'+cid+'/start');actual=self.api('GET','/containers/'+cid+'/json')
             if role=='registry':self.registry=actual
             else:self.original[role]=actual
@@ -98,9 +100,10 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
             for role in self.core.ROLES:
                 actual=self.api('GET','/containers/'+row['candidates'][role]['id']+'/json');before=self.original[role+'-read'];net=actual['NetworkSettings']['Networks'][self.net];original=before['NetworkSettings']['Networks'][self.net]
                 self.assertEqual(net['MacAddress'],original['MacAddress']);self.assertEqual(net['IPAddress'],original['IPAddress']);self.assertEqual(actual['HostConfig']['Memory'],before['HostConfig']['Memory']);self.assertEqual(actual['Config']['Env'],before['Config']['Env']);self.assertEqual(actual['Config']['Cmd'],before['Config']['Cmd'])
-            print(json.dumps({'schema':'ouf.two-read-redaction-native-executor-ci.v1','complete':True,'backend':os.environ['EXPECTED_STORE'],'oldConfigProfile':'LEGACY_PRESENT'if getattr(self,'legacy_explicit',True)else'ENDPOINT_ONLY_ABSENT','fullSignedLifecycle':True,'stages':len(self.core.STAGES),'fiveOtherComponentsAndRegistryUnchanged':True,'endpointMacIpPreserved':True,'memoryZeroAndPositiveRetained':True,'oldReadsRetainedStopped':2,'thirdSignatureBeforeCommit':True,'syntheticAuthoritiesAndWorkload':True,'productionRuntimeAccess':False,'applicationE2EProven':False}),flush=True)
+            print(json.dumps({'schema':'ouf.two-read-redaction-native-executor-ci.v1','complete':True,'backend':os.environ['EXPECTED_STORE'],'oldConfigProfile':'LEGACY_PRESENT'if getattr(self,'legacy_explicit',True)else'ENDPOINT_ONLY_ABSENT','mountProfile':'MOUNT_SPECS_RO_WITH_WRITABLE_TMPFS'if getattr(self,'mount_specs',False)else'RETAINED_BINDS_RO','fullSignedLifecycle':True,'stages':len(self.core.STAGES),'fiveOtherComponentsAndRegistryUnchanged':True,'endpointMacIpPreserved':True,'memoryZeroAndPositiveRetained':True,'oldReadsRetainedStopped':2,'thirdSignatureBeforeCommit':True,'syntheticAuthoritiesAndWorkload':True,'productionRuntimeAccess':False,'applicationE2EProven':False}),flush=True)
         finally:self.cleanup_native()
     def test_complete_endpoint_only(self):self.legacy_explicit=False;self.test_complete_legacy_explicit()
+    def test_complete_retained_mount_specs_and_tmpfs(self):self.mount_specs=True;self.test_complete_legacy_explicit()
     def test_lost_controller_after_both_new_read_starts(self):
         try:
             self.setup_native();r,w=os.pipe();child=os.fork()
@@ -127,4 +130,4 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
             self.assert_unaffected();print(json.dumps({'schema':'ouf.two-read-redaction-lost-controller-ci.v1','complete':True,'backend':os.environ['EXPECTED_STORE'],'bothOwnReadCandidatesStopped':True,'fiveOtherComponentsAndRegistryUnchanged':True,'claimedStartRetained':True,'noRollbackOrReplay':True,'syntheticAuthoritiesAndWorkload':True,'productionRuntimeAccess':False}),flush=True)
         finally:self.cleanup_native()
 if __name__=='__main__':
-    names=('test_complete_legacy_explicit','test_complete_endpoint_only','test_lost_controller_after_both_new_read_starts');result=unittest.TextTestRunner(verbosity=2).run(unittest.TestSuite(Native(n)for n in names));raise SystemExit(0 if result.wasSuccessful()else 1)
+    names=('test_complete_legacy_explicit','test_complete_endpoint_only','test_complete_retained_mount_specs_and_tmpfs','test_lost_controller_after_both_new_read_starts');result=unittest.TextTestRunner(verbosity=2).run(unittest.TestSuite(Native(n)for n in names));raise SystemExit(0 if result.wasSuccessful()else 1)
