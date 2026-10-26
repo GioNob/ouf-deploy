@@ -37,7 +37,10 @@ class Context:
         self.core,self.p,self.images,self.mac,self.http,self.ports_module,self.watch,self.engine_helpers,self.terminal=[parts[k]for k in('authority','plan_helper','image_custody','retained_mac','transport','ports','quarantine','engine_creation','terminal')]
         self.auth,self.sign,self.journal_module=auth,sign,journal;self.closure=copy.deepcopy(closure);self.case=copy.deepcopy(case);self.root=Path(case['executionRoot']);self.serial=0
         self.execution=None;self.counts={k:0 for k in self.core.LIMITS};self.responses=0;self.receiptBytes=0;self.runtime=runtime
-        self.native=self.read(case['nativePlanPath'],case['nativePlanHash']);self.inputs=self.read(case['inputsPath'],case['inputsHash'])
+        self.p.ancestry(self.root.parent);require(not os.path.lexists(self.root),'MCP_UPDATE_SCOPE_CONSUMED_NO_REPLAY');self.root.mkdir(mode=0o700);self.root.chmod(0o700)
+        self.sync(self.root.parent);self.write(self.root,'preparation-claim.json',{'schema':'ouf.mcp-diagnostic-update-preflight-claim.v1','nativePlanHash':case['nativePlanHash'],'maximums':self.core.LIMITS,'runtimeEffectsDispatched':0,'automaticReplayAllowed':False,'budgetReset':False})
+        self.reserve('ownerConfigurationReads');self.native=self.read(case['nativePlanPath'],case['nativePlanHash'])
+        self.reserve('ownerConfigurationReads');self.inputs=self.read(case['inputsPath'],case['inputsHash'])
         require(self.native['schema']=='ouf.mcp-denial-native-image-plan.v1'and self.native['frozenPlanHash']==case['frozenPlanHash']==self.p.digest(self.native['proposal'])
                 and self.native['nativeImageId']==case['nativeImageId']and self.native['imageAudit']['sourceCommit']==case['sourceCommit']
                 and self.native['nativeArchive']['sha256']==case['nativeArchiveHash']and self.native['executionEntryQualified']is False
@@ -66,8 +69,6 @@ class Context:
         self.proposal['mcpReplacement']['runtimeLabelProjection']={'expectedLabels':{**defaults,**old_labels}}
         host=request['HostConfig'];require(host.get('AutoRemove')is False and type(host.get('Memory'))is int and host['Memory']>0,'FINITE_RETAINED_MCP_HOST_POLICY_REQUIRED')
         if host.get('OomKillDisable')is None:self.proposal['mcpReplacement']['runtimeHostProjection']={'profile':'DOCKER_ENABLED_OOM_DEFAULT_NULL_FALSE_V1','requestedOomKillDisable':None,'materializedOomKillDisable':False,'positiveMemoryBytes':host['Memory']}
-        self.p.ancestry(self.root.parent);require(not os.path.lexists(self.root),'MCP_UPDATE_SCOPE_CONSUMED_NO_REPLAY');self.root.mkdir(mode=0o700);self.root.chmod(0o700)
-        self.sync(self.root.parent);self.write(self.root,'preparation-claim.json',{'schema':'ouf.mcp-diagnostic-update-preflight-claim.v1','nativePlanHash':case['nativePlanHash'],'maximums':self.core.LIMITS,'runtimeEffectsDispatched':0,'automaticReplayAllowed':False,'budgetReset':False})
         self.engine=self.http.Engine(self.p,self.proposal['engineBinding']);self.engine.before=self.before_dispatch;self.engine.retained=self.retained
         self.public_authority=public_authority or globals()['public_authority'];self.authority_metadata=self.refresh_authority();self.profile=self.authority_metadata['profile'];self.openssl=self.executable()
         self.input_seals={path:list(self.p.frame(Path(path).lstat()))for path in(case['nativePlanPath'],case['inputsPath'])}

@@ -81,8 +81,9 @@ def execute_approved(ctx,value,decision):
 class Logger:
     def __init__(self,path):
         self.original=sys.stdout;fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600);os.fchmod(fd,0o600);self.file=os.fdopen(fd,'w',buffering=1)
-    def write(self,s):self.original.write(s);self.file.write(s);return len(s)
-    def flush(self):self.original.flush();self.file.flush();os.fsync(self.file.fileno())
+    def write(self,s):
+        self.file.write(s);self.file.flush();os.fsync(self.file.fileno());self.original.write(s);return len(s)
+    def flush(self):self.file.flush();os.fsync(self.file.fileno());self.original.flush()
     def fileno(self):return self.original.fileno()
     def isatty(self):return self.original.isatty()
 def main():
