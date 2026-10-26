@@ -5,10 +5,10 @@
     "ingestion": {
       "repository": "GioNob/ouf-ingestion-runtime",
       "sourceCommit": "7d85bfe0d1423bcb13e115f06c92d8a0baa1ebf7",
-      "workflowRun": 40330319054,
-      "artifactId": 12653588090,
-      "zipBytes": 140865783,
-      "zipSha256": "e8a50b1069e4e2055a559bfa6860f56b3334bff065107103f2defcb185dc7e74",
+      "workflowRun": 40330310435,
+      "artifactId": 12653103275,
+      "zipBytes": 140874962,
+      "zipSha256": "f3a42897aaf29fe93ecbb091072c1966881d8e2c8d83416c0debb8d841d4de63",
       "user": "10002:10002",
       "entrypoint": [
         "java",
@@ -21,10 +21,10 @@
     "udp": {
       "repository": "GioNob/ouf-udp-object-resolution",
       "sourceCommit": "125510cf9d970aff7db66a0a8f27eb98b50bb6de",
-      "workflowRun": 40330625386,
-      "artifactId": 12654892222,
-      "zipBytes": 122361115,
-      "zipSha256": "fe7ec53d57785fb663cf6e40d4a9b9c13917c42a567cfe16113782abfce39177",
+      "workflowRun": 40330617797,
+      "artifactId": 12654597311,
+      "zipBytes": 122385628,
+      "zipSha256": "ce5b44eb696a71e0be1ec862597c81443a234e684915a19a59269578b0bb2003",
       "user": "10004:10004",
       "entrypoint": [
         "java",
@@ -34,5 +34,13 @@
         "org.springframework.boot.loader.launch.PropertiesLauncher"
       ]
     }
+  },
+  "rejectedPriorTransport": {
+    "caseHash": "db8577ab3082fbc2308ae0a6d33eb55fffc85e3020f99a8623cf69b165d849aa",
+    "scopeConsumed": true,
+    "githubApiGetAttempts": 2,
+    "imageImports": 0,
+    "containerWrites": 0,
+    "reason": "PR_ARTIFACT_SOURCE_IS_MERGE_COMMIT_NOT_SELECTED_HEAD"
   }
 }

@@ -5,7 +5,7 @@ on:
     paths: ['scripts/transport-acquisition-redaction-artifacts-20261026.py','tests/test_acquisition_redaction_artifact_transport.py','.github/workflows/acquisition-redaction-artifact-transport.yml']
 permissions: {contents: read, actions: read}
 concurrency:
-  group: ouf-acquisition-redaction-artifact-transport-db8577ab3082fbc2
+  group: ouf-acquisition-redaction-artifact-transport-5ab4bafadb29cdd5
   cancel-in-progress: false
 jobs:
   qualify-direct-transport:
@@ -45,3 +45,4 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with: {name: 'acquisition-redaction-transport-existing-runner-${{ github.run_id }}', path: acquisition-transport-existing-runner.json, retention-days: 30}
+

@@ -7,7 +7,7 @@ import copy,gzip,hashlib,importlib.util,ipaddress,json,os,re,shutil,signal,stat,
 from pathlib import Path
 INPUT_ROOT=Path('/etc/ouf/deploy-snapshots/acquisition-redaction-update-inputs-v1')
 INPUT_HASH='9bbe7298c2eff0be51bf943919c9db0044413256b08efe620a503f79aef4d7d2'
-CASE_HASH='db8577ab3082fbc2308ae0a6d33eb55fffc85e3020f99a8623cf69b165d849aa'
+CASE_HASH='5ab4bafadb29cdd51b8ddaa776ea9aaf4fdc410de675c746ad789f249273c64f'
 ROOT=Path('/etc/ouf/deploy-snapshots/acquisition-redaction-image-plan-9bbe7298c2eff0be-v1')
 COUNTS={'privateMetadataReads':0,'ciZipReads':0,'nativeArchivesPrepared':0,'engineGets':0,'containerWrites':0,'imageImports':0}
 MEMBERS={'image.tar.gz','image-id.txt','acquisition-image-config.json','source-commit.txt','SHA256SUMS'}

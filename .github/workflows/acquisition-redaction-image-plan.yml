@@ -56,8 +56,9 @@ jobs:
       - name: Exact two images and root private plan on the selected actual Engine store
         env: {SELECTED_STORE: '${{ matrix.store }}'}
         run: |
+          set -Eeuo pipefail
           parent="$(dirname "$GITHUB_WORKSPACE")"
-          sudo python3 -I -S -B tests/qualify_acquisition_redaction_image_plan.py "$parent/ouf-acquisition-redaction-transport-db8577ab3082fbc2" "$SELECTED_STORE" | tee redaction-native-proof.json
+          sudo python3 -I -S -B tests/qualify_acquisition_redaction_image_plan.py "$parent/ouf-acquisition-redaction-transport-5ab4bafadb29cdd5" "$SELECTED_STORE" | tee redaction-native-proof.json
       - uses: actions/upload-artifact@v4
         with: {name: 'redaction-native-proof-${{ matrix.store }}-${{ github.run_id }}', path: redaction-native-proof.json, retention-days: 30}
 

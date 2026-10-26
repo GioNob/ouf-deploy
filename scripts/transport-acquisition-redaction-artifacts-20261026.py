@@ -2,7 +2,7 @@
 """Direct GitHub artifact transport on the existing runner; no OUF runtime access."""
 import hashlib,json,os,re,signal,stat,sys,time,urllib.error,urllib.parse,urllib.request
 from pathlib import Path
-CASE_HASH='db8577ab3082fbc2308ae0a6d33eb55fffc85e3020f99a8623cf69b165d849aa'
+CASE_HASH='5ab4bafadb29cdd51b8ddaa776ea9aaf4fdc410de675c746ad789f249273c64f'
 class Stop(RuntimeError):pass
 def require(ok,code):
     if not ok:raise Stop(code)
@@ -88,11 +88,11 @@ def transport(case,parent,token,open_request=request):
     require(sha(encoded(case))==CASE_HASH,'EXACT_STAGING_CASE_REQUIRED')
     safe_parent(parent);root=parent/('ouf-acquisition-redaction-transport-'+CASE_HASH[:16])
     require(not os.path.lexists(root),'TRANSPORT_SCOPE_EXISTS_NO_REPLAY');root.mkdir(mode=0o700)
-    put(root/'claim.json',{'schema':'ouf.acquisition-redaction-artifact-transport-claim.v1','caseHash':CASE_HASH,'automaticReplayAllowed':False,'maximumGithubApiGets':2,'maximumStorageRedirectGets':6,'maximumSeconds':540,'oufOAuthRequests':0,'targetApplyAuthorized':False})
+    put(root/'claim.json',{'schema':'ouf.acquisition-redaction-artifact-transport-claim.v1','caseHash':CASE_HASH,'automaticReplayAllowed':False,'maximumGithubApiGets':2,'retainedPriorTransport':case['rejectedPriorTransport'],'maximumStorageRedirectGets':6,'maximumSeconds':540,'oufOAuthRequests':0,'targetApplyAuthorized':False})
     receipts={}
     for role,descriptor in case['artifacts'].items():receipts[role]=download(role,descriptor,token,root,open_request)
     require(set(receipts)=={'ingestion','udp'},'TWO_VERIFIED_ARCHIVES_REQUIRED')
-    result={'schema':'ouf.acquisition-redaction-artifact-transport-result.v1','status':'EXACT_ARTIFACTS_DOWNLOADED_ON_EXISTING_RUNNER','complete':True,'caseHash':CASE_HASH,'downloadDirectory':str(root),'runnerUid':os.geteuid(),'artifacts':receipts,'githubApiGetAttempts':2,'rootStagingInvoked':False,'engineGetAttempts':0,'sqlSessions':0,'oufOAuthRequests':0,'serviceCredentialFilesOpened':0,'privateSigningKeysRead':0,'imageImports':0,'containerWrites':0,'runnerReinstalled':False,'runtimeAuthorityIssued':False,'runtimeEffectsDispatched':0,'targetApplyAuthorized':False,'applicationE2EProven':False,'releaseAcceptance':False,'automaticReplayAllowed':False,'budgetReset':False}
+    result={'schema':'ouf.acquisition-redaction-artifact-transport-result.v1','status':'EXACT_ARTIFACTS_DOWNLOADED_ON_EXISTING_RUNNER','complete':True,'caseHash':CASE_HASH,'downloadDirectory':str(root),'runnerUid':os.geteuid(),'artifacts':receipts,'githubApiGetAttempts':2,'cumulativeGithubApiGetAttempts':4,'retainedPriorTransport':case['rejectedPriorTransport'],'rootStagingInvoked':False,'engineGetAttempts':0,'sqlSessions':0,'oufOAuthRequests':0,'serviceCredentialFilesOpened':0,'privateSigningKeysRead':0,'imageImports':0,'containerWrites':0,'runnerReinstalled':False,'runtimeAuthorityIssued':False,'runtimeEffectsDispatched':0,'targetApplyAuthorized':False,'applicationE2EProven':False,'releaseAcceptance':False,'automaticReplayAllowed':False,'budgetReset':False}
     put(root/'complete.json',result);fsync_directory(root);return result
 
 def main():
@@ -106,3 +106,4 @@ def main():
         print(json.dumps({'schema':'ouf.acquisition-redaction-artifact-transport-result.v1','status':'STOP_RECONCILE','reasonCode':reason,'complete':False,'partialTransportMayExist':True,'rootStagingInvoked':False,'engineGetAttempts':0,'sqlSessions':0,'oufOAuthRequests':0,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'releaseAcceptance':False,'automaticReplayAllowed':False,'budgetReset':False},sort_keys=True,separators=(',',':')));return 2
     finally:signal.alarm(0)
 if __name__=='__main__':raise SystemExit(main())
+
