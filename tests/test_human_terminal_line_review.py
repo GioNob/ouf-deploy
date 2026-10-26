@@ -59,6 +59,17 @@ class LineTests(unittest.TestCase):
     def test_suffix_is_not_stripped(self):
         result,_,_=self.run_reader([(0,LINE+b' extra\n')],.25)
         self.assertIsInstance(result,TimeoutError)
+    def test_old_reader_reproduces_length_stop_without_enter(self):
+        old_spec=importlib.util.spec_from_file_location('old_character_reader',ROOT/'tools/human_terminal_review.py')
+        old=importlib.util.module_from_spec(old_spec);old_spec.loader.exec_module(old)
+        master,slave=os.openpty();before=termios.tcgetattr(slave)
+        try:
+            os.write(master,LINE+LINE+b'\n')
+            with self.assertRaisesRegex(old.TerminalReviewError,'EXACT_TERMINAL_REVIEW_LENGTH_EXCEEDED'):
+                old.read_exact(HASH,lambda:None,emit=lambda _:None,progress=lambda _:None,fd=slave)
+            self.assertEqual(termios.tcgetattr(slave),before)
+        finally:os.close(master);os.close(slave)
+
     def test_pipe_is_not_a_terminal(self):
         r,w=os.pipe()
         try:

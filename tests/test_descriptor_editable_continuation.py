@@ -70,6 +70,30 @@ class ContinuationTests(unittest.TestCase):
         self.assertEqual(self.j.row['ttyInput']['state'],'WAITING_INPUT')
         self.assertFalse(self.j.row.get('humanReviewApproved',False))
         self.assertEqual(self.t.counts['previewPosts'],1)
+    def test_bad_input_recovery_keeps_same_review_and_counts(self):
+        import threading
+        plan=self.prepare();expected_counts=dict(self.t.counts);deadline=self.t.deadline
+        master,slave=os.openpty();out=[];errors=[]
+        def run():
+            try:m.approve(plan,self.j,self.t,fd=slave,emit=out.append)
+            except BaseException as error:errors.append(error)
+        worker=threading.Thread(target=run);worker.start()
+        try:
+            while not any('Input visibile' in v for v in out):time.sleep(.001)
+            os.write(master,b'APPROVO wrong wrong wrong\n')
+            until=time.monotonic()+2
+            while not any('Riga non valida' in v for v in out) and time.monotonic()<until:time.sleep(.001)
+            self.assertTrue(worker.is_alive());self.assertEqual(self.t.counts,expected_counts)
+            self.assertEqual(self.t.deadline,deadline);self.assertFalse(self.j.row.get('humanReviewApproved',False))
+            self.assertEqual(self.j.row['reviewHash'],m.digest(plan))
+            os.write(master,('APPROVO '+m.digest(plan)+'\n').encode());worker.join(2)
+            self.assertFalse(worker.is_alive());self.assertEqual(errors,[])
+            self.assertEqual(self.j.row['ttyInput']['rejectedLines'],1)
+            self.assertEqual(self.t.counts,expected_counts);self.assertEqual(self.t.deadline,deadline)
+        finally:
+            if worker.is_alive():self.t.deadline=time.monotonic()-1;worker.join(1)
+            os.close(master);os.close(slave)
+
     def test_register_create_and_wrong_uuid_still_closed(self):
         for method,path in [('POST','/policies'),('POST','/capabilities'),('GET','/policies/other')]:
             with self.assertRaises(m.Stop):self.t.request(path,method=method)

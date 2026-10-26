@@ -15,7 +15,7 @@ chmod 0700 "$delivery"
 delivery_log="$delivery/bootstrap.log"
 trap 'delivery_exit=$?; trap - EXIT; printf "DeliveryExit=%s\nDeliveryDirectory=%s\nDeliveryLog=%s\n" "$delivery_exit" "$delivery" "$delivery_log" | tee -a "$delivery_log"; exit "$delivery_exit"' EXIT
 code_sha=5ad8bd38a51ba13aee3501c6dffe3629583c0eeb3fe20fdedac04f62f8d4884d
-code_commit=0000000000000000000000000000000000000000
+code_commit=3d8408ac6154d667ab64042561f5d3d14b9f7a84
 download="$delivery/continue.py"
 curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-redirs 3 --connect-timeout 15 --max-time 60 \
   "https://raw.githubusercontent.com/GioNob/ouf-deploy/${code_commit}/scripts/continue-existing-descriptor-publication-editable-20261026.py" -o "$download"
