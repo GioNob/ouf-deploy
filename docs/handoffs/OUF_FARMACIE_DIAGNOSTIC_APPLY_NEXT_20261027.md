@@ -1,0 +1,69 @@
+# Farmacie — primo APPLY diagnostico minimo
+
+27 ottobre 2026, Europe/Rome. Questo checkpoint sostituisce il NEXT del [precedente handoff immagine/input](OUF_FARMACIE_DIAGNOSTIC_IMAGE_INPUTS_NEXT_20261026.md). I suoi riferimenti a prove, handoff precedenti e al checkpoint documentale iniziale rimangono validi. Non ripetere le preparazioni.
+
+## Ultimo risultato effettivo VPS
+
+`ONBOARDING_DIAGNOSTIC_IMAGE_INPUTS_PREPARED_NOT_AUTHORIZED`, complete=true, Exit0/DeliveryExit0. [Ricevuta conservata](../../evidence/onboarding-diagnostic-image-inputs-target-20261027.json).
+
+- Capture consumato: `5909d1003e88231c1d41a799a12539127d27386f79a04ed345ad9d29eaaddb6d`.
+- Preparazione immagine/input consumata: `c22586172070809d414d3654f3e002b7e1d84d749daae9b31dac8d1d14cbd0c0`.
+- Input privati: `/etc/ouf/deploy-snapshots/onboarding-diagnostic-image-inputs-5909d1003e88231c-v1/execution-inputs.json`.
+- Log: `/home/oufadmin/ouf-onboarding-diagnostic-image-delivery.ABE90yAu/bootstrap.log`.
+- Una ZIP CI, un archivio native, due letture metadata; zero Engine/import/lifecycle/SQL/OAuth/chiavi/credenziali. Non era APPLY e non ha emesso autorità.
+
+NON è stato ricevuto alcun risultato del nuovo APPLY, alcuna review umana o autorità runtime nuova. La chat non dispone di un executor root sul VPS. Il primo APPLY richiede il terminale dell'owner.
+
+## Immagine scelta e prove
+
+Si installa soltanto la diagnostica minima PR52. Source reviewed `a5ed8b05c264a8221783a6e323ba00117aed891d`; checkout CI testato `692277b1bf5def4a2b5b1ba4fb6770c16b136fb5`: unica differenza workflow CI, applicazione identica. Non installare il candidato M2 più ampio per ottenere la diagnosi.
+
+Immagine native `sha256:074bd16ec8ebd98cbf1ee085af9767a5f7e322072a541e85bd37925002fa5df2`; archivio `87585bd8d50f8d955ef1abc26c43df52a481ac89df2ed2722ace3765aad1b071`, 441989120 byte. Tutti gli strati e le 35 risorse SQL sono stati confrontati con la prova originale e il source installed194b586. Nessun rebuild/relabel. [Custodia completa](../../evidence/onboarding-diagnostic-image-inputs-qualified-20261026.json).
+
+Controller nuovo `e1597e00ca069a33700fe1132b0cdf9658deacd1`; wrapper delivery `15b2bef894b9c5e6434999e3cae69c803e236f63`, [release script](../../releases/apply-onboarding-diagnostic-update-20261027.sh). Manifesto di 21 fonti `687aefc7514bbe7b8c25a7e88cb5621d510d617529576dae46902ba762b1dccf`. Wrapper SHA256 `b99cbeafc72ce65c48e452365ddcb4e654ff380773d9259aa7a7a9a2955bf291`. I 21 blob sono stati verificati esatti sul commit pinned.
+
+Il registro di qualificazione è [evidence/onboarding-diagnostic-apply-qualified-20261027.json](../../evidence/onboarding-diagnostic-apply-qualified-20261027.json). La qualificazione CI è distinta dal risultato VPS: workload HTTP e autorità nelle prove native sono sintetici, PostgreSQL e lifecycle Docker sono reali. Non è prova della causa Farmacie né dell'E2E M2.
+
+## Perimetro della nuova review
+
+Un solo Onboarding sostitutivo, stessa configurazione e User/Env/launch, mount e policy risorse esistenti, stesso nome pubblico, MAC/IP e porte conservati. Il vecchio viene fermato, scollegato e rinominato; resta fermo. Nessun rollback automatico. Registry, MCP, worker, due READ, Gateway e altri peer correnti sono vincolati e non modificabili dal lifecycle.
+
+L'unico YAML owner esistente viene verificato in memoria contro il binding dei byte già classificati; nessun valore stampato e nessun altro file credenziali aperto. Non si interpreta l'errore di profiling via SQL.
+
+La nuova review autorizza al massimo **quattro nuove sessioni SQL tecniche in sola lettura** sul PostgreSQL nativo vincolato. Il profilo V35 è usato soltanto come identità/trasporto: nessuna vecchia autorità o budget viene riusato. Prima di qualsiasi lifecycle occorrono assenza di profiling/readiness pendente, stesso job FAILED/tentativi5 e identiche 35 migrazioni. Fingerprint di nove tabelle e job devono rimanere identici prima dello stop, prima del nuovo avvio e alla fine. SQL non restituisce eccezioni, campioni o contenuti di dominio.
+
+Massimi nuovi: 512 GET Engine, 10 scritture lifecycle/import incluse le sole quarantene previste, 1 import immagine, 96 readiness GET, 64 letture metadata configurazione, 1 lettura contenuto YAML owner, 4 SQL read-only, 1 quarantena del proprio candidato; zero Admin GET/PUT e zero letture di file credenziali di servizio. Tre firme installazione esistenti dopo consenso, massimo15 aperture chiave. Storico conservato separatamente, nessun reset.
+
+Review concreta: 900 secondi con input canonico visibile/editabile, riga errata correggibile senza estendere la finestra; la sola ricezione di un incolla non conferma. Esecuzione: 900 secondi più30 di sola quarantena negativa del proprio candidato non committed. Watchdog effimero, stop solo candidato verificato. Se STOP o risposta ambigua, conservare prove e non rilanciare; il vecchio non viene riavviato automaticamente.
+
+## Comando — UNA prima esecuzione dal terminale oufadmin
+
+Il wrapper verifica i checksum come utente, copia tutte le fonti in root0400 e le riverifica come root. Il controller resta direttamente collegato al terminale; conserva il proprio log0600. Il bootstrap mantiene log e exit separati. Non passare APPROVO al wrapper, non usare pipeline per l'esecuzione interattiva.
+
+```bash
+(
+  set -Eeuo pipefail
+  umask 077
+  ouf_diag_bootstrap=$(mktemp -d "$HOME/ouf-onboarding-diagnostic-apply-bootstrap.XXXXXXXX")
+  curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 65536 \
+    "https://raw.githubusercontent.com/GioNob/ouf-deploy/15b2bef894b9c5e6434999e3cae69c803e236f63/releases/apply-onboarding-diagnostic-update-20261027.sh" \
+    -o "$ouf_diag_bootstrap/run.sh"
+  printf '%s  %s\n' 'b99cbeafc72ce65c48e452365ddcb4e654ff380773d9259aa7a7a9a2955bf291' "$ouf_diag_bootstrap/run.sh" | sha256sum -c -
+  chmod 0400 "$ouf_diag_bootstrap/run.sh"
+  /usr/bin/bash "$ouf_diag_bootstrap/run.sh"
+)
+```
+
+Solo se approvi la review privata effettivamente mostrata, inserisci **la riga isolata `APPROVO <hash fresco>` prodotta dal controller e premi Invio**. Non copiare spiegazioni o hash storici. Non simulare il consenso. I test CI usano decisioni esclusivamente sintetiche e non trasferiscono alcuna autorizzazione al VPS.
+
+Nuovo context unico: `/etc/ouf/deploy-snapshots/onboarding-diagnostic-update-c22586172070809d-v1`. Codice protetto/log: `/usr/local/lib/ouf-onboarding-diagnostic-update-687aefc7514bbe7b/operator.log`. Delivery log nel nuovo `ouf-onboarding-diagnostic-apply-delivery.*` sotto HOME.
+
+Atteso, soltanto dopo prove reali: `ONBOARDING_DIAGNOSTIC_UPDATE_INSTALLED_E2E_NOT_ACCEPTED`, complete=true e Exit0/DeliveryExit0, quattro sessioni readonly, stato operativo invariato e readiness provata. Non presumere l'esito prima del JSON finale.
+
+## Dopo il risultato
+
+Se STOP: prima riconciliare le prove esatte, senza replay, nuovo upload/job, reset o ripristino automatico. Gli effetti ambigui restano CLAIMED.
+
+Se riuscito: registrare JSON e percorsi log su GitHub, poi ottenere la diagnosi minimizzata dello stesso asset `9c502da5-b5d8-405e-b3f5-60eb31ecb513` / job `677480c8-3d10-44fd-9dad-f72ddeed20a4` tramite owner/API governata. Handoff upload esistente `4da5410e-98de-472c-89b6-bc1cdae8ecf1`. Policy54 è scaduta: questa manutenzione non la rinnova e non autorizza letture di dominio tramite SQL. Nessun rinnovo/grant automatico; serve un mandato READ finito valido prima della lettura applicativa.
+
+M1/G4 resta acquisito sul caso conservato; M2/G5/G6/G7 aperti. Farmacie resta FAILED/causa non osservata finché la lettura owner non la dimostra. CSV locale valido non prova byte server o parser Java. D2/D3 composti in CI restano separati/non installati; D4–D7 non accettati. Nessuna nuova stima oraria inventata, terza acquisizione Teatri, fonte/attivazione, merge o release acceptance. Supervisor dopo E2E completo. Lavorare sequenzialmente, senza subagenti o automazioni.
