@@ -18,7 +18,7 @@ class Compatibility(unittest.TestCase):
  def test_exact_enrichment_preserves_both_input_dictionaries(self):
   before=copy.deepcopy((self.profile,self.now));proof=self.verify();self.assertEqual((self.profile,self.now),before);self.assertFalse(proof['historicalMetadataRewritten']);self.assertTrue(proof['liveCapturedPeerVerificationOnEveryEngineRequestRequired'])
  def test_missing_null_empty_or_nonroot_current_peer_denied(self):
-  for value in(None,[],[123,1,0],[123,0,1],[1,0,0],[True,0,0],[123.0,0,0]):
+  for value in(None,[],[123,1,0],[123,0,-1],[1,0,0],[True,0,0],[123.0,0,0]):
    with self.subTest(value=value):
     self.now['peerCredentials']=value
     with self.assertRaises(core.Stop):self.verify()
@@ -27,6 +27,8 @@ class Compatibility(unittest.TestCase):
  def test_historical_peer_present_is_not_this_observed_profile(self):
   self.old['peerCredentials']=[123,0,0]
   with self.assertRaises(core.Stop):self.verify()
+ def test_root_uid_and_exact_captured_group_are_preserved(self):
+  self.now['peerCredentials']=[123,0,998];proof=self.verify();self.assertEqual(proof['peerCredentialsHash'],core.digest([123,0,998]))
  def test_any_socket_or_retained_field_change_denied_even_with_updated_hashes(self):
   for key,value in(('socketPath','/other/socket'),('socketBinding',[1,3,0,998,0o660])):
    before=copy.deepcopy(self.now);self.now[key]=value

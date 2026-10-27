@@ -23,7 +23,7 @@ def retained_transport(core,profile,captured,expected):
     core.require(all(core.encoded(captured[k])==core.encoded(v)for k,v in retained.items()),'EVERY_RETAINED_ENGINE_FIELD_MUST_REMAIN_EXACT')
     peer=captured['peerCredentials'];socket=captured.get('socketBinding');path=captured.get('socketPath')
     core.require(type(peer)is list and len(peer)==3 and all(type(v)is int for v in peer)
-                 and peer[0]>1 and peer[1:]==[0,0],'EXACT_CURRENT_ROOT_ENGINE_PEER_CREDENTIALS_REQUIRED')
+                 and peer[0]>1 and peer[1]==0 and peer[2]>=0,'EXACT_CURRENT_ROOT_ENGINE_PEER_CREDENTIALS_REQUIRED')
     core.require(type(path)is str and path.startswith('/')and'..'not in path.split('/')and '\x00'not in path
                  and type(socket)is list and len(socket)==5 and all(type(v)is int for v in socket)
                  and socket[0]>=0 and socket[1]>0 and socket[2]==0 and socket[3]>=0 and socket[4]in(0o600,0o660),
