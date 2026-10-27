@@ -21,7 +21,7 @@ retained.write_bytes(raw);retained.chmod(0o400)
 def demote():os.setgroups([account.pw_gid]);os.setgid(account.pw_gid);os.setuid(uid)
 wrapper=home/'run.sh'
 download=subprocess.run(['/usr/bin/curl','--fail','--silent','--show-error','--location','--proto','=https','--proto-redir','=https','--max-redirs','3','--connect-timeout','15','--max-time','60',
-    'https://raw.githubusercontent.com/GioNob/ouf-deploy/1dff88ccf48ce7d6b1911af70e2882e143665c6c/releases/reconcile-managed-csv-recovery-peer-binding-20261027.sh','-o',str(wrapper)],
+    'https://raw.githubusercontent.com/GioNob/ouf-deploy/7d444e223e1e8d12484f5ec1320fb5a9e5fe99de/releases/reconcile-managed-csv-recovery-peer-binding-20261027.sh','-o',str(wrapper)],
     preexec_fn=demote,env={'HOME':str(home),'PATH':str(bin_dir),'LC_ALL':'C'},capture_output=True,timeout=70)
 assert download.returncode==0 and wrapper.read_bytes()==(BASE/'releases/reconcile-managed-csv-recovery-peer-binding-20261027.sh').read_bytes()
 wrapper.chmod(0o400)
@@ -33,10 +33,13 @@ try:
     rows=[json.loads(line) for line in output.splitlines() if line.startswith('{')]
     assert len(rows)==1 and rows[0]['status']=='STOP_RECONCILE' and rows[0]['reasonCode']=='EXACT_INSTALLED_CAPTURE_HASH_REQUIRED',output
     assert rows[0]['counts']['engineGets']==0 and rows[0]['counts']['privateMetadataReads']==1 and rows[0]['runtimeAuthorityIssued'] is False
-    expected='2d882c59063a950e628fbaa52568ca0092b33cd54c564acc0b8ae4e5e5f9fdd9'
-    code=Path('/usr/local/lib/ouf-managed-csv-recovery-inputs-eaec0b13236dc465/capture.py');info=code.stat()
+    accounting=rows[0]['captureAccounting']
+    assert accounting['priorStopReconciliationProven'] is False and accounting['cumulativeCounts'] is None
+    assert accounting['declaredPriorConsumedScopeCounts']=={'bytes':483676,'engineGets':0,'privateMetadataReads':3}
+    expected='cf6ccef19b01a61d1443d9cc43995f986964a4d0f85201982d80e3a87c73ff9f'
+    code=Path('/usr/local/lib/ouf-managed-csv-peer-reconcile-16b86a69f9c0ecf3/capture.py');info=code.stat()
     assert info.st_uid==info.st_gid==0 and stat.S_IMODE(info.st_mode)==0o400 and hashlib.sha256(code.read_bytes()).hexdigest()==expected
-    expected_files={"capture.py": "2d882c59063a950e628fbaa52568ca0092b33cd54c564acc0b8ae4e5e5f9fdd9", "retained_inputs.py": "eaec0b13236dc465cbdf8b0d52108b13f65858a65a5f6497a681ef43d70a6764", "case.json": "8d0e0dc04eaac9958055fa2185eaee68b1c8fcaa2fdc9cf5a89d714e7653c6b8"}
+    expected_files={"capture.py": "cf6ccef19b01a61d1443d9cc43995f986964a4d0f85201982d80e3a87c73ff9f", "retained_inputs.py": "eaec0b13236dc465cbdf8b0d52108b13f65858a65a5f6497a681ef43d70a6764", "case.json": "8d0e0dc04eaac9958055fa2185eaee68b1c8fcaa2fdc9cf5a89d714e7653c6b8"}
     for name,checksum in expected_files.items():
         sealed=code.parent/name;info=sealed.stat()
         assert info.st_uid==info.st_gid==0 and stat.S_IMODE(info.st_mode)==0o400 and hashlib.sha256(sealed.read_bytes()).hexdigest()==checksum
