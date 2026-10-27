@@ -21,8 +21,14 @@ jobs:
       fail-fast: false
       matrix:
         store: [containerd]
+        native_case:
+          - test_actual_lost_controller_quarantines_only_its_two_candidates
+          - test_external_change_before_start_is_retained_and_not_reset
+          - test_full_two_owner_native_lifecycle_and_exact_v36_state
+          - test_pending_profile_stops_before_runtime_writes
+          - test_zero_memory_retained
     runs-on: ubuntu-24.04
-    timeout-minutes: 22
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
@@ -56,10 +62,10 @@ jobs:
           done
           test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
       - name: Exact new signed controller and actual watchdog loss on synthetic ONBOARDING workloads
-        env: {EXPECTED_STORE: '${{ matrix.store }}'}
+        env: {EXPECTED_STORE: '${{ matrix.store }}', NATIVE_CASE: '${{ matrix.native_case }}'}
         run: |
           sudo install -d -m 700 /var/lib/ouf-onboarding-update-native-ci
-          sudo env OUF_CONTROL_UPDATE_TEST_ROOT=/var/lib/ouf-onboarding-update-native-ci EXPECTED_STORE="$EXPECTED_STORE" python3 -I -S -B tests/qualify_managed_csv_control_update_engine.py
+          sudo env OUF_CONTROL_UPDATE_TEST_ROOT=/var/lib/ouf-onboarding-update-native-ci EXPECTED_STORE="$EXPECTED_STORE" python3 -I -S -B tests/qualify_managed_csv_control_update_engine.py "$NATIVE_CASE"
   actual-new-review-sudo-terminal:
     strategy:
       fail-fast: false

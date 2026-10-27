@@ -12,7 +12,13 @@ class Native(fixture.Protocol):
     api=retained.Native.api
     psql=retained.Native.psql
     apply_fixture_migration=retained.Native.apply_fixture_migration
-    cleanup_native=retained.Native.cleanup_native
+    def cleanup_native(self):
+        retained.Native.cleanup_native(self)
+        # Identical synthetic builds across cases retain native manifests after
+        # removing containers/tags. Remove ONLY these disposable fixture images
+        # so each following case exercises fresh positive import dispatch.
+        for image in set(getattr(self,'case',{}).get('nativeImageIds',{}).values()):
+            subprocess.run(['docker','image','rm','--force',image],capture_output=True,timeout=30)
     context_instance=retained.Native.context_instance
     decision=retained.Native.decision
     def setup_native(self):
@@ -216,6 +222,8 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
 
 if __name__=='__main__':
     # The inherited cryptographic suite runs in its own job, rather than duplicating it here.
-    suite=unittest.TestSuite(Native(name)for name in sorted(Native.__dict__)if name.startswith('test_'))
+    names=__import__('sys').argv[1:]or[name for name in sorted(Native.__dict__)if name.startswith('test_')]
+    assert names and all(name in Native.__dict__ and name.startswith('test_')for name in names)
+    suite=unittest.TestSuite(Native(name)for name in names)
     result=unittest.TextTestRunner(verbosity=2).run(suite)
     raise SystemExit(0 if result.wasSuccessful()else 1)
