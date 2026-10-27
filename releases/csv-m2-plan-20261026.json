@@ -53,7 +53,7 @@
       "proven": 6,
       "total": 6
     },
-    "farmacieStatus": "FAILED_OBJECT_READ_FORBIDDEN_SERVICE_GRANT_EXPIRED",
+    "farmacieStatus": "FAILED_OBJECT_READ_FORBIDDEN_POLICY56_CORRECTED_HUMAN_RECOVERY_PENDING",
     "diagnosticCandidateInstalled": true,
     "diagnosticInstalledSourceCommit": "a5ed8b05c264a8221783a6e323ba00117aed891d"
   },
@@ -1914,7 +1914,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Complete and qualify same-job finite HUMAN profiling recovery from existing V35 session/fencing model; retain FAILED5, no new-key or quarantine-release bypass; consolidate before runtime review.",
+  "firstNextAction": "One new qualified read-only current-input capture for installed diagnostic Onboarding; then compile a new governed V36 maintenance/image plan. No consumed procedures, job reset or implicit HUMAN budget.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2180,7 +2180,7 @@
       "exit": "Categoria/causa owner dello stesso FAILED, regressione causale e percorso di recovery qualificato",
       "remainingHours": null,
       "progress": {
-        "status": "CONFIGURED_SERVICE_PERMISSION_GAP_PROVEN_STRUCTURAL_POLICY56_PUBLISHED_RECOVERY_OPEN",
+        "status": "STRUCTURAL_POLICY56_PUBLISHED_SAME_JOB_RECOVERY_SOURCE_QUALIFIED_TARGET_OPEN",
         "diagnosticCategory": "OBJECT_READ_FORBIDDEN",
         "parserReachedForObservedFailure": false,
         "serviceGrantExpirySourceIndication": true,
@@ -2188,8 +2188,7 @@
         "evidence": "evidence/farmacie-service-policy-read-target-20261027.json",
         "configuredServiceGrantExpired": true,
         "exclusiveHistorical403CauseProven": false,
-        "structuralPolicyRef": "ouf-lab-authorization:56",
-        "targetFileReadAfterPolicy56Proven": false
+        "structuralPolicyRef": "ouf-lab-authorization:56"
       }
     },
     {
@@ -2213,7 +2212,7 @@
           },
           {
             "repository": "GioNob/ouf-source-onboarding",
-            "commit": "976c478db7c7327e75da3e51aa4c00ca96ab1529",
+            "commit": "6ea5242f711761a384fa1b23667971601bc2c38b",
             "pullRequest": 53
           }
         ],
@@ -2225,12 +2224,13 @@
         ],
         "browserQualification": {
           "status": "PASS",
-          "runId": 40385473548,
-          "jobId": 121792467891,
-          "tests": 4,
+          "runId": 40533867215,
+          "jobId": 122293697262,
+          "tests": 7,
           "skipped": 0
         },
-        "remaining": "Remaining owner/Gateway cohort composition, exact installed-generation validation and final real-client path. Existing MCP/Onboarding code and browser qualification are reusable; do not recount as new implementation."
+        "remaining": "Remaining owner/Gateway cohort composition, exact installed-generation validation and final real-client path. Existing MCP/Onboarding code and browser qualification are reusable; do not recount as new implementation.",
+        "gatewayPairwiseCommit": "c22fbf7f5593f612aba7e318797c9459d0b871a7"
       }
     },
     {
@@ -2247,7 +2247,7 @@
       "remainingHours": null,
       "progress": {
         "status": "JOB_DISCOVERY_CODE_CI_QUALIFIED_NOT_INSTALLED",
-        "commit": "976c478db7c7327e75da3e51aa4c00ca96ab1529",
+        "commit": "6ea5242f711761a384fa1b23667971601bc2c38b",
         "evidenceRef": "evidence/csv-m2-job-discovery-input-capture-20261026.json",
         "remaining": "Original filename/domain work label and real-client validation"
       }
@@ -2266,23 +2266,14 @@
       "exit": "Permanenti non ritentati; transitori finiti; recovery HUMAN conserva tentativi/storia e non duplica effetti",
       "remainingHours": null,
       "progress": {
-        "status": "FAILFAST_AND_CANONICAL_JOB_ADMISSION_CI_QUALIFIED_HUMAN_SESSION_OPEN",
-        "commit": "11e579366c90ace6dd67c3fec5643559b556f7d0",
-        "evidenceRef": "evidence/profile-failfast-source-qualification-20261027.json",
-        "permanentAuthorizationFailureMustNotAutoRetry": true,
-        "failfastAndCanonicalJobGuardImplemented": true,
-        "complete": false,
-        "retainFailedJobAndAllAttempts": true,
-        "newHumanSessionWithCumulativeLimitsRequiredForRecovery": true,
+        "status": "OWNER_NATIVE_RECOVERY_SOURCE_CI_QUALIFIED_TARGET_PENDING",
+        "sourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
+        "evidenceRef": "evidence/profile-recovery-source-qualification-20261027.json",
+        "ownerSessionMechanismImplemented": true,
         "targetInstalled": false,
-        "remaining": [
-          "versioned finite elapsed-time profile and progressive backoff/jitter",
-          "explicit bounded network transient classification",
-          "HUMAN profiling recovery session on the same job/operation with actor/reason/decisionRef/limits",
-          "atomic expected-version and worker generation fencing across recovery sessions",
-          "native review and final owner/Gateway/MCP cohort qualification",
-          "legacy multiple-job execution reconciliation and bounded quarantine/capacity integration"
-        ]
+        "newHumanBudgetGranted": false,
+        "retainFailedJobAndAllAttempts": true,
+        "complete": false
       }
     },
     {
@@ -2332,7 +2323,7 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "docs/handoffs/OUF_PROFILE_FAILFAST_AND_RECOVERY_CHECKPOINT_20261027.md",
+  "currentCheckpoint": "docs/handoffs/OUF_PROFILE_RECOVERY_NATIVE_REVIEW_20261027.md",
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
     "evidence": "evidence/onboarding-diagnostic-apply-qualified-20261027.json",
@@ -2470,9 +2461,9 @@
     "jobResetAllowed": false,
     "finalPolicyRef": "ouf-lab-authorization:56"
   },
-  "profileFailfastQualification": {
-    "sourceCommit": "11e579366c90ace6dd67c3fec5643559b556f7d0",
-    "evidenceRef": "evidence/profile-failfast-source-qualification-20261027.json",
+  "profileRecoverySourceQualification": {
+    "sourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
+    "evidenceRef": "evidence/profile-recovery-source-qualification-20261027.json",
     "targetInstalled": false
   }
 }

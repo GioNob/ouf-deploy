@@ -1,3 +1,11 @@
+# CURRENT — recovery profiling HUMAN QUALIFICATA IN CI; target ancora FAILED5
+
+27 ottobre2026. Onboarding PR53 source6ea5242f711761a384fa1b23667971601bc2c38b:329test modulo/16recovery PostgreSQL/7browser/9diagnostica+2latenza PASS senza skip; immagine build/scan/boot PASS. V36 additiva, copia privata dello stato precedente, contatori monotoni, una sessione HUMAN da3tentativi/900s, concessione separata da ripresa, expected-version e generazione persistente. Nuove chiavi/riavvii/quarantena non rinnovano budget; risposta persa riconciliata con stesso comando. Native THS OIDC/CSRF e route HUMAN esistenti, niente nuovo tool MCP di grant. [Prova](evidence/profile-recovery-source-qualification-20261027.json).
+
+Policy56 SERVICE strutturale pubblicata e verificata; non riproporre. Sul VPS resta diagnosticaa5ed8b05..., stesso FarmacieFAILED/tentativi5. Nessuna migrazione36, nuovo budget, profiling o lettura file dopo56 eseguiti da questa sessione. CI NON è prova server. NEXT nuova cattura metadata per pianoV36:4file conservati+3GET Engine,90s, zero SQL/credenziali/chiavi/OAuth/lifecycle; NON riusare catture o APPLY consumate. Sorgente lettore1f83f8a.../sha52a8e9a8... qualificata12test+Engine reale, wrapper protetto ancora da qualificare prima della consegna. [Checkpoint](docs/handoffs/OUF_PROFILE_RECOVERY_NATIVE_REVIEW_20261027.md).
+
+M1/G4 acquisito, M2/G5/G6/G7 aperti. Native maintenance/APPLY e decisione HUMAN di dominio future richiedono nuove review concrete, mai chat come consenso. No merge/releaseacceptance/Registryrestart/reinstall/subagenti/automazioni. Header seguenti storici.
+
 # CURRENT — policy56 verificata; guardia403 e stesso job QUALIFICATE IN CI, recovery HUMAN aperta
 
 27 ottobre2026. SERVICE strutturale56 PUBLISHED verificato, non riproporre. Onboarding PR53 source11e579366c90ace6dd67c3fec5643559b556f7d0:305test modulo/9diagnostica/4browser+2latenza PASS senza skip; immagine build/scan/boot PASS. [Checkpoint](docs/handoffs/OUF_PROFILE_FAILFAST_AND_RECOVERY_CHECKPOINT_20261027.md), [prove](evidence/profile-failfast-source-qualification-20261027.json). Permanenti typed403/401 e sconosciuti fermano i retry; solo429/502/503/504 typed READ sono ritentabili entro il vecchio massimo5, rispettando Retry-After. Nuove chiavi restituiscono lo stesso job; concorrenza e release quarantena non rinnovano budget. CI non è risultato VPS.

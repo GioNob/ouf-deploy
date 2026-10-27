@@ -1,9 +1,9 @@
 name: Onboarding profile recovery current input capture
 on:
   push:
-    paths: ['scripts/capture-onboarding-profile-recovery-inputs-20261027.py', 'tests/test_onboarding_profile_recovery_current_inputs.py', 'tests/qualify_onboarding_profile_recovery_capture.py', '.github/workflows/onboarding-profile-recovery-current-inputs.yml']
+    paths: ['scripts/capture-onboarding-profile-recovery-inputs-20261027.py', 'tests/test_onboarding_profile_recovery_current_inputs.py', 'tests/qualify_onboarding_profile_recovery_capture.py', 'tests/qualify_profile_recovery_capture_delivery.py', 'releases/capture-onboarding-profile-recovery-inputs-20261027.sh', '.github/workflows/onboarding-profile-recovery-current-inputs.yml']
   pull_request:
-    paths: ['scripts/capture-onboarding-profile-recovery-inputs-20261027.py', 'tests/test_onboarding_profile_recovery_current_inputs.py', 'tests/qualify_onboarding_profile_recovery_capture.py', '.github/workflows/onboarding-profile-recovery-current-inputs.yml']
+    paths: ['scripts/capture-onboarding-profile-recovery-inputs-20261027.py', 'tests/test_onboarding_profile_recovery_current_inputs.py', 'tests/qualify_onboarding_profile_recovery_capture.py', 'tests/qualify_profile_recovery_capture_delivery.py', 'releases/capture-onboarding-profile-recovery-inputs-20261027.sh', '.github/workflows/onboarding-profile-recovery-current-inputs.yml']
 permissions: {contents: read}
 jobs:
   bounded-inputs:
@@ -18,3 +18,12 @@ jobs:
           sudo /usr/bin/python3 -I -S -B tests/qualify_onboarding_profile_recovery_capture.py
       - if: always()
         run: docker rm -f ouf-ci-profile-recovery-capture || true
+  protected-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: |
+          bash -n releases/capture-onboarding-profile-recovery-inputs-20261027.sh
+          sudo /usr/bin/python3 -I -S -B tests/qualify_profile_recovery_capture_delivery.py

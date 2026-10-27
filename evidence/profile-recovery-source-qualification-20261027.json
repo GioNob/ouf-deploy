@@ -1,0 +1,132 @@
+{
+  "schema": "ouf.managed-profile-recovery-source-qualification.v1",
+  "date": "2026-10-27",
+  "timezone": "Europe/Rome",
+  "status": "OWNER_SOURCE_CI_QUALIFIED_NOT_INSTALLED",
+  "repository": "GioNob/ouf-source-onboarding",
+  "pullRequest": 53,
+  "sourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
+  "gatewayPairwiseCommit": "c22fbf7f5593f612aba7e318797c9459d0b871a7",
+  "migration": "V36__managed_profile_recovery_sessions.sql",
+  "nativeReviewPath": "/trusted-human/managed-files/recovery/",
+  "sessionProfile": {
+    "id": "managed-profile-recovery.v1",
+    "maximumAttempts": 3,
+    "maximumElapsedSeconds": 900,
+    "budgetGrantQueuesWork": false,
+    "separateHumanResumeRequired": true,
+    "cumulativeAttemptsNeverReset": true
+  },
+  "initialProfile": {
+    "id": "managed-profile-initial.v1",
+    "maximumAttempts": 5,
+    "maximumElapsedSeconds": 900,
+    "timeOrigin": "original admission",
+    "legacyJobsSilentlyAdopted": false
+  },
+  "mechanisms": [
+    "same immutable asset/job and original idempotency key",
+    "private immutable prior_job snapshot, actor/reason/decisionRef and timestamps",
+    "one active session, expected-version transitions and persistent generation fencing",
+    "idempotent lost-response reconciliation for grant/resume/cancel",
+    "explicit HUMAN owner proof and file.profile plus quarantine.release",
+    "native OIDC session/CSRF adapter through existing HUMAN Gateway routes",
+    "safe card actions reflect missing permission and input drift",
+    "typed permanent/unknown failure stops; explicit transient HTTP/connect/timeouts only",
+    "incremental backoff with20percent jitter, Retry-After and elapsed limits",
+    "one live read per owner, no database transaction during remote I/O",
+    "atomic profile/job completion and append-only transition events",
+    "protected monotonic job identity and cumulative counters"
+  ],
+  "ci": {
+    "module": {
+      "runId": 40533867214,
+      "jobId": 122293696961,
+      "event": "push",
+      "tests": 329,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "conclusion": "success",
+      "directJobLogRead": true,
+      "productionImageBuild": true,
+      "productionImageScanPassed": true,
+      "nonRootBoot": true
+    },
+    "diagnostic": {
+      "runId": 40533867243,
+      "jobId": 122293697790,
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "conclusion": "success",
+      "directJobLogRead": true
+    },
+    "browser": {
+      "runId": 40533867215,
+      "jobId": 122293697262,
+      "tests": 7,
+      "failed": 0,
+      "skipped": 0,
+      "latencyTests": 2,
+      "conclusion": "success",
+      "directJobLogRead": true
+    },
+    "newSessionPostgresTests": 16,
+    "real35To36UpgradeTests": 1,
+    "gatewayHumanContractTests": 1
+  },
+  "governedImageArtifact": {
+    "runId": 40533881204,
+    "artifactId": 12747244692,
+    "sizeBytes": 212905775,
+    "archiveDigest": "sha256:afc1da28317b06845c8a37d81c529e931cb3d11415f13b9842fb3633a0e8d3d0",
+    "reviewedSourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
+    "containsManifest": true,
+    "targetDeliveryNotYetAuthorized": true
+  },
+  "qualificationCorrections": [
+    {
+      "source": "014548a626ef6c11284bca174f1dfec228056237",
+      "moduleTests": 320,
+      "scan": "FAILED_BLOCKED",
+      "cause": "Boot-managed HttpCore5.3.6 CVE-2026-54399/CVE-2026-54428",
+      "resolution": "HttpCore5.4.3, final production scan PASS; no suppression"
+    },
+    {
+      "source": "229401544d4f9de946445ab90becf40262034cbc",
+      "cause": "ambiguous HttpRequest import",
+      "resolution": "explicit JDK import"
+    },
+    {
+      "source": "b11165392d6e00a350ce67774f421f7634222bdc",
+      "cause": "isolated context fixture missing production Duration conversion",
+      "resolution": "ApplicationConversionService in real transport test; final PASS"
+    }
+  ],
+  "target": {
+    "installedSource": "a5ed8b05c264a8221783a6e323ba00117aed891d",
+    "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+    "jobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+    "retainedState": "FAILED",
+    "retainedAttempts": 5,
+    "newReadOrExecution": false,
+    "newBudget": false,
+    "reset": false,
+    "currentFileReadAfterPolicy56Proven": false
+  },
+  "remaining": [
+    "fresh native input capture and governed V36 maintenance/image plan",
+    "target deployment and separate actual HUMAN budget/resume decision",
+    "effective target Gateway/token/file-read and parsed original hash evidence",
+    "broader dependency incident/capacity/retention/alerts and native DNS/nft fault evidence",
+    "D5 vocabulary/relationship and final M2/two-client cohort acceptance"
+  ],
+  "runtimeEffects": 0,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "mergeAuthorized": false
+}
