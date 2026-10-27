@@ -19,7 +19,13 @@ retained=Path('/etc/ouf/deploy-snapshots/onboarding-diagnostic-current-inputs-20
 retained.parent.mkdir(parents=True,mode=0o700);retained.parent.chmod(0o700);raw=b'{"CI_ONLY_WRONG_PRIVATE_SEAL":true}'
 retained.write_bytes(raw);retained.chmod(0o400)
 def demote():os.setgroups([account.pw_gid]);os.setgid(account.pw_gid);os.setuid(uid)
-def invoke():return subprocess.run(['/usr/bin/bash','--noprofile','--norc',str(BASE/'releases/capture-onboarding-profile-recovery-inputs-20261027.sh')],
+wrapper=home/'run.sh'
+download=subprocess.run(['/usr/bin/curl','--fail','--silent','--show-error','--location','--proto','=https','--proto-redir','=https','--max-redirs','3','--connect-timeout','15','--max-time','60',
+    'https://raw.githubusercontent.com/GioNob/ouf-deploy/2981b7f009bd7072feabd78781e9b85eddfa9500/releases/capture-onboarding-profile-recovery-inputs-20261027.sh','-o',str(wrapper)],
+    preexec_fn=demote,env={'HOME':str(home),'PATH':str(bin_dir),'LC_ALL':'C'},capture_output=True,timeout=70)
+assert download.returncode==0 and wrapper.read_bytes()==(BASE/'releases/capture-onboarding-profile-recovery-inputs-20261027.sh').read_bytes()
+wrapper.chmod(0o400)
+def invoke():return subprocess.run(['/usr/bin/bash','--noprofile','--norc',str(wrapper)],
     stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,preexec_fn=demote,
     env={'HOME':str(home),'PATH':str(bin_dir),'LC_ALL':'C'},timeout=150)
 try:
