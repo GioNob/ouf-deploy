@@ -1,3 +1,7 @@
+# AGGIORNAMENTO — cattura consumata; consegna nuova immagine/piano qualificata
+
+Il risultato VPS della cattura è acquisito e non va ripetuto. Proseguire dal [nuovo handoff corrente](OUF_PROFILE_RECOVERY_IMAGE_PLAN_20261027.md): PRIMA preparazione dell’immagine CI V36 e proposta privata, tre soli metadata conservati, zero runtime I/O, nessun APPROVO. Non eseguire il comando di cattura storico riportato più sotto. CI della nuova consegna PASS; nessun risultato VPS della nuova preparazione ricevuto.
+
 # AGGIORNAMENTO VPS — cattura riuscita, scope CONSUMATO
 
 Ricevuta dell’operatore27ottobre2026: complete=true/Exit0/DeliveryExit0, status ONBOARDING_PROFILE_RECOVERY_CURRENT_INPUTS_CAPTURED_NOT_AUTHORIZED. Input hash1ce0ce1cd27195565393798d4d06246047c5b46c12cef39bc31aee4ed7aff82c;4metadata/3GET Engine/526335byte. Generazione installata corrispondente. [Ricevuta](../../evidence/profile-recovery-current-input-capture-target-20261027.json). Log /home/oufadmin/ouf-onboarding-profile-recovery-inputs-delivery.TnEBeFK8/bootstrap.log. Scope /etc/ouf/deploy-snapshots/onboarding-profile-recovery-current-inputs-20261027-v1 CONSUMATO; NON eseguire di nuovo il comando storico sotto.

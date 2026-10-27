@@ -55,7 +55,8 @@
     },
     "farmacieStatus": "FAILED_OBJECT_READ_FORBIDDEN_POLICY56_CORRECTED_HUMAN_RECOVERY_PENDING",
     "diagnosticCandidateInstalled": true,
-    "diagnosticInstalledSourceCommit": "a5ed8b05c264a8221783a6e323ba00117aed891d"
+    "diagnosticInstalledSourceCommit": "a5ed8b05c264a8221783a6e323ba00117aed891d",
+    "profileRecoveryV36Deployment": "IMAGE_AND_CONDITIONAL_PLAN_PREPARATION_QUALIFIED_NOT_EXECUTED_ON_TARGET"
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1914,7 +1915,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Prepare exact V36 CI image and conditional native plan from consumed current-input hash1ce0ce1c...; no repeat of capture, no Engine/import/lifecycle/SQL/OAuth or runtime authority during preparation.",
+  "firstNextAction": "FIRST execution of the newly qualified curl-only V36 image and conditional private-plan preparation (command in releases/OUF_PROFILE_RECOVERY_IMAGE_PLAN_COMMAND_20261027.sh). Three retained metadata files; zero Engine/SQL/config-content/OAuth/keys/import/lifecycle/job/budget/acquisition. No APPROVO in this preparation. STOP preserves evidence and consumes scope; do not repeat the successful capture or old procedures.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2323,7 +2324,7 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "docs/handoffs/OUF_PROFILE_RECOVERY_NATIVE_REVIEW_20261027.md",
+  "currentCheckpoint": "docs/handoffs/OUF_PROFILE_RECOVERY_IMAGE_PLAN_20261027.md",
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
     "evidence": "evidence/onboarding-diagnostic-apply-qualified-20261027.json",
@@ -2476,7 +2477,7 @@
     "sourceCommit": "1f83f8a61096583b22448d0b85673917a2baae3c",
     "deliveryCommit": "2981b7f009bd7072feabd78781e9b85eddfa9500",
     "wrapperSha256": "0babe8ba8455b31e23cd768904dfdef9ccee975853bcaaa438c7da1313d99b83",
-    "targetExecutionReceived": false
+    "targetExecutionReceived": true
   },
   "profileRecoveryInputCaptureTarget": {
     "evidenceRef": "evidence/profile-recovery-current-input-capture-target-20261027.json",
@@ -2486,5 +2487,22 @@
     "complete": true,
     "exit": 0,
     "deliveryExit": 0
+  },
+  "profileRecoveryImagePlanQualification": {
+    "evidenceRef": "evidence/profile-recovery-image-plan-qualified-20261027.json",
+    "sourceCommit": "238cbe770b362fb114dbb3687131a55191ec35ae",
+    "deliveryCommit": "d015550c6fa8358e1f22a685f324b125b53c4c30",
+    "wrapperSha256": "672d161a773cceeaff04223f67aded3e2576add9d6cea03cc733ace5fd7a7845",
+    "qualificationCommit": "090be1d5ab70b0d5f6c8493eae1dd245abd6fd03",
+    "qualified": true,
+    "targetExecutionReceived": false,
+    "targetInstalled": false,
+    "inputsHash": "1ce0ce1cd27195565393798d4d06246047c5b46c12cef39bc31aee4ed7aff82c",
+    "newScope": "/etc/ouf/deploy-snapshots/onboarding-profile-recovery-image-plan-1ce0ce1cd2719556-v1",
+    "nativeImageId": "sha256:e4690481db28e3e70335704de89e563dcf32ecf70e4a0caea1bdc30c48aa4359",
+    "conditionalPlanOnly": true,
+    "runtimeAuthorityIssued": false,
+    "databaseAdmissionProven": false,
+    "automaticReplayAllowed": false
   }
 }
