@@ -1,3 +1,9 @@
+# RISULTATO VPS — immagine e piano preparati, scope CONSUMATO
+
+Ricevuta operatore27ottobre2026: complete=true/Exit0/DeliveryExit0, status ONBOARDING_PROFILE_RECOVERY_IMAGE_AND_CONDITIONAL_PLAN_PREPARED_NOT_AUTHORIZED. [Prova](../../evidence/profile-recovery-image-plan-target-20261027.json). executionInputsHash `564038c5d487f0a4f4504cca4c6e9e418e1f715dbf95fe9ce97cb2b27c297b76`; conditionalNativePlanHash `432c2930c119223449870e935a1ac0f485607812e73019928b4148d9238ab22a`; nativeImageId `sha256:e4690481db28e3e70335704de89e563dcf32ecf70e4a0caea1bdc30c48aa4359`. Tre metadata, un ZIP, un archivio nativo; zero Engine/SQL/config-content/OAuth/credenziali/chiavi/import/lifecycle/migrazione/job/budget/acquisizioni. Root code closure cinque file verificata. Log `/home/oufadmin/ouf-onboarding-profile-recovery-image-plan-delivery.4CzecX7r/bootstrap.log`.
+
+Scope `/etc/ouf/deploy-snapshots/onboarding-profile-recovery-image-plan-1ce0ce1cd2719556-v1` CONSUMATO. NON eseguire di nuovo il comando storico sotto. conditionalLifecyclePlanCompiled=true; lifecyclePlanCompiled/executionEntryQualified/databaseAdmissionProven/currentRuntimeRevalidated/runtimeAuthorityIssued=false. Nessuna review APPROVO o autorità nuova ricevuta. Proseguire dalla qualifica del NUOVO controller di manutenzione36 sui due hash concreti, poi review privata fresca. Non confondere preparazione con installazione o E2E.
+
 # Onboarding V36: preparazione immagine e piano condizionale pronta, NON eseguita sul VPS
 
 27 ottobre 2026, Europe/Rome (UTC+1). [Predecessore](OUF_PROFILE_RECOVERY_NATIVE_REVIEW_20261027.md), [prova cattura VPS](../../evidence/profile-recovery-current-input-capture-target-20261027.json), [qualifica di questo passo](../../evidence/profile-recovery-image-plan-qualified-20261027.json).

@@ -56,7 +56,7 @@
     "farmacieStatus": "FAILED_OBJECT_READ_FORBIDDEN_POLICY56_CORRECTED_HUMAN_RECOVERY_PENDING",
     "diagnosticCandidateInstalled": true,
     "diagnosticInstalledSourceCommit": "a5ed8b05c264a8221783a6e323ba00117aed891d",
-    "profileRecoveryV36Deployment": "IMAGE_AND_CONDITIONAL_PLAN_PREPARATION_QUALIFIED_NOT_EXECUTED_ON_TARGET"
+    "profileRecoveryV36Deployment": "IMAGE_AND_CONDITIONAL_PLAN_PREPARED_ON_TARGET_NATIVE_EXECUTOR_PENDING"
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1915,7 +1915,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "FIRST execution of the newly qualified curl-only V36 image and conditional private-plan preparation (command in releases/OUF_PROFILE_RECOVERY_IMAGE_PLAN_COMMAND_20261027.sh). Three retained metadata files; zero Engine/SQL/config-content/OAuth/keys/import/lifecycle/job/budget/acquisition. No APPROVO in this preparation. STOP preserves evidence and consumes scope; do not repeat the successful capture or old procedures.",
+  "firstNextAction": "Qualify a new native V36 maintenance controller bound to target execution inputs564038c5... and conditional plan432c2930.... Reuse verified V35 backup/fencing/terminal/lifecycle code; fresh concrete HUMAN terminal APPROVO before any effect; no preparation replay, job budget or counter reset.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2495,7 +2495,7 @@
     "wrapperSha256": "672d161a773cceeaff04223f67aded3e2576add9d6cea03cc733ace5fd7a7845",
     "qualificationCommit": "090be1d5ab70b0d5f6c8493eae1dd245abd6fd03",
     "qualified": true,
-    "targetExecutionReceived": false,
+    "targetExecutionReceived": true,
     "targetInstalled": false,
     "inputsHash": "1ce0ce1cd27195565393798d4d06246047c5b46c12cef39bc31aee4ed7aff82c",
     "newScope": "/etc/ouf/deploy-snapshots/onboarding-profile-recovery-image-plan-1ce0ce1cd2719556-v1",
@@ -2503,6 +2503,17 @@
     "conditionalPlanOnly": true,
     "runtimeAuthorityIssued": false,
     "databaseAdmissionProven": false,
-    "automaticReplayAllowed": false
+    "automaticReplayAllowed": false,
+    "currentDeliveryUsable": false
+  },
+  "profileRecoveryImagePlanTarget": {
+    "evidenceRef": "evidence/profile-recovery-image-plan-target-20261027.json",
+    "executionInputsHash": "564038c5d487f0a4f4504cca4c6e9e418e1f715dbf95fe9ce97cb2b27c297b76",
+    "conditionalNativePlanHash": "432c2930c119223449870e935a1ac0f485607812e73019928b4148d9238ab22a",
+    "scopeConsumed": true,
+    "replayAllowed": false,
+    "complete": true,
+    "exit": 0,
+    "deliveryExit": 0
   }
 }

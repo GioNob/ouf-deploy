@@ -1,4 +1,12 @@
-# CURRENT — immagine e piano V36 QUALIFICATI; prima preparazione VPS da eseguire
+# CURRENT — immagine e piano V36 PREPARATI sul VPS; scope CONSUMATO
+
+27 ottobre 2026. Ricevuta operatore ONBOARDING_PROFILE_RECOVERY_IMAGE_AND_CONDITIONAL_PLAN_PREPARED_NOT_AUTHORIZED, complete=true/Exit0/DeliveryExit0. executionInputsHash564038c5d487f0a4f4504cca4c6e9e418e1f715dbf95fe9ce97cb2b27c297b76; conditionalNativePlanHash432c2930c119223449870e935a1ac0f485607812e73019928b4148d9238ab22a. [Prova VPS](evidence/profile-recovery-image-plan-target-20261027.json). Nuovo scope /etc/ouf/deploy-snapshots/onboarding-profile-recovery-image-plan-1ce0ce1cd2719556-v1 CONSUMATO: non ripetere preparazione/launcher, cattura o vecchie APPLY.
+
+Tre letture metadata, un ZIP CI letto/un archivio nativo preparato; zero Engine/SQL/config-content/OAuth/credenziali/chiavi/import/lifecycle/migrazione/job/budget/attivazioni/acquisizioni. Piano condizionale compilato, executor non qualificato; admission DB e runtime correnti non provati, nessuna authority runtime. Sul target resta diagnosticaa5ed8b05.../native074bd16e...; V36 NON installata. Ultimo Farmacie provato FAILED5, nessuna nuova osservazione applicativa.
+
+NEXT qualificare un NUOVO controller manutenzione V35→36 sul piano/hash concreti, riusando backup/fencing/terminal/lifecycle collaudati e senza authority storiche. Nuova review privata concreta e APPROVO umano nel terminale prima di qualsiasi effetto; manutenzione NON concede sessione HUMAN del job. [Handoff](docs/handoffs/OUF_PROFILE_RECOVERY_IMAGE_PLAN_20261027.md). Policy56 strutturale pubblicata, non riproporre; M1/G4 acquisiti, M2/G5/G6/G7 aperti. Nessun reset/replay/Registry restart/reinstall/merge/release acceptance/subagenti/automazioni. Header seguenti storici.
+
+# HISTORICAL — immagine e piano V36 QUALIFICATI; prima preparazione VPS da eseguire
 
 27 ottobre 2026. Cattura VPS hash1ce0ce1cd27195565393798d4d06246047c5b46c12cef39bc31aee4ed7aff82c riuscita e CONSUMATA: non ripeterla. [Nuovo handoff](docs/handoffs/OUF_PROFILE_RECOVERY_IMAGE_PLAN_20261027.md), [prove](evidence/profile-recovery-image-plan-qualified-20261027.json). Source preparer238cbe770b362fb114dbb3687131a55191ec35ae/SHA874d38f1..., wrapperd015550c6fa8358e1f22a685f324b125b53c4c30/SHA672d161a...: CI40542901199/job122325714407 (14 test+archivio reale+piano condizionale, zero runtime I/O) e job122325713511 (curl reale/nonroot/sudo/copia root0400/checksum ROOT/main negativa/replay rifiutato/log) PASS. Log diretti letti. Immagine CI6ea5242f.../testede42c398a... esatta in nove blocchi immutabili, nessun gh sul VPS. Native image e4690481..., sola migrazione nuova36; precedenti35 verificate.
 
