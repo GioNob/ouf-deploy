@@ -65,7 +65,7 @@
     "runtimeEvidenceOrigin": "OPERATOR_VPS_OUTPUT_AT_SUCCESSFUL_COMPLETION_NOT_A_NEW_LIVE_RECHECK",
     "activeOnboardingSourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
     "activeOnboardingNativeImageId": "sha256:e4690481db28e3e70335704de89e563dcf32ecf70e4a0caea1bdc30c48aa4359",
-    "profileControlCorrection": "EXACT_IMAGES_AND_CONDITIONAL_PLAN_PREPARATION_QUALIFIED_PENDING_TARGET_NO_RUNTIME_AUTHORITY",
+    "profileControlCorrection": "IMAGES_AND_CONDITIONAL_PLAN_PREPARED_SCOPE_CONSUMED_NEW_EXECUTOR_REVIEW_PENDING",
     "latestCohortCapture": "RECONCILIATION_SUCCESS_CAPTURE14a96f_SCOPE_CONSUMED_METADATA_ONLY"
   },
   "retainedFarmacie": {
@@ -1925,7 +1925,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Operator first execution of the NEW qualified two-image/conditional-plan preparation command on capture14a96f...; previous capture/reconciliation/publishers/APPLY consumed. Read3retained metadata and exact2CI ZIPs, derive2native archives with0Engine/import/lifecycle/SQL/authority. Record private execution-inputs and conditional-plan hashes, then qualify a new minimal deployment controller and concrete runtime review. HUMAN job budget3/900s and resume remain separate same-job decisions later.",
+  "firstNextAction": "Qualify a NEW minimal two-owner controller on executionInputsHash900b09... and conditionalNativePlanHash73d573..., reusing Teatri/V36 authority/TTY/lifecycle/fencing/backup. Fresh concrete runtime review and human terminal approval before effects. No prepared scope/publisher/capture/APPLY replay.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2687,5 +2687,14 @@
     "sourceClosure": "2d42559b5e4418b7521e40d45880fc802c8f9ccb91ea244210cf9bb287090b51",
     "newScope": "/etc/ouf/deploy-snapshots/managed-csv-control-image-plan-14a96f782827c894-v1",
     "targetExecuted": false
+  },
+  "profileControlImagePlanTarget": {
+    "evidence": "evidence/managed-csv-control-image-plan-target-20261027.json",
+    "scopeConsumed": true,
+    "executionInputsHash": "900b09c6d29a20fda5dfff1f1333df167363c96e865cc2c13a7b58791f4e0c51",
+    "conditionalNativePlanHash": "73d5733b86f2f8c8430a6a978540607557a8cd925911321ab58ae7b011bc1f7e",
+    "complete": true,
+    "runtimeAuthorityIssued": false,
+    "applicationCandidatesInstalled": false
   }
 }
