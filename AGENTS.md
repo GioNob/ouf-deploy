@@ -1,4 +1,12 @@
-# CURRENT — STOP coorte consumato; riconciliazione peer esatta QUALIFICATA, prima esecuzione figlia da ricevere
+# CURRENT — riconciliazione coorte RIUSCITA e CONSUMATA; preparare immagini/piano condizionale su14a96f78
+
+27ottobre2026, Europe/Rome. [Ricevuta VPS](evidence/managed-csv-peer-reconciliation-target-20261027.json): MANAGED_CSV_RECOVERY_CURRENT_INPUTS_CAPTURED_NOT_AUTHORIZED, complete=true, Exit0/DeliveryExit0. Inputhash14a96f782827c8948fabd857d9e3958cbe588a38dc9bd0968c342467f09ca9c1; coorte13/stessi targetOnboarding+MCP.5nuove metadata/670087byte/27GET Engine; precedenti3/483676byte/0Engine preservate: cumulativo8metadata/1153763byte/27Engine. Zero write/SQL/OAuth/credenziali/chiavi/import/lifecycle/grant/budget/resume/acquisizioni/authority runtime. Stato applicativo job/policy/readiness NON osservato.
+
+Scope figlio /etc/ouf/deploy-snapshots/managed-csv-recovery-control-inputs-20261027-v1/reconcile-retained-peer-binding-v1 CONSUMATO: NON rilanciare riconciliazione/cattura, publisher o APPLY36 riuscito. NEXT riusare helper custodia/plan/lifecycle Teatri-V36 per nuova preparazione dei due ZIP esatti conservati e piano CONDIZIONALE sul14a96f.... Nessuna nuova authority o attivazione. CandidatiOnboarding9890.../MCPd245... qualificati, nativec512c247.../a5218012..., NON installati; tutte36migrazioni/YAML identiche, zero nuove migrazioni.
+
+Ultimo Farmacie applicativo provatoFAILED5, policy56SERVICE strutturale acquisita. THS esclusiva UTENTE; nuovo catalogo/scopes/hop nativo ancora da provare. Dopo piano/review nuova concreta: HUMAN3/900 e resume distinti stesso job, cumulativi6–8; originale/hash/parser/preview61righe→UDP. M1/G4 acquisiti, M2/G5/G6/G7 aperti; no Registryrestart/reinstall/nuovo upload/job/terzaacquisizione/merge/releaseacceptance/subagenti/automazioni; Supervisor dopo E2E.
+
+# RETAINED — STOP coorte consumato; riconciliazione peer esatta QUALIFICATA, prima esecuzione figlia da ricevere
 
 27ottobre2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_MANAGED_CSV_RECOVERY_PEER_RECONCILIATION_20261027.md), [STOP VPS acquisito](evidence/managed-csv-recovery-peer-map-stop-target-20261027.json), [qualifica finale](evidence/managed-csv-peer-reconciliation-qualified-20261027.json). La cattura originale ha letto3metadata/483676byte,0Engine/0write: STOP_RECONCILE/EXACT_RETAINED_COHORT_REQUIRED/Exit2/DeliveryExit2. Scope managed-csv-recovery-control-inputs-20261027-v1 CONSUMATO: mai rilanciare vecchio comando/wrapper.
 
