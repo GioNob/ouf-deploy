@@ -167,6 +167,7 @@ class TransportAndScope(unittest.TestCase):
                 self.assertEqual(login.call_count, 1)
                 self.assertEqual((scope / "state.json").read_bytes(), retained)
                 self.assertEqual((scope / "state.json").stat().st_mode & 0o777, 0o600)
+                m.sys.stdout.file.close()
 
 
 class ReusedTransportAndLogin(unittest.TestCase):

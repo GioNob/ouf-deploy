@@ -14,3 +14,11 @@ jobs:
         with: {persist-credentials: false}
       - run: sudo python3 -I -S -B tests/test_farmacie_service_policy_read.py
       - run: python3 -m py_compile scripts/read-farmacie-service-policy-20261027.py
+  actual-protected-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: bash -n releases/read-farmacie-service-policy-20261027.sh
+      - run: sudo python3 -I -S -B tests/qualify_farmacie_service_policy_delivery.py
