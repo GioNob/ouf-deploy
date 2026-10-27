@@ -51,6 +51,7 @@ def review(ctx):
            'preflightCounts':copy.deepcopy(ctx.counts),'verification':{'trustPolicy':ctx.authority_metadata['trustPolicy'],'openssl':ctx.openssl,'context':ctx.authority_metadata['context']},
            'retainedCaptureCounts':ctx.proposal['retainedCaptureCounts'],'retainedImagePreparationCounts':ctx.proposal['retainedImagePreparationCounts'],
            'oldScopesConsumed':True,'oldV35AuthorityReused':False,'maintenanceSqlAuthorized':True,
+           'retainedUnissuedPreflight':ctx.retained_preflight,'retainedTransportCompatibility':ctx.transport_compatibility,
            'operationalSqlHash':ctx.proposal['operationalSqlHash'],'migrationFenceHash':c.digest(ctx.migrations),
            'existingOwnerConfigurationBinding':ctx.owner_overlay_binding,'ownerConfigurationContentReads':1,
            'maximumSigningOperations':3,'maximumSigningKeyReadDispatches':15,'maximumRawEngineReceiptBytesTwoPublishers':134217728,
@@ -60,6 +61,8 @@ def review(ctx):
 def terminal(ctx,value):
     c=ctx.core;reviewed=c.digest(value);deadline=time.monotonic()+900;wall=time.time()+900
     print('Revisione privata: '+str(ctx.root/'review.json'),flush=True)
+    print('NUOVA review residua dopo STOP pre-review riconciliato: sole3letture metadata originali gia incluse nel massimo64. Vecchia authority e journal assenti; nessun effetto runtime originale da ripetere.',flush=True)
+    print('Reader conservato consumato separatamente:7metadata+21fonti/manifesto. Profilo storico intatto; solo cattura corrente con peer root verificato su ogni connessione. Nessun reset o vecchio consenso riusato.',flush=True)
     print('SOLA sostituzione Onboarding con diagnostica minima PR52; nessuna installazione del candidato M2 piu ampio.',flush=True)
     print('Source reviewed '+ctx.case['sourceCommit']+'; image tested '+ctx.case['testedCommit']+'; identita CI esatta senza rebuild/relabel.',flush=True)
     print('Configurazione, User, Env, mount, policy risorse (Memory='+str(ctx.proposal['onboardingReplacement']['request']['HostConfig']['Memory'])+'), MAC/IP e porte esistenti conservati.',flush=True)

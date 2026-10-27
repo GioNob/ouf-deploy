@@ -6,6 +6,35 @@ never executed or adopted. Dispatch is gated by the new signed stage claim.
 import hashlib,os,stat,subprocess,time
 from pathlib import Path
 
+def retained_transport(core,profile,captured,expected):
+    """One observed format enrichment; retain both original hashes unchanged.
+
+    The historical profile lacks peerCredentials. Every other field must be
+    byte-equivalent to the authenticated capture, whose ROOT peer is still
+    checked live by Engine.connection on every request. No missing-current-peer,
+    arbitrary field exclusion, socket drift or historical hash rewriting.
+    """
+    core.require(profile['schema']=='ouf.current-onboarding-database-snapshot-profile.v1'
+                 and profile['runtimeBindingProfile']=='ouf.runtime-binding.native-mount-order.v1',
+                 'EXACT_RETAINED_DATABASE_SCHEMA_AND_NATIVE_PROFILE_REQUIRED')
+    retained=profile['engineBinding']
+    core.require(type(retained)is dict and type(captured)is dict and 'peerCredentials'not in retained
+                 and set(captured)==set(retained)|{'peerCredentials'},'EXACT_HISTORICAL_ABSENT_CURRENT_PRESENT_PEER_PROFILE_REQUIRED')
+    core.require(all(core.encoded(captured[k])==core.encoded(v)for k,v in retained.items()),'EVERY_RETAINED_ENGINE_FIELD_MUST_REMAIN_EXACT')
+    peer=captured['peerCredentials'];socket=captured.get('socketBinding');path=captured.get('socketPath')
+    core.require(type(peer)is list and len(peer)==3 and all(type(v)is int for v in peer)
+                 and peer[0]>1 and peer[1:]==[0,0],'EXACT_CURRENT_ROOT_ENGINE_PEER_CREDENTIALS_REQUIRED')
+    core.require(type(path)is str and path.startswith('/')and'..'not in path.split('/')and '\x00'not in path
+                 and type(socket)is list and len(socket)==5 and all(type(v)is int for v in socket)
+                 and socket[0]>=0 and socket[1]>0 and socket[2]==0 and socket[3]>=0 and socket[4]in(0o600,0o660),
+                 'EXACT_CURRENT_ROOT_ENGINE_SOCKET_CUSTODY_REQUIRED')
+    hashes={'retainedEngineBindingHash':core.digest(retained),'capturedEngineBindingHash':core.digest(captured),
+            'peerCredentialsHash':core.digest(peer)}
+    core.require(hashes==expected,'EXACT_RECONCILED_RETAINED_AND_CAPTURED_TRANSPORT_HASHES_REQUIRED')
+    return {'profile':'HISTORICAL_ENGINE_BINDING_WITHOUT_PEER_TO_EXACT_AUTHENTICATED_ROOT_PEER_CAPTURE_V1',
+            **hashes,'historicalMetadataRewritten':False,'sameSocketPathAndCustody':True,
+            'liveCapturedPeerVerificationOnEveryEngineRequestRequired':True}
+
 def check_postgres(ctx,actual):
     p=ctx.database_profile;core=ctx.core
     core.require(p['runtimeBindingProfile']=='ouf.runtime-binding.native-mount-order.v1'

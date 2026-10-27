@@ -22,7 +22,7 @@ class Native(fixture.Protocol):
         (build/'server.py').write_text('''import http.server
 class H(http.server.BaseHTTPRequestHandler):
  def do_GET(self):
-  self.send_response(200 if self.path=='/q/health/ready' else 404);self.end_headers();self.wfile.write(b'{"status":"UP"}')
+  self.send_response(200 if self.path=='/actuator/health/readiness' else 404);self.end_headers();self.wfile.write(b'{"status":"UP"}')
  def log_message(self,*args):pass
 http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
 ''')
@@ -89,14 +89,24 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
         prepared=folder/'execution-inputs.json';self.write(folder,prepared.name,execution_inputs)
         docker=Path('/usr/bin/docker').resolve();profile={'schema':'ouf.current-onboarding-database-snapshot-profile.v1',
             'identity':{'database':'postgres','databaseOid':int(self.psql("SELECT oid FROM pg_database WHERE datname='postgres'")),'runtimeRole':'postgres','adminRole':'postgres','postgresPort':5432},
-            'engineBinding':engine,'postgresRuntimeBinding':self.parts['engine_creation'].Engine.runtime_binding(self.original['postgres']),
+            'engineBinding':{k:v for k,v in engine.items()if k!='peerCredentials'},'postgresRuntimeBinding':self.parts['engine_creation'].Engine.runtime_binding(self.original['postgres']),
             'runtimeBindingProfile':'ouf.runtime-binding.native-mount-order.v1','dockerExecutable':{'path':str(docker),'sha256':hashlib.sha256(docker.read_bytes()).hexdigest()},
             'containerPrograms':{'env':'/usr/bin/env','timeout':'/usr/bin/timeout','psql':'/usr/bin/psql'},'unixSocketDirectory':'/var/run/postgresql'}
-        frozen={'schema':'ouf.onboarding-v35-frozen-native-plan.v1','boundDatabaseProfile':profile,'replacements':{'onboarding':{'request':self.original['onboarding']['Config'],'readiness':{'readinessPort':8080,'readinessPath':'/q/health/ready'}}},'nativeFlywayConfiguration':{'ownerOverlays':[{'binding':{'path':str(mount),'sha256':hashlib.sha256(mount.read_bytes()).hexdigest(),'metadata':list(self.p.frame(mount.lstat()))}}]}}
+        frozen={'schema':'ouf.onboarding-v35-frozen-native-plan.v1','boundDatabaseProfile':profile,'replacements':{'onboarding':{'request':self.original['onboarding']['Config'],'readiness':{'readinessPort':8080,'readinessPath':'/actuator/health/readiness'}}},'nativeFlywayConfiguration':{'ownerOverlays':[{'binding':{'path':str(mount),'sha256':hashlib.sha256(mount.read_bytes()).hexdigest(),'metadata':list(self.p.frame(mount.lstat()))}}]}}
         identity=self.root/'synthetic-database-identity.json';self.write(self.root,identity.name,frozen)
         self.case={'executionInputsHash':self.core.digest(execution_inputs),'inputsHash':input_hash,'nativeImageId':self.native_id,'sourceCommit':'d'*40,'testedCommit':self.source,
                    'nativeArchiveHash':derived['derivedArchiveSha256'],'executionInputsPath':str(prepared),'inputsPath':str(input_path),
-                   'databaseIdentityPath':str(identity),'databaseIdentityHash':self.core.digest(frozen),'ownerOverlayPath':str(mount),'executionRoot':str(self.root/'new-execution')}
+                   'databaseIdentityPath':str(identity),'databaseIdentityHash':self.core.digest(frozen),'ownerOverlayPath':str(mount)}
+        old=self.root/'original-unissued-preflight';old.mkdir(mode=0o700)
+        self.write(old,'preparation-claim.json',{'schema':'ouf.onboarding-diagnostic-update-preflight-claim.v1','executionInputsHash':self.case['executionInputsHash'],'maximums':self.core.LIMITS,'runtimeEffectsDispatched':0,'automaticReplayAllowed':False,'budgetReset':False})
+        for i in range(1,4):self.write(old,'preflight-attempt-1234-%05d.json'%i,{'kind':'ownerConfigurationReads','attempt':i,'attemptNotCompletion':True})
+        read_root=self.root/'reconciled-read';read_root.mkdir(mode=0o700)
+        retained=json.loads((BASE/'tests/fixtures/onboarding-peer-reconciled-result.json').read_bytes())
+        hashes={'retainedEngineBindingHash':self.core.digest(profile['engineBinding']),'capturedEngineBindingHash':self.core.digest(engine),'peerCredentialsHash':self.core.digest(engine['peerCredentials'])}
+        retained.update(contextPath=str(read_root),**{k:hashes[k]for k in('retainedEngineBindingHash','capturedEngineBindingHash')})
+        retained['engineBindingDifferences'][0]['captured']['sha256']=hashes['peerCredentialsHash'];self.write(read_root,'result.json',retained)
+        self.case.update(executionRoot=str(old/'retained-peer-credentials-continuation-v1'),priorStop={'root':str(old),'resultPath':str(read_root/'result.json'),'resultHash':self.core.digest(retained),'readerCounts':retained['counts'],'transportHashes':hashes})
+        self.assertNotIn('peerCredentials',profile['engineBinding']);self.assertIn('peerCredentials',engine)
         self.public={'trustPolicy':self.verification['trustPolicy'],'context':self.context,'profile':self.profile}
     def psql(self,sql):return self.cli('exec',self.pg,'psql','-X','-w','-q','-A','-t','-v','ON_ERROR_STOP=1','-U','postgres','-d','postgres','-c',sql)
     def context_instance(self):return self.parts['context'].Context(self.parts,self.auth,self.sign,self.journal,self.closure,case=self.case,public_authority=lambda p:copy.deepcopy(self.public),runtime=self.runtime)
@@ -113,6 +123,9 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
         try:
             self.setup_native();ctx=self.context_instance();review=self.entry.review(ctx);result=self.entry.execute_approved(ctx,review,self.decision(review))
             self.assertTrue(result['complete']);self.assertEqual(result['sqlSessionsByRepair'],4);row=ctx.execution.journal.read();self.assertEqual(row['state'],'COMPLETE');self.assertEqual(len(row['effects']),14)
+            self.assertEqual(review['retainedUnissuedPreflight']['retainedPreflightCounts']['ownerConfigurationReads'],3)
+            self.assertGreaterEqual(review['preflightCounts']['ownerConfigurationReads'],3+5+4+2)
+            self.assertFalse(review['retainedTransportCompatibility']['historicalMetadataRewritten'])
             for role,before in self.original.items():
                 after=self.api('GET','/containers/'+before['Id']+'/json')
                 if role=='onboarding':self.assertFalse(after['State']['Running']);self.assertEqual(after['NetworkSettings']['Networks'],{});self.assertEqual(before['State']['StartedAt'],after['State']['StartedAt'])

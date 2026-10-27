@@ -57,7 +57,7 @@ class Engine:
 CHILD=r'''import http.client,json,os,signal,sys
 signal.alarm(10)
 try:
- if len(sys.argv)!=4 or not sys.argv[1].isdigit() or not sys.argv[2].isdigit() or not 1<=int(sys.argv[2])<=65535 or sys.argv[3] not in('/q/health/ready','/health/ready'):raise ValueError()
+ if len(sys.argv)!=4 or not sys.argv[1].isdigit() or not sys.argv[2].isdigit() or not 1<=int(sys.argv[2])<=65535 or sys.argv[3]!='/actuator/health/readiness':raise ValueError()
  fd=int(sys.argv[1]);os.setns(fd,0);os.close(fd)
  c=http.client.HTTPConnection('127.0.0.1',int(sys.argv[2]),timeout=4)
  c.request('GET',sys.argv[3],headers={'Connection':'close','Accept':'application/json'})

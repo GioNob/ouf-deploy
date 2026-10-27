@@ -20,7 +20,14 @@ TARGET={'executionInputsHash':'c22586172070809d414d3654f3e002b7e1d84d749daae9b31
         'databaseIdentityPath':'/etc/ouf/deploy-snapshots/onboarding-budget-v35-54d86bbcd2ea47fd/native-plan-v1/execution-plan.json',
         'databaseIdentityHash':'b17c2c99cc791cced8ee00ed190e30b75c518ae84e2dd4a9ae7eef521390c8bd',
         'ownerOverlayPath':'/opt/ouf/secrets/onboarding-ths.yaml',
-        'executionRoot':'/etc/ouf/deploy-snapshots/onboarding-diagnostic-update-c22586172070809d-v1'}
+        'executionRoot':'/etc/ouf/deploy-snapshots/onboarding-diagnostic-update-c22586172070809d-v1/retained-peer-credentials-continuation-v1',
+        'priorStop':{'root':'/etc/ouf/deploy-snapshots/onboarding-diagnostic-update-c22586172070809d-v1',
+          'resultPath':'/etc/ouf/deploy-snapshots/onboarding-diagnostic-transport-stop-read-c2258617-v1/result.json',
+          'resultHash':'be0123cad1ce85cbe16b508d41d9361fa76843603dceffff4e1f64bac655ee3c',
+          'readerCounts':{'bytes':319666,'privateMetadataReads':7,'protectedCodeReads':22},
+          'transportHashes':{'retainedEngineBindingHash':'8e3adb93d5874ee423092e7171e501a2fcef3386c44fbe48ee40c7c92ef8bb01',
+            'capturedEngineBindingHash':'c17569848d56b8efb49ded7ab94b9e4e307ecb0b80eead2fed42aa34d1ed5718',
+            'peerCredentialsHash':'7ff52993d5d3cb149089942de7fc7a6511db2671cf2125976c081ad6fff89772'}}}
 PROFILE={'path':'/etc/ouf/deploy-snapshots/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json','sha256':'7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18'}
 POLICY={'path':'/etc/ouf/deploy-snapshots/semantic-trust-policy-preparation-20261004-172336/trust-policy.json','sha256':'21122630e52cb63c3744fee89f5c81ed926dad55231190243ca11be6d481bd42'}
 CONTEXT={'installationRef':'ouf-lab-netcup-01','entityRef':'ouf-lab','intentIssuerRef':'ouf-lab-infrastructure-installer','approvalIssuerRef':'ouf-lab-infrastructure-installer','attestorRef':'ouf-lab-node-attestor'}
@@ -46,8 +53,10 @@ class Context:
         self.fence,self.database=parts['state_fence'],parts['database']
         self.auth,self.sign,self.journal_module=auth,sign,journal;self.closure=copy.deepcopy(closure);self.case=copy.deepcopy(case);self.root=Path(case['executionRoot']);self.serial=0
         self.execution=None;self.counts={k:0 for k in self.core.LIMITS};self.responses=0;self.receiptBytes=0;self.runtime=runtime;self.prior_seals={}
+        require('priorStop'in case,'EXACT_RECONCILED_UNISSUED_PREFLIGHT_REQUIRED');self.counts['ownerConfigurationReads']=3
         self.p.ancestry(self.root.parent);require(not os.path.lexists(self.root),'ONBOARDING_UPDATE_SCOPE_CONSUMED_NO_REPLAY');self.root.mkdir(mode=0o700);self.root.chmod(0o700)
         self.sync(self.root.parent);self.write(self.root,'preparation-claim.json',{'schema':'ouf.onboarding-diagnostic-update-preflight-claim.v1','executionInputsHash':case['executionInputsHash'],'maximums':self.core.LIMITS,'runtimeEffectsDispatched':0,'automaticReplayAllowed':False,'budgetReset':False})
+        self.reconcile_preflight(case['priorStop'])
         self.reserve('ownerConfigurationReads');self.native=self.read(case['executionInputsPath'],case['executionInputsHash'])
         self.reserve('ownerConfigurationReads');self.inputs=self.read(case['inputsPath'],case['inputsHash'])
         n=self.native
@@ -63,11 +72,10 @@ class Context:
         self.reserve('ownerConfigurationReads');frozen=self.read(case['databaseIdentityPath'],case['databaseIdentityHash'])
         require(frozen['schema']=='ouf.onboarding-v35-frozen-native-plan.v1','RETAINED_DATABASE_IDENTITY_METADATA_ONLY')
         self.database_profile=copy.deepcopy(frozen['boundDatabaseProfile']);profile=self.database_profile
-        require(profile['schema']=='ouf.current-onboarding-database-snapshot-profile.v1'and profile['engineBinding']==n['engineBinding']
-                and profile['runtimeBindingProfile']=='ouf.runtime-binding.native-mount-order.v1','EXACT_RETAINED_NATIVE_DATABASE_TRANSPORT_REQUIRED')
+        self.transport_compatibility=self.database.retained_transport(self.core,profile,n['engineBinding'],case['priorStop']['transportHashes'])
         self.readiness=copy.deepcopy(frozen['replacements']['onboarding']['readiness'])
         require(type(self.readiness['readinessPort'])is int and 1<=self.readiness['readinessPort']<=65535
-                and self.readiness['readinessPath']in('/q/health/ready','/health/ready'),'RETAINED_OWNER_READINESS_ENDPOINT_REQUIRED')
+                and self.readiness['readinessPath']=='/actuator/health/readiness','RETAINED_OWNER_SPRING_READINESS_ENDPOINT_REQUIRED')
         self.reserve('ownerConfigurationReads');migration_path=Path(__file__).resolve().parent/'migration-fence.json'
         migration_doc=self.read(migration_path,closure[str(migration_path)])
         self.migrations=migration_doc
@@ -113,6 +121,7 @@ class Context:
                        'existingApplications':{'onboarding':self.p.stable_binding(old)},'onboardingReplacement':replacement,
                        'legacyConfigMacDetachPolicy':self.mac.policy(old),'operationalSqlHash':self.core.sha(self.fence.query().encode()),
                        'databaseTransportIdentityHash':self.core.digest(profile),'readiness':self.readiness,
+                       'retainedTransportCompatibility':self.transport_compatibility,'retainedUnissuedPreflight':self.retained_preflight,
                        'retainedCaptureCounts':copy.deepcopy(self.inputs['counts']),
                        'retainedImagePreparationCounts':{'ciZipReads':1,'containerWrites':0,'engineGets':0,'imageImports':0,'nativeArchivesPrepared':1,'privateMetadataReads':2}}
         self.inputs['currentObservations']={'onboarding':old};self.inputs['currentProcessPins']={'onboarding':n['currentProcessPin']}
@@ -137,6 +146,39 @@ class Context:
             os.fchmod(stream.fileno(),0o400);stream.write(raw);stream.flush();os.fsync(stream.fileno())
         self.sync(path.parent)
     def read(self,path,expected):return self.p.decode(self.p.protected(Path(path),expected))
+    def reconcile_preflight(self,binding):
+        old=Path(binding['root']);require(self.root.parent==old and self.root.name=='retained-peer-credentials-continuation-v1','EXACT_UNISSUED_PREFLIGHT_CHILD_REQUIRED')
+        names=[]
+        with os.scandir(old)as entries:
+            for row in entries:names.append(row.name);require(len(names)<=5,'UNISSUED_PREFLIGHT_ONLY_NO_OLD_AUTHORITY_OR_JOURNAL')
+        attempts=sorted(n for n in names if re.fullmatch(r'preflight-attempt-[1-9][0-9]{0,9}-[0-9]{5}\.json',n))
+        require(len(attempts)==3 and set(names)=={'preparation-claim.json',self.root.name,*attempts},'EXACT_ORIGINAL_THREE_METADATA_ATTEMPTS_REQUIRED')
+        def retained(path,expected=None):
+            self.reserve('ownerConfigurationReads');raw=self.p.protected(Path(path),expected,limit=16384)
+            self.prior_seals[str(path)]=list(self.p.frame(Path(path).lstat()));return self.p.decode(raw)
+        r=retained(binding['resultPath'],binding['resultHash']);counts={k:0 for k in self.core.LIMITS};counts['ownerConfigurationReads']=3
+        hashes=binding['transportHashes'];difference=[{'field':['peerCredentials'],'retained':{'present':False,'type':'ABSENT','sha256':None},
+                   'captured':{'present':True,'type':'list','sha256':hashes['peerCredentialsHash']}}]
+        require(r['schema']=='ouf.onboarding-transport-retained-stop-read.v1'and r['status']=='RETAINED_ONBOARDING_TRANSPORT_STOP_OBSERVED_NO_AUTHORITY'
+            and r['contextPath']==str(Path(binding['resultPath']).parent)and r['complete']is True
+            and r['guardChecks']=={'engineBinding':False,'profileSchema':True,'runtimeBindingProfile':True}and r['failedGuardChecks']==['engineBinding']
+            and r['engineBindingDifferences']==difference and r['retainedEngineBindingHash']==hashes['retainedEngineBindingHash']
+            and r['capturedEngineBindingHash']==hashes['capturedEngineBindingHash']and r['sameSocketPath']is True and r['sameSocketCustody']is True
+            and r['samePeerCredentials']is False and r['retainedPreflightCounts']==counts and r['counts']==binding['readerCounts']
+            and r['originalAuthorityAndJournalAbsent']is True and r['pinnedCodeAndRetainedClaimsProveNoRuntimeDispatch']is True
+            and r['originalScopeConsumed']is True and r['originalFilesWritten']==0 and r['currentRuntimeStateObserved']is False
+            and r['runtimeAuthorityIssued']is False and r['continuationAuthorized']is False and r['automaticReplayAllowed']is False
+            and r['budgetReset']is False and r['newEngineRequests']==r['sqlSessions']==r['oauthRequests']==r['credentialFileReads']==r['signingKeyReads']==r['configurationContentReads']==0,
+            'EXACT_RETAINED_ABSENT_PEER_RECONCILIATION_REQUIRED')
+        claim=retained(old/'preparation-claim.json')
+        require(claim=={'schema':'ouf.onboarding-diagnostic-update-preflight-claim.v1','executionInputsHash':self.case['executionInputsHash'],
+             'maximums':self.core.LIMITS,'runtimeEffectsDispatched':0,'automaticReplayAllowed':False,'budgetReset':False},'EXACT_OLD_UNISSUED_CLAIM_REQUIRED')
+        for i,name in enumerate(attempts,1):
+            require(retained(old/name)=={'kind':'ownerConfigurationReads','attempt':i,'attemptNotCompletion':True},'EXACT_RETAINED_METADATA_COUNTS_REQUIRED')
+        self.prior_inventory={'path':str(old),'metadata':list(self.p.frame(old.lstat())),'names':sorted(names)}
+        self.retained_preflight={'originalRoot':str(old),'reconciliationBinding':copy.deepcopy(binding),'retainedPreflightCounts':counts,
+            'separateConsumedReaderCounts':r['counts'],'originalAuthorityAndJournalAbsent':True,'oldScopeConsumed':True,
+            'newConcreteHumanReviewRequired':True,'oldAuthorityReused':False,'budgetReset':False}
     def evidence(self,name,value):
         # Controller and its single forked watchdog never overwrite or collide.
         self.serial+=1;self.write(self.root,name+'-'+str(os.getpid())+'-%05d.json'%self.serial,value)
@@ -167,6 +209,7 @@ class Context:
         require(Path('/proc/sys/kernel/random/boot_id').read_text().strip()==self.inputs['bootId']==self.proposal['bootId'],'SAME_ONBOARDING_UPDATE_HOST_BOOT_REQUIRED')
         for path,metadata in self.input_seals.items():require(list(self.p.frame(Path(path).lstat()))==metadata,'PREPARED_INPUT_SEAL_CHANGED')
         for path,metadata in self.prior_seals.items():require(list(self.p.frame(Path(path).lstat()))==metadata,'RECONCILED_PREFLIGHT_SEAL_CHANGED')
+        prior=self.prior_inventory;require(list(self.p.frame(Path(prior['path']).lstat()))==prior['metadata']and sorted(os.listdir(prior['path']))==prior['names'],'ORIGINAL_UNISSUED_PREFLIGHT_DIRECTORY_CHANGED')
         for path,metadata in self.source_seals.items():require(list(self.p.frame(Path(path).lstat()))==metadata,'SEALED_ONBOARDING_EXECUTOR_SOURCE_CHANGED')
         require(list(self.p.frame(Path(self.archive['path']).lstat()))==self.archive['metadata'],'PREPARED_ARCHIVE_SEAL_CHANGED')
         require(list(self.p.frame(Path(self.owner_overlay_binding['path']).lstat()))==self.owner_overlay_binding['metadata'],'EXACT_CLASSIFIED_OWNER_CONFIGURATION_CHANGED')

@@ -15,6 +15,7 @@ jobs:
       - run: |
           sudo install -d -m 700 /var/lib/ouf-onboarding-update-protocol-ci
           sudo env OUF_ONBOARDING_UPDATE_TEST_ROOT=/var/lib/ouf-onboarding-update-protocol-ci python3 -B -m unittest discover -s tests -p test_onboarding_diagnostic_update_protocol.py -v
+          sudo env OUF_ONBOARDING_UPDATE_TEST_ROOT=/var/lib/ouf-onboarding-update-protocol-ci python3 -I -S -B tests/test_onboarding_peer_compatibility.py
           python3 -B -m unittest discover -s tests -p test_retained_mac_transition.py -v
           python3 -B -m unittest discover -s tests -p test_onboarding_diagnostic_state_fence.py -v
   new-executor-native-lifecycle:
