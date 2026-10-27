@@ -2,7 +2,7 @@
   "schema": "ouf.onboarding-structural-object-read-proposal.v1",
   "date": "2026-10-27",
   "timezone": "Europe/Rome",
-  "status": "PENDING_HUMAN_DIRECT_THS",
+  "status": "PUBLISHED_HUMAN_DIRECT_THS",
   "evidence": "evidence/farmacie-service-policy-read-target-20261027.json",
   "request": {
     "operation": "UPSERT",
@@ -69,5 +69,16 @@
   "automaticReissueAllowed": false,
   "budgetReset": false,
   "applicationE2EProven": false,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "publishedReceipt": {
+    "proposalId": "b045ada2-f1d6-4e4e-9beb-acf85d6474f7",
+    "revision": 1,
+    "state": "PUBLISHED",
+    "expiresAt": "2026-10-27T14:29:59.514655Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=b045ada2-f1d6-4e4e-9beb-acf85d6474f7",
+    "finalPolicyRef": "ouf-lab-authorization:56"
+  },
+  "publishedBy": "HUMAN_DIRECT_THS",
+  "publicationVerifiedByAssistant": true,
+  "jobRecoveryExecuted": false
 }

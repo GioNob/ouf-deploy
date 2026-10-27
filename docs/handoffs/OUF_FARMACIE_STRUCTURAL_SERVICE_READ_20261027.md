@@ -1,3 +1,7 @@
+# AGGIORNAMENTO — policy56 PUBBLICATA E VERIFICATA
+
+Proposta b045ada2-f1d6-4e4e-9beb-acf85d6474f7 r1 PUBLISHED/finalPolicy56 verificata dopo conferma owner. Decisione HUMAN acquisita, non riproporre/rinnovare. Permesso SERVICE corretto; job FAILED/tentativi5 invariati. NEXT qualifica recovery HUMAN finita D4, nessun profiling/reset/replay automatico. La sezione PENDING sotto è storica.
+
 # Farmacie — grant SERVICE scaduto provato; correzione strutturale in review
 
 27 ottobre2026, Europe/Rome. [Lettura target](../../evidence/farmacie-service-policy-read-target-20261027.json), Exit0/DeliveryExit0. [Checkpoint precedente](OUF_FARMACIE_OBJECT_READ_FORBIDDEN_20261027.md). Policy55, hash b126492af85039fba88c0de4cc888bad3603356e3dcc07e6be1d4240fcc0c6ce, osservata27ottobre15:07:21 Europe/Rome. Descriptor READ/SERVICE/scope atteso coerenti. Unico matchingServiceGrant per ouf-onboarding/ouf.object-storage.content.read: grant-managed-file-read-onboarding, scaduto25ottobre2026 00:00Z; nessun ALLOW configurato corrente in quel set. Questa è prova della policy, non una nuova richiesta Gateway né prova del token workload o dell'esclusiva causa del403 storico.

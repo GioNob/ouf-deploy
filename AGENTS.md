@@ -1,3 +1,11 @@
+# CURRENT — policy56 SERVICE strutturale PUBBLICATA; ripresa job ancora da qualificare
+
+27 ottobre2026. Proposta b045ada2-f1d6-4e4e-9beb-acf85d6474f7 r1 PUBLISHED/finalPolicy56 verificata sullo stessoID dopo conferma owner. [Ricevuta](evidence/onboarding-structural-object-read-proposal-20261027.json). Permesso READ uf-onboarding/tenantouf-lab/capabilityouf.object-storage.content.read fino15set2036; vecchio grant scaduto conservato. Nessun nuovo budget o esecuzione di job con questa pubblicazione, nessuna approvazione simulata.
+
+NEXT D4: riusare budget-session/fencing/readiness già implementati per qualificare classificazione del403 permanente e ripresa HUMAN finita dello STESSO FAILED. Non chiamare source.file.profile con nuova key/job, non azzerare tentativi5, non usare release quarantena come bypass. Il servizio esistente conserva FAILED e storia ma non ha ancora la recovery finita del profiling qualificata. Nessuna preview o file-read aggiuntiva autorizzata implicitamente; token/Gateway e riuscita end-to-end ancora non provati dopo56.
+
+M1/G4 acquisito, M2/G5/G6/G7 aperti. Diagnostica minima installata; candidato M2 PR53 non installato. Tutti i precedenti scope/read/APPLY consumati. Nessun Registryrestart/reinstall/merge/releaseacceptance/subagenti/automazioni. Header seguenti STORICI.
+
 # CURRENT — grant SERVICE scaduto provato; correzione strutturale PENDING HUMAN
 
 27 ottobre2026. Ricevuta VPS SERVICE_POLICY_OBSERVED_NO_AUTHORITY complete=true/Exit0/DeliveryExit0, policy55/hashb126492a..., ore15:07:21 Europe/Rome (UTC+1). Unico matching grant ouf-onboarding/ouf.object-storage.content.read scaduto25ottobre; nessun matching ALLOW corrente. [Prova owner](evidence/farmacie-service-policy-read-target-20261027.json). Prerequisito configurato mancante, non prova esclusiva del403 storico né del token/Gateway corrente.1GET owner/1GET IAM/5POST IAM/115286byte, zero mutazioni/app/filebytes/SQL/credenziali. Lettore e scope CONSUMATI: NON rilanciare.
