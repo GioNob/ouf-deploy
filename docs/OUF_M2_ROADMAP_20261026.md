@@ -1,3 +1,15 @@
+# CURRENT — grant SERVICE scaduto provato; correzione strutturale PENDING HUMAN
+
+27 ottobre2026. Ricevuta VPS SERVICE_POLICY_OBSERVED_NO_AUTHORITY complete=true/Exit0/DeliveryExit0, policy55/hashb126492a..., ore16:07:21 Europe/Rome. Unico matching grant ouf-onboarding/ouf.object-storage.content.read scaduto25ottobre; nessun matching ALLOW corrente. [Prova owner](../evidence/farmacie-service-policy-read-target-20261027.json). Prerequisito configurato mancante, non prova esclusiva del403 storico né del token/Gateway corrente.1GET owner/1GET IAM/5POST IAM/115286byte, zero mutazioni/app/filebytes/SQL/credenziali. Lettore e scope CONSUMATI: NON rilanciare.
+
+L'owner contesta la dipendenza ordinaria da un grant breve. Nessuna nuova proposta temporanea SERVICE creata. Token breve rinnovabile, permesso strutturale revocabile e budget finiti di esecuzione sono distinti. Contratto Grant richiede validUntil: proposta strutturale fino15set2036, stesso orizzonte policy già inuso, esplicitamente mostrato all'owner; non fingersi contratto senza scadenza o monitoraggio già qualificato.
+
+Proposta b045ada2-f1d6-4e4e-9beb-acf85d6474f7 r0 PENDING/finalPolicyRefnull, riletta stessoID. [Review HUMAN](https://api.ouf-lab.it/trusted-human/authorization/?proposal=b045ada2-f1d6-4e4e-9beb-acf85d6474f7) entro16:29:59 Europe/Rome. Aggiunge SOLO READ SERVICE ouf-onboarding/tenantouf-lab/capability ouf.object-storage.content.read; conserva vecchio grant e tutti gli altri grant/ruoli/assegnazioni, Ingestion escluso. [Richiesta/ricevuta](../evidence/onboarding-structural-object-read-proposal-20261027.json). Nessuna pubblicazione dell'assistente o nuova authority/budget di job.
+
+NEXT decisione HUMAN diretta poi proposal.read STESSOID. [Handoff corrente](handoffs/OUF_FARMACIE_STRUCTURAL_SERVICE_READ_20261027.md). Scadenza/rifiuto conserva prove e non ripropone automaticamente. Pubblicare il permesso non rilancia FAILED: stessa storia/tentativi5, nessun nuovo profiling/job/reset/attivazione/acquisizione. D4 deve correggere catch-all che ritenta403 e qualificare nuova sessione HUMAN finita/cumulativa; prerequisiti autorizzativi della coorte e osservabilità scadenze ancora da qualificare. Nessun grant automatico per altri servizi sulla base dei soli cataloghi.
+
+Diagnostica VPS installata e APPLY/preview/capture/preparazioni consumate. M1/G4 acquisito, M2/G5/G6/G7 aperti; riusare typed/ASSETS/LATEST/recovery/UDP. No Registryrestart/reinstall/merge/releaseacceptance/subagenti/automazioni. Supervisor dopo E2E. Header seguenti STORICI.
+
 # CURRENT — fallimento object-read403 provato; lettore policy SERVICE qualificato NON eseguito
 
 27 ottobre2026. Policy55 PUBLISHED verificata e UNA preview del job Farmacie ha restituito OBJECT_READ_FORBIDDEN. Source installato conferma errore nella lettura oggetto prima del body/parser; non è un nuovo GET al file. [Prova owner](../evidence/farmacie-object-read-forbidden-observed-20261027.json). Quella preview è CONSUMATA; nessun nuovo profiling/upload/acquisizione o reset.

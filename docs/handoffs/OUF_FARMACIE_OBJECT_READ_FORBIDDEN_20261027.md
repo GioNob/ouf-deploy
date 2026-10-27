@@ -1,3 +1,7 @@
+# STORICO — lettura SERVICE eseguita, grant scaduto confermato
+
+Il comando seguente è CONSUMATO, non rilanciare. [Handoff corrente e proposta strutturale](OUF_FARMACIE_STRUCTURAL_SERVICE_READ_20261027.md).
+
 # Farmacie — fallimento di lettura oggetto localizzato, causa autorizzativa da verificare
 
 27 ottobre2026, Europe/Rome. [Prova MCP owner](../../evidence/farmacie-object-read-forbidden-observed-20261027.json). [Checkpoint precedente](OUF_FARMACIE_DIAGNOSTIC_INSTALLED_NEXT_READ_20261027.md).

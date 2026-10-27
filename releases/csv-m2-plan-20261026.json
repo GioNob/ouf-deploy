@@ -53,7 +53,7 @@
       "proven": 6,
       "total": 6
     },
-    "farmacieStatus": "FAILED_OBJECT_READ_FORBIDDEN_BEFORE_PARSER",
+    "farmacieStatus": "FAILED_OBJECT_READ_FORBIDDEN_SERVICE_GRANT_EXPIRED",
     "diagnosticCandidateInstalled": true,
     "diagnosticInstalledSourceCommit": "a5ed8b05c264a8221783a6e323ba00117aed891d"
   },
@@ -1914,7 +1914,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Verificare sul policy owner il grant SERVICE ouf-onboarding/ouf.object-storage.content.read e la relativa identità M2M, usando lettura governata e fonti già qualificate. Il catalogo sorgente scade25ottobre ma non prova la policy live. Una preview consumata; nessun nuovo upload/profiling/job/grant automatico o replay.",
+  "firstNextAction": "Decisione HUMAN sulla proposta strutturale SERVICE esistente b045ada2-f1d6-4e4e-9beb-acf85d6474f7, poi read stessoID. Grant finoorizzonte2036, non rinnovo perCSV. Qualificare ripresa finita del FAILED conservando storia/cumulativi: nessun reset, nuovo job o profiling automatico. Lettore policy e tutte le vecchie procedure consumati.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2180,12 +2180,14 @@
       "exit": "Categoria/causa owner dello stesso FAILED, regressione causale e percorso di recovery qualificato",
       "remainingHours": null,
       "progress": {
-        "status": "RETAINED_FAILURE_BOUNDARY_OBSERVED_UNDERLYING_AUTHORIZATION_CAUSE_OPEN",
+        "status": "CONFIGURED_SERVICE_PERMISSION_GAP_PROVEN_STRUCTURAL_FIX_PENDING_HUMAN",
         "diagnosticCategory": "OBJECT_READ_FORBIDDEN",
         "parserReachedForObservedFailure": false,
         "serviceGrantExpirySourceIndication": true,
-        "liveServiceGrantNotYetRead": true,
-        "evidence": "evidence/farmacie-object-read-forbidden-observed-20261027.json"
+        "liveServiceGrantNotYetRead": false,
+        "evidence": "evidence/farmacie-service-policy-read-target-20261027.json",
+        "configuredServiceGrantExpired": true,
+        "exclusiveHistorical403CauseProven": false
       }
     },
     {
@@ -2260,7 +2262,14 @@
         "D1"
       ],
       "exit": "Permanenti non ritentati; transitori finiti; recovery HUMAN conserva tentativi/storia e non duplica effetti",
-      "remainingHours": null
+      "remainingHours": null,
+      "progress": {
+        "status": "PERMANENT_403_RETRIED_FIVE_TIMES_REQUIRES_TARGETED_FIX",
+        "permanentAuthorizationFailureMustNotAutoRetry": true,
+        "retainFailedJobAndAllAttempts": true,
+        "newHumanSessionWithCumulativeLimitsRequiredForRecovery": true,
+        "implemented": false
+      }
     },
     {
       "id": "D5",
@@ -2309,7 +2318,7 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "docs/handoffs/OUF_FARMACIE_OBJECT_READ_FORBIDDEN_20261027.md",
+  "currentCheckpoint": "docs/handoffs/OUF_FARMACIE_STRUCTURAL_SERVICE_READ_20261027.md",
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
     "evidence": "evidence/onboarding-diagnostic-apply-qualified-20261027.json",
@@ -2414,5 +2423,36 @@
     "publicationBy": "HUMAN_DIRECT_THS",
     "diagnosticCategory": "OBJECT_READ_FORBIDDEN",
     "evidence": "evidence/farmacie-object-read-forbidden-observed-20261027.json"
+  },
+  "servicePolicyRead": {
+    "sourceCommit": "881a1fa97afdd6c1964761feb09648d88a82c08c",
+    "deliveryCommit": "618a7949c4d106399399e4178a1d632a9d271e7d",
+    "qualification": "evidence/farmacie-service-policy-read-qualified-20261027.json",
+    "status": "COMPLETE_SERVICE_GRANT_EXPIRY_OBSERVED",
+    "targetExecuted": true,
+    "targetReceipt": "evidence/farmacie-service-policy-read-target-20261027.json",
+    "scopeConsumed": true,
+    "currentDeliveryUsable": false,
+    "rerunAllowed": false,
+    "policyRef": "ouf-lab-authorization:55",
+    "policyHash": "b126492af85039fba88c0de4cc888bad3603356e3dcc07e6be1d4240fcc0c6ce",
+    "allMatchingWindowsExpired": true,
+    "anyCurrentAllowGrantConfigured": false,
+    "exit": 0,
+    "deliveryExit": 0
+  },
+  "structuralServiceReadProposal": {
+    "status": "PENDING_HUMAN_DIRECT_THS",
+    "proposalId": "b045ada2-f1d6-4e4e-9beb-acf85d6474f7",
+    "revision": 0,
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=b045ada2-f1d6-4e4e-9beb-acf85d6474f7",
+    "expiresAt": "2026-10-27T14:29:59.514655Z",
+    "capabilityId": "ouf.object-storage.content.read",
+    "servicePrincipalId": "ouf-onboarding",
+    "validUntil": "2036-09-15T07:13:50.968730Z",
+    "evidence": "evidence/onboarding-structural-object-read-proposal-20261027.json",
+    "published": false,
+    "newExecutionBudgetGranted": false,
+    "jobResetAllowed": false
   }
 }

@@ -87,9 +87,11 @@
   "operatorLogPath": "/usr/local/lib/ouf-farmacie-service-policy-read-ad582e403e4a8016/operator.log",
   "newScope": "/etc/ouf/deploy-snapshots/farmacie-service-policy-read-20261027-v1",
   "oldScopesReopened": false,
-  "targetExecuted": false,
+  "targetExecuted": true,
   "automaticReplayAllowed": false,
   "runtimeAuthorityIssued": false,
   "applicationE2EProven": false,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "targetReceipt": "evidence/farmacie-service-policy-read-target-20261027.json",
+  "scopeConsumed": true
 }
