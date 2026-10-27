@@ -1,3 +1,15 @@
+# CURRENT — fallimento object-read403 provato; lettore policy SERVICE qualificato NON eseguito
+
+27 ottobre2026. Policy55 PUBLISHED verificata e UNA preview del job Farmacie ha restituito OBJECT_READ_FORBIDDEN. Source installato conferma errore nella lettura oggetto prima del body/parser; non è un nuovo GET al file. [Prova owner](../evidence/farmacie-object-read-forbidden-observed-20261027.json). Quella preview è CONSUMATA; nessun nuovo profiling/upload/acquisizione o reset.
+
+Catalogo sorgente indica grant-managed-file-read-onboarding (SERVICE ouf-onboarding/capability ouf.object-storage.content.read) scaduto25ottobre. È INDIZIO, non ancora prova di policy live. MCP permissions.read non filtra servicePrincipalId: nessuna query artificiosa come subjectId. Riusati Device Flow HUMAN e trasporto del lettore descriptor già qualificato, in uno scope NUOVO solo READ.
+
+Lettore source881a1fa97afdd6c1964761feb09648d88a82c08c, delivery618a7949c4d106399399e4178a1d632a9d271e7d, wrapperSHA8e1b697b940544d5440355fc1f32e97b6d9c8c0c02e1fa9aa165331eca526278. [Qualifica](../evidence/farmacie-service-policy-read-qualified-20261027.json): push40512559522/PR40512572076 PASS16test, zero skip; delivery reale HTTPS/nonroot/sudo/root0400/checksum ROOT/main negativa prima del login PASS. Log diretti letti, byte source/wrapper pinned verificati. CI sintetica, NON risultato VPS.
+
+NEXT prima esecuzione NUOVA lettura e login browser ouf-admin: un GET policy attiva, massimo600s/121POST IAM/1GET IAM/1GET owner/4MB; zero Engine/SQL/file credenziali/chiavi/file applicativi/preview/policywrite/grant. [Handoff/comando](handoffs/OUF_FARMACIE_OBJECT_READ_FORBIDDEN_20261027.md). Nessun APPROVO o consenso da simulare; è solo lettura sotto autorità admin già esistente. Token solo in memoria. Scope /etc/ouf/deploy-snapshots/farmacie-service-policy-read-20261027-v1, mai rimuovere o rilanciare se STOP. Nessun lettore/consenso storico riusato; solo codice riusato.
+
+Diagnostica VPS già installata e APPLY consumata; stesso FAILED/tentativi5, M1/G4 acquisito, M2/G5/G6/G7 aperti. Niente rinnovo SERVICE alla cieca, reupload/profiling/job/reset/replay/attivazione/acquisizione/Registryrestart/reinstall/merge/release acceptance/subagenti/automazioni. Supervisor dopo E2E. Header seguenti STORICI.
+
 # CURRENT — proposta READ diagnostica PENDING; diagnostica VPS installata
 
 27 ottobre2026. Proposta `f8bc6357-136b-40fc-8a40-8d22816df0b0` revisione0 PENDING/finalPolicyRef=null, riletta sullo stessoID. [Review HUMAN](https://api.ouf-lab.it/trusted-human/authorization/?proposal=f8bc6357-136b-40fc-8a40-8d22816df0b0) entro15:24:12 Europe/Rome; grant nuovo SOLO preview per ouf-admin/tenantouf-lab, finestra15:09:04–16:09:04 Europe/Rome. [Intento/ricevuta](../evidence/farmacie-retained-diagnostic-read-intent-20261027.json). Una proposta preparata; nessuna pubblicazione o approvazione dell'assistente, nessuna preview eseguita. Contesto IAM capability: grant non vincolabile al job, ownership owner invariata; esecuzione prevista una sola READ del job677480c8/asset9c502da5. Non rinnova upload/profile né i vecchi scope.
