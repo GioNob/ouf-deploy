@@ -64,7 +64,8 @@
     },
     "runtimeEvidenceOrigin": "OPERATOR_VPS_OUTPUT_AT_SUCCESSFUL_COMPLETION_NOT_A_NEW_LIVE_RECHECK",
     "activeOnboardingSourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
-    "activeOnboardingNativeImageId": "sha256:e4690481db28e3e70335704de89e563dcf32ecf70e4a0caea1bdc30c48aa4359"
+    "activeOnboardingNativeImageId": "sha256:e4690481db28e3e70335704de89e563dcf32ecf70e4a0caea1bdc30c48aa4359",
+    "profileControlCorrection": "EXACT_CI_IMAGES_RETAINED_NATIVE_CAPTURE_QUALIFIED_NOT_INSTALLED"
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1923,7 +1924,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Reuse the qualified candidate sources and CI image artifacts without rebuilding old images. Bind exact archive/source/tested image identities and read current native authority prerequisites/catalogue/scopes in a NEW minimal scope before preparing the concrete deployment/permission review. No old APPLY/capture/publisher replay. Source qualification is not target deployment. Then USER-only same-job3attempts/900s budget and separate resume, original/hash/parser/preview and61rows to UDP.",
+  "firstNextAction": "Operator first execution of NEW read-only current-cohort capture. Then bind a new minimal deployment/admission review to actual captured hashes; zero schema migrations, preserve same job/counters; do not replay historical scopes. HUMAN governance and same-job3/900s budget and resume remain separate after real access.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2335,7 +2336,7 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "docs/handoffs/OUF_PROFILE_RECOVERY_CONTROL_AUTHORIZATION_20261027.md",
+  "currentCheckpoint": "docs/handoffs/OUF_MANAGED_CSV_RECOVERY_CUSTODY_CAPTURE_20261027.md",
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
     "evidence": "evidence/onboarding-diagnostic-apply-qualified-20261027.json",
@@ -2653,5 +2654,12 @@
     "mcpSource": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
     "runtimePermissionsPublished": false,
     "newHumanBudgetGranted": false
+  },
+  "profileControlCustodyAndCapture": {
+    "evidence": "evidence/managed-csv-recovery-custody-capture-qualified-20261027.json",
+    "status": "EXACT_IMAGES_RETAINED_NEW_READ_ONLY_CAPTURE_QUALIFIED_TARGET_NOT_EXECUTED",
+    "captureCode": "4dcffc7e299cda79d70b0a973e6e270ce4f36718",
+    "captureWrapper": "80b133705a00d5e643527d603205a906a1e05863",
+    "targetExecuted": false
   }
 }
