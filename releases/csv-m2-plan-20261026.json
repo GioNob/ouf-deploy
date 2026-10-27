@@ -1914,7 +1914,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "One new qualified read-only current-input capture for installed diagnostic Onboarding; then compile a new governed V36 maintenance/image plan. No consumed procedures, job reset or implicit HUMAN budget.",
+  "firstNextAction": "FIRST execution of releases/OUF_PROFILE_RECOVERY_INPUT_CAPTURE_COMMAND_20261027.sh on VPS as oufadmin, once only. Four retained metadata reads/three Engine GETs, no SQL/OAuth/credentials/migration/lifecycle/budget/job execution. STOP retains evidence and prohibits replay. Then compile a NEW governed V36 plan from the returned input hash.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2465,5 +2465,17 @@
     "sourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
     "evidenceRef": "evidence/profile-recovery-source-qualification-20261027.json",
     "targetInstalled": false
+  },
+  "profileFailfastQualification": {
+    "sourceCommit": "11e579366c90ace6dd67c3fec5643559b556f7d0",
+    "evidenceRef": "evidence/profile-failfast-source-qualification-20261027.json",
+    "targetInstalled": false
+  },
+  "profileRecoveryInputCaptureQualification": {
+    "evidenceRef": "evidence/profile-recovery-current-input-capture-qualified-20261027.json",
+    "sourceCommit": "1f83f8a61096583b22448d0b85673917a2baae3c",
+    "deliveryCommit": "2981b7f009bd7072feabd78781e9b85eddfa9500",
+    "wrapperSha256": "0babe8ba8455b31e23cd768904dfdef9ccee975853bcaaa438c7da1313d99b83",
+    "targetExecutionReceived": false
   }
 }

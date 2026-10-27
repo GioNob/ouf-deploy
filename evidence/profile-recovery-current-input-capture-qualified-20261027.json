@@ -1,6 +1,6 @@
 {
   "schema": "ouf.profile-recovery-current-input-capture-qualification.v1",
-  "status": "SOURCE_AND_NATIVE_CI_QUALIFIED_DELIVERY_PENDING",
+  "status": "SOURCE_NATIVE_AND_PROTECTED_DELIVERY_CI_QUALIFIED_NOT_EXECUTED_ON_TARGET",
   "sourceCommit": "1f83f8a61096583b22448d0b85673917a2baae3c",
   "sourcePath": "scripts/capture-onboarding-profile-recovery-inputs-20261027.py",
   "sourceSha256": "52a8e9a8ba86b8d56012fac562f3e9de1d6a861969159702703343365a3a0733",
@@ -38,5 +38,26 @@
   "applicationE2EProven": false,
   "runtimeAuthorityIssued": false,
   "automaticReplayAllowed": false,
-  "budgetReset": false
+  "budgetReset": false,
+  "delivery": {
+    "commit": "2981b7f009bd7072feabd78781e9b85eddfa9500",
+    "wrapper": "releases/capture-onboarding-profile-recovery-inputs-20261027.sh",
+    "wrapperSha256": "0babe8ba8455b31e23cd768904dfdef9ccee975853bcaaa438c7da1313d99b83",
+    "qualificationCommit": "6eb694eb871b0720656c609c0acc47a18255abcd",
+    "runId": 40536357706,
+    "rootNativeJobId": 122302563259,
+    "protectedDeliveryJobId": 122302563982,
+    "directJobLogsRead": true,
+    "conclusion": "success",
+    "realNonrootCurlSudoRoot400": true,
+    "actualMainWrongPrivateSealRejected": true,
+    "consumedScopeReplayRejected": true,
+    "noGhOrTimeoutExecutableNeeded": true,
+    "rootChecksumVerified": true,
+    "nonrootSourceReadDenied": true,
+    "bootstrapLog0600": true,
+    "oldFilesPreserved": true,
+    "targetAccess": false
+  },
+  "operatorCommandPath": "releases/OUF_PROFILE_RECOVERY_INPUT_CAPTURE_COMMAND_20261027.sh"
 }

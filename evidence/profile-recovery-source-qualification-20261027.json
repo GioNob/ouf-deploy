@@ -84,7 +84,40 @@
     "archiveDigest": "sha256:afc1da28317b06845c8a37d81c529e931cb3d11415f13b9842fb3633a0e8d3d0",
     "reviewedSourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
     "containsManifest": true,
-    "targetDeliveryNotYetAuthorized": true
+    "targetDeliveryNotYetAuthorized": true,
+    "archiveDigestKind": "GITHUB_ARTIFACT_ZIP",
+    "manifest": {
+      "archiveBytes": 212904147,
+      "archiveName": "image.tar.gz",
+      "archiveSha256": "e3868e3e6582150da2d94e3f4c467ef5140a54bbad2a69aa6a4306b43938c3c9",
+      "humanBudgetGranted": false,
+      "imageId": "sha256:24b89e0430513b441453467a57cca983fcef2dbb6733fe29dc0fa34b1be67463",
+      "imageRevisionLabel": "e42c398af3ab6989a956925445c478f8eb9f2446",
+      "imageTag": "ouf-source-onboarding:e42c398af3ab6989a956925445c478f8eb9f2446",
+      "preservedAtomicInstallationOwner": true,
+      "preservedDeploymentSourceCommit": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "preservedMigration": "V34__source_property_revision.sql",
+      "preservedMigrationGitBlob": "a6ee2ca93ae6b271e770e133e08da557bb379a09",
+      "preservedSourceRevisionParent": "be388e1462778438a208c2e00e166370fee32189",
+      "qualifiedInCiOnly": true,
+      "releaseAcceptance": false,
+      "repository": "GioNob/ouf-source-onboarding",
+      "reviewedSourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
+      "schema": "ouf.onboarding-tested-image.v1",
+      "sourceSchemaMigration": "V36__managed_profile_recovery_sessions.sql",
+      "targetApplyAuthorized": false,
+      "testedCommit": "e42c398af3ab6989a956925445c478f8eb9f2446",
+      "testedTree": "b2b4ca04043a818f39fd8a9743972b7e6130c16e",
+      "workflowRunAttempt": "1",
+      "workflowRunId": "40533881204"
+    },
+    "manifestRead": {
+      "rangeReads": 6,
+      "rangeBytes": 1439,
+      "fullArchiveChecksumVerified": false
+    },
+    "ciImageId": "sha256:24b89e0430513b441453467a57cca983fcef2dbb6733fe29dc0fa34b1be67463",
+    "vpsNativeImageIdPrepared": false
   },
   "qualificationCorrections": [
     {
@@ -128,5 +161,6 @@
   "budgetReset": false,
   "applicationE2EProven": false,
   "releaseAcceptance": false,
-  "mergeAuthorized": false
+  "mergeAuthorized": false,
+  "runtimeEffectsScope": "TARGET_ONLY"
 }

@@ -1,3 +1,7 @@
+# CONSEGNA QUALIFICATA — prima esecuzione metadata VPS da ricevere
+
+Lettore source1f83f8a.../SHA52a8e9a8... e wrapper2981b7f009bd7072feabd78781e9b85eddfa9500/SHA0babe8ba8455b31e23cd768904dfdef9ccee975853bcaaa438c7da1313d99b83 qualificati. CI finale40536357706/job122302563259 (12test+Engine reale/root0400) e job122302563982 (curl nonroot/sudo/copia root0400/checksum root/produzione-main nega sigillo errato e replay) PASS; log diretti letti. [Comando completo](../../releases/OUF_PROFILE_RECOVERY_INPUT_CAPTURE_COMMAND_20261027.sh). Eseguire una sola volta comeoufadmin; solo password sudo se richiesta, nessun APPROVO o login IAM. Questo comando scrive soltanto codice/prove/log privati e legge4metadata+3GET Engine; non migra, non reinstalla o riavvia, non legge il CSV e non rinnova alcun budget. Se STOP conservare prove e non rilanciare. Nessun risultato target di questa nuova cattura ricevuto.
+
 # Recovery profiling HUMAN qualificata; cattura corrente prima del pianoV36
 
 27 ottobre2026, Europe/Rome. [Predecessore](OUF_PROFILE_FAILFAST_AND_RECOVERY_CHECKPOINT_20261027.md). Policy56 SERVICE strutturale pubblicata/verificata, non riproporre. Permesso di lettura ordinaria distinto da token breve e sessione di job finita.
@@ -16,7 +20,7 @@ Installata solo diagnostica minimaa5ed8b05c264a8221783a6e323ba00117aed891d, imag
 
 ## Nuovo input capture prima del piano
 
-[Qualifica](../../evidence/profile-recovery-current-input-capture-qualified-20261027.json). Sorgente1f83f8a61096583b22448d0b85673917a2baae3c, script scripts/capture-onboarding-profile-recovery-inputs-20261027.py, SHA25652a8e9a8ba86b8d56012fac562f3e9de1d6a861969159702703343365a3a0733.12test e prova Engine reale/root0400 PASS; wrapper curl/sudo in qualifica, nessun comando target consegnato finché non passa. Nuovo scope /etc/ouf/deploy-snapshots/onboarding-profile-recovery-current-inputs-20261027-v1.4letture metadata esatti: inputs5909... conservato, reviewd771..., result e recovery.json COMPLETE della diagnostica installata.3GET massimi: Engineinfo e due inspect del solo candidateID trattenuto nel journal. Confronta generazione/processpin/nativebinding approvati, boot e tupla peer completa, incluso PID1 già qualificato: niente nuova assunzione PID>1 per il daemon, niente normalizzazione MAC globale.
+[Qualifica](../../evidence/profile-recovery-current-input-capture-qualified-20261027.json). Sorgente1f83f8a61096583b22448d0b85673917a2baae3c, script scripts/capture-onboarding-profile-recovery-inputs-20261027.py, SHA25652a8e9a8ba86b8d56012fac562f3e9de1d6a861969159702703343365a3a0733.12test e prova Engine reale/root0400 PASS; wrapper curl/sudo qualificato come nell’aggiornamento in testa; prima esecuzione target da ricevere. Nuovo scope /etc/ouf/deploy-snapshots/onboarding-profile-recovery-current-inputs-20261027-v1.4letture metadata esatti: inputs5909... conservato, reviewd771..., result e recovery.json COMPLETE della diagnostica installata.3GET massimi: Engineinfo e due inspect del solo candidateID trattenuto nel journal. Confronta generazione/processpin/nativebinding approvati, boot e tupla peer completa, incluso PID1 già qualificato: niente nuova assunzione PID>1 per il daemon, niente normalizzazione MAC globale.
 
 Zero Enginewrite/import/lifecycle/SQL/OAuth/credenziali/chiavi/nuovi job/budget/attivazioni/acquisizioni. Nessuna readiness o stato job applicativo corrente viene provato dalla sola metadata capture. RuntimeAuthorityIssued e continuationAuthorizedfalse. Se STOP: conservare log/prove e non rilanciare. I vecchi scope restano consumati.
 
@@ -27,3 +31,21 @@ Dopo l'unico risultato della nuova cattura, riusare piano/controller nativi e ma
 Correzione CI storica: tests/qualify_onboarding_transport_stop_read_delivery.py ricostruiva il vecchio manifest687a... da sorgenti correnti. Ora fixture dal commit originalee1597e00...; hash atteso e lettore/target immutati, zero vecchie procedure eseguite sul VPS. Qualifica098dd4e... run40534344391 PASS. Non leggere questo aggiustamento come nuova autorità o replay.
 
 No merge/releaseacceptance/Registryrestart/reinstall/subagenti/automazioni. Supervisor dopo E2E completo.
+
+## Comando consegnato, pinned e verificabile
+
+```bash
+(
+  set -Eeuo pipefail
+  umask 077
+  ouf_recovery_bootstrap=$(mktemp -d "$HOME/ouf-profile-recovery-bootstrap.XXXXXXXX")
+  exec > >(tee -a "$ouf_recovery_bootstrap/bootstrap.log") 2>&1
+  printf 'BootstrapDirectory=%s\n' "$ouf_recovery_bootstrap"
+  curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-redirs 3 --connect-timeout 15 --max-time 60 \
+    "https://raw.githubusercontent.com/GioNob/ouf-deploy/2981b7f009bd7072feabd78781e9b85eddfa9500/releases/capture-onboarding-profile-recovery-inputs-20261027.sh" \
+    -o "$ouf_recovery_bootstrap/run.sh"
+  printf '%s  %s\n' '0babe8ba8455b31e23cd768904dfdef9ccee975853bcaaa438c7da1313d99b83' "$ouf_recovery_bootstrap/run.sh" | sha256sum -c -
+  chmod 0400 "$ouf_recovery_bootstrap/run.sh"
+  /usr/bin/bash "$ouf_recovery_bootstrap/run.sh"
+)
+```
