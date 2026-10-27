@@ -15,6 +15,7 @@ def main():
     spec = importlib.util.spec_from_file_location('retained_csv_inputs', folder/'retained_inputs.py')
     core = importlib.util.module_from_spec(spec); spec.loader.exec_module(core)
     capture = None
+    case = None
     try:
         core.require(len(sys.argv) == 1 and os.geteuid() == os.getegid() == 0
                      and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode
@@ -34,7 +35,14 @@ def main():
                   'runtimeAuthorityIssued': False, 'containerWrites': 0, 'automaticReplayAllowed': False,
                   'budgetReset': False, 'applicationE2EProven': False, 'releaseAcceptance': False}
         if capture is not None and not (capture.root/'result.json').exists():
-            result['captureAccounting'] = core.capture_accounting(capture, getattr(capture, 'priorConsumedStop', None))
+            previous = getattr(capture, 'priorConsumedStop', None)
+            if case.get('reconcilePriorStop') is not None and previous is None:
+                result['captureAccounting'] = {
+                    'currentScopeCounts': dict(capture.counts),
+                    'declaredPriorConsumedScopeCounts': case['reconcilePriorStop']['counts'],
+                    'priorStopReconciliationProven': False, 'cumulativeCounts': None}
+            else:
+                result['captureAccounting'] = core.capture_accounting(capture, previous)
             capture.put('result.json', result)
     finally:
         signal.alarm(0)
