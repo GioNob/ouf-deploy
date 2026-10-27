@@ -56,7 +56,8 @@
     "farmacieStatus": "FAILED_OBJECT_READ_FORBIDDEN_POLICY56_CORRECTED_HUMAN_RECOVERY_PENDING",
     "diagnosticCandidateInstalled": true,
     "diagnosticInstalledSourceCommit": "a5ed8b05c264a8221783a6e323ba00117aed891d",
-    "profileRecoveryV36Deployment": "NATIVE_MAINTENANCE_QUALIFIED_FIRST_TARGET_EXECUTION_PENDING"
+    "profileRecoveryV36Deployment": "APPLY_OUTPUT_SUPPLIED_FULL_LOG_UNREADABLE_FINAL_RUNTIME_STATE_UNKNOWN",
+    "runtimeAfterLatestApplyVerified": false
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1915,7 +1916,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "FIRST execution of the new qualified native V35-to-V36 maintenance command in releases/OUF_PROFILE_RECOVERY_V36_APPLY_COMMAND_20261027.sh. Fresh concrete private review and isolated-line terminal APPROVO before any SQL/signing/runtime effect. Verified quiescent backup and exact additive36 history/defaults; retain FAILED5 and all prior data/counters, no job budget. STOP retains evidence and forbids replay; do not repeat capture/preparation/publisher or consumed APPLY.",
+  "firstNextAction": "Read the FULL user-attached output of the ALREADY DELIVERED first native V35-to-V36 APPLY in a new chat. Parse all frames, final result and Exit/DeliveryExit before any runtime action. Do not redeliver/rerun APPLY, capture, preparation or artifact publisher; do not infer success/STOP/zero effects from the preview. Reconcile incomplete/STOP evidence without replay; only verified positive server output permits separate HUMAN same-job budget/resume.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2324,7 +2325,7 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "docs/handoffs/OUF_PROFILE_RECOVERY_V36_NATIVE_APPLY_20261027.md",
+  "currentCheckpoint": "docs/handoffs/OUF_CHAT_RESUME_V36_APPLY_OUTPUT_PENDING_READ_20261027.md",
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
     "evidence": "evidence/onboarding-diagnostic-apply-qualified-20261027.json",
@@ -2526,16 +2527,36 @@
     "finalRun": 40548069329,
     "qualified": true,
     "targetExecutionReceived": false,
-    "targetInstalled": false,
-    "runtimeAuthorityIssuedOnTarget": false,
-    "freshConcreteTerminalReviewRequired": true,
-    "humanJobBudgetGranted": false,
+    "targetInstalled": null,
+    "runtimeAuthorityIssuedOnTarget": null,
+    "freshConcreteTerminalReviewRequired": null,
+    "humanJobBudgetGranted": null,
     "automaticReplayAllowed": false,
     "maximumNewTechnicalSqlSessions": 7,
     "maximumBackupProcesses": 2,
     "databaseMigrationRequested": {
       "from": 35,
       "to": 36
-    }
+    },
+    "operatorSuppliedOutput": true,
+    "fullOperatorOutputRead": false,
+    "targetFinalResultVerified": false,
+    "humanJobBudgetAuthorizedByMaintenance": false,
+    "currentDeliveryUsable": false,
+    "commandMustNotBeRedelivered": true,
+    "scopePotentiallyConsumed": true,
+    "awaitingAnotherApplyReview": false,
+    "originalApplyRequiresFreshConcreteTerminalReview": true
+  },
+  "profileRecoveryNativeUpdateOutputPendingRead": {
+    "evidenceRef": "evidence/profile-recovery-v36-apply-output-unreadable-checkpoint-20261027.json",
+    "operatorSuppliedOutput": true,
+    "fullOutputRead": false,
+    "targetFinalStatus": null,
+    "targetExit": null,
+    "targetDeliveryExit": null,
+    "scopePotentiallyConsumed": true,
+    "automaticReplayAllowed": false,
+    "attachmentAccessIssueIsNotServerFailure": true
   }
 }

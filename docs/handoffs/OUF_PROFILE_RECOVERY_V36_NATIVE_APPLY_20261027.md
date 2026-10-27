@@ -1,3 +1,7 @@
+# AGGIORNAMENTO — leggere l’output già fornito, non rieseguire il comando sotto
+
+L’operatore ha fornito output del primo APPLY e un nuovo log.txt; il contenuto integrale non è stato accessibile nella chat precedente. Esito finale VPS SCONOSCIUTO, possibili effetti e scope potenzialmente consumato. Non assumere “non eseguito” dal titolo storico sotto e NON riconsegnare il comando come prima esecuzione. Prima azione: [nuovo handoff di ripresa](OUF_CHAT_RESUME_V36_APPLY_OUTPUT_PENDING_READ_20261027.md) e lettura del log che l’operatore allegherà alla nuova chat. Solo dopo risultato verificato aggiornare installazione/authority e proseguire, senza replay.
+
 # Prima manutenzione nativa Onboarding V35→V36 — QUALIFICATA, NON eseguita sul VPS
 
 27 ottobre 2026, Europe/Rome (UTC+1). [Predecessore: preparazione immagine/piano](OUF_PROFILE_RECOVERY_IMAGE_PLAN_20261027.md). [Prova preparazione VPS](../../evidence/profile-recovery-image-plan-target-20261027.json). [Qualifica controller](../../evidence/profile-recovery-v36-native-update-qualified-20261027.json).

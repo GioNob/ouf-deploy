@@ -1,4 +1,14 @@
-# CURRENT — prima manutenzione nativa V35→V36 QUALIFICATA, nessun APPLY VPS ricevuto
+# CURRENT — output primo APPLY V36 fornito ma non leggibile in chat; ESITO VPS SCONOSCIUTO
+
+27 ottobre 2026. L’operatore, dopo la consegna dell’APPLY V35→V36, ha fornito output come testo/allegato e poi log.txt. Questa chat NON ha potuto leggere i contenuti integrali: solo anteprima con inizio authorityHash non completo. Nessun risultato finale, Exit/DeliveryExit o hash di review/authority completi verificato. Non chiamare questo un errore server, non affermare successo/STOP/assenza di effetti, non dichiarare V36 installata o ancora certamente assente. Il precedente header “prima esecuzione da ricevere” è STORICO, non istruzione di rilancio.
+
+PUNTO ESATTO: leggere per primo il log che l’operatore allegherà alla NUOVA chat, poi registrare risultato effettivo. [Nuovo handoff completo](docs/handoffs/OUF_CHAT_RESUME_V36_APPLY_OUTPUT_PENDING_READ_20261027.md), [checkpoint di accesso allegati, NON prova server](evidence/profile-recovery-v36-apply-output-unreadable-checkpoint-20261027.json). Scope /etc/ouf/deploy-snapshots/onboarding-profile-recovery-v36-apply-564038c5d487f0a4-v1 POTENZIALMENTE CONSUMATO: non riconsegnare/eseguire il comando APPLY, non riusare review/authority, non azzerare contatori. Primo frame issued/runtimeEffects0 non prova esito finale. Se log incompleto/STOP: conservare prove e riconciliare, nessun rilancio/rollback automatico.
+
+Due preparazioni VPS già verificate complete/Exit0/DeliveryExit0 e CONSUMATE: cattura1ce0ce1c..., image/input564038c5... e piano condizionale432c2930.... Controller/immagine qualificati CI, tutti i limiti e pin nel nuovo handoff. Codicee5410467..., wrapper2f04dff7.../SHAdc1d4312..., manifesto23filea46b1915..., nativeimagee4690481.... Nessuna nuova azione VPS/OUF, concessione o authority emessa da questo checkpoint documentale.
+
+Ultimo stato verificato PRIMA del tentativo: diagnosticaa5ed8b05.../074bd16e..., FarmacieFAILED5; dopo il tentativo stato runtime non verificato. Policy56 SERVICE strutturale pubblicata/verificata, non riproporre grant temporanei. Dopo eventuale APPLY positivo provato: HUMAN THS distinta per sessione3tentativi/900s e resume STESSO job, cumulativi6–8, mai reset. M1/G4 acquisiti, M2/G5/G6/G7 aperti. No terza acquisizione/bypass/Registry restart/reinstall/merge/release acceptance/subagenti/automazioni. Account OUF ouf-admin. Header seguenti storici.
+
+# HISTORICAL — prima manutenzione nativa V35→V36 QUALIFICATA, nessun APPLY VPS ricevuto
 
 27 ottobre 2026. Immagine/piano privato V36 preparati sul VPS: executionInputsHash564038c5d487f0a4f4504cca4c6e9e418e1f715dbf95fe9ce97cb2b27c297b76, conditionalNativePlanHash432c2930c119223449870e935a1ac0f485607812e73019928b4148d9238ab22a. [Prova target](evidence/profile-recovery-image-plan-target-20261027.json). Preparazione/cattura/publisher e vecchie APPLY CONSUMATI: non ripeterli.
 
