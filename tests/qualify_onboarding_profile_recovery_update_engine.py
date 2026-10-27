@@ -47,11 +47,17 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
         registry=self.api('POST','/containers/create?name=ouf-registry-'+uuid.uuid4().hex[:10],foreign)['Id'];self.ids.append(registry);self.api('POST','/containers/'+registry+'/start');self.registry=self.api('GET','/containers/'+registry+'/json')
         self.assertEqual(self.original['onboarding']['Config']['MacAddress'],'02:42:ac:44:01:07','REAL_LEGACY_CONFIG_MAC_REQUIRED')
         self.pg=self.cli('run','--detach','--network',self.net,'--env','POSTGRES_PASSWORD=ci-not-production','postgres:17');self.ids.append(self.pg)
+        ready=None
         for _ in range(60):
-            ready=subprocess.run(['docker','exec',self.pg,'pg_isready','-U','postgres'],capture_output=True)
-            if ready.returncode==0:break
+            logs=subprocess.run(['docker','logs',self.pg],capture_output=True,timeout=5)
+            # pg_isready alone also succeeds against the temporary initdb server.
+            # Wait for the entrypoint to finish and stop that server before admitting the final postmaster.
+            initialized=b'PostgreSQL init process complete; ready for start up.'in(logs.stdout+logs.stderr)
+            if initialized:
+                ready=subprocess.run(['docker','exec',self.pg,'pg_isready','-U','postgres'],capture_output=True,timeout=5)
+                if ready.returncode==0:break
             time.sleep(1)
-        self.assertEqual(ready.returncode,0)
+        self.assertIsNotNone(ready,'POSTGRES_FIXTURE_INITIALIZATION_NOT_COMPLETE');self.assertEqual(ready.returncode,0)
         self.original['postgres']=self.api('GET','/containers/'+self.pg+'/json')
         self.psql('CREATE SCHEMA ouf_onboarding;')
         fence=self.parts['state_fence'];migrations=json.loads((BASE/'releases/onboarding-profile-recovery-migration-fence-20261027.json').read_bytes())
