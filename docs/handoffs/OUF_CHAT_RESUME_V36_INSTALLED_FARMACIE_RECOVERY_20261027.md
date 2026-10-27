@@ -1,5 +1,21 @@
 # Ripresa OUF — APPLY V36 completato; prossimo recupero HUMAN dello stesso job Farmacie
 
+## Aggiornamento accesso HUMAN — 27 ottobre 2026
+
+L'owner ha chiarito: **alla THS accede e decide soltanto l'utente, non l'assistente**. L'assistente fornisce il link esatto a ogni decisione necessaria; non apre o controlla ulteriormente la THS e non simula consenso, budget o resume.
+
+La pagina recovery è raggiungibile. Un primo tentativo di sola lettura dell'assistente ha mostrato «Accesso non autorizzato o sessione scaduta». Successivamente l'utente ha riportato lo stesso messaggio. Il JS installato presenta quel testo sia per HTTP401 sia per403: status esatto, identità effettiva, scope/label e gate Gateway/owner non sono ancora distinti. NON è una nuova lettura riuscita del job.
+
+[Ingresso OIDC verificato nel codice installato](https://api.ouf-lab.it/oauth2/authorization/ouf-ths). Dopo questo passaggio l'utente ha riportato404 Route Not Found sulla radice https://api.ouf-lab.it/ . Il404 della radice non prova fallimento del login né indisponibilità della recovery. È stato fornito nuovamente il [link esatto alla scheda Farmacie](https://api.ouf-lab.it/trusted-human/managed-files/recovery/?asset=9c502da5-b5d8-405e-b3f5-60eb31ecb513&job=677480c8-3d10-44fd-9dad-f72ddeed20a4); l'utente ha poi confermato di aver riaperto il link esatto. Il contenuto attuale della scheda e l'identità effettiva non sono ancora stati riportati: non dedurre successo dalla sola riapertura.
+
+Se la scheda è disponibile: verificare account ouf-admin, stesso asset/job e stato fresco prima delle due decisioni separate, sessione3tentativi/900s e poi resume. FAILED5 resta l'ultima osservazione acquisita dall'APPLY, non una nuova lettura della scheda. Se esistono già sessione o comando pending, riconciliare quelli senza nuova concessione.
+
+Se il diniego persiste: localizzare il gate con letture governate minime e identità verificata; nessun grant largo/temporaneo per tentativi e nessun nuovo upload/job/APPLY. Gateway GET richiede preview; owner card richiede file.profile e ownership tenant/soggetto. Budget/resume richiedono inoltre quarantine.release. Policy56 SERVICE non prova questi permessi HUMAN.
+
+[Evidenza di accesso e passaggio HUMAN](../../evidence/profile-recovery-human-handoff-20261027.json). Nessuna chiamata al connettore OUF, decisione HUMAN o acquisizione eseguita dall'assistente in questa ripresa. La discovery corrente elenca il routing ouf-admin; il nome del collegamento non è prova del principal effettivo. Non usare giovanni-chatgpt come fallback.
+
+V36 resta installata secondo la ricevuta positiva già acquisita; tutti gli scope precedenti restano consumati. M1/G4 acquisiti; M2/G5/G6/G7 aperti.
+
 27 ottobre 2026, Europe/Rome (UTC+1). Repository `GioNob/ouf-deploy`, branch `fix/registry-bound-owner-lineage-20261023`, PR draft [#50](https://github.com/GioNob/ouf-deploy/pull/50). Predecessore documentale `2b3e94c75f59c9eb1c057dc2765f2081436f8450`. Questo aggiornamento registra un risultato VPS già avvenuto: nessun nuovo comando VPS, chiamata OUF, concessione, resume, acquisizione, merge o accettazione eseguiti da questa chat.
 
 ## Risposta al dubbio dell’operatore

@@ -1,0 +1,77 @@
+{
+  "schema": "ouf.profile-recovery-human-access-handoff.v1",
+  "recordedAt": "2026-10-27T18:05:18.332Z",
+  "timezone": "Europe/Rome",
+  "predecessorCommit": "475731cad88c2e590371b24501f0a9eec2a6c743",
+  "retainedApplyStatus": "ONBOARDING_PROFILE_RECOVERY_UPDATE_INSTALLED_E2E_NOT_ACCEPTED",
+  "applyScopeConsumed": true,
+  "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+  "jobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+  "humanSurface": {
+    "operator": "USER_ONLY",
+    "agentInteractionAllowed": false,
+    "recoveryUrl": "https://api.ouf-lab.it/trusted-human/managed-files/recovery/?asset=9c502da5-b5d8-405e-b3f5-60eb31ecb513&job=677480c8-3d10-44fd-9dad-f72ddeed20a4",
+    "oidcLoginUrl": "https://api.ouf-lab.it/oauth2/authorization/ouf-ths",
+    "loginPathSource": "GioNob/ouf-source-onboarding@6ea5242f711761a384fa1b23667971601bc2c38b:src/main/java/it/comune/trieste/ouf/onboarding/api/PermissionThsSecurity.java",
+    "loginCompletedByAgent": false,
+    "effectiveIdentityVerified": false
+  },
+  "accessObservation": {
+    "origins": [
+      "AGENT_INITIAL_READ_ONLY_BROWSER_ATTEMPT_BEFORE_OWNER_CLARIFICATION",
+      "USER_REPORTED_NATIVE_PAGE_MESSAGE"
+    ],
+    "visibleMessage": "Accesso non autorizzato o sessione scaduta. Accedi di nuovo a OUF.",
+    "uiConflatesHttp401And403": true,
+    "exactHttpStatusObserved": false,
+    "exactGateEstablished": false,
+    "ownershipProven": false,
+    "freshJobCardReadSucceeded": false,
+    "freshJobState": null,
+    "subsequentUserReport": {
+      "url": "https://api.ouf-lab.it/",
+      "error_msg": "404 Route Not Found",
+      "loginFailureProven": false,
+      "recoveryRouteUnavailableProven": false,
+      "nextAction": "User reports current card state or remaining error; assistant does not inspect THS",
+      "exactRecoveryReopenConfirmedByUser": true,
+      "reopenedCardOutcomeNotYetReported": true
+    }
+  },
+  "requiredGates": {
+    "gatewayRead": "ouf.managed-source.preview",
+    "ownerCard": "ouf.managed-source.file.profile",
+    "ownerRecoveryAdditional": "ouf.onboarding.quarantine.release",
+    "ownership": "Current tenant and subject proof",
+    "structuralServicePolicy": "ouf-lab-authorization:56; unchanged; does not prove HUMAN permission"
+  },
+  "lastVerifiedJob": {
+    "status": "FAILED",
+    "cumulativeAttempts": 5,
+    "origin": "Retained unchanged at successful V36 APPLY; not a fresh card read"
+  },
+  "pendingHumanSteps": [
+    "Authenticate ouf-admin and reopen exact card",
+    "Verify fresh identity/job/card/session/pending state and effective actions",
+    "If available and intended: HUMAN budget3attempts/900s, then separate HUMAN resume of same session/job",
+    "If denied: establish exact gate without blind permission change"
+  ],
+  "decisionsByAgent": {
+    "humanBudgetGrants": 0,
+    "resumes": 0,
+    "cancels": 0,
+    "permissionProposals": 0,
+    "permissionPublications": 0,
+    "newUploads": 0,
+    "newJobs": 0,
+    "acquisitions": 0
+  },
+  "oufConnectorCallsByThisResume": 0,
+  "browserCardReadAttempted": true,
+  "exactBrowserGatewayDispatchCountObserved": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "mergeAuthorized": false
+}

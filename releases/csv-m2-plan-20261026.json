@@ -1923,7 +1923,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Continue from native HUMAN recovery of the SAME Farmacie asset9c502da5-b5d8-405e-b3f5-60eb31ecb513/job677480c8-3d10-44fd-9dad-f72ddeed20a4. Verify ouf-admin identity and effective card/action permissions; obtain fresh state/review and distinct HUMAN budget3attempts/900s then resume decisions. V36 APPLY is COMPLETE/Exit0/DeliveryExit0 and CONSUMED. Do not replay capture/preparation/publisher/APPLY or reset attempts. Then prove file-read/hash/parser/preview and compose Farmacie61rows to UDP; M2 acceptance remains open.",
+  "firstNextAction": "USER ONLY has reopened exact Farmacie recovery card after native OIDC entry. Obtain current card result and verified ouf-admin identity/permissions/state; do not infer success from reopening or failure from root404. If generic401/403 persists, localize exact gate. After fresh valid card: separate HUMAN budget3attempts/900s and resume SAME retained job; reconcile existing commands first. V36 APPLY remains successful and consumed. No blind grants, alternate upload/job, replay or reset.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2275,18 +2275,18 @@
       "exit": "Permanenti non ritentati; transitori finiti; recovery HUMAN conserva tentativi/storia e non duplica effetti",
       "remainingHours": null,
       "progress": {
-        "status": "OWNER_NATIVE_RECOVERY_SOURCE_CI_QUALIFIED_TARGET_PENDING",
+        "status": "OWNER_NATIVE_RECOVERY_V36_INSTALLED_HUMAN_ACCESS_AND_RECOVERY_PENDING",
         "sourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
         "evidenceRef": "evidence/profile-recovery-source-qualification-20261027.json",
         "ownerSessionMechanismImplemented": true,
-        "targetInstalled": false,
+        "targetInstalled": true,
         "newHumanBudgetGranted": false,
         "retainFailedJobAndAllAttempts": true,
         "complete": false
       },
       "runtimeRecoveryV36Installed": true,
       "liveHumanBudgetResumeProven": false,
-      "remainingTargetEvidence": "Fresh native HUMAN card, separate finite budget/resume on the same FAILED5 job, original file read/hash/parser/profile/preview; no replay of maintenance."
+      "remainingTargetEvidence": "USER-only fresh card and effective identity/gate; separate finite budget/resume on same retained FAILED5 job; original read/hash/parser/profile/preview."
     },
     {
       "id": "D5",
@@ -2634,5 +2634,16 @@
     "humanBudgetsGranted": 0,
     "applicationE2EProven": false,
     "releaseAcceptance": false
+  },
+  "humanProfileRecoveryAccess": {
+    "status": "USER_REOPENED_EXACT_CARD_CURRENT_RESULT_PENDING",
+    "record": "evidence/profile-recovery-human-handoff-20261027.json",
+    "humanSurfaceUserOnly": true,
+    "agentMayInteractWithThs": false,
+    "freshJobCardReadSucceeded": false,
+    "effectiveIdentityVerified": false,
+    "lastVerifiedAttempts": 5,
+    "budgetGrantedByThisResume": false,
+    "resumedByThisResume": false
   }
 }
