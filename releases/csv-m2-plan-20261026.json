@@ -56,7 +56,7 @@
     "farmacieStatus": "FAILED_OBJECT_READ_FORBIDDEN_POLICY56_CORRECTED_HUMAN_RECOVERY_PENDING",
     "diagnosticCandidateInstalled": true,
     "diagnosticInstalledSourceCommit": "a5ed8b05c264a8221783a6e323ba00117aed891d",
-    "profileRecoveryV36Deployment": "IMAGE_AND_CONDITIONAL_PLAN_PREPARED_ON_TARGET_NATIVE_EXECUTOR_PENDING"
+    "profileRecoveryV36Deployment": "NATIVE_MAINTENANCE_QUALIFIED_FIRST_TARGET_EXECUTION_PENDING"
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1915,7 +1915,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Qualify a new native V36 maintenance controller bound to target execution inputs564038c5... and conditional plan432c2930.... Reuse verified V35 backup/fencing/terminal/lifecycle code; fresh concrete HUMAN terminal APPROVO before any effect; no preparation replay, job budget or counter reset.",
+  "firstNextAction": "FIRST execution of the new qualified native V35-to-V36 maintenance command in releases/OUF_PROFILE_RECOVERY_V36_APPLY_COMMAND_20261027.sh. Fresh concrete private review and isolated-line terminal APPROVO before any SQL/signing/runtime effect. Verified quiescent backup and exact additive36 history/defaults; retain FAILED5 and all prior data/counters, no job budget. STOP retains evidence and forbids replay; do not repeat capture/preparation/publisher or consumed APPLY.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2324,7 +2324,7 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "docs/handoffs/OUF_PROFILE_RECOVERY_IMAGE_PLAN_20261027.md",
+  "currentCheckpoint": "docs/handoffs/OUF_PROFILE_RECOVERY_V36_NATIVE_APPLY_20261027.md",
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
     "evidence": "evidence/onboarding-diagnostic-apply-qualified-20261027.json",
@@ -2515,5 +2515,27 @@
     "complete": true,
     "exit": 0,
     "deliveryExit": 0
+  },
+  "profileRecoveryNativeUpdateQualification": {
+    "evidenceRef": "evidence/profile-recovery-v36-native-update-qualified-20261027.json",
+    "codeCommit": "e5410467a410188a3b7ee7ae3264c7b0782f7b4a",
+    "deliveryCommit": "2f04dff7438b0f59c94e341d9c946f9098ba67ef",
+    "wrapperSha256": "dc1d4312f770f2dd4b95672060d189161344dbfd0e4f454ab6a32bf69bc03c07",
+    "sourceManifestSha256": "a46b19156c35cb915b0842e52a72a97bac691c0cd64676aaaa704eb285793cc2",
+    "qualificationCommit": "b97ae857925a57fb7c6448e23cddd696595af95e",
+    "finalRun": 40548069329,
+    "qualified": true,
+    "targetExecutionReceived": false,
+    "targetInstalled": false,
+    "runtimeAuthorityIssuedOnTarget": false,
+    "freshConcreteTerminalReviewRequired": true,
+    "humanJobBudgetGranted": false,
+    "automaticReplayAllowed": false,
+    "maximumNewTechnicalSqlSessions": 7,
+    "maximumBackupProcesses": 2,
+    "databaseMigrationRequested": {
+      "from": 35,
+      "to": 36
+    }
   }
 }

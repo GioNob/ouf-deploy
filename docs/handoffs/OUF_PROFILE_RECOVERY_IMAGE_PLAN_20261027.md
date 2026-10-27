@@ -1,3 +1,7 @@
+# AGGIORNAMENTO — preparazione consumata, nuova manutenzione V36 qualificata
+
+La ricevuta VPS e gli hash qui sotto sono acquisiti: non rieseguire preparazione o cattura. Proseguire dal [nuovo handoff corrente](OUF_PROFILE_RECOVERY_V36_NATIVE_APPLY_20261027.md): controller manutenzione35→36 qualificato, PRIMA esecuzione APPLY ancora da ricevere; review privata fresca e APPROVO solo nel terminale prima degli effetti. Nessun budget del job con questa manutenzione.
+
 # RISULTATO VPS — immagine e piano preparati, scope CONSUMATO
 
 Ricevuta operatore27ottobre2026: complete=true/Exit0/DeliveryExit0, status ONBOARDING_PROFILE_RECOVERY_IMAGE_AND_CONDITIONAL_PLAN_PREPARED_NOT_AUTHORIZED. [Prova](../../evidence/profile-recovery-image-plan-target-20261027.json). executionInputsHash `564038c5d487f0a4f4504cca4c6e9e418e1f715dbf95fe9ce97cb2b27c297b76`; conditionalNativePlanHash `432c2930c119223449870e935a1ac0f485607812e73019928b4148d9238ab22a`; nativeImageId `sha256:e4690481db28e3e70335704de89e563dcf32ecf70e4a0caea1bdc30c48aa4359`. Tre metadata, un ZIP, un archivio nativo; zero Engine/SQL/config-content/OAuth/credenziali/chiavi/import/lifecycle/migrazione/job/budget/acquisizioni. Root code closure cinque file verificata. Log `/home/oufadmin/ouf-onboarding-profile-recovery-image-plan-delivery.4CzecX7r/bootstrap.log`.
