@@ -27,7 +27,9 @@ def components():
     folder=Path(__file__).resolve().parent;raw=source(folder/'sources.json');mapping=json.loads(raw)
     required={'entry.py','authority.py','context.py','transport.py','ports.py','quarantine.py','recovery_journal.py','engine_creation.py','plan_helper.py','image_custody.py','retained_mac.py','terminal.py','authentication.py','signing.py','auth_protocol.py','auth_preexec.py','auth_producer.py','runtime_binding.py','state_fence.py','database.py','migration-fence.json'}
     require(type(mapping)is dict and set(mapping)==required,'EXACT_ONBOARDING_ONLY_SOURCE_CLOSURE_REQUIRED');closure={str(folder/'sources.json'):sha(raw)}
-    for name,digest in mapping.items():require(re.fullmatch('[a-f0-9]{64}',digest)is not None and sha(source(folder/name))==digest,'EXACT_ONBOARDING_EXECUTOR_SOURCE_DIGEST_REQUIRED')
+    for name,digest in mapping.items():
+        require(re.fullmatch('[a-f0-9]{64}',digest)is not None and sha(source(folder/name))==digest,'EXACT_ONBOARDING_EXECUTOR_SOURCE_DIGEST_REQUIRED')
+        closure[str(folder/name)]=digest
     require('tools'not in sys.modules,'ISOLATED_ROLE_VERIFIER_NAMESPACE_REQUIRED');package('tools');package('tools.semantic_lease_recovery')
     selected('tools.semantic_provider_preexec',folder/'auth_preexec.py',('PreexecDenied',),{},closure)
     selected('tools.semantic_provider_deployment_protocol',folder/'auth_protocol.py',('identity','hashed'),{'re':re},closure)

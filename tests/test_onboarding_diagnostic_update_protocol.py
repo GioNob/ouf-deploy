@@ -79,6 +79,12 @@ class Protocol(unittest.TestCase):
             with self.assertRaises(c.Stop):c.retained_host_policy({'AutoRemove':False,'Memory':memory,'OomKillDisable':None})
         for auto in(None,True,0,'false'):
             with self.assertRaises(c.Stop):c.retained_host_policy({'AutoRemove':auto,'Memory':0,'OomKillDisable':None})
+    def test_migration_resource_is_in_the_authenticated_sealed_closure(self):
+        resource=self.code/'migration-fence.json'
+        self.assertEqual(self.closure[str(resource)],hashlib.sha256(resource.read_bytes()).hexdigest())
+        self.assertEqual(len(json.loads(resource.read_bytes())),35)
+        resource.chmod(0o600);resource.write_bytes(b'[]\n');resource.chmod(0o400)
+        with self.assertRaisesRegex(RuntimeError,'SOURCE_DIGEST'):self.entry.components()
     def test_closed_source_loader_rejects_source_tamper(self):
         path=self.code/'ports.py';path.chmod(0o600);path.write_bytes(path.read_bytes()+b'\n# synthetic tamper\n');path.chmod(0o400)
         with self.assertRaisesRegex(RuntimeError,'SOURCE_DIGEST'):self.entry.components()

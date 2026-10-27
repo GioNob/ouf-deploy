@@ -133,6 +133,27 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
         self.memory_bytes=0;self.test_full_new_signed_executor_legacy_frame_and_attested_commit()
     def test_zero_memory_full_endpoint_legacy(self):
         self.memory_bytes=0;self.legacy_explicit=False;self.test_full_new_signed_executor_legacy_frame_and_attested_commit()
+    def test_pending_profile_blocks_before_any_runtime_write(self):
+        try:
+            self.setup_native();self.psql("UPDATE ouf_onboarding.file_profile_job SET state='READY'")
+            ctx=self.context_instance();review=self.entry.review(ctx)
+            with self.assertRaisesRegex(RuntimeError,'QUIESCENT'):self.entry.execute_approved(ctx,review,self.decision(review))
+            row=ctx.execution.journal.read();self.assertEqual(row['counts']['engineWrites'],0);self.assertEqual(row['counts']['sqlSessions'],1)
+            self.assertEqual(row['effects'][0]['state'],'CLAIMED');self.assertTrue(self.api('GET','/containers/'+self.original['onboarding']['Id']+'/json')['State']['Running'])
+            self.assertEqual(self.psql('SELECT attempts FROM ouf_onboarding.file_profile_job'),'5')
+        finally:self.cleanup_native()
+    def test_source_drift_stops_before_new_owner_start_without_reset(self):
+        try:
+            self.setup_native();ctx=self.context_instance();review=self.entry.review(ctx);cls=self.parts['ports'].NativePorts;original=cls.execute
+            def drift(ports,stage):
+                if stage=='VERIFY_PRESTART_STATE':self.psql("UPDATE ouf_onboarding.source SET payload='EXTERNAL_CHANGE_RETAINED'")
+                return original(ports,stage)
+            cls.execute=drift
+            with self.assertRaisesRegex(RuntimeError,'STATE_OR_COUNTER_CHANGED'):self.entry.execute_approved(ctx,review,self.decision(review))
+            row=ctx.execution.journal.read();self.assertEqual(row['counts']['sqlSessions'],3);self.assertEqual(row['effects'][-1]['stage'],'VERIFY_PRESTART_STATE');self.assertEqual(row['effects'][-1]['state'],'CLAIMED')
+            self.assertNotIn('START_ONBOARDING',[r['stage']for r in row['effects']]);self.assertEqual(row['quarantine']['state'],'APPLIED')
+            self.assertEqual(self.psql('SELECT payload FROM ouf_onboarding.source'),'EXTERNAL_CHANGE_RETAINED');self.assertEqual(self.psql('SELECT attempts FROM ouf_onboarding.file_profile_job'),'5')
+        finally:self.cleanup_native()
     def test_actual_lost_controller_watchdog_stops_only_its_new_onboarding(self):
         self.legacy_explicit=False;self.memory_bytes=0
         try:
@@ -168,4 +189,4 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
             print(json.dumps({'schema':'ouf.onboarding-update-lost-controller-ci.v1','complete':True,'backend':os.environ['EXPECTED_STORE'],'actualControllerExitAfterStartClaim':True,'watchdogStoppedOnlyOwnOnboarding':True,'oldNotRestarted':True,'sixOtherContainersUnchanged':True,'outsideScopeRegistryUnchanged':True,'claimedStageRetained':True,'syntheticAuthoritiesAndWorkload':True,'productionRuntimeAccess':False}),flush=True)
         finally:self.cleanup_native()
 if __name__=='__main__':
-    suite=unittest.TestSuite([Native(name)for name in('test_full_new_signed_executor_legacy_frame_and_attested_commit','test_full_endpoint_legacy_compatibility_profile','test_zero_memory_full_explicit_legacy','test_zero_memory_full_endpoint_legacy','test_actual_lost_controller_watchdog_stops_only_its_new_onboarding')]);result=unittest.TextTestRunner(verbosity=2).run(suite);raise SystemExit(0 if result.wasSuccessful()else 1)
+    suite=unittest.TestSuite([Native(name)for name in('test_full_new_signed_executor_legacy_frame_and_attested_commit','test_full_endpoint_legacy_compatibility_profile','test_zero_memory_full_explicit_legacy','test_zero_memory_full_endpoint_legacy','test_pending_profile_blocks_before_any_runtime_write','test_source_drift_stops_before_new_owner_start_without_reset','test_actual_lost_controller_watchdog_stops_only_its_new_onboarding')]);result=unittest.TextTestRunner(verbosity=2).run(suite);raise SystemExit(0 if result.wasSuccessful()else 1)
