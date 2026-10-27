@@ -11,8 +11,8 @@ Serve il terminale owner perché i due profili e le claim sono privati sul VPS e
   set -Eeuo pipefail
   umask 077
   ouf_transport_read_bootstrap=$(mktemp -d "$HOME/ouf-onboarding-transport-read-bootstrap.XXXXXXXX")
-  curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 65536 \\
-    "https://raw.githubusercontent.com/GioNob/ouf-deploy/5b91c2eb9302b8aaeb3a60cf45f26ce7b7951a1e/releases/read-onboarding-diagnostic-transport-stop-20261027.sh" \\
+  curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 65536 \
+    "https://raw.githubusercontent.com/GioNob/ouf-deploy/5b91c2eb9302b8aaeb3a60cf45f26ce7b7951a1e/releases/read-onboarding-diagnostic-transport-stop-20261027.sh" \
     -o "$ouf_transport_read_bootstrap/run.sh"
   printf '%s  %s\n' '2138066add8c89fec929b448f7dc8cf1205c2daa9ac400b49dbfb69b10af12e6' "$ouf_transport_read_bootstrap/run.sh" | sha256sum -c -
   chmod 0400 "$ouf_transport_read_bootstrap/run.sh"
