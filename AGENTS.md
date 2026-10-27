@@ -1,4 +1,12 @@
-# CURRENT — riuso Teatri: immagini esatte conservate; NUOVA lettura coorte qualificata, prima esecuzione VPS da ricevere
+# CURRENT — cattura fermata prima di Engine; scope CONSUMATO, correzione compatibilità peer in qualifica
+
+27ottobre2026. [Ricevuta target](evidence/managed-csv-recovery-peer-map-stop-target-20261027.json), [handoff corrente](docs/handoffs/OUF_MANAGED_CSV_RECOVERY_PEER_RECONCILIATION_20261027.md).3checksum ROOT400 corretti,3metadata/483676byte,0Engine/0write, STOP_RECONCILE/EXACT_RETAINED_COHORT_REQUIRED, Exit2/DeliveryExit2. Vecchio scope managed-csv-recovery-control-inputs-20261027-v1 CONSUMATO: NON rilanciare cattura/comando/wrapper.
+
+Causa verificata nel codice V36: producer current() conserva peer-<containerId[:16]>, consumer/fixture cercavano mcp. Correzione mantiene13peer/ID distinti/chiavi canoniche; seleziona UNICO MCP da hash completo bindingf5a01443...+native9a1af5be..., alias separati e nessuna identità allentata. Test usano producer effettivo;11localiPASS. NEXT qualificare CI e consegna nuova riconciliazione figlia reconcile-retained-peer-binding-v1:2letture claim/result STOP hash esatti+3metadata V36,27GETmassimi;3letture precedenti conservate, cumulativo8metadata/27Engine, byte monotoni. Non fornire nuovo comando prima della qualifica. Nessun file precedente sovrascritto, authority storica riusata, jobbudget/reset/nuovo upload/job/acquisizione.
+
+Immagini nativec512c247.../a5218012... conservate e publisher CONSUMATI restano qualificati ma NON installati. APPLY36 riuscito CONSUMATO conserva FarmacieFAILED5; policy56SERVICE acquisita. Nessun nuovo OUF/SQL/grant/budget/resume; THS esclusiva UTENTE. M1/G4 acquisiti, M2/G5/G6/G7 aperti; no Registryrestart/reinstall/merge/releaseacceptance/subagenti/automazioni; Supervisor dopo E2E.
+
+# RETAINED — riuso Teatri: immagini esatte conservate; NUOVA lettura coorte qualificata, prima esecuzione VPS da ricevere
 
 27 ottobre2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_MANAGED_CSV_RECOVERY_CUSTODY_CAPTURE_20261027.md), [prove](evidence/managed-csv-recovery-custody-capture-qualified-20261027.json), [mappa riuso Teatri](docs/MANAGED_CSV_RECOVERY_REUSE.md). Onboarding9890b318.../MCPd2454f3c... qualificati ma NON installati. Originali ZIP CI verificati senza rebuild/relabel/import; pure helper image_custody invariato. Onboarding source/tested merge de65795... hanno stesso treec77eae...; nativec512c247... e MCPnativea5218012... conservati su commit artifact31792893.../0e9341af..., publisher40577964779/40577971322PASS, CONSUMATI. TUTTE36 migrazioni e YAML immutati; nuova correzione richiede zero migrazioni.
 

@@ -3,9 +3,54 @@ import importlib.util
 import pathlib
 import tempfile
 import unittest
+import ast
+import contextlib
+import io
+import re
+import types
 
 SPEC = importlib.util.spec_from_file_location('capture', pathlib.Path(__file__).parents[1]/'tools/managed_csv_recovery/retained_inputs.py')
 m = importlib.util.module_from_spec(SPEC); SPEC.loader.exec_module(m)
+
+
+def production_cohort(observations, pin):
+    """Execute the installed producer's actual current() method, not a role-map replica."""
+    base = pathlib.Path(__file__).parents[1]
+    source = ast.parse((base/'tools/onboarding_profile_recovery_update/context.py').read_text())
+    owner = next(node for node in source.body if isinstance(node, ast.ClassDef) and node.name == 'Context')
+    current = next(node for node in owner.body if isinstance(node, ast.FunctionDef) and node.name == 'current')
+    helper = ast.parse((base/'tools/acquisition_read_native/plan_helper.py').read_text())
+    stable = next(node for node in helper.body if isinstance(node, ast.FunctionDef) and node.name == 'stable_binding')
+    namespace = {'copy': copy, 're': re, 'require': m.require, 'digest': m.digest}
+    exec(compile(ast.Module(body=[stable, current], type_ignores=[]), '<actual-installed-producer>', 'exec'), namespace)
+    own = observations['onboarding']; peer = observations['mcp']; own_binding = namespace['stable_binding'](own)
+    endpoints = {value['Id']: {'MacAddress': '02:00:00:00:%02x:%02x' % (i//256, i%256)}
+                 for i, value in enumerate(observations.values(), 1)}
+    network = {'Id': 'fixture-net', 'Name': 'fixture-network', 'Driver': 'bridge', 'Scope': 'local', 'Containers': endpoints}
+    proposal = {'existingApplications': {'onboarding': own_binding}, 'nativeIdentityProfile': 'CONFIG_DIGEST',
+                'onboardingReplacement': {'oldBinding': own_binding, 'retiredName': 'fixture-retired',
+                                         'network': {'id': network['Id'], 'name': network['Name']},
+                                         'request': {'NetworkingConfig': {'EndpointsConfig': {
+                                             network['Name']: {'MacAddress': endpoints[own['Id']]['MacAddress']}}}}}}
+    def get(path):
+        if path == '/v1.44/info':
+            return 200, {'ServerVersion': '29.8.1', 'DriverStatus': []}
+        if path == '/v1.44/networks/'+network['Id']:
+            return 200, copy.deepcopy(network)
+        if path == '/v1.44/containers/fixture-retired/json':
+            return 404, None
+        return 200, copy.deepcopy(next(value for value in observations.values()
+                                      if path == '/v1.44/containers/'+value['Id']+'/json'))
+    ctx = types.SimpleNamespace(proposal=proposal, native={'currentProcessPin': pin(own['State']['Pid'])},
+                                p=types.SimpleNamespace(stable_binding=namespace['stable_binding'], process_pin=pin),
+                                inputs={'currentProcessPins': {'onboarding': pin(own['State']['Pid'])}},
+                                database_profile={'postgresRuntimeBinding': {'containerId': peer['Id']}},
+                                database=types.SimpleNamespace(check_postgres=lambda *_: None), configuration_classified=True,
+                                preflight_get=get, check_sources=lambda: None, admission=lambda: None)
+    with contextlib.redirect_stdout(io.StringIO()):
+        namespace['current'](ctx)
+        namespace['current'](ctx)
+    return copy.deepcopy(ctx.proposal['existingApplications'])
 
 
 def fixture(observations=None, pin=None, installed='/private/completed'):
@@ -16,7 +61,7 @@ def fixture(observations=None, pin=None, installed='/private/completed'):
                               'Mounts': [], 'NetworkSettings': {}}
                         for role, digit, pid in [('onboarding', 'a', 44), ('mcp', 'b', 45)]}
     pin = pin or (lambda pid: {'pid': pid, 'startTicks': 1, 'namespaces': {'net': [1, 2], 'mnt': [1, 3]}})
-    cohort = {role: m.stable_binding(value) for role, value in observations.items()}
+    cohort = production_cohort(observations, pin)
     cohort['onboarding'] = {**cohort['onboarding'], 'containerId': 'c'*64}
     review = {'schema': 'ouf.onboarding-profile-recovery-update-review.v1', 'executionRoot': installed, 'bootId': 'boot',
               'stages': ['VERIFY_CURRENT_ADMISSION', 'VERIFY_FINAL'],
@@ -41,7 +86,7 @@ def fixture(observations=None, pin=None, installed='/private/completed'):
                                             'readinessProven': True, 'generation': proof['generation']}}}
     case = {'schema': 'ouf.managed-csv-recovery-capture-case.v1', 'installedRoot': installed, 'reviewHash': review_hash,
             'authorityHash': 'd'*64, 'installedSource': 'e'*40, 'installedNativeImageId': result['nativeImageId'],
-            'installedNativeBindingHash': native_hash, 'installedMcpNativeBindingHash': m.digest(cohort['mcp']),
+            'installedNativeBindingHash': native_hash, 'installedMcpNativeBindingHash': m.digest(m.stable_binding(observations['mcp'])),
             'installedMcpNativeImageId': observations['mcp']['Image'], 'cohortSize': len(cohort), 'targets': ['onboarding', 'mcp']}
     return review, result, journal, case, observations, pin
 
@@ -53,7 +98,7 @@ class FakeCapture:
 
     def private(self, path, expected=None):
         self.counts['privateMetadataReads'] += 1
-        value = copy.deepcopy(self.documents[path.name])
+        value = copy.deepcopy(self.documents[str(path)] if str(path) in self.documents else self.documents[path.name])
         if expected is not None:
             m.require(m.digest(value) == expected, 'EXACT_INSTALLED_CAPTURE_HASH_REQUIRED')
         return value
@@ -104,8 +149,59 @@ class CaptureTests(unittest.TestCase):
     def test_foreign_mcp_binding_refused(self):
         review, result, journal, case, _, _ = fixture()
         case['installedMcpNativeBindingHash'] = 'f'*64
-        with self.assertRaisesRegex(m.Stop, 'EXACT_RETAINED_MCP'):
+        with self.assertRaisesRegex(m.Stop, 'EXACT_RETAINED_MCP_BINDING'):
             m.retained(review, result, journal, case)
+
+    def test_actual_producer_peer_keys_resolve_one_mcp_without_alias(self):
+        review, result, journal, case, observations, _ = fixture()
+        cohort, _, targets = m.retained(review, result, journal, case)
+        self.assertNotIn('mcp', cohort)
+        self.assertEqual(targets['mcp'], 'peer-'+observations['mcp']['Id'][:16])
+        self.assertEqual(m.digest(cohort[targets['mcp']]), case['installedMcpNativeBindingHash'])
+
+    def test_semantic_alias_and_forged_peer_key_are_refused(self):
+        review, _, _, case, observations, _ = fixture()
+        original = review['nativePlan']['proposal']['existingApplications']
+        native_key = 'peer-'+observations['mcp']['Id'][:16]
+        for alias in ('mcp', 'peer-'+'c'*16):
+            cohort = copy.deepcopy(original); cohort[alias] = cohort.pop(native_key)
+            with self.assertRaisesRegex(m.Stop, 'EXACT_RETAINED_PEER_KEYS'):
+                m.retained_targets(cohort, case)
+
+    def test_matching_image_with_foreign_binding_is_not_adopted(self):
+        review, _, _, case, observations, _ = fixture()
+        cohort = review['nativePlan']['proposal']['existingApplications']
+        cohort['peer-'+observations['mcp']['Id'][:16]]['configHash'] = 'f'*64
+        with self.assertRaisesRegex(m.Stop, 'ONE_EXACT_RETAINED_MCP_BINDING'):
+            m.retained_targets(cohort, case)
+
+    def test_exact_prior_stop_is_preserved_in_cumulative_accounting(self):
+        real_case = m.decode((pathlib.Path(__file__).parents[1]/'releases/managed-csv-recovery-peer-reconcile-case-20261027.json').read_bytes())
+        prior = real_case['reconcilePriorStop']
+        c = FakeCapture({prior['root']+'/claim.json': prior['claim'], prior['root']+'/result.json': prior['result']})
+        c.root = pathlib.Path(real_case['outputRoot'])
+        old = m.reconcile_prior_stop(c, real_case)
+        self.assertEqual(c.counts['privateMetadataReads'], 2)
+        self.assertEqual(old['counts'], {'bytes': 483676, 'engineGets': 0, 'privateMetadataReads': 3})
+        c.counts.update(privateMetadataReads=5, engineGets=27, bytes=1000)
+        self.assertEqual(m.capture_accounting(c, old)['cumulativeCounts'],
+                         {'bytes': 484676, 'engineGets': 27, 'privateMetadataReads': 8})
+
+    def test_foreign_stop_or_prior_engine_effects_are_not_adopted(self):
+        real_case = m.decode((pathlib.Path(__file__).parents[1]/'releases/managed-csv-recovery-peer-reconcile-case-20261027.json').read_bytes())
+        for field, value in [('reasonCode', 'OTHER_STOP'), ('complete', True), ('containerWrites', 1)]:
+            case = copy.deepcopy(real_case); prior = case['reconcilePriorStop']; prior['result'][field] = value
+            prior['resultSha256'] = m.digest(prior['result'])
+            c = FakeCapture({prior['root']+'/claim.json': prior['claim'], prior['root']+'/result.json': prior['result']})
+            c.root = pathlib.Path(case['outputRoot'])
+            with self.assertRaisesRegex(m.Stop, 'EXACT_CONSUMED_PRE_ENGINE_STOP'):
+                m.reconcile_prior_stop(c, case)
+        case = copy.deepcopy(real_case); prior = case['reconcilePriorStop']; prior['result']['counts']['engineGets'] = 1
+        prior['counts'] = copy.deepcopy(prior['result']['counts']); prior['resultSha256'] = m.digest(prior['result'])
+        c = FakeCapture({prior['root']+'/claim.json': prior['claim'], prior['root']+'/result.json': prior['result']})
+        c.root = pathlib.Path(case['outputRoot'])
+        with self.assertRaisesRegex(m.Stop, 'EXACT_CONSUMED_PRE_ENGINE_STOP'):
+            m.reconcile_prior_stop(c, case)
 
     def test_engine_refuses_any_unselected_resource_before_dispatch(self):
         capture = FakeCapture({}); engine = m.Engine(capture, {}, ['a'*64, 'b'*64])

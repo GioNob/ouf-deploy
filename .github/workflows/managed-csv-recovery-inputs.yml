@@ -1,9 +1,9 @@
 name: Reused managed CSV recovery retained inputs
 on:
   push:
-    paths: ['tools/managed_csv_recovery/**', 'scripts/capture-managed-csv-recovery-inputs.py', 'tests/test_managed_csv_recovery_inputs.py', 'tests/qualify_managed_csv_recovery_capture.py', 'tests/qualify_managed_csv_recovery_delivery.py', 'releases/capture-managed-csv-recovery-inputs-20261027.sh', 'releases/managed-csv-recovery-capture-case-20261027.json', '.github/workflows/managed-csv-recovery-inputs.yml']
+    paths: ['tools/managed_csv_recovery/**', 'scripts/capture-managed-csv-recovery-inputs.py', 'tests/test_managed_csv_recovery_inputs.py', 'tests/qualify_managed_csv_recovery_capture.py', 'tests/qualify_managed_csv_recovery_delivery.py', 'releases/capture-managed-csv-recovery-inputs-20261027.sh', 'releases/managed-csv-recovery-capture-case-20261027.json', 'releases/managed-csv-recovery-peer-reconcile-case-20261027.json', '.github/workflows/managed-csv-recovery-inputs.yml']
   pull_request:
-    paths: ['tools/managed_csv_recovery/**', 'scripts/capture-managed-csv-recovery-inputs.py', 'tests/test_managed_csv_recovery_inputs.py', 'tests/qualify_managed_csv_recovery_capture.py', 'tests/qualify_managed_csv_recovery_delivery.py', 'releases/capture-managed-csv-recovery-inputs-20261027.sh', 'releases/managed-csv-recovery-capture-case-20261027.json', '.github/workflows/managed-csv-recovery-inputs.yml']
+    paths: ['tools/managed_csv_recovery/**', 'scripts/capture-managed-csv-recovery-inputs.py', 'tests/test_managed_csv_recovery_inputs.py', 'tests/qualify_managed_csv_recovery_capture.py', 'tests/qualify_managed_csv_recovery_delivery.py', 'releases/capture-managed-csv-recovery-inputs-20261027.sh', 'releases/managed-csv-recovery-capture-case-20261027.json', 'releases/managed-csv-recovery-peer-reconcile-case-20261027.json', '.github/workflows/managed-csv-recovery-inputs.yml']
 permissions: {contents: read}
 jobs:
   read-only-native-cohort:

@@ -7,7 +7,7 @@ is invoked. The fresh case binds the exact completed receipt and output scope.
 import copy, hashlib, http.client, json, os, re, socket, stat, struct
 from pathlib import Path
 
-MAXIMUMS = {'engineGets': 65, 'privateMetadataReads': 3,
+MAXIMUMS = {'engineGets': 65, 'privateMetadataReads': 5,
             'responseBytes': 2*1024*1024, 'totalBytes': 24*1024*1024, 'seconds': 90}
 
 class Stop(Exception):
@@ -49,9 +49,11 @@ def ancestry(path):
 
 
 class Capture:
-    def __init__(self, root, cohort_size):
+    def __init__(self, root, cohort_size, reconcile=False):
         require(type(cohort_size) is int and 1 <= cohort_size <= 32, 'BOUNDED_CAPTURE_COHORT_REQUIRED')
-        self.maximums = {**MAXIMUMS, 'engineGets': 1 + 2*cohort_size}
+        require(type(reconcile) is bool, 'EXPLICIT_RECONCILIATION_MODE_REQUIRED')
+        self.maximums = {**MAXIMUMS, 'engineGets': 1 + 2*cohort_size,
+                         'privateMetadataReads': 5 if reconcile else 3}
         self.root = Path(root)
         ancestry(self.root.parent)
         require(not os.path.lexists(self.root), 'CSV_RECOVERY_CAPTURE_CONSUMED_NO_REPLAY')
@@ -79,7 +81,7 @@ class Capture:
         self.sync(self.root)
 
     def private(self, path, expected=None):
-        require(self.counts['privateMetadataReads'] < MAXIMUMS['privateMetadataReads'], 'PRIVATE_CAPTURE_READ_LIMIT')
+        require(self.counts['privateMetadataReads'] < self.maximums['privateMetadataReads'], 'PRIVATE_CAPTURE_READ_LIMIT')
         self.counts['privateMetadataReads'] += 1
         path = Path(path)
         self.put('private-read-'+str(self.counts['privateMetadataReads'])+'-claim.json', {'path': str(path), 'attemptNotCompletion': True})
@@ -157,6 +159,50 @@ class Engine:
             conn.close()
 
 
+def retained_targets(cohort, case):
+    require(len(cohort) == case['cohortSize'] and set(case['targets']) == {'onboarding', 'mcp'}
+            and 'onboarding' in cohort, 'EXACT_RETAINED_COHORT_REQUIRED')
+    ids = [row['containerId'] for row in cohort.values()]
+    require(len(set(ids)) == len(ids)
+            and all(type(cid) is str and re.fullmatch('[a-f0-9]{64}', cid) for cid in ids),
+            'EXACT_DISTINCT_RETAINED_CONTAINER_IDS_REQUIRED')
+    require(all(role == 'onboarding' or role == 'peer-'+row['containerId'][:16]
+                for role, row in cohort.items()), 'EXACT_RETAINED_PEER_KEYS_REQUIRED')
+    matches = [role for role, row in cohort.items() if role != 'onboarding'
+               and digest(row) == case['installedMcpNativeBindingHash']
+               and row['imageId'] == case['installedMcpNativeImageId']]
+    require(len(matches) == 1, 'ONE_EXACT_RETAINED_MCP_BINDING_REQUIRED')
+    return {'onboarding': 'onboarding', 'mcp': matches[0]}
+
+
+def reconcile_prior_stop(capture, case):
+    previous = case.get('reconcilePriorStop')
+    if previous is None:
+        return None
+    root = Path(previous['root'])
+    require(capture.root.parent == root and capture.root.name == previous['continuationName'],
+            'EXACT_NEW_RECONCILIATION_CHILD_SCOPE_REQUIRED')
+    claim = capture.private(root/'claim.json', previous['claimSha256'])
+    result = capture.private(root/'result.json', previous['resultSha256'])
+    require(claim == previous['claim'] and result == previous['result']
+            and result['status'] == 'STOP_RECONCILE' and result['complete'] is False
+            and result['reasonCode'] == 'EXACT_RETAINED_COHORT_REQUIRED'
+            and result['counts'] == previous['counts']
+            and result['counts']['engineGets'] == result['containerWrites'] == 0
+            and result['counts']['privateMetadataReads'] == claim['maximums']['privateMetadataReads'] == 3
+            and result['runtimeAuthorityIssued'] is False and result['automaticReplayAllowed'] is False
+            and result['budgetReset'] is False, 'EXACT_CONSUMED_PRE_ENGINE_STOP_REQUIRED')
+    return {'scope': str(root), 'counts': copy.deepcopy(result['counts']),
+            'claimSha256': previous['claimSha256'], 'resultSha256': previous['resultSha256'],
+            'scopeConsumed': True, 'historicalAuthorityReused': False}
+
+
+def capture_accounting(capture, previous):
+    prior = previous['counts'] if previous else {key: 0 for key in capture.counts}
+    return {'currentScopeCounts': dict(capture.counts), 'retainedConsumedScopeCounts': copy.deepcopy(prior),
+            'cumulativeCounts': {key: prior[key]+value for key, value in capture.counts.items()}}
+
+
 def retained(review, result, journal, case):
     require(review['schema'] == 'ouf.onboarding-profile-recovery-update-review.v1'
             and digest(review) == case['reviewHash'] and review['executionRoot'] == case['installedRoot'],
@@ -190,21 +236,20 @@ def retained(review, result, journal, case):
             and proof['nativeBindingHash'] == case['installedNativeBindingHash']
             and candidate['generation'] == proof['generation'], 'EXACT_RETAINED_CANDIDATE_REQUIRED')
     cohort = copy.deepcopy(review['nativePlan']['proposal']['existingApplications'])
-    require(len(cohort) == case['cohortSize'] and set(case['targets']) == {'onboarding', 'mcp'}
-            and set(case['targets']) <= set(cohort), 'EXACT_RETAINED_COHORT_REQUIRED')
+    targets = retained_targets(cohort, case)
     cohort['onboarding']['containerId'] = candidate['id']
-    require(digest(cohort['mcp']) == case['installedMcpNativeBindingHash']
-            and cohort['mcp']['imageId'] == case['installedMcpNativeImageId'], 'EXACT_RETAINED_MCP_BINDING_REQUIRED')
-    return cohort, candidate
+    return cohort, candidate, targets
 
 
 def prepare(capture, case, *, engine_factory=Engine, pin=process_pin,
             boot_path=Path('/proc/sys/kernel/random/boot_id')):
     c = capture; installed = Path(case['installedRoot'])
+    previous = reconcile_prior_stop(c, case)
+    c.priorConsumedStop = previous
     review = c.private(installed/'review.json', case['reviewHash'])
     result = c.private(installed/'result.json')
     journal = c.private(installed/'recovery.json')
-    cohort, candidate = retained(review, result, journal, case)
+    cohort, candidate, targets = retained(review, result, journal, case)
     require(boot_path.read_text().strip() == review['bootId'], 'SAME_RETAINED_HOST_BOOT_REQUIRED')
     binding = review['nativePlan']['proposal']['engineBinding']
     ids = [row['containerId'] for row in cohort.values()]
@@ -240,6 +285,8 @@ def prepare(capture, case, *, engine_factory=Engine, pin=process_pin,
                'retainedInstallation': {'reviewHash': case['reviewHash'], 'authorityHash': case['authorityHash'],
                                         'scopeConsumed': True, 'counts': result['counts']},
                'historySeals': c.seals, 'counts': dict(c.counts), 'targets': case['targets'],
+               'resolvedTargetRoles': targets, 'priorConsumedStop': previous,
+               'captureAccounting': capture_accounting(c, previous),
                'currentApplicationPolicyOrLabelsObserved': False, 'currentJobOrBudgetStateObserved': False,
                'runtimeAuthorityIssued': False, 'automaticReplayAllowed': False, 'budgetReset': False}
     c.put('inputs.json', payload)
@@ -247,6 +294,7 @@ def prepare(capture, case, *, engine_factory=Engine, pin=process_pin,
               'status': 'MANAGED_CSV_RECOVERY_CURRENT_INPUTS_CAPTURED_NOT_AUTHORIZED', 'complete': True,
               'contextPath': str(c.root), 'inputsHash': digest(payload), 'counts': dict(c.counts),
               'cohortSize': len(cohort), 'targetRoles': case['targets'],
+              'captureAccounting': capture_accounting(c, previous),
               'currentJobOrBudgetStateObserved': False, 'currentApplicationPolicyOrLabelsObserved': False,
               'containerWrites': 0, 'sqlSessions': 0, 'credentialFileReads': 0,
               'oauthRequests': 0, 'installationSigningKeysRead': False, 'imageImports': 0,

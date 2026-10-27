@@ -25,7 +25,7 @@ def main():
                      and case['targetApplyAuthorized'] is False, 'READ_ONLY_CAPTURE_CASE_REQUIRED')
         signal.signal(signal.SIGALRM, lambda *_: core.require(False, 'FINITE_CAPTURE_WINDOW_EXPIRED'))
         signal.alarm(core.MAXIMUMS['seconds'])
-        capture = core.Capture(case['outputRoot'], case['cohortSize'])
+        capture = core.Capture(case['outputRoot'], case['cohortSize'], reconcile=case.get('reconcilePriorStop') is not None)
         result = core.prepare(capture, case)
     except BaseException as error:
         reason = str(error) if isinstance(error, core.Stop) and re.fullmatch('[A-Z0-9_]{1,120}', str(error)) else 'PRIVATE_CAPTURE_FAILURE_RECONCILE'
@@ -34,6 +34,7 @@ def main():
                   'runtimeAuthorityIssued': False, 'containerWrites': 0, 'automaticReplayAllowed': False,
                   'budgetReset': False, 'applicationE2EProven': False, 'releaseAcceptance': False}
         if capture is not None and not (capture.root/'result.json').exists():
+            result['captureAccounting'] = core.capture_accounting(capture, getattr(capture, 'priorConsumedStop', None))
             capture.put('result.json', result)
     finally:
         signal.alarm(0)
