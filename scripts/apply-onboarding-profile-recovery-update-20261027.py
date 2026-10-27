@@ -83,7 +83,7 @@ def terminal(ctx,value):
         require(time.monotonic()<deadline and time.time()<wall,'FINITE_PROFILE_V36_HUMAN_WINDOW_EXPIRED');ctx.check_sources()
     ctx.terminal.read_exact(reviewed,guard,emit=lambda s:print(s,flush=True),progress=lambda state:ctx.evidence('tty-progress',state))
     ctx.read(ctx.root/'review.json',reviewed)
-    return {'schema':'ouf.onboarding-diagnostic-terminal-decision.v1','reviewHash':reviewed,'decision':c.DECISION,'approvedAt':int(time.time())}
+    return {'schema':'ouf.onboarding-profile-recovery-terminal-decision.v1','reviewHash':reviewed,'decision':c.DECISION,'approvedAt':int(time.time())}
 def execute_approved(ctx,value,decision):
     c=ctx.core;ctx.current();ctx.refresh_authority();gate=c.issue(value,ctx.root,ctx.profile,decision,ctx.write,ctx.read)
     print(c.encoded({'schema':'ouf.onboarding-profile-recovery-update-issued.v1','reviewHash':c.digest(value),'authorityHash':c.sha(gate.raw),'runtimeAuthorityIssued':True,'runtimeEffectsDispatched':0,'automaticReplayAllowed':False}).decode(),flush=True)

@@ -1,4 +1,4 @@
-"""Four NEW, reviewed operational SQL attempts; no diagnostic/domain bypass.
+"""Seven NEW, reviewed operational SQL attempts; no diagnostic/domain bypass.
 
 The V35 profile provides only transport identity. Its authority and counters are
 never executed or adopted. Dispatch is gated by the new signed stage claim.
