@@ -1,9 +1,9 @@
 name: Onboarding diagnostic new authority and native lifecycle
 on:
   push:
-    paths: ['tools/onboarding_diagnostic_update/**','scripts/apply-onboarding-diagnostic-update-20261027.py','tests/*onboarding_diagnostic*','.github/workflows/onboarding-diagnostic-update.yml','releases/onboarding-diagnostic-migration-fence-20261027.json']
+    paths: ['tools/onboarding_diagnostic_update/**','scripts/apply-onboarding-diagnostic-update-20261027.py','tests/*onboarding_diagnostic*','tests/*onboarding_peer*','tests/fixtures/onboarding-peer-reconciled-result.json','releases/apply-onboarding-diagnostic-peer-continuation-20261027.sh','.github/workflows/onboarding-diagnostic-update.yml','releases/onboarding-diagnostic-migration-fence-20261027.json']
   pull_request:
-    paths: ['tools/onboarding_diagnostic_update/**','scripts/apply-onboarding-diagnostic-update-20261027.py','tests/*onboarding_diagnostic*','.github/workflows/onboarding-diagnostic-update.yml','releases/onboarding-diagnostic-migration-fence-20261027.json']
+    paths: ['tools/onboarding_diagnostic_update/**','scripts/apply-onboarding-diagnostic-update-20261027.py','tests/*onboarding_diagnostic*','tests/*onboarding_peer*','tests/fixtures/onboarding-peer-reconciled-result.json','releases/apply-onboarding-diagnostic-peer-continuation-20261027.sh','.github/workflows/onboarding-diagnostic-update.yml','releases/onboarding-diagnostic-migration-fence-20261027.json']
 permissions: {contents: read}
 jobs:
   root-crypto-and-journal:
@@ -96,6 +96,6 @@ jobs:
         with: {persist-credentials: false}
       - name: Curl-only wrapper, root code custody, protected main and refusal before authority
         run: |
-          bash -n releases/apply-onboarding-diagnostic-update-20261027.sh
-          sudo python3 -I -S -B tests/qualify_onboarding_diagnostic_update_delivery.py
+          bash -n releases/apply-onboarding-diagnostic-peer-continuation-20261027.sh
+          sudo python3 -I -S -B tests/qualify_onboarding_peer_continuation_delivery.py
 
