@@ -1,9 +1,9 @@
 name: Onboarding V36 reviewed migration and same-job preservation
 on:
   push:
-    paths: ['tools/onboarding_profile_recovery_update/**','scripts/apply-onboarding-profile-recovery-update-20261027.py','tests/*profile_recovery_update*','tests/fixtures/profile-recovery-v36.sql','tests/fixtures/profile_recovery_update_terminal_probe.py','.github/workflows/onboarding-profile-recovery-update.yml','releases/onboarding-profile-recovery-migration-fence-20261027.json']
+    paths: ['tools/onboarding_profile_recovery_update/**','scripts/apply-onboarding-profile-recovery-update-20261027.py','tests/*profile_recovery_update*','tests/fixtures/profile-recovery-v36.sql','tests/fixtures/profile_recovery_update_terminal_probe.py','releases/apply-onboarding-profile-recovery-update-20261027.sh','.github/workflows/onboarding-profile-recovery-update.yml','releases/onboarding-profile-recovery-migration-fence-20261027.json']
   pull_request:
-    paths: ['tools/onboarding_profile_recovery_update/**','scripts/apply-onboarding-profile-recovery-update-20261027.py','tests/*profile_recovery_update*','tests/fixtures/profile-recovery-v36.sql','tests/fixtures/profile_recovery_update_terminal_probe.py','.github/workflows/onboarding-profile-recovery-update.yml','releases/onboarding-profile-recovery-migration-fence-20261027.json']
+    paths: ['tools/onboarding_profile_recovery_update/**','scripts/apply-onboarding-profile-recovery-update-20261027.py','tests/*profile_recovery_update*','tests/fixtures/profile-recovery-v36.sql','tests/fixtures/profile_recovery_update_terminal_probe.py','releases/apply-onboarding-profile-recovery-update-20261027.sh','.github/workflows/onboarding-profile-recovery-update.yml','releases/onboarding-profile-recovery-migration-fence-20261027.json']
 permissions: {contents: read}
 jobs:
   root-crypto-and-journal:
@@ -124,3 +124,12 @@ jobs:
       - name: Exact archive and native plan with zero runtime I/O
         run: sudo /usr/bin/python3 -I -S -B /root/ouf-profile-image-plan-repo/repo/tests/qualify_profile_recovery_update_real_image.py
 
+
+  actual-sealed-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Actual curl-only pinned wrapper and protected production main, no approval or target access
+        run: sudo /usr/bin/python3 -I -S -B tests/qualify_profile_recovery_update_delivery.py
