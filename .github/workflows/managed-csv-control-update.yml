@@ -1,0 +1,103 @@
+name: Reviewed retained two-owner CSV control update
+on:
+  push:
+    paths: ["tools/managed_csv_control_update/**", "scripts/apply-managed-csv-control-update-20261027.py", "tests/test_managed_csv_control_update*", "tests/qualify_managed_csv_control_update_engine.py", "tests/qualify_managed_csv_control_update_real_image.py", "tests/qualify_managed_csv_control_update_terminal.py", "tests/fixtures/managed_csv_control_update_terminal_probe.py", ".github/workflows/managed-csv-control-update.yml"]
+  pull_request:
+    paths: ["tools/managed_csv_control_update/**", "scripts/apply-managed-csv-control-update-20261027.py", "tests/test_managed_csv_control_update*", "tests/qualify_managed_csv_control_update_engine.py", "tests/qualify_managed_csv_control_update_real_image.py", "tests/qualify_managed_csv_control_update_terminal.py", "tests/fixtures/managed_csv_control_update_terminal_probe.py", ".github/workflows/managed-csv-control-update.yml"]
+permissions: {contents: read}
+jobs:
+  root-crypto-state-and-journal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: |
+          sudo install -d -m 700 /var/lib/ouf-control-update-protocol-ci
+          sudo env OUF_CONTROL_UPDATE_TEST_ROOT=/var/lib/ouf-control-update-protocol-ci python3 -B -m unittest discover -s tests -p test_managed_csv_control_update_protocol.py -v
+          python3 -B -m unittest discover -s tests -p test_managed_csv_control_update_state.py -v
+  new-executor-native-lifecycle:
+    strategy:
+      fail-fast: false
+      matrix:
+        store: [containerd]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Reuse exact historical Docker29.8.1 in isolated hosted data root
+        env: {SELECTED_STORE: '${{ matrix.store }}'}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          printf '%s  %s\n' d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70 /tmp/ouf-docker-29.8.1.tgz | sha256sum --check -
+          sudo install -d -m 755 /opt/ouf-docker-29
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
+          sudo chown -R root:root /opt/ouf-docker-29
+          sudo systemctl stop docker.service docker.socket
+          sudo systemctl start containerd.service
+          sudo install -d -m 700 /var/lib/ouf-docker-29
+          python3 - <<'PY_CONFIG'
+          import json,os
+          from pathlib import Path
+          Path('/tmp/ouf-docker-29.json').write_text(json.dumps({'features':{'containerd-snapshotter':os.environ['SELECTED_STORE']=='containerd'},'exec-opts':['native.cgroupdriver=systemd']}))
+          PY_CONFIG
+          sudo systemd-run --unit=ouf-docker-mac-daemon --property=Restart=no \
+            --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json \
+            --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 \
+            --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid \
+            --containerd=/run/containerd/containerd.sock
+          for OUF_MAC_ENGINE_POLL in $(seq 1 60); do
+            if sudo docker info > /tmp/ouf-docker-29-info.txt 2>/dev/null; then break; fi
+            sleep 1
+          done
+          test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
+      - name: Exact new signed controller and actual watchdog loss on synthetic ONBOARDING workloads
+        env: {EXPECTED_STORE: '${{ matrix.store }}'}
+        run: |
+          sudo install -d -m 700 /var/lib/ouf-onboarding-update-native-ci
+          sudo env OUF_CONTROL_UPDATE_TEST_ROOT=/var/lib/ouf-onboarding-update-native-ci EXPECTED_STORE="$EXPECTED_STORE" python3 -I -S -B tests/qualify_managed_csv_control_update_engine.py
+  actual-new-review-sudo-terminal:
+    strategy:
+      fail-fast: false
+      matrix:
+        sudo_pty: [use_pty, '!use_pty']
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env: {CI_SUDO_PTY: '${{ matrix.sudo_pty }}'}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Configure isolated CI sudo transport variant
+        env:
+          CI_SUDO_PTY: ${{ matrix.sudo_pty }}
+        run: |
+          sudo /usr/bin/python3 -I -S -B - "$(id -un)" "$CI_SUDO_PTY" <<'PY'
+          import os,re,sys
+          user,mode=sys.argv[1:]
+          assert re.fullmatch('[a-z_][a-z0-9_-]*',user) and mode in ('use_pty','!use_pty')
+          fd=os.open('/etc/sudoers.d/ouf-ci-terminal-test',os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o440)
+          os.fchmod(fd,0o440)
+          with os.fdopen(fd,'w') as out:
+              out.write('Defaults:'+user+' '+mode+'\n');out.flush();os.fsync(out.fileno())
+          PY
+      - name: Exact new ONBOARDING prompt/logger with synthetic review and real canonical line editing
+        run: python3 -I -S -B tests/qualify_managed_csv_control_update_terminal.py
+
+  exact-control-application-config:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Exact immutable qualified ZIPs, finite public transfer without rebuild
+        run: |
+          mkdir -m 0700 "$RUNNER_TEMP/control-zips"
+          cp releases/managed-profile-control-onboarding-image-custody-20261027.json "$RUNNER_TEMP/control-zips/onboarding-custody.json"
+          cp releases/managed-profile-control-mcp-image-custody-20261027.json "$RUNNER_TEMP/control-zips/mcp-custody.json"
+          python3 scripts/download-managed-csv-control-images.py "$RUNNER_TEMP/control-zips"
+      - name: Exact new JAR, unchanged36 migrations/YAML, configuration and override rejection without runtime access
+        run: sudo env OUF_EXACT_ZIP_DIRECTORY="$RUNNER_TEMP/control-zips" /usr/bin/python3 -I -S -B tests/qualify_managed_csv_control_update_real_image.py
