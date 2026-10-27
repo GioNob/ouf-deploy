@@ -1,4 +1,12 @@
-# CURRENT — APPLY V36 RIUSCITO sul VPS; ripresa HUMAN Farmacie ancora da eseguire
+# CURRENT — V36 installata; correzione persistente del controllo HUMAN in qualifica
+
+27 ottobre2026. Riuso recovery Teatri in produzione: [handoff](docs/handoffs/OUF_PROFILE_RECOVERY_CONTROL_AUTHORIZATION_20261027.md), [prove](evidence/profile-recovery-control-authorization-20261027.json). Il motore V35/V36 è già persistente/installato; mancava la composizione del contesto di controllo. OnboardingPR53 source9890b318... e MCPPR80 sourced2454f3c... vincolano il job; template ruolo senza assignment, nessuna label CSV cambiata o autorità automatica. Qualifica finale in corso; parent Onboardingda9faef8... PASS337test/0skip e build/scan/boot. Primo check MCP formattazione test corretto, guard immutati.
+
+Con ouf-admin: propria proposta56 PUBLISHED e134grant/3pagine policy56/hashc52e856c... coerenti. Permanenti preview/profile richiedono label/dettaglio; generici scaduti; nessun grant nominale quarantine.release osservato. Una preview STESSO job negata nonritentabile; nessuno stato/byte nuovo. ROLES/CAPABILITIES INVALID_ARGUMENT/400: non inventare catalogo o descriptor. Browser principal/hop nativo non provati. THS ESCLUSIVA DELL'UTENTE, l'assistente fornisce i link senza accedervi.
+
+V36 APPLY riuscito CONSUMATO, FarmacieFAILED5 nell'ultima prova; nessun budget/resume/grantwrite/newjob/upload/acquisizione/SQL/Engine nella ripresa. NEXT qualifica/coorte e nuova ammissione minima del delta con review concreta; nessun replay vecchio APPLY/capture/preparazione/publisher. Poi HUMAN3tentativi/900s e resume separati STESSO job, cumulativi6–8. M1/G4 acquisiti; M2/G5/G6/G7 aperti; no Registryrestart/reinstall/reset/replay/merge/releaseacceptance/subagenti/automazioni. Supervisor dopo E2E.
+
+# RETAINED — APPLY V36 RIUSCITO sul VPS; ripresa HUMAN Farmacie ancora da eseguire
 
 **THS esclusiva dell'utente:** l'owner accede e decide; l'assistente fornisce i link senza interagire con la THS. La scheda Farmacie ha mostrato all'utente un diniego generico401/403. Dopo l'ingresso OIDC verificato nel codice, l'utente riporta404 sulla radice: non prova fallimento login; riaprire il link recovery esatto. Identità effettiva/gate/stato fresco ancora non distinti. [Checkpoint accesso HUMAN](evidence/profile-recovery-human-handoff-20261027.json). Nessun nuovo budget/resume/connettore OUF in questa ripresa; APPLY V36 riuscito e consumato resta acquisito.
 

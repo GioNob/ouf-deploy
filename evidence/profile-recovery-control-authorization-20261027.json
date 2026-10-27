@@ -1,0 +1,127 @@
+{
+  "schema": "ouf.managed-profile-control-authorization-checkpoint.v1",
+  "recordedAt": "2026-10-27T18:33:27.008Z",
+  "timezone": "Europe/Rome",
+  "status": "PRODUCTION_SOURCE_CORRECTION_IN_QUALIFICATION_NOT_INSTALLED",
+  "retainedV36": {
+    "source": "6ea5242f711761a384fa1b23667971601bc2c38b",
+    "applyStatus": "ONBOARDING_PROFILE_RECOVERY_UPDATE_INSTALLED_E2E_NOT_ACCEPTED",
+    "scopeConsumed": true,
+    "lastVerifiedJobStatus": "FAILED",
+    "lastVerifiedAttempts": 5
+  },
+  "target": {
+    "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+    "jobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+    "humanSurface": "USER_ONLY",
+    "userReportsCardDenialAfterReopen": true,
+    "exactNativeDenyingHopNotEstablished": true
+  },
+  "connectorIdentityCheck": {
+    "linkName": "ouf-admin",
+    "linkId": "link_6aafef96b4148191b767e9af7b756a07",
+    "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+    "proof": "Current routed read of the same protected proposal succeeded; source status method requires exact proposing subject and tenant. This does not verify browser principal.",
+    "proposalId": "b045ada2-f1d6-4e4e-9beb-acf85d6474f7",
+    "state": "PUBLISHED",
+    "policyRef": "ouf-lab-authorization:56"
+  },
+  "currentPolicyRead": {
+    "meaning": "CONFIGURED_GRANTS_NOT_EFFECTIVE_PERMISSIONS",
+    "policyRef": "ouf-lab-authorization:56",
+    "policyHash": "sha256:c52e856c8d95032f6942e1618fb0102f0b704acc5f41f044648e9466aaf9d323",
+    "pages": [
+      50,
+      50,
+      34
+    ],
+    "samePolicyHash": true,
+    "configuredSubjectGrants": 134,
+    "previewAndProfilePermanentGrantsRequireLabelsAndDetail": true,
+    "genericPreviewAndProfileGrantsExpired": true,
+    "subjectGrantForNativeQuarantineReleaseFound": false,
+    "rolesReadResult": "INVALID_ARGUMENT",
+    "capabilitiesReadResult": "HTTP400_INVALID_ARGUMENT"
+  },
+  "minimalJobRead": {
+    "calls": 1,
+    "result": {
+      "code": "authorization denied",
+      "retryable": false
+    },
+    "stateReadSucceeded": false,
+    "fileBytesRead": false
+  },
+  "oufCalls": {
+    "ownedProposalStatusReads": 1,
+    "subjectGrantPages": 3,
+    "roleCatalogueReadAttempts": 1,
+    "capabilityReadAttempts": 1,
+    "jobPreviewReads": 1,
+    "total": 7
+  },
+  "teatriReuse": {
+    "references": [
+      "tools/csv_last_row_recovery/permissions.py",
+      "tools/csv_materialization_recovery/retry.py",
+      "evidence/chatbot-teatri-readiness-service-route-diagnosis-20261017.json",
+      "evidence/ingestion-readiness-correction-ci-20261017.json"
+    ],
+    "reused": "Exact retained job scope; issuer/subject proof; fresh native review; idempotent command; cumulative history; finite session",
+    "separateHistoricalDefect": "Teatri SERVICE client crossed a HUMAN-only route; not inferred as the present native-card failure",
+    "alreadyPersisted": "V35 readiness and V36 ManagedProfileJobs sessions",
+    "notReplayed": true
+  },
+  "candidates": [
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "pr": 53,
+      "commit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
+      "parentQualification": {
+        "commit": "da9faef83c46f3681361d5d0a0a16877f127fb7f",
+        "run": 40559914524,
+        "job": 122385845477,
+        "moduleTests": 337,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "productionImageScanAndBoot": "PASS",
+        "directLogRead": true
+      },
+      "currentQualification": "IN_PROGRESS"
+    },
+    {
+      "repository": "GioNob/ouf-mcp-server",
+      "pr": 80,
+      "commit": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
+      "firstCandidate": "b93519ea466967a1b015b7c0a702a3793e1f93e5",
+      "firstFailure": "gofmt alignment in new test; corrected only formatting",
+      "currentQualification": "IN_PROGRESS"
+    }
+  ],
+  "codeChange": "Owner-resolved managed-profile-job control resource; matching bounded MCP exact-job pre-admission; durable tenant proof before metadata serialization; packaged explicit unassigned role template; real-policy/API/PostgreSQL/SDK/browser regressions; safe typed denial UI",
+  "noAutomaticAuthority": {
+    "roleTemplateHasAssignments": false,
+    "roleTemplatePublishesPolicy": false,
+    "roleTemplateGrantsBudget": false,
+    "dataLabelsReclassified": false,
+    "oldClaimsReused": false
+  },
+  "runtimeChanges": {
+    "newGrants": 0,
+    "budgets": 0,
+    "resumes": 0,
+    "uploads": 0,
+    "jobs": 0,
+    "acquisitions": 0,
+    "engineCalls": 0,
+    "sqlCalls": 0,
+    "registryRestart": false
+  },
+  "next": "Finish source qualification, retain direct logs and pin coherent images. Then prepare a fresh minimal governed deployment/authority admission using current evidence; no old APPLY/capture/publisher scope replay. Native HUMAN profile3attempts/900s and resume remain distinct decisions on the same job after actual access is proven.",
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "mergeAuthorized": false
+}

@@ -1923,7 +1923,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "USER ONLY has reopened exact Farmacie recovery card after native OIDC entry. Obtain current card result and verified ouf-admin identity/permissions/state; do not infer success from reopening or failure from root404. If generic401/403 persists, localize exact gate. After fresh valid card: separate HUMAN budget3attempts/900s and resume SAME retained job; reconcile existing commands first. V36 APPLY remains successful and consumed. No blind grants, alternate upload/job, replay or reset.",
+  "firstNextAction": "Finish source qualification, retain direct logs and pin coherent images. Then prepare a fresh minimal governed deployment/authority admission using current evidence; no old APPLY/capture/publisher scope replay. Native HUMAN profile3attempts/900s and resume remain distinct decisions on the same job after actual access is proven.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2275,7 +2275,7 @@
       "exit": "Permanenti non ritentati; transitori finiti; recovery HUMAN conserva tentativi/storia e non duplica effetti",
       "remainingHours": null,
       "progress": {
-        "status": "OWNER_NATIVE_RECOVERY_V36_INSTALLED_HUMAN_ACCESS_AND_RECOVERY_PENDING",
+        "status": "V36_ENGINE_INSTALLED_JOB_CONTROL_AUTHORIZATION_FIX_IN_QUALIFICATION",
         "sourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
         "evidenceRef": "evidence/profile-recovery-source-qualification-20261027.json",
         "ownerSessionMechanismImplemented": true,
@@ -2335,7 +2335,7 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "docs/handoffs/OUF_CHAT_RESUME_V36_INSTALLED_FARMACIE_RECOVERY_20261027.md",
+  "currentCheckpoint": "docs/handoffs/OUF_PROFILE_RECOVERY_CONTROL_AUTHORIZATION_20261027.md",
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
     "evidence": "evidence/onboarding-diagnostic-apply-qualified-20261027.json",
@@ -2636,7 +2636,7 @@
     "releaseAcceptance": false
   },
   "humanProfileRecoveryAccess": {
-    "status": "USER_REOPENED_EXACT_CARD_CURRENT_RESULT_PENDING",
+    "status": "USER_CARD_DENIAL_CONFIRMED_PRODUCTION_CONTROL_CONTEXT_FIX_IN_QUALIFICATION",
     "record": "evidence/profile-recovery-human-handoff-20261027.json",
     "humanSurfaceUserOnly": true,
     "agentMayInteractWithThs": false,
@@ -2645,5 +2645,13 @@
     "lastVerifiedAttempts": 5,
     "budgetGrantedByThisResume": false,
     "resumedByThisResume": false
+  },
+  "profileControlAuthorization": {
+    "status": "CANDIDATE_SOURCE_QUALIFICATION_IN_PROGRESS_NOT_INSTALLED",
+    "evidence": "evidence/profile-recovery-control-authorization-20261027.json",
+    "onboardingSource": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
+    "mcpSource": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
+    "runtimePermissionsPublished": false,
+    "newHumanBudgetGranted": false
   }
 }
