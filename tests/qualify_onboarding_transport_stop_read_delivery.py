@@ -17,8 +17,10 @@ assert shutil.which('gh',path=str(bin_dir))is None and shutil.which('timeout',pa
 def module(name,path):
  s=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
 m=module('retained_ci_reader',BASE/'scripts/read-onboarding-diagnostic-transport-stop-20261027.py')
-b=module('retained_ci_bundle',BASE/'tools/onboarding_diagnostic_update/bundle.py')
-old_code=Path(m.TARGET['oldCode']);old_code.parent.mkdir(parents=True,exist_ok=True);b.stage(BASE,old_code)
+FROZEN=BASE/'.pairwise/onboarding-diagnostic-pre-peer'
+assert FROZEN.is_dir(), 'exact historical e1597e00 source checkout required'
+b=module('retained_ci_bundle',FROZEN/'tools/onboarding_diagnostic_update/bundle.py')
+old_code=Path(m.TARGET['oldCode']);old_code.parent.mkdir(parents=True,exist_ok=True);b.stage(FROZEN,old_code)
 assert hashlib.sha256((old_code/'sources.json').read_bytes()).hexdigest()==m.TARGET['oldManifestHash']
 old=Path(m.TARGET['oldScope']);old.mkdir(parents=True,mode=0o700);old.chmod(0o700)
 def put(path,value,mode=0o400):

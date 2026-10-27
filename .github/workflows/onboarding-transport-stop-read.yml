@@ -1,9 +1,9 @@
 name: Onboarding retained transport stop read
 on:
   push:
-    paths: ['scripts/read-onboarding-diagnostic-transport-stop-20261027.py','tests/test_onboarding_transport_stop_read.py','releases/read-onboarding-diagnostic-transport-stop-20261027.sh','.github/workflows/onboarding-transport-stop-read.yml']
+    paths: ['scripts/read-onboarding-diagnostic-transport-stop-20261027.py','tests/test_onboarding_transport_stop_read.py','tests/qualify_onboarding_transport_stop_read_delivery.py','releases/read-onboarding-diagnostic-transport-stop-20261027.sh','.github/workflows/onboarding-transport-stop-read.yml']
   pull_request:
-    paths: ['scripts/read-onboarding-diagnostic-transport-stop-20261027.py','tests/test_onboarding_transport_stop_read.py','releases/read-onboarding-diagnostic-transport-stop-20261027.sh','.github/workflows/onboarding-transport-stop-read.yml']
+    paths: ['scripts/read-onboarding-diagnostic-transport-stop-20261027.py','tests/test_onboarding_transport_stop_read.py','tests/qualify_onboarding_transport_stop_read_delivery.py','releases/read-onboarding-diagnostic-transport-stop-20261027.sh','.github/workflows/onboarding-transport-stop-read.yml']
 permissions: {contents: read}
 jobs:
   exact-retained-evidence:
@@ -21,6 +21,12 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-deploy
+          ref: e1597e00ca069a33700fe1132b0cdf9658deacd1
+          path: .pairwise/onboarding-diagnostic-pre-peer
+          persist-credentials: false
       - run: |
           bash -n releases/read-onboarding-diagnostic-transport-stop-20261027.sh
           sudo python3 -I -S -B tests/qualify_onboarding_transport_stop_read_delivery.py
