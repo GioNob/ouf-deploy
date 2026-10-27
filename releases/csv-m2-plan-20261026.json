@@ -65,7 +65,7 @@
     "runtimeEvidenceOrigin": "OPERATOR_VPS_OUTPUT_AT_SUCCESSFUL_COMPLETION_NOT_A_NEW_LIVE_RECHECK",
     "activeOnboardingSourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
     "activeOnboardingNativeImageId": "sha256:e4690481db28e3e70335704de89e563dcf32ecf70e4a0caea1bdc30c48aa4359",
-    "profileControlCorrection": "QUALIFIED_IMAGES_RETAINED_NOT_INSTALLED_CHILD_COHORT_RECONCILIATION_PENDING",
+    "profileControlCorrection": "EXACT_IMAGES_AND_CONDITIONAL_PLAN_PREPARATION_QUALIFIED_PENDING_TARGET_NO_RUNTIME_AUTHORITY",
     "latestCohortCapture": "RECONCILIATION_SUCCESS_CAPTURE14a96f_SCOPE_CONSUMED_METADATA_ONLY"
   },
   "retainedFarmacie": {
@@ -1925,7 +1925,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Use captured inputs14a96f... as immutable provenance for a NEW metadata/image-only conditional plan preparation. Do not replay original capture, reconciliation, publishers or successful V36 APPLY. No current domain job/policy/readiness proof.",
+  "firstNextAction": "Operator first execution of the NEW qualified two-image/conditional-plan preparation command on capture14a96f...; previous capture/reconciliation/publishers/APPLY consumed. Read3retained metadata and exact2CI ZIPs, derive2native archives with0Engine/import/lifecycle/SQL/authority. Record private execution-inputs and conditional-plan hashes, then qualify a new minimal deployment controller and concrete runtime review. HUMAN job budget3/900s and resume remain separate same-job decisions later.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2337,7 +2337,7 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "docs/handoffs/OUF_MANAGED_CSV_RECOVERY_PEER_RECONCILIATION_20261027.md",
+  "currentCheckpoint": "docs/handoffs/OUF_MANAGED_CSV_CONTROL_IMAGE_PLAN_20261027.md",
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
     "evidence": "evidence/onboarding-diagnostic-apply-qualified-20261027.json",
@@ -2678,5 +2678,14 @@
     "inputsHash": "14a96f782827c8948fabd857d9e3958cbe588a38dc9bd0968c342467f09ca9c1",
     "complete": true,
     "applicationE2EProven": false
+  },
+  "profileControlImagePlanQualification": {
+    "evidence": "evidence/managed-csv-control-image-plan-qualified-20261027.json",
+    "status": "QUALIFIED_FIRST_IMAGE_AND_CONDITIONAL_PLAN_PREPARATION_PENDING_TARGET",
+    "code": "704a2adefe260196fa2487b8b08c06f77953af6d",
+    "wrapper": "d872420c44bf6ca2bdc0055201c8c332ae0f09da",
+    "sourceClosure": "2d42559b5e4418b7521e40d45880fc802c8f9ccb91ea244210cf9bb287090b51",
+    "newScope": "/etc/ouf/deploy-snapshots/managed-csv-control-image-plan-14a96f782827c894-v1",
+    "targetExecuted": false
   }
 }
