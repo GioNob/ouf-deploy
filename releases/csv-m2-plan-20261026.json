@@ -1914,7 +1914,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Qualificare D4 sul candidato M2: classificazione errori e nuova sessione HUMAN finita sullo stesso job FAILED con contatori cumulativi/fencing. Policy56 SERVICE strutturale pubblicata e verificata, non autorizza rilancio/reset. Nessun replay di preview, reader o APPLY.",
+  "firstNextAction": "Complete and qualify same-job finite HUMAN profiling recovery from existing V35 session/fencing model; retain FAILED5, no new-key or quarantine-release bypass; consolidate before runtime review.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2180,14 +2180,16 @@
       "exit": "Categoria/causa owner dello stesso FAILED, regressione causale e percorso di recovery qualificato",
       "remainingHours": null,
       "progress": {
-        "status": "CONFIGURED_SERVICE_PERMISSION_GAP_PROVEN_STRUCTURAL_FIX_PENDING_HUMAN",
+        "status": "CONFIGURED_SERVICE_PERMISSION_GAP_PROVEN_STRUCTURAL_POLICY56_PUBLISHED_RECOVERY_OPEN",
         "diagnosticCategory": "OBJECT_READ_FORBIDDEN",
         "parserReachedForObservedFailure": false,
         "serviceGrantExpirySourceIndication": true,
         "liveServiceGrantNotYetRead": false,
         "evidence": "evidence/farmacie-service-policy-read-target-20261027.json",
         "configuredServiceGrantExpired": true,
-        "exclusiveHistorical403CauseProven": false
+        "exclusiveHistorical403CauseProven": false,
+        "structuralPolicyRef": "ouf-lab-authorization:56",
+        "targetFileReadAfterPolicy56Proven": false
       }
     },
     {
@@ -2264,11 +2266,23 @@
       "exit": "Permanenti non ritentati; transitori finiti; recovery HUMAN conserva tentativi/storia e non duplica effetti",
       "remainingHours": null,
       "progress": {
-        "status": "PERMANENT_403_RETRIED_FIVE_TIMES_REQUIRES_TARGETED_FIX",
+        "status": "FAILFAST_AND_CANONICAL_JOB_ADMISSION_CI_QUALIFIED_HUMAN_SESSION_OPEN",
+        "commit": "11e579366c90ace6dd67c3fec5643559b556f7d0",
+        "evidenceRef": "evidence/profile-failfast-source-qualification-20261027.json",
         "permanentAuthorizationFailureMustNotAutoRetry": true,
+        "failfastAndCanonicalJobGuardImplemented": true,
+        "complete": false,
         "retainFailedJobAndAllAttempts": true,
         "newHumanSessionWithCumulativeLimitsRequiredForRecovery": true,
-        "implemented": false
+        "targetInstalled": false,
+        "remaining": [
+          "versioned finite elapsed-time profile and progressive backoff/jitter",
+          "explicit bounded network transient classification",
+          "HUMAN profiling recovery session on the same job/operation with actor/reason/decisionRef/limits",
+          "atomic expected-version and worker generation fencing across recovery sessions",
+          "native review and final owner/Gateway/MCP cohort qualification",
+          "legacy multiple-job execution reconciliation and bounded quarantine/capacity integration"
+        ]
       }
     },
     {
@@ -2318,7 +2332,7 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "docs/handoffs/OUF_FARMACIE_STRUCTURAL_SERVICE_READ_20261027.md",
+  "currentCheckpoint": "docs/handoffs/OUF_PROFILE_FAILFAST_AND_RECOVERY_CHECKPOINT_20261027.md",
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
     "evidence": "evidence/onboarding-diagnostic-apply-qualified-20261027.json",
@@ -2455,5 +2469,10 @@
     "newExecutionBudgetGranted": false,
     "jobResetAllowed": false,
     "finalPolicyRef": "ouf-lab-authorization:56"
+  },
+  "profileFailfastQualification": {
+    "sourceCommit": "11e579366c90ace6dd67c3fec5643559b556f7d0",
+    "evidenceRef": "evidence/profile-failfast-source-qualification-20261027.json",
+    "targetInstalled": false
   }
 }
