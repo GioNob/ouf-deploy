@@ -10,8 +10,8 @@ delivery=$(mktemp -d "$HOME/ouf-managed-csv-peer-reconcile-delivery.XXXXXXXX")
 chmod 0700 "$delivery"
 delivery_log="$delivery/bootstrap.log"
 trap 'delivery_exit=$?; trap - EXIT; printf "DeliveryExit=%s\nDeliveryDirectory=%s\nDeliveryLog=%s\n" "$delivery_exit" "$delivery" "$delivery_log" | tee -a "$delivery_log"; exit "$delivery_exit"' EXIT
-code_commit=87eeda5a41a8b5ab2caac03c0741e681ae937415
-code_root=/usr/local/lib/ouf-managed-csv-recovery-inputs-eaec0b13236dc465
+code_commit=8d8f46e8b8a746e1a58f057bd8715e66a5759848
+code_root=/usr/local/lib/ouf-managed-csv-peer-reconcile-16b86a69f9c0ecf3
 paths=(
   scripts/capture-managed-csv-recovery-inputs.py
   tools/managed_csv_recovery/retained_inputs.py
@@ -25,8 +25,8 @@ done
 sudo /usr/bin/python3 -I -S -B - "$delivery" "$operator_uid" <<'PY' 2>&1 | tee -a "$delivery_log"
 import hashlib,json,os,re,stat,sys
 source, owner = sys.argv[1], int(sys.argv[2])
-expected = {"capture.py":"2d882c59063a950e628fbaa52568ca0092b33cd54c564acc0b8ae4e5e5f9fdd9","retained_inputs.py":"eaec0b13236dc465cbdf8b0d52108b13f65858a65a5f6497a681ef43d70a6764","case.json":"8d0e0dc04eaac9958055fa2185eaee68b1c8fcaa2fdc9cf5a89d714e7653c6b8"}
-directory = '/usr/local/lib/ouf-managed-csv-recovery-inputs-eaec0b13236dc465'
+expected = {"capture.py":"cf6ccef19b01a61d1443d9cc43995f986964a4d0f85201982d80e3a87c73ff9f","retained_inputs.py":"eaec0b13236dc465cbdf8b0d52108b13f65858a65a5f6497a681ef43d70a6764","case.json":"8d0e0dc04eaac9958055fa2185eaee68b1c8fcaa2fdc9cf5a89d714e7653c6b8"}
+directory = '/usr/local/lib/ouf-managed-csv-peer-reconcile-16b86a69f9c0ecf3'
 scope = '/etc/ouf/deploy-snapshots/managed-csv-recovery-control-inputs-20261027-v1/reconcile-retained-peer-binding-v1'
 if os.geteuid()!=0 or owner<=0:
     raise SystemExit('STOP: identita root/operatore non valida')
