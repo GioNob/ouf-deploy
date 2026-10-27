@@ -65,8 +65,10 @@
     "runtimeEvidenceOrigin": "OPERATOR_VPS_OUTPUT_AT_SUCCESSFUL_COMPLETION_NOT_A_NEW_LIVE_RECHECK",
     "activeOnboardingSourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
     "activeOnboardingNativeImageId": "sha256:e4690481db28e3e70335704de89e563dcf32ecf70e4a0caea1bdc30c48aa4359",
-    "profileControlCorrection": "IMAGES_AND_CONDITIONAL_PLAN_PREPARED_SCOPE_CONSUMED_NEW_EXECUTOR_REVIEW_PENDING",
-    "latestCohortCapture": "RECONCILIATION_SUCCESS_CAPTURE14a96f_SCOPE_CONSUMED_METADATA_ONLY"
+    "profileControlCorrection": "NEW_NATIVE_EXECUTOR_QUALIFIED_FRESH_TARGET_REVIEW_PENDING",
+    "latestCohortCapture": "RECONCILIATION_SUCCESS_CAPTURE14a96f_SCOPE_CONSUMED_METADATA_ONLY",
+    "profileControlCandidatesInstalled": false,
+    "newControlUpdateRuntimeAuthorityIssued": false
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -2337,7 +2339,7 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "docs/handoffs/OUF_MANAGED_CSV_CONTROL_IMAGE_PLAN_20261027.md",
+  "currentCheckpoint": "docs/handoffs/OUF_MANAGED_CSV_CONTROL_UPDATE_20261027.md",
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
     "evidence": "evidence/onboarding-diagnostic-apply-qualified-20261027.json",
@@ -2658,19 +2660,21 @@
   },
   "profileControlCustodyAndCapture": {
     "evidence": "evidence/managed-csv-recovery-custody-capture-qualified-20261027.json",
-    "status": "EXACT_IMAGES_RETAINED_NEW_READ_ONLY_CAPTURE_QUALIFIED_TARGET_NOT_EXECUTED",
+    "status": "ORIGINAL_CAPTURE_STOP_CONSUMED_RECONCILIATION_COMPLETED",
     "captureCode": "4dcffc7e299cda79d70b0a973e6e270ce4f36718",
     "captureWrapper": "80b133705a00d5e643527d603205a906a1e05863",
-    "targetExecuted": false,
-    "originalTargetOutcome": "STOP_SCOPE_CONSUMED_SEE_PEER_RECONCILIATION"
+    "targetExecuted": true,
+    "originalTargetOutcome": "STOP_SCOPE_CONSUMED_SEE_PEER_RECONCILIATION",
+    "originalCaptureScopeConsumed": true
   },
   "profileControlPeerReconciliation": {
     "evidence": "evidence/managed-csv-peer-reconciliation-qualified-20261027.json",
-    "status": "PASS_FIRST_CHILD_RECONCILIATION_TARGET_EXECUTION_PENDING",
+    "status": "QUALIFIED_SCOPE_CONSUMED_TARGET_SUCCEEDED",
     "originalScopeConsumed": true,
     "originalStop": "EXACT_RETAINED_COHORT_REQUIRED",
     "newChildScope": "/etc/ouf/deploy-snapshots/managed-csv-recovery-control-inputs-20261027-v1/reconcile-retained-peer-binding-v1",
-    "targetExecuted": false
+    "targetExecuted": true,
+    "targetReceipt": "evidence/managed-csv-peer-reconciliation-target-20261027.json"
   },
   "profileControlPeerReconciliationTarget": {
     "evidence": "evidence/managed-csv-peer-reconciliation-target-20261027.json",
@@ -2681,12 +2685,14 @@
   },
   "profileControlImagePlanQualification": {
     "evidence": "evidence/managed-csv-control-image-plan-qualified-20261027.json",
-    "status": "QUALIFIED_FIRST_IMAGE_AND_CONDITIONAL_PLAN_PREPARATION_PENDING_TARGET",
+    "status": "QUALIFIED_SCOPE_CONSUMED_TARGET_SUCCEEDED",
     "code": "704a2adefe260196fa2487b8b08c06f77953af6d",
     "wrapper": "d872420c44bf6ca2bdc0055201c8c332ae0f09da",
     "sourceClosure": "2d42559b5e4418b7521e40d45880fc802c8f9ccb91ea244210cf9bb287090b51",
     "newScope": "/etc/ouf/deploy-snapshots/managed-csv-control-image-plan-14a96f782827c894-v1",
-    "targetExecuted": false
+    "targetExecuted": true,
+    "currentDeliveryUsable": false,
+    "targetReceipt": "evidence/managed-csv-control-image-plan-target-20261027.json"
   },
   "profileControlImagePlanTarget": {
     "evidence": "evidence/managed-csv-control-image-plan-target-20261027.json",
@@ -2696,5 +2702,28 @@
     "complete": true,
     "runtimeAuthorityIssued": false,
     "applicationCandidatesInstalled": false
+  },
+  "profileControlNativeUpdateQualification": {
+    "evidence": "evidence/managed-csv-control-update-qualified-20261027.json",
+    "status": "QUALIFIED_FIRST_NEW_TARGET_REVIEW_PENDING",
+    "sourceCommit": "74c4ddd77ff6f0e2122ff139eebdbd80dc671f0f",
+    "wrapperCommit": "965583e9aadc1a690541c83d543626abe8bf165c",
+    "qualificationCommit": "af635f7f7d9b1eae8866f90dbf563cc478e763b4",
+    "qualificationRun": 40595845656,
+    "deliveryRun": 40594822521,
+    "sourceClosureHash": "ebd7f080088da1c62e126ecd12e1228203be74039925080d322203a29a40ba61",
+    "wrapperSha256": "f91f09abc6b8c399256a246ff738c462d59540d5cd36a047041d81a4ab94260a",
+    "newScope": "/etc/ouf/deploy-snapshots/managed-csv-control-update-900b09c6d29a20fd-v1",
+    "targetExecuted": false,
+    "targetInstalled": false,
+    "freshConcreteHumanTerminalReviewRequired": true,
+    "currentDeliveryUsable": true,
+    "databaseMigrationsAuthorized": 0,
+    "maximumNewTechnicalReadonlySqlSessions": 8,
+    "humanBudgetGranted": false,
+    "resumed": false,
+    "runtimeAuthorityIssuedOnTarget": false,
+    "automaticReplayAllowed": false,
+    "applicationE2EProven": false
   }
 }

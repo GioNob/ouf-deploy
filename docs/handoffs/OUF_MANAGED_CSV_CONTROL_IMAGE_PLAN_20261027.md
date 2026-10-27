@@ -1,3 +1,7 @@
+# CURRENT — preparazione target RIUSCITA e CONSUMATA; non ripetere questo comando
+
+27 ottobre 2026. Ricevuta completa [qui](../../evidence/managed-csv-control-image-plan-target-20261027.json): complete=true, Exit0/DeliveryExit0, input900b09c6d29a20fda5dfff1f1333df167363c96e865cc2c13a7b58791f4e0c51, piano73d5733b86f2f8c8430a6a978540607557a8cd925911321ab58ae7b011bc1f7e.3metadata/580635byte,2ZIP,2native tar,zeroEngine/SQL/import/authority/effetti. Scope CONSUMATO come capture/reconcile/publisher/APPLY36. Il seguito corretto è il [nuovo controller e nuova review](OUF_MANAGED_CSV_CONTROL_UPDATE_20261027.md), qualificati ma NON ancora eseguiti sul target. I paragrafi seguenti conservano la consegna storica e non sono istruzioni da ripetere.
+
 # Preparazione delle due immagini e piano condizionale — QUALIFICATA, prima esecuzione VPS da ricevere
 
 27ottobre2026, Europe/Rome. [Ricevuta riconciliazione VPS](../../evidence/managed-csv-peer-reconciliation-target-20261027.json), [qualifica di questo passo](../../evidence/managed-csv-control-image-plan-qualified-20261027.json). [Riuso Teatri](../MANAGED_CSV_RECOVERY_REUSE.md).

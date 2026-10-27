@@ -1,3 +1,13 @@
+# CURRENT — due immagini/piano target preparati; nuovo controller QUALIFICATO, decisione di manutenzione pendente
+
+27 ottobre 2026. [Handoff corrente](handoffs/OUF_MANAGED_CSV_CONTROL_UPDATE_20261027.md), [qualifica](../evidence/managed-csv-control-update-qualified-20261027.json), [ricevuta preparazione target](../evidence/managed-csv-control-image-plan-target-20261027.json). Preparazione900b09c6/piano73d5733b riusciti e CONSUMATI; nuova qualifica40595845656/9jobPASS, consegna reale40594822521PASS,46casi crypto/fence/native/TTY senza skip, archivi/JAR/YAML/36migrazioni esatti. Fonte runtime74c4ddd..., wrapper965583e9..., fixture finaleaf635f7f...; nessun nuovo APPLY eseguito sul target e candidati Onboarding9890b318/MCPd2454f3c NON ancora installati.
+
+NEXT solo nuova review/esecuzione del controller Onboarding→MCP nel terminale dell'operatore, su900b09c6/73d5733b. Legge i metadata e riclassifica configurazione prima della review; authority900s dopo APPROVO umano fresco,8SQL READ ONLY,backup quiescente verificato,zero migrazioni,coorte13/11peer invariati,stesso FarmacieFAILED5. Nessun budget/resume/grant/attivazione/acquisizione. STOP conserva prove e non rilancia; non ripetere APPLY35→36, capture/reconcile/publisher/preparazione già consumati.
+
+Policy56 SERVICE strutturale è già PUBLISHED/verificata, non PENDING e non un grant temporaneo da riproporre. Dopo installazione: identità OUF effettiva ouf-admin, ownership/Gateway/permessi correnti, catalogo/scopes/hop nativo; THS SOLO UTENTE. Poi budget3/900 e resume separati dello STESSO job, cumulativi6–8; originale/hash/parser/preview61righe→UDP. Manutenzione/CI/readiness non sono E2E. Riusare il percorso Teatri e il codice typed/ASSETS/LATEST/recovery/UDP acquisito.
+
+M1/G4 acquisiti (8/8tecniche/6/6funzionali del caso conservato), M2/G5/G6/G7 aperti. D5/D6/D7, due client reali e dossier finale ancora da provare; Supervisor solo dopo E2E completo. No Registryrestart/reinstall/nuovo upload/job/terzaacquisizione/merge/releaseacceptance/subagenti/automazioni. Header e stati seguenti sono STORICI.
+
 # CURRENT — grant SERVICE scaduto provato; correzione strutturale PENDING HUMAN
 
 27 ottobre2026. Ricevuta VPS SERVICE_POLICY_OBSERVED_NO_AUTHORITY complete=true/Exit0/DeliveryExit0, policy55/hashb126492a..., ore15:07:21 Europe/Rome (UTC+1). Unico matching grant ouf-onboarding/ouf.object-storage.content.read scaduto25ottobre; nessun matching ALLOW corrente. [Prova owner](../evidence/farmacie-service-policy-read-target-20261027.json). Prerequisito configurato mancante, non prova esclusiva del403 storico né del token/Gateway corrente.1GET owner/1GET IAM/5POST IAM/115286byte, zero mutazioni/app/filebytes/SQL/credenziali. Lettore e scope CONSUMATI: NON rilanciare.
