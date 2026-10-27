@@ -1911,7 +1911,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Run only this new retained reader once on VPS. Obtain the exact guard components and original-claim reconciliation; then implement/qualify the observed compatibility delta before any separately reviewed residual runtime authority.",
+  "firstNextAction": "Run the new peer continuation once with fresh exact HUMAN terminal review. Preserve original3metadata reads cumulatively, all consumed preparations/APPLY/reader and old hashes. No target continuation result received.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2298,7 +2298,7 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "docs/handoffs/OUF_FARMACIE_DIAGNOSTIC_APPLY_NEXT_20261027.md",
+  "currentCheckpoint": "docs/handoffs/OUF_FARMACIE_DIAGNOSTIC_PEER_CONTINUATION_20261027.md",
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
     "evidence": "evidence/onboarding-diagnostic-apply-qualified-20261027.json",
@@ -2317,8 +2317,21 @@
       "sourceCommit": "b1618031d8c1d7ab10efd9c9742bc5c1b96131e8",
       "deliveryCommit": "5b91c2eb9302b8aaeb3a60cf45f26ce7b7951a1e",
       "qualified": true,
-      "targetExecuted": false,
-      "evidence": "evidence/onboarding-transport-stop-reader-qualified-20261027.json"
+      "targetExecuted": true,
+      "evidence": "evidence/onboarding-transport-stop-reader-qualified-20261027.json",
+      "resultEvidence": "evidence/onboarding-transport-stop-reconciled-target-20261027.json"
     }
+  },
+  "diagnosticPeerContinuation": {
+    "qualified": true,
+    "sourceCommit": "0e5be010ee37479a49500afb70bbf13b26b40e8a",
+    "deliveryCommit": "fd8313933609b53c98b691c675a7b8454f8e9364",
+    "wrapperSha256": "16fa7d0b398a3b5a54f371887855930db5edeeea7373a1a780fef5d79ffb64fc",
+    "evidence": "evidence/onboarding-peer-continuation-qualified-20261027.json",
+    "targetExecuted": false,
+    "runtimeAuthorityIssued": false,
+    "originalPreflightReadsCarried": 3,
+    "maximumOwnerMetadataReads": 64,
+    "oldHashesRewritten": false
   }
 }

@@ -1,3 +1,7 @@
+# SUPERATO — reader riuscito e consumato, continuazione separata qualificata
+
+27 ottobre2026. La lettura riportata più sotto è stata eseguita: unica differenza peerCredentials mancante nel profilo storico, stesso socket/custodia, zero dispatch e3metadataread riconciliati. NON ripetere reader/preparazioni/APPLY storici. NEXT aggiornato: [continuazione con nuova review](OUF_FARMACIE_DIAGNOSTIC_PEER_CONTINUATION_20261027.md). Nessun risultato della continuazione ricevuto. Tutto sotto è storico.
+
 # NEXT — sola riconciliazione dei file conservati, nessun nuovo APPLY
 
 Il precedente APPLY è consumato in STOP pre-review. Il nuovo reader è qualificato: source b1618031d8c1d7ab10efd9c9742bc5c1b96131e8/SHA cd89338de4dcdbb55930981f05a446c3b5184648945b9f5e6f8060ca215e932a; delivery5b91c2eb9302b8aaeb3a60cf45f26ce7b7951a1e/wrapperSHA2138066add8c89fec929b448f7dc8cf1205c2daa9ac400b49dbfb69b10af12e6. CI40467119923/jobs122065105823+122065106399 PASS:12test senza skip, consegna pubblica reale curl/sudo/root0400/checksumroot/log0600; entry esatta rifiuta hash privato sintetico errato, file originali invariati. Log diretti letti. [Prova](../../evidence/onboarding-transport-stop-reader-qualified-20261027.json).

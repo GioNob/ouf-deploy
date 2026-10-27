@@ -1,3 +1,13 @@
+# CURRENT — peer storico riconciliato; continuazione diagnostica qualificata NON eseguita
+
+27 ottobre2026. VPS reader completo/Exit0/DeliveryExit0: unica differenza peerCredentials ASSENTE storico→presente cattura; stesso socket/custodia e profiloNATIVE, vecchiaauthority/journalassenti,3metadataread originali/zeroEngineSQL. ReportSHA be0123cad1ce85cbe16b508d41d9361fa76843603dceffff4e1f64bac655ee3c. [Ricevuta](evidence/onboarding-transport-stop-reconciled-target-20261027.json). Capture/preparazione/primoAPPLY/reader CONSUMATI, NON ripetere.
+
+Fixsource0e5be010ee37479a49500afb70bbf13b26b40e8a, deliveryfd8313933609b53c98b691c675a7b8454f8e9364, wrapperSHA16fa7d0b398a3b5a54f371887855930db5edeeea7373a1a780fef5d79ffb64fc,21fonti root0400. Mantiene vecchi hash e tutti i campi; verifica peer corrente root esatto LIVE ogni connessione. Child retained-peer-credentials-continuation-v1 sotto vecchio contesto,3letture originali cumulative nei64massimi, reader7+22separato conservato. ProbeSpring /actuator/health/readiness riusato dal V35 qualificato. Nessun vecchio effetto runtime da ripetere.
+
+CI40479182671 PASS11protocollo/12compat-contatori/6MAC/9fence +7native per classic/containerd +11TTY per ciascun sudo; delivery40479720976/job122106687702 PASSrootcopy/checksum/contatori/TTY. Log diretti letti. Fixtureapp/schema/autorità sintetiche, Docker/PGreali: NON prove VPS/E2E. [Qualifica](evidence/onboarding-peer-continuation-qualified-20261027.json).
+
+NEXT solo prima esecuzione della NUOVA continuazione dal terminaleVPS, reviewconcreta fresca+APPROVOisolato+Invio, nessun consenso simulato. [Handoff/comando](docs/handoffs/OUF_FARMACIE_DIAGNOSTIC_PEER_CONTINUATION_20261027.md). Nessun risultato/authority della continuazione ricevuto. SeSTOPconservare eNONrilanciare. Stessa immagine074bd16e giàpreparata, stessaCFG/worker/Registry/MCP/Gateway,4SQLreadonlytecniche/zero nuovi job/attivazioni/grant/reset/replay/rollback. M1/G4acquisito, Farmaciecausaignota/M2aperto, policy54scaduta. No subagenti/automazioni/merge/releaseacceptance; Supervisor dopoE2E. Header successivi STORICI.
+
 # CURRENT — lettura conservata qualificata dopo STOP trasporto; NON rilanciare APPLY
 
 27 ottobre 2026. APPLY sourcee159/delivery15b2 consumato in STOP_RECONCILE/EXACT_RETAINED_NATIVE_DATABASE_TRANSPORT_REQUIRED, Exit2/DeliveryExit2, prima della review. Nessuna autorità nuova. [Ricevuta](evidence/onboarding-diagnostic-transport-stop-target-20261027.json). Causa precisa fra schema/EngineBinding/profilo mount ancora non osservata; fixture precedente usava binding identici e non provava compatibilità storica.
