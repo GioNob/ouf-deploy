@@ -35,8 +35,8 @@ try:
     proc.wait(timeout=5);assert proc.returncode==2,(proc.returncode,output.decode(errors='replace'))
     deliveries=list(home.glob('ouf-onboarding-diagnostic-apply-delivery.*'));assert len(deliveries)==1
     bootstrap=(deliveries[0]/'bootstrap.log').read_text();assert 'Exit=2'in bootstrap and 'DeliveryExit=2'in bootstrap
-    code=Path('/usr/local/lib/ouf-onboarding-diagnostic-update-f1ef9b49afceba45');manifest=(code/'sources.json').read_bytes()
-    assert hashlib.sha256(manifest).hexdigest()=='f1ef9b49afceba4518da11adf01b480a8d6d271f7698207614411a59031502c5'
+    code=Path('/usr/local/lib/ouf-onboarding-diagnostic-update-687aefc7514bbe7b');manifest=(code/'sources.json').read_bytes()
+    assert hashlib.sha256(manifest).hexdigest()=='687aefc7514bbe7b8c25a7e88cb5621d510d617529576dae46902ba762b1dccf'
     mapping=json.loads(manifest);assert len(mapping)==21
     for name,digest in mapping.items():
         path=code/name;s=path.stat();assert s.st_uid==s.st_gid==0 and s.st_mode&0o777==0o400 and hashlib.sha256(path.read_bytes()).hexdigest()==digest

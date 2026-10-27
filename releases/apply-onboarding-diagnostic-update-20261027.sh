@@ -7,21 +7,21 @@ delivery=$(mktemp -d "${HOME}/ouf-onboarding-diagnostic-apply-delivery.XXXXXXXX"
 chmod 0700 "$delivery"
 delivery_log="$delivery/bootstrap.log"
 trap 'delivery_exit=$?; trap - EXIT; printf "DeliveryExit=%s\nDeliveryDirectory=%s\nDeliveryLog=%s\n" "$delivery_exit" "$delivery" "$delivery_log" | tee -a "$delivery_log"; exit "$delivery_exit"' EXIT
-code_commit=9a4e197ff4715226d53c9b68da88233dadd30f96
-manifest_sha=f1ef9b49afceba4518da11adf01b480a8d6d271f7698207614411a59031502c5
-code_root=/usr/local/lib/ouf-onboarding-diagnostic-update-f1ef9b49afceba45
-printf '%s' '{"auth_preexec.py":"95da7f53be88ac0e602e03acbdf6940a719e96a6fedb207693d23f59f0b31015","auth_producer.py":"dbfb365087fb532a0df66f66b6d72be7e04e2df4f31116631beb0b20a9f6f50f","auth_protocol.py":"cd5aa30c8c806942c53a306e76a641b876e07a12fbbc3c0d106ecf6b94e87a0d","authentication.py":"7cb06f7976791abfc1ffac0e9660f3cdf603347f4514cd2bab7f55c6574e251d","authority.py":"0d3607368b72b89079ef56e43f1cac7b7721f09f8f17bc0f0aa6e8772ee49f74","context.py":"013477f32fef21e1d29c960e084724d07663cb5613f3613c909812065f68b4e0","database.py":"115863d4fad186dbdc23cf1ebde20f1c682bd32f700fdf094e5dc011e3c36c3a","engine_creation.py":"9d6149a0b3331666496583ebbaa9f43ed05d3039e7097861f3bd147f917ab3fb","entry.py":"1a8b07138d59e38e3912c6e584ad3bddaf87fe0b1898e075fc09f33132b1bbc4","image_custody.py":"5d0fc0edb1ebd9386326eadbbee08f2cf0a9fd1e122940c0661b5ac5e3655ed8","migration-fence.json":"9b25299a8939dc5354d5ab688ebf1816576b531e4ed672bf944ca4d67fe50c11","plan_helper.py":"09b892a89f7cd7fa31fbc891822445ed09554e9362e397bb9b12b98316e1d8dd","ports.py":"c76945ffd2ccb52a07ac7c2ba0ba8d0fe66f5224e704f95851490cd2eb5ea9d8","quarantine.py":"592639a3ea2dba5788653e7f00f3fe4fbaeadd823287136a5a122c164c696d42","recovery_journal.py":"8050144514a60ba19e71650bb8320887fe1be763a333058c21d6e2c3a789a162","retained_mac.py":"cb5dbbee4a80ce71860dfe5d32362a662d98898c58fd82009e69c5eb6ac1f7ce","runtime_binding.py":"291daecc2b541a7c7410cd9f7c22ec7fccc82568ae67b21b78148f939035c7de","signing.py":"81ad864e90b3efe17d65534ad4b1ccc187e60954f4f5d6244968d7809303a38f","state_fence.py":"79fd075e3a8e3682116df641fdab74decebe480523ae42b31efc17e5c891d597","terminal.py":"3e698faea1e933b9ce04ad7ed204ed44b60863ad8fac620385c37a10179bfbf5","transport.py":"8a2ef581529710af114e556e132b171e46c586db45c4b20ec70040dfc491906b"}' > "$delivery/sources.json"
+code_commit=e1597e00ca069a33700fe1132b0cdf9658deacd1
+manifest_sha=687aefc7514bbe7b8c25a7e88cb5621d510d617529576dae46902ba762b1dccf
+code_root=/usr/local/lib/ouf-onboarding-diagnostic-update-687aefc7514bbe7b
+printf '%s' '{"auth_preexec.py":"95da7f53be88ac0e602e03acbdf6940a719e96a6fedb207693d23f59f0b31015","auth_producer.py":"dbfb365087fb532a0df66f66b6d72be7e04e2df4f31116631beb0b20a9f6f50f","auth_protocol.py":"cd5aa30c8c806942c53a306e76a641b876e07a12fbbc3c0d106ecf6b94e87a0d","authentication.py":"7cb06f7976791abfc1ffac0e9660f3cdf603347f4514cd2bab7f55c6574e251d","authority.py":"12f3ac78dbc34e67e2fd3817470d823460bc2de0f28a56bfc2fe952066830bdc","context.py":"9228cc3df7aa2b7865b957b1d464b57838dbf4a40507505c058d05969498bfb8","database.py":"115863d4fad186dbdc23cf1ebde20f1c682bd32f700fdf094e5dc011e3c36c3a","engine_creation.py":"9d6149a0b3331666496583ebbaa9f43ed05d3039e7097861f3bd147f917ab3fb","entry.py":"fba1f638f25447d0613bae03127e9de9cce1170bc98874f1e4a4e6bb4ab565d1","image_custody.py":"5d0fc0edb1ebd9386326eadbbee08f2cf0a9fd1e122940c0661b5ac5e3655ed8","migration-fence.json":"9b25299a8939dc5354d5ab688ebf1816576b531e4ed672bf944ca4d67fe50c11","plan_helper.py":"09b892a89f7cd7fa31fbc891822445ed09554e9362e397bb9b12b98316e1d8dd","ports.py":"2fb56388c3a9ce219ce3e15eccdfcbaeffdf5c0708596d4566fda90854087554","quarantine.py":"592639a3ea2dba5788653e7f00f3fe4fbaeadd823287136a5a122c164c696d42","recovery_journal.py":"8050144514a60ba19e71650bb8320887fe1be763a333058c21d6e2c3a789a162","retained_mac.py":"cb5dbbee4a80ce71860dfe5d32362a662d98898c58fd82009e69c5eb6ac1f7ce","runtime_binding.py":"291daecc2b541a7c7410cd9f7c22ec7fccc82568ae67b21b78148f939035c7de","signing.py":"81ad864e90b3efe17d65534ad4b1ccc187e60954f4f5d6244968d7809303a38f","state_fence.py":"79fd075e3a8e3682116df641fdab74decebe480523ae42b31efc17e5c891d597","terminal.py":"3e698faea1e933b9ce04ad7ed204ed44b60863ad8fac620385c37a10179bfbf5","transport.py":"8a2ef581529710af114e556e132b171e46c586db45c4b20ec70040dfc491906b"}' > "$delivery/sources.json"
 printf '%s  %s\n' "$manifest_sha" "$delivery/sources.json" | sha256sum -c - | tee -a "$delivery_log"
 while read -r name path checksum; do
   curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 131072 \
     "https://raw.githubusercontent.com/GioNob/ouf-deploy/${code_commit}/${path}" -o "$delivery/$name"
   printf '%s  %s\n' "$checksum" "$delivery/$name" | sha256sum -c - | tee -a "$delivery_log"
 done <<'SOURCES'
-entry.py scripts/apply-onboarding-diagnostic-update-20261027.py 1a8b07138d59e38e3912c6e584ad3bddaf87fe0b1898e075fc09f33132b1bbc4
-authority.py tools/onboarding_diagnostic_update/authority.py 0d3607368b72b89079ef56e43f1cac7b7721f09f8f17bc0f0aa6e8772ee49f74
-context.py tools/onboarding_diagnostic_update/context.py 013477f32fef21e1d29c960e084724d07663cb5613f3613c909812065f68b4e0
+entry.py scripts/apply-onboarding-diagnostic-update-20261027.py fba1f638f25447d0613bae03127e9de9cce1170bc98874f1e4a4e6bb4ab565d1
+authority.py tools/onboarding_diagnostic_update/authority.py 12f3ac78dbc34e67e2fd3817470d823460bc2de0f28a56bfc2fe952066830bdc
+context.py tools/onboarding_diagnostic_update/context.py 9228cc3df7aa2b7865b957b1d464b57838dbf4a40507505c058d05969498bfb8
 transport.py tools/onboarding_diagnostic_update/transport.py 8a2ef581529710af114e556e132b171e46c586db45c4b20ec70040dfc491906b
-ports.py tools/onboarding_diagnostic_update/ports.py c76945ffd2ccb52a07ac7c2ba0ba8d0fe66f5224e704f95851490cd2eb5ea9d8
+ports.py tools/onboarding_diagnostic_update/ports.py 2fb56388c3a9ce219ce3e15eccdfcbaeffdf5c0708596d4566fda90854087554
 quarantine.py tools/onboarding_diagnostic_update/quarantine.py 592639a3ea2dba5788653e7f00f3fe4fbaeadd823287136a5a122c164c696d42
 state_fence.py tools/onboarding_diagnostic_update/state_fence.py 79fd075e3a8e3682116df641fdab74decebe480523ae42b31efc17e5c891d597
 database.py tools/onboarding_diagnostic_update/database.py 115863d4fad186dbdc23cf1ebde20f1c682bd32f700fdf094e5dc011e3c36c3a
@@ -45,9 +45,9 @@ from pathlib import Path
 source,owner,expected=Path(sys.argv[1]),int(sys.argv[2]),sys.argv[3]
 def require(ok,code):
     if not ok:raise SystemExit(code)
-require(os.geteuid()==os.getegid()==0 and owner>0 and expected=='f1ef9b49afceba4518da11adf01b480a8d6d271f7698207614411a59031502c5','ROOT_PINNED_CODE_COPY_REQUIRED')
+require(os.geteuid()==os.getegid()==0 and owner>0 and expected=='687aefc7514bbe7b8c25a7e88cb5621d510d617529576dae46902ba762b1dccf','ROOT_PINNED_CODE_COPY_REQUIRED')
 require(not os.path.lexists('/etc/ouf/deploy-snapshots/onboarding-diagnostic-update-c22586172070809d-v1'),'ONBOARDING_UPDATE_SCOPE_CONSUMED_NO_REPLAY')
-target=Path('/usr/local/lib/ouf-onboarding-diagnostic-update-f1ef9b49afceba45')
+target=Path('/usr/local/lib/ouf-onboarding-diagnostic-update-687aefc7514bbe7b')
 for parent in(target.parent,*target.parent.parents):
     s=parent.lstat();require(stat.S_ISDIR(s.st_mode)and s.st_uid==s.st_gid==0 and not s.st_mode&0o022,'ROOT_CODE_ANCESTRY_REQUIRED')
 require(not os.path.lexists(target),'ONBOARDING_CODE_SCOPE_EXISTS_STOP_RECONCILE')
