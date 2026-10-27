@@ -15,3 +15,12 @@ jobs:
       - run: |
           sudo install -d -m 700 /var/lib/ouf-onboarding-transport-read-ci
           sudo env OUF_TRANSPORT_READ_TEST_ROOT=/var/lib/ouf-onboarding-transport-read-ci python3 -I -S -B tests/test_onboarding_transport_stop_read.py
+  curl-only-protected-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: |
+          bash -n releases/read-onboarding-diagnostic-transport-stop-20261027.sh
+          sudo python3 -I -S -B tests/qualify_onboarding_transport_stop_read_delivery.py
