@@ -1911,7 +1911,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "One bounded retained-file read, no Engine/SQL/OAuth/configuration/credential/signing-key read, to identify exact failing guard components and reconcile original claims before considering a separately reviewed continuation. Never rerun the APPLY.",
+  "firstNextAction": "Run only this new retained reader once on VPS. Obtain the exact guard components and original-claim reconciliation; then implement/qualify the observed compatibility delta before any separately reviewed residual runtime authority.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2312,6 +2312,13 @@
     "scopeConsumed": true,
     "rerunAllowed": false,
     "currentDeliveryUsable": false,
-    "targetReceipt": "evidence/onboarding-diagnostic-transport-stop-target-20261027.json"
+    "targetReceipt": "evidence/onboarding-diagnostic-transport-stop-target-20261027.json",
+    "retainedStopReader": {
+      "sourceCommit": "b1618031d8c1d7ab10efd9c9742bc5c1b96131e8",
+      "deliveryCommit": "5b91c2eb9302b8aaeb3a60cf45f26ce7b7951a1e",
+      "qualified": true,
+      "targetExecuted": false,
+      "evidence": "evidence/onboarding-transport-stop-reader-qualified-20261027.json"
+    }
   }
 }

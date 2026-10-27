@@ -1,3 +1,27 @@
+# NEXT — sola riconciliazione dei file conservati, nessun nuovo APPLY
+
+Il precedente APPLY è consumato in STOP pre-review. Il nuovo reader è qualificato: source b1618031d8c1d7ab10efd9c9742bc5c1b96131e8/SHA cd89338de4dcdbb55930981f05a446c3b5184648945b9f5e6f8060ca215e932a; delivery5b91c2eb9302b8aaeb3a60cf45f26ce7b7951a1e/wrapperSHA2138066add8c89fec929b448f7dc8cf1205c2daa9ac400b49dbfb69b10af12e6. CI40467119923/jobs122065105823+122065106399 PASS:12test senza skip, consegna pubblica reale curl/sudo/root0400/checksumroot/log0600; entry esatta rifiuta hash privato sintetico errato, file originali invariati. Log diretti letti. [Prova](../../evidence/onboarding-transport-stop-reader-qualified-20261027.json).
+
+Legge sette file conservati (due input/plan, claim, tre tentativi, log) e verifica21fonti+manifesto del controller fermato senza eseguirlo. Massimi60s/8MiB. Zero Engine/SQL/OAuth/letture configurazione/credenziali/chiavi; nessun APPROVO, modifica originale o autorità nuova. Confronta separatamente schema, Enginebinding e runtimebindingprofile; stampa soltanto campi/tipi/hash dei delta, mai valori privati. Non osserva lo stato runtime corrente e non autorizza alcuna continuazione.
+
+Serve il terminale owner perché i due profili e le claim sono privati sul VPS e non disponibili via GitHub/chat. UNA esecuzione della sola lettura:
+
+```bash
+(
+  set -Eeuo pipefail
+  umask 077
+  ouf_transport_read_bootstrap=$(mktemp -d "$HOME/ouf-onboarding-transport-read-bootstrap.XXXXXXXX")
+  curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 65536 \\
+    "https://raw.githubusercontent.com/GioNob/ouf-deploy/5b91c2eb9302b8aaeb3a60cf45f26ce7b7951a1e/releases/read-onboarding-diagnostic-transport-stop-20261027.sh" \\
+    -o "$ouf_transport_read_bootstrap/run.sh"
+  printf '%s  %s\n' '2138066add8c89fec929b448f7dc8cf1205c2daa9ac400b49dbfb69b10af12e6' "$ouf_transport_read_bootstrap/run.sh" | sha256sum -c -
+  chmod 0400 "$ouf_transport_read_bootstrap/run.sh"
+  /usr/bin/bash "$ouf_transport_read_bootstrap/run.sh"
+)
+```
+
+Restituire JSON finale e log. SeSTOP, conservare e non rilanciare. Dopo il risultato correggere soltanto il delta realmente dimostrato e qualificare fixture non identiche per profili storici/correnti; eventuale recupero richiederà review concreta nuova e budget cumulativi, nessun riuso/replay. Il comando APPLY più sotto è solo storia, NON rilanciarlo. M1 acquisito e FAILED Farmacie conservato.
+
 # STOP VPS — confronto trasporto PostgreSQL, PRIMA della review; NON RILANCIARE
 
 27 ottobre 2026. Ricevuto STOP_RECONCILE/EXACT_RETAINED_NATIVE_DATABASE_TRANSPORT_REQUIRED, Exit2/DeliveryExit2. Delivery /home/oufadmin/ouf-onboarding-diagnostic-apply-delivery.V220onbW; log /usr/local/lib/ouf-onboarding-diagnostic-update-687aefc7514bbe7b/operator.log e bootstrap.log nella delivery. Tutti21checksum/copia root0400 verificati dall'operatore. Il comando sotto è STORICO E CONSUMATO, non più un NEXT eseguibile.
