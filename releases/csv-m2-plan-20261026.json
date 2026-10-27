@@ -1911,7 +1911,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Qualificare nuova continuazione annidata PID1 dopo due STOP pre-review; contatori11/64 conservati, nessun replay. Poi review terminale fresca prima di authority/effetti. M1 acquisito, causa Farmacie ancora ignota.",
+  "firstNextAction": "Prima esecuzione della NUOVA continuazione PID1 qualificata; review concreta e APPROVO fresco nel terminale prima di authority/effetti. Vecchie procedure consumate;11letture originali nello stesso64. Dopo installazione provata, diagnosi governata dello stesso job Farmacie con mandato READ finito valido; policy54 scaduta. M1 acquisito, M2 aperto.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2341,13 +2341,21 @@
     "targetReceipt": "evidence/onboarding-pid1-peer-stop-target-20261027.json"
   },
   "diagnosticPid1Continuation": {
-    "qualified": false,
+    "qualified": true,
     "targetExecuted": false,
     "originalCumulativeMetadataReads": 11,
     "maximumOwnerMetadataReads": 64,
     "oldHashesRewritten": false,
     "historicalLiveTransportReused": true,
-    "evidence": "evidence/onboarding-pid1-peer-stop-target-20261027.json",
-    "handoff": "docs/handoffs/OUF_FARMACIE_DIAGNOSTIC_PID1_CONTINUATION_20261027.md"
+    "evidence": "evidence/onboarding-pid1-continuation-qualified-20261027.json",
+    "handoff": "docs/handoffs/OUF_FARMACIE_DIAGNOSTIC_PID1_CONTINUATION_20261027.md",
+    "sourceCommit": "fc40492ee048b6cb6521027c0f9c0b0e26739bcf",
+    "deliveryCommit": "cda3a58c46644f5692a4d7d9753a8ddadf8b57a7",
+    "wrapperSha256": "1f7c1a634ac74f99755f35907eb5405d915402742d5add755f44a8588f6b8dd2",
+    "sourceManifestSha256": "67bc4cd76ccb43526d52c331c5f04454a869d4611251a8cb7092ff8803470f88",
+    "currentDeliveryUsable": true,
+    "preReviewMetadataReads": 54,
+    "freshConcreteTerminalReviewRequired": true,
+    "targetRuntimeAuthorityIssued": false
   }
 }

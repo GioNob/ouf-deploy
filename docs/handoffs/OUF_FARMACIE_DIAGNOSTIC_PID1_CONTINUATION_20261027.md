@@ -16,10 +16,33 @@ Nuovo scope esclusivo: child `pid1-peer-continuation-v1` sotto il secondo scope.
 
 ## Stato e prossima azione
 
-Correzione in qualifica CI; nessun nuovo comando qualificato consegnato in questo checkpoint. Test unitari17PASS; il socket PID1 kernel reale e il ciclo firmato Docker29.8.1/Postgres17 classic/containerd devono completarsi. Workload e chiavi CI sono sintetici: nessuna prova VPS/E2E.
+Correzione e consegna QUALIFICATE, NON eseguite sul VPS. [Evidenza completa](../../evidence/onboarding-pid1-continuation-qualified-20261027.json). Source `fc40492ee048b6cb6521027c0f9c0b0e26739bcf`; delivery `cda3a58c46644f5692a4d7d9753a8ddadf8b57a7`; wrapper `releases/apply-onboarding-diagnostic-pid1-continuation-20261027.sh`; SHA256 `1f7c1a634ac74f99755f35907eb5405d915402742d5add755f44a8588f6b8dd2`; closure21fonti `67bc4cd76ccb43526d52c331c5f04454a869d4611251a8cb7092ff8803470f88`; codice `/usr/local/lib/ouf-onboarding-diagnostic-update-67bc4cd76ccb4352`.
 
-Dopo qualifica: prima esecuzione della sola NUOVA consegna, checksum, copia root0400, log conservati, review concreta e `APPROVO <hash fresco>` realmente inserito nel terminale con Invio. Nessun consenso passato dal wrapper; il prompt editabile già provato viene riusato. Se STOP conservare e non rilanciare.
+CI source push40484538466 PASS:11protocollo/17compatibilità e contatori/6MAC/9fence senza skip;7native per classic/containerd (Docker29.8.1/Postgres17), socket Unix PID1 kernel reale su entrambi,11TTY per ciascun sudo. Nuova delivery push40484826693/job122123886839 PASS: HTTPS pubblico, sudo reale, root0400, main/TTY protetti, vecchi21codici+log invariati, contatori12–49 e rifiuto su hash input sintetico errato prima di authority/Engine/SQL/chiavi. Log diretti letti. Tutti21blob della closure verificati byte per byte al sourcepin; wrapper letto al deliverypin e identico. Workload e chiavi CI sono sintetici: nessuna prova VPS/E2E.
+
+NEXT prima esecuzione della sola NUOVA consegna, checksum, copia root0400, log conservati, review concreta e `APPROVO <hash fresco>` realmente inserito nel terminale con Invio. Nessun consenso passato dal wrapper; il prompt editabile già provato viene riusato. Se STOP conservare e non rilanciare.
 
 La stessa immagine minima diagnostica Onboarding074bd16e è già preparata e non viene ricostruita/relabelled. Preservare35migrazioni/nove tabelle/job FarmacieFAILED tentativi5, configurazione/risorse/MAC/IP/porte, tutti i peer Registry/MCP/worker/READ/Gateway. Non avviare candidato M2 più ampio, nuovo upload/profiling/acquisizione, grant o attivazione. Nessun rollback automatico. Policy54 scaduta: questa manutenzione non concede READ di dominio e non autorizza SQL per leggere la causa del job.
 
 M1/G4 resta acquisito: due run Teatri,26join,13identità/20proprietà,8Cinema preservati. M2 resta aperto; causa Farmacie ignota. [Audit del riuso](../OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md). No subagenti, automazioni, merge o release acceptance; Supervisor dopo E2E completo.
+
+## Comando unico — prima esecuzione nuova, come oufadmin
+
+Le due consegne precedenti rimangono consumate. Incollare questo blocco nel terminale VPS. Il controller mostra una nuova review concreta; la sua riga APPROVO va inserita separatamente con Invio. Non esiste un hash da approvare in chat.
+
+```bash
+(
+  set -Eeuo pipefail
+  umask 077
+  ouf_pid1_bootstrap=$(mktemp -d "$HOME/ouf-onboarding-pid1-bootstrap.XXXXXXXX")
+  curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
+    --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 131072 \
+    "https://raw.githubusercontent.com/GioNob/ouf-deploy/cda3a58c46644f5692a4d7d9753a8ddadf8b57a7/releases/apply-onboarding-diagnostic-pid1-continuation-20261027.sh" \
+    -o "$ouf_pid1_bootstrap/run.sh"
+  printf '%s  %s\n' '1f7c1a634ac74f99755f35907eb5405d915402742d5add755f44a8588f6b8dd2' "$ouf_pid1_bootstrap/run.sh" | sha256sum -c -
+  chmod 0400 "$ouf_pid1_bootstrap/run.sh"
+  /usr/bin/bash "$ouf_pid1_bootstrap/run.sh"
+)
+```
+
+Log runtime previsto: `/usr/local/lib/ouf-onboarding-diagnostic-update-67bc4cd76ccb4352/operator.log`; log bootstrap nella nuova directory `$HOME/ouf-onboarding-pid1-continuation-delivery.*`. Conservare JSON finale, Exit, Directory, Log, DeliveryExit, DeliveryDirectory e DeliveryLog. In caso STOP nessun rilancio. Solo dopo risultato completo provato passare alla diagnosi governata dello stesso job: policy54 non si rinnova con questa manutenzione. [Invariante appresa e riferimenti al codice storico](../OUF_LEARNED_NATIVE_TRANSPORT_INVARIANTS.md).
