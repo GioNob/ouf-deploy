@@ -1,6 +1,6 @@
 # Farmacie — grant SERVICE scaduto provato; correzione strutturale in review
 
-27 ottobre2026, Europe/Rome. [Lettura target](../../evidence/farmacie-service-policy-read-target-20261027.json), Exit0/DeliveryExit0. [Checkpoint precedente](OUF_FARMACIE_OBJECT_READ_FORBIDDEN_20261027.md). Policy55, hash b126492af85039fba88c0de4cc888bad3603356e3dcc07e6be1d4240fcc0c6ce, osservata27ottobre16:07:21 Europe/Rome. Descriptor READ/SERVICE/scope atteso coerenti. Unico matchingServiceGrant per ouf-onboarding/ouf.object-storage.content.read: grant-managed-file-read-onboarding, scaduto25ottobre2026 00:00Z; nessun ALLOW configurato corrente in quel set. Questa è prova della policy, non una nuova richiesta Gateway né prova del token workload o dell'esclusiva causa del403 storico.
+27 ottobre2026, Europe/Rome. [Lettura target](../../evidence/farmacie-service-policy-read-target-20261027.json), Exit0/DeliveryExit0. [Checkpoint precedente](OUF_FARMACIE_OBJECT_READ_FORBIDDEN_20261027.md). Policy55, hash b126492af85039fba88c0de4cc888bad3603356e3dcc07e6be1d4240fcc0c6ce, osservata27ottobre15:07:21 Europe/Rome. Descriptor READ/SERVICE/scope atteso coerenti. Unico matchingServiceGrant per ouf-onboarding/ouf.object-storage.content.read: grant-managed-file-read-onboarding, scaduto25ottobre2026 00:00Z; nessun ALLOW configurato corrente in quel set. Questa è prova della policy, non una nuova richiesta Gateway né prova del token workload o dell'esclusiva causa del403 storico.
 
 ## Lettura consumata
 
@@ -12,7 +12,7 @@ L'owner contesta che la lettura ordinaria di un servizio dipenda da un grant bre
 
 [Proposta concreta](../../evidence/onboarding-structural-object-read-proposal-20261027.json): nuovo grant service-onboarding-managed-file-read-structural-v1; SOLO capability READ ouf.object-storage.content.read, SERVICE ouf-onboarding, tenantouf-lab, subjectnull, constraintsnull come il vecchio profilo di servizio. ValidFrom 2026-10-27T14:14:50.000Z, validUntil2036-09-15T07:13:50.968730Z. Il vecchio grant scaduto resta nella storia e nella policy; nessun altro grant/ruolo/assegnazione/IAM/token modificato dalla richiesta. Ingestion escluso: la sua eventuale scadenza live non è stata letta e non va rinnovata per ipotesi.
 
-Proposta b045ada2-f1d6-4e4e-9beb-acf85d6474f7 r0 PENDING/finalPolicyRefnull, riletta stessoID. [Decisione HUMAN diretta THS](https://api.ouf-lab.it/trusted-human/authorization/?proposal=b045ada2-f1d6-4e4e-9beb-acf85d6474f7) entro27ottobre16:29:59 Europe/Rome. Nessuna approvazione/pubblicazione da parte dell'assistente. Dopo decisione, leggere STESSO proposalId; se scade/rifiutata, conservare senza riproporre automaticamente.
+Proposta b045ada2-f1d6-4e4e-9beb-acf85d6474f7 r0 PENDING/finalPolicyRefnull, riletta stessoID. [Decisione HUMAN diretta THS](https://api.ouf-lab.it/trusted-human/authorization/?proposal=b045ada2-f1d6-4e4e-9beb-acf85d6474f7) entro27ottobre15:29:59 Europe/Rome. Nessuna approvazione/pubblicazione da parte dell'assistente. Dopo decisione, leggere STESSO proposalId; se scade/rifiutata, conservare senza riproporre automaticamente.
 
 ## Limiti e prossimi delta
 
