@@ -1,9 +1,9 @@
 name: Profile recovery exact image and conditional plan
 on:
   push:
-    paths: ['scripts/prepare-onboarding-profile-recovery-image-plan-20261027.py', 'tests/test_onboarding_profile_recovery_image_plan.py', 'tests/qualify_onboarding_profile_recovery_image_plan.py', 'releases/onboarding-profile-recovery-image-custody-20261027.json', '.github/workflows/onboarding-profile-recovery-image-plan.yml']
+    paths: ['scripts/prepare-onboarding-profile-recovery-image-plan-20261027.py', 'tests/test_onboarding_profile_recovery_image_plan.py', 'tests/qualify_onboarding_profile_recovery_image_plan.py', 'tests/qualify_profile_recovery_image_plan_delivery.py', 'releases/prepare-onboarding-profile-recovery-image-plan-20261027.sh', 'releases/onboarding-profile-recovery-image-custody-20261027.json', '.github/workflows/onboarding-profile-recovery-image-plan.yml']
   pull_request:
-    paths: ['scripts/prepare-onboarding-profile-recovery-image-plan-20261027.py', 'tests/test_onboarding_profile_recovery_image_plan.py', 'tests/qualify_onboarding_profile_recovery_image_plan.py', 'releases/onboarding-profile-recovery-image-custody-20261027.json', '.github/workflows/onboarding-profile-recovery-image-plan.yml']
+    paths: ['scripts/prepare-onboarding-profile-recovery-image-plan-20261027.py', 'tests/test_onboarding_profile_recovery_image_plan.py', 'tests/qualify_onboarding_profile_recovery_image_plan.py', 'tests/qualify_profile_recovery_image_plan_delivery.py', 'releases/prepare-onboarding-profile-recovery-image-plan-20261027.sh', 'releases/onboarding-profile-recovery-image-custody-20261027.json', '.github/workflows/onboarding-profile-recovery-image-plan.yml']
 permissions: {contents: read}
 jobs:
   exact-archive-no-runtime:
@@ -36,3 +36,18 @@ jobs:
           sudo chmod 0400 /root/ouf-profile-image-plan-repo/repo/candidate.zip
       - name: Exact archive and native plan with zero runtime I/O
         run: sudo /usr/bin/python3 -I -S -B /root/ouf-profile-image-plan-repo/repo/tests/qualify_onboarding_profile_recovery_image_plan.py
+
+  actual-curl-sudo-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Seal CI fixture code, no live service or target access
+        run: |
+          sudo install -d -m 0700 /root/ouf-profile-plan-delivery-fixture
+          sudo cp -a . /root/ouf-profile-plan-delivery-fixture/repo
+          sudo chown -R root:root /root/ouf-profile-plan-delivery-fixture
+          sudo chmod -R go-w /root/ouf-profile-plan-delivery-fixture
+      - name: Actual HTTPS chunks, nonroot curl, sudo root0400, negative production main, retained logs
+        run: sudo /usr/bin/python3 -I -S -B /root/ouf-profile-plan-delivery-fixture/repo/tests/qualify_profile_recovery_image_plan_delivery.py
