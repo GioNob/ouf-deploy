@@ -2134,6 +2134,25 @@
       "acquisitions": 2,
       "observations": 2,
       "finalTargetScenarioProven": false
+    },
+    "ownerReaffirmedAt": "2026-10-27",
+    "integrationContinuityRule": {
+      "existingSuccessfulE2EIsMandatoryBaseline": true,
+      "preserveRetainedM1Acceptance": true,
+      "recoverExistingStageEvidenceBeforeImplementation": true,
+      "noWholeManualE2EReplayToRediscoverExistingProof": true,
+      "requiredStageComparison": [
+        "working commit and artifact",
+        "qualified contract and tests",
+        "retained target receipt when available",
+        "selected or installed generation",
+        "current owner authorization and route",
+        "observed delta and targeted regression"
+      ],
+      "unexpected403Handling": "Locate the exact failing step and emitting component; compare the successful binding, scopes, policy validity and route with the current path. Expired authority must be honored and explained; no blind regrant, parser attribution or new acquisition.",
+      "farmacieUploadAlreadyStagedEvidence": "evidence/new-csv-staged-profile-retry-wait-20261026.json",
+      "farmacieUploadMustNotBeRecreatedAsProfileRecovery": true,
+      "readinessDefinition": "A normal new-file journey reuses the assembled owners and guides any necessary HUMAN authorization/review; operator terminal commands and reconstructing identifiers are maintenance, not the ordinary CSV workflow."
     }
   },
   "audit": {
@@ -2169,7 +2188,7 @@
       "exit": "Coorte esatta che preserva readiness/diagnosi/READ e passa contratti owner/MCP/Gateway reali",
       "remainingHours": null,
       "progress": {
-        "status": "PARTIAL_CORE_QUALIFIED_BROWSER_PENDING",
+        "status": "PARTIAL_COHORT_COMPOSITION_CODE_AND_BROWSER_QUALIFIED_NOT_INSTALLED",
         "components": [
           {
             "repository": "GioNob/ouf-mcp-server",
@@ -2178,12 +2197,24 @@
           },
           {
             "repository": "GioNob/ouf-source-onboarding",
-            "commit": "6f318865330602f3cde6bc5b52092e7585c70bde",
+            "commit": "976c478db7c7327e75da3e51aa4c00ca96ab1529",
             "pullRequest": 53
           }
         ],
         "evidenceRef": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-        "complete": false
+        "complete": false,
+        "evidenceRefs": [
+          "evidence/csv-m2-typed-recovery-composition-20261026.json",
+          "evidence/csv-m2-job-discovery-input-capture-20261026.json"
+        ],
+        "browserQualification": {
+          "status": "PASS",
+          "runId": 40385473548,
+          "jobId": 121792467891,
+          "tests": 4,
+          "skipped": 0
+        },
+        "remaining": "Remaining owner/Gateway cohort composition, exact installed-generation validation and final real-client path. Existing MCP/Onboarding code and browser qualification are reusable; do not recount as new implementation."
       }
     },
     {

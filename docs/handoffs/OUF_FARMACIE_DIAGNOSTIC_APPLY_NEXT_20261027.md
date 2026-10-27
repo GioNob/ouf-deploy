@@ -67,3 +67,18 @@ Se STOP: prima riconciliare le prove esatte, senza replay, nuovo upload/job, res
 Se riuscito: registrare JSON e percorsi log su GitHub, poi ottenere la diagnosi minimizzata dello stesso asset `9c502da5-b5d8-405e-b3f5-60eb31ecb513` / job `677480c8-3d10-44fd-9dad-f72ddeed20a4` tramite owner/API governata. Handoff upload esistente `4da5410e-98de-472c-89b6-bc1cdae8ecf1`. Policy54 è scaduta: questa manutenzione non la rinnova e non autorizza letture di dominio tramite SQL. Nessun rinnovo/grant automatico; serve un mandato READ finito valido prima della lettura applicativa.
 
 M1/G4 resta acquisito sul caso conservato; M2/G5/G6/G7 aperti. Farmacie resta FAILED/causa non osservata finché la lettura owner non la dimostra. CSV locale valido non prova byte server o parser Java. D2/D3 composti in CI restano separati/non installati; D4–D7 non accettati. Nessuna nuova stima oraria inventata, terza acquisizione Teatri, fonte/attivazione, merge o release acceptance. Supervisor dopo E2E completo. Lavorare sequenzialmente, senza subagenti o automazioni.
+
+## Continuità del lavoro già riuscito — mandato owner del 27 ottobre
+
+L'E2E M1 percorso manualmente è la baseline obbligatoria. Un criterio finale M2 aperto non rende mancanti i motori o i passaggi già dimostrati. Prima di introdurre lavoro, recuperare per ogni passo commit/artefatto, contratto, prova CI e ricevuta target esistente; confrontarli con la generazione selezionata/installata e correggere soltanto il delta osservato. Non chiedere un nuovo ciclo manuale completo per ricostruire prove già conservate.
+
+| Passaggio | Prova da riusare | Implicazione operativa |
+| --- | --- | --- |
+| Acquisizione, ACK, intake, materializzazione, lineage/proprietà | [M1 target](../../evidence/csv-m1-f5-f6-owner-verification-20261026.json): 26 join, 13 identità, 20 proprietà, 8 Cinema preservati | M1/G4 resta PASS; nessuna terza Teatri o ripetizione del ciclo per riscoprire queste prove |
+| Upload Farmacie | [STAGED e job persistente](../../evidence/new-csv-staged-profile-retry-wait-20261026.json), poi [FAILED conservato](../../evidence/new-csv-profile-terminal-failure-20261026.json) | Il caricamento è già riuscito; non ripetere upload/picker/job per aggirare il problema successivo |
+| Typed, proprietà e ripresa ASSETS/LATEST | [Audit](../OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md) e [composizione](../../evidence/csv-m2-typed-recovery-composition-20261026.json) | Recuperare e comporre il codice esistente; niente nuovo parser o motore UDP equivalente |
+| Discovery job e browser | [Checkpoint successivo](../../evidence/csv-m2-job-discovery-input-capture-20261026.json): Onboarding976c478d, 296 test modulo, browser4 PASS/0skip | La voce browser pending della composizione precedente è storica; il piano corrente è corretto. Codice qualificato non implica installazione |
+
+Un 403 inatteso richiede identificare il punto e il componente che lo emette e confrontare il percorso già riuscito: account/client, token/scopes, validità della policy, rotta e owner selezionato. Non attribuirlo al parser o proporre nuovi grant alla cieca. Un'autorità scaduta resta scaduta e va gestita nel percorso guidato, preservando il lavoro durevole. Non è stata osservata una nuova risposta403 in questa registrazione e non viene assegnata una causa non provata al FAILED Farmacie.
+
+Il risultato di prodotto richiesto è caricare un file e proseguire in modo autoguidato fino a UDP e search, riusando i componenti già pronti. Terminale e copia manuale degli identificativi non sono il normale percorso CSV. Questa precisazione non esegue o riavvia APPLY, non rinnova autorizzazioni e non cambia il comando pinned sopra.
