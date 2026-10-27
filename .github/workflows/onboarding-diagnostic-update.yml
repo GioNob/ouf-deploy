@@ -87,4 +87,14 @@ jobs:
           PY
       - name: Exact new ONBOARDING prompt/logger with synthetic review and real canonical line editing
         run: python3 -I -S -B tests/qualify_onboarding_update_terminal_pipeline.py
+  actual-sealed-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Curl-only wrapper, root code custody, protected main and refusal before authority
+        run: |
+          bash -n releases/apply-onboarding-diagnostic-update-20261027.sh
+          sudo python3 -I -S -B tests/qualify_onboarding_diagnostic_update_delivery.py
 
