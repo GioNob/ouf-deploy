@@ -54,7 +54,8 @@
       "total": 6
     },
     "farmacieStatus": "FAILED_PROFILE_CAUSE_NOT_OBSERVED",
-    "diagnosticCandidateInstalled": false
+    "diagnosticCandidateInstalled": true,
+    "diagnosticInstalledSourceCommit": "a5ed8b05c264a8221783a6e323ba00117aed891d"
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1911,7 +1912,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Prima esecuzione della NUOVA continuazione PID1 qualificata; review concreta e APPROVO fresco nel terminale prima di authority/effetti. Vecchie procedure consumate;11letture originali nello stesso64. Dopo installazione provata, diagnosi governata dello stesso job Farmacie con mandato READ finito valido; policy54 scaduta. M1 acquisito, M2 aperto.",
+  "firstNextAction": "Decisione HUMAN diretta sulla proposta READ esistente f8bc6357-136b-40fc-8a40-8d22816df0b0, poi read stessoID/policy pubblicata prima dell'unica preview stesso job Farmacie. Diagnostica minima installata e APPLY consumata; nessun replay o rinnovo automatico.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2298,7 +2299,7 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "docs/handoffs/OUF_FARMACIE_DIAGNOSTIC_PEER_CONTINUATION_20261027.md",
+  "currentCheckpoint": "docs/handoffs/OUF_FARMACIE_DIAGNOSTIC_INSTALLED_NEXT_READ_20261027.md",
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
     "evidence": "evidence/onboarding-diagnostic-apply-qualified-20261027.json",
@@ -2342,7 +2343,7 @@
   },
   "diagnosticPid1Continuation": {
     "qualified": true,
-    "targetExecuted": false,
+    "targetExecuted": true,
     "originalCumulativeMetadataReads": 11,
     "maximumOwnerMetadataReads": 64,
     "oldHashesRewritten": false,
@@ -2353,9 +2354,49 @@
     "deliveryCommit": "cda3a58c46644f5692a4d7d9753a8ddadf8b57a7",
     "wrapperSha256": "1f7c1a634ac74f99755f35907eb5405d915402742d5add755f44a8588f6b8dd2",
     "sourceManifestSha256": "67bc4cd76ccb43526d52c331c5f04454a869d4611251a8cb7092ff8803470f88",
-    "currentDeliveryUsable": true,
+    "currentDeliveryUsable": false,
     "preReviewMetadataReads": 54,
     "freshConcreteTerminalReviewRequired": true,
-    "targetRuntimeAuthorityIssued": false
+    "targetRuntimeAuthorityIssued": true,
+    "targetStatus": "ONBOARDING_DIAGNOSTIC_UPDATE_INSTALLED_E2E_NOT_ACCEPTED",
+    "scopeConsumed": true,
+    "rerunAllowed": false,
+    "targetReceipt": "evidence/onboarding-diagnostic-apply-target-20261027.json",
+    "reviewHash": "d77154b3e734c0b249f315fe10961d99baa380d4625d920b917cbe7c270b134b",
+    "authorityHash": "fa906ab28f8268e7b62a8df59c9825b8c2524bf28da44821801db7b916c1f4ce",
+    "exit": 0,
+    "deliveryExit": 0,
+    "componentReadinessProven": true,
+    "targetCounts": {
+      "adminGets": 0,
+      "adminPuts": 0,
+      "engineGets": 261,
+      "engineWrites": 8,
+      "imageLoadAttempts": 1,
+      "ownerConfigurationContentReads": 1,
+      "ownerConfigurationReads": 56,
+      "quarantineStops": 0,
+      "readinessGets": 3,
+      "serviceCredentialFileReads": 0,
+      "sqlSessions": 4
+    }
+  },
+  "farmacieDiagnosticRead": {
+    "status": "PENDING_DIRECT_HUMAN_THS_REVIEW",
+    "intentEvidence": "evidence/farmacie-retained-diagnostic-read-intent-20261027.json",
+    "currentPolicyRef": "ouf-lab-authorization:54",
+    "currentPolicyHash": "sha256:0ddd2d44530161d7668684a86cc661792f10072e6572796a291f97481411f8e2",
+    "applicationReadExecuted": false,
+    "permissionProposalCreated": true,
+    "newGrantPublished": false,
+    "intendedMaximumReads": 1,
+    "intendedDurationSeconds": 3600,
+    "capabilityId": "ouf.managed-source.preview",
+    "proposalId": "f8bc6357-136b-40fc-8a40-8d22816df0b0",
+    "revision": 0,
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=f8bc6357-136b-40fc-8a40-8d22816df0b0",
+    "expiresAt": "2026-10-27T13:24:12.908659Z",
+    "validFrom": "2026-10-27T13:09:04.000Z",
+    "validUntil": "2026-10-27T14:09:04.000Z"
   }
 }

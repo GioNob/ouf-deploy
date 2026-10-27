@@ -1,3 +1,7 @@
+# STORICO — APPLY ESEGUITA CON SUCCESSO E CONSUMATA; NON RILANCIARE
+
+Ricevuta VPS Exit0/DeliveryExit0, ONBOARDING_DIAGNOSTIC_UPDATE_INSTALLED_E2E_NOT_ACCEPTED. Il comando seguente è storico. [Handoff corrente dopo installazione](OUF_FARMACIE_DIAGNOSTIC_INSTALLED_NEXT_READ_20261027.md).
+
 # Farmacie — riuso del controllo peer già qualificato e due STOP conservati
 
 27 ottobre 2026, Europe/Rome. Il secondo STOP è `EXACT_CURRENT_ROOT_ENGINE_PEER_CREDENTIALS_REQUIRED`, Exit2/DeliveryExit2, prima della review. [Ricevuta e ricostruzione circoscritta](../../evidence/onboarding-pid1-peer-stop-target-20261027.json). La consegna fd831393 e il suo scope sono CONSUMATI: non rilanciare. [Handoff precedente](OUF_FARMACIE_DIAGNOSTIC_PEER_CONTINUATION_20261027.md), che contiene tutti i riferimenti a capture, preparazione, primo STOP e reader consumati.

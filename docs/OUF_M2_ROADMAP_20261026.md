@@ -1,3 +1,21 @@
+# CURRENT — proposta READ diagnostica PENDING; diagnostica VPS installata
+
+27 ottobre2026. Proposta `f8bc6357-136b-40fc-8a40-8d22816df0b0` revisione0 PENDING/finalPolicyRef=null, riletta sullo stessoID. [Review HUMAN](https://api.ouf-lab.it/trusted-human/authorization/?proposal=f8bc6357-136b-40fc-8a40-8d22816df0b0) entro15:24:12 Europe/Rome; grant nuovo SOLO preview per ouf-admin/tenantouf-lab, finestra15:09:04–16:09:04 Europe/Rome. [Intento/ricevuta](../evidence/farmacie-retained-diagnostic-read-intent-20261027.json). Una proposta preparata; nessuna pubblicazione o approvazione dell'assistente, nessuna preview eseguita. Contesto IAM capability: grant non vincolabile al job, ownership owner invariata; esecuzione prevista una sola READ del job677480c8/asset9c502da5. Non rinnova upload/profile né i vecchi scope.
+
+NEXT decisione HUMAN diretta THS, poi proposal.read STESSOID e policy pubblicata prima della preview. Se scade/rifiutata, conservare e non riproporre automaticamente. La ricevuta VPS sotto resta acquisita; tutti i comandi APPLY consumati.
+
+# CURRENT — diagnostica Onboarding INSTALLATA sul VPS; prossima sola READ governata
+
+27 ottobre 2026. Ricevuta operatore `ONBOARDING_DIAGNOSTIC_UPDATE_INSTALLED_E2E_NOT_ACCEPTED`, complete=true, componentReadinessProven=true, Exit0/DeliveryExit0. [Prova target](../evidence/onboarding-diagnostic-apply-target-20261027.json). Review d77154b3e734c0b249f315fe10961d99baa380d4625d920b917cbe7c270b134b; authority fa906ab28f8268e7b62a8df59c9825b8c2524bf28da44821801db7b916c1f4ce. Questa è la ricevuta VPS, distinta dalle prove CI. Source diagnostica minima a5ed8b05c264a8221783a6e323ba00117aed891d, immagine nativa074bd16e installata; candidato M2 PR53 più ampio non installato.
+
+261 Engine GET,8 scritture,1 import,56 metadata cumulativi nello stesso64,1 YAML owner,3 readiness,4 SQL tecniche readonly,3 firme. Zero migrazioni/grant/attivazioni/acquisizioni. Job FAILED invariato, storia migrazioni esatta e nessun lavoro pendente;12 peer preservati, Registry intatto, vecchio Onboarding trattenuto fermo. Identità di contenuto di tutte le sorgenti mount NON provata; non ampliarne la dichiarazione. Bootstrap OAuth normale può essere avvenuto.
+
+APPLY PID1 e tutti gli scope precedenti CONSUMATI: NON rilanciare comando, preparazione o reader. [Handoff corrente](handoffs/OUF_FARMACIE_DIAGNOSTIC_INSTALLED_NEXT_READ_20261027.md). Log root /usr/local/lib/ouf-onboarding-diagnostic-update-67bc4cd76ccb4352/operator.log; bootstrap /home/oufadmin/ouf-onboarding-pid1-continuation-delivery.sWwSrUtM/bootstrap.log.
+
+NEXT fondamentale: decisione HUMAN diretta sulla proposta READ esistente e UNA READ dello stesso asset/job Farmacie solo dopo pubblicazione verificata. [Intento concreto](../evidence/farmacie-retained-diagnostic-read-intent-20261027.json). Riletti ROLES7/assegnazioni11 e133 grant configurati su3pagine con policy54/hash uniforme: vecchio permesso temporaneo scaduto; lista configurata non è prova di permessi effettivi. Una nuova proposta READ preparata e riletta; nessuna pubblicazione/grant/preview eseguita. Il contesto IAM installato è capability, non asset/job; ownership resta imposta dall'owner. Nessun rinnovo automatico dei vecchi permessi upload/profile/preview. La manutenzione installata non concede nuova autorità di dominio.
+
+Stesso job Farmacie FAILED/tentativi5; categoria/causa ancora ignota, UNCLASSIFIED possibile. M1/G4 acquisito, M2/G5/G6/G7 aperti. Riutilizzare typed/ASSETS/LATEST/recovery/motori UDP già disponibili. Nessun reupload/profiling/reset/replay/attivazione/acquisizione/Registry restart/reinstall/merge/release acceptance/subagente/automazione. Supervisor dopo E2E completo. Tutti gli header seguenti STORICI, inclusi i NEXT che dicono APPLY PID1 non eseguita.
+
 # CURRENT — continuazione PID1 qualificata, NON eseguita; lavoro M1/M2 riusato
 
 27 ottobre2026. Due STOP pre-review consumati: primo trasporto storico, secondo guard errato PID>1. Peer già riconciliato[1,0,0]; riusato controllo dei trasporti MCP/redazione/acquisizione esistenti: tupla LIVE completa+UID0, PID1 valido, hash storici intatti. [Invariante e codice storico](OUF_LEARNED_NATIVE_TRANSPORT_INVARIANTS.md).
