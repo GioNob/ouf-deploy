@@ -76,7 +76,8 @@
     "currentDiagnosticInputCaptureConsumed": true,
     "diagnosticImageExecutionInputsHash": "c22586172070809d414d3654f3e002b7e1d84d749daae9b31dac8d1d14cbd0c0",
     "diagnosticImagePreparationConsumed": true,
-    "diagnosticApplyReceived": false
+    "diagnosticApplyReceived": true,
+    "diagnosticCandidateInstalled": false
   },
   "workPackages": [
     {
@@ -1910,7 +1911,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Owner runs the exact pinned wrapper once on VPS, reads concrete private review and enters only its fresh APPROVO line plus Enter. STOP preserves evidence without rerun. After proven APPLY, use only owner-governed diagnostic READ with a valid finite domain mandate; no SQL diagnostic bypass.",
+  "firstNextAction": "One bounded retained-file read, no Engine/SQL/OAuth/configuration/credential/signing-key read, to identify exact failing guard components and reconcile original claims before considering a separately reviewed continuation. Never rerun the APPLY.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2304,7 +2305,13 @@
     "sourceCommit": "e1597e00ca069a33700fe1132b0cdf9658deacd1",
     "deliveryCommit": "15b2bef894b9c5e6434999e3cae69c803e236f63",
     "qualified": true,
-    "targetExecuted": false,
-    "freshTerminalReviewRequired": true
+    "targetExecuted": true,
+    "freshTerminalReviewRequired": true,
+    "targetStatus": "STOP_RECONCILE",
+    "reasonCode": "EXACT_RETAINED_NATIVE_DATABASE_TRANSPORT_REQUIRED",
+    "scopeConsumed": true,
+    "rerunAllowed": false,
+    "currentDeliveryUsable": false,
+    "targetReceipt": "evidence/onboarding-diagnostic-transport-stop-target-20261027.json"
   }
 }

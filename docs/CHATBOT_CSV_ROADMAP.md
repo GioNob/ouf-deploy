@@ -1,3 +1,11 @@
+# CURRENT — APPLY diagnostico Onboarding in STOP pre-review; scope consumato
+
+27 ottobre 2026. VPS STOP_RECONCILE/EXACT_RETAINED_NATIVE_DATABASE_TRANSPORT_REQUIRED, Exit2/DeliveryExit2. Delivery /home/oufadmin/ouf-onboarding-diagnostic-apply-delivery.V220onbW; log root /usr/local/lib/ouf-onboarding-diagnostic-update-687aefc7514bbe7b/operator.log, delivery bootstrap.log conservato.21fonti root0400/checksumOK. NON rilanciare APPLY né preparazioni5909/c225. Nessun APPROVO/review/autorità nuova ricevuto.
+
+Il guard pinned sourcee159 aggrega schema storico, uguaglianza bindingEngine e profilo mount NATIVE; fallisce prima di Engine/review/chiavi/SQL/lifecycle. Zero dispatch dedotto dal codice; claim conservate da riconciliare. Non inferire campo diverso o deriva server senza prova. La fixtureCI costruiva due profili con bindingEngine identico e non copriva compatibilità fra snapshot storici reali: qualifica precedente limitata, non risultato server.
+
+NEXT sola lettura finita dei file conservati: schema/binding/profile e claim/log esatti. Nuovo reader in qualifica; nessun nuovo APPLY consegnabile prima di evidenza e fix mirato. Nessuna normalizzazione generica, vecchi hash/contatori/file intatti. [STOP](evidence/onboarding-diagnostic-transport-stop-target-20261027.json) · [Handoff aggiornato](docs/handoffs/OUF_FARMACIE_DIAGNOSTIC_APPLY_NEXT_20261027.md). M1/G4 restaPASS; FarmacieFAILED/causa ignota, M2 aperto. Niente nuovo upload/job/terzaTeatri/attivazione/Registryrestart/merge/releaseacceptance; senza subagenti/automazioni. Header successivi STORICI; vecchio NEXT prima esecuzioneAPPLY è consumato.
+
 # CURRENT — input diagnostici VPS consumati; primo APPLY minimo qualificato, NON eseguito
 
 27 ottobre 2026. Ricevuto ONBOARDING_DIAGNOSTIC_IMAGE_INPUTS_PREPARED_NOT_AUTHORIZED/complete/Exit0/DeliveryExit0: executionInputsHash c22586172070809d414d3654f3e002b7e1d84d749daae9b31dac8d1d14cbd0c0; capture5909d100 consumato, preparazione immagine consumata. Log /home/oufadmin/ouf-onboarding-diagnostic-image-delivery.ABE90yAu/bootstrap.log. NON ripetere entrambe. Nessun nuovo risultato APPLY/review/HUMAN/autorità runtime ricevuto.

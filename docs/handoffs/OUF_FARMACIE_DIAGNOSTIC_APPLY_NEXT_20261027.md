@@ -1,3 +1,11 @@
+# STOP VPS — confronto trasporto PostgreSQL, PRIMA della review; NON RILANCIARE
+
+27 ottobre 2026. Ricevuto STOP_RECONCILE/EXACT_RETAINED_NATIVE_DATABASE_TRANSPORT_REQUIRED, Exit2/DeliveryExit2. Delivery /home/oufadmin/ouf-onboarding-diagnostic-apply-delivery.V220onbW; log /usr/local/lib/ouf-onboarding-diagnostic-update-687aefc7514bbe7b/operator.log e bootstrap.log nella delivery. Tutti21checksum/copia root0400 verificati dall'operatore. Il comando sotto è STORICO E CONSUMATO, non più un NEXT eseguibile.
+
+Il guard aggrega schema del profilo storico, uguaglianza dell'intero binding Engine storico/corrente e tipo runtime binding. La causa precisa non è ancora osservata. Nel codice pinned è prima di Engine/review/autorità/chiavi/SQL/lifecycle; nessun consenso ricevuto. Zero dispatch è dedotto dall'ordine del codice, le claim conservate devono ancora essere riconciliate. Non chiamare questo STOP una deriva server o un errore PostgreSQL già provato. La fixture CI costruiva entrambi i binding dalla medesima cattura: non qualificava la combinazione storica reale.
+
+[Ricevuta](../../evidence/onboarding-diagnostic-transport-stop-target-20261027.json). NEXT: qualificare ed eseguire UNA nuova lettura dei soli file conservati, con checksum/copia root/log; zero Engine/SQL/OAuth/configurazione/credenziali/chiavi. Non allentare il confronto, non sostituire hash, non resettare contatori o rilanciare il controller. M1 resta acquisito; causa Farmacie/M2 restano aperti. Nessun nuovo job/upload/acquisizione o riavvio di worker.
+
 # Farmacie — primo APPLY diagnostico minimo
 
 27 ottobre 2026, Europe/Rome. Questo checkpoint sostituisce il NEXT del [precedente handoff immagine/input](OUF_FARMACIE_DIAGNOSTIC_IMAGE_INPUTS_NEXT_20261026.md). I suoi riferimenti a prove, handoff precedenti e al checkpoint documentale iniziale rimangono validi. Non ripetere le preparazioni.
@@ -36,7 +44,7 @@ Massimi nuovi: 512 GET Engine, 10 scritture lifecycle/import incluse le sole qua
 
 Review concreta: 900 secondi con input canonico visibile/editabile, riga errata correggibile senza estendere la finestra; la sola ricezione di un incolla non conferma. Esecuzione: 900 secondi più30 di sola quarantena negativa del proprio candidato non committed. Watchdog effimero, stop solo candidato verificato. Se STOP o risposta ambigua, conservare prove e non rilanciare; il vecchio non viene riavviato automaticamente.
 
-## Comando — UNA prima esecuzione dal terminale oufadmin
+## Comando STORICO — eseguito in STOP, NON RILANCIARE
 
 Il wrapper verifica i checksum come utente, copia tutte le fonti in root0400 e le riverifica come root. Il controller resta direttamente collegato al terminale; conserva il proprio log0600. Il bootstrap mantiene log e exit separati. Non passare APPROVO al wrapper, non usare pipeline per l'esecuzione interattiva.
 
