@@ -53,7 +53,7 @@
       "proven": 6,
       "total": 6
     },
-    "farmacieStatus": "FAILED_PROFILE_CAUSE_NOT_OBSERVED",
+    "farmacieStatus": "FAILED_OBJECT_READ_FORBIDDEN_BEFORE_PARSER",
     "diagnosticCandidateInstalled": true,
     "diagnosticInstalledSourceCommit": "a5ed8b05c264a8221783a6e323ba00117aed891d"
   },
@@ -78,7 +78,9 @@
     "diagnosticImageExecutionInputsHash": "c22586172070809d414d3654f3e002b7e1d84d749daae9b31dac8d1d14cbd0c0",
     "diagnosticImagePreparationConsumed": true,
     "diagnosticApplyReceived": true,
-    "diagnosticCandidateInstalled": false
+    "diagnosticCandidateInstalled": false,
+    "observedFailureBoundary": "OBJECT_READ_FORBIDDEN_BEFORE_PARSER",
+    "observationEvidence": "evidence/farmacie-object-read-forbidden-observed-20261027.json"
   },
   "workPackages": [
     {
@@ -1912,7 +1914,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Decisione HUMAN diretta sulla proposta READ esistente f8bc6357-136b-40fc-8a40-8d22816df0b0, poi read stessoID/policy pubblicata prima dell'unica preview stesso job Farmacie. Diagnostica minima installata e APPLY consumata; nessun replay o rinnovo automatico.",
+  "firstNextAction": "Verificare sul policy owner il grant SERVICE ouf-onboarding/ouf.object-storage.content.read e la relativa identità M2M, usando lettura governata e fonti già qualificate. Il catalogo sorgente scade25ottobre ma non prova la policy live. Una preview consumata; nessun nuovo upload/profiling/job/grant automatico o replay.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2176,7 +2178,15 @@
       ],
       "dependsOn": [],
       "exit": "Categoria/causa owner dello stesso FAILED, regressione causale e percorso di recovery qualificato",
-      "remainingHours": null
+      "remainingHours": null,
+      "progress": {
+        "status": "RETAINED_FAILURE_BOUNDARY_OBSERVED_UNDERLYING_AUTHORIZATION_CAUSE_OPEN",
+        "diagnosticCategory": "OBJECT_READ_FORBIDDEN",
+        "parserReachedForObservedFailure": false,
+        "serviceGrantExpirySourceIndication": true,
+        "liveServiceGrantNotYetRead": true,
+        "evidence": "evidence/farmacie-object-read-forbidden-observed-20261027.json"
+      }
     },
     {
       "id": "D2",
@@ -2299,7 +2309,7 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "docs/handoffs/OUF_FARMACIE_DIAGNOSTIC_INSTALLED_NEXT_READ_20261027.md",
+  "currentCheckpoint": "docs/handoffs/OUF_FARMACIE_OBJECT_READ_FORBIDDEN_20261027.md",
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
     "evidence": "evidence/onboarding-diagnostic-apply-qualified-20261027.json",
@@ -2382,21 +2392,27 @@
     }
   },
   "farmacieDiagnosticRead": {
-    "status": "PENDING_DIRECT_HUMAN_THS_REVIEW",
+    "status": "COMPLETE_RETAINED_FAILURE_CATEGORY_OBSERVED",
     "intentEvidence": "evidence/farmacie-retained-diagnostic-read-intent-20261027.json",
     "currentPolicyRef": "ouf-lab-authorization:54",
     "currentPolicyHash": "sha256:0ddd2d44530161d7668684a86cc661792f10072e6572796a291f97481411f8e2",
-    "applicationReadExecuted": false,
+    "applicationReadExecuted": true,
     "permissionProposalCreated": true,
-    "newGrantPublished": false,
+    "newGrantPublished": true,
     "intendedMaximumReads": 1,
     "intendedDurationSeconds": 3600,
     "capabilityId": "ouf.managed-source.preview",
     "proposalId": "f8bc6357-136b-40fc-8a40-8d22816df0b0",
-    "revision": 0,
+    "revision": 1,
     "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=f8bc6357-136b-40fc-8a40-8d22816df0b0",
     "expiresAt": "2026-10-27T13:24:12.908659Z",
     "validFrom": "2026-10-27T13:09:04.000Z",
-    "validUntil": "2026-10-27T14:09:04.000Z"
+    "validUntil": "2026-10-27T14:09:04.000Z",
+    "applicationReadCalls": 1,
+    "readBudgetConsumed": true,
+    "finalPolicyRef": "ouf-lab-authorization:55",
+    "publicationBy": "HUMAN_DIRECT_THS",
+    "diagnosticCategory": "OBJECT_READ_FORBIDDEN",
+    "evidence": "evidence/farmacie-object-read-forbidden-observed-20261027.json"
   }
 }

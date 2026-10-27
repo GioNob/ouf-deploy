@@ -1,3 +1,7 @@
+# STORICO — policy55 pubblicata, singola preview eseguita e consumata
+
+Diagnosi owner OBJECT_READ_FORBIDDEN. [Handoff corrente](OUF_FARMACIE_OBJECT_READ_FORBIDDEN_20261027.md). Nessun replay di preview/proposta/APPLY.
+
 # Farmacie — diagnostica installata; prossima lettura governata
 
 27 ottobre 2026, Europe/Rome. [Ricevuta VPS](../../evidence/onboarding-diagnostic-apply-target-20261027.json). Il risultato dell'operatore è `ONBOARDING_DIAGNOSTIC_UPDATE_INSTALLED_E2E_NOT_ACCEPTED`, complete=true, componentReadinessProven=true, Exit0/DeliveryExit0. Questa è una prova target fornita dall'operatore, distinta dalla CI; nessun accesso indipendente al VPS da questa chat.

@@ -1,10 +1,10 @@
 {
   "schema": "ouf.farmacie-retained-diagnostic-read-intent.v1",
   "date": "2026-10-27",
-  "status": "PENDING_DIRECT_HUMAN_THS_REVIEW",
+  "status": "PUBLISHED_HUMAN_THS_ONE_APPLICATION_READ_CONSUMED",
   "runtimeAuthority": false,
   "permissionProposalCreated": true,
-  "newGrantPublished": false,
+  "newGrantPublished": true,
   "currentPolicy": {
     "ref": "ouf-lab-authorization:54",
     "hash": "sha256:0ddd2d44530161d7668684a86cc661792f10072e6572796a291f97481411f8e2",
@@ -137,7 +137,7 @@
   "observedCalls": {
     "authorizationRoleReads": 1,
     "authorizationGrantPages": 3,
-    "applicationPreviewCalls": 0,
+    "applicationPreviewCalls": 1,
     "permissionProposals": 1,
     "preDispatchMissingLinkRoutingError": 1,
     "routingErrorWasNotAnOwnerRequest": true,
@@ -191,5 +191,22 @@
     "expiresAt": "2026-10-27T13:24:12.908659Z",
     "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=f8bc6357-136b-40fc-8a40-8d22816df0b0",
     "finalPolicyRef": null
-  }
+  },
+  "publicationBy": "HUMAN_DIRECT_THS",
+  "publishedReceipt": {
+    "proposalId": "f8bc6357-136b-40fc-8a40-8d22816df0b0",
+    "revision": 1,
+    "state": "PUBLISHED",
+    "expiresAt": "2026-10-27T13:24:12.908659Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=f8bc6357-136b-40fc-8a40-8d22816df0b0",
+    "finalPolicyRef": "ouf-lab-authorization:55"
+  },
+  "applicationResponse": {
+    "jobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+    "status": "FAILED",
+    "resultRef": null,
+    "errorCode": "ONB_FILE_PROFILE_FAILED",
+    "diagnosticCategory": "OBJECT_READ_FORBIDDEN"
+  },
+  "applicationReadBudgetConsumed": true
 }
