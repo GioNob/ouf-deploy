@@ -2,7 +2,7 @@
   "schema": "ouf.managed-profile-control-authorization-checkpoint.v1",
   "recordedAt": "2026-10-27T18:33:27.008Z",
   "timezone": "Europe/Rome",
-  "status": "PRODUCTION_SOURCE_CORRECTION_IN_QUALIFICATION_NOT_INSTALLED",
+  "status": "PRODUCTION_SOURCE_CI_QUALIFIED_NOT_INSTALLED",
   "retainedV36": {
     "source": "6ea5242f711761a384fa1b23667971601bc2c38b",
     "applyStatus": "ONBOARDING_PROFILE_RECOVERY_UPDATE_INSTALLED_E2E_NOT_ACCEPTED",
@@ -88,7 +88,26 @@
         "productionImageScanAndBoot": "PASS",
         "directLogRead": true
       },
-      "currentQualification": "IN_PROGRESS"
+      "currentQualification": {
+        "status": "PASS",
+        "source": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
+        "moduleRun": 40560505484,
+        "moduleJob": 122387932522,
+        "tests": 338,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "realPgBudgetCases": 17,
+        "realPolicyCases": 4,
+        "realApiPolicyCases": 3,
+        "jobOwnershipCases": 1,
+        "browserRun": 40560505488,
+        "browserJob": 122387932567,
+        "diagnosticRun": 40560505683,
+        "diagnosticJob": 122387933312,
+        "directLogsRead": true,
+        "buildScanNonRootBoot": "PASS"
+      }
     },
     {
       "repository": "GioNob/ouf-mcp-server",
@@ -96,7 +115,19 @@
       "commit": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
       "firstCandidate": "b93519ea466967a1b015b7c0a702a3793e1f93e5",
       "firstFailure": "gofmt alignment in new test; corrected only formatting",
-      "currentQualification": "IN_PROGRESS"
+      "currentQualification": {
+        "status": "PASS",
+        "source": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
+        "fullRun": 40560685583,
+        "fullJob": 122388544115,
+        "kernelSuite": "PASS",
+        "race": "PASS",
+        "pairwise": "PASS",
+        "productionBuild": "PASS",
+        "staticcheck": "PASS",
+        "govulncheck": "No vulnerabilities found",
+        "directLogRead": true
+      }
     }
   ],
   "codeChange": "Owner-resolved managed-profile-job control resource; matching bounded MCP exact-job pre-admission; durable tenant proof before metadata serialization; packaged explicit unassigned role template; real-policy/API/PostgreSQL/SDK/browser regressions; safe typed denial UI",
@@ -118,10 +149,43 @@
     "sqlCalls": 0,
     "registryRestart": false
   },
-  "next": "Finish source qualification, retain direct logs and pin coherent images. Then prepare a fresh minimal governed deployment/authority admission using current evidence; no old APPLY/capture/publisher scope replay. Native HUMAN profile3attempts/900s and resume remain distinct decisions on the same job after actual access is proven.",
+  "next": "Reuse the qualified candidate sources and CI image artifacts without rebuilding old images. Bind exact archive/source/tested image identities and read current native authority prerequisites/catalogue/scopes in a NEW minimal scope before preparing the concrete deployment/permission review. No old APPLY/capture/publisher replay. Source qualification is not target deployment. Then USER-only same-job3attempts/900s budget and separate resume, original/hash/parser/preview and61rows to UDP.",
   "automaticReplayAllowed": false,
   "budgetReset": false,
   "applicationE2EProven": false,
   "releaseAcceptance": false,
-  "mergeAuthorized": false
+  "mergeAuthorized": false,
+  "imageArtifacts": {
+    "onboarding": [
+      {
+        "id": 12762000526,
+        "name": "source-onboarding-evidence-40560512724",
+        "sizeBytes": 619516,
+        "zipDigest": "sha256:5d6387d90c212c8ff4c130051e4af95f115ba4b3ade574737f4bfa00430d2022"
+      },
+      {
+        "id": 12761085834,
+        "name": "source-onboarding-governed-image-40560512724",
+        "sizeBytes": 212914450,
+        "zipDigest": "sha256:704bf88695423695777a39910f2b0826e58172ee0085c07f912bb71cfb1201dd"
+      }
+    ],
+    "mcp": [
+      {
+        "id": 12761775539,
+        "name": "acquisition-mcp-image-40560685583",
+        "sizeBytes": 9619180,
+        "zipDigest": "sha256:dbc4c918f71d0b3bf089c1b4a868ebf11ff9d3c9b1de44530cb6cd3df0cb71d7"
+      },
+      {
+        "id": 12761510808,
+        "name": "mcp-release-evidence-40560685583",
+        "sizeBytes": 286559,
+        "zipDigest": "sha256:1e194b0794773acf73e932e10d1d9edcde52178d01ca714fd42183607f6ad538"
+      }
+    ],
+    "archivesIndependentlyDownloaded": false,
+    "nativeImageIdsProven": false,
+    "newDeploymentReviewPrepared": false
+  }
 }

@@ -1923,7 +1923,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Finish source qualification, retain direct logs and pin coherent images. Then prepare a fresh minimal governed deployment/authority admission using current evidence; no old APPLY/capture/publisher scope replay. Native HUMAN profile3attempts/900s and resume remain distinct decisions on the same job after actual access is proven.",
+  "firstNextAction": "Reuse the qualified candidate sources and CI image artifacts without rebuilding old images. Bind exact archive/source/tested image identities and read current native authority prerequisites/catalogue/scopes in a NEW minimal scope before preparing the concrete deployment/permission review. No old APPLY/capture/publisher replay. Source qualification is not target deployment. Then USER-only same-job3attempts/900s budget and separate resume, original/hash/parser/preview and61rows to UDP.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2275,7 +2275,7 @@
       "exit": "Permanenti non ritentati; transitori finiti; recovery HUMAN conserva tentativi/storia e non duplica effetti",
       "remainingHours": null,
       "progress": {
-        "status": "V36_ENGINE_INSTALLED_JOB_CONTROL_AUTHORIZATION_FIX_IN_QUALIFICATION",
+        "status": "V36_ENGINE_INSTALLED_JOB_CONTROL_FIX_CI_QUALIFIED_NOT_INSTALLED",
         "sourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
         "evidenceRef": "evidence/profile-recovery-source-qualification-20261027.json",
         "ownerSessionMechanismImplemented": true,
@@ -2647,7 +2647,7 @@
     "resumedByThisResume": false
   },
   "profileControlAuthorization": {
-    "status": "CANDIDATE_SOURCE_QUALIFICATION_IN_PROGRESS_NOT_INSTALLED",
+    "status": "SOURCE_CI_QUALIFIED_NOT_INSTALLED",
     "evidence": "evidence/profile-recovery-control-authorization-20261027.json",
     "onboardingSource": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "mcpSource": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
