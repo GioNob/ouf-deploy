@@ -1,9 +1,9 @@
 name: Reused managed CSV recovery retained inputs
 on:
   push:
-    paths: ['tools/managed_csv_recovery/**', 'scripts/capture-managed-csv-recovery-inputs.py', 'tests/test_managed_csv_recovery_inputs.py', 'tests/qualify_managed_csv_recovery_capture.py', 'releases/managed-csv-recovery-capture-case-20261027.json', '.github/workflows/managed-csv-recovery-inputs.yml']
+    paths: ['tools/managed_csv_recovery/**', 'scripts/capture-managed-csv-recovery-inputs.py', 'tests/test_managed_csv_recovery_inputs.py', 'tests/qualify_managed_csv_recovery_capture.py', 'tests/qualify_managed_csv_recovery_delivery.py', 'releases/capture-managed-csv-recovery-inputs-20261027.sh', 'releases/managed-csv-recovery-capture-case-20261027.json', '.github/workflows/managed-csv-recovery-inputs.yml']
   pull_request:
-    paths: ['tools/managed_csv_recovery/**', 'scripts/capture-managed-csv-recovery-inputs.py', 'tests/test_managed_csv_recovery_inputs.py', 'tests/qualify_managed_csv_recovery_capture.py', 'releases/managed-csv-recovery-capture-case-20261027.json', '.github/workflows/managed-csv-recovery-inputs.yml']
+    paths: ['tools/managed_csv_recovery/**', 'scripts/capture-managed-csv-recovery-inputs.py', 'tests/test_managed_csv_recovery_inputs.py', 'tests/qualify_managed_csv_recovery_capture.py', 'tests/qualify_managed_csv_recovery_delivery.py', 'releases/capture-managed-csv-recovery-inputs-20261027.sh', 'releases/managed-csv-recovery-capture-case-20261027.json', '.github/workflows/managed-csv-recovery-inputs.yml']
 permissions: {contents: read}
 jobs:
   read-only-native-cohort:
@@ -24,3 +24,13 @@ jobs:
           for role in onboarding mcp peer0 peer1 peer2 peer3 peer4 peer5 peer6 peer7 peer8 peer9 peer10; do
             docker rm -f "ouf-csv-capture-$role" || true
           done
+  protected-curl-sudo-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Real pinned HTTPS, nonroot download, root0400, negative main and no replay
+        run: |
+          bash -n releases/capture-managed-csv-recovery-inputs-20261027.sh
+          sudo /usr/bin/python3 -I -S -B tests/qualify_managed_csv_recovery_delivery.py
