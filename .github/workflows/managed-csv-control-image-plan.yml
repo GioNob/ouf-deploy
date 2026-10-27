@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
-      - run: python3 -m unittest discover -s tests -p test_managed_csv_control_image_plan.py -v
+      - run: sudo /usr/bin/python3 -m unittest discover -s tests -p test_managed_csv_control_image_plan.py -v
       - name: Download original qualified immutable CI ZIPs without rebuild
         run: |
           mkdir -m 0700 "$RUNNER_TEMP/control-zips"
