@@ -1,3 +1,9 @@
+# CURRENT — secondo STOP peer PID1; consegne precedenti consumate, riuso trasporti qualificati
+
+27 ottobre2026. Ricevuto STOP_RECONCILE/EXACT_CURRENT_ROOT_ENGINE_PEER_CREDENTIALS_REQUIRED, Exit2/DeliveryExit2 dalla continuazione fd831393. NON rilanciarla. [Ricevuta](evidence/onboarding-pid1-peer-stop-target-20261027.json). Hash già riconciliato corrisponde a[1,0,0]; guard nuovo PID>1 errato. Vecchi trasporti MCP/redazione/acquisizione ammettevano già PID1, con identica tupla LIVE completa e UID0: riusare quel controllo. Non dedurre causa del PID1.
+
+Nuova continuazione child pid1-peer-continuation-v1 in qualifica, NON ancora consegnata/qualificata. Undici metadataread già consumate (3+8) conservate nello stesso64; verifica claim/inventari/vecchio codice21fonti+manifest/log prima della review. Nessun reset, replay o vecchia authority adottata. [Handoff corrente](docs/handoffs/OUF_FARMACIE_DIAGNOSTIC_PID1_CONTINUATION_20261027.md). M1/G4 acquisito; Farmacie stessoFAILED/tentativi5, causa ignota, M2aperto. Policy54scaduta. Nessun nuovo upload/profiling/acquisizione, Registryrestart/reinstall, merge/releaseacceptance/subagenti/automazioni. Header seguenti STORICI, inclusi NEXT che dicono continuazione fd831 non eseguita.
+
 # CURRENT — peer storico riconciliato; continuazione diagnostica qualificata NON eseguita
 
 27 ottobre2026. VPS reader completo/Exit0/DeliveryExit0: unica differenza peerCredentials ASSENTE storico→presente cattura; stesso socket/custodia e profiloNATIVE, vecchiaauthority/journalassenti,3metadataread originali/zeroEngineSQL. ReportSHA be0123cad1ce85cbe16b508d41d9361fa76843603dceffff4e1f64bac655ee3c. [Ricevuta](evidence/onboarding-transport-stop-reconciled-target-20261027.json). Capture/preparazione/primoAPPLY/reader CONSUMATI, NON ripetere.

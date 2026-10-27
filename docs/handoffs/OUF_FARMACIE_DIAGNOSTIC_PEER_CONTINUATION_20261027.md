@@ -1,3 +1,7 @@
+# SUPERATO — consegna fd831 eseguita in secondo STOP; NON rilanciare
+
+VPS Exit2/DeliveryExit2, reason EXACT_CURRENT_ROOT_ENGINE_PEER_CREDENTIALS_REQUIRED. Istruzioni seguenti storiche. [Nuovo handoff PID1 e contatori11/64](OUF_FARMACIE_DIAGNOSTIC_PID1_CONTINUATION_20261027.md).
+
 # Farmacie — continuazione dopo peer Engine riconciliato
 
 27 ottobre 2026, Europe/Rome. [Handoff precedente e storia completa](OUF_FARMACIE_DIAGNOSTIC_APPLY_NEXT_20261027.md). Capture5909d100, preparazione immagine/inputc2258617, primoAPPLY e reader conservato sono tutti CONSUMATI. Nessuno va rilanciato.

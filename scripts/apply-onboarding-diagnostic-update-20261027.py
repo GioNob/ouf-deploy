@@ -61,7 +61,8 @@ def review(ctx):
 def terminal(ctx,value):
     c=ctx.core;reviewed=c.digest(value);deadline=time.monotonic()+900;wall=time.time()+900
     print('Revisione privata: '+str(ctx.root/'review.json'),flush=True)
-    print('NUOVA review residua dopo STOP pre-review riconciliato: sole3letture metadata originali gia incluse nel massimo64. Vecchia authority e journal assenti; nessun effetto runtime originale da ripetere.',flush=True)
+    print('NUOVA review residua dopo due STOP pre-review:3+8=11letture metadata gia incluse nel massimo64. Claim/log/codice precedenti riverificati; vecchie authority e journal assenti; zero effetti runtime precedenti.',flush=True)
+    print('Peer catturato con PID1 ammesso come nei trasporti gia qualificati; identica verifica LIVE della tupla completa e UIDroot. Nessuna modifica ai binding o hash storici.',flush=True)
     print('Reader conservato consumato separatamente:7metadata+21fonti/manifesto. Profilo storico intatto; solo cattura corrente con peer root verificato su ogni connessione. Nessun reset o vecchio consenso riusato.',flush=True)
     print('SOLA sostituzione Onboarding con diagnostica minima PR52; nessuna installazione del candidato M2 piu ampio.',flush=True)
     print('Source reviewed '+ctx.case['sourceCommit']+'; image tested '+ctx.case['testedCommit']+'; identita CI esatta senza rebuild/relabel.',flush=True)

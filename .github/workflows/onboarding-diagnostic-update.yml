@@ -57,6 +57,12 @@ jobs:
             sleep 1
           done
           test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
+      - name: Actual kernel PID1 peer in disposable Unix socket fixture
+        run: |
+          sudo docker run --rm --network none --user 0:0 \
+            --mount type=bind,source="$PWD",target=/src,readonly \
+            --entrypoint python python:3.12-alpine \
+            -I -S -B /src/tests/qualify_onboarding_pid1_peer.py
       - name: Exact new signed controller and actual watchdog loss on synthetic ONBOARDING workloads
         env: {EXPECTED_STORE: '${{ matrix.store }}'}
         run: |

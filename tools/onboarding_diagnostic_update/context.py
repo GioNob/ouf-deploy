@@ -20,7 +20,10 @@ TARGET={'executionInputsHash':'c22586172070809d414d3654f3e002b7e1d84d749daae9b31
         'databaseIdentityPath':'/etc/ouf/deploy-snapshots/onboarding-budget-v35-54d86bbcd2ea47fd/native-plan-v1/execution-plan.json',
         'databaseIdentityHash':'b17c2c99cc791cced8ee00ed190e30b75c518ae84e2dd4a9ae7eef521390c8bd',
         'ownerOverlayPath':'/opt/ouf/secrets/onboarding-ths.yaml',
-        'executionRoot':'/etc/ouf/deploy-snapshots/onboarding-diagnostic-update-c22586172070809d-v1/retained-peer-credentials-continuation-v1',
+        'executionRoot':'/etc/ouf/deploy-snapshots/onboarding-diagnostic-update-c22586172070809d-v1/retained-peer-credentials-continuation-v1/pid1-peer-continuation-v1',
+        'priorPeerStop':{'root':'/etc/ouf/deploy-snapshots/onboarding-diagnostic-update-c22586172070809d-v1/retained-peer-credentials-continuation-v1',
+          'codeRoot':'/usr/local/lib/ouf-onboarding-diagnostic-update-d65d48b2da52ef45',
+          'manifestHash':'d65d48b2da52ef456b0db3cf1807e907983da87fd2100597cb0185c7714bdbce'},
         'priorStop':{'root':'/etc/ouf/deploy-snapshots/onboarding-diagnostic-update-c22586172070809d-v1',
           'resultPath':'/etc/ouf/deploy-snapshots/onboarding-diagnostic-transport-stop-read-c2258617-v1/result.json',
           'resultHash':'be0123cad1ce85cbe16b508d41d9361fa76843603dceffff4e1f64bac655ee3c',
@@ -53,10 +56,10 @@ class Context:
         self.fence,self.database=parts['state_fence'],parts['database']
         self.auth,self.sign,self.journal_module=auth,sign,journal;self.closure=copy.deepcopy(closure);self.case=copy.deepcopy(case);self.root=Path(case['executionRoot']);self.serial=0
         self.execution=None;self.counts={k:0 for k in self.core.LIMITS};self.responses=0;self.receiptBytes=0;self.runtime=runtime;self.prior_seals={}
-        require('priorStop'in case,'EXACT_RECONCILED_UNISSUED_PREFLIGHT_REQUIRED');self.counts['ownerConfigurationReads']=3
+        require('priorStop'in case and'priorPeerStop'in case,'EXACT_RECONCILED_UNISSUED_PREFLIGHT_CHAIN_REQUIRED');self.counts['ownerConfigurationReads']=11
         self.p.ancestry(self.root.parent);require(not os.path.lexists(self.root),'ONBOARDING_UPDATE_SCOPE_CONSUMED_NO_REPLAY');self.root.mkdir(mode=0o700);self.root.chmod(0o700)
         self.sync(self.root.parent);self.write(self.root,'preparation-claim.json',{'schema':'ouf.onboarding-diagnostic-update-preflight-claim.v1','executionInputsHash':case['executionInputsHash'],'maximums':self.core.LIMITS,'runtimeEffectsDispatched':0,'automaticReplayAllowed':False,'budgetReset':False})
-        self.reconcile_preflight(case['priorStop'])
+        self.reconcile_preflight(case['priorStop'],case['priorPeerStop'])
         self.reserve('ownerConfigurationReads');self.native=self.read(case['executionInputsPath'],case['executionInputsHash'])
         self.reserve('ownerConfigurationReads');self.inputs=self.read(case['inputsPath'],case['inputsHash'])
         n=self.native
@@ -146,16 +149,23 @@ class Context:
             os.fchmod(stream.fileno(),0o400);stream.write(raw);stream.flush();os.fsync(stream.fileno())
         self.sync(path.parent)
     def read(self,path,expected):return self.p.decode(self.p.protected(Path(path),expected))
-    def reconcile_preflight(self,binding):
-        old=Path(binding['root']);require(self.root.parent==old and self.root.name=='retained-peer-credentials-continuation-v1','EXACT_UNISSUED_PREFLIGHT_CHILD_REQUIRED')
+    def reconcile_preflight(self,binding,peer_stop=None):
+        old=Path(binding['root']);first=old/'retained-peer-credentials-continuation-v1'
+        if peer_stop:
+            require(Path(peer_stop['root'])==first and self.root.parent==first and self.root.name=='pid1-peer-continuation-v1','EXACT_PID1_PREFLIGHT_CHILD_REQUIRED')
+            child_name=first.name
+        else:
+            require(self.root.parent==old and self.root.name==first.name,'EXACT_UNISSUED_PREFLIGHT_CHILD_REQUIRED');child_name=self.root.name
         names=[]
         with os.scandir(old)as entries:
             for row in entries:names.append(row.name);require(len(names)<=5,'UNISSUED_PREFLIGHT_ONLY_NO_OLD_AUTHORITY_OR_JOURNAL')
         attempts=sorted(n for n in names if re.fullmatch(r'preflight-attempt-[1-9][0-9]{0,9}-[0-9]{5}\.json',n))
-        require(len(attempts)==3 and set(names)=={'preparation-claim.json',self.root.name,*attempts},'EXACT_ORIGINAL_THREE_METADATA_ATTEMPTS_REQUIRED')
-        def retained(path,expected=None):
-            self.reserve('ownerConfigurationReads');raw=self.p.protected(Path(path),expected,limit=16384)
-            self.prior_seals[str(path)]=list(self.p.frame(Path(path).lstat()));return self.p.decode(raw)
+        require(len(attempts)==3 and set(names)=={'preparation-claim.json',child_name,*attempts},'EXACT_ORIGINAL_THREE_METADATA_ATTEMPTS_REQUIRED')
+        def retained_raw(path,expected=None,limit=16384,mode=0o400):
+            self.reserve('ownerConfigurationReads');raw=self.p.protected(Path(path),expected,limit=limit)
+            require(stat.S_IMODE(Path(path).lstat().st_mode)==mode,'EXACT_RETAINED_FILE_MODE_REQUIRED')
+            self.prior_seals[str(path)]=list(self.p.frame(Path(path).lstat()));return raw
+        def retained(path,expected=None):return self.p.decode(retained_raw(path,expected))
         r=retained(binding['resultPath'],binding['resultHash']);counts={k:0 for k in self.core.LIMITS};counts['ownerConfigurationReads']=3
         hashes=binding['transportHashes'];difference=[{'field':['peerCredentials'],'retained':{'present':False,'type':'ABSENT','sha256':None},
                    'captured':{'present':True,'type':'list','sha256':hashes['peerCredentialsHash']}}]
@@ -179,6 +189,31 @@ class Context:
         self.retained_preflight={'originalRoot':str(old),'reconciliationBinding':copy.deepcopy(binding),'retainedPreflightCounts':counts,
             'separateConsumedReaderCounts':r['counts'],'originalAuthorityAndJournalAbsent':True,'oldScopeConsumed':True,
             'newConcreteHumanReviewRequired':True,'oldAuthorityReused':False,'budgetReset':False}
+        self.prior_inventories=[self.prior_inventory]
+        if peer_stop:
+            entries=[]
+            with os.scandir(first)as rows:
+                for row in rows:entries.append(row.name);require(len(entries)<=10,'PID1_OLD_SCOPE_MUST_HAVE_NO_AUTHORITY_OR_JOURNAL')
+            calls=sorted(n for n in entries if re.fullmatch(r'preflight-attempt-[1-9][0-9]{0,9}-[0-9]{5}\.json',n))
+            require(len(calls)==8 and set(entries)=={'preparation-claim.json',self.root.name,*calls}
+                and len({n.split('-')[2]for n in calls})==1,'EXACT_EIGHT_UNISSUED_PEER_STOP_ATTEMPTS_REQUIRED')
+            require(retained(first/'preparation-claim.json')==claim,'EXACT_SECOND_UNISSUED_CLAIM_REQUIRED')
+            for i,name in enumerate(calls,4):
+                require(retained(first/name)=={'kind':'ownerConfigurationReads','attempt':i,'attemptNotCompletion':True},'EXACT_CUMULATIVE_ATTEMPTS_FOUR_TO_ELEVEN_REQUIRED')
+            code=Path(peer_stop['codeRoot']);manifest=self.p.decode(retained_raw(code/'sources.json',peer_stop['manifestHash'],131072))
+            required={'entry.py','authority.py','context.py','transport.py','ports.py','quarantine.py','state_fence.py','database.py','recovery_journal.py','engine_creation.py','plan_helper.py','image_custody.py','retained_mac.py','terminal.py','authentication.py','signing.py','auth_protocol.py','auth_preexec.py','auth_producer.py','runtime_binding.py','migration-fence.json'}
+            require(type(manifest)is dict and set(manifest)==required,'EXACT_STOPPED_PEER_SOURCE_CLOSURE_REQUIRED')
+            for name,h in manifest.items():
+                require(type(h)is str and re.fullmatch('[a-f0-9]{64}',h),'EXACT_STOPPED_PEER_SOURCE_HASH_REQUIRED');retained_raw(code/name,h,131072)
+            stop=self.p.decode(retained_raw(code/'operator.log',limit=8192,mode=0o600))
+            expected={'applicationE2EProven':False,'automaticReplayAllowed':False,'automaticRollbackPerformed':False,'budgetReset':False,'complete':False,'contextPath':None,
+                'reasonCode':'EXACT_CURRENT_ROOT_ENGINE_PEER_CREDENTIALS_REQUIRED','releaseAcceptance':False,'runtimeEffectsMayBePartial':True,
+                'schema':'ouf.onboarding-diagnostic-update-result.v1','status':'STOP_RECONCILE'}
+            require(stop==expected,'EXACT_PRE_REVIEW_PID1_PEER_STOP_LOG_REQUIRED')
+            self.prior_inventories.append({'path':str(first),'metadata':list(self.p.frame(first.lstat())),'names':sorted(entries)})
+            cumulative=copy.deepcopy(counts);cumulative['ownerConfigurationReads']=11
+            self.retained_preflight.update(originalPreflightCounts=counts,retainedPreflightCounts=cumulative,
+                secondUnissuedStop={'binding':copy.deepcopy(peer_stop),'additionalOwnerMetadataReads':8,'runtimeDispatches':0,'authorityAndJournalAbsent':True,'originalFilesRewritten':False})
     def evidence(self,name,value):
         # Controller and its single forked watchdog never overwrite or collide.
         self.serial+=1;self.write(self.root,name+'-'+str(os.getpid())+'-%05d.json'%self.serial,value)
@@ -209,7 +244,8 @@ class Context:
         require(Path('/proc/sys/kernel/random/boot_id').read_text().strip()==self.inputs['bootId']==self.proposal['bootId'],'SAME_ONBOARDING_UPDATE_HOST_BOOT_REQUIRED')
         for path,metadata in self.input_seals.items():require(list(self.p.frame(Path(path).lstat()))==metadata,'PREPARED_INPUT_SEAL_CHANGED')
         for path,metadata in self.prior_seals.items():require(list(self.p.frame(Path(path).lstat()))==metadata,'RECONCILED_PREFLIGHT_SEAL_CHANGED')
-        prior=self.prior_inventory;require(list(self.p.frame(Path(prior['path']).lstat()))==prior['metadata']and sorted(os.listdir(prior['path']))==prior['names'],'ORIGINAL_UNISSUED_PREFLIGHT_DIRECTORY_CHANGED')
+        for prior in self.prior_inventories:
+            require(list(self.p.frame(Path(prior['path']).lstat()))==prior['metadata']and sorted(os.listdir(prior['path']))==prior['names'],'ORIGINAL_UNISSUED_PREFLIGHT_DIRECTORY_CHANGED')
         for path,metadata in self.source_seals.items():require(list(self.p.frame(Path(path).lstat()))==metadata,'SEALED_ONBOARDING_EXECUTOR_SOURCE_CHANGED')
         require(list(self.p.frame(Path(self.archive['path']).lstat()))==self.archive['metadata'],'PREPARED_ARCHIVE_SEAL_CHANGED')
         require(list(self.p.frame(Path(self.owner_overlay_binding['path']).lstat()))==self.owner_overlay_binding['metadata'],'EXACT_CLASSIFIED_OWNER_CONFIGURATION_CHANGED')

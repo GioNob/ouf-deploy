@@ -1,3 +1,9 @@
+# CURRENT — secondo STOP peer PID1; consegne precedenti consumate, riuso trasporti qualificati
+
+27 ottobre2026. Ricevuto STOP_RECONCILE/EXACT_CURRENT_ROOT_ENGINE_PEER_CREDENTIALS_REQUIRED, Exit2/DeliveryExit2 dalla continuazione fd831393. NON rilanciarla. [Ricevuta](../evidence/onboarding-pid1-peer-stop-target-20261027.json). Hash già riconciliato corrisponde a[1,0,0]; guard nuovo PID>1 errato. Vecchi trasporti MCP/redazione/acquisizione ammettevano già PID1, con identica tupla LIVE completa e UID0: riusare quel controllo. Non dedurre causa del PID1.
+
+Nuova continuazione child pid1-peer-continuation-v1 in qualifica, NON ancora consegnata/qualificata. Undici metadataread già consumate (3+8) conservate nello stesso64; verifica claim/inventari/vecchio codice21fonti+manifest/log prima della review. Nessun reset, replay o vecchia authority adottata. [Handoff corrente](handoffs/OUF_FARMACIE_DIAGNOSTIC_PID1_CONTINUATION_20261027.md). M1/G4 acquisito; Farmacie stessoFAILED/tentativi5, causa ignota, M2aperto. Policy54scaduta. Nessun nuovo upload/profiling/acquisizione, Registryrestart/reinstall, merge/releaseacceptance/subagenti/automazioni. Header seguenti STORICI, inclusi NEXT che dicono continuazione fd831 non eseguita.
+
 # OUF — Roadmap M2 dei soli delta verificati, revisione 1.2
 
 26 ottobre 2026 · Europe/Rome. [Mini-PET](OUF_M2_MINIPET_v1_0_20261026.md) · [Audit puntuale](OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md) · [Registro](../releases/csv-m2-plan-20261026.json).

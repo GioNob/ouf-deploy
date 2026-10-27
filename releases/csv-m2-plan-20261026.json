@@ -1911,7 +1911,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Run the new peer continuation once with fresh exact HUMAN terminal review. Preserve original3metadata reads cumulatively, all consumed preparations/APPLY/reader and old hashes. No target continuation result received.",
+  "firstNextAction": "Qualificare nuova continuazione annidata PID1 dopo due STOP pre-review; contatori11/64 conservati, nessun replay. Poi review terminale fresca prima di authority/effetti. M1 acquisito, causa Farmacie ancora ignota.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2328,10 +2328,26 @@
     "deliveryCommit": "fd8313933609b53c98b691c675a7b8454f8e9364",
     "wrapperSha256": "16fa7d0b398a3b5a54f371887855930db5edeeea7373a1a780fef5d79ffb64fc",
     "evidence": "evidence/onboarding-peer-continuation-qualified-20261027.json",
-    "targetExecuted": false,
+    "targetExecuted": true,
     "runtimeAuthorityIssued": false,
     "originalPreflightReadsCarried": 3,
     "maximumOwnerMetadataReads": 64,
-    "oldHashesRewritten": false
+    "oldHashesRewritten": false,
+    "targetStatus": "STOP_RECONCILE",
+    "reasonCode": "EXACT_CURRENT_ROOT_ENGINE_PEER_CREDENTIALS_REQUIRED",
+    "scopeConsumed": true,
+    "currentDeliveryUsable": false,
+    "rerunAllowed": false,
+    "targetReceipt": "evidence/onboarding-pid1-peer-stop-target-20261027.json"
+  },
+  "diagnosticPid1Continuation": {
+    "qualified": false,
+    "targetExecuted": false,
+    "originalCumulativeMetadataReads": 11,
+    "maximumOwnerMetadataReads": 64,
+    "oldHashesRewritten": false,
+    "historicalLiveTransportReused": true,
+    "evidence": "evidence/onboarding-pid1-peer-stop-target-20261027.json",
+    "handoff": "docs/handoffs/OUF_FARMACIE_DIAGNOSTIC_PID1_CONTINUATION_20261027.md"
   }
 }

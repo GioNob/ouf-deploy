@@ -105,7 +105,16 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
         hashes={'retainedEngineBindingHash':self.core.digest(profile['engineBinding']),'capturedEngineBindingHash':self.core.digest(engine),'peerCredentialsHash':self.core.digest(engine['peerCredentials'])}
         retained.update(contextPath=str(read_root),**{k:hashes[k]for k in('retainedEngineBindingHash','capturedEngineBindingHash')})
         retained['engineBindingDifferences'][0]['captured']['sha256']=hashes['peerCredentialsHash'];self.write(read_root,'result.json',retained)
-        self.case.update(executionRoot=str(old/'retained-peer-credentials-continuation-v1'),priorStop={'root':str(old),'resultPath':str(read_root/'result.json'),'resultHash':self.core.digest(retained),'readerCounts':retained['counts'],'transportHashes':hashes})
+        first=old/'retained-peer-credentials-continuation-v1';first.mkdir(mode=0o700)
+        self.write(first,'preparation-claim.json',{'schema':'ouf.onboarding-diagnostic-update-preflight-claim.v1','executionInputsHash':self.case['executionInputsHash'],'maximums':self.core.LIMITS,'runtimeEffectsDispatched':0,'automaticReplayAllowed':False,'budgetReset':False})
+        for serial,attempt in enumerate(range(4,12),1):self.write(first,'preflight-attempt-2345-%05d.json'%serial,{'kind':'ownerConfigurationReads','attempt':attempt,'attemptNotCompletion':True})
+        prior_code=self.root/'prior-peer-code';prior_code.mkdir(mode=0o700);mapping={}
+        for name in fixture.bundle.FILES:
+            raw=('CI_ONLY_PRIOR_SOURCE_NOT_EXECUTED:'+name).encode();self.write(prior_code,name,raw);mapping[name]=self.core.sha(raw)
+        self.write(prior_code,'sources.json',mapping)
+        stop={'applicationE2EProven':False,'automaticReplayAllowed':False,'automaticRollbackPerformed':False,'budgetReset':False,'complete':False,'contextPath':None,'reasonCode':'EXACT_CURRENT_ROOT_ENGINE_PEER_CREDENTIALS_REQUIRED','releaseAcceptance':False,'runtimeEffectsMayBePartial':True,'schema':'ouf.onboarding-diagnostic-update-result.v1','status':'STOP_RECONCILE'}
+        self.write(prior_code,'operator.log',stop);(prior_code/'operator.log').chmod(0o600)
+        self.case.update(executionRoot=str(first/'pid1-peer-continuation-v1'),priorStop={'root':str(old),'resultPath':str(read_root/'result.json'),'resultHash':self.core.digest(retained),'readerCounts':retained['counts'],'transportHashes':hashes},priorPeerStop={'root':str(first),'codeRoot':str(prior_code),'manifestHash':self.core.digest(mapping)})
         self.assertNotIn('peerCredentials',profile['engineBinding']);self.assertIn('peerCredentials',engine)
         self.public={'trustPolicy':self.verification['trustPolicy'],'context':self.context,'profile':self.profile}
     def psql(self,sql):return self.cli('exec',self.pg,'psql','-X','-w','-q','-A','-t','-v','ON_ERROR_STOP=1','-U','postgres','-d','postgres','-c',sql)
@@ -123,8 +132,8 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
         try:
             self.setup_native();ctx=self.context_instance();review=self.entry.review(ctx);result=self.entry.execute_approved(ctx,review,self.decision(review))
             self.assertTrue(result['complete']);self.assertEqual(result['sqlSessionsByRepair'],4);row=ctx.execution.journal.read();self.assertEqual(row['state'],'COMPLETE');self.assertEqual(len(row['effects']),14)
-            self.assertEqual(review['retainedUnissuedPreflight']['retainedPreflightCounts']['ownerConfigurationReads'],3)
-            self.assertGreaterEqual(review['preflightCounts']['ownerConfigurationReads'],3+5+4+2)
+            self.assertEqual(review['retainedUnissuedPreflight']['retainedPreflightCounts']['ownerConfigurationReads'],11)
+            self.assertEqual(review['preflightCounts']['ownerConfigurationReads'],11+37+4+2)
             self.assertFalse(review['retainedTransportCompatibility']['historicalMetadataRewritten'])
             for role,before in self.original.items():
                 after=self.api('GET','/containers/'+before['Id']+'/json')
@@ -132,13 +141,9 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
                 else:self.assertEqual(self.p.stable_binding(before),self.p.stable_binding(after))
             candidate=self.api('GET','/containers/'+row['candidates']['onboarding']['id']+'/json');self.assertEqual(candidate['NetworkSettings']['Networks'][self.net]['MacAddress'],'02:42:ac:44:01:07');self.assertEqual(candidate['NetworkSettings']['Networks'][self.net]['IPAddress'],self.original['onboarding']['NetworkSettings']['Networks'][self.net]['IPAddress'])
             self.assertEqual(candidate['HostConfig']['Memory'],self.original['onboarding']['HostConfig']['Memory']);self.assertIs(candidate['HostConfig']['AutoRemove'],False)
-            if self.case.get('priorPreflight'):
-                self.assertEqual(review['nativePlan']['proposal']['retainedPreflightReconciliation']['retainedOriginalCounts']['ownerConfigurationReads'],2)
-                self.assertGreaterEqual(review['preflightCounts']['ownerConfigurationReads'],10)
-                self.assertEqual(len(list(Path(self.case['priorPreflight']['root']).iterdir())),4)
             self.assertEqual(self.p.stable_binding(self.registry),self.p.stable_binding(self.api('GET','/containers/'+self.registry['Id']+'/json')))
             self.assertTrue((ctx.root/'candidate-result.json').is_file());self.assertTrue((ctx.root/'result.json').is_file())
-            print(json.dumps({'schema':'ouf.onboarding-update-synthetic-native-executor-ci.v1','complete':True,'backend':os.environ['EXPECTED_STORE'],'retainedMemoryBytes':candidate['HostConfig']['Memory'],'priorPreflightCountsPreserved':bool(self.case.get('priorPreflight')),'creationProfile':'EXPLICIT_LEGACY_CONFIG'if getattr(self,'legacy_explicit',True)else'ENDPOINT_ONLY_COMPAT_CONFIG','realDualRoleAuthorityAndAttestation':True,'oldLegacyMacInitiallyPresent':True,'fullSignedLifecycle':True,'sixOtherContainersUnchanged':True,'outsideScopeRegistryUnchanged':True,'endpointMacPreserved':True,'endpointIpPreserved':True,'oldRetainedStopped':True,'commitAfterThirdSignature':True,'applicationWorkloadSynthetic':True,'productionRuntimeAccess':False,'applicationE2EProven':False}),flush=True)
+            print(json.dumps({'schema':'ouf.onboarding-update-synthetic-native-executor-ci.v1','complete':True,'backend':os.environ['EXPECTED_STORE'],'retainedMemoryBytes':candidate['HostConfig']['Memory'],'retainedUnissuedMetadataReads':11,'preReviewMetadataReads':review['preflightCounts']['ownerConfigurationReads'],'sameMetadataMaximum':self.core.LIMITS['ownerConfigurationReads'],'creationProfile':'EXPLICIT_LEGACY_CONFIG'if getattr(self,'legacy_explicit',True)else'ENDPOINT_ONLY_COMPAT_CONFIG','realDualRoleAuthorityAndAttestation':True,'oldLegacyMacInitiallyPresent':True,'fullSignedLifecycle':True,'sixOtherContainersUnchanged':True,'outsideScopeRegistryUnchanged':True,'endpointMacPreserved':True,'endpointIpPreserved':True,'oldRetainedStopped':True,'commitAfterThirdSignature':True,'applicationWorkloadSynthetic':True,'productionRuntimeAccess':False,'applicationE2EProven':False}),flush=True)
         finally:self.cleanup_native()
     def test_full_endpoint_legacy_compatibility_profile(self):
         self.legacy_explicit=False;self.test_full_new_signed_executor_legacy_frame_and_attested_commit()
