@@ -52,6 +52,7 @@ def review(ctx):
            'retainedCaptureCounts':ctx.proposal['retainedCaptureCounts'],'retainedImagePreparationCounts':ctx.proposal['retainedImagePreparationCounts'],
            'oldScopesConsumed':True,'oldV35AuthorityReused':False,'maintenanceSqlAuthorized':True,
            'operationalSqlHash':ctx.proposal['operationalSqlHash'],'migrationFenceHash':c.digest(ctx.migrations),
+           'existingOwnerConfigurationBinding':ctx.owner_overlay_binding,'ownerConfigurationContentReads':1,
            'maximumSigningOperations':3,'maximumSigningKeyReadDispatches':15,'maximumRawEngineReceiptBytesTwoPublishers':134217728,
            'databaseRestoreAuthorized':False,'humanBudgetOrSourceActivationAuthorized':False,'acquisitionCallsAuthorized':False,
            'gatewayMutationAuthorized':False,'automaticReplayAllowed':False,'budgetReset':False,'releaseAcceptance':False}
@@ -62,6 +63,7 @@ def terminal(ctx,value):
     print('SOLA sostituzione Onboarding con diagnostica minima PR52; nessuna installazione del candidato M2 piu ampio.',flush=True)
     print('Source reviewed '+ctx.case['sourceCommit']+'; image tested '+ctx.case['testedCommit']+'; identita CI esatta senza rebuild/relabel.',flush=True)
     print('Configurazione, User, Env, mount, policy risorse (Memory='+str(ctx.proposal['onboardingReplacement']['request']['HostConfig']['Memory'])+'), MAC/IP e porte esistenti conservati.',flush=True)
+    print('Unico YAML owner esistente verificato in memoria contro i byte gia classificati; Env/launch invariati e seal controllato a ogni passo. Nessun valore privato stampato, nessun altro file credenziali aperto.',flush=True)
     print('Breve indisponibilita Onboarding. Vecchio fermato, scollegato e trattenuto fermo; nessun rollback. Se STOP puo restare indisponibile fino a riconciliazione autorizzata.',flush=True)
     print('Quattro NUOVE sessioni tecniche SQL in sola lettura: identita PG17, 35 migrazioni, hash di nove tabelle, assenza lavoro pendente, stesso job Farmacie FAILED/tentativi5. Nessun testo eccezione o dato di dominio letto tramite SQL.',flush=True)
     print('Condizione prima degli effetti: nessun profilo/readiness pendente. Prima del nuovo avvio e alla fine tutti i fingerprint devono restare identici; nessun reset, retry o nuovo job.',flush=True)

@@ -19,6 +19,7 @@ TARGET={'executionInputsHash':'c22586172070809d414d3654f3e002b7e1d84d749daae9b31
         'inputsPath':'/etc/ouf/deploy-snapshots/onboarding-diagnostic-current-inputs-20261026-v1/inputs.json',
         'databaseIdentityPath':'/etc/ouf/deploy-snapshots/onboarding-budget-v35-54d86bbcd2ea47fd/native-plan-v1/execution-plan.json',
         'databaseIdentityHash':'b17c2c99cc791cced8ee00ed190e30b75c518ae84e2dd4a9ae7eef521390c8bd',
+        'ownerOverlayPath':'/opt/ouf/secrets/onboarding-ths.yaml',
         'executionRoot':'/etc/ouf/deploy-snapshots/onboarding-diagnostic-update-c22586172070809d-v1'}
 PROFILE={'path':'/etc/ouf/deploy-snapshots/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json','sha256':'7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18'}
 POLICY={'path':'/etc/ouf/deploy-snapshots/semantic-trust-policy-preparation-20261004-172336/trust-policy.json','sha256':'21122630e52cb63c3744fee89f5c81ed926dad55231190243ca11be6d481bd42'}
@@ -71,6 +72,14 @@ class Context:
         migration_doc=self.read(migration_path,closure[str(migration_path)])
         self.migrations=migration_doc
         old=n['currentOnboarding'];request=self.p.config_copy(old);image=n['imageAudit']['imageConfig']
+        retained_request=frozen['replacements']['onboarding']['request']
+        for key in('Env','Entrypoint','Cmd','User','WorkingDir','Healthcheck'):
+            require(request.get(key)==retained_request.get(key),'SAME_CLASSIFIED_OWNER_LAUNCH_CONFIGURATION_REQUIRED')
+        overlays=frozen['nativeFlywayConfiguration']['ownerOverlays']
+        require(len(overlays)==1 and overlays[0]['binding']['path']==case['ownerOverlayPath'],'ONLY_NAMED_RETAINED_OWNER_CONFIGURATION_REQUIRED')
+        self.reserve('ownerConfigurationContentReads')
+        raw,self.owner_overlay_binding=self.p.private_config(case['ownerOverlayPath'],overlays[0]['binding'])
+        del raw
         require(request['User']in(image['User'],image['User'].split(':')[0])and request['Entrypoint']==image['Entrypoint']
                 and request.get('Cmd')==image.get('Cmd'),'EXACT_RETAINED_OWNER_LAUNCH_REQUIRED')
         name=old['Name'].removeprefix('/');require(re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.-]{0,160}',name),'BOUND_OWNER_NAME_REQUIRED')
@@ -160,6 +169,7 @@ class Context:
         for path,metadata in self.prior_seals.items():require(list(self.p.frame(Path(path).lstat()))==metadata,'RECONCILED_PREFLIGHT_SEAL_CHANGED')
         for path,metadata in self.source_seals.items():require(list(self.p.frame(Path(path).lstat()))==metadata,'SEALED_ONBOARDING_EXECUTOR_SOURCE_CHANGED')
         require(list(self.p.frame(Path(self.archive['path']).lstat()))==self.archive['metadata'],'PREPARED_ARCHIVE_SEAL_CHANGED')
+        require(list(self.p.frame(Path(self.owner_overlay_binding['path']).lstat()))==self.owner_overlay_binding['metadata'],'EXACT_CLASSIFIED_OWNER_CONFIGURATION_CHANGED')
     def closed_path(self,method,path,body):
         old=self.proposal['onboardingReplacement'];ids={v['containerId']for v in self.proposal['existingApplications'].values()}|getattr(self,'admitted_peer_ids',set())|{self.database_profile['postgresRuntimeBinding']['containerId']}
         if self.execution:ids|={v['id']for v in self.execution.read_journal()['candidates'].values()}

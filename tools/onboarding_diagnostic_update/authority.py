@@ -2,7 +2,7 @@
 import copy,hashlib,json,os,time
 from pathlib import Path
 STAGES=('VERIFY_CURRENT_ADMISSION','IMPORT_ONBOARDING','VERIFY_PRESTOP_STATE','DISABLE_OLD_ONBOARDING_RESTART','STOP_OLD_ONBOARDING','DETACH_OLD_ONBOARDING','RENAME_OLD_ONBOARDING','CREATE_ONBOARDING','VERIFY_PRESTART_STATE','START_ONBOARDING','VERIFY_ONBOARDING_READINESS','RESTORE_ONBOARDING_RESTART','VERIFY_FINAL','VERIFY_FINAL_STATE')
-LIMITS={'engineGets':512,'engineWrites':10,'imageLoadAttempts':1,'readinessGets':96,'adminGets':0,'adminPuts':0,'ownerConfigurationReads':64,'serviceCredentialFileReads':0,'quarantineStops':1,'sqlSessions':4}
+LIMITS={'engineGets':512,'engineWrites':10,'imageLoadAttempts':1,'readinessGets':96,'adminGets':0,'adminPuts':0,'ownerConfigurationReads':64,'ownerConfigurationContentReads':1,'serviceCredentialFileReads':0,'quarantineStops':1,'sqlSessions':4}
 AUTHORITY_SCHEMA='ouf.onboarding-diagnostic-update-authority.v1'
 HUMAN_SCHEMA='ouf.onboarding-diagnostic-update-mandate.v1'
 DECISION='APPROVE_ONE_FINITE_ONBOARDING_DIAGNOSTIC_UPDATE_ONLY'

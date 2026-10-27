@@ -125,7 +125,7 @@ class NativePorts:
                 'reviewHash':self.core.digest(self.review),'authorityHash':self.core.sha(self.gate.raw),'runtimeBindingHash':self.review['nativePlan']['runtimeBindingHash'],'candidateSourceCommit':self.ctx.case['sourceCommit'],
                 'nativeImageId':self.ctx.native['nativeImageId'],'counts':row['counts'],'unchangedPeers':len(self.plan['existingApplications'])-1,
                 'newOnboardingOwners':1,'oldOnboardingRetainedStopped':True,'nativeBindingHash':proof['nativeBindingHash'],'componentReadinessProven':True,
-                'registryWorkerTouched':False,'gatewayRequests':0,'credentialFileReads':0,'oauthRequestsByRepair':0,'normalOnboardingOAuthBootstrapMayHaveOccurred':True,
+                'registryWorkerTouched':False,'gatewayRequests':0,'additionalCredentialFileReads':0,'existingOwnerConfigurationFilesRead':row['counts']['ownerConfigurationContentReads'],'credentialValuesPrinted':False,'oauthRequestsByRepair':0,'normalOnboardingOAuthBootstrapMayHaveOccurred':True,
                 'normalOnboardingOAuthRequestsCountNotObserved':True,
                 'installationSigningKeysRead':True,'installationSigningOperations':3,'mountSourceContentIdentityProven':False,
                 'acquisitionsExecuted':0,'sourceActivations':0,'sqlSessionsByRepair':row['counts']['sqlSessions'],'newMaintenanceSqlMaximum':4,'oldV35AuthorityReused':False,'operationalStateProof':state_proof,'databaseMigrationsByRepair':0,'newGrantsGranted':0,

@@ -92,11 +92,11 @@ http.server.HTTPServer(('0.0.0.0',8080),H).serve_forever()
             'engineBinding':engine,'postgresRuntimeBinding':self.parts['engine_creation'].Engine.runtime_binding(self.original['postgres']),
             'runtimeBindingProfile':'ouf.runtime-binding.native-mount-order.v1','dockerExecutable':{'path':str(docker),'sha256':hashlib.sha256(docker.read_bytes()).hexdigest()},
             'containerPrograms':{'env':'/usr/bin/env','timeout':'/usr/bin/timeout','psql':'/usr/bin/psql'},'unixSocketDirectory':'/var/run/postgresql'}
-        frozen={'schema':'ouf.onboarding-v35-frozen-native-plan.v1','boundDatabaseProfile':profile,'replacements':{'onboarding':{'readiness':{'readinessPort':8080,'readinessPath':'/q/health/ready'}}}}
+        frozen={'schema':'ouf.onboarding-v35-frozen-native-plan.v1','boundDatabaseProfile':profile,'replacements':{'onboarding':{'request':self.original['onboarding']['Config'],'readiness':{'readinessPort':8080,'readinessPath':'/q/health/ready'}}},'nativeFlywayConfiguration':{'ownerOverlays':[{'binding':{'path':str(mount),'sha256':hashlib.sha256(mount.read_bytes()).hexdigest(),'metadata':list(self.p.frame(mount.lstat()))}}]}}
         identity=self.root/'synthetic-database-identity.json';self.write(self.root,identity.name,frozen)
         self.case={'executionInputsHash':self.core.digest(execution_inputs),'inputsHash':input_hash,'nativeImageId':self.native_id,'sourceCommit':'d'*40,'testedCommit':self.source,
                    'nativeArchiveHash':derived['derivedArchiveSha256'],'executionInputsPath':str(prepared),'inputsPath':str(input_path),
-                   'databaseIdentityPath':str(identity),'databaseIdentityHash':self.core.digest(frozen),'executionRoot':str(self.root/'new-execution')}
+                   'databaseIdentityPath':str(identity),'databaseIdentityHash':self.core.digest(frozen),'ownerOverlayPath':str(mount),'executionRoot':str(self.root/'new-execution')}
         self.public={'trustPolicy':self.verification['trustPolicy'],'context':self.context,'profile':self.profile}
     def psql(self,sql):return self.cli('exec',self.pg,'psql','-X','-w','-q','-A','-t','-v','ON_ERROR_STOP=1','-U','postgres','-d','postgres','-c',sql)
     def context_instance(self):return self.parts['context'].Context(self.parts,self.auth,self.sign,self.journal,self.closure,case=self.case,public_authority=lambda p:copy.deepcopy(self.public),runtime=self.runtime)
