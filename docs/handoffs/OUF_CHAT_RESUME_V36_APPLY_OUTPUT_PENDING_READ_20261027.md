@@ -1,3 +1,9 @@
+# SUPERATO — log ora letto, APPLY V36 riuscito; NON rilanciare
+
+27 ottobre 2026: log.txt è ora disponibile, letto integralmente e coerente con l’ultimo APPLY consegnato. Risultato ONBOARDING_PROFILE_RECOVERY_UPDATE_INSTALLED_E2E_NOT_ACCEPTED, complete/readiness=true, Exit0/DeliveryExit0; review27355a4e.../authority299960e8..., V36 installata e jobFAILED5 conservato. [Ricevuta completa](../../evidence/profile-recovery-v36-native-apply-target-20261027.json). L’incertezza sull’allegato è RISOLTA; i comandi di prima esecuzione sotto sono storici e lo scope APPLY è CONSUMATO.
+
+Ripartire dal [nuovo handoff corrente](OUF_CHAT_RESUME_V36_INSTALLED_FARMACIE_RECOVERY_20261027.md), scheda HUMAN del job Farmacie per budget e resume distinti. Non rieseguire cattura/preparazione/APPLY e non riusare authority/review. Il testo sotto descrive lo stato documentale PRECEDENTE.
+
 # Ripresa chat — leggere l’output del primo APPLY V36, esito finale non verificato
 
 27 ottobre 2026, Europe/Rome (UTC+1). Repository `GioNob/ouf-deploy`, branch `fix/registry-bound-owner-lineage-20261023`, PR draft [#50](https://github.com/GioNob/ouf-deploy/pull/50). Predecessore documentale verificato `9cd7d100c0d96e1fa47e1bb50a35c426a121c763`. Questo checkpoint aggiorna SOLO documentazione e stato della conversazione: nessuna nuova operazione VPS/OUF, authority, concessione, accettazione, merge o release.

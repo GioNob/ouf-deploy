@@ -1,3 +1,9 @@
+# SUPERATO — log ora letto, APPLY V36 riuscito; NON rilanciare
+
+27 ottobre 2026: log.txt è ora disponibile, letto integralmente e coerente con l’ultimo APPLY consegnato. Risultato ONBOARDING_PROFILE_RECOVERY_UPDATE_INSTALLED_E2E_NOT_ACCEPTED, complete/readiness=true, Exit0/DeliveryExit0; review27355a4e.../authority299960e8..., V36 installata e jobFAILED5 conservato. [Ricevuta completa](../../evidence/profile-recovery-v36-native-apply-target-20261027.json). L’incertezza sull’allegato è RISOLTA; i comandi di prima esecuzione sotto sono storici e lo scope APPLY è CONSUMATO.
+
+Ripartire dal [nuovo handoff corrente](OUF_CHAT_RESUME_V36_INSTALLED_FARMACIE_RECOVERY_20261027.md), scheda HUMAN del job Farmacie per budget e resume distinti. Non rieseguire cattura/preparazione/APPLY e non riusare authority/review. Il testo sotto descrive lo stato documentale PRECEDENTE.
+
 # AGGIORNAMENTO — leggere l’output già fornito, non rieseguire il comando sotto
 
 L’operatore ha fornito output del primo APPLY e un nuovo log.txt; il contenuto integrale non è stato accessibile nella chat precedente. Esito finale VPS SCONOSCIUTO, possibili effetti e scope potenzialmente consumato. Non assumere “non eseguito” dal titolo storico sotto e NON riconsegnare il comando come prima esecuzione. Prima azione: [nuovo handoff di ripresa](OUF_CHAT_RESUME_V36_APPLY_OUTPUT_PENDING_READ_20261027.md) e lettura del log che l’operatore allegherà alla nuova chat. Solo dopo risultato verificato aggiornare installazione/authority e proseguire, senza replay.

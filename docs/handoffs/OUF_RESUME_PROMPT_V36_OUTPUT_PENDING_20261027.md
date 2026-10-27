@@ -1,3 +1,7 @@
+# SUPERATO — non copiare questo vecchio prompt
+
+L’output è ora letto: APPLY V36 riuscito/Exit0/DeliveryExit0, scope consumato. Usare il [nuovo prompt V36 installata](OUF_RESUME_PROMPT_V36_INSTALLED_20261027.md) e il [nuovo handoff](OUF_CHAT_RESUME_V36_INSTALLED_FARMACIE_RECOVERY_20261027.md). Il testo seguente è storico.
+
 # Prompt di ripresa — output APPLY da leggere prima di agire
 
 Il checkpoint documentale è il commit che introduce questo file e l’handoff collegato. Il comando APPLY riportato negli handoff predecessori è storico e non va rilanciato.
