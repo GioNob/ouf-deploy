@@ -1914,7 +1914,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "FIRST execution of releases/OUF_PROFILE_RECOVERY_INPUT_CAPTURE_COMMAND_20261027.sh on VPS as oufadmin, once only. Four retained metadata reads/three Engine GETs, no SQL/OAuth/credentials/migration/lifecycle/budget/job execution. STOP retains evidence and prohibits replay. Then compile a NEW governed V36 plan from the returned input hash.",
+  "firstNextAction": "Prepare exact V36 CI image and conditional native plan from consumed current-input hash1ce0ce1c...; no repeat of capture, no Engine/import/lifecycle/SQL/OAuth or runtime authority during preparation.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2477,5 +2477,14 @@
     "deliveryCommit": "2981b7f009bd7072feabd78781e9b85eddfa9500",
     "wrapperSha256": "0babe8ba8455b31e23cd768904dfdef9ccee975853bcaaa438c7da1313d99b83",
     "targetExecutionReceived": false
+  },
+  "profileRecoveryInputCaptureTarget": {
+    "evidenceRef": "evidence/profile-recovery-current-input-capture-target-20261027.json",
+    "inputsHash": "1ce0ce1cd27195565393798d4d06246047c5b46c12cef39bc31aee4ed7aff82c",
+    "scopeConsumed": true,
+    "replayAllowed": false,
+    "complete": true,
+    "exit": 0,
+    "deliveryExit": 0
   }
 }
