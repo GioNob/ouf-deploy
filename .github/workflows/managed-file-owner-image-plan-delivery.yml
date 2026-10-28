@@ -1,0 +1,15 @@
+name: Managed-file owner V38 image plan immutable delivery
+on:
+  push:
+    paths: ['releases/prepare-managed-file-owner-image-plan-20261028.sh','tests/qualify_managed_file_owner_image_plan_delivery.py','.github/workflows/managed-file-owner-image-plan-delivery.yml']
+  pull_request:
+    paths: ['releases/prepare-managed-file-owner-image-plan-20261028.sh','tests/qualify_managed_file_owner_image_plan_delivery.py','.github/workflows/managed-file-owner-image-plan-delivery.yml']
+permissions: {contents: read}
+jobs:
+  actual-https-nonroot-sudo-zip-and-negative-main:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: sudo /usr/bin/python3 -I -S -B tests/qualify_managed_file_owner_image_plan_delivery.py
