@@ -1778,6 +1778,16 @@
     }
   },
   "publicationPendingHuman": true,
-  "proposalId": null,
-  "automaticReplayAllowed": false
+  "proposalId": "ad738511-24cd-418a-b5b2-0cfc46be59fe",
+  "automaticReplayAllowed": false,
+  "status": "CREATED_ONCE_PENDING_USER_THS_REVIEW",
+  "receipt": {
+    "proposalId": "ad738511-24cd-418a-b5b2-0cfc46be59fe",
+    "revision": 0,
+    "state": "PENDING",
+    "expiresAt": "2026-10-28T22:49:49.117724Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=ad738511-24cd-418a-b5b2-0cfc46be59fe",
+    "finalPolicyRef": null
+  },
+  "intentPersistedBeforeDispatchAt": "5aea3da27812e135ff29878bfb2e4978fb13fd75"
 }

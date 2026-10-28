@@ -93,7 +93,9 @@
     "profileRecoverySessionCompletedObserved": true,
     "farmacieProfileContentsRead": false,
     "farmacieProfilePreviewAccess": "DENIED_MCP_PRE_ADMISSION_NO_APPLICABLE_GRANT_POLICY58",
-    "profilePreviewPermissionProposal": "AUTOMATIC_APPROVAL_REVIEW_REJECTED_NO_PROPOSAL_RECEIPT"
+    "profilePreviewPermissionProposal": "EXPLICITLY_AUTHORIZED_CREATED_ONCE_PENDING_USER_THS",
+    "profilePreviewPermissionProposalId": "ad738511-24cd-418a-b5b2-0cfc46be59fe",
+    "profilePreviewPermissionPublished": false
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1955,21 +1957,14 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Explain automatic approval-review rejection and obtain explicit user authorization for preparing a stable, nominal ouf-admin owned-file preview role, valid no longer than existing admin assignment (2036-09-15T07:13:50.968730Z), preserving backend ownership/redaction and all unrelated entries. Do not retry or indirectly execute the rejected request before authorization. The proposal, if later authorized and created, still requires direct USER THS approval. Alternatively implement and qualify a genuinely narrower profile/asset resource binding. No new upload/profile/budget/resume; current job succeeded.",
+    "action": "USER-only review of the explicitly authorized stable owned-file preview proposal. Agent must not open or approve THS. After user decision read the same proposalId with ouf-admin and require owner PUBLISHED/finalPolicyRef before previewing the existing Farmacie profile. Reconcile sameID on ambiguity/expiry; no duplicate, login renewal, budget, resume, upload or profile job.",
+    "proposalId": "ad738511-24cd-418a-b5b2-0cfc46be59fe",
+    "url": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=ad738511-24cd-418a-b5b2-0cfc46be59fe",
+    "expiresAt": "2026-10-28T22:49:49.117724Z",
+    "permissionPublished": false,
     "profileId": "f3061699-4fde-4085-89c8-bc8703f65686",
-    "permissionDenial": {
-      "phase": "MCP_PRE_ADMISSION",
-      "reason": "NO_APPLICABLE_GRANT",
-      "evaluatedPolicyVersion": 58
-    },
-    "rejectedIntent": "evidence/owned-managed-file-preview-permission-intent-20261028.json",
-    "rejectionEvidence": "evidence/owned-managed-file-preview-permission-autoreview-20261028.json",
-    "proposalId": null,
     "sshExecutionCommandUsable": false,
-    "currentRuntimeAuthorityUsable": false,
-    "humanBudgetGrantReported": true,
-    "recoveryCompletedObserved": true,
-    "scopeConsumed": true
+    "currentRuntimeAuthorityUsable": false
   },
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
@@ -2396,10 +2391,9 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-28",
-    "handoff": "docs/handoffs/OUF_FARMACIE_PROFILE_SUCCEEDED_20261028.md",
-    "next": "EXPLICIT_USER_AUTHORIZATION_REQUIRED_BEFORE_RESUBMITTING_STABLE_OWNED_FILE_PREVIEW_PERMISSION",
-    "evidence": "evidence/farmacie-profile-recovery-succeeded-20261028.json",
-    "maintenanceReceipt": "evidence/managed-file-owner-v38-update-target-20261028.json"
+    "handoff": "docs/handoffs/OUF_OWNED_FILE_PREVIEW_PERMISSION_REVIEW_20261028.md",
+    "next": "USER_ONLY_THS_OWNED_FILE_PREVIEW_PERMISSION_REVIEW_THEN_READ_SAME_PROPOSAL",
+    "evidence": "evidence/owned-managed-file-preview-permission-proposal-20261028.json"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -4369,12 +4363,25 @@
     "budgetsByAgent": 0,
     "resumesByAgent": 0,
     "profilePreviewDenied": true,
-    "permissionProposalCreated": false,
+    "permissionProposalCreated": true,
     "automaticApprovalReviewRejected": true,
     "unclassifiedUiFinding": "Missing failure_class falls back to UNCLASSIFIED even after SUCCEEDED; do not report this as a current failure.",
     "browserIdentityAndTenantObserved": false,
     "ownershipReconciliationReceiptObserved": false,
     "acquisitionsExecutedByAgent": 0,
-    "M2Accepted": false
+    "M2Accepted": false,
+    "previousAutomaticReviewRejectionResolvedByExplicitUserAuthorization": true
+  },
+  "ownedManagedFilePreviewPermissionCurrent": {
+    "status": "PENDING_HUMAN_THS",
+    "proposalId": "ad738511-24cd-418a-b5b2-0cfc46be59fe",
+    "evidence": "evidence/owned-managed-file-preview-permission-proposal-20261028.json",
+    "explicitUserAuthorization": true,
+    "rolesBefore": 8,
+    "assignmentsBefore": 12,
+    "allExistingEntriesPreserved": true,
+    "permissionPublished": false,
+    "approvalByAgent": false,
+    "expiry": "2026-10-28T22:49:49.117724Z"
   }
 }
