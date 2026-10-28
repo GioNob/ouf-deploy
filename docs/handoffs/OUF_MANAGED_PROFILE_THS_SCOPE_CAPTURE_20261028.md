@@ -1,3 +1,17 @@
+# CURRENT — lettura THS RIUSCITA/CONSUMATA; tre scope mancanti nella richiesta applicativa
+
+28 ottobre 2026, Europe/Rome. [Ricevuta integrale](../../evidence/managed-profile-ths-scope-capture-target-20261028.json): MANAGED_PROFILE_THS_SCOPE_REQUEST_OBSERVED_NOT_AUTHORIZED, complete/Exit0/DeliveryExit0. InputsHash fdc618841f14eeb0c99ee3f61f0971affefff5f13d740d406db376d3daaa7bec, 3 metadata/27GET/743005byte, coorte13 e immagini owner/MCP invariate. Scope managed-profile-ths-scope-capture-policy58-20261028-v1 e comando CONSUMATI: NON rilanciare o riconsegnare.
+
+Richiesta effettiva: openid, authorization.policy.admin, ouf.managed-source.file.upload, resolution.issue.read, resolution.match.approve. Mancano tutti e soli i tre requisiti recovery preview/file.profile/quarantine.release. Patch additiva privata condizionale pronta; before b739cf07... → after f439449c..., cinque scope e altre proprietà conservati. Non applicata: zero Enginewrite/IAM/OAuth/SQL/lifecycle/grant/budget/resume/upload/job/acquisizioni. ClientId nel JSON=null, non osservato da file: registrationId ouf-ths NON prova clientId. Binding IAM/token browser restano ignoti; nessun login o nuovo grant proposto. Policy58 resta acquisita.
+
+NEXT preparare/qualificare lettura del client effettivo dal solo overlay owner già selezionato, custodia/processi correnti e successiva verifica IAM API sul client osservato. Riutilizzare Resolution/Teatri, stessa immagine, nuovo mandato concreto soltanto dopo prove. Nessun vecchio APPLY/login/authority riusato. THS esclusiva UTENTE. Ultimo jobFAILED5 non riletto; budget3/900 e resume futuri DUE decisioni HUMAN distinte stesso job/sessione, cumulativi6–8. M1/G4 acquisiti; M2/G5/G6/G7/E2E,61righe→UDP/D5–D7 aperti. Supervisor dopo E2E. No Registryrestart/reinstall, terza acquisizione, attivazione implicita, merge/releaseacceptance, subagenti/automazioni. Header seguenti STORICI.
+
+## Follow-up corrente
+
+La sezione precedente sostituisce tutti i NEXT storici sotto. Risultato letto integralmente in chat, log host non riletto indipendentemente; non richiederlo di nuovo. Consegna precedente esclusivamente storica, consumata.
+
+---
+
 # Richiesta OAuth della THS: lettura corrente qualificata — 28 ottobre 2026
 
 ## Punto corrente

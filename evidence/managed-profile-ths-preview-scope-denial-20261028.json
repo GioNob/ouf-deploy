@@ -3,7 +3,7 @@
   "date": "2026-10-28",
   "timezone": "Europe/Rome",
   "origin": "OPERATOR_NATIVE_THS_API_RESPONSE_NOT_AGENT_BROWSER_ACCESS",
-  "status": "NATIVE_GATEWAY_PREVIEW_SCOPE_MISSING_OBSERVED_REQUEST_BINDING_OR_OLD_TOKEN_TO_DISTINGUISH",
+  "status": "THREE_RECOVERY_SCOPES_ABSENT_FROM_ACTUAL_THS_REQUEST_BINDING_AND_CLIENT_TO_VERIFY",
   "nativeResponse": {
     "error": "required scopes ouf.managed-source.preview not present"
   },
@@ -11,7 +11,7 @@
   "sameJobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
   "priorVerifiedPolicyRef": "ouf-lab-authorization:58",
   "scopeAbsenceProvenForDeniedRequest": "ouf.managed-source.preview",
-  "scopeRequestConfigurationObserved": false,
+  "scopeRequestConfigurationObserved": true,
   "iamBindingObserved": false,
   "browserTokenInspected": false,
   "otherScopesMissingNotInferred": true,
@@ -24,7 +24,7 @@
     "strategy": "Read effective retained current request; qualify only additive missing scope request on same image, preserve all other properties; separately distinguish actual IAM binding and fresh token. No replay consumed previous configuration update."
   },
   "newReader": {
-    "status": "QUALIFIED_FIRST_TARGET_CAPTURE_PENDING",
+    "status": "SUCCESS_CONSUMED_NO_REPLAY",
     "newScope": "/etc/ouf/deploy-snapshots/managed-profile-ths-scope-capture-policy58-20261028-v1",
     "privateMetadataReads": 3,
     "maximumEngineGets": 27,
@@ -40,8 +40,9 @@
     "wrapperCommit": "006e729bf20e83be7725d3c42b4b4bbfcb6df659",
     "qualificationCommit": "bde4a04111e20d61533b29b42ddd843bc8116259",
     "qualificationEvidence": "evidence/managed-profile-ths-scope-capture-qualified-20261028.json",
-    "targetExecuted": false,
-    "currentDeliveryUsable": true
+    "targetExecuted": true,
+    "currentDeliveryUsable": false,
+    "targetReceipt": "evidence/managed-profile-ths-scope-capture-target-20261028.json"
   },
   "newLoginRequested": false,
   "newGrantsGranted": 0,
