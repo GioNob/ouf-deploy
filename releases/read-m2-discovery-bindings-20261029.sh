@@ -7,22 +7,22 @@ delivery=$(mktemp -d "${HOME}/ouf-m2-discovery-bindings-delivery.XXXXXXXX")
 chmod 0700 "$delivery"
 delivery_log="$delivery/bootstrap.log"
 trap 'delivery_exit=$?; trap - EXIT; printf "DeliveryExit=%s\nDeliveryDirectory=%s\nDeliveryLog=%s\n" "$delivery_exit" "$delivery" "$delivery_log" | tee -a "$delivery_log"; exit "$delivery_exit"' EXIT
-code_commit=874efd1f0279e20e188c27b8354ece8ee4a5c733
-code_sha=15f97ce821c62939f162086943ce37beb8a99baefa20e5054a0ab63a4e3cfde9
-code_root=/usr/local/lib/ouf-m2-discovery-bindings-15f97ce821c62939
+code_commit=8af878eca402bfe4598edb77ab0de239c575f506
+code_sha=788772e96f1e956e5439e2148b80bb825fda700e0a3a05a2021109b71823f215
+code_root=/usr/local/lib/ouf-m2-discovery-bindings-788772e96f1e956e
 curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 65536 \
   "https://raw.githubusercontent.com/GioNob/ouf-deploy/${code_commit}/scripts/read-m2-discovery-bindings-20261029.py" -o "$delivery/read.py"
 printf '%s  %s\n' "$code_sha" "$delivery/read.py" | sha256sum -c - | tee -a "$delivery_log"
 sudo /usr/bin/python3 -I -S -B - "$delivery/read.py" "$operator_uid" <<'PY' 2>&1 | tee -a "$delivery_log"
 import hashlib,os,pwd,stat,sys
 from pathlib import Path
-source=Path(sys.argv[1]);owner=int(sys.argv[2]);expected='15f97ce821c62939f162086943ce37beb8a99baefa20e5054a0ab63a4e3cfde9'
+source=Path(sys.argv[1]);owner=int(sys.argv[2]);expected='788772e96f1e956e5439e2148b80bb825fda700e0a3a05a2021109b71823f215'
 def require(ok,code):
     if not ok:raise SystemExit(code)
 require(os.geteuid()==os.getegid()==0 and owner>0 and owner==pwd.getpwnam('oufadmin').pw_uid,'ROOT_POLICY_READER_COPY_REQUIRED')
 scope=Path('/etc/ouf/deploy-snapshots/m2-discovery-current-bindings-0601fdfa-20261029-v1')
 require(not os.path.lexists(scope),'POLICY_READ_SCOPE_CONSUMED_NO_REPLAY')
-target=Path('/usr/local/lib/ouf-m2-discovery-bindings-15f97ce821c62939')
+target=Path('/usr/local/lib/ouf-m2-discovery-bindings-788772e96f1e956e')
 for parent in(target.parent,*target.parent.parents):
     s=parent.lstat();require(stat.S_ISDIR(s.st_mode)and s.st_uid==s.st_gid==0 and not s.st_mode&0o022,'ROOT_READER_ANCESTRY_REQUIRED')
 require(not os.path.lexists(target),'READER_DELIVERY_CONSUMED_NO_REPLAY')
