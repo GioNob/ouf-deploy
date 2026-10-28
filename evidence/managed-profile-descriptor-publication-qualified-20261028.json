@@ -41,7 +41,13 @@
     "actualHttpsNonrootSudoRoot400AndRootChecksum": true,
     "noTtyBeforeLoginOrPrivateScope": true,
     "failedScopeRetainedNoReplay": true,
-    "actualPrivateMode600": true
+    "actualPrivateMode600": true,
+    "prRun": 40655609085,
+    "prProtocolJob": 122705777717,
+    "prActualCurrentOwnerJob": 122705777996,
+    "prActualDeliveryJob": 122705778260,
+    "prConclusion": "PASS",
+    "prDirectLogsInspected": true
   },
   "ownerCatalogue": {
     "repository": "GioNob/ouf-source-onboarding",
