@@ -19,10 +19,10 @@ scope.parent.mkdir(parents=True,exist_ok=True,mode=0o700);scope.parent.chmod(0o7
 def operator():os.setgroups([account.pw_gid]);os.setgid(account.pw_gid);os.setuid(owner)
 wrapper=home/'read.sh'
 result=subprocess.run(['/usr/bin/curl','--fail','--silent','--show-error','--location','--proto','=https','--proto-redir','=https','--max-redirs','3','--connect-timeout','15','--max-time','60',
- 'https://raw.githubusercontent.com/GioNob/ouf-deploy/0278b2c84c525cced1471d6ffa851ce8844580b8/releases/read-managed-file-ownerships-20261028.sh','-o',str(wrapper)],
+ 'https://raw.githubusercontent.com/GioNob/ouf-deploy/0278b2c84c525cced1471d6ffa851ce8844580b8/releases/read-managed-file-ownership-20261028.sh','-o',str(wrapper)],
  preexec_fn=operator,env={'HOME':str(home),'PATH':str(minimal),'LC_ALL':'C'},capture_output=True,timeout=70)
 assert result.returncode==0,result.stderr
-assert wrapper.read_bytes()==(BASE/'releases/read-managed-file-ownerships-20261028.sh').read_bytes()
+assert wrapper.read_bytes()==(BASE/'releases/read-managed-file-ownership-20261028.sh').read_bytes()
 assert hashlib.sha256(wrapper.read_bytes()).hexdigest()=='292a16fd2abaf2057898f3238069c15173dbf4f7e1da4d709b39281023bed1e7'
 def invoke():return subprocess.run(['/usr/bin/bash','--noprofile','--norc',str(wrapper)],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,preexec_fn=operator,env={'HOME':str(home),'PATH':str(minimal),'LC_ALL':'C'},timeout=120)
 try:
