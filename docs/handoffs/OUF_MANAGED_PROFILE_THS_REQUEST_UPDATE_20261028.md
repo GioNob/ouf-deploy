@@ -1,3 +1,7 @@
+# INSTALLATO/CONSUMATO — aggiornamento della richiesta THS riuscito
+
+Allegato completo letto:THS_OWNER_REQUEST_UPDATE_INSTALLED_E2E_NOT_ACCEPTED,complete/readiness=true,scopePatchApplied=true,Exit0/DeliveryExit0. Review0990401f.../authorityce93c610...e scope e22a443d CONSUMATI. NON rilanciare/riconsegnare/riapprovare il comando sottostante. Seguire il [nuovo handoff dopo installazione](OUF_MANAGED_PROFILE_THS_REQUEST_INSTALLED_20261028.md):prossimo passo scheda HUMAN SOLO UTENTE,stesso job;budget/resume ancora non concessi. Tutto il testo sottostante è storico.
+
 # OUF — installazione della richiesta THS del solo Onboarding, stessa immagine — 28 ottobre 2026
 
 ## Punto acquisito e consumato

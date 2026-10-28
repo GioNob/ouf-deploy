@@ -2,7 +2,7 @@
   "schema": "ouf.ths-owner-request-update-qualified.v1",
   "date": "2026-10-28",
   "timezone": "Europe/Rome",
-  "status": "QUALIFIED_NEW_SAME_IMAGE_SINGLE_OWNER_UPDATE_NOT_EXECUTED_ON_TARGET",
+  "status": "SUCCESSFULLY_INSTALLED_AND_CONSUMED_E2E_NOT_ACCEPTED",
   "source": {
     "commit": "5df69acb120bd2e0be1161c433585c1be484e5bf",
     "entry": "scripts/apply-managed-profile-ths-request-20261028.py",
@@ -481,10 +481,10 @@
     "signingKeysOnlyAfterReviewFromExistingInstallationBindings": true,
     "mountedSourceContentIdentityNotNewlyProven": true
   },
-  "runtimeAuthorityIssued": false,
+  "runtimeAuthorityIssued": true,
   "targetApplyAuthorized": false,
-  "targetExecuted": false,
-  "currentDeliveryUsable": true,
+  "targetExecuted": true,
+  "currentDeliveryUsable": false,
   "automaticReplayAllowed": false,
   "budgetReset": false,
   "applicationE2EProven": false,
@@ -504,5 +504,28 @@
     }
   ],
   "localRuntimeQualificationUnavailable": "Local sandbox lacks /proc/sys/kernel/random/boot_id;15real crypto tests run on hosted root CI instead,not by weakening production boot fences.",
-  "totalDirectLogsRead": 20
+  "totalDirectLogsRead": 20,
+  "runtimeAuthorityConsumed": true,
+  "targetFollowUp": {
+    "receipt": "evidence/managed-profile-ths-request-update-target-20261028.json",
+    "completeOutput": "evidence/managed-profile-ths-request-update-target-20261028.log",
+    "resultCanonicalSha256": "1c452fa61251395b18c800ee0aceefa9cce09e068807b85729d0857ff9b547bf",
+    "entireAttachmentRead": true,
+    "independentHostLogRead": false,
+    "complete": true,
+    "componentReadinessProven": true,
+    "exit": 0,
+    "deliveryExit": 0,
+    "scopePatchApplied": true,
+    "scopeConsumed": true,
+    "reviewHash": "0990401fb938c73c13bd6be090c04a5291bfe52aa06d9546cdaf7e13659a10b8",
+    "authorityHash": "ce93c610fee96883a11fb806d283565340ffe6d1e6e629acf883eaabae0956ba",
+    "databaseMigrations": 0,
+    "imageImports": 0,
+    "humanBudgetsGranted": 0,
+    "resumes": 0,
+    "applicationE2EProven": false,
+    "effectiveBrowserTokenScopesProven": false,
+    "next": "USER_ONLY_FRESH_NATIVE_SAME_JOB_CARD_READ"
+  }
 }
