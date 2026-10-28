@@ -67,7 +67,7 @@ def pty_run(harness,*,credentials=True):
  finally:os.close(fd)
 
 try:
- iam_id=start(['--name','ouf-keycloak','-e','KC_BOOTSTRAP_ADMIN_USERNAME=fixture-admin','-e','KC_BOOTSTRAP_ADMIN_PASSWORD=PRIVATE_IAM_PASSWORD_CANARY',
+ iam_id=start(['-e','KC_BOOTSTRAP_ADMIN_USERNAME=fixture-admin','-e','KC_BOOTSTRAP_ADMIN_PASSWORD=PRIVATE_IAM_PASSWORD_CANARY',
                'quay.io/keycloak/keycloak:26.2.5','start-dev','--hostname=https://idp.fixture.test'])
  ready=False
  for _ in range(120):
@@ -92,7 +92,7 @@ try:
          'currentObservations':{'onboarding':onb,'iam':iam},'currentProcessPins':{'onboarding':m.process_pin(onb['State']['Pid']),'iam':m.process_pin(iam['State']['Pid'])},
          'currentRootProcessPins':{'pid1':m.process_pin(1),'engine':m.process_pin(credentials[0])},'iamRole':'iam','clientMetadata':identity,'overlayBinding':file_binding,
          **{k:False for k in ('executionEntryQualified','runtimeAuthorityIssued','targetApplyAuthorized','automaticReplayAllowed','budgetReset')}}
- case=copy.deepcopy(m.CASE);case.update(priorRoot=str(old),outputRoot=str(new),inputsHash=m.digest(inputs),priorInputsHash='4'*64,priorCounts={'fixture':True},clientId=identity['clientId'],issuer=identity['issuer'],realm='fixture',overlaySha256=file_binding['sha256'],installationRef='disposable-ci-profile',expectedEngineVersion=version)
+ case=copy.deepcopy(m.CASE);case.update(iamContainerName=iam['Name'],priorRoot=str(old),outputRoot=str(new),inputsHash=m.digest(inputs),priorInputsHash='4'*64,priorCounts={'fixture':True},clientId=identity['clientId'],issuer=identity['issuer'],realm='fixture',overlaySha256=file_binding['sha256'],installationRef='disposable-ci-profile',expectedEngineVersion=version)
  case['adminEndpoint']['expectedAdminUser']='fixture-admin'
  receipt={'schema':'ouf.managed-profile-ths-client-selection-result.v1','complete':True,'status':'MANAGED_PROFILE_THS_CLIENT_SELECTED_IAM_BINDING_NOT_OBSERVED','contextPath':str(old),'inputsHash':case['inputsHash'],'priorInputsHash':'4'*64,'counts':case['priorCounts'],'clientMetadata':identity,'mountedFileContentIdentityProven':True,'sameImageAndGeneration':True,
           **{k:0 for k in ('iamRequests','oauthRequests','engineWrites','humanBudgetsGranted','resumes')}}

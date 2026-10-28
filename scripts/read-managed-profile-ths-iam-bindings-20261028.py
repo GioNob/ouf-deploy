@@ -9,7 +9,7 @@ CASE={'priorRoot':'/etc/ouf/deploy-snapshots/managed-profile-ths-client-selectio
       'inputsHash':'5dfd7b7a903c07f546c42ba1915bf6f8fd1430ab91addc4879988cd4c1727892',
       'priorInputsHash':'fdc618841f14eeb0c99ee3f61f0971affefff5f13d740d406db376d3daaa7bec',
       'priorCounts':{'bytes':695761,'configurationFileContentReads':1,'engineGets':5,'privateMetadataReads':3},
-      'clientId':'ouf-authorization-ths','issuer':'https://auth.ouf-lab.it/realms/ouf','realm':'ouf',
+      'iamContainerName':'/ouf-keycloak','clientId':'ouf-authorization-ths','issuer':'https://auth.ouf-lab.it/realms/ouf','realm':'ouf',
       'overlaySha256':'6d546047448495746d7eaad6d83e7942fa2950f137d4a240a3aef9309f7f39be',
       'outputRoot':'/etc/ouf/deploy-snapshots/managed-profile-ths-iam-binding-read-5dfd7b7a-20261028-v1',
       'installationRef':'ouf-lab-validated-ths-recovery-20261028','expectedEngineVersion':'29.8.1',
@@ -566,7 +566,7 @@ def prepare(c,case=CASE,*,engine_factory=Engine,pin=process_pin,boot_path=Path('
          and identity['registrationId']=='ouf-ths'and identity['providerIdExplicit']is True and identity['authorizationGrantTypeConfigured']=='authorization_code'
          and identity['fileSelectionAndPrecedenceVerified']is True and inputs['overlayBinding']['sha256']==case['overlaySha256']
          and all(inputs[k]is False for k in ('executionEntryQualified','runtimeAuthorityIssued','targetApplyAuthorized','automaticReplayAllowed','budgetReset')),'EXACT_OBSERVED_THS_CLIENT_AND_NO_OLD_AUTHORITY_REQUIRED')
- observed=inputs['currentObservations'];iam=inputs['iamRole'];require(len(observed)==2 and set(observed)=={'onboarding',iam}and observed[iam]['Name']=='/ouf-keycloak','EXACT_RETAINED_THS_AND_IAM_SELECTION_REQUIRED')
+ observed=inputs['currentObservations'];iam=inputs['iamRole'];require(len(observed)==2 and set(observed)=={'onboarding',iam}and observed[iam]['Name']==case['iamContainerName'],'EXACT_RETAINED_THS_AND_IAM_SELECTION_REQUIRED')
  binding=inputs['engineBinding'];engine=engine_factory(c,binding,[v['Id']for v in observed.values()]);rootpins=inputs['currentRootProcessPins']
  require(engine.get('/v1.44/info').get('ServerVersion')==case['expectedEngineVersion'],'QUALIFIED_CURRENT_ENGINE_VERSION_REQUIRED')
  def guard():
