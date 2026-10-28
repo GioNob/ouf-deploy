@@ -1,3 +1,7 @@
+# SUPERSEDED — cattura riuscita e consumata; preparazione immagine V38 pronta
+
+Seguire [handoff corrente immagine/piano V38](OUF_MANAGED_FILE_OWNER_V38_IMAGE_PLAN_20261028.md). I riferimenti e NEXT sotto sono storici. Nessun vecchio comando autorizza replay.
+
 # OUF — ownership legacy esplicita e persistente — 28 ottobre 2026
 
 ## Checkpoint corrente
@@ -35,20 +39,7 @@ Contabilità lineage da lettura ownership consumata: conserva573839byte/3metadat
 
 Come **oufadmin** sul VPS,in TTY; nessun login IAM o APPROVO. Usare soltanto se la qualifica collegata riporta `currentDeliveryUsable=true`:
 
-```bash
-(
-  set -Eeuo pipefail
-  umask 077
-  ouf_owner_inputs_bootstrap=$(mktemp -d "$HOME/ouf-owner-inputs-bootstrap.XXXXXXXX")
-  curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
-    --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 16384 \
-    'https://raw.githubusercontent.com/GioNob/ouf-deploy/940779c786a1cab74bfffca346a83211b062461c/releases/capture-managed-file-owner-inputs-20261028.sh' \
-    -o "$ouf_owner_inputs_bootstrap/run.sh"
-  printf '%s  %s\n' '2433025d5762cba0eff9470d7657d716a17b0940f8e90ab5fa5f72d34eb761db' "$ouf_owner_inputs_bootstrap/run.sh" | sha256sum -c -
-  chmod 0400 "$ouf_owner_inputs_bootstrap/run.sh"
-  /usr/bin/bash "$ouf_owner_inputs_bootstrap/run.sh"
-)
-```
+Comando storico rimosso: cattura riuscita e CONSUMATA. Non riconsegnare/rilanciare.
 
 Riportare solo JSON finale/Exit/Directory/Log/DeliveryExit/DeliveryDirectory/DeliveryLog. STOP o esito ambiguo conserva e consuma: non rilanciare,non eliminare root/codice/log. Consegna root0400 `/usr/local/lib/ouf-managed-file-owner-inputs-f5fe26b895ca600d/read.py`;logroot0600 nella stessa directory. Non inviare metadata privati o credenziali.
 

@@ -1,7 +1,7 @@
 {
   "schema": "ouf.managed-file-owner-recovery-v38-qualification.v1",
   "date": "2026-10-28",
-  "status": "PERSISTENT_HUMAN_OWNER_SOURCE_QUALIFIED_NEW_INPUT_CAPTURE_DELIVERY_READY_TARGET_NOT_EXECUTED",
+  "status": "SOURCE_QUALIFIED_CURRENT_INPUT_CAPTURE_SUCCEEDED_CONSUMED_V38_IMAGE_PLAN_PREPARATION_READY",
   "targetOwnershipRead": {
     "receipt": "evidence/managed-file-ownership-read-target-20261028.json",
     "log": "evidence/managed-file-ownership-read-target-20261028.log",
@@ -108,9 +108,10 @@
       "name": "source-onboarding-governed-image-40732932645",
       "zipBytes": 213064533,
       "zipSha256ReportedByCi": "7719c1045753fe38bbdc498adb8f540c61bad411c25969badf71ec4d3ec5d91b",
-      "downloaded": false,
+      "downloaded": true,
       "imported": false,
-      "nativeArchiveManifestIndependentlyInspected": false
+      "nativeArchiveManifestIndependentlyInspected": true,
+      "custodyEvidence": "evidence/managed-file-owner-v38-image-plan-qualified-20261028.json"
     },
     "allEvidenceArtifactXmlIndependentlyRead": false,
     "applicationE2EProven": false
@@ -126,8 +127,8 @@
     "wrapperSha256": "2433025d5762cba0eff9470d7657d716a17b0940f8e90ab5fa5f72d34eb761db",
     "deliveryQualificationCommit": "7432f0a31238997e76a0e5936ff2a777ef7e45a6",
     "newScope": "/etc/ouf/deploy-snapshots/managed-file-owner-recovery-inputs-1c0cff56-20261028-v1",
-    "currentDeliveryUsable": true,
-    "targetExecuted": false,
+    "currentDeliveryUsable": false,
+    "targetExecuted": true,
     "maximums": {
       "privateMetadataReads": 4,
       "engineGets": 27,
@@ -215,7 +216,11 @@
     "acquisitions": 0,
     "runtimeAuthorityIssued": false,
     "planPrepared": false,
-    "targetApplyAuthorized": false
+    "targetApplyAuthorized": false,
+    "scopeConsumed": true,
+    "commandMustNotBeRedelivered": true,
+    "targetReceipt": "evidence/managed-file-owner-inputs-target-20261028.json",
+    "targetInputsHash": "8a4c84756a663c3eb3a6b6c615d5efccf0c67b3c6ac2281ff9633c9a93de6224"
   },
   "remaining": [
     "NEW bounded VPS current-input capture",
@@ -233,5 +238,6 @@
   "humanApprovalSimulated": false,
   "registryWorkerTouched": false,
   "subagentsUsed": false,
-  "scheduledAutomationCreated": false
+  "scheduledAutomationCreated": false,
+  "nextQualification": "evidence/managed-file-owner-v38-image-plan-qualified-20261028.json"
 }

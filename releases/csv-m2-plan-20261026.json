@@ -65,8 +65,8 @@
     "runtimeEvidenceOrigin": "OPERATOR_FINAL_SUCCESS_RESULT_READ_IN_FULL_NOT_NEW_AGENT_HOST_LOG_READ",
     "activeOnboardingSourceCommit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "activeOnboardingNativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
-    "profileControlCorrection": "OWNERSHIP_READ_SUCCEEDED_CONSUMED_V38_HUMAN_PATH_QUALIFIED_NOT_INSTALLED",
-    "latestCohortCapture": "SUCCESS_CONSUMED_FDC61884_EXACT13_BINDINGS_27GET_NO_RUNTIME_WRITES",
+    "profileControlCorrection": "OWNER_V38_SOURCE_AND_EXACT_IMAGE_QUALIFIED_CURRENT_CAPTURE_CONSUMED_CONDITIONAL_PLAN_PREPARATION_READY_NOT_INSTALLED",
+    "latestCohortCapture": "SUCCESS_CONSUMED_8A4C8475_EXACT13_27GET_4METADATA_ZERO_SQL",
     "profileControlCandidatesInstalled": true,
     "newControlUpdateRuntimeAuthorityIssued": true,
     "activeMcpSourceCommit": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
@@ -81,7 +81,9 @@
     "profileControlThsRequestUpdateInstalled": true,
     "newThsRequestUpdateAuthorityConsumed": true,
     "legacyOwnershipSourceQualified": true,
-    "legacyOwnershipCorrectionInstalled": false
+    "legacyOwnershipCorrectionInstalled": false,
+    "ownerRecoveryCandidateNativeImageId": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+    "ownerRecoveryCandidateInstalled": false
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1943,12 +1945,12 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Execute only NEW finite current-owner capture:4retainedmetadata/27GET exact13cohort/90s24MiB,zeroSQL/auth/configfile/credentials/keys/actions. Then exact CI ZIP and conditional single-Onboarding36to38 plan. Do not repeat consumed ownership reader or reopen THS before verified installation.",
+    "action": "Execute only NEW exact V38 image and conditional single-Onboarding plan preparation from3retained capture metadata,1original CI ZIP,0runtime requests/SQL/auth/actions. No APPLY or ownership/budget/resume decision. STOP consumes/preserves,no replay. After receipt qualify fresh36to38 fenced maintenance,then USER-only native ownership/budget/resume separately.",
     "sshExecutionCommandUsable": true,
     "qualificationPending": false,
     "humanBudgetGranted": false,
     "resumed": false,
-    "scope": "/etc/ouf/deploy-snapshots/managed-file-owner-recovery-inputs-1c0cff56-20261028-v1"
+    "scope": "/etc/ouf/deploy-snapshots/managed-file-owner-v38-image-plan-8a4c8475-20261028-v1"
   },
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
@@ -1961,7 +1963,10 @@
     "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
     "docs/handoffs/OUF_MANAGED_FILE_OWNER_RECOVERY_V38_20261028.md",
     "evidence/managed-file-ownership-read-target-20261028.json",
-    "evidence/managed-file-owner-recovery-v38-qualified-20261028.json"
+    "evidence/managed-file-owner-recovery-v38-qualified-20261028.json",
+    "docs/handoffs/OUF_MANAGED_FILE_OWNER_V38_IMAGE_PLAN_20261028.md",
+    "evidence/managed-file-owner-inputs-target-20261028.json",
+    "evidence/managed-file-owner-v38-image-plan-qualified-20261028.json"
   ],
   "canonicalScenarioAllocations": [
     {
@@ -2044,7 +2049,7 @@
       "status": "OPEN_FOR_M2_FINAL_COHORT"
     }
   ],
-  "revisionReason": "Successful consumed ownership read proves missing Farmacie tenant provenance versus retained Teatri review. Source9d19fad3 qualifies persistent intake and explicit HUMAN same-job legacy owner receipt;365application/9browser tests,scan/bootPASS. Not installed. Next NEW4metadata/27GET noSQL current runtime capture; no old command/authority replay.",
+  "revisionReason": "Exact current13cohort capture succeeded and is consumed(4metadata/27GET,zeroSQL). Original V38 CI ZIP downloaded,layer/JAR/all36retained+2new migrations/YAML/role/native manifest audited and durable original bytes preserved. Single-Onboarding conditional36to38 image-plan preparation and actual root400 delivery qualified;not executed on target,no authority/APPLY/ownership/budget/resume.",
   "historicalEstimate": {
     "version": "1.0",
     "commit": "26fa7b78593983fc54aa0b9a8d5c0142c26ff04f",
@@ -2366,8 +2371,8 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-28",
-    "handoff": "docs/handoffs/OUF_MANAGED_FILE_OWNER_RECOVERY_V38_20261028.md",
-    "next": "NEW_CURRENT_OWNER_INPUT_CAPTURE_THEN_SINGLE_ONBOARDING_CONDITIONAL_IMAGE_PLAN"
+    "handoff": "docs/handoffs/OUF_MANAGED_FILE_OWNER_V38_IMAGE_PLAN_20261028.md",
+    "next": "NEW_EXACT_ORIGINAL_V38_IMAGE_AND_CONDITIONAL_SINGLE_ONBOARDING_PLAN_PREPARATION"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -3080,7 +3085,11 @@
     "legacyOwnerSameCommandReconciliationQualified": true,
     "legacyOwnerDecisionSeparateFromBudgetAndResume": true,
     "browserCommandPersistenceRequiredBeforeDispatch": true,
-    "currentInputsBuilder": "tools/build_managed_file_owner_inputs.py"
+    "currentInputsBuilder": "tools/build_managed_file_owner_inputs.py",
+    "ownerImagePlanCompiler": "tools/managed_file_owner_recovery/image_plan.py",
+    "ownerImageExactOriginalZipDurableDelivery": "def3a36da119d5cfc28704338b238028796b960a",
+    "ownerImageArchiveAndAll38MigrationResourcesVerified": true,
+    "ownerV38MaintenanceControllerQualified": false
   },
   "profileControlThsIamBindingReadTarget": {
     "record": "evidence/managed-profile-ths-iam-binding-read-target-20261028.json",
@@ -4057,14 +4066,14 @@
     "ownershipDecisionSeparateFromBudgetAndResume": true
   },
   "managedFileOwnerRecoveryCurrentInputs": {
-    "status": "QUALIFIED_NEW_READ_ONLY_SCOPE_NOT_EXECUTED",
+    "status": "TARGET_SUCCEEDED_CONSUMED_NOT_AUTHORIZED",
     "evidence": "evidence/managed-file-owner-recovery-v38-qualified-20261028.json",
     "sourceCommit": "35527fe8b4245f21681f588cb3c50673993448b9",
     "wrapperCommit": "940779c786a1cab74bfffca346a83211b062461c",
     "wrapperSha256": "2433025d5762cba0eff9470d7657d716a17b0940f8e90ab5fa5f72d34eb761db",
     "qualificationCommit": "7432f0a31238997e76a0e5936ff2a777ef7e45a6",
-    "targetExecuted": false,
-    "currentDeliveryUsable": true,
+    "targetExecuted": true,
+    "currentDeliveryUsable": false,
     "metadataReads": 4,
     "engineGets": 27,
     "sqlSessions": 0,
@@ -4078,6 +4087,87 @@
     "planPrepared": false,
     "runtimeAuthorityIssued": false,
     "targetApplyAuthorized": false,
-    "automaticReplayAllowed": false
+    "automaticReplayAllowed": false,
+    "scopeConsumed": true,
+    "commandMustNotBeRedelivered": true,
+    "targetReceipt": "evidence/managed-file-owner-inputs-target-20261028.json",
+    "targetInputsHash": "8a4c84756a663c3eb3a6b6c615d5efccf0c67b3c6ac2281ff9633c9a93de6224",
+    "targetResultHash": "e79af0afea1ae9518cbb9dea9f45efbf423757e1d5786cca7255308392d9ffb1",
+    "counts": {
+      "bytes": 719512,
+      "engineGets": 27,
+      "privateMetadataReads": 4,
+      "sqlSessions": 0
+    },
+    "cumulativeCounts": {
+      "bytes": 1293351,
+      "engineGets": 32,
+      "privateMetadataReads": 7,
+      "sqlSessions": 1
+    }
+  },
+  "managedFileOwnerV38ImagePlanPreparation": {
+    "status": "EXACT_IMAGE_CONDITIONAL_SINGLE_OWNER_PLAN_AND_ACTUAL_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+    "evidence": "evidence/managed-file-owner-v38-image-plan-qualified-20261028.json",
+    "sourceCommit": "816b5cc6a06f8c3a6c092bf815fe183bebec9494",
+    "wrapperCommit": "63d7370f50814adda04f8cdcaf40cd4d7f619e54",
+    "deliveryQualificationCommit": "89d73ad5adf1f7b922982af53a726588fdf1f6a1",
+    "sourceClosureHash": "83465836310ad2bdbe7552e87599fa7a5ee253661d825ea60326362efbc138ae",
+    "wrapperSha256": "f185922cea4d0b9980d46408fbc6778569adeffef830125b2bd9cc86e0a23919",
+    "codeRoot": "/usr/local/lib/ouf-managed-file-owner-image-plan-83465836310ad2bd",
+    "scope": "/etc/ouf/deploy-snapshots/managed-file-owner-v38-image-plan-8a4c8475-20261028-v1",
+    "currentDeliveryUsable": true,
+    "targetExecuted": false,
+    "targetRoles": [
+      "onboarding"
+    ],
+    "unchangedPeers": 12,
+    "conditionalMigration": {
+      "from": 36,
+      "to": 38,
+      "newMigrations": 2
+    },
+    "unitTests": 9,
+    "actualArchiveRuns": [
+      {
+        "id": 40752393981,
+        "event": "push",
+        "job": 123042254699,
+        "conclusion": "success"
+      },
+      {
+        "id": 40752405622,
+        "event": "pull_request",
+        "job": 123042294141,
+        "conclusion": "success"
+      }
+    ],
+    "deliveryRuns": [
+      {
+        "id": 40752620686,
+        "event": "push",
+        "job": 123043046235,
+        "conclusion": "success"
+      },
+      {
+        "id": 40752630808,
+        "event": "pull_request",
+        "job": 123043082843,
+        "conclusion": "success"
+      }
+    ],
+    "candidateNativeImageId": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+    "candidateSourceCommit": "9d19fad3dd750dd5b9e77253d3e7e82029c1aca7",
+    "originalZipSha256": "7719c1045753fe38bbdc498adb8f540c61bad411c25969badf71ec4d3ec5d91b",
+    "exactZipDeliveryCommit": "def3a36da119d5cfc28704338b238028796b960a",
+    "newMetadataReads": 3,
+    "ciZipReads": 1,
+    "nativeArchivesPrepared": 1,
+    "maximumPreparationSeconds": 300,
+    "engineRequests": 0,
+    "sqlSessions": 0,
+    "runtimeAuthorityIssued": false,
+    "targetUpdateAuthorized": false,
+    "applicationE2EProven": false
   }
 }
