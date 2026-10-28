@@ -2,7 +2,7 @@
   "schema": "ouf.managed-file-owner-v38-update-qualification.v1",
   "date": "2026-10-28",
   "timezone": "Europe/Rome",
-  "status": "FRESH_SINGLE_ONBOARDING36_TO38_CONTROLLER_AND_PROTECTED_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+  "status": "QUALIFIED_CONTROLLER_TARGET_INSTALLED_AND_CONSUMED_E2E_NOT_ACCEPTED",
   "consumedPreparation": {
     "receipt": "evidence/managed-file-owner-v38-image-plan-target-20261028.json",
     "reportedOutput": "evidence/managed-file-owner-v38-image-plan-target-20261028.log",
@@ -101,10 +101,14 @@
     "negativeWatchdogEphemeralOwnCandidateOnly": true,
     "automaticRollbackAuthorized": false,
     "postInstallOwnershipBudgetAndResumeSeparate": true,
-    "currentDeliveryUsable": true,
-    "targetExecuted": false,
-    "targetInstalled": false,
-    "runtimeAuthorityIssuedOnTarget": false
+    "currentDeliveryUsable": false,
+    "targetExecuted": true,
+    "targetInstalled": true,
+    "runtimeAuthorityIssuedOnTarget": true,
+    "scopeConsumed": true,
+    "commandMustNotBeRedelivered": true,
+    "reviewConsumed": true,
+    "authorityConsumed": true
   },
   "preservationFence": {
     "boundedTables": 12,
@@ -303,7 +307,19 @@
     "ghAndTimeoutNotRequiredOnTarget": true,
     "applicationE2EProven": false
   },
-  "targetEffectsByThisCheckpoint": {
+  "remaining": [
+    "USER reads current THS card and actual identity/tenant via Aggiorna stato",
+    "Separate USER-only ownership confirmation of exact legacy asset/job",
+    "Separate same-job budget3/900 and resume,cumulative6to8",
+    "Original/hash/parser/preview,Farmacie61rows toUDP,provenance,D5-D7,two real clients,fullE2E"
+  ],
+  "runtimeAuthorityIssuedOnTarget": true,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "qualificationStatusBeforeTarget": "FRESH_SINGLE_ONBOARDING36_TO38_CONTROLLER_AND_PROTECTED_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+  "targetEffectsByQualificationCheckpoint": {
     "engineWrites": 0,
     "sqlSessions": 0,
     "imageImports": 0,
@@ -319,17 +335,9 @@
     "sourceActivations": 0,
     "registryWorkerTouched": false
   },
-  "remaining": [
-    "USER executes NEW controller in direct SSH TTY and reviews its fresh exact proposal",
-    "Fresh source/network/database/FAILED5 admission and quiesced backup before migration",
-    "Actual target installation and final signed preservation/readiness receipt",
-    "USER-only THS actual identity/tenant and separate ownership confirmation",
-    "Separate same-job budget3/900 and resume,cumulative6to8",
-    "Original/hash/parser/preview,Farmacie61rows toUDP,provenance,D5-D7,two real clients,fullE2E"
-  ],
-  "runtimeAuthorityIssuedOnTarget": false,
-  "applicationE2EProven": false,
-  "releaseAcceptance": false,
-  "automaticReplayAllowed": false,
-  "budgetReset": false
+  "targetReceipt": "evidence/managed-file-owner-v38-update-target-20261028.json",
+  "targetReportedOutput": "evidence/managed-file-owner-v38-update-target-20261028.log",
+  "canonicalTargetResultHash": "0601fdfadd157eedbdd35144e7913e152d3d1f1a67e4927317e2de6a566a61ca",
+  "currentRuntimeAuthorityUsable": false,
+  "independentHostLogRead": false
 }

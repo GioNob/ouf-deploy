@@ -1,3 +1,7 @@
+# SUPERSEDED — aggiornamento V38 RIUSCITO e CONSUMATO
+
+Seguire [handoff corrente dopo installazione](OUF_MANAGED_FILE_OWNER_V38_INSTALLED_20261028.md), [ricevuta target](../../evidence/managed-file-owner-v38-update-target-20261028.json). Complete/readiness/Exit0/DeliveryExit0;schema38,backup/fence verificati secondo output utente. Comando,scope,review e authority consumati:NON riconsegnare/rilanciare. Le sezioni seguenti descrivono la preparazione storica e non lo stato corrente.
+
 # OUF — nuovo aggiornamento governato del solo Onboarding36→38
 
 ## Checkpoint corrente
@@ -60,20 +64,7 @@ Consegna reale HTTPS/nonroot/sudo/TTY/root0400:runpush **40759055775**/job123065
 
 Eseguire una sola volta come **oufadmin** sul VPS,in SSH con TTY diretto. Non usare pipe o input precompilato per il controller. Non usare vecchie righeAPPROVO:il controller genera una review nuova con hash e scadenza propri. Leggere la review e decidere digitando soltanto la riga mostrata,poi Invio. Questa è manutenzione36→38;non approva ownership,budget o resume.
 
-```bash
-(
-  set -Eeuo pipefail
-  umask 077
-  ouf_owner_update_bootstrap=$(mktemp -d "$HOME/ouf-owner-update-bootstrap.XXXXXXXX")
-  curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
-    --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 16384 \
-    'https://raw.githubusercontent.com/GioNob/ouf-deploy/7ccfba0833cecc37b4cece37998326cd2a6ccc52/releases/apply-managed-file-owner-v38-20261028.sh' \
-    -o "$ouf_owner_update_bootstrap/run.sh"
-  printf '%s  %s\n' 'f4c7d459d063bac62401656d9da4dfa64a35722b79e8d5f0a23f0e7da361b0d7' "$ouf_owner_update_bootstrap/run.sh" | sha256sum -c -
-  chmod 0400 "$ouf_owner_update_bootstrap/run.sh"
-  /usr/bin/bash "$ouf_owner_update_bootstrap/run.sh"
-)
-```
+Comando storico rimosso: esecuzione riuscita e CONSUMATA. Non riconsegnare/rilanciare.
 
 Riportare JSONfinale/Exit/Directory/Log/RuntimeLog/DeliveryExit/DeliveryDirectory/DeliveryLog. Non inviare dump,review privata,metadata o chiavi/credenziali. Logroot0600 `operator.log` nel codeRoot,bootstrap0600 nella directory di consegna. STOP conserva e consuma:non rilanciare,non eliminare root/codice/log e non ripetere preparazione. Stato ambiguo si riconcilia nello stesso scope/journal,senza reset o authority riciclata.
 
