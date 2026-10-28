@@ -163,6 +163,14 @@ class BindingsTests(unittest.TestCase):
         self.assertTrue(summary['sourceRepositoryLabelPresent'])
         self.assertNotIn('private.invalid',json.dumps(summary))
 
+    def test_absent_environment_is_metadata_not_an_effective_configuration_claim(self):
+        value=next(iter(fixture()[4].values()))
+        value['Config']['Env']=None
+        summary=m.public_binding(value,{'pid':100})
+        self.assertTrue(all(flag=='ABSENT' for flag in summary['declaredDiscoveryFlags'].values()))
+        self.assertFalse(summary['springJsonPresent'])
+        self.assertFalse(summary['effectiveDiscoveryConfigurationProven'])
+
     def test_engine_has_no_listing_or_arbitrary_endpoint(self):
         cap=type('Cap',(),{'counts':{'engineGets':0},'maximums':{'engineGets':27}})()
         engine=m.Engine(cap,{},['a'*64])

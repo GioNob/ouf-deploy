@@ -242,9 +242,12 @@ def consumed_history(review, result, journal, case):
 def public_binding(actual, generation):
     config = actual['Config']
     env = {}
-    require(type(config.get('Env')) is list and len(config['Env']) <= 512,
+    rows = config.get('Env')
+    if rows is None:
+        rows = []
+    require(type(rows) is list and len(rows) <= 512,
             'BOUNDED_ENV_METADATA_REQUIRED')
-    for row in config['Env']:
+    for row in rows:
         require(type(row) is str and '=' in row and len(row) <= 1048576,
                 'TYPED_ENV_METADATA_REQUIRED')
         key, value = row.split('=', 1)
