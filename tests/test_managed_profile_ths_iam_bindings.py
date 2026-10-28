@@ -44,6 +44,11 @@ class BindingCompilerTests(unittest.TestCase):
         for row in all_rows:row['attributes']={}
         value=m.binding_report(client(),[],all_rows,all_rows,{n:{}for n in m.REQUIRED},expected_client='tenant-ths')
         self.assertTrue(value['bindingAndUnrestrictedEligibilityProven']);self.assertIsNone(value['requiredScopes'][0]['includeInTokenScopeAttribute'])
+    def test_lightweight_assignments_do_not_override_full_definition_attributes(self):
+        all_rows=rows();all_rows[0]['attributes']['include.in.token.scope']='false'
+        assigned=[{k:row[k]for k in ('id','name','protocol')}for row in all_rows]
+        value=m.binding_report(client(),[],assigned,all_rows,{n:{}for n in m.REQUIRED},expected_client='tenant-ths')
+        self.assertFalse(value['requiredScopes'][0]['includeInTokenScope']);self.assertFalse(value['bindingAndUnrestrictedEligibilityProven'])
     def test_duplicate_id_double_binding_or_different_definition_cannot_be_accepted(self):
         all_rows=rows()
         for kind in ('duplicate','double','drift'):

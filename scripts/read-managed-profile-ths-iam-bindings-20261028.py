@@ -267,7 +267,15 @@ def binding_report(client,defaults,optionals,definitions,role_mappings,*,expecte
             and type(client.get('id'))is str and re.fullmatch('[A-Za-z0-9_-]{1,128}',client['id']),'EXACT_ENABLED_BROWSER_OIDC_CLIENT_REQUIRED')
     d,o,all_scopes=scope_rows(defaults),scope_rows(optionals),scope_rows(definitions)
     require(not(set(d)&set(o))and not({v['id']for v in d.values()}&{v['id']for v in o.values()}),'DISJOINT_DEFAULT_OPTIONAL_CLIENT_BINDINGS_REQUIRED')
-    for name,row in {**d,**o}.items():require(name in all_scopes and row==all_scopes[name],'ASSIGNED_SCOPE_DEFINITION_IDENTITY_DRIFT')
+    for name,row in {**d,**o}.items():
+        require(name in all_scopes and row['id']==all_scopes[name]['id']
+                and row['protocol']in(None,all_scopes[name]['protocol']),'ASSIGNED_SCOPE_DEFINITION_IDENTITY_DRIFT')
+        # Assignment endpoints return lightweight representations on Keycloak26.
+        # An omitted attribute there is not a definition default: eligibility
+        # must come from the separately read realm definition of the same UUID.
+        if row['includeInTokenScopeAttribute']is not None:
+            require(row['includeInTokenScopeAttribute']==all_scopes[name]['includeInTokenScopeAttribute'],'EXPLICIT_ASSIGNED_SCOPE_ATTRIBUTE_DRIFT')
+        require(not row['dynamic']or all_scopes[name]['dynamic'],'EXPLICIT_ASSIGNED_SCOPE_PARAMETERIZATION_DRIFT')
     require(type(required)in(tuple,list)and 0<len(required)<=128 and len(set(required))==len(required),'DISTINCT_REQUIRED_SCOPES_REQUIRED')
     rows=[]
     for name in required:
