@@ -65,7 +65,7 @@
     "runtimeEvidenceOrigin": "OPERATOR_FINAL_SUCCESS_RESULT_READ_IN_FULL_NOT_NEW_AGENT_HOST_LOG_READ",
     "activeOnboardingSourceCommit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "activeOnboardingNativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
-    "profileControlCorrection": "INSTALLED_POLICY58_ROLE_PUBLISHED_MCP_ARGUMENT_GATE_NATIVE_HUMAN_CARD_PENDING",
+    "profileControlCorrection": "POLICY58_PUBLISHED_NATIVE_CARD403_AND_MCP_INVALID_ARGUMENT_BLOCKED",
     "latestCohortCapture": "RECONCILIATION_SUCCESS_CAPTURE14a96f_SCOPE_CONSUMED_METADATA_ONLY",
     "profileControlCandidatesInstalled": true,
     "newControlUpdateRuntimeAuthorityIssued": true,
@@ -112,7 +112,7 @@
       "hours": null,
       "checkpoint": "M2.0",
       "status": "AUDITED_REUSE_AND_CONCRETE_DELTAS_OPEN",
-      "currentBlocker": "NATIVE_HUMAN_CARD_LIVE_ACCESS_NOT_VERIFIED_MCP_JOB_READ_INVALID_ARGUMENT",
+      "currentBlocker": "NATIVE_THS403_CAUSE_NOT_OBSERVED_SESSION_SCOPES_GATEWAY_OWNER_TO_DISTINGUISH",
       "deliverables": [
         "Retained owner diagnostic evidence",
         "Targeted fix and regression",
@@ -1934,8 +1934,10 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "User opens exact native HUMAN job card and refreshes state; reconcile MCP INVALID_ARGUMENT without blind replay",
-    "url": "https://api.ouf-lab.it/trusted-human/managed-files/recovery/?asset=9c502da5-b5d8-405e-b3f5-60eb31ecb513&job=677480c8-3d10-44fd-9dad-f72ddeed20a4",
+    "action": "User reads only safe native error fields hidden by existing UI, then diagnose exact cause before correction",
+    "url": "https://api.ouf-lab.it/trusted-human/managed-files/recovery/api/9c502da5-b5d8-405e-b3f5-60eb31ecb513/677480c8-3d10-44fd-9dad-f72ddeed20a4",
+    "readOnly": true,
+    "userOnly": true,
     "budgetGranted": false,
     "resumeExecuted": false
   },
@@ -2352,8 +2354,8 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-28",
-    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_POLICY58_NATIVE_CARD_20261028.md",
-    "next": "USER_ONLY_NATIVE_CARD_REFRESH_READ_ONLY_NO_BUDGET_OR_RESUME_YET"
+    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_NATIVE_403_DIAGNOSIS_20261028.md",
+    "next": "USER_ONLY_READ_NATIVE_ERROR_FIELDS_NO_NEW_LOGIN_GRANT_BUDGET_OR_RESUME"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -2655,7 +2657,7 @@
     "releaseAcceptance": false
   },
   "humanProfileRecoveryAccess": {
-    "status": "POLICY58_PUBLISHED_MCP_INVALID_ARGUMENT_USER_NATIVE_CARD_REQUIRED",
+    "status": "NATIVE_HUMAN_CARD_HTTP403_REPORTED_RAW_CAUSE_NOT_OBSERVED",
     "record": "evidence/managed-profile-job-control-policy58-access-20261028.json",
     "humanSurfaceUserOnly": true,
     "agentMayInteractWithThs": false,
@@ -2676,7 +2678,10 @@
     "lastJobReadResult": {
       "error_code": "INVALID_ARGUMENT"
     },
-    "lastJobReadRetried": false
+    "lastJobReadRetried": false,
+    "nativeCardHttpStatusReported": 403,
+    "nativeCardErrorBodyObserved": false,
+    "nativeCardEvidence": "evidence/managed-profile-native-card-403-20261028.json"
   },
   "profileControlAuthorization": {
     "status": "ROLE_PUBLISHED_POLICY58_MCP_JOB_READ_INVALID_ARGUMENT_NATIVE_CARD_PENDING",

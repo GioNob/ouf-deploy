@@ -2,7 +2,7 @@
   "schema": "ouf.managed-profile-job-control-policy58-access.v1",
   "date": "2026-10-28",
   "timezone": "Europe/Rome",
-  "status": "ROLE_PUBLICATION58_VERIFIED_MCP_JOB_READ_INVALID_ARGUMENT_NATIVE_HUMAN_CARD_PENDING",
+  "status": "ROLE_PUBLICATION58_VERIFIED_NATIVE_CARD403_REPORTED_MCP_INVALID_ARGUMENT_CAUSES_OPEN",
   "operatorReportedPolicy": "ouf-lab-authorization:58",
   "sameProposalProtectedRead": {
     "proposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
@@ -220,7 +220,10 @@
     "url": "https://api.ouf-lab.it/trusted-human/managed-files/recovery/?asset=9c502da5-b5d8-405e-b3f5-60eb31ecb513&job=677480c8-3d10-44fd-9dad-f72ddeed20a4",
     "agentMayAccess": false,
     "liveVerified": false,
-    "nextAction": "USER_OPEN_CARD_AND_REFRESH_STATE_READ_ONLY_BEFORE_BUDGET_OR_RESUME"
+    "nextAction": "USER_ONLY_INSPECT_SAFE_NATIVE_ERROR_FIELDS_WITHOUT_NEW_LOGIN_OR_MUTATIONS",
+    "liveAttemptReported": true,
+    "httpStatusReported": 403,
+    "followupEvidence": "evidence/managed-profile-native-card-403-20261028.json"
   },
   "latestApplicationEvidence": {
     "status": "FAILED",

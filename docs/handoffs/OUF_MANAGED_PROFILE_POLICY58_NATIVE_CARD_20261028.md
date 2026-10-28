@@ -1,3 +1,5 @@
+> **SUPERATO: utente riporta403nativo,nessuna azioneinviata. Nonripetere Aggiornastato allacieca.** Seguire [diagnosi della risposta nativa](OUF_MANAGED_PROFILE_NATIVE_403_DIAGNOSIS_20261028.md);policy58restaverificata,zero budget/resume.
+
 # Policy58 verificata; controllo della scheda HUMAN — 28 ottobre 2026
 
 ## Pubblicazione e preservazione provate
