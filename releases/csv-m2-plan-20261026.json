@@ -65,7 +65,7 @@
     "runtimeEvidenceOrigin": "OPERATOR_FINAL_SUCCESS_RESULT_READ_IN_FULL_NOT_NEW_AGENT_HOST_LOG_READ",
     "activeOnboardingSourceCommit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "activeOnboardingNativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
-    "profileControlCorrection": "INSTALLED_OWNER_CONTROL_ACCESS_DENIED_ACTIVE_DESCRIPTOR_GATE",
+    "profileControlCorrection": "INSTALLED_SINGLE_MISSING_HUMAN_DESCRIPTOR_OBSERVED_PUBLICATION_QUALIFIED",
     "latestCohortCapture": "RECONCILIATION_SUCCESS_CAPTURE14a96f_SCOPE_CONSUMED_METADATA_ONLY",
     "profileControlCandidatesInstalled": true,
     "newControlUpdateRuntimeAuthorityIssued": true,
@@ -112,7 +112,7 @@
       "hours": null,
       "checkpoint": "M2.0",
       "status": "AUDITED_REUSE_AND_CONCRETE_DELTAS_OPEN",
-      "currentBlocker": "FAILED_PROFILE_ROOT_CAUSE_NOT_OBSERVED",
+      "currentBlocker": "SINGLE_HUMAN_RECOVERY_DESCRIPTOR_MISSING_FROM_REGISTERED_AND_ACTIVE56_FRESH_PUBLICATION_REVIEW_REQUIRED",
       "deliverables": [
         "Retained owner diagnostic evidence",
         "Targeted fix and regression",
@@ -124,7 +124,9 @@
       "waitHours": null,
       "remainingHours": null,
       "evidenceRefs": [
-        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "evidence/managed-profile-capability-read-target-20261028.json",
+        "evidence/managed-profile-descriptor-publication-qualified-20261028.json"
       ],
       "runtimeAuthorizationGranted": false,
       "historicalV1Hours": {
@@ -2644,7 +2646,7 @@
     "releaseAcceptance": false
   },
   "humanProfileRecoveryAccess": {
-    "status": "MCP_PRE_ADMISSION_NO_APPLICABLE_GRANT_ROLE_PROPOSAL_DESCRIPTOR_REJECTED",
+    "status": "EXACT_SINGLE_DESCRIPTOR_PREREQUISITE_PROVEN_PUBLICATION_REQUIRES_FRESH_HUMAN_REVIEW",
     "record": "evidence/managed-profile-control-post-install-access-20261028.json",
     "humanSurfaceUserOnly": true,
     "agentMayInteractWithThs": false,
@@ -2654,10 +2656,11 @@
     "budgetGrantedByThisResume": false,
     "resumedByThisResume": false,
     "identityProof": "Explicit ouf-admin routing and same protected owner/tenant proposal read; not browser identity",
-    "browserIdentityVerified": false
+    "browserIdentityVerified": false,
+    "missingCapabilityId": "ouf.onboarding.quarantine.release"
   },
   "profileControlAuthorization": {
-    "status": "INSTALLED_OWNER_CODE_POLICY_DESCRIPTOR_PREREQUISITE_BLOCKED",
+    "status": "INSTALLED_OWNER_CODE_ONLY_QUARANTINE_RELEASE_DESCRIPTOR_MISSING_PUBLICATION_QUALIFIED",
     "evidence": "evidence/profile-recovery-control-authorization-20261027.json",
     "onboardingSource": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "mcpSource": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
@@ -2797,5 +2800,36 @@
       "ownerGets": 3
     },
     "administrativeWrites": 0
+  },
+  "profileControlDescriptorCanonicalCatalogue": {
+    "repository": "GioNob/ouf-source-onboarding",
+    "commit": "2532c8c36c2dcefbff0315a2155b1af20c08ffec",
+    "path": "catalogue/r4a-managed-profile-recovery.json",
+    "tests": 4,
+    "conclusion": "PASS",
+    "runtimeDescriptorRegistered": false,
+    "targetOwnerBinaryUnchanged": true
+  },
+  "profileControlDescriptorPublicationQualification": {
+    "evidence": "evidence/managed-profile-descriptor-publication-qualified-20261028.json",
+    "status": "QUALIFIED_FIRST_TARGET_PUBLICATION_PENDING",
+    "codeCommit": "9d7d83b3fc18950e2516e79cff30930d198c36d5",
+    "wrapperCommit": "06bed5dc9fde4c4a570aa629e0f4f5657a02efee",
+    "qualificationCommit": "fb7fc07f4bee1cf78bd6361d58d4e2da7279a7e8",
+    "pushRun": 40655599364,
+    "newScope": "/etc/ouf/deploy-snapshots/managed-profile-descriptor-publication-policy56-20261028-v1",
+    "targetExecuted": false,
+    "scopeConsumed": false,
+    "currentDeliveryUsable": true,
+    "freshConcreteHumanReviewRequired": true,
+    "descriptorIds": [
+      "ouf.onboarding.quarantine.release"
+    ],
+    "maximumAdministrativeWrites": 3,
+    "maximumPreviewPosts": 2,
+    "newGrants": 0,
+    "humanBudgetsGranted": 0,
+    "resumes": 0,
+    "automaticReplayAllowed": false
   }
 }

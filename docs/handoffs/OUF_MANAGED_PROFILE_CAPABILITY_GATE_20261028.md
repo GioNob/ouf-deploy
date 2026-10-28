@@ -1,3 +1,5 @@
+> **SUPERATO: diagnostico riuscito/CONSUMATO, unica capability mancante provata.** Seguire [publisher minimo qualificato](OUF_MANAGED_PROFILE_DESCRIPTOR_PUBLICATION_20261028.md). NON ripetere il comando diagnostico storico.
+
 # Checkpoint acquisito: lettura descriptor riuscita — 28 ottobre 2026
 
 La sola capability mancante, fra tutte le41 necessarie, è `ouf.onboarding.quarantine.release`: assente sia dal catalogo registrato sia da ACTIVE56. Preview e profiling sono già corretti. [Ricevuta integrale](../../evidence/managed-profile-capability-read-target-20261028.json). Risposta/catálogo hash59856645…/ad928f19…, 1IAMGET/10IAMPOST/3ownerGET/234465byte, complete/Exit0/DeliveryExit0. Nessuna modifica di policy/grant/job/budget/resume. Esito letto integralmente dall'output operatore; log privato non riletto autonomamente.
