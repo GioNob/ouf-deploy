@@ -2,7 +2,7 @@
   "schema": "ouf.managed-file-ownership-reconciliation-qualification.v1",
   "date": "2026-10-28",
   "timezone": "Europe/Rome",
-  "status": "SOURCE_PREVENTION_AND_READ_ONLY_RECONCILIATION_QUALIFIED_TARGET_READ_PENDING",
+  "status": "HISTORICAL_READER_TARGET_SUCCEEDED_CONSUMED_V38_SOURCE_SUPERSEDES_PREVENTION_ONLY",
   "nativeDenial": {
     "record": "evidence/managed-profile-ths-ownership-denial-20261028.json",
     "code": "ONB_FILE_OWNER_SCOPE_UNPROVEN",
@@ -15,7 +15,7 @@
     "nativeIntakePersistedSubjectWithoutTenant": true,
     "delegatedIntakeRetainedTenantReceipt": true,
     "teatriReviewedSourceCanProvideLegacyTenantProof": true,
-    "currentFarmacieDatabaseCauseObserved": false,
+    "currentFarmacieDatabaseCauseObserved": true,
     "legacyTenantMustNotBeInferred": true
   },
   "preventiveSource": {
@@ -25,7 +25,14 @@
     "commit": "bd113e7f8c428d7c167142e1f38df0db12b3b3e6",
     "migration": "V37__managed_file_intake_tenant.sql",
     "targetInstalled": false,
-    "testedImageArtifactPublication": {"artifactId":12832179081,"name":"source-onboarding-governed-image-40726405468","bytes":213051362,"zipSha256ReportedByCi":"b4b9ac3a33c2de60533245970bdcf7202eb2c830181e3f1c7466f4c25a257a0a","downloadedOrImported":false,"publicationOrigin":"Successful CI job log; archive custody and native manifest not independently inspected here"},
+    "testedImageArtifactPublication": {
+      "artifactId": 12832179081,
+      "name": "source-onboarding-governed-image-40726405468",
+      "bytes": 213051362,
+      "zipSha256ReportedByCi": "b4b9ac3a33c2de60533245970bdcf7202eb2c830181e3f1c7466f4c25a257a0a",
+      "downloadedOrImported": false,
+      "publicationOrigin": "Successful CI job log; archive custody and native manifest not independently inspected here"
+    },
     "targetSchemaStill36": true,
     "tenantAndUploaderImmutable": true,
     "noLegacyBackfill": true,
@@ -114,8 +121,8 @@
     "wrapperSha256": "292a16fd2abaf2057898f3238069c15173dbf4f7e1da4d709b39281023bed1e7",
     "qualificationCommit": "3aab13a60b82717a1c489bbdd80d27a0c169e05c",
     "scope": "/etc/ouf/deploy-snapshots/managed-file-ownership-read-0990401f-20261028-v1",
-    "currentDeliveryUsable": true,
-    "targetExecuted": false,
+    "currentDeliveryUsable": false,
+    "targetExecuted": true,
     "maximums": {
       "seconds": 90,
       "totalBytes": 25165824,
@@ -151,7 +158,9 @@
     "resumes": 0,
     "acquisitions": 0,
     "newJobs": 0,
-    "uploads": 0
+    "uploads": 0,
+    "scopeConsumed": true,
+    "commandMustNotBeRedelivered": true
   },
   "readerQualification": {
     "unitTests": 7,
@@ -237,5 +246,10 @@
   "budgetReset": false,
   "applicationE2EProven": false,
   "releaseAcceptance": false,
-  "supervisorDeferredUntilApplicationE2E": true
+  "supervisorDeferredUntilApplicationE2E": true,
+  "supersededBy": "evidence/managed-file-owner-recovery-v38-qualified-20261028.json",
+  "currentDeliveryUsable": false,
+  "targetExecuted": true,
+  "targetReceipt": "evidence/managed-file-ownership-read-target-20261028.json",
+  "scopeConsumed": true
 }

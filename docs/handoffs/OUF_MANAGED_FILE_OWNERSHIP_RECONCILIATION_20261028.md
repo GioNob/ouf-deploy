@@ -1,3 +1,7 @@
+# SUPERSEDED — lettura riuscita e consumata, correzione V38 qualificata
+
+Seguire soltanto [handoff corrente V38](OUF_MANAGED_FILE_OWNER_RECOVERY_V38_20261028.md). La precedente lettura target è riuscita; il NEXT e le qualifiche sotto descrivono il checkpoint storico precedente e non autorizzano replay.
+
 # OUF — ownership persistente, confronto Farmacie/Teatri — 28 ottobre 2026
 
 ## Stato acquisito e limite attuale
@@ -52,20 +56,7 @@ Zero scritture DB, lifecycle, import, IAM/OAuth, grant, budget/resume, job/uploa
 
 Usare il comando seguente soltanto quando la qualifica collegata conferma `currentDeliveryUsable=true`. Come **oufadmin** sul VPS, TTY interattivo; può richiedere sudo, nessun login IAM o APPROVO. Non confondere SSHoufadmin con identità applicativaouf-admin.
 
-```bash
-(
-  set -Eeuo pipefail
-  umask 077
-  ouf_ownership_bootstrap=$(mktemp -d "$HOME/ouf-ownership-bootstrap.XXXXXXXX")
-  curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
-    --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 16384 \
-    'https://raw.githubusercontent.com/GioNob/ouf-deploy/0278b2c84c525cced1471d6ffa851ce8844580b8/releases/read-managed-file-ownership-20261028.sh' \
-    -o "$ouf_ownership_bootstrap/run.sh"
-  printf '%s  %s\n' '292a16fd2abaf2057898f3238069c15173dbf4f7e1da4d709b39281023bed1e7' "$ouf_ownership_bootstrap/run.sh" | sha256sum -c -
-  chmod 0400 "$ouf_ownership_bootstrap/run.sh"
-  /usr/bin/bash "$ouf_ownership_bootstrap/run.sh"
-)
-```
+Comando storico rimosso dalla consegna: reader eseguito con successo e scope CONSUMATO. Non rilanciare.
 
 Riportare JSON finale/Exit/Directory/Log/DeliveryExit/DeliveryDirectory/DeliveryLog. Non inviare dump, metadata privati, credenziali, token o wrapper backend THS/CSRF. Se STOP conservare e non rilanciare; riconciliare quello stesso scope senza nuova lettura automatica.
 
