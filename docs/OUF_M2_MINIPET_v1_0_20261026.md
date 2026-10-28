@@ -1,10 +1,20 @@
 # OUF — Mini-PET M2: CSV autoguidato fino a UDP
 
-**ID:** OUF-MP-CSV-M2 · **Versione:** 1.2 (percorso file conservato per i link esistenti) · **Data:** 26 ottobre 2026, Europe/Rome  
+**ID:** OUF-MP-CSV-M2 · **Versione:** 1.3 (percorso file conservato per i link esistenti) · **Data:** 29 ottobre 2026, Europe/Rome  
 **Stato:** piano del residuo M2; M1 acquisito, M2 aperto.  
 **Accettazione di prodotto:** Giovanni / HUMAN autorizzato. **Esecuzione:** agent principale, sequenziale, senza subagenti o automazioni operative.  
 **Stima residua:** inventario completato; restano da determinare causa Farmacie e impegno della composizione esatta. Le 34–58 ore, centrale 46, e la relativa riserva della versione 1.0 sono ritirate come forecast corrente.  
 **Roadmap:** [sequenza e checkpoint](OUF_M2_ROADMAP_20261026.md). **Registro:** [piano strutturato](../releases/csv-m2-plan-20261026.json).
+
+## Addendum vincolante del 29 ottobre 2026 — capability stabilmente operative
+
+L'owner richiede tassativamente che le capability del ciclo file e della discovery semantica siano stabilmente operative sul sistema installato e consumabili dal chatbot via MCP OUF. Il percorso per OntoPiA è chatbot → MCP → Gateway → Registry → provider governato. La disponibilità non può dipendere da attivazioni temporanee, grant ad hoc per ogni import o comandi operatore nel percorso ordinario.
+
+I [criteri M2-DISC-STABLE-01…08](OUF_M2_DISCOVERY_STABLE_OPERATION_20261029.md) sono aggiuntivi e bloccanti per l'accettazione interessata G5/G6/G7/M2: configurazione persistente e pubblicazione coordinata, identità e rotazione governate, job/idempotenza durabili, outage/retry finiti, restart/reboot con nuova ammissione, discovery reale OntoPiA, adozione HUMAN e due client. Restano tutti OPEN finché provati nel rispettivo perimetro reale.
+
+Questo requisito non autorizza bypass, vecchie authority consumate, reset di budget, token scaduti o restart/reinstall per tentativi. La manutenzione resta distinta dall'uso ordinario e conserva la concreta review/authority necessaria. La [nuova lettura corrente qualificata](handoffs/OUF_M2_DISCOVERY_CURRENT_BINDINGS_20261029.md) prepara il delta di installazione; non è una prova di operatività stabile.
+
+La versione1.2 rimane conservata nel [precedente snapshot](https://github.com/GioNob/ouf-deploy/blob/74f9476d521e698d23849d2e04a9aa0438d71028/docs/OUF_M2_MINIPET_v1_0_20261026.md). Nessun AT/UX/scenario precedente viene eliminato o trasformato inPASS.
 
 ## 0. Audit completato: cosa si riusa e cosa manca
 

@@ -1,7 +1,7 @@
 {
   "schema": "ouf.csv-m2-completion-plan.v1",
   "documentId": "OUF-MP-CSV-M2",
-  "version": "1.2",
+  "version": "1.3",
   "createdDate": "2026-10-26",
   "timezone": "Europe/Rome",
   "document": "docs/OUF_M2_MINIPET_v1_0_20261026.md",
@@ -98,7 +98,9 @@
     "profilePreviewPermissionPublished": true,
     "farmacieRowsReportedByOwner": 61,
     "farmacieMappingState": "DOMAIN_CONFIRMED_OPEN_AND_MINISTERIAL_ID_ONTOPIA_DISCOVERY_COMPOSITION_QUALIFIED_RUNTIME_BLOCKED",
-    "semanticExternalDiscovery": "NOT_EXPOSED_CURRENT_MCP_SOURCE_COMPOSITION_PR81_QUALIFIED_INACTIVE"
+    "semanticExternalDiscovery": "MCP_SOURCE_QUALIFIED_INACTIVE_CURRENT_BINDING_READER_QUALIFIED_TARGET_PENDING",
+    "stableCapabilitiesMandatory": true,
+    "stableCapabilitiesOperationalProven": false
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1960,15 +1962,19 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Complete governed OntoPiA discovery integration and current Registry/Gateway/provider admission, reusing PR81 and existing owner/gateway work. Prepare any needed concrete runtime review only after qualification; no current deployment command is ready. Required product flow remains actual OUF MCP capabilities. Never replace external discovery with direct web fetch/manual Turtle/native draft. Preserve all completed Farmacie work and consumed runtime scopes; no new dataset upload/profile/budget/resume.",
-    "sourcePullRequest": 81,
-    "sourceRepository": "GioNob/ouf-mcp-server",
-    "sourceCommit": "09d1f521703f2e896398c751b41008f22c6dca0d",
-    "discoveryDescriptorsState": "INACTIVE",
-    "discoveryExecuted": false,
-    "domainChoicesComplete": true,
-    "sshExecutionCommandUsable": false,
-    "currentRuntimeAuthorityUsable": false
+    "action": "Deliver the new pinned read-only binding capture command to the operator as oufadmin in interactive SSH, once only. No IAM/APPROVO; sudo if needed. Three consumed V38 metadata reads and27exact EngineGETs over13 retained peers,90s/24MiB. Return minimized final JSON/footer; never raw inputs/Engine/Env. On STOP preserve and do not replay. The result binds the qualified stable discovery installation delta; it does not issue runtime authority or activate providers.",
+    "commandPath": "releases/OUF_M2_DISCOVERY_BINDINGS_COMMAND_20261029.sh",
+    "wrapperCommit": "09d2a2ba407f109fe8261ce61a6875b05d16a8d8",
+    "wrapperSha256": "eaca415a403169f97d22ce4df6f3f2873e3acd160e2e085d523a1d58d656207c",
+    "sourceCommit": "8af878eca402bfe4598edb77ab0de239c575f506",
+    "sourceSha256": "788772e96f1e956e5439e2148b80bb825fda700e0a3a05a2021109b71823f215",
+    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-current-bindings-0601fdfa-20261029-v1",
+    "targetExecuted": false,
+    "currentDeliveryUsable": true,
+    "sshExecutionCommandUsable": true,
+    "qualificationPending": false,
+    "currentRuntimeAuthorityUsable": false,
+    "targetApplyAuthorized": false
   },
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
@@ -2070,7 +2076,7 @@
       "status": "OPEN_FOR_M2_FINAL_COHORT"
     }
   ],
-  "revisionReason": "V38 target result supplied by user: install/readiness/schema38/backup and 12-table preservation succeeded, Exit0/DeliveryExit0. Consume delivery/review/authority; next USER-only THS current card/identity, then separate ownership,budget3/900,resume. No E2E or release acceptance.",
+  "revisionReason": "Explicit owner requirement: capabilities must be stably operational through the actual OUF MCP/Gateway/Registry/provider path, with persistent configuration, governed restart/recovery and real acceptance.",
   "historicalEstimate": {
     "version": "1.0",
     "commit": "26fa7b78593983fc54aa0b9a8d5c0142c26ff04f",
@@ -2412,10 +2418,10 @@
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
-    "date": "2026-10-28",
-    "handoff": "docs/handoffs/OUF_M2_ONTOPIA_DISCOVERY_COMPOSITION_20261028.md",
-    "next": "COMPLETE_CURRENT_REGISTRY_GATEWAY_PROVIDER_ADMISSION_AND_COORDINATED_DISCOVERY_PUBLICATION",
-    "evidence": "evidence/farmacie-domain-and-ontopia-discovery-20261028.json"
+    "date": "2026-10-29",
+    "handoff": "docs/handoffs/OUF_M2_DISCOVERY_CURRENT_BINDINGS_20261029.md",
+    "next": "USER_ONE_NEW_READ_ONLY_CURRENT_BINDING_CAPTURE_THEN_BOUND_STABLE_INSTALLATION_DELTA",
+    "evidence": "evidence/m2-discovery-current-bindings-qualified-20261029.json"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -4563,6 +4569,189 @@
       "syntheticGatewayTransport": true,
       "externalProviderExecuted": false
     },
-    "requiredRuntimeReviewReady": false
+    "requiredRuntimeReviewReady": false,
+    "requiredStableOperation": true,
+    "currentBindingCapture": "evidence/m2-discovery-current-bindings-qualified-20261029.json",
+    "targetCaptureExecuted": false,
+    "runtimeReviewReady": false
+  },
+  "lastRevisedDate": "2026-10-29",
+  "stableDiscoveryMandate": {
+    "date": "2026-10-29",
+    "origin": "Explicit owner instruction in current chat",
+    "text": "Le capabilities devono tassativamente esser rese stabilmente operative",
+    "document": "docs/OUF_M2_DISCOVERY_STABLE_OPERATION_20261029.md",
+    "criteria": [
+      {
+        "id": "M2-DISC-STABLE-01",
+        "criterion": "Authorized chatbot clients discover and invoke request/status/candidates through the installed published MCP manifest; service/host/client restart does not silently remove the configured capability.",
+        "state": "OPEN"
+      },
+      {
+        "id": "M2-DISC-STABLE-02",
+        "criterion": "Provider, Gateway binding, workload identity, scopes, policy, trust and secretRef custody are installation configuration with governed renewal/rotation; ordinary discovery does not require an ad hoc grant, terminal command or reconstructed identifier.",
+        "state": "OPEN"
+      },
+      {
+        "id": "M2-DISC-STABLE-03",
+        "criterion": "One durable request and receipt survive interruption, lost response and restart; same intent/key is deduplicated, changed intent conflicts, and old generations cannot publish.",
+        "state": "OPEN"
+      },
+      {
+        "id": "M2-DISC-STABLE-04",
+        "criterion": "Transient provider outages use finite persistent retry/backoff/jitter/Retry-After without holding locks; exhaustion, revocation, permanent/unknown errors and ambiguous effects remain visible and require governed reconciliation.",
+        "state": "OPEN"
+      },
+      {
+        "id": "M2-DISC-STABLE-05",
+        "criterion": "Restart/reboot/rotation and recovery obtain current generation/admission and preserve cumulative history; no consumed authority, expired token or exhausted incident budget is reset or reused.",
+        "state": "OPEN"
+      },
+      {
+        "id": "M2-DISC-STABLE-06",
+        "criterion": "A real OntoPiA request traverses chatbot/MCP/Gateway/Registry/provider with canonical URI/provenance and bounded parser-safe immutable snapshot; provider failure never becomes empty success.",
+        "state": "OPEN"
+      },
+      {
+        "id": "M2-DISC-STABLE-07",
+        "criterion": "Candidate comparison, adoption, review/publication and pinned source mapping retain owner/HUMAN governance; manual web fetch/Turtle import and a new local ontology are not substitutes for the requested discovery.",
+        "state": "OPEN"
+      },
+      {
+        "id": "M2-DISC-STABLE-08",
+        "criterion": "The same capability contract and recoverable context work on two independent real MCP clients, including one without embedded UI, with cross-tenant denial before serialization.",
+        "state": "OPEN"
+      }
+    ],
+    "allCriteriaState": "OPEN",
+    "ordinaryUseRequiresOnlyGovernedCapabilitiesAndHumanSurfaces": true,
+    "oneTimeDemonstrationIsNotAcceptance": true
+  },
+  "discoveryCurrentBindingCapture": {
+    "schema": "ouf.m2-discovery-current-bindings-qualification.v1",
+    "date": "2026-10-29",
+    "timezone": "Europe/Rome",
+    "status": "SOURCE_NATIVE_AND_PROTECTED_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+    "sourceCommit": "8af878eca402bfe4598edb77ab0de239c575f506",
+    "sourcePath": "scripts/read-m2-discovery-bindings-20261029.py",
+    "sourceSha256": "788772e96f1e956e5439e2148b80bb825fda700e0a3a05a2021109b71823f215",
+    "qualificationCommit": "7131ea456379b361ef6cb3bc87e57c6030e511c3",
+    "sourcePullRequest": 51,
+    "retainedInstallationRoot": "/etc/ouf/deploy-snapshots/managed-file-owner-v38-update-b03d681a-20261028-v1",
+    "retainedCanonicalResultHash": "0601fdfadd157eedbdd35144e7913e152d3d1f1a67e4927317e2de6a566a61ca",
+    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-current-bindings-0601fdfa-20261029-v1",
+    "codeRoot": "/usr/local/lib/ouf-m2-discovery-bindings-788772e96f1e956e",
+    "maximums": {
+      "engineGets": 27,
+      "privateMetadataReads": 3,
+      "seconds": 90,
+      "responseBytes": 2097152,
+      "totalBytes": 25165824
+    },
+    "delivery": {
+      "commit": "09d2a2ba407f109fe8261ce61a6875b05d16a8d8",
+      "path": "releases/read-m2-discovery-bindings-20261029.sh",
+      "sha256": "eaca415a403169f97d22ce4df6f3f2873e3acd160e2e085d523a1d58d656207c",
+      "operatorAccount": "oufadmin",
+      "root400ChecksumVerification": true,
+      "ghOrTimeoutExecutableRequired": false
+    },
+    "qualification": {
+      "unitTests": 13,
+      "localUnitTestsPassed": true,
+      "nativeDockerVersion": "29.8.1",
+      "actualDisposableCohort": 13,
+      "actualUnixRootPeerAndProcessPins": true,
+      "historyFixtureSynthetic": true,
+      "privateStateAndEnvRetainedRoot600": true,
+      "publicOutputMinimized": true,
+      "positiveContainersAndHistoricalFilesUnchanged": true,
+      "changedPeerDenied": true,
+      "sameScopeReplayDenied": true,
+      "actualPinnedHttpsNonrootSudoDelivery": true,
+      "nonTtyBeforeScopeOrIAM": true,
+      "failedScopePreserved": true,
+      "nonrootCodeReadDenied": true,
+      "jobs": [
+        {
+          "id": 123160353743,
+          "run": 40786337605,
+          "event": "pull_request",
+          "name": "M2 stable discovery current binding capture",
+          "conclusion": "success"
+        },
+        {
+          "id": 123160353650,
+          "run": 40786337668,
+          "event": "pull_request",
+          "name": "M2 stable discovery binding protected delivery",
+          "conclusion": "success"
+        },
+        {
+          "id": 123160346645,
+          "run": 40786335560,
+          "event": "push",
+          "name": "M2 stable discovery current binding capture",
+          "conclusion": "success"
+        },
+        {
+          "id": 123160346781,
+          "run": 40786335641,
+          "event": "push",
+          "name": "M2 stable discovery binding protected delivery",
+          "conclusion": "success"
+        }
+      ],
+      "directLogsRead": [
+        123160353743,
+        123160353650,
+        123160346645,
+        123160346781
+      ],
+      "conclusion": "success",
+      "nullDockerEnvironmentSupportedWithoutInference": true,
+      "intermediateDeliveryGuardFailure": {
+        "commit": "09d2a2ba407f109fe8261ce61a6875b05d16a8d8",
+        "run": 40786330295,
+        "job": 123160329516,
+        "reason": "New wrapper checkout still had the predecessor wrapper comparison pin in its delivery qualifier. The exact-byte guard stopped before invoking delivery. Qualifier pins corrected in7131ea456379b361ef6cb3bc87e57c6030e511c3; final push/PR native+delivery all pass.",
+        "directLogRead": true,
+        "targetExecuted": false
+      }
+    },
+    "notProvenByCapture": [
+      "effective provider configuration",
+      "application readiness/provider reachability",
+      "database admission",
+      "credential file custody/content",
+      "current job/budget/row data",
+      "runtime authority",
+      "permanent capability operation"
+    ],
+    "runtimeEffects": {
+      "engineWrites": 0,
+      "sqlSessions": 0,
+      "iamRequests": 0,
+      "oauthRequests": 0,
+      "credentialFileReads": 0,
+      "configurationFileContentReads": 0,
+      "signingKeyReads": 0,
+      "imageImports": 0,
+      "containerLifecycle": 0,
+      "grants": 0,
+      "budgets": 0,
+      "resumes": 0,
+      "uploads": 0,
+      "jobs": 0,
+      "acquisitions": 0
+    },
+    "targetExecuted": false,
+    "currentDeliveryUsable": true,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "applicationE2EProven": false,
+    "releaseAcceptance": false
   }
 }
