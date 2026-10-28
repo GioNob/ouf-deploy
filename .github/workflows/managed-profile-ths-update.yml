@@ -15,7 +15,13 @@ jobs:
       - run: |
           sudo install -d -m 700 /var/lib/ouf-ths-update-protocol-ci
           sudo env OUF_CONTROL_UPDATE_TEST_ROOT=/var/lib/ouf-ths-update-protocol-ci python3 -I -S -B -m unittest discover -s tests -p test_managed_profile_ths_update_protocol.py -v
-          python3 -I -S -B -m unittest discover -s tests -p 'test_managed_profile_ths*.py'
+          python3 -I -S -B - <<'PY_SUITE'
+          import unittest
+          discovered=unittest.defaultTestLoader.discover('tests',pattern='test_managed_profile_ths*.py')
+          selected=unittest.TestSuite(s for s in discovered if all('test_managed_profile_ths_update_protocol'not in t.id() for child in s for t in child))
+          result=unittest.TextTestRunner(verbosity=1).run(selected)
+          assert result.testsRun==91 and not result.skipped and result.wasSuccessful()
+          PY_SUITE
   new-executor-native-lifecycle:
     strategy:
       fail-fast: false
@@ -93,3 +99,18 @@ jobs:
       - name: Exact new ONBOARDING prompt/logger with synthetic review and real canonical line editing
         run: python3 -I -S -B tests/qualify_managed_profile_ths_update_terminal.py
 
+
+  exact-same-image-proposed-request-config:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Exact immutable qualified ZIPs, finite public transfer without rebuild
+        run: |
+          mkdir -m 0700 "$RUNNER_TEMP/control-zips"
+          cp releases/managed-profile-control-onboarding-image-custody-20261027.json "$RUNNER_TEMP/control-zips/onboarding-custody.json"
+          cp releases/managed-profile-control-mcp-image-custody-20261027.json "$RUNNER_TEMP/control-zips/mcp-custody.json"
+          python3 scripts/download-managed-csv-control-images.py "$RUNNER_TEMP/control-zips"
+      - name: Exact new JAR, unchanged36 migrations/YAML, configuration and override rejection without runtime access
+        run: sudo env OUF_EXACT_ZIP_DIRECTORY="$RUNNER_TEMP/control-zips" /usr/bin/python3 -I -S -B tests/qualify_managed_profile_ths_update_real_image.py

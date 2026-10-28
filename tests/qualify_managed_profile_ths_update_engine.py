@@ -162,6 +162,6 @@ class Native(fixture.Protocol):
 
 if __name__=='__main__':
     names=__import__('sys').argv[1:]or[n for n in sorted(Native.__dict__)if n.startswith('test_')]
-    assert names and all(n in Native.__dict__and n.startswith('test_')for n in names)
+    assert names and all(n in Native.__dict__ and n.startswith('test_') for n in names)
     result=unittest.TextTestRunner(verbosity=2).run(unittest.TestSuite(Native(n)for n in names))
     raise SystemExit(0 if result.wasSuccessful()else 1)
