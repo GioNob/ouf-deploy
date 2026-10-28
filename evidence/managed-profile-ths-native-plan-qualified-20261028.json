@@ -2,7 +2,7 @@
   "schema": "ouf.ths-owner-request-native-plan-qualified.v1",
   "date": "2026-10-28",
   "timezone": "Europe/Rome",
-  "status": "QUALIFIED_NEW_CONDITIONAL_PLANNER_NOT_EXECUTED_ON_TARGET",
+  "status": "QUALIFIED_AND_SUCCESSFULLY_CONSUMED_CONDITIONAL_NATIVE_PLAN_PREPARED",
   "source": {
     "commit": "10b97a9598ebe9e63d7edbaac3edeb6633994941",
     "path": "scripts/prepare-managed-profile-ths-native-plan-20261028.py",
@@ -130,10 +130,27 @@
     "Fresh USER-only OAuth/card then distinct same-job3attempts900s budget and resume cumulative6–8",
     "Original/hash/parser/preview61rows to UDP, two real MCP clients and full M2E2E"
   ],
-  "targetExecuted": false,
-  "currentDeliveryUsable": true,
+  "targetExecuted": true,
+  "currentDeliveryUsable": false,
   "automaticReplayAllowed": false,
   "budgetReset": false,
   "applicationE2EProven": false,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "targetFollowUp": {
+    "receipt": "evidence/managed-profile-ths-native-plan-target-20261028.json",
+    "executionInputsHash": "e22a443d2617bf4db06b90ca272fd80e87fe3a05a9b4b6386b15cce51fea11e4",
+    "conditionalNativePlanHash": "9c961982f1e521ca67e25de6d9437cbfc670821c874625d77b9a092da33b6900",
+    "counts": {
+      "bytes": 750536,
+      "engineGets": 27,
+      "privateMetadataReads": 5
+    },
+    "complete": true,
+    "exit": 0,
+    "deliveryExit": 0,
+    "scopeConsumed": true,
+    "scopePatchApplied": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false
+  }
 }

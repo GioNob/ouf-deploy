@@ -1,3 +1,11 @@
+# CURRENT — piano nativo RIUSCITO/CONSUMATO; esecutore SOLO Onboarding in preparazione
+
+28 ottobre2026,Europe/Rome. [Ricevuta integrale](../../evidence/managed-profile-ths-native-plan-target-20261028.json):complete/Exit0/DeliveryExit0,coorte13/12peer,5metadata/27GET/750536byte. executionInputsHash e22a443d2617bf4db06b90ca272fd80e87fe3a05a9b4b6386b15cce51fea11e4;conditionalNativePlanHash9c961982f1e521ca67e25de6d9437cbfc670821c874625d77b9a092da33b6900. Profilo d0dbbd61b5a6486124e229e646ce63a96165dfc2433ae200f7fec92383d5140c,stessa immagine/source Onboarding9890b318/c512c247. Scope managed-profile-ths-native-plan-d0dbbd61-20261028-v1 e comando CONSUMATI:NON riconsegnare/rilanciare. IAM corretto e consumato;Policy58 acquisita,nessun nuovo login IAM o grant.
+
+NON installato:scopePatchApplied=false,runtimeAuthorityIssued=false,targetApplyAuthorized=false;zero Enginewrite/SQL/import/lifecycle/budget/resume/upload/job/acquisizioni/attivazioni. NEXT preparare/qualificare esecutore del SOLO delta Env Onboarding,stessa immagine,con nuova review HUMAN e authority firmata finita,13generazioni/12peer/rete/overlay/schema36/jobFAILED5 e backup quiescente correnti. Nessun comando nuovo pronto in questo checkpoint intermedio. Tutti i precedenti APPLY riusciti restano consumati,nessuna migrazione o import da ripetere.
+
+THS esclusiva UTENTE. Ultimo FarmacieFAILED5 non riletto;budget3/900 e resume DUE future decisioni HUMAN distinte stesso job/sessione,cumulativi6–8,mai reset/secondo budget dopo ambiguità. M1/G4 acquisiti;M2/G5/G6/G7/D5–D7/61righe→UDP/dueclient/E2E aperti;Supervisor dopo E2E. No nuovi upload/job/terza acquisizione/Registry restart o reinstall/attivazione implicita/merge/release acceptance/subagenti/automazioni. Le istruzioni seguenti sono STORICHE.
+
 # OUF — piano nativo della richiesta OAuth THS sulla stessa immagine — 28 ottobre 2026
 
 ## Correzione IAM acquisita, comando consumato
