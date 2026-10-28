@@ -2760,16 +2760,42 @@
   },
   "profileControlDescriptorReadQualification": {
     "evidence": "evidence/managed-profile-capability-read-qualified-20261028.json",
-    "status": "QUALIFIED_FIRST_TARGET_READ_PENDING",
+    "status": "QUALIFIED_TARGET_READ_SUCCEEDED_SCOPE_CONSUMED",
     "codeCommit": "8543017ea2c7f2272f31ae465d49a96d04101c49",
     "wrapperCommit": "7360b98ee12cd884d37a97d54806b44dbe4f9e4f",
     "qualificationCommit": "dc524b6ccd7722eb241afe3f00695a66ac4c9d29",
     "runId": 40641170827,
     "newScope": "/etc/ouf/deploy-snapshots/managed-profile-capability-read-policy56-20261028-v1",
-    "targetExecuted": false,
+    "targetExecuted": true,
     "sourceReusesTeatri": true,
     "policyWrites": 0,
     "requiresHumanBrowserLogin": true,
-    "automaticReplayAllowed": false
+    "automaticReplayAllowed": false,
+    "currentDeliveryUsable": false,
+    "scopeConsumed": true,
+    "commandMustNotBeRedelivered": true,
+    "targetReceipt": "evidence/managed-profile-capability-read-target-20261028.json"
+  },
+  "profileControlDescriptorReadTarget": {
+    "evidence": "evidence/managed-profile-capability-read-target-20261028.json",
+    "complete": true,
+    "exit": 0,
+    "deliveryExit": 0,
+    "scopeConsumed": true,
+    "policyRef": "ouf-lab-authorization:56",
+    "policyHash": "c52e856c8d95032f6942e1618fb0102f0b704acc5f41f044648e9466aaf9d323",
+    "activeResponseHash": "59856645ba247267a1e4839a4620f4ad70fe42d46d64fe6b7775b59c379ab912",
+    "catalogueHash": "ad928f1916a8b417aa0b2bde567ddf0924223863778ea96b22e98f4e8fb0f2d7",
+    "invalidRoleCapabilities": [
+      "ouf.onboarding.quarantine.release"
+    ],
+    "requiredRoleCapabilityCount": 41,
+    "counts": {
+      "bytes": 234465,
+      "iamGets": 1,
+      "iamPosts": 10,
+      "ownerGets": 3
+    },
+    "administrativeWrites": 0
   }
 }

@@ -1,3 +1,15 @@
+# Checkpoint acquisito: lettura descriptor riuscita — 28 ottobre 2026
+
+La sola capability mancante, fra tutte le41 necessarie, è `ouf.onboarding.quarantine.release`: assente sia dal catalogo registrato sia da ACTIVE56. Preview e profiling sono già corretti. [Ricevuta integrale](../../evidence/managed-profile-capability-read-target-20261028.json). Risposta/catálogo hash59856645…/ad928f19…, 1IAMGET/10IAMPOST/3ownerGET/234465byte, complete/Exit0/DeliveryExit0. Nessuna modifica di policy/grant/job/budget/resume. Esito letto integralmente dall'output operatore; log privato non riletto autonomamente.
+
+Scope `/etc/ouf/deploy-snapshots/managed-profile-capability-read-policy56-20261028-v1` CONSUMATO: il comando sotto è STORICO e non va rilanciato. Log `/usr/local/lib/ouf-managed-profile-capability-read-1243cdffacb4e559/operator.log`; delivery `/home/oufadmin/ouf-managed-profile-capability-delivery.JWXiKEkm/bootstrap.log`.
+
+Prossimo passo: qualificare un NUOVO publisher del SOLO descriptor mancante, usando protocollo Teatri corretto (revision0, receipt prima dei guard, terminale reale con editing e finestre finite). Nuova review amministrativa HUMAN concreta prima di effetti, preservando esattamente tutte capability/grant e ruoli/assegnazioni. Nessuna pubblicazione preparata è authority. Poi ruolo minimo del SOLO job tramite THS utente, verifica scope/Gateway/ownership, budget3/900 e resume separati stesso job, cumulativi6–8. M2/G5/G6/G7 aperti. Non ripetere APPLY, lettori, login o authority precedenti.
+
+---
+
+## Checkpoint precedente, STORICO
+
 # Owner di controllo installati; nuova lettura descriptor qualificata, prima esecuzione target pendente
 
 28 ottobre 2026, Europe/Rome. [Ricevuta completa](../../evidence/managed-csv-control-update-target-20261028.json), [accessi osservati](../../evidence/managed-profile-control-post-install-access-20261028.json), [qualifica della nuova sola lettura](../../evidence/managed-profile-capability-read-qualified-20261028.json). Questo checkpoint supera le indicazioni di primo APPLY contenute nell'handoff precedente.
