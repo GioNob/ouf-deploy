@@ -1,6 +1,6 @@
 {
   "schema": "ouf.managed-profile-control-permission-proposal-intent.v1",
-  "status": "FRESH_POLICY57_PROPOSAL_PREPARED_NOT_YET_DISPATCHED",
+  "status": "DISPATCHED_ONCE_RECEIPT_PENDING_NO_REPLAY",
   "accountLink": "ouf-admin",
   "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
   "basePolicyRef": "ouf-lab-authorization:57",
@@ -1750,12 +1750,16 @@
       ]
     }
   },
-  "proposalId": null,
+  "proposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
   "automaticReplayAllowed": false,
   "previousRejectedRequestReplayed": false,
   "humanReviewRequired": true,
   "agentMayApprove": false,
   "newBudgetGranted": false,
   "resumeExecuted": false,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "receiptEvidence": "evidence/managed-profile-control-permission-policy57-proposal-20261028.json",
+  "ownerReceiptConfirmed": true,
+  "dispatchConsumed": true,
+  "doNotCreateDuplicateProposal": true
 }

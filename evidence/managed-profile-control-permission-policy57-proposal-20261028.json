@@ -1,0 +1,98 @@
+{
+  "schema": "ouf.managed-profile-control-permission-proposal-policy57.v1",
+  "date": "2026-10-28",
+  "timezone": "Europe/Rome",
+  "status": "CREATED_PENDING_DIRECT_HUMAN_THS_NOT_PUBLISHED",
+  "accountLink": "ouf-admin",
+  "explicitLinkId": "link_6aafef96b4148191b767e9af7b756a07",
+  "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+  "effectiveIdentityVerifiedBeforeCalls": true,
+  "browserIdentityVerified": false,
+  "basePolicyRef": "ouf-lab-authorization:57",
+  "basePolicyHash": "701dce46f419002d19520a8578bf0cb4b72558c12689e5ab43bfd11bdd72804b",
+  "descriptorPublicationEvidence": "evidence/managed-profile-descriptor-publication-target-20261028.json",
+  "intentEvidence": "evidence/managed-profile-control-permission-policy57-intent-20261028.json",
+  "receipt": {
+    "proposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "revision": 0,
+    "state": "PENDING",
+    "expiresAt": "2026-10-28T08:46:00.672722Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "finalPolicyRef": null
+  },
+  "independentProtectedProposalRead": {
+    "proposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "revision": 0,
+    "state": "PENDING",
+    "expiresAt": "2026-10-28T08:46:00.672722Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "finalPolicyRef": null
+  },
+  "toolCalls": {
+    "protectedOwnPriorProposalRead": 1,
+    "freshRolesRead": 1,
+    "freshConfiguredGrantsRead": 1,
+    "permissionProposalCreate": 1,
+    "sameNewProposalRead": 1
+  },
+  "oldRolesPreserved": 7,
+  "oldAssignmentsPreserved": 11,
+  "newRoles": 1,
+  "newAssignments": 1,
+  "roleId": "farmacie-profile-control-677480c8-v1",
+  "assignment": {
+    "assignmentId": "farmacie-profile-control-677480c8-ouf-admin-policy57-v1",
+    "roleId": "farmacie-profile-control-677480c8-v1",
+    "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+    "externalRoleRef": null,
+    "validFrom": "2026-10-28T08:29:35.837Z",
+    "validUntil": "2036-09-15T07:13:50.968730Z"
+  },
+  "capabilityIds": [
+    "ouf.managed-source.preview",
+    "ouf.managed-source.file.profile",
+    "ouf.onboarding.quarantine.release"
+  ],
+  "exactConstraints": {
+    "effect": "ALLOW",
+    "externalRoleRef": null,
+    "resourceType": "managed-profile-job",
+    "resourceId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+    "resourceAttributes": {
+      "module": "ONBOARDING",
+      "assetRef": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+      "jobRef": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+      "detailLevel": "TENANT_OPERATIONAL"
+    },
+    "allowedDataLabels": [],
+    "allowedDetailLevels": [
+      "TENANT_OPERATIONAL"
+    ],
+    "requiredAcr": null,
+    "requiredAmr": [],
+    "maxAuthenticationAgeSeconds": null
+  },
+  "ownerAcceptedActiveDescriptorsForCompilation": true,
+  "published": false,
+  "currentConfiguredSubjectGrantCount": 134,
+  "configuredGrantCountIsNotEffectiveAllow": true,
+  "newHumanBudgetGranted": false,
+  "resumeExecuted": false,
+  "newJobs": 0,
+  "uploads": 0,
+  "sourceActivations": 0,
+  "acquisitionsExecuted": 0,
+  "policyPublicationByAgent": false,
+  "agentMayApprove": false,
+  "humanThsUserOnly": true,
+  "automaticReplayAllowed": false,
+  "ambiguousOutcome": false,
+  "doNotCreateDuplicateProposal": true,
+  "reviewWindowExpiresAt": "2026-10-28T08:46:00.672722Z",
+  "mcpOAuthScopesVerified": false,
+  "currentJobCardVerified": false,
+  "lastKnownJobStatus": "FAILED",
+  "lastKnownCumulativeAttempts": 5,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

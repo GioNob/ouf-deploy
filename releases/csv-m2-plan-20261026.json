@@ -1933,7 +1933,14 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Qualify a NEW minimal two-owner controller on executionInputsHash900b09... and conditionalNativePlanHash73d573..., reusing Teatri/V36 authority/TTY/lifecycle/fencing/backup. Fresh concrete runtime review and human terminal approval before effects. No prepared scope/publisher/capture/APPLY replay.",
+  "firstNextAction": {
+    "action": "Await HUMAN decision on exact current job-role proposal, then read same proposalId before application access",
+    "proposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "expiresAt": "2026-10-28T08:46:00.672722Z",
+    "budgetGranted": false,
+    "resumeExecuted": false
+  },
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2345,7 +2352,12 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "docs/handoffs/OUF_MANAGED_PROFILE_CAPABILITY_GATE_20261028.md",
+  "currentCheckpoint": {
+    "date": "2026-10-28",
+    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_JOB_ROLE_REVIEW_20261028.md",
+    "next": "HUMAN_THS_REVIEW_SAME_PROPOSAL_THEN_READ_SAME_ID",
+    "proposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319"
+  },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
     "evidence": "evidence/onboarding-diagnostic-apply-qualified-20261027.json",
@@ -2646,8 +2658,8 @@
     "releaseAcceptance": false
   },
   "humanProfileRecoveryAccess": {
-    "status": "EFFECTIVE_ADMIN_VERIFIED_POLICY57_FRESH_JOB_ROLE_PROPOSAL_PREPARATION",
-    "record": "evidence/managed-profile-control-post-install-access-20261028.json",
+    "status": "FRESH_POLICY57_JOB_ROLE_PROPOSAL_PENDING_DIRECT_HUMAN_THS",
+    "record": "evidence/managed-profile-control-permission-policy57-proposal-20261028.json",
     "humanSurfaceUserOnly": true,
     "agentMayInteractWithThs": false,
     "freshJobCardReadSucceeded": false,
@@ -2657,10 +2669,14 @@
     "resumedByThisResume": false,
     "identityProof": "Explicit ouf-admin routing and same protected owner/tenant proposal read; not browser identity",
     "browserIdentityVerified": false,
-    "missingCapabilityId": "ouf.onboarding.quarantine.release"
+    "missingCapabilityId": "ouf.onboarding.quarantine.release",
+    "pendingProposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "pendingProposalState": "PENDING",
+    "pendingProposalExpiresAt": "2026-10-28T08:46:00.672722Z",
+    "pendingApprovalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=fb54d330-0ec2-400a-ae71-e4ac3cf45319"
   },
   "profileControlAuthorization": {
-    "status": "DESCRIPTOR_PUBLISHED_POLICY57_FRESH_JOB_ROLE_PROPOSAL_PENDING",
+    "status": "DESCRIPTOR_PUBLISHED57_JOB_ROLE_PENDING_HUMAN",
     "evidence": "evidence/profile-recovery-control-authorization-20261027.json",
     "onboardingSource": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "mcpSource": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
@@ -2849,5 +2865,22 @@
     "humanBudgetsGranted": 0,
     "resumes": 0,
     "allGrantsPreserved": true
+  },
+  "profileControlJobRoleProposal": {
+    "evidence": "evidence/managed-profile-control-permission-policy57-proposal-20261028.json",
+    "proposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "state": "PENDING",
+    "revision": 0,
+    "expiresAt": "2026-10-28T08:46:00.672722Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "finalPolicyRef": null,
+    "oldRolesPreserved": 7,
+    "oldAssignmentsPreserved": 11,
+    "newRoles": 1,
+    "newAssignments": 1,
+    "budgetGranted": false,
+    "resumed": false,
+    "doNotCreateDuplicateProposal": true,
+    "humanSurfaceUserOnly": true
   }
 }
