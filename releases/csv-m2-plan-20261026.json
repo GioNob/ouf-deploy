@@ -65,7 +65,7 @@
     "runtimeEvidenceOrigin": "USER_PASTED_FINAL_RESULT_AND_FOOTER_NOT_INDEPENDENT_HOST_LOG_READ",
     "activeOnboardingSourceCommit": "9d19fad3dd750dd5b9e77253d3e7e82029c1aca7",
     "activeOnboardingNativeImageId": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
-    "profileControlCorrection": "V38_INSTALLED_SAME_JOB_RECOVERY_SUCCEEDED_PROFILE_PREVIEW_DENIED_POLICY58",
+    "profileControlCorrection": "V38_INSTALLED_SAME_JOB_RECOVERY_AND_PROFILE_PREVIEW_SUCCEEDED_POLICY59",
     "latestCohortCapture": "SUCCESS_CONSUMED_8A4C8475_EXACT13_27GET_4METADATA_ZERO_SQL",
     "profileControlCandidatesInstalled": true,
     "newControlUpdateRuntimeAuthorityIssued": true,
@@ -97,7 +97,8 @@
     "profilePreviewPermissionProposalId": "ad738511-24cd-418a-b5b2-0cfc46be59fe",
     "profilePreviewPermissionPublished": true,
     "farmacieRowsReportedByOwner": 61,
-    "farmacieMappingState": "PROPOSED_REQUIRES_IDENTITY_CLASSIFICATION_AND_PUBLISHED_SEMANTIC_PINS"
+    "farmacieMappingState": "DOMAIN_CONFIRMED_OPEN_AND_MINISTERIAL_ID_ONTOPIA_DISCOVERY_COMPOSITION_QUALIFIED_RUNTIME_BLOCKED",
+    "semanticExternalDiscovery": "NOT_EXPOSED_CURRENT_MCP_SOURCE_COMPOSITION_PR81_QUALIFIED_INACTIVE"
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1959,14 +1960,13 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Present the prepared mapping; confirm ministerial code as stable lexical source identity and ask for field classifications/exclusions. No OPEN inference. Resolve exact published semantic refs or prepare authorized drafts for terms genuinely missing. Honour the recorded MCP budget denial without retry/reset or falsely declaring catalogue empty. Create onboarding DRAFT only after required reviewed choices and refs.",
-    "mapping": "docs/OUF_FARMACIE_MAPPING_PROPOSAL_20261028.md",
-    "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
-    "profileId": "f3061699-4fde-4085-89c8-bc8703f65686",
-    "profileAlreadySucceeded": true,
-    "permissionPublished": true,
-    "policyRef": "ouf-lab-authorization:59",
-    "newProfileJobRequired": false,
+    "action": "Complete governed OntoPiA discovery integration and current Registry/Gateway/provider admission, reusing PR81 and existing owner/gateway work. Prepare any needed concrete runtime review only after qualification; no current deployment command is ready. Required product flow remains actual OUF MCP capabilities. Never replace external discovery with direct web fetch/manual Turtle/native draft. Preserve all completed Farmacie work and consumed runtime scopes; no new dataset upload/profile/budget/resume.",
+    "sourcePullRequest": 81,
+    "sourceRepository": "GioNob/ouf-mcp-server",
+    "sourceCommit": "09d1f521703f2e896398c751b41008f22c6dca0d",
+    "discoveryDescriptorsState": "INACTIVE",
+    "discoveryExecuted": false,
+    "domainChoicesComplete": true,
     "sshExecutionCommandUsable": false,
     "currentRuntimeAuthorityUsable": false
   },
@@ -2297,6 +2297,12 @@
         },
         "remaining": "Remaining owner/Gateway cohort composition, exact installed-generation validation and final real-client path. Existing MCP/Onboarding code and browser qualification are reusable; do not recount as new implementation.",
         "gatewayPairwiseCommit": "c22fbf7f5593f612aba7e318797c9459d0b871a7"
+      },
+      "governedOntopiaDiscoveryDependency": {
+        "state": "SOURCE_MCP_COMPOSITION_QUALIFIED_CURRENT_PROVIDER_ADMISSION_PENDING",
+        "evidence": "evidence/farmacie-domain-and-ontopia-discovery-20261028.json",
+        "sourceCommit": "09d1f521703f2e896398c751b41008f22c6dca0d",
+        "pullRequest": 81
       }
     },
     {
@@ -2357,7 +2363,13 @@
         "D2"
       ],
       "exit": "Valore→concetto/versione/RAW e relazione governata attraversano compiler/Ingestion/UDP; negativi espliciti",
-      "remainingHours": null
+      "remainingHours": null,
+      "governedOntopiaDiscoveryDependency": {
+        "state": "SOURCE_MCP_COMPOSITION_QUALIFIED_CURRENT_PROVIDER_ADMISSION_PENDING",
+        "evidence": "evidence/farmacie-domain-and-ontopia-discovery-20261028.json",
+        "sourceCommit": "09d1f521703f2e896398c751b41008f22c6dca0d",
+        "pullRequest": 81
+      }
     },
     {
       "id": "D6",
@@ -2375,7 +2387,13 @@
         "D5"
       ],
       "exit": "Farmacie con 61 righe contabilizzate, review corretta e risultati UDP/search leggibili, niente terminale ordinario",
-      "remainingHours": null
+      "remainingHours": null,
+      "governedOntopiaDiscoveryDependency": {
+        "state": "SOURCE_MCP_COMPOSITION_QUALIFIED_CURRENT_PROVIDER_ADMISSION_PENDING",
+        "evidence": "evidence/farmacie-domain-and-ontopia-discovery-20261028.json",
+        "sourceCommit": "09d1f521703f2e896398c751b41008f22c6dca0d",
+        "pullRequest": 81
+      }
     },
     {
       "id": "D7",
@@ -2395,9 +2413,9 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-28",
-    "handoff": "docs/handoffs/OUF_FARMACIE_PROFILE_PREVIEWED_20261028.md",
-    "next": "DOMAIN_IDENTITY_AND_FIELD_CLASSIFICATION_THEN_PINNED_SEMANTIC_MAPPING",
-    "evidence": "evidence/farmacie-profile-preview-policy59-20261028.json"
+    "handoff": "docs/handoffs/OUF_M2_ONTOPIA_DISCOVERY_COMPOSITION_20261028.md",
+    "next": "COMPLETE_CURRENT_REGISTRY_GATEWAY_PROVIDER_ADMISSION_AND_COORDINATED_DISCOVERY_PUBLICATION",
+    "evidence": "evidence/farmacie-domain-and-ontopia-discovery-20261028.json"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -4493,11 +4511,58 @@
     "sourceObjectKeyProposed": [
       "codice_ministeriale"
     ],
-    "sourceObjectKeyConfirmed": false,
-    "fieldLabelsConfirmed": false,
+    "sourceObjectKeyConfirmed": true,
+    "fieldLabelsConfirmed": true,
     "sourceDraftCreated": false,
     "semanticRefsResolved": false,
     "fullRowValidationPerformed": false,
-    "udpRowsMaterializedProven": false
+    "udpRowsMaterializedProven": false,
+    "fieldLabels": "ALL_10_OPEN",
+    "allFieldsIncluded": true,
+    "semanticDiscoveryRequired": "GOVERNED_ONTOPIA_VIA_OUF_MCP"
+  },
+  "farmacieDomainDecisionsCurrent": {
+    "date": "2026-10-28",
+    "sourceObjectKeyFields": [
+      "codice_ministeriale"
+    ],
+    "sourceObjectIdentityDatatype": "STRING",
+    "capDatatype": "STRING",
+    "includedFields": [
+      "nome_denominazione",
+      "indirizzo",
+      "latitudine",
+      "longitudine",
+      "sistema_coordinate",
+      "cap",
+      "codice_ministeriale",
+      "tipologia",
+      "inizio_validita_anagrafica",
+      "note"
+    ],
+    "dataAccessLabel": "OPEN",
+    "origin": "Explicit user confirmation in current chat",
+    "requiredOntologyProvider": "OntoPiA",
+    "requiredPath": "OUF MCP -> Gateway -> Registry -> provider"
+  },
+  "governedOntopiaDiscoveryCurrent": {
+    "status": "SOURCE_COMPOSITION_QUALIFIED_NO_RUNTIME_DISCOVERY",
+    "evidence": "evidence/farmacie-domain-and-ontopia-discovery-20261028.json",
+    "sourceCommit": "09d1f521703f2e896398c751b41008f22c6dca0d",
+    "pullRequest": 81,
+    "sourceRepo": "GioNob/ouf-mcp-server",
+    "descriptorState": "INACTIVE",
+    "installed": false,
+    "externalDiscoveryExecuted": false,
+    "sourceQualification": {
+      "topLevelPassed": 9,
+      "failures": 0,
+      "skipped": 0,
+      "goRaceEnabled": true,
+      "actualGatewaySchemas": true,
+      "syntheticGatewayTransport": true,
+      "externalProviderExecuted": false
+    },
+    "requiredRuntimeReviewReady": false
   }
 }

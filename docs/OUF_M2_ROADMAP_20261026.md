@@ -1,3 +1,15 @@
+# CURRENT — Farmacie: dominio confermato; discovery OntoPiA via MCP da completare
+
+28 ottobre 2026, Europe/Rome. [Handoff corrente](handoffs/OUF_M2_ONTOPIA_DISCOVERY_COMPOSITION_20261028.md), [evidenza](../evidence/farmacie-domain-and-ontopia-discovery-20261028.json). Utente conferma codice_ministeriale come chiave stabile STRING e tutti i 10 campi inclusi/OPEN. Richiede espressamente il ciclo chatbot → capability MCP OUF → Gateway → Registry → OntoPiA, senza aggiramenti. NON chiedere di nuovo queste scelte. La classificazione confermata non rimuove retroattivamente redazioni o controlli owner.
+
+La connessione/MCP installato d2454f3c espone ricerca/lettura del catalogo pubblicato ma NON semantic.discovery.request/status/candidates. Nessuna ricerca esterna OntoPiA è stata eseguita. Riuso del candidato esistente 0debc57f composto sul ramo M2 corrente in [MCP PR81](https://github.com/GioNob/ouf-mcp-server/pull/81), commit 09d1f521703f2e896398c751b41008f22c6dca0d. Tre descrittori rimangono INACTIVE. Nuove route Gateway fisse, schemi chiusi/idempotencyKey e limite100 per i soli candidati; tutti i descrittori e percorsi esistenti preservati.
+
+CI push40783225346/job123149874207 e PR40783229870/job123149892054 PASS; 9 test principali/0fail/0skip nel job mirato, race e schemi Gateway reali fissati ad ace683b1. Log diretti di5job letti; regressioni semantic/search/get/proposal/source review/revision/file recovery PASS. Fixture risposte Gateway, non provider reale, owner durable runtime o E2E.
+
+NEXT completare la qualifica/coorte Registry-Gateway-provider e le prove correnti di binding/ammissione/configurazione del provider; preparare la concreta review runtime se richiesta. Solo dopo readiness/policy/scopes/grant e pubblicazione coordinata usare le tre capability nella connessione MCP reale e conservare stessa request/idempotencyKey. Non trasformare descrittori ACTIVE o riavviare Registry/worker per prova, non riusare catture/authority/R9-R12 consumate né azzerare budget. Nessun URL esterno/manual import/Turtle dal modello come sostituto della discovery richiesta. Adozione/pubblicazione rimangono lifecycle owner/HUMAN.
+
+Farmacie stesso asset9c502da5/job677480c8/profilof3061699: SUCCEEDED e preview61righe/10colonne su policy59 già acquisiti. Nessun nuovo upload/job/profile/budget/resume/acquisizione. Semantica pubblicata esatta non risolta; nessuna bozza semantica/onboarding creata. M1/G4 preservati;M2/G5/G6/G7/D5–D7/dueclient/E2E aperti. No merge/releaseacceptance/subagenti/automazioni. Header e comandi sottostanti STORICI.
+
 # CURRENT — Policy 59 PUBLISHED; profilo Farmacie letto, mapping proposto e scelte di dominio aperte
 
 28 ottobre 2026,Europe/Rome. [Handoff](handoffs/OUF_FARMACIE_PROFILE_PREVIEWED_20261028.md),[preview owner](../evidence/farmacie-profile-preview-policy59-20261028.json),[proposta mapping](OUF_FARMACIE_MAPPING_PROPOSAL_20261028.md). Stessa proposta ad738511-24cd-418a-b5b2-0cfc46be59fe revision 1 PUBLISHED/finalPolicyRefouf-lab-authorization:59 confermata con caller-owned read. NON ricreare/riapprovare/riconsegnare review scaduta o chiedere nuovo grant preview.
