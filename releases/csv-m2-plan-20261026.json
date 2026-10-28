@@ -53,22 +53,26 @@
       "proven": 6,
       "total": 6
     },
-    "farmacieStatus": "FAILED_5_RETAINED_AFTER_V36_INSTALL_HUMAN_BUDGET_AND_RESUME_PENDING",
+    "farmacieStatus": "FAILED_5_PRESERVED_BY_SUCCESSFUL_CONTROL_UPDATE_NO_BUDGET_OR_RESUME",
     "diagnosticCandidateInstalled": false,
-    "profileRecoveryV36Deployment": "INSTALLED_CONFIRMED_VPS_RESULT_SCOPE_CONSUMED_HUMAN_RECOVERY_PENDING",
+    "profileRecoveryV36Deployment": "SUCCESSFUL_CONSUMED_PREDECESSOR_RETAINED_STOPPED_AFTER_CONTROL_UPDATE",
     "runtimeAfterLatestApplyVerified": true,
     "previousDiagnosticOwner": {
       "sourceCommit": "a5ed8b05c264a8221783a6e323ba00117aed891d",
       "nativeImageId": "sha256:074bd16ec8ebd98cbf1ee085af9767a5f7e322072a541e85bd37925002fa5df2",
       "retainedStopped": true
     },
-    "runtimeEvidenceOrigin": "OPERATOR_VPS_OUTPUT_AT_SUCCESSFUL_COMPLETION_NOT_A_NEW_LIVE_RECHECK",
-    "activeOnboardingSourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
-    "activeOnboardingNativeImageId": "sha256:e4690481db28e3e70335704de89e563dcf32ecf70e4a0caea1bdc30c48aa4359",
-    "profileControlCorrection": "NEW_NATIVE_EXECUTOR_QUALIFIED_FRESH_TARGET_REVIEW_PENDING",
+    "runtimeEvidenceOrigin": "OPERATOR_FINAL_SUCCESS_RESULT_READ_IN_FULL_NOT_NEW_AGENT_HOST_LOG_READ",
+    "activeOnboardingSourceCommit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
+    "activeOnboardingNativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
+    "profileControlCorrection": "INSTALLED_OWNER_CONTROL_ACCESS_DENIED_ACTIVE_DESCRIPTOR_GATE",
     "latestCohortCapture": "RECONCILIATION_SUCCESS_CAPTURE14a96f_SCOPE_CONSUMED_METADATA_ONLY",
-    "profileControlCandidatesInstalled": false,
-    "newControlUpdateRuntimeAuthorityIssued": false
+    "profileControlCandidatesInstalled": true,
+    "newControlUpdateRuntimeAuthorityIssued": true,
+    "activeMcpSourceCommit": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
+    "activeMcpNativeImageId": "sha256:a52180123104ac97e4979ad1b9b291654b076692da51708bb2a377301fef1220",
+    "newControlUpdateAuthorityConsumed": true,
+    "currentRuntimeAuthorityUsable": false
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -2339,7 +2343,7 @@
     }
   ],
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
-  "currentCheckpoint": "docs/handoffs/OUF_MANAGED_CSV_CONTROL_UPDATE_20261027.md",
+  "currentCheckpoint": "docs/handoffs/OUF_MANAGED_PROFILE_CAPABILITY_GATE_20261028.md",
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
     "evidence": "evidence/onboarding-diagnostic-apply-qualified-20261027.json",
@@ -2640,23 +2644,26 @@
     "releaseAcceptance": false
   },
   "humanProfileRecoveryAccess": {
-    "status": "USER_CARD_DENIAL_CONFIRMED_PRODUCTION_CONTROL_CONTEXT_FIX_IN_QUALIFICATION",
-    "record": "evidence/profile-recovery-human-handoff-20261027.json",
+    "status": "MCP_PRE_ADMISSION_NO_APPLICABLE_GRANT_ROLE_PROPOSAL_DESCRIPTOR_REJECTED",
+    "record": "evidence/managed-profile-control-post-install-access-20261028.json",
     "humanSurfaceUserOnly": true,
     "agentMayInteractWithThs": false,
     "freshJobCardReadSucceeded": false,
-    "effectiveIdentityVerified": false,
+    "effectiveIdentityVerified": true,
     "lastVerifiedAttempts": 5,
     "budgetGrantedByThisResume": false,
-    "resumedByThisResume": false
+    "resumedByThisResume": false,
+    "identityProof": "Explicit ouf-admin routing and same protected owner/tenant proposal read; not browser identity",
+    "browserIdentityVerified": false
   },
   "profileControlAuthorization": {
-    "status": "SOURCE_CI_QUALIFIED_NOT_INSTALLED",
+    "status": "INSTALLED_OWNER_CODE_POLICY_DESCRIPTOR_PREREQUISITE_BLOCKED",
     "evidence": "evidence/profile-recovery-control-authorization-20261027.json",
     "onboardingSource": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "mcpSource": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
     "runtimePermissionsPublished": false,
-    "newHumanBudgetGranted": false
+    "newHumanBudgetGranted": false,
+    "targetReceipt": "evidence/managed-csv-control-update-target-20261028.json"
   },
   "profileControlCustodyAndCapture": {
     "evidence": "evidence/managed-csv-recovery-custody-capture-qualified-20261027.json",
@@ -2705,7 +2712,7 @@
   },
   "profileControlNativeUpdateQualification": {
     "evidence": "evidence/managed-csv-control-update-qualified-20261027.json",
-    "status": "QUALIFIED_FIRST_NEW_TARGET_REVIEW_PENDING",
+    "status": "QUALIFIED_TARGET_INSTALLED_SUCCESS_SCOPE_CONSUMED",
     "sourceCommit": "74c4ddd77ff6f0e2122ff139eebdbd80dc671f0f",
     "wrapperCommit": "965583e9aadc1a690541c83d543626abe8bf165c",
     "qualificationCommit": "af635f7f7d9b1eae8866f90dbf563cc478e763b4",
@@ -2714,16 +2721,55 @@
     "sourceClosureHash": "ebd7f080088da1c62e126ecd12e1228203be74039925080d322203a29a40ba61",
     "wrapperSha256": "f91f09abc6b8c399256a246ff738c462d59540d5cd36a047041d81a4ab94260a",
     "newScope": "/etc/ouf/deploy-snapshots/managed-csv-control-update-900b09c6d29a20fd-v1",
-    "targetExecuted": false,
-    "targetInstalled": false,
-    "freshConcreteHumanTerminalReviewRequired": true,
-    "currentDeliveryUsable": true,
+    "targetExecuted": true,
+    "targetInstalled": true,
+    "freshConcreteHumanTerminalReviewRequired": false,
+    "currentDeliveryUsable": false,
     "databaseMigrationsAuthorized": 0,
     "maximumNewTechnicalReadonlySqlSessions": 8,
     "humanBudgetGranted": false,
     "resumed": false,
-    "runtimeAuthorityIssuedOnTarget": false,
+    "runtimeAuthorityIssuedOnTarget": true,
     "automaticReplayAllowed": false,
-    "applicationE2EProven": false
+    "applicationE2EProven": false,
+    "targetExecutionReceived": true,
+    "scopeConsumed": true,
+    "reviewAndAuthorityConsumed": true,
+    "commandMustNotBeRedelivered": true,
+    "targetReceipt": "evidence/managed-csv-control-update-target-20261028.json"
+  },
+  "profileControlNativeUpdateTarget": {
+    "evidence": "evidence/managed-csv-control-update-target-20261028.json",
+    "status": "MANAGED_CSV_CONTROL_UPDATE_INSTALLED_E2E_NOT_ACCEPTED",
+    "complete": true,
+    "exit": 0,
+    "deliveryExit": 0,
+    "componentReadinessProven": true,
+    "reviewHash": "42db62a1d9d8f0423b88c86b4d56c50f39d9b0cd96ae6a2c11797583df3f830e",
+    "authorityHash": "9ae7b608a7836e83d93df74d07612b121040854608bdf47cdd820a9d676f5bd1",
+    "scopeConsumed": true,
+    "unchangedPeers": 11,
+    "databaseMigrations": 0,
+    "technicalReadonlySqlSessions": 8,
+    "lastJobState": "FAILED",
+    "lastCumulativeAttempts": 5,
+    "humanBudgetsGranted": 0,
+    "resumes": 0,
+    "applicationE2EProven": false,
+    "releaseAcceptance": false
+  },
+  "profileControlDescriptorReadQualification": {
+    "evidence": "evidence/managed-profile-capability-read-qualified-20261028.json",
+    "status": "QUALIFIED_FIRST_TARGET_READ_PENDING",
+    "codeCommit": "8543017ea2c7f2272f31ae465d49a96d04101c49",
+    "wrapperCommit": "7360b98ee12cd884d37a97d54806b44dbe4f9e4f",
+    "qualificationCommit": "dc524b6ccd7722eb241afe3f00695a66ac4c9d29",
+    "runId": 40641170827,
+    "newScope": "/etc/ouf/deploy-snapshots/managed-profile-capability-read-policy56-20261028-v1",
+    "targetExecuted": false,
+    "sourceReusesTeatri": true,
+    "policyWrites": 0,
+    "requiresHumanBrowserLogin": true,
+    "automaticReplayAllowed": false
   }
 }

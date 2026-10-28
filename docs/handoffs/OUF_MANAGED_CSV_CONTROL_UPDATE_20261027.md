@@ -1,3 +1,7 @@
+# CURRENT — target INSTALLATO con successo, scope CONSUMATO; seguire il gate descriptor
+
+28 ottobre 2026. [Ricevuta completa](../../evidence/managed-csv-control-update-target-20261028.json): MANAGED_CSV_CONTROL_UPDATE_INSTALLED_E2E_NOT_ACCEPTED, complete/readiness=true/Exit0/DeliveryExit0. Due owner installati,backup verificato,storia36/FAILED5 invariati,11peer invariati,zero migrazioni/budget/resume/acquisizioni. Review42db62a1.../authority9ae7b608... e relativo scope CONSUMATI: NON eseguire il comando sotto, né riconsegnarlo o riapprovarlo. Il seguito corretto è [il nuovo handoff](OUF_MANAGED_PROFILE_CAPABILITY_GATE_20261028.md): prerequisito descriptor HUMAN da osservare prima di nuova review amministrativa/permessi e scheda job. Il resto di questo file conserva la consegna storica.
+
 # Nuovo aggiornamento Onboarding/MCP — QUALIFICATO, prima review/esecuzione target da ricevere
 
 27 ottobre 2026, Europe/Rome. Questo è un nuovo intento di manutenzione per installare i due fix di controllo persistenti. Non è una nuova esecuzione della V35→V36 già riuscita. L'APPLY V36, cattura/riconciliazione, publisher e preparazione immagini/piano sono consumati e non devono essere riconsegnati o rilanciati.

@@ -158,23 +158,26 @@
     "oldEntrypointsExecuted": false,
     "unchangedAuthenticatedPrimitives": true
   },
-  "runtimeAuthorityIssuedOnTarget": false,
+  "runtimeAuthorityIssuedOnTarget": true,
   "schema": "ouf.managed-csv-control-update-qualification.v1",
   "sourceActivations": 0,
   "sourceCommit": "74c4ddd77ff6f0e2122ff139eebdbd80dc671f0f",
   "sourceManifestSha256": "ebd7f080088da1c62e126ecd12e1228203be74039925080d322203a29a40ba61",
   "startupSecondsPerOwner": 180,
-  "status": "QUALIFIED_NEW_TARGET_REVIEW_PENDING",
+  "status": "QUALIFIED_TARGET_SUCCEEDED_SCOPE_CONSUMED_ACCESS_GATE_SEPARATE",
   "supervisorAfterCompleteE2EOnly": true,
-  "targetExecutionReceived": false,
-  "targetInstalled": false,
+  "targetExecutionReceived": true,
+  "targetInstalled": true,
   "targetRoles": [
     "onboarding",
     "mcp"
   ],
-  "targetRuntimeRevalidated": false,
+  "targetRuntimeRevalidated": true,
   "timezone": "Europe/Rome",
   "unchangedPeers": 11,
   "wrapperCommit": "965583e9aadc1a690541c83d543626abe8bf165c",
-  "wrapperSha256": "f91f09abc6b8c399256a246ff738c462d59540d5cd36a047041d81a4ab94260a"
+  "wrapperSha256": "f91f09abc6b8c399256a246ff738c462d59540d5cd36a047041d81a4ab94260a",
+  "targetAuthorityConsumed": true,
+  "currentDeliveryUsable": false,
+  "targetReceipt": "evidence/managed-csv-control-update-target-20261028.json"
 }
