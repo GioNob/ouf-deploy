@@ -96,5 +96,7 @@
   "runtimeAuthorityIssued": false,
   "applicationE2EProven": false,
   "automaticReplayAllowed": false,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "canonicalResultHash": "f71aa2e89b732312fb31bb3791564c4f1f7d6668dfaf45fdff5f44bc023485e9",
+  "repeatedEscapedReceiptIsSameExecution": true
 }

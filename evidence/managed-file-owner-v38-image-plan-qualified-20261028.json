@@ -2,7 +2,7 @@
   "schema": "ouf.managed-file-owner-v38-image-plan-qualification.v1",
   "date": "2026-10-28",
   "timezone": "Europe/Rome",
-  "status": "EXACT_IMAGE_CONDITIONAL_SINGLE_OWNER_PLAN_AND_ACTUAL_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+  "status": "TARGET_PREPARATION_SUCCEEDED_CONSUMED_NEW_NATIVE_UPDATE_QUALIFIED_NOT_EXECUTED",
   "consumedCapture": {
     "receipt": "evidence/managed-file-owner-inputs-target-20261028.json",
     "reportedOutput": "evidence/managed-file-owner-inputs-target-20261028.log",
@@ -109,8 +109,8 @@
     "nativeArchivesPrepared": 1,
     "maximumPreparationSeconds": 300,
     "maximumZipTransferSeconds": 720,
-    "currentDeliveryUsable": true,
-    "targetExecuted": false,
+    "currentDeliveryUsable": false,
+    "targetExecuted": true,
     "targetRoles": [
       "onboarding"
     ],
@@ -167,7 +167,11 @@
     "actualPinnedHttpsNonrootSudoRoot400": true,
     "wrongPrivateSealDeniedBeforeArchiveProcessing": true,
     "consumedScopeAndRetainedFilesPreservedInActualDelivery": true,
-    "ghOrTimeoutRequiredOnTarget": false
+    "ghOrTimeoutRequiredOnTarget": false,
+    "scopeConsumed": true,
+    "commandMustNotBeRedelivered": true,
+    "targetExecutionInputsHash": "b03d681a8070b31ab29ab9515846421e98ff55a197e963f447d645b1c824a120",
+    "targetConditionalPlanHash": "05e1398deae80106cbd9be45c04f9d9ffbe94303af882f06accb1f6d1a75b191"
   },
   "runtimeEffects": {
     "engineRequests": 0,
@@ -194,5 +198,7 @@
   "applicationE2EProven": false,
   "releaseAcceptance": false,
   "automaticReplayAllowed": false,
-  "budgetReset": false
+  "budgetReset": false,
+  "targetReceipt": "evidence/managed-file-owner-v38-image-plan-target-20261028.json",
+  "nextQualification": "evidence/managed-file-owner-v38-update-qualified-20261028.json"
 }

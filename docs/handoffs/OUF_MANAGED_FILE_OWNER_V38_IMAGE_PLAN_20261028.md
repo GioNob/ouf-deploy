@@ -1,3 +1,7 @@
+# SUPERSEDED — preparazione V38 riuscita e consumata; nuovo controller qualificato
+
+Seguire soltanto [handoff corrente aggiornamento nativo V38](OUF_MANAGED_FILE_OWNER_V38_NATIVE_UPDATE_20261028.md). I NEXT e le qualifiche sotto descrivono il checkpoint storico precedente. Non autorizzano replay.
+
 # OUF — immagine esatta V38 e piano condizionale del solo Onboarding
 
 ## Stato corrente, 28 ottobre 2026
@@ -32,20 +36,7 @@ Qualifica separata:9test del compilatore,archivio CI originale/JAR/38migrazioni/
 
 Come **oufadmin** sul VPS,una sola volta. Non richiede login IAM o APPROVO e non è un APPLY:
 
-```bash
-(
-  set -Eeuo pipefail
-  umask 077
-  ouf_owner_plan_bootstrap=$(mktemp -d "$HOME/ouf-owner-plan-bootstrap.XXXXXXXX")
-  curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
-    --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 16384 \
-    'https://raw.githubusercontent.com/GioNob/ouf-deploy/63d7370f50814adda04f8cdcaf40cd4d7f619e54/releases/prepare-managed-file-owner-image-plan-20261028.sh' \
-    -o "$ouf_owner_plan_bootstrap/run.sh"
-  printf '%s  %s\n' 'f185922cea4d0b9980d46408fbc6778569adeffef830125b2bd9cc86e0a23919' "$ouf_owner_plan_bootstrap/run.sh" | sha256sum -c -
-  chmod 0400 "$ouf_owner_plan_bootstrap/run.sh"
-  /usr/bin/bash "$ouf_owner_plan_bootstrap/run.sh"
-)
-```
+Comando storico rimosso: preparazione riuscita e CONSUMATA. Non riconsegnare/rilanciare.
 
 Riportare nuovo JSON finale/Exit/Directory/Log/DeliveryExit/DeliveryDirectory/DeliveryLog. Non inviare archivio,metadata privati,token/credenziali. STOP o esito ambiguo conserva e consuma:non rilanciare,non eliminare file/root/log. Non ripetere i due reader ownership/current-input già riusciti.
 

@@ -65,7 +65,7 @@
     "runtimeEvidenceOrigin": "OPERATOR_FINAL_SUCCESS_RESULT_READ_IN_FULL_NOT_NEW_AGENT_HOST_LOG_READ",
     "activeOnboardingSourceCommit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "activeOnboardingNativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
-    "profileControlCorrection": "OWNER_V38_SOURCE_AND_EXACT_IMAGE_QUALIFIED_CURRENT_CAPTURE_CONSUMED_CONDITIONAL_PLAN_PREPARATION_READY_NOT_INSTALLED",
+    "profileControlCorrection": "V38_IMAGE_PLAN_PREPARED_CONSUMED_SIGNED_SINGLE_ONBOARDING_UPDATE_QUALIFIED_TARGET_NOT_EXECUTED",
     "latestCohortCapture": "SUCCESS_CONSUMED_8A4C8475_EXACT13_27GET_4METADATA_ZERO_SQL",
     "profileControlCandidatesInstalled": true,
     "newControlUpdateRuntimeAuthorityIssued": true,
@@ -83,7 +83,9 @@
     "legacyOwnershipSourceQualified": true,
     "legacyOwnershipCorrectionInstalled": false,
     "ownerRecoveryCandidateNativeImageId": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
-    "ownerRecoveryCandidateInstalled": false
+    "ownerRecoveryCandidateInstalled": false,
+    "ownerV38UpdateControllerQualified": true,
+    "ownerV38UpdateInstalled": false
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1945,12 +1947,15 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Execute only NEW exact V38 image and conditional single-Onboarding plan preparation from3retained capture metadata,1original CI ZIP,0runtime requests/SQL/auth/actions. No APPLY or ownership/budget/resume decision. STOP consumes/preserves,no replay. After receipt qualify fresh36to38 fenced maintenance,then USER-only native ownership/budget/resume separately.",
+    "action": "Execute only NEW qualified signed single-Onboarding36to38 controller in direct SSH TTY as oufadmin. Read fresh private review and decide using only the displayed exact line plus Enter. Before decision:metadata/EngineGET/one owner overlay,JAR/config verification,no SQL/private signing keys. After fresh decision:7READONLYSQL,verified quiesced backup,at most1exact native import,Onboarding-only lifecycle and exact37/38 migrations by owner. Preserve FAILED5/zero owner receipts/budget/events/12peers. STOP consumes/preserves,no replay. USER-only THS ownership,budget3/900,resume remain later separate decisions.",
     "sshExecutionCommandUsable": true,
     "qualificationPending": false,
+    "newConcreteHumanTerminalDecisionRequired": true,
+    "runtimeAuthorityIssuedOnTarget": false,
+    "targetExecuted": false,
     "humanBudgetGranted": false,
     "resumed": false,
-    "scope": "/etc/ouf/deploy-snapshots/managed-file-owner-v38-image-plan-8a4c8475-20261028-v1"
+    "scope": "/etc/ouf/deploy-snapshots/managed-file-owner-v38-update-b03d681a-20261028-v1"
   },
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
@@ -1966,7 +1971,10 @@
     "evidence/managed-file-owner-recovery-v38-qualified-20261028.json",
     "docs/handoffs/OUF_MANAGED_FILE_OWNER_V38_IMAGE_PLAN_20261028.md",
     "evidence/managed-file-owner-inputs-target-20261028.json",
-    "evidence/managed-file-owner-v38-image-plan-qualified-20261028.json"
+    "evidence/managed-file-owner-v38-image-plan-qualified-20261028.json",
+    "docs/handoffs/OUF_MANAGED_FILE_OWNER_V38_NATIVE_UPDATE_20261028.md",
+    "evidence/managed-file-owner-v38-image-plan-target-20261028.json",
+    "evidence/managed-file-owner-v38-update-qualified-20261028.json"
   ],
   "canonicalScenarioAllocations": [
     {
@@ -2049,7 +2057,7 @@
       "status": "OPEN_FOR_M2_FINAL_COHORT"
     }
   ],
-  "revisionReason": "Exact current13cohort capture succeeded and is consumed(4metadata/27GET,zeroSQL). Original V38 CI ZIP downloaded,layer/JAR/all36retained+2new migrations/YAML/role/native manifest audited and durable original bytes preserved. Single-Onboarding conditional36to38 image-plan preparation and actual root400 delivery qualified;not executed on target,no authority/APPLY/ownership/budget/resume.",
+  "revisionReason": "V38 native image and conditional plan target preparation succeeded,Exit0/DeliveryExit0,scope consumed,b03d681a/05e1398d. New single-Onboarding36to38 signed controller and actual direct-TTY root400 delivery qualified:15protocol/7state/6native/22TTY/actualV38JAR. No target authority/APPLY or ownership/budget/resume;next NEW concrete HUMAN maintenance review.",
   "historicalEstimate": {
     "version": "1.0",
     "commit": "26fa7b78593983fc54aa0b9a8d5c0142c26ff04f",
@@ -2371,8 +2379,8 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-28",
-    "handoff": "docs/handoffs/OUF_MANAGED_FILE_OWNER_V38_IMAGE_PLAN_20261028.md",
-    "next": "NEW_EXACT_ORIGINAL_V38_IMAGE_AND_CONDITIONAL_SINGLE_ONBOARDING_PLAN_PREPARATION"
+    "handoff": "docs/handoffs/OUF_MANAGED_FILE_OWNER_V38_NATIVE_UPDATE_20261028.md",
+    "next": "NEW_DIRECT_TTY_SINGLE_ONBOARDING36_TO38_REVIEW_THEN_MAINTENANCE"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -3089,7 +3097,12 @@
     "ownerImagePlanCompiler": "tools/managed_file_owner_recovery/image_plan.py",
     "ownerImageExactOriginalZipDurableDelivery": "def3a36da119d5cfc28704338b238028796b960a",
     "ownerImageArchiveAndAll38MigrationResourcesVerified": true,
-    "ownerV38MaintenanceControllerQualified": false
+    "ownerV38MaintenanceControllerQualified": true,
+    "ownerV38MaintenanceControllerSource": "a9b5904c772c6cf93e34545163e72af5e6b4941f",
+    "ownerV38MaintenanceDeliveryBuilder": "tools/build_managed_file_owner_update_delivery.py",
+    "ownerV38TwelveTablePreservationFence": "tools/managed_file_owner_update/state_fence.py",
+    "ownerV38ActualPartialMigrationAndLostControllerQualified": true,
+    "ownerV38MaintenanceTargetExecuted": false
   },
   "profileControlThsIamBindingReadTarget": {
     "record": "evidence/managed-profile-ths-iam-binding-read-target-20261028.json",
@@ -4107,7 +4120,7 @@
     }
   },
   "managedFileOwnerV38ImagePlanPreparation": {
-    "status": "EXACT_IMAGE_CONDITIONAL_SINGLE_OWNER_PLAN_AND_ACTUAL_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+    "status": "TARGET_SUCCEEDED_CONSUMED_NOT_AUTHORIZED",
     "evidence": "evidence/managed-file-owner-v38-image-plan-qualified-20261028.json",
     "sourceCommit": "816b5cc6a06f8c3a6c092bf815fe183bebec9494",
     "wrapperCommit": "63d7370f50814adda04f8cdcaf40cd4d7f619e54",
@@ -4116,8 +4129,8 @@
     "wrapperSha256": "f185922cea4d0b9980d46408fbc6778569adeffef830125b2bd9cc86e0a23919",
     "codeRoot": "/usr/local/lib/ouf-managed-file-owner-image-plan-83465836310ad2bd",
     "scope": "/etc/ouf/deploy-snapshots/managed-file-owner-v38-image-plan-8a4c8475-20261028-v1",
-    "currentDeliveryUsable": true,
-    "targetExecuted": false,
+    "currentDeliveryUsable": false,
+    "targetExecuted": true,
     "targetRoles": [
       "onboarding"
     ],
@@ -4168,6 +4181,76 @@
     "sqlSessions": 0,
     "runtimeAuthorityIssued": false,
     "targetUpdateAuthorized": false,
+    "applicationE2EProven": false,
+    "scopeConsumed": true,
+    "commandMustNotBeRedelivered": true,
+    "targetReceipt": "evidence/managed-file-owner-v38-image-plan-target-20261028.json",
+    "executionInputsHash": "b03d681a8070b31ab29ab9515846421e98ff55a197e963f447d645b1c824a120",
+    "conditionalNativePlanHash": "05e1398deae80106cbd9be45c04f9d9ffbe94303af882f06accb1f6d1a75b191",
+    "targetResultHash": "f71aa2e89b732312fb31bb3791564c4f1f7d6668dfaf45fdff5f44bc023485e9",
+    "counts": {
+      "ciZipReads": 1,
+      "containerWrites": 0,
+      "engineGets": 0,
+      "imageImports": 0,
+      "nativeArchivesPrepared": 1,
+      "privateMetadataBytes": 634542,
+      "privateMetadataReads": 3
+    }
+  },
+  "managedFileOwnerV38NativeUpdateQualification": {
+    "status": "FRESH_SINGLE_ONBOARDING36_TO38_CONTROLLER_AND_PROTECTED_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+    "evidence": "evidence/managed-file-owner-v38-update-qualified-20261028.json",
+    "sourceCommit": "a9b5904c772c6cf93e34545163e72af5e6b4941f",
+    "wrapperCommit": "7ccfba0833cecc37b4cece37998326cd2a6ccc52",
+    "deliveryQualificationCommit": "6719e8ee2d3967994ba9773f39e8592de8591e5c",
+    "sourceClosureHash": "f00094e876add2eb729ef72dc83d60e446622bf6dead33b2992ad8f6d4b6a450",
+    "wrapperSha256": "f4c7d459d063bac62401656d9da4dfa64a35722b79e8d5f0a23f0e7da361b0d7",
+    "codeRoot": "/usr/local/lib/ouf-managed-file-owner-v38-update-f00094e876add2eb",
+    "executionRoot": "/etc/ouf/deploy-snapshots/managed-file-owner-v38-update-b03d681a-20261028-v1",
+    "candidateSourceCommit": "9d19fad3dd750dd5b9e77253d3e7e82029c1aca7",
+    "candidateNativeImageId": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+    "targetRoles": [
+      "onboarding"
+    ],
+    "unchangedPeers": 12,
+    "migration": {
+      "from": 36,
+      "to": 38,
+      "newMigrations": 2
+    },
+    "maximums": {
+      "engineGets": 768,
+      "engineWrites": 10,
+      "imageLoadAttempts": 1,
+      "readinessGets": 96,
+      "adminGets": 0,
+      "adminPuts": 0,
+      "ownerConfigurationReads": 64,
+      "ownerConfigurationContentReads": 1,
+      "serviceCredentialFileReads": 0,
+      "quarantineStops": 1,
+      "sqlSessions": 7,
+      "backupProcesses": 2
+    },
+    "preflightSeconds": 300,
+    "humanReviewSeconds": 900,
+    "executionAuthoritySeconds": 900,
+    "currentDeliveryUsable": true,
+    "targetExecuted": false,
+    "targetInstalled": false,
+    "runtimeAuthorityIssuedOnTarget": false,
+    "sourceControllerPushRun": 40758383606,
+    "sourceControllerPrRun": 40758393066,
+    "actualDeliveryPushRun": 40759055775,
+    "actualDeliveryPrRun": 40759070673,
+    "protocolCases": 15,
+    "stateFenceCases": 7,
+    "nativeCases": 6,
+    "terminalCases": 22,
+    "currentHumanOwnershipGranted": false,
+    "humanBudgetGranted": false,
+    "resumed": false,
     "applicationE2EProven": false
   }
 }
