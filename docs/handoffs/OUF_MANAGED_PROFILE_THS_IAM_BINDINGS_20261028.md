@@ -1,3 +1,13 @@
+# CURRENT — lettura IAM riuscita/CONSUMATA; correzione minima in preparazione
+
+28 ottobre 2026, Europe/Rome. [Ricevuta integrale](../../evidence/managed-profile-ths-iam-binding-read-target-20261028.json): complete/Exit0/DeliveryExit0,identità amministrativa protetta verificata,1auth/14GET IAM/5GET Engine/2metadata/135305byte. Status THS_IAM_BINDINGS_OBSERVED_CONFIGURATION_PROFILE_BLOCKED è lettura riuscita,non STOP e non profilo pronto. Scope/comando managed-profile-ths-iam-binding-read-5dfd7b7a-20261028-v1 CONSUMATI:non rilanciare/riconsegnare. Nessun token/password nuovo conservato o modifica IAM/runtime/grant/budget/resume.
+
+Client ouf-authorization-ths UUIDa53bc77e-1b21-4a54-8f1a-b236fadb759a:14DEFAULT/6OPTIONAL,69definizioni,baselineHashba556e9fce5fb31de5f53af0bf6d3fe7a77e8e09d9048529d8283eaaa6afabc2. Previewe369f8fd... e file.profile226b20cd... esistono,inclusione token=true,nessuna restrizione ruolo,ma binding NONE. Quarantine.release NON definito. Profilo Env non compilato. Policy58 resta PUBLISHED,nessuna nuova proposta/grant/login browser richiesto.
+
+NEXT preparare/qualificare UNA correzione nuova con review concreta esplicita:creare il solo scope OAuth mancante (OIDC,include in token scope=true,nessun RealmDefault),aggiungere3link OPTIONAL allo stesso client,preservare i20link precedenti e altre definizioni/configurazioni. OPTIONAL lega l'uso alla richiesta esplicita della THS;non modifica iDEFAULT esistenti. Fresh snapshot deve uguagliare baseline prima effetti;claim/receipt fsync prima guard e riconciliazione stessa operazione senza POST/PUT ripetuti. Se autorizzato dall'utente nel terminale,un nuovo accesso amministrativo finito distinto dal readconsumato,nessun refresh o vecchia finestra/budget riaperta. Nuovo comando NON ancora consegnato.
+
+Codice persistente e guard nativo sono acquisiti in sorgente/CI59test+Keycloak reale,non correzione installata o E2E. Dopo IAM verificato,compilare profilo Env solo privato condizionale;runtime APPLY ancora separato con review/fence correnti. THS esclusiva UTENTE;appouf-admin distinto da IAMoufadmin. Ultimo FarmacieFAILED5 non riletto,budget3/900 e resume DUE future decisioni HUMAN distinte stesso job/sessione,cumulativi6–8. M1/G4 acquisiti;M2/G5/G6/G7/E2E,61righe→UDP,D5–D7/dueclient aperti;Supervisor dopoE2E. No reset/nuovi upload/job/terzaacquisizione/Registryrestart/reinstall/attivazioneimplicita/merge/releaseacceptance/subagenti/automazioni. Header seguenti STORICI.
+
 # OUF — controllo IAM e contratto persistente della recovery THS — 28 ottobre 2026
 
 ## Punto corrente e predecessori consumati
