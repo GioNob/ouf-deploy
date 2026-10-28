@@ -1,0 +1,93 @@
+{
+  "schema": "ouf.farmacie-profile-recovery-observation.v1",
+  "observedAt": "2026-10-28T22:24:25Z",
+  "timezone": "Europe/Rome",
+  "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+  "jobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+  "profileId": "f3061699-4fde-4085-89c8-bc8703f65686",
+  "userThsObservation": {
+    "status": "Analisi completata",
+    "cumulativeAttempts": 6,
+    "sessionState": "COMPLETED",
+    "sessionUsedAttempts": 1,
+    "maximumSessionAttempts": 3,
+    "sizeBytes": 13903,
+    "lastBlockShown": "UNCLASSIFIED",
+    "screenshotClockLocal": "23:21",
+    "budgetGrantExplicitlyReported": true,
+    "resumeInferredFromCompletedSession": true,
+    "sessionIdOrOwnershipReceiptNotProvided": true
+  },
+  "liveMcpJobRead": {
+    "account": "ouf-admin",
+    "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+    "response": {
+      "jobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+      "status": "SUCCEEDED",
+      "resultRef": "f3061699-4fde-4085-89c8-bc8703f65686",
+      "errorCode": null
+    }
+  },
+  "profilePreviewAttempt": {
+    "result": "DENIED",
+    "phase": "MCP_PRE_ADMISSION",
+    "reasonCode": "NO_APPLICABLE_GRANT",
+    "evaluatedPolicyVersion": 58,
+    "retryable": false,
+    "dispatchToProfileOwnerNotProven": false,
+    "profileContentsRead": false
+  },
+  "codeFinding": {
+    "onboardingSource": "9d19fad3dd750dd5b9e77253d3e7e82029c1aca7",
+    "file": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedProfileJobs.java",
+    "observation": "card() substitutes UNCLASSIFIED for a missing failure_class, including SUCCEEDED. This is a misleading display/classification fallback; the current live job read has errorCode:null.",
+    "runtimeFixApplied": false
+  },
+  "resultBoundary": {
+    "sameJobSucceeded": true,
+    "newUploadOrJobDispatchedByAgent": false,
+    "newBudgetOrResumeDispatchedByAgent": false,
+    "profileIdOwnerReturned": true,
+    "csvRowsVerifiedFromProfile": false,
+    "expectedRows": 61,
+    "ingestionAcquisitionProven": false,
+    "udpMaterializationProven": false,
+    "M2Accepted": false,
+    "G5": "OPEN",
+    "G6": "OPEN",
+    "G7": "OPEN"
+  },
+  "callsThisContinuation": [
+    {
+      "tool": "source.file.preview",
+      "selection": "same asset/job",
+      "result": "SUCCEEDED"
+    },
+    {
+      "tool": "source.file.preview",
+      "selection": "same asset/new profile",
+      "result": "NO_APPLICABLE_GRANT",
+      "phase": "MCP_PRE_ADMISSION"
+    },
+    {
+      "tool": "authorization.permissions.read",
+      "selection": "ROLES limit50",
+      "result": "SCHEMA_REJECTED_BEFORE_VALID_CALL"
+    },
+    {
+      "tool": "authorization.permissions.read",
+      "selection": "GRANTS same subject limit1",
+      "result": "POLICY58_CONFIGURED_SNAPSHOT"
+    },
+    {
+      "tool": "authorization.permissions.read",
+      "selection": "ROLES only",
+      "result": "SUCCESS_8ROLES_12ASSIGNMENTS"
+    },
+    {
+      "tool": "authorization.permissions.read",
+      "selection": "CAPABILITIES only",
+      "result": "HTTP400_EMPTY_PROBLEM_NO_RETRY"
+    }
+  ]
+}
