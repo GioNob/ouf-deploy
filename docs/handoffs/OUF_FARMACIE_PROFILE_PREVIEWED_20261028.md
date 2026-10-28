@@ -1,6 +1,6 @@
 # OUF — Farmacie: anteprima letta su policy 59, proposta di mapping pronta
 
-28 ottobre 2026, Europe/Rome. [Evidenza](../../evidence/farmacie-profile-preview-policy 59-20261028.json),[mapping completo](../OUF_FARMACIE_MAPPING_PROPOSAL_20261028.md),[miniPETM2 v1.2](../OUF_M2_MINIPET_v1_0_20261026.md).
+28 ottobre 2026, Europe/Rome. [Evidenza](../../evidence/farmacie-profile-preview-policy59-20261028.json),[mapping completo](../OUF_FARMACIE_MAPPING_PROPOSAL_20261028.md),[miniPETM2 v1.2](../OUF_M2_MINIPET_v1_0_20261026.md).
 
 La proposta di permesso ad738511-24cd-418a-b5b2-0cfc46be59fe è stata verificata revision 1/PUBLISHED/finalPolicyRefouf-lab-authorization:59. Il relativo consenso è acquisito: nessun duplicato, nuovo grant preview o vecchia review da riproporre.
 

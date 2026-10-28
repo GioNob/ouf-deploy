@@ -1,12 +1,12 @@
 # Farmacie — proposta di mapping da completare con le decisioni di dominio
 
-28 ottobre 2026, Europe/Rome. Riferimento: [miniPET M2 v1.2](OUF_M2_MINIPET_v1_0_20261026.md), §5 e WP3. [Evidenza owner](../evidence/farmacie-profile-preview-policy 59-20261028.json).
+28 ottobre 2026, Europe/Rome. Riferimento: [miniPET M2 v1.2](OUF_M2_MINIPET_v1_0_20261026.md), §5 e WP3. [Evidenza owner](../evidence/farmacie-profile-preview-policy59-20261028.json).
 
 **Stato: proposta di lavoro, non configurazione approvata o eseguibile.** Nessun nuovo IRI è presentato come termine pubblicato. Nessuna fonte, acquisizione o attivazione è stata creata.
 
 ## Profilo letto attraverso MCP
 
-Policy 59 è confermata PUBLISHED dalla receipt owner della stessa proposta autorizzativa. Anteprima del profilo esistente riuscita: versione1, CSV,61 righe/10 colonne, UTF-8, separatorepunto e virgola, header 1. L'owner ha restituito un campione redatto di5 righe, che qui non viene ripubblicato.
+Policy 59 è confermata PUBLISHED dalla receipt owner della stessa proposta autorizzativa. Anteprima del profilo esistente riuscita: versione 1, CSV, 61 righe/10 colonne, UTF-8, separatore punto e virgola, header 1. L'owner ha restituito un campione redatto di 5 righe, che qui non viene ripubblicato.
 
 La proposta automatica sceglie nome_denominazione come chiave perché è il primo candidato. I candidati sono nome_denominazione,indirizzo,codice_ministeriale. L'unicità nel file non prova stabilità nel tempo: si propone codice_ministeriale per la conferma dell'utente, mantenendo il valore lessicale.
 

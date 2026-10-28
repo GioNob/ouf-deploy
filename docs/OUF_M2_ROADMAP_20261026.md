@@ -1,6 +1,6 @@
 # CURRENT — Policy 59 PUBLISHED; profilo Farmacie letto, mapping proposto e scelte di dominio aperte
 
-28 ottobre 2026,Europe/Rome. [Handoff](handoffs/OUF_FARMACIE_PROFILE_PREVIEWED_20261028.md),[preview owner](../evidence/farmacie-profile-preview-policy 59-20261028.json),[proposta mapping](OUF_FARMACIE_MAPPING_PROPOSAL_20261028.md). Stessa proposta ad738511-24cd-418a-b5b2-0cfc46be59fe revision 1 PUBLISHED/finalPolicyRefouf-lab-authorization:59 confermata con caller-owned read. NON ricreare/riapprovare/riconsegnare review scaduta o chiedere nuovo grant preview.
+28 ottobre 2026,Europe/Rome. [Handoff](handoffs/OUF_FARMACIE_PROFILE_PREVIEWED_20261028.md),[preview owner](../evidence/farmacie-profile-preview-policy59-20261028.json),[proposta mapping](OUF_FARMACIE_MAPPING_PROPOSAL_20261028.md). Stessa proposta ad738511-24cd-418a-b5b2-0cfc46be59fe revision 1 PUBLISHED/finalPolicyRefouf-lab-authorization:59 confermata con caller-owned read. NON ricreare/riapprovare/riconsegnare review scaduta o chiedere nuovo grant preview.
 
 source.file.preview sul profilo f3061699-4fde-4085-89c8-bc8703f65686/asset9c502da5-b5d8-405e-b3f5-60eb31ecb513 RIUSCITA:CSV v1,61 righe/10 colonne,UTF8,delimiter ;, header 1. Campione5 righe redatto letto,NON pubblicato;nome/indirizzo restano redatti. Owner suggerisce nome come chiave; proposta da confermare codice_ministeriale STRING stabile, CAP STRING,coordinate con coppia/range/CRS,data di validità anagrafica e note conservate. Label/inclusione ancora NON decise;non assegnareOPEN automatico.
 
