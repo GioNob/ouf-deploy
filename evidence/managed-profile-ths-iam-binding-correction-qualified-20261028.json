@@ -198,6 +198,7 @@
     "iamMutations": 4,
     "scopePatchApplied": false,
     "runtimeAuthorityIssued": false,
-    "targetApplyAuthorized": false
+    "targetApplyAuthorized": false,
+    "nextQualifiedPlan": "evidence/managed-profile-ths-native-plan-qualified-20261028.json"
   }
 }

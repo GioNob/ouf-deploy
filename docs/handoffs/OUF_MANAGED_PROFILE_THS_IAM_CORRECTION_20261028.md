@@ -1,3 +1,7 @@
+# ACQUISITO/CONSUMATO — correzione IAM riuscita
+
+La correzione IAM di questo handoff è riuscita,complete/Exit0/DeliveryExit0,4write provate e profilo privato pronto. NON rilanciare il comando sottostante. Seguire il [nuovo piano nativo del solo Onboarding](OUF_MANAGED_PROFILE_THS_NATIVE_PLAN_20261028.md). Vecchi login/review/authority restano consumati.
+
 # CURRENT — correzione IAM RIUSCITA/CONSUMATA; profilo owner pronto, configurazione NON installata
 
 28 ottobre2026,Europe/Rome. [Ricevuta integrale](../../evidence/managed-profile-ths-iam-binding-correction-target-20261028.json): complete/Exit0/DeliveryExit0, identità amministrativa protetta verificata, review a6b0abd0f97c740ce3c6ba7455e3ed078ff783b454cf1038a2efd8c2f1395c69. Una definizione OIDC +3link OPTIONAL corretti sul client ouf-authorization-ths / a53bc77e-1b21-4a54-8f1a-b236fadb759a. 70definizioni,14DEFAULT/9OPTIONAL;69definizioni/20link precedenti,Realm Default e proprietà client preservati. Binding e7b16276cd7cdba45d3a5ec5d96ba47b8a5bd23cf43db050eedfd5ac9935ee03. Quattro write riservate e osservate;29AdminGET/7EngineGET/3metadata/1auth nuova (cumulativo2),221649byte. Scope managed-profile-ths-iam-binding-correction-ba556e9f-20261028-v1 e comando CONSUMATI:NON riconsegnare/rieseguire/riapprovare;non riaprire login/finestre/budget.

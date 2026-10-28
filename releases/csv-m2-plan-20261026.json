@@ -65,7 +65,7 @@
     "runtimeEvidenceOrigin": "OPERATOR_FINAL_SUCCESS_RESULT_READ_IN_FULL_NOT_NEW_AGENT_HOST_LOG_READ",
     "activeOnboardingSourceCommit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "activeOnboardingNativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
-    "profileControlCorrection": "IAM_BASELINE_OBSERVED_CONSUMED_NEW_MINIMAL_CORRECTION_QUALIFIED_TARGET_PENDING",
+    "profileControlCorrection": "IAM_CORRECTED_CONSUMED_CONDITIONAL_PROFILE_READY_NEW_SINGLE_OWNER_NATIVE_PLAN_QUALIFIED_TARGET_PENDING",
     "latestCohortCapture": "SUCCESS_CONSUMED_FDC61884_EXACT13_BINDINGS_27GET_NO_RUNTIME_WRITES",
     "profileControlCandidatesInstalled": true,
     "newControlUpdateRuntimeAuthorityIssued": true,
@@ -74,7 +74,7 @@
     "newControlUpdateAuthorityConsumed": true,
     "currentRuntimeAuthorityUsable": false,
     "iamBindingObserved": true,
-    "iamBindingsCorrected": false,
+    "iamBindingsCorrected": true,
     "ownerScopeRequestPatchInstalled": false,
     "effectiveBrowserTokenScopesProven": false,
     "nativeJobCardAccessProven": false
@@ -1939,10 +1939,9 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Run new qualified correction once: one missing OIDC definition and three OPTIONAL links on the same client; exact native terminal review then one fresh hidden IAM authentication; compile private conditional owner profile without installation",
-    "command": "releases/OUF_MANAGED_PROFILE_THS_IAM_CORRECTION_COMMAND_20261028.sh",
-    "scope": "/etc/ouf/deploy-snapshots/managed-profile-ths-iam-binding-correction-ba556e9f-20261028-v1",
-    "maximumIamWriteDispatches": 4,
+    "action": "Run the newly qualified read-only planner once: five retained metadata and27GET exact cohort13; compile same-image SOLO Onboarding conditional native plan with12unchanged peers. No login/APPROVO/SQL/IAM/Enginewrite/budget/resume. STOP consumes scope; preserve without replay.",
+    "command": "releases/OUF_MANAGED_PROFILE_THS_NATIVE_PLAN_COMMAND_20261028.sh",
+    "scope": "/etc/ouf/deploy-snapshots/managed-profile-ths-native-plan-d0dbbd61-20261028-v1",
     "targetExecuted": false,
     "runtimeAuthorityIssued": false,
     "targetApplyAuthorized": false,
@@ -2040,7 +2039,7 @@
       "status": "OPEN_FOR_M2_FINAL_COHORT"
     }
   ],
-  "revisionReason": "Successful IAM binding read recorded and consumed; additive correction qualified with 81 tests and real Keycloak26.0.8/26.2.5 normal/lost-response fixtures. Target IAM correction, owner configuration, browser card and complete application E2E remain open.",
+  "revisionReason": "Target IAM correction succeeded and is consumed:1definition+3OPTIONAL links, exact profile prepared, no owner configuration installed. Fresh single-owner same-image native planner qualified91tests/real Unix/process custody/immutable protected delivery; target plan, runtime configuration, browser card and complete M2 E2E remain open.",
   "historicalEstimate": {
     "version": "1.0",
     "commit": "26fa7b78593983fc54aa0b9a8d5c0142c26ff04f",
@@ -2362,8 +2361,8 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-28",
-    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_THS_IAM_CORRECTION_20261028.md",
-    "next": "NEW_EXPLICIT_HUMAN_REVIEW_AND_FINITE_IAM_CORRECTION_NOT_RUNTIME_APPLY"
+    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_THS_NATIVE_PLAN_20261028.md",
+    "next": "NEW_READ_ONLY_SINGLE_OWNER_CONDITIONAL_NATIVE_PLAN_NO_AUTHENTICATION_OR_APPLY"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -3053,7 +3052,10 @@
     ],
     "lostWriteResponsesReconciledSameIdsWithoutMutationRetry": true,
     "nativeEditingWithinOriginalReviewDeadlineProven": true,
-    "currentIamCorrectionInstalled": false
+    "currentIamCorrectionInstalled": true,
+    "nativePlanCompiler": "tools/managed_profile_ths_scopes/native_plan.py",
+    "reproducibleNativePlanBuilder": "tools/build_managed_profile_ths_native_plan.py",
+    "freshNativePlanTargetExecuted": false
   },
   "profileControlThsIamBindingReadTarget": {
     "record": "evidence/managed-profile-ths-iam-binding-read-target-20261028.json",
@@ -3281,11 +3283,205 @@
       "maximumOptionalPuts": 3,
       "maximumBytes": 25165824
     },
+    "targetExecuted": true,
+    "currentDeliveryUsable": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "humanBudgetsGranted": 0,
+    "resumes": 0,
+    "status": "SUCCESSFULLY_CONSUMED_CONFIGURATION_PROFILE_PREPARED",
+    "targetReceipt": "evidence/managed-profile-ths-iam-binding-correction-target-20261028.json"
+  },
+  "profileControlThsIamBindingCorrectionTarget": {
+    "record": "evidence/managed-profile-ths-iam-binding-correction-target-20261028.json",
+    "result": {
+      "acquisitionsExecuted": 0,
+      "addedRequestScopes": [
+        "ouf.managed-source.preview",
+        "ouf.managed-source.file.profile",
+        "ouf.onboarding.quarantine.release"
+      ],
+      "adminIdentityApiVerified": true,
+      "adminSubjectFromSameFreshProviderIdToken": true,
+      "applicationE2EProven": false,
+      "automaticReplayAllowed": false,
+      "bindingObservation": {
+        "bindingAndUnrestrictedEligibilityProven": true,
+        "bindingSnapshotHash": "e7b16276cd7cdba45d3a5ec5d96ba47b8a5bd23cf43db050eedfd5ac9935ee03",
+        "blockedScopes": [],
+        "clientId": "ouf-authorization-ths",
+        "clientUuid": "a53bc77e-1b21-4a54-8f1a-b236fadb759a",
+        "defaultScopeCount": 14,
+        "definitionCount": 70,
+        "effectiveBrowserTokenScopesProven": false,
+        "iamMutations": 0,
+        "newGrantsGranted": 0,
+        "optionalScopeCount": 9,
+        "requiredScopes": [
+          {
+            "binding": "OPTIONAL",
+            "defined": true,
+            "eligibleForExplicitRequest": true,
+            "id": "e369f8fd-fe4d-4fa2-8ff2-4cd806398417",
+            "includeInTokenScope": true,
+            "includeInTokenScopeAttribute": "true",
+            "name": "ouf.managed-source.preview",
+            "roleMappingsObserved": true,
+            "unrestrictedByScopeRoleMappings": true
+          },
+          {
+            "binding": "OPTIONAL",
+            "defined": true,
+            "eligibleForExplicitRequest": true,
+            "id": "226b20cd-7798-4da9-af03-eb2bca3d2c5a",
+            "includeInTokenScope": true,
+            "includeInTokenScopeAttribute": "true",
+            "name": "ouf.managed-source.file.profile",
+            "roleMappingsObserved": true,
+            "unrestrictedByScopeRoleMappings": true
+          },
+          {
+            "binding": "OPTIONAL",
+            "defined": true,
+            "eligibleForExplicitRequest": true,
+            "id": "3dbfa25c-89da-53ec-89b0-4ba6458017c9",
+            "includeInTokenScope": true,
+            "includeInTokenScopeAttribute": "true",
+            "name": "ouf.onboarding.quarantine.release",
+            "roleMappingsObserved": true,
+            "unrestrictedByScopeRoleMappings": true
+          }
+        ],
+        "schema": "ouf.ths-oidc-client-binding-observation.v1"
+      },
+      "budgetReset": false,
+      "complete": true,
+      "configurationFileContentReads": 0,
+      "configurationProfileHash": "d0dbbd61b5a6486124e229e646ce63a96165dfc2433ae200f7fec92383d5140c",
+      "configurationProfilePrepared": true,
+      "contextPath": "/etc/ouf/deploy-snapshots/managed-profile-ths-iam-binding-correction-ba556e9f-20261028-v1",
+      "counts": {
+        "adminGetRetryReservations": 0,
+        "adminGetsReserved": 29,
+        "bytes": 221649,
+        "engineGets": 7,
+        "iamWritesObserved": 4,
+        "iamWritesReserved": 4,
+        "oauthRequestsReserved": 1,
+        "privateMetadataReads": 3
+      },
+      "createdScopeId": "3dbfa25c-89da-53ec-89b0-4ba6458017c9",
+      "createdScopeName": "ouf.onboarding.quarantine.release",
+      "credentialFilesRead": 0,
+      "credentialValuesPrinted": false,
+      "cumulativeAdministrativeAuthenticationReservationsInThisLineage": 2,
+      "currentJobOrBudgetStateObserved": false,
+      "effectiveBrowserTokenScopesProven": false,
+      "engineWrites": 0,
+      "historicalAuthorityReused": false,
+      "humanBudgetsGranted": 0,
+      "humanIamCorrectionReviewApproved": true,
+      "iamMutations": 4,
+      "imageImports": 0,
+      "jwtSignatureIndependentlyVerified": false,
+      "newAdministrativeCredentialValuesPersisted": false,
+      "newGrantsGranted": 0,
+      "newJobs": 0,
+      "newOptionalClientBindings": 3,
+      "newScopeDefinitions": 1,
+      "nonCredentialClientPropertiesPreserved": true,
+      "oldAuthenticationWindowsOrBudgetsReopened": false,
+      "oldScopesAndFilesModified": false,
+      "operationRef": "a258d03d9283225f938e658a01db474a949afe2bb206d127f96a56fd253b89e9",
+      "parentResultHash": "bfbff1b10039bcca43ad587167bb0fe4314055866c214926daaf4c2570f3fa7b",
+      "preexistingDefinitionsPreserved": true,
+      "preservedDefaultBindings": 14,
+      "preservedOptionalBindings": 6,
+      "realmDefaultsPreserved": true,
+      "releaseAcceptance": false,
+      "resumes": 0,
+      "retainedAdministrativeAuthenticationReservations": 1,
+      "retainedEnvironmentMayContainCredentials": true,
+      "reviewHash": "a6b0abd0f97c740ce3c6ba7455e3ed078ff783b454cf1038a2efd8c2f1395c69",
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.managed-profile-ths-iam-binding-correction-result.v1",
+      "scopePatchApplied": false,
+      "sourceActivations": 0,
+      "sqlSessions": 0,
+      "status": "THS_IAM_BINDINGS_CORRECTED_CONFIGURATION_PROFILE_PREPARED_NOT_AUTHORIZED",
+      "targetApplyAuthorized": false,
+      "uploads": 0
+    },
+    "exit": 0,
+    "deliveryExit": 0,
+    "scopeConsumed": true,
+    "automaticReplayAllowed": false
+  },
+  "profileControlThsNativePlanQualification": {
+    "record": "evidence/managed-profile-ths-native-plan-qualified-20261028.json",
+    "source": {
+      "commit": "10b97a9598ebe9e63d7edbaac3edeb6633994941",
+      "path": "scripts/prepare-managed-profile-ths-native-plan-20261028.py",
+      "bytes": 41126,
+      "sha256": "34ecd1f65917009523971431f5a60af33bda0eacc1c25d189b1e687494d3ecbd"
+    },
+    "wrapper": {
+      "commit": "6f25824ffea6318caed384cfa7b7e81378bc1e4f",
+      "path": "releases/prepare-managed-profile-ths-native-plan-20261028.sh",
+      "bytes": 4148,
+      "sha256": "ed0c03f4761604d255dd8f5f1c9768a3cc597e3fe86408c2e545da90c90d3930"
+    },
+    "qualification": {
+      "commit": "c3dc48409a4439705a521984c81816584282ed25",
+      "pushRun": 40703684260,
+      "prRun": 40703696104,
+      "unitTests": 91,
+      "newPlanTests": 10,
+      "preservedTests": 81,
+      "skips": 0,
+      "sourceReproduction": true,
+      "syntheticEngineMetadata": true,
+      "actualUnixHttpRootPeerAndPrivateCustody": true,
+      "actualThirteenProcessPins": true,
+      "actualPinnedHttpsNonrootSudoRoot400Delivery": true,
+      "privateFiles600": true,
+      "oldInputBytesUnchanged": true,
+      "driftDeniedBeforePlan": true,
+      "replayDenied": true,
+      "noHumanApprovalSimulated": true,
+      "targetCalls": 0,
+      "conclusion": "success",
+      "pushJobs": [
+        122869960807,
+        122869961317
+      ],
+      "prJobs": [
+        122870003574,
+        122870004119
+      ],
+      "directLogsRead": 4
+    },
+    "scope": "/etc/ouf/deploy-snapshots/managed-profile-ths-native-plan-d0dbbd61-20261028-v1",
+    "configurationProfileHash": "d0dbbd61b5a6486124e229e646ce63a96165dfc2433ae200f7fec92383d5140c",
+    "iamResultHash": "c82b1b1025086faf4acf0899485643209f8929c4fa8ce6ca045fc2bfbdd7d027",
+    "targetRoles": [
+      "onboarding"
+    ],
+    "cohortSize": 13,
+    "unchangedPeers": 12,
+    "sameNativeImageRequired": true,
     "targetExecuted": false,
     "currentDeliveryUsable": true,
     "runtimeAuthorityIssued": false,
     "targetApplyAuthorized": false,
     "humanBudgetsGranted": 0,
-    "resumes": 0
+    "resumes": 0,
+    "limits": {
+      "privateMetadataReads": 5,
+      "engineGets": 27,
+      "seconds": 120,
+      "responseBytes": 2097152,
+      "totalBytes": 25165824
+    }
   }
 }

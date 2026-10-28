@@ -1,3 +1,13 @@
+# CURRENT — IAM correction installed; owner request plan qualified, target plan pending
+
+28 October2026. [Successful consumed IAM receipt](../evidence/managed-profile-ths-iam-binding-correction-target-20261028.json) proves one definition and three OPTIONAL links with previous definitions/bindings and Realm Defaults preserved. The private additive request profile is ready but NOT installed. Follow the [new handoff](handoffs/OUF_MANAGED_PROFILE_THS_NATIVE_PLAN_20261028.md); no IAM login or correction is repeated.
+
+The persistent `native_plan.py` compiler and reproducible `build_managed_profile_ths_native_plan.py` now connect the exact successful IAM result/profile to fresh13-member Engine observations. They reuse Teatri configuration/network/allocation and legacy-MAC rules and compile only a single Onboarding replacement on the same image, preserving12peers including MCP. Profile hashes, exact current owner/configuration, every prior request scope/unrelated property, resources includingMemory0, mount/launch/labels/MAC/IP/aliases/allocated ports and restore restart policy are checked. Consumed roots are provenance, never reused authority.
+
+The planner has no execution or authentication port:5private metadata/27EngineGET/120seconds/24MiB, no SQL/IAM/OAuth/Enginewrite/import/lifecycle/grant/budget/resume. Inputs/output are private600; existing installation credentials may be present in retained Env/profile metadata and must never become public. Exclusive scope, fsynced read claims, drift denial before plan and no replay remain enforced.
+
+Qualificationc3dc48409a4439705a521984c81816584282ed25:91tests/0skip, real Unix/rootpeer/13process pins/private custody with SYNTHETIC Engine metadata and actual immutable HTTPS/nonroot/sudo/root400 delivery, push40703684260 and PR40703696104 PASS;4direct logs read. No production calls or human approval simulated. The plan is conditional: fresh SQL schema36/jobFAILED5 admission, complete live network membership/overlay and backup, concrete HUMAN review and signed finite runtime authority remain separate execution gates. Browser token/card, distinct job budget/resume and full61rows→UDP/two-real-client M2 acceptance remain open. All following earlier statuses are historical.
+
 # CURRENT — additive IAM correction qualified; target and owner configuration pending
 
 28 October2026. [Current handoff](handoffs/OUF_MANAGED_PROFILE_THS_IAM_CORRECTION_20261028.md), [qualification](../evidence/managed-profile-ths-iam-binding-correction-qualified-20261028.json), [consumed read](../evidence/managed-profile-ths-iam-binding-read-target-20261028.json). The current IAM baseline is now observed; older unknown-state statements below are historical. No target IAM correction or owner installation has occurred.
