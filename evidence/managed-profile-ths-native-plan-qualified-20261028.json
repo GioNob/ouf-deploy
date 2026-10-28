@@ -151,6 +151,7 @@
     "scopeConsumed": true,
     "scopePatchApplied": false,
     "runtimeAuthorityIssued": false,
-    "targetApplyAuthorized": false
+    "targetApplyAuthorized": false,
+    "nextQualifiedExecution": "evidence/managed-profile-ths-request-update-qualified-20261028.json"
   }
 }

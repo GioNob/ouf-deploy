@@ -1,3 +1,7 @@
+# ACQUISITO/CONSUMATO — piano nativo riuscito
+
+Piano completo,Exit0/DeliveryExit0,e22a443d/9c961982,coorte13/12peer. NON rilanciare il comando di preparazione sottostante. Seguire il [nuovo esecutore del SOLO delta Onboarding](OUF_MANAGED_PROFILE_THS_REQUEST_UPDATE_20261028.md),qualificato ma non eseguito sul target,con nuova review HUMAN. Nessun vecchio APPLY/login/authority da riusare.
+
 # CURRENT — piano nativo RIUSCITO/CONSUMATO; esecutore SOLO Onboarding in preparazione
 
 28 ottobre2026,Europe/Rome. [Ricevuta integrale](../../evidence/managed-profile-ths-native-plan-target-20261028.json):complete/Exit0/DeliveryExit0,coorte13/12peer,5metadata/27GET/750536byte. executionInputsHash e22a443d2617bf4db06b90ca272fd80e87fe3a05a9b4b6386b15cce51fea11e4;conditionalNativePlanHash9c961982f1e521ca67e25de6d9437cbfc670821c874625d77b9a092da33b6900. Profilo d0dbbd61b5a6486124e229e646ce63a96165dfc2433ae200f7fec92383d5140c,stessa immagine/source Onboarding9890b318/c512c247. Scope managed-profile-ths-native-plan-d0dbbd61-20261028-v1 e comando CONSUMATI:NON riconsegnare/rilanciare. IAM corretto e consumato;Policy58 acquisita,nessun nuovo login IAM o grant.

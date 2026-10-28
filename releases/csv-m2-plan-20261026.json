@@ -65,7 +65,7 @@
     "runtimeEvidenceOrigin": "OPERATOR_FINAL_SUCCESS_RESULT_READ_IN_FULL_NOT_NEW_AGENT_HOST_LOG_READ",
     "activeOnboardingSourceCommit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "activeOnboardingNativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
-    "profileControlCorrection": "IAM_CORRECTED_CONSUMED_CONDITIONAL_PROFILE_READY_NEW_SINGLE_OWNER_NATIVE_PLAN_QUALIFIED_TARGET_PENDING",
+    "profileControlCorrection": "IAM_CORRECTED_CONSUMED_NATIVE_PLAN_SUCCESS_CONSUMED_NEW_SIGNED_SINGLE_OWNER_CONFIGURATION_EXECUTOR_QUALIFIED_TARGET_PENDING",
     "latestCohortCapture": "SUCCESS_CONSUMED_FDC61884_EXACT13_BINDINGS_27GET_NO_RUNTIME_WRITES",
     "profileControlCandidatesInstalled": true,
     "newControlUpdateRuntimeAuthorityIssued": true,
@@ -1939,9 +1939,12 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Run the newly qualified read-only planner once: five retained metadata and27GET exact cohort13; compile same-image SOLO Onboarding conditional native plan with12unchanged peers. No login/APPROVO/SQL/IAM/Enginewrite/budget/resume. STOP consumes scope; preserve without replay.",
-    "command": "releases/OUF_MANAGED_PROFILE_THS_NATIVE_PLAN_COMMAND_20261028.sh",
-    "scope": "/etc/ouf/deploy-snapshots/managed-profile-ths-native-plan-d0dbbd61-20261028-v1",
+    "action": "Run new qualified single-owner request update once,review concrete current plan in native SSH TTY and enter APPROVO shown hash. Same image Onboarding,12unchanged peers,7READ ONLY SQL,verified quiesced backup,0imports/migrations/IAM/budget/resume;STOP preserve without replay.",
+    "command": "releases/OUF_MANAGED_PROFILE_THS_REQUEST_UPDATE_COMMAND_20261028.sh",
+    "scope": "/etc/ouf/deploy-snapshots/managed-profile-ths-request-update-e22a443d-20261028-v1",
+    "targetRoles": [
+      "onboarding"
+    ],
     "targetExecuted": false,
     "runtimeAuthorityIssued": false,
     "targetApplyAuthorized": false,
@@ -2039,7 +2042,7 @@
       "status": "OPEN_FOR_M2_FINAL_COHORT"
     }
   ],
-  "revisionReason": "Target IAM correction succeeded and is consumed:1definition+3OPTIONAL links, exact profile prepared, no owner configuration installed. Fresh single-owner same-image native planner qualified91tests/real Unix/process custody/immutable protected delivery; target plan, runtime configuration, browser card and complete M2 E2E remain open.",
+  "revisionReason": "Conditional native plan succeeded/consumed,e22a443d/9c961982. New same-image SOLO Onboarding signed maintenance qualified106tests,Docker29.8.1/PG17 physical lifecycle and failure cases,exact retained CI JAR and native proposed-request verifier,two sudoTTY variants,immutable31-source protected delivery. Target configuration installation,browser card/budget/resume and full M2 E2E remain open.",
   "historicalEstimate": {
     "version": "1.0",
     "commit": "26fa7b78593983fc54aa0b9a8d5c0142c26ff04f",
@@ -2361,8 +2364,8 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-28",
-    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_THS_NATIVE_PLAN_20261028.md",
-    "next": "NEW_READ_ONLY_SINGLE_OWNER_CONDITIONAL_NATIVE_PLAN_NO_AUTHENTICATION_OR_APPLY"
+    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_THS_REQUEST_UPDATE_20261028.md",
+    "next": "NEW_EXACT_HUMAN_REVIEWED_SAME_IMAGE_SINGLE_OWNER_REQUEST_CONFIGURATION_UPDATE"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -3055,7 +3058,13 @@
     "currentIamCorrectionInstalled": true,
     "nativePlanCompiler": "tools/managed_profile_ths_scopes/native_plan.py",
     "reproducibleNativePlanBuilder": "tools/build_managed_profile_ths_native_plan.py",
-    "freshNativePlanTargetExecuted": false
+    "freshNativePlanTargetExecuted": true,
+    "singleOwnerExecutionAuthority": "tools/managed_profile_ths_update/authority.py",
+    "singleOwnerExecutionContext": "tools/managed_profile_ths_update/context.py",
+    "singleOwnerExecutionPorts": "tools/managed_profile_ths_update/ports.py",
+    "signedSingleOwnerRequestUpdateQualified": true,
+    "actualNativeConfigurationVerifierAcceptsProposedCompleteRequest": true,
+    "rawBeforeAndCanonicalSemanticHashesKeptDistinct": true
   },
   "profileControlThsIamBindingReadTarget": {
     "record": "evidence/managed-profile-ths-iam-binding-read-target-20261028.json",
@@ -3470,8 +3479,8 @@
     "cohortSize": 13,
     "unchangedPeers": 12,
     "sameNativeImageRequired": true,
-    "targetExecuted": false,
-    "currentDeliveryUsable": true,
+    "targetExecuted": true,
+    "currentDeliveryUsable": false,
     "runtimeAuthorityIssued": false,
     "targetApplyAuthorized": false,
     "humanBudgetsGranted": 0,
@@ -3482,6 +3491,346 @@
       "seconds": 120,
       "responseBytes": 2097152,
       "totalBytes": 25165824
+    },
+    "status": "SUCCESSFULLY_CONSUMED_CONDITIONAL_NATIVE_PLAN_PREPARED",
+    "targetReceipt": "evidence/managed-profile-ths-native-plan-target-20261028.json"
+  },
+  "profileControlThsNativePlanTarget": {
+    "record": "evidence/managed-profile-ths-native-plan-target-20261028.json",
+    "result": {
+      "acquisitionsExecuted": 0,
+      "addedRequestScopes": [
+        "ouf.managed-source.preview",
+        "ouf.managed-source.file.profile",
+        "ouf.onboarding.quarantine.release"
+      ],
+      "applicationE2EProven": false,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "cohortSize": 13,
+      "complete": true,
+      "conditionalNativePlanHash": "9c961982f1e521ca67e25de6d9437cbfc670821c874625d77b9a092da33b6900",
+      "configurationFileContentReads": 0,
+      "configurationProfileHash": "d0dbbd61b5a6486124e229e646ce63a96165dfc2433ae200f7fec92383d5140c",
+      "contextPath": "/etc/ouf/deploy-snapshots/managed-profile-ths-native-plan-d0dbbd61-20261028-v1",
+      "counts": {
+        "bytes": 750536,
+        "engineGets": 27,
+        "privateMetadataReads": 5
+      },
+      "credentialFileReads": 0,
+      "currentJobOrBudgetStateObserved": false,
+      "databaseAdmissionProven": false,
+      "databaseMigration": {
+        "from": 36,
+        "newMigrations": 0,
+        "to": 36
+      },
+      "effectiveBrowserTokenScopesProven": false,
+      "engineWrites": 0,
+      "executionEntryQualified": false,
+      "executionInputsHash": "e22a443d2617bf4db06b90ca272fd80e87fe3a05a9b4b6386b15cce51fea11e4",
+      "historicalAuthorityReused": false,
+      "humanBudgetsGranted": 0,
+      "iamRequests": 0,
+      "iamResultHash": "c82b1b1025086faf4acf0899485643209f8929c4fa8ce6ca045fc2bfbdd7d027",
+      "imageImports": 0,
+      "nativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
+      "newGrantsGranted": 0,
+      "newJobs": 0,
+      "oauthRequests": 0,
+      "preservedRequestedScopeCount": 5,
+      "registryWorkerTouched": false,
+      "releaseAcceptance": false,
+      "resumes": 0,
+      "retainedIamBindingSnapshotHash": "e7b16276cd7cdba45d3a5ec5d96ba47b8a5bd23cf43db050eedfd5ac9935ee03",
+      "runtimeAuthorityIssued": false,
+      "sameNativeImageRequired": true,
+      "schema": "ouf.ths-owner-request-native-plan-result.v1",
+      "scopePatchApplied": false,
+      "signingKeyReads": 0,
+      "sourceActivations": 0,
+      "sourceCommit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
+      "sqlSessions": 0,
+      "status": "THS_OWNER_REQUEST_CONDITIONAL_NATIVE_PLAN_PREPARED_NOT_AUTHORIZED",
+      "targetApplyAuthorized": false,
+      "targetRoles": [
+        "onboarding"
+      ],
+      "unchangedPeers": 12,
+      "uploads": 0
+    },
+    "exit": 0,
+    "deliveryExit": 0,
+    "scopeConsumed": true,
+    "automaticReplayAllowed": false
+  },
+  "profileControlThsRequestUpdateQualification": {
+    "record": "evidence/managed-profile-ths-request-update-qualified-20261028.json",
+    "sourceCommit": "5df69acb120bd2e0be1161c433585c1be484e5bf",
+    "sourceClosureHash": "ab50b8b5a818713e504d5b72451949d72e39ba79de51554f02b37f44e769d21c",
+    "codeRoot": "/usr/local/lib/ouf-managed-profile-ths-request-update-ab50b8b5a818713e",
+    "sourceFiles": 31,
+    "wrapper": {
+      "commit": "79710e413ef0692f65c04836372150a701af126f",
+      "path": "releases/apply-managed-profile-ths-request-20261028.sh",
+      "sha256": "689c0087ebc41cfdc410dfb922e6e18056debd35d1981c39e0d9487e35b4e088",
+      "bytes": 12286
+    },
+    "nativeQualification": {
+      "commit": "83edf5cbdf935e426cdbe680fd22f00ddabd9160",
+      "pushRun": 40707508420,
+      "prRun": 40707522489,
+      "unitTests": 106,
+      "newRootProtocolTests": 15,
+      "preservedRequestBindingAndPlanTests": 91,
+      "skips": 0,
+      "mainJobs": [
+        {
+          "id": 122883482073,
+          "name": "actual-new-review-sudo-terminal (!use_pty)",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "push",
+          "run": 40707508420
+        },
+        {
+          "id": 122883482272,
+          "name": "new-root-crypto-and-preserved-contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "push",
+          "run": 40707508420
+        },
+        {
+          "id": 122883482291,
+          "name": "exact-same-image-proposed-request-config",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "push",
+          "run": 40707508420
+        },
+        {
+          "id": 122883482372,
+          "name": "new-executor-native-lifecycle (containerd, test_full_same_image_single_owner_update_preserves_fai...",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "push",
+          "run": 40707508420
+        },
+        {
+          "id": 122883482420,
+          "name": "new-executor-native-lifecycle (containerd, test_external_change_before_start_is_retained_and_not_...",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "push",
+          "run": 40707508420
+        },
+        {
+          "id": 122883482479,
+          "name": "new-executor-native-lifecycle (containerd, test_zero_memory_retained)",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "push",
+          "run": 40707508420
+        },
+        {
+          "id": 122883482488,
+          "name": "new-executor-native-lifecycle (containerd, test_pending_profile_stops_before_runtime_writes)",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "push",
+          "run": 40707508420
+        },
+        {
+          "id": 122883482511,
+          "name": "new-executor-native-lifecycle (containerd, test_actual_lost_controller_quarantines_only_its_singl...",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "push",
+          "run": 40707508420
+        },
+        {
+          "id": 122883482837,
+          "name": "actual-new-review-sudo-terminal (use_pty)",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "push",
+          "run": 40707508420
+        },
+        {
+          "id": 122883531914,
+          "name": "actual-new-review-sudo-terminal (use_pty)",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "pull_request",
+          "run": 40707522489
+        },
+        {
+          "id": 122883532245,
+          "name": "exact-same-image-proposed-request-config",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "pull_request",
+          "run": 40707522489
+        },
+        {
+          "id": 122883532283,
+          "name": "actual-new-review-sudo-terminal (!use_pty)",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "pull_request",
+          "run": 40707522489
+        },
+        {
+          "id": 122883532317,
+          "name": "new-executor-native-lifecycle (containerd, test_pending_profile_stops_before_runtime_writes)",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "pull_request",
+          "run": 40707522489
+        },
+        {
+          "id": 122883532323,
+          "name": "new-root-crypto-and-preserved-contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "pull_request",
+          "run": 40707522489
+        },
+        {
+          "id": 122883532338,
+          "name": "new-executor-native-lifecycle (containerd, test_full_same_image_single_owner_update_preserves_fai...",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "pull_request",
+          "run": 40707522489
+        },
+        {
+          "id": 122883532399,
+          "name": "new-executor-native-lifecycle (containerd, test_zero_memory_retained)",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "pull_request",
+          "run": 40707522489
+        },
+        {
+          "id": 122883532504,
+          "name": "new-executor-native-lifecycle (containerd, test_actual_lost_controller_quarantines_only_its_singl...",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "pull_request",
+          "run": 40707522489
+        },
+        {
+          "id": 122883532600,
+          "name": "new-executor-native-lifecycle (containerd, test_external_change_before_start_is_retained_and_not_...",
+          "status": "completed",
+          "conclusion": "success",
+          "event": "pull_request",
+          "run": 40707522489
+        }
+      ],
+      "conclusion": "success",
+      "actualDockerVersion": "29.8.1",
+      "actualStore": "containerd",
+      "actualPostgresMajor": 17,
+      "syntheticApplicationWorkload": true,
+      "realProductionJarStarted": false,
+      "realProductionJarAndNativeVerifierReadOnlyQualified": true,
+      "productionJarSha256": "ae976c4f2c7c78739638f111704ae7bcdb557155f91e00d2a549895644ca764a",
+      "productionApplicationYamlSha256": "a33298792a00d553424e53ea462696a143043d462e2895adeef633d2b4a91d0d",
+      "physicalNativeCases": [
+        "same-image full execution,15stages,7SQL,7Enginewrites,0imports,backup parsed,FAILED5 and12peers exact",
+        "Memory0 retained",
+        "pending READY job denied before any Enginewrite",
+        "external operational change preserved and denied before start",
+        "actual controller loss quarantines only its one verified candidate"
+      ],
+      "actualSudoTerminalVariants": [
+        "use_pty",
+        "!use_pty"
+      ],
+      "terminalInputCasesPerVariant": 11,
+      "sameReviewWindowAndNativeEditingPreserved": true,
+      "productionHumanApprovalSimulated": false,
+      "fixtureDecisionsAndKeysOnly": true,
+      "targetCalls": 0,
+      "directLogsRead": 18
+    },
+    "deliveryQualification": {
+      "commit": "f880a9c400a48810dfbe2dfdbf113caf70211f28",
+      "pushRun": 40708153291,
+      "prRun": 40708168604,
+      "actualPinnedHttpsNonrootSudoDirectTty": true,
+      "allSourcesRoot400ChecksumVerified": true,
+      "operatorLogs600": true,
+      "wrongPrivateSealDeniedBeforeReviewSqlOrSigning": true,
+      "nonTtyBeforePreflight": true,
+      "consumedScopeDeniedAndOldFilesUnchanged": true,
+      "ghAndTimeoutNotRequired": true,
+      "humanApprovalSimulated": false,
+      "targetCalls": 0,
+      "jobs": [
+        {
+          "id": 122885785426,
+          "conclusion": "success",
+          "run": 40708153291,
+          "event": "push"
+        },
+        {
+          "id": 122885844929,
+          "conclusion": "success",
+          "run": 40708168604,
+          "event": "pull_request"
+        }
+      ],
+      "directLogsRead": 2,
+      "conclusion": "success"
+    },
+    "scope": "/etc/ouf/deploy-snapshots/managed-profile-ths-request-update-e22a443d-20261028-v1",
+    "parentPlan": {
+      "receipt": "evidence/managed-profile-ths-native-plan-target-20261028.json",
+      "resultHash": "64265dbcd409d646e21ee019947e90bc809b78e1f47eca2b05ea628142ea4140",
+      "executionInputsHash": "e22a443d2617bf4db06b90ca272fd80e87fe3a05a9b4b6386b15cce51fea11e4",
+      "conditionalNativePlanHash": "9c961982f1e521ca67e25de6d9437cbfc670821c874625d77b9a092da33b6900",
+      "configurationProfileHash": "d0dbbd61b5a6486124e229e646ce63a96165dfc2433ae200f7fec92383d5140c",
+      "scopeConsumed": true
+    },
+    "targetRoles": [
+      "onboarding"
+    ],
+    "sameNativeImageRequired": true,
+    "unchangedPeers": 12,
+    "targetExecuted": false,
+    "currentDeliveryUsable": true,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "humanBudgetsGranted": 0,
+    "resumes": 0,
+    "limits": {
+      "downloadSeconds": 180,
+      "preflightSeconds": 300,
+      "humanReviewSeconds": 900,
+      "executionAuthoritySeconds": 900,
+      "candidateStartupSeconds": 180,
+      "negativeOnlyAdditionalSeconds": 30,
+      "engineGets": 768,
+      "engineWrites": 9,
+      "imageLoadAttempts": 0,
+      "readinessGets": 96,
+      "adminGets": 0,
+      "adminPuts": 0,
+      "ownerConfigurationReads": 64,
+      "ownerConfigurationContentReads": 1,
+      "serviceCredentialFileReads": 0,
+      "quarantineStops": 1,
+      "sqlSessions": 7,
+      "backupProcesses": 2,
+      "backupMaximumBytes": 268435456,
+      "backupSecondsPerProcess": 90,
+      "signatures": 3,
+      "maximumSigningKeyReadDispatches": 15
     }
   }
 }
