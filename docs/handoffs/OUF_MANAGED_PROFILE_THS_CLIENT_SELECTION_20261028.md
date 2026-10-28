@@ -1,3 +1,11 @@
+# CURRENT — client THS effettivo PROVATO; selezione riuscita/CONSUMATA, verifica IAM API in preparazione
+
+28 ottobre 2026, Europe/Rome. [Ricevuta integrale](../../evidence/managed-profile-ths-client-selection-target-20261028.json): complete/Exit0/DeliveryExit0,inputsHash5dfd7b7a903c07f546c42ba1915bf6f8fd1430ab91addc4879988cd4c1727892,3metadata/5GET/1config/695761byte. Client effettivo **ouf-authorization-ths**, registrationIdouf-ths,providerouf,issuerhttps://auth.ouf-lab.it/realms/ouf,authorization_code. File/mount/proc/generazione verificati,overlaySHA6d546047448495746d7eaad6d83e7942fa2950f137d4a240a3aef9309f7f39be;nessun rawoverlay salvato,segreto stampato,IAM/OAuth/SQL/write/lifecycle/grant/budget/resume. Scope managed-profile-ths-client-selection-fdc61884-20261028-v1 e comando CONSUMATI:NON rilanciare/riconsegnare.
+
+Richiesta corrente già provata:5scope conservati,mancano preview/file.profile/quarantine.release;patch Env solo privata condizionale NON applicata. Policy58 resta PUBLISHED. NEXT sviluppo/qualifica del controllo API-only dei binding sul SOLO client OAuth osservato e del compilatore riusabile del delta di configurazione;nessun vecchio login/claim/authority o console da riusare. Se credenziali/consenso amministrativi indispensabili,preparare un passo terminal/API concreto finito prima di richiederli. Non confondere identità IAM amministrativa con account applicativo ouf-admin o sessione THS,che resta esclusiva UTENTE.
+
+Industrializzazione:contratti/helper/test persistenti devono comporre una verifica/compilazione ripetibile,con valori d'installazione espliciti,preservazione proprietà/scope preesistenti,journal/counter monotoni,stop su drift/esito ambiguo e nessun reset/replay. Le consegne diagnostiche del VPS sono specifiche della coorte conservata;non certificano da sole un installer universale o E2E. M1/G4 acquisiti;M2/G5/G6/G7/E2E e61righe→UDP/D5–D7/dueclient aperti;Supervisor dopoE2E. Ultimo FarmacieFAILED5 non riletto;budget3/900 e resume future decisioni HUMAN distinte stesso job/sessione,cumulativi6–8. No nuovi upload/job/terzaacquisizione/Registryrestart/reinstall/attivazioneimplicita/merge/releaseacceptance/subagenti/automazioni. Header seguenti STORICI.
+
 # OUF — selezione del client THS dopo prova degli scope mancanti — 28 ottobre 2026
 
 ## Stato acquisito
