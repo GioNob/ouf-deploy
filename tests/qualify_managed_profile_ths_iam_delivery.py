@@ -19,19 +19,20 @@ scope.parent.mkdir(parents=True,exist_ok=True,mode=0o700);scope.parent.chmod(0o7
 def operator():os.setgroups([account.pw_gid]);os.setgid(account.pw_gid);os.setuid(owner)
 wrapper=home/'read.sh'
 result=subprocess.run(['/usr/bin/curl','--fail','--silent','--show-error','--location','--proto','=https','--proto-redir','=https','--max-redirs','3','--connect-timeout','15','--max-time','60',
- 'https://raw.githubusercontent.com/GioNob/ouf-deploy/f7ce015bd59f74b9986986a0c70adaa168f2ad3e/releases/read-managed-profile-ths-iam-bindings-20261028.sh','-o',str(wrapper)],
+ 'https://raw.githubusercontent.com/GioNob/ouf-deploy/02cf364bed4400c3f202eef6ad83fe9db10b44e1/releases/read-managed-profile-ths-iam-bindings-20261028.sh','-o',str(wrapper)],
  preexec_fn=operator,env={'HOME':str(home),'PATH':str(minimal),'LC_ALL':'C'},capture_output=True,timeout=70)
 assert result.returncode==0,result.stderr
 assert wrapper.read_bytes()==(BASE/'releases/read-managed-profile-ths-iam-bindings-20261028.sh').read_bytes()
-assert hashlib.sha256(wrapper.read_bytes()).hexdigest()=='f6ec6d753d13160e44646717302000d474e4bd565fed330fdfcaf9cca29aa907'
+assert hashlib.sha256(wrapper.read_bytes()).hexdigest()=='67e96b5bfb16db21134bfa08141d10d5c625de3f3f7a97ee5ec139b7ebc0fea5'
 def invoke():return subprocess.run(['/usr/bin/bash','--noprofile','--norc',str(wrapper)],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,preexec_fn=operator,env={'HOME':str(home),'PATH':str(minimal),'LC_ALL':'C'},timeout=120)
 try:
  process=invoke();output=process.stdout.decode();assert process.returncode==2,output
  assert 'INTERACTIVE_OPERATOR_TERMINAL_REQUIRED'in output and 'Apri nel browser:'not in output
  assert 'SourceChecksum=OK (root0400; verifica eseguita root)'in output
- code=Path('/usr/local/lib/ouf-managed-profile-ths-iam-bindings-761e7b9903958a45');entry=code/'read.py';info=entry.stat()
+ code=Path('/usr/local/lib/ouf-managed-profile-ths-iam-bindings-601dc5fd3f1ff39a');entry=code/'read.py';info=entry.stat()
  assert info.st_uid==info.st_gid==0 and info.st_nlink==1 and stat.S_IMODE(info.st_mode)==0o400
- assert hashlib.sha256(entry.read_bytes()).hexdigest()=='761e7b9903958a453dea33de12c89c0cc3ad6045b2f7a603b0ac1dcc83ce98c9'
+ assert entry.read_bytes()==(BASE/'scripts/read-managed-profile-ths-iam-bindings-20261028.py').read_bytes()
+ assert hashlib.sha256(entry.read_bytes()).hexdigest()=='601dc5fd3f1ff39af58c043244c98e206ae19a966bc686b6d37f8828e47e4792'
  denied=subprocess.run(['/usr/bin/setpriv','--reuid=65534','--regid=65534','--clear-groups','cat',str(entry)],capture_output=True)
  assert denied.returncode!=0 and not denied.stdout
  assert not scope.exists()and not(code/'operator.log').exists()
