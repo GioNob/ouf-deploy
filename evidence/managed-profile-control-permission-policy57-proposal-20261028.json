@@ -2,7 +2,7 @@
   "schema": "ouf.managed-profile-control-permission-proposal-policy57.v1",
   "date": "2026-10-28",
   "timezone": "Europe/Rome",
-  "status": "CREATED_PENDING_DIRECT_HUMAN_THS_NOT_PUBLISHED",
+  "status": "PUBLISHED_VERIFIED_POLICY58_NO_EXECUTION_BUDGET",
   "accountLink": "ouf-admin",
   "explicitLinkId": "link_6aafef96b4148191b767e9af7b756a07",
   "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
@@ -73,8 +73,8 @@
     "maxAuthenticationAgeSeconds": null
   },
   "ownerAcceptedActiveDescriptorsForCompilation": true,
-  "published": false,
-  "currentConfiguredSubjectGrantCount": 134,
+  "published": true,
+  "currentConfiguredSubjectGrantCount": 137,
   "configuredGrantCountIsNotEffectiveAllow": true,
   "newHumanBudgetGranted": false,
   "resumeExecuted": false,
@@ -94,5 +94,16 @@
   "lastKnownJobStatus": "FAILED",
   "lastKnownCumulativeAttempts": 5,
   "applicationE2EProven": false,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "publicationOutcomeRead": {
+    "proposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "revision": 1,
+    "state": "PUBLISHED",
+    "expiresAt": "2026-10-28T08:46:00.672722Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "finalPolicyRef": "ouf-lab-authorization:58"
+  },
+  "finalPolicyRef": "ouf-lab-authorization:58",
+  "publicationEvidence": "evidence/managed-profile-job-control-policy58-access-20261028.json",
+  "ownerOutcomeConfirmed": true
 }

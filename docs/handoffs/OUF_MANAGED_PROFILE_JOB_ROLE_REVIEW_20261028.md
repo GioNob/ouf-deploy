@@ -1,3 +1,5 @@
+> **SUPERATO: proposta verificata PUBLISHED/revision1/policy58. NON creare duplicati.** Seguire [scheda HUMAN corrente e limite MCP](OUF_MANAGED_PROFILE_POLICY58_NATIVE_CARD_20261028.md);zero budget/resume eseguiti.
+
 # Permessi HUMAN del solo job Farmacie: proposta PENDING — 28 ottobre 2026
 
 ## Punto corrente

@@ -65,7 +65,7 @@
     "runtimeEvidenceOrigin": "OPERATOR_FINAL_SUCCESS_RESULT_READ_IN_FULL_NOT_NEW_AGENT_HOST_LOG_READ",
     "activeOnboardingSourceCommit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "activeOnboardingNativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
-    "profileControlCorrection": "INSTALLED_DESCRIPTOR_PUBLISHED57_JOB_ROLE_REVIEW_REQUIRED",
+    "profileControlCorrection": "INSTALLED_POLICY58_ROLE_PUBLISHED_MCP_ARGUMENT_GATE_NATIVE_HUMAN_CARD_PENDING",
     "latestCohortCapture": "RECONCILIATION_SUCCESS_CAPTURE14a96f_SCOPE_CONSUMED_METADATA_ONLY",
     "profileControlCandidatesInstalled": true,
     "newControlUpdateRuntimeAuthorityIssued": true,
@@ -112,7 +112,7 @@
       "hours": null,
       "checkpoint": "M2.0",
       "status": "AUDITED_REUSE_AND_CONCRETE_DELTAS_OPEN",
-      "currentBlocker": "EXACT_JOB_HUMAN_ROLE_NOT_ASSIGNED_PROPOSAL_REVIEW_REQUIRED",
+      "currentBlocker": "NATIVE_HUMAN_CARD_LIVE_ACCESS_NOT_VERIFIED_MCP_JOB_READ_INVALID_ARGUMENT",
       "deliverables": [
         "Retained owner diagnostic evidence",
         "Targeted fix and regression",
@@ -1934,10 +1934,8 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Await HUMAN decision on exact current job-role proposal, then read same proposalId before application access",
-    "proposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
-    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=fb54d330-0ec2-400a-ae71-e4ac3cf45319",
-    "expiresAt": "2026-10-28T08:46:00.672722Z",
+    "action": "User opens exact native HUMAN job card and refreshes state; reconcile MCP INVALID_ARGUMENT without blind replay",
+    "url": "https://api.ouf-lab.it/trusted-human/managed-files/recovery/?asset=9c502da5-b5d8-405e-b3f5-60eb31ecb513&job=677480c8-3d10-44fd-9dad-f72ddeed20a4",
     "budgetGranted": false,
     "resumeExecuted": false
   },
@@ -2354,9 +2352,8 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-28",
-    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_JOB_ROLE_REVIEW_20261028.md",
-    "next": "HUMAN_THS_REVIEW_SAME_PROPOSAL_THEN_READ_SAME_ID",
-    "proposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319"
+    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_POLICY58_NATIVE_CARD_20261028.md",
+    "next": "USER_ONLY_NATIVE_CARD_REFRESH_READ_ONLY_NO_BUDGET_OR_RESUME_YET"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -2658,8 +2655,8 @@
     "releaseAcceptance": false
   },
   "humanProfileRecoveryAccess": {
-    "status": "FRESH_POLICY57_JOB_ROLE_PROPOSAL_PENDING_DIRECT_HUMAN_THS",
-    "record": "evidence/managed-profile-control-permission-policy57-proposal-20261028.json",
+    "status": "POLICY58_PUBLISHED_MCP_INVALID_ARGUMENT_USER_NATIVE_CARD_REQUIRED",
+    "record": "evidence/managed-profile-job-control-policy58-access-20261028.json",
     "humanSurfaceUserOnly": true,
     "agentMayInteractWithThs": false,
     "freshJobCardReadSucceeded": false,
@@ -2671,18 +2668,26 @@
     "browserIdentityVerified": false,
     "missingCapabilityId": "ouf.onboarding.quarantine.release",
     "pendingProposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
-    "pendingProposalState": "PENDING",
+    "pendingProposalState": "PUBLISHED",
     "pendingProposalExpiresAt": "2026-10-28T08:46:00.672722Z",
-    "pendingApprovalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=fb54d330-0ec2-400a-ae71-e4ac3cf45319"
+    "pendingApprovalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "publishedProposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "finalPolicyRef": "ouf-lab-authorization:58",
+    "lastJobReadResult": {
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "lastJobReadRetried": false
   },
   "profileControlAuthorization": {
-    "status": "DESCRIPTOR_PUBLISHED57_JOB_ROLE_PENDING_HUMAN",
+    "status": "ROLE_PUBLISHED_POLICY58_MCP_JOB_READ_INVALID_ARGUMENT_NATIVE_CARD_PENDING",
     "evidence": "evidence/profile-recovery-control-authorization-20261027.json",
     "onboardingSource": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "mcpSource": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
-    "runtimePermissionsPublished": false,
+    "runtimePermissionsPublished": true,
     "newHumanBudgetGranted": false,
-    "targetReceipt": "evidence/managed-csv-control-update-target-20261028.json"
+    "targetReceipt": "evidence/managed-csv-control-update-target-20261028.json",
+    "currentPolicyRef": "ouf-lab-authorization:58",
+    "currentPolicyHash": "sha256:e8c3401e1d3209f60af55c36bae25d8a1089d822dc129afbef6ae3a13cce6bfe"
   },
   "profileControlCustodyAndCapture": {
     "evidence": "evidence/managed-csv-recovery-custody-capture-qualified-20261027.json",
@@ -2869,11 +2874,11 @@
   "profileControlJobRoleProposal": {
     "evidence": "evidence/managed-profile-control-permission-policy57-proposal-20261028.json",
     "proposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
-    "state": "PENDING",
-    "revision": 0,
+    "state": "PUBLISHED",
+    "revision": 1,
     "expiresAt": "2026-10-28T08:46:00.672722Z",
     "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=fb54d330-0ec2-400a-ae71-e4ac3cf45319",
-    "finalPolicyRef": null,
+    "finalPolicyRef": "ouf-lab-authorization:58",
     "oldRolesPreserved": 7,
     "oldAssignmentsPreserved": 11,
     "newRoles": 1,
@@ -2881,6 +2886,7 @@
     "budgetGranted": false,
     "resumed": false,
     "doNotCreateDuplicateProposal": true,
-    "humanSurfaceUserOnly": true
+    "humanSurfaceUserOnly": true,
+    "publicationEvidence": "evidence/managed-profile-job-control-policy58-access-20261028.json"
   }
 }
