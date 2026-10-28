@@ -19,19 +19,19 @@ scope.parent.mkdir(parents=True,exist_ok=True,mode=0o700);scope.parent.chmod(0o7
 def operator():os.setgroups([account.pw_gid]);os.setgid(account.pw_gid);os.setuid(owner)
 wrapper=home/'read.sh'
 result=subprocess.run(['/usr/bin/curl','--fail','--silent','--show-error','--location','--proto','=https','--proto-redir','=https','--max-redirs','3','--connect-timeout','15','--max-time','60',
- 'https://raw.githubusercontent.com/GioNob/ouf-deploy/976464adf44ecf6f5f5049412aba6c6d9867593d/releases/read-m2-discovery-bindings-20261029.sh','-o',str(wrapper)],
+ 'https://raw.githubusercontent.com/GioNob/ouf-deploy/09d2a2ba407f109fe8261ce61a6875b05d16a8d8/releases/read-m2-discovery-bindings-20261029.sh','-o',str(wrapper)],
  preexec_fn=operator,env={'HOME':str(home),'PATH':str(minimal),'LC_ALL':'C'},capture_output=True,timeout=70)
 assert result.returncode==0,result.stderr
 assert wrapper.read_bytes()==(BASE/'releases/read-m2-discovery-bindings-20261029.sh').read_bytes()
-assert hashlib.sha256(wrapper.read_bytes()).hexdigest()=='e0dced8353b700e493d2170aa9df1cc65f2295d76bffc8a39d220d7f47f8f95e'
+assert hashlib.sha256(wrapper.read_bytes()).hexdigest()=='eaca415a403169f97d22ce4df6f3f2873e3acd160e2e085d523a1d58d656207c'
 def invoke():return subprocess.run(['/usr/bin/bash','--noprofile','--norc',str(wrapper)],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,preexec_fn=operator,env={'HOME':str(home),'PATH':str(minimal),'LC_ALL':'C'},timeout=120)
 try:
  process=invoke();output=process.stdout.decode();assert process.returncode==2,output
  assert 'INTERACTIVE_OPERATOR_TERMINAL_REQUIRED'in output and 'Apri nel browser:'not in output
  assert 'SourceChecksum=OK (root0400; verifica eseguita root)'in output
- code=Path('/usr/local/lib/ouf-m2-discovery-bindings-15f97ce821c62939');entry=code/'read.py';info=entry.stat()
+ code=Path('/usr/local/lib/ouf-m2-discovery-bindings-788772e96f1e956e');entry=code/'read.py';info=entry.stat()
  assert info.st_uid==info.st_gid==0 and info.st_nlink==1 and stat.S_IMODE(info.st_mode)==0o400
- assert hashlib.sha256(entry.read_bytes()).hexdigest()=='15f97ce821c62939f162086943ce37beb8a99baefa20e5054a0ab63a4e3cfde9'
+ assert hashlib.sha256(entry.read_bytes()).hexdigest()=='788772e96f1e956e5439e2148b80bb825fda700e0a3a05a2021109b71823f215'
  denied=subprocess.run(['/usr/bin/setpriv','--reuid=65534','--regid=65534','--clear-groups','cat',str(entry)],capture_output=True)
  assert denied.returncode!=0 and not denied.stdout
  assert not scope.exists()and not(code/'operator.log').exists()
