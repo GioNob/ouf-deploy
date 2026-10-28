@@ -1,3 +1,19 @@
+# CURRENT — additive IAM correction qualified; target and owner configuration pending
+
+28 October2026. [Current handoff](handoffs/OUF_MANAGED_PROFILE_THS_IAM_CORRECTION_20261028.md), [qualification](../evidence/managed-profile-ths-iam-binding-correction-qualified-20261028.json), [consumed read](../evidence/managed-profile-ths-iam-binding-read-target-20261028.json). The current IAM baseline is now observed; older unknown-state statements below are historical. No target IAM correction or owner installation has occurred.
+
+Persistent production source now includes:
+- `iam_correction.py`: pure additive plan, deterministic UUID/operation marker, exact preserved definitions/bindings and Realm Default invariants, immutable claim/receipt ledger.
+- `iam_correction_transport.py`: bounded Admin REST for one scope definition and three optional links; no general client/secret/role/mapper update.
+- `iam_correction_controller.py`: native terminal approval before fresh authentication, protected identity/baseline equality before effects, same-ID GET reconciliation without mutation retries, conditional private profile after proved postconditions.
+- `tools/build_managed_profile_ths_iam_correction.py`: reproducible sealed delivery from tracked modules and exact consumed receipt. No historical entrypoint, token, window or authority is reused.
+
+Fixed UUID and operation marker are approved before login. Claims are durable before dispatch and HTTP receipts before parser/process/expiry guards. Ambiguous responses reconcile the same object/binding in the original session; explicit denials stop. Partial/consumed work is not automatically retried or rolled back. The existing native editing helper supports correcting a rejected review line within the original90second window.
+
+Qualification8986be7b38b1ef7df6fe8a1b5fda3c4b987457ad:81tests/0skip, real Keycloak26.0.8/26.2.5, normal and lost-write-response scenarios per version. All preserve old definitions/bindings and Realm Defaults with exactly4writes; no duplicate write dispatch. Actual Docker/process roots/mount/netns/PTY and HTTPS/nonroot/sudo/root400/private600 delivery exercised; six direct logs read. Fixture-only identities/approvals, not target effects or application E2E.
+
+The new correction permits at most1new authentication/4IAMwrites and only compiles a private conditional owner profile. Installing that profile, fresh USER-only browser/card access, and distinct HUMAN budget/resume decisions remain separate gates. No application grant is issued. The native verifier guard remains as below; full bootstrap coverage, two real MCP clients,61rows→UDP and M2 acceptance remain open. The earlier read-only record below applies to the consumed reader, not to this four-write correction.
+
 # THS recovery: persistent installation contract and IAM binding verification
 
 The managed-file recovery surface has three distinct gates: the OAuth request in the installed owner, IAM client-scope bindings/eligibility, and the scopes in a newly emitted browser token. A published OUF authorization policy does not substitute for these gates.

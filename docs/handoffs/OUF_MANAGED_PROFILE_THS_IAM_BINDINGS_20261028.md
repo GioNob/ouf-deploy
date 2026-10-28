@@ -1,3 +1,7 @@
+# SUPERSEDED — lettura riuscita e consumata
+
+Il read documentato qui è acquisito integralmente e NON va rilanciato. Seguire il [nuovo handoff della correzione IAM](OUF_MANAGED_PROFILE_THS_IAM_CORRECTION_20261028.md), qualificata ma non eseguita sul target. Le istruzioni sottostanti sono storiche.
+
 # CURRENT — lettura IAM riuscita/CONSUMATA; correzione minima in preparazione
 
 28 ottobre 2026, Europe/Rome. [Ricevuta integrale](../../evidence/managed-profile-ths-iam-binding-read-target-20261028.json): complete/Exit0/DeliveryExit0,identità amministrativa protetta verificata,1auth/14GET IAM/5GET Engine/2metadata/135305byte. Status THS_IAM_BINDINGS_OBSERVED_CONFIGURATION_PROFILE_BLOCKED è lettura riuscita,non STOP e non profilo pronto. Scope/comando managed-profile-ths-iam-binding-read-5dfd7b7a-20261028-v1 CONSUMATI:non rilanciare/riconsegnare. Nessun token/password nuovo conservato o modifica IAM/runtime/grant/budget/resume.

@@ -65,14 +65,19 @@
     "runtimeEvidenceOrigin": "OPERATOR_FINAL_SUCCESS_RESULT_READ_IN_FULL_NOT_NEW_AGENT_HOST_LOG_READ",
     "activeOnboardingSourceCommit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "activeOnboardingNativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
-    "profileControlCorrection": "ACTUAL_CLIENT_PROVEN_THREE_REQUEST_SCOPES_MISSING_IAM_READER_AND_NATIVE_INSTALLATION_GUARD_QUALIFIED",
+    "profileControlCorrection": "IAM_BASELINE_OBSERVED_CONSUMED_NEW_MINIMAL_CORRECTION_QUALIFIED_TARGET_PENDING",
     "latestCohortCapture": "SUCCESS_CONSUMED_FDC61884_EXACT13_BINDINGS_27GET_NO_RUNTIME_WRITES",
     "profileControlCandidatesInstalled": true,
     "newControlUpdateRuntimeAuthorityIssued": true,
     "activeMcpSourceCommit": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
     "activeMcpNativeImageId": "sha256:a52180123104ac97e4979ad1b9b291654b076692da51708bb2a377301fef1220",
     "newControlUpdateAuthorityConsumed": true,
-    "currentRuntimeAuthorityUsable": false
+    "currentRuntimeAuthorityUsable": false,
+    "iamBindingObserved": true,
+    "iamBindingsCorrected": false,
+    "ownerScopeRequestPatchInstalled": false,
+    "effectiveBrowserTokenScopesProven": false,
+    "nativeJobCardAccessProven": false
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1934,10 +1939,15 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Run NEW qualified IAM binding read once; concrete terminal consent then hidden IAM password; no IAM/runtime mutation or profiling budget/resume",
-    "command": "releases/OUF_MANAGED_PROFILE_THS_IAM_BINDINGS_COMMAND_20261028.sh",
-    "scope": "/etc/ouf/deploy-snapshots/managed-profile-ths-iam-binding-read-5dfd7b7a-20261028-v1",
-    "targetExecuted": false
+    "action": "Run new qualified correction once: one missing OIDC definition and three OPTIONAL links on the same client; exact native terminal review then one fresh hidden IAM authentication; compile private conditional owner profile without installation",
+    "command": "releases/OUF_MANAGED_PROFILE_THS_IAM_CORRECTION_COMMAND_20261028.sh",
+    "scope": "/etc/ouf/deploy-snapshots/managed-profile-ths-iam-binding-correction-ba556e9f-20261028-v1",
+    "maximumIamWriteDispatches": 4,
+    "targetExecuted": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "humanBudgetsGranted": 0,
+    "resumes": 0
   },
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
@@ -2030,7 +2040,7 @@
       "status": "OPEN_FOR_M2_FINAL_COHORT"
     }
   ],
-  "revisionReason": "Source/CI/retained-target audit completed: reuse typed composition, durable recovery candidates and UDP engines; only concrete integration/implementation/proof deltas retained.",
+  "revisionReason": "Successful IAM binding read recorded and consumed; additive correction qualified with 81 tests and real Keycloak26.0.8/26.2.5 normal/lost-response fixtures. Target IAM correction, owner configuration, browser card and complete application E2E remain open.",
   "historicalEstimate": {
     "version": "1.0",
     "commit": "26fa7b78593983fc54aa0b9a8d5c0142c26ff04f",
@@ -2352,8 +2362,8 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-28",
-    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_THS_IAM_BINDINGS_20261028.md",
-    "next": "OPERATOR_EXPLICIT_FINITE_IAM_API_READ_AND_CONDITIONAL_PROFILE_COMPILATION"
+    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_THS_IAM_CORRECTION_20261028.md",
+    "next": "NEW_EXPLICIT_HUMAN_REVIEW_AND_FINITE_IAM_CORRECTION_NOT_RUNTIME_APPLY"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -3012,14 +3022,17 @@
     "conclusion": "success",
     "tests": 59,
     "directLogsRead": 4,
-    "targetExecuted": false,
+    "targetExecuted": true,
     "maximumNewAdministrativeAuthenticationRequests": 1,
     "maximumAdminGetAttempts": 20,
     "iamMutations": 0,
     "runtimeAuthorityIssued": false,
     "targetApplyAuthorized": false,
     "humanBudgetsGranted": 0,
-    "resumes": 0
+    "resumes": 0,
+    "currentDeliveryUsable": false,
+    "status": "SUCCESSFULLY_CONSUMED_CONFIGURATION_PROFILE_BLOCKED",
+    "targetReceipt": "evidence/managed-profile-ths-iam-binding-read-target-20261028.json"
   },
   "profileControlThsIndustrialization": {
     "document": "docs/OUF_MANAGED_PROFILE_THS_INDUSTRIALIZATION_20261028.md",
@@ -3029,6 +3042,250 @@
     "twoInstallationParameterSetsQualified": true,
     "twoRealExternalClientsProven": false,
     "allBootstrapPathsProvenToUseGuard": false,
-    "currentOwnerConfigurationCorrectionInstalled": false
+    "currentOwnerConfigurationCorrectionInstalled": false,
+    "iamCorrectionPlanner": "tools/managed_profile_ths_scopes/iam_correction.py",
+    "iamCorrectionTransport": "tools/managed_profile_ths_scopes/iam_correction_transport.py",
+    "iamCorrectionController": "tools/managed_profile_ths_scopes/iam_correction_controller.py",
+    "reproducibleCorrectionBuilder": "tools/build_managed_profile_ths_iam_correction.py",
+    "actualProviderVersions": [
+      "26.0.8",
+      "26.2.5"
+    ],
+    "lostWriteResponsesReconciledSameIdsWithoutMutationRetry": true,
+    "nativeEditingWithinOriginalReviewDeadlineProven": true,
+    "currentIamCorrectionInstalled": false
+  },
+  "profileControlThsIamBindingReadTarget": {
+    "record": "evidence/managed-profile-ths-iam-binding-read-target-20261028.json",
+    "result": {
+      "acquisitionsExecuted": 0,
+      "addedRequestScopes": [],
+      "adminIdentityApiVerified": true,
+      "adminSubjectFromSameFreshProviderIdToken": true,
+      "applicationE2EProven": false,
+      "automaticReplayAllowed": false,
+      "bindingObservation": {
+        "bindingAndUnrestrictedEligibilityProven": false,
+        "bindingSnapshotHash": "ba556e9fce5fb31de5f53af0bf6d3fe7a77e8e09d9048529d8283eaaa6afabc2",
+        "blockedScopes": [
+          "ouf.managed-source.preview",
+          "ouf.managed-source.file.profile",
+          "ouf.onboarding.quarantine.release"
+        ],
+        "clientId": "ouf-authorization-ths",
+        "clientUuid": "a53bc77e-1b21-4a54-8f1a-b236fadb759a",
+        "defaultScopeCount": 14,
+        "definitionCount": 69,
+        "effectiveBrowserTokenScopesProven": false,
+        "iamMutations": 0,
+        "newGrantsGranted": 0,
+        "optionalScopeCount": 6,
+        "requiredScopes": [
+          {
+            "binding": "NONE",
+            "defined": true,
+            "eligibleForExplicitRequest": false,
+            "id": "e369f8fd-fe4d-4fa2-8ff2-4cd806398417",
+            "includeInTokenScope": true,
+            "includeInTokenScopeAttribute": "true",
+            "name": "ouf.managed-source.preview",
+            "roleMappingsObserved": true,
+            "unrestrictedByScopeRoleMappings": true
+          },
+          {
+            "binding": "NONE",
+            "defined": true,
+            "eligibleForExplicitRequest": false,
+            "id": "226b20cd-7798-4da9-af03-eb2bca3d2c5a",
+            "includeInTokenScope": true,
+            "includeInTokenScopeAttribute": "true",
+            "name": "ouf.managed-source.file.profile",
+            "roleMappingsObserved": true,
+            "unrestrictedByScopeRoleMappings": true
+          },
+          {
+            "binding": "NONE",
+            "defined": false,
+            "eligibleForExplicitRequest": false,
+            "id": null,
+            "includeInTokenScope": null,
+            "includeInTokenScopeAttribute": null,
+            "name": "ouf.onboarding.quarantine.release",
+            "roleMappingsObserved": false,
+            "unrestrictedByScopeRoleMappings": false
+          }
+        ],
+        "schema": "ouf.ths-oidc-client-binding-observation.v1"
+      },
+      "budgetReset": false,
+      "complete": true,
+      "configurationAndPolicyReadOnly": true,
+      "configurationFileContentReads": 0,
+      "configurationProfileHash": null,
+      "configurationProfilePrepared": false,
+      "contextPath": "/etc/ouf/deploy-snapshots/managed-profile-ths-iam-binding-read-5dfd7b7a-20261028-v1",
+      "counts": {
+        "adminGetRetryReservations": 0,
+        "adminGetsReserved": 14,
+        "bytes": 135305,
+        "engineGets": 5,
+        "oauthRequestsReserved": 1,
+        "privateMetadataReads": 2
+      },
+      "credentialFilesRead": 0,
+      "credentialValuesPrinted": false,
+      "currentJobOrBudgetStateObserved": false,
+      "effectiveBrowserTokenScopesProven": false,
+      "engineWrites": 0,
+      "historicalAuthorityReused": false,
+      "humanBudgetsGranted": 0,
+      "iamMutations": 0,
+      "imageImports": 0,
+      "jwtSignatureIndependentlyVerified": false,
+      "newAdministrativeAuthenticationPerformed": true,
+      "newAdministrativeCredentialValuesPersisted": false,
+      "newGrantsGranted": 0,
+      "newJobs": 0,
+      "oldAuthenticationWindowsOrBudgetsReopened": false,
+      "readOnly": false,
+      "releaseAcceptance": false,
+      "resumes": 0,
+      "retainedClientInputsHash": "5dfd7b7a903c07f546c42ba1915bf6f8fd1430ab91addc4879988cd4c1727892",
+      "retainedEnvironmentMayContainCredentials": true,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.managed-profile-ths-iam-binding-read-result.v1",
+      "scopePatchApplied": false,
+      "sourceActivations": 0,
+      "sqlSessions": 0,
+      "status": "THS_IAM_BINDINGS_OBSERVED_CONFIGURATION_PROFILE_BLOCKED",
+      "targetApplyAuthorized": false,
+      "uploads": 0
+    },
+    "exit": 0,
+    "deliveryExit": 0,
+    "scopeConsumed": true,
+    "automaticReplayAllowed": false
+  },
+  "profileControlThsIamBindingCorrectionQualification": {
+    "record": "evidence/managed-profile-ths-iam-binding-correction-qualified-20261028.json",
+    "source": {
+      "commit": "78282b120dffa063ff8bc86f96071de1f2e8766f",
+      "path": "scripts/correct-managed-profile-ths-iam-bindings-20261028.py",
+      "bytes": 82522,
+      "sha256": "3e3d665eaee8c9f4699259b52a5c8403ad64cf494e9cf92684fb6cf1b74eed1a"
+    },
+    "wrapper": {
+      "commit": "dc848eba194a4e43abffcd97ba9791f37fc44884",
+      "path": "releases/correct-managed-profile-ths-iam-bindings-20261028.sh",
+      "sha256": "ca018484e6196366cd0c83f4ec17e09a6bc4b94a66bb871a2c4232a0a0db40d5"
+    },
+    "qualification": {
+      "commit": "8986be7b38b1ef7df6fe8a1b5fda3c4b987457ad",
+      "pushRun": 40697903097,
+      "prRun": 40697916270,
+      "conclusion": "success",
+      "unitTests": 81,
+      "newCorrectionTests": 22,
+      "preservedTests": 59,
+      "skips": 0,
+      "actualProviderVersions": [
+        "26.0.8",
+        "26.2.5"
+      ],
+      "profilesPerVersion": 2,
+      "lostWriteResponseScenarioPerVersion": true,
+      "nativeTerminalWrongLineCorrectedWithinOriginalWindow": true,
+      "sourceReproducedFromTrackedCodeAndEvidence": true,
+      "pushJobs": [
+        122849489267,
+        122849489628,
+        122849489632
+      ],
+      "prJobs": [
+        122849536931,
+        122849537614,
+        122849537636
+      ],
+      "directLogsRead": 6,
+      "actualDockerNamespaceProcessRootMountAndProvider": true,
+      "actualProtectedRoot400Main": true,
+      "actualHttpsNonrootSudoRoot400Delivery": true,
+      "privateFiles600": true,
+      "nonTtyBeforeScopeOrAuth": true,
+      "oldInputFilesUnchanged": true,
+      "replayDenied": true,
+      "fixtureConsentOnly": true,
+      "productionConsentSimulated": false,
+      "targetCalls": 0
+    },
+    "operationRef": "a258d03d9283225f938e658a01db474a949afe2bb206d127f96a56fd253b89e9",
+    "scope": "/etc/ouf/deploy-snapshots/managed-profile-ths-iam-binding-correction-ba556e9f-20261028-v1",
+    "delta": {
+      "realm": "ouf",
+      "clientId": "ouf-authorization-ths",
+      "clientUuid": "a53bc77e-1b21-4a54-8f1a-b236fadb759a",
+      "baselineBindingHash": "ba556e9fce5fb31de5f53af0bf6d3fe7a77e8e09d9048529d8283eaaa6afabc2",
+      "definitionToCreate": {
+        "id": "3dbfa25c-89da-53ec-89b0-4ba6458017c9",
+        "name": "ouf.onboarding.quarantine.release",
+        "protocol": "openid-connect",
+        "attributes": {
+          "include.in.token.scope": "true",
+          "ouf.provisioning.operation-ref": "a258d03d9283225f938e658a01db474a949afe2bb206d127f96a56fd253b89e9"
+        },
+        "protocolMappers": []
+      },
+      "optionalLinks": [
+        {
+          "name": "ouf.managed-source.preview",
+          "id": "e369f8fd-fe4d-4fa2-8ff2-4cd806398417"
+        },
+        {
+          "name": "ouf.managed-source.file.profile",
+          "id": "226b20cd-7798-4da9-af03-eb2bca3d2c5a"
+        },
+        {
+          "name": "ouf.onboarding.quarantine.release",
+          "id": "3dbfa25c-89da-53ec-89b0-4ba6458017c9"
+        }
+      ],
+      "expectedPostCounts": {
+        "definitions": 70,
+        "defaultClientScopes": 14,
+        "optionalClientScopes": 9
+      },
+      "preservedOldDefaultLinks": 14,
+      "preservedOldOptionalLinks": 6,
+      "preservedOldDefinitions": 69,
+      "realmDefaultsMutationAuthorized": false,
+      "existingDefinitionsMutationAuthorized": false,
+      "clientSettingsOrSecretsMutationAuthorized": false,
+      "rolesOrMappersMutationAuthorized": false
+    },
+    "limits": {
+      "totalSeconds": 600,
+      "reviewSeconds": 90,
+      "maximumReviewInputEvents": 128,
+      "passwordInputSeconds": 90,
+      "maximumSecondsAfterApproval": 210,
+      "maximumSecondsAfterPassword": 120,
+      "minimumRemainingAdminTokenBeforeFirstWriteSeconds": 30,
+      "privateMetadataReads": 3,
+      "engineGets": 7,
+      "administrativeAuthenticationRequests": 1,
+      "normalAdminGets": 29,
+      "maximumAdminGets": 40,
+      "maximumGetRetryReservations": 4,
+      "maximumIamWriteDispatches": 4,
+      "maximumPostCreates": 1,
+      "maximumOptionalPuts": 3,
+      "maximumBytes": 25165824
+    },
+    "targetExecuted": false,
+    "currentDeliveryUsable": true,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "humanBudgetsGranted": 0,
+    "resumes": 0
   }
 }

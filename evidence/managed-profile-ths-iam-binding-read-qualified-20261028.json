@@ -2,7 +2,7 @@
   "schema": "ouf.managed-profile-ths-iam-binding-read-qualified.v1",
   "date": "2026-10-28",
   "timezone": "Europe/Rome",
-  "status": "QUALIFIED_NEW_OPERATION_NOT_EXECUTED_ON_TARGET",
+  "status": "QUALIFIED_AND_SUCCESSFULLY_CONSUMED_PROFILE_BLOCKED",
   "source": {
     "commit": "831a6c2268b5e5dc1138a86bec7e2c81c70d9965",
     "path": "scripts/read-managed-profile-ths-iam-bindings-20261028.py",
@@ -144,7 +144,7 @@
     "runtimeAuthorityIssued": false,
     "targetApplyAuthorized": false
   },
-  "targetExecuted": false,
+  "targetExecuted": true,
   "automaticReplayAllowed": false,
   "budgetReset": false,
   "applicationE2EProven": false,
@@ -169,5 +169,27 @@
   "primarySources": [
     "https://github.com/keycloak/keycloak/blob/26.2.5/services/src/main/java/org/keycloak/services/resources/admin/ClientResource.java",
     "https://github.com/keycloak/keycloak/blob/26.2.5/server-spi/src/main/java/org/keycloak/models/ClientScopeModel.java"
-  ]
+  ],
+  "currentDeliveryUsable": false,
+  "targetFollowUp": {
+    "receipt": "evidence/managed-profile-ths-iam-binding-read-target-20261028.json",
+    "status": "THS_IAM_BINDINGS_OBSERVED_CONFIGURATION_PROFILE_BLOCKED",
+    "complete": true,
+    "exit": 0,
+    "deliveryExit": 0,
+    "scopeConsumed": true,
+    "replayAllowed": false,
+    "bindingSnapshotHash": "ba556e9fce5fb31de5f53af0bf6d3fe7a77e8e09d9048529d8283eaaa6afabc2",
+    "configurationProfilePrepared": false,
+    "configurationProfileHash": null,
+    "counts": {
+      "adminGetRetryReservations": 0,
+      "adminGetsReserved": 14,
+      "bytes": 135305,
+      "engineGets": 5,
+      "oauthRequestsReserved": 1,
+      "privateMetadataReads": 2
+    },
+    "nextQualifiedCorrection": "evidence/managed-profile-ths-iam-binding-correction-qualified-20261028.json"
+  }
 }
