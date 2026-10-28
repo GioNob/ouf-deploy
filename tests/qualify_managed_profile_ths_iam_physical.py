@@ -67,7 +67,7 @@ def pty_run(harness,*,credentials=True):
  finally:os.close(fd)
 
 try:
- iam_id=start(['-e','KC_BOOTSTRAP_ADMIN_USERNAME=fixture-admin','-e','KC_BOOTSTRAP_ADMIN_PASSWORD=PRIVATE_IAM_PASSWORD_CANARY',
+ iam_id=start(['--name','ouf-keycloak','-e','KC_BOOTSTRAP_ADMIN_USERNAME=fixture-admin','-e','KC_BOOTSTRAP_ADMIN_PASSWORD=PRIVATE_IAM_PASSWORD_CANARY',
                'quay.io/keycloak/keycloak:26.2.5','start-dev','--hostname=https://idp.fixture.test'])
  ready=False
  for _ in range(120):
