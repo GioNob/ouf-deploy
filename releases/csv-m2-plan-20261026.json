@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 27406)
-Total output lines: 3034
-
 {
   "schema": "ouf.csv-m2-completion-plan.v1",
   "documentId": "OUF-MP-CSV-M2",
@@ -1443,7 +1440,431 @@ Total output lines: 3034
       ],
       "historicalProcedureRetained": true,
       "audit": {
-        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.j…3406 tokens truncated…     "findingRefs": [
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-20",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F12"
+        ],
+        "evidenceRefs": [
+          "CI-mcp_resume"
+        ],
+        "existing": "Due sessioni SDK con owner sintetico sono una prova parziale.",
+        "concreteDelta": "Due client esterni indipendenti, almeno uno solo tool/link web; traccia fino a UDP e ritorno THS.",
+        "deltaRefs": [
+          "D7"
+        ]
+      }
+    },
+    {
+      "id": "CSV-AT-21",
+      "procedureAndExpected": "ProfiliENV-A/B: endpoint/indirizzi/MAC/path differenti, due reti; stesso codice, nessun default storico; input non validi rifiutati",
+      "requiredLevel": "I",
+      "canonicalTraceability": "021 per identità se precondizioni complete; ambiente locale",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R22"
+      ],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-21",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F12"
+        ],
+        "evidenceRefs": [
+          "RETAINED-ROLLOUT"
+        ],
+        "existing": "Controller e casi retained riusabili; audit non prova ENV-A/B completo.",
+        "concreteDelta": "Secondo profilo isolato sul solo delta finale; non nuovo installer universale né reset ambiente.",
+        "deltaRefs": [
+          "D7"
+        ]
+      }
+    },
+    {
+      "id": "CSV-AT-22",
+      "procedureAndExpected": "Executor: key/image/lifecycle/route con fault prima/dopo effetto; CID/PID/StartedAt/namespace nuovi verificati, predecessore conservato, no replay",
+      "requiredLevel": "I",
+      "canonicalTraceability": "Locale, gate operativo",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R23"
+      ],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP1",
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-22",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F08",
+          "F12"
+        ],
+        "evidenceRefs": [
+          "RETAINED-ROLLOUT",
+          "TARGET-READ"
+        ],
+        "existing": "Recovery di deployment conservate; operazioni originali non ripetute.",
+        "concreteDelta": "Scegliere executor già qualificato e coprire soltanto fault del nuovo delta non già provati.",
+        "deltaRefs": [
+          "D2",
+          "D7"
+        ]
+      }
+    },
+    {
+      "id": "CSV-AT-23",
+      "procedureAndExpected": "Gate correnti DB/HUMAN/Owner e readiness; assenza/drift/revoca blocca; due route attese e altre80preservate, policy startup effettiva provata",
+      "requiredLevel": "I+T",
+      "canonicalTraceability": "024 solo se intero scenario LKG eseguito",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R23"
+      ],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP1",
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true,
+      "currentDeltaInterpretation": "Historical route counts describe the retained rollout only. Freeze the current inventory for every new delta and prove all unrelated routes preserved; do not restore historical route counts.",
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-23",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F10",
+          "F12"
+        ],
+        "evidenceRefs": [
+          "RETAINED-ROLLOUT",
+          "TARGET-READ"
+        ],
+        "existing": "Readiness e generazioni retained; inventario storico non è quello da ripristinare.",
+        "concreteDelta": "Freeze della coorte corrente e preservazione route estranee; drift/deny/readiness per nuovo delta.",
+        "deltaRefs": [
+          "D2",
+          "D7"
+        ]
+      }
+    },
+    {
+      "id": "CSV-AT-24",
+      "procedureAndExpected": "Verifica finale coorte/contratti/evidenze/baseline e guida; tutti i requisiti coperti, nessun obbligatorio SKIPPED/BLOCKED, accettazione HUMAN",
+      "requiredLevel": "T+C",
+      "canonicalTraceability": "Blueprint0.3§9",
+      "status": "OPEN_FOR_M2_FINAL_COHORT",
+      "requirementIds": [
+        "CSV-R24"
+      ],
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "existingComponentEvidenceMayBeReusedWithImpactAnalysis": true,
+      "workPackages": [
+        "M2-WP6"
+      ],
+      "historicalProcedureRetained": true,
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "CSV-AT-24",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F01",
+          "F12"
+        ],
+        "evidenceRefs": [
+          "TARGET-M1"
+        ],
+        "existing": "M1 completo e dossier mantenuto; M2 aperto.",
+        "concreteDelta": "Comporre matrice finale, scenari canonici completi e HUMAN M2; nessun merge/release acceptance.",
+        "deltaRefs": [
+          "D7"
+        ]
+      }
+    }
+  ],
+  "additionalUxAcceptance": [
+    {
+      "id": "M2-UX-01",
+      "criterion": "Zero terminal/SQL and manual ID/hash/log copying; no prosegui needed merely to advance a technical stage",
+      "workPackages": [
+        "M2-WP2",
+        "M2-WP6"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-01",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F04",
+          "F10",
+          "F12"
+        ],
+        "evidenceRefs": [
+          "CI-onboarding",
+          "CI-mcp_resume",
+          "CI-gateway",
+          "CI-udp",
+          "TARGET-M1"
+        ],
+        "existing": "Prove dei singoli passaggi non provano percorso autoguidato.",
+        "concreteDelta": "Comporre proposta/review/attesa/esito senza terminale, ID copiati o prosegui tecnico.",
+        "deltaRefs": [
+          "D2",
+          "D3",
+          "D6",
+          "D7"
+        ]
+      }
+    },
+    {
+      "id": "M2-UX-02",
+      "criterion": "One intended upload/profile; duplicate-click/lost-response safety and actionable safe failure",
+      "workPackages": [
+        "M2-WP1",
+        "M2-WP2",
+        "M2-WP5"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-02",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F05",
+          "F11"
+        ],
+        "evidenceRefs": [
+          "TARGET-FAILED",
+          "LOCAL-FARMACIE",
+          "CI-DIAGNOSTIC"
+        ],
+        "existing": "Asset/job persistenti; Farmacie FAILED conservato, causa sconosciuta.",
+        "concreteDelta": "Fix causale, idempotenza e recupero finito del profiling; errore safe e azione valida.",
+        "deltaRefs": [
+          "D1",
+          "D4",
+          "D7"
+        ]
+      }
+    },
+    {
+      "id": "M2-UX-03",
+      "criterion": "All columns mapped or explicitly excluded; exact semantics, identity and classification",
+      "workPackages": [
+        "M2-WP3"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-03",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F02",
+          "F06"
+        ],
+        "evidenceRefs": [
+          "CI-typed",
+          "CI-onboarding",
+          "CI-ingestion",
+          "CI-udp"
+        ],
+        "existing": "Decisioni INCLUDE/EXCLUDE e transform typed già presenti.",
+        "concreteDelta": "Composizione di tutte le colonne, label e vocabolario/relazione dichiarati.",
+        "deltaRefs": [
+          "D2",
+          "D5",
+          "D6",
+          "D7"
+        ]
+      }
+    },
+    {
+      "id": "M2-UX-04",
+      "criterion": "Verified exact THS decision link; mobile/desktop return, expiry and stale-version recovery",
+      "workPackages": [
+        "M2-WP2",
+        "M2-WP6"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-04",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F10",
+          "F12"
+        ],
+        "evidenceRefs": [
+          "CI-onboarding",
+          "CI-udp",
+          "TARGET-M1",
+          "CI-mcp_resume",
+          "CI-gateway"
+        ],
+        "existing": "Owner review con hash/versioni già presente; picker non è diagnostica.",
+        "concreteDelta": "Link verificato per decisione esatta, ritorno da mobile/desktop e versioni scadute.",
+        "deltaRefs": [
+          "D6",
+          "D7"
+        ]
+      }
+    },
+    {
+      "id": "M2-UX-05",
+      "criterion": "Authorized owner-backed resume by work description after new chat; no expired picker dependency",
+      "workPackages": [
+        "M2-WP2",
+        "M2-WP5",
+        "M2-WP6"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-05",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F04",
+          "F09"
+        ],
+        "evidenceRefs": [
+          "CI-onboarding",
+          "CI-mcp_resume",
+          "CI-gateway"
+        ],
+        "existing": "ASSETS/LATEST candidati, ma job/etichetta lavoro assenti dalla lista.",
+        "concreteDelta": "Ritrovare lavoro descrittivo e relativo job entro tenant/soggetto e paginazione.",
+        "deltaRefs": [
+          "D2",
+          "D3",
+          "D7"
+        ]
+      }
+    },
+    {
+      "id": "M2-UX-06",
+      "criterion": "Every row accounted for; no complete claim from ACK or hidden/pending/redacted rows",
+      "workPackages": [
+        "M2-WP4",
+        "M2-WP6"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-06",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F01",
+          "F10"
+        ],
+        "evidenceRefs": [
+          "TARGET-M1",
+          "CI-onboarding",
+          "CI-udp"
+        ],
+        "existing": "READ complete M1 e lineage per riga riusabili.",
+        "concreteDelta": "Rendiconto 61 righe e parzialità; oggetti distinti dal numero righe; nessun successo dal solo ACK.",
+        "deltaRefs": [
+          "D6",
+          "D7"
+        ]
+      }
+    },
+    {
+      "id": "M2-UX-07",
+      "criterion": "Produced objects discoverable via available typed bounded search with authorization and pagination",
+      "workPackages": [
+        "M2-WP4",
+        "M2-WP6"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-07",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
+          "F10"
+        ],
+        "evidenceRefs": [
+          "CI-onboarding",
+          "CI-udp",
+          "TARGET-M1"
+        ],
+        "existing": "Search canonica tipizzata e related search già nel manifest.",
+        "concreteDelta": "Collegare type/object ID prodotti e paginazione governata; niente motore search nuovo.",
+        "deltaRefs": [
+          "D6",
+          "D7"
+        ]
+      }
+    },
+    {
+      "id": "M2-UX-08",
+      "criterion": "Observed progress and bounded next check; no permanent-error loop or per-row dependency incident storm",
+      "workPackages": [
+        "M2-WP1",
+        "M2-WP2",
+        "M2-WP5"
+      ],
+      "requiredLevel": "T+C",
+      "status": "OPEN",
+      "evidenceRefs": [
+        "evidence/csv-m2-code-evidence-gap-audit-20261026.json"
+      ],
+      "audit": {
+        "record": "evidence/csv-m2-code-evidence-gap-audit-20261026.json",
+        "id": "M2-UX-08",
+        "status": "PARTIAL_REUSE_FINAL_ACCEPTANCE_OPEN",
+        "findingRefs": [
           "F05",
           "F08"
         ],
