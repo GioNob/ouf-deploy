@@ -5,6 +5,9 @@ ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('client_fixture',ROOT/'tests/test_managed_profile_ths_client.py');f=importlib.util.module_from_spec(spec);spec.loader.exec_module(f);m=f.m
 assert os.geteuid()==os.getegid()==0
 root=Path('/var/lib/ouf-ths-client-unix-fixture');root.mkdir(mode=0o700);root.chmod(0o700)
+# Disposable hosted runner /opt may belong to its runner account. Build the
+# production-shaped ancestry in this CI fixture; never relax the source guard.
+os.chown('/opt',0,0);os.chmod('/opt',0o755)
 config=Path('/opt/ouf/secrets/onboarding-ths.yaml')
 config.parent.parent.mkdir(exist_ok=True);os.chown(config.parent.parent,1000,1000);config.parent.parent.chmod(0o750)
 config.parent.mkdir();os.chown(config.parent,1000,1000);config.parent.chmod(0o700)
