@@ -1,3 +1,7 @@
+# Aggiornamento: scheda live negata per ownership
+
+HTTP403 ONB_FILE_OWNER_SCOPE_UNPROVEN, correlation e8c96213-6537-42c1-a726-311d6eb7898a, riferito dall'utente il 28 ottobre2026. [Osservazione e diagnosi del gate](../../evidence/managed-profile-ths-ownership-denial-20261028.json). Non è prova di scadenza del budget900s: ownership controllata prima di card/policy, nessun predicato temporale. Ultima prova FAILED5/zero budget; identità/tenant browser e ricevute persistenti vanno riconciliati in lettura. Non chiedere riaperture/login alla cieca, non rilanciare APPLY né concedere budget o cambiare ownership. Le richieste sotto di aprire la scheda sono superate; esito installazione e tutti i vincoli restano acquisiti.
+
 # OUF — richiesta THS installata, prossimo passo scheda HUMAN dello stesso job — 28 ottobre 2026
 
 ## Esito acquisito, non rieseguire
