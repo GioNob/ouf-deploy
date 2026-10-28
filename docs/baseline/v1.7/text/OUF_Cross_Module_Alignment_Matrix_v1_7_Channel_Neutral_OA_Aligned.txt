@@ -1,0 +1,189 @@
+OPEN URBAN FRAMEWORK (OUF)
+CROSS-MODULE ALIGNMENT MATRIX
+Coherence alignment delta — Operational Awareness via MCP and persistent cross-module fault visibility
+Versione 1.7 — Operational Awareness Alignment — Settembre 2026
+v1.5 preserves every architectural ownership decision, contract boundary and E2E scenario semantic of Matrix v1.4. It supersedes v1.4 only for the MCP implementation technology and its controlled document reference: MCP Server PET v1.2 adopts Go 1.25 and the official MCP Go SDK v1.7.x for MCP 2026-07-28.
+1. Frozen ownership remains unchanged
+UDP remains system of record for canonical Urban Object identity/materialization, object resolution and Query Complexity Governor.
+Ingestion owns version-pinned execution, CDE/handoff/lineage and downstream durable watermark semantics.
+Onboarding owns source-specific configuration/mapping and publishes immutable runtime bundles/projections.
+Semantic Registry owns TBox/vocabularies/relation semantics and exact historical publication resolution.
+Authorization owns application policy/capability evaluation; backend owners enforce fine-grained authorization.
+Gateway owns network boundary, identity validation, coarse enforcement, governed routing and controlled publication.
+MCP Server owns typed capability exposure, orchestration budget, retry/remediation, trusted-human handoff, and governed operational-awareness aggregation/projection; it does not own raw monitoring telemetry or producer-domain incident truth.
+THS owns HUMAN_USER approval and protected operations; Protected Operations Workspace remains physically co-located in the THS module.
+2. Canonical E2E traceability
+Matrix v1.2 ID
+Canonical ID
+Rule
+E2E-X01
+OUF-E2E-001
+Mandatory; semantic meaning preserved from Matrix v1.2.
+E2E-X02
+OUF-E2E-002
+Mandatory; semantic meaning preserved from Matrix v1.2.
+E2E-X03
+OUF-E2E-003
+Mandatory; semantic meaning preserved from Matrix v1.2.
+E2E-X04
+OUF-E2E-004
+Mandatory; semantic meaning preserved from Matrix v1.2.
+E2E-X05
+OUF-E2E-005
+Mandatory; semantic meaning preserved from Matrix v1.2.
+E2E-X06
+OUF-E2E-006
+Mandatory; semantic meaning preserved from Matrix v1.2.
+E2E-X07
+OUF-E2E-007
+Mandatory; semantic meaning preserved from Matrix v1.2.
+E2E-X08
+OUF-E2E-008
+Mandatory; semantic meaning preserved from Matrix v1.2.
+E2E-X09
+OUF-E2E-009
+Mandatory; semantic meaning preserved from Matrix v1.2.
+E2E-X10
+OUF-E2E-010
+Mandatory; semantic meaning preserved from Matrix v1.2.
+E2E-X11
+OUF-E2E-011
+Mandatory; semantic meaning preserved from Matrix v1.2.
+E2E-X12
+OUF-E2E-012
+Mandatory; semantic meaning preserved from Matrix v1.2.
+E2E-X13
+OUF-E2E-013
+Mandatory; semantic meaning preserved from Matrix v1.2.
+E2E-X14
+OUF-E2E-014
+Mandatory; semantic meaning preserved from Matrix v1.2.
+E2E-X15
+OUF-E2E-015
+Mandatory; semantic meaning preserved from Matrix v1.2.
+E2E-X16
+OUF-E2E-016
+Mandatory; semantic meaning preserved from Matrix v1.2.
+Additional canonical scenarios OUF-E2E-017…025 capture first-ingestion happy path, backend-deny, semantic active-switch pinning, source identity separation, scenario-neutral M2M, capability projection, southbound bypass, Gateway last-known-good and full-path error/correlation behavior.
+3. MCP and THS acceptance suites
+3.1 MCP runtime technology alignment
+MCP Server PET v1.2 supersedes MCP Server PET v1.1 only for implementation technology. The approved Technology Economy Gate selects Go 1.25 and the official MCP Go SDK v1.7.x because that supported line implements the normative MCP 2026-07-28 protocol without a custom protocol adapter.
+The MCP module remains one codebase and one versioned binary with the process roles mcp-server and mcp-maintenance-worker. Capability ownership, typed tool contracts, Gateway mediation, Authorization enforcement, Trusted Human Surface boundaries, PostgreSQL persistence and all canonical E2E outcomes remain unchanged.
+The Go toolchain and SDK version/checksum are pinned. Official MCP 2026-07-28 conformance and cross-SDK interoperability are release gates. TypeScript SDK v2 is permitted only as an independent interoperability client fixture, not as a second server runtime.
+The existing Gateway–Onboarding micro pairwise test remains a mandatory regression fixture when MCP-to-Gateway capability binding is introduced. The Java/Spring starter-kit template continues to govern the other Java modules and is not normative for MCP Server v1.2.
+Suite
+Status in v1.5
+MCP-A
+Remains mandatory. MCP-A53…A55 are explicitly covered by OUF-E2E-016 cross-module evidence plus MCP module tests.
+THS-A
+Remains mandatory. THS-A12 requires both cross-module approval-card interoperability and protected-log operations entirely inside THS.
+Module PET acceptance suites
+Remain mandatory and are not replaced by cross-module E2E.
+4. Platform gate timing
+Gate class
+Contract/integration
+Representative acceptance/production
+A/B/C + actual issuer/JWKS/audience/claims
+Scenario-neutral mocks permitted; no application branching.
+Actual selected/configured binding required.
+Service identity lifecycle
+Synthetic/integration identity permitted.
+Provisioning/rotation lifecycle required.
+Routes/secrets/storage
+Logical refs/stubs/Testcontainers permitted.
+Actual environment bindings required.
+RPO/RTO / representative environment
+Not a functional coding blocker.
+Required for final operational acceptance.
+5. Coherence exit criteria
+Blueprint v0.3 is current L0 integration authority.
+E2E v0.3 is the only canonical cross-module scenario catalogue.
+WBS v0.4 includes MCP implementation and THS Protected Operations.
+Readiness Matrix v1.2 distinguishes internal development readiness from representative environment readiness.
+Contract repository rc3-coherence has one current-status authority and archived historical reports.
+Starter Kit v0.2.1 makes Helm lint/template a blocking target-CI gate and wires network-policy ingress/egress values.
+6. Operational Awareness cross-module alignment
+This section is normative for all implementation work performed after Matrix v1.7. It introduces no new central incident microservice. Producer modules remain authoritative for their own operational state; MCP is the human-facing conversational projection and aggregation layer.
+Concern
+Authoritative owner
+Persistence
+MCP exposure
+Key invariant
+Ingestion run/source faults
+Ingestion Runtime
+Ingestion datastore
+ingestion.status/history + operations.*
+Offline catch-up survives client disconnect
+Source schedule/retry/misfire policy
+Source Onboarding
+Versioned PublishedConfigurationBundle
+read-only projection as needed
+Runtime does not invent scheduler policy
+Gateway routing/publication/etcd/trust faults
+Urban API Gateway
+Gateway operational/audit persistence
+system.status + operations.*
+No raw APISIX/etcd telemetry exposed
+Authorization/redaction decision
+Authorization
+Authorization/audit evidence
+applied to every operational query
+NOT_AUTHORIZED != NO_INCIDENTS
+Cross-module conversational summary
+MCP Server
+No new producer truth; optional bounded cursor state only
+primary chatbot surface
+MCP cannot manufacture HEALTHY when evidence is missing
+Protected operational detail / corrective human action
+THS + domain owner
+owner audit/evidence
+handoff only
+HUMAN_USER authority preserved
+6.1 Canonical lifecycle and severity
+lifecycleState = OPEN | RECOVERING | RESOLVED; severity = INFO | WARNING | ERROR | CRITICAL
+Operational events are durable semantic transitions, not a mirror of logs/metrics.
+dedupKey + incidentId aggregate equivalent retry/fault events; recovery closes the same incident when causally equivalent.
+Each event carries module ownership, timestamps, correlation context, visibility class, safe impact summary and evidence references.
+Live notification is optional; persistent catch-up is mandatory.
+6.2 Canonical chatbot scenarios
+OUF-OA-001 — User reconnects after scheduled ingestion transient failure that self-recovered: summary reports RESOLVED incident, duration, retry count and no action required.
+OUF-OA-002 — User reconnects after terminal scheduled ingestion failure: OPEN incident reports source/job, safe error code, last attempt and action required.
+OUF-OA-003 — Gateway cannot reach one producer while other modules are healthy: system.status is PARTIAL/UNKNOWN for the missing producer, not global HEALTHY.
+OUF-OA-004 — Security-sensitive fault exists but actor lacks permission: response preserves redaction/authorization semantics without disclosing protected detail.
+OUF-OA-005 — Repeated equivalent timeout generates one incident timeline rather than notification storm.
+OUF-OA-006 — Lost live notification followed by reconnect still returns the persisted incident through summary/history.
+6.3 Release gates
+Each producer PET has persistent operational-event requirements and retention.
+MCP PET exposes bounded operational capabilities and preserves partial/unknown semantics.
+Gateway routes and authorizes operational queries without new network bypasses.
+Authorization defines detail-level/visibility-class policy and audit evidence.
+Pairwise tests cover Ingestion↔Gateway↔MCP and denial/redaction cases.
+Full-path acceptance includes offline fault → persisted incident → later chatbot catch-up.
+7. Channel-neutral human-facing capability alignment
+This section is normative for all work after Matrix v1.7. It corrects an MCP-centric ambiguity introduced during the first Operational Awareness implementation slice.
+Invariant
+Alignment rule
+Capability identity
+Human-facing OUF functionality is defined as a channel-neutral capability, not as an MCP-only tool.
+Common mediation
+Urban API Gateway mediates approved human-facing capability execution for MCP, UI, CLI and automation channels.
+MCP role
+MCP provides governed conversational discovery/invocation; it does not own exclusive application access.
+Owner role
+Each physical module exposes a private owner API for its capabilities, including MCP-owned capabilities.
+No recursion
+Gateway -> MCP owner API is permitted; Gateway -> /mcp for MCP-owned capability execution is forbidden.
+Security equivalence
+Authorization, tenant isolation, redaction, audit and evidence semantics do not weaken or change by presentation channel.
+Network boundary
+Private owner APIs are reachable only from approved Gateway/control-plane identities according to NetworkPolicy/trust policy.
+7.1 Corrected ouf.system.status topology
+Chatbot path: Human -> chatbot/MCP client -> MCP protocol/tool projection -> Urban API Gateway -> MCP private owner API -> MCP authoritative datastore projection.
+Future UI path: Human -> UI -> Urban API Gateway -> MCP private owner API -> MCP authoritative datastore projection.
+The two paths share the same capability identity and backend owner contract. Their authentication mechanism may differ, but Authorization and information-disclosure semantics remain governed and comparable.
+7.2 Alignment gates
+OUF-OA-CN-001 — No human-facing capability is implemented only as an MCP-local datastore shortcut.
+OUF-OA-CN-002 — Pairwise test proves MCP -> Gateway -> MCP owner API binding for ouf.system.status.
+OUF-OA-CN-003 — Gateway contract test proves a non-MCP presentation channel can bind the same capability subject to Authorization.
+OUF-OA-CN-004 — NetworkPolicy/trust evidence proves the owner API is not directly exposed to ordinary clients.
+OUF-OA-CN-005 — No recursive Gateway -> /mcp dispatch is present.

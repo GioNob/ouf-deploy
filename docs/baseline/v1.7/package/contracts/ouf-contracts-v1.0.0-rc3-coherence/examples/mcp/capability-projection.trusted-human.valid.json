@@ -1,0 +1,72 @@
+{
+  "gatewayCapability": {
+    "capabilityId": "source.onboarding.approve",
+    "version": "1.0",
+    "owner": "onboarding",
+    "operationType": "command",
+    "riskLevel": "low",
+    "input": {
+      "schemaRef": "schemas/onboarding-approval-target-v1.json"
+    },
+    "output": {
+      "schemaRef": "schemas/trusted-approval-ref-v1.json"
+    },
+    "authorization": {
+      "coarseScope": "ouf.read.objects",
+      "audience": "ouf-udp",
+      "backendCapabilityId": "source.onboarding.approve"
+    },
+    "bindings": {
+      "rest": {
+        "method": "GET",
+        "path": "/api/urban/v1/objects/{id}"
+      }
+    },
+    "mcp": {
+      "toolEligible": false
+    }
+  },
+  "authorizationCapability": {
+    "capabilityId": "source.onboarding.approve",
+    "version": "1.0",
+    "owner": "onboarding",
+    "operationType": "command",
+    "riskClass": "HIGH_IMPACT",
+    "humanRequired": true,
+    "toolEligibility": false,
+    "resourceTypes": [
+      "SOURCE_ONBOARDING_VERSION"
+    ]
+  },
+  "mcpDescriptor": {
+    "toolName": "source.onboarding.approve",
+    "capabilityId": "source.onboarding.approve",
+    "capabilityVersion": "1.0",
+    "owner": "onboarding",
+    "operationClass": "COMMAND",
+    "mcpClass": "TRUSTED_HUMAN_ONLY",
+    "publicationState": "ACTIVE",
+    "toolEligible": false,
+    "requiredAuthorizationCapability": "source.onboarding.approve",
+    "gatewayBindingRef": "capability://source.onboarding.approve",
+    "inputSchemaRef": "schemas/onboarding-approval-target-v1.json",
+    "outputSchemaRef": "schemas/trusted-approval-ref-v1.json",
+    "actorTypes": [
+      "HUMAN_USER"
+    ],
+    "baseCostEnvelope": {
+      "hardMaxToolCalls": 0,
+      "hardMaxGraphCalls": 0,
+      "hardMaxDistinctObjects": 0,
+      "hardMaxResultBytes": 0,
+      "hardMaxElapsedMs": 0
+    },
+    "conditionalOutcomeCost": {
+      "mismatchCalls": 0,
+      "equivalentRetryCalls": 0
+    },
+    "securityNotes": [
+      "Human confirmation occurs only through Trusted Approval Workspace direct path."
+    ]
+  }
+}

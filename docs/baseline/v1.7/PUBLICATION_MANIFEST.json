@@ -1,0 +1,2028 @@
+{
+  "schema": "ouf.reality-baseline-github-publication.v1",
+  "publishedDate": "2026-10-28",
+  "source": "Gmail attachment, Baseline package v1.7, selected by project owner",
+  "archive": "OUF_Reality_Baseline_Package_v1_7.zip",
+  "archiveSha256": "e63df67e8817eec38a9d4b3eb736b020f693b932f3360dc02f4555330f2201ce",
+  "archiveFiles": 324,
+  "byteExactPackageCopy": true,
+  "derivedTextCopies": 11,
+  "files": [
+    {
+      "path": "OUF_Reality_Baseline_Package_v1_7.zip",
+      "bytes": 1794523,
+      "sha256": "e63df67e8817eec38a9d4b3eb736b020f693b932f3360dc02f4555330f2201ce",
+      "gitBlobSha": "1f93f40b265f26d310cfe0d8f4725913d3f6d581"
+    },
+    {
+      "path": "package/MANIFEST.json",
+      "bytes": 81034,
+      "sha256": "fad20f87c39083d672eafa264f240158725afbf20006b3ff1d28db0b43cd9d16",
+      "gitBlobSha": "9791cc2bab75751a18447248936d856fbfb766e5"
+    },
+    {
+      "path": "package/README_PACKAGE_STATUS.md",
+      "bytes": 1805,
+      "sha256": "9aa1dd7467868c9aabccf28e688b700bfdf0ab26b39ab975b5bd6e43a9370115",
+      "gitBlobSha": "35b749b358235602e1ad70f89b8c73f775209f3d"
+    },
+    {
+      "path": "package/SHA256SUMS.txt",
+      "bytes": 55768,
+      "sha256": "275e37dea5485215ba43360c7fc869255ad591362cb4e8f832386f00b76ccfeb",
+      "gitBlobSha": "fce4f5cdc2d876d210143511f7a8fd10320bd202"
+    },
+    {
+      "path": "package/contracts/OUF_Contract_Publication_Maturity_v1_0.yaml",
+      "bytes": 9645,
+      "sha256": "f1b9daf03f4a31074188d9cc2547440509c75857a86b74117868dd3b47d4b9d7",
+      "gitBlobSha": "89bcc35bb4fdd598895fbd637e067e1505914858"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/README.md",
+      "bytes": 4301,
+      "sha256": "1340da735fab6028ad1fe37a4861cc020aca434d6ef0148c36921c7ede7f0d6e",
+      "gitBlobSha": "ad252d4e9912811136d9612bcd3ee62f3b510f5d"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/assurance-requirement-v1.json",
+      "bytes": 1217,
+      "sha256": "11ae67f96044f19d2e415e6cc9b1527782cc3bd2ce2f9b18c85b343e678686fa",
+      "gitBlobSha": "9fc29ab2f53ab012aff435afacea4f50c48abfcb"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/authorization-decision-v1.json",
+      "bytes": 1582,
+      "sha256": "939a5ecd22f59e0b45a355ccf0d260cf80763db4484603bee5ef4c8cc1f5ddad",
+      "gitBlobSha": "78ad7a675005fc94d1c385179f7c81a2a1d3b119"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/authorization-policy-bundle-v1.json",
+      "bytes": 1909,
+      "sha256": "b03d3424dce1178fd03619a683082c53b2aa758aec1533e6dd53bc8a3f0dd12a",
+      "gitBlobSha": "349a349c956ae9969b3a70f6758c92cf7863d9ff"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/capability-descriptor-v1.json",
+      "bytes": 2107,
+      "sha256": "0e49cb84f8d505c6256aeaa5293f596c22fd48c10afe27862b2d15c972fbfef7",
+      "gitBlobSha": "23a430b923571a64cc27e3d1f4cd1cf4120d82fa"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/organization-scope-v1.json",
+      "bytes": 935,
+      "sha256": "5b8f29f6dae31fc9837b8b715d3ea79d9df8eb4e1baecaabe74dd00bebaf31b1",
+      "gitBlobSha": "716fd65c9bf60b99e20184ec28db213e52b3709d"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/policy-evaluation-evidence-v1.json",
+      "bytes": 1758,
+      "sha256": "25e1890e73b5da3bca59738d21ddae0b3d9a43189c4ab0ea29f933116c7c862f",
+      "gitBlobSha": "e8e862e0732c2456d029e490443059a0460f2fc5"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/policy-grant-v1.json",
+      "bytes": 2200,
+      "sha256": "a5d709f4e1136bfccb01f7862550d04fdc5a8430f8dff0f7eaf479e9193f78b3",
+      "gitBlobSha": "5765e8f410d9b4420f51ff3444fc3795ca04905a"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/principal-context-v1.json",
+      "bytes": 2495,
+      "sha256": "c4f8176b2ba109eccdaa1b3de10ca69ade132ceac00a645be473f0260c8088e5",
+      "gitBlobSha": "c15073ac9b894d9ad1759fe0187896065bbeb68c"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/resource-context-v1.json",
+      "bytes": 2523,
+      "sha256": "77d0a2c53d753a21fe00f596a6cc9b31b1e181cf346e880136052e281d73273f",
+      "gitBlobSha": "34873671bdb8fc4262e472e04ac281c83800b18b"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/common/correlation-context-v1.json",
+      "bytes": 1081,
+      "sha256": "205e89136e43b3eff7285d32ad72cc6dab9f7c9dae3885342229b9297585a49a",
+      "gitBlobSha": "699442388e5c177bea18b70ea2d10fa9f27ee255"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/common/data-access-label-v1.json",
+      "bytes": 755,
+      "sha256": "00ebb3f34e98e5af7e9796d16957fefd6479871463ce849f3fa67970557870ee",
+      "gitBlobSha": "3ded67dcd839bba7947a9f0a040576914d7f473e"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/common/job-status-v1.json",
+      "bytes": 1369,
+      "sha256": "774e6db9225e1c07ef527e7a5cd3ad01eee60ddb9ed175f69ce9c8a78839fb67",
+      "gitBlobSha": "7e781757743119c85b07d8816681f5d1ba7f930d"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/common/problem-details-v1.json",
+      "bytes": 1798,
+      "sha256": "336e43c3a3903d6a10a2af46a3b046b84117d4ee4a226166d834a5e795908823",
+      "gitBlobSha": "061b2dc6fbf236dcde684354bc652e67c0658360"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/compatibility/compatibility-policy.yaml",
+      "bytes": 496,
+      "sha256": "b9150e1e3bf083539a95cb1de7db0bbd854397e34fd63c92b5909b7468f36862",
+      "gitBlobSha": "4367b408e8ec02aafe7f9551ec3102d5aaa7322f"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/compatibility/contract-hashes.json",
+      "bytes": 20049,
+      "sha256": "1142ae03db9f5c8e93581aff49bdee57b0fd2d3d9f6630a8379e8aad45d6dd35",
+      "gitBlobSha": "776bf86825d7426fe7d07f45c309a5ec2b66b838"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/compatibility/handoff-validation-report.json",
+      "bytes": 383,
+      "sha256": "13c5e4a10e83208c376a133833cf7d4dc582b593dba1e10a588516c6ba66f932",
+      "gitBlobSha": "41e336200a6a07e918a7b755d67a4635fb17d43f"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/compatibility/v1.0-freeze-manifest.json",
+      "bytes": 14447,
+      "sha256": "1bb71e3c689dd21ccc3c3fcd8bcf238039b6aef79c3e9373032acf731476eea0",
+      "gitBlobSha": "66e9dc989473de3bc21a62ad599531bb6b233791"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/compatibility/v1.0-promotion-checklist.md",
+      "bytes": 4039,
+      "sha256": "2d7ae3f92fc45cf777de6f62fdad631e3d353d7239a5a7732198cd4320312eea",
+      "gitBlobSha": "e7cf0c556382f0fbf398cf8b2b64779b2c5c1017"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/authorization-contract-invariants.yaml",
+      "bytes": 2836,
+      "sha256": "24d13ba8cf18cbe8e9300cc55ba3db351ae3a86900d629ecdc7d40df1d2afb96",
+      "gitBlobSha": "b3abc0fccc4c46c47f089263ab2d9284b3d972b6"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/cross-contract-invariants.yaml",
+      "bytes": 4369,
+      "sha256": "50435401b9e7e5a01ee61b281e2ce0742d56f773a67ed5814b6dc68deefb79ed",
+      "gitBlobSha": "55fb01f8edd5aa83436e7cf87324c38ef38eac7b"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/gateway-contract-invariants.yaml",
+      "bytes": 3275,
+      "sha256": "aa53392dab4e37020619f299ca8d5fe88ef5b2255ede5efcbc42a799d2a2f560",
+      "gitBlobSha": "59cfa2e372989a4d8f2d609501c434acfbb7bafa"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/m2m-identity-integration-invariants.yaml",
+      "bytes": 1584,
+      "sha256": "1c58739fde9fb5cc03289688cedd74eeeff4f110042effb4cc8a83aa777ea506",
+      "gitBlobSha": "37e3cb8b4355cbc7e32061f38512b0a64b27f2eb"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/mcp-capability-projection-rules-v1.yaml",
+      "bytes": 4427,
+      "sha256": "94d707b7f3c28e2a5fd143a8abb6441a9b39b871077827624b4ddc97f3f277d6",
+      "gitBlobSha": "41c1d82598a1161fef3f9fb55ea6949cf9661a4d"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/mcp-server-integration-invariants.yaml",
+      "bytes": 5198,
+      "sha256": "177d9d33cd82e3d086bf71ea1a4c76ca694a5c55cc72d0a66afa5c5370ca83f0",
+      "gitBlobSha": "8d749b0f4b854eea2579a8a7ad6de7f5f13e5916"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/onboarding-runtime-contract-map.yaml",
+      "bytes": 4484,
+      "sha256": "1ea2116d02a2aad5526aabef1914eee2427feb0537d93cdad8135e491e2991a0",
+      "gitBlobSha": "8bbeb82bc9d263fdf048763856650bb2ad3e6034"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/repository-wide-invariants.yaml",
+      "bytes": 3235,
+      "sha256": "acf62712dfec8f006decf1763873524407c2c3ae810cbdf10b4354209297d635",
+      "gitBlobSha": "49fd0e72dd6b8b0c4ae24b3742dad37082707e3b"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/semantic-cross-module-invariants.yaml",
+      "bytes": 3245,
+      "sha256": "d2b5252d57e0408bfe93ad832b6a554c3eb29c33e81b4e0a78a0bc40112c6651",
+      "gitBlobSha": "4af1dce605a1d8aac157a957de6445927e793bae"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/contract-catalog.yaml",
+      "bytes": 13110,
+      "sha256": "43b631ae72777e0ddddf69a06469028917e3891fda9575ddce8ae144ee1a7b78",
+      "gitBlobSha": "1f699bb4dc14e5abbf703c220c7e917b894628cb"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/CURRENT_STATUS.md",
+      "bytes": 699,
+      "sha256": "c0f5a2087be0489ca6970e22d5785663d820f22859170fb5d117f2881e29dcee",
+      "gitBlobSha": "8762c85beb503e6403696d30281c7b69f43a32ca"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/authorization-contract-set.md",
+      "bytes": 1281,
+      "sha256": "13440a975e80c66b2ad0b1495b4a6f5a53c4c3179f267c12d1e5c6c02084c5cf",
+      "gitBlobSha": "8ea754492c3603806781b75015b413ab0d04f312"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/authorization-contract-validation-report.json",
+      "bytes": 1348,
+      "sha256": "c24c2ef701c114a45b02d9d2d4b2cb6c6e58c0ee508126ef73af5ec5b76e1535",
+      "gitBlobSha": "a65daa9ccafe99b41fb13ed09593169b4fc2099c"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/canonical-data-envelope-v1-reconciliation.md",
+      "bytes": 2303,
+      "sha256": "df310906a48f6f638643460ca9a90586837aaf673eee4e1c14b29e6a90f4a8da",
+      "gitBlobSha": "e142b20cfbe1873dd81f4f95b17db548242ce843"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/canonical-data-envelope-v1-validation-report.json",
+      "bytes": 418,
+      "sha256": "22e40f040da2133812c1bd3c4bc858dc2ca2d1c991f896c7dbfe34b91e928b38",
+      "gitBlobSha": "0eca89b2f9fda082a5dee5758c3bb3a7049defa7"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/core-contract-consistency-report.json",
+      "bytes": 3712,
+      "sha256": "d66488fe07147ad272bf12b459df1a185b1abaec0cc3e181302c7222e61d9a6a",
+      "gitBlobSha": "3eba88046bebfbc3f5a776f1f910e4264865d87c"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/core-contract-consistency-report.md",
+      "bytes": 1356,
+      "sha256": "00ee7f5a8010fbcbfe141c0a9ed0ac375e54253a5a321872b8c0de5bf02d0b3d",
+      "gitBlobSha": "f356134c1a15c510496b00cd89fa5b40a6775019"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/gateway-contract-set.md",
+      "bytes": 1570,
+      "sha256": "10b0d674f256d5c6f2d2b08695ed4617527ad9ac37fe1a4b5abf88771c8b4a4d",
+      "gitBlobSha": "424722466fa4fdab559deebe289028a4f11d71ed"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/gateway-contract-validation-report.json",
+      "bytes": 1854,
+      "sha256": "6f294e13ebb412043c076fd42c86e187deb23e3ae3a158ff2f58754d683c8650",
+      "gitBlobSha": "ac21ffe31da4ddf8f461d8969c054be2965b1374"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/handoff-payload-v1-reconciliation.md",
+      "bytes": 1462,
+      "sha256": "2f570a055b3833545d2468dd0d859ff2c307d929482e780a63646ef01dc05c88",
+      "gitBlobSha": "3a464ce3fa74cd980c0461650985fbbac55413bf"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/mcp-gap-closure-report.json",
+      "bytes": 1014,
+      "sha256": "6008b5c518835d14d10cdaddf97ade1dace80d03bb9574f1223d1b71e67cdc4c",
+      "gitBlobSha": "fa66bb2f6e2ac2779d5e09e359c40d1c3c81cdce"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/mcp-gap-closure-report.md",
+      "bytes": 1628,
+      "sha256": "d77e4ece7d7e0da67827df73bf8dd1f4600c94b5f2ac944a8cd32e7716ce30c3",
+      "gitBlobSha": "c422b28201b81ed905be82c8342c0a20ec88c672"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/mcp-server-integration-check-report.json",
+      "bytes": 2783,
+      "sha256": "43b59871f256a268cea450d576e8bc6137e03f424834678738b0d34919a9c585",
+      "gitBlobSha": "ef376e20406da9eac1150bea33d0c5aaabb93e6c"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/mcp-server-integration-check-report.md",
+      "bytes": 2372,
+      "sha256": "81f676829439c3a4422367995a1047cd02d9561e0efd9bf42263a13725be0576",
+      "gitBlobSha": "3acde5e1e467c6f536e4a2452bda1d3d444d8ecc"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/repository-wide-consistency-report.json",
+      "bytes": 1378,
+      "sha256": "985c5411429a63771883d30f8819b7db6d01e0698013d85d74c9832a4731e009",
+      "gitBlobSha": "c20a0892c423063f994b7ff79ccdb3bed7bd8282"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/repository-wide-consistency-report.md",
+      "bytes": 1870,
+      "sha256": "bbe11e09c1ee8f44d6e767912d2c8db9db82cccef675d20838effce1e9698915",
+      "gitBlobSha": "79e22a6830dfdc4c8a68639a8b04773d553e7d4f"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/v1.0-promotion-freeze-report.json",
+      "bytes": 3371,
+      "sha256": "e59a1a29fabb3a86739676e86a13cfff5387362eaa66f72b50a51791b4322f81",
+      "gitBlobSha": "3c9f2efe9cfa010ea816532e0a74da320989c3aa"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/v1.0-promotion-freeze-report.md",
+      "bytes": 922,
+      "sha256": "9700c2bede6a34c5d5bd8152375d967f746da9e481065bfe02af8d55f058b1a2",
+      "gitBlobSha": "e1e0740102ca4ffe7f259fec3a326750f8bf364b"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/lineage-record-v1-reconciliation.md",
+      "bytes": 2004,
+      "sha256": "4a36b1e5a051247a66e19292efe32151370be69ea0ef32201319fc83cefd98e4",
+      "gitBlobSha": "8fac72604b14cc2fa7e52f52c467e38518823375"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/m2m-identity-integration-contract.md",
+      "bytes": 933,
+      "sha256": "60dc775abcedb8accbec4bb48eb38ccacee6f3c42d96e435f603a9366a28b60f",
+      "gitBlobSha": "6816703bdc13840905a1917bb626384c6563803a"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/m2m-identity-integration-validation-report.json",
+      "bytes": 1180,
+      "sha256": "061245e3a55d7ae53506b3fd8f2ee8428758faf01a109a07aaf27176695f2cc4",
+      "gitBlobSha": "d047a630ff1f7d2a6f78a46dc0d651c19913a6ea"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/onboarding-runtime-contract-set.md",
+      "bytes": 1491,
+      "sha256": "e858455d6b62cbe1cc971d340a18ebec157046c4734720129b2a82825fbf562e",
+      "gitBlobSha": "0c82a84492cfebfc166e6f35cf3b6ef7c76d1f24"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/onboarding-runtime-contract-validation-report.json",
+      "bytes": 993,
+      "sha256": "7da2a2a7188f8a918d5ff920c617dc5b4aff3c55b489e79fd117dc00b15df72b",
+      "gitBlobSha": "3aa584039aa01781cd8a3736011d7605339cd183"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/semantic-cross-module-contract-set.md",
+      "bytes": 1285,
+      "sha256": "17862f49cb33ba25ec656d20e360f18379ed8a3d0272a7bb496306a748e3c38f",
+      "gitBlobSha": "ab1d5891887f81370d9873f528c9eed9e2b3b82a"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/semantic-cross-module-validation-report.json",
+      "bytes": 1603,
+      "sha256": "7e93344ef00f2fc7684c0ba72dca0137155cb9f084b039bf0517e52ebf8188af",
+      "gitBlobSha": "77d254f9f4548ccf4b09279c7d5015edc7bf8f82"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/source-runtime-profile-canonicalization.md",
+      "bytes": 563,
+      "sha256": "ff729c612529cea96344b3890df3bfd087513e7c519b7dc323515c1d18f08be7",
+      "gitBlobSha": "aa89a5dec571e276e573e139ce4451137c8d976d"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/v1.0-promotion-checklist.md",
+      "bytes": 1338,
+      "sha256": "ed5ae81533e3f84fb6b75eac9fe90c739bdc0c70c8189955817bd983d9c129fd",
+      "gitBlobSha": "d4ddb90fa282712a0de7e0730c0b9c868ecb0a7f"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/authorization/authorization-negative-scenarios.json",
+      "bytes": 12693,
+      "sha256": "ad5bb86d4d4d45d89153b7db8d8dfb1de1ab472a3b3ce5c9a1fa2e17df4e05b2",
+      "gitBlobSha": "02339c3d0096c1cce8911b752b68600a90bba3fd"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/authorization/default-deny.valid.json",
+      "bytes": 2801,
+      "sha256": "36148a0e967b010f4021478d8ef2daef750f3e0a8fc53717ae3c80f0b316edcf",
+      "gitBlobSha": "6db70d5996a0136a26ef2286b8af98c2cf3117ab"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/authorization/full-authorization-contract-set.json",
+      "bytes": 2790,
+      "sha256": "99b6de77e0ecb109ad1850fe39b471d314eb63eaa1feff3e8913dcc23633a0d3",
+      "gitBlobSha": "0c4c4a65ce1d52463b27f0a2a442dbd8e4cdd92a"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/canonical-data-envelope.v1.additive-optional.json",
+      "bytes": 803,
+      "sha256": "13d9f24b345a3cd8b345dcf9fe929c3127a383fc304c8a3bbce7642c3336612a",
+      "gitBlobSha": "317bf3ede13619d9c4b1d2c898be91797628d6a6"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/canonical-data-envelope.v1.delete.json",
+      "bytes": 644,
+      "sha256": "255d1c6b5c83d31689b774e7b3d5acb62ea91a7ecd71994a10ea7b4cbb17452e",
+      "gitBlobSha": "513bfd8f5c08d4321dbc044c2a17d8dc3b38acf5"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/canonical-data-envelope.v1.invalid-major.json",
+      "bytes": 751,
+      "sha256": "9279843a147da19ed14e1f4f4a7e6a8dc11a0bedab9cb01072beae3a2dd0a8d7",
+      "gitBlobSha": "cd36231c794a52a774bc9e5e2115c23ae7f9f824"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/canonical-data-envelope.v1.invalid-no-schema-version.json",
+      "bytes": 721,
+      "sha256": "eefb8200b77355881d7089bce0d47903dc0cc15cc0bc474cf201f462b6031daa",
+      "gitBlobSha": "ecaf04a5d39883d5a3674a4cabdbf2a0fcd2e06f"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/canonical-data-envelope.v1.upsert.json",
+      "bytes": 751,
+      "sha256": "de7af883210ded473ca9bedd68f81d2f956354ce3080d9fb30f291c61fd07331",
+      "gitBlobSha": "591a9ece978ec15756c4a0e340a00908383bac4b"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/capability-descriptor.udp.object.read.json",
+      "bytes": 488,
+      "sha256": "a8ba034f4543b7e95eed34412e34f08ac39b85b80883f907ce5dac45cc150f7f",
+      "gitBlobSha": "ef992a7af443025ceea189d5d3738d34266b97bf"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/gateway/full-gateway-runtime-contract-set.invalid.json",
+      "bytes": 4889,
+      "sha256": "d28c4e8f50f2e592ac35dd1c7db01c07d0f7a6db8235731a3569ebd652f90665",
+      "gitBlobSha": "0f4ede71e4140329c5a4f3dab3469804a9997321"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/gateway/full-gateway-runtime-contract-set.json",
+      "bytes": 4936,
+      "sha256": "42a6856063a840b58169bcf32b681b44b71899f28d5e92dbfd5bbfe7d77c7086",
+      "gitBlobSha": "b07c5e2b2ca556888f5cd74af8676c59cb1caa1a"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/handoff-payload.v1.invalid-upsert-no-canonical.json",
+      "bytes": 1183,
+      "sha256": "3c5b933a538f098046309f8b83f0e544fa08c438824f1da8cd062c7325f7d09e",
+      "gitBlobSha": "8ac92532755d155ea19ad590f47a4f409b5d7239"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/handoff-payload.v1.tombstone.json",
+      "bytes": 809,
+      "sha256": "4774e9e314468a1a3f276a0d626b64beb6aff89529d49a285d1377646fd01db0",
+      "gitBlobSha": "7b23860c92d79e40ccfd25d45312543bbf3f1dc2"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/handoff-payload.v1.upsert.json",
+      "bytes": 1412,
+      "sha256": "13680863d1a2dfa344a97f05b23701a4a4c8944c61f44b17b6aa5d38d696ba54",
+      "gitBlobSha": "d5ffc72bb50868ebd8910b99ee62c10b450d38a8"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/identity/m2m-identity-profile.alpha.valid.json",
+      "bytes": 1237,
+      "sha256": "ef21c0cad2eca143f982fde00b37be4ff392e3a7df5ef7a7f975d3ea34914c09",
+      "gitBlobSha": "279dded2244be803b28b4e4c35272139cec79dcc"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/identity/m2m-identity-profile.beta.valid.json",
+      "bytes": 1234,
+      "sha256": "26fbf9304d128941c71a226fe1efb1c67927b2ba404d07293a21085ecde2c3cd",
+      "gitBlobSha": "18d911ebf8e62f59be5a70fe0d9b4666d4a123ab"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/identity/m2m-identity-profile.invalid.json",
+      "bytes": 1236,
+      "sha256": "28835004f59c4b9d76e76e5fccfb05cc9e72162a2d8316ab578835513789d206",
+      "gitBlobSha": "46dfc00c0db0cbcf0958a51e269bc433e0b9cd60"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/lineage-record.v1.invalid-no-bundle-ref.json",
+      "bytes": 1303,
+      "sha256": "08a620be59d666f78fc3babb83789969398b0d620983ffcde5d2de29f4b8c896",
+      "gitBlobSha": "2aefa9875395a2fe2df67092681c9d747d662c0f"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/lineage-record.v1.quarantined.json",
+      "bytes": 1354,
+      "sha256": "327f8d7b25f36efa5bb86d28ce048202d20b6a55bd65d4eeb7c40f6430ec497e",
+      "gitBlobSha": "6d753c95063449eb805ac30dff957dbeed382c21"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/lineage-record.v1.success.json",
+      "bytes": 1352,
+      "sha256": "d0742e24ac14211de751e1fcccdbb526f61a5a7f2f1b51b7bd2c069524fa7350",
+      "gitBlobSha": "dd2eac6e8c6868227cc3612dc9a58a91fcd5294c"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/mcp/capability-projection.invalid.json",
+      "bytes": 2038,
+      "sha256": "a4ebdde6350873c77be893280c7c81281db7c73e7493207f3c28dcac4fd193ee",
+      "gitBlobSha": "0c36cea180aaad1c507af333a0404fe3e034a3f4"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/mcp/capability-projection.trusted-human.valid.json",
+      "bytes": 2017,
+      "sha256": "e26f8d92a63a2b343348f124d1723f3cff90dca23765004ddfd94bbba88372f6",
+      "gitBlobSha": "5eda2cdeb779d8ce4007d82798e03c103eb2004f"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/mcp/capability-projection.valid.json",
+      "bytes": 2033,
+      "sha256": "26b73edc9ad5a4e0894fd196932c12c2fcff3918a2e527faf2028ecd3168d059",
+      "gitBlobSha": "b4149826b7d025a00cf9c7b328403eba1e69f13e"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/mcp-check/mcp-cross-module-fixture.invalid.json",
+      "bytes": 3635,
+      "sha256": "b8ea0769d665eab935a08a5d0a77ca7e4c64b0282e41707d8989786cee59692c",
+      "gitBlobSha": "c830a65e4bed50c6474ea162591fa2189631e117"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/mcp-check/mcp-cross-module-fixture.valid.json",
+      "bytes": 3641,
+      "sha256": "72d9c0e454d62e93c648e1dd1db1d80e1c886074df91375df5805a1c756db2fb",
+      "gitBlobSha": "2a656fead2410279b39db0ea6c2e2097b7c39bb5"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/onboarding-runtime/full-runtime-contract-set.invalid.json",
+      "bytes": 5084,
+      "sha256": "d6e68911a16f154ebf8e4fde591fa96c0bb34cf78e198015a97642abb8b657a9",
+      "gitBlobSha": "b0515cafcc08243abaacdd49ed28791734c021d5"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/onboarding-runtime/full-runtime-contract-set.json",
+      "bytes": 5096,
+      "sha256": "d3ea416edb56d3593af48e6432c1cf1117d92f59590fed672a5b59646713a188",
+      "gitBlobSha": "5cbda90e1c88fc19da4229bb6832ddf52e0b7e06"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/semantic/full-semantic-cross-module-set.invalid.json",
+      "bytes": 6969,
+      "sha256": "cd0c3439ec35c76822ded7de280f973931af31d8caf10a8a0396380fd041e5de",
+      "gitBlobSha": "99b46a247fabc6d07a7ce42c01e0cbd1c9783588"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/semantic/full-semantic-cross-module-set.json",
+      "bytes": 6955,
+      "sha256": "9d5b54ee2553a490b931d2322280d417eb0c760562417e99796f23a92ed22a8d",
+      "gitBlobSha": "73b847dc119cc8bfbe430c38a67b8b4cc6647d5e"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/capability-manifest-v1.json",
+      "bytes": 4899,
+      "sha256": "9426bc297494f414c7d4f0213597fc35600276a425cce895812e7d67e2cd86c9",
+      "gitBlobSha": "2c8ff6720e07f4f20c5e5dcbd561b9d6d784eeb6"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/client-credential-binding-v1.json",
+      "bytes": 1956,
+      "sha256": "7150fc69083ec4836fbeecd22d329606c4b6fb7a6e081a6b15a6e565c33d787f",
+      "gitBlobSha": "8831118eb5287dee30e698805a7f602e6c11e8fb"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/extraction-runtime-profile-v1.json",
+      "bytes": 2354,
+      "sha256": "f7e5265297d2a9abe40e11a962957db6dce54508ea5b49bc499d8ff93025e57e",
+      "gitBlobSha": "a8d9cba56ae033671a9cef676a8ea38c13eb2fce"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/gateway-authorization-context-v1.json",
+      "bytes": 1844,
+      "sha256": "20701709deb6a1795435d555d4270f3ccbec855161db3179c214922c5849b808",
+      "gitBlobSha": "903289d9ed6aabe740f1c309b32242111b2efa29"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/gateway-connector-handoff-v1.json",
+      "bytes": 2912,
+      "sha256": "b0095e044d19ad1017af8daaeb6c53829627e8b60115c0ffaf99f41647cb6488",
+      "gitBlobSha": "cb2591b513fb9ca16a9cfd20652d0801d19f6213"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/gateway-publication-manifest-v1.json",
+      "bytes": 2243,
+      "sha256": "7841e4d729e81aab04b93e664f0ce706027cf4fe6f714951a6d8c489dfb1d9fe",
+      "gitBlobSha": "3e842fbe4f1978870561f1e73677845b52afe57b"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/health-state-v1.json",
+      "bytes": 1439,
+      "sha256": "bfbc8c78d7b055d0903eac2aaf0192587848df5b955d84a8ae27d93fd990de3a",
+      "gitBlobSha": "63dc3d0d6b29965bf3ee10d2be4c19526a603e91"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/route-binding-v1.json",
+      "bytes": 3055,
+      "sha256": "302a99c3fa64a400266fbeca6dc2c2ee9864318df58013ed57e05b32a999d85e",
+      "gitBlobSha": "b10e226c3c9e6bf2d057780af90293559a32dfcc"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/source-runtime-profile-v1.json",
+      "bytes": 2042,
+      "sha256": "9e9e009122d86d1427c34c5cd7ca94c2ff7eb0325b85e3545cf860820ad622f8",
+      "gitBlobSha": "37c70c070a479a1f397573812a0eaa24a48c0c2e"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/source-schema-binding-v1.json",
+      "bytes": 1564,
+      "sha256": "f95b3210c0a1edaf872ef373515b1f9198168f38d2da6ef4016da6dfb6258f6b",
+      "gitBlobSha": "075cb2861da2e203e6a12257b5467ddc45277f51"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/identity/m2m-identity-integration-profile-v1.json",
+      "bytes": 8160,
+      "sha256": "bd9346ea1e20f0989831b07f0f3a3d6efff68cb4fb4195f2647e806c83a7c521",
+      "gitBlobSha": "0753fe30e2bf425b7f0283569fa0389232f42549"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/ingestion/canonical-data-envelope-v1.json",
+      "bytes": 6102,
+      "sha256": "e565ca0657172de0f80251204a1eaea75072932acb3b2479ed84daae616ef769",
+      "gitBlobSha": "a8d5b436edef113dba0e81852cbfafe3aab0c8b5"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/ingestion/handoff-payload-v1.json",
+      "bytes": 7234,
+      "sha256": "1c8f6bd16905c6ec6ef8af8fa003bac05e809257b4e7a3f7a142a284c844dab6",
+      "gitBlobSha": "95479c0ae0393c99c0b57f635a0947a624a3f6a2"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/ingestion/lineage-record-v1.json",
+      "bytes": 6217,
+      "sha256": "dfd3b88cff20de43e5d5ed233e614c04727e50210a7a8e03156507ccd52b4f13",
+      "gitBlobSha": "991634fb2716ca1022b257a95b8f56249a952765"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/mcp/canonical-capability-manifest-v1.json",
+      "bytes": 5136,
+      "sha256": "3f92e2798644df90d29a20563a5a2f1fa8abaef6cbd3b9cea198ace36e7aa87d",
+      "gitBlobSha": "6be16944766e8aa82a548953706327c3c77e4155"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/authority-policy-ref-v1.json",
+      "bytes": 1256,
+      "sha256": "6c2b762fcc06051f033620c1fcd6323bb23c282020329027037241d6286156a9",
+      "gitBlobSha": "1766cea7a5f8c35e1aced5d52bde7603533e1279"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/change-representation-profile-v1.json",
+      "bytes": 1067,
+      "sha256": "1ad0ed71e266bf812d449e74d3dc1e70b93ece7f1272a47a2f05996c5bf64268",
+      "gitBlobSha": "fd375cd53a235b3b0ca2dad5453a62e8fa8379cf"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/data-access-policy-v1.json",
+      "bytes": 994,
+      "sha256": "d0ba563c8853783316635d38e3e3036a6196500a1013c55b543bdb7e382c76d5",
+      "gitBlobSha": "1c473247e736c931d8542a666c0b5c92c79bd9c1"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/delta-patch-contract-v1.json",
+      "bytes": 1644,
+      "sha256": "7913b2636df8cb86fe67cce14ef909cc4c32b54da4afbb302868d1d92b108fd3",
+      "gitBlobSha": "24d788e07faae97029657d452a31ed9caa1c843f"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/extraction-profile-v1.json",
+      "bytes": 3655,
+      "sha256": "0e4c8a2f4b3d707b219c09b8225356132d708071e7e5227536128722e0e866a1",
+      "gitBlobSha": "c9b8d43bf86496f029afd2f276907dec203d1688"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/published-configuration-bundle-v1.json",
+      "bytes": 5346,
+      "sha256": "d30877abc2139f941775d0d8f98ccc266eb9d0a448169f23cad7ab8d67f07e4f",
+      "gitBlobSha": "f7a99196b02499b4bc5efb7668c91f4eee9f17d2"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/relationship-mapping-v1.json",
+      "bytes": 1902,
+      "sha256": "13efe43ae3a736e07e082d37a4b625d120c001e28c620fc0dc80f8ac4c726c69",
+      "gitBlobSha": "d3a984f61a94b5e503cbe0ffd1d81c6d045d4e22"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/semantic-mapping-v1.json",
+      "bytes": 2853,
+      "sha256": "a707acf70de7b9a07ce5aadefae8c01bfd7f18e7acc0a84c0d62ddccd76a2204",
+      "gitBlobSha": "6478c687e1b2c969ebddb75d2f0b4b53a124de5c"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/source-object-identity-policy-v1.json",
+      "bytes": 1087,
+      "sha256": "1c9606867e063947fce0f640907f3aee553547d4bb3d76e306df319d190aa824",
+      "gitBlobSha": "cb6bf216376f810d92a91bbd130dba4746cb7aa1"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/sync-profile-v1.json",
+      "bytes": 1784,
+      "sha256": "681a31b9a60a3415f85b8354e0e3157ca0b2352af40070fb438927cf603038f4",
+      "gitBlobSha": "2a16ebd0245f6c826a0e98c6f7e988c67b33d5ca"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/temporal-mapping-v1.json",
+      "bytes": 1711,
+      "sha256": "2bf1d2c584d1d0fe7284fdb9ec48f523ce246b94a18d99134b2ffc1cb65ffdb3",
+      "gitBlobSha": "6256901f7288a7ea87e404c1d58479029ec3cb3b"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/artifact-detail-v1.json",
+      "bytes": 2337,
+      "sha256": "fb83431aa02e7d90909906cf1f0d2fce34234d8c9717dd42fdde1afaa1d696df",
+      "gitBlobSha": "7cfe750b6d53761122d1392daa06e5076a73ff15"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/artifact-revision-v1.json",
+      "bytes": 1764,
+      "sha256": "5f5b534692df7821c4bb5c464b49eb2398e129df1eb3f8f1673f04cf61297f58",
+      "gitBlobSha": "701933660b1f1e8020c1e3556e94d3a9d31ef5b6"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/discovery-candidate-v1.json",
+      "bytes": 2281,
+      "sha256": "6f3cc0a5f1d7bf14fd1737cd8ed813c5d512fab632cea7e1e4dbfae3a23baba1",
+      "gitBlobSha": "d66646cdd8f28a4a45f2f3216d62d67a6f4309f2"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/discovery-request-v1.json",
+      "bytes": 1775,
+      "sha256": "b2c604593d1139b17d7c86293043246122cb1204b6834cad33c383086c7d6ef5",
+      "gitBlobSha": "60120a7ba681d5846eee3e6ab9cb80475a1f087e"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/external-origin-v1.json",
+      "bytes": 1750,
+      "sha256": "b32b9c7999be473eef154ef0ea64db1e683178309048bf3ecac74eee0ad5fd85",
+      "gitBlobSha": "46b410fdc9c4237876b0d3db0d201fe1f1f61755"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/impact-report-v1.json",
+      "bytes": 1377,
+      "sha256": "f852116c384d070065e96860f0980ce9d963f1cd0a22a3b398d428db2d6ca8e8",
+      "gitBlobSha": "561a46fcd02e6a8c17ae53fdbdc6ec04a4c25ca7"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/search-result-v1.json",
+      "bytes": 1089,
+      "sha256": "11480f53251a956908ec8bf8648cd1a5aa1e126631ad6924cb1cc5d5586114e4",
+      "gitBlobSha": "5ec6864292f2df430257277fcccde6c59967bbf5"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/semantic-change-notice-v1.json",
+      "bytes": 1605,
+      "sha256": "ad9e82cf93b53e38d2fac5d6937b7459a474b2207e860d84274f9b137ccdda11",
+      "gitBlobSha": "ffc5820ecb291ee6b8deebbd299aecfc6a3e7f7a"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/semantic-migration-proposal-v1.json",
+      "bytes": 1182,
+      "sha256": "188ca048bfffc64569e3adc6c2c50da889670ee3a587d3ecc2a9802d9bb64078",
+      "gitBlobSha": "b3851b038caa80f73a7d62a406d450c3f6c2f40e"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/semantic-publication-member-v1.json",
+      "bytes": 1158,
+      "sha256": "ff8c0edb6c276ed3ebedc70a698c1fd63b7582056088460d799215ac07127811",
+      "gitBlobSha": "15d3794843b7d3ab9db427cdc840d4b9902b3720"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/semantic-publication-set-v1.json",
+      "bytes": 1991,
+      "sha256": "492daa33daf944febe33b5a0b03565385dbd9eace8304bcdf2143d960caa9cd4",
+      "gitBlobSha": "f985a0e8c14b84e90e24a4cba504c0b8bd82d976"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/semantic-reference-v1.json",
+      "bytes": 2167,
+      "sha256": "4027b53ee05e36eb400f5befb330c9b963ccfdf1d8881e645d3df04267c3a473",
+      "gitBlobSha": "54d105176b5f31cae4338e694784dacbcd38ea3a"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/tests/check_core_consistency.py",
+      "bytes": 3807,
+      "sha256": "06d0ffed64992069396470c608336bc6c23bc4c7dc29cef7453b40fce1f1cc03",
+      "gitBlobSha": "fb17d8f9c3b3b3fe3da0fbbca0fb354ed44fd2db"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/tests/core-consistency-fixture.invalid.json",
+      "bytes": 2509,
+      "sha256": "83674c8afe657e5617d219b83d82ccbe77ea3d1feee3ca39a99a8a40d6510c61",
+      "gitBlobSha": "535b80d457c7ad92cc42e11d7e836344758b60fe"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/tests/core-consistency-fixture.valid.json",
+      "bytes": 2507,
+      "sha256": "efd978d4fc9ef71658261648aa7584ad3bd182abc07d47e26047a83910a4f4c0",
+      "gitBlobSha": "b3ed09b6aa4ed6af28e18223a1f9a551919c5ae0"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/tools/validate_repository.py",
+      "bytes": 588,
+      "sha256": "77524cebaae0cfe4f6cc51a5561828fc0e55fd23c4649e1ec0167e061fbd9b12",
+      "gitBlobSha": "be73a2e5f51b99df64bb63f69763d152fc8e6f68"
+    },
+    {
+      "path": "package/contracts/ouf-contracts-v1.0.0-rc3-coherence/trusted-human/trusted-human-card-model-v1.json",
+      "bytes": 1334,
+      "sha256": "31b5f7aaa2d710602470806a8c562f924c4f8d36e3e2332899b37c7d6c059201",
+      "gitBlobSha": "cabaed9e41a8b48a18c9aaca4c979d34ef595c90"
+    },
+    {
+      "path": "package/docs/external-readonly/OUF_Linee_Indirizzo_API_Verticali_v2_3(3).docx",
+      "bytes": 60634,
+      "sha256": "2a1f538f02b95c9637f127728dd857f7a5150f240916fc18eb3cf93f669f5fba",
+      "gitBlobSha": "8635361bea9a9a03b2cb9e3bd44d3f48c5328711"
+    },
+    {
+      "path": "package/docs/l0/OUF_Cross_Module_Alignment_Matrix_v1_7_Channel_Neutral_OA_Aligned.docx",
+      "bytes": 45538,
+      "sha256": "d48a3b36ea3dd23622da380ec498f753fcd37f49f534735fe7ef904def387b1b",
+      "gitBlobSha": "35f0514987b7203f064b2dbc55bcddc556253e8e"
+    },
+    {
+      "path": "package/docs/l0/OUF_Normative_Terminology_Supersession_Notice_v1_1.docx",
+      "bytes": 39586,
+      "sha256": "9a93fe9dd8134b0302d67f140cafac0a5fbed76ad1f692c7bd4b13919d18567f",
+      "gitBlobSha": "8f0f4d50af3bab7eb052cbda276af2591e129d13"
+    },
+    {
+      "path": "package/docs/l0/OUF_System_Integration_Development_Blueprint_v0_3.docx",
+      "bytes": 43260,
+      "sha256": "732dbff800d5ea5b971125817dc383eab5d760a92d5c9749fc75825e956122fd",
+      "gitBlobSha": "89aa9063bc6a50b90f9b2feab3b5faa298c6c9ea"
+    },
+    {
+      "path": "package/docs/l1/OUF_MCP_Server_v1_4_Go_Channel_Neutral_Operational_Awareness.docx",
+      "bytes": 120946,
+      "sha256": "83165c93197bc4d9fca9bfbbb346b48977931b0e0527849e57b894078cec1008",
+      "gitBlobSha": "abed152578abe757f893dd5d6f509cac6a494f22"
+    },
+    {
+      "path": "package/docs/l1/OUF_PET_Authorization_Access_Control_v1_5_Operational_Awareness.docx",
+      "bytes": 118101,
+      "sha256": "c02e54faf7aa8e93b6653d5b6f6bcb7d00657bfbe09b2e77fcc723acd2054c26",
+      "gitBlobSha": "17ce43485948c37f6a52ffd652bbb62f0c1cc669"
+    },
+    {
+      "path": "package/docs/l1/OUF_PET_Data_Lake_UDP_Urban_Object_Registry_v1_3_Development_Ready.docx",
+      "bytes": 169693,
+      "sha256": "77700b8741f312b88348ff00f7e98780b5636e55e76c6c6407999a6d08d25e8d",
+      "gitBlobSha": "50305ec6689875f3fdb836cc01ae8160af2a5ab8"
+    },
+    {
+      "path": "package/docs/l1/OUF_PET_EF_Ingestion_Runtime_v1_3_Operational_Awareness.docx",
+      "bytes": 174666,
+      "sha256": "b9eb1b3011854535e89ba23ce395553c736f6a34bcca7e51c13d512e81dd8886",
+      "gitBlobSha": "a3d958b7de5c8a7d930a0fa6b3e0eec289b31a8b"
+    },
+    {
+      "path": "package/docs/l1/OUF_PET_Semantic_Model_Registry_v1_3_Development_Ready.docx",
+      "bytes": 171422,
+      "sha256": "c28c4dbb1ca04d877890c00e3cfe5a52725d3aa2a51f7afec9177cae11514175",
+      "gitBlobSha": "b9a588d47c81e3c2868b57726e668d1f974d6026"
+    },
+    {
+      "path": "package/docs/l1/OUF_PET_Source_Onboarding_Configuration_THS_v1_6_Operational_Awareness.docx",
+      "bytes": 195292,
+      "sha256": "a69ab5923405467198f56fe00e9a5ff286e18291156b5040bd928399dadffbca",
+      "gitBlobSha": "4a9b26bff51833bd79ccae86c505c65e16bb41ef"
+    },
+    {
+      "path": "package/docs/l1/OUF_PET_Urban_API_Gateway_v1_5_Channel_Neutral_Operational_Awareness.docx",
+      "bytes": 142056,
+      "sha256": "d5ac46d60f5d34819cc28c87a8bb81b84aa232ece9925d81c369ddbcb301db72",
+      "gitBlobSha": "6bec592c940f7b1831f855e34b6c5038e5dfa985"
+    },
+    {
+      "path": "package/governance/OUF_Final_Implementation_Readiness_Matrix_v1_3.xlsx",
+      "bytes": 18882,
+      "sha256": "1d3593d6c22ad177a8ab3320f86f0e6cad31c45ccb19dc6988d48c6f7917e7ec",
+      "gitBlobSha": "f56c7b2c1440f777ad40ab70129b42a32bf8d765"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/README.md",
+      "bytes": 2838,
+      "sha256": "c486e6b47f62f8149ee85a0204950420624ee0da0448f29032cef6180249a628",
+      "gitBlobSha": "daa1164dd89c4b6986df8a1921f6a773e2ddc229"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/VERSION",
+      "bytes": 6,
+      "sha256": "71015c979ccb0fc8a0be7ca0ae83046ab045cdc2c8faa09fb2f0f7e440f9b4a6",
+      "gitBlobSha": "0c62199f16ac1e2d7f7ae75b420c1231325dff4e"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/build/ouf-platform-bom.pom.template",
+      "bytes": 1221,
+      "sha256": "be97c2d480b41a5ffd4dfa7b3ca5b63a0b541e85cb4c9508ffd868b7d1851030",
+      "gitBlobSha": "d2f54257d5041307ee9cc570d91bec5c01945719"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/ci/pipeline-contract.yaml",
+      "bytes": 1566,
+      "sha256": "86e5094682e36071e95ec83e659feff0cf71ce7afa26cb6a0ee7e47dea3d0de1",
+      "gitBlobSha": "238c9d25710e243b65d36b8fc967a138858d1754"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/ci/requirements.txt",
+      "bytes": 24,
+      "sha256": "6919085b084da38070f5710930ac9c33c4f8ec0acc0848fbc9bfde33c8997d53",
+      "gitBlobSha": "c3671f6e7d0616da4399f7f21a6f2047b3764652"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/ci/scripts/check_current_contract_baseline.py",
+      "bytes": 735,
+      "sha256": "0a197af04d5cf792708491fec96e7a1f726c8680b9236dfbe22e98919d59088f",
+      "gitBlobSha": "cbce609f04d6095a6dc13763128393da44c295e3"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/ci/scripts/check_helm_policy_wiring.py",
+      "bytes": 630,
+      "sha256": "c4781202c8df00e374ef0c06168da4f03a593aee625586350335edaf582d3222",
+      "gitBlobSha": "4b1efd54fa417a43f6dab4596e5722f895bd836f"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/ci/scripts/check_identity_neutrality.py",
+      "bytes": 1399,
+      "sha256": "2a320c883b625aee28b47cd18c80b3cfec28bb32bb831d4e8fa82b03e0fa62c0",
+      "gitBlobSha": "cfcbc7c4f3b827381caa508fd1b7093bbfa20708"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/ci/scripts/check_repository_layout.py",
+      "bytes": 628,
+      "sha256": "9f9801955c72a452aca4e7483cec49f34429551d74e0fe2fc3de72285a62d553",
+      "gitBlobSha": "9588f2d00db5fc32bfa07cd8968a3d739e6bdd15"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/ci/scripts/validate_contracts.py",
+      "bytes": 986,
+      "sha256": "d1729f6c765092a5cb3541ee257435f573faa654af2bb89b5532b76fa12f592c",
+      "gitBlobSha": "6c4e0b1cb9b1215bca045c0fbe01485f2663a364"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/README.md",
+      "bytes": 4301,
+      "sha256": "1340da735fab6028ad1fe37a4861cc020aca434d6ef0148c36921c7ede7f0d6e",
+      "gitBlobSha": "ad252d4e9912811136d9612bcd3ee62f3b510f5d"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/assurance-requirement-v1.json",
+      "bytes": 1217,
+      "sha256": "11ae67f96044f19d2e415e6cc9b1527782cc3bd2ce2f9b18c85b343e678686fa",
+      "gitBlobSha": "9fc29ab2f53ab012aff435afacea4f50c48abfcb"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/authorization-decision-v1.json",
+      "bytes": 1582,
+      "sha256": "939a5ecd22f59e0b45a355ccf0d260cf80763db4484603bee5ef4c8cc1f5ddad",
+      "gitBlobSha": "78ad7a675005fc94d1c385179f7c81a2a1d3b119"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/authorization-policy-bundle-v1.json",
+      "bytes": 1909,
+      "sha256": "b03d3424dce1178fd03619a683082c53b2aa758aec1533e6dd53bc8a3f0dd12a",
+      "gitBlobSha": "349a349c956ae9969b3a70f6758c92cf7863d9ff"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/capability-descriptor-v1.json",
+      "bytes": 2107,
+      "sha256": "0e49cb84f8d505c6256aeaa5293f596c22fd48c10afe27862b2d15c972fbfef7",
+      "gitBlobSha": "23a430b923571a64cc27e3d1f4cd1cf4120d82fa"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/organization-scope-v1.json",
+      "bytes": 935,
+      "sha256": "5b8f29f6dae31fc9837b8b715d3ea79d9df8eb4e1baecaabe74dd00bebaf31b1",
+      "gitBlobSha": "716fd65c9bf60b99e20184ec28db213e52b3709d"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/policy-evaluation-evidence-v1.json",
+      "bytes": 1758,
+      "sha256": "25e1890e73b5da3bca59738d21ddae0b3d9a43189c4ab0ea29f933116c7c862f",
+      "gitBlobSha": "e8e862e0732c2456d029e490443059a0460f2fc5"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/policy-grant-v1.json",
+      "bytes": 2200,
+      "sha256": "a5d709f4e1136bfccb01f7862550d04fdc5a8430f8dff0f7eaf479e9193f78b3",
+      "gitBlobSha": "5765e8f410d9b4420f51ff3444fc3795ca04905a"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/principal-context-v1.json",
+      "bytes": 2495,
+      "sha256": "c4f8176b2ba109eccdaa1b3de10ca69ade132ceac00a645be473f0260c8088e5",
+      "gitBlobSha": "c15073ac9b894d9ad1759fe0187896065bbeb68c"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/authorization/resource-context-v1.json",
+      "bytes": 2523,
+      "sha256": "77d0a2c53d753a21fe00f596a6cc9b31b1e181cf346e880136052e281d73273f",
+      "gitBlobSha": "34873671bdb8fc4262e472e04ac281c83800b18b"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/common/correlation-context-v1.json",
+      "bytes": 1081,
+      "sha256": "205e89136e43b3eff7285d32ad72cc6dab9f7c9dae3885342229b9297585a49a",
+      "gitBlobSha": "699442388e5c177bea18b70ea2d10fa9f27ee255"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/common/data-access-label-v1.json",
+      "bytes": 755,
+      "sha256": "00ebb3f34e98e5af7e9796d16957fefd6479871463ce849f3fa67970557870ee",
+      "gitBlobSha": "3ded67dcd839bba7947a9f0a040576914d7f473e"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/common/job-status-v1.json",
+      "bytes": 1369,
+      "sha256": "774e6db9225e1c07ef527e7a5cd3ad01eee60ddb9ed175f69ce9c8a78839fb67",
+      "gitBlobSha": "7e781757743119c85b07d8816681f5d1ba7f930d"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/common/problem-details-v1.json",
+      "bytes": 1798,
+      "sha256": "336e43c3a3903d6a10a2af46a3b046b84117d4ee4a226166d834a5e795908823",
+      "gitBlobSha": "061b2dc6fbf236dcde684354bc652e67c0658360"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/compatibility/compatibility-policy.yaml",
+      "bytes": 496,
+      "sha256": "b9150e1e3bf083539a95cb1de7db0bbd854397e34fd63c92b5909b7468f36862",
+      "gitBlobSha": "4367b408e8ec02aafe7f9551ec3102d5aaa7322f"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/compatibility/contract-hashes.json",
+      "bytes": 20049,
+      "sha256": "1142ae03db9f5c8e93581aff49bdee57b0fd2d3d9f6630a8379e8aad45d6dd35",
+      "gitBlobSha": "776bf86825d7426fe7d07f45c309a5ec2b66b838"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/compatibility/handoff-validation-report.json",
+      "bytes": 383,
+      "sha256": "13c5e4a10e83208c376a133833cf7d4dc582b593dba1e10a588516c6ba66f932",
+      "gitBlobSha": "41e336200a6a07e918a7b755d67a4635fb17d43f"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/compatibility/v1.0-freeze-manifest.json",
+      "bytes": 14447,
+      "sha256": "1bb71e3c689dd21ccc3c3fcd8bcf238039b6aef79c3e9373032acf731476eea0",
+      "gitBlobSha": "66e9dc989473de3bc21a62ad599531bb6b233791"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/compatibility/v1.0-promotion-checklist.md",
+      "bytes": 4039,
+      "sha256": "2d7ae3f92fc45cf777de6f62fdad631e3d353d7239a5a7732198cd4320312eea",
+      "gitBlobSha": "e7cf0c556382f0fbf398cf8b2b64779b2c5c1017"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/authorization-contract-invariants.yaml",
+      "bytes": 2836,
+      "sha256": "24d13ba8cf18cbe8e9300cc55ba3db351ae3a86900d629ecdc7d40df1d2afb96",
+      "gitBlobSha": "b3abc0fccc4c46c47f089263ab2d9284b3d972b6"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/cross-contract-invariants.yaml",
+      "bytes": 4369,
+      "sha256": "50435401b9e7e5a01ee61b281e2ce0742d56f773a67ed5814b6dc68deefb79ed",
+      "gitBlobSha": "55fb01f8edd5aa83436e7cf87324c38ef38eac7b"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/gateway-contract-invariants.yaml",
+      "bytes": 3275,
+      "sha256": "aa53392dab4e37020619f299ca8d5fe88ef5b2255ede5efcbc42a799d2a2f560",
+      "gitBlobSha": "59cfa2e372989a4d8f2d609501c434acfbb7bafa"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/m2m-identity-integration-invariants.yaml",
+      "bytes": 1584,
+      "sha256": "1c58739fde9fb5cc03289688cedd74eeeff4f110042effb4cc8a83aa777ea506",
+      "gitBlobSha": "37e3cb8b4355cbc7e32061f38512b0a64b27f2eb"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/mcp-capability-projection-rules-v1.yaml",
+      "bytes": 4427,
+      "sha256": "94d707b7f3c28e2a5fd143a8abb6441a9b39b871077827624b4ddc97f3f277d6",
+      "gitBlobSha": "41c1d82598a1161fef3f9fb55ea6949cf9661a4d"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/mcp-server-integration-invariants.yaml",
+      "bytes": 5198,
+      "sha256": "177d9d33cd82e3d086bf71ea1a4c76ca694a5c55cc72d0a66afa5c5370ca83f0",
+      "gitBlobSha": "8d749b0f4b854eea2579a8a7ad6de7f5f13e5916"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/onboarding-runtime-contract-map.yaml",
+      "bytes": 4484,
+      "sha256": "1ea2116d02a2aad5526aabef1914eee2427feb0537d93cdad8135e491e2991a0",
+      "gitBlobSha": "8bbeb82bc9d263fdf048763856650bb2ad3e6034"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/repository-wide-invariants.yaml",
+      "bytes": 3235,
+      "sha256": "acf62712dfec8f006decf1763873524407c2c3ae810cbdf10b4354209297d635",
+      "gitBlobSha": "49fd0e72dd6b8b0c4ae24b3742dad37082707e3b"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/consistency/semantic-cross-module-invariants.yaml",
+      "bytes": 3245,
+      "sha256": "d2b5252d57e0408bfe93ad832b6a554c3eb29c33e81b4e0a78a0bc40112c6651",
+      "gitBlobSha": "4af1dce605a1d8aac157a957de6445927e793bae"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/contract-catalog.yaml",
+      "bytes": 13110,
+      "sha256": "43b631ae72777e0ddddf69a06469028917e3891fda9575ddce8ae144ee1a7b78",
+      "gitBlobSha": "1f699bb4dc14e5abbf703c220c7e917b894628cb"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/CURRENT_STATUS.md",
+      "bytes": 699,
+      "sha256": "c0f5a2087be0489ca6970e22d5785663d820f22859170fb5d117f2881e29dcee",
+      "gitBlobSha": "8762c85beb503e6403696d30281c7b69f43a32ca"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/authorization-contract-set.md",
+      "bytes": 1281,
+      "sha256": "13440a975e80c66b2ad0b1495b4a6f5a53c4c3179f267c12d1e5c6c02084c5cf",
+      "gitBlobSha": "8ea754492c3603806781b75015b413ab0d04f312"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/authorization-contract-validation-report.json",
+      "bytes": 1348,
+      "sha256": "c24c2ef701c114a45b02d9d2d4b2cb6c6e58c0ee508126ef73af5ec5b76e1535",
+      "gitBlobSha": "a65daa9ccafe99b41fb13ed09593169b4fc2099c"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/canonical-data-envelope-v1-reconciliation.md",
+      "bytes": 2303,
+      "sha256": "df310906a48f6f638643460ca9a90586837aaf673eee4e1c14b29e6a90f4a8da",
+      "gitBlobSha": "e142b20cfbe1873dd81f4f95b17db548242ce843"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/canonical-data-envelope-v1-validation-report.json",
+      "bytes": 418,
+      "sha256": "22e40f040da2133812c1bd3c4bc858dc2ca2d1c991f896c7dbfe34b91e928b38",
+      "gitBlobSha": "0eca89b2f9fda082a5dee5758c3bb3a7049defa7"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/core-contract-consistency-report.json",
+      "bytes": 3712,
+      "sha256": "d66488fe07147ad272bf12b459df1a185b1abaec0cc3e181302c7222e61d9a6a",
+      "gitBlobSha": "3eba88046bebfbc3f5a776f1f910e4264865d87c"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/core-contract-consistency-report.md",
+      "bytes": 1356,
+      "sha256": "00ee7f5a8010fbcbfe141c0a9ed0ac375e54253a5a321872b8c0de5bf02d0b3d",
+      "gitBlobSha": "f356134c1a15c510496b00cd89fa5b40a6775019"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/gateway-contract-set.md",
+      "bytes": 1570,
+      "sha256": "10b0d674f256d5c6f2d2b08695ed4617527ad9ac37fe1a4b5abf88771c8b4a4d",
+      "gitBlobSha": "424722466fa4fdab559deebe289028a4f11d71ed"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/gateway-contract-validation-report.json",
+      "bytes": 1854,
+      "sha256": "6f294e13ebb412043c076fd42c86e187deb23e3ae3a158ff2f58754d683c8650",
+      "gitBlobSha": "ac21ffe31da4ddf8f461d8969c054be2965b1374"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/handoff-payload-v1-reconciliation.md",
+      "bytes": 1462,
+      "sha256": "2f570a055b3833545d2468dd0d859ff2c307d929482e780a63646ef01dc05c88",
+      "gitBlobSha": "3a464ce3fa74cd980c0461650985fbbac55413bf"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/mcp-gap-closure-report.json",
+      "bytes": 1014,
+      "sha256": "6008b5c518835d14d10cdaddf97ade1dace80d03bb9574f1223d1b71e67cdc4c",
+      "gitBlobSha": "fa66bb2f6e2ac2779d5e09e359c40d1c3c81cdce"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/mcp-gap-closure-report.md",
+      "bytes": 1628,
+      "sha256": "d77e4ece7d7e0da67827df73bf8dd1f4600c94b5f2ac944a8cd32e7716ce30c3",
+      "gitBlobSha": "c422b28201b81ed905be82c8342c0a20ec88c672"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/mcp-server-integration-check-report.json",
+      "bytes": 2783,
+      "sha256": "43b59871f256a268cea450d576e8bc6137e03f424834678738b0d34919a9c585",
+      "gitBlobSha": "ef376e20406da9eac1150bea33d0c5aaabb93e6c"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/mcp-server-integration-check-report.md",
+      "bytes": 2372,
+      "sha256": "81f676829439c3a4422367995a1047cd02d9561e0efd9bf42263a13725be0576",
+      "gitBlobSha": "3acde5e1e467c6f536e4a2452bda1d3d444d8ecc"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/repository-wide-consistency-report.json",
+      "bytes": 1378,
+      "sha256": "985c5411429a63771883d30f8819b7db6d01e0698013d85d74c9832a4731e009",
+      "gitBlobSha": "c20a0892c423063f994b7ff79ccdb3bed7bd8282"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/repository-wide-consistency-report.md",
+      "bytes": 1870,
+      "sha256": "bbe11e09c1ee8f44d6e767912d2c8db9db82cccef675d20838effce1e9698915",
+      "gitBlobSha": "79e22a6830dfdc4c8a68639a8b04773d553e7d4f"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/v1.0-promotion-freeze-report.json",
+      "bytes": 3371,
+      "sha256": "e59a1a29fabb3a86739676e86a13cfff5387362eaa66f72b50a51791b4322f81",
+      "gitBlobSha": "3c9f2efe9cfa010ea816532e0a74da320989c3aa"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/history/v1.0-promotion-freeze-report.md",
+      "bytes": 922,
+      "sha256": "9700c2bede6a34c5d5bd8152375d967f746da9e481065bfe02af8d55f058b1a2",
+      "gitBlobSha": "e1e0740102ca4ffe7f259fec3a326750f8bf364b"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/lineage-record-v1-reconciliation.md",
+      "bytes": 2004,
+      "sha256": "4a36b1e5a051247a66e19292efe32151370be69ea0ef32201319fc83cefd98e4",
+      "gitBlobSha": "8fac72604b14cc2fa7e52f52c467e38518823375"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/m2m-identity-integration-contract.md",
+      "bytes": 933,
+      "sha256": "60dc775abcedb8accbec4bb48eb38ccacee6f3c42d96e435f603a9366a28b60f",
+      "gitBlobSha": "6816703bdc13840905a1917bb626384c6563803a"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/m2m-identity-integration-validation-report.json",
+      "bytes": 1180,
+      "sha256": "061245e3a55d7ae53506b3fd8f2ee8428758faf01a109a07aaf27176695f2cc4",
+      "gitBlobSha": "d047a630ff1f7d2a6f78a46dc0d651c19913a6ea"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/onboarding-runtime-contract-set.md",
+      "bytes": 1491,
+      "sha256": "e858455d6b62cbe1cc971d340a18ebec157046c4734720129b2a82825fbf562e",
+      "gitBlobSha": "0c82a84492cfebfc166e6f35cf3b6ef7c76d1f24"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/onboarding-runtime-contract-validation-report.json",
+      "bytes": 993,
+      "sha256": "7da2a2a7188f8a918d5ff920c617dc5b4aff3c55b489e79fd117dc00b15df72b",
+      "gitBlobSha": "3aa584039aa01781cd8a3736011d7605339cd183"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/semantic-cross-module-contract-set.md",
+      "bytes": 1285,
+      "sha256": "17862f49cb33ba25ec656d20e360f18379ed8a3d0272a7bb496306a748e3c38f",
+      "gitBlobSha": "ab1d5891887f81370d9873f528c9eed9e2b3b82a"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/semantic-cross-module-validation-report.json",
+      "bytes": 1603,
+      "sha256": "7e93344ef00f2fc7684c0ba72dca0137155cb9f084b039bf0517e52ebf8188af",
+      "gitBlobSha": "77d254f9f4548ccf4b09279c7d5015edc7bf8f82"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/source-runtime-profile-canonicalization.md",
+      "bytes": 563,
+      "sha256": "ff729c612529cea96344b3890df3bfd087513e7c519b7dc323515c1d18f08be7",
+      "gitBlobSha": "aa89a5dec571e276e573e139ce4451137c8d976d"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/docs/v1.0-promotion-checklist.md",
+      "bytes": 1338,
+      "sha256": "ed5ae81533e3f84fb6b75eac9fe90c739bdc0c70c8189955817bd983d9c129fd",
+      "gitBlobSha": "d4ddb90fa282712a0de7e0730c0b9c868ecb0a7f"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/authorization/authorization-negative-scenarios.json",
+      "bytes": 12693,
+      "sha256": "ad5bb86d4d4d45d89153b7db8d8dfb1de1ab472a3b3ce5c9a1fa2e17df4e05b2",
+      "gitBlobSha": "02339c3d0096c1cce8911b752b68600a90bba3fd"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/authorization/default-deny.valid.json",
+      "bytes": 2801,
+      "sha256": "36148a0e967b010f4021478d8ef2daef750f3e0a8fc53717ae3c80f0b316edcf",
+      "gitBlobSha": "6db70d5996a0136a26ef2286b8af98c2cf3117ab"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/authorization/full-authorization-contract-set.json",
+      "bytes": 2790,
+      "sha256": "99b6de77e0ecb109ad1850fe39b471d314eb63eaa1feff3e8913dcc23633a0d3",
+      "gitBlobSha": "0c4c4a65ce1d52463b27f0a2a442dbd8e4cdd92a"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/canonical-data-envelope.v1.additive-optional.json",
+      "bytes": 803,
+      "sha256": "13d9f24b345a3cd8b345dcf9fe929c3127a383fc304c8a3bbce7642c3336612a",
+      "gitBlobSha": "317bf3ede13619d9c4b1d2c898be91797628d6a6"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/canonical-data-envelope.v1.delete.json",
+      "bytes": 644,
+      "sha256": "255d1c6b5c83d31689b774e7b3d5acb62ea91a7ecd71994a10ea7b4cbb17452e",
+      "gitBlobSha": "513bfd8f5c08d4321dbc044c2a17d8dc3b38acf5"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/canonical-data-envelope.v1.invalid-major.json",
+      "bytes": 751,
+      "sha256": "9279843a147da19ed14e1f4f4a7e6a8dc11a0bedab9cb01072beae3a2dd0a8d7",
+      "gitBlobSha": "cd36231c794a52a774bc9e5e2115c23ae7f9f824"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/canonical-data-envelope.v1.invalid-no-schema-version.json",
+      "bytes": 721,
+      "sha256": "eefb8200b77355881d7089bce0d47903dc0cc15cc0bc474cf201f462b6031daa",
+      "gitBlobSha": "ecaf04a5d39883d5a3674a4cabdbf2a0fcd2e06f"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/canonical-data-envelope.v1.upsert.json",
+      "bytes": 751,
+      "sha256": "de7af883210ded473ca9bedd68f81d2f956354ce3080d9fb30f291c61fd07331",
+      "gitBlobSha": "591a9ece978ec15756c4a0e340a00908383bac4b"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/capability-descriptor.udp.object.read.json",
+      "bytes": 488,
+      "sha256": "a8ba034f4543b7e95eed34412e34f08ac39b85b80883f907ce5dac45cc150f7f",
+      "gitBlobSha": "ef992a7af443025ceea189d5d3738d34266b97bf"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/gateway/full-gateway-runtime-contract-set.invalid.json",
+      "bytes": 4889,
+      "sha256": "d28c4e8f50f2e592ac35dd1c7db01c07d0f7a6db8235731a3569ebd652f90665",
+      "gitBlobSha": "0f4ede71e4140329c5a4f3dab3469804a9997321"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/gateway/full-gateway-runtime-contract-set.json",
+      "bytes": 4936,
+      "sha256": "42a6856063a840b58169bcf32b681b44b71899f28d5e92dbfd5bbfe7d77c7086",
+      "gitBlobSha": "b07c5e2b2ca556888f5cd74af8676c59cb1caa1a"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/handoff-payload.v1.invalid-upsert-no-canonical.json",
+      "bytes": 1183,
+      "sha256": "3c5b933a538f098046309f8b83f0e544fa08c438824f1da8cd062c7325f7d09e",
+      "gitBlobSha": "8ac92532755d155ea19ad590f47a4f409b5d7239"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/handoff-payload.v1.tombstone.json",
+      "bytes": 809,
+      "sha256": "4774e9e314468a1a3f276a0d626b64beb6aff89529d49a285d1377646fd01db0",
+      "gitBlobSha": "7b23860c92d79e40ccfd25d45312543bbf3f1dc2"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/handoff-payload.v1.upsert.json",
+      "bytes": 1412,
+      "sha256": "13680863d1a2dfa344a97f05b23701a4a4c8944c61f44b17b6aa5d38d696ba54",
+      "gitBlobSha": "d5ffc72bb50868ebd8910b99ee62c10b450d38a8"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/identity/m2m-identity-profile.alpha.valid.json",
+      "bytes": 1237,
+      "sha256": "ef21c0cad2eca143f982fde00b37be4ff392e3a7df5ef7a7f975d3ea34914c09",
+      "gitBlobSha": "279dded2244be803b28b4e4c35272139cec79dcc"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/identity/m2m-identity-profile.beta.valid.json",
+      "bytes": 1234,
+      "sha256": "26fbf9304d128941c71a226fe1efb1c67927b2ba404d07293a21085ecde2c3cd",
+      "gitBlobSha": "18d911ebf8e62f59be5a70fe0d9b4666d4a123ab"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/identity/m2m-identity-profile.invalid.json",
+      "bytes": 1236,
+      "sha256": "28835004f59c4b9d76e76e5fccfb05cc9e72162a2d8316ab578835513789d206",
+      "gitBlobSha": "46dfc00c0db0cbcf0958a51e269bc433e0b9cd60"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/lineage-record.v1.invalid-no-bundle-ref.json",
+      "bytes": 1303,
+      "sha256": "08a620be59d666f78fc3babb83789969398b0d620983ffcde5d2de29f4b8c896",
+      "gitBlobSha": "2aefa9875395a2fe2df67092681c9d747d662c0f"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/lineage-record.v1.quarantined.json",
+      "bytes": 1354,
+      "sha256": "327f8d7b25f36efa5bb86d28ce048202d20b6a55bd65d4eeb7c40f6430ec497e",
+      "gitBlobSha": "6d753c95063449eb805ac30dff957dbeed382c21"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/lineage-record.v1.success.json",
+      "bytes": 1352,
+      "sha256": "d0742e24ac14211de751e1fcccdbb526f61a5a7f2f1b51b7bd2c069524fa7350",
+      "gitBlobSha": "dd2eac6e8c6868227cc3612dc9a58a91fcd5294c"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/mcp/capability-projection.invalid.json",
+      "bytes": 2038,
+      "sha256": "a4ebdde6350873c77be893280c7c81281db7c73e7493207f3c28dcac4fd193ee",
+      "gitBlobSha": "0c36cea180aaad1c507af333a0404fe3e034a3f4"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/mcp/capability-projection.trusted-human.valid.json",
+      "bytes": 2017,
+      "sha256": "e26f8d92a63a2b343348f124d1723f3cff90dca23765004ddfd94bbba88372f6",
+      "gitBlobSha": "5eda2cdeb779d8ce4007d82798e03c103eb2004f"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/mcp/capability-projection.valid.json",
+      "bytes": 2033,
+      "sha256": "26b73edc9ad5a4e0894fd196932c12c2fcff3918a2e527faf2028ecd3168d059",
+      "gitBlobSha": "b4149826b7d025a00cf9c7b328403eba1e69f13e"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/mcp-check/mcp-cross-module-fixture.invalid.json",
+      "bytes": 3635,
+      "sha256": "b8ea0769d665eab935a08a5d0a77ca7e4c64b0282e41707d8989786cee59692c",
+      "gitBlobSha": "c830a65e4bed50c6474ea162591fa2189631e117"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/mcp-check/mcp-cross-module-fixture.valid.json",
+      "bytes": 3641,
+      "sha256": "72d9c0e454d62e93c648e1dd1db1d80e1c886074df91375df5805a1c756db2fb",
+      "gitBlobSha": "2a656fead2410279b39db0ea6c2e2097b7c39bb5"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/onboarding-runtime/full-runtime-contract-set.invalid.json",
+      "bytes": 5084,
+      "sha256": "d6e68911a16f154ebf8e4fde591fa96c0bb34cf78e198015a97642abb8b657a9",
+      "gitBlobSha": "b0515cafcc08243abaacdd49ed28791734c021d5"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/onboarding-runtime/full-runtime-contract-set.json",
+      "bytes": 5096,
+      "sha256": "d3ea416edb56d3593af48e6432c1cf1117d92f59590fed672a5b59646713a188",
+      "gitBlobSha": "5cbda90e1c88fc19da4229bb6832ddf52e0b7e06"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/semantic/full-semantic-cross-module-set.invalid.json",
+      "bytes": 6969,
+      "sha256": "cd0c3439ec35c76822ded7de280f973931af31d8caf10a8a0396380fd041e5de",
+      "gitBlobSha": "99b46a247fabc6d07a7ce42c01e0cbd1c9783588"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/examples/semantic/full-semantic-cross-module-set.json",
+      "bytes": 6955,
+      "sha256": "9d5b54ee2553a490b931d2322280d417eb0c760562417e99796f23a92ed22a8d",
+      "gitBlobSha": "73b847dc119cc8bfbe430c38a67b8b4cc6647d5e"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/capability-manifest-v1.json",
+      "bytes": 4899,
+      "sha256": "9426bc297494f414c7d4f0213597fc35600276a425cce895812e7d67e2cd86c9",
+      "gitBlobSha": "2c8ff6720e07f4f20c5e5dcbd561b9d6d784eeb6"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/client-credential-binding-v1.json",
+      "bytes": 1956,
+      "sha256": "7150fc69083ec4836fbeecd22d329606c4b6fb7a6e081a6b15a6e565c33d787f",
+      "gitBlobSha": "8831118eb5287dee30e698805a7f602e6c11e8fb"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/extraction-runtime-profile-v1.json",
+      "bytes": 2354,
+      "sha256": "f7e5265297d2a9abe40e11a962957db6dce54508ea5b49bc499d8ff93025e57e",
+      "gitBlobSha": "a8d9cba56ae033671a9cef676a8ea38c13eb2fce"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/gateway-authorization-context-v1.json",
+      "bytes": 1844,
+      "sha256": "20701709deb6a1795435d555d4270f3ccbec855161db3179c214922c5849b808",
+      "gitBlobSha": "903289d9ed6aabe740f1c309b32242111b2efa29"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/gateway-connector-handoff-v1.json",
+      "bytes": 2912,
+      "sha256": "b0095e044d19ad1017af8daaeb6c53829627e8b60115c0ffaf99f41647cb6488",
+      "gitBlobSha": "cb2591b513fb9ca16a9cfd20652d0801d19f6213"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/gateway-publication-manifest-v1.json",
+      "bytes": 2243,
+      "sha256": "7841e4d729e81aab04b93e664f0ce706027cf4fe6f714951a6d8c489dfb1d9fe",
+      "gitBlobSha": "3e842fbe4f1978870561f1e73677845b52afe57b"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/health-state-v1.json",
+      "bytes": 1439,
+      "sha256": "bfbc8c78d7b055d0903eac2aaf0192587848df5b955d84a8ae27d93fd990de3a",
+      "gitBlobSha": "63dc3d0d6b29965bf3ee10d2be4c19526a603e91"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/route-binding-v1.json",
+      "bytes": 3055,
+      "sha256": "302a99c3fa64a400266fbeca6dc2c2ee9864318df58013ed57e05b32a999d85e",
+      "gitBlobSha": "b10e226c3c9e6bf2d057780af90293559a32dfcc"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/source-runtime-profile-v1.json",
+      "bytes": 2042,
+      "sha256": "9e9e009122d86d1427c34c5cd7ca94c2ff7eb0325b85e3545cf860820ad622f8",
+      "gitBlobSha": "37c70c070a479a1f397573812a0eaa24a48c0c2e"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/gateway/source-schema-binding-v1.json",
+      "bytes": 1564,
+      "sha256": "f95b3210c0a1edaf872ef373515b1f9198168f38d2da6ef4016da6dfb6258f6b",
+      "gitBlobSha": "075cb2861da2e203e6a12257b5467ddc45277f51"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/identity/m2m-identity-integration-profile-v1.json",
+      "bytes": 8160,
+      "sha256": "bd9346ea1e20f0989831b07f0f3a3d6efff68cb4fb4195f2647e806c83a7c521",
+      "gitBlobSha": "0753fe30e2bf425b7f0283569fa0389232f42549"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/ingestion/canonical-data-envelope-v1.json",
+      "bytes": 6102,
+      "sha256": "e565ca0657172de0f80251204a1eaea75072932acb3b2479ed84daae616ef769",
+      "gitBlobSha": "a8d5b436edef113dba0e81852cbfafe3aab0c8b5"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/ingestion/handoff-payload-v1.json",
+      "bytes": 7234,
+      "sha256": "1c8f6bd16905c6ec6ef8af8fa003bac05e809257b4e7a3f7a142a284c844dab6",
+      "gitBlobSha": "95479c0ae0393c99c0b57f635a0947a624a3f6a2"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/ingestion/lineage-record-v1.json",
+      "bytes": 6217,
+      "sha256": "dfd3b88cff20de43e5d5ed233e614c04727e50210a7a8e03156507ccd52b4f13",
+      "gitBlobSha": "991634fb2716ca1022b257a95b8f56249a952765"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/mcp/canonical-capability-manifest-v1.json",
+      "bytes": 5136,
+      "sha256": "3f92e2798644df90d29a20563a5a2f1fa8abaef6cbd3b9cea198ace36e7aa87d",
+      "gitBlobSha": "6be16944766e8aa82a548953706327c3c77e4155"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/authority-policy-ref-v1.json",
+      "bytes": 1256,
+      "sha256": "6c2b762fcc06051f033620c1fcd6323bb23c282020329027037241d6286156a9",
+      "gitBlobSha": "1766cea7a5f8c35e1aced5d52bde7603533e1279"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/change-representation-profile-v1.json",
+      "bytes": 1067,
+      "sha256": "1ad0ed71e266bf812d449e74d3dc1e70b93ece7f1272a47a2f05996c5bf64268",
+      "gitBlobSha": "fd375cd53a235b3b0ca2dad5453a62e8fa8379cf"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/data-access-policy-v1.json",
+      "bytes": 994,
+      "sha256": "d0ba563c8853783316635d38e3e3036a6196500a1013c55b543bdb7e382c76d5",
+      "gitBlobSha": "1c473247e736c931d8542a666c0b5c92c79bd9c1"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/delta-patch-contract-v1.json",
+      "bytes": 1644,
+      "sha256": "7913b2636df8cb86fe67cce14ef909cc4c32b54da4afbb302868d1d92b108fd3",
+      "gitBlobSha": "24d788e07faae97029657d452a31ed9caa1c843f"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/extraction-profile-v1.json",
+      "bytes": 3655,
+      "sha256": "0e4c8a2f4b3d707b219c09b8225356132d708071e7e5227536128722e0e866a1",
+      "gitBlobSha": "c9b8d43bf86496f029afd2f276907dec203d1688"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/published-configuration-bundle-v1.json",
+      "bytes": 5346,
+      "sha256": "d30877abc2139f941775d0d8f98ccc266eb9d0a448169f23cad7ab8d67f07e4f",
+      "gitBlobSha": "f7a99196b02499b4bc5efb7668c91f4eee9f17d2"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/relationship-mapping-v1.json",
+      "bytes": 1902,
+      "sha256": "13efe43ae3a736e07e082d37a4b625d120c001e28c620fc0dc80f8ac4c726c69",
+      "gitBlobSha": "d3a984f61a94b5e503cbe0ffd1d81c6d045d4e22"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/semantic-mapping-v1.json",
+      "bytes": 2853,
+      "sha256": "a707acf70de7b9a07ce5aadefae8c01bfd7f18e7acc0a84c0d62ddccd76a2204",
+      "gitBlobSha": "6478c687e1b2c969ebddb75d2f0b4b53a124de5c"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/source-object-identity-policy-v1.json",
+      "bytes": 1087,
+      "sha256": "1c9606867e063947fce0f640907f3aee553547d4bb3d76e306df319d190aa824",
+      "gitBlobSha": "cb6bf216376f810d92a91bbd130dba4746cb7aa1"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/sync-profile-v1.json",
+      "bytes": 1784,
+      "sha256": "681a31b9a60a3415f85b8354e0e3157ca0b2352af40070fb438927cf603038f4",
+      "gitBlobSha": "2a16ebd0245f6c826a0e98c6f7e988c67b33d5ca"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/onboarding/temporal-mapping-v1.json",
+      "bytes": 1711,
+      "sha256": "2bf1d2c584d1d0fe7284fdb9ec48f523ce246b94a18d99134b2ffc1cb65ffdb3",
+      "gitBlobSha": "6256901f7288a7ea87e404c1d58479029ec3cb3b"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/artifact-detail-v1.json",
+      "bytes": 2337,
+      "sha256": "fb83431aa02e7d90909906cf1f0d2fce34234d8c9717dd42fdde1afaa1d696df",
+      "gitBlobSha": "7cfe750b6d53761122d1392daa06e5076a73ff15"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/artifact-revision-v1.json",
+      "bytes": 1764,
+      "sha256": "5f5b534692df7821c4bb5c464b49eb2398e129df1eb3f8f1673f04cf61297f58",
+      "gitBlobSha": "701933660b1f1e8020c1e3556e94d3a9d31ef5b6"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/discovery-candidate-v1.json",
+      "bytes": 2281,
+      "sha256": "6f3cc0a5f1d7bf14fd1737cd8ed813c5d512fab632cea7e1e4dbfae3a23baba1",
+      "gitBlobSha": "d66646cdd8f28a4a45f2f3216d62d67a6f4309f2"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/discovery-request-v1.json",
+      "bytes": 1775,
+      "sha256": "b2c604593d1139b17d7c86293043246122cb1204b6834cad33c383086c7d6ef5",
+      "gitBlobSha": "60120a7ba681d5846eee3e6ab9cb80475a1f087e"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/external-origin-v1.json",
+      "bytes": 1750,
+      "sha256": "b32b9c7999be473eef154ef0ea64db1e683178309048bf3ecac74eee0ad5fd85",
+      "gitBlobSha": "46b410fdc9c4237876b0d3db0d201fe1f1f61755"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/impact-report-v1.json",
+      "bytes": 1377,
+      "sha256": "f852116c384d070065e96860f0980ce9d963f1cd0a22a3b398d428db2d6ca8e8",
+      "gitBlobSha": "561a46fcd02e6a8c17ae53fdbdc6ec04a4c25ca7"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/search-result-v1.json",
+      "bytes": 1089,
+      "sha256": "11480f53251a956908ec8bf8648cd1a5aa1e126631ad6924cb1cc5d5586114e4",
+      "gitBlobSha": "5ec6864292f2df430257277fcccde6c59967bbf5"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/semantic-change-notice-v1.json",
+      "bytes": 1605,
+      "sha256": "ad9e82cf93b53e38d2fac5d6937b7459a474b2207e860d84274f9b137ccdda11",
+      "gitBlobSha": "ffc5820ecb291ee6b8deebbd299aecfc6a3e7f7a"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/semantic-migration-proposal-v1.json",
+      "bytes": 1182,
+      "sha256": "188ca048bfffc64569e3adc6c2c50da889670ee3a587d3ecc2a9802d9bb64078",
+      "gitBlobSha": "b3851b038caa80f73a7d62a406d450c3f6c2f40e"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/semantic-publication-member-v1.json",
+      "bytes": 1158,
+      "sha256": "ff8c0edb6c276ed3ebedc70a698c1fd63b7582056088460d799215ac07127811",
+      "gitBlobSha": "15d3794843b7d3ab9db427cdc840d4b9902b3720"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/semantic-publication-set-v1.json",
+      "bytes": 1991,
+      "sha256": "492daa33daf944febe33b5a0b03565385dbd9eace8304bcdf2143d960caa9cd4",
+      "gitBlobSha": "f985a0e8c14b84e90e24a4cba504c0b8bd82d976"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/semantic/semantic-reference-v1.json",
+      "bytes": 2167,
+      "sha256": "4027b53ee05e36eb400f5befb330c9b963ccfdf1d8881e645d3df04267c3a473",
+      "gitBlobSha": "54d105176b5f31cae4338e694784dacbcd38ea3a"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/tests/check_core_consistency.py",
+      "bytes": 3807,
+      "sha256": "06d0ffed64992069396470c608336bc6c23bc4c7dc29cef7453b40fce1f1cc03",
+      "gitBlobSha": "fb17d8f9c3b3b3fe3da0fbbca0fb354ed44fd2db"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/tests/core-consistency-fixture.invalid.json",
+      "bytes": 2509,
+      "sha256": "83674c8afe657e5617d219b83d82ccbe77ea3d1feee3ca39a99a8a40d6510c61",
+      "gitBlobSha": "535b80d457c7ad92cc42e11d7e836344758b60fe"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/tests/core-consistency-fixture.valid.json",
+      "bytes": 2507,
+      "sha256": "efd978d4fc9ef71658261648aa7584ad3bd182abc07d47e26047a83910a4f4c0",
+      "gitBlobSha": "b3ed09b6aa4ed6af28e18223a1f9a551919c5ae0"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/tools/validate_repository.py",
+      "bytes": 588,
+      "sha256": "77524cebaae0cfe4f6cc51a5561828fc0e55fd23c4649e1ec0167e061fbd9b12",
+      "gitBlobSha": "be73a2e5f51b99df64bb63f69763d152fc8e6f68"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/contracts/ouf-contracts-v1.0.0-rc3-coherence/trusted-human/trusted-human-card-model-v1.json",
+      "bytes": 1334,
+      "sha256": "31b5f7aaa2d710602470806a8c562f924c4f8d36e3e2332899b37c7d6c059201",
+      "gitBlobSha": "cabaed9e41a8b48a18c9aaca4c979d34ef595c90"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/docs/adoption-checklist.md",
+      "bytes": 1098,
+      "sha256": "3956f1ae0a512d5cb3fef8f90764dc5eb5231b10ccac334556e5259917b78182",
+      "gitBlobSha": "c645267225b75845711c45aa0242381897e4614a"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/docs/evidence-package.md",
+      "bytes": 721,
+      "sha256": "ea97a6513250c89835cf2d5b96c2bbd18a2351e2f36f5ecae8556a195b91e2c8",
+      "gitBlobSha": "c5289edf631a810cd4354cd38a6cbd5639159b8f"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/docs/module-repository-layout.md",
+      "bytes": 665,
+      "sha256": "38b113ced48ffbc6c6c371984052293d194c091c5fb3993bd9fb4482ff998cfc",
+      "gitBlobSha": "efa52393634b253f07241c3e62be59c27c7c2d1e"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/docs/starter-kit-validation-report.json",
+      "bytes": 5700,
+      "sha256": "7d58b0a7a1d96ca3c738d613e0832d018978d72bdf47ba9aa15fe6d16c080bf1",
+      "gitBlobSha": "c3491aaaea7e34a9253b10f10ec7f888d4af99a1"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/helm/README.md",
+      "bytes": 564,
+      "sha256": "35b81376b0e3341e8130db6e23d2ad2302c95c7842c1ff41301d621b5d999aff",
+      "gitBlobSha": "f8a1ed5bebc58579b9d536f7ab79928e472913cb"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/helm/ouf-service/Chart.yaml",
+      "bytes": 140,
+      "sha256": "f1c0bd50fadc8971ce7adeac492ca332aa62521578847891ba349110f3922a8e",
+      "gitBlobSha": "9407ec92ad66fdf48aee021f3b7857623911d5a1"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/helm/ouf-service/templates/_helpers.tpl",
+      "bytes": 105,
+      "sha256": "e8f2bcb07d30fd91d363fc49edaef4fe0f492a5273283722aeb3cf1d14158614",
+      "gitBlobSha": "239efff13cfd8542060701d9264a650d98d46b8f"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/helm/ouf-service/templates/deployment.yaml",
+      "bytes": 1322,
+      "sha256": "8ec10c12af933e3736167bdc56b7f75ebc9af447df06474f60fbf884b391023d",
+      "gitBlobSha": "591d1d95b0e279dfb4175080cdbe50fb7fee86a1"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/helm/ouf-service/templates/networkpolicy.yaml",
+      "bytes": 882,
+      "sha256": "ceeb18a21b98a559e57f6fa2c6a7596606fa3837c9298eb6f24559f952258e39",
+      "gitBlobSha": "f3dd700836767feed6fd8323aa98275eabc9e0d7"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/helm/ouf-service/templates/pdb.yaml",
+      "bytes": 295,
+      "sha256": "d52f7988ab9ce7fed7135c60a62e1f36a85e46545de97e1f51c49e3badc55c38",
+      "gitBlobSha": "b8e7a39687ace2201a0673eb37dbbb2d0e9c7c36"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/helm/ouf-service/templates/service.yaml",
+      "bytes": 243,
+      "sha256": "8941a61b86354482375a454eda370522bede9d4f984eb32299a80b027b8de14d",
+      "gitBlobSha": "8d375ce36fec24a74495761d46edf4cfa52c2ff9"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/helm/ouf-service/values.yaml",
+      "bytes": 785,
+      "sha256": "c401caa97c12d25778b375b1bf10ed64664c240502d9942c0be55941d00ec30a",
+      "gitBlobSha": "dab3034b63f99b7d53a8a527942604f6d08a957f"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/observability/README.md",
+      "bytes": 355,
+      "sha256": "c5991cb8087c456a229e5d935bb495aa2904ed355ea411d5de6de643f4dd67c7",
+      "gitBlobSha": "f272dbb3b90b01708701d04447d5799d655b564d"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/observability/observability-baseline.yaml",
+      "bytes": 774,
+      "sha256": "a9c306c9b5cade04749759c7defe7e4d1be5ab307a5a4a21ce13b8f5c1a727b5",
+      "gitBlobSha": "58939a2ecb326428a70742fd426d84b30a8c7d1b"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/platform/environment-bindings.example.yaml",
+      "bytes": 362,
+      "sha256": "e0326429c560627897a8ecfbf2153b45e949591bc7adead2d4a43ae7bc7002ef",
+      "gitBlobSha": "316d3779b42ecea55c2fdd54d5aa7204869014b4"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/platform/environment-bindings.schema.json",
+      "bytes": 1862,
+      "sha256": "fc2e46ebd38a303c11d42a2940314ee0c2aff2baa20e6e3038cad921d53b5ed7",
+      "gitBlobSha": "bdfc11481f6045b31250a77919a467808b68026d"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/platform/platform-version-bindings.yaml",
+      "bytes": 584,
+      "sha256": "5fa82fc920d20e6af8a3278e67806bc872ca7a47d6baa09a46f8a15bae58b7c8",
+      "gitBlobSha": "2ba053be154137d4f3922a30f15cf698565c4f37"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/sbom/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlobSha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/starter-kit-manifest.json",
+      "bytes": 31516,
+      "sha256": "6cd12182389f0957a11dd7ec9a4df5c3fedf734428a81c938a1731d6e8be8e4c",
+      "gitBlobSha": "478a74c9c4781b5b0b7aacc868457f094114fd29"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/templates/service-java21-springboot/README.md",
+      "bytes": 596,
+      "sha256": "c7a18064b2d8d6aef54348f79f76affd45fadf71bf02aa3f38a4bb181ae65dcb",
+      "gitBlobSha": "98f091696270f611c9b45365f27ec9754fb003de"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/templates/service-java21-springboot/pom.xml.template",
+      "bytes": 1569,
+      "sha256": "b4cf1265c40bfb3017f394f4fa0cff649b4f87ebad8d916a6c7c29e4085abfd7",
+      "gitBlobSha": "a423281ce8fb0110f7fdabf3f2594d2a528a40c1"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/templates/service-java21-springboot/src/main/java/it/trieste/ouf/template/Application.java.template",
+      "bytes": 314,
+      "sha256": "3f365904bc531da4b8bee13081d4af68e4f42e2bfff431c86fd9b9b56f3df8e4",
+      "gitBlobSha": "c47c81058cca9f64c178c1faa69398220ac1b5b4"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/templates/service-java21-springboot/src/main/resources/application.yaml.template",
+      "bytes": 335,
+      "sha256": "a811abdc3a8cf0cab2a50705c1a548d22125f289b31f7ced417c940580a6de1f",
+      "gitBlobSha": "07262ed0d2d572767b8dad35aa2e2baf0a977299"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/testing/contract/test_contract_repository.py",
+      "bytes": 644,
+      "sha256": "1262194cb23a2a8f85b7197e2bd40b76936f64e2d0f85978d28aa7689e3e3baf",
+      "gitBlobSha": "48f556ed1c38a253742f2abefa108df8f0958c16"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/testing/contract/test_identity_scenario_neutral.py",
+      "bytes": 639,
+      "sha256": "5ab0f19678b2c4cbd1255bc8bee7c08795ec1874dfeb28f569adac540f9c0ba4",
+      "gitBlobSha": "2e8ea255617f402caffe68fc61fd0dc797e09860"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/testing/contract/test_problem_details.py",
+      "bytes": 342,
+      "sha256": "7a8215a3247b1f2f54f1f1315231a07e2e06804f6057dbbccaa7032cc72d0932",
+      "gitBlobSha": "c15a0fca1e19089aaf5a43f60d26e6e519aa109e"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/testing/e2e/README.md",
+      "bytes": 375,
+      "sha256": "bcc91380e8ded4a7a2a74b1b71c9b35cbd80b45e052add5ed3d86cfedd072410",
+      "gitBlobSha": "574927e1cb086e5c9ff72318929a6a23397eacf2"
+    },
+    {
+      "path": "package/implementation/ouf-development-starter-kit-v0.2.1/testing/requirements.txt",
+      "bytes": 34,
+      "sha256": "2649c8bcce703dec7fe21cfd47b615a06067c62fc78934a78bb710a722dd8128",
+      "gitBlobSha": "b709a06694169febf1eda80f8e357d9cb07a1863"
+    },
+    {
+      "path": "package/implementation/ouf-e2e-integration-spec-v0.3/README.md",
+      "bytes": 606,
+      "sha256": "677d1904631fd6ed221772688b28c130b5d0d0e5cfbee6a2e8f0b315e8a8adeb",
+      "gitBlobSha": "67af34a991bdf4ad4ca156767a90122ad8051c09"
+    },
+    {
+      "path": "package/implementation/ouf-e2e-integration-spec-v0.3/contracts/contract-catalog.yaml",
+      "bytes": 13110,
+      "sha256": "43b631ae72777e0ddddf69a06469028917e3891fda9575ddce8ae144ee1a7b78",
+      "gitBlobSha": "1f699bb4dc14e5abbf703c220c7e917b894628cb"
+    },
+    {
+      "path": "package/implementation/ouf-e2e-integration-spec-v0.3/contracts/v1.0-freeze-manifest.json",
+      "bytes": 14447,
+      "sha256": "1bb71e3c689dd21ccc3c3fcd8bcf238039b6aef79c3e9373032acf731476eea0",
+      "gitBlobSha": "66e9dc989473de3bc21a62ad599531bb6b233791"
+    },
+    {
+      "path": "package/implementation/ouf-e2e-integration-spec-v0.3/e2e-spec-manifest.json",
+      "bytes": 1542,
+      "sha256": "00e638b72cc10601f4ad752909b3779ff1431232ea85a7acfecfde685dbc47e6",
+      "gitBlobSha": "c1c6d0636b0388baff4662cab405e7b758f7f179"
+    },
+    {
+      "path": "package/implementation/ouf-e2e-integration-spec-v0.3/evidence/e2e-evidence-record-v1.json",
+      "bytes": 2092,
+      "sha256": "c8d8910756ffd6058b0c967991c0b384e0dd9ccedb1e12ae0f92e81ce038e284",
+      "gitBlobSha": "80fe2407dd2836c84f37bb743bf1ff1ce1e1ba82"
+    },
+    {
+      "path": "package/implementation/ouf-e2e-integration-spec-v0.3/requirements.txt",
+      "bytes": 34,
+      "sha256": "2b4d18241c72199d6797d7bb8fd6385cdcb23f3e7761cc319ef5cfdfbf582fc7",
+      "gitBlobSha": "c546a86f5ff9513b44f9d3d701a1d6881b655901"
+    },
+    {
+      "path": "package/implementation/ouf-e2e-integration-spec-v0.3/spec/e2e-scenario-catalog.yaml",
+      "bytes": 39815,
+      "sha256": "e53d7c0cf881572d81789fe524a9dca98ebc30b543e9c1a172196fd66b539f9e",
+      "gitBlobSha": "427d63afc7defd71177772f42fc1716ba4886deb"
+    },
+    {
+      "path": "package/implementation/ouf-e2e-integration-spec-v0.3/spec/frozen-acceptance-traceability.yaml",
+      "bytes": 664,
+      "sha256": "cbeee0e5e27dece9f42ea19e7b17cc687dfa2ba1d23d9eed17aef0d48dfa4f3d",
+      "gitBlobSha": "b4388b041efd28d038523128b9bcc33402b8c257"
+    },
+    {
+      "path": "package/implementation/ouf-e2e-integration-spec-v0.3/spec/legacy-id-mapping.yaml",
+      "bytes": 940,
+      "sha256": "c839a538e3a412886f2b473841fdb3efa99282923883953fa6b427d2677cb159",
+      "gitBlobSha": "a76e854a4bfada7b3c86cc70017ae65abc7b1b12"
+    },
+    {
+      "path": "package/implementation/ouf-e2e-integration-spec-v0.3/spec/scenario-ownership.yaml",
+      "bytes": 2038,
+      "sha256": "981915594a8354149c691214d2199147fe4555fa595caa3f5416ec8b2b11277b",
+      "gitBlobSha": "16a95bed138ec4e3c074a42c1594c4644b0dda00"
+    },
+    {
+      "path": "package/implementation/ouf-e2e-integration-spec-v0.3/tests/test_catalog.py",
+      "bytes": 2629,
+      "sha256": "5f96e1c5d08cf3bbc331c269af1b1a1a96370073e1ea37fd948bf1113ee73555",
+      "gitBlobSha": "7c19fb2d8f4ae8c5dc019642bdb77041b89a0283"
+    },
+    {
+      "path": "package/planning/OUF_Development_Execution_Plan_WBS_v0_4_Semantic_Aligned.xlsx",
+      "bytes": 109611,
+      "sha256": "9ab45d333399ecc40b21a9100d2a984b211320b704868e07ea4aaf7ad7a40852",
+      "gitBlobSha": "7df2e96f8bf02236bbd346a7086c04c452d2c22e"
+    },
+    {
+      "path": "package/planning/OUF_WBS_E2E_Semantic_Mapping_v1_0_Reality_Baseline.yaml",
+      "bytes": 3974,
+      "sha256": "9fd1118440454db07cb77fb786b85a020289dbb764655039bdb7d80e07847c82",
+      "gitBlobSha": "4638ffc502560d821b550dab11cc5f8768c06b62"
+    },
+    {
+      "path": "package/provenance/OUF_Operational_Awareness_Channel_Neutral_Update_README.md",
+      "bytes": 771,
+      "sha256": "fd598ae8d0ad2a43dfb03f9f656160ccec58b640d1d538ba402c4b77517d111a",
+      "gitBlobSha": "845fed8bbdf59e929d880638ff3c391c6bd075a0"
+    },
+    {
+      "path": "text/OUF_Cross_Module_Alignment_Matrix_v1_7_Channel_Neutral_OA_Aligned.txt",
+      "bytes": 11389,
+      "sha256": "eb81ba9af1708afd29c6b5e65de0c5adde09dc2b0610c10d37e54265b615f9e7",
+      "gitBlobSha": "dca4824d727d56da7dd5475589ea7e47301f83ab"
+    },
+    {
+      "path": "text/OUF_Linee_Indirizzo_API_Verticali_v2_3(3).txt",
+      "bytes": 53921,
+      "sha256": "c67e72f478941cf29909ef72c9020c1223d04bf5aadf2bfa016fd14a742a5c3c",
+      "gitBlobSha": "d7f9eb2a8b68e6a39c178bda45b1f4d9eb1aa9dc"
+    },
+    {
+      "path": "text/OUF_MCP_Server_v1_4_Go_Channel_Neutral_Operational_Awareness.txt",
+      "bytes": 164856,
+      "sha256": "e8922416dfe72b49d54ed8ace274f6e610efdfd5116c7751828f3ae27e4bbc7a",
+      "gitBlobSha": "94b731b97192ad998843be4e71ee06073a780adf"
+    },
+    {
+      "path": "text/OUF_Normative_Terminology_Supersession_Notice_v1_1.txt",
+      "bytes": 2542,
+      "sha256": "9ca22968c4b4c1cc678ad258e1bfee4d41415bdb75b674a2baf21b4ac53fc59b",
+      "gitBlobSha": "7a318390da7dc190486ef6f34ca28d775d70e4b0"
+    },
+    {
+      "path": "text/OUF_PET_Authorization_Access_Control_v1_5_Operational_Awareness.txt",
+      "bytes": 104878,
+      "sha256": "ae289cb93ad436fa2a9ecb88ac172c697573e319c746ea7a16930d04c6fb46a8",
+      "gitBlobSha": "32c29a06d0be85f02c3cfa286d1d134ac45a25b7"
+    },
+    {
+      "path": "text/OUF_PET_Data_Lake_UDP_Urban_Object_Registry_v1_3_Development_Ready.txt",
+      "bytes": 186439,
+      "sha256": "5fec8216a4de11608e75d87e98deb58524fe20fddbeaf080195cb7a81debd3d9",
+      "gitBlobSha": "e5b4ae1ba51ce6d0e8a6c48b00b1ecb41de845fb"
+    },
+    {
+      "path": "text/OUF_PET_EF_Ingestion_Runtime_v1_3_Operational_Awareness.txt",
+      "bytes": 195481,
+      "sha256": "bd30d993343368909010f77f9f79342eebc286a6a299a0cbf5be28f263bb3052",
+      "gitBlobSha": "ea65b092f38ad9bfdedd0a4e1eedfc6ec48ae4d6"
+    },
+    {
+      "path": "text/OUF_PET_Semantic_Model_Registry_v1_3_Development_Ready.txt",
+      "bytes": 196784,
+      "sha256": "072cc2299fce8a952b9da46c0d7808fd374e3a078666e811f358706708c2a877",
+      "gitBlobSha": "fbac897ce2f55502bffaceccce9c9063b8dc9095"
+    },
+    {
+      "path": "text/OUF_PET_Source_Onboarding_Configuration_THS_v1_6_Operational_Awareness.txt",
+      "bytes": 237548,
+      "sha256": "df5dfa18dd2903e97c4f85bf409eb6db1668a3837379a3711945c11d182f4211",
+      "gitBlobSha": "bb395e7292b20feff6720657b6debe51ec0ad26f"
+    },
+    {
+      "path": "text/OUF_PET_Urban_API_Gateway_v1_5_Channel_Neutral_Operational_Awareness.txt",
+      "bytes": 150614,
+      "sha256": "6ba81eb3c96337664ee14ff6055c6035fd41be6e71b4995f0d584056a416ded7",
+      "gitBlobSha": "5f8b19fb2b3f97db2ec9cefad68987acd48df821"
+    },
+    {
+      "path": "text/OUF_System_Integration_Development_Blueprint_v0_3.txt",
+      "bytes": 9567,
+      "sha256": "a6e1d2ff67036c6b2d7d697ee42c74b868dcba5946d09135009d0f64a476a3db",
+      "gitBlobSha": "8f8d77fc0f98e18f4042e733589f9bd4eb43d4b3"
+    }
+  ]
+}
