@@ -65,8 +65,8 @@
     "runtimeEvidenceOrigin": "OPERATOR_FINAL_SUCCESS_RESULT_READ_IN_FULL_NOT_NEW_AGENT_HOST_LOG_READ",
     "activeOnboardingSourceCommit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "activeOnboardingNativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
-    "profileControlCorrection": "POLICY58_PUBLISHED_THS_PREVIEW_SCOPE_MISSING_READ_ONLY_CAPTURE_QUALIFIED",
-    "latestCohortCapture": "RECONCILIATION_SUCCESS_CAPTURE14a96f_SCOPE_CONSUMED_METADATA_ONLY",
+    "profileControlCorrection": "ACTUAL_THS_REQUEST_OMITS_THREE_RECOVERY_SCOPES_CLIENT_SELECTION_QUALIFIED",
+    "latestCohortCapture": "SUCCESS_CONSUMED_FDC61884_EXACT13_BINDINGS_27GET_NO_RUNTIME_WRITES",
     "profileControlCandidatesInstalled": true,
     "newControlUpdateRuntimeAuthorityIssued": true,
     "activeMcpSourceCommit": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
@@ -1934,9 +1934,9 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Run NEW qualified read-only scope request capture once, preserve STOP without replay; no new grant/login/budget/resume",
-    "command": "releases/OUF_MANAGED_PROFILE_THS_SCOPE_CAPTURE_COMMAND_20261028.sh",
-    "scope": "/etc/ouf/deploy-snapshots/managed-profile-ths-scope-capture-policy58-20261028-v1",
+    "action": "Run new qualified selected-client reader once; prior scope capture consumed; preserve any STOP without replay",
+    "command": "releases/OUF_MANAGED_PROFILE_THS_CLIENT_SELECTION_COMMAND_20261028.sh",
+    "scope": "/etc/ouf/deploy-snapshots/managed-profile-ths-client-selection-fdc61884-20261028-v1",
     "targetExecuted": false
   },
   "sourceRefs": [
@@ -2352,8 +2352,8 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-28",
-    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_THS_SCOPE_CAPTURE_20261028.md",
-    "next": "OPERATOR_READ_ONLY_SCOPE_REQUEST_CAPTURE_NO_LOGIN_APPROVAL_OR_APPLY"
+    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_THS_CLIENT_SELECTION_20261028.md",
+    "next": "OPERATOR_SELECTED_THS_CLIENT_READ_ONLY_NO_LOGIN_OR_APPLY"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -2655,7 +2655,7 @@
     "releaseAcceptance": false
   },
   "humanProfileRecoveryAccess": {
-    "status": "NATIVE_THS_PREVIEW_SCOPE_MISSING_PROVEN_CURRENT_REQUEST_CAPTURE_QUALIFIED",
+    "status": "THREE_RECOVERY_SCOPES_MISSING_FROM_CURRENT_THS_REQUEST_CLIENT_SELECTION_QUALIFIED",
     "record": "evidence/managed-profile-job-control-policy58-access-20261028.json",
     "humanSurfaceUserOnly": true,
     "agentMayInteractWithThs": false,
@@ -2666,11 +2666,9 @@
     "resumedByThisResume": false,
     "identityProof": "Explicit ouf-admin routing and same protected owner/tenant proposal read; not browser identity",
     "browserIdentityVerified": false,
-    "missingCapabilityId": "ouf.onboarding.quarantine.release",
-    "pendingProposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
-    "pendingProposalState": "PUBLISHED",
-    "pendingProposalExpiresAt": "2026-10-28T08:46:00.672722Z",
-    "pendingApprovalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "pendingProposalId": null,
+    "pendingProposalState": null,
+    "pendingApprovalPath": null,
     "publishedProposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
     "finalPolicyRef": "ouf-lab-authorization:58",
     "lastJobReadResult": {
@@ -2678,12 +2676,15 @@
     },
     "lastJobReadRetried": false,
     "nativeCardHttpStatusReported": 403,
-    "nativeCardErrorBodyObserved": false,
+    "nativeCardErrorBodyObserved": true,
     "nativeCardEvidence": "evidence/managed-profile-native-card-403-20261028.json",
     "nativeScopeDenied": "ouf.managed-source.preview",
     "nativeScopeDenialEvidence": "evidence/managed-profile-ths-preview-scope-denial-20261028.json",
-    "currentOAuthRequestObserved": false,
-    "iamClientBindingObserved": false
+    "currentOAuthRequestObserved": true,
+    "iamClientBindingObserved": false,
+    "previousMissingCapabilityId": "ouf.onboarding.quarantine.release",
+    "quarantineReleaseDescriptor": "PUBLISHED_ACTIVE_POLICY57_PRESERVED_BY58",
+    "historicalPublishedProposalExpiresAt": "2026-10-28T08:46:00.672722Z"
   },
   "profileControlAuthorization": {
     "status": "ROLE_PUBLISHED_POLICY58_MCP_JOB_READ_INVALID_ARGUMENT_NATIVE_CARD_PENDING",
@@ -2898,15 +2899,15 @@
   },
   "profileControlThsScopeCaptureQualification": {
     "evidence": "evidence/managed-profile-ths-scope-capture-qualified-20261028.json",
-    "status": "QUALIFIED_FIRST_TARGET_CAPTURE_PENDING",
+    "status": "QUALIFIED_AND_SUCCESSFULLY_CONSUMED",
     "sourceCommit": "fa4b7f77a3f61b71c4dc76a959f8677830363056",
     "wrapperCommit": "006e729bf20e83be7725d3c42b4b4bbfcb6df659",
     "qualificationCommit": "bde4a04111e20d61533b29b42ddd843bc8116259",
     "pushRun": 40663903278,
     "prRun": 40663912726,
     "scope": "/etc/ouf/deploy-snapshots/managed-profile-ths-scope-capture-policy58-20261028-v1",
-    "targetExecuted": false,
-    "currentDeliveryUsable": true,
+    "targetExecuted": true,
+    "currentDeliveryUsable": false,
     "runtimeAuthorityIssued": false,
     "targetApplyAuthorized": false,
     "maximumPrivateMetadataReads": 3,
@@ -2915,7 +2916,8 @@
     "iamRequests": 0,
     "credentialOrConfigFileReads": 0,
     "humanBudgetsGranted": 0,
-    "resumes": 0
+    "resumes": 0,
+    "targetReceipt": "evidence/managed-profile-ths-scope-capture-target-20261028.json"
   },
   "profileControlThsScopeContract": {
     "repository": "GioNob/ouf-source-onboarding",
@@ -2928,5 +2930,53 @@
       "ouf.onboarding.quarantine.release"
     ],
     "appliedToTarget": false
+  },
+  "profileControlThsScopeCaptureTarget": {
+    "record": "evidence/managed-profile-ths-scope-capture-target-20261028.json",
+    "inputsHash": "fdc618841f14eeb0c99ee3f61f0971affefff5f13d740d406db376d3daaa7bec",
+    "counts": {
+      "bytes": 743005,
+      "engineGets": 27,
+      "privateMetadataReads": 3
+    },
+    "requestedScopes": [
+      "openid",
+      "authorization.policy.admin",
+      "ouf.managed-source.file.upload",
+      "resolution.issue.read",
+      "resolution.match.approve"
+    ],
+    "missingRequestScopes": [
+      "ouf.managed-source.preview",
+      "ouf.managed-source.file.profile",
+      "ouf.onboarding.quarantine.release"
+    ],
+    "complete": true,
+    "exit": 0,
+    "deliveryExit": 0,
+    "consumed": true,
+    "clientIdObservedFromJson": null,
+    "iamBindingObserved": false,
+    "scopePatchApplied": false
+  },
+  "profileControlThsClientSelectionQualification": {
+    "record": "evidence/managed-profile-ths-client-selection-qualified-20261028.json",
+    "sourceCommit": "398a557268fe472a1adf92f8e79a9dfe513090b0",
+    "wrapperCommit": "185c1e7e7665212ef4279c6678179c0b48a6bbc4",
+    "qualificationCommit": "24ecce7010a765d5d3178ac5286f53e10b1624d9",
+    "pushRun": 40674237338,
+    "prRun": 40674249545,
+    "scope": "/etc/ouf/deploy-snapshots/managed-profile-ths-client-selection-fdc61884-20261028-v1",
+    "targetExecuted": false,
+    "currentDeliveryUsable": true,
+    "privateMetadataReads": 3,
+    "engineGets": 5,
+    "configurationFileContentReads": 1,
+    "rawOverlayPersisted": false,
+    "iamRequests": 0,
+    "oauthRequests": 0,
+    "engineWrites": 0,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false
   }
 }
