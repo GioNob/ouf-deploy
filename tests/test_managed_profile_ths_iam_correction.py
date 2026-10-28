@@ -132,9 +132,10 @@ class ControllerTests(unittest.TestCase):
         inputs={'currentObservations':{'onboarding':f.actual()},'clientMetadata':f.identity()};self.cap=f.Capture();self.provider=FakeProvider(case,plan,**kwargs)
         prepared=(inputs,parent,plan,{'plan':plan},os.open('/dev/null',os.O_RDONLY),{},lambda:None,lambda:None)
         def prompt(summary,phrase=None):
-            if phrase and decline:raise m.Stop('OPERATOR_DECLINED')
             return True if phrase else'PRIVATE_IAM_PASSWORD_CANARY'
-        with patch('builtins.print'):return m.execute_correction(self.cap,prepared,case,prompt=prompt,sender=self.provider)
+        def approve(*_):
+            if decline:raise m.Stop('OPERATOR_DECLINED')
+        with patch('builtins.print'):return m.execute_correction(self.cap,prepared,case,approve=approve,prompt=prompt,sender=self.provider)
     def test_complete_additive_correction_prepares_profile_and_preserves_prior_links(self):
         out=self.invoke();self.assertTrue(out['complete']);self.assertEqual(out['iamMutations'],4);self.assertEqual(out['newOptionalClientBindings'],3)
         self.assertEqual(out['preservedDefaultBindings'],1);self.assertEqual(out['preservedOptionalBindings'],1);self.assertTrue(out['realmDefaultsPreserved'])

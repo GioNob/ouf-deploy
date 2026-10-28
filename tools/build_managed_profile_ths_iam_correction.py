@@ -28,7 +28,8 @@ code+=defs('tools/managed_profile_ths_scopes/bindings.py',['scope_rows','binding
 code+=defs('tools/managed_profile_ths_scopes/iam_read.py',['CLIENT_FIELDS','CHILD','executable','dispatch','ReadLedger','terminal','access'])
 code+=defs('tools/managed_profile_ths_scopes/iam_correction.py',['MARKER','compile_correction','link_map','validate_created_scope','validate_location','verify_postcondition','CorrectionCapture','CorrectionLedger'])
 code+=defs('tools/managed_profile_ths_scopes/iam_correction_transport.py',['EXTRA_CHILD','BASE_OPERATIONS','dispatch_correction'])
-code+=defs('tools/managed_profile_ths_scopes/iam_correction_controller.py',['correction_snapshot','execute_correction'])
+code+=defs('tools/human_terminal_line_review.py',['TerminalReviewError','read_exact'])
+code+=defs('tools/managed_profile_ths_scopes/iam_correction_controller.py',['review_approval','correction_snapshot','execute_correction'])
 code+='''def validate_parent_read(parent,case):
  require(parent.get('schema')=='ouf.managed-profile-ths-iam-binding-read-result.v1'and digest(parent)==case['parentResultHash']
          and parent['status']=='THS_IAM_BINDINGS_OBSERVED_CONFIGURATION_PROFILE_BLOCKED'and parent['complete']is True
@@ -50,7 +51,7 @@ prepare=prepare[:start]+''' parent=c.private(Path(case['parentRoot'])/'result.js
 prepare=prepare[:prepare.index(" review={'schema':")]+''' review={'schema':'ouf.ths-iam-binding-correction-review.v1','plan':plan,'retainedInputsHash':case['inputsHash'],
          'currentBindingsHash':digest({r:stable_binding(v)for r,v in observed.items()}),'currentProcessPins':inputs['currentProcessPins'],
          'adminEndpoint':case['adminEndpoint'],'maximumNewAdministrativeAuthenticationRequests':1,'maximumAdminGetAttempts':40,
-         'maximumGetRetryReservations':4,'maximumIamWriteDispatches':4,'maximumEngineGets':7,'maximumSecondsAfterConsent':210,
+         'maximumReviewInputEvents':128,'maximumGetRetryReservations':4,'maximumIamWriteDispatches':4,'maximumEngineGets':7,'maximumSecondsAfterConsent':210,
          'maximumSecondsAfterPassword':120,'oldScopesAndBudgetsRemainConsumed':True,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False}
  c.put('review.json',review);review_path=c.root/'review.json'
  c.seals[str(review_path)]={'metadata':list(frame(review_path.lstat())),'sha256':hashlib.sha256(encoded(review)).hexdigest()}

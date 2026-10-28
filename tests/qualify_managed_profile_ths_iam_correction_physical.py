@@ -56,8 +56,10 @@ def pty_run(harness,*,approval=True):
      raise
     if not part:ended=True;break
     raw+=part
-    if approval and sent==0 and raw.endswith(b'> ')and b'Scrivi esattamente: 'in raw:
-     phrase=raw.rsplit(b'Scrivi esattamente: ',1)[1].split(b'\r\n',1)[0];assert re.fullmatch(rb'APPROVO CORREZIONE IAM [a-f0-9]{64}',phrase)
+    if approval and sent==0 and b'Input visibile.'in raw:
+     phrase=raw.rsplit(b'Scrivi esattamente: ',1)[1].split(b'\r\n',1)[0];assert re.fullmatch(rb'APPROVO [a-f0-9]{64}',phrase)
+     os.write(fd,b'BAD-LINE\n');sent=-1
+    elif approval and sent==-1 and b'Riga non valida'in raw:
      os.write(fd,phrase+b'\n');sent=1
     elif approval and sent==1 and raw.endswith(b'> ')and b'Password IAM per fixture-admin'in raw:
      assert not(termios.tcgetattr(fd)[3]&termios.ECHO);os.write(fd,b'PRIVATE_IAM_PASSWORD_CANARY\n');sent=2
@@ -135,6 +137,8 @@ m.execute_correction.__kwdefaults__['sender']=lose_response
   for path in current.iterdir():
    assert stat.S_IMODE(path.stat().st_mode)==0o600
    assert b'PRIVATE_IAM_'not in path.read_bytes()and b'PRIVATE_CLIENT_'not in path.read_bytes()and not re.search(rb'eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+',path.read_bytes())
+  review_events=[json.loads(p.read_bytes())for p in current.glob('review-input-*.json')]
+  assert any(v['state']=='LINE_REJECTED'for v in review_events)and any(v['state']=='LINE_RECEIVED'and v['rejectedLines']==1 for v in review_events)
   assert 'PRIVATE_IAM_'not in output and'PRIVATE_CLIENT_'not in output
   replay_status,replay=pty_run(harness,approval=False);assert replay_status==2 and'THS_IAM_CORRECTION_SCOPE_CONSUMED_NO_REPLAY'in replay
   assert all(p.read_bytes()==saved[p.name]for p in current.iterdir())

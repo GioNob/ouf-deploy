@@ -1,11 +1,22 @@
 """One finite reviewed IAM operation; current state must equal retained intent."""
 import json,os,time,types
-from tools.managed_csv_recovery.retained_inputs import require,digest,decode
+from tools.managed_csv_recovery.retained_inputs import Stop,require,digest,decode
 from tools.managed_profile_ths_scopes.contract import REQUIRED
 from tools.managed_profile_ths_scopes.bindings import binding_report,scope_rows,configuration_profile
 from tools.managed_profile_ths_scopes.iam_read import terminal,access
 from tools.managed_profile_ths_scopes.iam_correction import CorrectionLedger,link_map,validate_created_scope,validate_location,verify_postcondition
 from tools.managed_profile_ths_scopes.iam_correction_transport import dispatch_correction
+from tools.human_terminal_line_review import read_exact,TerminalReviewError
+
+def review_approval(review,guard,capture,*,clock=time.monotonic):
+    review_hash=digest(review);deadline=clock()+90;events=[0]
+    print('Scrivi esattamente: APPROVO '+review_hash,flush=True)
+    def current():guard();require(clock()<deadline,'FINITE_CORRECTION_REVIEW_INPUT_WINDOW_EXPIRED')
+    def progress(state):
+        require(events[0]<128,'FINITE_CORRECTION_REVIEW_INPUT_EVENTS_EXHAUSTED');events[0]+=1
+        capture.put('review-input-'+str(events[0])+'.json',{'schema':'ouf.ths-iam-review-input.v1',**state,'deadlineUnchanged':True})
+    try:read_exact(review_hash,current,emit=lambda value:print(value,flush=True),progress=progress)
+    except TerminalReviewError as error:raise Stop(str(error))from None
 
 def correction_snapshot(request,client_uuid,stage):
     client=request('client-'+stage,'CLIENT',uuid=client_uuid)
@@ -23,17 +34,17 @@ def correction_snapshot(request,client_uuid,stage):
             'realmDefaults':{'DEFAULT':link_map(request('realm-defaults-'+stage,'REALM_DEFAULTS')),
                              'OPTIONAL':link_map(request('realm-optionals-'+stage,'REALM_OPTIONALS'))}}
 
-def execute_correction(c,prepared,case,*,prompt=terminal,sender=dispatch_correction,wall=time.time):
+def execute_correction(c,prepared,case,*,approve=review_approval,prompt=terminal,sender=dispatch_correction,wall=time.time):
     inputs,parent,plan,review,namespace,program,guard,containers=prepared
     ledger=CorrectionLedger(c,clock=wall);password=token=response=None
     try:
         print(json.dumps({'review':review,'reviewHash':digest(review),'runtimeAuthorityIssued':False},sort_keys=True),flush=True)
-        prompt('Nuova correzione IAM condizionata alla baseline osservata.\n'
+        print('Nuova correzione IAM condizionata alla baseline osservata.\n'
                'UNA definizione OAuth con UUID fissato,nessun mapper/ruolo/RealmDefault;TRE link OPTIONAL SOLO al client '+plan['clientId']+'.\n'
                'Tutti i '+str(plan['preservedDefaultScopeCount'])+' DEFAULT/'+str(plan['preservedOptionalScopeCount'])+' OPTIONAL esistenti sono preservati;massimo1auth amministrativa e4write.\n'
                'Prima degli effetti identita e snapshot correnti devono coincidere con la review;nessuna richiesta di scrivere in chat password/token.\n'
-               'Nessun APPLY runtime,grant applicativo,budgetprofiling,resume,upload/job/acquisizione. STOP:non rilanciare.',
-               'APPROVO CORREZIONE IAM '+digest(review))
+               'Nessun APPLY runtime,grant applicativo,budgetprofiling,resume,upload/job/acquisizione. STOP:non rilanciare.',flush=True)
+        approve(review,guard,c)
         guard();ledger.approvedReviewHash=digest(review);ledger.deadline=wall()+210
         ledger.event('approval',reviewHash=ledger.approvedReviewHash,expiresAt=ledger.deadline,retainedAdministrativeAuthenticationReservations=1,
                      maximumNewAdministrativeAuthenticationRequests=1,oldBudgetsModified=False)
