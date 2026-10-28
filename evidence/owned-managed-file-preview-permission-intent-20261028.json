@@ -1770,5 +1770,8 @@
   },
   "published": false,
   "approvalAuthority": "USER_ONLY_DIRECT_THS",
-  "automaticReplayAllowed": false
+  "automaticReplayAllowed": false,
+  "status": "AUTOMATIC_REVIEW_REJECTED_DO_NOT_REPLAY",
+  "proposalId": null,
+  "rejectionEvidence": "evidence/owned-managed-file-preview-permission-autoreview-20261028.json"
 }

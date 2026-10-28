@@ -53,7 +53,7 @@
       "proven": 6,
       "total": 6
     },
-    "farmacieStatus": "FAILED_5_VERSION0_GENERATION0_ONE_JOB_ZERO_OWNERSHIP_RECEIPTS_BUDGETS_EVENTS_LEGACY_TENANT_NOT_BACKFILLED",
+    "farmacieStatus": "PROFILE_SUCCEEDED_SAME_JOB_6_CUMULATIVE_1_OF3_NEW_SESSION_COMPLETED",
     "diagnosticCandidateInstalled": false,
     "profileRecoveryV36Deployment": "SUCCESSFUL_CONSUMED_PREDECESSOR_RETAINED_STOPPED_AFTER_CONTROL_UPDATE",
     "runtimeAfterLatestApplyVerified": true,
@@ -65,7 +65,7 @@
     "runtimeEvidenceOrigin": "USER_PASTED_FINAL_RESULT_AND_FOOTER_NOT_INDEPENDENT_HOST_LOG_READ",
     "activeOnboardingSourceCommit": "9d19fad3dd750dd5b9e77253d3e7e82029c1aca7",
     "activeOnboardingNativeImageId": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
-    "profileControlCorrection": "V38_INSTALLED_CONSUMED_OWNERSHIP_BUDGET_RESUME_STILL_PENDING",
+    "profileControlCorrection": "V38_INSTALLED_SAME_JOB_RECOVERY_SUCCEEDED_PROFILE_PREVIEW_DENIED_POLICY58",
     "latestCohortCapture": "SUCCESS_CONSUMED_8A4C8475_EXACT13_27GET_4METADATA_ZERO_SQL",
     "profileControlCandidatesInstalled": true,
     "newControlUpdateRuntimeAuthorityIssued": true,
@@ -77,7 +77,7 @@
     "iamBindingsCorrected": true,
     "ownerScopeRequestPatchInstalled": true,
     "effectiveBrowserTokenScopesProven": false,
-    "nativeJobCardAccessProven": false,
+    "nativeJobCardAccessProven": true,
     "profileControlThsRequestUpdateInstalled": true,
     "newThsRequestUpdateAuthorityConsumed": true,
     "legacyOwnershipSourceQualified": true,
@@ -87,7 +87,13 @@
     "ownerV38UpdateControllerQualified": true,
     "ownerV38UpdateInstalled": true,
     "installedOnboardingSchemaVersion": 38,
-    "ownerV38UpdateAuthorityConsumed": true
+    "ownerV38UpdateAuthorityConsumed": true,
+    "farmacieProfileId": "f3061699-4fde-4085-89c8-bc8703f65686",
+    "humanProfileRecoveryBudgetReported": true,
+    "profileRecoverySessionCompletedObserved": true,
+    "farmacieProfileContentsRead": false,
+    "farmacieProfilePreviewAccess": "DENIED_MCP_PRE_ADMISSION_NO_APPLICABLE_GRANT_POLICY58",
+    "profilePreviewPermissionProposal": "AUTOMATIC_APPROVAL_REVIEW_REJECTED_NO_PROPOSAL_RECEIPT"
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1949,19 +1955,21 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Send the native THS same-asset/job recovery link to USER only; agent must not open it. USER uses only Aggiorna stato initially, verifies actual ouf-admin identity/tenant and reports state,cumulative attempts,last block,session and ownership review. No budget/resume before current ownership receipt. Subsequent ownership,budget3/900,resume are three separate HUMAN decisions on same job/session,cumulative6to8. Ambiguous result reconciles same command/session,no second budget.",
-    "url": "https://api.ouf-lab.it/trusted-human/managed-files/recovery/?asset=9c502da5-b5d8-405e-b3f5-60eb31ecb513&job=677480c8-3d10-44fd-9dad-f72ddeed20a4",
+    "action": "Explain automatic approval-review rejection and obtain explicit user authorization for preparing a stable, nominal ouf-admin owned-file preview role, valid no longer than existing admin assignment (2036-09-15T07:13:50.968730Z), preserving backend ownership/redaction and all unrelated entries. Do not retry or indirectly execute the rejected request before authorization. The proposal, if later authorized and created, still requires direct USER THS approval. Alternatively implement and qualify a genuinely narrower profile/asset resource binding. No new upload/profile/budget/resume; current job succeeded.",
+    "profileId": "f3061699-4fde-4085-89c8-bc8703f65686",
+    "permissionDenial": {
+      "phase": "MCP_PRE_ADMISSION",
+      "reason": "NO_APPLICABLE_GRANT",
+      "evaluatedPolicyVersion": 58
+    },
+    "rejectedIntent": "evidence/owned-managed-file-preview-permission-intent-20261028.json",
+    "rejectionEvidence": "evidence/owned-managed-file-preview-permission-autoreview-20261028.json",
+    "proposalId": null,
     "sshExecutionCommandUsable": false,
-    "qualificationPending": false,
-    "runtimeAuthorityIssuedOnTarget": true,
     "currentRuntimeAuthorityUsable": false,
-    "targetExecuted": true,
-    "scopeConsumed": true,
-    "humanOwnershipGranted": false,
-    "humanBudgetGranted": false,
-    "resumed": false,
-    "browserIdentityObserved": false,
-    "scope": "/etc/ouf/deploy-snapshots/managed-file-owner-v38-update-b03d681a-20261028-v1"
+    "humanBudgetGrantReported": true,
+    "recoveryCompletedObserved": true,
+    "scopeConsumed": true
   },
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
@@ -2237,7 +2245,7 @@
       "exit": "Categoria/causa owner dello stesso FAILED, regressione causale e percorso di recovery qualificato",
       "remainingHours": null,
       "progress": {
-        "status": "STRUCTURAL_POLICY56_PUBLISHED_SAME_JOB_RECOVERY_SOURCE_QUALIFIED_TARGET_OPEN",
+        "status": "SAME_JOB_PROFILE_SUCCEEDED_TARGET_OBSERVED_PREVIEW_ACCESS_PENDING",
         "diagnosticCategory": "OBJECT_READ_FORBIDDEN",
         "parserReachedForObservedFailure": false,
         "serviceGrantExpirySourceIndication": true,
@@ -2245,7 +2253,9 @@
         "evidence": "evidence/farmacie-service-policy-read-target-20261027.json",
         "configuredServiceGrantExpired": true,
         "exclusiveHistorical403CauseProven": false,
-        "structuralPolicyRef": "ouf-lab-authorization:56"
+        "structuralPolicyRef": "ouf-lab-authorization:56",
+        "currentReadFailureRemovedObserved": true,
+        "currentEvidence": "evidence/farmacie-profile-recovery-succeeded-20261028.json"
       }
     },
     {
@@ -2323,18 +2333,19 @@
       "exit": "Permanenti non ritentati; transitori finiti; recovery HUMAN conserva tentativi/storia e non duplica effetti",
       "remainingHours": null,
       "progress": {
-        "status": "V36_ENGINE_INSTALLED_JOB_CONTROL_FIX_CI_QUALIFIED_NOT_INSTALLED",
+        "status": "SAME_JOB_HUMAN_BUDGET_AND_COMPLETED_RECOVERY_OBSERVED",
         "sourceCommit": "6ea5242f711761a384fa1b23667971601bc2c38b",
         "evidenceRef": "evidence/profile-recovery-source-qualification-20261027.json",
         "ownerSessionMechanismImplemented": true,
         "targetInstalled": true,
-        "newHumanBudgetGranted": false,
+        "newHumanBudgetGranted": true,
         "retainFailedJobAndAllAttempts": true,
         "complete": false
       },
       "runtimeRecoveryV36Installed": true,
-      "liveHumanBudgetResumeProven": false,
-      "remainingTargetEvidence": "USER-only fresh card and effective identity/gate; separate finite budget/resume on same retained FAILED5 job; original read/hash/parser/profile/preview."
+      "liveHumanBudgetResumeProven": true,
+      "remainingTargetEvidence": "Original hash/parser/61-row profile preview is unread due policy58 MCP pre-admission denial; complete remaining composition/fault proofs without new job or budget.",
+      "liveHumanBudgetResumeEvidenceOrigin": "USER_REPORTED_BUDGET_AND_THS_COMPLETED_SESSION_PLUS_INDEPENDENT_MCP_SUCCEEDED_JOB"
     },
     {
       "id": "D5",
@@ -2385,9 +2396,10 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-28",
-    "handoff": "docs/handoffs/OUF_MANAGED_FILE_OWNER_V38_INSTALLED_20261028.md",
-    "next": "USER_ONLY_THS_READ_CURRENT_CARD_AND_IDENTITY_THEN_SEPARATE_OWNERSHIP_BUDGET_RESUME",
-    "targetReceipt": "evidence/managed-file-owner-v38-update-target-20261028.json"
+    "handoff": "docs/handoffs/OUF_FARMACIE_PROFILE_SUCCEEDED_20261028.md",
+    "next": "EXPLICIT_USER_AUTHORIZATION_REQUIRED_BEFORE_RESUBMITTING_STABLE_OWNED_FILE_PREVIEW_PERMISSION",
+    "evidence": "evidence/farmacie-profile-recovery-succeeded-20261028.json",
+    "maintenanceReceipt": "evidence/managed-file-owner-v38-update-target-20261028.json"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -3905,8 +3917,8 @@
           33024,
           1,
           735390,
-          1793201637733796530,
-          1793201637733796530
+          1793201637733796600,
+          1793201637733796600
         ],
         "path": "/etc/ouf/deploy-snapshots/managed-profile-ths-request-update-e22a443d-20261028-v1/onboarding.dump",
         "payloadParsed": true,
@@ -4337,5 +4349,32 @@
     "mountSourceContentIdentityProven": false,
     "effectiveBrowserTokenScopesProven": false,
     "browserIdentityObserved": false
+  },
+  "farmacieProfileRecoveryCurrent": {
+    "status": "SUCCEEDED_SAME_JOB_PROFILE_READ_BLOCKED",
+    "evidence": "evidence/farmacie-profile-recovery-succeeded-20261028.json",
+    "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+    "jobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+    "profileId": "f3061699-4fde-4085-89c8-bc8703f65686",
+    "userObservedCumulativeAttempts": 6,
+    "userObservedSessionAttempts": 1,
+    "userObservedSessionState": "COMPLETED",
+    "liveJobStatus": "SUCCEEDED",
+    "liveJobErrorCode": null,
+    "profileContentsRead": false,
+    "rowsVerified": 0,
+    "expectedRows": 61,
+    "newUploadsByAgent": 0,
+    "newJobsByAgent": 0,
+    "budgetsByAgent": 0,
+    "resumesByAgent": 0,
+    "profilePreviewDenied": true,
+    "permissionProposalCreated": false,
+    "automaticApprovalReviewRejected": true,
+    "unclassifiedUiFinding": "Missing failure_class falls back to UNCLASSIFIED even after SUCCEEDED; do not report this as a current failure.",
+    "browserIdentityAndTenantObserved": false,
+    "ownershipReconciliationReceiptObserved": false,
+    "acquisitionsExecutedByAgent": 0,
+    "M2Accepted": false
   }
 }

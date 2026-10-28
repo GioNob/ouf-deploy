@@ -16,7 +16,8 @@
     "screenshotClockLocal": "23:21",
     "budgetGrantExplicitlyReported": true,
     "resumeInferredFromCompletedSession": true,
-    "sessionIdOrOwnershipReceiptNotProvided": true
+    "sessionIdOrOwnershipReceiptNotProvided": true,
+    "browserIdentityAndTenantNotDisplayed": true
   },
   "liveMcpJobRead": {
     "account": "ouf-admin",
@@ -34,8 +35,8 @@
     "reasonCode": "NO_APPLICABLE_GRANT",
     "evaluatedPolicyVersion": 58,
     "retryable": false,
-    "dispatchToProfileOwnerNotProven": false,
-    "profileContentsRead": false
+    "profileContentsRead": false,
+    "ownerDispatchPerformed": false
   },
   "codeFinding": {
     "onboardingSource": "9d19fad3dd750dd5b9e77253d3e7e82029c1aca7",
@@ -88,6 +89,12 @@
       "tool": "authorization.permissions.read",
       "selection": "CAPABILITIES only",
       "result": "HTTP400_EMPTY_PROBLEM_NO_RETRY"
+    },
+    {
+      "tool": "authorization.permissions.propose",
+      "selection": "new nominal owned-file preview role/assignment",
+      "result": "REJECTED_BY_AUTOMATIC_APPROVAL_REVIEW",
+      "proposalId": null
     }
   ]
 }
