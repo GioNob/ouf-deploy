@@ -2,8 +2,8 @@
   "schema": "ouf.managed-profile-descriptor-publication-qualified.v1",
   "date": "2026-10-28",
   "timezone": "Europe/Rome",
-  "targetExecuted": false,
-  "currentDeliveryUsable": true,
+  "targetExecuted": true,
+  "currentDeliveryUsable": false,
   "qualified": true,
   "source": {
     "commit": "9d7d83b3fc18950e2516e79cff30930d198c36d5",
@@ -140,7 +140,7 @@
   },
   "newContext": "/etc/ouf/deploy-snapshots/managed-profile-descriptor-publication-policy56-20261028-v1",
   "freshHumanDeviceLoginRequired": true,
-  "freshConcreteTerminalReviewRequiredBeforeEffects": true,
+  "freshConcreteTerminalReviewRequiredBeforeEffects": false,
   "agentMayApprove": false,
   "humanThsUserOnly": true,
   "noSqlEngineCredentialSigningKeyFileReads": true,
@@ -148,5 +148,8 @@
   "automaticRollbackAllowed": false,
   "budgetReset": false,
   "applicationE2EProven": false,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "targetReceipt": "evidence/managed-profile-descriptor-publication-target-20261028.json",
+  "scopeConsumed": true,
+  "commandMustNotBeRedelivered": true
 }

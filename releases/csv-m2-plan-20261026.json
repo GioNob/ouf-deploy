@@ -65,7 +65,7 @@
     "runtimeEvidenceOrigin": "OPERATOR_FINAL_SUCCESS_RESULT_READ_IN_FULL_NOT_NEW_AGENT_HOST_LOG_READ",
     "activeOnboardingSourceCommit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "activeOnboardingNativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
-    "profileControlCorrection": "INSTALLED_SINGLE_MISSING_HUMAN_DESCRIPTOR_OBSERVED_PUBLICATION_QUALIFIED",
+    "profileControlCorrection": "INSTALLED_DESCRIPTOR_PUBLISHED57_JOB_ROLE_REVIEW_REQUIRED",
     "latestCohortCapture": "RECONCILIATION_SUCCESS_CAPTURE14a96f_SCOPE_CONSUMED_METADATA_ONLY",
     "profileControlCandidatesInstalled": true,
     "newControlUpdateRuntimeAuthorityIssued": true,
@@ -112,7 +112,7 @@
       "hours": null,
       "checkpoint": "M2.0",
       "status": "AUDITED_REUSE_AND_CONCRETE_DELTAS_OPEN",
-      "currentBlocker": "SINGLE_HUMAN_RECOVERY_DESCRIPTOR_MISSING_FROM_REGISTERED_AND_ACTIVE56_FRESH_PUBLICATION_REVIEW_REQUIRED",
+      "currentBlocker": "EXACT_JOB_HUMAN_ROLE_NOT_ASSIGNED_PROPOSAL_REVIEW_REQUIRED",
       "deliverables": [
         "Retained owner diagnostic evidence",
         "Targeted fix and regression",
@@ -2646,7 +2646,7 @@
     "releaseAcceptance": false
   },
   "humanProfileRecoveryAccess": {
-    "status": "EXACT_SINGLE_DESCRIPTOR_PREREQUISITE_PROVEN_PUBLICATION_REQUIRES_FRESH_HUMAN_REVIEW",
+    "status": "EFFECTIVE_ADMIN_VERIFIED_POLICY57_FRESH_JOB_ROLE_PROPOSAL_PREPARATION",
     "record": "evidence/managed-profile-control-post-install-access-20261028.json",
     "humanSurfaceUserOnly": true,
     "agentMayInteractWithThs": false,
@@ -2660,7 +2660,7 @@
     "missingCapabilityId": "ouf.onboarding.quarantine.release"
   },
   "profileControlAuthorization": {
-    "status": "INSTALLED_OWNER_CODE_ONLY_QUARANTINE_RELEASE_DESCRIPTOR_MISSING_PUBLICATION_QUALIFIED",
+    "status": "DESCRIPTOR_PUBLISHED_POLICY57_FRESH_JOB_ROLE_PROPOSAL_PENDING",
     "evidence": "evidence/profile-recovery-control-authorization-20261027.json",
     "onboardingSource": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "mcpSource": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
@@ -2812,16 +2812,16 @@
   },
   "profileControlDescriptorPublicationQualification": {
     "evidence": "evidence/managed-profile-descriptor-publication-qualified-20261028.json",
-    "status": "QUALIFIED_FIRST_TARGET_PUBLICATION_PENDING",
+    "status": "QUALIFIED_TARGET_PUBLICATION_SUCCEEDED_SCOPE_CONSUMED",
     "codeCommit": "9d7d83b3fc18950e2516e79cff30930d198c36d5",
     "wrapperCommit": "06bed5dc9fde4c4a570aa629e0f4f5657a02efee",
     "qualificationCommit": "fb7fc07f4bee1cf78bd6361d58d4e2da7279a7e8",
     "pushRun": 40655599364,
     "newScope": "/etc/ouf/deploy-snapshots/managed-profile-descriptor-publication-policy56-20261028-v1",
-    "targetExecuted": false,
-    "scopeConsumed": false,
-    "currentDeliveryUsable": true,
-    "freshConcreteHumanReviewRequired": true,
+    "targetExecuted": true,
+    "scopeConsumed": true,
+    "currentDeliveryUsable": false,
+    "freshConcreteHumanReviewRequired": false,
     "descriptorIds": [
       "ouf.onboarding.quarantine.release"
     ],
@@ -2830,6 +2830,24 @@
     "newGrants": 0,
     "humanBudgetsGranted": 0,
     "resumes": 0,
-    "automaticReplayAllowed": false
+    "automaticReplayAllowed": false,
+    "commandMustNotBeRedelivered": true,
+    "targetReceipt": "evidence/managed-profile-descriptor-publication-target-20261028.json"
+  },
+  "profileControlDescriptorPublicationTarget": {
+    "evidence": "evidence/managed-profile-descriptor-publication-target-20261028.json",
+    "complete": true,
+    "exit": 0,
+    "deliveryExit": 0,
+    "scopeConsumed": true,
+    "policyRef": "ouf-lab-authorization:57",
+    "policyHash": "701dce46f419002d19520a8578bf0cb4b72558c12689e5ab43bfd11bdd72804b",
+    "grantsHash": "664010f6ecc8e65516e2891a4bc6609bc580dba122cd4cf51f5e03bc8c4ec451",
+    "draftId": "7aaa6ddf-6825-433f-b772-a148e22850a0",
+    "reviewHash": "adae701a2a7aad632fbbfcef5365313000c23c1b09e4606e5e341c4facd22d9b",
+    "newGrantsGranted": 0,
+    "humanBudgetsGranted": 0,
+    "resumes": 0,
+    "allGrantsPreserved": true
   }
 }

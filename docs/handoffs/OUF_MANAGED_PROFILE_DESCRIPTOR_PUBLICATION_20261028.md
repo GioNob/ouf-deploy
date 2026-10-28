@@ -1,3 +1,5 @@
+> **PUBBLICAZIONE RIUSCITA E CONSUMATA: ACTIVE57, grant invariati, Exit0/DeliveryExit0. NON eseguire il comando storico sotto.** Vedi [ricevuta](../../evidence/managed-profile-descriptor-publication-target-20261028.json). Prossimo: nuova proposta minima permessi dello stesso job via THS utente; budget e resume restano separati.
+
 # Singolo descriptor HUMAN di recovery: pubblicazione minima qualificata — 28 ottobre 2026
 
 ## Stato acquisito e prove
