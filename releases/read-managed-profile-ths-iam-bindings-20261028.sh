@@ -7,22 +7,22 @@ delivery=$(mktemp -d "${HOME}/ouf-managed-profile-ths-iam-bindings-delivery.XXXX
 chmod 0700 "$delivery"
 delivery_log="$delivery/bootstrap.log"
 trap 'delivery_exit=$?; trap - EXIT; printf "DeliveryExit=%s\nDeliveryDirectory=%s\nDeliveryLog=%s\n" "$delivery_exit" "$delivery" "$delivery_log" | tee -a "$delivery_log"; exit "$delivery_exit"' EXIT
-code_commit=9215358c27fb380904c0e12658c04deaa47ddcad
-code_sha=601dc5fd3f1ff39af58c043244c98e206ae19a966bc686b6d37f8828e47e4792
-code_root=/usr/local/lib/ouf-managed-profile-ths-iam-bindings-601dc5fd3f1ff39a
+code_commit=831a6c2268b5e5dc1138a86bec7e2c81c70d9965
+code_sha=c9d0f9bb73b41e70593a90277f4d326463151845a1244af5bf089e54650371df
+code_root=/usr/local/lib/ouf-managed-profile-ths-iam-bindings-c9d0f9bb73b41e70
 curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 65536 \
   "https://raw.githubusercontent.com/GioNob/ouf-deploy/${code_commit}/scripts/read-managed-profile-ths-iam-bindings-20261028.py" -o "$delivery/read.py"
 printf '%s  %s\n' "$code_sha" "$delivery/read.py" | sha256sum -c - | tee -a "$delivery_log"
 sudo /usr/bin/python3 -I -S -B - "$delivery/read.py" "$operator_uid" <<'PY' 2>&1 | tee -a "$delivery_log"
 import hashlib,os,pwd,stat,sys
 from pathlib import Path
-source=Path(sys.argv[1]);owner=int(sys.argv[2]);expected='601dc5fd3f1ff39af58c043244c98e206ae19a966bc686b6d37f8828e47e4792'
+source=Path(sys.argv[1]);owner=int(sys.argv[2]);expected='c9d0f9bb73b41e70593a90277f4d326463151845a1244af5bf089e54650371df'
 def require(ok,code):
     if not ok:raise SystemExit(code)
 require(os.geteuid()==os.getegid()==0 and owner>0 and owner==pwd.getpwnam('oufadmin').pw_uid,'ROOT_POLICY_READER_COPY_REQUIRED')
 scope=Path('/etc/ouf/deploy-snapshots/managed-profile-ths-iam-binding-read-5dfd7b7a-20261028-v1')
 require(not os.path.lexists(scope),'POLICY_READ_SCOPE_CONSUMED_NO_REPLAY')
-target=Path('/usr/local/lib/ouf-managed-profile-ths-iam-bindings-601dc5fd3f1ff39a')
+target=Path('/usr/local/lib/ouf-managed-profile-ths-iam-bindings-c9d0f9bb73b41e70')
 for parent in(target.parent,*target.parent.parents):
     s=parent.lstat();require(stat.S_ISDIR(s.st_mode)and s.st_uid==s.st_gid==0 and not s.st_mode&0o022,'ROOT_READER_ANCESTRY_REQUIRED')
 require(not os.path.lexists(target),'READER_DELIVERY_CONSUMED_NO_REPLAY')
