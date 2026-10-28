@@ -1,3 +1,5 @@
+> **SUPERATO: risposta nativa ricevuta, scope preview assente nel contesto negato.** Non ripetere la lettura browser. Seguire [la nuova cattura corrente della richiesta OAuth](OUF_MANAGED_PROFILE_THS_SCOPE_CAPTURE_20261028.md), qualificata e non ancora eseguita; nessun nuovo login/grant/budget/resume.
+
 # 403 della scheda nativa: risposta da distinguere — 28 ottobre2026
 
 L'utente ha aperto la scheda delsolo asset9c502da5-b5d8-405e-b3f5-60eb31ecb513/job677480c8-3d10-44fd-9dad-f72ddeed20a4 e riporta esattamente:

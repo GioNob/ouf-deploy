@@ -2,7 +2,7 @@
   "schema": "ouf.managed-profile-native-card-denied.v1",
   "date": "2026-10-28",
   "timezone": "Europe/Rome",
-  "status": "USER_NATIVE_CARD_HTTP403_REPORTED_ERROR_BODY_NOT_OBSERVED",
+  "status": "FOLLOWUP_RAW_SCOPE_DENIAL_OBSERVED",
   "origin": "OPERATOR_EXACT_UI_MESSAGE_NOT_AGENT_BROWSER_ACCESS",
   "reportedMessage": "Accesso negato (HTTP 403). Il controllo di accesso ha negato la richiesta; sessione, scope e permessi devono essere verificati. Un nuovo login non concede permessi. Il lavoro è conservato; nessuna azione è stata inviata.",
   "httpStatusReported": 403,
@@ -18,7 +18,7 @@
   },
   "browserIdentityVerified": false,
   "browserTokenScopesObserved": false,
-  "rawErrorBodyObserved": false,
+  "rawErrorBodyObserved": true,
   "denyOriginOrCauseProven": false,
   "gatewayRuntimeConfigurationRead": false,
   "agentThsAccess": false,
@@ -76,34 +76,12 @@
     "currentClientOrScopesNotAssumedFromTeatri": true
   },
   "nextRead": {
-    "url": "https://api.ouf-lab.it/trusted-human/managed-files/recovery/api/9c502da5-b5d8-405e-b3f5-60eb31ecb513/677480c8-3d10-44fd-9dad-f72ddeed20a4",
-    "method": "GET",
-    "userOnly": true,
-    "mutation": false,
-    "purpose": "Inspect native error response which existing frontend intentionally hides, not retry an action or assume success",
-    "argumentsFromInstalledSource": true,
-    "shareOnly": [
-      "status",
-      "code",
-      "Code",
-      "error",
-      "message",
-      "error_msg",
-      "path",
-      "correlationId"
-    ],
-    "mustNotShare": [
-      "csrfToken",
-      "access_token",
-      "refresh_token",
-      "id_token",
-      "Authorization",
-      "Cookie"
-    ],
-    "successShareOnly": [
-      "card.status",
-      "card.cumulativeAttempts",
-      "card.recoveryPermissionAvailable"
-    ]
-  }
+    "superseded": true,
+    "doNotRepeatDeniedNativeRead": true,
+    "next": "Qualified current scope request metadata capture"
+  },
+  "rawErrorBody": {
+    "error": "required scopes ouf.managed-source.preview not present"
+  },
+  "followupEvidence": "evidence/managed-profile-ths-preview-scope-denial-20261028.json"
 }

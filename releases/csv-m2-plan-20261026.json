@@ -65,7 +65,7 @@
     "runtimeEvidenceOrigin": "OPERATOR_FINAL_SUCCESS_RESULT_READ_IN_FULL_NOT_NEW_AGENT_HOST_LOG_READ",
     "activeOnboardingSourceCommit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "activeOnboardingNativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
-    "profileControlCorrection": "POLICY58_PUBLISHED_NATIVE_CARD403_AND_MCP_INVALID_ARGUMENT_BLOCKED",
+    "profileControlCorrection": "POLICY58_PUBLISHED_THS_PREVIEW_SCOPE_MISSING_READ_ONLY_CAPTURE_QUALIFIED",
     "latestCohortCapture": "RECONCILIATION_SUCCESS_CAPTURE14a96f_SCOPE_CONSUMED_METADATA_ONLY",
     "profileControlCandidatesInstalled": true,
     "newControlUpdateRuntimeAuthorityIssued": true,
@@ -112,7 +112,7 @@
       "hours": null,
       "checkpoint": "M2.0",
       "status": "AUDITED_REUSE_AND_CONCRETE_DELTAS_OPEN",
-      "currentBlocker": "NATIVE_THS403_CAUSE_NOT_OBSERVED_SESSION_SCOPES_GATEWAY_OWNER_TO_DISTINGUISH",
+      "currentBlocker": "NATIVE_THS_PREVIEW_SCOPE_MISSING_REQUEST_CONFIGURATION_BINDING_AND_OLD_TOKEN_TO_DISTINGUISH",
       "deliverables": [
         "Retained owner diagnostic evidence",
         "Targeted fix and regression",
@@ -1934,12 +1934,10 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "User reads only safe native error fields hidden by existing UI, then diagnose exact cause before correction",
-    "url": "https://api.ouf-lab.it/trusted-human/managed-files/recovery/api/9c502da5-b5d8-405e-b3f5-60eb31ecb513/677480c8-3d10-44fd-9dad-f72ddeed20a4",
-    "readOnly": true,
-    "userOnly": true,
-    "budgetGranted": false,
-    "resumeExecuted": false
+    "action": "Run NEW qualified read-only scope request capture once, preserve STOP without replay; no new grant/login/budget/resume",
+    "command": "releases/OUF_MANAGED_PROFILE_THS_SCOPE_CAPTURE_COMMAND_20261028.sh",
+    "scope": "/etc/ouf/deploy-snapshots/managed-profile-ths-scope-capture-policy58-20261028-v1",
+    "targetExecuted": false
   },
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
@@ -2354,8 +2352,8 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-28",
-    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_NATIVE_403_DIAGNOSIS_20261028.md",
-    "next": "USER_ONLY_READ_NATIVE_ERROR_FIELDS_NO_NEW_LOGIN_GRANT_BUDGET_OR_RESUME"
+    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_THS_SCOPE_CAPTURE_20261028.md",
+    "next": "OPERATOR_READ_ONLY_SCOPE_REQUEST_CAPTURE_NO_LOGIN_APPROVAL_OR_APPLY"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -2657,7 +2655,7 @@
     "releaseAcceptance": false
   },
   "humanProfileRecoveryAccess": {
-    "status": "NATIVE_HUMAN_CARD_HTTP403_REPORTED_RAW_CAUSE_NOT_OBSERVED",
+    "status": "NATIVE_THS_PREVIEW_SCOPE_MISSING_PROVEN_CURRENT_REQUEST_CAPTURE_QUALIFIED",
     "record": "evidence/managed-profile-job-control-policy58-access-20261028.json",
     "humanSurfaceUserOnly": true,
     "agentMayInteractWithThs": false,
@@ -2681,7 +2679,11 @@
     "lastJobReadRetried": false,
     "nativeCardHttpStatusReported": 403,
     "nativeCardErrorBodyObserved": false,
-    "nativeCardEvidence": "evidence/managed-profile-native-card-403-20261028.json"
+    "nativeCardEvidence": "evidence/managed-profile-native-card-403-20261028.json",
+    "nativeScopeDenied": "ouf.managed-source.preview",
+    "nativeScopeDenialEvidence": "evidence/managed-profile-ths-preview-scope-denial-20261028.json",
+    "currentOAuthRequestObserved": false,
+    "iamClientBindingObserved": false
   },
   "profileControlAuthorization": {
     "status": "ROLE_PUBLISHED_POLICY58_MCP_JOB_READ_INVALID_ARGUMENT_NATIVE_CARD_PENDING",
@@ -2893,5 +2895,38 @@
     "doNotCreateDuplicateProposal": true,
     "humanSurfaceUserOnly": true,
     "publicationEvidence": "evidence/managed-profile-job-control-policy58-access-20261028.json"
+  },
+  "profileControlThsScopeCaptureQualification": {
+    "evidence": "evidence/managed-profile-ths-scope-capture-qualified-20261028.json",
+    "status": "QUALIFIED_FIRST_TARGET_CAPTURE_PENDING",
+    "sourceCommit": "fa4b7f77a3f61b71c4dc76a959f8677830363056",
+    "wrapperCommit": "006e729bf20e83be7725d3c42b4b4bbfcb6df659",
+    "qualificationCommit": "bde4a04111e20d61533b29b42ddd843bc8116259",
+    "pushRun": 40663903278,
+    "prRun": 40663912726,
+    "scope": "/etc/ouf/deploy-snapshots/managed-profile-ths-scope-capture-policy58-20261028-v1",
+    "targetExecuted": false,
+    "currentDeliveryUsable": true,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "maximumPrivateMetadataReads": 3,
+    "maximumEngineGets": 27,
+    "maximumSeconds": 90,
+    "iamRequests": 0,
+    "credentialOrConfigFileReads": 0,
+    "humanBudgetsGranted": 0,
+    "resumes": 0
+  },
+  "profileControlThsScopeContract": {
+    "repository": "GioNob/ouf-source-onboarding",
+    "commit": "a9c8310d284a118787fff63b700b964a2fe3027e",
+    "path": "catalogue/managed-profile-ths-oauth-request-v1.json",
+    "scopeRequestProperty": "spring.security.oauth2.client.registration.ouf-ths.scope",
+    "requiredScopes": [
+      "ouf.managed-source.preview",
+      "ouf.managed-source.file.profile",
+      "ouf.onboarding.quarantine.release"
+    ],
+    "appliedToTarget": false
   }
 }

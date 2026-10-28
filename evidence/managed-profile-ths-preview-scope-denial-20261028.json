@@ -24,7 +24,7 @@
     "strategy": "Read effective retained current request; qualify only additive missing scope request on same image, preserve all other properties; separately distinguish actual IAM binding and fresh token. No replay consumed previous configuration update."
   },
   "newReader": {
-    "status": "SOURCE_PREPARATION_NOT_YET_QUALIFIED_OR_EXECUTED",
+    "status": "QUALIFIED_FIRST_TARGET_CAPTURE_PENDING",
     "newScope": "/etc/ouf/deploy-snapshots/managed-profile-ths-scope-capture-policy58-20261028-v1",
     "privateMetadataReads": 3,
     "maximumEngineGets": 27,
@@ -35,7 +35,13 @@
     "sqlSessions": 0,
     "engineWrites": 0,
     "runtimeAuthorityIssued": false,
-    "targetApplyAuthorized": false
+    "targetApplyAuthorized": false,
+    "sourceCommit": "fa4b7f77a3f61b71c4dc76a959f8677830363056",
+    "wrapperCommit": "006e729bf20e83be7725d3c42b4b4bbfcb6df659",
+    "qualificationCommit": "bde4a04111e20d61533b29b42ddd843bc8116259",
+    "qualificationEvidence": "evidence/managed-profile-ths-scope-capture-qualified-20261028.json",
+    "targetExecuted": false,
+    "currentDeliveryUsable": true
   },
   "newLoginRequested": false,
   "newGrantsGranted": 0,
@@ -47,5 +53,13 @@
   "automaticReplayAllowed": false,
   "budgetReset": false,
   "applicationE2EProven": false,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "ownerScopeContract": {
+    "repository": "GioNob/ouf-source-onboarding",
+    "commit": "a9c8310d284a118787fff63b700b964a2fe3027e",
+    "path": "catalogue/managed-profile-ths-oauth-request-v1.json",
+    "tests": 3,
+    "preexistingTestsPreserved": 4,
+    "conclusion": "PASS"
+  }
 }
