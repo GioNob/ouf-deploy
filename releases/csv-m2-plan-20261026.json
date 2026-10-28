@@ -91,11 +91,13 @@
     "farmacieProfileId": "f3061699-4fde-4085-89c8-bc8703f65686",
     "humanProfileRecoveryBudgetReported": true,
     "profileRecoverySessionCompletedObserved": true,
-    "farmacieProfileContentsRead": false,
-    "farmacieProfilePreviewAccess": "DENIED_MCP_PRE_ADMISSION_NO_APPLICABLE_GRANT_POLICY58",
-    "profilePreviewPermissionProposal": "EXPLICITLY_AUTHORIZED_CREATED_ONCE_PENDING_USER_THS",
+    "farmacieProfileContentsRead": true,
+    "farmacieProfilePreviewAccess": "SUCCEEDED_POLICY59_61ROWS_10COLUMNS_REDACTED_SAMPLE",
+    "profilePreviewPermissionProposal": "PUBLISHED_REVISION1_POLICY59",
     "profilePreviewPermissionProposalId": "ad738511-24cd-418a-b5b2-0cfc46be59fe",
-    "profilePreviewPermissionPublished": false
+    "profilePreviewPermissionPublished": true,
+    "farmacieRowsReportedByOwner": 61,
+    "farmacieMappingState": "PROPOSED_REQUIRES_IDENTITY_CLASSIFICATION_AND_PUBLISHED_SEMANTIC_PINS"
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1957,12 +1959,14 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "USER-only review of the explicitly authorized stable owned-file preview proposal. Agent must not open or approve THS. After user decision read the same proposalId with ouf-admin and require owner PUBLISHED/finalPolicyRef before previewing the existing Farmacie profile. Reconcile sameID on ambiguity/expiry; no duplicate, login renewal, budget, resume, upload or profile job.",
-    "proposalId": "ad738511-24cd-418a-b5b2-0cfc46be59fe",
-    "url": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=ad738511-24cd-418a-b5b2-0cfc46be59fe",
-    "expiresAt": "2026-10-28T22:49:49.117724Z",
-    "permissionPublished": false,
+    "action": "Present the prepared mapping; confirm ministerial code as stable lexical source identity and ask for field classifications/exclusions. No OPEN inference. Resolve exact published semantic refs or prepare authorized drafts for terms genuinely missing. Honour the recorded MCP budget denial without retry/reset or falsely declaring catalogue empty. Create onboarding DRAFT only after required reviewed choices and refs.",
+    "mapping": "docs/OUF_FARMACIE_MAPPING_PROPOSAL_20261028.md",
+    "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
     "profileId": "f3061699-4fde-4085-89c8-bc8703f65686",
+    "profileAlreadySucceeded": true,
+    "permissionPublished": true,
+    "policyRef": "ouf-lab-authorization:59",
+    "newProfileJobRequired": false,
     "sshExecutionCommandUsable": false,
     "currentRuntimeAuthorityUsable": false
   },
@@ -2240,7 +2244,7 @@
       "exit": "Categoria/causa owner dello stesso FAILED, regressione causale e percorso di recovery qualificato",
       "remainingHours": null,
       "progress": {
-        "status": "SAME_JOB_PROFILE_SUCCEEDED_TARGET_OBSERVED_PREVIEW_ACCESS_PENDING",
+        "status": "SAME_JOB_PROFILE_SUCCEEDED_AND_PREVIEW_61ROWS_OBSERVED",
         "diagnosticCategory": "OBJECT_READ_FORBIDDEN",
         "parserReachedForObservedFailure": false,
         "serviceGrantExpirySourceIndication": true,
@@ -2250,7 +2254,7 @@
         "exclusiveHistorical403CauseProven": false,
         "structuralPolicyRef": "ouf-lab-authorization:56",
         "currentReadFailureRemovedObserved": true,
-        "currentEvidence": "evidence/farmacie-profile-recovery-succeeded-20261028.json"
+        "currentEvidence": "evidence/farmacie-profile-preview-policy59-20261028.json"
       }
     },
     {
@@ -2339,7 +2343,7 @@
       },
       "runtimeRecoveryV36Installed": true,
       "liveHumanBudgetResumeProven": true,
-      "remainingTargetEvidence": "Original hash/parser/61-row profile preview is unread due policy58 MCP pre-admission denial; complete remaining composition/fault proofs without new job or budget.",
+      "remainingTargetEvidence": "Profile preview now succeeds and reports61rows/10columns. Independent original hash and full-row/parser-validation proof remain unclosed; retain completed session and finish fault/composition qualification without new profiling.",
       "liveHumanBudgetResumeEvidenceOrigin": "USER_REPORTED_BUDGET_AND_THS_COMPLETED_SESSION_PLUS_INDEPENDENT_MCP_SUCCEEDED_JOB"
     },
     {
@@ -2391,9 +2395,9 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-28",
-    "handoff": "docs/handoffs/OUF_OWNED_FILE_PREVIEW_PERMISSION_REVIEW_20261028.md",
-    "next": "USER_ONLY_THS_OWNED_FILE_PREVIEW_PERMISSION_REVIEW_THEN_READ_SAME_PROPOSAL",
-    "evidence": "evidence/owned-managed-file-preview-permission-proposal-20261028.json"
+    "handoff": "docs/handoffs/OUF_FARMACIE_PROFILE_PREVIEWED_20261028.md",
+    "next": "DOMAIN_IDENTITY_AND_FIELD_CLASSIFICATION_THEN_PINNED_SEMANTIC_MAPPING",
+    "evidence": "evidence/farmacie-profile-preview-policy59-20261028.json"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -4355,14 +4359,14 @@
     "userObservedSessionState": "COMPLETED",
     "liveJobStatus": "SUCCEEDED",
     "liveJobErrorCode": null,
-    "profileContentsRead": false,
+    "profileContentsRead": true,
     "rowsVerified": 0,
     "expectedRows": 61,
     "newUploadsByAgent": 0,
     "newJobsByAgent": 0,
     "budgetsByAgent": 0,
     "resumesByAgent": 0,
-    "profilePreviewDenied": true,
+    "profilePreviewDenied": false,
     "permissionProposalCreated": true,
     "automaticApprovalReviewRejected": true,
     "unclassifiedUiFinding": "Missing failure_class falls back to UNCLASSIFIED even after SUCCEEDED; do not report this as a current failure.",
@@ -4370,18 +4374,130 @@
     "ownershipReconciliationReceiptObserved": false,
     "acquisitionsExecutedByAgent": 0,
     "M2Accepted": false,
-    "previousAutomaticReviewRejectionResolvedByExplicitUserAuthorization": true
+    "previousAutomaticReviewRejectionResolvedByExplicitUserAuthorization": true,
+    "profilePreviewPermissionPublished": true,
+    "rowsReportedByOwner": 61,
+    "rowsVerifiedMeaning": "Full per-row values and materialization not verified; owner profile reports61 rows."
   },
   "ownedManagedFilePreviewPermissionCurrent": {
-    "status": "PENDING_HUMAN_THS",
+    "status": "PUBLISHED",
     "proposalId": "ad738511-24cd-418a-b5b2-0cfc46be59fe",
     "evidence": "evidence/owned-managed-file-preview-permission-proposal-20261028.json",
     "explicitUserAuthorization": true,
     "rolesBefore": 8,
     "assignmentsBefore": 12,
     "allExistingEntriesPreserved": true,
-    "permissionPublished": false,
+    "permissionPublished": true,
     "approvalByAgent": false,
-    "expiry": "2026-10-28T22:49:49.117724Z"
+    "expiry": "2026-10-28T22:49:49.117724Z",
+    "revision": 1,
+    "finalPolicyRef": "ouf-lab-authorization:59",
+    "publicationReceiptIndependentlyRead": true
+  },
+  "farmacieProfilePreviewCurrent": {
+    "status": "READ_SUCCEEDED",
+    "evidence": "evidence/farmacie-profile-preview-policy59-20261028.json",
+    "mappingProposal": "docs/OUF_FARMACIE_MAPPING_PROPOSAL_20261028.md",
+    "profileMetadata": {
+      "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+      "profileId": "f3061699-4fde-4085-89c8-bc8703f65686",
+      "profileVersion": 1,
+      "format": "CSV",
+      "metadata": {
+        "rows": 61,
+        "columns": 10,
+        "encoding": "UTF-8",
+        "delimiter": ";",
+        "headerRow": 1
+      },
+      "columns": [
+        {
+          "name": "nome_denominazione",
+          "dataType": "STRING",
+          "nullable": false,
+          "distinctValues": 61
+        },
+        {
+          "name": "indirizzo",
+          "dataType": "STRING",
+          "nullable": false,
+          "distinctValues": 61
+        },
+        {
+          "name": "latitudine",
+          "dataType": "DECIMAL",
+          "nullable": true,
+          "distinctValues": 58
+        },
+        {
+          "name": "longitudine",
+          "dataType": "DECIMAL",
+          "nullable": true,
+          "distinctValues": 58
+        },
+        {
+          "name": "sistema_coordinate",
+          "dataType": "STRING",
+          "nullable": false,
+          "distinctValues": 1
+        },
+        {
+          "name": "cap",
+          "dataType": "LONG",
+          "nullable": false,
+          "distinctValues": 28
+        },
+        {
+          "name": "codice_ministeriale",
+          "dataType": "LONG",
+          "nullable": false,
+          "distinctValues": 61
+        },
+        {
+          "name": "tipologia",
+          "dataType": "STRING",
+          "nullable": false,
+          "distinctValues": 1
+        },
+        {
+          "name": "inizio_validita_anagrafica",
+          "dataType": "DATE",
+          "nullable": false,
+          "distinctValues": 30
+        },
+        {
+          "name": "note",
+          "dataType": "STRING",
+          "nullable": false,
+          "distinctValues": 4
+        }
+      ],
+      "candidateKeys": [
+        "nome_denominazione",
+        "indirizzo",
+        "codice_ministeriale"
+      ],
+      "recordModel": "ONE_ROW_ONE_SOURCE_OBJECT",
+      "identityProposal": {
+        "normalizationRuleRef": "normalization://managed-file/native-key-v1",
+        "strategy": "NATIVE_KEY",
+        "sourceFields": [
+          "nome_denominazione"
+        ],
+        "stabilityLimit": "Identity remains stable while the proposed key remains stable"
+      },
+      "proposalStatus": "PENDING_HUMAN_REVIEW"
+    },
+    "redactedSampleRowsReturned": 5,
+    "redactedSamplePersisted": false,
+    "sourceObjectKeyProposed": [
+      "codice_ministeriale"
+    ],
+    "sourceObjectKeyConfirmed": false,
+    "fieldLabelsConfirmed": false,
+    "sourceDraftCreated": false,
+    "semanticRefsResolved": false,
+    "fullRowValidationPerformed": false,
+    "udpRowsMaterializedProven": false
   }
 }

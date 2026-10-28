@@ -1,0 +1,166 @@
+{
+  "schema": "ouf.farmacie-profile-preview-observation.v1",
+  "recordedAt": "2026-10-28T22:39:14Z",
+  "timezone": "Europe/Rome",
+  "permissionPublication": {
+    "proposalId": "ad738511-24cd-418a-b5b2-0cfc46be59fe",
+    "revision": 1,
+    "state": "PUBLISHED",
+    "expiresAt": "2026-10-28T22:49:49.117724Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=ad738511-24cd-418a-b5b2-0cfc46be59fe",
+    "finalPolicyRef": "ouf-lab-authorization:59"
+  },
+  "permissionPublicationIndependentlyRead": true,
+  "account": "ouf-admin",
+  "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+  "profileId": "f3061699-4fde-4085-89c8-bc8703f65686",
+  "profileMetadata": {
+    "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+    "profileId": "f3061699-4fde-4085-89c8-bc8703f65686",
+    "profileVersion": 1,
+    "format": "CSV",
+    "metadata": {
+      "rows": 61,
+      "columns": 10,
+      "encoding": "UTF-8",
+      "delimiter": ";",
+      "headerRow": 1
+    },
+    "columns": [
+      {
+        "name": "nome_denominazione",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 61
+      },
+      {
+        "name": "indirizzo",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 61
+      },
+      {
+        "name": "latitudine",
+        "dataType": "DECIMAL",
+        "nullable": true,
+        "distinctValues": 58
+      },
+      {
+        "name": "longitudine",
+        "dataType": "DECIMAL",
+        "nullable": true,
+        "distinctValues": 58
+      },
+      {
+        "name": "sistema_coordinate",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 1
+      },
+      {
+        "name": "cap",
+        "dataType": "LONG",
+        "nullable": false,
+        "distinctValues": 28
+      },
+      {
+        "name": "codice_ministeriale",
+        "dataType": "LONG",
+        "nullable": false,
+        "distinctValues": 61
+      },
+      {
+        "name": "tipologia",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 1
+      },
+      {
+        "name": "inizio_validita_anagrafica",
+        "dataType": "DATE",
+        "nullable": false,
+        "distinctValues": 30
+      },
+      {
+        "name": "note",
+        "dataType": "STRING",
+        "nullable": false,
+        "distinctValues": 4
+      }
+    ],
+    "candidateKeys": [
+      "nome_denominazione",
+      "indirizzo",
+      "codice_ministeriale"
+    ],
+    "recordModel": "ONE_ROW_ONE_SOURCE_OBJECT",
+    "identityProposal": {
+      "normalizationRuleRef": "normalization://managed-file/native-key-v1",
+      "strategy": "NATIVE_KEY",
+      "sourceFields": [
+        "nome_denominazione"
+      ],
+      "stabilityLimit": "Identity remains stable while the proposed key remains stable"
+    },
+    "proposalStatus": "PENDING_HUMAN_REVIEW"
+  },
+  "profilePreviewSucceeded": true,
+  "redactedSampleInspected": true,
+  "redactedSampleValuesPersisted": false,
+  "redactedSampleRowsReturned": 5,
+  "namesAndAddressesRemainRedacted": true,
+  "proofBoundary": {
+    "ownerParserReported61Rows10Columns": true,
+    "allRowsReturned": false,
+    "allRowValuesValidated": false,
+    "serverObjectHashIndependentlyProven": false,
+    "reportedProfileNotFullObjectBytes": true,
+    "numberOfNewUdpObjectsKnown": false,
+    "ingestionOrUdpAcquisitionExecuted": false,
+    "configurationCreated": false,
+    "sourceActivated": false,
+    "semanticProposalCreated": false,
+    "M2Accepted": false
+  },
+  "semanticDiscovery": [
+    {
+      "q": "farmacia",
+      "type": "CLASS",
+      "result": "EMPTY_AUTHORIZED_RESULT"
+    },
+    {
+      "q": "pharm",
+      "type": "CLASS",
+      "result": "EMPTY_AUTHORIZED_RESULT"
+    },
+    {
+      "q": "farmac",
+      "type": "ONTOLOGY",
+      "result": "ORCHESTRATION_BUDGET_EXHAUSTED",
+      "retryable": false,
+      "retried": false
+    },
+    {
+      "q": "ouf",
+      "type": "ONTOLOGY",
+      "result": "TWO_PUBLISHED_ONTOLOGIES_RETURNED",
+      "semanticIds": [
+        "https://api.ouf-lab.it/semantic/cinema",
+        "https://api.ouf-lab.it/semantic/teatri#TeatriOntology"
+      ],
+      "publicationSetId": "9fe7d1ee-9e13-40bc-ad50-53e36ea0076b",
+      "publicationChecksum": "632fe084bdb359afe419bbf5651fc4711930c31e5cf1503c8da19cace803af28"
+    }
+  ],
+  "semanticConclusion": "No Pharmacy class matched the two successful class queries. Catalogue completeness and global absence are not proven. One distinct query was denied by orchestration budget; no retry/reset.",
+  "nextDomainChoices": [
+    "Confirm ministerial code as stable source identity, kept lexical STRING rather than LONG.",
+    "Assign data-access classification per column; no OPEN assumption from dataset topic or redacted preview."
+  ],
+  "residuals": [
+    "Published semantic class/properties/vocabulary pins unresolved.",
+    "Managed vocabulary/relationship compiler integration D5 remains open.",
+    "Complete validation of coordinate pairs/range, dates and identities in owner execution path required.",
+    "M2/G5/G6/G7 and two real client qualification remain open."
+  ]
+}
