@@ -4,6 +4,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('physical_correction',ROOT/'scripts/correct-managed-profile-ths-iam-bindings-20261028.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 assert os.geteuid()==os.getegid()==0 and os.environ.get('GITHUB_ACTIONS')=='true'
+fixture_version=os.environ.get('OUF_TEST_KEYCLOAK_VERSION','26.2.5');assert fixture_version in ('26.0.8','26.2.5')
 root=Path('/var/lib/ouf-ths-iam-correction-physical');root.mkdir(mode=0o700);root.chmod(0o700);containers=[]
 def run(argv,**kwargs):return subprocess.run(argv,capture_output=True,check=True,timeout=240,**kwargs)
 def start(argv):
@@ -68,7 +69,7 @@ def pty_run(harness,*,approval=True):
  finally:os.close(fd)
 
 try:
- iam_id=start(['-e','KC_BOOTSTRAP_ADMIN_USERNAME=fixture-admin','-e','KC_BOOTSTRAP_ADMIN_PASSWORD=PRIVATE_IAM_PASSWORD_CANARY','quay.io/keycloak/keycloak:26.2.5','start-dev','--hostname=https://idp.fixture.test'])
+ iam_id=start(['-e','KC_BOOTSTRAP_ADMIN_USERNAME=fixture-admin','-e','KC_BOOTSTRAP_ADMIN_PASSWORD=PRIVATE_IAM_PASSWORD_CANARY','quay.io/keycloak/keycloak:'+fixture_version,'start-dev','--hostname=https://idp.fixture.test'])
  ready=False
  for _ in range(120):
   p=subprocess.run(['docker','exec',iam_id,'bash','-c','exec 3<>/dev/tcp/127.0.0.1/8080'],capture_output=True,timeout=5)
@@ -143,7 +144,7 @@ m.execute_correction.__kwdefaults__['sender']=lose_response
   replay_status,replay=pty_run(harness,approval=False);assert replay_status==2 and'THS_IAM_CORRECTION_SCOPE_CONSUMED_NO_REPLAY'in replay
   assert all(p.read_bytes()==saved[p.name]for p in current.iterdir())
   results.append({'fixtureProfile':number,'lostWriteResponsesInjected':drop,'actualWrites':4,'writesObserved':result['counts']['iamWritesObserved'],'getAttempts':29,'oldBindingsAndDefinitionsPreserved':True,'realmDefaultsUnchanged':True,'newSecretMaterialPersisted':False,'noReplay':True})
- print(json.dumps({'status':'THS_IAM_CORRECTION_REAL_KEYCLOAK_DOCKER_PTY_PASS','keycloakVersion':'26.2.5','profiles':results,
+ print(json.dumps({'status':'THS_IAM_CORRECTION_REAL_KEYCLOAK_DOCKER_PTY_PASS','keycloakVersion':fixture_version,'profiles':results,
                   'actualNamespaceProcessRootMountAndProvider':True,'protectedRoot400Source':True,'privateState600':True,'fixtureConsentOnly':True,'productionConsentSimulated':False,'targetExecuted':False,'runtimeAuthorityIssued':False,'applicationE2EProven':False},sort_keys=True))
 finally:
  for cid in reversed(containers):subprocess.run(['docker','rm','-f',cid],capture_output=True,timeout=30)
