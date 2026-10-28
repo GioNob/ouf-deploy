@@ -2,7 +2,7 @@
   "schema": "ouf.managed-profile-ths-iam-binding-correction-qualified.v1",
   "date": "2026-10-28",
   "timezone": "Europe/Rome",
-  "status": "QUALIFIED_NEW_CORRECTION_NOT_EXECUTED_ON_TARGET",
+  "status": "QUALIFIED_AND_SUCCESSFULLY_CONSUMED_CONFIGURATION_PROFILE_PREPARED",
   "source": {
     "commit": "78282b120dffa063ff8bc86f96071de1f2e8766f",
     "path": "scripts/correct-managed-profile-ths-iam-bindings-20261028.py",
@@ -180,11 +180,24 @@
     "job": 122846859903,
     "reason": "Delivery test generated an incorrect filename from a broad string replacement;404 occurred before source execution. Exact immutable test references corrected; production wrapper/source unchanged."
   },
-  "targetExecuted": false,
-  "currentDeliveryUsable": true,
+  "targetExecuted": true,
+  "currentDeliveryUsable": false,
   "automaticReplayAllowed": false,
   "budgetReset": false,
   "effectiveBrowserTokenScopesProven": false,
   "applicationE2EProven": false,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "targetFollowUp": {
+    "receipt": "evidence/managed-profile-ths-iam-binding-correction-target-20261028.json",
+    "resultHash": "c82b1b1025086faf4acf0899485643209f8929c4fa8ce6ca045fc2bfbdd7d027",
+    "scopeConsumed": true,
+    "configurationProfileHash": "d0dbbd61b5a6486124e229e646ce63a96165dfc2433ae200f7fec92383d5140c",
+    "complete": true,
+    "exit": 0,
+    "deliveryExit": 0,
+    "iamMutations": 4,
+    "scopePatchApplied": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false
+  }
 }

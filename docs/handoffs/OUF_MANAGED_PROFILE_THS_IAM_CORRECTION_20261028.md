@@ -1,3 +1,11 @@
+# CURRENT — correzione IAM RIUSCITA/CONSUMATA; profilo owner pronto, configurazione NON installata
+
+28 ottobre2026,Europe/Rome. [Ricevuta integrale](../../evidence/managed-profile-ths-iam-binding-correction-target-20261028.json): complete/Exit0/DeliveryExit0, identità amministrativa protetta verificata, review a6b0abd0f97c740ce3c6ba7455e3ed078ff783b454cf1038a2efd8c2f1395c69. Una definizione OIDC +3link OPTIONAL corretti sul client ouf-authorization-ths / a53bc77e-1b21-4a54-8f1a-b236fadb759a. 70definizioni,14DEFAULT/9OPTIONAL;69definizioni/20link precedenti,Realm Default e proprietà client preservati. Binding e7b16276cd7cdba45d3a5ec5d96ba47b8a5bd23cf43db050eedfd5ac9935ee03. Quattro write riservate e osservate;29AdminGET/7EngineGET/3metadata/1auth nuova (cumulativo2),221649byte. Scope managed-profile-ths-iam-binding-correction-ba556e9f-20261028-v1 e comando CONSUMATI:NON riconsegnare/rieseguire/riapprovare;non riaprire login/finestre/budget.
+
+Profilo privato configuration-profile.json pronto,hash d0dbbd61b5a6486124e229e646ce63a96165dfc2433ae200f7fec92383d5140c. Propone solo l'aggiunta preview/file.profile/quarantine.release ai cinque scope richiesti;NON installato,nessuna authority runtime/APPLY. NEXT preparare e qualificare nuovo piano nativo del SOLO Onboarding sulla stessa immagine9890b318/c512c247 con coorte corrente,rete/mount/schema36/jobFAILED5 e review HUMAN nuovi. Nessun nuovo comando pronto in questo checkpoint intermedio. Il vecchio handoff IAM resta storico per l'esecuzione acquisita.
+
+Zero Enginewrite/SQL/import/nuovi grant applicativi/budget/resume/upload/job/acquisizioni/attivazioni. Policy58 acquisita e non da riproporre;MCPd2454f3c/a5218012 e Registry intatti. THS esclusiva UTENTE;token browser/accesso scheda non ancora provati. Ultimo FarmacieFAILED5 non riletto. Budget3/900 e successivo resume DUE future decisioni HUMAN distinte stesso job/sessione,cumulativi6–8;mai reset o altro budget dopo ambiguità. M1/G4 acquisiti;M2/G5/G6/G7,61righe→UDP,D5–D7/dueclient/E2E aperti;Supervisor dopo E2E. No nuovo upload/job/terza acquisizione/Registryrestart/reinstall/attivazioneimplicita/merge/releaseacceptance/subagenti/automazioni. Intestazioni seguenti STORICHE.
+
 # OUF — correzione IAM minima e persistente della recovery THS — 28 ottobre 2026
 
 ## Stato acquisito
