@@ -65,7 +65,7 @@
     "runtimeEvidenceOrigin": "OPERATOR_FINAL_SUCCESS_RESULT_READ_IN_FULL_NOT_NEW_AGENT_HOST_LOG_READ",
     "activeOnboardingSourceCommit": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
     "activeOnboardingNativeImageId": "sha256:c512c24787304dc0ee40d2b5b1559d458ddf1d5a65a068775ef173c47ba849a3",
-    "profileControlCorrection": "THS_REQUEST_UPDATE_INSTALLED_CONSUMED_SAME_IMAGE_SCHEMA36_FAILED5_PRESERVED_NATIVE_HUMAN_CARD_ACCESS_PENDING",
+    "profileControlCorrection": "THS_REQUEST_INSTALLED_CONSUMED_NATIVE_CARD_DENIED_OWNER_SCOPE_RECONCILIATION_REQUIRED",
     "latestCohortCapture": "SUCCESS_CONSUMED_FDC61884_EXACT13_BINDINGS_27GET_NO_RUNTIME_WRITES",
     "profileControlCandidatesInstalled": true,
     "newControlUpdateRuntimeAuthorityIssued": true,
@@ -1941,12 +1941,9 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "USER opens the native same-job recovery link with effective ouf-admin account,uses Aggiorna stato and reports safe displayed state/cumulative attempts. Verify access,ownership,Gateway/scopes/permissions before the distinct HUMAN budget/resume decisions. Agent does not enter THS.",
-    "url": "https://api.ouf-lab.it/trusted-human/managed-files/recovery/?asset=9c502da5-b5d8-405e-b3f5-60eb31ecb513&job=677480c8-3d10-44fd-9dad-f72ddeed20a4",
-    "targetRoles": [
-      "onboarding"
-    ],
-    "sshExecutionCommandUsable": false,
+    "action": "Execute only the NEW bounded ownership reader from the operator VPS as oufadmin after qualification. Three retained metadata, five exact Onboarding/Postgres Engine GET and one repeatable-read read-only SQL for the Farmacie asset/job and original Teatri asset. No original file bytes, IAM authentication, writes, grants, budget or resume. Do not reopen THS before the actual ownership gate is reconciled.",
+    "sshExecutionCommandUsable": true,
+    "qualificationPending": false,
     "humanBudgetGranted": false,
     "resumed": false
   },
@@ -2363,8 +2360,8 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-28",
-    "handoff": "docs/handoffs/OUF_MANAGED_PROFILE_THS_REQUEST_INSTALLED_20261028.md",
-    "next": "USER_ONLY_FRESH_NATIVE_SAME_JOB_CARD_READ_NO_BUDGET_OR_RESUME_YET"
+    "handoff": "docs/handoffs/OUF_MANAGED_FILE_OWNERSHIP_RECONCILIATION_20261028.md",
+    "next": "NEW_BOUNDED_READ_ONLY_SAME_JOB_OWNERSHIP_COMPARISON_WITH_TEATRI"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -3065,7 +3062,12 @@
     "actualNativeConfigurationVerifierAcceptsProposedCompleteRequest": true,
     "rawBeforeAndCanonicalSemanticHashesKeptDistinct": true,
     "sameImageSingleOwnerRequestUpdateTargetExecuted": true,
-    "fullApplicationE2EProven": false
+    "fullApplicationE2EProven": false,
+    "nativeIntakeTenantPersistenceSource": "bd113e7f8c428d7c167142e1f38df0db12b3b3e6",
+    "nativeIntakeTenantMigration": "V37__managed_file_intake_tenant.sql",
+    "nativeIntakeTenantPersistenceInstalled": false,
+    "legacyTenantBackfillPerformed": false,
+    "ownershipReaderBuilder": "tools/build_managed_file_ownership_reader.py"
   },
   "profileControlThsIamBindingReadTarget": {
     "record": "evidence/managed-profile-ths-iam-binding-read-target-20261028.json",
@@ -3964,7 +3966,7 @@
     "independentHostLogRead": false
   },
   "profileControlThsNativeHumanCardAccess": {
-    "status": "PENDING_USER_ONLY_FRESH_CARD_READ",
+    "status": "USER_OBSERVED_HTTP403_ONB_FILE_OWNER_SCOPE_UNPROVEN",
     "link": "https://api.ouf-lab.it/trusted-human/managed-files/recovery/?asset=9c502da5-b5d8-405e-b3f5-60eb31ecb513&job=677480c8-3d10-44fd-9dad-f72ddeed20a4",
     "agentBrowserAccessAuthorized": false,
     "effectiveBrowserTokenScopesProven": false,
@@ -3975,7 +3977,11 @@
     "resumed": false,
     "nextDistinctHumanDecisionAfterAccess": "3additional attempts within900seconds on SAME job/session,cumulative6–8",
     "subsequentDistinctHumanDecision": "resume SAME job/session with fresh state/review",
-    "ambiguousOutcome": "reconcile SAME command/session;no second budget or counter reset"
+    "ambiguousOutcome": "reconcile SAME command/session;no second budget or counter reset",
+    "denialCode": "ONB_FILE_OWNER_SCOPE_UNPROVEN",
+    "correlationId": "e8c96213-6537-42c1-a726-311d6eb7898a",
+    "observation": "evidence/managed-profile-ths-ownership-denial-20261028.json",
+    "browserIdentityOrTenantObserved": false
   },
   "profileControlThsConnectorCheck": {
     "record": "evidence/managed-profile-ths-request-update-connector-check-20261028.json",
@@ -3984,5 +3990,45 @@
     "callerOwnedProposalRead": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
     "policy58StillPublished": true,
     "browserIdentityOrTokenScopesProven": false
+  },
+  "managedFileOwnershipRecovery": {
+    "status": "READ_ONLY_RECONCILIATION_QUALIFIED_TARGET_NOT_EXECUTED",
+    "evidence": "evidence/managed-file-ownership-reconciliation-qualified-20261028.json",
+    "nativeDenial": "evidence/managed-profile-ths-ownership-denial-20261028.json",
+    "readerCommit": "f7a7199f26bc89a6533c4e7e17314af48d0d88b5",
+    "wrapperCommit": "0278b2c84c525cced1471d6ffa851ce8844580b8",
+    "wrapperSha256": "292a16fd2abaf2057898f3238069c15173dbf4f7e1da4d709b39281023bed1e7",
+    "qualificationCommit": "3aab13a60b82717a1c489bbdd80d27a0c169e05c",
+    "targetExecuted": false,
+    "currentDeliveryUsable": true,
+    "maximumMetadataReads": 3,
+    "maximumEngineGets": 5,
+    "maximumSqlSessions": 1,
+    "maximumSeconds": 90,
+    "configurationOrCredentialFileContentReads": 0,
+    "signingKeyReads": 0,
+    "iamRequests": 0,
+    "oauthRequests": 0,
+    "databaseWrites": 0,
+    "humanBudgetsGranted": 0,
+    "resumes": 0,
+    "newJobs": 0,
+    "uploads": 0,
+    "acquisitions": 0,
+    "automaticReplayAllowed": false,
+    "nativeIntakeFixRepository": "GioNob/ouf-source-onboarding",
+    "nativeIntakeFixSource": "bd113e7f8c428d7c167142e1f38df0db12b3b3e6",
+    "nativeIntakeFixInstalled": false,
+    "legacyOwnershipRepairPerformed": false,
+    "legacyOwnershipMustNotBeInferred": true,
+    "effectiveBrowserSubjectAndTenantStillRequired": true,
+    "nativeReaderPushRun": 40726539076,
+    "nativeReaderPrRun": 40726557591,
+    "deliveryPushRun": 40726538968,
+    "deliveryPrRun": 40726552621,
+    "preventiveSourcePushRun": 40726395480,
+    "preventiveSourcePrRun": 40726405468,
+    "applicationTests": 347,
+    "productionImageSecurityScanPassed": true
   }
 }
