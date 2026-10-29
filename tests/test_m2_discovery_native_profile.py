@@ -209,5 +209,18 @@ class DiscoveryNativeProfile(unittest.TestCase):
         self.assertIs(p.compiled['nativeExecutorIntegrated'], False)
         self.assertEqual(result['startup']['args'], ENTRY + JAVA)
 
+    def test_pinned_engine_baseline_compiles_full_discovery_without_observed_oci(self):
+        sys.path.insert(0,str(ROOT/'tools/semantic_frame_compiler'))
+        from tools.m2_discovery_installation_profile.frame_inputs import compile_inputs,ENGINE
+        r,s,_,_,c=fixture();p=DiscoveryProfile(r,**s)
+        raw=(ROOT/'tools/semantic_frame_compiler/containerd-overlayfs-southbound.json').read_bytes()
+        t,l=compile_inputs(raw,r,execution_profile=p,engine_profile=ENGINE)
+        policy=compile_policy(t,l,c,execution_profile=p)
+        self.assertEqual(len(policy['sources']),5)
+        self.assertEqual(len(policy['manifest']['mounts']),7)
+        self.assertEqual(policy['startup']['args'],ENTRY+JAVA)
+        with self.assertRaisesRegex(ValueError,'BASELINE_REQUIRED'):
+            compile_inputs(raw+b' ',r,execution_profile=p,engine_profile=ENGINE)
+
 
 if __name__ == '__main__': unittest.main()
