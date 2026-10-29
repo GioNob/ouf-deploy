@@ -42,8 +42,20 @@ def main(package_directory=None, output=None):
             assert record['runtimeUser']=='10001:10001' and record['targetApplyAuthorized'] is False
             archive=package_directory/'image.docker.tar'
             assert hashlib.sha256(archive.read_bytes()).hexdigest()=='4457a59574c06ec47ce686a40fb017e4cb3fe31bd12a62d8a5644d9d3d4f7d8c'
-            run('docker','load','--input',str(archive))
+            from image_custody import archive as verify_archive,tagless_archive,native_identity,loaded
+            # Docker29's containerd store addresses a manifest, not the config
+            # digest recorded in the original package. Reuse the qualified
+            # tagless envelope; preserve every authenticated config/layer byte.
+            with archive.open('rb') as original:
+                audit=verify_archive(original,'4457a59574c06ec47ce686a40fb017e4cb3fe31bd12a62d8a5644d9d3d4f7d8c',image,record['sourceCommit'])
+                projected=task/'tagless-image.tar'
+                with projected.open('w+b') as destination:
+                    envelope=tagless_archive(original,destination,audit,containerd=True)
+            audit['nativeIdentity']=native_identity(audit)
+            image=audit['nativeIdentity']['nativeImageId']
+            run('docker','load','--input',str(projected))
             native_image=json.loads(run('docker','image','inspect',image))[0]
+            loaded(audit,native_image)
             assert native_image['Id']==image and native_image['Config']['User']=='10001:10001'
             assert native_image['Config']['Entrypoint']==JAVA and native_image['Config'].get('Cmd') in (None,[])
         network_id=run('docker','network','create',network)
@@ -134,7 +146,7 @@ def main(package_directory=None, output=None):
             assert json.loads(run('docker','inspect',cid))[0]['State']==actual['State']
             assert (Path('/proc')/str(pid)/'cmdline').read_bytes()==cmdline
             result.update(schema='ouf.m2-discovery-registry-image-rootfs-ci.v1',
-                imageId=image,sourceCommit=record['sourceCommit'],packageRecordHash=hashlib.sha256(record_raw).hexdigest(),
+                imageId=image,configurationImageId=record['imageId'],imageAudit=audit,derivedEnvelope=envelope,sourceCommit=record['sourceCommit'],packageRecordHash=hashlib.sha256(record_raw).hexdigest(),
                 rootfsSeal=seal,limits=limits,mountTargets=[b['target'] for b in binds],
                 exactCandidateImageUsed=True,syntheticImageAndPrivateInputs=False,syntheticPrivateInputs=True,
                 derivation='DOCKER29_CONTAINERD_OVERLAYFS_PAUSED_FULL_DISCOVERY_GATE',
