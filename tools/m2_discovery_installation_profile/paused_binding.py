@@ -46,7 +46,7 @@ class DiscoveryPausedWorkloadBinding:
         else:
             snapshot,intent_hash=self.retained_checkpoint
             cursor=row.get('nextPhase');effects=row.get('effects')
-            require(digest(row)==snapshot and row['state']=='IN_FLIGHT' and type(cursor)is int and cursor in(9,10)
+            require(digest(row)==snapshot and row['state']=='IN_FLIGHT' and type(cursor)is int and cursor in(7,8,9,10)
                 and type(effects)is list and len(effects)==cursor+1
                 and [e.get('phase')for e in effects]==list(PHASES[:cursor+1])
                 and all(e.get('state')=='APPLIED'for e in effects[:cursor])
