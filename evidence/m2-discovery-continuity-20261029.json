@@ -13,19 +13,20 @@
   "source": {
     "repository": "GioNob/ouf-deploy",
     "branch": "feat/m2-discovery-complete-profile-20261029",
-    "commit": "12ec4870a8febcebfa96a06ef43b233570e2dfc3",
+    "commit": "ae11054df297e14fa80a81c39432af5cebea5001",
     "pr": 54,
     "merged": false
   },
   "qualification": {
     "selected": {
-      "source": "12ec4870a8febcebfa96a06ef43b233570e2dfc3",
-      "run": 40856360971,
-      "job": 123388212143,
-      "tests": 114,
+      "source": "ae11054df297e14fa80a81c39432af5cebea5001",
+      "pushRun": 40860072911,
+      "pushJob": 123400765696,
+      "prRun": 40860080014,
+      "prJob": 123400789917,
+      "testsPerJob": 127,
       "skips": 0,
-      "conclusion": "success",
-      "logRead": true
+      "logsRead": true
     },
     "recovery": {
       "source": "bcb645a9ec03dd5d4a2dc419649f3d55ae346e05",
@@ -114,13 +115,24 @@
     "nativePublisherTrustAccepted": false,
     "firstFailedRunPreserved": 40856064980
   },
-  "next": "Complete coordinated native preparation and executable thirteen-phase installation integration, including distinct worker, current IAM+provider public trust/network/DB/cohort and fencing. No current operator command; consumed scopes stay closed.",
-  "currentOperatorCommandReady": false,
+  "next": "Operator must run the single qualified SSH material-preparation command once; preserve all consumed scopes and return only public JSON/footer. Then continue coordinated native installation integration from preparedInputsHash.",
+  "currentOperatorCommandReady": true,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
   "stableCapabilitiesOperationalProven": false,
   "applicationE2EProven": false,
   "releaseAcceptance": false,
   "automaticReplayAllowed": false,
-  "budgetReset": false
+  "budgetReset": false,
+  "materialPreparation": {
+    "evidence": "evidence/m2-discovery-material-preparation-qualified-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_DISCOVERY_MATERIAL_PREPARATION_20261029.md",
+    "status": "QUALIFIED_NOT_EXECUTED_OPERATOR_FILESYSTEM_REQUIRED",
+    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-material-preparation-eed64887-20261029-v1",
+    "expectedCandidateBindingHash": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5",
+    "wrapperSource": "369ccc5cdb972dd7e361659f1f3d9cd47c59fe22",
+    "wrapperSha256": "7e25e9e150f3452dd0e6c994ae0d38cb3db803cfb2c0dae59b2baa75d787c0bd",
+    "capsuleSource": "6f2cc38a07a2b56542959716967e183f59217713",
+    "capsuleSha256": "7f1c64c3f20f7c31ee76799c3aad28bd4e8d6fcb7dbe688f1a02726cf6dd603b"
+  }
 }

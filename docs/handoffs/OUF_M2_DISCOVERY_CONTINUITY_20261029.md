@@ -1,3 +1,7 @@
+# Aggiornamento corrente — preparazione materiali qualificata
+
+Il prossimo passaggio richiede ora il filesystem VPS. [Unico comando corrente e rientro](OUF_M2_DISCOVERY_MATERIAL_PREPARATION_20261029.md). Sorgenteae11054d;127PASS/0skip,13peerDocker reali,consegna protetta e antiReplay qualificati. Nuovo scope NON eseguito, vecchi scope CONSUMATI e preservati. E2E ancoraOPEN.
+
 # Continuità M2 discovery — 29 ottobre 2026
 
 Il contesto operativo è conservato in questo handoff e nelle revisioni GitHub. La segnalazione dell'utente riguarda la visualizzazione della chat dopo le 9:11; non è prova di perdita del repository o dei risultati target.

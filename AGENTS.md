@@ -1,4 +1,14 @@
-# CURRENT — continuità salvata; custodia acquisita, qualifica installazione in corso
+# CURRENT — preparazione materiali qualificata; unico comando SSH corrente
+
+29ottobre2026. [Handoff e comando corrente](docs/handoffs/OUF_M2_DISCOVERY_MATERIAL_PREPARATION_20261029.md), [qualifica](evidence/m2-discovery-material-preparation-qualified-20261029.json). PR54 sourceae11054df297e14fa80a81c39432af5cebea5001.127PASS/0skip per push/PR, log letti;13peer Docker reali/27GET/copie/riletture e STOP supeer/replay qualificati. Consegna capsule byte-esattoHTTPS/nonroot/sudo/root0400, nonTTY/failedScope/priorLog/noReplay provati su4job, log letti.
+
+NEXT richiede ora filesystem VPS, non disponibile dal connector: eseguire UNA VOLTA il comando dell'handoff comeoufadminSSHinterattivo. Nuovo scope m2-discovery-material-preparation-eed64887-20261029-v1 NON eseguito.3metadata esatti,27GET max,1credenziale/2MACapp/1CA,2copie private nuove root:10001/0440+1CA root0600 e3riletture.90s/16MiB. Fonti storiche preservate. Nessun OAuth/IAM/login/SQL/nuovachiave/firma/import/lifecycle/grant/budget/upload/job/resume/acquisizione. NessunAPPROVO o segreto inchat, soloeventualesudo locale. RestituireJSON/footer; ancheSTOPconsuma, NONrilanciare/cancellare/ricreare o sovrascriverelog.
+
+eed64887custodia e f759/14einput restano RIUSCITI/CONSUMATI; nessun replay. Copie/inventario non sonoammissioneIAM/TLS/CA/DB oauthority; truststorecombinato edexecutor13fasi/worker distinto restanoda completare. Dopo risultato proseguirepreparazione coordinata e reviewHUMAN/authority finite soloquando pronte. FullRegistryrootfs/attestazionipacchetti acquisiti inCI, non targetadmission.
+
+M2/8stabilità/E2E OPEN;capability discovery non ancoraesposte. Farmacie/decisioni invariati. Chatbot→MCP→Gateway→Registry→OntoPiA obbligatorio; no bypass/merge/acceptance/subagenti/automazioni. Header/comandi successivi STORICI.
+
+# HISTORICAL — continuità salvata; custodia acquisita, qualifica installazione in corso
 
 29ottobre2026. [Handoff corrente](docs/handoffs/OUF_M2_DISCOVERY_CONTINUITY_20261029.md), [checkpoint](evidence/m2-discovery-continuity-20261029.json). Nessuna perdita repository osservata dopo segnalazione UI chat. Custodia eed64887 RIUSCITA/CONSUMATA, NON rilanciare. PR54 source12ec4870a8febcebfa96a06ef43b233570e2dfc3;114testPASS/0skip, regressione585testPASS/2skipTLS espliciti; Docker paused/PG PASS. Attestazioni MCP/Gateway SUCCESS e19subject/receipt riletti, nativepublishertrust non ammessa.
 
