@@ -1,9 +1,9 @@
 name: M2 public trust and current native context
 on:
   push:
-    paths: ['tools/m2_discovery_installation_profile/trust_preparation.py','tools/m2_discovery_installation_profile/native_context.py','tools/m2_discovery_installation_profile/trust_context_entry.py','tests/test_m2_discovery_trust_preparation.py','tests/qualify_m2_discovery_trust_context_native.py','.github/workflows/m2-discovery-trust-context-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/trust_preparation.py','tools/m2_discovery_installation_profile/native_context.py','tools/m2_discovery_installation_profile/trust_context_entry.py','scripts/export-m2-discovery-trust-context.py','releases/m2-discovery-trust-context-20261029.py','tests/test_m2_discovery_trust_context_capsule.py','tests/test_m2_discovery_trust_preparation.py','tests/qualify_m2_discovery_trust_context_native.py','.github/workflows/m2-discovery-trust-context-native.yml']
   pull_request:
-    paths: ['tools/m2_discovery_installation_profile/trust_preparation.py','tools/m2_discovery_installation_profile/native_context.py','tools/m2_discovery_installation_profile/trust_context_entry.py','tests/test_m2_discovery_trust_preparation.py','tests/qualify_m2_discovery_trust_context_native.py','.github/workflows/m2-discovery-trust-context-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/trust_preparation.py','tools/m2_discovery_installation_profile/native_context.py','tools/m2_discovery_installation_profile/trust_context_entry.py','scripts/export-m2-discovery-trust-context.py','releases/m2-discovery-trust-context-20261029.py','tests/test_m2_discovery_trust_context_capsule.py','tests/test_m2_discovery_trust_preparation.py','tests/qualify_m2_discovery_trust_context_native.py','.github/workflows/m2-discovery-trust-context-native.yml']
 permissions: {contents: read}
 jobs:
   native-material:
@@ -12,6 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
+      - name: Reproduce exact protected preparation capsule
+        run: python3 -I -B -S -m unittest discover -s tests -p test_m2_discovery_trust_context_capsule.py -v
       - name: Use official Docker 29.8.1 in an isolated disposable data root
         run: |
           set -euo pipefail
